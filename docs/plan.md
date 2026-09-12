@@ -8,6 +8,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-12 23:43（北京时间）：四卡保存回读通过，A4正式进程已启动
+
+- **Codex / A-02：** 四卡5步正常结束，实际回读`smoke/checkpoints/step_5.pt`（SHA `dc31736599d3562ae7a1a8e82129248cd292dd71ac5fe7ecf90dee3d84345194`）：504份Adam计数全5，504项训练状态变化、冻结部分逐字节不变，模型/Adam均有限，四rank RNG完整，四卡各20条实际train样本、覆盖五任务，normalizer与A3一致。`smoke_checkpoint_inspection.json`通过；这是工程验收，不是模型效果。
+- **正式运行：** supervisor `3719946`已自动启动torchrun `3729064`，`status.json`为`phase=formal/max_steps=2500/wall_seconds=null`。从原A3-5000重新初始化而非smoke权重；进入正式模型/数据初始化，须继续核对早期真实优化与四rank梯度回执。正式输出`/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912/formal`。
+- **协作同步：** 启动配方仍固定在Git分支的`e463932`；计划/目录/任务板已单独同步main（`13b03b1`），未把未经其他成员review的运行脚本或旧实验模型整体合入main。当前源码不热pull。
+
 ### 2026-09-12 23:34（北京时间）：A3父权重真实GPU门通过，四卡短测启动
 
 - **Codex / A-02：** `overnight_a4_20260912/gate/result.json`已实际通过：1138模型状态/192 LoRA逐字节恢复检查后，四个原train microbatch完成两次临时优化，动作专家与VLM LoRA真实更新、冻结参数不变，loss和梯度有限，峰值reserved 32,631,685,120字节。未保存或混入诊断权重。
