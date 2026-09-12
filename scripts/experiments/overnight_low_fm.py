@@ -32,7 +32,9 @@ POOLS = Path('/mnt/sdc1/robodojo/behavior_dev/GalaxeaVLA_memlite_coordination_de
 ROOT = Path('/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912')
 PYTHON = '/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python3.10'
 MAX_STEPS = 2500
-WALL_SECONDS = 8 * 3600
+# The user removed the overnight wall-clock cutoff. The finite step budget
+# remains; disk/numerical failures still stop safely without automatic retries.
+WALL_SECONDS = None
 MIN_FREE_DISK = 120 * 1024**3
 
 
@@ -254,7 +256,7 @@ def execute(command, env, log_path, seconds, heartbeat=None):
                                  stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
         try:
             while child.poll() is None:
-                if time.monotonic() - started > seconds:
+                if seconds is not None and time.monotonic() - started > seconds:
                     raise TimeoutError(f'Owned job reached wall-clock cap of {seconds} seconds')
                 if shutil.disk_usage(ROOT).free < MIN_FREE_DISK:
                     raise RuntimeError('Disk reserve reached; preserve existing checkpoints and stop this run')

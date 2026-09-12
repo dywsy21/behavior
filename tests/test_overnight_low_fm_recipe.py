@@ -21,7 +21,7 @@ class RecipeTests(unittest.TestCase):
         self.assertIsNone(args.resume_ckpt)
         self.assertEqual(args.low_initial_checkpoint, str(recipe.PARENT))
         self.assertEqual((args.nproc_per_node, args.num_obs_steps, args.seed), (4, 6, 29))
-        self.assertEqual(recipe.WALL_SECONDS, 28800)
+        self.assertIsNone(recipe.WALL_SECONDS)
         self.assertNotEqual(args.run_dir, str(recipe.PARENT.parent.parent))
 
     def test_smoke_is_not_formal_initial_checkpoint(self):
@@ -91,6 +91,18 @@ class RecipeTests(unittest.TestCase):
             with self.assertRaises(TimeoutError):
                 recipe.execute(['owned-child'], {}, Path(directory) / 'log', 1)
         stop.assert_called_once_with(child)
+
+    def test_no_formal_wall_cutoff(self):
+        child = Mock(pid=123456, returncode=0)
+        child.poll.side_effect = [None, 0]
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.object(recipe.subprocess, 'Popen', return_value=child), \
+             patch.object(recipe.time, 'monotonic', return_value=1000000) as clock, \
+             patch.object(recipe.time, 'sleep'), \
+             patch.object(recipe.shutil, 'disk_usage', return_value=Mock(free=recipe.MIN_FREE_DISK * 2)), \
+             patch.object(recipe, 'stop_owned_child'):
+            recipe.execute(['owned-child'], {}, Path(directory) / 'log', None)
+        clock.assert_called_once()
 
 
 if __name__ == '__main__':
