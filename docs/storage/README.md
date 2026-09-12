@@ -88,7 +88,9 @@ The copied receipts and manifests are small text artifacts from
   not payload data.
 - `verification_artifact_checksums.sha256` — server-side hashes for the
   selected receipts and related verification artifacts; it is not a payload
-  checksum list.
+  checksum list. It contains absolute `robo` paths and must be checked on
+  `robo`; do not run it locally as though it were a complete local-bundle
+  verification list.
 
 The source archive is not vendored into Git. These files preserve provenance
 without putting the 516 GB experiment payload into the collaboration repo.
