@@ -51,7 +51,7 @@
 - 编排/结果根：`/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912`；`launch.json`记录准确commit/父权重/源码SHA，`status.json`给出真实阶段，不能只看PID判定成功。
 - Git固定配方：`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_overnight_20260912`，commit `e463932740cbb3977a2b975be824c21d9dc96f45`；**不能在活跃副本pull**。它编排上述原A3训练快照，不代表主仓模型已完成P0-02整合。
 - `gate/`为两次临时优化验收、不保存训练权重；`smoke/`为四卡5步验收，`smoke_checkpoint_inspection.json`回读验证后才放行正式阶段；`formal/`才是从原A3-5000初始化的新2500更新阶段，正式初始模型不来自smoke。
-- 新正式权重：该根的`formal/checkpoints/step_N.pt`，每500更新及最终保存；固定80窗口结果在`formal/fixed_diagnostic/step_N.json`。截至23:43已通过GPU/四卡短测及保存回读，正式进程进入初始化；实际步数/文件以实时计划/status及样本/梯度回执为准。
+- 新正式权重：该根的`formal/checkpoints/step_N.pt`，每500更新及最终保存；固定80窗口结果在`formal/fixed_diagnostic/step_N.json`。23:48已进入正式训练，23:55四rank有效参数更新已核验；实际步数/文件以实时计划/status及样本/梯度回执为准。
 - 正式训练无墙钟截止（用户随后明确取消8小时限制）；有限2500步、不自动重试/追加训练。磁盘保留120GiB安全余量，不清理旧checkpoint；异常退出保留已有完整保存。恢复需绑定同run身份及原配置，不能重新执行`start`冒充断点恢复。
 
 ### 原有A/B评测和诊断
@@ -78,12 +78,14 @@
 
 这是2026-09-12的状态快照，不是允许按PID直接kill的清单；操作前重新核对实际argv/用户/启动时间，防止PID复用。
 
+23:54:39更新：为A4训练补足显存，仅在核验旧诊断已完成、完整启动身份和无连接后，以pidfd关闭旧A3前缀服务`3276541 / GPU0 / 8778`。该服务不再监听，旧权重、代码及`W/a3_prefix_radio_e121_l1_v1`结果全部保留；复现旧诊断时按其`service.launch.json`在新输出目录另行启动，不覆盖原回执。当前评测使用8773/8781，保持运行。下表的其他旧服务不因此自动获准停止。
+
 | 用途 | 端口/GPU | W下证据目录 |
 | --- | --- | --- |
 | 修正版A3完整低层 | `127.0.0.1:8781` / GPU3 | `a3_aligned_full_low_service_v3`，外层同名`.log`/`.launch.json` |
 | 修正版A3前缀诊断低层 | `127.0.0.1:8780` / GPU3 | `a3_aligned_radio_e121_l1_v2/service`及service日志 |
 | B-final高层 | `127.0.0.1:8773` / GPU2 | `a2_final_eval_b_high_service_v1` |
-| 原A2/旧A3等保留服务 | `8772/8776/8777/8778` / GPU0或2 | 历史比较服务，是否可停由准确依赖及团队决定 |
+| 原A2/旧A3等保留服务 | `8772/8776/8777` / GPU0或2 | 历史比较服务，是否可停由准确依赖及团队决定；8778已按上述核验关闭 |
 | 当前完整模拟器 | GPU1 | `native_a3_aligned_development_pilot_v3`；使用`kit_c1_gpu1_appdata_v1`私有缓存 |
 
 端口不能直接从外部访问时用SSH转发，不修改服务绑定扩大暴露。四张A100不等于四份可随意分配的空闲资源；先查实际进程和显存。渲染质量、IsaacSim版本与硬件兼容性仍需独立验证，吞吐不与正确性混为一谈。
