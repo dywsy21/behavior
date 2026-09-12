@@ -41,3 +41,9 @@
 1. 迁移完成前保留服务器原脏仓；不得在其上执行 pull、reset、checkout、force-push 或热改。服务器运行任务应使用停机后从 GitHub 建立的独立 checkout/worktree，并固定到明确 commit。
 2. 本地同步前先查看 `git status --short --branch` 和 `git remote -v`，再 `git fetch origin --prune`；仅在工作树干净、分支有 upstream 且无分叉时使用 `git pull --ff-only`。发现脏改动时只 fetch、审查和协调，不覆盖内容。
 3. 首次迁移提交 `69645b4220105ef1199fbbe90c889d4ae911ef6a` 只纳入经过检查的源码、配置、测试、轻量文档和协作规则；不纳入凭据、私人聊天、运行环境、数据、权重、视频、原始日志或海量诊断。首推前已复核暂存清单、秘密、大文件和 `git diff --cached --check`；证据追加 commit `c384b0a2a2398baf80bb4f35a8beb4bd9dcdd296` 已复核并普通 push。
+
+## 最新核验 checkpoint
+
+- 最终协作文档提交为 `49cced01e219c104155816c40ae3abc48e576034`，已普通 push 到 `origin/main`；本地仓库、GitHub `main` 和服务器 `/mnt/sdc1/robodojo/behavior` clone 均指向该 commit，工作树干净。服务器 clone 仍只用 `pull --ff-only` 更新，`upstream` 只读。
+- 服务器冷实验归档的最终软链、内容校验、隔离副本移除、释放空间和恢复边界，见[轻量存储验收材料](storage/README.md)。原始 receipts/manifest 保留在 `/mnt/tmp1/robodojo-archive-20260912/manifests/`；公开仓库只纳入小型文本证据，不纳入权重、数组、视频或整机进程/环境日志。
+- 原 `/mnt/sdc1/robodojo/GalaxeaVLA` 的 `.git`、31 个已修改路径和 90 个未跟踪路径仍保留；它不是本仓库的协作 checkout，也没有被 pull、reset、checkout 或 force-push。
