@@ -1,13 +1,13 @@
 # 仓库迁移与来源记录
 
-状态：首次迁移已完成（2026-09-12）；本地首个 commit 已 push，服务器干净 clone 已核验。本文件随后追加证据并以第二个普通 commit push。
+状态：首次迁移已完成（2026-09-12）；本地首个迁移 commit 与后续证据 commit 均已 push，服务器干净 clone 已在证据核验 checkpoint 追到最新并核验。
 
 本次迁移的可审计 receipt 与路径映射就是本文件（提交后固定为 `docs/REPOSITORY_SYNC.md`）；被忽略的归档内容位于 `artifacts/local-archive-20260912/root/`，不依赖 receipt 才能恢复。
 
 ## Git 入口
 
-- `origin`：`https://github.com/dywsy21/behavior.git`，首次检查时仓库公开可见但页面显示为空，`git ls-remote --heads origin` 没有 refs；首次迁移 commit `69645b4220105ef1199fbbe90c889d4ae911ef6a` 已通过普通 push 建立 `origin/main`，没有覆盖或重写 GitHub 历史。
-- `upstream`：`https://github.com/OpenGalaxea/GalaxeaVLA.git`，保存上游来源；当前 `upstream/main` 为 `89f2322b4ad016e192437adc1a2c253b05bab246`（`docs (readme): cite G0.5 arXiv paper`），其 push URL 已禁用。迁移后的本地 `main` 与 `origin/main` 均为 `69645b4220105ef1199fbbe90c889d4ae911ef6a`。
+- `origin`：`https://github.com/dywsy21/behavior.git`，首次检查时仓库公开可见但页面显示为空，`git ls-remote --heads origin` 没有 refs；首次迁移 commit `69645b4220105ef1199fbbe90c889d4ae911ef6a` 与证据 commit `c384b0a2a2398baf80bb4f35a8beb4bd9dcdd296` 均通过普通 push 建立/更新 `origin/main`，没有覆盖或重写 GitHub 历史。
+- `upstream`：`https://github.com/OpenGalaxea/GalaxeaVLA.git`，保存上游来源；当前 `upstream/main` 为 `89f2322b4ad016e192437adc1a2c253b05bab246`（`docs (readme): cite G0.5 arXiv paper`），其 push URL 已禁用。证据核验 checkpoint 的本地 `main` 与 `origin/main` 均为 `c384b0a2a2398baf80bb4f35a8beb4bd9dcdd296`。
 - `robo` 不是本仓库的 Git remote。它只用于只读核对 `/mnt/sdc1/robodojo/GalaxeaVLA`；GitHub 协作不再通过 rsync/scp 覆盖服务器活跃源码。
 
 ## 迁移来源
@@ -29,10 +29,10 @@
 
 首个 push 前核验服务器新协作入口 `/mnt/sdc1/robodojo/behavior` 不存在；原 `/mnt/sdc1/robodojo/GalaxeaVLA` 保持原位、原 `.git` 和脏工作区不变。首个 GitHub push 后才在该空路径 clone，并只通过共享原 `.venv`（不复制环境、不启动实验）。
 
-首次 push 后已在原先确认为空的 `/mnt/sdc1/robodojo/behavior` 完成普通 clone：`main` 与 origin 均指向 `69645b4220105ef1199fbbe90c889d4ae911ef6a`，工作树干净；该 clone 的 `upstream` fetch URL 为 OpenGalaxea、push URL 为 `DISABLED`。`/mnt/sdc1/robodojo/behavior/.venv` 是指向 `/mnt/sdc1/robodojo/GalaxeaVLA/.venv` 的软链，仅复用原环境，不复制、不安装、不启动实验。clone 完成后重新核对原 MAIN 的 loopback listeners：`8772/8773/8776/8777/8778/8780/8781` 均仍监听（python/python3.10），未停止或重启服务。
+首次 push 后已在原先确认为空的 `/mnt/sdc1/robodojo/behavior` 完成普通 clone，并在证据 commit 后用 `git pull --ff-only` 更新：证据核验 checkpoint 的 `main` 与 origin 均指向 `c384b0a2a2398baf80bb4f35a8beb4bd9dcdd296`，工作树干净；该 clone 的 `upstream` fetch URL 为 OpenGalaxea、push URL 为 `DISABLED`。`/mnt/sdc1/robodojo/behavior/.venv` 是指向 `/mnt/sdc1/robodojo/GalaxeaVLA/.venv` 的软链，仅复用原环境，不复制、不安装、不启动实验。clone 完成后重新核对原 MAIN 的 loopback listeners：`8772/8773/8776/8777/8778/8780/8781` 均仍监听（python/python3.10），未停止或重启服务。
 
 ## 安全同步约定
 
 1. 迁移完成前保留服务器原脏仓；不得在其上执行 pull、reset、checkout、force-push 或热改。服务器运行任务应使用停机后从 GitHub 建立的独立 checkout/worktree，并固定到明确 commit。
 2. 本地同步前先查看 `git status --short --branch` 和 `git remote -v`，再 `git fetch origin --prune`；仅在工作树干净、分支有 upstream 且无分叉时使用 `git pull --ff-only`。发现脏改动时只 fetch、审查和协调，不覆盖内容。
-3. 首次迁移提交 `69645b4220105ef1199fbbe90c889d4ae911ef6a` 只纳入经过检查的源码、配置、测试、轻量文档和协作规则；不纳入凭据、私人聊天、运行环境、数据、权重、视频、原始日志或海量诊断。首推前已复核暂存清单、秘密、大文件和 `git diff --cached --check`；本次证据追加提交完成后再复核并普通 push。
+3. 首次迁移提交 `69645b4220105ef1199fbbe90c889d4ae911ef6a` 只纳入经过检查的源码、配置、测试、轻量文档和协作规则；不纳入凭据、私人聊天、运行环境、数据、权重、视频、原始日志或海量诊断。首推前已复核暂存清单、秘密、大文件和 `git diff --cached --check`；证据追加 commit `c384b0a2a2398baf80bb4f35a8beb4bd9dcdd296` 已复核并普通 push。
