@@ -8,6 +8,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-12 23:31（北京时间）：A4后台验收/启动编排已运行
+
+- **负责人/任务：** Codex / A-02。服务器通过Git同步后在独立detached worktree固定`e463932740cbb3977a2b975be824c21d9dc96f45`；运行脚本SHA `3e21038efc97e68ccfb79b87f584025690ee035f43fd246b1c34b2e9a0ff5342`。11项CPU安全测试通过，正式训练墙钟限制为`null`，此前两次Git分支追踪失败均未产生训练。
+- **已提交运行：** supervisor PID `3719946`，运行根`/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912`；源码配方在`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_overnight_20260912`。`launch.json`固定配方commit、原A3源码SHA、父checkpoint SHA及预算；`status.json`记录实际阶段；`supervisor.log`/`gate.log`/`smoke.log`/`formal.log`分开保留。
+- **当前边界：** 后台编排已启动，不等于正式训练已执行。先真实两次更新/父状态核验，再四卡5步保存回读，均通过后自动启动独立`formal/`的2500更新；固定80诊断在`formal/fixed_diagnostic/`，checkpoint在`formal/checkpoints/`。仍未改变高层B、数据、既有仿真和服务；下一步确认真实门及正式早期更新。
+
 ### 2026-09-12晚：用户取消正式训练墙钟上限，继续启动
 
 - **负责人/任务：** Codex / A-02。用户最新要求“不用限时，跑起来就行”：取消正式训练8小时硬截止，仍按2500新增更新完成，每500步保存，保留磁盘/数值错误保护；不因时间到而终止训练。以下8小时记录是此前方案，已被本条替代。

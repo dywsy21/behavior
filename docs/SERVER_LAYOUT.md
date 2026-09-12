@@ -46,6 +46,16 @@
 
 ## 3. 结果、视频和原始证据去哪找
 
+### 2026-09-12晚新增：A4过夜低层训练
+
+- 编排/结果根：`/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912`；`launch.json`记录准确commit/父权重/源码SHA，`status.json`给出真实阶段，不能只看PID判定成功。
+- Git固定配方：`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_overnight_20260912`，commit `e463932740cbb3977a2b975be824c21d9dc96f45`；**不能在活跃副本pull**。它编排上述原A3训练快照，不代表主仓模型已完成P0-02整合。
+- `gate/`为两次临时优化验收、不保存训练权重；`smoke/`为四卡5步验收，`smoke_checkpoint_inspection.json`回读验证后才放行正式阶段；`formal/`才是从原A3-5000初始化的新2500更新阶段，正式初始模型不来自smoke。
+- 新正式权重：该根的`formal/checkpoints/step_N.pt`，每500更新及最终保存；固定80窗口结果在`formal/fixed_diagnostic/step_N.json`。截至23:31仅提交后台验收编排，哪些文件已实际产生以实时计划/status为准。
+- 正式训练无墙钟截止（用户随后明确取消8小时限制）；有限2500步、不自动重试/追加训练。磁盘保留120GiB安全余量，不清理旧checkpoint；异常退出保留已有完整保存。恢复需绑定同run身份及原配置，不能重新执行`start`冒充断点恢复。
+
+### 原有A/B评测和诊断
+
 | 结果类别 | W下路径 | 结论/边界 |
 | --- | --- | --- |
 | 旧A3完整五任务 | `native_a3_final_development_pilot_v1/task_0` … `task_4` | 各有`result.json`、`rollout.mp4`与记录；完整0/5，重复开发实例 |
