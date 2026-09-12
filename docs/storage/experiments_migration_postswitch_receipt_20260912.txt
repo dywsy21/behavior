@@ -1,0 +1,30 @@
+# receipt=experiments-migration-postswitch-v2
+post_switch_utc=2026-09-12T14:14:08Z
+source_link=/mnt/sdc1/robodojo/experiments
+source_readlink=/mnt/tmp1/robodojo-archive-20260912/experiments
+source_resolved=/mnt/tmp1/robodojo-archive-20260912/experiments
+archive_target=/mnt/tmp1/robodojo-archive-20260912/experiments
+backup=/mnt/sdc1/robodojo/experiments.archived-source-20260912
+backup_type=directory
+backup_inode=2168827452
+backup_du_actual=516608692224
+target_du_actual=516608692224
+backup_files=353
+target_files=353
+metadata_match=1
+backup_symlinks=0
+backup_recursive_mounts=0
+lsof_backup=empty
+sample_readability=source_link_and_backup_and_target_pass
+df_postswitch_before_removal_mount_roots:
+/dev/sda1      xfs  8793953927168 8491022094336 302931832832  97% /mnt/sdc1
+/dev/nvme0n1p1 xfs   959726878720  846249345024 113477533696  89% /mnt/tmp1
+hf_source_type=directory
+hf_target_type=directory
+hf_source_actual=311229177856
+hf_target_actual=311229222912
+active_processes_receipt=/mnt/tmp1/robodojo-archive-20260912/manifests/active_process_postswitch_20260912.txt
+task2_pid=3632286
+task2_state=running
+task2_output=/mnt/sdc1/robodojo/behavior_dev/direct_execution_L6rqZ6_20260910/native_a3_aligned_development_pilot_v3/task_2
+source_removal=not_yet_performed; this receipt is the last guard before exact backup removal

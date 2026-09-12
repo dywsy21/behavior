@@ -1,6 +1,6 @@
 # Git与三人协作
 
-共享仓库：[dywsy21/behavior](https://github.com/dywsy21/behavior)。本地工作根为`/home/wsy/behavior`；服务器当前源代码与运行副本并存，见[目录表](SERVER_LAYOUT.md)。
+共享仓库：[dywsy21/behavior](https://github.com/dywsy21/behavior)。本地工作根为`/home/wsy/behavior`；新的服务器协作checkout为`/mnt/sdc1/robodojo/behavior`。旧`GalaxeaVLA`脏工作区及运行副本保留，见[目录表](SERVER_LAYOUT.md)。
 
 ## 每次开始
 
@@ -38,6 +38,8 @@ git switch -c feat/low-fm-short-description
 服务器从GitHub拉取对应分支；完成检查后把实验绑定到准确commit、配置、父权重和数据清单。在独立worktree或快照运行，记录实际导入的源码路径。调试目录、主仓根和正在运行的快照不能混为一谈。
 
 运行中的训练/模型服务可能在稍后才读取某个文件，因此“这个文件现在没打开”不是可以pull/移动它的依据。旧进程完成后再切换；新版本用新运行目录/明确端口。Git同步不复制运行环境和TB级数据。
+
+新checkout目前复用旧`.venv`，不保证其editable安装已指向新源码。未来启动前核验实际import路径，使用独立环境或显式源码路径；不要在活跃共享环境中重新安装editable包来切换目录。
 
 ## 每次结束
 

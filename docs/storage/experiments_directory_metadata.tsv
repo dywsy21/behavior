@@ -1,0 +1,24 @@
+# manifest=experiments-directory-metadata-v1
+# generated_utc=2026-09-12T13:55:43Z
+# source=/mnt/sdc1/robodojo/experiments
+# target=/mnt/tmp1/robodojo-archive-20260912/experiments
+# source_actual_bytes=516608692224
+# source_apparent_bytes=516607863251
+# source_files=353
+# source_dirs=126
+# checksum=rsync_checksum_dry_run_exit0_session18399_PID3691970; itemized_changes=none; sha256=not_computed; receipt=/mnt/tmp1/robodojo-archive-20260912/manifests/experiments_checksum_receipt_20260912.txt
+# dependency=No production lsof opens; current checksum PID3691970 is expected; A3 task2-4 manifest/config paths audited
+# recovery=rsync -aHAXS --numeric-ids /mnt/tmp1/robodojo-archive-20260912/experiments/ /mnt/sdc1/robodojo/experiments/
+kind	relative_path	apparent_bytes	allocated_bytes	files	dirs	checksum	dependency	recovery
+historical-run	hy_vla	516607863251	516608692224	353	125	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/hy_vla_robodojo_smoke	1854	8192	2	1	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/hy_vla_robodojo_smoke_20260722_142127	0	0	0	1	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/hy_vla_robodojo_umi_2gpu_20260722_143857	1973	8192	2	1	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/hy_vla_robodojo_umi_2gpu_20260722_144317	1973	8192	2	1	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/hy_vla_robodojo_umi_2gpu_20260723_043433	54379775122	54379864064	38	13	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/hy_vla_robodojo_umi_2gpu_20260724_063831	0	0	0	1	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/hy_vla_robodojo_umi_2gpu_20260727_114427	462228073748	462228787200	308	103	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/hy_vla_robodojo_umi_3gpu_20260722_142127	0	0	0	1	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/hy_vla_robodojo_umi_3gpu_20260722_142755	0	0	0	1	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+historical-run	hy_vla/robodojo_umi	8581	12288	1	1	not_computed	No production open; current/known task paths under behavior_dev	/mnt/tmp1/robodojo-archive-20260912/experiments/ -> /mnt/sdc1/robodojo/experiments/
+# final_verification=rsync_checksum_dry_run_exit0; itemized_changes=none; sha256=not_computed; receipt=/mnt/tmp1/robodojo-archive-20260912/manifests/experiments_checksum_receipt_20260912.txt

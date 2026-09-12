@@ -1,0 +1,25 @@
+# receipt=experiments-source-removal-v2
+phase=pre_remove
+timestamp_utc=2026-09-12T14:15:22Z
+isolated_source=/mnt/sdc1/robodojo/experiments.archived-source-20260912
+archive_target=/mnt/tmp1/robodojo-archive-20260912/experiments
+original_path=/mnt/sdc1/robodojo/experiments
+filesystem=/dev/sda1 xfs
+backup_type=directory
+backup_inode=2168827452
+backup_du_actual=516608692224
+backup_files=353
+backup_dirs=126
+metadata_match=1
+symlinks=0
+recursive_mounts=0
+lsof=empty
+removal_manifest=/mnt/tmp1/robodojo-archive-20260912/manifests/experiments_source_removal_manifest.tsv
+content_receipt=/mnt/tmp1/robodojo-archive-20260912/manifests/experiments_checksum_receipt_20260912.txt
+removal_method=after final pass: find exact root -xdev -depth -mindepth 1 -type f -delete; exact root -xdev -depth -mindepth 1 -type l -delete; exact root -xdev -depth -mindepth 1 -type d -empty -delete; rmdir exact root; no rm -rf
+df_before_removal_mount_roots:
+/dev/sda1      xfs  8793953927168 8491029217280 302924709888  97% /mnt/sdc1
+/dev/nvme0n1p1 xfs   959726878720  846249562112 113477316608  89% /mnt/tmp1
+pre_remove_status=ready_for_exact_removal; no deletion yet
+runtime_receipt=/mnt/tmp1/robodojo-archive-20260912/manifests/experiments_source_removal_runtime_20260912.txt
+post_delete_status=complete_exact_root_removed; archive_target_retained; original_path_link_valid

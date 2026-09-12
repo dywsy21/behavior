@@ -7,6 +7,7 @@
 - [面向50任务的通用RL方法计划](RL_METHOD_PLAN.md)
 - [服务器代码/数据/权重/视频/归档位置](SERVER_LAYOUT.md)
 - [本次源码迁移、归档映射与Git入口核验](REPOSITORY_SYNC.md)
+- [安全磁盘归档、验收清单和恢复](storage/README.md)
 - [仓库级工作规则](../AGENTS.md)
 
 本地根目录保留协作代码；历史材料归档，重型实验文件被Git忽略但不代表可以删除。原GalaxeaVLA代码文档与上游许可保留；最新研究快照尚未完全集成的差异见任务板P0-02。

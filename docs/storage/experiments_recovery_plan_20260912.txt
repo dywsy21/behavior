@@ -1,0 +1,13 @@
+# recovery-plan=experiments-v1
+# archive=/mnt/tmp1/robodojo-archive-20260912/experiments
+# source-current=/mnt/sdc1/robodojo/experiments
+# verification=receipt /mnt/tmp1/robodojo-archive-20260912/manifests/experiments_checksum_receipt_20260912.txt; rsync checksum dry-run exit0; itemized_changes=none
+step1=while source path is unused, create exact staging directory /mnt/sdc1/robodojo/experiments.restore-20260912 (must not be an existing symlink)
+step2=rsync -aHAXS --numeric-ids /mnt/tmp1/robodojo-archive-20260912/experiments/ /mnt/sdc1/robodojo/experiments.restore-20260912/
+step3=rsync -aHAXS --numeric-ids --checksum --dry-run --itemize-changes --stats /mnt/tmp1/robodojo-archive-20260912/experiments/ /mnt/sdc1/robodojo/experiments.restore-20260912/; require exit0 and no itemized changes
+step4=check known model files/readability, file count 353, metadata list and lsof before switch
+step5=only after independent review and idle confirmation, if current path is a real directory: mv -T /mnt/sdc1/robodojo/experiments /mnt/sdc1/robodojo/experiments.previous-20260912; if current path is a symlink: mv -T /mnt/sdc1/robodojo/experiments /mnt/sdc1/robodojo/experiments.link-previous-20260912
+step6=mv -T /mnt/sdc1/robodojo/experiments.restore-20260912 /mnt/sdc1/robodojo/experiments
+rollback=if switch fails and source path is absent, mv -T /mnt/sdc1/robodojo/experiments.previous-20260912 /mnt/sdc1/robodojo/experiments (or exact experiments.link-previous-20260912) after confirming no process uses it
+archive-retention=retain /mnt/tmp1/robodojo-archive-20260912/experiments; do not rsync archive into an existing experiments symlink
+source-removal=not part of this plan and not authorized in this checkpoint
