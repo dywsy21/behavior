@@ -1,0 +1,162 @@
+# BEHAVIOR-1K five-task R1Pro data for pure-AR MEM-Lite training.
+#
+# The stored BEHAVIOR action column is 23-D:
+#   base_qvel(3) | trunk_qpos(4) | left_arm(7) | left_gripper(1)
+#   | right_arm(7) | right_gripper(1).
+# GroupedPaddingMerger maps it into the shared 27-D G05 layout defined by
+# configs/data/parts_meta/r1pro.yaml.  Do not change these raw slices to 27-D:
+# they must match meta/info.json exactly.
+_target_: g05.data.mixture_lerobot_dataset.MixtureLerobotDataset
+use_weight_normalization: true
+use_weight_for_sampling: false
+action_size: 32
+past_action_size: 0
+obs_size: 1
+obs_stride_second: 0.0
+val_set_proportion: 0.05
+val_split_mode: task_stratified
+is_training_set: true
+
+processors:
+  galaxea_r1pro:
+    shape_meta: &behavior5_r1pro_shape_meta
+      action:
+      - key: base_qvel
+        lerobot_key: action
+        start_index: 0
+        raw_shape: 3
+        shape: 3
+        time_offset: 0
+      - key: trunk_qpos
+        lerobot_key: action
+        start_index: 3
+        raw_shape: 4
+        shape: 4
+        time_offset: 0
+      - key: left_arm
+        lerobot_key: action
+        start_index: 7
+        raw_shape: 7
+        shape: 7
+        time_offset: 0
+      - key: left_gripper
+        lerobot_key: action
+        start_index: 14
+        raw_shape: 1
+        shape: 1
+        time_offset: 0
+      - key: right_arm
+        lerobot_key: action
+        start_index: 15
+        raw_shape: 7
+        shape: 7
+        time_offset: 0
+      - key: right_gripper
+        lerobot_key: action
+        start_index: 22
+        raw_shape: 1
+        shape: 1
+        time_offset: 0
+      state:
+      - key: base_qvel
+        lerobot_key: observation.state
+        start_index: 0
+        raw_shape: 3
+        shape: 3
+        time_offset: 0
+      - key: left_arm
+        lerobot_key: observation.state
+        start_index: 3
+        raw_shape: 7
+        shape: 7
+        time_offset: 0
+      - key: left_gripper
+        lerobot_key: observation.state
+        start_index: 24
+        raw_shape: 2
+        shape: 1
+        time_offset: 0
+      - key: right_arm
+        lerobot_key: observation.state
+        start_index: 28
+        raw_shape: 7
+        shape: 7
+        time_offset: 0
+      - key: right_gripper
+        lerobot_key: observation.state
+        start_index: 49
+        raw_shape: 2
+        shape: 1
+        time_offset: 0
+      - key: trunk_qpos
+        lerobot_key: observation.state
+        start_index: 53
+        raw_shape: 4
+        shape: 4
+        time_offset: 0
+      images:
+      - key: head_rgb
+        camera_type: exterior
+        lerobot_key: observation.rgb.zed_link_camera_0
+        start_index: 0
+        raw_shape: [3, 720, 720]
+        shape: [3, 224, 224]
+        time_offset: 0
+      - key: left_wrist_rgb
+        camera_type: wrist_left
+        lerobot_key: observation.rgb.left_realsense_link_camera_0
+        start_index: 0
+        raw_shape: [3, 480, 480]
+        shape: [3, 224, 224]
+        time_offset: 0
+      - key: right_wrist_rgb
+        camera_type: wrist_right
+        lerobot_key: observation.rgb.right_realsense_link_camera_0
+        start_index: 0
+        raw_shape: [3, 480, 480]
+        shape: [3, 224, 224]
+        time_offset: 0
+    action_state_transforms:
+    - _target_: g05.data_processor.transforms.relative_action.BehaviorPerKeyTransform
+      gripper_max_width: 0.1
+      trunk_relative_dims: [0, 1, 2]
+    train_transforms:
+      head_rgb: ${oc.load:configs/data/_transforms.yaml,train_head}
+      left_wrist_rgb: ${oc.load:configs/data/_transforms.yaml,train_wrist}
+      right_wrist_rgb: ${oc.load:configs/data/_transforms.yaml,train_wrist}
+    val_transforms:
+      head_rgb: ${oc.load:configs/data/_transforms.yaml,val}
+      left_wrist_rgb: ${oc.load:configs/data/_transforms.yaml,val}
+      right_wrist_rgb: ${oc.load:configs/data/_transforms.yaml,val}
+    norm_default_mode: z-score-tail
+    norm_exception_mode:
+      action:
+        left_gripper: q01/q99
+        right_gripper: q01/q99
+      state:
+        left_gripper: q01/q99
+        right_gripper: q01/q99
+    action_filter:
+      _target_: g05.data_processor.transforms.action_filter.BaseActionFilter
+    action_state_merger:
+      _target_: g05.data_processor.transforms.action_state_merger.GroupedPaddingMerger
+      merge: true
+      max_action_shape_meta: ${oc.load:configs/data/parts_meta/r1pro.yaml,parts_meta}
+      max_state_shape_meta: ${oc.load:configs/data/parts_meta/r1pro.yaml,parts_meta}
+      merge_spec: ${oc.load:configs/data/parts_meta/r1pro.yaml,merge_spec}
+    num_obs_steps: 1
+    use_stepwise_action_norm: true
+    drop_high_level_prob: 1.0
+    use_zh_instruction: false
+
+embodiment_datasets:
+  galaxea_r1pro:
+    type: g05.data.base_lerobot_datasetV3.BaseLerobotDatasetV3
+    embodiment_type: galaxea_r1pro
+    lerobot_ds_version: '3.0'
+    shape_meta: *behavior5_r1pro_shape_meta
+    stats_downsample_rate: 1000
+    dataset_groups:
+    - weight: 1.0
+      dataset_dirs:
+      - /mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4

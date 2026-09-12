@@ -1,0 +1,189 @@
+# MEM-Lite 协同训练执行计划与验收门
+
+**版本：2026-09-09；状态：E0 已完成，E1/E2/E3 均未放行。v6/48d6 raw parent、`unbound_relation` 白名单和 raw active-skill audit 误入模型三项 P1 已分别以 strict-r2、19 字段投影和 sidecar-only resolver 关闭；r2 对 9,171,004 行的逐行 reader/causal/mask/split 机械验证为 PASS、0 error，但仍明确 `PENDING_HUMAN_REVIEW`。Stage-A TEST_FIXTURE_ONLY source 已冻结组合：runtime 55 项、模型 30 项 CPU 合同、真实 R16 Hydra 路线及一次真实 GPU FM 更新均已通过。它们只是低层结构性证明；第一轮 120 条人工视觉样本的补充边界审查、task-0004 语义冲突处理及全量 release 仍未完成，正式训练、端到端 serving 和独立成功率评测更未完成。任何 CPU 绿、单步更新或 5000 steps 都不等于任务成功率改善或数据验收通过。**
+
+本计划服务于唯一的产品目标：在未见实例上提高完整 BEHAVIOR 任务成功率。训练步数、训练/离线 loss、单元测试通过和模型规模都不是完成条件。每个版本必须留下可复现的权重、数据、配置、代码、随机种子和评估证据，才能讨论成功率是否上升。
+
+主仓库为 `/mnt/sdc1/robodojo/GalaxeaVLA`。本文件与仓库内 `docs/memlite_coordination_execution.md` 内容同步。诊断依据保存在：
+
+- `/home/wsy/behavior/memlite-coordination-audit.ygMSCU/诊断结论.md`
+- `/home/wsy/behavior/memlite-coordination-audit.ygMSCU/协同训练策略.md`
+
+## 仓库约束与既有文档复核
+
+- 已检查主仓库及其父目录的适用 `AGENTS.md`：没有发现适用于 `GalaxeaVLA` 的额外仓库指令。本计划仍遵守现有 dirty/untracked 工作区不得覆盖、不得 reset/checkout 的约束。
+- 已复核 `docs/README.md`、`docs/data/schema.md`、`docs/deployment/serve_policy_mem.md`。其中 `shape_meta`/action-state 约束、观测历史时序和 `action_steps` 对齐要求在 E3/E4 中保持为回归门，不因 MEM-Lite 改造静默改变。
+- 既有未跟踪 `TODO.md` 的唯一待办是 `joint_training=true` 的自动 loss balancing，已登记为 R2；它不是开启 joint training 的授权，也不替代 E3 的真实梯度审计。
+- 本文写入时主仓库有 31 个已修改 tracked 文件和 96 个未跟踪源码/config/test 文件，均属于已有工作状态；本计划不会把它们当作已合并或已验证的实现。
+
+## 0. 不可改变的训练/评估约束
+
+1. 保留高低层分离和连续 FM 控制；协同是共享事件语义、互相匹配的数据和闭环状态，不是假称 FM 梯度穿过高层生成的离散文本。
+2. 每个样本的 `parent_goal`、`active_skill`、目标/目的地/手臂、`previous_outcome`、`next_decision`、`memory_update` 和 `task_complete` 使用同一份版本化协议。`SUCCEEDED`（上一技能成功）与 `task_complete`（全任务结束）绝不可混用。
+3. 低层 BC/FM 监督只能使用“从该状态出发实际执行该 `active_skill`”的专家动作。高层预测的错误技能不能和原专家的另一技能动作配对；此类记录只训练高层/结果判断，或者收集真正对应的专家分支动作。
+4. 训练环境特权状态只可产生标签、做审核或诊断；不得作为部署模型输入，也不得通过对象 ID 到世界坐标的查询泄漏到测试时。
+5. 原每任务 5% 留出集、五段 public_test 视频，以及任何其派生近重复样本永久隔离，只可评估/诊断，绝不回灌训练。新采集的同源纠正分支须以原始实例为组切分。
+6. 没有真实纠正动作的失败记录不是正向低层动作标签；它可以训练结果头、失败识别或高层决策。
+7. 任何完整任务评估必须报告实例、种子、最大时长、重置规则、成功判定、失败恢复次数、版本哈希。68.3 秒短程 rollout 不能叫正式成功率。
+8. 不为“再跑一遍旧模型”启动大规模基线 campaign。已有 v11 与历史轨迹只作为锚点；只在固定、同预算、同初始状态的**改动版本**之间做必要配对比较。
+
+## 1. 已知证据、其含义与限制
+
+| 现有证据 | 可以据此做的决定 | 不能据此声称的结论 |
+|---|---|---|
+| 全量 sidecar：同帧可配对高低层 74,002/74,002 intent 相同；无未来目标帧 | 不优先修“高低层字符串/时间连接普遍错位” | 所有原始人工语义标注都正确 |
+| 低层标签中 63.72% 为复合 `AND` 父目标；低层只拿单帧，未拿高层记忆/反馈 | 必须将可执行技能与父目标分开，并为低层提供已训练的条件/必要短历史 | 细粒度一定天然优于长子目标 |
+| 冻结 v11 干预：普通子目标换条件时动作变化很小；恢复条件作用明显 | 下一轮先验收普通技能服从，而不是只看 recovery loss | FM 路线无效，或这些数字就是任务成功率 |
+| v11 仅训练约 2.97M intent adapter；旧 FM/VLM、高层均冻结；训练路径有 `no_grad`/detach/优化器覆盖限制 | 真训低层 FM 专家须先做可达梯度审计，不能只翻一个开关 | 仅训练 5000 步已经比较过本计划 |
+| 原语料没有 FAILED/REPLAN；恢复集只有 58 条、主要是脚本诱发旋转后几何纠正 | 需要真实策略失败及专家纠正、独立 outcome 监督 | 现有旋转恢复可覆盖抓空、掉落、开门/放置失败 |
+| 高层冻结回放：标注历史下 13/20 intent 逐字匹配，陈旧初始历史下 2/20；切换后仍会滞后 | 高层、事实记忆和结果判断必须接受训练和陈旧记忆压力测试 | 高层“完全不会规划”，或这个小探针是正式成功率 |
+| 定向测试 18 passed | 现有 sidecar/因果数据/adapter 合约当前可运行 | 新架构、数据或任务成功率已经通过验证 |
+| schema-v6/48d6 候选曾通过独立 protocol/builder probe、data 34 项、model 16 项和局部解码；但人工抽查小样本证明 `parent_goal`/`target_parent_goal` 是含 `relation`、`memory_prefix`、`skill_idxes` 的原始 teacher repr，48d6 的 `_clean_text` 会将它原样投进 low condition / high target | 原始 relation/audit 必须和可部署的紧凑 parent 语义彻底分开；改正可作为带来源 hash 的 metadata enrichment，不必重扫视频/raw 9M | 48d6 不是最终无泄漏协议；任何 48d6 全量产物、CPU consumer 测试、人工单条发现都不构成 E1/E2/E3 放行 |
+| 训练 loader 生命周期候选：checkpoint remap → base safe load → post-load LoRA receipt → stage gate 在 DDP/optimizer 之前的串联，旧冻结组在 source 中机械通过；runtime 作者正因净化 data protocol 更新 identity/receipt 回归 | 可保留加载顺序作为新协议下复查的对象 | Stage-A/Stage-B 已真实更新、optimizer 覆盖正确、GPU 训练稳定或任何成功率改善 |
+
+当前 v11 低层权重 SHA-256：`e659db15463d8b809608ca29181f4761612c302e49de9d736ce20cd5c67fbb08`。它是诊断锚点，不是已证明有效的协同模型。
+
+### 新数据与仿真评测的现实风险（2026-09-08 更新）
+
+原始 demo 并没有提供可直接部署的、物理验证的子技能 outcome。任何无法由真实物理状态/观察依据确认的 `SUCCEEDED`、`FAILED` 或 `UNKNOWN`，必须保留为 `UNKNOWN`，并令该样本的 outcome 监督 `mask=false`；不得把标注区间结束、文本记忆、夹爪闭合或人工想象变成真假标签。
+
+目前也没有可用的“当前策略失败状态 → 专家物理纠正动作”实现。symbolic teleport 禁用；仍在开发的 primitives 不是教师，不能拿来伪造失败后的低层 BC 轨迹。E6 只能在训练实例中获取可复放、真实 physics 可验证的失败与纠正，覆盖抓取、开门、运输和放置等问题，而不是把最终目标缩窄为旋转恢复。
+
+完整五任务仿真必须使用官方 full-maxsteps，而不是遗留的 `3600s` wall budget：`task-0000=3224`、`task-0001=7901`、`task-0002=20682`、`task-0003=20544`、`task-0004=17770`。每次 E7 manifest 还须记录对应的 wall-clock 限制；长任务不能从短任务沿用同一个 wall budget。
+
+### 正在发生的受限执行（不等于阶段放行）
+
+- E1 全量 sidecar 曾按 48d6 构造；此前构造在 episode 600 左右被错误中止，唯一约 32 MiB 的**派生 staging**随之删除；原始数据和 v5 产物未受影响。经一次授权重启后，人工审核发现 parent raw-teacher 泄漏，故该运行及其后续产物均不能作为放行证据。raw 全量 builder 后来已经结束；clean enrichment 以来源 hash 做 metadata-only 处理，不重扫视频/raw 9M。全量 clean labels 已输出为 `ef2a64b08793bddbe46dc67dbb9302a4e25178cd4da1a219275cdb0627519368`，manifest 为 `7e7d9409d5a2bd8bb8836fc90f7ace54dbc8a9b559f56ab066728e67b454e5d1`；但按 task/skill/outcome 的全量统计、group split 审计和 E2 所需的主代理人工视觉审核仍未提供，故不能用于放行或训练。
+- 全量 clean labels 的关系安全扫描曾命中 `previous_intent`/`active_skills` 的 `unbound_relation`。抽样包为 `data/review_receipts/memlite_v6_unbound_relation_semantic_safety_samples_20260909.json`（SHA-256 `779f328c6058a3b4d988641247d56d10882cc9078fde3ab07642595eac591664`）：候选仅在 task-0002 的 199 个 episode 与 task-0004 的 9 个 episode 出现。原 `1a458a85…` 的递归删 key 已替换为 strict whitelist；r2 metadata-only 输出 labels SHA-256 为 `666f8fc0b097ad963de7c3e484d4017c59e8d0dfc74eaaa6124d6c551ac31cc6`。最终 reader/projection `c340…` 与 r2 的生成协议 `6584…` 已明确区分：前者只增加 exact-19 projection/resolver 接口，不改变 r2 语义字节。完整兼容 receipt [`memlite_v6_clean_r2_full_mechanical_validation_20260909.json`](/mnt/sdc1/robodojo/behavior_dev/GalaxeaVLA_memlite_coordination_dev_20260908/data/review_receipts/memlite_v6_clean_r2_full_mechanical_validation_20260909.json) SHA-256 `8f9e9c4a271878fe6f1510799bd668ed478e109e1ba1a0d85e9293760362d8a9`：9,171,004/9,171,004 immutable rows、strict projection、causal/mask/split 均 PASS（0 error），parallel rows 102,780、true pre-boundary gaps 2,651。它没有重扫 raw/video，也没有把 `review_passed=false/PENDING_HUMAN_REVIEW` 改为通过；E1/E2 的人工语义门仍在。
+- 48d6 的 source 组合曾得到 80 passed、1 expected contract fail；随后把净化 protocol 单独放入 source 时，旧 builder/recovery producer 仍产生旧 parent 文本，暴露出一次 torn-integration P1（6 项失败）。数据侧交付了兼容的 builder `2d429ade…` 和 recovery dataset `30c0e493…`；两者与 protocol `1a458a85…`、clean Base/sidecar/processor 在 source 原子组合后，data 39 + model 18 + runtime 35 项，合计 **92 passed**。这只证明该 TEST_FIXTURE_ONLY 组合的 CPU 机械接口；没有全量 clean 数据、训练或成功率结论。
+- 后续 source 组合以外部 cwd、清空 `PYTHONPATH` 跑当前模型 CPU 合同，得到 **2 failed / 26 passed**，不是可忽略的环境差异：data processor `b832…` 在 builder 已做完语义投影之后，又把 raw `active_skills_json` 及成员/边界审计字段写入 nested `samples`；低层模型的 no-audit guard 因而拒绝。修复合同已冻结：raw bundle、member ID、边界只保留在 sidecar 及以 `(episode_index, frame_index, actual_branch)` 唯一查询的 `MemLiteAuditResolver`，不得经过 getitem、processor、collate、builder 或 tokenizer；训练 receipt 仅能经 resolver 查询审计，再同 batch 的语义投影和 mask 比对。实际 selected `behavior5` 还通过 `MixtureLerobotDataset` 构造顶层训练集；已核实当前配置是包含五任务的**单一** Base 子数据集，因此顶层只能在 `len(datasets)==1` 时转发该 Base 的 resolver/spec 和 source tuple 映射，任何多 source mixture 必须 fail-closed，不能只给 inner Base 提供 resolver/spec 或暗中泛化拼接身份。数据、模型、训练三方须以该单一 API 完成真实 low 与 Stage-B 回归后再原子合并；不能删除 guard、把 raw 换名、由 inner Base 临时绕过，或凭旧 92 项回归启动 GPU。
+- 数据侧已交付**小样本**净化候选：protocol `1a458a85…`、1780-row clean fixture（labels `0c589484…`、manifest `6b00ff3b…`）与 enrichment `3e037f…`。全 1780 行都通过 `validate_v6_label`，三 parent/memory raw-marker 扫描为零命中（high 4、low 1776）；真实 low/high builder/prefix 验证了 audit 仅在 `annotated_parent_command_audit_json`，low condition 无 audit，high 的 old parent 在 EOC 前、current target 在 EOC 后，旧 raw-parent 反例被拒绝。它关闭的是该 fixture 上的 R15，不等于 full sidecar enrichment、人工审核或训练放行。
+- 真实 selected Stage-A processor 的 clean low receipt 已确认 action `(32,27)`、三路 image 各 `(1,3,256,256)`、proprio `(1,27)`，并固定了 v11-compatible processor config `2e0614e6…` 与 train-only stats `846bcbea…`。虽 raw `base_qvel`/`trunk_qpos` dummy registrations 存在，实际 transform 会先替换为 `lower_body`，未调用 dummy normalizer；四个 state/action round-trip 最大误差均接近机器精度。这关闭了该小样本的 normalization P1，仍须在任何正式训练 receipt 中再次固定 config/stats/source hash。Stage-B 仍需用 18 个唯一 camera/time ID 对齐 train/serve，不能把 `num_obs_steps=1` 误读为所有模态都只有一帧。
+- model 的 clean CPU 合同已为 19 passed，source 的 92 项组合回归包含 runtime 当前 handoff（runtime `e365491…`、旧 launcher `bad341d…`）。该组合测试的 `source_tree_sha256` 是 `cb0acd47890d3cfd2834d4ff84e21f32bffea9d6bfa77bcff415b922849a97fe`；它只供复现本次组合测试，不能写入未来 launch receipt。之后仅替换了 metadata-only enrichment 为 `7fc93096…`：data 39 项已重跑，clean fixture 与 66,028-row raw subset 的 labels 与参考输出逐字节一致；当前时点的 source 先后变更，不能把旧 92 项机械回归移植成“新快照全绿”。
+- launcher 的相对 `oc.load` P1 已在 source 修复为 `a7cdcac0…`：只接受 candidate `configs/task` 内 YAML，identity 覆盖整棵 config tree，子进程 `PYTHONPATH` 只保留 candidate `src:scripts:root`，并在导入前验证 `g05`/配置资源属于同一树。source runtime focused suite 已重跑 **36 passed**。随后在 source hash `f23278a8b62456de0a6239251acab64c05abe17179c47c97a296f4fda7a01c72` 上完成真实无 GPU Stage-A launch preflight，receipt 为 `/mnt/sdc1/robodojo/behavior_dev/memlite_coordination_preflight_20260908/source_stagea_cpu_preflight.json`（SHA `a12fd230…`）：clean fixture、train-only stats、task config、exact `(0, low)→low` 路线、`(32,27)` action、`(1,27)` proprio、三路 `(1,3,256,256)` image 皆已记录，CUDA 前后均为 false、未建模型/optimizer、未保存 checkpoint。该 receipt 仍缺实际 `g05.__file__`、解释器、严格 `PYTHONPATH`、`parts_meta` 路径/hash 和 preflight 自身 hash，故 R16 仅部分关闭；这些字段与模型 YAML literal 修复会进入**下一** source snapshot 后重跑。GPU Stage-A 结构检查尚未启动，且只可在全局锁、源码/配置哈希冻结、官方只读资产路径和独立 receipt 下执行；它不是长训授权。
+- 仿真抓取 P1 已独立复核：OG `IsGraspingState` 的 `TRUE/UNKNOWN/FALSE=1/0/-1` 已显式映射。新的 physical replay runner `9c35d1f8…` 将 source action 前的 1156–1161 observation 明确标作执行证据、非标签；outcome label 只使用真实 physics action 后同步得到的 1159–1164 history，anchor 是第三次 right-close hold 后的 1164，因此不混入未来 evidence。receipt 持久化 raw enum type/name/value 与 canonical tri-state，UNKNOWN 不变成 release；context 内先原子写 physical evidence，再允许 simulator `__exit__`。独立的时序/enum/receipt 测试 3 passed（候选总套件报告 35 passed）。
+- 已完成一次**真实** calibration-only physics replay：before-exit physical receipt [`physical_evidence_receipt.json`](/mnt/sdc1/robodojo/behavior_dev/GalaxeaVLA_memlite_coordination_dev_20260908/sim_runtime/artifacts/calibration_only/task0_radio_grasp_calibration_only_20260908T155548Z_3649569_186f0152/physical_evidence_receipt.json) 的 SHA-256 为 `68fb784e3df6adbe2113f1d8bd5f467e70469ce4d8ad581ab0f2fbaf0c1ce839`。它记录 pre 时左右手均为 raw `FALSE=-1`，三次真实 right-close hold（1162–1164）后右手稳定 raw `TRUE=+1`、左手 raw `FALSE=-1`；共消费 1165 个有限 23-D action，anchor/history 仍为 action 1164/1159–1164，物理 transition 为 true、outcome 为 `SUCCEEDED`。这是单一训练实例的物理校准证据，不是 policy SR；字段仍严格为 `reinject=false`、`teacher_eligible=false`、`calibration_only_not_teacher`，不得回灌为低层标签，也不能放行高层 outcome provider、多技能 feedback 或 E6 纠正闭环。
+- E2 的不可委托人工视觉审核：主代理已实际看完第一轮 **120 条**新样本；这不是全库 release，也不取消已有的分层覆盖、来源、前后媒体、train/eval 和边界证据要求。task-0003 的粗转场 `021` 显示 `GRASP` 时手仍接触 fridge 门，仍须以既有六个 mid/end 相关样本补充该 bundle 的前后媒体和标签对照，不能凭单帧武断改判。另 task-0004、episode 821 的 `jar_235` 原始 `HANDOVER` 方向在 `[7997,8267)` 有 270 帧重叠：数据侧须先精确全量计数，并提出双 branch **整 bundle 隔离**方案；它是待处理语义冲突，不能写成机械 PASS，也不阻断不受该冲突影响的 task-0000/episode-0 Stage-A fixture。task-0000/0001/0003 中末段各至少 18 条补样、task-0004 近末段至少 2 条补样，以及 r2 的审阅迁移/覆盖 receipt 仍待关闭。所有已审条目保留原始来源和投影未变的冻结 receipt，不能为了凑数重抽/重签；发现关键错误仍须修生成逻辑并扩大同类审查。
+- **独立 B 线（不改 A 或 r2）**：诊断证明 first-clean 将每行 `memory` 与 `memory_update` 都写成同一 `f(previous_parent_goal)`，多步历史退化，父目标改变时 online 历史错一事件。后续只在独立 B source 建 causal overlay：保留现有 19 字段，`K=3`，输入 `memory_i=U_{i-1}`，目标 `U_i=append_K(memory_i, previous_intent_i)`；只存 issued/unverified 的完整 canonical semantic bundle/对象语义，不存 ID、audit、帧、边界或伪物理成功。model 负责人单独实现 `high_planner_only`（planner CE；outcome head bitwise frozen、readiness=false、v10 high init）；sim 负责人单独实现 UNKNOWN_ONLY 的限频 replan/历史保留/官方 terminal 权威/observable allowlist。B 需自身三事件链、K eviction、parallel bundle、parent fallback、UNKNOWN replan、serve prefix 一致性和独立复审，之后才由集成负责人在独立 B source 串行合并；它不得阻塞 A 的单步、5-step smoke 或人工 r2 放行后的 A-main 5000。
+- **Stage-A R16 与单 GPU 结构性 FM 更新已完成（仍非正式训练）。** 当前 atomic source 的 runtime canonical `source_tree_sha256` 为 `f2338ce833c87e0bbdc5e187b4c54bce1c718c22a431954e1b5260881b785f4e`、config hash 为 `a70aec394b023e79d8eaf8edcf14abf6ee219516338374a5e13dbf9efc051543`；runtime 55 项 CPU+`py_compile`、模型 30 项外部 cwd/no-`PYTHONPATH` CPU 合同和 R16 真实 Hydra/Mixture/Base/processor/official-collate/resolver 路线都通过。R16 receipt 为 [`receipt.json`](/mnt/sdc1/robodojo/behavior_dev/GalaxeaVLA_memlite_coordination_dev_20260908/integration_receipts/stagea_source_cpu_e2e_r16locator_20260909T025400/receipt.json)，SHA-256 `64046be06870e2cea87065a4159df18d6f21f8fe7eb1b5124a4affe4fb2246e8`，CUDA 前后为 false。随后在非阻塞全局锁下，PID `3807430` 对 task-0000/episode-0 TEST_FIXTURE_ONLY 完成一次固定 seed/noise 的真实 FM forward/backward/AdamW update，receipt 为 [`receipt.json`](/mnt/sdc1/robodojo/behavior_dev/GalaxeaVLA_memlite_coordination_dev_20260908/integration_receipts/stagea_gpu_one_step_f233_20260909T030300/receipt.json)，SHA-256 `50c7a3598057d7aecc1121ce11f854a7d499c634e67e335ea2238e2a09a9472a`：continuous FM-only loss `0.7394396067`、无 CE 项；仅 `action_expert` 的 322 个参数有有限非零梯度且更新，623 个冻结参数 bitwise 不变，三相机真实 trace、`[1,32,27]` bool mask 与 lower-body stats round-trip 均已记录；57.59 秒、峰值 21.62 GB。它没有保存可用 checkpoint、没有重试/长训/高层/sim；该结构证明仍不覆盖 E1/E2、全量 r2、人工审核、5-step resume smoke 或成功率门。
+
+### 当前三条链路的边界
+
+- **A：低层结构验证。** 仅用不受 R15/task-0004 冲突影响的 task-0000 episode-0 fixture，已完成 R16 实际 CPU 路径和一次真 FM 更新；下一步仍须真实 sampler/checkpoint/resume 的 5-step smoke，最后才可能在 r2 人工门放行后考虑 A-main 5000。
+- **数据 release：** r2 已完成全量机械核验，但仍受人工语义、补样、task-0004 双 branch 整 bundle 隔离和迁移覆盖 receipt 约束；不得把 120 条初审或机械 PASS 误报为全量数据放行。
+- **B：高层记忆/serving。** `high_planner_only`、causal K=3 memory overlay 与 UNKNOWN_ONLY serving 是独立 B source 的后续工作。overlay 还必须构造“中途观测后继续同一完整 bundle”的幂等自环样本：结果是 `UNKNOWN/未验证`，不得伪造完成；否则周期性 UNKNOWN_ONLY 调用只见过切换意图的数据分布。它须验证同 bundle refresh 不重复事件语义、K=3 history 去重，并在少量可人工审查 fixture 与真实 prefix 上通过后才可串行合并。绝不改当前 A frozen source 或阻塞 A。
+
+## 2. 统一事件协议（所有实现阶段的硬依赖）
+
+训练和运行中每个决策点都记录以下紧凑的结构化字段或确定性文本模板：
+
+| 字段 | 语义 | 可接受值/例子 |
+|---|---|---|
+| `parent_goal` | 较长的任务目的 | `place plate in refrigerator` |
+| `active_skill` | 此刻唯一可执行的技能 | `NAVIGATE` / `OPEN` / `GRASP` / `TRANSPORT` / `PLACE` / 显式并行分支 |
+| `target`, `destination`, `arm` | 目标指代、目的地和执行手 | plate 93 / shelf 4 / right |
+| `previous_outcome` | 已发生的上一技能观察结果 | `IN_PROGRESS` / `SUCCEEDED` / `FAILED` / `UNKNOWN` |
+| `next_decision` | 下一调度行为 | `EXECUTE` / `RETRY` / `REPLAN` / `STOP` |
+| `memory_update` | 可从过去观察确认的事实 | 右手持盘子；右门已打开 |
+| `task_complete` | 仅表示全任务完成 | boolean |
+
+结果标签必须有可检查的观察依据。抓取要求物体被正确手稳定持有；放置要求释放后处于目标区域并稳定；开门要求门状态达到要求。证据不足标 `UNKNOWN`，不把区间结尾、夹爪闭合或时间超时伪造为成功/失败。
+
+## 3. 阶段、负责人、依赖与验收证据
+
+负责人按**角色**列出；由集成负责人在开始前指派具体人。除“主仓库串行集成负责人”外，其他工作可在隔离工作树并行；未经审查不得合并到主仓库。
+
+| 阶段 ID | 目标与工作范围 | 负责人 | 前置依赖 | 必须留下的验收证据 | 进入下一阶段的门槛 |
+|---|---|---|---|---|---|
+| E0：基线冻结与可恢复开发环境 | 记录当前 dirty 源状态、权重/数据指纹、评估预算；建立隔离工作树与恢复说明。只做文档/环境，不训模型。 | 主仓库串行集成负责人 | 无 | source manifest、工作树路径、`git diff`/untracked 哈希、容量检查；无训练进程证明 | 可从固定源状态复建隔离工作树，且主仓库未被覆盖 |
+| E1：事件协议与候选数据 | 将 `skill_annotation`/`primitive_annotation` 转为版本化事件单元：过去观测、旧技能/记忆、outcome 的物理证据或 `UNKNOWN+mask=false`、下一技能/记忆、同状态连续动作和有效 mask。离线标签对每个并行组以原 annotation 时间覆盖导出的独立 expected-members 核验完整性；运行时 parser 只需验证当前 bundle 合法、唯一、语义稳定。按实例分组切分。 | 数据与标注负责人 | E0 | schema/版本号、生成日志、总量与按 task/skill/outcome/边界的计数、来源索引、UNKNOWN/mask 计数、每个并行组 expected/emitted 成员与差异、train/eval/public_test 隔离检查 | 无未来泄漏、无组泄漏；每个低层样本可追溯到同状态同技能动作；不存在无物理依据的 outcome 监督；离线并行标签不以自身 emitted list 证明完整性 |
+| E2：数据语义审核与采样 | 对成功/失败/UNKNOWN、原子/复合/双臂技能及技能边界做分层审查；补齐 sampler，使 task×skill×boundary×outcome 均衡，恢复中的 brake/align/approach/settle 也单独均衡。 | 数据与标注负责人；**主代理亲自执行的人工审核负责人** | E1 | 至少 120 个分层样本的图像/短片和标签审阅记录、逐项通过/拒绝理由、修正记录、混淆矩阵、采样权重和实际 batch 组成 | 零未处理关键错误；UNKNOWN 和真失败均有明确路由；全量机械因果/mask/split 检查通过 |
+| E3：低层 FM 可训练路径 | 从匹配的完整 G0.5/FM 初始化，令 `active_skill` 与对象条件进入上下文化图文条件，再到 FM。实现 FM 专家/条件模块训练路径；先冻结视觉/VLM，后续预留低层 LoRA/后段和短历史。保持动作坐标、归一化、32 预测/16 执行的基准约束。 | 低层控制负责人；主仓库串行集成负责人 | E1、E2 的小样本可用 | 参数冻结表、optimizer 参数清单、每组梯度范数、一步前后参数 SHA/差异、无梯度路径单测、动作编解码/边界 mask/服务时序回归测试 | 预期训练参数确实更新，冻结参数不更新；条件不再只在末端词嵌入残差中出现 |
+| E4：低层技能服从训练与隔离评测 | 先训 FM 专家与条件模块；只有在 E4-A 不足时才打开 LoRA/短历史。评估“正确技能+学习低层”的导航、开门、抓取、运输、放置短技能，并做同状态、不同普通技能的行为级对照。 | 低层控制负责人；评测负责人 | E3 | run receipt（配置/数据/权重/代码/种子哈希）、每个 loss 的有效 token/维度、对象正确率、技能成功率、边界失败率、对照视频/轨迹 | 普通技能条件产生可观察且正确的对象/动作差异；不以 5000 步、单一 loss 或 recovery 下降放行 |
+| E5：高层与结果判断 | 以 E1 的真实 outcome、下一技能、记忆更新训练高层语义分支和轻量结果头；结果头仅看当前及过去观测/动作。保留旋转守卫为专项兜底，不能代替 outcome。 | 高层与结果判断负责人 | E1、E2；E4 固定候选版本 | 成败/UNKNOWN 分类及校准、错误切换/提前成功率、陈旧 memory 与 previous intent 分离消融、结果触发日志 | 能区分进行中与真正成功/失败；对陈旧上下文不锁死；不使用未来帧或 oracle 作为部署输入 |
+| E6：真实失败—专家纠正闭环与交替协同 | 在**训练实例**运行固定版本，收集当前策略实际失败；只能由可复放的真实 physics 专家/人工接管从失败状态纠正，产出失败证据、纠正动作和后果。symbolic teleport 和 WIP primitives 禁止作为教师。将高层、结果头与低层分开优化，轮流冻结固定版本采样。按需开放 LoRA/历史。 | 闭环数据负责人；低层负责人；高层负责人 | E4、E5 | 失败类别分布、每条纠正的前后状态和物理验证、专家动作、组切分证明、每轮固定版本/数据谱系、错误配对屏蔽统计 | 新数据包含真实抓取/开门/放置等失败，而不只是旋转；没有把错误高层技能与不匹配专家动作用于低层 BC |
+| E7：完整自动评测、选择与再迭代 | 冻结明确版本，在独立 5% eval 和 public_test 上进行足时完整闭环：自动高层 + 自动 outcome + FM。官方 full-maxsteps 固定为 task-0000..0004 的 3224/7901/20682/20544/17770；按任务声明合理的 wall-clock budget，禁止沿用统一 3600s。先将 E4 的 oracle-skill 与 E5 的诊断-oracle-outcome 数字作为定位指标，严格同部署指标分开报告。根据失败归因回到 E1–E6。 | 评测负责人；主仓库串行集成负责人 | E6 | manifest、成功判定原始日志、每 task/seed 成功率与置信区间、q_score、完整 maxsteps/wall budget、时长、错误目标、提前成功、恢复率、视频和失败分类 | 在预先声明的预算中，完整自动成功率相对指定锚点有可复查提升；否则按失败证据迭代，不发布“成功”声明 |
+
+### E2 的不可委托人工视觉验收
+
+新数据完成构造后，主代理必须亲自查看图像/短片及其对应标签，不能由子代理、脚本或汇总数字代签。最少审阅 **120 个分层样本**，并覆盖全部五个任务；每个任务的 train/eval 类别；原子技能、复合技能、双臂技能与技能边界；以及 `SUCCEEDED`、`FAILED`、`UNKNOWN` 三种结果。它不是要求每个交叉组合都人为凑足样本：任何缺失或不足的类别都必须如实报告为“无数据/数量不足”，随后补采或调整采集方案，绝不能虚构标签来填格子。
+
+每一条审阅记录至少保留：数据版本和 split、任务/episode/原始来源索引、对象 ID、`t` 前后时间戳、审阅的图像或短片路径、父目标/当前技能/outcome/记忆标签、审阅结论和理由。抽样须同时包含随机项与高风险边界项；抽样报告要能重新定位源数据，而不是只保留拼图截图。
+
+如果发现某一类关键错误（例如因果方向、对象指代、结果依据或动作区间错误），处理方式不是只改这条被抽中的记录：先修正生成逻辑，扩大到同类分层重新审核，并重新跑全量机械因果、mask 与 group-split 检查。E2 的放行条件是**零未处理关键错误**和上述全量机械检查通过；这仍不等于宣称已对整个语料库做完视觉认证。
+
+## 4. 训练与集成规则
+
+### 4.1 低层的渐进开放顺序
+
+1. 完整、相互匹配的旧 G0.5/FM 权重初始化；不把来自不同训练的 VLM 与 FM 专家直接拼接。
+2. 先训 FM 动作专家和技能条件模块，冻结视觉与 VLM 主干。
+3. 只有 E4 证明普通技能服从仍不足时，开放低层 VLM 的小规模 LoRA/后段；短历史通道也必须训练后才可依赖。
+4. 每一次开放都重新执行梯度、optimizer 覆盖、一步参数差异、显存/吞吐和旧行为保真审计。
+
+初始学习率仅作为探索起点：FM 专家约 `1e-5`、低层 VLM LoRA 约 `5e-6`、新模块约 `1e-4`、高层可训练参数约 `1e-5`。它们不是已验证最优值，亦不可复用 adapter-only 的显存/吞吐估计。
+
+### 4.1-A Stage-A 与 Stage-B 的独立门
+
+Stage-A 是单帧、三相机、低层 FM action-expert 的独立训练门。它需要自己的 clean 数据/E2 人工审核、candidate-root CPU 路线、真实一 GPU step 的梯度/更新/冻结审计和 train-only sampling receipt；不能因为 Stage-B 的六帧/18-image padding 或高层结果头尚未完成而无限期阻塞。
+
+Stage-B（LoRA/短历史）和高层/结果头则必须在其自身启动前完成六帧的真实、非 padding 18 camera/time ID 训练—推理 trace，以及 observable-only outcome provider 的端到端验证。两类门不可互相借用：Stage-A 的三图通过不证明 Stage-B 时序正确；Stage-B 未通过也不能被拿来宣称 Stage-A 或完整闭环已经失败。
+
+高层先按单独的 `high_planner_only` profile/run 训练 planner VLM：outcome head 必须冻结，参数覆盖为零、`outcome_validated=false`，且其 run receipt 单独列出。只有收集到真实 physics outcome 样本后，才允许另开 `high_planner_outcome` 训练结果头及其校准。这个未来 profile 不得混入 Stage-A 的参数组、loader receipt、结构预检或训练结论，也不以尚未完成的 outcome 训练阻塞 Stage-A。
+
+### 4.2 高层、结果头与低层如何协同
+
+- 高层学习下一技能、决策和事实记忆；结果头学习 `IN_PROGRESS/SUCCEEDED/FAILED/UNKNOWN`；FM 低层把当前**正确**技能变为动作。三个损失分别归一化、分别记录，不比较 CE 与 FM 的绝对数值。
+- 高层离散文本/结构化技能由其自身监督优化；不声称连续 FM loss 会穿过 argmax/生成 token 更新高层。
+- 只有预测技能与专家技能被验证语义等价时，才允许替换低层条件。其余行对高层纠正监督，低层 BC mask 为零；若需要另一技能动作，必须从同一状态实际采集分支。
+- 结果头比长文本规划更频繁检查已发生的动作与观察；只有新的尝试与观察证据出现时，才更新重试/失败计数。
+
+### 4.3 评估不能混淆的三层指标
+
+| 指标层 | 输入 | 回答的问题 | 不是 |
+|---|---|---|---|
+| L1 | 正确技能 + 学习低层 | 控制器是否服从该技能、做对对象 | 完整自主任务 SR |
+| L2 | 学习高层 + 诊断用真实 outcome | 规划/记忆是否是主要瓶颈 | 可部署系统 SR |
+| L3 | 自动高层 + 自动 outcome + FM | 部署闭环是否真的完成任务 | 仅训练 loss 或短程视频 |
+
+L3 是最终选择指标；L1/L2 只用于定位。所有版本都应同时给 L1、L2、L3，以免把某一模块的 oracle 优势误传为端到端提升。
+
+## 5. 当前待解决项与明确依赖
+
+| 编号 | 待解决项 | 首先由谁处理 | 阻塞的阶段 | 解决证据 |
+|---|---|---|---|---|
+| R1 | 事件协议如何从细粒度标注和物理状态构造，尤其是抓取/放置/开门的 outcome 依据 | 数据与标注负责人 | E1–E7 | 可版本化 schema、实例级来源和人工审核 |
+| R2 | `joint_training=true` 的自动 loss balancing（现有 `TODO.md`）以及真正可达的训练梯度 | 低层控制负责人 | E3–E6 | 各 loss 缩放、梯度归因、参数更新审计 |
+| R3 | `prefill()` 的 `no_grad`、KV detach 和 adapter-only optimizer 如何替换为可控训练通路 | 低层控制负责人 | E3–E6 | trainable/frozen 参数验证与回归测试 |
+| R4 | 如何从观察而非部署 oracle 判断技能 outcome，并校准 UNKNOWN | 高层与结果判断负责人 | E5–E7 | 严格过去信息评测、分类/校准及误报日志 |
+| R5 | 当前策略在训练实例上的真实失败和专家接管采集方式 | 闭环数据负责人 | E6 | 每条纠正可复放、可审计、组切分 |
+| R6 | 评测环境的成功 API、足时时限、种子和视频/日志收集是否统一 | 评测负责人 | E4、E7 | 预先版本化 manifest 与可复放评测 receipt |
+| R7 | 主仓库现有 31 个已修改、96 个未跟踪源文件的串行集成及冲突处理 | 主仓库串行集成负责人 | 全部 | 隔离工作树审查、逐次 cherry-pick/patch 审查；不覆盖队友改动 |
+| R8 | 原 demo 缺少物理可验证的技能 outcome，UNKNOWN 如何保持为无监督而非伪标签 | 数据与标注负责人 | E1–E5 | `UNKNOWN`/`mask=false` 的全量统计、因果审计与人工审阅记录 |
+| R9 | 真实 physics 失败后的专家纠正采集器尚不存在；teleport/WIP primitives 不可作教师 | 闭环数据负责人 | E6 | 可复放的物理失败—纠正轨迹、状态证据与专家动作 |
+| R10 | 五任务官方 maxsteps 与任务级 wall-clock 预算绑定 | 仿真/serving 与评测负责人 | E7 | 每 task 的 maxsteps、wall budget、完成/超时原始日志 |
+| R11 | Stage-A/B 的 loader 生命周期尚未把 checkpoint key remap、LoRA injection/restore、参数 stage gate 串到 DDP/optimizer 之前；Stage-B resume 还须拒绝缺失 adapter | 训练/评测入口负责人；低层控制负责人 | E3–E4 | 明确调用次序单测、真实参数组/optimizer receipt、resume 缺 adapter 失败测试 |
+| R12 | 最终 v6 protocol 已同步到 data/model 候选；runtime/serving/collate 仍须以同一 hash 同步并证明 `task_name` 进入高层 prefix，`target_parent_goal`/outcome/audit 不进入输入，且 audit expected-member/source ID 不进 token | runtime/serving 负责人；数据/模型负责人复核 | E1、E3、E5–E7 | 每个 consumer 的 hash lock、白名单 projection 与 tokenizer/collate 反例测试 |
+| R13 | 物理纠正与 outcome audit 的因果门：KNOWN evidence 必须严格早于标签帧；evidence-backed UNKNOWN 合法但不监督；物理纠正必须先证实未满足、实际消费至少一个有限 23-D physics action、再证实因果成功；OmniGibson `IsGraspingState` 必须显式三态映射（TRUE/UNKNOWN/FALSE = 1/0/-1），绝不使用 Python 真值；不可将部分 `IN_PROGRESS` 支持误扩展为“永久排除可恢复 FAILED” | 仿真/serving 与闭环数据负责人 | E1、E5–E7 | 对 shared protocol 的反例一致性、真实/同构三值 enum 下的抓取与放置 release 测试、pre/post state/action trace、无 teacher 的失败记录不回灌低层 BC、真实 simulator 复放证据 |
+| R14 | 结果头和六帧视觉的部署接线：serve 入口必须传入实际 observable-only context provider，递归拒绝 oracle/audit；用 18 个唯一 camera/time ID 走真实 `encode_train` 与 `encode_inference`，证明训练和 serving 都得到 `head_t0..t5,left_t0..t5,right_t0..t5` 的同一最终 placeholder/pixel 映射 | 模型负责人；仿真/serving 负责人；独立复核 | E3、E5、E7 | 非 mock 的 high-policy prefix/hidden/head E2E 测试、旧 bundle outcome 触发日志、18-ID 严格顺序回归；禁止用“18 个图”或各自内部单测替代 |
+| R15 | `parent_goal`、`target_parent_goal`、`previous_parent_goal` 及 `unbound_relation` 的语义投影：raw primitive relation、`skill_idx`、source/audit ID、memory prefix、v5 `intent/status` 不得以字符串 repr 进入任何 high input/target 或 low condition；raw teacher 只能作 audit。当前 `unbound_relation` 的递归删 key 不是白名单，须修正后重扫 full-clean label metadata。 | 数据/标注负责人；模型/训练 consumer 复核；主代理人工审核 | E1–E5 | 新协议/fixture hash、raw-marker 拒绝测试、关系字段白名单/反例、三个投影的精确 prompt 反例、真实 selected processor receipt、版本化 metadata enrichment 来源/目的 hash；随后重跑全部 data/runtime consumer |
+| R16 | coordination launcher 的子进程工作目录与 Hydra 相对资源路径：不得因把 `cwd` 设为 source root 而使 `oc.load` 找不到官方 `parts_meta`；解释器、实际 `g05.__file__`、严格子进程 `PYTHONPATH`、source/config/preflight 自身 hash、stats/parts-meta 绝对解析结果均须进入 receipt | 训练/评测入口负责人；独立复核 | E3–E7 | 无环境继承的 launch-isolation 回归、真实 selected config 的 resolve 结果、失败时 fail-closed、可独立核验模块/路径/hash 的 run receipt | 先前 receipt 已证实真实 CPU 路线但缺可独立核验的模块/环境字段；未补齐并重跑前禁止经该 launcher 启动任何长训、恢复或正式评测 |
+
+## 6. 隔离开发树与源状态恢复
+
+当前主仓库是脏工作区，不能直接让多位实现者并发写入。E0 使用一个且仅一个预留根目录：
+
+`/mnt/sdc1/robodojo/behavior_dev/GalaxeaVLA_memlite_coordination_dev_20260908`
+
+恢复设计：从记录的 `HEAD` 创建 detached `git worktree`，应用当前已修改 tracked 文件的二进制 patch，然后恢复未跟踪的源码/config/test 文件；每一步都以 source manifest 的 SHA-256 复核。`.venv`、`venv`、`checkpoints`、`datasets`、`outputs` 和任何模型权重均不复制、不链接、不删除。这样独立源码工作树预计约 9.9 MiB，而不是把主目录的约 11 GiB 环境/产物复制一遍。
+
+该根目录的 `SOURCE_MANIFEST.md` 是具体源版本、补丁哈希、未跟踪树哈希、容量与重建命令的权威记录。新实现者只在该隔离树/其后继隔离树中工作；主仓库只由串行集成负责人合并经过测试和审查的变更。任何人都不得 reset、checkout、覆盖或提交主工作区的既有 dirty/untracked 内容。
+
+## 7. 本计划的完成定义
+
+计划不会因为文档写完、一个 checkpoint 到 5000 steps 或一组测试变绿而完成。只有同时满足以下条件才可宣布本轮路线达成：
+
+1. E1–E6 的数据谱系、梯度审计、纠正数据和模型训练证据全部通过对应门槛；
+2. E7 在独立、隔离的完整自动闭环评测中显示可复查的任务成功率提升，并报告失败模式；
+3. 评测未污染 train/5% eval/public_test 边界，且主仓库集成可回滚/可重建；
+4. 若某阶段未达标，保留失败证据，按表中依赖回到最早的可解释瓶颈继续迭代，而不是用更长训练替代诊断。

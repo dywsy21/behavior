@@ -1,0 +1,40 @@
+# Pure AR + MEM-Lite overlay for retraining/post-training.
+# This is intentionally separate from g05.yaml so existing dual-head runs are
+# not changed. Training requires data.obs_size=6 and real memory annotations.
+defaults:
+  - g05
+  - _self_
+
+model_arch:
+  memlite_train_mode: mixed
+  # Three cameras x six chronological frames.
+  cond_steps: 6
+  num_obs_steps: 6
+  num_input_images: 18
+  discrete_action: true
+  continuous_action: false
+  return_continuous_action: false
+  predict_cot: true
+  mem_frame_drop_prob: 0.3
+  vision:
+    temporal_freq: 4
+    spacetime_mode: factorized
+    token_drop_layer: null
+    temporal_pe_pretrain_frames: 6
+  input_preprocessor:
+    pred_eov: true
+
+processor:
+  num_obs_steps: 6
+  num_input_cameras: 3
+  num_output_cameras: 3
+  samples_builder:
+    # Every training sample must carry data[memlite_branch]=high/low. The
+    # mixed builder dispatches to the corresponding template and never falls
+    # back to the legacy action template.
+    _target_: g05.data_processor.processor.samples_builder.MEMLiteMixedBuilder
+    # GalaxeaCoTProcessor supplies num_input_images/image_sizes after its
+    # per-embodiment image metadata is resolved. Keep the builder as a factory
+    # until then; eager Hydra instantiation has neither argument.
+    _partial_: true
+    _recursive_: false

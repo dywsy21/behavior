@@ -1,0 +1,17 @@
+# 27D grouped layout used by g05-base pretraining.
+# Missing groups are padded and marked as no-op by GroupedPaddingMerger.
+parts_meta:
+  left_arm: 7
+  right_arm: 7
+  left_gripper: 1
+  right_gripper: 1
+  left_ee_pose: 9
+  right_ee_pose: 9
+  lower_body: 7
+
+merge_spec:
+  left_control: [left_arm, left_ee_pose]
+  left_gripper: [left_gripper]
+  right_control: [right_arm, right_ee_pose]
+  right_gripper: [right_gripper]
+  lower_body: [lower_body]

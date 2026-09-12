@@ -1,0 +1,47 @@
+# @package _global_
+# Causal MEM-Lite retraining. Never reuse the v8 future-state sidecar here.
+defaults:
+  - r1pro_memlite_ar
+  - _self_
+
+data:
+  obs_stride_second: 0.5333333333333333  # 16 actions / recording fps 30
+  processors:
+    galaxea_r1pro:
+      norm_exception_mode:
+        action:
+          left_arm: z-score-tail-bounded
+          right_arm: z-score-tail-bounded
+          lower_body: z-score-tail-bounded
+
+tokenizer:
+  vq_config:
+    # A constant gripper TARGET is not a no-op. Keep the rule-based binary
+    # representation, but supervise its token even when the whole chunk agrees.
+    dropout_noop_parts: false
+    require_group_markers: true
+
+model:
+  max_steps: 5000
+  model_arch:
+    max_chunk_token_length: 4096
+    checkpoint_vlm: true
+  processor:
+    image_history_mode: preserve_cameras
+    samples_builder:
+      high_builder:
+        _target_: g05.data_processor.processor.samples_builder.MEMLiteCausalHighLevelBuilder
+    norm_exception_mode:
+      action:
+        left_arm: z-score-tail-bounded
+        right_arm: z-score-tail-bounded
+        lower_body: z-score-tail-bounded
+
+# Consumed and checked by serving, not just documentation of intended flags.
+memlite_runtime:
+  schema_version: 5
+  action_steps: 16
+  replan_every_chunks: 8
+  high_level_max_new_tokens: 1024
+  terminal_recheck_every_chunks: 4
+  require_explicit_grippers: true

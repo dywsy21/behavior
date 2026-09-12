@@ -1,0 +1,55 @@
+# @package _global_
+# Second-phase fine-tuning FROM v9 weights, with a fresh optimizer/scheduler.
+# This is not an exact continuation of v9's already-completed cosine schedule.
+# Original codec / RGB history / pure-AR architecture are retained. Explicit
+# anti-shortcut conditioning and real recovery supervision are versioned here.
+defaults:
+  - r1pro_memlite_ar_v9
+  - _self_
+
+seed: 17
+resume_ckpt: null
+batch_size_val: 8
+
+model:
+  pretrained_ckpt: ${oc.env:MEMLITE_INIT_CKPT}
+  use_pretrained_norm_stats: false  # retain the same explicit train-only stats file
+  max_steps: 5000
+  max_epochs: null
+  learning_rate: 0.00002
+  warmup_steps: 100
+  lr_min_ratio: 0.1
+  num_workers: 8
+  prefetch_factor: 2
+  model_arch:
+    memlite_conditioning:
+      enabled: true
+      velocity_dropout: 0.5
+      inference_velocity: masked
+      velocity_indices: [24, 25, 26]
+      proprio_dim: 27
+    memlite_action_group_loss:
+      enabled: true
+      lower_body_weight: 2.0
+
+data:
+  memlite_branch_sampling:
+    enabled: true
+    strategy: motion_recovery
+    sampling_index_path: ${oc.env:MEMLITE_TASK_EVENT_INDEX}
+    high_fraction: 0.125
+
+memlite_recovery:
+  enabled: true
+  manifest: ${oc.env:MEMLITE_RECOVERY_MANIFEST}
+
+memlite_runtime:
+  progress_monitor:
+    enabled: true
+    fps: 30.0
+    min_rotation_rad: 6.2
+    max_translation_path_m: 0.30
+    image_repeat_mae: 0.10
+    min_seconds: 15.0
+    window_seconds: 45.0
+    cooldown_seconds: 20.0

@@ -1,0 +1,15 @@
+# Pure G05 AR action-token inference/training overlay.
+# Compatible with action-only checkpoints (predict_cot=false).
+# For existing dual-head checkpoints, use the server's --pure-ar switch or
+# compose this model config; no FM trajectory is generated or returned.
+defaults:
+  - g05
+  - _self_
+
+model_arch:
+  discrete_action: true
+  continuous_action: false
+  return_continuous_action: false
+  predict_cot: false
+  input_preprocessor:
+    pred_eov: false

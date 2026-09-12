@@ -1,0 +1,12 @@
+# Explicit single-branch MEM-Lite training modes. Use these when the data
+# loader is intentionally planner-only or action-only; mixed mode remains the
+# default in g05_memlite_ar and requires both branches per batch.
+defaults:
+  - g05_memlite_ar
+  - _self_
+
+model_arch:
+  memlite_train_mode: high
+processor:
+  samples_builder:
+    _target_: g05.data_processor.processor.samples_builder.MEMLiteHighLevelBuilder

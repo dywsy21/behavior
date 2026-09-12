@@ -1,0 +1,130 @@
+# @package _global_
+defaults:
+- override /model: g05_memlite_ar
+- override /tokenizer: actioncodec
+- override /data: behavior5_r1pro_memlite
+- _self_
+data:
+  obs_size: 6
+  # A reviewed sidecar must be supplied explicitly at launch. Keep required
+  # mode on so mixed-branch training fails fast rather than silently falling
+  # back to unlabelled action samples.
+  memlite_branch_sampling:
+    enabled: true
+    high_fraction: 0.125
+    # Periodic teacher-forcing eval uses the same branch-balanced sampler;
+    # keep it explicit so eval cannot devolve into an all-low mixed batch.
+    eval_high_fraction: 0.125
+    drop_last: false
+  embodiment_datasets:
+    galaxea_r1pro:
+      memlite_sidecar: null
+      memlite_sidecar_required: true
+      memlite_cache_episodes: 2
+shard_datasets_by_node: false
+use_fsdp: false
+fsdp_sharding_strategy: hybrid
+fsdp_mixed_precision: false
+fsdp_prefetch: true
+fsdp_reshard_after_forward: true
+vlm:
+  cotrain: false
+  batch_size: ${model.batch_size}
+  num_workers: 4
+  vlm_batch_ratio: 0.2
+  loss_weight: 1.0
+# Reuse the train-only statistics computed with the same 5% task-stratified
+# split as the comparison baseline. This prevents a 9.2M-frame statistics scan
+# at launch; the fixture below validates its per-key dimensions.
+datastatics_path: /mnt/sdc1/robodojo/stats/g05/behavior5_r1pro_trainonly_taskstrat5_stats_v2.json
+# Match the 5-task baseline cadence. Step 5000 is periodic, so the resumable
+# checkpoint writer refreshes `last.pt` to checkpoints/step_5000.pt exactly once.
+checkpointing_steps: 500
+logger:
+  type: wandb
+  mode: offline
+  workspace: null
+deploy_checkpoint:
+  enabled: true
+tokenizer:
+  vq_config:
+    block_wise_autoregressive: false
+    block_size: 8
+    num_residuals: 2
+    rule_based_key_patterns:
+    - gripper
+    rule_based_binarize_threshold: 0.0
+    use_group_markers: true
+    group_order_shuffle: false
+    dropout_noop_parts: true
+    absent_key_fill_value: -100.0
+    parts_meta:
+      left_control: 9
+      left_gripper: 1
+      right_control: 9
+      right_gripper: 1
+      lower_body: 7
+    model_arch:
+      codebook_size: 4096
+model:
+  enable_bf16_training: false
+  use_8bit_optimizer: false
+  learning_rate: 4.0e-05
+  batch_size: 8
+  num_workers: 16
+  prefetch_factor: 4
+  # This is a step-bounded run.  finetune.py rejects a non-null epoch limit
+  # together with max_steps on the normal (non-DRY_RUN) path.
+  max_epochs: null
+  # This task is intentionally a directly runnable 5k-step comparison, not
+  # an epoch-bounded recipe inherited from the generic R1Pro task.
+  max_steps: 5000
+  # Pure AR never invokes model.action_expert: it is the continuous
+  # flow-matching branch (DDP indices 617--938 in the G0.5 checkpoint). Freeze
+  # it before DDP/AdamW so it cannot be reported as an unused parameter.
+  freeze_parameter_prefixes:
+  - model.action_expert.
+  # High and low MEM-Lite samples take distinct supervised templates. Keep
+  # unused-parameter detection on as a second-line DDP safeguard for any future
+  # conditional submodule; it is intentionally scoped to this MEM task.
+  find_unused_parameters: true
+  warmup_ratio: null
+  warmup_steps: 200
+  lr_scheduler_type: cosine
+  lr_min_ratio: 0.0
+  constant_end_ratio: 0.08
+  weight_decay: 0.03
+  processor:
+    vlm_input_action_norm_default_mode: null
+    vlm_input_action_norm_exception_mode: null
+    tokenizer_params:
+      local_files_only: true
+    camera_size_config:
+      exterior:
+      - 256
+      - 256
+      wrist_left:
+      - 256
+      - 256
+      wrist_right:
+      - 256
+      - 256
+    action_filter:
+      _target_: g05.data_processor.transforms.action_filter.DummyActionFilter
+    action_state_merger:
+      _target_: g05.data_processor.transforms.action_state_merger.GroupedPaddingMerger
+      max_action_shape_meta: ${oc.load:configs/data/parts_meta/r1pro.yaml,parts_meta}
+      max_state_shape_meta: ${oc.load:configs/data/parts_meta/r1pro.yaml,parts_meta}
+      merge_spec: ${oc.load:configs/data/parts_meta/r1pro.yaml,merge_spec}
+      merge: true
+  model_arch:
+    vision_lr_multiplier: 0.1
+    action_dim: 27
+    proprio_dim: 27
+    fm:
+      num_flow_samples: 4
+    ar:
+      block_wise_autoregressive: false
+    predict_cot: true
+    input_preprocessor:
+      pred_eov: true

@@ -1,0 +1,97 @@
+# @package _global_
+# Phase 1: independent frozen AR planner + coherent frozen old FM controller.
+# ONLY the explicit intent vector-field adapter receives optimizer updates.
+defaults:
+  - r1pro_memlite_ar_v9
+  - _self_
+
+seed: 17
+resume_ckpt: null
+batch_size_val: 8
+
+data:
+  obs_size: 1
+  obs_stride_second: 0.5333333333333333
+  memlite_branch_sampling:
+    enabled: true
+    strategy: fm_motion
+    sampling_index_path: ${oc.env:MEMLITE_TASK_EVENT_INDEX}
+    high_fraction: 0.0
+    eval_high_fraction: 0.0
+    low_quotas:
+      yaw_stop: 1
+      yaw_start_reverse: 1
+      gripper: 1
+      recovery: 1
+      other: 4
+
+model:
+  pretrained_ckpt: ${oc.env:MEMLITE_FM_INIT_CKPT}
+  use_pretrained_norm_stats: false
+  freeze_parameter_prefixes: [model.]  # also persist finetune's exact freeze audit
+  eval_tokenizer_first_batch: false  # FM does not consume any ActionCodec targets
+  find_unused_parameters: false
+  learning_rate: 0.0001
+  warmup_steps: 100
+  lr_min_ratio: 0.1
+  max_steps: 5000
+  max_epochs: null
+  num_workers: 8
+  prefetch_factor: 2
+  model_arch:
+    _target_: g05.models.g05.g05_policy_memlite_fm.G05PolicyMEMLiteFM
+    memlite_train_mode: low
+    discrete_action: false
+    continuous_action: true
+    return_continuous_action: true
+    predict_cot: false
+    cond_steps: 1
+    num_obs_steps: 1
+    num_input_images: 3
+    mem_frame_drop_prob: 0.0
+    checkpoint_vision: false
+    checkpoint_vlm: false
+    checkpoint_action_expert: false
+    vision:
+      temporal_freq: 0  # exact old single-frame controller path
+    input_preprocessor:
+      pred_eov: false  # preserve the old FM prefix's token mask
+    memlite_conditioning:
+      enabled: false
+    fm_intent_adapter:
+      enabled: true
+      hidden_dim: 256
+      num_heads: 4
+      num_layers: 2
+      max_tokens: 256
+      intent_dropout: 0.1
+      residual_weight: 0.001
+    fm:
+      joint_training: false
+      num_flow_samples: 4
+  processor:
+    num_obs_steps: 1
+    samples_builder:
+      _target_: g05.data_processor.processor.samples_builder.FMIntentActionBuilder
+      _partial_: true
+      _recursive_: false
+      high_builder: null
+
+tokenizer:
+  vq_config:
+    dropout_noop_parts: true  # retained provenance; FM never calls the codec
+
+memlite_recovery:
+  enabled: true
+  manifest: ${oc.env:MEMLITE_RECOVERY_MANIFEST}
+
+# The low policy has no semantic episode state. A separate 6-frame high policy
+# supplies the complete causal runtime configuration at serving time.
+memlite_runtime: null
+memlite_fm:
+  schema_version: 1
+  high_checkpoint: ${oc.env:MEMLITE_HIGH_CKPT}
+  high_frozen: true
+  low_observation_steps: 1
+  action_steps: 16
+  controller_init: ${oc.env:MEMLITE_FM_INIT_CKPT}

@@ -1,0 +1,13 @@
+# Explicit low-level MEM-Lite action-token training mode.
+defaults:
+  - g05_memlite_ar
+  - _self_
+
+model_arch:
+  memlite_train_mode: low
+  predict_cot: false
+  input_preprocessor:
+    pred_eov: false
+processor:
+  samples_builder:
+    _target_: g05.data_processor.processor.samples_builder.IntentActionBuilder
