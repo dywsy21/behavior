@@ -82,9 +82,9 @@
 
 - 本地协作根：`/home/wsy/behavior`。
 - GitHub：`https://github.com/dywsy21/behavior.git`；只同步代码、配置、tests和小文档。
-- 当前计划：`docs/TEAM_PLAN.md`；通用RL计划：`docs/RL_METHOD_PLAN.md`；每次开始先pull的规则：`AGENTS.md`。
+- goal总计划与实时记录：`docs/plan.md`；三人任务板：`docs/TEAM_PLAN.md`；通用RL计划：`docs/RL_METHOD_PLAN.md`；开工先pull及实时更新规则：`AGENTS.md`。
 - 根目录现保留`src/`、`configs/`、`tests/`、`scripts/`、`experiments/`、`tools/`、`assets/`、`skills/`、`licenses/`和项目元文件。
-- 41份旧本地顶层Markdown报告在`/home/wsy/behavior/docs/archive/`；远端MAIN的7份未跟踪历史文档在其`remote-main-20260912/`子目录。它们是历史记录，不是当前任务板。
+- 旧本地顶层Markdown报告在`/home/wsy/behavior/docs/archive/`；其中原goal计划已按用户要求移至`/home/wsy/behavior/docs/plan.md`作为实时维护入口。远端MAIN的7份未跟踪历史文档在`docs/archive/remote-main-20260912/`，继续作为历史记录。
 - 147项旧本地实验、视频、附件、补丁和快照已可逆归档到`/home/wsy/behavior/artifacts/local-archive-20260912/root/`，约4.1GiB；`memlite-resume.L6rqZ6`也在此。没有删除，不把未完成研究草稿全当生产源码导入。
 - 修正版radio视频本地位置：`/home/wsy/behavior/artifacts/local-archive-20260912/root/memlite-results-20260912/A3-aligned-radio-e121/`；其余历史文件按原目录名在同一归档根查找。
 - 上游中文/英文文档入口保留在`docs/upstream/`，架构/数据/部署文档仍在`docs/architecture/`、`docs/data/`、`docs/deployment/`。

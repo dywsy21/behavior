@@ -7,7 +7,7 @@
 
 [English](README.md) | [Chinese](README_zh.md)
 
-> Collaboration notes: see [repository sync](docs/REPOSITORY_SYNC.md), [team plan](docs/TEAM_PLAN.md), and [server layout](docs/SERVER_LAYOUT.md). This checkout preserves the GalaxeaVLA MAIN snapshot; newer experimental snapshots in `behavior_dev` remain separate and are not yet integrated.
+> Collaboration notes: see [goal plan and live progress](docs/plan.md), [repository sync](docs/REPOSITORY_SYNC.md), [team plan](docs/TEAM_PLAN.md), and [server layout](docs/SERVER_LAYOUT.md). This checkout preserves the GalaxeaVLA MAIN snapshot; newer experimental snapshots in `behavior_dev` remain separate and are not yet integrated.
 
 <div align="left">
   <img src="assets/r1_mascot.jpeg" alt="mascot" style="height: 160px; margin-right: 0px;">

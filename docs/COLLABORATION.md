@@ -4,7 +4,7 @@
 
 ## 每次开始
 
-先读`AGENTS.md`和[当前计划](TEAM_PLAN.md)，确认任务owner和预算。
+先读`AGENTS.md`、[goal执行计划与实时进度](plan.md)和[三人任务板](TEAM_PLAN.md)，确认任务owner和预算。工作中每完成实质操作或遇到状态变化立即更新plan，不等结束时补写。
 
 ```bash
 git status --short --branch
@@ -43,7 +43,7 @@ git switch -c feat/low-fm-short-description
 
 ## 每次结束
 
-1. 更新任务板的状态、实际结果、证据路径和下一步；失败也记录，未运行/未验证的草稿明确标注。
+1. 确认`docs/plan.md`实时记录及任务板已反映状态、实际结果、证据路径和下一步；失败也记录，未运行/未验证的草稿明确标注。
 2. 检查差异和暂存范围，只提交需要的源码/配置/测试/摘要；不要无检查地暂存整个目录。
 3. 运行`git diff --check`及相关测试，检查秘密和大文件；commit并push自己的分支。将分支/commit交给集成人或建PR。
 4. 权重/视频等留服务器，以路径和SHA关联；如本地需要看视频，放被忽略的artifacts目录，不进Git。
