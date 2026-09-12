@@ -31,6 +31,11 @@
 
 首次 push 后已在原先确认为空的 `/mnt/sdc1/robodojo/behavior` 完成普通 clone，并在证据 commit 后用 `git pull --ff-only` 更新：证据核验 checkpoint 的 `main` 与 origin 均指向 `c384b0a2a2398baf80bb4f35a8beb4bd9dcdd296`，工作树干净；该 clone 的 `upstream` fetch URL 为 OpenGalaxea、push URL 为 `DISABLED`。`/mnt/sdc1/robodojo/behavior/.venv` 是指向 `/mnt/sdc1/robodojo/GalaxeaVLA/.venv` 的软链，仅复用原环境，不复制、不安装、不启动实验。clone 完成后重新核对原 MAIN 的 loopback listeners：`8772/8773/8776/8777/8778/8780/8781` 均仍监听（python/python3.10），未停止或重启服务。
 
+## 运行环境边界
+
+- 新 clone 的 `.venv` 只是复用原 MAIN 的环境；其中已有的 editable install 可能仍指向旧的 `GalaxeaVLA/src`，因此不能仅凭工作目录位于新 clone 就声称运行了新仓源码。
+- 本次没有对共享环境执行 `pip install -e`，也没有启动实验或服务。后续若要运行，使用独立环境，或显式设置并核验 `PYTHONPATH`/实际 import 路径后再记录 receipt；不得在活跃任务上改写共享旧环境。
+
 ## 安全同步约定
 
 1. 迁移完成前保留服务器原脏仓；不得在其上执行 pull、reset、checkout、force-push 或热改。服务器运行任务应使用停机后从 GitHub 建立的独立 checkout/worktree，并固定到明确 commit。
