@@ -9,6 +9,26 @@ from omegaconf import OmegaConf
 import train_action_method_probe as recipe
 
 
+def test_real_source_launcher_keeps_cpu_hidden_and_restores_only_the_gpu_child(tmp_path, monkeypatch):
+    import coordination_launcher as launcher
+    from train_fm_method_probe import gpu_training_environment
+    monkeypatch.setenv('CUDA_VISIBLE_DEVICES', '')
+    for key in ('MEMLITE_COORDINATION_CONFIG_ONLY', 'MEMLITE_COORDINATION_CONFIG_RESOURCE_RECEIPT',
+                'MEMLITE_COORDINATION_TRAINER_COMMAND_JSON'):
+        monkeypatch.delenv(key, raising=False)
+    plan = dict(source_root=str(launcher.ROOT), config_root=str(launcher.ROOT / 'configs'),
+                source_root_sha256='source-digest', config_tree_sha256='config-digest',
+                identity=dict(world_size=4))
+    cpu = launcher.trainer_config_preflight_environment(plan, tmp_path / 'not-created.json', ['trainer'])
+    gpu = gpu_training_environment(launcher, plan)
+    assert cpu['CUDA_VISIBLE_DEVICES'] == '' and cpu['MEMLITE_COORDINATION_CONFIG_ONLY'] == '1'
+    assert gpu['CUDA_VISIBLE_DEVICES'] == '0,1,2,3' and 'MEMLITE_COORDINATION_CONFIG_ONLY' not in gpu
+    assert cpu['PYTHONPATH'] == gpu['PYTHONPATH']
+    assert gpu['MEMLITE_COORDINATION_SOURCE_ROOT_SHA256'] == 'source-digest'
+    import os
+    assert os.environ['CUDA_VISIBLE_DEVICES'] == ''
+
+
 def test_fixed_budget_is_an_actual_global_sixteen_batch():
     values = recipe.RECIPE
     assert values["batch_size"] * values["accumulation"] * values["world_size"] == 16

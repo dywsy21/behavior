@@ -26,6 +26,10 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**21:44最新状态（覆盖以下旧进程快照）：** 双路线根`/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913`内，`ar_native_task_fulltrain_v1/formal/checkpoints/step_500.pt`已完整验收（SHA `639e64aeeb251113b807751f234077595165e65e9dd9e3b66cd7c4661f9df963`），2222863/2724340退出。`ar_schema_reference_a4_v1`同十窗完成（result `6fdd96d8…`），`ar_native_observation_gate_v3`十状态全通过（`6e970017…`），3077705/3126741退出。`git_worktrees/ar_native_actor_20260913`固定0406b53/239 CPU passed，尚未启动神经服务或仿真。
+
+`fm_beta_stratified_v1`单GPU gate/result.json已通过（`d1c249a3…`），四卡smoke.log记录CUDA不可见的启动错误/0更新；其后exec_weight2/FM control/joint/KI/marker五个v1因前驱未验收依次failed。2289674/2291489/2294898/2296750/2297891/2994307均已退出，所有v1证据保留，不能再当作运行队列。拟修环境后另建对应v2，未覆盖旧run/源/服务；实际新位置随后登记。最近磁盘余量约602.8GB，未清理任何文件。
+
 **21:20诊断续接（覆盖下面20:56启动快照）：** `ar_schema_ar500_v2`已10/10完成，2994300退出，result SHA `1c9ad37c043182d71db1fd0ad91f855376eb09daefa4342ec523bab331d9bb9d`，0训练/仿真。新`ar_schema_reference_a4_v1`3077705使用固定f7c0c51的`git_worktrees/ar_schema_reference_20260913`，同十窗原A4-FM/codec参考运行；新`ar_native_observation_gate_v2`3095966使用a343a61的`git_worktrees/ar_native_observations_v2_20260913`，229 CPU通过后真实十train观察门运行。前次`ar_native_observation_gate_v1`3051919在相机别名检查错误处退出，日志保留、0VLM/更新/仿真。新run均在下述同一双路线根，同级`.launch.log`；所有活跃工作树不可热pull。
 
 **20:56新AR诊断/候选位置：** 实验根仍为`/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913`。新活跃源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/ar_marker_queue_20260913`固定73e2914，200 CPU passed；同时被schema诊断与等待进程使用，禁止热pull。

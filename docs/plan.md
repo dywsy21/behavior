@@ -12,6 +12,20 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 21:44（北京时间）：Beta四卡启动失败已定位，六个未执行候选安全停下；原生观察门通过
+
+- **Codex / M-02，真实故障：** `fm_beta_stratified_v1`的单GPU两次临时更新通过（result SHA `d1c249a35ac7e1d651690d030568727e1f3f94480d14eb8291449bfe85d49742`；原eval/RNG不变SHA `2c08c1d0d3cd59c7a26765d3dead9dcecfcff6960c474fe1e9b83b5734133060`），随后四rank在原finetune入口CUDA可用性断言处失败，smoke **0更新**、train.log为空、无checkpoint/采样回执。supervisor等待时隐藏CUDA，但FM的`launcher.child_environment`继承了空可见性；单GPU门和action trainer显式使用原四卡环境，故此处不是Beta公式/硬件故障。旧日志及receipt全部保留。
+- **真实队列/恢复边界：** Beta及后继`fm_exec_weight2_v1`→`fm_action_control_v1`→`joint_a4_fulltrain_v1`→`ki_a4_fulltrain_v1`→`ar_a4_marker_fulltrain_v1`在21:30–31依次failed，六supervisor均已退出；五后继0更新，不再描述为等待/运行。只修GPU子进程环境，CPU等待/配置门继续隐藏GPU；拟新固定源/回归后用对应v2重接这六个尚未执行的有限5+500，原A4重新初始化/原950-50不变，保留v1、不自动重试或重跑已完成AR/native/LR两臂。Beta可重复一次2更新工程门但不增加正式500预算，准确source/提交随后记录。
+- **Codex / AR-01，已通过：** 9eb4c8a的`ar_native_observation_gate_v3`十原train/五task全通过同状态像素、proprio、mask、native前缀、原始anchor及原逆变换0:16检查，result SHA `6e9700175db6a50fb7b382050410dd8041ac8853cde49b28a5b7dd12f4967e1c`，3126741退出、0VLM/优化/仿真。0406b53独立`ar_native_actor_20260913`239 CPU tests passed（1.79s）；真实神经actor→wire/仿真尚未做，逆变换fixture的专家动作只在检查外侧，不作为部署输入。原生500已覆盖950条train轨迹、五task各1600抽取。
+- **同步状态：** 本地保留自己的未提交计划/原生报告，已fetch确认feature upstream无新增；dirty期间未强pull，未热改任何旧运行目录。先修此具体环境错误再恢复实际训练，不重复候选方法答疑。
+
+21:48实质代码续记：FM四卡子环境显式恢复0,1,2,3并保留源码身份，拒绝config-only标志泄漏，CPU父进程仍隐藏；新增真实四rank小张量NCCL门（0模型/数据/更新，180秒工程上限），再进入原5步保存门。`method_queue_recovery.py`只允许六个精确v1 SHA→对应v2，要求旧PID退出/failed/无formal、Beta smoke为空且四rank同断言、后继未进入smoke，保留父权重/配方/预算和旧证据；不提供通用自动重试。10项本地stdlib测试/语法/空白通过，实际源码CPU回归和新GPU门尚待验，未提交新训练。
+
+### 2026-09-13 21:32（北京时间）：native500完整验收完成，既有Beta自动接续preflight
+
+- **Codex / AR-01，真实完成：** 原生task-AR于21:27:03完成正式500/8000 train抽取；`formal/checkpoint_inspection.json`passed，192 Adam/完整模型＋优化器＋四rank RNG回读/冻结不变、峰值reserved23,005,757,440 bytes。checkpoint SHA `639e64aeeb251113b807751f234077595165e65e9dd9e3b66cd7c4661f9df963`，未实测新进程续训，2222863/2724340已退出。
+- **效果与实际后继：** 原固定80 CE17.8859887→6.7387826，最终五task仍37 tokens/0完整组，无新SR；eval500 SHA `eb796e8170e003d34485e4ecec06631e8f8427d915aec6705b7da86f0ecb667f`。详细边界/原始路径见[原生AR筛选报告](experiments/2026-09-13-native-task-ar-screen.md)。既有Beta2289674已于21:27:21进入preflight，非新提交/正式500完成；后续等待链不变。观察门v3仍在运行，新的native actor串联代码待CPU验收，没有启动服务或仿真。
+
 ### 2026-09-13 21:29（北京时间）：native500更新/最终eval已到位，检查保存；观察门v3真实运行
 
 - **Codex / AR-01，真实训练进度：** native task-AR500更新/8000原train抽取已完成，固定80 CE6.738782585，五task自由仍各37 tokens/0完整组，尚无SR；此刻完整checkpoint保存回读与后继放行仍待核验。四rank各1000条microbatch来源回执与A4-AR500对应文件SHA逐对相同，明确是相同真实来源/顺序，不宣称像素/两个不同条件和初始化完全相同。

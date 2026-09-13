@@ -27,6 +27,7 @@ from probe_action_training_gpu import architecture_for, prepare_action_updates
 from probe_ar_execution_codec import publish
 from train_fm_method_probe import BASE, PARENT, PARENT_SHA, legacy, verify_parent
 from native_action_initialization import NATIVE_PARENT, NATIVE_PARENT_SHA, NATIVE_CONFIG, NATIVE_CONFIG_SHA, verify_native_parent
+from method_queue_recovery import DECLARED as RECOVERY_RUNS, recovery_identity, validate_recovery
 
 HERE = Path(__file__).resolve()
 ROUTES = ("ar", "joint", "ki", "fm")
@@ -54,6 +55,7 @@ def code_identity():
         Path(__file__).with_name("probe_ar_execution_codec.py"),
         Path(__file__).with_name("probe_action_training_gpu.py"),
         Path(__file__).with_name("native_action_initialization.py"),
+        Path(__file__).with_name("method_queue_recovery.py"),
         Path(__file__).with_name("train_fm_method_probe.py")]
     from action_training_runtime import EXTENSIONS
     paths.extend(REPO / relative for relative in EXTENSIONS.values())
@@ -79,6 +81,7 @@ def validate_spec(spec):
         raise RuntimeError("Required completed input/gradient evidence changed")
     if spec.get("after_fm") and spec.get("after_action"):
         raise RuntimeError("Use one explicitly declared serial predecessor, not two conflicting queues")
+    validate_recovery(spec, 'action')
 
 
 def declared_parent(route, initialization="a4", conditioning="skills"):
@@ -233,12 +236,16 @@ def dependency_identity(root, kind="fm"):
     # named like an AR experiment but using another parent/route is refused.
     names = {
         "fm": {"fm_ae_lr2x_v1": "ae_lr2x", "fm_beta_stratified_v1": "beta_stratified",
-               "fm_exec_weight2_v1": "exec_weight2"},
+               "fm_exec_weight2_v1": "exec_weight2", "fm_beta_stratified_v2": "beta_stratified",
+               "fm_exec_weight2_v2": "exec_weight2"},
         "action": {"ar_a4_fulltrain_v2": ("ar", "a4", "skills"),
                    "ar_native_task_fulltrain_v1": ("ar", "native", "native_task"),
                    "fm_action_control_v1": ("fm", "a4", "skills"),
                    "joint_a4_fulltrain_v1": ("joint", "a4", "skills"),
-                   "ki_a4_fulltrain_v1": ("ki", "a4", "skills")},
+                   "ki_a4_fulltrain_v1": ("ki", "a4", "skills"),
+                   "fm_action_control_v2": ("fm", "a4", "skills"),
+                   "joint_a4_fulltrain_v2": ("joint", "a4", "skills"),
+                   "ki_a4_fulltrain_v2": ("ki", "a4", "skills")},
     }
     if kind not in names or root.parent != BASE or root.name not in names[kind]:
         raise ValueError("Only a predeclared finite method run may be a serial predecessor")
@@ -257,6 +264,8 @@ def dependency_identity(root, kind="fm"):
                  and method.get("conditioning", "skills") == conditioning)
     if not valid or method["parent_sha256"] != parent_sha:
         raise RuntimeError("Dependency is not its declared finite method/initialization")
+    if root.name in RECOVERY_RUNS:
+        validate_recovery(method, kind)
     return dict(kind=kind, root=str(root), supervisor_pid=launch["supervisor_pid"],
                 launch_sha256=sha(root / "launch.json"), method_sha256=sha(root / "method_spec.json"))
 
@@ -692,6 +701,7 @@ def main():
     parser.add_argument("--initialization", choices=("a4", "native"), default="a4")
     parser.add_argument("--conditioning", choices=("skills", "native_task", "native_subtask_cot"), default="skills")
     parser.add_argument("--marker-rows", action="store_true")
+    parser.add_argument("--supersedes-run", type=Path)
     args = parser.parse_args()
     if args.mode == "start":
         if args.route is None or args.output is None or args.output.parent != BASE:
@@ -709,7 +719,8 @@ def main():
             native_checkpoint_config_sha256=NATIVE_CONFIG_SHA if args.initialization == "native" else None,
             reference_fm_is_auxiliary_skills_prefix=True, cot_supervision=args.conditioning == "native_subtask_cot",
             after_fm=dependency_identity(args.after_fm_run) if args.after_fm_run else None,
-            after_action=dependency_identity(args.after_action_run, "action") if args.after_action_run else None)
+            after_action=dependency_identity(args.after_action_run, "action") if args.after_action_run else None,
+            recovery_from=recovery_identity(args.supersedes_run, args.output, 'action') if args.supersedes_run else None)
         validate_spec(spec)
         args.output.mkdir(exist_ok=False)
         path = args.output / "method_spec.json"

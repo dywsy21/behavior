@@ -1,13 +1,17 @@
 """CPU/stdlib checks for the bounded experiment recipe, no robot/GPU imports."""
 import importlib.util
+import os
 from pathlib import Path
+import sys
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
 PATH = Path(__file__).resolve().parents[1] / 'scripts/experiments/train_fm_method_probe.py'
 SPEC = importlib.util.spec_from_file_location('fm_method_probe_recipe_test', PATH)
 recipe = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(recipe)
+with patch.object(sys, 'path', [str(PATH.parent), *sys.path]):
+    SPEC.loader.exec_module(recipe)
 
 
 def trial(name='control'):
@@ -21,6 +25,27 @@ def values(name='control', phase='formal'):
 
 
 class RecipeTests(unittest.TestCase):
+    def test_four_gpu_child_does_not_inherit_hidden_supervisor(self):
+        launcher = SimpleNamespace(child_environment=lambda _: {
+            **os.environ, 'PYTHONPATH': 'pinned/source',
+            'MEMLITE_COORDINATION_SOURCE_ROOT_SHA256': 'pinned-digest'})
+        with patch.dict(os.environ, {'CUDA_VISIBLE_DEVICES': ''}, clear=True):
+            env = recipe.gpu_training_environment(launcher, {'identity': {'world_size': 4}})
+            self.assertEqual(env['CUDA_VISIBLE_DEVICES'], '0,1,2,3')
+            self.assertEqual(os.environ['CUDA_VISIBLE_DEVICES'], '')
+            self.assertEqual(env['PYTHONPATH'], 'pinned/source')
+            self.assertEqual(env['MEMLITE_COORDINATION_SOURCE_ROOT_SHA256'], 'pinned-digest')
+
+    def test_gpu_child_rejects_preflight_flags_and_other_world_size(self):
+        for flag in ('MEMLITE_COORDINATION_CONFIG_ONLY',
+                     'MEMLITE_COORDINATION_CONFIG_RESOURCE_RECEIPT',
+                     'MEMLITE_COORDINATION_TRAINER_COMMAND_JSON'):
+            launcher = SimpleNamespace(child_environment=lambda _, flag=flag: {flag: 'value'})
+            with self.subTest(flag=flag), self.assertRaises(RuntimeError):
+                recipe.gpu_training_environment(launcher, {'identity': {'world_size': 4}})
+        with self.assertRaises(RuntimeError):
+            recipe.gpu_training_environment(None, {'identity': {'world_size': 1}})
+
     def test_budget_data_batch_and_identity(self):
         for name in recipe.TRIALS:
             got = values(name)

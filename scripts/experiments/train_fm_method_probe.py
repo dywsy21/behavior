@@ -21,10 +21,13 @@ import subprocess
 import sys
 from types import SimpleNamespace
 
+from method_queue_recovery import recovery_identity, validate_recovery
+
 HERE = Path(__file__).resolve()
 REPO = HERE.parents[2]
 METHODS = REPO / 'src/g05/utils/training/fm_training_methods.py'
 DEPENDENCY_HELPER = HERE.with_name('train_action_method_probe.py')
+RECOVERY_HELPER = HERE.with_name('method_queue_recovery.py')
 BASE = Path('/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913')
 LEGACY = Path('/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_overnight_20260912/scripts/experiments/overnight_low_fm.py')
 LEGACY_SHA = '3e21038efc97e68ccfb79b87f584025690ee035f43fd246b1c34b2e9a0ff5342'
@@ -78,6 +81,9 @@ def validate_spec(spec):
         raise RuntimeError('Do not switch a running recipe worktree')
     if subprocess.check_output(['git', '-C', str(REPO), 'status', '--porcelain'], text=True).strip():
         raise RuntimeError('Recipe worktree is dirty')
+    if spec.get('recovery_from') and spec.get('recovery_helper_sha256') != sha(RECOVERY_HELPER):
+        raise RuntimeError('Recovery helper identity changed')
+    validate_recovery(spec, 'fm')
     if spec.get('after_fm') and spec.get('after_action'):
         raise RuntimeError('Use one serial predecessor, not two conflicting queues')
     if spec.get('after_fm') or spec.get('after_action'):
@@ -272,6 +278,47 @@ def gpu_gate(old, spec):
     dist.destroy_process_group()
 
 
+def gpu_training_environment(launcher, plan):
+    """Restore the declared four devices in the child, not the CPU supervisor."""
+    if plan['identity']['world_size'] != 4:
+        raise RuntimeError('This finite FM screen requires exactly four GPUs')
+    env = launcher.child_environment(plan)
+    if any(key in env for key in ('MEMLITE_COORDINATION_CONFIG_ONLY',
+            'MEMLITE_COORDINATION_CONFIG_RESOURCE_RECEIPT',
+            'MEMLITE_COORDINATION_TRAINER_COMMAND_JSON')):
+        raise RuntimeError('CPU config-only flags must not reach actual training')
+    # child_environment intentionally inherits visibility. The queue parent
+    # has hidden CUDA before bootstrap/wait, so inheritance alone is wrong.
+    env['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
+    return env
+
+
+def four_gpu_admission(old):
+    """A tiny real CUDA/NCCL child check before loading model or train data."""
+    import torch
+    from torch import distributed as dist
+    rank = int(os.environ['LOCAL_RANK'])
+    if (os.environ.get('CUDA_VISIBLE_DEVICES') != '0,1,2,3'
+            or int(os.environ['WORLD_SIZE']) != 4 or not torch.cuda.is_available()
+            or torch.cuda.device_count() != 4):
+        raise RuntimeError('Declared four-GPU child visibility did not reach torchrun workers')
+    torch.cuda.set_device(rank)
+    dist.init_process_group('nccl')
+    value = torch.tensor([rank + 1.], device=f'cuda:{rank}')
+    dist.all_reduce(value)
+    if value.item() != 10.:
+        raise RuntimeError('Four-rank CUDA collective failed')
+    rows = [None] * 4
+    dist.all_gather_object(rows, dict(rank=rank, visible_devices=os.environ['CUDA_VISIBLE_DEVICES'],
+        current_device=torch.cuda.current_device(), gpu_name=torch.cuda.get_device_name(rank),
+        collective_sum=value.item()))
+    if rank == 0:
+        old.publish(old.ROOT / 'four_gpu_admission.json', dict(passed=True, ranks=rows,
+            actual_updates=0, model_loaded=False, data_loaded=False))
+    dist.barrier()
+    dist.destroy_process_group()
+
+
 def train_phase(old, spec, spec_path, phase):
     import coordination_launcher as launcher
     from g05.utils.training.coordination_runtime import (CoordinationLock, mark_running,
@@ -287,6 +334,13 @@ def train_phase(old, spec, spec_path, phase):
     gpu = old.gpu_budget(range(4))
     old.publish(old.ROOT / f'{phase}_plan.json', dict(plan=plan, command=command,
         gpu_before=gpu, time=old.now(), method_spec_sha256=sha(spec_path)))
+    if phase == 'smoke':
+        admission = [old.PYTHON, '-m', 'torch.distributed.run', '--standalone', '--nproc_per_node=4',
+                     str(HERE), 'cuda_gate', '--spec', str(spec_path)]
+        old.execute(admission, gpu_training_environment(launcher, plan),
+                    old.ROOT / 'four_gpu_admission.log', 180)
+        if not old.read(old.ROOT / 'four_gpu_admission.json')['passed']:
+            raise RuntimeError('Actual four-GPU admission failed')
     env = launcher.trainer_config_preflight_environment(plan, old.ROOT / f'{phase}_config_preflight.json', command)
     old.execute(command, env, old.ROOT / f'{phase}_config_preflight.log', 900)
     run = old.ROOT / phase
@@ -300,7 +354,7 @@ def train_phase(old, spec, spec_path, phase):
                 supervisor_pid=os.getpid(), trainer_pid=child.pid, run=str(run),
                 max_steps=5 if phase == 'smoke' else 500, trial=spec['trial']))
         try:
-            old.execute(command, launcher.child_environment(plan), old.ROOT / f'{phase}.log',
+            old.execute(command, gpu_training_environment(launcher, plan), old.ROOT / f'{phase}.log',
                         1800 if phase == 'smoke' else None, heartbeat)
             update_run_receipt(run, state='complete', returncode=0, source_root=str(old.SOURCE))
         except BaseException as error:
@@ -337,12 +391,13 @@ def supervise(old, spec, spec_path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode', choices=('start', 'supervise', 'gate', 'entry'))
+    parser.add_argument('mode', choices=('start', 'supervise', 'gate', 'cuda_gate', 'entry'))
     parser.add_argument('--trial', choices=tuple(TRIALS))
     parser.add_argument('--output', type=Path)
     parser.add_argument('--spec', type=Path)
     parser.add_argument('--after-fm-run', type=Path)
     parser.add_argument('--after-action-run', type=Path)
+    parser.add_argument('--supersedes-run', type=Path)
     args, remainder = parser.parse_known_args()
     if args.mode == 'start':
         if remainder or not args.trial or args.output is None or args.output.parent != BASE:
@@ -359,7 +414,9 @@ def main():
             initialization='a4', parent_path=str(PARENT),
             dependency_helper_sha256=sha(DEPENDENCY_HELPER) if dependency else None,
             after_fm=dependency.dependency_identity(args.after_fm_run, 'fm') if args.after_fm_run else None,
-            after_action=dependency.dependency_identity(args.after_action_run, 'action') if args.after_action_run else None)
+            after_action=dependency.dependency_identity(args.after_action_run, 'action') if args.after_action_run else None,
+            recovery_from=recovery_identity(args.supersedes_run, args.output, 'fm') if args.supersedes_run else None,
+            recovery_helper_sha256=sha(RECOVERY_HELPER) if args.supersedes_run else None)
         validate_spec(spec)
         args.output.mkdir(parents=True, exist_ok=False)
         spec_path = args.output / 'method_spec.json'
@@ -378,6 +435,9 @@ def main():
     spec = json.loads(args.spec.read_text())
     validate_spec(spec)
     old = legacy(spec)
+    if args.mode == 'cuda_gate':
+        four_gpu_admission(old)
+        return
     if args.mode == 'supervise':
         os.environ['CUDA_VISIBLE_DEVICES'] = ''
     old.bootstrap()
