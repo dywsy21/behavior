@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
+from functools import wraps
 import math
 from types import MethodType
 
@@ -120,7 +121,47 @@ def fm_training_methods(helper, settings: FMTrainingMethods, *, batch_size: int)
                 setattr(helper, name, value)
 
 
-def executed_prefix_codec_input(actions: torch.Tensor, execution_horizon: int = 16):
+@contextmanager
+def fm_policy_training_methods(policy_class, settings: FMTrainingMethods):
+    """Process-local training entry hook, leaving forward_train/eval untouched.
+
+    This outer scope may span a trainer run, unlike fm_training_methods. Only
+    grad-enabled train forwards get the inner helper scope. Parameters, class
+    names and checkpoint keys stay unchanged. The caller must bind this extra
+    source/config identity to its experiment receipt, not claim stock training.
+    """
+    marker = "_fm_policy_training_methods_installed"
+    if getattr(policy_class, marker, False):
+        raise RuntimeError("a policy method hook is already installed")
+    missing = object()
+    saved_forward = policy_class.__dict__.get("forward", missing)
+    original = policy_class.forward
+
+    @wraps(original)
+    def forward(self, batch, inference_mode=False):
+        if inference_mode or not self.training or not torch.is_grad_enabled():
+            return original(self, batch, inference_mode=inference_mode)
+        actions = batch.get("action")
+        if not isinstance(actions, torch.Tensor) or actions.ndim != 3:
+            raise ValueError("FM training requires [B,H,D] actions")
+        helper = self.model.fm_helper
+        with fm_training_methods(helper, settings, batch_size=actions.shape[0]):
+            return original(self, batch, inference_mode=False)
+
+    setattr(policy_class, marker, True)
+    policy_class.forward = forward
+    try:
+        yield
+    finally:
+        if saved_forward is missing:
+            delattr(policy_class, "forward")
+        else:
+            policy_class.forward = saved_forward
+        delattr(policy_class, marker)
+
+
+def executed_prefix_codec_input(actions: torch.Tensor, execution_horizon: int = 16,
+                                action_is_pad: torch.Tensor | None = None):
     """Experimental codec input: exact executable prefix, last-value tail pad.
 
     The suffix is a codec padding convention, NOT an expert-action label for
@@ -130,6 +171,16 @@ def executed_prefix_codec_input(actions: torch.Tensor, execution_horizon: int = 
         raise ValueError("actions must be finite floating-point [B,H,D]")
     if type(execution_horizon) is not int or not 0 < execution_horizon <= actions.shape[1]:
         raise ValueError("invalid executable horizon")
-    prefix = actions[:, :execution_horizon]
-    tail = prefix[:, -1:].expand(-1, actions.shape[1] - execution_horizon, -1)
-    return torch.cat((prefix, tail), dim=1)
+    lengths = torch.full((actions.shape[0],), execution_horizon, device=actions.device)
+    if action_is_pad is not None:
+        if (action_is_pad.dtype != torch.bool or action_is_pad.shape != actions.shape[:2]
+                or action_is_pad.device != actions.device):
+            raise ValueError("invalid codec temporal padding mask")
+        if (action_is_pad[:, :-1] & ~action_is_pad[:, 1:]).any():
+            raise ValueError("codec padding must be a suffix, not holes in the prefix")
+        lengths = (~action_is_pad[:, :execution_horizon]).sum(dim=1)
+        if (lengths == 0).any():
+            raise ValueError("codec requires at least one valid executable action")
+    indices = torch.arange(actions.shape[1], device=actions.device)[None, :]
+    indices = torch.minimum(indices, lengths[:, None] - 1)
+    return actions.gather(1, indices[:, :, None].expand(-1, -1, actions.shape[2]))

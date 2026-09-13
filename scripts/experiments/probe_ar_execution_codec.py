@@ -120,22 +120,26 @@ def main():
             for ri, source in enumerate(sources):
                 action = batch['action'][ri:ri + 1].float().clone()
                 mask = batch['action_dim_is_pad'][ri:ri + 1].bool()
-                if action.shape != (1, 32, 27) or batch['action_is_pad'][ri, :16].any():
-                    raise RuntimeError('Need a fully valid 16-step original training prefix')
+                temporal = batch['action_is_pad'][ri:ri + 1].bool()
+                if action.shape != (1, 32, 27):
+                    raise RuntimeError('Expected original 32x27 actions')
+                valid = ~temporal[0, :16]
+                padded = methods.executed_prefix_codec_input(action, action_is_pad=temporal)
                 if mask[0].nonzero().flatten().tolist() != [7, 8, 17, 18]:
                     raise RuntimeError('Unexpected R1Pro padding mask')
                 locator = batch['sample_meta'][ri]['dataset_locator']
                 if int(locator.rsplit('local_idx=', 1)[-1]) != source['requested_index']:
                     raise RuntimeError('Original sample locator differs from audited source')
-                variants = {'original32': action,
-                            'prefix16_holdpad32': methods.executed_prefix_codec_input(action)}
+                variants = {'original32': action, 'prefix16_holdpad32': padded}
                 original, _ = reconstruct(action, mask, 32)
-                row = dict(source=source, input_shape=list(action.shape), variants={})
+                row = dict(source=source, input_shape=list(action.shape), variants={},
+                           valid_prefix_steps=int(valid.sum()),
+                           full_execution_window=bool(valid.all()))
                 for name, codec_input in variants.items():
-                    if not torch.equal(codec_input[:, :16], action[:, :16]):
+                    if not torch.equal(codec_input[:, :16][:, valid], action[:, :16][:, valid]):
                         raise RuntimeError('Experimental representation changed executable target')
                     decoded, indices = reconstruct(codec_input, mask, 32)
-                    error = decoded[:16] - action[0, :16]
+                    error = decoded[:16][valid] - action[0, :16][valid]
                     row['variants'][name] = dict(supported=True, token_count=len(indices),
                         action_indices=indices, normalized_rmse_by_group={
                             name: float(error[:, dims].square().mean().sqrt()) for name, dims in groups.items()},
@@ -147,14 +151,14 @@ def main():
                 changed[:, 16:, 24:27] = -changed[:, 16:, 24:27] + .25
                 alternate, _ = reconstruct(changed, mask, 32)
                 row['future_suffix_effect_on_original_base_prefix_max'] = float(
-                    (alternate[:16, 24:27] - original[:16, 24:27]).abs().max())
-                if not torch.equal(methods.executed_prefix_codec_input(action),
-                                   methods.executed_prefix_codec_input(changed)):
+                    (alternate[:16, 24:27][valid] - original[:16, 24:27][valid]).abs().max())
+                if not torch.equal(padded,
+                                   methods.executed_prefix_codec_input(changed, action_is_pad=temporal)):
                     raise RuntimeError('Unused future affected executable-prefix codec input')
                 row['prefix16_padding_future_invariant'] = True
                 try:
                     direct, indices = reconstruct(action[:, :16], mask, 16)
-                    error = direct - action[0, :16]
+                    error = direct[valid] - action[0, :16][valid]
                     row['variants']['direct16'] = dict(supported=True, token_count=len(indices),
                         normalized_valid_rmse=float(error[:, ~mask[0]].square().mean().sqrt()),
                         normalized_rmse_by_group={name: float(error[:, dims].square().mean().sqrt())
@@ -163,6 +167,7 @@ def main():
                     row['variants']['direct16'] = dict(supported=False,
                         error_type=type(exc).__name__, error=str(exc)[:1200])
                 rows.append(row)
+                publish(args.output / f'row_{len(rows):02d}.json', row)
                 print(json.dumps(dict(completed_rows=len(rows), source=source,
                     metrics={k: {n: v for n, v in value.items()
                                  if n in {'supported', 'normalized_valid_rmse', 'error_type'}}
@@ -176,10 +181,13 @@ def main():
             mean_normalized_valid_rmse=sum(x['normalized_valid_rmse'] for x in values) / len(values)
                 if values else None)
     publish(args.output / 'result.json', dict(complete=True, n_original_train_rows=len(rows),
+        n_full_execution_windows=sum(row['full_execution_window'] for row in rows),
+        valid_executed_target_steps=sum(row['valid_prefix_steps'] for row in rows),
         summary=summary, rows=rows, source_sha256=SOURCE_SHA, input_sha256=INPUT_SHA,
         commit=commit, no_new_training_data=True, no_policy_or_success_rate_claim=True,
         limitations=['Ten original train inputs: engineering gate, not representative method efficacy.',
                      'Errors are normalized, not physical joint/base errors.',
+                     'Partial end-of-trajectory windows score only real, unpadded prefix targets.',
                      'Direct16 shape support does not establish temporal/deployment compatibility.',
                      'Hold padding is an experimental codec representation, not real future actions.']))
     print(json.dumps({'complete': True, 'summary': summary}), flush=True)

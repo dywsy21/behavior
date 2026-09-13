@@ -8,7 +8,8 @@ from torch import nn
 
 from g05.models.g05.helpers.fm_helper import FMHelper
 from g05.utils.training.fm_training_methods import (
-    FMTrainingMethods, executed_prefix_codec_input, fm_training_methods, stratified_beta_times,
+    FMTrainingMethods, executed_prefix_codec_input, fm_policy_training_methods,
+    fm_training_methods, stratified_beta_times,
 )
 
 
@@ -149,3 +150,51 @@ def test_codec_prefix_is_exact_and_independent_of_unused_future():
     assert torch.equal(padded, executed_prefix_codec_input(actions))
     with pytest.raises(ValueError):
         executed_prefix_codec_input(actions, 33)
+
+
+def test_codec_short_valid_prefix_holds_last_real_action_and_rejects_holes():
+    actions = torch.randn(2, 32, 27)
+    padding = torch.zeros(2, 32).bool()
+    padding[0, 5:] = True
+    result = executed_prefix_codec_input(actions, action_is_pad=padding)
+    assert torch.equal(result[0, :5], actions[0, :5])
+    assert torch.equal(result[0, 5:], actions[0, 4:5].expand(27, -1))
+    actions[0, 5:] = 1e6
+    assert torch.equal(result, executed_prefix_codec_input(actions, action_is_pad=padding))
+    padding[0, 6] = False
+    with pytest.raises(ValueError, match="holes"):
+        executed_prefix_codec_input(actions, action_is_pad=padding)
+    padding[0] = True
+    with pytest.raises(ValueError, match="at least one"):
+        executed_prefix_codec_input(actions, action_is_pad=padding)
+
+
+def test_policy_hook_is_train_only_preserves_inherited_forward_and_restores():
+    class Parent(nn.Module):
+        def forward(self, batch, inference_mode=False):
+            return getattr(self.model.fm_helper, "_fm_training_methods_active", False)
+    class Policy(Parent):
+        def __init__(self):
+            super().__init__()
+            self.model = SimpleNamespace(fm_helper=helper())
+    policy = Policy()
+    batch = {"action": torch.zeros(2, 32, 27)}
+    original = Policy.forward
+    with fm_policy_training_methods(Policy, FMTrainingMethods(execution_weight=2)):
+        assert policy(batch)
+        assert not policy(batch, inference_mode=True)
+        with torch.no_grad():
+            assert not policy(batch)
+        policy.eval()
+        assert not policy(batch)
+        assert not getattr(policy.model.fm_helper, "_fm_training_methods_active", False)
+        with pytest.raises(RuntimeError, match="already installed"):
+            with fm_policy_training_methods(Policy, FMTrainingMethods()):
+                pass
+    assert Policy.forward is original
+    assert "forward" not in Policy.__dict__
+    with pytest.raises(ValueError):
+        with fm_policy_training_methods(Policy, FMTrainingMethods()):
+            policy.train()
+            policy({"action": torch.zeros(2, 27)})
+    assert Policy.forward is original
