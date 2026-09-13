@@ -12,10 +12,16 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
-### 2026-09-13 19:20（北京时间）：新增AR同历史数值诊断，准备有限只读GPU检查
+### 2026-09-13 19:11（北京时间）：A4同历史诊断完成；未发现LoRA绕过或位置错位
 
-- **Codex / AR-01，代码/待真实验证：** 新`probe_ar_decode_consistency.py`在同一权重/两条原train上，比较完整teacher-forcing与实际AR缓存循环的每token原始logits、目标rank/CE、MRoPE/类型mask及LoRA模块调用；另外分别自由生成，绝不把强制token历史当部署输出。6项CPU统计用例已写，本地语法/空白检查通过，真实CPU/GPU尚未验收。
-- **运行预登记：** 拟`ar_decode_consistency_a4_v1`，新独立Git worktree/准确commit；原A4 SHA `61867047…`与原10行缓存中的前两microbatch各首行、seed17自由生成、GPU1/两CPU线程/最多40%单卡显存；两行各1完整teacher前向＋1真实缓存teacher诊断（最多96 tokens）＋1无GT自由生成（原96以内动作预算），0优化/保存策略/仿真，无自动重试。输入/权重/预算失败即停止；数值差异原样报告而不套未经验证的通过阈值。A4-AR及原生/五方法队列继续固定旧源码，不改训练配方。
+- **Codex / AR-01，实际完成/0更新：** `ar_decode_consistency_a4_v1`的2604744已退出，result SHA `161649772d3a5b8a519a6f5916b6dd1201d26df1de3bbca2e341e23f4cbea43b`。两原train窗口各61个token，teacher完整前向与缓存强制同历史的MRoPE/类型mask全部一致，122个下一token的argmax有121个一致；96个LoRA模块在完整/缓存/自由路径均实际调用，没有发现整条解码绕过适配器。
+- **数值与限制：** 两行full/cached eager CE分别15.08357/15.12535、13.05716/13.02461；最大logit差0.75/0.5，非逐位一致，不擅自声称所有数值路径完全等价。两次独立自由生成仍37 tokens且漏组。当前证据不支持用“位置错位或LoRA未执行”解释该原A4两样本，但尚未检查训练后的500权重、所有窗口或所有误差来源。
+- **下一步：** 待当前500权重真实完成后复用诊断入口核验；现在继续实现显式原生Subtask-CoT视图与终止边界接续，输出监督只复用已审核同状态skills，不构造bbox/trace/FAILED/SUCCEEDED或新release。先真实输入/生成门再登记CoT训练，现有队列不变。
+
+### 2026-09-13 19:09（北京时间）：AR同历史诊断46项CPU通过，原A4只读GPU检查已启动
+
+- **Codex / AR-01，代码/真实CPU通过：** 新`probe_ar_decode_consistency.py`在同一权重/两条原train上，比较完整teacher-forcing与实际AR缓存循环的每token原始logits、目标rank/CE、MRoPE/类型mask及LoRA模块调用；另外分别自由生成，绝不把强制token历史当部署输出。robo独立`ar_decode_consistency_20260913`固定039e268，新增6项＋40项原回归共46 tests passed；GPU结果待验。
+- **实际运行：** `ar_decode_consistency_a4_v1`于19:08:51启动，PID2604744，日志在同级`.launch.log`；原A4 SHA `61867047…`与原10行缓存中的前两microbatch各首行、seed17自由生成、GPU1/两CPU线程/最多40%单卡显存。两行各1完整teacher前向＋1真实缓存teacher诊断（最多96 tokens）＋1无GT自由生成（沿用原actor显式预算，不更改生成行为），0优化/保存策略/仿真，无自动重试。输入/权重/预算失败即停止；数值差异原样报告而不套未经验证的通过阈值。A4-AR及原生/五方法队列继续固定旧源码，不改训练配方。
 
 ### 2026-09-13 19:07（北京时间）：A4-AR固定80 CE下降，但自由生成仍全部漏组
 

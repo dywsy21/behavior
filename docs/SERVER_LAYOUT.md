@@ -48,6 +48,8 @@
 
 ### 2026-09-13新增：FM方法与AR重新验证
 
+- **19:11 AR只读数值诊断完成：** `dual_track_fm_ar_20260913/ar_decode_consistency_a4_v1`，2604744已退出/代码039e268，独立worktree `git_worktrees/ar_decode_consistency_20260913`。46 CPU passed；两原train行/122同历史下一token比较，121 argmax一致、MRoPE与类型mask一致、96 LoRA模块三路径均调用，自由仍漏组，0更新/仿真。`result.json` SHA `161649772d3a5b8a519a6f5916b6dd1201d26df1de3bbca2e341e23f4cbea43b`；`.launch.log`在run同级，不以强制历史诊断冒称actor输出。
+
 - **17:57 AR正式接续：** `ar_a4_fulltrain_v2/smoke/checkpoint_inspection.json`已passed（5更新/192 Adam），临时`smoke/checkpoints/step_5.pt` SHA `9f22d74f9886ee31a4bda9598a25de22e6680e90ce2b1176b5b02f4bf9f9a84c`。现supervisor1940901/formal trainer2316504重新从原A4初始化正式500，日志`formal.log`及`formal/`；不是从smoke续训，不能用旧2307504 PID判断当前任务。后继队列仍等待，171898c活跃worktree不变。
 
 - **17:50最新阶段（覆盖下方启动历史）：** `fm_ae_lr2x_v1`于17:45:40完成500及回读；`formal/checkpoints/step_500.pt` SHA `7f1c9acdfe52d3ffd6e98038c46a6d743a07766b1188e20c7b45262048396753`。最终固定80=0.2011440，见[LR筛选报告](experiments/2026-09-13-fm-lr-screen.md)。`ar_a4_fulltrain_v2`已启动四卡smoke，supervisor1940901/trainer2307504；原生与其后五臂仍等待，不能将下文“0 AR更新等待”的旧快照当作最新阶段。
