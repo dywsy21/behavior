@@ -10,6 +10,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 16:21（北京时间）：AR v2实际处于已验证等待，FM候选42/500
+
+- **Codex / AR-01，已提交但尚未更新：** 171898c在robo实际80项CPU回归通过；`ar_a4_fulltrain_v2`于16:18:15提交，supervisor1940901，method spec SHA `27d22490bb4ccaa9319cc37699a7754471dd91ba60d97f6f5995b0881c7cc930`。16:20实际`status.json`为verified_live_dependency，确认前驱1902909的start_ticks327057321；无CUDA、0 AR更新，不是仅有启动计划。固定worktree `action_queue_20260913`现被等待进程使用，不能pull/switch/热改。
+- **预算/接续条件：** AE×2须真正500完成并验收权重SHA，才依次启动AR四卡5步保存门、从原A4重新初始化的500步；microbatch2/累积2/global16、每rank4 worker/prefetch2、seed41/LoRA1e-5/50warmup/cosine500、全部原950 train来源及原50 eval隔离、每100原80诊断与每task一个自由生成。AR不使用FM监督/动作补齐，不更新B、不自动部署。v1等待API失败记录完整保留，无已训练步数被重跑。
+- **FM现状/未完成：** 1902909/1912524原候选进程保持，最新日志42/500，没有新的固定80候选点或SR。control500及其0.1982012结果已完成；AR真实训练、原生AR/CoT、KI/joint同入口对照、其他FM候选和有效组合、真实闭环仍未完成。继续按具体活进程检查，不因SSH观察超时重启任务，整个goal保持active。路径与协作进度同步到main文档，模型实现仍只在feature待独立审查。
+
 ### 2026-09-13 16:17（北京时间）：AR排队首版在Python等待API处停止，0更新；补兼容等待
 
 - **Codex / AR-01，实际失败：** bcfec9f再次74 CPU通过后，`ar_a4_fulltrain_v1`于16:12:54提交，supervisor1919165、spec SHA `3494e1d4d3c6882c827633e4738c13e2b36b9011c49fda78396dc8666b5ab8a3`；16:12:57因服务器该Python没有`os.pidfd_open`退出，进程已实查不存在。未启动AR trainer、0优化/0GPU/0仿真。失败run保留，不把排队提交算作AR训练。

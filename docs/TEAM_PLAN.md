@@ -34,6 +34,8 @@ A3 checkpoint：`865193f1c8a257d72ea159bd7a46cebf945b0fd24905110b831f0e8a3438e94
 
 ### 本轮实验状态
 
+16:21更新：171898c实际80项CPU通过；AR v2已提交，supervisor1940901真实等待已核验FM前驱1902909，0GPU/0 AR更新，spec `27d22490…`。前驱完成验收后自动AR四卡5步保存门→从原A4独立500，四worker供数；活跃`action_queue_20260913`不可热改。AE×2最新42/500。完整AR/原生CoT、KI/joint/其余FM方法及闭环仍未完成，团队职责不变。
+
 16:17更新：AR v1排队提交后因该Python缺`os.pidfd_open`退出（0训练/0GPU），失败证据保留；新增PID+启动ticks+argv的兼容只读等待，6项回归待验后用新v2提交，不重复训练。AE×2仍正常15/500，四rank已观察31–32个microbatch来源与control前缀全部相等；参考FM门result SHA `7530aa9f…`已确认。不是方法效果或goal完成。
 
 16:11更新：AR真实参考门两次FM与control同输入逐位相等（0.0640164241194725），0优化/仿真；全80参考仍由正式初始诊断核验。尚未启动的新训练配方调整为每rank4 worker/prefetch2以供数给GPU，所有新入口对照一致；不宣称worker随机状态精确恢复或已提速。重验CPU后提交独立AR5+500等待AE×2，当前AR未实际更新。
