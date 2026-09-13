@@ -48,6 +48,12 @@
 
 ### 2026-09-13新增：FM方法与AR重新验证
 
+- **20:23 marker20完成：** `ar_marker_rows20_v1/result.json` SHA `860e06515a99a48aa7f6c8f243a04990bf3455d39ebe1f9ae62d20e0903e8d31`，20/193 Adam/恢复通过，五task仍漏body。其`trainable_state.pt` SHA `2f1d0fdd7ddebc5b3c03fa74f13fb70f06e62a0fa101db2d52694e0e00580805`只含实验adapter与优化器，依赖AR500父权重，不作为独立发布策略。
+
+- **20:17 marker接续：** `ar_marker_control20_v1`已完成20/回载passed、2818602退出，result `a2386e90…`；同源8ff16c1的`ar_marker_rows20_v1`于20:16:32启动2835113，最多20更新/16384新增参数。两者都只是十train缓存诊断，原始日志和小体积adapter保留原位，不部署或自动追加。
+
+- **20:13 marker短对照：** `git_worktrees/ar_marker_learning_20260913`固定8ff16c1/183 CPU passed；`dual_track_fm_ar_20260913/ar_marker_control20_v1` PID2818602，20:12:46真实启动、GPU1/最多20更新，日志为同级`.launch.log`。markers臂还未启动；活跃worktree不热pull，小体积adapter实验文件不等于可独立部署checkpoint。
+
 - **19:59最新阶段：** `dual_track_fm_ar_20260913/ar_marker_embedding_audit_v1/result.json` CPU完成，SHA `88c4a83e5f11e5df8f967966de1aaa92db2be1ecec1d33b3948c3d7f49778edb`，源码`git_worktrees/ar_marker_audit_20260913`/33d739c，0更新/仿真。此前AR500探针2715623已退出，result SHA `c17363d9…`，不再活跃。原生task smoke通过（`8ef61d98…`），formal2724340已由2222863接续；固定6e2587b不可热改，后继五臂仍等待。
 
 - **19:39 AR500只读探针运行：** `dual_track_fm_ar_20260913/ar_decode_consistency_ar500_v1` PID2715623，09ff64a的`git_worktrees/ar_cot_metrics_20260913`；已完成500权重SHA `51bacc1d…`，两原train同历史/分项CE/独立自由生成，0更新/仿真，结果待验。该worktree现活跃，不热改。
