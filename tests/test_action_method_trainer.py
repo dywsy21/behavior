@@ -136,6 +136,81 @@ def test_duplicate_optimizer_parameters_are_rejected():
         recipe.make_optimizer(model)
 
 
+def test_marker_full_recipe_keeps_original_a4_and_small_independent_learning_rate():
+    cfg = OmegaConf.create(dict(tokenizer=dict(vq_config={}), model=dict(model_arch=dict(
+        fm={}, ar={"use_fused_ce": True}, AT_CONFIG={}, coordination_train={}))))
+    arch = recipe.configure(cfg, "ar", marker_rows=True)
+    assert cfg.model.pretrained_ckpt == str(recipe.PARENT)
+    assert "G05PolicyMEMLiteActionRows" in arch._target_
+    assert arch.marker_row_adaptation.train_rows and not arch.ar.use_fused_ce
+    assert recipe.expected_adam_states("ar", True) == 193
+    assert recipe.MARKER_RECIPE["peak_learning_rate"] == 1e-3
+    assert cfg.model.learning_rate == 1e-5 and cfg.model.max_steps == 500
+
+
+@pytest.mark.parametrize("route,initialization,conditioning,flag", [
+    ("joint", "a4", "skills", True), ("ki", "a4", "skills", True),
+    ("ar", "native", "native_task", True), ("ar", "native", "native_subtask_cot", True),
+    ("ar", "a4", "skills", 1)])
+def test_marker_full_recipe_refuses_undeclared_cross_route_combinations(route, initialization, conditioning, flag):
+    with pytest.raises(ValueError, match="explicitly pure AR"):
+        recipe.validate_marker_variant(route, initialization, conditioning, flag)
+
+
+def test_marker_optimizer_registers_only_one_small_state_and_preserves_lr_ratio():
+    model = torch.nn.Module()
+    model.lora = torch.nn.Parameter(torch.ones(2, 2))
+    model.model = torch.nn.Module()
+    model.model.action_marker_rows = torch.nn.Module()
+    model.model.action_marker_rows.delta = torch.nn.Parameter(torch.zeros(8, 2048))
+    model.frozen_base = torch.nn.Parameter(torch.ones(2), requires_grad=False)
+    model.get_optim_param_groups = lambda **kwargs: [dict(
+        params=[p for p in model.parameters() if p.requires_grad], lr=kwargs["lr"], weight_decay=.03)]
+    optimizer, scheduler = recipe.make_optimizer(model, marker_rows=True)
+    assert scheduler.base_lrs == [1e-5, 1e-3]
+    assert [len(group["params"]) for group in optimizer.param_groups] == [1, 1]
+    for _ in range(2):
+        optimizer.zero_grad()
+        (model.lora.sum() + model.model.action_marker_rows.delta.sum()).backward()
+        optimizer.step()
+        scheduler.step()
+    assert len(optimizer.state) == 2
+    assert optimizer.param_groups[1]["lr"] / optimizer.param_groups[0]["lr"] == pytest.approx(100.)
+    assert torch.count_nonzero(model.model.action_marker_rows.delta)
+    assert model.frozen_base.grad is None
+
+
+def test_a4_marker_initialization_refuses_trained_cache_adapter_or_changed_base():
+    from g05.models.g05.helpers.action_marker_rows import install_marker_rows, required_marker_ids
+    codec = SimpleNamespace(action_token_begin_idx=100, action_token_end_idx=124, _codebook_size=10,
+        serializer=SimpleNamespace(nn_key_names=["left", "right", "body"], rule_key_names=["lg", "rg"],
+            num_residuals=2, max_residuals=4, group_marker_action_indices={
+                "<left_0>": 10, "<right_0>": 11, "<body_0>": 12,
+                "<left_1>": 13, "<right_1>": 14, "<body_1>": 15, "<lg>": 22, "<rg>": 23}))
+    vlm = torch.nn.Module()
+    vlm.input_proj = torch.nn.Embedding(124, 2048)
+    vlm.output_proj = torch.nn.Linear(2048, 124, bias=False)
+    vlm.output_proj.weight = vlm.input_proj.weight
+    adapter = install_marker_rows(vlm, required_marker_ids(codec))
+    expected = {f"base_{i}": torch.tensor([float(i)]) for i in range(946)}
+    expected.update({f"model.vlm.lora_{i}": torch.ones(1) for i in range(192)})
+    actual = {name: value.clone() for name, value in expected.items()}
+    actual.update({"model.action_marker_rows." + key: value for key, value in adapter.state_dict().items()})
+    model = SimpleNamespace(state_dict=lambda: actual, model=SimpleNamespace(action_marker_rows=adapter),
+                            _marker_vlm=lambda: vlm, action_tokenizer=codec)
+    parent = dict(step=2500, model_state_dict=expected)
+    assert recipe.verify_a4_marker_initialization(model, parent)["cache_adapter_loaded"] is False
+    with torch.no_grad():
+        adapter.delta[0, 0] = 1.
+    with pytest.raises(RuntimeError, match="zero function"):
+        recipe.verify_a4_marker_initialization(model, parent)
+    with torch.no_grad():
+        adapter.delta.zero_()
+    actual["base_0"].add_(1.)
+    with pytest.raises(RuntimeError, match="not restored exactly"):
+        recipe.verify_a4_marker_initialization(model, parent)
+
+
 def checkpoint_fixture():
     state = {f"p{i}": torch.tensor([float(i)]) for i in range(1138)}
     adam = dict(param_groups=[dict(params=list(range(192)), lr=1e-6)], state={

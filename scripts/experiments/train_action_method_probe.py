@@ -36,6 +36,8 @@ RECIPE = dict(seed=41, batch_size=2, accumulation=2, world_size=4,
     workers=4, max_updates=500, smoke_updates=5, learning_rate=1e-5,
     warmup_steps=50, lr_min_ratio=.1, betas=[.9, .95], weight_decay=.03,
     max_grad_norm=1., eval_every=100, history=6, prediction=32, execution=[0, 16])
+MARKER_RECIPE = dict(mode="required_codec_markers", rows=8, parameters=16384,
+                     peak_learning_rate=1e-3, ce_backend="eager", train_rows=True)
 
 
 def now():
@@ -60,16 +62,20 @@ def code_identity():
 
 def validate_spec(spec):
     parent, parent_sha = declared_parent(spec["route"], spec["initialization"], spec["conditioning"])
+    marker_rows = validate_marker_variant(spec["route"], spec["initialization"], spec["conditioning"],
+                                          spec.get("marker_rows", False))
     if (spec["route"] not in ROUTES or spec["recipe"] != RECIPE
             or spec["parent_sha256"] != parent_sha or spec["parent_path"] != str(parent)
             or spec["code"] != code_identity()
-            or Path(spec["output"]).parent != BASE):
+            or Path(spec["output"]).parent != BASE
+            or spec.get("marker_recipe") != (MARKER_RECIPE if marker_rows else None)):
         raise RuntimeError("Action experiment recipe/source/parent/budget changed")
     if subprocess.check_output(["git", "-C", str(REPO), "status", "--porcelain"], text=True).strip():
         raise RuntimeError("Use a clean immutable action experiment worktree")
     if subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip() != spec["commit"]:
         raise RuntimeError("Active action recipe worktree must not be switched")
-    if spec["prerequisites"] != prerequisites(spec["route"], spec["initialization"], spec["conditioning"]):
+    if spec["prerequisites"] != prerequisites(spec["route"], spec["initialization"], spec["conditioning"],
+                                             marker_rows=marker_rows):
         raise RuntimeError("Required completed input/gradient evidence changed")
     if spec.get("after_fm") and spec.get("after_action"):
         raise RuntimeError("Use one explicitly declared serial predecessor, not two conflicting queues")
@@ -87,11 +93,18 @@ def declared_parent(route, initialization="a4", conditioning="skills"):
     return NATIVE_PARENT, NATIVE_PARENT_SHA
 
 
-def configure(cfg, route, initialization="a4", conditioning="skills"):
+def validate_marker_variant(route, initialization, conditioning, marker_rows):
+    if type(marker_rows) is not bool or marker_rows and (route, initialization, conditioning) != ("ar", "a4", "skills"):
+        raise ValueError("This marker full-data candidate is explicitly pure AR / A4 / skills only")
+    return marker_rows
+
+
+def configure(cfg, route, initialization="a4", conditioning="skills", *, marker_rows=False):
     from omegaconf import OmegaConf
     from g05.utils.training.ar_training_methods import ActionTrainingSettings
     OmegaConf.set_struct(cfg, False)
     parent, _ = declared_parent(route, initialization, conditioning)
+    validate_marker_variant(route, initialization, conditioning, marker_rows)
     if route == "fm":
         arch = cfg.model.model_arch
         if (arch.discrete_action or not arch.continuous_action or arch.predict_cot
@@ -100,6 +113,11 @@ def configure(cfg, route, initialization="a4", conditioning="skills"):
         cfg.model.pretrained_ckpt, cfg.resume_ckpt = str(parent), None
     else:
         arch = architecture_for(cfg, ActionTrainingSettings(route=route, conditioning=conditioning), parent=parent)
+    if marker_rows:
+        arch._target_ = "g05.models.g05.g05_policy_memlite_action_rows.G05PolicyMEMLiteActionRows"
+        arch.ar.use_fused_ce = False
+        arch.marker_row_adaptation = dict(mode="required_codec_markers", train_rows=True)
+        arch.coordination_train.expected_trainable_groups = ["action_marker_rows", "vlm_lora"]
     for key, value in dict(batch_size=2, grad_accumulation_steps=2, num_workers=4,
             learning_rate=1e-5, warmup_steps=50, lr_min_ratio=.1, max_steps=500,
             weight_decay=.03, betas=[.9, .95], max_grad_norm=1.).items():
@@ -108,7 +126,7 @@ def configure(cfg, route, initialization="a4", conditioning="skills"):
     return arch
 
 
-def make_optimizer(model):
+def make_optimizer(model, *, marker_rows=False):
     import torch
     from g05.utils.training.get_scheduler import get_scheduler
     groups = model.get_optim_param_groups(lr=1e-5, weight_decay=.03,
@@ -117,18 +135,34 @@ def make_optimizer(model):
     expected = {id(p) for p in model.parameters() if p.requires_grad}
     if len(actual) != len(set(actual)) or set(actual) != expected:
         raise RuntimeError("Optimizer must cover every and only declared parameter once")
+    if marker_rows:
+        row_parameter = model.model.action_marker_rows.delta
+        if (not row_parameter.requires_grad or row_parameter.shape != (8, 2048)
+                or row_parameter.dtype != torch.float32 or id(row_parameter) not in expected):
+            raise RuntimeError("Missing declared small marker parameter in optimizer")
+        split_groups = []
+        for group in groups:
+            others = [p for p in group["params"] if p is not row_parameter]
+            if others:
+                split_groups.append({**group, "params": others})
+        split_groups.append(dict(params=[row_parameter], lr=MARKER_RECIPE["peak_learning_rate"],
+                                 weight_decay=.03, name="action_marker_rows_decay"))
+        groups = split_groups
     optimizer = torch.optim.AdamW(groups, lr=1e-5, betas=(.9, .95))
     scheduler = get_scheduler("cosine", optimizer, num_warmup_steps=50,
                               num_training_steps=500, lr_min_ratio=.1)
     return optimizer, scheduler
 
 
-def expected_adam_states(route):
-    return 192 if route == "ar" else 504 if route == "fm" else 514
+def expected_adam_states(route, marker_rows=False):
+    if marker_rows and route != "ar":
+        raise ValueError("Marker optimizer is pure AR only")
+    return (193 if marker_rows else 192) if route == "ar" else 504 if route == "fm" else 514
 
 
-def prerequisites(route, initialization="a4", conditioning="skills"):
+def prerequisites(route, initialization="a4", conditioning="skills", *, marker_rows=False):
     declared_parent(route, initialization, conditioning)
+    validate_marker_variant(route, initialization, conditioning, marker_rows)
     input_path, data_path = BASE / "ar_input_gate_v2/result.json", BASE / "ar_loader_gate_v1/result.json"
     if initialization == "native":
         input_path = BASE / "ar_native_input_gate_v1/result.json"
@@ -152,7 +186,45 @@ def prerequisites(route, initialization="a4", conditioning="skills"):
             or gate["parent_sha256"] != NATIVE_PARENT_SHA
             or gate["settings"] != dict(route="ar", conditioning=conditioning, codec_mode="original32")):
         raise RuntimeError("Native AR requires its exact native parent/conditioning GPU evidence")
-    return {str(p): sha(p) for p in (input_path, data_path, path)}
+    required = [input_path, data_path, path]
+    if marker_rows:
+        rows_path = BASE / "ar_marker_rows20_v1/result.json"
+        control_path = BASE / "ar_marker_control20_v1/result.json"
+        if (sha(rows_path) != "860e06515a99a48aa7f6c8f243a04990bf3455d39ebe1f9ae62d20e0903e8d31"
+                or sha(control_path) != "a2386e902b4b14a83007be59809c151371a2a3092f80d9feb9d44b50c390cb9a"):
+            raise RuntimeError("Required completed paired marker-learning evidence changed")
+        rows, control = read(rows_path), read(control_path)
+        if (any(not result["complete"] or result["actual_updates"] != 20
+                or not result["trainable_roundtrip_passed"] or not result["frozen_unchanged"]
+                for result in (rows, control)) or rows["actual_adam_states"] != 193
+                or control["actual_adam_states"] != 192 or rows["before"] != control["before"]
+                or rows["generations_before"] != control["generations_before"]):
+            raise RuntimeError("Marker paired update/restoration/equal-start evidence did not pass")
+        required.extend([rows_path, control_path])
+    return {str(p): sha(p) for p in required}
+
+
+def verify_a4_marker_initialization(model, parent):
+    """Exact original A4 plus two explicitly zero/new adapter state entries."""
+    import torch
+    from g05.models.g05.helpers.action_marker_rows import required_marker_ids, assert_marker_bindings
+    expected, actual = parent["model_state_dict"], model.state_dict()
+    extras = {"model.action_marker_rows.delta", "model.action_marker_rows.token_ids"}
+    if (parent["step"] != 2500 or len(expected) != 1138 or set(actual) != set(expected) | extras
+            or sum("lora_" in key for key in expected) != 192):
+        raise RuntimeError("Full A4 plus exact marker state schema required")
+    for name, value in expected.items():
+        loaded = actual[name].detach().cpu()
+        if (loaded.dtype != value.dtype or loaded.shape != value.shape or not torch.isfinite(loaded).all()
+                or not torch.equal(loaded.contiguous().view(torch.uint8), value.contiguous().view(torch.uint8))):
+            raise RuntimeError("Original A4 not restored exactly: " + name)
+    adapter = model.model.action_marker_rows
+    if (adapter.delta.shape != (8, 2048) or torch.count_nonzero(adapter.delta)
+            or adapter.token_ids.cpu().tolist() != list(required_marker_ids(model.action_tokenizer))):
+        raise RuntimeError("Fresh marker adapter must match actual codec IDs and zero function")
+    assert_marker_bindings(model._marker_vlm(), adapter)
+    return dict(passed=True, full_parent_entries=1138, new_zero_marker_entries=2,
+                marker_parameters=16384, original_a4_parent=True, cache_adapter_loaded=False)
 
 
 def dependency_identity(root, kind="fm"):
@@ -165,7 +237,8 @@ def dependency_identity(root, kind="fm"):
         "action": {"ar_a4_fulltrain_v2": ("ar", "a4", "skills"),
                    "ar_native_task_fulltrain_v1": ("ar", "native", "native_task"),
                    "fm_action_control_v1": ("fm", "a4", "skills"),
-                   "joint_a4_fulltrain_v1": ("joint", "a4", "skills")},
+                   "joint_a4_fulltrain_v1": ("joint", "a4", "skills"),
+                   "ki_a4_fulltrain_v1": ("ki", "a4", "skills")},
     }
     if kind not in names or root.parent != BASE or root.name not in names[kind]:
         raise ValueError("Only a predeclared finite method run may be a serial predecessor")
@@ -402,7 +475,7 @@ def assert_saved_state(saved, model, optimizer, scheduler, spec, step, rank_stat
             or saved["next_microbatch"] != step * 2):
         raise RuntimeError("Saved action training clock/recipe/RNG identity differs")
     expected, actual = model.state_dict(), saved["model_state_dict"]
-    if set(expected) != set(actual) or len(actual) != 1138:
+    if set(expected) != set(actual) or len(actual) != (1140 if spec.get("marker_rows", False) else 1138):
         raise RuntimeError("Saved full policy schema differs")
     for name, value in expected.items():
         other = actual[name]
@@ -411,7 +484,7 @@ def assert_saved_state(saved, model, optimizer, scheduler, spec, step, rank_stat
     current, states = optimizer.state_dict(), saved["optimizer_state_dict"]
     if current["param_groups"] != states["param_groups"] or set(current["state"]) != set(states["state"]):
         raise RuntimeError("Adam parameter-group identity changed")
-    if len(states["state"]) != expected_adam_states(spec["route"]):
+    if len(states["state"]) != expected_adam_states(spec["route"], spec.get("marker_rows", False)):
         raise RuntimeError("Wrong number of actual Adam states")
     for index, state in states["state"].items():
         if int(state["step"]) != step:
@@ -468,7 +541,8 @@ def train(spec, phase):
             or spec["initialization"] == "native" and sha(NATIVE_CONFIG) != NATIVE_CONFIG_SHA):
         raise RuntimeError("Original processor recipe or declared parent differs")
     cfg = OmegaConf.load(config_path)
-    arch = configure(cfg, spec["route"], spec["initialization"], spec["conditioning"])
+    arch = configure(cfg, spec["route"], spec["initialization"], spec["conditioning"],
+                     marker_rows=spec.get("marker_rows", False))
     pipeline = build_original_pipeline(cfg, rank=rank, world_size=world, workers=RECIPE["workers"])
     identity.update(pipeline=pipeline.identity, config_sha256=sha(config_path), spec=spec)
     publish(output / f"identity_rank{rank}.json", identity)
@@ -479,7 +553,9 @@ def train(spec, phase):
     print(json.dumps(dict(rank=rank, stage="pipeline_ready", route=spec["route"])), flush=True)
     model, parent = load_model_from_checkpoint(arch, str(parent_path), device=str(device),
                                                eval_mode=False, return_full_checkpoint=True)
-    if spec["initialization"] == "native":
+    if spec.get("marker_rows", False):
+        restoration = verify_a4_marker_initialization(model, parent)
+    elif spec["initialization"] == "native":
         restoration = verify_native_parent(model, parent)
     else:
         verify_parent(model, parent)
@@ -495,7 +571,7 @@ def train(spec, phase):
     ddp = DDP(model, device_ids=[local_rank], find_unused_parameters=True,
               gradient_as_bucket_view=True, bucket_cap_mb=128)
     audit.after_distributed_initialization()
-    optimizer, scheduler = make_optimizer(model)
+    optimizer, scheduler = make_optimizer(model, marker_rows=spec.get("marker_rows", False))
     total = 5 if phase == "smoke" else 500
     pipeline.sampler.set_epoch(0)
     pipeline.sampler.set_start_batch(0)
@@ -615,18 +691,21 @@ def main():
     parser.add_argument("--after-action-run", type=Path)
     parser.add_argument("--initialization", choices=("a4", "native"), default="a4")
     parser.add_argument("--conditioning", choices=("skills", "native_task", "native_subtask_cot"), default="skills")
+    parser.add_argument("--marker-rows", action="store_true")
     args = parser.parse_args()
     if args.mode == "start":
         if args.route is None or args.output is None or args.output.parent != BASE:
             raise ValueError("Select one action route and a new child of the experiment root")
         parent, parent_sha = declared_parent(args.route, args.initialization, args.conditioning)
+        validate_marker_variant(args.route, args.initialization, args.conditioning, args.marker_rows)
         spec = dict(route=args.route, output=str(args.output), recipe=RECIPE, parent_sha256=parent_sha,
             parent_path=str(parent), initialization=args.initialization, conditioning=args.conditioning,
             code=code_identity(), commit=subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
             fresh_adam=True, high_unchanged=True, train_split="original950", eval_split="original50",
             native_upstream_ar_replication=False, no_automatic_deployment=True,
             timing_comparable_to_stock_fm=False,
-            prerequisites=prerequisites(args.route, args.initialization, args.conditioning),
+            prerequisites=prerequisites(args.route, args.initialization, args.conditioning, marker_rows=args.marker_rows),
+            marker_rows=args.marker_rows, marker_recipe=dict(MARKER_RECIPE) if args.marker_rows else None,
             native_checkpoint_config_sha256=NATIVE_CONFIG_SHA if args.initialization == "native" else None,
             reference_fm_is_auxiliary_skills_prefix=True, cot_supervision=args.conditioning == "native_subtask_cot",
             after_fm=dependency_identity(args.after_fm_run) if args.after_fm_run else None,

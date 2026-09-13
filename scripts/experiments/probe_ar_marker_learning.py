@@ -16,7 +16,7 @@ import subprocess
 import traceback
 
 from action_training_runtime import bootstrap, INPUT, INPUT_SHA, REPO, sha
-from probe_action_training_gpu import architecture_for, prepare_action_updates, take_row, task_generation_rows
+from probe_action_training_gpu import architecture_for, prepare_action_updates, take_row, task_generation_rows, generation_execution_metrics
 from probe_ar_execution_codec import publish
 from train_action_method_probe import now, read
 from train_fm_method_probe import BASE, PARENT_SHA
@@ -211,10 +211,8 @@ def main():
                     torch.cuda.manual_seed_all(17)
                     value = model.forward_inference(batch["samples"], batch["pixel_values"],
                                                     action_dim_is_pad=batch["action_dim_is_pad"])
-                valid = (~batch["action_is_pad"][:, :16, None] & ~batch["action_dim_is_pad"][:, None, :])
-                difference = (value["action"][:, :16] - batch["action"][:, :16])[valid]
                 report = dict(valid=True, selected_action_source=value["selected_action_source"],
-                    normalized_executed_rmse=float(difference.square().mean().sqrt()),
+                    **generation_execution_metrics(value["action"], batch),
                     complete_blocks=value["ar_complete_block_receipts"])
             except RuntimeError as exc:
                 if not str(exc).startswith("Free AR generation"):

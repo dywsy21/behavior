@@ -185,3 +185,21 @@ def test_marker_recipe_is_explicit_eager_and_has_one_training_difference():
     assert not control.marker_row_adaptation.train_rows and candidate.marker_row_adaptation.train_rows
     candidate.marker_row_adaptation.train_rows = False
     assert candidate == control
+
+
+def test_execution_metric_uses_valid_prefix_and_separately_moved_targets():
+    from probe_action_training_gpu import generation_execution_metrics
+    action = torch.zeros(1, 32, 27)
+    target = torch.ones(1, 32, 27, dtype=torch.float64)
+    temporal = torch.ones(1, 32, dtype=torch.bool)
+    temporal[:, :5] = False
+    padding = torch.zeros(1, 27, dtype=torch.bool)
+    padding[:, [7, 8, 17, 18]] = True
+    target[:, 5:] = 100.
+    target[..., padding[0]] = 1000.
+    batch = dict(action=target, action_is_pad=temporal, action_dim_is_pad=padding)
+    metrics = generation_execution_metrics(action, batch)
+    assert metrics == dict(normalized_executed_rmse=1., valid_scalar_targets=5 * 23)
+    temporal.fill_(True)
+    with pytest.raises(RuntimeError, match="No valid"):
+        generation_execution_metrics(action, batch)

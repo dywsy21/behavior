@@ -74,6 +74,24 @@ def prepare_action_updates(model, device):
     return contract
 
 
+def generation_execution_metrics(action, batch):
+    """AR codecs may return CPU actions even when model inputs are on CUDA."""
+    import torch
+    target, temporal, padding = batch["action"], batch["action_is_pad"], batch["action_dim_is_pad"]
+    if (action.ndim != 3 or action.shape != target.shape or action.shape[1:] != (32, 27)
+            or temporal.dtype != torch.bool or temporal.shape != action.shape[:2]
+            or padding.dtype != torch.bool or padding.shape != (action.shape[0], 27)
+            or not torch.isfinite(action).all() or not torch.isfinite(target).all()):
+        raise RuntimeError("Invalid full action/target/valid-mask tensors for offline execution metrics")
+    target = target.to(action.device)
+    valid = (~temporal[:, :16, None]).to(action.device) & (~padding[:, None, :]).to(action.device)
+    if not valid.any():
+        raise RuntimeError("No valid executed scalar targets in this diagnostic window")
+    difference = (action[:, :16].float() - target[:, :16].float())[valid]
+    return dict(normalized_executed_rmse=float(difference.square().mean().sqrt()),
+                valid_scalar_targets=int(valid.sum()))
+
+
 def task_generation_rows(originals, receipt):
     """One actual cached train row per task, with its exact original source."""
     if len(originals) != len(receipt["batches"]):

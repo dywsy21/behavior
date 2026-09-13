@@ -17,7 +17,7 @@ import traceback
 
 from action_training_runtime import bootstrap, INPUT, INPUT_SHA, REPO, sha
 from action_training_data import build_original_pipeline, exact_eval_batch
-from probe_action_training_gpu import architecture_for, prepare_action_updates, task_generation_rows
+from probe_action_training_gpu import architecture_for, prepare_action_updates, task_generation_rows, generation_execution_metrics
 from probe_ar_decode_consistency import verify_probe_checkpoint
 from probe_ar_marker_learning import AR500_SHA
 from probe_ar_execution_codec import publish
@@ -122,10 +122,8 @@ def main():
                                                          action_dim_is_pad=batch["action_dim_is_pad"])
             if raw.get("ids") != [sampler.generated]:
                 raise RuntimeError("Actual generated sequence differs from constrained sampling trace")
-            valid = ~batch["action_is_pad"][:, :16, None] & ~batch["action_dim_is_pad"][:, None, :]
-            errors = (prediction["action"][:, :16] - batch["action"][:, :16])[valid]
             output = dict(valid=True, selected_action_source=prediction["selected_action_source"],
-                normalized_executed_rmse=float(errors.square().mean().sqrt()), valid_scalar_targets=int(valid.sum()),
+                **generation_execution_metrics(prediction["action"], batch),
                 generated_action=prediction["action"].detach().cpu().tolist(),
                 complete_blocks=prediction["ar_complete_block_receipts"], schema=sampler.require_complete())
         except RuntimeError as exc:

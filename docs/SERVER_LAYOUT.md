@@ -48,6 +48,8 @@
 
 ### 2026-09-13新增：FM方法与AR重新验证
 
+- **20:38 schema只读GPU：** `dual_track_fm_ar_20260913/ar_schema_ar500_v1` PID2910095，20:34:30启动，固定220312c的`git_worktrees/ar_schema_generation_v2_20260913`（191 CPU passed）。五train＋五原heldout、最多10次AR生成/0更新/仿真，不加载marker20，不热改源；结果尚待验。b8c638d旧worktree只做过CPU测试，没有启动GPU。
+
 - **20:23 marker20完成：** `ar_marker_rows20_v1/result.json` SHA `860e06515a99a48aa7f6c8f243a04990bf3455d39ebe1f9ae62d20e0903e8d31`，20/193 Adam/恢复通过，五task仍漏body。其`trainable_state.pt` SHA `2f1d0fdd7ddebc5b3c03fa74f13fb70f06e62a0fa101db2d52694e0e00580805`只含实验adapter与优化器，依赖AR500父权重，不作为独立发布策略。
 
 - **20:17 marker接续：** `ar_marker_control20_v1`已完成20/回载passed、2818602退出，result `a2386e90…`；同源8ff16c1的`ar_marker_rows20_v1`于20:16:32启动2835113，最多20更新/16384新增参数。两者都只是十train缓存诊断，原始日志和小体积adapter保留原位，不部署或自动追加。
