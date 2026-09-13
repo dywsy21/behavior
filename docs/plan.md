@@ -12,6 +12,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 22:21（北京时间）：290 CPU通过，有界原生AR物理作业已提交
+
+- **Codex / AR-01：** 新独立`git_worktrees/ar_native_prefix_pilot_20260913`固定989a575，实际290 CPU tests passed（1.74s），包括真实原frozen window只减max_chunks、不变448 prefix/语义/env0的检查。`ar_native_prefix_pilot_v1`于22:19:21提交3191511，manifest SHA `eb7f99d66accbcf3128984717f0ce5bf964bca79e63a680622908d8b15725afd`；明确原生500/schema/task-only/16 chunk上限。
+- **真实阶段/边界：** 当前专用服务初始化，尚不能报已跑256或成功率。先完整权重/实际socket身份/剩余GPU25GiB门，再启动唯一仿真回合；不改旧服务/正在训练的7572ce2队列。main aaf3f2e已同步最新计划，原生单次神经→桥接proof已完成，下一验真实物理历史/视频及失败原因。
+
 ### 2026-09-13 22:17（北京时间）：有界原生AR服务/局部仿真接线完成，待真实CPU验收
 
 - **Codex / AR-01，代码实质进展：** 新`native_ar_prefix_client.py`独立task-only协议，复用原每物理步捕获历史，但不读取/发送评估器传入的GRASP对象；新`serve_native_ar_prefix.py`只接受一次seed17 session/最多16神经尝试，错误输出不commit历史，不接受额外teacher字段、旧FM路由或重置追加预算。实际每chunk仍经原观察→AR→原inverse/official23，保留完整生成/trace。
