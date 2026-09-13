@@ -12,6 +12,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 21:16（北京时间）：观察门拦下相机字段名误判，修静态映射；FM参考已实际启动
+
+- **Codex / AR-01，真实失败与根因：** `ar_native_observation_gate_v1`3051919在首个原状态的public预处理后停止，0VLM/更新/仿真。新检查误把raw相机名`head_rgb/left_wrist_rgb/right_wrist_rgb`当作pixel dict键；原`FullProcessor.process_images`一直按shape_meta的camera_type输出`exterior/wrist_left/wrist_right`。修为从同一元数据推导别名/次序/精确6×3×H×W，新增5项别名/顺序/重复键/缺相机检查，不改像素/历史或放松字段白名单。拟新固定源CPU后`ar_native_observation_gate_v2`重验相同十状态，首状态重复属工程检查，失败记录保留。
+- **独立参考真实运行：** f7c0c51的`git_worktrees/ar_schema_reference_20260913`224 CPU passed（1.95s）；`ar_schema_reference_a4_v1`于21:14:31启动3077705，既定10原A4-FM＋10外侧codec/0新AR/0更新/仿真。结果尚待验；它与新观察代码分属独立源，无热改/重训。native400结果SHA `2ff8c287803dbc33051b21c55aa9736a3f407961aa8765b8305f339d6e3d95cf`。
+
 ### 2026-09-13 21:11（北京时间）：同窗口A4-FM与codec内容参考入口已写，待CPU后有限GPU诊断
 
 - **Codex / AR-01，唯一假设/预算：** 将格式完整与动作内容分开，`probe_ar_schema_reference.py`读取已完成schema十条，不重新生成AR；拟`ar_schema_reference_a4_v1`，独立Git源/CPU配对检查通过后GPU1、两CPU线程、40%单卡显存/需40GiB余量，原A4完整1138/192恢复、seed17，对同五train＋五heldout各一次原SkillFM生成＋一次外侧codec重建，共10 FM/10 codec/0新AR/0更新与仿真。来源/目标mask/非有限/全维恢复不符即停，无重试或部署，准确source随后固定。

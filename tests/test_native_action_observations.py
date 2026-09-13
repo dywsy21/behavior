@@ -3,7 +3,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from native_action_observations import checked_observation, derive_static_action_mask, CAMERAS, STATE_WIDTHS, ACTION_WIDTHS
+from native_action_observations import checked_observation, derive_static_action_mask, camera_feature_layout, CAMERAS, STATE_WIDTHS, ACTION_WIDTHS
 
 
 def observation():
@@ -62,6 +62,35 @@ def test_static_mask_preserves_base_trunk_and_both_grippers():
     mask = derive_static_action_mask(processor())
     assert mask.dtype == torch.bool and mask.nonzero().flatten().tolist() == [7, 8, 17, 18]
     assert not mask[20:].any() and not mask[[9, 19]].any()
+
+
+def camera_processor():
+    types = ("exterior", "wrist_left", "wrist_right")
+    return SimpleNamespace(shape_meta=dict(images=[dict(key=key, camera_type=kind, shape=[3, 256, 256])
+        for key, kind in zip(CAMERAS, types)]))
+
+
+def test_raw_camera_names_map_to_original_model_feature_types_in_the_same_order():
+    layout = camera_feature_layout(camera_processor())
+    assert list(layout) == ["exterior", "wrist_left", "wrist_right"]
+    assert list(layout) != list(CAMERAS)
+    assert all(shape == (6, 3, 256, 256) for shape in layout.values())
+
+
+@pytest.mark.parametrize("damage", ["raw_order", "duplicate_type", "wrong_channels", "missing_camera"])
+def test_feature_alias_fix_does_not_relax_image_layout_validation(damage):
+    value = camera_processor()
+    records = value.shape_meta["images"]
+    if damage == "raw_order":
+        records[0], records[1] = records[1], records[0]
+    elif damage == "duplicate_type":
+        records[1]["camera_type"] = records[0]["camera_type"]
+    elif damage == "wrong_channels":
+        records[0]["shape"][0] = 1
+    else:
+        records.pop()
+    with pytest.raises(ValueError):
+        camera_feature_layout(value)
 
 
 @pytest.mark.parametrize("damage", ["old_action_offset", "missing_base", "group_order", "group_width"])

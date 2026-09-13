@@ -42,7 +42,7 @@ def main():
     from g05.utils.training.ar_training_methods import ActionTrainingSettings, native_task_actor_samples
     from g05.utils.training.coordination_receipts import validate_coordination_batch
     from preflight_memlite_skillfm_gpu import _build_cpu_input_preprocessor
-    from native_action_observations import NativeTaskObservationProcessor, OBSERVATION_FIELDS, CAMERAS
+    from native_action_observations import NativeTaskObservationProcessor, OBSERVATION_FIELDS
 
     torch.set_num_threads(2)
     torch.set_num_interop_threads(1)
@@ -109,7 +109,9 @@ def main():
         if not all(torch.equal(reference[name], sample[name]) for name in
                    ("proprio", "proprio_is_pad", "proprio_dim_is_pad", "action_dim_is_pad")):
             raise RuntimeError("Removing training targets changed normalized state or masks")
-        if not all(torch.equal(reference["pixel_values"][camera], sample["pixel_values"][camera]) for camera in CAMERAS):
+        if (list(reference["pixel_values"]) != list(native.pixel_layout) or
+                not all(torch.equal(reference["pixel_values"][camera], sample["pixel_values"][camera])
+                        for camera in native.pixel_layout)):
             raise RuntimeError("Observed-only public processor changed real camera tensors")
         reference_samples = native_task_actor_samples([reference["samples"]], num_images=18)
         ids, mask = tokenizer.encode_inference(reference_samples, device=torch.device("cpu"), mode="ar")

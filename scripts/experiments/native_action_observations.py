@@ -82,6 +82,21 @@ def derive_static_action_mask(processor):
     return mask
 
 
+def camera_feature_layout(processor):
+    """Raw camera keys and the model's camera-type keys are different names."""
+    records = processor.shape_meta["images"]
+    if [record["key"] for record in records] != list(CAMERAS):
+        raise ValueError("Raw camera metadata must retain the three official cameras in order")
+    layout = {}
+    for record in records:
+        key, shape = record["camera_type"], tuple(record["shape"])
+        if (not isinstance(key, str) or not key or key in layout or len(shape) != 3
+                or shape[0] != 3 or any(type(size) is not int or size < 1 for size in shape)):
+            raise ValueError("Invalid or duplicate model camera-type stream metadata")
+        layout[key] = (6, *shape)
+    return layout
+
+
 @dataclass
 class PreparedNativeObservation:
     sample: dict
@@ -101,6 +116,7 @@ class NativeTaskObservationProcessor:
             raise ValueError("Native task processor needs the audited six-frame R1Pro configuration")
         self.processor = deepcopy(source_processor)
         self.action_mask = derive_static_action_mask(self.processor)
+        self.pixel_layout = camera_feature_layout(self.processor)
         self.processor.samples_builder = _CameraMajorHistoryBuilder(18, dict(builder._image_sizes),
             embodiment_type=builder.embodiment_type)
         self.processor.set_action_execution_start_index(0)
@@ -117,9 +133,14 @@ class NativeTaskObservationProcessor:
         sample["samples"] = native_task_actor_samples([sample["samples"]], num_images=18)[0]
         if (sample["proprio"].shape != (6, 27) or not torch.isfinite(sample["proprio"]).all()
                 or not torch.equal(sample["proprio_dim_is_pad"], self.action_mask)
-                or list(sample["pixel_values"]) != list(CAMERAS)
-                or any(value.shape[0] != 6 for value in sample["pixel_values"].values())):
-            raise ValueError("Native processor changed the real history/order/embodiment layout")
+                or list(sample["pixel_values"]) != list(self.pixel_layout)
+                or any(tuple(value.shape) != self.pixel_layout.get(key)
+                       for key, value in sample["pixel_values"].items())):
+            raise ValueError("Native processor changed the real history/order/embodiment layout: " + repr(dict(
+                proprio_shape=list(sample["proprio"].shape),
+                proprio_padding=sample["proprio_dim_is_pad"].nonzero().flatten().tolist(),
+                actual_pixel_shapes={key: list(value.shape) for key, value in sample["pixel_values"].items()},
+                expected_pixel_shapes=self.pixel_layout)))
         sample["action_dim_is_pad"] = self.action_mask.clone()
         return PreparedNativeObservation(sample=sample, raw_state_anchor=anchor)
 
