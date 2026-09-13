@@ -12,6 +12,17 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 21:06（北京时间）：schema十窗口实际完成，格式与控制质量继续分开验收
+
+- **Codex / AR-01，真实结果：** `ar_schema_ar500_v2`2994300已退出，10/10实际完整60动作tokens/8块＋终止，无safe clamp、无marker adapter、0更新/仿真；result SHA `1c9ad37c043182d71db1fd0ad91f855376eb09daefa4342ec523bab331d9bb9d`，峰值reserved13,384,024,064 bytes。原始argmax每窗口被静态规则覆盖4–14次，完整格式是人为约束，不算模型学会或SR。
+- **内容误差与下一检验：** 五train的有效执行段归一化RMSE依task为0.95167/0.24305/0.54443/0.63380/0.84177；五heldout为0.53585/1.40578/1.10162/1.01044/0.18985。样本很少、含尾段padding，仅保留真实有效0:16/23D，不能与FM速度loss直接比。下一补同窗口原A4-FM生成与codec重建参考（另登记有限调用预算），再决定局部闭环；不靠格式完整宣布AR更优，不重复训练/重新生成这十条。
+
+### 2026-09-13 21:05（北京时间）：原生task-AR观察入口已写，准备十原train的真实处理器一致性门
+
+- **Codex / AR-01，代码状态：** `native_action_observations.py`新增独立public观察适配器：不要求伪MEM-Lite投影，只接受真实历史入口的七个观察字段；独立复制处理器、沿用原public preprocess/正常归一化与camera-major Base模板，元数据推导四补齐位、执行起点0、保留当前原始关节anchor。逆变换仍走原处理器到六组真实23D，不把27D归一化数值直接切成wire。原训练/服务源未改，尚未真实验收或启动仿真。
+- **下一有界检查预登记：** 新Git源/CPU单测后，`ar_native_observation_gate_v1`只重读已有十train/五task精确状态，2CPU线程、0VLM/优化/仿真、无新标签release；检查原eval-mode同状态像素/状态/动作mask、真实原生token前缀一致性、独立raw joint anchor和0:16逆路径。GT动作只允许在外侧明确标注的逆变换fixture，绝不进入actor；不是数据增广逐位等价或闭环结果。若身份/边界/一致性失败即停，不随机换窗口。source待固定；schema2994300和原生500/已提交队列不变。
+- **文档同步：** main 6dce3ae已ff pull到robo协作clone；实验代码继续独立feature，未越过独立review合入main。
+
 ### 2026-09-13 20:56（北京时间）：200 CPU通过，schema修正版运行，唯一marker原切分候选已排队
 
 - **Codex / AR-01，真实检查与启动：** 新独立`git_worktrees/ar_marker_queue_20260913`固定73e2914，robo 200 tests passed（1.85s）。`ar_schema_ar500_v2`于20:54:34启动2994300，仍为原AR500/五train＋五heldout/0更新与仿真；修复后十次生成尚待结果。v1首条与跨设备失败证据保留，不掩盖已发生的一次重复。
