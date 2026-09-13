@@ -24,6 +24,7 @@ from types import SimpleNamespace
 HERE = Path(__file__).resolve()
 REPO = HERE.parents[2]
 METHODS = REPO / 'src/g05/utils/training/fm_training_methods.py'
+DEPENDENCY_HELPER = HERE.with_name('train_action_method_probe.py')
 BASE = Path('/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913')
 LEGACY = Path('/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_overnight_20260912/scripts/experiments/overnight_low_fm.py')
 LEGACY_SHA = '3e21038efc97e68ccfb79b87f584025690ee035f43fd246b1c34b2e9a0ff5342'
@@ -77,6 +78,19 @@ def validate_spec(spec):
         raise RuntimeError('Do not switch a running recipe worktree')
     if subprocess.check_output(['git', '-C', str(REPO), 'status', '--porcelain'], text=True).strip():
         raise RuntimeError('Recipe worktree is dirty')
+    if spec.get('after_fm') and spec.get('after_action'):
+        raise RuntimeError('Use one serial predecessor, not two conflicting queues')
+    if spec.get('after_fm') or spec.get('after_action'):
+        if (spec.get('dependency_helper_sha256') != sha(DEPENDENCY_HELPER)
+                or spec.get('initialization') != 'a4' or spec.get('parent_path') != str(PARENT)):
+            raise RuntimeError('Serial helper or independent A4 initialization changed')
+
+
+def dependency_helpers():
+    # Import at the lifecycle boundary, not while this module is imported by
+    # the action trainer. This avoids a circular top-level import.
+    import train_action_method_probe
+    return train_action_method_probe
 
 
 def settings_for(methods, spec):
@@ -297,7 +311,10 @@ def train_phase(old, spec, spec_path, phase):
 
 def supervise(old, spec, spec_path):
     try:
+        os.environ['CUDA_VISIBLE_DEVICES'] = ''
         old.bootstrap()
+        if spec.get('after_fm') or spec.get('after_action'):
+            dependency_helpers().wait_for_dependency(spec, old)
         old.publish(old.ROOT / 'status.json', dict(state='preflight', time=old.now()))
         old.gpu_budget([1])
         env = old.environment()
@@ -324,16 +341,25 @@ def main():
     parser.add_argument('--trial', choices=tuple(TRIALS))
     parser.add_argument('--output', type=Path)
     parser.add_argument('--spec', type=Path)
+    parser.add_argument('--after-fm-run', type=Path)
+    parser.add_argument('--after-action-run', type=Path)
     args, remainder = parser.parse_known_args()
     if args.mode == 'start':
         if remainder or not args.trial or args.output is None or args.output.parent != BASE:
             raise ValueError('Start needs one named trial and a new direct child of the experiment root')
         old = legacy()
+        if args.after_fm_run and args.after_action_run:
+            raise ValueError('Select only one explicitly declared predecessor')
+        dependency = dependency_helpers() if args.after_fm_run or args.after_action_run else None
         spec = dict(commit=subprocess.check_output(['git', '-C', str(REPO), 'rev-parse', 'HEAD'], text=True).strip(),
             trial=args.trial, settings=TRIALS[args.trial], output=str(args.output),
             entry_sha256=sha(HERE), methods_sha256=sha(METHODS), parent_sha256=PARENT_SHA,
             max_updates=500, smoke_updates=5, seed=41, high_unchanged=True, train_only=True,
-            fresh_optimizer_and_scheduler=True, equivalent_resume=False)
+            fresh_optimizer_and_scheduler=True, equivalent_resume=False,
+            initialization='a4', parent_path=str(PARENT),
+            dependency_helper_sha256=sha(DEPENDENCY_HELPER) if dependency else None,
+            after_fm=dependency.dependency_identity(args.after_fm_run, 'fm') if args.after_fm_run else None,
+            after_action=dependency.dependency_identity(args.after_action_run, 'action') if args.after_action_run else None)
         validate_spec(spec)
         args.output.mkdir(parents=True, exist_ok=False)
         spec_path = args.output / 'method_spec.json'
@@ -352,6 +378,8 @@ def main():
     spec = json.loads(args.spec.read_text())
     validate_spec(spec)
     old = legacy(spec)
+    if args.mode == 'supervise':
+        os.environ['CUDA_VISIBLE_DEVICES'] = ''
     old.bootstrap()
     if args.mode == 'supervise':
         supervise(old, spec, args.spec)

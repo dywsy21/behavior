@@ -152,14 +152,33 @@ def prerequisites(route, initialization="a4", conditioning="skills"):
 
 def dependency_identity(root, kind="fm"):
     root = Path(root)
-    names = {"fm": "fm_ae_lr2x_v1", "action": "ar_a4_fulltrain_v2"}
-    if kind not in names or root.parent != BASE or root.name != names[kind]:
-        raise ValueError("Only the predeclared FM or A4-AR run may be a serial predecessor")
+    # Only the already declared finite screening chain is accepted. A run
+    # named like an AR experiment but using another parent/route is refused.
+    names = {
+        "fm": {"fm_ae_lr2x_v1": "ae_lr2x", "fm_beta_stratified_v1": "beta_stratified",
+               "fm_exec_weight2_v1": "exec_weight2"},
+        "action": {"ar_a4_fulltrain_v2": ("ar", "a4", "skills"),
+                   "ar_native_task_fulltrain_v1": ("ar", "native", "native_task"),
+                   "fm_action_control_v1": ("fm", "a4", "skills"),
+                   "joint_a4_fulltrain_v1": ("joint", "a4", "skills")},
+    }
+    if kind not in names or root.parent != BASE or root.name not in names[kind]:
+        raise ValueError("Only a predeclared finite method run may be a serial predecessor")
     launch, method = read(root / "launch.json"), read(root / "method_spec.json")
-    valid = (method["trial"] == "ae_lr2x" and method["max_updates"] == 500 if kind == "fm"
-             else method["route"] == "ar" and method["recipe"] == RECIPE)
-    if not valid or method["parent_sha256"] != PARENT_SHA:
-        raise RuntimeError("Dependency is not the declared finite A4-initialized candidate")
+    expected = names[kind][root.name]
+    parent_sha = PARENT_SHA
+    if kind == "fm":
+        from train_fm_method_probe import TRIALS
+        valid = (method["trial"] == expected and method["max_updates"] == 500
+                 and method["settings"] == TRIALS[expected])
+    else:
+        route, initialization, conditioning = expected
+        parent_sha = declared_parent(route, initialization, conditioning)[1]
+        valid = (method["route"] == route and method["recipe"] == RECIPE
+                 and method.get("initialization", "a4") == initialization
+                 and method.get("conditioning", "skills") == conditioning)
+    if not valid or method["parent_sha256"] != parent_sha:
+        raise RuntimeError("Dependency is not its declared finite method/initialization")
     return dict(kind=kind, root=str(root), supervisor_pid=launch["supervisor_pid"],
                 launch_sha256=sha(root / "launch.json"), method_sha256=sha(root / "method_spec.json"))
 

@@ -12,7 +12,13 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
-### 2026-09-13 17:33（北京时间）：增加原生AR省略部件的只读语义审计
+### 2026-09-13 17:38（北京时间）：省略语义审计完成；后续有限方法对照接续准备
+
+- **Codex / AR-01，真实结果：** 861942c在robo 7项标准库检查通过，`ar_native_omission_audit_v1`完成10原train/20目标编码与20既有自由生成审计；result SHA `429d8fa2e9d09e63477dd94433b58ca166442c4ca8b07e29ea1f0b456590b09e`。20输出已有块均完整、无缺残差，但全部漏目标编码应保留的lower_body；task0还漏left_control，task2漏正在二值变化的left_gripper。9/10目标窗口允许省略双夹爪，另1只允许右夹爪；真实5/8步尾部窗口不改变本次noop判断。不是所有缺组都来自合法noop；也不将归一化0当物理保持、不据此宣布历史打转根因/AR不可行。0VLM/优化/仿真，无新release或部署合同放宽。
+- **Codex / M-02、M-04，实质代码/待验：** 两现有trainer增加仅限已声明run的串行前驱类型/父权重/配方校验，FM等待也不占CUDA、绑定等待helper SHA；沿用已验PID+ticks+argv与500 checkpoint完整验收。8项FM标准库测试通过，新增10项真实action runtime CPU测试待验；活跃fb40145/171898c/6e2587b三个worktree未改。
+- **后续五臂预登记：** 接在既有原生task-AR后依次`fm_beta_stratified_v1`→`fm_exec_weight2_v1`→`fm_action_control_v1`→`joint_a4_fulltrain_v1`→`ki_a4_fulltrain_v1`，每臂独立原A4父/新Adam、原950/50、seed41/四卡global16/4 worker/50warmup/cosine500，5步保存门后独立500；M-02另外各有原runner两临时更新GPU门。Beta/前16步2:1加权各只改一个因素，对照已完成原FM control；后面三臂共享新loader与LoRA/AE1e-5，分别FM、CE+FM不隔离、CE+FM隔离。原固定80口径不变，每100记录；后面三臂另有CE/自由动作。总计2500正式更新，不是五轮5000或全矩阵搜索；数值/输入/保存/前驱失败即停、不重试/不部署，不借用前驱训练权重，盘余至少120GiB，旧服务保留。当前只写好入口与预算，尚未提交这五臂；真实CPU通过后逐个登记准确commit/PID/spec。仍需效果比较、闭环、CoT、条件服从及有效组合，不把排队当完成。
+
+### 2026-09-13 17:31（北京时间）：增加原生AR省略部件的只读语义审计
 
 - **Codex / AR-01，实质代码：** 新`probe_native_ar_omissions.py`及7项标准库单元检查（已全部通过）。严格区分完整但省略组、缺残差/截断，以及codec认为noop的组；不填零、不修改部署合同。源码确认旧codec会省略恒定二值夹爪，而缺NN组解码成归一化0，这不能自动当作物理保持。
 - **下一只读预算：** 拟`ar_native_omission_audit_v1`，新独立Git worktree/commit；只对原10条train做开关noop两种20目标编码，按task/episode/frame/requested_index/bundle精确连接两份已完成native GPU回执的20自由生成记录。2 CPU线程、0VLM/优化/仿真、不构造release；报告目标编码的合法省略与实际缺失，不用专家答案修补actor。首次身份/解析错误即停，真实结果尚待运行。FM和两份AR训练队列继续不变；main文档已同步99ee6c2，robo协作clone已ff pull，活跃源未改。

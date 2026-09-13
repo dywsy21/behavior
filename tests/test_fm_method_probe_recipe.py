@@ -73,6 +73,21 @@ class RecipeTests(unittest.TestCase):
                 with patch.object(recipe.subprocess, 'check_output', side_effect=outputs), self.assertRaises(RuntimeError):
                     recipe.validate_spec(trial())
 
+    def test_queued_fm_still_initializes_from_a4_and_pins_dependency_helper(self):
+        spec = dict(**trial('beta_stratified'), initialization='a4', parent_path=str(recipe.PARENT),
+            after_action={'root': 'native'}, after_fm=None, dependency_helper_sha256='helper')
+        def digest(path):
+            return 'methods' if path == recipe.METHODS else 'helper' if path == recipe.DEPENDENCY_HELPER else 'entry'
+        with patch.object(recipe, 'sha', side_effect=digest):
+            for damage in [None, {'initialization': 'native'}, {'parent_path': '/native/model.pt'},
+                           {'dependency_helper_sha256': 'changed'}, {'after_fm': {'root': 'other'}}]:
+                with patch.object(recipe.subprocess, 'check_output', side_effect=['commit\n', '']):
+                    if damage is None:
+                        recipe.validate_spec(spec)
+                    else:
+                        with self.subTest(damage=damage), self.assertRaises(RuntimeError):
+                            recipe.validate_spec({**spec, **damage})
+
 
 if __name__ == '__main__':
     unittest.main()

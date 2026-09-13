@@ -161,6 +161,45 @@ def test_dependency_is_narrow_not_an_arbitrary_process_or_training_queue():
         recipe.dependency_identity(recipe.BASE / "ar_native_unapproved", "action")
 
 
+@pytest.mark.parametrize("name,kind,choice", [
+    ("ar_a4_fulltrain_v2", "action", ("ar", "a4", "skills")),
+    ("ar_native_task_fulltrain_v1", "action", ("ar", "native", "native_task")),
+    ("fm_action_control_v1", "action", ("fm", "a4", "skills")),
+    ("joint_a4_fulltrain_v1", "action", ("joint", "a4", "skills")),
+    ("fm_ae_lr2x_v1", "fm", "ae_lr2x"),
+    ("fm_beta_stratified_v1", "fm", "beta_stratified"),
+    ("fm_exec_weight2_v1", "fm", "exec_weight2"),
+])
+def test_each_screening_predecessor_binds_method_parent_and_finite_budget(monkeypatch, name, kind, choice):
+    from train_fm_method_probe import TRIALS
+    if kind == "fm":
+        method = dict(trial=choice, settings=dict(TRIALS[choice]), max_updates=500, parent_sha256=recipe.PARENT_SHA)
+    else:
+        route, initialization, conditioning = choice
+        method = dict(route=route, initialization=initialization, conditioning=conditioning,
+            recipe=deepcopy(recipe.RECIPE), parent_sha256=recipe.declared_parent(*choice)[1])
+    monkeypatch.setattr(recipe, "read", lambda p: dict(supervisor_pid=42) if p.name == "launch.json" else method)
+    monkeypatch.setattr(recipe, "sha", lambda p: "fixed")
+    identity = recipe.dependency_identity(recipe.BASE / name, kind)
+    assert identity["supervisor_pid"] == 42 and identity["kind"] == kind
+    method["parent_sha256"] = "wrong-parent"
+    with pytest.raises(RuntimeError, match="declared finite"):
+        recipe.dependency_identity(recipe.BASE / name, kind)
+
+
+@pytest.mark.parametrize("damage", ["route", "initialization", "budget"])
+def test_predecessor_name_alone_cannot_authorize_a_different_native_run(monkeypatch, damage):
+    method = dict(route="ar", initialization="native", conditioning="native_task", recipe=deepcopy(recipe.RECIPE),
+        parent_sha256=recipe.NATIVE_PARENT_SHA)
+    if damage == "budget":
+        method["recipe"]["max_updates"] = 5000
+    else:
+        method[damage] = "ki" if damage == "route" else "a4"
+    monkeypatch.setattr(recipe, "read", lambda p: dict(supervisor_pid=42) if p.name == "launch.json" else method)
+    with pytest.raises(RuntimeError, match="declared finite"):
+        recipe.dependency_identity(recipe.BASE / "ar_native_task_fulltrain_v1", "action")
+
+
 @pytest.mark.parametrize("kind", ["fm", "action"])
 @pytest.mark.parametrize("damage", [None, "running", "steps", "sha", "wrong_checkpoint", "failed_inspection"])
 def test_dependency_requires_terminal_complete_and_its_own_exact_500_weight(tmp_path, monkeypatch, kind, damage):

@@ -34,6 +34,8 @@
 
 ## 实时状态
 
+17:38（北京时间）：原生省略审计已完成，result `429d8fa2…`，20输出均漏目标保留的lower_body且部分另漏活动夹爪/左臂；已有块未截断，不能将所有缺组解释为noop。准备串行追加既定M-02/M-04短对照：native-task-AR完成→Beta分层500→执行段加权500→新入口纯FM500→joint500→KI500。各自原A4重新初始化，先保存门、失败停止、无自动重试/部署；目标/源码/依赖和预算详见plan17:38，本时刻尚未排队。当前两份AR仍等待既有FM前驱。
+
 17:26（北京时间）：native-task GPU v2已complete，result SHA `09d6244d99053c8295fad280267044fabc0b8df8709ee33739a7c8e8efb5577c`；两真实临时更新、CE15.3403→15.3014，五task前后自由生成仍缺组，不是方法收益。现已提交`ar_native_task_fulltrain_v1`，6e2587b/supervisor2222863/spec `2f01682d…`；真实等待既有A4-AR1940901，0GPU/0更新，通过前驱500验收才从原生G0.5独立5+500。预算、950/50切分、无CoT/无自动部署边界见plan顶部。用户要求不再重复超参答疑、compact后按真实run续做，已加入AGENTS。
 
 17:13（北京时间）：原生base SHA `072211e5…`已核实，原生初始化不会借用A4 adapter。首GPU v1在0更新时定位HL_END注册把state编号挪动；显式原生关闭该token、A4默认保持，117 CPU/真实20视图通过。native-skills v2两真实临时更新完成，946基础状态精确恢复/192新LoRA，固定CE15.2484→15.2965、五task前后均缺完整动作组，不是方法收益；result SHA `4b527cbabe11f4770a32901f5a2146abe1d4666d83ad4a35a2384bf0fd514d6d`。6e2587b补原生task actor无planner依赖，119 CPU后task-only v2门运行；完整原生950/50四卡5+500入口/串行依赖已写，但尚未排队。CoT监督、实际闭环、其他FM候选与组合不因此省略。
