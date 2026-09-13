@@ -34,6 +34,8 @@ A3 checkpoint：`865193f1c8a257d72ea159bd7a46cebf945b0fd24905110b831f0e8a3438e94
 
 ### 本轮实验状态
 
+17:13更新：原生skills真实两更新/加载/梯度/冻结门完成（result `4b527cba…`），但五task前后自由生成均缺动作组、固定CE略升，不是效果收益。6e2587b实际119 CPU通过，原生task-only门现按同预算运行、无planner接口依赖；完整原生训练尚未排队，CoT与闭环仍待完成。FM candidate step300=0.2009023，未作最终结论。
+
 17:03更新：native-skills首GPU门因原生252189行词表与MEM-Lite新增HL_END造成的252190行不符而在0更新停止，日志保留；定位到state编号移动，已写原生关闭HL_END注册、A4默认保持的独立兼容修正。下一步CPU20视图→新v2 GPU门；原生950/50四卡5+500及等待A4-AR完成的入口已写、未验收/排队。FM step200候选0.1988765对control0.1972260，仍只中途诊断。没有新的SR或完整方法结论。
 
 16:49更新：原生G0.5权重SHA与HF下载metadata匹配，946基础状态/0 LoRA，未下载新权重。已写精确native初始化检查及官方动作-only模板视图，拟CPU后GPU1串行native-skills/native-task各两临时更新＋五task前后自由生成；不是已训练的原生AR策略。完整950/50训练及CoT证据仍待补，现有FM与AR等待进程不改，数据扩充/RL职责不变。
