@@ -82,3 +82,53 @@ def test_duplicate_optimizer_parameters_are_rejected():
     model.get_optim_param_groups = lambda **kwargs: [dict(params=[model.weight, model.weight])]
     with pytest.raises(RuntimeError, match="once"):
         recipe.make_optimizer(model)
+
+
+def checkpoint_fixture():
+    state = {f"p{i}": torch.tensor([float(i)]) for i in range(1138)}
+    adam = dict(param_groups=[dict(params=list(range(192)), lr=1e-6)], state={
+        i: dict(step=torch.tensor(5.), exp_avg=torch.ones(1), exp_avg_sq=torch.full((1,), .1))
+        for i in range(192)})
+    schedule = dict(last_epoch=5, _last_lr=[1e-6])
+    rng = [dict(rank=i, cpu=torch.tensor([i]), cuda=torch.tensor([i + 1]), loader=torch.tensor([i + 2]))
+           for i in range(4)]
+    model = SimpleNamespace(state_dict=lambda: state)
+    optimizer = SimpleNamespace(state_dict=lambda: adam)
+    scheduler = SimpleNamespace(state_dict=lambda: schedule)
+    spec = dict(route="ar", provenance="unit-test-only")
+    saved = deepcopy(dict(model_state_dict=state, optimizer_state_dict=adam, scheduler_state_dict=schedule,
+        step=5, next_microbatch=10, rng_by_rank=rng, action_experiment_spec=spec))
+    return saved, model, optimizer, scheduler, spec, rng
+
+
+def test_full_checkpoint_and_optimizer_roundtrip_contract():
+    saved, model, optimizer, scheduler, spec, rng = checkpoint_fixture()
+    recipe.assert_saved_state(saved, model, optimizer, scheduler, spec, 5, rng)
+
+
+@pytest.mark.parametrize("corruption", ["model", "moment", "clock", "rng", "spec", "cursor", "missing"])
+def test_corrupt_checkpoint_never_passes_inspection(corruption):
+    saved, model, optimizer, scheduler, spec, rng = checkpoint_fixture()
+    if corruption == "model":
+        saved["model_state_dict"]["p100"].add_(1)
+    elif corruption == "moment":
+        saved["optimizer_state_dict"]["state"][0]["exp_avg"].fill_(float("nan"))
+    elif corruption == "clock":
+        saved["optimizer_state_dict"]["state"][0]["step"].zero_()
+    elif corruption == "rng":
+        saved["rng_by_rank"][0]["cpu"].add_(1)
+    elif corruption == "spec":
+        saved["action_experiment_spec"]["route"] = "ki"
+    elif corruption == "cursor":
+        saved["next_microbatch"] = 8
+    else:
+        del saved["model_state_dict"]["p100"]
+    with pytest.raises(RuntimeError):
+        recipe.assert_saved_state(saved, model, optimizer, scheduler, spec, 5, rng)
+
+
+def test_dependency_is_narrow_not_an_arbitrary_process_or_training_queue():
+    with pytest.raises(ValueError, match="predeclared"):
+        recipe.dependency_identity("/mnt/sdc1/robodojo")
+    with pytest.raises(ValueError, match="predeclared"):
+        recipe.dependency_identity(recipe.BASE / "unknown_other_training")

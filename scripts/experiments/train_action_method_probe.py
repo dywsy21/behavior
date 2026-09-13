@@ -17,6 +17,7 @@ import json
 import os
 from pathlib import Path
 import random
+import select
 import shutil
 import subprocess
 import time
@@ -65,6 +66,8 @@ def validate_spec(spec):
         raise RuntimeError("Use a clean immutable action experiment worktree")
     if subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip() != spec["commit"]:
         raise RuntimeError("Active action recipe worktree must not be switched")
+    if spec["prerequisites"] != prerequisites(spec["route"]):
+        raise RuntimeError("Required completed input/gradient evidence changed")
 
 
 def configure(cfg, route):
@@ -118,6 +121,58 @@ def prerequisites(route):
     if not gate.get("complete", gate.get("passed", False)) or gate["actual_updates"] != 2:
         raise RuntimeError("Real route-specific gradient/update gate is required")
     return {str(p): sha(p) for p in (input_path, data_path, path)}
+
+
+def dependency_identity(root):
+    root = Path(root)
+    if root.parent != BASE or root.name != "fm_ae_lr2x_v1":
+        raise ValueError("Only the predeclared AE-LR candidate may precede this AR run")
+    launch, method = read(root / "launch.json"), read(root / "method_spec.json")
+    if method["trial"] != "ae_lr2x" or method["parent_sha256"] != PARENT_SHA or method["max_updates"] != 500:
+        raise RuntimeError("FM dependency is not the declared finite paired candidate")
+    return dict(root=str(root), supervisor_pid=launch["supervisor_pid"],
+                launch_sha256=sha(root / "launch.json"), method_sha256=sha(root / "method_spec.json"))
+
+
+def wait_for_dependency(spec, old):
+    dependency = spec.get("after_fm")
+    if dependency is None:
+        return
+    root = Path(dependency["root"])
+    if dependency_identity(root) != dependency:
+        raise RuntimeError("Predecessor launch/recipe identity changed")
+    pid = dependency["supervisor_pid"]
+    try:
+        handle = os.pidfd_open(pid)
+    except ProcessLookupError:
+        handle = None
+    if handle is not None:
+        try:
+            # A pidfd pins the process; command-line identity prevents waiting
+            # on a recycled unrelated PID. No predecessor is ever signalled.
+            argv = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
+            if (b"supervise" not in argv or str(root / "method_spec.json").encode() not in argv
+                    or not any(value.endswith(b"/train_fm_method_probe.py") for value in argv)):
+                raise RuntimeError("Predecessor PID is not its recorded FM supervisor")
+            while not select.select([handle], [], [], 10)[0]:
+                old.publish(Path(spec["output"]) / "status.json", dict(state="waiting", time=now(),
+                    phase="verified_live_dependency", supervisor_pid=os.getpid(), dependency=dependency,
+                    policy_updates=0, gpu_allocated=False))
+        except FileNotFoundError:
+            # The pinned process may finish between pidfd_open and /proc read.
+            if not select.select([handle], [], [], 0)[0]:
+                raise
+        finally:
+            os.close(handle)
+    state = read(root / "status.json")
+    inspection = read(root / "formal_checkpoint_inspection.json")
+    if (state["state"] != "complete" or state["verified_optimizer_steps"] != 500
+            or not inspection["passed"] or inspection["step"] != 500
+            or sha(inspection["checkpoint"]) != inspection["checkpoint_sha256"]):
+        raise RuntimeError("Predecessor did not finish and verify; do not start AR or retry it")
+    publish(Path(spec["output"]) / "dependency_completed.json", dict(verified=True, time=now(),
+        dependency=dependency, inspection_sha256=sha(root / "formal_checkpoint_inspection.json"),
+        initializes_from_original_A4_not_dependency=True))
 
 
 @contextmanager
@@ -392,7 +447,7 @@ def train(spec, phase):
             model=model, optimizer=optimizer, scheduler=scheduler, action_experiment_spec=spec,
             model_arch=OmegaConf.to_container(arch, resolve=True), rng_by_rank=rng,
             next_microbatch=total * 2, dataset_stats_sha256=STATS_SHA,
-            parameter_group_names=audit.group_name_lists,
+            parameter_group_names=audit.group_name_lists, gradient_evidence_rank0=audit.checkpoint_evidence(),
             resume_scope="Exact saved state; new-process continuation must validate sampler/RNG before use")
         saved = torch.load(path, map_location="cpu", weights_only=False, mmap=True)
         assert_saved_state(saved, model, optimizer, scheduler, spec, total, rng)
@@ -410,6 +465,7 @@ def supervise(spec, path):
     try:
         bootstrap()
         from g05.utils.training.coordination_runtime import CoordinationLock
+        wait_for_dependency(spec, old)
         for phase in ("smoke", "formal"):
             if phase == "formal" and not read(Path(spec["output"]) / "smoke/checkpoint_inspection.json")["passed"]:
                 raise RuntimeError("Real DDP saved-state inspection is required")
@@ -439,6 +495,7 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--spec", type=Path)
     parser.add_argument("--phase", choices=("smoke", "formal"))
+    parser.add_argument("--after-fm-run", type=Path)
     args = parser.parse_args()
     if args.mode == "start":
         if args.route is None or args.output is None or args.output.parent != BASE:
@@ -447,7 +504,8 @@ def main():
             code=code_identity(), commit=subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
             fresh_adam=True, high_unchanged=True, train_split="original950", eval_split="original50",
             native_upstream_ar_replication=False, no_automatic_deployment=True,
-            timing_comparable_to_stock_fm=False, prerequisites=prerequisites(args.route))
+            timing_comparable_to_stock_fm=False, prerequisites=prerequisites(args.route),
+            after_fm=dependency_identity(args.after_fm_run) if args.after_fm_run else None)
         validate_spec(spec)
         args.output.mkdir(exist_ok=False)
         path = args.output / "method_spec.json"

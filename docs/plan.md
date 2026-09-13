@@ -10,6 +10,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 15:59（北京时间）：AE×2已启动并通过GPU门，AR正式配方65项CPU检查通过
+
+- **Codex / M-01，运行中：** `fm_ae_lr2x_v1`于15:55:15启动，supervisor1902909、固定fb40145，method spec SHA `d661502417afe2dce58f8e3b26a5f7579e94dd4f0f3e08ec798b08eb6e76b160`。15:58核验真实进程与单GPU门：A4完整恢复/原评估口径相同、4 microbatch/2更新通过；四卡5步torchrun1903487运行中。正式500尚未开始，候选效果未出；未改变旧服务或已完成control。
+- **AR-01实现验收：** 新独立`action_trainer_20260913`固定2f095df，新增11项加已有54项共65 CPU测试通过；包括真实Adam warmup前两更新、参数覆盖、原FM入口保留与评估不进入训练。尚未真实运行完整AR trainer，不能拿单元门声称训练完成。
+- **下一有界执行预登记：** 为持续利用四卡且不让两轮四卡训练争抢显存，新增仅依赖已声明`fm_ae_lr2x_v1`的串行启动门：验证具体supervisor argv并以pidfd等待其实际退出，再验500步checkpoint与SHA，成功后才放行AR的5步保存门→独立500。依赖失败就停止，不重试、不从该FM候选权重接训；AR仍从原A4初始化。拟新run `ar_a4_fulltrain_v1`，首版无新进程resume宣称、无自动部署；新等待和checkpoint篡改测试待验。用户goal内的原生AR/CoT、KI/joint实训、后续闭环和有效组合没有缩减。
+
 ### 2026-09-13 15:54（北京时间）：FM control500完成验收，准备唯一AE×2候选；完整AR训练编排已写
 
 - **Codex / M-01，前轮为progress：** 上轮完成54项回归、40真实AR视图和Git同步；本轮clean pull/fetch后重新核验真实进程。control于15:50:53完成，supervisor1499025/torchrun1508221均已退出；`formal_checkpoint_inspection.json`passed，step500 SHA `def222a6674e6ac92e6ee982c22836b789240f1542c459d5de2111cd646a244e`，504 Adam均500、全部模型/Adam有限、冻结状态未变、四rank RNG与各2000次train抽取验收。不是仅凭PID退出认定成功。
