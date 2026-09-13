@@ -12,6 +12,44 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 19:32（北京时间）：CoT真实两更新门完成；新指标/正式入口166 CPU通过
+
+- **Codex / AR-01，GPU实际完成：** 5aa3eff的`ar_native_subtask_cot_gpu_gate_v1`已退出，result SHA `54f83aff390626a0dfc009c5825d6a0769a36d5c3772402229d48477a622a92b`。原生946基础项恢复、192新LoRA/Adam、CE真实梯度（初始化96非零）、FM零梯度和冻结检查通过；两临时更新，同一行总CE14.413805→14.408789，峰值reserved23,416,799,232 bytes。不是可比action-only收益或SR；0发布权重/仿真。
+- **生成边界与仍未通过项：** 前后各五task均通过文本/EOV交接、进入动作生成后被缺组检查拒绝，0/5完整动作；task0的动作串19 tokens，其他37，均在`|`主动结束。这版回执只存最后一段raw动作，不能据此评价生成subtask语义好坏；下一版已保留两段calls，不能把缺失文本证据补造出来。
+- **下一源码/待实测：** 独立`ar_cot_metrics_20260913`固定09ff64a，实际166 CPU passed（1.66s），含CoT专属训练入口、动作/文本指标不互相稀释、FM参考flag恢复与双阶段trace。尚未用它训练或追加CoT500；现有950/50 AR与后续FM队列不变。接下来核验A4-AR500完整保存，再用这个新源对原两train作同历史/动作token诊断；CoT固定80新参考与正式5+500是否入队仍待专门验收/登记。
+
+### 2026-09-13 19:30（北京时间）：补CoT独立动作CE与双阶段回执，正式入口草稿待验
+
+- **Codex / AR-01，实质代码/待验：** 从已有CE cache拆分未加权action-token CE与text/boundary CE、各自有效token数，训练目标不变；原固定80逐task/窗口同口径汇总，CoT文本不能稀释动作指标。自由生成回执新增按调用顺序保留文本/动作两段，避免原`ids`只保留最后一次。正式trainer新增显式native_subtask_cot配置与专属已完成输入/GPU证据门，原FM参考临时关闭CoT/EOV监督并完整恢复。新CPU用例/本地语法检查已写；尚未以此新入口训练，不热改5aa3eff GPU源或其他队列。
+- **其他修正/下一步：** AR500只读诊断的预算字段改读真实`method_spec.recipe.max_updates`，不会在500完成后误读不存在的顶层字段。19:29实际A4-AR476/500，CoT GPU回执已出现complete与两次更新日志，详细指标/生成失败类型正在核验；未宣称CoT效果或新SR。下一次只在500真正完成/完整回读后对原两train窗口做同历史数值复核，仍0优化/仿真，不追加训练。
+
+### 2026-09-13 19:25（北京时间）：CoT原生GPU两更新门已启动
+
+- **Codex / AR-01，运行中：** `ar_native_subtask_cot_gpu_gate_v1`真实PID2672389，于19:24:38启动，固定5aa3eff的`ar_native_subtask_cot_v2_20260913`，预算与上一条预登记一致；原生恢复/真实梯度/自由生成结果待验，不用启动当通过。不得热改此worktree。
+- **评估边界：** CoT的总CE混有文本与动作，不能直接与action-only CE作数值优劣比较。后续正式入口需分别记录动作token CE和文本/边界CE、两个生成阶段及EOV接续，保持原FM辅助参考不变；当前尚未追加CoT正式训练，A4-AR仍在原500预算内。
+
+### 2026-09-13 19:24（北京时间）：CoT真实十行输入通过并人工核对，准备原生两更新GPU门
+
+- **Codex / AR-01，实际通过：** `ar_native_subtask_cot_v2_20260913`固定5aa3eff，156 CPU tests passed；`ar_native_subtask_cot_input_gate_v2`十行完成，result SHA `0d89930ff98ed90144e4aa592d2e0d7c8bc8ef6e3c207f47a610b85098141e6c`。全部原生词表/60动作tokens/8完整组、42–53个CoT监督token、EOV标签、完整未截断、actor无teacher输入通过。v1确为不同CoT长度造成的左padding比较错误，真实逐行观察IDs和类型mask全部一致，并未靠放宽真实输入一致性过关。
+- **本人审核范围：** 逐条读完十份来源与文本，核对PLACE_ON/GRASP/OPEN_DOOR/NAVIGATE/PRESS及对象、来源/目的、right_door和UNSPECIFIED字段；转写只是原已审核skill文本加`Subtask:`前缀，无新事实、bbox、trace或成功/失败标签。本轮不是重新做视觉标注/发布新数据；原图像审核证据继续沿用。
+- **下一有限GPU预登记：** `ar_native_subtask_cot_gpu_gate_v1`，同5aa3eff独立worktree/原生base SHA `072211e5…`，GPU1/2CPU线程；原两train行两临时Adam更新/192 LoRA、FM恒0，五task各一真train窗口更新前后自由生成（每次CoT最多256＋动作原300预算），原生946基础状态精确恢复/新零B。0发布权重/仿真，不自动追加或部署；输入/数值/梯度/恢复错误停止，生成不完整原样记录。尚未启动CoT正式500，现有A4-AR/原生task/五方法队列不变。
+
+### 2026-09-13 19:22（北京时间）：CoT CPU首门停在前缀比较，修正多长度padding检查后重验
+
+- **Codex / AR-01，失败保留/0更新：** `ar_native_subtask_cot_input_gate_v1`退出1，未通过observation/teacher boundary，manifest保留，没有启动CoT GPU。检查器把包含不同长度CoT的训练左padding与纯观察的左padding按整块矩阵比较，不能据此断言逻辑token前缀错误。
+- **修正与下一门：** 新`observed_prefix_receipts`按每行真实非padding token比较全部观察IDs/类型mask/监督mask，保留各行padding数量与边界回执；新增4个CPU用例确保padding差异可区分、真实token/mask/label错误仍拒绝。拟新独立commit与`ar_native_subtask_cot_input_gate_v2`复查相同十原train、仍0VLM/优化/仿真；真实边界是否一致尚待结果，不通过删检查放行。
+
+### 2026-09-13 19:20（北京时间）：CoT入口152项CPU通过，真实十行输入门运行
+
+- **Codex / AR-01：** 新独立`ar_native_subtask_cot_20260913`固定923515f，robo实际152 tests passed（1.53s）；包括旧FM/AR/KI/原生恢复/依赖等待回归，以及同状态CoT输出、无teacher前缀、原生EOV配置和真实停止token仅提交一次。`ar_native_subtask_cot_input_gate_v1`已开始CPU真实输入检查，结果尚待验收；无CoT神经训练或新策略权重。
+- **既有训练：** 19:18实查A4-AR413/500；step400固定80 CE6.8592896、辅助FM0.1973669191，五task自由生成仍0/5完整组。沿原预算运行，不添加步数；后继队列未重提。main文档6b563a3已ff pull到robo协作clone，活跃源码保持固定。
+
+### 2026-09-13 19:18（北京时间）：原生Subtask-CoT显式入口已实现，待真实输入与模型验收
+
+- **Codex / AR-01，代码/未冒称通过：** 新`native_subtask_cot`配方只允许原生G0.5/纯AR；原生词表、EOV显式CE、256 token文本上限，保留原32步/全部23D目标。训练输出逐字复用已审核同状态`active_skills_text`，遵循原`SubtaskCoTBuilder`模板；部署白名单只有任务/六帧观察，拒绝atomic_task/teacher_subtask等答案，不依赖MEM-Lite planner，也不宣称完整复现上游bbox/trace CoT。
+- **架构边界修正：** 真实非BAR decoder在停止token进入KV前就返回；新CoT分支必须将真实生成的EOV恰好提交一次，才能从其hidden开始动作生成。新增停止长度/MRoPE/重复提交检查；未生成EOV、超预算、空subtask或提前生成动作均拒绝，不用固定答案修补。旧AR/FM/J/KI默认行为与活跃worktree未改。
+- **下一有限门：** 新独立worktree跑CPU回归和`ar_native_subtask_cot_input_gate_v1`：原十行/五task、2CPU线程、0VLM/优化/仿真，真实检查未截断、CoT/EOV/60动作token标签、改teacher答案不影响actor前缀。本人逐行核对输出文本与原来源；通过后再单独登记/执行GPU两临时更新与五task自由生成，尚未追加CoT正式500训练。入口`probe_native_subtask_cot_inputs.py`及相关单元检查已写，本地语法/空白检查通过。
+
 ### 2026-09-13 19:11（北京时间）：A4同历史诊断完成；未发现LoRA绕过或位置错位
 
 - **Codex / AR-01，实际完成/0更新：** `ar_decode_consistency_a4_v1`的2604744已退出，result SHA `161649772d3a5b8a519a6f5916b6dd1201d26df1de3bbca2e341e23f4cbea43b`。两原train窗口各61个token，teacher完整前向与缓存强制同历史的MRoPE/类型mask全部一致，122个下一token的argmax有121个一致；96个LoRA模块在完整/缓存/自由路径均实际调用，没有发现整条解码绕过适配器。
