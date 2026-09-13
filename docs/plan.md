@@ -10,6 +10,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 10:44（北京时间）：A3/A4配对动作诊断已启动
+
+- **Codex / A-02，运行中：** Git commit `f9d8937c6048333e5613097ee20b4c6d16c8f760`，服务器独立worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_effectiveness_20260913`已显式fetch/pull并核对干净；9项测试在服务器再次通过。supervisor PID1472661，run `/mnt/sdc1/robodojo/behavior_dev/a4_paired_actions_20260913_v1`；`launch.json`绑定版本/预算，`process.json`记录进程，A3/A4日志分开。
+- **实际阶段/边界：** A3 worker已开始加载与依赖校验，尚未得到生成结果。每个权重单独进程顺序加载、释放显存；170次上限，0优化/0physics/不部署，不停止其他服务。继续核对真实生成和旧A3逐字节复现，再读取配对差异。
+
 ### 2026-09-13 10:40（北京时间）：A4身份/固定窗口比较核实，动作配对脚本待GPU执行
 
 - **Codex / A-02：** 已独立重算A4最终文件SHA，与`6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`一致。A3最终及A4全部25份固定诊断具有相同manifest `a365370d81596cb720ba5df38e6935aa1e0a2bdcbf1fbc0c54dfd52bbf45b254`、window-set `7ade41ed2407bf29f032cc5bd0de51b240b292e7c3ab1b560859ec1159ece527`、noise/time sampler `2a77e3006b1531bd0f5b7c655578698002eea47ac2ace7f4cc64046013b7d1e5`，均为80窗口，不是full eval。
