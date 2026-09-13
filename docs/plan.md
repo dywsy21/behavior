@@ -12,6 +12,23 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 19:11（北京时间）：A4同历史诊断完成；未发现LoRA绕过或位置错位
+
+- **Codex / AR-01，实际完成/0更新：** `ar_decode_consistency_a4_v1`的2604744已退出，result SHA `161649772d3a5b8a519a6f5916b6dd1201d26df1de3bbca2e341e23f4cbea43b`。两原train窗口各61个token，teacher完整前向与缓存强制同历史的MRoPE/类型mask全部一致，122个下一token的argmax有121个一致；96个LoRA模块在完整/缓存/自由路径均实际调用，没有发现整条解码绕过适配器。
+- **数值与限制：** 两行full/cached eager CE分别15.08357/15.12535、13.05716/13.02461；最大logit差0.75/0.5，非逐位一致，不擅自声称所有数值路径完全等价。两次独立自由生成仍37 tokens且漏组。当前证据不支持用“位置错位或LoRA未执行”解释该原A4两样本，但尚未检查训练后的500权重、所有窗口或所有误差来源。
+- **下一步：** 待当前500权重真实完成后复用诊断入口核验；现在继续实现显式原生Subtask-CoT视图与终止边界接续，输出监督只复用已审核同状态skills，不构造bbox/trace/FAILED/SUCCEEDED或新release。先真实输入/生成门再登记CoT训练，现有队列不变。
+
+### 2026-09-13 19:09（北京时间）：AR同历史诊断46项CPU通过，原A4只读GPU检查已启动
+
+- **Codex / AR-01，代码/真实CPU通过：** 新`probe_ar_decode_consistency.py`在同一权重/两条原train上，比较完整teacher-forcing与实际AR缓存循环的每token原始logits、目标rank/CE、MRoPE/类型mask及LoRA模块调用；另外分别自由生成，绝不把强制token历史当部署输出。robo独立`ar_decode_consistency_20260913`固定039e268，新增6项＋40项原回归共46 tests passed；GPU结果待验。
+- **实际运行：** `ar_decode_consistency_a4_v1`于19:08:51启动，PID2604744，日志在同级`.launch.log`；原A4 SHA `61867047…`与原10行缓存中的前两microbatch各首行、seed17自由生成、GPU1/两CPU线程/最多40%单卡显存。两行各1完整teacher前向＋1真实缓存teacher诊断（最多96 tokens）＋1无GT自由生成（沿用原actor显式预算，不更改生成行为），0优化/保存策略/仿真，无自动重试。输入/权重/预算失败即停止；数值差异原样报告而不套未经验证的通过阈值。A4-AR及原生/五方法队列继续固定旧源码，不改训练配方。
+
+### 2026-09-13 19:07（北京时间）：A4-AR固定80 CE下降，但自由生成仍全部漏组
+
+- **Codex / AR-01，实际进展：** formal2316504已超过319/500，仍由1940901监管；原生及五方法后继未重复提交。原固定80的CE从step0的18.6797803降至100/200/300的14.0474166/8.2061711/7.1059599；原初始FM参考0.196943994070与A4逐值一致，step300参考0.1971009450（辅助指标，不是AR控制误差）。`formal/eval_step_300.json` SHA `83e11977c037f9b60dc4dfe742cd371cf88a6a275ea407414ed9d0e1d037d947`。
+- **未通过部署门：** 四个评估时点每task固定一条自由生成均0/5完整动作组；step300均37 tokens、只有双臂残差块后终止，缺lower_body/双夹爪，未执行仿真、没有新SR。CE下降不能代替完整可用动作；不放宽23D合同或用GT/FM填空。
+- **下一诊断优先级：** 在现有500预算内继续观察，不热改活跃源；先查同一token历史下teacher-forcing与缓存解码的实际数值一致性、LoRA推理路径和终止位置，再加原生Subtask-CoT对照及闭环。该检查只读原train和已有权重、0优化/仿真，具体有限GPU预算在运行前登记；CoT仍待实现，不把计划写成已完成。
+
 ### 2026-09-13 17:57（北京时间）：A4-AR四卡5步保存回读通过，正式500作业已启动
 
 - **Codex / AR-01，实际通过：** `ar_a4_fulltrain_v2/smoke/checkpoint_inspection.json`passed，5次optimizer调用/192 Adam状态/80条实际train抽取、冻结不变、完整模型/Adam/四rank RNG回读通过；临时权重SHA `9f22d74f9886ee31a4bda9598a25de22e6680e90ce2b1176b5b02f4bf9f9a84c`，峰值rank0 reserved23,129,489,408 bytes。五步FM均0、只CE，真实LoRA更新在warmup第二次调用核验；第一步LR0被正确记录，不冒称零LR造成参数更新。
