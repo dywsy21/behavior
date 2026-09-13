@@ -21,6 +21,7 @@ from g05.data_processor.processor.samples_builder import validate_embedded_model
 from g05.utils.memlite_skill_protocol import MEMLITE_SKILL_SCHEMA_VERSION
 from g05.utils.training.ar_training_methods import (
     ActionTrainingSettings, action_prefix_samples, action_training_samples, validate_complete_action_tokens,
+    native_task_actor_samples,
 )
 
 
@@ -152,13 +153,27 @@ class G05PolicyMEMLiteAction(G05PolicyQwen35):
         expected[:, [7, 8, 17, 18]] = True
         if not torch.equal(mask, expected):
             raise ValueError("Missing real base/trunk controls or incorrect padding mask")
-        for sample in samples:
-            projection = validate_embedded_model_projection(sample)
-            if (projection["memlite_branch"] != "low" or projection["task_complete"]
-                    or projection["next_decision"] != "EXECUTE"
-                    or any(skill["verb"] == "SKILL_UNKNOWN" for skill in projection["active_skills"])):
-                raise ValueError("Actor requires a nonterminal, valid low-level semantic condition")
-        prepared = action_prefix_samples(samples, self.action_training)
+        if self.action_training.conditioning == "native_task":
+            # End-to-end task AR must not require a planner/oracle bundle just
+            # to pass an interface check. No semantic sidecar enters prefill.
+            prepared = native_task_actor_samples(samples, num_images=int(self.model_config.num_input_images))
+            for sample in prepared:
+                proprio = sample["proprio"]
+                if not isinstance(proprio, dict):
+                    raise ValueError("Native actor requires explicit observed proprioception metadata")
+                value, state_mask = proprio.get("value"), proprio.get("proprio_dim_is_pad")
+                if (not isinstance(value, torch.Tensor) or value.shape != (6, 27) or not torch.isfinite(value).all()
+                        or not isinstance(state_mask, torch.Tensor) or state_mask.dtype != torch.bool
+                        or state_mask.shape != (27,) or not torch.equal(state_mask.to(mask.device), expected[0])):
+                    raise ValueError("Native actor requires six observed 27D states and the real embodiment mask")
+        else:
+            for sample in samples:
+                projection = validate_embedded_model_projection(sample)
+                if (projection["memlite_branch"] != "low" or projection["task_complete"]
+                        or projection["next_decision"] != "EXECUTE"
+                        or any(skill["verb"] == "SKILL_UNKNOWN" for skill in projection["active_skills"])):
+                    raise ValueError("Actor requires a nonterminal, valid low-level semantic condition")
+            prepared = action_prefix_samples(samples, self.action_training)
         started = time.monotonic()
         state = self.prefill(prepared, pixel_values)
         if self.action_training.route == "ar":

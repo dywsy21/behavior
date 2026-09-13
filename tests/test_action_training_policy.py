@@ -41,6 +41,29 @@ def test_trainability_is_route_specific(route):
         policy._assert_action_training_contract()
 
 
+def test_native_task_actor_does_not_require_or_read_a_planner_projection(monkeypatch):
+    from g05.data_processor.processor.samples_builder import BaseSamplesBuilder
+    policy = bare_policy("ar")
+    policy.action_training = ActionTrainingSettings(conditioning="native_task")
+    policy.model_config = SimpleNamespace(num_input_images=1)
+    mask = torch.zeros(1, 27, dtype=torch.bool)
+    mask[:, [7, 8, 17, 18]] = True
+    sample = dict(template=BaseSamplesBuilder(1, {"head": (256, 256)}).template,
+        command="turn on the radio", embodiment="r1pro", image0={"value": torch.ones(1)},
+        proprio=dict(value=torch.zeros(6, 27), proprio_dim_is_pad=mask[0]))
+    def forbidden(*args):
+        raise AssertionError("Native task actor must not request a semantic projection")
+    monkeypatch.setattr(module, "validate_embedded_model_projection", forbidden)
+    captured = []
+    def prefill(samples, pixels):
+        captured.extend(samples)
+        raise RuntimeError("test reached target-free prefill")
+    policy.prefill = prefill
+    with pytest.raises(RuntimeError, match="reached target-free"):
+        policy.forward_inference([sample], {}, action_dim_is_pad=mask)
+    assert captured and "memlite_branch" not in captured[0]
+
+
 def test_load_before_freeze_and_actual_ki_detach_setting_required():
     policy = bare_policy("ki")
     policy._coordination_post_load_receipt = None

@@ -10,6 +10,17 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 17:10（北京时间）：补原生task-AR无planner输入接口，准备task臂真实检查
+
+- **Codex / AR-01：** native-skills v2实际进程2144305运行，已写restoration、真实梯度以及五task更新前生成回执；最终两更新result仍须核验。native CPU输入result SHA `099858a2d15c41241d3806833cb444db17e277cc05d71e928804f45fad4ee150`。原10行本体实测全部6×27，不将图像历史误当动作历史。
+- **实质接口修正/待验证：** 原生`native_task` actor不再要求一个并不输入网络的MEM-Lite技能投影；只接收精确官方动作模板、任务/本体标识、18图像槽与六帧本体状态/真实padding mask，并剥离memory/skills/outcome等sidecar。普通skills actor的语义检查保持，训练侧同状态审计保持；新增无planner客户端/禁止teacher输入的CPU测试。此修正尚未跑真实task臂，不能宣称闭环已通。
+- **下一步：** 新独立源码通过CPU后，用同原生权重、原数据/seed和两临时更新预算执行native-task v2，串行等待skills进程实际结束。原生完整5+500仍须两门及输入验收后才排队；FM当前已实查306/500，A4-AR仍等待，不改它们的源码或预算。
+
+### 2026-09-13 17:06（北京时间）：原生词表117项CPU＋20真实输入视图通过，进入GPU v2
+
+- **Codex / AR-01，实际完成：** 独立`ar_native_vocab_20260913`固定82ccb19，robo 117项CPU passed；`ar_native_input_gate_v1`真实10 train行×skills/native_task共20视图complete，原生动作区间[248077,252187)、EOV252187/state252188，无HL_END，全部60-token/8码块、前缀一致/无截断/23D完整。不是自由生成效果。
+- **运行中：** 仅提交原生skills `ar_native_skills_gpu_gate_v2`，新源已明确保留原生词表；仍GPU1两临时更新＋五task前后生成上限、0发布权重/仿真。task臂等前者实际结束后才运行；旧失败v1保留，活跃FM/A4-AR源码未动。完整native训练入口的CPU编排检查已包含在117项内，但尚未正式排队或神经更新。
+
 ### 2026-09-13 17:03（北京时间）：原生加载首门失败定位到HL_END挪动state，保留原生词表重验
 
 - **Codex / AR-01，实际失败/0更新：** dc0d085的native-skills进程2081801已退出1，v1日志和manifest保留；严格946项检查在`model.vlm.input_proj.weight`处拒绝252189→252190行的默认部分加载，尚未执行优化/自由生成，不重复声称native已通过。源码定位：MEM-Lite无条件在`<EOV>`后、`<state>`前注册`<HL_END>`；官方原实现没有HL_END，因此原生state252188被挪到252189。动作词表范围未因此挪动；尚不能把此兼容性缺陷宣称为历史打转的已证实根因。

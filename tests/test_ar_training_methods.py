@@ -8,6 +8,7 @@ import torch
 
 from g05.utils.training.ar_training_methods import (
     ActionTrainingSettings, action_prefix_samples, action_training_samples, validate_complete_action_tokens,
+    native_task_actor_samples,
 )
 
 
@@ -83,6 +84,23 @@ def test_native_task_does_not_guess_a_different_source_template():
     samples[0]["template"] = samples[0]["template"].replace("Task: <command_text_!_200>; ", "Goal: <command_text_!_200>; ")
     with pytest.raises(ValueError, match="exact source command"):
         action_prefix_samples(samples, ActionTrainingSettings(conditioning="native_task"))
+
+
+def test_native_actor_accepts_no_planner_and_strips_all_sidecar_fields():
+    samples, *_ = fixture()
+    for row in samples:
+        row.update(embodiment="r1pro", image0={"value": torch.ones(1)}, memory="must not enter", outcome_target="unknown")
+    native = native_task_actor_samples(samples, num_images=1)
+    assert set(native[0]) == {"template", "command", "embodiment", "proprio", "image0"}
+    # A standalone client has no memlite_branch, skills, outcome or memory.
+    again = native_task_actor_samples(native, num_images=1)
+    assert again[0]["template"] == native[0]["template"]
+    assert torch.equal(again[0]["proprio"]["value"], native[0]["proprio"]["value"])
+    with pytest.raises(ValueError, match="observed inputs"):
+        native_task_actor_samples(native, num_images=18)
+    native[0]["teacher_action"] = torch.zeros(32, 27)
+    with pytest.raises(ValueError, match="teacher"):
+        native_task_actor_samples(native, num_images=1)
 
 
 @pytest.mark.parametrize("key", ["action", "gt_action", "future_state", "teacher_action"])

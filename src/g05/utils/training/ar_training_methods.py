@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import asdict, dataclass
+import re
 
 import torch
 
@@ -149,4 +150,32 @@ def action_training_samples(samples, actions, action_is_pad, action_dim_is_pad,
             action_dim_is_pad=action_dim_is_pad[i].detach().clone(),
             action_op_mask=(~action_dim_is_pad[i]).detach().clone(),
             parts_meta=dict(CANONICAL_PARTS))
+    return result
+
+
+def native_task_actor_samples(samples, *, num_images):
+    """Native action-only deployment requires no planner or semantic sidecar.
+
+    Accept either the audited source view or an already-native Base template,
+    then pass ONLY task/embodiment/current observations to the neural processor.
+    Training still validates its same-state source separately before adding GT.
+    """
+    from g05.data_processor.processor.samples_builder import BaseSamplesBuilder
+    if type(num_images) is not int or num_images < 1 or not samples:
+        raise ValueError("native actor requires explicit image layout and nonempty samples")
+    image_keys = {f"image{i}" for i in range(num_images)}
+    expected = BaseSamplesBuilder(num_input_images=num_images, image_sizes={"layout_only": (256, 256)}).template
+    allowed = {"template", "command", "embodiment", "proprio"} | image_keys
+    result = []
+    for sample in samples:
+        if any(key in sample for key in ("action", "gt_action", "future_state", "teacher_action")):
+            raise ValueError("native actor must not receive teacher or future fields")
+        template = sample.get("template", "")
+        row = (action_prefix_samples([sample], ActionTrainingSettings(conditioning="native_task"))[0]
+               if isinstance(template, str) and SKILL_INPUT in template else deepcopy(sample))
+        if (row.get("template") != expected or not allowed.issubset(row)
+                or {key for key in row if re.fullmatch(r"image\d+", key)} != image_keys
+                or any(not isinstance(row[key], str) or not row[key].strip() for key in ("command", "embodiment"))):
+            raise ValueError("native actor requires the exact Base task template and complete observed inputs")
+        result.append({key: row[key] for key in sorted(allowed)})
     return result
