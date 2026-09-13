@@ -33,10 +33,13 @@ class PrefixPilotTests(unittest.TestCase):
                 service.validate_checkpoint_path('/tmp/approved_run', '/tmp/approved_run/checkpoints/step_2500.pt', value)
 
     def test_live_service_control_class_is_unchanged(self):
-        tree = ast.parse((ROOT / 'serve_low_fm_prefix.py').read_text())
+        text = (ROOT / 'serve_low_fm_prefix.py').read_text()
+        tree = ast.parse(text)
         node = next(n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == 'FormalALowService')
-        self.assertEqual(hashlib.sha256(ast.dump(node, include_attributes=False).encode()).hexdigest(),
-                         '38f0717c5e5bd85fc2e4857f00034f1ee25f14ab4133eb9794d18f5e22c9cc56')
+        # ast.dump includes new grammar fields in Python >=3.12. Pin the exact
+        # original class source bytes, located by AST, for cross-version checks.
+        self.assertEqual(hashlib.sha256(ast.get_source_segment(text, node).encode()).hexdigest(),
+                         '7d5e0f17daf3c16a3557d8b2c36f7d794c3da49797f75634bc99549b39f4551f')
 
     def test_same_window_and_control_budget(self):
         manifest = dict(source_split='train', source_episode_index=121, policy_seed=17)
