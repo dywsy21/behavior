@@ -12,6 +12,37 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 20:31（北京时间）：schema首轮CPU发现旧测试跨dtype比较不稳定，修正同dtype精确比较
+
+- **Codex / AR-01，失败如实保留：** b8c638d独立`ar_schema_generation_20260913`为190 passed/1 failed；失败在此前marker的FP64回载投影与FP32矩阵乘法后转FP64比较，差1.79e-7，取决于测试随机顺序，并非新schema解码测试失败。未启动schema GPU。修正为模型状态转换后逐项精确相等、两侧均FP64真实投影逐值相同，不放宽容差或删检查；拟新独立源重验。
+- **原生task实查：** 已200/500、3200原train抽取；固定80 CE8.45134298（step100为14.33103361），五task自由仍各37 tokens/0完整组。未追加训练、未作最终方法结论，原500与后继五FM臂不变；新schema仍只计划10次0更新读权重诊断。
+
+### 2026-09-13 20:29（北京时间）：独立schema解码变体与10窗口诊断已写，待真实验证
+
+- **Codex / AR-01：** 新`action_schema_decoding.py`在实际AR采样处限定静态8码块/60 tokens＋真实`|`停止，保留模型对所有payload的预测；读取codec夹爪联合radix/有效序列数并用strict decode复核，避免原safe decode把越界联合索引静默clamp。逐token记录原argmax、被覆盖次数、所选token的原rank/CE；禁止CoT/BAR/批量/嵌套调用，异常后恢复原sampler，旧默认推理不改。
+- **有限入口/未冒称通过：** `probe_ar_schema_generation.py`落实上一条的原AR500、五train＋原固定80各task首个heldout共10次/0更新与仿真，不叠加marker20权重，规范完整不算学会格式。本地语法/空白通过，CPU与GPU待新独立Git worktree核验；新检查即使完整也仍须物理控制与闭环，原生500/五FM臂未改。
+
+### 2026-09-13 20:23（北京时间）：marker20完成并显示可学习性改善；完整动作仍未通过
+
+- **Codex / AR-01，实际完成：** `ar_marker_rows20_v1`20更新/193 Adam/16384新增参数、冻结不变、保存后实际扰动再恢复通过；result SHA `860e06515a99a48aa7f6c8f243a04990bf3455d39ebe1f9ae62d20e0903e8d31`，小adapter SHA `2f1d0fdd7ddebc5b3c03fa74f13fb70f06e62a0fa101db2d52694e0e00580805`。两臂before十行诊断和五task生成记录完全相同；候选末十train CE5.4112934，对control6.0237459低10.17%。body0/1目标平均rank由control187035/164929改善为680.5/20.6，左夹爪rank1322.6→1。
+- **边界/结果：** 这是冻结marker行确实构成可学习性瓶颈之一的干预证据，不是原留出集/动作控制/SR提升。五task自由仍0/5完整；task0/2开始输出双夹爪、task1右夹爪，全部仍漏body。两臂均到20停止、0仿真，未自动加训或部署；详细数字与父权重依赖见[AR500格式诊断](experiments/2026-09-13-ar500-schema-diagnosis.md)。
+- **下一步预登记：** 独立静态codec结构约束解码变体，先CPU测试、后新Git源/原AR500，GPU1/两CPU线程/40%显存，最多原缓存五task各一train＋原固定80每task首个heldout窗口，共10次AR生成、每次完整60动作token＋实际终止token（≤96）、0优化/仿真。只约束真实残差码块顺序和codec合法范围，动作payload全部由模型预测，不读GT动作、不用零/FM补组；额外检查夹爪两位联合编码的合法索引，避免旧safe decode静默clamp。用途是把格式错误与动作内容质量分开，约束保证完整不算模型学会格式；不得与marker训练叠加冒称单因素收益。新serving的无planner原生观察构建/23D逆变换仍在准备，正式marker/CoT训练未追加，原生500和FM队列不变。
+
+### 2026-09-13 20:17（北京时间）：control20实际完成；同条件marker20已接续
+
+- **Codex / AR-01，实际完成：** `ar_marker_control20_v1`2818602已退出，result SHA `a2386e902b4b14a83007be59809c151371a2a3092f80d9feb9d44b50c390cb9a`；20更新/40原train抽取/192 Adam、零初始化实际输入/输出投影逐值相同、冻结不变和LoRA/delta/Adam保存后扰动再恢复通过，峰值reserved25,818,038,272 bytes。十train均CE6.1973654→6.0237459，五task自由仍0/5完整组；只说明额外20步LoRA缓存拟合，非固定80或SR。小体积`trainable_state.pt` SHA `e8af692ba1ba9c9828783164f00ff082c6cf21af608370f593c5b4950962cf43`，必须依赖原父，不是独立部署权重。
+- **实际接续：** 同8ff16c1/同AR500/原缓存顺序与seed，`ar_marker_rows20_v1`于20:16:32启动2835113，GPU1/两CPU线程，只多训练已声明16384 marker参数（LR1e-3），仍20上限、0仿真，无新CoT/约束解码。对照已验收后才启动，候选实际结果尚待核验；原生task500/五方法队列不变。
+
+### 2026-09-13 20:13（北京时间）：marker策略183项CPU通过；配对control20已真实启动
+
+- **Codex / AR-01：** 新独立`git_worktrees/ar_marker_learning_20260913`固定8ff16c1，robo实际183 tests passed（1.79s），包含旧AR/KI/FM/原生CoT回归及新共享行真实梯度、绑定、冻结、错误恢复、eager路径检查。`ar_marker_control20_v1`于20:12:46启动2818602，同级`.launch.log`，GPU1/两CPU线程、既定20更新预算；此时在载入AR500，尚未证实更新/效果。
+- **接续：** 先验control实际20和回载，再同源/父权重/数据/seed单独启动markers20；任何工程失败保留回执并定位，不无假设重复训练。原生task500和后继五方法照旧，不热改任何活跃源，暂不发布adapter为独立策略或下发仿真。
+
+### 2026-09-13 20:10（北京时间）：marker独立策略、配对短训和回归已写，尚待robo真实CPU/GPU验收
+
+- **Codex / AR-01，实质代码：** `action_marker_rows.py`/`g05_policy_memlite_action_rows.py`新增共享8行delta、保留父词表参数名/绑定，默认旧策略不变；显式拒绝fused CE、整词表解冻、部分/错ID/错namespace恢复。`probe_ar_marker_learning.py`落实两臂各20更新的既定缓存诊断，真实零初始化投影比对、逐标记CE/rank、五task无GT自由生成、冻结与小体积LoRA/delta/Adam回载；AdamW betas(.9,.95)/weight_decay.03、常数LR、clip1，两臂一致。尚未在GPU运行，不把脚本写好称为收益。
+- **验证/实际进度：** 本地语法和空白检查通过；新增真实CPU张量/梯度/绑定/恢复/绕过防护测试待robo运行。下一固定新Git worktree先验CPU，通过后串行control与markers，不新增大训练或热改队列。原生task formal已真实100/500、1600原train抽取，后继五臂不重提；main文档c7bef2d已ff pull到robo协作clone。
+
 ### 2026-09-13 19:59（北京时间）：词表CPU审计完成；原生task正式500已接续；登记marker短对照
 
 - **Codex / AR-01，实际完成：** `ar_marker_embedding_audit_v1/result.json` SHA `88c4a83e5f11e5df8f967966de1aaa92db2be1ecec1d33b3948c3d7f49778edb`，独立33d739c/两CPU线程/0VLM、更新、仿真。原生与AR500输入输出确实共享storage；8个实际marker行全部逐字未变，body两行cosine0.99788970、L2距离0.02973128。只是瓶颈线索，尚未作因果训练验证。
