@@ -12,6 +12,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 20:10（北京时间）：marker独立策略、配对短训和回归已写，尚待robo真实CPU/GPU验收
+
+- **Codex / AR-01，实质代码：** `action_marker_rows.py`/`g05_policy_memlite_action_rows.py`新增共享8行delta、保留父词表参数名/绑定，默认旧策略不变；显式拒绝fused CE、整词表解冻、部分/错ID/错namespace恢复。`probe_ar_marker_learning.py`落实两臂各20更新的既定缓存诊断，真实零初始化投影比对、逐标记CE/rank、五task无GT自由生成、冻结与小体积LoRA/delta/Adam回载；AdamW betas(.9,.95)/weight_decay.03、常数LR、clip1，两臂一致。尚未在GPU运行，不把脚本写好称为收益。
+- **验证/实际进度：** 本地语法和空白检查通过；新增真实CPU张量/梯度/绑定/恢复/绕过防护测试待robo运行。下一固定新Git worktree先验CPU，通过后串行control与markers，不新增大训练或热改队列。原生task formal已真实100/500、1600原train抽取，后继五臂不重提；main文档c7bef2d已ff pull到robo协作clone。
+
 ### 2026-09-13 19:59（北京时间）：词表CPU审计完成；原生task正式500已接续；登记marker短对照
 
 - **Codex / AR-01，实际完成：** `ar_marker_embedding_audit_v1/result.json` SHA `88c4a83e5f11e5df8f967966de1aaa92db2be1ecec1d33b3948c3d7f49778edb`，独立33d739c/两CPU线程/0VLM、更新、仿真。原生与AR500输入输出确实共享storage；8个实际marker行全部逐字未变，body两行cosine0.99788970、L2距离0.02973128。只是瓶颈线索，尚未作因果训练验证。
