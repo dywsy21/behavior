@@ -12,6 +12,13 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 19:59（北京时间）：词表CPU审计完成；原生task正式500已接续；登记marker短对照
+
+- **Codex / AR-01，实际完成：** `ar_marker_embedding_audit_v1/result.json` SHA `88c4a83e5f11e5df8f967966de1aaa92db2be1ecec1d33b3948c3d7f49778edb`，独立33d739c/两CPU线程/0VLM、更新、仿真。原生与AR500输入输出确实共享storage；8个实际marker行全部逐字未变，body两行cosine0.99788970、L2距离0.02973128。只是瓶颈线索，尚未作因果训练验证。
+- **实际训练接续：** 原生task `smoke/checkpoint_inspection.json`passed，5更新/80原train抽取/192 Adam/完整模型、优化器、四rank RNG回读，权重SHA `8ef61d98a99a072ae937f9b923baf8f188d7cd83140e65ae533b901fa227eb5f`。2222863于19:56:26启动formal2724340，重新从原生base/新Adam开始原500预算；其后五方法仍真实waiting，未重提或修改活跃源码。
+- **下一有限实验预登记（未启动）：** 新独立源码实现8个实际codec marker的共享输入/输出零初始化delta（8×2048=16384参数）＋原LoRA，原252k词表其余行/AE/视觉塔仍冻结。以已完成AR500 SHA `51bacc1d…`为同父、原已审核10条train缓存/五task，control与marker两臂各最多20更新、每次2行、固定seed41/原缓存顺序、LoRA1e-5，marker单独1e-3，AdamW/clip1；两臂均显式eager CE（fused路径直接读原weight会绕过delta），不加新loss/CoT/约束解码。先CPU回归，再GPU1/两CPU线程、至少40GiB空闲/最多40%单卡显存，串行运行两臂，不抢四卡队列。
+- **验收/停止：** 零初始化必须保留父前向，真实梯度/冻结参数/仅LoRA与16384新增参数变化、adapter＋Adam回载、前后十train逐标记CE/rank和五task目标无关自由生成；任何身份/数值/梯度/回载错误停止，20即停无自动延长。仅短缓存可学习性因果筛查，不冒称原950/50泛化、发布部署权重或SR；新正式训练与闭环依结果另登记。具体入口和Git commit在完成代码后绑定。
+
 ### 2026-09-13 19:48（北京时间）：AR500数值复核完成；定位到body标记学习不足的具体证据
 
 - **Codex / AR-01，实际完成：** `ar_decode_consistency_ar500_v1`的2715623已退出，result SHA `c17363d9f2a7c902d9c12e7804543f73fa6db9a1adba2b8b8b4cc3907f0dd233`。两原train/122下一token，116 argmax一致、位置/类型mask全一致，full/cached CE6.81763/6.82625与5.30327/5.30684；新分项动作CE实际为6.81495/5.25977，各60 tokens、FM0。0更新/仿真，自由仍漏组。

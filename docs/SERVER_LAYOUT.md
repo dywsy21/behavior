@@ -48,6 +48,8 @@
 
 ### 2026-09-13新增：FM方法与AR重新验证
 
+- **19:59最新阶段：** `dual_track_fm_ar_20260913/ar_marker_embedding_audit_v1/result.json` CPU完成，SHA `88c4a83e5f11e5df8f967966de1aaa92db2be1ecec1d33b3948c3d7f49778edb`，源码`git_worktrees/ar_marker_audit_20260913`/33d739c，0更新/仿真。此前AR500探针2715623已退出，result SHA `c17363d9…`，不再活跃。原生task smoke通过（`8ef61d98…`），formal2724340已由2222863接续；固定6e2587b不可热改，后继五臂仍等待。
+
 - **19:39 AR500只读探针运行：** `dual_track_fm_ar_20260913/ar_decode_consistency_ar500_v1` PID2715623，09ff64a的`git_worktrees/ar_cot_metrics_20260913`；已完成500权重SHA `51bacc1d…`，两原train同历史/分项CE/独立自由生成，0更新/仿真，结果待验。该worktree现活跃，不热改。
 
 - **19:37 A4-AR500完成/原生接续：** `ar_a4_fulltrain_v2/formal/checkpoints/step_500.pt` SHA `51bacc1d9ec1f6d19c7e82e93bed60b8a1eb5d5ffbab5337c9b7ba47a84e90aa`，inspection通过，原1940901/2316504已退出；eval500 SHA `20600c174ae6d7ce454604ba3a5f9c9a31bb1dbce39f130c9ccbfb15ecd7cb6a`、CE6.7695，仍缺组。原生`ar_native_task_fulltrain_v1`2222863现smoke2714930、源6e2587b；不要按旧“waiting”记录重启或pull它。
