@@ -10,6 +10,47 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 15:38（北京时间）：54项回归与AR全部真实码块校验通过
+
+- **Codex / AR-01：** 新独立worktree `ar_blocks_20260913`固定7edf644，robo实际54项CPU回归通过；`ar_input_gate_v2/result.json`complete，SHA `f4fe54428154821af39a4c53062d959edd8d618c13094cb1fbc6bd3324f361ea`。10条原train×4视图均完整60动作tokens/8码块；每个残差级与两个夹爪码块齐全，prefix/无截断/真实23D约定保持。0神经前向、0更新、0仿真；不将正确teacher target等同自由生成已过。
+- **状态/下一步：** 原control最新438/500，未重启/追加/热改；已完成的是AR格式与数据入口、AR/KI/joint的两更新工程门，实际AR和CE+FM方法训练、FM AE×2候选及闭环均未完成。严格保持单变量/同父与原未加权指标，接下来完成control500验收后启动已定AE×2，并将真实完整loader接入有界AR训练；不是重复十行拟合。新代码只在feature，计划同步main，等待独立代码审查后才合并实现。
+
+### 2026-09-13 15:35（北京时间）：joint与原完整数据管线门完成，AR补齐完整码块校验
+
+- **Codex / M-04、AR-01：** 本轮已fetch，保留上一阶段五份未提交修改，未强pull/热改活跃FM源。`joint_gpu_gate_v1/result.json`complete，SHA `fb48b231c918a9bd7412bff65713837414afd14f5250329c6afb4c5debfe16ad`；不隔离时FM连通322 AE和182 LoRA，CE连通192 LoRA而不连通AE。两次临时更新完成，固定输入CE降至14.83285、FM升至0.0676576；与KI一致只通过工程门，不是效果结论、没有发布权重。
+- **完整数据入口：** c220e73的`ar_loader_gate_v1/result.json`complete，SHA `1bb36c7aa62d911bc1e6901846dcd85f5908791ee613194232bfd0c26428869c`。真实原train loader取出五task共10行并验来源；五个eval窗口只核验身份、不参与训练。dataset长度8,898,502/451,241是train/eval帧窗口数，不是轨迹数；原950/50切分与归一化、固定80身份保持。新loader使用私有worker RNG，不能在未配对核验前声称与原FM trainer所有随机抽样完全相同。
+- **实质修正/待测试：** 原codec解析会对缺失残差级/短码块补零，单看absent keys不足以识别。纯AR新增仅依赖静态codec元数据和生成IDs的完整码块校验，拒绝缺级、截断、重复或越界；不读取专家答案、不强填动作。八项CPU用例与真实40视图目标探针已补，当前仅语法/diff检查通过。下一独立CPU `ar_input_gate_v2`验证，不覆盖v1，不改神经训练loss或活跃FM服务。
+- **对照与答疑：** 15:34核验原supervisor/torchrun仍在、417/500；step400原固定80为0.1983362647，仍略差于A4父0.1969439941，不据此提前定性最终效果。继续完成分组LR对照及实际AR/joint/KI训练、自由生成和闭环；超参值得试，但小样本可拟合与完整任务0/3不支持盲目把全局LR、clip或batch一起调大。整个goal未完成。
+
+### 2026-09-13 15:19（北京时间）：KI真实梯度与无答案泄漏通过，准备接原完整train loader
+
+- **Codex / M-04，实际工程门：** 9045cf7的`ki_gpu_gate_v1/result.json`complete，SHA `eb5c6366051d736df45983c815818b3a7d09ac63da975cd4b2cbe11fc47efec6`。CE连通192 LoRA、不连通AE；FM连通322 AE、不连通LoRA。保持观察/连续目标/噪声不变，实际改变60个teacher-action suffix tokens，CE15.07449→26.21026而FM逐位保持0.06588463485，Qwen的prefix recurrent门通过。两次临时Adam更新、514份状态step2、冻结参数未变；部署检查只走FM，23D形状/有限值有效，无辅助AR调用。峰值reserved约28.4GiB。
+- **严格效果边界：** 两更新后固定输入CE下降但FM从0.0658846升至0.0675914；不是方法收益，临时权重不保存/部署。旧control回执322 AE+182 LoRA有梯度，而新CE覆盖192 LoRA，因此Adam数量504/514不同来自梯度覆盖，不是本轮额外解冻AE（两者均322张量）。接着同预算独立`joint_gpu_gate_v1`检验不隔离对照，仍不能替代正式三组训练。
+- **AR真实训练准备：** 新增`action_training_data.py`，复用原A3完整五任务dataset、train-only归一化、episode轮转采样与collator；显式核验train/eval不同resolver与原固定80身份。拟CPU`ar_loader_gate_v1`：原train真实五microbatch/10行及每task一个eval窗口仅做输入身份检查、2 CPU线程、0模型/优化/仿真，不构造release、不回灌eval。当前只做语法检查；通过后才能接实际950条train来源的有界AR训练，不重复拟合十行缓存冒充正式效果。
+
+### 2026-09-13 15:13（北京时间）：纯AR真实梯度/两更新通过，自由生成确认缺少下半身和夹爪组
+
+- **Codex / AR-01，工程实证：** 9045cf7在robo通过46项CPU检查；`ar_gpu_gate_v2/result.json`complete（SHA `50215961993d57088fdfa2460a30308d47f6b03e9161ca70eb58df13558fa5ae`）。完整A4恢复后，真实CE连通192个LoRA张量、当前输入187个梯度非零，FM恒0/不连通；两次临时Adam更新、192份Adam状态均step2、冻结参数未变。固定同输入CE 15.0744896→14.8460464；两次更新的clip前范数18.16/24.49。峰值reserved约22.13GiB。没有保存临时权重或仿真，不能当正式AR学习/方法收益。
+- **实际自由生成失败及定位：** 更新前后各实际生成37 tokens（含末尾`|`），仅`left_control_0/right_control_0/left_control_1/right_control_1`，而正确目标60动作tokens含`lower_body_0/1`与两个gripper组。本人用真实CPU tokenizer/codec重解`before/after_raw_generation.json`，明确missing=`left_gripper,lower_body,right_gripper`；不是本次标签mask遗漏、不是解码器临时删组，也不是用满生成预算。新入口拒绝下发此不完整动作，未填零/FM补齐。该父权重是FM训练后的A4，不是原生上游AR复现；短短两更新不构成AR不可行的结论。
+- **下一步/并行状态：** 继续准备原950条train的有界AR训练，目标是学会完整格式与真实控制，而非只做teacher-forcing；还须自由生成/闭环。先同9045cf7、A4/原train/GPU1、单行/两临时更新预算运行独立`ki_gpu_gate_v1`，核验CE→LoRA、FM→AE且不入LoRA，以及真实teacher-suffix不泄漏；joint另门。15:10 control真实进程仍在、288/500，预算和活跃源未改；所有方法最终效果仍未完成。
+
+### 2026-09-13 15:05（北京时间）：AR GPU首门在独立codec设备迁移处停止，定位并补回归
+
+- **Codex / AR-01，真实失败：** `ar_gpu_gate_v1`在9570e1c完成A4全部1138状态/192 LoRA逐值恢复并写`restoration.json`，但首个编码前向因动作张量在CUDA、独立ActionCodec仍在CPU而退出1；0 optimizer更新、未保存临时权重。该tokenizer不是policy的nn.Module子模块，`model.to()`不负责迁移；原finetune在模型迁移后另有`model.action_tokenizer.to(device)`，本次新GPU探针漏了这一步，不将其误报为训练数据或历史AR根因。
+- **修正/待验证：** 新增`prepare_action_updates`复用该显式生命周期，补五项CPU配方/真实行切片测试；下一新run为`ar_gpu_gate_v2`，仍两次临时更新上限、同A4/原train/GPU1，不覆盖v1日志或放宽动作完整性检查。当前代码只做语法检查，v2尚未运行；FM control仍正常更新，15:03日志252/500，没有重启。
+
+### 2026-09-13 15:01（北京时间）：41项CPU回归及40视图真实输入门通过，准备AR真实GPU门
+
+- **Codex / AR-00，实际完成：** 新独立worktree`ar_inputs_20260913`固定3807531，41项AR/策略/FM CPU测试通过。`ar_input_gate_v1/result.json`complete，SHA `5a6ca932949dabc4198e546045e8deb52d9c0977eed81f01fd96a7665a70ddbe`；十条原train、五task、四种视图共40行，全部prefix一致/无GT泄漏到prefix/无截断/真实控制组齐全/token往返相等。每行60个动作tokens，完整序列1317–1395 tokens，实际动作词表区间[248077,252187)，当前Qwen hook无需偏移修正。0 VLM、0优化、0物理，不能当自由AR已通过。
+- **Codex / AR-01、M-04，拟运行：** 新增`probe_action_training_gpu.py`，从完整A4-2500权重单次恢复，单行原train microbatch、两次临时Adam1e-5更新、实际CE/FM各组梯度、无teacher-suffix泄漏与更新前后目标自由生成；不保存/部署临时权重。先唯一纯AR门`ar_gpu_gate_v1`；joint/KI在独立进程分别验收，不能混成已验证KI。新脚本仅语法门通过，尚未真实运行。
+- **资源/边界：** GPU1只作短工程门，启动时要求至少40GiB空闲、两CPU线程、0仿真，不停其他服务/训练、不热改其源码。可能与当前FM control共卡，故该重叠区间及整轮墙钟不能用于公平加速比较；训练更新数/样本/学习率/固定评估口径均不变。无效自由AR预测单独记录，不能用零动作或FM补齐伪装有效；非预期运行错误即停。后续仍须真实有界AR训练与闭环、FM候选/组合效果，goal保持active。
+
+### 2026-09-13 14:51（北京时间）：AR/KI入口补全CPU回归和真实tokenizer门，待运行
+
+- **Codex / AR-00、AR-01、M-04；前轮分类为verified wait：** 上轮核验真实FM进程并得到首个固定80，不把答疑/计划当新方法收益。本轮再次fetch，保留未提交草稿未强pull；14:43原control真实进程仍在、日志141/500，不重启或热改fb40145。
+- **实质实现：** 补全独立`G05PolicyMEMLiteAction`/`ar_training_methods.py`，明确纯AR仅LoRA、joint/KI为AE+LoRA以及FM梯度路由；保持原v6输入校验。新CPU回归覆盖参数范围、Qwen prefix recurrent边界、目标拒绝及单一推理来源。源码发现旧decoder对空串返回零动作但absent为空，故新入口额外拒绝无有效动作token；同时处理AR解码CPU张量与GPU mask的设备差异。没有据此归因旧打转或宣称真实策略已通过。
+- **下一工程门/预算：** 新`action_training_runtime.py`只挂载三份声明Git扩展，其余神经/数据仍固定A3 source SHA；`probe_action_training_inputs.py`拟用既有十条五任务原train缓存，检查四种表示视图共40行的训练/推理prefix相等、GT反事实不影响prefix、标签位置/无截断/全部23维与token往返。2 CPU线程、0 VLM/0 optimizer/0仿真，无新数据release，首次错误即停并保留run。当前六份文件仅py_compile与diff检查通过，torch检查和真实输入门尚未运行；之后仍需纯AR训练、自由生成、闭环及KI真实梯度验收。
+
 ### 2026-09-13 14:40（北京时间）：超参/训练方法答疑，control首个固定80结果已出
 
 - **Codex / M-01，只读复核：** 用户追问改变超参或具体训练方法是否值得。本轮读实际A4审计、冻结SkillFM/FMHelper与配方，并复查PI KI及MolmoAct2一手说明；未改活跃源码/超参、未重启或新增训练。开工已fetch；本地有三份未提交AR/KI草稿，保留原状、未强pull，草稿尚未完成实际模型验收。
