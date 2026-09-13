@@ -10,6 +10,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 13:46（北京时间）：FM的13项CPU检查通过，AR首轮编码门因继承noop配置停止
+
+- **Codex / M-00、AR-00：** 开工已clean pull/fetch，robo独立worktree固定`7d7a8cf`。现有Python环境CPU执行`test_fm_training_methods.py`及`test_fm_velocity_adapter.py`，实际13项通过；覆盖原helper loss/gradient/RNG逐值不变、Beta分层、23D梯度和异常恢复。尚无真实大模型更新或方法收益结论。
+- **AR真实失败/根因界定：** `dual_track_fm_ar_20260913/ar_codec_gate_v1`加载实际codec后，在首条样本发现两个gripper组缺失并按门槛退出。回查配置`dropout_noop_parts=true`和源码：恒定二值夹爪被当noop省略；这是本次探针继承了FM不使用的codec配置，不是新发现FM丢失夹爪，也不能据此解释历史AR全部失败。旧AR v9已显式关闭该开关。
+- **下一步：** 保留v1失败manifest；新探针显式记录关闭noop dropout的“全部动作组”诊断配置，并保持缺组即失败，真实重跑新v2。FM继续真实GPU梯度/固定评估口径门，继而有界训练；两条路线仍未完成。
+
 ### 2026-09-13 13:32（北京时间）：双路线goal开始实施，FM可控扩展已写，AR编码门准备中
 
 - **Codex / M-01、AR-01；上一goal轮分类为进展：** 前轮源码证据确认了KI缺失和监督等价关系，但尚无新方法训练。本轮重新检查Git及robo真实进程：无新训练/仿真，GPU1空闲，其他卡各约30GiB旧服务保持；sdc1余669GiB。新分支`feat/dual-track-fm-ar-20260913`从最新main `dbc89c8`建立，不热改原快照。

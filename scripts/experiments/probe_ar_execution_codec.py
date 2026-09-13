@@ -7,7 +7,6 @@ All errors are in normalized action coordinates, not physical success metrics.
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
@@ -78,7 +77,14 @@ def main():
     methods = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = methods
     spec.loader.exec_module(methods)
-    codec = VQActionTokenizer(deepcopy(cfg.tokenizer.vq_config), action_dim=27, device='cpu')
+    # The inherited FM processor config never uses this AR path. Its noop
+    # option drops constant gripper groups; a complete-control codec probe
+    # must explicitly disable that option (as the existing AR v9 did).
+    # Do not remove the missing-group guard or replace absent outputs by GT.
+    codec_config = deepcopy(cfg.tokenizer.vq_config)
+    inherited_noop_dropout = bool(codec_config.get('dropout_noop_parts', False))
+    codec_config.dropout_noop_parts = False
+    codec = VQActionTokenizer(codec_config, action_dim=27, device='cpu')
     codec.action_tokenizer.eval()
     batches = torch.load(INPUT / 'actual_cpu_batches.pt', map_location='cpu', weights_only=False)
     if len(batches) != len(receipt['batches']):
@@ -86,6 +92,8 @@ def main():
     publish(args.output / 'manifest.json', dict(commit=commit, source=str(SOURCE),
         source_sha256=SOURCE_SHA, input_sha256=INPUT_SHA, methods_sha256=sha(methods_path),
         codec_sha256=sha(cfg.tokenizer.vq_config.ckpt_dir), train_only=True,
+        inherited_dropout_noop_parts=inherited_noop_dropout, dropout_noop_parts=False,
+        codec_config=OmegaConf.to_container(codec_config, resolve=True),
         inference_model_calls=0, optimizer_updates=0, simulator_controls=0,
         start_time=datetime.now(timezone.utc).isoformat(), max_original_rows=10))
 
