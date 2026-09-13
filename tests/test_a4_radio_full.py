@@ -91,6 +91,8 @@ class RadioFullTests(unittest.TestCase):
         cls = next(node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)
                    and node.name == 'FormalALowService')
         block = '\n'.join(current.splitlines()[cls.lineno - 1:cls.end_lineno])
+        self.assertEqual(hashlib.sha256(block.encode()).hexdigest(),
+            'b3825157c80d8fd5caaca44ab6331308edfb4dea5848c6166cfc6da2f8792d67')
         # The complete constructor/reset/infer class is byte-identical to the
         # earlier validated full runner; only loading/bootstrap is generalized.
         old = Path(__file__).resolve().parents[1] / 'artifacts/local-archive-20260912/root/memlite-resume.L6rqZ6/serve_a3_aligned_full_v2.py'
