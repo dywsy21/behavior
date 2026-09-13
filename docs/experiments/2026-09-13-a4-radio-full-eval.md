@@ -31,6 +31,8 @@
 
 ## 证据位置
 
+302复核：高层第512控制切GRASP，之后持续到3224，未进入TOGGLE。3426行诊断同样包含3224真实控制，0错误、0确认持有对象。本人查看25张均匀抽帧＋末帧：右手未夹住，后段收音机倒在桌面上，但未拿起。视频本地/服务器SHA同为`4ea517c8d855a7dd2f0137f252131d80378c73f259fe08eae25c6a5224152ae8`，107.533秒/1613帧。不能把失败仅归因于高层没发抓取或切换太晚。
+
 - 服务器run：`/mnt/sdc1/robodojo/behavior_dev/a4_radio_full_20260913_v1`；`manifest.json`固定条件，`launch.json`记录supervisor1479480，`wire_probe.json`为实际通信验收。
 - `instance_301/`等：每回合`result.json`、`rollout.mp4`、`controller_events.json`、`official_step_trace.jsonl`、`diagnostic_physical_evidence.jsonl`。`summary.json`仅整轮结束后写出。
 - Git运行副本：`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_radio_full_20260913`，不热pull。
