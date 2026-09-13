@@ -48,6 +48,8 @@
 
 ### 2026-09-13新增：FM方法与AR重新验证
 
+- **17:26接续：** `dual_track_fm_ar_20260913/ar_native_task_fulltrain_v1`已提交，supervisor2222863，spec SHA `2f01682d6912b14cd7c8d4d6371694cd81ea1303756968d3722bda68811c42af`；真实等待A4-AR1940901，0GPU/0训练更新。固定6e2587b的`git_worktrees/ar_native_task_20260913`现在是正式等待/训练活跃源，不得pull。task GPU v2已退出0，result SHA `09d6244d99053c8295fad280267044fabc0b8df8709ee33739a7c8e8efb5577c`；它仅为两临时更新门，没有可部署checkpoint。
+
 - **原生AR新增（17:13）：** 原生base在`/mnt/sdc1/robodojo/checkpoints/G05/g05-base/checkpoints/model_state_dict.pt`，SHA `072211e5b2f5ef036729bae673f3f44da40adbea5c0044af55fe2fb8af654327`，不与A4父权重混用。新`dual_track_fm_ar_20260913/ar_native_input_gate_v1`是CPU20视图；`ar_native_skills_gpu_gate_v2`是已完成的两临时更新（不是正式策略），result SHA `4b527cbabe11f4770a32901f5a2146abe1d4666d83ad4a35a2384bf0fd514d6d`；`ar_native_skills_gpu_gate_v1`保留0更新词表加载失败。`ar_native_task_gpu_gate_v2`为当前task-only门，使用固定6e2587b的`git_worktrees/ar_native_task_20260913`，运行时不可pull。完整native训练尚未启动；原生词表不注册HL_END，A4默认词表不改。
 - **16:35最新观测（覆盖下方启动历史）：** `dual_track_fm_ar_20260913/fm_control_v1`已500更新并验收，最终权重`formal/checkpoints/step_500.pt` SHA `def222a6674e6ac92e6ee982c22836b789240f1542c459d5de2111cd646a244e`。`fm_ae_lr2x_v1`是唯一AE LR×2候选，正式1902909/1912524运行；首个`formal/fixed_diagnostic/step_100.json`的原80均值0.1986116943，SHA `dca01b74cc0e9f488274b64b3d39bd02c546cce7cc33668bd14b9843146f1ad6`，不是最终500结果。仍固定下述fb40145 worktree，不能热pull。
 - `dual_track_fm_ar_20260913/ar_a4_fulltrain_v2`：AR正式配方的串行任务，supervisor1940901等待上述候选实际完成/验收，当前0 AR更新；`method_spec.json` SHA `27d22490bb4ccaa9319cc37699a7754471dd91ba60d97f6f5995b0881c7cc930`。`status.json`区分waiting/smoke/formal/complete/failed，`smoke/`和`formal/`只有被真实启动后才产生；预定5步保存门→独立500，均用原A4父权重。`ar_a4_fulltrain_v1`是0更新等待API失败证据，不是训练权重。
