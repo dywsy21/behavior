@@ -48,6 +48,20 @@
 
 ### 2026-09-13新增：FM方法与AR重新验证
 
+- **17:50最新阶段（覆盖下方启动历史）：** `fm_ae_lr2x_v1`于17:45:40完成500及回读；`formal/checkpoints/step_500.pt` SHA `7f1c9acdfe52d3ffd6e98038c46a6d743a07766b1188e20c7b45262048396753`。最终固定80=0.2011440，见[LR筛选报告](experiments/2026-09-13-fm-lr-screen.md)。`ar_a4_fulltrain_v2`已启动四卡smoke，supervisor1940901/trainer2307504；原生与其后五臂仍等待，不能将下文“0 AR更新等待”的旧快照当作最新阶段。
+
+**17:44后续筛选队列（均已核验真实等待、0GPU/0更新）：** 根为`/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913`；共用固定84110fa的`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/method_screen_queue_20260913`，不可热pull。每臂`launch.json`/`method_spec.json`/`status.json`区分提交、等待与实际smoke/formal；checkpoint只有训练并验收后才存在。
+
+| run子目录 | supervisor PID | 等待的前驱PID | method_spec SHA256 |
+| --- | --- | --- | --- |
+| `fm_beta_stratified_v1` | 2289674 | 2222863（native-task-AR） | `191a5393dfd57b8e6749bc93e1487328a6d5fed57fad26a76903f8203adde866` |
+| `fm_exec_weight2_v1` | 2291489 | 2289674 | `a6b18a6c325b69b2609720ac95bd0b1ef6624eaf98ed4585faa2a80803cb4231` |
+| `fm_action_control_v1` | 2294898 | 2291489 | `e16d8670fbf0f70193b670a7fb3d736552ab8d48e06f28b3ca16a6a87cd242eb` |
+| `joint_a4_fulltrain_v1` | 2296750 | 2294898 | `2d8595a640def732d4891ed0497654fdcecd58e51be8d31866f80b9229bb6c03` |
+| `ki_a4_fulltrain_v1` | 2297891 | 2296750 | `b9a7eec4cabe36688ff7badc6620bde93b16f3c3ba69cb92fe9823f3c4a9ff06` |
+
+- `ar_native_omission_audit_v1/result.json`：只读CPU20目标/20已生成记录审计，SHA `429d8fa2e9d09e63477dd94433b58ca166442c4ca8b07e29ea1f0b456590b09e`。代码861942c的`git_worktrees/ar_native_omission_20260913`已退出，无新策略/仿真或release。
+
 - **17:26接续：** `dual_track_fm_ar_20260913/ar_native_task_fulltrain_v1`已提交，supervisor2222863，spec SHA `2f01682d6912b14cd7c8d4d6371694cd81ea1303756968d3722bda68811c42af`；真实等待A4-AR1940901，0GPU/0训练更新。固定6e2587b的`git_worktrees/ar_native_task_20260913`现在是正式等待/训练活跃源，不得pull。task GPU v2已退出0，result SHA `09d6244d99053c8295fad280267044fabc0b8df8709ee33739a7c8e8efb5577c`；它仅为两临时更新门，没有可部署checkpoint。
 
 - **原生AR新增（17:13）：** 原生base在`/mnt/sdc1/robodojo/checkpoints/G05/g05-base/checkpoints/model_state_dict.pt`，SHA `072211e5b2f5ef036729bae673f3f44da40adbea5c0044af55fe2fb8af654327`，不与A4父权重混用。新`dual_track_fm_ar_20260913/ar_native_input_gate_v1`是CPU20视图；`ar_native_skills_gpu_gate_v2`是已完成的两临时更新（不是正式策略），result SHA `4b527cbabe11f4770a32901f5a2146abe1d4666d83ad4a35a2384bf0fd514d6d`；`ar_native_skills_gpu_gate_v1`保留0更新词表加载失败。`ar_native_task_gpu_gate_v2`为当前task-only门，使用固定6e2587b的`git_worktrees/ar_native_task_20260913`，运行时不可pull。完整native训练尚未启动；原生词表不注册HL_END，A4默认词表不改。

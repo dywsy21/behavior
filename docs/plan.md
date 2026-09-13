@@ -12,6 +12,33 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 17:50（北京时间）：AE×2正式500完成且未改善固定80；A4-AR已进入四卡保存门
+
+- **Codex / M-01，实际完成：** candidate于17:45:40完成全部500 optimizer调用和保存回读；权重SHA `7f1c9acdfe52d3ffd6e98038c46a6d743a07766b1188e20c7b45262048396753`，504 Adam/504可训练状态变化、冻结不变、全有限、四rank RNG通过。原supervisor1902909/torchrun1912524均已退出，未重跑/追加。
+- **效果与完整来源核验：** 原固定80总FM=0.2011440476，对control0.1982012083高1.485%；仅task0改善，其他四个退化。两个run四rank完整采样回执SHA逐对相等，各1000 microbatch，共8000真train抽取/950轨迹/每task1600次；不冒称像素逐位相等或新SR。暂不把AE×2纳入有效组合，详细证据/限制见[LR筛选结果](experiments/2026-09-13-fm-lr-screen.md)。候选step500诊断SHA `a58d046c…`，父A4不被替换。
+- **AR真实接续：** 原A4-AR supervisor1940901已通过前驱500验收，四卡smoke trainer2307504运行，17:48仍在初始化/数据阶段，尚不能声称已完成5更新或正式500。native2222863及五方法后继保持等待。下一次继续核验AR实际更新/保存门；不重新答超参、不重复提交队列。CoT、闭环、M-03条件化候选与有效组合仍未完成。
+
+### 2026-09-13 17:44（北京时间）：后续五臂全部已提交并核验真实等待，尚无新增训练更新
+
+- **Codex / M-02、M-04：** 84110fa固定源码的五份supervisor于17:40–17:42实际提交；逐个PID/argv、status和spec SHA核验通过，均为verified_live_dependency、0更新。nvidia-smi进程清单中没有这些等待PID，未占GPU。依赖链为native2222863→Beta2289674→exec-weight2291489→新入口FM2294898→joint2296750→KI2297891；前一run完整500验收后下一run才开训，失败就停止，不是五轮并发抢卡。
+- **唯一证据位置：** 全部在`dual_track_fm_ar_20260913`，对应spec SHA依次为`191a5393…`、`a6b18a6c…`、`e16d8670…`、`2d8595a6…`、`b9a7eec4…`；完整run/PID/SHA表见SERVER_LAYOUT。共用活跃worktree`method_screen_queue_20260913`固定84110fa，即使等待也不得pull或切换。
+- **下一次续接：** 先核验FM AE×2的500完成/固定80/权重回读，再核验A4-AR进入smoke/formal；不要重新启动已排队任务或重复超参答疑。等待时可继续准备CoT和实际闭环接口，不能把上述排队/CPU检查当方法有效；两条路线效果、M-03条件化候选和有效组合仍未完成。当前部署权重及旧服务未变。
+
+### 2026-09-13 17:39（北京时间）：串行筛选源码144项CPU检查通过，开始提交预登记五臂
+
+- **Codex / M-02、M-04：** 独立worktree `method_screen_queue_20260913`固定84110fa，robo实际144 tests通过（1.58s），包括七个前驱配方/父权重、错误native身份/预算、500 checkpoint损坏、FM等待绑定和原模型回归。现按下述已登记顺序提交五个独立5+500 run，等待native2222863，0额外GPU直到前驱完成；提交后逐个核验真实PID/argv/状态/spec SHA，不用仅有文件判断已运行。17:38观测FM467/500，原A4-AR/native-AR仍等待，盘余665.82GB。
+
+### 2026-09-13 17:37（北京时间）：省略语义审计完成；后续有限方法对照接续准备
+
+- **Codex / AR-01，真实结果：** 861942c在robo 7项标准库检查通过，`ar_native_omission_audit_v1`完成10原train/20目标编码与20既有自由生成审计；result SHA `429d8fa2e9d09e63477dd94433b58ca166442c4ca8b07e29ea1f0b456590b09e`。20输出已有块均完整、无缺残差，但全部漏目标编码应保留的lower_body；task0还漏left_control，task2漏正在二值变化的left_gripper。9/10目标窗口允许省略双夹爪，另1只允许右夹爪；真实5/8步尾部窗口不改变本次noop判断。不是所有缺组都来自合法noop；也不将归一化0当物理保持、不据此宣布历史打转根因/AR不可行。0VLM/优化/仿真，无新release或部署合同放宽。
+- **Codex / M-02、M-04，实质代码/待验：** 两现有trainer增加仅限已声明run的串行前驱类型/父权重/配方校验，FM等待也不占CUDA、绑定等待helper SHA；沿用已验PID+ticks+argv与500 checkpoint完整验收。8项FM标准库测试通过，新增10项真实action runtime CPU测试待验；活跃fb40145/171898c/6e2587b三个worktree未改。
+- **后续五臂预登记：** 接在既有原生task-AR后依次`fm_beta_stratified_v1`→`fm_exec_weight2_v1`→`fm_action_control_v1`→`joint_a4_fulltrain_v1`→`ki_a4_fulltrain_v1`，每臂独立原A4父/新Adam、原950/50、seed41/四卡global16/4 worker/50warmup/cosine500，5步保存门后独立500；M-02另外各有原runner两临时更新GPU门。Beta/前16步2:1加权各只改一个因素，对照已完成原FM control；后面三臂共享新loader与LoRA/AE1e-5，分别FM、CE+FM不隔离、CE+FM隔离。原固定80口径不变，每100记录；后面三臂另有CE/自由动作。总计2500正式更新，不是五轮5000或全矩阵搜索；数值/输入/保存/前驱失败即停、不重试/不部署，不借用前驱训练权重，盘余至少120GiB，旧服务保留。当前只写好入口与预算，尚未提交这五臂；真实CPU通过后逐个登记准确commit/PID/spec。仍需效果比较、闭环、CoT、条件服从及有效组合，不把排队当完成。
+
+### 2026-09-13 17:31（北京时间）：增加原生AR省略部件的只读语义审计
+
+- **Codex / AR-01，实质代码：** 新`probe_native_ar_omissions.py`及7项标准库单元检查（已全部通过）。严格区分完整但省略组、缺残差/截断，以及codec认为noop的组；不填零、不修改部署合同。源码确认旧codec会省略恒定二值夹爪，而缺NN组解码成归一化0，这不能自动当作物理保持。
+- **下一只读预算：** 拟`ar_native_omission_audit_v1`，新独立Git worktree/commit；只对原10条train做开关noop两种20目标编码，按task/episode/frame/requested_index/bundle精确连接两份已完成native GPU回执的20自由生成记录。2 CPU线程、0VLM/优化/仿真、不构造release；报告目标编码的合法省略与实际缺失，不用专家答案修补actor。首次身份/解析错误即停，真实结果尚待运行。FM和两份AR训练队列继续不变；main文档已同步99ee6c2，robo协作clone已ff pull，活跃源未改。
+
 ### 2026-09-13 17:26（北京时间）：原生task正式训练已提交，真实等待A4-AR
 
 - **Codex / AR-01：** `ar_native_task_fulltrain_v1`于17:24:39提交，supervisor2222863；spec SHA `2f01682d6912b14cd7c8d4d6371694cd81ea1303756968d3722bda68811c42af`，源6e2587b。17:25真实PID/argv与status共同核验：等待1940901（start_ticks327195368），0GPU/0原生AR更新。前驱成功验收才执行下述原生5+500，不是已开始神经训练。当前三个活跃训练/等待worktree全部保持固定，不热改。原生训练及最终闭环结论仍待完成。
