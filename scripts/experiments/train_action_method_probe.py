@@ -463,6 +463,9 @@ def train(spec, phase):
 def supervise(spec, path):
     old = legacy(dict(output=spec["output"]))
     try:
+        # The supervisor/verified wait has no CUDA context. Child environments
+        # explicitly select the four GPUs only after the predecessor finishes.
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
         bootstrap()
         from g05.utils.training.coordination_runtime import CoordinationLock
         wait_for_dependency(spec, old)
