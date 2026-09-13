@@ -12,6 +12,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 20:31（北京时间）：schema首轮CPU发现旧测试跨dtype比较不稳定，修正同dtype精确比较
+
+- **Codex / AR-01，失败如实保留：** b8c638d独立`ar_schema_generation_20260913`为190 passed/1 failed；失败在此前marker的FP64回载投影与FP32矩阵乘法后转FP64比较，差1.79e-7，取决于测试随机顺序，并非新schema解码测试失败。未启动schema GPU。修正为模型状态转换后逐项精确相等、两侧均FP64真实投影逐值相同，不放宽容差或删检查；拟新独立源重验。
+- **原生task实查：** 已200/500、3200原train抽取；固定80 CE8.45134298（step100为14.33103361），五task自由仍各37 tokens/0完整组。未追加训练、未作最终方法结论，原500与后继五FM臂不变；新schema仍只计划10次0更新读权重诊断。
+
 ### 2026-09-13 20:29（北京时间）：独立schema解码变体与10窗口诊断已写，待真实验证
 
 - **Codex / AR-01：** 新`action_schema_decoding.py`在实际AR采样处限定静态8码块/60 tokens＋真实`|`停止，保留模型对所有payload的预测；读取codec夹爪联合radix/有效序列数并用strict decode复核，避免原safe decode把越界联合索引静默clamp。逐token记录原argmax、被覆盖次数、所选token的原rank/CE；禁止CoT/BAR/批量/嵌套调用，异常后恢复原sampler，旧默认推理不改。

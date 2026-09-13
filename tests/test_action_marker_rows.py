@@ -88,8 +88,13 @@ def test_deepcopy_device_dtype_and_strict_state_restore_preserve_tying():
     assert_marker_bindings(restored, restored.action_marker_rows)
     assert restored.action_marker_rows is not model.action_marker_rows
     restored.load_state_dict(model.state_dict(), strict=True)
-    torch.testing.assert_close(restored.output_proj(torch.ones(2, 4, dtype=torch.float64)),
-                               model.output_proj(torch.ones(2, 4)).double())
+    # Compare the same accumulation dtype. FP32 GEMM then casting its output
+    # to FP64 is not a reference for an FP64 GEMM (and was RNG-order flaky).
+    model.double()
+    for name, value in model.state_dict().items():
+        assert torch.equal(restored.state_dict()[name], value)
+    hidden = torch.ones(2, 4, dtype=torch.float64)
+    assert torch.equal(restored.output_proj(hidden), model.output_proj(hidden))
 
 
 def test_partial_or_different_identity_adapter_resume_is_rejected():
