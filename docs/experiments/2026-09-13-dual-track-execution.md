@@ -34,6 +34,10 @@
 
 ## 实时状态
 
+17:26（北京时间）：native-task GPU v2已complete，result SHA `09d6244d99053c8295fad280267044fabc0b8df8709ee33739a7c8e8efb5577c`；两真实临时更新、CE15.3403→15.3014，五task前后自由生成仍缺组，不是方法收益。现已提交`ar_native_task_fulltrain_v1`，6e2587b/supervisor2222863/spec `2f01682d…`；真实等待既有A4-AR1940901，0GPU/0更新，通过前驱500验收才从原生G0.5独立5+500。预算、950/50切分、无CoT/无自动部署边界见plan顶部。用户要求不再重复超参答疑、compact后按真实run续做，已加入AGENTS。
+
+17:13（北京时间）：原生base SHA `072211e5…`已核实，原生初始化不会借用A4 adapter。首GPU v1在0更新时定位HL_END注册把state编号挪动；显式原生关闭该token、A4默认保持，117 CPU/真实20视图通过。native-skills v2两真实临时更新完成，946基础状态精确恢复/192新LoRA，固定CE15.2484→15.2965、五task前后均缺完整动作组，不是方法收益；result SHA `4b527cbabe11f4770a32901f5a2146abe1d4666d83ad4a35a2384bf0fd514d6d`。6e2587b补原生task actor无planner依赖，119 CPU后task-only v2门运行；完整原生950/50四卡5+500入口/串行依赖已写，但尚未排队。CoT监督、实际闭环、其他FM候选与组合不因此省略。
+
 16:35（北京时间）：只读核验AE×2正式进程仍活跃，首个`formal/fixed_diagnostic/step_100.json`的原固定80=0.1986116943（SHA `dca01b74cc0e9f488274b64b3d39bd02c546cce7cc33668bd14b9843146f1ad6`）；control同step100=0.1971548254，候选暂差0.739%。不拿早期单点作最终方法结论，不改活跃配方/追加训练；AR v2仍waiting、0更新。超参值得有界对照，但现有证据不支持盲增全局LR/clip，KI/joint工程通过也不等于有效；完整训练/闭环/组合仍待完成。
 
 16:21（北京时间）：AR v1因Python无pidfd接口在0更新时失败，已保留；171898c用PID+启动ticks+argv兼容等待通过80 CPU。`ar_a4_fulltrain_v2`supervisor1940901正在真实等待FM1902909（ticks327057321），spec SHA `27d22490bb4ccaa9319cc37699a7754471dd91ba60d97f6f5995b0881c7cc930`；前驱完整验收才独立AR5+500，不从FM候选权重续训，不自动部署。当前AE×2为42/500，AR0更新。原生AR/CoT、KI/joint、其他FM候选/组合及真实闭环仍是未完成要求。

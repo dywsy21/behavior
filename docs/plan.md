@@ -6,9 +6,58 @@
 
 **2026-09-13最新职责：** 用户将更多训练数据、特别是错误恢复数据交给一位队友，将通用RL交给另一位队友；本线程/Codex集中研究高低层怎样训练更有效、条件服从与协同接口、相应方法评测和集成。原E0–E7目标/质量要求不缩减，但不重复承担队友的数据扩充或RL实现；需要新数据时提出明确接口与证据需求，不擅自平行重建。
 
+**续接约定（用户最新明确要求）：** 超参/训练方法答疑已经完成，不再重复回答，候选依据见[方法文档](experiments/2026-09-13-fm-training-method-candidates.md)。compact后从下方最新真实执行记录续做FM/AR训练与闭环，核验既有进程后再行动；不能把历史问句当成当前问题。此约定已加入AGENTS.md。
+
 ## 实时进度（最新记录在前）
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
+
+### 2026-09-13 17:26（北京时间）：原生task正式训练已提交，真实等待A4-AR
+
+- **Codex / AR-01：** `ar_native_task_fulltrain_v1`于17:24:39提交，supervisor2222863；spec SHA `2f01682d6912b14cd7c8d4d6371694cd81ea1303756968d3722bda68811c42af`，源6e2587b。17:25真实PID/argv与status共同核验：等待1940901（start_ticks327195368），0GPU/0原生AR更新。前驱成功验收才执行下述原生5+500，不是已开始神经训练。当前三个活跃训练/等待worktree全部保持固定，不热改。原生训练及最终闭环结论仍待完成。
+
+### 2026-09-13 17:24（北京时间）：续接规则落盘；原生task短门完成，准备正式串行训练
+
+- **Codex / AR-01，真实新结果：** `ar_native_task_gpu_gate_v2`已退出0，result SHA `09d6244d99053c8295fad280267044fabc0b8df8709ee33739a7c8e8efb5577c`。原生权重/原生词表、192 LoRA的CE连通与FM零梯度、两真实临时Adam更新/冻结检查通过；同输入CE15.3403177→15.3013954。五task更新前后均缺完整动作组，未保存策略/下发模拟器；仅工程可训练性通过，不是AR效果收益或SR。
+- **下一有限训练预登记：** 使用已119 CPU/真实task门验收的独立worktree `ar_native_task_20260913`、代码6e2587b，拟`ar_native_task_fulltrain_v1`。只等待既有A4-AR v2（supervisor1940901）真正500完成/权重验收，再进行四卡5步保存回读门→从原生G0.5 SHA `072211e5…`和新LoRA/Adam独立500；不从A4或前驱权重接训。原950/50、seed41、global16、每rank4 worker、LR1e-5/50warmup/cosine500、原80辅助参考＋CE及五task自由生成；无MEM-Lite planner依赖、无CoT监督、不自动部署/追加。输入/依赖/数值/保存错误即停止，保留120GiB盘余量。当前仅预登记，尚未提交队列。
+- **真实前驱/边界：** 17:23核验FM候选387/500，1902909/1912524仍活跃；A4-AR1940901确在verified_live_dependency、0更新。不重启这些任务或热改其worktree。原生预训练允许省略不活跃部件与我们全23D合同之间的语义差异仍须分析；完整训练、CoT、闭环、KI/joint及其余FM候选/组合均未完成。
+- **用户续接要求/同步：** 已在AGENTS与本计划记下不再重复超参答疑，下一轮按实际run续做。上一并发fetch/pull出现FETCH_HEAD多目标错误，已改为顺序、显式当前分支ff-only pull并确认up to date；无覆盖/重置用户文件。
+
+### 2026-09-13 17:13（北京时间）：原生skills两更新门完成；task-only真实门开始
+
+- **Codex / AR-01，真实验收：** `ar_native_skills_gpu_gate_v2/result.json`complete，SHA `4b527cbabe11f4770a32901f5a2146abe1d4666d83ad4a35a2384bf0fd514d6d`，2144305已退出0。原946权重逐项精确、192新LoRA/零B初始化通过；CE连通192 LoRA（初始96非零，符合零B）、FM0，两次真实临时更新/192 Adam/冻结状态检查通过，峰值reserved23,758,635,008 bytes。固定输入CE15.248372→15.296524，未改善，不包装为方法收益。
+- **自由生成/限制：** 五task更新前后均不满足全动作组合同（task0为19 tokens，其余各37；并非用满生成预算），没有下发仿真动作或保存临时权重。这说明原生基座在当前skills条件下也不能直接满足完整23D输出要求，但两更新不是否定AR能力/已完成迁移训练。需同任务模板及原完整数据实训，再分清预训练noop省略语义、格式学习与控制质量。
+- **下一实际运行：** 新`ar_native_task_20260913`固定6e2587b，119 CPU tests实过；提交`ar_native_task_gpu_gate_v2`，GPU1同两更新/五task前后生成预算、原生词表、无planner依赖，结果待验。FM step300=0.2009022778，而同step control0.1975404179，仍是未完成500步的候选点；现有训练/排队预算和源码不变。
+
+### 2026-09-13 17:10（北京时间）：补原生task-AR无planner输入接口，准备task臂真实检查
+
+- **Codex / AR-01：** native-skills v2实际进程2144305运行，已写restoration、真实梯度以及五task更新前生成回执；最终两更新result仍须核验。native CPU输入result SHA `099858a2d15c41241d3806833cb444db17e277cc05d71e928804f45fad4ee150`。原10行本体实测全部6×27，不将图像历史误当动作历史。
+- **实质接口修正/待验证：** 原生`native_task` actor不再要求一个并不输入网络的MEM-Lite技能投影；只接收精确官方动作模板、任务/本体标识、18图像槽与六帧本体状态/真实padding mask，并剥离memory/skills/outcome等sidecar。普通skills actor的语义检查保持，训练侧同状态审计保持；新增无planner客户端/禁止teacher输入的CPU测试。此修正尚未跑真实task臂，不能宣称闭环已通。
+- **下一步：** 新独立源码通过CPU后，用同原生权重、原数据/seed和两临时更新预算执行native-task v2，串行等待skills进程实际结束。原生完整5+500仍须两门及输入验收后才排队；FM当前已实查306/500，A4-AR仍等待，不改它们的源码或预算。
+
+### 2026-09-13 17:06（北京时间）：原生词表117项CPU＋20真实输入视图通过，进入GPU v2
+
+- **Codex / AR-01，实际完成：** 独立`ar_native_vocab_20260913`固定82ccb19，robo 117项CPU passed；`ar_native_input_gate_v1`真实10 train行×skills/native_task共20视图complete，原生动作区间[248077,252187)、EOV252187/state252188，无HL_END，全部60-token/8码块、前缀一致/无截断/23D完整。不是自由生成效果。
+- **运行中：** 仅提交原生skills `ar_native_skills_gpu_gate_v2`，新源已明确保留原生词表；仍GPU1两临时更新＋五task前后生成上限、0发布权重/仿真。task臂等前者实际结束后才运行；旧失败v1保留，活跃FM/A4-AR源码未动。完整native训练入口的CPU编排检查已包含在117项内，但尚未正式排队或神经更新。
+
+### 2026-09-13 17:03（北京时间）：原生加载首门失败定位到HL_END挪动state，保留原生词表重验
+
+- **Codex / AR-01，实际失败/0更新：** dc0d085的native-skills进程2081801已退出1，v1日志和manifest保留；严格946项检查在`model.vlm.input_proj.weight`处拒绝252189→252190行的默认部分加载，尚未执行优化/自由生成，不重复声称native已通过。源码定位：MEM-Lite无条件在`<EOV>`后、`<state>`前注册`<HL_END>`；官方原实现没有HL_END，因此原生state252188被挪到252189。动作词表范围未因此挪动；尚不能把此兼容性缺陷宣称为历史打转的已证实根因。
+- **修正/待验：** 原input_preprocessor与Git副本逐字一致，现仅加显式`register_memlite_hl_end=false`原生模式，默认true完整保留A4/MEM-Lite词表；原生模式不加新token，继续要求946基础权重逐项原样恢复，不放宽部分加载/补零门。进程内声明第四个Git扩展及基础policy的processor绑定，不热改原源码/环境。CPU真实native tokenizer门拟`ar_native_input_gate_v1`（10行×skills/native_task两视图，0 VLM/优化）；再新native-skills/native-task **v2** GPU门，不启动尚未运行的task-v1。
+- **原生正式训练草稿：** 完整action trainer已增加显式native父权重/条件选择，以及只等待已声明`ar_a4_fulltrain_v2`真正完成、验500权重后才启动的串行依赖；原生不会从A4/前驱权重接训。仍原950/50、四卡global16、5步保存门→独立500、原80＋自由生成；A4参考值只约束A4初始化，native另记其原始参考。新增CPU用例待验；当前未提交原生正式训练队列，不把草稿算实训。
+- **FM现状：** 原AE×2继续，step200固定80=0.1988764574，同步数control=0.1972260463，候选暂差约0.837%；不作最终500/SR结论，不改现有预算。完整双路线及组合闭环继续待办。
+
+### 2026-09-13 16:51（北京时间）：原生AR入口92项CPU通过，开始真实native-skills短门
+
+- **Codex / AR-01：** 新独立worktree `ar_native_20260913`固定dc0d085，在robo实际92项CPU检查通过（包括原FM/AR/KI回归及新增native加载/模板/五task取样）。首个`ar_native_skills_gpu_gate_v1`已提交GPU1真实入口，预算同上：原生权重、两临时更新、五task前后自由生成，0发布权重/仿真；GPU阶段结果未出。启动不算验收，须检查真实进程、restoration/gradient/result回执。
+- **后续：** 同源native-task臂等前一进程结束才运行，不挤占第二张卡或热改当前源。现有FM500与AR等待不变；完整原生AR训练/CoT/闭环及FM候选组合仍待完成。
+
+### 2026-09-13 16:49（北京时间）：确认原生G0.5身份，增加明确的原生AR初始化与模板
+
+- **Codex / AR-01，实查完成：** 上轮新增首个AE×2诊断证据，属于progress；本轮clean pull/fetch后实查1902909/1912524仍活跃（最近日志153/500），1940901仍verified_live_dependency。原生权重实际为`/mnt/sdc1/robodojo/checkpoints/G05/g05-base/checkpoints/model_state_dict.pt`，11,440,519,964 bytes，SHA `072211e5b2f5ef036729bae673f3f44da40adbea5c0044af55fe2fb8af654327`，与本地HF下载metadata一致（revision `e312be81e90c56a55bcb26b57429bd39a335b449`）；946基础状态、0 LoRA，仅权重无Adam。配套config SHA `c98af37352c0f600341d2ecbdb49fcdfa87812198654448991615065fa1a4461`，27D接口；没有重新下载权重。
+- **实现/待验证：** 新`native_action_initialization.py`逐项验证原946状态与新192 LoRA的零B初始化，拒绝A4 adapter混入或随机/部分加载。AR数据视图增加`native_task`，与原`BaseSamplesBuilder`动作模板精确对应（包含终止竖线），不改已有skills/task视图。现有GPU入口支持显式native/A4起点；native每task选一条真实train窗口，在两临时更新前后各自由生成一次，保留不完整动作失败而不补零/FM。新CPU用例及语法检查已写，真实CPU/GPU尚待验收；不热改两个活跃worktree。
+- **下一有界执行：** 拟新`ar_native_skills_gpu_gate_v1`与`ar_native_task_gpu_gate_v1`，GPU1串行、原10行train缓存中的原前两行作两临时更新、seed41/LR1e-5，五task×前后共10自由生成/臂、0保存权重/仿真；前者分离native与A4初始化差异，后者检验官方动作模板/纯任务条件。实际代码commit/输入与权重SHA由manifest固定；当前GPU1约45GiB可用，门槛40GiB，不停别的任务，共卡时间不作公平吞吐。过真实学习门后才接原950/50的有界原生AR训练，不重复十行拟合冒充正式训练。
+- **CoT边界：** 发布权重配置predict_cot=true，而官方R1Pro微调recipe默认false；原五任务parquet无原生CoT字段。先验证原生权重的动作-only微调入口，不捏造grounding/action-hint标签，不冒称复现论文BEHAVIOR权重或完整CoT配方。原生推理CoT与监督可用性仍待进一步核实，完整双路线/组合/闭环未完成。
 
 ### 2026-09-13 16:35（北京时间）：AE×2首个100步评估尚未改善，超参答疑不改活跃训练
 
