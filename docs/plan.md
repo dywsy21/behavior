@@ -10,6 +10,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 14:51（北京时间）：AR/KI入口补全CPU回归和真实tokenizer门，待运行
+
+- **Codex / AR-00、AR-01、M-04；前轮分类为verified wait：** 上轮核验真实FM进程并得到首个固定80，不把答疑/计划当新方法收益。本轮再次fetch，保留未提交草稿未强pull；14:43原control真实进程仍在、日志141/500，不重启或热改fb40145。
+- **实质实现：** 补全独立`G05PolicyMEMLiteAction`/`ar_training_methods.py`，明确纯AR仅LoRA、joint/KI为AE+LoRA以及FM梯度路由；保持原v6输入校验。新CPU回归覆盖参数范围、Qwen prefix recurrent边界、目标拒绝及单一推理来源。源码发现旧decoder对空串返回零动作但absent为空，故新入口额外拒绝无有效动作token；同时处理AR解码CPU张量与GPU mask的设备差异。没有据此归因旧打转或宣称真实策略已通过。
+- **下一工程门/预算：** 新`action_training_runtime.py`只挂载三份声明Git扩展，其余神经/数据仍固定A3 source SHA；`probe_action_training_inputs.py`拟用既有十条五任务原train缓存，检查四种表示视图共40行的训练/推理prefix相等、GT反事实不影响prefix、标签位置/无截断/全部23维与token往返。2 CPU线程、0 VLM/0 optimizer/0仿真，无新数据release，首次错误即停并保留run。当前六份文件仅py_compile与diff检查通过，torch检查和真实输入门尚未运行；之后仍需纯AR训练、自由生成、闭环及KI真实梯度验收。
+
 ### 2026-09-13 14:40（北京时间）：超参/训练方法答疑，control首个固定80结果已出
 
 - **Codex / M-01，只读复核：** 用户追问改变超参或具体训练方法是否值得。本轮读实际A4审计、冻结SkillFM/FMHelper与配方，并复查PI KI及MolmoAct2一手说明；未改活跃源码/超参、未重启或新增训练。开工已fetch；本地有三份未提交AR/KI草稿，保留原状、未强pull，草稿尚未完成实际模型验收。
