@@ -10,6 +10,18 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 15:19（北京时间）：KI真实梯度与无答案泄漏通过，准备接原完整train loader
+
+- **Codex / M-04，实际工程门：** 9045cf7的`ki_gpu_gate_v1/result.json`complete，SHA `eb5c6366051d736df45983c815818b3a7d09ac63da975cd4b2cbe11fc47efec6`。CE连通192 LoRA、不连通AE；FM连通322 AE、不连通LoRA。保持观察/连续目标/噪声不变，实际改变60个teacher-action suffix tokens，CE15.07449→26.21026而FM逐位保持0.06588463485，Qwen的prefix recurrent门通过。两次临时Adam更新、514份状态step2、冻结参数未变；部署检查只走FM，23D形状/有限值有效，无辅助AR调用。峰值reserved约28.4GiB。
+- **严格效果边界：** 两更新后固定输入CE下降但FM从0.0658846升至0.0675914；不是方法收益，临时权重不保存/部署。旧control回执322 AE+182 LoRA有梯度，而新CE覆盖192 LoRA，因此Adam数量504/514不同来自梯度覆盖，不是本轮额外解冻AE（两者均322张量）。接着同预算独立`joint_gpu_gate_v1`检验不隔离对照，仍不能替代正式三组训练。
+- **AR真实训练准备：** 新增`action_training_data.py`，复用原A3完整五任务dataset、train-only归一化、episode轮转采样与collator；显式核验train/eval不同resolver与原固定80身份。拟CPU`ar_loader_gate_v1`：原train真实五microbatch/10行及每task一个eval窗口仅做输入身份检查、2 CPU线程、0模型/优化/仿真，不构造release、不回灌eval。当前只做语法检查；通过后才能接实际950条train来源的有界AR训练，不重复拟合十行缓存冒充正式效果。
+
+### 2026-09-13 15:13（北京时间）：纯AR真实梯度/两更新通过，自由生成确认缺少下半身和夹爪组
+
+- **Codex / AR-01，工程实证：** 9045cf7在robo通过46项CPU检查；`ar_gpu_gate_v2/result.json`complete（SHA `50215961993d57088fdfa2460a30308d47f6b03e9161ca70eb58df13558fa5ae`）。完整A4恢复后，真实CE连通192个LoRA张量、当前输入187个梯度非零，FM恒0/不连通；两次临时Adam更新、192份Adam状态均step2、冻结参数未变。固定同输入CE 15.0744896→14.8460464；两次更新的clip前范数18.16/24.49。峰值reserved约22.13GiB。没有保存临时权重或仿真，不能当正式AR学习/方法收益。
+- **实际自由生成失败及定位：** 更新前后各实际生成37 tokens（含末尾`|`），仅`left_control_0/right_control_0/left_control_1/right_control_1`，而正确目标60动作tokens含`lower_body_0/1`与两个gripper组。本人用真实CPU tokenizer/codec重解`before/after_raw_generation.json`，明确missing=`left_gripper,lower_body,right_gripper`；不是本次标签mask遗漏、不是解码器临时删组，也不是用满生成预算。新入口拒绝下发此不完整动作，未填零/FM补齐。该父权重是FM训练后的A4，不是原生上游AR复现；短短两更新不构成AR不可行的结论。
+- **下一步/并行状态：** 继续准备原950条train的有界AR训练，目标是学会完整格式与真实控制，而非只做teacher-forcing；还须自由生成/闭环。先同9045cf7、A4/原train/GPU1、单行/两临时更新预算运行独立`ki_gpu_gate_v1`，核验CE→LoRA、FM→AE且不入LoRA，以及真实teacher-suffix不泄漏；joint另门。15:10 control真实进程仍在、288/500，预算和活跃源未改；所有方法最终效果仍未完成。
+
 ### 2026-09-13 15:05（北京时间）：AR GPU首门在独立codec设备迁移处停止，定位并补回归
 
 - **Codex / AR-01，真实失败：** `ar_gpu_gate_v1`在9570e1c完成A4全部1138状态/192 LoRA逐值恢复并写`restoration.json`，但首个编码前向因动作张量在CUDA、独立ActionCodec仍在CPU而退出1；0 optimizer更新、未保存临时权重。该tokenizer不是policy的nn.Module子模块，`model.to()`不负责迁移；原finetune在模型迁移后另有`model.action_tokenizer.to(device)`，本次新GPU探针漏了这一步，不将其误报为训练数据或历史AR根因。

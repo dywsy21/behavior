@@ -34,6 +34,10 @@
 
 ## 实时状态
 
+15:19（北京时间）：`ki_gpu_gate_v1`真实梯度/无teacher-suffix泄漏/两临时更新通过，result SHA `eb5c6366051d736df45983c815818b3a7d09ac63da975cd4b2cbe11fc47efec6`；不是方法收益，FM固定输入略升。下一独立`joint_gpu_gate_v1`同9045cf7/A4/两更新；新`action_training_data.py`拟CPU`ar_loader_gate_v1`验证真正原train loader与独立eval身份，10 train行/5 eval窗口、0模型/0优化，不回灌eval或发布新数据。
+
+15:13（北京时间）：`ar_gpu_gate_v2`真实CE→LoRA和两Adam更新通过，固定输入CE15.07449→14.84605，FM恒0，结果SHA `50215961993d57088fdfa2460a30308d47f6b03e9161ca70eb58df13558fa5ae`；自由生成仍缺lower_body/两个gripper，正确60-token目标没有缺组。只完成工程门，不是正式训练、SR或AR被否定。下一独立`ki_gpu_gate_v1`同A4/原train/单GPU1、两临时更新和真实无泄漏/梯度路由检查，无checkpoint发布。
+
 15:01（北京时间）：3807531在独立`ar_inputs_20260913`完成41项CPU测试与`ar_input_gate_v1`真实输入门，结果SHA `5a6ca932949dabc4198e546045e8deb52d9c0977eed81f01fd96a7665a70ddbe`，十原始行/40视图全部通过，60动作tokens/行。拟`ar_gpu_gate_v1`单GPU1、A4恢复、单行原train、两临时更新及真实梯度/自由生成，不保存权重；先AR、其他路由另门。共享GPU期间不比较整轮墙钟，仍须完成真正训练/闭环。
 
 14:51（北京时间）：AR/KI策略扩展及CPU回归、真实tokenizer探针已写，仅语法门通过。首轮tokenizer run拟`ar_input_gate_v1`：十条已有五任务train样本、四种视图40行、两CPU线程、无VLM/优化/物理。须真实验证prefix/目标/23D后再训练；task-only不是完整上游CoT复现。新代码用另一个Git worktree运行，不拉取活跃FM副本。
