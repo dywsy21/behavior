@@ -14,6 +14,7 @@
 
 - **Codex / A-02、B-03，运行中：** 本地/服务器7项CPU检查通过，Git独立worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_radio_full_20260913`固定`be23b06b045fcc06e6fa8ab6dfb724aeebe95f31`，supervisor PID1479480。run `/mnt/sdc1/robodojo/behavior_dev/a4_radio_full_20260913_v1`的`manifest.json`、`launch.json`已写出，正在加载前身份核验；不把编排启动当作已完成回合。
 - **执行与判据：** 高B-final/低A4专用服务、真实7次wire门后跑301→302→303。每回合从零动作/空命令记忆重置，最多3224控制；官方任务目标是指定收音机`toggled_on`，抓住或模型自报都不算成功。基础设施失败单列并停下检查，不静默加入失败分母/换实例重试；正常跑满失败则继续固定下一实例。完整权重/物理循环不变的回归通过，代码仅在feature发布，未合入main模型实现。
+- **11:42实际通信门：** 两个专用服务ready；A4-2500完整base/adapter逐值恢复为true、B仍UNKNOWN_ONLY，7次真实低层调用全部通过六帧/23D/mask/0:16检查。`wire_probe.json`已passed，首个完整回合进程1480089已启动进入初始化；尚无回合成功率，不修改正在运行的be23b06源码。
 
 ### 2026-09-13 11:37（北京时间）：按用户要求准备A4完整收音机评测
 
