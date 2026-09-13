@@ -10,6 +10,18 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 14:14（北京时间）：四卡保存回读通过，control正式500步进程启动
+
+- **Codex / M-01：** `fm_control_v1/smoke_checkpoint_inspection.json`passed；真实回读step5（SHA `56cc992a81463180344c871a345368c368a15623bc01db17b6411947f4243c03`），504份Adam计数均5、504项可训练状态变化、冻结状态未变、所有模型/Adam有限、四rank RNG保存、每rank20条真实train抽取、归一化一致。只通过工程门，不发布临时smoke权重。
+- **当前运行：** supervisor1499025已启动正式torchrun1508221，`status.json`为formal/running/max_steps500；重新从A4-2500权重开始而非smoke，seed41/新Adam、四卡global16、AE与LoRA1e-5、warmup50/cosine500。正式模型/数据初始化中，尚无完成500更新或新固定80结论。源worktree仍fb40145，不热pull。
+- **下一步/边界：** 确认正式真实更新，完成并验收control后跑唯一AE×2单因素候选，再比较原固定80/动作和闭环，不能拿不同权重训练日志loss直接比较。其他FM方法、有效组合、纯AR策略训练和闭环均未完成；整个双路线goal保持active，无额外训练/成功率承诺。
+
+### 2026-09-13 14:07（北京时间）：control真实GPU门通过，四卡保存回读短测运行中
+
+- **Codex / M-01：** `fm_control_v1/gate/result.json`passed，A4全1138状态/192 LoRA完整恢复后，3次真实前向证明本control入口的原评估loss与CPU/CUDA RNG逐位一致；4个原train microbatch完成2次临时优化、504份Adam计数均2、动作专家与LoRA更新、冻结参数逐值未变。峰值reserved 35,475,423,232字节；无诊断权重保存或混入正式初始化。
+- **实际阶段：** 原trainer同参数配置/资源门已通过，四卡5步短测torchrun1499487运行中；须取得`smoke_checkpoint_inspection.json`并验证保存回读才放行formal500。不把control的GPU门当其他非默认时间/权重选项都已验证，更不当loss/SR收益。
+- **协作：** 14:00启动及AR编码结果/边界已docs-only同步main `d26b57e`，robo协作clone已ff pull；活跃训练worktree仍固定fb40145、未热改。AE×2候选、其他FM方法组合和AR策略训练/闭环未完成。
+
 ### 2026-09-13 14:00（北京时间）：M-01 control编排已启动，真实GPU门进行中
 
 - **Codex / M-01，运行中：** robo独立worktree固定`fb40145d62b387ead5e9b25ea8a45c4a2fef57cc`，22项CPU检查通过后启动supervisor1499025；run `dual_track_fm_ar_20260913/fm_control_v1`，`method_spec.json` SHA `569455fb9ca4c0417cae9a998c767e82cdf846c9703a7f64adb62fb7718a9d03`。启动前再次确认无其他训练/仿真，六个旧服务保留，不热pull此worktree。
