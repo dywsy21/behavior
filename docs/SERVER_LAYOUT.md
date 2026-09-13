@@ -46,6 +46,12 @@
 
 ## 3. 结果、视频和原始证据去哪找
 
+### 2026-09-13新增：FM方法与AR重新验证
+
+- `/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913`：双路线小实验根。`ar_codec_gate_v1`/`v2`为失败证据，`ar_codec_gate_v3/result.json`为十条原train的CPU编码往返结果；不是AR策略或成功率。
+- `fm_control_v1`：14:00编排已启动，supervisor1499025、固定Git fb40145；`method_spec.json`绑定扩展源码/父A4/预算，`status.json`为阶段，`gate/`与`smoke/`是工程门，`formal/`才是最多500次真实五任务更新。启动不是完成，须读阶段与checkpoint验收。
+- Git固定worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/dual_track_fm_ar_20260913`；方法代码在独立feature，main仅同步说明。运行中不得pull，复用只读A3源码和A4旧编排的SHA明确记录；没有复制旧权重/数据，其他服务保留。
+
 ### 2026-09-12晚新增：A4过夜低层训练
 
 - 编排/结果根：`/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912`；`launch.json`记录准确commit/父权重/源码SHA，`status.json`给出真实阶段，不能只看PID判定成功。

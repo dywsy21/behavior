@@ -10,6 +10,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 14:00（北京时间）：M-01 control编排已启动，真实GPU门进行中
+
+- **Codex / M-01，运行中：** robo独立worktree固定`fb40145d62b387ead5e9b25ea8a45c4a2fef57cc`，22项CPU检查通过后启动supervisor1499025；run `dual_track_fm_ar_20260913/fm_control_v1`，`method_spec.json` SHA `569455fb9ca4c0417cae9a998c767e82cdf846c9703a7f64adb62fb7718a9d03`。启动前再次确认无其他训练/仿真，六个旧服务保留，不热pull此worktree。
+- **当前阶段/边界：** 正在GPU1加载A4并检查真实未改评估口径、两次临时优化；随后须四卡5步checkpoint回读通过，才自动进入独立500步正式control。编排启动不等于已训练500步或方法有效；AE×2及其他候选、AR策略训练/闭环均未完成。
+- **证据/下一步：** 进度`status.json`，详细`gate.log`/`smoke.log`/`formal.log`，每一门失败即停且保留原证据，无自动重试。继续核验实际更新和正式阶段，结果及时同步团队main文档，实验代码只在feature。
+
 ### 2026-09-13 13:58（北京时间）：AR十行编码门完成，FM真实训练配方待GPU门
 
 - **Codex / AR-00：** Git `2dd2cac`，robo真实CPU 15项测试通过；`dual_track_fm_ar_20260913/ar_codec_gate_v3/result.json`complete，10条原train/五任务，8个完整16步窗口＋5/8步末尾窗口，合计141个有效执行目标。全组原32/holdpad32均完整解码、原有效前缀不变、候选不受未执行后缀变化影响。直接16步10/10不支持，不能只改配置horizon上线。
