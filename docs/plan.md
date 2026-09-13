@@ -12,6 +12,16 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 21:11（北京时间）：同窗口A4-FM与codec内容参考入口已写，待CPU后有限GPU诊断
+
+- **Codex / AR-01，唯一假设/预算：** 将格式完整与动作内容分开，`probe_ar_schema_reference.py`读取已完成schema十条，不重新生成AR；拟`ar_schema_reference_a4_v1`，独立Git源/CPU配对检查通过后GPU1、两CPU线程、40%单卡显存/需40GiB余量，原A4完整1138/192恢复、seed17，对同五train＋五heldout各一次原SkillFM生成＋一次外侧codec重建，共10 FM/10 codec/0新AR/0更新与仿真。来源/目标mask/非有限/全维恢复不符即停，无重试或部署，准确source随后固定。
+- **指标与边界：** 三者统一实际有效0:16/23D的动作RMSE，并重算保存的AR动作确保目标相同；FM使用原SkillFM类，不用KI/AR代理架构。codec重建使用GT但严格在actor调用之外，不能当部署输出或理论误差下界。A4与AR500训练历史不同、单seed/十诊断窗，此项是实用策略比较而非等算力算法因果或SR。原生观察门/原500/等待链保持运行，不再重答训练候选介绍。
+
+### 2026-09-13 21:09（北京时间）：218 CPU通过，真实观察一致性门已启动；native400仍漏组
+
+- **Codex / AR-01：** 独立`git_worktrees/ar_native_observations_20260913`固定ed07c5e，218 CPU tests passed（1.89s）；`ar_native_observation_gate_v1`于21:08:21启动3051919，既定十原train/两CPU线程/0VLM与优化及仿真，目前只在初始化，真实处理器结果待验，不把单测称部署通过。
+- **原生训练：** native-task step400固定80 CE6.799288785（300为6.990212220），五task自由依旧37 tokens/0完整组。仍按原500继续，不加步/改权重或schema；原生FM参考1.428307仅辅助，不是AR控制误差。schema10的后处理另已核实4个窗口存在payload位置的原argmax越界（共14次），不只强制了marker；codec合法范围也是显式推理变体的一部分。
+
 ### 2026-09-13 21:06（北京时间）：schema十窗口实际完成，格式与控制质量继续分开验收
 
 - **Codex / AR-01，真实结果：** `ar_schema_ar500_v2`2994300已退出，10/10实际完整60动作tokens/8块＋终止，无safe clamp、无marker adapter、0更新/仿真；result SHA `1c9ad37c043182d71db1fd0ad91f855376eb09daefa4342ec523bab331d9bb9d`，峰值reserved13,384,024,064 bytes。原始argmax每窗口被静态规则覆盖4–14次，完整格式是人为约束，不算模型学会或SR。
