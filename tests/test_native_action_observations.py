@@ -6,6 +6,18 @@ import torch
 from native_action_observations import checked_observation, derive_static_action_mask, camera_feature_layout, CAMERAS, STATE_WIDTHS, ACTION_WIDTHS
 
 
+def test_real_source_collator_cannot_consume_the_reference_sample():
+    from g05.utils.data.data_utils import collate_fn_pad_sequences
+    from probe_native_action_observations import collate_reference
+    reference = dict(samples=dict(command="actual task", proprio=torch.ones(6, 27)),
+        action=torch.ones(32, 27), idx=0)
+    pipeline = SimpleNamespace(collate=collate_fn_pad_sequences)
+    batch = collate_reference(pipeline, reference)
+    assert reference["samples"]["command"] == batch["samples"][0]["command"]
+    batch["samples"][0]["proprio"].zero_()
+    assert reference["samples"]["proprio"].eq(1).all()
+
+
 def observation():
     return dict(task="turn on the radio", embodiment_type="galaxea_r1pro", frequency=30.,
         images={camera: torch.zeros(6, 3, 8, 8, dtype=torch.uint8) for camera in CAMERAS},

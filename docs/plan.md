@@ -12,6 +12,17 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 21:25（北京时间）：观察门v2像素/状态已相同，后续比较被原collator就地pop中断
+
+- **Codex / AR-01，真实范围：** `ar_native_observation_gate_v2`3095966已退出；首原train通过静态mask、实际collate及同状态像素/归一化proprio比较，在取reference['samples']时KeyError。原`collate_fn_pad_sequences`会就地pop该字段，新探针此前把唯一reference直接传给它；这是检查器的可变对象使用错误，不是actor接收了teacher或相机顺序仍不一致。
+- **修复/边界：** 新`collate_reference`深拷贝后交原collator，新增调用真实collator的CPU测试，保证后续token/原始anchor/逆变换比较还能使用原样本。新源CPU后拟`ar_native_observation_gate_v3`验完同十train，不修改actor张量处理、不重训/加仿真；v1/v2各首条工程读取保留，累计最多12次原状态处理、0VLM/优化。完整十条仍未通过，不掩盖失败或把已过子检查算最终验收。
+
+### 2026-09-13 21:23（北京时间）：同窗内容对照完成，FM胜7/10；AR不只是格式问题
+
+- **Codex / AR-01，真实完成：** `ar_schema_reference_a4_v1`3077705已退出，原A4精确1138/192恢复、10原FM生成＋10外侧codec重建、0新AR/优化/仿真；result SHA `6fdd96d8738fe8fe13682b7b97a7cc5bc1b1d08c49318da98b3246b1238fe5ab`。逐条重算已保存AR输出与原目标/有效mask完全一致，全部真实23D；FM误差较低7/10，AR较低3/10（train1、heldout2/4）。
+- **实证与边界：** 按真实有效scalar合并RMSE，train AR/FM/codec=0.66450/0.45252/0.02094（1403 scalar）；五heldout=0.95226/0.90168/0.04410（1840 scalar）。每窗codec重建都显著低于两种策略误差，说明这十窗的主要误差不能只归于编码器表示能力；它不是理论下界，也不排除闭环量化/历史效应。AR已强制格式而多数窗仍不如FM，后续必须同时检查动作内容，不以完整码块判成功；两条策略训练历史不同，此处非等算力/全eval/SR比较。
+- **后续顺序：** 保持原FM方法链；AR先验完真实无teacher观察/逆变换入口，并完成已登记marker原切分候选，再依据内容与wire结果做有限局部闭环。CoT正式训练不抢当前队列，不因这十窗追加大训练或无限缓存拟合。明细见[AR诊断报告](experiments/2026-09-13-ar500-schema-diagnosis.md)。
+
 ### 2026-09-13 21:20（北京时间）：相机映射修复229 CPU通过，真实观察门v2运行
 
 - **Codex / AR-01：** 新独立`git_worktrees/ar_native_observations_v2_20260913`固定a343a61，229 tests passed（1.92s）；`ar_native_observation_gate_v2`于21:18:46启动3095966，仍为相同十原train的观察/原逆变换检查，0VLM/优化/仿真。真实数据/像素/token前缀等结果尚待验，不热pull该工作树；v1失败保留，未对旧训练作追溯修改。

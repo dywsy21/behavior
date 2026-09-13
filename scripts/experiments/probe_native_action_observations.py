@@ -24,6 +24,12 @@ from train_action_method_probe import read, now
 from train_fm_method_probe import BASE
 
 
+def collate_reference(pipeline, reference):
+    # The real source collator pops the nested `samples` field. The same
+    # unmodified reference is still needed for prefix and inverse comparisons.
+    return pipeline.collate([deepcopy(reference)])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
@@ -91,7 +97,7 @@ def main():
                 pipeline.train_processor.processors[key].preprocess = original
         if len(captures) != 1:
             raise RuntimeError("Expected one exact original raw sample, no fallback/retry")
-        batch = pipeline.collate([reference])
+        batch = collate_reference(pipeline, reference)
         audit = validate_coordination_batch(batch, source_spec_path=pipeline.source_spec,
                                             audit_resolver=pipeline.train_resolver)
         locator = reference["memlite_audit_locator"]
