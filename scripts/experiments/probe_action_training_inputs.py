@@ -37,6 +37,7 @@ def main():
     from g05.models.g05.g05_policy_memlite_skill_fm import G05PolicyMEMLiteSkillFM
     from g05.utils.training.ar_training_methods import (
         ActionTrainingSettings, CANONICAL_PARTS, action_prefix_samples, action_training_samples,
+        validate_complete_action_tokens,
     )
     from preflight_memlite_skillfm_gpu import _build_cpu_input_preprocessor
 
@@ -142,12 +143,14 @@ def main():
                     # this catches action-token offset and text roundtrip drift.
                     if not torch.equal(decoded_tokens[ri], ids[ri, selected]):
                         raise RuntimeError("Supervised action token IDs changed during text/codec decoding")
+                    block_receipt = validate_complete_action_tokens(decoded_tokens[ri], tokenizer)
                     valid = (~temporal[ri, :16])[:, None] & (~dimensions[ri])[None, :]
                     error = (decoded[ri][:16] - actions[ri, :16])[valid]
                     row = dict(source=source, settings=settings.as_dict(),
                         prefix_length=int(split), sequence_length=ids.shape[1], action_token_count=int(selected.sum()),
                         exact_prefix_match=True, prefix_labels_masked=True, action_counterfactual_prefix_invariant=True,
                         untruncated=True, complete_action_groups=True, exact_token_roundtrip=True,
+                        complete_codec_blocks=block_receipt,
                         valid_execution_steps=int((~temporal[ri, :16]).sum()),
                         normalized_executed_rmse=float(error.square().mean().sqrt()))
                     rows.append(row)

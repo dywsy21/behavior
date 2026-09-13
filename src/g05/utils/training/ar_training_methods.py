@@ -45,6 +45,46 @@ CANONICAL_PARTS = dict(left_control=9, left_gripper=1, right_control=9,
                        right_gripper=1, lower_body=7)
 
 
+def validate_complete_action_tokens(ids, tokenizer):
+    """Reject partial levels/blocks that the legacy codec would zero-fill.
+
+    This reads only static codec metadata and generated IDs, never action GT.
+    Group order is allowed to vary, but each required residual/rule block must
+    appear exactly once with the full number of real codebook tokens.
+    """
+    if (not isinstance(ids, torch.Tensor) or ids.ndim != 1
+            or ids.dtype not in (torch.int16, torch.int32, torch.int64)):
+        raise ValueError("expected one integer action-token sequence")
+    serializer = tokenizer.serializer
+    markers = serializer.group_marker_action_indices
+    required = {}
+    for level in range(serializer.num_residuals):
+        for key in serializer.nn_key_names:
+            marker = f"<{key}_{level}>" if serializer.max_residuals > 1 else f"<{key}>"
+            required[markers[marker]] = serializer.code_len
+    for key in serializer.rule_key_names:
+        required[markers[f"<{key}>"]] = serializer.rule_tokens_per_key
+    if not required or any(int(count) < 1 for count in required.values()):
+        raise ValueError("codec has no valid complete-block layout")
+    codebook_size = int(tokenizer._codebook_size)
+    raw = (ids.detach().cpu() - int(tokenizer.action_token_begin_idx)).tolist()
+    seen = set()
+    cursor = 0
+    while cursor < len(raw):
+        marker = raw[cursor]
+        if marker not in required or marker in seen:
+            raise ValueError("unknown, duplicate or misplaced action-group marker")
+        count = int(required[marker])
+        codes = raw[cursor + 1:cursor + count + 1]
+        if len(codes) != count or any(code < 0 or code >= codebook_size for code in codes):
+            raise ValueError("truncated action block or group marker inside codebook payload")
+        seen.add(marker)
+        cursor += count + 1
+    if seen != set(required):
+        raise ValueError("missing required action group or residual level")
+    return dict(token_count=len(raw), complete_blocks=len(seen))
+
+
 def action_prefix_samples(samples, settings: ActionTrainingSettings):
     """Target-free view with an action-output slot; reject accidental GT ingress.
 

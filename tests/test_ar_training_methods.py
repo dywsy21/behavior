@@ -1,12 +1,13 @@
 """Rendering/target contract tests; no model or simulator construction."""
 from copy import deepcopy
 from dataclasses import replace
+from types import SimpleNamespace
 
 import pytest
 import torch
 
 from g05.utils.training.ar_training_methods import (
-    ActionTrainingSettings, action_prefix_samples, action_training_samples,
+    ActionTrainingSettings, action_prefix_samples, action_training_samples, validate_complete_action_tokens,
 )
 
 
@@ -97,3 +98,24 @@ def test_gradient_route_declaration():
     assert not original.uses_fm
     assert replace(original, route="joint").uses_fm
     assert replace(original, route="ki").uses_fm
+
+
+def grouped_codec():
+    return SimpleNamespace(action_token_begin_idx=100, _codebook_size=10,
+        serializer=SimpleNamespace(nn_key_names=["arm"], rule_key_names=["gripper"],
+            num_residuals=2, max_residuals=2, code_len=2, rule_tokens_per_key=1,
+            group_marker_action_indices={"<arm_0>": 10, "<arm_1>": 11, "<gripper>": 12}))
+
+
+def test_complete_codec_blocks_accept_any_unambiguous_order():
+    for ids in ([110, 101, 102, 111, 103, 104, 112, 100], [112, 100, 111, 103, 104, 110, 101, 102]):
+        assert validate_complete_action_tokens(torch.tensor(ids), grouped_codec()) == dict(token_count=8, complete_blocks=3)
+
+
+@pytest.mark.parametrize("ids", [[], [110, 101], [110, 101, 102, 112, 100],
+    [110, 101, 111, 111, 103, 104, 112, 100],
+    [110, 101, 102, 111, 103, 104, 112, 100, 112, 100],
+    [110, 101, 102, 111, 103, 104, 112], [0]])
+def test_partial_duplicate_or_missing_residual_blocks_are_not_silently_zero_filled(ids):
+    with pytest.raises(ValueError):
+        validate_complete_action_tokens(torch.tensor(ids, dtype=torch.long), grouped_codec())

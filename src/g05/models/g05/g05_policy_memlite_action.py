@@ -20,7 +20,7 @@ from .helpers.vlm_lora import VLMloraConfig, inject_vlm_lora, normalize_pre_inje
 from g05.data_processor.processor.samples_builder import validate_embedded_model_projection
 from g05.utils.memlite_skill_protocol import MEMLITE_SKILL_SCHEMA_VERSION
 from g05.utils.training.ar_training_methods import (
-    ActionTrainingSettings, action_prefix_samples, action_training_samples,
+    ActionTrainingSettings, action_prefix_samples, action_training_samples, validate_complete_action_tokens,
 )
 
 
@@ -178,6 +178,11 @@ class G05PolicyMEMLiteAction(G05PolicyQwen35):
                     or any(not isinstance(ids, torch.Tensor) or ids.ndim != 1
                            or not ((ids >= begin) & (ids < end)).any() for ids in tokens)):
                 raise RuntimeError("Free AR generation produced no valid action tokens")
+            try:
+                result["ar_complete_block_receipts"] = [
+                    validate_complete_action_tokens(ids, self.action_tokenizer) for ids in tokens]
+            except ValueError as exc:
+                raise RuntimeError("Free AR generation has incomplete or malformed codec blocks: " + str(exc)) from exc
         else:
             # No auxiliary autoregressive action generation in deployed KI.
             result = dict(action=self.model.inference_fm(

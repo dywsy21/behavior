@@ -10,6 +10,13 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 15:35（北京时间）：joint与原完整数据管线门完成，AR补齐完整码块校验
+
+- **Codex / M-04、AR-01：** 本轮已fetch，保留上一阶段五份未提交修改，未强pull/热改活跃FM源。`joint_gpu_gate_v1/result.json`complete，SHA `fb48b231c918a9bd7412bff65713837414afd14f5250329c6afb4c5debfe16ad`；不隔离时FM连通322 AE和182 LoRA，CE连通192 LoRA而不连通AE。两次临时更新完成，固定输入CE降至14.83285、FM升至0.0676576；与KI一致只通过工程门，不是效果结论、没有发布权重。
+- **完整数据入口：** c220e73的`ar_loader_gate_v1/result.json`complete，SHA `1bb36c7aa62d911bc1e6901846dcd85f5908791ee613194232bfd0c26428869c`。真实原train loader取出五task共10行并验来源；五个eval窗口只核验身份、不参与训练。dataset长度8,898,502/451,241是train/eval帧窗口数，不是轨迹数；原950/50切分与归一化、固定80身份保持。新loader使用私有worker RNG，不能在未配对核验前声称与原FM trainer所有随机抽样完全相同。
+- **实质修正/待测试：** 原codec解析会对缺失残差级/短码块补零，单看absent keys不足以识别。纯AR新增仅依赖静态codec元数据和生成IDs的完整码块校验，拒绝缺级、截断、重复或越界；不读取专家答案、不强填动作。八项CPU用例与真实40视图目标探针已补，当前仅语法/diff检查通过。下一独立CPU `ar_input_gate_v2`验证，不覆盖v1，不改神经训练loss或活跃FM服务。
+- **对照与答疑：** 15:34核验原supervisor/torchrun仍在、417/500；step400原固定80为0.1983362647，仍略差于A4父0.1969439941，不据此提前定性最终效果。继续完成分组LR对照及实际AR/joint/KI训练、自由生成和闭环；超参值得试，但小样本可拟合与完整任务0/3不支持盲目把全局LR、clip或batch一起调大。整个goal未完成。
+
 ### 2026-09-13 15:19（北京时间）：KI真实梯度与无答案泄漏通过，准备接原完整train loader
 
 - **Codex / M-04，实际工程门：** 9045cf7的`ki_gpu_gate_v1/result.json`complete，SHA `eb5c6366051d736df45983c815818b3a7d09ac63da975cd4b2cbe11fc47efec6`。CE连通192 LoRA、不连通AE；FM连通322 AE、不连通LoRA。保持观察/连续目标/噪声不变，实际改变60个teacher-action suffix tokens，CE15.07449→26.21026而FM逐位保持0.06588463485，Qwen的prefix recurrent门通过。两次临时Adam更新、514份状态step2、冻结参数未变；部署检查只走FM，23D形状/有限值有效，无辅助AR调用。峰值reserved约28.4GiB。

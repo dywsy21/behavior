@@ -102,7 +102,9 @@ def test_boundary_scope_restores_even_after_failed_forward(monkeypatch):
 
 def actor_fixture(route, monkeypatch):
     policy = bare_policy(route)
-    policy.action_tokenizer = SimpleNamespace(action_token_begin_idx=100, action_token_end_idx=200)
+    policy.action_tokenizer = SimpleNamespace(action_token_begin_idx=100, action_token_end_idx=200,
+        _codebook_size=10, serializer=SimpleNamespace(nn_key_names=["test"], rule_key_names=[],
+            num_residuals=1, max_residuals=1, code_len=2, group_marker_action_indices={"<test>": 10}))
     state = SimpleNamespace(attention_mask=torch.ones(1, 6), pixel_values={}, kv_cache=object(),
                             position_ids=torch.arange(6)[None])
     monkeypatch.setattr(module, "validate_embedded_model_projection", lambda sample:
@@ -118,7 +120,7 @@ def actor_fixture(route, monkeypatch):
         assert kwargs["only_ar"] is True and "action_gt" not in kwargs
         calls.append("ar")
         return dict(action=torch.ones(1, 32, 27), selected_action_source="ar",
-                    ar_absent_keys=[set()], decoded_action_tokens=[torch.tensor([101, 102])])
+                    ar_absent_keys=[set()], decoded_action_tokens=[torch.tensor([110, 101, 102])])
     policy.generate_action = ar
     def fm(**kwargs):
         calls.append("fm")
