@@ -58,6 +58,8 @@
 
 2026-09-13新结果根（不在W内）：
 
+- `/mnt/sdc1/robodojo/behavior_dev/a4_radio_full_20260913_v1`：本轮拟启动的A4＋B-final自主完整收音机三实例评测，public_test301/302/303；不是有前缀的L1。`manifest.json`固定条件，`instance_301/`等各保留结果/视频，`summary.json`仅结束后生成；新专用服务8783/8784，结束仅关闭自身子进程。当前尚在启动前代码门，真实状态见plan。
+
 - `/mnt/sdc1/robodojo/behavior_dev/a4_paired_actions_20260913_v1`：170次A3/A4原train同输入FM对照已complete，`result.json`为摘要，`A3/`和`A4/`保留预测/完整恢复证据；没有physics或SR。
 - `/mnt/sdc1/robodojo/behavior_dev/a4_radio_e121_l1_20260913_v1`：A4局部GRASP已完成，448原前缀＋464模型控制后满足指定对象稳定抓取；`actual_analysis.json`和[本轮报告](experiments/2026-09-13-a4-training-effectiveness.md)记录审核/限制，不是完整SR。`service/`为已退出的GPU0/8782临时服务证据，`actual_rollout/`为真实控制/物理trace/视频；supervisor已关闭自己创建的服务。Git worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_prefix_20260913`在执行时固定c7fb287，确认全部进程退出后才更新至a3ce491运行只读后处理；不热pull。
 - 本地A4视频及抽帧/小摘要：`/home/wsy/behavior/artifacts/a4_effectiveness_20260913`。视频源/本地SHA一致；不入Git，不视为可随意删的cache。
