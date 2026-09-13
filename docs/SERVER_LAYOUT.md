@@ -56,6 +56,11 @@
 
 ### 原有A/B评测和诊断
 
+2026-09-13新结果根（不在W内）：
+
+- `/mnt/sdc1/robodojo/behavior_dev/a4_paired_actions_20260913_v1`：170次A3/A4原train同输入FM对照已complete，`result.json`为摘要，`A3/`和`A4/`保留预测/完整恢复证据；没有physics或SR。
+- `/mnt/sdc1/robodojo/behavior_dev/a4_radio_e121_l1_20260913_v1`：A4局部GRASP，10:59已通过真实7次wire并启动仿真。`service/`为临时GPU0/8782服务证据，`actual_rollout/`为真实控制/物理trace/视频；supervisor结束后自动关闭自己创建的服务。其Git worktree为`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_prefix_20260913`（固定c7fb287，不热pull）。
+
 | 结果类别 | W下路径 | 结论/边界 |
 | --- | --- | --- |
 | 旧A3完整五任务 | `native_a3_final_development_pilot_v1/task_0` … `task_4` | 各有`result.json`、`rollout.mp4`与记录；完整0/5，重复开发实例 |

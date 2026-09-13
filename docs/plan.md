@@ -10,6 +10,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 10:59（北京时间）：A4单次L1真实服务通过，仿真启动
+
+- **Codex / A-02，运行中：** Git固定`c7fb287`，独立worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_prefix_20260913`；服务器4项CPU测试通过后启动supervisor1474264。run `/mnt/sdc1/robodojo/behavior_dev/a4_radio_e121_l1_20260913_v1`，模型GPU0/8782、仿真GPU1，`launch.json`/`service.launch.json`/`rollout.launch.json`分别记录实际进程。
+- **实际验证：** 新服务已完整载入A4-2500且7次真实wire全部通过，逐次核对六帧时钟、4个padding位、23真实控制、动作起点0及实际checkpoint身份；模型调用约0.61–0.62秒/chunk。仿真进程已启动进入环境初始化，尚无新局部成功/完整SR结论；预算仍448原前缀＋最多1280模型控制，临时服务由本次supervisor在结束时回收。
+
 ### 2026-09-13 10:50（北京时间）：170次配对完成，A4仅有限动作改善；批准单次L1复测
 
 - **Codex / A-02：** `a4_paired_actions_20260913_v1/result.json`已complete，实际170次/0优化/0physics；两权重各1138状态/192 LoRA全量恢复、42条训练/推理prefix和重复seed通过；A3额外与原84份预测逐字节一致，旧结果没有因评测实现变化而漂移。
