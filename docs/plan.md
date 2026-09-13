@@ -12,6 +12,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 20:56（北京时间）：200 CPU通过，schema修正版运行，唯一marker原切分候选已排队
+
+- **Codex / AR-01，真实检查与启动：** 新独立`git_worktrees/ar_marker_queue_20260913`固定73e2914，robo 200 tests passed（1.85s）。`ar_schema_ar500_v2`于20:54:34启动2994300，仍为原AR500/五train＋五heldout/0更新与仿真；修复后十次生成尚待结果。v1首条与跨设备失败证据保留，不掩盖已发生的一次重复。
+- **实际等待而非训练：** `ar_a4_marker_fulltrain_v1`于20:54:35提交supervisor2994307，spec SHA `c14c484b88c40e99ffb68bc570b656dfa1bcc5b6a50ff02decc75506a4212c21`；PID/argv/start ticks及KI2297891依赖身份核验，status为verified_live_dependency、0GPU/0更新。沿20:38预登记原A4＋零delta、原950/50、5保存门→独立500，193 Adam/1140模型状态待真实四卡门验证，不接20步adapter、不更改已有六臂源码或顺序。
+- **原队列实查：** native task-AR已330/500、5280 train抽取，其后五方法仍保持原等待链。继续核验最终原留出/自由生成，并准备真正无teacher的推理与闭环接口；排队及CPU通过不等于方法收益，未新增仿真或替换旧服务。
+
 ### 2026-09-13 20:44（北京时间）：schema首GPU停在指标跨设备比较，保留一条真实完整输出后修评估侧
 
 - **Codex / AR-01，真实失败范围：** `ar_schema_ar500_v1`2910095在首train_task0生成后、计算RMSE时退出；真实codec返回CPU action，GT/mask在CUDA，评估端直接相减报设备不一致。`train_task0_raw.json`保留实际61 tokens与逐步约束trace；已经过策略完整组/有限值检查才到该指标，不是仿真成功或模型学会格式。实际1次生成/0优化/仿真，尚未评估另9窗口。
