@@ -26,6 +26,8 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**22:02续记：** `fm_beta_stratified_v2/smoke/checkpoints/step_5.pt`已实际保存/回读（`5bc38337…`，504 Adam/冻结不变/80来源），正式500尚待验。新`git_worktrees/ar_native_actor_wire_20260913`固定0701fd1/274 CPU通过；双路线根`ar_native_actor_wire_probe_v1`于22:01:12启动3140666，日志为同级`.launch.log`，原native500/一次生成/0训练仿真。该独立源正在使用，不热pull；旧六服务/旧v1证据保留。
+
 **21:53六个显式恢复run：** 固定源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/method_queue_recovery_20260913`（7572ce2，267 CPU passed），已活跃，禁止热pull。run仍在双路线根，原v1失败保留，均新建v2、原A4独立5+500、不追加formal预算。Beta在真实gate，后五个已核验等待/0更新；阶段见各自status.json、日志与launch.json。
 
 | run | supervisor | method_spec.json SHA256 |

@@ -12,6 +12,22 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 22:17（北京时间）：有界原生AR服务/局部仿真接线完成，待真实CPU验收
+
+- **Codex / AR-01，代码实质进展：** 新`native_ar_prefix_client.py`独立task-only协议，复用原每物理步捕获历史，但不读取/发送评估器传入的GRASP对象；新`serve_native_ar_prefix.py`只接受一次seed17 session/最多16神经尝试，错误输出不commit历史，不接受额外teacher字段、旧FM路由或重置追加预算。实际每chunk仍经原观察→AR→原inverse/official23，保留完整生成/trace。
+- **新`run_native_ar_prefix_pilot.py`：** 固定原radio窗口/448 prefix/env0，仿真沿原官方reset/load-instance流程（一个评测回合，不省略框架必需初始化reset），仅把原frozen window的max_chunks80收窄至16；原物理oracle/录像/C1记录不改，高层/技能不进入actor。新8785私有服务/只检查socket身份的0生成门，仿真首个真实回复先验证23D与历史身份再执行。显式GPU/磁盘门、只清理自己启动的服务、失败不重试；源码/新增协议及真实原窗口缩预算测试待固定Git后CPU验收，尚未启动服务/仿真，不把草稿称闭环。
+
+### 2026-09-13 22:07（北京时间）：原生AR神经→raw23→序列化通过；准备16-chunk局部闭环
+
+- **Codex / AR-01，真实完成：** `ar_native_actor_wire_probe_v1`3140666已退出，result SHA `2570ba7d943b39a05953bc7bcc69b216709955dafb2d3eda6575e45062d82c75`。完整1138/192及native原生词表精确恢复，已有448前缀末一次真实生成60动作tokens；全部六raw组/32×23、执行0:16、官方reset躯干第4通道0和原msgpack逐值相同。schema覆盖原argmax5处，非模型自行学会格式；峰值reserved13,384,024,064 bytes，单次推理约12.08s（有并行训练，不是公平吞吐指标）。0新物理动作/更新；原始输出和完整trace保留。首chunk底盘yaw约-0.30，须检查实际行为，不能据接口通过断言动作好。
+- **下一局部预算预登记：** 同radio train121/instance138、env0/policy17、原448动作前缀，原native500＋显式schema、**最多16次神经chunk/256模型控制**，仅一次官方重置，0训练/数据release/额外回合。复用原实际每步观察历史、官方23桥/C1物理记录；固定GRASP只供评估器判据，**不传给task-only actor，不输入oracle反馈**。新专用loopback8785服务、模型/仿真均拟GPU1，模型需40GiB可用、启动仿真再需25GiB，否则不启动/不挤停训练与旧服务；不把共享GPU的墙钟作方法加速证据。先CPU/实际socket身份和完整动作检查，再仿真；保存视频/物理trace并人工看图，到256或官方/物理成功即停，不自动延长到1280或跑全任务。
+- **M-02实际状态：** Beta已进入正式阶段3141061，从原A4独立开始，尚无500完成或效果结论；后五臂仍等待。完整新闭环代码与准确source/启动状态随后记录，不能把此计划算已执行。
+
+### 2026-09-13 22:02（北京时间）：Beta四卡5更新/保存门通过；原生actor真实单次探针运行
+
+- **Codex / M-02：** Beta v2四卡smoke实际5更新，完整保存回读passed：504 Adam/504训练条目改变、冻结不变、四rank RNG、每rank20条来源（共80）；checkpoint SHA `5bc38337304cbe2a06d1eb1f6d74158e9c0b45e32812842d65ff82997a5f8cf6`。这是保存门而非500效果，后续应从原A4独立正式500；原六臂队列/预算保持。
+- **Codex / AR-01：** 0701fd1独立`git_worktrees/ar_native_actor_wire_20260913`274 CPU passed（1.62s）。`ar_native_actor_wire_probe_v1`于22:01:12启动3140666，同级`.launch.log`；原native500、已有448前缀末一次神经/schema/原桥/序列化，0训练与仿真，当前完整权重加载中、尚无通过结果，不重复十状态处理器门或改旧服务。
+
 ### 2026-09-13 22:00（北京时间）：原生AR神经/原桥接入口已写，待CPU后单次真实验证
 
 - **Codex / AR-01：** 新`native_ar_actor_runtime.py`只载入已完整验收的native500，保留原生词表（配置仍按native base，不因500路径错误注册HL_END）、完整1138/192逐位回载、同train-only统计；只构建原处理器，不实例化训练/评估dataset。复用已固定SHA的实际history ingress与原postprocessed-raw→official23桥，不伪装成FM snapshot。
