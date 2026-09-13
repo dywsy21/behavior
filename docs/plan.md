@@ -10,6 +10,13 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 15:54（北京时间）：FM control500完成验收，准备唯一AE×2候选；完整AR训练编排已写
+
+- **Codex / M-01，前轮为progress：** 上轮完成54项回归、40真实AR视图和Git同步；本轮clean pull/fetch后重新核验真实进程。control于15:50:53完成，supervisor1499025/torchrun1508221均已退出；`formal_checkpoint_inspection.json`passed，step500 SHA `def222a6674e6ac92e6ee982c22836b789240f1542c459d5de2111cd646a244e`，504 Adam均500、全部模型/Adam有限、冻结状态未变、四rank RNG与各2000次train抽取验收。不是仅凭PID退出认定成功。
+- **实际效果/限制：** 原固定80 step500=0.1982012083，相比A4父0.1969439941高约0.638%；五task依次0.14149776/0.16176960/0.27347011/0.16389004/0.25037853。此配方是同A4新Adam/50步warmup/cosine500，不是原日程的等价续训。没有新的SR，不能因该短对照未改善就否定SFT。旧AR短GPU门曾共卡，因此整轮墙钟不作公平速度指标。
+- **M-01下一臂预登记：** `fm_ae_lr2x_v1`，仍Git fb40145/同A4 SHA/原950-50/seed41/四卡global16/500更新、每100原80；唯一变化AE1e-5→2e-5，LoRA维持1e-5。先同源GPU两更新与四卡5步保存回读，再从父A4独立正式500；不部署/自动追加/清理旧文件。15:52各卡空闲约50/79/49/49GiB、盘余637GiB，保留120GiB；六个旧服务保留。拟启动，非已运行。
+- **AR-01/M-04实质实现：** 新`train_action_method_probe.py`接入已验原完整loader、四卡global16、AR/joint/KI与同入口纯FM对照；全A4初始化、先5更新保存回读再独立500，CE/FM严格分开、原固定80 prefix-only FM及每task一条目标自由生成、实际draw/冻结/Adam/RNG证据。首版workers0使数据与模型RNG可定位，故不和旧四worker FM入口声称同墙钟/完全相同随机过程；初始完整80须实测复现父A4参考值。当前语法门通过、11项新CPU测试待执行，实际AR训练尚未启动；新进程断点续训仍须另外验证，不能把保存回读冒称已验证恢复。该AR臂为FM训练后A4的技能条件微调，不是原生G0.5+CoT复现；后者及闭环/组合仍在goal内。
+
 ### 2026-09-13 15:38（北京时间）：54项回归与AR全部真实码块校验通过
 
 - **Codex / AR-01：** 新独立worktree `ar_blocks_20260913`固定7edf644，robo实际54项CPU回归通过；`ar_input_gate_v2/result.json`complete，SHA `f4fe54428154821af39a4c53062d959edd8d618c13094cb1fbc6bd3324f361ea`。10条原train×4视图均完整60动作tokens/8码块；每个残差级与两个夹爪码块齐全，prefix/无截断/真实23D约定保持。0神经前向、0更新、0仿真；不将正确teacher target等同自由生成已过。
