@@ -12,6 +12,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 21:29（北京时间）：native500更新/最终eval已到位，检查保存；观察门v3真实运行
+
+- **Codex / AR-01，真实训练进度：** native task-AR500更新/8000原train抽取已完成，固定80 CE6.738782585，五task自由仍各37 tokens/0完整组，尚无SR；此刻完整checkpoint保存回读与后继放行仍待核验。四rank各1000条microbatch来源回执与A4-AR500对应文件SHA逐对相同，明确是相同真实来源/顺序，不宣称像素/两个不同条件和初始化完全相同。
+- **真实观察门：** 9eb4c8a独立`git_worktrees/ar_native_observations_v3_20260913`230 CPU tests passed（1.80s）；`ar_native_observation_gate_v3`于21:27:26启动3126741，沿已声明十状态/0VLM/优化/仿真验证，不再丢失reference样本，真实最终结果待验。
+- **后续接线实质代码：** 新`infer_native_task_observation`将public观察→实际policy.forward_inference→原23D逆变换串起，只传samples/pixels/static mask，拒绝训练态、技能路由混用、collator产出GT及未声明的CoT约束解码。支持显式非CoT schema变体、保留trace；新增无teacher调用/路由测试，语法通过，CPU待验。未启动模型服务/仿真、未更换现有actor。main6125886已ff pull到robo，活跃源不热改。
+
 ### 2026-09-13 21:25（北京时间）：观察门v2像素/状态已相同，后续比较被原collator就地pop中断
 
 - **Codex / AR-01，真实范围：** `ar_native_observation_gate_v2`3095966已退出；首原train通过静态mask、实际collate及同状态像素/归一化proprio比较，在取reference['samples']时KeyError。原`collate_fn_pad_sequences`会就地pop该字段，新探针此前把唯一reference直接传给它；这是检查器的可变对象使用错误，不是actor接收了teacher或相机顺序仍不一致。

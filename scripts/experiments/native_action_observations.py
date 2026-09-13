@@ -8,7 +8,9 @@ camera-major Base template. Shared training processors are never modified.
 from __future__ import annotations
 
 from copy import deepcopy
+from contextlib import nullcontext
 from dataclasses import dataclass
+import time
 
 import torch
 
@@ -172,3 +174,42 @@ class NativeTaskObservationProcessor:
                     or not torch.isfinite(value).all()):
                 raise ValueError("Invalid raw inverse action or wrong execution start: " + name)
         return raw
+
+
+def infer_native_task_observation(policy, adapter, observation, *, device, constrain_format=False):
+    """One observed-only native actor call, followed by the checked inverse.
+
+    History admission and session RNG are owned by the external controller.
+    No installed skill, teacher token, future action, or physical truth is an
+    argument to this entry. Schema constraints are an explicit optional variant.
+    """
+    from g05.utils.common.pytorch_utils import dict_apply
+    from g05.models.g05.helpers.action_schema_decoding import constrained_action_schema
+
+    settings = policy.action_training
+    if (policy.training or settings.route != "ar" or settings.conditioning not in {"native_task", "native_subtask_cot"}
+            or type(constrain_format) is not bool or constrain_format and settings.predicts_cot):
+        raise ValueError("Require eval-mode native task AR; initial constrained variant is non-CoT only")
+    device = torch.device(device)
+    started = time.monotonic()
+    prepared = adapter.preprocess_for_inference(observation)
+    batch = dict_apply(adapter.collate(prepared),
+        lambda value: value.to(device) if isinstance(value, torch.Tensor) else value)
+    if any(key in batch for key in ("action", "action_gt", "gt_action", "action_is_pad")):
+        raise ValueError("Native actor collator emitted forbidden future/teacher targets")
+    prepared_at = time.monotonic()
+    precision = torch.autocast("cuda", dtype=torch.bfloat16) if device.type == "cuda" else nullcontext()
+    with torch.no_grad(), precision:
+        with constrained_action_schema(policy) if constrain_format else nullcontext() as sampler:
+            prediction = policy.forward_inference(samples=batch["samples"], pixel_values=batch["pixel_values"],
+                                                   action_dim_is_pad=batch["action_dim_is_pad"])
+    generated_at = time.monotonic()
+    raw = adapter.postprocess_action(prediction, prepared)
+    return dict(grouped_raw_action=raw, generated=prediction,
+        schema=sampler.require_complete() if sampler is not None else None,
+        schema_trace=sampler.trace if sampler is not None else [],
+        timing=dict(preprocess_ms=(prepared_at - started) * 1000,
+                    infer_ms=(generated_at - prepared_at) * 1000,
+                    postprocess_ms=(time.monotonic() - generated_at) * 1000),
+        actor_route=settings.conditioning + "_ar", teacher_or_planner_in_actor=False,
+        static_format_forced=constrain_format, execution_start=0, execution_steps=16)

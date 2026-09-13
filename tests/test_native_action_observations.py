@@ -18,6 +18,62 @@ def test_real_source_collator_cannot_consume_the_reference_sample():
     assert reference["samples"]["proprio"].eq(1).all()
 
 
+def actor_fixture():
+    from g05.utils.training.ar_training_methods import ActionTrainingSettings
+    batch = dict(samples=[dict(command="task", proprio="observed")],
+        pixel_values={"exterior": torch.zeros(1, 6, 3, 4, 4)},
+        action_dim_is_pad=torch.zeros(1, 27, dtype=torch.bool))
+    calls = []
+    def predict(**kwargs):
+        assert not torch.is_grad_enabled()
+        calls.append(kwargs)
+        return {"test": "neural-output-placeholder"}
+    adapter = SimpleNamespace(preprocess_for_inference=lambda observed: observed,
+        collate=lambda prepared: batch, postprocess_action=lambda predicted, prepared: {"test": "raw-placeholder"})
+    policy = SimpleNamespace(training=False, action_training=ActionTrainingSettings(conditioning="native_task"),
+        forward_inference=predict)
+    return policy, adapter, batch, calls
+
+
+def test_native_actor_call_has_no_planner_teacher_or_raw_diagnostic_arguments():
+    from native_action_observations import infer_native_task_observation
+    policy, adapter, batch, calls = actor_fixture()
+    result = infer_native_task_observation(policy, adapter, {}, device="cpu")
+    assert len(calls) == 1 and set(calls[0]) == {"samples", "pixel_values", "action_dim_is_pad"}
+    assert calls[0]["samples"] == batch["samples"]
+    assert not result["teacher_or_planner_in_actor"] and not result["static_format_forced"]
+
+
+@pytest.mark.parametrize("field", ["action", "gt_action", "action_gt", "action_is_pad"])
+def test_native_actor_refuses_target_emission_before_any_neural_call(field):
+    from native_action_observations import infer_native_task_observation
+    policy, adapter, batch, calls = actor_fixture()
+    batch[field] = torch.zeros(1)
+    with pytest.raises(ValueError, match="forbidden"):
+        infer_native_task_observation(policy, adapter, {}, device="cpu")
+    assert calls == []
+
+
+@pytest.mark.parametrize("damage", ["training", "skill_route", "cot_schema", "implicit_schema"])
+def test_native_actor_cannot_silently_change_a_conditioning_or_decoding_route(damage):
+    from g05.utils.training.ar_training_methods import ActionTrainingSettings
+    from native_action_observations import infer_native_task_observation
+    policy, adapter, _, calls = actor_fixture()
+    constraint = False
+    if damage == "training":
+        policy.training = True
+    elif damage == "skill_route":
+        policy.action_training = ActionTrainingSettings(conditioning="skills")
+    elif damage == "cot_schema":
+        policy.action_training = ActionTrainingSettings(conditioning="native_subtask_cot")
+        constraint = True
+    else:
+        constraint = "false"
+    with pytest.raises(ValueError):
+        infer_native_task_observation(policy, adapter, {}, device="cpu", constrain_format=constraint)
+    assert calls == []
+
+
 def observation():
     return dict(task="turn on the radio", embodiment_type="galaxea_r1pro", frequency=30.,
         images={camera: torch.zeros(6, 3, 8, 8, dtype=torch.uint8) for camera in CAMERAS},
