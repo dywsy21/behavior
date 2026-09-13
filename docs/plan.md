@@ -10,6 +10,38 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 14:00（北京时间）：M-01 control编排已启动，真实GPU门进行中
+
+- **Codex / M-01，运行中：** robo独立worktree固定`fb40145d62b387ead5e9b25ea8a45c4a2fef57cc`，22项CPU检查通过后启动supervisor1499025；run `dual_track_fm_ar_20260913/fm_control_v1`，`method_spec.json` SHA `569455fb9ca4c0417cae9a998c767e82cdf846c9703a7f64adb62fb7718a9d03`。启动前再次确认无其他训练/仿真，六个旧服务保留，不热pull此worktree。
+- **当前阶段/边界：** 正在GPU1加载A4并检查真实未改评估口径、两次临时优化；随后须四卡5步checkpoint回读通过，才自动进入独立500步正式control。编排启动不等于已训练500步或方法有效；AE×2及其他候选、AR策略训练/闭环均未完成。
+- **证据/下一步：** 进度`status.json`，详细`gate.log`/`smoke.log`/`formal.log`，每一门失败即停且保留原证据，无自动重试。继续核验实际更新和正式阶段，结果及时同步团队main文档，实验代码只在feature。
+
+### 2026-09-13 13:58（北京时间）：AR十行编码门完成，FM真实训练配方待GPU门
+
+- **Codex / AR-00：** Git `2dd2cac`，robo真实CPU 15项测试通过；`dual_track_fm_ar_20260913/ar_codec_gate_v3/result.json`complete，10条原train/五任务，8个完整16步窗口＋5/8步末尾窗口，合计141个有效执行目标。全组原32/holdpad32均完整解码、原有效前缀不变、候选不受未执行后缀变化影响。直接16步10/10不支持，不能只改配置horizon上线。
+- **结果边界：** 逐行归一化有效维RMSE均值原32为0.0219491，holdpad为0.0215759，7/10行改善、3/10变差；约1.70%均值下降仅是小缓存工程诊断，不是AR学习/泛化或成功率证据。v1/v2失败保留。AR后续仍需明确codec/任务条件/自由生成的真实训练与闭环。
+- **Codex / M-01，拟开训：** 新增`train_fm_method_probe.py`，显式hash绑定原A3 trainer、A4安全编排与新训练forward扩展；7项本地标准库配方测试通过。先启动唯一control：A4-2500完整权重初始化、新Adam/scheduler、seed41、原950/50数据/采样、6帧/32预测/0:16执行、四卡global16、动作专家与LoRA均1e-5、50步warmup/500步cosine至0.1。真实GPU恢复/评估口径/2次更新门→四卡5步保存回读→独立正式500更新，每100步原固定80、500步checkpoint；不自动再训/部署、不占队友数据或RL职责。
+- **对照/资源/停止：** 后续ae_lr2x仅动作专家2e-5，LoRA保持1e-5，其余含初始化和采样顺序相同；本轮不同时组合方法。robo四卡余约50/81/50/50GiB、sdc1余669GiB；GPU1做单卡门，正式四卡保留现有服务，磁盘保留120GiB、数值/身份/恢复失败即停、无自动重试。尚未启动该编排，大模型门/正式更新/双方效果均未完成。
+
+### 2026-09-13 13:53（北京时间）：AR探针补齐真实轨迹末尾情况，训练forward隔离入口已写
+
+- **Codex / M-00、AR-00：** v2已完成首条原32步与holdpad对照，直接16步codec不支持；随后因第二条仅5步真实动作、探针错误假定所有行均16步有效而停止。只读检查全部缓存：10行中8行32步有效，另2行仅5/8步有效；这是原轨迹末尾的真实padding，不是损坏数据，不能编造补齐为专家监督。
+- **修正/待验收：** 编码候选支持真实连续有效前缀，内部尾部复制最后一个有效动作；仅对真实有效步评分，完整16步与部分末尾窗口分开计数，缺组/掩码断洞仍拒绝。新增CPU边界测试及只对grad-enabled train forward生效的policy入口，保留原`forward_train`/FM评估实现身份；当前未跑新测试或大模型更新。
+- **下一步：** 新版本Git固定后运行CPU门和codec v3，继而实际GPU更新门及M-01同A4父权重的分组LR对照。v1/v2失败保留，不用首条codec误差下降作为AR方法结论。
+
+### 2026-09-13 13:46（北京时间）：FM的13项CPU检查通过，AR首轮编码门因继承noop配置停止
+
+- **Codex / M-00、AR-00：** 开工已clean pull/fetch，robo独立worktree固定`7d7a8cf`。现有Python环境CPU执行`test_fm_training_methods.py`及`test_fm_velocity_adapter.py`，实际13项通过；覆盖原helper loss/gradient/RNG逐值不变、Beta分层、23D梯度和异常恢复。尚无真实大模型更新或方法收益结论。
+- **AR真实失败/根因界定：** `dual_track_fm_ar_20260913/ar_codec_gate_v1`加载实际codec后，在首条样本发现两个gripper组缺失并按门槛退出。回查配置`dropout_noop_parts=true`和源码：恒定二值夹爪被当noop省略；这是本次探针继承了FM不使用的codec配置，不是新发现FM丢失夹爪，也不能据此解释历史AR全部失败。旧AR v9已显式关闭该开关。
+- **下一步：** 保留v1失败manifest；新探针显式记录关闭noop dropout的“全部动作组”诊断配置，并保持缺组即失败，真实重跑新v2。FM继续真实GPU梯度/固定评估口径门，继而有界训练；两条路线仍未完成。
+
+### 2026-09-13 13:32（北京时间）：双路线goal开始实施，FM可控扩展已写，AR编码门准备中
+
+- **Codex / M-01、AR-01；上一goal轮分类为进展：** 前轮源码证据确认了KI缺失和监督等价关系，但尚无新方法训练。本轮重新检查Git及robo真实进程：无新训练/仿真，GPU1空闲，其他卡各约30GiB旧服务保持；sdc1余669GiB。新分支`feat/dual-track-fm-ar-20260913`从最新main `dbc89c8`建立，不热改原快照。
+- **用户完整目标：** “所有有效的方法都要用上；重新研究纯AR是否可行，两条线都推行实验，结束后给结论；仍为最后大训练做验证准备”。旧仅FM规则按新要求放开独立AR实验，未缩成只做离线loss。执行和验收见[双路线实验计划](experiments/2026-09-13-dual-track-execution.md)。
+- **已写代码/待验证：** `src/g05/utils/training/fm_training_methods.py`实现有作用域、可恢复的原Beta等概率时间分层和执行段加权，以及AR执行前缀内部padding候选；对应CPU测试已写、尚未执行。本地无torch，将从Git独立服务器worktree用现有环境测试，不安装/改动共享环境。
+- **AR证据/下一步：** 旧v10报告证明部分32步codec后半段影响前16步刹车，不等于AR路线本身不行。本轮已回读原train处理缓存：5个真实microbatch/10条样本、五task、动作[2,32,27]、SHA `237acf01b29bd0d6806ed1a11d9033a747640b3ea9e0bf7246b7a62b4e92be81`。先真实codec前缀往返门，继而训练和闭环；缓存仅用于工程门，不能作为整条路线效果样本。新训练、AR rollout、方法组合与最终结论均未完成。
+
 ### 2026-09-13 13:15（北京时间）：训练超参与方法候选完成，只分析未开训
 
 - **Codex / A-02：** 核对SkillFM、FMHelper与Qwen3.5 prefix缓存实现，并查PI Knowledge Insulation、MolmoAct2当前微调配方及PCGrad一手资料。明确`joint_training=true`只是FM→VLM梯度连通，当前SkillFM禁止离散动作目标；不是已实现CE＋FM/KI。

@@ -34,7 +34,11 @@ A3 checkpoint：`865193f1c8a257d72ea159bd7a46cebf945b0fd24905110b831f0e8a3438e94
 
 ### 本轮实验状态
 
-训练方法补充：Codex已完成[超参与方法候选](experiments/2026-09-13-fm-training-method-candidates.md)选型，区分低成本分组LR/Beta时间分层与需实现的KI-inspired双监督；当前SkillFM并未具备KI。未实施/开训，先选一个有界对照，不自动全矩阵搜索。
+14:00（北京时间）：M-01 control编排已在robo启动，run `dual_track_fm_ar_20260913/fm_control_v1`、supervisor1499025、固定Git fb40145；22项CPU门通过，当前真实单卡门，不冒称500步正式已完成。通过真实更新/四卡保存回读后才进入有界500步；AE×2对照及AR策略训练尚未启动。其他职责与旧服务保留。
+
+2026-09-13用户已授权双路线实验证明：Codex推进FM有效方法筛选/组合与纯AR重新验证，两条线均须训练和闭环，不能只交选型建议。新增M-01/AR-01分阶段验收见[双路线计划](experiments/2026-09-13-dual-track-execution.md)。13:58状态：15项FM/codec CPU测试与7项训练配方检查通过；10条真实train编码门完成，直接16步不支持、holdpad32有升有降，尚无AR策略效果。M-01先准备同A4父权重control500步，再作动作专家LR单因素对照；真实GPU门和正式更新未启动。数据扩充与RL职责仍归两位队友。
+
+训练方法补充：Codex已完成[超参与方法候选](experiments/2026-09-13-fm-training-method-candidates.md)选型，区分低成本分组LR/Beta时间分层与需实现的KI-inspired双监督；当前SkillFM并未具备KI。以下13:15“未实施”是历史状态，后续以本节及plan最新记录为准；按双路线goal分阶段验证，不自动全矩阵搜索。
 
 2026-09-13只读学习效率审计：A4固定80先升至0.201226、后降至0.196944；既有10样本100步FM 0.107716→0.017985。暂不支持“学习率过小/梯度裁剪导致学不动”的简单归因。Codex建议先做固定train/eval及关键动作诊断，再有界单变量LR对照；尚未启动新训练或修改模型/采样，详见[学习效率审计](experiments/2026-09-13-fm-learning-efficiency-audit.md)。
 
