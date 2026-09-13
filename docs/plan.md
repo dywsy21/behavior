@@ -10,6 +10,13 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 16:49（北京时间）：确认原生G0.5身份，增加明确的原生AR初始化与模板
+
+- **Codex / AR-01，实查完成：** 上轮新增首个AE×2诊断证据，属于progress；本轮clean pull/fetch后实查1902909/1912524仍活跃（最近日志153/500），1940901仍verified_live_dependency。原生权重实际为`/mnt/sdc1/robodojo/checkpoints/G05/g05-base/checkpoints/model_state_dict.pt`，11,440,519,964 bytes，SHA `072211e5b2f5ef036729bae673f3f44da40adbea5c0044af55fe2fb8af654327`，与本地HF下载metadata一致（revision `e312be81e90c56a55bcb26b57429bd39a335b449`）；946基础状态、0 LoRA，仅权重无Adam。配套config SHA `c98af37352c0f600341d2ecbdb49fcdfa87812198654448991615065fa1a4461`，27D接口；没有重新下载权重。
+- **实现/待验证：** 新`native_action_initialization.py`逐项验证原946状态与新192 LoRA的零B初始化，拒绝A4 adapter混入或随机/部分加载。AR数据视图增加`native_task`，与原`BaseSamplesBuilder`动作模板精确对应（包含终止竖线），不改已有skills/task视图。现有GPU入口支持显式native/A4起点；native每task选一条真实train窗口，在两临时更新前后各自由生成一次，保留不完整动作失败而不补零/FM。新CPU用例及语法检查已写，真实CPU/GPU尚待验收；不热改两个活跃worktree。
+- **下一有界执行：** 拟新`ar_native_skills_gpu_gate_v1`与`ar_native_task_gpu_gate_v1`，GPU1串行、原10行train缓存中的原前两行作两临时更新、seed41/LR1e-5，五task×前后共10自由生成/臂、0保存权重/仿真；前者分离native与A4初始化差异，后者检验官方动作模板/纯任务条件。实际代码commit/输入与权重SHA由manifest固定；当前GPU1约45GiB可用，门槛40GiB，不停别的任务，共卡时间不作公平吞吐。过真实学习门后才接原950/50的有界原生AR训练，不重复十行拟合冒充正式训练。
+- **CoT边界：** 发布权重配置predict_cot=true，而官方R1Pro微调recipe默认false；原五任务parquet无原生CoT字段。先验证原生权重的动作-only微调入口，不捏造grounding/action-hint标签，不冒称复现论文BEHAVIOR权重或完整CoT配方。原生推理CoT与监督可用性仍待进一步核实，完整双路线/组合/闭环未完成。
+
 ### 2026-09-13 16:35（北京时间）：AE×2首个100步评估尚未改善，超参答疑不改活跃训练
 
 - **Codex / M-01，只读实查：** 16:33:35核验FM supervisor1902909/torchrun1912524仍活跃，`fm_ae_lr2x_v1`处于formal；首个原固定80结果`formal/fixed_diagnostic/step_100.json`为0.1986116943，SHA `dca01b74cc0e9f488274b64b3d39bd02c546cce7cc33668bd14b9843146f1ad6`。同更新数control100为0.1971548254，候选高约0.739%；相对A4父高约0.847%。这是中途一个固定窗口/噪声诊断点，不是500步结论或SR，不能据此终止或追加预算。各task依次0.14445460/0.16000390/0.27245573/0.16426686/0.25187739。

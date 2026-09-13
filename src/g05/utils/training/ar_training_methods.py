@@ -23,8 +23,8 @@ class ActionTrainingSettings:
     def __post_init__(self):
         if self.route not in {"ar", "joint", "ki"}:
             raise ValueError("route must be ar, joint or ki")
-        if self.conditioning not in {"skills", "task"}:
-            raise ValueError("conditioning must be skills or task")
+        if self.conditioning not in {"skills", "task", "native_task"}:
+            raise ValueError("conditioning must be skills, task or native_task")
         if self.codec_mode not in {"original32", "prefix16_holdpad32"}:
             raise ValueError("unsupported codec horizon convention")
         if self.route != "ar" and (self.conditioning != "skills" or self.codec_mode != "original32"):
@@ -104,11 +104,20 @@ def action_prefix_samples(samples, settings: ActionTrainingSettings):
         if any(key in sample for key in ("gt_action", "future_state", "teacher_action")):
             raise ValueError("future/teacher fields cannot enter the actor prefix")
         value = deepcopy(sample)
-        if settings.conditioning == "task":
+        if settings.conditioning in {"task", "native_task"}:
             template = template.replace(SKILL_INPUT, "", 1)
             for key in ("parent_goal", "active_skills_text", "active_skills_semantic_json"):
                 value.pop(key, None)
-        value["template"] = template[:-len(FM_ENDING)] + AR_ENDING
+        ending = AR_ENDING
+        if settings.conditioning == "native_task":
+            # Match the upstream BaseSamplesBuilder, including punctuation
+            # and the action terminator. No fabricated CoT supervision.
+            task_slot = "Task: <command_text_!_200>; "
+            if template.count(task_slot) != 1:
+                raise ValueError("native task view requires the exact source command slot")
+            template = template.replace(task_slot, "Task: <command_text_!_200> ", 1)
+            ending = "<EOV><EOC><action_action>|<eos>"
+        value["template"] = template[:-len(FM_ENDING)] + ending
         result.append(value)
     return result
 

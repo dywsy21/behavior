@@ -64,6 +64,27 @@ def test_task_only_removes_skill_inputs_but_preserves_observed_state_and_task():
         assert torch.equal(row["proprio"]["value"], original["proprio"]["value"])
 
 
+def test_native_task_template_exactly_matches_upstream_action_only_builder():
+    from g05.data_processor.processor.samples_builder import BaseSamplesBuilder
+    samples, actions, temporal, dimensions = fixture()
+    settings = ActionTrainingSettings(conditioning="native_task")
+    expected = BaseSamplesBuilder(num_input_images=1, image_sizes={"head": (256, 256)}).template
+    prefix = action_prefix_samples(samples, settings)
+    targets = action_training_samples(samples, actions, temporal, dimensions, settings)
+    for index, (original, row, target) in enumerate(zip(samples, prefix, targets)):
+        assert row["template"] == target["template"] == expected
+        assert "action" not in row and "parent_goal" not in row
+        assert row["command"] == original["command"]
+        assert torch.equal(target["action"]["value"], actions[index])
+
+
+def test_native_task_does_not_guess_a_different_source_template():
+    samples, *_ = fixture()
+    samples[0]["template"] = samples[0]["template"].replace("Task: <command_text_!_200>; ", "Goal: <command_text_!_200>; ")
+    with pytest.raises(ValueError, match="exact source command"):
+        action_prefix_samples(samples, ActionTrainingSettings(conditioning="native_task"))
+
+
 @pytest.mark.parametrize("key", ["action", "gt_action", "future_state", "teacher_action"])
 def test_target_free_rendering_rejects_teacher_fields(key):
     samples, *_ = fixture()

@@ -50,6 +50,7 @@ def code_identity():
         Path(__file__).with_name("action_training_data.py"),
         Path(__file__).with_name("probe_ar_execution_codec.py"),
         Path(__file__).with_name("probe_action_training_gpu.py"),
+        Path(__file__).with_name("native_action_initialization.py"),
         Path(__file__).with_name("train_fm_method_probe.py")]
     from action_training_runtime import EXTENSIONS
     paths.extend(REPO / relative for relative in EXTENSIONS.values())

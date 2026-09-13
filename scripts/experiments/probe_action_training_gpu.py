@@ -1,8 +1,10 @@
 """Bounded real-model AR/joint/KI route gate; not a method-effect experiment.
 
-A4 full-weight warm start, audited original train inputs, two temporary Adam
-updates, actual per-loss gradients and target-free generation. No checkpoint
-is published. Each route is a separate process/output with explicit identity.
+A4 full-weight warm start or explicitly verified native G0.5 initialization,
+audited original train inputs, two temporary Adam updates, actual per-loss
+gradients and target-free generation. The native probe includes one real row
+per task before/after, not a single row repeated five times. No checkpoint is
+published. Each route is a separate process/output with explicit identity.
 """
 from __future__ import annotations
 
@@ -19,9 +21,12 @@ import traceback
 from action_training_runtime import bootstrap, REPO, INPUT, INPUT_SHA, sha
 from probe_ar_execution_codec import publish
 from train_fm_method_probe import PARENT, PARENT_SHA, verify_parent
+from native_action_initialization import (
+    NATIVE_PARENT, NATIVE_PARENT_SHA, NATIVE_CONFIG, NATIVE_CONFIG_SHA, verify_native_parent,
+)
 
 
-def architecture_for(cfg, settings):
+def architecture_for(cfg, settings, *, parent=PARENT):
     from omegaconf import OmegaConf
     OmegaConf.set_struct(cfg, False)
     cfg.tokenizer.vq_config.dropout_noop_parts = False
@@ -36,7 +41,7 @@ def architecture_for(cfg, settings):
     arch.coordination_train.stage = "experimental_" + settings.route
     arch.coordination_train.trainability_profile = "low_ce_fm_lora" if settings.uses_fm else "low_ar_lora"
     arch.coordination_train.expected_trainable_groups = ["action_expert", "vlm_lora"] if settings.uses_fm else ["vlm_lora"]
-    cfg.model.pretrained_ckpt, cfg.resume_ckpt = str(PARENT), None
+    cfg.model.pretrained_ckpt, cfg.resume_ckpt = str(parent), None
     return arch
 
 
@@ -63,14 +68,37 @@ def prepare_action_updates(model, device):
     return contract
 
 
+def task_generation_rows(originals, receipt):
+    """One actual cached train row per task, with its exact original source."""
+    if len(originals) != len(receipt["batches"]):
+        raise RuntimeError("Cached batch/source lengths differ")
+    selected = {}
+    for batch, item in zip(originals, receipt["batches"]):
+        if len(batch["samples"]) != len(item["sources"]):
+            raise RuntimeError("Cached row/source lengths differ")
+        for index, source in enumerate(item["sources"]):
+            task = int(source["task"])
+            if task not in selected:
+                selected[task] = (take_row(batch, index), deepcopy(source))
+    if set(selected) != set(range(5)):
+        raise RuntimeError("Native generation probe requires actual rows from all five tasks")
+    return selected
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--route", required=True, choices=["ar", "joint", "ki"])
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--gpu", required=True, type=int)
+    parser.add_argument("--initialization", choices=["a4", "native"], default="a4")
+    parser.add_argument("--conditioning", choices=["skills", "task", "native_task"], default="skills")
     args = parser.parse_args()
     if not args.output.is_absolute() or args.gpu not in range(4):
         raise ValueError("Use one explicit robo GPU and new absolute output")
+    if args.initialization == "native" and args.route != "ar":
+        raise ValueError("The native initialization probe is currently an explicit pure-AR experiment")
+    parent_path, parent_sha = ((NATIVE_PARENT, NATIVE_PARENT_SHA) if args.initialization == "native"
+                               else (PARENT, PARENT_SHA))
     if subprocess.check_output(["git", "-C", str(REPO), "status", "--porcelain"], text=True).strip():
         raise RuntimeError("Run from a clean, pinned worktree")
     args.output.mkdir(parents=True, exist_ok=False)
@@ -93,32 +121,42 @@ def main():
     if free < 40 * 1024**3:
         raise RuntimeError("Single-row engineering gate requires at least 40 GiB free; do not evict other work")
     original_receipt = json.loads((INPUT / "result.json").read_text())
-    if (sha(PARENT) != PARENT_SHA or sha(INPUT / "actual_cpu_batches.pt") != INPUT_SHA
+    if (sha(parent_path) != parent_sha or sha(INPUT / "actual_cpu_batches.pt") != INPUT_SHA
             or original_receipt["status"] != "complete" or not original_receipt["train_only"]
             or original_receipt["processor_config_sha256"] != sha(INPUT / "diagnostic_processor_config.yaml")):
-        raise RuntimeError("A4 parent or audited train inputs changed")
-    settings = ActionTrainingSettings(route=args.route)
+        raise RuntimeError("Declared parent or audited train inputs changed")
+    if args.initialization == "native" and sha(NATIVE_CONFIG) != NATIVE_CONFIG_SHA:
+        raise RuntimeError("Native checkpoint configuration identity changed")
+    settings = ActionTrainingSettings(route=args.route, conditioning=args.conditioning)
     cfg = OmegaConf.load(INPUT / "diagnostic_processor_config.yaml")
-    arch = architecture_for(cfg, settings)
+    arch = architecture_for(cfg, settings, parent=parent_path)
     identity.update(commit=subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
-        gpu=args.gpu, parent=str(PARENT), parent_sha256=PARENT_SHA, input_sha256=INPUT_SHA,
+        gpu=args.gpu, parent=str(parent_path), parent_sha256=parent_sha, input_sha256=INPUT_SHA,
+        initialization=args.initialization,
+        native_config_sha256=NATIVE_CONFIG_SHA if args.initialization == "native" else None,
+        initialization_helper_sha256=sha(Path(__file__).with_name("native_action_initialization.py")),
         input_config_sha256=sha(INPUT / "diagnostic_processor_config.yaml"), entry_sha256=sha(Path(__file__)),
         start_time=datetime.now(timezone.utc).isoformat(), settings=settings.as_dict(),
         architecture=OmegaConf.to_container(arch, resolve=True), max_updates=2, single_row_microbatch=True,
+        target_free_generations=10 if args.initialization == "native" else 2,
         checkpoint_saved=False, simulator_controls=0, formal_training=False,
         timing_comparison_valid=False, timing_note="May share a GPU with an independent FM job; correctness only.")
     publish(args.output / "manifest.json", identity)
-    print(json.dumps(dict(stage="load", route=args.route, parent_sha256=PARENT_SHA)), flush=True)
-    model, parent = load_model_from_checkpoint(arch, str(PARENT), device="cuda:0",
+    print(json.dumps(dict(stage="load", route=args.route, parent_sha256=parent_sha)), flush=True)
+    model, parent = load_model_from_checkpoint(arch, str(parent_path), device="cuda:0",
                                               eval_mode=False, return_full_checkpoint=True)
-    verify_parent(model, parent)
+    if args.initialization == "native":
+        restoration = verify_native_parent(model, parent)
+    else:
+        verify_parent(model, parent)
+        restoration = dict(passed=True, exact_state_entries=1138, exact_lora_entries=192)
     del parent
     gc.collect()
     contract = prepare_action_updates(model, "cuda:0")
-    publish(args.output / "restoration.json", dict(passed=True, exact_state_entries=1138,
-        exact_lora_entries=192, trainability=contract))
+    publish(args.output / "restoration.json", dict(**restoration, trainability=contract))
     originals = torch.load(INPUT / "actual_cpu_batches.pt", map_location="cpu", weights_only=False)
     cpu_rows = [take_row(batch) for batch in originals[:2]]
+    generation_rows = task_generation_rows(originals, original_receipt) if args.initialization == "native" else {}
     def move(batch):
         return dict_apply(deepcopy(batch), lambda x: x.to("cuda:0") if isinstance(x, torch.Tensor) else x)
     first = move(cpu_rows[0])
@@ -197,7 +235,9 @@ def main():
     del total, value
     raw.clear()
 
-    def free_generation(label):
+    def free_generation(label, current=None, source=None):
+        current = first if current is None else current
+        source = original_receipt["batches"][0]["sources"][0] if source is None else source
         model.eval()
         generated = {}
         original_ar = model.model.inference_ar
@@ -210,11 +250,11 @@ def main():
             with torch.random.fork_rng(devices=[0]), torch.autocast("cuda", dtype=torch.bfloat16):
                 torch.manual_seed(17)
                 torch.cuda.manual_seed_all(17)
-                result = model.forward_inference(first["samples"], first["pixel_values"],
-                                                 action_dim_is_pad=first["action_dim_is_pad"])
-            target = first["action"].to(result["action"].device)
-            valid = ((~first["action_is_pad"][:, :16])[:, :, None]
-                     & (~first["action_dim_is_pad"])[:, None, :]).to(target.device)
+                result = model.forward_inference(current["samples"], current["pixel_values"],
+                                                 action_dim_is_pad=current["action_dim_is_pad"])
+            target = current["action"].to(result["action"].device)
+            valid = ((~current["action_is_pad"][:, :16])[:, :, None]
+                     & (~current["action_dim_is_pad"])[:, None, :]).to(target.device)
             error = (result["action"][:, :16] - target[:, :16])[valid]
             report = dict(valid=True, selected_action_source=result["selected_action_source"],
                 normalized_executed_rmse=float(error.square().mean().sqrt()),
@@ -226,11 +266,22 @@ def main():
         finally:
             model.model.inference_ar = original_ar
             publish(args.output / f"{label}_raw_generation.json", generated)
-        report.update(generated=generated, source=original_receipt["batches"][0]["sources"][0])
+        report.update(generated=generated, source=source)
         publish(args.output / f"{label}_generation.json", report)
         return report
 
     generated_before = free_generation("before")
+    def other_task_generations(label, first_result):
+        if not generation_rows:
+            return [first_result]
+        reports = []
+        for task, (original, source) in sorted(generation_rows.items()):
+            if source == first_result["source"]:
+                reports.append(first_result)
+            else:
+                reports.append(free_generation(f"{label}_task{task}", move(original), source))
+        return reports
+    generations_before = other_task_generations("before", generated_before)
     params = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.AdamW(params, lr=1e-5, betas=(.9, .95), weight_decay=.03)
     model.train()
@@ -261,17 +312,20 @@ def main():
             or any(not torch.isfinite(s[key]).all() for s in optimizer.state.values() for key in ("exp_avg", "exp_avg_sq"))):
         raise RuntimeError("Adam state/actual update count/finiteness check failed")
     generated_after = free_generation("after")
+    generations_after = other_task_generations("after", generated_after)
     model.eval()
     after, _ = fixed_forward()
     publish(args.output / "result.json", dict(complete=True, gradient_and_update_gate_passed=True,
         inference_valid_before=generated_before["valid"], inference_valid_after=generated_after["valid"],
+        generations_before=generations_before, generations_after=generations_after,
         settings=settings.as_dict(), actual_updates=2, adam_state_count=len(optimizer.state),
         before=before, after=after, updates=updates, gradient_routes=gradient_routes,
-        peak_memory_reserved_bytes=torch.cuda.max_memory_reserved(), parent_sha256=PARENT_SHA,
+        peak_memory_reserved_bytes=torch.cuda.max_memory_reserved(), parent_sha256=parent_sha,
+        initialization=args.initialization,
         checkpoint_saved=False, formal_training=False, simulator_controls=0,
         limitations=["Two temporary updates are not a training-method effect or success-rate experiment.",
-                     "A4 is an FM-trained warm start, not a reproduced native upstream AR checkpoint.",
-                     "One-row generation check is not a policy success rate; timing may include GPU sharing."]))
+                     "Initialization is explicit; this is not the published BEHAVIOR policy or full CoT recipe.",
+                     "Train-window generation validity is not success rate; timing may include GPU sharing."]))
     print(json.dumps(dict(complete=True, route=args.route, actual_updates=2,
                          inference_valid_after=generated_after["valid"])), flush=True)
 

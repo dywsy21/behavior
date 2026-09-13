@@ -6,7 +6,7 @@ import pytest
 import torch
 from omegaconf import OmegaConf
 
-from probe_action_training_gpu import architecture_for, prepare_action_updates, take_row
+from probe_action_training_gpu import architecture_for, prepare_action_updates, take_row, task_generation_rows
 from g05.utils.training.ar_training_methods import ActionTrainingSettings
 
 
@@ -46,3 +46,27 @@ def test_one_row_is_a_real_slice_not_a_repeat_or_audit_payload():
     assert "audit_only" not in result
     result["action"].zero_()
     assert batch["action"][1].count_nonzero()
+
+
+def test_native_parent_override_is_explicit_without_changing_default_recipe():
+    cfg = OmegaConf.create(dict(tokenizer=dict(vq_config=dict(dropout_noop_parts=True)),
+        model=dict(model_arch=dict(fm={}, AT_CONFIG={}, coordination_train={}))))
+    result = architecture_for(cfg, ActionTrainingSettings(conditioning="native_task"), parent="/native/model.pt")
+    assert cfg.model.pretrained_ckpt == "/native/model.pt"
+    assert result.action_training.conditioning == "native_task"
+    assert not result.continuous_action and not result.predict_cot
+
+
+def test_generation_rows_cover_real_five_tasks_without_repeating_one_row():
+    batches, receipts = [], []
+    for task in range(5):
+        batches.append(dict(samples=[dict(task=task)], action=torch.full((1, 32, 27), float(task)),
+            action_is_pad=torch.zeros(1, 32, dtype=torch.bool), action_dim_is_pad=torch.zeros(1, 27, dtype=torch.bool),
+            pixel_values={"head": torch.full((1, 2), float(task))}))
+        receipts.append(dict(sources=[dict(task=task, episode=task + 100, frame=42)]))
+    rows = task_generation_rows(batches, dict(batches=receipts))
+    for task, (batch, source) in rows.items():
+        assert batch["samples"] == [dict(task=task)] and source == receipts[task]["sources"][0]
+        assert batch["action"].eq(task).all()
+    with pytest.raises(RuntimeError, match="all five"):
+        task_generation_rows(batches[:4], dict(batches=receipts[:4]))
