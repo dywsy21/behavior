@@ -26,6 +26,11 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**20:56新AR诊断/候选位置：** 实验根仍为`/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913`。新活跃源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/ar_marker_queue_20260913`固定73e2914，200 CPU passed；同时被schema诊断与等待进程使用，禁止热pull。
+
+- `ar_schema_ar500_v2`：2994300于20:54:34启动，同级`.launch.log`；原AR500的10次静态格式约束生成、0更新/仿真，结果待验。`ar_schema_ar500_v1`首条61 tokens保留在`train_task0_raw.json`（SHA `50d01cf0b897288d2a41cdc8e225fd788667dd06f284e2bb61b7186ced2319e1`），随后评估CPU/CUDA相减失败，2910095已退出，不是成功完成十窗口。
+- `ar_a4_marker_fulltrain_v1`：supervisor2994307已核验真实等待KI2297891，0GPU/0更新；`method_spec.json` SHA `c14c484b88c40e99ffb68bc570b656dfa1bcc5b6a50ff02decc75506a4212c21`，`launch.json`/`status.json`记录依赖身份与阶段。预定原A4＋零初始化8行共享delta、原切分5保存门→独立500；尚无新checkpoint，不能拿20步缓存adapter冒充它。
+
 以下相对目录均在 **W = `/mnt/sdc1/robodojo/behavior_dev/direct_execution_L6rqZ6_20260910`** 下。
 
 | 用途 | W下目录/文件 | 说明 |
@@ -47,6 +52,8 @@
 ## 3. 结果、视频和原始证据去哪找
 
 ### 2026-09-13新增：FM方法与AR重新验证
+
+- **20:38 schema只读GPU：** `dual_track_fm_ar_20260913/ar_schema_ar500_v1` PID2910095，20:34:30启动，固定220312c的`git_worktrees/ar_schema_generation_v2_20260913`（191 CPU passed）。五train＋五原heldout、最多10次AR生成/0更新/仿真，不加载marker20，不热改源；结果尚待验。b8c638d旧worktree只做过CPU测试，没有启动GPU。
 
 - **20:23 marker20完成：** `ar_marker_rows20_v1/result.json` SHA `860e06515a99a48aa7f6c8f243a04990bf3455d39ebe1f9ae62d20e0903e8d31`，20/193 Adam/恢复通过，五task仍漏body。其`trainable_state.pt` SHA `2f1d0fdd7ddebc5b3c03fa74f13fb70f06e62a0fa101db2d52694e0e00580805`只含实验adapter与优化器，依赖AR500父权重，不作为独立发布策略。
 

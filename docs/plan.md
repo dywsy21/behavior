@@ -12,6 +12,24 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 20:56（北京时间）：200 CPU通过，schema修正版运行，唯一marker原切分候选已排队
+
+- **Codex / AR-01，真实检查与启动：** 新独立`git_worktrees/ar_marker_queue_20260913`固定73e2914，robo 200 tests passed（1.85s）。`ar_schema_ar500_v2`于20:54:34启动2994300，仍为原AR500/五train＋五heldout/0更新与仿真；修复后十次生成尚待结果。v1首条与跨设备失败证据保留，不掩盖已发生的一次重复。
+- **实际等待而非训练：** `ar_a4_marker_fulltrain_v1`于20:54:35提交supervisor2994307，spec SHA `c14c484b88c40e99ffb68bc570b656dfa1bcc5b6a50ff02decc75506a4212c21`；PID/argv/start ticks及KI2297891依赖身份核验，status为verified_live_dependency、0GPU/0更新。沿20:38预登记原A4＋零delta、原950/50、5保存门→独立500，193 Adam/1140模型状态待真实四卡门验证，不接20步adapter、不更改已有六臂源码或顺序。
+- **原队列实查：** native task-AR已330/500、5280 train抽取，其后五方法仍保持原等待链。继续核验最终原留出/自由生成，并准备真正无teacher的推理与闭环接口；排队及CPU通过不等于方法收益，未新增仿真或替换旧服务。
+
+### 2026-09-13 20:44（北京时间）：schema首GPU停在指标跨设备比较，保留一条真实完整输出后修评估侧
+
+- **Codex / AR-01，真实失败范围：** `ar_schema_ar500_v1`2910095在首train_task0生成后、计算RMSE时退出；真实codec返回CPU action，GT/mask在CUDA，评估端直接相减报设备不一致。`train_task0_raw.json`保留实际61 tokens与逐步约束trace；已经过策略完整组/有限值检查才到该指标，不是仿真成功或模型学会格式。实际1次生成/0优化/仿真，尚未评估另9窗口。
+- **修复与再验预算：** 新共享`generation_execution_metrics`只将GT和有效mask对齐到生成动作所在设备，保留原0:16/23D计分；新增精确有效窗口测试，并修同类marker探针的尚未触发分支。既有marker20全都未通过完整生成，因此其结果不受影响、不重训。新独立source/CPU通过后拟`ar_schema_ar500_v2`再执行相同10窗口；连同v1已发生的一条，工程修复两轮最多11次生成、仍0更新/仿真，不修改采样/模型/数据或掩盖这一次重复。
+- **未运行的训练入口：** 原切分marker5+500编排正在接线：专属小参数LR/193 Adam/1140状态、原A4完整恢复＋零delta、仅等待KI末臂。尚未提交，不热改原训练队列；新代码待CPU和真实四卡保存门，不先报已训练。
+
+### 2026-09-13 20:38（北京时间）：schema 191 CPU通过并真实运行；准备一个原切分marker候选
+
+- **Codex / AR-01，实际状态：** 220312c独立`ar_schema_generation_v2_20260913`重验191 passed（1.89s）；`ar_schema_ar500_v1`于20:34:30启动2910095，按原10窗口/0更新预算运行，当前在原数据/模型初始化，结果待验。main文档7c4c7a2已ff pull到robo，活跃source未改。
+- **下一训练预算预登记（尚未排队）：** 基于20步配对得到的marker可学习性证据，仅准备一臂`ar_a4_marker_fulltrain_v1`，从原A4 SHA `61867047…`重新初始化/新Adam，绝不接十行拟合adapter；原950/50、seed41、四A100/global16/每rank4 workers、LoRA1e-5、共享8行marker峰值LR1e-3、50 warmup/cosine500，AE与整个原词表冻结。先四卡5次保存门，再独立从A4作500，每100原固定80CE/FM参考及五task**无约束**自由生成。源码完成/CPU通过后才固定新commit，串行等现有KI最后一臂完成，120GiB磁盘保留；身份/非有限/梯度/回载错误停止，500即停，无自动续训/部署。
+- **比较边界：** 现有A4-AR500作实用配方参照；新marker必须走eager CE，原AR500为fused、其ce_z_loss_scale已核实0，两者实现差异保留，不能把完整500的全部收益都归于marker。严格单变量干预证据来自已完成的两臂20步同eager试验；若原留出/闭环有收益，再决定是否补匹配eager原切分对照。此处不新增CoT、rank搜索或训练组合；原生AR及五方法等待链不动。
+
 ### 2026-09-13 20:31（北京时间）：schema首轮CPU发现旧测试跨dtype比较不稳定，修正同dtype精确比较
 
 - **Codex / AR-01，失败如实保留：** b8c638d独立`ar_schema_generation_20260913`为190 passed/1 failed；失败在此前marker的FP64回载投影与FP32矩阵乘法后转FP64比较，差1.79e-7，取决于测试随机顺序，并非新schema解码测试失败。未启动schema GPU。修正为模型状态转换后逐项精确相等、两侧均FP64真实投影逐值相同，不放宽容差或删检查；拟新独立源重验。
