@@ -48,6 +48,8 @@
 
 ### 2026-09-13新增：FM方法与AR重新验证
 
+- **19:32 CoT GPU门完成/下一入口：** `ar_native_subtask_cot_gpu_gate_v1/result.json` SHA `54f83aff390626a0dfc009c5825d6a0769a36d5c3772402229d48477a622a92b`，2672389已退出，两临时更新通过但动作0/5完整组，未发布权重。新独立`git_worktrees/ar_cot_metrics_20260913`固定09ff64a/166 CPU passed，含动作/文本分项CE和两段生成回执、待用AR500只读诊断；尚无新训练/服务，不热改任何仍活跃队列源。
+
 - **19:25原生Subtask-CoT：** 工作树`git_worktrees/ar_native_subtask_cot_v2_20260913`固定5aa3eff；`dual_track_fm_ar_20260913/ar_native_subtask_cot_input_gate_v2/result.json`十行complete，SHA `0d89930ff98ed90144e4aa592d2e0d7c8bc8ef6e3c207f47a610b85098141e6c`，v1检查器padding比较失败保留。`ar_native_subtask_cot_gpu_gate_v1` PID2672389、同级`.launch.log`，只两临时更新/五task自由生成；尚无正式CoT权重或仿真。活跃worktree禁止热改。
 
 - **19:11 AR只读数值诊断完成：** `dual_track_fm_ar_20260913/ar_decode_consistency_a4_v1`，2604744已退出/代码039e268，独立worktree `git_worktrees/ar_decode_consistency_20260913`。46 CPU passed；两原train行/122同历史下一token比较，121 argmax一致、MRoPE与类型mask一致、96 LoRA模块三路径均调用，自由仍漏组，0更新/仿真。`result.json` SHA `161649772d3a5b8a519a6f5916b6dd1201d26df1de3bbca2e341e23f4cbea43b`；`.launch.log`在run同级，不以强制历史诊断冒称actor输出。
