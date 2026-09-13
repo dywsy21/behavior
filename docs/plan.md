@@ -12,6 +12,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 19:18（北京时间）：原生Subtask-CoT显式入口已实现，待真实输入与模型验收
+
+- **Codex / AR-01，代码/未冒称通过：** 新`native_subtask_cot`配方只允许原生G0.5/纯AR；原生词表、EOV显式CE、256 token文本上限，保留原32步/全部23D目标。训练输出逐字复用已审核同状态`active_skills_text`，遵循原`SubtaskCoTBuilder`模板；部署白名单只有任务/六帧观察，拒绝atomic_task/teacher_subtask等答案，不依赖MEM-Lite planner，也不宣称完整复现上游bbox/trace CoT。
+- **架构边界修正：** 真实非BAR decoder在停止token进入KV前就返回；新CoT分支必须将真实生成的EOV恰好提交一次，才能从其hidden开始动作生成。新增停止长度/MRoPE/重复提交检查；未生成EOV、超预算、空subtask或提前生成动作均拒绝，不用固定答案修补。旧AR/FM/J/KI默认行为与活跃worktree未改。
+- **下一有限门：** 新独立worktree跑CPU回归和`ar_native_subtask_cot_input_gate_v1`：原十行/五task、2CPU线程、0VLM/优化/仿真，真实检查未截断、CoT/EOV/60动作token标签、改teacher答案不影响actor前缀。本人逐行核对输出文本与原来源；通过后再单独登记/执行GPU两临时更新与五task自由生成，尚未追加CoT正式500训练。入口`probe_native_subtask_cot_inputs.py`及相关单元检查已写，本地语法/空白检查通过。
+
 ### 2026-09-13 19:11（北京时间）：A4同历史诊断完成；未发现LoRA绕过或位置错位
 
 - **Codex / AR-01，实际完成/0更新：** `ar_decode_consistency_a4_v1`的2604744已退出，result SHA `161649772d3a5b8a519a6f5916b6dd1201d26df1de3bbca2e341e23f4cbea43b`。两原train窗口各61个token，teacher完整前向与缓存强制同历史的MRoPE/类型mask全部一致，122个下一token的argmax有121个一致；96个LoRA模块在完整/缓存/自由路径均实际调用，没有发现整条解码绕过适配器。

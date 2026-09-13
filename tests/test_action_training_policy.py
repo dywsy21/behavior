@@ -185,3 +185,40 @@ def test_actor_refuses_expert_actions_before_prefill(monkeypatch):
     with pytest.raises(ValueError, match="target-free"):
         policy.forward_inference(samples, {}, actions=torch.zeros(1, 32, 27), action_dim_is_pad=mask)
     assert not calls
+
+
+def test_cot_stop_is_committed_once_before_action_hidden_is_used():
+    cache = SparseKVCache(last_linear_layer=1)
+    cache.key_cache[3] = torch.ones(1, 1, 3, 2)
+    cache.value_cache[3] = cache.key_cache[3].clone()
+    forwarded = []
+    class VLM:
+        def embed(self, token):
+            forwarded.append(token.clone())
+            return token[..., None].float().repeat(1, 1, 2)
+        def __call__(self, **kwargs):
+            assert kwargs["kv_cache"] is cache
+            cache.key_cache[3] = torch.cat([cache.key_cache[3], torch.zeros(1, 1, 1, 2)], dim=2)
+            cache.value_cache[3] = cache.key_cache[3].clone()
+            return torch.full((1, 1, 2), 42.), cache
+    core = SimpleNamespace(vlm=VLM(), ar_helper=SimpleNamespace(_assign_token_index=lambda ids: torch.full_like(ids, 6)),
+        attn_implementation="test", build_causal_mask_and_position_ids=lambda ids, mask, **kw:
+            (torch.zeros(1, 1, 1, 4), torch.full((3, 1, 1), 3)),
+        mask_helper=SimpleNamespace(_build_mrope_position_ids=lambda mask, device:
+            torch.arange(mask.shape[1])[None, None].repeat(3, 1, 1)))
+    policy = SimpleNamespace(model=core, processor=SimpleNamespace(eov_token_id=9))
+    state = SimpleNamespace(generated_ids=torch.tensor([[7, 8, 9]]), kv_cache=cache,
+        attention_mask=torch.ones(1, 3), position_ids=torch.arange(3)[None], last_hidden=torch.zeros(1, 2),
+        device=torch.device("cpu"))
+    def invariants(where):
+        assert state.kv_cache.num_items() == state.attention_mask.shape[1] == state.position_ids.shape[-1]
+    state.check_invariants = invariants
+    returned = module.G05PolicyMEMLiteAction._commit_generated_cot_eov(policy, state)
+    assert returned is state and len(forwarded) == 1 and forwarded[0].tolist() == [[9]]
+    assert state.last_hidden.eq(42).all() and state.position_ids.shape == (3, 1, 4)
+    with pytest.raises(RuntimeError, match="real EOV"):
+        module.G05PolicyMEMLiteAction._commit_generated_cot_eov(policy, state)
+    assert len(forwarded) == 1
+    state.generated_ids = torch.tensor([[7, 8]])
+    with pytest.raises(RuntimeError, match="real EOV"):
+        module.G05PolicyMEMLiteAction._commit_generated_cot_eov(policy, state)

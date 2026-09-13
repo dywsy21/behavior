@@ -8,7 +8,7 @@ import torch
 
 from g05.utils.training.ar_training_methods import (
     ActionTrainingSettings, action_prefix_samples, action_training_samples, validate_complete_action_tokens,
-    native_task_actor_samples,
+    native_task_actor_samples, native_subtask_cot_actor_samples,
 )
 
 
@@ -137,6 +137,56 @@ def test_gradient_route_declaration():
     assert not original.uses_fm
     assert replace(original, route="joint").uses_fm
     assert replace(original, route="ki").uses_fm
+
+
+def cot_fixture():
+    values = fixture()
+    for row in values[0]:
+        row.update(embodiment="r1pro", image0={"value": torch.ones(1)})
+    return values
+
+
+def test_native_cot_prefix_has_no_teacher_skill_and_exact_upstream_template():
+    from g05.data_processor.processor.samples_builder import SubtaskCoTBuilder
+    samples, *_ = cot_fixture()
+    settings = ActionTrainingSettings(conditioning="native_subtask_cot")
+    assert settings.predicts_cot and not settings.uses_fm
+    actual = action_prefix_samples(samples, settings)
+    assert actual[0]["template"] == SubtaskCoTBuilder(1, {"head": (256, 256)}).template
+    assert set(actual[0]) == {"template", "command", "embodiment", "proprio", "image0", "prompt"}
+    assert actual[0]["prompt"] == "predict subtask"
+    again = native_subtask_cot_actor_samples(actual, num_images=1)
+    assert again[0]["template"] == actual[0]["template"]
+
+
+@pytest.mark.parametrize("key", ["atomic_task", "cot_target", "teacher_subtask", "action"])
+def test_native_cot_actor_rejects_supervised_answers(key):
+    samples, *_ = cot_fixture()
+    samples[0][key] = "not an observation"
+    with pytest.raises(ValueError):
+        action_prefix_samples(samples, ActionTrainingSettings(conditioning="native_subtask_cot"))
+
+
+def test_subtask_target_is_exact_same_state_text_on_output_side_only(monkeypatch):
+    import g05.data_processor.processor.samples_builder as builders
+    monkeypatch.setattr(builders, "validate_embedded_model_projection", lambda sample:
+        dict(memlite_branch="low", task_complete=False, next_decision="EXECUTE", active_skills=[dict(verb="GRASP")]))
+    samples, actions, temporal, dimensions = cot_fixture()
+    settings = ActionTrainingSettings(conditioning="native_subtask_cot")
+    result = action_training_samples(samples, actions, temporal, dimensions, settings)
+    assert result[0]["atomic_task"] == "Subtask: " + samples[0]["active_skills_text"]
+    assert "active_skills_text" not in result[0] and "atomic_task" not in samples[0]
+    assert torch.equal(result[0]["action"]["value"], actions[0])
+    monkeypatch.setattr(builders, "validate_embedded_model_projection", lambda sample:
+        dict(memlite_branch="low", task_complete=True, next_decision="STOP", active_skills=[]))
+    with pytest.raises(ValueError, match="same-state"):
+        action_training_samples(samples, actions, temporal, dimensions, settings)
+
+
+@pytest.mark.parametrize("route", ["ki", "joint"])
+def test_cot_cannot_silently_change_joint_or_ki_ablation(route):
+    with pytest.raises(ValueError):
+        ActionTrainingSettings(route=route, conditioning="native_subtask_cot")
 
 
 def grouped_codec():

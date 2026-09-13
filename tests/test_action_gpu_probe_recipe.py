@@ -70,3 +70,15 @@ def test_generation_rows_cover_real_five_tasks_without_repeating_one_row():
         assert batch["action"].eq(task).all()
     with pytest.raises(RuntimeError, match="all five"):
         task_generation_rows(batches[:4], dict(batches=receipts[:4]))
+
+
+def test_cot_recipe_requires_native_parent_and_supervises_the_eov_boundary():
+    from native_action_initialization import NATIVE_PARENT
+    cfg = OmegaConf.create(dict(tokenizer=dict(vq_config=dict(dropout_noop_parts=True)),
+        model=dict(model_arch=dict(fm={}, AT_CONFIG={}, coordination_train={}, input_preprocessor={}))))
+    settings = ActionTrainingSettings(conditioning="native_subtask_cot")
+    with pytest.raises(ValueError, match="native G0.5"):
+        architecture_for(cfg, settings)
+    arch = architecture_for(cfg, settings, parent=NATIVE_PARENT)
+    assert arch.predict_cot and arch.input_preprocessor.pred_eov and arch.native_cot_max_new_tokens == 256
+    assert not arch.register_memlite_hl_end and not arch.continuous_action

@@ -24,8 +24,8 @@ class ActionTrainingSettings:
     def __post_init__(self):
         if self.route not in {"ar", "joint", "ki"}:
             raise ValueError("route must be ar, joint or ki")
-        if self.conditioning not in {"skills", "task", "native_task"}:
-            raise ValueError("conditioning must be skills, task or native_task")
+        if self.conditioning not in {"skills", "task", "native_task", "native_subtask_cot"}:
+            raise ValueError("conditioning must be skills, task, native_task or native_subtask_cot")
         if self.codec_mode not in {"original32", "prefix16_holdpad32"}:
             raise ValueError("unsupported codec horizon convention")
         if self.route != "ar" and (self.conditioning != "skills" or self.codec_mode != "original32"):
@@ -37,6 +37,10 @@ class ActionTrainingSettings:
     @property
     def uses_fm(self):
         return self.route != "ar"
+
+    @property
+    def predicts_cot(self):
+        return self.conditioning == "native_subtask_cot"
 
 
 SKILL_INPUT = "Parent goal: <parent_goal_text_!>; <active_skills_text_text_!> "
@@ -95,6 +99,9 @@ def action_prefix_samples(samples, settings: ActionTrainingSettings):
     """
     if not samples:
         raise ValueError("empty action batch")
+    if settings.predicts_cot:
+        image_keys = [key for key in samples[0] if re.fullmatch(r"image\d+", key)]
+        return native_subtask_cot_actor_samples(samples, num_images=len(image_keys))
     result = []
     for sample in samples:
         template = sample.get("template")
@@ -146,10 +153,48 @@ def action_training_samples(samples, actions, action_is_pad, action_dim_is_pad,
     codec_actions = actions if settings.codec_mode == "original32" else padded
     result = action_prefix_samples(samples, settings)
     for i, sample in enumerate(result):
+        if settings.predicts_cot:
+            # This is a representation of the already-reviewed same-state
+            # skill bundle, not a newly inferred outcome or upstream atomic_task
+            # annotation. All actor-visible fields were whitelisted above.
+            from g05.data_processor.processor.samples_builder import validate_embedded_model_projection
+            projection = validate_embedded_model_projection(samples[i])
+            if (projection["memlite_branch"] != "low" or projection["task_complete"]
+                    or projection["next_decision"] != "EXECUTE"
+                    or any(s["verb"] == "SKILL_UNKNOWN" for s in projection["active_skills"])):
+                raise ValueError("Subtask-CoT requires a valid same-state nonterminal skill target")
+            sample["atomic_task"] = "Subtask: " + samples[i]["active_skills_text"]
         sample["action"] = dict(value=codec_actions[i].detach().clone(),
             action_dim_is_pad=action_dim_is_pad[i].detach().clone(),
             action_op_mask=(~action_dim_is_pad[i]).detach().clone(),
             parts_meta=dict(CANONICAL_PARTS))
+    return result
+
+
+def native_subtask_cot_actor_samples(samples, *, num_images):
+    """Task+observations only; subtask text is generated, never supplied by GT.
+
+    Use the exact upstream SubtaskCoTBuilder rendering. Existing skill labels
+    are added only by action_training_samples on the supervised output side.
+    """
+    from g05.data_processor.processor.samples_builder import BaseSamplesBuilder, SubtaskCoTBuilder
+    if type(num_images) is not int or num_images < 1 or not samples:
+        raise ValueError("Subtask-CoT requires an explicit observed image layout")
+    base = BaseSamplesBuilder(num_images, {"layout_only": (256, 256)}).template
+    cot = SubtaskCoTBuilder(num_images, {"layout_only": (256, 256)}).template
+    observed = []
+    for sample in samples:
+        if any(key in sample for key in ("atomic_task", "cot_target", "teacher_subtask")):
+            raise ValueError("Subtask-CoT actor cannot receive a teacher subtask")
+        row = deepcopy(sample)
+        if row.get("template") == cot:
+            if row.get("prompt") != "predict subtask":
+                raise ValueError("Subtask-CoT actor requires the declared prompt")
+            row["template"] = base
+        observed.append(row)
+    result = native_task_actor_samples(observed, num_images=num_images)
+    for row in result:
+        row.update(template=cot, prompt="predict subtask")
     return result
 
 

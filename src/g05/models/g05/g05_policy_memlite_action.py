@@ -21,7 +21,7 @@ from g05.data_processor.processor.samples_builder import validate_embedded_model
 from g05.utils.memlite_skill_protocol import MEMLITE_SKILL_SCHEMA_VERSION
 from g05.utils.training.ar_training_methods import (
     ActionTrainingSettings, action_prefix_samples, action_training_samples, validate_complete_action_tokens,
-    native_task_actor_samples,
+    native_task_actor_samples, native_subtask_cot_actor_samples,
 )
 
 
@@ -63,9 +63,14 @@ class G05PolicyMEMLiteAction(G05PolicyQwen35):
         settings = ActionTrainingSettings(**dict(model_cfg.get("action_training", {})))
         if (not model_cfg.get("discrete_action")
                 or bool(model_cfg.get("continuous_action")) != settings.uses_fm
-                or bool(model_cfg.get("predict_cot"))
+                or bool(model_cfg.get("predict_cot")) != settings.predicts_cot
                 or model_cfg.get("memlite_train_mode", "off") != "off"):
-            raise ValueError("AR/joint/KI flags must match the declared action-only route")
+            raise ValueError("AR/joint/KI flags must match the declared action/CoT route")
+        if settings.predicts_cot and (not model_cfg["input_preprocessor"].get("pred_eov")
+                or model_cfg.get("register_memlite_hl_end", True)
+                or model_cfg["ar"].get("block_wise_autoregressive", False)
+                or not 1 <= int(model_cfg.get("native_cot_max_new_tokens", 0)) <= 512):
+            raise ValueError("Native Subtask-CoT requires original vocabulary, supervised EOV and a bounded non-BAR decoder")
         if settings.uses_fm and bool(model_cfg["fm"]["joint_training"]) != (settings.route == "joint"):
             raise ValueError("joint passes FM gradients to the VLM; KI must detach them")
         if int(model_cfg.get("num_obs_steps", 0)) != 6 or int(model_cfg.get("action_dim", 0)) != 27:
@@ -153,10 +158,11 @@ class G05PolicyMEMLiteAction(G05PolicyQwen35):
         expected[:, [7, 8, 17, 18]] = True
         if not torch.equal(mask, expected):
             raise ValueError("Missing real base/trunk controls or incorrect padding mask")
-        if self.action_training.conditioning == "native_task":
+        if self.action_training.conditioning in {"native_task", "native_subtask_cot"}:
             # End-to-end task AR must not require a planner/oracle bundle just
             # to pass an interface check. No semantic sidecar enters prefill.
-            prepared = native_task_actor_samples(samples, num_images=int(self.model_config.num_input_images))
+            builder = native_subtask_cot_actor_samples if self.action_training.predicts_cot else native_task_actor_samples
+            prepared = builder(samples, num_images=int(self.model_config.num_input_images))
             for sample in prepared:
                 proprio = sample["proprio"]
                 if not isinstance(proprio, dict):
@@ -176,6 +182,28 @@ class G05PolicyMEMLiteAction(G05PolicyQwen35):
             prepared = action_prefix_samples(samples, self.action_training)
         started = time.monotonic()
         state = self.prefill(prepared, pixel_values)
+        cot_result = {}
+        if self.action_training.predicts_cot:
+            if len(samples) != 1:
+                raise ValueError("Initial native CoT actor is single-environment only; mixed-length batch handoff is unverified")
+            eov = self.processor.eov_token_id
+            cot_prefix_length = state.attention_mask.shape[1]
+            state = self.generate_text(state, max_new_tokens=int(self.model_config.native_cot_max_new_tokens),
+                stop_token_ids=[eov], trim_token_ids=self._get_trim_token_ids(include_eov=True))
+            ids = state.generated_ids
+            begin, end = self.action_tokenizer.action_token_begin_idx, self.action_tokenizer.action_token_end_idx
+            if (not isinstance(ids, torch.Tensor) or ids.ndim != 2 or ids.shape[0] != 1 or ids.shape[1] < 2
+                    or int(ids[0, -1]) != eov or ((ids >= begin) & (ids < end)).any()
+                    or state.attention_mask.shape[1] != cot_prefix_length + ids.shape[1] - 1
+                    or not state.generated_texts or not state.generated_texts[0].strip().startswith("Subtask:")
+                    or not state.generated_texts[0].split("|", 1)[0].removeprefix("Subtask:").strip()):
+                raise RuntimeError("Free AR generation failed to produce a bounded text subtask followed by EOV")
+            cot_result = dict(cot_text=list(state.generated_texts), cot_generated_ids=ids.detach().clone())
+            # The actual non-BAR decoder stops BEFORE forwarding its stop token.
+            # Actions must condition on the generated EOV, not reuse the hidden
+            # that still predicts EOV. Never fabricate the subtask or skip this
+            # boundary merely because the text string looks well formed.
+            state = self._commit_generated_cot_eov(state)
         if self.action_training.route == "ar":
             result = self.generate_action(state, prepared, action_dim_is_pad=mask, only_ar=True)
             if result.get("selected_action_source") != "ar":
@@ -213,5 +241,37 @@ class G05PolicyMEMLiteAction(G05PolicyQwen35):
         result["execution_start"] = 0
         result["execution_steps"] = 16
         result["action_training"] = self.action_training.as_dict()
+        result.update(cot_result)
         result.setdefault("_timing", {})["action_route_total_ms"] = (time.monotonic() - started) * 1000
         return result
+
+    def _commit_generated_cot_eov(self, state):
+        """Consume exactly one genuinely generated EOV into the Qwen cache."""
+        from g05.models.kv_cache import SparseKVCache
+        state.check_invariants("native cot handoff entry")
+        if (state.generated_ids is None or state.generated_ids.shape[0] != 1
+                or int(state.generated_ids[0, -1]) != self.processor.eov_token_id
+                or getattr(state, "_native_cot_eov_committed", False)
+                or not isinstance(state.kv_cache, SparseKVCache)):
+            raise RuntimeError("Native CoT handoff requires a real EOV and the declared Qwen cache")
+        core = self.model
+        token = state.generated_ids[:, -1:]
+        kind = core.ar_helper._assign_token_index(token)
+        mask = torch.cat([state.attention_mask, kind], dim=1)
+        embeddings = core.vlm.embed(token)
+        step_mask, step_pos = core.build_causal_mask_and_position_ids(token, mask,
+            kv_len=state.kv_cache.num_items(), dtype=embeddings.dtype)
+        hidden, cache = core.vlm(inputs_embeds=embeddings, attention_mask=step_mask,
+            position_ids=step_pos, kv_cache=state.kv_cache, return_kv_cache=True,
+            attn_implementation=core.attn_implementation, mixture_name="vlm")
+        # generate_text's generic position metadata is 2-D. Rebuild the actual
+        # Qwen MRoPE positions from the unchanged image grid and observed types;
+        # verify the final position against the one just used by neural decode.
+        positions = core.mask_helper._build_mrope_position_ids(mask, state.device)
+        if not torch.equal(positions[..., -1:], step_pos):
+            raise RuntimeError("Native CoT EOV cache handoff has inconsistent MRoPE positions")
+        state.kv_cache, state.attention_mask, state.position_ids = cache, mask, positions
+        state.last_hidden = hidden[:, -1]
+        state._native_cot_eov_committed = True
+        state.check_invariants("native cot handoff exit")
+        return state

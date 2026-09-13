@@ -34,7 +34,12 @@ def architecture_for(cfg, settings, *, parent=PARENT):
     arch._target_ = "g05.models.g05.g05_policy_memlite_action.G05PolicyMEMLiteAction"
     arch.action_training = settings.as_dict()
     arch.discrete_action, arch.continuous_action = True, settings.uses_fm
-    arch.predict_cot, arch.memlite_train_mode = False, "off"
+    arch.predict_cot, arch.memlite_train_mode = settings.predicts_cot, "off"
+    if settings.predicts_cot:
+        if Path(parent) != NATIVE_PARENT:
+            raise ValueError("The declared Subtask-CoT arm starts from native G0.5 only")
+        arch.input_preprocessor.pred_eov = True
+        arch.native_cot_max_new_tokens = 256
     arch.register_memlite_hl_end = Path(parent) != NATIVE_PARENT
     arch.fm.joint_training = settings.route == "joint"
     arch.AT_CONFIG.dropout_noop_parts = False
@@ -92,7 +97,7 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--gpu", required=True, type=int)
     parser.add_argument("--initialization", choices=["a4", "native"], default="a4")
-    parser.add_argument("--conditioning", choices=["skills", "task", "native_task"], default="skills")
+    parser.add_argument("--conditioning", choices=["skills", "task", "native_task", "native_subtask_cot"], default="skills")
     args = parser.parse_args()
     if not args.output.is_absolute() or args.gpu not in range(4):
         raise ValueError("Use one explicit robo GPU and new absolute output")
