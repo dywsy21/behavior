@@ -19,6 +19,7 @@ EXTENSIONS = {
     "g05.utils.training.fm_training_methods": "src/g05/utils/training/fm_training_methods.py",
     "g05.utils.training.ar_training_methods": "src/g05/utils/training/ar_training_methods.py",
     "g05.models.g05.helpers.action_marker_rows": "src/g05/models/g05/helpers/action_marker_rows.py",
+    "g05.models.g05.helpers.action_schema_decoding": "src/g05/models/g05/helpers/action_schema_decoding.py",
     "g05.models.g05.g05_policy_memlite_action": "src/g05/models/g05/g05_policy_memlite_action.py",
     "g05.models.g05.g05_policy_memlite_action_rows": "src/g05/models/g05/g05_policy_memlite_action_rows.py",
 }

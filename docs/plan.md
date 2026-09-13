@@ -12,6 +12,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 20:29（北京时间）：独立schema解码变体与10窗口诊断已写，待真实验证
+
+- **Codex / AR-01：** 新`action_schema_decoding.py`在实际AR采样处限定静态8码块/60 tokens＋真实`|`停止，保留模型对所有payload的预测；读取codec夹爪联合radix/有效序列数并用strict decode复核，避免原safe decode把越界联合索引静默clamp。逐token记录原argmax、被覆盖次数、所选token的原rank/CE；禁止CoT/BAR/批量/嵌套调用，异常后恢复原sampler，旧默认推理不改。
+- **有限入口/未冒称通过：** `probe_ar_schema_generation.py`落实上一条的原AR500、五train＋原固定80各task首个heldout共10次/0更新与仿真，不叠加marker20权重，规范完整不算学会格式。本地语法/空白通过，CPU与GPU待新独立Git worktree核验；新检查即使完整也仍须物理控制与闭环，原生500/五FM臂未改。
+
 ### 2026-09-13 20:23（北京时间）：marker20完成并显示可学习性改善；完整动作仍未通过
 
 - **Codex / AR-01，实际完成：** `ar_marker_rows20_v1`20更新/193 Adam/16384新增参数、冻结不变、保存后实际扰动再恢复通过；result SHA `860e06515a99a48aa7f6c8f243a04990bf3455d39ebe1f9ae62d20e0903e8d31`，小adapter SHA `2f1d0fdd7ddebc5b3c03fa74f13fb70f06e62a0fa101db2d52694e0e00580805`。两臂before十行诊断和五task生成记录完全相同；候选末十train CE5.4112934，对control6.0237459低10.17%。body0/1目标平均rank由control187035/164929改善为680.5/20.6，左夹爪rank1322.6→1。
