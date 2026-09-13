@@ -17,7 +17,6 @@ import json
 import os
 from pathlib import Path
 import random
-import select
 import shutil
 import subprocess
 import time
@@ -134,6 +133,19 @@ def dependency_identity(root):
                 launch_sha256=sha(root / "launch.json"), method_sha256=sha(root / "method_spec.json"))
 
 
+def process_start_ticks(pid, proc_root=Path("/proc")):
+    """Read a live Linux process identity without optional Python pidfd APIs."""
+    try:
+        raw = (Path(proc_root) / str(pid) / "stat").read_text()
+    except FileNotFoundError:
+        return None
+    fields = raw.rsplit(")", 1)[1].split()
+    if fields[0] in ("Z", "X"):
+        return None
+    # fields begins at proc(5) field3 (state); starttime is field22.
+    return int(fields[19])
+
+
 def wait_for_dependency(spec, old):
     dependency = spec.get("after_fm")
     if dependency is None:
@@ -142,28 +154,25 @@ def wait_for_dependency(spec, old):
     if dependency_identity(root) != dependency:
         raise RuntimeError("Predecessor launch/recipe identity changed")
     pid = dependency["supervisor_pid"]
-    try:
-        handle = os.pidfd_open(pid)
-    except ProcessLookupError:
-        handle = None
-    if handle is not None:
+    original_ticks = process_start_ticks(pid)
+    while original_ticks is not None and process_start_ticks(pid) == original_ticks:
         try:
-            # A pidfd pins the process; command-line identity prevents waiting
-            # on a recycled unrelated PID. No predecessor is ever signalled.
             argv = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
+            if process_start_ticks(pid) != original_ticks:
+                break
             if (b"supervise" not in argv or str(root / "method_spec.json").encode() not in argv
                     or not any(value.endswith(b"/train_fm_method_probe.py") for value in argv)):
                 raise RuntimeError("Predecessor PID is not its recorded FM supervisor")
-            while not select.select([handle], [], [], 10)[0]:
-                old.publish(Path(spec["output"]) / "status.json", dict(state="waiting", time=now(),
-                    phase="verified_live_dependency", supervisor_pid=os.getpid(), dependency=dependency,
-                    policy_updates=0, gpu_allocated=False))
         except FileNotFoundError:
-            # The pinned process may finish between pidfd_open and /proc read.
-            if not select.select([handle], [], [], 0)[0]:
+            if process_start_ticks(pid) == original_ticks:
                 raise
-        finally:
-            os.close(handle)
+            break
+        # Read-only waiting: PID + start ticks + argv are checked on each
+        # iteration. No process (including a reused PID) is ever signalled.
+        old.publish(Path(spec["output"]) / "status.json", dict(state="waiting", time=now(),
+            phase="verified_live_dependency", supervisor_pid=os.getpid(), dependency=dependency,
+            dependency_start_ticks=original_ticks, policy_updates=0, gpu_allocated=False))
+        time.sleep(10)
     state = read(root / "status.json")
     inspection = read(root / "formal_checkpoint_inspection.json")
     if (state["state"] != "complete" or state["verified_optimizer_steps"] != 500

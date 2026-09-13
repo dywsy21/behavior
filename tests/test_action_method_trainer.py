@@ -132,3 +132,21 @@ def test_dependency_is_narrow_not_an_arbitrary_process_or_training_queue():
         recipe.dependency_identity("/mnt/sdc1/robodojo")
     with pytest.raises(ValueError, match="predeclared"):
         recipe.dependency_identity(recipe.BASE / "unknown_other_training")
+
+
+@pytest.mark.parametrize("state,expected", [("S", 123456), ("R", 123456), ("Z", None), ("X", None)])
+def test_process_identity_handles_parentheses_in_name_and_terminal_state(tmp_path, state, expected):
+    root = tmp_path / "42"
+    root.mkdir()
+    fields = [state] + ["0"] * 18 + ["123456"] + ["0"] * 8
+    (root / "stat").write_text("42 (worker (with) spaces) " + " ".join(fields))
+    assert recipe.process_start_ticks(42, tmp_path) == expected
+
+
+def test_missing_process_is_not_reported_as_live(tmp_path):
+    assert recipe.process_start_ticks(42, tmp_path) is None
+
+
+def test_real_current_process_identity_without_pidfd():
+    import os
+    assert recipe.process_start_ticks(os.getpid()) > 0
