@@ -12,6 +12,23 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 19:48（北京时间）：AR500数值复核完成；定位到body标记学习不足的具体证据
+
+- **Codex / AR-01，实际完成：** `ar_decode_consistency_ar500_v1`的2715623已退出，result SHA `c17363d9f2a7c902d9c12e7804543f73fa6db9a1adba2b8b8b4cc3907f0dd233`。两原train/122下一token，116 argmax一致、位置/类型mask全一致，full/cached CE6.81763/6.82625与5.30327/5.30684；新分项动作CE实际为6.81495/5.25977，各60 tokens、FM0。0更新/仿真，自由仍漏组。
+- **更具体的线索：** 按已审核真实grammar，252175/252178是lower_body两层、并非夹爪。即便完整正确历史，这些body标记的目标rank仍约15万–18万，错误选择在teacher与缓存路径一致。原生与AR500词表标记行只读比对逐字未变；body范数约0.4575、两行距离0.02973，而双臂标记约1.58–2.06，提示“近似冷启动标记行＋冻结输入/输出层”表示瓶颈。没有预训练日志或因果消融，不宣称从未预训练/唯一根因。
+- **报告与下一有限动作：** [AR500格式诊断](experiments/2026-09-13-ar500-schema-diagnosis.md)已写。拟`ar_marker_embedding_audit_v1`，新独立commit、2CPU线程/mmap原生和500两个已验权重、真实grammar SHA约束、0VLM/更新/仿真，保存上述矩阵统计与绑定关系供复核；入口`audit_ar_marker_embeddings.py`已写。后续优先准备必需marker行共享输入/输出适配的短对照，具体范围/预算另登记，不提前追加训练或随机覆盖base；原生task500及FM队列继续，CoT正式训练暂未排队。
+
+### 2026-09-13 19:39（北京时间）：A4-AR500完整完成；其只读诊断与原生task保存门运行
+
+- **Codex / AR-01，实际完成：** A4-AR在19:35:52写出complete，1940901/2316504均已退出；500更新/8000原train抽取/192 Adam、完整1138项模型与优化器/四rank RNG保存回读、冻结不变通过。`formal/checkpoints/step_500.pt` SHA `51bacc1d9ec1f6d19c7e82e93bed60b8a1eb5d5ffbab5337c9b7ba47a84e90aa`，非新进程断点恢复证明。
+- **有限500的效果：** 原固定80 CE18.6797803→6.7694657，五task最终为6.5626134/6.7851502/6.8848691/6.6194772/6.9952188；辅助原FM0.1976125470，不能与FM方法的训练loss横比。最终五task自由生成仍0/5完整动作组，未部署/仿真，无新SR；eval500 SHA `20600c174ae6d7ce454604ba3a5f9c9a31bb1dbce39f130c9ccbfb15ecd7cb6a`。新同历史`ar_decode_consistency_ar500_v1`于19:38:23真实启动2715623，09ff64a独立源码/原两train/0更新预算，结果待验。
+- **真实接续：** 原生task-AR supervisor2222863已自动开始四卡smoke trainer2714930，固定6e2587b、独立原生base/新Adam，仍须5次保存门后从原生base重新开始500；不是复用A4-AR权重。其后五臂继续等待，CoT仍只有两临时更新门、未排入正式500；不重复提交任何队列。
+
+### 2026-09-13 19:35（北京时间）：A4-AR已到500更新，最终评估/保存回读尚在进行
+
+- **Codex / AR-01，真实进度：** `formal/train_metrics.jsonl`已记录step500/8000真train抽取/FM0，最后训练batch CE6.1056073；supervisor1940901/trainer2316504仍在运行，尚无完整checkpoint inspection，不能将500日志等同于整个run完成。原生task-AR仍等待前驱正式验收。
+- **下一只读诊断预登记：** 只有status complete且500完整回读passed后，才启动`ar_decode_consistency_ar500_v1`；09ff64a独立`ar_cot_metrics_20260913`（166 CPU passed）、原两train行/两CPU线程/GPU1最多40%显存、每行1teacher完整前向＋最多96 token同历史缓存循环＋1原预算自由生成，0优化/仿真/新策略。与已完成A4 `ar_decode_consistency_a4_v1`比较同历史数值、分项动作CE与生成缺组位置；父权重SHA绑定刚完成的inspection，不用日志或临时smoke代替。
+
 ### 2026-09-13 19:32（北京时间）：CoT真实两更新门完成；新指标/正式入口166 CPU通过
 
 - **Codex / AR-01，GPU实际完成：** 5aa3eff的`ar_native_subtask_cot_gpu_gate_v1`已退出，result SHA `54f83aff390626a0dfc009c5825d6a0769a36d5c3772402229d48477a622a92b`。原生946基础项恢复、192新LoRA/Adam、CE真实梯度（初始化96非零）、FM零梯度和冻结检查通过；两临时更新，同一行总CE14.413805→14.408789，峰值reserved23,416,799,232 bytes。不是可比action-only收益或SR；0发布权重/仿真。
