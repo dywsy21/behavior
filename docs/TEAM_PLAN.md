@@ -34,6 +34,8 @@ A3 checkpoint：`865193f1c8a257d72ea159bd7a46cebf945b0fd24905110b831f0e8a3438e94
 
 ### 本轮实验状态
 
+训练方法补充：Codex已完成[超参与方法候选](experiments/2026-09-13-fm-training-method-candidates.md)选型，区分低成本分组LR/Beta时间分层与需实现的KI-inspired双监督；当前SkillFM并未具备KI。未实施/开训，先选一个有界对照，不自动全矩阵搜索。
+
 2026-09-13只读学习效率审计：A4固定80先升至0.201226、后降至0.196944；既有10样本100步FM 0.107716→0.017985。暂不支持“学习率过小/梯度裁剪导致学不动”的简单归因。Codex建议先做固定train/eval及关键动作诊断，再有界单变量LR对照；尚未启动新训练或修改模型/采样，详见[学习效率审计](experiments/2026-09-13-fm-learning-efficiency-audit.md)。
 
 2026-09-13，A4＋B-final完整收音机评测已结束：固定public_test301/302/303、env0/policy17、各3224控制，0前缀/自动高层/无oracle反馈，官方目标成功0/3。三回合都从NAVIGATE切到GRASP，但没有一帧确认持有对象、没有进入TOGGLE；75张全程抽帧＋3末帧及全部物理记录复核，三段视频已在本地。专用服务及编排均已退出，未追加训练/回合。由Codex负责，Git实际运行be23b06；详细限制/证据见[完整收音机评测](experiments/2026-09-13-a4-radio-full-eval.md)。这完成了本轮测试，不代表A-02方法改善、整个高低层训练goal或跨50任务效果已验收。
