@@ -10,6 +10,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 11:05（北京时间）：A4局部GRASP出现因果成功，待完整证据/视频复核
+
+- **Codex / A-02，实际已完成：** A4 L1于11:01:48正常结束，448原前缀后真实执行29×16=464模型控制，31事件/913次物理观察。frame896为`target_not_held_by_any_arm / IN_PROGRESS`，frame912为指定`radio_89`的`any_arm_grasp / SUCCEEDED`，`initial_satisfied=false`、`policy_causal_success=true`。本次固定GRASP的停止规则与A3相同，达到物理因果成功即停止，不要求成功后继续跑满1280。
+- **区别/限制：** 同起点A3在1280模型控制内无稳定抓取；当前是一次train实例、oracle-skill局部改善候选，不是自主高层/完整任务SR，也不证明运输或后续开关任务成功。正回执还须逐项核对实际消费动作、真实历史、精确目标/稳定计数和本人视频，不能只见SUCCEEDED字段即放行。
+- **证据/下一步：** `completion.json`已complete，完整结果SHA `b81afbabb720e3015997375da4a48e00d00076f3463c965a125ff641692e4f35`；正在下载视频到本地忽略目录并复核。暂停原先“若失败则改训练损失”的分支，先确认这个真实局部收益，再做有限独立/协同验证；不回灌评测轨迹或追加训练。
+
 ### 2026-09-13 10:59（北京时间）：A4单次L1真实服务通过，仿真启动
 
 - **Codex / A-02，运行中：** Git固定`c7fb287`，独立worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_prefix_20260913`；服务器4项CPU测试通过后启动supervisor1474264。run `/mnt/sdc1/robodojo/behavior_dev/a4_radio_e121_l1_20260913_v1`，模型GPU0/8782、仿真GPU1，`launch.json`/`service.launch.json`/`rollout.launch.json`分别记录实际进程。
