@@ -22,6 +22,27 @@ from train_fm_method_probe import BASE
 from train_action_method_probe import read, now
 
 
+def observed_prefix_receipts(ids, labels, mask, prefix, prefix_mask):
+    """Compare logical rows, not left-padding added for different CoT lengths."""
+    import torch
+    if ids.shape != labels.shape or ids.shape != mask.shape or prefix.shape != prefix_mask.shape:
+        raise ValueError("Input/label/type masks must have identical paired shapes")
+    if ids.shape[0] != prefix.shape[0]:
+        raise ValueError("Training and actor batch sizes differ")
+    rows = []
+    for i in range(ids.shape[0]):
+        active, observed = mask[i].bool(), prefix_mask[i].bool()
+        train_ids, train_labels, train_types = ids[i, active], labels[i, active], mask[i, active]
+        n = int(observed.sum())
+        rows.append(dict(observation_tokens=n,
+            training_left_padding=int((~active).cumprod(0).sum()),
+            inference_left_padding=int((~observed).cumprod(0).sum()),
+            same_tokens=bool(n > 0 and torch.equal(train_ids[:n], prefix[i, observed])),
+            same_types=bool(n > 0 and torch.equal(train_types[:n], prefix_mask[i, observed])),
+            observation_labels_masked=bool(n > 0 and (train_labels[:n] == -100).all())))
+    return rows
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
@@ -86,9 +107,9 @@ def main():
             ids, labels, mask, split = processor.encode_train(prepared, device=torch.device("cpu"),
                 training=False, max_chunk_token_length=int(arch.max_chunk_token_length))
             prefix, prefix_mask = processor.encode_inference(observed, device=torch.device("cpu"), mode="ar")
-            context = prefix.shape[1]
-            if (not torch.equal(ids[:, :context], prefix) or not torch.equal(mask[:, :context], prefix_mask)
-                    or not (labels[:, :context] == -100).all() or not context < split < ids.shape[1]):
+            boundaries = observed_prefix_receipts(ids, labels, mask, prefix, prefix_mask)
+            publish(args.output / f"batch_{batch_index}_boundaries.json", boundaries)
+            if not all(row["same_tokens"] and row["same_types"] and row["observation_labels_masked"] for row in boundaries):
                 raise RuntimeError("Native CoT observation/teacher boundary mismatch")
             p, pl, pm = processor.preprocess(deepcopy(prepared), device=torch.device("cpu"),
                 control_flag="return_prefix", training=False)
@@ -116,15 +137,15 @@ def main():
                     raise RuntimeError("CoT target is not its original reviewed same-state text")
                 eov = (ids[i] == processor.eov_token_id) & mask[i].bool()
                 if (int(eov.sum()) != 1 or not torch.equal(labels[i, eov], ids[i, eov])
-                        or not (labels[i, context:split] != -100).any()
+                        or not (labels[i, :split] != -100).any()
                         or selected[i, :split].any() or not torch.equal(labels[i, selected[i]], ids[i, selected[i]])
                         or absent[i] or not torch.equal(decoded_ids[i], ids[i, selected[i]])
                         or decoded[i].shape != (32, 27) or not torch.isfinite(decoded[i]).all()):
                     raise RuntimeError("CoT/EOV/action target masks or complete 23D codec supervision are invalid")
                 complete = validate_complete_action_tokens(decoded_ids[i], tokenizer)
-                row = dict(source=source, cot_target=prepared[i]["atomic_task"], observation_tokens=context,
+                row = dict(source=source, cot_target=prepared[i]["atomic_task"], **boundaries[i],
                     eov_prefix_length=split, total_tokens=ids.shape[1], complete_codec_blocks=complete,
-                    supervised_cot_tokens=int((labels[i, context:split] != -100).sum()),
+                    supervised_cot_tokens=int((labels[i, :split] != -100).sum()),
                     original_skill_text_exact=True, target_free_prefix_exact=True,
                     teacher_counterfactual_prefix_invariant=True, eov_supervised=True, untruncated=True)
                 rows.append(row)

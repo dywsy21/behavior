@@ -12,6 +12,16 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 19:22（北京时间）：CoT CPU首门停在前缀比较，修正多长度padding检查后重验
+
+- **Codex / AR-01，失败保留/0更新：** `ar_native_subtask_cot_input_gate_v1`退出1，未通过observation/teacher boundary，manifest保留，没有启动CoT GPU。检查器把包含不同长度CoT的训练左padding与纯观察的左padding按整块矩阵比较，不能据此断言逻辑token前缀错误。
+- **修正与下一门：** 新`observed_prefix_receipts`按每行真实非padding token比较全部观察IDs/类型mask/监督mask，保留各行padding数量与边界回执；新增4个CPU用例确保padding差异可区分、真实token/mask/label错误仍拒绝。拟新独立commit与`ar_native_subtask_cot_input_gate_v2`复查相同十原train、仍0VLM/优化/仿真；真实边界是否一致尚待结果，不通过删检查放行。
+
+### 2026-09-13 19:20（北京时间）：CoT入口152项CPU通过，真实十行输入门运行
+
+- **Codex / AR-01：** 新独立`ar_native_subtask_cot_20260913`固定923515f，robo实际152 tests passed（1.53s）；包括旧FM/AR/KI/原生恢复/依赖等待回归，以及同状态CoT输出、无teacher前缀、原生EOV配置和真实停止token仅提交一次。`ar_native_subtask_cot_input_gate_v1`已开始CPU真实输入检查，结果尚待验收；无CoT神经训练或新策略权重。
+- **既有训练：** 19:18实查A4-AR413/500；step400固定80 CE6.8592896、辅助FM0.1973669191，五task自由生成仍0/5完整组。沿原预算运行，不添加步数；后继队列未重提。main文档6b563a3已ff pull到robo协作clone，活跃源码保持固定。
+
 ### 2026-09-13 19:18（北京时间）：原生Subtask-CoT显式入口已实现，待真实输入与模型验收
 
 - **Codex / AR-01，代码/未冒称通过：** 新`native_subtask_cot`配方只允许原生G0.5/纯AR；原生词表、EOV显式CE、256 token文本上限，保留原32步/全部23D目标。训练输出逐字复用已审核同状态`active_skills_text`，遵循原`SubtaskCoTBuilder`模板；部署白名单只有任务/六帧观察，拒绝atomic_task/teacher_subtask等答案，不依赖MEM-Lite planner，也不宣称完整复现上游bbox/trace CoT。
