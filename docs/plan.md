@@ -12,6 +12,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 17:33（北京时间）：增加原生AR省略部件的只读语义审计
+
+- **Codex / AR-01，实质代码：** 新`probe_native_ar_omissions.py`及7项标准库单元检查（已全部通过）。严格区分完整但省略组、缺残差/截断，以及codec认为noop的组；不填零、不修改部署合同。源码确认旧codec会省略恒定二值夹爪，而缺NN组解码成归一化0，这不能自动当作物理保持。
+- **下一只读预算：** 拟`ar_native_omission_audit_v1`，新独立Git worktree/commit；只对原10条train做开关noop两种20目标编码，按task/episode/frame/requested_index/bundle精确连接两份已完成native GPU回执的20自由生成记录。2 CPU线程、0VLM/优化/仿真、不构造release；报告目标编码的合法省略与实际缺失，不用专家答案修补actor。首次身份/解析错误即停，真实结果尚待运行。FM和两份AR训练队列继续不变；main文档已同步99ee6c2，robo协作clone已ff pull，活跃源未改。
+
 ### 2026-09-13 17:26（北京时间）：原生task正式训练已提交，真实等待A4-AR
 
 - **Codex / AR-01：** `ar_native_task_fulltrain_v1`于17:24:39提交，supervisor2222863；spec SHA `2f01682d6912b14cd7c8d4d6371694cd81ea1303756968d3722bda68811c42af`，源6e2587b。17:25真实PID/argv与status共同核验：等待1940901（start_ticks327195368），0GPU/0原生AR更新。前驱成功验收才执行下述原生5+500，不是已开始神经训练。当前三个活跃训练/等待worktree全部保持固定，不热改。原生训练及最终闭环结论仍待完成。
