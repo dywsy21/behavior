@@ -12,6 +12,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 22:23（北京时间）：原生AR实际socket/资源门通过，唯一局部仿真已启动
+
+- **Codex / AR-01：** 私有服务3191531完整载入native500，原生路由的实际socket identity门passed、0额外生成/未占用唯一session；25GiB剩余GPU门通过。仿真3196694于22:20:39启动，已导入场景/机器人并进入原官方重置/实例加载流程，尚未取得256模型控制/结果；旧训练和六服务未改。`ar_native_prefix_pilot_v1/{service.launch.json,socket_gate.json,rollout.launch.json,rollout.log}`为证据，不把Kit加载期预期contact-view警告当作结果或失败。
+- **M-02配方核对：** 实查原control和Beta正式`.hydra/overrides.yaml`均为`model.num_workers=4`，fb40145原始control源码也是4；不存在本轮把control workers0与Beta workers4混作单因素比较的事实。原80评估不变，后续仍需核对真实来源顺序和指标，不能由相同来源推断增广像素逐位相同。
+
 ### 2026-09-13 22:21（北京时间）：290 CPU通过，有界原生AR物理作业已提交
 
 - **Codex / AR-01：** 新独立`git_worktrees/ar_native_prefix_pilot_20260913`固定989a575，实际290 CPU tests passed（1.74s），包括真实原frozen window只减max_chunks、不变448 prefix/语义/env0的检查。`ar_native_prefix_pilot_v1`于22:19:21提交3191511，manifest SHA `eb7f99d66accbcf3128984717f0ce5bf964bca79e63a680622908d8b15725afd`；明确原生500/schema/task-only/16 chunk上限。
