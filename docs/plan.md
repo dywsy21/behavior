@@ -10,6 +10,13 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 13:32（北京时间）：双路线goal开始实施，FM可控扩展已写，AR编码门准备中
+
+- **Codex / M-01、AR-01；上一goal轮分类为进展：** 前轮源码证据确认了KI缺失和监督等价关系，但尚无新方法训练。本轮重新检查Git及robo真实进程：无新训练/仿真，GPU1空闲，其他卡各约30GiB旧服务保持；sdc1余669GiB。新分支`feat/dual-track-fm-ar-20260913`从最新main `dbc89c8`建立，不热改原快照。
+- **用户完整目标：** “所有有效的方法都要用上；重新研究纯AR是否可行，两条线都推行实验，结束后给结论；仍为最后大训练做验证准备”。旧仅FM规则按新要求放开独立AR实验，未缩成只做离线loss。执行和验收见[双路线实验计划](experiments/2026-09-13-dual-track-execution.md)。
+- **已写代码/待验证：** `src/g05/utils/training/fm_training_methods.py`实现有作用域、可恢复的原Beta等概率时间分层和执行段加权，以及AR执行前缀内部padding候选；对应CPU测试已写、尚未执行。本地无torch，将从Git独立服务器worktree用现有环境测试，不安装/改动共享环境。
+- **AR证据/下一步：** 旧v10报告证明部分32步codec后半段影响前16步刹车，不等于AR路线本身不行。本轮已回读原train处理缓存：5个真实microbatch/10条样本、五task、动作[2,32,27]、SHA `237acf01b29bd0d6806ed1a11d9033a747640b3ea9e0bf7246b7a62b4e92be81`。先真实codec前缀往返门，继而训练和闭环；缓存仅用于工程门，不能作为整条路线效果样本。新训练、AR rollout、方法组合与最终结论均未完成。
+
 ### 2026-09-13 13:15（北京时间）：训练超参与方法候选完成，只分析未开训
 
 - **Codex / A-02：** 核对SkillFM、FMHelper与Qwen3.5 prefix缓存实现，并查PI Knowledge Insulation、MolmoAct2当前微调配方及PCGrad一手资料。明确`joint_training=true`只是FM→VLM梯度连通，当前SkillFM禁止离散动作目标；不是已实现CE＋FM/KI。
