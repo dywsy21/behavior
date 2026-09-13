@@ -139,6 +139,20 @@ class BaseModalityProcessor:
         raise NotImplementedError("Subclasses must implement the process method")
 
 
+def register_memlite_high_end(registry, model_cfg):
+    """Keep legacy MEM-Lite IDs by default; native AR opts out explicitly."""
+    config = model_cfg if model_cfg is not None else {}
+    enabled = config.get("register_memlite_hl_end", True)
+    if type(enabled) is not bool:
+        raise ValueError("register_memlite_hl_end must be an explicit boolean")
+    if not enabled:
+        if config.get("memlite_train_mode", "off") != "off":
+            raise ValueError("MEM-Lite high/low branch mode requires its high-level boundary token")
+        return None
+    registry.register(["<HL_END>"])
+    return registry.get_id("<HL_END>")
+
+
 class InputPreprocessor:
     """
     Data input preprocessor for tokenizing text, images, proprio, and actions.
@@ -237,9 +251,9 @@ class InputPreprocessor:
         # after action tokens so action-token offsets remain unchanged for old
         # checkpoints.  It is intentionally treated as static text by the
         # template parser; after EOC static text becomes a supervised target.
-        hl_end_tok = "<HL_END>"
-        self.registry.register([hl_end_tok])
-        self.hl_end_token_id = self.registry.get_id(hl_end_tok)
+        # Native G0.5 has no HL_END; opt-out must happen BEFORE registering
+        # <state>, or positional checkpoint loading shifts that native row.
+        self.hl_end_token_id = register_memlite_high_end(self.registry, model_cfg)
 
         self.token_manager = SpecialTokenManager.for_model(
             model_type=model_type,

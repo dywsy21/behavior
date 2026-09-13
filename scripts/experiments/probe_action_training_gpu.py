@@ -35,6 +35,7 @@ def architecture_for(cfg, settings, *, parent=PARENT):
     arch.action_training = settings.as_dict()
     arch.discrete_action, arch.continuous_action = True, settings.uses_fm
     arch.predict_cot, arch.memlite_train_mode = False, "off"
+    arch.register_memlite_hl_end = Path(parent) != NATIVE_PARENT
     arch.fm.joint_training = settings.route == "joint"
     arch.AT_CONFIG.dropout_noop_parts = False
     arch.language_loss_weight = 1.

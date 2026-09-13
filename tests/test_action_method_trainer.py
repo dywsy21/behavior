@@ -17,6 +17,31 @@ def test_fixed_budget_is_an_actual_global_sixteen_batch():
     assert values["workers"] == 4
 
 
+@pytest.mark.parametrize("initialization,conditioning,expected", [
+    ("a4", "skills", recipe.PARENT), ("native", "skills", recipe.NATIVE_PARENT),
+    ("native", "native_task", recipe.NATIVE_PARENT)])
+def test_training_parent_is_explicit_and_not_the_serial_predecessor(initialization, conditioning, expected):
+    path, digest = recipe.declared_parent("ar", initialization, conditioning)
+    assert path == expected and len(digest) == 64
+
+
+@pytest.mark.parametrize("route,initialization,conditioning", [
+    ("ki", "native", "skills"), ("fm", "native", "native_task"),
+    ("ar", "a4", "native_task"), ("ar", "native", "oracle"), ("ar", "unknown", "skills")])
+def test_undeclared_native_training_combinations_are_rejected(route, initialization, conditioning):
+    with pytest.raises(ValueError):
+        recipe.declared_parent(route, initialization, conditioning)
+
+
+def test_native_full_data_recipe_does_not_claim_a4_initialization():
+    cfg = OmegaConf.create(dict(tokenizer=dict(vq_config={}),
+        model=dict(model_arch=dict(fm={}, AT_CONFIG={}, coordination_train={})) ))
+    arch = recipe.configure(cfg, "ar", "native", "native_task")
+    assert cfg.model.pretrained_ckpt == str(recipe.NATIVE_PARENT)
+    assert arch.action_training.conditioning == "native_task"
+    assert not arch.continuous_action and not arch.predict_cot
+
+
 @pytest.mark.parametrize("route,states", [("ar", 192), ("joint", 514), ("ki", 514), ("fm", 504)])
 def test_actual_adam_count_distinguishes_fm_only_unused_lora(route, states):
     assert recipe.expected_adam_states(route) == states
@@ -132,6 +157,39 @@ def test_dependency_is_narrow_not_an_arbitrary_process_or_training_queue():
         recipe.dependency_identity("/mnt/sdc1/robodojo")
     with pytest.raises(ValueError, match="predeclared"):
         recipe.dependency_identity(recipe.BASE / "unknown_other_training")
+    with pytest.raises(ValueError, match="predeclared"):
+        recipe.dependency_identity(recipe.BASE / "ar_native_unapproved", "action")
+
+
+@pytest.mark.parametrize("kind", ["fm", "action"])
+@pytest.mark.parametrize("damage", [None, "running", "steps", "sha", "wrong_checkpoint", "failed_inspection"])
+def test_dependency_requires_terminal_complete_and_its_own_exact_500_weight(tmp_path, monkeypatch, kind, damage):
+    state = dict(state="complete", verified_optimizer_steps=500, verified_updates=500)
+    inspection = dict(passed=True, step=500, actual_updates=500,
+        checkpoint=str(tmp_path / "formal/checkpoints/step_500.pt"), checkpoint_sha256="correct")
+    if damage == "running":
+        state["state"] = "running"
+    elif damage == "steps":
+        state["verified_optimizer_steps"] = state["verified_updates"] = 499
+    elif damage == "sha":
+        inspection["checkpoint_sha256"] = "corrupt"
+    elif damage == "wrong_checkpoint":
+        inspection["checkpoint"] = str(tmp_path / "other/checkpoints/step_500.pt")
+    elif damage == "failed_inspection":
+        inspection["passed"] = False
+    monkeypatch.setattr(recipe, "read", lambda p: state if p.name == "status.json" else inspection)
+    monkeypatch.setattr(recipe, "sha", lambda p: "correct")
+    if damage:
+        with pytest.raises(RuntimeError, match="did not finish"):
+            recipe.verify_dependency_completed(tmp_path, kind)
+    else:
+        result = recipe.verify_dependency_completed(tmp_path, kind)
+        assert result.name == ("formal_checkpoint_inspection.json" if kind == "fm" else "checkpoint_inspection.json")
+
+
+def test_two_independent_queues_cannot_race_for_the_same_gpus():
+    with pytest.raises(RuntimeError, match="one serial"):
+        recipe.wait_for_dependency(dict(after_fm={"x": 1}, after_action={"x": 2}), None)
 
 
 @pytest.mark.parametrize("state,expected", [("S", 123456), ("R", 123456), ("Z", None), ("X", None)])

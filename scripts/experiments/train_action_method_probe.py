@@ -26,6 +26,7 @@ from action_training_data import build_original_pipeline, exact_eval_batch, STAT
 from probe_action_training_gpu import architecture_for, prepare_action_updates
 from probe_ar_execution_codec import publish
 from train_fm_method_probe import BASE, PARENT, PARENT_SHA, legacy, verify_parent
+from native_action_initialization import NATIVE_PARENT, NATIVE_PARENT_SHA, NATIVE_CONFIG, NATIVE_CONFIG_SHA, verify_native_parent
 
 HERE = Path(__file__).resolve()
 ROUTES = ("ar", "joint", "ki", "fm")
@@ -58,30 +59,47 @@ def code_identity():
 
 
 def validate_spec(spec):
+    parent, parent_sha = declared_parent(spec["route"], spec["initialization"], spec["conditioning"])
     if (spec["route"] not in ROUTES or spec["recipe"] != RECIPE
-            or spec["parent_sha256"] != PARENT_SHA or spec["code"] != code_identity()
+            or spec["parent_sha256"] != parent_sha or spec["parent_path"] != str(parent)
+            or spec["code"] != code_identity()
             or Path(spec["output"]).parent != BASE):
         raise RuntimeError("Action experiment recipe/source/parent/budget changed")
     if subprocess.check_output(["git", "-C", str(REPO), "status", "--porcelain"], text=True).strip():
         raise RuntimeError("Use a clean immutable action experiment worktree")
     if subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip() != spec["commit"]:
         raise RuntimeError("Active action recipe worktree must not be switched")
-    if spec["prerequisites"] != prerequisites(spec["route"]):
+    if spec["prerequisites"] != prerequisites(spec["route"], spec["initialization"], spec["conditioning"]):
         raise RuntimeError("Required completed input/gradient evidence changed")
+    if spec.get("after_fm") and spec.get("after_action"):
+        raise RuntimeError("Use one explicitly declared serial predecessor, not two conflicting queues")
 
 
-def configure(cfg, route):
+def declared_parent(route, initialization="a4", conditioning="skills"):
+    if route not in ROUTES or initialization not in {"a4", "native"}:
+        raise ValueError("Unknown action route/initialization")
+    if initialization == "a4":
+        if conditioning != "skills":
+            raise ValueError("The declared A4 training arms keep skill conditioning")
+        return PARENT, PARENT_SHA
+    if route != "ar" or conditioning not in {"skills", "native_task"}:
+        raise ValueError("Native base training is an explicit AR skills/native_task arm")
+    return NATIVE_PARENT, NATIVE_PARENT_SHA
+
+
+def configure(cfg, route, initialization="a4", conditioning="skills"):
     from omegaconf import OmegaConf
     from g05.utils.training.ar_training_methods import ActionTrainingSettings
     OmegaConf.set_struct(cfg, False)
+    parent, _ = declared_parent(route, initialization, conditioning)
     if route == "fm":
         arch = cfg.model.model_arch
         if (arch.discrete_action or not arch.continuous_action or arch.predict_cot
                 or "G05PolicyMEMLiteSkillFM" not in arch._target_):
             raise RuntimeError("Paired FM must use the unchanged original SkillFM architecture")
-        cfg.model.pretrained_ckpt, cfg.resume_ckpt = str(PARENT), None
+        cfg.model.pretrained_ckpt, cfg.resume_ckpt = str(parent), None
     else:
-        arch = architecture_for(cfg, ActionTrainingSettings(route=route))
+        arch = architecture_for(cfg, ActionTrainingSettings(route=route, conditioning=conditioning), parent=parent)
     for key, value in dict(batch_size=2, grad_accumulation_steps=2, num_workers=4,
             learning_rate=1e-5, warmup_steps=50, lr_min_ratio=.1, max_steps=500,
             weight_decay=.03, betas=[.9, .95], max_grad_norm=1.).items():
@@ -109,28 +127,40 @@ def expected_adam_states(route):
     return 192 if route == "ar" else 504 if route == "fm" else 514
 
 
-def prerequisites(route):
+def prerequisites(route, initialization="a4", conditioning="skills"):
+    declared_parent(route, initialization, conditioning)
     input_path, data_path = BASE / "ar_input_gate_v2/result.json", BASE / "ar_loader_gate_v1/result.json"
+    if initialization == "native":
+        input_path = BASE / "ar_native_input_gate_v1/result.json"
     inputs, data = read(input_path), read(data_path)
-    if not inputs["complete"] or inputs["rendered_views"] != 40 or not data["complete"]:
+    if not inputs["complete"] or inputs["rendered_views"] != (20 if initialization == "native" else 40) or not data["complete"]:
         raise RuntimeError("Real tokenizer/complete full-data input gates are required")
     name = {"ar": "ar_gpu_gate_v2", "ki": "ki_gpu_gate_v1", "joint": "joint_gpu_gate_v1",
             "fm": "fm_control_v1/gate"}[route]
+    if initialization == "native":
+        name = "ar_native_" + ("task" if conditioning == "native_task" else "skills") + "_gpu_gate_v2"
     path = BASE / name / "result.json"
     gate = read(path)
     if not gate.get("complete", gate.get("passed", False)) or gate["actual_updates"] != 2:
         raise RuntimeError("Real route-specific gradient/update gate is required")
+    if initialization == "native" and (gate.get("initialization") != "native"
+            or gate["parent_sha256"] != NATIVE_PARENT_SHA
+            or gate["settings"] != dict(route="ar", conditioning=conditioning, codec_mode="original32")):
+        raise RuntimeError("Native AR requires its exact native parent/conditioning GPU evidence")
     return {str(p): sha(p) for p in (input_path, data_path, path)}
 
 
-def dependency_identity(root):
+def dependency_identity(root, kind="fm"):
     root = Path(root)
-    if root.parent != BASE or root.name != "fm_ae_lr2x_v1":
-        raise ValueError("Only the predeclared AE-LR candidate may precede this AR run")
+    names = {"fm": "fm_ae_lr2x_v1", "action": "ar_a4_fulltrain_v2"}
+    if kind not in names or root.parent != BASE or root.name != names[kind]:
+        raise ValueError("Only the predeclared FM or A4-AR run may be a serial predecessor")
     launch, method = read(root / "launch.json"), read(root / "method_spec.json")
-    if method["trial"] != "ae_lr2x" or method["parent_sha256"] != PARENT_SHA or method["max_updates"] != 500:
-        raise RuntimeError("FM dependency is not the declared finite paired candidate")
-    return dict(root=str(root), supervisor_pid=launch["supervisor_pid"],
+    valid = (method["trial"] == "ae_lr2x" and method["max_updates"] == 500 if kind == "fm"
+             else method["route"] == "ar" and method["recipe"] == RECIPE)
+    if not valid or method["parent_sha256"] != PARENT_SHA:
+        raise RuntimeError("Dependency is not the declared finite A4-initialized candidate")
+    return dict(kind=kind, root=str(root), supervisor_pid=launch["supervisor_pid"],
                 launch_sha256=sha(root / "launch.json"), method_sha256=sha(root / "method_spec.json"))
 
 
@@ -148,11 +178,14 @@ def process_start_ticks(pid, proc_root=Path("/proc")):
 
 
 def wait_for_dependency(spec, old):
-    dependency = spec.get("after_fm")
+    if spec.get("after_fm") and spec.get("after_action"):
+        raise RuntimeError("Only one serial dependency is permitted")
+    dependency = spec.get("after_fm") or spec.get("after_action")
     if dependency is None:
         return
     root = Path(dependency["root"])
-    if dependency_identity(root) != dependency:
+    kind = dependency["kind"]
+    if dependency_identity(root, kind) != dependency:
         raise RuntimeError("Predecessor launch/recipe identity changed")
     pid = dependency["supervisor_pid"]
     original_ticks = process_start_ticks(pid)
@@ -162,8 +195,9 @@ def wait_for_dependency(spec, old):
             if process_start_ticks(pid) != original_ticks:
                 break
             if (b"supervise" not in argv or str(root / "method_spec.json").encode() not in argv
-                    or not any(value.endswith(b"/train_fm_method_probe.py") for value in argv)):
-                raise RuntimeError("Predecessor PID is not its recorded FM supervisor")
+                    or not any(value.endswith(b"/train_fm_method_probe.py" if kind == "fm"
+                                              else b"/train_action_method_probe.py") for value in argv)):
+                raise RuntimeError("Predecessor PID is not its recorded method supervisor")
         except FileNotFoundError:
             if process_start_ticks(pid) == original_ticks:
                 raise
@@ -174,15 +208,27 @@ def wait_for_dependency(spec, old):
             phase="verified_live_dependency", supervisor_pid=os.getpid(), dependency=dependency,
             dependency_start_ticks=original_ticks, policy_updates=0, gpu_allocated=False))
         time.sleep(10)
-    state = read(root / "status.json")
-    inspection = read(root / "formal_checkpoint_inspection.json")
-    if (state["state"] != "complete" or state["verified_optimizer_steps"] != 500
-            or not inspection["passed"] or inspection["step"] != 500
-            or sha(inspection["checkpoint"]) != inspection["checkpoint_sha256"]):
-        raise RuntimeError("Predecessor did not finish and verify; do not start AR or retry it")
+    inspection_path = verify_dependency_completed(root, kind)
     publish(Path(spec["output"]) / "dependency_completed.json", dict(verified=True, time=now(),
-        dependency=dependency, inspection_sha256=sha(root / "formal_checkpoint_inspection.json"),
-        initializes_from_original_A4_not_dependency=True))
+        dependency=dependency, inspection_sha256=sha(inspection_path),
+        initialization=spec["initialization"], parent_path=spec["parent_path"], initializes_from_dependency=False))
+
+
+def verify_dependency_completed(root, kind):
+    root = Path(root)
+    if kind not in {"fm", "action"}:
+        raise ValueError("Unknown serial dependency kind")
+    state = read(root / "status.json")
+    path = root / ("formal_checkpoint_inspection.json" if kind == "fm" else "formal/checkpoint_inspection.json")
+    inspection = read(path)
+    state_steps = state.get("verified_optimizer_steps" if kind == "fm" else "verified_updates")
+    saved_steps = inspection.get("step" if kind == "fm" else "actual_updates")
+    if (state.get("state") != "complete" or state_steps != 500
+            or not inspection.get("passed") or saved_steps != 500
+            or Path(inspection["checkpoint"]) != root / "formal/checkpoints/step_500.pt"
+            or sha(inspection["checkpoint"]) != inspection["checkpoint_sha256"]):
+        raise RuntimeError("Predecessor did not finish and verify; do not start or retry it")
+    return path
 
 
 @contextmanager
@@ -366,11 +412,13 @@ def train(spec, phase):
         output.mkdir(exist_ok=False)
     dist.barrier()
     config_path = INPUT / "diagnostic_processor_config.yaml"
+    parent_path, parent_sha = declared_parent(spec["route"], spec["initialization"], spec["conditioning"])
     if (sha(config_path) != read(INPUT / "result.json")["processor_config_sha256"]
-            or sha(PARENT) != PARENT_SHA):
-        raise RuntimeError("Original processor recipe or A4 parent differs")
+            or sha(parent_path) != parent_sha
+            or spec["initialization"] == "native" and sha(NATIVE_CONFIG) != NATIVE_CONFIG_SHA):
+        raise RuntimeError("Original processor recipe or declared parent differs")
     cfg = OmegaConf.load(config_path)
-    arch = configure(cfg, spec["route"])
+    arch = configure(cfg, spec["route"], spec["initialization"], spec["conditioning"])
     pipeline = build_original_pipeline(cfg, rank=rank, world_size=world, workers=RECIPE["workers"])
     identity.update(pipeline=pipeline.identity, config_sha256=sha(config_path), spec=spec)
     publish(output / f"identity_rank{rank}.json", identity)
@@ -379,13 +427,17 @@ def train(spec, phase):
         publish(output / "train_source_spec.json", pipeline.source_spec)
         shutil.copyfile(STATS, output / "dataset_stats.json")
     print(json.dumps(dict(rank=rank, stage="pipeline_ready", route=spec["route"])), flush=True)
-    model, parent = load_model_from_checkpoint(arch, str(PARENT), device=str(device),
+    model, parent = load_model_from_checkpoint(arch, str(parent_path), device=str(device),
                                                eval_mode=False, return_full_checkpoint=True)
-    verify_parent(model, parent)
+    if spec["initialization"] == "native":
+        restoration = verify_native_parent(model, parent)
+    else:
+        verify_parent(model, parent)
+        restoration = dict(passed=True, full_parent_entries=1138)
     del parent
     gc.collect()
     contract = prepare_action_updates(model, device)
-    publish(output / f"restoration_rank{rank}.json", dict(passed=True, full_parent_entries=1138, contract=contract))
+    publish(output / f"restoration_rank{rank}.json", dict(**restoration, contract=contract))
     # Audit ALL frozen parameters, including the action expert on pure AR.
     frozen_names = [name for name, p in model.named_parameters() if not p.requires_grad]
     audit = CoordinationGradientAudit(model, expected_groups=contract["expected_trainable_groups"],
@@ -400,7 +452,8 @@ def train(spec, phase):
     before = evaluate(model, pipeline, spec["route"], 0, output, rank, world, full=phase == "formal")
     # Verify the reference metric against the immutable A4 result, not an
     # untested claim that a new CE/FM path happens to be numerically identical.
-    if phase == "formal" and abs(before["aggregate"]["reference_fm_loss"] - .1969439941) > 2e-6:
+    if (spec["initialization"] == "a4" and phase == "formal"
+            and abs(before["aggregate"]["reference_fm_loss"] - .1969439941) > 2e-6):
         raise RuntimeError("A4 prefix-only fixed80 metric differs from the original reference")
     iterator = iter(pipeline.loader)
     params = [p for p in model.parameters() if p.requires_grad]
@@ -509,16 +562,25 @@ def main():
     parser.add_argument("--spec", type=Path)
     parser.add_argument("--phase", choices=("smoke", "formal"))
     parser.add_argument("--after-fm-run", type=Path)
+    parser.add_argument("--after-action-run", type=Path)
+    parser.add_argument("--initialization", choices=("a4", "native"), default="a4")
+    parser.add_argument("--conditioning", choices=("skills", "native_task"), default="skills")
     args = parser.parse_args()
     if args.mode == "start":
         if args.route is None or args.output is None or args.output.parent != BASE:
             raise ValueError("Select one action route and a new child of the experiment root")
-        spec = dict(route=args.route, output=str(args.output), recipe=RECIPE, parent_sha256=PARENT_SHA,
+        parent, parent_sha = declared_parent(args.route, args.initialization, args.conditioning)
+        spec = dict(route=args.route, output=str(args.output), recipe=RECIPE, parent_sha256=parent_sha,
+            parent_path=str(parent), initialization=args.initialization, conditioning=args.conditioning,
             code=code_identity(), commit=subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
             fresh_adam=True, high_unchanged=True, train_split="original950", eval_split="original50",
             native_upstream_ar_replication=False, no_automatic_deployment=True,
-            timing_comparable_to_stock_fm=False, prerequisites=prerequisites(args.route),
-            after_fm=dependency_identity(args.after_fm_run) if args.after_fm_run else None)
+            timing_comparable_to_stock_fm=False,
+            prerequisites=prerequisites(args.route, args.initialization, args.conditioning),
+            native_checkpoint_config_sha256=NATIVE_CONFIG_SHA if args.initialization == "native" else None,
+            reference_fm_is_auxiliary_skills_prefix=True, cot_supervision=False,
+            after_fm=dependency_identity(args.after_fm_run) if args.after_fm_run else None,
+            after_action=dependency_identity(args.after_action_run, "action") if args.after_action_run else None)
         validate_spec(spec)
         args.output.mkdir(exist_ok=False)
         path = args.output / "method_spec.json"

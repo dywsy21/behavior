@@ -22,6 +22,7 @@ from probe_ar_execution_codec import publish
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--native", action="store_true", help="Verify the native vocabulary and task-only template")
     args = parser.parse_args()
     if not args.output.is_absolute():
         raise ValueError("Use a new absolute run directory")
@@ -55,6 +56,10 @@ def main():
             or not receipt["all_five_tasks"] or receipt["processor_config_sha256"] != sha(config_path)):
         raise RuntimeError("Audited original train inputs/config identity differs")
     cfg = OmegaConf.load(config_path)
+    if args.native:
+        OmegaConf.set_struct(cfg, False)
+        cfg.model.model_arch.register_memlite_hl_end = False
+        cfg.model.model_arch.memlite_train_mode = "off"
     cfg.tokenizer.vq_config.dropout_noop_parts = False
     cfg.model.model_arch.AT_CONFIG.dropout_noop_parts = False
     processor = _build_cpu_input_preprocessor(cfg)
@@ -68,6 +73,9 @@ def main():
     begin, end = tokenizer.action_token_begin_idx, tokenizer.action_token_end_idx
     if processor.tokenizer.convert_tokens_to_ids(tokenizer.action_tokens[0]) != begin:
         raise RuntimeError("Qwen action token offset remains inconsistent")
+    if args.native:
+        from native_action_initialization import verify_native_vocabulary
+        verify_native_vocabulary(processor)
     architecture = cfg.model.model_arch
     validator = SimpleNamespace(model_config=architecture, interface_schema_version=6,
                                 _memlite_branch_masks=G05PolicyQwen35._memlite_branch_masks)
@@ -77,10 +85,14 @@ def main():
     settings_list = [ActionTrainingSettings(),
         ActionTrainingSettings(codec_mode="prefix16_holdpad32"),
         ActionTrainingSettings(conditioning="task"), ActionTrainingSettings(route="ki")]
+    if args.native:
+        settings_list = [ActionTrainingSettings(), ActionTrainingSettings(conditioning="native_task")]
     identity.update(commit=subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
         input_sha256=INPUT_SHA, config_sha256=sha(config_path), entry_sha256=sha(Path(__file__)),
         codec_sha256=sha(cfg.tokenizer.vq_config.ckpt_dir), start_time=datetime.now(timezone.utc).isoformat(),
         settings=[s.as_dict() for s in settings_list], action_token_range=[begin, end],
+        native_vocabulary=args.native, state_token_id=processor.state_token_id,
+        eov_token_id=processor.eov_token_id, hl_end_token_id=processor.hl_end_token_id,
         qwen_offset_hook_updates=offset_updates, max_chunk_token_length=int(architecture.max_chunk_token_length),
         dropout_noop_parts=False, train_only=True, policy_forwards=0, optimizer_updates=0, simulator_controls=0)
     publish(args.output / "manifest.json", identity)
@@ -156,14 +168,14 @@ def main():
                     rows.append(row)
                     publish(args.output / f"row_{len(rows):02d}.json", row)
                 print(json.dumps(dict(batch=batch_index, settings=settings.as_dict(), passed_rows=len(rows))), flush=True)
-    if original_count != 10 or len(rows) != 40 or {r["source"]["task"] for r in rows} != set(range(5)):
-        raise RuntimeError("Expected ten original train rows/five tasks and forty tokenization views")
-    publish(args.output / "result.json", dict(complete=True, original_train_rows=10, rendered_views=40,
+    if original_count != 10 or len(rows) != 10 * len(settings_list) or {r["source"]["task"] for r in rows} != set(range(5)):
+        raise RuntimeError("Expected ten original train rows/five tasks and all declared tokenization views")
+    publish(args.output / "result.json", dict(complete=True, original_train_rows=10, rendered_views=len(rows),
         identity=identity, rows=rows, policy_forwards=0, optimizer_updates=0, simulator_controls=0,
         limitations=["Actual tokenizer and codec only, no learned/free AR generation.",
                      "Original train engineering cache, not generalization or success rate.",
                      "Task-only is an explicit conditioning ablation, not upstream full-CoT replication."]))
-    print(json.dumps(dict(complete=True, original_train_rows=10, rendered_views=40)), flush=True)
+    print(json.dumps(dict(complete=True, original_train_rows=10, rendered_views=len(rows))), flush=True)
 
 
 if __name__ == "__main__":

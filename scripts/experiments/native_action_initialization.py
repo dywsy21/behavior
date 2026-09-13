@@ -12,10 +12,20 @@ NATIVE_CONFIG_SHA = "c98af37352c0f600341d2ecbdb49fcdfa87812198654448991615065fa1
 HF_DOWNLOAD_REVISION = "e312be81e90c56a55bcb26b57429bd39a335b449"
 
 
+def verify_native_vocabulary(processor):
+    codec = processor.action_tokenizer
+    if (processor.hl_end_token_id is not None or processor.state_token_id != 252188
+            or processor.eov_token_id != 252187 or codec.action_token_begin_idx != 248077
+            or codec.action_token_end_idx != 252187):
+        raise RuntimeError("Native G0.5 must retain its original action/EOV/state token IDs, without HL_END")
+    return dict(action_range=[248077, 252187], eov=252187, state=252188, hl_end=None, vocab_size=252189)
+
+
 def verify_native_parent(model, parent):
     import torch
     from g05.models.g05.helpers.vlm_lora import normalize_pre_injection_state_keys
 
+    vocabulary = verify_native_vocabulary(model.processor)
     if set(parent) != {"model_state_dict"}:
         raise RuntimeError("Native released checkpoint must contain weights only")
     expected = parent["model_state_dict"]
@@ -44,4 +54,5 @@ def verify_native_parent(model, parent):
         raise RuntimeError("Native initialization must not restore an A4/trained adapter")
     return dict(passed=True, exact_base_entries=946, new_lora_entries=192,
                 zero_function_adapter=True, trained_adapter_restored=False,
+                vocabulary=vocabulary,
                 published_behavior_finetune_replication=False)

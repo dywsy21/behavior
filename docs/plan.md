@@ -10,6 +10,18 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 17:03（北京时间）：原生加载首门失败定位到HL_END挪动state，保留原生词表重验
+
+- **Codex / AR-01，实际失败/0更新：** dc0d085的native-skills进程2081801已退出1，v1日志和manifest保留；严格946项检查在`model.vlm.input_proj.weight`处拒绝252189→252190行的默认部分加载，尚未执行优化/自由生成，不重复声称native已通过。源码定位：MEM-Lite无条件在`<EOV>`后、`<state>`前注册`<HL_END>`；官方原实现没有HL_END，因此原生state252188被挪到252189。动作词表范围未因此挪动；尚不能把此兼容性缺陷宣称为历史打转的已证实根因。
+- **修正/待验：** 原input_preprocessor与Git副本逐字一致，现仅加显式`register_memlite_hl_end=false`原生模式，默认true完整保留A4/MEM-Lite词表；原生模式不加新token，继续要求946基础权重逐项原样恢复，不放宽部分加载/补零门。进程内声明第四个Git扩展及基础policy的processor绑定，不热改原源码/环境。CPU真实native tokenizer门拟`ar_native_input_gate_v1`（10行×skills/native_task两视图，0 VLM/优化）；再新native-skills/native-task **v2** GPU门，不启动尚未运行的task-v1。
+- **原生正式训练草稿：** 完整action trainer已增加显式native父权重/条件选择，以及只等待已声明`ar_a4_fulltrain_v2`真正完成、验500权重后才启动的串行依赖；原生不会从A4/前驱权重接训。仍原950/50、四卡global16、5步保存门→独立500、原80＋自由生成；A4参考值只约束A4初始化，native另记其原始参考。新增CPU用例待验；当前未提交原生正式训练队列，不把草稿算实训。
+- **FM现状：** 原AE×2继续，step200固定80=0.1988764574，同步数control=0.1972260463，候选暂差约0.837%；不作最终500/SR结论，不改现有预算。完整双路线及组合闭环继续待办。
+
+### 2026-09-13 16:51（北京时间）：原生AR入口92项CPU通过，开始真实native-skills短门
+
+- **Codex / AR-01：** 新独立worktree `ar_native_20260913`固定dc0d085，在robo实际92项CPU检查通过（包括原FM/AR/KI回归及新增native加载/模板/五task取样）。首个`ar_native_skills_gpu_gate_v1`已提交GPU1真实入口，预算同上：原生权重、两临时更新、五task前后自由生成，0发布权重/仿真；GPU阶段结果未出。启动不算验收，须检查真实进程、restoration/gradient/result回执。
+- **后续：** 同源native-task臂等前一进程结束才运行，不挤占第二张卡或热改当前源。现有FM500与AR等待不变；完整原生AR训练/CoT/闭环及FM候选组合仍待完成。
+
 ### 2026-09-13 16:49（北京时间）：确认原生G0.5身份，增加明确的原生AR初始化与模板
 
 - **Codex / AR-01，实查完成：** 上轮新增首个AE×2诊断证据，属于progress；本轮clean pull/fetch后实查1902909/1912524仍活跃（最近日志153/500），1940901仍verified_live_dependency。原生权重实际为`/mnt/sdc1/robodojo/checkpoints/G05/g05-base/checkpoints/model_state_dict.pt`，11,440,519,964 bytes，SHA `072211e5b2f5ef036729bae673f3f44da40adbea5c0044af55fe2fb8af654327`，与本地HF下载metadata一致（revision `e312be81e90c56a55bcb26b57429bd39a335b449`）；946基础状态、0 LoRA，仅权重无Adam。配套config SHA `c98af37352c0f600341d2ecbdb49fcdfa87812198654448991615065fa1a4461`，27D接口；没有重新下载权重。
