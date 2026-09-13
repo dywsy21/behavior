@@ -1,6 +1,6 @@
 # robo服务器文件位置与保留规则
 
-更新：2026-09-12。本文件中的服务器路径属于`ssh robo`，不是本地路径。**源码走GitHub push/pull，数据、权重、环境、完整实验结果不走Git。**
+更新：2026-09-13。本文件中的服务器路径属于`ssh robo`，不是本地路径。**源码走GitHub push/pull，数据、权重、环境、完整实验结果不走Git。**
 
 源码整理与GitHub同步已完成；按用户后来确认的安全范围，旧`hy_vla`实验归档已净释放约481.11GiB。下表区分实际运行位置、Git协作入口和冷归档；其他重要目录保留原位。
 
@@ -51,15 +51,20 @@
 - 编排/结果根：`/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912`；`launch.json`记录准确commit/父权重/源码SHA，`status.json`给出真实阶段，不能只看PID判定成功。
 - Git固定配方：`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_overnight_20260912`，commit `e463932740cbb3977a2b975be824c21d9dc96f45`；**不能在活跃副本pull**。它编排上述原A3训练快照，不代表主仓模型已完成P0-02整合。
 - `gate/`为两次临时优化验收、不保存训练权重；`smoke/`为四卡5步验收，`smoke_checkpoint_inspection.json`回读验证后才放行正式阶段；`formal/`才是从原A3-5000初始化的新2500更新阶段，正式初始模型不来自smoke。
-- 新正式权重：该根的`formal/checkpoints/step_N.pt`，每500更新及最终保存；固定80窗口结果在`formal/fixed_diagnostic/step_N.json`。23:48已进入正式训练，23:55四rank有效参数更新已核验；实际步数/文件以实时计划/status及样本/梯度回执为准。
+- 新正式权重：该根的`formal/checkpoints/step_N.pt`，每500更新及最终保存；固定80窗口结果在`formal/fixed_diagnostic/step_N.json`。2026-09-13 07:39完成，`step_2500.pt` SHA `6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`；`formal_checkpoint_inspection.json`通过完整模型/Adam/RNG/冻结参数验收，尚无A4成功率结论。
 - 正式训练无墙钟截止（用户随后明确取消8小时限制）；有限2500步、不自动重试/追加训练。磁盘保留120GiB安全余量，不清理旧checkpoint；异常退出保留已有完整保存。恢复需绑定同run身份及原配置，不能重新执行`start`冒充断点恢复。
 
 ### 原有A/B评测和诊断
 
+2026-09-13新结果根（不在W内）：
+
+- `/mnt/sdc1/robodojo/behavior_dev/a4_paired_actions_20260913_v1`：170次A3/A4原train同输入FM对照已complete，`result.json`为摘要，`A3/`和`A4/`保留预测/完整恢复证据；没有physics或SR。
+- `/mnt/sdc1/robodojo/behavior_dev/a4_radio_e121_l1_20260913_v1`：A4局部GRASP，10:59已通过真实7次wire并启动仿真。`service/`为临时GPU0/8782服务证据，`actual_rollout/`为真实控制/物理trace/视频；supervisor结束后自动关闭自己创建的服务。其Git worktree为`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_prefix_20260913`（固定c7fb287，不热pull）。
+
 | 结果类别 | W下路径 | 结论/边界 |
 | --- | --- | --- |
 | 旧A3完整五任务 | `native_a3_final_development_pilot_v1/task_0` … `task_4` | 各有`result.json`、`rollout.mp4`与记录；完整0/5，重复开发实例 |
-| 修正版完整五任务 | `native_a3_aligned_development_pilot_v3` | `task_N/`放结果/视频，序列receipt记录完成情况；2026-09-12 21:48核对task0/1完整失败、task2在跑、task3/4待执行 |
+| 修正版完整五任务 | `native_a3_aligned_development_pilot_v3` | `task_N/`放结果/视频，序列receipt记录完成情况；2026-09-13核对task0–4均完整结束，官方0/5，属于A3+B-final而非A4 |
 | 修正版完整评测清单 | `native_a3_aligned_five_task_development_v3.json` | 同A3/B、public_test301、env0/policy17；SHA `2722f9404b046ff69b443774d65fe1cb7b0bf4c25369d67b988cb7889924d730` |
 | 旧A3固定GRASP | `a3_prefix_radio_e121_l1_v1/actual_rollout` | 448原前缀＋1280模型控制，无稳定抓取 |
 | 修正版固定GRASP | `a3_aligned_radio_e121_l1_v2/actual_rollout` | 同权重/起点/条件仍未稳定抓取；`collection_result.json`不是完整任务SR |
@@ -86,7 +91,7 @@
 | 修正版A3前缀诊断低层 | `127.0.0.1:8780` / GPU3 | `a3_aligned_radio_e121_l1_v2/service`及service日志 |
 | B-final高层 | `127.0.0.1:8773` / GPU2 | `a2_final_eval_b_high_service_v1` |
 | 原A2/旧A3等保留服务 | `8772/8776/8777` / GPU0或2 | 历史比较服务，是否可停由准确依赖及团队决定；8778已按上述核验关闭 |
-| 当前完整模拟器 | GPU1 | `native_a3_aligned_development_pilot_v3`；使用`kit_c1_gpu1_appdata_v1`私有缓存 |
+| 上轮完整模拟器（已结束） | GPU1 | `native_a3_aligned_development_pilot_v3`；使用`kit_c1_gpu1_appdata_v1`私有缓存，2026-09-13核对campaign已退出 |
 
 端口不能直接从外部访问时用SSH转发，不修改服务绑定扩大暴露。四张A100不等于四份可随意分配的空闲资源；先查实际进程和显存。渲染质量、IsaacSim版本与硬件兼容性仍需独立验证，吞吐不与正确性混为一谈。
 
