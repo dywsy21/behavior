@@ -250,6 +250,8 @@ def main():
         def traced(*a, **kw):
             result = original_ar(*a, **kw)
             generated["ids"] = result["generated_ids"].detach().cpu().tolist()
+            generated.setdefault("calls", []).append(dict(ids=generated["ids"],
+                max_new_tokens=kw.get("max_new_tokens"), stop_token_ids=kw.get("stop_token_ids")))
             return result
         model.model.inference_ar = traced
         try:
@@ -265,6 +267,8 @@ def main():
             report = dict(valid=True, selected_action_source=result["selected_action_source"],
                 normalized_executed_rmse=float(error.square().mean().sqrt()),
                 execution_start=result["execution_start"], execution_steps=result["execution_steps"])
+            if "cot_text" in result:
+                report["cot_text"] = result["cot_text"]
         except RuntimeError as exc:
             if not str(exc).startswith("Free AR generation"):
                 raise

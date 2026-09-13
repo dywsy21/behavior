@@ -21,7 +21,7 @@ from g05.data_processor.processor.samples_builder import validate_embedded_model
 from g05.utils.memlite_skill_protocol import MEMLITE_SKILL_SCHEMA_VERSION
 from g05.utils.training.ar_training_methods import (
     ActionTrainingSettings, action_prefix_samples, action_training_samples, validate_complete_action_tokens,
-    native_task_actor_samples, native_subtask_cot_actor_samples,
+    native_task_actor_samples, native_subtask_cot_actor_samples, action_token_loss_metrics,
 )
 
 
@@ -142,8 +142,11 @@ class G05PolicyMEMLiteAction(G05PolicyQwen35):
         self._assert_action_training_contract()
         prepared = action_training_samples(samples, actions, action_pad_masks,
                                            action_dim_is_pad, self.action_training)
-        return super().forward_train(prepared, pixel_values, actions=actions,
+        loss, metrics = super().forward_train(prepared, pixel_values, actions=actions,
             action_pad_masks=action_pad_masks, action_dim_is_pad=action_dim_is_pad, **kwargs)
+        metrics.update(action_token_loss_metrics(self.model.ar_helper._last_ce_cache,
+            self.action_tokenizer.action_token_begin_idx, self.action_tokenizer.action_token_end_idx))
+        return loss, metrics
 
     @torch.no_grad()
     def forward_inference(self, samples, pixel_values, **kwargs):

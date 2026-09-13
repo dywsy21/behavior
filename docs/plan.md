@@ -12,6 +12,22 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 19:30（北京时间）：补CoT独立动作CE与双阶段回执，正式入口草稿待验
+
+- **Codex / AR-01，实质代码/待验：** 从已有CE cache拆分未加权action-token CE与text/boundary CE、各自有效token数，训练目标不变；原固定80逐task/窗口同口径汇总，CoT文本不能稀释动作指标。自由生成回执新增按调用顺序保留文本/动作两段，避免原`ids`只保留最后一次。正式trainer新增显式native_subtask_cot配置与专属已完成输入/GPU证据门，原FM参考临时关闭CoT/EOV监督并完整恢复。新CPU用例/本地语法检查已写；尚未以此新入口训练，不热改5aa3eff GPU源或其他队列。
+- **其他修正/下一步：** AR500只读诊断的预算字段改读真实`method_spec.recipe.max_updates`，不会在500完成后误读不存在的顶层字段。19:29实际A4-AR476/500，CoT GPU回执已出现complete与两次更新日志，详细指标/生成失败类型正在核验；未宣称CoT效果或新SR。下一次只在500真正完成/完整回读后对原两train窗口做同历史数值复核，仍0优化/仿真，不追加训练。
+
+### 2026-09-13 19:25（北京时间）：CoT原生GPU两更新门已启动
+
+- **Codex / AR-01，运行中：** `ar_native_subtask_cot_gpu_gate_v1`真实PID2672389，于19:24:38启动，固定5aa3eff的`ar_native_subtask_cot_v2_20260913`，预算与上一条预登记一致；原生恢复/真实梯度/自由生成结果待验，不用启动当通过。不得热改此worktree。
+- **评估边界：** CoT的总CE混有文本与动作，不能直接与action-only CE作数值优劣比较。后续正式入口需分别记录动作token CE和文本/边界CE、两个生成阶段及EOV接续，保持原FM辅助参考不变；当前尚未追加CoT正式训练，A4-AR仍在原500预算内。
+
+### 2026-09-13 19:24（北京时间）：CoT真实十行输入通过并人工核对，准备原生两更新GPU门
+
+- **Codex / AR-01，实际通过：** `ar_native_subtask_cot_v2_20260913`固定5aa3eff，156 CPU tests passed；`ar_native_subtask_cot_input_gate_v2`十行完成，result SHA `0d89930ff98ed90144e4aa592d2e0d7c8bc8ef6e3c207f47a610b85098141e6c`。全部原生词表/60动作tokens/8完整组、42–53个CoT监督token、EOV标签、完整未截断、actor无teacher输入通过。v1确为不同CoT长度造成的左padding比较错误，真实逐行观察IDs和类型mask全部一致，并未靠放宽真实输入一致性过关。
+- **本人审核范围：** 逐条读完十份来源与文本，核对PLACE_ON/GRASP/OPEN_DOOR/NAVIGATE/PRESS及对象、来源/目的、right_door和UNSPECIFIED字段；转写只是原已审核skill文本加`Subtask:`前缀，无新事实、bbox、trace或成功/失败标签。本轮不是重新做视觉标注/发布新数据；原图像审核证据继续沿用。
+- **下一有限GPU预登记：** `ar_native_subtask_cot_gpu_gate_v1`，同5aa3eff独立worktree/原生base SHA `072211e5…`，GPU1/2CPU线程；原两train行两临时Adam更新/192 LoRA、FM恒0，五task各一真train窗口更新前后自由生成（每次CoT最多256＋动作原300预算），原生946基础状态精确恢复/新零B。0发布权重/仿真，不自动追加或部署；输入/数值/梯度/恢复错误停止，生成不完整原样记录。尚未启动CoT正式500，现有A4-AR/原生task/五方法队列不变。
+
 ### 2026-09-13 19:22（北京时间）：CoT CPU首门停在前缀比较，修正多长度padding检查后重验
 
 - **Codex / AR-01，失败保留/0更新：** `ar_native_subtask_cot_input_gate_v1`退出1，未通过observation/teacher boundary，manifest保留，没有启动CoT GPU。检查器把包含不同长度CoT的训练左padding与纯观察的左padding按整块矩阵比较，不能据此断言逻辑token前缀错误。

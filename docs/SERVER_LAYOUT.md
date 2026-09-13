@@ -48,6 +48,8 @@
 
 ### 2026-09-13新增：FM方法与AR重新验证
 
+- **19:25原生Subtask-CoT：** 工作树`git_worktrees/ar_native_subtask_cot_v2_20260913`固定5aa3eff；`dual_track_fm_ar_20260913/ar_native_subtask_cot_input_gate_v2/result.json`十行complete，SHA `0d89930ff98ed90144e4aa592d2e0d7c8bc8ef6e3c207f47a610b85098141e6c`，v1检查器padding比较失败保留。`ar_native_subtask_cot_gpu_gate_v1` PID2672389、同级`.launch.log`，只两临时更新/五task自由生成；尚无正式CoT权重或仿真。活跃worktree禁止热改。
+
 - **19:11 AR只读数值诊断完成：** `dual_track_fm_ar_20260913/ar_decode_consistency_a4_v1`，2604744已退出/代码039e268，独立worktree `git_worktrees/ar_decode_consistency_20260913`。46 CPU passed；两原train行/122同历史下一token比较，121 argmax一致、MRoPE与类型mask一致、96 LoRA模块三路径均调用，自由仍漏组，0更新/仿真。`result.json` SHA `161649772d3a5b8a519a6f5916b6dd1201d26df1de3bbca2e341e23f4cbea43b`；`.launch.log`在run同级，不以强制历史诊断冒称actor输出。
 
 - **17:57 AR正式接续：** `ar_a4_fulltrain_v2/smoke/checkpoint_inspection.json`已passed（5更新/192 Adam），临时`smoke/checkpoints/step_5.pt` SHA `9f22d74f9886ee31a4bda9598a25de22e6680e90ce2b1176b5b02f4bf9f9a84c`。现supervisor1940901/formal trainer2316504重新从原A4初始化正式500，日志`formal.log`及`formal/`；不是从smoke续训，不能用旧2307504 PID判断当前任务。后继队列仍等待，171898c活跃worktree不变。

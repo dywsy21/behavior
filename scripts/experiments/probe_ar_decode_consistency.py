@@ -74,7 +74,7 @@ def main():
         spec, status = read(run / "method_spec.json"), read(run / "status.json")
         inspection = read(run / "formal/checkpoint_inspection.json")
         if (spec["route"] != "ar" or spec["parent_sha256"] != PARENT_SHA
-                or spec["max_updates"] != 500 or status.get("state") != "complete"
+                or spec["recipe"]["max_updates"] != 500 or status.get("state") != "complete"
                 or not inspection.get("passed") or inspection.get("actual_updates") != 500):
             raise RuntimeError("The declared AR500 predecessor has not completed verification")
         checkpoint = run / "formal/checkpoints/step_500.pt"

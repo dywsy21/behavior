@@ -19,7 +19,7 @@ def test_fixed_budget_is_an_actual_global_sixteen_batch():
 
 @pytest.mark.parametrize("initialization,conditioning,expected", [
     ("a4", "skills", recipe.PARENT), ("native", "skills", recipe.NATIVE_PARENT),
-    ("native", "native_task", recipe.NATIVE_PARENT)])
+    ("native", "native_task", recipe.NATIVE_PARENT), ("native", "native_subtask_cot", recipe.NATIVE_PARENT)])
 def test_training_parent_is_explicit_and_not_the_serial_predecessor(initialization, conditioning, expected):
     path, digest = recipe.declared_parent("ar", initialization, conditioning)
     assert path == expected and len(digest) == 64
@@ -54,6 +54,33 @@ def test_reference_fm_flags_restore_on_exception():
             assert not model.discrete_action and model.continuous_action
             raise ValueError("test")
     assert model.discrete_action and not model.continuous_action
+
+
+def test_cot_and_eov_supervision_cannot_contaminate_the_original_fm_reference():
+    model = SimpleNamespace(discrete_action=True, continuous_action=False, predict_cot=True,
+                            processor=SimpleNamespace(pred_eov=True))
+    with pytest.raises(ValueError):
+        with recipe.original_fm_flags(model):
+            assert not model.predict_cot and not model.processor.pred_eov
+            raise ValueError("test")
+    assert model.predict_cot and model.processor.pred_eov
+
+
+def test_subtask_cot_full_training_keeps_native_weights_and_explicit_supervision():
+    cfg = OmegaConf.create(dict(tokenizer=dict(vq_config={}), model=dict(model_arch=dict(
+        fm={}, AT_CONFIG={}, coordination_train={}, input_preprocessor={})) ))
+    arch = recipe.configure(cfg, "ar", "native", "native_subtask_cot")
+    assert cfg.model.pretrained_ckpt == str(recipe.NATIVE_PARENT)
+    assert arch.predict_cot and arch.input_preprocessor.pred_eov and not arch.continuous_action
+
+
+def test_optional_token_components_use_same_uniform_task_window_averaging():
+    rows = [dict(task_id=f"task{i}", ce_loss=1., reference_fm_loss=.2,
+                 action_token_ce=float(i), text_boundary_token_ce=0.) for i in range(5)]
+    assert recipe.summarize(rows + [deepcopy(rows[-1])] * 3)["aggregate"]["action_token_ce"] == 2.
+    del rows[1]["action_token_ce"]
+    with pytest.raises(RuntimeError, match="Incomplete token"):
+        recipe.summarize(rows)
 
 
 def test_reference_path_cannot_be_used_for_training():

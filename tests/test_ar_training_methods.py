@@ -8,7 +8,7 @@ import torch
 
 from g05.utils.training.ar_training_methods import (
     ActionTrainingSettings, action_prefix_samples, action_training_samples, validate_complete_action_tokens,
-    native_task_actor_samples, native_subtask_cot_actor_samples,
+    native_task_actor_samples, native_subtask_cot_actor_samples, action_token_loss_metrics,
 )
 
 
@@ -187,6 +187,24 @@ def test_subtask_target_is_exact_same_state_text_on_output_side_only(monkeypatch
 def test_cot_cannot_silently_change_joint_or_ki_ablation(route):
     with pytest.raises(ValueError):
         ActionTrainingSettings(route=route, conditioning="native_subtask_cot")
+
+
+def test_action_ce_is_not_diluted_by_more_easy_cot_tokens():
+    cache = dict(token_loss=torch.tensor([4., 6., 0., 0.]), shift_labels_masked=torch.tensor([100, 101, 12, 99]))
+    first = action_token_loss_metrics(cache, 100, 102)
+    cache["token_loss"] = torch.cat([cache["token_loss"], torch.zeros(10)])
+    cache["shift_labels_masked"] = torch.cat([cache["shift_labels_masked"], torch.full((10,), 11)])
+    after = action_token_loss_metrics(cache, 100, 102)
+    assert first["action_token_ce"] == after["action_token_ce"] == 5.
+    assert first["action_token_targets"] == after["action_token_targets"] == 2
+    assert after["text_boundary_token_ce"] == 0 and after["text_boundary_token_targets"] == 12
+
+
+@pytest.mark.parametrize("losses,targets", [([], []), ([1.], [-100]),
+    ([float("nan"), 0.], [100, 10]), ([1., 2.], [100]), ([1., 2.], [100, 101])])
+def test_corrupt_or_incomplete_ce_cache_cannot_be_summarized(losses, targets):
+    with pytest.raises(ValueError):
+        action_token_loss_metrics(dict(token_loss=torch.tensor(losses), shift_labels_masked=torch.tensor(targets)), 100, 102)
 
 
 def grouped_codec():

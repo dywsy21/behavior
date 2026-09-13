@@ -82,8 +82,8 @@ def declared_parent(route, initialization="a4", conditioning="skills"):
         if conditioning != "skills":
             raise ValueError("The declared A4 training arms keep skill conditioning")
         return PARENT, PARENT_SHA
-    if route != "ar" or conditioning not in {"skills", "native_task"}:
-        raise ValueError("Native base training is an explicit AR skills/native_task arm")
+    if route != "ar" or conditioning not in {"skills", "native_task", "native_subtask_cot"}:
+        raise ValueError("Native base training is an explicit AR skills/task/subtask-CoT arm")
     return NATIVE_PARENT, NATIVE_PARENT_SHA
 
 
@@ -132,13 +132,18 @@ def prerequisites(route, initialization="a4", conditioning="skills"):
     input_path, data_path = BASE / "ar_input_gate_v2/result.json", BASE / "ar_loader_gate_v1/result.json"
     if initialization == "native":
         input_path = BASE / "ar_native_input_gate_v1/result.json"
+    if conditioning == "native_subtask_cot":
+        input_path = BASE / "ar_native_subtask_cot_input_gate_v2/result.json"
     inputs, data = read(input_path), read(data_path)
-    if not inputs["complete"] or inputs["rendered_views"] != (20 if initialization == "native" else 40) or not data["complete"]:
+    expected_views = 10 if conditioning == "native_subtask_cot" else 20 if initialization == "native" else 40
+    if not inputs["complete"] or inputs["rendered_views"] != expected_views or not data["complete"]:
         raise RuntimeError("Real tokenizer/complete full-data input gates are required")
     name = {"ar": "ar_gpu_gate_v2", "ki": "ki_gpu_gate_v1", "joint": "joint_gpu_gate_v1",
             "fm": "fm_control_v1/gate"}[route]
     if initialization == "native":
         name = "ar_native_" + ("task" if conditioning == "native_task" else "skills") + "_gpu_gate_v2"
+    if conditioning == "native_subtask_cot":
+        name = "ar_native_subtask_cot_gpu_gate_v1"
     path = BASE / name / "result.json"
     gate = read(path)
     if not gate.get("complete", gate.get("passed", False)) or gate["actual_updates"] != 2:
@@ -254,11 +259,24 @@ def verify_dependency_completed(root, kind):
 def original_fm_flags(policy):
     """Explicit prefix-only reference measurement; never used for training."""
     before = policy.discrete_action, policy.continuous_action
+    has_cot = hasattr(policy, "predict_cot")
+    cot_before = policy.predict_cot if has_cot else None
+    processor = getattr(policy, "processor", None)
+    has_eov = processor is not None and hasattr(processor, "pred_eov")
+    eov_before = processor.pred_eov if has_eov else None
     try:
         policy.discrete_action, policy.continuous_action = False, True
+        if has_cot:
+            policy.predict_cot = False
+        if has_eov:
+            processor.pred_eov = False
         yield
     finally:
         policy.discrete_action, policy.continuous_action = before
+        if has_cot:
+            policy.predict_cot = cot_before
+        if has_eov:
+            processor.pred_eov = eov_before
 
 
 def reference_fm(policy, batch):
@@ -282,12 +300,18 @@ def summarize(rows):
         grouped[row["task_id"]].append(row)
     if set(grouped) != {f"task{i}" for i in range(5)}:
         raise RuntimeError("Diagnostic missed a task")
+    metrics = ["ce_loss", "reference_fm_loss"]
+    for key in ("action_token_ce", "text_boundary_token_ce"):
+        if any(key in row for row in rows):
+            if not all(key in row for row in rows):
+                raise RuntimeError("Incomplete token-component evaluation metrics")
+            metrics.append(key)
     per_task = {}
     for task, values in sorted(grouped.items()):
         per_task[task] = {metric: sum(row[metric] for row in values) / len(values)
-                         for metric in ("ce_loss", "reference_fm_loss")}
+                         for metric in metrics}
     return dict(per_task=per_task, aggregate={key: sum(v[key] for v in per_task.values()) / 5
-                for key in ("ce_loss", "reference_fm_loss")})
+                for key in metrics})
 
 
 def evaluate(model, pipeline, route, step, output, rank, world, *, full):
@@ -315,6 +339,9 @@ def evaluate(model, pipeline, route, step, output, rank, world, *, full):
                 _, metrics = model(batch)
             row = dict(task_id=window["task_id"], window_id=window["window_id"],
                 skill=window["skill"], ce_loss=float(metrics.get("ce_loss", 0.)), reference_fm_loss=fm)
+            if route != "fm":
+                row.update({key: float(metrics[key]) for key in
+                    ("action_token_ce", "text_boundary_token_ce", "action_token_targets", "text_boundary_token_targets")})
             if not all(torch.isfinite(torch.tensor(row[k])) for k in ("ce_loss", "reference_fm_loss")):
                 raise RuntimeError("Nonfinite fixed heldout metric")
             if window["window_id"] == first_per_task[window["task_id"]] and route != "fm":
@@ -324,6 +351,8 @@ def evaluate(model, pipeline, route, step, output, rank, world, *, full):
                 def traced(*args, **kwargs):
                     result = original(*args, **kwargs)
                     raw["ids"] = result["generated_ids"].detach().cpu().tolist()
+                    raw.setdefault("calls", []).append(dict(ids=raw["ids"],
+                        max_new_tokens=kwargs.get("max_new_tokens"), stop_token_ids=kwargs.get("stop_token_ids")))
                     return result
                 model.model.inference_ar = traced
                 try:
@@ -335,6 +364,8 @@ def evaluate(model, pipeline, route, step, output, rank, world, *, full):
                     error = (action[:, :16] - batch["action"][:, :16])[valid]
                     row["generation"] = dict(valid=True, source=prediction["selected_action_source"],
                         normalized_executed_rmse=float(error.square().mean().sqrt()), raw=raw)
+                    if "cot_text" in prediction:
+                        row["generation"]["cot_text"] = prediction["cot_text"]
                 except RuntimeError as exc:
                     if not str(exc).startswith("Free AR generation"):
                         raise
@@ -583,7 +614,7 @@ def main():
     parser.add_argument("--after-fm-run", type=Path)
     parser.add_argument("--after-action-run", type=Path)
     parser.add_argument("--initialization", choices=("a4", "native"), default="a4")
-    parser.add_argument("--conditioning", choices=("skills", "native_task"), default="skills")
+    parser.add_argument("--conditioning", choices=("skills", "native_task", "native_subtask_cot"), default="skills")
     args = parser.parse_args()
     if args.mode == "start":
         if args.route is None or args.output is None or args.output.parent != BASE:
@@ -597,7 +628,7 @@ def main():
             timing_comparable_to_stock_fm=False,
             prerequisites=prerequisites(args.route, args.initialization, args.conditioning),
             native_checkpoint_config_sha256=NATIVE_CONFIG_SHA if args.initialization == "native" else None,
-            reference_fm_is_auxiliary_skills_prefix=True, cot_supervision=False,
+            reference_fm_is_auxiliary_skills_prefix=True, cot_supervision=args.conditioning == "native_subtask_cot",
             after_fm=dependency_identity(args.after_fm_run) if args.after_fm_run else None,
             after_action=dependency_identity(args.after_action_run, "action") if args.after_action_run else None)
         validate_spec(spec)

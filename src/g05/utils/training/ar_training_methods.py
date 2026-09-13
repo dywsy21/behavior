@@ -50,6 +50,29 @@ CANONICAL_PARTS = dict(left_control=9, left_gripper=1, right_control=9,
                        right_gripper=1, lower_body=7)
 
 
+def action_token_loss_metrics(cache, begin, end):
+    """Report action vs text/boundary losses without changing the objective.
+
+    The AR helper already computed these detached, valid-target per-token
+    losses. Separating them prevents longer/easier CoT text from masquerading
+    as lower action loss. Boundary includes EOV, separators and EOS, not only
+    the subtask content. No additional teacher or model forward is involved.
+    """
+    losses, targets = cache["token_loss"], cache["shift_labels_masked"]
+    if (losses.ndim != 1 or targets.shape != losses.shape or not losses.numel()
+            or not torch.isfinite(losses).all() or (targets < 0).any() or not begin < end):
+        raise ValueError("Invalid valid-target CE cache")
+    actions = (targets >= begin) & (targets < end)
+    result = {}
+    for name, selected in (("action_token", actions), ("text_boundary_token", ~actions)):
+        count = int(selected.sum())
+        if not count:
+            raise ValueError("Declared action-token training needs action and boundary targets")
+        result[name + "_targets"] = count
+        result[name + "_ce"] = float(losses[selected].detach().float().mean())
+    return result
+
+
 def validate_complete_action_tokens(ids, tokenizer):
     """Reject partial levels/blocks that the legacy codec would zero-fill.
 
