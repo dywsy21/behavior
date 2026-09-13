@@ -26,6 +26,19 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**22:02续记：** `fm_beta_stratified_v2/smoke/checkpoints/step_5.pt`已实际保存/回读（`5bc38337…`，504 Adam/冻结不变/80来源），正式500尚待验。新`git_worktrees/ar_native_actor_wire_20260913`固定0701fd1/274 CPU通过；双路线根`ar_native_actor_wire_probe_v1`于22:01:12启动3140666，日志为同级`.launch.log`，原native500/一次生成/0训练仿真。该独立源正在使用，不热pull；旧六服务/旧v1证据保留。
+
+**21:53六个显式恢复run：** 固定源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/method_queue_recovery_20260913`（7572ce2，267 CPU passed），已活跃，禁止热pull。run仍在双路线根，原v1失败保留，均新建v2、原A4独立5+500、不追加formal预算。Beta在真实gate，后五个已核验等待/0更新；阶段见各自status.json、日志与launch.json。
+
+| run | supervisor | method_spec.json SHA256 |
+| --- | --- | --- |
+| fm_beta_stratified_v2 | 3131633 | `16dfb7ded0b1773fd755d1e5cb9f05d19d093e65c385233fe9de56d69bb8a0a1` |
+| fm_exec_weight2_v2 | 3131858 | `c8ab308b18dd7784139a8e4b2e16f81528eece38951064f0b17f827a4b3c38b1` |
+| fm_action_control_v2 | 3131867 | `09b3bb2a385b7b45266238f097327bcbf49c95c0670ac589da889692bb398c0c` |
+| joint_a4_fulltrain_v2 | 3131878 | `02a01661ad86667291195e6b631c5d68c1c0d3a624d3945204f4c9ea425abb93` |
+| ki_a4_fulltrain_v2 | 3131887 | `1850c78e2d729c476871c67a3e5bfa13a73934adfc591374f8c70d1f123bc285` |
+| ar_a4_marker_fulltrain_v2 | 3131895 | `eb2036b66c3045ac25f2764d2104a6c8c3cbd4f35052857eb80385dc145223c2` |
+
 **21:44最新状态（覆盖以下旧进程快照）：** 双路线根`/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913`内，`ar_native_task_fulltrain_v1/formal/checkpoints/step_500.pt`已完整验收（SHA `639e64aeeb251113b807751f234077595165e65e9dd9e3b66cd7c4661f9df963`），2222863/2724340退出。`ar_schema_reference_a4_v1`同十窗完成（result `6fdd96d8…`），`ar_native_observation_gate_v3`十状态全通过（`6e970017…`），3077705/3126741退出。`git_worktrees/ar_native_actor_20260913`固定0406b53/239 CPU passed，尚未启动神经服务或仿真。
 
 `fm_beta_stratified_v1`单GPU gate/result.json已通过（`d1c249a3…`），四卡smoke.log记录CUDA不可见的启动错误/0更新；其后exec_weight2/FM control/joint/KI/marker五个v1因前驱未验收依次failed。2289674/2291489/2294898/2296750/2297891/2994307均已退出，所有v1证据保留，不能再当作运行队列。拟修环境后另建对应v2，未覆盖旧run/源/服务；实际新位置随后登记。最近磁盘余量约602.8GB，未清理任何文件。

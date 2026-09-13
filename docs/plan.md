@@ -12,6 +12,37 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 22:17（北京时间）：有界原生AR服务/局部仿真接线完成，待真实CPU验收
+
+- **Codex / AR-01，代码实质进展：** 新`native_ar_prefix_client.py`独立task-only协议，复用原每物理步捕获历史，但不读取/发送评估器传入的GRASP对象；新`serve_native_ar_prefix.py`只接受一次seed17 session/最多16神经尝试，错误输出不commit历史，不接受额外teacher字段、旧FM路由或重置追加预算。实际每chunk仍经原观察→AR→原inverse/official23，保留完整生成/trace。
+- **新`run_native_ar_prefix_pilot.py`：** 固定原radio窗口/448 prefix/env0，仿真沿原官方reset/load-instance流程（一个评测回合，不省略框架必需初始化reset），仅把原frozen window的max_chunks80收窄至16；原物理oracle/录像/C1记录不改，高层/技能不进入actor。新8785私有服务/只检查socket身份的0生成门，仿真首个真实回复先验证23D与历史身份再执行。显式GPU/磁盘门、只清理自己启动的服务、失败不重试；源码/新增协议及真实原窗口缩预算测试待固定Git后CPU验收，尚未启动服务/仿真，不把草稿称闭环。
+
+### 2026-09-13 22:07（北京时间）：原生AR神经→raw23→序列化通过；准备16-chunk局部闭环
+
+- **Codex / AR-01，真实完成：** `ar_native_actor_wire_probe_v1`3140666已退出，result SHA `2570ba7d943b39a05953bc7bcc69b216709955dafb2d3eda6575e45062d82c75`。完整1138/192及native原生词表精确恢复，已有448前缀末一次真实生成60动作tokens；全部六raw组/32×23、执行0:16、官方reset躯干第4通道0和原msgpack逐值相同。schema覆盖原argmax5处，非模型自行学会格式；峰值reserved13,384,024,064 bytes，单次推理约12.08s（有并行训练，不是公平吞吐指标）。0新物理动作/更新；原始输出和完整trace保留。首chunk底盘yaw约-0.30，须检查实际行为，不能据接口通过断言动作好。
+- **下一局部预算预登记：** 同radio train121/instance138、env0/policy17、原448动作前缀，原native500＋显式schema、**最多16次神经chunk/256模型控制**，仅一次官方重置，0训练/数据release/额外回合。复用原实际每步观察历史、官方23桥/C1物理记录；固定GRASP只供评估器判据，**不传给task-only actor，不输入oracle反馈**。新专用loopback8785服务、模型/仿真均拟GPU1，模型需40GiB可用、启动仿真再需25GiB，否则不启动/不挤停训练与旧服务；不把共享GPU的墙钟作方法加速证据。先CPU/实际socket身份和完整动作检查，再仿真；保存视频/物理trace并人工看图，到256或官方/物理成功即停，不自动延长到1280或跑全任务。
+- **M-02实际状态：** Beta已进入正式阶段3141061，从原A4独立开始，尚无500完成或效果结论；后五臂仍等待。完整新闭环代码与准确source/启动状态随后记录，不能把此计划算已执行。
+
+### 2026-09-13 22:02（北京时间）：Beta四卡5更新/保存门通过；原生actor真实单次探针运行
+
+- **Codex / M-02：** Beta v2四卡smoke实际5更新，完整保存回读passed：504 Adam/504训练条目改变、冻结不变、四rank RNG、每rank20条来源（共80）；checkpoint SHA `5bc38337304cbe2a06d1eb1f6d74158e9c0b45e32812842d65ff82997a5f8cf6`。这是保存门而非500效果，后续应从原A4独立正式500；原六臂队列/预算保持。
+- **Codex / AR-01：** 0701fd1独立`git_worktrees/ar_native_actor_wire_20260913`274 CPU passed（1.62s）。`ar_native_actor_wire_probe_v1`于22:01:12启动3140666，同级`.launch.log`；原native500、已有448前缀末一次神经/schema/原桥/序列化，0训练与仿真，当前完整权重加载中、尚无通过结果，不重复十状态处理器门或改旧服务。
+
+### 2026-09-13 22:00（北京时间）：原生AR神经/原桥接入口已写，待CPU后单次真实验证
+
+- **Codex / AR-01：** 新`native_ar_actor_runtime.py`只载入已完整验收的native500，保留原生词表（配置仍按native base，不因500路径错误注册HL_END）、完整1138/192逐位回载、同train-only统计；只构建原处理器，不实例化训练/评估dataset。复用已固定SHA的实际history ingress与原postprocessed-raw→official23桥，不伪装成FM snapshot。
+- **单次探针：** `probe_native_ar_actor_wire.py`按上条预算读已有368..448六锚点，task-only/显式schema/seed17实际一次生成，先保存模型输出，再验六组raw32→wire32×23、执行0:16、官方reset躯干常数通道及原msgpack精确回读。新7项bridge正反例测试/语法完成，真实CPU和GPU待独立Git源；并未称socket/仿真已过。Beta四卡3132261已实际读首batch（2×6×3×256×256/三相机），原队列不热改。
+
+### 2026-09-13 21:56（北京时间）：四卡CUDA实测通过，Beta进入真实smoke；预登记原生神经→wire单次检查
+
+- **Codex / M-02：** Beta v2真实两更新门再次通过，四个loss与v1同为0.08853949/0.06442431/0.01927145/0.08223524。新增四rank实际GPU可见性与NCCL小张量门passed，每rank设备0/1/2/3、collective=10，result SHA `f3cb7438bf865960d18901becfec68f54bd6b41dcf34282ca029bd9e244517ac`。21:54:09进入四卡smoke3132261，尚未验收保存/正式500；等待链不变。
+- **Codex / AR-01，下一步有限预登记：** 准备`ar_native_actor_wire_probe_v1`，原生task500 SHA `639e64ae…`＋显式静态schema、seed17、GPU1/两CPU线程/40%单卡上限/需40GiB可用；只用已有radio train121/instance138真实448动作前缀末的六相机/本体锚点，**1次神经生成、0更新、0新仿真动作**。新源/CPU后验证实际历史入口→native观察adapter→完整权重→原逆变换→原official23桥→真实msgpack roundtrip；不传技能/演示未来/物理真值，不加载训练dataset。保存生成/原始23D/强制格式trace/原观察SHA，不把回放观察、格式或序列化门当闭环/SR；通过后再登记小闭环，不重复此前十状态门。
+
+### 2026-09-13 21:53（北京时间）：267 CPU通过，六个精确v2已提交并核验等待
+
+- **Codex / M-02、M-04、AR-01：** 新独立`git_worktrees/method_queue_recovery_20260913`固定7572ce2，实际267 CPU tests passed（1.50s）。Beta v2于21:51:00启动3131633（spec `16dfb7de…`），已验完native500前驱并进入真实gate；后五臂21:51:59–52:00已提交且核验PID/start ticks/argv等待，0GPU/0更新：exec-weight3131858→FM3131867→joint3131878→KI3131887→marker3131895。所有v2绑定原v1失败与零formal证据、独立原A4/同5+500/950-50；新四卡工程门/真实训练结果尚待验，不将提交算完成。
+- **文档同步：** main281fff6已push并ff pull到robo协作clone，包括native500/观察门/内容参考/失败定位；代码仍feature、所有活跃源不热改。完整新run/spec SHA位置见SERVER_LAYOUT，旧六个v1保留。
+
 ### 2026-09-13 21:44（北京时间）：Beta四卡启动失败已定位，六个未执行候选安全停下；原生观察门通过
 
 - **Codex / M-02，真实故障：** `fm_beta_stratified_v1`的单GPU两次临时更新通过（result SHA `d1c249a35ac7e1d651690d030568727e1f3f94480d14eb8291449bfe85d49742`；原eval/RNG不变SHA `2c08c1d0d3cd59c7a26765d3dead9dcecfcff6960c474fe1e9b83b5734133060`），随后四rank在原finetune入口CUDA可用性断言处失败，smoke **0更新**、train.log为空、无checkpoint/采样回执。supervisor等待时隐藏CUDA，但FM的`launcher.child_environment`继承了空可见性；单GPU门和action trainer显式使用原四卡环境，故此处不是Beta公式/硬件故障。旧日志及receipt全部保留。
