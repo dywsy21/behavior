@@ -48,7 +48,7 @@
 
 ### 2026-09-13新增：FM方法与AR重新验证
 
-- **16:21最新状态（覆盖下方启动历史）：** `dual_track_fm_ar_20260913/fm_control_v1`已500更新并验收，最终权重`formal/checkpoints/step_500.pt` SHA `def222a6674e6ac92e6ee982c22836b789240f1542c459d5de2111cd646a244e`。`fm_ae_lr2x_v1`是唯一AE LR×2候选，正式1902909/1912524运行、42/500，仍固定下述fb40145 worktree，不能热pull。
+- **16:35最新观测（覆盖下方启动历史）：** `dual_track_fm_ar_20260913/fm_control_v1`已500更新并验收，最终权重`formal/checkpoints/step_500.pt` SHA `def222a6674e6ac92e6ee982c22836b789240f1542c459d5de2111cd646a244e`。`fm_ae_lr2x_v1`是唯一AE LR×2候选，正式1902909/1912524运行；首个`formal/fixed_diagnostic/step_100.json`的原80均值0.1986116943，SHA `dca01b74cc0e9f488274b64b3d39bd02c546cce7cc33668bd14b9843146f1ad6`，不是最终500结果。仍固定下述fb40145 worktree，不能热pull。
 - `dual_track_fm_ar_20260913/ar_a4_fulltrain_v2`：AR正式配方的串行任务，supervisor1940901等待上述候选实际完成/验收，当前0 AR更新；`method_spec.json` SHA `27d22490bb4ccaa9319cc37699a7754471dd91ba60d97f6f5995b0881c7cc930`。`status.json`区分waiting/smoke/formal/complete/failed，`smoke/`和`formal/`只有被真实启动后才产生；预定5步保存门→独立500，均用原A4父权重。`ar_a4_fulltrain_v1`是0更新等待API失败证据，不是训练权重。
 - AR活跃Git worktree：`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/action_queue_20260913`，固定171898c，等待也属于活跃使用，禁止切换/热改。入口` scripts/experiments/train_action_method_probe.py`；数据/环境仍复用原目录，模型代码仅feature分支，main目前同步文档。
 - `dual_track_fm_ar_20260913/ar_reference_metric_gate_v1/result.json`：2次原train同输入参考前向逐位相等、0更新，SHA `7530aa9facead5b5d7b9ac4a7c4fb2f5f6f9e46eae4bdbb8faf72bea94d0d568`；`ar_input_gate_v2`为40视图真实codec检查，`ar_loader_gate_v1`为完整loader输入身份检查，`ar_gpu_gate_v2`/`ki_gpu_gate_v1`/`joint_gpu_gate_v1`为两临时更新工程门。以上不是已训练的AR/KI权重或成功率结果。
