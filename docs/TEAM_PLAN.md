@@ -34,6 +34,8 @@ A3 checkpoint：`865193f1c8a257d72ea159bd7a46cebf945b0fd24905110b831f0e8a3438e94
 
 ### 本轮实验状态
 
+15:38更新：7edf644真实54项CPU回归＋AR输入v2全部40视图通过完整60-token/8码块校验，result SHA `f4fe54428154821af39a4c53062d959edd8d618c13094cb1fbc6bd3324f361ea`；没有神经更新或仿真。control438/500。正式AR/CE+FM方法训练与候选FM、自由生成/闭环仍待完成，未改变队友数据/RL职责。
+
 15:35更新：joint两临时更新与真实梯度检查通过；原完整950/50数据入口已完成10 train行/5 eval窗口身份门，不是AR正式训练。新增AR完整码块校验防止旧codec静默补零，待CPU及40真实视图验收。FM control已核验417/500、step400固定80=0.1983363，AE×2与实际AR/joint/KI效果仍未出；后续须训练和闭环，不以工程门替代方法证据。分工不变。
 
 15:19更新：KI真实GPU工程门通过CE→LoRA/FM→AE分离、60个teacher-action tokens反事实不影响FM、两临时更新与目标自由FM推理；未证明学习收益或SR。接着同预算joint无隔离门，同时准备原完整train loader的CPU身份门；不把十行缓存拟合当正式AR训练，队友职责不变。
