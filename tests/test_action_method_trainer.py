@@ -14,7 +14,7 @@ def test_fixed_budget_is_an_actual_global_sixteen_batch():
     assert values["batch_size"] * values["accumulation"] * values["world_size"] == 16
     assert values["max_updates"] == 500 and values["smoke_updates"] == 5
     assert values["history"] == 6 and values["prediction"] == 32 and values["execution"] == [0, 16]
-    assert values["workers"] == 0
+    assert values["workers"] == 4
 
 
 @pytest.mark.parametrize("route,states", [("ar", 192), ("joint", 514), ("ki", 514), ("fm", 504)])
@@ -51,7 +51,7 @@ def test_original_fm_architecture_is_not_silently_converted_to_ce():
         discrete_action=False, continuous_action=True, predict_cot=False))))
     arch = recipe.configure(cfg, "fm")
     assert not arch.discrete_action and arch.continuous_action
-    assert cfg.model.learning_rate == 1e-5 and cfg.model.num_workers == 0
+    assert cfg.model.learning_rate == 1e-5 and cfg.model.num_workers == 4
     arch.discrete_action = True
     with pytest.raises(RuntimeError, match="unchanged"):
         recipe.configure(cfg, "fm")

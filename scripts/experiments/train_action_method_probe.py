@@ -31,9 +31,9 @@ from train_fm_method_probe import BASE, PARENT, PARENT_SHA, legacy, verify_paren
 HERE = Path(__file__).resolve()
 ROUTES = ("ar", "joint", "ki", "fm")
 RECIPE = dict(seed=41, batch_size=2, accumulation=2, world_size=4,
-    # Synchronous loading initially makes augmentation RNG and sampler resume
-    # explicit. Throughput is not comparable to the stock four-worker trainer.
-    workers=0, max_updates=500, smoke_updates=5, learning_rate=1e-5,
+    # Match the working A3 pipeline's per-rank prefetch concurrency. Exact
+    # continuation of stochastic worker state is NOT claimed by saving RNG.
+    workers=4, max_updates=500, smoke_updates=5, learning_rate=1e-5,
     warmup_steps=50, lr_min_ratio=.1, betas=[.9, .95], weight_decay=.03,
     max_grad_norm=1., eval_every=100, history=6, prediction=32, execution=[0, 16])
 
@@ -82,7 +82,7 @@ def configure(cfg, route):
         cfg.model.pretrained_ckpt, cfg.resume_ckpt = str(PARENT), None
     else:
         arch = architecture_for(cfg, ActionTrainingSettings(route=route))
-    for key, value in dict(batch_size=2, grad_accumulation_steps=2, num_workers=0,
+    for key, value in dict(batch_size=2, grad_accumulation_steps=2, num_workers=4,
             learning_rate=1e-5, warmup_steps=50, lr_min_ratio=.1, max_steps=500,
             weight_decay=.03, betas=[.9, .95], max_grad_norm=1.).items():
         cfg.model[key] = value
@@ -361,7 +361,7 @@ def train(spec, phase):
         raise RuntimeError("Original processor recipe or A4 parent differs")
     cfg = OmegaConf.load(config_path)
     arch = configure(cfg, spec["route"])
-    pipeline = build_original_pipeline(cfg, rank=rank, world_size=world, workers=0)
+    pipeline = build_original_pipeline(cfg, rank=rank, world_size=world, workers=RECIPE["workers"])
     identity.update(pipeline=pipeline.identity, config_sha256=sha(config_path), spec=spec)
     publish(output / f"identity_rank{rank}.json", identity)
     if rank == 0:
@@ -415,7 +415,7 @@ def train(spec, phase):
                 if spec["route"] == "ar" and float(metrics["fm_loss"]) != 0.:
                     raise RuntimeError("Pure AR unexpectedly uses FM supervision")
                 (loss / 2).backward()
-            stats += torch.tensor([float(loss), float(metrics.get("ce_loss", 0.)),
+            stats += torch.tensor([float(loss.detach()), float(metrics.get("ce_loss", 0.)),
                                    float(metrics["fm_loss"])], dtype=torch.float64, device=device) / 2
             del batch, original, loss, metrics
         norm = torch.nn.utils.clip_grad_norm_(params, 1., error_if_nonfinite=True)
@@ -448,7 +448,7 @@ def train(spec, phase):
             model_arch=OmegaConf.to_container(arch, resolve=True), rng_by_rank=rng,
             next_microbatch=total * 2, dataset_stats_sha256=STATS_SHA,
             parameter_group_names=audit.group_name_lists, gradient_evidence_rank0=audit.checkpoint_evidence(),
-            resume_scope="Exact saved state; new-process continuation must validate sampler/RNG before use")
+            resume_scope="Exact saved tensors; stochastic worker/prefetch continuation is not verified")
         saved = torch.load(path, map_location="cpu", weights_only=False, mmap=True)
         assert_saved_state(saved, model, optimizer, scheduler, spec, total, rng)
         publish(output / "checkpoint_inspection.json", dict(passed=True, checkpoint=str(path),
