@@ -10,6 +10,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 11:55（北京时间）：A4收音机301完整结束，0/1，继续固定302/303
+
+- **Codex / A-02、B-03，实际部分结果：** 301正常跑满3224控制，耗时808.92秒，26次自动高层调用，官方未成功；result SHA `5aa127330248caa4c19eefa6bbd7df7f59aea6d64af573ba007fa51e003ae4a9`。不是短预算/通信故障；运行中看到高层从NAVIGATE切到GRASP，但尚须完整物理记录/本人视频核验失败阶段。
+- **边界/进度：** 当前只有1个已完成回合，暂计0/1，不冒称三回合或总体SR。302已按原清单启动，303仍排队，权重/策略/seed/3224预算均未变。视频正在传本地`artifacts/a4_radio_full_20260913/instance_301/`，不用于训练；继续完成预定3回合，保留全部结果。
+
 ### 2026-09-13 11:39（北京时间）：A4完整收音机三回合编排已启动
 
 - **Codex / A-02、B-03，运行中：** 本地/服务器7项CPU检查通过，Git独立worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/a4_radio_full_20260913`固定`be23b06b045fcc06e6fa8ab6dfb724aeebe95f31`，supervisor PID1479480。run `/mnt/sdc1/robodojo/behavior_dev/a4_radio_full_20260913_v1`的`manifest.json`、`launch.json`已写出，正在加载前身份核验；不把编排启动当作已完成回合。
