@@ -34,6 +34,8 @@
 
 ## 实时状态
 
+15:01（北京时间）：3807531在独立`ar_inputs_20260913`完成41项CPU测试与`ar_input_gate_v1`真实输入门，结果SHA `5a6ca932949dabc4198e546045e8deb52d9c0977eed81f01fd96a7665a70ddbe`，十原始行/40视图全部通过，60动作tokens/行。拟`ar_gpu_gate_v1`单GPU1、A4恢复、单行原train、两临时更新及真实梯度/自由生成，不保存权重；先AR、其他路由另门。共享GPU期间不比较整轮墙钟，仍须完成真正训练/闭环。
+
 14:51（北京时间）：AR/KI策略扩展及CPU回归、真实tokenizer探针已写，仅语法门通过。首轮tokenizer run拟`ar_input_gate_v1`：十条已有五任务train样本、四种视图40行、两CPU线程、无VLM/优化/物理。须真实验证prefix/目标/23D后再训练；task-only不是完整上游CoT复现。新代码用另一个Git worktree运行，不拉取活跃FM副本。
 
 14:40（北京时间）：control日志实际119/500，step100原固定80为0.1971548254（结果SHA `ce9a6b8f8c6256c78f0f5d92a2f43c48645df3acb7854e88488ac21fb144830c`），较A4略高约0.107%，非最终效果。此次只读答疑，未改训练/启动新臂；AE×2及AR/KI真实策略训练和闭环仍未完成。
