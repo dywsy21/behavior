@@ -12,6 +12,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 21:20（北京时间）：相机映射修复229 CPU通过，真实观察门v2运行
+
+- **Codex / AR-01：** 新独立`git_worktrees/ar_native_observations_v2_20260913`固定a343a61，229 tests passed（1.92s）；`ar_native_observation_gate_v2`于21:18:46启动3095966，仍为相同十原train的观察/原逆变换检查，0VLM/优化/仿真。真实数据/像素/token前缀等结果尚待验，不热pull该工作树；v1失败保留，未对旧训练作追溯修改。
+- **其他实际状态：** native已457/500、7312原train抽取，Beta仍等待其完整500验收；A4-FM/codec同窗参考3077705仍运行。任务板与双路线状态已跟进，现有5000旧权重/六个旧服务不变，无新SR。
+
 ### 2026-09-13 21:16（北京时间）：观察门拦下相机字段名误判，修静态映射；FM参考已实际启动
 
 - **Codex / AR-01，真实失败与根因：** `ar_native_observation_gate_v1`3051919在首个原状态的public预处理后停止，0VLM/更新/仿真。新检查误把raw相机名`head_rgb/left_wrist_rgb/right_wrist_rgb`当作pixel dict键；原`FullProcessor.process_images`一直按shape_meta的camera_type输出`exterior/wrist_left/wrist_right`。修为从同一元数据推导别名/次序/精确6×3×H×W，新增5项别名/顺序/重复键/缺相机检查，不改像素/历史或放松字段白名单。拟新固定源CPU后`ar_native_observation_gate_v2`重验相同十状态，首状态重复属工程检查，失败记录保留。
