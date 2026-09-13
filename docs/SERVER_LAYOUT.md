@@ -26,6 +26,8 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**21:20诊断续接（覆盖下面20:56启动快照）：** `ar_schema_ar500_v2`已10/10完成，2994300退出，result SHA `1c9ad37c043182d71db1fd0ad91f855376eb09daefa4342ec523bab331d9bb9d`，0训练/仿真。新`ar_schema_reference_a4_v1`3077705使用固定f7c0c51的`git_worktrees/ar_schema_reference_20260913`，同十窗原A4-FM/codec参考运行；新`ar_native_observation_gate_v2`3095966使用a343a61的`git_worktrees/ar_native_observations_v2_20260913`，229 CPU通过后真实十train观察门运行。前次`ar_native_observation_gate_v1`3051919在相机别名检查错误处退出，日志保留、0VLM/更新/仿真。新run均在下述同一双路线根，同级`.launch.log`；所有活跃工作树不可热pull。
+
 **20:56新AR诊断/候选位置：** 实验根仍为`/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913`。新活跃源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/ar_marker_queue_20260913`固定73e2914，200 CPU passed；同时被schema诊断与等待进程使用，禁止热pull。
 
 - `ar_schema_ar500_v2`：2994300于20:54:34启动，同级`.launch.log`；原AR500的10次静态格式约束生成、0更新/仿真，结果待验。`ar_schema_ar500_v1`首条61 tokens保留在`train_task0_raw.json`（SHA `50d01cf0b897288d2a41cdc8e225fd788667dd06f284e2bb61b7186ced2319e1`），随后评估CPU/CUDA相减失败，2910095已退出，不是成功完成十窗口。

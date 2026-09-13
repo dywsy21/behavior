@@ -12,6 +12,37 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 21:20（北京时间）：相机映射修复229 CPU通过，真实观察门v2运行
+
+- **Codex / AR-01：** 新独立`git_worktrees/ar_native_observations_v2_20260913`固定a343a61，229 tests passed（1.92s）；`ar_native_observation_gate_v2`于21:18:46启动3095966，仍为相同十原train的观察/原逆变换检查，0VLM/优化/仿真。真实数据/像素/token前缀等结果尚待验，不热pull该工作树；v1失败保留，未对旧训练作追溯修改。
+- **其他实际状态：** native已457/500、7312原train抽取，Beta仍等待其完整500验收；A4-FM/codec同窗参考3077705仍运行。任务板与双路线状态已跟进，现有5000旧权重/六个旧服务不变，无新SR。
+
+### 2026-09-13 21:16（北京时间）：观察门拦下相机字段名误判，修静态映射；FM参考已实际启动
+
+- **Codex / AR-01，真实失败与根因：** `ar_native_observation_gate_v1`3051919在首个原状态的public预处理后停止，0VLM/更新/仿真。新检查误把raw相机名`head_rgb/left_wrist_rgb/right_wrist_rgb`当作pixel dict键；原`FullProcessor.process_images`一直按shape_meta的camera_type输出`exterior/wrist_left/wrist_right`。修为从同一元数据推导别名/次序/精确6×3×H×W，新增5项别名/顺序/重复键/缺相机检查，不改像素/历史或放松字段白名单。拟新固定源CPU后`ar_native_observation_gate_v2`重验相同十状态，首状态重复属工程检查，失败记录保留。
+- **独立参考真实运行：** f7c0c51的`git_worktrees/ar_schema_reference_20260913`224 CPU passed（1.95s）；`ar_schema_reference_a4_v1`于21:14:31启动3077705，既定10原A4-FM＋10外侧codec/0新AR/0更新/仿真。结果尚待验；它与新观察代码分属独立源，无热改/重训。native400结果SHA `2ff8c287803dbc33051b21c55aa9736a3f407961aa8765b8305f339d6e3d95cf`。
+
+### 2026-09-13 21:11（北京时间）：同窗口A4-FM与codec内容参考入口已写，待CPU后有限GPU诊断
+
+- **Codex / AR-01，唯一假设/预算：** 将格式完整与动作内容分开，`probe_ar_schema_reference.py`读取已完成schema十条，不重新生成AR；拟`ar_schema_reference_a4_v1`，独立Git源/CPU配对检查通过后GPU1、两CPU线程、40%单卡显存/需40GiB余量，原A4完整1138/192恢复、seed17，对同五train＋五heldout各一次原SkillFM生成＋一次外侧codec重建，共10 FM/10 codec/0新AR/0更新与仿真。来源/目标mask/非有限/全维恢复不符即停，无重试或部署，准确source随后固定。
+- **指标与边界：** 三者统一实际有效0:16/23D的动作RMSE，并重算保存的AR动作确保目标相同；FM使用原SkillFM类，不用KI/AR代理架构。codec重建使用GT但严格在actor调用之外，不能当部署输出或理论误差下界。A4与AR500训练历史不同、单seed/十诊断窗，此项是实用策略比较而非等算力算法因果或SR。原生观察门/原500/等待链保持运行，不再重答训练候选介绍。
+
+### 2026-09-13 21:09（北京时间）：218 CPU通过，真实观察一致性门已启动；native400仍漏组
+
+- **Codex / AR-01：** 独立`git_worktrees/ar_native_observations_20260913`固定ed07c5e，218 CPU tests passed（1.89s）；`ar_native_observation_gate_v1`于21:08:21启动3051919，既定十原train/两CPU线程/0VLM与优化及仿真，目前只在初始化，真实处理器结果待验，不把单测称部署通过。
+- **原生训练：** native-task step400固定80 CE6.799288785（300为6.990212220），五task自由依旧37 tokens/0完整组。仍按原500继续，不加步/改权重或schema；原生FM参考1.428307仅辅助，不是AR控制误差。schema10的后处理另已核实4个窗口存在payload位置的原argmax越界（共14次），不只强制了marker；codec合法范围也是显式推理变体的一部分。
+
+### 2026-09-13 21:06（北京时间）：schema十窗口实际完成，格式与控制质量继续分开验收
+
+- **Codex / AR-01，真实结果：** `ar_schema_ar500_v2`2994300已退出，10/10实际完整60动作tokens/8块＋终止，无safe clamp、无marker adapter、0更新/仿真；result SHA `1c9ad37c043182d71db1fd0ad91f855376eb09daefa4342ec523bab331d9bb9d`，峰值reserved13,384,024,064 bytes。原始argmax每窗口被静态规则覆盖4–14次，完整格式是人为约束，不算模型学会或SR。
+- **内容误差与下一检验：** 五train的有效执行段归一化RMSE依task为0.95167/0.24305/0.54443/0.63380/0.84177；五heldout为0.53585/1.40578/1.10162/1.01044/0.18985。样本很少、含尾段padding，仅保留真实有效0:16/23D，不能与FM速度loss直接比。下一补同窗口原A4-FM生成与codec重建参考（另登记有限调用预算），再决定局部闭环；不靠格式完整宣布AR更优，不重复训练/重新生成这十条。
+
+### 2026-09-13 21:05（北京时间）：原生task-AR观察入口已写，准备十原train的真实处理器一致性门
+
+- **Codex / AR-01，代码状态：** `native_action_observations.py`新增独立public观察适配器：不要求伪MEM-Lite投影，只接受真实历史入口的七个观察字段；独立复制处理器、沿用原public preprocess/正常归一化与camera-major Base模板，元数据推导四补齐位、执行起点0、保留当前原始关节anchor。逆变换仍走原处理器到六组真实23D，不把27D归一化数值直接切成wire。原训练/服务源未改，尚未真实验收或启动仿真。
+- **下一有界检查预登记：** 新Git源/CPU单测后，`ar_native_observation_gate_v1`只重读已有十train/五task精确状态，2CPU线程、0VLM/优化/仿真、无新标签release；检查原eval-mode同状态像素/状态/动作mask、真实原生token前缀一致性、独立raw joint anchor和0:16逆路径。GT动作只允许在外侧明确标注的逆变换fixture，绝不进入actor；不是数据增广逐位等价或闭环结果。若身份/边界/一致性失败即停，不随机换窗口。source待固定；schema2994300和原生500/已提交队列不变。
+- **文档同步：** main 6dce3ae已ff pull到robo协作clone；实验代码继续独立feature，未越过独立review合入main。
+
 ### 2026-09-13 20:56（北京时间）：200 CPU通过，schema修正版运行，唯一marker原切分候选已排队
 
 - **Codex / AR-01，真实检查与启动：** 新独立`git_worktrees/ar_marker_queue_20260913`固定73e2914，robo 200 tests passed（1.85s）。`ar_schema_ar500_v2`于20:54:34启动2994300，仍为原AR500/五train＋五heldout/0更新与仿真；修复后十次生成尚待结果。v1首条与跨设备失败证据保留，不掩盖已发生的一次重复。
