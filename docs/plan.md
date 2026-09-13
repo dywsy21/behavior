@@ -10,6 +10,48 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 16:21（北京时间）：AR v2实际处于已验证等待，FM候选42/500
+
+- **Codex / AR-01，已提交但尚未更新：** 171898c在robo实际80项CPU回归通过；`ar_a4_fulltrain_v2`于16:18:15提交，supervisor1940901，method spec SHA `27d22490bb4ccaa9319cc37699a7754471dd91ba60d97f6f5995b0881c7cc930`。16:20实际`status.json`为verified_live_dependency，确认前驱1902909的start_ticks327057321；无CUDA、0 AR更新，不是仅有启动计划。固定worktree `action_queue_20260913`现被等待进程使用，不能pull/switch/热改。
+- **预算/接续条件：** AE×2须真正500完成并验收权重SHA，才依次启动AR四卡5步保存门、从原A4重新初始化的500步；microbatch2/累积2/global16、每rank4 worker/prefetch2、seed41/LoRA1e-5/50warmup/cosine500、全部原950 train来源及原50 eval隔离、每100原80诊断与每task一个自由生成。AR不使用FM监督/动作补齐，不更新B、不自动部署。v1等待API失败记录完整保留，无已训练步数被重跑。
+- **FM现状/未完成：** 1902909/1912524原候选进程保持，最新日志42/500，没有新的固定80候选点或SR。control500及其0.1982012结果已完成；AR真实训练、原生AR/CoT、KI/joint同入口对照、其他FM候选和有效组合、真实闭环仍未完成。继续按具体活进程检查，不因SSH观察超时重启任务，整个goal保持active。路径与协作进度同步到main文档，模型实现仍只在feature待独立审查。
+
+### 2026-09-13 16:17（北京时间）：AR排队首版在Python等待API处停止，0更新；补兼容等待
+
+- **Codex / AR-01，实际失败：** bcfec9f再次74 CPU通过后，`ar_a4_fulltrain_v1`于16:12:54提交，supervisor1919165、spec SHA `3494e1d4d3c6882c827633e4738c13e2b36b9011c49fda78396dc8666b5ab8a3`；16:12:57因服务器该Python没有`os.pidfd_open`退出，进程已实查不存在。未启动AR trainer、0优化/0GPU/0仿真。失败run保留，不把排队提交算作AR训练。
+- **修正/待验：** 不升级共享环境，改为每10秒核验`/proc` PID＋启动ticks＋准确argv的只读等待；识别消失/zombie/PID复用，始终不发送信号。仍须前驱真正complete并验500步权重SHA才放行；新增6项含真实当前进程的CPU回归，拟新`ar_a4_fulltrain_v2`，不覆盖v1、不重试FM或重复任何已训练步数。
+- **FM实证/参考门：** AE×2真实1902909/1912524仍在，日志15/500；此刻四rank分别已记录32/31/31/31个microbatch，与control对应前缀完整采样回执逐项相等。只证明已观察前缀，不冒称全500已配对。AR参考门result SHA `7530aa9facead5b5d7b9ac4a7c4fb2f5f6f9e46eae4bdbb8faf72bea94d0d568`，两前向完全相等证据保留。整个goal继续，当前没有新的方法收益/SR结论。
+
+### 2026-09-13 16:11（北京时间）：AR真实参考数值逐位相等，准备提交串行AR500
+
+- **Codex / AR-01，真实完成：** 6454980的`ar_reference_metric_gate_v1`退出0，两次真实无梯度前向均0.0640164241194725，与原control同父/同两行/同seed771结果完全相等；AR/连续标志与CPU/CUDA RNG恢复，0 optimizer/仿真。这证明该输入上的参考口径，正式初始80窗口仍须独立复现父A4，不能用两行替代全80。
+- **实施调整/理由：** 将尚未启动的AR/joint/KI/同入口FM配方改用原A3已有的每rank4 worker/prefetch2（不再把初稿workers0同步读视频用于正式训练），保留新入口私有loader RNG与全部来源校验。目的为避免GPU等待CPU视频读取；未实测吞吐增益，也不宣称与旧入口每个随机增强逐位相同。所有新入口对照共享此设置；保存RNG/游标不是已验证stochastic worker的精确新进程恢复。对应CPU用例更新，待重验后提交`ar_a4_fulltrain_v1`串行等待AE×2。
+- **当前边界：** AE×2正式1912524运行中；AR尚未提交，原生AR+CoT、KI/joint实训、方法闭环/组合尚未完成。本轮未新增/修改训练数据或部署actor，未合入未经独立审查的模型代码到main。
+
+### 2026-09-13 16:08（北京时间）：AE×2正式500进程启动，AR真实参考门运行中
+
+- **Codex / M-01：** AE×2四卡5步保存回读passed，checkpoint SHA `6da58b5f9e3e86f5f95623fb065be5573b1570c70e882e6d432e1a3d0083ba6a`，504 Adam均5、冻结不变、四rank RNG与各20次真实抽取。正式torchrun1912524已启动（16:07实查），仍从原A4初始化，尚未得到500更新结果。
+- **Codex / AR-01：** 最新6454980在新`action_ready_20260913`再次通过74 CPU测试。现启动已预登记`ar_reference_metric_gate_v1`（GPU1、2真实无梯度前向、0更新/仿真），基于原两行/seed771核验prefix-only FM参考；只在候选已进入formal后启动，显存充足、不停其他服务。此CPU/GPU共享区间及整轮墙钟不作为公平加速对照。AR排队仍等该门结果，未声称AR训练已开始。
+
+### 2026-09-13 16:05（北京时间）：完整AR编排74项CPU测试通过，补真实参考评估门
+
+- **Codex / AR-01：** 7a7941a在独立`action_queue_20260913`实际74项CPU测试passed，包含checkpoint模型/Adam时钟/动量/RNG/下一sampler游标破坏检测；这是编排门，不是新进程恢复或实际AR500。串行等待使用真实pidfd、核验具体argv与前驱权重，不因观察超时重启任务；supervisor新增隐藏CUDA，等待时不占GPU。
+- **拟参考门/预算：** 新`probe_action_reference_metric.py`，`ar_reference_metric_gate_v1`预定GPU1、完整父A4、原2行train缓存/seed771、仅2次无梯度前向、0优化/仿真。比较新AR模型入口的prefix-only FM和已完成control GPU门原值0.0640164241194725，并验训练路由及RNG恢复；当前仅语法检查。等AE×2进入正式阶段并确认显存余量才运行，避免阻塞其阶段资源门。共享区间不计公平吞吐；队友服务保留。
+- **下一步：** 参考门通过后提交`ar_a4_fulltrain_v1`等待当前AE×2真实完成，再独立5+500；若参考不符则修正而不提前长训。当前AR尚未排队/更新，AE×2四卡5步仍运行，完整双路线结论未完成。
+
+### 2026-09-13 15:59（北京时间）：AE×2已启动并通过GPU门，AR正式配方65项CPU检查通过
+
+- **Codex / M-01，运行中：** `fm_ae_lr2x_v1`于15:55:15启动，supervisor1902909、固定fb40145，method spec SHA `d661502417afe2dce58f8e3b26a5f7579e94dd4f0f3e08ec798b08eb6e76b160`。15:58核验真实进程与单GPU门：A4完整恢复/原评估口径相同、4 microbatch/2更新通过；四卡5步torchrun1903487运行中。正式500尚未开始，候选效果未出；未改变旧服务或已完成control。
+- **AR-01实现验收：** 新独立`action_trainer_20260913`固定2f095df，新增11项加已有54项共65 CPU测试通过；包括真实Adam warmup前两更新、参数覆盖、原FM入口保留与评估不进入训练。尚未真实运行完整AR trainer，不能拿单元门声称训练完成。
+- **下一有界执行预登记：** 为持续利用四卡且不让两轮四卡训练争抢显存，新增仅依赖已声明`fm_ae_lr2x_v1`的串行启动门：验证具体supervisor argv并以pidfd等待其实际退出，再验500步checkpoint与SHA，成功后才放行AR的5步保存门→独立500。依赖失败就停止，不重试、不从该FM候选权重接训；AR仍从原A4初始化。拟新run `ar_a4_fulltrain_v1`，首版无新进程resume宣称、无自动部署；新等待和checkpoint篡改测试待验。用户goal内的原生AR/CoT、KI/joint实训、后续闭环和有效组合没有缩减。
+
+### 2026-09-13 15:54（北京时间）：FM control500完成验收，准备唯一AE×2候选；完整AR训练编排已写
+
+- **Codex / M-01，前轮为progress：** 上轮完成54项回归、40真实AR视图和Git同步；本轮clean pull/fetch后重新核验真实进程。control于15:50:53完成，supervisor1499025/torchrun1508221均已退出；`formal_checkpoint_inspection.json`passed，step500 SHA `def222a6674e6ac92e6ee982c22836b789240f1542c459d5de2111cd646a244e`，504 Adam均500、全部模型/Adam有限、冻结状态未变、四rank RNG与各2000次train抽取验收。不是仅凭PID退出认定成功。
+- **实际效果/限制：** 原固定80 step500=0.1982012083，相比A4父0.1969439941高约0.638%；五task依次0.14149776/0.16176960/0.27347011/0.16389004/0.25037853。此配方是同A4新Adam/50步warmup/cosine500，不是原日程的等价续训。没有新的SR，不能因该短对照未改善就否定SFT。旧AR短GPU门曾共卡，因此整轮墙钟不作公平速度指标。
+- **M-01下一臂预登记：** `fm_ae_lr2x_v1`，仍Git fb40145/同A4 SHA/原950-50/seed41/四卡global16/500更新、每100原80；唯一变化AE1e-5→2e-5，LoRA维持1e-5。先同源GPU两更新与四卡5步保存回读，再从父A4独立正式500；不部署/自动追加/清理旧文件。15:52各卡空闲约50/79/49/49GiB、盘余637GiB，保留120GiB；六个旧服务保留。拟启动，非已运行。
+- **AR-01/M-04实质实现：** 新`train_action_method_probe.py`接入已验原完整loader、四卡global16、AR/joint/KI与同入口纯FM对照；全A4初始化、先5更新保存回读再独立500，CE/FM严格分开、原固定80 prefix-only FM及每task一条目标自由生成、实际draw/冻结/Adam/RNG证据。首版workers0使数据与模型RNG可定位，故不和旧四worker FM入口声称同墙钟/完全相同随机过程；初始完整80须实测复现父A4参考值。当前语法门通过、11项新CPU测试待执行，实际AR训练尚未启动；新进程断点续训仍须另外验证，不能把保存回读冒称已验证恢复。该AR臂为FM训练后A4的技能条件微调，不是原生G0.5+CoT复现；后者及闭环/组合仍在goal内。
+
 ### 2026-09-13 15:38（北京时间）：54项回归与AR全部真实码块校验通过
 
 - **Codex / AR-01：** 新独立worktree `ar_blocks_20260913`固定7edf644，robo实际54项CPU回归通过；`ar_input_gate_v2/result.json`complete，SHA `f4fe54428154821af39a4c53062d959edd8d618c13094cb1fbc6bd3324f361ea`。10条原train×4视图均完整60动作tokens/8码块；每个残差级与两个夹爪码块齐全，prefix/无截断/真实23D约定保持。0神经前向、0更新、0仿真；不将正确teacher target等同自由生成已过。
