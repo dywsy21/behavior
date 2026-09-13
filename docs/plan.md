@@ -10,6 +10,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-13 15:05（北京时间）：AR GPU首门在独立codec设备迁移处停止，定位并补回归
+
+- **Codex / AR-01，真实失败：** `ar_gpu_gate_v1`在9570e1c完成A4全部1138状态/192 LoRA逐值恢复并写`restoration.json`，但首个编码前向因动作张量在CUDA、独立ActionCodec仍在CPU而退出1；0 optimizer更新、未保存临时权重。该tokenizer不是policy的nn.Module子模块，`model.to()`不负责迁移；原finetune在模型迁移后另有`model.action_tokenizer.to(device)`，本次新GPU探针漏了这一步，不将其误报为训练数据或历史AR根因。
+- **修正/待验证：** 新增`prepare_action_updates`复用该显式生命周期，补五项CPU配方/真实行切片测试；下一新run为`ar_gpu_gate_v2`，仍两次临时更新上限、同A4/原train/GPU1，不覆盖v1日志或放宽动作完整性检查。当前代码只做语法检查，v2尚未运行；FM control仍正常更新，15:03日志252/500，没有重启。
+
 ### 2026-09-13 15:01（北京时间）：41项CPU回归及40视图真实输入门通过，准备AR真实GPU门
 
 - **Codex / AR-00，实际完成：** 新独立worktree`ar_inputs_20260913`固定3807531，41项AR/策略/FM CPU测试通过。`ar_input_gate_v1/result.json`complete，SHA `5a6ca932949dabc4198e546045e8deb52d9c0977eed81f01fd96a7665a70ddbe`；十条原train、五task、四种视图共40行，全部prefix一致/无GT泄漏到prefix/无截断/真实控制组齐全/token往返相等。每行60个动作tokens，完整序列1317–1395 tokens，实际动作词表区间[248077,252187)，当前Qwen hook无需偏移修正。0 VLM、0优化、0物理，不能当自由AR已通过。

@@ -54,6 +54,15 @@ def take_row(batch, index=0):
     return result
 
 
+def prepare_action_updates(model, device):
+    contract = model.configure_coordination_trainability()
+    model.apply_fp32_params()
+    # The codec is an independent tokenizer object, not an nn.Module child
+    # moved by policy.to(). Mirror the real finetune loader's explicit move.
+    model.action_tokenizer.to(device)
+    return contract
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--route", required=True, choices=["ar", "joint", "ki"])
@@ -105,8 +114,7 @@ def main():
     verify_parent(model, parent)
     del parent
     gc.collect()
-    contract = model.configure_coordination_trainability()
-    model.apply_fp32_params()
+    contract = prepare_action_updates(model, "cuda:0")
     publish(args.output / "restoration.json", dict(passed=True, exact_state_entries=1138,
         exact_lora_entries=192, trainability=contract))
     originals = torch.load(INPUT / "actual_cpu_batches.pt", map_location="cpu", weights_only=False)
