@@ -1,0 +1,402 @@
+{
+  "fm_screen": [
+    {
+      "run": "fm_control_v1",
+      "status": {
+        "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_control_v1/formal/checkpoints/step_500.pt",
+        "next": "Paired reference/action and closed-loop comparison; no automatic extra training",
+        "state": "complete",
+        "success_rate_claim": false,
+        "time": "2026-09-13T07:50:53.035525+00:00",
+        "trial": "control",
+        "verified_optimizer_steps": 500
+      },
+      "checkpoint_receipt": {
+        "actual_adam_states": 504,
+        "all_model_and_adam_finite": true,
+        "all_rank_rng_saved": true,
+        "changed_trainable_entries": 504,
+        "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_control_v1/formal/checkpoints/step_500.pt",
+        "checkpoint_sha256": "def222a6674e6ac92e6ee982c22836b789240f1542c459d5de2111cd646a244e",
+        "frozen_bitwise_unchanged": true,
+        "parent_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+        "passed": true,
+        "per_rank_sample_counts": [
+          2000,
+          2000,
+          2000,
+          2000
+        ],
+        "source_sha256": "356c717fe4f44d40517a1879e6742f12c9300daa5de13e3a89c71d1fa2fc9281",
+        "step": 500,
+        "success_rate_claim": false
+      },
+      "actual_draws": 8000,
+      "unique_episodes": 950,
+      "per_task_draws": {
+        "0": 1600,
+        "1": 1600,
+        "2": 1600,
+        "3": 1600,
+        "4": 1600
+      },
+      "all_rank_sources_byte_equal_to_control": true,
+      "source_files": [
+        {
+          "rank": 0,
+          "sha256": "208076c4fead2425818b0d977c5bb57d6043e51b05fcd2a728e2d02c28487dce",
+          "draws": 2000
+        },
+        {
+          "rank": 1,
+          "sha256": "e43213a52ffea6a45a5f6150c9006134d4fec91fafde4ab92c29d5799838ad3c",
+          "draws": 2000
+        },
+        {
+          "rank": 2,
+          "sha256": "77e2ac9235c4cecb6fbb76e74639de7f469fb14097dfc1dc7ba8ed634a480206",
+          "draws": 2000
+        },
+        {
+          "rank": 3,
+          "sha256": "756cdd002fcf1158c1ba29bbc1715f2196231a395e0c42da276633002ed145ae",
+          "draws": 2000
+        }
+      ],
+      "metrics": [
+        {
+          "step": 100,
+          "aggregate": 0.19715482542524115,
+          "per_task": {
+            "task0": 0.144062822451815,
+            "task1": 0.15817493968643248,
+            "task2": 0.27170405676588416,
+            "task3": 0.16346769622759894,
+            "task4": 0.24836461199447513
+          },
+          "sha256": "ce9a6b8f8c6256c78f0f5d92a2f43c48645df3acb7854e88488ac21fb144830c"
+        },
+        {
+          "step": 200,
+          "aggregate": 0.1972260462702252,
+          "per_task": {
+            "task0": 0.14257626747712493,
+            "task1": 0.1609379816800356,
+            "task2": 0.27252908796072006,
+            "task3": 0.16076041088672355,
+            "task4": 0.24932648334652185
+          },
+          "sha256": "1e3aea11a40728d39054f334065c23016dfebf122bb50e2c3fee41d020bf54c7"
+        },
+        {
+          "step": 300,
+          "aggregate": 0.19754041787236928,
+          "per_task": {
+            "task0": 0.14265333209186792,
+            "task1": 0.1612880608299747,
+            "task2": 0.27065539220348,
+            "task3": 0.16384155477862805,
+            "task4": 0.24926374945789576
+          },
+          "sha256": "4db7ccbe49c787f38b564382323fd797c7ff4a10fd244961dd4501d8b919d93a"
+        },
+        {
+          "step": 400,
+          "aggregate": 0.19833626465406268,
+          "per_task": {
+            "task0": 0.1418126500211656,
+            "task1": 0.16253769514150918,
+            "task2": 0.27309138025157154,
+            "task3": 0.16399946867022663,
+            "task4": 0.2502401291858405
+          },
+          "sha256": "9f8d56269fd0606c337370415db61901e5dd321c6e61d34941c3f1d655e7760f"
+        },
+        {
+          "step": 500,
+          "aggregate": 0.1982012082822621,
+          "per_task": {
+            "task0": 0.14149776007980108,
+            "task1": 0.16176959581207484,
+            "task2": 0.27347011188976467,
+            "task3": 0.1638900424586609,
+            "task4": 0.25037853117100894
+          },
+          "sha256": "bc1b1437b65c4cfe1116c38d13aaca934b7a371b4cf558178c65b97169b37cad"
+        }
+      ],
+      "relative_final_percent": 0
+    },
+    {
+      "run": "fm_beta_stratified_v2",
+      "status": {
+        "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_beta_stratified_v2/formal/checkpoints/step_500.pt",
+        "next": "Paired reference/action and closed-loop comparison; no automatic extra training",
+        "state": "complete",
+        "success_rate_claim": false,
+        "time": "2026-09-13T15:43:28.763287+00:00",
+        "trial": "beta_stratified",
+        "verified_optimizer_steps": 500
+      },
+      "checkpoint_receipt": {
+        "actual_adam_states": 504,
+        "all_model_and_adam_finite": true,
+        "all_rank_rng_saved": true,
+        "changed_trainable_entries": 504,
+        "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_beta_stratified_v2/formal/checkpoints/step_500.pt",
+        "checkpoint_sha256": "05ea17bcbbf62437b70e286ce58e6113f20cfe1dd7b79eb56010b73d1f7a6c1e",
+        "frozen_bitwise_unchanged": true,
+        "parent_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+        "passed": true,
+        "per_rank_sample_counts": [
+          2000,
+          2000,
+          2000,
+          2000
+        ],
+        "source_sha256": "356c717fe4f44d40517a1879e6742f12c9300daa5de13e3a89c71d1fa2fc9281",
+        "step": 500,
+        "success_rate_claim": false
+      },
+      "actual_draws": 8000,
+      "unique_episodes": 950,
+      "per_task_draws": {
+        "0": 1600,
+        "1": 1600,
+        "2": 1600,
+        "3": 1600,
+        "4": 1600
+      },
+      "all_rank_sources_byte_equal_to_control": true,
+      "source_files": [
+        {
+          "rank": 0,
+          "sha256": "208076c4fead2425818b0d977c5bb57d6043e51b05fcd2a728e2d02c28487dce",
+          "draws": 2000
+        },
+        {
+          "rank": 1,
+          "sha256": "e43213a52ffea6a45a5f6150c9006134d4fec91fafde4ab92c29d5799838ad3c",
+          "draws": 2000
+        },
+        {
+          "rank": 2,
+          "sha256": "77e2ac9235c4cecb6fbb76e74639de7f469fb14097dfc1dc7ba8ed634a480206",
+          "draws": 2000
+        },
+        {
+          "rank": 3,
+          "sha256": "756cdd002fcf1158c1ba29bbc1715f2196231a395e0c42da276633002ed145ae",
+          "draws": 2000
+        }
+      ],
+      "metrics": [
+        {
+          "step": 100,
+          "aggregate": 0.19543231932912022,
+          "per_task": {
+            "task0": 0.14322628546506166,
+            "task1": 0.16094606812112033,
+            "task2": 0.26948943408206105,
+            "task3": 0.15939022845122963,
+            "task4": 0.2441095805261284
+          },
+          "sha256": "90905af012ad16baa88b6b93be79b0c8e2b7ffec6eab2749df09c30f7fc30f0b"
+        },
+        {
+          "step": 200,
+          "aggregate": 0.1958374679496046,
+          "per_task": {
+            "task0": 0.14185538864694536,
+            "task1": 0.1618657564977184,
+            "task2": 0.2702853297814727,
+            "task3": 0.15859974347404204,
+            "task4": 0.2465811213478446
+          },
+          "sha256": "03b2672f674c7099f7fc92ed60aaade321511e51ea4dc6050c75d5e8fc7307dc"
+        },
+        {
+          "step": 300,
+          "aggregate": 0.19598224150249735,
+          "per_task": {
+            "task0": 0.14334000181406736,
+            "task1": 0.15909726778045297,
+            "task2": 0.26905876700766385,
+            "task3": 0.16126454767072573,
+            "task4": 0.24715062323957682
+          },
+          "sha256": "8d7b99b37575ba97b3416363adcf1b9c5241635c4bf8e6935aacca4e52058217"
+        },
+        {
+          "step": 400,
+          "aggregate": 0.19579340728232636,
+          "per_task": {
+            "task0": 0.14213499217294157,
+            "task1": 0.15995408594608307,
+            "task2": 0.26985078817233443,
+            "task3": 0.15911722840974107,
+            "task4": 0.2479099417105317
+          },
+          "sha256": "e228502882966879b9b267d8edd2bea5cf4e038ed228e82f4a2605723f3b5125"
+        },
+        {
+          "step": 500,
+          "aggregate": 0.19595056880498304,
+          "per_task": {
+            "task0": 0.14146893308497965,
+            "task1": 0.15951723034959286,
+            "task2": 0.2715864423662424,
+            "task3": 0.15909231750993058,
+            "task4": 0.24808792071416974
+          },
+          "sha256": "1972b6b0d290ebbbf1166cca6b5155b7dc9913536be97cffd6a0275a8c23be5b"
+        }
+      ],
+      "relative_final_percent": -1.1355326724718395
+    },
+    {
+      "run": "fm_exec_weight2_v2",
+      "status": {
+        "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_exec_weight2_v2/formal/checkpoints/step_500.pt",
+        "next": "Paired reference/action and closed-loop comparison; no automatic extra training",
+        "state": "complete",
+        "success_rate_claim": false,
+        "time": "2026-09-13T17:34:16.333829+00:00",
+        "trial": "exec_weight2",
+        "verified_optimizer_steps": 500
+      },
+      "checkpoint_receipt": {
+        "actual_adam_states": 504,
+        "all_model_and_adam_finite": true,
+        "all_rank_rng_saved": true,
+        "changed_trainable_entries": 504,
+        "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_exec_weight2_v2/formal/checkpoints/step_500.pt",
+        "checkpoint_sha256": "101c4b32d7df3bacd529159474f5c1f1720ade2a93614b5d68ea43de5e7eca2f",
+        "frozen_bitwise_unchanged": true,
+        "parent_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+        "passed": true,
+        "per_rank_sample_counts": [
+          2000,
+          2000,
+          2000,
+          2000
+        ],
+        "source_sha256": "356c717fe4f44d40517a1879e6742f12c9300daa5de13e3a89c71d1fa2fc9281",
+        "step": 500,
+        "success_rate_claim": false
+      },
+      "actual_draws": 8000,
+      "unique_episodes": 950,
+      "per_task_draws": {
+        "0": 1600,
+        "1": 1600,
+        "2": 1600,
+        "3": 1600,
+        "4": 1600
+      },
+      "all_rank_sources_byte_equal_to_control": true,
+      "source_files": [
+        {
+          "rank": 0,
+          "sha256": "208076c4fead2425818b0d977c5bb57d6043e51b05fcd2a728e2d02c28487dce",
+          "draws": 2000
+        },
+        {
+          "rank": 1,
+          "sha256": "e43213a52ffea6a45a5f6150c9006134d4fec91fafde4ab92c29d5799838ad3c",
+          "draws": 2000
+        },
+        {
+          "rank": 2,
+          "sha256": "77e2ac9235c4cecb6fbb76e74639de7f469fb14097dfc1dc7ba8ed634a480206",
+          "draws": 2000
+        },
+        {
+          "rank": 3,
+          "sha256": "756cdd002fcf1158c1ba29bbc1715f2196231a395e0c42da276633002ed145ae",
+          "draws": 2000
+        }
+      ],
+      "metrics": [
+        {
+          "step": 100,
+          "aggregate": 0.1971005626313854,
+          "per_task": {
+            "task0": 0.1447066953405738,
+            "task1": 0.15806259645614773,
+            "task2": 0.27128101512789726,
+            "task3": 0.16258979754638858,
+            "task4": 0.24886270868591964
+          },
+          "sha256": "910f0ea0bd99827566c3b8bcafd86b28733d4916473799c920d45c96a15f1408"
+        },
+        {
+          "step": 200,
+          "aggregate": 0.1966986384417396,
+          "per_task": {
+            "task0": 0.1417982846032828,
+            "task1": 0.1605572096304968,
+            "task2": 0.2716868130955845,
+            "task3": 0.16040973269264214,
+            "task4": 0.24904115218669176
+          },
+          "sha256": "16fa70f4ded1f35475679153e3c3aa4e33a3cb1a9f44b4bff63448567b885c4b"
+        },
+        {
+          "step": 300,
+          "aggregate": 0.19712219623615965,
+          "per_task": {
+            "task0": 0.14184754621237516,
+            "task1": 0.16074563621077687,
+            "task2": 0.2696689593140036,
+            "task3": 0.16404773836256936,
+            "task4": 0.24930110108107328
+          },
+          "sha256": "7ea182213bc981084e92b276905301cb3095700b762adf31e235fb914715e643"
+        },
+        {
+          "step": 400,
+          "aggregate": 0.1978326404991094,
+          "per_task": {
+            "task0": 0.14106496656313539,
+            "task1": 0.16167331591714174,
+            "task2": 0.2721702088601887,
+            "task3": 0.1639526818471495,
+            "task4": 0.25030202930793166
+          },
+          "sha256": "54ad62cfbfbc2a0bd070cbb0f72a01c9bd66f98ed8ce7856cb072a0e7d036b0e"
+        },
+        {
+          "step": 500,
+          "aggregate": 0.19772040828829632,
+          "per_task": {
+            "task0": 0.14063992584124207,
+            "task1": 0.16074594121892005,
+            "task2": 0.27268727286718786,
+            "task3": 0.16383673070231453,
+            "task4": 0.25069217081181705
+          },
+          "sha256": "a83410b7190c65e1b12b46667d483416d3ff51f3d2bedfb366cd171ec1009ce8"
+        }
+      ],
+      "relative_final_percent": -0.2425817673528341
+    }
+  ],
+  "initial_reference_differences": [
+    {
+      "window_id": "task4-74-990-2895",
+      "old": 0.6152222752571106,
+      "new": 0.6154944896697998,
+      "delta": 0.000272214412689209
+    }
+  ],
+  "verified_at": "2026-09-14T10:43:00+08:00",
+  "owner": "Codex",
+  "checkpoint_files_sha256_rechecked": true,
+  "full_eval": false,
+  "success_rate_claim": false,
+  "limits": [
+    "Single seed, five-task original fixed80 diagnostic; no full heldout or new closed-loop result.",
+    "Actual source receipts match bytewise; stochastic image pixels are not proven byte-identical."
+  ]
+}
