@@ -1,0 +1,45 @@
+{
+  "owner": "Codex",
+  "task_id": "M-04-C",
+  "date_timezone": "2026-09-14 Asia/Shanghai",
+  "source_commit": "dc2fe36c5696b33d3b5fbbf93b527e24e4132dfe",
+  "source_worktree": "robo:/mnt/sdc1/robodojo/behavior_dev/git_worktrees/module_clip_20260914",
+  "helper_sha256": "05d0571e7e6590bb3eda1dbc24ec9992f621cc29bc693ed38374167e88470691",
+  "tests_sha256": "40a8d648a6d26628c7db519a05c645855c15c7bb54efa514b6168bdf11d9724a",
+  "python": "/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python3.10",
+  "pytorch": "2.7.1+cu128",
+  "command": "scripts/experiments/action_training_runtime.py -q tests/test_action_gradient_clipping.py",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "PYTHONPATH": "scripts/experiments"
+  },
+  "actual_exit_code": 0,
+  "pytest_summary": "44 passed in 0.18s",
+  "passed_tests": 44,
+  "failed_tests": 0,
+  "verified_scope": [
+    "Original-order global PyTorch clipping matches gradients, parameter values and CPU RNG bitwise",
+    "Toy global AdamW parameter/moment states match across three updates",
+    "Per-module clipping matches two separate PyTorch clipping calls",
+    "Changing the other module gradient no longer changes the action-expert clipping coefficient",
+    "Missing/zero gradients, mixed BF16/FP32, nonoverlapping DDP-style gradient bucket views",
+    "Parameter coverage, names, frozen parameters and duplicate tensor identities",
+    "Nonfinite or overflowing norms fail before another group is partly clipped"
+  ],
+  "actual_policy_updates": 0,
+  "actual_policy_model_calls": 0,
+  "original_data_reads": 0,
+  "simulator_controls": 0,
+  "installed_in_trainer": false,
+  "actual_gpu_ddp_tested": false,
+  "independent_team_review_complete": false,
+  "limitations": [
+    "CPU synthetic tensor tests are not policy-learning or success-rate evidence",
+    "Per-module cap1 permits combined norm near sqrt(2) for two active groups",
+    "No automatic opt-in, new training queue or production/default change",
+    "No claim that clipping coefficients equal AdamW learning-rate multipliers"
+  ]
+}
