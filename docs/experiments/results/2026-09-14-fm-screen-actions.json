@@ -1,0 +1,293 @@
+{
+  "result_sha256": "a9906fa5f4c254a1f5ce7ef0a9ce0456ebf49e8e8d96177f74dda7c51e1adca8",
+  "summary": [
+    {
+      "run": "fm_control_v1",
+      "split": {
+        "train": {
+          "executed": {
+            "valid_scalar_targets": 1403,
+            "pooled_rmse": 0.44872047856694863
+          },
+          "unexecuted": {
+            "valid_scalar_targets": 1104,
+            "pooled_rmse": 0.6269480793094642
+          },
+          "a4_executed": {
+            "valid_scalar_targets": 1403,
+            "pooled_rmse": 0.4525186803445973
+          },
+          "a4_unexecuted": {
+            "valid_scalar_targets": 1104,
+            "pooled_rmse": 0.650536754682749
+          }
+        },
+        "heldout": {
+          "executed": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.8206183407641964
+          },
+          "unexecuted": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.955176518260561
+          },
+          "a4_executed": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.9016778668486406
+          },
+          "a4_unexecuted": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.9909079957112727
+          }
+        }
+      },
+      "front_better_than_control": 0,
+      "per_window": [
+        {
+          "label": "train_task0",
+          "executed": 0.17034471955901204,
+          "unexecuted": 0.5762022686634344
+        },
+        {
+          "label": "train_task1",
+          "executed": 0.5898563553390942,
+          "unexecuted": 0.7033889427424146
+        },
+        {
+          "label": "train_task2",
+          "executed": 0.53164418879694,
+          "unexecuted": 0.5936553067768352
+        },
+        {
+          "label": "train_task3",
+          "executed": 0.40089546172387996,
+          "unexecuted": null
+        },
+        {
+          "label": "train_task4",
+          "executed": 0.2976987003015555,
+          "unexecuted": null
+        },
+        {
+          "label": "heldout_task0",
+          "executed": 0.2926469802894288,
+          "unexecuted": 0.6450492368359118
+        },
+        {
+          "label": "heldout_task1",
+          "executed": 1.2785552919166203,
+          "unexecuted": 1.2501559363587555
+        },
+        {
+          "label": "heldout_task2",
+          "executed": 1.1651750540325403,
+          "unexecuted": 1.4176580467683464
+        },
+        {
+          "label": "heldout_task3",
+          "executed": 0.06450647877687771,
+          "unexecuted": 0.03648968000215819
+        },
+        {
+          "label": "heldout_task4",
+          "executed": 0.5337906182094936,
+          "unexecuted": 0.7561393308858545
+        }
+      ]
+    },
+    {
+      "run": "fm_beta_stratified_v2",
+      "split": {
+        "train": {
+          "executed": {
+            "valid_scalar_targets": 1403,
+            "pooled_rmse": 0.4447391978649368
+          },
+          "unexecuted": {
+            "valid_scalar_targets": 1104,
+            "pooled_rmse": 0.6293225498129514
+          },
+          "a4_executed": {
+            "valid_scalar_targets": 1403,
+            "pooled_rmse": 0.4525186803445973
+          },
+          "a4_unexecuted": {
+            "valid_scalar_targets": 1104,
+            "pooled_rmse": 0.650536754682749
+          }
+        },
+        "heldout": {
+          "executed": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.8392609170925791
+          },
+          "unexecuted": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.9571473994608696
+          },
+          "a4_executed": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.9016778668486406
+          },
+          "a4_unexecuted": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.9909079957112727
+          }
+        }
+      },
+      "front_better_than_control": 7,
+      "per_window": [
+        {
+          "label": "train_task0",
+          "executed": 0.16987227841981528,
+          "unexecuted": 0.5761364940299404
+        },
+        {
+          "label": "train_task1",
+          "executed": 0.5873512585490078,
+          "unexecuted": 0.7099132634405043
+        },
+        {
+          "label": "train_task2",
+          "executed": 0.5299156642739784,
+          "unexecuted": 0.5934901125944438
+        },
+        {
+          "label": "train_task3",
+          "executed": 0.37797081729590787,
+          "unexecuted": null
+        },
+        {
+          "label": "train_task4",
+          "executed": 0.2993644738944518,
+          "unexecuted": null
+        },
+        {
+          "label": "heldout_task0",
+          "executed": 0.24122592026852827,
+          "unexecuted": 0.6634476429295613
+        },
+        {
+          "label": "heldout_task1",
+          "executed": 1.3004019824014015,
+          "unexecuted": 1.274145383687907
+        },
+        {
+          "label": "heldout_task2",
+          "executed": 1.161789115139412,
+          "unexecuted": 1.4149801535294142
+        },
+        {
+          "label": "heldout_task3",
+          "executed": 0.06288839621804847,
+          "unexecuted": 0.0346998677694741
+        },
+        {
+          "label": "heldout_task4",
+          "executed": 0.6471864305725169,
+          "unexecuted": 0.716710242766342
+        }
+      ]
+    },
+    {
+      "run": "fm_exec_weight2_v2",
+      "split": {
+        "train": {
+          "executed": {
+            "valid_scalar_targets": 1403,
+            "pooled_rmse": 0.44967009385504153
+          },
+          "unexecuted": {
+            "valid_scalar_targets": 1104,
+            "pooled_rmse": 0.6264510209153185
+          },
+          "a4_executed": {
+            "valid_scalar_targets": 1403,
+            "pooled_rmse": 0.4525186803445973
+          },
+          "a4_unexecuted": {
+            "valid_scalar_targets": 1104,
+            "pooled_rmse": 0.650536754682749
+          }
+        },
+        "heldout": {
+          "executed": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.8178077427928073
+          },
+          "unexecuted": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.955266442391565
+          },
+          "a4_executed": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.9016778668486406
+          },
+          "a4_unexecuted": {
+            "valid_scalar_targets": 1840,
+            "pooled_rmse": 0.9909079957112727
+          }
+        }
+      },
+      "front_better_than_control": 5,
+      "per_window": [
+        {
+          "label": "train_task0",
+          "executed": 0.1701876419753565,
+          "unexecuted": 0.5761304516396618
+        },
+        {
+          "label": "train_task1",
+          "executed": 0.5893812439477315,
+          "unexecuted": 0.7019539089724117
+        },
+        {
+          "label": "train_task2",
+          "executed": 0.5322066587491019,
+          "unexecuted": 0.593849355636061
+        },
+        {
+          "label": "train_task3",
+          "executed": 0.4082800790125855,
+          "unexecuted": null
+        },
+        {
+          "label": "train_task4",
+          "executed": 0.29920080861163395,
+          "unexecuted": null
+        },
+        {
+          "label": "heldout_task0",
+          "executed": 0.2942753895891308,
+          "unexecuted": 0.6422421314448675
+        },
+        {
+          "label": "heldout_task1",
+          "executed": 1.267083313420329,
+          "unexecuted": 1.24218146961792
+        },
+        {
+          "label": "heldout_task2",
+          "executed": 1.167982023372913,
+          "unexecuted": 1.4213648252487563
+        },
+        {
+          "label": "heldout_task3",
+          "executed": 0.06416805039633332,
+          "unexecuted": 0.03622864574917757
+        },
+        {
+          "label": "heldout_task4",
+          "executed": 0.5325878774242877,
+          "unexecuted": 0.765238289492206
+        }
+      ]
+    }
+  ],
+  "verified_at": "2026-09-14T11:19:00+08:00",
+  "owner": "Codex",
+  "actual_generations": 30,
+  "optimizer_updates": 0,
+  "simulator_controls": 0,
+  "success_rate_claim": false
+}

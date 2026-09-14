@@ -322,6 +322,37 @@ def test_predecessor_name_alone_cannot_authorize_a_different_native_run(monkeypa
         recipe.dependency_identity(recipe.BASE / "ar_native_task_fulltrain_v1", "action")
 
 
+@pytest.mark.parametrize("name,route", [
+    ("fm_action_control_v3", "fm"),
+    ("joint_a4_fulltrain_v3", "joint"),
+    ("ki_a4_fulltrain_v3", "ki"),
+])
+@pytest.mark.parametrize("valid_evidence", [True, False])
+def test_reference_recovery_predecessor_requires_its_full_evidence(monkeypatch, name, route, valid_evidence):
+    method = dict(output=str(recipe.BASE / name), route=route, initialization="a4", conditioning="skills",
+                  recipe=deepcopy(recipe.RECIPE), parent_sha256=recipe.PARENT_SHA)
+    calls = []
+
+    def validate(spec):
+        calls.append(spec)
+        if not valid_evidence:
+            raise RuntimeError("Reference recovery evidence changed")
+
+    monkeypatch.setattr(recipe, "read", lambda p: dict(supervisor_pid=42) if p.name == "launch.json" else method)
+    monkeypatch.setattr(recipe, "sha", lambda p: "fixed")
+    monkeypatch.setattr(recipe.reference_gate_recovery, "validate_recovery", validate)
+    if valid_evidence:
+        identity = recipe.dependency_identity(recipe.BASE / name, "action")
+        assert identity["supervisor_pid"] == 42 and identity["root"] == method["output"]
+    else:
+        with pytest.raises(RuntimeError, match="Reference recovery evidence changed"):
+            recipe.dependency_identity(recipe.BASE / name, "action")
+    assert calls == [method]
+    method["parent_sha256"] = "wrong-parent"
+    with pytest.raises(RuntimeError, match="declared finite"):
+        recipe.dependency_identity(recipe.BASE / name, "action")
+
+
 @pytest.mark.parametrize("kind", ["fm", "action"])
 @pytest.mark.parametrize("damage", [None, "running", "steps", "sha", "wrong_checkpoint", "failed_inspection"])
 def test_dependency_requires_terminal_complete_and_its_own_exact_500_weight(tmp_path, monkeypatch, kind, damage):

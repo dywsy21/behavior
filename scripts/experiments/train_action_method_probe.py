@@ -250,7 +250,10 @@ def dependency_identity(root, kind="fm"):
                    "ki_a4_fulltrain_v1": ("ki", "a4", "skills"),
                    "fm_action_control_v2": ("fm", "a4", "skills"),
                    "joint_a4_fulltrain_v2": ("joint", "a4", "skills"),
-                   "ki_a4_fulltrain_v2": ("ki", "a4", "skills")},
+                   "ki_a4_fulltrain_v2": ("ki", "a4", "skills"),
+                   "fm_action_control_v3": ("fm", "a4", "skills"),
+                   "joint_a4_fulltrain_v3": ("joint", "a4", "skills"),
+                   "ki_a4_fulltrain_v3": ("ki", "a4", "skills")},
     }
     if kind not in names or root.parent != BASE or root.name not in names[kind]:
         raise ValueError("Only a predeclared finite method run may be a serial predecessor")
@@ -271,6 +274,8 @@ def dependency_identity(root, kind="fm"):
         raise RuntimeError("Dependency is not its declared finite method/initialization")
     if root.name in RECOVERY_RUNS:
         validate_recovery(method, kind)
+    if root.name in reference_gate_recovery.DECLARED:
+        reference_gate_recovery.validate_recovery(method)
     return dict(kind=kind, root=str(root), supervisor_pid=launch["supervisor_pid"],
                 launch_sha256=sha(root / "launch.json"), method_sha256=sha(root / "method_spec.json"))
 
