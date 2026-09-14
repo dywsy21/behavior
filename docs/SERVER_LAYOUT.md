@@ -26,6 +26,8 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 11:57最新：** `fm_screen_prefix512_v1/fm_control_v1`已完整512并完成本地审查；本地`/home/wsy/behavior/artifacts/experiments/2026-09-14-fm-screen-prefix512-v1/fm_control_v1`含视频和`review/`。原三臂supervisor4177428在第二臂前端口检查停止，旧三进程均退出；保留`supervise_failure.json`。新显式恢复34585使用`git_worktrees/fm_screen_prefix_resume_20260914`固定d5f0aec/145 CPU，只接Beta服务34590/8787→exec/8788，原manifest不改、补充`recovery.json`/`recovery.launch.json`，源不可热pull。原A4只读服务文件也在被引用，勿修改。FM v3正式168/500。
+
 **2026-09-14 11:44最新：** `dual_track_fm_ar_20260913/fm_screen_prefix512_v1`为新三FM500局部闭环，supervisor4177428；其`fm_control_v1/`下专用服务4177433/8786正在初始化，后两臂待串行执行，均最多512模型控制。编排源`git_worktrees/fm_screen_prefix_20260914`固定7b806b6/137 CPU，神经服务继续只读使用原`git_worktrees/a4_prefix_20260913/scripts/experiments/serve_low_fm_prefix.py`（`c4bc099d…`）；两处运行期均禁止热pull。各臂service/socket/rollout/completion分别给出真实阶段；manifest SHA `d37907aa…`，不是全任务SR或数据release。FM v3正式100/500，后三臂等待。
 
 **2026-09-14 11:34最新：** 新`git_worktrees/reference_queue_20260914`固定9f26b45/117 CPU，现被joint4129515、KI4129539、marker4129562三个v3等待器使用，禁止热pull；三者依次等待FM4092082→joint→KI，原5＋500。各`launch.json`/`method_spec.json`/`status.json`已存在并核验，FM仍使用独立8fcf61f源、formal42/500。下方“未创建”是11:32历史，已由此次真实提交覆盖。

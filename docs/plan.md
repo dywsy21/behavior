@@ -12,6 +12,12 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-14 11:57（北京时间）：control视频/全记录/人工复核完成，后两臂已显式恢复
+
+- **Codex / M-02-L1，真实完成：** control原512全部动作与物理回执一致、32请求/192真实历史锚点/34物理边界通过本地只读审查（machine SHA `db7f5cf8…`）。视频本地/远端同SHA `e8c51bde…`，已在聊天展示；本人查看17头部＋12双腕共29视图，右手前期接近radio、后期停在附近微调，未形成稳定抓取/抬起，32 post-chunk均IN_PROGRESS/34边界均未持有。不是持续原地打转，也不是完整SR0%；人工记录在本地该arm的`review/manual_visual_review.json`，不重做或补跑此臂。
+- **剩余预算恢复：** d5f0aec新`git_worktrees/fm_screen_prefix_resume_20260914`实际145 CPU passed（1.18s）。11:56:09提交34585，恢复SHA `1b58e96dcb6fa8fccd25bbc14ff0aba6fe415cad0f700c3c4bbfe4a44ccbf0df`，只允许未消耗的Beta/exec共1024模型控制，分别8787/8788。原manifest/control/失败不改；Beta服务34590初始化、尚无新物理结果。原端口失败不等于方法失败。
+- **M-04：** 四卡FM168/500，原三后继仍等待；不把这个中途loss或control单回合解释为方法全面胜负。等待后两臂实际完成再比较，M-03/CoT/有效组合/最终验收仍未完成。
+
 ### 2026-09-14 11:51（北京时间）：control局部512已完成；后两臂被端口复用检查拦下，未消耗预算
 
 - **Codex / M-02-L1：** control完整512/32 chunks已保存，result SHA `cd356486a4377ff76b87366fc194eaee8913d8625882933a9646dcd2dec7b6a6`、completion `87fff31b…`；视频/回执正在复制到本地`artifacts/experiments/2026-09-14-fm-screen-prefix512-v1/fm_control_v1`供全记录/人工检查，尚未给出最终物理结论。
