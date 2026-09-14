@@ -1,6 +1,8 @@
 # AR marker行训练：阶段证据
 
-2026-09-14 18:10北京时间，Codex / AR-01。**当前正式训练最近264/500，不是最终权重/方法验收。** run `robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/ar_a4_marker_fulltrain_v3`，source9f26b45；原spec `9401ca0c526853e756e7f44b5a7fdf6879346cef5dfc96509f84b8d1ea897bd0`。从原A4独立训练LoRA＋8行共享marker delta，纯AR/无FM更新，不叠静态schema强制解码；不是原生task-only或CoT那两条路线。
+2026-09-14 18:20北京时间更新，Codex / AR-01。**当前正式训练最近302/500，不是最终权重/方法验收。** run `robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/ar_a4_marker_fulltrain_v3`，source9f26b45；原spec `9401ca0c526853e756e7f44b5a7fdf6879346cef5dfc96509f84b8d1ea897bd0`。从原A4独立训练LoRA＋8行共享marker delta，纯AR/无FM更新，不叠静态schema强制解码；不是原生task-only或CoT那两条路线。
+
+最新300点：固定80 CE=4.7525360107（action=4.8317308754，text/boundary=0.00087947054），自由完整4/5；task0–3各61tokens、source均AR，前16归一化RMSE依次1.0272169113、1.7956352234、1.3895500898、1.2618654966；task4生成长度到300仍不完整。task1/3的同名诊断窗口记录比200点误差更高，不把结构改善/多出有效样本或更低CE当作内容收益。原`formal/eval_step_300.json` SHA `75938b004cc100cb9bac7d497c141b74f586abac74e4017cc9ee9293a234c59d`；尚未核对与旧FM生成的实际像素逐位身份，不作严格跨模型动作胜负结论。以下200点表保留作历史过程证据。
 
 ## 当前结果：格式开始学到，动作还不能据此判好
 
