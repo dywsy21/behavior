@@ -12,6 +12,11 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-14 17:42（北京时间）：EMA集成CPU通过；marker100仍未学全动作组
+
+- **Codex / M-03-E：** ee970b0独立`git_worktrees/ema_screen_20260914`实际257 CPU passed（3.03s），涵盖新EMA状态/还原/独立配方/前驱门及旧action/CoT/恢复回归。实际原A3 audit的group_name_lists、checkpoint extra_state接口也已核对，未假定不存在的接口。再补一项加载真实模型前的每rank空闲显存门：55% allocator上限之外额外保留1GiB，读取实际共享卡余量，不停止旧服务；此小修须新源7项内存门后才提交队列，当前尚无EMA进程/GPU更新。
+- **Codex / AR-01新阶段证据：** marker固定80/100 CE=5.52621591091156（action=5.6132445574，text/boundary=0.3045315138），eval SHA `12082a24442df7d0b2368974b40fafeef1b73927b2ae48cfb8f0d98920e5256a`；五task自由0/5完整。token长度43/300/64/46/46，现均开始输出body0，但task1重复body0到300上限，其他仍缺残差层或夹爪，不能据CE低或body出现宣布可部署/AR有效。原训练101/500后继续，CoT仍原队列，不重跑生成或追加截断上限。
+
 ### 2026-09-14 17:31（北京时间）：接续M-03唯一EMA短对照，先实现完整状态/还原门
 
 - **Codex / M-03-E预登记：** M-04首筛已完成，不继续等待它或重做三臂。选择一项独立`fm_trainable_ema_v1`：原A4/新Adam、同950/50与seed41、原FM/全局clip/LoRA rank8/LR1e-5/50 warmup+cosine不变；EMA只跟踪全部可训练AE+LoRA参数，beta=0.99、每次成功optimizer后一次、更新前复制父权重，不深拷贝冻结骨干。原始在线权重与该轮EMA并列评估，不能把平滑的eval下降叫训练收敛加速。拟四卡5步保存门＋独立500，等待现有CoT完整验收，0新增数据/仿真，无自动重试或续5000；当前尚未实现/排队。[精确配方/预算](experiments/2026-09-14-ema-screen.md)。

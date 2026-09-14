@@ -653,6 +653,9 @@ def train(spec, phase):
         publish(output / "train_source_spec.json", pipeline.source_spec)
         shutil.copyfile(STATS, output / "dataset_stats.json")
     print(json.dumps(dict(rank=rank, stage="pipeline_ready", route=spec["route"])), flush=True)
+    if spec.get("ema_recipe") is not None:
+        resources = ema_method_screen.memory_budget_receipt(*torch.cuda.mem_get_info(device))
+        publish(output / f"ema_resource_rank{rank}.json", resources)
     model, parent = load_model_from_checkpoint(arch, str(parent_path), device=str(device),
                                                eval_mode=False, return_full_checkpoint=True)
     if spec.get("marker_rows", False):

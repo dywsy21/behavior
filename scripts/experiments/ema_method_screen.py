@@ -37,3 +37,15 @@ def validate_smoke(inspection):
             or evidence.get("full_state_roundtrip") is not True
             or evidence.get("online_restoration_checks") != 1):
         raise RuntimeError("Formal EMA requires its own five-step full-shadow/clock/online-restore gate")
+
+
+def memory_budget_receipt(free_bytes, total_bytes):
+    if (type(free_bytes) is not int or type(total_bytes) is not int
+            or not 0 < free_bytes <= total_bytes):
+        raise RuntimeError("Invalid actual device memory readings for EMA")
+    limit = int(total_bytes * RECIPE["per_process_gpu_memory_fraction"])
+    reserve = 1024**3
+    if free_bytes < limit + reserve:
+        raise RuntimeError("Insufficient free GPU memory for the bounded EMA process plus 1GiB reserve")
+    return dict(free_bytes_before_model=free_bytes, total_bytes=total_bytes,
+                allocator_limit_bytes=limit, additional_reserve_bytes=reserve)

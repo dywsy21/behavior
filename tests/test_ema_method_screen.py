@@ -68,3 +68,18 @@ def test_shadow_and_clock_must_both_be_valid_before_formal(key, value):
     result["ema"][key] = value
     with pytest.raises(RuntimeError):
         screen.validate_smoke(result)
+
+
+def test_actual_free_memory_accounts_for_existing_services_and_reserve():
+    total = 80 * 1024**3
+    required = int(total * .55) + 1024**3
+    result = screen.memory_budget_receipt(required, total)
+    assert result["allocator_limit_bytes"] == int(total * .55)
+    with pytest.raises(RuntimeError, match="Insufficient"):
+        screen.memory_budget_receipt(required - 1, total)
+
+
+@pytest.mark.parametrize("free,total", [(0, 80), (-1, 80), (81, 80), (True, 80), (40., 80), (40, 80.)])
+def test_invalid_memory_measurement_cannot_release_a_gpu_job(free, total):
+    with pytest.raises(RuntimeError):
+        screen.memory_budget_receipt(free, total)
