@@ -26,6 +26,8 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 18:10新后继：** `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/tail_lr_screen_20260914`固定2300c50/299 CPU，现在由1820879活跃等待器引用，禁止热pull。唯一`dual_track_fm_ar_20260913/fm_tail_lr_v1`的spec SHA `55bdce00df92b30b8d75dd3b465134e4dc9664907037de64a558cc22a55932d4`、launch SHA `6f4ca2522dd63e75048a4659fd439c5e9f4c63bead4bc6bc139353233d176f32`；18:09真实等待EMA1707751/ticks336359196，0GPU/0更新。原marker1563012训练、CoT220792→EMA1707751继续原队列，尾端候选不接前驱权重/不叠EMA；smoke/formal尚未开始，不重复提交。marker200阶段结果原文件在`ar_a4_marker_fulltrain_v3/formal/eval_step_200.json`（059b0b4d…），不是新500权重。
+
 **2026-09-14 17:46新队列：** `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/ema_screen_20260914`现在固定d28581a（264 CPU通过）并已用于活跃EMA等待器1707751，**不可热pull**；ee970b0是同目录较早已结束CPU检查的历史commit。唯一run `dual_track_fm_ar_20260913/fm_trainable_ema_v1`含`method_spec.json`（SHA `d195fd580899e5d947df5daa8d768d6be44315ca61a7c441beab159e2d8fd2b7`）、launch/status/supervisor.log；当前0GPU/0更新，等待CoT220792/ticks334478266。smoke/formal尚未创建，不重排；将来每阶段`ema/`保存配对评估，完整online+EMA+Adam同checkpoint，`ema_*_rank*.json`记录实际内存/影子/还原。原marker1563012真实训练、CoT原等待，旧9f26b45/d114581均不变。
 
 **2026-09-14 17:16更新：** `dual_track_fm_ar_20260913/m04_actions_ki_v1/result.json`真实十窗complete（SHA `8e5434b647bdf40117bf16abf5b950508941d9f85805c3a9b7e0c54c6ca6c29c`），1547266退出；三臂30动作已全部结束，不重复生成。marker原4129562已进入正式1563012（9f26b45），CoT220792仍等marker；这是训练中的后继，不是旧KI仍存活。完整结果/输入配对见docs的M-04报告，未启动该方法的模拟器。
