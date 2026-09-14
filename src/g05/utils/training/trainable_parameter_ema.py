@@ -35,6 +35,7 @@ class TrainableParameterEMA:
         self._shadow = {n: p.detach().clone() for n, p in self._parameters}
         self._num_updates = 0
         self._applied = False
+        self.restoration_checks = 0
 
     @staticmethod
     def _assert_finite(tensors, where):
@@ -148,7 +149,13 @@ class TrainableParameterEMA:
                     parameter.copy_(self._shadow[name])
                 yield self._model
         finally:
-            with torch.no_grad():
-                for name, parameter in self._parameters:
-                    parameter.copy_(backup[name])
-            self._applied = False
+            try:
+                with torch.no_grad():
+                    for name, parameter in self._parameters:
+                        parameter.copy_(backup[name])
+                self._validate_online()
+                if any(not torch.equal(p.detach().cpu(), backup[n]) for n, p in self._parameters):
+                    raise RuntimeError("EMA evaluation did not restore the exact online parameters")
+                self.restoration_checks += 1
+            finally:
+                self._applied = False

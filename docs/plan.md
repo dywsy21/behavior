@@ -20,6 +20,8 @@
 
 17:36实现续记：已新增独立`trainable_parameter_ema.py`与CPU玩具回归，显式master FP32/FP64、514参数合同由后续真实模型核验，保存版本/完整shadow/更新时钟；评估上下文CPU备份并finally还原在线参数、对象不替换。语法/空白通过，正在固定独立Git源跑CPU/磁盘新进程恢复门；尚未接trainer/提交GPU训练，不能把代码存在当EMA效果。
 
+17:40实际续记：a49d7e3独立`git_worktrees/ema_cpu_20260914`的46 CPU用例已全部通过（1.78s），包括另一个真实CPU进程从磁盘恢复并继续更新、在线八次玩具Adam/梯度/RNG逐位一致；0真实policy/数据/仿真。后续接入代码已在本地独立完成：只允许唯一FM EMA run接既有CoT，训练后更新shadow、online/EMA分开原80、临时评估后真实逐位校验还原、完整shadow/时钟保存回读及55%单进程显存上限；尚未固定新源CPU验收或排队。旧marker/CoT源未改，main74b9414已ff到robo协作clone。
+
 ### 2026-09-14 17:16（北京时间）：M-04三臂500/30动作首筛完成，两个双监督配方不升级默认
 
 - **Codex / M-04-A真实完成：** KI十窗result SHA `8e5434b647bdf40117bf16abf5b950508941d9f85805c3a9b7e0c54c6ca6c29c`，1547266退出；完整1138/192逐位恢复passed，实际像素/本体/mask及原目标支持与FM、joint均逐项一致。三臂原30 FM生成已用完，0 AR/codec/新训练/仿真。KI heldout前0:16 RMSE=0.9060167，比FM 0.8818891高2.74%，比joint 0.9047233高0.14%；train前段约高1.23%，后段亦无改善。[三臂报告/数值](experiments/2026-09-14-joint-ki-screen.md)已更新，合并SSE/count复核通过。

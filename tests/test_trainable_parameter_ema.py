@@ -112,6 +112,7 @@ def test_temporary_average_restores_on_exit_and_keeps_parameter_references(raise
         assert raise_inside
     assert {n: id(p) for n, p in model.named_parameters()} == identities
     assert_states_equal(saved, model.state_dict())
+    assert ema.restoration_checks == 1
     ema.update(optimizer_step=2)
 
 

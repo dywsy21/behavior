@@ -29,6 +29,7 @@ from train_fm_method_probe import BASE, PARENT, PARENT_SHA, legacy, verify_paren
 from native_action_initialization import NATIVE_PARENT, NATIVE_PARENT_SHA, NATIVE_CONFIG, NATIVE_CONFIG_SHA, verify_native_parent
 from method_queue_recovery import DECLARED as RECOVERY_RUNS, recovery_identity, validate_recovery
 import reference_gate_recovery
+import ema_method_screen
 
 HERE = Path(__file__).resolve()
 ROUTES = ("ar", "joint", "ki", "fm")
@@ -65,6 +66,7 @@ def code_identity():
         Path(__file__).with_name("native_action_initialization.py"),
         Path(__file__).with_name("method_queue_recovery.py"),
         Path(__file__).with_name("reference_gate_recovery.py"),
+        Path(__file__).with_name("ema_method_screen.py"),
         Path(__file__).with_name("train_fm_method_probe.py")]
     from action_training_runtime import EXTENSIONS
     paths.extend(REPO / relative for relative in EXTENSIONS.values())
@@ -91,6 +93,7 @@ def validate_spec(spec):
     if spec.get("after_fm") and spec.get("after_action"):
         raise RuntimeError("Use one explicitly declared serial predecessor, not two conflicting queues")
     validate_cot_screen(spec)
+    ema_method_screen.validate_screen(spec)
     if Path(spec['output']).name in reference_gate_recovery.DECLARED or spec.get('reference_gate_recovery'):
         reference_gate_recovery.validate_recovery(spec)
     else:
@@ -291,7 +294,8 @@ def dependency_identity(root, kind="fm"):
                    "fm_action_control_v3": ("fm", "a4", "skills"),
                    "joint_a4_fulltrain_v3": ("joint", "a4", "skills"),
                    "ki_a4_fulltrain_v3": ("ki", "a4", "skills"),
-                   "ar_a4_marker_fulltrain_v3": ("ar", "a4", "skills")},
+                   "ar_a4_marker_fulltrain_v3": ("ar", "a4", "skills"),
+                   "ar_native_subtask_cot_fulltrain_v1": ("ar", "native", "native_subtask_cot")},
     }
     if kind not in names or root.parent != BASE or root.name not in names[kind]:
         raise ValueError("Only a predeclared finite method run may be a serial predecessor")
@@ -314,6 +318,10 @@ def dependency_identity(root, kind="fm"):
             method.get("marker_rows") is not True or method.get("marker_recipe") != MARKER_RECIPE
             or sha(root / "method_spec.json") != MARKER_PREDECESSOR_SHA):
         raise RuntimeError("CoT predecessor must be the exact already queued marker variant")
+    if root.name == ema_method_screen.COT_RUN:
+        if sha(root / "method_spec.json") != ema_method_screen.COT_SPEC_SHA:
+            raise RuntimeError("EMA predecessor must be the exact already queued native CoT variant")
+        validate_cot_screen(method)
     if root.name in RECOVERY_RUNS:
         validate_recovery(method, kind)
     if root.name in reference_gate_recovery.DECLARED:
@@ -550,7 +558,7 @@ def capture_rng(pipeline, rank):
         loader=pipeline.loader_generator.get_state())
 
 
-def assert_saved_state(saved, model, optimizer, scheduler, spec, step, rank_states):
+def assert_saved_state(saved, model, optimizer, scheduler, spec, step, rank_states, *, ema=None):
     import torch
     if (saved["step"] != step or saved["action_experiment_spec"] != spec
             or saved["scheduler_state_dict"] != scheduler.state_dict()
@@ -579,6 +587,12 @@ def assert_saved_state(saved, model, optimizer, scheduler, spec, step, rank_stat
         for key in ("cpu", "cuda", "loader"):
             if not torch.equal(saved_rng[key], original_rng[key]):
                 raise RuntimeError("Per-rank RNG failed roundtrip")
+    if ema is not None:
+        if spec.get("ema_recipe") != ema_method_screen.RECIPE or "trainable_ema_state_dict" not in saved:
+            raise RuntimeError("Missing declared complete EMA state in checkpoint")
+        ema.assert_matches_state(saved["trainable_ema_state_dict"], expected_updates=step)
+    elif "trainable_ema_state_dict" in saved:
+        raise RuntimeError("A non-EMA checkpoint cannot claim EMA evidence")
 
 
 def train(spec, phase):
@@ -588,6 +602,8 @@ def train(spec, phase):
         gate = read(reference_gate_recovery.smoke_gate_path(spec))
         if not gate["passed"] or gate["actual_updates"] != 5:
             raise RuntimeError("Formal phase requires this run's actual DDP saved-state gate")
+        if spec.get("ema_recipe") is not None:
+            ema_method_screen.validate_smoke(gate)
     identity = bootstrap()
     import numpy as np
     import torch
@@ -608,6 +624,9 @@ def train(spec, phase):
     torch.set_num_threads(2)
     torch.set_num_interop_threads(1)
     torch.cuda.set_device(local_rank)
+    if spec.get("ema_recipe") is not None:
+        torch.cuda.set_per_process_memory_fraction(ema_method_screen.RECIPE["per_process_gpu_memory_fraction"],
+                                                  local_rank)
     random.seed(41 + rank)
     np.random.seed(41 + rank)
     torch.manual_seed(41 + rank)
@@ -655,10 +674,30 @@ def train(spec, phase):
               gradient_as_bucket_view=True, bucket_cap_mb=128)
     audit.after_distributed_initialization()
     optimizer, scheduler = make_optimizer(model, marker_rows=spec.get("marker_rows", False))
+    ema = None
+    if spec.get("ema_recipe") is not None:
+        from g05.utils.training.trainable_parameter_ema import TrainableParameterEMA
+        ema = TrainableParameterEMA(model, beta=spec["ema_recipe"]["beta"])
+        names = {name for group in audit.group_name_lists.values() for name in group}
+        if (len(ema.parameter_names) != spec["ema_recipe"]["expected_parameter_tensors"]
+                or set(ema.parameter_names) != names
+                or any(p.dtype != torch.float32 for p in model.parameters() if p.requires_grad)):
+            raise RuntimeError("Real EMA membership/master precision differs from the declared AE+LoRA scope")
+        publish(output / f"ema_identity_rank{rank}.json", dict(parameter_tensors=len(ema.parameter_names),
+            parameter_names=list(ema.parameter_names), shadow_bytes=ema.shadow_bytes,
+            num_updates=ema.num_updates, recipe=spec["ema_recipe"], initial_parent_copy_exact=True))
+        if rank == 0:
+            (output / "ema").mkdir(exist_ok=False)
+        dist.barrier()
     total = 5 if phase == "smoke" else 500
     pipeline.sampler.set_epoch(0)
     pipeline.sampler.set_start_batch(0)
     before = evaluate(model, pipeline, spec["route"], 0, output, rank, world, full=phase == "formal")
+    if ema is not None and rank == 0:
+        publish(output / "ema/initial_reference.json", dict(step=0, num_updates=0,
+            identical_parent_shadow=True, separate_ema_forward_calls=0,
+            reused_online_reference=str(output / "eval_step_0.json"),
+            aggregate=before["aggregate"], not_an_independent_ema_measurement=True))
     # Verify the reference metric against the immutable A4 result, not an
     # untested claim that a new CE/FM path happens to be numerically identical.
     if (spec["initialization"] == "a4" and phase == "formal"
@@ -694,6 +733,8 @@ def train(spec, phase):
         rates = [float(g["lr"]) for g in optimizer.param_groups]
         facts = audit.after_backward() if step <= 2 else None
         optimizer.step()
+        if ema is not None:
+            ema.update(optimizer_step=step)
         if step <= 2:
             audit.after_optimizer_step(facts, step=step, effective_lrs=rates)
         scheduler.step()
@@ -703,6 +744,8 @@ def train(spec, phase):
             row = dict(step=step, loss=float(stats[0]), ce_loss=float(stats[1]), fm_loss=float(stats[2]),
                 rank0_grad_norm=float(norm), lr=rates, elapsed_seconds=time.monotonic() - started,
                 actual_train_rows=step * 16, route=spec["route"])
+            if ema is not None:
+                row["ema_num_updates"] = ema.num_updates
             with (output / "train_metrics.jsonl").open("a") as stream:
                 stream.write(json.dumps(row) + "\n")
             if step <= 5 or step % 10 == 0:
@@ -710,24 +753,47 @@ def train(spec, phase):
         optimizer.zero_grad(set_to_none=True)
         if step % 100 == 0 or step == total:
             evaluate(model, pipeline, spec["route"], step, output, rank, world, full=phase == "formal")
+            if ema is not None:
+                with ema.average_parameters():
+                    evaluate(model, pipeline, spec["route"], step, output / "ema", rank, world,
+                             full=phase == "formal")
+                publish(output / f"ema_restore_rank{rank}.json", dict(step=step,
+                    num_updates=ema.num_updates, online_restoration_checks=ema.restoration_checks,
+                    online_parameters_bitwise_restored=True, parameter_objects_preserved=True))
     audit.require_verified_update()
     audit._assert_frozen_unchanged()
     rng = [None] * world
     dist.all_gather_object(rng, capture_rng(pipeline, rank))
+    if ema is not None:
+        publish(output / f"ema_final_rank{rank}.json", dict(num_updates=ema.num_updates,
+            parameter_tensors=len(ema.parameter_names), shadow_bytes=ema.shadow_bytes,
+            online_restoration_checks=ema.restoration_checks,
+            peak_reserved_bytes=torch.cuda.max_memory_reserved(), peak_allocated_bytes=torch.cuda.max_memory_allocated()))
     if rank == 0:
+        ema_payload = {} if ema is None else {"trainable_ema_state_dict": ema.state_dict()}
         path = save_training_checkpoint(output, step=total, epoch=0, batch_idx=total * 2 - 1,
             model=model, optimizer=optimizer, scheduler=scheduler, action_experiment_spec=spec,
             model_arch=OmegaConf.to_container(arch, resolve=True), rng_by_rank=rng,
             next_microbatch=total * 2, dataset_stats_sha256=STATS_SHA,
             parameter_group_names=audit.group_name_lists, gradient_evidence_rank0=audit.checkpoint_evidence(),
-            resume_scope="Exact saved tensors; stochastic worker/prefetch continuation is not verified")
+            resume_scope="Exact saved tensors; stochastic worker/prefetch continuation is not verified", **ema_payload)
         saved = torch.load(path, map_location="cpu", weights_only=False, mmap=True)
-        assert_saved_state(saved, model, optimizer, scheduler, spec, total, rng)
+        assert_saved_state(saved, model, optimizer, scheduler, spec, total, rng, ema=ema)
+        ema_evidence = {}
+        if ema is not None:
+            # Exercise actual full-state loading, not only a tensor comparison.
+            del ema_payload
+            gc.collect()
+            ema.load_state_dict(saved["trainable_ema_state_dict"], expected_updates=total)
+            ema.assert_matches_state(saved["trainable_ema_state_dict"], expected_updates=total)
+            ema_evidence["ema"] = dict(num_updates=ema.num_updates, parameter_tensors=len(ema.parameter_names),
+                full_state_roundtrip=True, online_restoration_checks=ema.restoration_checks,
+                shadow_bytes=ema.shadow_bytes, real_policy_new_process_resume_tested=False)
         publish(output / "checkpoint_inspection.json", dict(passed=True, checkpoint=str(path),
             checkpoint_sha256=sha(path), actual_updates=total, actual_adam_states=len(optimizer.state),
             frozen_unchanged=True, full_model_optimizer_rng_roundtrip=True,
             new_process_resume_tested=False, actual_train_rows=total * 16,
-            peak_rank0_reserved_bytes=torch.cuda.max_memory_reserved(), success_rate_claim=False))
+            peak_rank0_reserved_bytes=torch.cuda.max_memory_reserved(), success_rate_claim=False, **ema_evidence))
     dist.barrier()
     dist.destroy_process_group()
 
@@ -775,6 +841,7 @@ def main():
     parser.add_argument("--initialization", choices=("a4", "native"), default="a4")
     parser.add_argument("--conditioning", choices=("skills", "native_task", "native_subtask_cot"), default="skills")
     parser.add_argument("--marker-rows", action="store_true")
+    parser.add_argument("--trainable-ema", action="store_true")
     parser.add_argument("--supersedes-run", type=Path)
     args = parser.parse_args()
     if args.mode == "start":
@@ -790,6 +857,7 @@ def main():
             timing_comparable_to_stock_fm=False,
             prerequisites=prerequisites(args.route, args.initialization, args.conditioning, marker_rows=args.marker_rows),
             marker_rows=args.marker_rows, marker_recipe=dict(MARKER_RECIPE) if args.marker_rows else None,
+            ema_recipe=deepcopy(ema_method_screen.RECIPE) if args.trainable_ema else None,
             native_checkpoint_config_sha256=NATIVE_CONFIG_SHA if args.initialization == "native" else None,
             reference_fm_is_auxiliary_skills_prefix=True, cot_supervision=args.conditioning == "native_subtask_cot",
             cot_comparison=dict(COT_COMPARISON) if args.conditioning == "native_subtask_cot" else None,
