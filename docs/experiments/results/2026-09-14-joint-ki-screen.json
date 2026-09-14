@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-09-14T08:27:05.873357+00:00",
+  "observed_at": "2026-09-14T09:14:58.200322+00:00",
   "owner": "Codex",
   "task_id": "M-04",
   "root": "robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913",
@@ -687,34 +687,35 @@
       "inspection_sha256": "250ab5425a1c8707a0f2f680030cb3fdb418159d5047d66bf6881bea5cf3b649"
     },
     "ki_a4_fulltrain_v3": {
-      "actual_updates": 295,
-      "train_log_sha256": "dbc0eb08f678c4e8634dd3ad5b33ddfe4dfbdea0f154710eb1f81eed4636947f",
+      "observed_at": "2026-09-14T09:07:43.472502+00:00",
+      "actual_updates": 500,
+      "train_log_sha256": "1d43faaebbe280f1bf81f453d0777bb0aad65086ba165d6e4c7bcb29270cb6b2",
       "last_row": {
-        "step": 295,
-        "loss": 6.94449257850647,
-        "ce_loss": 6.834250330924988,
-        "fm_loss": 0.11024215957149863,
-        "rank0_grad_norm": 1.5349023342132568,
+        "step": 500,
+        "loss": 6.177282154560089,
+        "ce_loss": 6.112079441547394,
+        "fm_loss": 0.06520270160399377,
+        "rank0_grad_norm": 1.5720325708389282,
         "lr": [
-          0.000004904846243842949,
-          0.000004904846243842949,
-          0.000004904846243842949,
-          0.000004904846243842949,
-          0.000004904846243842949,
-          0.000004904846243842949
+          0.0000010001096618257237,
+          0.0000010001096618257237,
+          0.0000010001096618257237,
+          0.0000010001096618257237,
+          0.0000010001096618257237,
+          0.0000010001096618257237
         ],
-        "elapsed_seconds": 3522.5328734559007,
-        "actual_train_rows": 4720,
+        "elapsed_seconds": 5989.162169147283,
+        "actual_train_rows": 8000,
         "route": "ki"
       },
       "norms": {
-        "updates": 295,
-        "clipped_count": 295,
+        "updates": 500,
+        "clipped_count": 500,
         "fraction_clipped": 1,
-        "min": 1.4615305662155151,
-        "median": 6.862698078155518,
+        "min": 1.2409803867340088,
+        "median": 2.1964335441589355,
         "max": 16.06281280517578,
-        "mean_clip_coefficient": 0.21823495898563314
+        "mean_clip_coefficient": 0.3910253429317386
       },
       "norms_by100": [
         {
@@ -741,14 +742,36 @@
         },
         {
           "begin": 201,
-          "end": 295,
-          "updates": 95,
-          "clipped_count": 95,
+          "end": 300,
+          "updates": 100,
+          "clipped_count": 100,
           "fraction_clipped": 1,
-          "min": 1.4615305662155151,
-          "median": 2.228282928466797,
+          "min": 1.4052751064300537,
+          "median": 2.1629637479782104,
           "max": 5.152374267578125,
-          "mean_clip_coefficient": 0.4360165361835362
+          "mean_clip_coefficient": 0.4454274869266325
+        },
+        {
+          "begin": 301,
+          "end": 400,
+          "updates": 100,
+          "clipped_count": 100,
+          "fraction_clipped": 1,
+          "min": 1.2483400106430054,
+          "median": 1.615704894065857,
+          "max": 2.2585723400115967,
+          "mean_clip_coefficient": 0.6206998595736538
+        },
+        {
+          "begin": 401,
+          "end": 500,
+          "updates": 100,
+          "clipped_count": 100,
+          "fraction_clipped": 1,
+          "min": 1.2409803867340088,
+          "median": 1.5096720457077026,
+          "max": 1.9589109420776367,
+          "mean_clip_coefficient": 0.6594219485251481
         }
       ],
       "fixed80": [
@@ -877,8 +900,148 @@
               "text_boundary_token_ce": 16.21978271007538
             }
           }
+        },
+        {
+          "step": 300,
+          "sha256": "0283083a0fa41a4ed3b91d779cb40086edadcd69d18be6b3bdebc8d11d6aab55",
+          "aggregate": {
+            "action_token_ce": 7.03681817650795,
+            "ce_loss": 7.106526112556457,
+            "reference_fm_loss": 0.19864802989759484,
+            "text_boundary_token_ce": 11.289048385620116
+          },
+          "per_task": {
+            "task0": {
+              "action_token_ce": 6.827415496110916,
+              "ce_loss": 6.903617024421692,
+              "reference_fm_loss": 0.13782377890311182,
+              "text_boundary_token_ce": 11.475759744644165
+            },
+            "task1": {
+              "action_token_ce": 7.04528146982193,
+              "ce_loss": 7.110543131828308,
+              "reference_fm_loss": 0.16377575136721134,
+              "text_boundary_token_ce": 11.026288509368896
+            },
+            "task2": {
+              "action_token_ce": 7.14739391207695,
+              "ce_loss": 7.212396264076233,
+              "reference_fm_loss": 0.28144969372078776,
+              "text_boundary_token_ce": 11.112585186958313
+            },
+            "task3": {
+              "action_token_ce": 6.877290725708008,
+              "ce_loss": 6.950383692979813,
+              "reference_fm_loss": 0.16135914626647718,
+              "text_boundary_token_ce": 11.33600127696991
+            },
+            "task4": {
+              "action_token_ce": 7.286709278821945,
+              "ce_loss": 7.355690449476242,
+              "reference_fm_loss": 0.24883177923038602,
+              "text_boundary_token_ce": 11.494607210159302
+            }
+          }
+        },
+        {
+          "step": 400,
+          "sha256": "f8a8c068c15a485688783e09f99574c6f8cff7652d8fcd89c79c81a871ec69f8",
+          "aggregate": {
+            "action_token_ce": 6.846883398294449,
+            "ce_loss": 6.860943627357483,
+            "reference_fm_loss": 0.19919141647405922,
+            "text_boundary_token_ce": 7.704599928855896
+          },
+          "per_task": {
+            "task0": {
+              "action_token_ce": 6.636709988117218,
+              "ce_loss": 6.656556576490402,
+              "reference_fm_loss": 0.1379121714271605,
+              "text_boundary_token_ce": 7.84738826751709
+            },
+            "task1": {
+              "action_token_ce": 6.865104109048843,
+              "ce_loss": 6.8731048703193665,
+              "reference_fm_loss": 0.16559836268424988,
+              "text_boundary_token_ce": 7.353187799453735
+            },
+            "task2": {
+              "action_token_ce": 6.961081385612488,
+              "ce_loss": 6.971536099910736,
+              "reference_fm_loss": 0.28285884228534997,
+              "text_boundary_token_ce": 7.598862290382385
+            },
+            "task3": {
+              "action_token_ce": 6.693550169467926,
+              "ce_loss": 6.711800664663315,
+              "reference_fm_loss": 0.16172213084064424,
+              "text_boundary_token_ce": 7.806873798370361
+            },
+            "task4": {
+              "action_token_ce": 7.077971339225769,
+              "ce_loss": 7.091719925403595,
+              "reference_fm_loss": 0.24786557513289154,
+              "text_boundary_token_ce": 7.916687488555908
+            }
+          }
+        },
+        {
+          "step": 500,
+          "sha256": "029a00f98223202517e52376858bc02b1bedee308197c8af2c5e26fcdf816fc4",
+          "aggregate": {
+            "action_token_ce": 6.7809189558029175,
+            "ce_loss": 6.770783179998398,
+            "reference_fm_loss": 0.1995491939771455,
+            "text_boundary_token_ce": 6.162682580947876
+          },
+          "per_task": {
+            "task0": {
+              "action_token_ce": 6.570277601480484,
+              "ce_loss": 6.565823554992676,
+              "reference_fm_loss": 0.13895799755118787,
+              "text_boundary_token_ce": 6.298624515533447
+            },
+            "task1": {
+              "action_token_ce": 6.8029322028160095,
+              "ce_loss": 6.7864567041397095,
+              "reference_fm_loss": 0.16556909692008048,
+              "text_boundary_token_ce": 5.797970771789551
+            },
+            "task2": {
+              "action_token_ce": 6.899124830961227,
+              "ce_loss": 6.885513007640839,
+              "reference_fm_loss": 0.28306471835821867,
+              "text_boundary_token_ce": 6.068852543830872
+            },
+            "task3": {
+              "action_token_ce": 6.62564891576767,
+              "ce_loss": 6.619882166385651,
+              "reference_fm_loss": 0.1624948845419567,
+              "text_boundary_token_ce": 6.273919463157654
+            },
+            "task4": {
+              "action_token_ce": 7.006611227989197,
+              "ce_loss": 6.996240466833115,
+              "reference_fm_loss": 0.24765927251428366,
+              "text_boundary_token_ce": 6.3740456104278564
+            }
+          }
         }
-      ]
+      ],
+      "inspection": {
+        "actual_adam_states": 514,
+        "actual_train_rows": 8000,
+        "actual_updates": 500,
+        "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/ki_a4_fulltrain_v3/formal/checkpoints/step_500.pt",
+        "checkpoint_sha256": "3efc6d1ab77cd02b01fa0a3db92262d522636fa2085e107dca04d7f3163e45ea",
+        "frozen_unchanged": true,
+        "full_model_optimizer_rng_roundtrip": true,
+        "new_process_resume_tested": false,
+        "passed": true,
+        "peak_rank0_reserved_bytes": 33659289600,
+        "success_rate_claim": false
+      },
+      "inspection_sha256": "9cbdf1cb299b3259802da145a15e72e76acc84ba377038e7ce30f022f9bde96f"
     }
   },
   "action_results": {
@@ -2428,15 +2591,1061 @@
           }
         }
       ]
+    },
+    "ki": {
+      "observed_at": "2026-09-14T09:14:58.200322+00:00",
+      "result_sha256": "8e5434b647bdf40117bf16abf5b950508941d9f85805c3a9b7e0c54c6ca6c29c",
+      "restoration": {
+        "checkpoint_sha256": "3efc6d1ab77cd02b01fa0a3db92262d522636fa2085e107dca04d7f3163e45ea",
+        "complete_state_entries": 1138,
+        "lora_entries": 192,
+        "passed": true,
+        "route": "ki",
+        "step": 500
+      },
+      "run": "ki_a4_fulltrain_v3",
+      "checkpoint_sha256": "3efc6d1ab77cd02b01fa0a3db92262d522636fa2085e107dca04d7f3163e45ea",
+      "complete": true,
+      "fm_generations": 10,
+      "ar_generations": 0,
+      "optimizer_updates": 0,
+      "simulator_controls": 0,
+      "pairing": {
+        "fm": [
+          {
+            "label": "train_task0",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.16708620030373136,
+            "ki_front_rmse": 0.1686419094332871,
+            "ki_better": false
+          },
+          {
+            "label": "train_task1",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.5900912979979408,
+            "ki_front_rmse": 0.5957829695644801,
+            "ki_better": false
+          },
+          {
+            "label": "train_task2",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.5303802409163558,
+            "ki_front_rmse": 0.5297065472678544,
+            "ki_better": true
+          },
+          {
+            "label": "train_task3",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.3781053689677427,
+            "ki_front_rmse": 0.41923464146446293,
+            "ki_better": false
+          },
+          {
+            "label": "train_task4",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.32536557175660114,
+            "ki_front_rmse": 0.3045909899953318,
+            "ki_better": true
+          },
+          {
+            "label": "heldout_task0",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.2743716837492725,
+            "ki_front_rmse": 0.2734868529296642,
+            "ki_better": true
+          },
+          {
+            "label": "heldout_task1",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 1.2879441235062543,
+            "ki_front_rmse": 1.2762524134221838,
+            "ki_better": true
+          },
+          {
+            "label": "heldout_task2",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 1.1764461923577345,
+            "ki_front_rmse": 1.2183630634446472,
+            "ki_better": false
+          },
+          {
+            "label": "heldout_task3",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.062207780826902606,
+            "ki_front_rmse": 0.06466586388870448,
+            "ki_better": false
+          },
+          {
+            "label": "heldout_task4",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.8755951900482337,
+            "ki_front_rmse": 0.9550526087330311,
+            "ki_better": false
+          }
+        ],
+        "joint": [
+          {
+            "label": "train_task0",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.16870439289407735,
+            "ki_front_rmse": 0.1686419094332871,
+            "ki_better": true
+          },
+          {
+            "label": "train_task1",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.5959917857360442,
+            "ki_front_rmse": 0.5957829695644801,
+            "ki_better": true
+          },
+          {
+            "label": "train_task2",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.5296890104858459,
+            "ki_front_rmse": 0.5297065472678544,
+            "ki_better": false
+          },
+          {
+            "label": "train_task3",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.4193364135242731,
+            "ki_front_rmse": 0.41923464146446293,
+            "ki_better": true
+          },
+          {
+            "label": "train_task4",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.3027481247222837,
+            "ki_front_rmse": 0.3045909899953318,
+            "ki_better": false
+          },
+          {
+            "label": "heldout_task0",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.2733448585518285,
+            "ki_front_rmse": 0.2734868529296642,
+            "ki_better": false
+          },
+          {
+            "label": "heldout_task1",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 1.277622845143413,
+            "ki_front_rmse": 1.2762524134221838,
+            "ki_better": true
+          },
+          {
+            "label": "heldout_task2",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 1.2166609286421204,
+            "ki_front_rmse": 1.2183630634446472,
+            "ki_better": false
+          },
+          {
+            "label": "heldout_task3",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.06470030622240633,
+            "ki_front_rmse": 0.06466586388870448,
+            "ki_better": true
+          },
+          {
+            "label": "heldout_task4",
+            "equal_fields": {
+              "label": true,
+              "source": true,
+              "pixel_fingerprints": true,
+              "proprio_fingerprints": true,
+              "mask_fingerprints": true,
+              "a4_executed": true,
+              "a4_unexecuted": true
+            },
+            "control_front_rmse": 0.9492806827841899,
+            "ki_front_rmse": 0.9550526087330311,
+            "ki_better": false
+          }
+        ]
+      },
+      "pooled": {
+        "train_executed": {
+          "sse": 287.35563588397554,
+          "count": 1403,
+          "rmse": 0.45256506278562003
+        },
+        "train_unexecuted": {
+          "sse": 444.48046415832323,
+          "count": 1104,
+          "rmse": 0.6345148667174298
+        },
+        "train_a4_executed": {
+          "sse": 287.2967379533245,
+          "count": 1403,
+          "rmse": 0.4525186803445972
+        },
+        "train_a4_unexecuted": {
+          "sse": 467.21066838925213,
+          "count": 1104,
+          "rmse": 0.650536754682749
+        },
+        "heldout_executed": {
+          "sse": 1510.3938062548655,
+          "count": 1840,
+          "rmse": 0.906016665989957
+        },
+        "heldout_unexecuted": {
+          "sse": 1772.0532139788943,
+          "count": 1840,
+          "rmse": 0.9813625216511852
+        },
+        "heldout_a4_executed": {
+          "sse": 1495.9622750390754,
+          "count": 1840,
+          "rmse": 0.9016778668486406
+        },
+        "heldout_a4_unexecuted": {
+          "sse": 1806.6935269747385,
+          "count": 1840,
+          "rmse": 0.9909079957112727
+        }
+      },
+      "rows": [
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.16967713843728227,
+            "squared_error_sum": 10.594841921441393,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.5759265046062539,
+            "squared_error_sum": 122.0624126445357,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.1686419094332871,
+            "squared_error_sum": 10.465954451168244,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "train_task0",
+          "route": "ki",
+          "source": {
+            "branch": "low",
+            "bundle_id": "99:1556:1896:7457d544db0f",
+            "diagnostic_split": "train",
+            "episode": 99,
+            "frame": 1782,
+            "missed_by_valid_A2_5000": false,
+            "requested_index": 233382,
+            "task": 0
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.5760657847151431,
+            "squared_error_sum": 122.1214581015663,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.60621007075627,
+            "squared_error_sum": 135.23655915816644,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.765301271851234,
+            "squared_error_sum": 215.53246150453884,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.5957829695644801,
+            "squared_error_sum": 130.6243036308898,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "train_task1",
+          "route": "ki",
+          "source": {
+            "branch": "low",
+            "bundle_id": "383:3774:4188:a2a3c383c3e3",
+            "diagnostic_split": "train",
+            "episode": 383,
+            "frame": 3787,
+            "missed_by_valid_A2_5000": false,
+            "requested_index": 1394766,
+            "task": 1
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.723818063223392,
+            "squared_error_sum": 192.79983262263414,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.5299123113310102,
+            "squared_error_sum": 103.33699723366387,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.5934785861127557,
+            "squared_error_sum": 129.6157942401776,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.5297065472678544,
+            "squared_error_sum": 103.25676164838283,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "train_task2",
+          "route": "ki",
+          "source": {
+            "branch": "low",
+            "bundle_id": "584:170:596:c3a5e36d0841",
+            "diagnostic_split": "train",
+            "episode": 584,
+            "frame": 500,
+            "missed_by_valid_A2_5000": true,
+            "requested_index": 3972813,
+            "task": 2
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.5933489456368631,
+            "squared_error_sum": 129.5591734341228,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.3955899626230978,
+            "squared_error_sum": 28.794421009178482,
+            "valid_scalar_targets": 184,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": false,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": null,
+            "squared_error_sum": 0,
+            "valid_scalar_targets": 0,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.41923464146446293,
+            "squared_error_sum": 32.33941396710597,
+            "valid_scalar_targets": 184,
+            "weighted": false
+          },
+          "label": "train_task3",
+          "route": "ki",
+          "source": {
+            "branch": "low",
+            "bundle_id": "754:715:1765:cb6a4412cb9d",
+            "diagnostic_split": "train",
+            "episode": 754,
+            "frame": 1757,
+            "missed_by_valid_A2_5000": false,
+            "requested_index": 6148358,
+            "task": 3
+          },
+          "unexecuted": {
+            "defined": false,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": null,
+            "squared_error_sum": 0,
+            "valid_scalar_targets": 0,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.2848938571357583,
+            "squared_error_sum": 9.333918630874336,
+            "valid_scalar_targets": 115,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": false,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": null,
+            "squared_error_sum": 0,
+            "valid_scalar_targets": 0,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.3045909899953318,
+            "squared_error_sum": 10.669202186428674,
+            "valid_scalar_targets": 115,
+            "weighted": false
+          },
+          "label": "train_task4",
+          "route": "ki",
+          "source": {
+            "branch": "low",
+            "bundle_id": "978:4254:4429:bdabfde2e0e6",
+            "diagnostic_split": "train",
+            "episode": 978,
+            "frame": 4424,
+            "missed_by_valid_A2_5000": true,
+            "requested_index": 8776319,
+            "task": 4
+          },
+          "unexecuted": {
+            "defined": false,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": null,
+            "squared_error_sum": 0,
+            "valid_scalar_targets": 0,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.2712890337615024,
+            "squared_error_sum": 27.08396826084384,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.638674994058492,
+            "squared_error_sum": 150.10931527710628,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.2734868529296642,
+            "squared_error_sum": 27.52458161093681,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task0",
+          "route": "ki",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"coffee_table_koagbh_0\",\"target\":\"radio_89\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]",
+            "actual_branch": "low",
+            "dataset_index": 289,
+            "diagnostic_split": "heldout",
+            "episode_index": 190,
+            "fm_replay_seed": 1948654329430719200,
+            "frame_index": 289,
+            "skill": "GRASP",
+            "source_fingerprint_sha256": "fd4baad2e01bb03a9600e9c3e48b08c8ca6f92a7f94b4c8b6af6dbaf074038cf",
+            "task_id": "task0",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task0-00-190-289"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.6467966850579127,
+            "squared_error_sum": 153.9513102631009,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 1.275776941599371,
+            "squared_error_sum": 598.9593041357252,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 1.256380838232065,
+            "squared_error_sum": 580.8853543290279,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 1.2762524134221838,
+            "squared_error_sum": 599.4058419778692,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task1",
+          "route": "ki",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"floors_zqjkvm_0\",\"target\":\"trash_can_116\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]",
+            "actual_branch": "low",
+            "dataset_index": 17744,
+            "diagnostic_split": "heldout",
+            "episode_index": 390,
+            "fm_replay_seed": 2744608406708436000,
+            "frame_index": 1007,
+            "skill": "GRASP",
+            "source_fingerprint_sha256": "2393debe10c36b01f0cc9f3c4797a7297bf69e5d63a77c65c18ac76a588bc874",
+            "task_id": "task1",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task1-16-390-1007"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 1.2516222322951098,
+            "squared_error_sum": 576.4934221541448,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 1.1794822078053406,
+            "squared_error_sum": 511.95360649880485,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 1.4471584832470954,
+            "squared_error_sum": 770.6905046333244,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 1.2183630634446472,
+            "squared_error_sum": 546.2623480067709,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task2",
+          "route": "ki",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"bottom_cabinet_rhdbzv_0\",\"target_part\":\"left\",\"unbound_relation\":\"\",\"verb\":\"CLOSE_DRAWER\"}]",
+            "actual_branch": "low",
+            "dataset_index": 65896,
+            "diagnostic_split": "heldout",
+            "episode_index": 590,
+            "fm_replay_seed": 5254866371760839000,
+            "frame_index": 5263,
+            "skill": "CLOSE_DRAWER",
+            "source_fingerprint_sha256": "354ac1c67ed4644f28091684e437e74738034b057b6cc928cbf483494236d6d9",
+            "task_id": "task2",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task2-32-590-5263"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 1.4541387602680846,
+            "squared_error_sum": 778.1431885539528,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.0637564947316068,
+            "squared_error_sum": 1.4958797483297972,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.03607308279594947,
+            "squared_error_sum": 0.47886636728446064,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.06466586388870448,
+            "squared_error_sum": 1.5388560145098626,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task3",
+          "route": "ki",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"fridge_petcxr_0\",\"target_part\":\"right_door\",\"unbound_relation\":\"\",\"verb\":\"CLOSE_DOOR\"}]",
+            "actual_branch": "low",
+            "dataset_index": 200997,
+            "diagnostic_split": "heldout",
+            "episode_index": 790,
+            "fm_replay_seed": 2585783678210491400,
+            "frame_index": 9174,
+            "skill": "CLOSE_DOOR",
+            "source_fingerprint_sha256": "34399809987fb7a486e9bdb732190701ba8f866fe770d5ddb1fe197355557358",
+            "task_id": "task3",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task3-48-790-9174"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.036379436595939126,
+            "squared_error_sum": 0.4870345337899674,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.9842089026816706,
+            "squared_error_sum": 356.4695163953718,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.9096844387884739,
+            "squared_error_sum": 304.52948636799545,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.9550526087330311,
+            "squared_error_sum": 335.6621786447787,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task4",
+          "route": "ki",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"top_cabinet_lkxmne_2\",\"target_part\":\"right_door\",\"unbound_relation\":\"\",\"verb\":\"CLOSE_DOOR\"}]",
+            "actual_branch": "low",
+            "dataset_index": 352700,
+            "diagnostic_split": "heldout",
+            "episode_index": 990,
+            "fm_replay_seed": 7508913599438307000,
+            "frame_index": 10974,
+            "skill": "CLOSE_DOOR",
+            "source_fingerprint_sha256": "4cda1ccdfab14f617d43a432e94dc72a58c7acfcb5f9cff9e66600f31009e5f9",
+            "task_id": "task4",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task4-64-990-10974"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.845348941449344,
+            "squared_error_sum": 262.9782584739057,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        }
+      ]
     }
   },
   "limitations": [
-    "Interim snapshot: FM and joint500 and their ten-window action probes are complete; KI500 remains pending. Training-log statistics were captured at training_observed_at.",
+    "All three500-update training arms and all thirty paired FM action generations are complete. These are single-seed offline diagnostics, not closed-loop success rates.",
     "No new optimizer updates or simulator controls were issued by this summary.",
     "Raw sampler bytes match after only a stage-label substitution; this does not certify training pixel or RNG identity.",
     "Norms are total pre-clipping rank0 norms; no per-loss gradient directions or module-specific update ratios were measured.",
     "Clipping coefficients are not equivalent to AdamW learning-rate multipliers.",
     "All ten action windows are repeatedly inspected diagnostic states, not a blind success-rate test."
   ],
-  "training_observed_at": "2026-09-14T08:21:21.578414+00:00"
+  "training_observed_at": "2026-09-14T08:21:21.578414+00:00",
+  "ki_source_pairing": [
+    {
+      "rank": 0,
+      "microbatches": 1000,
+      "draws": 2000,
+      "identical_after_only_stage_replacement": true,
+      "ki_sha256": "f9532f578340125473bfc977708e529b9353c5fce4ccc27014aa6ae636c177f8",
+      "normalized_fm_sha256": "5173c5b49452f00de00a7aac2523322ffe3646b510559277d0ab2b1570d40217"
+    },
+    {
+      "rank": 1,
+      "microbatches": 1000,
+      "draws": 2000,
+      "identical_after_only_stage_replacement": true,
+      "ki_sha256": "177498c1f12622c75f27dcaadc9dc325a2c29ccae40dfba09b55f7ae70152d6f",
+      "normalized_fm_sha256": "e776b63caa8a32ed465d9bbf96a7f02ec814d0ad4fa98c4e1f36bbe7ee0c519a"
+    },
+    {
+      "rank": 2,
+      "microbatches": 1000,
+      "draws": 2000,
+      "identical_after_only_stage_replacement": true,
+      "ki_sha256": "9eb341843b8e3ffeb0639bb3bf3b65b0dc35311dbae15da231be67bc1fb3d694",
+      "normalized_fm_sha256": "529d62c25c1396c30825ed33623ba5b7adfc5f93132b33df67b92414fbf5d103"
+    },
+    {
+      "rank": 3,
+      "microbatches": 1000,
+      "draws": 2000,
+      "identical_after_only_stage_replacement": true,
+      "ki_sha256": "1a0a7dc9854b5994fbeb041a51e3b4fbeba8847e2c127b5d24e619b9090e3d69",
+      "normalized_fm_sha256": "a73a661c34bcab1db667b990605eb1184a18f957571009a02d22a79c03516171"
+    }
+  ],
+  "offline_screen_complete": true,
+  "method_promoted_to_default": false,
+  "simulator_controls_in_this_m04_screen": 0
 }
