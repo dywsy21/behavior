@@ -12,6 +12,23 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-14 12:03（北京时间）：Beta局部512完成，第三臂顺利接续；M-04实际采样前缀核验
+
+- **Codex / M-02-L1：** Beta完整512已保存，result SHA `e6d697b83d87d859818f3fe094013acb2c47bccea5264b7f23c9208ed517cf90`，视频SHA `0eaea9a6…`；服务34590已退出-15，第三臂exec专用8788服务59091于12:02:04启动，端口复用修正已实际跨臂通过。Beta视频/全回执正复制本地，完整人工/物理审核待验，不预填成功；control已完成不重跑。
+- **M-04实际只读核对：** 新FM四rank前376 microbatch（188更新/3008 draw）与旧control在仅去掉`stage`路线标签后全部JSON字节相同；不能把完整文件SHA不同误报采样不同。规范化SHA依次`03615df048f51a7a350ecff71de8f7e5e776c2283743337f17c4b0d0bcfa5ffc`、`3757f534bff36b030ae9996302ee0165eddab2f8402bc26eccf9e13b818c584c`、`15957efa2969c680eaa01103056aa2b4ea0cf81732562ffdef71435d9c3ec085`、`1aa5b8acfcdc69784fedff0e36ed4899e0de952dd5db56e67455365390ef18bd`。仅证明来源/时钟/技能身份，不证明训练增广像素或全RNG相同；最新正式194/500。
+
+### 2026-09-14 11:57（北京时间）：control视频/全记录/人工复核完成，后两臂已显式恢复
+
+- **Codex / M-02-L1，真实完成：** control原512全部动作与物理回执一致、32请求/192真实历史锚点/34物理边界通过本地只读审查（machine SHA `db7f5cf8…`）。视频本地/远端同SHA `e8c51bde…`，已在聊天展示；本人查看17头部＋12双腕共29视图，右手前期接近radio、后期停在附近微调，未形成稳定抓取/抬起，32 post-chunk均IN_PROGRESS/34边界均未持有。不是持续原地打转，也不是完整SR0%；人工记录在本地该arm的`review/manual_visual_review.json`，不重做或补跑此臂。
+- **剩余预算恢复：** d5f0aec新`git_worktrees/fm_screen_prefix_resume_20260914`实际145 CPU passed（1.18s）。11:56:09提交34585，恢复SHA `1b58e96dcb6fa8fccd25bbc14ff0aba6fe415cad0f700c3c4bbfe4a44ccbf0df`，只允许未消耗的Beta/exec共1024模型控制，分别8787/8788。原manifest/control/失败不改；Beta服务34590初始化、尚无新物理结果。原端口失败不等于方法失败。
+- **M-04：** 四卡FM168/500，原三后继仍等待；不把这个中途loss或control单回合解释为方法全面胜负。等待后两臂实际完成再比较，M-03/CoT/有效组合/最终验收仍未完成。
+
+### 2026-09-14 11:51（北京时间）：control局部512已完成；后两臂被端口复用检查拦下，未消耗预算
+
+- **Codex / M-02-L1：** control完整512/32 chunks已保存，result SHA `cd356486a4377ff76b87366fc194eaee8913d8625882933a9646dcd2dec7b6a6`、completion `87fff31b…`；视频/回执正在复制到本地`artifacts/experiments/2026-09-14-fm-screen-prefix512-v1/fm_control_v1`供全记录/人工检查，尚未给出最终物理结论。
+- **接续故障：** 完成control并关闭自建服务后，下一臂沿用8786的bind检查报Address already in use（failure SHA `a4245a8a…`），队列已停止。11:51实查supervisor4177428/服务4177433/仿真4181904都已退出，服务退出-15，8786及拟用8787/8788均无监听/连接，Beta/exec目录各只有原event_context，0推理/物理。短暂端口状态已消失，不能声称抓到了TIME_WAIT真值；优先推测是刚关闭连接的复用冲突。
+- **有界修正：** 保留原manifest/control/失败证据，只给未执行Beta与exec使用独立8787/8788，并以显式恢复回执绑定旧结果/新Git源；不重跑control、不删原失败、不改训练/权重/512预算。须CPU验证确实跳过已完成臂和拒绝重复恢复，再提交这两臂。
+
 ### 2026-09-14 11:49（北京时间）：首FM臂已实际执行160控制，逐回合审查入口已备
 
 - **Codex / M-02-L1：** control的完整1138/192位级恢复、原FM mask/起点与socket身份通过（0额外神经生成）；仿真4181904于11:45:02启动，11:49已实际10 chunk/160模型控制，event11/frame608为IN_PROGRESS，尚未完成/抓取。原512上限不变，模型/仿真GPU1仍有约18GiB空闲，其他训练/服务未停。
