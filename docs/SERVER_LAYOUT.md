@@ -26,6 +26,8 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 12:33最新：** 新`git_worktrees/ar_cot_screen_20260914`固定d114581/165 CPU，仅供`dual_track_fm_ar_20260913/ar_native_subtask_cot_fulltrain_v1`，supervisor220792已真实等待marker4129562，spec SHA `3dffcd78de30bff9d19c3e2b1658433bda29e0a215d4b48bf7630bf3d2d37863`。这是第五个既定串行训练/等待器，不是已训练CoT权重；旧FM8fcf61f/后三臂9f26b45源不变，三处活跃源均不可热pull。先核验status/launch，不重复提交。
+
 **2026-09-14 12:17补充：** 三臂机器/本人审核JSON及六张拼图在服务器`dual_track_fm_ar_20260913/fm_screen_prefix512_v1/review_by_main_20260914/<arm>/`亦有完整校验副本，6 JSON/6 PNG与本地SHA相同；不覆盖原completion历史。当前仅方法训练链继续，FM已270/500，三个原后继等待器不重复启动。
 
 **2026-09-14 12:11最新：** `fm_screen_prefix512_v1`三臂各512全部完成，1536动作及本人87视图核验完成；`recovery`supervisor34585、Beta34590/39113、exec59091/64006均退出，原control三进程此前也退出。三臂各`completion.json`和root completion的`personal_review_pending`是当时不可变历史；实际已完成的后续人工/机器回执在本地`/home/wsy/behavior/artifacts/experiments/2026-09-14-fm-screen-prefix512-v1/<arm>/review/`，详见[报告](experiments/2026-09-14-fm-prefix512-screen.md)，不覆盖旧回执。三视频已本地，非cache可随意删。当前活跃仍是FM v3 4092082/4092140和9f26b45的后三训练等待器，不热pull它们。
