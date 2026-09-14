@@ -40,6 +40,13 @@ RECIPE = dict(seed=41, batch_size=2, accumulation=2, world_size=4,
     max_grad_norm=1., eval_every=100, history=6, prediction=32, execution=[0, 16])
 MARKER_RECIPE = dict(mode="required_codec_markers", rows=8, parameters=16384,
                      peak_learning_rate=1e-3, ce_backend="eager", train_rows=True)
+COT_RUN = "ar_native_subtask_cot_fulltrain_v1"
+MARKER_PREDECESSOR_SHA = "9401ca0c526853e756e7f44b5a7fdf6879346cef5dfc96509f84b8d1ea897bd0"
+COT_COMPARISON = dict(control_run="ar_native_task_fulltrain_v1",
+    control_checkpoint_sha256="639e64aeeb251113b807751f234077595165e65e9dd9e3b66cd7c4661f9df963",
+    change="same-state skill text as generated output before action tokens",
+    mixed_ce_comparable=False, action_ce_reported_separately=True,
+    new_annotation_release=False, additional_marker_rows=False, schema_decoding=False)
 
 
 def now():
@@ -83,10 +90,30 @@ def validate_spec(spec):
         raise RuntimeError("Required completed input/gradient evidence changed")
     if spec.get("after_fm") and spec.get("after_action"):
         raise RuntimeError("Use one explicitly declared serial predecessor, not two conflicting queues")
+    validate_cot_screen(spec)
     if Path(spec['output']).name in reference_gate_recovery.DECLARED or spec.get('reference_gate_recovery'):
         reference_gate_recovery.validate_recovery(spec)
     else:
         validate_recovery(spec, 'action')
+
+
+def validate_cot_screen(spec):
+    """One new CoT arm, not a hidden marker/CoT grid or continued cache fit."""
+    cot = spec.get("conditioning") == "native_subtask_cot"
+    if not cot:
+        if Path(spec["output"]).name == COT_RUN or spec.get("cot_comparison") is not None:
+            raise RuntimeError("The declared CoT screen cannot name another training method")
+        return
+    dependency = spec.get("after_action") or {}
+    if (Path(spec["output"]) != BASE / COT_RUN
+            or (spec["route"], spec["initialization"]) != ("ar", "native")
+            or spec.get("marker_rows") is not False or spec.get("after_fm")
+            or spec.get("recovery_from") or spec.get("reference_gate_recovery")
+            or spec.get("cot_comparison") != COT_COMPARISON
+            or dependency.get("root") != str(BASE / "ar_a4_marker_fulltrain_v3")
+            or dependency.get("kind") != "action"
+            or dependency.get("method_sha256") != MARKER_PREDECESSOR_SHA):
+        raise RuntimeError("CoT requires its single declared native screen and exact existing marker predecessor")
 
 
 def declared_parent(route, initialization="a4", conditioning="skills"):
@@ -195,6 +222,16 @@ def prerequisites(route, initialization="a4", conditioning="skills", *, marker_r
             or gate["settings"] != dict(route="ar", conditioning=conditioning, codec_mode="original32")):
         raise RuntimeError("Native AR requires its exact native parent/conditioning GPU evidence")
     required = [input_path, data_path, path]
+    if conditioning == "native_subtask_cot":
+        control = BASE / COT_COMPARISON["control_run"]
+        control_path = verify_dependency_completed(control, "action")
+        inspection = read(control_path)
+        if (inspection["checkpoint_sha256"] != COT_COMPARISON["control_checkpoint_sha256"]
+                or inspection["actual_adam_states"] != 192 or not inspection["frozen_unchanged"]
+                or not inspection["full_model_optimizer_rng_roundtrip"]
+                or inspection["actual_train_rows"] != 8000):
+            raise RuntimeError("CoT requires the already completed native task-only500 control, not a new control run")
+        required.extend([control_path, control / "method_spec.json", control / "status.json"])
     if marker_rows:
         rows_path = BASE / "ar_marker_rows20_v1/result.json"
         control_path = BASE / "ar_marker_control20_v1/result.json"
@@ -253,7 +290,8 @@ def dependency_identity(root, kind="fm"):
                    "ki_a4_fulltrain_v2": ("ki", "a4", "skills"),
                    "fm_action_control_v3": ("fm", "a4", "skills"),
                    "joint_a4_fulltrain_v3": ("joint", "a4", "skills"),
-                   "ki_a4_fulltrain_v3": ("ki", "a4", "skills")},
+                   "ki_a4_fulltrain_v3": ("ki", "a4", "skills"),
+                   "ar_a4_marker_fulltrain_v3": ("ar", "a4", "skills")},
     }
     if kind not in names or root.parent != BASE or root.name not in names[kind]:
         raise ValueError("Only a predeclared finite method run may be a serial predecessor")
@@ -272,6 +310,10 @@ def dependency_identity(root, kind="fm"):
                  and method.get("conditioning", "skills") == conditioning)
     if not valid or method["parent_sha256"] != parent_sha:
         raise RuntimeError("Dependency is not its declared finite method/initialization")
+    if root.name == "ar_a4_marker_fulltrain_v3" and (
+            method.get("marker_rows") is not True or method.get("marker_recipe") != MARKER_RECIPE
+            or sha(root / "method_spec.json") != MARKER_PREDECESSOR_SHA):
+        raise RuntimeError("CoT predecessor must be the exact already queued marker variant")
     if root.name in RECOVERY_RUNS:
         validate_recovery(method, kind)
     if root.name in reference_gate_recovery.DECLARED:
@@ -406,6 +448,38 @@ def summarize(rows):
                 for key in metrics})
 
 
+@contextmanager
+def trace_free_generation(model, raw):
+    """Keep readable CoT even when later action validation rejects the output.
+
+    This observes each existing call exactly once; it does not generate extra
+    tokens, edit their IDs, repair a failed subtask, or change model/RNG state.
+    """
+    original = model.model.inference_ar
+
+    def traced(*args, **kwargs):
+        result = original(*args, **kwargs)
+        ids = result["generated_ids"].detach().cpu()
+        raw["ids"] = ids.tolist()
+        calls = raw.setdefault("calls", [])
+        is_text = bool(getattr(model, "predict_cot", False)) and not calls
+        call = dict(ids=raw["ids"], phase="text" if is_text else "action",
+            max_new_tokens=kwargs.get("max_new_tokens"), stop_token_ids=kwargs.get("stop_token_ids"))
+        if is_text:
+            call["decoded_text"] = model.processor.decode_text(
+                ids, model._get_trim_token_ids(include_eov=True))
+            call["ended_with_eov"] = [bool(row and row[-1] == model.processor.eov_token_id)
+                                      for row in raw["ids"]]
+        calls.append(call)
+        return result
+
+    model.model.inference_ar = traced
+    try:
+        yield
+    finally:
+        model.model.inference_ar = original
+
+
 def evaluate(model, pipeline, route, step, output, rank, world, *, full):
     import torch
     import torch.distributed as dist
@@ -439,16 +513,8 @@ def evaluate(model, pipeline, route, step, output, rank, world, *, full):
             if window["window_id"] == first_per_task[window["task_id"]] and route != "fm":
                 replay_official_fm_sampler_seed(17)
                 raw = {}
-                original = model.model.inference_ar
-                def traced(*args, **kwargs):
-                    result = original(*args, **kwargs)
-                    raw["ids"] = result["generated_ids"].detach().cpu().tolist()
-                    raw.setdefault("calls", []).append(dict(ids=raw["ids"],
-                        max_new_tokens=kwargs.get("max_new_tokens"), stop_token_ids=kwargs.get("stop_token_ids")))
-                    return result
-                model.model.inference_ar = traced
                 try:
-                    with torch.autocast("cuda", dtype=torch.bfloat16):
+                    with trace_free_generation(model, raw), torch.autocast("cuda", dtype=torch.bfloat16):
                         prediction = model.forward_inference(batch["samples"], batch["pixel_values"],
                             action_dim_is_pad=batch["action_dim_is_pad"])
                     action = prediction["action"].to(device)
@@ -462,8 +528,6 @@ def evaluate(model, pipeline, route, step, output, rank, world, *, full):
                     if not str(exc).startswith("Free AR generation"):
                         raise
                     row["generation"] = dict(valid=False, error=str(exc), raw=raw)
-                finally:
-                    model.model.inference_ar = original
             local.append(row)
     gathered = [None] * world
     dist.all_gather_object(gathered, local)
@@ -728,6 +792,7 @@ def main():
             marker_rows=args.marker_rows, marker_recipe=dict(MARKER_RECIPE) if args.marker_rows else None,
             native_checkpoint_config_sha256=NATIVE_CONFIG_SHA if args.initialization == "native" else None,
             reference_fm_is_auxiliary_skills_prefix=True, cot_supervision=args.conditioning == "native_subtask_cot",
+            cot_comparison=dict(COT_COMPARISON) if args.conditioning == "native_subtask_cot" else None,
             after_fm=dependency_identity(args.after_fm_run) if args.after_fm_run else None,
             after_action=dependency_identity(args.after_action_run, "action") if args.after_action_run else None,
             recovery_from=(recovery_identity(args.supersedes_run, args.output, 'action')

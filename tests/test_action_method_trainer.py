@@ -94,6 +94,76 @@ def test_subtask_cot_full_training_keeps_native_weights_and_explicit_supervision
     assert arch.predict_cot and arch.input_preprocessor.pred_eov and not arch.continuous_action
 
 
+@pytest.mark.parametrize("damage", [None, "name", "parent", "marker", "predecessor", "digest", "comparison"])
+def test_one_cot_candidate_binds_existing_marker_queue_and_original_native_control(damage):
+    spec = dict(output=str(recipe.BASE / recipe.COT_RUN), conditioning="native_subtask_cot",
+        route="ar", initialization="native", marker_rows=False,
+        cot_comparison=deepcopy(recipe.COT_COMPARISON), after_action=dict(kind="action",
+            root=str(recipe.BASE / "ar_a4_marker_fulltrain_v3"), method_sha256=recipe.MARKER_PREDECESSOR_SHA))
+    if damage == "name":
+        spec["output"] += "_extra_grid"
+    elif damage == "parent":
+        spec["initialization"] = "a4"
+    elif damage == "marker":
+        spec["marker_rows"] = True
+    elif damage == "predecessor":
+        spec["after_action"]["root"] = str(recipe.BASE / "ki_a4_fulltrain_v3")
+    elif damage == "digest":
+        spec["after_action"]["method_sha256"] = "different-marker-run"
+    elif damage == "comparison":
+        spec["cot_comparison"]["schema_decoding"] = True
+    if damage:
+        with pytest.raises(RuntimeError, match="single declared"):
+            recipe.validate_cot_screen(spec)
+    else:
+        recipe.validate_cot_screen(spec)
+
+
+def test_cot_run_name_cannot_silently_train_task_only_and_old_arms_remain_unchanged():
+    with pytest.raises(RuntimeError, match="another training method"):
+        recipe.validate_cot_screen(dict(output=str(recipe.BASE / recipe.COT_RUN), conditioning="native_task"))
+    recipe.validate_cot_screen(dict(output=str(recipe.BASE / "joint_a4_fulltrain_v3"), conditioning="skills"))
+
+
+@pytest.mark.parametrize("cot,fail_after_text", [(True, False), (True, True), (False, False)])
+def test_generation_trace_keeps_real_text_on_action_failure_without_extra_calls(cot, fail_after_text):
+    results = [dict(generated_ids=torch.tensor([[11, 99]])), dict(generated_ids=torch.tensor([[42, 91]]))]
+    calls, decoded = [], []
+
+    def inference(*args, **kwargs):
+        result = results[len(calls)]
+        calls.append(kwargs)
+        return result
+
+    def decode(ids, trim):
+        decoded.append((ids.tolist(), trim))
+        return ["Subtask: GRASP radio"]
+
+    model = SimpleNamespace(predict_cot=cot, model=SimpleNamespace(inference_ar=inference),
+        processor=SimpleNamespace(decode_text=decode, eov_token_id=99),
+        _get_trim_token_ids=lambda **kwargs: [99])
+    raw, rng = {}, torch.get_rng_state().clone()
+    try:
+        with recipe.trace_free_generation(model, raw):
+            assert model.model.inference_ar(max_new_tokens=256, stop_token_ids=[99]) is results[0]
+            if fail_after_text:
+                raise RuntimeError("Free AR generation failed")
+            assert model.model.inference_ar(max_new_tokens=80, stop_token_ids=[91]) is results[1]
+    except RuntimeError as exc:
+        assert fail_after_text and str(exc) == "Free AR generation failed"
+    assert model.model.inference_ar is inference and torch.equal(rng, torch.get_rng_state())
+    assert len(calls) == len(raw["calls"]) == (1 if fail_after_text else 2)
+    if cot:
+        assert raw["calls"][0]["phase"] == "text"
+        assert raw["calls"][0]["decoded_text"] == ["Subtask: GRASP radio"]
+        assert raw["calls"][0]["ended_with_eov"] == [True]
+        assert decoded == [([[11, 99]], [99])]
+    else:
+        assert not decoded and raw["calls"][0]["phase"] == "action"
+    if not fail_after_text:
+        assert raw["ids"] == [[42, 91]] and raw["calls"][1]["phase"] == "action"
+
+
 def test_optional_token_components_use_same_uniform_task_window_averaging():
     rows = [dict(task_id=f"task{i}", ce_loss=1., reference_fm_loss=.2,
                  action_token_ce=float(i), text_boundary_token_ce=0.) for i in range(5)]
@@ -351,6 +421,33 @@ def test_reference_recovery_predecessor_requires_its_full_evidence(monkeypatch, 
     method["parent_sha256"] = "wrong-parent"
     with pytest.raises(RuntimeError, match="declared finite"):
         recipe.dependency_identity(recipe.BASE / name, "action")
+
+
+@pytest.mark.parametrize("damage", [None, "adapter", "recipe", "sha", "recovery"])
+def test_cot_marker_predecessor_cannot_swap_adapter_or_skip_recovery(monkeypatch, damage):
+    method = dict(output=str(recipe.BASE / "ar_a4_marker_fulltrain_v3"), route="ar",
+        initialization="a4", conditioning="skills", recipe=deepcopy(recipe.RECIPE),
+        parent_sha256=recipe.PARENT_SHA, marker_rows=True, marker_recipe=deepcopy(recipe.MARKER_RECIPE))
+    if damage == "adapter":
+        method["marker_rows"] = False
+    if damage == "recipe":
+        method["marker_recipe"]["peak_learning_rate"] = 1.
+    monkeypatch.setattr(recipe, "read", lambda p: dict(supervisor_pid=42) if p.name == "launch.json" else method)
+    monkeypatch.setattr(recipe, "sha", lambda p: "changed" if damage == "sha" else recipe.MARKER_PREDECESSOR_SHA)
+    calls = []
+
+    def validate(spec):
+        calls.append(spec)
+        if damage == "recovery":
+            raise RuntimeError("Reference recovery evidence changed")
+
+    monkeypatch.setattr(recipe.reference_gate_recovery, "validate_recovery", validate)
+    if damage:
+        with pytest.raises(RuntimeError):
+            recipe.dependency_identity(recipe.BASE / "ar_a4_marker_fulltrain_v3", "action")
+    else:
+        identity = recipe.dependency_identity(recipe.BASE / "ar_a4_marker_fulltrain_v3", "action")
+        assert identity["supervisor_pid"] == 42 and calls == [method]
 
 
 @pytest.mark.parametrize("kind", ["fm", "action"])
