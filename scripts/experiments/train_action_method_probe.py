@@ -28,6 +28,7 @@ from probe_ar_execution_codec import publish
 from train_fm_method_probe import BASE, PARENT, PARENT_SHA, legacy, verify_parent
 from native_action_initialization import NATIVE_PARENT, NATIVE_PARENT_SHA, NATIVE_CONFIG, NATIVE_CONFIG_SHA, verify_native_parent
 from method_queue_recovery import DECLARED as RECOVERY_RUNS, recovery_identity, validate_recovery
+import reference_gate_recovery
 
 HERE = Path(__file__).resolve()
 ROUTES = ("ar", "joint", "ki", "fm")
@@ -56,6 +57,7 @@ def code_identity():
         Path(__file__).with_name("probe_action_training_gpu.py"),
         Path(__file__).with_name("native_action_initialization.py"),
         Path(__file__).with_name("method_queue_recovery.py"),
+        Path(__file__).with_name("reference_gate_recovery.py"),
         Path(__file__).with_name("train_fm_method_probe.py")]
     from action_training_runtime import EXTENSIONS
     paths.extend(REPO / relative for relative in EXTENSIONS.values())
@@ -81,7 +83,10 @@ def validate_spec(spec):
         raise RuntimeError("Required completed input/gradient evidence changed")
     if spec.get("after_fm") and spec.get("after_action"):
         raise RuntimeError("Use one explicitly declared serial predecessor, not two conflicting queues")
-    validate_recovery(spec, 'action')
+    if Path(spec['output']).name in reference_gate_recovery.DECLARED or spec.get('reference_gate_recovery'):
+        reference_gate_recovery.validate_recovery(spec)
+    else:
+        validate_recovery(spec, 'action')
 
 
 def declared_parent(route, initialization="a4", conditioning="skills"):
@@ -511,7 +516,7 @@ def train(spec, phase):
     if phase not in ("smoke", "formal"):
         raise ValueError("Unsupported training phase")
     if phase == "formal":
-        gate = read(Path(spec["output"]) / "smoke/checkpoint_inspection.json")
+        gate = read(reference_gate_recovery.smoke_gate_path(spec))
         if not gate["passed"] or gate["actual_updates"] != 5:
             raise RuntimeError("Formal phase requires this run's actual DDP saved-state gate")
     identity = bootstrap()
@@ -667,8 +672,8 @@ def supervise(spec, path):
         bootstrap()
         from g05.utils.training.coordination_runtime import CoordinationLock
         wait_for_dependency(spec, old)
-        for phase in ("smoke", "formal"):
-            if phase == "formal" and not read(Path(spec["output"]) / "smoke/checkpoint_inspection.json")["passed"]:
+        for phase in reference_gate_recovery.training_phases(spec):
+            if phase == "formal" and not read(reference_gate_recovery.smoke_gate_path(spec))["passed"]:
                 raise RuntimeError("Real DDP saved-state inspection is required")
             old.gpu_budget(range(4))
             command = [old.PYTHON, "-m", "torch.distributed.run", "--standalone", "--nproc_per_node=4",
@@ -720,7 +725,10 @@ def main():
             reference_fm_is_auxiliary_skills_prefix=True, cot_supervision=args.conditioning == "native_subtask_cot",
             after_fm=dependency_identity(args.after_fm_run) if args.after_fm_run else None,
             after_action=dependency_identity(args.after_action_run, "action") if args.after_action_run else None,
-            recovery_from=recovery_identity(args.supersedes_run, args.output, 'action') if args.supersedes_run else None)
+            recovery_from=(recovery_identity(args.supersedes_run, args.output, 'action')
+                           if args.supersedes_run and args.output.name not in reference_gate_recovery.DECLARED else None),
+            reference_gate_recovery=(reference_gate_recovery.recovery_identity(args.supersedes_run, args.output)
+                                    if args.output.name in reference_gate_recovery.DECLARED else None))
         validate_spec(spec)
         args.output.mkdir(exist_ok=False)
         path = args.output / "method_spec.json"
