@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-09-14T08:21:21.578414+00:00",
+  "observed_at": "2026-09-14T08:27:05.873357+00:00",
   "owner": "Codex",
   "task_id": "M-04",
   "root": "robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913",
@@ -1575,15 +1575,868 @@
       ]
     },
     "joint": {
-      "complete": false
+      "observed_at": "2026-09-14T08:27:05.873357+00:00",
+      "result_sha256": "3e1f5eb6b3c2f9437aae4083c1a0d56fb0f8c647fad6aa032eabdb68de706dec",
+      "restoration": {
+        "checkpoint_sha256": "e1a67647570ae0706503625b0891086e1a15474e335177aed6b44a35553b9fd5",
+        "complete_state_entries": 1138,
+        "lora_entries": 192,
+        "passed": true,
+        "route": "joint",
+        "step": 500
+      },
+      "run": "joint_a4_fulltrain_v3",
+      "checkpoint_sha256": "e1a67647570ae0706503625b0891086e1a15474e335177aed6b44a35553b9fd5",
+      "complete": true,
+      "fm_generations": 10,
+      "ar_generations": 0,
+      "optimizer_updates": 0,
+      "simulator_controls": 0,
+      "pairing": [
+        {
+          "label": "train_task0",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 0.16708620030373136,
+          "joint_front_rmse": 0.16870439289407735,
+          "joint_better": false
+        },
+        {
+          "label": "train_task1",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 0.5900912979979408,
+          "joint_front_rmse": 0.5959917857360442,
+          "joint_better": false
+        },
+        {
+          "label": "train_task2",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 0.5303802409163558,
+          "joint_front_rmse": 0.5296890104858459,
+          "joint_better": true
+        },
+        {
+          "label": "train_task3",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 0.3781053689677427,
+          "joint_front_rmse": 0.4193364135242731,
+          "joint_better": false
+        },
+        {
+          "label": "train_task4",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 0.32536557175660114,
+          "joint_front_rmse": 0.3027481247222837,
+          "joint_better": true
+        },
+        {
+          "label": "heldout_task0",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 0.2743716837492725,
+          "joint_front_rmse": 0.2733448585518285,
+          "joint_better": true
+        },
+        {
+          "label": "heldout_task1",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 1.2879441235062543,
+          "joint_front_rmse": 1.277622845143413,
+          "joint_better": true
+        },
+        {
+          "label": "heldout_task2",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 1.1764461923577345,
+          "joint_front_rmse": 1.2166609286421204,
+          "joint_better": false
+        },
+        {
+          "label": "heldout_task3",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 0.062207780826902606,
+          "joint_front_rmse": 0.06470030622240633,
+          "joint_better": false
+        },
+        {
+          "label": "heldout_task4",
+          "equal_fields": {
+            "label": true,
+            "source": true,
+            "pixel_fingerprints": true,
+            "proprio_fingerprints": true,
+            "mask_fingerprints": true,
+            "a4_executed": true,
+            "a4_unexecuted": true
+          },
+          "fm_front_rmse": 0.8755951900482337,
+          "joint_front_rmse": 0.9492806827841899,
+          "joint_better": false
+        }
+      ],
+      "pooled": {
+        "train_executed": {
+          "sse": 287.3351271585852,
+          "count": 1403,
+          "rmse": 0.45254891259218766
+        },
+        "train_unexecuted": {
+          "sse": 444.5615676558283,
+          "count": 1104,
+          "rmse": 0.6345727534320987
+        },
+        "train_a4_executed": {
+          "sse": 287.2967379533245,
+          "count": 1403,
+          "rmse": 0.4525186803445972
+        },
+        "train_a4_unexecuted": {
+          "sse": 467.21066838925213,
+          "count": 1104,
+          "rmse": 0.650536754682749
+        },
+        "heldout_executed": {
+          "sse": 1506.084640514479,
+          "count": 1840,
+          "rmse": 0.9047233064032192
+        },
+        "heldout_unexecuted": {
+          "sse": 1770.0957558841285,
+          "count": 1840,
+          "rmse": 0.9808203520423628
+        },
+        "heldout_a4_executed": {
+          "sse": 1495.9622750390754,
+          "count": 1840,
+          "rmse": 0.9016778668486406
+        },
+        "heldout_a4_unexecuted": {
+          "sse": 1806.6935269747385,
+          "count": 1840,
+          "rmse": 0.9909079957112727
+        }
+      },
+      "rows": [
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.16967713843728227,
+            "squared_error_sum": 10.594841921441393,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.5759265046062539,
+            "squared_error_sum": 122.0624126445357,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.16870439289407735,
+            "squared_error_sum": 10.473711362887391,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "train_task0",
+          "route": "joint",
+          "source": {
+            "branch": "low",
+            "bundle_id": "99:1556:1896:7457d544db0f",
+            "diagnostic_split": "train",
+            "episode": 99,
+            "frame": 1782,
+            "missed_by_valid_A2_5000": false,
+            "requested_index": 233382,
+            "task": 0
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.5760818020138841,
+            "squared_error_sum": 122.12824928105555,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.60621007075627,
+            "squared_error_sum": 135.23655915816644,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.765301271851234,
+            "squared_error_sum": 215.53246150453884,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.5959917857360442,
+            "squared_error_sum": 130.71588478866067,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "train_task1",
+          "route": "joint",
+          "source": {
+            "branch": "low",
+            "bundle_id": "383:3774:4188:a2a3c383c3e3",
+            "diagnostic_split": "train",
+            "episode": 383,
+            "frame": 3787,
+            "missed_by_valid_A2_5000": false,
+            "requested_index": 1394766,
+            "task": 1
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.7239734316111759,
+            "squared_error_sum": 192.8826109218212,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.5299123113310102,
+            "squared_error_sum": 103.33699723366387,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.5934785861127557,
+            "squared_error_sum": 129.6157942401776,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.5296890104858459,
+            "squared_error_sum": 103.24992480124666,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "train_task2",
+          "route": "joint",
+          "source": {
+            "branch": "low",
+            "bundle_id": "584:170:596:c3a5e36d0841",
+            "diagnostic_split": "train",
+            "episode": 584,
+            "frame": 500,
+            "missed_by_valid_A2_5000": true,
+            "requested_index": 3972813,
+            "task": 2
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.5933295592710341,
+            "squared_error_sum": 129.55070745295154,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.3955899626230978,
+            "squared_error_sum": 28.794421009178482,
+            "valid_scalar_targets": 184,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": false,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": null,
+            "squared_error_sum": 0,
+            "valid_scalar_targets": 0,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.4193364135242731,
+            "squared_error_sum": 32.355117098161635,
+            "valid_scalar_targets": 184,
+            "weighted": false
+          },
+          "label": "train_task3",
+          "route": "joint",
+          "source": {
+            "branch": "low",
+            "bundle_id": "754:715:1765:cb6a4412cb9d",
+            "diagnostic_split": "train",
+            "episode": 754,
+            "frame": 1757,
+            "missed_by_valid_A2_5000": false,
+            "requested_index": 6148358,
+            "task": 3
+          },
+          "unexecuted": {
+            "defined": false,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": null,
+            "squared_error_sum": 0,
+            "valid_scalar_targets": 0,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.2848938571357583,
+            "squared_error_sum": 9.333918630874336,
+            "valid_scalar_targets": 115,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": false,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": null,
+            "squared_error_sum": 0,
+            "valid_scalar_targets": 0,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.3027481247222837,
+            "squared_error_sum": 10.540489107628837,
+            "valid_scalar_targets": 115,
+            "weighted": false
+          },
+          "label": "train_task4",
+          "route": "joint",
+          "source": {
+            "branch": "low",
+            "bundle_id": "978:4254:4429:bdabfde2e0e6",
+            "diagnostic_split": "train",
+            "episode": 978,
+            "frame": 4424,
+            "missed_by_valid_A2_5000": true,
+            "requested_index": 8776319,
+            "task": 4
+          },
+          "unexecuted": {
+            "defined": false,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": null,
+            "squared_error_sum": 0,
+            "valid_scalar_targets": 0,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.2712890337615024,
+            "squared_error_sum": 27.08396826084384,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.638674994058492,
+            "squared_error_sum": 150.10931527710628,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.2733448585518285,
+            "squared_error_sum": 27.496007504392644,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task0",
+          "route": "joint",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"coffee_table_koagbh_0\",\"target\":\"radio_89\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]",
+            "actual_branch": "low",
+            "dataset_index": 289,
+            "diagnostic_split": "heldout",
+            "episode_index": 190,
+            "fm_replay_seed": 1948654329430719200,
+            "frame_index": 289,
+            "skill": "GRASP",
+            "source_fingerprint_sha256": "fd4baad2e01bb03a9600e9c3e48b08c8ca6f92a7f94b4c8b6af6dbaf074038cf",
+            "task_id": "task0",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task0-00-190-289"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.6469356292906843,
+            "squared_error_sum": 154.01746070803,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 1.275776941599371,
+            "squared_error_sum": 598.9593041357252,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 1.256380838232065,
+            "squared_error_sum": 580.8853543290279,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 1.277622845143413,
+            "squared_error_sum": 600.6938094711047,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task1",
+          "route": "joint",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"floors_zqjkvm_0\",\"target\":\"trash_can_116\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]",
+            "actual_branch": "low",
+            "dataset_index": 17744,
+            "diagnostic_split": "heldout",
+            "episode_index": 390,
+            "fm_replay_seed": 2744608406708436000,
+            "frame_index": 1007,
+            "skill": "GRASP",
+            "source_fingerprint_sha256": "2393debe10c36b01f0cc9f3c4797a7297bf69e5d63a77c65c18ac76a588bc874",
+            "task_id": "task1",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task1-16-390-1007"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 1.2523351293150409,
+            "squared_error_sum": 577.1503256108795,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 1.1794822078053406,
+            "squared_error_sum": 511.95360649880485,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 1.4471584832470954,
+            "squared_error_sum": 770.6905046333244,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 1.2166609286421204,
+            "squared_error_sum": 544.7370840246249,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task2",
+          "route": "joint",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"bottom_cabinet_rhdbzv_0\",\"target_part\":\"left\",\"unbound_relation\":\"\",\"verb\":\"CLOSE_DRAWER\"}]",
+            "actual_branch": "low",
+            "dataset_index": 65896,
+            "diagnostic_split": "heldout",
+            "episode_index": 590,
+            "fm_replay_seed": 5254866371760839000,
+            "frame_index": 5263,
+            "skill": "CLOSE_DRAWER",
+            "source_fingerprint_sha256": "354ac1c67ed4644f28091684e437e74738034b057b6cc928cbf483494236d6d9",
+            "task_id": "task2",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task2-32-590-5263"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 1.4532878587604146,
+            "squared_error_sum": 777.2327809547185,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.0637564947316068,
+            "squared_error_sum": 1.4958797483297972,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.03607308279594947,
+            "squared_error_sum": 0.47886636728446064,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.06470030622240633,
+            "squared_error_sum": 1.5404957021005194,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task3",
+          "route": "joint",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"fridge_petcxr_0\",\"target_part\":\"right_door\",\"unbound_relation\":\"\",\"verb\":\"CLOSE_DOOR\"}]",
+            "actual_branch": "low",
+            "dataset_index": 200997,
+            "diagnostic_split": "heldout",
+            "episode_index": 790,
+            "fm_replay_seed": 2585783678210491400,
+            "frame_index": 9174,
+            "skill": "CLOSE_DOOR",
+            "source_fingerprint_sha256": "34399809987fb7a486e9bdb732190701ba8f866fe770d5ddb1fe197355557358",
+            "task_id": "task3",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task3-48-790-9174"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.03641401036000594,
+            "squared_error_sum": 0.4879606953834921,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        },
+        {
+          "a4_executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.9842089026816706,
+            "squared_error_sum": 356.4695163953718,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "a4_unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.9096844387884739,
+            "squared_error_sum": 304.52948636799545,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "calls": {
+            "ar": 0,
+            "fm": 1
+          },
+          "executed": {
+            "defined": true,
+            "interval": [
+              0,
+              16
+            ],
+            "normalized_rmse": 0.9492806827841899,
+            "squared_error_sum": 331.6172438122561,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          },
+          "label": "heldout_task4",
+          "route": "joint",
+          "source": {
+            "active_skills_semantic_json": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"top_cabinet_lkxmne_2\",\"target_part\":\"right_door\",\"unbound_relation\":\"\",\"verb\":\"CLOSE_DOOR\"}]",
+            "actual_branch": "low",
+            "dataset_index": 352700,
+            "diagnostic_split": "heldout",
+            "episode_index": 990,
+            "fm_replay_seed": 7508913599438307000,
+            "frame_index": 10974,
+            "skill": "CLOSE_DOOR",
+            "source_fingerprint_sha256": "4cda1ccdfab14f617d43a432e94dc72a58c7acfcb5f9cff9e66600f31009e5f9",
+            "task_id": "task4",
+            "valid_action_mask_sha256": "3c87b9fd11393fe5a2173daacba9580983848756feaa719abddfd101c3e6baba",
+            "window_id": "task4-64-990-10974"
+          },
+          "unexecuted": {
+            "defined": true,
+            "interval": [
+              16,
+              32
+            ],
+            "normalized_rmse": 0.8424976259725245,
+            "squared_error_sum": 261.2072279151171,
+            "valid_scalar_targets": 368,
+            "weighted": false
+          }
+        }
+      ]
     }
   },
   "limitations": [
-    "Interim snapshot: KI and joint ten-window action inference are not complete.",
+    "Interim snapshot: FM and joint500 and their ten-window action probes are complete; KI500 remains pending. Training-log statistics were captured at training_observed_at.",
     "No new optimizer updates or simulator controls were issued by this summary.",
     "Raw sampler bytes match after only a stage-label substitution; this does not certify training pixel or RNG identity.",
     "Norms are total pre-clipping rank0 norms; no per-loss gradient directions or module-specific update ratios were measured.",
     "Clipping coefficients are not equivalent to AdamW learning-rate multipliers.",
     "All ten action windows are repeatedly inspected diagnostic states, not a blind success-rate test."
-  ]
+  ],
+  "training_observed_at": "2026-09-14T08:21:21.578414+00:00"
 }
