@@ -26,6 +26,8 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 16:19更新：** 双路线根`/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913`中，`joint_a4_fulltrain_v3/formal/checkpoints/step_500.pt`已完整验收（SHA `e1a67647570ae0706503625b0891086e1a15474e335177aed6b44a35553b9fd5`），对应eval/inspection均已写出；`m04_actions_fm_v1/result.json`真实完成十窗（`d3502794…`），原两PID退出。现有44255a4的`git_worktrees/m04_actions_20260914`已唯一启动joint原十窗1324567；输出`m04_actions_joint_v1`与同级`.launch.json`/`.launch.log`，结果待验，不重做FM/CPU门。KI原1031803/4129539实际训练，marker4129562/CoT220792等待；活跃源不热pull。
+
 **2026-09-14 13:05最新：** `fm_action_control_v3`13:02:59完整500验收完成、旧4092082/4092140退出；最终权重SHA `efce4dfe232f85ac18f7fca66b562360ba23d839f3f74748f658b5911b5c33f9`，固定80=0.19756705752806739。首个`m04_actions_fm_v1`于13:04:38启动410326，使用原44255a4的`m04_actions_20260914`，同级`.launch.json`/`.launch.log`为启动证据；十原状态/0训练/仿真，结果待验。此源现活跃，不可pull；不要重复启动。
 
 **2026-09-14 12:59已完成：** `git_worktrees/action_groups_20260914`固定64e9ff8/51 CPU；`dual_track_fm_ar_20260913/fm_saved_action_groups_v1`保存十原目标/40已有预测的组误差，358858及子进程已退出，result SHA `3669ad81ba2b2fe66fc35cef0df8d9c132312ebfe96f08abd84fb04f6397edc1`。0新模型调用/训练/仿真；完整run保留，轻量报告已入docs，不重复此诊断。
