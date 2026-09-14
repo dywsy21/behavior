@@ -1,5 +1,22 @@
 # AR marker行训练：阶段证据
 
+## 最新：最终十窗口内容验收（2026-09-14 19:08北京时间）
+
+原A4父权重重训marker500的十窗口自由AR验收已完成，result SHA `831cbd40586ba5c1fca9481485072fe964030c46b3cc9f84c47ef32f6eb64330`。[逐窗/机器摘要](results/2026-09-14-ar-marker-actions.json)。source81810be/42 CPU，2021126已退出，原10生成预算用完；0新FM/teacher encode/训练/物理。每条60动作tokens＋终止248044，均原自由生成、实际AR、8组完整，不是静态schema强制，也不是任务SR。完整1140状态/192 LoRA/2 marker逐位恢复passed（receipt SHA `140e70e4e667b14d30ec5081e19382e4fdbdb1493f218aedb6e72a986f837d36`）。
+
+十条来源、实际像素/本体/mask均与已完成M04 FM十窗逐项匹配；对照动作与原A4缓存均复算目标/有效支持，不额外生成。以下按SSE/有效scalar合并，越低越好；全10有效，无失败筛选偏差。短train窗口的有效长度保留，不补到16。
+
+| 诊断划分/区间 | 有效scalar | marker AR500 | 同入口FM500 | A4缓存参考 |
+| --- | ---: | ---: | ---: | ---: |
+| train前0:16 | 1403 | 0.8206035 | 0.4470648 | 0.4525187 |
+| heldout前0:16 | 1840 | 1.1197821 | 0.8818891 | 0.9016779 |
+| train后16:32 | 1104 | 0.7751956 | 0.6300357 | 0.6505368 |
+| heldout后16:32 | 1840 | 1.2282899 | 0.9744828 | 0.9909080 |
+
+前段AR只在train_task1、heldout_task2、heldout_task4三窗胜FM，其余七窗更差；heldout前段合并误差高26.98%。因此格式学习有实际进展，**内容尚未总体胜出，本marker候选不升默认、不据个别好窗扩物理或追加5000**。这不是完整成功率，不是否定所有AR或证明marker单因素因果（本配方与旧AR另有eager/fused CE差异）。下一原native CoT/其余FM方法继续，marker这十窗不再重跑。
+
+## 训练终点与历史阶段证据
+
 2026-09-14 18:56北京时间更新，Codex / AR-01。**正式500已完整完成，动作配对/方法验收仍待做。** run `robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/ar_a4_marker_fulltrain_v3`，source9f26b45；原spec `9401ca0c526853e756e7f44b5a7fdf6879346cef5dfc96509f84b8d1ea897bd0`。从原A4独立训练LoRA＋8行共享marker delta，纯AR/无FM更新，不叠静态schema强制解码；不是原生task-only或CoT那两条路线。
 
 最终500/8000抽取/193 Adam/冻结及完整模型优化器四rank RNG回读passed；checkpoint `3801388d71381c4cd586dac4bc19b07164e8922b8de6b5ea869bdcc52a56b52b`，inspection `b848f38026e5583f0cfa4d3471cd8647ed0eddb70a36a366617a5e5f73ce43a4`；未实测新进程续训。原固定80 CE4.619393786787986、action4.696353414654732、text/boundary0.0018457102428556028，FM仅参考0.19695782312192023，eval SHA `36a9fc0947e285d828f42e683aab962e6f3594302c44513830e6e6a2753c619f`。原五诊断自由动作全部完整/source AR，task0–4前段RMSE依次0.9996753931、1.7443532944、1.0976165533、1.0016080141、0.1395004243。**结构5/5不是成功率，不能据此部署**；与旧FM未核实同实际像素，不先写严格内容胜负。以下300/200保留为历史。

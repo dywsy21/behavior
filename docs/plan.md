@@ -12,6 +12,14 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-14 19:08（北京时间）：marker十窗完整结束，格式通过但内容未胜FM
+
+- **Codex / AR-01-A结果：** 唯一2021126已退出，`ar_marker_actions_v1`10/10自由完整、每条61 tokens/实际AR/无FM或teacher encode；全1140/192 LoRA/2 marker状态逐位恢复passed。实际十窗像素、本体、mask与M04 FM缓存全部匹配，原目标评分复算通过。result SHA `831cbd40586ba5c1fca9481485072fe964030c46b3cc9f84c47ef32f6eb64330`，机器摘要见[结果](experiments/results/2026-09-14-ar-marker-actions.json)，原完整动作留服务器。
+- **结论/停止：** 前0:16合并RMSE，train AR0.8206035 vs FM0.4470648；heldout AR1.1197821 vs FM0.8818891（约差26.98%），仅train_task1/heldout_task2/heldout_task4共3/10窗更好，后段也更差。修复格式不等于内容/任务成功；本marker候选不升默认、不据个别窗追加物理或5000，不再重复这十生成，不据此否定所有AR。CoT原220792已正式2032144，smoke5/80/192 Adam及全保存passed（12ae130c…）；EMA/tail原等待。
+- **下一真实执行：** M-03容量源a077cac新16 CPU passed（0.14s），正执行原2checkpoint/192对/CPU-only审计，结果待验；不重做42/299/264测试。继续原CoT→EMA→tail及容量/梯度依据、有效兼容方法与最终交付，goal仍未完，无新增SR。
+
+19:10容量入口修正：首次只读审计在读A4配置前停止，原因是误用新probe的`formal/config.yaml`，原Hydra保存路径实际为`formal/.hydra/config.yaml`（既有尾端报告已记录SHA）。此时0checkpoint分解/无输出/无策略或更新；已修精确路径并增加路径回归，先新固定源CPU后仅继续尚未执行的原2权重预算。原marker十窗已完成不重做，训练源不热改。
+
 ### 2026-09-14 19:03（北京时间）：M-03容量适用性只读审计预登记
 
 - **Codex / M-03-R0：** 已只读确认实际FM配置为r8/alpha16/dropout0.05、7类目标投影、192 LoRA状态完整恢复；不是按helper默认dropout0猜配方。原恢复helper SHA `dd879250e0165786be8f87c30e2299255deef411c1df77333c66e19df1e9ad0f`严格拒绝不匹配形状，因此直接把r改16不能沿用当前A4完整恢复门，且alpha/r缩放必须保持。

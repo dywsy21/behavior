@@ -20,6 +20,11 @@ FM = BASE / "fm_action_control_v3/formal/checkpoints/step_500.pt"
 FM_SHA = "efce4dfe232f85ac18f7fca66b562360ba23d839f3f74748f658b5911b5c33f9"
 
 
+def parent_config_path(checkpoint=PARENT):
+    # A4 was produced by the original Hydra trainer, not the newer probe.
+    return Path(checkpoint).parents[1] / ".hydra/config.yaml"
+
+
 def low_rank_spectrum(a, b, *, scaling):
     import torch
     if (a.device.type != "cpu" or b.device.type != "cpu" or a.ndim != 2 or b.ndim != 2
@@ -102,11 +107,11 @@ def main():
     config = OmegaConf.to_container(cfg, resolve=False)
     if config.get("r") != 8 or config.get("alpha") != 16 or config.get("dropout") != .05:
         raise RuntimeError("Actual saved LoRA recipe changed")
-    parent_config_path = PARENT.parents[1] / "config.yaml"
+    parent_config = parent_config_path()
     parent_config_sha = "4d45b4c2ae8872b8e4a88916c4143d922b8cf0e76eedaa6a4116d473d9ef2483"
-    if sha(parent_config_path) != parent_config_sha:
+    if sha(parent_config) != parent_config_sha:
         raise RuntimeError("Original A4 saved config changed")
-    parent_lora = OmegaConf.to_container(OmegaConf.load(parent_config_path).model.model_arch.low_vlm_lora,
+    parent_lora = OmegaConf.to_container(OmegaConf.load(parent_config).model.model_arch.low_vlm_lora,
                                         resolve=False)
     if parent_lora != config:
         raise RuntimeError("Parent/control LoRA scaling or target configuration differs")

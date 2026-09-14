@@ -6,6 +6,11 @@ import torch
 import audit_lora_capacity as audit
 
 
+def test_original_a4_uses_hydra_config_not_the_new_probe_layout():
+    assert str(audit.parent_config_path()) == (
+        "/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912/formal/.hydra/config.yaml")
+
+
 @pytest.mark.parametrize("rank", [1, 2, 8])
 @pytest.mark.parametrize("zero", [False, True])
 def test_skinny_qr_matches_direct_small_matrix_svd_and_leaves_inputs_rng_unchanged(rank, zero):
