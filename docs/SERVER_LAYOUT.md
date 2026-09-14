@@ -26,6 +26,8 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 19:30重要更正：** 以下“CoT2032144/EMA1707751/tail1820879活跃”为19:17以前快照。原CoT在19:18:02被账号ssy手动kill进程组，19:18:07写failed；正式最后39/624抽取、没有`formal/checkpoints`。后继EMA/tail各因未完成前驱退出、0更新，原source/worktree仍保留，不能把它们当正在排队。事故证据/恢复边界见`docs/experiments/2026-09-14-cot-external-stop.md`；三份v1 run与status/日志不覆盖，不重启旧服务3543247。协调GPU使用前不提交CoT替代轮或恢复EMA/tail；现有已完成marker/FM/LoRA审计结果全部保留。
+
 **2026-09-14 19:17更新：** `dual_track_fm_ar_20260913/lora_capacity_a4_fm500_v1/result.json`只读审计已完成（SHA `0bb9958df841577b77285c115119f421d73786a567cf8e06f5213e45a370b06e`，2权重/192对/0神经与训练）；`git_worktrees/capacity_audit_20260914`最终固定e50e7b5/17 CPU，CPU任务已退出，不再重跑。a077cac仅是此前错误配置路径的历史入口；原A4实际配置在`overnight_a4_20260912/formal/.hydra/config.yaml`，SHA4d45b4c2…。新容量训练尚未登记/启动；原CoT2032144/EMA1707751/tail1820879活跃源不能pull。
 
 **2026-09-14 19:08更新：** `dual_track_fm_ar_20260913/ar_marker_actions_v1/result.json`完整十窗结束（SHA `831cbd40586ba5c1fca9481485072fe964030c46b3cc9f84c47ef32f6eb64330`），2021126退出；该完整输出/原动作留服务器，轻量摘要已在docs/experiments/results。所有10自由格式正确但总体动作误差未胜FM，无marker新物理视频。原CoT220792已正式2032144，source d114581仍活跃不能pull，smoke权重SHA `12ae130c87d73525c4269ca6c9fe6684ad94aff345a339db68ffb3ed8cfbad1a`；EMA/tail维持原等待。新`git_worktrees/capacity_audit_20260914`固定a077cac/16 CPU，仅用于2权重/192对LoRA只读审计、无训练；结果尚待验，不重复启动。
