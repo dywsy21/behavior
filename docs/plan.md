@@ -12,6 +12,29 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-14 17:46（北京时间）：唯一EMA对照已排队，继续原marker→CoT→EMA
+
+- **Codex / M-03-E真实提交并核验：** `fm_trainable_ema_v1`于17:45:33启动1707751，17:46实查argv/状态为`verified_live_dependency`，精确等待原CoT220792/ticks334478266，0GPU/0更新。source `d28581a9b0bc68d7740adf875b8493fbea392cc8`、spec `d195fd580899e5d947df5daa8d768d6be44315ca61a7c441beab159e2d8fd2b7`、launch `f9fb4d947c1648b8726a0e8650caefb4225ba540e7bc905bdf3bfa12b31f78ef`。原A4/纯FM、新Adam、5步四卡保存门→独立500、online/EMA配对，264 CPU通过；[预算与机器证据](experiments/2026-09-14-ema-screen.md)。**不要在续接时重新提交EMA、重复其CPU门或把等待写成训练完成。**
+- **当前明确续接位置：** marker4129562/正式1563012仍训练（最近125/500；100点自由0/5完整）；CoT220792仍等marker；新EMA1707751只排在CoT之后。下一验收marker200/500及CoT真实接续，再看EMA原5/500与还原/显存门；不重复已完成M-01/M-02/M-04、缓存动作或视频审核。容量/独立日程与有效组合的选择仍未完，不因排队或CPU通过标goal完成。
+- **代码/资源边界：** 最新EMA源只在feature、独立worktree，代码合主线仍待队友独立review。旧9f26b45/d114581源完全未改；未启动新的控制臂、物理、数据构造/清理或5000长训。计划/结果正在仅文档同步main，后续干净协作clone可ff，三处活跃源码均不得热pull。
+
+### 2026-09-14 17:42（北京时间）：EMA集成CPU通过；marker100仍未学全动作组
+
+- **Codex / M-03-E：** ee970b0独立`git_worktrees/ema_screen_20260914`实际257 CPU passed（3.03s），涵盖新EMA状态/还原/独立配方/前驱门及旧action/CoT/恢复回归。实际原A3 audit的group_name_lists、checkpoint extra_state接口也已核对，未假定不存在的接口。再补一项加载真实模型前的每rank空闲显存门：55% allocator上限之外额外保留1GiB，读取实际共享卡余量，不停止旧服务；此小修须新源7项内存门后才提交队列，当前尚无EMA进程/GPU更新。
+- **Codex / AR-01新阶段证据：** marker固定80/100 CE=5.52621591091156（action=5.6132445574，text/boundary=0.3045315138），eval SHA `12082a24442df7d0b2368974b40fafeef1b73927b2ae48cfb8f0d98920e5256a`；五task自由0/5完整。token长度43/300/64/46/46，现均开始输出body0，但task1重复body0到300上限，其他仍缺残差层或夹爪，不能据CE低或body出现宣布可部署/AR有效。原训练101/500后继续，CoT仍原队列，不重跑生成或追加截断上限。
+
+17:45真实续记：最终源d28581a在已结束CPU的独立`ema_screen_20260914`安全ff更新，264 CPU passed（2.90s），包含新增7项显存边界；源已feature push。实查唯一EMA输出未创建，原CoT220792/marker4129562真实存活，CoT spec SHA精确匹配。现在仅提交预登记的一项`fm_trainable_ema_v1`等待该CoT完成，当前启动回执尚待返回；不抢原队列、不启动新控制臂/5000/仿真。marker实际125/500，不再做旧M-04/CPU玩具重复验收。
+
+### 2026-09-14 17:31（北京时间）：接续M-03唯一EMA短对照，先实现完整状态/还原门
+
+- **Codex / M-03-E预登记：** M-04首筛已完成，不继续等待它或重做三臂。选择一项独立`fm_trainable_ema_v1`：原A4/新Adam、同950/50与seed41、原FM/全局clip/LoRA rank8/LR1e-5/50 warmup+cosine不变；EMA只跟踪全部可训练AE+LoRA参数，beta=0.99、每次成功optimizer后一次、更新前复制父权重，不深拷贝冻结骨干。原始在线权重与该轮EMA并列评估，不能把平滑的eval下降叫训练收敛加速。拟四卡5步保存门＋独立500，等待现有CoT完整验收，0新增数据/仿真，无自动重试或续5000；当前尚未实现/排队。[精确配方/预算](experiments/2026-09-14-ema-screen.md)。
+- **工程门/下一：** 先CPU检验时钟、完整保存恢复、异常时参数还原、在线Adam/RNG不受干扰；独立新Git源再验四卡真实显存及保存门。此方法不叠加刚写的分模块裁剪、日程/容量变化，不重做已完成EMA库标量小例子。源commit待实际提交填写，未把候选写成已有效。
+- **既有运行/同步：** marker正式初始80的FM=0.19694399407017044、CE=18.679780113697053，17:29实际44/500；CoT220792仍校验等待4129562，未重新排队。最新三M-04/30动作结论已以main文档74b9414 push，robo干净协作clone正在ff同步，活跃9f26b45/d114581不pull。
+
+17:36实现续记：已新增独立`trainable_parameter_ema.py`与CPU玩具回归，显式master FP32/FP64、514参数合同由后续真实模型核验，保存版本/完整shadow/更新时钟；评估上下文CPU备份并finally还原在线参数、对象不替换。语法/空白通过，正在固定独立Git源跑CPU/磁盘新进程恢复门；尚未接trainer/提交GPU训练，不能把代码存在当EMA效果。
+
+17:40实际续记：a49d7e3独立`git_worktrees/ema_cpu_20260914`的46 CPU用例已全部通过（1.78s），包括另一个真实CPU进程从磁盘恢复并继续更新、在线八次玩具Adam/梯度/RNG逐位一致；0真实policy/数据/仿真。后续接入代码已在本地独立完成：只允许唯一FM EMA run接既有CoT，训练后更新shadow、online/EMA分开原80、临时评估后真实逐位校验还原、完整shadow/时钟保存回读及55%单进程显存上限；尚未固定新源CPU验收或排队。旧marker/CoT源未改，main74b9414已ff到robo协作clone。
+
 ### 2026-09-14 17:16（北京时间）：M-04三臂500/30动作首筛完成，两个双监督配方不升级默认
 
 - **Codex / M-04-A真实完成：** KI十窗result SHA `8e5434b647bdf40117bf16abf5b950508941d9f85805c3a9b7e0c54c6ca6c29c`，1547266退出；完整1138/192逐位恢复passed，实际像素/本体/mask及原目标支持与FM、joint均逐项一致。三臂原30 FM生成已用完，0 AR/codec/新训练/仿真。KI heldout前0:16 RMSE=0.9060167，比FM 0.8818891高2.74%，比joint 0.9047233高0.14%；train前段约高1.23%，后段亦无改善。[三臂报告/数值](experiments/2026-09-14-joint-ki-screen.md)已更新，合并SSE/count复核通过。
