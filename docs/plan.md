@@ -12,6 +12,34 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-14 10:43（北京时间）：两FM候选500已验收；后四臂在参考一致性门停下，先定位不重跑已完成臂
+
+- **Codex / M-02，真实完成：** Beta于昨23:43、exec-weight于今01:34完成正式500，504 Adam/冻结不变/四rank RNG保存回读通过，实际权重SHA再次重算分别`05ea17bc…`/`101c4b32…`。全部四rank的500步采样回执与原control逐字相同，8000抽取/950轨迹/五task各1600；eval manifest/release/采样身份一致。最终原固定80分别0.1959505688/0.1977204083，对control0.1982012083低1.1355%/0.2426%；尚无新闭环/SR。[结果及完整曲线](experiments/2026-09-14-fm-method-screen.md)。
+- **M-04/AR-01，故障不是在训练中等待：** `fm_action_control_v2`实际5步smoke通过（`676d1a86…`），formal初始80为0.19694739675，较原A4参考差3.40e-6、超2e-6门限，01:49在0正式更新停止；逐窗核对79/80完全相同，仅`task4-74-990-2895`不同。joint/KI/marker因前驱失败退出、未进训练。10:36实际核查所有六supervisor/PID均不存在，不能再称仍排队；旧结果不改，先定位单窗输入/计算与数值差异，不以放大容差过门，然后只恢复尚未执行的原四臂预算。
+- **续接与资源：** 上一goal轮为实质进展（AR物理/人工复核完成并落盘），不是需重答的问答。此次fetch无上游新增，本地保留上轮未提交的自有审查/计划，未强pull；磁盘约461GiB可用、GPU1约75GiB可用，旧服务保留。先提交现有审查与本轮证据，补同步main/robo，再用新固定源验证修复；M-03/CoT/组合/闭环未完成，goal保持active。
+
+### 2026-09-13 22:44（北京时间）：原生AR局部视频已到本地，256控制/29视图复核完成
+
+- **Codex / AR-01，审查完成：** 本次视频/小回执已完整复制到本地被ignore的`artifacts/experiments/2026-09-13-native-ar-prefix-v1`，视频本地/远端SHA一致`e845f688…`；主agent人工查看17头部＋12腕部共29不同视图，另2高分辨率复看。新增只读审查脚本实际通过全256动作/16chunk/96历史锚点/18物理事件一致性，machine SHA `ce039f5c…`；新人工记录完成审查，不覆盖原不可变completion的pending历史。
+- **实际失败定位：** 手臂生成目标相对当前关节大多只有约0.002–0.003rad RMS，夹爪有开合却未对准radio，机身间歇移动/转向，**非持续原地打转**；实际输出→23D→前0:16→物理记录一致，排除了本轮丢动作组或跳5步。18个保存边界均未持有，不伪称每帧held都核验；256短预算未成功不是完整SR0%，也不是对A4的等预算比较。原生pilot三个自建进程已退出，旧服务/训练未动，不追加本回合。完整视频/限制/下一步见[局部评测审查](experiments/2026-09-13-native-ar-prefix-review.md)。
+- **并行进度/同步：** Beta正式3141061仍活跃，采样已进入187附近，固定80的100步结果已出，正在核对与control的真实采样前缀/评估身份；后五臂仍等待。恢复本轮fetch后feature无新增，保留自己的dirty计划与审查脚本，未强pull或热改活跃7572ce2源；下一安全点提交并同步文档。
+
+### 2026-09-13 22:29（北京时间）：原生AR局部256控制已跑完，未抓住；转入视频/物理人工审查
+
+- **Codex / AR-01，实际完成而非成功：** 原生task500/schema的唯一回合完整执行448原prefix＋256模型控制、16实际请求、18评估事件，末态IN_PROGRESS、官方未终止；`actual_rollout/collection_result.json`SHA `5a200786ea42317c97327431eed3cbf794355be00eac53b7bf4fa38fb426757d`。没有GRASP/物理真值进入actor；3191511/3191531/3196694均已退出，仅自建服务由owner正常终止（-15），旧服务/训练未停。还不能把短预算未完成称完整任务0% SR，也不追加回合。
+- **人工审查/本地交付：** `rollout.mp4`SHA `e845f688b7d7a45a1805261ff0af0d707f38cb59334e4b39752efd47c768e5d0`，约30MiB的该次rollout及小回执正在复制到被ignore的`artifacts/experiments/2026-09-13-native-ar-prefix-v1`，不是源码同步；全16 chunk/18事件/物理、动作一致性及人工抽帧尚待审。实际chunk9 yaw约+0.006，不能从早先离线单chunk的-0.30直接断言本轮持续原地打转，须完整轨迹检查。
+- **M-02：** Beta已过正式100（最新约106），原固定80 step100已产出；500/方法最终结论尚未完成，后五臂仍等待，不热改或追加预算。
+
+### 2026-09-13 22:23（北京时间）：原生AR实际socket/资源门通过，唯一局部仿真已启动
+
+- **Codex / AR-01：** 私有服务3191531完整载入native500，原生路由的实际socket identity门passed、0额外生成/未占用唯一session；25GiB剩余GPU门通过。仿真3196694于22:20:39启动，已导入场景/机器人并进入原官方重置/实例加载流程，尚未取得256模型控制/结果；旧训练和六服务未改。`ar_native_prefix_pilot_v1/{service.launch.json,socket_gate.json,rollout.launch.json,rollout.log}`为证据，不把Kit加载期预期contact-view警告当作结果或失败。
+- **M-02配方核对：** 实查原control和Beta正式`.hydra/overrides.yaml`均为`model.num_workers=4`，fb40145原始control源码也是4；不存在本轮把control workers0与Beta workers4混作单因素比较的事实。原80评估不变，后续仍需核对真实来源顺序和指标，不能由相同来源推断增广像素逐位相同。
+
+### 2026-09-13 22:21（北京时间）：290 CPU通过，有界原生AR物理作业已提交
+
+- **Codex / AR-01：** 新独立`git_worktrees/ar_native_prefix_pilot_20260913`固定989a575，实际290 CPU tests passed（1.74s），包括真实原frozen window只减max_chunks、不变448 prefix/语义/env0的检查。`ar_native_prefix_pilot_v1`于22:19:21提交3191511，manifest SHA `eb7f99d66accbcf3128984717f0ce5bf964bca79e63a680622908d8b15725afd`；明确原生500/schema/task-only/16 chunk上限。
+- **真实阶段/边界：** 当前专用服务初始化，尚不能报已跑256或成功率。先完整权重/实际socket身份/剩余GPU25GiB门，再启动唯一仿真回合；不改旧服务/正在训练的7572ce2队列。main aaf3f2e已同步最新计划，原生单次神经→桥接proof已完成，下一验真实物理历史/视频及失败原因。
+
 ### 2026-09-13 22:17（北京时间）：有界原生AR服务/局部仿真接线完成，待真实CPU验收
 
 - **Codex / AR-01，代码实质进展：** 新`native_ar_prefix_client.py`独立task-only协议，复用原每物理步捕获历史，但不读取/发送评估器传入的GRASP对象；新`serve_native_ar_prefix.py`只接受一次seed17 session/最多16神经尝试，错误输出不commit历史，不接受额外teacher字段、旧FM路由或重置追加预算。实际每chunk仍经原观察→AR→原inverse/official23，保留完整生成/trace。

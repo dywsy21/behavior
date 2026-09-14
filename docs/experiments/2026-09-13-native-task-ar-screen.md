@@ -30,4 +30,8 @@ Owner Codex，五任务方法筛选，不是50任务正式训练。run：`/mnt/s
 
 ## 后续
 
-保留已声明的8行marker原切分候选与独立schema变体；[同窗口A4-AR诊断](2026-09-13-ar500-schema-diagnosis.md)已经表明强制格式后仍有动作内容误差。先完成真实观察→模型→23D逆变换和有限局部闭环，不能把工程门或总CE下降当成功率。原CoT输入/两临时更新门已做，正式CoT训练尚未放行；本轮不自动加5000步/全任务训练，也不从原生500覆盖当前A4-FM部署。
+22:23更新：原生观察v3十状态通过后，0701fd1的`ar_native_actor_wire_probe_v1`一次真实神经/schema→原raw32×23→原msgpack检查complete，result SHA `2570ba7d943b39a05953bc7bcc69b216709955dafb2d3eda6575e45062d82c75`。完整1138/192、原生词表/统计/0:16全部核验，格式强制覆盖5次原argmax；没有teacher/技能/物理真值进入actor，0优化与仿真，不能当成功率。其首chunk raw yaw约-0.30，是否持续转动须靠真实闭环判断。
+
+22:44更新：`ar_native_prefix_pilot_v1`固定989a575/290 CPU，实际socket通过后已完成同train121/instance138、env0/policy17、原448prefix＋16 chunks/256模型控制。末态IN_PROGRESS、未抓住，所有自建进程退出；0训练/新数据release，GRASP与oracle未进入actor。全动作/历史/物理核验和Codex人工29视图审查完成，视频已复制本地，见[独立物理复核](2026-09-13-native-ar-prefix-review.md)。主要表现是手臂近保持、夹爪未对准、机身间歇运动；不是持续原地打转。不能将此短预算与A4的464步局部成功当等预算胜负或完整任务SR。
+
+保留已声明的8行marker原切分候选与独立schema变体；[同窗口A4-AR诊断](2026-09-13-ar500-schema-diagnosis.md)已经表明强制格式后仍有动作内容误差。真实观察→模型→23D逆变换及本次有限局部闭环已完成，不能把工程门或总CE下降当成功率，不延长这份已诊断策略。原CoT输入/两临时更新门已做，正式CoT训练尚未放行；本轮不自动加5000步/全任务训练，也不从原生500覆盖当前A4-FM部署。

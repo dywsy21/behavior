@@ -26,6 +26,12 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 10:43实际状态覆盖以下旧记录：** 六个恢复supervisor均已退出。`fm_beta_stratified_v2`与`fm_exec_weight2_v2`正式500完成，checkpoint SHA分别`05ea17bc…`/`101c4b32…`；`fm_action_control_v2`smoke5通过，formal仅到`eval_step_0.json`即参考值断言失败、0正式更新；joint/KI/marker未训练即前驱失败退出。旧7572ce2源及失败目录都保留，不在旧run覆盖/重启；后续修复用新Git固定源，准确新run另记。新FM报告见[结果](experiments/2026-09-14-fm-method-screen.md)，约461GiB磁盘可用；旧六服务不动。
+
+**22:44最新状态：** `ar_native_prefix_pilot_v1`唯一448＋256控制已完成，3191511/3191531/3196694全部退出，8785私有服务已正常停下；完整结果SHA `5a200786…`，视频SHA `e845f688…`。约36MB结果已复制本地`/home/wsy/behavior/artifacts/experiments/2026-09-13-native-ar-prefix-v1`，`actual_rollout/rollout.mp4`可看，`review/`有全动作/物理校验及29视图人工记录；[摘要](experiments/2026-09-13-native-ar-prefix-review.md)区分短测未成功与SR。原wire单次3140666也早已complete退出；两个结束源保留证据，不再写成活跃服务。只有恢复队列7572ce2及其Beta正式3141061正在训练/等待，不得热pull；旧六服务仍保留。
+
+**22:21新实际物理作业：** `git_worktrees/ar_native_prefix_pilot_20260913`固定989a575/290 CPU passed；双路线根`ar_native_prefix_pilot_v1`于22:19:21提交3191511，manifest `eb7f99d6…`，端口8785仅loopback，native500＋schema＋task-only。当前服务初始化，后续socket/资源门通过才进唯一448prefix＋最多256模型控制；实际进度看`service.log`、`socket_gate.json`、`rollout.launch.json`、`actual_rollout/collection_result.json`，不是已完成结果。全部旧服务保留、该源码不可热pull。
+
 **22:02续记：** `fm_beta_stratified_v2/smoke/checkpoints/step_5.pt`已实际保存/回读（`5bc38337…`，504 Adam/冻结不变/80来源），正式500尚待验。新`git_worktrees/ar_native_actor_wire_20260913`固定0701fd1/274 CPU通过；双路线根`ar_native_actor_wire_probe_v1`于22:01:12启动3140666，日志为同级`.launch.log`，原native500/一次生成/0训练仿真。该独立源正在使用，不热pull；旧六服务/旧v1证据保留。
 
 **21:53六个显式恢复run：** 固定源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/method_queue_recovery_20260913`（7572ce2，267 CPU passed），已活跃，禁止热pull。run仍在双路线根，原v1失败保留，均新建v2、原A4独立5+500、不追加formal预算。Beta在真实gate，后五个已核验等待/0更新；阶段见各自status.json、日志与launch.json。
