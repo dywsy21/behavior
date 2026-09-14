@@ -1,0 +1,23 @@
+# AR marker行训练：阶段证据
+
+2026-09-14 18:10北京时间，Codex / AR-01。**当前正式训练最近264/500，不是最终权重/方法验收。** run `robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/ar_a4_marker_fulltrain_v3`，source9f26b45；原spec `9401ca0c526853e756e7f44b5a7fdf6879346cef5dfc96509f84b8d1ea897bd0`。从原A4独立训练LoRA＋8行共享marker delta，纯AR/无FM更新，不叠静态schema强制解码；不是原生task-only或CoT那两条路线。
+
+## 当前结果：格式开始学到，动作还不能据此判好
+
+原固定80的CE从step0的18.6797801到100的5.5262159、200的4.9585251。100→200的自由完整动作从0/5到2/5：task1的GRASP和task3的CLOSE_DOOR各生成完整8组，共60个动作tokens＋1个终止符；实际`selected_action_source`均为AR，无FM或GT补组。
+
+| 原留出诊断窗口 | step200生成 | 有效执行0:16的归一化RMSE |
+| --- | --- | ---: |
+| task0-00-190-289 / GRASP | 43 tokens；缺右臂/下身残差层 | 不计有效动作分数 |
+| task1-16-390-1007 / GRASP | 61 tokens；8组完整 | 1.5051903725 |
+| task2-32-590-5263 / CLOSE_DRAWER | 91 tokens；重复body1、未通过完整动作检查 | 不计有效动作分数 |
+| task3-48-790-9174 / CLOSE_DOOR | 61 tokens；8组完整 | 1.0019207001 |
+| task4-64-990-10974 / CLOSE_DOOR | 70 tokens；重复body1、结构非法 | 不计有效动作分数 |
+
+200点action-token CE=5.0410959482，text/boundary CE=0.0043092482。结构/边界学习不能冒充动作内容正确，更不能把2/5写成任务success rate。两条已解码动作的误差仍较大；未用仅这两条有效子集的均值与FM全五条比较，也没有把失败三条填零/自动补动作。当前无marker分支的仿真结果。
+
+原完整文件分别为`formal/eval_step_100.json`（SHA `12082a24442df7d0b2368974b40fafeef1b73927b2ae48cfb8f0d98920e5256a`）与`formal/eval_step_200.json`（`059b0b4d07edf8384c3c84c2d5c5fa53b12e0bd46e36820f8adedfe21b5fc217`）。这些是已发生的原评估回放读取，本次没有新增生成、teacher forcing、截断上限或训练步数。
+
+## 后续
+
+继续原500及完整保存门，核对300/500自由完整性与内容后再决定严格有限动作/闭环验收；不部署中途权重、不因出现2/5就追加5000。CoT220792仍按原依赖等待marker4129562；EMA、尾端LR也各有独立源/父权重/预算，不重排或混称同一个模型。

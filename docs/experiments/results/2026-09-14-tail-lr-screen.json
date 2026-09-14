@@ -1,0 +1,72 @@
+{
+  "owner": "Codex / M-03-S",
+  "observed_at": "2026-09-14T18:09:21+08:00",
+  "state": "verified_live_dependency",
+  "source_commit": "2300c50ac83c47f2e8df01f1691e514383bbbc71",
+  "source_root": "robo:/mnt/sdc1/robodojo/behavior_dev/git_worktrees/tail_lr_screen_20260914",
+  "source_clean_verified": true,
+  "run": "robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_tail_lr_v1",
+  "spec_sha256": "55bdce00df92b30b8d75dd3b465134e4dc9664907037de64a558cc22a55932d4",
+  "launch_sha256": "6f4ca2522dd63e75048a4659fd439c5e9f4c63bead4bc6bc139353233d176f32",
+  "launch_time": "2026-09-14T18:07:06.457518+08:00",
+  "supervisor_pid": 1820879,
+  "process_argv_verified": true,
+  "gpu_allocated": false,
+  "actual_policy_updates": 0,
+  "policy_training_completed": false,
+  "method_effectiveness_verified": false,
+  "dependency": {
+    "run": "fm_trainable_ema_v1",
+    "supervisor_pid": 1707751,
+    "process_start_ticks": 336359196,
+    "spec_sha256": "d195fd580899e5d947df5daa8d768d6be44315ca61a7c441beab159e2d8fd2b7",
+    "launch_sha256": "f9fb4d947c1648b8726a0e8650caefb4225ba540e7bc905bdf3bfa12b31f78ef",
+    "initializes_from_dependency_weights": false,
+    "must_verify_full_ema_state": true
+  },
+  "a4_parent_cpu_metadata_read": {
+    "checkpoint": "robo:/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912/formal/checkpoints/step_2500.pt",
+    "expected_previously_verified_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+    "full_checkpoint_sha_recomputed_in_this_metadata_read": false,
+    "step": 2500, "optimizer_group_count": 6,
+    "each_saved_current_lr": 0.0000010000000000000002,
+    "each_initial_lr": 0.00001,
+    "scheduler_last_epoch": 2500, "scheduler_step_count": 2501,
+    "betas": [0.9, 0.95], "group_weight_decays": [0.03, 0.03, 0.03, 0.0, 0.0, 0.0],
+    "config_sha256_recomputed": "4d45b4c2ae8872b8e4a88916c4143d922b8cf0e76eedaa6a4116d473d9ef2483",
+    "cpu_mmap_only": true, "policy_instantiated": false, "optimizer_updates": 0
+  },
+  "cpu_validation": {
+    "passed": 299, "failed": 0, "seconds": 4.05, "new_tests": 35,
+    "cuda_visible_devices": "", "threads": 2,
+    "actual_500_scheduler_lrs_verified": true,
+    "default_toy_parameters_adam_and_curve_bitwise_unchanged": true,
+    "cpu_disk_resume_200_to_500_verified": true,
+    "existing_ema_queue_and_shadow_completion_gate_verified": true,
+    "actual_policy_or_gpu_tested": false,
+    "new_policy_forwards": 0, "new_policy_optimizer_updates": 0,
+    "targets": [
+      "tests/test_tail_lr_method_screen.py", "tests/test_trainable_parameter_ema.py",
+      "tests/test_ema_method_screen.py", "tests/test_action_method_trainer.py",
+      "tests/test_action_training_policy.py", "tests/test_ar_training_methods.py",
+      "tests/test_reference_gate_recovery.py", "tests/test_method_queue_recovery.py",
+      "tests/test_action_gpu_probe_recipe.py"
+    ]
+  },
+  "files_sha256": {
+    "scripts/experiments/tail_lr_method_screen.py": "201eef26b2f51603cd3f9b72ab855f95544034cfa47ffab2e5510825bddedf43",
+    "scripts/experiments/train_action_method_probe.py": "27a0fbe040ef06a41847bb0b14597dbc0eeb4e63c90ff3f910f44ce1314512a1",
+    "scripts/experiments/ema_method_screen.py": "b9ef493ed3522c9f509079c7b136fda1b3113b2859a5d4377821352ef2d06eb2",
+    "tests/test_tail_lr_method_screen.py": "d89992d282774d743305af35c4881b09c9fafb83c230f361b3f7d30cb03fe5a1"
+  },
+  "declared_budget": {
+    "smoke_updates": 5, "fresh_formal_updates": 500, "world_size": 4,
+    "global_batch_size": 16, "formal_train_draws": 8000, "training_seed": 41,
+    "learning_rate": 0.0000010000000000000002, "warmup_steps": 0, "lr_min_ratio": 1.0,
+    "fresh_adam": true, "restore_parent_adam": false, "use_ema": false,
+    "new_action_generation_budget": 0, "new_simulator_controls": 0, "new_training_data": 0,
+    "automatic_retry": false, "automatic_deployment": false
+  },
+  "next": "Preserve marker -> CoT -> EMA -> tail queue. Verify original EMA500 full-state completion before this run's own five-update save gate and independent A4 500. Do not queue again.",
+  "success_rate_claim": false
+}

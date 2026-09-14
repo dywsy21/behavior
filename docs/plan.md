@@ -12,6 +12,17 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-14 18:10（北京时间）：尾端日程唯一排队已核验，四候选按原依赖继续
+
+- **Codex / M-03-S真实提交：** `fm_tail_lr_v1`于18:07:06启动1820879，18:09实查PID/argv/`verified_live_dependency`，精确等待EMA1707751/ticks336359196，0GPU/0更新。source `2300c50ac83c47f2e8df01f1691e514383bbbc71`、spec `55bdce00df92b30b8d75dd3b465134e4dc9664907037de64a558cc22a55932d4`、launch `6f4ca2522dd63e75048a4659fd439c5e9f4c63bead4bc6bc139353233d176f32`；299 CPU/完整默认和尾端日程门通过。仍是原A4新Adam/5＋500，不继承EMA权重或叠EMA；[预算/机器证据](experiments/2026-09-14-tail-lr-screen.md)。**不要重复排队、再跑299 CPU或重做A4 optimizer读取。**
+- **续接入口：** marker4129562/正式1563012最近264/500；CoT220792→EMA1707751→tail1820879三个实际等待器依次接续，四处活跃源不能pull。下一看marker300/500完整自由生成与保存结果、CoT真实启动；EMA/tail仍须各自GPU/保存/500与动作效果验收，当前排队不等于方法收益。[marker阶段证据](experiments/2026-09-14-ar-marker-screen.md)覆盖100→200：格式0/5→2/5、非SR。
+- **剩余边界：** LoRA容量适用性/效果、必要任务梯度证据、AR内容/闭环、有效兼容方法及最终路线交付仍未完成，不缩成仅完成这两条队列。未追加物理/数据/5000，不重复已完成M-01/M-02/M-04或人工视频审查；代码feature已push，文档向main/robo协作clone同步，代码主线整合仍待独立review。
+
+### 2026-09-14 18:06（北京时间）：尾端日程299 CPU通过；AR marker200出现2/5完整自由动作
+
+- **Codex / M-03-S：** 2300c50独立`git_worktrees/tail_lr_screen_20260914`实际299 CPU passed（4.05s），含本次35项和既有EMA/AR/CoT/保存门；500个实际PyTorch预更新LR全部恒定父末值、默认曲线/玩具Adam逐位不变、200→500磁盘恢复及严格EMA前驱完整状态门均通过。0真实policy更新/仿真，新源已feature push；唯一tail输出尚未创建，正提交预登记5＋500等待原EMA，回执尚待核验，不重复已有控制臂或EMA。
+- **Codex / AR-01实质新证据：** marker固定80/200 CE=4.958525106310844（action=5.0410959482，text/boundary=0.0043092482），eval SHA `059b0b4d07edf8384c3c84c2d5c5fa53b12e0bd46e36820f8adedfe21b5fc217`。task1/3首次自由生成全部8组、各61 tokens含终止，实际为AR，前16归一化RMSE约1.5052/1.0019；其他三例仍缺残差层或重复body1。因此完整格式由100点0/5到200点2/5，但动作尚不佳，非2/5任务成功，也不宣称500已完成/直接部署。原训练18:03实际230/500，既有CoT/EMA仍原等待。
+
 ### 2026-09-14 17:58（北京时间）：M-03日程检查确认父权重已到低LR，准备唯一尾端日程对照
 
 - **Codex / M-03-S实证：** 上一goal轮为progress（EMA实现/264 CPU/真实排队）。本轮clean pull/fetch后实查marker/CoT/EMA四PID仍真实存活，不重启；另以CPU mmap只读A4-2500 checkpoint的optimizer/scheduler，六组当前保存LR均`1.0000000000000002e-6`、initial_lr均1e-5、last_epoch2500/_step_count2501。原config SHA仍`4d45b4c2ae8872b8e4a88916c4143d922b8cf0e76eedaa6a4116d473d9ef2483`。因此现有500筛选确实是新Adam＋重升峰值，不是原末段日程的连续恢复；这不证明退化根因，且部分动作误差改善，不能只靠FM均值判定。
