@@ -12,10 +12,18 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-14 17:46（北京时间）：唯一EMA对照已排队，继续原marker→CoT→EMA
+
+- **Codex / M-03-E真实提交并核验：** `fm_trainable_ema_v1`于17:45:33启动1707751，17:46实查argv/状态为`verified_live_dependency`，精确等待原CoT220792/ticks334478266，0GPU/0更新。source `d28581a9b0bc68d7740adf875b8493fbea392cc8`、spec `d195fd580899e5d947df5daa8d768d6be44315ca61a7c441beab159e2d8fd2b7`、launch `f9fb4d947c1648b8726a0e8650caefb4225ba540e7bc905bdf3bfa12b31f78ef`。原A4/纯FM、新Adam、5步四卡保存门→独立500、online/EMA配对，264 CPU通过；[预算与机器证据](experiments/2026-09-14-ema-screen.md)。**不要在续接时重新提交EMA、重复其CPU门或把等待写成训练完成。**
+- **当前明确续接位置：** marker4129562/正式1563012仍训练（最近125/500；100点自由0/5完整）；CoT220792仍等marker；新EMA1707751只排在CoT之后。下一验收marker200/500及CoT真实接续，再看EMA原5/500与还原/显存门；不重复已完成M-01/M-02/M-04、缓存动作或视频审核。容量/独立日程与有效组合的选择仍未完，不因排队或CPU通过标goal完成。
+- **代码/资源边界：** 最新EMA源只在feature、独立worktree，代码合主线仍待队友独立review。旧9f26b45/d114581源完全未改；未启动新的控制臂、物理、数据构造/清理或5000长训。计划/结果正在仅文档同步main，后续干净协作clone可ff，三处活跃源码均不得热pull。
+
 ### 2026-09-14 17:42（北京时间）：EMA集成CPU通过；marker100仍未学全动作组
 
 - **Codex / M-03-E：** ee970b0独立`git_worktrees/ema_screen_20260914`实际257 CPU passed（3.03s），涵盖新EMA状态/还原/独立配方/前驱门及旧action/CoT/恢复回归。实际原A3 audit的group_name_lists、checkpoint extra_state接口也已核对，未假定不存在的接口。再补一项加载真实模型前的每rank空闲显存门：55% allocator上限之外额外保留1GiB，读取实际共享卡余量，不停止旧服务；此小修须新源7项内存门后才提交队列，当前尚无EMA进程/GPU更新。
 - **Codex / AR-01新阶段证据：** marker固定80/100 CE=5.52621591091156（action=5.6132445574，text/boundary=0.3045315138），eval SHA `12082a24442df7d0b2368974b40fafeef1b73927b2ae48cfb8f0d98920e5256a`；五task自由0/5完整。token长度43/300/64/46/46，现均开始输出body0，但task1重复body0到300上限，其他仍缺残差层或夹爪，不能据CE低或body出现宣布可部署/AR有效。原训练101/500后继续，CoT仍原队列，不重跑生成或追加截断上限。
+
+17:45真实续记：最终源d28581a在已结束CPU的独立`ema_screen_20260914`安全ff更新，264 CPU passed（2.90s），包含新增7项显存边界；源已feature push。实查唯一EMA输出未创建，原CoT220792/marker4129562真实存活，CoT spec SHA精确匹配。现在仅提交预登记的一项`fm_trainable_ema_v1`等待该CoT完成，当前启动回执尚待返回；不抢原队列、不启动新控制臂/5000/仿真。marker实际125/500，不再做旧M-04/CPU玩具重复验收。
 
 ### 2026-09-14 17:31（北京时间）：接续M-03唯一EMA短对照，先实现完整状态/还原门
 

@@ -26,6 +26,8 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 17:46新队列：** `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/ema_screen_20260914`现在固定d28581a（264 CPU通过）并已用于活跃EMA等待器1707751，**不可热pull**；ee970b0是同目录较早已结束CPU检查的历史commit。唯一run `dual_track_fm_ar_20260913/fm_trainable_ema_v1`含`method_spec.json`（SHA `d195fd580899e5d947df5daa8d768d6be44315ca61a7c441beab159e2d8fd2b7`）、launch/status/supervisor.log；当前0GPU/0更新，等待CoT220792/ticks334478266。smoke/formal尚未创建，不重排；将来每阶段`ema/`保存配对评估，完整online+EMA+Adam同checkpoint，`ema_*_rank*.json`记录实际内存/影子/还原。原marker1563012真实训练、CoT原等待，旧9f26b45/d114581均不变。
+
 **2026-09-14 17:16更新：** `dual_track_fm_ar_20260913/m04_actions_ki_v1/result.json`真实十窗complete（SHA `8e5434b647bdf40117bf16abf5b950508941d9f85805c3a9b7e0c54c6ca6c29c`），1547266退出；三臂30动作已全部结束，不重复生成。marker原4129562已进入正式1563012（9f26b45），CoT220792仍等marker；这是训练中的后继，不是旧KI仍存活。完整结果/输入配对见docs的M-04报告，未启动该方法的模拟器。
 
 **2026-09-14 17:08更新：** 双路线根`ki_a4_fulltrain_v3/formal/checkpoints/step_500.pt`已完整验收，SHA `3efc6d1ab77cd02b01fa0a3db92262d522636fa2085e107dca04d7f3163e45ea`；原4129539/1031803退出，只读监控38073正常结束。`m04_actions_ki_v1`最后十窗17:07:41启动1547266，固定44255a4、同级`.launch.json`/`.launch.log`；尚无最终动作结果，不重复启动。marker4129562已进入smoke1543690，CoT220792仍等待；各活跃源不热pull。

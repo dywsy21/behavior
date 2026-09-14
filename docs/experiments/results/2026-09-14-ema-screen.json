@@ -1,0 +1,66 @@
+{
+  "owner": "Codex / M-03-E",
+  "observed_at": "2026-09-14T17:46:04+08:00",
+  "state": "verified_live_dependency",
+  "source_commit": "d28581a9b0bc68d7740adf875b8493fbea392cc8",
+  "source_root": "robo:/mnt/sdc1/robodojo/behavior_dev/git_worktrees/ema_screen_20260914",
+  "source_clean_verified": true,
+  "run": "robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_trainable_ema_v1",
+  "spec_sha256": "d195fd580899e5d947df5daa8d768d6be44315ca61a7c441beab159e2d8fd2b7",
+  "launch_sha256": "f9fb4d947c1648b8726a0e8650caefb4225ba540e7bc905bdf3bfa12b31f78ef",
+  "launch_time": "2026-09-14T17:45:33.892469+08:00",
+  "supervisor_pid": 1707751,
+  "process_argv_verified": true,
+  "gpu_allocated": false,
+  "actual_policy_updates": 0,
+  "actual_ema_updates": 0,
+  "policy_training_completed": false,
+  "method_effectiveness_verified": false,
+  "dependency": {
+    "run": "ar_native_subtask_cot_fulltrain_v1",
+    "supervisor_pid": 220792,
+    "process_start_ticks": 334478266,
+    "spec_sha256": "3dffcd78de30bff9d19c3e2b1658433bda29e0a215d4b48bf7630bf3d2d37863",
+    "launch_sha256": "3a069ce0e91f5af62d7e916d4d5972a179c03142cc83a6522fd722764c9bbfdb",
+    "initializes_from_dependency_weights": false
+  },
+  "cpu_validation": {
+    "python": "robo:/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python3.10",
+    "cuda_visible_devices": "",
+    "threads": 2,
+    "helper_first_version": {"commit": "a49d7e3", "passed": 46, "failed": 0, "seconds": 1.78},
+    "integration_first_version": {"commit": "ee970b0", "passed": 257, "failed": 0, "seconds": 3.03},
+    "final_source": {"commit": "d28581a", "passed": 264, "failed": 0, "seconds": 2.90},
+    "targets": [
+      "tests/test_trainable_parameter_ema.py", "tests/test_ema_method_screen.py",
+      "tests/test_action_method_trainer.py", "tests/test_action_training_policy.py",
+      "tests/test_ar_training_methods.py", "tests/test_reference_gate_recovery.py",
+      "tests/test_method_queue_recovery.py", "tests/test_action_gpu_probe_recipe.py"
+    ],
+    "toy_online_parameters_gradients_adam_rng_bitwise_unchanged": true,
+    "toy_new_cpu_process_disk_restore_and_continuation": true,
+    "actual_policy_new_process_resume_tested": false,
+    "actual_gpu_memory_tested": false,
+    "new_policy_forwards": 0,
+    "new_policy_optimizer_updates": 0
+  },
+  "files_sha256": {
+    "src/g05/utils/training/trainable_parameter_ema.py": "969b45c22560c6f2986f8c53bb9b24d1d6e3aa353d6155a7975f8deb8fa1ff43",
+    "scripts/experiments/ema_method_screen.py": "810efb9fc1c93101907116ecc01f637768a8b3f4cfed1dded3ac3f062099f6b7",
+    "scripts/experiments/train_action_method_probe.py": "71fcf675c5e544a1bb19c6390c5b8b18edfe829418848306de90cb4a55e254dd",
+    "scripts/experiments/action_training_runtime.py": "d86f10b79c2faca8c73f7f4dd6d4732813ac40f64c4acf1c01d6ccf5c159151e",
+    "tests/test_trainable_parameter_ema.py": "c5827c5a9dabf30abb0d9c1048348c6fa010c271e0ccddee33337467ca53bf20",
+    "tests/test_ema_method_screen.py": "8053de8ab9bdd2d8212bab738d65d3383a102f2454eb5d57bbe3286008e676bf"
+  },
+  "declared_budget": {
+    "smoke_updates": 5, "fresh_formal_updates": 500, "world_size": 4,
+    "global_batch_size": 16, "formal_train_draws": 8000, "training_seed": 41,
+    "ema_beta": 0.99, "ema_update_every": 1, "per_process_memory_fraction": 0.55,
+    "additional_free_memory_reserve_bytes": 1073741824,
+    "additional_formal_ema_evaluation_windows": 400,
+    "new_action_generation_budget": 0, "new_simulator_controls": 0,
+    "new_training_data": 0, "automatic_retry": false, "automatic_deployment": false
+  },
+  "next": "Preserve existing marker/CoT queue; after exact predecessor completion verify this run's 5-update full EMA save/restore and actual GPU memory gate, then independent A4 500. Do not queue again.",
+  "success_rate_claim": false
+}
