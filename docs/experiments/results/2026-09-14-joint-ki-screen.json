@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-09-14T08:27:05.873357+00:00",
+  "observed_at": "2026-09-14T09:07:43.472502+00:00",
   "owner": "Codex",
   "task_id": "M-04",
   "root": "robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913",
@@ -687,34 +687,35 @@
       "inspection_sha256": "250ab5425a1c8707a0f2f680030cb3fdb418159d5047d66bf6881bea5cf3b649"
     },
     "ki_a4_fulltrain_v3": {
-      "actual_updates": 295,
-      "train_log_sha256": "dbc0eb08f678c4e8634dd3ad5b33ddfe4dfbdea0f154710eb1f81eed4636947f",
+      "observed_at": "2026-09-14T09:07:43.472502+00:00",
+      "actual_updates": 500,
+      "train_log_sha256": "1d43faaebbe280f1bf81f453d0777bb0aad65086ba165d6e4c7bcb29270cb6b2",
       "last_row": {
-        "step": 295,
-        "loss": 6.94449257850647,
-        "ce_loss": 6.834250330924988,
-        "fm_loss": 0.11024215957149863,
-        "rank0_grad_norm": 1.5349023342132568,
+        "step": 500,
+        "loss": 6.177282154560089,
+        "ce_loss": 6.112079441547394,
+        "fm_loss": 0.06520270160399377,
+        "rank0_grad_norm": 1.5720325708389282,
         "lr": [
-          0.000004904846243842949,
-          0.000004904846243842949,
-          0.000004904846243842949,
-          0.000004904846243842949,
-          0.000004904846243842949,
-          0.000004904846243842949
+          0.0000010001096618257237,
+          0.0000010001096618257237,
+          0.0000010001096618257237,
+          0.0000010001096618257237,
+          0.0000010001096618257237,
+          0.0000010001096618257237
         ],
-        "elapsed_seconds": 3522.5328734559007,
-        "actual_train_rows": 4720,
+        "elapsed_seconds": 5989.162169147283,
+        "actual_train_rows": 8000,
         "route": "ki"
       },
       "norms": {
-        "updates": 295,
-        "clipped_count": 295,
+        "updates": 500,
+        "clipped_count": 500,
         "fraction_clipped": 1,
-        "min": 1.4615305662155151,
-        "median": 6.862698078155518,
+        "min": 1.2409803867340088,
+        "median": 2.1964335441589355,
         "max": 16.06281280517578,
-        "mean_clip_coefficient": 0.21823495898563314
+        "mean_clip_coefficient": 0.3910253429317386
       },
       "norms_by100": [
         {
@@ -741,14 +742,36 @@
         },
         {
           "begin": 201,
-          "end": 295,
-          "updates": 95,
-          "clipped_count": 95,
+          "end": 300,
+          "updates": 100,
+          "clipped_count": 100,
           "fraction_clipped": 1,
-          "min": 1.4615305662155151,
-          "median": 2.228282928466797,
+          "min": 1.4052751064300537,
+          "median": 2.1629637479782104,
           "max": 5.152374267578125,
-          "mean_clip_coefficient": 0.4360165361835362
+          "mean_clip_coefficient": 0.4454274869266325
+        },
+        {
+          "begin": 301,
+          "end": 400,
+          "updates": 100,
+          "clipped_count": 100,
+          "fraction_clipped": 1,
+          "min": 1.2483400106430054,
+          "median": 1.615704894065857,
+          "max": 2.2585723400115967,
+          "mean_clip_coefficient": 0.6206998595736538
+        },
+        {
+          "begin": 401,
+          "end": 500,
+          "updates": 100,
+          "clipped_count": 100,
+          "fraction_clipped": 1,
+          "min": 1.2409803867340088,
+          "median": 1.5096720457077026,
+          "max": 1.9589109420776367,
+          "mean_clip_coefficient": 0.6594219485251481
         }
       ],
       "fixed80": [
@@ -877,8 +900,148 @@
               "text_boundary_token_ce": 16.21978271007538
             }
           }
+        },
+        {
+          "step": 300,
+          "sha256": "0283083a0fa41a4ed3b91d779cb40086edadcd69d18be6b3bdebc8d11d6aab55",
+          "aggregate": {
+            "action_token_ce": 7.03681817650795,
+            "ce_loss": 7.106526112556457,
+            "reference_fm_loss": 0.19864802989759484,
+            "text_boundary_token_ce": 11.289048385620116
+          },
+          "per_task": {
+            "task0": {
+              "action_token_ce": 6.827415496110916,
+              "ce_loss": 6.903617024421692,
+              "reference_fm_loss": 0.13782377890311182,
+              "text_boundary_token_ce": 11.475759744644165
+            },
+            "task1": {
+              "action_token_ce": 7.04528146982193,
+              "ce_loss": 7.110543131828308,
+              "reference_fm_loss": 0.16377575136721134,
+              "text_boundary_token_ce": 11.026288509368896
+            },
+            "task2": {
+              "action_token_ce": 7.14739391207695,
+              "ce_loss": 7.212396264076233,
+              "reference_fm_loss": 0.28144969372078776,
+              "text_boundary_token_ce": 11.112585186958313
+            },
+            "task3": {
+              "action_token_ce": 6.877290725708008,
+              "ce_loss": 6.950383692979813,
+              "reference_fm_loss": 0.16135914626647718,
+              "text_boundary_token_ce": 11.33600127696991
+            },
+            "task4": {
+              "action_token_ce": 7.286709278821945,
+              "ce_loss": 7.355690449476242,
+              "reference_fm_loss": 0.24883177923038602,
+              "text_boundary_token_ce": 11.494607210159302
+            }
+          }
+        },
+        {
+          "step": 400,
+          "sha256": "f8a8c068c15a485688783e09f99574c6f8cff7652d8fcd89c79c81a871ec69f8",
+          "aggregate": {
+            "action_token_ce": 6.846883398294449,
+            "ce_loss": 6.860943627357483,
+            "reference_fm_loss": 0.19919141647405922,
+            "text_boundary_token_ce": 7.704599928855896
+          },
+          "per_task": {
+            "task0": {
+              "action_token_ce": 6.636709988117218,
+              "ce_loss": 6.656556576490402,
+              "reference_fm_loss": 0.1379121714271605,
+              "text_boundary_token_ce": 7.84738826751709
+            },
+            "task1": {
+              "action_token_ce": 6.865104109048843,
+              "ce_loss": 6.8731048703193665,
+              "reference_fm_loss": 0.16559836268424988,
+              "text_boundary_token_ce": 7.353187799453735
+            },
+            "task2": {
+              "action_token_ce": 6.961081385612488,
+              "ce_loss": 6.971536099910736,
+              "reference_fm_loss": 0.28285884228534997,
+              "text_boundary_token_ce": 7.598862290382385
+            },
+            "task3": {
+              "action_token_ce": 6.693550169467926,
+              "ce_loss": 6.711800664663315,
+              "reference_fm_loss": 0.16172213084064424,
+              "text_boundary_token_ce": 7.806873798370361
+            },
+            "task4": {
+              "action_token_ce": 7.077971339225769,
+              "ce_loss": 7.091719925403595,
+              "reference_fm_loss": 0.24786557513289154,
+              "text_boundary_token_ce": 7.916687488555908
+            }
+          }
+        },
+        {
+          "step": 500,
+          "sha256": "029a00f98223202517e52376858bc02b1bedee308197c8af2c5e26fcdf816fc4",
+          "aggregate": {
+            "action_token_ce": 6.7809189558029175,
+            "ce_loss": 6.770783179998398,
+            "reference_fm_loss": 0.1995491939771455,
+            "text_boundary_token_ce": 6.162682580947876
+          },
+          "per_task": {
+            "task0": {
+              "action_token_ce": 6.570277601480484,
+              "ce_loss": 6.565823554992676,
+              "reference_fm_loss": 0.13895799755118787,
+              "text_boundary_token_ce": 6.298624515533447
+            },
+            "task1": {
+              "action_token_ce": 6.8029322028160095,
+              "ce_loss": 6.7864567041397095,
+              "reference_fm_loss": 0.16556909692008048,
+              "text_boundary_token_ce": 5.797970771789551
+            },
+            "task2": {
+              "action_token_ce": 6.899124830961227,
+              "ce_loss": 6.885513007640839,
+              "reference_fm_loss": 0.28306471835821867,
+              "text_boundary_token_ce": 6.068852543830872
+            },
+            "task3": {
+              "action_token_ce": 6.62564891576767,
+              "ce_loss": 6.619882166385651,
+              "reference_fm_loss": 0.1624948845419567,
+              "text_boundary_token_ce": 6.273919463157654
+            },
+            "task4": {
+              "action_token_ce": 7.006611227989197,
+              "ce_loss": 6.996240466833115,
+              "reference_fm_loss": 0.24765927251428366,
+              "text_boundary_token_ce": 6.3740456104278564
+            }
+          }
         }
-      ]
+      ],
+      "inspection": {
+        "actual_adam_states": 514,
+        "actual_train_rows": 8000,
+        "actual_updates": 500,
+        "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/ki_a4_fulltrain_v3/formal/checkpoints/step_500.pt",
+        "checkpoint_sha256": "3efc6d1ab77cd02b01fa0a3db92262d522636fa2085e107dca04d7f3163e45ea",
+        "frozen_unchanged": true,
+        "full_model_optimizer_rng_roundtrip": true,
+        "new_process_resume_tested": false,
+        "passed": true,
+        "peak_rank0_reserved_bytes": 33659289600,
+        "success_rate_claim": false
+      },
+      "inspection_sha256": "9cbdf1cb299b3259802da145a15e72e76acc84ba377038e7ce30f022f9bde96f"
     }
   },
   "action_results": {
@@ -2428,15 +2591,55 @@
           }
         }
       ]
+    },
+    "ki": {
+      "complete": false,
+      "pid": 1547266,
+      "launch_time": "2026-09-14T09:07:41.578952+00:00",
+      "fm_generation_budget": 10
     }
   },
   "limitations": [
-    "Interim snapshot: FM and joint500 and their ten-window action probes are complete; KI500 remains pending. Training-log statistics were captured at training_observed_at.",
+    "FM, joint and KI500 training are complete. FM/joint ten-window probes are complete; KI ten-window probe launched. Earlier FM/joint training-log snapshots are immutable completed runs.",
     "No new optimizer updates or simulator controls were issued by this summary.",
     "Raw sampler bytes match after only a stage-label substitution; this does not certify training pixel or RNG identity.",
     "Norms are total pre-clipping rank0 norms; no per-loss gradient directions or module-specific update ratios were measured.",
     "Clipping coefficients are not equivalent to AdamW learning-rate multipliers.",
     "All ten action windows are repeatedly inspected diagnostic states, not a blind success-rate test."
   ],
-  "training_observed_at": "2026-09-14T08:21:21.578414+00:00"
+  "training_observed_at": "2026-09-14T08:21:21.578414+00:00",
+  "ki_source_pairing": [
+    {
+      "rank": 0,
+      "microbatches": 1000,
+      "draws": 2000,
+      "identical_after_only_stage_replacement": true,
+      "ki_sha256": "f9532f578340125473bfc977708e529b9353c5fce4ccc27014aa6ae636c177f8",
+      "normalized_fm_sha256": "5173c5b49452f00de00a7aac2523322ffe3646b510559277d0ab2b1570d40217"
+    },
+    {
+      "rank": 1,
+      "microbatches": 1000,
+      "draws": 2000,
+      "identical_after_only_stage_replacement": true,
+      "ki_sha256": "177498c1f12622c75f27dcaadc9dc325a2c29ccae40dfba09b55f7ae70152d6f",
+      "normalized_fm_sha256": "e776b63caa8a32ed465d9bbf96a7f02ec814d0ad4fa98c4e1f36bbe7ee0c519a"
+    },
+    {
+      "rank": 2,
+      "microbatches": 1000,
+      "draws": 2000,
+      "identical_after_only_stage_replacement": true,
+      "ki_sha256": "9eb341843b8e3ffeb0639bb3bf3b65b0dc35311dbae15da231be67bc1fb3d694",
+      "normalized_fm_sha256": "529d62c25c1396c30825ed33623ba5b7adfc5f93132b33df67b92414fbf5d103"
+    },
+    {
+      "rank": 3,
+      "microbatches": 1000,
+      "draws": 2000,
+      "identical_after_only_stage_replacement": true,
+      "ki_sha256": "1a0a7dc9854b5994fbeb041a51e3b4fbeba8847e2c127b5d24e619b9090e3d69",
+      "normalized_fm_sha256": "a73a661c34bcab1db667b990605eb1184a18f957571009a02d22a79c03516171"
+    }
+  ]
 }
