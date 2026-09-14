@@ -26,6 +26,10 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 12:17补充：** 三臂机器/本人审核JSON及六张拼图在服务器`dual_track_fm_ar_20260913/fm_screen_prefix512_v1/review_by_main_20260914/<arm>/`亦有完整校验副本，6 JSON/6 PNG与本地SHA相同；不覆盖原completion历史。当前仅方法训练链继续，FM已270/500，三个原后继等待器不重复启动。
+
+**2026-09-14 12:11最新：** `fm_screen_prefix512_v1`三臂各512全部完成，1536动作及本人87视图核验完成；`recovery`supervisor34585、Beta34590/39113、exec59091/64006均退出，原control三进程此前也退出。三臂各`completion.json`和root completion的`personal_review_pending`是当时不可变历史；实际已完成的后续人工/机器回执在本地`/home/wsy/behavior/artifacts/experiments/2026-09-14-fm-screen-prefix512-v1/<arm>/review/`，详见[报告](experiments/2026-09-14-fm-prefix512-screen.md)，不覆盖旧回执。三视频已本地，非cache可随意删。当前活跃仍是FM v3 4092082/4092140和9f26b45的后三训练等待器，不热pull它们。
+
 **2026-09-14 11:57最新：** `fm_screen_prefix512_v1/fm_control_v1`已完整512并完成本地审查；本地`/home/wsy/behavior/artifacts/experiments/2026-09-14-fm-screen-prefix512-v1/fm_control_v1`含视频和`review/`。原三臂supervisor4177428在第二臂前端口检查停止，旧三进程均退出；保留`supervise_failure.json`。新显式恢复34585使用`git_worktrees/fm_screen_prefix_resume_20260914`固定d5f0aec/145 CPU，只接Beta服务34590/8787→exec/8788，原manifest不改、补充`recovery.json`/`recovery.launch.json`，源不可热pull。原A4只读服务文件也在被引用，勿修改。FM v3正式168/500。
 
 **2026-09-14 11:44最新：** `dual_track_fm_ar_20260913/fm_screen_prefix512_v1`为新三FM500局部闭环，supervisor4177428；其`fm_control_v1/`下专用服务4177433/8786正在初始化，后两臂待串行执行，均最多512模型控制。编排源`git_worktrees/fm_screen_prefix_20260914`固定7b806b6/137 CPU，神经服务继续只读使用原`git_worktrees/a4_prefix_20260913/scripts/experiments/serve_low_fm_prefix.py`（`c4bc099d…`）；两处运行期均禁止热pull。各臂service/socket/rollout/completion分别给出真实阶段；manifest SHA `d37907aa…`，不是全任务SR或数据release。FM v3正式100/500，后三臂等待。

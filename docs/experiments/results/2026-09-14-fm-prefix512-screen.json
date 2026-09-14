@@ -1,0 +1,117 @@
+{
+  "owner": "Codex main agent",
+  "verified_at": "2026-09-14T12:11:00+08:00",
+  "source_run": "robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_screen_prefix512_v1",
+  "local_root": "/home/wsy/behavior/artifacts/experiments/2026-09-14-fm-screen-prefix512-v1",
+  "complete": true,
+  "full_task_success_rate_claim": false,
+  "new_optimizer_updates": 0,
+  "actual_model_controls": 1536,
+  "original_prefix_controls": 1344,
+  "manual_views": 87,
+  "extra_rollouts": 0,
+  "rows": [
+    {
+      "arm": "fm_control_v1",
+      "checkpoint_sha256": "def222a6674e6ac92e6ee982c22836b789240f1542c459d5de2111cd646a244e",
+      "result_sha256": "cd356486a4377ff76b87366fc194eaee8913d8625882933a9646dcd2dec7b6a6",
+      "events_sha256": "74bd4bac4471c01b715c7d07b885965da4bf8f661395e0487e8fa6c3f488d418",
+      "video_sha256": "e8c51bde9278a854fd03950ea16b202956ae6707eb80c2f08cc8def5560bcbd4",
+      "actual_model_controls": 512,
+      "actual_chunks": 32,
+      "history_anchors_verified": 192,
+      "post_chunk_outcomes": {
+        "IN_PROGRESS": 32
+      },
+      "causal_success_boundaries": [],
+      "paired_prefix_comparison": {
+        "reference_arm": "fm_control_v1",
+        "rgb_history_bitwise_equal": {
+          "head_rgb": true,
+          "left_wrist_rgb": true,
+          "right_wrist_rgb": true
+        },
+        "state_max_abs_difference": {
+          "base_qvel": 0,
+          "trunk_qpos": 0,
+          "left_arm": 0,
+          "left_gripper": 0,
+          "right_arm": 0,
+          "right_gripper": 0
+        }
+      },
+      "manual_review_sha256": "ffe94b20b915fa7b7fe96ee649865b06dccccc2ca7cad3cb8d0024fe9e51f14a",
+      "machine_review_sha256": "db7f5cf8f075c25bf533740c4c6385f6a24cbbe554ed08d7aab7c39ab5882df6",
+      "manual_views": 29,
+      "manual_review_complete": true
+    },
+    {
+      "arm": "fm_beta_stratified_v2",
+      "checkpoint_sha256": "05ea17bcbbf62437b70e286ce58e6113f20cfe1dd7b79eb56010b73d1f7a6c1e",
+      "result_sha256": "e6d697b83d87d859818f3fe094013acb2c47bccea5264b7f23c9208ed517cf90",
+      "events_sha256": "8bff9693d24bd84357c5a06d55ace79f32d1bde3532056bd1482f3b9e370aa5f",
+      "video_sha256": "0eaea9a6945970fb5d9a800eeb0e39330b12c8847538cbf83388e679fb165226",
+      "actual_model_controls": 512,
+      "actual_chunks": 32,
+      "history_anchors_verified": 192,
+      "post_chunk_outcomes": {
+        "IN_PROGRESS": 32
+      },
+      "causal_success_boundaries": [],
+      "paired_prefix_comparison": {
+        "reference_arm": "fm_control_v1",
+        "rgb_history_bitwise_equal": {
+          "head_rgb": false,
+          "left_wrist_rgb": false,
+          "right_wrist_rgb": false
+        },
+        "state_max_abs_difference": {
+          "base_qvel": 0,
+          "trunk_qpos": 0,
+          "left_arm": 0,
+          "left_gripper": 0,
+          "right_arm": 0,
+          "right_gripper": 0
+        }
+      },
+      "manual_review_sha256": "d0c12546a3df597d91347a9ec8ccd7d9d1b858ae2c0ce8453a9b3cef249100e7",
+      "machine_review_sha256": "59f5b3b7ae416c832c86356e47efcf0d2e29c4c9309ecaea077d2f25c8d76566",
+      "manual_views": 29,
+      "manual_review_complete": true
+    },
+    {
+      "arm": "fm_exec_weight2_v2",
+      "checkpoint_sha256": "101c4b32d7df3bacd529159474f5c1f1720ade2a93614b5d68ea43de5e7eca2f",
+      "result_sha256": "ffd62353feaa1d1accbaf68c5cccfb470ab291c3f8cd24eb20ee3aeab14376c2",
+      "events_sha256": "29c126844493fb240a619199622c77dedb65a34e9d256123d7754012916f0bd5",
+      "video_sha256": "b899ae0ea1d1f145cfcd450a6dfcc12ace9fe9c00a5a810b15f19d5bfb539947",
+      "actual_model_controls": 512,
+      "actual_chunks": 32,
+      "history_anchors_verified": 192,
+      "post_chunk_outcomes": {
+        "IN_PROGRESS": 32
+      },
+      "causal_success_boundaries": [],
+      "paired_prefix_comparison": {
+        "reference_arm": "fm_control_v1",
+        "rgb_history_bitwise_equal": {
+          "head_rgb": false,
+          "left_wrist_rgb": false,
+          "right_wrist_rgb": false
+        },
+        "state_max_abs_difference": {
+          "base_qvel": 0,
+          "trunk_qpos": 0,
+          "left_arm": 0,
+          "left_gripper": 0,
+          "right_arm": 0,
+          "right_gripper": 0
+        }
+      },
+      "manual_review_sha256": "0233341bf33e20d7d8d64f6dcd87a9aace93157bdc52c0735b83e119947ce1c8",
+      "machine_review_sha256": "4bcdf212b56bea1fa5d849bb7c89d2d6f300838df08ee080ad36ae6ba25d1df2",
+      "manual_views": 29,
+      "manual_review_complete": true
+    }
+  ]
+}
