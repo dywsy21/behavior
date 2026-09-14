@@ -1,0 +1,63 @@
+{
+  "time": "2026-09-14T08:52:21.391155+00:00",
+  "library": "0.7.7",
+  "source": "/mnt/sdc1/robodojo/GalaxeaVLA/.venv/lib/python3.10/site-packages/ema_pytorch/ema_pytorch.py",
+  "source_sha256": "f87d751eb3e4fc2977adbb0d7a2fd765f110efb07723dd0b4ab5b3ff37a505d0",
+  "constructor": {
+    "beta": 0.67,
+    "power": 0.6666666666666666,
+    "update_every": 10,
+    "update_after_step": 0
+  },
+  "order": [
+    "uninterrupted",
+    "full_wrapper_state_resume",
+    "weights_only_resume"
+  ],
+  "before": [
+    {
+      "step": 35,
+      "initted": true,
+      "weight": 16.803369522094727
+    },
+    {
+      "step": 35,
+      "initted": true,
+      "weight": 16.803369522094727
+    },
+    {
+      "step": 0,
+      "initted": false,
+      "weight": 16.803369522094727
+    }
+  ],
+  "after": [
+    {
+      "step": 36,
+      "initted": true,
+      "weight": 16.803369522094727
+    },
+    {
+      "step": 36,
+      "initted": true,
+      "weight": 16.803369522094727
+    },
+    {
+      "step": 1,
+      "initted": true,
+      "weight": 36
+    }
+  ],
+  "full_resume_exact": true,
+  "weights_only_reset_demonstrated": true,
+  "real_policy_updates": 0,
+  "real_policy_model_calls": 0,
+  "optimizer_steps": 0,
+  "data_reads": 0,
+  "simulator_controls": 0,
+  "owner": "Codex",
+  "task_id": "M-03-E",
+  "scope": "In-process CPU scalar state_dict restore; not a policy checkpoint or new-process resume test",
+  "current_experiment_trainers_use_ema": false,
+  "installed_library_or_trainer_modified": false
+}
