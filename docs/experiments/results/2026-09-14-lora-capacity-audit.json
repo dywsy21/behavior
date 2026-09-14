@@ -1,0 +1,417 @@
+{
+  "backwards": 0,
+  "checkpoints_read": 2,
+  "complete": true,
+  "config": {
+    "adapter_name": "skill_fm",
+    "alpha": 16,
+    "dropout": 0.05,
+    "enabled": true,
+    "r": 8,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "config_sha256": "2beb9d68c1ff34fadeb3c2d432010f07479813d32b1a645d3f53618b7bd76995",
+  "entry_sha256": "bac3823d4908ce40e826633b98d09eab412048b2d3288ce3ead6b8c028a6d857",
+  "factor_pairs_analyzed": 192,
+  "limitations": [
+    "Matrix spectra do not establish underfitting, task-gradient conflict or higher-rank benefit.",
+    "No rank expansion, new random adapter, target-scope change, or training was performed.",
+    "Layer-module coverage is read from actual saved tensor names, not assumed from target-name defaults."
+  ],
+  "no_dense_update_materialized": true,
+  "optimizer_updates": 0,
+  "parent_config_sha256": "4d45b4c2ae8872b8e4a88916c4143d922b8cf0e76eedaa6a4116d473d9ef2483",
+  "policy_forwards": 0,
+  "simulator_controls": 0,
+  "source_commit": "e50e7b5d09707060f1a607d7ba2cc3e6ab8b4157",
+  "training_samples_read": 0,
+  "summary": [
+    {
+      "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912/formal/checkpoints/step_2500.pt",
+      "checkpoint_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+      "by_module_leaf": {
+        "down_proj": {
+          "total": 24,
+          "with_lora": 24
+        },
+        "gate_proj": {
+          "total": 24,
+          "with_lora": 24
+        },
+        "in_proj_a": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "in_proj_b": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "in_proj_qkv": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "in_proj_z": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "input_proj": {
+          "total": 1,
+          "with_lora": 0
+        },
+        "k_proj": {
+          "total": 6,
+          "with_lora": 6
+        },
+        "o_proj": {
+          "total": 6,
+          "with_lora": 6
+        },
+        "out_proj": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "output_proj": {
+          "total": 1,
+          "with_lora": 0
+        },
+        "q_proj": {
+          "total": 6,
+          "with_lora": 6
+        },
+        "up_proj": {
+          "total": 24,
+          "with_lora": 24
+        },
+        "v_proj": {
+          "total": 6,
+          "with_lora": 6
+        }
+      },
+      "energy_rank95": {
+        "0": 5,
+        "1": 9,
+        "2": 12,
+        "3": 12,
+        "4": 4,
+        "5": 10,
+        "6": 12,
+        "7": 22,
+        "8": 10
+      },
+      "participation_rank": {
+        "min": 0,
+        "median": 1.9693249307411205,
+        "max": 7.040851121850847
+      },
+      "update_norm": {
+        "min": 0,
+        "median": 0.38559032986174324,
+        "max": 2.2650209661291907
+      },
+      "adapted_modules": [
+        "model.vlm.base_model.model.layers.0.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.0.mlp.up_proj",
+        "model.vlm.base_model.model.layers.0.mlp.down_proj",
+        "model.vlm.base_model.model.layers.1.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.1.mlp.up_proj",
+        "model.vlm.base_model.model.layers.1.mlp.down_proj",
+        "model.vlm.base_model.model.layers.2.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.2.mlp.up_proj",
+        "model.vlm.base_model.model.layers.2.mlp.down_proj",
+        "model.vlm.base_model.model.layers.3.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.3.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.3.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.3.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.3.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.3.mlp.up_proj",
+        "model.vlm.base_model.model.layers.3.mlp.down_proj",
+        "model.vlm.base_model.model.layers.4.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.4.mlp.up_proj",
+        "model.vlm.base_model.model.layers.4.mlp.down_proj",
+        "model.vlm.base_model.model.layers.5.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.5.mlp.up_proj",
+        "model.vlm.base_model.model.layers.5.mlp.down_proj",
+        "model.vlm.base_model.model.layers.6.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.6.mlp.up_proj",
+        "model.vlm.base_model.model.layers.6.mlp.down_proj",
+        "model.vlm.base_model.model.layers.7.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.7.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.7.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.7.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.7.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.7.mlp.up_proj",
+        "model.vlm.base_model.model.layers.7.mlp.down_proj",
+        "model.vlm.base_model.model.layers.8.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.8.mlp.up_proj",
+        "model.vlm.base_model.model.layers.8.mlp.down_proj",
+        "model.vlm.base_model.model.layers.9.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.9.mlp.up_proj",
+        "model.vlm.base_model.model.layers.9.mlp.down_proj",
+        "model.vlm.base_model.model.layers.10.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.10.mlp.up_proj",
+        "model.vlm.base_model.model.layers.10.mlp.down_proj",
+        "model.vlm.base_model.model.layers.11.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.11.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.11.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.11.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.11.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.11.mlp.up_proj",
+        "model.vlm.base_model.model.layers.11.mlp.down_proj",
+        "model.vlm.base_model.model.layers.12.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.12.mlp.up_proj",
+        "model.vlm.base_model.model.layers.12.mlp.down_proj",
+        "model.vlm.base_model.model.layers.13.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.13.mlp.up_proj",
+        "model.vlm.base_model.model.layers.13.mlp.down_proj",
+        "model.vlm.base_model.model.layers.14.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.14.mlp.up_proj",
+        "model.vlm.base_model.model.layers.14.mlp.down_proj",
+        "model.vlm.base_model.model.layers.15.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.15.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.15.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.15.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.15.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.15.mlp.up_proj",
+        "model.vlm.base_model.model.layers.15.mlp.down_proj",
+        "model.vlm.base_model.model.layers.16.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.16.mlp.up_proj",
+        "model.vlm.base_model.model.layers.16.mlp.down_proj",
+        "model.vlm.base_model.model.layers.17.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.17.mlp.up_proj",
+        "model.vlm.base_model.model.layers.17.mlp.down_proj",
+        "model.vlm.base_model.model.layers.18.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.18.mlp.up_proj",
+        "model.vlm.base_model.model.layers.18.mlp.down_proj",
+        "model.vlm.base_model.model.layers.19.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.19.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.19.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.19.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.19.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.19.mlp.up_proj",
+        "model.vlm.base_model.model.layers.19.mlp.down_proj",
+        "model.vlm.base_model.model.layers.20.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.20.mlp.up_proj",
+        "model.vlm.base_model.model.layers.20.mlp.down_proj",
+        "model.vlm.base_model.model.layers.21.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.21.mlp.up_proj",
+        "model.vlm.base_model.model.layers.21.mlp.down_proj",
+        "model.vlm.base_model.model.layers.22.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.22.mlp.up_proj",
+        "model.vlm.base_model.model.layers.22.mlp.down_proj",
+        "model.vlm.base_model.model.layers.23.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.23.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.23.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.23.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.23.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.23.mlp.up_proj",
+        "model.vlm.base_model.model.layers.23.mlp.down_proj"
+      ]
+    },
+    {
+      "checkpoint": "/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/fm_action_control_v3/formal/checkpoints/step_500.pt",
+      "checkpoint_sha256": "efce4dfe232f85ac18f7fca66b562360ba23d839f3f74748f658b5911b5c33f9",
+      "by_module_leaf": {
+        "down_proj": {
+          "total": 24,
+          "with_lora": 24
+        },
+        "gate_proj": {
+          "total": 24,
+          "with_lora": 24
+        },
+        "in_proj_a": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "in_proj_b": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "in_proj_qkv": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "in_proj_z": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "input_proj": {
+          "total": 1,
+          "with_lora": 0
+        },
+        "k_proj": {
+          "total": 6,
+          "with_lora": 6
+        },
+        "o_proj": {
+          "total": 6,
+          "with_lora": 6
+        },
+        "out_proj": {
+          "total": 18,
+          "with_lora": 0
+        },
+        "output_proj": {
+          "total": 1,
+          "with_lora": 0
+        },
+        "q_proj": {
+          "total": 6,
+          "with_lora": 6
+        },
+        "up_proj": {
+          "total": 24,
+          "with_lora": 24
+        },
+        "v_proj": {
+          "total": 6,
+          "with_lora": 6
+        }
+      },
+      "energy_rank95": {
+        "0": 5,
+        "1": 9,
+        "2": 12,
+        "3": 12,
+        "4": 5,
+        "5": 9,
+        "6": 12,
+        "7": 22,
+        "8": 10
+      },
+      "participation_rank": {
+        "min": 0,
+        "median": 1.9491721427939472,
+        "max": 7.011166612552799
+      },
+      "update_norm": {
+        "min": 0,
+        "median": 0.3892829654975283,
+        "max": 2.3179095082162435
+      },
+      "adapted_modules": [
+        "model.vlm.base_model.model.layers.0.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.0.mlp.up_proj",
+        "model.vlm.base_model.model.layers.0.mlp.down_proj",
+        "model.vlm.base_model.model.layers.1.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.1.mlp.up_proj",
+        "model.vlm.base_model.model.layers.1.mlp.down_proj",
+        "model.vlm.base_model.model.layers.2.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.2.mlp.up_proj",
+        "model.vlm.base_model.model.layers.2.mlp.down_proj",
+        "model.vlm.base_model.model.layers.3.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.3.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.3.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.3.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.3.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.3.mlp.up_proj",
+        "model.vlm.base_model.model.layers.3.mlp.down_proj",
+        "model.vlm.base_model.model.layers.4.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.4.mlp.up_proj",
+        "model.vlm.base_model.model.layers.4.mlp.down_proj",
+        "model.vlm.base_model.model.layers.5.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.5.mlp.up_proj",
+        "model.vlm.base_model.model.layers.5.mlp.down_proj",
+        "model.vlm.base_model.model.layers.6.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.6.mlp.up_proj",
+        "model.vlm.base_model.model.layers.6.mlp.down_proj",
+        "model.vlm.base_model.model.layers.7.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.7.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.7.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.7.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.7.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.7.mlp.up_proj",
+        "model.vlm.base_model.model.layers.7.mlp.down_proj",
+        "model.vlm.base_model.model.layers.8.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.8.mlp.up_proj",
+        "model.vlm.base_model.model.layers.8.mlp.down_proj",
+        "model.vlm.base_model.model.layers.9.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.9.mlp.up_proj",
+        "model.vlm.base_model.model.layers.9.mlp.down_proj",
+        "model.vlm.base_model.model.layers.10.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.10.mlp.up_proj",
+        "model.vlm.base_model.model.layers.10.mlp.down_proj",
+        "model.vlm.base_model.model.layers.11.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.11.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.11.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.11.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.11.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.11.mlp.up_proj",
+        "model.vlm.base_model.model.layers.11.mlp.down_proj",
+        "model.vlm.base_model.model.layers.12.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.12.mlp.up_proj",
+        "model.vlm.base_model.model.layers.12.mlp.down_proj",
+        "model.vlm.base_model.model.layers.13.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.13.mlp.up_proj",
+        "model.vlm.base_model.model.layers.13.mlp.down_proj",
+        "model.vlm.base_model.model.layers.14.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.14.mlp.up_proj",
+        "model.vlm.base_model.model.layers.14.mlp.down_proj",
+        "model.vlm.base_model.model.layers.15.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.15.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.15.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.15.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.15.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.15.mlp.up_proj",
+        "model.vlm.base_model.model.layers.15.mlp.down_proj",
+        "model.vlm.base_model.model.layers.16.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.16.mlp.up_proj",
+        "model.vlm.base_model.model.layers.16.mlp.down_proj",
+        "model.vlm.base_model.model.layers.17.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.17.mlp.up_proj",
+        "model.vlm.base_model.model.layers.17.mlp.down_proj",
+        "model.vlm.base_model.model.layers.18.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.18.mlp.up_proj",
+        "model.vlm.base_model.model.layers.18.mlp.down_proj",
+        "model.vlm.base_model.model.layers.19.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.19.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.19.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.19.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.19.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.19.mlp.up_proj",
+        "model.vlm.base_model.model.layers.19.mlp.down_proj",
+        "model.vlm.base_model.model.layers.20.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.20.mlp.up_proj",
+        "model.vlm.base_model.model.layers.20.mlp.down_proj",
+        "model.vlm.base_model.model.layers.21.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.21.mlp.up_proj",
+        "model.vlm.base_model.model.layers.21.mlp.down_proj",
+        "model.vlm.base_model.model.layers.22.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.22.mlp.up_proj",
+        "model.vlm.base_model.model.layers.22.mlp.down_proj",
+        "model.vlm.base_model.model.layers.23.self_attn.q_proj",
+        "model.vlm.base_model.model.layers.23.self_attn.k_proj",
+        "model.vlm.base_model.model.layers.23.self_attn.v_proj",
+        "model.vlm.base_model.model.layers.23.self_attn.o_proj",
+        "model.vlm.base_model.model.layers.23.mlp.gate_proj",
+        "model.vlm.base_model.model.layers.23.mlp.up_proj",
+        "model.vlm.base_model.model.layers.23.mlp.down_proj"
+      ]
+    }
+  ],
+  "unchanged": [
+    "model.vlm.base_model.model.layers.23.mlp.down_proj",
+    "model.vlm.base_model.model.layers.23.mlp.gate_proj",
+    "model.vlm.base_model.model.layers.23.mlp.up_proj",
+    "model.vlm.base_model.model.layers.23.self_attn.o_proj",
+    "model.vlm.base_model.model.layers.23.self_attn.q_proj"
+  ],
+  "a_changed": 91,
+  "b_changed": 91,
+  "result_sha256": "0bb9958df841577b77285c115119f421d73786a567cf8e06f5213e45a370b06e",
+  "result_path": "robo:/mnt/sdc1/robodojo/behavior_dev/dual_track_fm_ar_20260913/lora_capacity_a4_fm500_v1/result.json",
+  "cpu_tests": {
+    "passed": 17,
+    "seconds": 0.12
+  },
+  "owner": "Codex",
+  "task_id": "M-03-R0"
+}
