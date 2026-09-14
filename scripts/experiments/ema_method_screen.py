@@ -25,6 +25,7 @@ def validate_screen(spec):
             or (spec["route"], spec["initialization"], spec["conditioning"]) != ("fm", "a4", "skills")
             or spec.get("marker_rows") is not False or spec.get("after_fm")
             or spec.get("recovery_from") or spec.get("reference_gate_recovery")
+            or spec.get("tail_lr_recipe") is not None
             or dependency.get("kind") != "action" or dependency.get("root") != str(BASE / COT_RUN)
             or dependency.get("method_sha256") != COT_SPEC_SHA):
         raise RuntimeError("EMA requires one isolated original-FM screen after the exact existing CoT run")

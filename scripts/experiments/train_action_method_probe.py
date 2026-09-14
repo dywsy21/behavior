@@ -30,6 +30,7 @@ from native_action_initialization import NATIVE_PARENT, NATIVE_PARENT_SHA, NATIV
 from method_queue_recovery import DECLARED as RECOVERY_RUNS, recovery_identity, validate_recovery
 import reference_gate_recovery
 import ema_method_screen
+import tail_lr_method_screen
 
 HERE = Path(__file__).resolve()
 ROUTES = ("ar", "joint", "ki", "fm")
@@ -67,6 +68,7 @@ def code_identity():
         Path(__file__).with_name("method_queue_recovery.py"),
         Path(__file__).with_name("reference_gate_recovery.py"),
         Path(__file__).with_name("ema_method_screen.py"),
+        Path(__file__).with_name("tail_lr_method_screen.py"),
         Path(__file__).with_name("train_fm_method_probe.py")]
     from action_training_runtime import EXTENSIONS
     paths.extend(REPO / relative for relative in EXTENSIONS.values())
@@ -77,7 +79,8 @@ def validate_spec(spec):
     parent, parent_sha = declared_parent(spec["route"], spec["initialization"], spec["conditioning"])
     marker_rows = validate_marker_variant(spec["route"], spec["initialization"], spec["conditioning"],
                                           spec.get("marker_rows", False))
-    if (spec["route"] not in ROUTES or spec["recipe"] != RECIPE
+    if (spec["route"] not in ROUTES
+            or spec["recipe"] != tail_lr_method_screen.training_recipe(RECIPE, spec.get("tail_lr_recipe"))
             or spec["parent_sha256"] != parent_sha or spec["parent_path"] != str(parent)
             or spec["code"] != code_identity()
             or Path(spec["output"]).parent != BASE
@@ -94,6 +97,7 @@ def validate_spec(spec):
         raise RuntimeError("Use one explicitly declared serial predecessor, not two conflicting queues")
     validate_cot_screen(spec)
     ema_method_screen.validate_screen(spec)
+    tail_lr_method_screen.validate_screen(spec)
     if Path(spec['output']).name in reference_gate_recovery.DECLARED or spec.get('reference_gate_recovery'):
         reference_gate_recovery.validate_recovery(spec)
     else:
@@ -137,12 +141,13 @@ def validate_marker_variant(route, initialization, conditioning, marker_rows):
     return marker_rows
 
 
-def configure(cfg, route, initialization="a4", conditioning="skills", *, marker_rows=False):
+def configure(cfg, route, initialization="a4", conditioning="skills", *, marker_rows=False, tail_lr_recipe=None):
     from omegaconf import OmegaConf
     from g05.utils.training.ar_training_methods import ActionTrainingSettings
     OmegaConf.set_struct(cfg, False)
     parent, _ = declared_parent(route, initialization, conditioning)
     validate_marker_variant(route, initialization, conditioning, marker_rows)
+    tail_lr_method_screen.validate_variant(route, initialization, conditioning, marker_rows, tail_lr_recipe)
     if route == "fm":
         arch = cfg.model.model_arch
         if (arch.discrete_action or not arch.continuous_action or arch.predict_cot
@@ -160,14 +165,21 @@ def configure(cfg, route, initialization="a4", conditioning="skills", *, marker_
             learning_rate=1e-5, warmup_steps=50, lr_min_ratio=.1, max_steps=500,
             weight_decay=.03, betas=[.9, .95], max_grad_norm=1.).items():
         cfg.model[key] = value
+    selected_recipe = tail_lr_method_screen.training_recipe(RECIPE, tail_lr_recipe)
+    for key in ("learning_rate", "warmup_steps", "lr_min_ratio"):
+        cfg.model[key] = selected_recipe[key]
     cfg.seed = 41
     return arch
 
 
-def make_optimizer(model, *, marker_rows=False):
+def make_optimizer(model, *, marker_rows=False, tail_lr_recipe=None):
     import torch
     from g05.utils.training.get_scheduler import get_scheduler
-    groups = model.get_optim_param_groups(lr=1e-5, weight_decay=.03,
+    if marker_rows and tail_lr_recipe is not None:
+        raise RuntimeError("Tail-LR and marker adaptation cannot be combined in this screen")
+    selected_recipe = tail_lr_method_screen.training_recipe(RECIPE, tail_lr_recipe)
+    learning_rate = selected_recipe["learning_rate"]
+    groups = model.get_optim_param_groups(lr=learning_rate, weight_decay=.03,
         apply_decay_on_norm_and_bias=False, backbone_lr_multiplier=1., vision_lr_multiplier=1.)
     actual = [id(p) for group in groups for p in group["params"]]
     expected = {id(p) for p in model.parameters() if p.requires_grad}
@@ -186,9 +198,9 @@ def make_optimizer(model, *, marker_rows=False):
         split_groups.append(dict(params=[row_parameter], lr=MARKER_RECIPE["peak_learning_rate"],
                                  weight_decay=.03, name="action_marker_rows_decay"))
         groups = split_groups
-    optimizer = torch.optim.AdamW(groups, lr=1e-5, betas=(.9, .95))
-    scheduler = get_scheduler("cosine", optimizer, num_warmup_steps=50,
-                              num_training_steps=500, lr_min_ratio=.1)
+    optimizer = torch.optim.AdamW(groups, lr=learning_rate, betas=(.9, .95))
+    scheduler = get_scheduler("cosine", optimizer, num_warmup_steps=selected_recipe["warmup_steps"],
+                              num_training_steps=500, lr_min_ratio=selected_recipe["lr_min_ratio"])
     return optimizer, scheduler
 
 
@@ -295,7 +307,8 @@ def dependency_identity(root, kind="fm"):
                    "joint_a4_fulltrain_v3": ("joint", "a4", "skills"),
                    "ki_a4_fulltrain_v3": ("ki", "a4", "skills"),
                    "ar_a4_marker_fulltrain_v3": ("ar", "a4", "skills"),
-                   "ar_native_subtask_cot_fulltrain_v1": ("ar", "native", "native_subtask_cot")},
+                   "ar_native_subtask_cot_fulltrain_v1": ("ar", "native", "native_subtask_cot"),
+                   "fm_trainable_ema_v1": ("fm", "a4", "skills")},
     }
     if kind not in names or root.parent != BASE or root.name not in names[kind]:
         raise ValueError("Only a predeclared finite method run may be a serial predecessor")
@@ -322,6 +335,10 @@ def dependency_identity(root, kind="fm"):
         if sha(root / "method_spec.json") != ema_method_screen.COT_SPEC_SHA:
             raise RuntimeError("EMA predecessor must be the exact already queued native CoT variant")
         validate_cot_screen(method)
+    if root.name == tail_lr_method_screen.EMA_RUN:
+        if sha(root / "method_spec.json") != tail_lr_method_screen.EMA_SPEC_SHA:
+            raise RuntimeError("Tail LR predecessor must be the exact already queued EMA variant")
+        ema_method_screen.validate_screen(method)
     if root.name in RECOVERY_RUNS:
         validate_recovery(method, kind)
     if root.name in reference_gate_recovery.DECLARED:
@@ -394,6 +411,8 @@ def verify_dependency_completed(root, kind):
             or Path(inspection["checkpoint"]) != root / "formal/checkpoints/step_500.pt"
             or sha(inspection["checkpoint"]) != inspection["checkpoint_sha256"]):
         raise RuntimeError("Predecessor did not finish and verify; do not start or retry it")
+    if root.name == tail_lr_method_screen.EMA_RUN and kind == "action":
+        tail_lr_method_screen.validate_ema_completion(inspection)
     return path
 
 
@@ -644,7 +663,7 @@ def train(spec, phase):
         raise RuntimeError("Original processor recipe or declared parent differs")
     cfg = OmegaConf.load(config_path)
     arch = configure(cfg, spec["route"], spec["initialization"], spec["conditioning"],
-                     marker_rows=spec.get("marker_rows", False))
+                     marker_rows=spec.get("marker_rows", False), tail_lr_recipe=spec.get("tail_lr_recipe"))
     pipeline = build_original_pipeline(cfg, rank=rank, world_size=world, workers=RECIPE["workers"])
     identity.update(pipeline=pipeline.identity, config_sha256=sha(config_path), spec=spec)
     publish(output / f"identity_rank{rank}.json", identity)
@@ -676,7 +695,8 @@ def train(spec, phase):
     ddp = DDP(model, device_ids=[local_rank], find_unused_parameters=True,
               gradient_as_bucket_view=True, bucket_cap_mb=128)
     audit.after_distributed_initialization()
-    optimizer, scheduler = make_optimizer(model, marker_rows=spec.get("marker_rows", False))
+    optimizer, scheduler = make_optimizer(model, marker_rows=spec.get("marker_rows", False),
+                                         tail_lr_recipe=spec.get("tail_lr_recipe"))
     ema = None
     if spec.get("ema_recipe") is not None:
         from g05.utils.training.trainable_parameter_ema import TrainableParameterEMA
@@ -845,6 +865,7 @@ def main():
     parser.add_argument("--conditioning", choices=("skills", "native_task", "native_subtask_cot"), default="skills")
     parser.add_argument("--marker-rows", action="store_true")
     parser.add_argument("--trainable-ema", action="store_true")
+    parser.add_argument("--tail-lr", action="store_true")
     parser.add_argument("--supersedes-run", type=Path)
     args = parser.parse_args()
     if args.mode == "start":
@@ -852,7 +873,9 @@ def main():
             raise ValueError("Select one action route and a new child of the experiment root")
         parent, parent_sha = declared_parent(args.route, args.initialization, args.conditioning)
         validate_marker_variant(args.route, args.initialization, args.conditioning, args.marker_rows)
-        spec = dict(route=args.route, output=str(args.output), recipe=RECIPE, parent_sha256=parent_sha,
+        tail_recipe = deepcopy(tail_lr_method_screen.RECIPE) if args.tail_lr else None
+        spec = dict(route=args.route, output=str(args.output),
+            recipe=tail_lr_method_screen.training_recipe(RECIPE, tail_recipe), parent_sha256=parent_sha,
             parent_path=str(parent), initialization=args.initialization, conditioning=args.conditioning,
             code=code_identity(), commit=subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
             fresh_adam=True, high_unchanged=True, train_split="original950", eval_split="original50",
@@ -861,6 +884,7 @@ def main():
             prerequisites=prerequisites(args.route, args.initialization, args.conditioning, marker_rows=args.marker_rows),
             marker_rows=args.marker_rows, marker_recipe=dict(MARKER_RECIPE) if args.marker_rows else None,
             ema_recipe=deepcopy(ema_method_screen.RECIPE) if args.trainable_ema else None,
+            tail_lr_recipe=tail_recipe,
             native_checkpoint_config_sha256=NATIVE_CONFIG_SHA if args.initialization == "native" else None,
             reference_fm_is_auxiliary_skills_prefix=True, cot_supervision=args.conditioning == "native_subtask_cot",
             cot_comparison=dict(COT_COMPARISON) if args.conditioning == "native_subtask_cot" else None,

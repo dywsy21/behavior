@@ -12,6 +12,13 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-14 17:58（北京时间）：M-03日程检查确认父权重已到低LR，准备唯一尾端日程对照
+
+- **Codex / M-03-S实证：** 上一goal轮为progress（EMA实现/264 CPU/真实排队）。本轮clean pull/fetch后实查marker/CoT/EMA四PID仍真实存活，不重启；另以CPU mmap只读A4-2500 checkpoint的optimizer/scheduler，六组当前保存LR均`1.0000000000000002e-6`、initial_lr均1e-5、last_epoch2500/_step_count2501。原config SHA仍`4d45b4c2ae8872b8e4a88916c4143d922b8cf0e76eedaa6a4116d473d9ef2483`。因此现有500筛选确实是新Adam＋重升峰值，不是原末段日程的连续恢复；这不证明退化根因，且部分动作误差改善，不能只靠FM均值判定。
+- **唯一新对照预登记：** 选`fm_tail_lr_v1`，仅改变学习率整条曲线为父保存值恒定1e-6（无新warmup/restart），AE/LoRA同比例；原A4/新Adam/纯FM、950/50、seed41/global16/6帧32→0:16、原clip/rank/评估不变。仍不继承旧Adam，因而不称完整续训。比较已完成同入口FM500，不重启control，不叠EMA/clip/容量/数据。拟等待既有EMA完整验收后四卡5门＋独立500，0新仿真/标签，无自动重试/追加5000；[配方/停止标准](experiments/2026-09-14-tail-lr-screen.md)。当前尚未实现/排队，先CPU检查真实LR曲线及保存恢复、默认路径不变和严格前驱门。
+
+18:03实现续记：新`tail_lr_method_screen.py`限定唯一原FM日程/既有EMA的精确spec与500影子回读门；trainer的配置、真实optimizer/scheduler及保存spec同时使用显式有效配方，原默认分支保持。新增CPU测试覆盖500次实际scheduler/玩具Adam、默认更新逐位一致、200→500磁盘恢复和队列不可绕过；语法/空白通过，实际CPU待固定新源。尚未提交tail作业，不改现有d28581a/9f26b45/d114581活跃源。
+
 ### 2026-09-14 17:46（北京时间）：唯一EMA对照已排队，继续原marker→CoT→EMA
 
 - **Codex / M-03-E真实提交并核验：** `fm_trainable_ema_v1`于17:45:33启动1707751，17:46实查argv/状态为`verified_live_dependency`，精确等待原CoT220792/ticks334478266，0GPU/0更新。source `d28581a9b0bc68d7740adf875b8493fbea392cc8`、spec `d195fd580899e5d947df5daa8d768d6be44315ca61a7c441beab159e2d8fd2b7`、launch `f9fb4d947c1648b8726a0e8650caefb4225ba540e7bc905bdf3bfa12b31f78ef`。原A4/纯FM、新Adam、5步四卡保存门→独立500、online/EMA配对，264 CPU通过；[预算与机器证据](experiments/2026-09-14-ema-screen.md)。**不要在续接时重新提交EMA、重复其CPU门或把等待写成训练完成。**

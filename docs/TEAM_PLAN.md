@@ -18,6 +18,8 @@ RL研究对象是跨任务可复用的后训练方法，端盘掉落只是其中
 
 ## 2. 已完成与真实效果
 
+2026-09-14 17:58：Codex只读确认A4-2500当前保存LR六组均约1e-6，已有短训会重新升到1e-5；不是已证退化原因。M-03日程单项选择`fm_tail_lr_v1`恒定父末端LR/原A4新Adam/纯FM，拟既有EMA后5＋500，不重训control/叠EMA或改数据；尚未实现排队，先CPU曲线/恢复/前驱门。现有marker→CoT→EMA保持原PID/源，容量与方法效果仍待证据。
+
 2026-09-14 17:46最新：Codex的唯一`fm_trainable_ema_v1`已实际排队1707751（d28581a/264 CPU，spec d195fd58…），精确等待既有CoT220792，0GPU/0更新；原A4纯FM的online/EMA同轮配对、5保存门＋独立500，不重启control或更改旧配方。原marker最近125/500、100点CE5.5262/free0/5，CoT仍原队列。下一按原marker→CoT→EMA验收，不再提交同名作业；M-03容量/日程、AR实际效果和兼容组合仍未完，队友数据/RL职责不变。
 
 2026-09-14 17:31：Codex转入M-03唯一EMA短对照的实现门；原A4/纯FM配方不改，跟踪可训练AE+LoRA、beta0.99/每optimizer一次，在线与EMA同轮配对。拟等既有CoT后5＋500，尚未排队，先完整状态/还原CPU与真实四卡门；不叠加clip/新日程/rank、不重复队友数据或RL。marker真实44/500，原CoT等待不变；预算见[EMA筛选](experiments/2026-09-14-ema-screen.md)。
