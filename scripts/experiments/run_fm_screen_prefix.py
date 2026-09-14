@@ -35,6 +35,11 @@ SERVICE_SHA = 'c4bc099d1ac5d4d96e311498d6d8c8309900f8cb1e91c140be2f1d901057109f'
 PYTHON = '/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python3.10'
 BEHPY = '/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python'
 PORT = 8786
+REMAINING_PORTS = {'fm_beta_stratified_v2': 8787, 'fm_exec_weight2_v2': 8788}
+ORIGINAL_MANIFEST_SHA = 'd37907aab5b3bb72706bade8ed2909a78379f4c189a3512a94ab1d789d0ce4bb'
+CONTROL_RESULT_SHA = 'cd356486a4377ff76b87366fc194eaee8913d8625882933a9646dcd2dec7b6a6'
+CONTROL_COMPLETION_SHA = '87fff31b85fc3c71bb28fd803a8a7e5d18bde9c0a15c627e3bf1525b6ab7e439'
+PORT_FAILURE_SHA = 'a4245a8a4d13610b9f22dec901e3393675228c5c9afb59c56dd6846e875b3515'
 SCREEN = {
     'fm_control_v1': 'def222a6674e6ac92e6ee982c22836b789240f1542c459d5de2111cd646a244e',
     'fm_beta_stratified_v2': '05ea17bcbbf62437b70e286ce58e6113f20cfe1dd7b79eb56010b73d1f7a6c1e',
@@ -168,13 +173,66 @@ def prepare():
 
 def validate():
     manifest = read(OUTPUT / 'manifest.json')
-    if (manifest['commit'] != clean_commit() or manifest['recipe'] != RECIPE or manifest['screen'] != SCREEN
+    if (manifest['recipe'] != RECIPE or manifest['screen'] != SCREEN
             or manifest['port'] != PORT or manifest['kind'] != 'three_FM500_matched_radio_prefix512_v1'):
         raise RuntimeError('Registered source, methods or finite budget changed')
+    if (OUTPUT / 'recovery.json').exists():
+        if read(OUTPUT / 'recovery.json') != recovery_identity():
+            raise RuntimeError('Exact unused-arm recovery evidence changed')
+    elif manifest['commit'] != clean_commit():
+        raise RuntimeError('New source requires an explicit audited unused-arm recovery')
     for path, digest in manifest['files'].items():
         if sha(path) != digest:
             raise RuntimeError('Registered dependency changed: ' + path)
     return manifest
+
+
+def assert_exited(pid):
+    if (Path('/proc') / str(pid)).exists():
+        raise RuntimeError('Original physics process must have exited before explicit recovery')
+
+
+def recovery_identity():
+    bound = {
+        OUTPUT / 'manifest.json': ORIGINAL_MANIFEST_SHA,
+        OUTPUT / 'supervise_failure.json': PORT_FAILURE_SHA,
+        OUTPUT / 'fm_control_v1/completion.json': CONTROL_COMPLETION_SHA,
+        OUTPUT / 'fm_control_v1/actual_rollout/collection_result.json': CONTROL_RESULT_SHA,
+    }
+    if any(sha(path) != digest for path, digest in bound.items()):
+        raise RuntimeError('Only the exact observed post-control port failure may be resumed')
+    for path, key in ((OUTPUT / 'launch.json', 'pid'),
+                      (OUTPUT / 'fm_control_v1/service.launch.json', 'pid'),
+                      (OUTPUT / 'fm_control_v1/rollout.launch.json', 'pid')):
+        assert_exited(read(path)[key])
+        bound[path] = sha(path)
+    exit_path = OUTPUT / 'fm_control_v1/private_service_exit.json'
+    if read(exit_path) != dict(pid=4177433, returncode=-15, other_jobs_stopped=False):
+        raise RuntimeError('Original private service was not confirmed stopped')
+    bound[exit_path] = sha(exit_path)
+    return dict(kind='resume_only_two_unused_FM512_arms_v1', commit=clean_commit(),
+                entry_sha256=sha(HERE), evidence={str(path): digest for path, digest in bound.items()},
+                ports=REMAINING_PORTS, skipped_completed_arms=['fm_control_v1'],
+                original_total_model_controls=1536, remaining_model_controls=1024,
+                changed_only_port_and_serial_resume=True, automatic_retry=False)
+
+
+def prepare_recovery():
+    if (OUTPUT / 'recovery.json').exists() or (OUTPUT / 'completion.json').exists():
+        raise FileExistsError('No repeated recovery or repeat of a completed comparison')
+    receipt = recovery_identity()
+    for name in REMAINING_PORTS:
+        root = OUTPUT / name
+        if root.is_symlink() or {p.name for p in root.iterdir()} != {'event_context.json'}:
+            raise RuntimeError('A remaining arm already consumed or prepared runtime work')
+    # Keep the original manifest and its failed launch intact. The supplemental
+    # receipt explicitly identifies the new source and per-arm endpoint map.
+    write(OUTPUT / 'recovery.json', receipt)
+    validate()
+
+
+def active_ports():
+    return dict(REMAINING_PORTS) if (OUTPUT / 'recovery.json').exists() else dict.fromkeys(SCREEN, PORT)
 
 
 def free_mib():
@@ -186,7 +244,7 @@ async def socket_gate(manifest, name):
     imports()
     import websockets
     from g05.utils.websocket import unpackb
-    async with websockets.connect(f'ws://127.0.0.1:{PORT}', max_size=64 << 20, ping_timeout=None) as ws:
+    async with websockets.connect(f'ws://127.0.0.1:{active_ports()[name]}', max_size=64 << 20, ping_timeout=None) as ws:
         identity = validate_hello(unpackb(await asyncio.wait_for(ws.recv(), timeout=60)), manifest, name)
     # Identity greeting only: no begin, no RNG reset, no neural invocation.
     write(OUTPUT / name / 'socket_gate.json', dict(passed=True, model_calls=0, identity=identity))
@@ -194,12 +252,14 @@ async def socket_gate(manifest, name):
 
 def supervise():
     manifest = validate()
-    completed = []
-    for name, digest in SCREEN.items():
+    completed = ([dict(arm='fm_control_v1', **read(OUTPUT / 'fm_control_v1/completion.json'))]
+                 if (OUTPUT / 'recovery.json').exists() else [])
+    for name, port in active_ports().items():
+        digest = SCREEN[name]
         if free_mib() < 40 * 1024 or shutil.disk_usage(BASE).free < 120 * 1024**3:
             raise RuntimeError('Insufficient GPU/disk headroom; keep other jobs untouched')
         with socket.socket() as check:
-            check.bind(('127.0.0.1', PORT))
+            check.bind(('127.0.0.1', port))
         directory, formal = OUTPUT / name, BASE / name / 'formal'
         env = dict(os.environ, CUDA_VISIBLE_DEVICES='1', OMP_NUM_THREADS='2', OPENBLAS_NUM_THREADS='2',
                    TOKENIZERS_PARALLELISM='false', PYTHONUNBUFFERED='1')
@@ -208,7 +268,7 @@ def supervise():
         command = [PYTHON, str(SERVICE), '--run', str(formal), '--checkpoint', str(formal / 'checkpoints/step_500.pt'),
             '--checkpoint-step', '500', '--checkpoint-sha', digest, '--runtime', str(RUNTIME),
             '--config', str(COMPOSITION / 'serving_config.yaml'), '--adapter', str(ADAPTER),
-            '--output-dir', str(directory / 'service'), '--port', str(PORT), '--serving-source', str(SOURCE),
+            '--output-dir', str(directory / 'service'), '--port', str(port), '--serving-source', str(SOURCE),
             '--snapshot', str(COMPOSITION / 'native_snapshot.json'), '--source-receipt', str(COMPOSITION / 'source_receipt.json'),
             '--initial-action-count', '448', '--prefix-window-sha', manifest['window_sha256'],
             '--inference-alignment-receipt', str(RUNTIME / 'inference_alignment_receipt.json')]
@@ -265,7 +325,7 @@ def supervise():
 
 
 def simulate(name):
-    if name not in SCREEN:
+    if name not in active_ports():
         raise ValueError('Unknown or unregistered FM500 arm')
     manifest = validate()
     imports()
@@ -290,7 +350,7 @@ def simulate(name):
     window, context = load_c1_window_and_context(manifest['window_path'], manifest['contexts'][name])
     window = bound_window(window, context)
     result = factory.run_official_a2_prefix_window(window=window, context=context, source_root=SOURCE,
-        policy_uri=f'ws://127.0.0.1:{PORT}', expected_checkpoint_sha256=SCREEN[name],
+        policy_uri=f'ws://127.0.0.1:{active_ports()[name]}', expected_checkpoint_sha256=SCREEN[name],
         prefix_window_sha256=manifest['window_sha256'], output_dir=OUTPUT / name / 'actual_rollout',
         gpu=1, policy_seed=17)
     print(json.dumps(result, ensure_ascii=False), flush=True)
@@ -298,29 +358,33 @@ def simulate(name):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode', choices=('start', 'supervise', 'simulate'))
+    parser.add_argument('mode', choices=('start', 'recover', 'supervise', 'simulate'))
     parser.add_argument('--arm', choices=tuple(SCREEN))
     args = parser.parse_args()
     if (args.mode == 'simulate') != (args.arm is not None):
         parser.error('--arm is required only for simulate')
-    if args.mode == 'start':
+    if args.mode in ('start', 'recover'):
         lock = (BASE / 'fm_screen_prefix512_v1.lock').open('a')
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        prepare()
+        prepare_recovery() if args.mode == 'recover' else prepare()
+        prefix = 'recovery.' if args.mode == 'recover' else ''
         command = [PYTHON, str(HERE), 'supervise']
-        with (OUTPUT / 'supervisor.log').open('x') as stream:
+        with (OUTPUT / (prefix + 'supervisor.log')).open('x') as stream:
             child = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=stream, stderr=subprocess.STDOUT,
                 start_new_session=True, pass_fds=(lock.fileno(),))
         receipt = dict(pid=child.pid, command=command, started_unix=time.time(),
-                       manifest_sha256=sha(OUTPUT / 'manifest.json'), recipe=RECIPE)
-        write(OUTPUT / 'launch.json', receipt)
+                       manifest_sha256=sha(OUTPUT / 'manifest.json'), recipe=RECIPE,
+                       remaining_ports=active_ports(),
+                       recovery_sha256=sha(OUTPUT / 'recovery.json') if prefix else None)
+        write(OUTPUT / (prefix + 'launch.json'), receipt)
         print(json.dumps(receipt), flush=True)
         return
     try:
         supervise() if args.mode == 'supervise' else simulate(args.arm)
     except BaseException:
         target = OUTPUT if args.mode == 'supervise' else OUTPUT / args.arm
-        write(target / (args.mode + '_failure.json'), dict(failed=True, traceback=traceback.format_exc(),
+        prefix = 'recovery_' if (OUTPUT / 'recovery.json').exists() else ''
+        write(target / (prefix + args.mode + '_failure.json'), dict(failed=True, traceback=traceback.format_exc(),
                                                         automatic_retry=False))
         raise
 

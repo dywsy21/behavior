@@ -1,4 +1,5 @@
 from dataclasses import asdict
+import json
 import sys
 
 import numpy as np
@@ -79,3 +80,69 @@ def test_actual_window_only_changes_the_predeclared_budget(monkeypatch):
                                                    bounded.frozen_window().prefix_actions))
     with pytest.raises(ValueError):
         pilot.bound_window(bounded, context)
+
+
+def test_recovery_ports_exclude_completed_control_and_never_reuse_its_port(tmp_path, monkeypatch):
+    monkeypatch.setattr(pilot, 'OUTPUT', tmp_path)
+    assert pilot.active_ports() == dict.fromkeys(pilot.SCREEN, 8786)
+    (tmp_path / 'recovery.json').write_text('{}')
+    ports = pilot.active_ports()
+    assert ports == {'fm_beta_stratified_v2': 8787, 'fm_exec_weight2_v2': 8788}
+    assert len(set(ports.values())) == 2 and 8786 not in ports.values()
+
+
+@pytest.mark.parametrize('damage', [None, 'started_arm', 'already_recovered', 'completed_comparison'])
+def test_only_previously_unused_arms_may_be_recovered_once(tmp_path, monkeypatch, damage):
+    monkeypatch.setattr(pilot, 'OUTPUT', tmp_path)
+    for name in pilot.REMAINING_PORTS:
+        (tmp_path / name).mkdir()
+        (tmp_path / name / 'event_context.json').write_text('{}')
+    if damage == 'started_arm':
+        (tmp_path / 'fm_beta_stratified_v2/service.launch.json').write_text('{}')
+    elif damage == 'already_recovered':
+        (tmp_path / 'recovery.json').write_text('{}')
+    elif damage == 'completed_comparison':
+        (tmp_path / 'completion.json').write_text('{}')
+    monkeypatch.setattr(pilot, 'recovery_identity', lambda: {'audited': True})
+    validations = []
+    monkeypatch.setattr(pilot, 'validate', lambda: validations.append(True))
+    if damage:
+        with pytest.raises((RuntimeError, FileExistsError)):
+            pilot.prepare_recovery()
+        assert not validations
+    else:
+        pilot.prepare_recovery()
+        assert json.loads((tmp_path / 'recovery.json').read_text()) == {'audited': True}
+        assert validations == [True]
+        with pytest.raises(FileExistsError):
+            pilot.prepare_recovery()
+
+
+@pytest.mark.parametrize('damage', [None, 'changed_failure', 'live_process'])
+def test_recovery_identity_binds_the_actual_original_failure_and_dead_processes(monkeypatch, damage):
+    identities = {
+        pilot.OUTPUT / 'manifest.json': pilot.ORIGINAL_MANIFEST_SHA,
+        pilot.OUTPUT / 'supervise_failure.json': pilot.PORT_FAILURE_SHA,
+        pilot.OUTPUT / 'fm_control_v1/completion.json': pilot.CONTROL_COMPLETION_SHA,
+        pilot.OUTPUT / 'fm_control_v1/actual_rollout/collection_result.json': pilot.CONTROL_RESULT_SHA,
+    }
+    if damage == 'changed_failure':
+        identities[pilot.OUTPUT / 'supervise_failure.json'] = 'unrelated-failure'
+    monkeypatch.setattr(pilot, 'sha', lambda path: identities.get(path, 'other-sha'))
+    monkeypatch.setattr(pilot, 'clean_commit', lambda: 'new-pinned-source')
+    monkeypatch.setattr(pilot, 'read', lambda path: dict(pid=4177433, returncode=-15, other_jobs_stopped=False)
+                        if path.name == 'private_service_exit.json' else {'pid': 42})
+    exits = []
+    def assert_exited(pid):
+        exits.append(pid)
+        if damage == 'live_process':
+            raise RuntimeError('Original physics process must have exited')
+    monkeypatch.setattr(pilot, 'assert_exited', assert_exited)
+    if damage:
+        with pytest.raises(RuntimeError):
+            pilot.recovery_identity()
+    else:
+        receipt = pilot.recovery_identity()
+        assert exits == [42, 42, 42]
+        assert receipt['remaining_model_controls'] == 1024
+        assert receipt['skipped_completed_arms'] == ['fm_control_v1']
