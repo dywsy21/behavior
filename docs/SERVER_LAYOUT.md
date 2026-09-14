@@ -26,6 +26,12 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 11:34最新：** 新`git_worktrees/reference_queue_20260914`固定9f26b45/117 CPU，现被joint4129515、KI4129539、marker4129562三个v3等待器使用，禁止热pull；三者依次等待FM4092082→joint→KI，原5＋500。各`launch.json`/`method_spec.json`/`status.json`已存在并核验，FM仍使用独立8fcf61f源、formal42/500。下方“未创建”是11:32历史，已由此次真实提交覆盖。
+
+**2026-09-14 11:32更正：** `fm_action_control_v3`4092082/4092140已进入真实更新（11:30为22），初始80为原精确0.19694399407017044。joint/KI/marker三个v3目录尚不存在；第一次串行提交在创建joint目录前因前驱名单遗漏安全拒绝，待新固定源修正后补提交。8fcf61f活跃源禁止热改；旧结果/服务均保留。
+
+**2026-09-14 11:19最新：** `fm_initial_reference_probe_v1`（8前向）、`fm_full_reference_probe_v1`（四卡80窗/160前向）和`fm_screen_actions_v1`（30 FM生成）均已complete退出，result SHA分别`379f7945…`、`ddedb3b7…`、`a9906fa5…`；0新优化/仿真，不是新成功率。`git_worktrees/reference_recovery_20260914`固定8fcf61f/111 CPU，现在用于新恢复训练，禁止热pull；`fm_action_control_v3`4092082已提交（spec `5169c020…`），后继三臂提交中，真实阶段见各status/launch。旧v1/v2及两个已完成FM500全部保留。
+
 **2026-09-14 10:43实际状态覆盖以下旧记录：** 六个恢复supervisor均已退出。`fm_beta_stratified_v2`与`fm_exec_weight2_v2`正式500完成，checkpoint SHA分别`05ea17bc…`/`101c4b32…`；`fm_action_control_v2`smoke5通过，formal仅到`eval_step_0.json`即参考值断言失败、0正式更新；joint/KI/marker未训练即前驱失败退出。旧7572ce2源及失败目录都保留，不在旧run覆盖/重启；后续修复用新Git固定源，准确新run另记。新FM报告见[结果](experiments/2026-09-14-fm-method-screen.md)，约461GiB磁盘可用；旧六服务不动。
 
 **22:44最新状态：** `ar_native_prefix_pilot_v1`唯一448＋256控制已完成，3191511/3191531/3196694全部退出，8785私有服务已正常停下；完整结果SHA `5a200786…`，视频SHA `e845f688…`。约36MB结果已复制本地`/home/wsy/behavior/artifacts/experiments/2026-09-13-native-ar-prefix-v1`，`actual_rollout/rollout.mp4`可看，`review/`有全动作/物理校验及29视图人工记录；[摘要](experiments/2026-09-13-native-ar-prefix-review.md)区分短测未成功与SR。原wire单次3140666也早已complete退出；两个结束源保留证据，不再写成活跃服务。只有恢复队列7572ce2及其Beta正式3141061正在训练/等待，不得热pull；旧六服务仍保留。
