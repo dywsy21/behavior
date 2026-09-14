@@ -26,6 +26,12 @@
 
 ## 2. 当前A3与B-final：别拿错权重或源码
 
+**2026-09-14 19:17更新：** `dual_track_fm_ar_20260913/lora_capacity_a4_fm500_v1/result.json`只读审计已完成（SHA `0bb9958df841577b77285c115119f421d73786a567cf8e06f5213e45a370b06e`，2权重/192对/0神经与训练）；`git_worktrees/capacity_audit_20260914`最终固定e50e7b5/17 CPU，CPU任务已退出，不再重跑。a077cac仅是此前错误配置路径的历史入口；原A4实际配置在`overnight_a4_20260912/formal/.hydra/config.yaml`，SHA4d45b4c2…。新容量训练尚未登记/启动；原CoT2032144/EMA1707751/tail1820879活跃源不能pull。
+
+**2026-09-14 19:08更新：** `dual_track_fm_ar_20260913/ar_marker_actions_v1/result.json`完整十窗结束（SHA `831cbd40586ba5c1fca9481485072fe964030c46b3cc9f84c47ef32f6eb64330`），2021126退出；该完整输出/原动作留服务器，轻量摘要已在docs/experiments/results。所有10自由格式正确但总体动作误差未胜FM，无marker新物理视频。原CoT220792已正式2032144，source d114581仍活跃不能pull，smoke权重SHA `12ae130c87d73525c4269ca6c9fe6684ad94aff345a339db68ffb3ed8cfbad1a`；EMA/tail维持原等待。新`git_worktrees/capacity_audit_20260914`固定a077cac/16 CPU，仅用于2权重/192对LoRA只读审计、无训练；结果尚待验，不重复启动。
+
+**2026-09-14 18:58更新：** 原`ar_a4_marker_fulltrain_v3/formal/checkpoints/step_500.pt`完整验收（SHA `3801388d71381c4cd586dac4bc19b07164e8922b8de6b5ea869bdcc52a56b52b`，inspection `b848f38026e5583f0cfa4d3471cd8647ed0eddb70a36a366617a5e5f73ce43a4`），不是下面历史302/500状态。唯一最终十窗`dual_track_fm_ar_20260913/ar_marker_actions_v1`于18:57:18启动2021126；源`git_worktrees/marker_actions_20260914`固定81810be97b108d1e843844139535c86931c60a80、42 CPU passed，正在使用不可pull；同级`.launch.json/.launch.log`记录原10 AR/0训练仿真。输出结果仍待验，不重启。CoT原220792已smoke2019434，EMA/tail仍原等待，不改三处活跃源。
+
 **2026-09-14 18:10新后继：** `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/tail_lr_screen_20260914`固定2300c50/299 CPU，现在由1820879活跃等待器引用，禁止热pull。唯一`dual_track_fm_ar_20260913/fm_tail_lr_v1`的spec SHA `55bdce00df92b30b8d75dd3b465134e4dc9664907037de64a558cc22a55932d4`、launch SHA `6f4ca2522dd63e75048a4659fd439c5e9f4c63bead4bc6bc139353233d176f32`；18:09真实等待EMA1707751/ticks336359196，0GPU/0更新。原marker1563012训练、CoT220792→EMA1707751继续原队列，尾端候选不接前驱权重/不叠EMA；smoke/formal尚未开始，不重复提交。marker200阶段结果原文件在`ar_a4_marker_fulltrain_v3/formal/eval_step_200.json`（059b0b4d…），不是新500权重。
 
 **2026-09-14 17:46新队列：** `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/ema_screen_20260914`现在固定d28581a（264 CPU通过）并已用于活跃EMA等待器1707751，**不可热pull**；ee970b0是同目录较早已结束CPU检查的历史commit。唯一run `dual_track_fm_ar_20260913/fm_trainable_ema_v1`含`method_spec.json`（SHA `d195fd580899e5d947df5daa8d768d6be44315ca61a7c441beab159e2d8fd2b7`）、launch/status/supervisor.log；当前0GPU/0更新，等待CoT220792/ticks334478266。smoke/formal尚未创建，不重排；将来每阶段`ema/`保存配对评估，完整online+EMA+Adam同checkpoint，`ema_*_rank*.json`记录实际内存/影子/还原。原marker1563012真实训练、CoT原等待，旧9f26b45/d114581均不变。
