@@ -12,6 +12,10 @@
 
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
+### 2026-09-15 16:26（北京时间）：三条字幕视频复制到artifacts根目录
+
+- **Codex / V-01交付位置更新：** 按用户要求，三份`*-intent.mp4`已从`artifacts/selected-videos-20260915/subtitled/`非覆盖复制到`/home/wsy/behavior/artifacts/`根目录，文件名不变。三份逐字节cmp通过，SHA仍为`8388ef5a…`/`6180dc68…`/`38c5c06d…`；原副本保留、Git忽略正常。新入口见[视频清单](experiments/2026-09-15-selected-videos.md)，无剩余复制问题，不涉及新训练或评测。
+
 ### 2026-09-15 16:13（北京时间）：三段实时意图硬字幕完成，切换前后成片核验通过
 
 - **Codex / V-01-subtitles完成：** 三份`artifacts/selected-videos-20260915/subtitled/*-intent.mp4`实际导出/全解码通过，1050/233/450帧、70/15.53/30秒，720×1184/15fps。原画面未遮挡、未加速或覆盖，ckpt不变；ASS、逐段manifest、27条raw规划/固定条件及`validation.json`保留。A2/A3基于真实已安装高层技能及committed命令记忆，A4明确标注固定原标注GRASP/0高层；没有编写不存在的自由文本CoT。

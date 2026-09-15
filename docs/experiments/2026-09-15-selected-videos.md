@@ -2,6 +2,12 @@
 
 2026-09-15 15:49（北京时间），Codex / V-01。按用户请求筛选已有结果；**三个不同任务的局部亮点，不是三个完整任务成功，也不是新评测或随机抽样的成功率。** 低层全部为FM，未选取原生AR或新500步方法候选冒充成功。
 
+16:26按用户要求，三条带字幕视频另放到本地`artifacts/`根目录，已逐字节校验、原副本保留：
+
+- [01-A2-trash-grasp-and-carry-intent.mp4](/home/wsy/behavior/artifacts/01-A2-trash-grasp-and-carry-intent.mp4)
+- [02-A4-radio-grasp-policy-only-intent.mp4](/home/wsy/behavior/artifacts/02-A4-radio-grasp-policy-only-intent.mp4)
+- [03-A3-halloween-candle-grasp-and-carry-intent.mp4](/home/wsy/behavior/artifacts/03-A3-halloween-candle-grasp-and-carry-intent.mp4)
+
 ## 16:13更新：实时意图字幕版已完成
 
 用户追加要求后，已为同三条短片生成硬字幕版本，ckpt和原视频内容/速度不变。原720×720画面完整保留在720×1184视频中央，上方显示模型/仿真时钟/控制步，下方显示实时意图、原技能与对象ID、决策、命令记忆及来源/限制；未覆盖原片。
