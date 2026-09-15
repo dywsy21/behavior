@@ -2,6 +2,26 @@
 
 2026-09-15 15:49（北京时间），Codex / V-01。按用户请求筛选已有结果；**三个不同任务的局部亮点，不是三个完整任务成功，也不是新评测或随机抽样的成功率。** 低层全部为FM，未选取原生AR或新500步方法候选冒充成功。
 
+## 16:13更新：实时意图字幕版已完成
+
+用户追加要求后，已为同三条短片生成硬字幕版本，ckpt和原视频内容/速度不变。原720×720画面完整保留在720×1184视频中央，上方显示模型/仿真时钟/控制步，下方显示实时意图、原技能与对象ID、决策、命令记忆及来源/限制；未覆盖原片。
+
+| 字幕版（本地） | 主要意图切换（短片时间） | 来源 |
+| --- | --- | --- |
+| [01 A2：抓桶并携行](/home/wsy/behavior/artifacts/selected-videos-20260915/subtitled/01-A2-trash-grasp-and-carry-intent.mp4) | 22.6667s，GRASP垃圾桶116 → NAVIGATE汽水罐114 | 18次已提交B-final结构化规划 |
+| [02 A4：抓收音机](/home/wsy/behavior/artifacts/selected-videos-20260915/subtitled/02-A4-radio-grasp-policy-only-intent.mp4) | 固定GRASP收音机89，全段不变 | 原始标注条件；0高层调用，无高层记忆/CoT |
+| [03 A3：拾蜡烛并携行](/home/wsy/behavior/artifacts/selected-videos-20260915/subtitled/03-A3-halloween-candle-grasp-and-carry-intent.mp4) | 17.20s，GRASP蜡烛91 → NAVIGATE下柜0 | 8次已提交B-final结构化规划 |
+
+**字幕不是补写的CoT。** 原始日志有技能、目标、`decision`、`previous_outcome`、`memory_update`等结构化输出，没有另存的自由文本推理段。中文是忠实转述，不把画面观察改写成当时模型的意图。`issued_command_history`仅表示命令记录，不等于完成历史；`verified_world_facts=[]`与UNKNOWN_ONLY按原样标明，不能当作训练过的物理反馈。
+
+时序以`consumed_actions_before_request`和实际安装的`active_subgoal`为准，短片开始前最后一次高层状态正确延续；不是将第一条截内更新提前到0秒。A2/A3日志本地与robo的SHA分别为`9151a1f7a7d5f01bc46e86c348dc445028b6206b928862e8747d9f9d8eb10162`/`7d88df90b0fb546c469f15a79d84f5bfca0e02cbaee7360b7fcaf136031c2eef`，现场核对一致。A2的132、A3的57个实际低层chunk均与字幕引用的已安装技能一致；1733个输出帧逐一检查字幕区间无重叠/缺口或未来状态。
+
+三段成片1050/233/450帧、70/15.5333/30秒、15fps/H.264/yuv420p，完整解码全部exit0。Codex本人检查实际烧录成片的A2第339/340帧、A3第257/258帧及A4第130帧：切换前后一帧正确、中文字形可读、没有遮住原画面/文字越界。人工查看的是这5个成片视图，不宣称看完每一帧。
+
+字幕目录`artifacts/selected-videos-20260915/subtitled/`同时保留`.ass`、逐段`.manifest.json`、`sources/*.planner-excerpt.json`（27条原始规划/固定条件，含可用raw_text）、`validation.json`和`review/`。媒体/原始日志/字体软链均被忽略，不入Git；本轮没有新模型、训练或仿真。
+
+成片SHA256按01/02/03顺序：`8388ef5a762b8da4f459f592a093ae3893e5350255ebe00ced2fd2a883d8e503`、`6180dc6888c173dba17931ff0e2a82789e5f13d137c60c52791e068432928aa1`、`38c5c06d7cf630ebcfcbdcca636d964702eee216b17ab33785321fc8f85f7d2f`。
+
 ## 本地短片
 
 目录：`/home/wsy/behavior/artifacts/selected-videos-20260915/`。原视频、失败后续和已有审核全部保留。以下均连续截取、没有加速、插帧或更改执行顺序。原视频15fps，每两个控制记录一帧，播放对应仿真时钟，不是慢速仿真实际消耗的墙钟时间。
