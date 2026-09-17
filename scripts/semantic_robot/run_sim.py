@@ -11,6 +11,7 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+from urllib.request import urlopen
 
 import numpy as np
 
@@ -39,6 +40,7 @@ def main():
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--gpu", type=int, default=3)
     p.add_argument("--uri", default="http://127.0.0.1:8897")
+    p.add_argument("--expected-revision", help="Required model identity for agent mode")
     p.add_argument("--max-decisions", type=int, default=48)
     p.add_argument("--max-controls", type=int, default=1536)
     p.add_argument("--max-seconds", type=int, default=1200)
@@ -47,6 +49,14 @@ def main():
         raise ValueError("Outside preregistered pilot budget")
     if args.task == 3 and args.prefix:
         raise ValueError("Task3 pilot starts at reset; no unregistered expert prefix")
+    model_identity=None
+    if args.mode=="agent":
+        with urlopen(args.uri,timeout=10) as reply:
+            model_identity=json.load(reply)
+        if not args.expected_revision or model_identity.get("revision") != args.expected_revision:
+            raise ValueError("Model service revision does not match registered checkpoint")
+        if not model_identity.get("constrained_action_grammar"):
+            raise ValueError("This pilot requires explicit constrained syntax")
     if subprocess.check_output(["git","-C",str(REPO),"status","--porcelain"],text=True).strip():
         raise RuntimeError("Immutable clean worktree required")
     out=Path(args.output); out.mkdir(parents=True,exist_ok=False)
@@ -74,6 +84,7 @@ def main():
              "args":vars(args),"window_sha256":sha(path),"window":str(path),"robot_sha256":ROBOT_SHA,
              "instance":window.instance_id,"split":"train","environment_seed":0,"policy_seed":17,
              "task_name":window.task_name,"prompt_version":PROMPT_VERSION,"training_updates":0,
+             "model_identity":model_identity,
              "evaluator_version":"v3.9.1-development-not-official-v3.9.2","started_unix":time.time(),
              "prefix_is_expert_not_agent":bool(args.prefix),"actor_has_privileged_scene_state":False,
              "runtime_factory_sha256":sha(ADAPTER/"native_oracle_low_v1/official_factory.py")}
@@ -117,11 +128,16 @@ def main():
             def capture(label):
                 images=harness.observation()["images"]
                 head=Image.fromarray(images["head_rgb"].transpose(1,2,0)).resize((640,640))
-                canvas=Image.new("RGB",(640,768),(15,20,28)); canvas.paste(head,(0,0))
+                canvas=Image.new("RGB",(640,1088),(15,20,28)); canvas.paste(head,(0,0))
+                for x,name in ((0,"left_wrist_rgb"),(320,"right_wrist_rgb")):
+                    wrist=Image.fromarray(images[name].transpose(1,2,0)).resize((320,320))
+                    canvas.paste(wrist,(x,640))
                 draw=ImageDraw.Draw(canvas)
-                draw.text((12,650),f"R1Pro semantic agent | task {args.task} | {args.mode}",fill="white")
-                draw.text((12,680),f"Control {controls} | {label}",fill="white")
-                draw.text((12,710),"LOCAL PILOT / expert prefix excluded / not full task success",fill="white")
+                draw.text((12,645),"LEFT WRIST",fill="white"); draw.text((332,645),"RIGHT WRIST",fill="white")
+                draw.text((12,974),f"R1Pro semantic agent | task {args.task} | {args.mode}",fill="white")
+                draw.text((12,1004),f"Control {controls} | {label}",fill="white")
+                draw.text((12,1034),f"LOCAL PILOT | {prefix_count} expert prefix controls not shown",fill="white")
+                draw.text((12,1060),"Command is not verified task success",fill="white")
                 video.append_data(np.asarray(canvas))
 
             for decision in range(args.max_decisions):
@@ -172,7 +188,8 @@ def main():
             result={"status":"complete","controls":controls,"prefix_controls":prefix_count,"decisions":decisions,
                     "terminal":terminal,"official_success":bool(done_info.get("success",False)),
                     "wall_s_after_prefix":time.perf_counter()-started,"full_task_success_rate_claim":False,
-                    "final_done_info":repr(done_info)}
+                    "final_done_info":repr(done_info),
+                    "final_goal_status":done_info.get("goal_status",{})}
             write(out/"result.json",result)
     except BaseException as exc:
         write(out/"failure.json",{"error":repr(exc),"controls":controls,"prefix_controls":prefix_count})
