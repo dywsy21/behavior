@@ -8,7 +8,7 @@ from scipy.spatial.transform import Rotation
 
 from semantic_robot.control import RobotState
 from semantic_robot.v2.harness import Goal, TaskHarness, parse_plan
-from semantic_robot.v2.kinematics import RobotModel
+from semantic_robot.v2.kinematics import RobotModel, link_origin_jacobian
 from semantic_robot.v2.protocol import Action, Evidence, HOLD, strict_json
 from semantic_robot.v2.servo import SafeServo, bounded_ik, native_action, segment_distance
 from semantic_robot.v2.vision import prepare_views, project
@@ -88,6 +88,33 @@ class ProtocolTests(unittest.TestCase):
 
 
 class KinematicsTests(unittest.TestCase):
+    def test_com_jacobian_translates_point_in_rotated_link(self):
+        model, state = fixture()
+        rng = np.random.default_rng(52)
+        local_com = np.array([.027,-.018,.12])
+        for _ in range(8):
+            quat = Rotation.random(random_state=rng).as_quat()
+            offset = Rotation.from_quat(quat).apply(local_com)
+            true = rng.normal(size=(6,18))
+            measured = true.copy()
+            measured[:3] += np.cross(true[3:].T, offset).T
+            np.testing.assert_allclose(link_origin_jacobian(measured,quat,local_com),true,atol=1e-14)
+            np.testing.assert_array_equal(measured[3:],true[3:])
+
+    def test_com_correction_recovers_fk_not_just_self_consistent_jacobian(self):
+        pose = (np.array([.4,.1,.8]), np.array([0.,0.,0.,1.]))
+        true = np.zeros((6,18)); true[5,4] = 1
+        true[:3,4] = [-.1,.4,0]
+        com = np.array([.03,.02,0.])
+        measured = true.copy(); measured[:3] += np.cross(true[3:].T,com).T
+        poses = {name:pose for name in ("left","right","torso")}
+        corrected = link_origin_jacobian(measured,pose[1],com)
+        model = RobotModel.from_reference(np.zeros(18),np.full(18,-2.),np.full(18,2.),poses,
+                                         {name:corrected for name in poses})
+        q = np.zeros(18); q[4] = .6
+        actual = Rotation.from_rotvec([0,0,.6]).apply(pose[0])
+        np.testing.assert_allclose(model.poses(q)["left"][0],actual,atol=1e-12)
+
     def test_fk_reference_roundtrip(self):
         model, state = fixture()
         restored = RobotModel(json.loads(json.dumps(model.spec)))

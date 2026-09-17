@@ -3,10 +3,24 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from semantic_robot.og_backend import OGKinematics, array
-from .kinematics import RobotModel, transform
+from .kinematics import RobotModel, transform, link_origin_jacobian
 
 
 class CalibratedRobot(OGKinematics):
+    def local_com(self, name):
+        if not hasattr(self, "_local_com"):
+            self._local_com = {}
+        if name not in self._local_com:
+            self._local_com[name] = array(self.robot.links[name].center_of_mass).reshape(3).copy()
+        return self._local_com[name]
+
+    def state(self):
+        state = super().state()
+        for name, link in self.links.items():
+            state.jacobians[name] = link_origin_jacobian(
+                state.jacobians[name], state.poses[name][1], self.local_com(link))
+        return state
+
     def calibrate(self):
         import omnigibson.lazy as lazy
         state = self.state()
@@ -20,7 +34,8 @@ class CalibratedRobot(OGKinematics):
                 if row < 0:
                     continue
                 poses["link:"+name] = tuple(array(v) for v in self.api.get_link_relative_position_orientation(self.path, name))
-                jacobians["link:"+name] = all_jac[row][:, self.indices+offset]
+                jacobians["link:"+name] = link_origin_jacobian(
+                    all_jac[row][:, self.indices+offset], poses["link:"+name][1], self.local_com(name))
             except (KeyError, ValueError, AssertionError):
                 continue  # non-articulation decorative links are not collision/FK links
         cameras = {}
@@ -61,7 +76,9 @@ class CalibratedRobot(OGKinematics):
             chains[arm] = names
         metadata = {"cameras": cameras, "arm_chains": chains, "joint_indices": self.indices.tolist(),
                     "joint_names": [joint_names[int(i)] for i in self.indices],
-                    "source": "robot_only_reference_poses_and_jacobians", "scene_truth": False,
+                    "source": "robot_only_reference_poses_and_com_corrected_jacobians", "scene_truth": False,
+                    "jacobian_point": "link_origin_corrected_from_physx_com",
+                    "local_link_com": {name: value.tolist() for name, value in self._local_com.items()},
                     "collision": "3cm arm capsules, 8cm wrist separation; not environment mesh collision"}
         return RobotModel.from_reference(state.q, state.lower, state.upper, poses, jacobians, metadata)
 

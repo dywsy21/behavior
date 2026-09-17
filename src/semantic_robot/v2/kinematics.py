@@ -25,6 +25,18 @@ def transform(p, q):
     return result
 
 
+def link_origin_jacobian(com_jacobian, link_quaternion, local_com):
+    """PhysX geometric J is at link COM, but link poses are at prim origins.
+
+    Translate the *point*, not the axes: v_origin = v_com - omega x R*c.
+    Both velocity blocks are already expressed in the robot-base frame.
+    """
+    J = finite(com_jacobian, (6, 18)).copy()
+    offset = Rotation.from_quat(link_quaternion).apply(finite(local_com, (3,)))
+    J[:3] -= np.cross(J[3:].T, offset).T
+    return J
+
+
 def se3_exp(screw, value):
     v, w = screw[:3], screw[3:]
     result = np.eye(4)

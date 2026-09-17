@@ -133,6 +133,9 @@ def main():
                 write(out/"fk_checks.json",checks)
                 for name, errors in check["errors"].items():
                     if errors["position_m"] > .003 or errors["angle_rad"] > .02 or errors.get("jacobian_max_abs",0) > .04:
+                        # OG shutdown may terminate before the outer except runs.
+                        write(out/"failure.json",{"error":"FK_MISMATCH", "check":check,
+                              "controls":controls,"prefix_controls":prefix_count,"decisions":decisions})
                         raise RuntimeError(f"Portable robot/camera FK mismatch {label}/{name}: {errors}")
 
             def step(action, render=True):
