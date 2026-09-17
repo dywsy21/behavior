@@ -6,6 +6,19 @@
 
 ## 1. 总览
 
+**2026-09-17新增语义微动作试验（Codex）：**
+
+| 位置 | 内容/边界 |
+| --- | --- |
+| `/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917` | H-02/03 run根；`gate_v1`是24命令控制门，`radio_2b_v2`/`radio_4b_v2`为局部VLM闭环；实际完成状态见各result/日志及plan，不凭目录存在认定成功 |
+| 同根`models/Qwen3.5-2B`和`models/Qwen3.5-4B` | 官方冻结权重，revision分别`15852e8c…`/`851bf6e8…`，不是新训MEM-Lite或Show-Harness adapter，不入Git |
+| 同根`deps` | transformers5.7.0依赖overlay，经显式PYTHONPATH供新服务使用；未升级共享G05的4.57.1。模型Python仍复用原torch2.7.1；仿真Python不使用此overlay |
+| 同根`server_*` / `bench_*` | 身份、调用清单/图像prompt hash和同图延迟；端口仅127.0.0.1的8897/8898，配额有界，结束释放自己的服务 |
+| `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_agent_*` | `1680e01`/`f18dd43`/`a7880ec`/`fa9db1b`/`d312380`各不可变Git快照；服务/仿真引用的快照不能热pull |
+| 本地`/home/wsy/behavior/artifacts/semantic-agent-20260917/` | 已传回的控制门/闭环视频、审核图和结果副本；被忽略不代表可删除 |
+
+本次查`/mnt/sdc1`约181G可用，`/mnt/tmp1`不再存在；下表的归档盘是9月12日历史记录，后续清理必须重新核对挂载，不能照旧路径移动。本次未清理/迁移任何旧文件，新增试验限定25GiB内。
+
 | 类别 | 当前服务器位置 | 用途与处理原则 |
 | --- | --- | --- |
 | 原主代码工作区 | `/mnt/sdc1/robodojo/GalaxeaVLA` | 用户指定迁移来源；源码已复制到本地，原31个已修改/90个未跟踪路径及`.git`保留。不直接pull覆盖旧改动 |
