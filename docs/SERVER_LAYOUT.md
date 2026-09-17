@@ -6,6 +6,21 @@
 
 ## 1. 总览
 
+**2026-09-17 H-06语义agent v2（Codex，进行中）：** 源码分支`feat/semantic-agent-v2-20260917`，根为`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917`。不覆盖下面v1。
+
+| v2位置（相对新根，除非写绝对路径） | 内容/边界 |
+| --- | --- |
+| `models/Qwen3.8-27B`、`download_reference.log` | 官方冻结revision `1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0`，55,586,036,737字节，下载回执/逐文件大小核验；不是微调权重 |
+| `gate_radio_v1` / `gate_radio_v2`及同名`.log` | 分别为libGLU初始化失败、COM/link原点参考点失败，原证据保留；不能当成功门 |
+| `gate_radio_v3` | `3869ed8`修正质心Jacobian后复验，状态见plan；校准JSON是机器人资产，不含场景对象状态 |
+| `static_review_inputs_v1` | 15原始状态及三视角人工审核拼图；此版本的几何引导来自失败校准，不可作为正确标尺 |
+| `static_4b_v2` | 用修正后校准重新生成15状态输入，4B观察/动作各一次、最多30调用、0执行；不作为新训练集 |
+| `server_4b_v1`、同名`.log` | v2协议服务8907，复用旧4B权重，不与原v1服务/队友服务混淆；调用及输入hash留证 |
+| `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_v2_*` | e19940f下载、be00be7服务、47b992d旧门、3869ed8修复门等独立不可变源，禁止热pull/修改 |
+| 本地`/home/wsy/behavior/artifacts/semantic-agent-v2-20260917/` | 原/修复校准、15状态审核图等；不入Git，不因ignore而随意删除 |
+
+v2预算≤65GiB新增并至少80GiB可用，0训练；共享解释器和依赖仍见下表。模拟器入口仅在本私有进程re-exec时补既有pymeshlab的libGLU目录，不升级共享OG/conda。最新进程/资源状态只以plan与实查为准。
+
 **2026-09-17新增语义微动作试验（Codex）：**
 
 19:35收尾：下面4个物理run均结束，模型服务3982269/3982591已停止，GPU1/3本轮工作已释放；队友3898152/3898758仍在。总目录14,231,956,955字节/约13.25GiB，0清理旧文件。三条VLM短测无任务成功，并暴露IK限位边界，不可把目录complete当方法已验收。[报告](experiments/2026-09-17-semantic-agent-pilot.md)
