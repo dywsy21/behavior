@@ -16,7 +16,9 @@
 | 同根`models/Qwen3.5-2B`和`models/Qwen3.5-4B` | 官方冻结权重，revision分别`15852e8c…`/`851bf6e8…`，不是新训MEM-Lite或Show-Harness adapter，不入Git |
 | 同根`deps` | transformers5.7.0依赖overlay，经显式PYTHONPATH供新服务使用；未升级共享G05的4.57.1。模型Python仍复用原torch2.7.1；仿真Python不使用此overlay |
 | 同根`server_*` / `bench_*` / `sanity_*` | 身份、调用清单/图像prompt hash、同图延迟与无执行输入检查；旧8897/8898私有服务已停止，8＋60＋108调用日志保留 |
+| 同根`audit_saved_inputs_v1` / `audit_saved_inputs_v1.log` | H-05保存状态审计：3状态×6配方=18静态调用，0控制/更新；原始prompt/媒体hash/token/输出完整保留，进程3993804已于20:07核验退出；结果SHA `0882a4b2…` |
 | `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_agent_*` | `1680e01`/`f18dd43`/`a7880ec`/`fa9db1b`/`d312380`/`1d872d7`不可变Git快照；运行已结束，仍保留用于重现，不用新代码覆盖旧版本 |
+| `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_audit_a870cff` | H-05诊断脚本不可变源码；不连接模拟器，原生产控制器没有改动 |
 | 本地`/home/wsy/behavior/artifacts/semantic-agent-20260917/` | 已传回的控制门/闭环视频、审核图和结果副本；被忽略不代表可删除 |
 
 本次查`/mnt/sdc1`约181G可用，`/mnt/tmp1`不再存在；下表的归档盘是9月12日历史记录，后续清理必须重新核对挂载，不能照旧路径移动。本次未清理/迁移任何旧文件，新增试验限定25GiB内。

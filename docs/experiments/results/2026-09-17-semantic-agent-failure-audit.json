@@ -1,0 +1,49 @@
+{
+  "id": "H-05",
+  "date_timezone": "2026-09-17 Asia/Shanghai",
+  "owner": "Codex",
+  "kind": "saved_inputs_diagnosis_not_success_rate_evaluation",
+  "status": "complete",
+  "code_commit": "a870cffaa97c7143b796014aaa565841d91c3226",
+  "model": "Qwen/Qwen3.5-4B",
+  "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "model_lora_adapter": null,
+  "remote_run": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917/audit_saved_inputs_v1",
+  "raw_result_sha256": "0882a4b25c43741d97c494ae9bc3aa80c74d311abff8603d85853eec63eb7a6e",
+  "local_artifacts": "artifacts/semantic-agent-20260917/audit_saved_inputs_v1",
+  "calls": 18,
+  "unique_saved_states": 3,
+  "recipes_per_state": 6,
+  "actuations": 0,
+  "training_updates": 0,
+  "wall_s_after_load": 41.98796234605834,
+  "hit_output_cap_count": 0,
+  "original_constrained_action_reproduced_count": 3,
+  "original_free_invalid_count": 2,
+  "original_grammar_root_probability_mass": {
+    "radio_start": 0.9851481318473816,
+    "radio_empty_lift": 0.9901806712150574,
+    "plates_start": 0.9701036214828491
+  },
+  "human_review": {
+    "raw_images_reviewed": 9,
+    "cases": ["radio_start", "radio_empty_lift", "plates_start"],
+    "views_per_case": ["head_rgb", "left_wrist_rgb", "right_wrist_rgb"],
+    "review_directory": "artifacts/semantic-agent-20260917/audit_review",
+    "holding_claim_wrong_cases_in_visible_facts_probe": ["radio_empty_lift", "plates_start"],
+    "note": "Qualitative development-state audit, combined with previously reviewed physical rollout videos; not a held-out benchmark."
+  },
+  "limitations": [
+    "single_part changes both human-selected stage advice and grammar; not an isolated causal ablation or autonomous planning result",
+    "640-input wrist images are upsampled from 480; head source is 720",
+    "observation_then_action output is not a bare command by design; the radio_empty_lift HOLD action itself is valid",
+    "root token probability does not establish semantic correctness of later constrained tokens",
+    "joint-limit clipping is a confirmed controller design weakness; the unique cause of maximum physical tracking error is not yet isolated",
+    "no new simulation success rate, controller fix, model training, strong-model download or production rollout"
+  ],
+  "next_steps_not_started": [
+    "joint-limit-aware IK, failure events and multi-pose kinematic gates",
+    "camera-grounded factorized action interface and stage/outcome/recovery harness",
+    "bounded stronger-VLM quality reference before small-model robot SFT"
+  ]
+}
