@@ -1,4 +1,5 @@
 import importlib.util
+import ast
 from pathlib import Path
 import unittest
 
@@ -11,6 +12,12 @@ spec.loader.exec_module(service)
 
 
 class TransportTests(unittest.TestCase):
+    def test_portable_modules_parse_on_model_environment_python310(self):
+        root=Path(__file__).resolve().parents[2]
+        for path in (root/"src/semantic_robot/v2").glob("*.py"):
+            with self.subTest(path=path.name):
+                ast.parse(path.read_text(),feature_version=(3,10))
+
     def test_plain_unchanged_and_one_fence_only(self):
         payload = '{"visible":true,"note":"observed"}'
         self.assertEqual(service.normalize_json_transport(payload),(payload,None))

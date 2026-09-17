@@ -139,6 +139,7 @@ class SafeServo:
         if action.move in (*TRANSLATIONS, *ROTATIONS):
             action.amount(carry)  # reject before mutating any runtime state
         self.action, self.start, self.carry = action, state, bool(carry)
+        self.joint_plan = None
         self.ticks, self.stalled, self.divergent, self.limit_ticks = 0, 0, 0, 0
         self.total_ticks = {"micro": 12, "fine": 18, "coarse": 24}[action.scale]
         self.status, self.done, self.base_integral = "RUNNING", False, np.zeros(3)
@@ -168,7 +169,7 @@ class SafeServo:
             self.targets["torso"] = tuple(v.copy() for v in state.poses["torso"])
             self.columns = np.arange(18)  # coupled trunk + arm compensation in ONE solve
         else:
-            self.columns = np.r_[*[np.arange(4, 11) if n == "left" else np.arange(11, 18) for n in names]]
+            self.columns = np.concatenate([np.arange(4, 11) if n == "left" else np.arange(11, 18) for n in names])
         for name in names:
             p, quat = self.targets[name]
             frame = np.eye(3)
@@ -186,12 +187,44 @@ class SafeServo:
                 self.rot_tolerance = max(.003, min(np.deg2rad(1.5), amount*.25))
         # Non-mutating reachability gate before actuating anything.
         predicted = state.q.copy()
-        for _ in range(32):
-            if self._within(self.model.poses(predicted, self.targets)):
+        for _ in range(64):
+            errors = self._errors(self.model.poses(predicted, self.targets), self.targets)
+            if all(np.linalg.norm(e[:3]) <= min(.0005,self.pos_tolerance*.25) and
+                   np.linalg.norm(e[3:]) <= self.rot_tolerance*.25 for e in errors.values()):
                 break
             predicted = self._solve(predicted, self.targets, .05)
         if not self._within(self.model.poses(predicted, self.targets)):
             return self.abort("UNREACHABLE_OR_COLLISION_BLOCKED")
+        # Plan AND execute the same finite trajectory. Re-solving a lightly
+        # damped Cartesian ramp once per tick does not reproduce the iterative
+        # reachability solve, particularly at the folded-arm singularity.
+        joint_tick = self.limits.joint_tick*(.5 if self.carry else 1)
+        delta = predicted-state.q
+        moving_ticks = max(int(np.ceil(self.total_ticks*.65)),
+                           int(np.ceil(1.875*np.max(np.abs(delta))/joint_tick)))
+        ticks = max(self.total_ticks,moving_ticks+5)
+        if ticks > {"micro":24,"fine":40,"coarse":64}[action.scale]:
+            return self.abort("DURATION_LIMIT_EXCEEDED")
+        plan, previous = [], state.q.copy()
+        for i in range(ticks):
+            t = min(1.,(i+1)/moving_ticks)
+            u = 10*t**3-15*t**4+6*t**5
+            q = state.q+u*delta
+            if (np.max(np.abs(q-previous)) > joint_tick+1e-9 or
+                    self.collision.clearance(q) < 0 or self.collision.clearance((q+previous)/2) < 0):
+                return self.abort("TRAJECTORY_LIMIT_OR_COLLISION")
+            # Joint interpolation may curve in Cartesian space. Explicitly
+            # reject paths leaving the bounded intended position/orientation
+            # corridor, rather than silently changing the meaning of UP etc.
+            for name,(p,quat) in self.model.poses(q,self.targets).items():
+                p0,q0 = state.poses[name]; goal_p,goal_q = self.targets[name]
+                rot = (Rotation.from_quat(goal_q)*Rotation.from_quat(q0).inv()).as_rotvec()
+                expected = (p0+u*(goal_p-p0),(Rotation.from_rotvec(u*rot)*Rotation.from_quat(q0)).as_quat())
+                error = pose_error(expected,(p,quat))
+                if np.linalg.norm(error[:3]) > 2*self.pos_tolerance or np.linalg.norm(error[3:]) > 2*self.rot_tolerance:
+                    return self.abort("CARTESIAN_PATH_DEVIATION")
+            plan.append(q); previous = q
+        self.joint_plan, self.total_ticks = np.asarray(plan), ticks
         return True
 
     def abort(self, reason):
@@ -225,14 +258,20 @@ class SafeServo:
             current[name] = (p0+s*(p-p0), (Rotation.from_rotvec(rot*s)*Rotation.from_quat(q0)).as_quat())
         q = self.start.q.copy()
         if self.columns.size:
-            q = self._solve(state.q, current, self.limits.joint_tick*(.5 if self.carry else 1))
-            # Hold non-active joints at latched start, rather than following disturbances.
-            mask = np.ones(18, dtype=bool); mask[self.columns] = False
-            q[mask] = self.start.q[mask]
-            cost = self._cost(state.poses, current)
+            planned = self.joint_plan[self.ticks]
+            current = self.model.poses(planned,self.targets)
+            # Uniform rate limiting of the joint-space segment under physical
+            # lag, NOT clipping independently solved Cartesian IK coordinates.
+            delta = planned-state.q
+            tick = self.limits.joint_tick*(.5 if self.carry else 1)
+            q = state.q+delta*min(1.,tick/max(float(np.max(np.abs(delta))),1e-12))
+            if self.collision.clearance(q) < 0:
+                self.abort("ROBOT_COLLISION_RISK")
+                return self.safe_hold(state)
+            cost = self._cost(state.poses, self.targets)
             near_limit = np.any(q[self.columns] < self.model.lower[self.columns]+.003) or np.any(q[self.columns] > self.model.upper[self.columns]-.003)
             self.limit_ticks += int(near_limit)
-            stalled = s >= .99 and self.previous_cost is not None and cost >= self.previous_cost*.995 and not self._within(state.poses)
+            stalled = self.ticks >= self.total_ticks-5 and self.previous_cost is not None and cost >= self.previous_cost*.995 and not self._within(state.poses)
             self.stalled = self.stalled+1 if stalled else 0
             self.previous_cost = cost
             if self.stalled >= self.limits.stall_ticks:

@@ -1,6 +1,7 @@
 import copy
 from dataclasses import asdict
 import json
+from pathlib import Path
 import unittest
 
 import numpy as np
@@ -158,6 +159,32 @@ class KinematicsTests(unittest.TestCase):
 
 
 class ServoTests(unittest.TestCase):
+    def test_real_folded_arm_executes_the_plan_that_passed_preflight(self):
+        model = RobotModel(json.loads((Path(__file__).parent/"fixtures/r1pro_folded_fk.json").read_text()))
+        state = model.state(model.reference,np.full(2,.05),np.zeros(3))
+        servo = SafeServo(model,state)
+        self.assertTrue(servo.begin(Action("right","up","fine"),state))
+        self.assertGreater(servo.total_ticks,18)
+        self.assertLessEqual(servo.total_ticks,40)
+        path = [state.q.copy()]
+        while not servo.done and servo.ticks<servo.total_ticks:
+            a = servo.next_action(state)
+            q = np.r_[a[3:14],a[15:22]]; path.append(q)
+            state = model.state(q,state.gripper,np.zeros(3))
+        result = servo.finish(state)
+        self.assertEqual(result["status"],"TARGET_REACHED")
+        self.assertLess(result["target_error_m"]["right"],servo.pos_tolerance)
+        self.assertGreater(result["eef_delta_m"]["right"][2],.01-servo.pos_tolerance)
+        self.assertLessEqual(np.abs(np.diff(path,axis=0)).max(),.025001)
+
+    def test_slow_joint_limit_cannot_silently_exceed_action_horizon(self):
+        from semantic_robot.v2.servo import ServoLimits
+        model,state=fixture()
+        servo=SafeServo(model,state,limits=ServoLimits(joint_tick=.00001))
+        self.assertFalse(servo.begin(Action("right","up"),state))
+        self.assertEqual(servo.status,"DURATION_LIMIT_EXCEEDED")
+        self.assertEqual(servo.ticks,0)
+
     def simulate(self, action, carry=False):
         model, state = fixture(); servo = SafeServo(model,state)
         self.assertTrue(servo.begin(action,state,carry))
