@@ -90,6 +90,8 @@ def main():
                     obs, call = policy.observe(manager,state,bundle)
                 else:
                     stored = cached[index]
+                    if stored.get("hit_token_cap"):
+                        raise ValueError("Cached generation was truncated; never repair into a valid action")
                     expected_text = observation_context(manager,state,bundle)
                     if stored["prompt_sha256"] != hashlib.sha256((OBSERVE_SYSTEM+expected_text).encode()).hexdigest():
                         raise ValueError("Cached observation prompt drift")

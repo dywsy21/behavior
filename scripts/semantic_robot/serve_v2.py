@@ -144,7 +144,9 @@ def main():
             except Exception as exc:
                 import traceback
                 traceback.print_exc()
-                ledger.write(json.dumps({"error": repr(exc), "calls": identity["calls"]})+"\n")
+                ledger.write(json.dumps({"error": repr(exc), "calls": identity["calls"],
+                                        "raw_text":locals().get("raw_text"),
+                                        "input_images":locals().get("hashes")})+"\n")
                 self.send(400, {"error": repr(exc)})
     print("semantic-v2-ready", json.dumps(identity), flush=True)
     try:
