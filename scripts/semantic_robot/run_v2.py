@@ -9,6 +9,18 @@ import subprocess
 import sys
 import time
 
+# The preserved simulator environment supplies libGLU through pymeshlab, as do
+# the project's reviewed launchers. The native loader reads LD_LIBRARY_PATH at
+# process start: setting it after importing Kit is too late. Re-exec only this
+# private process; never modify conda, shared libraries or a teammate's service.
+if __name__ == "__main__" and sys.platform.startswith("linux"):
+    native_lib = Path(sys.prefix)/f"lib/python{sys.version_info.major}.{sys.version_info.minor}/site-packages/pymeshlab/lib"
+    entries = os.environ.get("LD_LIBRARY_PATH", "").split(":")
+    if (native_lib/"libGLU.so.1").exists() and str(native_lib) not in entries:
+        env = dict(os.environ)
+        env["LD_LIBRARY_PATH"] = ":".join([str(native_lib), *[x for x in entries if x]])
+        os.execve(sys.executable, [sys.executable, *sys.argv], env)
+
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
@@ -90,7 +102,8 @@ def main():
                 "task":args.task,"task_name":window.task_name,"split":"train","seed":0,
                 "window_sha":sha(path),"robot_sha":ROBOT_SHA,"model_identity":policy.identity if policy else None,
                 "training_updates":0,"evaluator":"v3.9.1-development-not-official-v3.9.2",
-                "actor_scene_truth":False,"prefix_is_expert_not_agent":bool(args.prefix)}
+                "actor_scene_truth":False,"prefix_is_expert_not_agent":bool(args.prefix),
+                "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
     controls, prefix_count, terminal = 0,0,False
     info, decisions, checks, failures = {},[],[],[]
