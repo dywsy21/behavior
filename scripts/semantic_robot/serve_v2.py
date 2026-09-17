@@ -12,7 +12,22 @@ import sys
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]/"src"))
-from semantic_robot.v2.protocol import Action
+from semantic_robot.v2.protocol import Action, strict_json
+
+
+def normalize_json_transport(raw):
+    """Remove only ONE complete Markdown wrapper; never repair JSON/semantics.
+
+    Original bytes remain in the ledger. Prose, multiple blocks, duplicate keys,
+    truncated blocks and non-JSON content are still rejected, not guessed.
+    """
+    text = raw.strip()
+    lines = text.splitlines()
+    if len(lines) >= 3 and lines[0] in ("```json", "```") and lines[-1] == "```":
+        candidate = "\n".join(lines[1:-1]).strip()
+        strict_json(candidate)
+        return candidate, "single_markdown_json_fence"
+    return text, None
 
 
 def main():
@@ -117,7 +132,10 @@ def main():
                 with torch.inference_mode():
                     ids = model.generate(**inputs, max_new_tokens=cap, do_sample=False, use_cache=True, **options)[0, prefix:]
                 torch.cuda.synchronize()
-                row = {"call": identity["calls"], "kind": data["kind"], "text": processor.decode(ids, skip_special_tokens=True).strip(),
+                raw_text = processor.decode(ids, skip_special_tokens=True).strip()
+                normalized, wrapper = normalize_json_transport(raw_text)
+                row = {"call": identity["calls"], "kind": data["kind"], "text": normalized,
+                       "raw_text": raw_text, "transport_wrapper_removed": wrapper,
                        "output_tokens": len(ids), "input_tokens": prefix, "hit_token_cap": len(ids) == cap,
                        "generation_s": time.perf_counter()-generated_at, "total_s": time.perf_counter()-started,
                        "images": hashes, "prompt_sha256": hashlib.sha256((data["system"]+data["text"]).encode()).hexdigest(),

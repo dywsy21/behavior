@@ -19,8 +19,10 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO/"src"))
 from semantic_robot.v2.harness import Goal, TaskHarness
 from semantic_robot.v2.kinematics import RobotModel
-from semantic_robot.v2.policy import VLMPolicy
+from semantic_robot.v2.policy import VLMPolicy, OBSERVE_SYSTEM, ACTION_SYSTEM, observation_context
+from semantic_robot.v2.protocol import Action, Evidence
 from semantic_robot.v2.vision import prepare_views
+from serve_v2 import normalize_json_transport
 
 CASES = [(run, step) for run, steps in (
     ("radio_4b_v2", (0,8,12,16,32)), ("radio_2b_v2", (0,8,16,32,47)),
@@ -35,13 +37,29 @@ def main():
     p.add_argument("--prepare-only", action="store_true")
     p.add_argument("--uri", default="http://127.0.0.1:8907")
     p.add_argument("--revision")
+    p.add_argument("--reuse-run", help="Completed original static result.json; never rerun cached generations")
+    p.add_argument("--reuse-service", help="Original service dir with identity and raw call ledger")
     args = p.parse_args()
     if subprocess.check_output(["git","-C",str(REPO),"status","--porcelain"],text=True).strip():
         raise RuntimeError("Use fixed clean source")
     root, out = Path(args.root), Path(args.output)
     out.mkdir(parents=True,exist_ok=False)
     model = RobotModel(json.loads(Path(args.calibration).read_text()))
-    policy = None if args.prepare_only else VLMPolicy(args.uri,args.revision,max_calls=30)
+    cached, original, reused, original_calls = None, None, 0, 0
+    if bool(args.reuse_run) != bool(args.reuse_service) or (args.prepare_only and args.reuse_run):
+        raise ValueError("Both cache identities required for inference-only transport repair")
+    if args.reuse_run:
+        original = json.loads(Path(args.reuse_run).read_text())
+        identity = json.loads((Path(args.reuse_service)/"identity.json").read_text())
+        ledger = [json.loads(line) for line in (Path(args.reuse_service)/"calls.jsonl").read_text().splitlines()]
+        cached = [r for r in ledger if r.get("kind")=="observe"]
+        original_calls = original["calls"]
+        if (identity["revision"] != args.revision or original["status"] != "complete" or
+                len(cached) != len(CASES) or len(ledger) != original_calls or
+                original["calibration_sha"] != model.sha or original["cases"] != len(CASES)):
+            raise ValueError("Cache revision/calibration/case/call identity mismatch")
+    remaining_calls = 30-original_calls
+    policy = None if args.prepare_only else VLMPolicy(args.uri,args.revision,max_calls=remaining_calls)
     rows = []
     for index,(run,step) in enumerate(CASES):
         source = root/run/f"decision_{step:03d}"
@@ -68,11 +86,43 @@ def main():
         sheet.save(case/"human_contact_sheet.jpg")
         if policy:
             try:
-                obs, call = policy.observe(manager,state,bundle)
+                if cached is None:
+                    obs, call = policy.observe(manager,state,bundle)
+                else:
+                    stored = cached[index]
+                    expected_text = observation_context(manager,state,bundle)
+                    if stored["prompt_sha256"] != hashlib.sha256((OBSERVE_SYSTEM+expected_text).encode()).hexdigest():
+                        raise ValueError("Cached observation prompt drift")
+                    expected_images = []
+                    for label,image in zip(bundle.labels,bundle.images):
+                        image = image.copy(); image.thumbnail((640,640))
+                        expected_images.append({"label":label,"size":list(image.size),
+                            "pixels_sha256":hashlib.sha256(image.tobytes()).hexdigest()})
+                    if stored["images"] != expected_images:
+                        raise ValueError("Cached observation pixels drift")
+                    normalized, wrapper = normalize_json_transport(stored.get("raw_text",stored["text"]))
+                    result = dict(stored, text=normalized, raw_text=stored.get("raw_text",stored["text"]),
+                                  transport_wrapper_removed=wrapper, reused_generation=True)
+                    obs = Evidence.parse(normalized)
+                    call = {"result":result,"request":{"system":OBSERVE_SYSTEM,"text":expected_text}}
+                    reused += 1
                 row["calls"].append({"kind":"observe","result":call["result"],"system":call["request"]["system"],"text":call["request"]["text"]})
                 row["evidence"] = obs.as_dict()
                 manager.observe(obs,state,bundle.geometry)
-                action, call = policy.act(manager,state,bundle)
+                old = [] if original is None else [c for c in original["rows"][index]["calls"] if c["kind"]=="act"]
+                if old:
+                    expected_text = observation_context(manager,state,bundle)
+                    expected_text += "\nVisible evidence: "+json.dumps(asdict(manager.observation))
+                    expected_text += "\nChoose exactly one of these complete commands:\n"+"\n".join(a.text() for a in manager.palette())
+                    stored = old[0]
+                    if stored["system"] != ACTION_SYSTEM or stored["text"] != expected_text:
+                        raise ValueError("Cached action prompt drift")
+                    action = Action.parse(stored["result"]["text"]); manager.authorize(action)
+                    call = {"result":dict(stored["result"],reused_generation=True),
+                            "request":{"system":stored["system"],"text":stored["text"]}}
+                    reused += 1
+                else:
+                    action, call = policy.act(manager,state,bundle)
                 row["calls"].append({"kind":"act","result":call["result"],"system":call["request"]["system"],"text":call["request"]["text"]})
                 row["action"], row["stage"] = asdict(action), manager.stage
             except Exception as exc:
@@ -82,6 +132,10 @@ def main():
         print(json.dumps({k:row[k] for k in ("index","run","step","evidence","action","error") if k in row}),flush=True)
     result = {"status":"complete","code_commit":subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip(),
               "cases":len(rows),"calls":policy.calls if policy else 0,"actuations":0,"training_updates":0,
+              "reused_calls":reused,"original_calls":original_calls,
+              "total_unique_generations":original_calls+(policy.calls if policy else 0),
+              "model_identity":policy.identity if policy else None,
+              "reuse_run":args.reuse_run,"reuse_service":args.reuse_service,
               "calibration_sha":model.sha,"rows":rows,"human_review_pending":True}
     (out/"result.json").write_text(json.dumps(result,indent=2))
 
