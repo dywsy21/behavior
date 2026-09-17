@@ -81,6 +81,11 @@ class ProtocolTests(unittest.TestCase):
         for text in ('[]', '[{"kind":"teleport"}]', '{}'):
             with self.assertRaises(ValueError): parse_plan(text)
 
+    def test_plan_resource_ownership(self):
+        for goals in ([Goal("place","shelf","right","supported")],
+                      [Goal("pick","radio","right","held"),Goal("pick","bowl","right","held")]):
+            with self.assertRaises(ValueError): parse_plan(json.dumps([asdict(g) for g in goals]))
+
 
 class KinematicsTests(unittest.TestCase):
     def test_fk_reference_roundtrip(self):
@@ -269,6 +274,29 @@ class HarnessTests(unittest.TestCase):
         h=self.make(); h.stage="APPROACH"
         for _ in range(4): h.executed(Action("right","forward"),feedback())
         self.assertEqual(h.stage,"APPROACH")
+
+    def test_recovery_requires_new_successful_recovery_action(self):
+        h=self.make(); _,s=fixture()
+        h.executed(Action("right","forward"),feedback("TRACKING_FAILED"))
+        h.observe(evidence(),s); self.assertEqual(h.stage,"RECOVER")
+        h.observe(evidence(),s); self.assertEqual(h.stage,"RECOVER")
+        h.executed(Action("right","open"),feedback(delta=0))
+        h.observe(evidence(),s); self.assertEqual(h.stage,"ALIGN")
+
+    def test_effect_confirmation_holds_instead_of_pushing_again(self):
+        h=TaskHarness([Goal("press","button","left","indicator changes")]); _,s=fixture()
+        h.stage="INTERACT"; h.executed(Action("left","forward","micro"),feedback())
+        h.observe(evidence(effect=True),s)
+        self.assertEqual(h.stage,"VERIFY_EFFECT"); self.assertEqual(h.palette(),(HOLD,))
+        h.executed(HOLD,feedback(delta=0)); h.observe(evidence(effect=True),s)
+        self.assertEqual(h.stop_reason,"PLAN_EXHAUSTED_NOT_OFFICIAL_SUCCESS")
+
+    def test_support_requires_confirmation_before_open(self):
+        h=TaskHarness([Goal("place","shelf","right","supported")]); _,s=fixture(); h.stage="ALIGN"
+        h.observe(evidence(supported=True),s)
+        self.assertEqual(h.stage,"VERIFY_SUPPORT"); self.assertEqual(h.palette(),(HOLD,))
+        h.executed(HOLD,feedback(delta=0)); h.observe(evidence(supported=True),s)
+        self.assertEqual(h.stage,"RELEASE")
 
     def test_invisible_target_no_fabricated_uv(self):
         h=self.make(); _,s=fixture(); h.stage="ALIGN"

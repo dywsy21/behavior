@@ -38,6 +38,17 @@ def parse_plan(text):
         if not isinstance(value, dict) or set(value) != set(Goal.__dataclass_fields__):
             raise ValueError("Exact goal fields required")
         result.append(Goal(**value))
+    occupied = set()
+    for goal in result:
+        arms = {"left", "right"} if goal.hand == "both" else {goal.hand}
+        if goal.kind == "pick":
+            if occupied & arms:
+                raise ValueError("Plan attempts to pick with an already occupied hand")
+            occupied |= arms
+        elif goal.kind == "place":
+            if not arms <= occupied:
+                raise ValueError("Plan places with a hand that has not picked an object")
+            occupied -= arms
     return result
 
 
@@ -58,6 +69,7 @@ class TaskHarness:
         self.stop_reason = None
         self.stage_age, self.confirmations, self.no_progress = 0, 0, 0
         self.last_distance = None
+        self.executions, self.recovery_entered_after = 0, 0
 
     @property
     def goal(self):
@@ -80,6 +92,7 @@ class TaskHarness:
     def recover(self, event):
         self.events.append({"event": event, "goal": self.index, "stage": self.stage})
         self.recoveries += 1
+        self.recovery_entered_after = self.executions
         if self.recoveries > self.max_recoveries:
             self.stop_reason = "RECOVERY_BUDGET_EXHAUSTED"
             return
@@ -129,9 +142,10 @@ class TaskHarness:
                 self.recover("PREVIOUS_HOLD_LOST_OR_UNCERTAIN")
                 return
         if self.stage == "RECOVER":
-            if self.last_action and self.last_action.move == "open" and self.goal.kind == "pick":
+            recovered_action = self.executions > self.recovery_entered_after and self.feedback and self.feedback["status"] == "TARGET_REACHED"
+            if recovered_action and self.last_action.move == "open" and self.goal.kind == "pick":
                 self.transition("ALIGN" if evidence.visible else "SEARCH")
-            elif evidence.visible and evidence.hazard == "none" and self.last_action and self.last_action.move not in ("hold", "close"):
+            elif recovered_action and evidence.visible and evidence.hazard == "none" and self.last_action.move not in ("hold", "close"):
                 self.transition("APPROACH")
             elif self.stage_age >= 4:
                 self.recover("RECOVERY_NO_PROGRESS")
@@ -148,16 +162,17 @@ class TaskHarness:
         elif self.stage == "APPROACH":
             wrist = evidence.view == self.goal.hand+"_wrist" or (self.goal.hand == "both" and "wrist" in evidence.view)
             if self.goal.kind == "navigate":
-                self.confirmations = self.confirmations+1 if evidence.effect is True else 0
-                if self.confirmations >= 2:
-                    self._complete_goal()
+                if evidence.effect is True and self.last_action and self.last_action.move != "hold":
+                    self.transition("VERIFY_EFFECT")
+                    self.confirmations = 1
             elif wrist or evidence.enclosed is True:
                 self.transition("ALIGN")
         elif self.stage == "ALIGN":
             if self.goal.kind == "pick" and evidence.enclosed is True:
                 self.transition("GRASP")
             elif self.goal.kind == "place" and evidence.supported is True:
-                self.transition("RELEASE")
+                self.transition("VERIFY_SUPPORT")
+                self.confirmations = 1
             elif self.goal.kind not in ("pick", "place"):
                 self.transition("INTERACT")
         elif self.stage == "VERIFY_GRASP":
@@ -176,10 +191,22 @@ class TaskHarness:
                 self._complete_goal()
             elif self.stage_age >= 5:
                 self.recover("PLACEMENT_UNVERIFIED")
+        elif self.stage == "VERIFY_SUPPORT":
+            self.confirmations = self.confirmations+1 if evidence.supported is True else 0
+            if self.confirmations >= 2:
+                self.transition("RELEASE")
+            elif evidence.supported is not True:
+                self.transition("ALIGN")
         elif self.stage == "INTERACT":
-            self.confirmations = self.confirmations+1 if evidence.effect is True and self.last_action and self.last_action.move != "hold" else 0
+            if evidence.effect is True and self.last_action and self.last_action.move != "hold":
+                self.transition("VERIFY_EFFECT")
+                self.confirmations = 1
+        elif self.stage == "VERIFY_EFFECT":
+            self.confirmations = self.confirmations+1 if evidence.effect is True else 0
             if self.confirmations >= 2:
                 self._complete_goal()
+            elif evidence.effect is not True:
+                self.transition("APPROACH" if self.goal.kind == "navigate" else "INTERACT")
         # Image progress is relative target-to-hand distance, not merely pixels changing.
         if geometry and evidence.target_uv and self.goal.hand in ("left", "right"):
             uv = geometry.get(evidence.view, {}).get(self.goal.hand, {}).get("eef_uv")
@@ -217,7 +244,7 @@ class TaskHarness:
         if stage == "VERIFY_GRASP":
             add(g.hand, ("up",), ("micro", "fine"))
             return tuple(actions)
-        if stage == "VERIFY_PLACE":
+        if stage in ("VERIFY_PLACE", "VERIFY_SUPPORT", "VERIFY_EFFECT"):
             return tuple(actions)
         if stage == "RECOVER":
             if g.kind == "pick" and not any(self.hold_verified[arm] for arm in self.arms):
@@ -242,6 +269,7 @@ class TaskHarness:
             raise ValueError("Action outside current stage/arm/evidence palette")
 
     def executed(self, action, feedback):
+        self.executions += 1
         self.last_action, self.feedback = action, feedback
         self.history.append({"action": asdict(action), "feedback": feedback, "stage": self.stage})
         if feedback["status"] == "TARGET_REACHED":
