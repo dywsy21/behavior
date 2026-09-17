@@ -99,6 +99,11 @@ class TaskHarness:
         # Never open a potentially held object automatically. The recovery palette
         # requires re-observation; only unverified/empty pick grippers may reopen.
         self.transition("RECOVER")
+        # A new attempt gets its own observation window even if we were already
+        # recovering. transition() deliberately does nothing for the same stage;
+        # retaining its old age would spend all remaining attempts immediately.
+        self.stage_age, self.confirmations, self.no_progress = 0, 0, 0
+        self.last_distance = None
 
     def _complete_goal(self):
         g = self.goal
@@ -254,7 +259,9 @@ class TaskHarness:
         if g.kind == "navigate":
             return tuple(actions)
         frames = ("base",) if g.hand == "both" else ("base", obs.view) if obs and obs.visible else ("base",)
-        scales = ("micro", "fine") if stage != "APPROACH" else ("fine", "coarse")
+        # Near a workspace boundary, 1 cm may be unreachable while 2 mm is
+        # feasible. Approach must not hide the only feasible smaller step.
+        scales = ("micro", "fine") if stage != "APPROACH" else ("micro", "fine", "coarse")
         add(g.hand, TRANSLATIONS, scales, frames)
         if not self.carry and stage in ("ALIGN", "INTERACT"):
             add(g.hand, ROTATIONS, ("micro", "fine"), ("tool",) if g.hand != "both" else ("base",))

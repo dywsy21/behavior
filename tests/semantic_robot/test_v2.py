@@ -337,6 +337,29 @@ class HarnessTests(unittest.TestCase):
         h.executed(Action("right","open"),feedback(delta=0))
         h.observe(evidence(),s); self.assertEqual(h.stage,"ALIGN")
 
+    def test_approach_allows_smaller_step_after_reachability_failure(self):
+        h=self.make(); h.stage="APPROACH"; h.observation=evidence()
+        for scale in ("micro","fine","coarse"):
+            h.authorize(Action("right","forward",scale,"base"))
+        with self.assertRaises(ValueError):
+            h.authorize(Action("left","forward","micro","base"))
+
+    def test_each_recovery_attempt_has_a_fresh_bounded_window(self):
+        h=TaskHarness([Goal("navigate","table","both","table visible")]); _,s=fixture()
+        unseen=evidence(visible=False,view="none",target_uv=None)
+        h.recover("SEARCH_NO_PROGRESS")
+        for attempt in range(1,4):
+            self.assertEqual(h.recoveries,attempt)
+            self.assertEqual(h.stage_age,0)
+            for _ in range(3):
+                h.observe(unseen,s)
+                self.assertEqual(h.recoveries,attempt)
+                self.assertIsNone(h.stop_reason)
+            h.observe(unseen,s)
+        self.assertEqual(h.recoveries,4)
+        self.assertEqual(h.stop_reason,"RECOVERY_BUDGET_EXHAUSTED")
+        self.assertEqual(h.palette(),(HOLD,))
+
     def test_effect_confirmation_holds_instead_of_pushing_again(self):
         h=TaskHarness([Goal("press","button","left","indicator changes")]); _,s=fixture()
         h.stage="INTERACT"; h.executed(Action("left","forward","micro"),feedback())
