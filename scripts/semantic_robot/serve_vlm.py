@@ -10,7 +10,10 @@ from io import BytesIO
 import json
 import os
 from pathlib import Path
+import sys
 import time
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
 
 def main():
@@ -20,6 +23,7 @@ def main():
     parser.add_argument("--output", required=True)
     parser.add_argument("--port", type=int, default=8897)
     parser.add_argument("--max-calls", type=int, default=160)
+    parser.add_argument("--constrained", action="store_true", help="Constrain syntax only; never choose actions from simulator truth")
     args = parser.parse_args()
     out = Path(args.output); out.mkdir(parents=True, exist_ok=False)
     import torch
@@ -29,6 +33,14 @@ def main():
     torch.set_num_threads(4)
     torch.manual_seed(17)
     processor = AutoProcessor.from_pretrained(args.model, local_files_only=True)
+    trie = {}
+    if args.constrained:
+        from semantic_robot.actions import action_language
+        for line in action_language():
+            node=trie
+            for token in processor.tokenizer.encode(line,add_special_tokens=False):
+                node=node.setdefault(token,{})
+            node[None]={}
     started = time.perf_counter()
     model = AutoModelForImageTextToText.from_pretrained(args.model, local_files_only=True,
         torch_dtype=torch.bfloat16, attn_implementation="sdpa").to("cuda").eval()
@@ -36,7 +48,8 @@ def main():
                     transformers=transformers.__version__, torch=torch.__version__, gpu=torch.cuda.get_device_name(),
                     visible_devices=os.environ.get("CUDA_VISIBLE_DEVICES"), load_seconds=time.perf_counter()-started,
                     training_updates=0, max_calls=args.max_calls, temperature=0, max_new_tokens=48,
-                    thinking=False, batch_size=1, image_size=[320,320], calls=0)
+                    thinking=False, batch_size=1, image_size=[320,320], calls=0,
+                    constrained_action_grammar=args.constrained)
     (out / "identity.json").write_text(json.dumps(identity, indent=2))
     ledger = (out / "calls.jsonl").open("x", buffering=1)
 
@@ -72,8 +85,19 @@ def main():
                     return_dict=True,return_tensors="pt",enable_thinking=False).to("cuda")
                 torch.cuda.synchronize(); t1=time.perf_counter()
                 identity["calls"] += 1
+                prefix_length=inputs["input_ids"].shape[1]
+                def allowed_tokens(batch_id, input_ids):
+                    node=trie
+                    for token in input_ids[prefix_length:].tolist():
+                        node=node[token]
+                    allowed=[token for token in node if token is not None]
+                    if None in node:
+                        eos=model.generation_config.eos_token_id
+                        allowed += eos if isinstance(eos,list) else [eos]
+                    return allowed
+                generation_options={"prefix_allowed_tokens_fn":allowed_tokens} if args.constrained else {}
                 with torch.inference_mode():
-                    outputs=model.generate(**inputs,max_new_tokens=48,do_sample=False,use_cache=True)
+                    outputs=model.generate(**inputs,max_new_tokens=48,do_sample=False,use_cache=True,**generation_options)
                 torch.cuda.synchronize(); t2=time.perf_counter()
                 token_ids=outputs[0,inputs["input_ids"].shape[1]:]
                 text=processor.decode(token_ids,skip_special_tokens=True).strip()

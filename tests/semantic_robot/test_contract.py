@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from semantic_robot.actions import parse_action, displacement, rotation, Unit
+from semantic_robot.actions import parse_action, displacement, rotation, Unit, action_language
 from semantic_robot.control import R1ProServo, RobotState, dls
 from semantic_robot.prompts import user_text
 
@@ -21,6 +21,12 @@ def state():
 
 
 class ContractTests(unittest.TestCase):
+    def test_entire_constrained_language_is_valid_unique(self):
+        lines=action_language()
+        self.assertEqual(len(lines),len(set(lines)))
+        self.assertGreater(len(lines),800)
+        for line in lines: parse_action(line)
+
     def test_parser_all_groups(self):
         for text in ("R FWD FINE", "L ROLL_NEG COARSE", "BASE YAW_POS COARSE", "TORSO UP FINE", "BOTH CLOSE", "L UP FINE ; R DOWN FINE", "HOLD", "DONE", "MODE CARRY"):
             with self.subTest(text=text):

@@ -75,3 +75,17 @@ def rotation(unit: Unit, carry: bool = False) -> np.ndarray:
         raise ValueError("CARRY locks wrist orientation; exit explicitly before rotating")
     degrees = {"FINE": 5., "COARSE": 15.}[unit.grain]
     return np.asarray(ROTATIONS[unit.move], dtype=float) * np.deg2rad(degrees)
+
+
+def action_language(include_pairs=True):
+    """Finite grammar for optional constrained decoding; no task/object heuristic."""
+    arms = {part: [f"{part} {move} {grain}" for move in (*DIRECTIONS, *ROTATIONS)
+                   for grain in ("FINE", "COARSE")] + [f"{part} {move}" for move in ("OPEN", "CLOSE", "HOLD")]
+            for part in ("L", "R", "BOTH")}
+    lines = [line for group in arms.values() for line in group]
+    lines += [f"BASE {move} {grain}" for move in ("FWD", "BACK", "LEFT", "RIGHT", "YAW_POS", "YAW_NEG") for grain in ("FINE", "COARSE")]
+    lines += [f"TORSO {move} {grain}" for move in ("UP", "DOWN", "FWD", "BACK") for grain in ("FINE", "COARSE")]
+    lines += ["HOLD", "DONE", "MODE CARRY", "MODE NORMAL"]
+    if include_pairs:
+        lines += [left + " ; " + right for left in arms["L"] for right in arms["R"]]
+    return tuple(sorted(lines))
