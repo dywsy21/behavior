@@ -31,7 +31,7 @@
 
 VLM规划返回有限子目标，每项指定kind、target、hand、done_when、level。task0/3已有策略提示仍提供右手抓radio、左手按按钮或端盘注意点，但不提供隐藏位置、不生成固定动作轨迹。其他任务共用规划schema和阶段逻辑，不维护50套低层控制器。
 
-阶段包括SEARCH、APPROACH、ALIGN、GRASP、VERIFY_GRASP、INTERACT、RELEASE、VERIFY_PLACE、RECOVER。阶段与动作之间有真实校验：目标未找到时不开放手臂抓取；抓取未确认时不进入下一个目标；没有支撑证据不能释放。刚闭合夹爪只进入验证阶段。
+阶段包括SEARCH、APPROACH、ALIGN、GRASP、VERIFY_GRASP、INTERACT、VERIFY_EFFECT、VERIFY_SUPPORT、RELEASE、VERIFY_PLACE、RECOVER。阶段与动作之间有真实校验：目标未找到时不开放手臂抓取；抓取未确认时不进入下一个目标；松手前再次确认支撑。刚闭合夹爪只进入验证阶段；第一次看到开关等效果后先HOLD复核，避免重复按键撤销效果。恢复必须实际执行一条新的成功恢复动作，不能拿上一步旧回执假装恢复完成。
 
 持有证据必须至少同时有非空开度、视觉包围、前后图像随动声明和真实手部位移；宽度独立不能证明持物，模型自述也不能。置放要求松开实测及连续观察到支撑。跨目标保存持物对象的**观测性记录**，丢失证据回退，不引入MEM-Lite权重。最终计划耗尽仍标记`NOT_OFFICIAL_SUCCESS`，官方成功仅由隔离评估器记录。
 
@@ -41,13 +41,15 @@ VLM规划返回有限子目标，每项指定kind、target、hand、done_when、
 
 校准来自机器人自身参考关节位形的局部link姿态和运动Jacobian，转换为空间螺旋轴。远端policy可用保存的校准JSON及18维proprio执行FK/Jacobian，运行无需访问OG。校准必须在其他姿态与真实机器人比较；单纯解析Jacobian与自身FK差分一致是必要而不充分的验收。相机采用USD的+x右、+y上、-z前约定，投影与原图分辨率绑定。
 
+**质心参考点不能混用：** PhysX线速度Jacobian在link质心，而pose是link原点。导出时读取机器人link自身的固定局部质心，使用`Jv_origin = Jv_com - cross(Jω, R_link·com_local)`，再构造POE和相机偏移Jacobian。忽略它时末端可能因质心接近零而看似正确，其他link/腕相机却跨姿态漂移。本轮真实门恰好捕获该错误，未通过放宽阈值处理。[NVIDIA工程说明](https://forums.developer.nvidia.com/t/differences-between-isaac-sim-and-mujoco-jacobians/252755)、[本机同系API说明](https://docs.omniverse.nvidia.com/kit/docs/omni_physics/107.0/extensions/runtime/source/omni.physics.tensors/docs/api/python.html)
+
 执行器在关节求解过程中施加界和速度限制，使用FK预测检查改善与机器人碰撞距离，而非最后逐维裁剪。动作开始前有限迭代验证可达性；执行时偏差、持续限位或停滞触发零底盘速度/保持夹爪。回执区分TARGET_REACHED、UNREACHABLE_OR_COLLISION_BLOCKED、TRACKING_DIVERGED、JOINT_LIMIT_STALL、NO_MOTION_PROGRESS等；TARGET_REACHED只表示该微动作到达，不表示抓取/任务成功。
 
 **碰撞能力有明确边界：** 当前是非相邻同臂/跨臂3cm半径胶囊近似及双末端8cm距离，OG仍启真实自碰撞。它不是全身精确mesh或环境碰撞规划器；RGB证据仍可能错，深度环境障碍约束尚需合法RGB-D接口与专门验收。不得用“控制器有保护”宣传为真实机器人安全认证。正式比赛v3.9.2部署未因本次v3.9.1开发测试自动通过，不热升级共享框架。
 
 ## 验证和模型
 
-- 初轮47项CPU通过，包括旧13；覆盖格式、FK差分、像素坐标、限位重新分配、拒绝不可达、异常停止、躯干补偿、空夹与完成反馈、有限恢复。
+- 当前53项CPU通过，包括旧13；覆盖格式、FK差分/非零质心真值回归、像素坐标、限位重新分配、拒绝不可达、异常停止、躯干补偿、空夹与完成反馈、有限恢复。
 - 真实gate在radio原448前缀经过的不同姿态及task3初态验证；gate结果与实际实现digest绑定。agent入口必须收到两个task都通过的回执，不能绕过失败门。
 - 模型服务接受最多9张明确标签图，头图最长边640，腕图不放大；plan/observe/act分别有输出上限，只有动作使用当前阶段语法树。原始输出、输入像素hash、耗时和预算均记录，截断拒绝执行。
 - 原Qwen3.5-4B作对照，官方Qwen3.8-27B固定revision `1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0`作强参考；没有训练或套用不匹配的Show-Harness adapter。下载55,586,036,737字节，文件大小校验完成；实际效果和GPU显存/速度待实测。
