@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 15:22当前：** B5两门已完整通过（385/396新控制、48/48在线视觉位移有效、digest0a3d0085…），4155037/4155097已退出。唯一`radio_b5`4158141/GPU1/8908、`plates_b5`4158203/GPU3/8909正在初始化，均源`semantic_contact_gate_ec1a63e`且OMP/MKL/OpenBLAS=4，不能热改。radio服务4136279保留77/224起，旧plates4136398已TERM115次，替为新同权重`server_b5_plates`4157077/8909/0起≤179次。完整B4归档已本地SHA匹配/视频全解码，结果见实验文档；下文待换新/待启动描述均是历史。
+
 **2026-09-18 15:16当前（覆盖下面历史启动状态）：** B4两策略已结束，无官方成功；旧radio服务4136279/GPU1/8908仍在（77/224调用，源39881cf），task3旧服务4136398/GPU3/8909（115/224）待核身份后替换。B5不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_contact_gate_ec1a63e`已145 CPU，两`gate_radio_b5`/`gate_plates_b5`启动，根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_effect_20260918`，日志同级。策略尚未启动；每个新仿真进程OMP/MKL/OpenBLAS=4。两主接触静态及SHA已在本地artifacts，B4完整归档仍传输中。禁止热改这些源/把下文旧PID当现状。
 
 **2026-09-18 14:22 H-08策略运行：** `radio_b4`4143759/GPU1/8908、`plates_b4`4143760/GPU3/8909已唯一启动，正在初始化，run与日志均在同H-08根；各自原预算/前缀不变，仿真14a33ec、服务39881cf，不热改。下条的准备提交已更新为运行中，结果仍待验。
