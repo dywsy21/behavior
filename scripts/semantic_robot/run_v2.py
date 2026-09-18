@@ -122,6 +122,7 @@ def main():
         raise ValueError("Measured approach progress and explicit estimator require visual odometry")
     if args.odometry_substep_controls and not args.visual_odometry:
         raise ValueError("Action-internal sampling requires visual odometry")
+    action_control_limit=args.max_controls-(1 if args.odometry_substep_controls else 0)
     if args.mode == "agent":
         if not args.expected_revision or len(args.gate_result) != 2:
             raise ValueError("Model identity and both task pose gates required")
@@ -198,18 +199,41 @@ def main():
 
     @contextmanager
     def recorded_session():
+        nonlocal controls
         with OfficialEvaluatorSession(window,gpu=args.gpu) as environment:
             try:
                 yield environment
             except BaseException as exc:
                 # The native Kit shutdown may terminate the interpreter before
                 # an outer except runs. Persist the ORIGINAL error inside it.
-                if policy and policy.last_call is not None:
-                    from semantic_robot.v2.structured_planning import call_receipt
-                    write(out/"last_policy_call_before_failure.json",call_receipt(policy.last_call))
-                write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
-                    "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
-                    "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
+                try:
+                    if policy and policy.last_call is not None:
+                        from semantic_robot.v2.structured_planning import call_receipt
+                        write(out/"last_policy_call_before_failure.json",call_receipt(policy.last_call))
+                    if not (out/"failure.json").exists():
+                        write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
+                            "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
+                            "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
+                except BaseException as record_error:
+                    print(f"Original failure {exc!r}; recording also failed {record_error!r}",file=sys.stderr,flush=True)
+                # The opt-in path reserves one control slot for this stop. Save
+                # the first error BEFORE attempting cleanup; a secondary stop
+                # error must never replace the diagnostic that caused it.
+                if args.odometry_substep_controls and reset_completed and not terminal and servo is not None:
+                    stop_record={"control_before":controls,"attempted":False}
+                    try:
+                        if controls>=args.max_controls:
+                            raise RuntimeError("Reserved safe-hold slot is unavailable")
+                        stop_record["attempted"]=True
+                        step(servo.safe_hold(state_now())); controls+=1
+                        stop_record.update(completed=True,control_after=controls)
+                        trace.write(json.dumps({"control":controls,"safety_stop":True,"after_exception":True})+"\n")
+                    except BaseException as stop_error:
+                        stop_record.update(completed=stop_record.get("completed",False),error=repr(stop_error))
+                    try:
+                        write(out/"safety_hold_after_failure.json",stop_record)
+                    except BaseException as record_error:
+                        print(f"Safety hold receipt {stop_record!r}; recording failed {record_error!r}",file=sys.stderr,flush=True)
                 raise
     try:
         with recorded_session() as environment:
@@ -356,7 +380,7 @@ def main():
             phase="BOUNDED_CONTROL_OR_AGENT_LOOP"
             for decision in range(args.max_decisions):
                 recoverable_stop=bool(controller and controller.can_replan_stop)
-                if controls>=args.max_controls or time.perf_counter()-started>=args.max_seconds or terminal or (manager and manager.stop_reason and not recoverable_stop):
+                if controls>=action_control_limit or time.perf_counter()-started>=args.max_seconds or terminal or (manager and manager.stop_reason and not recoverable_stop):
                     break
                 if not policy and decision >= len(gate): break
                 if grounded and shutil.disk_usage(out).free<80*1024**3:
@@ -519,7 +543,7 @@ def main():
                     return measured["valid"]
                 if accepted:
                     if substep_motion is not None:substep_motion.begin(controls)
-                    while not servo.done and servo.ticks<servo.total_ticks and controls<args.max_controls:
+                    while not servo.done and servo.ticks<servo.total_ticks and controls<action_control_limit:
                         command = servo.next_action(state_now())
                         ended = step(command,render=(controls%2==1 or servo.ticks==servo.total_ticks or servo.done))
                         controls += 1
