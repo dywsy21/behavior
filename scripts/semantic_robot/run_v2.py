@@ -36,6 +36,7 @@ from semantic_robot.v2.protocol import Action, HOLD
 from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.vision import prepare_views
 from semantic_robot.v2.onboard import OnboardRGBD
+from semantic_robot.v2.grounding import observed_cloud, LocalDepthGuard
 from semantic_robot.v2.grounded_harness import GroundedHarness, GroundedController
 from semantic_robot.v2.policy import GroundedPolicy, RefinedGroundedPolicy
 
@@ -283,6 +284,14 @@ def main():
                     np.savez_compressed(directory/"depth.npz",**depths)
                     write(directory/"depth_receipt.json",depth_receipt)
                 row = {"decision":decision,"control_start":controls}
+                if grounded and not policy:
+                    guard=LocalDepthGuard(observed_cloud(depths,model,state.q),model,state.q,depths)
+                    audit=guard.receipt()
+                    audit["base_preflight_without_execution"]={move:guard.check(Action("base",move))
+                        for move in ("forward","back","left","right")}
+                    write(directory/"self_depth.json",audit)
+                    if not audit["chassis_self_depth"]["available"]:
+                        row["error"]="MISSING_ROBOT_SELF_GEOMETRY";failures.append(row);decisions.append(row);break
                 if gate_motion is not None:
                     receipt=gate_motion.observe(images,depths,model,state.q)
                     write(directory/"visual_odometry.json",receipt)

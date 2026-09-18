@@ -7,6 +7,33 @@ from .kinematics import RobotModel, transform, link_origin_jacobian
 
 
 class CalibratedRobot(OGKinematics):
+    def base_visual_surface(self):
+        """Export the declared chassis skin, never any environment geometry."""
+        import omnigibson.lazy as lazy
+        from omnigibson.utils.usd_utils import mesh_prim_shape_to_trimesh_mesh
+        name=self.robot.base_footprint_link_name
+        link=self.robot.links[name]
+        vertices,faces=[],[]
+        offset=0
+        for mesh in link.visual_meshes.values():
+            prim,local=mesh.prim,np.eye(4)
+            for _ in range(16):
+                if str(prim.GetPath())==str(link.prim.GetPath()):break
+                local=np.asarray(lazy.pxr.UsdGeom.Xformable(prim).GetLocalTransformation()).T@local
+                prim=prim.GetParent()
+            else:raise ValueError("Base visual mesh not attached to declared chassis")
+            if mesh.prim.GetPrimTypeInfo().GetTypeName()=="Mesh":
+                points=array(mesh.points);indices=array(mesh.faces).astype(np.int64)
+            else:
+                primitive=mesh_prim_shape_to_trimesh_mesh(mesh.prim)
+                points=np.asarray(primitive.vertices);indices=np.asarray(primitive.faces)
+            points=(np.c_[points,np.ones(len(points))]@local.T)[:,:3]
+            vertices.append(points);faces.append(indices+offset);offset+=len(points)
+        if not vertices:raise ValueError("Declared chassis has no visual geometry for self-depth filtering")
+        return {"link":"link:"+name,"vertices":np.concatenate(vertices).round(8).tolist(),
+                "faces":np.concatenate(faces).tolist(),"source":"robot_base_visual_mesh_only","scene_truth":False,
+                "frame":"declared_base_link_local","not_environment_mesh":True}
+
     def native_grasp_centers(self):
         """Centre of robot-defined finger contact regions, with actual finger q.
 
@@ -103,6 +130,7 @@ class CalibratedRobot(OGKinematics):
                     "local_link_com": {name: value.tolist() for name, value in self._local_com.items()},
                     "collision": "3cm arm capsules, 8cm wrist separation; not environment mesh collision"}
         if grounded:
+            metadata["base_visual_surface"]=self.base_visual_surface()
             native_centers = self.native_grasp_centers()
             metadata["grasp_centers_eef"] = {
                 arm:(np.linalg.inv(transform(*state.poses[arm])) @ np.r_[point,1.])[:3].tolist()

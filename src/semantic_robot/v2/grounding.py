@@ -128,11 +128,14 @@ class LocalDepthGuard:
             xyz=[model.forward(q,n)[:3,3] for n in chain]
             self.segments.extend(zip(xyz[:-1],xyz[1:]))
         # Remove points falling on known robot arms/grippers, not target masks.
-        keep=np.ones(len(self.points),dtype=bool)
+        from .self_filter import chassis_depth_mask
+        own_chassis,self.self_filter_receipt=chassis_depth_mask(model,q,self.points)
+        keep=~own_chassis
         for a,b in self.segments:
             keep &= self.segment_distances(self.points,a,b) > .07
         for p in model.grasp_centers(q).values():
             keep &= np.linalg.norm(self.points-p,axis=1) > .09
+        self.environment_points=self.points[keep]
         self.obstacles=self.points[keep & (self.points[:,2]>.10) & (self.points[:,2]<1.8)]
 
     @staticmethod
@@ -144,7 +147,7 @@ class LocalDepthGuard:
     def check(self, action, carry=False):
         if action.part != "base" or action.move == "hold":
             return True,"NOT_A_BASE_MOVE"
-        if len(self.points)<40:
+        if len(self.environment_points)<40:
             return False,"BASE_DEPTH_UNKNOWN"
         amount=action.amount(carry)
         translation=np.zeros(3); yaw=0.
@@ -153,9 +156,9 @@ class LocalDepthGuard:
             # A valid depth ray must actually observe the intended heading;
             # absence of obstacle points is not a free-space certificate.
             heading=math.atan2(translation[1],translation[0])
-            ray_heading=np.arctan2(self.points[:,1],self.points[:,0])
+            ray_heading=np.arctan2(self.environment_points[:,1],self.environment_points[:,0])
             diff=np.arctan2(np.sin(ray_heading-heading),np.cos(ray_heading-heading))
-            seen=(np.abs(diff)<math.radians(25))&(np.linalg.norm(self.points[:,:2],axis=1)>.45)
+            seen=(np.abs(diff)<math.radians(25))&(np.linalg.norm(self.environment_points[:,:2],axis=1)>.45)
             if np.count_nonzero(seen)<12:
                 return False,"UNOBSERVED_BASE_TRANSLATION"
         else:
@@ -180,5 +183,6 @@ class LocalDepthGuard:
 
     def receipt(self):
         return {"visible_depth_points":len(self.points),"nonrobot_obstacle_points":len(self.obstacles),
+                "chassis_self_depth":self.self_filter_receipt,"environment_depth_points":len(self.environment_points),
                 "body_radius_m":self.radius,"unseen_space_not_certified":True,
                 "scene_truth_used":False}
