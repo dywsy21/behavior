@@ -61,9 +61,11 @@ def segment_distance(a, b, c, d):
 
 
 class RobotCollisionGuard:
-    def __init__(self, model):
+    def __init__(self, model, hand_body=False):
         self.model = model
         self.chains = model.spec.get("metadata", {}).get("arm_chains", {})
+        from .hand_body_collision import HandBodyGuard
+        self.hand_body = HandBodyGuard(model) if hand_body else None
 
     def clearance(self, q):
         names = {"left", "right"} | {name for chain in self.chains.values() for name in chain}
@@ -80,11 +82,14 @@ class RobotCollisionGuard:
         for a, b in arms.get("left", []):
             for c, d in arms.get("right", []):
                 result = min(result, segment_distance(a, b, c, d)-.06)
+        if self.hand_body is not None:
+            result = min(result, self.hand_body.clearance(q)[0])
         return result
 
 
 @dataclass(frozen=True)
 class ServoLimits:
+    robot_geometry_guards: bool = False
     joint_margin: float = .001
     joint_tick: float = .025
     orientation_weight: float = .15  # metres per radian, explicit unlike v1
@@ -99,7 +104,7 @@ class SafeServo:
 
     def __init__(self, model, state, gripper_command=None, limits=None):
         self.model, self.limits = model, limits or ServoLimits()
-        self.collision = RobotCollisionGuard(model)
+        self.collision = RobotCollisionGuard(model, self.limits.robot_geometry_guards)
         self.grips = finite(gripper_command, (2,)) if gripper_command is not None else np.clip(state.gripper/.05*2-1, -1, 1)
         self.done, self.status, self.ticks = True, "IDLE", 0
         self.action = None

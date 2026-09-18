@@ -169,7 +169,7 @@ class LocalDepthGuard:
     observed arm obstacles as well as a circular body footprint; unseen geometry
     remains a limitation, explicitly present in every receipt.
     """
-    def __init__(self, points, model, q, depth_images, body_radius=.34):
+    def __init__(self, points, model, q, depth_images, body_radius=.34, self_geometry=None):
         self.model, self.q = model, q
         self.radius = body_radius
         self.depth_images = depth_images
@@ -182,10 +182,21 @@ class LocalDepthGuard:
         from .self_filter import chassis_depth_mask
         own_chassis,self.self_filter_receipt=chassis_depth_mask(model,q,self.points)
         keep=~own_chassis
-        for a,b in self.segments:
-            keep &= self.segment_distances(self.points,a,b) > .07
-        for p in model.grasp_centers(q).values():
-            keep &= np.linalg.norm(self.points-p,axis=1) > .09
+        self.actual_box_mask = self_geometry is not None
+        if self.actual_box_mask:
+            from .grasp_motion import robot_point_mask
+            own = robot_point_mask(self.points, self_geometry)
+            if own is None:
+                raise ValueError("Current actual robot geometry required for precise self exclusion")
+            # Use the current 3mm robot box margin, not the legacy chassis
+            # surface's 6mm margin or 7/9cm arm/closing-center neighborhoods.
+            # Those broader filters can erase a nearby real table surface.
+            keep = ~own
+        else:
+            for a,b in self.segments:
+                keep &= self.segment_distances(self.points,a,b) > .07
+            for p in model.grasp_centers(q).values():
+                keep &= np.linalg.norm(self.points-p,axis=1) > .09
         self.environment_points=self.points[keep]
         self.obstacles=self.points[keep & (self.points[:,2]>.10) & (self.points[:,2]<1.8)]
 
@@ -236,4 +247,6 @@ class LocalDepthGuard:
         return {"visible_depth_points":len(self.points),"nonrobot_obstacle_points":len(self.obstacles),
                 "chassis_self_depth":self.self_filter_receipt,"environment_depth_points":len(self.environment_points),
                 "body_radius_m":self.radius,"unseen_space_not_certified":True,
+                "actual_robot_box_self_exclusion":self.actual_box_mask,
+                "legacy_chassis_surface_mask_diagnostic_only":self.actual_box_mask,
                 "scene_truth_used":False}

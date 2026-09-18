@@ -170,6 +170,10 @@ class CalibratedRobot(OGKinematics):
                     "collision": "3cm arm capsules, 8cm wrist separation; not environment mesh collision"}
         if grounded:
             metadata["base_visual_surface"]=self.base_visual_surface()
+            metadata["robot_visual_boxes_reference"]=self.native_self_boxes()
+            # Current OG uses a generic Robot class with a model definition.
+            if getattr(self.robot, "model", None) == "r1pro" and self.robot.end_effector == "gripper":
+                metadata["parallel_gripper_open_envelope"]="R1Pro_parallel_prismatic_jaws"
             native_centers = self.native_grasp_centers()
             metadata["grasp_centers_eef"] = {
                 arm:(np.linalg.inv(transform(*state.poses[arm])) @ np.r_[point,1.])[:3].tolist()
