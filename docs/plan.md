@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 04:23（北京时间）H15 r1增量审查通过/两门初始化（Codex/Astra）：** Astra已亲核安装constructor/property、6项定向回归/0.016s通过，5cfbb89无剩余API阻塞；按04:20新票唯一`gate_radio_h15_r1`152337、`gate_plates_h15_r1`152335/GPU3已提交初始化，原各24/1536/1200s/0模型前缀，尚未称通过。源`semantic_geometry_5cfbb89`/digest239cb591、root4831861072B/余89850781696B、GPU3空起；旧两失败不覆盖，原起点及新模型仍未启动。Astra collector33 SFT测试通过，真实源绑定末审进行；父待稳定HEAD独立复审后再放行物理采集。
+
 **2026-09-19 04:22（北京时间）API修正双端验证/失败与账本归档完成（Codex）：** 新不可变5cfbb89在robo331/13.860s通过（本地331/5.195s），≤300s代码块结束，独立增量review待；没有新reset。两失败完整目录/日志已本地，failure SHA均`c5971b86…c2057`与robo一致；旧模型104行账本SHA`8864d30d…77403`、identity SHA`7924a4dd…e4453`双端一致，仍未停止132309。采集器作者继续原≤900s票，父不修改其dirty文件；新门/源与资源状态同步SERVER/TEAM。
 
 **2026-09-19 04:20（北京时间）固定手API修正完成/新复验待审（Codex）：** `5cfbb89`仅识别固定r1pro无end_effector字段（has_end_effector_variants=false），变体仍须明确gripper、未知拒绝；新增与真实字段形状一致回归，本地331/5.195s通过，robo新不可变源测试中。原≤300s代码块结束；Astra在完成采集器时独立审此最小增量。新两修复复验在`h15_r1_fixed_hand_api_block.json`另登记（0/3、各24/1536/1200s/0模型前缀、GPU3），**尚未reset**；原唯一零前缀策略预算仍未使用，不增加策略回合。失败两门＋日志正传本地`h15_failed_gate_bundle`；旧模型104账本在`h13_server_archive`下载中、尚未停止。H09S未新采/训。
