@@ -6,7 +6,8 @@
   "candidate_commit": "e73e2636cd5df456857efc12906fb115fa1ac44f",
   "runtime_commit": "465bc8561496c97615f8d48604010f5f5b3555c3",
   "implementation_digest": "2f49a25d9064475e3d9028c15266358e354ae16ccb9e1595f4fc05dc4ca1bc89",
-  "runtime_status": "matched_diagnostic_failed_preserved_r3_static_transport_passed_with_negative_gain_choice_r3_two_gates_running_fullstart_unspent",
+  "runtime_status": "matched_diagnostic_failed_preserved_r3_static_negative_gain_choice_retained_r3_gates_passed_original_fullstart_running",
+  "full_start_runtime": {"started_at": "2026-09-19T00:24:10+08:00", "pid": 108260, "runtime_commit": "1d93b2999de782053f6613f41177153b2b75214d", "implementation_digest": "428c339abed08da0747abc4412c3c66a41e0695b1a2cb5446821b42c6f37388b", "server_calls_before": 12, "status": "initializing_not_success", "source_path": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_prompt_1d93b29", "evaluator": "v3.9.1-development-not-official-v3.9.2"},
   "matched_diagnostic_result": {"run": "radio_h10_matched", "runtime_commit": "dfe7c96f552bd182cdeb76d761ca2324f48be403", "status": "failed_HTTP400_before_d5_action_generation", "completed_actions": 5, "new_controls": 96, "client_requests": 9, "successful_generations": 8, "expert_prefix": 448, "saved_policy_prefix": 362, "official_success_evidence": false, "repeat_matched": false},
   "repair_r3": {
     "registered_at": "2026-09-19T00:12:00+08:00",
@@ -16,6 +17,7 @@
     "cpu_gate": {"max_seconds": 300, "model_calls": 0, "controls": 0, "actual_d4_d5_tokens": [9532, 10025], "eight_history_pressure_tokens": [10303, 10603], "legacy_d4_exact_request_tokens": 11726, "legacy_d5_tokens": 12145},
     "static_gate": {"run": "static_h10_r3", "source_run": "radio_h10_matched", "decisions": [4, 5], "max_model_calls": 2, "max_seconds": 300, "controls": 0, "requires": "Independent review, all exact image hashes, original command order and membership"},
     "gates": ["gate_radio_h10_r3", "gate_plates_h10_r3"],
+    "result": {"gate_radio_h10_r3": {"passed": true, "controls": 417, "wall_s": 121.4019877850078, "sha256": "8c6641a90b4818e027587891851400e4b1df0a9403b2125573751aca09457d47"}, "gate_plates_h10_r3": {"passed": true, "controls": 418, "wall_s": 122.65258482005447, "sha256": "b2b4bc7e430c1cb589101dfbc1dd4249f1e3c9dde931f1c1c832ac5af05916d5"}},
     "additional_engineering_resets": 2,
     "each": {"max_decisions": 24, "max_controls": 1536, "max_seconds": 1200, "expert_prefix": 0, "model_calls": 0, "seed": 0},
     "tasks_instances": {"0": 138, "3": 242},
