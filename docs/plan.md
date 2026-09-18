@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 05:11（北京时间）H09S前两条人工审核通过/第三缺后验停止（Codex/Astra）：** 同163349 task1真实完成164专家前缀、12固定停顿；父逐次看当前三图/本体与源164/172/180，分别独立批准RIGHT_LEFT，前两条各18原生控制＋12再停顿，右EEF y分别9.543/9.549mm。父看两条前/即时后/停顿后三视图、全18条23D与run trace逐值核、每组28文件SHA；底盘命令0、双开爪1、非右臂命令不变，桶仍侧躺受地面支撑。前两`post`在本地`artifacts/vlm-sft-native-teacher-20260919/manual_approvals/task1_0{0,1}_post.json`，只通过当前GRASP的侧向接近标签，非抓取/训练效果；第一release helper父已通过。第三审批在原120s内被实际读取并执行18控制至native90，但after保存触发单例写前字节门，failure wall425.513s；第三缺完整记录，**不能正标签**，最终hold/退出待作者核。task3暂停。Astra新增≤600s纯CPU/≤5MiB派生，核各capture体积/重复、真实前缀吞吐与3473前缀/900s可行性，再给容量与数据扩展方案；0新reset/控制/模型/训练，不直接追加采集。原失败不追认合规、原数据门不降低。父继续H15同一回合及腕姿约束只读诊断。
+
 **2026-09-19 05:01（北京时间）H09S task1已提交/父待人工教师（Codex/Astra）：** 原剩余一次task1/192在04:59:09.866由Astra提交163349/GPU1，`pilot_v2/task_1`及相邻日志，固定68dacca/新SHA599298a授权；启动root54623709B/余88355119104B，初始化不等于采集通过。父当前就绪，WAITING后120s内审三图/状态/来源，无自动正标签；task3未放行。H15同158357至少58决策/1302控制，右手在APPROACH、最近距离约.719m，尚未抓取。只读代码发现APPROACH无腕旋转、ALIGN/INTERACT才开放，**这是下一待检验假设，不是已定根因或已经部署修复**；不热改本次源。
 
 **2026-09-19 04:58（北京时间）H09S真实大文件验证/原剩余task1放行（Codex/Astra）：** 真实writer/loader4.639817s、47345882→3127231B、全字节与完整model同一；失败全包3167823B/SHA94c4f14d…53952已在作者本地`artifacts/h09s-artifact-budget-fix-68dacca`，原失败不删除。robo新干净`vlm_sft_native_68dacca`36/.443s、实际4807前缀/来源.378655s通过，旧1509授权实际拒绝，全root54619559B计入旧失败和派生。父激活`authorization_remaining_two_68dacca.json`双端SHA599298a3…78795，**只放行原剩余task1/192一次**到`pilot_v2/task_1`、GPU1，164prefix/200native/900s/3候选/120s逐条父审，尚待PID；task3等另一次父就绪，task0禁止重置。父重看task1源三视图及当前意图GRASP trash can，源运动base不能直接拆分BC；还没有新正标签/训练。H15同一GPU3回合仍运行，d53图radio仍直立，未宣称抓取。
