@@ -19,6 +19,10 @@ def robot_point_mask(points,geometry):
     for box in geometry["boxes"]:
         t=np.asarray(box["T_base_link"],dtype=float);lo=np.asarray(box["lower"]);hi=np.asarray(box["upper"])
         if t.shape!=(4,4) or lo.shape!=(3,) or hi.shape!=(3,) or not np.isfinite(t).all() or not np.isfinite([lo,hi]).all() or np.any(lo>hi):raise ValueError("Invalid robot-only box")
+        if (not np.allclose(t[3], [0,0,0,1], atol=1e-8, rtol=0) or
+                not np.allclose(t[:3,:3].T@t[:3,:3], np.eye(3), atol=1e-6, rtol=0) or
+                not np.isclose(np.linalg.det(t[:3,:3]), 1., atol=1e-6, rtol=0)):
+            raise ValueError("Rigid SE(3) robot-only box transform required")
         local=(points-t[:3,3])@t[:3,:3]
         mask|=np.all((local>=lo-margin)&(local<=hi+margin),axis=1)
     return mask

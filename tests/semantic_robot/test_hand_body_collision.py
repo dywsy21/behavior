@@ -77,6 +77,23 @@ class HandBodyTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             LocalDepthGuard(points, model, state.q, {}, self_geometry={})
 
+    def test_malformed_current_geometry_cannot_erase_obstacle_and_leave_free_rays(self):
+        model, state, geometry = calibrated_fixture()
+        points = np.concatenate((np.tile([.4, 0, .2], (50, 1)), np.tile([1.5, 0, .2], (50, 1))))
+        action = Action("base", "forward")
+        self.assertEqual(LocalDepthGuard(points, model, state.q, {}, self_geometry=geometry).check(action),
+                         (False, "OBSERVED_BASE_OBSTACLE"))
+        scaled, reflected, projective = np.eye(4), np.eye(4), np.eye(4)
+        scaled[:3, :3] *= .1
+        scaled[:3, 3] = [.4, 0, .2]
+        reflected[0, 0] = -1
+        projective[3, 0] = .01
+        for matrix in (scaled, reflected, projective):
+            corrupt = copy.deepcopy(geometry)
+            corrupt["boxes"][0]["T_base_link"] = matrix.tolist()
+            with self.subTest(matrix=matrix.tolist()), self.assertRaisesRegex(ValueError, "SE\\(3\\)"):
+                LocalDepthGuard(points, model, state.q, {}, self_geometry=corrupt)
+
 
 if __name__ == "__main__":
     unittest.main()
