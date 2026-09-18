@@ -2,6 +2,7 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 from PIL import Image
@@ -10,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/"scripts/vlm_sft"),str(ROOT/"src")]
 from common import CAMERAS,actor_state,prompt
 from live import ACTIVE,parse_request,request_payload,runtime_proprio,validate_proprio
-from run_local import guard_release,implementation_digest,GATE
+from run_local import guard_release,implementation_digest,GATE,write_privileged_audit
 
 
 class LiveContractTests(unittest.TestCase):
@@ -45,6 +46,15 @@ class LiveContractTests(unittest.TestCase):
         self.assertTrue(guard_release("RIGHT_UP",{"right":True,"left":False}))
         self.assertEqual(len(implementation_digest()),64)
         self.assertFalse(any(t.startswith("TORSO") for t in GATE))
+
+    def test_diagnostic_world_pose_is_write_only_not_actor_state(self):
+        robot=SimpleNamespace(grasping_mode="physical",get_position_orientation=lambda:(np.array([1,2,3]),np.array([0,0,0,1])))
+        with patch("run_local.write_json") as write:
+            self.assertIsNone(write_privileged_audit("audit.json",robot))
+        value=write.call_args.args[1]
+        self.assertTrue(value["not_available_to_actor"])
+        self.assertEqual(value["robot_world_position_m"],[1,2,3])
+        with self.assertRaises(ValueError):validate_proprio(value)
 
 
 if __name__=="__main__":unittest.main()

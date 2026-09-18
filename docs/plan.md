@@ -14,6 +14,7 @@
 
 ### 2026-09-18 20:12（北京时间）：H-09独立VLM SFT首块登记
 
+**21:05 H-09闭环审查与位移审计：** 主代理已独立review ac35ed1 live/serve/run_local/codec，无GT泄漏/映射阻塞；为区别实际底盘位移与速度积分偏差，在单独write-only事后审计函数保存robot world pose＋既有assisted持物诊断，actor/分支/停止条件不读其返回（返回None），增加负向接口测试。未读物体pose/隐藏目标，不改动作、安全阈值、预算；新digest双工程门在该代码上重建，0新物理。
 **20:58 H-09评测防混淆补项：** 1199训练中1086是base，不能让总准确率掩盖操作稀疏。静态评测未开始前增加base/非base分层、无需神经调用的“重复上个动作”对照；原始/微调/当前本体速度基线仍保留，192测试全部一次配对、不看测试选权重。训练源140c47d不改。
 **20:56 H-09训练270/600及闭环接口：** train_v1已270更新/510.87s、峰18.18GiB，200步adapter已存，原600终点不按测试择优。新增live/serve/run_local与3接口回归（总16 CPU通过），当前源码本地未部署/0新物理。仅固定合法GRASP radio和NAVIGATE breakfast table，训练/服务同41符号、同prefix、当前RGB/本体及实际执行历史；真值仅另写事后audit，close-latch禁止固定技能内误open。`h09_local_pilot.json`另登记新桥接2工程门（各20命令/768控制/1200s、0模型）后原4配对回合，全部GPU1且训练后顺序；不称父H08 grounded策略同源。源码将固定交主代理review。
 **20:49 H-09正式训练实际运行：** train_v1 PID61793，GPU1、源140c47d（远端worktree目录尾b4537b6为命名笔误，以Git/identity记录140c47d为准，未热改）；新v4三任务prefix/mask通过、已实际2更新，热态1.952s/update、峰17.88GiB。继续原≤600/3h/200-400-600检查点，disk余92GiB。独立HTTP/闭环接口在本地开发，尚未新物理或将loss作效果。

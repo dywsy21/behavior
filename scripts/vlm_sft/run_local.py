@@ -35,6 +35,7 @@ from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.grounding import observed_cloud,LocalDepthGuard
 from semantic_robot.v2.diagnostics import grasp_audit
+from semantic_robot.og_backend import array
 
 GATE=("HOLD","RIGHT_UP","RIGHT_DOWN","LEFT_FORWARD","LEFT_BACK","RIGHT_YAW_PLUS","RIGHT_YAW_MINUS",
       "LEFT_ROLL_PLUS","LEFT_ROLL_MINUS","BASE_BACK","BASE_FORWARD","BASE_YAW_PLUS","BASE_YAW_MINUS",
@@ -48,6 +49,13 @@ def implementation_digest():
 
 def guard_release(token,latches):
     return not (token.endswith("_OPEN") and latches.get(token.split("_")[0].lower(),False))
+
+
+def write_privileged_audit(path,robot):
+    """Write-only diagnostic boundary: returns nothing to the actor/loop state."""
+    position,quaternion=(array(v).tolist() for v in robot.get_position_orientation())
+    write_json(path,{**grasp_audit(robot),"robot_world_position_m":position,"robot_world_quaternion_xyzw":quaternion,
+        "world_pose_for_actual_motion_audit_only":True})
 
 
 def main():
@@ -119,6 +127,7 @@ def main():
                 if terminal:raise RuntimeError("Terminal inside separately counted expert prefix")
                 if i%64==63:check_fk(f"prefix_{i+1}")
             state=state_now();check_fk("after_prefix")
+            write_privileged_audit(out/"PRIVILEGED_INITIAL_AUDIT.json",env.robots[0])
             servo=SafeServo(model,state,gripper_command=np.asarray(prefix[-1])[[14,22]] if len(prefix) else None)
             video=imageio.get_writer(str(out/"rollout.mp4"),fps=15,codec="libx264",quality=7,macro_block_size=2)
             started=time.monotonic();phase="policy";failures=[]
@@ -170,7 +179,7 @@ def main():
                     if feedback["status"]!="TARGET_REACHED":stop="EXECUTION_SAFETY_STOP";failures.append(row)
                 else:row["feedback"]={"status":"REJECTED_NO_MOTION","reason":reason if not allowed else servo.status}
                 # No privileged value from this audit returns to policy/latch/history.
-                write_json(folder/"PRIVILEGED_POST_ACTION_GRASP_AUDIT.json",grasp_audit(env.robots[0]))
+                write_privileged_audit(folder/"PRIVILEGED_POST_ACTION_GRASP_AUDIT.json",env.robots[0])
                 check_fk(f"decision_{decision}")
                 row["control_end"]=controls;decisions.append(row);trace.write(json.dumps(row)+"\n")
                 write_json(out/"progress.json",{"controls":controls,"decisions":len(decisions),"last":row})
