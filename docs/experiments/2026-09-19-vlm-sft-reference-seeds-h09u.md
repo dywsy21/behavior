@@ -68,3 +68,17 @@ PRESS 改为该目标实例专属 `_update` 观察器，非全局类补丁；每
 修复仅 `native_teacher_og.resolve_bound_native_objects`：从已经绑定的task scope值精确匹配native `.name`，要求唯一BDDL别名、metadata同名、scene registry返回同一对象、实际links/states/prim_path存在；target/destination/payload角色分开，重复同物拒绝。未绑定、重复alias、registry替身、模糊/category/BDDL名冒作native名均拒绝；无scene-wide候选搜索、不unwrap未证明的wrapper、不改原source、无新对象姿态进入actor。精确身份回执只写private frame。
 
 64 SFT/.231s、331 harness/5.025s通过；新增4组包含真实同构的ashcan映射正例与上述负例、actor投影拒绝identity字段。旧9b运行源未改，失败完整保留计预算。修复尚未经真实reset验证，必须父独立审及另登记一次新参考回放；未自行追加物理或宣称seed可用。
+
+## H09U-P2：身份修复后唯一参考回放（已失败退出）
+
+2026-09-19 06:55 BJT 父独立审26e修复通过并合入，逐读安装BehaviorTask/scene/TRO、唯一native映射与64测试，另行明确放行一次task1。运行源码固定 **26e476eaa7c5143f1e64d79f649d9003ef6aad7b**，新干净Git worktree `.../git_worktrees/vlm_sft_h09u_26e476e`；旧9b源及P1失败均未修改。executor仍239cb591；prepared仍d4311e88，不重建来源。
+
+07:00:25 BJT 唯一提交GPU1，Python **185102**（launcher185097），输出原root `h09u_reference_task1_v2`及相邻`.log`。新的有效授权 `authorization_h09u_reference_task1_v2.json` SHA **60d4204ab4e384e57b4ab44b1a5b455534ce6a4702a3a9df3f450e3bfab7d5ea**，reviewer `Codex-parent-H09U-identity-final-review`；164prefix+288完整专家+12tail+1hold=465控制、reset后900s、单run80MiB、原root累计384MiB含P1及此前全部失败、保80GiB空闲、0模型/训练、无retry。没有task0或native teacher授权，成功seed仍必须父人工审后才能使用。
+
+启动前64远端测试/.528s通过，source clean；实际完整manifest/8源文件、TRAIN排除、同digest两门flag/hash、安装toggle依赖、官方factory任务名/mode/instance/seed和164×23 prefix逐值全部通过，未在CPU预检构造session。root文件实占92,429,849B、free86,993,231,872B，完整80MiB预留后仍≥80GiB；GPU1空闲、GPU0队友及GPU3父服务不动。已见真实OG初始化，尚未以进程启动或身份修复声称产生seed或有效训练数据。
+
+07:04:44 BJT 已停止并退出：身份解析真实通过，三条private frame均唯一绑定 `ashcan.n.01_1 -> trash_can_116`；实际164prefix+**1专家控制**后关节状态门失败。固定20mrad门测得最大 **43.879509mrad**，在q[10]（左臂第7关节）；grip35.193µm仍在原门内。没有调门或retry。显式final hold真实完成：总 **166控制=164+1+1**，私有账本连续164/165/166；三帧均双手held/contact=false、无新forbidden、IN_PROGRESS，不是GRASP成功。0seed、0native BC、0模型/训练。failure中的165控制和127.983529s是hold前首错快照，最终hold回执166单列；不能把进程退出码或不完整技能当成功。
+
+完整 **18文件6,593,455B**＋log双端逐文件SHA全部一致，capture内7文件hash、完整压缩标定roundtrip也通过。本地 `artifacts/h09u-reference-task1-v2/run`；本人亲看before三原图：目标桶在地面、双手打开，没有已抓取证据。没有故障后RGB-D，不冒称最终视觉状态已认证；final hold私有pose/contact仍留存。末原root99,028,328B（含全部旧失败），free86,971,916,288B；本次Python和launcher均退出、immutable源仍clean。GPU1当时仍报419MiB但无本次PID，不擅自终止任何其他进程。关键SHA/原始计数见 `configs/vlm_sft/h09u_p2_failure_clock_audit.json`。
+
+只读时钟诊断：新旧两次control164的q完全相同；它与source frame164最大18.6833mrad、与frame165最大5.8459mrad。control165的实测q由final_hold命令的当前q保留，与应比较frame165差43.8795mrad、与frame166差5.9124mrad；prefix164条和first expert action23均逐值精确匹配prepared源。这提示必须查原始state/action对齐、控制延迟/工厂时钟，但仅两个实际边界**不足以证明可平移一个frame**。原source/20mrad门保持，未按最近邻改时钟，未向actor灌入未来state。后继应先从原数据导出与安装控制循环证明契约，再有界登记；目前无成功seed，不能诚实量化其native可达性或启动采集/训练。
