@@ -1,0 +1,4218 @@
+{
+  "status": "complete_counts_not_training_data",
+  "wall_seconds": 30.16632290603593,
+  "tasks": [
+    0,
+    1,
+    3
+  ],
+  "reference_source": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_joint_90a7c20",
+  "new_model_calls": 0,
+  "new_controls": 0,
+  "training_updates": 0,
+  "horizon_frames": 16,
+  "source_hz": 30,
+  "additional_episode_selection": "sha256(h09r:41:task:instance), first 12 unique per task",
+  "exclusions": {
+    "original_5pct_all_instances": [
+      [
+        0,
+        279
+      ],
+      [
+        0,
+        280
+      ],
+      [
+        0,
+        282
+      ],
+      [
+        0,
+        284
+      ],
+      [
+        0,
+        285
+      ],
+      [
+        0,
+        288
+      ],
+      [
+        0,
+        296
+      ],
+      [
+        0,
+        297
+      ],
+      [
+        0,
+        299
+      ],
+      [
+        0,
+        300
+      ],
+      [
+        1,
+        291
+      ],
+      [
+        1,
+        292
+      ],
+      [
+        1,
+        293
+      ],
+      [
+        1,
+        294
+      ],
+      [
+        1,
+        295
+      ],
+      [
+        1,
+        296
+      ],
+      [
+        1,
+        297
+      ],
+      [
+        1,
+        298
+      ],
+      [
+        1,
+        299
+      ],
+      [
+        1,
+        300
+      ],
+      [
+        3,
+        284
+      ],
+      [
+        3,
+        288
+      ],
+      [
+        3,
+        289
+      ],
+      [
+        3,
+        290
+      ],
+      [
+        3,
+        292
+      ],
+      [
+        3,
+        295
+      ],
+      [
+        3,
+        297
+      ],
+      [
+        3,
+        298
+      ],
+      [
+        3,
+        299
+      ],
+      [
+        3,
+        300
+      ]
+    ],
+    "h09_validation_test_all_instances": [
+      [
+        0,
+        43
+      ],
+      [
+        0,
+        47
+      ],
+      [
+        0,
+        60
+      ],
+      [
+        0,
+        140
+      ],
+      [
+        1,
+        14
+      ],
+      [
+        1,
+        66
+      ],
+      [
+        1,
+        122
+      ],
+      [
+        1,
+        274
+      ],
+      [
+        3,
+        36
+      ],
+      [
+        3,
+        52
+      ],
+      [
+        3,
+        88
+      ],
+      [
+        3,
+        185
+      ]
+    ],
+    "development_instances": [
+      [
+        0,
+        138
+      ],
+      [
+        3,
+        242
+      ]
+    ]
+  },
+  "eligible_pool_episodes": {
+    "0": 185,
+    "1": 186,
+    "3": 185
+  },
+  "eligible_pool_instances": {
+    "0": 185,
+    "1": 186,
+    "3": 185
+  },
+  "old_train_rows": 1199,
+  "old_train_tokens": {
+    "BASE_YAW_PLUS": 270,
+    "BASE_FORWARD": 366,
+    "BASE_YAW_MINUS": 338,
+    "RIGHT_OPEN": 9,
+    "BASE_BACK": 43,
+    "LEFT_RIGHT": 10,
+    "LEFT_DOWN": 5,
+    "LEFT_YAW_PLUS": 1,
+    "LEFT_FORWARD": 4,
+    "RIGHT_DOWN": 13,
+    "RIGHT_CLOSE": 11,
+    "RIGHT_RIGHT": 6,
+    "RIGHT_PITCH_MINUS": 1,
+    "BASE_RIGHT": 45,
+    "RIGHT_LEFT": 24,
+    "LEFT_LEFT": 2,
+    "BASE_LEFT": 24,
+    "LEFT_OPEN": 3,
+    "LEFT_CLOSE": 3,
+    "RIGHT_FORWARD": 2,
+    "RIGHT_UP": 16,
+    "RIGHT_BACK": 1,
+    "RIGHT_ROLL_PLUS": 1,
+    "BOTH_FORWARD": 1
+  },
+  "old_train_file_sha256": "95118601ba7fd71e9ec1060c7cb04e014c333a31ece3560ff172cd2bfcf753c6",
+  "source_identity": {
+    "groups_sha256": "3d6cb946fab72c156ae320cda2ae6f4a524dbcfb1c49875c50ae67f608a138aa",
+    "labels_sha256": "666f8fc0b097ad963de7c3e484d4017c59e8d0dfc74eaaa6124d6c551ac31cc6",
+    "quarantine_sha256": "94e6d4d65ab93a797c3e15b4001523055f067b8acbb83996c3eecdd08dfb5684",
+    "release_manifest_sha256": "c14a8c4632ea79263962ccc1500132185162bdc7977ac6f31a42938d01243888",
+    "common_sha256": "4618a66ae5bbee3bf43306ca860a512520d4b1cfd29e7074e1383068dbb23f63",
+    "episode_meta_sha256": {
+      "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/meta/episodes/chunk-000/file-000.parquet": "e1a572dd714d2ff427e8759b7e181de22f4a999faeeb47c9b3b6ddef6670928e",
+      "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/meta/episodes/chunk-001/file-000.parquet": "d1d13ffa59b1b77346a62c14d69b87c8a6d4f8c024741da618a72f9e216d8138",
+      "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/meta/episodes/chunk-002/file-000.parquet": "6b6bc66e85cc871c149471c84cb2b3ef5bf10b24be50335c7e5b46eaa6219d72",
+      "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/meta/episodes/chunk-003/file-000.parquet": "c3611ec14c103758d2a15ab90f07f6d163228dfa1df02b48f1987de67d95150e",
+      "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/meta/episodes/chunk-004/file-000.parquet": "9f8bfbae8a5630101e590dc4f7cfc610ab1a9f105557703adcf4a9f22c5910b4"
+    }
+  },
+  "sources": [
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 8,
+      "instance": 10,
+      "frames": 2427,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "7e18e4c1726b233e05a7b2f0d82fd5fa417562646fdc3b86ea0921dfff9264c0"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 9,
+      "instance": 11,
+      "frames": 2277,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "e7bcaf9cb349e5f1bdeb8186090761709b981b75a555cc6e038a034f07e4ee0a"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 12,
+      "instance": 14,
+      "frames": 1991,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "1ff91f833cd32e91f649a2ea983f49bfe7697841a335200ea44c8fd07dee8489"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 14,
+      "instance": 17,
+      "frames": 2375,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "2a95d70271c447ff95025158e948e2056d04e90711518d564ca18bc7c51cad0b"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 28,
+      "instance": 31,
+      "frames": 2834,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "9ba57d653e7ecfc098990840d40e5a7887063ef407ea4cbaa548afad1e7acb09"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 30,
+      "instance": 33,
+      "frames": 2263,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "f544c9ba26b4f76c72d19e7ce019f6a30ebdad8a0c8be6b840fac9b994300408"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 34,
+      "instance": 37,
+      "frames": 1656,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "9c87aa6524270fa0f73ab5310f5805c4496219293d86ab0809cdfb88481ec232"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 42,
+      "instance": 45,
+      "frames": 1646,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "22007fb14087a27db5286f9501cc3d2f6c34c7b918cab7d7df168532c730c44d"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 43,
+      "instance": 46,
+      "frames": 2655,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "1bd12413cc30d9fd61df695219c00c21900fa594031a1444638709fe178eb009"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 45,
+      "instance": 48,
+      "frames": 2289,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "67b2c845395ad58d552b0bd8498c2aad9d8cca6dbb4274e1012194afefae8f2d"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 50,
+      "instance": 53,
+      "frames": 1850,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "863a5076ccc59ddfef4ad7b2dc87746ba05d8f0c5ce69208a3178d7caad1c7b0"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 66,
+      "instance": 70,
+      "frames": 2459,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "f8775ce1ba25dd041a2fba46b3e7c94bcff92dc52c232d15bfd3e75c2f270404"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 70,
+      "instance": 74,
+      "frames": 2530,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "d9a7c59607f28bfd05b99777963667ade154f7a3b380d2423b1afb578d01f3f5"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 75,
+      "instance": 79,
+      "frames": 2567,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "d842f984157044aeec2bb52a13729a9177369dc056a05ee4834740154fbd9c84"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 109,
+      "instance": 122,
+      "frames": 2403,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "a1573c546bbdf78a5d22eac22cef80ba8f81c44ea5bfef98e4704edbf61174c4"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 117,
+      "instance": 132,
+      "frames": 1625,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "73195a47c7423eb7e70a2e52ba0e395094f43194935f6f91e7a30fc19c8b1b80"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 120,
+      "instance": 135,
+      "frames": 1621,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "727c2df504077a2b96444dd07b060ced4ce9ca71b0219892180df1c8f0b5ca7d"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 133,
+      "instance": 159,
+      "frames": 2246,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "edf90bd12d7f184a77b5b4032bd3b44e717e70e3932c42e5ab4b8ce6aba33333"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 140,
+      "instance": 167,
+      "frames": 2055,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "39e60400839c47f6dc8aeaf36944981843a4a452564d78dfae3fe2c00b2f5c85"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 145,
+      "instance": 175,
+      "frames": 2029,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "85057f913543937ec1e02e836f6b1d89c788b4c7c918a720c9f5351472555cf6"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 148,
+      "instance": 183,
+      "frames": 1561,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "b5c4221da86dbbf8b0b37c4b977516f94d91b53616029351877a1e50851b1212"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 0,
+      "episode": 151,
+      "instance": 190,
+      "frames": 1023,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "20b6dea49f83e1c007a9364f7a4de7841a589dc27fdf16f0ac6e057639b7715c"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 152,
+      "instance": 193,
+      "frames": 1711,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "acdb4ab2c1433058aa9af60f02e15ac8fd54b1725565fac3e0f5c08a1e6b04f1"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 0,
+      "episode": 186,
+      "instance": 272,
+      "frames": 1467,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-000/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "37f38909e7ef8297805cdf2acca68586466a17fd8325eff42278fa3e18dec558"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 200,
+      "instance": 1,
+      "frames": 7667,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "34c7f3c5a5bafeeb0a508c545a2e5215294b00f5e6d4d0127a381bff69712113"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 205,
+      "instance": 8,
+      "frames": 6233,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "e9ef9958adfad464efde3f8b7c150d386402eb41167c3c4b14dcb211bd1fcbf2"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 207,
+      "instance": 12,
+      "frames": 5540,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "76c7c939df780b3109549b12064d8a1b1344536381155839f5ec18a1c58f4020"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 213,
+      "instance": 22,
+      "frames": 7986,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "e98b111b13b79ef9d0e6d47f5835552e3f9ba638a4d89209fc5661257718d14a"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 218,
+      "instance": 27,
+      "frames": 8107,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "d9ba31df339708f132ef5687ae44b6196f5c09b05e47837ff92c9616f949e0d5"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 242,
+      "instance": 65,
+      "frames": 5571,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "26a38d6f7b472e1a189fb45cc1d5f742acf0957b3f9f0f5beefa55eeebdbd6f4"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 247,
+      "instance": 71,
+      "frames": 6411,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "18bbd62abc80a249cf2879d99dee99535875c82118b9954bf270e24408d2f147"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 264,
+      "instance": 114,
+      "frames": 5497,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "269810d2ca055994b0034de628114beaedaa4a0ddcb8f8e4c6097ac6630f2c64"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 277,
+      "instance": 132,
+      "frames": 5991,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-002.parquet",
+      "extracted_arrays_and_labels_sha256": "142732510322786baf7631252d8d0d40cecb30f23c688ec14bc01b97d66553f2"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 291,
+      "instance": 146,
+      "frames": 4272,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-002.parquet",
+      "extracted_arrays_and_labels_sha256": "ad2ffe7a8ad4a7df29f01d21711df6a1832cea1f101c8f00fb5cdcf0579910f5"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 305,
+      "instance": 185,
+      "frames": 2013,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-002.parquet",
+      "extracted_arrays_and_labels_sha256": "bfc0112cad35a054fb967819d841a39897439cda6d519ee8075f97e109224eb5"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 310,
+      "instance": 192,
+      "frames": 2402,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-002.parquet",
+      "extracted_arrays_and_labels_sha256": "06780c386db3be8d3d14f045b46af346ad9f6ee9b3d8fdfc933741bc9dd06e84"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 312,
+      "instance": 194,
+      "frames": 1719,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-002.parquet",
+      "extracted_arrays_and_labels_sha256": "00e4f269d43947d13aa7f586d05b11e5d4507527bf2e59492960affea193529d"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 324,
+      "instance": 211,
+      "frames": 4501,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-003.parquet",
+      "extracted_arrays_and_labels_sha256": "222e5fa26459600d220db808a88f42d943ea6c04f634c460c775196fcd451121"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 328,
+      "instance": 215,
+      "frames": 4606,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-003.parquet",
+      "extracted_arrays_and_labels_sha256": "b05866f6202849e3c7cc380c182bfd07d46f486ec6025bd9ae1fd77eddebe41f"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 332,
+      "instance": 219,
+      "frames": 4712,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-003.parquet",
+      "extracted_arrays_and_labels_sha256": "080ec6101bdbdf20ef2cc7d17807a5fcf58357c296a5d6af438fb6cf155032bd"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 340,
+      "instance": 227,
+      "frames": 4284,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-003.parquet",
+      "extracted_arrays_and_labels_sha256": "c5a67f2557ae17bf6f89ad7894c1dd3ce9307396d4ab8bebdeb70d04cb06bb54"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 351,
+      "instance": 251,
+      "frames": 5115,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-003.parquet",
+      "extracted_arrays_and_labels_sha256": "35f3d9b48ba5f58ddbb1ab2d8091a61e852168726efd52787a3ba4232e84e955"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 360,
+      "instance": 260,
+      "frames": 4891,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-003.parquet",
+      "extracted_arrays_and_labels_sha256": "938406535be3d18fcacfbabaac1b4d31d0f5d5daf2ece209b6177d9977065712"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 363,
+      "instance": 263,
+      "frames": 5877,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-003.parquet",
+      "extracted_arrays_and_labels_sha256": "c020771f4217eecada404c9822a882bb959b63562138f4902e8bf3252001ccf2"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 372,
+      "instance": 273,
+      "frames": 5552,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-004.parquet",
+      "extracted_arrays_and_labels_sha256": "c7b0c3452d91d182c49945d6aa482e5d8d78d85f2ba72cd656eb84c00cc37267"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 1,
+      "episode": 377,
+      "instance": 278,
+      "frames": 5246,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-004.parquet",
+      "extracted_arrays_and_labels_sha256": "978e1dc509753b95a9d99577bb0f01abebce66ab659ed616bbcf56f9efe55717"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 379,
+      "instance": 280,
+      "frames": 3580,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-004.parquet",
+      "extracted_arrays_and_labels_sha256": "994e9c8cc1e9665cd6525d2f5e39559e33e1a5593a6a46d6b974040671c5c5a6"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 1,
+      "episode": 389,
+      "instance": 290,
+      "frames": 4902,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-001/file-004.parquet",
+      "extracted_arrays_and_labels_sha256": "0d01a113f477cc0571a454b25bc1ceb3903be93e06abe507674e1306b2e48917"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 607,
+      "instance": 8,
+      "frames": 16848,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-000.parquet",
+      "extracted_arrays_and_labels_sha256": "85c7a11b279ca94ac7b9640e70184f027d9e2c4899eea977f3a8725d559117f8"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 618,
+      "instance": 19,
+      "frames": 14943,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "604dd50d006515255442ce6daf2498330fab5867ecf6753c0380db274ced38b0"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 622,
+      "instance": 23,
+      "frames": 9210,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "4987f7c5f792e73043a07696f167692088c0f4784ad7f0d21a42af2cc59c4b17"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 625,
+      "instance": 26,
+      "frames": 9634,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "f68102e698efee5ce73d554a740c6c012540ea388cd734ec692b1ad1048a942a"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 629,
+      "instance": 30,
+      "frames": 13185,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "dce37be4208ae81e6b901ca6d6de6b54c427c8d6d2188eaeb7cc1f80c49c2b07"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 634,
+      "instance": 35,
+      "frames": 8712,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-001.parquet",
+      "extracted_arrays_and_labels_sha256": "bf52b57dd3087032682329f7cf4686e07b2fc33a08ac9241837c1989ea788cb3"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 674,
+      "instance": 90,
+      "frames": 13152,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-004.parquet",
+      "extracted_arrays_and_labels_sha256": "8507647f7e72d51dd4826e9e660b3eecb07482b646379040bc3810ed37a59e86"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 676,
+      "instance": 92,
+      "frames": 13519,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-004.parquet",
+      "extracted_arrays_and_labels_sha256": "0b99792735aff13ae70805a032a3e2ebf5d093277b5f32a5b704e674326f09e1"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 678,
+      "instance": 96,
+      "frames": 13500,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-004.parquet",
+      "extracted_arrays_and_labels_sha256": "dd73afb10df9ec90da5a960b3ebe941994738a84142dd039765faef57c172f5c"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 711,
+      "instance": 146,
+      "frames": 15113,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-006.parquet",
+      "extracted_arrays_and_labels_sha256": "bc18df59518f403eb821b2faa9150eb661effbc0a9fc0d04a19a492d13cce414"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 716,
+      "instance": 151,
+      "frames": 14133,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-007.parquet",
+      "extracted_arrays_and_labels_sha256": "8804a3c20bd943846b6978db50e1fab3e8c1ca5cc139a48b5f8c19b2092832ac"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 721,
+      "instance": 163,
+      "frames": 16034,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-007.parquet",
+      "extracted_arrays_and_labels_sha256": "84a9aebf3216ee8730362014f9f77984ca9cd98a8bd4e6a474094593626c4894"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 725,
+      "instance": 170,
+      "frames": 14993,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-007.parquet",
+      "extracted_arrays_and_labels_sha256": "de905b5ac270598fcd42f039c438020d70042b39c1f031285bf83749a4be0acb"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 742,
+      "instance": 205,
+      "frames": 13740,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-008.parquet",
+      "extracted_arrays_and_labels_sha256": "51ef3eb08b2cba5210d800ab58da98bd1d41d697d68bb1fdd522de4dc2fa1638"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 750,
+      "instance": 220,
+      "frames": 12911,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-009.parquet",
+      "extracted_arrays_and_labels_sha256": "a1f2b6e1a46effa6d0714faf0eac92a986f98baca36fdf7e0fa14377f5a172fc"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 756,
+      "instance": 231,
+      "frames": 15376,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-009.parquet",
+      "extracted_arrays_and_labels_sha256": "d2b4a2d622a6f013fcc603150984194eb208928c6a994169d9922c00ed12bb48"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 760,
+      "instance": 240,
+      "frames": 12467,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-010.parquet",
+      "extracted_arrays_and_labels_sha256": "079c067fce2b6f47d5cd1e82723acf31dae9ef5ef1ab9439722812bd13a97040"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 767,
+      "instance": 249,
+      "frames": 12115,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-010.parquet",
+      "extracted_arrays_and_labels_sha256": "466296861f4d58363b0e26e98eb688fa6282c8acf2d60f25929e99cf35737a29"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 769,
+      "instance": 252,
+      "frames": 14102,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-010.parquet",
+      "extracted_arrays_and_labels_sha256": "69d7b964d8816ecb4ef3971416a2566380863d33d8824f4a8545bbf9478a6e23"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 771,
+      "instance": 254,
+      "frames": 14125,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-010.parquet",
+      "extracted_arrays_and_labels_sha256": "559b79ea4e860e63cac85d5baddd254cd9c34adfd0087d01d828d56b0fcea858"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 773,
+      "instance": 257,
+      "frames": 12004,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-010.parquet",
+      "extracted_arrays_and_labels_sha256": "a3bfdfd738acef56af5bdcd98e62139f2919f9cf290411b987706fb1d3720719"
+    },
+    {
+      "cohort": "additional_train",
+      "task": 3,
+      "episode": 774,
+      "instance": 259,
+      "frames": 10783,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-010.parquet",
+      "extracted_arrays_and_labels_sha256": "1a0b65e7cac28ea59541115f1a12ad48bca0e6e87b4c34b2b92cef3616a6ae9d"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 786,
+      "instance": 279,
+      "frames": 12924,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-011.parquet",
+      "extracted_arrays_and_labels_sha256": "a1c4c811acb9387c8060290002b82443e7874f710ebc266b565fc6f1c2be2864"
+    },
+    {
+      "cohort": "h09_train",
+      "task": 3,
+      "episode": 787,
+      "instance": 280,
+      "frames": 15712,
+      "parquet": "/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4/data/chunk-003/file-011.parquet",
+      "extracted_arrays_and_labels_sha256": "8b3be59f48e8ff71389f6cbea20752a77f80e5aa9a0e06871ca9452ff289466f"
+    }
+  ],
+  "counts": {
+    "h09_train/t0/stride16/NAVIGATE": {
+      "windows": 452,
+      "low_base_windows": 48,
+      "near_rest_windows": 24,
+      "phase_start_windows": 23,
+      "released_same_skill": 440,
+      "released_near_rest": 20,
+      "released_phase_start": 23,
+      "pure_direction_accepted": 213,
+      "accepted_low_base": 3,
+      "accepted_phase_start": 5,
+      "accepted_near_rest": 2,
+      "manipulation_direction": 1,
+      "translation_endpoint_checked": 1,
+      "translation_endpoint_within_native_10mm_tolerance": 0
+    },
+    "h09_train/t0/stride16/GRASP": {
+      "windows": 479,
+      "low_base_windows": 455,
+      "near_rest_windows": 64,
+      "phase_start_windows": 13,
+      "released_same_skill": 467,
+      "released_near_rest": 63,
+      "released_phase_start": 13,
+      "pure_direction_accepted": 11,
+      "accepted_low_base": 10,
+      "accepted_near_rest": 3,
+      "accepted_phase_start": 2,
+      "accepted_near_rest_and_phase_start": 1,
+      "manipulation_direction": 10,
+      "translation_endpoint_checked": 8,
+      "translation_endpoint_within_native_10mm_tolerance": 1
+    },
+    "h09_train/t0/stride16/MISSING": {
+      "windows": 93
+    },
+    "h09_train/t0/stride16/PRESS": {
+      "windows": 256,
+      "low_base_windows": 256,
+      "near_rest_windows": 16,
+      "phase_start_windows": 12,
+      "released_same_skill": 244,
+      "released_near_rest": 15,
+      "released_phase_start": 12,
+      "pure_direction_accepted": 4,
+      "accepted_low_base": 4,
+      "manipulation_direction": 4,
+      "translation_endpoint_checked": 4,
+      "translation_endpoint_within_native_10mm_tolerance": 0
+    },
+    "h09_train/t0/stride16/PLACE_ON": {
+      "windows": 310,
+      "low_base_windows": 290,
+      "near_rest_windows": 56,
+      "phase_start_windows": 12,
+      "released_same_skill": 301,
+      "released_near_rest": 56,
+      "released_phase_start": 12,
+      "pure_direction_accepted": 10,
+      "accepted_low_base": 7,
+      "accepted_near_rest": 1,
+      "manipulation_direction": 7,
+      "translation_endpoint_checked": 3,
+      "translation_endpoint_within_native_10mm_tolerance": 1
+    },
+    "h09_train/t0/phase_first_low_extra/GRASP": {
+      "windows": 11,
+      "low_base_windows": 8,
+      "near_rest_windows": 6,
+      "phase_start_windows": 11,
+      "released_same_skill": 11,
+      "released_near_rest": 6,
+      "released_phase_start": 11
+    },
+    "h09_train/t0/phase_first_low_extra/PRESS": {
+      "windows": 12,
+      "low_base_windows": 12,
+      "near_rest_windows": 2,
+      "phase_start_windows": 12,
+      "released_same_skill": 12,
+      "released_near_rest": 2,
+      "released_phase_start": 12
+    },
+    "h09_train/t0/phase_first_low_extra/PLACE_ON": {
+      "windows": 12,
+      "low_base_windows": 12,
+      "near_rest_windows": 0,
+      "phase_start_windows": 12,
+      "released_same_skill": 12,
+      "released_near_rest": 0,
+      "released_phase_start": 12
+    },
+    "h09_train/t0/phase_first_low_extra/NAVIGATE": {
+      "windows": 1,
+      "low_base_windows": 1,
+      "near_rest_windows": 0,
+      "phase_start_windows": 1,
+      "released_same_skill": 1,
+      "released_near_rest": 0,
+      "released_phase_start": 1
+    },
+    "additional_train/t0/stride16/NAVIGATE": {
+      "windows": 361,
+      "low_base_windows": 40,
+      "near_rest_windows": 12,
+      "phase_start_windows": 23,
+      "released_same_skill": 349,
+      "released_near_rest": 7,
+      "released_phase_start": 23,
+      "pure_direction_accepted": 177,
+      "accepted_phase_start": 4,
+      "accepted_low_base": 1
+    },
+    "additional_train/t0/stride16/GRASP": {
+      "windows": 504,
+      "low_base_windows": 466,
+      "near_rest_windows": 84,
+      "phase_start_windows": 13,
+      "released_same_skill": 492,
+      "released_near_rest": 83,
+      "released_phase_start": 13,
+      "pure_direction_accepted": 9,
+      "accepted_low_base": 9,
+      "manipulation_direction": 9,
+      "translation_endpoint_checked": 4,
+      "translation_endpoint_within_native_10mm_tolerance": 1,
+      "accepted_near_rest": 6,
+      "accepted_phase_start": 1,
+      "accepted_near_rest_and_phase_start": 1
+    },
+    "additional_train/t0/stride16/PRESS": {
+      "windows": 205,
+      "low_base_windows": 205,
+      "near_rest_windows": 13,
+      "phase_start_windows": 12,
+      "released_same_skill": 193,
+      "released_near_rest": 13,
+      "released_phase_start": 12,
+      "pure_direction_accepted": 4,
+      "accepted_low_base": 4,
+      "manipulation_direction": 4,
+      "translation_endpoint_checked": 3,
+      "translation_endpoint_within_native_10mm_tolerance": 0
+    },
+    "additional_train/t0/stride16/PLACE_ON": {
+      "windows": 268,
+      "low_base_windows": 242,
+      "near_rest_windows": 40,
+      "phase_start_windows": 12,
+      "released_same_skill": 256,
+      "released_near_rest": 40,
+      "released_phase_start": 12,
+      "pure_direction_accepted": 12,
+      "accepted_low_base": 8,
+      "manipulation_direction": 8,
+      "translation_endpoint_checked": 6,
+      "translation_endpoint_within_native_10mm_tolerance": 0,
+      "accepted_near_rest": 2
+    },
+    "additional_train/t0/stride16/MISSING": {
+      "windows": 157
+    },
+    "additional_train/t0/phase_first_low_extra/GRASP": {
+      "windows": 11,
+      "low_base_windows": 7,
+      "near_rest_windows": 3,
+      "phase_start_windows": 11,
+      "released_same_skill": 11,
+      "released_near_rest": 3,
+      "released_phase_start": 11
+    },
+    "additional_train/t0/phase_first_low_extra/PRESS": {
+      "windows": 12,
+      "low_base_windows": 12,
+      "near_rest_windows": 0,
+      "phase_start_windows": 12,
+      "released_same_skill": 12,
+      "released_near_rest": 0,
+      "released_phase_start": 12
+    },
+    "additional_train/t0/phase_first_low_extra/PLACE_ON": {
+      "windows": 12,
+      "low_base_windows": 12,
+      "near_rest_windows": 0,
+      "phase_start_windows": 12,
+      "released_same_skill": 12,
+      "released_near_rest": 0,
+      "released_phase_start": 12
+    },
+    "additional_train/t0/phase_first_low_extra/NAVIGATE": {
+      "windows": 1,
+      "low_base_windows": 0,
+      "near_rest_windows": 0,
+      "phase_start_windows": 1,
+      "released_same_skill": 1,
+      "released_near_rest": 0,
+      "released_phase_start": 1,
+      "pure_direction_accepted": 1,
+      "accepted_phase_start": 1
+    },
+    "additional_train/t1/stride16/NAVIGATE": {
+      "windows": 1053,
+      "low_base_windows": 148,
+      "near_rest_windows": 31,
+      "phase_start_windows": 52,
+      "released_same_skill": 1005,
+      "released_near_rest": 25,
+      "released_phase_start": 52,
+      "pure_direction_accepted": 120,
+      "accepted_low_base": 4,
+      "accepted_near_rest": 3,
+      "manipulation_direction": 1,
+      "translation_endpoint_checked": 1,
+      "translation_endpoint_within_native_10mm_tolerance": 0,
+      "accepted_phase_start": 1
+    },
+    "additional_train/t1/stride16/MISSING": {
+      "windows": 452
+    },
+    "additional_train/t1/stride16/GRASP": {
+      "windows": 1332,
+      "low_base_windows": 1192,
+      "near_rest_windows": 116,
+      "phase_start_windows": 50,
+      "released_same_skill": 1284,
+      "released_near_rest": 116,
+      "released_phase_start": 50,
+      "pure_direction_accepted": 18,
+      "accepted_low_base": 14,
+      "accepted_near_rest": 4,
+      "manipulation_direction": 14,
+      "translation_endpoint_checked": 10,
+      "translation_endpoint_within_native_10mm_tolerance": 0
+    },
+    "additional_train/t1/stride16/PLACE_IN": {
+      "windows": 440,
+      "low_base_windows": 434,
+      "near_rest_windows": 8,
+      "phase_start_windows": 40,
+      "released_same_skill": 404,
+      "released_near_rest": 8,
+      "released_phase_start": 40,
+      "pure_direction_accepted": 3,
+      "accepted_low_base": 3,
+      "accepted_near_rest": 1,
+      "manipulation_direction": 3,
+      "translation_endpoint_checked": 1,
+      "translation_endpoint_within_native_10mm_tolerance": 0
+    },
+    "additional_train/t1/stride16/PLACE_ON": {
+      "windows": 237,
+      "low_base_windows": 235,
+      "near_rest_windows": 22,
+      "phase_start_windows": 15,
+      "released_same_skill": 225,
+      "released_near_rest": 22,
+      "released_phase_start": 15,
+      "pure_direction_accepted": 1,
+      "accepted_low_base": 1,
+      "manipulation_direction": 1
+    },
+    "additional_train/t1/phase_first_low_extra/GRASP": {
+      "windows": 46,
+      "low_base_windows": 21,
+      "near_rest_windows": 2,
+      "phase_start_windows": 46,
+      "released_same_skill": 46,
+      "released_near_rest": 2,
+      "released_phase_start": 46
+    },
+    "additional_train/t1/phase_first_low_extra/NAVIGATE": {
+      "windows": 44,
+      "low_base_windows": 25,
+      "near_rest_windows": 5,
+      "phase_start_windows": 44,
+      "released_same_skill": 44,
+      "released_near_rest": 5,
+      "released_phase_start": 44,
+      "pure_direction_accepted": 1,
+      "accepted_phase_start": 1
+    },
+    "additional_train/t1/phase_first_low_extra/PLACE_IN": {
+      "windows": 32,
+      "low_base_windows": 31,
+      "near_rest_windows": 0,
+      "phase_start_windows": 32,
+      "released_same_skill": 32,
+      "released_near_rest": 0,
+      "released_phase_start": 32
+    },
+    "additional_train/t1/phase_first_low_extra/PLACE_ON": {
+      "windows": 9,
+      "low_base_windows": 9,
+      "near_rest_windows": 0,
+      "phase_start_windows": 9,
+      "released_same_skill": 9,
+      "released_near_rest": 0,
+      "released_phase_start": 9
+    },
+    "h09_train/t1/stride16/NAVIGATE": {
+      "windows": 1224,
+      "low_base_windows": 150,
+      "near_rest_windows": 34,
+      "phase_start_windows": 55,
+      "released_same_skill": 1176,
+      "released_near_rest": 27,
+      "released_phase_start": 55,
+      "pure_direction_accepted": 201,
+      "accepted_phase_start": 7,
+      "accepted_low_base": 2,
+      "accepted_near_rest": 2,
+      "accepted_near_rest_and_phase_start": 2,
+      "manipulation_direction": 1,
+      "translation_endpoint_checked": 1,
+      "translation_endpoint_within_native_10mm_tolerance": 0
+    },
+    "h09_train/t1/stride16/GRASP": {
+      "windows": 1541,
+      "low_base_windows": 1397,
+      "near_rest_windows": 227,
+      "phase_start_windows": 51,
+      "released_same_skill": 1493,
+      "released_near_rest": 225,
+      "released_phase_start": 51,
+      "pure_direction_accepted": 20,
+      "accepted_low_base": 11,
+      "accepted_near_rest": 6,
+      "manipulation_direction": 8,
+      "translation_endpoint_checked": 4,
+      "translation_endpoint_within_native_10mm_tolerance": 0
+    },
+    "h09_train/t1/stride16/PLACE_IN": {
+      "windows": 557,
+      "low_base_windows": 543,
+      "near_rest_windows": 16,
+      "phase_start_windows": 39,
+      "released_same_skill": 521,
+      "released_near_rest": 16,
+      "released_phase_start": 39,
+      "pure_direction_accepted": 8,
+      "accepted_low_base": 6,
+      "manipulation_direction": 6,
+      "translation_endpoint_checked": 5,
+      "translation_endpoint_within_native_10mm_tolerance": 0
+    },
+    "h09_train/t1/stride16/PLACE_ON": {
+      "windows": 357,
+      "low_base_windows": 355,
+      "near_rest_windows": 73,
+      "phase_start_windows": 12,
+      "released_same_skill": 345,
+      "released_near_rest": 73,
+      "released_phase_start": 12,
+      "pure_direction_accepted": 2,
+      "accepted_low_base": 2,
+      "manipulation_direction": 2,
+      "accepted_near_rest": 1
+    },
+    "h09_train/t1/stride16/MISSING": {
+      "windows": 461
+    },
+    "h09_train/t1/phase_first_low_extra/GRASP": {
+      "windows": 45,
+      "low_base_windows": 24,
+      "near_rest_windows": 6,
+      "phase_start_windows": 45,
+      "released_same_skill": 45,
+      "released_near_rest": 6,
+      "released_phase_start": 45
+    },
+    "h09_train/t1/phase_first_low_extra/NAVIGATE": {
+      "windows": 41,
+      "low_base_windows": 30,
+      "near_rest_windows": 3,
+      "phase_start_windows": 41,
+      "released_same_skill": 41,
+      "released_near_rest": 3,
+      "released_phase_start": 41,
+      "pure_direction_accepted": 5,
+      "accepted_low_base": 1,
+      "accepted_near_rest": 1,
+      "accepted_phase_start": 5,
+      "accepted_near_rest_and_phase_start": 1
+    },
+    "h09_train/t1/phase_first_low_extra/PLACE_IN": {
+      "windows": 33,
+      "low_base_windows": 33,
+      "near_rest_windows": 0,
+      "phase_start_windows": 33,
+      "released_same_skill": 33,
+      "released_near_rest": 0,
+      "released_phase_start": 33
+    },
+    "h09_train/t1/phase_first_low_extra/PLACE_ON": {
+      "windows": 12,
+      "low_base_windows": 12,
+      "near_rest_windows": 1,
+      "phase_start_windows": 12,
+      "released_same_skill": 12,
+      "released_near_rest": 1,
+      "released_phase_start": 12
+    },
+    "additional_train/t3/stride16/NAVIGATE": {
+      "windows": 5160,
+      "low_base_windows": 453,
+      "near_rest_windows": 81,
+      "phase_start_windows": 120,
+      "released_same_skill": 5055,
+      "released_near_rest": 69,
+      "released_phase_start": 120,
+      "pure_direction_accepted": 1330,
+      "accepted_phase_start": 12,
+      "accepted_low_base": 11,
+      "manipulation_direction": 2,
+      "translation_endpoint_checked": 2,
+      "translation_endpoint_within_native_10mm_tolerance": 0,
+      "accepted_near_rest": 6
+    },
+    "additional_train/t3/stride16/OPEN_DOOR": {
+      "windows": 985,
+      "low_base_windows": 504,
+      "near_rest_windows": 143,
+      "phase_start_windows": 12,
+      "released_same_skill": 973,
+      "released_near_rest": 143,
+      "released_phase_start": 12,
+      "pure_direction_accepted": 80,
+      "accepted_low_base": 10,
+      "manipulation_direction": 7,
+      "translation_endpoint_checked": 4,
+      "translation_endpoint_within_native_10mm_tolerance": 0,
+      "accepted_near_rest": 5
+    },
+    "additional_train/t3/stride16/GRASP": {
+      "windows": 2062,
+      "low_base_windows": 1618,
+      "near_rest_windows": 198,
+      "phase_start_windows": 54,
+      "released_same_skill": 2014,
+      "released_near_rest": 193,
+      "released_phase_start": 54,
+      "pure_direction_accepted": 37,
+      "accepted_low_base": 28,
+      "accepted_near_rest": 12,
+      "manipulation_direction": 28,
+      "translation_endpoint_checked": 19,
+      "translation_endpoint_within_native_10mm_tolerance": 3
+    },
+    "additional_train/t3/stride16/PLACE_IN": {
+      "windows": 1633,
+      "low_base_windows": 1107,
+      "near_rest_windows": 195,
+      "phase_start_windows": 49,
+      "released_same_skill": 1591,
+      "released_near_rest": 195,
+      "released_phase_start": 49,
+      "pure_direction_accepted": 39,
+      "accepted_low_base": 21,
+      "manipulation_direction": 20,
+      "translation_endpoint_checked": 15,
+      "translation_endpoint_within_native_10mm_tolerance": 0,
+      "accepted_near_rest": 7
+    },
+    "additional_train/t3/stride16/CLOSE_DOOR": {
+      "windows": 548,
+      "low_base_windows": 270,
+      "near_rest_windows": 31,
+      "phase_start_windows": 12,
+      "released_same_skill": 536,
+      "released_near_rest": 31,
+      "released_phase_start": 12,
+      "pure_direction_accepted": 47,
+      "accepted_low_base": 3,
+      "manipulation_direction": 1,
+      "translation_endpoint_checked": 1,
+      "translation_endpoint_within_native_10mm_tolerance": 0,
+      "accepted_near_rest": 2
+    },
+    "additional_train/t3/stride16/MISSING": {
+      "windows": 35
+    },
+    "additional_train/t3/phase_first_low_extra/OPEN_DOOR": {
+      "windows": 12,
+      "low_base_windows": 7,
+      "near_rest_windows": 2,
+      "phase_start_windows": 12,
+      "released_same_skill": 12,
+      "released_near_rest": 2,
+      "released_phase_start": 12
+    },
+    "additional_train/t3/phase_first_low_extra/NAVIGATE": {
+      "windows": 90,
+      "low_base_windows": 59,
+      "near_rest_windows": 4,
+      "phase_start_windows": 90,
+      "released_same_skill": 90,
+      "released_near_rest": 4,
+      "released_phase_start": 90,
+      "pure_direction_accepted": 1,
+      "accepted_low_base": 1,
+      "accepted_phase_start": 1,
+      "manipulation_direction": 1,
+      "translation_endpoint_checked": 1,
+      "translation_endpoint_within_native_10mm_tolerance": 1
+    },
+    "additional_train/t3/phase_first_low_extra/GRASP": {
+      "windows": 42,
+      "low_base_windows": 30,
+      "near_rest_windows": 15,
+      "phase_start_windows": 42,
+      "released_same_skill": 42,
+      "released_near_rest": 15,
+      "released_phase_start": 42
+    },
+    "additional_train/t3/phase_first_low_extra/PLACE_IN": {
+      "windows": 47,
+      "low_base_windows": 27,
+      "near_rest_windows": 6,
+      "phase_start_windows": 47,
+      "released_same_skill": 47,
+      "released_near_rest": 6,
+      "released_phase_start": 47
+    },
+    "additional_train/t3/phase_first_low_extra/CLOSE_DOOR": {
+      "windows": 12,
+      "low_base_windows": 6,
+      "near_rest_windows": 3,
+      "phase_start_windows": 12,
+      "released_same_skill": 12,
+      "released_near_rest": 3,
+      "released_phase_start": 12
+    },
+    "h09_train/t3/stride16/NAVIGATE": {
+      "windows": 4844,
+      "low_base_windows": 476,
+      "near_rest_windows": 53,
+      "phase_start_windows": 114,
+      "released_same_skill": 4743,
+      "released_near_rest": 45,
+      "released_phase_start": 114,
+      "pure_direction_accepted": 1207,
+      "accepted_low_base": 8,
+      "manipulation_direction": 5,
+      "translation_endpoint_checked": 5,
+      "translation_endpoint_within_native_10mm_tolerance": 0,
+      "accepted_phase_start": 12,
+      "accepted_near_rest": 4,
+      "accepted_near_rest_and_phase_start": 1
+    },
+    "h09_train/t3/stride16/OPEN_DOOR": {
+      "windows": 809,
+      "low_base_windows": 415,
+      "near_rest_windows": 93,
+      "phase_start_windows": 12,
+      "released_same_skill": 797,
+      "released_near_rest": 93,
+      "released_phase_start": 12,
+      "pure_direction_accepted": 56,
+      "accepted_low_base": 15,
+      "manipulation_direction": 10,
+      "translation_endpoint_checked": 9,
+      "translation_endpoint_within_native_10mm_tolerance": 0,
+      "accepted_near_rest": 6
+    },
+    "h09_train/t3/stride16/GRASP": {
+      "windows": 1912,
+      "low_base_windows": 1485,
+      "near_rest_windows": 121,
+      "phase_start_windows": 48,
+      "released_same_skill": 1864,
+      "released_near_rest": 117,
+      "released_phase_start": 48,
+      "pure_direction_accepted": 49,
+      "accepted_low_base": 34,
+      "manipulation_direction": 33,
+      "translation_endpoint_checked": 24,
+      "translation_endpoint_within_native_10mm_tolerance": 5,
+      "accepted_near_rest": 7
+    },
+    "h09_train/t3/stride16/PLACE_IN": {
+      "windows": 1466,
+      "low_base_windows": 952,
+      "near_rest_windows": 140,
+      "phase_start_windows": 51,
+      "released_same_skill": 1426,
+      "released_near_rest": 138,
+      "released_phase_start": 51,
+      "pure_direction_accepted": 37,
+      "accepted_low_base": 27,
+      "manipulation_direction": 25,
+      "translation_endpoint_checked": 19,
+      "translation_endpoint_within_native_10mm_tolerance": 1,
+      "accepted_near_rest": 6
+    },
+    "h09_train/t3/stride16/CLOSE_DOOR": {
+      "windows": 400,
+      "low_base_windows": 208,
+      "near_rest_windows": 19,
+      "phase_start_windows": 13,
+      "released_same_skill": 388,
+      "released_near_rest": 19,
+      "released_phase_start": 13,
+      "pure_direction_accepted": 23,
+      "accepted_low_base": 1,
+      "accepted_near_rest": 1,
+      "manipulation_direction": 1,
+      "translation_endpoint_checked": 1,
+      "translation_endpoint_within_native_10mm_tolerance": 0
+    },
+    "h09_train/t3/stride16/MISSING": {
+      "windows": 84
+    },
+    "h09_train/t3/phase_first_low_extra/OPEN_DOOR": {
+      "windows": 12,
+      "low_base_windows": 5,
+      "near_rest_windows": 1,
+      "phase_start_windows": 12,
+      "released_same_skill": 12,
+      "released_near_rest": 1,
+      "released_phase_start": 12
+    },
+    "h09_train/t3/phase_first_low_extra/GRASP": {
+      "windows": 48,
+      "low_base_windows": 29,
+      "near_rest_windows": 10,
+      "phase_start_windows": 48,
+      "released_same_skill": 48,
+      "released_near_rest": 10,
+      "released_phase_start": 48,
+      "pure_direction_accepted": 1,
+      "accepted_phase_start": 1
+    },
+    "h09_train/t3/phase_first_low_extra/NAVIGATE": {
+      "windows": 88,
+      "low_base_windows": 54,
+      "near_rest_windows": 7,
+      "phase_start_windows": 88,
+      "released_same_skill": 88,
+      "released_near_rest": 7,
+      "released_phase_start": 88,
+      "pure_direction_accepted": 1,
+      "accepted_low_base": 1,
+      "accepted_phase_start": 1
+    },
+    "h09_train/t3/phase_first_low_extra/PLACE_IN": {
+      "windows": 45,
+      "low_base_windows": 17,
+      "near_rest_windows": 6,
+      "phase_start_windows": 45,
+      "released_same_skill": 45,
+      "released_near_rest": 6,
+      "released_phase_start": 45
+    },
+    "h09_train/t3/phase_first_low_extra/CLOSE_DOOR": {
+      "windows": 11,
+      "low_base_windows": 4,
+      "near_rest_windows": 2,
+      "phase_start_windows": 11,
+      "released_same_skill": 11,
+      "released_near_rest": 2,
+      "released_phase_start": 11
+    }
+  },
+  "rejections": {
+    "h09_train/t0/stride16/NAVIGATE": {
+      "mixed_or_transitional_base": 206,
+      "not_released_same_skill_window": 12,
+      "uncoordinated_two_arm_motion": 12,
+      "stationary_or_subthreshold_not_success": 8,
+      "mixed_or_curved_arm_motion": 1
+    },
+    "h09_train/t0/stride16/GRASP": {
+      "executor_contract_mismatch": 87,
+      "mixed_or_transitional_base": 37,
+      "torso_motion_unrepresentable": 100,
+      "stationary_or_subthreshold_not_success": 37,
+      "uncoordinated_two_arm_motion": 44,
+      "mixed_or_curved_arm_motion": 138,
+      "mixed_gripper_motion": 13,
+      "not_released_same_skill_window": 12
+    },
+    "h09_train/t0/stride16/PRESS": {
+      "uncoordinated_two_arm_motion": 108,
+      "mixed_or_curved_arm_motion": 105,
+      "stationary_or_subthreshold_not_success": 10,
+      "mixed_gripper_motion": 16,
+      "not_released_same_skill_window": 12,
+      "torso_motion_unrepresentable": 1
+    },
+    "h09_train/t0/stride16/PLACE_ON": {
+      "uncoordinated_two_arm_motion": 53,
+      "mixed_or_curved_arm_motion": 74,
+      "stationary_or_subthreshold_not_success": 37,
+      "mixed_or_transitional_base": 25,
+      "torso_motion_unrepresentable": 64,
+      "not_released_same_skill_window": 9,
+      "mixed_gripper_motion": 12,
+      "executor_contract_mismatch": 26
+    },
+    "h09_train/t0/phase_first_low_extra/GRASP": {
+      "stationary_or_subthreshold_not_success": 4,
+      "uncoordinated_two_arm_motion": 1,
+      "executor_contract_mismatch": 1,
+      "torso_motion_unrepresentable": 1,
+      "mixed_or_transitional_base": 3,
+      "mixed_or_curved_arm_motion": 1
+    },
+    "h09_train/t0/phase_first_low_extra/PRESS": {
+      "uncoordinated_two_arm_motion": 9,
+      "mixed_or_curved_arm_motion": 3
+    },
+    "h09_train/t0/phase_first_low_extra/PLACE_ON": {
+      "uncoordinated_two_arm_motion": 7,
+      "mixed_or_curved_arm_motion": 4,
+      "mixed_gripper_motion": 1
+    },
+    "h09_train/t0/phase_first_low_extra/NAVIGATE": {
+      "mixed_or_transitional_base": 1
+    },
+    "additional_train/t0/stride16/NAVIGATE": {
+      "mixed_or_transitional_base": 155,
+      "stationary_or_subthreshold_not_success": 3,
+      "not_released_same_skill_window": 12,
+      "mixed_or_curved_arm_motion": 2,
+      "uncoordinated_two_arm_motion": 11,
+      "executor_contract_mismatch": 1
+    },
+    "additional_train/t0/stride16/GRASP": {
+      "stationary_or_subthreshold_not_success": 55,
+      "executor_contract_mismatch": 78,
+      "mixed_or_transitional_base": 55,
+      "torso_motion_unrepresentable": 106,
+      "uncoordinated_two_arm_motion": 51,
+      "mixed_or_curved_arm_motion": 128,
+      "mixed_gripper_motion": 10,
+      "not_released_same_skill_window": 12
+    },
+    "additional_train/t0/stride16/PRESS": {
+      "uncoordinated_two_arm_motion": 84,
+      "mixed_or_curved_arm_motion": 75,
+      "stationary_or_subthreshold_not_success": 12,
+      "mixed_gripper_motion": 15,
+      "not_released_same_skill_window": 12,
+      "torso_motion_unrepresentable": 3
+    },
+    "additional_train/t0/stride16/PLACE_ON": {
+      "mixed_or_curved_arm_motion": 62,
+      "uncoordinated_two_arm_motion": 38,
+      "stationary_or_subthreshold_not_success": 29,
+      "mixed_gripper_motion": 12,
+      "mixed_or_transitional_base": 29,
+      "torso_motion_unrepresentable": 50,
+      "not_released_same_skill_window": 12,
+      "executor_contract_mismatch": 24
+    },
+    "additional_train/t0/phase_first_low_extra/GRASP": {
+      "mixed_or_transitional_base": 5,
+      "stationary_or_subthreshold_not_success": 3,
+      "executor_contract_mismatch": 1,
+      "uncoordinated_two_arm_motion": 1,
+      "mixed_or_curved_arm_motion": 1
+    },
+    "additional_train/t0/phase_first_low_extra/PRESS": {
+      "mixed_or_curved_arm_motion": 6,
+      "uncoordinated_two_arm_motion": 4,
+      "torso_motion_unrepresentable": 2
+    },
+    "additional_train/t0/phase_first_low_extra/PLACE_ON": {
+      "mixed_or_curved_arm_motion": 3,
+      "uncoordinated_two_arm_motion": 7,
+      "executor_contract_mismatch": 1,
+      "torso_motion_unrepresentable": 1
+    },
+    "additional_train/t1/stride16/NAVIGATE": {
+      "uncoordinated_two_arm_motion": 15,
+      "mixed_or_transitional_base": 811,
+      "not_released_same_skill_window": 48,
+      "mixed_or_curved_arm_motion": 13,
+      "stationary_or_subthreshold_not_success": 11,
+      "torso_motion_unrepresentable": 29,
+      "executor_contract_mismatch": 6
+    },
+    "additional_train/t1/stride16/GRASP": {
+      "torso_motion_unrepresentable": 730,
+      "executor_contract_mismatch": 69,
+      "stationary_or_subthreshold_not_success": 58,
+      "mixed_gripper_motion": 47,
+      "mixed_or_curved_arm_motion": 102,
+      "not_released_same_skill_window": 48,
+      "uncoordinated_two_arm_motion": 52,
+      "mixed_or_transitional_base": 208
+    },
+    "additional_train/t1/stride16/PLACE_IN": {
+      "torso_motion_unrepresentable": 95,
+      "uncoordinated_two_arm_motion": 199,
+      "mixed_or_curved_arm_motion": 55,
+      "mixed_gripper_motion": 33,
+      "not_released_same_skill_window": 36,
+      "stationary_or_subthreshold_not_success": 11,
+      "mixed_or_transitional_base": 8
+    },
+    "additional_train/t1/stride16/PLACE_ON": {
+      "uncoordinated_two_arm_motion": 14,
+      "executor_contract_mismatch": 43,
+      "torso_motion_unrepresentable": 126,
+      "mixed_gripper_motion": 14,
+      "stationary_or_subthreshold_not_success": 13,
+      "not_released_same_skill_window": 12,
+      "mixed_or_curved_arm_motion": 11,
+      "mixed_or_transitional_base": 3
+    },
+    "additional_train/t1/phase_first_low_extra/GRASP": {
+      "torso_motion_unrepresentable": 12,
+      "uncoordinated_two_arm_motion": 6,
+      "stationary_or_subthreshold_not_success": 3,
+      "executor_contract_mismatch": 1,
+      "mixed_or_curved_arm_motion": 2,
+      "mixed_or_transitional_base": 22
+    },
+    "additional_train/t1/phase_first_low_extra/NAVIGATE": {
+      "torso_motion_unrepresentable": 2,
+      "stationary_or_subthreshold_not_success": 2,
+      "mixed_or_transitional_base": 35,
+      "uncoordinated_two_arm_motion": 4
+    },
+    "additional_train/t1/phase_first_low_extra/PLACE_IN": {
+      "torso_motion_unrepresentable": 27,
+      "uncoordinated_two_arm_motion": 4,
+      "mixed_or_transitional_base": 1
+    },
+    "additional_train/t1/phase_first_low_extra/PLACE_ON": {
+      "uncoordinated_two_arm_motion": 2,
+      "stationary_or_subthreshold_not_success": 1,
+      "mixed_or_curved_arm_motion": 1,
+      "torso_motion_unrepresentable": 4,
+      "mixed_or_transitional_base": 1
+    },
+    "h09_train/t1/stride16/NAVIGATE": {
+      "uncoordinated_two_arm_motion": 25,
+      "mixed_or_transitional_base": 900,
+      "stationary_or_subthreshold_not_success": 11,
+      "not_released_same_skill_window": 48,
+      "mixed_or_curved_arm_motion": 12,
+      "torso_motion_unrepresentable": 13,
+      "executor_contract_mismatch": 14
+    },
+    "h09_train/t1/stride16/GRASP": {
+      "mixed_or_transitional_base": 254,
+      "mixed_or_curved_arm_motion": 92,
+      "torso_motion_unrepresentable": 812,
+      "executor_contract_mismatch": 124,
+      "mixed_gripper_motion": 52,
+      "stationary_or_subthreshold_not_success": 105,
+      "not_released_same_skill_window": 48,
+      "uncoordinated_two_arm_motion": 34
+    },
+    "h09_train/t1/stride16/PLACE_IN": {
+      "torso_motion_unrepresentable": 71,
+      "uncoordinated_two_arm_motion": 263,
+      "mixed_or_curved_arm_motion": 110,
+      "mixed_gripper_motion": 35,
+      "stationary_or_subthreshold_not_success": 17,
+      "not_released_same_skill_window": 36,
+      "mixed_or_transitional_base": 16,
+      "executor_contract_mismatch": 1
+    },
+    "h09_train/t1/stride16/PLACE_ON": {
+      "uncoordinated_two_arm_motion": 5,
+      "mixed_or_curved_arm_motion": 9,
+      "torso_motion_unrepresentable": 181,
+      "stationary_or_subthreshold_not_success": 40,
+      "mixed_gripper_motion": 12,
+      "executor_contract_mismatch": 92,
+      "mixed_or_transitional_base": 4,
+      "not_released_same_skill_window": 12
+    },
+    "h09_train/t1/phase_first_low_extra/GRASP": {
+      "mixed_or_transitional_base": 17,
+      "mixed_or_curved_arm_motion": 9,
+      "stationary_or_subthreshold_not_success": 2,
+      "uncoordinated_two_arm_motion": 5,
+      "executor_contract_mismatch": 2,
+      "torso_motion_unrepresentable": 10
+    },
+    "h09_train/t1/phase_first_low_extra/NAVIGATE": {
+      "mixed_or_transitional_base": 25,
+      "mixed_or_curved_arm_motion": 1,
+      "uncoordinated_two_arm_motion": 4,
+      "stationary_or_subthreshold_not_success": 2,
+      "torso_motion_unrepresentable": 4
+    },
+    "h09_train/t1/phase_first_low_extra/PLACE_IN": {
+      "torso_motion_unrepresentable": 23,
+      "uncoordinated_two_arm_motion": 7,
+      "mixed_or_curved_arm_motion": 3
+    },
+    "h09_train/t1/phase_first_low_extra/PLACE_ON": {
+      "uncoordinated_two_arm_motion": 4,
+      "executor_contract_mismatch": 1,
+      "mixed_or_curved_arm_motion": 3,
+      "torso_motion_unrepresentable": 4
+    },
+    "additional_train/t3/stride16/NAVIGATE": {
+      "uncoordinated_two_arm_motion": 25,
+      "mixed_or_transitional_base": 3457,
+      "not_released_same_skill_window": 105,
+      "mixed_or_curved_arm_motion": 23,
+      "stationary_or_subthreshold_not_success": 18,
+      "torso_motion_unrepresentable": 118,
+      "executor_contract_mismatch": 84
+    },
+    "additional_train/t3/stride16/OPEN_DOOR": {
+      "uncoordinated_two_arm_motion": 35,
+      "mixed_or_curved_arm_motion": 190,
+      "mixed_or_transitional_base": 550,
+      "stationary_or_subthreshold_not_success": 58,
+      "mixed_gripper_motion": 19,
+      "not_released_same_skill_window": 12,
+      "torso_motion_unrepresentable": 37,
+      "executor_contract_mismatch": 4
+    },
+    "additional_train/t3/stride16/GRASP": {
+      "uncoordinated_two_arm_motion": 127,
+      "mixed_or_curved_arm_motion": 391,
+      "mixed_or_transitional_base": 633,
+      "torso_motion_unrepresentable": 578,
+      "stationary_or_subthreshold_not_success": 118,
+      "not_released_same_skill_window": 48,
+      "executor_contract_mismatch": 78,
+      "mixed_gripper_motion": 52
+    },
+    "additional_train/t3/stride16/PLACE_IN": {
+      "torso_motion_unrepresentable": 218,
+      "uncoordinated_two_arm_motion": 77,
+      "stationary_or_subthreshold_not_success": 84,
+      "mixed_or_transitional_base": 731,
+      "mixed_or_curved_arm_motion": 334,
+      "mixed_gripper_motion": 42,
+      "not_released_same_skill_window": 42,
+      "executor_contract_mismatch": 66
+    },
+    "additional_train/t3/stride16/CLOSE_DOOR": {
+      "torso_motion_unrepresentable": 56,
+      "executor_contract_mismatch": 38,
+      "mixed_or_transitional_base": 280,
+      "stationary_or_subthreshold_not_success": 11,
+      "uncoordinated_two_arm_motion": 14,
+      "mixed_or_curved_arm_motion": 90,
+      "not_released_same_skill_window": 12
+    },
+    "additional_train/t3/phase_first_low_extra/OPEN_DOOR": {
+      "uncoordinated_two_arm_motion": 2,
+      "mixed_or_curved_arm_motion": 5,
+      "mixed_or_transitional_base": 2,
+      "torso_motion_unrepresentable": 1,
+      "stationary_or_subthreshold_not_success": 2
+    },
+    "additional_train/t3/phase_first_low_extra/NAVIGATE": {
+      "mixed_or_transitional_base": 86,
+      "uncoordinated_two_arm_motion": 1,
+      "torso_motion_unrepresentable": 2
+    },
+    "additional_train/t3/phase_first_low_extra/GRASP": {
+      "uncoordinated_two_arm_motion": 14,
+      "torso_motion_unrepresentable": 3,
+      "stationary_or_subthreshold_not_success": 3,
+      "mixed_or_curved_arm_motion": 10,
+      "mixed_or_transitional_base": 12
+    },
+    "additional_train/t3/phase_first_low_extra/PLACE_IN": {
+      "torso_motion_unrepresentable": 4,
+      "stationary_or_subthreshold_not_success": 5,
+      "mixed_or_transitional_base": 15,
+      "mixed_or_curved_arm_motion": 7,
+      "uncoordinated_two_arm_motion": 12,
+      "executor_contract_mismatch": 4
+    },
+    "additional_train/t3/phase_first_low_extra/CLOSE_DOOR": {
+      "torso_motion_unrepresentable": 4,
+      "mixed_or_transitional_base": 5,
+      "executor_contract_mismatch": 2,
+      "mixed_or_curved_arm_motion": 1
+    },
+    "h09_train/t3/stride16/NAVIGATE": {
+      "uncoordinated_two_arm_motion": 33,
+      "mixed_or_transitional_base": 3215,
+      "not_released_same_skill_window": 101,
+      "mixed_or_curved_arm_motion": 23,
+      "stationary_or_subthreshold_not_success": 12,
+      "torso_motion_unrepresentable": 154,
+      "executor_contract_mismatch": 99
+    },
+    "h09_train/t3/stride16/OPEN_DOOR": {
+      "uncoordinated_two_arm_motion": 38,
+      "stationary_or_subthreshold_not_success": 34,
+      "mixed_or_transitional_base": 455,
+      "mixed_or_curved_arm_motion": 181,
+      "mixed_gripper_motion": 20,
+      "not_released_same_skill_window": 12,
+      "torso_motion_unrepresentable": 12,
+      "executor_contract_mismatch": 1
+    },
+    "h09_train/t3/stride16/GRASP": {
+      "uncoordinated_two_arm_motion": 97,
+      "mixed_or_curved_arm_motion": 388,
+      "mixed_or_transitional_base": 579,
+      "stationary_or_subthreshold_not_success": 65,
+      "mixed_gripper_motion": 45,
+      "torso_motion_unrepresentable": 554,
+      "executor_contract_mismatch": 87,
+      "not_released_same_skill_window": 48
+    },
+    "h09_train/t3/stride16/PLACE_IN": {
+      "mixed_or_curved_arm_motion": 290,
+      "uncoordinated_two_arm_motion": 75,
+      "mixed_or_transitional_base": 686,
+      "stationary_or_subthreshold_not_success": 61,
+      "torso_motion_unrepresentable": 178,
+      "mixed_gripper_motion": 35,
+      "not_released_same_skill_window": 40,
+      "executor_contract_mismatch": 64
+    },
+    "h09_train/t3/stride16/CLOSE_DOOR": {
+      "stationary_or_subthreshold_not_success": 6,
+      "mixed_or_curved_arm_motion": 72,
+      "uncoordinated_two_arm_motion": 20,
+      "torso_motion_unrepresentable": 33,
+      "executor_contract_mismatch": 24,
+      "mixed_or_transitional_base": 210,
+      "not_released_same_skill_window": 12
+    },
+    "h09_train/t3/phase_first_low_extra/OPEN_DOOR": {
+      "uncoordinated_two_arm_motion": 1,
+      "mixed_or_transitional_base": 5,
+      "stationary_or_subthreshold_not_success": 2,
+      "mixed_or_curved_arm_motion": 3,
+      "torso_motion_unrepresentable": 1
+    },
+    "h09_train/t3/phase_first_low_extra/GRASP": {
+      "uncoordinated_two_arm_motion": 17,
+      "mixed_or_transitional_base": 16,
+      "torso_motion_unrepresentable": 1,
+      "mixed_gripper_motion": 1,
+      "mixed_or_curved_arm_motion": 9,
+      "executor_contract_mismatch": 2,
+      "stationary_or_subthreshold_not_success": 1
+    },
+    "h09_train/t3/phase_first_low_extra/NAVIGATE": {
+      "mixed_or_transitional_base": 79,
+      "mixed_or_curved_arm_motion": 4,
+      "stationary_or_subthreshold_not_success": 1,
+      "torso_motion_unrepresentable": 3
+    },
+    "h09_train/t3/phase_first_low_extra/PLACE_IN": {
+      "stationary_or_subthreshold_not_success": 1,
+      "mixed_or_curved_arm_motion": 7,
+      "mixed_or_transitional_base": 24,
+      "uncoordinated_two_arm_motion": 8,
+      "executor_contract_mismatch": 4,
+      "torso_motion_unrepresentable": 1
+    },
+    "h09_train/t3/phase_first_low_extra/CLOSE_DOOR": {
+      "stationary_or_subthreshold_not_success": 2,
+      "mixed_or_transitional_base": 6,
+      "executor_contract_mismatch": 2,
+      "mixed_or_curved_arm_motion": 1
+    }
+  },
+  "tokens": {
+    "h09_train/t0/stride16/NAVIGATE": {
+      "BASE_YAW_PLUS": 54,
+      "BASE_FORWARD": 46,
+      "BASE_YAW_MINUS": 109,
+      "LEFT_RIGHT": 1,
+      "BASE_RIGHT": 3
+    },
+    "h09_train/t0/stride16/PLACE_ON": {
+      "RIGHT_OPEN": 3,
+      "BASE_BACK": 3,
+      "RIGHT_DOWN": 1,
+      "RIGHT_RIGHT": 2,
+      "RIGHT_PITCH_MINUS": 1
+    },
+    "h09_train/t0/stride16/GRASP": {
+      "LEFT_RIGHT": 2,
+      "LEFT_YAW_PLUS": 1,
+      "LEFT_FORWARD": 1,
+      "RIGHT_DOWN": 3,
+      "RIGHT_CLOSE": 1,
+      "BASE_YAW_MINUS": 1,
+      "RIGHT_LEFT": 1,
+      "LEFT_LEFT": 1
+    },
+    "h09_train/t0/stride16/PRESS": {
+      "LEFT_DOWN": 3,
+      "LEFT_FORWARD": 1
+    },
+    "additional_train/t0/stride16/NAVIGATE": {
+      "BASE_YAW_PLUS": 48,
+      "BASE_FORWARD": 54,
+      "BASE_YAW_MINUS": 74,
+      "BASE_RIGHT": 1
+    },
+    "additional_train/t0/stride16/GRASP": {
+      "RIGHT_DOWN": 2,
+      "RIGHT_CLOSE": 5,
+      "LEFT_FORWARD": 1,
+      "RIGHT_RIGHT": 1
+    },
+    "additional_train/t0/stride16/PRESS": {
+      "LEFT_CLOSE": 1,
+      "LEFT_FORWARD": 1,
+      "LEFT_RIGHT": 1,
+      "LEFT_DOWN": 1
+    },
+    "additional_train/t0/stride16/PLACE_ON": {
+      "RIGHT_DOWN": 1,
+      "BASE_BACK": 4,
+      "RIGHT_LEFT": 1,
+      "RIGHT_FORWARD": 1,
+      "RIGHT_OPEN": 2,
+      "LEFT_UP": 1,
+      "RIGHT_RIGHT": 1,
+      "LEFT_LEFT": 1
+    },
+    "additional_train/t0/phase_first_low_extra/NAVIGATE": {
+      "BASE_YAW_MINUS": 1
+    },
+    "additional_train/t1/stride16/NAVIGATE": {
+      "BASE_FORWARD": 67,
+      "BASE_YAW_MINUS": 28,
+      "LEFT_RIGHT": 1,
+      "BASE_YAW_PLUS": 20,
+      "BASE_LEFT": 4
+    },
+    "additional_train/t1/stride16/GRASP": {
+      "LEFT_RIGHT": 5,
+      "RIGHT_CLOSE": 3,
+      "LEFT_LEFT": 4,
+      "BASE_BACK": 2,
+      "BASE_LEFT": 1,
+      "LEFT_CLOSE": 1,
+      "RIGHT_RIGHT": 1,
+      "BASE_FORWARD": 1
+    },
+    "additional_train/t1/stride16/PLACE_IN": {
+      "LEFT_OPEN": 2,
+      "LEFT_DOWN": 1
+    },
+    "h09_train/t1/stride16/NAVIGATE": {
+      "BASE_YAW_MINUS": 50,
+      "BASE_FORWARD": 79,
+      "BASE_YAW_PLUS": 58,
+      "BASE_LEFT": 12,
+      "BASE_BACK": 1,
+      "RIGHT_RIGHT": 1
+    },
+    "h09_train/t1/stride16/GRASP": {
+      "RIGHT_RIGHT": 1,
+      "BASE_LEFT": 1,
+      "BASE_FORWARD": 7,
+      "RIGHT_CLOSE": 3,
+      "BASE_BACK": 2,
+      "LEFT_RIGHT": 1,
+      "BASE_RIGHT": 1,
+      "BASE_YAW_MINUS": 1,
+      "RIGHT_DOWN": 2,
+      "LEFT_CLOSE": 1
+    },
+    "h09_train/t1/phase_first_low_extra/NAVIGATE": {
+      "BASE_FORWARD": 1,
+      "BASE_LEFT": 1,
+      "BASE_YAW_PLUS": 1,
+      "BASE_YAW_MINUS": 2
+    },
+    "h09_train/t1/stride16/PLACE_IN": {
+      "BASE_BACK": 2,
+      "LEFT_LEFT": 1,
+      "LEFT_RIGHT": 2,
+      "LEFT_DOWN": 1,
+      "LEFT_OPEN": 1,
+      "RIGHT_LEFT": 1
+    },
+    "h09_train/t1/stride16/PLACE_ON": {
+      "RIGHT_OPEN": 2
+    },
+    "additional_train/t1/stride16/PLACE_ON": {
+      "RIGHT_OPEN": 1
+    },
+    "additional_train/t1/phase_first_low_extra/NAVIGATE": {
+      "BASE_BACK": 1
+    },
+    "additional_train/t3/stride16/OPEN_DOOR": {
+      "RIGHT_LEFT": 3,
+      "BASE_YAW_MINUS": 34,
+      "BASE_FORWARD": 18,
+      "BASE_BACK": 15,
+      "BASE_RIGHT": 2,
+      "BASE_YAW_PLUS": 1,
+      "BASE_LEFT": 3,
+      "RIGHT_DOWN": 1,
+      "RIGHT_OPEN": 2,
+      "RIGHT_CLOSE": 1
+    },
+    "additional_train/t3/stride16/NAVIGATE": {
+      "BASE_YAW_PLUS": 266,
+      "BASE_RIGHT": 74,
+      "BASE_FORWARD": 645,
+      "BASE_LEFT": 20,
+      "BASE_BACK": 21,
+      "BASE_YAW_MINUS": 302,
+      "LEFT_FORWARD": 2
+    },
+    "additional_train/t3/stride16/PLACE_IN": {
+      "RIGHT_LEFT": 1,
+      "RIGHT_ROLL_MINUS": 1,
+      "LEFT_RIGHT": 2,
+      "BASE_BACK": 6,
+      "LEFT_UP": 1,
+      "RIGHT_DOWN": 3,
+      "RIGHT_OPEN": 3,
+      "BASE_YAW_PLUS": 4,
+      "BASE_FORWARD": 9,
+      "LEFT_BACK": 1,
+      "LEFT_ROLL_MINUS": 1,
+      "RIGHT_UP": 6,
+      "LEFT_DOWN": 1
+    },
+    "additional_train/t3/stride16/GRASP": {
+      "BASE_YAW_PLUS": 2,
+      "RIGHT_LEFT": 6,
+      "LEFT_LEFT": 4,
+      "LEFT_CLOSE": 2,
+      "LEFT_BACK": 1,
+      "BASE_FORWARD": 5,
+      "RIGHT_DOWN": 2,
+      "RIGHT_YAW_MINUS": 1,
+      "RIGHT_CLOSE": 6,
+      "RIGHT_UP": 2,
+      "RIGHT_FORWARD": 3,
+      "RIGHT_RIGHT": 1,
+      "BASE_BACK": 2
+    },
+    "additional_train/t3/stride16/CLOSE_DOOR": {
+      "BASE_FORWARD": 29,
+      "BASE_YAW_PLUS": 8,
+      "BASE_YAW_MINUS": 7,
+      "RIGHT_RIGHT": 1,
+      "BASE_BACK": 1,
+      "BASE_RIGHT": 1
+    },
+    "additional_train/t3/phase_first_low_extra/NAVIGATE": {
+      "LEFT_LEFT": 1
+    },
+    "h09_train/t3/stride16/NAVIGATE": {
+      "BASE_YAW_PLUS": 226,
+      "LEFT_FORWARD": 2,
+      "BASE_RIGHT": 47,
+      "BASE_FORWARD": 602,
+      "BASE_BACK": 28,
+      "BASE_YAW_MINUS": 290,
+      "BASE_LEFT": 9,
+      "RIGHT_LEFT": 1,
+      "RIGHT_RIGHT": 1,
+      "BOTH_FORWARD": 1
+    },
+    "h09_train/t3/stride16/OPEN_DOOR": {
+      "RIGHT_FORWARD": 1,
+      "RIGHT_CLOSE": 1,
+      "BASE_BACK": 4,
+      "RIGHT_LEFT": 1,
+      "BASE_LEFT": 2,
+      "BASE_YAW_PLUS": 1,
+      "BASE_FORWARD": 13,
+      "BASE_YAW_MINUS": 26,
+      "RIGHT_UP": 5,
+      "LEFT_RIGHT": 1,
+      "RIGHT_DOWN": 1
+    },
+    "h09_train/t3/stride16/GRASP": {
+      "BASE_FORWARD": 5,
+      "RIGHT_LEFT": 18,
+      "RIGHT_CLOSE": 6,
+      "RIGHT_FORWARD": 1,
+      "BASE_YAW_PLUS": 2,
+      "BASE_YAW_MINUS": 3,
+      "LEFT_RIGHT": 2,
+      "BASE_RIGHT": 5,
+      "RIGHT_DOWN": 2,
+      "LEFT_DOWN": 1,
+      "LEFT_CLOSE": 2,
+      "RIGHT_ROLL_PLUS": 1,
+      "BASE_BACK": 1
+    },
+    "h09_train/t3/stride16/PLACE_IN": {
+      "RIGHT_UP": 11,
+      "RIGHT_DOWN": 4,
+      "BASE_YAW_PLUS": 2,
+      "RIGHT_OPEN": 4,
+      "BASE_YAW_MINUS": 1,
+      "BASE_BACK": 2,
+      "BASE_FORWARD": 7,
+      "LEFT_OPEN": 2,
+      "LEFT_RIGHT": 1,
+      "RIGHT_BACK": 1,
+      "RIGHT_LEFT": 2
+    },
+    "h09_train/t3/stride16/CLOSE_DOOR": {
+      "BASE_FORWARD": 15,
+      "BASE_YAW_PLUS": 3,
+      "BASE_YAW_MINUS": 4,
+      "RIGHT_RIGHT": 1
+    },
+    "h09_train/t3/phase_first_low_extra/GRASP": {
+      "BASE_YAW_PLUS": 1
+    },
+    "h09_train/t3/phase_first_low_extra/NAVIGATE": {
+      "BASE_BACK": 1
+    }
+  },
+  "stratum_tokens": {
+    "h09_train/t0/stride16/PLACE_ON/low_base": {
+      "RIGHT_OPEN": 3,
+      "RIGHT_DOWN": 1,
+      "RIGHT_RIGHT": 2,
+      "RIGHT_PITCH_MINUS": 1
+    },
+    "h09_train/t0/stride16/PLACE_ON/near_rest": {
+      "RIGHT_OPEN": 1
+    },
+    "h09_train/t0/stride16/GRASP/low_base": {
+      "LEFT_RIGHT": 2,
+      "LEFT_YAW_PLUS": 1,
+      "LEFT_FORWARD": 1,
+      "RIGHT_DOWN": 3,
+      "RIGHT_CLOSE": 1,
+      "RIGHT_LEFT": 1,
+      "LEFT_LEFT": 1
+    },
+    "h09_train/t0/stride16/GRASP/near_rest": {
+      "LEFT_RIGHT": 2,
+      "RIGHT_LEFT": 1
+    },
+    "h09_train/t0/stride16/GRASP/phase_start": {
+      "LEFT_RIGHT": 1,
+      "BASE_YAW_MINUS": 1
+    },
+    "h09_train/t0/stride16/GRASP/near_rest_and_phase_start": {
+      "LEFT_RIGHT": 1
+    },
+    "h09_train/t0/stride16/PRESS/low_base": {
+      "LEFT_DOWN": 3,
+      "LEFT_FORWARD": 1
+    },
+    "h09_train/t0/stride16/NAVIGATE/low_base": {
+      "BASE_YAW_PLUS": 1,
+      "LEFT_RIGHT": 1,
+      "BASE_FORWARD": 1
+    },
+    "h09_train/t0/stride16/NAVIGATE/phase_start": {
+      "BASE_YAW_PLUS": 2,
+      "BASE_YAW_MINUS": 3
+    },
+    "additional_train/t0/stride16/NAVIGATE/phase_start": {
+      "BASE_YAW_PLUS": 2,
+      "BASE_YAW_MINUS": 2
+    },
+    "additional_train/t0/stride16/GRASP/low_base": {
+      "RIGHT_DOWN": 2,
+      "RIGHT_CLOSE": 5,
+      "LEFT_FORWARD": 1,
+      "RIGHT_RIGHT": 1
+    },
+    "additional_train/t0/stride16/PRESS/low_base": {
+      "LEFT_CLOSE": 1,
+      "LEFT_FORWARD": 1,
+      "LEFT_RIGHT": 1,
+      "LEFT_DOWN": 1
+    },
+    "additional_train/t0/stride16/PLACE_ON/low_base": {
+      "RIGHT_DOWN": 1,
+      "RIGHT_LEFT": 1,
+      "RIGHT_FORWARD": 1,
+      "RIGHT_OPEN": 2,
+      "LEFT_UP": 1,
+      "RIGHT_RIGHT": 1,
+      "LEFT_LEFT": 1
+    },
+    "additional_train/t0/stride16/GRASP/near_rest": {
+      "LEFT_FORWARD": 1,
+      "RIGHT_RIGHT": 1,
+      "RIGHT_CLOSE": 3,
+      "RIGHT_DOWN": 1
+    },
+    "additional_train/t0/stride16/GRASP/phase_start": {
+      "LEFT_FORWARD": 1
+    },
+    "additional_train/t0/stride16/GRASP/near_rest_and_phase_start": {
+      "LEFT_FORWARD": 1
+    },
+    "additional_train/t0/stride16/PLACE_ON/near_rest": {
+      "RIGHT_FORWARD": 1,
+      "RIGHT_OPEN": 1
+    },
+    "additional_train/t0/phase_first_low_extra/NAVIGATE/phase_start": {
+      "BASE_YAW_MINUS": 1
+    },
+    "h09_train/t0/stride16/NAVIGATE/near_rest": {
+      "LEFT_RIGHT": 1,
+      "BASE_FORWARD": 1
+    },
+    "additional_train/t0/stride16/NAVIGATE/low_base": {
+      "BASE_YAW_MINUS": 1
+    },
+    "additional_train/t1/stride16/GRASP/low_base": {
+      "LEFT_RIGHT": 5,
+      "RIGHT_CLOSE": 3,
+      "LEFT_LEFT": 4,
+      "LEFT_CLOSE": 1,
+      "RIGHT_RIGHT": 1
+    },
+    "additional_train/t1/stride16/GRASP/near_rest": {
+      "LEFT_RIGHT": 2,
+      "RIGHT_CLOSE": 1,
+      "LEFT_LEFT": 1
+    },
+    "additional_train/t1/stride16/NAVIGATE/low_base": {
+      "BASE_YAW_MINUS": 1,
+      "BASE_FORWARD": 1,
+      "LEFT_RIGHT": 1,
+      "BASE_LEFT": 1
+    },
+    "additional_train/t1/stride16/NAVIGATE/near_rest": {
+      "BASE_YAW_MINUS": 1,
+      "BASE_FORWARD": 1,
+      "LEFT_RIGHT": 1
+    },
+    "additional_train/t1/stride16/PLACE_IN/low_base": {
+      "LEFT_OPEN": 2,
+      "LEFT_DOWN": 1
+    },
+    "additional_train/t1/stride16/PLACE_IN/near_rest": {
+      "LEFT_OPEN": 1
+    },
+    "h09_train/t1/stride16/GRASP/low_base": {
+      "RIGHT_RIGHT": 1,
+      "RIGHT_CLOSE": 3,
+      "BASE_BACK": 1,
+      "LEFT_RIGHT": 1,
+      "BASE_FORWARD": 1,
+      "BASE_RIGHT": 1,
+      "RIGHT_DOWN": 2,
+      "LEFT_CLOSE": 1
+    },
+    "h09_train/t1/stride16/GRASP/near_rest": {
+      "RIGHT_RIGHT": 1,
+      "BASE_BACK": 1,
+      "BASE_FORWARD": 1,
+      "BASE_RIGHT": 1,
+      "RIGHT_DOWN": 1,
+      "LEFT_CLOSE": 1
+    },
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/low_base": {
+      "BASE_FORWARD": 1
+    },
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/near_rest": {
+      "BASE_FORWARD": 1
+    },
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/phase_start": {
+      "BASE_FORWARD": 1,
+      "BASE_LEFT": 1,
+      "BASE_YAW_PLUS": 1,
+      "BASE_YAW_MINUS": 2
+    },
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/near_rest_and_phase_start": {
+      "BASE_FORWARD": 1
+    },
+    "h09_train/t1/stride16/NAVIGATE/phase_start": {
+      "BASE_YAW_PLUS": 2,
+      "BASE_LEFT": 2,
+      "BASE_YAW_MINUS": 2,
+      "RIGHT_RIGHT": 1
+    },
+    "h09_train/t1/stride16/PLACE_IN/low_base": {
+      "LEFT_LEFT": 1,
+      "LEFT_RIGHT": 2,
+      "LEFT_DOWN": 1,
+      "LEFT_OPEN": 1,
+      "RIGHT_LEFT": 1
+    },
+    "h09_train/t1/stride16/PLACE_ON/low_base": {
+      "RIGHT_OPEN": 2
+    },
+    "additional_train/t1/stride16/PLACE_ON/low_base": {
+      "RIGHT_OPEN": 1
+    },
+    "h09_train/t1/stride16/NAVIGATE/low_base": {
+      "BASE_YAW_PLUS": 1,
+      "RIGHT_RIGHT": 1
+    },
+    "h09_train/t1/stride16/NAVIGATE/near_rest": {
+      "BASE_YAW_PLUS": 1,
+      "RIGHT_RIGHT": 1
+    },
+    "h09_train/t1/stride16/NAVIGATE/near_rest_and_phase_start": {
+      "BASE_YAW_PLUS": 1,
+      "RIGHT_RIGHT": 1
+    },
+    "h09_train/t1/stride16/PLACE_ON/near_rest": {
+      "RIGHT_OPEN": 1
+    },
+    "additional_train/t1/phase_first_low_extra/NAVIGATE/phase_start": {
+      "BASE_BACK": 1
+    },
+    "additional_train/t1/stride16/NAVIGATE/phase_start": {
+      "BASE_YAW_MINUS": 1
+    },
+    "additional_train/t3/stride16/OPEN_DOOR/low_base": {
+      "RIGHT_LEFT": 2,
+      "BASE_BACK": 4,
+      "RIGHT_DOWN": 1,
+      "RIGHT_OPEN": 2,
+      "RIGHT_CLOSE": 1
+    },
+    "additional_train/t3/stride16/OPEN_DOOR/near_rest": {
+      "RIGHT_LEFT": 1,
+      "BASE_BACK": 2,
+      "RIGHT_DOWN": 1,
+      "RIGHT_OPEN": 1
+    },
+    "additional_train/t3/stride16/PLACE_IN/low_base": {
+      "RIGHT_LEFT": 1,
+      "RIGHT_ROLL_MINUS": 1,
+      "LEFT_RIGHT": 2,
+      "LEFT_UP": 1,
+      "RIGHT_DOWN": 3,
+      "RIGHT_OPEN": 3,
+      "BASE_YAW_PLUS": 1,
+      "LEFT_BACK": 1,
+      "LEFT_ROLL_MINUS": 1,
+      "RIGHT_UP": 6,
+      "LEFT_DOWN": 1
+    },
+    "additional_train/t3/stride16/PLACE_IN/near_rest": {
+      "RIGHT_ROLL_MINUS": 1,
+      "LEFT_RIGHT": 1,
+      "RIGHT_DOWN": 1,
+      "BASE_YAW_PLUS": 1,
+      "LEFT_BACK": 1,
+      "RIGHT_OPEN": 1,
+      "LEFT_DOWN": 1
+    },
+    "additional_train/t3/stride16/GRASP/low_base": {
+      "RIGHT_LEFT": 6,
+      "LEFT_LEFT": 4,
+      "LEFT_CLOSE": 2,
+      "LEFT_BACK": 1,
+      "RIGHT_DOWN": 2,
+      "RIGHT_YAW_MINUS": 1,
+      "RIGHT_CLOSE": 6,
+      "RIGHT_UP": 2,
+      "RIGHT_FORWARD": 3,
+      "RIGHT_RIGHT": 1
+    },
+    "additional_train/t3/stride16/GRASP/near_rest": {
+      "RIGHT_LEFT": 4,
+      "LEFT_LEFT": 2,
+      "LEFT_BACK": 1,
+      "RIGHT_UP": 2,
+      "RIGHT_RIGHT": 1,
+      "RIGHT_CLOSE": 1,
+      "RIGHT_FORWARD": 1
+    },
+    "additional_train/t3/stride16/NAVIGATE/phase_start": {
+      "BASE_BACK": 6,
+      "LEFT_FORWARD": 2,
+      "BASE_YAW_MINUS": 3,
+      "BASE_FORWARD": 1
+    },
+    "additional_train/t3/phase_first_low_extra/NAVIGATE/low_base": {
+      "LEFT_LEFT": 1
+    },
+    "additional_train/t3/phase_first_low_extra/NAVIGATE/phase_start": {
+      "LEFT_LEFT": 1
+    },
+    "h09_train/t3/stride16/OPEN_DOOR/low_base": {
+      "RIGHT_FORWARD": 1,
+      "RIGHT_CLOSE": 1,
+      "RIGHT_LEFT": 1,
+      "BASE_YAW_PLUS": 1,
+      "BASE_FORWARD": 2,
+      "RIGHT_UP": 5,
+      "LEFT_RIGHT": 1,
+      "RIGHT_DOWN": 1,
+      "BASE_LEFT": 1,
+      "BASE_YAW_MINUS": 1
+    },
+    "h09_train/t3/stride16/OPEN_DOOR/near_rest": {
+      "RIGHT_CLOSE": 1,
+      "BASE_YAW_PLUS": 1,
+      "BASE_FORWARD": 1,
+      "RIGHT_DOWN": 1,
+      "BASE_YAW_MINUS": 1,
+      "RIGHT_UP": 1
+    },
+    "h09_train/t3/stride16/GRASP/low_base": {
+      "RIGHT_LEFT": 18,
+      "RIGHT_CLOSE": 6,
+      "RIGHT_FORWARD": 1,
+      "LEFT_RIGHT": 2,
+      "BASE_YAW_MINUS": 1,
+      "RIGHT_DOWN": 2,
+      "LEFT_DOWN": 1,
+      "LEFT_CLOSE": 2,
+      "RIGHT_ROLL_PLUS": 1
+    },
+    "h09_train/t3/stride16/PLACE_IN/low_base": {
+      "RIGHT_UP": 11,
+      "RIGHT_DOWN": 4,
+      "RIGHT_OPEN": 4,
+      "LEFT_OPEN": 2,
+      "LEFT_RIGHT": 1,
+      "RIGHT_BACK": 1,
+      "BASE_FORWARD": 2,
+      "RIGHT_LEFT": 2
+    },
+    "h09_train/t3/stride16/PLACE_IN/near_rest": {
+      "RIGHT_DOWN": 1,
+      "RIGHT_OPEN": 1,
+      "BASE_FORWARD": 1,
+      "RIGHT_LEFT": 2,
+      "RIGHT_UP": 1
+    },
+    "h09_train/t3/stride16/NAVIGATE/low_base": {
+      "LEFT_FORWARD": 2,
+      "RIGHT_LEFT": 1,
+      "BASE_FORWARD": 2,
+      "RIGHT_RIGHT": 1,
+      "BOTH_FORWARD": 1,
+      "BASE_LEFT": 1
+    },
+    "h09_train/t3/stride16/NAVIGATE/phase_start": {
+      "BASE_BACK": 4,
+      "BASE_YAW_MINUS": 4,
+      "LEFT_FORWARD": 1,
+      "BASE_YAW_PLUS": 2,
+      "BOTH_FORWARD": 1
+    },
+    "h09_train/t3/stride16/NAVIGATE/near_rest": {
+      "RIGHT_LEFT": 1,
+      "BASE_FORWARD": 2,
+      "BOTH_FORWARD": 1
+    },
+    "h09_train/t3/stride16/GRASP/near_rest": {
+      "RIGHT_CLOSE": 1,
+      "LEFT_DOWN": 1,
+      "RIGHT_ROLL_PLUS": 1,
+      "RIGHT_LEFT": 4
+    },
+    "additional_train/t3/stride16/NAVIGATE/low_base": {
+      "LEFT_FORWARD": 2,
+      "BASE_YAW_MINUS": 4,
+      "BASE_FORWARD": 3,
+      "BASE_YAW_PLUS": 2
+    },
+    "additional_train/t3/stride16/CLOSE_DOOR/low_base": {
+      "RIGHT_RIGHT": 1,
+      "BASE_FORWARD": 1,
+      "BASE_RIGHT": 1
+    },
+    "additional_train/t3/stride16/NAVIGATE/near_rest": {
+      "BASE_YAW_MINUS": 3,
+      "BASE_FORWARD": 3
+    },
+    "additional_train/t3/stride16/CLOSE_DOOR/near_rest": {
+      "BASE_FORWARD": 1,
+      "BASE_RIGHT": 1
+    },
+    "h09_train/t3/phase_first_low_extra/GRASP/phase_start": {
+      "BASE_YAW_PLUS": 1
+    },
+    "h09_train/t3/stride16/CLOSE_DOOR/low_base": {
+      "RIGHT_RIGHT": 1
+    },
+    "h09_train/t3/stride16/CLOSE_DOOR/near_rest": {
+      "RIGHT_RIGHT": 1
+    },
+    "h09_train/t3/stride16/NAVIGATE/near_rest_and_phase_start": {
+      "BOTH_FORWARD": 1
+    },
+    "h09_train/t3/phase_first_low_extra/NAVIGATE/low_base": {
+      "BASE_BACK": 1
+    },
+    "h09_train/t3/phase_first_low_extra/NAVIGATE/phase_start": {
+      "BASE_BACK": 1
+    }
+  },
+  "source_episodes_by_stratum": {
+    "h09_train/t0/stride16/NAVIGATE/present": [
+      8,
+      9,
+      12,
+      14,
+      45,
+      70,
+      75,
+      117,
+      133,
+      145,
+      152,
+      186
+    ],
+    "h09_train/t0/stride16/NAVIGATE/accepted": [
+      8,
+      9,
+      12,
+      14,
+      45,
+      70,
+      75,
+      117,
+      133,
+      145,
+      152,
+      186
+    ],
+    "h09_train/t0/stride16/GRASP/present": [
+      8,
+      9,
+      12,
+      14,
+      45,
+      70,
+      75,
+      117,
+      133,
+      145,
+      152,
+      186
+    ],
+    "h09_train/t0/stride16/PRESS/present": [
+      8,
+      9,
+      12,
+      14,
+      45,
+      70,
+      75,
+      117,
+      133,
+      145,
+      152,
+      186
+    ],
+    "h09_train/t0/stride16/PLACE_ON/present": [
+      8,
+      9,
+      12,
+      14,
+      45,
+      70,
+      75,
+      117,
+      133,
+      145,
+      152,
+      186
+    ],
+    "h09_train/t0/stride16/PLACE_ON/accepted": [
+      8,
+      70,
+      75,
+      117,
+      133
+    ],
+    "h09_train/t0/stride16/PLACE_ON/low_base": [
+      8,
+      70,
+      75,
+      117,
+      133
+    ],
+    "h09_train/t0/stride16/PLACE_ON/near_rest": [
+      8
+    ],
+    "h09_train/t0/phase_first_low_extra/GRASP/present": [
+      8,
+      9,
+      12,
+      14,
+      70,
+      75,
+      117,
+      133,
+      145,
+      152,
+      186
+    ],
+    "h09_train/t0/phase_first_low_extra/PRESS/present": [
+      8,
+      9,
+      12,
+      14,
+      45,
+      70,
+      75,
+      117,
+      133,
+      145,
+      152,
+      186
+    ],
+    "h09_train/t0/phase_first_low_extra/PLACE_ON/present": [
+      8,
+      9,
+      12,
+      14,
+      45,
+      70,
+      75,
+      117,
+      133,
+      145,
+      152,
+      186
+    ],
+    "h09_train/t0/stride16/GRASP/accepted": [
+      9,
+      12,
+      70,
+      145,
+      186
+    ],
+    "h09_train/t0/stride16/GRASP/low_base": [
+      9,
+      12,
+      70,
+      186
+    ],
+    "h09_train/t0/stride16/GRASP/near_rest": [
+      9,
+      186
+    ],
+    "h09_train/t0/stride16/GRASP/phase_start": [
+      9,
+      145
+    ],
+    "h09_train/t0/stride16/GRASP/near_rest_and_phase_start": [
+      9
+    ],
+    "h09_train/t0/stride16/PRESS/accepted": [
+      9,
+      75,
+      117,
+      145
+    ],
+    "h09_train/t0/stride16/PRESS/low_base": [
+      9,
+      75,
+      117,
+      145
+    ],
+    "h09_train/t0/stride16/NAVIGATE/low_base": [
+      12,
+      45,
+      117
+    ],
+    "h09_train/t0/stride16/NAVIGATE/phase_start": [
+      12,
+      14,
+      70,
+      152
+    ],
+    "h09_train/t0/phase_first_low_extra/NAVIGATE/present": [
+      12
+    ],
+    "additional_train/t0/stride16/NAVIGATE/present": [
+      28,
+      30,
+      34,
+      42,
+      43,
+      50,
+      66,
+      109,
+      120,
+      140,
+      148,
+      151
+    ],
+    "additional_train/t0/stride16/NAVIGATE/accepted": [
+      28,
+      30,
+      34,
+      42,
+      43,
+      50,
+      66,
+      109,
+      140,
+      148
+    ],
+    "additional_train/t0/stride16/NAVIGATE/phase_start": [
+      28,
+      34,
+      42,
+      66
+    ],
+    "additional_train/t0/stride16/GRASP/present": [
+      28,
+      30,
+      34,
+      42,
+      43,
+      50,
+      66,
+      109,
+      120,
+      140,
+      148,
+      151
+    ],
+    "additional_train/t0/stride16/GRASP/accepted": [
+      28,
+      30,
+      34,
+      120,
+      140,
+      148
+    ],
+    "additional_train/t0/stride16/GRASP/low_base": [
+      28,
+      30,
+      34,
+      120,
+      140,
+      148
+    ],
+    "additional_train/t0/stride16/PRESS/present": [
+      28,
+      30,
+      34,
+      42,
+      43,
+      50,
+      66,
+      109,
+      120,
+      140,
+      148,
+      151
+    ],
+    "additional_train/t0/stride16/PRESS/accepted": [
+      28,
+      34,
+      120
+    ],
+    "additional_train/t0/stride16/PRESS/low_base": [
+      28,
+      34,
+      120
+    ],
+    "additional_train/t0/stride16/PLACE_ON/present": [
+      28,
+      30,
+      34,
+      42,
+      43,
+      50,
+      66,
+      109,
+      120,
+      140,
+      148,
+      151
+    ],
+    "additional_train/t0/stride16/PLACE_ON/accepted": [
+      28,
+      30,
+      34,
+      43,
+      66,
+      109
+    ],
+    "additional_train/t0/stride16/PLACE_ON/low_base": [
+      28,
+      30,
+      34,
+      43,
+      66,
+      109
+    ],
+    "additional_train/t0/phase_first_low_extra/GRASP/present": [
+      28,
+      30,
+      34,
+      42,
+      43,
+      50,
+      109,
+      120,
+      140,
+      148,
+      151
+    ],
+    "additional_train/t0/phase_first_low_extra/PRESS/present": [
+      28,
+      30,
+      34,
+      42,
+      43,
+      50,
+      66,
+      109,
+      120,
+      140,
+      148,
+      151
+    ],
+    "additional_train/t0/phase_first_low_extra/PLACE_ON/present": [
+      28,
+      30,
+      34,
+      42,
+      43,
+      50,
+      66,
+      109,
+      120,
+      140,
+      148,
+      151
+    ],
+    "additional_train/t0/stride16/GRASP/near_rest": [
+      30,
+      120,
+      140,
+      148
+    ],
+    "additional_train/t0/stride16/GRASP/phase_start": [
+      30
+    ],
+    "additional_train/t0/stride16/GRASP/near_rest_and_phase_start": [
+      30
+    ],
+    "additional_train/t0/stride16/PLACE_ON/near_rest": [
+      34,
+      43
+    ],
+    "additional_train/t0/phase_first_low_extra/NAVIGATE/present": [
+      42
+    ],
+    "additional_train/t0/phase_first_low_extra/NAVIGATE/accepted": [
+      42
+    ],
+    "additional_train/t0/phase_first_low_extra/NAVIGATE/phase_start": [
+      42
+    ],
+    "h09_train/t0/stride16/NAVIGATE/near_rest": [
+      45,
+      117
+    ],
+    "additional_train/t0/stride16/NAVIGATE/low_base": [
+      66
+    ],
+    "additional_train/t1/stride16/NAVIGATE/present": [
+      200,
+      205,
+      247,
+      264,
+      291,
+      305,
+      310,
+      312,
+      332,
+      340,
+      363,
+      377
+    ],
+    "additional_train/t1/stride16/NAVIGATE/accepted": [
+      200,
+      205,
+      247,
+      264,
+      291,
+      305,
+      310,
+      332,
+      340,
+      363,
+      377
+    ],
+    "additional_train/t1/stride16/GRASP/present": [
+      200,
+      205,
+      247,
+      264,
+      291,
+      305,
+      310,
+      312,
+      332,
+      340,
+      363,
+      377
+    ],
+    "additional_train/t1/stride16/GRASP/accepted": [
+      200,
+      205,
+      247,
+      264,
+      291,
+      305,
+      340
+    ],
+    "additional_train/t1/stride16/GRASP/low_base": [
+      200,
+      205,
+      247,
+      264,
+      305,
+      340
+    ],
+    "additional_train/t1/stride16/GRASP/near_rest": [
+      200,
+      205,
+      247
+    ],
+    "additional_train/t1/stride16/NAVIGATE/low_base": [
+      200,
+      247,
+      264
+    ],
+    "additional_train/t1/stride16/NAVIGATE/near_rest": [
+      200,
+      247
+    ],
+    "additional_train/t1/stride16/PLACE_IN/present": [
+      200,
+      205,
+      247,
+      264,
+      291,
+      305,
+      310,
+      312,
+      332,
+      340,
+      363,
+      377
+    ],
+    "additional_train/t1/stride16/PLACE_ON/present": [
+      200,
+      205,
+      247,
+      264,
+      291,
+      305,
+      310,
+      312,
+      332,
+      340,
+      363,
+      377
+    ],
+    "additional_train/t1/phase_first_low_extra/GRASP/present": [
+      200,
+      205,
+      247,
+      264,
+      291,
+      305,
+      310,
+      312,
+      332,
+      340,
+      363,
+      377
+    ],
+    "additional_train/t1/phase_first_low_extra/NAVIGATE/present": [
+      200,
+      205,
+      247,
+      264,
+      291,
+      305,
+      310,
+      312,
+      332,
+      340,
+      363,
+      377
+    ],
+    "additional_train/t1/phase_first_low_extra/PLACE_IN/present": [
+      200,
+      205,
+      247,
+      264,
+      291,
+      305,
+      310,
+      312,
+      332,
+      340,
+      363,
+      377
+    ],
+    "additional_train/t1/phase_first_low_extra/PLACE_ON/present": [
+      200,
+      247,
+      264,
+      291,
+      310,
+      312,
+      332,
+      363,
+      377
+    ],
+    "additional_train/t1/stride16/PLACE_IN/accepted": [
+      205,
+      264,
+      363
+    ],
+    "additional_train/t1/stride16/PLACE_IN/low_base": [
+      205,
+      264,
+      363
+    ],
+    "additional_train/t1/stride16/PLACE_IN/near_rest": [
+      205
+    ],
+    "h09_train/t1/stride16/NAVIGATE/present": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      324,
+      328,
+      351,
+      360,
+      372,
+      379,
+      389
+    ],
+    "h09_train/t1/stride16/NAVIGATE/accepted": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      324,
+      328,
+      351,
+      360,
+      372,
+      379,
+      389
+    ],
+    "h09_train/t1/stride16/GRASP/present": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      324,
+      328,
+      351,
+      360,
+      372,
+      379,
+      389
+    ],
+    "h09_train/t1/stride16/GRASP/accepted": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      328,
+      351,
+      360,
+      372,
+      379
+    ],
+    "h09_train/t1/stride16/GRASP/low_base": [
+      207,
+      213,
+      218,
+      277,
+      328,
+      351,
+      360,
+      372,
+      379
+    ],
+    "h09_train/t1/stride16/GRASP/near_rest": [
+      207,
+      213,
+      218,
+      328,
+      351,
+      379
+    ],
+    "h09_train/t1/stride16/PLACE_IN/present": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      324,
+      328,
+      351,
+      360,
+      372,
+      379,
+      389
+    ],
+    "h09_train/t1/stride16/PLACE_ON/present": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      324,
+      328,
+      351,
+      360,
+      372,
+      379,
+      389
+    ],
+    "h09_train/t1/phase_first_low_extra/GRASP/present": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      324,
+      328,
+      351,
+      360,
+      372,
+      379,
+      389
+    ],
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/present": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      324,
+      328,
+      351,
+      360,
+      372,
+      379,
+      389
+    ],
+    "h09_train/t1/phase_first_low_extra/PLACE_IN/present": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      324,
+      328,
+      351,
+      360,
+      372,
+      379,
+      389
+    ],
+    "h09_train/t1/phase_first_low_extra/PLACE_ON/present": [
+      207,
+      213,
+      218,
+      242,
+      277,
+      324,
+      328,
+      351,
+      360,
+      372,
+      379,
+      389
+    ],
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/accepted": [
+      213,
+      242,
+      324,
+      351,
+      372
+    ],
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/low_base": [
+      213
+    ],
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/near_rest": [
+      213
+    ],
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/phase_start": [
+      213,
+      242,
+      324,
+      351,
+      372
+    ],
+    "h09_train/t1/phase_first_low_extra/NAVIGATE/near_rest_and_phase_start": [
+      213
+    ],
+    "h09_train/t1/stride16/NAVIGATE/phase_start": [
+      218,
+      242,
+      277,
+      351,
+      372
+    ],
+    "h09_train/t1/stride16/PLACE_IN/accepted": [
+      218,
+      242,
+      328,
+      379
+    ],
+    "h09_train/t1/stride16/PLACE_IN/low_base": [
+      218,
+      242,
+      328,
+      379
+    ],
+    "h09_train/t1/stride16/PLACE_ON/accepted": [
+      242,
+      277
+    ],
+    "h09_train/t1/stride16/PLACE_ON/low_base": [
+      242,
+      277
+    ],
+    "additional_train/t1/stride16/PLACE_ON/accepted": [
+      264
+    ],
+    "additional_train/t1/stride16/PLACE_ON/low_base": [
+      264
+    ],
+    "h09_train/t1/stride16/NAVIGATE/low_base": [
+      277,
+      372
+    ],
+    "h09_train/t1/stride16/NAVIGATE/near_rest": [
+      277,
+      372
+    ],
+    "h09_train/t1/stride16/NAVIGATE/near_rest_and_phase_start": [
+      277,
+      372
+    ],
+    "h09_train/t1/stride16/PLACE_ON/near_rest": [
+      277
+    ],
+    "additional_train/t1/phase_first_low_extra/NAVIGATE/accepted": [
+      332
+    ],
+    "additional_train/t1/phase_first_low_extra/NAVIGATE/phase_start": [
+      332
+    ],
+    "additional_train/t1/stride16/NAVIGATE/phase_start": [
+      377
+    ],
+    "additional_train/t3/stride16/NAVIGATE/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/OPEN_DOOR/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/OPEN_DOOR/accepted": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/OPEN_DOOR/low_base": [
+      607,
+      629,
+      716,
+      721,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/OPEN_DOOR/near_rest": [
+      607,
+      629,
+      721,
+      774
+    ],
+    "additional_train/t3/stride16/NAVIGATE/accepted": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/GRASP/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/PLACE_IN/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/PLACE_IN/accepted": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      769
+    ],
+    "additional_train/t3/stride16/PLACE_IN/low_base": [
+      607,
+      629,
+      674,
+      711,
+      716,
+      721,
+      725,
+      769
+    ],
+    "additional_train/t3/stride16/PLACE_IN/near_rest": [
+      607,
+      629,
+      674,
+      716
+    ],
+    "additional_train/t3/stride16/GRASP/accepted": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/GRASP/low_base": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/GRASP/near_rest": [
+      607,
+      629,
+      711,
+      716,
+      725,
+      750,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/NAVIGATE/phase_start": [
+      607,
+      678,
+      721,
+      725,
+      750,
+      767,
+      774
+    ],
+    "additional_train/t3/stride16/CLOSE_DOOR/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/CLOSE_DOOR/accepted": [
+      607,
+      629,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/phase_first_low_extra/OPEN_DOOR/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/phase_first_low_extra/NAVIGATE/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/phase_first_low_extra/GRASP/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/phase_first_low_extra/PLACE_IN/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/phase_first_low_extra/CLOSE_DOOR/present": [
+      607,
+      629,
+      674,
+      678,
+      711,
+      716,
+      721,
+      725,
+      750,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/phase_first_low_extra/NAVIGATE/accepted": [
+      607
+    ],
+    "additional_train/t3/phase_first_low_extra/NAVIGATE/low_base": [
+      607
+    ],
+    "additional_train/t3/phase_first_low_extra/NAVIGATE/phase_start": [
+      607
+    ],
+    "h09_train/t3/stride16/NAVIGATE/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/NAVIGATE/accepted": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/OPEN_DOOR/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/OPEN_DOOR/accepted": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/OPEN_DOOR/low_base": [
+      618,
+      625,
+      742,
+      756,
+      760,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/OPEN_DOOR/near_rest": [
+      618,
+      742,
+      760,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/GRASP/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/GRASP/accepted": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      756,
+      760,
+      771,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/GRASP/low_base": [
+      618,
+      622,
+      625,
+      676,
+      756,
+      760,
+      771,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/PLACE_IN/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/PLACE_IN/accepted": [
+      618,
+      625,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/PLACE_IN/low_base": [
+      618,
+      676,
+      742,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/PLACE_IN/near_rest": [
+      618,
+      773,
+      787
+    ],
+    "h09_train/t3/stride16/NAVIGATE/low_base": [
+      618,
+      625,
+      742,
+      773,
+      787
+    ],
+    "h09_train/t3/stride16/CLOSE_DOOR/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/CLOSE_DOOR/accepted": [
+      618,
+      676,
+      756,
+      760,
+      771,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/NAVIGATE/phase_start": [
+      618,
+      676,
+      742,
+      756,
+      760,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/phase_first_low_extra/OPEN_DOOR/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/phase_first_low_extra/GRASP/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/phase_first_low_extra/NAVIGATE/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/phase_first_low_extra/PLACE_IN/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      760,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/phase_first_low_extra/CLOSE_DOOR/present": [
+      618,
+      622,
+      625,
+      634,
+      676,
+      742,
+      756,
+      771,
+      773,
+      786,
+      787
+    ],
+    "h09_train/t3/stride16/NAVIGATE/near_rest": [
+      625,
+      742,
+      773,
+      787
+    ],
+    "h09_train/t3/stride16/GRASP/near_rest": [
+      676,
+      760,
+      771,
+      787
+    ],
+    "additional_train/t3/stride16/NAVIGATE/low_base": [
+      678,
+      725,
+      767,
+      769,
+      774
+    ],
+    "additional_train/t3/stride16/CLOSE_DOOR/low_base": [
+      711,
+      725,
+      767
+    ],
+    "additional_train/t3/stride16/NAVIGATE/near_rest": [
+      725,
+      769
+    ],
+    "additional_train/t3/stride16/CLOSE_DOOR/near_rest": [
+      725,
+      767
+    ],
+    "h09_train/t3/phase_first_low_extra/GRASP/accepted": [
+      742
+    ],
+    "h09_train/t3/phase_first_low_extra/GRASP/phase_start": [
+      742
+    ],
+    "h09_train/t3/stride16/CLOSE_DOOR/low_base": [
+      756
+    ],
+    "h09_train/t3/stride16/CLOSE_DOOR/near_rest": [
+      756
+    ],
+    "h09_train/t3/stride16/NAVIGATE/near_rest_and_phase_start": [
+      773
+    ],
+    "h09_train/t3/phase_first_low_extra/NAVIGATE/accepted": [
+      773
+    ],
+    "h09_train/t3/phase_first_low_extra/NAVIGATE/low_base": [
+      773
+    ],
+    "h09_train/t3/phase_first_low_extra/NAVIGATE/phase_start": [
+      773
+    ]
+  },
+  "translation_amount_ratio_quantiles": {
+    "h09_train/t0/stride16/GRASP": {
+      "n": 8,
+      "min_q25_median_q75_max": [
+        0.6668543236463242,
+        0.8990826832765162,
+        1.4506396089149503,
+        1.6079010065541812,
+        2.0758977656325217
+      ]
+    },
+    "h09_train/t0/stride16/PRESS": {
+      "n": 4,
+      "min_q25_median_q75_max": [
+        2.0567498643166258,
+        2.4744140373750785,
+        2.8770485691078176,
+        3.313607538308948,
+        3.833045023772572
+      ]
+    },
+    "additional_train/t0/stride16/GRASP": {
+      "n": 4,
+      "min_q25_median_q75_max": [
+        0.7168362119387495,
+        0.8155881570756096,
+        1.1465840296298762,
+        1.4984657420175012,
+        1.6598752066544362
+      ]
+    },
+    "additional_train/t0/stride16/PRESS": {
+      "n": 3,
+      "min_q25_median_q75_max": [
+        1.0472918986957367,
+        1.1446103852903637,
+        1.2419288718849908,
+        1.536811757009711,
+        1.8316946421344313
+      ]
+    },
+    "additional_train/t0/stride16/PLACE_ON": {
+      "n": 6,
+      "min_q25_median_q75_max": [
+        0.6812639607934047,
+        0.6848659149618388,
+        0.8270684246019451,
+        1.0718660677385203,
+        4.713130258728337
+      ]
+    },
+    "h09_train/t0/stride16/NAVIGATE": {
+      "n": 1,
+      "min_q25_median_q75_max": [
+        2.0406808020310474,
+        2.0406808020310474,
+        2.0406808020310474,
+        2.0406808020310474,
+        2.0406808020310474
+      ]
+    },
+    "h09_train/t0/stride16/PLACE_ON": {
+      "n": 3,
+      "min_q25_median_q75_max": [
+        0.72961293337808,
+        0.9403961679324058,
+        1.1511794024867315,
+        1.6335435059060948,
+        2.115907609325458
+      ]
+    },
+    "additional_train/t1/stride16/GRASP": {
+      "n": 10,
+      "min_q25_median_q75_max": [
+        0.674134983600044,
+        1.3385420412798001,
+        1.6263499989814318,
+        2.0887356171933487,
+        2.8914314811631443
+      ]
+    },
+    "h09_train/t1/stride16/GRASP": {
+      "n": 4,
+      "min_q25_median_q75_max": [
+        0.6151548116362531,
+        0.6155972952113082,
+        0.6871803533152878,
+        1.104756744380828,
+        2.143179226840565
+      ]
+    },
+    "h09_train/t1/stride16/PLACE_IN": {
+      "n": 5,
+      "min_q25_median_q75_max": [
+        0.745178310805032,
+        0.7607508880933753,
+        1.7148668596981633,
+        2.202750956008967,
+        2.7740822320149383
+      ]
+    },
+    "additional_train/t1/stride16/NAVIGATE": {
+      "n": 1,
+      "min_q25_median_q75_max": [
+        0.6851826083341197,
+        0.6851826083341197,
+        0.6851826083341197,
+        0.6851826083341197,
+        0.6851826083341197
+      ]
+    },
+    "additional_train/t1/stride16/PLACE_IN": {
+      "n": 1,
+      "min_q25_median_q75_max": [
+        0.9963531451307017,
+        0.9963531451307017,
+        0.9963531451307017,
+        0.9963531451307017,
+        0.9963531451307017
+      ]
+    },
+    "h09_train/t1/stride16/NAVIGATE": {
+      "n": 1,
+      "min_q25_median_q75_max": [
+        0.6255321144668099,
+        0.6255321144668099,
+        0.6255321144668099,
+        0.6255321144668099,
+        0.6255321144668099
+      ]
+    },
+    "additional_train/t3/stride16/OPEN_DOOR": {
+      "n": 4,
+      "min_q25_median_q75_max": [
+        0.6033384239508689,
+        0.7115394568404022,
+        1.2242972946319133,
+        1.8363475591276295,
+        2.242425872129779
+      ]
+    },
+    "additional_train/t3/stride16/PLACE_IN": {
+      "n": 15,
+      "min_q25_median_q75_max": [
+        0.641531552265225,
+        0.8159831289769375,
+        1.6050599238437404,
+        3.479558885903928,
+        5.436642093509325
+      ]
+    },
+    "additional_train/t3/stride16/GRASP": {
+      "n": 19,
+      "min_q25_median_q75_max": [
+        0.6264416077982626,
+        0.7565900291354779,
+        0.8140088427423537,
+        0.9536071576941496,
+        3.556238789029625
+      ]
+    },
+    "additional_train/t3/phase_first_low_extra/NAVIGATE": {
+      "n": 1,
+      "min_q25_median_q75_max": [
+        0.9566369010231165,
+        0.9566369010231165,
+        0.9566369010231165,
+        0.9566369010231165,
+        0.9566369010231165
+      ]
+    },
+    "h09_train/t3/stride16/OPEN_DOOR": {
+      "n": 9,
+      "min_q25_median_q75_max": [
+        0.9461469732521303,
+        1.2207095035097855,
+        1.3877531722472471,
+        1.913204506105404,
+        2.1726459309130526
+      ]
+    },
+    "h09_train/t3/stride16/GRASP": {
+      "n": 24,
+      "min_q25_median_q75_max": [
+        0.6383391316548992,
+        0.8203814969237915,
+        1.137018757334761,
+        1.3530704663840032,
+        2.4682394719065694
+      ]
+    },
+    "h09_train/t3/stride16/PLACE_IN": {
+      "n": 19,
+      "min_q25_median_q75_max": [
+        0.7497616756599496,
+        1.2982989209701565,
+        2.1588286412634208,
+        2.9754277567764698,
+        6.499558790471638
+      ]
+    },
+    "h09_train/t3/stride16/NAVIGATE": {
+      "n": 6,
+      "min_q25_median_q75_max": [
+        1.0164045959826136,
+        1.1430817209875546,
+        1.306473411288353,
+        1.6220280142514982,
+        1.9513229241773942
+      ]
+    },
+    "additional_train/t3/stride16/NAVIGATE": {
+      "n": 2,
+      "min_q25_median_q75_max": [
+        1.1928634453081763,
+        1.3436283947068914,
+        1.4943933441056063,
+        1.6451582935043214,
+        1.7959232429030365
+      ]
+    },
+    "additional_train/t3/stride16/CLOSE_DOOR": {
+      "n": 1,
+      "min_q25_median_q75_max": [
+        1.6737795867236784,
+        1.6737795867236784,
+        1.6737795867236784,
+        1.6737795867236784,
+        1.6737795867236784
+      ]
+    },
+    "h09_train/t3/stride16/CLOSE_DOOR": {
+      "n": 1,
+      "min_q25_median_q75_max": [
+        1.5544302322736252,
+        1.5544302322736252,
+        1.5544302322736252,
+        1.5544302322736252,
+        1.5544302322736252
+      ]
+    }
+  },
+  "limits": [
+    "Only 72 predetermined train-source episodes receive raw-window inspection, not all eligible episodes.",
+    "No validation/test examples, images or outcomes read; groups metadata used only to exclude instances.",
+    "Phase-start candidates may overlap the stride grid: count separately, never sum as independent samples/history.",
+    "Pure direction and endpoint compatibility do not establish native executor trajectory, timing, contact or success.",
+    "Near-rest is a fixed past-three-frame kinematic screen, not a causal shortcut/vision ablation."
+  ]
+}
+
