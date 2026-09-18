@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 07:54（北京时间）H19固定源CPU完成/旧服务归档退出中（Codex）：** 新不可变`semantic_combined_0d34ec7`准确0d34ec7cb6aa0daaf1fde974e1f72d23144a3450/digest621bd7c5…c916，本地368/6.037s＋67/.224s、robo368/17.473s通过，≤600s父CPU实现块完成，待Astra独立终审，仍0新物理。旧服务真实190/215且无客户端，identity/calls账本双端SHA0f1fcd3f…2896/e8677715…27a6、完整本地`h15_server_complete_archive`核过后仅向确认身份156556发TERM，退出待核；未删除旧证据/源码、未触队友GPU。P3源重算尾差修复和near-grasp教师仍Astra原CPU票进行中，不称新训练。
+
 **2026-09-19 07:52（北京时间）H17证据闭合/H19预算入口显式化（Codex）：** H17完整本地3SHA/全视频解码/60主hash/10完整链30段60端点FK/9次BASE链消费/181连续控制均过，亲看末head及末动作前右腕，radio仍桌面、无抓取。35da7cd远端363/17.637s过，仅CPU；发现旧runner硬上限仍96/3072/2400，下一最小显式`fullstart192` profile只允许另登记的grounded agent零两类前缀，默认pilot/工程门上限不动，未知/越界/带前缀拒绝并补回归。这是新块启动入口，不是放宽运行中预算；独立终审/新源门前不启动物理。旧模型190调用归档中，尚未停止。
 
 **2026-09-19 07:50（北京时间）P3父独立seed审通过/H19联合预登记（Codex）：** 已亲看全部39原图、独立核59 capture hash/452×23来源动作/464普通控制＋实际hold465，302 oracle逐项一致、433..465连续33成功。父审JSON `configs/vlm_sft/h09u_p3_seed_parent_review.json`仅批准离线pose seed，非native BC/训练/官方SR。跨CPU重算pose差8.88e-16，严格array_equal会误拒，作者在原CPU票内改仅重算数值1e-12门并补篡改负例，所有源字节/物理阈值不变。父联合候选363/6.313s通过，三原保存态均同时有真实受guard底盘和腕姿候选（8.78/8.19/8.04s）；尚待独立终审。`h19_combined_fullstart_block.json`另预登记新NVMe≤4GiB/最多3reset：2工程门后唯一0前缀原起点192/6144/7200s/431调用，固定原27B，不训练；这是明确加长诊断＋联合版本，不伪称等预算A/B。当前0新reset/模型，先Git固定与独立审。
