@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 01:43当前：** H12不可变源`git_worktrees/semantic_substep_8e270b1`（8e270b1/digest1f9c5b），GPU3门`gate_radio_h12`120081/`gate_plates_h12`120082初始化；新GPU1模型`server_h12`121949/8921/≤215调用已提交加载，同27B revision，未启动策略。旧111660已核身份退出、18调用保留并下载本地`h11_server_archive/`；新源禁止热改。新run和日志在原`agentic_vlm_goal_20260918`，仍4GiB/80GiB边界。
+
 **2026-09-19 01:36当前：** 新`git_worktrees/semantic_substep_14901a8`为14901a8/digest596c76a7独立源，309CPU过，尚无新模型或物理进程；旧111660/GPU1/8920保持2000d78/18调用空闲，GPU3空。H12各CPU诊断在本地`artifacts/agentic-vlm-goal-20260918/h12_*odometry*audit.json`，光流/相机合并均未部署，不把其正样本统计当策略改善。根约2.0GiB/盘余87GiB；不删除旧证据。
 
 **2026-09-19 01:01当前：** 115556已正常退出，`radio_h11_fullstart/result.json`SHA882220ce…，361控制/官方false/视觉里程计不确定停止；GPU3释放，111660/GPU1/8920空闲18/217，不能热改服务源。完整H11策略本地`h11_fullstart_bundle/radio_h11_fullstart`已传完，96主RGB-D hash通过；H12仅CPU保存状态诊断，无新runtime/物理/训练。旧H11两门完整本地`h11_gates_bundle/`已传完，未完成额外人工/视频校验前不笼统标记全验。

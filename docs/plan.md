@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 01:43（北京时间）H12新服务已加载提交（Codex）：** 已确认旧111660退出后，`server_h12`121949/GPU1/8921/215调用从同8e270b1独立源启动，同模型revision/结构化grammar；当前加载/ready待核，0策略调用。两工程门120081/120082继续初始化；旧H11 ledger18下载归档中，不能热改源/重复提交。
+
+**2026-09-19 01:42（北京时间）H12双工程门已运行（Codex）：** 已核旧111660/2000d78/18调用身份后TERM，ledger18完整保留；GPU3唯一`gate_radio_h12`120081及`gate_plates_h12`120082同8e270b1/digest1f9c5b、6tick采样、各原24/1536/1200s/0模型前缀，正在初始化，非门已通过。原0前缀策略仍未启动；新8921服务加载提交中，旧源及所有失败不覆盖，不热改新源。
+
 **2026-09-19 01:41（北京时间）H12 CPU块完成/后继有限物理块登记（Codex/Astra）：** 8e270b1独立312/4.975s及真实inner/outer/finally＋all-write/双close/broken-stderr联合注入通过，无剩余代码阻塞；双端312已过。登记固定该源/digest1f9c5b：GPU3仅`gate_radio_h12`/`gate_plates_h12`两新工程reset各24决策/1536控制/1200s/0前缀模型，原质量门；全部通过退出及实际段链核验后，仅1条`radio_h12_fullstart`原task0/train138/seed0、0前缀、新规划、96/3072/2400s/≤215调用。GPU1新`server_h12`8921、同27B revision/grammar、215调用；核旧111660身份及18ledger后停旧服务，旧源/证据保留。还未启动，根2.0GiB/余87GiB、仍守4/80GiB；不重启H09、不追加静态选型/匹配前缀。
 
 **2026-09-19 01:39（北京时间）H12首错误保持修正/312双端过（Codex）：** Astra复现外层补写/close能覆盖主错误，已在`8e270b1897befe32385f7662ddd90c8aeeeda2f2`修复并添加实际runner AST永久回归；recording/trace/video失败保首错，无首错时close失败仍报告，raw_servo保持第一份状态。312本地/4.198s、robo/12.788s过，新独立`semantic_substep_8e270b1`/digest`1f9c5bcdbf6e33b1d7d56cb22f0e5fa1effa31cf0ac445d3482784ab3d5b384c`，最终复审待。H11两完整门副本另144+144主RGB-D hash及两视频全解码通过；8页门面板未全人工看，不报全人工验收。仍0新模型/物理/训练。
