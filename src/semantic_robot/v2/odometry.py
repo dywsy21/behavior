@@ -113,8 +113,12 @@ def solve_rgbd_correspondences(points_before,pixels_after,points_after,K,camera_
 class RGBDMotion:
     def __init__(self,estimator="pnp"):
         import cv2
-        if estimator not in ("pnp","rgbd_rigid"):raise ValueError("Explicit RGB-D estimator required")
-        self.solve=solve_correspondences if estimator=="pnp" else solve_rgbd_correspondences
+        if estimator not in ("pnp","rgbd_rigid","rgbd_joint"):raise ValueError("Explicit RGB-D estimator required")
+        if estimator=="rgbd_joint":
+            from .joint_odometry import solve_joint_correspondences
+            self.solve=solve_joint_correspondences
+        else:
+            self.solve=solve_correspondences if estimator=="pnp" else solve_rgbd_correspondences
         self.cv2=cv2
         cv2.setNumThreads(2)
         self.sift=cv2.SIFT_create(nfeatures=2000);self.matcher=cv2.BFMatcher()
