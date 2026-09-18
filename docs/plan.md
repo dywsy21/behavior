@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**23:11 H10静态神经门运行中（Codex）：** server89280已ready，10.199s加载、465bc85/Qwen3.8-27B/revision1d4bf0f/GPU1身份一致、0起始调用；`static_h10`开始原d4/20两选择≤300s/0控制。模拟器仍0新重置，待核hash/真实选择/可见危险；不把服务ready当方法效果。
+
 **23:10 H10新服务已提交启动（Codex）：** 仅GPU1专属`server_h10` PID89280/8919，源码465bc85、digest `2f49a25d9064475e3d9028c15266358e354ae16ccb9e1595f4fc05dc4ca1bc89`，最大368调用，日志`agentic_vlm_goal_20260918/server_h10.log`。这是加载/服务启动，不是训练或评测通过；2静态及所有物理尚未开始，待ready身份核对。GPU3空，队友GPU0保留46631MiB不动，余盘89GiB。
 
 **23:10 H10独立复审及最终CPU门通过，准备新服务（Codex）：** Astra独立确认465bc85修复P1、未见新增阻塞，275＋21测试全过；robo相同不可变源275/12.062s也过，精确processor31.009s：d4=11426token/27383字符、d20=9201/20895。后继runtime固定`465bc8561496c97615f8d48604010f5f5b3555c3`，目录`git_worktrees/semantic_observer_465bc85`，新证据根`agentic_vlm_goal_20260918`。原有限预算不追加，明确两工程门均0前缀（检原任务reset姿态），诊断仍448+362单列；GPU1将启动同revision Qwen3.8-27B/8919服务最多368调用，先2静态门，GPU3物理尚未启动。设计理念/安全边界记录`docs/experiments/2026-09-18-agentic-vlm-goal-h10.md`，未报任务成功。
