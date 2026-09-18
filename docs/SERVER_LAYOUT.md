@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 02:03当前：** `radio_h12_fullstart`124062已退出/官方false，427控制、19调用；完整下载至本地`artifacts/agentic-vlm-goal-20260918/h12_fullstart_bundle`中。121949/GPU1/8921仍同8e270b1空闲19/215，不热改；GPU3无该策略。H12双门本地完整且144+144主观测hash/视频全解码过。根2.9GiB、盘余86GiB；H13目前只有保存数据CPU诊断，无新模型/物理。
+
 **2026-09-19 01:52当前：** H12两门120081/120082均通过退出；唯一`agentic_vlm_goal_20260918/radio_h12_fullstart`124062/GPU3初始化，固定8e270b1/digest1f9c5b，不可热改；模型121949/GPU1/8921同源，起始0/215call。策略0前缀96/3072/2400s，artifact启动前按两门真实文件量改累计≤6GiB、仍余≥80GiB，根约2.7GiB。门完整本地`h12_gates_bundle/`下载中，旧H11服务已退出、18ledger本地SHA一致；不要依历史记录重复启动。
 
 **2026-09-19 01:43当前：** H12不可变源`git_worktrees/semantic_substep_8e270b1`（8e270b1/digest1f9c5b），GPU3门`gate_radio_h12`120081/`gate_plates_h12`120082初始化；新GPU1模型`server_h12`121949/8921/≤215调用已提交加载，同27B revision，未启动策略。旧111660已核身份退出、18调用保留并下载本地`h11_server_archive/`；新源禁止热改。新run和日志在原`agentic_vlm_goal_20260918`，仍4GiB/80GiB边界。
