@@ -1,7 +1,8 @@
 {
   "experiment_id":"H09S-native-teacher-first-three",
   "registered_at":"2026-09-19T04:28:00+08:00",
-  "status":"engineering_gates_passed_gpu1_handed_over_authorization_activated_first_instance_only",
+  "status":"first_instance_task0_submitted_initializing_other_two_not_started",
+  "first_runtime":{"pid":156956,"submitted_at":"2026-09-19T04:35:24+08:00","run":"/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/pilot_v1/task_0","authorization_sha256":"1348181d7f11112f74df7a82650a43c1a12dbea4b2b0948ec81c8e921d72449c"},
   "activation_at":"2026-09-19T04:34:00+08:00",
   "authorization_local":"artifacts/vlm-sft-native-teacher-20260919/authorization_first_three.json",
   "runtime_source":"/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_native_1509b7a",

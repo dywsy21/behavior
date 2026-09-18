@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 04:36当前：** GPU3 `agentic_vlm_goal_20260918/server_h15`156556/8923同5cfbb89 ready0/215，唯一`radio_h15_fullstart`158357零前缀初始化；两r1门已过并退出，完整本地`h15_gates_bundle`传完。GPU1交给Astra：`vlm_sft_native_teacher_20260919/pilot_v1/task_0`156956及相邻log，源码`git_worktrees/vlm_sft_native_1509b7a`，授权`authorization_first_three.json`，只启动第一个TRAIN70，未训练。parent source`semantic_geometry_5cfbb89`与collector source均不可热改。旧132309已退出，104调用本地归档保留。
+
 **2026-09-19 04:23当前：** 新`gate_radio_h15_r1`152337与`gate_plates_h15_r1`152335/GPU3已初始化提交，源`git_worktrees/semantic_geometry_5cfbb89`/digest239cb591，独立API复审通过；原H15失败目录保留。新model/fullstart/collector未启动，GPU1旧132309仍104空闲。下方“未启动”按时间保留为历史。
 
 **2026-09-19 04:22当前：** H15两门149129/149131已reset后标定失败并退出，0控制；完整本地`h15_failed_gate_bundle`两failure SHA一致。API修正新源`git_worktrees/semantic_geometry_5cfbb89`仅331 CPU通过，独立审查待，`gate_radio_h15_r1`/`gate_plates_h15_r1`未启动。`h13_server_archive/server_h13`104调用及身份已完整下载/SHA核验；132309/GPU1/8922尚未停止，GPU3空。下方“初始化中”仅历史，禁止按旧PID复跑。
