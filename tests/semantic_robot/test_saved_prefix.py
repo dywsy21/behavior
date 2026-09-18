@@ -61,7 +61,9 @@ class SavedPrefixTests(unittest.TestCase):
         def make_unloaded(m,r,g,s):
             m["args"]["prefix"]=0
             for row in r:
-                if "action23" in row:row["action23"][22]=1
+                # Actual reset-derived OPEN latch is slightly below +1; keep
+                # that exact source command instead of changing the replay.
+                if "action23" in row:row["action23"][14]=.9999653100967407;row["action23"][22]=.9999596476554871
                 elif row["action"]["move"]=="close":row["action"]["move"]="up"
             s["gripper"]=[.05,.05]
         path=self.make(root,make_unloaded)

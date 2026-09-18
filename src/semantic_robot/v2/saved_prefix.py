@@ -49,7 +49,7 @@ def load_saved_prefix(path,*,task,prefix,window_sha,robot_sha):
                 plan[index].kind!="pick" or plan[index].hand not in ("left","right") or
                 h.get("stage")!="APPROACH" or h.get("stop_reason") is not None or
                 h.get("carry_constraints") is not False or np.any(g<.0495) or
-                not np.array_equal(actions[-1,[14,22]],[1,1])):
+                np.any(actions[-1,[14,22]]<.999) or np.any(actions[-1,[14,22]]>1)):
             raise ValueError("Only original-source unloaded single-hand APPROACH may be replayed")
         for field in ("unverified_close_latches","holding_verified_by_observation_and_proprio","possible_contact_after_any_close"):
             values=h.get(field,{})
