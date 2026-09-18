@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 06:55（北京时间）身份最小修复父审通过/P2单次参考段登记（Codex）：** 固定26e476e完整增量/4组负例独立审，64/.231s通过；父直接读安装behavior_task与scene.get_task_metadata确认调用和对象身份语义，核真实cache映射/scene与TRO SHA。批准Astra在H17独立review结束后部署新不可变26e、远端64及source/gates CPU门过，再GPU1唯一`h09u_reference_task1_v2`：同[1,310,192]/原准备SHA、1reset/465含hold/900s/80MiB/原root累计384MiB/余80GiB，0模型训练；授权必须固定26e新SHA，旧P1失败保留不覆盖。改变仅精确绑定，不改动作/时钟/成功阈值；失败停不自动retry。此为新因果修复后的有限实验，不追认原P1成功；task0/教师/SFT仍待真实seed与父人工审。
+
+**2026-09-19 06:52（北京时间）H09U身份修复父审登记（Codex）：** Astra固定`26e476e`已生成，父下一≤600s独立读最小身份解析/负例与真实TRAIN192 cache、64 SFT回归；候选尚未放行物理。实际证据已确认scope以BDDL key `ashcan.n.01_1`绑定原生`trash_can_116`，不是原生名作key；要求精确name、单一绑定、metadata/scene registry对象同一，未绑定/歧义/跨角色同物失败关闭。Astra随后按已登记票独立审父4b56b03，交叉审不改对方模块。
+
 **2026-09-19 06:50（北京时间）H17远端CPU与资源核验完成（Codex）：** 新不可变`semantic_body_4b56b03`354/18.007s过，digest `a4ecacc0e8773d78790f50a13300647ccc03d28ad82db9e3a5474e6af3f2d499`；旧模型156556/8923真实170/215、固定revision/schema均不变，够本次最多43调用。旧root7,406,026,563B仍≤7GiB，原盘余86,987,673,600B、新NVMe余2,937,980,526,592B；新物理目录未创建/reset0，待Astra独立终审。H09U-P1作者核17文件6,585,894B全SHA/164×23前缀精确＋1finalhold=165，故障前66.704s，父已看before头/右腕，桶在地面、双爪未持物；身份修复原600s票进行中，不将该失败当抓取效果。
 
 **2026-09-19 06:49（北京时间）H17稳定交审/远端CPU登记（Codex）：** `4b56b03`已push，下一≤300s仅Git创建新不可变`semantic_body_4b56b03`、远端354回归/digest与模型剩余调用/两盘余量核验，0reset/新模型/训练。Astra原身份修复票完成后独立≤600s审此固定commit，父同期审其SFT修复；不热改旧模型或9b/P1源。独立通过前不启动H17物理。
