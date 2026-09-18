@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 06:06当前：** 新不可变`git_worktrees/semantic_reorientation_2c546d2`341远端CPU/真实source绑定通过，独立复审通过。父root下`gate_radio_h16`172069、`gate_plates_h16`172070/GPU3初始化中，日志同名`.log`，不得热改该源；模型156556/8923仍5cf/148calls空闲。H16局部保存前缀回合未启。Astra H09U只CPU修种子/因果与回放入口，GPU1空，无新SFT采集或训练。
+
 **2026-09-19 05:53当前：** `git_worktrees/semantic_reorientation_1c7ddee`干净不可变、339 CPU与H15原1392前缀SHA/新SEARCH校验通过（digest c654f420…dedd229），仅待独立审，无H16模拟器进程。旧0e源码保留，其来源校验拒绝发生在reset前。GPU3模型156556/8923仍旧5cf源/148calls空闲，GPU1仍空给Astra H09T；新物理尚未放行。H15完整本地`h15_fullstart_bundle/radio_h15_fullstart`540主RGB-D hash/全视频/主SHA通过，旁边partial_scp是中断复制保留的部分副本，不是唯一结果。
 
 **2026-09-19 05:23当前：** H15策略158357与task1采集163349均已退出；GPU1空闲，GPU3仅模型156556/8923空闲148调用。`radio_h15_fullstart`官方false/90决策/1914控制、完整1,073,873,438B正传本地`artifacts/agentic-vlm-goal-20260918/h15_fullstart_bundle`；服务器父root6,570,536,733B、磁盘余87,953,440,768B，仍须守7GiB/余80GiB。task1 `pilot_v2/task_1`最终164prefix/91native含finally hold，两完整接近标签，第三后验写前超量失败；全SFT root85,022,736B，task3未启动。源码/失败不删不热改。
