@@ -14,6 +14,8 @@
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
 
+**21:17 B20唯一匹配回合已运行（Codex）：** 两门66709/66710已退出；同9f5957b GPU3模型70673/8909/≤151就绪，唯一`radio_b20_matched`71052恢复448＋362前缀，64/2048/1800s预算，尚无策略结果。源码`semantic_inspection_budget_9f5957b`不可热改，模型/策略不重复提交。B19完整人工核验的轻量摘要存`experiments/results/2026-09-18-semantic-agent-b19.json`，新物理结果待。
+
 **21:14 B20双门通过/新鲜初图本人已看（Codex）：** 同9f5957b/8d4e2cec，radio385控制/93.249s、plates396/115.327s，gate_ok均true，result SHA `011c38c5dc4d1d4c52e924da0500b9b5e41dd14552a73b73ec7a2c5e721904d3` / `ac94b1389446d7ab852492b2df501dbb23b3ea2c803137cdc66ad9a2521ad164`。本人看`b20_gate_previews`初图、场景/相机正确，准备确认门退出后同源GPU3新模型8909/≤151，再唯一原匹配；尚不称策略有效。
 
 **21:14 B19完整证据核验通过（Codex本人）：** 本地`b19_verified_bundle`归档SHA149ba578…一致；174 RGB-D hash零差异，完整rollout ffmpeg解码通过，本人看5页/9时刻三视图：28个已执行动作独立事后审计全部仍持radio_89、无open/detach，d3注册验证与计划切换真实发生；后续主要平移、按钮未见，官方false未改。静态B20 result SHA `c63da5f114f14de14138de94335d78e80fe304982ed7f9575a491a05f3c8ed3a`，服务＋静态另归档SHA `23658ad4c3e0da06503f3e7f7f9920a708c21b091603365880c4e42926a7763b`已传本地，旧服务退出；B20双门正在执行控制，未提前报pass。
