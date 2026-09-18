@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 22:02当前：** H09所有训练/两门/四策略/专属模型已完成退出，GPU1/8918释放；H08 GPU3/8909亦无本轮进程，不重复启动。H09根`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_showharness_20260918`：`data_v4`为实际1199/193/192数据；`train_v1/adapter_0600`为最终实验adapter（SHA `b5a125ed14dc06c82a7ae7fd288d8c7202d90e2210cc1d1c2f7195f3daac15e1`）；`eval_test_v1`静态，`radio_base_v1`/`radio_ft_v1`/`plates_ft_v1`/`plates_base_v1`四物理，`server_v1`调用证据。实际训练源140c47d、实际评测源975852a，后续035af65交接/父集成不替换这些历史身份。四视频及轻量回执副本已SHA核验到本仓`artifacts/vlm-sft-showharness-20260918/`；完整原始本地审阅材料仍在`/home/wsy/behavior_worktrees/vlm-sft-20260918/artifacts/`，含标明的partial校准下载，不当完整校准使用。H09根约2.8GiB、全盘余89GiB；不清理唯一证据，不将adapter当已改善策略。
+
 **2026-09-18 21:56当前：** H08 B20模拟器71052/模型70673已确认退出，GPU3释放；`semantic_agent_effect_20260918/b20_complete.tar.gz`已完整下载并SHA验证，本地`artifacts/semantic-agent-effect-20260918/b20_verified_bundle/`包含策略/双门/服务及日志。策略视频214帧全解码、126 RGB-D hash和全部20后动作附着审计通过，人工4页面板完成；官方false。H09四配对已结束，专属74735/8918服务由Astra停止/核验，最终模型与结果位置以随后交接为准；不根据下文历史重新启动。
 
 **2026-09-18 21:28当前：** B20策略71052已结束，官方false/429控制；70673核身份停止中，H08根`b20_complete.tar.gz`准备归档，源9f5957b保留。GPU3不再追加新回合；B20终态不要误作仍运行或任务成功。H09 GPU1独立微调后四短闭环继续，以owner记录为准，不动其服务。

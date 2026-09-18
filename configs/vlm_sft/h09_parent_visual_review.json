@@ -1,0 +1,28 @@
+{
+  "reviewer": "Codex parent, direct visual inspection",
+  "review_completed_at": "2026-09-18T22:02:00+08:00",
+  "timing": "Supplemental post-training independent review, not a new pre-training gate",
+  "source_review": "configs/vlm_sft/h09_data_v4_review.json",
+  "panels_directory": "/home/wsy/behavior_worktrees/vlm-sft-20260918/artifacts/h09_review/review",
+  "data_image_manifest_sha256": "aa2ca08f17f255f4738cc148dd5807b91f6b0306962f36e2817a2a077d772565",
+  "selection_indices": [0, 3, 6, 7, 12, 13, 15, 19, 23, 24, 26, 29, 30, 32],
+  "reviewed_ids": ["t0_e14_f32", "t0_e186_f400", "t0_e12_f1472", "t0_e133_f1952", "t1_e372_f368", "t1_e218_f96", "t1_e270_f2960", "t1_e270_f1232", "t3_e787_f10256", "t3_e773_f6640", "t3_e773_f16", "t3_e742_f13424", "t3_e618_f2560", "t3_e618_f12624"],
+  "views_per_case": 6,
+  "finding": "No obvious mismatched images, object context or visible action-direction contradiction in reviewed cases. This does not establish sufficient action/intent coverage or manipulation competence.",
+  "specific_notes": {
+    "t1_e270_f2960": "Left close near orange can; other hand at bin. Command is not proof of grasp.",
+    "t1_e270_f1232": "Right close at bin edge; no successful attachment inferred.",
+    "t3_e773_f16": "Both arms unfold at skill entry; not proof of visual reaching to fridge.",
+    "t3_e742_f13424": "Left opens above sink with bowl visible; no placement-success label inferred.",
+    "t3_e618_f2560": "Small right-hand lateral motion near plate; metric direction uses independent robot FK, not quantitative image measurement.",
+    "t3_e618_f12624": "Right close near table bowl while left holds another; no grasp outcome certified."
+  },
+  "limitations": ["Old selection headers/text are not the final v4 inference prompt; only SHA-verified identical images and retained targets are inherited", "Small millimetre movements are not quantitatively certified from 256-pixel panels", "Only train/validation panels inspected, not heldout test images", "No training, checkpoint selection or new physical/model calls performed for this review"],
+  "physical_video_supplement": {
+    "radio_ft_v1": {"direct_video_frame_indices": [0, 479], "finding": "Starts near radio, ends facing away; consistent with recorded negative yaw and no grasp"},
+    "plates_ft_v1": {"direct_video_frame_indices": [0, 215], "finding": "Approaches microwave/kitchen counter, not breakfast table"},
+    "local_delivery_root": "/home/wsy/behavior/artifacts/vlm-sft-showharness-20260918",
+    "four_videos_and_four_receipts_sha_verified": true,
+    "owner_full_decode_and_18_frame_review": "configs/vlm_sft/h09_final_result.json"
+  }
+}

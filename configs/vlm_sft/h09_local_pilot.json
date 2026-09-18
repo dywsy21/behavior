@@ -1,0 +1,26 @@
+{
+  "experiment": "H09-S1-fixed-local-skill-paired-closed-loop",
+  "owner": "Astra-max-vlm-sft-showharness",
+  "hypothesis": "The audited learned base/arm/gripper direction interface improves local behavior over the same base model under identical input and execution constraints.",
+  "physical_gpu": 1,
+  "port": 8918,
+  "inherited_executor_commit": "6da8c80fb94e748c479ddd558290c6315f6e163d",
+  "policy_protocol": "h09-semantic-motion-v4-no-torso",
+  "new_runner": "scripts/vlm_sft/run_local.py",
+  "engineering_gates": {"runs": 2, "tasks": [0, 3], "commands_per_run": 20, "max_new_controls_per_run": 768, "max_seconds_after_prefix_per_run": 1200, "model_calls": 0, "reason": "New shared VLM-to-servo bridge must pass both robot/sensor/control starts before physical model evaluation"},
+  "paired_runs": [
+    {"task": 0, "instance": 138, "variant": "base", "expert_prefix_controls": 448},
+    {"task": 0, "instance": 138, "variant": "finetuned", "expert_prefix_controls": 448},
+    {"task": 3, "instance": 242, "variant": "finetuned", "expert_prefix_controls": 0},
+    {"task": 3, "instance": 242, "variant": "base", "expert_prefix_controls": 0}
+  ],
+  "environment_seed": 0,
+  "policy_seed": 41,
+  "max_decisions_per_policy_run": 40,
+  "max_new_controls_per_policy_run": 1280,
+  "max_seconds_after_prefix_per_policy_run": 1200,
+  "max_total_policy_model_calls": 160,
+  "stop_conditions": ["time/control/decision/disk budget", "tracking/sensor/FK failure", "three consecutive action rejections", "official episode termination", "HTTP model/codec identity mismatch"],
+  "metrics": ["actual decision/control counts and accepted/rejected motion categories", "observed robot motion and command gripper state", "separately stored privileged post-action attachment diagnostics never available to actor", "official success and goal predicates only in final audit", "per-action model latency", "direct video/image inspection"],
+  "limitations": ["Fixed GRASP radio and NAVIGATE breakfast table instructions are legal task-language subgoals, not a dynamic full-task planner", "Known development starts, excluded from SFT instances; not blind test or population task SR", "No torso candidates; no action magnitude matching claim", "SafeServo checks robot-only kinematics/self-collision; LocalDepthGuard vetoes base motion only and does not certify environment/held-object collision safety", "CLOSE latches forbid later OPEN in the same fixed skill, including unverified loads; latches do not assert attachment", "Engineering gates are additional explicitly bounded implementation validation, not task trials or model training"]
+}

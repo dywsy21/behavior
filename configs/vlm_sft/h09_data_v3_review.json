@@ -1,0 +1,26 @@
+{
+  "approved": true,
+  "scope": "Small SFT experiment only; not full manipulation coverage or task success certification",
+  "reviewer": "Astra/max direct visual inspection; not an external human annotator",
+  "reviewed_at": "2026-09-18T20:39:00+08:00",
+  "data": "/mnt/sdc1/robodojo/behavior_dev/vlm_sft_showharness_20260918/data_v3",
+  "image_manifest_sha256": "0973d88818a5295766249c07f77ca223812a9f77cb23088f0f98666ec689ce41",
+  "protocol": "h09-semantic-motion-v3",
+  "source_commit": "58df5ab0d4385b5e0c20d18ee30efaf15a352038",
+  "review_panels": "/mnt/sdc1/robodojo/behavior_dev/vlm_sft_showharness_20260918/data_v2/review",
+  "review_archive_sha256": "ac188e08feb852aa692019f46c2a34e43a7d3c4d1a9666921211b655d6151412",
+  "reviewed_ids": ["t0_e14_f32", "t0_e186_f400", "t0_e12_f1472", "t0_e133_f1952", "t0_e152_f928", "t0_e9_f1024", "t1_e372_f368", "t1_e218_f96", "t1_e270_f2960", "t1_e270_f1232", "t1_e242_f4048", "t1_e218_f7632", "t3_e787_f10256", "t3_e773_f6640", "t3_e773_f16", "t3_e742_f13424", "t3_e618_f2560", "t3_e618_f12624", "t3_e635_f9280", "t3_e676_f8096", "t3_e742_f5664"],
+  "all_reviewed_ids_retained_in_v3": true,
+  "checks": ["Current and +16 frame head/left/right views inspected for 21 stratified samples", "Three tasks and base, torso, bilateral, single-arm and gripper labels represented", "Active semantic skill matches visible object context", "Gripper opening/closing labels are commands only, not successful grasp/place outcomes", "Independent robot-only FK and 30 Hz source clock gate passed", "v3 images reused only after SHA checks; no training on unreviewed v1/v2", "Original per-task five-percent holdout and whole source instances excluded; public_test excluded"],
+  "case_notes": {
+    "t0_e133_f1952": "Radio at coffee table, right gripper visibly opens; no placement-success inference",
+    "t1_e270_f2960": "Left gripper closes around orange soda can while right arm holds bin; matching GRASP can instruction",
+    "t1_e270_f1232": "Right gripper closes at bin rim; command not certified attachment",
+    "t1_e218_f7632": "Torso-up within PLACE bin segment appears posture/retreat-like; no completed-skill label inferred",
+    "t3_e773_f16": "BOTH_FORWARD is initial arm unfolding during NAVIGATE; rare preparation action, not a visually grounded reach",
+    "t3_e742_f13424": "Left bowl over sink with fingers opening; matching PLACE instruction, no outcome label",
+    "t3_e618_f12624": "Right gripper closes around bowl at table; left hand holds other bowl",
+    "t3_e676_f8096": "Torso up while holding plate/pizza at fridge shelf; corresponding PLACE context"
+  },
+  "limitations": ["Millimetre-level translations cannot be quantified from 256px image pairs alone; numerical path/FK checks remain necessary", "Training coverage is dominated by base and torso; rare arm/rotation classes and unrepresented classes are reported separately", "No FAILED/SUCCEEDED labels were fabricated; mixed, stationary, boundary and unknown motion windows are rejected", "Labels encode direction over 0.533 seconds, not exact deployment microstep amplitude", "Test set remains unviewed and is for one final paired comparison; validation pictures are development data"]
+}
