@@ -11,6 +11,27 @@ from contact_replay_contract import load_contract
 
 
 class ContactReplayTests(unittest.TestCase):
+    def test_native_teardown_failure_preserves_original_without_repeated_hold(self):
+        from replay_contact_audit import preserved_session
+        original = RuntimeError("original simulation failure")
+        first = [None]
+        calls = []
+        def record(exc):
+            first[0] = first[0] or exc
+        class Session:
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                raise OSError("native teardown failed")
+        try:
+            with preserved_session(Session, record, lambda: first[0]):
+                record(original)
+                calls.append("hold and cleanup attempted")
+                raise original
+        except BaseException as caught:
+            self.assertIs(caught, original)
+        self.assertEqual(len(calls), 1)
+
     def test_column_only_support_and_visual_only_link_coverage(self):
         from replay_contact_audit import audit_pairs
         api = Mock()

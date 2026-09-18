@@ -4,6 +4,7 @@ No actor, planner, new target or recovery exists here. This is not a success-rat
 trial. Matching proprio is necessary, not proof that scene dynamics match H13.
 """
 import argparse
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -47,6 +48,16 @@ def audit_pairs(api, scene_idx, queried, registered_rows, required_links, regist
     columns = required_links & registered_cols
     reverse = api.get_contact_pairs(scene_idx, registered_rows, columns, current_only) if columns else set()
     return sorted({tuple(sorted(pair)) for pair in forward | reverse})
+
+
+@contextmanager
+def preserved_session(factory, record_error, primary_error):
+    try:
+        with factory() as session:
+            yield session
+    except BaseException as exc:
+        record_error(exc)
+        raise primary_error()
 
 
 def main():
@@ -100,7 +111,7 @@ def main():
 
     # Persist completion/failure BEFORE native session teardown, which can quit
     # the interpreter. Cleanup never hides an earlier diagnostic exception.
-    with OfficialEvaluatorSession(window, gpu=a.gpu) as session:
+    with preserved_session(lambda: OfficialEvaluatorSession(window, gpu=a.gpu), record_error, lambda: first_error) as session:
         import omnigibson as og
         from omnigibson.utils.usd_utils import RigidContactAPI
         reset_completed = False
