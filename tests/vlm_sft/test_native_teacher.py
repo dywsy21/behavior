@@ -172,6 +172,7 @@ class NativeTeacherTests(unittest.TestCase):
             _,_,_,_,receipt=capture_snapshot(folder,model,lambda:state,onboard,lambda:geometry,lambda:None,
                                              {"prefix_control":2,"native_control":12},Path(tmp))
             self.assertEqual(receipt["q"],state.q.tolist())
+            self.assertEqual(receipt["kinematic_model_sha256"],model.sha)
             self.assertEqual(receipt["clock"]["native_control"],12)
             for file,expected in receipt["files_sha256"].items():self.assertEqual(sha(folder/file),expected)
             with np.load(folder/"depth.npz") as saved:

@@ -108,6 +108,7 @@ def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, cl
     write_json(folder/"sensors.json", receipts)
     write_json(folder/"proprio.json", runtime_proprio(after))
     evidence = {"clock": clock, "q": after.q.tolist(), "gripper": after.gripper.tolist(),
+                "kinematic_model_sha256": model.sha,
                 "source": "render_only_current_onboard_RGBD_and_robot_joint_FK", "scene_truth": False,
                 "files_sha256": {name: sha(folder/name) for name in
                     ["depth.npz", "robot_self_geometry.json", "sensors.json", "proprio.json",
@@ -263,7 +264,9 @@ def main():
                     _, stable_hashes, _, _, _ = capture(folder/"after_settle")
                 record = {"request": request, "approval": approval,
                           "execution": {"token": token, "action": asdict(action), "status": feedback["status"],
-                                        "native_controls": controls-start_control, "interrupted": feedback["status"] != "TARGET_REACHED",
+                                        "native_controls": len(native_actions),
+                                        "post_action_settle_controls": controls-start_control-len(native_actions),
+                                        "interrupted": feedback["status"] != "TARGET_REACHED",
                                         "native_trace_sha256": sha(folder/"native_execution.json")},
                           "feedback": feedback, "post_observation_sha256": digest({"immediate": post_hashes, "settled": stable_hashes}),
                           "settle_passed": stable_hashes is not None,

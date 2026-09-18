@@ -16,6 +16,8 @@
 
 新增负例：旧/false-flag 工程门、错误 digest、窗口/参考/前缀字节漂移、同形状错前缀、错任务、畸形当前几何及捕获中 q 漂移；正例验证真实安全/保载传播、深度回读/hash。33 项 SFT CPU 测试通过；首版29项为历史。父已看3任务×3视角×0/8/16帧共27源帧，仅确认原专家参考可审，不是对尚未发生的停顿态批准。
 
+04:23 真实 CPU 收尾：合入 `5cfbb89` 后完整331 semantic/5.153s及33 SFT/.063s通过；固定手 API 单独6项/.016s通过。`6c9034f` 的来源验证代码经 Git blobs 在远端 CPU 执行，0.2445s 完成原3个准备目录清单/窗口/前缀/参考核验与真实 factory 的全部4807控制数值比较，均通过且未导入 omnigibson，0 reset/控制。最后留证补充模型 calibration digest，并将单个 primitive 的实际控制条数与后置12步 settle 分开记录，不改变执行。执行器 digest 保持239cb591…；旧准备数据完全未改。所有新增代码/报告仅在作者 worktree，父共享计划由父同步。新物理/正标签/训练仍为0。
+
 使用 `configs/vlm_sft/h09s_authorization.template.json` 填真实最终 collector commit、**新通过**工程门绝对路径和 reviewer，再由负责人显式授权；模板默认 false，不能直接启动。父 API 修复执行器 `5cfbb89` 预期 digest 为 `239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b`。最终 review、新同源双门和 GPU1 交接前不运行。拟议命令如下（没有执行；task_0、task_1、task_3 分别显式运行，逐个完成审核，无自动批量循环）：
 
 ```bash
