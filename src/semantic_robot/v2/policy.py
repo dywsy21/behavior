@@ -122,6 +122,7 @@ Check the target's distinguishing visual identity BEFORE setting visible=true. A
 
 
 GROUNDED_OBSERVE_SYSTEM = grounded_observation_system()
+GROUNDED_OBSERVE_SYSTEM += " When supplied, yellow strips and their connecting polygon show the ROBOT'S current open-finger contact region, not the target. Check whether an actual graspable part crosses that region in the raw view; a center cross below an object is not enclosure. For pick select an identifiable graspable part, such as a handle or suitably narrow rim, rather than reflexively clicking the whole object's center. A broad body need not fit the fingers. The guide is only geometry; perspective overlap is not a grasp certificate."
 
 
 def bimanual_observation_system():
@@ -162,6 +163,7 @@ class GroundedPolicy(VLMPolicy):
         text=actor_context(harness,state,bundle,allowed)
         text+="\nChoose one feasible command below; indices bind the scores, output ONLY its JSON:\n"+"\n".join(f"{index}: {a.text()}" for index,a in enumerate(allowed))
         system=ACTION_SYSTEM+" Prefer measurable progress toward the grounded contact region; review predicted distance gains and failed paths. For navigation, follow the navigation receipt: face the visible destination before approaching it; hand-to-surface distance is NOT a navigation completion test. The 2mm option remains available near limits. Do not repeatedly HOLD with good depth and a safe improving action. Grasp orientation/contact quality still require the raw views; a surface point is not a full grasp pose."
+        system += " For tool-frame TRANSLATIONS, forward/back are +/- local X, left/right +/- local Y, up/down +/- local Z (axis labels, not camera directions); use target_minus_center_tool_m to choose signs. Robot-only yellow contact strips and their polygon show the calibrated finger region at the current open aperture, not a target detection. An object close to the center but outside this region still needs alignment. If the region is visibly empty/below the target, align before CLOSE even when an exploratory close is offered; do not infer enclosure from the 4cm attempt bound. Choose a graspable narrow part, and change pose/approach if advancing only displaces the object."
         if harness.grasp_probe.get("eligible"):
             system += " A bounded active grasp probe is currently offered: CLOSE attempts a grasp but proves nothing. When the target is already near the open fingers and further advances keep pushing it, prefer a close attempt over continued pushing. You need not claim enclosure or holding before attempting; current enclosure is UNKNOWN, not verified true. Subsequent lift and independent evidence decide the outcome. You may still HOLD if the raw views contradict a safe attempt."
         result,payload=self._call("act",system,text,bundle,allowed)

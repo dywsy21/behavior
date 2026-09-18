@@ -34,8 +34,8 @@ class CalibratedRobot(OGKinematics):
                 "faces":np.concatenate(faces).tolist(),"source":"robot_base_visual_mesh_only","scene_truth":False,
                 "frame":"declared_base_link_local","not_environment_mesh":True}
 
-    def native_grasp_centers(self):
-        """Centre of robot-defined finger contact regions, with actual finger q.
+    def native_grasp_regions(self):
+        """Robot-defined finger contact strips, with actual finger q.
 
         Only robot asset points and robot-relative link transforms are read.
         No raycast, assisted-grasp status, object state or world pose is used.
@@ -52,9 +52,13 @@ class CalibratedRobot(OGKinematics):
                     points.append((transform(p,q) @ np.r_[array(entry.position),1.])[:3])
                 if not points:
                     raise ValueError("Robot grasp-region definition missing")
-                sides.append(np.mean(points,axis=0))
-            result[arm] = np.mean(sides,axis=0)
+                sides.append(np.asarray(points))
+            result[arm] = sides
         return result
+
+    def native_grasp_centers(self):
+        return {arm:np.mean([side.mean(axis=0) for side in sides],axis=0)
+                for arm,sides in self.native_grasp_regions().items()}
 
     def local_com(self, name):
         if not hasattr(self, "_local_com"):
@@ -137,6 +141,15 @@ class CalibratedRobot(OGKinematics):
                 for arm,point in native_centers.items()}
             metadata["grasp_center_source"] = "equal_side_average_of_robot_finger_region_asset_points"
             metadata["grasp_center_invariance_requires_open_close_gate"] = True
+            metadata["grasp_region_reference_gripper_m"]=state.gripper.tolist()
+            all_q=array(self.robot.get_joint_positions());all_upper=array(self.robot.joint_upper_limits)
+            metadata["grasp_region_reference_fully_open"]={arm:bool(all(
+                abs(all_q[joint_names.index(name)]-all_upper[joint_names.index(name)])<.0001
+                for name in self.robot.finger_joint_names[arm])) for arm in ("left","right")}
+            metadata["grasp_regions_eef"]={arm:[
+                (np.c_[side,np.ones(len(side))] @ np.linalg.inv(transform(*state.poses[arm])).T)[:,:3].tolist()
+                for side in sides] for arm,sides in self.native_grasp_regions().items()}
+            metadata["grasp_region_source"]="robot_finger_contact_definitions_not_object_grasp_prediction"
         return RobotModel.from_reference(state.q, state.lower, state.upper, poses, jacobians, metadata)
 
     def compare(self, model):
@@ -160,4 +173,11 @@ class CalibratedRobot(OGKinematics):
             for arm, actual in self.native_grasp_centers().items():
                 result["grasp_center_"+arm] = {"position_m":float(np.linalg.norm(actual-centers[arm])),
                                              "angle_rad":0.}
+        if "grasp_regions_eef" in model.spec["metadata"]:
+            actual=self.native_grasp_regions()
+            for arm,row in model.grasp_regions(state.q,state.gripper).items():
+                if row["valid"]:
+                    error=max(float(np.linalg.norm(np.asarray(pred)-real,axis=1).max())
+                              for pred,real in zip(row["sides_base_m"],actual[arm]))
+                    result["grasp_region_"+arm]={"position_m":error,"angle_rad":0.}
         return result

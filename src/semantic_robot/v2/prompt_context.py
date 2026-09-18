@@ -25,7 +25,7 @@ def readable(value):
 def contact_summary(value):
     result = selected(value, ("valid", "reason", "point_base_m", "surface_point_not_object_pose",
         "distance_to_active_closing_center_m", "mean_contact_distance_m", "per_hand_distance_m",
-        "target_minus_center_base_m", "point_is_display_midpoint_not_grasp_target", "navigation_workspace_check"))
+        "target_minus_center_base_m", "target_minus_center_tool_m", "point_is_display_midpoint_not_grasp_target", "navigation_workspace_check"))
     result["views"] = [selected(row, ("view", "target_uv", "valid", "reason", "depth_m", "spread_m"))
                        for row in value.get("views", [])]
     result["projected_checks_not_identity_proof"] = [selected(row, ("view", "status"))
@@ -70,7 +70,7 @@ def actor_context(harness, state, bundle, allowed=()):
             ("visible_depth_points", "nonrobot_obstacle_points", "unseen_space_not_certified")),
         "geometric_gain_is_not_grasp_success": True}
     guides = {view: {hand: selected(row, ("eef_uv", "grasp_center_uv", "grasp_center_in_frame",
-                    "base_axis_pixel_deltas_for_1cm")) for hand, row in hands.items()}
+                    "base_axis_pixel_deltas_for_1cm", "finger_contact_region")) for hand, row in hands.items()}
               for view, hands in bundle.geometry.items()}
     value = {"harness": scope, "current_visual_evidence": None if harness.observation is None else asdict(harness.observation),
         "robot": {"finger_mean_mm_not_total_gap": (state.gripper * 1000).tolist(),

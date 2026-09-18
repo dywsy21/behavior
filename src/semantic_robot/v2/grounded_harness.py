@@ -93,6 +93,11 @@ class GroundedHarness(TaskHarness):
         if (not self.stop_reason and self.stage=="ALIGN" and self.goal.kind=="pick"
                 and self.grasp_probe.get("eligible")):
             palette += (Action(self.goal.hand,"close"),)
+        if (not self.stop_reason and self.goal.kind=="pick" and self.goal.hand in ("left","right")
+                and self.stage in ("APPROACH","ALIGN") and not any(self.pending_grasp.values())
+                and not any(self.hold_verified.values())):
+            scales=("micro","fine","coarse") if self.stage=="APPROACH" else ("micro","fine")
+            palette += tuple(Action(self.goal.hand,move,scale,"tool") for move in TRANSLATIONS for scale in scales)
         if (not self.stop_reason and self.goal.kind == "pick" and self.goal.hand == "both"
                 and self.stage in ("APPROACH", "ALIGN") and not any(self.hold_verified.values())
                 and not any(self.pending_grasp.values())):
@@ -255,6 +260,7 @@ class GroundedController:
             self.target["mean_contact_distance_m"]=float(np.mean(list(distances.values())))
             self.target["per_hand_distance_m"]=distances
             self.target["target_minus_center_base_m"]={a:(points[a]-self.centers[a]).round(4).tolist() for a in manager.arms}
+            self.target["target_minus_center_tool_m"]={a:(self.model.forward(state.q,a)[:3,:3].T@(points[a]-self.centers[a])).round(4).tolist() for a in manager.arms}
         co_motion=True
         for arm in manager.arms:
             previous=self.previous
@@ -340,6 +346,8 @@ class GroundedController:
         vector = np.asarray(TRANSLATIONS[action.move], dtype=float)
         if action.frame == "base":
             return vector
+        if action.frame == "tool" and action.part in ("left","right"):
+            return self.model.forward(state.q,action.part)[:3,:3] @ vector
         if action.frame in VIEWS:
             # Exactly SafeServo's camera frame: forward into image, left/up in
             # image coordinates. This estimate never replaces its real IK test.

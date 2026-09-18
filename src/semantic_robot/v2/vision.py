@@ -33,11 +33,12 @@ class VisualBundle:
     current_raw: dict
 
 
-def prepare_views(images, model, q, previous=None, grounded=False):
+def prepare_views(images, model, q, previous=None, grounded=False, gripper=None):
     metadata = model.spec["metadata"]["cameras"]
     result, labels, geometry, raw = [], [], {}, {}
     poses = model.poses(q)
     centers = model.grasp_centers(q) if grounded else {}
+    regions = model.grasp_regions(q,gripper) if grounded else {}
     for view, camera in metadata.items():
         original = rgb_image(images[view+"_rgb"])
         if original.size != (camera["width"], camera["height"]):
@@ -68,6 +69,26 @@ def prepare_views(images, model, q, previous=None, grounded=False):
                             draw.text(tuple(tip), axis, fill=color)
             entries[arm] = record
             if grounded:
+                region=regions[arm]
+                record["finger_contact_region"]={"valid":region["valid"],"reason":region["reason"],
+                    "robot_geometry_not_target_or_enclosure":True}
+                if region["valid"]:
+                    strips=[]
+                    for side in region["sides_base_m"]:
+                        strip=[project(point,T,K) for point in side]
+                        strips.append(strip)
+                    record["finger_contact_region"]["sides_uv"]=[[
+                        None if point is None else (point/np.asarray(original.size)).tolist() for point in side] for side in strips]
+                    points=[point for side in strips for point in side]
+                    # Do not clamp offscreen geometry into fake finger locations.
+                    if all(point is not None and np.all(point>=0) and np.all(point<original.size) for point in points):
+                        color="cyan" if arm=="left" else "magenta"
+                        pts=np.asarray(points);middle=pts.mean(axis=0)
+                        order=np.argsort(np.arctan2(pts[:,1]-middle[1],pts[:,0]-middle[0]))
+                        outline=[tuple(pts[j]) for j in order]
+                        draw.line(outline+[outline[0]],fill=color,width=2)
+                        for side in strips:draw.line([tuple(point) for point in side],fill="yellow",width=3)
+                        draw.text((middle[0]+8,middle[1]+8),arm+" FINGER REGION (robot only)",fill=color)
                 center_uv = project(centers[arm],T,K)
                 record["grasp_center_uv"] = None if center_uv is None else (center_uv/np.array(original.size)).tolist()
                 record["grasp_center_source"] = model.spec["metadata"].get("grasp_center_source","EEF_FALLBACK_NOT_FINGERTIP")

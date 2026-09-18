@@ -138,6 +138,33 @@ class RobotModel:
             poses[name] = (T[:3, 3], Rotation.from_matrix(T[:3, :3]).as_quat())
         return RobotState(q, self.lower, self.upper, poses, jac, gripper, base_velocity)
 
+    def grasp_regions(self, q, gripper):
+        """Reference-opening finger regions only; changed aperture ABSTAINS.
+
+        The portable model excludes individual finger DOFs. Never draw a stale
+        open-jaw region over a closed or asymmetrically loaded hand.
+        """
+        meta=self.spec.get("metadata",{})
+        regions=meta.get("grasp_regions_eef",{})
+        reference=meta.get("grasp_region_reference_gripper_m")
+        result={}
+        for i,arm in enumerate(("left","right")):
+            row={"valid":False,"reason":"REGION_GEOMETRY_OR_CURRENT_APERTURE_UNAVAILABLE"}
+            result[arm]=row
+            if (arm not in regions or reference is None or gripper is None or
+                    not meta.get("grasp_region_reference_fully_open",{}).get(arm,False)):continue
+            values=finite(gripper,(2,));refs=finite(reference,(2,))
+            if abs(values[i]-refs[i])>.0005:
+                row["reason"]="APERTURE_DIFFERS_FROM_CALIBRATED_REGION";continue
+            sides=[np.asarray(x,dtype=float) for x in regions[arm]]
+            if len(sides)!=2 or any(x.ndim!=2 or x.shape[1]!=3 or len(x)<2 or not np.isfinite(x).all() for x in sides):
+                raise ValueError("Two finite robot contact strips required")
+            T=self.forward(q,arm)
+            row.update(valid=True,reason="ROBOT_REFERENCE_OPENING_GEOMETRY",source=meta.get("grasp_region_source"),
+                sides_base_m=[(s@T[:3,:3].T+T[:3,3]).tolist() for s in sides],
+                not_enclosure_or_holding_evidence=True)
+        return result
+
     def finite_difference_error(self, q, eps=1e-6):
         errors = {}
         for name in ("left", "right", "torso"):

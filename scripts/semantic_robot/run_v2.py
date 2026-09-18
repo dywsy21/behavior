@@ -231,7 +231,7 @@ def main():
             previous = None
             started = time.perf_counter()
             first_images,first_depth,first_receipt=observation_now("after_prefix")
-            first = prepare_views(first_images,model,state.q,grounded=grounded)
+            first = prepare_views(first_images,model,state.q,grounded=grounded,gripper=state.gripper)
             if grounded: np.savez_compressed(out/"initial_depth.npz",**first_depth)
             for label,img in zip(first.labels,first.images): img.save(out/(label+".png"))
 
@@ -279,7 +279,7 @@ def main():
                     break
                 state = state_now()
                 images,depths,depth_receipt=observation_now(f"decision_{decision}")
-                bundle = prepare_views(images,model,state.q,previous,grounded=grounded)
+                bundle = prepare_views(images,model,state.q,previous,grounded=grounded,gripper=state.gripper)
                 directory = out/f"decision_{decision:03d}"; directory.mkdir()
                 for label,img in zip(bundle.labels,bundle.images): img.save(directory/(label+".png"))
                 write(directory/"proprio.json",{"q":state.q.tolist(),"gripper":state.gripper.tolist(),"geometry":bundle.geometry})
