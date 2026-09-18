@@ -15,7 +15,7 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/"src"),str(ROOT/"scripts/vlm_sft")]
 from native_teacher_toggle import ToggleObserver,PressCausality
 from native_teacher_reference_prepare import validate_segment
-from native_teacher_reference_contract import compare_source_state
+from native_teacher_reference_contract import check_actual_joint_bounds,source_state_diagnostic
 from native_teacher_seed import seed_identity,validate_seed_release,extract_seed
 from native_teacher_contract import digest
 from native_teacher_outcomes import LocalOutcome
@@ -136,10 +136,58 @@ class ReferenceTests(unittest.TestCase):
         args=list(self.fixture());args[-1]=[{"episode_index":66,"frame_start":2,"frame_end":2}]
         with self.assertRaises(ValueError):validate_segment(*args)
 
-    def test_real_state_clock_mismatch_stops_not_calibrates(self):
-        s=types.SimpleNamespace(q=np.zeros(18),gripper=np.zeros(2));compare_source_state(s,np.zeros(61))
-        s.q[0]=.021
-        with self.assertRaises(RuntimeError):compare_source_state(s,np.zeros(61))
+    def test_source_mismatch_is_fixed_frame_diagnostic_not_outcome_or_safety(self):
+        s=types.SimpleNamespace(q=np.zeros(18),gripper=np.zeros(2));s.q[10]=.0438795
+        d=source_state_diagnostic(s,np.zeros(61),165)
+        self.assertEqual(d['source_frame_index'],165);self.assertAlmostEqual(d['q_max_abs'],.0438795)
+        self.assertFalse(d['nearest_frame_search_used']);self.assertTrue(d['not_safety_or_outcome_gate'])
+        self.assertNotIn('outcome',d);self.assertNotIn('passed',d)
+        oracle=LocalOutcome({'verb':'GRASP','hand':'right','target':'target'})
+        self.assertEqual(oracle.update(frame())['outcome'],'IN_PROGRESS')
+        self.assertTrue(np.array_equal(s.q,np.r_[np.zeros(10),.0438795,np.zeros(7)]))
+
+    def test_actual_hard_joint_bounds_and_nonfinite_state_still_fail_closed(self):
+        model=types.SimpleNamespace(lower=np.full(18,-1.),upper=np.ones(18))
+        s=types.SimpleNamespace(q=np.zeros(18),gripper=np.zeros(2));s.q[10]=.1
+        check_actual_joint_bounds(s,model)
+        for bad in (1.0001,-1.0001,float('nan'),float('inf')):
+            s.q[10]=bad
+            with self.assertRaises((ValueError,RuntimeError)):check_actual_joint_bounds(s,model)
+        s.q[10]=0;s.gripper[0]=float('nan')
+        with self.assertRaises(ValueError):check_actual_joint_bounds(s,model)
+        with self.assertRaises(ValueError):source_state_diagnostic(s,np.zeros(61),165)
+
+    def test_diagnostic_rejects_bad_source_or_clock_and_cannot_enter_actor(self):
+        from native_teacher_contract import actor_input
+        import test_native_teacher
+        s=types.SimpleNamespace(q=np.zeros(18),gripper=np.zeros(2))
+        for source,tick in ((np.zeros(60),0),(np.full(61,np.nan),0),(np.zeros(61),-1),(np.zeros(61),True)):
+            with self.assertRaises(ValueError):source_state_diagnostic(s,source,tick)
+        request,_,_,_=test_native_teacher.NativeTeacherTests().fixture();actor=request['actor']
+        bad={**actor['proprio'],'source_state_diagnostic':source_state_diagnostic(s,np.zeros(61),165)}
+        with self.assertRaises(ValueError):actor_input(actor['task'],actor['active_instruction'],bad,actor['current_rgb_sha256'],[])
+
+    def test_actual_runner_measurement_logs_error_but_retains_clock_and_contact_stops(self):
+        tree=ast.parse((ROOT/'scripts/vlm_sft/native_teacher_reference_replay.py').read_text())
+        fn=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='measure')
+        code=compile(ast.fix_missing_locations(ast.Module(body=[fn],type_ignores=[])),'actual_reference_measure','exec')
+        s=types.SimpleNamespace(q=np.zeros(18),gripper=np.full(2,.05));s.q[10]=.0438795
+        f=frame(165);sink=[];rows=[]
+        spec={'verb':'GRASP','hand':'right','target':'target'}
+        ns={'completed':165,'prefix':[0]*164,'source_states':np.zeros((2,61)),
+            'state':lambda:s,'model':types.SimpleNamespace(lower=np.full(18,-1.),upper=np.ones(18)),
+            'check_actual_joint_bounds':check_actual_joint_bounds,'source_state_diagnostic':source_state_diagnostic,
+            'reader':types.SimpleNamespace(read=lambda tick:f,check_local_fk=lambda *a:None),
+            'oracle':LocalOutcome(spec),'spec':spec,'private':sink,'rows':rows,'json':json,
+            'current_writer':types.SimpleNamespace(append_text=lambda stream,line:stream.append(line))}
+        exec(code,ns);ns['measure'](np.zeros(23),'expert_segment',source_index=1)
+        self.assertEqual(rows[0]['source_state_diagnostic']['source_frame_index'],165)
+        self.assertAlmostEqual(rows[0]['source_state_diagnostic']['q_max_abs'],.0438795)
+        self.assertEqual(rows[0]['verdict']['outcome'],'IN_PROGRESS');self.assertEqual(len(sink),1)
+        with self.assertRaises(ValueError):ns['measure'](np.zeros(23),'expert_segment',source_index=0)
+        f['forbidden_contacts']=[['finger','torso']];ns['oracle']=LocalOutcome(spec)
+        with self.assertRaisesRegex(RuntimeError,'NEW_FORBIDDEN_PHYSICAL_CONTACT'):
+            ns['measure'](np.zeros(23),'expert_segment',source_index=1)
 
     def test_random_hash_or_relabelled_seed_is_not_a_release(self):
         spec={"verb":"PRESS","hand":"right","target":"target","destination":"","support_hand":None,

@@ -23,7 +23,7 @@ from PIL import Image
 from native_teacher_collect import (REPO,ADAPTER,CalibratedRobot,OnboardRGBD,native_action,
     capture_snapshot,implementation_digest,preserved_session,report_failure)
 from native_teacher_artifacts import ArtifactBudget,write_calibration,json_bytes,capture_upper_bound
-from native_teacher_reference_contract import load_reference,compare_source_state
+from native_teacher_reference_contract import load_reference,check_actual_joint_bounds,source_state_diagnostic
 from native_teacher_outcomes import LocalOutcome
 from native_teacher_og import PrivilegedReader
 from native_teacher_seed import extract_seed,seed_identity
@@ -57,6 +57,7 @@ def main():
     identity=seed_identity(ref,spec)
     writer.write_json(a.output/"manifest.json",{"code":code,"authorization":release,"binding":binding,"identity":identity,
                      "models":0,"actor":None,"training_eligible":False,"reference_actions_are_not_native_BC":True,
+                     "source_validation":"exact_actions_identity_clock; exported_proprio_error_diagnostic_only",
                      "installed_toggle_source_sha256":TOGGLE_SHA})
     completed=issued=0;terminal=False;primary=None;started=None;kin=reader=None;grips=None
     trace=private=None;rows=[];captures=[];final_hold=False;current_writer=writer
@@ -83,6 +84,7 @@ def main():
                 nonlocal completed,issued,terminal,grips
                 if terminal or issued>=budget["max_controls"]-(0 if cleanup else 1):raise RuntimeError("Reference terminal/control cap")
                 if not cleanup and time.monotonic()-started>=budget["seconds_after_reset"]:raise TimeoutError("Reference time cap")
+                check_actual_joint_bounds(state(),model)
                 command=np.asarray(command,dtype=np.float32)
                 if command.shape!=(23,) or not np.isfinite(command).all():raise ValueError("Finite native23 command required")
                 line=json.dumps({"phase":phase,"issued_control":issued+1,"actual_action23":command.tolist()},allow_nan=False)+"\n"
@@ -110,25 +112,32 @@ def main():
             for command in prefix:
                 step(command,"prefix")
                 if terminal:raise RuntimeError("Original reference prefix terminated")
-            compare_source_state(state(),source_states[0])
+            check_actual_joint_bounds(state(),model)
             before=capture("before")
             reader=PrivilegedReader(env,spec);oracle=LocalOutcome(spec)
-            def measure(command,phase,cleanup=False):
-                f=reader.read(completed);f["finger_opening"]=dict(zip(("left","right"),state().gripper.tolist()))
-                reader.check_local_fk(state(),f)
+            def measure(command,phase,cleanup=False,source_index=None):
+                if source_index is not None and completed!=len(prefix)+source_index:
+                    raise ValueError("Actual reference/source action clock mismatch")
+                current=state();check_actual_joint_bounds(current,model)
+                f=reader.read(completed);f["finger_opening"]=dict(zip(("left","right"),current.gripper.tolist()))
+                reader.check_local_fk(current,f)
                 token=None
                 if command is not None:
                     grip=command[14 if spec["hand"]=="left" else 22]
                     token=spec["hand"].upper()+("_CLOSE" if grip<-.5 else "_OPEN") if abs(grip)>.5 else None
                 verdict=oracle.update(f,token)
-                row={"frame":f,"actual_action23":None if command is None else command.tolist(),"phase":phase,"verdict":verdict}
+                diagnostic=(None if source_index is None else source_state_diagnostic(
+                    current,source_states[source_index],len(prefix)+source_index))
+                row={"frame":f,"actual_action23":None if command is None else command.tolist(),"phase":phase,"verdict":verdict,
+                     "actual_q":current.q.tolist(),"actual_gripper":current.gripper.tolist(),
+                     "source_state_diagnostic":diagnostic}
                 line=json.dumps(row,allow_nan=False)+"\n"
                 if len(line.encode())>16384:raise RuntimeError("Reference telemetry exceeded bound")
                 if cleanup:writer.check(len(line.encode()),cleanup=True);private.write(line)
                 else:current_writer.append_text(private,line)
                 rows.append(row)
                 if verdict["outcome"] in ("UNKNOWN","FAILED"):raise RuntimeError("Reference physical evidence: "+verdict["reason"])
-            measure(None,"baseline")
+            measure(None,"baseline",source_index=0)
             writer.write_json(a.output/"PRIVATE_initial_contacts.json",reader.baseline_receipt)
             # Reserve the COMPLETE segment evidence before its first action.
             # Three remaining full snapshots + bounded ledger + sparse raw RGB.
@@ -138,8 +147,7 @@ def main():
                 with writer.transaction(reserve) as reservation:
                     current_writer=reservation
                     for i,command in enumerate(segment):
-                        actual=step(command,"expert_segment");measure(actual,"expert_segment")
-                        compare_source_state(state(),source_states[i+1])
+                        actual=step(command,"expert_segment");measure(actual,"expert_segment",source_index=i+1)
                         if terminal:raise RuntimeError("Reference skill terminated before complete evidence")
                         if (i+1)%30==0:
                             # Render-only sparse three-view RGB for independent
