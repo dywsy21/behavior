@@ -41,6 +41,14 @@ def report_failure(out, first_error, controls, started):
             pass
 
 
+def audit_pairs(api, scene_idx, queried, registered_rows, required_links, registered_cols, current_only):
+    forward = api.get_contact_pairs(scene_idx, queried, None, current_only)
+    # The installed column lookup raises for unregistered visual-only links.
+    columns = required_links & registered_cols
+    reverse = api.get_contact_pairs(scene_idx, registered_rows, columns, current_only) if columns else set()
+    return sorted({tuple(sorted(pair)) for pair in forward | reverse})
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--spec", required=True)
@@ -142,11 +150,10 @@ def main():
                 def values(x):
                     return x.detach().cpu().numpy().tolist() if hasattr(x, "detach") else np.asarray(x).tolist()
                 def pairs(current_only):
-                    forward = RigidContactAPI.get_contact_pairs(scene_idx, queried, None, current_only)
                     # A static support may be a column only. Include contacts
                     # from every dynamic row TO the required task/robot links.
-                    reverse = RigidContactAPI.get_contact_pairs(scene_idx, registered_rows, required_links, current_only)
-                    return sorted({tuple(sorted(pair)) for pair in forward | reverse})
+                    return audit_pairs(RigidContactAPI, scene_idx, queried, registered_rows,
+                                       required_links, registered_cols, current_only)
                 current, recent = pairs(True), pairs(False)
                 objects = queried | {link_objects[path] for pair in current + recent for path in pair if path in link_objects}
                 poses = {obj.name: {"prim_path": obj.prim_path, "world_pose_xyzw": [values(x) for x in obj.get_position_orientation()]}

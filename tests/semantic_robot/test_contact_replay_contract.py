@@ -11,6 +11,19 @@ from contact_replay_contract import load_contract
 
 
 class ContactReplayTests(unittest.TestCase):
+    def test_column_only_support_and_visual_only_link_coverage(self):
+        from replay_contact_audit import audit_pairs
+        api = Mock()
+        def query(scene, rows, cols, current):
+            if cols is None:
+                return {("robot", "floor")}
+            self.assertEqual(cols, {"robot", "table"})
+            return {("radio", "table"), ("floor", "robot")}
+        api.get_contact_pairs.side_effect = query
+        pairs = audit_pairs(api, 0, {"entity"}, {"robot", "radio"},
+                            {"robot", "table", "visual_only"}, {"robot", "table", "floor"}, True)
+        self.assertEqual(pairs, [("floor", "robot"), ("radio", "table")])
+
     def test_all_reporting_writes_fail_without_replacing_primary_exception(self):
         from replay_contact_audit import report_failure
         primary = RuntimeError("original")
