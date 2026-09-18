@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 04:57（北京时间）H15首次闭环行为分叉（Codex）：** 同158357原一次回合，d51/52的`candidates.json`将BASE-forward/fine明确拒绝为`OBSERVED_BASE_OBSTACLE`，d51实际改选right-forward/coarse并TARGET_REACHED（至1170控制），不是只在保存数据试算中生效。本人已看本次初始head/d23/d32/d50，d50收音机仍直立在桌面；d32正确识别桌/收音机，之后已转pick子目标。旧H13对应d51–54继续底盘推进、H14证明d52轮–桌接触；新旧非完全相同全状态实验，**只能报执行接口局部改变，尚不能声称无接触/已抓取/完整成功**。run继续原预算、源5cfbb89不变，约6.144GB根/88.428GB余量；SFT新68源只部署核验，未新reset/训练。
+
 **2026-09-19 04:53（北京时间）H09S压缩/写前门独立审查合入（Codex/Astra）：** 最终`68daccaa55cbd23002a19711226c20230a4ef22b`父逐行审过、36 SFT/.197s及正确PYTHONPATH下331 harness/5.057s通过，无阻塞；首harness命令漏PYTHONPATH导致15导入错误，非有效回归结果，保留此更正。完整标定gzip/原字节/canonical模型三身份不丢字段，真实47.35MB初验3.13MB；29+1MiB单例、97+3MiB全root含旧失败，prefix写前预留，异常有保夹爪hold测试。代码已合入，旧1509源不热改。旧task0最终确认已记录304prefix/0native、0样本，SIGINT在途步未知。Astra原CPU实现块结束，下一≤300s只部署不可变68源/远端CPU及来源/磁盘核验，0reset。原剩余task1/192、task3/30两reset在`h09s_remaining_collection_block.json`登记，**仍等新授权和父逐例放行**，不重置task0、不扩100MiB/训练门。父H15同158357已到44决策/1020控制、进入导航验证，唯一回合未结束。
 
 **2026-09-19 04:43（北京时间）H15完整门归档核验/H09S体积故障停止（Codex/Astra）：** 本地`h15_gates_bundle`两完整run各144主RGB-D hash零差、result SHA与robo一致、两全视频解码通过；本人补看两门panel02/03（三视角、各四个夹爪开闭时刻），只确认动作，不当抓取/任务成功。原158357/GPU3零前缀策略已reset并执行搜索，至少8决策/192控制，仍运行、无新成功。Astra唯一156956因实际`robot_calibration.json`47345882B超每run30MiB而SIGINT并确认退出（发信号前prefix304，最终计数待核），0WAITING/候选/正标签；OG信号钩子直接关闭，**未产final_hold，不能称safe-hold完成**。原reset计数保留，task1/3暂停、源1509不改。新Astra≤600s CPU/≤20MiB派生票仅无损标定压缩/写前体积门及真实大mesh回归，0物理/模型/训练，父独立复审后才登记剩余采集。当前分支已干净pull/fetch，无上游新增。
