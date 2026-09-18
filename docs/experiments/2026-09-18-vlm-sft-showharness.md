@@ -4,6 +4,7 @@
 
 ## 最新状态
 
+- 2026-09-18 21:06（北京时间）：train_v1实际完成600更新/1095.469s，训练源140c47dabfe7d15ac5674e7f45874703aaa2241c，PID61793退出；67,276,800可训练LoRA参数，18.182GiB峰值。基座权重SHA `aa33250c4fc64891ddfaba3a314fd9542ea371843c387178b425fbcc5ed680b1`，600最终adapter SHA `b5a125ed14dc06c82a7ae7fd288d8c7202d90e2210cc1d1c2f7195f3daac15e1`，identity SHA185d96bd…。开始eval_test_v1（975852a），192条实例留出、原始/微调同input/grammar、base/非base分层与速度/上一动作持久性规则；不看测试选checkpoint。神经与实际物理效果仍待完成。
 - 2026-09-18 20:56（北京时间）：train_v1实际270/600更新、510.87s，源140c47d/PID61793/GPU1，200检查点已存；峰18.18GiB。独立local-skill服务/runner完成本地16CPU，待固定review与双工程门。闭环登记`configs/vlm_sft/h09_local_pilot.json`：新桥接2×20命令/768控制/1200s工程门、0模型，再原4配对40决策回合；仍仅GPU1，训练完成后顺序。固定合法技能不读取expert skill；非base环境碰撞不认证；完整任务成功与局部持物诊断分开。
 - 2026-09-18 20:46（北京时间）：真实两更新gate_v1完成（bff206c），native/custom CE同1.0453935861587524、误差0；冻结梯度为空、372 LoRA张量更新、回载logits差0，18.71GiB峰值，热态1.995s/update。随后执行器审计发现TORSO语义不一致，**未开始v3正式训练**；ec5c012将TORSO从监督/推理候选统一去除，历史截断并重建text。v4=1199/193/192、训练各任务238/222/739，图片全部核SHA复用、14已审阅非TORSO案例，manifest SHAaa2ca08f…。下一从基座新建train_v1最多600更新，预估20–30min；三任务新prefix/mask会先实际检验。首块仅base/arm/gripper方向，不验证躯干策略。
 - 2026-09-18 20:39（北京时间）：严格v3完成1755训练/259验证/288测试；额外60候选被拒（task0/1/3=9/35/16），分组不变。图片manifest SHA `0973d88818a5295766249c07f77ca223812a9f77cb23088f0f98666ec689ce41`，机械门全过，21已查看面板全部保留，审核记录`configs/vlm_sft/h09_data_v3_review.json`。准备GPU1两更新真实门（≤1200s），此门只是工程验证，不是有效性训练。主代理已完成codec/prepare/modeling/train/evaluate独立静态review，无剩余阻塞。
@@ -34,8 +35,8 @@
 
 - [x] 来源分组冻结、同状态微动作映射和机械检查。
 - [x] 分层直接图像/标签审核及可定位记录（Astra视觉审阅，不冒称外部人工标注）。
-- [ ] 实际训练mask、梯度、保存/回载与吞吐门。
-- [ ] 完成有界训练与adapter SHA。
+- [x] 实际训练mask、梯度、保存/回载与吞吐门。
+- [x] 完成有界训练与adapter SHA。
 - [ ] 留出未微调/微调比较及行为失败分类。
 - [ ] 同协议物理闭环和视频审核。
 - [ ] 主代理独立代码审查。
