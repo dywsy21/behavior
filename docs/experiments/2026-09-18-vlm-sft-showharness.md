@@ -4,6 +4,7 @@
 
 ## 最新状态
 
+- 2026-09-18 20:46（北京时间）：真实两更新gate_v1完成（bff206c），native/custom CE同1.0453935861587524、误差0；冻结梯度为空、372 LoRA张量更新、回载logits差0，18.71GiB峰值，热态1.995s/update。随后执行器审计发现TORSO语义不一致，**未开始v3正式训练**；ec5c012将TORSO从监督/推理候选统一去除，历史截断并重建text。v4=1199/193/192、训练各任务238/222/739，图片全部核SHA复用、14已审阅非TORSO案例，manifest SHAaa2ca08f…。下一从基座新建train_v1最多600更新，预估20–30min；三任务新prefix/mask会先实际检验。首块仅base/arm/gripper方向，不验证躯干策略。
 - 2026-09-18 20:39（北京时间）：严格v3完成1755训练/259验证/288测试；额外60候选被拒（task0/1/3=9/35/16），分组不变。图片manifest SHA `0973d88818a5295766249c07f77ca223812a9f77cb23088f0f98666ec689ce41`，机械门全过，21已查看面板全部保留，审核记录`configs/vlm_sft/h09_data_v3_review.json`。准备GPU1两更新真实门（≤1200s），此门只是工程验证，不是有效性训练。主代理已完成codec/prepare/modeling/train/evaluate独立静态review，无剩余阻塞。
 - 2026-09-18 20:37（北京时间）：第三轮review指出TORSO/BOTH和rotation分支中途反转风险，已统一全路径方向/反转/离轴与双臂逐帧一致性；12CPU正负例通过。本人已查看v2的21张三视图current/+16面板，任务/活动技能匹配、可见夹爪开合/底盘方向一致；小幅末端/躯干运动无法仅靠图像定量确认，独立FK门提供坐标审计。下一生成严格v3并记录受影响量，复用原图不扩任务/episode。0训练/新物理。
 - 2026-09-18 20:27（北京时间）：主代理独立review发现endpoint-only可能漏掉中途手臂 excursion、base只验前8帧、原留出需整instance去重、列表ID和history stride边界。`0cf316a`已改为全16帧方向/本体轨迹纯度、原5%所有instance排除、逐对象清ID、强制stride≥horizon，10CPU反例通过。未对旧data_v1训练；新data_v2索引25.23秒完成：train1779/val262/test293，分组SHA不变；任务0/1/3原窗口2106/5579/12747，严格映射准入485/615/2125（抽样上限前），保留全部拒绝分类。新抽帧仅复用核SHA旧图片/提取缺失图，原数据不覆盖。训练第二轮review要求native labels loss与自定义CE数值核对、EOS非UNK、回载logits核对，`1a76197`已实现，待真实GPU门。0训练/新物理。

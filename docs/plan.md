@@ -14,6 +14,7 @@
 
 ### 2026-09-18 20:12（北京时间）：H-09独立VLM SFT首块登记
 
+**20:46 H-09正式训练登记：** ec5c012派生v4无新图，train/val/test=1199/193/192；训练任务0/1/3=238/222/739，109?非base统计待核，类别全列manifest。去TORSO共556/66/96，4条训练历史截断，统一41符号；manifest SHAaa2ca08f…，14原已看非TORSO面板保留。已过真实loss/梯度/回载门不重复浪费；新文本在正式trainer开头再次三任务真实prefix/mask核验。从原2B新初始化rank64训练run train_v1，GPU1≤600更新/3h、200/400/600 adapter，原数据/8GiB/80GiB停止条件不变；启动PID随后补，不能称已经训练完成。
 **20:44 H-09真实工程门通过/执行语义过滤：** bff206c gate_v1 PID60030已完成2更新/33.98s；native/custom CE误差0，372 LoRA张量更新，冻结梯度为空，回载logits误差0；峰18.71GiB，热态1.995s/update。发现TORSO源标签带双手移动而SafeServo保持双EEF，主代理审阅要求首块排除；不启动原v3正式训练。新v4统一训练/推理vocab去TORSO，只派生过滤原图片、历史截到最近可映射连续段、重建text/hash；BOTH平移均为双臂base方向、旋转Rdelta*Rcurrent是base轴、gripper为开合命令不称成功，未改父执行器。下一过滤manifest与真实prefix检查后直接正式600步（预估20–30min，原3h硬限）。
 **20:39 H-09数据门放行/真实训练门准备：** 58df5ab严格v3为1755/259/288，额外拒绝60候选（task0/1/3=9/35/16），原48episode/instance分组SHA不变；图片manifest SHA0973d888…，FK/时钟/PTS全过。21已视觉审阅样本全部仍在v3，审核receipt列明逐ID、可见开合与细小位移不确定性、无结果标签、类别缺失；`h09_data_v3_review.json`仅放行小SFT。主代理独立静态review无剩余阻塞。下一GPU1真实2更新mask/native loss/梯度/回载logits门（≤1200s），通过才从原基座正式600更新/3h；盘余92GiB，0新物理。
 

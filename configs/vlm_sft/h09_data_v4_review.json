@@ -1,0 +1,12 @@
+{
+  "approved": true,
+  "reviewer": "Astra/max direct visual inspection, inherited identical images from audited v3",
+  "data": "/mnt/sdc1/robodojo/behavior_dev/vlm_sft_showharness_20260918/data_v4",
+  "image_manifest_sha256": "aa2ca08f17f255f4738cc148dd5807b91f6b0306962f36e2817a2a077d772565",
+  "protocol": "h09-semantic-motion-v4-no-torso",
+  "parent_review": "configs/vlm_sft/h09_data_v3_review.json",
+  "reviewed_ids": ["t0_e14_f32", "t0_e186_f400", "t0_e12_f1472", "t0_e133_f1952", "t1_e372_f368", "t1_e218_f96", "t1_e270_f2960", "t1_e270_f1232", "t3_e787_f10256", "t3_e773_f6640", "t3_e773_f16", "t3_e742_f13424", "t3_e618_f2560", "t3_e618_f12624"],
+  "derivation": "All TORSO targets excluded; any previous TORSO truncates history through that token. Text and SHA rebuilt with 41-symbol vocabulary, shared by training and inference. Every reused image SHA verified. No new source episodes or images.",
+  "remaining_execution_contract": ["Single and BOTH translations: base axes, fixed orientation, source torso quiet; BOTH has same-axis synchronized end effectors", "Single-arm rotations: base-axis left multiplication R_delta times R_current, same as SafeServo; position quiet", "Gripper OPEN/CLOSE: signed finger opening command, not grasp or place success", "Base: local velocity direction; measured displacement not guaranteed by command integration"],
+  "limitations": ["Direction projection still differs in amplitude/time from fixed microsteps", "1090/1199 training targets are base; 109 are arms, bilateral and grippers", "No HOLD/outcome training positives and many rare or absent classes", "Only current image/proprio and past representable expert actions enter actor; test remains unviewed", "This is a small interface-transfer experiment, not an exact Show-Harness reproduction"]
+}
