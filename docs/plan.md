@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 04:43（北京时间）H15完整门归档核验/H09S体积故障停止（Codex/Astra）：** 本地`h15_gates_bundle`两完整run各144主RGB-D hash零差、result SHA与robo一致、两全视频解码通过；本人补看两门panel02/03（三视角、各四个夹爪开闭时刻），只确认动作，不当抓取/任务成功。原158357/GPU3零前缀策略已reset并执行搜索，至少8决策/192控制，仍运行、无新成功。Astra唯一156956因实际`robot_calibration.json`47345882B超每run30MiB而SIGINT并确认退出（发信号前prefix304，最终计数待核），0WAITING/候选/正标签；OG信号钩子直接关闭，**未产final_hold，不能称safe-hold完成**。原reset计数保留，task1/3暂停、源1509不改。新Astra≤600s CPU/≤20MiB派生票仅无损标定压缩/写前体积门及真实大mesh回归，0物理/模型/训练，父独立复审后才登记剩余采集。当前分支已干净pull/fetch，无上游新增。
+
 **2026-09-19 04:36（北京时间）两线真实运行已启动（Codex/Astra）：** `server_h15`156556/GPU3/8923同5cfbb89/revision1d4bf0、9.613508s载入、HTTP身份0/215 ready；唯一`radio_h15_fullstart`158357/GPU3已提交初始化，0专家/重放前缀、新规划、原96/3072/2400s，未有成功。root5496236198B、GPU3余28439MiB足够一个sim；不热改源。Astra GPU1唯一`pilot_v1/task_0`156956于04:35:24启动、TRAIN70/e66/f1170、authorization SHA1348181d…249c，1170前缀/≤200新控制/900s/3候选，正在初始化，另两例未启。父随时审WAITING前后三视图，Astra负责采集预算/下载，不占GPU3；完整新两门本地`h15_gates_bundle`传输完成，后续全主RGB-D/视频核验继续，未因此追加run。
 
 **2026-09-19 04:34（北京时间）H15两门真实通过/资源交接与H09S激活（Codex）：** r1两PID已退出，24命令各22到达/2原躯干拒绝，radio417控制/192.543427s、plates418/181.452797s，均gate_ok/robot_geometry_guards=true、同239cb591。父已看两本次首head；13.063653s只读真实链审查两门各76段、合304次head RGB-D hash/FK、8 BASE完整消费及SE3重算0差，实际全开参考标记齐。result SHA`2460d102…35e19`/`b7117a5e…7f75`，完整本地包下载中。旧132309已核精确命令及104账本后TERM、确认退出，GPU1/3都空且GPU0队友不动；余89167511552B。Astra不可变1509源在robo33/.182s＋331/13.694s、真实清单/4807前缀.0686s通过。父激活原3例预算的`authorization_first_three.json`（本地artifacts，非源码同步）；**先task0/70，后两例等父可及时审才启动**，仍0训练/全部隔离。H15新模型准备原GPU3/8923，0新调用起，原唯一原起点尚未提交。
