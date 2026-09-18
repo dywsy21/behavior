@@ -26,6 +26,7 @@ def main():
     parser.add_argument("--uri", required=True)
     parser.add_argument("--revision", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--prepare-only", action="store_true")
     args = parser.parse_args()
     if not 1 <= len(args.state) <= 4:
         raise ValueError("At most four preselected states, no retry")
@@ -33,12 +34,13 @@ def main():
         raise RuntimeError("Clean fixed client source required")
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=False)
-    policy = GroundedPolicy(args.uri, args.revision, max_calls=len(args.state))
+    policy = None if args.prepare_only else GroundedPolicy(args.uri, args.revision, max_calls=len(args.state))
     rows = []
     for index, value in enumerate(args.state):
         source = Path(value)
         old = json.loads((source / "observation.json").read_text())
-        old_context = json.loads(old["request"]["text"])["harness"]
+        old_request = old["request_without_pixel_duplicates"]
+        old_context = json.loads(old_request["text"])["harness"]
         model = RobotModel(json.loads((source.parent / "robot_calibration.json").read_text()))
         proprio = json.loads((source / "proprio.json").read_text())
         state = model.state(np.asarray(proprio["q"]), np.asarray(proprio["gripper"]), np.zeros(3))
@@ -50,15 +52,26 @@ def main():
         if history:
             harness.last_action = Action(**history[-1]["action"])
             harness.feedback = history[-1]["feedback"]
-        labels = [entry["label"] for entry in old["request"]["images"]]
+        labels = [entry["label"] for entry in old_request["images"]]
         images = [Image.open(source / (label + ".png")).convert("RGB") for label in labels]
         raw = {view: np.asarray(Image.open(source / ("CURRENT_" + view.upper() + "_RAW.png")))
                for view in ("head", "left_wrist", "right_wrist")}
         bundle = VisualBundle(images, labels, proprio["geometry"], raw)
+        if args.prepare_only:
+            from semantic_robot.v2.policy import perception_context
+            import hashlib
+            hashes=[]
+            for label,img in zip(labels,images):
+                img=img.copy();img.thumbnail((640,640))
+                hashes.append({"label":label,"size":list(img.size),"pixels_sha256":hashlib.sha256(img.tobytes()).hexdigest()})
+            if hashes != old["result"]["images"]:
+                raise ValueError("Saved pixels do not match original model input")
+            rows.append({"source":str(source),"same_pixels":True,"new_text":perception_context(harness,state,bundle)})
+            continue
         observation, call = policy.observe(harness, state, bundle)
         call["request"]["images"] = [{"label": label} for label in labels]
         row = {"source": str(source), "old_result": old["result"], "new_call": call,
-               "old_text_chars": len(old["request"]["text"]), "new_text_chars": len(call["request"]["text"]),
+               "old_text_chars": len(old_request["text"]), "new_text_chars": len(call["request"]["text"]),
                "new_evidence": asdict(observation),
                "new_grounding": localize_target(observation, dict(np.load(source / "depth.npz")), model, state.q),
                "exact_same_input_pixels": old["result"]["images"] == call["result"]["images"],
@@ -70,7 +83,7 @@ def main():
         print(json.dumps({"source": str(source), "old": old["result"]["text"],
                           "new": call["result"]["text"], "same_pixels": row["exact_same_input_pixels"]}), flush=True)
     result = {"code_commit": subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
-              "model_identity": policy.identity, "model_calls": policy.calls, "controls": 0,
+              "model_identity": policy.identity if policy else None, "model_calls": policy.calls if policy else 0, "controls": 0,
               "manual_point_review_required": True, "rows": rows}
     (output / "result.json").write_text(json.dumps(result, indent=2))
 
