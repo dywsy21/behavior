@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**23:00 H10真实tokenizer门失败定位（Codex）：** 服务器维护clone仅fetch main，先前普通fetch未得到feature；已显式fetch自己的分支并新建不可变f1bb2db，未覆盖旧源。原本地Qwen3.8-27B processor CPU31.858s：B20 d4=12280>服务硬12000，d20=9677，0神经/物理；未放行模型/模拟器。仅在opt-in actor显示层移除每候选重复reference_hand/motion_hand/非真值说明，动作编号/相机/几何分数与完整底层审计保留，统一非真值说明仍明确；不删图、不涨token cap。静态d20无旧action ledger的真实终止帧问题已7544877修，用同帧原observation九图账（没有造动作）。下一精确tokenizer复测及独立review；当前CPU累计仍在900s额度内。
+
 **22:55 H10后继有限预算登记，未启动（Codex）：** `configs/semantic_robot/h10_observer_block.json`登记review通过后原27B revision1d4bf0f/GPU1新服务最多368调用：B20 d4/20两静态选择≤300s/0控制；GPU3两task原姿态工程门各24命令/1536控制/1200s（含8°free腕与fresh深度否决）；通过后唯一同448+362前缀诊断64决策/2048新控制/1800s/151调用，再唯一radio原起点0前缀96决策/3072控制/2400s/215调用。所有task0 train138/task3 train242/seed0，完整起点回合与诊断分母分开保留，单开发例不泛化；4GiB新增/80GiB余盘门。服务器实查GPU1/3空、89GiB余量，0/2不动。e73e263实现已提交、Astra只读review中；新静态工具仅按原历史姿态重建预算，末帧使用其自己的深度/机器人盒，图像hash必须与原结果完全一致。runtime仍待review后固定，当前0新神经/物理。
 
 **22:51 H10整体保存状态门（Codex）：** `observer_integrated_b20.json`两状态完整新候选/真实深度盒扫掠11.191s完成，每个均24自由手候选通过负向深度门；最优roll+8°保留约7°指向改善，尚未入镜、不证按钮/空域安全。原持物path/attempt累计保留；此单步审计仅当前pose去回访，不假称完整历史因果重放。269 harness＋21 SFT全过（4.137s/0.020s），`diff --check`通过；0模型/物理。即将把稳定实现交原Astra/max子代理只读独立review；Codex继续实验登记/资源核验，子代理不重训或写父线源码，review问题修好再放行。

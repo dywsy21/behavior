@@ -40,9 +40,11 @@ def main():
         inputs = processor.apply_chat_template(policy.payload, tokenize=True, add_generation_prompt=True,
             return_dict=True, return_tensors="pt", enable_thinking=False)
         tokens = inputs["input_ids"].shape[1]
-        rows.append({"decision": index, "choices": len(allowed), "input_tokens": tokens, "within_12000": tokens <= 12000})
+        characters=len(policy.payload[0]["content"])+len(policy.payload[1]["content"][-1]["text"])
+        rows.append({"decision": index, "choices": len(allowed), "input_tokens": tokens, "text_characters": characters,
+                     "within_32000_characters": characters<=32000,"within_12000": tokens <= 12000})
     result = {"rows": rows, "model_calls": 0, "controls": 0, "wall_seconds": time.monotonic() - started,
-              "within_existing_input_budget": all(r["within_12000"] for r in rows)}
+              "within_existing_input_budget": all(r["within_12000"] and r["within_32000_characters"] for r in rows)}
     a.output.write_text(json.dumps(result, indent=2))
     print(json.dumps(result), flush=True)
     if not result["within_existing_input_budget"]: raise SystemExit(1)

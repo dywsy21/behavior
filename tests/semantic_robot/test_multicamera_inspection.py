@@ -9,6 +9,8 @@ from semantic_robot.v2.harness import Goal
 from semantic_robot.v2.multicamera_inspection import MultiCameraInspection, free_observing_hand, inspection_carry
 from semantic_robot.v2.protocol import Action, HOLD, ROTATIONS
 from semantic_robot.v2.servo import SafeServo
+from semantic_robot.v2.prompt_context import actor_context
+import json
 from test_v2 import fixture, evidence
 
 
@@ -102,3 +104,17 @@ class MultiCameraTests(unittest.TestCase):
         self.assertTrue(inspection_carry(h, Action("left", "roll_plus", "coarse", "tool")))
         h.stage = "SEARCH"; h.observation = replace(h.observation, visible=True, view="head", target_uv=[.5, .5])
         self.assertTrue(inspection_carry(h, Action("left", "roll_plus", "coarse", "tool")))
+
+    def test_compact_scores_keep_bound_command_and_camera_not_repeated_names(self):
+        model, state, h, servo, inspector = self.make()
+        inspector.free_guard = SimpleNamespace(arm="left", check=lambda plan: (True, {"reason": "test_sweep"}))
+        allowed, h.candidate_receipt = inspector.candidates(model, state, h, servo, Guard())
+        payload=json.loads(actor_context(h,state,SimpleNamespace(geometry={}),allowed))
+        receipt=payload["CURRENT preflight receipt"]
+        self.assertTrue(receipt["inspection_anchor_is_not_affordance_or_visibility_evidence"])
+        self.assertEqual([r["command_index"] for r in receipt["scores_for_allowed_commands"]],list(range(len(allowed))))
+        for row in receipt["scores_for_allowed_commands"]:
+            after=row.get("inspection_after")
+            if after:
+                self.assertIn("observer_camera",after);self.assertIn("pointing_gain_deg",after)
+                self.assertNotIn("motion_hand",after);self.assertNotIn("reference_hand",after)

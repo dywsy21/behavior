@@ -60,8 +60,15 @@ def actor_context(harness, state, bundle, allowed=()):
     # canonical commands; rejected or merely tested actions cannot be offered.
     for index, action in enumerate(allowed):
         row = next((row for row in tested if row.get("action") == asdict(action)), None)
-        scores.append({"command_index": index, **(selected(row, ("accepted", "reason", "planned_ticks",
-            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after")) if row else {})})
+        score={"command_index": index, **(selected(row, ("accepted", "reason", "planned_ticks",
+            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after")) if row else {})}
+        if getattr(harness,"multicamera_inspection",False) and "inspection_after" in score:
+            # Hand identity is already bound by the canonical command and the
+            # single shared reference. Do not repeat it for all 42 candidates.
+            score["inspection_after"]=selected(score["inspection_after"],("observer_camera", "bearing_after_deg",
+                "pointing_gain_deg", "in_image_bounds", "range_m", "prior_anchor_uv", "side_separation_from_head_deg",
+                "relative_pose_novelty_margin"))
+        scores.append(score)
     preflight = {"scores_for_allowed_commands": scores,
         "rejected_reason_counts": dict(Counter(row.get("reason", "UNKNOWN") for row in tested if not row.get("accepted"))),
         "navigation": receipt.get("navigation"), "command_grip_latch": receipt.get("command_grip_latch"),
@@ -69,6 +76,8 @@ def actor_context(harness, state, bundle, allowed=()):
         "depth_guard": selected(receipt.get("depth_guard", {}),
             ("visible_depth_points", "nonrobot_obstacle_points", "unseen_space_not_certified")),
         "geometric_gain_is_not_grasp_success": True}
+    if getattr(harness,"multicamera_inspection",False):
+        preflight["inspection_anchor_is_not_affordance_or_visibility_evidence"]=True
     guides = {view: {hand: selected(row, ("eef_uv", "grasp_center_uv", "grasp_center_in_frame",
                     "base_axis_pixel_deltas_for_1cm", "finger_contact_region")) for hand, row in hands.items()}
               for view, hands in bundle.geometry.items()}
