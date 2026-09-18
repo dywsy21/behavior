@@ -25,7 +25,7 @@ def readable(value):
 def contact_summary(value):
     result = selected(value, ("valid", "reason", "point_base_m", "surface_point_not_object_pose",
         "distance_to_active_closing_center_m", "mean_contact_distance_m", "per_hand_distance_m",
-        "target_minus_center_base_m", "point_is_display_midpoint_not_grasp_target"))
+        "target_minus_center_base_m", "point_is_display_midpoint_not_grasp_target", "navigation_workspace_check"))
     result["views"] = [selected(row, ("view", "target_uv", "valid", "reason", "depth_m", "spread_m"))
                        for row in value.get("views", [])]
     result["projected_checks_not_identity_proof"] = [selected(row, ("view", "status"))

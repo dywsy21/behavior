@@ -12,6 +12,7 @@ from .protocol import Action, HOLD, TRANSLATIONS, VIEWS, strict_json
 from .search import CoverageSearch
 from .servo import SafeServo
 from .bimanual import localize_hand_contacts, all_claims
+from .navigation import navigation_workspace_check
 
 
 RECOVERY_STRATEGIES=("scan_left","scan_right","move_forward","move_left","move_right","retry_approach","hold")
@@ -276,6 +277,10 @@ class GroundedController:
         if manager.goal.kind=="navigate":
             internal["navigation_aligned"]=bool(self.target["valid"] and abs(self._navigation_geometry()["bearing_deg"])<=15.)
             self.progress["navigation_aligned"]=internal["navigation_aligned"]
+            workspace=navigation_workspace_check(self.model,state.q,self.target,manager.arms)
+            self.target["navigation_workspace_check"]=workspace
+            internal["navigation_reach_possible"]=workspace["valid"] and workspace["within_optimistic_reach"]
+            self.progress["navigation_workspace_check"]=workspace
         if (manager.stage == "ALIGN" and manager.goal.kind == "pick" and distance is not None
                 and distance > .10 and not any(manager.hold_verified.values())):
             # Hysteresis: enter ALIGN at 8cm, leave above 10cm. A changed contact

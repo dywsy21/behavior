@@ -130,6 +130,8 @@ class TaskHarness:
         # Only the grounded adapter supplies these sensor-derived measurements;
         # they are not VLM JSON fields and never certify task completion.
         measured_progress = measured_progress or {}
+        navigation_ready=(measured_progress.get("navigation_aligned",True) and
+                          measured_progress.get("navigation_reach_possible",True))
         if self.stage in ("SEARCH","RECOVER") and measured_progress.get("new_search_coverage") is True:
             self.stage_age = 0
         if evidence.hazard in ("slip", "collision"):
@@ -172,7 +174,7 @@ class TaskHarness:
         elif self.stage == "APPROACH":
             wrist = evidence.view == self.goal.hand+"_wrist" or (self.goal.hand == "both" and "wrist" in evidence.view)
             if self.goal.kind == "navigate":
-                if (evidence.effect is True and measured_progress.get("navigation_aligned",True)
+                if (evidence.effect is True and navigation_ready
                         and self.last_action and self.last_action.move != "hold"):
                     self.transition("VERIFY_EFFECT")
                     self.confirmations = 1
@@ -216,7 +218,7 @@ class TaskHarness:
                 self.transition("VERIFY_EFFECT")
                 self.confirmations = 1
         elif self.stage == "VERIFY_EFFECT":
-            effect=evidence.effect is True and (self.goal.kind!="navigate" or measured_progress.get("navigation_aligned",True))
+            effect=evidence.effect is True and (self.goal.kind!="navigate" or navigation_ready)
             self.confirmations = self.confirmations+1 if effect else 0
             if self.confirmations >= 2:
                 self._complete_goal()
