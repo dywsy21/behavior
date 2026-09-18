@@ -39,6 +39,7 @@ from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.grounding import observed_cloud, LocalDepthGuard
 from semantic_robot.v2.grounded_harness import GroundedHarness, GroundedController
 from semantic_robot.v2.policy import GroundedPolicy, RefinedGroundedPolicy
+from semantic_robot.v2.diagnostics import grasp_audit
 
 
 def implementation_digest():
@@ -69,6 +70,7 @@ def main():
     p.add_argument("--harness", choices=("v2","grounded"), default="v2")
     p.add_argument("--refine-grounding",action="store_true",help="Opt-in bounded crop/surface-choice perception")
     p.add_argument("--visual-odometry",action="store_true",help="Use quality-gated onboard RGB-D motion for coverage")
+    p.add_argument("--active-grasp-probe",action="store_true",help="Bounded exploratory close; original grasp verification remains mandatory")
     p.add_argument("--task", type=int, choices=(0,3), default=0)
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--gpu", type=int, default=3)
@@ -89,7 +91,7 @@ def main():
         raise RuntimeError("Immutable clean source required")
     digest = implementation_digest()
     grounded=args.harness=="grounded"
-    if (args.refine_grounding or args.visual_odometry) and not grounded:
+    if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe) and not grounded:
         raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.mode == "agent":
         if not args.expected_revision or len(args.gate_result) != 2:
@@ -131,6 +133,7 @@ def main():
                 "harness":args.harness,"max_strategy_replans":2 if grounded else 0,
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
                 "visual_odometry":args.visual_odometry,
+                "active_grasp_probe":args.active_grasp_probe,"privileged_audit_is_actor_input":False,
                 "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
     controls, prefix_count, terminal = 0,0,False
@@ -242,7 +245,7 @@ def main():
             if policy:
                 goals, call = policy.plan(args.task,environment.observation()["task"],first)
                 save_call(out,"planner",call)
-                manager = GroundedHarness(goals) if grounded else TaskHarness(goals)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe) if grounded else TaskHarness(goals)
                 if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
@@ -360,6 +363,9 @@ def main():
                         if ended or time.perf_counter()-started>=args.max_seconds: break
                 state = state_now()
                 feedback = servo.finish(state)
+                # Stored separately AFTER motion, NEVER added to feedback,
+                # manager context, RGB-D bundle, or neural model requests.
+                write(directory/"PRIVILEGED_POST_ACTION_GRASP_AUDIT.json",grasp_audit(env.robots[0]))
                 row.update(feedback=feedback,control_end=controls,wall_s=time.perf_counter()-wall)
                 decisions.append(row); trace.write(json.dumps(row)+"\n")
                 if controller: controller.executed(action,feedback)
@@ -391,6 +397,7 @@ def main():
                       "stop_reason":stop_reason,"harness":args.harness,"sensor_check_count":len(sensor_checks),
                       "refine_grounding":args.refine_grounding,"surface_choices":getattr(policy,"refinements",0),
                       "visual_odometry":args.visual_odometry,
+                      "active_grasp_probe":args.active_grasp_probe,
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
                       "full_task_success_rate_claim":False}

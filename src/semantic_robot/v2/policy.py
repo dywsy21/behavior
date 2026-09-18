@@ -162,6 +162,8 @@ class GroundedPolicy(VLMPolicy):
         text=actor_context(harness,state,bundle,allowed)
         text+="\nChoose one feasible command below; indices bind the scores, output ONLY its JSON:\n"+"\n".join(f"{index}: {a.text()}" for index,a in enumerate(allowed))
         system=ACTION_SYSTEM+" Prefer measurable progress toward the grounded contact region; review predicted distance gains and failed paths. For navigation, follow the navigation receipt: face the visible destination before approaching it; hand-to-surface distance is NOT a navigation completion test. The 2mm option remains available near limits. Do not repeatedly HOLD with good depth and a safe improving action. Grasp orientation/contact quality still require the raw views; a surface point is not a full grasp pose."
+        if harness.grasp_probe.get("eligible"):
+            system += " A bounded active grasp probe is currently offered: CLOSE attempts a grasp but proves nothing. When the target is already near the open fingers and further advances keep pushing it, prefer a close attempt over continued pushing. You need not claim enclosure or holding before attempting; current enclosure is UNKNOWN, not verified true. Subsequent lift and independent evidence decide the outcome. You may still HOLD if the raw views contradict a safe attempt."
         result,payload=self._call("act",system,text,bundle,allowed)
         action=Action.parse(result["text"])
         harness.authorize(action)

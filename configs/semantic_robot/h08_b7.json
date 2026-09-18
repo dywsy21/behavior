@@ -1,0 +1,22 @@
+{
+  "experiment_id": "H-08-B7",
+  "owner": "Codex-solo",
+  "hypothesis": "Separating a bounded grasp attempt from grasp verification breaks passive-enclosure deadlock without inventing success.",
+  "code_commit": "PENDING_FIXED_SOURCE",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "training_updates": 0,
+  "new_weight_downloads": 0,
+  "actor_scene_truth": false,
+  "static_states": ["radio_b6/decision_009", "radio_b6/decision_019"],
+  "static_model_calls": 2,
+  "static_controls": 0,
+  "gate_each": {"decisions": 24, "controls": 1536, "wall_seconds": 1200, "model_calls": 0},
+  "policy": {"task": 0, "split": "train", "instance": 138, "seed": 0, "expert_prefix": 448, "gpu": 1, "decisions": 64, "controls": 2048, "wall_seconds": 1800, "max_model_calls": 147},
+  "grasp_probe": {"max_attempts_per_goal": 2, "max_surface_distance_m": 0.04, "min_active_finger_mean_m": 0.02, "unknown_not_false_enclosure": true, "not_grasp_pose_certificate": true, "original_success_gates_unchanged": true},
+  "flags": ["--harness", "grounded", "--refine-grounding", "--visual-odometry", "--active-grasp-probe"],
+  "gpu_scope": [1, 3],
+  "cpu_threads": 4,
+  "min_free_disk_GiB": 80,
+  "stop": ["Existing hard safety gates", "Declared budget", "Original success verification"],
+  "comparison": "B6 same start/model and limits; development diagnosis, no population success-rate claim. task3 B6 continues unchanged; no new task3 policy in this block."
+}

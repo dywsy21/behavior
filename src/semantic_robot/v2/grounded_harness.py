@@ -30,7 +30,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals):
+    def __init__(self, goals, *, active_grasp_probe=False):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -39,6 +39,28 @@ class GroundedHarness(TaskHarness):
         self.candidate_receipt={}
         self.motion_receipt={}
         self.pending_grasp={"left":False,"right":False}
+        self.active_grasp_probe=bool(active_grasp_probe)
+        self.grasp_probe_attempts={}
+        self.grasp_probe={"eligible":False,"reason":"NOT_OBSERVED"}
+
+    def update_grasp_probe(self,state):
+        """A bounded exploratory close, NEVER an enclosure/holding assertion.
+
+        The 4cm heuristic limits an attempt, not object width or contact pose.
+        Explicit contrary evidence, missing contact, load and danger still veto.
+        """
+        obs=self.observation
+        count=self.grasp_probe_attempts.get(self.index,0)
+        distance=self.grounding.get("distance_to_active_closing_center_m")
+        checks={"enabled":self.active_grasp_probe,"pick_align":self.goal.kind=="pick" and self.stage=="ALIGN",
+            "not_stopped":not self.stop_reason,"attempt_budget":count<2,
+            "visible_and_not_contradicted":bool(obs and obs.visible and obs.enclosed is None and obs.hazard=="none"),
+            "fresh_near_contact":bool(self.grounding.get("valid") and distance is not None and 0<=distance<=.04),
+            "no_existing_load":not self.carry and not any(self.hold_verified.values()) and not any(self.pending_grasp.values()),
+            "active_fingers_open":all(state.gripper[("left","right").index(a)]>.02 for a in self.arms)}
+        self.grasp_probe={"eligible":all(checks.values()),"checks":checks,"attempts_used":count,"max_attempts":2,
+            "max_surface_distance_m":.04,"command":"close","success_claim":False,
+            "reason":"EXPLORATORY_CLOSE_REQUIRES_SUBSEQUENT_VERIFICATION" if all(checks.values()) else "PRECONDITIONS_NOT_MET"}
 
     @property
     def carry(self):
@@ -48,6 +70,10 @@ class GroundedHarness(TaskHarness):
         return super().carry or (self.goal.level and any(self.pending_grasp.values()))
 
     def executed(self,action,feedback):
+        probe=(self.grasp_probe.get("eligible") and self.stage=="ALIGN" and
+               action==Action(self.goal.hand,"close"))
+        if probe and (feedback.get("control_ticks",0)>0 or feedback["status"]=="TARGET_REACHED"):
+            self.grasp_probe_attempts[self.index]=self.grasp_probe_attempts.get(self.index,0)+1
         super().executed(action,feedback)
         if feedback["status"]=="TARGET_REACHED" and action.move in ("close","open"):
             arms=("left","right") if action.part=="both" else (action.part,)
@@ -55,9 +81,17 @@ class GroundedHarness(TaskHarness):
                 if arm in self.pending_grasp:
                     if action.move=="open":self.pending_grasp[arm]=False
                     elif self.goal.kind=="pick":self.pending_grasp[arm]=True
+        if probe and feedback["status"]=="TARGET_REACHED":
+            self.events.append({"event":"UNVERIFIED_GRASP_PROBE","goal":self.index,
+                                "attempt":self.grasp_probe_attempts[self.index],"success_claim":False})
+            self.transition("VERIFY_GRASP")
+        self.grasp_probe={**self.grasp_probe,"eligible":False}
 
     def palette(self):
         palette=super().palette()
+        if (not self.stop_reason and self.stage=="ALIGN" and self.goal.kind=="pick"
+                and self.grasp_probe.get("eligible")):
+            palette += (Action(self.goal.hand,"close"),)
         if (not self.stop_reason and self.goal.kind == "pick" and self.goal.hand == "both"
                 and self.stage in ("APPROACH", "ALIGN") and not any(self.hold_verified.values())
                 and not any(self.pending_grasp.values())):
@@ -90,7 +124,8 @@ class GroundedHarness(TaskHarness):
         context=super().context()
         context.update(target_surface_estimate=self.grounding, search=self.search_context,
                        strategy_replans=self.replans, recent_replans=self.replan_history[-2:],
-                       egocentric_motion=self.motion_receipt, unverified_close_latches=self.pending_grasp.copy())
+                       egocentric_motion=self.motion_receipt, unverified_close_latches=self.pending_grasp.copy(),
+                       active_grasp_probe=self.grasp_probe.copy())
         return context
 
 
@@ -250,6 +285,7 @@ class GroundedController:
             manager.stage_age=0
         # Do not feed off-screen / cross-camera 2D EEF distances into progress.
         manager.observe(evidence,state,geometry=None,measured_progress=internal)
+        manager.update_grasp_probe(state)
         if self.reposition_left and self.reposition not in manager.palette():
             self.reposition_left=0  # a new stage may forbid the queued strategy
         manager.search_context=self.search.context()
@@ -400,6 +436,9 @@ class GroundedController:
             open_action=Action(self.harness.goal.hand,"open")
             if open_action in palette:
                 proposed.insert(0,open_action)
+            close_probe=Action(self.harness.goal.hand,"close")
+            if self.harness.grasp_probe.get("eligible") and close_probe in palette:
+                proposed.insert(0,close_probe)
             rotations=[action for action in palette if action.move in
                        ("roll_plus","roll_minus","pitch_plus","pitch_minus","yaw_plus","yaw_minus")
                        and action.part in (*self.harness.arms,"both")]
