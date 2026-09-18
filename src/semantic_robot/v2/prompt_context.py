@@ -35,6 +35,26 @@ def contact_summary(value):
     return result
 
 
+def columnar_scores(scores):
+    """Lossless display table: every offered command/field remains represented.
+
+    Dotted columns name fields of inspection_after. Missing cells are null,
+    never implicit positive evidence. This changes no executor receipt/ranking.
+    """
+    flattened=[];columns=[]
+    for score in scores:
+        row={}
+        for key,value in score.items():
+            if key=="inspection_after":
+                row.update({"inspection_after."+k:v for k,v in value.items()})
+            else:row[key]=value
+        for key in row:
+            if key not in columns:columns.append(key)
+        flattened.append(row)
+    return {"encoding":"Each row follows columns; null means missing/unknown, not true",
+            "columns":columns,"rows":[[row.get(key) for key in columns] for row in flattened]}
+
+
 def actor_context(harness, state, bundle, allowed=()):
     """Keep the supplied recent outcomes and all commands, not debug dumps.
 
@@ -69,7 +89,8 @@ def actor_context(harness, state, bundle, allowed=()):
                 "pointing_gain_deg", "in_image_bounds", "range_m", "prior_anchor_uv", "side_separation_from_head_deg",
                 "relative_pose_novelty_margin"))
         scores.append(score)
-    preflight = {"scores_for_allowed_commands": scores,
+    compact=bool(getattr(harness,"multicamera_inspection",False) and any("inspection_after" in s for s in scores))
+    preflight = {"scores_for_allowed_commands": columnar_scores(scores) if compact else scores,
         "rejected_reason_counts": dict(Counter(row.get("reason", "UNKNOWN") for row in tested if not row.get("accepted"))),
         "navigation": receipt.get("navigation"), "command_grip_latch": receipt.get("command_grip_latch"),
         "fresh_execution_recheck_required": True,

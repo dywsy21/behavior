@@ -167,9 +167,11 @@ class MultiCameraTests(unittest.TestCase):
         payload=json.loads(actor_context(h,state,SimpleNamespace(geometry={}),allowed))
         receipt=payload["CURRENT preflight receipt"]
         self.assertTrue(receipt["inspection_anchor_is_not_affordance_or_visibility_evidence"])
-        self.assertEqual([r["command_index"] for r in receipt["scores_for_allowed_commands"]],list(range(len(allowed))))
-        for row in receipt["scores_for_allowed_commands"]:
-            after=row.get("inspection_after")
-            if after:
-                self.assertIn("observer_camera",after);self.assertIn("pointing_gain_deg",after)
-                self.assertNotIn("motion_hand",after);self.assertNotIn("reference_hand",after)
+        table=receipt["scores_for_allowed_commands"]
+        rows=[dict(zip(table["columns"],row)) for row in table["rows"]]
+        self.assertEqual([r["command_index"] for r in rows],list(range(len(allowed))))
+        for row in rows:
+            if row.get("inspection_after.observer_camera") is not None:
+                self.assertIsNotNone(row["inspection_after.pointing_gain_deg"])
+                self.assertNotIn("inspection_after.motion_hand",row)
+                self.assertNotIn("inspection_after.reference_hand",row)
