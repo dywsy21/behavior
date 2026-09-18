@@ -6,6 +6,10 @@
 
 ## 1. 总览
 
+**2026-09-18 17:58当前：** `radio_b11`12314已自然安全停/退出，result SHA83487814…、289新控制/41模型/官方false；仅闲置`server_b11_radio`9792已请求TERM，待核退出。完整`b11_complete.tar.gz`归档中，保留四工程门＋唯一策略＋服务/日志，旧source不改。没有任何新B12物理run。下方运行记录均为历史。
+
+**2026-09-18 17:52当前：** 唯一`radio_b11`实际PID12314/GPU1，17:46启动，同源`server_b11_radio`9792/8908运行；两者固定`git_worktrees/semantic_goal_boundary_a4e3aab`、digest4cad025b，禁止热改。`gate_radio_b11_v2`9727/`gate_plates_b11_v2`9725已完整通过并退出，不再等待或重跑；新run/日志在原H08根。GPU3目前空闲，余盘97G；本地90c5913已push且fetch/pull无新团队更新。下方17:43“尚未启动”是历史。
+
 **2026-09-18 17:43当前：** B11旧两门6944/6945已通过/退出，38个机器人link盒及实际四指位姿均已保存。新固定`git_worktrees/semantic_goal_boundary_a4e3aab`含189CPU通过的子目标边界/搜索记账修复；`gate_radio_b11_v2`9727、`gate_plates_b11_v2`9725在GPU3，不能热改。GPU1同源`server_b11_radio`9792/8908（147调用上限）预载，**radio_b11尚未启动**，必须等新两门精确digest通过。B8完整本地`b8_verified_bundle/`已SHA/视频/444hash/人工末段审查；B9/B10静态完整本地`b9_b10_static_bundle/`已SHA，旧服务3880在12次后已停，B9/B10均没有新物理策略。当前新run根仍同H08；不根据下方旧“尚无附着”重做B7。
 
 **2026-09-18 17:17当前：** B8 task3已结束（1561控制/118模型/SEARCH_TRAVEL_BUDGET/官方false），服务4190951已停，`b8_complete.tar.gz`只读归档中；旧源4f48c60保留。B9两门完整通过但静态视觉缺陷未过，**没有radio_b9策略**；server_b9_radio3880/GPU1/8908同affcdec还在，供B10≤8静态（原4起）使用。B10新不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grasp_feedback_bca3d16`，176CPU；输出同H08根的`static_grasp_feedback_b10`、`static_grasp_geometry_b10`，0控制，物理门/策略均未启动。B7完整本地`b7_verified_bundle/`已SHA/视频/294hash核验，**d21–24确附着radio_89、d25恢复open释放**，下方旧“没有附着”判断由plan更正；operator_stop与全部原证据不覆盖。

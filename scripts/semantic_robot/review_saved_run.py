@@ -13,6 +13,49 @@ def read(path):return json.loads(path.read_text()) if path.exists() else {}
 def sha(value):return hashlib.sha256(value).hexdigest()
 
 
+def grasp_timeline(rows):
+    """Audit every executed action, not only the first active grasp probes.
+
+    Attachment is privileged *diagnostic* evidence, never actor input or a task
+    success predicate. Missing receipts are unknown, not evidence of an empty hand.
+    """
+    arms=("left","right");previous={arm:None for arm in arms}
+    result={"diagnostic_only_not_actor_input":True,"not_task_success":True,
+            "close_decisions":[],"open_decisions":[],"missing_post_action_receipts":[],
+            "attachment_observations":[],"attachment_changes":[],
+            "opens_after_observed_attachment":[],"registered_verification_decisions":[]}
+    for row in rows:
+        execution=row.get("execution")
+        if not execution or "feedback" not in execution:continue
+        i=row["decision"];action=execution["action"]
+        if action["move"] in ("close","open"):
+            result[action["move"]+"_decisions"].append(i)
+        record=row.get("post_action_grasp_audit")
+        if record is None:
+            result["missing_post_action_receipts"].append(i)
+            previous={arm:None for arm in arms}
+        else:
+            objects=record.get("assisted_objects",{})
+            for arm in arms:
+                if arm not in objects:
+                    previous[arm]=None
+                    continue
+                obj=objects[arm];old=previous[arm]
+                if obj is not None:
+                    result["attachment_observations"].append({"decision":i,"arm":arm,"object":obj})
+                if old is not None:
+                    if old["object"]!=obj:
+                        result["attachment_changes"].append({"decision":i,"arm":arm,
+                            "before":old["object"],"after":obj,"action":action})
+                    if old["object"] is not None and action["move"]=="open" and action["part"] in (arm,"both"):
+                        result["opens_after_observed_attachment"].append({"decision":i,"arm":arm,
+                            "previous_decision":old["decision"],"object_before":old["object"],"object_after":obj})
+                previous[arm]={"decision":i,"object":obj}
+        if row.get("registered_grasp_motion",{}).get("verified"):
+            result["registered_verification_decisions"].append(i)
+    return result
+
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--run",required=True);p.add_argument("--output",required=True)
@@ -41,7 +84,10 @@ def main():
              "target_valid":g.get("valid"),"target_reason":g.get("reason"),
              "target_distance_m":g.get("distance_to_active_closing_center_m"),
              "search":h.get("search"),"refinement":read(source/"refinement.json").get("choice"),
-             "execution":decisions.get(i),"completed_claims":h.get("completed_observation_claims",[])}
+             "execution":decisions.get(i),"completed_claims":h.get("completed_observation_claims",[]),
+             "registered_grasp_motion":read(source/"grounded_progress.json").get("registered_grasp_motion",{}),
+             "post_action_grasp_audit":(read(source/"PRIVILEGED_POST_ACTION_GRASP_AUDIT.json")
+                                        if (source/"PRIVILEGED_POST_ACTION_GRASP_AUDIT.json").exists() else None)}
         rows.append(row)
         receipt=read(source/"depth_receipt.json")
         if receipt:
@@ -58,6 +104,10 @@ def main():
         key=lambda r:(r["stage"],r["goal_index"],r["visible"],r["view"])
         if i%args.stride==0 or i==len(rows)-1 or (i and key(row)!=key(rows[i-1])) or row["refinement"] is not None:
             selected.append(row)
+        elif ((row.get("execution") or {}).get("action",{}).get("move") in ("close","open") or
+              row.get("registered_grasp_motion",{}).get("verified") or
+              (i and row["post_action_grasp_audit"]!=rows[i-1]["post_action_grasp_audit"])):
+            selected.append(row)
     for page in range(0,len(selected),2):
         canvas=Image.new("RGB",(960,704),(22,24,30));draw=ImageDraw.Draw(canvas)
         for j,row in enumerate(selected[page:page+2]):
@@ -73,6 +123,7 @@ def main():
             "completed_execution_count":sum("feedback" in d for d in decisions.values()),
             "actions":dict(Counter("/".join((d["action"]["part"],d["action"]["move"],d["action"]["scale"])) for d in decisions.values() if "action" in d)),
             "hash_checks":checks,"hash_mismatches":bad,"selected_panel_decisions":[r["decision"] for r in selected],
+            "grasp_diagnostic":grasp_timeline(rows),
             "rows":rows,"human_review_not_automated":True,"new_model_calls":0,"new_controls":0}
     (out/"audit.json").write_text(json.dumps(result,indent=2,allow_nan=False))
     print(json.dumps({k:v for k,v in result.items() if k not in ("rows","terminal")},indent=2))
