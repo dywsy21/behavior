@@ -1,0 +1,68 @@
+{
+  "scope": "CPU_ONLY_EXISTING_TRAIN_AND_SAVED_P1_P2_NO_NEW_RESET",
+  "registered_start_BJT": "2026-09-19 07:10:24",
+  "max_cpu_wall_seconds": 900,
+  "new_model_calls": 0,
+  "new_controls": 0,
+  "new_training_updates": 0,
+  "official_dataset_download_revision": "4f50b44796641a4d526a19d9aeadc8aa51e2f2c2",
+  "official_e310_raw_episode_id": 11920,
+  "official_e310_instance": 192,
+  "official_e310_frames": 2402,
+  "official_and_g05_full_state_action_arrays_exact": true,
+  "e310_float64_state_then_action_bytes_sha256": "0985414078958b294281be07bb707488597438d4619e8a238eb111207980aec6",
+  "installed_source_files": {
+    "directory": "/mnt/sdc1/xhz/BEHAVIOR2026/BEHAVIOR-1K/OmniGibson/omnigibson/envs",
+    "data_wrapper.py": "0e70cf95ff3a2b530b819568199ec6d5bcaa39c519b3fbb6722603c6231aa0db",
+    "hdf5_data_wrapper.py": "c143f9fb42d3f92518489efc8be32ad0ebd515cc18968b049ba19de3e255819b",
+    "lerobot_data_wrapper.py": "248297fd59bbbac07500b0f424c241cc08a0cc7eb180abb371b7a32bf44df566"
+  },
+  "installed_composition_evidence": {
+    "hdf5_collection": "Reset state followed by post-step state; each key truncated to N action samples, yielding pre-action state[i] alongside action[i].",
+    "playback": "Restore pre-action state[i], apply action[i] at 1000 Hz with contacts enabled, then collect observation.",
+    "lerobot_writer": "Pair action[i] with the PREVIOUS playback-history observation.",
+    "executed_actual_writer_AST_fixture": [
+      {"frame": 0, "state": "S0_initial", "action": "A0"},
+      {"frame": 1, "state": "S0_after_tiny_step", "action": "A1"},
+      {"frame": 2, "state": "S1_after_tiny_step", "action": "A2"},
+      {"frame": 3, "state": "S2_after_tiny_step", "action": "A3"}
+    ],
+    "exact_historical_exporter_commit_available": false,
+    "uniform_source_offset_proven_for_published_dataset": false,
+    "nearest_frame_or_plus_one_patch_applied": false
+  },
+  "joint_delta_distribution_rad": [
+    {"task": 0, "source_interval": [1170, 1610], "n": 440, "median": 0.004541894420981407, "p90": 0.023442808166146283, "max": 0.08931159973144531, "over_0p02": 50},
+    {"task": 1, "source_interval": [164, 452], "n": 288, "median": 0.007001638412475586, "p90": 0.022553761675953868, "max": 0.08065527677536011, "over_0p02": 33}
+  ],
+  "command_joint_targets_vs_source_state_lag_diagnostic_not_actual_replay": [
+    {"task": 0, "lag": 0, "n": 440, "median_rad": 0.012226920574903488, "max_rad": 0.1750844120979309, "over_0p02": 123},
+    {"task": 0, "lag": 1, "n": 440, "median_rad": 0.006811469793319702, "max_rad": 0.09262189269065857, "over_0p02": 55},
+    {"task": 0, "lag": 2, "n": 439, "median_rad": 0.005153298377990723, "max_rad": 0.02938765659928322, "over_0p02": 8},
+    {"task": 0, "lag": 3, "n": 438, "median_rad": 0.006379961967468262, "max_rad": 0.08870875835418701, "over_0p02": 63},
+    {"task": 1, "lag": 0, "n": 288, "median_rad": 0.015511512756347656, "max_rad": 0.14746981859207153, "over_0p02": 85},
+    {"task": 1, "lag": 1, "n": 288, "median_rad": 0.00851529836654663, "max_rad": 0.0903952419757843, "over_0p02": 57},
+    {"task": 1, "lag": 2, "n": 287, "median_rad": 0.006398379802703857, "max_rad": 0.060973480343818665, "over_0p02": 28},
+    {"task": 1, "lag": 3, "n": 286, "median_rad": 0.007597625255584717, "max_rad": 0.08059269189834595, "over_0p02": 51}
+  ],
+  "new_contract": {
+    "exact_source_actions_instances_seeds_intervals_hashes_unchanged": true,
+    "actual_control_index_must_match_unshifted_source_index": true,
+    "source_q_and_gripper_difference_diagnostic_only": true,
+    "actual_q_gripper_and_signed_difference_written_to_private_ledger": true,
+    "finite_actual_joint_bounds_before_each_ordinary_control": true,
+    "joint_bound_numeric_tolerance_rad": 0.00001,
+    "physical_contact_FK_oracle_and_budget_gates_unchanged": true,
+    "final_hold_and_independent_seed_review_still_required": true,
+    "reference_actions_are_native_BC": false,
+    "P1_or_P2_retroactively_accepted": false
+  },
+  "validation": {
+    "sft_tests": 67,
+    "sft_seconds": 0.239,
+    "frozen_harness_tests": 331,
+    "frozen_harness_seconds": 5.197,
+    "actual_saved_P2_q_at_164_and_165_within_native_hard_limits": true,
+    "actual_runner_AST_measurement_still_rejects_wrong_clock_and_forbidden_contact": true
+  }
+}

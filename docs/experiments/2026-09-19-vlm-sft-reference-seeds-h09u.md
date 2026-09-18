@@ -82,3 +82,17 @@ PRESS 改为该目标实例专属 `_update` 观察器，非全局类补丁；每
 完整 **18文件6,593,455B**＋log双端逐文件SHA全部一致，capture内7文件hash、完整压缩标定roundtrip也通过。本地 `artifacts/h09u-reference-task1-v2/run`；本人亲看before三原图：目标桶在地面、双手打开，没有已抓取证据。没有故障后RGB-D，不冒称最终视觉状态已认证；final hold私有pose/contact仍留存。末原root99,028,328B（含全部旧失败），free86,971,916,288B；本次Python和launcher均退出、immutable源仍clean。GPU1当时仍报419MiB但无本次PID，不擅自终止任何其他进程。关键SHA/原始计数见 `configs/vlm_sft/h09u_p2_failure_clock_audit.json`。
 
 只读时钟诊断：新旧两次control164的q完全相同；它与source frame164最大18.6833mrad、与frame165最大5.8459mrad。control165的实测q由final_hold命令的当前q保留，与应比较frame165差43.8795mrad、与frame166差5.9124mrad；prefix164条和first expert action23均逐值精确匹配prepared源。这提示必须查原始state/action对齐、控制延迟/工厂时钟，但仅两个实际边界**不足以证明可平移一个frame**。原source/20mrad门保持，未按最近邻改时钟，未向actor灌入未来state。后继应先从原数据导出与安装控制循环证明契约，再有界登记；目前无成功seed，不能诚实量化其native可达性或启动采集/训练。
+
+## H09U 来源时钟审计与最小验证分离（CPU，未新回放）
+
+父07:10:24 BJT另登记≤900s/0reset、模型、物理、训练；读完证据后明确要求来源与物理成功分开验证，不机械统一+1。已核官方原e310/raw11920/instance192完整2402帧：61D state、23D action与G05子集逐值完全相同，float64 state后action字节SHA `09854140…0aec6`。下载缓存固定Hub revision `4f50b44796641a4d526a19d9aeadc8aa51e2f2c2`，30Hz timestamp也一致；不是我们prepare截取错位。
+
+直接读取安装版三层一手实现：`hdf5_data_wrapper.py:118–149,481–541`把reset state与每步post-state收集后按N截断，HDF5 state[i]因而是action[i]前；`data_wrapper.py:377–381,701–744`逐i恢复state[i]、有contact时以1000Hz小步action[i]取观测；`lerobot_data_wrapper.py:307–331,435–458`又把action[i]配前一history观测。实际writer方法AST在无OG/无物理fixture执行得到`(S0,A0),(S0+tiny,A1),(S1+tiny,A2),(S2+tiny,A3)`。该组合**能产生额外一拍滞后**，符合P2观测，但公开metadata未固定生成该数据的导出代码commit，本票没有本episode原HDF5；因此不把当前安装实现当历史导出的完全证明。未更改共享Git安全配置、源或数据。
+
+整段定量而非单点拟合：task1 288对相邻原q，max-joint变化中位7.002mrad、P90 22.554mrad，33对>20mrad；task0 440对中位4.542mrad、P90 23.443mrad，50对>20mrad。仅离线比较command关节目标与source state的lag0/1/2/3：lag2整体较接近，但task1仍28/287、task0仍8/439超过20mrad。这不是实际回放误差、不能据此选最优帧或声称lag2已正确。完整原计数、安装三文件SHA和writer输出见 `configs/vlm_sft/h09u_source_clock_audit.json`。
+
+结论：旧20mrad是我们添加的**导出轨迹逐帧复现门，不是机器人关节安全阈值**；在此来源上不足以作为真实动作失败判据。新最小修改不移动source索引、不重写原manifest/标签：动作23、原实例/seed、完整区间、SHA及实际issued/completed控制时钟继续精确；固定source帧的有符号q/grip差连同每步实际q/grip只写私有账本，不参与成功或动作选择。actual control必须仍等于prefix+原source index，错钟硬拒绝。
+
+真实安全/物理判定独立：每个普通控制前及每条物理measurement检查有限actual q/grip、校准native关节硬上下界（仅1e-5rad数值容差，绝不clip）；实际FK、未知接触、非法新接触、目标身份/held/提起/相对稳定、PRESS因果、12tail、末hold、时间/控制/容量门均不放宽。参考原动作仍不是SafeServo逐步预检的BC，也不是完整环境碰撞认证；原prefix接触未作全程认证的限制不变。新的seed只有真实整段局部oracle成功并由父看完整实际图/ledger后才能使用，源姿态差过大仍须父判断是否已失去目标语义或局部pose可迁移性。失败P1/P2不追认为成功。
+
+67 SFT/.239s、独立分支冻结331 harness/5.197s通过；实际P2已保存control164/165的q通过真实标定硬限但保留18.683/43.879mrad诊断。新增实际runner `measure` AST核：43.879mrad只记诊断、仍IN_PROGRESS，错source时钟/新非法接触继续拒绝；NaN、越硬限、畸形source负例及actor白名单泄漏拒绝通过；原finally首错/hold回归保留。新代码尚未部署或新增reset，需父独立审和新的精确授权后才进行一次参考技能先导，不扩到native采集/训练。

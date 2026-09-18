@@ -54,10 +54,37 @@ def load_reference(folder,release,code,executor,counts):
     return ref,spec,prefix,segment,states,binding
 
 
-def compare_source_state(current,source):
-    q=np.r_[source[53:57],source[3:10],source[28:35]]
-    g=np.array([source[24:26].mean(),source[49:51].mean()])
-    error={"q_max_abs":float(np.max(abs(current.q-q))),"gripper_max_abs":float(np.max(abs(current.gripper-g)))}
-    if error["q_max_abs"]>.02 or error["gripper_max_abs"]>.005:
-        raise RuntimeError("Reference expert control/proprio diverged: "+str(error))
-    return error
+def check_actual_joint_bounds(current,model):
+    """Actual native joint safety, independent of exported demonstration lag.
+
+    This is not collision/path certification and never clips a measured state.
+    The 1e-5 rad allowance is floating-point boundary tolerance, not the old
+    20 mrad source-reproduction criterion. Reference replay is not SafeServo BC.
+    """
+    q,g=np.asarray(current.q,float),np.asarray(current.gripper,float)
+    lo,hi=np.asarray(model.lower,float),np.asarray(model.upper,float)
+    if (q.shape!=(18,) or g.shape!=(2,) or lo.shape!=(18,) or hi.shape!=(18,) or
+            not all(np.isfinite(x).all() for x in (q,g,lo,hi)) or np.any(lo>=hi)):
+        raise ValueError("Finite calibrated actual reference state/bounds required")
+    if np.any(q<lo-1e-5) or np.any(q>hi+1e-5):
+        raise RuntimeError("ACTUAL_REFERENCE_JOINT_LIMIT_VIOLATION")
+
+
+def source_state_diagnostic(current,source,frame_index):
+    """Compare the FIXED source frame; never shift/search or earn success.
+
+    LeRobot playback observations are not guaranteed to reproduce the dynamics
+    of a fresh action replay. Source identity is checked by exact action bytes,
+    instance/seed/interval and hashes; physical outcomes use actual measurements.
+    """
+    source=np.asarray(source,float)
+    q,g=np.asarray(current.q,float),np.asarray(current.gripper,float)
+    if (type(frame_index) is not int or frame_index<0 or source.shape!=(61,) or
+            q.shape!=(18,) or g.shape!=(2,) or
+            not all(np.isfinite(x).all() for x in (source,q,g))):
+        raise ValueError("Finite fixed-frame source diagnostic required")
+    dq=q-np.r_[source[53:57],source[3:10],source[28:35]]
+    dg=g-np.array([source[24:26].mean(),source[49:51].mean()])
+    return {"source_frame_index":frame_index,"q_error_rad":dq.tolist(),"gripper_error_m":dg.tolist(),
+            "q_max_abs":float(abs(dq).max()),"gripper_max_abs":float(abs(dg).max()),
+            "nearest_frame_search_used":False,"not_safety_or_outcome_gate":True}
