@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 18:29当前：** af6283f/9c69bee4源正在被两个策略及两个服务使用，禁止热改。`radio_b13`19689/GPU1/8908与`radio_b13_matched`19690/GPU3/8909唯一运行；对应`server_b13_radio`18895、`server_b13_matched`18898，147/81限；目录/日志仍在`semantic_agent_effect_20260918`。两新工程门已通过且17003/17004退出，下面“等待门”为历史。匹配run读旧`radio_b7`四SHA固定文件，额外362动作前缀在manifest/结果/视频独立标注；不能清理旧B7数据或热改source。
+
 **2026-09-18 18:24当前：** 新唯一源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_measured_approach_af6283f`固定af6283f/9c69bee4、双端206CPU；同H08根的`gate_radio_b13`17003/GPU1、`gate_plates_b13`17004/GPU3运行，不能热pull/改源码。`server_b13_radio`与`server_b13_matched`正在提交预载8908/8909，147/81模型调用上限；两个策略尚未运行，等待新门。B11及9792旧服务均已退出，完整本地`b11_verified_bundle/`已SHA/视频/120hash/人工7页核验。
 
 **2026-09-18 17:58当前：** `radio_b11`12314已自然安全停/退出，result SHA83487814…、289新控制/41模型/官方false；仅闲置`server_b11_radio`9792已请求TERM，待核退出。完整`b11_complete.tar.gz`归档中，保留四工程门＋唯一策略＋服务/日志，旧source不改。没有任何新B12物理run。下方运行记录均为历史。
