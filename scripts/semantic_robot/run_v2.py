@@ -51,6 +51,14 @@ def implementation_digest():
     return hashlib.sha256(b"".join(p.name.encode()+p.read_bytes() for p in paths)).hexdigest()
 
 
+def secondary_error_report(message):
+    """Cleanup/logging failures must not replace the original control error."""
+    try:
+        print(message,file=sys.stderr,flush=True)
+    except BaseException:
+        pass  # Even a broken stderr must not suppress the original exception.
+
+
 def bounded_gate(grounded=False,multicamera=False):
     actions = [HOLD, Action("right","up"), Action("right","down"),
             Action("left","forward","micro"), Action("left","back","micro"),
@@ -215,7 +223,7 @@ def main():
                             "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
                             "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
                 except BaseException as record_error:
-                    print(f"Original failure {exc!r}; recording also failed {record_error!r}",file=sys.stderr,flush=True)
+                    secondary_error_report(f"Original failure {exc!r}; recording also failed {record_error!r}")
                 # The opt-in path reserves one control slot for this stop. Save
                 # the first error BEFORE attempting cleanup; a secondary stop
                 # error must never replace the diagnostic that caused it.
@@ -233,7 +241,7 @@ def main():
                     try:
                         write(out/"safety_hold_after_failure.json",stop_record)
                     except BaseException as record_error:
-                        print(f"Safety hold receipt {stop_record!r}; recording failed {record_error!r}",file=sys.stderr,flush=True)
+                        secondary_error_report(f"Safety hold receipt {stop_record!r}; recording failed {record_error!r}")
                 raise
     try:
         with recorded_session() as environment:
@@ -562,6 +570,7 @@ def main():
                         write(directory/"action_motion.json",substep_result)
                 state = state_now()
                 feedback = servo.finish(state)
+                raw_servo_feedback=feedback  # Later adjudication creates copies; preserve original status.
                 if motion_fault:
                     feedback={**feedback,"visual_gate_failure":substep_result}
                     if feedback["status"] in ("TARGET_REACHED","BASE_TRACKING_FAILED"):
@@ -590,7 +599,7 @@ def main():
                     write(post/"proprio.json",{"q":post_state.q.tolist(),"gripper":post_state.gripper.tolist()})
                     motion_receipt=gate_motion.observe(post_images,post_depths,model,post_state.q)
                     write(post/"visual_odometry.json",motion_receipt)
-                    write(post/"raw_servo_feedback.json",feedback)
+                    write(post/"raw_servo_feedback.json",raw_servo_feedback)
                     if not motion_receipt["valid"] or motion_receipt.get("initial",False):
                         # No fallback to qvel, and no clearing hard servo stops.
                         feedback={**feedback,"visual_gate_failure":motion_receipt}
@@ -649,14 +658,24 @@ def main():
                       "full_task_success_rate_claim":False}
             write(out/"result.json",result)
     except BaseException as exc:
-        if not (out/"failure.json").exists():
-            write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
-                "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
-                "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
+        try:
+            if not (out/"failure.json").exists():
+                write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
+                    "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
+                    "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
+        except BaseException as record_error:
+            secondary_error_report(f"Original failure {exc!r}; outer recording also failed {record_error!r}")
         raise
     finally:
-        trace.close()
-        if video is not None: video.close()
+        primary_active=sys.exc_info()[1] is not None
+        cleanup_errors=[]
+        for resource in (trace,video):
+            if resource is None:continue
+            try:resource.close()
+            except BaseException as cleanup_error:
+                cleanup_errors.append(cleanup_error)
+                secondary_error_report(f"Output cleanup failed: {cleanup_error!r}")
+        if cleanup_errors and not primary_active:raise cleanup_errors[0]
 
 
 if __name__=="__main__":
