@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 06:50当前：** H17新不可变`git_worktrees/semantic_body_4b56b03`354 CPU通过/digest a4ecacc0…2d499，无新物理/输出目录；GPU3旧156556/8923真实170/215，43剩余配额足。GPU1参考179879已退出，失败完整本地在子worktree `artifacts/h09u-reference-task1-v1/run`（17文件6,585,894B、全SHA过，165控制含hold）；原服务器目录/9b源保留不改。新NVMe拟输出仍未创建，余2.7TiB，原盘余约81GiB；旧父root7,406,026,563B，仍遵原7GiB，不把换盘抹成零历史。
+
 **2026-09-19 06:39当前：** Astra GPU1唯一参考回放179879（壳179878），固定`git_worktrees/vlm_sft_h09u_9b52faa`，`vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`及同级log；只TRAIN192、164原prefix＋288完整技能段＋13收尾，不是新VLM训练。授权同root `authorization_h09u_reference_task1_v1.json`/SHA44e2c2cd…8454f1。保持旧目录/源不热改，未启动task0。H16本地`h16_matched_bundle`已完整传完、三主SHA过。
 
 **2026-09-19 06:36当前：** H16唯一175529已退出、218新控制/22调用/官方false；完整新结果171,088,570B正在本地`h16_matched_bundle`归档。GPU3仅原156556模型保留，累计170/215调用（待账本再核），不热改。H09U运行源`git_worktrees/vlm_sft_h09u_9b52faa`已CPU/父审，下一只task1参考回放GPU1，拟`vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`，尚未PID；prepared仍原`h09u_reference_prepare_v2`，旧失败累计不抹除。双H16门本地`h16_gates_bundle`已完整SHA/288主hash/视频解码通过。
