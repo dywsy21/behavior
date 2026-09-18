@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 07:16当前：** H17两门186948/186949退出且完整链/视频通过；唯一`radio_h17_matched_approach`192585/GPU3于07:15:32 BJT初始化，新NVMe同根/相邻log，固定`semantic_body_3411489`；原156556模型8923保持170/215起。局部是1392保存策略前缀，不是零前缀成功率。GPU1无新采集，Astra只核上游时钟；所有旧失败留存。
+
 **2026-09-19 07:11当前：** H17 GPU3原186948/186949各已200控制、尚未门完成；NVMe输出原处，局部未启。GPU1 P2 185102已退出，原`h09u_reference_task1_v2`保留166控制/时序验证失败；完整本地作者`artifacts/h09u-reference-task1-v2/run`，双端全SHA审计进行中，非成功seed。模型156556保持旧源空闲。
 
 **2026-09-19 07:02当前：** 新目录已真实创建：`/mnt/nvme_tmp/robodojo_agentic_20260919/h17_body_options`，仅H17有限新输出，累计1GiB；GPU3门`gate_radio_h17`186948/`gate_plates_h17`186949＋同名log初始化，runtime `git_worktrees/semantic_body_3411489`/digest b2d14390…c78df，禁止热改。旧root7,406,026,563B/旧模型156556保留原盘，局部run未启。GPU1 P2 Python185102（壳185097），原root `h09u_reference_task1_v2`＋log、独立26e源/新授权60d420…7d5ea；旧P1失败保留；尚未训练。
