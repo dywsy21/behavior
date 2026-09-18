@@ -1,0 +1,24 @@
+{
+  "scope": "CPU_ONLY_NO_SESSION_CONSTRUCTED_NO_PHYSICAL_AUTHORIZATION",
+  "runtime_code_commit": "9b52faae182ed446453ffe5d8aca63529636712f",
+  "executor_digest": "239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b",
+  "remote_runtime": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09u_9b52faa",
+  "prepared_root": "/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/h09u_reference_prepare_v2",
+  "preparation_manifest_sha256": "d4311e887582e3259a835f83664e02126ea9abc8df69ff45d6a6046ae95317f2",
+  "prepared_file_count": 17,
+  "prepared_file_bytes": 774831,
+  "local_sft_tests": 60,
+  "remote_sft_tests": 60,
+  "remote_sft_seconds": 0.531,
+  "local_harness_tests": 331,
+  "local_harness_seconds": 5.201,
+  "source_checks": [
+    {"task": 0, "episode": 66, "instance": 70, "prefix_controls": 1170, "skill_controls": 440, "source_states": 441, "factory_prefix_exact": true, "inactive_release_rejected": true},
+    {"task": 1, "episode": 310, "instance": 192, "prefix_controls": 164, "skill_controls": 288, "source_states": 289, "factory_prefix_exact": true, "inactive_release_rejected": true}
+  ],
+  "new_resets": 0,
+  "new_simulator_controls": 0,
+  "new_model_calls": 0,
+  "training_updates": 0,
+  "new_physical_successful_seeds": 0
+}

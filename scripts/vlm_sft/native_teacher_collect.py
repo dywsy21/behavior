@@ -32,7 +32,8 @@ from common import TOKENS, sha, write_json, token_to_action
 from live import runtime_proprio
 from native_teacher_contract import (SCHEMA, digest, actor_input, validate_approval,
                                      verify_prepared_source, verify_loaded_window)
-from native_teacher_artifacts import ArtifactBudget, write_calibration
+from native_teacher_artifacts import (ArtifactBudget, write_calibration, json_bytes,
+                                     capture_layout, capture_upper_bound, action_evidence_bound)
 from semantic_robot.v2.servo import SafeServo, ServoLimits, native_action
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.onboard import OnboardRGBD
@@ -79,9 +80,11 @@ def require_release(value, code, executor):
         raise ValueError("Both matching engineering gates required; old H13 gates are insufficient")
 
 
-def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, clock, budget_root=None, writer=None):
+def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, clock, budget_root=None, writer=None,
+                     expected_layout=None):
     """One render-only RGB-D/actual-box snapshot, bound to unchanged local q."""
-    folder = Path(folder); folder.mkdir()
+    folder = Path(folder)
+    if folder.exists(): raise FileExistsError(folder)
     before = state_now()
     images, depths, receipts = onboard.read(model, render=render)
     geometry = geometry_now()
@@ -91,27 +94,39 @@ def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, cl
     if robot_point_mask(np.empty((0, 3)), geometry) is None:
         raise ValueError("Fresh actual robot self geometry required")
     writer = writer or ArtifactBudget(budget_root or folder)
-    hashes = {}
+    layout = capture_layout(images, depths)
+    if expected_layout is not None and layout != expected_layout:
+        raise RuntimeError("Sensor layout changed after the action reservation")
+    hashes, payloads = {}, {}
     for view in ("head", "left_wrist", "right_wrist"):
-        file = folder/(view+".png")
         buffer = io.BytesIO()
         Image.fromarray(images[view+"_rgb"].transpose(1, 2, 0)).save(buffer, format="PNG")
-        writer.write_bytes(file, buffer.getvalue())
-        hashes[view] = sha(file)
+        payloads[view+".png"] = buffer.getvalue()
+        hashes[view] = hashlib.sha256(payloads[view+".png"]).hexdigest()
     buffer = io.BytesIO(); np.savez_compressed(buffer, **depths)
-    writer.write_bytes(folder/"depth.npz", buffer.getvalue())
-    writer.write_json(folder/"robot_self_geometry.json", geometry)
-    writer.write_json(folder/"sensors.json", receipts)
-    writer.write_json(folder/"proprio.json", runtime_proprio(after))
+    payloads["depth.npz"] = buffer.getvalue()
+    payloads["robot_self_geometry.json"] = json_bytes(geometry)
+    payloads["sensors.json"] = json_bytes(receipts)
+    payloads["proprio.json"] = json_bytes(runtime_proprio(after))
     evidence = {"clock": clock, "q": after.q.tolist(), "gripper": after.gripper.tolist(),
                 "kinematic_model_sha256": model.sha,
                 "source": "render_only_current_onboard_RGBD_and_robot_joint_FK", "scene_truth": False,
-                "files_sha256": {name: sha(folder/name) for name in
-                    ["depth.npz", "robot_self_geometry.json", "sensors.json", "proprio.json",
-                     "head.png", "left_wrist.png", "right_wrist.png"]},
+                "array_layout": layout,
+                "files_sha256": {name: hashlib.sha256(value).hexdigest() for name, value in payloads.items()},
                 "depth_array_sha256": {view: hashlib.sha256(np.ascontiguousarray(raw).tobytes()).hexdigest()
                                        for view, raw in depths.items()}}
-    writer.write_json(folder/"capture.json", evidence)
+    payloads["capture.json"] = json_bytes(evidence)
+    if sum(len(value) for name,value in payloads.items() if name.endswith(".json")) > 1024**2:
+        raise RuntimeError("Capture metadata exceeds the registered 1 MiB bound")
+    size = sum(map(len, payloads.values()))
+    if size > capture_upper_bound(layout):
+        raise RuntimeError("Encoded capture exceeds its raw-shape bound")
+    writer.check(size)  # One WHOLE bundle, before any file appears.
+    staging = folder.with_name("."+folder.name+".pending")
+    staging.mkdir()
+    for name, value in payloads.items():
+        writer.write_bytes(staging/name, value)
+    staging.rename(folder)  # Complete capture becomes visible only here.
     return after, hashes, depths, geometry, evidence
 
 
@@ -134,6 +149,7 @@ def main():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--authorization", type=Path, required=True)
     p.add_argument("--gpu", type=int, choices=(1, 3), required=True)
+    p.add_argument("--teacher-config", type=Path, help="Separately authorized H09T private offline teacher; never actor input")
     x = p.parse_args()
     code = subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip()
     if subprocess.check_output(["git", "-C", str(REPO), "status", "--porcelain"], text=True).strip():
@@ -141,8 +157,33 @@ def main():
     release = json.loads(x.authorization.read_text())
     require_release(release, code, implementation_digest())
     ref, expected_prefix, source_binding = verify_prepared_source(x.prepared, release)
+    teacher_spec = None
+    if x.teacher_config is not None:
+        from native_teacher_policy import validate_spec, validate_train_group
+        if (release.get("authorize_offline_teacher") is not True or
+                sha(x.teacher_config) != release.get("teacher_config_sha256") or
+                not 1 <= release.get("max_teacher_primitives", 0) <= 6):
+            raise ValueError("New bounded offline-teacher authorization required BEFORE reset")
+        teacher_spec = json.loads(x.teacher_config.read_text())
+        validate_spec(teacher_spec, ref)
+        counts_path = REPO/"configs/vlm_sft/h09r_train_feasibility_counts.json"
+        if sha(counts_path) != release.get("train_counts_sha256"):
+            raise ValueError("TRAIN exclusions manifest identity mismatch")
+        validate_train_group(ref, json.loads(counts_path.read_text()), release["held_out_instance_groups"])
+        seed_path = Path(release["pose_evidence_path"])
+        from native_teacher_seed import validate_seed_release
+        review_path = Path(release["pose_review_path"])
+        if sha(review_path) != release.get("pose_review_sha256"):
+            raise ValueError("Unregistered independent pose review")
+        validate_seed_release(seed_path, review_path, teacher_spec, ref, release["seed_reference_preparation_sha256"])
+        if teacher_spec["verb"] == "PRESS":
+            from native_teacher_toggle import verify_installed_dependency
+            verify_installed_dependency()
+        if teacher_spec["verb"] == "PLACE_IN":
+            raise ValueError("PLACE_IN all-corners volume adapter not yet independently validated; no reset")
     x.output.mkdir(parents=True, exist_ok=False)
     artifacts = ArtifactBudget(x.output, x.prepared.resolve().parent.parent)
+    current_writer = artifacts
     import shutil
     if shutil.disk_usage(x.output).free < 80*1024**3:
         raise RuntimeError("Disk reserve: no reset")
@@ -164,6 +205,8 @@ def main():
               "models": 0, "training_eligible": False, "no_restore_or_automatic_recovery": True})
     controls = 0; prefix_count = 0; terminal = False; first_error = None; started = None
     kin = None; grips = None; trace = None; history = []; completed = []
+    teacher_reader = teacher_outcome = teacher_trace = None
+    teacher_token = None; teacher_frame = None
     def record_error(exc):
         nonlocal first_error
         first_error = first_error or exc
@@ -186,22 +229,34 @@ def main():
             grips = np.clip(state().gripper/.05*2-1, -1, 1)
             trace = (x.output/"native_trace.jsonl").open("x", buffering=1)
             def step(command, kind):
-                nonlocal controls, prefix_count, terminal, grips
+                nonlocal controls, prefix_count, terminal, grips, teacher_frame
                 if terminal or (kind != "prefix" and controls >= 199):
                     raise RuntimeError("Terminal/control budget; final stop slot reserved")
                 if time.monotonic()-started >= 900:
                     raise TimeoutError("Pilot wall budget")
+                if shutil.disk_usage(x.output).free < 80*1024**3:
+                    raise RuntimeError("Disk reserve exhausted; no additional control")
                 line = json.dumps({"phase": kind, "prefix_control": prefix_count+int(kind=="prefix"),
                                    "native_control": controls+int(kind!="prefix"),
                                    "action23": np.asarray(command).tolist()}, allow_nan=False)+"\n"
-                artifacts.check(len(line.encode("utf-8")))  # BEFORE env.step, including expert prefix.
+                current_writer.check(len(line.encode("utf-8")))  # BEFORE env.step, including expert prefix.
                 with og.sim.render_on_step(True):
                     obs, _, terminated, truncated, _ = env.step(command, n_render_iterations=1)
                 if kind == "prefix": prefix_count += 1
                 else: controls += 1
                 terminal = bool(terminated or truncated); grips = np.asarray(command)[[14, 22]].copy()
                 e = session.evaluator; e.obs = e._preprocess_obs(e._sync_lights_and_get_obs(obs))
-                trace.write(line)
+                current_writer.append_text(trace, line)
+                if teacher_reader is not None:
+                    teacher_frame = teacher_reader.read(prefix_count+controls)
+                    teacher_frame["finger_opening"] = dict(zip(("left", "right"), state().gripper.tolist()))
+                    verdict = teacher_outcome.update(teacher_frame, teacher_token)
+                    evidence_line = json.dumps({"frame": teacher_frame, "verdict": verdict}, allow_nan=False)+"\n"
+                    if len(evidence_line.encode()) > 16384:
+                        raise RuntimeError("Teacher telemetry exceeds registered bound; quarantine entire trajectory")
+                    current_writer.append_text(teacher_trace, evidence_line)
+                    if verdict["outcome"] in ("UNKNOWN", "FAILED"):
+                        raise RuntimeError("Teacher stopped without positive labels: "+verdict["reason"])
                 if terminal: raise RuntimeError("Official episode terminated; no automatic reset")
             for command in prefix: step(command, "prefix")
             source_q = np.r_[ref["source_states"][0][53:57], ref["source_states"][0][3:10], ref["source_states"][0][28:35]]
@@ -212,11 +267,74 @@ def main():
                 for _ in range(12):
                     step(native_action(fixed, grips), "settle"); recent.append(state())
                 if not rest_screen(recent): raise RuntimeError("No near-rest after fixed 12 controls; no extra settling")
-            def capture(folder):
+            def capture(folder, layout=None):
                 return capture_snapshot(folder, model, state, onboard, kin.native_self_boxes, og.sim.render,
-                                        {"prefix_control": prefix_count, "native_control": controls}, x.output, artifacts)
+                                        {"prefix_control": prefix_count, "native_control": controls}, x.output, current_writer,
+                                        expected_layout=layout)
             settle()
-            for index in range(3):
+            if teacher_spec is not None:
+                from native_teacher_policy import PoseTeacher
+                from native_teacher_outcomes import LocalOutcome
+                from native_teacher_og import PrivilegedReader
+                teacher_reader = PrivilegedReader(env, teacher_spec)
+                teacher_outcome = LocalOutcome(teacher_spec)
+                teacher_frame = teacher_reader.read(prefix_count+controls)
+                teacher_frame["finger_opening"] = dict(zip(("left", "right"), state().gripper.tolist()))
+                initial = teacher_outcome.update(teacher_frame)
+                if initial["outcome"] in ("UNKNOWN", "FAILED"):
+                    raise RuntimeError("Unknown initial teacher evidence")
+                artifacts.write_json(x.output/"PRIVATE_teacher_initial.json", {"spec": teacher_spec, "frame": teacher_frame,
+                     "baseline_contacts": teacher_reader.baseline_receipt, "not_actor_input": True})
+                teacher_trace = (x.output/"PRIVATE_teacher_trace.jsonl").open("x", buffering=1)
+                teacher = PoseTeacher(teacher_spec)
+                for index in range(release["max_teacher_primitives"]):
+                    folder = x.output/f"teacher_{index:02d}"; folder.mkdir()
+                    before, hashes, depths, geometry, receipt = capture(folder/"before")
+                    teacher_reader.check_local_fk(before, teacher_frame)
+                    actor = actor_input(session.observation()["task"], ref["active_instruction"], runtime_proprio(before), hashes, history[-5:])
+                    ranked = teacher.ranked(before, teacher_frame, teacher_reader.goal(), teacher_reader.base())
+                    choice = None; rejected = []
+                    for token in ranked:
+                        try:
+                            candidate, preflight = native_preflight(model, before, grips, token_to_action(token), depths, geometry)
+                            choice = token, candidate, preflight
+                            break
+                        except RuntimeError as exc: rejected.append({"token": token, "reason": str(exc)})
+                    if choice is None: raise RuntimeError("No safe decreasing teacher proposal; no retry/reset")
+                    token, servo, preflight = choice
+                    if controls+servo.total_ticks+12 > 199:
+                        raise RuntimeError("Insufficient whole primitive + settle budget BEFORE action")
+                    layout = receipt["array_layout"]
+                    if shutil.disk_usage(x.output).free < 80*1024**3+action_evidence_bound(layout):
+                        raise RuntimeError("Insufficient physical disk reserve for whole action evidence")
+                    try:
+                        with artifacts.transaction(action_evidence_bound(layout)) as reserved:
+                            current_writer = reserved; teacher_token = token
+                            reserved.write_json(folder/"request.json", {"actor": actor, "token": token,
+                                "private_proposal_order": ranked, "rejected": rejected, "preflight": preflight,
+                                "capture_sha256": sha(folder/"before/capture.json"), "training_eligible": False})
+                            start_control = controls
+                            while not servo.done and servo.ticks < servo.total_ticks:
+                                step(servo.next_action(state()), "candidate")
+                            feedback = servo.finish(state())
+                            reserved.write_json(folder/"native_execution.json", {"token": token, "control_start": start_control,
+                                "control_end": controls, "feedback": feedback})
+                            capture(folder/"after", layout)
+                            if feedback["status"] != "TARGET_REACHED": raise RuntimeError("Teacher native execution failed")
+                            teacher_token = None
+                            settle(); capture(folder/"after_settle", layout)
+                            teacher.executed(token, teacher_frame); history.append(token)
+                            reserved.write_json(folder/"QUARANTINED_record.json", {"actor": actor, "token": token,
+                                "native_trace_sha256": sha(folder/"native_execution.json"), "local_outcome": teacher_outcome.result,
+                                "training_eligible": False, "whole_trajectory_terminal_review_required": True})
+                            completed.append(str(folder))
+                    finally:
+                        current_writer = artifacts; teacher_token = None
+                    if teacher_outcome.result["outcome"] == "SUCCEEDED": break
+                artifacts.write_json(x.output/"PRIVATE_local_outcome.json", teacher_outcome.result)
+                if teacher_outcome.result["outcome"] != "SUCCEEDED":
+                    raise RuntimeError("Bounded teacher ended without local completion; zero positive BC labels")
+            for index in range(0 if teacher_spec is not None else 3):
                 if sum(v.stat().st_size for v in x.output.rglob("*") if v.is_file()) > 30*1024**2 or shutil.disk_usage(x.output).free < 80*1024**3:
                     raise RuntimeError("Pilot disk budget")
                 folder = x.output/f"sample_{index:02d}"; folder.mkdir()
@@ -251,30 +369,40 @@ def main():
                 preflight["no_physics_since_capture"] = controls == capture_receipt["clock"]["native_control"]
                 if not preflight["no_physics_since_capture"]:
                     raise RuntimeError("Approval crossed a physics step")
-                artifacts.write_json(folder/"preflight.json", preflight)
-                start_control = controls
-                native_actions = []
-                while not servo.done and servo.ticks < servo.total_ticks:
-                    command = servo.next_action(state()); step(command, "candidate")
-                    native_actions.append({"native_control": controls, "action23": command.tolist()})
-                feedback = servo.finish(state())
-                artifacts.write_json(folder/"native_execution.json", {"control_start": start_control, "control_end": controls,
-                           "actions": native_actions})
-                _, post_hashes, _, _, _ = capture(folder/"after")
-                stable_hashes = None
-                if feedback["status"] == "TARGET_REACHED":
-                    settle()
-                    _, stable_hashes, _, _, _ = capture(folder/"after_settle")
-                record = {"request": request, "approval": approval,
-                          "execution": {"token": token, "action": asdict(action), "status": feedback["status"],
-                                        "native_controls": len(native_actions),
-                                        "post_action_settle_controls": controls-start_control-len(native_actions),
-                                        "interrupted": feedback["status"] != "TARGET_REACHED",
-                                        "native_trace_sha256": sha(folder/"native_execution.json")},
-                          "feedback": feedback, "post_observation_sha256": digest({"immediate": post_hashes, "settled": stable_hashes}),
-                          "settle_passed": stable_hashes is not None,
-                          "training_eligible": False, "post_review_required": True}
-                artifacts.write_json(folder/"QUARANTINED_record.json", record); completed.append(str(folder))
+                layout = capture_receipt["array_layout"]
+                if shutil.disk_usage(x.output).free < 80*1024**3+action_evidence_bound(layout):
+                    raise RuntimeError("Insufficient physical disk reserve for whole action evidence")
+                if controls+servo.total_ticks+12 > 199:
+                    raise RuntimeError("Whole primitive and settling exceed remaining control budget")
+                try:
+                    with artifacts.transaction(action_evidence_bound(layout)) as reserved:
+                        current_writer = reserved
+                        reserved.write_json(folder/"preflight.json", preflight)
+                        start_control = controls
+                        native_actions = []
+                        while not servo.done and servo.ticks < servo.total_ticks:
+                            command = servo.next_action(state()); step(command, "candidate")
+                            native_actions.append({"native_control": controls, "action23": command.tolist()})
+                        feedback = servo.finish(state())
+                        reserved.write_json(folder/"native_execution.json", {"control_start": start_control, "control_end": controls,
+                                   "actions": native_actions, "feedback": feedback})
+                        _, post_hashes, _, _, _ = capture(folder/"after", layout)
+                        stable_hashes = None
+                        if feedback["status"] == "TARGET_REACHED":
+                            settle()
+                            _, stable_hashes, _, _, _ = capture(folder/"after_settle", layout)
+                        record = {"request": request, "approval": approval,
+                                  "execution": {"token": token, "action": asdict(action), "status": feedback["status"],
+                                                "native_controls": len(native_actions),
+                                                "post_action_settle_controls": controls-start_control-len(native_actions),
+                                                "interrupted": feedback["status"] != "TARGET_REACHED",
+                                                "native_trace_sha256": sha(folder/"native_execution.json")},
+                                  "feedback": feedback, "post_observation_sha256": digest({"immediate": post_hashes, "settled": stable_hashes}),
+                                  "settle_passed": stable_hashes is not None,
+                                  "training_eligible": False, "post_review_required": True}
+                        reserved.write_json(folder/"QUARANTINED_record.json", record); completed.append(str(folder))
+                finally:
+                    current_writer = artifacts
                 if feedback["status"] != "TARGET_REACHED": raise RuntimeError("Native action failed; no corrective retry")
                 history.append(token)
         except BaseException as exc:
@@ -286,9 +414,22 @@ def main():
                     env.step(stop, n_render_iterations=1); controls += 1
                     artifacts.write_json(x.output/"final_hold.json", {"completed": True, "native_controls": controls,
                                          "prefix_controls": prefix_count, "action23": stop.tolist()}, cleanup=True)
+                    if teacher_reader is not None:
+                        frame = teacher_reader.read(prefix_count+controls)
+                        frame["finger_opening"] = dict(zip(("left", "right"), kin.state().gripper.tolist()))
+                        verdict = teacher_outcome.update(frame)
+                        artifacts.write_json(x.output/"PRIVATE_final_hold_outcome.json", {"frame": frame, "verdict": verdict}, cleanup=True)
+                        if verdict["outcome"] != "SUCCEEDED" and first_error is None:
+                            raise RuntimeError("Final hold did not preserve successful local outcome")
                 except BaseException as exc: record_error(exc)
             if trace is not None:
                 try: trace.close()
+                except BaseException as exc: record_error(exc)
+            if teacher_trace is not None:
+                try: teacher_trace.close()
+                except BaseException as exc: record_error(exc)
+            if teacher_reader is not None:
+                try: teacher_reader.close()
                 except BaseException as exc: record_error(exc)
         if first_error is not None: raise first_error
         try:

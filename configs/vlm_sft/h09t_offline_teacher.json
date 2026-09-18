@@ -1,0 +1,67 @@
+{
+  "status": "CPU_IMPLEMENTATION_ONLY_NOT_AUTHORIZATION",
+  "owner": "vlm_sft_showharness",
+  "hypothesis": "Same-state privileged offline teacher with the same native executor and measured local completion can avoid mixed-window labels and velocity continuation.",
+  "executor_digest": "239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b",
+  "authorize_offline_teacher": false,
+  "current_implementation_limits": {
+    "native_controls_including_settle_and_final_hold": 200,
+    "after_reset_seconds": 900,
+    "maximum_primitives": 6,
+    "run_bytes": 31457280,
+    "total_experiment_bytes_including_old_failures": 104857600,
+    "free_disk_bytes": 85899345920,
+    "candidate_rotation": false,
+    "carry_precaution": true,
+    "PLACE_IN": "RESET_BLOCKED_PENDING_FULL_VOLUME_ADAPTER",
+    "automatic_training_release": false
+  },
+  "pose_seed_acquisition_PROPOSAL_NOT_RELEASE": {
+    "physics_resets": 3,
+    "source_segments": [
+      {"task": 0, "episode": 66, "instance": 70, "start": 1170, "end_exclusive": 1610, "verb": "PRESS", "prefix": 1170, "segment_controls": 440},
+      {"task": 1, "episode": 310, "instance": 192, "start": 164, "end_exclusive": 452, "verb": "GRASP", "prefix": 164, "segment_controls": 288},
+      {"task": 3, "episode": 629, "instance": 30, "start": 3473, "end_exclusive": 4756, "verb": "PLACE_IN", "prefix": 3473, "segment_controls": 1283}
+    ],
+    "total_prefix_controls": 4807,
+    "total_segment_controls": 2011,
+    "tail_stability_controls_per_reset": 12,
+    "final_hold_controls_per_reset": 1,
+    "total_max_controls": 6857,
+    "proposed_seconds_per_reset": 2100,
+    "proposed_total_disk_bytes": 402653184,
+    "blocked_until": ["full expert segment extraction and immutable hashes", "read-only teacher API independent review", "reference replay runner with per-control clock/evidence and fresh source contract", "explicit new reset/control/storage authorization"],
+    "success_rule": "Measured causal local outcome and stable pose only; annotation endpoint alone never produces a seed. Failed or UNKNOWN replay stops, no retry."
+  },
+  "future_data_gate_unchanged": {
+    "correct_native_records": 240,
+    "per_verb": 40,
+    "train_instance_groups_per_verb": 4,
+    "near_rest_per_verb": 20,
+    "phase_start_per_verb": 10,
+    "open_records": 20,
+    "close_records": 20,
+    "max_base_fraction": 0.2,
+    "release": "whole successful trajectory + independent stratified image/trace review; all rare cells reviewed"
+  },
+  "future_training_NOT_AUTHORIZED": {
+    "base": "existing Qwen3.5-2B",
+    "maximum_updates": 400,
+    "effective_batch": 16,
+    "maximum_gpu_hours": 1,
+    "hyperparameter_search": false,
+    "paired_static_calls": 300,
+    "paired_local_episodes": 6,
+    "episode_decisions": 30,
+    "episode_controls": 960,
+    "episode_seconds": 600,
+    "official_full_task_SR_claim": false
+  },
+  "legacy_oracle_read_only_audit": {
+    "memlite_oracle_evidence.py": "e9a5ea28bf327822c3a80159fabb7e22f26220db7ad61f6aa764ce801accfafd",
+    "memlite_native_fm_contract.py": "e8af96cf6008ac6443cd8647020b54fba9935b6b456e42d684c2b16f37388a7a",
+    "memlite_skill_protocol.py": "48d6f6d263b2891fdbf6e837a86f2a64ee79effb8a1268e41bfd6368e5ed12a0",
+    "LICENSE-G0.5": "7307545b304365232fb3aa65f020b44202d0ba162bb5ebb1f04eca4d1b840696",
+    "copied_legacy_code": false
+  }
+}

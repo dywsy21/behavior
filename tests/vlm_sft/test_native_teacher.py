@@ -228,7 +228,7 @@ class NativeTeacherTests(unittest.TestCase):
                   isinstance(n.value,ast.Call) and isinstance(n.value.func,ast.Name) and n.value.func.id=="write_calibration")
         block.body=block.body[:stop+1]
         record=copy.deepcopy(next(n for n in main.body if isinstance(n,ast.FunctionDef) and n.name=="record_error"))
-        prelude=ast.parse("controls=0\nprefix_count=0\nterminal=False\nfirst_error=None\nstarted=None\nkin=None\ngrips=None\ntrace=None\n").body
+        prelude=ast.parse("controls=0\nprefix_count=0\nterminal=False\nfirst_error=None\nstarted=None\nkin=None\ngrips=None\ntrace=None\nteacher_reader=None\nteacher_trace=None\n").body
         function=ast.FunctionDef(name="exercise",args=ast.arguments(posonlyargs=[],args=[],kwonlyargs=[],kw_defaults=[],defaults=[]),
                     body=prelude+[record,block,ast.parse("return controls,prefix_count,first_error").body[0]],decorator_list=[])
         model,state,_=calibrated_fixture()

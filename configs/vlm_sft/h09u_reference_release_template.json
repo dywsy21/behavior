@@ -1,0 +1,22 @@
+{
+  "authorize_reference_replay": false,
+  "code_commit": "REPLACE_WITH_REVIEWED_CLEAN_COMMIT",
+  "executor_digest": "239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b",
+  "reviewer": "",
+  "preparation_manifest_sha256": "d4311e887582e3259a835f83664e02126ea9abc8df69ff45d6a6046ae95317f2",
+  "h09r_counts_sha256": "d94850ebfeadeef8b28f618e543ebae7cb7a18bd127c5d79ba6f4c18c0f015e3",
+  "source": [0, 66, 70],
+  "held_out_instance_groups": [],
+  "engineering_gate_paths": ["REPLACE_MATCHING_TASK0_RESULT", "REPLACE_MATCHING_TASK3_RESULT"],
+  "experiment_root": "/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919",
+  "budget": {
+    "max_controls": 1623,
+    "tail_controls": 12,
+    "final_hold_controls": 1,
+    "seconds_after_reset": 2100,
+    "run_MiB": 96,
+    "total_MiB": 384
+  },
+  "model_calls": 0,
+  "resets": 1
+}
