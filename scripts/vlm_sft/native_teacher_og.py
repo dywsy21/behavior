@@ -4,6 +4,7 @@ No reset, teleport, state setter, simulator step or success override occurs here
 Installed API uncertainty raises/returns UNKNOWN, not a fabricated measurement.
 """
 import numpy as np
+from collections.abc import Mapping
 from scipy.spatial.transform import Rotation
 from native_teacher_outcomes import rigid
 
@@ -39,20 +40,47 @@ def measured_bool(value):
     return bool(value)
 
 
+def resolve_bound_native_objects(scope, metadata, registry, spec):
+    """Exact source scene-name -> ONE already-bound task object, TRAIN only.
+
+    Installed BehaviorTask scope keys are BDDL instances, while annotations
+    use native names. No fuzzy/category match, scene-wide fallback or guessed
+    wrapper unwrapping is permitted. Registry identity must be the same object.
+    """
+    if not isinstance(scope,Mapping) or not isinstance(metadata,Mapping):
+        raise ValueError("Task scope and inst_to_name metadata required")
+    requested=[spec["target"]]+([spec["destination"]] if spec["destination"] else [])+list(spec["payloads"])
+    if (not requested or any(not isinstance(n,str) or not n or n!=n.strip() for n in requested)
+            or len(set(requested))!=len(requested)):
+        raise ValueError("Distinct exact target/destination/payload identities required")
+    objects,receipt={},{}
+    for name in requested:
+        aliases=[key for key,value in metadata.items() if value==name]
+        matches=[(key,obj) for key,obj in scope.items() if obj is not None and getattr(obj,"name",None)==name]
+        if (len(aliases)!=1 or len(matches)!=1 or matches[0][0]!=aliases[0] or
+                not isinstance(aliases[0],str) or not aliases[0]):
+            raise ValueError("Missing/unbound/ambiguous native teacher identity: "+name)
+        key,obj=matches[0]
+        if (registry("name",name) is not obj or not isinstance(getattr(obj,"links",None),Mapping) or
+                not obj.links or not isinstance(getattr(obj,"states",None),Mapping) or
+                not isinstance(getattr(obj,"prim_path",None),str) or not obj.prim_path):
+            raise ValueError("Task/scene native object identity disagreement: "+name)
+        if any(obj is other for other in objects.values()):
+            raise ValueError("One object cannot fulfill different teacher roles")
+        objects[name]=obj
+        receipt[name]={"bddl_instance":key,"native_name":obj.name,"prim_path":obj.prim_path,
+                       "task_scope_and_scene_registry_same_object":True}
+    return objects,receipt
+
+
 class PrivilegedReader:
     def __init__(self, env, spec):
         from omnigibson.utils.usd_utils import RigidContactAPI
         from replay_contact_audit import audit_pairs
         self.api, self.pairs = RigidContactAPI, audit_pairs
         self.robot, self.spec, self.idx = env.robots[0], spec, env.scene.idx
-        scope = env.task.object_scope
-        self.objects = {}
-        for name in [spec["target"], spec["destination"], *spec["payloads"]]:
-            if not name: continue
-            obj = scope.get(name)
-            if obj is None or not hasattr(obj, "links") or not hasattr(obj, "states"):
-                raise ValueError("Unresolved teacher identity: "+name)
-            self.objects[name] = obj
+        self.objects,self.identity_receipt=resolve_bound_native_objects(
+            env.task.object_scope,env.scene.get_task_metadata(key="inst_to_name"),env.scene.object_registry,spec)
         self.target = self.objects[spec["target"]]
         self.rows = set(self.api._PATH_TO_ROW_IDX[self.idx])
         self.cols = set(self.api._PATH_TO_COL_IDX[self.idx])
@@ -149,7 +177,8 @@ class PrivilegedReader:
         frame = {"tick": tick, "target_uid": self.spec["target"], "target_pose": pose(self.target).tolist(),
                  "hand_poses": hand_poses, "held": held, "finger_contact": contact,
                  "contacts_known": True, "payload_ok": payload_ok, "forbidden_contacts": forbidden,
-                 "contact_pairs": sorted(current), "privileged_teacher_only": True}
+                 "contact_pairs": sorted(current), "privileged_teacher_only": True,
+                 "identity_bindings":self.identity_receipt}
         if self.spec["verb"] == "PRESS":
             frame["toggled"] = measured_bool(state_of(self.target, "ToggledOn").value)
             frame["goal_parent_pose"] = pose(state_of(self.target, "ToggledOn").link).tolist()

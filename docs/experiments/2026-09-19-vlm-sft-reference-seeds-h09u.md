@@ -51,8 +51,20 @@ PRESS 改为该目标实例专属 `_update` 观察器，非全局类补丁；每
 
 父审核且另行生成 exact-code 有效授权后，入口为该干净固定目录下：`env PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python scripts/vlm_sft/native_teacher_reference_replay.py --prepared /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/h09u_reference_prepare_v2/task_1 --authorization <父另发有效授权绝对路径> --output <父登记的新运行绝对目录> --gpu 1`。task0需另一份 `[0,66,70]` 授权及1623控制预算。当前 template明确false、缺code/reviewer/gate路径，不能直接启动。剩余：父独立代码审查、真实接口/时钟先导、成功seed人工审核、native新预算实现/审查、数据门、新训练和配对效果，全部尚未完成。
 
-## H09U-P1：父终审后唯一 task1 参考回放（运行中）
+## H09U-P1：父终审后唯一 task1 参考回放（已失败退出）
 
 2026-09-19 06:36 BJT 父逐文件终审和独立60测试通过并合入，明确放行一次task1。06:38:45提交GPU1、固定9b52faa/239cb591；唯一输出 `vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`，相邻`.log`。有效授权 `authorization_h09u_reference_task1_v1.json` 双端SHA `44e2c2cd4131d5081d4cea464886cf652593aa2c0385fe8ecdd0306cb68454f1`，reviewer `Codex-parent-H09U-final-review`。164prefix+288完整技能+12稳定+1hold=465控制、reset后900s、80MiB、累计384MiB含旧失败、磁盘余80GiB、0模型训练、失败不retry。task0与native teacher未获授权。
 
 启动前实际CPU source/factory前缀、TRAIN排除、toggle依赖、两门flag/digest/完整SHA通过；source干净。GPU1无进程，父156556仅GPU3，队友GPU0不动。root实占85,836,638B、磁盘余87,032,434,688B，已预留完整80MiB后仍≥80GiB。Python **PID179879**（启动壳179878），远端实际进程起点06:38:59 BJT，已见OG初始化。当前仅提交初始化，绝不当成seed成功；终态、真实控制、全证据和父手审待。
+
+06:42:08 BJT 失败并退出：原164×23 prefix逐值精确，source q误差18.68327mrad、grip37.387µm，均在原20mrad/5mm门内；保存before后，`PrivilegedReader`误用native scene name查询BDDL-keyed `task.object_scope`，`trash_can_116`未找到。完整专家段 **0控制**、private ledger空、0 seed。最终hold真实完成，向量=before当前q＋最后原grip，总165控制；首错误保持，`failure.wall_s=66.703707`是hold前时刻，不冒称整段总wall。没有retry。
+
+完整17文件6,585,894B＋相邻log均双端SHA通过；本地 `artifacts/h09u-reference-task1-v1/run`，before三原图/depth/selfboxes、完整压缩标定、trace、failure及hold齐全。本人已看三图：桶在地面、双手打开，不是已完成GRASP。此次错误前没有expert skill执行，也无hold后RGB-D（错误cleanup只保存控制回执），不伪造终态图证。末root92,428,246B含旧失败、free87,006,310,400B、GPU1回0MiB。轻量实际账本及所有关键SHA见 `configs/vlm_sft/h09u_p1_failure_identity_audit.json`。
+
+### 有界身份适配修复（06:44:32–06:54:32 BJT，CPU≤600s）
+
+父另批准0reset/模型/训练的最小修复。已直接读安装factory与`BehaviorTask`：303行按BDDL instance建scope；524–553行从scene `inst_to_name`读取native name并赋 `scene.object_registry('name',name)` 返回的实际对象，当前安装版不是需猜测解包的代理。Evaluator283–318行加载原TRAIN192 TRO时仍用BDDL key。实际原scene cache `metadata.task.inst_to_name`明确 **`ashcan.n.01_1 -> trash_can_116`**，原192 TRO也有该key；scene/TRO SHA已固定在审计JSON。原source标注的native name正确，错误是teacher查键接口。
+
+修复仅 `native_teacher_og.resolve_bound_native_objects`：从已经绑定的task scope值精确匹配native `.name`，要求唯一BDDL别名、metadata同名、scene registry返回同一对象、实际links/states/prim_path存在；target/destination/payload角色分开，重复同物拒绝。未绑定、重复alias、registry替身、模糊/category/BDDL名冒作native名均拒绝；无scene-wide候选搜索、不unwrap未证明的wrapper、不改原source、无新对象姿态进入actor。精确身份回执只写private frame。
+
+64 SFT/.231s、331 harness/5.025s通过；新增4组包含真实同构的ashcan映射正例与上述负例、actor投影拒绝identity字段。旧9b运行源未改，失败完整保留计预算。修复尚未经真实reset验证，必须父独立审及另登记一次新参考回放；未自行追加物理或宣称seed可用。

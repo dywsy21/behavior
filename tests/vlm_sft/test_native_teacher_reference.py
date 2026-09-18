@@ -19,11 +19,57 @@ from native_teacher_reference_contract import compare_source_state
 from native_teacher_seed import seed_identity,validate_seed_release,extract_seed
 from native_teacher_contract import digest
 from native_teacher_outcomes import LocalOutcome
+from native_teacher_og import resolve_bound_native_objects
 from common import sha
 from test_native_teacher_automatic import frame,toggle_events
 
 
 class ReferenceTests(unittest.TestCase):
+    def identity_fixture(self):
+        def obj(name):return types.SimpleNamespace(name=name,prim_path='/World/'+name,links={'root':object()},states={})
+        target,destination=obj('trash_can_116'),obj('table_12')
+        scope={'ashcan.n.01_1':target,'table.n.02_1':destination,'future.n.01_1':None}
+        metadata={'ashcan.n.01_1':'trash_can_116','table.n.02_1':'table_12','future.n.01_1':'unborn_1'}
+        registry=lambda field,name:next((o for o in (target,destination) if o.name==name),None)
+        spec={'target':'trash_can_116','destination':'table_12','payloads':[]}
+        return scope,metadata,registry,spec
+
+    def test_exact_native_name_resolves_bound_bddl_identity_and_distinct_roles(self):
+        scope,meta,reg,spec=self.identity_fixture()
+        objects,receipt=resolve_bound_native_objects(scope,meta,reg,spec)
+        self.assertIs(objects['trash_can_116'],scope['ashcan.n.01_1'])
+        self.assertIs(objects['table_12'],scope['table.n.02_1'])
+        self.assertEqual(receipt['trash_can_116']['bddl_instance'],'ashcan.n.01_1')
+        swapped={**spec,'target':'table_12','destination':'trash_can_116'}
+        swapped_objects,_=resolve_bound_native_objects(scope,meta,reg,swapped)
+        self.assertIs(swapped_objects[swapped['target']],scope['table.n.02_1'])
+
+    def test_native_identity_unbound_unknown_fuzzy_and_role_alias_fail_closed(self):
+        for replacement in ('trash_can','trash_can_116 ','ashcan.n.01_1','unborn_1'):
+            scope,meta,reg,spec=self.identity_fixture();spec['target']=replacement
+            with self.assertRaises(ValueError):resolve_bound_native_objects(scope,meta,reg,spec)
+        scope,meta,reg,spec=self.identity_fixture();scope['ashcan.n.01_1']=None
+        with self.assertRaises(ValueError):resolve_bound_native_objects(scope,meta,reg,spec)
+        scope,meta,reg,spec=self.identity_fixture();spec['destination']=spec['target']
+        with self.assertRaises(ValueError):resolve_bound_native_objects(scope,meta,reg,spec)
+
+    def test_duplicate_bddl_alias_wrong_metadata_or_registry_proxy_rejected(self):
+        scope,meta,reg,spec=self.identity_fixture()
+        scope['ashcan.n.01_2']=scope['ashcan.n.01_1'];meta['ashcan.n.01_2']='trash_can_116'
+        with self.assertRaises(ValueError):resolve_bound_native_objects(scope,meta,reg,spec)
+        scope,meta,reg,spec=self.identity_fixture();meta['ashcan.n.01_1']='another_1'
+        with self.assertRaises(ValueError):resolve_bound_native_objects(scope,meta,reg,spec)
+        scope,meta,reg,spec=self.identity_fixture()
+        with self.assertRaises(ValueError):resolve_bound_native_objects(scope,meta,lambda field,name:copy.copy(reg(field,name)),spec)
+
+    def test_identity_receipt_remains_private_not_actor_proprio(self):
+        import test_native_teacher
+        from native_teacher_contract import actor_input
+        args=self.identity_fixture();_,receipt=resolve_bound_native_objects(*args)
+        request,_,_,_=test_native_teacher.NativeTeacherTests().fixture();actor=request['actor']
+        bad={**actor['proprio'],'identity_bindings':receipt}
+        with self.assertRaises(ValueError):actor_input(actor['task'],actor['active_instruction'],bad,actor['current_rgb_sha256'],[])
+
     def test_instance_hook_exact_original_call_result_and_restore(self):
         class State:
             value=False;robot_can_toggle_steps=0
