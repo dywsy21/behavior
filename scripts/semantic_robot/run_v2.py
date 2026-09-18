@@ -43,6 +43,7 @@ from semantic_robot.v2.diagnostics import grasp_audit
 from semantic_robot.v2.multicamera_inspection import inspection_carry, free_observing_hand
 from semantic_robot.v2.arm_observation_guard import ObservingArmGuard
 from semantic_robot.v2.observer_gate import choose_gate_pair
+from semantic_robot.v2.motion_feedback import observed_motion_feedback
 
 
 def implementation_digest():
@@ -484,6 +485,29 @@ def main():
                         if ended or time.perf_counter()-started>=args.max_seconds: break
                 state = state_now()
                 feedback = servo.finish(state)
+                if gate_motion is not None and accepted and action.part=="base":
+                    # Judge this action before deciding whether the gate may
+                    # continue. The pre-action gate observation is still the
+                    # odometer reference; never judge it from the next zero-step
+                    # duplicate frame or the unreliable instantaneous qvel sum.
+                    post_images,post_depths,post_receipt=observation_now(f"post_base_gate_{decision}")
+                    post_state=state_now()
+                    post=directory/"post_base_motion";post.mkdir()
+                    for view in ("head","left_wrist","right_wrist"):
+                        Image.fromarray(post_images[view+"_rgb"].transpose(1,2,0)).save(post/("CURRENT_"+view.upper()+"_RAW.png"))
+                    np.savez_compressed(post/"depth.npz",**post_depths)
+                    write(post/"depth_receipt.json",post_receipt)
+                    write(post/"proprio.json",{"q":post_state.q.tolist(),"gripper":post_state.gripper.tolist()})
+                    motion_receipt=gate_motion.observe(post_images,post_depths,model,post_state.q)
+                    write(post/"visual_odometry.json",motion_receipt)
+                    write(post/"raw_servo_feedback.json",feedback)
+                    if not motion_receipt["valid"] or motion_receipt.get("initial",False):
+                        # No fallback to qvel, and no clearing hard servo stops.
+                        feedback={**feedback,"visual_gate_failure":motion_receipt}
+                        if feedback["status"] in ("TARGET_REACHED","BASE_TRACKING_FAILED"):
+                            feedback["status"]="VISUAL_ODOMETRY_GATE_FAILED"
+                    else:
+                        feedback=observed_motion_feedback(action,feedback,motion_receipt)
                 # Stored separately AFTER motion, NEVER added to feedback,
                 # manager context, RGB-D bundle, or neural model requests.
                 write(directory/"PRIVILEGED_POST_ACTION_GRASP_AUDIT.json",grasp_audit(env.robots[0]))

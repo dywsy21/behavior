@@ -14,6 +14,12 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**23:49 H10共用视觉判据实现/289 CPU过（Codex）：** 新`motion_feedback.py`提取actor原有12mm/2°判据，gate每次已接受BASE执行后立即fresh三相机RGB-D、实际q，先保存完整post-base输入/原反馈，再同helper裁决，质量失败停止、无raw兜底；碰撞/发散/中断状态不清。此前gate仅验前帧视觉质量并按raw提前退出的缺口已接线。新增6组双向误判/硬失败/NaN/initial/原记录不变/正反carry测试，289 harness/4.930s及入口编译通过；独立复审待，0新控制/模型。原r1一过一败结论保留，原两策略仍未用；不从坏速度传感器做闭环，也未修改官方本体/物理/时间。
+
+**23:45 H10 r1失败根因更正：门仍用错误测量（Codex）：** Native robot.py1623确认`base_qvel`是旋转到局部的base关节瞬时速度；早期H08独立probe已证其积分不等于实际机身位移。此次只读d11前原RGB-D→末视频PnP（100帧全解码、492匹配/467内点/0.261px）估计后退56.67mm、侧移1.02mm、yaw **−0.01436°**，与raw积分2.072°明显矛盾；末帧是有损视频/假定锁定q，缺当前深度，**只作根因诊断，不改写gate通过**。发现actor已用双帧RGB-D同12mm/2°重判，gate却在读取下一帧前按raw提前失败，属于验收/部署测量不一致。下一在原≤300s CPU额度内提取共用判据、gate每次BASE后fresh RGB-D立即测量，原质量门/硬停止不变；不从坏速度传感器加yaw纠偏，不放宽阈值，不启动策略/新reset。原失败证据保留，独立review待。
+
+**23:39 H10 r1一门过/一门底盘失败（Codex）：** 两PID均退出；plates24决策/418控制/116.458s `gate_ok=true`，radio12决策/201控制/64.928s `gate_ok=false`。两门d7/8实际yaw±8°及fresh depth检查通过，radio d11后退6cm累计本体速度为[-57.44,-6.05]mm、偏航2.072°，超过原2°门；旧无该腕运动门偏航1.768°，不能归因VLM或改阈值。两策略仍未启动，0新模型调用。下一仅≤300s CPU/读旧证据核本体velocity坐标、积分时序及开环底盘抗偏航；Astra只读独立审计同模块，Codex独占实现/测试。不原样重置刷通过，后继物理另登记、旧r1保留。
+
 **23:34 H10 r1两门已提交运行（Codex）：** GPU3独立`gate_radio_h10_r1` PID94047、`gate_plates_h10_r1` PID94109，源5accf69、各24/1536/1200s/0前缀/0模型。新日志同证据根对应`.log`，目前初始化，未称工程通过或任务效果；原策略仍未启动。门结束后核实际8°轴、fresh深度及required criteria，再放行同预算诊断。
 
 **23:33 H10 r1追加有限工程复验登记（Codex）：** Astra/max独立复审5accf69通过，无新阻塞；283 harness＋21 SFT及robo283/12.949s过。新`repair_r1`只增加2工程reset：`gate_radio_h10_r1`/`gate_plates_h10_r1`，各原24决策/1536控制/1200s/0前缀/0模型，task0 train138/task3 train242/seed0，GPU3；旧失败门不覆盖，门角度8°/硬阈值/必达判据不变。新runtime/digest `5accf69`/`59cdfdaefe78d0afee095cd88be408dbb70e115ae89979de5ecc77e29707725f`；服务89280仍465bc85、同权重协议/2调用，分开记录不热改。Git干净pull/fetch同步，GPU3空、89GiB余量/新根351MiB；原1诊断＋1全起点策略预算仍未用，追加门待启动。

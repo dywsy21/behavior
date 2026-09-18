@@ -13,6 +13,7 @@ from .search import CoverageSearch
 from .servo import SafeServo
 from .bimanual import localize_hand_contacts, all_claims
 from .navigation import navigation_workspace_check
+from .motion_feedback import observed_motion_feedback
 
 
 RECOVERY_STRATEGIES=("scan_left","scan_right","move_forward","move_left","move_right","retry_approach","hold")
@@ -315,24 +316,7 @@ class GroundedController:
             if self.pending_motion is not None:raise ValueError("Missing pre-action visual reference")
             return receipt
         if self.pending_motion is None:raise ValueError("No executed action matches this visual motion")
-        feedback=copy.deepcopy(self.pending_motion)
-        feedback["base_velocity_integral_raw"]=feedback["base_integral"]
-        feedback["base_integral"]=receipt["body_delta"]
-        feedback["base_motion_source"]="onboard_RGBD_not_joint_velocity_integration"
-        feedback["base_motion_convention"]="displacement_in_previous_body_frame"
-        action=self.harness.last_action
-        if action is not None and action.part=="base" and feedback["status"] in ("TARGET_REACHED","BASE_TRACKING_FAILED"):
-            # Re-evaluate ONLY the post-motion base residual that was previously
-            # judged from the unreliable velocity integral. Never clear a servo
-            # interruption, collision, joint-limit or other hard safety failure.
-            expected=np.zeros(3);amount=action.amount(feedback.get("carry",False))
-            if action.move in TRANSLATIONS:expected[:2]=np.asarray(TRANSLATIONS[action.move])[:2]*amount
-            elif action.move in ("yaw_plus","yaw_minus"):expected[2]=amount*(1 if action.move=="yaw_plus" else -1)
-            residual=np.asarray(receipt["body_delta"])-expected
-            feedback["base_tracking_status_from_velocity_raw"]=feedback["status"]
-            feedback["visual_base_residual"]=residual.tolist()
-            feedback["status"]=("TARGET_REACHED" if np.linalg.norm(residual[:2])<.012 and abs(residual[2])<np.deg2rad(2.)
-                                else "BASE_TRACKING_FAILED")
+        feedback=observed_motion_feedback(self.harness.last_action,self.pending_motion,receipt)
         self.search.executed(feedback,exploratory=self.pending_exploratory)
         self.harness.feedback=feedback
         if self.harness.history:self.harness.history[-1]={**self.harness.history[-1],"feedback":feedback}
