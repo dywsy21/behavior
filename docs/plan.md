@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 04:22（北京时间）API修正双端验证/失败与账本归档完成（Codex）：** 新不可变5cfbb89在robo331/13.860s通过（本地331/5.195s），≤300s代码块结束，独立增量review待；没有新reset。两失败完整目录/日志已本地，failure SHA均`c5971b86…c2057`与robo一致；旧模型104行账本SHA`8864d30d…77403`、identity SHA`7924a4dd…e4453`双端一致，仍未停止132309。采集器作者继续原≤900s票，父不修改其dirty文件；新门/源与资源状态同步SERVER/TEAM。
+
 **2026-09-19 04:20（北京时间）固定手API修正完成/新复验待审（Codex）：** `5cfbb89`仅识别固定r1pro无end_effector字段（has_end_effector_variants=false），变体仍须明确gripper、未知拒绝；新增与真实字段形状一致回归，本地331/5.195s通过，robo新不可变源测试中。原≤300s代码块结束；Astra在完成采集器时独立审此最小增量。新两修复复验在`h15_r1_fixed_hand_api_block.json`另登记（0/3、各24/1536/1200s/0模型前缀、GPU3），**尚未reset**；原唯一零前缀策略预算仍未使用，不增加策略回合。失败两门＋日志正传本地`h15_failed_gate_bundle`；旧模型104账本在`h13_server_archive`下载中、尚未停止。H09S未新采/训。
 
 **2026-09-19 04:17（北京时间）H15两门初始化后失败/明确API根因（Codex）：** 149129/149131均已退出，reset_completed=true、ROBOT_CALIBRATION阶段`Robot.end_effector`不存在，0控制/模型/决策，原两reset已经使用，不能报门通过或复用计数。安装robot.py214–229只在has_end_effector_variants时设置end_effector；r1pro是固定手型。父登记≤300s CPU最小识别修复＋与实际对象字段形状一致负例，不更改几何阈值；Astra仍在独立collector补丁，随后增量终审。新源两修复复验需另登记；唯一原起点策略/新服务仍未启动，旧132309仍空闲。失败目录及旧b6源保留不覆盖。

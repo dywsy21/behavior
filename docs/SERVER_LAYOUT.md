@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 04:22当前：** H15两门149129/149131已reset后标定失败并退出，0控制；完整本地`h15_failed_gate_bundle`两failure SHA一致。API修正新源`git_worktrees/semantic_geometry_5cfbb89`仅331 CPU通过，独立审查待，`gate_radio_h15_r1`/`gate_plates_h15_r1`未启动。`h13_server_archive/server_h13`104调用及身份已完整下载/SHA核验；132309/GPU1/8922尚未停止，GPU3空。下方“初始化中”仅历史，禁止按旧PID复跑。
+
 **2026-09-19 04:15当前：** GPU3新`agentic_vlm_goal_20260918/gate_radio_h15`149129/`gate_plates_h15`149131及同名日志已提交初始化，源`git_worktrees/semantic_geometry_b6f0845`不可变/digestb71737e4。尚无H15模型或原起点策略；旧132309/GPU1/8922仍104空闲。根4831846809B/余83.70GiB为启动前检查；不要复用下方旧工程门/旧运行状态。
 
 **2026-09-19 04:07当前：** 新CPU-only不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_geometry_e9abf39`，329测试通过，未新物理。H14完整本地包已三SHA/视频解码完成，下条“下载中”是历史。Astra独立`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1`为三个TRAIN参考前缀/9视频（799441B），不是正标签；本地完整小包在`/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09s-prepare-v1`。旧132309/GPU1仍104空闲，GPU3空，盘余约83.72GiB，未启动新训练。
