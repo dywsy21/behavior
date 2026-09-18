@@ -2,7 +2,7 @@
 
 2026-09-18，负责人Codex；分支`feat/semantic-agent-grounded-20260918`，物理实验源`9993fab`（最新字段兼容修复尚未物理复验）。改进的[接口设计](../SEMANTIC_AGENT_GROUNDED.md)、实时[执行计划](../plan.md)。没有训练或改动G05/FM/MEM-Lite、队友数据/RL，也未合main。
 
-12:06当前：两个控制门及本人首帧核验通过，但后续两短闭环因观察JSON漏可选字段中断。契约已修、96项CPU和两条原始回答的真实保存状态离线回放通过；所有模型/仿真已停止。**没有有效的新策略闭环比较，不能报告方法成功率提升。**
+12:10当前：两个控制门及本人首帧核验通过，但后续两短闭环因观察JSON漏可选字段中断。契约修复`e6925d8`已push，本地/robo各96项CPU和两条原始回答的真实保存状态离线回放通过；所有模型/仿真已停止。**没有有效的新策略闭环比较，不能报告方法成功率提升。**
 
 ## 本轮假设与实现
 
@@ -26,7 +26,7 @@
 | `18b47ff` | 本地89 CPU；robo89/89、3.950s | 两场景初始化失败，各0新控制/前缀/神经调用 |
 | `d2da0ac` | 本地90/90、1.587s；robo90/90、3.897s | 两控制门完成，人工发现首帧陈旧；6次静态完成 |
 | `9993fab` | 本地91/91、1.527s；robo91/91、3.852s | 首帧人工门及两工程门通过；24/24、22/24＋2运动前拒绝 |
-| 字段兼容收尾修复（见plan的提交） | 本地96/96、1.708s；原始call3/6与保存RGB-D离线回放 | 0新生成/0控制；尚未新物理复验，不复用9993fab门 |
+| `e6925d8`字段兼容收尾修复 | 本地96/96、1.599s；robo Python3.10 96/96、3.919s；原始call3/6与保存RGB-D离线回放 | 0新生成/0控制；尚未新物理复验，不复用9993fab门 |
 
 ## 初始化失败的根因与修复
 
@@ -82,5 +82,7 @@ task3决策0显示餐桌，只有18控制HOLD后的决策1与控制2视频已经
 - 原始档案在`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_grounded_20260918`；本地同名run在`/home/wsy/behavior/artifacts/semantic-agent-grounded-20260918/`。归档SHA：`gates_and_static_v2.tar`=`f4b74f2f…`，`gates_v3.tar`=`a057e72d…`，`pilots_v1.tar`=`8817a4c2…`，均与robo一致，未删除或覆盖旧失败。
 - 控制视频：[radio门](/home/wsy/behavior/artifacts/semantic-agent-grounded-20260918/gate_radio_v3/rollout.mp4)、[task3门](/home/wsy/behavior/artifacts/semantic-agent-grounded-20260918/gate_plates_v3/rollout.mp4)。它们是工程动作，不是模型完成任务的录像；新radio策略只录到0.6s HOLD，task3零控制没有动作视频。
 - 本分支可交独立成员review，不自动合main。最新字段修复需新的同源控制门/有界策略复验，不能复用旧88a8c268回执。
+
+轻量[机器摘要](results/2026-09-18-semantic-agent-grounded.json)包含完整源身份、gate结果/video SHA、失败原始计数和不可外推标记。下一新增预算尚未答复；如批准，总模型生成额度仍224（剩余212），不重新采样静态6例或新增训练。
 
 服务器根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_grounded_20260918`；本地证据`artifacts/semantic-agent-grounded-20260918/`，原始视频/深度/日志不入Git。[路径索引](../SERVER_LAYOUT.md)

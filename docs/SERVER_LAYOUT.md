@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 12:10 H-07修复源码：** `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grounded_e6925d8`固定e6925d87f90d12a7ab6237cb99daf3279cb3b646，模型环境Python3.10 96/96 CPU通过（3.919s）；仅CPU验证，未启动新神经/模拟器，不拿9993fab旧门当新源回执。旧失败结果/最新控制门/全部下载证据仍在下方H-07根，本地artifacts约988MiB。新物理复验预算待用户答复。
+
 **2026-09-18 12:06 H-07真实状态：** `radio_27b_v1`与`plates_27b_v1`因首轮/次轮观察字段契约失败退出，分别18 HOLD新控制/0控制；以各`failure.json`为终态，没有`result.json`，不是仍在运行/有效SR。`server_27b_v2`6次生成已停（4104006退出，两模拟器4104443/4104495也退出），没有新模型权重。`pilots_v1.tar`与本地SHA8817a4c2…一致，含两run/日志/服务逐调用；`plates_pilot_v1.tar`为此前单独保存的同次task3失败证据。新字段兼容修复只在Git本地进行，尚无新物理run；下方启动记录为历史。
 
 **2026-09-18 11:54覆盖下方H-07运行状态：** 9993fab最新两门已完成（共同digest88a8c268…），首帧人工核验通过。新`server_27b_v2`（4104006/GPU3/8907、最多218调用）正在服务；H-07根`radio_27b_v1`/`plates_27b_v1`及同级`.log`为本轮新两策略短测，已提交、结果待验，勿与H-06同名run混淆。`semantic_grounded_9993fab`正在使用，禁止热pull/修改。`gates_v3.tar`新两门证据已与本地SHA一致，旧gates/static不覆盖。[实时计划](plan.md)

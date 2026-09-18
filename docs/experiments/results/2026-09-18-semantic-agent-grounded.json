@@ -1,7 +1,7 @@
 {
   "experiment": "H-07",
   "owner": "Codex",
-  "updated_at": "2026-09-18T12:08:00+08:00",
+  "updated_at": "2026-09-18T12:10:00+08:00",
   "status": "engineering_gates_passed_policy_pilots_aborted_contract_fix_cpu_only",
   "branch": "feat/semantic-agent-grounded-20260918",
   "evaluated_commit": "9993fab4fc9e4e6ffd5d76a4e5a8fa01f9a21eb7",
@@ -83,7 +83,10 @@
     }
   ],
   "post_pilot_fix": {
+    "code_commit": "e6925d87f90d12a7ab6237cb99daf3279cb3b646",
     "local_cpu_tests_passed": 96,
+    "remote_cpu_tests_passed": 96,
+    "remote_cpu_wall_seconds": 3.919,
     "physical_validation": "NOT_RUN",
     "omitted_other_views_default": "empty_no_corroborating_evidence",
     "core_evidence_fields_strict": true,
