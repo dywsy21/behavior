@@ -4,7 +4,7 @@
   "registered_at": "2026-09-19T05:48:00+08:00",
   "status": "preregistered_waiting_independent_review_no_reset",
   "hypothesis": "Offering safe unloaded wrist adjustments with finite robot-only future reach information improves a fixed-pose approach bottleneck without changing the low-level servo or training weights.",
-  "code_identity": "Final exact immutable commit and implementation digest must be recorded before any reset; candidate14f5db5 plus manifest-classification correction.",
+  "code_identity": {"commit":"1c7ddee19806848fc7f2c66b691baaa6486b3041","implementation_digest":"c654f42097842da4940bb58a94ed2ba0ad476148f4c17bb865b2548f5dedd229","source_path":"/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_reorientation_1c7ddee","local_tests":339,"local_test_s":5.586,"remote_tests":339,"remote_test_s":14.439,"real_source_validation_s":0.03272090898826718,"real_source_spec_sha256":"3cba061ad7586d6ceff839a36e72802df4163120843179376154f846e02bc8a7","independent_review":"pending"},
   "flags": ["grounded","refine_grounding","visual_odometry","active_grasp_probe","grasp_motion","robot_geometry_guards","approach_reorientation","approach_progress","held_object_inspection","persistent_grasp_tracks","spatial_grasp_features","inspection_budget_aware","multicamera_inspection","structured_planning"],
   "odometry": {"estimator":"rgbd_joint","substep_controls":6},
   "contact_geometry": false,
