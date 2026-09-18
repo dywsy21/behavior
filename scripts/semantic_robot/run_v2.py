@@ -384,9 +384,16 @@ def main():
                         write(directory/"candidates.json",manager.candidate_receipt)
                         if manager.stop_reason:
                             row["stop_reason"]=manager.stop_reason; decisions.append(row); break
-                        action,call=policy.act_feasible(manager,state,bundle,allowed)
-                        save_call(directory,"action",call)
-                        row["selection_source"]="VLM_among_current_preflighted_actions"
+                        if controller.grasp_verifier is not None and manager.stage=="VERIFY_GRASP":
+                            action,selection=controller.verification_action(allowed)
+                            row["selection_source"]=selection["source"]
+                            write(directory/"action_selection.json",selection)
+                            if manager.stop_reason:
+                                row["stop_reason"]=manager.stop_reason;decisions.append(row);break
+                        else:
+                            action,call=policy.act_feasible(manager,state,bundle,allowed)
+                            save_call(directory,"action",call)
+                            row["selection_source"]="VLM_among_current_preflighted_actions"
                     else:
                         action, call = policy.act(manager,state,bundle)
                         save_call(directory,"action",call)

@@ -616,6 +616,34 @@ class GroundedController:
             self.harness.stop_reason="NO_SAFE_ACTION_AT_CURRENT_STATE"
         return tuple(allowed)
 
+    def verification_action(self,allowed):
+        """A finite sensing action must match its verifier's measurement scale.
+
+        The old VLM could choose a 2mm pulse that could not satisfy the >=3mm
+        measured-motion gate. Never lower that gate or invent evidence; use
+        one already-preflighted 1cm synchronized lift per fresh observation.
+        The original four-observation window bounds this to three probes.
+        """
+        h=self.harness
+        if self.grasp_verifier is None or h.goal.kind!="pick" or h.stage!="VERIFY_GRASP":
+            raise ValueError("Registered grasp verification is not active")
+        obs=h.observation
+        observable=(obs is not None and obs.visible and self.target.get("valid") and
+                    obs.enclosed is not False and obs.co_moving is not False and obs.hazard=="none")
+        action=Action(h.goal.hand,"up","fine")
+        reason=("VERIFICATION_TARGET_UNOBSERVABLE_OR_CONTRADICTED" if not observable else
+                "NO_SAFE_OBSERVABLE_GRASP_LIFT" if action not in allowed else None)
+        if reason is not None:
+            h.recover(reason)
+            # Even with a malformed missing latch, no unobservable motion is
+            # authorized by this sensing routine. This is a stop, not success.
+            if h.stop_reason is None:h.stop_reason=reason
+            return HOLD,{"source":"registered_grasp_sensing_controller","reason":reason,"success_claim":False}
+        h.authorize(action)
+        return action,{"source":"registered_grasp_sensing_controller","reason":"PRECHECKED_1CM_MEASURABLE_LIFT",
+            "max_probes_in_original_window":3,"commanded_lift_m":action.amount(h.carry),
+            "measurement_gate_unchanged":True,"no_model_action_call":True,"success_claim":False}
+
     def search_action(self,state):
         """One finite pulse, not a hidden multi-step macro or VLM fiction."""
         if self.goal_changed:return HOLD,{"source":"goal_transition_barrier","reason":"OBSERVE_NEW_GOAL_FIRST"}

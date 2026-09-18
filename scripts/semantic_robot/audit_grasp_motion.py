@@ -15,18 +15,21 @@ def read(p):return json.loads(p.read_text())
 
 
 def frame(p):
-    return {"q":np.asarray(read(p/"proprio.json")["q"]),"depth":dict(np.load(p/"depth.npz")),
+    result={"q":np.asarray(read(p/"proprio.json")["q"]),"depth":dict(np.load(p/"depth.npz")),
         "rgb":{v:np.asarray(Image.open(p/("CURRENT_"+v.upper()+"_RAW.png"))) for v in ("head","left_wrist","right_wrist")}}
+    if (p/"robot_self_geometry.json").exists():result["self_geometry"]=read(p/"robot_self_geometry.json")
+    return result
 
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--run",required=True);p.add_argument("--decision",type=int,action="append",required=True);p.add_argument("--output",required=True);a=p.parse_args()
     root=Path(a.run);out=Path(a.output);out.mkdir(parents=True,exist_ok=False);m=RobotModel(read(root/"robot_calibration.json"));rows=[]
+    estimator=read(root/"manifest.json").get("args",{}).get("odometry_estimator","pnp")
     for i in a.decision:
         d0,d1=(root/f"decision_{j:03d}" for j in (i-1,i));before,after=frame(d0),frame(d1)
         target=read(d0/"harness.json")["target_surface_estimate"]
         if not target["valid"]:rows.append({"decision":i,"valid":False,"reason":"PREVIOUS_TARGET_UNKNOWN"});continue
-        motion=RGBDMotion()
+        motion=RGBDMotion(estimator)
         for row in (before,after):r=motion.observe({v+"_rgb":rgb for v,rgb in row["rgb"].items()},row["depth"],m,row["q"])
         if not r["valid"]:rows.append({"decision":i,"valid":False,"reason":"HEAD_MOTION_UNKNOWN","motion":r});continue
         result=measure_grasp_motion(before,after,m,"right",target["point_base_m"],r["body_transform_current_in_previous"])

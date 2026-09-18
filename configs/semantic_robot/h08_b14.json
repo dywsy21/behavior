@@ -1,0 +1,23 @@
+{
+  "experiment_id": "H-08-B14",
+  "owner": "Codex-solo",
+  "hypothesis": "An explicit, fresh-preflighted 1cm grasp-sensing lift avoids sub-resolution micro motions resetting the registered verifier, without changing its evidence thresholds or window.",
+  "code_commit": "PENDING_FIXED_SOURCE",
+  "implementation_digest": "PENDING_FIXED_SOURCE",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "training_updates": 0,
+  "weights_changed": false,
+  "actor_scene_truth": false,
+  "gate_each": {"tasks": [0, 3], "gpu": 3, "decisions": 24, "controls": 1536, "wall_seconds": 1200, "model_calls": 0},
+  "policy_matched": {"run": "radio_b14_matched", "task": 0, "instance": 138, "split": "train", "seed": 0, "expert_prefix": 448, "saved_policy_prefix": 362, "gpu": 3, "decisions": 32, "controls": 768, "wall_seconds": 900, "model_calls": 81, "prefix_spec": "configs/semantic_robot/h08_b13_matched_prefix.json"},
+  "comparison": "B13 matched diagnostic, identical hash-pinned 448 expert + 362 recorded policy prefix and original plan. Replayed controls are not autonomous progress or success-rate evidence.",
+  "flags": ["--harness", "grounded", "--refine-grounding", "--visual-odometry", "--active-grasp-probe", "--grasp-motion", "--odometry-estimator", "rgbd_rigid", "--approach-progress"],
+  "contact_geometry": false,
+  "paired_only_observer": false,
+  "cpu_threads": 4,
+  "min_free_disk_GiB": 80,
+  "max_added_artifacts_GiB": 2,
+  "no_new_standard_or_task3_policy": true,
+  "stops": ["Original safety checks and verification thresholds/window", "No safe informative sensing lift", "Replay hash/endpoint mismatch", "Unknown possible load: preserve, not open", "Declared run budget"],
+  "limitations": "Known development start, assisted grasp, evaluator3.9.1; not independent success rate. Standard B13 failure is diagnosed separately. Independent member review pending."
+}
