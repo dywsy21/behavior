@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 20:08当前：** 主代理仅GPU3双门`gate_radio_b18`44434、`gate_plates_b18`44435运行，源`git_worktrees/semantic_persistent_d807d3d`固定d807d3d/b353df13/238CPU；H08根新增`offline_b18_radio_b17_matched`、`offline_b18_radio_b14_matched`为0控制旧帧候选核验。B18模型/策略未启动，不热改源。GPU1已交Astra H09独立SFT；其专属根`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_showharness_20260918`，精确运行位置由其后续回报，不与H08混淆。
+
 **2026-09-18 19:50当前：** B17唯一策略39229已结束（55新控制/4模型/官方false、保载安全停），38931核对专用命令后TERM；`b17_complete.tar.gz`SHA1c953bcd…约256MiB已归档、传本地中。下方“策略运行”为历史；不原样重启，新源/物理尚无，仅离线轨迹诊断。
 
 **2026-09-18 19:44当前：** B17双门36340/36341均退出且通过；`server_b17_matched`38931/GPU1/8908/≤151已就绪，唯一`radio_b17_matched`GPU3已提交，仍用`semantic_reference_c9d3ea9`不可变源。不能照下方旧记录再启动另一run。双门初图本地`artifacts/semantic-agent-effect-20260918/b17_gate_previews/`已人工看；静态完整包在同根`b17_static_verified_bundle/`。
