@@ -8,7 +8,7 @@ import numpy as np
 
 from .grounding import LocalDepthGuard, localize_target, observed_cloud
 from .harness import TaskHarness
-from .protocol import Action, HOLD, TRANSLATIONS, strict_json
+from .protocol import Action, HOLD, TRANSLATIONS, VIEWS, strict_json
 from .search import CoverageSearch
 from .servo import SafeServo
 
@@ -42,6 +42,13 @@ class GroundedHarness(TaskHarness):
         palette=super().palette()
         if not self.stop_reason and self.stage in ("SEARCH","RECOVER"):
             palette += (Action("base","yaw_plus","coarse"),Action("base","yaw_minus","coarse"))
+        if (not self.stop_reason and self.stage == "ALIGN" and self.goal.kind == "pick"
+                and not any(self.hold_verified.values())):
+            # A near target can still be beyond an extended arm's workspace.
+            # Permit a *single* small, fresh-depth-checked body adjustment; do
+            # not force wrist-only alignment or move a potentially held load.
+            palette += tuple(Action("base", move, "micro") for move in ("forward", "back", "left", "right"))
+            palette += tuple(Action("torso", move, "micro") for move in ("up", "down"))
         return tuple(dict.fromkeys(palette))
 
     def context(self):
@@ -79,7 +86,7 @@ def metric_co_motion(previous, current, state, centers, feedback, arm):
 
 class GroundedController:
     # A hard candidate-count limit bounds CPU work; no unbounded IK search.
-    max_preflights=10
+    max_preflights=24
     max_replans=2
 
     def __init__(self, model, servo, harness, visual_odometry=False):
@@ -98,6 +105,11 @@ class GroundedController:
         if visual_odometry:
             from .odometry import RGBDMotion
             self.motion=RGBDMotion()
+
+    @property
+    def can_replan_stop(self):
+        return (self.harness.stop_reason == "RECOVERY_BUDGET_EXHAUSTED"
+                and self.harness.replans < self.max_replans)
 
     def update_motion(self,images,depths,state):
         if self.motion is None:raise ValueError("Visual motion was not enabled")
@@ -160,6 +172,11 @@ class GroundedController:
                        "metric_co_motion":co_motion,"distance_reduced":reduced}
         internal=dict(self.progress)
         internal["target_distance_m"]=distance if distance is not None else math.inf
+        if (manager.stage == "ALIGN" and manager.goal.kind == "pick" and distance is not None
+                and distance > .10 and not any(manager.hold_verified.values())):
+            # Hysteresis: enter ALIGN at 8cm, leave above 10cm. A changed contact
+            # estimate must not strand a 16cm-away target in wrist-only control.
+            manager.transition("APPROACH")
         if reduced and manager.stage in ("APPROACH","ALIGN"):
             manager.stage_age=0
         # Do not feed off-screen / cross-camera 2D EEF distances into progress.
@@ -209,6 +226,17 @@ class GroundedController:
             manager.stop_reason="MODEL_REQUESTED_SAFE_STOP"
         self.replan_needed=None
 
+    def _translation_direction(self, action, state):
+        vector = np.asarray(TRANSLATIONS[action.move], dtype=float)
+        if action.frame == "base":
+            return vector
+        if action.frame in VIEWS:
+            # Exactly SafeServo's camera frame: forward into image, left/up in
+            # image coordinates. This estimate never replaces its real IK test.
+            frame = self.model.forward(state.q, "camera_" + action.frame)[:3, :3]
+            return frame @ np.array([[0, -1, 0], [0, 0, 1], [-1, 0, 0]]) @ vector
+        return None
+
     def _expected_point(self, action, state, trial=None):
         point=np.asarray(self.target["point_base_m"])
         centers=self.centers
@@ -223,9 +251,10 @@ class GroundedController:
         elif trial is not None and trial.joint_plan is not None:
             centers=self.model.grasp_centers(trial.joint_plan[-1])
         elif action.move in TRANSLATIONS and action.part in (*self.harness.arms,"both"):
-            if action.frame!="base":
+            direction = self._translation_direction(action, state)
+            if direction is None:
                 return None
-            centers={a:p+(np.asarray(TRANSLATIONS[action.move])*action.amount(self.harness.carry)
+            centers={a:p+(direction*action.amount(self.harness.carry)
                           if action.part in (a,"both") else 0) for a,p in centers.items()}
         else:
             return None
@@ -240,16 +269,21 @@ class GroundedController:
             ranked=[]
             before=self.target["distance_to_active_closing_center_m"]
             for action in palette:
-                if action.move in TRANSLATIONS and action.part in (*self.harness.arms,"both") and action.frame=="base":
+                if action.move in TRANSLATIONS and action.part in (*self.harness.arms,"both"):
                     after=self._expected_point(action,state)
                     if after is not None:
                         ranked.append((before-after,action))
             ranked.sort(key=lambda x:x[0],reverse=True)
-            translation_slots=2 if self.harness.stage in ("ALIGN","INTERACT") and not self.harness.carry else 6
-            # Each promising direction gets its 2mm fallback BEFORE spending
-            # the budget on a second direction. Micro cannot disappear again.
+            translation_slots=8
+            # Rank *directions*, not repeated scales of one direction. Failed
+            # forward IK must not spend every slot and hide feasible up/left.
+            # Camera-frame diagonals may be feasible when base axes are not.
+            selected_directions=[]
             for gain,action in ranked:
                 if gain<=0 or len(proposed)>=translation_slots: continue
+                direction=self._translation_direction(action,state)
+                if any(action.part==part and float(direction@old)>.995 for part,old in selected_directions):continue
+                selected_directions.append((action.part,direction))
                 if action not in proposed: proposed.append(action)
                 micro=Action(action.part,action.move,"micro",action.frame)
                 if micro in palette and micro not in proposed: proposed.append(micro)
@@ -258,7 +292,7 @@ class GroundedController:
             # it still needs CURRENT observed free space, not a guessed room map.
             body=[]
             for action in palette:
-                if action.part=="base" and action.move in TRANSLATIONS and action.scale=="fine":
+                if action.part=="base" and action.move in TRANSLATIONS and action.scale==("micro" if self.harness.stage=="ALIGN" else "fine"):
                     distance=self._expected_point(action,state)
                     if distance is not None: body.append((distance,action))
             proposed.extend(a for _,a in sorted(body,key=lambda x:x[0])[:1])
@@ -268,9 +302,9 @@ class GroundedController:
             if open_action in palette:
                 proposed.insert(0,open_action)
             for action in palette:
-                if action.move in ("roll_plus","roll_minus","pitch_plus","pitch_minus","yaw_plus","yaw_minus") and action.part in (*self.harness.arms,"both") and action.scale=="micro":
+                if action.move in ("roll_plus","roll_minus","pitch_plus","pitch_minus","yaw_plus","yaw_minus") and action.part in (*self.harness.arms,"both"):
                     if len(proposed)<self.max_preflights: proposed.append(action)
-            if self.harness.stage in ("APPROACH","RECOVER"):
+            if self.harness.stage in ("APPROACH","ALIGN","RECOVER"):
                 for move in ("up","down"):
                     torso=Action("torso",move,"micro")
                     if torso in palette and len(proposed)<self.max_preflights:proposed.append(torso)

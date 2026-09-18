@@ -15,7 +15,7 @@ from semantic_robot.v2.kinematics import RobotModel
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.protocol import Action, HOLD
-from semantic_robot.v2.policy import GROUNDED_OBSERVE_SYSTEM
+from semantic_robot.v2.policy import GROUNDED_OBSERVE_SYSTEM, perception_context
 from semantic_robot.v2.search import CoverageSearch
 from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.vision import project, prepare_views
@@ -244,6 +244,54 @@ class SearchTests(unittest.TestCase):
 
 
 class OrchestrationTests(unittest.TestCase):
+    def test_perception_does_not_receive_previous_target_or_action_scores(self):
+        model,state,h,servo,c,depths,receipt=setup_controller()
+        h.grounding={"target_uv":[.12345,.98765],"point_base_m":[7,8,9]}
+        h.candidate_receipt={"tested":["OLD_ACTION_SCORES"]}
+        h.search_context={"covered_heading_bins":[3,5]}
+        h.last_action=Action("right","up")
+        h.feedback=feedback();h.feedback["eef_delta_m"]["right"]=[0,0,.01]
+        text=perception_context(h,state,SimpleNamespace(geometry={"head":{"robot_only":True}}))
+        value=json.loads(text)
+        self.assertEqual(value["current_goal"]["target"],"radio")
+        self.assertEqual(value["last_executed_action"]["move"],"up")
+        self.assertEqual(value["measured_last_motion_for_before_after_comparison"]["eef_delta_m"]["right"],[0,0,.01])
+        for forbidden in ("target_uv","point_base_m","OLD_ACTION_SCORES","covered_heading_bins"):
+            self.assertNotIn(forbidden,text)
+
+    def test_alignment_keeps_body_fallback_only_for_unheld_pick(self):
+        model,state,h,servo,c,depths,receipt=setup_controller()
+        h.stage="ALIGN"
+        self.assertIn(Action("base","forward","micro"),h.palette())
+        self.assertNotIn(Action("base","forward","fine"),h.palette())
+        h.hold_verified["left"]=True
+        self.assertNotIn(Action("base","forward","micro"),h.palette())
+
+    def test_far_contact_leaves_alignment_without_certifying_grasp(self):
+        model,state,h,servo,c,depths,receipt=setup_controller()
+        h.stage="ALIGN"
+        c.observe(grounded_evidence(enclosed=True),state,depths,receipt)
+        self.assertEqual(h.stage,"APPROACH")
+        self.assertEqual(h.index,0)
+        self.assertNotIn(Action("right","close"),h.palette())
+
+    def test_alignment_samples_alternate_directions_and_fine_rotations(self):
+        model,state,h,servo,c,depths,receipt=setup_controller()
+        c.observe(grounded_evidence(),state,depths,receipt)
+        h.stage="ALIGN"
+        center=c.centers["right"]
+        point=center+np.array([.04,.015,.03])
+        c.target.update(valid=True,point_base_m=point.tolist(),distance_to_active_closing_center_m=float(np.linalg.norm(point-center)))
+        c.candidates(state)
+        tested=[Action(**r["action"]) for r in h.candidate_receipt["tested"]]
+        self.assertIn(Action("right","forward","micro"),tested)
+        self.assertTrue(any(a.part=="right" and a.scale=="fine" and a.move in ("forward","back","left","right","up","down")
+                            and c._translation_direction(a,state)[2]>.99 for a in tested))
+        for move in ("roll_plus","roll_minus","pitch_plus","pitch_minus","yaw_plus","yaw_minus"):
+            self.assertIn(Action("right",move,"fine","tool"),tested)
+            self.assertIn(Action("right",move,"micro","tool"),tested)
+        self.assertLessEqual(len(tested),25)
+
     def test_unknown_depth_cannot_advance_to_grasp(self):
         model,state,h,servo,c,depths,receipt=setup_controller()
         h.stage="ALIGN"
@@ -263,7 +311,7 @@ class OrchestrationTests(unittest.TestCase):
         c.observe(grounded_evidence(),state,depths,receipt)
         allowed=c.candidates(state)
         np.testing.assert_array_equal(servo.grips,[-1,-1])
-        self.assertLessEqual(len(c.harness.candidate_receipt["tested"]),11)
+        self.assertLessEqual(len(c.harness.candidate_receipt["tested"]),c.max_preflights+1)
         self.assertTrue(all(a in h.palette() for a in allowed))
         self.assertNotIn(Action("right","close"),allowed)
         self.assertEqual(servo.status,"IDLE")

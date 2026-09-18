@@ -266,7 +266,7 @@ def main():
                 gate_motion=RGBDMotion()
             phase="BOUNDED_CONTROL_OR_AGENT_LOOP"
             for decision in range(args.max_decisions):
-                recoverable_stop=bool(controller and manager.stop_reason=="RECOVERY_BUDGET_EXHAUSTED" and manager.replans<2)
+                recoverable_stop=bool(controller and controller.can_replan_stop)
                 if controls>=args.max_controls or time.perf_counter()-started>=args.max_seconds or terminal or (manager and manager.stop_reason and not recoverable_stop):
                     break
                 if not policy and decision >= len(gate): break
@@ -292,7 +292,10 @@ def main():
                     if args.visual_odometry:
                         receipt=controller.update_motion(images,depths,state)
                         write(directory/"visual_odometry.json",receipt)
-                        if manager.stop_reason:
+                        # A prior exhausted local-recovery window may enter a
+                        # bounded strategy replan. Valid odometry must not turn
+                        # that permission into an unconditional early break.
+                        if manager.stop_reason and not controller.can_replan_stop:
                             row["stop_reason"]=manager.stop_reason;decisions.append(row);break
                     observation, call = policy.observe(manager,state,bundle)
                     save_call(directory,"observation",call)

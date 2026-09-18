@@ -48,6 +48,28 @@ def observation_context(harness, state, bundle):
         "width_alone_does_not_verify_holding": True}}, ensure_ascii=False)
 
 
+def perception_context(harness, state, bundle):
+    """Observe the new image, not the previous detector's unlabelled answer.
+
+    Action selection still receives measured geometry/full execution context.
+    The visual observer gets the goal, current robot geometry and only the last
+    actual displacement needed to judge before/after co-motion. Prior pixels,
+    target distances, search coverage and action-score tables are not evidence.
+    """
+    feedback = harness.feedback or {}
+    motion = {k: feedback[k] for k in ("status", "control_ticks", "eef_delta_m", "base_integral", "base_motion_source") if k in feedback}
+    return json.dumps({
+        "current_goal": asdict(harness.goal), "goal_index": harness.index, "stage": harness.stage,
+        "prior_holding_claims_not_current_visual_evidence": harness.held,
+        "last_executed_action": None if harness.last_action is None else asdict(harness.last_action),
+        "measured_last_motion_for_before_after_comparison": motion,
+        "current_robot": {"finger_mean_mm_not_total_gap": (state.gripper * 1000).round(2).tolist(),
+                          "projection_guides": bundle.geometry},
+        "instruction": "Locate the target anew in CURRENT RAW views. Do not reuse previous pixel coordinates. "
+                       "The object may now be elsewhere, occluded, or outside the view. A table's chair or the floor is not its surface.",
+    }, ensure_ascii=False)
+
+
 class VLMPolicy:
     def __init__(self, uri, expected_revision, max_calls=160):
         self.uri, self.max_calls, self.calls = uri, max_calls, 0
@@ -103,7 +125,7 @@ RECOVER_SYSTEM = """Replan only the current failed search/approach strategy. Do 
 
 class GroundedPolicy(VLMPolicy):
     def observe(self,harness,state,bundle):
-        text=observation_context(harness,state,bundle)
+        text=perception_context(harness,state,bundle)
         result,payload=self._call("observe",GROUNDED_OBSERVE_SYSTEM,text,bundle)
         evidence = GroundedEvidence.parse(result["text"])
         validation = {"defaulted_fields": [] if "other_views" in strict_json(result["text"]) else ["other_views"],

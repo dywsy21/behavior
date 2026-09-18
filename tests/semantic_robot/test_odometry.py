@@ -82,6 +82,22 @@ class OdometryTests(unittest.TestCase):
         self.assertEqual(h.stop_reason,"VISUAL_ODOMETRY_UNCERTAIN")
         self.assertEqual(c.search.heading,0.)
 
+    def test_fresh_motion_does_not_bypass_or_disable_bounded_replanning(self):
+        model,state=fixture();h=GroundedHarness([Goal("pick","radio","right","moves with hand")])
+        c=GroundedController(model,SafeServo(model,state),h,visual_odometry=True);c.motion=Mock()
+        c.motion.observe.return_value={"valid":True,"body_delta":[0,0,0]}
+        raw=feedback();raw["base_integral"]=[0,0,0]
+        c.executed(HOLD,raw)
+        h.stop_reason="RECOVERY_BUDGET_EXHAUSTED"
+        self.assertTrue(c.can_replan_stop)
+        c.update_motion({}, {},state)
+        self.assertTrue(c.can_replan_stop)
+        self.assertEqual(h.stop_reason,"RECOVERY_BUDGET_EXHAUSTED")
+        h.replans=2
+        self.assertFalse(c.can_replan_stop)
+        h.replans=0;h.stop_reason="VISUAL_ODOMETRY_UNCERTAIN"
+        self.assertFalse(c.can_replan_stop)
+
     def test_visual_displacement_has_previous_body_frame_not_midpoint_velocity_frame(self):
         search=CoverageSearch()
         search.executed({"base_integral":[.1,0.,.2],"base_motion_convention":"displacement_in_previous_body_frame"})
