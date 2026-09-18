@@ -14,6 +14,8 @@
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
 
+**21:56 两线真实评测完成，进入证据/合并验收（Codex＋Astra）：** 本地B20完整包SHA `fa83601f031b6a18a34446ba723497f6190c1c59a93656b25c1ee98321050e17`一致；126 RGB-D hash零差异、214帧视频全解码，本人看全部4页面板/7时刻三RAW。20个已执行动作后审计均仍持radio_89，0 open/detach，d3认证/切意图真实发生；官方false与20cm耗尽不变。完整源复算观察跨度16.512°与先前快照一致。证据`artifacts/semantic-agent-effect-20260918/b20_verified_bundle/`、[轻量摘要](experiments/results/2026-09-18-semantic-agent-b20.json)。H09最后plates-base也结束24决策/379控制/96.318s；四对照合计100模型/1939新控制，均无夹爪命令/持物、官方false，FT餐桌确实朝微波炉台面而非目标；Astra完成最后视频/初图差异/服务退出核验后交稳定HEAD，尚未合并。当前干净分支fetch/pull已同步、main仍33677bd；不启动新训练/同例B21，保留实验权重而不升级为默认。
+
 **21:47 H09前三闭环已结束，最后对照运行（Astra；主代理记录）：** radio-FT真实累计负yaw276.98°，39/40 actor输入低base速度，不能把失败说成只是当前高速延续；已480帧全解码/owner看0/120/240/360/479，未抓取。plates-FT24决策/433控制/77.951s全前进，实际world观察端点路径1.315m，`BASE_TRACKING_FAILED`安全停、官方false；未证明接近正确桌子，视频仍需核验。最后plates-base按原975852a/预算运行，不增加训练或回合；父B20只归档/审核、GPU3已释放。
 
 **21:43 H09意图粒度核对完成（Astra；主代理记录）：** task3训练NAVIGATE596条实际target为fridge270/plate221/bowl51/drop in sink54，无table/dining table/breakfast table家具导航目标；但另有GRASP plate source breakfast table36＋GRASP bowl source breakfast table13，故不是“早餐桌概念完全未见”。正确局限是训练技能意图与部署子目标粒度未直接对齐；不能擅自把NAV plate/bowl改判同义家具导航，也不改本轮固定提示。938fc87保存0调用覆盖审计/测试；原FT/base两餐桌回合继续，后续按通用接口/数据覆盖门修，不围绕单例提示调参。
