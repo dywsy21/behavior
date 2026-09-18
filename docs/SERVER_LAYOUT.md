@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 07:50当前：** H17 192585已退出，147,454,991B完整run在本地`artifacts/agentic-vlm-goal-20260918/h17_matched_bundle/radio_h17_matched_approach`；GPU3仅旧156556模型空闲190/215，GPU1当前空给Astra。P3完整70文件本地子worktree、双端SHA全过，父seed人工审通过但尚无native训练样本。H19新NVMe根`/mnt/nvme_tmp/robodojo_agentic_20260919/h19_combined_fullstart`仅预登记≤4GiB，尚未创建/运行，旧所有根及不可变源保留。
+
 **2026-09-19 07:36当前：** P3 196049/196046已退出，原`h09u_reference_task1_v3`20,782,245B/465控制/reference局部成功，seed仍隔离、完整本地下载核验中。`/mnt/nvme_tmp/robodojo_agentic_20260919/h18_cpu`仅31,428B旧/新保存态CPU结果，无新模型/仿真；不可变ada源CPU/独立审通过。H17旧341/192585原回合未在此记录为结束，勿重复启动。
 
 **2026-09-19 07:32当前：** GPU1新P3 `vlm_sft_native_teacher_20260919/h09u_reference_task1_v3`196049（壳196046），07:27:19 BJT提交，固定aff、授权00a798b1…594b4a1，原源/失败留存。GPU3 H17 192585已通过1392前缀并实际策略运行，仍同341；模型156556不变。新`git_worktrees/semantic_fastfk_ada39f7`只做CPU、不挂任何物理任务；H17双门完整本地`h17_gates_bundle`全SHA/运动链/视频通过。

@@ -76,5 +76,27 @@ class BodyOptionsTests(unittest.TestCase):
             with self.assertRaises(WallTimeBudgetReached):c.candidates(s,deadline=0)
             check.assert_not_called()
 
+    def test_combined_retains_body_and_wrist_with_same_bounded_checks(self):
+        _,s,h,servo,c=self.setup_body();h.approach_reorientation=True
+        before=s.q.copy();allowed=c.candidates(s)
+        rows=h.candidate_receipt["tested"]
+        self.assertTrue(h.candidate_receipt["approach_body_options"]["eligible"])
+        self.assertTrue(h.candidate_receipt["approach_reorientation"]["eligible"])
+        self.assertEqual({r["action"]["move"] for r in rows
+                          if r["action"]["part"]=="base" and r["action"]["scale"]=="fine"},
+                         {"forward","back","left","right","yaw_plus","yaw_minus"})
+        self.assertTrue(any(a.part=="right" and a.move in ROTATIONS for a in allowed))
+        self.assertLessEqual(len(rows)-1,32)
+        self.assertEqual(set(allowed),{Action(**r["action"]) for r in rows if r["accepted"]})
+        np.testing.assert_array_equal(before,s.q);self.assertEqual(servo.status,"IDLE")
+
+    def test_combined_unknown_load_disables_both_extensions(self):
+        _,s,h,_,c=self.setup_body();h.approach_reorientation=True
+        h.pending_grasp["right"]=None
+        allowed=c.candidates(s)
+        self.assertFalse(h.candidate_receipt["approach_body_options"]["eligible"])
+        self.assertFalse(h.candidate_receipt["approach_reorientation"]["eligible"])
+        self.assertFalse(any(a.move in ROTATIONS for a in allowed))
+
 
 if __name__=="__main__":unittest.main()

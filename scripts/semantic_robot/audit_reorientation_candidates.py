@@ -22,7 +22,7 @@ def main():
     parser.add_argument("--run", required=True)
     parser.add_argument("--decision", action="append", type=int, required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--candidate-mode",choices=("reorientation","body"),default="reorientation")
+    parser.add_argument("--candidate-mode",choices=("reorientation","body","combined"),default="reorientation")
     args = parser.parse_args()
     root, out = Path(args.run), Path(args.output)
     if out.exists() or not 1 <= len(args.decision) <= 3 or len(set(args.decision)) != len(args.decision):
@@ -41,8 +41,8 @@ def main():
         refined = json.loads((source / "refinement.json").read_text())
         evidence = GroundedEvidence.parse(json.dumps(refined.get("refined_evidence", json.loads(raw["result"]["text"]))))
         h = GroundedHarness([Goal(**saved["goal"])], contact_geometry=False,
-                            approach_reorientation=args.candidate_mode=="reorientation",
-                            approach_body_options=args.candidate_mode=="body")
+                            approach_reorientation=args.candidate_mode in ("reorientation","combined"),
+                            approach_body_options=args.candidate_mode in ("body","combined"))
         h.stage, h.observation, h.last_gripper = saved["stage"], evidence, state.gripper.copy()
         h.grounding = saved["target_surface_estimate"]
         h.pending_grasp = saved["unverified_close_latches"].copy()
