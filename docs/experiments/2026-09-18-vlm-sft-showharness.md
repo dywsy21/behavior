@@ -2,8 +2,11 @@
 
 负责人：Astra/max 子代理。独立分支 `feat/vlm-sft-showharness-20260918`，基点 `6da8c80fb94e748c479ddd558290c6315f6e163d`。主代理负责 H-08 harness，本文只维护 H-09。当前是小规模方法验证，不是50任务大训练。
 
+**最终结论：实际训练与验证已完成，但本轮没有证实闭环任务收益。** 2B LoRA在A100上600更新/18.26分钟完成，方向分类从5/192到180/192；然而速度延续规则已达170/192，操作子集仅2/18到7/18。四个注册物理回合全部官方false、没有夹爪命令或持物；微调radio反复转向，plates朝厨房台面前进，均不满足当前目标。保留全部负结果，不追加原配方训练/回合。机器可读轻量交付见`configs/vlm_sft/h09_final_result.json`。
+
 ## 最新状态
 
+- 2026-09-18 21:53（北京时间）：四回合、100模型调用/1939新控制全部完成；两radio各448专家前缀单列。四视频SHA与服务器一致，967帧全解码，Astra亲看18个分层视频帧（精确索引见下）；完整逐决策图像/输入/控制/诊断和轻量回执已在本地。74735服务已退出，8918空、GPU1为0MiB；H09根2.8GiB、全盘余89GiB。数据/训练/live/诊断和最新零调用分析均获主代理独立review，21 H09 CPU与232原CPU通过。剩余为未验证能力与下一块数据设计，不存在待启动/待完成的本块训练或物理回合。
 - 2026-09-18 21:44（北京时间）：前三物理回合完成，均官方false/无持物。radio-FT40/961/143.761s全为底盘负yaw，实际累计276.98°、39/40输入低base速度；480视频帧全解码并看0/120/240/360/479，确实转离radio而未抓取。plates-FT24/433/77.951s全前進，实际world路径1.315m后BASE_TRACKING_FAILED安全停。最后plates-base同975852a/同原预算已起，不增加回合/训练；终态/视频审核待。
 - 2026-09-18 21:32（北京时间）：首物理radio_base_v1终态12决策/166新控制＋448专家前缀/43.854s；12次LEFT_FORWARD，9次执行达到命令目标、3次连续可达性/自碰撞拒绝，按注册条件停机。官方false，不能把移动命令完成当GRASP成功。radio_ft_v1同975852a/同预算开始；视频下载与实际位移审计进行中，后两个plates尚未启动。
 - 2026-09-18 21:26（北京时间）：975852a双工程门完成：radio20命令/355新控制/55.423s，plates20/410/75.512s，gate_ok均true、同digest7993ec29；底盘后移遮挡拒绝如实保留，开合不当作抓取。本人已看两门head/right-wrist初始原图，客厅radio/厨房冰箱灶台场景一致。最终2B+adapter服务74735/8918/GPU1、cap160已起，原四回合按radio-base、radio-FT、plates-FT、plates-base顺序运行；不再训练。
@@ -35,14 +38,14 @@
 
 闭环初始预算：同协议2起点×未微调/微调，各≤40决策/1280新控制/1200秒，GPU1顺序运行。原前缀单列。两个模型使用完全相同的控制、安全门、提示与重置规则；成功只认官方物理判据，另报告局部行为、拒绝、动作和延迟。数据/映射审计失败就先纠正具体根因，不消耗此物理预算。
 
-## 尚未完成
+## 本块验收
 
 - [x] 来源分组冻结、同状态微动作映射和机械检查。
 - [x] 分层直接图像/标签审核及可定位记录（Astra视觉审阅，不冒称外部人工标注）。
 - [x] 实际训练mask、梯度、保存/回载与吞吐门。
 - [x] 完成有界训练与adapter SHA。
 - [x] 留出未微调/微调比较及静态失败分类（物理失败分类待闭环）。
-- [ ] 同协议物理闭环和视频审核。
+- [x] 同协议物理闭环和视频审核（负结果完整保留，未扩大预算）。
 - [x] 主代理独立代码审查（数据codec、mask/reload、训练、live/serve/runner与write-only特权诊断边界）。
 
 ## 首块已完成的训练与静态结果
@@ -69,3 +72,52 @@ FT相对同基座多175个正确，但相对速度规则只多10个；其中底�
 ## 独立图像审核补录
 
 主代理在原36张已保留面板中独立直接查看4例，未见图像与方向/开合标签明显矛盾：selection index6 `t0_e12_f1472` RIGHT_DOWN对应约14.6mm下移；index7 `t0_e133_f1952` RIGHT_OPEN可见开爪，但未据此判断PLACE成功；index23 `t3_e787_f10256` BASE_YAW_MINUS背景转向一致；index24 `t3_e773_f6640` BASE_BACK视野后退一致。本地路径为`artifacts/h09_review/review/`，完整文件名见`h09_data_v4_review.json`补录。旧selection源自v1/v3，文本仍可能含TORSO/旧图像路径；仅核SHA相同的图像与有效标签继承为v4审核证据，实际训练41符号/无TORSO文本以过滤后的v4 manifest与机械prefix检查为准，未改写旧证据。
+
+## 已完成的物理配对
+
+四回合及服务均固定`975852aa0f012987084dc9a1d49e1d1783122163`，执行实现digest `7993ec29399233c0ba287c1a955fa9bdbf576d283e9271578054a65dd1a2e17b`；分析源`938fc87e6660cf95c9f307d49addcfe3b23a79a5`。共享原`6da8c80`的SafeServo/机载输入/底盘depth-veto，**不是H-08动态GroundedController同源策略**。两场景工程门先通过，分别355/410新控制、55.423/75.512s、0模型调用；策略新预算仍各40决策/1280新控制/1200s，环境seed0/policy seed41，顺序radio原始→radio微调→plates微调→plates原始。
+
+H09 radio只有448专家控制前缀；H08匹配持物验证起点另接旧策略362控制，且模型/控制策略/目标阶段均不同。**两线不得直接比较成功率或将父harness改进归因于此adapter。** 本文有效的模型对照仅是H09同2B基座的adapter-off/on。
+
+| 回合 | 决策/新控制 | prefix后秒数 | 实际行为和停止 | 官方成功 |
+| --- | ---: | ---: | --- | --- |
+| radio原始 | 12 / 166 | 43.854 | 12次LEFT_FORWARD；9执行、3可达性/自碰撞拒绝后停；左EEF端点路径87.8mm | false |
+| radio微调 | 40 / 961 | 143.761 | 40次BASE_YAW_MINUS；实际累计yaw −276.98°，预算停，未执行GRASP | false |
+| plates微调 | 24 / 433 | 77.951 | 24次BASE_FORWARD；底盘端点路径1.315m，末次BASE_TRACKING_FAILED安全停 | false |
+| plates原始 | 24 / 379 | 96.318 | 24次LEFT_FORWARD；21执行、3拒绝后停；左EEF端点路径205.6mm、底盘不动 | false |
+
+100次模型决策中没有OPEN/CLOSE；全部事后assisted持物审计为空。命令TARGET_REACHED只表示机器人完成该微动作，不表示抓取/导航目标完成。radio最终官方谓词均satisfied=[]、unsatisfied=[0]；plates均satisfied=[0,3]、unsatisfied=[1,2]，与工程起点相同。固定GRASP和NAVIGATE不是完整任务规划器，因此这里不能据0/4构造总体任务SR估计。人工视频看到plates微调朝微波炉/台面接近，没有转向餐桌；未设计独立导航距离成功阈值，不伪造局部导航SR。末次命令速度积分约19.9mm而预期为60mm，触发原跟踪门；没有读取接触真值来确定唯一物理受阻原因。
+
+两对重置的初始robot world pose与提供给actor的proprio均完全相同；原始头图不是逐字节相同，radio/plates平均绝对RGB通道差分别1.595/1.103（0–255尺度，最大73/53），相机画面直接核对为同场景起点。故是同配置物理配对，不冒称物理首帧像素完全相同；静态配对则确实复用同一input tensor。world pose/assisted attachment仅write-only落盘作事后分析，未回注actor、动作分支或停止条件。距离/转角是决策端点观测之和，非连续扫掠路径，也不含末尾单步安全保持后的新增观测。
+
+在线模型延迟median/p95秒：radio原始0.143/4.166（首次冷调用影响尾部）、radio微调0.334/0.346、plates微调0.222/0.227、plates原始0.140/0.149。解码符号长度不同，不把延迟差全归LoRA。物理actor处于低base速度的次数为11/12、39/40、24/24、24/24，总98/100；训练仅127/1199、静态测试20/192为此状态。该分布差是证据，但没有做图像/本体/历史因果消融，不能认定它单独导致不服从指令。
+
+## 数据覆盖与负结果解释
+
+原计划按每任务来源episode配额选样；严格过滤后并不任务均衡，更没有对**实际部署意图×动作类别×近静止/阶段起点**设置准入门。此缺口不能用“训练见过task0/3”掩盖：
+
+- radio GRASP确切指令只有11条训练样本、5来源episode；10条低base速度、全部空history，其中RIGHT_CLOSE仅1条。task0另外213条是NAVIGATE、10条PLACE、4条PRESS。不能声称充分训练了GRASP。
+- plates固定`NAVIGATE breakfast table`没有直接训练样本。相近NAVIGATE目标为fridge270、plate221、bowl51、drop in sink54；家具导航目标table/dining table/breakfast table均未出现。桌子概念并非完全未见：49条GRASP以breakfast table为source，另272条到plate/bowl的相关导航。物体目标和家具目标不是可无条件合并的同义标签，结论只是部署子目标粒度缺直接监督。
+- 静态180/192主要是专家连续运动状态下的方向延续；当前速度规则170/192已解释大部分分数。FT比规则的操作增量7条、底盘增量3条仍是真实计数，但不支持可靠视觉操控结论。物理radio在GRASP下反复转向，直接证明这次模型没有正确执行指令；不是所有失败都应归因于控制器或模型规模。
+- 源16帧/30Hz方向投影与部署固定微动作幅度/时钟不完全一致；许多混合操作被严格拒绝，113条非底盘训练标签不足以覆盖41符号及完整技能。没有HOLD/失败/完成正标签，不伪造它们补数；也没有用这些失败模型轨迹自循环作SFT教师。
+
+训练前已针对独立review做过有界纠正：全窗口反转/离轴检查、整instance留出、ID清理、历史因果约束、实际native loss/回载校验，以及排除执行语义不一致的TORSO监督/候选/历史。正式600步后未追加训练或改prompt挑结果。这一负结果不否定有充分覆盖的harness-native SFT；也不为直接扩大到50任务或改用27B提供证据。
+
+下一块如果获注册，**必须先**按实际部署子目标、动作类别、近静止与阶段起点分层审核覆盖；采集/映射严格同harness动作和时钟，覆盖真实停止/恢复决策及未知状态，而不是仅增加连续运动中间帧或同样本训练轮数。与现有数据负责人协调，不自行重建50任务或手写任务专用教师。尚未验证：去图像/去本体因果消融、未见任务/场景泛化、完整动态技能切换、可靠抓取与完整任务成功。它们不属于本块已完成的结果。
+
+## 可复核交付与视频
+
+训练配置`configs/vlm_sft/h09_first_block.json`；物理注册`configs/vlm_sft/h09_local_pilot.json`；轻量结果`configs/vlm_sft/h09_final_result.json`。最终adapter目录为`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_showharness_20260918/train_v1/adapter_0600`，权重SHA `b5a125ed14dc06c82a7ae7fd288d8c7202d90e2210cc1d1c2f7195f3daac15e1`。数据/权重/全部原始证据仍在服务器H09根，没有新基座下载或覆盖。
+
+本地四视频位于`/home/wsy/behavior_worktrees/vlm-sft-20260918/artifacts/h09_physical/`，每个run下还有完整逐决策图像/输入/反馈/特权离线审计；`video_review/frame_*.png`是按下表视频帧索引顺序提取的检查图。Astra直接查看18帧，非声称外部人工标注或逐帧人工观看；全部967帧另做解码检查。
+
+| 本地视频 | 完整帧数 / 秒 | 本人直接查看的零基视频帧 | 可见结果 |
+| --- | ---: | --- | --- |
+| [radio原始](/home/wsy/behavior_worktrees/vlm-sft-20260918/artifacts/h09_physical/radio_base_v1/rollout.mp4) | 82 / 5.467 | 0,40,81 | 左手在桌左侧前移，radio留在桌面 |
+| [radio微调](/home/wsy/behavior_worktrees/vlm-sft-20260918/artifacts/h09_physical/radio_ft_v1/rollout.mp4) | 480 / 32.000 | 0,120,240,360,479 | 从radio依次转向阳台、壁炉、电视、厨房，未抓取 |
+| [plates微调](/home/wsy/behavior_worktrees/vlm-sft-20260918/artifacts/h09_physical/plates_ft_v1/rollout.mp4) | 216 / 14.400 | 0,54,108,162,215 | 持续接近微波炉/厨房台面，未转向餐桌 |
+| [plates原始](/home/wsy/behavior_worktrees/vlm-sft-20260918/artifacts/h09_physical/plates_base_v1/rollout.mp4) | 189 / 12.600 | 0,47,94,141,188 | 只伸左手，头部场景基本不变 |
+
+视频只含自主suffix、每2控制采1帧/15fps，省略推理等待；不能以视频秒数代替实际wall time。两radio的448专家前缀各自另计。审阅包仅省略重复约46MiB robot_calibration.json，其完整远端文件保留且SHA为radio `cd3a071749fc1457f75669e32828ad7377097e4740a4a7d4f66da99c9d2352a1`、plates `598d23bc69d61ac139f312e62bdd0b867d87ed33a6bc11b71817741bc0a2a886`；本地radio部分下载以`.partial-download`标明，不当完整文件使用。
+
+四视频SHA、逐run result SHA与帧审核索引均列轻量结果JSON。完整轻量收尾包`final_receipts_v1.tar.gz` SHA `9d3082a3e8c828669d0a4116a3bfed29de3f26c9c37cec8c5b4f7d055030dea4`；物理汇总`physical_summary_v1.json` SHA `74cfcb73f1115e084c599c2c60f283fc9f36116705a295a989ad76d3455b8849`；零调用分布/意图审计SHA `77550cdea2fc5c16b6f52ea2ffc65bf9571f6fb0a6215385ab44237329d0182d`，均已本地核对。主代理负责最后Git集成，不热改任何旧实验源，不合main。
