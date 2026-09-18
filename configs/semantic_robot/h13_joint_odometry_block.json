@@ -3,7 +3,8 @@
   "goal_id": "G-AV1",
   "owner": "Codex-parent",
   "registered_at": "2026-09-19T02:03:00+08:00",
-  "status": "all_local_remote_cpu_passed_final_independent_review_pending",
+  "status": "independent_review_passed_two_engineering_gates_initializing",
+  "runtime": {"gate_radio_h13": 130412, "gate_plates_h13": 130413, "gates_started_at": "2026-09-19T02:25:00+08:00", "model_pid": 132309, "model_port": 8922, "model_ready": true, "model_calls_at_ready": 0, "old_model_pid": 121949, "old_model_exited": true, "old_model_calls_retained": 19, "independent_review": "passed_90a7c20"},
   "hypothesis": "A single fixed bidirectional RGB-plus-depth objective, initialized by robust 3D support, avoids inconsistent Euclidean-only fits without returning to PnP-only near-table drift.",
   "source_commit": "90a7c2078d4655d159edee0d7c3593e31ab2c5e2",
   "implementation_digest": "627652f7a6064db0d3ef6a4495c99d1e223d87749c871bde17a09a1c46e5528b",
@@ -11,7 +12,7 @@
   "cpu_block": {"seconds": 1200, "new_model_calls": 0, "new_controls": 0, "local_tests": 319, "remote_tests": 319, "local_s": 4.233, "remote_s": 13.214, "independent_tests": 319, "independent_s": 5.242, "offline_pairs": 242, "offline_production_pass": 242, "remote_original_pairs": 223, "remote_reproduction_s": 53.958, "remote_production_pairs": 242, "remote_production_pass": 242, "remote_production_s": 17.364},
   "physical_block": {
     "registered_at": "2026-09-19T02:19:00+08:00",
-    "status": "not_started_conditional_on_independent_review_and_remote_cpu",
+    "status": "two_engineering_gates_initializing_fullstart_not_started",
     "start_after": "Independent stable-source review, remote CPU and all saved-pair audit pass; disk reserve and exact source/GPU identities verified",
     "model": {"run": "server_h13", "gpu": 1, "port": 8922, "max_calls": 215, "structured_planning": true, "path": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917/models/Qwen3.8-27B", "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0"},
     "replace_only": "server_h12 PID121949 after exact process identity, 19-call ledger retention and exit verification",
