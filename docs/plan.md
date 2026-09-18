@@ -14,6 +14,8 @@
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
 
+**20:36 B19双门通过，唯一匹配准备（Codex）：** 385/396控制、89.659/110.104s，gate_ok true，同6fe40b1a；result SHA `50a58b880e9b6a8778ccdff3196ee40d89524a54c522ab48035565d9376f3150`、`32cc72d98a4c15ecd2fe42819dc352a68ad6c758c66a1a28dc7346a4e99cf9f6`。先确认两gate退出、GPU3独立`server_b19_matched`/8909/≤151，再新首帧人工核验，才启动唯一64/2048/1800s匹配；未把控制门当任务效果。
+
 **20:33 B19工程门运行/B18完整核验完成（Codex）：** GPU3唯一`gate_radio_b19`55607、`gate_plates_b19`55608运行，源5df51be不可热改，模型/策略尚未启动。B18全包本地SHA502455c0…一致，24 RGB-D hash/全视频解码通过，本人看全部4观察；三次后动作诊断均仍radio_89、无open，与“未通过观察认证”明确区分。证据`artifacts/semantic-agent-effect-20260918/b18_verified_bundle/`，0新增训练。已请Astra待正式训练运行后空档做父harness只读独立审查，不抢其数据/训练启动优先级。
 
 **20:32 B19新B18保存帧与真实注册器通过，准备精确源双门（Codex）：** 源`5df51be18438901f0c7eaa39840199e90b1df8d5`、digest `6fe40b1ae9be9b004439c986a44aac29e5155b8438d976fbf429ab18bf8aaf0a`；robo独立`semantic_spatial_5df51be`241CPU/6.207s，新B18三对11/11/13且100%跟随，累计20.991mm，实际`GraspMotionVerifier`回放d3通过，0新控制/模型。17固定对门全部满足，本人查看新B18 d2、标准d25和空抓d9叠图，轨迹在对象机身/把手，不把手指当对象；负例跟随0仍拒绝。唯一下一块为已登记GPU3两工程门，通过/新首帧人工看后才匹配策略；H09仍GPU1，未扩task3策略。B18全包已下载，SHA/视频解码核验随即进行，独立review待。
