@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 05:01当前：** GPU1唯一新collector163349，04:59:09.866提交`vlm_sft_native_teacher_20260919/pilot_v2/task_1`/同级log，固定`git_worktrees/vlm_sft_native_68dacca`，只TRAIN192/164前缀。还未有教师样本/训练，task3未放行。GPU3同H15模型156556/策略158357仍运行，不热改任何活跃源。
+
 **2026-09-19 04:58当前：** 父H15 GPU3模型156556/8923＋策略158357仍同源运行；局部d51/52拒底盘前进，未有最终成功。新采集不可变源`git_worktrees/vlm_sft_native_68dacca`已36测试/真实来源核验通过；`vlm_sft_native_teacher_20260919/authorization_remaining_two_68dacca.json`已激活SHA599298a3…78795，仅准原剩余`pilot_v2/task_1`/GPU1启动（待PID），task3未放行。旧失败`pilot_v1/task_0`304prefix/0native不删，完整压缩故障包在`artifact_budget_fix_68dacca/task0_failure_full.tar.gz`，本地作者artifacts同名包已SHA核验；累计root约54.62MB包含原47MB失败，100MiB不扩大。
 
 **2026-09-19 04:43当前：** H15 GPU3模型156556/8923＋唯一策略158357正在原起点搜索，不热改5cfbb89；两r1完整本地`h15_gates_bundle`已288主RGB-D hash/两全视频解码、夹爪开闭人工面板通过。GPU1采集156956已体积故障中断退出，`vlm_sft_native_teacher_20260919/pilot_v1/task_0`保留大标定与`budget_operator_stop.json`，无final_hold/候选/训练，task1/3未启。下一只CPU修collector，旧1509源不改；父根5702020154B、盘余88910872576B，仍在7GiB/80GiB边界内。
