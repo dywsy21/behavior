@@ -4,6 +4,7 @@ import sys
 import unittest
 
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/"scripts/vlm_sft"),str(ROOT/"src")]
@@ -59,6 +60,29 @@ class ContractTests(unittest.TestCase):
         s,a=quiet();s[:,53]=np.linspace(0,.04,17)
         s[:,19]=np.linspace(0,.02,17);s[:,44]=np.linspace(0,.02,17)
         self.assertEqual(classify_window(s,a)[0],"TORSO_UP")
+
+    def test_all_translation_parts_reject_hidden_reversal_and_curvature(self):
+        for torso in (False,True):
+            for corruption in ("reverse","lateral","asymmetric","rotation"):
+                s,a=quiet()
+                s[:,17]=s[:,42]=np.linspace(0,.02,17)
+                if torso:s[:,53]=np.linspace(0,.04,17)
+                if corruption=="reverse":s[6:10,17]=s[6:10,42]=.07
+                elif corruption=="lateral":s[6:10,18]=s[6:10,43]=.04
+                elif corruption=="asymmetric":s[6:10,18]=.003;s[6:10,43]=-.003
+                else:s[6:10,20:24]=Rotation.from_rotvec([0,0,.2]).as_quat()
+                self.assertIsNone(classify_window(s,a)[0],(torso,corruption))
+
+    def test_rotation_paths_are_fixed_base_axis_and_monotone(self):
+        for axis in range(3):
+            s,a=quiet();vectors=np.zeros((17,3));vectors[:,axis]=np.linspace(0,.1,17)
+            s[:,45:49]=Rotation.from_rotvec(vectors).as_quat()
+            self.assertEqual(classify_window(s,a)[0],f"RIGHT_{('ROLL','PITCH','YAW')[axis]}_PLUS")
+            vectors[6:10,axis]=.3;s[:,45:49]=Rotation.from_rotvec(vectors).as_quat()
+            self.assertIsNone(classify_window(s,a)[0])
+            vectors[:,axis]=np.linspace(0,.1,17);vectors[6:10,(axis+1)%3]=.1
+            s[:,45:49]=Rotation.from_rotvec(vectors).as_quat()
+            self.assertIsNone(classify_window(s,a)[0])
 
     def test_gripper_is_command_not_success(self):
         s,a=quiet();s[:,49:51]=np.linspace(.05,.02,17)[:,None];a[:,22]=-1

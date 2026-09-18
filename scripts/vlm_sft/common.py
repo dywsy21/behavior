@@ -14,7 +14,7 @@ import re
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-VERSION = "h09-semantic-motion-v2"
+VERSION = "h09-semantic-motion-v3"
 CAMERAS = {"head": "zed_link_camera_0", "left_wrist": "left_realsense_link_camera_0",
            "right_wrist": "right_realsense_link_camera_0"}
 POSITIONS = {"left": slice(17, 20), "right": slice(42, 45)}
@@ -106,6 +106,25 @@ def directional(v, positive=MOVE_NAMES, negative=NEG_NAMES, minimum=.006, purity
     return (positive if v[i] > 0 else negative)[i]
 
 
+def path_direction(path, positive=MOVE_NAMES, negative=NEG_NAMES, minimum=.006, tolerance=.0015):
+    """Require a straight, nearly monotone whole path, not just pure endpoints.
+
+    Input is a cumulative displacement in one fixed base coordinate frame.
+    A small absolute tolerance absorbs measured robot tracking noise only.
+    """
+    path = np.asarray(path, dtype=float)
+    delta = path[-1] - path[0]
+    direction = directional(delta, positive, negative, minimum)
+    if direction is None:
+        return None
+    axis = int(np.argmax(np.abs(delta)))
+    reverse = np.maximum(-np.diff(path[:, axis]) * np.sign(delta[axis]), 0).sum()
+    lateral = np.linalg.norm(np.delete(path-path[0], axis, axis=1), axis=1).max()
+    if reverse > tolerance or lateral > .35*abs(delta[axis])+tolerance:
+        return None
+    return direction
+
+
 def classify_window(states, actions, previous_action=None):
     """Return a token only if one primitive explains the bounded expert window.
 
@@ -122,9 +141,11 @@ def classify_window(states, actions, previous_action=None):
           for p, sl in QUATERNIONS.items()}
     dq = {p: float(np.max(np.ptp(s[:, sl], axis=0))) for p, sl in JOINTS.items()}
     dg = {p: float(s[-1, sl].mean()-s[0, sl].mean()) for p, sl in GRIPS.items()}
-    position_excursion = {p: float(np.linalg.norm(s[:, sl]-s[0, sl], axis=1).max()) for p, sl in POSITIONS.items()}
-    rotation_excursion = {p: float(np.linalg.norm((Rotation.from_quat(s[:, sl])*Rotation.from_quat(s[0, sl]).inv()).as_rotvec(),axis=1).max())
-                          for p,sl in QUATERNIONS.items()}
+    position_paths = {p: s[:, sl]-s[0, sl] for p, sl in POSITIONS.items()}
+    rotation_paths = {p: (Rotation.from_quat(s[:, sl])*Rotation.from_quat(s[0, sl]).inv()).as_rotvec()
+                      for p,sl in QUATERNIONS.items()}
+    position_excursion = {p: float(np.linalg.norm(v, axis=1).max()) for p,v in position_paths.items()}
+    rotation_excursion = {p: float(np.linalg.norm(v,axis=1).max()) for p,v in rotation_paths.items()}
     grip_excursion = {p: float(np.ptp(s[:, sl].mean(axis=1))) for p,sl in GRIPS.items()}
     evidence = {"delta_eef_base_m": {p: v.tolist() for p, v in dp.items()},
                 "delta_rotation_base_rad": {p: v.tolist() for p, v in rv.items()},
@@ -160,31 +181,27 @@ def classify_window(states, actions, previous_action=None):
     if not grips_quiet:
         return None, dict(evidence, reject="mixed_gripper_motion")
     if dq["torso"] >= .01:
-        mean = (dp["left"] + dp["right"])/2
-        d = directional(mean)
+        d = path_direction((position_paths["left"] + position_paths["right"])/2)
         if (d in ("FORWARD", "BACK", "UP", "DOWN") and max(dq[p] for p in POSITIONS) < .01
-                and np.linalg.norm(dp["left"]-dp["right"]) < .005
-                and max(np.linalg.norm(v) for v in rv.values()) < .04):
+                and all(path_direction(v) == d for v in position_paths.values())
+                and np.linalg.norm(position_paths["left"]-position_paths["right"],axis=1).max() < .005
+                and max(rotation_excursion.values()) < .04):
             return "TORSO_"+d, evidence
         return None, dict(evidence, reject="torso_motion_unrepresentable")
     moving = [p for p in POSITIONS if position_excursion[p] >= .006 or rotation_excursion[p] >= .035]
     if len(moving) == 2:
-        d = directional((dp["left"]+dp["right"])/2)
-        if d and np.linalg.norm(dp["left"]-dp["right"]) < .004 and max(np.linalg.norm(v) for v in rv.values()) < .035:
+        d = path_direction((position_paths["left"]+position_paths["right"])/2)
+        if (d and all(path_direction(v) == d for v in position_paths.values())
+                and np.linalg.norm(position_paths["left"]-position_paths["right"],axis=1).max() < .004
+                and max(rotation_excursion.values()) < .035):
             return "BOTH_"+d, evidence
         return None, dict(evidence, reject="uncoordinated_two_arm_motion")
     if len(moving) == 1:
         p = moving[0]
-        d = directional(dp[p])
+        d = path_direction(position_paths[p])
         if d and rotation_excursion[p] < .035:
-            # Reject reversal within a window even if endpoints look pure.
-            increments = np.diff(s[:, POSITIONS[p]], axis=0)
-            axis = int(np.argmax(np.abs(dp[p])))
-            reverse = np.maximum(-increments[:, axis]*np.sign(dp[p][axis]), 0).sum()
-            lateral=np.linalg.norm(np.delete(s[:,POSITIONS[p]]-s[0,POSITIONS[p]],axis,axis=1),axis=1).max()
-            if reverse <= .0015 and lateral <= .35*abs(dp[p][axis])+.0015:
-                return p.upper()+"_"+d, evidence
-        r = directional(rv[p], tuple(x+"_PLUS" for x in ROT_NAMES), tuple(x+"_MINUS" for x in ROT_NAMES), .035)
+            return p.upper()+"_"+d, evidence
+        r = path_direction(rotation_paths[p], tuple(x+"_PLUS" for x in ROT_NAMES), tuple(x+"_MINUS" for x in ROT_NAMES), .035, .008)
         if r and position_excursion[p] < .006:
             return p.upper()+"_"+r, evidence
         return None, dict(evidence, reject="mixed_or_curved_arm_motion")
