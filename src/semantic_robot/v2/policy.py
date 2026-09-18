@@ -9,6 +9,8 @@ from urllib.request import Request, urlopen
 from semantic_robot.prompts import TASK_ADVICE
 from .harness import parse_plan
 from .protocol import Action, Evidence
+from .grounding import GroundedEvidence
+from .grounded_harness import parse_recovery
 
 PLAN_SYSTEM = """Plan robot manipulation using visible observations and the task, not imagined object locations. Return only a JSON array of subgoals. Each has exactly kind, target, hand, done_when, level. kind is pick, place, press, open, close or navigate. hand is left, right or both. level is a boolean: true for transport requiring orientation preservation. Use short visually identifiable target descriptions, not hidden simulator IDs. done_when is an observable criterion, not 'command issued'. A pick and place are separate goals. Opening containers before filling is normally necessary. Allow uncertainty: the controller will search rather than assume a target is already visible. At most 16 goals. Example: [{"kind":"pick","target":"red radio","hand":"right","done_when":"radio moves with right gripper after a small lift","level":false},{"kind":"press","target":"visible power button of held radio","hand":"left","done_when":"power indicator visibly changes","level":false}]. Never describe task success from a close command."""
 
@@ -77,3 +79,36 @@ class VLMPolicy:
         action = Action.parse(result["text"])
         harness.authorize(action)
         return action, {"result": result, "request": payload}
+
+
+GROUNDED_OBSERVE_SYSTEM = OBSERVE_SYSTEM + """
+This run also has a robot-calibrated CLOSING CENTER cross: the centre between the fingers, not a target detection. OFFSCREEN is a label, not a clamped hand position. For pick choose a graspable visible contact area, for press a visible button, for navigate a visible destination, not the whole image centroid. Prefer the active wrist when the target and grasping region are both identifiable. Add exactly one extra field to the observation JSON: \"other_views\": []. When the SAME physical surface/affordance is clearly identifiable in another CURRENT camera, include up to two {\"view\":\"head\",\"target_uv\":[0.5,0.5]} entries with distinct views. Do not guess cross-view correspondence; empty is valid. All UVs refer to CURRENT RAW images, not earlier frames. Keep note short."""
+
+RECOVER_SYSTEM = """Replan only the current failed search/approach strategy. Do NOT edit the original goals, mark anything done, or invent held objects/hidden locations. Use current visible images, measured heading coverage, depth and failed action receipts. Return exactly {\"strategy\":\"scan_left\",\"visible_reason\":\"short visible evidence explaining the choice\"}. Strategies: scan_left, scan_right, move_forward, move_left, move_right, retry_approach, hold. scan directions are measured base yaw sweeps, not image-left hand moves. move strategies allow at most five 6cm pulses, EACH rechecked against fresh onboard depth; they may be refused if unseen/blocked. If a complete heading sweep has already covered this viewpoint, choose a visibly safe viewpoint change, or hold when none is supported. retry_approach requires a visible target and a different feasible path. hold ends safely. At most two strategy replans per episode. Unobserved space is UNKNOWN, not free."""
+
+
+class GroundedPolicy(VLMPolicy):
+    def observe(self,harness,state,bundle):
+        text=observation_context(harness,state,bundle)
+        result,payload=self._call("observe",GROUNDED_OBSERVE_SYSTEM,text,bundle)
+        return GroundedEvidence.parse(result["text"]),{"result":result,"request":payload}
+
+    def act_feasible(self,harness,state,bundle,allowed):
+        if not allowed:
+            raise ValueError("No preflighted action to select")
+        text=observation_context(harness,state,bundle)
+        text+="\nVisible evidence: "+json.dumps(asdict(harness.observation))
+        text+="\nCURRENT preflight receipt (geometric gain is an estimate, NOT grasp success): "+json.dumps(harness.candidate_receipt)
+        text+="\nChoose exactly one of these feasible complete commands:\n"+"\n".join(a.text() for a in allowed)
+        system=ACTION_SYSTEM+" Prefer measurable progress toward the grounded contact region; review predicted distance gains and failed paths. The 2mm option remains available near limits. Do not repeatedly HOLD with good depth and a safe improving action. Grasp orientation/contact quality still require the raw views; a surface point is not a full grasp pose."
+        result,payload=self._call("act",system,text,bundle,allowed)
+        action=Action.parse(result["text"])
+        harness.authorize(action)
+        if action not in allowed:
+            raise ValueError("Action not in current-state preflight results")
+        return action,{"result":result,"request":payload}
+
+    def recover(self,harness,state,bundle,reason):
+        text=observation_context(harness,state,bundle)+"\nRecovery trigger: "+reason
+        result,payload=self._call("plan",RECOVER_SYSTEM,text,bundle)
+        return parse_recovery(result["text"]),{"result":result,"request":payload}

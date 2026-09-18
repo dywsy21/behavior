@@ -12,6 +12,9 @@ from PIL import Image
 
 from semantic_robot.v2.harness import Goal, TaskHarness
 from semantic_robot.v2.policy import VLMPolicy
+from semantic_robot.v2.policy import GroundedPolicy
+from semantic_robot.v2.grounded_harness import GroundedHarness, GroundedController
+from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.protocol import Action
 from semantic_robot.v2.vision import VisualBundle
 from test_v2 import fixture, evidence
@@ -25,6 +28,8 @@ class PipelineTests(unittest.TestCase):
         self.proxy_environment.start()
         owner = self
         self.requests, self.cap, self.forbidden = [], False, False
+        self.grounded=False
+        self.action_override=None
         class Handler(BaseHTTPRequestHandler):
             def log_message(self,*args):
                 pass
@@ -41,13 +46,17 @@ class PipelineTests(unittest.TestCase):
                 value=json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                 owner.requests.append(value)
                 if value["kind"]=="plan":
-                    text=json.dumps([asdict(Goal("pick","radio","right","visible co-motion after micro lift"))])
+                    text=(json.dumps({"strategy":"scan_left","visible_reason":"current table is not identified"})
+                          if "Replan only" in value["system"] else
+                          json.dumps([asdict(Goal("pick","radio","right","visible co-motion after micro lift"))]))
                 elif value["kind"]=="observe":
-                    text=json.dumps(asdict(evidence(view="head")))
+                    observation=asdict(evidence(view="head"))
+                    if owner.grounded:observation["other_views"]=[]
+                    text=json.dumps(observation)
                 else:
                     candidates=[Action.parse(x) for x in value["allowed"]]
-                    text=(Action("right","close") if owner.forbidden else
-                          next(a for a in candidates if a.part=="right" and a.move=="up")).text()
+                    text=(owner.action_override if owner.action_override else Action("right","close") if owner.forbidden else
+                          next((a for a in candidates if a.part=="right" and a.move=="up"),candidates[0])).text()
                 self.send({"text":text,"hit_token_cap":owner.cap})
         self.server=HTTPServer(("127.0.0.1",0),Handler)
         self.thread=threading.Thread(target=lambda:self.server.serve_forever(poll_interval=.01),daemon=True)
@@ -94,6 +103,34 @@ class PipelineTests(unittest.TestCase):
         manager.observe(evidence(view="head"),self.state)
         self.forbidden=True
         with self.assertRaises(ValueError):policy.act(manager,self.state,self.bundle)
+        self.assertEqual(manager.executions,0)
+
+    def test_grounded_schema_preflight_and_bounded_recovery_real_transport(self):
+        self.grounded=True
+        policy=GroundedPolicy(self.uri,"test-pinned-revision",max_calls=3)
+        manager=GroundedHarness([Goal("pick","radio","right","held")])
+        servo=SafeServo(self.model,self.state,[-1,-1])
+        controller=GroundedController(self.model,servo,manager)
+        obs,_=policy.observe(manager,self.state,self.bundle)
+        depths={v:np.ones((100,100),dtype=np.float32) for v in ("head","left_wrist","right_wrist")}
+        controller.observe(obs,self.state,depths,{"head":{"valid_fraction":1.}})
+        allowed=controller.candidates(self.state)
+        action,_=policy.act_feasible(manager,self.state,self.bundle,allowed)
+        self.assertIn(action,allowed)
+        recovery,_=policy.recover(manager,self.state,self.bundle,"schema test")
+        self.assertEqual(recovery["strategy"],"scan_left")
+        self.assertEqual(policy.calls,3)
+        self.assertEqual(manager.executions,0)
+        self.assertIn("CURRENT preflight receipt",self.requests[1]["text"])
+
+    def test_stage_legal_but_not_preflighted_action_rejected(self):
+        policy=GroundedPolicy(self.uri,"test-pinned-revision")
+        manager=GroundedHarness([Goal("pick","radio","right","held")]);manager.stage="APPROACH"
+        manager.observation=evidence()
+        self.action_override=Action("right","down")
+        allowed=(Action("right","up"),)
+        self.assertIn(self.action_override,manager.palette())
+        with self.assertRaises(ValueError):policy.act_feasible(manager,self.state,self.bundle,allowed)
         self.assertEqual(manager.executions,0)
 
 

@@ -6,6 +6,7 @@ It is accepted only after prediction is tested at other poses against the robot.
 """
 import hashlib
 import json
+from collections import OrderedDict
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -74,6 +75,9 @@ class RobotModel:
             if name not in self.links:
                 raise ValueError("Missing controlled link")
         self.sha = hashlib.sha256(json.dumps(calibration, sort_keys=True).encode()).hexdigest()
+        # Preflight evaluates many candidate poses; collision FK does not need
+        # Jacobians. A bounded, instance-local cache avoids recomputing them.
+        self._fk_cache = OrderedDict()
 
     @staticmethod
     def from_reference(q, lower, upper, poses, jacobians, metadata=None):
@@ -103,7 +107,29 @@ class RobotModel:
 
     def poses(self, q, names=("left", "right", "torso")):
         return {name: (T[:3, 3], Rotation.from_matrix(T[:3, :3]).as_quat())
-                for name in names for T, _ in [self.evaluate(q, name)]}
+                for name in names for T in [self.forward(q, name)]}
+
+    def forward(self, q, name):
+        q = finite(q, (18,))
+        key = (q.astype(np.float64).tobytes(), name)
+        if key not in self._fk_cache:
+            home, screws = self.links[name]
+            T = np.eye(4)
+            for i, value in enumerate(q-self.reference):
+                if value and np.any(screws[:, i]):
+                    T = T @ se3_exp(screws[:, i], value)
+            self._fk_cache[key] = T @ home
+            if len(self._fk_cache) > 512:
+                self._fk_cache.popitem(last=False)
+        else:
+            self._fk_cache.move_to_end(key)
+        return self._fk_cache[key].copy()  # callers must not mutate cached geometry
+
+    def grasp_centers(self, q):
+        """Robot-defined closing-region centres, never estimated object poses."""
+        points = self.spec.get("metadata", {}).get("grasp_centers_eef", {})
+        return {arm: (self.forward(q, arm) @ np.r_[points.get(arm, [0., 0., 0.]), 1.])[:3]
+                for arm in ("left", "right")}
 
     def state(self, q, gripper, base_velocity):
         poses, jac = {}, {}

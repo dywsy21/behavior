@@ -33,10 +33,11 @@ class VisualBundle:
     current_raw: dict
 
 
-def prepare_views(images, model, q, previous=None):
+def prepare_views(images, model, q, previous=None, grounded=False):
     metadata = model.spec["metadata"]["cameras"]
     result, labels, geometry, raw = [], [], {}, {}
     poses = model.poses(q)
+    centers = model.grasp_centers(q) if grounded else {}
     for view, camera in metadata.items():
         original = rgb_image(images[view+"_rgb"])
         if original.size != (camera["width"], camera["height"]):
@@ -66,6 +67,22 @@ def prepare_views(images, model, q, previous=None):
                             draw.line((*uv, *tip), fill=color, width=2)
                             draw.text(tuple(tip), axis, fill=color)
             entries[arm] = record
+            if grounded:
+                center_uv = project(centers[arm],T,K)
+                record["grasp_center_uv"] = None if center_uv is None else (center_uv/np.array(original.size)).tolist()
+                record["grasp_center_source"] = model.spec["metadata"].get("grasp_center_source","EEF_FALLBACK_NOT_FINGERTIP")
+                if center_uv is not None:
+                    in_frame=bool(np.all(center_uv>=0) and np.all(center_uv<original.size))
+                    record["grasp_center_in_frame"]=in_frame
+                    color="cyan" if arm=="left" else "magenta"
+                    if in_frame:
+                        x,y=center_uv
+                        draw.line((x-7,y,x+7,y),fill=color,width=2)
+                        draw.line((x,y-7,x,y+7),fill=color,width=2)
+                        draw.text((x+8,y-14),arm+" CLOSING CENTER",fill=color)
+                    else:
+                        # A border label is NOT a clamped target/hand marker.
+                        draw.text((8,28 if arm=="left" else 44),arm+" closing center OFFSCREEN",fill=color)
         geometry[view] = entries
         if previous is not None:
             result.append(Image.fromarray(previous[view])); labels.append("PREVIOUS_"+view.upper()+"_RAW")

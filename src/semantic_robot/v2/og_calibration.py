@@ -7,6 +7,28 @@ from .kinematics import RobotModel, transform, link_origin_jacobian
 
 
 class CalibratedRobot(OGKinematics):
+    def native_grasp_centers(self):
+        """Centre of robot-defined finger contact regions, with actual finger q.
+
+        Only robot asset points and robot-relative link transforms are read.
+        No raycast, assisted-grasp status, object state or world pose is used.
+        The two sides are equally weighted even when their point counts differ.
+        """
+        result = {}
+        for arm in ("left", "right"):
+            sides = []
+            for definitions in (self.robot.assisted_grasp_start_points,
+                                self.robot.assisted_grasp_end_points):
+                points = []
+                for entry in definitions[arm]:
+                    p, q = (array(v) for v in self.api.get_link_relative_position_orientation(self.path, entry.link_name))
+                    points.append((transform(p,q) @ np.r_[array(entry.position),1.])[:3])
+                if not points:
+                    raise ValueError("Robot grasp-region definition missing")
+                sides.append(np.mean(points,axis=0))
+            result[arm] = np.mean(sides,axis=0)
+        return result
+
     def local_com(self, name):
         if not hasattr(self, "_local_com"):
             self._local_com = {}
@@ -21,7 +43,7 @@ class CalibratedRobot(OGKinematics):
                 state.jacobians[name], state.poses[name][1], self.local_com(link))
         return state
 
-    def calibrate(self):
+    def calibrate(self, grounded=False):
         import omnigibson.lazy as lazy
         state = self.state()
         poses, jacobians = dict(state.poses), dict(state.jacobians)
@@ -80,6 +102,13 @@ class CalibratedRobot(OGKinematics):
                     "jacobian_point": "link_origin_corrected_from_physx_com",
                     "local_link_com": {name: value.tolist() for name, value in self._local_com.items()},
                     "collision": "3cm arm capsules, 8cm wrist separation; not environment mesh collision"}
+        if grounded:
+            native_centers = self.native_grasp_centers()
+            metadata["grasp_centers_eef"] = {
+                arm:(np.linalg.inv(transform(*state.poses[arm])) @ np.r_[point,1.])[:3].tolist()
+                for arm,point in native_centers.items()}
+            metadata["grasp_center_source"] = "equal_side_average_of_robot_finger_region_asset_points"
+            metadata["grasp_center_invariance_requires_open_close_gate"] = True
         return RobotModel.from_reference(state.q, state.lower, state.upper, poses, jacobians, metadata)
 
     def compare(self, model):
@@ -98,4 +127,9 @@ class CalibratedRobot(OGKinematics):
             result["camera_"+view] = {
                 "position_m": float(np.linalg.norm(actual[:3,3]-predicted_camera[:3,3])),
                 "angle_rad": float(np.linalg.norm(Rotation.from_matrix(actual[:3,:3]@predicted_camera[:3,:3].T).as_rotvec()))}
+        if "grasp_centers_eef" in model.spec["metadata"]:
+            centers = model.grasp_centers(state.q)
+            for arm, actual in self.native_grasp_centers().items():
+                result["grasp_center_"+arm] = {"position_m":float(np.linalg.norm(actual-centers[arm])),
+                                             "angle_rad":0.}
         return result

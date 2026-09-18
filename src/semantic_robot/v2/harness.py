@@ -121,12 +121,17 @@ class TaskHarness:
         else:
             self.transition("SEARCH")
 
-    def observe(self, evidence: Evidence, state, geometry=None):
+    def observe(self, evidence: Evidence, state, geometry=None, measured_progress=None):
         self.previous_observation, self.observation = self.observation, evidence
         self.events = []
         if self.stop_reason:
             return
         self.stage_age += 1
+        # Only the grounded adapter supplies these sensor-derived measurements;
+        # they are not VLM JSON fields and never certify task completion.
+        measured_progress = measured_progress or {}
+        if self.stage in ("SEARCH","RECOVER") and measured_progress.get("new_search_coverage") is True:
+            self.stage_age = 0
         if evidence.hazard in ("slip", "collision"):
             # Hold first. Repeated danger consumes finite recovery; no auto-release.
             self.recover("VISUAL_"+evidence.hazard.upper()+"_SUSPECTED")
@@ -170,10 +175,12 @@ class TaskHarness:
                 if evidence.effect is True and self.last_action and self.last_action.move != "hold":
                     self.transition("VERIFY_EFFECT")
                     self.confirmations = 1
-            elif wrist or evidence.enclosed is True:
+            elif (measured_progress.get("target_distance_m",float("inf")) <= .08
+                  if "target_distance_m" in measured_progress else wrist or evidence.enclosed is True):
                 self.transition("ALIGN")
         elif self.stage == "ALIGN":
-            if self.goal.kind == "pick" and evidence.enclosed is True:
+            if (self.goal.kind == "pick" and evidence.enclosed is True and
+                    measured_progress.get("target_distance_m",0.) <= .06):
                 self.transition("GRASP")
             elif self.goal.kind == "place" and evidence.supported is True:
                 self.transition("VERIFY_SUPPORT")
@@ -185,7 +192,8 @@ class TaskHarness:
             # Two sources: nonempty physical opening + visual enclosure and temporal
             # co-motion after an actual verification displacement. Neither alone wins.
             temporal = self.previous_observation is not None and self.previous_observation.visible
-            if not empty and moved and temporal and evidence.enclosed is True and evidence.co_moving is True:
+            if (not empty and moved and temporal and evidence.enclosed is True and evidence.co_moving is True
+                    and measured_progress.get("metric_co_motion",True) is True):
                 self._complete_goal()
             elif self.stage_age >= 4:
                 self.recover("GRASP_UNVERIFIED")
