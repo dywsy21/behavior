@@ -42,6 +42,7 @@ from semantic_robot.v2.policy import GroundedPolicy, RefinedGroundedPolicy
 from semantic_robot.v2.diagnostics import grasp_audit
 from semantic_robot.v2.multicamera_inspection import inspection_carry, free_observing_hand
 from semantic_robot.v2.arm_observation_guard import ObservingArmGuard
+from semantic_robot.v2.observer_gate import choose_gate_pair
 
 
 def implementation_digest():
@@ -437,6 +438,12 @@ def main():
                         action, call = policy.act(manager,state,bundle)
                         save_call(directory,"action",call)
                 else:
+                    if args.multicamera_inspection and decision==7:
+                        forward,back,pair=choose_gate_pair(model,state,servo,depths,self_geometry)
+                        write(directory/"observer_gate_pair.json",pair)
+                        if forward is None:
+                            row["error"]=pair["reason"];failures.append(row);decisions.append(row);break
+                        gate[7],gate[8]=forward,back
                     action = gate[decision]
                 row["action"] = asdict(action)
                 wall = time.perf_counter()

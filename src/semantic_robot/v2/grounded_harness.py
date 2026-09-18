@@ -211,6 +211,12 @@ class GroundedHarness(TaskHarness):
             # not force wrist-only alignment or move a potentially held load.
             palette += tuple(Action("base", move, "micro") for move in ("forward", "back", "left", "right"))
             palette += tuple(Action("torso", move, "micro") for move in ("up", "down"))
+        if self.held_inspection_enabled and self.search_reference.startswith("held_"):
+            reference=self.search_reference.removeprefix("held_")
+            if not self.hold_verified.get(reference):return (HOLD,)
+            # A rigidly held target moves with the body. Base translation/yaw
+            # cannot bring the working hand closer to it in this same frame.
+            palette=tuple(a for a in palette if a.part!="base")
         return tuple(dict.fromkeys(palette))
 
     def context(self):
@@ -516,15 +522,35 @@ class GroundedController:
     def _expected_distances(self, action, state, trial=None):
         points=self._points_for_arms()
         centers=self.centers
+        reference=None
+        if self.harness.held_inspection_enabled:
+            scope=self.harness.search_reference
+            if scope=="unknown":return None  # never silently default to world geometry
+            if scope.startswith("held_"):
+                reference=scope.removeprefix("held_")
+                if not self.harness.hold_verified.get(reference):return None
+                current=self.model.forward(state.q,reference)
+                predicted=current.copy()
+                if trial is not None and trial.joint_plan is not None:
+                    predicted=self.model.forward(trial.joint_plan[-1],reference)
+                elif action.move in TRANSLATIONS and action.part in (reference,"both"):
+                    direction=self._translation_direction(action,state)
+                    if direction is None:return None
+                    predicted[:3,3]+=direction*action.amount(self.harness.carry)
+                # CURRENT observed contact (e.g. the button), not the old
+                # inspection object's surface anchor, follows the held frame.
+                points={a:predicted[:3,:3]@(current[:3,:3].T@(p-current[:3,3]))+predicted[:3,3]
+                        for a,p in points.items()}
         if action.part=="base":
-            amount=action.amount(self.harness.carry)
-            if action.move in TRANSLATIONS:
-                points={a:p-np.asarray(TRANSLATIONS[action.move])*amount for a,p in points.items()}
-            else:
-                angle=-amount*(1 if action.move=="yaw_plus" else -1)
-                c,s=math.cos(angle),math.sin(angle)
-                R=np.array([[c,-s,0],[s,c,0],[0,0,1]])
-                points={a:R@p for a,p in points.items()}
+            if reference is None:
+                amount=action.amount(self.harness.carry)
+                if action.move in TRANSLATIONS:
+                    points={a:p-np.asarray(TRANSLATIONS[action.move])*amount for a,p in points.items()}
+                else:
+                    angle=-amount*(1 if action.move=="yaw_plus" else -1)
+                    c,s=math.cos(angle),math.sin(angle)
+                    R=np.array([[c,-s,0],[s,c,0],[0,0,1]])
+                    points={a:R@p for a,p in points.items()}
         elif trial is not None and trial.joint_plan is not None:
             centers=self.model.grasp_centers(trial.joint_plan[-1])
         elif action.move in TRANSLATIONS and action.part in (*self.harness.arms,"both"):
@@ -533,7 +559,7 @@ class GroundedController:
                 return None
             centers={a:p+(direction*action.amount(self.harness.carry)
                           if action.part in (a,"both") else 0) for a,p in centers.items()}
-        else:
+        elif reference is None or action.part not in (reference,"torso","all"):
             return None
         return {a:float(np.linalg.norm(points[a]-centers[a])) for a in self.harness.arms}
 
