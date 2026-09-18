@@ -24,7 +24,30 @@ def robot_point_mask(points,geometry):
     return mask
 
 
-def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_camera,after_camera,seed,before_self=None,after_self=None):
+def continued_features(previous,detected,mask,limit=160,min_distance=7):
+    """Keep measured feature identity; recheck the current target/self mask.
+
+    Neither stale coordinates nor prior consistency bypass the new optical,
+    depth, robot-exclusion, spread or rigid-following checks below.
+    """
+    old=np.asarray(previous,dtype=np.float32)
+    if old.ndim!=2 or old.shape[1]!=2 or len(old)>limit or not np.isfinite(old).all():
+        raise ValueError("Bounded finite Nx2 previous feature coordinates required")
+    new=np.empty((0,2),np.float32) if detected is None else np.asarray(detected,dtype=np.float32).reshape(-1,2)
+    kept=[];inherited=0;h,w=mask.shape
+    for origin,rows in (("continued",old),("detected",new)):
+        for p in rows:
+            x,y=np.rint(p).astype(int)
+            if not 0<=x<w or not 0<=y<h or not mask[y,x]:continue
+            if kept and np.min(np.linalg.norm(np.asarray(kept)-p,axis=1))<min_distance:continue
+            kept.append(p)
+            if origin=="continued":inherited+=1
+            if len(kept)==limit:break
+        if len(kept)==limit:break
+    return (np.asarray(kept,dtype=np.float32).reshape(-1,1,2) if kept else None),inherited
+
+
+def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_camera,after_camera,seed,before_self=None,after_self=None,previous_features=None,stable_seed_depth=False):
     import cv2
     old,new=np.asarray(before_rgb),np.asarray(after_rgb)
     shape=(camera["height"],camera["width"],3)
@@ -49,8 +72,22 @@ def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_cam
                   robot_seed_pixels_excluded=int((near&own).sum()) if own is not None else None)
     if own is not None:near&=~own
     mask=np.zeros((h,w),np.uint8);mask[yy[valid][near],xx[valid][near]]=255
+    if stable_seed_depth:
+        # The very same 3x3 finite/stable-depth requirement is checked again
+        # after optical flow. Apply it before corner ranking too, so rejected
+        # depth-edge corners cannot set the detector's relative-quality scale.
+        finite=np.isfinite(d0);z=np.where(finite,d0,0).astype(np.float32);kernel=np.ones((3,3),np.uint8)
+        stable=(cv2.erode(finite.astype(np.uint8),kernel)>0)&(cv2.dilate(z,kernel)-cv2.erode(z,kernel)<=.01)
+        stable[:2]=False;stable[-2:]=False;stable[:,:2]=False;stable[:,-2:]=False
+        mask[~stable]=0
+        result["eligible_stable_depth_seed_pixels"]=int(np.count_nonzero(mask))
     gray0=cv2.cvtColor(old,cv2.COLOR_RGB2GRAY);gray1=cv2.cvtColor(new,cv2.COLOR_RGB2GRAY)
     points=cv2.goodFeaturesToTrack(gray0,maxCorners=160,qualityLevel=.015,minDistance=7,mask=mask,blockSize=5)
+    if previous_features is not None:
+        detected=0 if points is None else len(points)
+        points,inherited=continued_features(previous_features,points,mask)
+        result.update(previous_features_supplied=len(previous_features),continued_features_in_current_mask=inherited,
+                      newly_detected_features=detected,feature_budget=160)
     result.update(eligible_feature_pixels=int(near.sum()),seed_feature_count=0 if points is None else len(points))
     if points is None or len(points)<8:return result,None,None
     params=dict(winSize=(17,17),maxLevel=3,criteria=(cv2.TERM_CRITERIA_EPS|cv2.TERM_CRITERIA_COUNT,30,.01))
@@ -88,7 +125,7 @@ def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_cam
     return result,np.asarray(xyz0),np.asarray(xyz1)
 
 
-def measure_grasp_motion(before,after,model,arm,seed,body_transform):
+def measure_grasp_motion(before,after,model,arm,seed,body_transform,previous_features=None,stable_seed_depth=False):
     """Compare matched points in robot and hand coordinates; no VLM co-motion.
 
     The transformation maps the current body to the previous body, obtained
@@ -96,7 +133,7 @@ def measure_grasp_motion(before,after,model,arm,seed,body_transform):
     """
     view=arm+"_wrist";camera=model.spec["metadata"]["cameras"][view]
     t0,t1=(model.forward(row["q"],"camera_"+view) for row in (before,after))
-    receipt,p0,p1=point_tracks(before["rgb"][view],after["rgb"][view],before["depth"][view],after["depth"][view],camera,t0,t1,seed,before.get("self_geometry"),after.get("self_geometry"))
+    receipt,p0,p1=point_tracks(before["rgb"][view],after["rgb"][view],before["depth"][view],after["depth"][view],camera,t0,t1,seed,before.get("self_geometry"),after.get("self_geometry"),previous_features,stable_seed_depth)
     if not receipt["valid"]:return receipt
     e0,e1=(model.forward(row["q"],arm) for row in (before,after))
     body=np.asarray(body_transform,dtype=float)
@@ -126,8 +163,9 @@ def measure_grasp_motion(before,after,model,arm,seed,body_transform):
 
 class GraspMotionVerifier:
     """Bounded rigid following, not a simulator holding predicate or task truth."""
-    def __init__(self):
+    def __init__(self,persistent_tracks=False):
         self.previous=None;self.lifts={};self.displacement={};self.last_execution=None
+        self.persistent_tracks=bool(persistent_tracks);self.tracks={}
 
     def observe(self,model,state,images,depths,self_geometry,harness,targets,motion,evidence):
         frame={"q":state.q.copy(),"gripper":state.gripper.copy(),"rgb":images,"depth":depths,
@@ -145,7 +183,7 @@ class GraspMotionVerifier:
             harness.feedback and harness.feedback["status"]=="TARGET_REACHED" and
             motion.get("valid") and "body_transform_current_in_previous" in motion)
         if not eligible:
-            self.lifts={};self.displacement={};result["reason"]="NO_ELIGIBLE_VERIFICATION_LIFT";return result
+            self.lifts={};self.displacement={};self.tracks={};result["reason"]="NO_ELIGIBLE_VERIFICATION_LIFT";return result
         if harness.executions==self.last_execution:
             result["reason"]="NO_NEW_EXECUTED_LIFT";return result
         self.last_execution=harness.executions
@@ -155,12 +193,29 @@ class GraspMotionVerifier:
                   harness.pending_grasp[arm] and state.gripper[index]>=.0015 and old["gripper"][index]>=.0015)
             row={"registered_pair_consistent":False,"reason":"MISSING_TARGET_OR_NONEMPTY_PENDING_HAND"}
             if good:
-                row=measure_grasp_motion(old,frame,model,arm,seed["point_base_m"],motion["body_transform_current_in_previous"])
+                arguments=(old,frame,model,arm,seed["point_base_m"],motion["body_transform_current_in_previous"])
+                if self.persistent_tracks:
+                    history=self.tracks.get(arm);features=None;reason="NO_PREVIOUS_QUALIFIED_TRACKS"
+                    if history:
+                        digest=hashlib.sha256(np.asarray(old["rgb"][arm+"_wrist"]).tobytes()).hexdigest()
+                        linked=(history["execution"]==old["execution"] and history["goal_index"]==old["goal_index"]
+                                and history["image_sha"]==digest and old["execution"]+1==harness.executions)
+                        if linked:features=history["points"];reason="PREVIOUS_QUALIFIED_PAIR_SAME_IMAGE_GOAL_EXECUTION"
+                        else:
+                            self.lifts[arm]=0;self.displacement[arm]=np.zeros(3)
+                            reason="HISTORY_IDENTITY_MISMATCH_RESET"
+                    row=measure_grasp_motion(*arguments,features,True)
+                    row["feature_history_binding"]={"continued":features is not None,"reason":reason,"stable_depth_before_detection":True}
+                else:row=measure_grasp_motion(*arguments)
             if row.get("registered_pair_consistent"):
                 self.lifts[arm]=self.lifts.get(arm,0)+1
                 self.displacement[arm]=self.displacement.get(arm,np.zeros(3))+np.asarray(row["hand_delta_m"])
             else:
                 self.lifts[arm]=0;self.displacement[arm]=np.zeros(3)
+            self.tracks.pop(arm,None)
+            if self.persistent_tracks and row.get("registered_pair_consistent") and row.get("tracked_pixels"):
+                self.tracks[arm]={"execution":harness.executions,"goal_index":harness.index,
+                    "image_sha":row["current_rgb_sha256"],"points":[p["after"] for p in row["tracked_pixels"]]}
             row["consecutive_registered_lifts"]=self.lifts[arm]
             row["cumulative_hand_delta_m"]=self.displacement[arm].tolist()
             row["verified"]=bool(self.lifts[arm]>=2 and np.linalg.norm(self.displacement[arm])>=.015 and self.displacement[arm][2]>=.012)

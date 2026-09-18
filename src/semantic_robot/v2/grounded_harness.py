@@ -243,7 +243,7 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False):
         self.model,self.servo,self.harness=model,servo,harness
         if approach_progress and not visual_odometry:raise ValueError("Approach progress requires measured visual motion")
         from .approach_progress import ApproachProgress
@@ -265,10 +265,11 @@ class GroundedController:
         from .held_inspection import HeldInspection
         self.inspector=HeldInspection() if harness.held_inspection_enabled else None
         self.grasp_verifier=None
+        if persistent_grasp_tracks and not grasp_motion:raise ValueError("Persistent features require registered grasp motion")
         if grasp_motion:
             if not visual_odometry:raise ValueError("Registered grasp motion requires independent RGB-D body motion")
             from .grasp_motion import GraspMotionVerifier
-            self.grasp_verifier=GraspMotionVerifier()
+            self.grasp_verifier=GraspMotionVerifier(persistent_tracks=persistent_grasp_tracks)
         if visual_odometry:
             from .odometry import RGBDMotion
             self.motion=RGBDMotion(odometry_estimator)

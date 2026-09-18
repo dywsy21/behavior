@@ -76,6 +76,7 @@ def main():
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid"),default="pnp")
     p.add_argument("--approach-progress",action="store_true",help="Veto repeated near-field base advances without observed contact progress")
     p.add_argument("--held-object-inspection",action="store_true",help="Explicit semantic reference and bounded held-object relative inspection")
+    p.add_argument("--persistent-grasp-tracks",action="store_true",help="Identity-bound persistent features and stable-depth corner selection; original grasp evidence thresholds")
     p.add_argument("--task", type=int, choices=(0,3), default=0)
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--replay-prefix-spec",help="Hash-pinned saved-action diagnostic warm start, counted separately from policy")
@@ -101,6 +102,7 @@ def main():
         raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
     if args.held_object_inspection and not args.grasp_motion:raise ValueError("Held inspection requires registered verified anchors")
+    if args.persistent_grasp_tracks and not args.grasp_motion:raise ValueError("Persistent tracks require registered verification")
     if (args.approach_progress or args.odometry_estimator!="pnp") and not args.visual_odometry:
         raise ValueError("Measured approach progress and explicit estimator require visual odometry")
     if args.mode == "agent":
@@ -115,6 +117,7 @@ def main():
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
                 g.get("approach_progress",False)==args.approach_progress and
+                g.get("persistent_grasp_tracks",False)==args.persistent_grasp_tracks and
                 g.get("held_object_inspection",False)==args.held_object_inspection for g in gates):
             raise ValueError("Control/FK gates have not passed for this exact implementation")
     out = Path(args.output); out.mkdir(parents=True,exist_ok=False)
@@ -292,7 +295,7 @@ def main():
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
                 if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion,
-                    odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress)
+                    odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress,persistent_grasp_tracks=args.persistent_grasp_tracks)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -476,6 +479,7 @@ def main():
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "held_object_inspection":args.held_object_inspection,
+                      "persistent_grasp_tracks":args.persistent_grasp_tracks,
                       "semantic_reference_calls":getattr(policy,"reference_calls",0),
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,

@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 19:50当前：** B17唯一策略39229已结束（55新控制/4模型/官方false、保载安全停），38931核对专用命令后TERM；`b17_complete.tar.gz`SHA1c953bcd…约256MiB已归档、传本地中。下方“策略运行”为历史；不原样重启，新源/物理尚无，仅离线轨迹诊断。
+
 **2026-09-18 19:44当前：** B17双门36340/36341均退出且通过；`server_b17_matched`38931/GPU1/8908/≤151已就绪，唯一`radio_b17_matched`GPU3已提交，仍用`semantic_reference_c9d3ea9`不可变源。不能照下方旧记录再启动另一run。双门初图本地`artifacts/semantic-agent-effect-20260918/b17_gate_previews/`已人工看；静态完整包在同根`b17_static_verified_bundle/`。
 
 **2026-09-18 19:38当前：** `semantic_reference_c9d3ea9`固定c9d3ea9/2600725f正在供GPU3双门`gate_radio_b17`36340、`gate_plates_b17`36341使用，禁止热pull/修改。B17静态已完成、35667已请求TERM，`b17_static_complete.tar.gz`SHA8ee449e9…；策略/新模型尚未启动。所有目录均位于H08根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_effect_20260918`。
