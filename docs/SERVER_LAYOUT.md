@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 15:53当前：** B6两工程门完成、对应进程4167916/4167977退出；唯一`radio_b6`4172010/GPU1、`plates_b6`4172067/GPU3运行中，同源`semantic_identity_b6`固定9177016。服务`server_b6_radio`4170243/8908、`server_b6_plates`4170359/8909同源0起/147与179调用上限，不热改。先前B5都已接口失败退出，不能按旧运行状态重启；B5完整归档c43131f0…传回本地中。源/配置/两门SHA与完整预算见plan、h08_b6.json及H-08报告。
+
 **2026-09-18 15:46当前：** B5两个策略均因输入token超限退出（radio72新控制/11生成，task3 720/33），无方法成功结论。旧服务4136279/4157077已停止（93/33总生成）。新源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_identity_b6`固定9177016/150CPU，`gate_radio_b6`、`gate_plates_b6`与`server_b6_radio`/`server_b6_plates`正在启动/预载，GPU1/3、端口8908/8909、147/179调用上限；输出根保持`semantic_agent_effect_20260918`，策略尚未启动。`static_context_b6`保存2原prompt/精确token与动作，`static_identity_b6`2观察中第二是冰箱，`static_identity_positive_b6`才是餐桌正例。不可把下面旧B5“运行中”当现状。
 
 **2026-09-18 15:22当前：** B5两门已完整通过（385/396新控制、48/48在线视觉位移有效、digest0a3d0085…），4155037/4155097已退出。唯一`radio_b5`4158141/GPU1/8908、`plates_b5`4158203/GPU3/8909正在初始化，均源`semantic_contact_gate_ec1a63e`且OMP/MKL/OpenBLAS=4，不能热改。radio服务4136279保留77/224起，旧plates4136398已TERM115次，替为新同权重`server_b5_plates`4157077/8909/0起≤179次。完整B4归档已本地SHA匹配/视频全解码，结果见实验文档；下文待换新/待启动描述均是历史。
