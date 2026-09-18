@@ -31,7 +31,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False):
+    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False,multicamera_inspection=False):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -48,6 +48,8 @@ class GroundedHarness(TaskHarness):
         self.held_inspection_enabled=bool(held_inspection)
         self.inspection_budget_aware=bool(inspection_budget_aware)
         if self.inspection_budget_aware and not self.held_inspection_enabled:raise ValueError("Inspection budget mode requires held inspection")
+        self.multicamera_inspection=bool(multicamera_inspection)
+        if self.multicamera_inspection and not self.inspection_budget_aware:raise ValueError("Multi-camera inspection requires budget-aware held inspection")
         self.target_references={}
         self.reference_from_planner=bool(reference_from_planner)
         self.reference_receipts={}
@@ -161,6 +163,9 @@ class GroundedHarness(TaskHarness):
         if self.held_inspection_enabled and self.stage in ("SEARCH","RECOVER") and self.observation and not self.observation.visible:
             if self.stop_reason:return (HOLD,)
             if self.search_reference.startswith("held_"):
+                if self.multicamera_inspection:
+                    from .multicamera_inspection import multicamera_palette
+                    return multicamera_palette(self)
                 from .held_inspection import inspection_palette
                 arm=self.search_reference[5:]
                 return inspection_palette(arm,self.carry,self.inspection_budget_aware) if self.hold_verified[arm] else (HOLD,)
@@ -266,6 +271,9 @@ class GroundedController:
         self.goal_changed=False
         from .held_inspection import HeldInspection
         self.inspector=HeldInspection(budget_aware=harness.inspection_budget_aware) if harness.held_inspection_enabled else None
+        if harness.multicamera_inspection:
+            from .multicamera_inspection import MultiCameraInspection
+            self.inspector=MultiCameraInspection()
         self.grasp_verifier=None
         if persistent_grasp_tracks and not grasp_motion:raise ValueError("Persistent features require registered grasp motion")
         if spatial_grasp_features and not persistent_grasp_tracks:raise ValueError("Spatial features require persistent tracking")
@@ -378,7 +386,8 @@ class GroundedController:
                        "metric_co_motion":co_motion,"distance_reduced":reduced}
         internal=dict(self.progress)
         if self.inspector is not None and manager.search_reference.startswith("held_"):
-            fresh,context=self.inspector.observe(self.model,state,manager)
+            fresh,context=(self.inspector.observe(self.model,state,manager,depths,self_geometry)
+                           if manager.multicamera_inspection else self.inspector.observe(self.model,state,manager))
             manager.held_inspection=context
             internal["new_search_coverage"]=fresh
             self.progress["new_relative_inspection_view"]=fresh

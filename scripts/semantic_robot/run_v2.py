@@ -32,7 +32,7 @@ from semantic_robot.v2.harness import TaskHarness
 from semantic_robot.v2.kinematics import RobotModel
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.policy import VLMPolicy
-from semantic_robot.v2.protocol import Action, HOLD
+from semantic_robot.v2.protocol import Action, HOLD, TRANSLATIONS, ROTATIONS
 from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.vision import prepare_views
 from semantic_robot.v2.onboard import OnboardRGBD
@@ -40,6 +40,8 @@ from semantic_robot.v2.grounding import observed_cloud, LocalDepthGuard
 from semantic_robot.v2.grounded_harness import GroundedHarness, GroundedController
 from semantic_robot.v2.policy import GroundedPolicy, RefinedGroundedPolicy
 from semantic_robot.v2.diagnostics import grasp_audit
+from semantic_robot.v2.multicamera_inspection import inspection_carry, free_observing_hand
+from semantic_robot.v2.arm_observation_guard import ObservingArmGuard
 
 
 def implementation_digest():
@@ -47,7 +49,7 @@ def implementation_digest():
     return hashlib.sha256(b"".join(p.name.encode()+p.read_bytes() for p in paths)).hexdigest()
 
 
-def bounded_gate(grounded=False):
+def bounded_gate(grounded=False,multicamera=False):
     actions = [HOLD, Action("right","up"), Action("right","down"),
             Action("left","forward","micro"), Action("left","back","micro"),
             Action("right","yaw_plus","micro","tool"), Action("right","yaw_minus","micro","tool"),
@@ -60,6 +62,8 @@ def bounded_gate(grounded=False):
             Action("right","close"),Action("right","open"),Action("left","close"),Action("left","open"),HOLD]
     if grounded:
         actions[13:15]=[Action("base","yaw_plus","coarse"),Action("base","yaw_minus","coarse")]
+    if multicamera:
+        actions[7:9]=[Action("left","roll_plus","coarse","tool"),Action("left","roll_minus","coarse","tool")]
     return actions
 
 
@@ -79,6 +83,7 @@ def main():
     p.add_argument("--persistent-grasp-tracks",action="store_true",help="Identity-bound persistent features and stable-depth corner selection; original grasp evidence thresholds")
     p.add_argument("--spatial-grasp-features",action="store_true",help="Fixed spatial feature quotas avoid global contrast domination; original evidence thresholds")
     p.add_argument("--inspection-budget-aware",action="store_true",help="Existing bounded coarse/fine framing plus non-revisited relative views")
+    p.add_argument("--multicamera-inspection",action="store_true",help="Opt-in independent free-wrist observation with visible-depth sweep veto")
     p.add_argument("--task", type=int, choices=(0,3), default=0)
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--replay-prefix-spec",help="Hash-pinned saved-action diagnostic warm start, counted separately from policy")
@@ -107,6 +112,7 @@ def main():
     if args.persistent_grasp_tracks and not args.grasp_motion:raise ValueError("Persistent tracks require registered verification")
     if args.spatial_grasp_features and not args.persistent_grasp_tracks:raise ValueError("Spatial features require persistent tracks")
     if args.inspection_budget_aware and not args.held_object_inspection:raise ValueError("Inspection budget mode requires held-object inspection")
+    if args.multicamera_inspection and not args.inspection_budget_aware:raise ValueError("Multi-camera inspection requires budget-aware held inspection")
     if (args.approach_progress or args.odometry_estimator!="pnp") and not args.visual_odometry:
         raise ValueError("Measured approach progress and explicit estimator require visual odometry")
     if args.mode == "agent":
@@ -124,6 +130,7 @@ def main():
                 g.get("persistent_grasp_tracks",False)==args.persistent_grasp_tracks and
                 g.get("spatial_grasp_features",False)==args.spatial_grasp_features and
                 g.get("inspection_budget_aware",False)==args.inspection_budget_aware and
+                g.get("multicamera_inspection",False)==args.multicamera_inspection and
                 g.get("held_object_inspection",False)==args.held_object_inspection for g in gates):
             raise ValueError("Control/FK gates have not passed for this exact implementation")
     out = Path(args.output); out.mkdir(parents=True,exist_ok=False)
@@ -296,7 +303,7 @@ def main():
                 else:
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware) if grounded else TaskHarness(goals)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection) if grounded else TaskHarness(goals)
                 if replay is not None:
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
@@ -319,7 +326,7 @@ def main():
                 draw.text((8,1065),f"Expert {prefix_count} + saved-policy {replay_count} prefix not shown. 30Hz sim /15fps.",fill="white")
                 video.append_data(np.asarray(canvas))
 
-            gate = bounded_gate(grounded)
+            gate = bounded_gate(grounded,args.multicamera_inspection)
             gate_motion=None
             if args.visual_odometry and not policy:
                 from semantic_robot.v2.odometry import RGBDMotion
@@ -434,7 +441,30 @@ def main():
                 row["action"] = asdict(action)
                 wall = time.perf_counter()
                 state = state_now()  # recheck actual joints after model latency
-                accepted = servo.begin(action,state,carry=bool(manager and manager.carry))
+                carry=(inspection_carry(manager,action) if args.multicamera_inspection and manager else bool(manager and manager.carry))
+                accepted = servo.begin(action,state,carry=carry)
+                free_actor_motion=bool(controller and controller.is_held_search and action.part==free_observing_hand(manager))
+                free_gate_motion=bool(args.mode=="gate" and action.part=="left" and action.move in (*TRANSLATIONS,*ROTATIONS))
+                if accepted and args.multicamera_inspection and (free_actor_motion or free_gate_motion):
+                    # Re-read RGB-D AFTER model latency. Do not reuse a stale
+                    # preflight cloud as a current execution clearance check.
+                    _,fresh_depths,fresh_receipt=observation_now(f"preexecute_free_camera_{decision}")
+                    fresh_state=state_now()
+                    if (np.max(np.abs(fresh_state.q-state.q))>1e-5 or
+                            np.max(np.abs(fresh_state.gripper-state.gripper))>1e-5):
+                        safe,check=False,{"reason":"ROBOT_CHANGED_DURING_OBSERVER_PREFLIGHT"}
+                    else:
+                        guard=ObservingArmGuard(model,state.q,observed_cloud(fresh_depths,model,state.q,stride=6),kin.native_self_boxes(),action.part)
+                        safe,check=guard.check(servo.joint_plan)
+                    write(directory/"observer_execution_check.json",{"safe":safe,"check":check,"sensors":fresh_receipt})
+                    np.savez_compressed(directory/"observer_execution_depth.npz",**fresh_depths)
+                    if not safe:
+                        reason="OBSERVER_EXECUTION_VETO_"+check["reason"]
+                        if manager:manager.stop_reason=reason
+                        else:failures.append({"decision":decision,"error":reason})
+                        row.update(accepted_before_motion=False,stop_reason=reason)
+                        decisions.append(row)
+                        break
                 row["accepted_before_motion"] = accepted
                 previous = bundle.current_raw
                 if accepted:
@@ -468,6 +498,7 @@ def main():
             gate_ok = args.mode=="gate" and not failures and len(decisions)==len(gate) and len(reached)>=16
             if grounded and args.mode=="gate":
                 required={13,14,19,20,21,22}
+                if args.multicamera_inspection:required|={7,8}
                 gate_ok=bool(gate_ok and required <= {r["decision"] for r in reached} and sensor_checks and
                              "grasp_centers_eef" in model.spec["metadata"])
             stop_reason=manager.stop_reason if manager else "CONTROL_GATE_COMPLETE" if gate_ok else "CONTROL_GATE_FAILED"
@@ -489,6 +520,7 @@ def main():
                       "persistent_grasp_tracks":args.persistent_grasp_tracks,
                       "spatial_grasp_features":args.spatial_grasp_features,
                       "inspection_budget_aware":args.inspection_budget_aware,
+                      "multicamera_inspection":args.multicamera_inspection,
                       "semantic_reference_calls":getattr(policy,"reference_calls",0),
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
