@@ -352,7 +352,11 @@ class GroundedController:
                         if self.target["valid"] else None)
         new_coverage=self.search.observe(manager.index,self.model.forward(state.q,"camera_head"),camera["K"],
                                         camera["width"],depth_receipt["head"]["valid_fraction"],evidence.visible,target_bearing)
-        self.depth_guard=LocalDepthGuard(observed_cloud(depths,self.model,state.q),self.model,state.q,depths)
+        precise_geometry = self.servo.limits.robot_geometry_guards
+        if precise_geometry and self_geometry is None:
+            raise ValueError("Fresh robot-only geometry required by enabled guard")
+        self.depth_guard=LocalDepthGuard(observed_cloud(depths,self.model,state.q),self.model,state.q,depths,
+                                        self_geometry=self_geometry if precise_geometry else None)
         distance=None
         if self.target["valid"]:
             points=self._points_for_arms()

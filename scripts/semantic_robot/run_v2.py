@@ -33,7 +33,7 @@ from semantic_robot.v2.kinematics import RobotModel
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.policy import VLMPolicy
 from semantic_robot.v2.protocol import Action, HOLD, TRANSLATIONS, ROTATIONS
-from semantic_robot.v2.servo import SafeServo
+from semantic_robot.v2.servo import SafeServo, ServoLimits
 from semantic_robot.v2.vision import prepare_views
 from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.grounding import observed_cloud, LocalDepthGuard
@@ -87,6 +87,8 @@ def main():
     p.add_argument("--active-grasp-probe",action="store_true",help="Bounded exploratory close; original grasp verification remains mandatory")
     p.add_argument("--contact-geometry",action="store_true",help="Experimental finger guides/tool translations; not mixed into the feedback-only comparison")
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
+    p.add_argument("--robot-geometry-guards", action="store_true",
+                   help="Opt-in actual robot depth self-exclusion and fully-open hand/body collision envelopes")
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid","rgbd_joint"),default="pnp")
     p.add_argument("--odometry-substep-controls",type=int,choices=(0,6),default=0,
                    help="Opt-in fixed action-internal RGB-D sampling; zero preserves legacy behavior")
@@ -121,6 +123,8 @@ def main():
     if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe or args.contact_geometry or args.grasp_motion) and not grounded:
         raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
+    if args.robot_geometry_guards and not args.grasp_motion:
+        raise ValueError("Robot geometry guards require fresh grounded robot geometry")
     if args.held_object_inspection and not args.grasp_motion:raise ValueError("Held inspection requires registered verified anchors")
     if args.persistent_grasp_tracks and not args.grasp_motion:raise ValueError("Persistent tracks require registered verification")
     if args.spatial_grasp_features and not args.persistent_grasp_tracks:raise ValueError("Spatial features require persistent tracks")
@@ -141,6 +145,7 @@ def main():
                 g.get("visual_odometry",False)==args.visual_odometry and
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("grasp_motion",False)==args.grasp_motion and
+                g.get("robot_geometry_guards",False)==args.robot_geometry_guards and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
                 g.get("odometry_substep_controls",0)==args.odometry_substep_controls and
                 g.get("approach_progress",False)==args.approach_progress and
@@ -188,6 +193,7 @@ def main():
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
                 "visual_odometry":args.visual_odometry,
                 "odometry_substep_controls":args.odometry_substep_controls,
+                "robot_geometry_guards":args.robot_geometry_guards,
                 "active_grasp_probe":args.active_grasp_probe,"privileged_audit_is_actor_input":False,
                 "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
@@ -325,7 +331,8 @@ def main():
             state = state_now()
             previous_grips = (replay["actions"][-1,[14,22]] if replay is not None else
                               None if not prefix_count else np.asarray(prefix[-1])[[14,22]])
-            servo = SafeServo(model,state,gripper_command=previous_grips)
+            servo = SafeServo(model,state,gripper_command=previous_grips,
+                              limits=ServoLimits(robot_geometry_guards=args.robot_geometry_guards))
             video = imageio.get_writer(str(out/"rollout.mp4"),fps=15,codec="libx264",quality=7,macro_block_size=2)
             previous = None
             started = time.perf_counter()
@@ -414,7 +421,8 @@ def main():
                     write(directory/"depth_receipt.json",depth_receipt)
                 row = {"decision":decision,"control_start":controls}
                 if grounded and not policy:
-                    guard=LocalDepthGuard(observed_cloud(depths,model,state.q),model,state.q,depths)
+                    guard=LocalDepthGuard(observed_cloud(depths,model,state.q),model,state.q,depths,
+                                          self_geometry=self_geometry if args.robot_geometry_guards else None)
                     audit=guard.receipt()
                     audit["base_preflight_without_execution"]={move:guard.check(Action("base",move))
                         for move in ("forward","back","left","right")}
@@ -645,6 +653,7 @@ def main():
                       "visual_odometry":args.visual_odometry,
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
+                      "robot_geometry_guards":args.robot_geometry_guards,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "odometry_substep_controls":args.odometry_substep_controls,
                       "held_object_inspection":args.held_object_inspection,
