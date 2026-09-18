@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 07:11当前：** H17 GPU3原186948/186949各已200控制、尚未门完成；NVMe输出原处，局部未启。GPU1 P2 185102已退出，原`h09u_reference_task1_v2`保留166控制/时序验证失败；完整本地作者`artifacts/h09u-reference-task1-v2/run`，双端全SHA审计进行中，非成功seed。模型156556保持旧源空闲。
+
 **2026-09-19 07:02当前：** 新目录已真实创建：`/mnt/nvme_tmp/robodojo_agentic_20260919/h17_body_options`，仅H17有限新输出，累计1GiB；GPU3门`gate_radio_h17`186948/`gate_plates_h17`186949＋同名log初始化，runtime `git_worktrees/semantic_body_3411489`/digest b2d14390…c78df，禁止热改。旧root7,406,026,563B/旧模型156556保留原盘，局部run未启。GPU1 P2 Python185102（壳185097），原root `h09u_reference_task1_v2`＋log、独立26e源/新授权60d420…7d5ea；旧P1失败保留；尚未训练。
 
 **2026-09-19 06:50当前：** H17新不可变`git_worktrees/semantic_body_4b56b03`354 CPU通过/digest a4ecacc0…2d499，无新物理/输出目录；GPU3旧156556/8923真实170/215，43剩余配额足。GPU1参考179879已退出，失败完整本地在子worktree `artifacts/h09u-reference-task1-v1/run`（17文件6,585,894B、全SHA过，165控制含hold）；原服务器目录/9b源保留不改。新NVMe拟输出仍未创建，余2.7TiB，原盘余约81GiB；旧父root7,406,026,563B，仍遵原7GiB，不把换盘抹成零历史。
