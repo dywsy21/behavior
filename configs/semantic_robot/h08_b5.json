@@ -2,7 +2,8 @@
   "experiment_id": "H-08-B5",
   "owner": "Codex-solo",
   "hypothesis": "Explicit per-contact observations, actual target bearings and staged feasible motion remove interface-induced stalls without weakening success gates.",
-  "code_commit_short": "b2ae717",
+  "code_commit": "ec1a63e83a6cf9e2e143f56c9188c0d3fa0ec83c",
+  "implementation_digest": "0a3d008559c6975195c5e602942f9e32ad45cb0a3cec95b4b7982c8656c7a655",
   "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
   "model_path": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917/models/Qwen3.8-27B",
   "training_updates": 0,
@@ -22,6 +23,6 @@
   "comparison": "B4 same task, instance, seed, prefix and policy bounds; integrated engineering comparison, not single-factor ablation or population SR.",
   "flags": ["--harness", "grounded", "--refine-grounding", "--visual-odometry"],
   "stops": ["Any hard safety or vision-motion uncertainty", "Per-run declared budget", "Disk free below 80 GiB"],
-  "prerequisites": ["144 CPU regressions on both machines", "Two primary-contact static checks plus human review", "Both new implementation-digest gates before any policy episode"],
+  "prerequisites": ["145 CPU regressions on both machines", "Two primary-contact static checks plus human review", "Both new implementation-digest gates before any policy episode"],
   "success_reporting": "CPU/gate pass is not efficacy; require real observed motion and local outcome evidence; full task only official criteria. All prefixes remain explicitly expert."
 }

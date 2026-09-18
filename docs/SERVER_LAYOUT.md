@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 15:16当前（覆盖下面历史启动状态）：** B4两策略已结束，无官方成功；旧radio服务4136279/GPU1/8908仍在（77/224调用，源39881cf），task3旧服务4136398/GPU3/8909（115/224）待核身份后替换。B5不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_contact_gate_ec1a63e`已145 CPU，两`gate_radio_b5`/`gate_plates_b5`启动，根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_effect_20260918`，日志同级。策略尚未启动；每个新仿真进程OMP/MKL/OpenBLAS=4。两主接触静态及SHA已在本地artifacts，B4完整归档仍传输中。禁止热改这些源/把下文旧PID当现状。
+
 **2026-09-18 14:22 H-08策略运行：** `radio_b4`4143759/GPU1/8908、`plates_b4`4143760/GPU3/8909已唯一启动，正在初始化，run与日志均在同H-08根；各自原预算/前缀不变，仿真14a33ec、服务39881cf，不热改。下条的准备提交已更新为运行中，结果仍待验。
 
 **2026-09-18 14:21 H-08当前：** 运行源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_selfdepth_14a33ec`，两`gate_radio_b4_fast`/`gate_plates_b4_fast`已完整通过，385/396新控制、digest ac733fff…；旧39881cf两慢版门中断保留（无完整result）。B4服务4136279/8908/GPU1与4136398/8909/GPU3仍固定`semantic_selfdepth_39881cf`（仅仿真优化，HTTP源码未改），同27B各0/224调用。策略`radio_b4`/`plates_b4`准备唯一提交；根仍`semantic_agent_effect_20260918`、同级日志。B3完整归档SHA16cca5a0…和静态归档SHA40aa687e…均已到本地并校验，B3两视频已全解码与人工选帧核验。旧启动/传输记录均为历史，不热改任何在用源。
