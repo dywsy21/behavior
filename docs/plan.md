@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 04:17（北京时间）H15两门初始化后失败/明确API根因（Codex）：** 149129/149131均已退出，reset_completed=true、ROBOT_CALIBRATION阶段`Robot.end_effector`不存在，0控制/模型/决策，原两reset已经使用，不能报门通过或复用计数。安装robot.py214–229只在has_end_effector_variants时设置end_effector；r1pro是固定手型。父登记≤300s CPU最小识别修复＋与实际对象字段形状一致负例，不更改几何阈值；Astra仍在独立collector补丁，随后增量终审。新源两修复复验需另登记；唯一原起点策略/新服务仍未启动，旧132309仍空闲。失败目录及旧b6源保留不覆盖。
+
 **2026-09-19 04:15（北京时间）H15双工程门已提交初始化（Codex）：** 唯一`gate_radio_h15`149129、`gate_plates_h15`149131/GPU3，固定`semantic_geometry_b6f0845`/digest`b71737e4…`、实际robot_geometry_guards=true，同已登记各24/1536/1200s/0前缀/模型；还未声称reset或门通过。启动前root4831846809B、盘余89865490432B、GPU3空81152MiB，旧132309/GPU1仍104空闲，GPU0队友不动。下一核本次首图/标定和真实动作，新模型/原起点尚未提交；Astra同时独立修H09S采集器，不热改本次源。
 
 **2026-09-19 04:13（北京时间）H15最终审查通过/H09S补丁分工（Codex/Astra）：** `b6f084542397280ec2c7f1cb6f8713ac4bfa001c`/digest`b71737e4…d1cff`本地330/4.971s、robo330/14.042s、116保存态35.797156s通过（结论不变）；Astra最终复审无阻塞，128随机OBB与精确求交一致、真实URDF/USD四指prismatic及原夹爪latch safe-hold核验通过。原≤300s修正块结束，放行04:11已登记两门，实际启动仍待。原Astra转 **H09S≤900s CPU补丁/0模型物理训练/≤20MiB**，仅自己SFT文件：合并b6父源、实际开启新两几何门、gate开关核验、固定prepare/window/prefix身份、保存当前depth/自体盒复现安全判定及负例；父独立终审后才另登记首3实例采集。父独占新工程门/源部署/人工图像检查，不重复子代码实现。
