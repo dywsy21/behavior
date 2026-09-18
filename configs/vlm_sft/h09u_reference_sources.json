@@ -1,0 +1,16 @@
+{
+  "status": "CPU_PREPARATION_ONLY_NO_RESET_AUTHORIZATION",
+  "h09s_preparation_sha256": "415d5e96eb85290c9433c61052712d32e2644f3d4d60460930b35635ad876873",
+  "h09r_counts_sha256": "d94850ebfeadeef8b28f618e543ebae7cb7a18bd127c5d79ba6f4c18c0f015e3",
+  "held_out_instance_groups": [],
+  "sources": [
+    {"task":0,"episode":66,"instance":70,"start":1170,"end":1610,"verb":"PRESS","hand":"left","support_hand":"right","payloads":[]},
+    {"task":1,"episode":310,"instance":192,"start":164,"end":452,"verb":"GRASP","hand":"right","support_hand":null,"payloads":[]}
+  ],
+  "source_hz": 30,
+  "tail_controls": 12,
+  "final_hold_controls": 1,
+  "maximum_total_controls_if_later_authorized": 2088,
+  "reference_replay_model_calls": 0,
+  "PLACE_IN": "BLOCKED_UNVALIDATED_FULL_VOLUME_ADAPTER"
+}
