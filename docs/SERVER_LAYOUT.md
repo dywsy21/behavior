@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 20:38当前：** B19双门已退出/通过；GPU3唯一模型58225/8909＋`radio_b19_matched`58614，固定`semantic_spatial_5df51be`，预算64/2048/1800s、≤151。不要照旧门状态重复提交或热改；GPU1 Astra H09在构造严格data_v3、未正式训练。
+
 **2026-09-18 20:33当前：** GPU3 B19双门55607/55608，源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_spatial_5df51be`/digest6fe40b1a，不热改。新模型/策略未启动；同H08根`offline_b19_b18_matched`及`b19_actual_registered_b18_replay.json`是0控制离线证据。B18策略/服务均已退出，全包本地`b18_verified_bundle/`已SHA/24hash/全视频解码/人工4观察核验。
 
 **2026-09-18 20:24当前：** B18策略47681已退出、55新控制/官方false；模型47250已核身份TERM，归档待。新诊断只在本地CPU，不重启旧run；GPU3暂无新物理。Astra GPU1独立H09正在构造严格数据release/真batch门，未正式训练，旧data_v1保留；主分支7dc0fdb已pull/fetch同步，main仍33677bd。
