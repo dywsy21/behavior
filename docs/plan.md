@@ -14,6 +14,10 @@
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
 
+**19:36 B17静态通过/有限物理登记（Codex）：** `static_semantic_b17`35927完成，实际1次text-only模型（held_right）＋无held例确定world，0控制；原按钮视觉仍不可见，没有被语义改成可见。本人核输入仅goal/观察验证标签、输出与d4头图，原姿态12个fine候选＋HOLD预检通过，无base/开爪，旧锚点头uv约(.757,.994)确在右下边缘。登记`h08_b17.json`同c9d3ea9源：先GPU3两个24/1536/1200s新门，通过才唯一radio匹配64/2048/1800s，GPU1同27B服务≤151（语义≤4），前448＋362另计，0标准/task3策略/训练。B17是25mm域一致＋语义/相对观察的集成对照，不谎称纯单因素；是否露出按钮/保持持物/官方成功都待实测。
+
+**19:35 B17精确源静态运行（Codex）：** `c9d3ea9d776eb236eed14a3153f174e4624edb54`，digest `2600725f7ce22c84d57df256a7439aed2f02dd7fe2d8e4734dc2179acc0e8daf`，独立`semantic_reference_c9d3ea9`，robo232CPU/6.701s通过。GPU1`server_b17_static`35667/8908/≤2调用，新静态`static_semantic_b17`已提交，两保存状态、不控制；等待真实路由/原姿态候选结果。不热改，不追加B16。B16归档已下载本地SHA8129ffce…一致。本人再核B14d4头视图：radio在右下边界且按钮未见，世界搜索无法给持物带来相对视角；这不是模型已经看到了按钮。
+
 **19:32 B16静态失败/B17语义与视觉分离实现（Codex）：** B16实际两调用：held-radio按钮不可见时模型仍输出reference unknown，世界目标例world通过；0控制/0新reset，`failure.json`保留，不放行B16物理。旧服务34106身份核对后TERM，归档SHA `8129ffced9d1e093d079b432da623641ebc8f7fa685ddd825fc08b2b6e20fdca`。B17本地新增text-only `reference`有限四选项（含world/unknown，不把期待答案强塞进去），仅当前goal＋已有观察验证的held标签；每goal绑定一次，最多4次语义调用，视觉unknown不再覆盖关系，未知/矛盾/未验证手停。无已验证负载时world无需模型。复用B16机载锚点/相对观察预检，原视觉失败方案只保留静态复现。登记`h08_b17_static.json`同两保存状态、≤2调用/600s/0控制，232CPU/2.889s及入口编译通过，独立review待，物理仍未放行。续接fetch成功、main33677bd/分支0差异；自身计划脏修改保留故未pull。
 
 **19:21 B16静态真实运行/旧证据本地完成（Codex）：** 固定`f3f706ddc1b43e4b5004d591707868153d280137`、digest `8b001c6b8723873b9c6bb97e6d72e838bca918f19d0ebf98519c1016c28d1001`，robo独立`semantic_held_inspection_f3f706d`223CPU/6.773s。GPU1`server_b16_static`34106/8908/≤2调用及`static_reference_b16`34223按原两保存状态启动，尚待最终静态/预检结果，0控制。B14完整本地192 RGB-D hash无差异、视频全解码，本人看全部5页9时刻，32次独立附着都radio_89且无open；d3反馈成功、之后头景改变但物体对腕视角几乎不变，验证世界扫描无效。B15部分归档SHA也本地通过；B14/B15原服务已确认退出，不重启。
