@@ -60,6 +60,30 @@ task0已经退出，并非仍运行或成功采集。标定JSON **47,345,882B**�
 
 父已读实际writer/loader与部署回执、独立审查通过并显式放行仅task1。核新`authorization_remaining_two_68dacca.json` SHA `599298a34957c3f971ae2cbae2597baa56b71f71a7c22803ca268c49f0178795`与原清单后，04:59:09.866 BJT提交唯一PID163349/GPU1，run=`pilot_v2/task_1`，日志/launch同级。源固定68dacca，TRAIN192/e310/f164、164专家前缀、≤200新控制（含停顿/最终hold）、reset后900s、≤3候选、每次人工等待120s，0模型训练；每run30MiB/global100MiB计原失败不变。启动时盘余88,355,119,104B、pilot累计54,623,709B。当前仅初始化，非采集通过；父承担当前及前后人工教师，所有记录隔离。task3未放行、task0不重置，遇基础设施故障暂停remaining。
 
+### 05:09 task1 结束；05:11–05:21 仅CPU容量、吞吐和教师路线审计
+
+PID163349已退出。真实164prefix＋91native（54候选、36停顿、1最终hold）=255控制，0模型/训练。三个独立审批均在120s内落盘，文件时间差93.217/95.497/112.310s，三次各18条实际向量与总trace逐值一致。前两RIGHT_LEFT达到目标并各停顿12步，右EEF侧移9.543/9.549mm；父亲看各before/after/after_settle三视角、源和轨迹后分别后审通过。两record digest为`e44140ed…05d9b`/`91982752…48089`，两post canonical digest为`04867711…19b87`/`d3e6ec2e…3c30`；实际`release_reviewed_record`再次通过，保存为`artifacts/h09s-runtime-68dacca/reviewed_task1/`的两条候选。它们仅同实例/同GRASP意图/同RIGHT_LEFT，不是抓取成功，也不足任何新训练发布。
+
+第三18条已执行，但在`sample_02/after/robot_self_geometry.json`写前容量拒绝；其after仅三RGB和depth，没有完整capture/后停顿/record/持久化finish反馈，**不补造TARGET_REACHED或第三正标签**。failure首错误保留，reset后425.513s；`final_hold.json`真实completed=true、native91，零base、双grip1。第三原审批仍保留。run实际30,390,700B（28.983MiB），未越30MiB，正常29MiB余18,004B不足再写约31KB自体盒；写前拒绝与清理余量按设计生效，但没有事前为整段后验预留空间，导致真实动作缺完整证据。task3暂停，不重置task0/1。
+
+83个run文件和最终log已全量下载，逐文件SHA/大小均匹配远端：本worktree `artifacts/h09s-runtime-68dacca/pilot_v2/task_1/`，相邻log/launch；清单`task1_evidence_cpu/final_artifacts.json` SHA `314d9fef76896077f20cd022858ac3affa7bf86b0b0e35a99fa300abdfe0d6af`。旧失败仍计入全root85,022,736B（本审计派生前）；97MiB普通额度只剩16,689,136B，绝不把历史超限追认为合规。本票只新增小JSON/报告，无新控制/reset/模型/训练。
+
+每个完整capture实测3.348–3.429MB，其中三RGB约1.07–1.09MB、depth.npz约2.24–2.31MB，自体盒约31KB。两次`after_settle→next before`的时钟/q/grip完全相同，**depth.npz、proprio、selfgeometry三个文件逐字节相同**，共重复4,637,920B；RGB三路数组全不相同，sensors/capture也不同，不能称整帧重复。可做无损内容寻址复用完全相同的payload，并保留每观察独立时钟/图像/引用SHA；或另审“0physics且q/grip相同才直接复用已拍快照”的接口，但本票均未实现、未改旧证据。下一采集器必须在动作前预留整个after+settle回执的保守容量，不只保证单次write。
+
+时间证据：标定receipt至首before=65.048s，涵盖FK检查＋164prefix＋12settle＋capture；两次实际12settle+capture为5.347/5.423s。扣其均值得prefix代理速率0.36380s/control，3473前缀约1263.5s，另有标定约12.83s及动作/审核。**这不是逐tick计时，task3场景吞吐可能不同；但不支持900s可行，更不能靠先reset试运气。** 文件原时间与计算在`task1_evidence_cpu/capacity_timing.json`。一次有现实余量的后继应另登记同未用task3单reset、最多1个完整候选、reset后1800s及按实测整段预留至少24MiB；连同原85MB证据，累计上限需前置重定为例如120MiB，旧失败仍标失败。此为未批准建议，需代码/授权显式绑定新预算与整段预留、独立审查；现在不改源、不执行。
+
+#### 可到新训练的唯一建议：特权离线教师完成局部技能，再抽审完整轨迹
+
+可以用仿真特权几何/原专家作**离线教师**，不必240条都在线人工审批。教师使用同状态对象/容器/按钮元链接、原同技能轨迹的对象相对路点作提案，逐次从同41符号选动作，并经完全相同native安全门真实执行。距离或专家路点误差只作搜索代价，**不能直接发正确BC**。只接受从未完成到真实局部完成、保持任务支撑/载荷约束、无未解释接触/跌落且前后证据完整的同意图轨迹，再分层人工审图/稀有类别全审；失败整段隔离，恢复若需要必须有新合法意图及实计控制，不把失败原意图配另一技能动作。对象ID、隐藏位姿、未来路点、谓词结果只在教师/出处字段，现actor投影不变。
+
+本票读到的真实API及边界（未新仿真验证）：安装`object_states/toggle.py`的ToggledOn带togglebutton元链接，真实手指接触和marker重叠连续5更新才翻转，可用**原生false→true及保持**作为PRESS候选终判，绝不用set_value写成功；`inside.py:240`读取的是对象中心落入容器体积，不能单独证明整个物体/盘上食物被稳定放好，需释放后连续物理更新、目标支撑/内容保持与载荷约束；`robots/robot.py:1957`在physical模式用ControllerView状态，实际实现另核candidate接触（其“忽略candidate”注释已落后实现），仍不能独自证明目标稳定持有，需目标身份接触＋真实小幅提起/迁移后物体相对手稳定，不能看闭爪自报。H14已核RigidContactAPI可读碰对/物体pose，但覆盖/caching仍需沿已审contract，纯接触亦非成功。
+
+旧sim_runtime的`g05/utils/memlite_native_fm_contract.py:569`确有`evaluate_installed_subgoal`，动态依赖`PhysicalSkillOracle`；有UNKNOWN/IN_PROGRESS/SUCCEEDED、因果完成及placement streak接口，明确不是官方整任务SR。**当前68源并无该模块，不能把旧adapter存在当即插即用且全部谓词可靠**；后继要固定其实现SHA、依赖和各意图正负例，校验GRASP身份/保持、PRESS因果翻转、PLACE支撑/释放后稳定，再只接教师侧。现同41符号能否在这些起点完成操作也未证明；特权几何不能绕过IK/碰撞/持物约束或瞬移状态。
+
+有限路线（均尚未授权）：先独立CPU实现/审查教师与三类终判，随后一个三类局部技能先导，最多3来源reset、12000prefix、3000native、3GPU小时、300MiB，不branch restore/重跑；每类至少有一个完整技能成功且人工审整条，任类不能完成就定位并停，不直接做600条。只有此门过，才登记12 TRAIN来源（每task4）＋6全新按实例留出来源；排原5%全实例/H09留出/138/242，预先核总前缀≤30000；≤18reset、20000native、600条候选、单GPU≤10小时、≤6GiB完整证据。按当前代理速率prefix约3.0h、20k native粗估3h、600条多帧存储/初始化/教师计算另留余量；这些是上限而非成功保证。旧6小时/1GiB建议已不适合保留完整RGB-D证据的真实吞吐，必须重新登记，不能沿用。当前盘余约82GiB无法直接新增6GiB且保80GiB；需父先明确可用数据盘/已核可归档空间，不能删除旧证据凑预算。
+
+达到原240正确native准入门（GRASP/PRESS/PLACE各≥40、各≥4来源、各近静止≥20/阶段起点≥10、CLOSE/OPEN各≥20并各≥4来源、BASE≤20%）后，才用现2B另起adapter≤400更新/1GPU小时；不续写旧H09。相同新来源协议base/FT静态≤300调用＋3异质起点配对共6短闭环、每例30决策/960控制/600s，报告局部物理指标与全任务SR分别。人工可改为按意图×动作族×停顿/起点抽审且稀有格全审，仍保上述数据覆盖/完整轨迹正确性门，不用两个同方向样本支撑泛化结论。
+
 实现的是 **人工当前状态教师的可执行采集流程**，不是把混合专家动作重新解释成纯动作：`native_teacher_prepare.py` 做严格 TRAIN 来源与前缀转换；`native_teacher_contract.py` 编译只供审阅的方向候选、绑定人工审批与隔离记录；`native_teacher_collect.py` 可在停顿后导出三 RGB，零 physics 等待审批，执行已有 `token_to_action`/`SafeServo`，导出实际 23D 轨迹、立即及再停顿后的图像，默认全部 quarantine。没有新的 VLM、自举标签或自动正确性证书。
 
 初版 `973ba76` 已由 Git 同步；远端 CPU 直接执行该提交的 Git blobs，复用 `semantic_joint_90a7c20` 中未变的 common/live/prepare 依赖，未创建或热改运行源码。真实准备 **3.353s，799,441 字节**，含三个前缀、9 段三视图原专家 17 帧视频和完整定位/来源回执；0 模型/控制/reset。目录：`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1`。后续修订增加稳定停顿后图像、近静止 EEF 门及保守未知负载约束，不改变已准备的数据。29 项 SFT CPU 测试通过（原21＋新8），新采集器尚未在 simulator 中运行，不能称端到端采集已通过。
