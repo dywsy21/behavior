@@ -59,7 +59,9 @@ def main():
         bundle=prepare_views(images,model,state.q,previous,grounded=True)
         # Preserve actual marked views AND their recorded numeric geometry.
         bundle.images=[Image.open(source/(label+".png")).convert("RGB") for label in bundle.labels]
-        bundle.geometry=json.loads(original["request"]["text"])["current_robot"]["projection_guides"]
+        source_request=original.get("request_without_pixel_duplicates",original.get("request"))
+        if not isinstance(source_request,dict):raise ValueError("Saved prompt provenance missing")
+        bundle.geometry=json.loads(source_request["text"])["current_robot"]["projection_guides"]
         manager=GroundedHarness([Goal(**saved["goal"])])
         manager.stage=saved["stage"];manager.observation=observation
         manager.held=saved["held_target_claims"];manager.hold_verified=saved["holding_verified_by_observation_and_proprio"]
