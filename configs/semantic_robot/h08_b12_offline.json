@@ -1,0 +1,16 @@
+{
+  "experiment_id": "H-08-B12-offline",
+  "owner": "Codex-solo",
+  "hypothesis": "Using both observed depth maps to estimate rigid motion reduces PnP's depth/pose ambiguity without weakening the existing motion and reprojection limits.",
+  "status": "diagnostic_only_not_deployed",
+  "baseline_code": "a4e3aabd0b4e8c0694176885efd7885e2fc8e32a",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "saved_pairs": {
+    "radio_b11": [1, 2, 8, 12, 17, 18, 19],
+    "gate_radio_b11_v2": [13, 14, 20],
+    "gate_plates_b11_v2": [13, 14]
+  },
+  "budget": {"CPU_pairs": 12, "wall_seconds": 300, "new_model_calls": 0, "controls": 0, "resets": 0, "training": 0},
+  "interpretation": "All pairs use exactly the same raw RGB-D and robot FK for both estimators. More accepted pairs is not itself correctness; inspect spatial support, residuals and original frames. No physical truth is saved for B11's body pose, so do not claim absolute odometry accuracy.",
+  "stop": "Finish 12 pairs and inspect; no new simulator policy is registered by this configuration."
+}

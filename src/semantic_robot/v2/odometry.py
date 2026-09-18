@@ -50,9 +50,71 @@ def solve_correspondences(points_before, pixels_after, points_after, K, camera_b
     return result
 
 
+def rigid_fit(before,after):
+    """Fixed-scale least-squares rigid registration; never a learned pose prior."""
+    a,b=np.asarray(before),np.asarray(after)
+    if len(a)<3 or a.shape!=b.shape or a.shape[1:]!=(3,):return None
+    ca,cb=a.mean(axis=0),b.mean(axis=0)
+    u,s,vt=np.linalg.svd((a-ca).T@(b-cb))
+    if s[1]<1e-8:return None  # Collinear points do not constrain full rotation.
+    correction=np.eye(3);correction[2,2]=np.linalg.det(vt.T@u.T)
+    r=vt.T@correction@u.T
+    t=cb-r@ca
+    return r,t
+
+
+def solve_rgbd_correspondences(points_before,pixels_after,points_after,K,camera_before,camera_after):
+    """Experimental 3D--3D RANSAC with independent RGB reprojection checks.
+
+    Same motion/reprojection/depth limits as PnP. This is not a fallback that
+    keeps trying solvers until one says a stopped action was safe.
+    """
+    xyz,uv,newxyz=map(lambda x:np.asarray(x,dtype=np.float64),(points_before,pixels_after,points_after))
+    result={"valid":False,"reason":"INSUFFICIENT_STABLE_CORRESPONDENCES","matches":len(xyz),
+            "estimator":"RGBD_RIGID_RANSAC_EXPERIMENTAL"}
+    if len(xyz)<25:return result
+    if (xyz.shape!=(len(xyz),3) or newxyz.shape!=xyz.shape or uv.shape!=(len(xyz),2)
+            or not all(np.isfinite(a).all() for a in (xyz,uv,newxyz))):
+        raise ValueError("Finite aligned RGB-D correspondences required")
+    rng=np.random.default_rng(31);best=None;best_score=(-1,-float("inf"))
+    for _ in range(200):
+        choice=rng.choice(len(xyz),3,replace=False);fit=rigid_fit(xyz[choice],newxyz[choice])
+        if fit is None:continue
+        r,t=fit;error=np.linalg.norm(xyz@r.T+t-newxyz,axis=1);sel=error<.01
+        score=(int(sel.sum()),-float(np.median(error[sel])) if sel.any() else -float("inf"))
+        if score>best_score:best,best_score=sel,score
+    if best is None or best.sum()<25:
+        result["reason"]="RGBD_RIGID_NOT_SUPPORTED";return result
+    for _ in range(2):
+        fit=rigid_fit(xyz[best],newxyz[best])
+        if fit is None:return {**result,"reason":"DEGENERATE_3D_SUPPORT"}
+        r,t=fit;error=np.linalg.norm(xyz@r.T+t-newxyz,axis=1);best=error<.01
+        if best.sum()<25:return {**result,"reason":"RGBD_RIGID_NOT_SUPPORTED"}
+    sel=np.flatnonzero(best);result.update(inliers=len(sel),inlier_fraction=len(sel)/len(xyz))
+    if len(sel)/len(xyz)<.45:return {**result,"reason":"MATCHES_NOT_GEOMETRICALLY_COHERENT"}
+    fitted=xyz[sel]@r.T+t
+    if np.any(fitted[:,2]<=.01):return {**result,"reason":"INVALID_PROJECTED_DEPTH"}
+    projected=fitted@np.asarray(K).T;projected=projected[:,:2]/projected[:,2,None]
+    pixel_error=float(np.median(np.linalg.norm(projected-uv[sel],axis=1)))
+    point_error=float(np.median(np.linalg.norm(fitted-newxyz[sel],axis=1)))
+    rel=np.eye(4);rel[:3,:3]=r;rel[:3,3]=t
+    motion,delta=body_motion(camera_before,camera_after,rel)
+    result.update(median_reprojection_px=pixel_error,median_depth_correspondence_m=point_error,
+        body_delta=delta.tolist(),body_translation_z_m=float(motion[2,3]),
+        body_transform_current_in_previous=motion.tolist(),
+        support_3d_singular_values=np.linalg.svd(xyz[sel]-xyz[sel].mean(axis=0),compute_uv=False).tolist(),
+        inlier_pixel_span=np.ptp(uv[sel],axis=0).tolist())
+    if pixel_error>1. or point_error>.015:return {**result,"reason":"RGB_DEPTH_MOTION_DISAGREEMENT"}
+    if np.linalg.norm(delta[:2])>.18 or abs(delta[2])>.30 or abs(motion[2,3])>.035:
+        return {**result,"reason":"OUTSIDE_SINGLE_MICRO_ACTION_MOTION_BOUND"}
+    return {**result,"valid":True,"reason":"CURRENT_RGBD_GEOMETRIC_MOTION"}
+
+
 class RGBDMotion:
-    def __init__(self):
+    def __init__(self,estimator="pnp"):
         import cv2
+        if estimator not in ("pnp","rgbd_rigid"):raise ValueError("Explicit RGB-D estimator required")
+        self.solve=solve_correspondences if estimator=="pnp" else solve_rgbd_correspondences
         self.cv2=cv2
         cv2.setNumThreads(2)
         self.sift=cv2.SIFT_create(nfeatures=2000);self.matcher=cv2.BFMatcher()
@@ -91,4 +153,4 @@ class RGBDMotion:
                 if not .05<z<5. or not np.isfinite(patch).all() or np.ptp(patch)>.03:break
                 good.append(np.linalg.solve(K,np.r_[uv,1.])*z)
             if len(good)==2:oldpoints.append(good[0]);newpoints.append(good[1]);pixels.append(uv1)
-        return {**receipt,**solve_correspondences(oldpoints,pixels,newpoints,K,previous["camera"],T)}
+        return {**receipt,**self.solve(oldpoints,pixels,newpoints,K,previous["camera"],T)}
