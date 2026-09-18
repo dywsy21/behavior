@@ -38,11 +38,29 @@ class GroundedHarness(TaskHarness):
         self.replan_history=[]
         self.candidate_receipt={}
         self.motion_receipt={}
+        self.pending_grasp={"left":False,"right":False}
+
+    @property
+    def carry(self):
+        # An unverified close may already support part of a fragile load. Do
+        # not unlock orientation/independent alignment merely because the final
+        # two-hand verification has not yet passed.
+        return super().carry or (self.goal.level and any(self.pending_grasp.values()))
+
+    def executed(self,action,feedback):
+        super().executed(action,feedback)
+        if feedback["status"]=="TARGET_REACHED" and action.move in ("close","open"):
+            arms=("left","right") if action.part=="both" else (action.part,)
+            for arm in arms:
+                if arm in self.pending_grasp:
+                    if action.move=="open":self.pending_grasp[arm]=False
+                    elif self.goal.kind=="pick":self.pending_grasp[arm]=True
 
     def palette(self):
         palette=super().palette()
         if (not self.stop_reason and self.goal.kind == "pick" and self.goal.hand == "both"
-                and self.stage in ("APPROACH", "ALIGN") and not any(self.hold_verified.values())):
+                and self.stage in ("APPROACH", "ALIGN") and not any(self.hold_verified.values())
+                and not any(self.pending_grasp.values())):
             # Before grasping, each hand must be able to reach its own contact.
             # After closing, VERIFY_GRASP retains only the synchronized lift.
             extra=[]
@@ -57,6 +75,8 @@ class GroundedHarness(TaskHarness):
             palette += tuple(extra)
         if not self.stop_reason and self.stage in ("SEARCH","RECOVER"):
             palette += (Action("base","yaw_plus","coarse"),Action("base","yaw_minus","coarse"))
+        if not self.stop_reason and self.stage=="APPROACH" and self.goal.kind=="navigate":
+            palette += (Action("base","yaw_plus","coarse"),Action("base","yaw_minus","coarse"))
         if (not self.stop_reason and self.stage == "ALIGN" and self.goal.kind == "pick"
                 and not any(self.hold_verified.values())):
             # A near target can still be beyond an extended arm's workspace.
@@ -70,7 +90,7 @@ class GroundedHarness(TaskHarness):
         context=super().context()
         context.update(target_surface_estimate=self.grounding, search=self.search_context,
                        strategy_replans=self.replans, recent_replans=self.replan_history[-2:],
-                       egocentric_motion=self.motion_receipt)
+                       egocentric_motion=self.motion_receipt, unverified_close_latches=self.pending_grasp.copy())
         return context
 
 
@@ -185,8 +205,10 @@ class GroundedController:
         self.centers=self.model.grasp_centers(state.q)
         manager.grounding=self.target
         camera=self.model.spec["metadata"]["cameras"]["head"]
+        target_bearing=(math.atan2(self.target["point_base_m"][1],self.target["point_base_m"][0])
+                        if self.target["valid"] else None)
         new_coverage=self.search.observe(manager.index,self.model.forward(state.q,"camera_head"),camera["K"],
-                                        camera["width"],depth_receipt["head"]["valid_fraction"],evidence.visible)
+                                        camera["width"],depth_receipt["head"]["valid_fraction"],evidence.visible,target_bearing)
         self.depth_guard=LocalDepthGuard(observed_cloud(depths,self.model,state.q),self.model,state.q,depths)
         distance=None
         if self.target["valid"]:
@@ -314,6 +336,18 @@ class GroundedController:
         distances=self._expected_distances(action,state,trial)
         return max(distances.values()) if distances is not None else None
 
+    def _navigation_geometry(self,action=None):
+        point=np.asarray(self.target["point_base_m"],dtype=float).copy()
+        if action is not None:
+            amount=action.amount(self.harness.carry)
+            if action.move in TRANSLATIONS:point-=np.asarray(TRANSLATIONS[action.move])*amount
+            elif action.move in ("yaw_plus","yaw_minus"):
+                angle=-amount*(1 if action.move=="yaw_plus" else -1)
+                c,s=math.cos(angle),math.sin(angle)
+                point=np.array([[c,-s,0],[s,c,0],[0,0,1]])@point
+        return {"range_m":float(np.linalg.norm(point[:2])),
+                "bearing_deg":math.degrees(math.atan2(point[1],point[0]))}
+
     def candidates(self,state):
         palette=self.harness.palette()
         bimanual=self.harness.goal.kind=="pick" and self.harness.goal.hand=="both"
@@ -383,7 +417,7 @@ class GroundedController:
         if self.target.get("valid") and self.harness.goal.kind=="navigate" and self.harness.stage=="APPROACH":
             # A navigation goal must retain turns and alternate translations;
             # the manipulation ranking's one body fallback is insufficient.
-            proposed=[a for a in palette if a.part=="base" and a.scale=="fine"]
+            proposed=[a for a in palette if a.part=="base"]
         allowed=[]; started=time.perf_counter()
         for action in [HOLD,*dict.fromkeys(proposed[:limit])]:
             ok,reason=self.depth_guard.check(action,self.harness.carry)
@@ -407,9 +441,30 @@ class GroundedController:
                         row["predicted_distance_gain_m"]=round(before-float(np.mean(list(distances.values()))),5)
                         row["gain_objective"]="mean_active_contact_distance; stage gates use maximum"
             rows.append(row)
+        navigation=None
+        if self.target.get("valid") and self.harness.goal.kind=="navigate" and self.harness.stage=="APPROACH":
+            navigation={"current":self._navigation_geometry(),"rule":"face_visible_destination_before_approaching",
+                        "alignment_tolerance_deg":15.,"not_a_completion_or_collision_certificate":True}
+            toward=[]
+            for row in rows:
+                action=Action(**row["action"])
+                if action.part!="base":continue
+                row["navigation_after"]=self._navigation_geometry(action)
+                improvement=abs(navigation["current"]["bearing_deg"])-abs(row["navigation_after"]["bearing_deg"])
+                if row["accepted"] and action.move in ("yaw_plus","yaw_minus") and improvement>.1:
+                    toward.append(action)
+            if abs(navigation["current"]["bearing_deg"])>15. and toward:
+                allowed=[a for a in allowed if a==HOLD or a in toward]
+                navigation["phase"]="FACE_TARGET_FIRST"
+            else:
+                # If a turn is blocked, keep depth-checked repositioning options.
+                # A scalar range is never allowed to declare navigation success.
+                navigation["phase"]="APPROACH_OR_SAFE_REPOSITION"
+            for row in rows:row["offered_to_policy"]=Action(**row["action"]) in allowed
         self.harness.candidate_receipt={"state_q":state.q.tolist(),"command_grip_latch":self.servo.grips.tolist(),
             "tested":rows,"preflight_s":time.perf_counter()-started,"max_nonhold_preflights":limit,
-            "depth_guard":self.depth_guard.receipt(),"fresh_execution_recheck_required":True}
+            "depth_guard":self.depth_guard.receipt(),"fresh_execution_recheck_required":True,
+            "navigation":navigation}
         if not allowed:
             self.harness.stop_reason="NO_SAFE_ACTION_AT_CURRENT_STATE"
         return tuple(allowed)

@@ -25,7 +25,7 @@ from semantic_robot.v2.vision import prepare_views
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--state",action="append",required=True)
-    p.add_argument("--mode",choices=("refine","bimanual"),required=True)
+    p.add_argument("--mode",choices=("refine","bimanual","observe"),required=True)
     p.add_argument("--bimanual-target")
     p.add_argument("--uri",required=True);p.add_argument("--revision",required=True)
     p.add_argument("--output",required=True);p.add_argument("--prepare-only",action="store_true")
@@ -76,7 +76,9 @@ def main():
                            selected_grounding=localize_target(selected,depths,model,state.q))
         elif policy:
             observed,call=policy.observe(manager,state,bundle)
-            row.update(observed_evidence=asdict(observed),hand_grounding=localize_hand_contacts(observed,depths,model,state.q))
+            row.update(observed_evidence=asdict(observed))
+            if args.mode=="bimanual":row["hand_grounding"]=localize_hand_contacts(observed,depths,model,state.q)
+            else:row["selected_grounding"]=localize_target(observed,depths,model,state.q)
         if call:
             call["request"]["images"]=[{"label":x["label"]} for x in call["request"]["images"]]
             row["call"]=call

@@ -193,6 +193,17 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(call["validation"]["defaulted_fields"],["hand_contacts"])
         self.assertEqual(policy.calls,2)
 
+    def test_live_contact_contract_rejects_invented_cross_view_correspondence(self):
+        fields=asdict(evidence(view="right_wrist"))
+        fields["other_views"]=[{"view":"head","target_uv":[.7,.8]}]
+        self.observation_override=json.dumps(fields)
+        policy=GroundedPolicy(self.uri,"test-pinned-revision",max_calls=1)
+        manager=GroundedHarness([Goal("pick","radio","right","held")])
+        with self.assertRaisesRegex(ValueError,"guessed metric correspondences"):
+            policy.observe(manager,self.state,self.bundle)
+        self.assertEqual(policy.calls,1)
+        self.assertIn("MUST be []",self.requests[0]["system"])
+
     def test_bimanual_refinement_is_single_hand_and_shared_bounded_budget(self):
         original,_,state,bundle,depths,model=self.refinement_inputs()
         contacts=(HandContact("left","head",(.5,.5),False,None),

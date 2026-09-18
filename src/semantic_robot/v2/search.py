@@ -45,7 +45,7 @@ class CoverageSearch:
         self.travel_m += float(np.linalg.norm(delta[:2]))
         self.rotation_rad += abs(float(delta[2]))
 
-    def observe(self, goal_index, camera_pose, K, width, valid_depth_fraction, visible):
+    def observe(self, goal_index, camera_pose, K, width, valid_depth_fraction, visible, target_bearing_rad=None):
         if goal_index!=self.goal_index:
             self.goal_index=goal_index
             self.covered=set(); self.nodes=[]; self.origin=self.xy.copy()
@@ -68,7 +68,13 @@ class CoverageSearch:
                     self.covered.add(index)
         self.new_coverage=len(self.covered)>before
         if visible:
-            self.last_seen_heading=self.observed_heading; self.misses=0
+            if target_bearing_rad is not None and not math.isfinite(target_bearing_rad):
+                raise ValueError("Observed target bearing must be finite")
+            # A target at the image edge is NOT at the optical-axis heading.
+            # Use its observed robot-relative bearing + measured body heading.
+            self.last_seen_heading=(self.observed_heading if target_bearing_rad is None
+                                    else self.heading+target_bearing_rad)
+            self.misses=0
         else:
             self.misses+=1
         return self.new_coverage
@@ -98,4 +104,5 @@ class CoverageSearch:
                 "new_observation_coverage":self.new_coverage,"sweep_complete":self.complete,
                 "previous_viewpoints":len(self.nodes),"travel_m":round(self.travel_m,3),
                 "rotation_deg":round(math.degrees(self.rotation_rad),2),
+                "last_target_bearing_deg":None if self.last_seen_heading is None else round(math.degrees(self.last_seen_heading),2),
                 "coverage_is_not_goal_completion":True}

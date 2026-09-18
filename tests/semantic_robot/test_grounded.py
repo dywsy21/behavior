@@ -39,6 +39,75 @@ def setup_controller():
 
 
 class DepthTests(unittest.TestCase):
+    def test_search_reacquires_target_ray_not_previous_camera_center(self):
+        search=CoverageSearch();search.heading=.5
+        camera=np.eye(4);camera[:3,:3]=Rotation.from_euler("y",-np.pi/2).as_matrix()
+        K=[[100,0,100],[0,100,100],[0,0,1]]
+        search.observe(0,camera,K,200,1.,True,target_bearing_rad=.7)
+        self.assertAlmostEqual(search.last_seen_heading,1.2)
+        search.heading=.7
+        search.observe(0,camera,K,200,1.,False)
+        action,reason=search.propose()
+        self.assertEqual(action,Action("base","yaw_plus","coarse"))
+        self.assertEqual(reason,"REACQUIRE_LAST_OBSERVED_BEARING")
+        with self.assertRaises(ValueError):search.observe(0,camera,K,200,1.,True,target_bearing_rad=float("nan"))
+    def test_navigation_faces_observed_destination_before_sideways_chasing(self):
+        model,state,manager,servo,controller,depths,receipt=setup_controller()
+        manager.goals=[Goal("navigate","visible table","both","in front of table")]
+        manager.stage="APPROACH";controller.centers=model.grasp_centers(state.q)
+        controller.target={"valid":True,"point_base_m":[1.,1.,.8],"distance_to_active_closing_center_m":1.5}
+        controller.depth_guard=SimpleNamespace(check=lambda *args:(True,"TEST_FREE_DEPTH"),receipt=lambda:{})
+        allowed=controller.candidates(state)
+        self.assertIn(Action("base","yaw_plus","coarse"),allowed)
+        self.assertTrue(all(a==HOLD or (a.part=="base" and a.move=="yaw_plus") for a in allowed))
+        self.assertEqual(manager.candidate_receipt["navigation"]["phase"],"FACE_TARGET_FIRST")
+        self.assertAlmostEqual(manager.candidate_receipt["navigation"]["current"]["bearing_deg"],45.)
+        self.assertEqual(manager.completed,[])
+        controller.target["point_base_m"]=[1.,0.,.8]
+        allowed=controller.candidates(state)
+        self.assertIn(Action("base","forward","micro"),allowed)
+        self.assertIn(Action("base","forward","fine"),allowed)
+
+    def test_navigation_blocked_turn_retains_checked_reposition_not_blind_turn(self):
+        model,state,manager,servo,controller,depths,receipt=setup_controller()
+        manager.goals=[Goal("navigate","table","both","in front")];manager.stage="APPROACH"
+        controller.centers=model.grasp_centers(state.q)
+        controller.target={"valid":True,"point_base_m":[1.,1.,.8],"distance_to_active_closing_center_m":1.5}
+        controller.depth_guard=SimpleNamespace(check=lambda a,*args:(a.move not in ("yaw_plus","yaw_minus"),"TEST_BLOCKED_TURN"),receipt=lambda:{})
+        allowed=controller.candidates(state)
+        self.assertFalse(any(a.move in ("yaw_plus","yaw_minus") for a in allowed))
+        self.assertIn(Action("base","left","micro"),allowed)
+    def test_primary_contact_reprojection_compares_same_point_not_model_clicks(self):
+        model,state=fixture();depths={v:np.full((100,100),1.2,np.float32) for v in ("head","left_wrist","right_wrist")}
+        result=localize_target(grounded_evidence(),depths,model,state.q)
+        self.assertTrue(result["valid"])
+        self.assertEqual(len(result["projected_same_point_checks"]),2)
+        self.assertTrue(all(r["status"]=="SURFACE_DEPTH_AGREES_NOT_IDENTITY_PROOF" for r in result["projected_same_point_checks"]))
+        self.assertEqual(result["valid_views"],1)  # not two independent identity confirmations
+
+    def test_primary_contact_occluded_or_unknown_elsewhere_remains_single_view(self):
+        model,state=fixture();depths={"right_wrist":np.full((100,100),1.2,np.float32),
+                                  "head":np.full((100,100),.8,np.float32),
+                                  "left_wrist":np.full((100,100),np.inf,np.float32)}
+        result=localize_target(grounded_evidence(),depths,model,state.q)
+        self.assertTrue(result["valid"])
+        self.assertEqual({r["status"] for r in result["projected_same_point_checks"]},
+                         {"OCCLUDED_BY_NEARER_SURFACE","DEPTH_UNKNOWN"})
+
+    def test_primary_point_in_observed_free_space_of_other_camera_rejected(self):
+        model,state=fixture();depths={"right_wrist":np.full((100,100),1.2,np.float32),
+                                  "head":np.full((100,100),2.,np.float32)}
+        result=localize_target(grounded_evidence(),depths,model,state.q)
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["reason"],"PROJECTED_CONTACT_DEPTH_CONTRADICTION")
+
+    def test_projected_depth_edge_is_unknown_not_false_corroboration(self):
+        model,state=fixture();depths={v:np.full((100,100),1.2,np.float32) for v in ("head","right_wrist")}
+        depths["head"][49:52,:]=2.
+        result=localize_target(grounded_evidence(),depths,model,state.q)
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["projected_same_point_checks"][0]["status"],"DEPTH_EDGE_UNKNOWN")
+
     def test_grounded_prompt_example_is_complete_and_parser_valid(self):
         example=GROUNDED_OBSERVE_SYSTEM.split("Return only JSON with exactly these fields:\n",1)[1].split("\n",1)[0]
         fields=json.loads(example)

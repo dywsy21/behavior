@@ -9,6 +9,7 @@ import math
 import numpy as np
 
 from .protocol import Evidence, VIEWS, strict_json, TRANSLATIONS
+from .vision import project
 
 
 @dataclass(frozen=True)
@@ -62,6 +63,39 @@ def unproject(uv_pixels, z, K, T_camera):
     return usd @ T_camera[:3, :3].T + T_camera[:3, 3]
 
 
+def check_projected_contact(point, primary_view, depths, model, q):
+    """Check the SAME 3D surface ray in other calibrated cameras.
+
+    Independently named object pixels are not point correspondences. Occlusion,
+    FOV and depth discontinuities abstain; clear observed free space at the
+    projected point contradicts it. Agreement is geometry, not object identity.
+    """
+    checks=[]
+    for view,camera in model.spec["metadata"]["cameras"].items():
+        if view==primary_view or view not in depths:continue
+        T=model.forward(q,"camera_"+view)
+        uv=project(point,T,camera["K"])
+        expected=-float((np.asarray(point)-T[:3,3])@T[:3,2])
+        row={"view":view,"expected_depth_m":expected,"status":"OUTSIDE_VIEW",
+             "pixel_is_geometry_projection_not_model_correspondence":True}
+        checks.append(row)
+        if uv is None or np.any(uv<2) or np.any(uv>=[camera["width"]-2,camera["height"]-2]):continue
+        row["projected_uv"]=(uv/[camera["width"]-1,camera["height"]-1]).tolist()
+        x,y=np.rint(uv).astype(int);depth=validate_depth(depths[view],camera)
+        patch=depth[y-2:y+3,x-2:x+3]
+        values=patch[np.isfinite(patch)&(patch>.025)&(patch<4.)]
+        if len(values)<15:
+            row["status"]="DEPTH_UNKNOWN";continue
+        measured=float(np.median(values));spread=float(np.quantile(values,.9)-np.quantile(values,.1))
+        tolerance=max(.015,expected*.04)
+        row.update(observed_depth_m=measured,spread_m=spread,tolerance_m=tolerance)
+        if spread>max(.015,measured*.04):row["status"]="DEPTH_EDGE_UNKNOWN"
+        elif measured<expected-tolerance:row["status"]="OCCLUDED_BY_NEARER_SURFACE"
+        elif measured>expected+tolerance:row["status"]="OBSERVED_FREE_SPACE_CONTRADICTION"
+        else:row["status"]="SURFACE_DEPTH_AGREES_NOT_IDENTITY_PROOF"
+    return checks
+
+
 def localize_target(evidence, depth_images, model, q):
     result = {"valid":False, "source":"VLM_pixel_plus_onboard_depth",
               "surface_point_not_object_pose":True, "views":[], "reason":"TARGET_NOT_VISIBLE"}
@@ -96,6 +130,12 @@ def localize_target(evidence, depth_images, model, q):
         result["reason"]="MULTIVIEW_TARGET_DISAGREEMENT"; return result
     result.update(valid=True, reason="OBSERVED_SURFACE_ESTIMATE",
                   point_base_m=np.mean(points,axis=0).tolist(), valid_views=len(points))
+    if not getattr(evidence,"other_views",()):
+        checks=check_projected_contact(result["point_base_m"],evidence.view,depth_images,model,q)
+        result["projected_same_point_checks"]=checks
+        result["model_cameras_not_independently_averaged"]=True
+        if any(row["status"]=="OBSERVED_FREE_SPACE_CONTRADICTION" for row in checks):
+            result.update(valid=False,reason="PROJECTED_CONTACT_DEPTH_CONTRADICTION")
     return result
 
 

@@ -116,7 +116,7 @@ def grounded_observation_system():
     fields["other_views"] = []
     GroundedEvidence.parse(json.dumps(fields))  # fail if example/schema drift
     return before + "Return only JSON with exactly these fields:\n" + json.dumps(fields, separators=(",", ":")) + "\n" + descriptions + """
-This run also has a robot-calibrated CLOSING CENTER cross: the centre between the fingers, not a target detection. OFFSCREEN is a label, not a clamped hand position. For pick choose a graspable visible contact area, for press a visible button, for navigate a visible destination, not the whole image centroid. Prefer the active wrist when the target and grasping region are both identifiable. other_views: include [] when no extra CURRENT view corroborates the target; omission means no extra evidence, never inferred correspondence. When the SAME physical surface/affordance is clearly identifiable in another CURRENT camera, include up to two {\"view\":\"head\",\"target_uv\":[0.5,0.5]} entries with distinct views. Do not guess cross-view correspondence. All UVs refer to CURRENT RAW images, not earlier frames. Keep note short."""
+This run also has a robot-calibrated CLOSING CENTER cross: the centre between the fingers, not a target detection. OFFSCREEN is a label, not a clamped hand position. For pick choose a graspable visible contact area, for press a visible button, for navigate a visible destination, not the whole image centroid. Prefer the active wrist when the target and grasping region are both identifiable. Select ONE best CURRENT contact view. other_views MUST be [] in this interface: other images help identify the object, but do not independently click pixels in them. The same object seen from different sides does NOT mean the same physical surface point. The geometric adapter, not you, projects your selected 3D contact into the other cameras and checks depth/occlusion. All UVs refer to CURRENT RAW images, not earlier frames. Keep note short."""
 
 
 GROUNDED_OBSERVE_SYSTEM = grounded_observation_system()
@@ -143,9 +143,12 @@ class GroundedPolicy(VLMPolicy):
         bimanual=harness.goal.kind=="pick" and harness.goal.hand=="both"
         result,payload=self._call("observe",BIMANUAL_OBSERVE_SYSTEM if bimanual else GROUNDED_OBSERVE_SYSTEM,text,bundle)
         evidence = (BimanualEvidence if bimanual else GroundedEvidence).parse(result["text"])
+        if evidence.other_views:
+            raise ValueError("Primary-contact interface requires other_views=[]; no guessed metric correspondences")
         validation = {"defaulted_fields": [] if "other_views" in strict_json(result["text"]) else ["other_views"],
                       "missing_other_views_means": "NO_CORROBORATING_EVIDENCE",
-                      "raw_model_text_unchanged": True, "retries": 0}
+                      "raw_model_text_unchanged": True, "retries": 0,
+                      "contact_contract":"one_view_per_contact; other-camera geometry from calibrated reprojection"}
         if bimanual and "hand_contacts" not in strict_json(result["text"]):
             validation["defaulted_fields"].append("hand_contacts")
             validation["missing_hand_contacts_means"]="NO_CONTACT_EVIDENCE; no shared-point fallback"
@@ -158,7 +161,7 @@ class GroundedPolicy(VLMPolicy):
         text+="\nVisible evidence: "+json.dumps(asdict(harness.observation))
         text+="\nCURRENT preflight receipt (geometric gain is an estimate, NOT grasp success): "+json.dumps(harness.candidate_receipt)
         text+="\nChoose exactly one of these feasible complete commands:\n"+"\n".join(a.text() for a in allowed)
-        system=ACTION_SYSTEM+" Prefer measurable progress toward the grounded contact region; review predicted distance gains and failed paths. The 2mm option remains available near limits. Do not repeatedly HOLD with good depth and a safe improving action. Grasp orientation/contact quality still require the raw views; a surface point is not a full grasp pose."
+        system=ACTION_SYSTEM+" Prefer measurable progress toward the grounded contact region; review predicted distance gains and failed paths. For navigation, follow the navigation receipt: face the visible destination before approaching it; hand-to-surface distance is NOT a navigation completion test. The 2mm option remains available near limits. Do not repeatedly HOLD with good depth and a safe improving action. Grasp orientation/contact quality still require the raw views; a surface point is not a full grasp pose."
         result,payload=self._call("act",system,text,bundle,allowed)
         action=Action.parse(result["text"])
         harness.authorize(action)

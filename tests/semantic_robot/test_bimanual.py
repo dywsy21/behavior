@@ -121,6 +121,27 @@ class BimanualTests(unittest.TestCase):
                 "eef_delta_m":{"left":[.01,0,0],"right":[.01,0,0]}})
         self.assertEqual(manager.recoveries,0)
 
+    def test_partial_unverified_grasp_does_not_unlock_independent_hand_motion(self):
+        _,_,manager,_,_=setup();manager.stage="GRASP"
+        manager.executed(Action("both","close"),{"status":"TARGET_REACHED"})
+        self.assertEqual(manager.stage,"VERIFY_GRASP")
+        self.assertTrue(manager.carry)
+        self.assertFalse(any(manager.hold_verified.values()))
+        manager.stage="ALIGN"  # emulate a later recovery, not a real success
+        self.assertNotIn(Action("left","left"),manager.palette())
+        self.assertNotIn(Action("both","roll_plus","micro"),manager.palette())
+        manager.executed(Action("both","open"),{"status":"TARGET_REACHED"})
+        self.assertFalse(manager.carry)
+        self.assertIn(Action("left","left"),manager.palette())
+        self.assertEqual(manager.completed,[])
+
+    def test_failed_open_does_not_clear_pending_grasp_protection(self):
+        _,_,manager,_,_=setup();manager.stage="GRASP"
+        manager.executed(Action("both","close"),{"status":"TARGET_REACHED"})
+        manager.executed(Action("both","open"),{"status":"ROBOT_COLLISION_RISK"})
+        self.assertTrue(all(manager.pending_grasp.values()))
+        self.assertTrue(manager.carry)
+
     def test_both_metric_contacts_must_follow_both_hands(self):
         for moving_both in (False,True):
             model,state,manager,controller,depths=setup()
