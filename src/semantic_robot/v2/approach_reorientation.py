@@ -15,9 +15,10 @@ def eligible(harness):
     return bool(harness.approach_reorientation and not harness.stop_reason
                 and harness.stage == "APPROACH" and harness.goal.kind == "pick"
                 and harness.goal.hand in ("left", "right") and not harness.carry
-                and not any(harness.pending_grasp.values())
-                and not any(harness.hold_verified.values())
-                and not any(harness.possible_contact_after_close.values())
+                and all(isinstance(load, dict) and set(load) == {"left", "right"}
+                        and all(value is False for value in load.values())
+                        for load in (harness.pending_grasp, harness.hold_verified,
+                                     harness.possible_contact_after_close))
                 and fingers is not None and np.shape(fingers) == (2,)
                 and np.isfinite(fingers).all() and np.all(np.asarray(fingers) >= .0495)
                 and observation is not None and observation.visible and observation.hazard == "none"
@@ -36,7 +37,7 @@ def preview(model, state, grips, limits, arm, point, rotation_trials, translatio
     if (point.shape != (3,) or not np.isfinite(point).all() or arm not in ("left", "right")
             or len(rotation_trials) > 6 or len(translations) > 3
             or not np.isfinite(grips).all() or np.shape(grips) != (2,)
-            or not np.all(np.asarray(grips) >= .999)):
+            or not np.all((np.asarray(grips) >= .999) & (np.asarray(grips) <= 1.))):
         raise ValueError("Bounded, unladen approach preview inputs required")
     if any(a.part != arm or a.move not in TRANSLATIONS or a.scale != "coarse" for a in translations):
         raise ValueError("Preview only current-arm coarse translations")

@@ -576,7 +576,7 @@ class GroundedController:
         if self.goal_changed:return (HOLD,)
         palette=self.harness.palette()
         from .approach_reorientation import eligible, preview
-        posture_mode=eligible(self.harness) and bool(np.all(self.servo.grips >= .999) and np.all(state.gripper >= .0495))
+        posture_mode=eligible(self.harness) and bool(np.all((self.servo.grips >= .999) & (self.servo.grips <= 1.)) and np.all(state.gripper >= .0495))
         if self.harness.approach_reorientation and self.harness.stage=="APPROACH" and not posture_mode:
             # A measured open jaw cannot override a pending CLOSE command.
             palette=tuple(a for a in palette if not (a.part in ("left","right","both") and a.move in ROTATIONS))

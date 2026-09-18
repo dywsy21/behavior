@@ -65,6 +65,35 @@ class ApproachReorientationTests(unittest.TestCase):
                 mutate(h)
                 self.assertFalse(eligible(h))
 
+    def test_unknown_or_incomplete_load_maps_never_offer_rotation(self):
+        for name in ("pending_grasp", "hold_verified", "possible_contact_after_close"):
+            for value in (None, {}, {"left": False}, {"left": False, "right": None},
+                          {"left": False, "right": 0},
+                          {"left": False, "right": False, "extra": False}):
+                with self.subTest(name=name, value=value):
+                    _, state, h, _, controller = setup()
+                    setattr(h, name, value)
+                    self.assertFalse(eligible(h))
+                    # The legacy general palette may itself reject malformed
+                    # maps. Complete but unknown values must not unlock it.
+                    if isinstance(value, dict) and set(value) == {"left", "right"}:
+                        self.assertFalse(any(a.part == "right" and a.move in ROTATIONS
+                                             for a in h.palette()))
+
+    def test_out_of_range_or_nonfinite_command_latch_never_offers_rotation(self):
+        for latch in ([1., 1.1], [1., np.inf], [np.nan, 1.]):
+            with self.subTest(latch=latch):
+                _, state, h, servo, controller = setup()
+                servo.grips = np.asarray(latch)
+                # Other actions may be rejected by the native servo. In
+                # either case rotation must not pass this eligibility gate.
+                try:
+                    allowed = controller.candidates(state)
+                except ValueError:
+                    continue
+                self.assertFalse(h.candidate_receipt["approach_reorientation"]["eligible"])
+                self.assertFalse(any(a.part == "right" and a.move in ROTATIONS for a in allowed))
+
     def test_all_rotation_directions_survive_translation_failures_and_preview_is_not_offered(self):
         model, state, h, servo, controller = setup()
         before = state.q.copy()
@@ -134,6 +163,7 @@ class ApproachReorientationTests(unittest.TestCase):
                                         ([(action, servo)], [Action("left", "forward", "coarse")])):
             with self.assertRaises(ValueError): preview(*args, rotations, translations)
         with self.assertRaises(ValueError): preview(model, state, [-1, 1], servo.limits, "right", [1, 0, 1], [(action, servo)], [forward])
+        with self.assertRaises(ValueError): preview(model, state, [1, 1.1], servo.limits, "right", [1, 0, 1], [(action, servo)], [forward])
         with self.assertRaises(ValueError): preview(model, state, [1, 1], servo.limits, "right", [np.nan, 0, 1], [(action, servo)], [forward])
         altered = copy.deepcopy(state)
         altered.q[11] += .01
