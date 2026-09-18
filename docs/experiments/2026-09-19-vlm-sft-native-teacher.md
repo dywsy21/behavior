@@ -8,6 +8,8 @@
 
 初版 `973ba76` 已由 Git 同步；远端 CPU 直接执行该提交的 Git blobs，复用 `semantic_joint_90a7c20` 中未变的 common/live/prepare 依赖，未创建或热改运行源码。真实准备 **3.353s，799,441 字节**，含三个前缀、9 段三视图原专家 17 帧视频和完整定位/来源回执；0 模型/控制/reset。目录：`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1`。后续修订增加稳定停顿后图像、近静止 EEF 门及保守未知负载约束，不改变已准备的数据。29 项 SFT CPU 测试通过（原21＋新8），新采集器尚未在 simulator 中运行，不能称端到端采集已通过。
 
+03:55 收尾：三个生成窗口及所有4807条前缀已经真实安装的 `load_official_oracle_window` / `frozen_window()` 逐一装载通过，确认未导入 omnigibson、未启动物理。本地完整小包为 `/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09s-prepare-v1`（844KiB）；3前缀SHA、9视频SHA及全部17帧解码通过，可直接在各 `task_N/expert_{head,left_wrist,right_wrist}.mp4` 人工审阅。还没有任何当前停顿图或正标签，不把源视频审核当采集审核。
+
 | task / episode / TRAIN instance | 同源技能首帧 | 前缀控制 | reference SHA256 |
 |---|---|---:|---|
 | 0 / 66 / 70 | PRESS，1170 | 1170 | `204f5fc4b14d5b85bec38cabf9ad75594fcaaeee76e91b9b31cd9bc35de5bdcb` |
