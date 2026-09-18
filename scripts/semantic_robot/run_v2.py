@@ -260,7 +260,7 @@ def main():
                     write(directory/"harness.json",manager.context())
                     if manager.stop_reason:
                         row["stop_reason"] = manager.stop_reason; decisions.append(row); break
-                    if controller and not observation.visible and manager.stage in ("SEARCH","RECOVER"):
+                    if controller and ((not observation.visible and manager.stage in ("SEARCH","RECOVER")) or controller.reposition_left>0):
                         action,selection=controller.search_action(state)
                         write(directory/"action_selection.json",selection)
                         row["selection_source"]=selection["source"]

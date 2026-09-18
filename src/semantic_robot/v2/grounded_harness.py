@@ -116,6 +116,8 @@ class GroundedController:
             manager.stage_age=0
         # Do not feed off-screen / cross-camera 2D EEF distances into progress.
         manager.observe(evidence,state,geometry=None,measured_progress=internal)
+        if self.reposition_left and self.reposition not in manager.palette():
+            self.reposition_left=0  # a new stage may forbid the queued strategy
         manager.search_context=self.search.context()
         self.replan_needed=None
         if manager.stop_reason=="RECOVERY_BUDGET_EXHAUSTED":
@@ -147,6 +149,9 @@ class GroundedController:
         strategy=value["strategy"]
         if strategy in ("scan_left","scan_right"):
             self.search.direction=1 if strategy=="scan_left" else -1
+            if manager.observation.visible:
+                self.reposition=Action("base","yaw_plus" if self.search.direction>0 else "yaw_minus","coarse")
+                self.reposition_left=1
         elif strategy.startswith("move_"):
             self.reposition=Action("base",strategy[5:],"fine")
             self.reposition_left=5  # <=30cm, 5 fresh depth checks / observations
@@ -228,6 +233,10 @@ class GroundedController:
                 proposed.sort(key=lambda a:a.scale!="fine")  # depth needs >5mm for co-motion evidence
             if not self.target.get("valid") and self.harness.stage in ("APPROACH","ALIGN"):
                 proposed=[]  # visible but bad depth: observe/replan, no blind approach
+        if self.target.get("valid") and self.harness.goal.kind=="navigate" and self.harness.stage=="APPROACH":
+            # A navigation goal must retain turns and alternate translations;
+            # the manipulation ranking's one body fallback is insufficient.
+            proposed=[a for a in palette if a.part=="base" and a.scale=="fine"]
         allowed=[]; started=time.perf_counter()
         for action in [HOLD,*dict.fromkeys(proposed[:self.max_preflights])]:
             ok,reason=self.depth_guard.check(action,self.harness.carry)

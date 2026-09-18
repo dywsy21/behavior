@@ -241,5 +241,24 @@ class OrchestrationTests(unittest.TestCase):
         self.assertIs(metric_co_motion(previous,target,state,centers,fb,"right"),True)
         self.assertIsNone(metric_co_motion(previous,target,state,centers,{"base_integral":[0,0,.1]},"right"))
 
+    def test_visible_target_recovery_strategy_is_actually_queued(self):
+        model,state,h,servo,c,depths,receipt=setup_controller()
+        c.observe(grounded_evidence(),state,depths,receipt)
+        c.replan_needed="RECOVERY_BUDGET_EXHAUSTED"
+        c.apply_recovery(parse_recovery('{"strategy":"scan_right","visible_reason":"need a different visible angle"}'))
+        self.assertEqual(c.reposition,Action("base","yaw_minus","coarse"))
+        self.assertEqual(c.reposition_left,1)
+        self.assertIn(c.reposition,h.palette())
+
+    def test_navigation_keeps_rotation_candidates_and_not_arm_actions(self):
+        model,state,h,servo,c,depths,receipt=setup_controller()
+        h.goals=[Goal("navigate","table","right","table close enough")]
+        c.observe(grounded_evidence(),state,depths,receipt)
+        c.candidates(state)
+        tested=[Action(**row["action"]) for row in h.candidate_receipt["tested"]]
+        self.assertIn(Action("base","yaw_plus"),tested)
+        self.assertIn(Action("base","yaw_minus"),tested)
+        self.assertTrue(all(a.part in ("base","all") for a in tested))
+
 
 if __name__=="__main__":unittest.main()
