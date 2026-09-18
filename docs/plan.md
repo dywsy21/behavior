@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**23:10 H10独立复审及最终CPU门通过，准备新服务（Codex）：** Astra独立确认465bc85修复P1、未见新增阻塞，275＋21测试全过；robo相同不可变源275/12.062s也过，精确processor31.009s：d4=11426token/27383字符、d20=9201/20895。后继runtime固定`465bc8561496c97615f8d48604010f5f5b3555c3`，目录`git_worktrees/semantic_observer_465bc85`，新证据根`agentic_vlm_goal_20260918`。原有限预算不追加，明确两工程门均0前缀（检原任务reset姿态），诊断仍448+362单列；GPU1将启动同revision Qwen3.8-27B/8919服务最多368调用，先2静态门，GPU3物理尚未启动。设计理念/安全边界记录`docs/experiments/2026-09-18-agentic-vlm-goal-h10.md`，未报任务成功。
+
 **23:06 H10独立审查P1已修、待复审（Codex）：** Astra复核发现非pick的合法CLOSE（如门把手）不会写pick专用pending，跨子目标后可能把未知负载手当free；依技能审查门未放任何物理。新增独立`possible_contact_after_close`记任意已执行/中断CLOSE，只在显式OPEN完成且实际开口匹配机器人校准的全张开位置（≤0.5mm）后清除，不把TARGET_REACHED单独当已张开。helper/palette/carry统一拒此手，单纯闭合或子目标完成不能抹锁存；新增真实公开接口跨goal/中断/假OPEN/实际opening测试，273 CPU/4.307s过，继续补free回访/预算/finger偏移负例再交复审。225d539 CPU token门31.289s已通过：d4=11412token/27319字符、d20=9187/20831；原图和12000/32000上限均不改。0模型/物理，后继预算仍待新修复源固定。
 
 **23:00 H10真实tokenizer门失败定位（Codex）：** 服务器维护clone仅fetch main，先前普通fetch未得到feature；已显式fetch自己的分支并新建不可变f1bb2db，未覆盖旧源。原本地Qwen3.8-27B processor CPU31.858s：B20 d4=12280>服务硬12000，d20=9677，0神经/物理；未放行模型/模拟器。仅在opt-in actor显示层移除每候选重复reference_hand/motion_hand/非真值说明，动作编号/相机/几何分数与完整底层审计保留，统一非真值说明仍明确；不删图、不涨token cap。静态d20无旧action ledger的真实终止帧问题已7544877修，用同帧原observation九图账（没有造动作）。下一精确tokenizer复测及独立review；当前CPU累计仍在900s额度内。
