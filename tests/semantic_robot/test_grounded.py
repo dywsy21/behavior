@@ -38,6 +38,28 @@ def setup_controller():
 
 
 class DepthTests(unittest.TestCase):
+    def test_render_barrier_discards_pre_reset_sensor_buffers_without_controls(self):
+        model,state=fixture()
+        adapter=OnboardRGBD.__new__(OnboardRGBD)
+        updates=[]
+        class Sensor:
+            def get_obs(self):
+                # Emulate a renderer retaining an old view until its pipeline
+                # has been drained; both RGB and depth must come from the new one.
+                current=len(updates)>=4
+                return {"rgb":np.full((100,100,3),77 if current else 12,dtype=np.uint8),
+                        "depth_linear":np.full((100,100),1. if current else 3.,dtype=np.float32)},{}
+        adapter.sensors={v:Sensor() for v in ("head","left_wrist","right_wrist")}
+        adapter.snapshot_id=0
+        images,depths,receipt=adapter.read(model,render=lambda:updates.append("render_only"))
+        self.assertEqual(len(updates),4)
+        for view in adapter.sensors:
+            self.assertTrue(np.all(images[view+"_rgb"]==77))
+            self.assertTrue(np.all(depths[view]==1.))
+            self.assertEqual(receipt[view]["render_barrier_updates"],4)
+            self.assertEqual(receipt[view]["control_steps_in_capture"],0)
+        with self.assertRaises(ValueError):adapter.read(model,render=None)
+
     def test_onboard_adapter_never_reconfigures_live_camera_or_reloads_physics(self):
         class Sensor:
             def __init__(self,size):self.size=size

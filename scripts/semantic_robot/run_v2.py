@@ -167,7 +167,11 @@ def main():
             def observation_now(label):
                 if onboard is None:
                     return environment.observation()["images"],{},{}
-                images,depths,receipt=onboard.read(model)
+                q_before=kin.state().q.copy()
+                images,depths,receipt=onboard.read(model,render=og.sim.render)
+                q_after=kin.state().q
+                if np.max(np.abs(q_before-q_after))>1e-5:
+                    raise RuntimeError("Robot moved during render-only observation barrier")
                 check={"label":label,"cameras":receipt}
                 sensor_checks.append(check)
                 write(out/"sensor_checks.json",sensor_checks)

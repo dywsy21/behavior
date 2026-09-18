@@ -31,8 +31,17 @@ class OnboardRGBD:
             if (sensor.image_height,sensor.image_width)!=(expected,expected):
                 raise ValueError("Official RGB-D resolution mismatch; no live sensor reconfiguration")
             self.sensors[view]=sensor
+        self.snapshot_id=0
 
-    def read(self, model):
+    def read(self, model, *, render):
+        # Reset / teleports can leave annotator buffers at the PRE-reset pose.
+        # Do not trust get_obs() alone. Render-only updates flush the same
+        # asynchronous sensor pipeline used by the official light synchronizer.
+        # No env.step / physics action / object query is permitted in this hook.
+        if not callable(render):
+            raise ValueError("Explicit current-frame render barrier required")
+        for _ in range(4):render()
+        self.snapshot_id+=1
         images,depths,receipt={},{},{}
         for view,sensor in self.sensors.items():
             sample,_=sensor.get_obs()
@@ -54,5 +63,6 @@ class OnboardRGBD:
                            "shape":list(depth.shape),"valid_fraction":float(valid.mean()),
                            "rgb_sha256":hashlib.sha256(rgb.tobytes()).hexdigest(),
                            "depth_sha256":hashlib.sha256(depth.tobytes()).hexdigest(),
-                           "same_sensor_current_render":True}
+                           "same_sensor_current_render":True,"render_barrier_updates":4,
+                           "snapshot_id":self.snapshot_id,"control_steps_in_capture":0}
         return images,depths,receipt
