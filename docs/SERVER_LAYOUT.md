@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 17:17当前：** B8 task3已结束（1561控制/118模型/SEARCH_TRAVEL_BUDGET/官方false），服务4190951已停，`b8_complete.tar.gz`只读归档中；旧源4f48c60保留。B9两门完整通过但静态视觉缺陷未过，**没有radio_b9策略**；server_b9_radio3880/GPU1/8908同affcdec还在，供B10≤8静态（原4起）使用。B10新不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grasp_feedback_bca3d16`，176CPU；输出同H08根的`static_grasp_feedback_b10`、`static_grasp_geometry_b10`，0控制，物理门/策略均未启动。B7完整本地`b7_verified_bundle/`已SHA/视频/294hash核验，**d21–24确附着radio_89、d25恢复open释放**，下方旧“没有附着”判断由plan更正；operator_stop与全部原证据不覆盖。
+
 **2026-09-18 16:56当前：** B7模拟器4185700经SIGINT人工早停、服务4184694已TERM；48完成/759新控制、服务104生成，没有result/failure（evaluator直接退出），`radio_b7/operator_stop.json`明确记录，不冒充完整终态。`b7_complete.tar.gz` SHA `b47e0b25e57c0dddab38a71173d9c594a519196b25d654ae0ce9a0c5195da0f9`开始下载。B9两门4193789/4193846在GPU1，源`semantic_grasp_geometry_affcdec`，未加载模型；B8 plates4191304及server4190951/8909仍在GPU3，源`semantic_navigation_4f48c60`。B6归档已在本地`b6_verified_bundle/`且744 RGB-D hash/两视频通过，人工选择时刻见plan；不要照下面旧状态重启任何旧run。
 
 **2026-09-18 16:36当前：** `radio_b7`4185700/GPU1及`server_b7_radio`4184694/8908运行，源`semantic_probe_605512f`；第1次close空抓，未成功、不重启。`gate_radio_b8`4188030与`gate_plates_b8`4188040均GPU3，无B8模型，源`semantic_navigation_4f48c60`，通过/退出前不加载179调用的新服务。B6两策略及两旧服务均已停止，完整压缩归档SHA4c835b5b…正在传本地；B7/B8都仍同H-08输出根，不热改任一运行源码。
