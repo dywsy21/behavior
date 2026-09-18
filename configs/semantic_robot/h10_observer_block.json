@@ -5,6 +5,7 @@
   "hypothesis": "Separating a held visual reference from the moving hand and observer camera allows an independently aimed free wrist view without moving or releasing the load.",
   "candidate_commit": "e73e2636cd5df456857efc12906fb115fa1ac44f",
   "runtime_commit": "465bc8561496c97615f8d48604010f5f5b3555c3",
+  "implementation_digest": "2f49a25d9064475e3d9028c15266358e354ae16ccb9e1595f4fc05dc4ca1bc89",
   "runtime_status": "independent_review_and_cpu_token_gate_passed_preparing_service",
   "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
   "training_updates": 0,
