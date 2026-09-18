@@ -4,6 +4,8 @@ from pathlib import Path
 import unittest
 
 from semantic_robot.v2.protocol import strict_json
+from semantic_robot.v2.protocol import HOLD
+from semantic_robot.v2.affordance import SurfaceChoice
 
 path = Path(__file__).resolve().parents[2]/"scripts/semantic_robot/serve_v2.py"
 spec = importlib.util.spec_from_file_location("semantic_v2_service",path)
@@ -12,6 +14,17 @@ spec.loader.exec_module(service)
 
 
 class TransportTests(unittest.TestCase):
+    def test_action_and_ground_grammars_remain_separate(self):
+        service.validate_scoped_choices("act",[HOLD.text()])
+        service.validate_scoped_choices("ground",[SurfaceChoice().text(),SurfaceChoice(2).text()])
+        service.validate_scoped_choices("observe",[])
+        for kind,lines in (("ground",[SurfaceChoice(2).text()]),("ground",[HOLD.text()]),
+                           ("act",[SurfaceChoice().text()]),("ground",[SurfaceChoice().text()]*2),
+                           ("ground",['{"candidate_id": null}']), ("ground",[None]),
+                           ("act",[]),("plan",[SurfaceChoice().text()])):
+            with self.subTest(kind=kind,lines=lines),self.assertRaises(ValueError):
+                service.validate_scoped_choices(kind,lines)
+
     def test_portable_modules_parse_on_model_environment_python310(self):
         root=Path(__file__).resolve().parents[2]
         for path in (root/"src/semantic_robot/v2").glob("*.py"):

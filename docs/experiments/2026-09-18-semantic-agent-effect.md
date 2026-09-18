@@ -15,4 +15,8 @@
 
 服务器新根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_effect_20260918`。初始源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grounded_e6925d8`不可热改。本地证据放`artifacts/semantic-agent-effect-20260918/`，不入Git。[实时计划](../plan.md)记各启动/终态与后续块。
 
-当前仅授权/登记完成，尚无H-08真实效果结果。H-07两软件中断的0/18控制不改写为成功。
+12:36当前：两B1工程门已通过（radio385新控制＋448前缀，task3 396新控制）；同e6925d8/implementation digest `028fdacd876bfb13ba3724ae7b1020c3e6f37af6641d2cbd38f25eeaefcc0ab9`。模型4111632、radio4111945、task3 4112002已实际运行，策略结果待验。H-07两软件中断的0/18控制不改写为成功。
+
+## 第二块候选（尚未部署）
+
+通用RGB-D表面细定位：保留原深度边缘拒绝阈值，在原点附近提出最多12个稳定表面点，把原始局部图和单独编号图给VLM，有限语法选择ID或null；不自动吸附最近深度，不读取仿真目标真值，不把选点当持物证明。每回合最多16次额外选择、执行前仍重新走原预检。默认关闭、需独立CPU/静态人工核验与真实控制门，当前B1不包含此修改。保存radio帧已验证候选确实可能含背景，不能省略目标语义选择。

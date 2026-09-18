@@ -12,7 +12,9 @@ from PIL import Image
 
 from semantic_robot.v2.harness import Goal, TaskHarness
 from semantic_robot.v2.policy import VLMPolicy
-from semantic_robot.v2.policy import GroundedPolicy
+from semantic_robot.v2.policy import GroundedPolicy, RefinedGroundedPolicy
+from semantic_robot.v2.affordance import SurfaceChoice
+from semantic_robot.v2.grounding import GroundedEvidence, localize_target
 from semantic_robot.v2.grounded_harness import GroundedHarness, GroundedController
 from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.protocol import Action
@@ -31,6 +33,8 @@ class PipelineTests(unittest.TestCase):
         self.grounded=False
         self.action_override=None
         self.observation_override=None
+        self.surface_override=SurfaceChoice(0)
+        self.finite_choice_kinds=["act","ground"]
         class Handler(BaseHTTPRequestHandler):
             def log_message(self,*args):
                 pass
@@ -41,7 +45,8 @@ class PipelineTests(unittest.TestCase):
                 self.end_headers();self.wfile.write(raw)
 
             def do_GET(self):
-                self.send({"protocol":"semantic-v2","revision":"test-pinned-revision"})
+                self.send({"protocol":"semantic-v2","revision":"test-pinned-revision",
+                           "finite_choice_kinds":owner.finite_choice_kinds})
 
             def do_POST(self):
                 value=json.loads(self.rfile.read(int(self.headers["Content-Length"])))
@@ -54,6 +59,7 @@ class PipelineTests(unittest.TestCase):
                     observation=asdict(evidence(view="head"))
                     if owner.grounded:observation["other_views"]=[]
                     text=owner.observation_override if owner.observation_override is not None else json.dumps(observation)
+                elif value["kind"]=="ground":text=owner.surface_override.text()
                 else:
                     candidates=[Action.parse(x) for x in value["allowed"]]
                     text=(owner.action_override if owner.action_override else Action("right","close") if owner.forbidden else
@@ -167,6 +173,47 @@ class PipelineTests(unittest.TestCase):
         self.observation_override=json.dumps(fields)
         _,call=policy.observe(manager,self.state,self.bundle)
         self.assertEqual(call["validation"]["defaulted_fields"],[])
+
+    def refinement_inputs(self):
+        obs=GroundedEvidence(**asdict(evidence(view="head")))
+        manager=GroundedHarness([Goal("pick","radio","right","held")]);manager.stage="APPROACH"
+        depths={v:np.ones((100,100),np.float32) for v in ("head","left_wrist","right_wrist")}
+        depths["head"][49:52,:]=2.
+        bundle=VisualBundle([],[],{},{v:np.zeros((100,100,3),np.uint8) for v in depths})
+        return obs,manager,self.state,bundle,depths,self.model
+
+    def test_real_surface_choice_transport_abstention_and_budget(self):
+        policy=RefinedGroundedPolicy(self.uri,"test-pinned-revision",max_refinements=1)
+        inputs=self.refinement_inputs()
+        selected,call,receipt,views=policy.refine(*inputs)
+        self.assertEqual(call["result"]["text"],'{"candidate_id":0}')
+        self.assertTrue(receipt["refined_target"]["valid"])
+        self.assertEqual(receipt["robot_controls"],0)
+        self.assertNotEqual(selected.target_uv,inputs[0].target_uv)
+        self.assertEqual(self.requests[0]["kind"],"ground")
+        self.assertIn('{"candidate_id":null}',self.requests[0]["allowed"])
+        self.assertEqual(len(self.requests[0]["images"]),5)
+        same,call,receipt,_=policy.refine(*inputs)
+        self.assertIs(same,inputs[0]);self.assertIsNone(call)
+        self.assertEqual(receipt["reason"],"REFINEMENT_BUDGET_EXHAUSTED")
+        self.assertEqual(len(self.requests),1)
+        self.surface_override=SurfaceChoice()
+        other=RefinedGroundedPolicy(self.uri,"test-pinned-revision")
+        selected,_,receipt,_=other.refine(*inputs)
+        self.assertIs(selected,inputs[0]);self.assertEqual(receipt["reason"],"MODEL_ABSTAINED")
+        self.assertEqual(inputs[1].executions,0)
+
+    def test_refinement_skips_verification_and_rejects_old_service(self):
+        inputs=self.refinement_inputs()
+        policy=RefinedGroundedPolicy(self.uri,"test-pinned-revision")
+        for stage in ("GRASP","VERIFY_GRASP","RELEASE","VERIFY_PLACE","VERIFY_SUPPORT","VERIFY_EFFECT"):
+            inputs[1].stage=stage
+            self.assertIsNone(policy.refine(*inputs)[1])
+        inputs[1].stage="APPROACH";inputs[4]["head"][:]=1.
+        self.assertIsNone(policy.refine(*inputs)[1])
+        self.finite_choice_kinds=["act"]
+        with self.assertRaises(ValueError):RefinedGroundedPolicy(self.uri,"test-pinned-revision")
+        self.assertEqual(self.requests,[])
 
 
 if __name__=="__main__":

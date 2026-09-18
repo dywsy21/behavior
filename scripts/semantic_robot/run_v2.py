@@ -37,7 +37,7 @@ from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.vision import prepare_views
 from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.grounded_harness import GroundedHarness, GroundedController
-from semantic_robot.v2.policy import GroundedPolicy
+from semantic_robot.v2.policy import GroundedPolicy, RefinedGroundedPolicy
 
 
 def implementation_digest():
@@ -66,6 +66,7 @@ def main():
     p.add_argument("--output", required=True)
     p.add_argument("--mode", choices=("gate","agent"), default="gate")
     p.add_argument("--harness", choices=("v2","grounded"), default="v2")
+    p.add_argument("--refine-grounding",action="store_true",help="Opt-in bounded crop/surface-choice perception")
     p.add_argument("--task", type=int, choices=(0,3), default=0)
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--gpu", type=int, default=3)
@@ -84,12 +85,15 @@ def main():
         raise RuntimeError("Immutable clean source required")
     digest = implementation_digest()
     grounded=args.harness=="grounded"
+    if args.refine_grounding and not grounded:
+        raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.mode == "agent":
         if not args.expected_revision or len(args.gate_result) != 2:
             raise ValueError("Model identity and both task pose gates required")
         gates = [json.loads(Path(path).read_text()) for path in args.gate_result]
         if {g["task"] for g in gates} != {0,3} or not all(g["gate_ok"] and g["implementation_digest"] == digest and
-                g.get("harness","v2")==args.harness for g in gates):
+                g.get("harness","v2")==args.harness and
+                g.get("refine_grounding",False)==args.refine_grounding for g in gates):
             raise ValueError("Control/FK gates have not passed for this exact implementation")
     out = Path(args.output); out.mkdir(parents=True,exist_ok=False)
     if grounded and shutil.disk_usage(out).free<80*1024**3:
@@ -109,8 +113,9 @@ def main():
     window = load_official_oracle_window(path)
     if window.official_mode != "train" or window.seed != 0 or window.robot_config_sha256 != ROBOT_SHA:
         raise ValueError("Frozen task/config identity mismatch")
-    policy_class=GroundedPolicy if grounded else VLMPolicy
-    policy = policy_class(args.uri,args.expected_revision,max_calls=1+2*args.max_decisions+(2 if grounded else 0)) if args.mode=="agent" else None
+    policy_class=RefinedGroundedPolicy if args.refine_grounding else GroundedPolicy if grounded else VLMPolicy
+    policy = policy_class(args.uri,args.expected_revision,max_calls=1+2*args.max_decisions+
+        (2 if grounded else 0)+(16 if args.refine_grounding else 0)) if args.mode=="agent" else None
     manifest = {"code_commit":subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip(),
                 "implementation_digest":digest, "args":vars(args), "instance":window.instance_id,
                 "task":args.task,"task_name":window.task_name,"split":"train","seed":0,
@@ -119,6 +124,7 @@ def main():
                 "actor_scene_truth":False,"prefix_is_expert_not_agent":bool(args.prefix),
                 "actor_modalities":["rgb","depth_linear","proprio"] if grounded else ["rgb","proprio"],
                 "harness":args.harness,"max_strategy_replans":2 if grounded else 0,
+                "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
                 "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
     controls, prefix_count, terminal = 0,0,False
@@ -271,6 +277,13 @@ def main():
                 if policy:
                     observation, call = policy.observe(manager,state,bundle)
                     save_call(directory,"observation",call)
+                    if args.refine_grounding:
+                        observation,call,receipt,detail_views=policy.refine(observation,manager,state,bundle,depths,model)
+                        write(directory/"refinement.json",receipt)
+                        if call is not None:save_call(directory,"surface_choice",call)
+                        if detail_views is not None:
+                            for label,img in zip(detail_views.labels,detail_views.images):
+                                if "CROP" in label or "CANDIDATES" in label:img.save(directory/(label+".png"))
                     if controller:
                         controller.observe(observation,state,depths,depth_receipt)
                         if controller.replan_needed:
@@ -345,6 +358,7 @@ def main():
                       "calibration_sha":model.sha,"fk_check_count":len(checks),"gate_failures":failures,
                       "official_success":bool(done.get("success",False)),"final_goal_status":done.get("goal_status",{}),
                       "stop_reason":stop_reason,"harness":args.harness,"sensor_check_count":len(sensor_checks),
+                      "refine_grounding":args.refine_grounding,"surface_choices":getattr(policy,"refinements",0),
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
                       "full_task_success_rate_claim":False}

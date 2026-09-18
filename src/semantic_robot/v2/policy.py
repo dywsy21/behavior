@@ -11,6 +11,8 @@ from .harness import parse_plan
 from .protocol import Action, Evidence, strict_json
 from .grounding import GroundedEvidence
 from .grounded_harness import parse_recovery
+from .affordance import SurfaceChoice, surface_candidates, refinement_bundle, select_surface
+from .grounding import localize_target
 
 PLAN_SYSTEM = """Plan robot manipulation using visible observations and the task, not imagined object locations. Return only a JSON array of subgoals. Each has exactly kind, target, hand, done_when, level. kind is pick, place, press, open, close or navigate. hand is left, right or both. level is a boolean: true for transport requiring orientation preservation. Use short visually identifiable target descriptions, not hidden simulator IDs. done_when is an observable criterion, not 'command issued'. A pick and place are separate goals. Opening containers before filling is normally necessary. Allow uncertainty: the controller will search rather than assume a target is already visible. At most 16 goals. Example: [{"kind":"pick","target":"red radio","hand":"right","done_when":"radio moves with right gripper after a small lift","level":false},{"kind":"press","target":"visible power button of held radio","hand":"left","done_when":"power indicator visibly changes","level":false}]. Never describe task success from a close command."""
 
@@ -128,3 +130,48 @@ class GroundedPolicy(VLMPolicy):
         text=observation_context(harness,state,bundle)+"\nRecovery trigger: "+reason
         result,payload=self._call("plan",RECOVER_SYSTEM,text,bundle)
         return parse_recovery(result["text"]),{"result":result,"request":payload}
+
+
+SURFACE_SYSTEM = """Choose a visible contact surface for the CURRENT target, not a robot action. Full CURRENT raw views and a magnified CURRENT crop are supplied. The cyan numbered dots are depth-stable surface CANDIDATES, NOT object detections. Some dots may lie on background, a different object or an ungraspable part. Use the unmarked crop to check them. For pick prefer a clearly visible graspable part of the named object, for press its actual button, for open/close its handle, for navigate the named destination. Select one supplied candidate_id only if the numbered dot is visibly ON that target/affordance; otherwise choose null. Never choose a point merely because it is nearest or has small depth. Output exactly one of the listed JSON choices. No motion, holding, completion or cross-view correspondence is certified by this choice."""
+
+
+class RefinedGroundedPolicy(GroundedPolicy):
+    def __init__(self,*args,max_refinements=16,**kwargs):
+        super().__init__(*args,**kwargs)
+        if "ground" not in self.identity.get("finite_choice_kinds",[]):
+            raise ValueError("Service must support constrained surface choices before a refined run")
+        if type(max_refinements) is not int or not 1<=max_refinements<=16:
+            raise ValueError("Bounded refinement budget required")
+        self.max_refinements,self.refinements=max_refinements,0
+
+    def refine(self,evidence,harness,state,bundle,depths,model):
+        target=localize_target(evidence,depths,model,state.q)
+        receipt={"attempted":False,"original_target":target,"refinements_used":self.refinements,
+                 "original_evidence":asdict(evidence),"robot_controls":0}
+        if (not evidence.visible or target["valid"] or harness.stage in
+                ("GRASP","VERIFY_GRASP","RELEASE","VERIFY_PLACE","VERIFY_SUPPORT","VERIFY_EFFECT")):
+            receipt["reason"]="NOT_NEEDED_OR_VERIFICATION_STAGE"
+            return evidence,None,receipt,None
+        if self.refinements>=self.max_refinements:
+            receipt["reason"]="REFINEMENT_BUDGET_EXHAUSTED"
+            return evidence,None,receipt,None
+        proposals=surface_candidates(evidence,depths,model,state.q)
+        receipt["proposals"]=proposals
+        if not proposals["candidates"]:
+            receipt["reason"]="NO_STABLE_SURFACE_PROPOSALS"
+            return evidence,None,receipt,None
+        views=refinement_bundle(bundle,proposals)
+        allowed=(SurfaceChoice(),*(SurfaceChoice(c["id"]) for c in proposals["candidates"]))
+        text=json.dumps({"current_goal":asdict(harness.goal),"stage":harness.stage,
+                         "original_observation":asdict(evidence),"rejected_depth":target,
+                         "crop_and_candidates":proposals})
+        text+="\nChoose exactly one:\n"+"\n".join(c.text() for c in allowed)
+        self.refinements+=1  # even a failed call consumes the bounded allowance
+        result,payload=self._call("ground",SURFACE_SYSTEM,text,views,allowed)
+        choice=SurfaceChoice.parse(result["text"])
+        if choice not in allowed:raise ValueError("Choice not proposed in the current snapshot")
+        refined=select_surface(evidence,choice,proposals)
+        receipt.update(attempted=True,refinements_used=self.refinements,choice=asdict(choice),
+                       reason="MODEL_ABSTAINED" if choice.candidate_id is None else "MODEL_SELECTED_CURRENT_SURFACE",
+                       refined_evidence=asdict(refined),refined_target=localize_target(refined,depths,model,state.q))
+        return refined,{"result":result,"request":payload},receipt,views

@@ -13,6 +13,23 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]/"src"))
 from semantic_robot.v2.protocol import Action, strict_json
+from semantic_robot.v2.affordance import SurfaceChoice
+
+
+def validate_scoped_choices(kind, lines):
+    if not isinstance(lines,list):raise ValueError("Choice list required")
+    if not all(isinstance(line,str) for line in lines):raise ValueError("Canonical choice strings required")
+    if kind not in ("act","ground"):
+        if lines:raise ValueError("Only finite-choice calls may constrain output")
+        return
+    cls,limit=(Action,240) if kind=="act" else (SurfaceChoice,13)
+    if not 1<=len(lines)<=limit or len(set(lines))!=len(lines):
+        raise ValueError("Missing, duplicate or bloated finite choices")
+    values=[cls.parse(line) for line in lines]
+    if any(v.text()!=line for v,line in zip(values,lines)):
+        raise ValueError("Finite choices must be canonical")
+    if kind=="ground" and SurfaceChoice() not in values:
+        raise ValueError("Surface choice must permit abstaining")
 
 
 def normalize_json_transport(raw):
@@ -60,7 +77,8 @@ def main():
                 "torch": torch.__version__, "transformers": transformers.__version__,
                 "gpu": torch.cuda.get_device_name(), "visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
                 "image_max_side": 640, "wrist_no_upsampling": True, "max_images": 9,
-                "training_updates": 0, "action_grammar": "per-request scoped explicit JSON"}
+                "training_updates": 0, "action_grammar": "per-request scoped explicit JSON",
+                "finite_choice_kinds":["act","ground"]}
     (out/"identity.json").write_text(json.dumps(identity, indent=2))
     ledger = (out/"calls.jsonl").open("x", buffering=1)
 
@@ -80,8 +98,9 @@ def main():
                 if not 0 < n <= 24_000_000 or identity["calls"] >= args.max_calls:
                     raise ValueError("Payload or global call budget exceeded")
                 data = json.loads(self.rfile.read(n))
-                if set(data) != {"kind", "system", "text", "images", "allowed"} or data["kind"] not in ("plan", "observe", "act"):
+                if set(data) != {"kind", "system", "text", "images", "allowed"} or data["kind"] not in ("plan", "observe", "act", "ground"):
                     raise ValueError("Bad v2 request contract")
+                validate_scoped_choices(data["kind"],data["allowed"])
                 if len(data["system"])+len(data["text"]) > 32000 or not 1 <= len(data["images"]) <= 9:
                     raise ValueError("Context/image count exceeded")
                 content, hashes = [], []
@@ -104,18 +123,12 @@ def main():
                 if prefix > 12000:
                     raise ValueError("Token context budget exceeded")
                 trie = {}
-                if data["kind"] == "act":
-                    if not 1 <= len(data["allowed"]) <= 240:
-                        raise ValueError("Missing/bloated action palette")
+                if data["kind"] in ("act","ground"):
                     for line in data["allowed"]:
-                        if Action.parse(line).text() != line:
-                            raise ValueError("Action grammar is not canonical")
                         node = trie
                         for token in processor.tokenizer.encode(line, add_special_tokens=False):
                             node = node.setdefault(token, {})
                         node[None] = {}
-                elif data["allowed"]:
-                    raise ValueError("Only action calls have a command grammar")
                 def allowed_tokens(batch_id, ids):
                     node = trie
                     for token in ids[prefix:].tolist():
@@ -126,7 +139,7 @@ def main():
                         allowed += eos if isinstance(eos, list) else [eos]
                     return allowed
                 options = {"prefix_allowed_tokens_fn": allowed_tokens} if trie else {}
-                cap = {"plan": 1024, "observe": 320, "act": 64}[data["kind"]]
+                cap = {"plan": 1024, "observe": 320, "act": 64, "ground":32}[data["kind"]]
                 identity["calls"] += 1
                 torch.cuda.synchronize(); generated_at = time.perf_counter()
                 with torch.inference_mode():

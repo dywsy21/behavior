@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 12:36 H-08当前：** 新根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_effect_20260918`；B1不可变源仍`git_worktrees/semantic_grounded_e6925d8`。`gate_radio_b1`/`gate_plates_b1`两门已通过；`server_b1`（4111632/GPU3/8907，固定27B、≤220调用）、`radio_b1`（4111945/GPU1）、`plates_b1`（4112002/GPU3）正在跑，日志同级`.log`。每策略48决策/1536新控制/1200s、0训练。本地证据目标`/home/wsy/behavior/artifacts/semantic-agent-effect-20260918/`。这是用户新授权后的独立H-08，下面H-07等待/停止记录保留为历史，勿重复提交或热改源。
+
 **2026-09-18 12:10 H-07修复源码：** `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grounded_e6925d8`固定e6925d87f90d12a7ab6237cb99daf3279cb3b646，模型环境Python3.10 96/96 CPU通过（3.919s）；仅CPU验证，未启动新神经/模拟器，不拿9993fab旧门当新源回执。旧失败结果/最新控制门/全部下载证据仍在下方H-07根，本地artifacts约988MiB。新物理复验预算待用户答复。
 
 **2026-09-18 12:06 H-07真实状态：** `radio_27b_v1`与`plates_27b_v1`因首轮/次轮观察字段契约失败退出，分别18 HOLD新控制/0控制；以各`failure.json`为终态，没有`result.json`，不是仍在运行/有效SR。`server_27b_v2`6次生成已停（4104006退出，两模拟器4104443/4104495也退出），没有新模型权重。`pilots_v1.tar`与本地SHA8817a4c2…一致，含两run/日志/服务逐调用；`plates_pilot_v1.tar`为此前单独保存的同次task3失败证据。新字段兼容修复只在Git本地进行，尚无新物理run；下方启动记录为历史。
