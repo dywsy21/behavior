@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 18:24当前：** 新唯一源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_measured_approach_af6283f`固定af6283f/9c69bee4、双端206CPU；同H08根的`gate_radio_b13`17003/GPU1、`gate_plates_b13`17004/GPU3运行，不能热pull/改源码。`server_b13_radio`与`server_b13_matched`正在提交预载8908/8909，147/81模型调用上限；两个策略尚未运行，等待新门。B11及9792旧服务均已退出，完整本地`b11_verified_bundle/`已SHA/视频/120hash/人工7页核验。
+
 **2026-09-18 17:58当前：** `radio_b11`12314已自然安全停/退出，result SHA83487814…、289新控制/41模型/官方false；仅闲置`server_b11_radio`9792已请求TERM，待核退出。完整`b11_complete.tar.gz`归档中，保留四工程门＋唯一策略＋服务/日志，旧source不改。没有任何新B12物理run。下方运行记录均为历史。
 
 **2026-09-18 17:52当前：** 唯一`radio_b11`实际PID12314/GPU1，17:46启动，同源`server_b11_radio`9792/8908运行；两者固定`git_worktrees/semantic_goal_boundary_a4e3aab`、digest4cad025b，禁止热改。`gate_radio_b11_v2`9727/`gate_plates_b11_v2`9725已完整通过并退出，不再等待或重跑；新run/日志在原H08根。GPU3目前空闲，余盘97G；本地90c5913已push且fetch/pull无新团队更新。下方17:43“尚未启动”是历史。
