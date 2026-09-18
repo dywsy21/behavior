@@ -4,6 +4,7 @@ import json
 import math
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -323,6 +324,25 @@ class SearchTests(unittest.TestCase):
 
 
 class OrchestrationTests(unittest.TestCase):
+    def test_failed_coarse_approach_checks_feasible_middle_scale_before_micro(self):
+        model,state,h,servo,c,depths,receipt=setup_controller()
+        c.observe(grounded_evidence(),state,depths,receipt);h.stage="APPROACH"
+        center=c.centers["right"];point=center+np.array([0.,0.,.12])
+        c.target.update(valid=True,point_base_m=point.tolist(),distance_to_active_closing_center_m=.12)
+        c.target["mean_contact_distance_m"]=.12
+        coarse=Action("right","up","coarse");middle=Action("right","up","fine");micro=Action("right","up","micro")
+        real=SafeServo.begin
+        def reject_coarse(instance,action,current,carry=False):
+            if action.part=="right" and action.move=="up" and action.scale=="coarse":
+                return instance.abort("UNREACHABLE_OR_COLLISION_BLOCKED")
+            return real(instance,action,current,carry)
+        with patch.object(SafeServo,"begin",reject_coarse), patch.object(h,"palette",return_value=(HOLD,coarse,middle,micro)):
+            allowed=c.candidates(state)
+        tested=[Action(**r["action"]) for r in h.candidate_receipt["tested"]]
+        self.assertIn(middle,allowed)
+        self.assertLess(tested.index(coarse),tested.index(middle));self.assertLess(tested.index(middle),tested.index(micro))
+        self.assertLessEqual(len(tested),25)
+
     def test_perception_does_not_receive_previous_target_or_action_scores(self):
         model,state,h,servo,c,depths,receipt=setup_controller()
         h.grounding={"target_uv":[.12345,.98765],"point_base_m":[7,8,9]}

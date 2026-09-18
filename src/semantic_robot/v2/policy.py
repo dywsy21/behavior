@@ -14,6 +14,7 @@ from .grounded_harness import parse_recovery
 from .affordance import SurfaceChoice, surface_candidates, refinement_bundle, select_surface, surface_selection_context
 from .grounding import localize_target
 from .bimanual import BimanualEvidence, HandContact, contact_evidence
+from .prompt_context import actor_context
 
 PLAN_SYSTEM = """Plan robot manipulation using visible observations and the task, not imagined object locations. Return only a JSON array of subgoals. Each has exactly kind, target, hand, done_when, level. kind is pick, place, press, open, close or navigate. hand is left, right or both. level is a boolean: true for transport requiring orientation preservation. Use short visually identifiable target descriptions, not hidden simulator IDs. done_when is an observable criterion, not 'command issued'. A pick and place are separate goals. Opening containers before filling is normally necessary. Allow uncertainty: the controller will search rather than assume a target is already visible. At most 16 goals. Example: [{"kind":"pick","target":"red radio","hand":"right","done_when":"radio moves with right gripper after a small lift","level":false},{"kind":"press","target":"visible power button of held radio","hand":"left","done_when":"power indicator visibly changes","level":false}]. Never describe task success from a close command."""
 
@@ -157,10 +158,8 @@ class GroundedPolicy(VLMPolicy):
     def act_feasible(self,harness,state,bundle,allowed):
         if not allowed:
             raise ValueError("No preflighted action to select")
-        text=observation_context(harness,state,bundle)
-        text+="\nVisible evidence: "+json.dumps(asdict(harness.observation))
-        text+="\nCURRENT preflight receipt (geometric gain is an estimate, NOT grasp success): "+json.dumps(harness.candidate_receipt)
-        text+="\nChoose exactly one of these feasible complete commands:\n"+"\n".join(a.text() for a in allowed)
+        text=actor_context(harness,state,bundle,allowed)
+        text+="\nChoose one feasible command below; indices bind the scores, output ONLY its JSON:\n"+"\n".join(f"{index}: {a.text()}" for index,a in enumerate(allowed))
         system=ACTION_SYSTEM+" Prefer measurable progress toward the grounded contact region; review predicted distance gains and failed paths. For navigation, follow the navigation receipt: face the visible destination before approaching it; hand-to-surface distance is NOT a navigation completion test. The 2mm option remains available near limits. Do not repeatedly HOLD with good depth and a safe improving action. Grasp orientation/contact quality still require the raw views; a surface point is not a full grasp pose."
         result,payload=self._call("act",system,text,bundle,allowed)
         action=Action.parse(result["text"])
@@ -170,7 +169,7 @@ class GroundedPolicy(VLMPolicy):
         return action,{"result":result,"request":payload}
 
     def recover(self,harness,state,bundle,reason):
-        text=observation_context(harness,state,bundle)+"\nRecovery trigger: "+reason
+        text=actor_context(harness,state,bundle)+"\nRecovery trigger: "+reason
         result,payload=self._call("plan",RECOVER_SYSTEM,text,bundle)
         return parse_recovery(result["text"]),{"result":result,"request":payload}
 

@@ -422,7 +422,12 @@ class GroundedController:
             # the manipulation ranking's one body fallback is insufficient.
             proposed=[a for a in palette if a.part=="base"]
         allowed=[]; started=time.perf_counter()
-        for action in [HOLD,*dict.fromkeys(proposed[:limit])]:
+        queue=[HOLD,*dict.fromkeys(proposed[:limit])]
+        tested=set()
+        while queue and len(tested-{HOLD})<limit:
+            action=queue.pop(0)
+            if action in tested:continue
+            tested.add(action)
             ok,reason=self.depth_guard.check(action,self.harness.carry)
             trial=None
             if ok:
@@ -444,6 +449,13 @@ class GroundedController:
                         row["predicted_distance_gain_m"]=round(before-float(np.mean(list(distances.values()))),5)
                         row["gain_objective"]="mean_active_contact_distance; stage gates use maximum"
             rows.append(row)
+            if (not ok and action.part in (*self.harness.arms,"both")
+                    and action.move in TRANSLATIONS and action.scale=="coarse"):
+                # A rejected 3cm move does NOT imply that only 2mm is possible.
+                # Try the existing 1cm command before its micro sibling; every
+                # attempt still counts toward the unchanged preflight budget.
+                middle=Action(action.part,action.move,"fine",action.frame)
+                if middle in palette and middle not in tested:queue.insert(0,middle)
         navigation=None
         if self.target.get("valid") and self.harness.goal.kind=="navigate" and self.harness.stage=="APPROACH":
             navigation={"current":self._navigation_geometry(),"rule":"face_visible_destination_before_approaching",
