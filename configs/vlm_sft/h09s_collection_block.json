@@ -1,7 +1,11 @@
 {
   "experiment_id":"H09S-native-teacher-first-three",
   "registered_at":"2026-09-19T04:28:00+08:00",
-  "status":"review_passed_conditional_pilot_no_physical_started",
+  "status":"engineering_gates_passed_gpu1_handed_over_authorization_activated_first_instance_only",
+  "activation_at":"2026-09-19T04:34:00+08:00",
+  "authorization_local":"artifacts/vlm-sft-native-teacher-20260919/authorization_first_three.json",
+  "runtime_source":"/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_native_1509b7a",
+  "remote_cpu":{"sft_tests":33,"sft_s":0.182,"harness_tests":331,"harness_s":13.694,"actual_prepared_and_factory_binding_s":0.0686},
   "owner":"Astra-max-vlm_sft_showharness",
   "manual_pre_and_post_reviewer":"Codex-parent",
   "hypothesis":"At fixed TRAIN phase starts, actual paused-state teaching followed by the same safe primitive executor can produce correctly aligned, auditable manipulation records instead of mixed-trajectory pseudo-labels.",
