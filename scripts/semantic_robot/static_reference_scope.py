@@ -19,11 +19,14 @@ from semantic_robot.v2.vision import VisualBundle
 from audit_grasp_motion import frame,read
 
 
-def preflight(d,obs):
+def preflight(d,obs,planner_reference=None):
     saved=read(d/"harness.json");m=RobotModel(read(d.parent/"robot_calibration.json"));f=frame(d);pr=read(d/"proprio.json")
     state=m.state(np.asarray(pr["q"]),np.asarray(pr["gripper"]),np.zeros(3))
     h=GroundedHarness([Goal(**saved["goal"])],held_inspection=True,contact_geometry=False)
     h.held=saved["held_target_claims"];h.hold_verified=saved["holding_verified_by_observation_and_proprio"]
+    if planner_reference is not None:
+        h.reference_from_planner=True
+        h.bind_reference(planner_reference,"text_only_static_planner")
     h.level={a:False for a in ("left","right")}
     if saved["carry_constraints"]:raise ValueError("Static fixture requires original non-level hold, not an inferred relaxation")
     # Restore a previously observed, verified anchor, never simulator attachment.

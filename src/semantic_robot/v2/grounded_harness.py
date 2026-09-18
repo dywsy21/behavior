@@ -31,7 +31,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False):
+    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -47,6 +47,8 @@ class GroundedHarness(TaskHarness):
         self.grasp_probe={"eligible":False,"reason":"NOT_OBSERVED"}
         self.held_inspection_enabled=bool(held_inspection)
         self.target_references={}
+        self.reference_from_planner=bool(reference_from_planner)
+        self.reference_receipts={}
         self.held_inspection={}
 
     @property
@@ -55,14 +57,23 @@ class GroundedHarness(TaskHarness):
 
     def resolve_reference(self,evidence):
         if not self.held_inspection_enabled:return
+        if self.reference_from_planner:return  # Visual invisibility cannot erase a semantic relationship.
         reference=getattr(evidence,"target_reference","unknown")
         if reference=="unknown":return  # Missing relation never fabricates world/held truth.
+        self.bind_reference(reference,"legacy_visual_observer_B16")
+
+    def bind_reference(self,reference,source):
+        from .target_reference import REFERENCES
+        if reference not in REFERENCES:raise ValueError("Invalid reference")
         old=self.target_references.get(self.index)
         if old is not None and old!=reference:
             self.stop_reason="TARGET_REFERENCE_CONTRADICTION";return
         if reference.startswith("held_") and not self.hold_verified[reference[5:]]:
             self.stop_reason="TARGET_REFERENCE_REQUIRES_VERIFIED_HOLD";return
         self.target_references[self.index]=reference
+        self.reference_receipts[self.index]={"reference":reference,"source":source,"not_current_attachment_evidence":True}
+        if reference=="unknown" and any(self.hold_verified.values()):
+            self.stop_reason="TARGET_REFERENCE_UNRESOLVED_WITH_HELD_LOAD"
 
     def possibly_loaded_arms(self):
         # Unknown aperture after a CLOSE is not evidence of an empty hand.
@@ -192,7 +203,8 @@ class GroundedHarness(TaskHarness):
     def context(self):
         context=super().context()
         if self.held_inspection_enabled:
-            context.update(target_reference=self.search_reference,held_inspection=self.held_inspection)
+            context.update(target_reference=self.search_reference,held_inspection=self.held_inspection,
+                           reference_binding=self.reference_receipts.get(self.index))
         context.update(target_surface_estimate=self.grounding, search=self.search_context,
                        strategy_replans=self.replans, recent_replans=self.replan_history[-2:],
                        egocentric_motion=self.motion_receipt, unverified_close_latches=self.pending_grasp.copy(),

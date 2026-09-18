@@ -6,6 +6,10 @@
 
 ## 1. 总览
 
+**2026-09-18 19:32当前：** B16静态34223已异常退出（2调用、0控制），held-reference unknown失败；34106核对专属命令后TERM，`b16_static_failed.tar.gz`SHA8129ffce…保留失败证据。B17新语义路由仅本地开发，无新物理或模型进程；旧f3f706d证据保留，不热修改。
+
+**2026-09-18 19:21当前：** 唯一新静态服务`server_b16_static`34106/GPU1/8908/≤2调用，脚本`static_reference_b16`34223，固定源`git_worktrees/semantic_held_inspection_f3f706d`/digest8b001c6b/223CPU。这不是物理回合；两静态结果待验，源不热改。旧B14/15所有服务已退出；完整B14与部分B15都已本地SHA通过，B14另192hash/视频/本人5页核验。
+
 **2026-09-18 19:19当前：** B14模拟器29038已结束、模型28821已请求TERM，`b14_complete.tar.gz` SHA25efcf4a…已在本地`b14_verified_bundle/`，745新控制/32生成、官方false但d3注册验证成功。B15静态32592异常退出（2实际调用，第三例0调用前检查失败），服务32343已请求TERM；`b15_static_partial.tar.gz` SHAd2bfae82…保留部分结果和日志。B16仅本地代码/223CPU，无服务器新源或运行；旧B13/B14策略都不重启。
 
 **2026-09-18 18:55当前：** B14两门25757/25758已完整通过/退出，`radio_b14_matched`29038＋`server_b14_matched`28821/8909在GPU3，均固定`semantic_informative_probe_274479f`；源不可热改。B13标准完整本地`b13_standard_verified_bundle/`已6bcce747…SHA/168hash/全视频解码，旧回合/服务均结束。B15只有本地候选/保存帧CPU，无服务器新源或进程。

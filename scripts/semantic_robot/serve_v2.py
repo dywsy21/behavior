@@ -14,15 +14,16 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]/"src"))
 from semantic_robot.v2.protocol import Action, strict_json
 from semantic_robot.v2.affordance import SurfaceChoice
+from semantic_robot.v2.target_reference import ReferenceChoice, REFERENCES
 
 
 def validate_scoped_choices(kind, lines):
     if not isinstance(lines,list):raise ValueError("Choice list required")
     if not all(isinstance(line,str) for line in lines):raise ValueError("Canonical choice strings required")
-    if kind not in ("act","ground"):
+    if kind not in ("act","ground","reference"):
         if lines:raise ValueError("Only finite-choice calls may constrain output")
         return
-    cls,limit=(Action,240) if kind=="act" else (SurfaceChoice,13)
+    cls,limit={"act":(Action,240),"ground":(SurfaceChoice,13),"reference":(ReferenceChoice,4)}[kind]
     if not 1<=len(lines)<=limit or len(set(lines))!=len(lines):
         raise ValueError("Missing, duplicate or bloated finite choices")
     values=[cls.parse(line) for line in lines]
@@ -30,6 +31,13 @@ def validate_scoped_choices(kind, lines):
         raise ValueError("Finite choices must be canonical")
     if kind=="ground" and SurfaceChoice() not in values:
         raise ValueError("Surface choice must permit abstaining")
+    if kind=="reference" and {v.target_reference for v in values}!=set(REFERENCES):
+        raise ValueError("Semantic routing must retain all references including unknown/world")
+
+
+def validate_image_count(kind, images):
+    if not isinstance(images,list) or not (len(images)==0 if kind=="reference" else 1<=len(images)<=9):
+        raise ValueError("Reference is text-only; visual calls require 1..9 images")
 
 
 def normalize_json_transport(raw):
@@ -78,7 +86,7 @@ def main():
                 "gpu": torch.cuda.get_device_name(), "visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
                 "image_max_side": 640, "wrist_no_upsampling": True, "max_images": 9,
                 "training_updates": 0, "action_grammar": "per-request scoped explicit JSON",
-                "finite_choice_kinds":["act","ground"]}
+                "finite_choice_kinds":["act","ground","reference"]}
     (out/"identity.json").write_text(json.dumps(identity, indent=2))
     ledger = (out/"calls.jsonl").open("x", buffering=1)
 
@@ -98,10 +106,11 @@ def main():
                 if not 0 < n <= 24_000_000 or identity["calls"] >= args.max_calls:
                     raise ValueError("Payload or global call budget exceeded")
                 data = json.loads(self.rfile.read(n))
-                if set(data) != {"kind", "system", "text", "images", "allowed"} or data["kind"] not in ("plan", "observe", "act", "ground"):
+                if set(data) != {"kind", "system", "text", "images", "allowed"} or data["kind"] not in ("plan", "observe", "act", "ground", "reference"):
                     raise ValueError("Bad v2 request contract")
                 validate_scoped_choices(data["kind"],data["allowed"])
-                if len(data["system"])+len(data["text"]) > 32000 or not 1 <= len(data["images"]) <= 9:
+                validate_image_count(data["kind"],data["images"])
+                if len(data["system"])+len(data["text"]) > (4096 if data["kind"]=="reference" else 32000):
                     raise ValueError("Context/image count exceeded")
                 content, hashes = [], []
                 for entry in data["images"]:
@@ -123,7 +132,7 @@ def main():
                 if prefix > 12000:
                     raise ValueError("Token context budget exceeded")
                 trie = {}
-                if data["kind"] in ("act","ground"):
+                if data["kind"] in ("act","ground","reference"):
                     for line in data["allowed"]:
                         node = trie
                         for token in processor.tokenizer.encode(line, add_special_tokens=False):
@@ -139,7 +148,7 @@ def main():
                         allowed += eos if isinstance(eos, list) else [eos]
                     return allowed
                 options = {"prefix_allowed_tokens_fn": allowed_tokens} if trie else {}
-                cap = {"plan": 1024, "observe": 320, "act": 64, "ground":32}[data["kind"]]
+                cap = {"plan": 1024, "observe": 320, "act": 64, "ground":32,"reference":32}[data["kind"]]
                 identity["calls"] += 1
                 torch.cuda.synchronize(); generated_at = time.perf_counter()
                 with torch.inference_mode():

@@ -137,7 +137,9 @@ def main():
         raise ValueError("Frozen task/config identity mismatch")
     policy_class=RefinedGroundedPolicy if args.refine_grounding else GroundedPolicy if grounded else VLMPolicy
     policy = policy_class(args.uri,args.expected_revision,max_calls=1+2*args.max_decisions+
-        (2 if grounded else 0)+(16 if args.refine_grounding else 0)) if args.mode=="agent" else None
+        (2 if grounded else 0)+(16 if args.refine_grounding else 0)+(4 if args.held_object_inspection else 0)) if args.mode=="agent" else None
+    if policy and args.held_object_inspection and "reference" not in policy.identity.get("finite_choice_kinds",[]):
+        raise ValueError("Held inspection requires a text-only reference service")
     # B15's tracking-anchor prompt did not improve the two failing states.
     # Retain it for static reproduction, not as the production default.
     manifest = {"code_commit":subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip(),
@@ -285,7 +287,7 @@ def main():
                 else:
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection) if grounded else TaskHarness(goals)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection) if grounded else TaskHarness(goals)
                 if replay is not None:
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
@@ -354,6 +356,12 @@ def main():
                         # bounded strategy replan. Valid odometry must not turn
                         # that permission into an unconditional early break.
                         if manager.stop_reason and not controller.can_replan_stop:
+                            row["stop_reason"]=manager.stop_reason;decisions.append(row);break
+                    if args.held_object_inspection:
+                        call=policy.resolve_target_reference(manager)
+                        if call is not None:save_call(directory,"semantic_reference",call)
+                        write(directory/"reference_binding.json",manager.reference_receipts.get(manager.index))
+                        if manager.stop_reason:
                             row["stop_reason"]=manager.stop_reason;decisions.append(row);break
                     observation, call = policy.observe(manager,state,bundle)
                     save_call(directory,"observation",call)
@@ -468,6 +476,7 @@ def main():
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "held_object_inspection":args.held_object_inspection,
+                      "semantic_reference_calls":getattr(policy,"reference_calls",0),
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
                       "full_task_success_rate_claim":False}

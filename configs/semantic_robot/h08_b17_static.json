@@ -1,0 +1,18 @@
+{
+  "experiment_id": "H-08-B17-static",
+  "owner": "Codex-solo",
+  "hypothesis": "Separate text-only semantic routing from visual detection so an invisible affordance on a verified held object does not become an unknown reference.",
+  "code_commit": "PENDING_FIXED_SOURCE",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "gpu": 1,
+  "states": ["radio_b14_matched/decision_004", "plates_b8/decision_033"],
+  "expected_references_for_audit_only": ["held_right", "world"],
+  "max_model_calls": 2,
+  "wall_seconds": 600,
+  "controls": 0,
+  "resets": 0,
+  "training_updates": 0,
+  "actor_input": "Current goal and prior observationally verified holding labels only; zero images, poses or simulator truth. No available held reference uses deterministic world routing.",
+  "minimum_free_disk_GiB": 80,
+  "physical_release": "Separate registration only after semantic, preflight and human checks pass."
+}

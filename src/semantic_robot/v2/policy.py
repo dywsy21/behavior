@@ -205,6 +205,34 @@ class GroundedPolicy(VLMPolicy):
     paired_grasp_verification=False
     trackable_grasp_anchor=False
 
+    def resolve_target_reference(self,harness):
+        from .target_reference import ReferenceChoice,REFERENCES,REFERENCE_SYSTEM,reference_context
+        from .vision import VisualBundle
+        if not harness.held_inspection_enabled or not harness.reference_from_planner:
+            raise ValueError("Separate semantic reference mode required")
+        if harness.index in harness.target_references:
+            ref=harness.search_reference
+            if ref.startswith("held_") and not harness.hold_verified[ref[5:]]:
+                harness.stop_reason="TARGET_REFERENCE_REQUIRES_VERIFIED_HOLD"
+            return None
+        context=reference_context(harness)
+        if not any(harness.hold_verified.values()):
+            harness.bind_reference("world","no_verified_held_reference_available")
+            return None
+        if "reference" not in self.identity.get("finite_choice_kinds",[]):
+            raise ValueError("Service lacks constrained text-only semantic routing")
+        used=getattr(self,"reference_calls",0)
+        if used>=4:
+            harness.stop_reason="SEMANTIC_REFERENCE_CALL_BUDGET_REACHED"
+            return None
+        self.reference_calls=used+1
+        choices=tuple(ReferenceChoice(ref) for ref in REFERENCES)
+        text=json.dumps(context,ensure_ascii=False)+"\nChoices:\n"+"\n".join(c.text() for c in choices)
+        result,payload=self._call("reference",REFERENCE_SYSTEM,text,VisualBundle([],[],{},{}),choices)
+        choice=ReferenceChoice.parse(result["text"])
+        harness.bind_reference(choice.target_reference,"text_only_semantic_planner")
+        return {"result":result,"request":payload}
+
     def observe(self,harness,state,bundle):
         bundle,instruction=verification_inputs(harness,bundle) if self.paired_grasp_verification else (bundle,"")
         text=perception_context(harness,state,bundle)
@@ -215,7 +243,7 @@ class GroundedPolicy(VLMPolicy):
         bimanual=harness.goal.kind=="pick" and harness.goal.hand=="both"
         system=BIMANUAL_OBSERVE_SYSTEM if bimanual else GROUNDED_OBSERVE_SYSTEM
         if not bimanual and not getattr(harness,"contact_geometry",True):system=GROUNDED_OBSERVE_CORE
-        if getattr(harness,"held_inspection_enabled",False):system=reference_observation_system(system)
+        if getattr(harness,"held_inspection_enabled",False) and not harness.reference_from_planner:system=reference_observation_system(system)
         if self.trackable_grasp_anchor:instruction+=grasp_tracking_instruction(harness)
         result,payload=self._call("observe",system+instruction,text,bundle)
         evidence = (BimanualEvidence if bimanual else GroundedEvidence).parse(result["text"])
