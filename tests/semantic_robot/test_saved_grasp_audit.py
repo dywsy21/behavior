@@ -40,5 +40,11 @@ class SavedGraspAuditTests(unittest.TestCase):
         self.assertEqual(r["open_decisions"],[])
         self.assertEqual(len(r["attachment_observations"]),1)
 
+    def test_physical_mode_has_no_assisted_diagnostic(self):
+        x=row(0,"close",None);x["post_action_grasp_audit"]["assisted_objects"]=None
+        r=review.grasp_timeline([x])
+        self.assertEqual(r["unavailable_attachment_diagnostics"],[0])
+        self.assertEqual(r["attachment_observations"],[])
+
 
 if __name__=="__main__":unittest.main()

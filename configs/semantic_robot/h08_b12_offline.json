@@ -11,6 +11,7 @@
     "gate_plates_b11_v2": [13, 14]
   },
   "budget": {"CPU_pairs": 12, "wall_seconds": 300, "new_model_calls": 0, "controls": 0, "resets": 0, "training": 0},
+  "followup_reference_check": {"run": "odometry_probe_b2", "fixed_saved_pairs": 9, "CPU_seconds": 300, "controls": 0, "model_calls": 0, "truth_used_only_after_pose_estimation": true, "baseline": "already completed original PnP replay; do not regenerate it"},
   "interpretation": "All pairs use exactly the same raw RGB-D and robot FK for both estimators. More accepted pairs is not itself correctness; inspect spatial support, residuals and original frames. No physical truth is saved for B11's body pose, so do not claim absolute odometry accuracy.",
   "stop": "Finish 12 pairs and inspect; no new simulator policy is registered by this configuration."
 }

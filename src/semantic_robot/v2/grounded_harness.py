@@ -169,6 +169,7 @@ class GroundedHarness(TaskHarness):
                        strategy_replans=self.replans, recent_replans=self.replan_history[-2:],
                        egocentric_motion=self.motion_receipt, unverified_close_latches=self.pending_grasp.copy(),
                        active_grasp_probe=self.grasp_probe.copy())
+        if hasattr(self,"approach_progress"):context["approach_progress"]=self.approach_progress
         return context
 
 
@@ -202,8 +203,11 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False):
         self.model,self.servo,self.harness=model,servo,harness
+        if approach_progress and not visual_odometry:raise ValueError("Approach progress requires measured visual motion")
+        from .approach_progress import ApproachProgress
+        self.approach_monitor=ApproachProgress() if approach_progress else None
         self.search=CoverageSearch()
         self.previous=None
         self.target={"valid":False}
@@ -225,7 +229,7 @@ class GroundedController:
             self.grasp_verifier=GraspMotionVerifier()
         if visual_odometry:
             from .odometry import RGBDMotion
-            self.motion=RGBDMotion()
+            self.motion=RGBDMotion(odometry_estimator)
 
     @property
     def can_replan_stop(self):
@@ -325,6 +329,15 @@ class GroundedController:
         self.progress={"new_search_coverage":new_coverage,"target_distance_m":distance,
                        "metric_co_motion":co_motion,"distance_reduced":reduced}
         internal=dict(self.progress)
+        if self.approach_monitor is not None:
+            points=self._points_for_arms() if self.target.get("valid") else {}
+            poses={a:self.model.forward(state.q,a).copy() for a in manager.arms}
+            for arm in poses:poses[arm][:3,3]=self.centers[arm]
+            manager.approach_progress=self.approach_monitor.observe(goal_index=manager.index,
+                kind=manager.goal.kind,stage=manager.stage,points=points,poses=poses,
+                execution=manager.executions,action=manager.last_action,feedback=manager.feedback,
+                motion=manager.motion_receipt,loaded=any(manager.pending_grasp.values()) or any(manager.hold_verified.values()))
+            self.progress["approach_progress"]=manager.approach_progress
         if self.grasp_verifier is not None:
             if images is None or self_geometry is None:raise ValueError("Fresh raw images and robot-only self geometry required")
             targets=self.hand_targets if bimanual else {a:self.target for a in manager.arms}
@@ -546,6 +559,8 @@ class GroundedController:
             if action in tested:continue
             tested.add(action)
             ok,reason=self.depth_guard.check(action,self.harness.carry)
+            if self.approach_monitor is not None and not self.approach_monitor.allowed(action):
+                ok,reason=False,"REPEATED_BASE_APPROACH_WITHOUT_CONTACT_PROGRESS"
             trial=None
             if ok:
                 # Recreate the servo with the actual command latch, NOT measured
@@ -612,6 +627,10 @@ class GroundedController:
             self.harness.stop_reason=reason
             return HOLD,{"source":"measured_search_controller","reason":reason}
         self.harness.authorize(action)
+        if self.approach_monitor is not None and not self.approach_monitor.allowed(action):
+            self.reposition_left=0
+            self.harness.recover("REPEATED_BASE_APPROACH_WITHOUT_CONTACT_PROGRESS")
+            return HOLD,{"source":"observed_progress_veto","reason":"REPOSITION_DIRECTION_STILL_BLOCKED"}
         ok,why=self.depth_guard.check(action,self.harness.carry)
         trial=SafeServo(self.model,state,self.servo.grips.copy(),self.servo.limits)
         if ok:

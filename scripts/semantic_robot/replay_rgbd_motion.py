@@ -15,11 +15,12 @@ from semantic_robot.v2.odometry import RGBDMotion
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--run",required=True);p.add_argument("--output",required=True)
+    p.add_argument("--estimator",choices=("pnp","rgbd_rigid"),default="pnp")
     args=p.parse_args();run=Path(args.run);out=Path(args.output)
     if out.exists():raise ValueError("Preserve prior replay")
     import cv2
     cv2.setNumThreads(2)
-    model=RobotModel(json.loads((run/"robot_calibration.json").read_text()));est=RGBDMotion()
+    model=RobotModel(json.loads((run/"robot_calibration.json").read_text()));est=RGBDMotion(args.estimator)
     terminal=json.loads((run/("result.json" if (run/"result.json").exists() else "failure.json")).read_text())
     executions={r["decision"]:r for r in terminal["decisions"]}
     audit=run/"odometry_audit.jsonl"
@@ -45,7 +46,7 @@ def main():
         rows.append(row)
     valid=[r for r in rows if r["receipt"]["valid"] and not r["receipt"].get("initial")]
     errors=[r["diagnostic_only_error"] for r in valid if "diagnostic_only_error" in r]
-    result={"run":str(run),"pairs":max(0,len(rows)-1),"valid_pairs":len(valid),"new_controls":0,"new_model_calls":0,
+    result={"run":str(run),"estimator":args.estimator,"pairs":max(0,len(rows)-1),"valid_pairs":len(valid),"new_controls":0,"new_model_calls":0,
             "production_estimator_no_truth_inputs":True,"truth_comparison_only_after_estimation":truth is not None,
             "max_abs_body_error":np.max(np.abs(errors),axis=0).tolist() if errors else None,"rows":rows}
     out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(result,indent=2,allow_nan=False))

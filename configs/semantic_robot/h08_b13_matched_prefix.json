@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "source_run": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_effect_20260918/radio_b7",
+  "source_code_commit": "605512f74b5bb8b16f1a5ff336cba85f935c83ad",
+  "replay_decisions": 22,
+  "replay_controls": 362,
+  "sha256": {
+    "manifest.json": "44dea43da072bb28b70c90b482763e928e1ba9d3ad0210c99addc11712c0db80",
+    "steps.jsonl": "76faf53a95d346b7090a0f56ec5e3dddddb14280bf48d7405190877b383fd217",
+    "plan.json": "eb92e17b7d1e24a1e2701a6f0801bf10617b775e4f39c41c16e048bdef4c9307",
+    "decision_022/proprio.json": "5b47fbd6b7ee2efc47e845d4bc666b9ff2393c1eff9e04a2ed16f53b5616e6d3"
+  }
+}

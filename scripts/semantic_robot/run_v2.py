@@ -73,8 +73,11 @@ def main():
     p.add_argument("--active-grasp-probe",action="store_true",help="Bounded exploratory close; original grasp verification remains mandatory")
     p.add_argument("--contact-geometry",action="store_true",help="Experimental finger guides/tool translations; not mixed into the feedback-only comparison")
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
+    p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid"),default="pnp")
+    p.add_argument("--approach-progress",action="store_true",help="Veto repeated near-field base advances without observed contact progress")
     p.add_argument("--task", type=int, choices=(0,3), default=0)
     p.add_argument("--prefix", type=int, default=0)
+    p.add_argument("--replay-prefix-spec",help="Hash-pinned saved-action diagnostic warm start, counted separately from policy")
     p.add_argument("--gpu", type=int, default=3)
     p.add_argument("--uri", default="http://127.0.0.1:8907")
     p.add_argument("--expected-revision")
@@ -96,6 +99,8 @@ def main():
     if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe or args.contact_geometry or args.grasp_motion) and not grounded:
         raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
+    if (args.approach_progress or args.odometry_estimator!="pnp") and not args.visual_odometry:
+        raise ValueError("Measured approach progress and explicit estimator require visual odometry")
     if args.mode == "agent":
         if not args.expected_revision or len(args.gate_result) != 2:
             raise ValueError("Model identity and both task pose gates required")
@@ -105,7 +110,9 @@ def main():
                 g.get("refine_grounding",False)==args.refine_grounding and
                 g.get("visual_odometry",False)==args.visual_odometry and
                 g.get("contact_geometry",False)==args.contact_geometry and
-                g.get("grasp_motion",False)==args.grasp_motion for g in gates):
+                g.get("grasp_motion",False)==args.grasp_motion and
+                g.get("odometry_estimator","pnp")==args.odometry_estimator and
+                g.get("approach_progress",False)==args.approach_progress for g in gates):
             raise ValueError("Control/FK gates have not passed for this exact implementation")
     out = Path(args.output); out.mkdir(parents=True,exist_ok=False)
     if grounded and shutil.disk_usage(out).free<80*1024**3:
@@ -134,6 +141,7 @@ def main():
                 "window_sha":sha(path),"robot_sha":ROBOT_SHA,"model_identity":policy.identity if policy else None,
                 "training_updates":0,"evaluator":"v3.9.1-development-not-official-v3.9.2",
                 "actor_scene_truth":False,"prefix_is_expert_not_agent":bool(args.prefix),
+                "matched_grasp_feedback_diagnostic":bool(args.replay_prefix_spec),
                 "actor_modalities":["rgb","depth_linear","proprio"] if grounded else ["rgb","proprio"],
                 "harness":args.harness,"max_strategy_replans":2 if grounded else 0,
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
@@ -141,7 +149,13 @@ def main():
                 "active_grasp_probe":args.active_grasp_probe,"privileged_audit_is_actor_input":False,
                 "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
-    controls, prefix_count, terminal = 0,0,False
+    replay=None
+    if args.replay_prefix_spec:
+        if args.mode!="agent" or not grounded or not args.grasp_motion:raise ValueError("Matched prefix is an explicit grasp-feedback agent diagnostic")
+        from semantic_robot.v2.saved_prefix import load_saved_prefix
+        replay=load_saved_prefix(args.replay_prefix_spec,task=args.task,prefix=args.prefix,window_sha=sha(path),robot_sha=ROBOT_SHA)
+        write(out/"replay_prefix_source.json",replay["receipt"])
+    controls, prefix_count, replay_count, terminal = 0,0,0,False
     info, decisions, checks, failures = {},[],[],[]
     sensor_checks=[]
     controller=None
@@ -158,7 +172,7 @@ def main():
                 # The native Kit shutdown may terminate the interpreter before
                 # an outer except runs. Persist the ORIGINAL error inside it.
                 write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
-                    "controls":controls,"prefix_controls":prefix_count,"decisions":decisions,
+                    "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
                     "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
                 raise
     try:
@@ -207,7 +221,7 @@ def main():
                     if errors["position_m"] > .003 or errors["angle_rad"] > .02 or errors.get("jacobian_max_abs",0) > .04:
                         # OG shutdown may terminate before the outer except runs.
                         write(out/"failure.json",{"error":"FK_MISMATCH", "check":check,
-                              "controls":controls,"prefix_controls":prefix_count,"decisions":decisions})
+                              "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions})
                         raise RuntimeError(f"Portable robot/camera FK mismatch {label}/{name}: {errors}")
 
             def step(action, render=True):
@@ -229,8 +243,20 @@ def main():
                 if i%64==63:
                     check_fk(f"prefix_{i+1}")
             check_fk("after_prefix")
+            if replay is not None:
+                phase="MATCHED_DIAGNOSTIC_SAVED_ACTION_REPLAY"
+                for i,action in enumerate(replay["actions"]):
+                    if step(action,render=True):raise RuntimeError("Terminated during diagnostic action replay")
+                    replay_count+=1
+                    if i%64==63:check_fk(f"replay_{i+1}")
+                check_fk("after_diagnostic_replay")
+                from semantic_robot.v2.saved_prefix import check_endpoint
+                matched=check_endpoint(replay,state_now());write(out/"replay_endpoint_check.json",matched)
+                write(out/"PRIVILEGED_REPLAY_GRASP_AUDIT.json",grasp_audit(env.robots[0]))
+                if not matched["passed"]:raise RuntimeError("Diagnostic replay endpoint mismatch; no new policy actions")
             state = state_now()
-            previous_grips = None if not prefix_count else np.asarray(prefix[-1])[[14,22]]
+            previous_grips = (replay["actions"][-1,[14,22]] if replay is not None else
+                              None if not prefix_count else np.asarray(prefix[-1])[[14,22]])
             servo = SafeServo(model,state,gripper_command=previous_grips)
             video = imageio.get_writer(str(out/"rollout.mp4"),fps=15,codec="libx264",quality=7,macro_block_size=2)
             previous = None
@@ -248,10 +274,18 @@ def main():
                 write(directory/(name+".json"),receipt)
 
             if policy:
-                goals, call = policy.plan(args.task,environment.observation()["task"],first)
-                save_call(out,"planner",call)
+                if replay is None:
+                    goals, call = policy.plan(args.task,environment.observation()["task"],first)
+                    save_call(out,"planner",call)
+                else:
+                    goals=replay["plan"]
+                    write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
                 manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry) if grounded else TaskHarness(goals)
-                if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion)
+                if replay is not None:
+                    from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
+                    bootstrap_unverified_pick(manager,replay,state)
+                if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion,
+                    odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -265,14 +299,14 @@ def main():
                 draw.text((8,992),label[:98],fill="white")
                 draw.text((8,1017),f"Stage: {manager.stage if manager else 'KINEMATIC GATE'} | {servo.status}",fill="white")
                 draw.text((8,1042),"Observed/commanded is not official success. Inference wait omitted.",fill="white")
-                draw.text((8,1065),f"Expert prefix {prefix_count} not shown. 30Hz sim / 15fps video.",fill="white")
+                draw.text((8,1065),f"Expert {prefix_count} + saved-policy {replay_count} prefix not shown. 30Hz sim /15fps.",fill="white")
                 video.append_data(np.asarray(canvas))
 
             gate = bounded_gate(grounded)
             gate_motion=None
             if args.visual_odometry and not policy:
                 from semantic_robot.v2.odometry import RGBDMotion
-                gate_motion=RGBDMotion()
+                gate_motion=RGBDMotion(args.odometry_estimator)
             phase="BOUNDED_CONTROL_OR_AGENT_LOOP"
             for decision in range(args.max_decisions):
                 recoverable_stop=bool(controller and controller.can_replan_stop)
@@ -402,6 +436,7 @@ def main():
                 stop_reason=("OFFICIAL_EPISODE_TERMINATED" if terminal else "CONTROL_BUDGET_REACHED" if controls>=args.max_controls
                              else "WALL_TIME_BUDGET_REACHED" if time.perf_counter()-started>=args.max_seconds else "DECISION_BUDGET_REACHED")
             result = {"status":"complete","task":args.task,"controls":controls,"prefix_controls":prefix_count,
+                      "diagnostic_replay_controls":replay_count,"matched_grasp_feedback_diagnostic":replay is not None,
                       "decisions":decisions,"gate_ok":gate_ok,"implementation_digest":digest,
                       "calibration_sha":model.sha,"fk_check_count":len(checks),"gate_failures":failures,
                       "official_success":bool(done.get("success",False)),"final_goal_status":done.get("goal_status",{}),
@@ -410,12 +445,13 @@ def main():
                       "visual_odometry":args.visual_odometry,
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
+                      "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
                       "full_task_success_rate_claim":False}
             write(out/"result.json",result)
     except BaseException as exc:
-        write(out/"failure.json",{"error":repr(exc),"controls":controls,"prefix_controls":prefix_count,"decisions":decisions})
+        write(out/"failure.json",{"error":repr(exc),"controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions})
         raise
     finally:
         trace.close()

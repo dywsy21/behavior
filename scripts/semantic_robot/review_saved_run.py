@@ -22,6 +22,7 @@ def grasp_timeline(rows):
     arms=("left","right");previous={arm:None for arm in arms}
     result={"diagnostic_only_not_actor_input":True,"not_task_success":True,
             "close_decisions":[],"open_decisions":[],"missing_post_action_receipts":[],
+            "unavailable_attachment_diagnostics":[],
             "attachment_observations":[],"attachment_changes":[],
             "opens_after_observed_attachment":[],"registered_verification_decisions":[]}
     for row in rows:
@@ -35,7 +36,11 @@ def grasp_timeline(rows):
             result["missing_post_action_receipts"].append(i)
             previous={arm:None for arm in arms}
         else:
-            objects=record.get("assisted_objects",{})
+            objects=record.get("assisted_objects")
+            if not isinstance(objects,dict):
+                result["unavailable_attachment_diagnostics"].append(i)
+                previous={arm:None for arm in arms}
+                objects={}
             for arm in arms:
                 if arm not in objects:
                     previous[arm]=None
