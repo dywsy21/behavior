@@ -14,6 +14,8 @@
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
 
+**21:43 H09意图粒度核对完成（Astra；主代理记录）：** task3训练NAVIGATE596条实际target为fridge270/plate221/bowl51/drop in sink54，无table/dining table/breakfast table家具导航目标；但另有GRASP plate source breakfast table36＋GRASP bowl source breakfast table13，故不是“早餐桌概念完全未见”。正确局限是训练技能意图与部署子目标粒度未直接对齐；不能擅自把NAV plate/bowl改判同义家具导航，也不改本轮固定提示。938fc87保存0调用覆盖审计/测试；原FT/base两餐桌回合继续，后续按通用接口/数据覆盖门修，不围绕单例提示调参。
+
 **21:41 H09具体部署意图覆盖不足，不能按task已见推能力（Astra＋Codex）：** 0调用精确计数：task0的238训练行中，固定`GRASP radio/source coffee table`仅11条/5来源episode，10低base速度、11空history、只有1 RIGHT_CLOSE；其唯一base标签1个BASE_YAW_MINUS。task3的739行中，`NAVIGATE breakfast table` exact为0，相近文本/同义概念正核对，暂不写成概念完全缺失。这是本轮准备/审查遗漏的部署意图覆盖门：先前task分组、坐标/标签正确不能保证当前技能训练充分。原四配对prompt/权重不改，后续数据必须在训练前检查实际部署intent×动作类别×近静止/技能起点覆盖，保留本轮负结果，不因覆盖不足否定通用SFT路线。
 
 **21:39 H09 radio配对均失败，静态高分未转真实技能（Astra；主代理记录）：** 相同975852a/同448专家前缀，base12决策/166控制/43.854s，9次左手前伸（累计87.8mm）＋3运动学拒绝、无持物；FT40决策/961控制/143.761s，40次全`BASE_YAW_MINUS`，双EEF基体系累计漂移约0.1mm、没有抓取、官方false。这是明确的意图服从/部署状态问题，不是把接口没执行或静态93.75%说成功。base视频82帧已owner全解码/人工0/40/81，另侧证据仍核验；`plates_ft`按原顺序运行、后继`plates_base`，0新训练/超预算。父B20终帧已看/全包继续下载，不部署该SFT为默认策略。
