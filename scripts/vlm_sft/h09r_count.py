@@ -70,7 +70,7 @@ def main():
     quarantine = defaultdict(list)
     quarantine_path = RELEASE / "quarantine_ranges.parquet"
     for r in pq.read_table(quarantine_path).to_pylist():
-        quarantine[int(r["episode_index"])].append((int(r["start_frame"]), int(r["end_frame"])))
+        quarantine[int(r["episode_index"])].append((int(r["frame_start"]), int(r["frame_end"])))
     counts = defaultdict(Counter)
     source_episodes = defaultdict(set)
     rejects = defaultdict(Counter)
@@ -123,7 +123,8 @@ def main():
         first_low = {}
         for f, r in labels.items():
             if r["low_action_supervision_mask"] and r["memlite_branch"] == "low":
-                first_low.setdefault(r["segment_start"], f)
+                start = r["segment_start"]
+                first_low[start] = min(first_low.get(start, f), f)
         supplemental = set(first_low.values()) - grid
         for scheme, frames in (("stride16", sorted(grid)), ("phase_first_low_extra", sorted(supplemental))):
             for f in frames:
