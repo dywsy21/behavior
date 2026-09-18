@@ -11,7 +11,7 @@ from common import sha,write_json
 
 def low_velocity(row):
     v=np.asarray(row["proprio"]["base_velocity_local"])
-    return np.linalg.norm(v[:2])<.02 and abs(v[2])<.03
+    return bool(np.linalg.norm(v[:2])<.02 and abs(v[2])<.03)
 
 
 def main():

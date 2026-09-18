@@ -12,9 +12,15 @@ sys.path[:0]=[str(ROOT/"scripts/vlm_sft"),str(ROOT/"src")]
 from common import CAMERAS,actor_state,prompt
 from live import ACTIVE,parse_request,request_payload,runtime_proprio,validate_proprio
 from run_local import guard_release,implementation_digest,GATE,write_privileged_audit
+from stratify_static import low_velocity
 
 
 class LiveContractTests(unittest.TestCase):
+    def test_velocity_audit_counts_use_json_native_booleans(self):
+        row={"proprio":{"base_velocity_local":[0,0,0]}}
+        self.assertIs(type(low_velocity(row)),bool)
+        self.assertIs(type(sum(low_velocity(row) for _ in range(3))),int)
+
     def fixture(self):
         state=np.zeros(61);state[17:20]=[.1,.2,.3];state[42:45]=[.4,-.2,.3]
         state[24:26]=.04;state[49:51]=.03;state[:3]=[.1,-.2,.05];state[53:57]=[.2,.3,.4,.5]
