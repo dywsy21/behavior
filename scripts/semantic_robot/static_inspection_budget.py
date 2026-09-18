@@ -51,7 +51,11 @@ def restore(run,index,multicamera=False):
         if not np.isclose(h.held_inspection[key],saved["held_inspection"][key],rtol=1e-6,atol=1e-6):raise ValueError("Causal history disagrees with saved actual budget")
     ctl.depth_guard=LocalDepthGuard(observed_cloud(f["depth"],model,state.q),model,state.q,f["depth"])
     allowed=ctl.inspection_candidates(state)
-    original=read(d/"action.json");labels=[x["label"] for x in original["result"]["images"]]
+    # An old terminal observation may have no action call (e.g. exhausted
+    # holding-hand path). Its actual observer image ledger is still usable.
+    source=d/"action.json"
+    if multicamera and not source.exists():source=d/"observation.json"
+    original=read(source);labels=[x["label"] for x in original["result"]["images"]]
     bundle=VisualBundle([Image.open(d/(label+".png")).convert("RGB") for label in labels],labels,pr["geometry"],f["rgb"])
     return h,state,bundle,allowed,original
 
