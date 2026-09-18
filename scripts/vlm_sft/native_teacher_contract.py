@@ -5,10 +5,11 @@ Pure CPU helpers. No simulator/model import, success oracle, or auto-label path.
 from dataclasses import asdict
 import hashlib
 import json
+from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from common import TOKENS, POSITIONS, QUATERNIONS, GRIPS, token_to_action
+from common import TOKENS, POSITIONS, QUATERNIONS, GRIPS, token_to_action, sha
 from live import validate_proprio
 
 SCHEMA = "h09s-native-manual-teacher-v1"
@@ -17,6 +18,54 @@ SCHEMA = "h09s-native-manual-teacher-v1"
 def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
                                     allow_nan=False).encode()).hexdigest()
+
+
+def verify_prepared_source(prepared, release):
+    """Bind all reset inputs BEFORE creating an evaluator; never rewrite them."""
+    prepared = Path(prepared).resolve()
+    manifest_path = prepared.parent / "preparation.json"
+    if sha(manifest_path) != release.get("preparation_manifest_sha256"):
+        raise ValueError("Unregistered preparation manifest")
+    manifest = json.loads(manifest_path.read_text())
+    if (manifest.get("schema") != SCHEMA or
+            manifest.get("status") != "PREPARED_NOT_COLLECTED_NOT_TRAINING_DATA" or
+            len(manifest.get("sources", [])) != 3 or
+            {r["task"] for r in manifest["sources"]} != {0, 1, 3}):
+        raise ValueError("Exactly the reviewed three TRAIN preparations required")
+    ref_path = prepared / "teacher_reference.json"
+    ref = json.loads(ref_path.read_text())
+    pilot = ref["pilot"]
+    rows = [r for r in manifest["sources"] if r["task"] == pilot["task"]]
+    if len(rows) != 1 or prepared.name != f"task_{pilot['task']}":
+        raise ValueError("Prepared source ownership mismatch")
+    row = rows[0]
+    if (ref.get("schema") != SCHEMA or any(row[k] != pilot[k] for k in ("task", "episode", "instance", "frame", "verb")) or
+            ref["prefix_controls"] != pilot["frame"]):
+        raise ValueError("Prepared source identity mismatch")
+    hashes = {"teacher_reference.json": row["reference_sha256"],
+              "window.json": row["window_sha256"], "prefix.npy": row["prefix_sha256"]}
+    if any(sha(prepared / name) != expected for name, expected in hashes.items()):
+        raise ValueError("Prepared window/prefix/reference bytes changed")
+    window = json.loads((prepared / "window.json").read_text())
+    if (window["official_mode"] != "train" or window["seed"] != 0 or
+            window["instance_id"] != pilot["instance"] or not window.get("task_name") or
+            window["prefix_actions_sha256"] != hashes["prefix.npy"] or
+            Path(window["prefix_actions_path"]).resolve() != prepared / "prefix.npy"):
+        raise ValueError("Prepared reset or prefix path mismatch")
+    prefix = np.load(prepared / "prefix.npy", allow_pickle=False)
+    if prefix.shape != (pilot["frame"], 23) or prefix.dtype != np.float32 or not np.isfinite(prefix).all():
+        raise ValueError("Exact finite full 23D prefix required")
+    binding = {"preparation_manifest_sha256": sha(manifest_path), "files_sha256": hashes,
+               "task": pilot["task"], "task_name": window["task_name"],
+               "instance": pilot["instance"], "official_mode": "train", "seed": 0}
+    return ref, prefix, binding
+
+
+def verify_loaded_window(window, prefix, expected_prefix, binding):
+    if (window.task_name != binding["task_name"] or window.official_mode != binding["official_mode"] or
+            window.instance_id != binding["instance"] or window.seed != binding["seed"] or
+            not np.array_equal(np.asarray(prefix), expected_prefix)):
+        raise ValueError("Factory loaded a different task/reset/full prefix")
 
 
 def select_sources(counts):

@@ -7,6 +7,8 @@ separate post-review. No automatic trajectory continuation, restore or model.
 """
 import argparse
 from dataclasses import asdict
+import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -28,11 +30,13 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO/"src"), str(REPO/"scripts/semantic_robot")]
 from common import TOKENS, sha, write_json, token_to_action
 from live import runtime_proprio
-from native_teacher_contract import SCHEMA, digest, actor_input, validate_approval
-from semantic_robot.v2.servo import SafeServo, native_action
+from native_teacher_contract import (SCHEMA, digest, actor_input, validate_approval,
+                                     verify_prepared_source, verify_loaded_window)
+from semantic_robot.v2.servo import SafeServo, ServoLimits, native_action
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.grounding import observed_cloud, LocalDepthGuard
+from semantic_robot.v2.grasp_motion import robot_point_mask
 from run_sim import ADAPTER
 from run_v2 import implementation_digest
 from replay_contact_audit import preserved_session, report_failure
@@ -69,8 +73,62 @@ def require_release(value, code, executor):
         raise ValueError("A separately reviewed H14-fixed executor and new pilot authorization are required")
     gates = [json.loads(Path(p).read_text()) for p in value["engineering_gate_paths"]]
     if len(gates) != 2 or {g["task"] for g in gates} != {0, 3} or not all(
-            g["gate_ok"] and g["implementation_digest"] == executor for g in gates):
+            g["gate_ok"] is True and g.get("robot_geometry_guards") is True and
+            g["implementation_digest"] == executor for g in gates):
         raise ValueError("Both matching engineering gates required; old H13 gates are insufficient")
+
+
+def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, clock, budget_root=None):
+    """One render-only RGB-D/actual-box snapshot, bound to unchanged local q."""
+    folder = Path(folder); folder.mkdir()
+    before = state_now()
+    images, depths, receipts = onboard.read(model, render=render)
+    geometry = geometry_now()
+    after = state_now()
+    if np.max(abs(before.q-after.q)) > 1e-5 or np.max(abs(before.gripper-after.gripper)) > 1e-5:
+        raise RuntimeError("Physics changed during render-only capture")
+    if robot_point_mask(np.empty((0, 3)), geometry) is None:
+        raise ValueError("Fresh actual robot self geometry required")
+    def save_bytes(file, content):
+        if budget_root is not None:
+            used = sum(p.stat().st_size for p in Path(budget_root).rglob("*") if p.is_file())
+            if used + len(content) > 30*1024**2:
+                raise RuntimeError("Raw evidence exceeds per-run artifact budget; no candidate execution")
+        file.write_bytes(content)
+    hashes = {}
+    for view in ("head", "left_wrist", "right_wrist"):
+        file = folder/(view+".png")
+        buffer = io.BytesIO()
+        Image.fromarray(images[view+"_rgb"].transpose(1, 2, 0)).save(buffer, format="PNG")
+        save_bytes(file, buffer.getvalue())
+        hashes[view] = sha(file)
+    buffer = io.BytesIO(); np.savez_compressed(buffer, **depths)
+    save_bytes(folder/"depth.npz", buffer.getvalue())
+    write_json(folder/"robot_self_geometry.json", geometry)
+    write_json(folder/"sensors.json", receipts)
+    write_json(folder/"proprio.json", runtime_proprio(after))
+    evidence = {"clock": clock, "q": after.q.tolist(), "gripper": after.gripper.tolist(),
+                "source": "render_only_current_onboard_RGBD_and_robot_joint_FK", "scene_truth": False,
+                "files_sha256": {name: sha(folder/name) for name in
+                    ["depth.npz", "robot_self_geometry.json", "sensors.json", "proprio.json",
+                     "head.png", "left_wrist.png", "right_wrist.png"]},
+                "depth_array_sha256": {view: hashlib.sha256(np.ascontiguousarray(raw).tobytes()).hexdigest()
+                                       for view, raw in depths.items()}}
+    write_json(folder/"capture.json", evidence)
+    return after, hashes, depths, geometry, evidence
+
+
+def native_preflight(model, state, grips, action, depths, geometry):
+    guard = LocalDepthGuard(observed_cloud(depths, model, state.q), model, state.q, depths,
+                            self_geometry=geometry)
+    allowed, reason = guard.check(action, carry=True)
+    servo = SafeServo(model, state, gripper_command=grips,
+                      limits=ServoLimits(robot_geometry_guards=True))
+    if not allowed or not servo.begin(action, state, carry=True) or servo.total_ticks > 40:
+        raise RuntimeError("Native preflight rejected: "+reason+" / "+servo.status)
+    return servo, {"robot_geometry_guards": True, "depth_guard": guard.receipt(),
+                   "depth_check": reason, "servo_status": servo.status,
+                   "q": state.q.tolist(), "gripper": state.gripper.tolist()}
 
 
 def main():
@@ -85,11 +143,7 @@ def main():
         raise ValueError("Clean immutable source required")
     release = json.loads(x.authorization.read_text())
     require_release(release, code, implementation_digest())
-    ref = json.loads((x.prepared/"teacher_reference.json").read_text())
-    if release["prepared_reference_sha256"].get(str(ref["pilot"]["task"])) != sha(x.prepared/"teacher_reference.json"):
-        raise ValueError("Unregistered prepared source")
-    if ref["pilot"]["task"] not in (0, 1, 3):
-        raise ValueError("Exactly the registered TRAIN pilots")
+    ref, expected_prefix, source_binding = verify_prepared_source(x.prepared, release)
     x.output.mkdir(parents=True, exist_ok=False)
     import shutil
     if shutil.disk_usage(x.output).free < 80*1024**3:
@@ -99,14 +153,16 @@ def main():
     sys.path.insert(0, str(ADAPTER))
     from native_oracle_low_v1.official_factory import load_official_oracle_window, OfficialEvaluatorSession
     window = load_official_oracle_window(x.prepared/"window.json")
-    if (window.official_mode != "train" or window.seed != 0 or
-            window.instance_id != ref["pilot"]["instance"]):
-        raise ValueError("Prepared reset mismatch")
     prefix = np.asarray(window.frozen_window().prefix_actions)
-    if prefix.shape != (ref["prefix_controls"], 23):
-        raise ValueError("Exact counted prefix required")
+    verify_loaded_window(window, prefix, expected_prefix, source_binding)
+    # Recheck the pinned files after factory loading; no mutable input reread
+    # is allowed to replace the already verified in-memory prefix.
+    _, _, rechecked = verify_prepared_source(x.prepared, release)
+    if rechecked != source_binding:
+        raise ValueError("Prepared identity changed while loading")
     write_json(x.output/"manifest.json", {"schema": SCHEMA, "code": code, "authorization": release,
-              "source": ref["source"], "prefix_controls": len(prefix), "native_controls_max": 200,
+              "source": ref["source"], "prepared_binding": source_binding, "robot_geometry_guards": True,
+              "prefix_controls": len(prefix), "native_controls_max": 200,
               "models": 0, "training_eligible": False, "no_restore_or_automatic_recovery": True})
     controls = 0; prefix_count = 0; terminal = False; first_error = None; started = None
     kin = None; grips = None; trace = None; history = []; completed = []
@@ -153,22 +209,14 @@ def main():
                     step(native_action(fixed, grips), "settle"); recent.append(state())
                 if not rest_screen(recent): raise RuntimeError("No near-rest after fixed 12 controls; no extra settling")
             def capture(folder):
-                folder.mkdir(); before = state()
-                images, depths, receipts = onboard.read(model, render=og.sim.render)
-                after = state()
-                if np.max(abs(before.q-after.q)) > 1e-5 or np.max(abs(before.gripper-after.gripper)) > 1e-5:
-                    raise RuntimeError("Physics changed during render-only capture")
-                hashes = {}
-                for v in ("head", "left_wrist", "right_wrist"):
-                    file = folder/(v+".png"); Image.fromarray(images[v+"_rgb"].transpose(1, 2, 0)).save(file); hashes[v] = sha(file)
-                write_json(folder/"sensors.json", receipts); write_json(folder/"proprio.json", runtime_proprio(after))
-                return after, hashes, depths
+                return capture_snapshot(folder, model, state, onboard, kin.native_self_boxes, og.sim.render,
+                                        {"prefix_control": prefix_count, "native_control": controls}, x.output)
             settle()
             for index in range(3):
                 if sum(v.stat().st_size for v in x.output.rglob("*") if v.is_file()) > 30*1024**2 or shutil.disk_usage(x.output).free < 80*1024**3:
                     raise RuntimeError("Pilot disk budget")
                 folder = x.output/f"sample_{index:02d}"; folder.mkdir()
-                before, hashes, depths = capture(folder/"before")
+                before, hashes, depths, geometry, capture_receipt = capture(folder/"before")
                 actor = actor_input(session.observation()["task"], ref["active_instruction"], runtime_proprio(before), hashes, history[-5:])
                 request = {"schema": SCHEMA, "actor": actor, "native_control": controls,
                            "source_group": {k: ref["pilot"][k] for k in ("task", "episode", "instance")},
@@ -176,6 +224,7 @@ def main():
                            "execution_constraints": "Unknown load treated conservatively: carry=True; no base/rotation in this first pilot",
                            "source_reference": str(x.prepared/"teacher_reference.json"),
                            "source_reference_sha256": sha(x.prepared/"teacher_reference.json"),
+                           "before_capture_sha256": sha(folder/"before/capture.json"),
                            "proposal_aid": ref["proposals"], "must_revalidate_intent_after_pause": True}
                 write_json(folder/"request.json", request)
                 write_json(folder/"WAITING_FOR_MANUAL_APPROVAL.json", {"request_sha256": digest(request), "deadline_seconds": 120,
@@ -193,11 +242,12 @@ def main():
                 action = token_to_action(token); carry = True  # Never infer unloaded from a gripper command/aperture.
                 if action.part == "base":
                     raise ValueError("First manipulation pilot excludes BASE pending H14 deployment-safe body guard")
-                guard = LocalDepthGuard(observed_cloud(depths, model, now.q), model, now.q, depths)
-                allowed, reason = guard.check(action, carry)
-                servo = SafeServo(model, now, gripper_command=grips)
-                if not allowed or not servo.begin(action, now, carry=carry) or servo.total_ticks > 40:
-                    raise RuntimeError("Native preflight rejected: "+reason)
+                servo, preflight = native_preflight(model, now, grips, action, depths, geometry)
+                preflight["before_capture_sha256"] = request["before_capture_sha256"]
+                preflight["no_physics_since_capture"] = controls == capture_receipt["clock"]["native_control"]
+                if not preflight["no_physics_since_capture"]:
+                    raise RuntimeError("Approval crossed a physics step")
+                write_json(folder/"preflight.json", preflight)
                 start_control = controls
                 native_actions = []
                 while not servo.done and servo.ticks < servo.total_ticks:
@@ -206,11 +256,11 @@ def main():
                 feedback = servo.finish(state())
                 write_json(folder/"native_execution.json", {"control_start": start_control, "control_end": controls,
                            "actions": native_actions})
-                post_state, post_hashes, _ = capture(folder/"after")
+                _, post_hashes, _, _, _ = capture(folder/"after")
                 stable_hashes = None
                 if feedback["status"] == "TARGET_REACHED":
                     settle()
-                    _, stable_hashes, _ = capture(folder/"after_settle")
+                    _, stable_hashes, _, _, _ = capture(folder/"after_settle")
                 record = {"request": request, "approval": approval,
                           "execution": {"token": token, "action": asdict(action), "status": feedback["status"],
                                         "native_controls": controls-start_control, "interrupted": feedback["status"] != "TARGET_REACHED",

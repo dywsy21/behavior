@@ -4,6 +4,28 @@
 
 ## 本块交付与实际结果
 
+### 04:13 后独立审查修正（CPU，尚未采集）
+
+父审发现初版未实际开启 H15 安全开关，且仅绑定 reference、未绑定窗口和前缀全部字节；**初版 7f4ccb3 不得用于采集**。本次 ≤900s CPU/0 GPU、模型、控制、reset、训练修复块从干净独立分支显式 fetch 并 merge `b6f0845`，再同步父固定手 API 修复 `5cfbb89`；不改父工作树或活跃源。
+
+修订后 `SafeServo` 强制 `ServoLimits(robot_geometry_guards=True)`，`LocalDepthGuard` 使用与该次 RGB-D 同一不变 q/指口区间捕获的真实机器人盒。审批等待不推进 physics，执行前再核 q/指口和控制时钟；试算回执记录开关、深度门与绑定观察。两工程门必须 `gate_ok is True`、`robot_geometry_guards is True` 且完整 executor digest 相同；旧 H13 门或 H15 初始化失败门不能放行。
+
+授权固定 `preparation.json` SHA `415d5e96eb85290c9433c61052712d32e2644f3d4d60460930b35635ad876873`，进而校验窗口、完整 prefix.npy、teacher reference 原字节和实例/技能首帧；前缀路径必须指向该准备目录。官方 factory 装载后再核任务名、train/instance/seed、全部前缀数值和文件身份，均在创建 evaluator/reset 之前。原 `prepare_v1` 不修改、不重建；本地媒体副本不能冒充远端绝对前缀路径。
+
+每个 before/after/after_settle 保存三 RGB、原始三视图 `depth.npz`、`robot_self_geometry.json`、传感器回执和 `capture.json`。后者绑定全部文件 SHA、depth 数组 SHA、完整机器人 q/指口及 prefix/native 控制计数，不进入 actor。图像/深度按实际编码字节在落盘前检查每 run 30MiB，沿用总100MiB与清理余量，不扩大预算。前审 request 绑定 before capture；记录仍全部 quarantine，人工后审和 H09R 240条覆盖门不变。
+
+新增负例：旧/false-flag 工程门、错误 digest、窗口/参考/前缀字节漂移、同形状错前缀、错任务、畸形当前几何及捕获中 q 漂移；正例验证真实安全/保载传播、深度回读/hash。33 项 SFT CPU 测试通过；首版29项为历史。父已看3任务×3视角×0/8/16帧共27源帧，仅确认原专家参考可审，不是对尚未发生的停顿态批准。
+
+使用 `configs/vlm_sft/h09s_authorization.template.json` 填真实最终 collector commit、**新通过**工程门绝对路径和 reviewer，再由负责人显式授权；模板默认 false，不能直接启动。父 API 修复执行器 `5cfbb89` 预期 digest 为 `239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b`。最终 review、新同源双门和 GPU1 交接前不运行。拟议命令如下（没有执行；task_0、task_1、task_3 分别显式运行，逐个完成审核，无自动批量循环）：
+
+```bash
+env PYTHONPATH=src /mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python scripts/vlm_sft/native_teacher_collect.py --prepared /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1/task_0 --output /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/pilot_v1/task_0 --authorization /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/authorization_v1.json --gpu 1
+env PYTHONPATH=src /mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python scripts/vlm_sft/native_teacher_collect.py --prepared /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1/task_1 --output /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/pilot_v1/task_1 --authorization /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/authorization_v1.json --gpu 1
+env PYTHONPATH=src /mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python scripts/vlm_sft/native_teacher_collect.py --prepared /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1/task_3 --output /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/pilot_v1/task_3 --authorization /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/authorization_v1.json --gpu 1
+```
+
+以下保留首块准备记录，不将本次代码修复写成新训练效果。
+
 实现的是 **人工当前状态教师的可执行采集流程**，不是把混合专家动作重新解释成纯动作：`native_teacher_prepare.py` 做严格 TRAIN 来源与前缀转换；`native_teacher_contract.py` 编译只供审阅的方向候选、绑定人工审批与隔离记录；`native_teacher_collect.py` 可在停顿后导出三 RGB，零 physics 等待审批，执行已有 `token_to_action`/`SafeServo`，导出实际 23D 轨迹、立即及再停顿后的图像，默认全部 quarantine。没有新的 VLM、自举标签或自动正确性证书。
 
 初版 `973ba76` 已由 Git 同步；远端 CPU 直接执行该提交的 Git blobs，复用 `semantic_joint_90a7c20` 中未变的 common/live/prepare 依赖，未创建或热改运行源码。真实准备 **3.353s，799,441 字节**，含三个前缀、9 段三视图原专家 17 帧视频和完整定位/来源回执；0 模型/控制/reset。目录：`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1`。后续修订增加稳定停顿后图像、近静止 EEF 门及保守未知负载约束，不改变已准备的数据。29 项 SFT CPU 测试通过（原21＋新8），新采集器尚未在 simulator 中运行，不能称端到端采集已通过。

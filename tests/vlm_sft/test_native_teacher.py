@@ -3,16 +3,22 @@ from dataclasses import asdict
 import json
 from pathlib import Path
 import sys
+import tempfile
 import types
 import unittest
+from unittest.mock import patch
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT/"src"), str(ROOT/"scripts/vlm_sft")]
 from native_teacher_contract import (select_sources, compile_candidates, actor_input, digest,
-                                     validate_approval, release_reviewed_record)
-from native_teacher_collect import rest_screen, require_release
-from common import TOKENS, token_to_action
+                                     validate_approval, release_reviewed_record, verify_prepared_source,
+                                     verify_loaded_window, SCHEMA)
+from native_teacher_collect import rest_screen, require_release, native_preflight, capture_snapshot
+from common import TOKENS, token_to_action, sha, write_json
+
+sys.path.insert(0, str(ROOT/"tests/semantic_robot"))
+from test_hand_body_collision import calibrated_fixture
 
 
 class NativeTeacherTests(unittest.TestCase):
@@ -94,6 +100,88 @@ class NativeTeacherTests(unittest.TestCase):
         self.assertFalse(rest_screen([state(),state(),state(),state(.02)]))
         self.assertFalse(rest_screen([state(),state(),state(),state(np.nan)]))
         with self.assertRaises(ValueError):require_release({},"code","executor")
+
+    def test_gate_flag_and_exact_executor_are_required(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = [Path(tmp)/f"gate_{task}.json" for task in (0,3)]
+            rows = [{"task": task, "gate_ok": True, "implementation_digest": "executor",
+                     "robot_geometry_guards": True} for task in (0,3)]
+            release = {"schema": SCHEMA, "authorize_collection": True, "collector_commit": "code",
+                       "executor_digest": "executor", "h14_body_and_finger_safety_reviewed": True,
+                       "reviewer": "fixture", "max_resets": 3, "max_candidates_per_instance": 3,
+                       "engineering_gate_paths": [str(p) for p in paths]}
+            for p,row in zip(paths,rows):write_json(p,row)
+            require_release(release,"code","executor")
+            for key,value in (("robot_geometry_guards",False),("robot_geometry_guards",None),
+                              ("implementation_digest","old"),("gate_ok",False)):
+                row=dict(rows[0]);row[key]=value;write_json(paths[0],row)
+                with self.subTest(key=key,value=value),self.assertRaises(ValueError):
+                    require_release(release,"code","executor")
+
+    def prepared_fixture(self, root):
+        prepared=root/"task_0";prepared.mkdir()
+        pilot={"task":0,"episode":66,"instance":70,"frame":2,"verb":"PRESS"}
+        ref={"schema":SCHEMA,"pilot":pilot,"prefix_controls":2}
+        np.save(prepared/"prefix.npy",np.zeros((2,23),np.float32),allow_pickle=False)
+        window={"official_mode":"train","seed":0,"instance_id":70,"task_name":"turning_on_radio",
+                "prefix_actions_path":str(prepared/"prefix.npy"),"prefix_actions_sha256":sha(prepared/"prefix.npy")}
+        write_json(prepared/"teacher_reference.json",ref);write_json(prepared/"window.json",window)
+        row={**pilot,"reference_sha256":sha(prepared/"teacher_reference.json"),
+             "window_sha256":sha(prepared/"window.json"),"prefix_sha256":sha(prepared/"prefix.npy")}
+        manifest={"schema":SCHEMA,"status":"PREPARED_NOT_COLLECTED_NOT_TRAINING_DATA",
+                  "sources":[row,{"task":1},{"task":3}]}
+        write_json(root/"preparation.json",manifest)
+        return prepared,{"preparation_manifest_sha256":sha(root/"preparation.json")}
+
+    def test_preparation_binds_all_bytes_and_factory_task_prefix(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            prepared,release=self.prepared_fixture(Path(tmp))
+            ref,prefix,binding=verify_prepared_source(prepared,release)
+            window=types.SimpleNamespace(task_name=binding["task_name"],official_mode="train",instance_id=70,seed=0)
+            verify_loaded_window(window,prefix,prefix.copy(),binding)
+            wrong=prefix.copy();wrong[0,5]=.01
+            with self.assertRaises(ValueError):verify_loaded_window(window,wrong,prefix,binding)
+            window.task_name="different_task"
+            with self.assertRaises(ValueError):verify_loaded_window(window,prefix,prefix,binding)
+            for name in ("window.json","prefix.npy","teacher_reference.json"):
+                path=prepared/name;original=path.read_bytes();path.write_bytes(original+b" ")
+                with self.subTest(file=name),self.assertRaises(ValueError):verify_prepared_source(prepared,release)
+                path.write_bytes(original)
+            release["preparation_manifest_sha256"]="0"*64
+            with self.assertRaises(ValueError):verify_prepared_source(prepared,release)
+
+    def test_native_preflight_enables_real_guards_and_rejects_bad_current_geometry(self):
+        model,state,geometry=calibrated_fixture()
+        with patch("native_teacher_collect.observed_cloud",return_value=np.tile([1.5,0,.2],(50,1))):
+            servo,receipt=native_preflight(model,state,[-1,1],token_to_action("RIGHT_UP"),{},geometry)
+            self.assertTrue(servo.limits.robot_geometry_guards)
+            self.assertIsNotNone(servo.collision.hand_body)
+            self.assertTrue(receipt["depth_guard"]["actual_robot_box_self_exclusion"])
+            self.assertTrue(servo.carry)
+            bad=copy.deepcopy(geometry);bad["boxes"][0]["T_base_link"][0][0]=.1
+            with self.assertRaises(ValueError):native_preflight(model,state,[-1,1],token_to_action("RIGHT_UP"),{},bad)
+
+    def test_capture_binds_raw_depth_actual_boxes_q_and_clock(self):
+        model,state,geometry=calibrated_fixture()
+        views=("head","left_wrist","right_wrist")
+        images={v+"_rgb":np.zeros((3,4,4),np.uint8) for v in views}
+        depths={v:np.ones((4,4),np.float32) for v in views}
+        onboard=types.SimpleNamespace(read=lambda *a,**kw:(images,depths,{v:{"fixture":True} for v in views}))
+        with tempfile.TemporaryDirectory() as tmp:
+            folder=Path(tmp)/"before"
+            _,_,_,_,receipt=capture_snapshot(folder,model,lambda:state,onboard,lambda:geometry,lambda:None,
+                                             {"prefix_control":2,"native_control":12},Path(tmp))
+            self.assertEqual(receipt["q"],state.q.tolist())
+            self.assertEqual(receipt["clock"]["native_control"],12)
+            for file,expected in receipt["files_sha256"].items():self.assertEqual(sha(folder/file),expected)
+            with np.load(folder/"depth.npz") as saved:
+                for view in views:np.testing.assert_array_equal(saved[view],depths[view])
+            bad=copy.deepcopy(geometry);bad["boxes"][0]["T_base_link"][0][0]=.1
+            with self.assertRaises(ValueError):capture_snapshot(Path(tmp)/"bad",model,lambda:state,onboard,
+                        lambda:bad,lambda:None,{},Path(tmp))
+            changed=model.state(state.q+.01,state.gripper,np.zeros(3)); sequence=iter([state,changed])
+            with self.assertRaises(RuntimeError):capture_snapshot(Path(tmp)/"stale",model,lambda:next(sequence),
+                        onboard,lambda:geometry,lambda:None,{},Path(tmp))
 
 
 if __name__ == "__main__": unittest.main()
