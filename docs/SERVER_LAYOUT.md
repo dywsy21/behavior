@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 00:44当前：** H10服务89280已核身份停止/退出（13调用保留）；H11新服务111660/GPU1/8920加载中，`agentic_vlm_goal_20260918/server_h11`、源`git_worktrees/semantic_structured_2000d78`/digestade09283，schema0308a127和decoder817f944。模型依赖只加独立`semantic_structured_20260919/deps_817f944` overlay，原不兼容`deps`保留，未动共享环境；GPU3无新物理。原H10所有失败与r3门均保留，本地门完整副本288主RGB-D hash通过；2静态及H11物理待。
+
 **2026-09-19 00:28当前：** 108260因首规划JSON解析失败退出，`radio_h10_fullstart`仅初始图/失败记录，无已执行动作或完整视频；不要重复启动旧run。89280服务仍GPU1/8919、13/368调用，GPU3已释放；H11仅本地CPU实现/依赖检查，尚无新模型服务或物理。r3双门完整副本正传至本地`gates_r3_bundle/`，传完前不算核验。
 
 **2026-09-19 00:24当前：** r3门105324/105398均已通过退出；唯一策略`agentic_vlm_goal_20260918/radio_h10_fullstart` PID108260/GPU3正在初始化，源`git_worktrees/semantic_prompt_1d93b29`，0前缀、96/3072/2400s。模型89280/GPU1/8919保持465bc85、同revision，从12/368调用起，不能热改或重复启动。r3 result SHA8c6641a9…/b2b4bc7e…；matched完整副本已在本地`matched_failed_bundle/`完成hash/全视频解码/人工六观察核验，下条“未核完”仅历史。盘余约87GiB，保留≥80GiB。

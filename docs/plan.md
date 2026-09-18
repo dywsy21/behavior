@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 00:44（北京时间）H11固定新服务加载（Codex）：** 2000d78静态工具经Astra增量复审无阻塞，源码已Git至独立`semantic_structured_2000d78`，digestade09283…。核专属89280身份/13调用后TERM并确认退出，旧ledger归档中；新`server_h11`111660/GPU1/8920/最多217调用已唯一提交、加载中，模型revision不变、schema0308a127…/decoder817f944，不把启动当通过。2静态/双工程门/1原起点策略均未开始，队友GPU0保持46631MiB不动；不热改任一服务源。
+
 **2026-09-19 00:42（北京时间）H11 CPU块完成/后继有限预算（Codex）：** e2caf1b本地299/5.163s、robo299/12.992s、Astra独立299＋21及实际两层异常测试全过；真实CPU `h11_grammar_e2caf1b.json`20.840s，6初图prefix2163token、10合法序列/中途EOS拒绝/跨schema/解释首token拒绝过，0模型/控制。817f944上游overlay修复真实import，不改共享环境。2000d78仅增2静态规划工具（同runtime），其只读复审待；`h11_structured_planning_block.json`登记后继**2静态≤300s＋2原阈值工程reset＋1新0前缀回合**，分别GPU1新8920/最多217调用、GPU3每门24/1536/1200s和策略96/3072/2400s，原任务实例/seed保持。旧89280核身份后停止，不覆盖13调用和H10失败；尚未启动新模型/物理，盘余87GiB/根1.5GiB，合守4GiB/80GiB。上条00:39记录实际代码提交完成约00:37，时间更正但证据内容不变。
 
 **2026-09-19 00:39（北京时间）H11结构化规划实现/CPU中（Codex）：** 新opt-in`--structured-planning`只约束task-plan/recovery两白名单schema，保留原有限动作trie/严格解析/全部硬预算；reset前核schema+decoder commit，补完整任务提示但**不宣称格式等于语义完整**。原始/截断响应现在解析前留回执，初始规划独立phase，外层不覆盖首错误。既有298测试已过，新增16/17及布尔边界复验中；失败初图本人已核，r3全包已传完。发现PyPI LMFE0.11.3与现transformers5.7 import不兼容，只在新独立overlay装上游固定817f944（保留失败依赖包、不改共享环境）；真实VLM tokenizer/六图prefix/EOS/跨schema CPU门待。Astra设计审查确认边界，稳定实现复审随后；0新模型/控制/训练，89280空闲13。
