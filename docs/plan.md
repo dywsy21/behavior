@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 04:20（北京时间）固定手API修正完成/新复验待审（Codex）：** `5cfbb89`仅识别固定r1pro无end_effector字段（has_end_effector_variants=false），变体仍须明确gripper、未知拒绝；新增与真实字段形状一致回归，本地331/5.195s通过，robo新不可变源测试中。原≤300s代码块结束；Astra在完成采集器时独立审此最小增量。新两修复复验在`h15_r1_fixed_hand_api_block.json`另登记（0/3、各24/1536/1200s/0模型前缀、GPU3），**尚未reset**；原唯一零前缀策略预算仍未使用，不增加策略回合。失败两门＋日志正传本地`h15_failed_gate_bundle`；旧模型104账本在`h13_server_archive`下载中、尚未停止。H09S未新采/训。
+
 **2026-09-19 04:17（北京时间）H15两门初始化后失败/明确API根因（Codex）：** 149129/149131均已退出，reset_completed=true、ROBOT_CALIBRATION阶段`Robot.end_effector`不存在，0控制/模型/决策，原两reset已经使用，不能报门通过或复用计数。安装robot.py214–229只在has_end_effector_variants时设置end_effector；r1pro是固定手型。父登记≤300s CPU最小识别修复＋与实际对象字段形状一致负例，不更改几何阈值；Astra仍在独立collector补丁，随后增量终审。新源两修复复验需另登记；唯一原起点策略/新服务仍未启动，旧132309仍空闲。失败目录及旧b6源保留不覆盖。
 
 **2026-09-19 04:15（北京时间）H15双工程门已提交初始化（Codex）：** 唯一`gate_radio_h15`149129、`gate_plates_h15`149131/GPU3，固定`semantic_geometry_b6f0845`/digest`b71737e4…`、实际robot_geometry_guards=true，同已登记各24/1536/1200s/0前缀/模型；还未声称reset或门通过。启动前root4831846809B、盘余89865490432B、GPU3空81152MiB，旧132309/GPU1仍104空闲，GPU0队友不动。下一核本次首图/标定和真实动作，新模型/原起点尚未提交；Astra同时独立修H09S采集器，不热改本次源。

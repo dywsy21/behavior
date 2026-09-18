@@ -1,0 +1,20 @@
+{
+  "experiment_id": "H15-r1-fixed-hand-api",
+  "owner": "Codex-parent",
+  "registered_at": "2026-09-19T04:20:00+08:00",
+  "status": "cpu_passed_awaiting_independent_delta_review_no_new_reset",
+  "hypothesis": "Recognizing installed fixed-hand Robot API permits the already-reviewed geometry guards to initialize; all geometry and thresholds remain unchanged.",
+  "source_commit": "5cfbb894ae5d2331847261be9889f509d1fa6d79",
+  "implementation_digest": "239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b",
+  "source_path": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_geometry_5cfbb89",
+  "prior_failed_resets": {"runs": ["gate_radio_h15","gate_plates_h15"], "count":2,"controls":0,"source_commit":"b6f084542397280ec2c7f1cb6f8713ac4bfa001c", "retained":true},
+  "start_after": "Independent final delta review and remote CPU pass; original source and failed results preserved; GPU/disk checked",
+  "repair_engineering_gates": {"runs":["gate_radio_h15_r1","gate_plates_h15_r1"],"tasks":[0,3],"instances":[138,242],"split":"train","seed":0,"gpu":3,"resets":2,"max_decisions_each":24,"max_controls_each":1536,"max_seconds_each_after_reset":1200,"prefix_controls":0,"model_calls":0,"robot_geometry_guards":true},
+  "conditional_fullstart": "Only the still-unused single radio_h15_fullstart reset registered in h15_robot_geometry_block.json; use these NEW exact-digest passing gates, original 0 prefix/96 decisions/3072 controls/2400s/215 calls. Not an additional policy rollout.",
+  "conditional_model": "Original registered server_h15 GPU3/8923, same frozen27B revision1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0, max215; start after gates exit and memory check. Old server_h13 identity and 104-call ledger retained before stopping/freeing GPU1.",
+  "stop": "Initialization, sensor, servo, motion, safety or budget failure ends this block; no further retry or relaxation without a diagnosed correction and new registration.",
+  "training_updates":0,
+  "min_free_disk_GiB":80,
+  "max_cumulative_root_GiB":7,
+  "artifact_root":"/mnt/sdc1/robodojo/behavior_dev/agentic_vlm_goal_20260918"
+}
