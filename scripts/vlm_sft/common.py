@@ -14,7 +14,7 @@ import re
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-VERSION = "h09-semantic-motion-v3"
+VERSION = "h09-semantic-motion-v4-no-torso"
 CAMERAS = {"head": "zed_link_camera_0", "left_wrist": "left_realsense_link_camera_0",
            "right_wrist": "right_realsense_link_camera_0"}
 POSITIONS = {"left": slice(17, 20), "right": slice(42, 45)}
@@ -25,12 +25,15 @@ GRIP_ACTION = {"left": 14, "right": 22}
 MOVE_NAMES = ("FORWARD", "LEFT", "UP")
 NEG_NAMES = ("BACK", "RIGHT", "DOWN")
 ROT_NAMES = ("ROLL", "PITCH", "YAW")
-TOKENS = tuple([f"{p}_{d}" for p in ("LEFT", "RIGHT", "BOTH")
+PROJECTED_TOKENS = tuple([f"{p}_{d}" for p in ("LEFT", "RIGHT", "BOTH")
                 for d in (*MOVE_NAMES, *NEG_NAMES)] +
                [f"{p}_{r}_{s}" for p in ("LEFT", "RIGHT") for r in ROT_NAMES for s in ("PLUS", "MINUS")] +
                [f"{p}_{g}" for p in ("LEFT", "RIGHT") for g in ("OPEN", "CLOSE")] +
                [f"BASE_{d}" for d in ("FORWARD", "BACK", "LEFT", "RIGHT", "YAW_PLUS", "YAW_MINUS")] +
                [f"TORSO_{d}" for d in ("FORWARD", "BACK", "UP", "DOWN")] + ["HOLD"])
+# The current servo compensates the arms while moving its torso link, whereas
+# expert quiet-arm-joint torso segments move both EEFs. Never conflate them.
+TOKENS = tuple(t for t in PROJECTED_TOKENS if not t.startswith("TORSO_"))
 
 SYSTEM = """Control a mobile two-arm robot using its current onboard RGB views and robot-relative proprioception. Images are not mirrored. The robot base frame is FORWARD +x, LEFT +y, UP +z. LEFT and RIGHT name the robot arms, not the image side. Choose one small semantic motion from the supplied vocabulary. Use the current task and active instruction; previous motions are context, not a command to repeat. OPEN and CLOSE are gripper commands, not claims of success. HOLD safely keeps the current pose. Output the single motion symbol only, without reasoning, punctuation or extra text."""
 

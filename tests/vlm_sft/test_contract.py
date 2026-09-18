@@ -9,6 +9,7 @@ from scipy.spatial.transform import Rotation
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/"scripts/vlm_sft"),str(ROOT/"src")]
 from common import TOKENS, actor_state, classify_window, clean_object, prompt, token_to_action
+from filter_contract import mapped_history
 
 
 def quiet():
@@ -104,6 +105,13 @@ class ContractTests(unittest.TestCase):
         for token in TOKENS:
             value=token_to_action(token)
             self.assertEqual(type(value).parse(value.text()),value)
+
+    def test_executor_contract_filter_and_causal_history(self):
+        self.assertFalse(any(t.startswith("TORSO_") for t in TOKENS))
+        with self.assertRaises(ValueError):token_to_action("TORSO_UP")
+        self.assertEqual(mapped_history(["BASE_FORWARD","TORSO_UP","RIGHT_UP"]),["RIGHT_UP"])
+        self.assertEqual(mapped_history(["TORSO_UP","RIGHT_UP","TORSO_DOWN"]),[])
+        self.assertEqual(mapped_history(["RIGHT_UP"]),["RIGHT_UP"])
 
 
 if __name__ == "__main__":unittest.main()

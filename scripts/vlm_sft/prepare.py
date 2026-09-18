@@ -14,7 +14,7 @@ import time
 import numpy as np
 import pyarrow.parquet as pq
 
-from common import CAMERAS, VERSION, actor_state, classify_window, prompt, sha, skill_text, write_json
+from common import CAMERAS, VERSION, TOKENS, actor_state, classify_window, prompt, sha, skill_text, write_json
 
 ROOT = Path("/mnt/sdc1/robodojo/datasets/behavior2026_g05_tasks_0_4")
 LABELS = Path("/mnt/sdc1/robodojo/datasets/memlite_skill_annotations_task0_4_v6_clean_r2_20260909/meta/memlite_skill_annotations_v6.parquet")
@@ -129,6 +129,8 @@ def main():
                 previous = []
                 continue
             token, evidence = classify_window(states[f:f+h+1], actions[f:f+h], actions[f-1] if f else None)
+            if token is not None and token not in TOKENS:
+                token,evidence=None,dict(evidence,reject="executor_contract_mismatch")
             if token is None:
                 rejects[evidence["reject"]] += 1
                 rejects_by_task[e["task_index"]][evidence["reject"]]+=1
