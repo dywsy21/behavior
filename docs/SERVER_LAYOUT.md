@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 00:54当前：** H11两门112456/112535通过退出（SHA9f21f7be…/c2312319…），唯一`agentic_vlm_goal_20260918/radio_h11_fullstart`115556/GPU3初始化；2000d78/ade09283源固定，0前缀、96/3072/2400s。服务111660/GPU1/8920同源、起始2/217，不能热改/重复提交；新结果待，H10所有失败保留。
+
 **2026-09-19 00:49当前：** H11服务111660/GPU1/8920就绪、2/217调用；`static_plans_h11`已完成且保留两输出。GPU3双工程门`gate_radio_h11`112456、`gate_plates_h11`112535正在初始化，源均`semantic_structured_2000d78`不可热改，未启动策略。旧H10服务ledger已本地`h10_server_archive/`，完整原起点包`fullstart_failed_bundle/`，六初图hash与call13一致；r3双门完整视频解码与288主观测hash过。
 
 **2026-09-19 00:44当前：** H10服务89280已核身份停止/退出（13调用保留）；H11新服务111660/GPU1/8920加载中，`agentic_vlm_goal_20260918/server_h11`、源`git_worktrees/semantic_structured_2000d78`/digestade09283，schema0308a127和decoder817f944。模型依赖只加独立`semantic_structured_20260919/deps_817f944` overlay，原不兼容`deps`保留，未动共享环境；GPU3无新物理。原H10所有失败与r3门均保留，本地门完整副本288主RGB-D hash通过；2静态及H11物理待。
