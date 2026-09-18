@@ -64,7 +64,7 @@ def main():
         "base_path":args.model,"paired_order":"alternate base-first/adapter-first by sample","selection_from_test":False}
     write_json(args.output/"manifest.json",manifest)
     model,processor=load_model(args.model,adapter=args.adapter)
-    predictions={"base":[],"finetuned":[],"proprio_persistence":[]}
+    predictions={"base":[],"finetuned":[],"proprio_persistence":[],"last_action_persistence":[]}
     ledger=(args.output/"predictions.jsonl").open("x",buffering=1)
     start=time.monotonic()
     for i,row in enumerate(rows):
@@ -81,8 +81,12 @@ def main():
         if outputs["base"]["input_ids_sha256"]!=outputs["finetuned"]["input_ids_sha256"]:
             raise RuntimeError("Paired model inputs differ")
         predictions["proprio_persistence"].append({"prediction":persistence_rule(row),"target":row["target"],"latency_s":0.,"task_id":row["task_id"]})
+        predictions["last_action_persistence"].append({"prediction":row["history"][-1] if row["history"] else "HOLD",
+            "target":row["target"],"latency_s":0.,"task_id":row["task_id"]})
         if (i+1)%20==0:print(json.dumps({"completed":i+1,"n":len(rows),"elapsed_s":time.monotonic()-start}),flush=True)
     result={"status":"complete","metrics":{arm:summarize(values) for arm,values in predictions.items()},
+            "by_family":{arm:{family:summarize([r for r in values if r["target"].startswith("BASE_")==is_base])
+                for family,is_base in (("base_motion",True),("arm_and_gripper",False))} for arm,values in predictions.items()},
             "by_task":{arm:{str(task):summarize([r for r in values if r["task_id"]==task]) for task in (0,1,3)} for arm,values in predictions.items()},
             "paired":{key:sum(fn(b,f) for b,f in zip(predictions["base"],predictions["finetuned"])) for key,fn in {
                 "both_correct":lambda b,f:b["prediction"]==b["target"] and f["prediction"]==f["target"],
