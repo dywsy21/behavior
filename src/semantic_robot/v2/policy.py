@@ -8,7 +8,7 @@ from urllib.request import Request, urlopen
 
 from semantic_robot.prompts import TASK_ADVICE
 from .harness import parse_plan
-from .protocol import Action, Evidence
+from .protocol import Action, Evidence, strict_json
 from .grounding import GroundedEvidence
 from .grounded_harness import parse_recovery
 
@@ -81,8 +81,20 @@ class VLMPolicy:
         return action, {"result": result, "request": payload}
 
 
-GROUNDED_OBSERVE_SYSTEM = OBSERVE_SYSTEM + """
-This run also has a robot-calibrated CLOSING CENTER cross: the centre between the fingers, not a target detection. OFFSCREEN is a label, not a clamped hand position. For pick choose a graspable visible contact area, for press a visible button, for navigate a visible destination, not the whole image centroid. Prefer the active wrist when the target and grasping region are both identifiable. Add exactly one extra field to the observation JSON: \"other_views\": []. When the SAME physical surface/affordance is clearly identifiable in another CURRENT camera, include up to two {\"view\":\"head\",\"target_uv\":[0.5,0.5]} entries with distinct views. Do not guess cross-view correspondence; empty is valid. All UVs refer to CURRENT RAW images, not earlier frames. Keep note short."""
+def grounded_observation_system():
+    # Keep the legacy v2 prompt unchanged, but REPLACE its example for grounded
+    # runs. Appending a contradictory extra-field instruction was insufficient:
+    # both H-07 pilots copied the earlier, incomplete JSON example.
+    before, rest = OBSERVE_SYSTEM.split("Return only JSON with exactly these fields:\n", 1)
+    example, descriptions = rest.split("\n", 1)
+    fields = strict_json(example)
+    fields["other_views"] = []
+    GroundedEvidence.parse(json.dumps(fields))  # fail if example/schema drift
+    return before + "Return only JSON with exactly these fields:\n" + json.dumps(fields, separators=(",", ":")) + "\n" + descriptions + """
+This run also has a robot-calibrated CLOSING CENTER cross: the centre between the fingers, not a target detection. OFFSCREEN is a label, not a clamped hand position. For pick choose a graspable visible contact area, for press a visible button, for navigate a visible destination, not the whole image centroid. Prefer the active wrist when the target and grasping region are both identifiable. other_views: include [] when no extra CURRENT view corroborates the target; omission means no extra evidence, never inferred correspondence. When the SAME physical surface/affordance is clearly identifiable in another CURRENT camera, include up to two {\"view\":\"head\",\"target_uv\":[0.5,0.5]} entries with distinct views. Do not guess cross-view correspondence. All UVs refer to CURRENT RAW images, not earlier frames. Keep note short."""
+
+
+GROUNDED_OBSERVE_SYSTEM = grounded_observation_system()
 
 RECOVER_SYSTEM = """Replan only the current failed search/approach strategy. Do NOT edit the original goals, mark anything done, or invent held objects/hidden locations. Use current visible images, measured heading coverage, depth and failed action receipts. Return exactly {\"strategy\":\"scan_left\",\"visible_reason\":\"short visible evidence explaining the choice\"}. Strategies: scan_left, scan_right, move_forward, move_left, move_right, retry_approach, hold. scan directions are measured base yaw sweeps, not image-left hand moves. move strategies allow at most five 6cm pulses, EACH rechecked against fresh onboard depth; they may be refused if unseen/blocked. If a complete heading sweep has already covered this viewpoint, choose a visibly safe viewpoint change, or hold when none is supported. retry_approach requires a visible target and a different feasible path. hold ends safely. At most two strategy replans per episode. Unobserved space is UNKNOWN, not free."""
 
@@ -91,7 +103,11 @@ class GroundedPolicy(VLMPolicy):
     def observe(self,harness,state,bundle):
         text=observation_context(harness,state,bundle)
         result,payload=self._call("observe",GROUNDED_OBSERVE_SYSTEM,text,bundle)
-        return GroundedEvidence.parse(result["text"]),{"result":result,"request":payload}
+        evidence = GroundedEvidence.parse(result["text"])
+        validation = {"defaulted_fields": [] if "other_views" in strict_json(result["text"]) else ["other_views"],
+                      "missing_other_views_means": "NO_CORROBORATING_EVIDENCE",
+                      "raw_model_text_unchanged": True, "retries": 0}
+        return evidence,{"result":result,"request":payload,"validation":validation}
 
     def act_feasible(self,harness,state,bundle,allowed):
         if not allowed:

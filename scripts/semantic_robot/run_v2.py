@@ -223,7 +223,9 @@ def main():
             def save_call(directory, name, call):
                 payload = dict(call["request"])
                 payload["images"] = [{"label":row["label"]} for row in payload["images"]]
-                write(directory/(name+".json"),{"result":call["result"],"request_without_pixel_duplicates":payload})
+                receipt={"result":call["result"],"request_without_pixel_duplicates":payload}
+                if "validation" in call: receipt["validation"]=call["validation"]
+                write(directory/(name+".json"),receipt)
 
             if policy:
                 goals, call = policy.plan(args.task,environment.observation()["task"],first)

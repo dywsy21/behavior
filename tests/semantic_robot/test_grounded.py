@@ -15,6 +15,7 @@ from semantic_robot.v2.kinematics import RobotModel
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.protocol import Action, HOLD
+from semantic_robot.v2.policy import GROUNDED_OBSERVE_SYSTEM
 from semantic_robot.v2.search import CoverageSearch
 from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.vision import project, prepare_views
@@ -38,6 +39,34 @@ def setup_controller():
 
 
 class DepthTests(unittest.TestCase):
+    def test_grounded_prompt_example_is_complete_and_parser_valid(self):
+        example=GROUNDED_OBSERVE_SYSTEM.split("Return only JSON with exactly these fields:\n",1)[1].split("\n",1)[0]
+        fields=json.loads(example)
+        self.assertEqual(set(fields),set(GroundedEvidence.__dataclass_fields__))
+        self.assertEqual(fields["other_views"],[])
+        self.assertFalse(GroundedEvidence.parse(example).visible)
+
+    def test_missing_corroboration_is_abstention_not_invented_evidence(self):
+        # Actual H-07 response shape: one pilot missed the field when invisible,
+        # the other missed it despite a visible head-view target.
+        for visible in (True,False):
+            fields=asdict(evidence(visible=visible,view="head" if visible else "none",
+                                  target_uv=(.67,.78) if visible else None))
+            parsed=GroundedEvidence.parse(json.dumps(fields))
+            self.assertEqual(parsed.other_views,())
+            self.assertEqual(parsed.visible,visible)
+            self.assertEqual(parsed.target_uv,fields["target_uv"])
+
+    def test_missing_optional_view_does_not_relax_core_or_unknown_keys(self):
+        valid=asdict(evidence(view="head"))
+        for key in valid:
+            fields=dict(valid); fields.pop(key)
+            with self.subTest(missing=key),self.assertRaises(ValueError):
+                GroundedEvidence.parse(json.dumps(fields))
+        for fields in ({**valid,"object_pose":[0,0,0]}, {**valid,"other_views":None},
+                       {**valid,"other_views":{}}, {**valid,"other_views":[{"view":"none","target_uv":None}]}):
+            with self.assertRaises(ValueError):GroundedEvidence.parse(json.dumps(fields))
+
     def test_render_barrier_discards_pre_reset_sensor_buffers_without_controls(self):
         model,state=fixture()
         adapter=OnboardRGBD.__new__(OnboardRGBD)

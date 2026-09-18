@@ -30,6 +30,7 @@ class PipelineTests(unittest.TestCase):
         self.requests, self.cap, self.forbidden = [], False, False
         self.grounded=False
         self.action_override=None
+        self.observation_override=None
         class Handler(BaseHTTPRequestHandler):
             def log_message(self,*args):
                 pass
@@ -52,7 +53,7 @@ class PipelineTests(unittest.TestCase):
                 elif value["kind"]=="observe":
                     observation=asdict(evidence(view="head"))
                     if owner.grounded:observation["other_views"]=[]
-                    text=json.dumps(observation)
+                    text=owner.observation_override if owner.observation_override is not None else json.dumps(observation)
                 else:
                     candidates=[Action.parse(x) for x in value["allowed"]]
                     text=(owner.action_override if owner.action_override else Action("right","close") if owner.forbidden else
@@ -132,6 +133,40 @@ class PipelineTests(unittest.TestCase):
         self.assertIn(self.action_override,manager.palette())
         with self.assertRaises(ValueError):policy.act_feasible(manager,self.state,self.bundle,allowed)
         self.assertEqual(manager.executions,0)
+
+    def test_actual_invisible_response_reaches_search_without_retry_or_extra_evidence(self):
+        # Verbatim server_27b_v2 call 3, H-07 plates_27b_v1, 2026-09-18.
+        self.observation_override='{"visible":false,"view":"none","target_uv":null,"enclosed":null,"co_moving":null,"supported":null,"effect":false,"hazard":"none","note":"Target not identified in current views."}'
+        policy=GroundedPolicy(self.uri,"test-pinned-revision",max_calls=1)
+        manager=GroundedHarness([Goal("navigate","breakfast table","both","visibly near table")])
+        servo=SafeServo(self.model,self.state)
+        controller=GroundedController(self.model,servo,manager)
+        obs,call=policy.observe(manager,self.state,self.bundle)
+        self.assertEqual(call["result"]["text"],self.observation_override)
+        self.assertEqual(call["validation"]["defaulted_fields"],["other_views"])
+        self.assertEqual(call["validation"]["retries"],0)
+        self.assertEqual(len(self.requests),1)
+        self.assertEqual(policy.calls,1)
+        depths={v:np.ones((100,100),dtype=np.float32) for v in ("head","left_wrist","right_wrist")}
+        controller.observe(obs,self.state,depths,{"head":{"valid_fraction":1.}})
+        action,selection=controller.search_action(self.state)
+        self.assertEqual(action,Action("base","yaw_plus","coarse"))
+        self.assertEqual(manager.stage,"SEARCH")
+        self.assertFalse(controller.target["valid"])
+        self.assertEqual(manager.executions,0)  # preflight only, not a new rollout
+
+    def test_actual_visible_response_raw_preserved_and_no_defaults_when_supplied(self):
+        self.observation_override='{"visible":true,"view":"head","target_uv":[0.67,0.78],"enclosed":false,"co_moving":null,"supported":true,"effect":false,"hazard":"none","note":"Red and white radio is visible on the table. Right gripper is open and not in contact with the radio."}'
+        policy=GroundedPolicy(self.uri,"test-pinned-revision",max_calls=2)
+        manager=GroundedHarness([Goal("pick","radio","right","held")])
+        obs,call=policy.observe(manager,self.state,self.bundle)
+        self.assertEqual(call["result"]["text"],self.observation_override)
+        self.assertEqual(obs.other_views,())
+        self.assertEqual(obs.target_uv,(.67,.78))
+        fields=json.loads(self.observation_override);fields["other_views"]=[]
+        self.observation_override=json.dumps(fields)
+        _,call=policy.observe(manager,self.state,self.bundle)
+        self.assertEqual(call["validation"]["defaulted_fields"],[])
 
 
 if __name__=="__main__":

@@ -1,0 +1,111 @@
+{
+  "experiment": "H-07",
+  "owner": "Codex",
+  "updated_at": "2026-09-18T12:08:00+08:00",
+  "status": "engineering_gates_passed_policy_pilots_aborted_contract_fix_cpu_only",
+  "branch": "feat/semantic-agent-grounded-20260918",
+  "evaluated_commit": "9993fab4fc9e4e6ffd5d76a4e5a8fa01f9a21eb7",
+  "evaluated_implementation_digest": "88a8c268acdb472fb6ff48e2688b6c0dac50d27596385352c1131c307108582f",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "server_root": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_grounded_20260918",
+  "local_artifacts": "/home/wsy/behavior/artifacts/semantic-agent-grounded-20260918",
+  "budget_used": {
+    "scene_resets": 8,
+    "neural_generations": 12,
+    "training_updates": 0,
+    "new_model_downloads": 0,
+    "simulators_and_model_services_stopped": true,
+    "further_physical_budget": "awaiting_user_reply"
+  },
+  "fresh_frame_gate": {
+    "run": "gate_plates_v3",
+    "manual_before_after_hold_review": "both_show_current_stove_and_fridge",
+    "head_pixel_mae_0_to_255": 2.4217258230452674,
+    "max_joint_change_rad": 0.0000048643050831742585,
+    "renders_per_snapshot": 4,
+    "control_steps_in_capture": 0,
+    "generalized_all_resets_claim": false
+  },
+  "gates": [
+    {
+      "run": "gate_radio_v3",
+      "task": 0,
+      "instance": 138,
+      "seed": 0,
+      "commands": 24,
+      "target_reached": 24,
+      "pre_motion_rejected": 0,
+      "new_controls": 385,
+      "expert_prefix_controls": 448,
+      "wall_seconds_after_prefix": 79.7316056122072,
+      "max_fk_position_error_m": 0.000003250008197449737,
+      "saved_rgb_depth_hashes_matched": 144,
+      "result_sha256": "08a5313206a1ee915a14715d99d0cdfe44427379f94fafc21c236c13c1431bf7",
+      "video_sha256": "d87fad6dd9dcbfab5ad572d583d12e2bc755a69bad0b3ed04c797b241d056e9a"
+    },
+    {
+      "run": "gate_plates_v3",
+      "task": 3,
+      "instance": 242,
+      "seed": 0,
+      "commands": 24,
+      "target_reached": 22,
+      "pre_motion_rejected": 2,
+      "new_controls": 396,
+      "expert_prefix_controls": 0,
+      "wall_seconds_after_prefix": 93.43645596317947,
+      "max_fk_position_error_m": 0.0000022500956304232538,
+      "saved_rgb_depth_hashes_matched": 144,
+      "result_sha256": "b7e136e7de4029fa200c34ff498ab2e0c0eedf7b20e58f64518fc5a0f2d5f09c",
+      "video_sha256": "e6d2bcc8fb377b4c97a8d0926e43d35c26ebfb2b593bf4587af210d136978490"
+    }
+  ],
+  "policy_pilots": [
+    {
+      "run": "radio_27b_v1",
+      "new_controls": 18,
+      "expert_prefix_controls": 448,
+      "executed_actions": ["HOLD"],
+      "model_calls": 4,
+      "outcome": "ABORTED_OBSERVATION_CONTRACT",
+      "failure_call_in_shared_service": 6,
+      "missing_field": "other_views"
+    },
+    {
+      "run": "plates_27b_v1",
+      "new_controls": 0,
+      "expert_prefix_controls": 0,
+      "executed_actions": [],
+      "model_calls": 2,
+      "outcome": "ABORTED_OBSERVATION_CONTRACT",
+      "failure_call_in_shared_service": 3,
+      "missing_field": "other_views"
+    }
+  ],
+  "post_pilot_fix": {
+    "local_cpu_tests_passed": 96,
+    "physical_validation": "NOT_RUN",
+    "omitted_other_views_default": "empty_no_corroborating_evidence",
+    "core_evidence_fields_strict": true,
+    "model_text_rewritten": false,
+    "hidden_model_retries": 0,
+    "saved_state_replay": {
+      "new_neural_generations": 0,
+      "new_controls": 0,
+      "plates": "SEARCH_8_DEGREE_YAW_PREFLIGHTED_NOT_EXECUTED",
+      "radio": "DEPTH_EDGE_AMBIGUOUS_ONLY_HOLD"
+    }
+  },
+  "corrected_hypothesis": {
+    "grasp_center_to_old_eef_m": 0.000276,
+    "large_eef_offset_explains_old_failures": false
+  },
+  "full_task_success_rate": null,
+  "method_effectiveness_claim": false,
+  "independent_review": "PENDING",
+  "archives_sha256": {
+    "gates_and_static_v2.tar": "f4b74f2f18380ed5812e65483029fce388451321efa1277f69537459178744da",
+    "gates_v3.tar": "a057e72dc94dd4e937336005f5c48c2fa05617974daa7d647e7e168a70bbdea5",
+    "pilots_v1.tar": "8817a4c2a42aabd64974ac6050409123b013168eb49200848dc89dc4985ea64c"
+  }
+}

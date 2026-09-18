@@ -18,6 +18,12 @@ class GroundedEvidence(Evidence):
     @classmethod
     def parse(cls, text):
         value = strict_json(text)
+        # No corroborating view supplied means NO extra evidence. This is the
+        # dataclass's abstaining default, not a guessed pixel / repaired fact.
+        # All core evidence fields, unknown keys and malformed supplied views
+        # remain strict. The policy records this default without changing raw text.
+        if isinstance(value, dict) and set(value) == set(Evidence.__dataclass_fields__):
+            value["other_views"] = []
         if not isinstance(value, dict) or set(value) != set(cls.__dataclass_fields__):
             raise ValueError("Exact grounded observation fields required")
         extra = value.pop("other_views")

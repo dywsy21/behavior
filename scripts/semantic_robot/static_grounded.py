@@ -32,8 +32,9 @@ def main():
     out=Path(args.output);out.mkdir(parents=True,exist_ok=False)
     policy=GroundedPolicy(args.uri,args.revision,max_calls=6)
     rows=[]
-    # Fixed before reading new model outputs. Two radio poses and one invisible
-    # table search state; correlated development sanity, not recognition SR.
+    # Fixed before reading new model outputs: two radio poses and task3's initial
+    # frame. Actual visibility/freshness must be audited, not assumed invisible.
+    # These correlated development states do not estimate recognition SR.
     for index,(root,step) in enumerate(((args.radio_gate,0),(args.radio_gate,18),(args.plates_gate,0))):
         root=Path(root);source=root/f"decision_{step:03d}"
         model=RobotModel(json.loads((root/"robot_calibration.json").read_text()))
