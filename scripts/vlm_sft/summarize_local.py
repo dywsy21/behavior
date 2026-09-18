@@ -8,6 +8,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from common import sha,write_json
+from stratify_static import low_velocity
 
 
 RUNS=("radio_base_v1","radio_ft_v1","plates_ft_v1","plates_base_v1")
@@ -25,10 +26,15 @@ def summarize(folder):
         for arm,obj in (r.get("assisted_objects") or {}).items():
             if obj is not None:objects[(arm,obj)]+=1
     decisions=result["decisions"]
+    actor_proprio=[json.loads((folder/f"decision_{r['decision']:03d}"/"proprio.json").read_text()) for r in decisions]
+    requests=[json.loads((folder/f"decision_{r['decision']:03d}"/"request_without_images.json").read_text()) for r in decisions]
     return {"result_sha256":sha(folder/"result.json"),"manifest_sha256":sha(folder/"manifest.json"),"task":result["task"],
         "variant":result["variant"],"code_commit":manifest["code_commit"],"implementation_digest":result["implementation_digest"],
         "controls":result["controls"],"expert_prefix_controls":result["prefix_controls"],"decisions":len(decisions),
         "official_success":result["official_success"],"stop_reason":result["stop_reason"],"wall_s_after_prefix":result["wall_s_after_prefix"],
+        "actor_distribution_audit":{"decisions_with_low_base_velocity":sum(low_velocity({"proprio":p}) for p in actor_proprio),
+            "decisions_with_empty_action_history":sum(not p["history"] for p in requests),
+            "low_velocity_definition":"XY speed <0.02 m/s AND abs yaw speed <0.03 rad/s, identical to static audit"},
         "action_counts":dict(Counter(r["token"] for r in decisions)),"execution_status":dict(Counter(r["feedback"]["status"] for r in decisions)),
         "rejection_reasons":dict(Counter(r["feedback"].get("reason","") for r in decisions if r["feedback"]["status"]=="REJECTED_NO_MOTION")),
         "actual_world_base_endpoint_delta_m":endpoint.tolist(),"actual_world_base_endpoint_rotation_rad":angular.tolist(),
