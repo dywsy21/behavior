@@ -35,7 +35,11 @@ class CoverageSearch:
         delta=np.asarray(feedback.get("base_integral",[0.,0.,0.]),dtype=float)
         if delta.shape!=(3,) or not np.isfinite(delta).all():
             raise ValueError("Finite measured base integral required")
-        c,s=math.cos(self.heading+delta[2]/2),math.sin(self.heading+delta[2]/2)
+        convention=feedback.get("base_motion_convention","instantaneous_body_velocity_integral")
+        if convention not in ("instantaneous_body_velocity_integral","displacement_in_previous_body_frame"):
+            raise ValueError("Unknown local odometry translation frame")
+        heading=self.heading+(delta[2]/2 if convention=="instantaneous_body_velocity_integral" else 0.)
+        c,s=math.cos(heading),math.sin(heading)
         self.xy += np.array([[c,-s],[s,c]])@delta[:2]
         self.heading += float(delta[2])
         self.travel_m += float(np.linalg.norm(delta[:2]))

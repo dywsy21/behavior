@@ -1,6 +1,7 @@
 """Sensor-grounded finite task/search/recovery orchestration, not task scripts."""
 import math
 import time
+import copy
 from dataclasses import asdict
 
 import numpy as np
@@ -35,6 +36,7 @@ class GroundedHarness(TaskHarness):
         self.replans=0
         self.replan_history=[]
         self.candidate_receipt={}
+        self.motion_receipt={}
 
     def palette(self):
         palette=super().palette()
@@ -45,7 +47,8 @@ class GroundedHarness(TaskHarness):
     def context(self):
         context=super().context()
         context.update(target_surface_estimate=self.grounding, search=self.search_context,
-                       strategy_replans=self.replans, recent_replans=self.replan_history[-2:])
+                       strategy_replans=self.replans, recent_replans=self.replan_history[-2:],
+                       egocentric_motion=self.motion_receipt)
         return context
 
 
@@ -79,7 +82,7 @@ class GroundedController:
     max_preflights=10
     max_replans=2
 
-    def __init__(self, model, servo, harness):
+    def __init__(self, model, servo, harness, visual_odometry=False):
         self.model,self.servo,self.harness=model,servo,harness
         self.search=CoverageSearch()
         self.previous=None
@@ -90,6 +93,48 @@ class GroundedController:
         self.reposition_left=0
         self.replan_needed=None
         self.progress={}
+        self.motion=None
+        self.pending_motion=None
+        if visual_odometry:
+            from .odometry import RGBDMotion
+            self.motion=RGBDMotion()
+
+    def update_motion(self,images,depths,state):
+        if self.motion is None:raise ValueError("Visual motion was not enabled")
+        receipt=self.motion.observe(images,depths,self.model,state.q)
+        self.harness.motion_receipt=receipt
+        if not receipt["valid"]:
+            # Never turn an unreliable velocity integral into new coverage.
+            self.harness.stop_reason="VISUAL_ODOMETRY_UNCERTAIN"
+            return receipt
+        if receipt.get("initial"):
+            if self.pending_motion is not None:raise ValueError("Missing pre-action visual reference")
+            return receipt
+        if self.pending_motion is None:raise ValueError("No executed action matches this visual motion")
+        feedback=copy.deepcopy(self.pending_motion)
+        feedback["base_velocity_integral_raw"]=feedback["base_integral"]
+        feedback["base_integral"]=receipt["body_delta"]
+        feedback["base_motion_source"]="onboard_RGBD_not_joint_velocity_integration"
+        feedback["base_motion_convention"]="displacement_in_previous_body_frame"
+        action=self.harness.last_action
+        if action is not None and action.part=="base" and feedback["status"] in ("TARGET_REACHED","BASE_TRACKING_FAILED"):
+            # Re-evaluate ONLY the post-motion base residual that was previously
+            # judged from the unreliable velocity integral. Never clear a servo
+            # interruption, collision, joint-limit or other hard safety failure.
+            expected=np.zeros(3);amount=action.amount(feedback.get("carry",False))
+            if action.move in TRANSLATIONS:expected[:2]=np.asarray(TRANSLATIONS[action.move])[:2]*amount
+            elif action.move in ("yaw_plus","yaw_minus"):expected[2]=amount*(1 if action.move=="yaw_plus" else -1)
+            residual=np.asarray(receipt["body_delta"])-expected
+            feedback["base_tracking_status_from_velocity_raw"]=feedback["status"]
+            feedback["visual_base_residual"]=residual.tolist()
+            feedback["status"]=("TARGET_REACHED" if np.linalg.norm(residual[:2])<.012 and abs(residual[2])<np.deg2rad(2.)
+                                else "BASE_TRACKING_FAILED")
+        self.search.executed(feedback)
+        self.harness.feedback=feedback
+        if self.harness.history:self.harness.history[-1]={**self.harness.history[-1],"feedback":feedback}
+        self.harness.search_context=self.search.context()
+        self.pending_motion=None
+        return receipt
 
     def observe(self,evidence,state,depths,depth_receipt):
         manager=self.harness
@@ -290,7 +335,10 @@ class GroundedController:
                        "search":self.search.context(),"depth_guard":self.depth_guard.receipt()}
 
     def executed(self,action,feedback):
-        self.search.executed(feedback)
+        if self.motion is None:self.search.executed(feedback)
+        else:
+            if self.pending_motion is not None:raise ValueError("An executed motion has not been observed")
+            self.pending_motion=copy.deepcopy(feedback)
         if action==self.reposition and feedback["status"]=="TARGET_REACHED":
             self.reposition_left-=1
         self.harness.executed(action,feedback)

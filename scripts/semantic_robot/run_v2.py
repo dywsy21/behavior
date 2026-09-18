@@ -67,6 +67,7 @@ def main():
     p.add_argument("--mode", choices=("gate","agent"), default="gate")
     p.add_argument("--harness", choices=("v2","grounded"), default="v2")
     p.add_argument("--refine-grounding",action="store_true",help="Opt-in bounded crop/surface-choice perception")
+    p.add_argument("--visual-odometry",action="store_true",help="Use quality-gated onboard RGB-D motion for coverage")
     p.add_argument("--task", type=int, choices=(0,3), default=0)
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--gpu", type=int, default=3)
@@ -77,7 +78,9 @@ def main():
     p.add_argument("--max-controls", type=int, default=1536)
     p.add_argument("--max-seconds", type=int, default=1200)
     args = p.parse_args()
-    if not (0 <= args.prefix <= 448 and args.max_decisions in range(1,49) and 1 <= args.max_controls <= 1536 and 1 <= args.max_seconds <= 1200):
+    # H-08's user-authorized iterative block permits a full *measured* sweep
+    # plus local manipulation. Per-run smaller declared limits remain binding.
+    if not (0 <= args.prefix <= 448 and args.max_decisions in range(1,97) and 1 <= args.max_controls <= 3072 and 1 <= args.max_seconds <= 2400):
         raise ValueError("Registered pilot budget exceeded")
     if args.task == 3 and args.prefix:
         raise ValueError("Task3 has no registered expert prefix")
@@ -85,7 +88,7 @@ def main():
         raise RuntimeError("Immutable clean source required")
     digest = implementation_digest()
     grounded=args.harness=="grounded"
-    if args.refine_grounding and not grounded:
+    if (args.refine_grounding or args.visual_odometry) and not grounded:
         raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.mode == "agent":
         if not args.expected_revision or len(args.gate_result) != 2:
@@ -93,7 +96,8 @@ def main():
         gates = [json.loads(Path(path).read_text()) for path in args.gate_result]
         if {g["task"] for g in gates} != {0,3} or not all(g["gate_ok"] and g["implementation_digest"] == digest and
                 g.get("harness","v2")==args.harness and
-                g.get("refine_grounding",False)==args.refine_grounding for g in gates):
+                g.get("refine_grounding",False)==args.refine_grounding and
+                g.get("visual_odometry",False)==args.visual_odometry for g in gates):
             raise ValueError("Control/FK gates have not passed for this exact implementation")
     out = Path(args.output); out.mkdir(parents=True,exist_ok=False)
     if grounded and shutil.disk_usage(out).free<80*1024**3:
@@ -125,6 +129,7 @@ def main():
                 "actor_modalities":["rgb","depth_linear","proprio"] if grounded else ["rgb","proprio"],
                 "harness":args.harness,"max_strategy_replans":2 if grounded else 0,
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
+                "visual_odometry":args.visual_odometry,
                 "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
     controls, prefix_count, terminal = 0,0,False
@@ -237,7 +242,7 @@ def main():
                 goals, call = policy.plan(args.task,environment.observation()["task"],first)
                 save_call(out,"planner",call)
                 manager = GroundedHarness(goals) if grounded else TaskHarness(goals)
-                if grounded: controller=GroundedController(model,servo,manager)
+                if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -255,6 +260,10 @@ def main():
                 video.append_data(np.asarray(canvas))
 
             gate = bounded_gate(grounded)
+            gate_motion=None
+            if args.visual_odometry and not policy:
+                from semantic_robot.v2.odometry import RGBDMotion
+                gate_motion=RGBDMotion()
             phase="BOUNDED_CONTROL_OR_AGENT_LOOP"
             for decision in range(args.max_decisions):
                 recoverable_stop=bool(controller and manager.stop_reason=="RECOVERY_BUDGET_EXHAUSTED" and manager.replans<2)
@@ -274,7 +283,17 @@ def main():
                     np.savez_compressed(directory/"depth.npz",**depths)
                     write(directory/"depth_receipt.json",depth_receipt)
                 row = {"decision":decision,"control_start":controls}
+                if gate_motion is not None:
+                    receipt=gate_motion.observe(images,depths,model,state.q)
+                    write(directory/"visual_odometry.json",receipt)
+                    if not receipt["valid"]:
+                        row["error"]="VISUAL_ODOMETRY_GATE_FAILED";failures.append(row);decisions.append(row);break
                 if policy:
+                    if args.visual_odometry:
+                        receipt=controller.update_motion(images,depths,state)
+                        write(directory/"visual_odometry.json",receipt)
+                        if manager.stop_reason:
+                            row["stop_reason"]=manager.stop_reason;decisions.append(row);break
                     observation, call = policy.observe(manager,state,bundle)
                     save_call(directory,"observation",call)
                     if args.refine_grounding:
@@ -359,6 +378,7 @@ def main():
                       "official_success":bool(done.get("success",False)),"final_goal_status":done.get("goal_status",{}),
                       "stop_reason":stop_reason,"harness":args.harness,"sensor_check_count":len(sensor_checks),
                       "refine_grounding":args.refine_grounding,"surface_choices":getattr(policy,"refinements",0),
+                      "visual_odometry":args.visual_odometry,
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
                       "full_task_success_rate_claim":False}
