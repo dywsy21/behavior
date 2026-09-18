@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 18:55当前：** B14两门25757/25758已完整通过/退出，`radio_b14_matched`29038＋`server_b14_matched`28821/8909在GPU3，均固定`semantic_informative_probe_274479f`；源不可热改。B13标准完整本地`b13_standard_verified_bundle/`已6bcce747…SHA/168hash/全视频解码，旧回合/服务均结束。B15只有本地候选/保存帧CPU，无服务器新源或进程。
+
 **2026-09-18 18:48当前：** B13两模拟器/两模型均确认退出。新固定`git_worktrees/semantic_informative_probe_274479f`（274479f/4fc431d0）正在被GPU3两个工程门`gate_radio_b14`25757、`gate_plates_b14`25758使用，源禁止热改；模型/匹配策略尚未运行。同H08根/同级日志。B13标准完整归档6bcce747…下载中，不能删除旧证据/旧B7前缀。
 
 **2026-09-18 18:45当前：** 两B13策略19689/19690已结束，匹配服务18898已退出；标准服务18895已请求TERM、待最终退出核验。`b13_matched_complete.tar.gz` SHA588a57ae…已本地`artifacts/semantic-agent-effect-20260918/b13_matched_verified_bundle/`完整校验，含视频/24hash/人工4帧与track_review；`b13_standard_complete.tar.gz`正在归档，标准453新控制/官方false。旧af6283f源与旧B7前缀数据保留，不覆盖任何run。B14新源/两门/诊断尚未创建，后续GPU3有限预算见plan/config，不根据下方历史重启B13。

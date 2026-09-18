@@ -16,6 +16,20 @@ def boxes():
 
 
 class GraspMotionTests(unittest.TestCase):
+    def test_contact_tracking_uses_localization_near_range_not_hidden_four_cm_cutoff(self):
+        from semantic_robot.v2.grounding import MIN_CONTACT_DEPTH_M
+        camera={"width":100,"height":100,"K":[[100,0,50],[0,100,50],[0,0,1]]}
+        old=np.random.default_rng(81).integers(0,256,(100,100,3),dtype=np.uint8)
+        new=np.roll(old,1,axis=1)
+        for z,expected in ((.020,False),(.032,True),(.060,True)):
+            depth=np.full((100,100),z,dtype=np.float32)
+            r,a,b=point_tracks(old,new,depth,depth,camera,np.eye(4),np.eye(4),[0,0,-z])
+            self.assertEqual(r["depth_range_m"][0],MIN_CONTACT_DEPTH_M)
+            self.assertEqual(r["valid"],expected)
+            if expected:self.assertGreaterEqual(r["rgbd_tracks"],8)
+            else:self.assertEqual(r["depth_valid_pixels"],0)
+            self.assertNotIn("verified",r)  # Correspondences alone are not a grasp.
+
     def test_robot_only_exclusion_and_missing_finger_metadata(self):
         b=boxes();np.testing.assert_array_equal(robot_point_mask([[0,0,0],[2,2,2]],b),[True,False])
         self.assertEqual(len(robot_point_mask([],b)),0)

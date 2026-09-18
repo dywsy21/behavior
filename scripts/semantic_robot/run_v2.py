@@ -135,6 +135,7 @@ def main():
     policy_class=RefinedGroundedPolicy if args.refine_grounding else GroundedPolicy if grounded else VLMPolicy
     policy = policy_class(args.uri,args.expected_revision,max_calls=1+2*args.max_decisions+
         (2 if grounded else 0)+(16 if args.refine_grounding else 0)) if args.mode=="agent" else None
+    if policy and args.grasp_motion:policy.trackable_grasp_anchor=True
     manifest = {"code_commit":subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip(),
                 "implementation_digest":digest, "args":vars(args), "instance":window.instance_id,
                 "task":args.task,"task_name":window.task_name,"split":"train","seed":0,

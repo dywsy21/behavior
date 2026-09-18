@@ -1,0 +1,19 @@
+{
+  "experiment_id": "H-08-B15-static",
+  "owner": "Codex-solo",
+  "hypothesis": "A verification-specific semantic tracking anchor can provide measurable same-object surface correspondences where a near contact centroid cannot; keep all correspondence and motion acceptance gates.",
+  "code_commit": "PENDING_FIXED_SOURCE",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "gpu": 1,
+  "states": ["radio_b13/decision_024", "radio_b13/decision_025", "radio_b13_matched/decision_000", "radio_b13_matched/decision_001"],
+  "model_calls": 4,
+  "wall_seconds": 600,
+  "controls": 0,
+  "resets": 0,
+  "training_updates": 0,
+  "same_original_nine_images": true,
+  "counterfactual_saved_motion_only": true,
+  "minimum_free_disk_GiB": 80,
+  "physical_policy_authorized_by_this_spec": false,
+  "required_review": "Same-object anchors by human raw-image inspection, sufficient valid nonrobot tracks on informative pairs, no false verification on insufficient motion. Static evidence is not a new grasp or task success."
+}

@@ -45,6 +45,11 @@ class GroundedEvidence(Evidence):
         return cls(**asdict(base), other_views=tuple(checked))
 
 
+# Contact localization and near-field grasp tracking share this sensor domain.
+# The navigation obstacle cloud keeps its separately scoped range.
+MIN_CONTACT_DEPTH_M = .025
+
+
 def validate_depth(value, camera):
     depth = np.asarray(value)
     if depth.shape == (camera["height"], camera["width"], 1):
@@ -113,7 +118,7 @@ def localize_target(evidence, depth_images, model, q):
         camera = cameras[view]; depth = validate_depth(depth_images[view], camera)
         x,y = np.rint(uv*(np.array([camera["width"],camera["height"]])-1)).astype(int)
         patch = depth[max(0,y-2):y+3,max(0,x-2):x+3]
-        valid = patch[np.isfinite(patch) & (patch > .025) & (patch < 4.)]
+        valid = patch[np.isfinite(patch) & (patch > MIN_CONTACT_DEPTH_M) & (patch < 4.)]
         if valid.size < max(5, .6*patch.size):
             row["reason"] = "DEPTH_HOLE_OR_RANGE"; continue
         z = float(np.median(valid)); spread = float(np.quantile(valid,.9)-np.quantile(valid,.1))

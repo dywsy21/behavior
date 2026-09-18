@@ -167,10 +167,28 @@ Nonempty fingers, enclosure and commanded motion alone cannot prove a grasp."""
 RECOVER_SYSTEM = """Replan only the current failed search/approach strategy. Do NOT edit the original goals, mark anything done, or invent held objects/hidden locations. Use current visible images, measured heading coverage, depth and failed action receipts. Return exactly {\"strategy\":\"scan_left\",\"visible_reason\":\"short visible evidence explaining the choice\"}. Keep visible_reason to one short sentence, preferably under 240 characters; it is audit text, not an action. Strategies: scan_left, scan_right, move_forward, move_left, move_right, retry_approach, hold. scan directions are measured base yaw sweeps, not image-left hand moves. move strategies allow at most five 6cm pulses, EACH rechecked against fresh onboard depth; they may be refused if unseen/blocked. If a complete heading sweep has already covered this viewpoint, choose a visibly safe viewpoint change, or hold when none is supported. retry_approach requires a visible target and a different feasible path. hold ends safely. At most two strategy replans per episode. Unobserved space is UNKNOWN, not free."""
 
 
+def grasp_tracking_instruction(harness):
+    if harness.goal.kind!="pick" or harness.stage!="VERIFY_GRASP":return ""
+    return """ This observation is for registered GRASP VERIFICATION, not a new reach.
+For this stage only, target_uv is a TRACKING ANCHOR on the named target, not
+the grasp contact or the image center. In the active wrist RAW image select
+a clearly identifiable rigid feature (e.g. a textured marking, corner or
+visible junction) on that SAME target with surrounding visible surface.
+Do not click a robot finger, featureless area, occlusion boundary or background.
+Prefer a stable visible feature over the nearest surface or broad centroid;
+do not invent a point if you cannot identify one. For two hands, supply each
+hand's own visible feature of the SAME object through hand_contacts. Other
+views still aid identity; all coordinates refer to the chosen CURRENT RAW.
+Keep the original visible/enclosed/co_moving semantics: a feature choice is
+NOT holding evidence. Report unknown instead of inferring co-motion from a
+command or assuming that a closed gripper succeeded. No changed camera set."""
+
+
 class GroundedPolicy(VLMPolicy):
     # B10 paired-only observation regressed on genuine grasps. Kept for
     # reproducible static experiments, not enabled in the production pilot.
     paired_grasp_verification=False
+    trackable_grasp_anchor=False
 
     def observe(self,harness,state,bundle):
         bundle,instruction=verification_inputs(harness,bundle) if self.paired_grasp_verification else (bundle,"")
@@ -182,6 +200,7 @@ class GroundedPolicy(VLMPolicy):
         bimanual=harness.goal.kind=="pick" and harness.goal.hand=="both"
         system=BIMANUAL_OBSERVE_SYSTEM if bimanual else GROUNDED_OBSERVE_SYSTEM
         if not bimanual and not getattr(harness,"contact_geometry",True):system=GROUNDED_OBSERVE_CORE
+        if self.trackable_grasp_anchor:instruction+=grasp_tracking_instruction(harness)
         result,payload=self._call("observe",system+instruction,text,bundle)
         evidence = (BimanualEvidence if bimanual else GroundedEvidence).parse(result["text"])
         if evidence.other_views:

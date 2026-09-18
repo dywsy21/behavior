@@ -5,7 +5,7 @@ authorize an observational grasp, with current robot self-geometry mandatory.
 """
 import hashlib
 import numpy as np
-from .grounding import unproject,validate_depth
+from .grounding import unproject,validate_depth,MIN_CONTACT_DEPTH_M
 
 
 def robot_point_mask(points,geometry):
@@ -38,16 +38,20 @@ def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_cam
         return {**result,"reason":"IDENTICAL_FULL_IMAGE_NO_FRESH_MOTION_EVIDENCE"},None,None
     d0,d1=validate_depth(before_depth,camera),validate_depth(after_depth,camera)
     h,w=d0.shape;K=np.asarray(camera["K"]);yy,xx=np.mgrid[:h,:w]
-    valid=np.isfinite(d0)&(d0>.04)&(d0<3.)
+    valid=np.isfinite(d0)&(d0>MIN_CONTACT_DEPTH_M)&(d0<3.)
     uv=np.c_[xx[valid],yy[valid]];xyz=unproject(uv,d0[valid],K,before_camera)
     # A seed is a VLM-localized target surface, not an object segmentation mask.
     # Keep a small 3D neighborhood; later measurements remain corroboration.
     near=np.linalg.norm(xyz-np.asarray(seed),axis=1)<.035
     own=robot_point_mask(xyz,before_self)
+    result.update(depth_range_m=[MIN_CONTACT_DEPTH_M,3.],depth_valid_pixels=int(valid.sum()),
+                  local_seed_pixels_before_self_exclusion=int(near.sum()),
+                  robot_seed_pixels_excluded=int((near&own).sum()) if own is not None else None)
     if own is not None:near&=~own
     mask=np.zeros((h,w),np.uint8);mask[yy[valid][near],xx[valid][near]]=255
     gray0=cv2.cvtColor(old,cv2.COLOR_RGB2GRAY);gray1=cv2.cvtColor(new,cv2.COLOR_RGB2GRAY)
     points=cv2.goodFeaturesToTrack(gray0,maxCorners=160,qualityLevel=.015,minDistance=7,mask=mask,blockSize=5)
+    result.update(eligible_feature_pixels=int(near.sum()),seed_feature_count=0 if points is None else len(points))
     if points is None or len(points)<8:return result,None,None
     params=dict(winSize=(17,17),maxLevel=3,criteria=(cv2.TERM_CRITERIA_EPS|cv2.TERM_CRITERIA_COUNT,30,.01))
     after,ok,err=cv2.calcOpticalFlowPyrLK(gray0,gray1,points,None,**params)
@@ -65,7 +69,7 @@ def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_cam
             patch=depth[y-1:y+2,x-1:x+2]
             if not np.isfinite(patch).all() or np.ptp(patch)>.01:break
             z=float(np.median(patch))
-            if not .04<z<3.:break
+            if not MIN_CONTACT_DEPTH_M<z<3.:break
             zs.append(z)
         if len(zs)!=2:continue
         xyz0.append(unproject([u],[zs[0]],K,before_camera)[0]);xyz1.append(unproject([v],[zs[1]],K,after_camera)[0]);kept.append((u,v))
