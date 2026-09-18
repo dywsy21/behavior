@@ -95,6 +95,8 @@ def main():
             tokens=int(inputs["input_ids"].shape[1]);chars=len(payload["system"])+len(payload["text"])
             old=original.get("request_without_pixel_duplicates",{})
             same=(payload["system"]==old.get("system") and payload["text"]==old.get("text")) if (Path(path)/f"decision_{int(index):03d}"/"action.json").exists() and not stress else None
+            if a.legacy_scores and same is False:
+                raise ValueError("Legacy reconstruction differs from the actual saved successful request")
             rows.append({"case":case,"synthetic_eight_history_pressure_only":stress,"choices":len(payload["allowed"]),
                 "input_tokens":tokens,"characters":chars,"same_original_images":True,
                 "matches_saved_successful_prompt":same,"within_budget":tokens<=12000 and chars<=32000})
