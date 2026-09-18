@@ -26,6 +26,14 @@ def load_images(root,row):
     return {v:Image.open(Path(root)/row["images"][v]).convert("RGB") for v in CAMERAS}
 
 
+def eos_id(processor):
+    tokenizer=processor.tokenizer
+    eos=tokenizer.convert_tokens_to_ids("<|im_end|>")
+    if eos is None or eos==tokenizer.unk_token_id or tokenizer.convert_ids_to_tokens(eos)!="<|im_end|>" or eos!=tokenizer.eos_token_id:
+        raise RuntimeError("Expected verified native im_end EOS, not unknown token")
+    return eos
+
+
 def encode(processor,row,images,*,supervised):
     import torch
     msg=messages(row,images)
@@ -37,7 +45,7 @@ def encode(processor,row,images,*,supervised):
     # assistant messages separately can silently introduce a different think block.
     target=row["target"]
     if target not in TOKENS:raise ValueError("Unknown target")
-    response=processor.tokenizer.encode(target,add_special_tokens=False)+[processor.tokenizer.convert_tokens_to_ids("<|im_end|>")]
+    response=processor.tokenizer.encode(target,add_special_tokens=False)+[eos_id(processor)]
     if not 2<=len(response)<=16 or any(x is None or x<0 for x in response):raise ValueError("Unexpected response encoding")
     result={k:v.clone() for k,v in prefix.items()}
     old=prefix["input_ids"].shape[1]
@@ -116,7 +124,7 @@ def decode(model,processor,encoded):
     inputs={k:v.to("cuda") for k,v in encoded.items() if k!="labels"}
     prefix=inputs["input_ids"].shape[1]
     trie={}
-    eos=processor.tokenizer.convert_tokens_to_ids("<|im_end|>")
+    eos=eos_id(processor)
     for token in TOKENS:
         node=trie
         for value in processor.tokenizer.encode(token,add_special_tokens=False):node=node.setdefault(value,{})
