@@ -80,6 +80,8 @@ def main():
     p.add_argument("--contact-geometry",action="store_true",help="Experimental finger guides/tool translations; not mixed into the feedback-only comparison")
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid"),default="pnp")
+    p.add_argument("--odometry-substep-controls",type=int,choices=(0,6),default=0,
+                   help="Opt-in fixed action-internal RGB-D sampling; zero preserves legacy behavior")
     p.add_argument("--approach-progress",action="store_true",help="Veto repeated near-field base advances without observed contact progress")
     p.add_argument("--held-object-inspection",action="store_true",help="Explicit semantic reference and bounded held-object relative inspection")
     p.add_argument("--persistent-grasp-tracks",action="store_true",help="Identity-bound persistent features and stable-depth corner selection; original grasp evidence thresholds")
@@ -118,6 +120,8 @@ def main():
     if args.multicamera_inspection and not args.inspection_budget_aware:raise ValueError("Multi-camera inspection requires budget-aware held inspection")
     if (args.approach_progress or args.odometry_estimator!="pnp") and not args.visual_odometry:
         raise ValueError("Measured approach progress and explicit estimator require visual odometry")
+    if args.odometry_substep_controls and not args.visual_odometry:
+        raise ValueError("Action-internal sampling requires visual odometry")
     if args.mode == "agent":
         if not args.expected_revision or len(args.gate_result) != 2:
             raise ValueError("Model identity and both task pose gates required")
@@ -129,6 +133,7 @@ def main():
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
+                g.get("odometry_substep_controls",0)==args.odometry_substep_controls and
                 g.get("approach_progress",False)==args.approach_progress and
                 g.get("persistent_grasp_tracks",False)==args.persistent_grasp_tracks and
                 g.get("spatial_grasp_features",False)==args.spatial_grasp_features and
@@ -173,6 +178,7 @@ def main():
                 "harness":args.harness,"max_strategy_replans":2 if grounded else 0,
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
                 "visual_odometry":args.visual_odometry,
+                "odometry_substep_controls":args.odometry_substep_controls,
                 "active_grasp_probe":args.active_grasp_probe,"privileged_audit_is_actor_input":False,
                 "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
@@ -340,6 +346,13 @@ def main():
             if args.visual_odometry and not policy:
                 from semantic_robot.v2.odometry import RGBDMotion
                 gate_motion=RGBDMotion(args.odometry_estimator)
+            substep_motion=None
+            if args.odometry_substep_controls:
+                from semantic_robot.v2.substep_odometry import SubstepMotion
+                substep_motion=SubstepMotion(controller.motion if controller else gate_motion,args.odometry_substep_controls)
+                if controller:controller.motion=substep_motion
+                else:gate_motion=substep_motion
+            saved_end_snapshot=None
             phase="BOUNDED_CONTROL_OR_AGENT_LOOP"
             for decision in range(args.max_decisions):
                 recoverable_stop=bool(controller and controller.can_replan_stop)
@@ -350,7 +363,14 @@ def main():
                     if manager: manager.stop_reason="DISK_RESERVE_REACHED"
                     break
                 state = state_now()
-                images,depths,depth_receipt=observation_now(f"decision_{decision}")
+                if saved_end_snapshot is not None:
+                    previous_control,end_q,end_gripper,images,depths,depth_receipt=saved_end_snapshot
+                    if (previous_control!=controls or not np.array_equal(end_q,state.q)
+                            or not np.array_equal(end_gripper,state.gripper)):
+                        raise RuntimeError("Control/state changed before end-frame reuse")
+                    saved_end_snapshot=None
+                else:
+                    images,depths,depth_receipt=observation_now(f"decision_{decision}")
                 bundle = prepare_views(images,model,state.q,previous,grounded=grounded,gripper=state.gripper,show_finger_regions=args.contact_geometry)
                 directory = out/f"decision_{decision:03d}"; directory.mkdir()
                 self_geometry=kin.native_self_boxes() if args.grasp_motion else None
@@ -482,22 +502,61 @@ def main():
                         break
                 row["accepted_before_motion"] = accepted
                 previous = bundle.current_raw
+                motion_fault=False
+                substep_result=None
+                def sample_substep():
+                    nonlocal saved_end_snapshot
+                    sample_images,sample_depths,sample_receipts=observation_now(f"motion_{decision}_{controls}")
+                    sample_state=state_now()
+                    location=directory/"motion_substeps"/f"control_{controls:06d}";location.mkdir(parents=True)
+                    Image.fromarray(sample_images["head_rgb"].transpose(1,2,0)).save(location/"CURRENT_HEAD_RAW.png")
+                    np.savez_compressed(location/"depth.npz",head=sample_depths["head"])
+                    write(location/"depth_receipt.json",{"head":sample_receipts["head"]})
+                    write(location/"proprio.json",{"q":sample_state.q.tolist(),"gripper":sample_state.gripper.tolist()})
+                    measured=substep_motion.sample(sample_images,sample_depths,model,sample_state.q,controls)
+                    write(location/"visual_odometry.json",measured)
+                    saved_end_snapshot=(controls,sample_state.q.copy(),sample_state.gripper.copy(),sample_images,sample_depths,sample_receipts)
+                    return measured["valid"]
                 if accepted:
+                    if substep_motion is not None:substep_motion.begin(controls)
                     while not servo.done and servo.ticks<servo.total_ticks and controls<args.max_controls:
                         command = servo.next_action(state_now())
                         ended = step(command,render=(controls%2==1 or servo.ticks==servo.total_ticks or servo.done))
                         controls += 1
                         trace.write(json.dumps({"control":controls,"decision":decision,"action23":command.tolist(),"terminal":ended})+"\n")
                         if controls%2==0: capture(action.text())
+                        if substep_motion is not None and controls-substep_motion.last>=args.odometry_substep_controls:
+                            if not sample_substep():
+                                motion_fault=True
+                                break
                         if ended or time.perf_counter()-started>=args.max_seconds: break
+                    if substep_motion is not None:
+                        if controls>substep_motion.last and not sample_substep():motion_fault=True
+                        substep_result=substep_motion.finish(controls,interrupted=bool(terminal or
+                            servo.ticks<servo.total_ticks or servo.status!="RUNNING"))
+                        motion_fault=motion_fault or not substep_result["valid"]
+                        write(directory/"action_motion.json",substep_result)
                 state = state_now()
                 feedback = servo.finish(state)
+                if motion_fault:
+                    feedback={**feedback,"visual_gate_failure":substep_result}
+                    if feedback["status"] in ("TARGET_REACHED","BASE_TRACKING_FAILED"):
+                        feedback["status"]="VISUAL_ODOMETRY_GATE_FAILED"
+                    if manager:
+                        manager.motion_receipt=substep_result
+                        manager.stop_reason=("OFFICIAL_EPISODE_TERMINATED" if terminal else
+                            feedback["status"] if feedback["status"] not in ("TARGET_REACHED","BASE_TRACKING_FAILED","VISUAL_ODOMETRY_GATE_FAILED","INTERRUPTED") else
+                            "ACTION_INTERRUPTED_DURING_MOTION_MEASUREMENT" if substep_result["reason"]=="ACTION_INTERRUPTED_NO_FULL_MOTION_CERTIFICATE" else
+                            "VISUAL_ODOMETRY_UNCERTAIN")
                 if gate_motion is not None and accepted and action.part=="base":
                     # Judge this action before deciding whether the gate may
                     # continue. The pre-action gate observation is still the
                     # odometer reference; never judge it from the next zero-step
                     # duplicate frame or the unreliable instantaneous qvel sum.
-                    post_images,post_depths,post_receipt=observation_now(f"post_base_gate_{decision}")
+                    if substep_motion is not None:
+                        _,_,_,post_images,post_depths,post_receipt=saved_end_snapshot
+                    else:
+                        post_images,post_depths,post_receipt=observation_now(f"post_base_gate_{decision}")
                     post_state=state_now()
                     post=directory/"post_base_motion";post.mkdir()
                     for view in ("head","left_wrist","right_wrist"):
@@ -525,7 +584,7 @@ def main():
                 check_fk(f"decision_{decision}")
                 write(out/"progress.json",{"controls":controls,"decisions":len(decisions),"last":row})
                 print(json.dumps(row),flush=True)
-                if not policy and accepted and feedback["status"] not in ("TARGET_REACHED",):
+                if not policy and accepted and (motion_fault or feedback["status"] not in ("TARGET_REACHED",)):
                     failures.append(row); break  # diagnose, do not push further after a failed gate
             # Explicit zero base velocity / preserve grippers on EVERY exit path.
             if not terminal and servo is not None and controls < args.max_controls:
@@ -554,6 +613,7 @@ def main():
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
+                      "odometry_substep_controls":args.odometry_substep_controls,
                       "held_object_inspection":args.held_object_inspection,
                       "persistent_grasp_tracks":args.persistent_grasp_tracks,
                       "spatial_grasp_features":args.spatial_grasp_features,

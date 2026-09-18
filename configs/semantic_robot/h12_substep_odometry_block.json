@@ -1,0 +1,32 @@
+{
+  "experiment_id": "H12-substep-odometry-1",
+  "goal_id": "G-AV1",
+  "owner": "Codex-parent",
+  "registered_at": "2026-09-19T01:23:00+08:00",
+  "status": "cpu_implementation_independent_review_pending_no_new_physics",
+  "hypothesis": "Sampling the same quality-gated RGB-D estimator every six control ticks and composing SE3 within each action improves correspondence continuity compared with measuring only at VLM decision boundaries.",
+  "comparison": "H11 original start: 0 prefix, 15 decisions, 361 controls, official false, head RGB-D quality stop; preserve H10/H11 failures.",
+  "source_commit": "pending_stable_review",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "tasks_instances_seed": [{"task": 0, "instance": 138, "split": "train", "seed": 0}, {"task": 3, "instance": 242, "split": "train", "seed": 0}],
+  "training_updates": 0,
+  "cpu_block_seconds": 1200,
+  "model_calls_authorized_this_block": 0,
+  "physics_controls_authorized_this_block": 0,
+  "sampling_interval_controls": 6,
+  "estimator": "rgbd_rigid",
+  "quality_bounds": "Unchanged 25 inliers, 0.45 fraction, 1px median reprojection, 15mm median depth residual and 0.18m/0.30rad/0.035m motion bounds; full-action bounds and original 12mm/2deg action residual remain.",
+  "failure_rule": "Any failed segment or interrupted action invalidates the complete chain; no partial-motion credit, no velocity fallback, no retry solver. Preserve hard servo stops and final safe hold.",
+  "evidence": "Every head RGB-D/q/hash substep saved; exact end snapshot at same control/q/gripper reused once for complete-action delivery; detailed chain excluded from model prompt.",
+  "rejected_cpu_alternatives": [
+    "Individual wrist RGB-D lacks sufficient world support at H11 failure.",
+    "Pooled cameras can hide head reprojection >1px; not deployed.",
+    "Global KLT passes old geometry but has concentrated support; not deployed.",
+    "Spatial KLT plus joint RGB/depth consensus still fails two of 61 saved pairs; not deployed."
+  ],
+  "min_free_disk_GiB": 80,
+  "max_cumulative_artifacts_GiB": 4,
+  "evidence_root": "/mnt/sdc1/robodojo/behavior_dev/agentic_vlm_goal_20260918",
+  "stop_conditions": ["Independent review blocker", "CPU failure", "Missing final sample or inconsistent control/frame/FK chain", "Existing physical/sensor/budget gate"],
+  "limitations": ["More short measurements do not certify accumulated accuracy", "Static-scene assumption remains", "No intermediate-depth replay is available for the old failed episode", "New physical block must be registered after CPU/review; no unchanged rerun"]
+}
