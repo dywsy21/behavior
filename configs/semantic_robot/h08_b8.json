@@ -1,0 +1,23 @@
+{
+  "experiment_id": "H-08-B8",
+  "owner": "Codex-solo",
+  "hypothesis": "A robot-derived reach upper bound prevents distant navigation completion and preserves the approach phase for real progress.",
+  "code_commit": "4f48c60ae8db12d14528d4a60cd4f4cc4f90f34a",
+  "implementation_digest": "7265184a2b8e1a79569e0e853c2227cf79277c39961ffcdc76ae86836bc9fdf1",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "training_updates": 0,
+  "new_weight_downloads": 0,
+  "actor_scene_truth": false,
+  "cpu_audit_states": ["plates_b6/decision_043", "plates_b4/decision_070", "radio_b6/decision_009"],
+  "static_model_calls": 0,
+  "static_controls": 0,
+  "gate_each": {"decisions": 24, "controls": 1536, "wall_seconds": 1200, "model_calls": 0, "gpu": 3},
+  "gate_memory_rule": "Two independent simulators may share GPU3; no new model until both gates exit. GPU1 B7 is untouched.",
+  "policy": {"task": 3, "split": "train", "instance": 242, "seed": 0, "expert_prefix": 0, "gpu": 3, "decisions": 80, "controls": 2400, "wall_seconds": 2400, "max_model_calls": 179},
+  "active_grasp_probe": false,
+  "flags": ["--harness", "grounded", "--refine-grounding", "--visual-odometry"],
+  "cpu_threads": 4,
+  "min_free_disk_GiB": 80,
+  "stop": ["Existing hard safety gates", "Declared budget", "Original success verification"],
+  "comparison": "B6 task3 matched model/start/limits; only navigation completion veto is active. Geometric plausibility is not arrival or task success. No new radio policy."
+}
