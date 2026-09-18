@@ -71,6 +71,8 @@ def main():
     p.add_argument("--refine-grounding",action="store_true",help="Opt-in bounded crop/surface-choice perception")
     p.add_argument("--visual-odometry",action="store_true",help="Use quality-gated onboard RGB-D motion for coverage")
     p.add_argument("--active-grasp-probe",action="store_true",help="Bounded exploratory close; original grasp verification remains mandatory")
+    p.add_argument("--contact-geometry",action="store_true",help="Experimental finger guides/tool translations; not mixed into the feedback-only comparison")
+    p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
     p.add_argument("--task", type=int, choices=(0,3), default=0)
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--gpu", type=int, default=3)
@@ -91,8 +93,9 @@ def main():
         raise RuntimeError("Immutable clean source required")
     digest = implementation_digest()
     grounded=args.harness=="grounded"
-    if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe) and not grounded:
+    if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe or args.contact_geometry or args.grasp_motion) and not grounded:
         raise ValueError("Surface refinement requires the grounded sensor contract")
+    if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
     if args.mode == "agent":
         if not args.expected_revision or len(args.gate_result) != 2:
             raise ValueError("Model identity and both task pose gates required")
@@ -100,7 +103,9 @@ def main():
         if {g["task"] for g in gates} != {0,3} or not all(g["gate_ok"] and g["implementation_digest"] == digest and
                 g.get("harness","v2")==args.harness and
                 g.get("refine_grounding",False)==args.refine_grounding and
-                g.get("visual_odometry",False)==args.visual_odometry for g in gates):
+                g.get("visual_odometry",False)==args.visual_odometry and
+                g.get("contact_geometry",False)==args.contact_geometry and
+                g.get("grasp_motion",False)==args.grasp_motion for g in gates):
             raise ValueError("Control/FK gates have not passed for this exact implementation")
     out = Path(args.output); out.mkdir(parents=True,exist_ok=False)
     if grounded and shutil.disk_usage(out).free<80*1024**3:
@@ -231,7 +236,7 @@ def main():
             previous = None
             started = time.perf_counter()
             first_images,first_depth,first_receipt=observation_now("after_prefix")
-            first = prepare_views(first_images,model,state.q,grounded=grounded,gripper=state.gripper)
+            first = prepare_views(first_images,model,state.q,grounded=grounded,gripper=state.gripper,show_finger_regions=args.contact_geometry)
             if grounded: np.savez_compressed(out/"initial_depth.npz",**first_depth)
             for label,img in zip(first.labels,first.images): img.save(out/(label+".png"))
 
@@ -245,8 +250,8 @@ def main():
             if policy:
                 goals, call = policy.plan(args.task,environment.observation()["task"],first)
                 save_call(out,"planner",call)
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe) if grounded else TaskHarness(goals)
-                if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry) if grounded else TaskHarness(goals)
+                if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -279,8 +284,10 @@ def main():
                     break
                 state = state_now()
                 images,depths,depth_receipt=observation_now(f"decision_{decision}")
-                bundle = prepare_views(images,model,state.q,previous,grounded=grounded,gripper=state.gripper)
+                bundle = prepare_views(images,model,state.q,previous,grounded=grounded,gripper=state.gripper,show_finger_regions=args.contact_geometry)
                 directory = out/f"decision_{decision:03d}"; directory.mkdir()
+                self_geometry=kin.native_self_boxes() if args.grasp_motion else None
+                if self_geometry is not None:write(directory/"robot_self_geometry.json",self_geometry)
                 for label,img in zip(bundle.labels,bundle.images): img.save(directory/(label+".png"))
                 write(directory/"proprio.json",{"q":state.q.tolist(),"gripper":state.gripper.tolist(),"geometry":bundle.geometry})
                 if grounded:
@@ -319,7 +326,7 @@ def main():
                             for label,img in zip(detail_views.labels,detail_views.images):
                                 if "CROP" in label or "CANDIDATES" in label:img.save(directory/(label+".png"))
                     if controller:
-                        controller.observe(observation,state,depths,depth_receipt)
+                        controller.observe(observation,state,depths,depth_receipt,images=bundle.current_raw,self_geometry=self_geometry)
                         if controller.replan_needed:
                             recovery,call=policy.recover(manager,state,bundle,controller.replan_needed)
                             save_call(directory,"recovery",call)
@@ -398,6 +405,7 @@ def main():
                       "refine_grounding":args.refine_grounding,"surface_choices":getattr(policy,"refinements",0),
                       "visual_odometry":args.visual_odometry,
                       "active_grasp_probe":args.active_grasp_probe,
+                      "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
                       "full_task_success_rate_claim":False}

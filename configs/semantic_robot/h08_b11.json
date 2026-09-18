@@ -1,0 +1,31 @@
+{
+  "experiment_id": "H-08-B11",
+  "owner": "Codex-solo",
+  "hypothesis": "A robot-self-excluding RGB-D rigid-following verifier preserves and recognizes real grasps that the VLM leaves unknown, allowing the next subgoal.",
+  "code_commit": "PIN_BEFORE_REMOTE_EXECUTION",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "training_updates": 0,
+  "new_weight_downloads": 0,
+  "paid_API_calls": 0,
+  "actor_scene_truth": false,
+  "offline": {"B7_saved_pairs": [6,10,20,22,23,24,25,26,27], "max_extra_saved_pairs": 48, "model_calls": 0, "controls": 0},
+  "gate_each": {"decisions": 24, "controls": 1536, "wall_seconds": 1200, "model_calls": 0, "gpu": 1},
+  "policy": {"task": 0, "instance": 138, "split": "train", "seed": 0, "expert_prefix": 448, "gpu": 1, "decisions": 64, "controls": 2048, "wall_seconds": 1800, "max_model_calls": 147},
+  "service_max_calls": 147,
+  "flags": ["--harness", "grounded", "--refine-grounding", "--visual-odometry", "--active-grasp-probe", "--grasp-motion"],
+  "contact_geometry": false,
+  "paired_only_observer": false,
+  "no_new_task3_policy": true,
+  "registered_grasp_requirements": [
+    "Current target identified; no explicit non-enclosure/non-following, slip or collision claim",
+    "Actual nonempty pending closed hand, independently for both arms when applicable",
+    "At least 8 stable forward/backward RGB-D feature matches per lift; reject known robot-link visual boxes at actual finger positions",
+    "At least 80 percent hand-relative residual <3mm and world target-vs-hand displacement residual <4mm",
+    "At least two consecutive independently measured lift intervals, cumulative translation >=15mm and upward >=12mm",
+    "Original 9-image observer retained; raw claims preserved, never rewrite null as true"
+  ],
+  "cpu_threads": 4,
+  "min_free_disk_GiB": 80,
+  "stop": ["Hard safety gate", "Unknown potentially loaded grasp: hold without releasing", "Declared budget"],
+  "limitations": "Known development start, assisted grasp mode, version3.9.1; not an independent challenge success-rate test. Old B7 has no per-frame robot self boxes, so those single-pair findings remain diagnostic and cannot authorize deployment."
+}

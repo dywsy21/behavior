@@ -40,7 +40,8 @@ def solve_correspondences(points_before, pixels_after, points_after, K, camera_b
     point_error=float(np.median(np.linalg.norm(xyz[sel]@rel[:3,:3].T+rel[:3,3]-newxyz[sel],axis=1)))
     motion,delta=body_motion(camera_before,camera_after,rel)
     result.update(median_reprojection_px=pixel_error,median_depth_correspondence_m=point_error,
-                  body_delta=delta.tolist(),body_translation_z_m=float(motion[2,3]))
+                  body_delta=delta.tolist(),body_translation_z_m=float(motion[2,3]),
+                  body_transform_current_in_previous=motion.tolist())
     if pixel_error>1. or point_error>.015:
         result["reason"]="RGB_DEPTH_MOTION_DISAGREEMENT";return result
     if np.linalg.norm(delta[:2])>.18 or abs(delta[2])>.30 or abs(motion[2,3])>.035:

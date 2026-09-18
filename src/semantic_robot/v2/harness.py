@@ -195,9 +195,15 @@ class TaskHarness:
             # Two sources: nonempty physical opening + visual enclosure and temporal
             # co-motion after an actual verification displacement. Neither alone wins.
             temporal = self.previous_observation is not None and self.previous_observation.visible
-            if (not empty and moved and temporal and evidence.enclosed is True and evidence.co_moving is True
-                    and measured_progress.get("metric_co_motion",True) is True):
+            legacy=(evidence.enclosed is True and evidence.co_moving is True
+                    and measured_progress.get("metric_co_motion",True) is True)
+            registration=measured_progress.get("registered_grasp_motion",{})
+            registered=(registration.get("verified") is True and
+                        registration.get("source")=="registered_onboard_RGBD_grasp_motion" and
+                        evidence.enclosed is not False and evidence.co_moving is not False)
+            if not empty and moved and temporal and (legacy or registered):
                 self._complete_goal()
+                if registered:self.completed[-1]["registered_motion_evidence"]=registration
             elif self.stage_age >= 4:
                 self.recover("GRASP_UNVERIFIED")
         elif self.stage == "VERIFY_PLACE":

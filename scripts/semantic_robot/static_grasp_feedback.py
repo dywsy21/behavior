@@ -28,6 +28,7 @@ def main():
     if subprocess.check_output(["git","-C",str(REPO),"status","--porcelain"],text=True).strip():raise RuntimeError("Fixed clean source required")
     run=Path(a.run);out=Path(a.output);out.mkdir(parents=True,exist_ok=False)
     m=RobotModel(read(run/"robot_calibration.json"));policy=GroundedPolicy(a.uri,a.revision,max_calls=4) if a.uri else None
+    if policy:policy.paired_grasp_verification=True  # reproduce the B10 ablation, not current production
     rows=[]
     for i in (10,22,23,24,25):
         d=run/f"decision_{i:03d}";before=run/f"decision_{i-1:03d}"

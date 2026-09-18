@@ -55,7 +55,7 @@ class VisualBundle:
     current_raw: dict
 
 
-def prepare_views(images, model, q, previous=None, grounded=False, gripper=None):
+def prepare_views(images, model, q, previous=None, grounded=False, gripper=None,show_finger_regions=True):
     metadata = model.spec["metadata"]["cameras"]
     result, labels, geometry, raw = [], [], {}, {}
     poses = model.poses(q)
@@ -91,7 +91,7 @@ def prepare_views(images, model, q, previous=None, grounded=False, gripper=None)
                             draw.text(tuple(tip), axis, fill=color)
             entries[arm] = record
             if grounded:
-                region=regions[arm]
+                region=regions[arm] if show_finger_regions else {"valid":False,"reason":"FINGER_GUIDE_DISABLED_FOR_ABLATION"}
                 record["finger_contact_region"]={"valid":region["valid"],"reason":region["reason"],
                     "robot_geometry_not_target_or_enclosure":True}
                 if region["valid"]:

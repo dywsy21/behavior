@@ -7,6 +7,41 @@ from .kinematics import RobotModel, transform, link_origin_jacobian
 
 
 class CalibratedRobot(OGKinematics):
+    def native_self_boxes(self):
+        """Robot visual-link bounds at ACTUAL joint positions, including fingers.
+
+        Robot asset meshes only; no scene mesh, segmentation or object queries.
+        Conservative boxes may reject useful target points, never grant a grasp.
+        """
+        if not hasattr(self,"_self_bounds"):
+            import omnigibson.lazy as lazy
+            from omnigibson.utils.usd_utils import mesh_prim_shape_to_trimesh_mesh
+            self._self_bounds={}
+            for name,link in self.robot.links.items():
+                vertices=[]
+                for mesh in link.visual_meshes.values():
+                    prim,local=mesh.prim,np.eye(4)
+                    for _ in range(16):
+                        if str(prim.GetPath())==str(link.prim.GetPath()):break
+                        local=np.asarray(lazy.pxr.UsdGeom.Xformable(prim).GetLocalTransformation()).T@local
+                        prim=prim.GetParent()
+                    else:raise ValueError("Robot visual mesh not attached to its declared link")
+                    points=(array(mesh.points) if mesh.prim.GetPrimTypeInfo().GetTypeName()=="Mesh"
+                            else np.asarray(mesh_prim_shape_to_trimesh_mesh(mesh.prim).vertices))
+                    vertices.append((np.c_[points,np.ones(len(points))]@local.T)[:,:3])
+                if vertices:
+                    points=np.concatenate(vertices)
+                    self._self_bounds[name]=(points.min(axis=0),points.max(axis=0))
+        boxes=[]
+        for name,(lower,upper) in self._self_bounds.items():
+            # Decorative non-articulation links still have a robot-relative
+            # transform through the link API; absence fails closed for verifier.
+            p,q=(array(v) for v in self.api.get_link_relative_position_orientation(self.path,name))
+            boxes.append({"link":name,"lower":lower.tolist(),"upper":upper.tolist(),
+                          "T_base_link":transform(p,q).tolist()})
+        return {"source":"robot_visual_link_boxes_actual_joint_fk","scene_truth":False,
+                "includes_actual_finger_positions":True,"margin_m":.003,"boxes":boxes}
+
     def base_visual_surface(self):
         """Export the declared chassis skin, never any environment geometry."""
         import omnigibson.lazy as lazy

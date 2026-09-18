@@ -31,7 +31,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals, *, active_grasp_probe=False):
+    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -41,6 +41,7 @@ class GroundedHarness(TaskHarness):
         self.motion_receipt={}
         self.pending_grasp={"left":False,"right":False}
         self.last_gripper=None
+        self.contact_geometry=bool(contact_geometry)
         self.active_grasp_probe=bool(active_grasp_probe)
         self.grasp_probe_attempts={}
         self.grasp_probe={"eligible":False,"reason":"NOT_OBSERVED"}
@@ -129,7 +130,7 @@ class GroundedHarness(TaskHarness):
         if (not self.stop_reason and self.stage=="ALIGN" and self.goal.kind=="pick"
                 and self.grasp_probe.get("eligible")):
             palette += (Action(self.goal.hand,"close"),)
-        if (not self.stop_reason and self.goal.kind=="pick" and self.goal.hand in ("left","right")
+        if (self.contact_geometry and not self.stop_reason and self.goal.kind=="pick" and self.goal.hand in ("left","right")
                 and self.stage in ("APPROACH","ALIGN") and not any(self.pending_grasp.values())
                 and not any(self.hold_verified.values())):
             scales=("micro","fine","coarse") if self.stage=="APPROACH" else ("micro","fine")
@@ -201,7 +202,7 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False):
         self.model,self.servo,self.harness=model,servo,harness
         self.search=CoverageSearch()
         self.previous=None
@@ -215,6 +216,11 @@ class GroundedController:
         self.progress={}
         self.motion=None
         self.pending_motion=None
+        self.grasp_verifier=None
+        if grasp_motion:
+            if not visual_odometry:raise ValueError("Registered grasp motion requires independent RGB-D body motion")
+            from .grasp_motion import GraspMotionVerifier
+            self.grasp_verifier=GraspMotionVerifier()
         if visual_odometry:
             from .odometry import RGBDMotion
             self.motion=RGBDMotion()
@@ -261,7 +267,7 @@ class GroundedController:
         self.pending_motion=None
         return receipt
 
-    def observe(self,evidence,state,depths,depth_receipt):
+    def observe(self,evidence,state,depths,depth_receipt,images=None,self_geometry=None):
         manager=self.harness
         observed_goal_index=manager.index
         bimanual=manager.goal.kind=="pick" and manager.goal.hand=="both"
@@ -296,7 +302,8 @@ class GroundedController:
             self.target["mean_contact_distance_m"]=float(np.mean(list(distances.values())))
             self.target["per_hand_distance_m"]=distances
             self.target["target_minus_center_base_m"]={a:(points[a]-self.centers[a]).round(4).tolist() for a in manager.arms}
-            self.target["target_minus_center_tool_m"]={a:(self.model.forward(state.q,a)[:3,:3].T@(points[a]-self.centers[a])).round(4).tolist() for a in manager.arms}
+            if manager.contact_geometry:
+                self.target["target_minus_center_tool_m"]={a:(self.model.forward(state.q,a)[:3,:3].T@(points[a]-self.centers[a])).round(4).tolist() for a in manager.arms}
         co_motion=True
         for arm in manager.arms:
             previous=self.previous
@@ -315,6 +322,12 @@ class GroundedController:
         self.progress={"new_search_coverage":new_coverage,"target_distance_m":distance,
                        "metric_co_motion":co_motion,"distance_reduced":reduced}
         internal=dict(self.progress)
+        if self.grasp_verifier is not None:
+            if images is None or self_geometry is None:raise ValueError("Fresh raw images and robot-only self geometry required")
+            targets=self.hand_targets if bimanual else {a:self.target for a in manager.arms}
+            registration=self.grasp_verifier.observe(self.model,state,images,depths,self_geometry,manager,targets,manager.motion_receipt,evidence)
+            self.progress["registered_grasp_motion"]=registration
+            internal["registered_grasp_motion"]=registration
         internal["target_distance_m"]=distance if distance is not None else math.inf
         if manager.goal.kind=="navigate":
             internal["navigation_aligned"]=bool(self.target["valid"] and abs(self._navigation_geometry()["bearing_deg"])<=15.)
