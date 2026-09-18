@@ -34,6 +34,10 @@ env PYTHONPATH=src /mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python scripts/vlm
 
 证据在 `/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/preflight_1509b7a/source_preflight.json`；同目录 `authorization_inactive.json` 的SHA为 `2ff9e14a6643fbfa03d42b00cbf37ea0ff2e3271073478ac091c337668d42976`，`authorize_collection=false` 且实际被 require_release 拒绝。余盘89,167,646,720B，原prepare_v1不改。两个小文件本地副本在本worktree `artifacts/h09s-runtime-1509b7a/preflight`。**尚未启动collector**：需父完成新H15双门/首图/动作审阅与退出核验、停止旧132309并交接GPU1，再显式放行。逐实例等待父人工教师就绪，不自动启动下一例。
 
+### 04:35 task0 唯一先导运行中
+
+04:34 父完成两新门退出/实际链及首图审阅，确认旧132309退出并独占交接GPU1；显式只放行task0。`authorization_first_three.json` SHA `1348181d7f11112f74df7a82650a43c1a12dbea4b2b0948ec81c8e921d72449c`、gate开关及digest均在启动前核验。04:35:24 BJT提交PID156956，runtime仍1509，run=`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/pilot_v1/task_0`，日志同级task_0.log，launch记录同级task_0_launch.json。启动前GPU1空；TRAIN70/e66/f1170、单次reset/1170前缀/≤200新控制/≤900s、≤3人工候选/每次120s，0模型训练，预算不扩大。目前仅初始化，未称reset/停顿/采集成功；task1/3不自动启动，原始记录仍全部隔离。
+
 实现的是 **人工当前状态教师的可执行采集流程**，不是把混合专家动作重新解释成纯动作：`native_teacher_prepare.py` 做严格 TRAIN 来源与前缀转换；`native_teacher_contract.py` 编译只供审阅的方向候选、绑定人工审批与隔离记录；`native_teacher_collect.py` 可在停顿后导出三 RGB，零 physics 等待审批，执行已有 `token_to_action`/`SafeServo`，导出实际 23D 轨迹、立即及再停顿后的图像，默认全部 quarantine。没有新的 VLM、自举标签或自动正确性证书。
 
 初版 `973ba76` 已由 Git 同步；远端 CPU 直接执行该提交的 Git blobs，复用 `semantic_joint_90a7c20` 中未变的 common/live/prepare 依赖，未创建或热改运行源码。真实准备 **3.353s，799,441 字节**，含三个前缀、9 段三视图原专家 17 帧视频和完整定位/来源回执；0 模型/控制/reset。目录：`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1`。后续修订增加稳定停顿后图像、近静止 EEF 门及保守未知负载约束，不改变已准备的数据。29 项 SFT CPU 测试通过（原21＋新8），新采集器尚未在 simulator 中运行，不能称端到端采集已通过。
