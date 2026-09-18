@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 06:36当前：** H16唯一175529已退出、218新控制/22调用/官方false；完整新结果171,088,570B正在本地`h16_matched_bundle`归档。GPU3仅原156556模型保留，累计170/215调用（待账本再核），不热改。H09U运行源`git_worktrees/vlm_sft_h09u_9b52faa`已CPU/父审，下一只task1参考回放GPU1，拟`vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`，尚未PID；prepared仍原`h09u_reference_prepare_v2`，旧失败累计不抹除。双H16门本地`h16_gates_bundle`已完整SHA/288主hash/视频解码通过。
+
 **2026-09-19 06:24盘核验：** `/mnt/nvme_tmp`实际挂载`/dev/mapper/vg_nvme-lv_nvme_tmp`、XFS/rw、3.5TiB总/约2.7TiB可用，目录1777，robodojo用户可写；**不是已消失的/mnt/tmp1**。拟新独立输出父目录`/mnt/nvme_tmp/robodojo_agentic_20260919`尚未创建/未迁移文件，后继实验需记录有限预算/真实路径；不把tmp名字当可删除依据、不改队友现有内容。原SDA盘仍保余80GiB，H16不换盘热改。
 
 **2026-09-19 06:15当前：** GPU3唯一新局部策略`agentic_vlm_goal_20260918/radio_h16_matched_approach`175529（同名log）初始化，source仍`semantic_reorientation_2c546d2`；模型156556/8923旧5cf/148起。双H16门完整288主hash/304段签名-FK/8BASE通过，完整本地包仍下载；不要重启门或热改2c。H09U只有CPU准备新不可变7b源/本地草稿，无新采集或训练。
