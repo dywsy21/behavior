@@ -46,7 +46,14 @@ class ChassisSurface:
         self.triangles=vertices[raw_faces]
         self.centers=self.triangles.mean(axis=1)
         self.radii=np.linalg.norm(self.triangles-self.centers[:,None],axis=2).max(axis=1)
-        self.tree=cKDTree(self.centers)
+        # A few large triangles must not give every tiny skin triangle a huge
+        # query radius. Radius bins are an exact broad phase, not decimation:
+        # every true near-surface triangle remains inside its bin's bound.
+        exponents=np.ceil(np.log2(np.maximum(self.radii,.001))).astype(int)
+        self.bins=[]
+        for exponent in np.unique(exponents):
+            ids=np.flatnonzero(exponents==exponent)
+            self.bins.append((ids,cKDTree(self.centers[ids]),float(self.radii[ids].max())))
         self.lower,self.upper=vertices.min(axis=0),vertices.max(axis=0)
 
     def mask(self, points, T_link):
@@ -57,15 +64,24 @@ class ChassisSurface:
         # Bound temporary memory even for a detailed chassis mesh.
         for start in range(0,len(eligible),64):
             ids=eligible[start:start+64]
-            nearby=self.tree.query_ball_point(local[ids],float(self.radii.max()+self.tolerance_m))
-            for point_id,candidates in zip(ids,nearby):
-                if not candidates:continue
-                candidates=np.asarray(candidates,dtype=int)
-                distance=np.linalg.norm(self.centers[candidates]-local[point_id],axis=1)
-                candidates=candidates[distance<=self.radii[candidates]+self.tolerance_m]
-                if not len(candidates):continue
-                p=np.broadcast_to(local[point_id],(len(candidates),3))
-                mask[point_id]=bool(np.any(paired_surface_distance(p,self.triangles[candidates])<=self.tolerance_m))
+            for triangle_ids,tree,radius in self.bins:
+                remaining=ids[~mask[ids]]
+                if not len(remaining):break
+                nearby=tree.query_ball_point(local[remaining],radius+self.tolerance_m)
+                point_rows=[];face_rows=[]
+                for point_id,candidates in zip(remaining,nearby):
+                    if not candidates:continue
+                    candidates=triangle_ids[np.asarray(candidates,dtype=int)]
+                    distance=np.linalg.norm(self.centers[candidates]-local[point_id],axis=1)
+                    candidates=candidates[distance<=self.radii[candidates]+self.tolerance_m]
+                    point_rows.extend([point_id]*len(candidates));face_rows.extend(candidates)
+                if not point_rows:continue
+                point_rows=np.asarray(point_rows,dtype=int);face_rows=np.asarray(face_rows,dtype=int)
+                # Large exact broad-phase matches are chunked, never dropped.
+                for block in range(0,len(point_rows),100000):
+                    pids=point_rows[block:block+100000];fids=face_rows[block:block+100000]
+                    close=paired_surface_distance(local[pids],self.triangles[fids])<=self.tolerance_m
+                    mask[pids[close]]=True
         return mask
 
 

@@ -38,5 +38,17 @@ class SelfSurfaceTests(unittest.TestCase):
                         {"faces":[[0.,1.,2.]]},{"vertices":[[np.nan,0,0]]}):
             with self.assertRaises(ValueError):ChassisSurface({**self.spec(),**changed})
 
+    def test_radius_bins_equal_brute_force_across_tiny_and_large_triangles(self):
+        rng=np.random.default_rng(471)
+        centers=rng.uniform(-.1,.1,(60,3))
+        sizes=np.geomspace(.001,.6,60)
+        triangles=centers[:,None]+rng.uniform(-1,1,(60,3,3))*sizes[:,None,None]
+        spec=self.spec();spec["vertices"]=triangles.reshape(-1,3).tolist()
+        spec["faces"]=np.arange(180).reshape(-1,3).tolist()
+        surface=ChassisSurface(spec)
+        points=np.r_[triangles.mean(axis=1)+rng.normal(0,.003,(60,3)),rng.uniform(-.3,.3,(50,3))]
+        exact=np.array([np.min(paired_surface_distance(np.broadcast_to(p,(60,3)),triangles))<=surface.tolerance_m for p in points])
+        np.testing.assert_array_equal(surface.mask(points,np.eye(4)),exact)
+
 
 if __name__=="__main__":unittest.main()
