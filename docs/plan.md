@@ -14,6 +14,7 @@
 
 ### 2026-09-18 20:12（北京时间）：H-09独立VLM SFT首块登记
 
+**21:37 H-09 radio微调终态/plates配对启动：** radio_ft_v1/PID77097已退出，40/40均BASE_YAW_MINUS执行，961新控制＋448前缀、143.761s、DECISION_BUDGET、官方false、持物审计为空；手臂几乎未动，不能把40次TARGET_REACHED当抓取进步。result SHA7945d739…、video SHA1e9c65f2…。plates_ft_v1同975852a/GPU1开始原40/1280/1200s，无前缀。radio-base完整审阅包本地SHA7e277d5e…一致、82帧全解码且本人看视频帧0/40/81：左手在桌左沿前移，radio仍桌面；独立FK累计左EEF移动87.8mm、0持物。离线汇总补逐观察累计转角，避免把超过半周的转向误写成反向的最短端点角；不改物理源。原逐文件下载的46MiB校准中断部分以.partial-download保留，完整远端未动；之后压缩审阅包只排除该大校准，存其SHA。
 **21:32 H-09首物理回合完成/第二回合启动：** radio_base_v1/PID75130已正常退出，12模型决策全LEFT_FORWARD、9 TARGET_REACHED＋3 UNREACHABLE_OR_COLLISION_BLOCKED拒绝，166新控制＋448前缀、43.854s、THREE_CONSECUTIVE_REJECTIONS安全停，官方false/无已满足任务谓词。原始视频/逐步输入正下载，本人待核运动。radio_ft_v1同975852a、同基座与最终adapter、原40/1280/1200s开始，不重复base；actor无真值输入，后续两个plates仍原顺序预算。
 **21:30 H-09配对回合诊断补项：** radio_base_v1 PID75130运行，服务74735/8918，均固定975852a；最新本地分析脚本另加每回合当前低base速度和空history计数，与静态同阈值，仅读落盘actor输入、不修改活跃源码/动作/预算。18 H09＋232原CPU全过，盘余90GiB、H09根2.5GiB；四回合终态/视频审核仍待。
 **21:26 H-09双门通过/四配对开始：** gate_plates_v1完成20命令/410新控制/75.512s、gate_ok=true，result SHA0a0623175c9984cec08ddff4f9c299655f9001f4e7912f9c8ef83e23c55e76e0；两门同975852a/digest7993ec29，本人已看两场景head/right-wrist初图。GPU1服务74735/8918固定基座aa33250c和最终adapter b5a125ed、max160，radio_base_v1开始原40决策/1280新控制/1200s，448前缀另计；其后radio_ft/plates_ft/plates_base顺序，不追加训练。0调用CPU分层确认test非低速172/192且全base，FT172/172；低base速度20例FT8/20、原始2/20，训练低速仅127/1199；这是部署停顿状态的重要分布限制，不能把93.75%当视觉掌握。主代理独立查看4张既有训练面板无明显图文矛盾，旧selection文本不作为v4文本证据。

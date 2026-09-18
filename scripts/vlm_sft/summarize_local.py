@@ -14,6 +14,15 @@ from stratify_static import low_velocity
 RUNS=("radio_base_v1","radio_ft_v1","plates_ft_v1","plates_base_v1")
 
 
+def rotation_path(quaternions):
+    rotations=Rotation.from_quat(quaternions)
+    increments=(rotations[1:]*rotations[:-1].inv()).as_rotvec()
+    yaw=np.unwrap(rotations.as_euler("xyz")[:,2])
+    return {"decision_endpoint_rotation_travel_rad":float(np.linalg.norm(increments,axis=1).sum()),
+        "decision_endpoint_signed_yaw_travel_rad":float(yaw[-1]-yaw[0]),
+        "decision_endpoint_absolute_yaw_travel_rad":float(np.abs(np.diff(yaw)).sum())}
+
+
 def summarize(folder):
     result=json.loads((folder/"result.json").read_text());manifest=json.loads((folder/"manifest.json").read_text())
     initial=json.loads((folder/"PRIVILEGED_INITIAL_AUDIT.json").read_text())
@@ -38,6 +47,7 @@ def summarize(folder):
         "action_counts":dict(Counter(r["token"] for r in decisions)),"execution_status":dict(Counter(r["feedback"]["status"] for r in decisions)),
         "rejection_reasons":dict(Counter(r["feedback"].get("reason","") for r in decisions if r["feedback"]["status"]=="REJECTED_NO_MOTION")),
         "actual_world_base_endpoint_delta_m":endpoint.tolist(),"actual_world_base_endpoint_rotation_rad":angular.tolist(),
+        **rotation_path([r["robot_world_quaternion_xyzw"] for r in poses]),
         "decision_endpoint_base_path_m":float(np.linalg.norm(np.diff(positions,axis=0),axis=1).sum()),
         "eef_base_endpoint_path_m":{a:sum(float(np.linalg.norm(r["feedback"].get("eef_delta_m",{}).get(a,[0,0,0]))) for r in decisions) for a in ("left","right")},
         "assisted_attachment_audit_counts":[{"arm":a,"object":o,"decisions_attached":n} for (a,o),n in objects.items()],
