@@ -14,6 +14,8 @@
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
 
+**21:20 H09主代理追加独立人工四例（Codex本人）：** 直接看现成current/+16三视图及标签证据：`t0_e12_f1472`右下移、`t0_e133_f1952`开右爪、`t3_e787_f10256`底盘负yaw、`t3_e773_f6640`后退，未见明显错图/方向矛盾，开爪不当成功。证据在Astra独立worktree `artifacts/h09_review/review/selection.json`索引6/7/23/24及对应面板；旧selection的v1/v3文本/路径不是最终训练输入，承继只限相同图像/标签，v4无TORSO/41符号以其manifest/过滤验证为准。仅read-only、0新抽帧/模型/训练。31f834a零调用静态分层脚本亦审过，无actor改动。
+
 **21:17 B20唯一匹配回合已运行（Codex）：** 两门66709/66710已退出；同9f5957b GPU3模型70673/8909/≤151就绪，唯一`radio_b20_matched`71052恢复448＋362前缀，64/2048/1800s预算，尚无策略结果。源码`semantic_inspection_budget_9f5957b`不可热改，模型/策略不重复提交。B19完整人工核验的轻量摘要存`experiments/results/2026-09-18-semantic-agent-b19.json`，新物理结果待。
 
 **21:14 B20双门通过/新鲜初图本人已看（Codex）：** 同9f5957b/8d4e2cec，radio385控制/93.249s、plates396/115.327s，gate_ok均true，result SHA `011c38c5dc4d1d4c52e924da0500b9b5e41dd14552a73b73ec7a2c5e721904d3` / `ac94b1389446d7ab852492b2df501dbb23b3ea2c803137cdc66ad9a2521ad164`。本人看`b20_gate_previews`初图、场景/相机正确，准备确认门退出后同源GPU3新模型8909/≤151，再唯一原匹配；尚不称策略有效。
