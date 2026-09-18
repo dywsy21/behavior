@@ -1,0 +1,18 @@
+{
+  "experiment_id": "H-08-B20",
+  "owner": "Codex-parent",
+  "hypothesis": "Coarse/fine framing and bounded memory of measured relative views leave more of the unchanged inspection budget for observing different sides, instead of repeated centering and rotation undo.",
+  "code_commit": "PIN_AFTER_CHECKED_COMMIT_BEFORE_EXECUTION",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "comparison": "B19 frozen development states and same model; inherited spatial grasp evidence and all original thresholds unchanged.",
+  "static_gate": {"run": "radio_b19_matched", "decisions": [4, 14, 25, 26], "cpu_wall_seconds": 300, "model_decisions": [4, 14, 25], "max_model_calls": 3, "controls": 0, "required": "Same causal images/budgets; legal offered moves; original d26 rotation undo rejected; directly inspect choices before any physics."},
+  "inspection": {"attempts": 24, "path_m": 0.2, "rotation_deg": 60, "nonlevel_translation_scales": ["coarse", "fine"], "level_translation_scales": ["fine"], "rotation_scale": "fine", "revisit_position_m": 0.008, "revisit_angle_deg": 2, "history_max_poses": 25, "novel_pose_is_not_information_gain": true},
+  "physical_budget_registered": false,
+  "training_updates": 0,
+  "actor_scene_truth": false,
+  "gpu": 3,
+  "existing_service": {"pid_at_registration": 58225, "port": 8909, "calls_before": 54, "max_total_calls_after_this_static_block": 57, "code_commit": "5df51be18438901f0c7eaa39840199e90b1df8d5", "http_model_code_unchanged": true},
+  "min_free_disk_GiB": 80,
+  "max_added_artifacts_GiB": 3,
+  "limitations": ["Robot-only IK/joint/self-collision preflight does NOT certify arm or held-object environment collision clearance", "No new grasp/full-task result from static selection", "Known task0 train138 development evidence, not independent test", "Physics requires separate exact-source gates and explicit finite registration"]
+}

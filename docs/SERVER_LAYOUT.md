@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 21:03当前：** B19策略58614已退出；完整`semantic_agent_effect_20260918/b19_complete.tar.gz` SHA `149ba57863ba37ac91e688b363a0ea60f074ce5a600fe7b4ac34998181b59f34`在下载到本地artifacts，未含仍活跃模型58225/GPU3/8909。模型保留只作B20最多3保存帧调用（当前54/151），旧源5df51be不得热改；B20仅本地实现无新物理。H09 GPU1唯一`vlm_sft_showharness_20260918/train_v1`61793实际470/600，源140c47d/最终data_v4，200/400 adapter已存；其目录名后缀不是commit，请以identity为准。盘余91GiB，仍保80GiB，不删除旧证据。
+
 **2026-09-18 20:38当前：** B19双门已退出/通过；GPU3唯一模型58225/8909＋`radio_b19_matched`58614，固定`semantic_spatial_5df51be`，预算64/2048/1800s、≤151。不要照旧门状态重复提交或热改；GPU1 Astra H09在构造严格data_v3、未正式训练。
 
 **2026-09-18 20:33当前：** GPU3 B19双门55607/55608，源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_spatial_5df51be`/digest6fe40b1a，不热改。新模型/策略未启动；同H08根`offline_b19_b18_matched`及`b19_actual_registered_b18_replay.json`是0控制离线证据。B18策略/服务均已退出，全包本地`b18_verified_bundle/`已SHA/24hash/全视频解码/人工4观察核验。

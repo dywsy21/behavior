@@ -11,8 +11,9 @@ from .servo import SafeServo
 from .vision import project
 
 
-def inspection_palette(hand,level=False):
-    moves=[Action(hand,move,"fine") for move in TRANSLATIONS]
+def inspection_palette(hand,level=False,budget_aware=False):
+    scales=("coarse","fine") if budget_aware and not level else ("fine",)
+    moves=[Action(hand,move,scale) for scale in scales for move in TRANSLATIONS]
     if not level:moves += [Action(hand,move,"fine","tool") for move in ROTATIONS]
     return (HOLD,*moves)
 
@@ -22,8 +23,19 @@ class HeldInspection:
     max_path_m=.20
     max_rotation_rad=np.deg2rad(60.)
 
-    def __init__(self):
+    def __init__(self,budget_aware=False):
         self.anchors={};self.states={}
+        self.budget_aware=bool(budget_aware)
+
+    @staticmethod
+    def novelty(relative,visited):
+        """Pose coverage, not information gain or visible-affordance evidence."""
+        margins=[]
+        for old in visited:
+            distance=float(np.linalg.norm(relative[:3,3]-old[:3,3]))
+            angle=float(np.linalg.norm(Rotation.from_matrix(relative[:3,:3]@old[:3,:3].T).as_rotvec()))
+            margins.append(max(distance/.008,angle/np.deg2rad(2.)))
+        return min(margins) if margins else None
 
     def remember(self,model,state,arm,target):
         if not target.get("valid"):return
@@ -38,13 +50,19 @@ class HeldInspection:
             return False,{"valid":False,"reason":"NO_VERIFIED_HELD_ANCHOR"}
         relative=np.linalg.inv(model.forward(state.q,"camera_head"))@model.forward(state.q,arm)
         row=self.states.setdefault(harness.index,{"arm":arm,"last":relative.copy(),"novel":relative.copy(),
-            "path_m":0.,"rotation_rad":0.,"attempts":0})
+            "path_m":0.,"rotation_rad":0.,"attempts":0,"visited":[],"recorded_attempts":-1})
         if row["arm"]!=arm:raise ValueError("Inspection reference changed within one goal")
         row["path_m"]+=float(np.linalg.norm(relative[:3,3]-row["last"][:3,3]))
         row["rotation_rad"]+=float(np.linalg.norm(Rotation.from_matrix(relative[:3,:3]@row["last"][:3,:3].T).as_rotvec()))
         row["last"]=relative.copy()
         fresh=(np.linalg.norm(relative[:3,3]-row["novel"][:3,3])>=.008 or
                np.linalg.norm(Rotation.from_matrix(relative[:3,:3]@row["novel"][:3,:3].T).as_rotvec())>=np.deg2rad(2.))
+        if self.budget_aware:
+            margin=self.novelty(relative,row["visited"])
+            fresh=margin is not None and margin>=1.
+            if row["recorded_attempts"]!=row["attempts"]:
+                if len(row["visited"])>=self.max_attempts+1:raise ValueError("Inspection history exceeded action budget")
+                row["visited"].append(relative.copy());row["recorded_attempts"]=row["attempts"]
         if fresh:row["novel"]=relative.copy()
         return bool(fresh),self.context(model,state,harness)
 
@@ -62,12 +80,17 @@ class HeldInspection:
         return {"valid":True,"reference_hand":arm,"attempts":row["attempts"],"max_attempts":self.max_attempts,
             "relative_path_m":row["path_m"],"relative_rotation_deg":float(np.rad2deg(row["rotation_rad"])),
             "max_path_m":self.max_path_m,"max_rotation_deg":60.,"base_rotation_is_not_relative_inspection":True,
+            "budget_aware_view_coverage":self.budget_aware,"recorded_relative_views":len(row["visited"]),
+            "pose_novelty_is_not_affordance_information_gain":True,
+            "environment_collision_check":"NOT_PROVIDED_FOR_HAND_OR_HELD_OBJECT",
             "anchor":self.anchors[arm],**self.view(model,state.q,arm)}
 
     def candidates(self,model,state,harness,servo,depth_guard):
         row=self.states.get(harness.index);arm=harness.search_reference.removeprefix("held_")
         receipt={"source":"held_object_relative_view_inspection","tested":[],"command_grip_latch":servo.grips.tolist(),
-                 "depth_guard":depth_guard.receipt(),"scene_truth":False}
+                 "depth_guard":depth_guard.receipt(),"scene_truth":False,
+                 "environment_collision_check":"NOT_PROVIDED_FOR_HAND_OR_HELD_OBJECT",
+                 "kinematic_preflight":"robot_only_limits_IK_self_collision_not_environment_safety"}
         if row is None or arm not in self.anchors or not harness.hold_verified.get(arm):
             harness.stop_reason="NO_VERIFIED_HELD_ANCHOR";return (HOLD,),receipt
         if row["attempts"]>=self.max_attempts or row["path_m"]>=self.max_path_m or row["rotation_rad"]>=self.max_rotation_rad:
@@ -85,7 +108,14 @@ class HeldInspection:
             if ok:
                 predicted=trial.joint_plan[-1] if trial.joint_plan is not None else state.q
                 result.update(inspection_after=self.view(model,predicted,arm),planned_ticks=trial.total_ticks)
-                allowed.append(action)
+                if self.budget_aware:
+                    relative=np.linalg.inv(model.forward(predicted,"camera_head"))@model.forward(predicted,arm)
+                    margin=self.novelty(relative,row["visited"])
+                    result["inspection_after"].update(relative_pose_novelty_margin=margin,
+                        novelty_threshold=1.,not_affordance_information_gain=True)
+                    if margin is not None and margin<1.:
+                        result.update(accepted=False,reason="PREVIOUSLY_OBSERVED_RELATIVE_VIEW")
+                if result["accepted"]:allowed.append(action)
             receipt["tested"].append(result)
         if len(allowed)==1:harness.stop_reason="NO_SAFE_HELD_INSPECTION_ACTION"
         return tuple(allowed),receipt

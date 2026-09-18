@@ -13,6 +13,41 @@ from test_v2 import fixture,evidence
 
 
 class HeldInspectionTests(unittest.TestCase):
+    def test_budget_palette_keeps_scope_level_and_original_bounds(self):
+        choices=inspection_palette("right",budget_aware=True)
+        self.assertIn(Action("right","up","coarse"),choices)
+        self.assertTrue(all(a==HOLD or a.part=="right" for a in choices))
+        self.assertFalse(any(a.move in ("open","close") or a.part in ("base","torso") for a in choices))
+        level=inspection_palette("right",level=True,budget_aware=True)
+        self.assertFalse(any(a.move in ROTATIONS or a.scale=="coarse" for a in level))
+        with self.assertRaises(ValueError):GroundedHarness([Goal("press","button","left","effect")],inspection_budget_aware=True)
+
+    def test_budget_coverage_rejects_return_to_an_earlier_view(self):
+        m,s,h,_=self.make();inspector=HeldInspection(budget_aware=True)
+        inspector.remember(m,s,"right",{"valid":True,"point_base_m":m.forward(s.q,"right")[:3,3].tolist()})
+        self.assertFalse(inspector.observe(m,s,h)[0])
+        q=s.q.copy();q[14]=np.deg2rad(3.);turned=m.state(q,s.gripper,np.zeros(3))
+        inspector.executed(h);self.assertTrue(inspector.observe(m,turned,h)[0])
+        inspector.executed(h);self.assertFalse(inspector.observe(m,s,h)[0])
+        self.assertEqual(len(inspector.states[h.index]["visited"]),3)
+        for _ in range(4):self.assertFalse(inspector.observe(m,s,h)[0])
+        self.assertEqual(len(inspector.states[h.index]["visited"]),3)
+
+    def test_budget_candidate_rejects_undo_but_does_not_claim_environment_clearance(self):
+        m,s,h,_=self.make();h.inspection_budget_aware=True;inspector=HeldInspection(budget_aware=True)
+        inspector.remember(m,s,"right",{"valid":True,"point_base_m":m.forward(s.q,"right")[:3,3].tolist()})
+        inspector.observe(m,s,h)
+        q=s.q.copy();q[14]=np.deg2rad(3.);turned=m.state(q,s.gripper,np.zeros(3))
+        inspector.executed(h);inspector.observe(m,turned,h)
+        class Guard:
+            def receipt(self):return {}
+            def check(self,*args):return True,"NOT_A_BASE_MOVE"
+        allowed,receipt=inspector.candidates(m,turned,h,SafeServo(m,turned,[-1,-1]),Guard())
+        self.assertNotIn(Action("right","roll_minus","fine","tool"),allowed)
+        undo=next(row for row in receipt["tested"] if row["action"]=={"part":"right","move":"roll_minus","scale":"fine","frame":"tool"})
+        self.assertEqual(undo["reason"],"PREVIOUSLY_OBSERVED_RELATIVE_VIEW")
+        self.assertEqual(receipt["environment_collision_check"],"NOT_PROVIDED_FOR_HAND_OR_HELD_OBJECT")
+
     def make(self,reference="held_right",level=False):
         m,s=fixture();s.gripper[:]=.035
         h=GroundedHarness([Goal("press","button of held object","left","visible effect")],held_inspection=True)
@@ -82,4 +117,3 @@ class HeldInspectionTests(unittest.TestCase):
             def receipt(self):return {}
         allowed,_=inspector.candidates(m,s,h,SafeServo(m,s,[-1,-1]),Guard())
         self.assertEqual(allowed,(HOLD,));self.assertEqual(h.stop_reason,"HELD_INSPECTION_BUDGET_REACHED")
-

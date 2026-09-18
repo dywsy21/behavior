@@ -78,6 +78,7 @@ def main():
     p.add_argument("--held-object-inspection",action="store_true",help="Explicit semantic reference and bounded held-object relative inspection")
     p.add_argument("--persistent-grasp-tracks",action="store_true",help="Identity-bound persistent features and stable-depth corner selection; original grasp evidence thresholds")
     p.add_argument("--spatial-grasp-features",action="store_true",help="Fixed spatial feature quotas avoid global contrast domination; original evidence thresholds")
+    p.add_argument("--inspection-budget-aware",action="store_true",help="Existing bounded coarse/fine framing plus non-revisited relative views")
     p.add_argument("--task", type=int, choices=(0,3), default=0)
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--replay-prefix-spec",help="Hash-pinned saved-action diagnostic warm start, counted separately from policy")
@@ -105,6 +106,7 @@ def main():
     if args.held_object_inspection and not args.grasp_motion:raise ValueError("Held inspection requires registered verified anchors")
     if args.persistent_grasp_tracks and not args.grasp_motion:raise ValueError("Persistent tracks require registered verification")
     if args.spatial_grasp_features and not args.persistent_grasp_tracks:raise ValueError("Spatial features require persistent tracks")
+    if args.inspection_budget_aware and not args.held_object_inspection:raise ValueError("Inspection budget mode requires held-object inspection")
     if (args.approach_progress or args.odometry_estimator!="pnp") and not args.visual_odometry:
         raise ValueError("Measured approach progress and explicit estimator require visual odometry")
     if args.mode == "agent":
@@ -121,6 +123,7 @@ def main():
                 g.get("approach_progress",False)==args.approach_progress and
                 g.get("persistent_grasp_tracks",False)==args.persistent_grasp_tracks and
                 g.get("spatial_grasp_features",False)==args.spatial_grasp_features and
+                g.get("inspection_budget_aware",False)==args.inspection_budget_aware and
                 g.get("held_object_inspection",False)==args.held_object_inspection for g in gates):
             raise ValueError("Control/FK gates have not passed for this exact implementation")
     out = Path(args.output); out.mkdir(parents=True,exist_ok=False)
@@ -293,7 +296,7 @@ def main():
                 else:
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection) if grounded else TaskHarness(goals)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware) if grounded else TaskHarness(goals)
                 if replay is not None:
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
@@ -485,6 +488,7 @@ def main():
                       "held_object_inspection":args.held_object_inspection,
                       "persistent_grasp_tracks":args.persistent_grasp_tracks,
                       "spatial_grasp_features":args.spatial_grasp_features,
+                      "inspection_budget_aware":args.inspection_budget_aware,
                       "semantic_reference_calls":getattr(policy,"reference_calls",0),
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,

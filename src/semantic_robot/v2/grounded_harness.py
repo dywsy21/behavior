@@ -31,7 +31,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False):
+    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -46,6 +46,8 @@ class GroundedHarness(TaskHarness):
         self.grasp_probe_attempts={}
         self.grasp_probe={"eligible":False,"reason":"NOT_OBSERVED"}
         self.held_inspection_enabled=bool(held_inspection)
+        self.inspection_budget_aware=bool(inspection_budget_aware)
+        if self.inspection_budget_aware and not self.held_inspection_enabled:raise ValueError("Inspection budget mode requires held inspection")
         self.target_references={}
         self.reference_from_planner=bool(reference_from_planner)
         self.reference_receipts={}
@@ -161,7 +163,7 @@ class GroundedHarness(TaskHarness):
             if self.search_reference.startswith("held_"):
                 from .held_inspection import inspection_palette
                 arm=self.search_reference[5:]
-                return inspection_palette(arm,self.carry) if self.hold_verified[arm] else (HOLD,)
+                return inspection_palette(arm,self.carry,self.inspection_budget_aware) if self.hold_verified[arm] else (HOLD,)
             if self.search_reference=="unknown" and any(self.hold_verified.values()):return (HOLD,)
         palette=super().palette()
         if (not self.stop_reason and self.stage=="ALIGN" and self.goal.kind=="pick"
@@ -263,7 +265,7 @@ class GroundedController:
         self.pending_exploratory=True
         self.goal_changed=False
         from .held_inspection import HeldInspection
-        self.inspector=HeldInspection() if harness.held_inspection_enabled else None
+        self.inspector=HeldInspection(budget_aware=harness.inspection_budget_aware) if harness.held_inspection_enabled else None
         self.grasp_verifier=None
         if persistent_grasp_tracks and not grasp_motion:raise ValueError("Persistent features require registered grasp motion")
         if spatial_grasp_features and not persistent_grasp_tracks:raise ValueError("Spatial features require persistent tracking")

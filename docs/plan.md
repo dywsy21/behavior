@@ -14,6 +14,10 @@
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
 
+**21:03 B20实现/244CPU；H09 live独立审查（Codex）：** 新opt-in `--inspection-budget-aware`加入既有3cm/1cm候选与最多25个实测头—手相对位姿的非回访门，原24次/20cm/60°不扩，level任务仍仅fine平移；回执明确非base无环境碰撞认证。本地244CPU/3.325s、入口编译/diff通过，旧d4/d14/d25三静态＋d26 CPU回转负例登记`h08_b20.json`，0新增物理预算；固定源/静态待。本地保留未提交实现故仅fetch、不强pull，main仍33677bd。独立审Astra ac35ed1的serve/live/run_local：41token及proprio/prompt一致、无GT输入、保载不误open，未见新增阻塞；H09实际470/600、200/400 adapter已保存，剩余训练→192留出配对→双工程门→原四个40/1280/1200s固定技能比较，不能用静态准确率冒充成功率。B19完整归档正下载，服务58225仅为最多3静态调用保留。
+
+**20:52 B19终态/下一仅静态B20；H09正式运行（Codex＋Astra）：** B19已514新控制/54模型/568.917s、官方false，`HELD_INSPECTION_BUDGET_REACHED`；result SHA `591551e9c3fb7a93e4b042026b218f4b0658b616e9649c08650cd7934d4f99e2`。d3抓取通过，21次1cm取景耗约19.66cm，最后roll+/roll-/roll+回旧视角，未找到按钮；不把相对观察改善算任务成功。下一仅B20≤300s CPU旧d4/d14/d25姿态预检＋最多3静态模型选择/0控制：既有3cm/1cm可选、记忆已访问头—手相对位姿拒回访，原24次/20cm/60°不扩，物理另登记。Astra完成5df51be独立只读审查无GT/阈值绕过/误释放新增问题，指出`LocalDepthGuard`非base返回NOT_A_BASE_MOVE——仅有robot IK/self-collision，**没有持物/手臂环境碰撞认证**，新回执与报告将明确，不能称完整安全检查。H09 `train_v1`61793/GPU1确实更新，源140c47d、热态1.952s/update/峰17.88GiB，新v4prefix/mask过，原600/3h预算；远端worktree后缀b4537b6仅目录命名非代码SHA，后续从identity取准。
+
 **20:48 H09执行一致v4准备正式训练（Astra；主代理记录）：** ec5c012从v3过滤TORSO并统一41符号，v4=1199/193/192，训练task0/1/3=238/222/739；base1086、arm/both/gripper113，非全技能均衡数据。删556/66/96，4条训练历史截断到最近映射连续段、重建text，全图核SHA复用；manifest `aa2ca08f17f255f4738cc148dd5807b91f6b0306962f36e2817a2a077d772565`，14非TORSO人工样本承继。BOTH同步base轴平移/静torso、单臂旋转左乘和开合符号核对；固定幅度仍是方向迁移限制。主代理复核过滤脚本无新增阻塞。140c47d已push，`train_v1`正唯一提交、从原基座，先新prefix/mask再≤600更新，PID/真实更新待回报；不把提交写成完成。
 
 **20:43 B19真实已过抓取/进入持物观察；H09训练门过但修执行契约（Codex＋Astra）：** B19 d3后goal1、d4–8为held_right SEARCH，已开始受限持物手相对观察而非世界航向扫描，模型15调用，回合仍运行、尚无按钮/完整成功。待完整附件审计/人工帧核验后定量。Astra gate_v1/60030已2更新33.98s通过：native/custom CE均1.045393586、差0，LoRA梯度32.9097、冻结无梯度、372张量更新，回载logits最大差0，峰值18.71GiB allocated/20.25 reserved，第2更新1.995s；不把门当方法效果。其独立live接线发现**专家TORSO令双EEF同移，当前SafeServo torso却补偿保持双EEF**，不是单纯步长差。我要求正式首块排除TORSO标签/候选并重建相关history/text，保留原v3/gate，不改父执行器；可复用模型/loss门，过滤后再核真实prefix/mask直接启动。正式训练尚未开始。
