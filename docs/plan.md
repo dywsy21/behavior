@@ -14,6 +14,8 @@
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
 
+**21:06 B20双端CPU/独立review/旧姿态门过，3静态启动（Codex＋Astra）：** 固定9f5957b/digest8d4e2cec，robo244CPU/6.471s；`static_b20_cpu_v1`四姿态各19/18/7/6候选、原d26回转被拒，0新控制/模型，旧已执行路径/角度账与因果重建一致。Astra只读审5df51be→9f5957b未见新增阻塞，仍强调位姿新颖不代表按钮信息。仅`static_b20_model_v1`三旧帧选择启动≤3调用/300s/0控制，沿用旧58225服务、结果待验，物理尚未放行。主代理另审H09 975852a事后world pose诊断隔离通过，未回注actor。
+
 **21:03 B20实现/244CPU；H09 live独立审查（Codex）：** 新opt-in `--inspection-budget-aware`加入既有3cm/1cm候选与最多25个实测头—手相对位姿的非回访门，原24次/20cm/60°不扩，level任务仍仅fine平移；回执明确非base无环境碰撞认证。本地244CPU/3.325s、入口编译/diff通过，旧d4/d14/d25三静态＋d26 CPU回转负例登记`h08_b20.json`，0新增物理预算；固定源/静态待。本地保留未提交实现故仅fetch、不强pull，main仍33677bd。独立审Astra ac35ed1的serve/live/run_local：41token及proprio/prompt一致、无GT输入、保载不误open，未见新增阻塞；H09实际470/600、200/400 adapter已保存，剩余训练→192留出配对→双工程门→原四个40/1280/1200s固定技能比较，不能用静态准确率冒充成功率。B19完整归档正下载，服务58225仅为最多3静态调用保留。
 
 **20:52 B19终态/下一仅静态B20；H09正式运行（Codex＋Astra）：** B19已514新控制/54模型/568.917s、官方false，`HELD_INSPECTION_BUDGET_REACHED`；result SHA `591551e9c3fb7a93e4b042026b218f4b0658b616e9649c08650cd7934d4f99e2`。d3抓取通过，21次1cm取景耗约19.66cm，最后roll+/roll-/roll+回旧视角，未找到按钮；不把相对观察改善算任务成功。下一仅B20≤300s CPU旧d4/d14/d25姿态预检＋最多3静态模型选择/0控制：既有3cm/1cm可选、记忆已访问头—手相对位姿拒回访，原24次/20cm/60°不扩，物理另登记。Astra完成5df51be独立只读审查无GT/阈值绕过/误释放新增问题，指出`LocalDepthGuard`非base返回NOT_A_BASE_MOVE——仅有robot IK/self-collision，**没有持物/手臂环境碰撞认证**，新回执与报告将明确，不能称完整安全检查。H09 `train_v1`61793/GPU1确实更新，源140c47d、热态1.952s/update/峰17.88GiB，新v4prefix/mask过，原600/3h预算；远端worktree后缀b4537b6仅目录命名非代码SHA，后续从identity取准。
