@@ -14,6 +14,8 @@
 
 ### 2026-09-18 20:12（北京时间）：H-09独立VLM SFT首块登记
 
+**20:16 H-09数据索引完成、坐标/图像审核运行中：** Astra/max的a201e09双端7CPU通过；48来源episode得到训练2006/验证298/测试364（CPU23.20s），分组SHA3d6cb946…，`vlm_sft_showharness_20260918/data_v1`。混合动作多数被拒，当前标签偏底盘/躯干，不能冒充完整操作覆盖；16帧方向投影与部署固定步长幅度差单列。90ee7ae独立robot-only FK/30Hz审计和a201e09三视图抽帧各≤1200s运行，尚未人工放行/训练，0新物理；主代理正在只读审查codec。
+
 Astra/max唯一负责人，独立`feat/vlm-sft-showharness-20260918`/worktree；已fetch origin/main33677bd，基点6da8c80包含main，主仓dirty未pull、不改H-08。GPU1 A10080GB空闲，旧38931退出，8918空；盘余94GiB，新增≤8GiB/始终余≥80GiB。原论文2B/rank64/单H200<2h条件和官方配置差异已核，见[专属报告](experiments/2026-09-18-vlm-sft-showharness.md)。登记task0/1/3各12训练＋2验证＋2测试来源episode、原5%/public_test不训练；先实际专家微动作映射/人工分层审核，再2B冻结vision/projector的≤600更新/3小时。闭环最多两起点×前后各40决策/1280控制/1200s，GPU1顺序，前缀另计。配置`configs/vlm_sft/h09_first_block.json`；当前仅准备、0训练/新物理，下一生成受审计的小数据。主代理仍维护共享总进度和H-08源码。
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
