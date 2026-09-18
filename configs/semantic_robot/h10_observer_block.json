@@ -6,7 +6,7 @@
   "candidate_commit": "e73e2636cd5df456857efc12906fb115fa1ac44f",
   "runtime_commit": "465bc8561496c97615f8d48604010f5f5b3555c3",
   "implementation_digest": "2f49a25d9064475e3d9028c15266358e354ae16ccb9e1595f4fc05dc4ca1bc89",
-  "runtime_status": "matched_diagnostic_failed_at_d5_token_budget_r3_prompt_repair_registered_fullstart_unspent",
+  "runtime_status": "matched_diagnostic_failed_preserved_r3_static_transport_passed_with_negative_gain_choice_r3_two_gates_running_fullstart_unspent",
   "matched_diagnostic_result": {"run": "radio_h10_matched", "runtime_commit": "dfe7c96f552bd182cdeb76d761ca2324f48be403", "status": "failed_HTTP400_before_d5_action_generation", "completed_actions": 5, "new_controls": 96, "client_requests": 9, "successful_generations": 8, "expert_prefix": 448, "saved_policy_prefix": 362, "official_success_evidence": false, "repeat_matched": false},
   "repair_r3": {
     "registered_at": "2026-09-19T00:12:00+08:00",

@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 00:14当前：** H10旧matched101630已HTTP400退出，5动作/96新控制，证据`radio_h10_matched`保留；源码`git_worktrees/semantic_prompt_1d93b29`只压缩显示重复字段，digest428c339a。GPU3新双门`gate_radio_h10_r3`105324/`gate_plates_h10_r3`105398正在初始化，原fullstart未运行。模型89280/GPU1/8919仍465bc85同权重，12/368调用，不热改。`static_h10_r3`两次已完成0控制；新根1.1GiB/余88GiB。r2双门完整本地`artifacts/agentic-vlm-goal-20260918/gates_r2_bundle/`，失败matched下载到`matched_failed_bundle/`未核完前不当完整副本。
+
 **2026-09-18 23:54当前：** H10证据根同下；r2双门98393/98469已通过并退出，`git_worktrees/semantic_gate_motion_dfe7c96`/digest128f5595固定，新唯一`radio_h10_matched`101630/GPU3正在初始化。模型服务89280/GPU1/8919仍旧465bc85源和同一冻结revision，身份分开记、不热改；原2静态调用。诊断前缀448＋362不计自主成功，64/2048/1800s上限；`radio_h10_fullstart`尚未运行。r1/最初失败门保留，旧H09不重启；盘余88GiB，原4GiB新增/80GiB余量边界不变。
 
 **2026-09-18 23:33当前：** 新H10证据根`/mnt/sdc1/robodojo/behavior_dev/agentic_vlm_goal_20260918`，本地副本根`artifacts/agentic-vlm-goal-20260918/`。GPU1模型89280/8919使用不可变`git_worktrees/semantic_observer_465bc85`，同Qwen3.8-27B revision1d4bf0f，最大368调用/当前2；不可热改。初始`gate_radio_h10`/`gate_plates_h10`已失败退出，保留；新`git_worktrees/semantic_observer_5accf69`经CPU/独立review，`gate_radio_h10_r1`/`gate_plates_h10_r1`仅登记未启动，后续1诊断＋1原起点策略亦未运行。两个source身份分开记录；root351MiB/盘余89GiB，H09旧训练和证据不重启、不清理。
