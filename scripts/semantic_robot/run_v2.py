@@ -191,13 +191,15 @@ def main():
                 "window_sha":sha(path),"robot_sha":ROBOT_SHA,"model_identity":policy.identity if policy else None,
                 "training_updates":0,"evaluator":"v3.9.1-development-not-official-v3.9.2",
                 "actor_scene_truth":False,"prefix_is_expert_not_agent":bool(args.prefix),
-                "matched_grasp_feedback_diagnostic":bool(args.replay_prefix_spec),
+                "matched_grasp_feedback_diagnostic":False,
+                "diagnostic_replay_requested":bool(args.replay_prefix_spec),
                 "actor_modalities":["rgb","depth_linear","proprio"] if grounded else ["rgb","proprio"],
                 "harness":args.harness,"max_strategy_replans":2 if grounded else 0,
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
                 "visual_odometry":args.visual_odometry,
                 "odometry_substep_controls":args.odometry_substep_controls,
                 "robot_geometry_guards":args.robot_geometry_guards,
+                "approach_reorientation":args.approach_reorientation,
                 "active_grasp_probe":args.active_grasp_probe,"privileged_audit_is_actor_input":False,
                 "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
@@ -207,6 +209,9 @@ def main():
         from semantic_robot.v2.saved_prefix import load_saved_prefix
         replay=load_saved_prefix(args.replay_prefix_spec,task=args.task,prefix=args.prefix,window_sha=sha(path),robot_sha=ROBOT_SHA)
         write(out/"replay_prefix_source.json",replay["receipt"])
+        manifest["diagnostic_replay_purpose"]=replay["receipt"]["purpose"]
+        manifest["matched_grasp_feedback_diagnostic"]=replay["receipt"]["purpose"]=="matched_grasp_feedback_diagnostic"
+        write(out/"manifest.json",manifest)
     controls, prefix_count, replay_count, terminal = 0,0,0,False
     info, decisions, checks, failures = {},[],[],[]
     sensor_checks=[]

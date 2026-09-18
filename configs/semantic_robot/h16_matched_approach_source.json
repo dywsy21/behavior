@@ -1,0 +1,15 @@
+{
+  "schema": 2,
+  "purpose": "matched_unladen_approach_diagnostic",
+  "source_run": "/mnt/sdc1/robodojo/behavior_dev/agentic_vlm_goal_20260918/radio_h15_fullstart",
+  "source_code_commit": "5cfbb894ae5d2331847261be9889f509d1fa6d79",
+  "replay_decisions": 63,
+  "replay_controls": 1392,
+  "sha256": {
+    "manifest.json": "58e0a734b8d133bf9bc1bf950d49a1ed2a3c5ff382989cb950f558d80c9bd5c2",
+    "steps.jsonl": "735e9a0e291f26d729d3460445d07ff0f64ce08c473263cafa5836bb6e6c5d17",
+    "plan.json": "ac156c8143d41b7d76a3f4637bb1c8c229a00919ea44dce31dc9697ce75b35d7",
+    "decision_063/proprio.json": "e877ff0f4706d53dc7a10b4ec60666c7d2baf26c6a9cc8ce53c59803c984256b",
+    "decision_063/harness.json": "e5fb236192a3323cace2be23ba95b35cfbae58e7b0c84a32faf633512efc9081"
+  }
+}
