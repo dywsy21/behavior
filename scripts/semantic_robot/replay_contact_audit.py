@@ -118,8 +118,13 @@ def main():
                 raise RuntimeError("No auditable task object scope")
             if scene_idx not in RigidContactAPI._CONTACT_MATRIX or not len(RigidContactAPI.get_contact_row_indices(scene_idx, {robot})):
                 raise RuntimeError("Contact cache unavailable; refuse evidence-free replay")
-            registered = set(RigidContactAPI._PATH_TO_ROW_IDX[scene_idx]) | set(RigidContactAPI._PATH_TO_COL_IDX[scene_idx])
-            coverage = {obj.name: {"registered_links": [link.prim_path for link in obj.links.values() if link.prim_path in registered],
+            registered_rows = set(RigidContactAPI._PATH_TO_ROW_IDX[scene_idx])
+            registered_cols = set(RigidContactAPI._PATH_TO_COL_IDX[scene_idx])
+            registered = registered_rows | registered_cols
+            required_links = {link.prim_path for obj in queried for link in obj.links.values()}
+            coverage = {obj.name: {"query_row_links": [link.prim_path for link in obj.links.values() if link.prim_path in registered_rows],
+                                  "filter_column_links": [link.prim_path for link in obj.links.values() if link.prim_path in registered_cols],
+                                  "registered_links": [link.prim_path for link in obj.links.values() if link.prim_path in registered],
                                   "unregistered_links": [link.prim_path for link in obj.links.values() if link.prim_path not in registered]}
                         for obj in queried}
             write(out / "contact_coverage.json", {"scene_idx": scene_idx, "objects": coverage})
@@ -136,8 +141,13 @@ def main():
                 # No returned data can affect action choice, success, or timing.
                 def values(x):
                     return x.detach().cpu().numpy().tolist() if hasattr(x, "detach") else np.asarray(x).tolist()
-                current = sorted(RigidContactAPI.get_contact_pairs(scene_idx, queried, None, True))
-                recent = sorted(RigidContactAPI.get_contact_pairs(scene_idx, queried, None, False))
+                def pairs(current_only):
+                    forward = RigidContactAPI.get_contact_pairs(scene_idx, queried, None, current_only)
+                    # A static support may be a column only. Include contacts
+                    # from every dynamic row TO the required task/robot links.
+                    reverse = RigidContactAPI.get_contact_pairs(scene_idx, registered_rows, required_links, current_only)
+                    return sorted({tuple(sorted(pair)) for pair in forward | reverse})
+                current, recent = pairs(True), pairs(False)
                 objects = queried | {link_objects[path] for pair in current + recent for path in pair if path in link_objects}
                 poses = {obj.name: {"prim_path": obj.prim_path, "world_pose_xyzw": [values(x) for x in obj.get_position_orientation()]}
                          for obj in objects}
