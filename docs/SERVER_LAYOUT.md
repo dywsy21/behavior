@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 12:50 H-08最新：** B1两策略以`failure.json`终止，server_b1停止，82生成；511MiB `b1_complete.tar`/SHA bfc7f22f…保留所有旧门/策略/服务，正在下载。B2新源`git_worktrees/semantic_refined_160abd5`（105CPU），`gate_radio_b2`4117180/GPU1与`gate_plates_b2`4117232/GPU3正在跑；`server_b2`4115322/GPU1/8908仍固定`semantic_refined_6d18204`，2/256调用，两源都不能热改。`static_surface_b2`为完成的2神经/0控制选点，tar SHA94f3080d…与本地一致。B2短闭环未启动，不复用B1旧门。[H-08报告](experiments/2026-09-18-semantic-agent-effect.md)
+
 **2026-09-18 12:36 H-08当前：** 新根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_effect_20260918`；B1不可变源仍`git_worktrees/semantic_grounded_e6925d8`。`gate_radio_b1`/`gate_plates_b1`两门已通过；`server_b1`（4111632/GPU3/8907，固定27B、≤220调用）、`radio_b1`（4111945/GPU1）、`plates_b1`（4112002/GPU3）正在跑，日志同级`.log`。每策略48决策/1536新控制/1200s、0训练。本地证据目标`/home/wsy/behavior/artifacts/semantic-agent-effect-20260918/`。这是用户新授权后的独立H-08，下面H-07等待/停止记录保留为历史，勿重复提交或热改源。
 
 **2026-09-18 12:10 H-07修复源码：** `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grounded_e6925d8`固定e6925d87f90d12a7ab6237cb99daf3279cb3b646，模型环境Python3.10 96/96 CPU通过（3.919s）；仅CPU验证，未启动新神经/模拟器，不拿9993fab旧门当新源回执。旧失败结果/最新控制门/全部下载证据仍在下方H-07根，本地artifacts约988MiB。新物理复验预算待用户答复。
