@@ -6,22 +6,25 @@
 
 ## 1. 总览
 
-**2026-09-17 H-06语义agent v2（Codex，进行中）：** 源码分支`feat/semantic-agent-v2-20260917`，根为`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917`。不覆盖下面v1。
+**2026-09-17/18 H-06语义agent v2（Codex，本轮有界评估结束）：** 源码分支`feat/semantic-agent-v2-20260917`，根为`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917`。所有本轮模型/模拟器已停止，结果与下载的官方权重保留；两条策略短测均未成功，不覆盖下面v1。[最终报告](experiments/2026-09-17-semantic-agent-v2.md)
 
 | v2位置（相对新根，除非写绝对路径） | 内容/边界 |
 | --- | --- |
 | `models/Qwen3.8-27B`、`download_reference.log` | 官方冻结revision `1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0`，55,586,036,737字节，下载回执/逐文件大小核验；不是微调权重 |
 | `gate_radio_v1` / `gate_radio_v2`及同名`.log` | 分别为libGLU初始化失败、COM/link原点参考点失败，原证据保留；不能当成功门 |
-| `gate_radio_v3` | `3869ed8`修正质心Jacobian后复验，状态见plan；校准JSON是机器人资产，不含场景对象状态 |
+| `gate_radio_v3` | `3869ed8`修正质心Jacobian后复验通过，349控制；不是最终有限轨迹版本，校准JSON是机器人资产，不含场景对象状态 |
 | `gate_plates_v1` | 旧短窗口渐进IK失败，37控制后停止；保留与修复后同姿态的物理对照，不是通过门 |
-| `gate_radio_v4` / `gate_plates_v2` | 当前`b620b3b`有限关节计划版本、GPU1/3并行工程复验；前者448专家前缀，后者0前缀；必须两门通过才能执行该版本策略 |
+| `gate_radio_v4` / `gate_plates_v2` | `b620b3b`有限轨迹两门已通过：24到达/361控制、22到达＋2运动前拒绝/371控制；前者448前缀另计，后者0；与26de8ad同digest，不适用于e7478cf新harness |
 | `static_review_inputs_v1` | 15原始状态及三视角人工审核拼图；此版本的几何引导来自失败校准，不可作为正确标尺 |
-| `static_4b_v2` | 用修正后校准重新生成15状态输入，4B观察/动作各一次、最多30调用、0执行；不作为新训练集 |
+| `static_4b_v2` | 修正校准后15状态/30调用完成，radio仅2/10识别，静态门未通过、未放行4B物理回合；不作为新训练集 |
 | `static_27b_v2` / `static_27b_v3_transport` | 前者保留原18调用/12围栏解析失败，后者校验hash后复用原观察＋3动作、仅补12动作；合计30独立生成，不重复模型采样 |
-| `server_4b_v1`、同名`.log` | v2协议服务8907，复用旧4B权重，不与原v1服务/队友服务混淆；调用及输入hash留证 |
+| `server_4b_v1`、同名`.log` | 已停，30调用；原v2协议服务8907，复用旧4B权重，不与原v1服务/队友服务混淆；调用及输入hash留证 |
 | `server_27b_v1` / `server_27b_v2` | 分别18/12静态调用；两服务均已停止，后者于22:17释放GPU供双场景验收。若后续重载使用新目录，不覆盖这些身份/调用日志 |
+| `server_27b_v3`、同名`.log` | 26de8ad/GPU3/8907，闭环48调用（2规划＋24观察＋22动作），原PID4030268已停；不是新微调权重 |
+| `radio_27b_v1` / `plates_27b_v1`及同名`.log` | 26de8ad最后两条闭环已结束：task0 train138/env0/seed0、448专家前缀＋98新控制；task3 train242/env0/seed0、0前缀＋235控制。均恢复耗尽、官方成功false；result/manifest/plan/逐决策JSON、原图、rollout.mp4全部保留 |
+| `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_v2_e7478cf` | 最终micro接近/恢复计时修复的Git独立源；2026-09-18模型环境Python3.10全部64 CPU通过，0新闭环/训练。不要用旧控制门绕过新digest检查 |
 | `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_v2_*` | e19940f下载、be00be7服务、47b992d旧门、3869ed8修复门等独立不可变源，禁止热pull/修改 |
-| 本地`/home/wsy/behavior/artifacts/semantic-agent-v2-20260917/` | 原/修复校准、15状态审核图等；不入Git，不因ignore而随意删除 |
+| 本地`/home/wsy/behavior/artifacts/semantic-agent-v2-20260917/` | 原/修复校准、15状态审核、两条闭环同名完整目录及server_27b_v3调用日志；最终两门在`gate-radio-v4`/`gate-plates-v2`。两条rollout.mp4已SHA/全解码/人工抽帧检查；不入Git，不因ignore而删除 |
 
 v2预算≤65GiB新增并至少80GiB可用，0训练；共享解释器和依赖仍见下表。模拟器入口仅在本私有进程re-exec时补既有pymeshlab的libGLU目录，不升级共享OG/conda。最新进程/资源状态只以plan与实查为准。
 
