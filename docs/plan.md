@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 00:42（北京时间）H11 CPU块完成/后继有限预算（Codex）：** e2caf1b本地299/5.163s、robo299/12.992s、Astra独立299＋21及实际两层异常测试全过；真实CPU `h11_grammar_e2caf1b.json`20.840s，6初图prefix2163token、10合法序列/中途EOS拒绝/跨schema/解释首token拒绝过，0模型/控制。817f944上游overlay修复真实import，不改共享环境。2000d78仅增2静态规划工具（同runtime），其只读复审待；`h11_structured_planning_block.json`登记后继**2静态≤300s＋2原阈值工程reset＋1新0前缀回合**，分别GPU1新8920/最多217调用、GPU3每门24/1536/1200s和策略96/3072/2400s，原任务实例/seed保持。旧89280核身份后停止，不覆盖13调用和H10失败；尚未启动新模型/物理，盘余87GiB/根1.5GiB，合守4GiB/80GiB。上条00:39记录实际代码提交完成约00:37，时间更正但证据内容不变。
+
 **2026-09-19 00:39（北京时间）H11结构化规划实现/CPU中（Codex）：** 新opt-in`--structured-planning`只约束task-plan/recovery两白名单schema，保留原有限动作trie/严格解析/全部硬预算；reset前核schema+decoder commit，补完整任务提示但**不宣称格式等于语义完整**。原始/截断响应现在解析前留回执，初始规划独立phase，外层不覆盖首错误。既有298测试已过，新增16/17及布尔边界复验中；失败初图本人已核，r3全包已传完。发现PyPI LMFE0.11.3与现transformers5.7 import不兼容，只在新独立overlay装上游固定817f944（保留失败依赖包、不改共享环境）；真实VLM tokenizer/六图prefix/EOS/跨schema CPU门待。Astra设计审查确认边界，稳定实现复审随后；0新模型/控制/训练，89280空闲13。
 
 **2026-09-19 00:28（北京时间）H10起点规划真实失败/H11仅CPU块登记（Codex）：** 108260已退出；`radio_h10_fullstart`0控制/0前缀/1模型调用，failure SHA`db762b47ae271fd37647bf8d59c471c9cd69b9735d351639bc49d9ddf4355a15`。服务call13完整输出是解释文字＋JSON fenced array，非截断（83输出/2107输入token）；strict parser拒绝正确，但计划只到“看见收音机”、漏了抓取/开机。旧failure标记EXPERT_PREFIX是阶段标记未更新，**不是执行了前缀**。该原起点尝试计入失败，不伪称没有尝试。下一H11假设：约束JSON生成可消除非语义格式失败，同时明确“任务完整目标≠当前可见状态”；Codex独占实现，Astra独立只读检查，先≤900s CPU/0模型/0控制/0训练、保旧parser和失败原文、不靠提取任意JSON或自动重试。新增物理/模型预算待CPU和review结果另登记；旧89280保留空闲13/368、不热改。
