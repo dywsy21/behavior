@@ -39,6 +39,8 @@ class LocalOutcome:
         self.first = self.last = None
         self.closed = self.opened = self.edge_seen = False
         self.close_pose = None
+        from native_teacher_toggle import PressCausality
+        self.press_causality = PressCausality(spec["hand"]) if spec["verb"] == "PRESS" else None
         self.failure = None
         self.result = {"outcome": "UNKNOWN", "reason": "NO_PHYSICS_EVIDENCE"}
 
@@ -104,9 +106,17 @@ class LocalOutcome:
                 self.frames.clear()
                 self.result = {"outcome": "UNKNOWN", "reason": "TOGGLE_UNAVAILABLE"}
                 return dict(self.result)
-            if (previous is not None and previous.get("toggled") is False and
-                    self.first["toggled"] is False and value is True and frame["finger_contact"].get(arm) is True):
-                self.edge_seen = True
+            try:
+                if frame.get("toggle_observer_active") is not True or not isinstance(frame.get("toggle_events"), list):
+                    raise ValueError("Scoped actual-update observer missing")
+                edge = self.press_causality.consume(frame["toggle_events"])
+                if previous is not None and previous.get("toggled") is False and value is True and not edge:
+                    raise ValueError("Toggle changed without its causal update chain")
+                if self.first["toggled"] is False and edge and value is True: self.edge_seen = True
+            except (ValueError, KeyError, TypeError) as exc:
+                self.frames.clear()
+                self.result = {"outcome":"UNKNOWN", "reason":"PRESS_CAUSALITY_UNAVAILABLE: "+str(exc)}
+                return dict(self.result)
             positive = self.edge_seen and value is True
             if self.first["toggled"] is True: reason = "INITIAL_TOGGLE_TRUE_NO_NEW_CREDIT"
         else:

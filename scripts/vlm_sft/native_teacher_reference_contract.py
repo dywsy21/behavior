@@ -1,0 +1,63 @@
+"""Reset-free loading and bounded source contract for full expert references."""
+import json
+from pathlib import Path
+import numpy as np
+from common import sha
+from native_teacher_policy import validate_train_group
+from native_teacher_reference_prepare import SCHEMA
+
+
+def load_reference(folder,release,code,executor,counts):
+    folder=Path(folder).resolve();manifest_path=folder.parent/"preparation.json"
+    if (release.get("authorize_reference_replay") is not True or release.get("code_commit")!=code or
+            release.get("executor_digest")!=executor or not release.get("reviewer") or
+            sha(manifest_path)!=release.get("preparation_manifest_sha256")):
+        raise ValueError("New exact-code/reference authorization required before reset")
+    manifest=json.loads(manifest_path.read_text())
+    if manifest["schema"]!=SCHEMA or manifest["status"]!="PREPARED_NO_RESET_NO_OUTCOME_NO_SEED":
+        raise ValueError("Unknown prepared reference schema")
+    rows=[r for r in manifest["sources"] if folder.name==f"task_{r['task']}"]
+    if len(rows)!=1:raise ValueError("Reference source ownership mismatch")
+    row=rows[0]
+    if [row[k] for k in ("task","episode","instance")]!=release["source"]:
+        raise ValueError("Authorization is for another instance/episode")
+    expected={"prefix.npy","segment.npy","source_states.npy","teacher_reference.json","private_spec.json","segment_labels.json","label_selection_audit.json","window.json"}
+    if set(row["files_sha256"])!=expected or any(sha(folder/k)!=v for k,v in row["files_sha256"].items()):
+        raise ValueError("Prepared source bytes changed")
+    ref=json.loads((folder/"teacher_reference.json").read_text());spec=json.loads((folder/"private_spec.json").read_text())
+    validate_train_group(ref,counts,release["held_out_instance_groups"])
+    source=ref["source"];skill=json.loads(ref["private_original_semantic_json"])
+    if (len(skill)!=1 or skill[0].get("unbound_relation") or spec["verb"] not in ("GRASP","PRESS") or
+            any(spec[k]!=skill[0][k] for k in ("verb","target","destination")) or
+            any(source[k]!=row[k] for k in ("task","episode","instance")) or
+            spec["hand"]!=row["hand"] or spec["support_hand"]!=row["support_hand"] or
+            ref["source_label"]["segment_start"]!=row["start"] or ref["source_label"]["segment_end"]!=row["end"]):
+        raise ValueError("Reference identity/intent changed")
+    prefix,segment,states=(np.load(folder/(name+".npy"),allow_pickle=False) for name in ("prefix","segment","source_states"))
+    for values,shape in ((prefix,(row["start"],23)),(segment,(row["end"]-row["start"],23)),(states,(len(segment)+1,61))):
+        if values.shape!=shape or values.dtype!=np.float32 or not np.isfinite(values).all():raise ValueError("Full reference arrays invalid")
+    window=json.loads((folder/"window.json").read_text())
+    if (window["official_mode"]!="train" or window["instance_id"]!=row["instance"] or window["seed"]!=0 or
+            window["max_steps"]!=row["end"]+14 or window["prefix_actions_sha256"]!=row["files_sha256"]["prefix.npy"] or
+            Path(window["prefix_actions_path"]).resolve()!=folder/"prefix.npy"):
+        raise ValueError("Reference reset/window clock identity mismatch")
+    budget=release["budget"]
+    if (budget["max_controls"]!=row["end"]+13 or budget["tail_controls"]!=12 or budget["final_hold_controls"]!=1 or
+            not 1<=budget["seconds_after_reset"]<=2100 or not 1<=budget["run_MiB"]<=128 or
+            not 1<=budget["total_MiB"]<=512 or release.get("model_calls")!=0 or release.get("resets")!=1):
+        raise ValueError("Reference budget differs from the single registered full segment")
+    gates=[json.loads(Path(p).read_text()) for p in release["engineering_gate_paths"]]
+    if len(gates)!=2 or {g["task"] for g in gates}!={0,3} or any(g.get("gate_ok") is not True or
+            g.get("robot_geometry_guards") is not True or g.get("implementation_digest")!=executor for g in gates):
+        raise ValueError("Reviewed matching safety gates required")
+    binding={"reference_preparation_sha256":sha(manifest_path),"source":row,"window":window}
+    return ref,spec,prefix,segment,states,binding
+
+
+def compare_source_state(current,source):
+    q=np.r_[source[53:57],source[3:10],source[28:35]]
+    g=np.array([source[24:26].mean(),source[49:51].mean()])
+    error={"q_max_abs":float(np.max(abs(current.q-q))),"gripper_max_abs":float(np.max(abs(current.gripper-g)))}
+    if error["q_max_abs"]>.02 or error["gripper_max_abs"]>.005:
+        raise RuntimeError("Reference expert control/proprio diverged: "+str(error))
+    return error

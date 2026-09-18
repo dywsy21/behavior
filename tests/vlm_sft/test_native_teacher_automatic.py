@@ -27,7 +27,16 @@ def frame(tick=0):
             "contacts_known": True, "payload_ok": True, "forbidden_contacts": [], "toggled": False,
             "linear_velocity": [0.,0.,0.], "angular_velocity": [0.,0.,0.],
             "relation": True, "supported": True, "corners_inside": True,
-            "finger_opening": {"left": .05, "right": .05}}
+            "finger_opening": {"left": .05, "right": .05}, "toggle_observer_active":True,"toggle_events":[]}
+
+
+def toggle_events(arm="right",other=False):
+    # Five actual OG updates in ONE control; not five invented control ticks.
+    return [{"update_index":i,"before":{"value":False,"counter":i-1,"measurement":{
+        "arm_marker_overlap":{"left":arm=="left" or other,"right":arm=="right" or other},
+        "arm_target_contact":{"left":True,"right":True},"other_robot_marker_overlap":False,
+        "hand_poses":{a:np.eye(4).tolist() for a in ("left","right")},"goal_parent_pose":np.eye(4).tolist()}},
+        "after":{"value":i==5,"counter":i}} for i in range(1,6)]
 
 
 class AutomaticTeacherTests(unittest.TestCase):
@@ -90,7 +99,9 @@ class AutomaticTeacherTests(unittest.TestCase):
     def test_press_requires_new_edge_with_contact_and_twelve_ticks(self):
         o=self.outcome("PRESS");o.update(frame())
         for t in range(1,13):
-            f=frame(t);f["toggled"]=True;f["finger_contact"]["right"]=True;out=o.update(f)
+            f=frame(t);f["toggled"]=True;f["finger_contact"]["right"]=True
+            if t==1:f["toggle_events"]=toggle_events()
+            out=o.update(f)
             if t<12:self.assertNotEqual(out["outcome"],"SUCCEEDED")
         self.assertEqual(out["outcome"],"SUCCEEDED")
         for initial_on,contact in ((True,True),(False,False)):
@@ -146,6 +157,7 @@ class AutomaticTeacherTests(unittest.TestCase):
         with self.assertRaises(ValueError):extract_seed(spec,rows)
         for t in range(1,13):
             f=frame(t);f["toggled"]=True;f["finger_contact"]["right"]=True
+            if t==1:f["toggle_events"]=toggle_events()
             f["goal_parent_pose"]=np.eye(4).tolist()
             rows.append({"frame":f,"actual_action23":[0.]*23})
         seed=extract_seed(spec,rows)

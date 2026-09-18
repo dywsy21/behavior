@@ -69,6 +69,42 @@ class PrivilegedReader:
             raise ValueError("Finger contact registration unavailable")
         self.initial_pairs = None
         self.baseline_receipt = None
+        self.toggle_context = None
+        self.toggle_observer = None
+        if spec["verb"] == "PRESS":
+            from native_teacher_toggle import ToggleObserver
+            target_state = state_of(self.target, "ToggledOn")
+            self.toggle_observer = ToggleObserver(target_state, self.marker_measurement)
+            self.toggle_context = self.toggle_observer.installed()
+            self.toggle_context.__enter__()
+
+    def close(self):
+        if self.toggle_context is not None:
+            context, self.toggle_context = self.toggle_context, None
+            context.__exit__(None, None, None)
+
+    def marker_measurement(self):
+        import omnigibson as og
+        s = state_of(self.target, "ToggledOn")
+        radius = float(np.min(array(s.visual_marker.extent*s.scale*s.link.scale)))
+        position = array(s.visual_marker.get_position_orientation()[0])
+        if not np.isfinite(radius) or radius <= 0 or position.shape != (3,) or not np.isfinite(position).all():
+            raise ValueError("Invalid installed toggle marker sphere")
+        hits = set()
+        def callback(hit):
+            hits.add(str(hit.rigid_body)); return True
+        og.sim.psqi.overlap_sphere(radius=radius, pos=position.tolist(), reportFn=callback)
+        all_fingers = {link.prim_path for robot in self.robot.scene.robots if robot.is_manipulation
+                       for links in robot.finger_links.values() for link in links}
+        current = {tuple(pair) for pair in self.pairs(self.api,self.idx,self.queried,
+                                                     self.rows,self.links,self.cols,True)}
+        return {"arm_marker_overlap": {a:bool(hits&paths) for a,paths in self.fingers.items()},
+                "arm_target_contact": {a:any(set(pair)&paths and set(pair)&self.target_links for pair in current)
+                                       for a,paths in self.fingers.items()},
+                "other_robot_marker_overlap": bool((hits&all_fingers)-set.union(*self.fingers.values())),
+                "marker_hits": sorted(hits&all_fingers), "marker_center":position.tolist(), "marker_radius":radius,
+                "hand_poses":{a:pose(self.robot.eef_links[a]).tolist() for a in self.fingers},
+                "goal_parent_pose":pose(s.link).tolist()}
 
     def goal(self):
         s = self.spec
@@ -115,8 +151,10 @@ class PrivilegedReader:
                  "contacts_known": True, "payload_ok": payload_ok, "forbidden_contacts": forbidden,
                  "contact_pairs": sorted(current), "privileged_teacher_only": True}
         if self.spec["verb"] == "PRESS":
-            frame["toggled"] = measured_bool(state_of(self.target, "ToggledOn").get_value())
+            frame["toggled"] = measured_bool(state_of(self.target, "ToggledOn").value)
             frame["goal_parent_pose"] = pose(state_of(self.target, "ToggledOn").link).tolist()
+            frame["toggle_observer_active"] = self.toggle_observer.active
+            frame["toggle_events"] = self.toggle_observer.drain()
         if self.spec["verb"].startswith("PLACE"):
             destination = self.objects[self.spec["destination"]]
             frame["goal_parent_pose"] = pose(destination).tolist()

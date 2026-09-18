@@ -171,8 +171,14 @@ def main():
             raise ValueError("TRAIN exclusions manifest identity mismatch")
         validate_train_group(ref, json.loads(counts_path.read_text()), release["held_out_instance_groups"])
         seed_path = Path(release["pose_evidence_path"])
-        if sha(seed_path) != teacher_spec["pose_evidence_sha256"]:
-            raise ValueError("Missing or changed independently reviewed pose seed evidence")
+        from native_teacher_seed import validate_seed_release
+        review_path = Path(release["pose_review_path"])
+        if sha(review_path) != release.get("pose_review_sha256"):
+            raise ValueError("Unregistered independent pose review")
+        validate_seed_release(seed_path, review_path, teacher_spec, ref, release["seed_reference_preparation_sha256"])
+        if teacher_spec["verb"] == "PRESS":
+            from native_teacher_toggle import verify_installed_dependency
+            verify_installed_dependency()
         if teacher_spec["verb"] == "PLACE_IN":
             raise ValueError("PLACE_IN all-corners volume adapter not yet independently validated; no reset")
     x.output.mkdir(parents=True, exist_ok=False)
@@ -421,6 +427,9 @@ def main():
                 except BaseException as exc: record_error(exc)
             if teacher_trace is not None:
                 try: teacher_trace.close()
+                except BaseException as exc: record_error(exc)
+            if teacher_reader is not None:
+                try: teacher_reader.close()
                 except BaseException as exc: record_error(exc)
         if first_error is not None: raise first_error
         try:
