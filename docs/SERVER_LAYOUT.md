@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 16:36当前：** `radio_b7`4185700/GPU1及`server_b7_radio`4184694/8908运行，源`semantic_probe_605512f`；第1次close空抓，未成功、不重启。`gate_radio_b8`4188030与`gate_plates_b8`4188040均GPU3，无B8模型，源`semantic_navigation_4f48c60`，通过/退出前不加载179调用的新服务。B6两策略及两旧服务均已停止，完整压缩归档SHA4c835b5b…正在传本地；B7/B8都仍同H-08输出根，不热改任一运行源码。
+
 **2026-09-18 16:22当前：** B6两策略均结束、官方false（radio648新控制/89调用，task3 1711/128）；原9177016目录不修改。新源`git_worktrees/semantic_probe_605512f`固定605512f/159CPU，`static_probe_b7`对B6 d9/d19共2动作选择/0控制，复用旧radio服务4170243/8908（89起）；旧plates服务4170359/8909闲置待停。B7工程门/策略尚未启动，不能将旧B6门用来验新source。B5完整归档本地已SHA与两视频/216hash验证，位置`artifacts/semantic-agent-effect-20260918/b5_verified_bundle/`。
 
 **2026-09-18 15:53当前：** B6两工程门完成、对应进程4167916/4167977退出；唯一`radio_b6`4172010/GPU1、`plates_b6`4172067/GPU3运行中，同源`semantic_identity_b6`固定9177016。服务`server_b6_radio`4170243/8908、`server_b6_plates`4170359/8909同源0起/147与179调用上限，不热改。先前B5都已接口失败退出，不能按旧运行状态重启；B5完整归档c43131f0…传回本地中。源/配置/两门SHA与完整预算见plan、h08_b6.json及H-08报告。
