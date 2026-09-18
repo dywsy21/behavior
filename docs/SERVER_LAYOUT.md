@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 H-07（Codex，控制门运行中）：** 根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_grounded_20260918`，独立源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grounded_18b47ff`，分支`feat/semantic-agent-grounded-20260918`。`gate_radio_v1`/`gate_plates_v1`及同级`.log`是新RGB-D/夹持中心/搜索转向控制门，未完成；产物保留但不进Git。权重直接只读复用下方H-06的27B，未复制/下载，模型服务与策略回合尚未启动。新门/新digest不能与旧v2混报。[设计](SEMANTIC_AGENT_GROUNDED.md)
+
 **2026-09-17/18 H-06语义agent v2（Codex，本轮有界评估结束）：** 源码分支`feat/semantic-agent-v2-20260917`，根为`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917`。所有本轮模型/模拟器已停止，结果与下载的官方权重保留；两条策略短测均未成功，不覆盖下面v1。[最终报告](experiments/2026-09-17-semantic-agent-v2.md)
 
 | v2位置（相对新根，除非写绝对路径） | 内容/边界 |

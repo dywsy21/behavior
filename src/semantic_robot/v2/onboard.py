@@ -12,7 +12,6 @@ from .grounding import validate_depth
 
 class OnboardRGBD:
     def __init__(self, env):
-        from omnigibson.eval.utils.eval_utils import set_sensor_modalities
         robot=env.robots[0]
         self.sensors={}
         parents={"head":"zed_link", "left_wrist":"left_realsense_link", "right_wrist":"right_realsense_link"}
@@ -22,10 +21,16 @@ class OnboardRGBD:
             if len(matches)!=1:
                 raise ValueError("Unique robot-mounted RGB-D camera required: "+view)
             sensor=matches[0]
-            set_sensor_modalities(sensor,{"rgb","depth_linear"})
-            sensor.image_height=sensor.image_width=720 if view=="head" else 480
+            # OfficialEvaluatorSession ALREADY installs RGBDFullResWrapper.
+            # Reassigning even the SAME resolution destroys/recreates render
+            # products and can invalidate initialized PhysX articulation views.
+            # This adapter is strictly read-only, not another sensor wrapper.
+            expected=720 if view=="head" else 480
+            if set(sensor.modalities)!={"rgb","depth_linear"}:
+                raise ValueError("Official RGB-D wrapper must configure modalities before robot initialization")
+            if (sensor.image_height,sensor.image_width)!=(expected,expected):
+                raise ValueError("Official RGB-D resolution mismatch; no live sensor reconfiguration")
             self.sensors[view]=sensor
-        env.load_observation_space()
 
     def read(self, model):
         images,depths,receipt={},{},{}

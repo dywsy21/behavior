@@ -13,6 +13,7 @@ from semantic_robot.v2.grounded_harness import GroundedHarness, GroundedControll
 from semantic_robot.v2.harness import Goal
 from semantic_robot.v2.kinematics import RobotModel
 from semantic_robot.v2.og_calibration import CalibratedRobot
+from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.protocol import Action, HOLD
 from semantic_robot.v2.search import CoverageSearch
 from semantic_robot.v2.servo import SafeServo
@@ -37,6 +38,26 @@ def setup_controller():
 
 
 class DepthTests(unittest.TestCase):
+    def test_onboard_adapter_never_reconfigures_live_camera_or_reloads_physics(self):
+        class Sensor:
+            def __init__(self,size):self.size=size
+            modalities={"rgb","depth_linear"}
+            intrinsic_matrix=np.eye(3)
+            @property
+            def image_height(self):return self.size
+            @property
+            def image_width(self):return self.size
+            # No setters: redundant assignment itself must fail this regression.
+        sensors={"zed_link:Camera":Sensor(720),"left_realsense_link:Camera":Sensor(480),"right_realsense_link:Camera":Sensor(480)}
+        env=SimpleNamespace(robots=[SimpleNamespace(sensors=sensors)])
+        adapter=OnboardRGBD(env)
+        self.assertEqual(len(adapter.sensors),3)
+        sensors["zed_link:Camera"].size=480
+        with self.assertRaises(ValueError):OnboardRGBD(env)
+        sensors["zed_link:Camera"].size=720
+        sensors["zed_link:Camera"].modalities={"rgb"}
+        with self.assertRaises(ValueError):OnboardRGBD(env)
+
     def test_unprojection_linear_depth_usd_sign_and_camera_rotation(self):
         model,state=fixture()
         T=np.eye(4);T[:3,:3]=Rotation.from_euler("xyz",[.2,.3,.4]).as_matrix();T[:3,3]=[.1,.2,.5]

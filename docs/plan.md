@@ -25,6 +25,10 @@
 
 11:19部署前复核：`40c1aee`已push并在robo独立worktree跑完87/87 CPU（Python3.10，3.79s，0GPU）。进一步发现“目标仍可见”时扫描/换位重规划可能未进入执行分支，及导航候选被机械臂排序挤掉转向，已修并加2项回归，当前**89/89本地通过**；尚未启动任何新reset，不拿旧source测试冒充新源实测。下一固定这版跑两门。
 
+11:19真实门启动：固定`18b47ff`已push，robo `git_worktrees/semantic_grounded_18b47ff`真实Python3.10 **89/89 CPU通过（3.95s）**。`semantic_agent_grounded_20260918/gate_radio_v1`（4093141/GPU1、task0/448前缀）与`gate_plates_v1`（4093201/GPU3、task3/0前缀）已启动初始化，各24命令/1536新控制/1200秒控制阶段预算，日志同级`.log`；仍0神经生成/训练。正在核对深度/FK/夹持中心，提交成功不等于门通过；队友GPU0进程保持。
+
+11:25初始化失败/修复：两v1在reset后配置相机时同样失败，**0专家前缀/0新控制/0神经调用**，进程已退出。原框架`run_behavior_eval_chunked`本来就启用RGB-D并延迟初始化空间；新Onboard又给同一分辨率赋值，原生setter仍销毁/重建render product，随后本体观测读到失效PhysX articulation。现在只读核验现有modalities/分辨率，不改相机/重载环境，并加禁止setter和live reload回归；所有异常在OG退出前留receipt。此为本次适配错误，不是VLM能力失败。按预登记**将2个策略reset额度改作两场景工程复验，总4个reset不增加，本轮不再追加独立策略回合**；保留最多6次已保存状态静态调用。门再次失败即止，不能用新静态结果冒充闭环/成功率。
+
 ### 2026-09-18 10:26（北京时间）：H-06中断续接，核验最终提交并收尾交接
 
 - **Codex / H-06：** clean fetch/pull确认`e7478cf`已在GitHub，本地无遗漏修改，main仍`33677bd`。昨晚两条回合result/视频已完成，本轮复查4030268/4031167/4031345均不存在，不重启既有实验；当前产品goal为null。GPU占用已变化，仅记录现状，不把队友旧PID或旧余量当当前状态。

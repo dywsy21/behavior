@@ -1,5 +1,6 @@
 """Bounded development gate / VLM rollout. v1 and active teammate code unchanged."""
 import argparse
+from contextlib import contextmanager
 from dataclasses import asdict
 import hashlib
 import json
@@ -126,16 +127,30 @@ def main():
     controller=None
     video, manager, servo, state = None,None,None,None
     trace = (out/"steps.jsonl").open("x",buffering=1)
-    try:
+    phase,reset_completed="SESSION_INITIALIZATION",False
+
+    @contextmanager
+    def recorded_session():
         with OfficialEvaluatorSession(window,gpu=args.gpu) as environment:
+            try:
+                yield environment
+            except BaseException as exc:
+                # The native Kit shutdown may terminate the interpreter before
+                # an outer except runs. Persist the ORIGINAL error inside it.
+                write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
+                    "controls":controls,"prefix_controls":prefix_count,"decisions":decisions,
+                    "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
+                raise
+    try:
+        with recorded_session() as environment:
             import omnigibson as og
+            phase="RESET"
             environment.reset()
+            reset_completed=True
             env = environment.evaluator.env
+            phase="READ_ONLY_ONBOARD_ADAPTER"
             onboard=OnboardRGBD(env) if grounded else None
-            if onboard:
-                # Attach the allowed depth annotator and finish its initial
-                # render before reading buffers. No control step is hidden here.
-                for _ in range(3): og.sim.render()
+            phase="ROBOT_CALIBRATION"
             kin = CalibratedRobot(env.robots[0])
             model = kin.calibrate(grounded=grounded)
             write(out/"robot_calibration.json",model.spec)
@@ -181,6 +196,7 @@ def main():
                 return terminal
 
             check_fk("reset")
+            phase="EXPERT_PREFIX"
             prefix = window.frozen_window().prefix_actions[:args.prefix]
             for i, action in enumerate(prefix):
                 if step(action,render=(i%16==15 or i==len(prefix)-1)):
@@ -227,6 +243,7 @@ def main():
                 video.append_data(np.asarray(canvas))
 
             gate = bounded_gate(grounded)
+            phase="BOUNDED_CONTROL_OR_AGENT_LOOP"
             for decision in range(args.max_decisions):
                 recoverable_stop=bool(controller and manager.stop_reason=="RECOVERY_BUDGET_EXHAUSTED" and manager.replans<2)
                 if controls>=args.max_controls or time.perf_counter()-started>=args.max_seconds or terminal or (manager and manager.stop_reason and not recoverable_stop):
