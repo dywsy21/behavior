@@ -6,6 +6,7 @@ import unittest
 from semantic_robot.v2.protocol import strict_json
 from semantic_robot.v2.protocol import HOLD
 from semantic_robot.v2.affordance import SurfaceChoice
+from semantic_robot.v2.grounded_harness import parse_recovery
 
 path = Path(__file__).resolve().parents[2]/"scripts/semantic_robot/serve_v2.py"
 spec = importlib.util.spec_from_file_location("semantic_v2_service",path)
@@ -14,6 +15,20 @@ spec.loader.exec_module(service)
 
 
 class TransportTests(unittest.TestCase):
+    def test_actual_b1_recovery_text_is_audit_not_actuation(self):
+        # Exact H-08 B1 calls77/82. Only rationale length failed previously.
+        texts=[
+            '{"strategy": "move_forward", "visible_reason": "A complete 360-degree sweep at this viewpoint found no target; the visible open floor and clear path toward the far glass doors suggest the breakfast table is in an adjacent area, so moving forward to a new viewpoint is the only supported option."}',
+            '{"strategy":"hold","visible_reason":"The red and white radio is clearly visible on the table in front of the robot, but the recovery budget is exhausted and the target surface estimate is invalid due to multiview disagreement. Holding is the safest option to avoid further failed approaches."}'
+        ]
+        for text in texts:
+            self.assertEqual(parse_recovery(text),strict_json(text))
+        import json
+        for value in ({"strategy":"teleport","visible_reason":"clear"},
+                      {"strategy":"hold","visible_reason":"x"*1025},
+                      {"strategy":"hold","visible_reason":"ok","done":True}):
+            with self.assertRaises(ValueError):parse_recovery(json.dumps(value))
+
     def test_action_and_ground_grammars_remain_separate(self):
         service.validate_scoped_choices("act",[HOLD.text()])
         service.validate_scoped_choices("ground",[SurfaceChoice().text(),SurfaceChoice(2).text()])

@@ -19,7 +19,10 @@ def parse_recovery(text):
     value=strict_json(text)
     if not isinstance(value,dict) or set(value)!={"strategy","visible_reason"}:
         raise ValueError("Recovery changes strategy only, not goals or completion")
-    if value["strategy"] not in RECOVERY_STRATEGIES or not isinstance(value["visible_reason"],str) or not 1<=len(value["visible_reason"])<=240:
+    # The rationale is audit text, never a command. A harmless 244-character
+    # explanation must not abort an otherwise valid safe strategy. Keep a real
+    # payload bound and preserve the exact text; no truncation or inferred enum.
+    if value["strategy"] not in RECOVERY_STRATEGIES or not isinstance(value["visible_reason"],str) or not 1<=len(value["visible_reason"])<=1024:
         raise ValueError("Invalid bounded recovery strategy")
     return value
 
