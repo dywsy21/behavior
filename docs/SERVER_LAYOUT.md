@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 13:56 H-08最新：** B3两策略均结束（radio738新控制/105调用，task3 1580/128，官方false），两模型服务已停止，radio另4静态合计109。完整`b3_complete.tar`SHA16cca5a0…传回本地中；`b4_static.tar`SHA40aa687e…为4静态及服务调用证据。新不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_selfdepth_39881cf`已robo123CPU，唯一`gate_plates_b4`4134086/GPU3启动核验本体visual mesh/self_depth；radio新门与B4策略尚未提交。新旧run都在原H-08根，日志同级；禁止热改或把下面旧启动记录当现状。
+
 **2026-09-18 13:19 H-08 B3运行：** `gate_radio_b3`/`gate_plates_b3`已通过（385/396新控制、48/48视觉运动、a2f598f3…）。唯一`radio_b3`和`plates_b3`在H-08根启动，预算分别64/2048/1800s、80/2400/2400s；`server_b3_radio`4125196/GPU1/8908、`server_b3_plates`4125250/GPU3/8909各224调用，均同0e79cd6/27B revision。所有源码从`semantic_odometry_0e79cd6`运行，禁止热改；当前策略尚无终态，新日志同级`.log`。
 
 **2026-09-18 13:15 H-08 B3当前：** 不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_odometry_0e79cd6`固定0e79cd692d936c56081a6b25ded0c2b17218ba63，robo113CPU通过。H-08根下`gate_radio_b3`/`gate_plates_b3`真实工程门正在初始化；`server_b3_radio`GPU1/8908、`server_b3_plates`GPU3/8909各同27B/≤224调用开始加载。旧`server_b2`已停（仅2静态）；B2两策略没有启动。`odometry_probe_b2`217控制/0神经完成，归档SHA71c1e712…已在本地，物理真值只存诊断。B3两策略仍等新门，不热改/重复提交。[实时计划](plan.md)
