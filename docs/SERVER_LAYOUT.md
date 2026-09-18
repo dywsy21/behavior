@@ -6,6 +6,10 @@
 
 ## 1. 总览
 
+**2026-09-18 14:22 H-08策略运行：** `radio_b4`4143759/GPU1/8908、`plates_b4`4143760/GPU3/8909已唯一启动，正在初始化，run与日志均在同H-08根；各自原预算/前缀不变，仿真14a33ec、服务39881cf，不热改。下条的准备提交已更新为运行中，结果仍待验。
+
+**2026-09-18 14:21 H-08当前：** 运行源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_selfdepth_14a33ec`，两`gate_radio_b4_fast`/`gate_plates_b4_fast`已完整通过，385/396新控制、digest ac733fff…；旧39881cf两慢版门中断保留（无完整result）。B4服务4136279/8908/GPU1与4136398/8909/GPU3仍固定`semantic_selfdepth_39881cf`（仅仿真优化，HTTP源码未改），同27B各0/224调用。策略`radio_b4`/`plates_b4`准备唯一提交；根仍`semantic_agent_effect_20260918`、同级日志。B3完整归档SHA16cca5a0…和静态归档SHA40aa687e…均已到本地并校验，B3两视频已全解码与人工选帧核验。旧启动/传输记录均为历史，不热改任何在用源。
+
 **2026-09-18 13:56 H-08最新：** B3两策略均结束（radio738新控制/105调用，task3 1580/128，官方false），两模型服务已停止，radio另4静态合计109。完整`b3_complete.tar`SHA16cca5a0…传回本地中；`b4_static.tar`SHA40aa687e…为4静态及服务调用证据。新不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_selfdepth_39881cf`已robo123CPU，唯一`gate_plates_b4`4134086/GPU3启动核验本体visual mesh/self_depth；radio新门与B4策略尚未提交。新旧run都在原H-08根，日志同级；禁止热改或把下面旧启动记录当现状。
 
 **2026-09-18 13:19 H-08 B3运行：** `gate_radio_b3`/`gate_plates_b3`已通过（385/396新控制、48/48视觉运动、a2f598f3…）。唯一`radio_b3`和`plates_b3`在H-08根启动，预算分别64/2048/1800s、80/2400/2400s；`server_b3_radio`4125196/GPU1/8908、`server_b3_plates`4125250/GPU3/8909各224调用，均同0e79cd6/27B revision。所有源码从`semantic_odometry_0e79cd6`运行，禁止热改；当前策略尚无终态，新日志同级`.log`。
