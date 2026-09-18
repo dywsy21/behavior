@@ -38,6 +38,16 @@ env PYTHONPATH=src /mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python scripts/vlm
 
 04:34 父完成两新门退出/实际链及首图审阅，确认旧132309退出并独占交接GPU1；显式只放行task0。`authorization_first_three.json` SHA `1348181d7f11112f74df7a82650a43c1a12dbea4b2b0948ec81c8e921d72449c`、gate开关及digest均在启动前核验。04:35:24 BJT提交PID156956，runtime仍1509，run=`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/pilot_v1/task_0`，日志同级task_0.log，launch记录同级task_0_launch.json。启动前GPU1空；TRAIN70/e66/f1170、单次reset/1170前缀/≤200新控制/≤900s、≤3人工候选/每次120s，0模型训练，预算不扩大。目前仅初始化，未称reset/停顿/采集成功；task1/3不自动启动，原始记录仍全部隔离。
 
+### 04:40 task0 基础设施失败停止；04:42 有界 CPU 修复
+
+task0已经退出，并非仍运行或成功采集。标定JSON **47,345,882B**（包含完整底盘视觉网格）超过每run30MiB，旧1509仅在前缀/settle后检查磁盘，真实规模未被先前小fixture覆盖。发现后核唯一PID并SIGINT停止；记录304条已完成专家前缀、0教师动作/候选/标签、0模型训练。OG自己的SIGINT handler直接shutdown，**无result/failure/final_hold回执，不声称safe hold已执行**；信号时可能在途的step不能补造完成计数。一reset已消耗，task0不重跑，task1/3暂停。原失败47,511,519B全保留并计入累计100MiB，不能换目录绕过。
+
+失败证据 `pilot_v1/task_0/budget_operator_stop.json` SHA `158970e4607fa05ce33c0ed8f5cbc1230c5967347a8ccffefcbf1cf4c42e814e`，trace SHA `b0bac7f5f53e4de5c5a2d7d7da49f26ea2d5604bf8098a75d001d0ac8e417882`，标定原字节SHA `bbf369bc6ec7cb6d0fcfd35cffd8465790e5fd39857f609a8cbf6138c0a35fd6`；轻量文件及日志本地 `artifacts/h09s-runtime-1509b7a/pilot_v1`。这不是PRESS动作失败或SFT效果证据。
+
+父另登记≤600s CPU/≤20MiB派生、0物理/模型/训练修复。在线控制器始终使用完整内存model，没有按robot_calibration.json路径回读依赖；仅将持久化改为 `robot_calibration.json.gz`，保留全部字段，另存raw字节SHA、gzip SHA、原canonical model SHA与两种大小；`load_calibration`可验证并还原完整模型。真实失败JSON只读压缩初验3,127,231B/0.501s、解压逐字节相同，未删除旧文件。
+
+`ArtifactBudget`在所有正常二进制/JSON写前核字节，prefix每step也先为trace预留空间，避免先超额落盘再浪费前缀。每run最多29MiB正常数据+1MiB清理，仍≤30；总root由SHA绑定的prepared位置确定，递归包含旧失败/日志/准备/授权/派生等，最多97MiB正常+3MiB清理，仍≤100。目录改变不能绕过；少于预期样本即停止，不放宽容量。标定写入前先建立实际reset夹爪latch，以便预算异常进入原finally保姿态/保夹爪hold。36项CPU测试通过，包括大mesh无损往返、原始超限文件写前拒绝、跨run累计、以及实际collector初始try/finally的预算异常注入：0prefix、1hold、错误和hold回执均保留。真实大标定最终writer/loader与归档核验见后续补记；物理仍暂停，旧1509源码不热改。
+
 实现的是 **人工当前状态教师的可执行采集流程**，不是把混合专家动作重新解释成纯动作：`native_teacher_prepare.py` 做严格 TRAIN 来源与前缀转换；`native_teacher_contract.py` 编译只供审阅的方向候选、绑定人工审批与隔离记录；`native_teacher_collect.py` 可在停顿后导出三 RGB，零 physics 等待审批，执行已有 `token_to_action`/`SafeServo`，导出实际 23D 轨迹、立即及再停顿后的图像，默认全部 quarantine。没有新的 VLM、自举标签或自动正确性证书。
 
 初版 `973ba76` 已由 Git 同步；远端 CPU 直接执行该提交的 Git blobs，复用 `semantic_joint_90a7c20` 中未变的 common/live/prepare 依赖，未创建或热改运行源码。真实准备 **3.353s，799,441 字节**，含三个前缀、9 段三视图原专家 17 帧视频和完整定位/来源回执；0 模型/控制/reset。目录：`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1`。后续修订增加稳定停顿后图像、近静止 EEF 门及保守未知负载约束，不改变已准备的数据。29 项 SFT CPU 测试通过（原21＋新8），新采集器尚未在 simulator 中运行，不能称端到端采集已通过。

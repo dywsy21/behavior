@@ -32,6 +32,7 @@ from common import TOKENS, sha, write_json, token_to_action
 from live import runtime_proprio
 from native_teacher_contract import (SCHEMA, digest, actor_input, validate_approval,
                                      verify_prepared_source, verify_loaded_window)
+from native_teacher_artifacts import ArtifactBudget, write_calibration
 from semantic_robot.v2.servo import SafeServo, ServoLimits, native_action
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.onboard import OnboardRGBD
@@ -78,7 +79,7 @@ def require_release(value, code, executor):
         raise ValueError("Both matching engineering gates required; old H13 gates are insufficient")
 
 
-def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, clock, budget_root=None):
+def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, clock, budget_root=None, writer=None):
     """One render-only RGB-D/actual-box snapshot, bound to unchanged local q."""
     folder = Path(folder); folder.mkdir()
     before = state_now()
@@ -89,24 +90,19 @@ def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, cl
         raise RuntimeError("Physics changed during render-only capture")
     if robot_point_mask(np.empty((0, 3)), geometry) is None:
         raise ValueError("Fresh actual robot self geometry required")
-    def save_bytes(file, content):
-        if budget_root is not None:
-            used = sum(p.stat().st_size for p in Path(budget_root).rglob("*") if p.is_file())
-            if used + len(content) > 30*1024**2:
-                raise RuntimeError("Raw evidence exceeds per-run artifact budget; no candidate execution")
-        file.write_bytes(content)
+    writer = writer or ArtifactBudget(budget_root or folder)
     hashes = {}
     for view in ("head", "left_wrist", "right_wrist"):
         file = folder/(view+".png")
         buffer = io.BytesIO()
         Image.fromarray(images[view+"_rgb"].transpose(1, 2, 0)).save(buffer, format="PNG")
-        save_bytes(file, buffer.getvalue())
+        writer.write_bytes(file, buffer.getvalue())
         hashes[view] = sha(file)
     buffer = io.BytesIO(); np.savez_compressed(buffer, **depths)
-    save_bytes(folder/"depth.npz", buffer.getvalue())
-    write_json(folder/"robot_self_geometry.json", geometry)
-    write_json(folder/"sensors.json", receipts)
-    write_json(folder/"proprio.json", runtime_proprio(after))
+    writer.write_bytes(folder/"depth.npz", buffer.getvalue())
+    writer.write_json(folder/"robot_self_geometry.json", geometry)
+    writer.write_json(folder/"sensors.json", receipts)
+    writer.write_json(folder/"proprio.json", runtime_proprio(after))
     evidence = {"clock": clock, "q": after.q.tolist(), "gripper": after.gripper.tolist(),
                 "kinematic_model_sha256": model.sha,
                 "source": "render_only_current_onboard_RGBD_and_robot_joint_FK", "scene_truth": False,
@@ -115,7 +111,7 @@ def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, cl
                      "head.png", "left_wrist.png", "right_wrist.png"]},
                 "depth_array_sha256": {view: hashlib.sha256(np.ascontiguousarray(raw).tobytes()).hexdigest()
                                        for view, raw in depths.items()}}
-    write_json(folder/"capture.json", evidence)
+    writer.write_json(folder/"capture.json", evidence)
     return after, hashes, depths, geometry, evidence
 
 
@@ -146,6 +142,7 @@ def main():
     require_release(release, code, implementation_digest())
     ref, expected_prefix, source_binding = verify_prepared_source(x.prepared, release)
     x.output.mkdir(parents=True, exist_ok=False)
+    artifacts = ArtifactBudget(x.output, x.prepared.resolve().parent.parent)
     import shutil
     if shutil.disk_usage(x.output).free < 80*1024**3:
         raise RuntimeError("Disk reserve: no reset")
@@ -161,7 +158,7 @@ def main():
     _, _, rechecked = verify_prepared_source(x.prepared, release)
     if rechecked != source_binding:
         raise ValueError("Prepared identity changed while loading")
-    write_json(x.output/"manifest.json", {"schema": SCHEMA, "code": code, "authorization": release,
+    artifacts.write_json(x.output/"manifest.json", {"schema": SCHEMA, "code": code, "authorization": release,
               "source": ref["source"], "prepared_binding": source_binding, "robot_geometry_guards": True,
               "prefix_controls": len(prefix), "native_controls_max": 200,
               "models": 0, "training_eligible": False, "no_restore_or_automatic_recovery": True})
@@ -177,7 +174,10 @@ def main():
             session.reset(); started = time.monotonic(); env = session.evaluator.env
             kin = CalibratedRobot(env.robots[0]); model = kin.calibrate(grounded=True)
             onboard = OnboardRGBD(env)
-            write_json(x.output/"robot_calibration.json", model.spec)
+            # Establish the reset grip latch before any artifact-budget failure,
+            # so the existing finally block can hold without releasing a hand.
+            grips = np.clip(kin.state().gripper/.05*2-1, -1, 1)
+            write_calibration(artifacts, model)
             checks = kin.compare(model)
             if any(e["position_m"] > .003 or e["angle_rad"] > .02 or e.get("jacobian_max_abs", 0) > .04 for e in checks.values()):
                 raise RuntimeError("FK drift")
@@ -191,14 +191,17 @@ def main():
                     raise RuntimeError("Terminal/control budget; final stop slot reserved")
                 if time.monotonic()-started >= 900:
                     raise TimeoutError("Pilot wall budget")
+                line = json.dumps({"phase": kind, "prefix_control": prefix_count+int(kind=="prefix"),
+                                   "native_control": controls+int(kind!="prefix"),
+                                   "action23": np.asarray(command).tolist()}, allow_nan=False)+"\n"
+                artifacts.check(len(line.encode("utf-8")))  # BEFORE env.step, including expert prefix.
                 with og.sim.render_on_step(True):
                     obs, _, terminated, truncated, _ = env.step(command, n_render_iterations=1)
                 if kind == "prefix": prefix_count += 1
                 else: controls += 1
                 terminal = bool(terminated or truncated); grips = np.asarray(command)[[14, 22]].copy()
                 e = session.evaluator; e.obs = e._preprocess_obs(e._sync_lights_and_get_obs(obs))
-                trace.write(json.dumps({"phase": kind, "prefix_control": prefix_count, "native_control": controls,
-                                       "action23": np.asarray(command).tolist()})+"\n")
+                trace.write(line)
                 if terminal: raise RuntimeError("Official episode terminated; no automatic reset")
             for command in prefix: step(command, "prefix")
             source_q = np.r_[ref["source_states"][0][53:57], ref["source_states"][0][3:10], ref["source_states"][0][28:35]]
@@ -211,7 +214,7 @@ def main():
                 if not rest_screen(recent): raise RuntimeError("No near-rest after fixed 12 controls; no extra settling")
             def capture(folder):
                 return capture_snapshot(folder, model, state, onboard, kin.native_self_boxes, og.sim.render,
-                                        {"prefix_control": prefix_count, "native_control": controls}, x.output)
+                                        {"prefix_control": prefix_count, "native_control": controls}, x.output, artifacts)
             settle()
             for index in range(3):
                 if sum(v.stat().st_size for v in x.output.rglob("*") if v.is_file()) > 30*1024**2 or shutil.disk_usage(x.output).free < 80*1024**3:
@@ -227,8 +230,8 @@ def main():
                            "source_reference_sha256": sha(x.prepared/"teacher_reference.json"),
                            "before_capture_sha256": sha(folder/"before/capture.json"),
                            "proposal_aid": ref["proposals"], "must_revalidate_intent_after_pause": True}
-                write_json(folder/"request.json", request)
-                write_json(folder/"WAITING_FOR_MANUAL_APPROVAL.json", {"request_sha256": digest(request), "deadline_seconds": 120,
+                artifacts.write_json(folder/"request.json", request)
+                artifacts.write_json(folder/"WAITING_FOR_MANUAL_APPROVAL.json", {"request_sha256": digest(request), "deadline_seconds": 120,
                            "approval_path": str(folder/"approval.json"), "physics_steps_while_waiting": 0})
                 wait_start = time.monotonic()
                 while not (folder/"approval.json").exists():
@@ -248,14 +251,14 @@ def main():
                 preflight["no_physics_since_capture"] = controls == capture_receipt["clock"]["native_control"]
                 if not preflight["no_physics_since_capture"]:
                     raise RuntimeError("Approval crossed a physics step")
-                write_json(folder/"preflight.json", preflight)
+                artifacts.write_json(folder/"preflight.json", preflight)
                 start_control = controls
                 native_actions = []
                 while not servo.done and servo.ticks < servo.total_ticks:
                     command = servo.next_action(state()); step(command, "candidate")
                     native_actions.append({"native_control": controls, "action23": command.tolist()})
                 feedback = servo.finish(state())
-                write_json(folder/"native_execution.json", {"control_start": start_control, "control_end": controls,
+                artifacts.write_json(folder/"native_execution.json", {"control_start": start_control, "control_end": controls,
                            "actions": native_actions})
                 _, post_hashes, _, _, _ = capture(folder/"after")
                 stable_hashes = None
@@ -271,7 +274,7 @@ def main():
                           "feedback": feedback, "post_observation_sha256": digest({"immediate": post_hashes, "settled": stable_hashes}),
                           "settle_passed": stable_hashes is not None,
                           "training_eligible": False, "post_review_required": True}
-                write_json(folder/"QUARANTINED_record.json", record); completed.append(str(folder))
+                artifacts.write_json(folder/"QUARANTINED_record.json", record); completed.append(str(folder))
                 if feedback["status"] != "TARGET_REACHED": raise RuntimeError("Native action failed; no corrective retry")
                 history.append(token)
         except BaseException as exc:
@@ -279,15 +282,17 @@ def main():
         finally:
             if kin is not None and grips is not None and not terminal and controls < 200:
                 try:
-                    env.step(native_action(kin.state().q, grips), n_render_iterations=1); controls += 1
-                    write_json(x.output/"final_hold.json", {"completed": True, "native_controls": controls})
+                    stop = native_action(kin.state().q, grips)
+                    env.step(stop, n_render_iterations=1); controls += 1
+                    artifacts.write_json(x.output/"final_hold.json", {"completed": True, "native_controls": controls,
+                                         "prefix_controls": prefix_count, "action23": stop.tolist()}, cleanup=True)
                 except BaseException as exc: record_error(exc)
             if trace is not None:
                 try: trace.close()
                 except BaseException as exc: record_error(exc)
         if first_error is not None: raise first_error
         try:
-            write_json(x.output/"result.json", {"status": "COLLECTED_QUARANTINED_NOT_SFT", "prefix_controls": prefix_count,
+            artifacts.write_json(x.output/"result.json", {"status": "COLLECTED_QUARANTINED_NOT_SFT", "prefix_controls": prefix_count,
                        "native_controls": controls, "samples": completed, "model_calls": 0, "official_success_claim": False})
         except BaseException as exc:
             record_error(exc); raise first_error
