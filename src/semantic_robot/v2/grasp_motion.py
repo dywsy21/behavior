@@ -47,7 +47,28 @@ def continued_features(previous,detected,mask,limit=160,min_distance=7):
     return (np.asarray(kept,dtype=np.float32).reshape(-1,1,2) if kept else None),inherited
 
 
-def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_camera,after_camera,seed,before_self=None,after_self=None,previous_features=None,stable_seed_depth=False):
+def spatial_features(gray,mask):
+    """Fixed 4x4 spatial quota; local contrast cannot suppress distant corners.
+
+    Detection is not evidence: every candidate still passes the original optical
+    flow, depth, self-exclusion and rigid-motion checks. The 160 point/7px budget
+    is unchanged. Whole-image derivatives avoid artificial crop-edge corners.
+    """
+    import cv2
+    h,w=mask.shape;groups=[]
+    for iy in range(4):
+        for ix in range(4):
+            tile=np.zeros_like(mask)
+            ys=slice(iy*h//4,(iy+1)*h//4);xs=slice(ix*w//4,(ix+1)*w//4)
+            tile[ys,xs]=mask[ys,xs]
+            found=cv2.goodFeaturesToTrack(gray,maxCorners=10,qualityLevel=.015,minDistance=7,mask=tile,blockSize=5)
+            groups.append([] if found is None else found.reshape(-1,2).tolist())
+    # Round-robin preserves coverage when adjacent tiles share nearby corners.
+    candidates=[g[i] for i in range(10) for g in groups if i<len(g)]
+    return continued_features(np.empty((0,2),np.float32),candidates or None,mask)[0]
+
+
+def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_camera,after_camera,seed,before_self=None,after_self=None,previous_features=None,stable_seed_depth=False,spatial_seed_features=False):
     import cv2
     old,new=np.asarray(before_rgb),np.asarray(after_rgb)
     shape=(camera["height"],camera["width"],3)
@@ -82,7 +103,9 @@ def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_cam
         mask[~stable]=0
         result["eligible_stable_depth_seed_pixels"]=int(np.count_nonzero(mask))
     gray0=cv2.cvtColor(old,cv2.COLOR_RGB2GRAY);gray1=cv2.cvtColor(new,cv2.COLOR_RGB2GRAY)
-    points=cv2.goodFeaturesToTrack(gray0,maxCorners=160,qualityLevel=.015,minDistance=7,mask=mask,blockSize=5)
+    points=(spatial_features(gray0,mask) if spatial_seed_features else
+            cv2.goodFeaturesToTrack(gray0,maxCorners=160,qualityLevel=.015,minDistance=7,mask=mask,blockSize=5))
+    if spatial_seed_features:result["feature_selection"]="fixed_4x4_local_contrast_10_per_tile_max160_min_distance7"
     if previous_features is not None:
         detected=0 if points is None else len(points)
         points,inherited=continued_features(previous_features,points,mask)
@@ -125,7 +148,7 @@ def point_tracks(before_rgb,after_rgb,before_depth,after_depth,camera,before_cam
     return result,np.asarray(xyz0),np.asarray(xyz1)
 
 
-def measure_grasp_motion(before,after,model,arm,seed,body_transform,previous_features=None,stable_seed_depth=False):
+def measure_grasp_motion(before,after,model,arm,seed,body_transform,previous_features=None,stable_seed_depth=False,spatial_seed_features=False):
     """Compare matched points in robot and hand coordinates; no VLM co-motion.
 
     The transformation maps the current body to the previous body, obtained
@@ -133,7 +156,7 @@ def measure_grasp_motion(before,after,model,arm,seed,body_transform,previous_fea
     """
     view=arm+"_wrist";camera=model.spec["metadata"]["cameras"][view]
     t0,t1=(model.forward(row["q"],"camera_"+view) for row in (before,after))
-    receipt,p0,p1=point_tracks(before["rgb"][view],after["rgb"][view],before["depth"][view],after["depth"][view],camera,t0,t1,seed,before.get("self_geometry"),after.get("self_geometry"),previous_features,stable_seed_depth)
+    receipt,p0,p1=point_tracks(before["rgb"][view],after["rgb"][view],before["depth"][view],after["depth"][view],camera,t0,t1,seed,before.get("self_geometry"),after.get("self_geometry"),previous_features,stable_seed_depth,spatial_seed_features)
     if not receipt["valid"]:return receipt
     e0,e1=(model.forward(row["q"],arm) for row in (before,after))
     body=np.asarray(body_transform,dtype=float)
@@ -163,9 +186,12 @@ def measure_grasp_motion(before,after,model,arm,seed,body_transform,previous_fea
 
 class GraspMotionVerifier:
     """Bounded rigid following, not a simulator holding predicate or task truth."""
-    def __init__(self,persistent_tracks=False):
+    def __init__(self,persistent_tracks=False,spatial_seed_features=False):
         self.previous=None;self.lifts={};self.displacement={};self.last_execution=None
         self.persistent_tracks=bool(persistent_tracks);self.tracks={}
+        self.spatial_seed_features=bool(spatial_seed_features)
+        if self.spatial_seed_features and not self.persistent_tracks:
+            raise ValueError("Spatial features require the identity-bound persistent tracking mode")
 
     def observe(self,model,state,images,depths,self_geometry,harness,targets,motion,evidence):
         frame={"q":state.q.copy(),"gripper":state.gripper.copy(),"rgb":images,"depth":depths,
@@ -204,7 +230,7 @@ class GraspMotionVerifier:
                         else:
                             self.lifts[arm]=0;self.displacement[arm]=np.zeros(3)
                             reason="HISTORY_IDENTITY_MISMATCH_RESET"
-                    row=measure_grasp_motion(*arguments,features,True)
+                    row=measure_grasp_motion(*arguments,features,True,spatial_seed_features=self.spatial_seed_features)
                     row["feature_history_binding"]={"continued":features is not None,"reason":reason,"stable_depth_before_detection":True}
                 else:row=measure_grasp_motion(*arguments)
             if row.get("registered_pair_consistent"):

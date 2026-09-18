@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 20:24当前：** B18策略47681已退出、55新控制/官方false；模型47250已核身份TERM，归档待。新诊断只在本地CPU，不重启旧run；GPU3暂无新物理。Astra GPU1独立H09正在构造严格数据release/真batch门，未正式训练，旧data_v1保留；主分支7dc0fdb已pull/fetch同步，main仍33677bd。
+
 **2026-09-18 20:14当前：** B18双门已通过/退出；主代理GPU3 `server_b18_matched`47250/8909/≤151、唯一`radio_b18_matched`正在启动，源d807d3d不热改。Astra H09在独立源`vlm_sft_a201e09`准备CPU `data_v1`索引，训练尚未开始，GPU1留给其后续2B LoRA；各自新增盘量3/8GiB，合守80GiB余量。
 
 **2026-09-18 20:08当前：** 主代理仅GPU3双门`gate_radio_b18`44434、`gate_plates_b18`44435运行，源`git_worktrees/semantic_persistent_d807d3d`固定d807d3d/b353df13/238CPU；H08根新增`offline_b18_radio_b17_matched`、`offline_b18_radio_b14_matched`为0控制旧帧候选核验。B18模型/策略未启动，不热改源。GPU1已交Astra H09独立SFT；其专属根`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_showharness_20260918`，精确运行位置由其后续回报，不与H08混淆。

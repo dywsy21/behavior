@@ -15,7 +15,7 @@ from audit_grasp_motion import frame,read
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--run",required=True);p.add_argument("--decision",type=int,action="append",required=True)
-    p.add_argument("--continued",action="store_true");p.add_argument("--stable-seed-depth",action="store_true");p.add_argument("--output",required=True);a=p.parse_args()
+    p.add_argument("--continued",action="store_true");p.add_argument("--stable-seed-depth",action="store_true");p.add_argument("--spatial-seed-features",action="store_true");p.add_argument("--output",required=True);a=p.parse_args()
     run=Path(a.run);out=Path(a.output);out.mkdir(parents=True,exist_ok=False);model=RobotModel(read(run/"robot_calibration.json"))
     rows=[];history=None;count=0;delta=np.zeros(3)
     for i in a.decision:
@@ -28,7 +28,7 @@ def main():
         use=bool(a.continued and chain)
         if not chain:count=0;delta=np.zeros(3)
         points=history["points"] if use else None
-        result=measure_grasp_motion(before,after,model,"right",target["point_base_m"],motion["body_transform_current_in_previous"],points,a.stable_seed_depth)
+        result=measure_grasp_motion(before,after,model,"right",target["point_base_m"],motion["body_transform_current_in_previous"],points,a.stable_seed_depth,a.spatial_seed_features)
         if result.get("registered_pair_consistent"):
             count+=1;delta+=np.asarray(result["hand_delta_m"])
             history={"next_decision":i+1,"image_sha":result["current_rgb_sha256"],"goal_index":h["goal_index"],
@@ -45,7 +45,7 @@ def main():
             canvas.paste(im,(480*k,0))
         canvas.save(out/f"decision_{i:03d}_tracks.jpg")
         rows.append(result);print(json.dumps({k:v for k,v in result.items() if k!="tracked_pixels"}),flush=True)
-    (out/"result.json").write_text(json.dumps({"run":str(run),"continued_candidate":a.continued,"stable_seed_depth":a.stable_seed_depth,"controls":0,"model_calls":0,"rows":rows},indent=2))
+    (out/"result.json").write_text(json.dumps({"run":str(run),"continued_candidate":a.continued,"stable_seed_depth":a.stable_seed_depth,"spatial_seed_features":a.spatial_seed_features,"controls":0,"model_calls":0,"rows":rows},indent=2))
 
 
 if __name__=="__main__":main()

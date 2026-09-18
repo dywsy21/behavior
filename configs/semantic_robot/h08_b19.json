@@ -1,0 +1,22 @@
+{
+  "experiment_id": "H-08-B19",
+  "owner": "Codex-parent",
+  "hypothesis": "Fixed spatial quotas prevent a few high-contrast corners from suppressing independent lower-contrast target tracks across new renders, without relaxing grasp evidence thresholds.",
+  "code_commit": "PIN_AFTER_COMMIT",
+  "implementation_digest": "PIN_AFTER_COMMIT",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "training_updates": 0,
+  "actor_scene_truth": false,
+  "offline_gate": {"pairs": 17, "runs": ["B18 matched", "B17 matched", "B14 matched", "B13 standard", "B13 matched"], "wall_seconds": 300, "model_calls": 0, "controls": 0, "required": "All four fine-lift chains meet original thresholds; empty and subresolution negatives remain rejected; human track overlays reviewed. B18 new frames pending at registration."},
+  "selection": {"grid": [4, 4], "corners_per_cell": 10, "quality_level_per_cell": 0.015, "max_total_points": 160, "min_distance_pixels": 7, "stable_depth_and_persistent_identity": true},
+  "gate_each": {"tasks": [0, 3], "gpu": 3, "decisions": 24, "controls": 1536, "wall_seconds": 1200, "model_calls": 0},
+  "policy_matched": {"run": "radio_b19_matched", "task": 0, "instance": 138, "split": "train", "seed": 0, "expert_prefix": 448, "saved_policy_prefix": 362, "gpu": 3, "model_gpu": 3, "decisions": 64, "controls": 2048, "wall_seconds": 1800, "model_calls": 151, "max_reference_calls": 4, "prefix_spec": "configs/semantic_robot/h08_b13_matched_prefix.json"},
+  "comparison": "B18 exact prefix/plan/frozen model/protocol. Only opt-in spatial feature selection changes; first offline then exact-source gates, then one matched closed loop. GPU1 reserved for H09.",
+  "flags": ["--harness", "grounded", "--refine-grounding", "--visual-odometry", "--active-grasp-probe", "--grasp-motion", "--odometry-estimator", "rgbd_rigid", "--approach-progress", "--held-object-inspection", "--persistent-grasp-tracks", "--spatial-grasp-features"],
+  "cpu_threads": 4,
+  "min_free_disk_GiB": 80,
+  "max_added_artifacts_GiB": 3,
+  "no_new_standard_or_task3_policy": true,
+  "stops": ["Any offline negative falsely accepted blocks physics", "Original >=8 points, >=80% rigid following, >=2 consecutive pairs and >=15mm/12mm upward accumulated motion", "Original three-lift window; bad/contradictory pair clears history", "All original semantic/inspection/servo/load-preservation guards", "Replay mismatch or declared budget"],
+  "limitations": "Known assisted-grasp development start, evaluator3.9.1; not independent full-task success rate. Independent code review pending."
+}

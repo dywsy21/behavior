@@ -2,12 +2,31 @@ import unittest
 from unittest.mock import patch
 import hashlib
 import numpy as np
-from semantic_robot.v2.grasp_motion import continued_features,GraspMotionVerifier,point_tracks
+from semantic_robot.v2.grasp_motion import continued_features,GraspMotionVerifier,point_tracks,spatial_features
 import test_grasp_motion as original
 from test_v2 import evidence
 
 
 class ContinuedFeatureTests(unittest.TestCase):
+    def test_local_contrast_keeps_independent_weak_corners(self):
+        import cv2
+        gray=np.zeros((128,128),np.uint8);gray[8:20,8:20]=255;gray[100:112,100:112]=15
+        mask=np.full_like(gray,255)
+        global_points=cv2.goodFeaturesToTrack(gray,maxCorners=160,qualityLevel=.015,minDistance=7,mask=mask,blockSize=5)
+        self.assertFalse(np.any(global_points.reshape(-1,2)[:,0]>90))
+        points=spatial_features(gray,mask).reshape(-1,2)
+        self.assertTrue(np.any(points[:,0]>90));self.assertTrue(np.any(points[:,0]<30))
+        mask[96:,96:]=0
+        self.assertFalse(np.any(spatial_features(gray,mask).reshape(-1,2)[:,0]>90))
+
+    def test_spatial_candidate_cap_spacing_and_empty_mask(self):
+        gray=np.random.default_rng(44).integers(0,256,(480,480),dtype=np.uint8)
+        mask=np.full_like(gray,255);points=spatial_features(gray,mask).reshape(-1,2)
+        self.assertLessEqual(len(points),160)
+        distances=np.linalg.norm(points[:,None]-points[None,:],axis=2);np.fill_diagonal(distances,np.inf)
+        self.assertGreaterEqual(distances.min(),7.)
+        self.assertIsNone(spatial_features(gray,np.zeros_like(mask)))
+
     def test_ongoing_identity_has_priority_but_rechecks_current_mask(self):
         mask=np.ones((60,60),np.uint8);mask[10,10]=0
         old=[[10,10],[20,20],[30,30]];detected=np.asarray([[[21,21]],[[45,45]]],np.float32)
@@ -42,7 +61,7 @@ class ContinuedFeatureTests(unittest.TestCase):
         return v.observe(m,s,rgb,{},original.boxes(),h,t,motion,obs or evidence(enclosed=True,co_moving=None))
 
     @staticmethod
-    def measured(old,current,*args):
+    def measured(old,current,*args,**kwargs):
         return {"registered_pair_consistent":True,"hand_delta_m":[0,0,.008],
                 "current_rgb_sha256":hashlib.sha256(current["rgb"]["right_wrist"].tobytes()).hexdigest(),
                 "tracked_pixels":[{"before":[8*i,30],"after":[8*i,31]} for i in range(8)]}
@@ -54,7 +73,15 @@ class ContinuedFeatureTests(unittest.TestCase):
             r=self.observe(x,2);self.assertTrue(r["verified"])
             self.assertEqual(len(measured.call_args.args[-2]),8)
             self.assertIs(measured.call_args.args[-1],True)
+            self.assertIs(measured.call_args.kwargs["spatial_seed_features"],False)
             self.assertTrue(r["per_hand"]["right"]["feature_history_binding"]["continued"])
+
+    def test_spatial_registration_mode_is_explicit_and_passed_to_measurement(self):
+        with self.assertRaises(ValueError):GraspMotionVerifier(spatial_seed_features=True)
+        x=self.case();x[3].spatial_seed_features=True
+        with patch("semantic_robot.v2.grasp_motion.measure_grasp_motion",side_effect=self.measured) as measured:
+            self.observe(x,0);self.observe(x,1)
+            self.assertIs(measured.call_args.kwargs["spatial_seed_features"],True)
 
     def test_hash_or_execution_gap_resets_chain_and_uses_cold_detection(self):
         for kind in ("hash","execution","goal"):
