@@ -44,7 +44,7 @@ def actor_context(harness, state, bundle, allowed=()):
     context = harness.context()
     scope = selected(context, ("goal_index", "goal", "stage", "held_target_claims",
         "holding_verified_by_observation_and_proprio", "carry_constraints", "unverified_close_latches",
-        "recoveries", "strategy_replans", "recent_replans", "stop_reason", "events", "search", "active_grasp_probe", "approach_progress", "target_reference", "held_inspection"))
+        "recoveries", "strategy_replans", "recent_replans", "stop_reason", "events", "search", "active_grasp_probe", "approach_progress", "target_reference", "held_inspection", "possible_contact_after_any_close"))
     scope["target_surface_estimate"] = contact_summary(context.get("target_surface_estimate", {}))
     scope["egocentric_motion"] = selected(context.get("egocentric_motion", {}),
         ("valid", "reason", "body_delta", "body_translation_z_m"))

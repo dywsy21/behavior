@@ -12,6 +12,7 @@ from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.prompt_context import actor_context
 import json
 from test_v2 import fixture, evidence
+from test_v2 import feedback
 
 
 class Guard:
@@ -60,11 +61,46 @@ class MultiCameraTests(unittest.TestCase):
         np.testing.assert_allclose(servo.grips, [1, -1])
 
     def test_occupied_or_unverified_other_hand_not_used_as_observer(self):
-        for kind in ("held", "hold_verified", "pending_grasp"):
+        for kind in ("held", "hold_verified", "pending_grasp", "possible_contact_after_close"):
             _, _, h, _, _ = self.make()
             getattr(h, kind)["left"] = "other" if kind == "held" else True
             self.assertIsNone(free_observing_hand(h))
             self.assertFalse(any(a.part == "left" for a in h.palette()))
+
+    def test_nonpick_close_survives_goal_completion_until_observed_open(self):
+        model,state=fixture();state.gripper[:]=.02
+        h=GroundedHarness([Goal("open","drawer handle","left","open"),Goal("press","held button","left","effect")],
+                          held_inspection=True,inspection_budget_aware=True,multicamera_inspection=True)
+        h.held["right"]="object";h.hold_verified["right"]=True
+        h.stage="INTERACT";h.observation=GroundedEvidence(**evidence().as_dict())
+        close=Action("left","close");h.authorize(close)
+        h.executed(close,{**feedback(),"finger_mean_m":[.02,.02],"control_ticks":18})
+        for _ in range(3):h.observe(GroundedEvidence(**evidence(effect=True).as_dict()),state)
+        self.assertEqual(h.index,1)
+        h.bind_reference("held_right","test_semantic_relation")
+        h.stage="SEARCH";h.observation=GroundedEvidence(**evidence(visible=False,view="none",target_uv=None).as_dict())
+        self.assertIsNone(free_observing_hand(h))
+        # A completed actuator command alone does not prove the jaws opened.
+        h.executed(Action("left","open"),{**feedback(),"finger_mean_m":[.02,.02]})
+        self.assertIsNone(free_observing_hand(h))
+        h.executed(Action("left","open"),{**feedback(),"finger_mean_m":[.04,.02],"gripper_open_at_calibrated_aperture":["left"]})
+        self.assertEqual(free_observing_hand(h),"left")
+
+    def test_interrupted_nonpick_close_also_blocks_observer(self):
+        _,_,h,_,_=self.make()
+        h.executed(Action("left","close"),{**feedback("INTERRUPTED"),"control_ticks":1,"finger_mean_m":[.02,.03]})
+        self.assertTrue(h.possible_contact_after_close["left"])
+        self.assertIsNone(free_observing_hand(h))
+
+    def test_servo_reports_measured_opening_not_open_command(self):
+        model,state=fixture()
+        model.spec["metadata"].update(grasp_region_reference_gripper_m=[.05,.05],
+                                      grasp_region_reference_fully_open={"left":True,"right":True})
+        for opening,expected in ((.02,False),(.05,True)):
+            servo=SafeServo(model,state,[-1,-1]);servo.begin(Action("left","open"),state)
+            servo.ticks=servo.total_ticks;state.gripper[0]=opening
+            receipt=servo.finish(state)
+            self.assertEqual("left" in receipt["gripper_open_at_calibrated_aperture"],expected)
 
     def test_ownership_change_and_missing_depth_fail_closed(self):
         model, state, h, servo, inspector = self.make()
@@ -86,6 +122,25 @@ class MultiCameraTests(unittest.TestCase):
         self.assertEqual(context["attempts"], 1)
         inspector.states[h.index]["attempts"] = 24
         self.assertEqual(inspector.candidates(model, changed, h, servo, Guard())[0], (HOLD,))
+
+    def test_free_motion_bounds_and_revisit_are_real_candidate_vetoes(self):
+        for key,value in (("free_path_m",.2),("free_rotation_rad",np.deg2rad(120))):
+            model,state,h,servo,inspector=self.make()
+            inspector.free_guard=SimpleNamespace(arm="left",check=lambda plan:(True,{"reason":"test_sweep"}))
+            inspector.observers[h.index][key]=value
+            allowed,_=inspector.candidates(model,state,h,servo,Guard())
+            self.assertFalse(any(a.part=="left" for a in allowed))
+            self.assertTrue(any(a.part=="right" for a in allowed))
+        model,state,h,servo,inspector=self.make()
+        action=Action("left","roll_plus","coarse","tool")
+        self.assertTrue(servo.begin(action,state,False))
+        turned=model.state(servo.joint_plan[-1],state.gripper,state.base_velocity)
+        inspector.executed(h);inspector.observe(model,turned,h)
+        inspector.free_guard=SimpleNamespace(arm="left",check=lambda plan:(True,{"reason":"test_sweep"}))
+        allowed,receipt=inspector.candidates(model,turned,h,servo,Guard())
+        undo=Action("left","roll_minus","coarse","tool")
+        self.assertNotIn(undo,allowed)
+        self.assertTrue(any(r["reason"]=="PREVIOUSLY_OBSERVED_RELATIVE_VIEW" and r["action"]["part"]=="left" for r in receipt["tested"]))
 
     def test_accepted_free_candidates_have_sweep_receipts_not_visibility_claims(self):
         model, state, h, servo, inspector = self.make()

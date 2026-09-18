@@ -22,7 +22,8 @@ def free_observing_hand(harness):
     if reference not in ("left", "right") or not harness.hold_verified.get(reference):
         return None
     other = "left" if reference == "right" else "right"
-    if harness.held.get(other) is not None or harness.hold_verified.get(other) or harness.pending_grasp.get(other):
+    if (harness.held.get(other) is not None or harness.hold_verified.get(other) or harness.pending_grasp.get(other)
+            or harness.possible_contact_after_close.get(other)):
         return None
     return other
 

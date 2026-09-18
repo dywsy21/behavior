@@ -297,10 +297,17 @@ class SafeServo:
         self.done = True
         errors = self._errors(state.poses, self.targets)
         empty = [name for i, name in enumerate(("left", "right")) if self.grips[i] < 0 and state.gripper[i] < .0015]
+        metadata=self.model.spec.get("metadata",{})
+        opening=metadata.get("grasp_region_reference_gripper_m")
+        calibrated_open=metadata.get("grasp_region_reference_fully_open",{})
+        observed_open=[name for i,name in enumerate(("left","right")) if self.grips[i]>0
+                       and opening is not None and calibrated_open.get(name,False)
+                       and np.isfinite(state.gripper[i]) and abs(state.gripper[i]-opening[i])<=.0005]
         return {"status": self.status, "control_ticks": self.ticks, "joint_limit_ticks": self.limit_ticks,
                 "target_error_m": {n: float(np.linalg.norm(e[:3])) for n, e in errors.items()},
                 "orientation_error_deg": {n: float(np.rad2deg(np.linalg.norm(e[3:]))) for n, e in errors.items()},
                 "eef_delta_m": {n: (state.poses[n][0]-self.start.poses[n][0]).tolist() for n in ("left", "right")},
                 "finger_mean_m": state.gripper.tolist(), "empty_grasp_suspected": empty,
+                "gripper_open_at_calibrated_aperture": observed_open,
                 "base_integral": self.base_integral.tolist(), "carry": self.carry,
                 "holding": "UNKNOWN", "official_success": "NOT_AVAILABLE_TO_ACTOR"}

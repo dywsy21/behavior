@@ -1,5 +1,6 @@
 import unittest
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 from semantic_robot.v2.arm_observation_guard import ObservingArmGuard, box_distance
 
@@ -68,3 +69,16 @@ class ArmGuardTests(unittest.TestCase):
         self.assertEqual(self.make().check(plan)[1]["reason"], "OTHER_ARM_OR_TORSO_WOULD_MOVE")
         for plan in (np.zeros((65, 18)), np.full((1, 18), np.nan), np.zeros((1, 17))):
             with self.assertRaises(ValueError): self.make().check(plan)
+
+    def test_actual_finger_offset_rotates_with_arm_not_calibration_opening(self):
+        class Arm(LinearArm):
+            def forward(self,q,name):
+                t=super().forward(q,name)
+                t[:3,:3]=Rotation.from_euler("z",q[5]).as_matrix()
+                return t
+        geom=geometry();box=geom["boxes"][0];box["link"]="left_finger_link1"
+        box["T_base_link"][0][3]=.1
+        cloud=np.vstack([np.tile([2.,2.,2.],(50,1)),[[.070710678,.070710678,0.]]])
+        guard=ObservingArmGuard(Arm(),np.zeros(18),cloud,geom,"left")
+        plan=np.zeros((2,18));plan[:,5]=[np.pi/4,np.pi/2]
+        self.assertFalse(guard.check(plan)[0])

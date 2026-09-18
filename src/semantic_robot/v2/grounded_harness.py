@@ -40,6 +40,9 @@ class GroundedHarness(TaskHarness):
         self.candidate_receipt={}
         self.motion_receipt={}
         self.pending_grasp={"left":False,"right":False}
+        # Distinct from PICK verification: closing on a door/container handle
+        # may also leave a contact/load after its semantic goal is finished.
+        self.possible_contact_after_close={"left":False,"right":False}
         self.last_gripper=None
         self.contact_geometry=bool(contact_geometry)
         self.active_grasp_probe=bool(active_grasp_probe)
@@ -143,6 +146,7 @@ class GroundedHarness(TaskHarness):
         # an explicit OPEN completes or grasp evidence really verifies holding.
         if action.move=="close" and (feedback.get("control_ticks",0)>0 or feedback["status"]=="TARGET_REACHED"):
             for arm in (("left","right") if action.part=="both" else (action.part,)):
+                if arm in self.possible_contact_after_close:self.possible_contact_after_close[arm]=True
                 if arm in self.pending_grasp and self.goal.kind=="pick":self.pending_grasp[arm]=True
         super().executed(action,feedback)
         if feedback["status"]=="TARGET_REACHED" and action.move in ("close","open"):
@@ -151,6 +155,8 @@ class GroundedHarness(TaskHarness):
                 if arm in self.pending_grasp:
                     if action.move=="open":self.pending_grasp[arm]=False
                     elif self.goal.kind=="pick":self.pending_grasp[arm]=True
+                if action.move=="open" and arm in feedback.get("gripper_open_at_calibrated_aperture",[]):
+                    self.possible_contact_after_close[arm]=False
         if probe and feedback["status"]=="TARGET_REACHED":
             self.events.append({"event":"UNVERIFIED_GRASP_PROBE","goal":self.index,
                                 "attempt":self.grasp_probe_attempts[self.index],"success_claim":False})
@@ -216,6 +222,7 @@ class GroundedHarness(TaskHarness):
                        strategy_replans=self.replans, recent_replans=self.replan_history[-2:],
                        egocentric_motion=self.motion_receipt, unverified_close_latches=self.pending_grasp.copy(),
                        active_grasp_probe=self.grasp_probe.copy())
+        if self.multicamera_inspection:context["possible_contact_after_any_close"]=self.possible_contact_after_close.copy()
         if hasattr(self,"approach_progress"):context["approach_progress"]=self.approach_progress
         return context
 
@@ -391,7 +398,7 @@ class GroundedController:
             manager.held_inspection=context
             internal["new_search_coverage"]=fresh
             self.progress["new_relative_inspection_view"]=fresh
-            if not context["valid"]:manager.stop_reason="NO_VERIFIED_HELD_ANCHOR"
+            if not context["valid"]:manager.stop_reason=manager.stop_reason or "NO_VERIFIED_HELD_ANCHOR"
         if self.approach_monitor is not None:
             points=self._points_for_arms() if self.target.get("valid") else {}
             poses={a:self.model.forward(state.q,a).copy() for a in manager.arms}
