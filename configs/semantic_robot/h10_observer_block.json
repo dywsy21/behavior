@@ -6,7 +6,21 @@
   "candidate_commit": "e73e2636cd5df456857efc12906fb115fa1ac44f",
   "runtime_commit": "465bc8561496c97615f8d48604010f5f5b3555c3",
   "implementation_digest": "2f49a25d9064475e3d9028c15266358e354ae16ccb9e1595f4fc05dc4ca1bc89",
-  "runtime_status": "initial_two_gates_failed_preserved_repaired_gate_pair_registered_no_policy_started",
+  "runtime_status": "r1_plates_passed_radio_failed_raw_velocity_gate_inconsistency_r2_awaits_review_no_policy_started",
+  "repair_r2": {
+    "registered_at": "2026-09-18T23:46:00+08:00",
+    "runtime_commit": "dfe7c96f552bd182cdeb76d761ca2324f48be403",
+    "implementation_digest": "128f5595a2bd29d34d9f297bdfd6a2c0303da41b9b4c08f04960bd139119a73c",
+    "hypothesis": "Engineering BASE gate must judge the action's measured fresh RGB-D displacement using the same quality checks and 12mm/2deg thresholds as actor deployment, not the previously invalidated joint-velocity integral.",
+    "start_after": "Independent dfe7c96 review and remote 289 CPU tests pass; both prior r1 simulator processes exited; GPU/disk checks pass.",
+    "preserved_r1_results": {"gate_radio_h10_r1": "failed_201_controls_raw_base_tracking", "gate_plates_h10_r1": "passed_418_controls"},
+    "gates": ["gate_radio_h10_r2", "gate_plates_h10_r2"],
+    "additional_engineering_resets": 2,
+    "each": {"max_decisions": 24, "max_controls": 1536, "max_seconds": 1200, "expert_prefix": 0, "model_calls": 0, "seed": 0},
+    "tasks_instances": {"0": 138, "3": 242},
+    "stop_conditions": "Original bounds and hard servo failures unchanged; invalid/initial post-motion visual evidence stops; no raw-velocity fallback, no retrospective pass for earlier gates.",
+    "policy_budget": "Original one matched diagnostic plus one full-start pilot still unspent; no extra policy episodes or model calls; reuse unchanged server89280."
+  },
   "repair_r1": {
     "registered_at": "2026-09-18T23:33:00+08:00",
     "runtime_commit": "5accf6993efddb4533dda55cc1f1cab17554c17c",

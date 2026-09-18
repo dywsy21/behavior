@@ -14,7 +14,9 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
-**23:49 H10共用视觉判据实现/289 CPU过（Codex）：** 新`motion_feedback.py`提取actor原有12mm/2°判据，gate每次已接受BASE执行后立即fresh三相机RGB-D、实际q，先保存完整post-base输入/原反馈，再同helper裁决，质量失败停止、无raw兜底；碰撞/发散/中断状态不清。此前gate仅验前帧视觉质量并按raw提前退出的缺口已接线。新增6组双向误判/硬失败/NaN/initial/原记录不变/正反carry测试，289 harness/4.930s及入口编译通过；独立复审待，0新控制/模型。原r1一过一败结论保留，原两策略仍未用；不从坏速度传感器做闭环，也未修改官方本体/物理/时间。
+**23:48 H10 r2源固定/有限复验登记（Codex）：** `dfe7c96f552bd182cdeb76d761ca2324f48be403`已push并在robo独立`semantic_gate_motion_dfe7c96`，digest `128f5595a2bd29d34d9f297bdfd6a2c0303da41b9b4c08f04960bd139119a73c`；289服务器CPU/12.457s过。`repair_r2`登记复审通过后仅新增`gate_radio_h10_r2`/`gate_plates_h10_r2`两个24/1536/1200s/0前缀/模型工程reset，原策略不追加。当前两旧PID均退出、GPU3空、余88GiB/根642MiB，服务89280仍2调用；尚未启动r2。r1两result SHA168df348…/f229c413…及4次free fresh depth门全保留；本地radio完整副本传输中，未假称已核验。下一等独立审查，不能绕过门直接跑策略。
+
+**23:45 H10共用视觉判据实现/289 CPU过（Codex）：** 新`motion_feedback.py`提取actor原有12mm/2°判据，gate每次已接受BASE执行后立即fresh三相机RGB-D、实际q，先保存完整post-base输入/原反馈，再同helper裁决，质量失败停止、无raw兜底；碰撞/发散/中断状态不清。此前gate仅验前帧视觉质量并按raw提前退出的缺口已接线。新增6组双向误判/硬失败/NaN/initial/原记录不变/正反carry测试，289 harness/4.930s及入口编译通过；独立复审待，0新控制/模型。原r1一过一败结论保留，原两策略仍未用；不从坏速度传感器做闭环，也未修改官方本体/物理/时间。
 
 **23:45 H10 r1失败根因更正：门仍用错误测量（Codex）：** Native robot.py1623确认`base_qvel`是旋转到局部的base关节瞬时速度；早期H08独立probe已证其积分不等于实际机身位移。此次只读d11前原RGB-D→末视频PnP（100帧全解码、492匹配/467内点/0.261px）估计后退56.67mm、侧移1.02mm、yaw **−0.01436°**，与raw积分2.072°明显矛盾；末帧是有损视频/假定锁定q，缺当前深度，**只作根因诊断，不改写gate通过**。发现actor已用双帧RGB-D同12mm/2°重判，gate却在读取下一帧前按raw提前失败，属于验收/部署测量不一致。下一在原≤300s CPU额度内提取共用判据、gate每次BASE后fresh RGB-D立即测量，原质量门/硬停止不变；不从坏速度传感器加yaw纠偏，不放宽阈值，不启动策略/新reset。原失败证据保留，独立review待。
 
