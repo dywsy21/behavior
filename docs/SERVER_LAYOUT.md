@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 20:14当前：** B18双门已通过/退出；主代理GPU3 `server_b18_matched`47250/8909/≤151、唯一`radio_b18_matched`正在启动，源d807d3d不热改。Astra H09在独立源`vlm_sft_a201e09`准备CPU `data_v1`索引，训练尚未开始，GPU1留给其后续2B LoRA；各自新增盘量3/8GiB，合守80GiB余量。
+
 **2026-09-18 20:08当前：** 主代理仅GPU3双门`gate_radio_b18`44434、`gate_plates_b18`44435运行，源`git_worktrees/semantic_persistent_d807d3d`固定d807d3d/b353df13/238CPU；H08根新增`offline_b18_radio_b17_matched`、`offline_b18_radio_b14_matched`为0控制旧帧候选核验。B18模型/策略未启动，不热改源。GPU1已交Astra H09独立SFT；其专属根`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_showharness_20260918`，精确运行位置由其后续回报，不与H08混淆。
 
 **2026-09-18 19:50当前：** B17唯一策略39229已结束（55新控制/4模型/官方false、保载安全停），38931核对专用命令后TERM；`b17_complete.tar.gz`SHA1c953bcd…约256MiB已归档、传本地中。下方“策略运行”为历史；不原样重启，新源/物理尚无，仅离线轨迹诊断。
