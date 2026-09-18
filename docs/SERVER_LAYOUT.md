@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 16:56当前：** B7模拟器4185700经SIGINT人工早停、服务4184694已TERM；48完成/759新控制、服务104生成，没有result/failure（evaluator直接退出），`radio_b7/operator_stop.json`明确记录，不冒充完整终态。`b7_complete.tar.gz` SHA `b47e0b25e57c0dddab38a71173d9c594a519196b25d654ae0ce9a0c5195da0f9`开始下载。B9两门4193789/4193846在GPU1，源`semantic_grasp_geometry_affcdec`，未加载模型；B8 plates4191304及server4190951/8909仍在GPU3，源`semantic_navigation_4f48c60`。B6归档已在本地`b6_verified_bundle/`且744 RGB-D hash/两视频通过，人工选择时刻见plan；不要照下面旧状态重启任何旧run。
+
 **2026-09-18 16:36当前：** `radio_b7`4185700/GPU1及`server_b7_radio`4184694/8908运行，源`semantic_probe_605512f`；第1次close空抓，未成功、不重启。`gate_radio_b8`4188030与`gate_plates_b8`4188040均GPU3，无B8模型，源`semantic_navigation_4f48c60`，通过/退出前不加载179调用的新服务。B6两策略及两旧服务均已停止，完整压缩归档SHA4c835b5b…正在传本地；B7/B8都仍同H-08输出根，不热改任一运行源码。
 
 **2026-09-18 16:22当前：** B6两策略均结束、官方false（radio648新控制/89调用，task3 1711/128）；原9177016目录不修改。新源`git_worktrees/semantic_probe_605512f`固定605512f/159CPU，`static_probe_b7`对B6 d9/d19共2动作选择/0控制，复用旧radio服务4170243/8908（89起）；旧plates服务4170359/8909闲置待停。B7工程门/策略尚未启动，不能将旧B6门用来验新source。B5完整归档本地已SHA与两视频/216hash验证，位置`artifacts/semantic-agent-effect-20260918/b5_verified_bundle/`。
