@@ -14,6 +14,8 @@
 
 ### 2026-09-18 12:23（北京时间）：H-08获持续迭代授权，用两空闲卡推进到真实效果
 
+**21:10 B20双工程门真实启动（Codex）：** 已核身份终止旧58225，GPU3 `gate_radio_b20`66709/`gate_plates_b20`66710唯一运行，源`semantic_inspection_budget_9f5957b`不热改，均24/1536/1200s、0模型；新模型/匹配策略尚未启动。原静态3调用已保存本地`artifacts/semantic-agent-effect-20260918/static_b20_model_v1`，不重复。B19归档下载近完成，随后SHA/全附件/视频/人工核验。
+
 **21:09 B20三静态通过，登记唯一物理；H09真600完成（Codex＋Astra）：** `static_b20_model_v1`真实3调用/0控制，同原图hash；d4/d14改right-forward-coarse、d25 roll-plus-fine，d26回访仍拒，本人看原头/右腕图，非凭静态声称按钮已见。登记同9f5957b源GPU3两新24/1536/1200s工程门，双门/新初帧通过后仅一个`radio_b20_matched`64/2048/1800s/≤151模型，原448＋362前缀单列；原24观察/20cm/60°不增加，不追加标准/task3策略。旧58225静态服务57次后将停/归档，新服务需同源；尚未启动物理。H09 `train_v1`真实600完成/退出，用1095.469s、峰18.182GiB，base SHA `aa33250c4fc64891ddfaba3a314fd9542ea371843c387178b425fbcc5ed680b1`，600 adapter SHA `b5a125ed14dc06c82a7ae7fd288d8c7202d90e2210cc1d1c2f7195f3daac15e1`；`eval_test_v1`在原192留出配对评估，随后双门和四闭环，尚无微调效果结论。
 
 **21:06 B20双端CPU/独立review/旧姿态门过，3静态启动（Codex＋Astra）：** 固定9f5957b/digest8d4e2cec，robo244CPU/6.471s；`static_b20_cpu_v1`四姿态各19/18/7/6候选、原d26回转被拒，0新控制/模型，旧已执行路径/角度账与因果重建一致。Astra只读审5df51be→9f5957b未见新增阻塞，仍强调位姿新颖不代表按钮信息。仅`static_b20_model_v1`三旧帧选择启动≤3调用/300s/0控制，沿用旧58225服务、结果待验，物理尚未放行。主代理另审H09 975852a事后world pose诊断隔离通过，未回注actor。

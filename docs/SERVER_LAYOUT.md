@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 21:10当前：** 旧58225已核身份退出；主代理GPU3双门66709/66710使用`git_worktrees/semantic_inspection_budget_9f5957b`不可变源，策略/新服务未启。H08根`static_b20_cpu_v1`/`static_b20_model_v1`已结束（4姿态/3神经/0控制），B19完整包本地下载中；后续服务日志另归档。H09正式600已完成/退出，最终adapter在其`train_v1`，Astra正在原192留出配对，不根据test另选checkpoint。
+
 **2026-09-18 21:03当前：** B19策略58614已退出；完整`semantic_agent_effect_20260918/b19_complete.tar.gz` SHA `149ba57863ba37ac91e688b363a0ea60f074ce5a600fe7b4ac34998181b59f34`在下载到本地artifacts，未含仍活跃模型58225/GPU3/8909。模型保留只作B20最多3保存帧调用（当前54/151），旧源5df51be不得热改；B20仅本地实现无新物理。H09 GPU1唯一`vlm_sft_showharness_20260918/train_v1`61793实际470/600，源140c47d/最终data_v4，200/400 adapter已存；其目录名后缀不是commit，请以identity为准。盘余91GiB，仍保80GiB，不删除旧证据。
 
 **2026-09-18 20:38当前：** B19双门已退出/通过；GPU3唯一模型58225/8909＋`radio_b19_matched`58614，固定`semantic_spatial_5df51be`，预算64/2048/1800s、≤151。不要照旧门状态重复提交或热改；GPU1 Astra H09在构造严格data_v3、未正式训练。
