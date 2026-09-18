@@ -6,6 +6,10 @@
 
 ## 1. 总览
 
+**2026-09-18 13:19 H-08 B3运行：** `gate_radio_b3`/`gate_plates_b3`已通过（385/396新控制、48/48视觉运动、a2f598f3…）。唯一`radio_b3`和`plates_b3`在H-08根启动，预算分别64/2048/1800s、80/2400/2400s；`server_b3_radio`4125196/GPU1/8908、`server_b3_plates`4125250/GPU3/8909各224调用，均同0e79cd6/27B revision。所有源码从`semantic_odometry_0e79cd6`运行，禁止热改；当前策略尚无终态，新日志同级`.log`。
+
+**2026-09-18 13:15 H-08 B3当前：** 不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_odometry_0e79cd6`固定0e79cd692d936c56081a6b25ded0c2b17218ba63，robo113CPU通过。H-08根下`gate_radio_b3`/`gate_plates_b3`真实工程门正在初始化；`server_b3_radio`GPU1/8908、`server_b3_plates`GPU3/8909各同27B/≤224调用开始加载。旧`server_b2`已停（仅2静态）；B2两策略没有启动。`odometry_probe_b2`217控制/0神经完成，归档SHA71c1e712…已在本地，物理真值只存诊断。B3两策略仍等新门，不热改/重复提交。[实时计划](plan.md)
+
 **2026-09-18 12:50 H-08最新：** B1两策略以`failure.json`终止，server_b1停止，82生成；511MiB `b1_complete.tar`/SHA bfc7f22f…保留所有旧门/策略/服务，正在下载。B2新源`git_worktrees/semantic_refined_160abd5`（105CPU），`gate_radio_b2`4117180/GPU1与`gate_plates_b2`4117232/GPU3正在跑；`server_b2`4115322/GPU1/8908仍固定`semantic_refined_6d18204`，2/256调用，两源都不能热改。`static_surface_b2`为完成的2神经/0控制选点，tar SHA94f3080d…与本地一致。B2短闭环未启动，不复用B1旧门。[H-08报告](experiments/2026-09-18-semantic-agent-effect.md)
 
 **2026-09-18 12:36 H-08当前：** 新根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_effect_20260918`；B1不可变源仍`git_worktrees/semantic_grounded_e6925d8`。`gate_radio_b1`/`gate_plates_b1`两门已通过；`server_b1`（4111632/GPU3/8907，固定27B、≤220调用）、`radio_b1`（4111945/GPU1）、`plates_b1`（4112002/GPU3）正在跑，日志同级`.log`。每策略48决策/1536新控制/1200s、0训练。本地证据目标`/home/wsy/behavior/artifacts/semantic-agent-effect-20260918/`。这是用户新授权后的独立H-08，下面H-07等待/停止记录保留为历史，勿重复提交或热改源。
