@@ -7,12 +7,12 @@ from .protocol import ROTATIONS, TRANSLATIONS
 from .servo import SafeServo
 
 
-def eligible(harness):
+def unladen_pick_approach(harness):
     """Only an observed open, unladen single hand may change approach pose."""
     fingers = harness.last_gripper
     observation = harness.observation
     distance = harness.grounding.get("distance_to_active_closing_center_m", 0)
-    return bool(harness.approach_reorientation and not harness.stop_reason
+    return bool(not harness.stop_reason
                 and harness.stage == "APPROACH" and harness.goal.kind == "pick"
                 and harness.goal.hand in ("left", "right") and not harness.carry
                 and all(isinstance(load, dict) and set(load) == {"left", "right"}
@@ -26,7 +26,11 @@ def eligible(harness):
                 and np.isfinite(distance) and distance > .10)
 
 
-def preview(model, state, grips, limits, arm, point, rotation_trials, translations):
+def eligible(harness):
+    return bool(harness.approach_reorientation and unladen_pick_approach(harness))
+
+
+def preview(model, state, grips, limits, arm, point, rotation_trials, translations, deadline=None):
     """At most six accepted rotations x three coarse translations, all read-only.
 
     Every endpoint is predicted, not observed. These trials have only robot
@@ -52,9 +56,12 @@ def preview(model, state, grips, limits, arm, point, rotation_trials, translatio
         endpoint = model.state(trial.joint_plan[-1].copy(), state.gripper.copy(), np.zeros(3))
         checks = []
         for action in translations:
+            from .wall_budget import require_time
+            require_time(deadline)
             count += 1
             following = SafeServo(model, endpoint, np.asarray(grips).copy(), limits)
             ok = following.begin(action, endpoint, carry=False)
+            require_time(deadline)
             row = {"action": asdict(action), "accepted_robot_only": bool(ok), "reason": following.status}
             if ok:
                 after = float(np.linalg.norm(point - model.grasp_centers(following.joint_plan[-1])[arm]))

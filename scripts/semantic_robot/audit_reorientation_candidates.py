@@ -22,11 +22,13 @@ def main():
     parser.add_argument("--run", required=True)
     parser.add_argument("--decision", action="append", type=int, required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--candidate-mode",choices=("reorientation","body"),default="reorientation")
     args = parser.parse_args()
     root, out = Path(args.run), Path(args.output)
     if out.exists() or not 1 <= len(args.decision) <= 3 or len(set(args.decision)) != len(args.decision):
         raise ValueError("New output and <=3 distinct registered decisions required")
     started = time.monotonic()
+    deadline=time.perf_counter()+180
     model = RobotModel(json.loads((root / "robot_calibration.json").read_text()))
     rows = []
     for decision in args.decision:
@@ -38,7 +40,9 @@ def main():
         raw = json.loads((source / "observation.json").read_text())
         refined = json.loads((source / "refinement.json").read_text())
         evidence = GroundedEvidence.parse(json.dumps(refined.get("refined_evidence", json.loads(raw["result"]["text"]))))
-        h = GroundedHarness([Goal(**saved["goal"])], contact_geometry=False, approach_reorientation=True)
+        h = GroundedHarness([Goal(**saved["goal"])], contact_geometry=False,
+                            approach_reorientation=args.candidate_mode=="reorientation",
+                            approach_body_options=args.candidate_mode=="body")
         h.stage, h.observation, h.last_gripper = saved["stage"], evidence, state.gripper.copy()
         h.grounding = saved["target_surface_estimate"]
         h.pending_grasp = saved["unverified_close_latches"].copy()
@@ -53,16 +57,17 @@ def main():
         geometry = json.loads((source / "robot_self_geometry.json").read_text())
         c.depth_guard = LocalDepthGuard(observed_cloud(depths, model, state.q), model, state.q, depths, self_geometry=geometry)
         before = state.q.copy()
-        allowed = c.candidates(state)
+        allowed = c.candidates(state,deadline=deadline)
         if not np.array_equal(before, state.q) or servo.status != "IDLE":
             raise AssertionError("Read-only sampler mutated live state")
         rows.append({"decision": decision, "allowed": [a.text() for a in allowed], "receipt": h.candidate_receipt,
                      "input_sha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in source.iterdir() if p.is_file()}})
         print(json.dumps({"decision": decision, "allowed_count": len(allowed), "preflight_s": h.candidate_receipt["preflight_s"],
+                          "allowed_body": [a.text() for a in allowed if a.part=="base"],
                           "rotation_summaries": [{"action": r["action"], "preview": r["reorientation_after"]}
                                                  for r in h.candidate_receipt["tested"] if "reorientation_after" in r]}), flush=True)
     with out.open("x") as f:
-        json.dump({"rows": rows, "wall_s": time.monotonic()-started, "new_controls": 0, "model_calls": 0,
+        json.dump({"rows": rows,"candidate_mode":args.candidate_mode, "wall_s": time.monotonic()-started, "new_controls": 0, "model_calls": 0,
                    "model_sha256": hashlib.sha256((root / "robot_calibration.json").read_bytes()).hexdigest(),
                    "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}, f, indent=2, allow_nan=False)
 

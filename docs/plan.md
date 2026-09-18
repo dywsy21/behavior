@@ -14,6 +14,14 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 06:48（北京时间）H17生产保存态/354回归与有限预登记（Codex）：** 原三保存态生产采样14.247s本地、24/24/25非hold预检，每态两向fine yaw真实进入合法列表，d63/77另有right fine；不执行预测、不引入特权，证据`h17_body_production_candidates.json`。354 harness/6.384s、60 SFT/.226s过；deadline采用单CPU/控制量子不强中断、实际耗时照记，取消动作的夹爪目标不经final hold偷执行。H16完整包66hash/218连续控制/视频完整解码/本人末head核过。H17配置预登记新NVMe≤1GiB（旧7GiB留档），独立审/新固定源CPU后2门、再唯一1392前缀＋10决策/384控制/600s/43模型局部对照；尚无新目录/reset。Astra原600s身份适配继续，后交叉审，未新训练。
+
+**2026-09-19 06:44（北京时间）H09U-P1身份接口失败/H17实现回归（Codex/Astra）：** 179879已退出，完成164原prefix及before后，TRAIN reader把原生名`trash_can_116`直接查BDDL object_scope失败，尚未执行288技能段/0seed，finally hold记录存在、全165控制待作者核。不是模型或抓取物理失败；旧证据保留不重试。Astra下一≤600s纯CPU最小精确身份适配：查安装BDDL绑定/API、唯一对应的任务对象、拒绝模糊/歧义/未绑定，负例与稳定commit交父审，0reset/训练。父H17六向候选/协作式deadline/最后已发夹爪指令保持已实现，352/6.294s过；补实际runner边界负例及原3保存态回归，独立审和新物理尚待。
+
+**2026-09-19 06:39（北京时间）H09U-P1真实启动（Astra/Codex）：** 唯一179879/GPU1于06:38:59 BJT提交，`vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`＋相邻log，固定9b/239cb591；授权SHA44e2c2cd…8454f1，同root `authorization_h09u_reference_task1_v1.json`。启动前source/factory与同digest旧双门SHA/flags核过，root85,836,638B/free87,032,434,688B。原1reset/465控制/900s/80MiB/累计384MiB，0模型训练；初始化不等于成功，task0未启，父待实际图像/账本人工审。
+
+**2026-09-19 06:39（北京时间）H16等决策比较/H17有限实现登记（Codex）：** 完整局部包已本地、三主SHA双端相同。相同起点前10完整动作：H15距离减少67.538mm/191控制/163.407s候选；H16减少89.054mm/216控制/376.902s候选，净距离多21.516mm但候选耗时2.31倍、均无抓取；新记忆不同且距离基于图像表面点，非严格策略A/B。下一≤1800s CPU实现/回归H17：可选已确认空手、可见远处PICK的六向底盘fine候选及拒后micro回退，保留所有depth/servo/运动实测门；修计算/模型前后与实际开动前时间检查，不降安全阈值。候选≤32，不启H16额外18前瞻；同d63/77/89保存态最多3生产候选回归≤180s、0新物理模型。稳定后Astra独立审，物理另登记；不是自动复跑或延长H16。
+
 **2026-09-19 06:36（北京时间）H09U父独立审通过/仅task1参考回放放行（Codex）：** 已逐读9b新增runner/prepare/contract/seed/toggle、OG reader与collector/outcome增量及负例，独立60测试/.257s过；任意seed内容、跨手/pose/准备SHA绑定及指定手连续5真实update归因两旧问题关闭。只批准固定`9b52faa`/digest239cb591…40b9b、TRAIN task1/e310/i192/seed0、164原专家prefix＋288完整段＋12稳定＋1hold=465控制、1reset、reset后≤900s、80MiB，0模型训练/GPU1，原root累计≤384MiB含旧85MB失败且盘余80GiB。Astra单owner保存exact授权/CPU核现有同digest双门与源后执行，不需新工程门；任何未知/失配/故障停且不重试。实际源状态容差/接触API/局部成功尚未物理证明，结果需父人工图像/全控制/接触审核；task0与原生教师/新SFT仍未放行。授权仅数据参考，不计actor效果或SR。
 
 **2026-09-19 06:35（北京时间）H16局部回合结束（Codex）：** 175529已退出，10个完整动作＋第11个只执行1控制，再1hold，共218新控制/22模型/660.561198s，官方false/无抓取；result SHA c3bba2dc…88afb、steps dbc7aa28…0149、video1e6958be…6426，171,088,570B，完整本地`h16_matched_bundle`正在归档。原600s预算实际超60.56s：同步候选/模型计算未中途检查，且到时后仍开动1控制，非新传感故障；不追认合规。旧起点相同但记忆不同，净进度和耗时比较待完整审计。下一CPU修底盘候选覆盖与执行前deadline，不原样重跑或延长当前回合。

@@ -104,6 +104,8 @@ def actor_context(harness, state, bundle, allowed=()):
         lookahead=posture.get("preview") or {}
         preflight["approach_reorientation"]={"eligible":posture.get("eligible",False),
             **selected(lookahead,("trigger","source","scene_truth","future_state_is_prediction","future_actions_not_authorized"))}
+    if getattr(harness,"approach_body_options",False):
+        preflight["approach_body_options"]=receipt.get("approach_body_options",{})
     guides = {view: {hand: selected(row, ("eef_uv", "grasp_center_uv", "grasp_center_in_frame",
                     "base_axis_pixel_deltas_for_1cm", "finger_contact_region")) for hand, row in hands.items()}
               for view, hands in bundle.geometry.items()}

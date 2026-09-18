@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 06:39当前：** Astra GPU1唯一参考回放179879（壳179878），固定`git_worktrees/vlm_sft_h09u_9b52faa`，`vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`及同级log；只TRAIN192、164原prefix＋288完整技能段＋13收尾，不是新VLM训练。授权同root `authorization_h09u_reference_task1_v1.json`/SHA44e2c2cd…8454f1。保持旧目录/源不热改，未启动task0。H16本地`h16_matched_bundle`已完整传完、三主SHA过。
+
 **2026-09-19 06:36当前：** H16唯一175529已退出、218新控制/22调用/官方false；完整新结果171,088,570B正在本地`h16_matched_bundle`归档。GPU3仅原156556模型保留，累计170/215调用（待账本再核），不热改。H09U运行源`git_worktrees/vlm_sft_h09u_9b52faa`已CPU/父审，下一只task1参考回放GPU1，拟`vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`，尚未PID；prepared仍原`h09u_reference_prepare_v2`，旧失败累计不抹除。双H16门本地`h16_gates_bundle`已完整SHA/288主hash/视频解码通过。
 
 **2026-09-19 06:24盘核验：** `/mnt/nvme_tmp`实际挂载`/dev/mapper/vg_nvme-lv_nvme_tmp`、XFS/rw、3.5TiB总/约2.7TiB可用，目录1777，robodojo用户可写；**不是已消失的/mnt/tmp1**。拟新独立输出父目录`/mnt/nvme_tmp/robodojo_agentic_20260919`尚未创建/未迁移文件，后继实验需记录有限预算/真实路径；不把tmp名字当可删除依据、不改队友现有内容。原SDA盘仍保余80GiB，H16不换盘热改。
