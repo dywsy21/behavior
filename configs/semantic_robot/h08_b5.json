@@ -1,0 +1,27 @@
+{
+  "experiment_id": "H-08-B5",
+  "owner": "Codex-solo",
+  "hypothesis": "Explicit per-contact observations, actual target bearings and staged feasible motion remove interface-induced stalls without weakening success gates.",
+  "code_commit_short": "b2ae717",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "model_path": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917/models/Qwen3.8-27B",
+  "training_updates": 0,
+  "new_weight_downloads": 0,
+  "actor_scene_truth": false,
+  "cpu_environment": {
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4"
+  },
+  "cpu_environment_scope": "Only new simulator processes; no running environment or model service is changed. Latency benefit unproven until gates.",
+  "gate_each": {"decisions": 24, "controls": 1536, "wall_seconds": 1200, "model_calls": 0},
+  "tasks": [
+    {"task": 0, "split": "train", "instance": 138, "env": 0, "seed": 0, "expert_prefix": 448, "gpu": 1, "decisions": 64, "controls": 2048, "wall_seconds": 1800, "max_policy_calls": 147},
+    {"task": 3, "split": "train", "instance": 242, "env": 0, "seed": 0, "expert_prefix": 0, "gpu": 3, "decisions": 80, "controls": 2400, "wall_seconds": 2400, "max_policy_calls": 179}
+  ],
+  "comparison": "B4 same task, instance, seed, prefix and policy bounds; integrated engineering comparison, not single-factor ablation or population SR.",
+  "flags": ["--harness", "grounded", "--refine-grounding", "--visual-odometry"],
+  "stops": ["Any hard safety or vision-motion uncertainty", "Per-run declared budget", "Disk free below 80 GiB"],
+  "prerequisites": ["144 CPU regressions on both machines", "Two primary-contact static checks plus human review", "Both new implementation-digest gates before any policy episode"],
+  "success_reporting": "CPU/gate pass is not efficacy; require real observed motion and local outcome evidence; full task only official criteria. All prefixes remain explicitly expert."
+}
