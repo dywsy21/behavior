@@ -337,7 +337,11 @@ def main():
                     write(directory/"harness.json",manager.context())
                     if manager.stop_reason:
                         row["stop_reason"] = manager.stop_reason; decisions.append(row); break
-                    if controller and ((not observation.visible and manager.stage in ("SEARCH","RECOVER")) or controller.reposition_left>0):
+                    if controller and controller.goal_changed:
+                        action=HOLD
+                        row["selection_source"]="goal_transition_barrier_no_model_call"
+                        write(directory/"action_selection.json",{"source":row["selection_source"],"reason":"OLD_TARGET_INVALIDATED_OBSERVE_NEW_GOAL_FIRST"})
+                    elif controller and ((not observation.visible and manager.stage in ("SEARCH","RECOVER")) or controller.reposition_left>0):
                         action,selection=controller.search_action(state)
                         write(directory/"action_selection.json",selection)
                         row["selection_source"]=selection["source"]

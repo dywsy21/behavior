@@ -27,10 +27,12 @@ class CoverageSearch:
         self.observed_heading=0.
         self.travel_m=0.
         self.rotation_rad=0.
+        self.search_travel_m=0.
+        self.search_rotation_rad=0.
         self.last_seen_heading=None
         self.misses=0
 
-    def executed(self, feedback):
+    def executed(self, feedback,exploratory=True):
         # Use actual measured displacement, including failed/partial motions.
         delta=np.asarray(feedback.get("base_integral",[0.,0.,0.]),dtype=float)
         if delta.shape!=(3,) or not np.isfinite(delta).all():
@@ -44,12 +46,16 @@ class CoverageSearch:
         self.heading += float(delta[2])
         self.travel_m += float(np.linalg.norm(delta[:2]))
         self.rotation_rad += abs(float(delta[2]))
+        if exploratory:
+            self.search_travel_m+=float(np.linalg.norm(delta[:2]))
+            self.search_rotation_rad+=abs(float(delta[2]))
 
     def observe(self, goal_index, camera_pose, K, width, valid_depth_fraction, visible, target_bearing_rad=None):
         if goal_index!=self.goal_index:
             self.goal_index=goal_index
             self.covered=set(); self.nodes=[]; self.origin=self.xy.copy()
             self.last_seen_heading=None; self.misses=0
+            self.search_travel_m=0.;self.search_rotation_rad=0.
         if np.linalg.norm(self.xy-self.origin)>.25:
             self.nodes.append({"xy":self.origin.tolist(),"bins":sorted(self.covered)})
             self.nodes=self.nodes[-8:]
@@ -84,7 +90,7 @@ class CoverageSearch:
         return len(self.covered)==self.bins
 
     def propose(self):
-        if self.travel_m>1.2 or self.rotation_rad>4*math.pi:
+        if self.search_travel_m>1.2 or self.search_rotation_rad>4*math.pi:
             return None,"SEARCH_TRAVEL_BUDGET"
         if self.complete:
             return None,"LOCAL_VIEW_SWEEP_COMPLETE_TARGET_NOT_FOUND"
@@ -104,5 +110,8 @@ class CoverageSearch:
                 "new_observation_coverage":self.new_coverage,"sweep_complete":self.complete,
                 "previous_viewpoints":len(self.nodes),"travel_m":round(self.travel_m,3),
                 "rotation_deg":round(math.degrees(self.rotation_rad),2),
+                "current_goal_search_travel_m":round(self.search_travel_m,3),
+                "current_goal_search_rotation_deg":round(math.degrees(self.search_rotation_rad),2),
+                "search_budget_excludes_identified_goal_approach":True,
                 "last_target_bearing_deg":None if self.last_seen_heading is None else round(math.degrees(self.last_seen_heading),2),
                 "coverage_is_not_goal_completion":True}

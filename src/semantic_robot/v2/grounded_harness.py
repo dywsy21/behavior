@@ -216,6 +216,8 @@ class GroundedController:
         self.progress={}
         self.motion=None
         self.pending_motion=None
+        self.pending_exploratory=True
+        self.goal_changed=False
         self.grasp_verifier=None
         if grasp_motion:
             if not visual_odometry:raise ValueError("Registered grasp motion requires independent RGB-D body motion")
@@ -260,7 +262,7 @@ class GroundedController:
             feedback["visual_base_residual"]=residual.tolist()
             feedback["status"]=("TARGET_REACHED" if np.linalg.norm(residual[:2])<.012 and abs(residual[2])<np.deg2rad(2.)
                                 else "BASE_TRACKING_FAILED")
-        self.search.executed(feedback)
+        self.search.executed(feedback,exploratory=self.pending_exploratory)
         self.harness.feedback=feedback
         if self.harness.history:self.harness.history[-1]={**self.harness.history[-1],"feedback":feedback}
         self.harness.search_context=self.search.context()
@@ -269,6 +271,7 @@ class GroundedController:
 
     def observe(self,evidence,state,depths,depth_receipt,images=None,self_geometry=None):
         manager=self.harness
+        self.goal_changed=False
         observed_goal_index=manager.index
         bimanual=manager.goal.kind=="pick" and manager.goal.hand=="both"
         self.hand_targets=localize_hand_contacts(evidence,depths,self.model,state.q) if bimanual else {}
@@ -345,6 +348,18 @@ class GroundedController:
             manager.stage_age=0
         # Do not feed off-screen / cross-camera 2D EEF distances into progress.
         manager.observe(evidence,state,geometry=None,measured_progress=internal)
+        if manager.index!=observed_goal_index:
+            self.goal_changed=True
+            self.target={"valid":False,"reason":"NEW_GOAL_REQUIRES_FRESH_SEMANTIC_OBSERVATION",
+                         "observation_goal_index":observed_goal_index,"current_goal_index":manager.index}
+            self.hand_targets={};manager.grounding=self.target
+            manager.observation=None
+            self.reposition=None;self.reposition_left=0;self.replan_needed=None
+            self.previous=None
+            self.progress["goal_transition_barrier"]={"from":observed_goal_index,"to":manager.index,
+                "old_target_invalidated":True,"permitted_action":"HOLD_ONLY_BEFORE_NEW_GOAL_OBSERVATION"}
+            manager.update_grasp_probe(state)
+            return
         manager.update_grasp_probe(state)
         if self.reposition_left and self.reposition not in manager.palette():
             self.reposition_left=0  # a new stage may forbid the queued strategy
@@ -450,6 +465,7 @@ class GroundedController:
                 "bearing_deg":math.degrees(math.atan2(point[1],point[0]))}
 
     def candidates(self,state):
+        if self.goal_changed:return (HOLD,)
         palette=self.harness.palette()
         bimanual=self.harness.goal.kind=="pick" and self.harness.goal.hand=="both"
         limit=40 if bimanual else self.max_preflights
@@ -587,6 +603,7 @@ class GroundedController:
 
     def search_action(self,state):
         """One finite pulse, not a hidden multi-step macro or VLM fiction."""
+        if self.goal_changed:return HOLD,{"source":"goal_transition_barrier","reason":"OBSERVE_NEW_GOAL_FIRST"}
         if self.reposition is not None and self.reposition_left>0:
             action,reason=self.reposition,"BOUNDED_REPOSITION_WITH_CURRENT_DEPTH"
         else:
@@ -608,10 +625,12 @@ class GroundedController:
                        "search":self.search.context(),"depth_guard":self.depth_guard.receipt()}
 
     def executed(self,action,feedback):
-        if self.motion is None:self.search.executed(feedback)
+        exploratory=self.harness.stage in ("SEARCH","RECOVER") and not self.goal_changed
+        if self.motion is None:self.search.executed(feedback,exploratory=exploratory)
         else:
             if self.pending_motion is not None:raise ValueError("An executed motion has not been observed")
             self.pending_motion=copy.deepcopy(feedback)
+            self.pending_exploratory=exploratory
         if action==self.reposition and feedback["status"]=="TARGET_REACHED":
             self.reposition_left-=1
         self.harness.executed(action,feedback)
