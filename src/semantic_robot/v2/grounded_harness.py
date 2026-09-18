@@ -238,6 +238,9 @@ class GroundedController:
                        "metric_co_motion":co_motion,"distance_reduced":reduced}
         internal=dict(self.progress)
         internal["target_distance_m"]=distance if distance is not None else math.inf
+        if manager.goal.kind=="navigate":
+            internal["navigation_aligned"]=bool(self.target["valid"] and abs(self._navigation_geometry()["bearing_deg"])<=15.)
+            self.progress["navigation_aligned"]=internal["navigation_aligned"]
         if (manager.stage == "ALIGN" and manager.goal.kind == "pick" and distance is not None
                 and distance > .10 and not any(manager.hold_verified.values())):
             # Hysteresis: enter ALIGN at 8cm, leave above 10cm. A changed contact

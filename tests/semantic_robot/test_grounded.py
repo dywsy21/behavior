@@ -39,6 +39,16 @@ def setup_controller():
 
 
 class DepthTests(unittest.TestCase):
+    def test_navigation_model_done_claim_cannot_override_wrong_measured_bearing(self):
+        model,state=fixture();h=GroundedHarness([Goal("navigate","table","both","facing table")])
+        h.stage="APPROACH";h.last_action=Action("base","left")
+        obs=grounded_evidence(effect=True)
+        h.observe(obs,state,measured_progress={"navigation_aligned":False})
+        self.assertEqual(h.stage,"APPROACH");self.assertEqual(h.completed,[])
+        h.observe(obs,state,measured_progress={"navigation_aligned":True})
+        self.assertEqual(h.stage,"VERIFY_EFFECT")
+        h.observe(obs,state,measured_progress={"navigation_aligned":False})
+        self.assertEqual(h.stage,"APPROACH");self.assertEqual(h.completed,[])
     def test_search_reacquires_target_ray_not_previous_camera_center(self):
         search=CoverageSearch();search.heading=.5
         camera=np.eye(4);camera[:3,:3]=Rotation.from_euler("y",-np.pi/2).as_matrix()
