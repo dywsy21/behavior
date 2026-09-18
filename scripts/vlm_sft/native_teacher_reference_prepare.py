@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+from collections import Counter
 import numpy as np
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/"src"))
@@ -25,8 +26,9 @@ def validate_segment(states, actions, frames, labels, source, start, end, semant
     h.update(json.dumps(labels,sort_keys=True,separators=(",",":")).encode())
     if h.hexdigest()!=source["extracted_arrays_and_labels_sha256"]:
         raise ValueError("Original full-episode arrays/labels SHA changed")
-    by_frame={row["frame_index"]:row for row in labels}
-    if len(by_frame)!=len(labels):raise ValueError("Duplicate annotation frames")
+    selected=[(i,r) for i,r in enumerate(labels) if r["source_kind"]=="original_demo" and r["memlite_branch"]=="low"]
+    by_frame={row["frame_index"]:row for _,row in selected}
+    if len(by_frame)!=len(selected):raise ValueError("Duplicate/conflicting original_demo low annotation frames")
     for f in range(start,end):
         r=by_frame[f]
         if (r["active_skills_semantic_json"]!=semantic or r["source_kind"]!="original_demo" or
@@ -35,7 +37,13 @@ def validate_segment(states, actions, frames, labels, source, start, end, semant
             raise ValueError("Full reference crosses a mixed/unreleased/changed skill boundary")
     if any(r["episode_index"]==source["episode"] and r["frame_start"]<end and r["frame_end"]>=start for r in quarantine):
         raise ValueError("Reference touches quarantined source")
-    return a[:start].astype(np.float32),a[start:end].astype(np.float32),s[start:end+1].astype(np.float32)
+    audit={"full_rows":len(labels),"unique_frames":len({r["frame_index"] for r in labels}),
+           "duplicate_frame_rows":len(labels)-len({r["frame_index"] for r in labels}),
+           "branch_counts":dict(Counter(str((r["source_kind"],r["memlite_branch"])) for r in labels)),
+           "row_index_scope":"episode-filtered original parquet row order, before branch selection",
+           "selected_segment_row_indexes":[i for i,r in selected if start<=r["frame_index"]<end],
+           "full_arrays_and_all_label_rows_sha256":h.hexdigest()}
+    return a[:start].astype(np.float32),a[start:end].astype(np.float32),s[start:end+1].astype(np.float32),audit
 
 
 def prepare(config,counts,h09s,output):
@@ -62,7 +70,7 @@ def prepare(config,counts,h09s,output):
         data=pq.read_table(source["parquet"],filters=[("episode_index","=",pilot["episode"])],
                            columns=["frame_index","observation.state","action"]).sort_by("frame_index")
         labels=pq.read_table(LABELS,filters=[("episode_index","=",pilot["episode"])],columns=LABEL_COLUMNS).to_pylist()
-        prefix,segment,states=validate_segment(data["observation.state"].to_pylist(),data["action"].to_pylist(),
+        prefix,segment,states,audit=validate_segment(data["observation.state"].to_pylist(),data["action"].to_pylist(),
                 data["frame_index"].to_numpy(),labels,source,pilot["start"],pilot["end"],ref["private_original_semantic_json"],quarantine)
         folder=output/f"task_{pilot['task']}";folder.mkdir()
         for name,values in (("prefix",prefix),("segment",segment),("source_states",states)):
@@ -76,6 +84,7 @@ def prepare(config,counts,h09s,output):
         write_json(folder/"teacher_reference.json",ref)
         write_json(folder/"private_spec.json",spec)
         write_json(folder/"segment_labels.json",[r for r in labels if pilot["start"]<=r["frame_index"]<pilot["end"]])
+        write_json(folder/"label_selection_audit.json",audit)
         window=json.loads((prior/"window.json").read_text())
         window.update(window_id=f"h09u-full-t{pilot['task']}-e{pilot['episode']}",max_steps=pilot["end"]+14,
                       prefix_actions_path=str((folder/"prefix.npy").resolve()),prefix_actions_sha256=sha(folder/"prefix.npy"))
