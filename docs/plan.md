@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**23:33 H10 r1追加有限工程复验登记（Codex）：** Astra/max独立复审5accf69通过，无新阻塞；283 harness＋21 SFT及robo283/12.949s过。新`repair_r1`只增加2工程reset：`gate_radio_h10_r1`/`gate_plates_h10_r1`，各原24决策/1536控制/1200s/0前缀/0模型，task0 train138/task3 train242/seed0，GPU3；旧失败门不覆盖，门角度8°/硬阈值/必达判据不变。新runtime/digest `5accf69`/`59cdfdaefe78d0afee095cd88be408dbb70e115ae89979de5ecc77e29707725f`；服务89280仍465bc85、同权重协议/2调用，分开记录不热改。Git干净pull/fetch同步，GPU3空、89GiB余量/新根351MiB；原1诊断＋1全起点策略预算仍未用，追加门待启动。
+
 **23:26 H10修复后的真实pose CPU门通过（Codex）：** 新不可变`5accf6993efddb4533dda55cc1f1cab17554c17c`已push/在robo单独checkout。两旧gate d7的真实RGB-D/actual self boxes检查各4.868s/5.002s：roll±、pitch±仍如实被拒；yaw+8°及其反向通过IK与整段48节点/96含中点的可见深度否决，没有改小8°或放松阈值。证据新根`gate_radio_pair_5accf69.json`/`gate_plates_pair_5accf69.json`，0模型/控制；283本地CPU/5.032s过。增量独立review中，原两策略仍未开始；只准备新增2工程门的有限复验，不自动扩大策略分母/训练。
 
 **23:23 H10参考系修复及自适应工程门实现（Codex）：** 已改held目标visible阶段palette/授权不提供底盘接近；候选用**当前可见接触点**相对已验证参考手推导随关节FK的变化，body整体不改变相对距，世界目标保持原式，unknown/认证失效不默认为world；5新CPU含51.45mm假gain反例、双手同移零gain/单手有效、历史锚点不能替按钮，280 harness/4.926s过。工程门新增仅在当前实际开爪姿态枚举最多6个8°方向，前进＋反向IK/机器人自碰撞＋同当前深度48采样通过才选，仍最终fresh gate；无可行pair则失败，不缩小角度或放宽安全。正在补对应3测试，下一两旧门d7保存状态CPU实测和独立增量审查；0新模型/物理、旧89280只有2调用，所有旧源/失败记录保留。
