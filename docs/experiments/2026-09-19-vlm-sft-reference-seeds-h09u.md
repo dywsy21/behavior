@@ -4,7 +4,7 @@
 
 ## 已完成的真实来源准备
 
-准备源 `0df85fc`，robo `.../vlm_sft_native_teacher_20260919/h09u_reference_prepare_v2`；manifest SHA `d4311e887582e3259a835f83664e02126ea9abc8df69ff45d6a6046ae95317f2`。17 个文件的实际总量以目录核验为准；manifest 中其余文件合计 771,074 B，另加 manifest 本身。本地完整副本为独立 worktree `artifacts/h09u-reference-prepare-v2`。原失败 v1 保留，失败发生在重复分支检查、未生成回放结果。
+准备源 `0df85fc`，robo `.../vlm_sft_native_teacher_20260919/h09u_reference_prepare_v2`；manifest SHA `d4311e887582e3259a835f83664e02126ea9abc8df69ff45d6a6046ae95317f2`。双端完整17文件 **774,831 B**；manifest 中其余文件合计771,074 B。本地完整副本为独立 worktree `artifacts/h09u-reference-prepare-v2`。原失败 v1 保留，失败发生在重复分支检查、未生成回放结果。
 
 |原 TRAIN 来源|完整 prefix|完整技能段|12 稳定 +1 hold 后总控制|
 |---|---:|---:|---:|
@@ -46,3 +46,7 @@ PRESS 改为该目标实例专属 `_update` 观察器，非全局类补丁；每
 ## CPU 验证
 
 当前60 SFT tests（含新11组）/0.232s，331 harness/5.201s。新增覆盖原_update返回/次数/异常/恢复、measurement失败不影响原更新、另一手归因/断链/重复、high/low与同branch冲突、原SHA/quarantine、source q失配、任意seed/跨hand/pose/准备SHA与证据损坏拒绝、完整seed/review正路径、真实runner finally AST在全写失败时保首错/hold以及terminal/控制上限不step。均合成CPU测试，不冒充实际物理成功。
+
+06:30 BJT 远端固定 `9b52faae182ed446453ffe5d8aca63529636712f`，`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09u_9b52faa`：60 SFT/0.531s；实际两源 load_reference、原TRAIN排除、四维绑定/全部文件SHA、现有两安全门flag+digest、真实官方 factory 原前缀逐值均通过，inactive template拒绝。未构造session。安装scene.idx/robots、robot.is_manipulation接口及toggle源码SHA只读核过。轻量原始计数见 `configs/vlm_sft/h09u_cpu_validation.json`。
+
+父审核且另行生成 exact-code 有效授权后，入口为该干净固定目录下：`env PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python scripts/vlm_sft/native_teacher_reference_replay.py --prepared /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/h09u_reference_prepare_v2/task_1 --authorization <父另发有效授权绝对路径> --output <父登记的新运行绝对目录> --gpu 1`。task0需另一份 `[0,66,70]` 授权及1623控制预算。当前 template明确false、缺code/reviewer/gate路径，不能直接启动。剩余：父独立代码审查、真实接口/时钟先导、成功seed人工审核、native新预算实现/审查、数据门、新训练和配对效果，全部尚未完成。
