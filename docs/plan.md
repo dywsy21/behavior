@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**23:13 H10两真实工程门启动（Codex）：** `static_h10`56.273s/恰2调用/0控制完成，d4、d20都选left-roll-plus-coarse/tool，原九图hash完全一致，指向预测改善7.06/7.10°但尚未入镜。本人复看d4头/双腕原图，未把几何当按钮信息。GPU3同不可变465bc85/digest2f49a25d启动`gate_radio_h10`PID89833、`gate_plates_h10`PID89890，各原24/1536/1200s、0前缀/0模型，正在初始化，不能称过门。服务89280/GPU1当前2/368空闲待用；静态完整记录复制本地artifacts中，旧证据不改。两个策略仍未提交。
+
 **23:11 H10静态神经门运行中（Codex）：** server89280已ready，10.199s加载、465bc85/Qwen3.8-27B/revision1d4bf0f/GPU1身份一致、0起始调用；`static_h10`开始原d4/20两选择≤300s/0控制。模拟器仍0新重置，待核hash/真实选择/可见危险；不把服务ready当方法效果。
 
 **23:10 H10新服务已提交启动（Codex）：** 仅GPU1专属`server_h10` PID89280/8919，源码465bc85、digest `2f49a25d9064475e3d9028c15266358e354ae16ccb9e1595f4fc05dc4ca1bc89`，最大368调用，日志`agentic_vlm_goal_20260918/server_h10.log`。这是加载/服务启动，不是训练或评测通过；2静态及所有物理尚未开始，待ready身份核对。GPU3空，队友GPU0保留46631MiB不动，余盘89GiB。
