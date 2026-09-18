@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 07:00（北京时间）H17零控制race最小修复完成（Codex）：** motion.begin移至通过每控制量子deadline检查之后；若0控制到时则记NOT_STARTED退出，不finish空链/后验BASE消费/manager.executed，原finish拒空链未放宽。真实runner AST＋真实SubstepMotion回归通过，晚到模型回复保留在取消证据但不返回动作。356 harness/6.227s、64 SFT/.228s过，下一新固定源远端CPU/增量独立审，0新reset；旧4b源只做过CPU，未热改。
+
+**2026-09-19 06:58（北京时间）H17独立审发现零控制deadline竞争（Codex/Astra）：** Astra对4b独立354/6.310s过，实际AST＋SubstepMotion复现“第二次开动前检查后到期、begin后0控制跳出、finish空segments异常”；安全hold仍可执行，但取消被误分类，阻塞物理。父下一≤300s最小修复：仅真正开始一个控制量子时开启motion链，零控制预算退出不finish/消费/记执行；保留严格空链拒绝，补精确race回归。并保存已返回但越deadline的模型原始回执而不执行；其余候选/载荷边界独立未见新阻塞。Astra同时按已放行P2新26e部署CPU，未更改父4b或旧9b运行源。
+
 **2026-09-19 06:55（北京时间）身份最小修复父审通过/P2单次参考段登记（Codex）：** 固定26e476e完整增量/4组负例独立审，64/.231s通过；父直接读安装behavior_task与scene.get_task_metadata确认调用和对象身份语义，核真实cache映射/scene与TRO SHA。批准Astra在H17独立review结束后部署新不可变26e、远端64及source/gates CPU门过，再GPU1唯一`h09u_reference_task1_v2`：同[1,310,192]/原准备SHA、1reset/465含hold/900s/80MiB/原root累计384MiB/余80GiB，0模型训练；授权必须固定26e新SHA，旧P1失败保留不覆盖。改变仅精确绑定，不改动作/时钟/成功阈值；失败停不自动retry。此为新因果修复后的有限实验，不追认原P1成功；task0/教师/SFT仍待真实seed与父人工审。
 
 **2026-09-19 06:52（北京时间）H09U身份修复父审登记（Codex）：** Astra固定`26e476e`已生成，父下一≤600s独立读最小身份解析/负例与真实TRAIN192 cache、64 SFT回归；候选尚未放行物理。实际证据已确认scope以BDDL key `ashcan.n.01_1`绑定原生`trash_can_116`，不是原生名作key；要求精确name、单一绑定、metadata/scene registry对象同一，未绑定/歧义/跨角色同物失败关闭。Astra随后按已登记票独立审父4b56b03，交叉审不改对方模块。

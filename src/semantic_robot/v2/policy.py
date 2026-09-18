@@ -16,7 +16,7 @@ from .grounding import localize_target
 from .bimanual import BimanualEvidence, HandContact, contact_evidence
 from .prompt_context import actor_context
 from .structured_planning import COMPLETE_PLAN_INSTRUCTION, DECODER_COMMIT, schema_digest
-from .wall_budget import require_time
+from .wall_budget import require_time, WallTimeBudgetReached
 
 PLAN_SYSTEM = """Plan robot manipulation using visible observations and the task, not imagined object locations. Return only a JSON array of subgoals. Each has exactly kind, target, hand, done_when, level. kind is pick, place, press, open, close or navigate. hand is left, right or both. level is a boolean: true for transport requiring orientation preservation. Use short visually identifiable target descriptions, not hidden simulator IDs. done_when is an observable criterion, not 'command issued'. A pick and place are separate goals. Opening containers before filling is normally necessary. Allow uncertainty: the controller will search rather than assume a target is already visible. At most 16 goals. Example: [{"kind":"pick","target":"red radio","hand":"right","done_when":"radio moves with right gripper after a small lift","level":false},{"kind":"press","target":"visible power button of held radio","hand":"left","done_when":"power indicator visibly changes","level":false}]. Never describe task success from a close command."""
 
@@ -50,8 +50,12 @@ def call_service(uri, kind, system, text, bundle, allowed=(), timeout=120, respo
     if left is not None:timeout=min(timeout,left)
     with urlopen(request, timeout=timeout) as response:
         result = json.load(response)
-    require_time(deadline)
     result["roundtrip_s"] = time.perf_counter()-started
+    try:
+        require_time(deadline)
+    except WallTimeBudgetReached as exc:
+        exc.call={"result":result,"request":payload,"cancelled_after_deadline":True}
+        raise
     if result.get("hit_token_cap"):
         raise TruncatedPolicyOutput(result, payload)
     return result, payload
@@ -102,6 +106,7 @@ class VLMPolicy:
             raise ValueError("Exact structured-planning schema service required")
 
     def _call(self, *args, **kwargs):
+        self.last_call = None
         require_time(getattr(self,"deadline",None))
         if self.calls >= self.max_calls:
             raise RuntimeError("Episode model-call budget exhausted")
@@ -109,8 +114,8 @@ class VLMPolicy:
         self.last_call = None
         try:
             result, payload = call_service(self.uri, *args, deadline=getattr(self,"deadline",None), **kwargs)
-        except TruncatedPolicyOutput as exc:
-            self.last_call = exc.call
+        except (TruncatedPolicyOutput,WallTimeBudgetReached) as exc:
+            self.last_call = getattr(exc,"call",None)
             raise
         self.last_call = {"result": result, "request": payload}
         return result, payload

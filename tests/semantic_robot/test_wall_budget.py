@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 from semantic_robot.v2.policy import VLMPolicy,call_service
 from semantic_robot.v2.protocol import HOLD
+from semantic_robot.v2.substep_odometry import SubstepMotion
 from semantic_robot.v2.wall_budget import WallTimeBudgetReached,expired,require_time,stop_before_motion
 
 
@@ -48,6 +49,20 @@ class WallBudgetTests(unittest.TestCase):
                     call_service("http://localhost/","act","","",SimpleNamespace(labels=["head"],images=[Image()]),deadline=15)
                 call.assert_not_called()
 
+    def test_late_http_result_is_saved_but_not_returned_for_actuation(self):
+        clock=SimpleNamespace(now=10.)
+        class Late(BytesIO):
+            def read(self,*a):clock.now=12.;return super().read(*a)
+        response=Late(json.dumps({"text":"late action"}).encode())
+        p=object.__new__(VLMPolicy);p.calls=0;p.max_calls=1;p.deadline=11.;p.uri="http://localhost/"
+        with patch("semantic_robot.v2.wall_budget.time.perf_counter",side_effect=lambda:clock.now):
+            with patch("semantic_robot.v2.policy.urlopen",return_value=response):
+                with self.assertRaises(WallTimeBudgetReached):
+                    p._call("act","","",SimpleNamespace(labels=[],images=[]))
+        self.assertEqual(p.calls,1)
+        self.assertTrue(p.last_call["cancelled_after_deadline"])
+        self.assertEqual(p.last_call["result"]["text"],"late action")
+
     def test_selected_action_is_logged_without_moving_after_deadline(self):
         manager=SimpleNamespace(stop_reason=None);rows=[];row={"action":{"move":"close"},"control_start":23}
         self.assertTrue(stop_before_motion(0,23,row,rows,manager))
@@ -76,6 +91,23 @@ class WallBudgetTests(unittest.TestCase):
             self.assertEqual(len(calls),0 if before else 1)
             self.assertEqual(ns["decisions"][0]["feedback"]["control_ticks"],0)
             self.assertEqual(ns["decisions"][0]["control_end"],7)
+
+    def test_real_runner_zero_tick_deadline_race_never_opens_or_finishes_chain(self):
+        tree=ast.parse((Path(__file__).resolve().parents[2]/"scripts/semantic_robot/run_v2.py").read_text())
+        block=next(n for n in ast.walk(tree) if isinstance(n,ast.If) and ast.unparse(n.test)=="accepted"
+                   and any(isinstance(child,ast.While) for child in n.body))
+        loop=ast.parse("for _ in range(1):\n    pass").body[0];loop.body=[block]
+        code=compile(ast.fix_missing_locations(ast.Module(body=[loop],type_ignores=[])),"actual_zero_tick_race","exec")
+        motion=SubstepMotion(None);motion.reference={"fixture":"unchanged"}
+        ns={"accepted":True,"servo":SimpleNamespace(done=False,ticks=0,total_ticks=18),
+            "controls":7,"action_control_limit":20,"row":{"control_start":7},"decisions":[],
+            "deadline":0,"expired":expired,"budget_interrupted":False,"substep_motion":motion,
+            "manager":SimpleNamespace(stop_reason=None),"stop_before_motion":stop_before_motion}
+        with patch.object(motion,"begin",wraps=motion.begin) as begin,patch.object(motion,"finish",wraps=motion.finish) as finish:
+            exec(code,ns);begin.assert_not_called();finish.assert_not_called()
+        self.assertFalse(motion.active);self.assertIsNone(motion.pending)
+        self.assertTrue(ns["budget_interrupted"]);self.assertEqual(ns["controls"],7)
+        self.assertEqual(ns["decisions"][0]["feedback"]["status"],"NOT_STARTED_WALL_TIME_BUDGET")
 
 
 if __name__=="__main__":unittest.main()

@@ -590,11 +590,12 @@ def main():
                     saved_end_snapshot=(controls,sample_state.q.copy(),sample_state.gripper.copy(),sample_images,sample_depths,sample_receipts)
                     return measured["valid"]
                 if accepted:
-                    if substep_motion is not None:substep_motion.begin(controls)
                     while not servo.done and servo.ticks<servo.total_ticks and controls<action_control_limit:
                         if expired(deadline):
                             budget_interrupted=True
                             break
+                        if substep_motion is not None and controls==row["control_start"]:
+                            substep_motion.begin(controls)
                         command = servo.next_action(state_now())
                         # next_action mutates the servo clock; producing and
                         # issuing this ONE control is an atomic budget quantum.
@@ -611,6 +612,12 @@ def main():
                         if expired(deadline):
                             budget_interrupted=True
                             break
+                    if budget_interrupted and controls==row["control_start"]:
+                        # Deadline may cross AFTER the second outer check.
+                        # No control means no motion chain to finish or deliver,
+                        # and no selected grip becomes an issued command.
+                        stop_before_motion(deadline,controls,row,decisions,manager)
+                        break
                     if substep_motion is not None:
                         if controls>substep_motion.last and not sample_substep():motion_fault=True
                         substep_result=substep_motion.finish(controls,interrupted=bool(terminal or
