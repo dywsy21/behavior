@@ -35,7 +35,9 @@ def choose_groups(episodes, cfg):
         if len(rows) != 200:
             raise ValueError("Original task group no longer contains 200 episodes")
         original_eval = {r["episode_index"] for r in rows[-10:]}
-        candidates = [r for r in rows[:-10] if (task, r["task_instance_id"]) not in excluded]
+        original_eval_instances = {r["task_instance_id"] for r in rows[-10:]}
+        candidates = [r for r in rows[:-10] if (task, r["task_instance_id"]) not in excluded
+                      and r["task_instance_id"] not in original_eval_instances]
         # Hash grouping is independent of action/visual labels and model scores.
         candidates.sort(key=lambda r: hashlib.sha256(f'{cfg["seed"]}:{task}:{r["task_instance_id"]}'.encode()).hexdigest())
         seen = set()
@@ -65,10 +67,13 @@ def main():
     p.add_argument("--config", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--extract", action="store_true")
+    p.add_argument("--reuse-images-from",type=Path)
     args = p.parse_args()
     cfg = json.loads(args.config.read_text())
+    if cfg["minimum_sample_spacing_frames"] < cfg["horizon_frames"]:
+        raise ValueError("Stride must be at least horizon; overlapping future labels cannot become history")
     if args.extract:
-        return extract(args.output)
+        return extract(args.output,args.reuse_images_from)
     if subprocess.check_output(["git", "-C", str(REPO), "status", "--porcelain"], text=True).strip():
         raise RuntimeError("Use clean pinned source")
     args.output.mkdir(parents=True, exist_ok=False)
@@ -91,6 +96,7 @@ def main():
         invalid_ranges[int(ep)].append((int(start), int(end)))
     h = cfg["horizon_frames"]
     samples, rejects, hist = [], Counter(), Counter()
+    rejects_by_task=defaultdict(Counter);total_by_task=Counter();accepted_by_task=Counter()
     for number, (ep, group) in enumerate(sorted(groups.items()), 1):
         reserve(args.output)
         e = group["episode"]
@@ -106,22 +112,26 @@ def main():
         previous = []
         candidates = []
         for f in range(0, len(states)-h, cfg["minimum_sample_spacing_frames"]):
+            total_by_task[e["task_index"]]+=1
             label = labels.get(f)
             if (not label or not label["low_action_supervision_mask"] or label["memlite_branch"] != "low"
                     or min(label["action_horizon_end"], label["segment_end"]) <= f+h
                     or any(lo <= f+h and hi >= f for lo,hi in invalid_ranges[ep])):
                 rejects["not_released_same_skill_window"] += 1
+                rejects_by_task[e["task_index"]]["not_released_same_skill_window"]+=1
                 previous = []
                 continue
             try:
                 active = skill_text(label["active_skills_semantic_json"])
             except ValueError:
                 rejects["unbound_instruction"] += 1
+                rejects_by_task[e["task_index"]]["unbound_instruction"]+=1
                 previous = []
                 continue
             token, evidence = classify_window(states[f:f+h+1], actions[f:f+h], actions[f-1] if f else None)
             if token is None:
                 rejects[evidence["reject"]] += 1
+                rejects_by_task[e["task_index"]][evidence["reject"]]+=1
                 previous = []  # do not invent an executed semantic history for mixed actions
                 continue
             state = actor_state(states[f])
@@ -133,6 +143,7 @@ def main():
                    "label_evidence": evidence, "same_skill_end_exclusive":min(label["action_horizon_end"],label["segment_end"]),
                    "source_fingerprint":hashlib.sha256(states[f:f+h+1].tobytes()+actions[f:f+h].tobytes()+label["active_skills_semantic_json"].encode()).hexdigest()}
             candidates.append(row)
+            accepted_by_task[e["task_index"]]+=1
             previous.append(token)
         # Class round robin within source episode prevents stationary/base-heavy
         # clips from filling the bounded dataset. Evaluation reports macro and
@@ -164,13 +175,14 @@ def main():
               "quarantine_sha256":sha(RELEASE/"quarantine_ranges.parquet"),"root":str(ROOT),"group_sha256":sha(args.output/"groups.json"),
               "counts":dict(Counter(r["split"] for r in samples)),"class_counts":{s:dict(Counter(r["target"] for r in samples if r["split"]==s)) for s in ("train","validation","test")},
               "rejected_windows":dict(rejects),"elapsed_s":time.time()-started,
+              "coverage_by_task":{str(t):{"all_windows":total_by_task[t],"accepted_before_cap":accepted_by_task[t],"rejected":dict(rejects_by_task[t])} for t in cfg["tasks"]},
               "split_sha256":{s:sha(args.output/(s+".jsonl")) for s in ("train","validation","test")},
               "limitations":["Conservative projection of continuous expert direction; not exact primitive demonstrations.","No positive terminal or outcome labels.","Instance-group holdout is within three known tasks, not task-level generalization."]}
     write_json(args.output/"index_manifest.json",manifest)
     print(json.dumps(manifest,ensure_ascii=False),flush=True)
 
 
-def extract(out):
+def extract(out,reuse=None):
     import av
     from PIL import Image
     manifest=json.loads((out/"index_manifest.json").read_text())
@@ -179,6 +191,11 @@ def extract(out):
     media.mkdir(exist_ok=False)
     counts=Counter()
     rows_by_ep=defaultdict(list)
+    cached={}
+    if reuse:
+        for split in ("train","validation","test"):
+            for line in (reuse/(split+"_images.jsonl")).read_text().splitlines():
+                row=json.loads(line);cached[row["id"]]=row
     all_rows={}
     for split in ("train","validation","test"):
         rows=[json.loads(x) for x in (out/(split+".jsonl")).read_text().splitlines()]
@@ -196,6 +213,14 @@ def extract(out):
                 stream.thread_type="AUTO"
                 stream.codec_context.thread_count=2
                 for row in rows:
+                    old=cached.get(row["id"])
+                    if old is not None:
+                        source=reuse/old["images"][view]
+                        if sha(source)!=old["image_receipts"][view]["png_sha256"]:raise RuntimeError("Reused immutable frame changed")
+                        row.setdefault("images",{})[view]=str(source.resolve())
+                        row.setdefault("image_receipts",{})[view]=old["image_receipts"][view]
+                        counts[view]+=1
+                        continue
                     timestamp=float(e[key+"/from_timestamp"])+row["frame_index"]/30
                     container.seek(int(timestamp/stream.time_base),stream=stream,backward=True)
                     found=None

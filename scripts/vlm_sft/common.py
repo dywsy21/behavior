@@ -14,7 +14,7 @@ import re
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-VERSION = "h09-semantic-motion-v1"
+VERSION = "h09-semantic-motion-v2"
 CAMERAS = {"head": "zed_link_camera_0", "left_wrist": "left_realsense_link_camera_0",
            "right_wrist": "right_realsense_link_camera_0"}
 POSITIONS = {"left": slice(17, 20), "right": slice(42, 45)}
@@ -52,6 +52,8 @@ def clean_object(value):
     if not value or value in ("NONE", "UNSPECIFIED"):
         return ""
     text = str(value)
+    if "," in text:
+        return ", ".join(clean_object(item.strip()) for item in text.split(","))
     text = re.sub(r"_\d+$", "", text)
     text = re.sub(r"_[a-z0-9]{6}$", "", text)
     # Some annotations have comma-separated objects; each is sanitized alone.
@@ -120,22 +122,30 @@ def classify_window(states, actions, previous_action=None):
           for p, sl in QUATERNIONS.items()}
     dq = {p: float(np.max(np.ptp(s[:, sl], axis=0))) for p, sl in JOINTS.items()}
     dg = {p: float(s[-1, sl].mean()-s[0, sl].mean()) for p, sl in GRIPS.items()}
+    position_excursion = {p: float(np.linalg.norm(s[:, sl]-s[0, sl], axis=1).max()) for p, sl in POSITIONS.items()}
+    rotation_excursion = {p: float(np.linalg.norm((Rotation.from_quat(s[:, sl])*Rotation.from_quat(s[0, sl]).inv()).as_rotvec(),axis=1).max())
+                          for p,sl in QUATERNIONS.items()}
+    grip_excursion = {p: float(np.ptp(s[:, sl].mean(axis=1))) for p,sl in GRIPS.items()}
     evidence = {"delta_eef_base_m": {p: v.tolist() for p, v in dp.items()},
                 "delta_rotation_base_rad": {p: v.tolist() for p, v in rv.items()},
                 "joint_range_rad": dq, "delta_finger_m": dg,
-                "raw_base_command_mean": a[:, :3].mean(0).tolist()}
+                "raw_base_command_mean": a[:, :3].mean(0).tolist(),
+                "max_position_excursion_m":position_excursion,"max_rotation_excursion_rad":rotation_excursion,
+                "finger_excursion_m":grip_excursion}
     base = a[:, :3] * np.array([.75, .75, 1.])
     base_abs = np.max(np.abs(base), axis=0)
-    arm_quiet = max(np.linalg.norm(v) for v in dp.values()) < .007 and max(np.linalg.norm(v) for v in rv.values()) < .06
-    grips_quiet = max(abs(v) for v in dg.values()) < .005
+    arm_quiet = max(position_excursion.values()) < .007 and max(rotation_excursion.values()) < .06
+    grips_quiet = max(grip_excursion.values()) < .005
     if float(base_abs.max()) > .04:
-        # Pure direction, consistent throughout the first eight commands; no
+        # Pure direction, consistent throughout ALL commands; no
         # conversion of the simulator's biased velocity integral into truth.
         scaled = base / [.12, .12, .25]
         mean = scaled.mean(0)
         d = directional(mean, ("FORWARD", "LEFT", "YAW_PLUS"), ("BACK", "RIGHT", "YAW_MINUS"), .15)
         axis = int(np.argmax(np.abs(mean)))
-        stable = bool(np.all(scaled[:8, axis] * np.sign(mean[axis]) > .1))
+        dominant=scaled[:,axis]*np.sign(mean[axis])
+        orthogonal=np.linalg.norm(np.delete(scaled,axis,axis=1),axis=1)
+        stable = bool(np.all(dominant > .1) and np.all(orthogonal <= .35*dominant))
         if d and stable and arm_quiet and grips_quiet and dq["torso"] < .01:
             return "BASE_"+d, evidence
         return None, dict(evidence, reject="mixed_or_transitional_base")
@@ -145,7 +155,7 @@ def classify_window(states, actions, previous_action=None):
         p = changes[0]
         values = a[:, GRIP_ACTION[p]]
         sign = np.sign(dg[p])
-        if np.all(values[:4]*sign > .15):
+        if np.all(values*sign > .15):
             return p.upper() + ("_OPEN" if sign > 0 else "_CLOSE"), evidence
     if not grips_quiet:
         return None, dict(evidence, reject="mixed_gripper_motion")
@@ -157,7 +167,7 @@ def classify_window(states, actions, previous_action=None):
                 and max(np.linalg.norm(v) for v in rv.values()) < .04):
             return "TORSO_"+d, evidence
         return None, dict(evidence, reject="torso_motion_unrepresentable")
-    moving = [p for p in POSITIONS if np.linalg.norm(dp[p]) >= .006 or np.linalg.norm(rv[p]) >= .035]
+    moving = [p for p in POSITIONS if position_excursion[p] >= .006 or rotation_excursion[p] >= .035]
     if len(moving) == 2:
         d = directional((dp["left"]+dp["right"])/2)
         if d and np.linalg.norm(dp["left"]-dp["right"]) < .004 and max(np.linalg.norm(v) for v in rv.values()) < .035:
@@ -166,15 +176,16 @@ def classify_window(states, actions, previous_action=None):
     if len(moving) == 1:
         p = moving[0]
         d = directional(dp[p])
-        if d and np.linalg.norm(rv[p]) < .035:
+        if d and rotation_excursion[p] < .035:
             # Reject reversal within a window even if endpoints look pure.
             increments = np.diff(s[:, POSITIONS[p]], axis=0)
             axis = int(np.argmax(np.abs(dp[p])))
             reverse = np.maximum(-increments[:, axis]*np.sign(dp[p][axis]), 0).sum()
-            if reverse <= .0015:
+            lateral=np.linalg.norm(np.delete(s[:,POSITIONS[p]]-s[0,POSITIONS[p]],axis,axis=1),axis=1).max()
+            if reverse <= .0015 and lateral <= .35*abs(dp[p][axis])+.0015:
                 return p.upper()+"_"+d, evidence
         r = directional(rv[p], tuple(x+"_PLUS" for x in ROT_NAMES), tuple(x+"_MINUS" for x in ROT_NAMES), .035)
-        if r and np.linalg.norm(dp[p]) < .006:
+        if r and position_excursion[p] < .006:
             return p.upper()+"_"+r, evidence
         return None, dict(evidence, reject="mixed_or_curved_arm_motion")
     if previous_action is not None and np.max(np.abs(np.asarray(previous_action)[:3])) > .08 and base_abs.max() < .01:

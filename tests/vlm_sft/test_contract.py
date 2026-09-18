@@ -39,6 +39,22 @@ class ContractTests(unittest.TestCase):
         a[:8,2]=-.2
         self.assertIsNone(classify_window(s,a)[0])
 
+    def test_late_base_reversal_rejected(self):
+        s,a=quiet();a[:,2]=.4;a[12:,2]=-.1
+        self.assertIsNone(classify_window(s,a)[0])
+
+    def test_arm_excursion_cannot_hide_inside_base_or_gripper(self):
+        for gripper in (False,True):
+            s,a=quiet();s[4:10,42]=.08
+            if gripper:
+                s[:,49:51]=np.linspace(.05,.02,17)[:,None];a[:,22]=-1
+            else:a[:,0]=.3
+            self.assertIsNone(classify_window(s,a)[0])
+
+    def test_curved_side_excursion_not_pure_translation(self):
+        s,a=quiet();s[:,42]=np.linspace(0,.02,17);s[4:10,43]=.05
+        self.assertIsNone(classify_window(s,a)[0])
+
     def test_torso_not_mislabelled_as_both_arms(self):
         s,a=quiet();s[:,53]=np.linspace(0,.04,17)
         s[:,19]=np.linspace(0,.02,17);s[:,44]=np.linspace(0,.02,17)
@@ -53,6 +69,7 @@ class ContractTests(unittest.TestCase):
     def test_contract_strips_ids_and_refuses_privileged_keys(self):
         self.assertEqual(clean_object("coffee_table_koagbh_0"),"coffee table")
         self.assertEqual(clean_object("radio_89"),"radio")
+        self.assertEqual(clean_object("radio_89, coffee_table_koagbh_0"),"radio, coffee table")
         state=actor_state(quiet()[0][0])
         text=prompt("turn on radio","pick radio",state,[])
         self.assertNotIn("future",text)
