@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**23:18 H10两门真实失败，策略未放行（Codex）：** 465bc85两门已退出，均24决策/369控制/0前缀/0神经，radio106.524s、plates109.164s。两场景新强制left-roll±8°在reset姿态均`UNREACHABLE_OR_COLLISION_BLOCKED`，未执行；只有两次left微平移经过fresh depth门，其余原需达项正常，不能把“无执行故障”重写为gate_ok。原gate结果保留，matched/fullstart均未启动。本人看两reset头图（radio壁炉、plates厨房）确认本次确原始起点、非旧持物帧。sim主负载GPU3约25.6GiB，OG启动枚举在0/1/2各进程还创建200–238MiB上下文（非这些卡上的模拟工作），两个PID退出已释放，队友进程未变；不笼统声称框架绝不触碰其他GPU。
+
+同期Astra只读CPU确认另一个实质参考系缺陷：held_right+visible press时，旧候选把BASE_FORWARD_FINE虚报84.031→32.58mm（gain51.45mm），但随手持目标的真实相对gain=0；只针对pick/not-loaded的进展监视不拦。**在策略前修**，不热改465bc85/89280服务。下一仅CPU≤300s：held-reference正确预测/禁无效整体底盘接近，以及两旧门d7实际pose上筛有限6方向、前进/返回均过IK与可见深度门的8°free-wrist门；不放松限位/碰撞。新代码/review通过后才另登记最多2个修复工程门，原2策略预算仍未使用，不自动追加政策回合。
+
 **23:13 H10两真实工程门启动（Codex）：** `static_h10`56.273s/恰2调用/0控制完成，d4、d20都选left-roll-plus-coarse/tool，原九图hash完全一致，指向预测改善7.06/7.10°但尚未入镜。本人复看d4头/双腕原图，未把几何当按钮信息。GPU3同不可变465bc85/digest2f49a25d启动`gate_radio_h10`PID89833、`gate_plates_h10`PID89890，各原24/1536/1200s、0前缀/0模型，正在初始化，不能称过门。服务89280/GPU1当前2/368空闲待用；静态完整记录复制本地artifacts中，旧证据不改。两个策略仍未提交。
 
 **23:11 H10静态神经门运行中（Codex）：** server89280已ready，10.199s加载、465bc85/Qwen3.8-27B/revision1d4bf0f/GPU1身份一致、0起始调用；`static_h10`开始原d4/20两选择≤300s/0控制。模拟器仍0新重置，待核hash/真实选择/可见危险；不把服务ready当方法效果。
