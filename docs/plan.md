@@ -14,6 +14,12 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 01:41（北京时间）H12 CPU块完成/后继有限物理块登记（Codex/Astra）：** 8e270b1独立312/4.975s及真实inner/outer/finally＋all-write/双close/broken-stderr联合注入通过，无剩余代码阻塞；双端312已过。登记固定该源/digest1f9c5b：GPU3仅`gate_radio_h12`/`gate_plates_h12`两新工程reset各24决策/1536控制/1200s/0前缀模型，原质量门；全部通过退出及实际段链核验后，仅1条`radio_h12_fullstart`原task0/train138/seed0、0前缀、新规划、96/3072/2400s/≤215调用。GPU1新`server_h12`8921、同27B revision/grammar、215调用；核旧111660身份及18ledger后停旧服务，旧源/证据保留。还未启动，根2.0GiB/余87GiB、仍守4/80GiB；不重启H09、不追加静态选型/匹配前缀。
+
+**2026-09-19 01:39（北京时间）H12首错误保持修正/312双端过（Codex）：** Astra复现外层补写/close能覆盖主错误，已在`8e270b1897befe32385f7662ddd90c8aeeeda2f2`修复并添加实际runner AST永久回归；recording/trace/video失败保首错，无首错时close失败仍报告，raw_servo保持第一份状态。312本地/4.198s、robo/12.788s过，新独立`semantic_substep_8e270b1`/digest`1f9c5bcdbf6e33b1d7d56cb22f0e5fa1effa31cf0ac445d3482784ab3d5b384c`，最终复审待。H11两完整门副本另144+144主RGB-D hash及两视频全解码通过；8页门面板未全人工看，不报全人工验收。仍0新模型/物理/训练。
+
+**2026-09-19 01:36（北京时间）H12固定源双端CPU通过（Codex）：** `14901a832221b8367504b8c57104ceb84188dbc3`已push并经Git到robo独立`git_worktrees/semantic_substep_14901a8`，digest`596c76a7f2f9b24278e9a9c6477bc9f08424c4da6156f830d892252e65b650d9`；309本地/4.053s及robo/12.269s过。已核旧111660仍同源空闲、GPU3无进程；未热改或新增模型/物理。Astra正做异常/预算停机增量故障注入，过后另登记后继物理块。
+
 **2026-09-19 01:34（北京时间）H12独立审查定位停止槽缺口并修复（Codex/Astra）：** dadb402已有309本地CPU（含真实controller消费完整0.12rad而非末0.03rad）；Astra真实runner AST＋SafeServo假环境复现异常和控制上限中途结束可漏显式hold，未新仿真。新opt-in预留1控制槽，正常/中途失败都不超max_controls；session内原错误先保存，再当前proprio/原夹爪命令safe_hold并计数/trace，清理/写证据次级错误不覆盖首异常。增量复审与故障注入待；0模型/物理/训练，旧服务111660空闲18/217。当前2.0GiB根/87GiB空余，队友GPU0不动。
 
 **2026-09-19 01:29（北京时间）H12动作内VO代码已接线、验证中（Codex）：** 默认关闭的`--odometry-substep-controls 6`保持原`rgbd_rigid`；每6tick及末尾余段保存当前head RGB-D/q/hash，以`T_total@T_segment`累计，整动作界不变。完整回执只消费一次，actor复用同control/q/爪的末快照；门立即消费后不把零步帧当整动作，详细段链留`action_motion.json`不塞模型上下文。任段失败或中断不给部分里程，保硬错误和safe hold。旧299测试过，新增累计/缓存/末段/负例正跑；Astra独立审查待，0模型/物理/训练。离线光流脚本补尺寸/完整patch/有限性审查缺口，但仍未部署。
