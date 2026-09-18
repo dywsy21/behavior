@@ -1,7 +1,9 @@
 {
   "experiment_id": "H09S-original-remaining-two-after-artifact-repair",
   "registered_at": "2026-09-19T04:53:00+08:00",
-  "status": "CPU_deployment_only_waiting_new_authorization_and_manual_reviewer",
+  "status": "task1_authorized_parent_ready_waiting_actual_launch_task3_not_released",
+  "authorization": {"activated_at":"2026-09-19T04:58:00+08:00","path":"/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/authorization_remaining_two_68dacca.json","sha256":"599298a34957c3f971ae2cbae2597baa56b71f71a7c22803ca268c49f0178795","immediate_task":1},
+  "remote_preflight": {"source":"/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_native_68dacca","SFT_tests":36,"SFT_seconds":0.443,"source_binding_seconds":0.3786554322578013,"receipt_sha256":"cba2ef7d3925dcbec3845d94ec8f46e0122cfcb8c4d61224d9d3f1f3994f904f","total_root_bytes":54619559,"old_authorization_rejected":true},
   "owner": "Astra-max-vlm_sft_showharness",
   "manual_pre_and_post_reviewer": "Codex-parent",
   "hypothesis": "Unchanged current-state native teaching can be collected within original evidence limits after lossless calibration storage and pre-write budget repair.",

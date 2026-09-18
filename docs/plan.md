@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 04:58（北京时间）H09S真实大文件验证/原剩余task1放行（Codex/Astra）：** 真实writer/loader4.639817s、47345882→3127231B、全字节与完整model同一；失败全包3167823B/SHA94c4f14d…53952已在作者本地`artifacts/h09s-artifact-budget-fix-68dacca`，原失败不删除。robo新干净`vlm_sft_native_68dacca`36/.443s、实际4807前缀/来源.378655s通过，旧1509授权实际拒绝，全root54619559B计入旧失败和派生。父激活`authorization_remaining_two_68dacca.json`双端SHA599298a3…78795，**只放行原剩余task1/192一次**到`pilot_v2/task_1`、GPU1，164prefix/200native/900s/3候选/120s逐条父审，尚待PID；task3等另一次父就绪，task0禁止重置。父重看task1源三视图及当前意图GRASP trash can，源运动base不能直接拆分BC；还没有新正标签/训练。H15同一GPU3回合仍运行，d53图radio仍直立，未宣称抓取。
+
 **2026-09-19 04:57（北京时间）H15首次闭环行为分叉（Codex）：** 同158357原一次回合，d51/52的`candidates.json`将BASE-forward/fine明确拒绝为`OBSERVED_BASE_OBSTACLE`，d51实际改选right-forward/coarse并TARGET_REACHED（至1170控制），不是只在保存数据试算中生效。本人已看本次初始head/d23/d32/d50，d50收音机仍直立在桌面；d32正确识别桌/收音机，之后已转pick子目标。旧H13对应d51–54继续底盘推进、H14证明d52轮–桌接触；新旧非完全相同全状态实验，**只能报执行接口局部改变，尚不能声称无接触/已抓取/完整成功**。run继续原预算、源5cfbb89不变，约6.144GB根/88.428GB余量；SFT新68源只部署核验，未新reset/训练。
 
 **2026-09-19 04:53（北京时间）H09S压缩/写前门独立审查合入（Codex/Astra）：** 最终`68daccaa55cbd23002a19711226c20230a4ef22b`父逐行审过、36 SFT/.197s及正确PYTHONPATH下331 harness/5.057s通过，无阻塞；首harness命令漏PYTHONPATH导致15导入错误，非有效回归结果，保留此更正。完整标定gzip/原字节/canonical模型三身份不丢字段，真实47.35MB初验3.13MB；29+1MiB单例、97+3MiB全root含旧失败，prefix写前预留，异常有保夹爪hold测试。代码已合入，旧1509源不热改。旧task0最终确认已记录304prefix/0native、0样本，SIGINT在途步未知。Astra原CPU实现块结束，下一≤300s只部署不可变68源/远端CPU及来源/磁盘核验，0reset。原剩余task1/192、task3/30两reset在`h09s_remaining_collection_block.json`登记，**仍等新授权和父逐例放行**，不重置task0、不扩100MiB/训练门。父H15同158357已到44决策/1020控制、进入导航验证，唯一回合未结束。
