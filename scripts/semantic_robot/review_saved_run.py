@@ -20,7 +20,14 @@ def main():
     args=p.parse_args()
     if not 1<=args.stride<=12:raise ValueError("Bounded panel stride required")
     run=Path(args.run);out=Path(args.output);out.mkdir(parents=True,exist_ok=False)
-    terminal=read(run/"result.json") or read(run/"failure.json")
+    terminal_path=next((run/name for name in ("result.json","failure.json","operator_stop.json") if (run/name).exists()),None)
+    if terminal_path is None:raise ValueError("No real terminal or explicit operator-stop record")
+    terminal=read(terminal_path)
+    if terminal_path.name=="operator_stop.json":
+        # The evaluator's signal hook may quit Kit before Python's finally.
+        # Preserve this distinction; recover only already-written decisions.
+        trace=[json.loads(line) for line in (run/"steps.jsonl").read_text().splitlines()]
+        terminal["decisions"]=[row for row in trace if "action" in row and "feedback" in row]
     decisions={d["decision"]:d for d in terminal.get("decisions",[])}
     rows=[];checks=0;bad=[]
     views=("head","left_wrist","right_wrist")
@@ -61,7 +68,7 @@ def main():
                 img=Image.open(source/("CURRENT_"+view.upper()+"_RAW.png")).convert("RGB").resize((320,320))
                 canvas.paste(img,(col*320,y+30))
         canvas.save(out/f"panel_{page//2:02d}.jpg",quality=94)
-    result={"run":str(run),"terminal_sha256":sha((run/("result.json" if (run/"result.json").exists() else "failure.json")).read_bytes()),
+    result={"run":str(run),"terminal_record":terminal_path.name,"terminal_sha256":sha(terminal_path.read_bytes()),
             "terminal":{k:v for k,v in terminal.items() if k!="decisions"},
             "completed_execution_count":sum("feedback" in d for d in decisions.values()),
             "actions":dict(Counter("/".join((d["action"]["part"],d["action"]["move"],d["action"]["scale"])) for d in decisions.values() if "action" in d)),
