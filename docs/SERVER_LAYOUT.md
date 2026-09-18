@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 21:28当前：** B20策略71052已结束，官方false/429控制；70673核身份停止中，H08根`b20_complete.tar.gz`准备归档，源9f5957b保留。GPU3不再追加新回合；B20终态不要误作仍运行或任务成功。H09 GPU1独立微调后四短闭环继续，以owner记录为准，不动其服务。
+
 **2026-09-18 21:17当前：** B20双工程门已退出/通过；同`semantic_inspection_budget_9f5957b`的唯一GPU3模型70673/8909和策略`radio_b20_matched`71052活跃，不热改或重新提交。策略64/2048/1800s，前缀448＋362另计。B19完整本地`artifacts/semantic-agent-effect-20260918/b19_verified_bundle`已SHA/174 RGB-D hash/全视频解码/本人5页核验。
 
 **2026-09-18 21:10当前：** 旧58225已核身份退出；主代理GPU3双门66709/66710使用`git_worktrees/semantic_inspection_budget_9f5957b`不可变源，策略/新服务未启。H08根`static_b20_cpu_v1`/`static_b20_model_v1`已结束（4姿态/3神经/0控制），B19完整包本地下载中；后续服务日志另归档。H09正式600已完成/退出，最终adapter在其`train_v1`，Astra正在原192留出配对，不根据test另选checkpoint。
