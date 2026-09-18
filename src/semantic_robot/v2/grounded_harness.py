@@ -2,7 +2,7 @@
 import math
 import time
 import copy
-from dataclasses import asdict
+from dataclasses import asdict, replace
 
 import numpy as np
 
@@ -11,6 +11,7 @@ from .harness import TaskHarness
 from .protocol import Action, HOLD, TRANSLATIONS, VIEWS, strict_json
 from .search import CoverageSearch
 from .servo import SafeServo
+from .bimanual import localize_hand_contacts, all_claims
 
 
 RECOVERY_STRATEGIES=("scan_left","scan_right","move_forward","move_left","move_right","retry_approach","hold")
@@ -40,6 +41,20 @@ class GroundedHarness(TaskHarness):
 
     def palette(self):
         palette=super().palette()
+        if (not self.stop_reason and self.goal.kind == "pick" and self.goal.hand == "both"
+                and self.stage in ("APPROACH", "ALIGN") and not any(self.hold_verified.values())):
+            # Before grasping, each hand must be able to reach its own contact.
+            # After closing, VERIFY_GRASP retains only the synchronized lift.
+            extra=[]
+            for arm in self.arms:
+                frames=("base", arm+"_wrist", "head")
+                scales=("micro","fine","coarse") if self.stage=="APPROACH" else ("micro","fine")
+                extra.extend(Action(arm,move,scale,frame) for move in TRANSLATIONS for scale in scales for frame in frames)
+                if self.stage=="ALIGN":
+                    extra.extend(Action(arm,move,scale,"tool") for move in
+                        ("roll_plus","roll_minus","pitch_plus","pitch_minus","yaw_plus","yaw_minus")
+                        for scale in ("micro","fine"))
+            palette += tuple(extra)
         if not self.stop_reason and self.stage in ("SEARCH","RECOVER"):
             palette += (Action("base","yaw_plus","coarse"),Action("base","yaw_minus","coarse"))
         if (not self.stop_reason and self.stage == "ALIGN" and self.goal.kind == "pick"
@@ -94,6 +109,7 @@ class GroundedController:
         self.search=CoverageSearch()
         self.previous=None
         self.target={"valid":False}
+        self.hand_targets={}
         self.centers={}
         self.depth_guard=None
         self.reposition=None
@@ -151,7 +167,21 @@ class GroundedController:
     def observe(self,evidence,state,depths,depth_receipt):
         manager=self.harness
         observed_goal_index=manager.index
-        self.target=localize_target(evidence,depths,self.model,state.q)
+        bimanual=manager.goal.kind=="pick" and manager.goal.hand=="both"
+        self.hand_targets=localize_hand_contacts(evidence,depths,self.model,state.q) if bimanual else {}
+        if bimanual:
+            valid=all(row["valid"] for row in self.hand_targets.values())
+            self.target={"valid":valid,"source":"separate_VLM_hand_pixels_plus_onboard_depth",
+                         "reason":"OBSERVED_HAND_CONTACTS" if valid else "MISSING_OR_INVALID_HAND_CONTACT",
+                         "hand_contacts":self.hand_targets,"views":[],"surface_point_not_object_pose":True}
+            if valid:
+                self.target["point_base_m"]=np.mean([row["point_base_m"] for row in self.hand_targets.values()],axis=0).tolist()
+                self.target["point_is_display_midpoint_not_grasp_target"]=True
+            contacts=getattr(evidence,"hand_contacts",())
+            evidence=replace(evidence,enclosed=all_claims(row.enclosed for row in contacts),
+                             co_moving=all_claims(row.co_moving for row in contacts))
+        else:
+            self.target=localize_target(evidence,depths,self.model,state.q)
         self.centers=self.model.grasp_centers(state.q)
         manager.grounding=self.target
         camera=self.model.spec["metadata"]["cameras"]["head"]
@@ -160,14 +190,28 @@ class GroundedController:
         self.depth_guard=LocalDepthGuard(observed_cloud(depths,self.model,state.q),self.model,state.q,depths)
         distance=None
         if self.target["valid"]:
-            point=np.asarray(self.target["point_base_m"])
-            distance=max(float(np.linalg.norm(point-self.centers[a])) for a in manager.arms)
+            points=self._points_for_arms()
+            distances={a:float(np.linalg.norm(points[a]-self.centers[a])) for a in manager.arms}
+            distance=max(distances.values())
             self.target["distance_to_active_closing_center_m"]=distance
-            self.target["target_minus_center_base_m"]={a:(point-self.centers[a]).round(4).tolist() for a in manager.arms}
-        co_motion=all(metric_co_motion(self.previous,self.target,state,self.centers,manager.feedback,a) is True for a in manager.arms)
-        previous_distance=(self.previous or {}).get("distance")
+            self.target["mean_contact_distance_m"]=float(np.mean(list(distances.values())))
+            self.target["per_hand_distance_m"]=distances
+            self.target["target_minus_center_base_m"]={a:(points[a]-self.centers[a]).round(4).tolist() for a in manager.arms}
+        co_motion=True
+        for arm in manager.arms:
+            previous=self.previous
+            current=self.target
+            if bimanual:
+                current=self.hand_targets[arm]
+                previous=({**previous,"target":previous.get("hand_targets",{}).get(arm,{"valid":False})}
+                          if previous else None)
+            co_motion=co_motion and metric_co_motion(previous,current,state,self.centers,manager.feedback,arm) is True
+        # With two contacts, improving one hand is progress even when the other
+        # hand still determines the maximum used by the strict stage gate.
+        progress_distance=self.target.get("mean_contact_distance_m",distance)
+        previous_distance=(self.previous or {}).get("progress_distance")
         same_goal=self.previous and self.previous["goal_index"]==manager.index
-        reduced=bool(same_goal and distance is not None and previous_distance is not None and distance<previous_distance-.001)
+        reduced=bool(same_goal and progress_distance is not None and previous_distance is not None and progress_distance<previous_distance-.001)
         self.progress={"new_search_coverage":new_coverage,"target_distance_m":distance,
                        "metric_co_motion":co_motion,"distance_reduced":reduced}
         internal=dict(self.progress)
@@ -192,8 +236,8 @@ class GroundedController:
         if self.replan_needed and manager.replans>=self.max_replans:
             manager.stop_reason="STRATEGY_REPLAN_BUDGET_EXHAUSTED"
             self.replan_needed=None
-        self.previous={"target":self.target,"centers":{a:p.copy() for a,p in self.centers.items()},
-                       "distance":distance,"goal_index":observed_goal_index}
+        self.previous={"target":self.target,"hand_targets":self.hand_targets,"centers":{a:p.copy() for a,p in self.centers.items()},
+                       "distance":distance,"progress_distance":progress_distance,"goal_index":observed_goal_index}
 
     def apply_recovery(self,value):
         manager=self.harness
@@ -237,17 +281,23 @@ class GroundedController:
             return frame @ np.array([[0, -1, 0], [0, 0, 1], [-1, 0, 0]]) @ vector
         return None
 
-    def _expected_point(self, action, state, trial=None):
-        point=np.asarray(self.target["point_base_m"])
+    def _points_for_arms(self):
+        contacts=self.target.get("hand_contacts")
+        return {a:np.asarray(contacts[a]["point_base_m"] if contacts else self.target["point_base_m"])
+                for a in self.harness.arms}
+
+    def _expected_distances(self, action, state, trial=None):
+        points=self._points_for_arms()
         centers=self.centers
         if action.part=="base":
             amount=action.amount(self.harness.carry)
             if action.move in TRANSLATIONS:
-                point=point-np.asarray(TRANSLATIONS[action.move])*amount
+                points={a:p-np.asarray(TRANSLATIONS[action.move])*amount for a,p in points.items()}
             else:
                 angle=-amount*(1 if action.move=="yaw_plus" else -1)
                 c,s=math.cos(angle),math.sin(angle)
-                point=np.array([[c,-s,0],[s,c,0],[0,0,1]])@point
+                R=np.array([[c,-s,0],[s,c,0],[0,0,1]])
+                points={a:R@p for a,p in points.items()}
         elif trial is not None and trial.joint_plan is not None:
             centers=self.model.grasp_centers(trial.joint_plan[-1])
         elif action.move in TRANSLATIONS and action.part in (*self.harness.arms,"both"):
@@ -258,22 +308,34 @@ class GroundedController:
                           if action.part in (a,"both") else 0) for a,p in centers.items()}
         else:
             return None
-        return max(float(np.linalg.norm(point-centers[a])) for a in self.harness.arms)
+        return {a:float(np.linalg.norm(points[a]-centers[a])) for a in self.harness.arms}
+
+    def _expected_point(self, action, state, trial=None):
+        distances=self._expected_distances(action,state,trial)
+        return max(distances.values()) if distances is not None else None
 
     def candidates(self,state):
         palette=self.harness.palette()
+        bimanual=self.harness.goal.kind=="pick" and self.harness.goal.hand=="both"
+        limit=40 if bimanual else self.max_preflights
         if self.depth_guard is None:
             raise RuntimeError("Current RGB-D observation required before proposing motion")
         rows=[]; proposed=[]
         if self.target.get("valid") and self.harness.stage not in ("GRASP","RELEASE","VERIFY_GRASP","VERIFY_PLACE","VERIFY_SUPPORT","VERIFY_EFFECT"):
             ranked=[]
-            before=self.target["distance_to_active_closing_center_m"]
+            before=self.target.get("mean_contact_distance_m",self.target["distance_to_active_closing_center_m"])
             for action in palette:
                 if action.move in TRANSLATIONS and action.part in (*self.harness.arms,"both"):
-                    after=self._expected_point(action,state)
-                    if after is not None:
-                        ranked.append((before-after,action))
+                    distances=self._expected_distances(action,state)
+                    if distances is not None:
+                        ranked.append((before-float(np.mean(list(distances.values()))),action))
             ranked.sort(key=lambda x:x[0],reverse=True)
+            if bimanual:
+                # Reserve a useful direction for EACH hand before common moves
+                # consume the finite list. Their errors can point opposite ways.
+                first=[next((row for row in ranked if row[1].part==arm and row[0]>0),None)
+                       for arm in self.harness.arms]
+                ranked=[row for row in first if row is not None]+ranked
             translation_slots=8
             # Rank *directions*, not repeated scales of one direction. Failed
             # forward IK must not spend every slot and hide feasible up/left.
@@ -301,13 +363,16 @@ class GroundedController:
             open_action=Action(self.harness.goal.hand,"open")
             if open_action in palette:
                 proposed.insert(0,open_action)
-            for action in palette:
-                if action.move in ("roll_plus","roll_minus","pitch_plus","pitch_minus","yaw_plus","yaw_minus") and action.part in (*self.harness.arms,"both"):
-                    if len(proposed)<self.max_preflights: proposed.append(action)
+            rotations=[action for action in palette if action.move in
+                       ("roll_plus","roll_minus","pitch_plus","pitch_minus","yaw_plus","yaw_minus")
+                       and action.part in (*self.harness.arms,"both")]
+            if bimanual:rotations.sort(key=lambda action:action.part=="both")
+            for action in rotations:
+                if len(proposed)<limit: proposed.append(action)
             if self.harness.stage in ("APPROACH","ALIGN","RECOVER"):
                 for move in ("up","down"):
                     torso=Action("torso",move,"micro")
-                    if torso in palette and len(proposed)<self.max_preflights:proposed.append(torso)
+                    if torso in palette and len(proposed)<limit:proposed.append(torso)
         else:
             # State-machine verification has deliberately small palettes.
             proposed=[a for a in palette if a!=HOLD and a.part!="torso"]
@@ -320,7 +385,7 @@ class GroundedController:
             # the manipulation ranking's one body fallback is insufficient.
             proposed=[a for a in palette if a.part=="base" and a.scale=="fine"]
         allowed=[]; started=time.perf_counter()
-        for action in [HOLD,*dict.fromkeys(proposed[:self.max_preflights])]:
+        for action in [HOLD,*dict.fromkeys(proposed[:limit])]:
             ok,reason=self.depth_guard.check(action,self.harness.carry)
             trial=None
             if ok:
@@ -334,13 +399,16 @@ class GroundedController:
                 allowed.append(action)
                 row["planned_ticks"]=trial.total_ticks
                 if self.target.get("valid"):
-                    distance=self._expected_point(action,state,trial)
-                    if distance is not None:
-                        row["predicted_target_distance_m"]=round(distance,5)
-                        row["predicted_distance_gain_m"]=round(self.target["distance_to_active_closing_center_m"]-distance,5)
+                    distances=self._expected_distances(action,state,trial)
+                    if distances is not None:
+                        row["predicted_target_distance_m"]=round(max(distances.values()),5)
+                        row["predicted_per_hand_distance_m"]={a:round(d,5) for a,d in distances.items()}
+                        before=self.target.get("mean_contact_distance_m",self.target["distance_to_active_closing_center_m"])
+                        row["predicted_distance_gain_m"]=round(before-float(np.mean(list(distances.values()))),5)
+                        row["gain_objective"]="mean_active_contact_distance; stage gates use maximum"
             rows.append(row)
         self.harness.candidate_receipt={"state_q":state.q.tolist(),"command_grip_latch":self.servo.grips.tolist(),
-            "tested":rows,"preflight_s":time.perf_counter()-started,"max_nonhold_preflights":self.max_preflights,
+            "tested":rows,"preflight_s":time.perf_counter()-started,"max_nonhold_preflights":limit,
             "depth_guard":self.depth_guard.receipt(),"fresh_execution_recheck_required":True}
         if not allowed:
             self.harness.stop_reason="NO_SAFE_ACTION_AT_CURRENT_STATE"

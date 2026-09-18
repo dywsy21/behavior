@@ -19,6 +19,7 @@ from semantic_robot.v2.grounded_harness import GroundedHarness, GroundedControll
 from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.protocol import Action
 from semantic_robot.v2.vision import VisualBundle
+from semantic_robot.v2.bimanual import BimanualEvidence, HandContact
 from test_v2 import fixture, evidence
 
 
@@ -173,6 +174,47 @@ class PipelineTests(unittest.TestCase):
         self.observation_override=json.dumps(fields)
         _,call=policy.observe(manager,self.state,self.bundle)
         self.assertEqual(call["validation"]["defaulted_fields"],[])
+
+    def test_bimanual_observer_has_two_explicit_contacts_and_no_centroid_fallback(self):
+        fields=asdict(evidence(view="head",enclosed=True));fields["other_views"]=[]
+        fields["hand_contacts"]=[asdict(HandContact("left","head",(.4,.5),True,None)),
+                                 asdict(HandContact("right","none",None,None,None))]
+        self.observation_override=json.dumps(fields)
+        policy=GroundedPolicy(self.uri,"test-pinned-revision",max_calls=2)
+        manager=GroundedHarness([Goal("pick","wide tray","both","both hands support it",True)])
+        obs,call=policy.observe(manager,self.state,self.bundle)
+        self.assertIsInstance(obs,BimanualEvidence)
+        self.assertIn("two graspable regions",self.requests[0]["system"])
+        self.assertEqual(obs.hand_contacts[1].view,"none")
+        self.assertEqual(call["validation"]["defaulted_fields"],[])
+        fields.pop("hand_contacts");self.observation_override=json.dumps(fields)
+        obs,call=policy.observe(manager,self.state,self.bundle)
+        self.assertEqual(obs.hand_contacts,())
+        self.assertEqual(call["validation"]["defaulted_fields"],["hand_contacts"])
+        self.assertEqual(policy.calls,2)
+
+    def test_bimanual_refinement_is_single_hand_and_shared_bounded_budget(self):
+        original,_,state,bundle,depths,model=self.refinement_inputs()
+        contacts=(HandContact("left","head",(.5,.5),False,None),
+                  HandContact("right","right_wrist",(.6,.6),False,None))
+        obs=BimanualEvidence(**asdict(original),hand_contacts=contacts)
+        manager=GroundedHarness([Goal("pick","wide tray","both","both hands support it",True)])
+        manager.stage="APPROACH"
+        policy=RefinedGroundedPolicy(self.uri,"test-pinned-revision",max_refinements=1)
+        changed,call,receipt,_=policy.refine(obs,manager,state,bundle,depths,model)
+        self.assertTrue(receipt["attempted"])
+        self.assertEqual(receipt["hand"],"left")
+        self.assertNotEqual(changed.hand_contacts[0].target_uv,contacts[0].target_uv)
+        self.assertEqual(changed.hand_contacts[1],contacts[1])
+        self.assertEqual(BimanualEvidence.parse(json.dumps(asdict(changed))),changed)
+        self.assertEqual(len(self.requests),1)
+        self.assertEqual(json.loads(self.requests[0]["text"].split("\nChoose exactly one:")[0])["current_goal"]["hand"],"left")
+        _,call,receipt,_=policy.refine(obs,manager,state,bundle,depths,model)
+        self.assertIsNone(call);self.assertEqual(len(self.requests),1)
+        self.assertEqual(receipt["reason"],"REFINEMENT_BUDGET_EXHAUSTED")
+        unknown=BimanualEvidence(**asdict(original),hand_contacts=())
+        same,call,_,_=policy.refine(unknown,manager,state,bundle,depths,model)
+        self.assertIs(same,unknown);self.assertIsNone(call)
 
     def refinement_inputs(self):
         obs=GroundedEvidence(**asdict(evidence(view="head")))

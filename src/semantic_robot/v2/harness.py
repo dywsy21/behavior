@@ -296,11 +296,14 @@ class TaskHarness:
             last = list(self.history)[-4:]
             commands = [r["action"] for r in last]
             a, b, c, d = commands
-            drift = sum((np.asarray(r["feedback"].get("eef_delta_m", {}).get(self.goal.hand, [0,0,0])) for r in last), np.zeros(3))
+            # There is no "both" key in physical per-hand feedback. Using that
+            # missing key silently labelled every bimanual ABAB as zero motion.
+            drift = max(np.linalg.norm(sum((np.asarray(r["feedback"].get("eef_delta_m", {}).get(arm, [0,0,0]))
+                        for r in last), np.zeros(3))) for arm in self.arms)
             # Repetition is legitimate while approaching. Detect near-zero effect or
             # cancelling ABAB only; never globally penalize valid repeated moves.
             noop = a == b == c == d and all(r["action"]["move"] in ("hold", "close", "open") for r in last)
-            cancel = a == c and b == d and a != b and all(x["part"] in ("left", "right", "both") for x in commands) and np.linalg.norm(drift) < .004
+            cancel = a == c and b == d and a != b and all(x["part"] in ("left", "right", "both") for x in commands) and drift < .004
             if noop or cancel:
                 self.recover("REPEATED_NOOP" if noop else "OSCILLATION")
 

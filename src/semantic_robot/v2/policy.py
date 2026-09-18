@@ -1,5 +1,5 @@
 """Two-stage visible-evidence / scoped-action policy. No hidden retries."""
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import base64
 from io import BytesIO
 import json
@@ -13,6 +13,7 @@ from .grounding import GroundedEvidence
 from .grounded_harness import parse_recovery
 from .affordance import SurfaceChoice, surface_candidates, refinement_bundle, select_surface
 from .grounding import localize_target
+from .bimanual import BimanualEvidence, HandContact, contact_evidence
 
 PLAN_SYSTEM = """Plan robot manipulation using visible observations and the task, not imagined object locations. Return only a JSON array of subgoals. Each has exactly kind, target, hand, done_when, level. kind is pick, place, press, open, close or navigate. hand is left, right or both. level is a boolean: true for transport requiring orientation preservation. Use short visually identifiable target descriptions, not hidden simulator IDs. done_when is an observable criterion, not 'command issued'. A pick and place are separate goals. Opening containers before filling is normally necessary. Allow uncertainty: the controller will search rather than assume a target is already visible. At most 16 goals. Example: [{"kind":"pick","target":"red radio","hand":"right","done_when":"radio moves with right gripper after a small lift","level":false},{"kind":"press","target":"visible power button of held radio","hand":"left","done_when":"power indicator visibly changes","level":false}]. Never describe task success from a close command."""
 
@@ -120,17 +121,34 @@ This run also has a robot-calibrated CLOSING CENTER cross: the centre between th
 
 GROUNDED_OBSERVE_SYSTEM = grounded_observation_system()
 
+
+def bimanual_observation_system():
+    before, rest = GROUNDED_OBSERVE_SYSTEM.split("Return only JSON with exactly these fields:\n", 1)
+    example, after = rest.split("\n", 1)
+    fields = strict_json(example)
+    fields["hand_contacts"] = [asdict(HandContact(hand, "none", None, None, None)) for hand in ("left", "right")]
+    BimanualEvidence.parse(json.dumps(fields))
+    return before + "Return only JSON with exactly these fields:\n" + json.dumps(fields) + "\n" + after + """
+This PICK uses BOTH hands. hand_contacts supplies one independent contact for each named hand: hand, view, target_uv, enclosed, co_moving. Locate two graspable regions on the SAME target, reachable by the respective hand (for a broad plate typically opposite edges). Do NOT give both hands the object centroid or copy one hand's coordinates to the other. Each UV is in its stated CURRENT RAW view. An occluded/unidentifiable contact uses view=none, target_uv=null and unknown booleans; never infer a hidden rim. A visible object's global target_uv is NOT a two-hand grasp target. Per-hand enclosed refers ONLY to that hand's fingers; co_moving needs that hand's actual before/after displacement. The aggregate booleans do not override missing per-hand evidence. During a verification lift, identify the SAME physical contact region across the two times, or report unknown. No holding is certified by these claims."""
+
+
+BIMANUAL_OBSERVE_SYSTEM = bimanual_observation_system()
+
 RECOVER_SYSTEM = """Replan only the current failed search/approach strategy. Do NOT edit the original goals, mark anything done, or invent held objects/hidden locations. Use current visible images, measured heading coverage, depth and failed action receipts. Return exactly {\"strategy\":\"scan_left\",\"visible_reason\":\"short visible evidence explaining the choice\"}. Keep visible_reason to one short sentence, preferably under 240 characters; it is audit text, not an action. Strategies: scan_left, scan_right, move_forward, move_left, move_right, retry_approach, hold. scan directions are measured base yaw sweeps, not image-left hand moves. move strategies allow at most five 6cm pulses, EACH rechecked against fresh onboard depth; they may be refused if unseen/blocked. If a complete heading sweep has already covered this viewpoint, choose a visibly safe viewpoint change, or hold when none is supported. retry_approach requires a visible target and a different feasible path. hold ends safely. At most two strategy replans per episode. Unobserved space is UNKNOWN, not free."""
 
 
 class GroundedPolicy(VLMPolicy):
     def observe(self,harness,state,bundle):
         text=perception_context(harness,state,bundle)
-        result,payload=self._call("observe",GROUNDED_OBSERVE_SYSTEM,text,bundle)
-        evidence = GroundedEvidence.parse(result["text"])
+        bimanual=harness.goal.kind=="pick" and harness.goal.hand=="both"
+        result,payload=self._call("observe",BIMANUAL_OBSERVE_SYSTEM if bimanual else GROUNDED_OBSERVE_SYSTEM,text,bundle)
+        evidence = (BimanualEvidence if bimanual else GroundedEvidence).parse(result["text"])
         validation = {"defaulted_fields": [] if "other_views" in strict_json(result["text"]) else ["other_views"],
                       "missing_other_views_means": "NO_CORROBORATING_EVIDENCE",
                       "raw_model_text_unchanged": True, "retries": 0}
+        if bimanual and "hand_contacts" not in strict_json(result["text"]):
+            validation["defaulted_fields"].append("hand_contacts")
+            validation["missing_hand_contacts_means"]="NO_CONTACT_EVIDENCE; no shared-point fallback"
         return evidence,{"result":result,"request":payload,"validation":validation}
 
     def act_feasible(self,harness,state,bundle,allowed):
@@ -167,6 +185,31 @@ class RefinedGroundedPolicy(GroundedPolicy):
         self.max_refinements,self.refinements=max_refinements,0
 
     def refine(self,evidence,harness,state,bundle,depths,model):
+        if harness.goal.kind=="pick" and harness.goal.hand=="both":
+            # At most ONE extra model choice per decision, shared 16-call cap.
+            # Refine a supplied per-hand ray only; never manufacture a missing
+            # contact or substitute the global object centroid for both hands.
+            receipt={"attempted":False,"original_evidence":asdict(evidence),
+                     "reason":"BIMANUAL_CONTACTS_VALID_OR_UNKNOWN","robot_controls":0,
+                     "refinements_used":self.refinements}
+            for contact in getattr(evidence,"hand_contacts",()):
+                single=contact_evidence(evidence,contact)
+                if not single.visible or localize_target(single,depths,model,state.q)["valid"]:
+                    continue
+                from types import SimpleNamespace
+                goal=replace(harness.goal,hand=contact.hand,
+                             done_when="This hand and the other hand both support the same target after a lift.")
+                scope=SimpleNamespace(goal=goal,stage=harness.stage)
+                refined,call,detail,views=self.refine(single,scope,state,bundle,depths,model)
+                updated=replace(contact,view=refined.view,target_uv=refined.target_uv,
+                                enclosed=refined.enclosed,co_moving=refined.co_moving)
+                result=replace(evidence,hand_contacts=tuple(updated if row.hand==contact.hand else row
+                                                          for row in evidence.hand_contacts))
+                receipt.update(attempted=detail["attempted"],reason=detail["reason"],
+                               hand=contact.hand,contact_receipt=detail,refined_evidence=asdict(result),
+                               refinements_used=self.refinements)
+                return result,call,receipt,views
+            return evidence,None,receipt,None
         target=localize_target(evidence,depths,model,state.q)
         receipt={"attempted":False,"original_target":target,"refinements_used":self.refinements,
                  "original_evidence":asdict(evidence),"robot_controls":0}
