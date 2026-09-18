@@ -6,7 +6,9 @@
 
 ## 1. 总览
 
-**2026-09-18 H-07（Codex，控制门运行中）：** 根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_grounded_20260918`，独立源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grounded_18b47ff`，分支`feat/semantic-agent-grounded-20260918`。`gate_radio_v1`/`gate_plates_v1`及同级`.log`是新RGB-D/夹持中心/搜索转向控制门，未完成；产物保留但不进Git。权重直接只读复用下方H-06的27B，未复制/下载，模型服务与策略回合尚未启动。新门/新digest不能与旧v2混报。[设计](SEMANTIC_AGENT_GROUNDED.md)
+**2026-09-18 11:54覆盖下方H-07运行状态：** 9993fab最新两门已完成（共同digest88a8c268…），首帧人工核验通过。新`server_27b_v2`（4104006/GPU3/8907、最多218调用）正在服务；H-07根`radio_27b_v1`/`plates_27b_v1`及同级`.log`为本轮新两策略短测，已提交、结果待验，勿与H-06同名run混淆。`semantic_grounded_9993fab`正在使用，禁止热pull/修改。`gates_v3.tar`新两门证据已与本地SHA一致，旧gates/static不覆盖。[实时计划](plan.md)
+
+**2026-09-18 11:48 H-07（Codex，首帧修复复验运行中）：** 根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_grounded_20260918`，最新独立源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grounded_9993fab`，分支`feat/semantic-agent-grounded-20260918`。`gate_radio_v1`/`gate_plates_v1`初始化失败、0控制；d2da0ac的`gate_radio_v2`/`gate_plates_v2`控制完成，但task3初图陈旧，不能放行新源。新增`gate_radio_v3`/`gate_plates_v3`及同级`.log`正在重新验证RGB-D同步。`static_27b_v1`已6次静态调用/0执行，task3陈旧帧只算schema检查；`server_27b_v1`已停止。`gates_and_static_v2.tar`为233MiB证据归档，本地传输目标`/home/wsy/behavior/artifacts/semantic-agent-grounded-20260918/`，产物均不入Git。权重只读复用下方H-06的27B，未复制/下载；新策略尚未启动。[设计](SEMANTIC_AGENT_GROUNDED.md)
 
 **2026-09-17/18 H-06语义agent v2（Codex，本轮有界评估结束）：** 源码分支`feat/semantic-agent-v2-20260917`，根为`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917`。所有本轮模型/模拟器已停止，结果与下载的官方权重保留；两条策略短测均未成功，不覆盖下面v1。[最终报告](experiments/2026-09-17-semantic-agent-v2.md)
 
