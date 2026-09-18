@@ -1,0 +1,26 @@
+{
+  "experiment_id": "H-08-B10",
+  "owner": "Codex-solo",
+  "hypothesis": "Distinguishing uncertain load from empty grasp and focusing verification on paired raw views prevents dropping a genuine grasp; clipped robot guides avoid invisible near-field regions.",
+  "code_commit": "PIN_BEFORE_REMOTE_EXECUTION",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "training_updates": 0,
+  "new_weight_downloads": 0,
+  "actor_scene_truth": false,
+  "static_max_model_calls": 8,
+  "static_controls": 0,
+  "static": {
+    "geometry": "B7 d5/d9: one observe plus at most one act each; clipped guides, exact same raw RGB-D",
+    "feedback": "B7 d10/d22 negative or no-motion; d23/d24 actual lifts, one observe each; d25 old-evidence CPU release regression with no model call",
+    "required": "Parent manual review, all retained raw service images unchanged; no static outcome is an executed grasp"
+  },
+  "gate_each": {"decisions": 24, "controls": 1536, "wall_seconds": 1200, "model_calls": 0, "gpu": 1},
+  "policy": {"task": 0, "instance": 138, "split": "train", "seed": 0, "expert_prefix": 448, "gpu": 1, "decisions": 64, "controls": 2048, "wall_seconds": 1800, "max_model_calls": 147},
+  "max_probe_attempts_per_goal": 2,
+  "service_rule": "B9 service may supply <=8 static calls after its 4 previous calls. Stop it before GPU1 gates; start unique fixed-source B10 policy service <=147 calls after gate processes exit.",
+  "no_new_task3_policy": true,
+  "cpu_threads": 4,
+  "min_free_disk_GiB": 80,
+  "stop": ["Hard safety gate", "Unknown nonempty grasp after bounded verification: HOLD with close latch, never OPEN", "Declared budget"],
+  "unchanged": ["Original visual enclosure plus co-motion and geometric verification thresholds", "23 controls /30Hz", "No privileged attachment state in actor", "B8 running source"]
+}

@@ -137,14 +137,46 @@ This PICK uses BOTH hands. hand_contacts supplies one independent contact for ea
 
 BIMANUAL_OBSERVE_SYSTEM = bimanual_observation_system()
 
+
+def verification_inputs(harness,bundle):
+    """Focused raw before/after evidence, same pixels and no extra model call."""
+    if harness.goal.kind!="pick" or harness.stage!="VERIFY_GRASP":return bundle,""
+    from .vision import VisualBundle
+    views=[a+"_wrist" for a in harness.arms]+["head"]
+    selected=[]
+    for view in views:
+        for time in ("PREVIOUS","CURRENT"):
+            label=time+"_"+view.upper()+"_RAW"
+            if label in bundle.labels:selected.append(bundle.labels.index(label))
+    subset=VisualBundle([bundle.images[i] for i in selected],[bundle.labels[i] for i in selected],
+                        bundle.geometry,bundle.current_raw)
+    instruction=""" This is a GRASP VERIFICATION observation, not another reach plan.
+Compare each PREVIOUS/CURRENT pair of the SAME camera. Wrist cameras are attached
+to the hand: a held object's identifiable features remain fixed relative to the
+fingers while the background changes after a measured hand lift. A stationary
+world object generally shifts relative to those fingers. No movement after a
+CLOSE alone is evidence of following. Inspect actual image differences and the
+reported last displacement; do NOT infer success just because a lift was commanded.
+Report co_moving=true only when the visible target follows that hand, false when
+it visibly does not, otherwise null. If possible select the SAME identifiable
+physical feature across times; current target_uv still refers to CURRENT RAW.
+Nonempty fingers, enclosure and commanded motion alone cannot prove a grasp."""
+    return subset,instruction
+
 RECOVER_SYSTEM = """Replan only the current failed search/approach strategy. Do NOT edit the original goals, mark anything done, or invent held objects/hidden locations. Use current visible images, measured heading coverage, depth and failed action receipts. Return exactly {\"strategy\":\"scan_left\",\"visible_reason\":\"short visible evidence explaining the choice\"}. Keep visible_reason to one short sentence, preferably under 240 characters; it is audit text, not an action. Strategies: scan_left, scan_right, move_forward, move_left, move_right, retry_approach, hold. scan directions are measured base yaw sweeps, not image-left hand moves. move strategies allow at most five 6cm pulses, EACH rechecked against fresh onboard depth; they may be refused if unseen/blocked. If a complete heading sweep has already covered this viewpoint, choose a visibly safe viewpoint change, or hold when none is supported. retry_approach requires a visible target and a different feasible path. hold ends safely. At most two strategy replans per episode. Unobserved space is UNKNOWN, not free."""
 
 
 class GroundedPolicy(VLMPolicy):
     def observe(self,harness,state,bundle):
+        bundle,instruction=verification_inputs(harness,bundle)
         text=perception_context(harness,state,bundle)
+        if instruction:
+            context=json.loads(text)
+            context["current_robot"].pop("projection_guides",None)
+            text=json.dumps(context,ensure_ascii=False)
         bimanual=harness.goal.kind=="pick" and harness.goal.hand=="both"
-        result,payload=self._call("observe",BIMANUAL_OBSERVE_SYSTEM if bimanual else GROUNDED_OBSERVE_SYSTEM,text,bundle)
+        system=BIMANUAL_OBSERVE_SYSTEM if bimanual else GROUNDED_OBSERVE_SYSTEM
+        result,payload=self._call("observe",system+instruction,text,bundle)
         evidence = (BimanualEvidence if bimanual else GroundedEvidence).parse(result["text"])
         if evidence.other_views:
             raise ValueError("Primary-contact interface requires other_views=[]; no guessed metric correspondences")

@@ -14,6 +14,28 @@ def project(point, T_camera, K):
     return uvw[:2]/uvw[2]
 
 
+def clip_segment(a, b, size):
+    """Intersect a projected segment with the image, never clamp its vertices.
+
+    Offscreen endpoints are ordinary for close wrist cameras. Clipping preserves
+    the true visible line; two offscreen points on the same side draw nothing.
+    Points behind the camera remain unknown, not invented projections.
+    """
+    if a is None or b is None:
+        return None
+    a,b=np.asarray(a,dtype=float),np.asarray(b,dtype=float)
+    if not np.isfinite([a,b]).all():return None
+    d=b-a;lo,hi=0.,1.
+    for axis,maximum in enumerate(np.asarray(size)-1):
+        if abs(d[axis])<1e-12:
+            if not 0<=a[axis]<=maximum:return None
+            continue
+        enter,leave=sorted((-a[axis]/d[axis],(maximum-a[axis])/d[axis]))
+        lo,hi=max(lo,enter),min(hi,leave)
+        if lo>hi:return None
+    return tuple(a+lo*d),tuple(a+hi*d)
+
+
 def rgb_image(value):
     x = np.asarray(value)
     if x.ndim != 3:
@@ -80,15 +102,26 @@ def prepare_views(images, model, q, previous=None, grounded=False, gripper=None)
                     record["finger_contact_region"]["sides_uv"]=[[
                         None if point is None else (point/np.asarray(original.size)).tolist() for point in side] for side in strips]
                     points=[point for side in strips for point in side]
-                    # Do not clamp offscreen geometry into fake finger locations.
-                    if all(point is not None and np.all(point>=0) and np.all(point<original.size) for point in points):
+                    # Draw only actual visible portions, not border-clamped
+                    # fake endpoints or a fabricated closed border polygon.
+                    drawn=[]
+                    if all(point is not None for point in points):
                         color="cyan" if arm=="left" else "magenta"
                         pts=np.asarray(points);middle=pts.mean(axis=0)
                         order=np.argsort(np.arctan2(pts[:,1]-middle[1],pts[:,0]-middle[0]))
                         outline=[tuple(pts[j]) for j in order]
-                        draw.line(outline+[outline[0]],fill=color,width=2)
-                        for side in strips:draw.line([tuple(point) for point in side],fill="yellow",width=3)
-                        draw.text((middle[0]+8,middle[1]+8),arm+" FINGER REGION (robot only)",fill=color)
+                        for a,b in zip(outline,outline[1:]+outline[:1]):
+                            segment=clip_segment(a,b,original.size)
+                            if segment is not None:draw.line(segment,fill=color,width=2)
+                        for side in strips:
+                            for a,b in zip(side,side[1:]):
+                                segment=clip_segment(a,b,original.size)
+                                if segment is not None:
+                                    draw.line(segment,fill="yellow",width=3)
+                                    drawn.append([list(p) for p in segment])
+                        if drawn and np.all(middle>=0) and np.all(middle<original.size):
+                            draw.text((middle[0]+8,middle[1]+18),arm+" FINGER REGION (robot only)",fill=color)
+                    record["finger_contact_region"]["visible_strip_segments_px"]=drawn
                 center_uv = project(centers[arm],T,K)
                 record["grasp_center_uv"] = None if center_uv is None else (center_uv/np.array(original.size)).tolist()
                 record["grasp_center_source"] = model.spec["metadata"].get("grasp_center_source","EEF_FALLBACK_NOT_FINGERTIP")

@@ -40,9 +40,36 @@ class GroundedHarness(TaskHarness):
         self.candidate_receipt={}
         self.motion_receipt={}
         self.pending_grasp={"left":False,"right":False}
+        self.last_gripper=None
         self.active_grasp_probe=bool(active_grasp_probe)
         self.grasp_probe_attempts={}
         self.grasp_probe={"eligible":False,"reason":"NOT_OBSERVED"}
+
+    def possibly_loaded_arms(self):
+        # Unknown aperture after a CLOSE is not evidence of an empty hand.
+        return [a for i,a in enumerate(("left","right")) if self.pending_grasp[a]
+                and (self.last_gripper is None or not np.isfinite(self.last_gripper[i])
+                     or self.last_gripper[i]>=.0015)]
+
+    def observe(self,evidence,state,geometry=None,measured_progress=None):
+        self.last_gripper=np.asarray(state.gripper,dtype=float).copy()
+        return super().observe(evidence,state,geometry,measured_progress)
+
+    def recover(self,event):
+        if self.possibly_loaded_arms():
+            # Verification uncertainty is not permission to drop a load. This
+            # finite safe stop is NOT success and cannot enter a VLM replan.
+            self.events.append({"event":event,"goal":self.index,"stage":self.stage,
+                                "possibly_loaded_arms":self.possibly_loaded_arms()})
+            self.stop_reason="UNVERIFIED_LOAD_PRESERVED_"+event
+            return
+        return super().recover(event)
+
+    def _complete_goal(self):
+        arms=self.arms;kind=self.goal.kind
+        super()._complete_goal()
+        if kind in ("pick","place"):
+            for a in arms:self.pending_grasp[a]=False
 
     def update_grasp_probe(self,state):
         """A bounded exploratory close, NEVER an enclosure/holding assertion.
@@ -75,6 +102,13 @@ class GroundedHarness(TaskHarness):
                action==Action(self.goal.hand,"close"))
         if probe and (feedback.get("control_ticks",0)>0 or feedback["status"]=="TARGET_REACHED"):
             self.grasp_probe_attempts[self.index]=self.grasp_probe_attempts.get(self.index,0)+1
+        widths=feedback.get("finger_mean_m")
+        self.last_gripper=np.asarray(widths,dtype=float).copy() if widths is not None else None
+        # Even an interrupted close may have made contact. Keep the latch until
+        # an explicit OPEN completes or grasp evidence really verifies holding.
+        if action.move=="close" and (feedback.get("control_ticks",0)>0 or feedback["status"]=="TARGET_REACHED"):
+            for arm in (("left","right") if action.part=="both" else (action.part,)):
+                if arm in self.pending_grasp and self.goal.kind=="pick":self.pending_grasp[arm]=True
         super().executed(action,feedback)
         if feedback["status"]=="TARGET_REACHED" and action.move in ("close","open"):
             arms=("left","right") if action.part=="both" else (action.part,)
@@ -89,6 +123,8 @@ class GroundedHarness(TaskHarness):
         self.grasp_probe={**self.grasp_probe,"eligible":False}
 
     def palette(self):
+        if self.possibly_loaded_arms() and self.stage not in ("VERIFY_GRASP","GRASP"):
+            return (HOLD,)
         palette=super().palette()
         if (not self.stop_reason and self.stage=="ALIGN" and self.goal.kind=="pick"
                 and self.grasp_probe.get("eligible")):
