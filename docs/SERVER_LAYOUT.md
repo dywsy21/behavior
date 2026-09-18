@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 00:28当前：** 108260因首规划JSON解析失败退出，`radio_h10_fullstart`仅初始图/失败记录，无已执行动作或完整视频；不要重复启动旧run。89280服务仍GPU1/8919、13/368调用，GPU3已释放；H11仅本地CPU实现/依赖检查，尚无新模型服务或物理。r3双门完整副本正传至本地`gates_r3_bundle/`，传完前不算核验。
+
 **2026-09-19 00:24当前：** r3门105324/105398均已通过退出；唯一策略`agentic_vlm_goal_20260918/radio_h10_fullstart` PID108260/GPU3正在初始化，源`git_worktrees/semantic_prompt_1d93b29`，0前缀、96/3072/2400s。模型89280/GPU1/8919保持465bc85、同revision，从12/368调用起，不能热改或重复启动。r3 result SHA8c6641a9…/b2b4bc7e…；matched完整副本已在本地`matched_failed_bundle/`完成hash/全视频解码/人工六观察核验，下条“未核完”仅历史。盘余约87GiB，保留≥80GiB。
 
 **2026-09-19 00:14当前：** H10旧matched101630已HTTP400退出，5动作/96新控制，证据`radio_h10_matched`保留；源码`git_worktrees/semantic_prompt_1d93b29`只压缩显示重复字段，digest428c339a。GPU3新双门`gate_radio_h10_r3`105324/`gate_plates_h10_r3`105398正在初始化，原fullstart未运行。模型89280/GPU1/8919仍465bc85同权重，12/368调用，不热改。`static_h10_r3`两次已完成0控制；新根1.1GiB/余88GiB。r2双门完整本地`artifacts/agentic-vlm-goal-20260918/gates_r2_bundle/`，失败matched下载到`matched_failed_bundle/`未核完前不当完整副本。

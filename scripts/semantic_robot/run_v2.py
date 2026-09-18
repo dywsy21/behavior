@@ -92,6 +92,7 @@ def main():
     p.add_argument("--gpu", type=int, default=3)
     p.add_argument("--uri", default="http://127.0.0.1:8907")
     p.add_argument("--expected-revision")
+    p.add_argument("--structured-planning", action="store_true")
     p.add_argument("--gate-result", action="append", default=[])
     p.add_argument("--max-decisions", type=int, default=48)
     p.add_argument("--max-controls", type=int, default=1536)
@@ -155,7 +156,8 @@ def main():
         raise ValueError("Frozen task/config identity mismatch")
     policy_class=RefinedGroundedPolicy if args.refine_grounding else GroundedPolicy if grounded else VLMPolicy
     policy = policy_class(args.uri,args.expected_revision,max_calls=1+2*args.max_decisions+
-        (2 if grounded else 0)+(16 if args.refine_grounding else 0)+(4 if args.held_object_inspection else 0)) if args.mode=="agent" else None
+        (2 if grounded else 0)+(16 if args.refine_grounding else 0)+(4 if args.held_object_inspection else 0),
+        structured_planning=args.structured_planning) if args.mode=="agent" else None
     if policy and args.held_object_inspection and "reference" not in policy.identity.get("finite_choice_kinds",[]):
         raise ValueError("Held inspection requires a text-only reference service")
     # B15's tracking-anchor prompt did not improve the two failing states.
@@ -196,6 +198,9 @@ def main():
             except BaseException as exc:
                 # The native Kit shutdown may terminate the interpreter before
                 # an outer except runs. Persist the ORIGINAL error inside it.
+                if policy and policy.last_call is not None:
+                    from semantic_robot.v2.structured_planning import call_receipt
+                    write(out/"last_policy_call_before_failure.json",call_receipt(policy.last_call))
                 write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
                     "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
                     "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
@@ -286,6 +291,7 @@ def main():
             video = imageio.get_writer(str(out/"rollout.mp4"),fps=15,codec="libx264",quality=7,macro_block_size=2)
             previous = None
             started = time.perf_counter()
+            phase="INITIAL_OBSERVATION"
             first_images,first_depth,first_receipt=observation_now("after_prefix")
             first = prepare_views(first_images,model,state.q,grounded=grounded,gripper=state.gripper,show_finger_regions=args.contact_geometry)
             if grounded: np.savez_compressed(out/"initial_depth.npz",**first_depth)
@@ -299,6 +305,7 @@ def main():
                 write(directory/(name+".json"),receipt)
 
             if policy:
+                phase="INITIAL_PLAN"
                 if replay is None:
                     goals, call = policy.plan(args.task,environment.observation()["task"],first)
                     save_call(out,"planner",call)
@@ -558,7 +565,10 @@ def main():
                       "full_task_success_rate_claim":False}
             write(out/"result.json",result)
     except BaseException as exc:
-        write(out/"failure.json",{"error":repr(exc),"controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions})
+        if not (out/"failure.json").exists():
+            write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
+                "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
+                "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
         raise
     finally:
         trace.close()

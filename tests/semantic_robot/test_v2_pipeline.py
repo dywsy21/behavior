@@ -36,6 +36,8 @@ class PipelineTests(unittest.TestCase):
         self.observation_override=None
         self.surface_override=SurfaceChoice(0)
         self.finite_choice_kinds=["act","ground"]
+        self.structured_support=False
+        self.plan_override=None
         class Handler(BaseHTTPRequestHandler):
             def log_message(self,*args):
                 pass
@@ -46,8 +48,13 @@ class PipelineTests(unittest.TestCase):
                 self.end_headers();self.wfile.write(raw)
 
             def do_GET(self):
-                self.send({"protocol":"semantic-v2","revision":"test-pinned-revision",
-                           "finite_choice_kinds":owner.finite_choice_kinds})
+                from semantic_robot.v2.structured_planning import schema_digest, DECODER_COMMIT
+                identity={"protocol":"semantic-v2","revision":"test-pinned-revision",
+                          "finite_choice_kinds":owner.finite_choice_kinds}
+                if owner.structured_support:
+                    identity.update(structured_planning_schemas=["task_plan_v1","recovery_v1"],
+                                    planning_schema_sha256=schema_digest(),structured_decoder={"commit":DECODER_COMMIT})
+                self.send(identity)
 
             def do_POST(self):
                 value=json.loads(self.rfile.read(int(self.headers["Content-Length"])))
@@ -56,6 +63,7 @@ class PipelineTests(unittest.TestCase):
                     text=(json.dumps({"strategy":"scan_left","visible_reason":"current table is not identified"})
                           if "Replan only" in value["system"] else
                           json.dumps([asdict(Goal("pick","radio","right","visible co-motion after micro lift"))]))
+                    if owner.plan_override is not None:text=owner.plan_override
                 elif value["kind"]=="observe":
                     observation=asdict(evidence(view="head"))
                     if owner.grounded:observation["other_views"]=[]
@@ -98,6 +106,37 @@ class PipelineTests(unittest.TestCase):
     def test_identity_rejected_before_neural_or_actuator_calls(self):
         with self.assertRaises(ValueError):VLMPolicy(self.uri,"wrong-revision")
         self.assertEqual(self.requests,[])
+
+    def test_structured_capability_checked_before_call(self):
+        with self.assertRaises(ValueError):
+            VLMPolicy(self.uri,"test-pinned-revision",structured_planning=True)
+        self.assertEqual(self.requests,[])
+
+    def test_structured_plan_and_recovery_have_distinct_schema_names(self):
+        self.structured_support=True
+        policy=GroundedPolicy(self.uri,"test-pinned-revision",structured_planning=True)
+        goals,_=policy.plan(0,"Turn on a radio",self.bundle)
+        manager=GroundedHarness(goals)
+        policy.recover(manager,self.state,self.bundle,"bounded recovery")
+        self.assertEqual([x["response_schema"] for x in self.requests],["task_plan_v1","recovery_v1"])
+        self.assertIn("COMPLETE requested task",self.requests[0]["system"])
+        self.assertEqual(policy.calls,2)
+
+    def test_invalid_plan_and_truncation_preserve_original_response_without_retry(self):
+        from semantic_robot.v2.structured_planning import call_receipt
+        for cap in (False,True):
+            self.cap=cap
+            self.plan_override='Target invisible.\n```json\n[]\n```'
+            policy=VLMPolicy(self.uri,"test-pinned-revision")
+            before=len(self.requests)
+            with self.assertRaises(ValueError):policy.plan(0,"Turn on a radio",self.bundle)
+            self.assertEqual(len(self.requests),before+1)
+            self.assertEqual(policy.calls,1)
+            receipt=call_receipt(policy.last_call)
+            self.assertEqual(receipt["result"]["text"],self.plan_override)
+            self.assertEqual(receipt["result"]["hit_token_cap"],cap)
+            self.assertEqual(receipt["request_without_pixel_duplicates"]["images"],[{"label":"CURRENT_HEAD_RAW"}])
+            self.assertIn("png",policy.last_call["request"]["images"][0])
 
     def test_truncation_consumes_one_call_and_never_retries(self):
         self.cap=True

@@ -6,8 +6,8 @@
   "candidate_commit": "e73e2636cd5df456857efc12906fb115fa1ac44f",
   "runtime_commit": "465bc8561496c97615f8d48604010f5f5b3555c3",
   "implementation_digest": "2f49a25d9064475e3d9028c15266358e354ae16ccb9e1595f4fc05dc4ca1bc89",
-  "runtime_status": "matched_diagnostic_failed_preserved_r3_static_negative_gain_choice_retained_r3_gates_passed_original_fullstart_running",
-  "full_start_runtime": {"started_at": "2026-09-19T00:24:10+08:00", "pid": 108260, "runtime_commit": "1d93b2999de782053f6613f41177153b2b75214d", "implementation_digest": "428c339abed08da0747abc4412c3c66a41e0695b1a2cb5446821b42c6f37388b", "server_calls_before": 12, "status": "initializing_not_success", "source_path": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_prompt_1d93b29", "evaluator": "v3.9.1-development-not-official-v3.9.2"},
+  "runtime_status": "fullstart_failed_initial_plan_prose_plus_JSON_zero_controls_no_task_success_all_evidence_preserved",
+  "full_start_runtime": {"started_at": "2026-09-19T00:24:10+08:00", "pid": 108260, "runtime_commit": "1d93b2999de782053f6613f41177153b2b75214d", "implementation_digest": "428c339abed08da0747abc4412c3c66a41e0695b1a2cb5446821b42c6f37388b", "server_calls_before": 12, "status": "failed_initial_plan_JSONDecodeError_process_exited", "controls": 0, "model_calls": 1, "failure_sha256": "db762b47ae271fd37647bf8d59c471c9cd69b9735d351639bc49d9ddf4355a15", "failure_phase_label_is_stale_not_expert_prefix": true, "counts_as_fullstart_failure": true, "source_path": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_prompt_1d93b29", "evaluator": "v3.9.1-development-not-official-v3.9.2"},
   "matched_diagnostic_result": {"run": "radio_h10_matched", "runtime_commit": "dfe7c96f552bd182cdeb76d761ca2324f48be403", "status": "failed_HTTP400_before_d5_action_generation", "completed_actions": 5, "new_controls": 96, "client_requests": 9, "successful_generations": 8, "expert_prefix": 448, "saved_policy_prefix": 362, "official_success_evidence": false, "repeat_matched": false},
   "repair_r3": {
     "registered_at": "2026-09-19T00:12:00+08:00",

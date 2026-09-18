@@ -15,6 +15,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]/"src"))
 from semantic_robot.v2.protocol import Action, strict_json
 from semantic_robot.v2.affordance import SurfaceChoice
 from semantic_robot.v2.target_reference import ReferenceChoice, REFERENCES
+from semantic_robot.v2.structured_planning import response_schema, schema_digest, decoder_identity
+
+
+def validate_response_schema(data, enabled):
+    expected = {"kind", "system", "text", "images", "allowed"}
+    if "response_schema" in data:
+        expected.add("response_schema")
+    if set(data) != expected or data.get("kind") not in ("plan", "observe", "act", "ground", "reference"):
+        raise ValueError("Bad v2 request contract")
+    if "response_schema" not in data:
+        return None
+    if not enabled or data["allowed"]:
+        raise ValueError("Structured planning disabled or conflicts with finite choices")
+    return response_schema(data["response_schema"], data["kind"])
 
 
 def validate_scoped_choices(kind, lines):
@@ -62,6 +76,7 @@ def main():
     p.add_argument("--output", required=True)
     p.add_argument("--port", type=int, default=8907)
     p.add_argument("--max-calls", type=int, default=320)
+    p.add_argument("--structured-planning", action="store_true")
     args = p.parse_args()
     if not 1 <= args.max_calls <= 640:
         raise ValueError("Outside H-06 call budget")
@@ -75,9 +90,19 @@ def main():
     from transformers import AutoProcessor, AutoModelForImageTextToText
     torch.set_num_threads(4); torch.manual_seed(17)
     processor = AutoProcessor.from_pretrained(args.model, local_files_only=True)
+    tokenizer_data = None
+    if args.structured_planning:
+        from lmformatenforcer import JsonSchemaParser
+        from lmformatenforcer.integrations.transformers import build_token_enforcer_tokenizer_data, build_transformers_prefix_allowed_tokens_fn
+        decoder = decoder_identity()
+        tokenizer_data = build_token_enforcer_tokenizer_data(processor.tokenizer)
     start = time.perf_counter()
     model = AutoModelForImageTextToText.from_pretrained(args.model, local_files_only=True,
         torch_dtype=torch.bfloat16, attn_implementation="sdpa").to("cuda").eval()
+    if args.structured_planning:
+        eos = model.generation_config.eos_token_id
+        if processor.tokenizer.eos_token_id not in (eos if isinstance(eos,list) else [eos]):
+            raise ValueError("Structured tokenizer EOS differs from model stop tokens")
     identity = {"protocol": "semantic-v2", "model": args.model, "revision": args.revision,
                 "code_commit": subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip(),
                 "max_calls": args.max_calls, "calls": 0, "load_s": time.perf_counter()-start,
@@ -87,6 +112,9 @@ def main():
                 "image_max_side": 640, "wrist_no_upsampling": True, "max_images": 9,
                 "training_updates": 0, "action_grammar": "per-request scoped explicit JSON",
                 "finite_choice_kinds":["act","ground","reference"]}
+    if args.structured_planning:
+        identity.update(structured_planning_schemas=["task_plan_v1", "recovery_v1"],
+                        planning_schema_sha256=schema_digest(), structured_decoder=decoder)
     (out/"identity.json").write_text(json.dumps(identity, indent=2))
     ledger = (out/"calls.jsonl").open("x", buffering=1)
 
@@ -106,8 +134,7 @@ def main():
                 if not 0 < n <= 24_000_000 or identity["calls"] >= args.max_calls:
                     raise ValueError("Payload or global call budget exceeded")
                 data = json.loads(self.rfile.read(n))
-                if set(data) != {"kind", "system", "text", "images", "allowed"} or data["kind"] not in ("plan", "observe", "act", "ground", "reference"):
-                    raise ValueError("Bad v2 request contract")
+                schema = validate_response_schema(data, args.structured_planning)
                 validate_scoped_choices(data["kind"],data["allowed"])
                 validate_image_count(data["kind"],data["images"])
                 if len(data["system"])+len(data["text"]) > (4096 if data["kind"]=="reference" else 32000):
@@ -148,6 +175,8 @@ def main():
                         allowed += eos if isinstance(eos, list) else [eos]
                     return allowed
                 options = {"prefix_allowed_tokens_fn": allowed_tokens} if trie else {}
+                if schema is not None:
+                    options = {"prefix_allowed_tokens_fn": build_transformers_prefix_allowed_tokens_fn(tokenizer_data, JsonSchemaParser(schema))}
                 cap = {"plan": 1024, "observe": 320, "act": 64, "ground":32,"reference":32}[data["kind"]]
                 identity["calls"] += 1
                 torch.cuda.synchronize(); generated_at = time.perf_counter()
@@ -161,6 +190,7 @@ def main():
                        "output_tokens": len(ids), "input_tokens": prefix, "hit_token_cap": len(ids) == cap,
                        "generation_s": time.perf_counter()-generated_at, "total_s": time.perf_counter()-started,
                        "images": hashes, "prompt_sha256": hashlib.sha256((data["system"]+data["text"]).encode()).hexdigest(),
+                       "response_schema": data.get("response_schema"),
                        "peak_allocated_mib": torch.cuda.max_memory_allocated()/1024**2}
                 ledger.write(json.dumps(row)+"\n"); self.send(200, row)
             except Exception as exc:

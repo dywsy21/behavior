@@ -15,6 +15,7 @@ from .affordance import SurfaceChoice, surface_candidates, refinement_bundle, se
 from .grounding import localize_target
 from .bimanual import BimanualEvidence, HandContact, contact_evidence
 from .prompt_context import actor_context
+from .structured_planning import COMPLETE_PLAN_INSTRUCTION, DECODER_COMMIT, schema_digest
 
 PLAN_SYSTEM = """Plan robot manipulation using visible observations and the task, not imagined object locations. Return only a JSON array of subgoals. Each has exactly kind, target, hand, done_when, level. kind is pick, place, press, open, close or navigate. hand is left, right or both. level is a boolean: true for transport requiring orientation preservation. Use short visually identifiable target descriptions, not hidden simulator IDs. done_when is an observable criterion, not 'command issued'. A pick and place are separate goals. Opening containers before filling is normally necessary. Allow uncertainty: the controller will search rather than assume a target is already visible. At most 16 goals. Example: [{"kind":"pick","target":"red radio","hand":"right","done_when":"radio moves with right gripper after a small lift","level":false},{"kind":"press","target":"visible power button of held radio","hand":"left","done_when":"power indicator visibly changes","level":false}]. Never describe task success from a close command."""
 
@@ -25,20 +26,28 @@ visible: whether the CURRENT target is identifiable. view: head, left_wrist, rig
 ACTION_SYSTEM = """Choose ONE micro-action from the explicitly listed JSON objects. Output that object only, no alternatives or extra fields. Fields are part, move, scale, frame. A hand not selected stays still. No automatic grasp or place exists. Follow the CURRENT stage, its active hand, visible facts and execution events, not a guessed later stage. base frame: forward is robot +x, left +y, up +z. A named camera frame: forward goes into that view, back towards it, left/up are that image's left/up. tool frame rotates around the active gripper's local axes. ROBOT_GUIDE arrows/text give current base-axis pixel directions; do not confuse image-left with robot-left. For alignment use a view in which the target and gripper can be related. micro arm translation is 2mm, fine 1cm, coarse 3cm; micro/fine/coarse rotation 1/3/8 degrees. If feedback reports blocked or uncertain, change strategy, do not repeat pushing. HOLD is valid when evidence is insufficient. CARRY forbids hand rotations, preserves current orientation, and does not fix an already tilted plate."""
 
 
-def call_service(uri, kind, system, text, bundle, allowed=(), timeout=120):
+class TruncatedPolicyOutput(ValueError):
+    def __init__(self, result, payload):
+        super().__init__("Truncated model output, no actuation allowed")
+        self.call = {"result": result, "request": payload}
+
+
+def call_service(uri, kind, system, text, bundle, allowed=(), timeout=120, response_schema=None):
     images = []
     for label, image in zip(bundle.labels, bundle.images):
         buffer = BytesIO(); image.save(buffer, format="PNG")
         images.append({"label": label, "png": base64.b64encode(buffer.getvalue()).decode()})
     payload = {"kind": kind, "system": system, "text": text, "images": images,
                "allowed": [a.text() for a in allowed]}
+    if response_schema is not None:
+        payload["response_schema"] = response_schema
     started = time.perf_counter()
     request = Request(uri, json.dumps(payload).encode(), {"Content-Type": "application/json"})
     with urlopen(request, timeout=timeout) as response:
         result = json.load(response)
     result["roundtrip_s"] = time.perf_counter()-started
     if result.get("hit_token_cap"):
-        raise ValueError("Truncated model output, no actuation allowed")
+        raise TruncatedPolicyOutput(result, payload)
     return result, payload
 
 
@@ -73,22 +82,36 @@ def perception_context(harness, state, bundle):
 
 
 class VLMPolicy:
-    def __init__(self, uri, expected_revision, max_calls=160):
+    def __init__(self, uri, expected_revision, max_calls=160, structured_planning=False):
         self.uri, self.max_calls, self.calls = uri, max_calls, 0
+        self.structured_planning, self.last_call = bool(structured_planning), None
         with urlopen(uri, timeout=10) as response:
             self.identity = json.load(response)
         if self.identity.get("revision") != expected_revision or self.identity.get("protocol") != "semantic-v2":
             raise ValueError("Wrong model/protocol service")
+        if self.structured_planning and (self.identity.get("structured_planning_schemas") != ["task_plan_v1", "recovery_v1"] or
+                self.identity.get("planning_schema_sha256") != schema_digest() or
+                self.identity.get("structured_decoder", {}).get("commit") != DECODER_COMMIT):
+            raise ValueError("Exact structured-planning schema service required")
 
     def _call(self, *args, **kwargs):
         if self.calls >= self.max_calls:
             raise RuntimeError("Episode model-call budget exhausted")
         self.calls += 1
-        return call_service(self.uri, *args, **kwargs)
+        self.last_call = None
+        try:
+            result, payload = call_service(self.uri, *args, **kwargs)
+        except TruncatedPolicyOutput as exc:
+            self.last_call = exc.call
+            raise
+        self.last_call = {"result": result, "request": payload}
+        return result, payload
 
     def plan(self, task_id, instruction, bundle):
         text = f"Task: {instruction}\nTask strategy (not current state): {TASK_ADVICE.get(task_id, '')}"
-        result, payload = self._call("plan", PLAN_SYSTEM, text, bundle)
+        system = PLAN_SYSTEM + ("\n" + COMPLETE_PLAN_INSTRUCTION if self.structured_planning else "")
+        options = {"response_schema": "task_plan_v1"} if self.structured_planning else {}
+        result, payload = self._call("plan", system, text, bundle, **options)
         return parse_plan(result["text"]), {"result": result, "request": payload}
 
     def observe(self, harness, state, bundle):
@@ -286,7 +309,8 @@ class GroundedPolicy(VLMPolicy):
 
     def recover(self,harness,state,bundle,reason):
         text=actor_context(harness,state,bundle)+"\nRecovery trigger: "+reason
-        result,payload=self._call("plan",RECOVER_SYSTEM,text,bundle)
+        options = {"response_schema": "recovery_v1"} if self.structured_planning else {}
+        result,payload=self._call("plan",RECOVER_SYSTEM,text,bundle,**options)
         return parse_recovery(result["text"]),{"result":result,"request":payload}
 
 

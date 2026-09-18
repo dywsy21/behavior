@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 00:39（北京时间）H11结构化规划实现/CPU中（Codex）：** 新opt-in`--structured-planning`只约束task-plan/recovery两白名单schema，保留原有限动作trie/严格解析/全部硬预算；reset前核schema+decoder commit，补完整任务提示但**不宣称格式等于语义完整**。原始/截断响应现在解析前留回执，初始规划独立phase，外层不覆盖首错误。既有298测试已过，新增16/17及布尔边界复验中；失败初图本人已核，r3全包已传完。发现PyPI LMFE0.11.3与现transformers5.7 import不兼容，只在新独立overlay装上游固定817f944（保留失败依赖包、不改共享环境）；真实VLM tokenizer/六图prefix/EOS/跨schema CPU门待。Astra设计审查确认边界，稳定实现复审随后；0新模型/控制/训练，89280空闲13。
+
+**2026-09-19 00:28（北京时间）H10起点规划真实失败/H11仅CPU块登记（Codex）：** 108260已退出；`radio_h10_fullstart`0控制/0前缀/1模型调用，failure SHA`db762b47ae271fd37647bf8d59c471c9cd69b9735d351639bc49d9ddf4355a15`。服务call13完整输出是解释文字＋JSON fenced array，非截断（83输出/2107输入token）；strict parser拒绝正确，但计划只到“看见收音机”、漏了抓取/开机。旧failure标记EXPERT_PREFIX是阶段标记未更新，**不是执行了前缀**。该原起点尝试计入失败，不伪称没有尝试。下一H11假设：约束JSON生成可消除非语义格式失败，同时明确“任务完整目标≠当前可见状态”；Codex独占实现，Astra独立只读检查，先≤900s CPU/0模型/0控制/0训练、保旧parser和失败原文、不靠提取任意JSON或自动重试。新增物理/模型预算待CPU和review结果另登记；旧89280保留空闲13/368、不热改。
+
 **2026-09-19 00:24（北京时间）H10原始起点唯一回合已启动（Codex）：** r3两门均已通过并退出，radio417控制/121.402s、plates418/122.653s，各24决策/22到达、4次fresh自由手深度与4次BASE前后RGB-D有效，必须项全过；result SHA8c6641a9…/b2b4bc7e…。仅提交原预算`radio_h10_fullstart` PID108260/GPU3：task0/train138/seed0、**0专家/0旧策略前缀**、96决策/3072控制/2400s/≤215调用，源1d93b29/digest428c339a，模型89280/GPU1/8919从12调用起。正在初始化，未报任务成功；开发模拟器v3.9.1的任务终止判据与官方v3.9.2竞赛成绩仍须区分。GPU3启动前空、盘余约87GiB≥80GiB，旧失败不覆盖。下一核真实初图与全程动作/官方任务条件，无额外matched复跑。
 
 **2026-09-19 00:16（北京时间）H10失败诊断完整副本核验（Codex）：** `matched_failed_bundle/radio_h10_matched`已完整传回，本人逐6观察×3原图核看；36 RGB-D hash、48视频帧全解码通过，failure SHAc9e51cf0…、视频SHA8eecd9cb…。5次后动作均right radio_89，0开爪/掉落，d3传感器认证/d4左腕改变画面真实，仍没看见/操作按钮；d5缺动作是HTTP400，不补造动作或成功。r3两门仍初始化，无重复策略提交；原唯一0前缀评测预算保留。

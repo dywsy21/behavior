@@ -1,0 +1,4 @@
+# Isolated experiment overlay only; never install into active shared model env.
+# PyPI 0.11.3 lacks the Transformers-5 import fix present at this upstream commit.
+lm-format-enforcer @ git+https://github.com/noamgat/lm-format-enforcer.git@817f944fcc8851917c40300a47f62d1defc3ffc3
+interegular==0.3.3
