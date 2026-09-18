@@ -1,4 +1,6 @@
 import copy
+import ast
+import gzip
 from dataclasses import asdict
 import json
 from pathlib import Path
@@ -16,6 +18,10 @@ from native_teacher_contract import (select_sources, compile_candidates, actor_i
                                      verify_loaded_window, SCHEMA)
 from native_teacher_collect import rest_screen, require_release, native_preflight, capture_snapshot
 from common import TOKENS, token_to_action, sha, write_json
+from native_teacher_artifacts import ArtifactBudget, write_calibration, load_calibration, json_bytes
+from semantic_robot.v2.kinematics import RobotModel
+from semantic_robot.v2.servo import native_action
+from replay_contact_audit import report_failure
 
 sys.path.insert(0, str(ROOT/"tests/semantic_robot"))
 from test_hand_body_collision import calibrated_fixture
@@ -183,6 +189,69 @@ class NativeTeacherTests(unittest.TestCase):
             changed=model.state(state.q+.01,state.gripper,np.zeros(3)); sequence=iter([state,changed])
             with self.assertRaises(RuntimeError):capture_snapshot(Path(tmp)/"stale",model,lambda:next(sequence),
                         onboard,lambda:geometry,lambda:None,{},Path(tmp))
+
+    def test_lossless_calibration_preserves_full_mesh_raw_and_canonical_identity(self):
+        model,_,_=calibrated_fixture();spec=copy.deepcopy(model.spec)
+        spec["metadata"]["large_visual_mesh_fixture"]={"vertices":[[.123456789,.234567891,.345678912]]*20000}
+        model=RobotModel(spec);raw=json_bytes(spec)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);writer=ArtifactBudget(root,run_limit=100000,total_limit=300000,reserve=1000)
+            with self.assertRaises(RuntimeError):writer.write_bytes(root/"forbidden_plain.json",raw)
+            self.assertFalse((root/"forbidden_plain.json").exists())
+            receipt=write_calibration(writer,model)
+            self.assertEqual(gzip.decompress((root/receipt["path"]).read_bytes()),raw)
+            restored=load_calibration(root)
+            self.assertEqual(restored.spec,model.spec);self.assertEqual(restored.sha,model.sha)
+            self.assertLess(receipt["compressed_bytes"],100000)
+            bad=json.loads((root/"robot_calibration_receipt.json").read_text())
+            bad["canonical_model_sha256"]="0"*64;write_json(root/"robot_calibration_receipt.json",bad)
+            with self.assertRaises(ValueError):load_calibration(root)
+
+    def test_artifact_budget_counts_other_runs_and_reserves_cleanup(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            total=Path(tmp);root=total/"run";root.mkdir();(total/"old_failure.bin").write_bytes(b"x"*800)
+            writer=ArtifactBudget(root,total,run_limit=1000,total_limit=1000,reserve=50)
+            with self.assertRaises(RuntimeError):writer.write_bytes(root/"rejected.bin",b"x"*100)
+            self.assertFalse((root/"rejected.bin").exists())
+            writer.write_bytes(root/"hold.json",b"{}",cleanup=True)
+            with self.assertRaises(ValueError):writer.write_bytes(total/"outside.bin",b"x")
+
+    def test_real_runner_calibration_budget_failure_records_error_and_holds_before_prefix(self):
+        # Execute the collector's real initial try/except/finally with CPU fakes.
+        # Cut only unreachable later work: the injected byte-budget failure is
+        # at write_calibration, before the first expert-prefix control.
+        tree=ast.parse((ROOT/"scripts/vlm_sft/native_teacher_collect.py").read_text())
+        main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=="main")
+        context=next(n for n in main.body if isinstance(n,ast.With))
+        block=copy.deepcopy(next(n for n in context.body if isinstance(n,ast.Try)))
+        stop=next(i for i,n in enumerate(block.body) if isinstance(n,ast.Expr) and
+                  isinstance(n.value,ast.Call) and isinstance(n.value.func,ast.Name) and n.value.func.id=="write_calibration")
+        block.body=block.body[:stop+1]
+        record=copy.deepcopy(next(n for n in main.body if isinstance(n,ast.FunctionDef) and n.name=="record_error"))
+        prelude=ast.parse("controls=0\nprefix_count=0\nterminal=False\nfirst_error=None\nstarted=None\nkin=None\ngrips=None\ntrace=None\n").body
+        function=ast.FunctionDef(name="exercise",args=ast.arguments(posonlyargs=[],args=[],kwonlyargs=[],kw_defaults=[],defaults=[]),
+                    body=prelude+[record,block,ast.parse("return controls,prefix_count,first_error").body[0]],decorator_list=[])
+        model,state,_=calibrated_fixture()
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/"already_present.bin").write_bytes(b"x"*12500)
+            artifacts=ArtifactBudget(root,run_limit=20000,total_limit=60000,reserve=8000)
+            steps=[];resets=[]
+            env=types.SimpleNamespace(robots=[object()],step=lambda action,**kw:steps.append(np.asarray(action)))
+            kin=types.SimpleNamespace(calibrate=lambda **kw:model,state=lambda:state)
+            namespace={"np":np,"time":__import__("time"),"session":types.SimpleNamespace(reset=lambda:resets.append(1),
+                       evaluator=types.SimpleNamespace(env=env)),"CalibratedRobot":lambda _:kin,"OnboardRGBD":lambda _:None,
+                       "artifacts":artifacts,"write_calibration":write_calibration,"native_action":native_action,
+                       "report_failure":report_failure,"x":types.SimpleNamespace(output=root)}
+            exec(compile(ast.fix_missing_locations(ast.Module(body=[function],type_ignores=[])),"real_collector_cleanup","exec"),namespace)
+            controls,prefix,error=namespace["exercise"]()
+            self.assertEqual((controls,prefix,len(steps),len(resets)),(1,0,1,1))
+            self.assertIsInstance(error,RuntimeError);self.assertIn("BEFORE writing",str(error))
+            self.assertFalse((root/"robot_calibration.json.gz").exists())
+            self.assertIn("BEFORE writing",json.loads((root/"failure.json").read_text())["error"])
+            hold=json.loads((root/"final_hold.json").read_text())
+            self.assertTrue(hold["completed"]);self.assertEqual(hold["prefix_controls"],0)
+            np.testing.assert_array_equal(steps[0][:3],np.zeros(3))
+            self.assertLessEqual(ArtifactBudget.used(root),20000)
 
 
 if __name__ == "__main__": unittest.main()
