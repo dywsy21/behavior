@@ -1,5 +1,6 @@
 import copy
 import unittest
+from types import SimpleNamespace
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -10,6 +11,7 @@ from semantic_robot.v2.grounding import LocalDepthGuard
 from semantic_robot.v2.kinematics import RobotModel
 from semantic_robot.v2.servo import SafeServo, ServoLimits
 from semantic_robot.v2.protocol import Action
+from semantic_robot.v2.og_calibration import r1pro_parallel_hand_supported
 
 
 def calibrated_fixture():
@@ -33,6 +35,19 @@ def calibrated_fixture():
 
 
 class HandBodyTests(unittest.TestCase):
+    def test_installed_fixed_hand_has_no_end_effector_attribute(self):
+        fixed = SimpleNamespace(model="r1pro", has_end_effector_variants=False)
+        self.assertFalse(hasattr(fixed, "end_effector"))
+        self.assertTrue(r1pro_parallel_hand_supported(fixed))
+        self.assertTrue(r1pro_parallel_hand_supported(SimpleNamespace(
+            model="r1pro", has_end_effector_variants=True, end_effector="gripper")))
+        for robot in (SimpleNamespace(model="r1pro"),
+                      SimpleNamespace(model="unknown", has_end_effector_variants=False),
+                      SimpleNamespace(model="r1pro", has_end_effector_variants=True),
+                      SimpleNamespace(model="r1pro", has_end_effector_variants=True, end_effector="suction")):
+            with self.subTest(robot=robot):
+                self.assertFalse(r1pro_parallel_hand_supported(robot))
+
     def test_separating_axis_handles_rotated_disjoint_and_overlapping_boxes(self):
         a, b = np.eye(4), np.eye(4)
         lo, hi = np.full(3, -.1), np.full(3, .1)

@@ -6,6 +6,20 @@ from semantic_robot.og_backend import OGKinematics, array
 from .kinematics import RobotModel, transform, link_origin_jacobian
 
 
+def r1pro_parallel_hand_supported(robot):
+    """Installed generic Robot stores end_effector only for variant models.
+
+    The fixed r1pro asset has the audited two-prismatic-finger hands; an
+    explicitly selected alternate hand or an unknown model API is not accepted.
+    Reference hand links and fully-open state are validated separately.
+    """
+    if getattr(robot, "model", None) != "r1pro":
+        return False
+    variants = getattr(robot, "has_end_effector_variants", None)
+    return (variants is False or
+            (variants is True and getattr(robot, "end_effector", None) == "gripper"))
+
+
 class CalibratedRobot(OGKinematics):
     def native_self_boxes(self):
         """Robot visual-link bounds at ACTUAL joint positions, including fingers.
@@ -172,7 +186,7 @@ class CalibratedRobot(OGKinematics):
             metadata["base_visual_surface"]=self.base_visual_surface()
             metadata["robot_visual_boxes_reference"]=self.native_self_boxes()
             # Current OG uses a generic Robot class with a model definition.
-            if getattr(self.robot, "model", None) == "r1pro" and self.robot.end_effector == "gripper":
+            if r1pro_parallel_hand_supported(self.robot):
                 metadata["parallel_gripper_open_envelope"]="R1Pro_parallel_prismatic_jaws"
             native_centers = self.native_grasp_centers()
             metadata["grasp_centers_eef"] = {
