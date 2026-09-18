@@ -89,6 +89,7 @@ def main():
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
     p.add_argument("--robot-geometry-guards", action="store_true",
                    help="Opt-in actual robot depth self-exclusion and fully-open hand/body collision envelopes")
+    p.add_argument("--approach-reorientation",action="store_true",help="Opt-in unladen wrist candidates and bounded robot-only two-command reach preview")
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid","rgbd_joint"),default="pnp")
     p.add_argument("--odometry-substep-controls",type=int,choices=(0,6),default=0,
                    help="Opt-in fixed action-internal RGB-D sampling; zero preserves legacy behavior")
@@ -125,6 +126,8 @@ def main():
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
     if args.robot_geometry_guards and not args.grasp_motion:
         raise ValueError("Robot geometry guards require fresh grounded robot geometry")
+    if args.approach_reorientation and not args.robot_geometry_guards:
+        raise ValueError("Approach reorientation requires the reviewed robot geometry guards")
     if args.held_object_inspection and not args.grasp_motion:raise ValueError("Held inspection requires registered verified anchors")
     if args.persistent_grasp_tracks and not args.grasp_motion:raise ValueError("Persistent tracks require registered verification")
     if args.spatial_grasp_features and not args.persistent_grasp_tracks:raise ValueError("Spatial features require persistent tracks")
@@ -146,6 +149,7 @@ def main():
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("robot_geometry_guards",False)==args.robot_geometry_guards and
+                g.get("approach_reorientation",False)==args.approach_reorientation and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
                 g.get("odometry_substep_controls",0)==args.odometry_substep_controls and
                 g.get("approach_progress",False)==args.approach_progress and
@@ -319,7 +323,10 @@ def main():
             check_fk("after_prefix")
             if replay is not None:
                 phase="MATCHED_DIAGNOSTIC_SAVED_ACTION_REPLAY"
+                replay_started=time.perf_counter()
                 for i,action in enumerate(replay["actions"]):
+                    if time.perf_counter()-replay_started>=600:
+                        raise TimeoutError("Registered saved-prefix replay 600s budget")
                     if step(action,render=True):raise RuntimeError("Terminated during diagnostic action replay")
                     replay_count+=1
                     if i%64==63:check_fk(f"replay_{i+1}")
@@ -357,7 +364,7 @@ def main():
                 else:
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection) if grounded else TaskHarness(goals)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection,approach_reorientation=args.approach_reorientation) if grounded else TaskHarness(goals)
                 if replay is not None:
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
@@ -644,7 +651,9 @@ def main():
                 stop_reason=("OFFICIAL_EPISODE_TERMINATED" if terminal else "CONTROL_BUDGET_REACHED" if controls>=args.max_controls
                              else "WALL_TIME_BUDGET_REACHED" if time.perf_counter()-started>=args.max_seconds else "DECISION_BUDGET_REACHED")
             result = {"status":"complete","task":args.task,"controls":controls,"prefix_controls":prefix_count,
-                      "diagnostic_replay_controls":replay_count,"matched_grasp_feedback_diagnostic":replay is not None,
+                      "diagnostic_replay_controls":replay_count,
+                      "diagnostic_replay_purpose":replay["receipt"]["purpose"] if replay is not None else None,
+                      "matched_grasp_feedback_diagnostic":replay is not None and replay["receipt"]["purpose"]=="matched_grasp_feedback_diagnostic",
                       "decisions":decisions,"gate_ok":gate_ok,"implementation_digest":digest,
                       "calibration_sha":model.sha,"fk_check_count":len(checks),"gate_failures":failures,
                       "official_success":bool(done.get("success",False)),"final_goal_status":done.get("goal_status",{}),
@@ -654,6 +663,7 @@ def main():
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
                       "robot_geometry_guards":args.robot_geometry_guards,
+                      "approach_reorientation":args.approach_reorientation,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "odometry_substep_controls":args.odometry_substep_controls,
                       "held_object_inspection":args.held_object_inspection,

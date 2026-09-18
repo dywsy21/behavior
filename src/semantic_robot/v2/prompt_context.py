@@ -81,7 +81,7 @@ def actor_context(harness, state, bundle, allowed=()):
     for index, action in enumerate(allowed):
         row = next((row for row in tested if row.get("action") == asdict(action)), None)
         score={"command_index": index, **(selected(row, ("accepted", "reason", "planned_ticks",
-            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after")) if row else {})}
+            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after", "reorientation_after")) if row else {})}
         if getattr(harness,"multicamera_inspection",False) and "inspection_after" in score:
             # Hand identity is already bound by the canonical command and the
             # single shared reference. Do not repeat it for all 42 candidates.
@@ -99,6 +99,11 @@ def actor_context(harness, state, bundle, allowed=()):
         "geometric_gain_is_not_grasp_success": True}
     if getattr(harness,"multicamera_inspection",False):
         preflight["inspection_anchor_is_not_affordance_or_visibility_evidence"]=True
+    if getattr(harness,"approach_reorientation",False):
+        posture=receipt.get("approach_reorientation",{})
+        lookahead=posture.get("preview") or {}
+        preflight["approach_reorientation"]={"eligible":posture.get("eligible",False),
+            **selected(lookahead,("trigger","source","scene_truth","future_state_is_prediction","future_actions_not_authorized"))}
     guides = {view: {hand: selected(row, ("eef_uv", "grasp_center_uv", "grasp_center_in_frame",
                     "base_axis_pixel_deltas_for_1cm", "finger_contact_region")) for hand, row in hands.items()}
               for view, hands in bundle.geometry.items()}

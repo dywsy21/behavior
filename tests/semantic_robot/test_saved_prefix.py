@@ -57,5 +57,45 @@ class SavedPrefixTests(unittest.TestCase):
             with tempfile.TemporaryDirectory() as root:
                 with self.assertRaises(ValueError):self.load(self.make(Path(root),change))
 
+    def make_approach(self,root,change=None):
+        def make_unloaded(m,r,g,s):
+            m["args"]["prefix"]=0
+            for row in r:
+                if "action23" in row:row["action23"][22]=1
+                elif row["action"]["move"]=="close":row["action"]["move"]="up"
+            s["gripper"]=[.05,.05]
+        path=self.make(root,make_unloaded)
+        spec=json.loads(path.read_text());spec.update(schema=2,purpose="matched_unladen_approach_diagnostic")
+        h={"goal_index":0,"goal":json.loads((root/"plan.json").read_text())[0],"stage":"APPROACH",
+           "stop_reason":None,"carry_constraints":False,
+           "unverified_close_latches":{"left":False,"right":False},
+           "holding_verified_by_observation_and_proprio":{"left":False,"right":False},
+           "possible_contact_after_any_close":{"left":False,"right":False}}
+        if change:change(spec,h)
+        name="decision_002/harness.json";(root/name).write_text(json.dumps(h))
+        spec["sha256"][name]=hashlib.sha256((root/name).read_bytes()).hexdigest()
+        path.write_text(json.dumps(spec));return path
+
+    def test_unladen_diagnostic_does_not_copy_old_evidence_or_completion(self):
+        with tempfile.TemporaryDirectory() as root:
+            p=self.make_approach(Path(root))
+            replay=load_saved_prefix(p,task=0,prefix=0,window_sha="window",robot_sha="robot")
+        h=GroundedHarness(replay["plan"])
+        bootstrap_unverified_pick(h,replay,SimpleNamespace(q=np.zeros(18),gripper=np.array([.05,.05])))
+        self.assertEqual(h.stage,"SEARCH");self.assertEqual(h.completed,[])
+        self.assertIsNone(h.observation);self.assertIsNone(h.feedback);self.assertIsNone(h.last_action)
+        self.assertFalse(any(h.pending_grasp.values()));self.assertFalse(any(h.hold_verified.values()))
+        self.assertFalse(replay["receipt"]["autonomous_progress"])
+
+    def test_unladen_source_rejects_wrong_stage_missing_load_state_goal_and_budget(self):
+        changes=[lambda s,h:h.update(stage="VERIFY_GRASP"),lambda s,h:h.pop("unverified_close_latches"),
+                 lambda s,h:h["possible_contact_after_any_close"].update(right=True),
+                 lambda s,h:h.update(goal_index=1),lambda s,h:s.update(replay_controls=2049),
+                 lambda s,h:s.update(purpose="arbitrary_resume")]
+        for change in changes:
+            with tempfile.TemporaryDirectory() as root:
+                p=self.make_approach(Path(root),change)
+                with self.assertRaises(ValueError):load_saved_prefix(p,task=0,prefix=0,window_sha="window",robot_sha="robot")
+
 
 if __name__=="__main__":unittest.main()
