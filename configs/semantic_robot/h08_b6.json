@@ -1,0 +1,26 @@
+{
+  "experiment_id": "H-08-B6",
+  "owner": "Codex-solo",
+  "hypothesis": "Compact decision context removes reproducible request failures, and intermediate-scale preflights remove a verified omission of feasible 1cm motion.",
+  "code_commit": "c01a45edc52190a0756c33f6054136f32dd06376",
+  "model_path": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917/models/Qwen3.8-27B",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "input_token_cap_unchanged": 12000,
+  "training_updates": 0,
+  "new_weight_downloads": 0,
+  "actor_scene_truth": false,
+  "static_states": ["radio_b5/decision_004", "plates_b5/decision_030"],
+  "static_max_model_calls_total": 2,
+  "static_controls": 0,
+  "cpu_environment": {"OMP_NUM_THREADS": "4", "MKL_NUM_THREADS": "4", "OPENBLAS_NUM_THREADS": "4"},
+  "gate_each": {"decisions": 24, "controls": 1536, "wall_seconds": 1200, "model_calls": 0},
+  "tasks": [
+    {"task": 0, "split": "train", "instance": 138, "env": 0, "seed": 0, "expert_prefix": 448, "gpu": 1, "decisions": 64, "controls": 2048, "wall_seconds": 1800, "max_policy_calls": 147},
+    {"task": 3, "split": "train", "instance": 242, "env": 0, "seed": 0, "expert_prefix": 0, "gpu": 3, "decisions": 80, "controls": 2400, "wall_seconds": 2400, "max_policy_calls": 179}
+  ],
+  "flags": ["--harness", "grounded", "--refine-grounding", "--visual-odometry"],
+  "prerequisites": ["150 CPU regressions on both machines", "Both real failed prompts fit unchanged cap and allow a valid finite action", "Manual review of saved current images and selected actions", "Both new implementation-digest control gates"],
+  "stops": ["Original hard safety and motion uncertainty gates", "Declared run budget", "Disk free below 80 GiB"],
+  "comparison": "B4/B5 identical developer start and physical budgets; integrated engineering iteration, not clean factor ablation or population SR. Failed requests are reported as infrastructure failure.",
+  "success_reporting": "Actual local manipulation needs physical/temporal evidence; complete task needs official criteria. Gate passage is not method efficacy."
+}
