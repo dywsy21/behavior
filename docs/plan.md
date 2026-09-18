@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**23:34 H10 r1两门已提交运行（Codex）：** GPU3独立`gate_radio_h10_r1` PID94047、`gate_plates_h10_r1` PID94109，源5accf69、各24/1536/1200s/0前缀/0模型。新日志同证据根对应`.log`，目前初始化，未称工程通过或任务效果；原策略仍未启动。门结束后核实际8°轴、fresh深度及required criteria，再放行同预算诊断。
+
 **23:33 H10 r1追加有限工程复验登记（Codex）：** Astra/max独立复审5accf69通过，无新阻塞；283 harness＋21 SFT及robo283/12.949s过。新`repair_r1`只增加2工程reset：`gate_radio_h10_r1`/`gate_plates_h10_r1`，各原24决策/1536控制/1200s/0前缀/0模型，task0 train138/task3 train242/seed0，GPU3；旧失败门不覆盖，门角度8°/硬阈值/必达判据不变。新runtime/digest `5accf69`/`59cdfdaefe78d0afee095cd88be408dbb70e115ae89979de5ecc77e29707725f`；服务89280仍465bc85、同权重协议/2调用，分开记录不热改。Git干净pull/fetch同步，GPU3空、89GiB余量/新根351MiB；原1诊断＋1全起点策略预算仍未用，追加门待启动。
 
 **23:26 H10修复后的真实pose CPU门通过（Codex）：** 新不可变`5accf6993efddb4533dda55cc1f1cab17554c17c`已push/在robo单独checkout。两旧gate d7的真实RGB-D/actual self boxes检查各4.868s/5.002s：roll±、pitch±仍如实被拒；yaw+8°及其反向通过IK与整段48节点/96含中点的可见深度否决，没有改小8°或放松阈值。证据新根`gate_radio_pair_5accf69.json`/`gate_plates_pair_5accf69.json`，0模型/控制；283本地CPU/5.032s过。增量独立review中，原两策略仍未开始；只准备新增2工程门的有限复验，不自动扩大策略分母/训练。
