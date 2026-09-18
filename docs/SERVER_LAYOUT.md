@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 23:54当前：** H10证据根同下；r2双门98393/98469已通过并退出，`git_worktrees/semantic_gate_motion_dfe7c96`/digest128f5595固定，新唯一`radio_h10_matched`101630/GPU3正在初始化。模型服务89280/GPU1/8919仍旧465bc85源和同一冻结revision，身份分开记、不热改；原2静态调用。诊断前缀448＋362不计自主成功，64/2048/1800s上限；`radio_h10_fullstart`尚未运行。r1/最初失败门保留，旧H09不重启；盘余88GiB，原4GiB新增/80GiB余量边界不变。
+
 **2026-09-18 23:33当前：** 新H10证据根`/mnt/sdc1/robodojo/behavior_dev/agentic_vlm_goal_20260918`，本地副本根`artifacts/agentic-vlm-goal-20260918/`。GPU1模型89280/8919使用不可变`git_worktrees/semantic_observer_465bc85`，同Qwen3.8-27B revision1d4bf0f，最大368调用/当前2；不可热改。初始`gate_radio_h10`/`gate_plates_h10`已失败退出，保留；新`git_worktrees/semantic_observer_5accf69`经CPU/独立review，`gate_radio_h10_r1`/`gate_plates_h10_r1`仅登记未启动，后续1诊断＋1原起点策略亦未运行。两个source身份分开记录；root351MiB/盘余89GiB，H09旧训练和证据不重启、不清理。
 
 **2026-09-18 22:02当前：** H09所有训练/两门/四策略/专属模型已完成退出，GPU1/8918释放；H08 GPU3/8909亦无本轮进程，不重复启动。H09根`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_showharness_20260918`：`data_v4`为实际1199/193/192数据；`train_v1/adapter_0600`为最终实验adapter（SHA `b5a125ed14dc06c82a7ae7fd288d8c7202d90e2210cc1d1c2f7195f3daac15e1`）；`eval_test_v1`静态，`radio_base_v1`/`radio_ft_v1`/`plates_ft_v1`/`plates_base_v1`四物理，`server_v1`调用证据。实际训练源140c47d、实际评测源975852a，后续035af65交接/父集成不替换这些历史身份。四视频及轻量回执副本已SHA核验到本仓`artifacts/vlm-sft-showharness-20260918/`；完整原始本地审阅材料仍在`/home/wsy/behavior_worktrees/vlm-sft-20260918/artifacts/`，含标明的partial校准下载，不当完整校准使用。H09根约2.8GiB、全盘余89GiB；不清理唯一证据，不将adapter当已改善策略。
