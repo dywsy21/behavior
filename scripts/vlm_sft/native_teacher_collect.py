@@ -22,6 +22,7 @@ if __name__ == "__main__" and sys.platform.startswith("linux"):
 
 import numpy as np
 from PIL import Image
+from scipy.spatial.transform import Rotation
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO/"src"), str(REPO/"scripts/semantic_robot")]
@@ -36,6 +37,9 @@ from run_sim import ADAPTER
 from run_v2 import implementation_digest
 from replay_contact_audit import preserved_session, report_failure
 
+PILOT_TOKENS = [t for t in TOKENS if not t.startswith("BASE_") and
+                not any(axis in t for axis in ("ROLL", "PITCH", "YAW"))]
+
 
 def rest_screen(states):
     """Robot-only near-rest screen, NOT a certificate of stationary objects."""
@@ -45,7 +49,14 @@ def rest_screen(states):
     g = np.asarray([s.gripper for s in states[-4:]])
     v = np.asarray([s.base_velocity for s in states[-4:]])
     values = np.concatenate([q.ravel(), g.ravel(), v.ravel()])
-    return bool(np.isfinite(values).all() and np.max(abs(np.diff(q, axis=0)))*30 < .03
+    if not np.isfinite(values).all(): return False
+    for arm in ("left", "right"):
+        positions = np.asarray([s.poses[arm][0] for s in states[-4:]])
+        rotations = Rotation.from_quat(np.asarray([s.poses[arm][1] for s in states[-4:]]))
+        if (not np.isfinite(positions).all() or np.linalg.norm(np.diff(positions, axis=0), axis=1).max()*30 >= .02 or
+                np.linalg.norm((rotations[1:]*rotations[:-1].inv()).as_rotvec(), axis=1).max()*30 >= .05):
+            return False
+    return bool(np.max(abs(np.diff(q, axis=0)))*30 < .03
                 and np.max(abs(np.diff(g, axis=0)))*30 < .005
                 and np.max(np.linalg.norm(v[:, :2], axis=1)) < .02 and np.max(abs(v[:, 2])) < .03)
 
@@ -161,7 +172,8 @@ def main():
                 actor = actor_input(session.observation()["task"], ref["active_instruction"], runtime_proprio(before), hashes, history[-5:])
                 request = {"schema": SCHEMA, "actor": actor, "native_control": controls,
                            "source_group": {k: ref["pilot"][k] for k in ("task", "episode", "instance")},
-                           "allowed_tokens": [t for t in TOKENS if not t.startswith("BASE_")],
+                           "allowed_tokens": PILOT_TOKENS,
+                           "execution_constraints": "Unknown load treated conservatively: carry=True; no base/rotation in this first pilot",
                            "source_reference": str(x.prepared/"teacher_reference.json"),
                            "source_reference_sha256": sha(x.prepared/"teacher_reference.json"),
                            "proposal_aid": ref["proposals"], "must_revalidate_intent_after_pause": True}
@@ -178,7 +190,7 @@ def main():
                 now = state()
                 if np.max(abs(now.q-before.q)) > 1e-5 or np.max(abs(now.gripper-before.gripper)) > 1e-5:
                     raise RuntimeError("Approval is stale")
-                action = token_to_action(token); carry = bool(np.any(grips < .5))
+                action = token_to_action(token); carry = True  # Never infer unloaded from a gripper command/aperture.
                 if action.part == "base":
                     raise ValueError("First manipulation pilot excludes BASE pending H14 deployment-safe body guard")
                 guard = LocalDepthGuard(observed_cloud(depths, model, now.q), model, now.q, depths)
@@ -195,15 +207,20 @@ def main():
                 write_json(folder/"native_execution.json", {"control_start": start_control, "control_end": controls,
                            "actions": native_actions})
                 post_state, post_hashes, _ = capture(folder/"after")
+                stable_hashes = None
+                if feedback["status"] == "TARGET_REACHED":
+                    settle()
+                    _, stable_hashes, _ = capture(folder/"after_settle")
                 record = {"request": request, "approval": approval,
                           "execution": {"token": token, "action": asdict(action), "status": feedback["status"],
                                         "native_controls": controls-start_control, "interrupted": feedback["status"] != "TARGET_REACHED",
                                         "native_trace_sha256": sha(folder/"native_execution.json")},
-                          "feedback": feedback, "post_observation_sha256": digest(post_hashes),
+                          "feedback": feedback, "post_observation_sha256": digest({"immediate": post_hashes, "settled": stable_hashes}),
+                          "settle_passed": stable_hashes is not None,
                           "training_eligible": False, "post_review_required": True}
                 write_json(folder/"QUARANTINED_record.json", record); completed.append(str(folder))
                 if feedback["status"] != "TARGET_REACHED": raise RuntimeError("Native action failed; no corrective retry")
-                history.append(token); settle()
+                history.append(token)
         except BaseException as exc:
             record_error(exc)
         finally:

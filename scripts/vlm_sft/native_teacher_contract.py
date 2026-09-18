@@ -117,7 +117,7 @@ def release_reviewed_record(record, post):
     if (token is None or executed["token"] != token or executed["action"] != asdict(token_to_action(token)) or
             executed["status"] != "TARGET_REACHED" or executed["interrupted"] or
             executed["native_controls"] <= 0 or not executed["native_trace_sha256"] or
-            not record.get("post_observation_sha256")):
+            not record.get("post_observation_sha256") or record.get("settle_passed") is not True):
         raise ValueError("Approved primitive must actually finish; legality is not correctness")
     return {"actor": record["request"]["actor"], "target": token,
             "source_group": record["request"]["source_group"],

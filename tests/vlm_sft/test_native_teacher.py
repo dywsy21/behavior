@@ -31,7 +31,7 @@ class NativeTeacherTests(unittest.TestCase):
         record = {"request": request, "approval": approval,
                   "execution": {"token": "RIGHT_UP", "action": asdict(token_to_action("RIGHT_UP")),
                                 "status": "TARGET_REACHED", "interrupted": False, "native_controls": 18,
-                                "native_trace_sha256": "b"*64}, "post_observation_sha256": "c"*64}
+                                "native_trace_sha256": "b"*64}, "post_observation_sha256": "c"*64, "settle_passed": True}
         post = {"record_sha256": digest(record), "reviewer": "post reviewer", "decision": "approve",
                 "correct_for_current_intent": True, "reviewed_full_before_after_and_native_trace": True,
                 "not_based_only_on_safety_or_distance": True, "reason": "Fixture manual judgment of the action and preserved constraints, not a success certificate."}
@@ -88,7 +88,8 @@ class NativeTeacherTests(unittest.TestCase):
         self.assertFalse(out["official_success_claim"])
 
     def test_rest_and_release_fail_closed(self):
-        def state(x=0.):return types.SimpleNamespace(q=np.full(18,x),gripper=np.ones(2)*.05,base_velocity=np.zeros(3))
+        def state(x=0.):return types.SimpleNamespace(q=np.full(18,x),gripper=np.ones(2)*.05,base_velocity=np.zeros(3),
+                                                    poses={a:(np.zeros(3),[0.,0.,0.,1.]) for a in ("left","right")})
         self.assertFalse(rest_screen([state()]*3));self.assertTrue(rest_screen([state()]*4))
         self.assertFalse(rest_screen([state(),state(),state(),state(.02)]))
         self.assertFalse(rest_screen([state(),state(),state(),state(np.nan)]))
