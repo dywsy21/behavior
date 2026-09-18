@@ -18,6 +18,7 @@
   "model_dtype": "bfloat16",
   "model_backend": "transformers-sdpa",
   "thinking": false,
+  "budget_profile_for_policy_only": "fullstart192",
   "image_max_side": 640,
   "max_images": 9,
   "training_updates": 0,

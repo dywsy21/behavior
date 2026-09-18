@@ -45,6 +45,7 @@ from semantic_robot.v2.arm_observation_guard import ObservingArmGuard
 from semantic_robot.v2.observer_gate import choose_gate_pair
 from semantic_robot.v2.motion_feedback import observed_motion_feedback
 from semantic_robot.v2.wall_budget import expired, stop_before_motion
+from semantic_robot.v2.run_budget import validate_run_budget
 
 
 def implementation_digest():
@@ -112,11 +113,10 @@ def main():
     p.add_argument("--max-decisions", type=int, default=48)
     p.add_argument("--max-controls", type=int, default=1536)
     p.add_argument("--max-seconds", type=int, default=1200)
+    p.add_argument("--budget-profile", choices=("pilot","fullstart192"), default="pilot",
+                   help="Explicitly registered original-start extension; gates and prefixes keep pilot limits")
     args = p.parse_args()
-    # H-08's user-authorized iterative block permits a full *measured* sweep
-    # plus local manipulation. Per-run smaller declared limits remain binding.
-    if not (0 <= args.prefix <= 448 and args.max_decisions in range(1,97) and 1 <= args.max_controls <= 3072 and 1 <= args.max_seconds <= 2400):
-        raise ValueError("Registered pilot budget exceeded")
+    validate_run_budget(args)
     if args.task == 3 and args.prefix:
         raise ValueError("Task3 has no registered expert prefix")
     if subprocess.check_output(["git","-C",str(REPO),"status","--porcelain"],text=True).strip():
