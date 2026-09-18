@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 07:02当前：** 新目录已真实创建：`/mnt/nvme_tmp/robodojo_agentic_20260919/h17_body_options`，仅H17有限新输出，累计1GiB；GPU3门`gate_radio_h17`186948/`gate_plates_h17`186949＋同名log初始化，runtime `git_worktrees/semantic_body_3411489`/digest b2d14390…c78df，禁止热改。旧root7,406,026,563B/旧模型156556保留原盘，局部run未启。GPU1 P2 Python185102（壳185097），原root `h09u_reference_task1_v2`＋log、独立26e源/新授权60d420…7d5ea；旧P1失败保留；尚未训练。
+
 **2026-09-19 06:50当前：** H17新不可变`git_worktrees/semantic_body_4b56b03`354 CPU通过/digest a4ecacc0…2d499，无新物理/输出目录；GPU3旧156556/8923真实170/215，43剩余配额足。GPU1参考179879已退出，失败完整本地在子worktree `artifacts/h09u-reference-task1-v1/run`（17文件6,585,894B、全SHA过，165控制含hold）；原服务器目录/9b源保留不改。新NVMe拟输出仍未创建，余2.7TiB，原盘余约81GiB；旧父root7,406,026,563B，仍遵原7GiB，不把换盘抹成零历史。
 
 **2026-09-19 06:39当前：** Astra GPU1唯一参考回放179879（壳179878），固定`git_worktrees/vlm_sft_h09u_9b52faa`，`vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`及同级log；只TRAIN192、164原prefix＋288完整技能段＋13收尾，不是新VLM训练。授权同root `authorization_h09u_reference_task1_v1.json`/SHA44e2c2cd…8454f1。保持旧目录/源不热改，未启动task0。H16本地`h16_matched_bundle`已完整传完、三主SHA过。

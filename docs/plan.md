@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 07:02（北京时间）H17双工程门与H09U-P2真实运行（Codex/Astra）：** H17于07:02:18 BJT提交GPU3 `gate_radio_h17`186948/`gate_plates_h17`186949，新根`/mnt/nvme_tmp/robodojo_agentic_20260919/h17_body_options`，固定341/b2d14390，原各24/1536/1200s、0模型/前缀，启动余NVMe2,937,980,526,592B/GPU3 25,661MiB，旧root7,406,026,563B未迁删。门正在初始化，不当控制通过；局部10决策未启。Astra P2真实Python185102/GPU1（壳185097），07:00:25起、26e源/60d420授权，原465/900s/80MiB；仅参考回放，尚无新seed或训练。两边运行源码不可热改，GPU0队友不动。
+
 **2026-09-19 07:02（北京时间）H17最终独立审/远端通过，双门放行（Codex/Astra）：** 34114892经Astra增量8 wall＋4 cleanup测试/实际AST审过，零控制race关闭；远端356/18.320s、digest b2d14390…c78df，五SHA/1392×23来源重验通过。首远端辅助命令误导入不存在load_replay只在CPU尾报错，已用实际load_saved_prefix复核，无reset；运行代码无此错误。按原3reset预算下一仅GPU3新NVMe两个工程门，各24/1536/1200s/340MiB，累计新1GiB，旧root保持7GiB；局部待真门完成/审计后。Astra P2已07:00:25提交GPU1（壳185097、Python待核），固定26e、新授权60d4204a…7d5ea，64远端/source/gates过、root92,429,849B/free86,993,231,872B；未称seed或训练完成。
 
 **2026-09-19 07:00（北京时间）H17零控制race最小修复完成（Codex）：** motion.begin移至通过每控制量子deadline检查之后；若0控制到时则记NOT_STARTED退出，不finish空链/后验BASE消费/manager.executed，原finish拒空链未放宽。真实runner AST＋真实SubstepMotion回归通过，晚到模型回复保留在取消证据但不返回动作。356 harness/6.227s、64 SFT/.228s过，下一新固定源远端CPU/增量独立审，0新reset；旧4b源只做过CPU，未热改。
