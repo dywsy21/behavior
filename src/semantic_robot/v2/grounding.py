@@ -15,6 +15,7 @@ from .vision import project
 @dataclass(frozen=True)
 class GroundedEvidence(Evidence):
     other_views: tuple = ()
+    target_reference: str = "unknown"
 
     @classmethod
     def parse(cls, text):
@@ -23,11 +24,16 @@ class GroundedEvidence(Evidence):
         # dataclass's abstaining default, not a guessed pixel / repaired fact.
         # All core evidence fields, unknown keys and malformed supplied views
         # remain strict. The policy records this default without changing raw text.
-        if isinstance(value, dict) and set(value) == set(Evidence.__dataclass_fields__):
-            value["other_views"] = []
+        if isinstance(value,dict):
+            value.setdefault("target_reference","unknown")
+            if set(value)==set(Evidence.__dataclass_fields__)|{"target_reference"}:
+                value["other_views"]=[]
         if not isinstance(value, dict) or set(value) != set(cls.__dataclass_fields__):
             raise ValueError("Exact grounded observation fields required")
         extra = value.pop("other_views")
+        reference=value.pop("target_reference","unknown")
+        if reference not in ("world","held_left","held_right","unknown"):
+            raise ValueError("Invalid semantic target reference")
         import json
         base = Evidence.parse(json.dumps(value, allow_nan=False))
         if not isinstance(extra, list) or len(extra) > 2 or (extra and not base.visible):
@@ -42,7 +48,7 @@ class GroundedEvidence(Evidence):
             validated = Evidence.parse(json.dumps(fields, allow_nan=False))
             checked.append({"view":validated.view, "target_uv":validated.target_uv})
             seen.add(validated.view)
-        return cls(**asdict(base), other_views=tuple(checked))
+        return cls(**asdict(base), other_views=tuple(checked),target_reference=reference)
 
 
 # Contact localization and near-field grasp tracking share this sensor domain.

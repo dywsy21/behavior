@@ -31,7 +31,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True):
+    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -45,6 +45,24 @@ class GroundedHarness(TaskHarness):
         self.active_grasp_probe=bool(active_grasp_probe)
         self.grasp_probe_attempts={}
         self.grasp_probe={"eligible":False,"reason":"NOT_OBSERVED"}
+        self.held_inspection_enabled=bool(held_inspection)
+        self.target_references={}
+        self.held_inspection={}
+
+    @property
+    def search_reference(self):
+        return self.target_references.get(self.index,"unknown")
+
+    def resolve_reference(self,evidence):
+        if not self.held_inspection_enabled:return
+        reference=getattr(evidence,"target_reference","unknown")
+        if reference=="unknown":return  # Missing relation never fabricates world/held truth.
+        old=self.target_references.get(self.index)
+        if old is not None and old!=reference:
+            self.stop_reason="TARGET_REFERENCE_CONTRADICTION";return
+        if reference.startswith("held_") and not self.hold_verified[reference[5:]]:
+            self.stop_reason="TARGET_REFERENCE_REQUIRES_VERIFIED_HOLD";return
+        self.target_references[self.index]=reference
 
     def possibly_loaded_arms(self):
         # Unknown aperture after a CLOSE is not evidence of an empty hand.
@@ -53,6 +71,7 @@ class GroundedHarness(TaskHarness):
                      or self.last_gripper[i]>=.0015)]
 
     def observe(self,evidence,state,geometry=None,measured_progress=None):
+        self.resolve_reference(evidence)
         self.last_gripper=np.asarray(state.gripper,dtype=float).copy()
         return super().observe(evidence,state,geometry,measured_progress)
 
@@ -126,6 +145,13 @@ class GroundedHarness(TaskHarness):
     def palette(self):
         if self.possibly_loaded_arms() and self.stage not in ("VERIFY_GRASP","GRASP"):
             return (HOLD,)
+        if self.held_inspection_enabled and self.stage in ("SEARCH","RECOVER") and self.observation and not self.observation.visible:
+            if self.stop_reason:return (HOLD,)
+            if self.search_reference.startswith("held_"):
+                from .held_inspection import inspection_palette
+                arm=self.search_reference[5:]
+                return inspection_palette(arm,self.carry) if self.hold_verified[arm] else (HOLD,)
+            if self.search_reference=="unknown" and any(self.hold_verified.values()):return (HOLD,)
         palette=super().palette()
         if (not self.stop_reason and self.stage=="ALIGN" and self.goal.kind=="pick"
                 and self.grasp_probe.get("eligible")):
@@ -165,6 +191,8 @@ class GroundedHarness(TaskHarness):
 
     def context(self):
         context=super().context()
+        if self.held_inspection_enabled:
+            context.update(target_reference=self.search_reference,held_inspection=self.held_inspection)
         context.update(target_surface_estimate=self.grounding, search=self.search_context,
                        strategy_replans=self.replans, recent_replans=self.replan_history[-2:],
                        egocentric_motion=self.motion_receipt, unverified_close_latches=self.pending_grasp.copy(),
@@ -222,6 +250,8 @@ class GroundedController:
         self.pending_motion=None
         self.pending_exploratory=True
         self.goal_changed=False
+        from .held_inspection import HeldInspection
+        self.inspector=HeldInspection() if harness.held_inspection_enabled else None
         self.grasp_verifier=None
         if grasp_motion:
             if not visual_odometry:raise ValueError("Registered grasp motion requires independent RGB-D body motion")
@@ -277,6 +307,8 @@ class GroundedController:
         manager=self.harness
         self.goal_changed=False
         observed_goal_index=manager.index
+        observed_kind,observed_arms=manager.goal.kind,manager.arms
+        manager.resolve_reference(evidence)
         bimanual=manager.goal.kind=="pick" and manager.goal.hand=="both"
         self.hand_targets=localize_hand_contacts(evidence,depths,self.model,state.q) if bimanual else {}
         if bimanual:
@@ -329,6 +361,12 @@ class GroundedController:
         self.progress={"new_search_coverage":new_coverage,"target_distance_m":distance,
                        "metric_co_motion":co_motion,"distance_reduced":reduced}
         internal=dict(self.progress)
+        if self.inspector is not None and manager.search_reference.startswith("held_"):
+            fresh,context=self.inspector.observe(self.model,state,manager)
+            manager.held_inspection=context
+            internal["new_search_coverage"]=fresh
+            self.progress["new_relative_inspection_view"]=fresh
+            if not context["valid"]:manager.stop_reason="NO_VERIFIED_HELD_ANCHOR"
         if self.approach_monitor is not None:
             points=self._points_for_arms() if self.target.get("valid") else {}
             poses={a:self.model.forward(state.q,a).copy() for a in manager.arms}
@@ -362,6 +400,9 @@ class GroundedController:
         # Do not feed off-screen / cross-camera 2D EEF distances into progress.
         manager.observe(evidence,state,geometry=None,measured_progress=internal)
         if manager.index!=observed_goal_index:
+            if self.inspector is not None and observed_kind=="pick":
+                for arm in observed_arms:
+                    if manager.hold_verified[arm]:self.inspector.remember(self.model,state,arm,self.hand_targets[arm] if bimanual else self.target)
             self.goal_changed=True
             self.target={"valid":False,"reason":"NEW_GOAL_REQUIRES_FRESH_SEMANTIC_OBSERVATION",
                          "observation_goal_index":observed_goal_index,"current_goal_index":manager.index}
@@ -373,6 +414,9 @@ class GroundedController:
                 "old_target_invalidated":True,"permitted_action":"HOLD_ONLY_BEFORE_NEW_GOAL_OBSERVATION"}
             manager.update_grasp_probe(state)
             return
+        if (self.inspector is not None and not evidence.visible and any(manager.hold_verified.values())
+                and manager.search_reference=="unknown"):
+            manager.stop_reason="TARGET_REFERENCE_UNRESOLVED_WITH_HELD_LOAD"
         manager.update_grasp_probe(state)
         if self.reposition_left and self.reposition not in manager.palette():
             self.reposition_left=0  # a new stage may forbid the queued strategy
@@ -380,7 +424,7 @@ class GroundedController:
         self.replan_needed=None
         if manager.stop_reason=="RECOVERY_BUDGET_EXHAUSTED":
             self.replan_needed=manager.stop_reason
-        if not evidence.visible and self.search.complete and self.reposition_left<=0:
+        if not self.is_held_search and not evidence.visible and self.search.complete and self.reposition_left<=0:
             self.replan_needed="LOCAL_VIEW_SWEEP_COMPLETE_TARGET_NOT_FOUND"
         if self.replan_needed and manager.replans>=self.max_replans:
             manager.stop_reason="STRATEGY_REPLAN_BUDGET_EXHAUSTED"
@@ -616,6 +660,18 @@ class GroundedController:
             self.harness.stop_reason="NO_SAFE_ACTION_AT_CURRENT_STATE"
         return tuple(allowed)
 
+    @property
+    def is_held_search(self):
+        h=self.harness
+        return bool(self.inspector is not None and h.search_reference.startswith("held_") and
+                    h.stage in ("SEARCH","RECOVER") and h.observation and not h.observation.visible)
+
+    def inspection_candidates(self,state):
+        if not self.is_held_search:raise ValueError("No current held-object search")
+        allowed,receipt=self.inspector.candidates(self.model,state,self.harness,self.servo,self.depth_guard)
+        self.harness.candidate_receipt=receipt
+        return allowed
+
     def verification_action(self,allowed):
         """A finite sensing action must match its verifier's measurement scale.
 
@@ -647,6 +703,7 @@ class GroundedController:
     def search_action(self,state):
         """One finite pulse, not a hidden multi-step macro or VLM fiction."""
         if self.goal_changed:return HOLD,{"source":"goal_transition_barrier","reason":"OBSERVE_NEW_GOAL_FIRST"}
+        if self.is_held_search:raise ValueError("Held affordance cannot use world-heading search")
         if self.reposition is not None and self.reposition_left>0:
             action,reason=self.reposition,"BOUNDED_REPOSITION_WITH_CURRENT_DEPTH"
         else:
@@ -672,6 +729,7 @@ class GroundedController:
                        "search":self.search.context(),"depth_guard":self.depth_guard.receipt()}
 
     def executed(self,action,feedback):
+        if self.is_held_search:self.inspector.executed(self.harness)
         exploratory=self.harness.stage in ("SEARCH","RECOVER") and not self.goal_changed
         if self.motion is None:self.search.executed(feedback,exploratory=exploratory)
         else:

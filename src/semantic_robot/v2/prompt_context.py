@@ -44,7 +44,7 @@ def actor_context(harness, state, bundle, allowed=()):
     context = harness.context()
     scope = selected(context, ("goal_index", "goal", "stage", "held_target_claims",
         "holding_verified_by_observation_and_proprio", "carry_constraints", "unverified_close_latches",
-        "recoveries", "strategy_replans", "recent_replans", "stop_reason", "events", "search", "active_grasp_probe", "approach_progress"))
+        "recoveries", "strategy_replans", "recent_replans", "stop_reason", "events", "search", "active_grasp_probe", "approach_progress", "target_reference", "held_inspection"))
     scope["target_surface_estimate"] = contact_summary(context.get("target_surface_estimate", {}))
     scope["egocentric_motion"] = selected(context.get("egocentric_motion", {}),
         ("valid", "reason", "body_delta", "body_translation_z_m"))
@@ -61,7 +61,7 @@ def actor_context(harness, state, bundle, allowed=()):
     for index, action in enumerate(allowed):
         row = next((row for row in tested if row.get("action") == asdict(action)), None)
         scores.append({"command_index": index, **(selected(row, ("accepted", "reason", "planned_ticks",
-            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after")) if row else {})})
+            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after")) if row else {})})
     preflight = {"scores_for_allowed_commands": scores,
         "rejected_reason_counts": dict(Counter(row.get("reason", "UNKNOWN") for row in tested if not row.get("accepted"))),
         "navigation": receipt.get("navigation"), "command_grip_latch": receipt.get("command_grip_latch"),

@@ -115,6 +115,7 @@ def grounded_observation_system():
     example, descriptions = rest.split("\n", 1)
     fields = strict_json(example)
     fields["other_views"] = []
+    fields["target_reference"] = "unknown"
     GroundedEvidence.parse(json.dumps(fields))  # fail if example/schema drift
     return before + "Return only JSON with exactly these fields:\n" + json.dumps(fields, separators=(",", ":")) + "\n" + descriptions + """
 This run also has a robot-calibrated CLOSING CENTER cross: the centre between the fingers, not a target detection. OFFSCREEN is a label, not a clamped hand position. For pick choose a graspable visible contact area, for press a visible button, for navigate a visible destination, not the whole image centroid. Prefer the active wrist when the target and grasping region are both identifiable. Select ONE best CURRENT contact view. other_views MUST be [] in this interface: other images help identify the object, but do not independently click pixels in them. The same object seen from different sides does NOT mean the same physical surface point. The geometric adapter, not you, projects your selected 3D contact into the other cameras and checks depth/occlusion. All UVs refer to CURRENT RAW images, not earlier frames.
@@ -184,6 +185,20 @@ NOT holding evidence. Report unknown instead of inferring co-motion from a
 command or assuming that a closed gripper succeeded. No changed camera set."""
 
 
+def reference_observation_system(system):
+    before,rest=system.split("Return only JSON with exactly these fields:\n",1)
+    example,after=rest.split("\n",1);fields=strict_json(example);fields["target_reference"]="unknown"
+    return before+"Return only JSON with exactly these fields:\n"+json.dumps(fields)+"\n"+after+"""
+target_reference declares the CURRENT GOAL'S semantic reference, not its visual
+visibility: world for an independent destination/object; held_left or held_right
+ONLY for a part/affordance of the named object in that hand's prior verified
+holding claim; unknown when this relationship cannot be established. A button
+on the object already held in the right hand is held_right even if the LEFT
+hand is to press it, or the button is hidden. Do not choose a reference from
+which camera sees it. This field does not certify current attachment, location,
+or success; visible and target_uv must still be supported by the current image."""
+
+
 class GroundedPolicy(VLMPolicy):
     # B10 paired-only observation regressed on genuine grasps. Kept for
     # reproducible static experiments, not enabled in the production pilot.
@@ -200,6 +215,7 @@ class GroundedPolicy(VLMPolicy):
         bimanual=harness.goal.kind=="pick" and harness.goal.hand=="both"
         system=BIMANUAL_OBSERVE_SYSTEM if bimanual else GROUNDED_OBSERVE_SYSTEM
         if not bimanual and not getattr(harness,"contact_geometry",True):system=GROUNDED_OBSERVE_CORE
+        if getattr(harness,"held_inspection_enabled",False):system=reference_observation_system(system)
         if self.trackable_grasp_anchor:instruction+=grasp_tracking_instruction(harness)
         result,payload=self._call("observe",system+instruction,text,bundle)
         evidence = (BimanualEvidence if bimanual else GroundedEvidence).parse(result["text"])
@@ -209,6 +225,8 @@ class GroundedPolicy(VLMPolicy):
                       "missing_other_views_means": "NO_CORROBORATING_EVIDENCE",
                       "raw_model_text_unchanged": True, "retries": 0,
                       "contact_contract":"one_view_per_contact; other-camera geometry from calibrated reprojection"}
+        if getattr(harness,"held_inspection_enabled",False) and "target_reference" not in strict_json(result["text"]):
+            validation["defaulted_fields"].append("target_reference")
         if bimanual and "hand_contacts" not in strict_json(result["text"]):
             validation["defaulted_fields"].append("hand_contacts")
             validation["missing_hand_contacts_means"]="NO_CONTACT_EVIDENCE; no shared-point fallback"
@@ -224,6 +242,8 @@ class GroundedPolicy(VLMPolicy):
             system += " For tool-frame TRANSLATIONS, forward/back are +/- local X, left/right +/- local Y, up/down +/- local Z (axis labels, not camera directions); use target_minus_center_tool_m to choose signs. Robot-only yellow contact strips and their polygon show the calibrated finger region at the current open aperture, not a target detection. An object close to the center but outside this region still needs alignment. If the region is visibly empty/below the target, align before CLOSE even when an exploratory close is offered; do not infer enclosure from the 4cm attempt bound. Choose a graspable narrow part, and change pose/approach if advancing only displaces the object."
         if harness.grasp_probe.get("eligible"):
             system += " A bounded active grasp probe is currently offered: CLOSE attempts a grasp but proves nothing. When the target is already near the open fingers and further advances keep pushing it, prefer a close attempt over continued pushing. You need not claim enclosure or holding before attempting; current enclosure is UNKNOWN, not verified true. Subsequent lift and independent evidence decide the outcome. You may still HOLD if the raw views contradict a safe attempt."
+        if getattr(harness,"held_inspection_enabled",False) and harness.search_reference.startswith("held_") and harness.stage in ("SEARCH","RECOVER"):
+            system += " The missing affordance belongs to an already held object. This is INSPECTION, not pressing yet. Use the reference holding hand to present/reorient the object toward the head camera; rotating the base or the attached wrist camera together with the object does not reveal its hidden side. The free working hand is for the later interaction. Candidate inspection_after predicts only a previously observed surface anchor in the head image, NOT the button. Prefer bringing the object away from the head-image border toward its centre, then exposing another side with a permitted small rotation. Keep the grip closed; do not assume an affordance has appeared until the next actual observation. Respect level-preserving constraints and the finite inspection path budget."
         result,payload=self._call("act",system,text,bundle,allowed)
         action=Action.parse(result["text"])
         harness.authorize(action)

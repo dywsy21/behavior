@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 19:19当前：** B14模拟器29038已结束、模型28821已请求TERM，`b14_complete.tar.gz` SHA25efcf4a…已在本地`b14_verified_bundle/`，745新控制/32生成、官方false但d3注册验证成功。B15静态32592异常退出（2实际调用，第三例0调用前检查失败），服务32343已请求TERM；`b15_static_partial.tar.gz` SHAd2bfae82…保留部分结果和日志。B16仅本地代码/223CPU，无服务器新源或运行；旧B13/B14策略都不重启。
+
 **2026-09-18 18:55当前：** B14两门25757/25758已完整通过/退出，`radio_b14_matched`29038＋`server_b14_matched`28821/8909在GPU3，均固定`semantic_informative_probe_274479f`；源不可热改。B13标准完整本地`b13_standard_verified_bundle/`已6bcce747…SHA/168hash/全视频解码，旧回合/服务均结束。B15只有本地候选/保存帧CPU，无服务器新源或进程。
 
 **2026-09-18 18:48当前：** B13两模拟器/两模型均确认退出。新固定`git_worktrees/semantic_informative_probe_274479f`（274479f/4fc431d0）正在被GPU3两个工程门`gate_radio_b14`25757、`gate_plates_b14`25758使用，源禁止热改；模型/匹配策略尚未运行。同H08根/同级日志。B13标准完整归档6bcce747…下载中，不能删除旧证据/旧B7前缀。

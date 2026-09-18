@@ -1,0 +1,18 @@
+{
+  "experiment_id": "H-08-B16-static",
+  "owner": "Codex-solo",
+  "hypothesis": "Explicit semantic target reference scopes search to relative motion of a verified held object instead of invariant base-heading scans, without confusing the reference hand and working hand.",
+  "code_commit": "PENDING_FIXED_SOURCE",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "gpu": 1,
+  "states": ["radio_b14_matched/decision_004", "plates_b8/decision_033"],
+  "expected_references_for_audit_only": ["held_right", "world"],
+  "model_calls": 2,
+  "wall_seconds": 600,
+  "controls": 0,
+  "resets": 0,
+  "training_updates": 0,
+  "same_original_images": true,
+  "minimum_free_disk_GiB": 80,
+  "physical_release": "Separate registration only after semantic, preflight and human checks pass."
+}

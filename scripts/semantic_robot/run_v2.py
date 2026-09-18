@@ -75,6 +75,7 @@ def main():
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid"),default="pnp")
     p.add_argument("--approach-progress",action="store_true",help="Veto repeated near-field base advances without observed contact progress")
+    p.add_argument("--held-object-inspection",action="store_true",help="Explicit semantic reference and bounded held-object relative inspection")
     p.add_argument("--task", type=int, choices=(0,3), default=0)
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--replay-prefix-spec",help="Hash-pinned saved-action diagnostic warm start, counted separately from policy")
@@ -99,6 +100,7 @@ def main():
     if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe or args.contact_geometry or args.grasp_motion) and not grounded:
         raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
+    if args.held_object_inspection and not args.grasp_motion:raise ValueError("Held inspection requires registered verified anchors")
     if (args.approach_progress or args.odometry_estimator!="pnp") and not args.visual_odometry:
         raise ValueError("Measured approach progress and explicit estimator require visual odometry")
     if args.mode == "agent":
@@ -112,7 +114,8 @@ def main():
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
-                g.get("approach_progress",False)==args.approach_progress for g in gates):
+                g.get("approach_progress",False)==args.approach_progress and
+                g.get("held_object_inspection",False)==args.held_object_inspection for g in gates):
             raise ValueError("Control/FK gates have not passed for this exact implementation")
     out = Path(args.output); out.mkdir(parents=True,exist_ok=False)
     if grounded and shutil.disk_usage(out).free<80*1024**3:
@@ -135,7 +138,8 @@ def main():
     policy_class=RefinedGroundedPolicy if args.refine_grounding else GroundedPolicy if grounded else VLMPolicy
     policy = policy_class(args.uri,args.expected_revision,max_calls=1+2*args.max_decisions+
         (2 if grounded else 0)+(16 if args.refine_grounding else 0)) if args.mode=="agent" else None
-    if policy and args.grasp_motion:policy.trackable_grasp_anchor=True
+    # B15's tracking-anchor prompt did not improve the two failing states.
+    # Retain it for static reproduction, not as the production default.
     manifest = {"code_commit":subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip(),
                 "implementation_digest":digest, "args":vars(args), "instance":window.instance_id,
                 "task":args.task,"task_name":window.task_name,"split":"train","seed":0,
@@ -281,7 +285,7 @@ def main():
                 else:
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry) if grounded else TaskHarness(goals)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection) if grounded else TaskHarness(goals)
                 if replay is not None:
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
@@ -377,9 +381,18 @@ def main():
                         row["selection_source"]="goal_transition_barrier_no_model_call"
                         write(directory/"action_selection.json",{"source":row["selection_source"],"reason":"OLD_TARGET_INVALIDATED_OBSERVE_NEW_GOAL_FIRST"})
                     elif controller and ((not observation.visible and manager.stage in ("SEARCH","RECOVER")) or controller.reposition_left>0):
-                        action,selection=controller.search_action(state)
-                        write(directory/"action_selection.json",selection)
-                        row["selection_source"]=selection["source"]
+                        if controller.is_held_search:
+                            allowed=controller.inspection_candidates(state)
+                            write(directory/"candidates.json",manager.candidate_receipt)
+                            if manager.stop_reason:
+                                row["stop_reason"]=manager.stop_reason;decisions.append(row);break
+                            action,call=policy.act_feasible(manager,state,bundle,allowed)
+                            save_call(directory,"action",call)
+                            row["selection_source"]="VLM_preflighted_relative_held_inspection"
+                        else:
+                            action,selection=controller.search_action(state)
+                            write(directory/"action_selection.json",selection)
+                            row["selection_source"]=selection["source"]
                     elif controller:
                         allowed=controller.candidates(state)
                         write(directory/"candidates.json",manager.candidate_receipt)
@@ -454,6 +467,7 @@ def main():
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
+                      "held_object_inspection":args.held_object_inspection,
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
                       "full_task_success_rate_claim":False}
