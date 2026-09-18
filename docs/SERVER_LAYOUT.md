@@ -6,6 +6,10 @@
 
 ## 1. 总览
 
+**2026-09-19 06:15当前：** GPU3唯一新局部策略`agentic_vlm_goal_20260918/radio_h16_matched_approach`175529（同名log）初始化，source仍`semantic_reorientation_2c546d2`；模型156556/8923旧5cf/148起。双H16门完整288主hash/304段签名-FK/8BASE通过，完整本地包仍下载；不要重启门或热改2c。H09U只有CPU准备新不可变7b源/本地草稿，无新采集或训练。
+
+**2026-09-19 06:12当前：** `gate_radio_h16`172069与`gate_plates_h16`172070已退出、result两门通过（417/418控制），2c源不可变保留。完整副本传向本地`artifacts/agentic-vlm-goal-20260918/h16_gates_bundle`，链审计待；`radio_h16_matched_approach`尚未启动。GPU3仍仅旧模型156556/148calls，GPU1留给Astra。
+
 **2026-09-19 06:06当前：** 新不可变`git_worktrees/semantic_reorientation_2c546d2`341远端CPU/真实source绑定通过，独立复审通过。父root下`gate_radio_h16`172069、`gate_plates_h16`172070/GPU3初始化中，日志同名`.log`，不得热改该源；模型156556/8923仍5cf/148calls空闲。H16局部保存前缀回合未启。Astra H09U只CPU修种子/因果与回放入口，GPU1空，无新SFT采集或训练。
 
 **2026-09-19 05:53当前：** `git_worktrees/semantic_reorientation_1c7ddee`干净不可变、339 CPU与H15原1392前缀SHA/新SEARCH校验通过（digest c654f420…dedd229），仅待独立审，无H16模拟器进程。旧0e源码保留，其来源校验拒绝发生在reset前。GPU3模型156556/8923仍旧5cf源/148calls空闲，GPU1仍空给Astra H09T；新物理尚未放行。H15完整本地`h15_fullstart_bundle/radio_h15_fullstart`540主RGB-D hash/全视频/主SHA通过，旁边partial_scp是中断复制保留的部分副本，不是唯一结果。
