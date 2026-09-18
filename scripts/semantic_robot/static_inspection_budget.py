@@ -20,12 +20,12 @@ from semantic_robot.v2.servo import SafeServo
 from semantic_robot.v2.vision import VisualBundle
 
 
-def restore(run,index):
+def restore(run,index,multicamera=False):
     d=run/f"decision_{index:03d}";saved=read(d/"harness.json");model=RobotModel(read(run/"robot_calibration.json"))
     f=frame(d);pr=read(d/"proprio.json");state=model.state(np.array(pr["q"]),np.array(pr["gripper"]),np.zeros(3))
     if saved["carry_constraints"] or saved["target_reference"]!="held_right":raise ValueError("Original non-level held fixture required")
     h=GroundedHarness([Goal(**saved["goal"])],held_inspection=True,reference_from_planner=True,
-                      contact_geometry=False,inspection_budget_aware=True)
+                      contact_geometry=False,inspection_budget_aware=True,multicamera_inspection=multicamera)
     h.held=saved["held_target_claims"];h.hold_verified=saved["holding_verified_by_observation_and_proprio"]
     h.bind_reference(saved["target_reference"],"original_saved_semantic_relation_not_new_truth")
     h.stage=saved["stage"];h.observation=GroundedEvidence.parse(read(d/"observation.json")["result"]["text"])
@@ -40,7 +40,12 @@ def restore(run,index):
         past=read(run/f"decision_{j:03d}"/"proprio.json")
         oldstate=model.state(np.array(past["q"]),np.array(past["gripper"]),np.zeros(3))
         if j>4:ctl.inspector.executed(h)
-        ctl.inspector.observe(model,oldstate,h)
+        if multicamera:
+            # Earlier poses reconstruct only measured motion accounts. A cloud
+            # from another pose is never presented as current free-arm depth.
+            ctl.inspector.observe(model,oldstate,h,f["depth"] if j==index else None,
+                                  read(d/"robot_self_geometry.json") if j==index else None)
+        else:ctl.inspector.observe(model,oldstate,h)
     h.held_inspection=ctl.inspector.context(model,state,h)
     for key in ("attempts","relative_path_m","relative_rotation_deg"):
         if not np.isclose(h.held_inspection[key],saved["held_inspection"][key],rtol=1e-6,atol=1e-6):raise ValueError("Causal history disagrees with saved actual budget")

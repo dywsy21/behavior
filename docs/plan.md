@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**22:55 H10后继有限预算登记，未启动（Codex）：** `configs/semantic_robot/h10_observer_block.json`登记review通过后原27B revision1d4bf0f/GPU1新服务最多368调用：B20 d4/20两静态选择≤300s/0控制；GPU3两task原姿态工程门各24命令/1536控制/1200s（含8°free腕与fresh深度否决）；通过后唯一同448+362前缀诊断64决策/2048新控制/1800s/151调用，再唯一radio原起点0前缀96决策/3072控制/2400s/215调用。所有task0 train138/task3 train242/seed0，完整起点回合与诊断分母分开保留，单开发例不泛化；4GiB新增/80GiB余盘门。服务器实查GPU1/3空、89GiB余量，0/2不动。e73e263实现已提交、Astra只读review中；新静态工具仅按原历史姿态重建预算，末帧使用其自己的深度/机器人盒，图像hash必须与原结果完全一致。runtime仍待review后固定，当前0新神经/物理。
+
 **22:51 H10整体保存状态门（Codex）：** `observer_integrated_b20.json`两状态完整新候选/真实深度盒扫掠11.191s完成，每个均24自由手候选通过负向深度门；最优roll+8°保留约7°指向改善，尚未入镜、不证按钮/空域安全。原持物path/attempt累计保留；此单步审计仅当前pose去回访，不假称完整历史因果重放。269 harness＋21 SFT全过（4.137s/0.020s），`diff --check`通过；0模型/物理。即将把稳定实现交原Astra/max子代理只读独立review；Codex继续实验登记/资源核验，子代理不重训或写父线源码，review问题修好再放行。
 
 **22:49 H10接线/反例回归（Codex）：** 默认关闭的`--multicamera-inspection`已接harness/controller/actor提示/runner与精确gate身份；自由相机与参考手分离，level载荷不旋转、其grip不释放。新增可见深度free-arm盒扫掠否决（不宣称未知空间/载荷完整避障），模型后重新render读取深度并检查q/夹爪稳定才放执行；新工程门将增加同8°自由腕来回并调用扫掠门。269 harness CPU/3.836s通过（14新增含中途障碍、另一手不mask、两手占用、固定持物关节/grip、共享预算、缺深度与未知空间）；尚未独立review/物理验收。Git fetch main仍33677bd，因本条自己的未提交H10修改未pull，不覆盖任何内容。继续原≤900s CPU额度内真实保存状态整体候选/深度门检查，然后交独立审查；0新训练/模型/物理。
