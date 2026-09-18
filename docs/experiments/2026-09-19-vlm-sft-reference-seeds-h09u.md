@@ -50,3 +50,9 @@ PRESS 改为该目标实例专属 `_update` 观察器，非全局类补丁；每
 06:30 BJT 远端固定 `9b52faae182ed446453ffe5d8aca63529636712f`，`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09u_9b52faa`：60 SFT/0.531s；实际两源 load_reference、原TRAIN排除、四维绑定/全部文件SHA、现有两安全门flag+digest、真实官方 factory 原前缀逐值均通过，inactive template拒绝。未构造session。安装scene.idx/robots、robot.is_manipulation接口及toggle源码SHA只读核过。轻量原始计数见 `configs/vlm_sft/h09u_cpu_validation.json`。
 
 父审核且另行生成 exact-code 有效授权后，入口为该干净固定目录下：`env PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python scripts/vlm_sft/native_teacher_reference_replay.py --prepared /mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/h09u_reference_prepare_v2/task_1 --authorization <父另发有效授权绝对路径> --output <父登记的新运行绝对目录> --gpu 1`。task0需另一份 `[0,66,70]` 授权及1623控制预算。当前 template明确false、缺code/reviewer/gate路径，不能直接启动。剩余：父独立代码审查、真实接口/时钟先导、成功seed人工审核、native新预算实现/审查、数据门、新训练和配对效果，全部尚未完成。
+
+## H09U-P1：父终审后唯一 task1 参考回放（运行中）
+
+2026-09-19 06:36 BJT 父逐文件终审和独立60测试通过并合入，明确放行一次task1。06:38:45提交GPU1、固定9b52faa/239cb591；唯一输出 `vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`，相邻`.log`。有效授权 `authorization_h09u_reference_task1_v1.json` 双端SHA `44e2c2cd4131d5081d4cea464886cf652593aa2c0385fe8ecdd0306cb68454f1`，reviewer `Codex-parent-H09U-final-review`。164prefix+288完整技能+12稳定+1hold=465控制、reset后900s、80MiB、累计384MiB含旧失败、磁盘余80GiB、0模型训练、失败不retry。task0与native teacher未获授权。
+
+启动前实际CPU source/factory前缀、TRAIN排除、toggle依赖、两门flag/digest/完整SHA通过；source干净。GPU1无进程，父156556仅GPU3，队友GPU0不动。root实占85,836,638B、磁盘余87,032,434,688B，已预留完整80MiB后仍≥80GiB。Python **PID179879**（启动壳179878），远端实际进程起点06:38:59 BJT，已见OG初始化。当前仅提交初始化，绝不当成seed成功；终态、真实控制、全证据和父手审待。
