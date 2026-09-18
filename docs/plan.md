@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 07:02（北京时间）H17最终独立审/远端通过，双门放行（Codex/Astra）：** 34114892经Astra增量8 wall＋4 cleanup测试/实际AST审过，零控制race关闭；远端356/18.320s、digest b2d14390…c78df，五SHA/1392×23来源重验通过。首远端辅助命令误导入不存在load_replay只在CPU尾报错，已用实际load_saved_prefix复核，无reset；运行代码无此错误。按原3reset预算下一仅GPU3新NVMe两个工程门，各24/1536/1200s/340MiB，累计新1GiB，旧root保持7GiB；局部待真门完成/审计后。Astra P2已07:00:25提交GPU1（壳185097、Python待核），固定26e、新授权60d4204a…7d5ea，64远端/source/gates过、root92,429,849B/free86,993,231,872B；未称seed或训练完成。
+
 **2026-09-19 07:00（北京时间）H17零控制race最小修复完成（Codex）：** motion.begin移至通过每控制量子deadline检查之后；若0控制到时则记NOT_STARTED退出，不finish空链/后验BASE消费/manager.executed，原finish拒空链未放宽。真实runner AST＋真实SubstepMotion回归通过，晚到模型回复保留在取消证据但不返回动作。356 harness/6.227s、64 SFT/.228s过，下一新固定源远端CPU/增量独立审，0新reset；旧4b源只做过CPU，未热改。
 
 **2026-09-19 06:58（北京时间）H17独立审发现零控制deadline竞争（Codex/Astra）：** Astra对4b独立354/6.310s过，实际AST＋SubstepMotion复现“第二次开动前检查后到期、begin后0控制跳出、finish空segments异常”；安全hold仍可执行，但取消被误分类，阻塞物理。父下一≤300s最小修复：仅真正开始一个控制量子时开启motion链，零控制预算退出不finish/消费/记执行；保留严格空链拒绝，补精确race回归。并保存已返回但越deadline的模型原始回执而不执行；其余候选/载荷边界独立未见新阻塞。Astra同时按已放行P2新26e部署CPU，未更改父4b或旧9b运行源。
