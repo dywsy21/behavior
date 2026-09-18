@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 05:52（北京时间）H16实现块结束/最终独立审候选（Codex）：** 稳定`1c7ddee19806848fc7f2c66b691baaa6486b3041`已push，339/5.586s通过，源码冻结；父原1200s实现块结束，不自动加功能。下一≤300s仅robo新不可变1c部署/339 CPU/真实五SHA-1392前缀和无旧视觉bootstrap核验，0reset/模型/训练。Astra完成原H09T CPU块后按独立≤600s票审1c（包含14f主体和0e/1c最小校正），未过审不执行已预登记物理。旧0e源和入口拒绝证据保留。
+
 **2026-09-19 05:51（北京时间）H16远端CPU过/真实latch入口校正（Codex）：** 新不可变`semantic_reorientation_0e48f84`339/14.696s过，真实五SHA/1392前缀入口拒绝，0reset。实查H15原command latch为`.9999653101/.9999596477`（reset实测全开反算），不是精确+1；原source未改。诊断入口对齐既有空手预览的≥.999且≤1判定，仍同时要求实际指口≥49.5mm与所有持物/close/接触状态明确false，负载和闭爪不放宽；回归加入真实非整数latch。原旧0e源保留、不热改；最终小增量本地/远端和Astra独立审待，物理仍未放行。
 
 **2026-09-19 05:48（北京时间）H16有限物理预登记/H15证据验收（Codex）：** `h16_reorientation_block.json`只预登记：独立终审/双端CPU后先2新同源工程门，再原H15 d63的1392控制保存策略前缀＋最多12新决策/384控制/600s/47调用（前缀另600s）；不是原起点SR，未reset。保GPU3/7GiB累计/余80GiB、47.35MB标定及旧结果都计入，不扩训练；旧模型156556冻结5cf源148/215可复用客户端新提示，不热改。新warmstart严格来源五SHA写入source配置。父自审修正manifest旧字段仍把任意replay叫grasp-feedback的问题，真实purpose现在分开；最终commit待。H15全run540主RGB-D hash零差/全视频解码通过，result/steps/video/148-call ledger双端SHA一致；本人补看d89 head/right wrist与panel07/09。radio仍在桌上、没有抓取证据。Astra H09T继续，结束后独立审父码；现在只有部署/CPU获准，无新仿真。
