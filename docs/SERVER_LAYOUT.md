@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 00:49当前：** H11服务111660/GPU1/8920就绪、2/217调用；`static_plans_h11`已完成且保留两输出。GPU3双工程门`gate_radio_h11`112456、`gate_plates_h11`112535正在初始化，源均`semantic_structured_2000d78`不可热改，未启动策略。旧H10服务ledger已本地`h10_server_archive/`，完整原起点包`fullstart_failed_bundle/`，六初图hash与call13一致；r3双门完整视频解码与288主观测hash过。
+
 **2026-09-19 00:44当前：** H10服务89280已核身份停止/退出（13调用保留）；H11新服务111660/GPU1/8920加载中，`agentic_vlm_goal_20260918/server_h11`、源`git_worktrees/semantic_structured_2000d78`/digestade09283，schema0308a127和decoder817f944。模型依赖只加独立`semantic_structured_20260919/deps_817f944` overlay，原不兼容`deps`保留，未动共享环境；GPU3无新物理。原H10所有失败与r3门均保留，本地门完整副本288主RGB-D hash通过；2静态及H11物理待。
 
 **2026-09-19 00:28当前：** 108260因首规划JSON解析失败退出，`radio_h10_fullstart`仅初始图/失败记录，无已执行动作或完整视频；不要重复启动旧run。89280服务仍GPU1/8919、13/368调用，GPU3已释放；H11仅本地CPU实现/依赖检查，尚无新模型服务或物理。r3双门完整副本正传至本地`gates_r3_bundle/`，传完前不算核验。
