@@ -89,11 +89,33 @@ def refinement_bundle(bundle, receipt):
         text=str(c["id"])
         tx,ty=min(guide.width-30,x+5),max(0,y-20)
         draw.text((tx,ty),text,fill="white",stroke_width=2,stroke_fill="black",font=font)
-    images=[Image.fromarray(v) for v in bundle.current_raw.values()]+[crop,guide]
+    # A texture-only crop is otherwise ambiguous: its grey pixels may be part
+    # of a white object OR the table. Explicitly show WHERE this crop came from
+    # in a separate overview; keep the original evidence image untouched.
+    overview=original.copy();overview_draw=ImageDraw.Draw(overview)
+    overview_draw.rectangle(tuple(receipt["crop_box_pixels"]),outline="cyan",width=3)
+    overview_draw.text((max(0,x0),max(0,y0-18)),"CROP REGION (not object box)",fill="cyan",stroke_width=1,stroke_fill="black")
+    images=[Image.fromarray(v) for v in bundle.current_raw.values()]+[overview,crop,guide]
     labels=["CURRENT_"+v.upper()+"_RAW" for v in bundle.current_raw]+[
+        "CURRENT_"+view.upper()+"_CROP_LOCATION_GUIDE_NOT_OBJECT_BOX",
         "CURRENT_"+view.upper()+"_CROP_RAW",
         "CURRENT_"+view.upper()+"_SURFACE_CANDIDATES_NOT_OBJECT_DETECTIONS"]
     return VisualBundle(images,labels,bundle.geometry,bundle.current_raw)
+
+
+def surface_selection_context(goal, stage, receipt):
+    """The visual point selector does not solve conflicting 3D correspondences.
+
+    Scores, old target answers and bad fused poses must not contaminate this
+    independent visual check. All metric provenance remains in the saved receipt.
+    """
+    return {"current_goal":asdict(goal),"stage":stage,"view":receipt["view"],
+            "image_size_pixels":receipt["image_size_pixels"],"crop_box_pixels":receipt["crop_box_pixels"],
+            "crop_is_not_object_bounding_box":True,
+            "candidates":[{"id":row["id"],"pixel_xy":row["pixel_xy"]} for row in receipt["candidates"]],
+            "instruction":"Use the CURRENT full raw image and cyan crop-location rectangle to identify "
+                          "what the enlarged patch belongs to. Choose a numbered visible surface ON the "
+                          "requested object/affordance, or null. It is a location reference, not a grasp certificate."}
 
 
 def select_surface(evidence, choice, receipt):

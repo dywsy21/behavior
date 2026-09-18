@@ -68,9 +68,10 @@ class AffordanceTests(unittest.TestCase):
 
     def test_crop_raw_and_annotated_are_separate_and_resolution_checked(self):
         receipt=self.proposals();views=refinement_bundle(self.bundle,receipt)
-        self.assertEqual(len(views.images),5)
+        self.assertEqual(len(views.images),6)
         self.assertEqual(views.images[-2].size,(512,512))
         self.assertIn("NOT_OBJECT_DETECTIONS",views.labels[-1])
+        self.assertIn("NOT_OBJECT_BOX",views.labels[-3])
         self.assertEqual(int(np.asarray(views.images[-2]).sum()),0)
         self.assertGreater(int(np.asarray(views.images[-1]).sum()),0)
         self.assertEqual(sum(int(x.sum()) for x in self.raw.values()),0)

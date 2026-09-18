@@ -11,7 +11,7 @@ from .harness import parse_plan
 from .protocol import Action, Evidence, strict_json
 from .grounding import GroundedEvidence
 from .grounded_harness import parse_recovery
-from .affordance import SurfaceChoice, surface_candidates, refinement_bundle, select_surface
+from .affordance import SurfaceChoice, surface_candidates, refinement_bundle, select_surface, surface_selection_context
 from .grounding import localize_target
 from .bimanual import BimanualEvidence, HandContact, contact_evidence
 
@@ -172,7 +172,7 @@ class GroundedPolicy(VLMPolicy):
         return parse_recovery(result["text"]),{"result":result,"request":payload}
 
 
-SURFACE_SYSTEM = """Choose a visible contact surface for the CURRENT target, not a robot action. Full CURRENT raw views and a magnified CURRENT crop are supplied. The cyan numbered dots are depth-stable surface CANDIDATES, NOT object detections. Some dots may lie on background, a different object or an ungraspable part. Use the unmarked crop to check them. For pick prefer a clearly visible graspable part of the named object, for press its actual button, for open/close its handle, for navigate the named destination. Select one supplied candidate_id only if the numbered dot is visibly ON that target/affordance; otherwise choose null. Never choose a point merely because it is nearest or has small depth. Output exactly one of the listed JSON choices. No motion, holding, completion or cross-view correspondence is certified by this choice."""
+SURFACE_SYSTEM = """Choose a visible contact surface for the CURRENT target, not a robot action. Full CURRENT raw views, a separate overview marking the crop's location, and an enlarged raw/numbered crop are supplied. The cyan rectangle locates the crop: it is NOT an object detection. Cyan numbered dots are depth-stable surface CANDIDATES, NOT object detections. Some dots may lie on background or a different object. Use the full view to identify which object the patch belongs to; a component need not share the color in the object's name. Check the unmarked crop and then its numbered counterpart. For pick prefer a clearly visible surface near the intended graspable region; this surface is only a position reference, not a complete grasp pose. For press select its actual button, for open/close its handle, for navigate the named destination. Select one candidate_id only if its dot is visibly ON the requested object/affordance; otherwise choose null. Never choose merely because a point is nearest or has small depth. Output exactly one listed JSON choice. No motion, enclosure, holding, completion or cross-view correspondence is certified."""
 
 
 class RefinedGroundedPolicy(GroundedPolicy):
@@ -227,9 +227,7 @@ class RefinedGroundedPolicy(GroundedPolicy):
             return evidence,None,receipt,None
         views=refinement_bundle(bundle,proposals)
         allowed=(SurfaceChoice(),*(SurfaceChoice(c["id"]) for c in proposals["candidates"]))
-        text=json.dumps({"current_goal":asdict(harness.goal),"stage":harness.stage,
-                         "original_observation":asdict(evidence),"rejected_depth":target,
-                         "crop_and_candidates":proposals})
+        text=json.dumps(surface_selection_context(harness.goal,harness.stage,proposals))
         text+="\nChoose exactly one:\n"+"\n".join(c.text() for c in allowed)
         self.refinements+=1  # even a failed call consumes the bounded allowance
         result,payload=self._call("ground",SURFACE_SYSTEM,text,views,allowed)
