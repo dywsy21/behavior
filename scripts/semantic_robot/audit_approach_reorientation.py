@@ -116,7 +116,7 @@ def run(args):
     print(json.dumps({"wall_s": result["wall_s"], "trial_count": calls, "rows": [
         {"decision": row["decision"], "baseline": [{"action": r["action"], "ok": r["accepted"], "reason": r["reason"],
          "closest_joint": r["closest_joint_index"], "margin": r["endpoint_joint_margin_min"], "negative_collision_checks": r["collision_queries"]["negative"]} for r in row["baseline"]],
-         "rotations_unlocking_coarse": [{"action": r["rotation"]["action"], "following": [t["action"]["move"] for t in r["following_translations"] if t["accepted"]}
+         "rotations_unlocking_coarse": [{"action": r["rotation"]["action"], "following": [t["action"]["move"] for t in r["following_translations"] if t["accepted"]]}
          for r in row["rotations"] if any(t["accepted"] for t in r["following_translations"])]} for row in result["rows"]]}, indent=2))
 
 
