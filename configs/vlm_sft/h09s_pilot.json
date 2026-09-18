@@ -1,0 +1,27 @@
+{
+  "schema": "h09s-native-manual-teacher-v1",
+  "status": "CPU_PREPARATION_ONLY_NOT_AUTHORIZATION",
+  "counts": "configs/vlm_sft/h09r_train_feasibility_counts.json",
+  "source_selection": "sha256(h09s:teacher:1:task:instance), minimum within H09R additional_train",
+  "source_hz": 30,
+  "pilots": [
+    {"task": 0, "episode": 66, "instance": 70, "frame": 1170, "verb": "PRESS"},
+    {"task": 1, "episode": 310, "instance": 192, "frame": 164, "verb": "GRASP"},
+    {"task": 3, "episode": 629, "instance": 30, "frame": 3473, "verb": "PLACE_IN"}
+  ],
+  "proposed_acquisition_budget": {
+    "resets": 3,
+    "prefix_controls_total": 4807,
+    "restore_or_recovery_controls": 0,
+    "max_candidates_per_instance": 3,
+    "native_controls_per_instance_including_settle_and_stop": 200,
+    "settle_controls_each": 12,
+    "max_seconds_after_reset_per_instance": 900,
+    "approval_wait_seconds_each": 120,
+    "max_artifact_MiB_total": 100,
+    "disk_free_GiB_min": 80,
+    "model_calls": 0,
+    "training_updates": 0,
+    "gpu": "ONE_FREE_GPU_EXPLICITLY_COORDINATED_LATER"
+  }
+}

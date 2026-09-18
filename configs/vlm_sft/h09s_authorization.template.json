@@ -1,0 +1,15 @@
+{
+  "schema": "h09s-native-manual-teacher-v1",
+  "authorize_collection": false,
+  "collector_commit": "FILL_FINAL_REVIEWED_COLLECTOR_COMMIT",
+  "executor_digest": "239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b",
+  "h14_body_and_finger_safety_reviewed": false,
+  "reviewer": "",
+  "max_resets": 3,
+  "max_candidates_per_instance": 3,
+  "preparation_manifest_sha256": "415d5e96eb85290c9433c61052712d32e2644f3d4d60460930b35635ad876873",
+  "engineering_gate_paths": [
+    "FILL_NEW_PASSED_RADIO_GATE_RESULT_ABSOLUTE_PATH",
+    "FILL_NEW_PASSED_PLATES_GATE_RESULT_ABSOLUTE_PATH"
+  ]
+}
