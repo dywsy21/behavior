@@ -14,6 +14,8 @@
 
 ### 2026-09-18 20:12（北京时间）：H-09独立VLM SFT首块登记
 
+**20:27 H-09独立review修复/新严格数据：** 主代理指出中途轨迹/后半反转、整instance留出、列表ID和stride风险；Astra/max `0cf316a`全窗口检查＋10CPU反例通过，新data_v2为1779/262/293，原分组SHA不变，旧v1不覆盖/不训练。各任务准入及拒绝计数见新index_manifest；三视图只复用核SHA旧帧或提新帧。`1a76197`补原生loss/EOS/回载logits实际GPU门，尚未运行/0训练/新物理；人工审核待新面板，幅度迁移/局部技能边界仍明确保留。
+
 **20:21 H-09数据机械门通过/人工面板生成：** 48episode×3时刻×5机器人link独立重建，最大3.374µm/1.247µrad，61D EEF确为机体系；正式标签SHA666f8fc0…一致。8004张三视图256²/2668样本抽帧完成，PTS半帧门全过，596MiB、盘余93GiB。Astra/max已实现仅LM LoRA及训练/推理共用prefix，待人工审核＋真实两更新mask/梯度/adapter恢复门；0GPU训练/新物理。证据`data_v1/frame_audit.json`、`image_manifest.json`，主代理独立review继续。
 
 **20:16 H-09数据索引完成、坐标/图像审核运行中：** Astra/max的a201e09双端7CPU通过；48来源episode得到训练2006/验证298/测试364（CPU23.20s），分组SHA3d6cb946…，`vlm_sft_showharness_20260918/data_v1`。混合动作多数被拒，当前标签偏底盘/躯干，不能冒充完整操作覆盖；16帧方向投影与部署固定步长幅度差单列。90ee7ae独立robot-only FK/30Hz审计和a201e09三视图抽帧各≤1200s运行，尚未人工放行/训练，0新物理；主代理正在只读审查codec。
