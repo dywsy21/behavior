@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-18 19:38当前：** `semantic_reference_c9d3ea9`固定c9d3ea9/2600725f正在供GPU3双门`gate_radio_b17`36340、`gate_plates_b17`36341使用，禁止热pull/修改。B17静态已完成、35667已请求TERM，`b17_static_complete.tar.gz`SHA8ee449e9…；策略/新模型尚未启动。所有目录均位于H08根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_effect_20260918`。
+
 **2026-09-18 19:32当前：** B16静态34223已异常退出（2调用、0控制），held-reference unknown失败；34106核对专属命令后TERM，`b16_static_failed.tar.gz`SHA8129ffce…保留失败证据。B17新语义路由仅本地开发，无新物理或模型进程；旧f3f706d证据保留，不热修改。
 
 **2026-09-18 19:21当前：** 唯一新静态服务`server_b16_static`34106/GPU1/8908/≤2调用，脚本`static_reference_b16`34223，固定源`git_worktrees/semantic_held_inspection_f3f706d`/digest8b001c6b/223CPU。这不是物理回合；两静态结果待验，源不热改。旧B14/15所有服务已退出；完整B14与部分B15都已本地SHA通过，B14另192hash/视频/本人5页核验。
