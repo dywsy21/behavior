@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 03:28当前：** H13完整副本本地`artifacts/agentic-vlm-goal-20260918/h13_fullstart_bundle/radio_h13_fullstart`已传完805MiB、408主RGB-D hash/视频SHA与解码通过；人工面板不等于全帧。H14-contact新脚本仅本地CPU，拟远端`agentic_vlm_goal_20260918/radio_h14_contact_replay`尚不存在/未启动，待独立review与新固定Git源；原132309模型保持空闲104调用，不动源90a7c20。H09R计数/方案已Git187be9b，无新数据采集/训练。
+
 **2026-09-19 03:03当前：** `radio_h13_fullstart`134323已退出，68决策/1483控制/104模型，官方false/NO_MOTION_PROGRESS，result/video保留。`server_h13`132309/GPU1/8922仍104/215空闲、源`semantic_joint_90a7c20`不热改；GPU3当前无本轮模拟器。全本地`artifacts/agentic-vlm-goal-20260918/h13_fullstart_bundle`下载中，不能当已完整校验；两H13门完整本地/hash/视频解码已过。父H14仅CPU保存几何诊断，Astra H09R仅训练来源计数，无新训练或物理提交。
 
 **2026-09-19 02:32当前：** H13两门130412/130413均通过退出、Astra全段链验收通过；唯一`agentic_vlm_goal_20260918/radio_h13_fullstart`134323/GPU3已启动初始化。同90a7c20/digest627652f7、0前缀、新规划、96/3072/2400s；模型132309/GPU1/8922起始0/215。根3815699383字节、累计上限7GiB、余≥80GiB；门完整本地`h13_gates_bundle`仍下载中。不可热改活跃源或重复提交。
