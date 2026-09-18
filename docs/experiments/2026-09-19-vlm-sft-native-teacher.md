@@ -56,6 +56,10 @@ task0已经退出，并非仍运行或成功采集。标定JSON **47,345,882B**�
 
 另获≤300s、0reset/模型/控制/训练部署票：显式Git fetch并新建干净不可变`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_native_68dacca`，robo36 SFT/0.443s通过，未热改1509。真实原清单SHA415d5e96…及全部4807前缀通过官方factory逐值绑定，CPU0.379s、未导入OG；旧1509授权被新源拒绝。证据`preflight_68dacca/source_preflight.json` SHA `cba2ef7d3925dcbec3845d94ec8f46e0122cfcb8c4d61224d9d3f1f3994f904f`。executor digest仍`239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b`；GPU1只有约214MiB上下文占用、无本票采集进程，盘余88,422,387,712B。**task1/3未启动**，等待新授权SHA及父逐例人工放行；task0不重置。后续文档commit不替换已审runtime身份。
 
+### 04:59 task1 原剩余单次先导启动
+
+父已读实际writer/loader与部署回执、独立审查通过并显式放行仅task1。核新`authorization_remaining_two_68dacca.json` SHA `599298a34957c3f971ae2cbae2597baa56b71f71a7c22803ca268c49f0178795`与原清单后，04:59:09.866 BJT提交唯一PID163349/GPU1，run=`pilot_v2/task_1`，日志/launch同级。源固定68dacca，TRAIN192/e310/f164、164专家前缀、≤200新控制（含停顿/最终hold）、reset后900s、≤3候选、每次人工等待120s，0模型训练；每run30MiB/global100MiB计原失败不变。启动时盘余88,355,119,104B、pilot累计54,623,709B。当前仅初始化，非采集通过；父承担当前及前后人工教师，所有记录隔离。task3未放行、task0不重置，遇基础设施故障暂停remaining。
+
 实现的是 **人工当前状态教师的可执行采集流程**，不是把混合专家动作重新解释成纯动作：`native_teacher_prepare.py` 做严格 TRAIN 来源与前缀转换；`native_teacher_contract.py` 编译只供审阅的方向候选、绑定人工审批与隔离记录；`native_teacher_collect.py` 可在停顿后导出三 RGB，零 physics 等待审批，执行已有 `token_to_action`/`SafeServo`，导出实际 23D 轨迹、立即及再停顿后的图像，默认全部 quarantine。没有新的 VLM、自举标签或自动正确性证书。
 
 初版 `973ba76` 已由 Git 同步；远端 CPU 直接执行该提交的 Git blobs，复用 `semantic_joint_90a7c20` 中未变的 common/live/prepare 依赖，未创建或热改运行源码。真实准备 **3.353s，799,441 字节**，含三个前缀、9 段三视图原专家 17 帧视频和完整定位/来源回执；0 模型/控制/reset。目录：`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1`。后续修订增加稳定停顿后图像、近静止 EEF 门及保守未知负载约束，不改变已准备的数据。29 项 SFT CPU 测试通过（原21＋新8），新采集器尚未在 simulator 中运行，不能称端到端采集已通过。
