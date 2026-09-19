@@ -13,13 +13,19 @@ from common import CAMERAS, SYSTEM, TOKENS, VERSION
 
 def messages(row, images):
     if set(images)!=set(CAMERAS):raise ValueError("Three onboard views required")
+    system=SYSTEM
+    if "protocol" in row:
+        from native_actor_protocol import VERSION as POSE_VERSION, SYSTEM as POSE_SYSTEM, prompt
+        if row["protocol"]!=POSE_VERSION or row["text"]!=prompt(row["actor"]):
+            raise ValueError("Unknown/mismatched versioned actor prefix")
+        system=POSE_SYSTEM
     content=[]
     for view in CAMERAS:
         img=images[view].convert("RGB")
         if img.size!=(256,256):img=img.resize((256,256),Image.Resampling.LANCZOS)
         content.extend([{"type":"text","text":view.upper()}, {"type":"image","image":img}])
     content.append({"type":"text","text":row["text"]})
-    return [{"role":"system","content":SYSTEM},{"role":"user","content":content}]
+    return [{"role":"system","content":system},{"role":"user","content":content}]
 
 
 def load_images(root,row):
