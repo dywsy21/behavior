@@ -1,0 +1,39 @@
+# H09V：真实seed后的近抓取教师支持（CPU，尚未物理）
+
+Astra独占SFT；父独占harness/总计划。2026-09-19 07:45:46–08:05:46 BJT，≤1200s CPU、0reset/控制/模型/训练。期间按父要求分离只读审H19（368/5.876s＋24预算和3未知载荷负例），没有合入或热改父harness。部署执行器仍239cb591，原aff P3源码不变。
+
+## 已有实际成果与不可外推边界
+
+P3原专家GRASP完整465控制真实成功；父35da7cd独立看39图并复核完整控制/物理账本，批准**object-local pose seed**，不是native BC、phase-start或完整任务SR。原批准文件按Git完整原字节纳入，SHA `06fbd9aa…436a`；新本地 `validate_seed_release` 已以真实70文件成功执行。原run/seed字节均未改。
+
+父发现跨CPU/BLAS复算同一位姿尾数差8.8818e-16。仅“完整ledger重新计算矩阵 vs 固定seed矩阵”采用atol1e-12/rtol0；SE3/有限检查、outcome完全相等、seed文件SHA、spec↔seed精确相等、review digest仍严格。1e-15复算差过、1e-8拒，spec改1e-15或seed只加换行仍拒；不是物理阈值放宽。
+
+## 最小执行支持
+
+`PoseTeacher(...allow_empty_rotation=True)`仅新near schema启用。原41符号及base坐标解释不改：fine平移始终carry=True/1cm；fine旋转仅在该手真实object-agnostic `is_grasping(arm)`为FALSE、target hold为FALSE、当前无任何外部手指接触、command OPEN在[.999,1]、实际开口与完整开口标定相差≤0.5mm且≥49.5mm、从未发CLOSE时可用3°。不能只用“没抓住指定目标”推断空手。安装robot.py1957–2001明确candidate=None返回any-object状态，UNKNOWN保留；这些新增字段仅在PRIVATE teacher frame，actor白名单不变。
+
+选择器和实际 `native_preflight`两处检查资格；fresh RGB-D/current self geometry与原SafeServo geometryTrue保持，另一手/躯干关节和grip不随active手旋转而改变。**现LocalDepthGuard非BASE不是完整环境碰撞认证**；新旋转仅经已有门、机器人IK/全手-躯干自碰撞/路径/执行反馈检查，不伪称持物或未知空间完整避障。关闭后永远不再借empty模式旋转；其他loaded/unknown情形不放宽。
+
+新near专属授权限定1reset、396专家prefix、≤12native/420新控制含初始12停稳和末hold、reset后900s、run100MiB、原累计384MiB、保80GiB、0模型/训练。旧manual授权仍3例/3候选/200/30MiB/100MiB，默认旋转仍禁用。新授权模板明确false，缺commit/准备SHA等，不能启动。
+
+在动作前保留完整after+settle+trace预算；容量不足不执行下一条，不要求用满12条。按既有raw形状一个macro预留约20MiB，实际三组完整capture通常约10MiB；100MiB可能在12条前触发保守容量拒绝，不能把候选数上限当保证完成数。每条先核完整ticks+12settle+最终hold余量。near新增issued账本，env.step抛异常前已经发出的CLOSE仍锁存供finally保持，issued/实际completed区分并计控制上限；新增真实step AST负例保首异常、无假completion、不OPEN。末hold仍独立尝试、无retry。只有完整local oracle与末hold都成功、整条轨迹后审后才可能释放BC；所有当下record仍隔离。
+
+## 来源绑定与真实CPU准备
+
+`native_teacher_near_grasp.py`不读/复制大数据集：从已固定d4311e88原完整TRAIN参考的8文件核SHA与实例排除，重建 `prefix164 + segment[0:232]` 得396×23，逐frame选择original_demo/low、同GRASP/原164→452边界；高层重复不覆盖，选中分支冲突拒绝。当前reference frame为396，但原skill_start164保留，保证批准seed身份不被假改成新技能起点；prefix末双OPEN必须实际为[.999,1]。来源图/未来动作仅教师参考，不投影给actor。
+
+本地真实准备 `artifacts/h09v-near-grasp-prepare-local-v1` 78,438B；manifest `4b3cd89a4093bb4eb0ec8b56a94517c734b6e20293d3f2a50538c6b65896819d`，prefix SHA `f92baf548a56b651e13e99f3519a6a5b1df98177fefde4c74dc1012a5f4a1447`、shape396×23、末grip[1,1]；verify重新从原source推导逐值相等。window完整字段（task/mode/instance/seed/max_steps817/前缀路径与SHA）也严格重建比较。实际源训练排除保持，未读静态test来优化。远端准备必须在新Git不可变源用远端绝对output重新生成，manifest SHA会不同，不拿本地路径hash冒充远端。
+
+CPU入口：`native_teacher_near_grasp.py --reference <原h09u_reference_prepare_v2/task_1> --output <全新h09v_prepare_v1> --start-control 396 --reference-manifest-sha d4311e887582e3259a835f83664e02126ea9abc8df69ff45d6a6046ae95317f2 --counts <固定source/configs/vlm_sft/h09r_train_feasibility_counts.json>`。随后spec用父批准seed的精确goal_pose和pose_evidence SHA、原GRASP语义与reviewer；active release必须另绑定spec SHA、远端prepare SHA、当前commit、原两安全门与预算，再走原 `native_teacher_collect.py --teacher-config ...`。本票未生成active授权或调用collector。
+
+## 仍必须解决的离散几何门
+
+P3控制396的连续right-only IK可行不等于41符号路径可行。其初始goal位差[3.650,15.082,2.004]mm，理想1cm格点的最近误差仍**约6.45mm > 原4mm接近门**；3°旋转不能改变EEF位置。实际12tick停稳后的状态尚未获取，不能假设误差恰好减小。现compiler只给严格降低cost的动作；网格局部最小返回空列表→停止，另有同pose最多4次/12primitive上限，绝不来回无界刷、降低4mm或把close/距离当成功。
+
+因此此实现可审，但**不建议直接用它赌396停稳后恰能进4mm**。最小后继应单独审“通用候选抓取区域内允许有限一次close尝试”的proposal条件：几何条件只决定尝试，不是正标签；实际指定目标接触+独立提起+相对稳定+末hold仍是唯一局部GRASP终判，失败整轨迹零正BC。需要真实抓取区域/开口/目标几何与尝试预算依据，不按这一实例调4mm数值。本票没有实现/授权该更宽proposal。
+
+原240条/6意图与跨实例/近静止/phase-start覆盖门不降低；一个paid396近终点先导只验证局部teacher接口。后继仍须可迁移真实采集→新2B≤400steps→base/FT有限同预算闭环，不重启旧H09负配方，也不把此CPU支持当训练效果。
+
+父另明确：上述旧门继续约束“广覆盖”结论，不作为所有窄问题永远不能训练的理由。若新near先导物理通过，可另行**前瞻登记GRASP-only停顿纠正实验**，独立实例组划分、有限新SFT及同预算base/adapter物理对照，只对该局部范围给结论，不冒称六类覆盖/原起点SR。当前尚无native完整GRASP轨迹，不能以P3 expert seed或两条手工缩距标签填数；后继具体样本数和预算须在真实先导产率已知后登记，本票未放训练。
+
+最终CPU：75 SFT/0.290s、冻结分支331 harness/5.186s通过；新7+1组涵盖object-agnostic未知/数字0/接触/开口/命令latch、默认旋转禁用、base系3°/平移1cm、前缀真实重建与实例排除/close latch、near预算及false几何flag、真实step异常已发CLOSE保载、不可达网格停止。另真实P3父review helper与396准备完整核验通过，executor digest仍239cb591。无新reset/模型/物理/训练；准备78,438B，远端尚无新prepared或运行源。

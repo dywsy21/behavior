@@ -1,0 +1,38 @@
+{
+  "verb": "GRASP",
+  "hand": "right",
+  "support_hand": null,
+  "target": "trash_can_116",
+  "destination": "",
+  "payloads": [],
+  "goal_frame": "target",
+  "schema": "h09t-private-teacher-v1",
+  "goal_pose_local": [
+    [
+      -0.3178637755943514,
+      -0.947940809267304,
+      -0.019257265915854065,
+      0.10829824538333321
+    ],
+    [
+      -0.9414873140048948,
+      0.31316839278447456,
+      0.12460816718272683,
+      -0.03223367669877586
+    ],
+    [
+      -0.11209039982421834,
+      0.057738894052789105,
+      -0.9920191340799879,
+      0.09573812256432257
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "pose_reviewer": "Codex-parent-H09U-P3-independent-visual-physics-review",
+  "pose_evidence_sha256": "bc8865c719e84ab73b43bb2f0ba7cbaa975ce0bf1612ab1053f6073804cf4b7d"
+}

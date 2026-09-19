@@ -96,3 +96,25 @@ PRESS 改为该目标实例专属 `_update` 观察器，非全局类补丁；每
 真实安全/物理判定独立：每个普通控制前及每条物理measurement检查有限actual q/grip、校准native关节硬上下界（仅1e-5rad数值容差，绝不clip）；实际FK、未知接触、非法新接触、目标身份/held/提起/相对稳定、PRESS因果、12tail、末hold、时间/控制/容量门均不放宽。参考原动作仍不是SafeServo逐步预检的BC，也不是完整环境碰撞认证；原prefix接触未作全程认证的限制不变。新的seed只有真实整段局部oracle成功并由父看完整实际图/ledger后才能使用，源姿态差过大仍须父判断是否已失去目标语义或局部pose可迁移性。失败P1/P2不追认为成功。
 
 67 SFT/.239s、独立分支冻结331 harness/5.197s通过；实际P2已保存control164/165的q通过真实标定硬限但保留18.683/43.879mrad诊断。新增实际runner `measure` AST核：43.879mrad只记诊断、仍IN_PROGRESS，错source时钟/新非法接触继续拒绝；NaN、越硬限、畸形source负例及actor白名单泄漏拒绝通过；原finally首错/hold回归保留。新代码尚未部署或新增reset，需父独立审和新的精确授权后才进行一次参考技能先导，不扩到native采集/训练。
+
+## H09U-P3：验证分离后唯一参考回放（局部成功，seed待独立审核）
+
+2026-09-19 07:25 BJT 父独立审 `affc1e3a3e5f0841d427d422e01d68db323ea9ad` 通过（67/.249s）并合入 `fed20ef`，明确另放行一次 task1/e310/i192/seed0。新不可变源码 `.../git_worktrees/vlm_sft_h09u_affc1e3`，executor仍239cb591、prepared仍d4311e88；新授权 `authorization_h09u_reference_task1_v3.json` 双端SHA **00a798b1c148e7d6f3359f408d77fc44c4cf2059cf5ce2a15282de282594b4a1**，reviewer `Codex-parent-H09U-clock-final-review`。
+
+启动前远端67/.556s、完整来源/排除/8文件SHA、factory164×23前缀、toggle依赖、同digest两门flag/hash全部通过；source clean。原root累计99,030,094B、盘余86,958,698,496B，预留80MiB后仍大于80GiB。GPU1无其他实质任务，但父GPU3模拟器在各卡建立的200MiB上下文仍保留，不擅停。07:27:19 BJT 唯一Python **PID196049**（launcher196046）已启动，输出 `h09u_reference_task1_v3` 和相邻log；07:31已见真实初始化及prefix执行，尚无终态。
+
+本次仍仅1reset、164prefix+288expert+12tail+1hold=465控制、reset后900s、run80MiB、原累计384MiB含所有失败、0模型/训练；不重试、不启动task0/native collector。原P1/P2保留，不因验证分离追认为成功。父H18新FK只读审查与本次运行分离，绝不热改aff源。实际完整账本、全部图像及真实成功seed仍待，本条不把启动或跨过旧source-q门当局部技能成功。
+
+07:34:03.796 BJT 远端真实 `result.json` 生成，**REFERENCE_LOCAL_SUCCEEDED**；Python/launcher随后退出。本例完整465控制=164prefix+288expert+12稳定+1独立末hold，0模型/训练。前452条23D来源动作逐值完全相同；464 ordinary issued/completed与private逐步动作一致，12尾控制保持段末q及最后grip，final hold465保持尾末真实q且没有误OPEN；302条private连续164..465、固定source索引未偏移或搜索。首CLOSE397，首严格局部成功433，至465连续33条SUCCEEDED；目标实际抬升216.067mm、手从close抬升198.447mm，末12条相对手位姿最大变化12.42µm/0.00313°。这些是原专家参考技能的真实局部物理结果，**不是官方完整任务SR、native BC或新VLM效果**。
+
+所有302私有测量无新增forbidden contact、q在真实硬界内，最小边界余159.5µrad；原source289帧q也都在界内，原452动作target有frame446/q16恰在上界但未越界。实际固定source误差最大74.34mrad/开口9.11mm仍保留为诊断，不隐藏动力学偏差。参考回放未使用SafeServo改写专家动作，也不证明原prefix所有场景接触安全。seed始终 `QUARANTINED_pose_seed.json`、`training_eligible=false`，必须父独立看源/当前/过程/终态与账本后另写批准receipt。
+
+完整 **70文件20,782,245B** 和相邻log双端SHA全部相同；13组capture/59个绑定文件、四full capture控制164/452/464/465的q/grip/原depth数组hash全部通过，完整压缩标定roundtrip仍原canonical `b7511abe…65fd5`。本地 `artifacts/h09u-reference-task1-v3/run`；本人亲看全部12张full RAW与27张过程图（另有四页只加相机/时刻文字的缩略拼图 `full_captures.jpg`、`process_1/2/3.jpg`）。可见右手接近地面桶沿、闭合提起、末尾保持，不能从图片单独替代接触/稳定判据。原root累计119,815,902B、盘余86,923,771,904B，仍在384MiB/80GiB门内；GPU1无本次进程。全部关键SHA/计数见 `configs/vlm_sft/h09u_p3_reference_result.json`。
+
+### native起点可行性（只读，不新增控制）
+
+使用成功object-local hand pose、**同control实际目标pose**构造当前goal，world-base由实际手pose与机器人FK交叉恢复（两手推导最大元素差5.39e-7），这些只进离线teacher诊断。control164原GRASP阶段起点需要base系[+4.21,+11.34,−36.73]cm，L1=52.28cm、姿态10.59°；按1cm轴向网格名义54步，现6条/200控制和此前拟议24条都不足，carryTrue禁转也不能消除姿态差。当前DOWN/LEFT/FORWARD三个原native单步通过fresh depth+实际selfboxes+geometryTrue预检，绝不代表整个路径能走完。
+
+额外固定右7关节/左臂和躯干不动、原SafeServo bounded IK/hand-body guard最多64迭代：control164/344/374的最终位置残差分别289.6/24.2/13.2mm；control396仍双手全开、held/contact均false，到目标L1仅20.74mm、姿态4.845°，5迭代到0.418mm/0.120°。这不是离散路径、环境避障或停稳后的可达性证明；1cm网格与4mm近位阈值也可能造成终点无法精确到达，不能据IK成功直接采正标签。
+
+父已在07:45左右另放行≤1200s/0reset/模型/训练的最小CPU支持票：对确认全开无载手才使用原41中3°旋转，平移仍1cm；明确396条**付费专家前缀**，它不算原GRASP phase-start覆盖。未来候选12 native/420新控制/900s/100MiB仍仅建议，必须稳定代码独立审和新物理登记；原240覆盖门、新训练及成对实际效果均未完成。此处以成功seed推进后继，而不拿一个近终点种子冒充足够训练数据。

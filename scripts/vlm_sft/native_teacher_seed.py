@@ -42,7 +42,11 @@ def validate_seed_release(seed_path, review_path, spec, reference, preparation_s
             rows[-1]["frame"]["tick"]!=identity["segment_end"]+13):
         raise ValueError("Reference full segment/12 stability/final hold clock mismatch")
     measured=extract_seed(spec,rows)
-    if measured["outcome"]!=seed.get("outcome") or not np.array_equal(measured["goal_pose_local"],seed["goal_pose_local"]):
+    # Recomputing inverse/matmul on another CPU/BLAS changes final ulps.
+    # Only this DERIVED matrix comparison tolerates numerical roundoff. Seed
+    # bytes, seed/spec equality and independent review digests remain exact.
+    if measured["outcome"]!=seed.get("outcome") or not np.allclose(
+            rigid(measured["goal_pose_local"]),rigid(seed["goal_pose_local"]),atol=1e-12,rtol=0):
         raise ValueError("Seed not reproduced by its actual successful trajectory")
     result=json.loads((seed_path.parent/"result.json").read_text())
     if (result.get("status")!="REFERENCE_LOCAL_SUCCEEDED" or result.get("identity")!=identity or

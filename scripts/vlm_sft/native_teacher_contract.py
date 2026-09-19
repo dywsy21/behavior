@@ -22,6 +22,8 @@ def digest(value):
 
 def verify_prepared_source(prepared, release):
     """Bind all reset inputs BEFORE creating an evaluator; never rewrite them."""
+    from native_teacher_near_grasp import SCHEMA as NEAR_SCHEMA,verify_prepared
+    if release.get("schema")==NEAR_SCHEMA:return verify_prepared(prepared,release)
     prepared = Path(prepared).resolve()
     manifest_path = prepared.parent / "preparation.json"
     if sha(manifest_path) != release.get("preparation_manifest_sha256"):
