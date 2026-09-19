@@ -59,3 +59,9 @@ P3控制396的连续right-only IK可行不等于41符号路径可行。其初始
 spec SHA `6c2cccb811b51db3f388f853b02aa6ed1757415a8494511f630a41a559765217`；实际P3seed `bc8865c719e84ab73b43bb2f0ba7cbaa975ce0bf1612ab1053f6073804cf4b7d`、父review `06fbd9aaf34ecf60613872084835cbe627291a603858522211ef0fa0b3a0436a`，完整physics/图像/evidence/recomputed-pose release helper通过。两H15r1门flagTrue/239digest和SHA分别2460d102…35e19、b7117a5e…7f75保持。
 
 只生成 `authorization_h09v_near_v1.INACTIVE.json`，SHA `1dbaf6b9b0da2b5b64dfacd445f2f6f6c0b87b70b35c50782d26103ed33ef38d`，`authorize_collection:false`，实际require_release明确拒绝；reviewer仍未填，不能执行。原始CPU回执 `cpu_preflight_h09v_123837d.json` SHA `5b9de636f9bfb332d8dc435b3ef0bf1afc8916df13dd84eca5d00afd88995873`，本地完整小副本在 `artifacts/h09v-near-remote-preflight-123837d/`。08:20:00 BJT核原root文件累计119,896,803B（另CPU回执少量字节随后落盘），sdc1余86,878,801,920B、NVMe余2,936,491,474,944B；完整100MiB预留后仍保≥80GiB，旧失败全部计入原384MiB。GPU1在部署前0MiB/无进程，父GPU3服务与GPU0队友不动。尚待父独立增量审查/另一次明确物理放行；0新reset/控制/模型/训练。
+
+## 08:27:09 BJT：唯一H09V原生近抓取先导提交（运行中）
+
+父08:25已独立读固定123增量/实际collector，81/.286s＋600额外几何边界过（13 CLOSE提案逐核）并明确放行一次。准确runtime仍123837d/239，新run原root下 `h09v_native_task1_v1`，Python PID213880/GPU1；启动命令与GPU/时间落 `launch_h09v_native_task1_v1.json`，日志相邻 `.log`。只用396精确专家前缀＋≤12原生primitive/420新控制含初12停稳和末hold、reset后900s、100MiB run/原root含失败384MiB/余80GiB、0模型/训练、无自动retry；不是phase-start、官方SR或VLM效果。
+
+新active `authorization_h09v_native_task1_v1.json` SHA `08162a7213da6dc66e6b905b509c772fdc3c69b164eb2ab8aee042d59b5430d1`，绑定123源/b146准备/6c2spec/06f父seed-review与原两安全门；authorizer `Codex-parent-H09V-123837d-independent-final-review`。原inactive与所有旧源/失败不改。启动前完整require_release/factory/来源/种子/预算再次通过；free86,878,404,608B、原root119,899,132B，GPU1仅父模拟器跨卡209MiB上下文、80,943MiB空，不停止其他进程。此处只记录真实提交，完成与实际抓取证据仍待；所有新record继续隔离，父亲自看图/物理账本后才可能放BC。
