@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 08:09当前：** H19两门203694/203695通过/退出，完整链/主SHA/视频已父核，新GPU3服务208180于08:09:01 BJT提交，端口8924、`h19_combined_fullstart/server_h19`及log、固定`semantic_combined_0d34ec7`源；原起点agent未启。完整门副本正传本地h19_gates_bundle；原server_h15/156556结束，不再调用。Astra仍≤600s格点教师CPU，GPU1无新物理/训练。
+
 **2026-09-19 07:56当前：** H19新NVMe根已创建、`gate_radio_h19`203694与`gate_plates_h19`203695/GPU3于07:55:56 BJT提交，固定不可变`semantic_combined_0d34ec7`/621bd7c5，同名log与`launch_gates.json`，累计≤4GiB。两个门尚在初始化，不重启/热改。旧156556已确认退出；新8924模型和原起点策略均未启动。GPU1仍留Astra，不触GPU0队友。
 
 **2026-09-19 07:54当前：** 新Git不可变`git_worktrees/semantic_combined_0d34ec7`仅CPU368通过/digest621bd7c5…c916；H19物理根仍未启动。旧156556空闲190账本已完整本地`h15_server_complete_archive/server_h15`双端SHA核后仅发TERM，需核退出；原server_h15所有结果保留，不再新调用。AstraGPU1仅CPU准备，无新模拟器或训练。
