@@ -96,6 +96,8 @@ def main():
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid","rgbd_joint"),default="pnp")
     p.add_argument("--odometry-substep-controls",type=int,choices=(0,6),default=0,
                    help="Opt-in fixed action-internal RGB-D sampling; zero preserves legacy behavior")
+    p.add_argument("--search-motion-recovery",action="store_true",
+                   help="Opt-in at most two open-hand search reference resets after measured HOLD; never old-pose recovery")
     p.add_argument("--approach-progress",action="store_true",help="Veto repeated near-field base advances without observed contact progress")
     p.add_argument("--held-object-inspection",action="store_true",help="Explicit semantic reference and bounded held-object relative inspection")
     p.add_argument("--persistent-grasp-tracks",action="store_true",help="Identity-bound persistent features and stable-depth corner selection; original grasp evidence thresholds")
@@ -141,6 +143,10 @@ def main():
         raise ValueError("Measured approach progress and explicit estimator require visual odometry")
     if args.odometry_substep_controls and not args.visual_odometry:
         raise ValueError("Action-internal sampling requires visual odometry")
+    if args.search_motion_recovery and not (grounded and args.robot_geometry_guards and
+            args.held_object_inspection and args.odometry_estimator=="rgbd_joint" and
+            args.odometry_substep_controls==6 and args.prefix==0 and not args.replay_prefix_spec):
+        raise ValueError("Search reanchor requires original-start guarded joint RGB-D and semantic reference")
     action_control_limit=args.max_controls-(1 if args.odometry_substep_controls else 0)
     if args.mode == "agent":
         if not args.expected_revision or len(args.gate_result) != 2:
@@ -157,6 +163,7 @@ def main():
                 g.get("approach_body_options",False)==args.approach_body_options and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
                 g.get("odometry_substep_controls",0)==args.odometry_substep_controls and
+                g.get("search_motion_recovery",False)==args.search_motion_recovery and
                 g.get("approach_progress",False)==args.approach_progress and
                 g.get("persistent_grasp_tracks",False)==args.persistent_grasp_tracks and
                 g.get("spatial_grasp_features",False)==args.spatial_grasp_features and
@@ -203,6 +210,7 @@ def main():
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
                 "visual_odometry":args.visual_odometry,
                 "odometry_substep_controls":args.odometry_substep_controls,
+                "search_motion_recovery":args.search_motion_recovery,
                 "robot_geometry_guards":args.robot_geometry_guards,
                 "approach_reorientation":args.approach_reorientation,
                 "approach_body_options":args.approach_body_options,
@@ -390,7 +398,7 @@ def main():
                     bootstrap_unverified_pick(manager,replay,state)
                 if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion,
                     odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress,persistent_grasp_tracks=args.persistent_grasp_tracks,
-                    spatial_grasp_features=args.spatial_grasp_features)
+                    spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -675,6 +683,41 @@ def main():
                     # Keep incomplete odometry as incomplete, but distinguish
                     # the known budget interruption from a sensor failure.
                     manager.stop_reason="WALL_TIME_BUDGET_REACHED_DURING_ACTION"
+                if controller and controller.search_recovery is not None and motion_fault and not budget_interrupted:
+                    recovery_dir=directory/"search_reanchor";recovery_dir.mkdir()
+                    def save_reanchor_snapshot(control, raw_images, raw_depths, receipts, current_state):
+                        location=recovery_dir/f"control_{control:06d}";location.mkdir()
+                        for view in ("head","left_wrist","right_wrist"):
+                            Image.fromarray(raw_images[view+"_rgb"].transpose(1,2,0)).save(location/("CURRENT_"+view.upper()+"_RAW.png"))
+                        np.savez_compressed(location/"depth.npz",**raw_depths)
+                        write(location/"depth_receipt.json",receipts)
+                        write(location/"proprio.json",{"q":current_state.q.tolist(),"gripper":current_state.gripper.tolist(),"control":control})
+                    anchor_hold=servo.safe_hold(state_now()).copy()
+                    def issue_reanchor_hold():
+                        nonlocal controls
+                        if controls>=action_control_limit or expired(deadline):
+                            raise RuntimeError("Recovery control budget expired before issue")
+                        ended=step(anchor_hold,render=True)
+                        controls+=1
+                        trace.write(json.dumps({"control":controls,"reanchor_after_decision":decision,
+                            "action23":anchor_hold.tolist(),"terminal":ended})+"\n")
+                        if controls%2==0:capture("SENSING HOLD: NEW LOCAL REFERENCE, NO SUCCESS CLAIM")
+                        return ended
+                    reanchor, new_snapshot=controller.search_recovery.attempt(controller,substep_result,
+                        controls=controls,action_limit=action_control_limit,terminal=terminal,deadline=deadline,
+                        observe=observation_now,state_now=state_now,issue_hold=issue_reanchor_hold,
+                        save_snapshot=save_reanchor_snapshot)
+                    write(recovery_dir/"receipt.json",reanchor)
+                    row["search_reanchor"]={k:v for k,v in reanchor.items() if k!="chain"}
+                    manager.search_reanchor=controller.search_recovery.context()
+                    if reanchor["valid"]:
+                        substep_motion=controller.motion
+                        saved_end_snapshot=new_snapshot
+                        previous=None  # No previous-image comparison across the unknown gap.
+                    elif terminal:
+                        manager.stop_reason="OFFICIAL_EPISODE_TERMINATED_DURING_SEARCH_REANCHOR"
+                    elif expired(deadline):
+                        manager.stop_reason="WALL_TIME_BUDGET_REACHED_DURING_SEARCH_REANCHOR"
                 check_fk(f"decision_{decision}")
                 write(out/"progress.json",{"controls":controls,"decisions":len(decisions),"last":row})
                 print(json.dumps(row),flush=True)
@@ -714,6 +757,7 @@ def main():
                       "approach_body_options":args.approach_body_options,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "odometry_substep_controls":args.odometry_substep_controls,
+                      "search_motion_recovery":args.search_motion_recovery,
                       "held_object_inspection":args.held_object_inspection,
                       "persistent_grasp_tracks":args.persistent_grasp_tracks,
                       "spatial_grasp_features":args.spatial_grasp_features,

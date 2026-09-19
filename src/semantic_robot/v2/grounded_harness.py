@@ -237,6 +237,7 @@ class GroundedHarness(TaskHarness):
                        active_grasp_probe=self.grasp_probe.copy())
         if self.multicamera_inspection:context["possible_contact_after_any_close"]=self.possible_contact_after_close.copy()
         if hasattr(self,"approach_progress"):context["approach_progress"]=self.approach_progress
+        if hasattr(self,"search_reanchor"):context["search_reanchor"]=self.search_reanchor
         return context
 
 
@@ -270,7 +271,7 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False):
         self.model,self.servo,self.harness=model,servo,harness
         if approach_progress and not visual_odometry:raise ValueError("Approach progress requires measured visual motion")
         from .approach_progress import ApproachProgress
@@ -289,6 +290,12 @@ class GroundedController:
         self.pending_motion=None
         self.pending_exploratory=True
         self.goal_changed=False
+        self.search_recovery=None
+        if search_motion_recovery:
+            if not visual_odometry or odometry_estimator!="rgbd_joint":
+                raise ValueError("Search reanchor requires unchanged joint RGB-D motion")
+            from .search_reanchor import SearchReanchor
+            self.search_recovery=SearchReanchor()
         from .held_inspection import HeldInspection
         self.inspector=HeldInspection(budget_aware=harness.inspection_budget_aware) if harness.held_inspection_enabled else None
         if harness.multicamera_inspection:
@@ -837,6 +844,8 @@ class GroundedController:
                        "search":self.search.context(),"depth_guard":self.depth_guard.receipt()}
 
     def executed(self,action,feedback):
+        if self.search_recovery is not None and action.move=="close":
+            self.search_recovery.ever_closed=True
         if self.is_held_search:self.inspector.executed(self.harness)
         exploratory=self.harness.stage in ("SEARCH","RECOVER") and not self.goal_changed
         if self.motion is None:self.search.executed(feedback,exploratory=exploratory)

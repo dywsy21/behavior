@@ -6,6 +6,10 @@
 
 ## 1. 总览
 
+**2026-09-19 21:38当前：** H09W唯一PID317744/GPU3于21:37:50 BJT启动初始化，新NVMe `robodojo_vlm_sft_20260919/h09w_native_complete/native_task1_v1`与相邻log/launch.json；active授权位于原SDA根`authorization_h09w_native_task1_v1.json`SHAea4c255c…4d57，固定f991/239源不可热改。当前无本轮VLM服务/训练，父H21仅CPU379通过待独立审。队友GPU0/1/2与313698副context不动。
+
+**2026-09-19 21:35当前：** 父旧模型209877已身份核验/21call与identity双端SHA归档后TERM并确认退出，本地`artifacts/agentic-vlm-goal-20260918/h19_server_complete_archive/server_h19_fullenv/`。GPU3余80,939MiB，队友313698副context不触；GPU1的247595/8790 `rl_radio_dense_20260919/code/model_service.py`与313698 `local_baseline.py --post-training`属于队友，禁止终止。新固定SFT源`git_worktrees/vlm_sft_h09w_f9916db`只CPU验收过；拟新NVMe `/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09w_native_complete/native_task1_v1`刚单次放行，真实PID待作者回执，不称运行/训练。父H21仅本地CPU，不热改原0d/f991。
+
 **2026-09-19 21:24当前：** 中断恢复后核209877/GPU3/8924仍旧固定0d服务，211843/213880均已退出。H19完整本地`artifacts/agentic-vlm-goal-20260918/h19_fullstart_bundle/`三主SHA/视频解码过；H09V完整包在子worktree`artifacts/h09v-native-task1-v1/complete/`且父完整账本审通过，非成功训练数据。Astra新f9916db仅容量CPU源码；拟NVMe `robodojo_vlm_sft_20260919/h09w_native_complete`尚未放新物理。GPU1现15,277MiB、GPU2 4,035MiB，须核现进程而非沿用旧空闲；不触队友，sdc余128.49GB/NVMe2.94TB。
 
 **2026-09-19 08:39当前：** H19原起点211843现已退出/官方false，原`radio_h19_fullstart`300,907,179B、469控制/21调用/617.439s保留，因462→468视觉运动段质量拒绝。GPU3仅209877/8924模型空闲21/431；不用旧192预算继续同run。父新只CPU诊断，完整H19本地包下载中。08:38“父仍运行”是较早轮询，已更正；H09V213880也已退出，Astra收尾完整证据/新容量设计。
