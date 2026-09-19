@@ -77,6 +77,7 @@ def require_release(value, code, executor):
             value.get("max_resets") != (1 if near else 3) or value.get("max_candidates_per_instance") != (12 if near else 3)):
         raise ValueError("A separately reviewed H14-fixed executor and new pilot authorization are required")
     if near and (value.get("authorize_offline_teacher") is not True or value.get("allow_known_empty_rotation") is not True or
+                 value.get("allow_grasp_cell_attempt") is not True or
                  value.get("native_controls_max")!=420 or value.get("seconds_after_reset")!=900 or
                  value.get("run_MiB")!=100 or value.get("total_MiB")!=384 or
                  value.get("max_teacher_primitives")!=12 or value.get("model_calls")!=0 or
@@ -335,13 +336,15 @@ def main():
                 artifacts.write_json(x.output/"PRIVATE_teacher_initial.json", {"spec": teacher_spec, "frame": teacher_frame,
                      "baseline_contacts": teacher_reader.baseline_receipt, "not_actor_input": True})
                 teacher_trace = (x.output/"PRIVATE_teacher_trace.jsonl").open("x", buffering=1)
-                teacher = PoseTeacher(teacher_spec,allow_empty_rotation=near)
+                teacher = PoseTeacher(teacher_spec,allow_empty_rotation=near,
+                    allow_grasp_cell_attempt=near and release.get("allow_grasp_cell_attempt") is True)
                 for index in range(release["max_teacher_primitives"]):
                     folder = x.output/f"teacher_{index:02d}"; folder.mkdir()
                     before, hashes, depths, geometry, receipt = capture(folder/"before")
                     teacher_reader.check_local_fk(before, teacher_frame)
                     actor = actor_input(session.observation()["task"], ref["active_instruction"], runtime_proprio(before), hashes, history[-5:])
                     ranked = teacher.ranked(before, teacher_frame, teacher_reader.goal(), teacher_reader.base(),grips,model)
+                    artifacts.write_json(folder/"PRIVATE_proposal.json", teacher.proposal_receipt)
                     choice = None; rejected = []
                     for token in ranked:
                         try:
@@ -362,6 +365,7 @@ def main():
                             current_writer = reserved; teacher_token = token
                             reserved.write_json(folder/"request.json", {"actor": actor, "token": token,
                                 "private_proposal_order": ranked, "rejected": rejected, "preflight": preflight,
+                                "private_proposal_basis": teacher.proposal_receipt,
                                 "capture_sha256": sha(folder/"before/capture.json"), "training_eligible": False})
                             start_control = controls
                             while not servo.done and servo.ticks < servo.total_ticks:

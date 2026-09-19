@@ -9,6 +9,7 @@
   "max_candidates_per_instance": 12,
   "authorize_offline_teacher": true,
   "allow_known_empty_rotation": true,
+  "allow_grasp_cell_attempt": true,
   "max_teacher_primitives": 12,
   "native_controls_max": 420,
   "seconds_after_reset": 900,
@@ -34,5 +35,5 @@
   "automatic_retry": false,
   "is_original_skill_phase_start": false,
   "native_success_required_for_positive_BC": true,
-  "registration_note": "Inactive CPU template. Continuous endpoint IK is not a feasible discrete grasp proof; the 1cm grid may stop outside the unchanged 4mm proposal gate. No reset before parent review and explicit physical registration."
+  "registration_note": "Inactive CPU template. The original 4mm pose gate is unchanged. A separate one-shot CLOSE proposal requires known-empty hand, angle <=4deg, residual <= half-diagonal of the 1cm grid cell, and no improving direction among all 12 unfiltered geometric neighbors. This is not success evidence. No reset before parent review and explicit physical registration."
 }
