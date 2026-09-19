@@ -29,21 +29,25 @@ from native_teacher_og import PrivilegedReader
 from native_teacher_seed import extract_seed,seed_identity
 from common import sha
 from native_teacher_toggle import verify_installed_dependency,TOGGLE_SHA
+from native_reference_profile import validate_execution_location,check_initialization_deadline
 
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--prepared",type=Path,required=True)
     p.add_argument("--authorization",type=Path,required=True);p.add_argument("--output",type=Path,required=True)
-    p.add_argument("--gpu",type=int,choices=(1,),required=True);a=p.parse_args()
+    p.add_argument("--gpu",type=int,choices=(1,3),required=True);a=p.parse_args()
     code=subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip()
     if subprocess.check_output(["git","-C",str(REPO),"status","--porcelain"],text=True).strip():raise ValueError("Clean immutable source required")
     release=json.loads(a.authorization.read_text());counts_path=REPO/"configs/vlm_sft/h09r_train_feasibility_counts.json"
     if sha(counts_path)!=release["h09r_counts_sha256"]:raise ValueError("TRAIN counts identity changed")
     ref,spec,prefix,segment,source_states,binding=load_reference(a.prepared,release,code,implementation_digest(),json.loads(counts_path.read_text()))
+    validate_execution_location(release,a.output,a.gpu)
     verify_installed_dependency()
     a.output.mkdir(parents=True,exist_ok=False)
     budget=release["budget"];writer=ArtifactBudget(a.output,release["experiment_root"],budget["run_MiB"]*1024**2,budget["total_MiB"]*1024**2)
     if shutil.disk_usage(a.output).free<80*1024**3:raise RuntimeError("Disk reserve: no reset")
+    if release.get("reference_profile") is not None and any(shutil.disk_usage(m).free<80*1024**3 for m in ("/mnt/sdc1","/mnt/nvme_tmp")):
+        raise RuntimeError("Both-filesystem reserve: no reset")
     os.environ["OMNIGIBSON_GPU_ID"]=str(a.gpu);os.environ["BEHAVIOR_ACTION_STEPS"]="1"
     os.environ.setdefault("OMNIGIBSON_HEADLESS","1");os.environ.setdefault("OMNI_KIT_ACCEPT_EULA","YES")
     sys.path.insert(0,str(ADAPTER))
@@ -68,11 +72,19 @@ def main():
         try:writer.write_json(a.output/"control_failure_ledger.json",{"issued":issued,"completed":completed,
                       "inflight_action_may_have_partially_executed":issued!=completed,"original_error":repr(primary)},cleanup=True)
         except BaseException:pass
+    initialization_started=time.monotonic()
     with preserved_session(lambda:OfficialEvaluatorSession(window,gpu=a.gpu),error,lambda:primary) as session:
         import omnigibson as og
         try:
+            check_initialization_deadline(release,time.monotonic()-initialization_started)
             session.reset();started=time.monotonic();env=session.evaluator.env
             kin=CalibratedRobot(env.robots[0]);grips=np.clip(kin.state().gripper/.05*2-1,-1,1)
+            # Cooperative boundary checks; constructor/reset are native blocking
+            # calls, not asynchronously interrupted. A late completed reset can
+            # still receive the existing finally hold, never begin the prefix.
+            check_initialization_deadline(release,time.monotonic()-initialization_started)
+            writer.write_json(a.output/"initialization.json",{"seconds":time.monotonic()-initialization_started,
+                "reference_profile":release.get("reference_profile"),"cooperative_not_async_deadline":True})
             model=kin.calibrate(grounded=True);write_calibration(writer,model);onboard=OnboardRGBD(env)
             if any(e["position_m"]>.003 or e["angle_rad"]>.02 or e.get("jacobian_max_abs",0)>.04 for e in kin.compare(model).values()):
                 raise RuntimeError("Reference FK mismatch")
