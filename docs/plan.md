@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 08:14（北京时间）完整模型overlay诊断（Codex）：** 208920同样加载前退出/0调用，错误是共享HF4.57.1不认识qwen3_5；上一仅恢复decoder而遗漏旧HF5.7 overlay，不能称环境已恢复。两失败保留，agent/reset仍0。下一≤180s只CPU整体核原`semantic_agent_20260917/deps`＋decoder817＋源码三个路径：实际Torch/HF版本/路径、AutoConfig/AutoProcessor、模型类映射和decoder源码，全部吻合旧服务后才登记一次完整环境启动；不执行错误日志建议的pip升级、不改共享库或门，原431调用未用。
+
 **2026-09-19 08:13（北京时间）H19依赖恢复/已审H09V合入（Codex）：** 原overlay真实import及decoder direct_url 817f944确认，未安装新包；08:12:35 BJT仅新GPU3服务208920/8924/`server_h19_envfix`提交，PYTHONPATH显式`semantic_structured_20260919/deps_817f944:<固定0d>/src`，原失败208180保留，agent仍未启。父已审630合入615c9be，合并后368/6.362s＋75/.257s过并push；未热改H19或原aff远端，Astra格单元增量仍在独立CPU票内，尚无native GRASP正轨迹/新训练。
 
 **2026-09-19 08:11（北京时间）H19服务环境接线错误/最小修复登记（Codex）：** 208180已退出，加载前`ModuleNotFoundError: lmformatenforcer`，0模型调用/0新reset，原server_h19目录与log保留，不当模型成功。原因是本次launcher遗漏已在H11固定的独立`semantic_structured_20260919/deps_817f944` overlay，非依赖需要重装。下一≤120s仅CPU验证原overlay真实import/direct_url commit及路径，再新`server_h19_envfix`单次初始化（原431总调用预算，未用）；不改任何共享环境/源/门、不重置场景，未启动agent。原H19两门全部审计有效不重跑。
