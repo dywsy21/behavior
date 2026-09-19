@@ -78,15 +78,21 @@ def empty_hand_rotation_allowed(arm, state, frame, grips, model, close_issued):
 
 
 class PoseTeacher:
-    def __init__(self, spec, allow_empty_rotation=False):
+    def __init__(self, spec, allow_empty_rotation=False, allow_grasp_cell_attempt=False):
         self.spec = spec
         self.allow_empty_rotation = allow_empty_rotation is True
+        self.allow_grasp_cell_attempt = allow_grasp_cell_attempt is True
+        self.cell_close_proposed = False
+        self.proposal_receipt = None
         self.stage = "APPROACH"
         self.close_issued = self.open_issued = False
         self.lift_origin = None
         self.visits = {}
 
     def ranked(self, state, frame, goal_world, base_world, grips=None, model=None):
+        self.proposal_receipt = None
+        if self.cell_close_proposed and not self.close_issued:
+            raise RuntimeError("Grid-cell CLOSE already proposed; no retry after rejection/interruption")
         arm, verb = self.spec["hand"], self.spec["verb"]
         if frame["held"][arm] is None:
             raise RuntimeError("UNKNOWN hold state; no teacher action")
@@ -112,11 +118,18 @@ class PoseTeacher:
         local_current, local_goal = np.linalg.inv(base)@current, np.linalg.inv(base)@goal
         distance = np.linalg.norm(local_current[:3, 3]-local_goal[:3, 3])
         angle = np.linalg.norm(Rotation.from_matrix(local_goal[:3, :3]@local_current[:3, :3].T).as_rotvec())
+        self.proposal_receipt = {"not_actor_input": True, "not_success_evidence": True,
+            "proposal_basis": "EXACT_POSE_GATE" if distance <= .004 and angle <= np.deg2rad(4) else "DECREASING_POSE_COST",
+            "position_error_m": float(distance), "angle_error_rad": float(angle),
+            "goal_minus_hand_base_m": (local_goal[:3, 3]-local_current[:3, 3]).tolist()}
         if distance <= .004 and angle <= np.deg2rad(4):
             if verb == "GRASP" and not self.close_issued: return [arm.upper()+"_CLOSE"]
             if verb.startswith("PLACE") and not self.open_issued: return [arm.upper()+"_OPEN"]
             return ["HOLD"]
         candidates = []
+        geometric = []
+        rotation_allowed = self.allow_empty_rotation and empty_hand_rotation_allowed(
+            arm,state,frame,grips,model,self.close_issued)
         for token in TOKENS:
             if not token.startswith(arm.upper()+"_"): continue
             action = token_to_action(token)
@@ -124,8 +137,6 @@ class PoseTeacher:
             if action.move in TRANSLATIONS:
                 predicted[:3, 3] += np.asarray(TRANSLATIONS[action.move])*action.amount(True)
             elif action.move in ROTATIONS:
-                if (not self.allow_empty_rotation or not empty_hand_rotation_allowed(
-                        arm,state,frame,grips,model,self.close_issued)):continue
                 # Existing token_to_action is BASE-frame fine rotation (3deg),
                 # NOT a tool-axis reinterpretation. Translations stay carry=True.
                 if action.frame!="base":raise ValueError("Unreviewed teacher action frame")
@@ -134,8 +145,26 @@ class PoseTeacher:
             else: continue
             cost = (np.linalg.norm(predicted[:3, 3]-local_goal[:3, 3]) +
                     .04*np.linalg.norm(Rotation.from_matrix(local_goal[:3, :3]@predicted[:3, :3].T).as_rotvec()))
-            candidates.append((cost, token))
+            # Geometry is deliberately evaluated BEFORE eligibility, IK/depth
+            # or execution safety filtering. A safety veto is not a local minimum.
+            geometric.append((float(cost), token))
+            if action.move in TRANSLATIONS or rotation_allowed:
+                candidates.append((cost, token))
         current_cost = distance+.04*angle
+        improving = [token for cost, token in geometric if cost < current_cost]
+        grid_step = token_to_action(arm.upper()+"_FORWARD").amount(True)
+        cell_radius = np.sqrt(3)*grid_step/2
+        self.proposal_receipt.update({"current_cost": float(current_cost),
+            "unfiltered_neighbor_costs": {token: cost for cost, token in geometric},
+            "strictly_improving_geometry": improving, "grid_step_m": float(grid_step),
+            "grid_cell_half_diagonal_m": float(cell_radius)})
+        if (self.allow_grasp_cell_attempt and verb == "GRASP" and self.close_issued is False and
+                empty_hand_rotation_allowed(arm,state,frame,grips,model,self.close_issued) and
+                distance <= cell_radius and angle <= np.deg2rad(4) and
+                len(geometric) == 12 and not improving):
+            self.cell_close_proposed = True
+            self.proposal_receipt["proposal_basis"] = "GRASP_GRID_CELL_SINGLE_CLOSE_ATTEMPT"
+            return [arm.upper()+"_CLOSE"]
         return [token for cost, token in sorted(candidates) if cost < current_cost-1e-6][:12]
 
     def executed(self, token, frame):

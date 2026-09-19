@@ -62,6 +62,100 @@ class NearTeacherTests(unittest.TestCase):
         for _ in range(4):teacher.executed('HOLD',f)
         with self.assertRaises(RuntimeError):teacher.executed('HOLD',f)
 
+    def test_grid_cell_is_optin_one_proposal_not_success_or_retry(self):
+        f,s,m,g=self.empty();goal=np.eye(4);goal[:3,3]=[.0048]*3
+        t=PoseTeacher({'verb':'GRASP','hand':'right'},True,True)
+        self.assertEqual(t.ranked(s,f,goal,np.eye(4),g,m),['RIGHT_CLOSE'])
+        r=t.proposal_receipt
+        self.assertEqual(r['proposal_basis'],'GRASP_GRID_CELL_SINGLE_CLOSE_ATTEMPT')
+        self.assertEqual(len(r['unfiltered_neighbor_costs']),12)
+        self.assertEqual(r['strictly_improving_geometry'],[])
+        self.assertAlmostEqual(r['grid_cell_half_diagonal_m'],np.sqrt(3)*.005)
+        self.assertGreater(r['position_error_m'],.004)
+        self.assertTrue(r['not_success_evidence']);self.assertTrue(r['not_actor_input'])
+        with self.assertRaisesRegex(RuntimeError,'already proposed'):t.ranked(s,f,goal,np.eye(4),g,m)
+        t.executed('RIGHT_CLOSE',f)
+        with self.assertRaisesRegex(RuntimeError,'no retry'):t.ranked(s,f,goal,np.eye(4),g,m)
+
+    def test_grid_cell_requires_known_empty_real_open_and_never_applies_to_other_verbs(self):
+        f,s,m,g=self.empty();goal=np.eye(4);goal[:3,3]=[.0048]*3
+        for field in ('held_any','held','finger_contact','finger_external_contact'):
+            for value in (True,None,0):
+                bad=copy.deepcopy(f);bad[field]['right']=value
+                t=PoseTeacher({'verb':'GRASP','hand':'right'},True,True)
+                with self.subTest(field=field,value=value):
+                    if field=='held' and value is None:
+                        with self.assertRaises(RuntimeError):t.ranked(s,bad,goal,np.eye(4),g,m)
+                    else:self.assertNotIn('RIGHT_CLOSE',t.ranked(s,bad,goal,np.eye(4),g,m))
+        for commands,opening in (([1,-1],.05),([1,.998],.05),([1,1.001],.05),([1,1],.049)):
+            s.gripper[1]=opening;t=PoseTeacher({'verb':'GRASP','hand':'right'},True,True)
+            self.assertNotIn('RIGHT_CLOSE',t.ranked(s,f,goal,np.eye(4),commands,m))
+        s.gripper[1]=.05
+        t=PoseTeacher({'verb':'PRESS','hand':'right'},True,True)
+        self.assertEqual(t.ranked(s,f,goal,np.eye(4),g,m),[])
+        for enable in (False,None,1):
+            self.assertEqual(PoseTeacher({'verb':'GRASP','hand':'right'},True,enable).ranked(s,f,goal,np.eye(4),g,m),[])
+
+    def test_grid_cell_checks_all_geometry_including_ineligible_rotations_and_tiny_gains(self):
+        f,s,m,g=self.empty();goal=np.eye(4);goal[:3,3]=[.0048]*3
+        goal[:3,:3]=Rotation.from_euler('z',2,degrees=True).as_matrix()
+        t=PoseTeacher({'verb':'GRASP','hand':'right'},False,True)
+        self.assertEqual(t.ranked(s,f,goal,np.eye(4),g,m),[])
+        self.assertIn('RIGHT_YAW_PLUS',t.proposal_receipt['strictly_improving_geometry'])
+        # Less than the old 1e-6 ranking margin is STILL a real improvement;
+        # returning an empty filtered ranking must not admit a CLOSE.
+        goal=np.eye(4);goal[:3,3]=[.005000001,0,0]
+        t=PoseTeacher({'verb':'GRASP','hand':'right'},True,True)
+        self.assertEqual(t.ranked(s,f,goal,np.eye(4),g,m),[])
+        self.assertIn('RIGHT_FORWARD',t.proposal_receipt['strictly_improving_geometry'])
+        for displacement,angle in (([.009,0,0],0),([.0048]*3,4.001)):
+            goal=np.eye(4);goal[:3,3]=displacement;goal[:3,:3]=Rotation.from_euler('z',angle,degrees=True).as_matrix()
+            self.assertNotIn('RIGHT_CLOSE',PoseTeacher({'verb':'GRASP','hand':'right'},True,True).ranked(s,f,goal,np.eye(4),g,m))
+
+    def test_original_exact_pose_gate_is_unchanged(self):
+        f,s,m,g=self.empty();goal=np.eye(4);goal[0,3]=.004
+        goal[:3,:3]=Rotation.from_euler('z',3.9,degrees=True).as_matrix()
+        for cell in (False,True):
+            t=PoseTeacher({'verb':'GRASP','hand':'right'},True,cell)
+            self.assertEqual(t.ranked(s,f,goal,np.eye(4),g,m),['RIGHT_CLOSE'])
+            self.assertEqual(t.proposal_receipt['proposal_basis'],'EXACT_POSE_GATE')
+            self.assertFalse(t.cell_close_proposed)
+
+    def test_actual_collector_safety_veto_does_not_fallback_to_cell_close(self):
+        f,s,m,g=self.empty();goal=np.eye(4);goal[0,3]=.006
+        teacher=PoseTeacher({'verb':'GRASP','hand':'right'},True,True)
+        tree=ast.parse((ROOT/'scripts/vlm_sft/native_teacher_collect.py').read_text())
+        loop=next(n for n in ast.walk(tree) if isinstance(n,ast.For) and
+                  isinstance(n.target,ast.Name) and n.target.id=='index' and
+                  isinstance(n.iter,ast.Call) and isinstance(n.iter.func,ast.Name) and n.iter.func.id=='range' and
+                  'max_teacher_primitives' in ast.unparse(n.iter))
+        start=next(i for i,n in enumerate(loop.body) if isinstance(n,ast.Assign) and
+                   any(isinstance(v,ast.Name) and v.id=='ranked' for v in n.targets))
+        end=next(i for i,n in enumerate(loop.body[start:],start) if isinstance(n,ast.If) and ast.unparse(n.test)=='choice is None')
+        reject=MagicMock(side_effect=RuntimeError('fixture fresh depth veto'));store=MagicMock()
+        ns={'teacher':teacher,'teacher_frame':f,'teacher_reader':NS(goal=lambda:goal,base=lambda:np.eye(4)),
+            'before':s,'grips':g,'model':m,'artifacts':store,'folder':Path('/not-written'),
+            'depths':{},'geometry':None,'near':True,'native_preflight':reject,'token_to_action':token_to_action}
+        fragment=ast.Module(body=copy.deepcopy(loop.body[start:end+1]),type_ignores=[])
+        with self.assertRaisesRegex(RuntimeError,'No safe'):exec(compile(ast.fix_missing_locations(fragment),'actual_selection','exec'),ns)
+        self.assertEqual(reject.call_count,1);self.assertEqual(ns['ranked'],['RIGHT_FORWARD'])
+        self.assertFalse(teacher.cell_close_proposed)
+        self.assertEqual(store.write_json.call_args.args[0].name,'PRIVATE_proposal.json')
+        self.assertEqual(teacher.proposal_receipt['strictly_improving_geometry'],['RIGHT_FORWARD'])
+
+    def test_cell_receipt_cannot_enter_actor_and_no_lift_never_becomes_bc(self):
+        from native_teacher_outcomes import LocalOutcome
+        f,s,m,g=self.empty();goal=np.eye(4);goal[:3,3]=[.0048]*3
+        t=PoseTeacher({'verb':'GRASP','hand':'right'},True,True);t.ranked(s,f,goal,np.eye(4),g,m)
+        req,*_=test_native_teacher.NativeTeacherTests().fixture();actor=req['actor']
+        bad={**actor['proprio'],'proposal_basis':t.proposal_receipt}
+        with self.assertRaises(ValueError):actor_input(actor['task'],actor['active_instruction'],bad,actor['current_rgb_sha256'],[])
+        o=LocalOutcome({'verb':'GRASP','hand':'right','target':'target'});o.update(frame())
+        for tick in range(1,15):
+            evidence=frame(tick);evidence['held']['right']=True;evidence['finger_contact']['right']=True
+            verdict=o.update(evidence,'RIGHT_CLOSE' if tick==1 else None)
+        self.assertNotEqual(verdict['outcome'],'SUCCEEDED')
+
     def test_preflight_itself_rechecks_empty_and_never_changes_translation_carry(self):
         f,s,m,g=self.empty();e={'frame':f,'close_issued':False}
         with patch('native_teacher_collect.observed_cloud',return_value=np.empty((0,3))), \
@@ -131,12 +225,13 @@ class NearTeacherTests(unittest.TestCase):
                 path=root/f'gate{task}.json';write_json(path,{'task':task,'gate_ok':True,'robot_geometry_guards':True,'implementation_digest':'executor'});gates.append(str(path))
             release={'schema':SCHEMA,'authorize_collection':True,'collector_commit':'code','executor_digest':'executor',
                      'h14_body_and_finger_safety_reviewed':True,'reviewer':'independent','max_resets':1,'max_candidates_per_instance':12,
-                     'authorize_offline_teacher':True,'allow_known_empty_rotation':True,'native_controls_max':420,
+                     'authorize_offline_teacher':True,'allow_known_empty_rotation':True,'allow_grasp_cell_attempt':True,'native_controls_max':420,
                      'seconds_after_reset':900,'run_MiB':100,'total_MiB':384,'max_teacher_primitives':12,
                      'model_calls':0,'experiment_root':d,'engineering_gate_paths':gates}
             require_release(release,'code','executor')
             for key,bad in [('max_resets',2),('native_controls_max',421),('seconds_after_reset',901),
-                            ('run_MiB',101),('allow_known_empty_rotation',False),('collector_commit','old')]:
+                            ('run_MiB',101),('allow_known_empty_rotation',False),('allow_grasp_cell_attempt',False),
+                            ('allow_grasp_cell_attempt',None),('collector_commit','old')]:
                 with self.subTest(key=key),self.assertRaises(ValueError):require_release({**release,key:bad},'code','executor')
             gate=json.loads(Path(gates[0]).read_text());gate['robot_geometry_guards']=False;write_json(gates[0],gate)
             with self.assertRaises(ValueError):require_release(release,'code','executor')
