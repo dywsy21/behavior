@@ -14,7 +14,7 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
-**2026-09-19 22:50（北京时间）H09Y第二TRAIN参考父独审通过/未放GPU（Codex）：** 完整核读固定a6cde5d新profile、来源prepare、完整reference执行/契约与测试，独立99/2.398s＋331/6.272s通过；远端真实manifest61eebc47…62d3和596×23/590×23/591×61逐字节绑定、24个inactive/heldout/身份/预算/路径负例0.0585s通过，原授权仍false、0reset/模型。`configs/vlm_sft/h09y_reference_parent_review.json`仅认可单TRAIN114参考代码；GPU3仍父H21，未启动1199控制参考，更未训练。Astra继续原≤3600s剩余CPU接release/train/service。原合法GRASP指令不指定手，因此后继两手各自独立、只事后oracle评分，any-hand可算该局部技能；不得跨手拼条件或将seed手别漏入actor，专家左手留出是姿态OOD而非强制选手。明确指定手的合法指令仍按指定手验收。
+**2026-09-19 22:50（北京时间）H09Y第二TRAIN参考父独审通过/未放GPU（Codex）：** 完整核读固定a6cde5d新profile、来源prepare、完整reference执行/契约与测试，独立99/2.398s＋331/6.272s通过；远端真实manifest61eebc47…62d3和596×23/590×23/591×61逐字节绑定、24个inactive/heldout/身份/预算/路径负例0.0585s通过，原授权仍false、0reset/模型。`configs/vlm_sft/h09y_reference_parent_review.json`仅认可单TRAIN114参考代码；GPU3仍父H21，未启动1199控制参考，更未训练。已审源码合入cecfe39、整合99/2.192s＋381/7.386s通过，实际CPU摘要68e81e6另合ff1b1ce并push，未改运行源。Astra继续原≤3600s剩余CPU接release/train/service。原合法GRASP指令不指定手，因此后继两手各自独立、只事后oracle评分，any-hand可算该局部技能；不得跨手拼条件或将seed手别漏入actor，专家左手留出是姿态OOD而非强制选手。明确指定手的合法指令仍按指定手验收。
 
 **2026-09-19 22:48（北京时间）H21双门本地完整审闭合（Codex）：** 原tar传输已退出0；完整`artifacts/agentic-vlm-goal-20260918/h21_gates_bundle/`父重核7.561s通过，288主RGB-D hash/44整链/152段/304 FK端点/8 BASE消费/835连续控制，六个result/steps/video SHA与远端完全一致；不再是传输中。原354348于22:47已1128控制、decision49/68调用，已切右手PICK的APPROACH、仍0次恢复，未抓取/官方成功；所有活跃源及预算不改，GPU0/1/2队友保留。
 
