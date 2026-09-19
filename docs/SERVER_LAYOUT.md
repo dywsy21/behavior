@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 22:17当前：** H21唯一原起点354348/GPU3于22:16:17 BJT启动初始化，NVMe根`h21_search_reanchor/radio_h21_fullstart`/相邻log/launch_policy.json；353691/8925同cc服务ready、起始0/431。两源相同固定`semantic_reanchor_cc249c9`不可热pull；两旧门退出、完整本地归档仍传输。Astra无新GPU任务。
+
 **2026-09-19 22:15当前：** H21原两门已完成全链/视频/首图审计；GPU3现在唯一新353691/8925模型加载，`h21_search_reanchor/server_h21`与相邻log/launch_server.json，源仍`semantic_reanchor_cc249c9`不可热改。策略尚未启，0新训练；本地h21_gates_bundle仍在完整传输。
 
 **2026-09-19 22:14当前：** H21两门328327/328328已退出，原NVMe根两个result通过（417/418控制），固定cc源保留；完整本地`artifacts/agentic-vlm-goal-20260918/h21_gates_bundle/`在传输/核验，未启动新服务或策略。GPU3待父下一个原登记完整回合，Astra仍仅CPU。
