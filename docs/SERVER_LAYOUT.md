@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 21:52当前：** H21新不可变`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_reanchor_cc249c9`固定cc249c9/digest2445784a，仅381 CPU通过，无新物理/model。旧bd46同目录前缀的CPU副本保留。H09W仍原317744/GPU3/f991，初态完整本地子worktree`artifacts/h09w-native-task1-v1/initial/`，父3 RAW/7payload+3depth hash审过，后态待。
+
 **2026-09-19 21:38当前：** H09W唯一PID317744/GPU3于21:37:50 BJT启动初始化，新NVMe `robodojo_vlm_sft_20260919/h09w_native_complete/native_task1_v1`与相邻log/launch.json；active授权位于原SDA根`authorization_h09w_native_task1_v1.json`SHAea4c255c…4d57，固定f991/239源不可热改。当前无本轮VLM服务/训练，父H21仅CPU379通过待独立审。队友GPU0/1/2与313698副context不动。
 
 **2026-09-19 21:35当前：** 父旧模型209877已身份核验/21call与identity双端SHA归档后TERM并确认退出，本地`artifacts/agentic-vlm-goal-20260918/h19_server_complete_archive/server_h19_fullenv/`。GPU3余80,939MiB，队友313698副context不触；GPU1的247595/8790 `rl_radio_dense_20260919/code/model_service.py`与313698 `local_baseline.py --post-training`属于队友，禁止终止。新固定SFT源`git_worktrees/vlm_sft_h09w_f9916db`只CPU验收过；拟新NVMe `/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09w_native_complete/native_task1_v1`刚单次放行，真实PID待作者回执，不称运行/训练。父H21仅本地CPU，不热改原0d/f991。

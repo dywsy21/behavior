@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 21:52（北京时间）H21远端CPU就绪/H09W初态父亲审（Codex）：** 新不可变`git_worktrees/semantic_reanchor_cc249c9`准确cc/244，远端381/20.933s、含digest总21.973s通过且源干净，0物理/模型；旧bd46/f991保留不热改，H21待317744退出后GPU交接。父亲看H09W初态head/双腕3 RAW，地面桶沿与右手相对位置符合GRASP起点，图像不能单独证明无接触；独核7payload/3depth SHA、396+12时钟、actor白名单/对应proprio/空真实动作史/capture SHA dd710490…b8a0。完整后态仍待、所有记录隔离，不是已训练/成功。完整初态本地子worktree `artifacts/h09w-native-task1-v1/initial/`。
+
 **2026-09-19 21:49（北京时间）H21独立终审通过/后继物理仅预登记（Codex/Astra）：** 固定cc249c9两P2关闭，Astra独立381/6.595s＋13恢复/.188s＋33负例/.081s通过，无新增阻塞；新局部参考不等于恢复旧位姿/安全或任务成功。`h21_search_reanchor_block.json`明确同0d模型/任务138/seed0/192决策6144总控制7200s、最多2×12恢复HOLD计入总额、GPU3新根4GiB/余80GiB，先2同源24决策工程门再唯一0两前缀回合（3reset总上限），目前未启动，需H09W退出/资源交接及新cc远端CPU。Astra核原317744已396＋49新控制、1宏、IN_PROGRESS，继续唯一原预算；父不抢GPU3。H21主CPU实现/独立审已在原1800s内完成，下一仅≤300s新不可变cc远端381回归，不热改bd46或f991。
 
 **2026-09-19 21:45（北京时间）H21独立审P2修复/旧H19证据闭合（Codex/Astra）：** Astra固定bd46独立379/6.825s确认两P2：缺手部键的空map会all([])误作空载；静止门只约yaw而漏roll/pitch。父原CPU票内修为四组exact双手键/严格False或None、完整SO(3)≤.02rad并保留yaw/xy/z门；新增24映射/未知历史及roll/pitch反例，381/6.612s通过，digest2445784a…bd52，待新固定SHA增量独审，未H21物理。旧bd46不可变远端379/20.764s通过，只CPU、不是新修版。H09W仍唯一317744，作者核已reset到prefix、未新模型训练。父已审f991合入f16a781并push，合并后87/.322s＋379/6.695s过；运行f991原源不热改。H19完整本地进一步独核120主hash/19整链+1失败链/78段156端点FK/19完整消费/469连续控制钟/468完整23维向量，3.163s；原末hold只有stop-marker，不冒称有其动作向量。审计JSON `h19_fullstart_bundle/h19_parent_complete_audit.json`SHAffacfd7e…1173；原固定开爪命令真实约.999965/.999960而非精确1，均在原标定全开门内。
