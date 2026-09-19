@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 22:15（北京时间）H21全门审通过/模型加载提交（Codex）：** 父9.556s独核288主RGB-D hash、44完整链/152段/304 FK端点、8 BASE整链消费和835连续控制全部过，两视频全解码无误；本地完整包仍传输中。新GPU3模型353691/8925于22:14:18.334690 BJT真实提交，`h21_search_reanchor/server_h21`，固定cc源/原27B revision/完整两overlay/431调用，尚待ready；唯一策略尚未启动，不算已有恢复/成功效果。Astra仍H09X CPU独立协议/来源，队友卡不触。
+
+**2026-09-19 22:14（北京时间）H21两门真实完成（Codex）：** 原328327/328328均已退出，radio417控制/764.177s、plates418/715.513s，各24决策、gate_ok且failures空、0模型、search recovery flag真实打开；较早晨共享负载下慢但均在原1200s内。两首head已亲看，完整RGB-D/运动链/FK/控制钟及视频独核、约0.67GB全包本地归档现在收尾；未将文件存在等同于全审完成，模型/唯一原起点策略仍待此门。没有追加reset或热改源。
+
 **2026-09-19 22:08（北京时间）H21首图/模型环境核验（Codex）：** 两门原进程已执行至约11/12决策，仍未出result；本人亲看本次首head RAW，分别壁炉/厨房原起点，与零前缀一致。对固定cc源做13.157s CPU整套模型依赖预检，HF5.7.0/Torch2.7.1+cu128/qwen3_5/Qwen3VLProcessor/decoder817均吻合；未加载权重/调用模型/新reset，不重复早晨缺overlay错误。策略仍待原两门完整验收，门的初图在`artifacts/agentic-vlm-goal-20260918/h21_gate_previews/`。
 
 **2026-09-19 22:06（北京时间）H09W父独立全账本与23 RAW审通过（Codex）：** 完整295文件/107,345,578B的SHA与远端1f8b2f30清单一致；父另写只读audit独核396逐维前缀、723 issued=completed＋实际hold724、30capture/210payload/90depth SHA与robot-only FK、10宏actor白名单/真实历史及区间，317次oracle含初态与末hold完全重算一致（1.484s）。目标升36.9722mm、手升38.4660mm、末12相对3.139μm/.001209°、原严格GRASP/保持成功。本人已看初态三图＋全部10宏停稳head＋0/3/5/8/9双腕，共23真实RAW；桶壁闭爪和随动与账本一致，左腕多地面、无hold后新图，不靠图片证明毫米值/碰撞安全。`configs/vlm_sft/h09w_native_parent_review.json`接受为**单条候选轨迹**，原quarantine不改、尚不放整体BC/训练；2+2来源/新robot-only输入协议和配对评测仍由Astra在原CPU票准备。局部教师成功不等于VLM或官方SR。

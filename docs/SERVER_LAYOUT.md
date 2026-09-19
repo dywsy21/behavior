@@ -6,6 +6,10 @@
 
 ## 1. 总览
 
+**2026-09-19 22:15当前：** H21原两门已完成全链/视频/首图审计；GPU3现在唯一新353691/8925模型加载，`h21_search_reanchor/server_h21`与相邻log/launch_server.json，源仍`semantic_reanchor_cc249c9`不可热改。策略尚未启，0新训练；本地h21_gates_bundle仍在完整传输。
+
+**2026-09-19 22:14当前：** H21两门328327/328328已退出，原NVMe根两个result通过（417/418控制），固定cc源保留；完整本地`artifacts/agentic-vlm-goal-20260918/h21_gates_bundle/`在传输/核验，未启动新服务或策略。GPU3待父下一个原登记完整回合，Astra仍仅CPU。
+
 **2026-09-19 21:56当前：** H09W317744已退出，`h09w_native_complete/native_task1_v1`保留107.34MB/724控制/局部GRASP成功但隔离，完整本地子`artifacts/h09w-native-task1-v1/complete/`正在全核。GPU3现在父唯一两H21门328327/328328，新`/mnt/nvme_tmp/robodojo_agentic_20260919/h21_search_reanchor`/两个相邻log/launch_gates.json，固定`semantic_reanchor_cc249c9`，不能热改。新VLM服务和完整策略尚未启，队友进程不触。
 
 **2026-09-19 21:52当前：** H21新不可变`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_reanchor_cc249c9`固定cc249c9/digest2445784a，仅381 CPU通过，无新物理/model。旧bd46同目录前缀的CPU副本保留。H09W仍原317744/GPU3/f991，初态完整本地子worktree`artifacts/h09w-native-task1-v1/initial/`，父3 RAW/7payload+3depth hash审过，后态待。
