@@ -6,6 +6,10 @@
 
 ## 1. 总览
 
+**2026-09-19 08:39当前：** H19原起点211843现已退出/官方false，原`radio_h19_fullstart`300,907,179B、469控制/21调用/617.439s保留，因462→468视觉运动段质量拒绝。GPU3仅209877/8924模型空闲21/431；不用旧192预算继续同run。父新只CPU诊断，完整H19本地包下载中。08:38“父仍运行”是较早轮询，已更正；H09V213880也已退出，Astra收尾完整证据/新容量设计。
+
+**2026-09-19 08:38当前：** H09V213880已退出，原`h09v_native_task1_v1`89,949,654B/失败、8macro、396+267控制及真实末hold保留，完整本地包下载中；不是已训checkpoint/完整GRASP成功。GPU1释放待后继另票，原100MiB run不重跑或修改，Astra先收尾体积/物理证据。父209877模型及211843/H19仍原源运行。
+
 **2026-09-19 08:28当前：** Astra GPU1唯一213880于08:27:09 BJT提交`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/h09v_native_task1_v1`、相邻log；active授权SHA08162a72…5430d1，固定`vlm_sft_h09v_123837d`不热改，尚无正BC/新训练。父GPU3模型209877和原起点211843都在运行；211843在GPU1有约209MiB副context但主sim仍GPU3，不以此停队友。两路预算互不挪用，原root所有失败保留。
 
 **2026-09-19 08:24当前：** H19实际服务209877/GPU3/8924、`server_h19_fullenv`已ready；唯一原起点211843于08:23:31 BJT提交`/mnt/nvme_tmp/robodojo_agentic_20260919/h19_combined_fullstart/radio_h19_fullstart`，同0d不可变源、零两类前缀，原192/6144/7200s。模型完整PYTHONPATH必须是`/mnt/sdc1/robodojo/behavior_dev/semantic_structured_20260919/deps_817f944:/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917/deps:<固定source>/src`：前者decoder817，后者HF5.7.0；共享HF4.57.1不识别qwen3_5。**模拟器不加载这两个overlay**。208180/208920均加载前失败/0calls/已退出，两个日志保留。Astra新不可变`git_worktrees/vlm_sft_h09v_123837d`仅CPU81＋331过、near396准备78,412B，GPU1仍空待父放行，不是已采集/训练。
