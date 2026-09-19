@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 08:13（北京时间）H19依赖恢复/已审H09V合入（Codex）：** 原overlay真实import及decoder direct_url 817f944确认，未安装新包；08:12:35 BJT仅新GPU3服务208920/8924/`server_h19_envfix`提交，PYTHONPATH显式`semantic_structured_20260919/deps_817f944:<固定0d>/src`，原失败208180保留，agent仍未启。父已审630合入615c9be，合并后368/6.362s＋75/.257s过并push；未热改H19或原aff远端，Astra格单元增量仍在独立CPU票内，尚无native GRASP正轨迹/新训练。
+
 **2026-09-19 08:11（北京时间）H19服务环境接线错误/最小修复登记（Codex）：** 208180已退出，加载前`ModuleNotFoundError: lmformatenforcer`，0模型调用/0新reset，原server_h19目录与log保留，不当模型成功。原因是本次launcher遗漏已在H11固定的独立`semantic_structured_20260919/deps_817f944` overlay，非依赖需要重装。下一≤120s仅CPU验证原overlay真实import/direct_url commit及路径，再新`server_h19_envfix`单次初始化（原431总调用预算，未用）；不改任何共享环境/源/门、不重置场景，未启动agent。原H19两门全部审计有效不重跑。
 
 **2026-09-19 08:09（北京时间）H19门完整核验通过/新服务提交（Codex）：** 父逐核288主RGB-D hash、44链152段304端点FK、8BASE完整链消费及835连续控制，两初head人工看过、两全视频解码过。结果SHA d8c36149…8023/f8ab44c4…fb53；完整本地h19_gates_bundle传输中。08:09:01 BJT新GPU3模型208180/8924提交，固定0d源/原27B revision、431服务调用上限，仍0训练；门旧203694/203695和旧156556均退出。下一确认模型/显存/预算身份后，才放已登记唯一radio零两类前缀192/6144/7200s；不是新增回合配额，当前agent尚未启动。

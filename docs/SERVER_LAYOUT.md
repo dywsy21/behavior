@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 08:13当前：** H19首次208180因launcher遗漏decoder overlay在加载前退出/0调用，`server_h19.log`保留；新208920/GPU3/8924于08:12:35提交`server_h19_envfix`，源仍不可变0d。模型服务必须复用已固定`/mnt/sdc1/robodojo/behavior_dev/semantic_structured_20260919/deps_817f944`，以`PYTHONPATH=<该overlay>:<固定source>/src`加载；虚拟环境自身没有该依赖，不要重复安装/改共享环境。原起点agent未启动。
+
 **2026-09-19 08:09当前：** H19两门203694/203695通过/退出，完整链/主SHA/视频已父核，新GPU3服务208180于08:09:01 BJT提交，端口8924、`h19_combined_fullstart/server_h19`及log、固定`semantic_combined_0d34ec7`源；原起点agent未启。完整门副本正传本地h19_gates_bundle；原server_h15/156556结束，不再调用。Astra仍≤600s格点教师CPU，GPU1无新物理/训练。
 
 **2026-09-19 07:56当前：** H19新NVMe根已创建、`gate_radio_h19`203694与`gate_plates_h19`203695/GPU3于07:55:56 BJT提交，固定不可变`semantic_combined_0d34ec7`/621bd7c5，同名log与`launch_gates.json`，累计≤4GiB。两个门尚在初始化，不重启/热改。旧156556已确认退出；新8924模型和原起点策略均未启动。GPU1仍留Astra，不触GPU0队友。
