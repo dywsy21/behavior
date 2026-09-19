@@ -49,3 +49,13 @@ P3控制396的连续right-only IK可行不等于41符号路径可行。其初始
 这是一次**尝试许可**而非正确性证书。只有真实目标身份接触/held、实际抬升、连续相对稳定及最终hold全通过原LocalOutcome，再经父整轨迹后审，才可能将该段作为BC；仅CLOSE/缩距/几何局部最小都不能产生正标签。当前0条新native完整GRASP、0新训练。旧P3仅pose seed；未触及原六类240覆盖标准或另行前瞻登记的GRASP-only实验边界。
 
 本块验证：81 SFT/0.325s、原冻结harness331/5.032s通过。新增6组涵盖一次提案/禁止重试、未知或持物/未全开/非法flag/其他verb、未获旋转资格但仍存在几何改进、2nm改进不能被排序容差吞掉、越界/角差、旧4mm路径不变、AST实际collector深度否决后不追加CLOSE、私有字段actor泄漏拒绝及只闭爪不抬升不成功。额外固定seed190919生成800个CPU几何状态，直接执行Git固定630旧selector与本版默认cell=False，对两种rotation模式完整候选顺序逐项相同；不是物理/神经运行。准备/seed/schema来源与41动作幅度未改；fine平移carry=False/True均为1cm（coarse才3cm），本实现仍只对明确空手旋转采用False。inactive模板仍 `authorize_collection:false`，尚无新部署或物理授权。
+
+## 08:17:55 BJT起：新不可变123837d远端准备（≤300s，0物理）
+
+仅显式fetch并创建 `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09v_123837d`，完整commit `123837daf73d5a5aff2667b2a03da482b2f4b88e`、clean detached；原aff/父0d均未pull或热改。远端81 SFT/0.636s＋331 harness/13.605s通过，运行digest仍 `239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b`。
+
+原experiment root下新 `h09v_near_prepare_v1` 共78,412B（远端绝对路径与本地不同），manifest SHA `b146d41baa3329657c609886fa1fdffad78696f76abf3ee82f7a99a68161d400`；prefix仍 `f92baf548a56b651e13e99f3519a6a5b1df98177fefde4c74dc1012a5f4a1447`，reference `9c59cfcea4a38621c14168edcc65571d9cad83f59112db0e26cfe2d22c705bb1`，window `5cc1aa9f3d2b95bdb007c5d612a50c3fe51dcb23d647dd99bcace0ff4348381b`。真实factory加载 `picking_up_trash/train/192/seed0`、396×23前缀逐值相同、末双OPEN、max_steps817；原skill_start164和reference_frame396保留，前后重核全部来源SHA。只调用window loader，未构造session/reset。
+
+spec SHA `6c2cccb811b51db3f388f853b02aa6ed1757415a8494511f630a41a559765217`；实际P3seed `bc8865c719e84ab73b43bb2f0ba7cbaa975ce0bf1612ab1053f6073804cf4b7d`、父review `06fbd9aaf34ecf60613872084835cbe627291a603858522211ef0fa0b3a0436a`，完整physics/图像/evidence/recomputed-pose release helper通过。两H15r1门flagTrue/239digest和SHA分别2460d102…35e19、b7117a5e…7f75保持。
+
+只生成 `authorization_h09v_near_v1.INACTIVE.json`，SHA `1dbaf6b9b0da2b5b64dfacd445f2f6f6c0b87b70b35c50782d26103ed33ef38d`，`authorize_collection:false`，实际require_release明确拒绝；reviewer仍未填，不能执行。原始CPU回执 `cpu_preflight_h09v_123837d.json` SHA `5b9de636f9bfb332d8dc435b3ef0bf1afc8916df13dd84eca5d00afd88995873`，本地完整小副本在 `artifacts/h09v-near-remote-preflight-123837d/`。08:20:00 BJT核原root文件累计119,896,803B（另CPU回执少量字节随后落盘），sdc1余86,878,801,920B、NVMe余2,936,491,474,944B；完整100MiB预留后仍保≥80GiB，旧失败全部计入原384MiB。GPU1在部署前0MiB/无进程，父GPU3服务与GPU0队友不动。尚待父独立增量审查/另一次明确物理放行；0新reset/控制/模型/训练。
