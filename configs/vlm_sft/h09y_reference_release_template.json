@@ -1,0 +1,24 @@
+{
+  "authorize_reference_replay": false,
+  "code_commit": "REPLACE_WITH_REVIEWED_CLEAN_COMMIT",
+  "executor_digest": "239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b",
+  "reviewer": "",
+  "preparation_manifest_sha256": "REPLACE_AFTER_CPU_PREPARATION",
+  "h09r_counts_sha256": "d94850ebfeadeef8b28f618e543ebae7cb7a18bd127c5d79ba6f4c18c0f015e3",
+  "reference_profile": "h09y-train114-reference-v1",
+  "purpose": "TRAIN_POSE_SEED_REFERENCE_NOT_NATIVE_BC",
+  "source": [1, 264, 114],
+  "held_out_instance_groups": [[1, 1], [1, 71]],
+  "physical_gpu": 3,
+  "engineering_gate_paths": [
+    "/mnt/sdc1/robodojo/behavior_dev/agentic_vlm_goal_20260918/gate_radio_h15_r1/result.json",
+    "/mnt/sdc1/robodojo/behavior_dev/agentic_vlm_goal_20260918/gate_plates_h15_r1/result.json"
+  ],
+  "experiment_root": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only",
+  "budget": {
+    "max_controls": 1199, "tail_controls": 12, "final_hold_controls": 1,
+    "seconds_after_reset": 1200, "initialization_seconds": 900,
+    "run_MiB": 80, "total_MiB": 6144
+  },
+  "model_calls": 0, "resets": 1
+}

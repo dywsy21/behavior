@@ -5,12 +5,17 @@ import numpy as np
 from common import sha
 from native_teacher_policy import validate_train_group
 from native_teacher_reference_prepare import SCHEMA
+from native_reference_profile import validate_profile
 
 
-def load_reference(folder,release,code,executor,counts):
+def load_reference(folder,release,code,executor,counts,*,validate_inactive=False):
     folder=Path(folder).resolve();manifest_path=folder.parent/"preparation.json"
-    if (release.get("authorize_reference_replay") is not True or release.get("code_commit")!=code or
-            release.get("executor_digest")!=executor or not release.get("reviewer") or
+    # CPU preflight is explicitly separate from execution: an inactive release
+    # is accepted ONLY by this named inspection mode, never the runner default.
+    permission=(release.get("authorize_reference_replay") is False and release.get("reviewer")=="") if validate_inactive else (
+        release.get("authorize_reference_replay") is True and isinstance(release.get("reviewer"),str) and bool(release["reviewer"]))
+    if (not permission or release.get("code_commit")!=code or
+            release.get("executor_digest")!=executor or
             sha(manifest_path)!=release.get("preparation_manifest_sha256")):
         raise ValueError("New exact-code/reference authorization required before reset")
     manifest=json.loads(manifest_path.read_text())
@@ -19,6 +24,7 @@ def load_reference(folder,release,code,executor,counts):
     rows=[r for r in manifest["sources"] if folder.name==f"task_{r['task']}"]
     if len(rows)!=1:raise ValueError("Reference source ownership mismatch")
     row=rows[0]
+    profile=validate_profile(release,manifest,row)
     if [row[k] for k in ("task","episode","instance")]!=release["source"]:
         raise ValueError("Authorization is for another instance/episode")
     expected={"prefix.npy","segment.npy","source_states.npy","teacher_reference.json","private_spec.json","segment_labels.json","label_selection_audit.json","window.json"}
@@ -42,7 +48,7 @@ def load_reference(folder,release,code,executor,counts):
             Path(window["prefix_actions_path"]).resolve()!=folder/"prefix.npy"):
         raise ValueError("Reference reset/window clock identity mismatch")
     budget=release["budget"]
-    if (budget["max_controls"]!=row["end"]+13 or budget["tail_controls"]!=12 or budget["final_hold_controls"]!=1 or
+    if profile is None and (budget["max_controls"]!=row["end"]+13 or budget["tail_controls"]!=12 or budget["final_hold_controls"]!=1 or
             not 1<=budget["seconds_after_reset"]<=2100 or not 1<=budget["run_MiB"]<=128 or
             not 1<=budget["total_MiB"]<=512 or release.get("model_calls")!=0 or release.get("resets")!=1):
         raise ValueError("Reference budget differs from the single registered full segment")
@@ -51,6 +57,7 @@ def load_reference(folder,release,code,executor,counts):
             g.get("robot_geometry_guards") is not True or g.get("implementation_digest")!=executor for g in gates):
         raise ValueError("Reviewed matching safety gates required")
     binding={"reference_preparation_sha256":sha(manifest_path),"source":row,"window":window}
+    if profile is not None:binding.update(reference_profile=profile,purpose=manifest["purpose"])
     return ref,spec,prefix,segment,states,binding
 
 
