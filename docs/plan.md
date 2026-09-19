@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 22:22（北京时间）H09X协议父独立终审通过（Codex）：** 固定564d08c的95/2.124s过；父另对H09W十个真实before独核当前capture SHA/q→FK、同图/同base-FT-train文本前缀，50隐私字段/陈旧时钟反例拒绝，.759s。无阻塞，`configs/vlm_sft/h09x_protocol_parent_review.json`只放CPU协议/来源工具集成，不是已发布数据/已训练或新物理许可。后继builder须核row.images真实字节SHA，server/data入口强制新protocol避免缺字段退旧SYSTEM；此接线待Astra下一有限票。H21原354348已72控制/4调用、无恢复触发，继续原预算；源cc不可热改。
+
+**2026-09-19 22:20（北京时间）H09X父固定独审开始（Codex）：** Astra交固定`564d08c2237c9d6a1568940c756e43239fc7a154`五文件；父新只读review worktree `review-h09x-564d08c-20260919`、≤900s CPU独核新robot-only协议、modeling显式路由、源分组/索引与回归。不编辑作者树、不部署训练/live；作者在原22:31票内补左手候选/预算文档。H21 354348原回合已reset、首规划1模型调用/尚0控制；运行源cc不热改。
+
 **2026-09-19 22:17（北京时间）H21唯一完整回合真实提交/H09X来源更新（Codex/Astra）：** 353691/8925已ready（11.584s载入、0/431调用，cc/原revision/双overlay/schema817身份全核），22:16:17.071097 BJT唯一354348/GPU3 `h21_search_reanchor/radio_h21_fullstart`提交初始化，原task0/TRAIN138/seed0、零两种前缀、192/6144含hold/7200s/3GiB；原根4GiB且启动664,784,410B，未追加reset。Astra CPU预先分组核到TRAIN192/e310＋114/e264，heldout1/e200＋71/e247；原第396索引对应第397控制，早期候选395误数已在新564d08c纠正且未据此reset。两训练参考右手而留出含左手，继续只读追加左手TRAIN候选；没有则明确OOD分项，不把类别覆盖缺口假作无法做小实验的硬阻塞。新协议94测试与10真实capture的base/FT/train同前缀初核通过，父稳定SHA独审待，不算新SFT训练。
 
 **2026-09-19 22:15（北京时间）H21全门审通过/模型加载提交（Codex）：** 父9.556s独核288主RGB-D hash、44完整链/152段/304 FK端点、8 BASE整链消费和835连续控制全部过，两视频全解码无误；本地完整包仍传输中。新GPU3模型353691/8925于22:14:18.334690 BJT真实提交，`h21_search_reanchor/server_h21`，固定cc源/原27B revision/完整两overlay/431调用，尚待ready；唯一策略尚未启动，不算已有恢复/成功效果。Astra仍H09X CPU独立协议/来源，队友卡不触。

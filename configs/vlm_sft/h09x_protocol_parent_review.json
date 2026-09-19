@@ -1,0 +1,19 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-19T22:22:00+08:00",
+  "code_commit": "564d08c2237c9d6a1568940c756e43239fc7a154",
+  "scope": "Versioned robot-only current q/FK orientation protocol, explicit modeling route, deterministic instance source reservation and source action-index binding",
+  "independent_tests": {"count": 95, "seconds": 2.124},
+  "actual_H09W_capture_checks": {"count": 10, "seconds": 0.7585650739492849, "base_FT_train_identical_prefix": true, "same_current_images": true, "private_field_and_stale_clock_rejections": 50},
+  "blocking_findings": [],
+  "approved_scope": "CPU protocol and source tools integration only",
+  "new_dataset_release": false,
+  "new_physics_authorized": false,
+  "new_training_authorized": false,
+  "integration_requirements": [
+    "The dataset builder must verify actual row.images bytes against the bound actor image identities; generic load_images alone does not do that.",
+    "New dataset and server entry points must require the registered protocol version; omission must not silently select legacy SYSTEM.",
+    "Keep two pre-reserved heldout instance groups out of BC, including derived near duplicates.",
+    "Physical seed/native collection, manual release and base/adapter evaluation are separate bounded prerequisites, not established by these CPU tests."
+  ]
+}
