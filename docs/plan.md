@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 22:50（北京时间）H09Y第二TRAIN参考父独审通过/未放GPU（Codex）：** 完整核读固定a6cde5d新profile、来源prepare、完整reference执行/契约与测试，独立99/2.398s＋331/6.272s通过；远端真实manifest61eebc47…62d3和596×23/590×23/591×61逐字节绑定、24个inactive/heldout/身份/预算/路径负例0.0585s通过，原授权仍false、0reset/模型。`configs/vlm_sft/h09y_reference_parent_review.json`仅认可单TRAIN114参考代码；GPU3仍父H21，未启动1199控制参考，更未训练。Astra继续原≤3600s剩余CPU接release/train/service。原合法GRASP指令不指定手，因此后继两手各自独立、只事后oracle评分，any-hand可算该局部技能；不得跨手拼条件或将seed手别漏入actor，专家左手留出是姿态OOD而非强制选手。明确指定手的合法指令仍按指定手验收。
+
+**2026-09-19 22:48（北京时间）H21双门本地完整审闭合（Codex）：** 原tar传输已退出0；完整`artifacts/agentic-vlm-goal-20260918/h21_gates_bundle/`父重核7.561s通过，288主RGB-D hash/44整链/152段/304 FK端点/8 BASE消费/835连续控制，六个result/steps/video SHA与远端完全一致；不再是传输中。原354348于22:47已1128控制、decision49/68调用，已切右手PICK的APPROACH、仍0次恢复，未抓取/官方成功；所有活跃源及预算不改，GPU0/1/2队友保留。
+
 **2026-09-19 22:39（北京时间）H21原起点进入APPROACH（Codex）：** 原354348到834控制/39调用，decision34的实际harness由SEARCH转APPROACH（导航living-room table），测得搜索heading236.16°，仍原epoch0/0次恢复；策略487MB、根1.152GB、预算内。首次本轮能继续检验原起点接近/对齐接口，但尚未抓取或官方成功，也不是已证实reanchor收益。父不插入专家动作、不重置/改prompt，Astra H09Y原CPU票并行。
 
 **2026-09-19 22:34（北京时间）H21已600控制但未验证恢复（Codex）：** 原354348已25次搜索/600控制，策略372MB、根1.037GB，原预算继续；没有reanchor receipt、目标仍未出现。虽然越过H19的469停止步数，本次尚未触发新恢复且规划/渲染轨迹不严格相同，不能把多走步数归因于H21。活跃推理期间health GET遇3秒超时（HTTP单线程可能正处理7秒观察），后续监控改读原calls账本，不据这一timeout判服务故障或重启。无新reset/训练/代码热改。
