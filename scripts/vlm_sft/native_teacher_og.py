@@ -170,6 +170,11 @@ class PrivilegedReader:
         contact = {a: any(set(pair)&self.fingers[a] and set(pair)&self.target_links for pair in current)
                    for a in self.fingers}
         held = {a: truth(self.robot.is_grasping(a, self.target)) for a in self.fingers}
+        # candidate_obj=None asks the installed robot about ANY object, not
+        # merely this task target. UNKNOWN is retained, never called unloaded.
+        held_any = {a: truth(self.robot.is_grasping(a)) for a in self.fingers}
+        finger_external = {a:any(set(pair)&paths and set(pair)-self.robot_links for pair in current)
+                           for a,paths in self.fingers.items()}
         payload = [measured_bool(state_of(self.objects[name], "OnTop").get_value(self.target))
                    for name in self.spec["payloads"]]
         payload_ok = None if any(v is None for v in payload) else all(payload)
@@ -178,7 +183,8 @@ class PrivilegedReader:
                  "hand_poses": hand_poses, "held": held, "finger_contact": contact,
                  "contacts_known": True, "payload_ok": payload_ok, "forbidden_contacts": forbidden,
                  "contact_pairs": sorted(current), "privileged_teacher_only": True,
-                 "identity_bindings":self.identity_receipt}
+                 "identity_bindings":self.identity_receipt,"held_any":held_any,
+                 "finger_external_contact":finger_external}
         if self.spec["verb"] == "PRESS":
             frame["toggled"] = measured_bool(state_of(self.target, "ToggledOn").value)
             frame["goal_parent_pose"] = pose(state_of(self.target, "ToggledOn").link).tolist()

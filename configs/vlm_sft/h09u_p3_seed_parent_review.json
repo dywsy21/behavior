@@ -1,0 +1,11 @@
+{
+  "seed_sha256": "bc8865c719e84ab73b43bb2f0ba7cbaa975ce0bf1612ab1053f6073804cf4b7d",
+  "identity_sha256": "3112679618e78529452ffff7e19ed608a05d4ed490755bb59d5561b258093cc7",
+  "goal_pose_sha256": "1e90aca38c5b9a37625b91a24556b8aa229c818a40312981ccbe2a50a464537e",
+  "reviewer": "Codex-parent-H09U-P3-independent-visual-physics-review",
+  "decision": "approve",
+  "reviewed_source_current_and_terminal_views": true,
+  "reviewed_contact_update_and_control_ledger": true,
+  "local_outcome_and_pose_accepted": true,
+  "reason": "2026-09-19 BJT: Parent personally inspected all 12 full RAW views and all 27 process RGB views. The right hand grasps the tan trash-can rim, lifts the target and retains it through both terminal holds; the left hand remains empty. Independently checked 59 capture-file hashes, exact 452x23 source actions, 464 consecutive issued/completed ordinary controls and separate actual final hold465. Recomputed all302 consecutive private outcomes; controls433..465 are33 strict SUCCEEDED samples with no forbidden contacts. Outcome is exactly reproduced; derived pose differs across CPU numerical libraries by at most8.8818e-16, requiring a narrow1e-12 recomputation comparison while all seed/spec/review bytes remain strictly bound. Approval is ONLY for this TRAIN1/e310/instance192 object-local pose seed as an offline-teacher reference, not a native BC label, VLM effect, phase-start teacher coverage, official task success or automatic permission for further simulation/training. Seed remains immutable and training_eligible=false."
+}

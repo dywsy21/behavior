@@ -9,6 +9,7 @@ import sys
 import tempfile
 import types
 import unittest
+from unittest.mock import patch
 import numpy as np
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -235,6 +236,19 @@ class ReferenceTests(unittest.TestCase):
                     "reason":"Synthetic test fixture only; not a real review or acquired sample."}
             rp=root/"review.json";rp.write_text(json.dumps(review))
             self.assertEqual(validate_seed_release(p,rp,spec,ref,"b"*64)["identity"],identity)
+            measured=extract_seed(spec,rows)
+            for delta,accepted in ((1e-15,True),(1e-8,False)):
+                perturbed=copy.deepcopy(measured);perturbed['goal_pose_local'][0][3]+=delta
+                with patch('native_teacher_seed.extract_seed',return_value=perturbed):
+                    if accepted:validate_seed_release(p,rp,spec,ref,'b'*64)
+                    else:
+                        with self.assertRaises(ValueError):validate_seed_release(p,rp,spec,ref,'b'*64)
+            spec['goal_pose_local'][0][3]=1e-15
+            with self.assertRaises(ValueError):validate_seed_release(p,rp,spec,ref,'b'*64)
+            spec['goal_pose_local'][0][3]=0
+            original=p.read_bytes();p.write_bytes(original+b'\n')
+            with self.assertRaises(ValueError):validate_seed_release(p,rp,spec,ref,'b'*64)
+            p.write_bytes(original)
             with self.assertRaises(ValueError):validate_seed_release(p,rp,spec,ref,"c"*64)
             spec["goal_pose_local"][0][3]=.01
             with self.assertRaises(ValueError):validate_seed_release(p,rp,spec,ref,"b"*64)

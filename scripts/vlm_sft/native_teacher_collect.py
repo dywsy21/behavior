@@ -42,6 +42,8 @@ from semantic_robot.v2.grasp_motion import robot_point_mask
 from run_sim import ADAPTER
 from run_v2 import implementation_digest
 from replay_contact_audit import preserved_session, report_failure
+from native_teacher_near_grasp import SCHEMA as NEAR_SCHEMA
+from native_teacher_reference_contract import check_actual_joint_bounds,source_state_diagnostic
 
 PILOT_TOKENS = [t for t in TOKENS if not t.startswith("BASE_") and
                 not any(axis in t for axis in ("ROLL", "PITCH", "YAW"))]
@@ -68,11 +70,18 @@ def rest_screen(states):
 
 
 def require_release(value, code, executor):
-    if (value.get("schema") != SCHEMA or value.get("authorize_collection") is not True or
+    near=value.get("schema")==NEAR_SCHEMA
+    if (value.get("schema") not in (SCHEMA,NEAR_SCHEMA) or value.get("authorize_collection") is not True or
             value.get("collector_commit") != code or value.get("executor_digest") != executor or
             value.get("h14_body_and_finger_safety_reviewed") is not True or not value.get("reviewer") or
-            value.get("max_resets") != 3 or value.get("max_candidates_per_instance") != 3):
+            value.get("max_resets") != (1 if near else 3) or value.get("max_candidates_per_instance") != (12 if near else 3)):
         raise ValueError("A separately reviewed H14-fixed executor and new pilot authorization are required")
+    if near and (value.get("authorize_offline_teacher") is not True or value.get("allow_known_empty_rotation") is not True or
+                 value.get("native_controls_max")!=420 or value.get("seconds_after_reset")!=900 or
+                 value.get("run_MiB")!=100 or value.get("total_MiB")!=384 or
+                 value.get("max_teacher_primitives")!=12 or value.get("model_calls")!=0 or
+                 not isinstance(value.get("experiment_root"),str)):
+        raise ValueError("Exact one-reset near-grasp budget/rotation authorization required")
     gates = [json.loads(Path(p).read_text()) for p in value["engineering_gate_paths"]]
     if len(gates) != 2 or {g["task"] for g in gates} != {0, 3} or not all(
             g["gate_ok"] is True and g.get("robot_geometry_guards") is True and
@@ -130,15 +139,23 @@ def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, cl
     return after, hashes, depths, geometry, evidence
 
 
-def native_preflight(model, state, grips, action, depths, geometry):
+def native_preflight(model, state, grips, action, depths, geometry, rotation_evidence=None):
+    from semantic_robot.v2.protocol import ROTATIONS
+    from native_teacher_policy import empty_hand_rotation_allowed
+    carry=True
+    if action.move in ROTATIONS:
+        if (rotation_evidence is None or not empty_hand_rotation_allowed(action.part,state,
+                rotation_evidence["frame"],grips,model,rotation_evidence["close_issued"])):
+            raise RuntimeError("Rotation requires current known-empty calibrated-open hand and no CLOSE latch")
+        carry=False  # ONLY rotation. Existing fine translations remain 1cm.
     guard = LocalDepthGuard(observed_cloud(depths, model, state.q), model, state.q, depths,
                             self_geometry=geometry)
-    allowed, reason = guard.check(action, carry=True)
+    allowed, reason = guard.check(action, carry=carry)
     servo = SafeServo(model, state, gripper_command=grips,
                       limits=ServoLimits(robot_geometry_guards=True))
-    if not allowed or not servo.begin(action, state, carry=True) or servo.total_ticks > 40:
+    if not allowed or not servo.begin(action, state, carry=carry) or servo.total_ticks > 40:
         raise RuntimeError("Native preflight rejected: "+reason+" / "+servo.status)
-    return servo, {"robot_geometry_guards": True, "depth_guard": guard.receipt(),
+    return servo, {"robot_geometry_guards": True,"carry":carry,"amount":action.amount(carry), "depth_guard": guard.receipt(),
                    "depth_check": reason, "servo_status": servo.status,
                    "q": state.q.tolist(), "gripper": state.gripper.tolist()}
 
@@ -156,13 +173,16 @@ def main():
         raise ValueError("Clean immutable source required")
     release = json.loads(x.authorization.read_text())
     require_release(release, code, implementation_digest())
+    near=release.get("schema")==NEAR_SCHEMA
+    native_limit=420 if near else 200
+    if near and x.teacher_config is None:raise ValueError("Near-grasp release cannot enable the manual pilot")
     ref, expected_prefix, source_binding = verify_prepared_source(x.prepared, release)
     teacher_spec = None
     if x.teacher_config is not None:
         from native_teacher_policy import validate_spec, validate_train_group
         if (release.get("authorize_offline_teacher") is not True or
                 sha(x.teacher_config) != release.get("teacher_config_sha256") or
-                not 1 <= release.get("max_teacher_primitives", 0) <= 6):
+                not 1 <= release.get("max_teacher_primitives", 0) <= (12 if near else 6)):
             raise ValueError("New bounded offline-teacher authorization required BEFORE reset")
         teacher_spec = json.loads(x.teacher_config.read_text())
         validate_spec(teacher_spec, ref)
@@ -182,7 +202,8 @@ def main():
         if teacher_spec["verb"] == "PLACE_IN":
             raise ValueError("PLACE_IN all-corners volume adapter not yet independently validated; no reset")
     x.output.mkdir(parents=True, exist_ok=False)
-    artifacts = ArtifactBudget(x.output, x.prepared.resolve().parent.parent)
+    artifacts = (ArtifactBudget(x.output,release["experiment_root"],100*1024**2,384*1024**2) if near else
+                 ArtifactBudget(x.output, x.prepared.resolve().parent.parent))
     current_writer = artifacts
     import shutil
     if shutil.disk_usage(x.output).free < 80*1024**3:
@@ -199,18 +220,25 @@ def main():
     _, _, rechecked = verify_prepared_source(x.prepared, release)
     if rechecked != source_binding:
         raise ValueError("Prepared identity changed while loading")
-    artifacts.write_json(x.output/"manifest.json", {"schema": SCHEMA, "code": code, "authorization": release,
+    artifacts.write_json(x.output/"manifest.json", {"schema": release["schema"], "code": code, "authorization": release,
               "source": ref["source"], "prepared_binding": source_binding, "robot_geometry_guards": True,
-              "prefix_controls": len(prefix), "native_controls_max": 200,
+              "prefix_controls": len(prefix), "native_controls_max": native_limit,
+              "is_original_skill_phase_start":not near,"translations_m":.01,"known_empty_rotation_deg":3 if near else None,
               "models": 0, "training_eligible": False, "no_restore_or_automatic_recovery": True})
-    controls = 0; prefix_count = 0; terminal = False; first_error = None; started = None
-    kin = None; grips = None; trace = None; history = []; completed = []
+    controls = 0; prefix_count = 0; issued_native = 0; issued_prefix = 0
+    terminal = False; first_error = None; started = None
+    kin = None; grips = None; trace = issue_trace = None; history = []; completed = []
     teacher_reader = teacher_outcome = teacher_trace = None
     teacher_token = None; teacher_frame = None
     def record_error(exc):
         nonlocal first_error
         first_error = first_error or exc
         report_failure(x.output, first_error, controls, started)
+        if near:
+            try:artifacts.write_json(x.output/"PRIVATE_failure_control_ledger.json",
+                {"issued_prefix":issued_prefix,"completed_prefix":prefix_count,"issued_native":issued_native,
+                 "completed_native":controls,"inflight_may_have_executed":issued_prefix+issued_native!=prefix_count+controls},cleanup=True)
+            except BaseException:pass
     with preserved_session(lambda: OfficialEvaluatorSession(window, gpu=x.gpu), record_error, lambda: first_error) as session:
         import omnigibson as og
         try:
@@ -228,18 +256,26 @@ def main():
                 n = kin.state(); return model.state(n.q, n.gripper, n.base_velocity)
             grips = np.clip(state().gripper/.05*2-1, -1, 1)
             trace = (x.output/"native_trace.jsonl").open("x", buffering=1)
+            if near:issue_trace=(x.output/"issued_trace.jsonl").open("x",buffering=1)
             def step(command, kind):
-                nonlocal controls, prefix_count, terminal, grips, teacher_frame
-                if terminal or (kind != "prefix" and controls >= 199):
+                nonlocal controls, prefix_count, terminal, grips, teacher_frame,issued_native,issued_prefix
+                if terminal or (kind != "prefix" and (issued_native if near else controls) >= native_limit-1):
                     raise RuntimeError("Terminal/control budget; final stop slot reserved")
                 if time.monotonic()-started >= 900:
                     raise TimeoutError("Pilot wall budget")
                 if shutil.disk_usage(x.output).free < 80*1024**3:
                     raise RuntimeError("Disk reserve exhausted; no additional control")
+                if near:check_actual_joint_bounds(state(),model)
                 line = json.dumps({"phase": kind, "prefix_control": prefix_count+int(kind=="prefix"),
                                    "native_control": controls+int(kind!="prefix"),
                                    "action23": np.asarray(command).tolist()}, allow_nan=False)+"\n"
                 current_writer.check(len(line.encode("utf-8")))  # BEFORE env.step, including expert prefix.
+                # Once issued, a CLOSE command must also be the cleanup latch
+                # if env.step throws after partial physical execution.
+                if near:current_writer.append_text(issue_trace,line)
+                grips = np.asarray(command)[[14,22]].copy()
+                if kind=="prefix":issued_prefix+=1
+                else:issued_native+=1
                 with og.sim.render_on_step(True):
                     obs, _, terminated, truncated, _ = env.step(command, n_render_iterations=1)
                 if kind == "prefix": prefix_count += 1
@@ -248,10 +284,13 @@ def main():
                 e = session.evaluator; e.obs = e._preprocess_obs(e._sync_lights_and_get_obs(obs))
                 current_writer.append_text(trace, line)
                 if teacher_reader is not None:
+                    actual_state=state()
+                    if near:check_actual_joint_bounds(actual_state,model)
                     teacher_frame = teacher_reader.read(prefix_count+controls)
-                    teacher_frame["finger_opening"] = dict(zip(("left", "right"), state().gripper.tolist()))
+                    teacher_frame["finger_opening"] = dict(zip(("left", "right"), actual_state.gripper.tolist()))
                     verdict = teacher_outcome.update(teacher_frame, teacher_token)
-                    evidence_line = json.dumps({"frame": teacher_frame, "verdict": verdict}, allow_nan=False)+"\n"
+                    evidence_line = json.dumps({"frame": teacher_frame, "verdict": verdict,
+                        "actual_q":actual_state.q.tolist(),"actual_gripper":actual_state.gripper.tolist()}, allow_nan=False)+"\n"
                     if len(evidence_line.encode()) > 16384:
                         raise RuntimeError("Teacher telemetry exceeds registered bound; quarantine entire trajectory")
                     current_writer.append_text(teacher_trace, evidence_line)
@@ -260,7 +299,11 @@ def main():
                 if terminal: raise RuntimeError("Official episode terminated; no automatic reset")
             for command in prefix: step(command, "prefix")
             source_q = np.r_[ref["source_states"][0][53:57], ref["source_states"][0][3:10], ref["source_states"][0][28:35]]
-            if np.max(abs(state().q-source_q)) > .02:
+            if near:
+                check_actual_joint_bounds(state(),model)
+                artifacts.write_json(x.output/"PRIVATE_source_proprio_diagnostic.json",
+                    source_state_diagnostic(state(),ref["source_states"][0],len(prefix)))
+            elif np.max(abs(state().q-source_q)) > .02:
                 raise RuntimeError("Expert replay diverged before pause")
             def settle():
                 fixed = state().q.copy(); recent = []
@@ -283,26 +326,33 @@ def main():
                 initial = teacher_outcome.update(teacher_frame)
                 if initial["outcome"] in ("UNKNOWN", "FAILED"):
                     raise RuntimeError("Unknown initial teacher evidence")
+                if near and (teacher_spec["verb"]!="GRASP" or any(
+                        teacher_frame.get("held_any",{}).get(a) is not False or
+                        teacher_frame["held"].get(a) is not False or
+                        teacher_frame.get("finger_external_contact",{}).get(a) is not False
+                        for a in ("left","right"))):
+                    raise RuntimeError("Near-grasp starts with unknown load/contact; no action")
                 artifacts.write_json(x.output/"PRIVATE_teacher_initial.json", {"spec": teacher_spec, "frame": teacher_frame,
                      "baseline_contacts": teacher_reader.baseline_receipt, "not_actor_input": True})
                 teacher_trace = (x.output/"PRIVATE_teacher_trace.jsonl").open("x", buffering=1)
-                teacher = PoseTeacher(teacher_spec)
+                teacher = PoseTeacher(teacher_spec,allow_empty_rotation=near)
                 for index in range(release["max_teacher_primitives"]):
                     folder = x.output/f"teacher_{index:02d}"; folder.mkdir()
                     before, hashes, depths, geometry, receipt = capture(folder/"before")
                     teacher_reader.check_local_fk(before, teacher_frame)
                     actor = actor_input(session.observation()["task"], ref["active_instruction"], runtime_proprio(before), hashes, history[-5:])
-                    ranked = teacher.ranked(before, teacher_frame, teacher_reader.goal(), teacher_reader.base())
+                    ranked = teacher.ranked(before, teacher_frame, teacher_reader.goal(), teacher_reader.base(),grips,model)
                     choice = None; rejected = []
                     for token in ranked:
                         try:
-                            candidate, preflight = native_preflight(model, before, grips, token_to_action(token), depths, geometry)
+                            candidate, preflight = native_preflight(model, before, grips, token_to_action(token), depths, geometry,
+                                {"frame":teacher_frame,"close_issued":teacher.close_issued} if near else None)
                             choice = token, candidate, preflight
                             break
                         except RuntimeError as exc: rejected.append({"token": token, "reason": str(exc)})
                     if choice is None: raise RuntimeError("No safe decreasing teacher proposal; no retry/reset")
                     token, servo, preflight = choice
-                    if controls+servo.total_ticks+12 > 199:
+                    if controls+servo.total_ticks+12 > native_limit-1:
                         raise RuntimeError("Insufficient whole primitive + settle budget BEFORE action")
                     layout = receipt["array_layout"]
                     if shutil.disk_usage(x.output).free < 80*1024**3+action_evidence_bound(layout):
@@ -372,7 +422,7 @@ def main():
                 layout = capture_receipt["array_layout"]
                 if shutil.disk_usage(x.output).free < 80*1024**3+action_evidence_bound(layout):
                     raise RuntimeError("Insufficient physical disk reserve for whole action evidence")
-                if controls+servo.total_ticks+12 > 199:
+                if controls+servo.total_ticks+12 > native_limit-1:
                     raise RuntimeError("Whole primitive and settling exceed remaining control budget")
                 try:
                     with artifacts.transaction(action_evidence_bound(layout)) as reserved:
@@ -408,13 +458,19 @@ def main():
         except BaseException as exc:
             record_error(exc)
         finally:
-            if kin is not None and grips is not None and not terminal and controls < 200:
+            if kin is not None and grips is not None and not terminal and (issued_native if near else controls) < native_limit:
                 try:
                     stop = native_action(kin.state().q, grips)
+                    if near:
+                        try:artifacts.write_json(x.output/"final_hold_attempt.json",
+                            {"issued_native":issued_native+1,"action23":stop.tolist()},cleanup=True)
+                        except BaseException as exc:record_error(exc)
+                    issued_native+=1
                     env.step(stop, n_render_iterations=1); controls += 1
                     artifacts.write_json(x.output/"final_hold.json", {"completed": True, "native_controls": controls,
                                          "prefix_controls": prefix_count, "action23": stop.tolist()}, cleanup=True)
                     if teacher_reader is not None:
+                        if near:check_actual_joint_bounds(state(),model)
                         frame = teacher_reader.read(prefix_count+controls)
                         frame["finger_opening"] = dict(zip(("left", "right"), kin.state().gripper.tolist()))
                         verdict = teacher_outcome.update(frame)
@@ -425,6 +481,9 @@ def main():
             if trace is not None:
                 try: trace.close()
                 except BaseException as exc: record_error(exc)
+            if issue_trace is not None:
+                try:issue_trace.close()
+                except BaseException as exc:record_error(exc)
             if teacher_trace is not None:
                 try: teacher_trace.close()
                 except BaseException as exc: record_error(exc)
