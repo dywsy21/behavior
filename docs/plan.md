@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 21:45（北京时间）H21独立审P2修复/旧H19证据闭合（Codex/Astra）：** Astra固定bd46独立379/6.825s确认两P2：缺手部键的空map会all([])误作空载；静止门只约yaw而漏roll/pitch。父原CPU票内修为四组exact双手键/严格False或None、完整SO(3)≤.02rad并保留yaw/xy/z门；新增24映射/未知历史及roll/pitch反例，381/6.612s通过，digest2445784a…bd52，待新固定SHA增量独审，未H21物理。旧bd46不可变远端379/20.764s通过，只CPU、不是新修版。H09W仍唯一317744，作者核已reset到prefix、未新模型训练。父已审f991合入f16a781并push，合并后87/.322s＋379/6.695s过；运行f991原源不热改。H19完整本地进一步独核120主hash/19整链+1失败链/78段156端点FK/19完整消费/469连续控制钟/468完整23维向量，3.163s；原末hold只有stop-marker，不冒称有其动作向量。审计JSON `h19_fullstart_bundle/h19_parent_complete_audit.json`SHAffacfd7e…1173；原固定开爪命令真实约.999965/.999960而非精确1，均在原标定全开门内。
+
 **2026-09-19 21:38（北京时间）H09W真实启动/H21待独立终审（Codex/Astra）：** Astra唯一317744于21:37:50.330924 BJT/GPU3提交新`h09w_native_complete/native_task1_v1`，active授权原根`authorization_h09w_native_task1_v1.json`SHAea4c255c…4d57，固定f991/239、真实来源复核，仍初始化，0模型训练，不称已采集。父H21全部379/6.642s过（新增11组包括直接执行实际runner恢复块的12连续23维HOLD与9RAW），digest21d34e8c…1e14；CPU实现块提前结束，准备固定SHA交Astra独立终审，同时作者持续监控原317744。未启动新harness物理/模型。
 
 **2026-09-19 21:35（北京时间）H09W新容量单次物理放行/GPU交接（Codex/Astra）：** f991远端不可变`git_worktrees/vlm_sft_h09w_f9916db`干净，87/.712s＋331/15.323s，真实396×23前缀/factory/完整P3seed/父review/239双门绑定CPU过；回执SHAe4ed15d5…ceee，inactive授权d7a439b0…7d4e保持关闭。父已下载旧209877的identity/21calls并双端SHA（305d05c7…66e2/da084632…3efd）一致、核零连接后TERM，现确认退出，GPU3余80,939MiB（队友副context214MiB保留）。**放GPU3一次H09W `h09w_native_complete/native_task1_v1`，任务/来源1/e310/TRAIN192/seed0，396专家前缀＋≤420新控制含12停稳/末hold，≤12宏/900s，run384MiB/新根512MiB/旧新累计768MiB/余80GiB，0模型训练；执行器239/1cm3°/一次格单元CLOSE/所有GRASP门不变。** 由于GPU1现为队友RL，明确改用GPU3；不是严格只改容量的硬件A/B。作者须新active授权绑定f991、确认目录不存在和GPU资源后只提交此一次，回报PID并持续监控/完整下载，父亲看图像和物理账本前样本仍隔离。任何失败不自动重试。父H21仍CPU，不同时抢GPU3。

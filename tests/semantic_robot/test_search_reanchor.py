@@ -10,6 +10,7 @@ from unittest.mock import Mock, patch
 
 import numpy as np
 from PIL import Image
+from scipy.spatial.transform import Rotation
 
 from semantic_robot.v2.grounded_harness import GroundedController, GroundedHarness
 from semantic_robot.v2.harness import Goal
@@ -142,6 +143,28 @@ class SearchReanchorTests(unittest.TestCase):
         for delta in (measured(x=.009),measured(yaw=.015)):
             self.setup();result,_=self.attempt([delta,delta]);self.assertFalse(result["valid"])
             self.assertEqual(result["reason"],"HOLD_NOT_OBSERVED_AT_REST")
+            self.assertEqual(self.c.search.local_epoch,0)
+
+    def test_missing_hand_maps_or_false_like_values_are_unknown_not_empty(self):
+        for name in ("pending_grasp","hold_verified","possible_contact_after_close","held"):
+            empty=None if name=="held" else False
+            for value in ({},{"left":empty},{"right":empty},{"left":empty,"right":0},
+                          {"left":empty,"right":empty,"third":empty},None):
+                self.setup();setattr(self.h,name,value)
+                result,_=self.attempt()
+                self.assertFalse(result["valid"],(name,value));self.assertEqual(self.issued,[])
+        self.setup();self.c.search_recovery.ever_closed=None
+        self.assertFalse(self.attempt()[0]["valid"])
+
+    def test_roll_pitch_drift_in_valid_rgbd_chain_is_not_rest(self):
+        for axis in ("x","y"):
+            self.setup();delta=measured()
+            T=np.eye(4);T[:3,:3]=Rotation.from_euler(axis,.15).as_matrix()
+            delta["body_transform_current_in_previous"]=T.tolist()
+            result,_=self.attempt([delta,delta])
+            self.assertFalse(result["valid"])
+            self.assertEqual(result["reason"],"HOLD_NOT_OBSERVED_AT_REST")
+            self.assertAlmostEqual(result["hold_total_rotation_rad"],.30)
             self.assertEqual(self.c.search.local_epoch,0)
 
     def test_mid_probe_budget_grip_or_terminal_cannot_resume(self):

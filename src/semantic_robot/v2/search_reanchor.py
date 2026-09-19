@@ -40,9 +40,14 @@ class SearchReanchor:
         segments = failed.get("segments", [])
         start, end = failed.get("control_start"), failed.get("control_end")
         span = (type(start) is int and type(end) is int and 0 <= start < end <= start+24)
-        flags = [*h.pending_grasp.values(), *h.hold_verified.values(), *h.possible_contact_after_close.values()]
+        arms={"left","right"}
+        flags=(h.pending_grasp,h.hold_verified,h.possible_contact_after_close)
+        known_unloaded=all(isinstance(row,dict) and set(row)==arms and
+                           all(value is False for value in row.values()) for row in flags)
+        known_unheld=(isinstance(h.held,dict) and set(h.held)==arms and
+                      all(value is None for value in h.held.values()))
         return {
-            "attempt_budget": self.attempts < self.max_attempts,
+            "attempt_budget": type(self.attempts) is int and 0 <= self.attempts < self.max_attempts,
             "only_visual_quality_stop": h.stop_reason == "VISUAL_ODOMETRY_UNCERTAIN",
             "not_terminal": terminal is False,
             "unseen_world_search": bool(h.stage == "SEARCH" and h.search_reference == "world" and
@@ -50,8 +55,8 @@ class SearchReanchor:
                 h.goal.kind in ("navigate", "pick")),
             "base_search_not_reposition": bool(action and action.part == "base" and
                 action.move in ("yaw_plus", "yaw_minus") and c.reposition_left == 0 and c.pending_exploratory),
-            "no_load_or_contact_history": bool(not self.ever_closed and all(x is False for x in flags) and
-                all(x is None for x in h.held.values()) and not h.completed),
+            "no_load_or_contact_history": bool(self.ever_closed is False and known_unloaded and
+                known_unheld and not h.completed),
             "calibrated_open_latches_and_apertures": calibrated_open(c, state),
             "no_held_or_blocked_anchors": bool((c.inspector is None or not c.inspector.anchors) and
                 (c.approach_monitor is None or not c.approach_monitor.blocked)),
@@ -123,8 +128,10 @@ class SearchReanchor:
             receipt["reason"] = "HOLD_CHAIN_FAILED"
             return receipt, None
         T = checked_transform(chain)
+        angle=math.acos(float(np.clip((np.trace(T[:3,:3])-1)/2,-1.,1.)))
+        receipt["hold_total_rotation_rad"]=angle
         if (np.linalg.norm(T[:2, 3]) > .01 or abs(math.atan2(T[1, 0], T[0, 0])) > .02 or
-                abs(T[2, 3]) > .005 or not calibrated_open(c, state)):
+                angle > .02 or abs(T[2, 3]) > .005 or not calibrated_open(c, state)):
             receipt["reason"] = "HOLD_NOT_OBSERVED_AT_REST"
             return receipt, None
         receipt.update(valid=True, reason="NEW_LOCAL_REFERENCE_AFTER_MEASURED_HOLD_NOT_OLD_POSE_RECOVERY",
