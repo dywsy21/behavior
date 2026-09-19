@@ -44,6 +44,7 @@ from run_v2 import implementation_digest
 from replay_contact_audit import preserved_session, report_failure
 from native_teacher_near_grasp import SCHEMA as NEAR_SCHEMA
 from native_teacher_reference_contract import check_actual_joint_bounds,source_state_diagnostic
+from native_teacher_capacity import capacity_limits,near_artifact_budget
 
 PILOT_TOKENS = [t for t in TOKENS if not t.startswith("BASE_") and
                 not any(axis in t for axis in ("ROLL", "PITCH", "YAW"))]
@@ -71,6 +72,13 @@ def rest_screen(states):
 
 def require_release(value, code, executor):
     near=value.get("schema")==NEAR_SCHEMA
+    if near:
+        capacity_limits(value)
+        if any(type(value.get(k)) is not int for k in ("max_resets","max_candidates_per_instance",
+                "native_controls_max","seconds_after_reset","max_teacher_primitives","model_calls")):
+            raise ValueError("Integer near-grasp limits required; bools/floats are not budgets")
+    elif any(k in value for k in ("capacity_profile","prior_experiment_roots","combined_total_MiB")):
+        raise ValueError("Capacity profiles only apply to the explicit near-grasp protocol")
     if (value.get("schema") not in (SCHEMA,NEAR_SCHEMA) or value.get("authorize_collection") is not True or
             value.get("collector_commit") != code or value.get("executor_digest") != executor or
             value.get("h14_body_and_finger_safety_reviewed") is not True or not value.get("reviewer") or
@@ -79,7 +87,6 @@ def require_release(value, code, executor):
     if near and (value.get("authorize_offline_teacher") is not True or value.get("allow_known_empty_rotation") is not True or
                  value.get("allow_grasp_cell_attempt") is not True or
                  value.get("native_controls_max")!=420 or value.get("seconds_after_reset")!=900 or
-                 value.get("run_MiB")!=100 or value.get("total_MiB")!=384 or
                  value.get("max_teacher_primitives")!=12 or value.get("model_calls")!=0 or
                  not isinstance(value.get("experiment_root"),str)):
         raise ValueError("Exact one-reset near-grasp budget/rotation authorization required")
@@ -203,7 +210,7 @@ def main():
         if teacher_spec["verb"] == "PLACE_IN":
             raise ValueError("PLACE_IN all-corners volume adapter not yet independently validated; no reset")
     x.output.mkdir(parents=True, exist_ok=False)
-    artifacts = (ArtifactBudget(x.output,release["experiment_root"],100*1024**2,384*1024**2) if near else
+    artifacts = (near_artifact_budget(x.output,release) if near else
                  ArtifactBudget(x.output, x.prepared.resolve().parent.parent))
     current_writer = artifacts
     import shutil
