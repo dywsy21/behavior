@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 08:24当前：** H19实际服务209877/GPU3/8924、`server_h19_fullenv`已ready；唯一原起点211843于08:23:31 BJT提交`/mnt/nvme_tmp/robodojo_agentic_20260919/h19_combined_fullstart/radio_h19_fullstart`，同0d不可变源、零两类前缀，原192/6144/7200s。模型完整PYTHONPATH必须是`/mnt/sdc1/robodojo/behavior_dev/semantic_structured_20260919/deps_817f944:/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917/deps:<固定source>/src`：前者decoder817，后者HF5.7.0；共享HF4.57.1不识别qwen3_5。**模拟器不加载这两个overlay**。208180/208920均加载前失败/0calls/已退出，两个日志保留。Astra新不可变`git_worktrees/vlm_sft_h09v_123837d`仅CPU81＋331过、near396准备78,412B，GPU1仍空待父放行，不是已采集/训练。
+
 **2026-09-19 08:13当前：** H19首次208180因launcher遗漏decoder overlay在加载前退出/0调用，`server_h19.log`保留；新208920/GPU3/8924于08:12:35提交`server_h19_envfix`，源仍不可变0d。模型服务必须复用已固定`/mnt/sdc1/robodojo/behavior_dev/semantic_structured_20260919/deps_817f944`，以`PYTHONPATH=<该overlay>:<固定source>/src`加载；虚拟环境自身没有该依赖，不要重复安装/改共享环境。原起点agent未启动。
 
 **2026-09-19 08:09当前：** H19两门203694/203695通过/退出，完整链/主SHA/视频已父核，新GPU3服务208180于08:09:01 BJT提交，端口8924、`h19_combined_fullstart/server_h19`及log、固定`semantic_combined_0d34ec7`源；原起点agent未启。完整门副本正传本地h19_gates_bundle；原server_h15/156556结束，不再调用。Astra仍≤600s格点教师CPU，GPU1无新物理/训练。

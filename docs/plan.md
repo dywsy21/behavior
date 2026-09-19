@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 08:25（北京时间）H09V格单元独立终审/单次near先导放行（Codex/Astra）：** 父完整读630→123及实际collector，固定123837d独立81/.286s＋600随机几何/一次性边界通过（13闭爪提案均符合原精确门或真正格单元局部极小），无新阻塞；不把安全筛选后空列表当几何极小，不改变原物理GRASP/hold成功门。Astra远端123/239cb591、prepare b146d41b…d400、spec6c2cccb8…5217、父review06fbd9aa…436a、真实factory/来源/81＋331均过。**现仅放GPU1一次task1/e310/train192/seed0、396精确专家前缀的near-grasp**，新run `h09v_native_task1_v1`，≤12原生动作/420新控制含初停12与末hold/900s/100MiB，原根含失败累计384MiB、余≥80GiB、0模型/训练，不自动retry；由Astra生成绑定准确SHA的active授权并启动、监控、完整下载，父随后亲看真实图像/物理账本，之前所有记录隔离。是原生教师局部测试，非原phase-start/VLM效果/官方SR；真实产率出来后另定窄GRASP SFT有限块，不停在准备报告。
+
+**2026-09-19 08:24（北京时间）H19唯一原起点实际启动（Codex）：** 完整原双overlay CPU核验通过，GPU3服务209877/8924于08:15:52载入，同0d/原27B revision、HF5.7.0、decoder817、0/431 ready；前两启动失败均留档。08:23:31 BJT唯一`h19_combined_fullstart/radio_h19_fullstart`211843提交初始化，准确0d/621bd7c5、零专家/零保存策略前缀、新规划，显式fullstart192，原192决策/6144控制含hold/7200s/3GiB，根4GiB/余80GiB，不追加reset。双门完整本地审计6.309s/835控制与六主SHA皆过，路径h19_gates_bundle；不是任务成功。H09V父在固定123837d独立81/.286s通过、全grid增量与实际collector审完，最后边界核后放原登记near单例；目前仍0新native/训练。Git干净pull/fetch，main无新增，未热改任何运行源。
+
 **2026-09-19 08:14（北京时间）完整模型overlay诊断（Codex）：** 208920同样加载前退出/0调用，错误是共享HF4.57.1不认识qwen3_5；上一仅恢复decoder而遗漏旧HF5.7 overlay，不能称环境已恢复。两失败保留，agent/reset仍0。下一≤180s只CPU整体核原`semantic_agent_20260917/deps`＋decoder817＋源码三个路径：实际Torch/HF版本/路径、AutoConfig/AutoProcessor、模型类映射和decoder源码，全部吻合旧服务后才登记一次完整环境启动；不执行错误日志建议的pip升级、不改共享库或门，原431调用未用。
 
 **2026-09-19 08:13（北京时间）H19依赖恢复/已审H09V合入（Codex）：** 原overlay真实import及decoder direct_url 817f944确认，未安装新包；08:12:35 BJT仅新GPU3服务208920/8924/`server_h19_envfix`提交，PYTHONPATH显式`semantic_structured_20260919/deps_817f944:<固定0d>/src`，原失败208180保留，agent仍未启。父已审630合入615c9be，合并后368/6.362s＋75/.257s过并push；未热改H19或原aff远端，Astra格单元增量仍在独立CPU票内，尚无native GRASP正轨迹/新训练。
