@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 21:56（北京时间）H09W原生完整GRASP终态待父全审/H21双门真实提交（Codex/Astra）：** 317744已退出并释放主GPU3，H09W result `COLLECTED_QUARANTINED_NOT_SFT`，396＋327普通native＋实际hold=724控制、10宏、107,340,216B，tick723局部oracle成功且hold724仍成功/12稳定ticks；0模型训练、不是官方SR或VLM效果，完整293run＋log/launch双端审/父人工正在收尾。源与旧失败全部保留，未放BC。父接回GPU3后，21:55:19.548479 BJT唯一cc/244两门`gate_radio_h21`328327/`gate_plates_h21`328328已初始化提交，新NVMe `h21_search_reanchor`/相邻log/launch_gates.json；原各24/1536/1200s/340MiB/0模型/两前缀，根4GiB/余80GiB，未新服务/原起点策略。当前分工：Astra本轮采集全审＋后继CPU设计，父新门监控和H09W图/物理独核；没有热改任何活跃源。
+
 **2026-09-19 21:52（北京时间）H21远端CPU就绪/H09W初态父亲审（Codex）：** 新不可变`git_worktrees/semantic_reanchor_cc249c9`准确cc/244，远端381/20.933s、含digest总21.973s通过且源干净，0物理/模型；旧bd46/f991保留不热改，H21待317744退出后GPU交接。父亲看H09W初态head/双腕3 RAW，地面桶沿与右手相对位置符合GRASP起点，图像不能单独证明无接触；独核7payload/3depth SHA、396+12时钟、actor白名单/对应proprio/空真实动作史/capture SHA dd710490…b8a0。完整后态仍待、所有记录隔离，不是已训练/成功。完整初态本地子worktree `artifacts/h09w-native-task1-v1/initial/`。
 
 **2026-09-19 21:49（北京时间）H21独立终审通过/后继物理仅预登记（Codex/Astra）：** 固定cc249c9两P2关闭，Astra独立381/6.595s＋13恢复/.188s＋33负例/.081s通过，无新增阻塞；新局部参考不等于恢复旧位姿/安全或任务成功。`h21_search_reanchor_block.json`明确同0d模型/任务138/seed0/192决策6144总控制7200s、最多2×12恢复HOLD计入总额、GPU3新根4GiB/余80GiB，先2同源24决策工程门再唯一0两前缀回合（3reset总上限），目前未启动，需H09W退出/资源交接及新cc远端CPU。Astra核原317744已396＋49新控制、1宏、IN_PROGRESS，继续唯一原预算；父不抢GPU3。H21主CPU实现/独立审已在原1800s内完成，下一仅≤300s新不可变cc远端381回归，不热改bd46或f991。

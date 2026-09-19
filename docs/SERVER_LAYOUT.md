@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-19 21:56当前：** H09W317744已退出，`h09w_native_complete/native_task1_v1`保留107.34MB/724控制/局部GRASP成功但隔离，完整本地子`artifacts/h09w-native-task1-v1/complete/`正在全核。GPU3现在父唯一两H21门328327/328328，新`/mnt/nvme_tmp/robodojo_agentic_20260919/h21_search_reanchor`/两个相邻log/launch_gates.json，固定`semantic_reanchor_cc249c9`，不能热改。新VLM服务和完整策略尚未启，队友进程不触。
+
 **2026-09-19 21:52当前：** H21新不可变`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_reanchor_cc249c9`固定cc249c9/digest2445784a，仅381 CPU通过，无新物理/model。旧bd46同目录前缀的CPU副本保留。H09W仍原317744/GPU3/f991，初态完整本地子worktree`artifacts/h09w-native-task1-v1/initial/`，父3 RAW/7payload+3depth hash审过，后态待。
 
 **2026-09-19 21:38当前：** H09W唯一PID317744/GPU3于21:37:50 BJT启动初始化，新NVMe `robodojo_vlm_sft_20260919/h09w_native_complete/native_task1_v1`与相邻log/launch.json；active授权位于原SDA根`authorization_h09w_native_task1_v1.json`SHAea4c255c…4d57，固定f991/239源不可热改。当前无本轮VLM服务/训练，父H21仅CPU379通过待独立审。队友GPU0/1/2与313698副context不动。
