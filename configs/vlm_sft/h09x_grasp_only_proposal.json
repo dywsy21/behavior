@@ -1,0 +1,33 @@
+{
+  "status": "CPU_REVIEWED_PROTOCOL_PROPOSED_BUDGET_NOT_AUTHORIZATION",
+  "authorize_acquisition": false,
+  "authorize_training": false,
+  "authorize_evaluation": false,
+  "owner": "Astra-max-vlm-sft-showharness",
+  "protocol": "h09x-current-robot-pose-v1",
+  "protocol_code": "564d08c2237c9d6a1568940c756e43239fc7a154",
+  "executor_digest": "239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b",
+  "source_audit_sha256": "5cb0ed5a5c4ca48e5148dbeab4406c373242bcd3764c4ebb5a8d9864c7934278",
+  "counts_sha256": "d94850ebfeadeef8b28f618e543ebae7cb7a18bd127c5d79ba6f4c18c0f015e3",
+  "train_instances": [[1, 192], [1, 114]],
+  "heldout_instances": [[1, 1], [1, 71]],
+  "heldout_strata": {"1": "left_hand_unseen_training_hand_OOD", "71": "right_hand"},
+  "next_reference": {"task": 1, "episode": 264, "instance": 114, "seed": 0, "prefix_controls": 596, "expert_segment_controls": 590, "tail_controls": 12, "final_hold_controls": 1, "max_controls": 1199, "max_resets": 1, "after_reset_seconds": 1200, "initialization_seconds": 900, "max_run_mib": 80},
+  "proposed_training_acquisitions": [
+    {"instance": 114, "prefix_controls": 993},
+    {"instance": 192, "prefix_controls": 392},
+    {"instance": 114, "prefix_controls": 989},
+    {"instance": 192, "prefix_controls": 388},
+    {"instance": 114, "prefix_controls": 985}
+  ],
+  "per_native_run": {"max_primitives": 12, "max_new_controls_including_settle_hold": 420, "after_reset_seconds": 1200, "initialization_seconds": 900, "max_run_mib": 384, "retries": 0},
+  "data_gate": {"complete_successful_trajectories": 4, "per_training_instance": 2, "actual_macros": 32, "causal_close": 4, "lift_macros": 8, "preclose_corrections": 8, "distinct_nonhold_tokens": 4, "actual_rotation_required": true, "within_instance_near_duplicate_position_m": 0.003, "within_instance_near_duplicate_angle_deg": 0.75, "failed_positive_bc": 0, "full_parent_review_binding_required": true},
+  "training": {"fresh_base": "Qwen3.5-2B", "old_h09_adapter_reused": false, "seed": 41, "lora_rank": 16, "lora_alpha": 32, "lora_dropout": 0.05, "learning_rate": 0.00005, "effective_batch_size": 8, "microbatch": 2, "max_updates_including_gate": 120, "gpu_wall_seconds": 2700, "checkpoint_selection": "fixed_terminal_not_heldout_selected", "max_artifact_mib": 256},
+  "paired_evaluation": {"instances": [1, 71], "prefixes": [832, 1038], "policies": ["base", "finetuned", "train_only_proprio_history_nearest_neighbor"], "total_resets": 6, "max_neural_action_calls": 48, "hidden_local_oracle_actor_feedback": false},
+  "total_future_max_resets": 12,
+  "total_future_max_controls": 15176,
+  "new_nvme_root_gib": 6,
+  "minimum_free_gib": 80,
+  "official_full_task_success_claim": false,
+  "pending_interfaces": ["new source preparation identities and purpose split", "reviewed trajectory release plus actual training image SHA", "new service forced protocol", "training GPU and protocol identity gate", "deployment-only empty-hand rotation eligibility without privileged teacher state"]
+}
