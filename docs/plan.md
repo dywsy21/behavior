@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 22:06（北京时间）H09W父独立全账本与23 RAW审通过（Codex）：** 完整295文件/107,345,578B的SHA与远端1f8b2f30清单一致；父另写只读audit独核396逐维前缀、723 issued=completed＋实际hold724、30capture/210payload/90depth SHA与robot-only FK、10宏actor白名单/真实历史及区间，317次oracle含初态与末hold完全重算一致（1.484s）。目标升36.9722mm、手升38.4660mm、末12相对3.139μm/.001209°、原严格GRASP/保持成功。本人已看初态三图＋全部10宏停稳head＋0/3/5/8/9双腕，共23真实RAW；桶壁闭爪和随动与账本一致，左腕多地面、无hold后新图，不靠图片证明毫米值/碰撞安全。`configs/vlm_sft/h09w_native_parent_review.json`接受为**单条候选轨迹**，原quarantine不改、尚不放整体BC/训练；2+2来源/新robot-only输入协议和配对评测仍由Astra在原CPU票准备。局部教师成功不等于VLM或官方SR。
+
+**2026-09-19 22:02（北京时间）续接实核/后继SFT CPU票（Codex/Astra）：** 已fetch，main仍33677bd；保留原四份本线程未提交进度，核后a99c741提交push，没有热pull活跃源。H21原328327/328328均已实际reset与控制（44/48），未到result，继续原24/1536/1200s；无新模型。Astra核actor目前确缺EEF姿态/全q，当前RGB是否足够未证实，不能直接归因。下一≤1800s仅CPU：作者独占SFT协议/测试，在新版本由当前capture q和固定robot-only FK加入姿态/关节，基础与微调输入同构、禁止对象真值/未来；提出至少2训练＋2实例组留出的GRASP-only最小来源/预算，排除旧5%与反复诊断实例，不随机拆相邻帧。H09W完整静态包改tar流传输，部分scp明确隔离；295 SHA/父图像和物理全审前仍不放BC。此票没有新reset、GPU训练或自动扩采，父继续H21与独立review。
+
 **2026-09-19 21:56（北京时间）H09W原生完整GRASP终态待父全审/H21双门真实提交（Codex/Astra）：** 317744已退出并释放主GPU3，H09W result `COLLECTED_QUARANTINED_NOT_SFT`，396＋327普通native＋实际hold=724控制、10宏、107,340,216B，tick723局部oracle成功且hold724仍成功/12稳定ticks；0模型训练、不是官方SR或VLM效果，完整293run＋log/launch双端审/父人工正在收尾。源与旧失败全部保留，未放BC。父接回GPU3后，21:55:19.548479 BJT唯一cc/244两门`gate_radio_h21`328327/`gate_plates_h21`328328已初始化提交，新NVMe `h21_search_reanchor`/相邻log/launch_gates.json；原各24/1536/1200s/340MiB/0模型/两前缀，根4GiB/余80GiB，未新服务/原起点策略。当前分工：Astra本轮采集全审＋后继CPU设计，父新门监控和H09W图/物理独核；没有热改任何活跃源。
 
 **2026-09-19 21:52（北京时间）H21远端CPU就绪/H09W初态父亲审（Codex）：** 新不可变`git_worktrees/semantic_reanchor_cc249c9`准确cc/244，远端381/20.933s、含digest总21.973s通过且源干净，0物理/模型；旧bd46/f991保留不热改，H21待317744退出后GPU交接。父亲看H09W初态head/双腕3 RAW，地面桶沿与右手相对位置符合GRASP起点，图像不能单独证明无接触；独核7payload/3depth SHA、396+12时钟、actor白名单/对应proprio/空真实动作史/capture SHA dd710490…b8a0。完整后态仍待、所有记录隔离，不是已训练/成功。完整初态本地子worktree `artifacts/h09w-native-task1-v1/initial/`。
