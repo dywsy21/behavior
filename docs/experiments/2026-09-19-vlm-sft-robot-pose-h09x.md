@@ -46,7 +46,7 @@
 4. **训练一次小2B，不续旧adapter。** 复用原Qwen3.5-2B权重，language-only LoRA r16/alpha32/dropout.05，LR5e−5、有效batch8/microbatch2、seed41，固定120总更新（含最初2步真实loss/梯度/原生CE和reload门）、单GPU≤45min、adapter/小状态≤256MiB；固定终点、不按heldout表现挑checkpoint/反复调参。假设产率近W的10宏/轨迹，6条最多约60条，不足以支持广泛泛化；学习/过拟合都需要报告。
 5. **留出同预算物理效果。** 两留出原TRAIN实例的832/1038精确prefix，base、FT和预登记非视觉proprio＋已执行history最近邻各一次，共6reset；每例同12决策/420新controls/reset后1200s/初始化900s，合计5610prefix＋≤2520新controls、最多48个神经动作调用。最近邻只由TRAIN合法本体/历史拟合，不能读目标真值、phase index或留出教师pose；另零模型静态报重复上一动作/仅history规则，防把固定动作序列背诵称视觉收益。左手OOD与右手同分布分开给原始1例/策略计数，不作统计显著性结论。局部oracle只作事后审计，不反馈actor、不因hidden grasp truth提前结束/改变动作；完整任务SR另报，不因本局部任务成功冒称完成捡垃圾。
 
-整个后继最多12个新reset（1参考＋5采集＋6评测），13176个新实际控制上限（含所有付费prefix、settle/hold），0自动retry；初始化与reset后上限合计≤7h，训练45min，另CPU/传输不冒充GPU时间。新NVMe独立root拟≤6GiB，所有旧根保留另计；5×384MiB采集＋6×384MiB评测＋80MiB参考＋256MiBadapter＋余量仍可容纳，双盘余≥80GiB。这个总额是**分阶段上限建议，不是已授予/必须跑满**。H09W单例828秒含初始化只给吞吐参照，不能保证993前缀同速；给新实例余量不等于降低任何动作/物理质量门。
+整个后继最多12个新reset（1参考＋5采集＋6评测），15176个新实际控制上限（1199参考＋3747采集prefix＋2100采集native＋5610评测prefix＋2520评测native，含所有settle/hold），0自动retry；初始化与reset后上限合计≤7h，训练45min，另CPU/传输不冒充GPU时间。新NVMe独立root拟≤6GiB，所有旧根保留另计；5×384MiB采集＋6×384MiB评测＋80MiB参考＋256MiBadapter＋余量仍可容纳，双盘余≥80GiB。这个总额是**分阶段上限建议，不是已授予/必须跑满**。H09W单例828秒含初始化只给吞吐参照，不能保证993前缀同速；给新实例余量不等于降低任何动作/物理质量门。
 
 ## 下一块必须补齐的小接线，不掩盖为“命令已可运行”
 

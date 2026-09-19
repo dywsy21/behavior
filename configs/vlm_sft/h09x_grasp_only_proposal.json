@@ -25,7 +25,7 @@
   "training": {"fresh_base": "Qwen3.5-2B", "old_h09_adapter_reused": false, "seed": 41, "lora_rank": 16, "lora_alpha": 32, "lora_dropout": 0.05, "learning_rate": 0.00005, "effective_batch_size": 8, "microbatch": 2, "max_updates_including_gate": 120, "gpu_wall_seconds": 2700, "checkpoint_selection": "fixed_terminal_not_heldout_selected", "max_artifact_mib": 256},
   "paired_evaluation": {"instances": [1, 71], "prefixes": [832, 1038], "policies": ["base", "finetuned", "train_only_proprio_history_nearest_neighbor"], "total_resets": 6, "max_neural_action_calls": 48, "hidden_local_oracle_actor_feedback": false},
   "total_future_max_resets": 12,
-  "total_future_max_controls": 13176,
+  "total_future_max_controls": 15176,
   "new_nvme_root_gib": 6,
   "minimum_free_gib": 80,
   "official_full_task_success_claim": false,
