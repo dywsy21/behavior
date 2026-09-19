@@ -1,4 +1,4 @@
-# H09W：原生教师完整记录容量（仅CPU，未新物理）
+# H09W：原生教师完整记录容量与唯一真实GRASP先导
 
 负责人Astra；父独占harness/总计划。2026-09-19 08:46:17 BJT开始，≤600s CPU、0reset/控制/模型/训练。父已依据H09V完整真实证据批准本CPU票：唯一假设是100MiB记录限额不足，新增显式384MiB run配置能容纳原12宏的保守证据上界；不修改教师/动作/成功门，不把容量验证叫方法A/B。
 
@@ -27,3 +27,15 @@ collector仅改profile验证和构造预算对象；仍12macro/420新控制含�
 早晨`f9916dbb2f5679c0b9a2d6fbd19480e222aa7b07`已提交推送，随后额度/compact中断；不是原600秒块一直运行。21:27新独立CPU票在robo维护clone显式fetch，新增干净不可变`git_worktrees/vlm_sft_h09w_f9916db`，未pull/改活跃源。远端87 SFT/0.712s、331 harness/15.323s通过，executor仍`239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b`。真实factory仅加载`picking_up_trash/train/192/seed0`，396×23 float32前缀逐值一致，SHA`f92baf548a56b651e13e99f3519a6a5b1df98177fefde4c74dc1012a5f4a1447`；原b146准备、完整P3实际轨迹/种子/父审核及两239工程门绑定均过。CPU回执SHA`e4ed15d5d5ec0bca6255f058acb3ccaebf59139dc8ddf0db36ad620c5961ceee`、inactive授权SHA`d7a439b0e17b416d1e773aada9d0e1dadd15b8d4453cdade5c83fb807ac77d4e`，均在旧SDA根且双端校验到本地`artifacts/h09w-deploy-f9916db/`；执行入口对inactive明确拒绝。
 
 21:35父另放单次物理：GPU1已被队友RL占用，父归档停止自身GPU3旧模型后将GPU3主仿真交本轮，队友副context不动。**GPU硬件选择不同于H09V，不宣称严格容量单变量A/B。** 新active授权`authorization_h09w_native_task1_v1.json`SHA`ea4c255c4988b83334415cd6486918d55447c2936650a439251e3c17af3b4d57`绑定f991、父新票及CPU回执，旧inactive未覆盖。21:37:50.330924 BJT／13:37:50.330924 UTC，唯一PID317744提交，run为`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09w_native_complete/native_task1_v1`，日志相邻`native_task1_v1.log`，`launch.json`记录完整命令/资源。启动前GPU3余80,939MiB、仅保留队友313698副context；两盘余128,473,370,624B／2,936,187,805,696B，旧根209,906,360B继续累计。原task1/e310/TRAIN192/seed0、396前缀＋≤420新控制含初12停稳与末hold、≤12宏/900秒、run384MiB/新根512MiB/跨根768MiB/余80GiB及全部动作/物理成功门不变；0模型/训练，无自动重试。此处仅为真实提交，尚无完成/成功；即使局部oracle通过也先隔离，待父完整图像与控制审后才可作为BC来源。
+
+## 21:51终态与22:04完整证据核验（北京时间）
+
+同一317744正常退出，21:51:38.578453结果落盘；从提交含初始化到结果828.2475s，不能把它冒称精确的reset后时间。真实396专家prefix＋327普通native＋1实际末hold=724控制，10完整macro，无failure.json，0模型/训练。动作顺序是LEFT、YAW+、LEFT、ROLL−、YAW+、CLOSE、UP×4（均RIGHT）。最终tick723及末hold724的独立物理局部GRASP均SUCCEEDED，12稳定ticks；没有官方完整任务成功声明。
+
+作者双端重算全部316后初始化oracle verdict逐字段一致，317私有frame含initial与hold；152个目标身份持物/指接触tick、16成功tick。最终目标相对初始抬升36.9721800mm，手相对首次CLOSE抬升38.4660363mm；末12帧目标—手相对平移最大3.139μm、角变化0.00120934°，0新增被记录的禁接触。396×23前缀逐值吻合，723普通issued/completed逐条相同，末hold为724且保持最后已发夹爪latch；90 depth数组hash、全部capture/q时钟核过。该判据不是全环境无碰撞证明，也不是VLM产生的动作。
+
+run107,340,216B；run293文件＋log/launch共295文件107,345,578B，完整双端大小/SHA均相同。清单`h09w_native_task1_v1_hashes.json`SHA`1f8b2f307ee20b021e2817f30b15430476bdab2dad71ed0636c1fb5fd6388025`；result`43386bee5add2c6a28902d61214c8030d3a062f8ac4b2ce2fd1e1df17d0a065c`；final_hold`c3b245e94521870195c5d78211b34c8e8bfe1a14d05dc239db7c1ab6daa51bb8`。完整本地 `/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09w-native-task1-v1/complete/native_task1_v1/`，30个capture各三RAW，共90图。最后settle图在tick723；末hold724只有真实控制/私有物理回执，没有伪造一组新RGB。首慢速SCP中断的部分副本在相邻`partial_scp/`保留；之后tar流完整传输exit0才进行最终295核验，先前未完整时FileNotFound不算通过。
+
+本地作者audit为`complete/h09w_native_audit_local.json`，SHA`7215576ceb8a6d2a82338b77a24e399d5316bc32b77fa31e9645ab0cc7fe3b4c`；远端独立重算SHA`0f92447f39f0aa7b3094a7bc1674e857893bf0167360fcd1de0621a6dc45f6ca`，末矩阵运算有1e−16量级跨CPU差异，verdict完全一致。作者人工看初始三RAW、05 before右腕与05 settled head/右腕、07 settled head、09 settled三RAW（10张），观察到桶沿闭爪及随后桶随手上移，不能单凭图像量化持物稳定。
+
+父独立审查在commit`b8c5c87`的`configs/vlm_sft/h09w_native_parent_review.json`：295 SHA、396×23、issued/completed与hold、30capture210payload90depth、FK/actor/history与全部oracle重算过；父亲看初始3＋全部10 settled head＋0/3/5/8/9双腕，共23 RAW（不是全90）。**这一条完整native轨迹可作为后继明确分组的数据来源；旧quarantine文件仍不改，未授权训练或再采集。** 原H09V容量失败及其8条隔离动作不追认正BC。GPU3已交回父H21门。下一H09X仅CPU补当前机器人姿态输入及2训练/2留出实例来源，不能以这一条高度序列相关轨迹声称泛化或微调效果。
