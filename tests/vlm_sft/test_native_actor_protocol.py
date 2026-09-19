@@ -17,7 +17,7 @@ import native_actor_protocol as p
 from common import CAMERAS, sha, write_json
 from live import runtime_proprio as legacy_proprio
 from modeling import messages, encode, collate
-from native_grasp_sources import reserve_groups
+from native_grasp_sources import reserve_groups, audit_source, npy_sha
 from semantic_robot.v2.kinematics import RobotModel
 
 
@@ -141,6 +141,24 @@ class PoseProtocolTests(unittest.TestCase):
         self.assertTrue(all((r["task"], r["instance"]) not in blocked for _, r in groups))
         duplicate = copy.deepcopy(counts); duplicate["sources"].append(groups[0][1])
         with self.assertRaises(ValueError): reserve_groups(duplicate)
+
+    def test_source_action_index_is_prefix_length_not_one_frame_before(self):
+        states = np.zeros((60, 61)); actions = np.zeros((60, 23)); actions[:, [14, 22]] = 1
+        actions[30:, 22] = -1
+        skill = json.dumps([{"verb": "GRASP", "arm": "RIGHT", "unbound_relation": False}])
+        labels = [{"frame_index": i, "active_skills_semantic_json": skill,
+                   "source_kind": "original_demo", "memlite_branch": "low", "low_action_supervision_mask": True,
+                   "segment_start": 10, "segment_end": 50, "action_horizon_end": 50} for i in range(60)]
+        h = hashlib.sha256(states.tobytes()+actions.tobytes())
+        h.update(json.dumps(labels, sort_keys=True, separators=(",", ":")).encode())
+        source = {"episode": 9, "frames": 60, "extracted_arrays_and_labels_sha256": h.hexdigest()}
+        def column(array): return SimpleNamespace(to_pylist=lambda: array.tolist(), to_numpy=lambda: array)
+        data = {"observation.state": column(states), "action": column(actions), "frame_index": column(np.arange(60))}
+        selected = audit_source(source, data, labels, [])["selected_earliest_eligible"]
+        self.assertEqual(selected["first_close_action_index_zero_based"], 30)
+        self.assertEqual(selected["first_close_control_one_based"], 31)
+        self.assertEqual(selected["near_prefix_controls"], 30)
+        self.assertEqual(selected["near_prefix_sha256"], npy_sha(actions[:30]))
 
 
 if __name__ == "__main__": unittest.main()

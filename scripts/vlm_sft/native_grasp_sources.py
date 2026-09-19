@@ -66,16 +66,20 @@ def audit_source(source, data, label_rows, quarantine):
             if any(arm not in ("left", "right") for arm in arms): raise ValueError("Unsupported source hand")
             close = [(f, arm) for f in range(max(start, 2), end-17) for arm in arms
                      if actions[f, 14 if arm == "left" else 22] < -.5 and
+                     np.count_nonzero(actions[f, [14, 22]] < -.5) == 1 and
                      np.all((actions[f-1, [14, 22]] >= .999) & (actions[f-1, [14, 22]] <= 1)) and
                      np.all((actions[f-2, [14, 22]] >= .999) & (actions[f-2, [14, 22]] <= 1))]
             if not close: raise ValueError("No single-hand CLOSE after two actual full-open source commands")
             first = min(f for f, arm in close)
             at_first = [arm for f, arm in close if f == first]
             if len(at_first) != 1: raise ValueError("Simultaneous both-hand CLOSE is not this pilot")
-            near = first-1  # Same prospective rule as H09V, not fitted to runtime outcome.
+            # Index f is the NEXT source action after f prefix controls. The
+            # first CLOSE index396 is control397; H09V's paid prefix is396.
+            near = first
             if not start < near < end-16: raise ValueError("No complete interior near-grasp reference")
             row.update(status="SOURCE_AVAILABLE_PHYSICAL_SEED_UNVERIFIED", hand=at_first[0],
-                first_close_control_index=first, near_prefix_controls=near,
+                first_close_action_index_zero_based=first, first_close_control_one_based=first+1,
+                near_prefix_controls=near,
                 near_prefix_sha256=npy_sha(actions[:near]), source_prefix_sha256=npy_sha(prefix),
                 source_segment_sha256=npy_sha(segment), reference_controls_with_tail_hold=end+13,
                 selection=selection, native_success=False)
