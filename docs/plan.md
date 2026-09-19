@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-19 22:08（北京时间）H21首图/模型环境核验（Codex）：** 两门原进程已执行至约11/12决策，仍未出result；本人亲看本次首head RAW，分别壁炉/厨房原起点，与零前缀一致。对固定cc源做13.157s CPU整套模型依赖预检，HF5.7.0/Torch2.7.1+cu128/qwen3_5/Qwen3VLProcessor/decoder817均吻合；未加载权重/调用模型/新reset，不重复早晨缺overlay错误。策略仍待原两门完整验收，门的初图在`artifacts/agentic-vlm-goal-20260918/h21_gate_previews/`。
+
 **2026-09-19 22:06（北京时间）H09W父独立全账本与23 RAW审通过（Codex）：** 完整295文件/107,345,578B的SHA与远端1f8b2f30清单一致；父另写只读audit独核396逐维前缀、723 issued=completed＋实际hold724、30capture/210payload/90depth SHA与robot-only FK、10宏actor白名单/真实历史及区间，317次oracle含初态与末hold完全重算一致（1.484s）。目标升36.9722mm、手升38.4660mm、末12相对3.139μm/.001209°、原严格GRASP/保持成功。本人已看初态三图＋全部10宏停稳head＋0/3/5/8/9双腕，共23真实RAW；桶壁闭爪和随动与账本一致，左腕多地面、无hold后新图，不靠图片证明毫米值/碰撞安全。`configs/vlm_sft/h09w_native_parent_review.json`接受为**单条候选轨迹**，原quarantine不改、尚不放整体BC/训练；2+2来源/新robot-only输入协议和配对评测仍由Astra在原CPU票准备。局部教师成功不等于VLM或官方SR。
 
 **2026-09-19 22:02（北京时间）续接实核/后继SFT CPU票（Codex/Astra）：** 已fetch，main仍33677bd；保留原四份本线程未提交进度，核后a99c741提交push，没有热pull活跃源。H21原328327/328328均已实际reset与控制（44/48），未到result，继续原24/1536/1200s；无新模型。Astra核actor目前确缺EEF姿态/全q，当前RGB是否足够未证实，不能直接归因。下一≤1800s仅CPU：作者独占SFT协议/测试，在新版本由当前capture q和固定robot-only FK加入姿态/关节，基础与微调输入同构、禁止对象真值/未来；提出至少2训练＋2实例组留出的GRASP-only最小来源/预算，排除旧5%与反复诊断实例，不随机拆相邻帧。H09W完整静态包改tar流传输，部分scp明确隔离；295 SHA/父图像和物理全审前仍不放BC。此票没有新reset、GPU训练或自动扩采，父继续H21与独立review。
