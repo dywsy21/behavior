@@ -1,0 +1,24 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-21T21:37:00+08:00",
+  "code_commit": "42f38b7cc73fbdb3f7ce88fedf7f7c5024518fb9",
+  "result_sha256": "a650020fb0dc98d5bae9bdc22029f8d35ed2ba626cac3e5454f7e0084e8b0cb8",
+  "real_model_calls": 3,
+  "seconds": 9.126050573773682,
+  "service_calls_before_after": [290,293],
+  "prior290_ledger_sha256": "2c3687ac93ac3d965d89b39aea6d1f43612be29ae32c2690cbab872c14cb75dd",
+  "all_three_candidate_guides_and_RAW_crops_personally_reviewed": true,
+  "original_full_RAW_review": "All3 views of each117/118/120 previously reviewed in H32;117 full head also re-viewed now",
+  "decisions": [
+    {"decision":117,"choice":5,"manual_semantics":"Visible red top/handle surface belongs to radio; not grasp certification","call_s":1.4813843350857496},
+    {"decision":118,"choice":null,"manual_semantics":"Original point is table/background; crop offers mostly background and ambiguous lower object edge. Abstention is appropriate but not positive localization","controller_HOLD_only_verified":true,"call_s":1.3938935711048543},
+    {"decision":120,"choice":0,"manual_semantics":"Visible red front surface belongs to radio; not grasp certification","call_s":1.479650131892413}
+  ],
+  "new_controls": 0,
+  "new_resets": 0,
+  "official_success_claim": false,
+  "local_GRASP_improvement_claim": false,
+  "local_evidence": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h33_neural_saved_v1",
+  "remaining_risk": "Refusal prevents the bad motion, but the ordinary next observation has no explicit surface-review failure feedback. Repetition/deadlock is a risk, not yet a measured closed-loop outcome.",
+  "next": "At most2 separately registered saved-state calls to test public abstention feedback before any new live rollout."
+}

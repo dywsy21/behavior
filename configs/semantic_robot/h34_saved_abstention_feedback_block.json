@@ -1,0 +1,23 @@
+{
+  "experiment_id": "H34-current-image-abstention-feedback-probe-v1",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-21T21:37:00+08:00",
+  "status": "REGISTERED_NOT_CALLED",
+  "hypothesis": "Giving the observer its actual public null-surface result may let it re-localize the visible target in another current view instead of repeating an unconfirmed wrist contact.",
+  "client_commit": "42f38b7cc73fbdb3f7ce88fedf7f7c5024518fb9",
+  "source_snapshot": "H30 decision118, exact original9 images/system/context except one added public review-feedback field",
+  "baseline": "Reuse archived H30 decision118 actual same27B observation (right_wrist UV[.5,.15]); no new baseline sampling",
+  "feedback_evidence_sha256": "a650020fb0dc98d5bae9bdc22029f8d35ed2ba626cac3e5454f7e0084e8b0cb8",
+  "feedback_scope": "Only prior view and real MODEL_ABSTAINED result; no oracle identity, 3D object pose, human-corrected UV or expected camera answer",
+  "existing_service": "2673116 GPU2 port8929, original revision1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0, code82754f1, 293 calls before",
+  "max_new_model_calls": 2,
+  "calls": "One new observation; if the existing H33 algorithm requests it, at most one surface choice. All outcomes retained, no retry.",
+  "wall_seconds": 300,
+  "output_MiB": 128,
+  "new_resets": 0,
+  "new_controls": 0,
+  "training_updates": 0,
+  "output": "/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/h34_feedback_saved_v1",
+  "acceptance": "Parent manually checks new pixel and any selected surface on exact RAW. Can support or reject prompt feedback integration, never physical success.",
+  "no_physical_or_deployment_authority": true
+}
