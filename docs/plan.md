@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 23:02（北京时间）父数据receipt显式字段补全（Codex）：** 正式3.10在新953父receipt缺CARRY_CONTRACT四显式字段时正确拒绝，未写dataset/未启动训练。父补已审不变的carry_duration_v1=true、2body、14宏、640含hold；物理结论/清单/代码/2100时限不变，原405e3a7证据仍保留。子使用新v2 sources绑定新receipt SHA再做正式34行覆盖，不代签/降门。
+
 **2026-09-21 23:00（北京时间）六评时限窄修父独审通过（Codex/Astra）：** 固定6f328877七路径全读、完整summary/控制与query上下文审，父独立201/5.651s过；公共8fdf及训练/服务/数据源码与8ad逐字不变。明确新tag才CARRY2100，旧1200不变，六槽授权/manifest/result/summary拒混且非有限/越时结果不计成功，动作/渲染/判据不变；receipt `h09z_evalwall_6f32887_parent_review.json`。子23:00前原900s内完成远端3.10/201/13.541s，正式34行coverage与新八inactive准备中；接真实SHA后立即放fresh120，不增加采集或训练研究。
 
 **2026-09-21 22:58（北京时间）旧父服务封存退出/H38只条件登记（Codex）：** H30＋静态探针共305调用，完整calls/identity已双端SHA核（8cec1891…b2e77/7894a21b…ccb1a）到本地`h30_server_complete_archive`；22:56:55仅TERM准确2673116，后核退出、GPU2与3各81152MiB空，队友0/1不动。H30配置旧running字段同步为官方timeout失败；全证据保留。`h38_appearance_physical_block.json`仅条件登记2顺序工程门＋1原起点回合（原24/1536/1200和192/6144/7200，官方3224不改），须6f独审后才新物理；独审留到子训练运行空档。无新父模型/重置。
