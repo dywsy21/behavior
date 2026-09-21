@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 19:17当前：** 父GPU2唯一模型2673116/8929已ready，原起点2673899于19:16:33.203375初始化；固定源`git_worktrees/semantic_workspace_82754f1`/827不热改。结果`/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/server_h30`与`radio_h30_fullstart`、同级log/launch_model/policy，父独立暖runtime同上。两H30 gate均退出，全本地在`artifacts/agentic-vlm-goal-20260918/h30_gates_bundle/`且父数值/RAW/视频审过。子两旧ws45均失败退出，完整110/195文件各在子worktree native_complete/，父全审闭；新duration/body2仍CPU/inactive，GPU3未新物理。SSH仍可偶发断连，提交前必须核同输出进程和独占文件，不能见断线就重跑。
+
 **2026-09-21 18:46当前：** 父新`h30_workspace_progress/gate_plates_h30`/2669109/GPU2于18:45:22.507036初始化，同级`gate_plates_h30.log`/`launch_plates.json`，仍固定`semantic_workspace_82754f1`和父独立暖缓存；radio首门完整本地在`artifacts/agentic-vlm-goal-20260918/h30_gates_bundle/gate_radio_h30`且父全链/RAW/独立复核已过。子第二`h09y_grasp_only/native_t1_i192_p0388_ws45`/2666104已退出、终态完整包待，第一380_ws45全195文件在子worktree native_complete/且父57RAW失败审已闭。连接18:37后曾SSH协商超时，单次`KexAlgorithms=curve25519-sha256`＋StrictHostKeyChecking=yes已恢复；未改服务器/本地ATrust中继或持久配置。不要按旧PID重启采集，0/1队友不动。
 
 **2026-09-21 18:20当前：** 父H30首`/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/gate_radio_h30`/2661586与子`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0380_ws45`/2659018均已退出；父24/442工程通过待全审，子6宏/603控制但未抓取失败、0BC。父源码`git_worktrees/semantic_workspace_82754f1`及自身`robodojo_harness_runtime_20260921/gripper_v1_gates`缓存保留，子固定`git_worktrees/vlm_sft_h09z_1cf0d1f`/独立缓存保留，不热改/删。GPU2/3当前两进程已释放，后继第二gate/388均未启动；0/1队友不动。
