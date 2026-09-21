@@ -148,11 +148,23 @@ class ServoLimits:
     divergent_angle: float = np.deg2rad(9)
     stall_ticks: int = 5
     emergency_ticks: int = 3
+    carry_duration_v1: bool = False
 
     def __post_init__(self):
+        if type(self.carry_duration_v1) is not bool:
+            raise ValueError("Carry duration v1 must be an explicit boolean")
         if self.gripper_completion_v1 and not (0 < self.divergent_position <= .018
                                                and 0 < self.divergent_angle <= np.deg2rad(9)):
             raise ValueError("Gripper completion v1 cannot enlarge the original divergence envelope")
+
+    def action_tick_limit(self, action, carry=False):
+        limit = {"micro": 24, "fine": 40, "coarse": 64}[action.scale]
+        if (self.carry_duration_v1 and carry and action.part in ("left", "right", "both")
+                and action.move in TRANSLATIONS):
+            # Carry halves joint speed. Preserve the original finite joint-path
+            # budget by doubling only moving time, not the five settling ticks.
+            return 2 * (limit - 5) + 5
+        return limit
 
 
 class SafeServo:
@@ -201,6 +213,7 @@ class SafeServo:
             action.amount(carry)  # reject before mutating any runtime state
         self.action, self.start, self.carry = action, state, bool(carry)
         self.joint_plan = None
+        self.required_joint_trajectory_ticks = None
         self.ticks, self.stalled, self.divergent, self.limit_ticks = 0, 0, 0, 0
         self.total_ticks = {"micro": 12, "fine": 18, "coarse": 24}[action.scale]
         self.status, self.done, self.base_integral = "RUNNING", False, np.zeros(3)
@@ -264,7 +277,8 @@ class SafeServo:
         moving_ticks = max(int(np.ceil(self.total_ticks*.65)),
                            int(np.ceil(1.875*np.max(np.abs(delta))/joint_tick)))
         ticks = max(self.total_ticks,moving_ticks+5)
-        if ticks > {"micro":24,"fine":40,"coarse":64}[action.scale]:
+        self.required_joint_trajectory_ticks = ticks
+        if ticks > self.limits.action_tick_limit(action, self.carry):
             return self.abort("DURATION_LIMIT_EXCEEDED")
         plan, previous = [], state.q.copy()
         for i in range(ticks):
@@ -414,6 +428,15 @@ class SafeServo:
                 "gripper_open_at_calibrated_aperture": observed_open,
                 "base_integral": self.base_integral.tolist(), "carry": self.carry,
                 "holding": "UNKNOWN", "official_success": "NOT_AVAILABLE_TO_ACTOR"}
+        if self.limits.carry_duration_v1:
+            result["motion_timing"] = {
+                "version": "carry_duration_v1",
+                "maximum_control_ticks": self.limits.action_tick_limit(self.action, self.carry),
+                "required_joint_trajectory_ticks": self.required_joint_trajectory_ticks,
+                "joint_trajectory_planned": self.joint_plan is not None,
+                "joint_step_limit": self.limits.joint_tick * (.5 if self.carry else 1),
+                "joint_trajectory_settling_ticks": 5,
+                "success_claim": False}
         if gripper_checks is not None:
             result["pose_tracking_status"] = "TARGET_REACHED" if self._within(state.poses) else "TRACKING_FAILED"
             result["gripper_execution"] = {"version": GRIPPER_COMPLETION_VERSION,
