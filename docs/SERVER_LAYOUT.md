@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 22:58当前：** 原子953/2708026已完成并退出，241文件完整本地/父全部72RAW与物理审闭合；新训练尚未启动。父旧模型2673116/8929已完整305调用账本封存并TERM退出，GPU2/3此时实空81152MiB，0/1队友不动。H38新`git_worktrees/semantic_appearance_6f528b5`只CPU487/33.069s过、待独审；拟结果根`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance`尚未运行。不可删除旧H30全证据或把其不完整本地大包当齐全。
+
 **2026-09-21 22:19当前：** 子唯一2708026/GPU3于22:17:39提交，固定`git_worktrees/vlm_sft_h09z_wall_8ad336e`，输出`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i114_p0953_ws45_cd1_b2_wall2100`及相邻`.log/.launch.json`。active同根`authorization_native_t1_i114_p0953_ws45_cd1_b2_wall2100_8ad336e_active.json`，a445424f…5667f，绑定aa74705父审。正在初始化，禁止热改源；旧953超时证据保留。父模型2673116/8929仍GPU2，保存态H35已结束后总300调用；H36仅本地CPU无物理。fresh120/六评尚未启。
 
 **2026-09-21 21:52当前：** 953/2694415超时退出，完整204文件在子worktree `artifacts/h09y-resume-20260921/native_complete/native_t1_i114_p0953_ws45_cd1_b2`；旧ced源/失败/末hold保留，GPU3尚无新采集或训练。父H33/H34都是保存态无物理，结果同`h30_workspace_progress/{h33_neural_saved_v1,h34_feedback_saved_v1}`，小包完整到本地。父模型2673116/8929暂留294调用，H30完整本地`h30_summary_bundle`有摘要/视频；`h30_full_bundle`仍是不完整传输件，不能当齐全或删除远端。
