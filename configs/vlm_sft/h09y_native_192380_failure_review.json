@@ -30,6 +30,6 @@
   "BC_released": false,
   "training_updates": 0,
   "failure": "No safe decreasing teacher proposal; no retry/reset",
-  "fifth_proposal_exact_root_diagnosis": "Separate bounded saved-state diagnosis still pending; this receipt does not assert singularity, collision or timing as the cause.",
+  "fifth_proposal_exact_root_diagnosis": "Completed separate saved-state report b61b484f0123777eb6653c117e30893d279c7ea829194634b3c77755429b9161: all three improving candidates stop at64-iteration IK with position residual5.585/3.311/3.812mm above2.5mm; orientation, collision and joint margins pass, duration not reached. Supports near-singular local stagnation but not global unreachability. V1 partial serialization failure retained, not valid evidence.",
   "does_not_authorize": "No reset, relabeling, dataset coverage relaxation, source change or training is authorized by this failed-run review."
 }
