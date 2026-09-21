@@ -15,6 +15,8 @@ from PIL import Image
 
 from common import CAMERAS, TOKENS, SYSTEM as LEGACY_SYSTEM, sha
 from live import runtime_proprio as legacy_proprio, validate_proprio as legacy_validate
+from native_motion_codec import (ACTOR_VERSION as WORKSPACE_VERSION, codec_for_protocol,
+                                 tokens as motion_tokens, BODY_SYSTEM)
 
 VERSION = "h09x-current-robot-pose-v1"
 SYSTEM = LEGACY_SYSTEM + " Current joint positions and both end-effector rotation matrices are robot proprioception, not object estimates. Each rotation matrix maps end-effector local axes into the robot base frame (columns are the local axes in base coordinates). Rotational motion symbols are about robot BASE axes, not camera or tool axes."
@@ -86,24 +88,30 @@ def runtime_proprio(model, state, *, clock, expected_clock, calibration_sha256):
     return value
 
 
-def actor_input(task, instruction, proprio, image_hashes, history):
+def actor_input(task, instruction, proprio, image_hashes, history, *, protocol=VERSION):
+    vocabulary = motion_tokens(codec_for_protocol(protocol))
     validate_proprio(proprio)
     if any(not isinstance(s, str) or not 1 <= len(s) <= 5000 for s in (task, instruction)):
         raise ValueError("Legal task and active instruction strings required")
     if not isinstance(image_hashes, dict) or set(image_hashes) != set(CAMERAS):
         raise ValueError("Three current onboard RGB identities required")
     for h in image_hashes.values(): check_sha(h)
-    if type(history) is not list or len(history) > 5 or any(t not in TOKENS for t in history):
+    if type(history) is not list or len(history) > 5 or any(t not in vocabulary for t in history):
         raise ValueError("At most five actually completed motion symbols required")
-    return {"protocol": VERSION, "task": task, "active_instruction": instruction,
+    return {"protocol": protocol, "task": task, "active_instruction": instruction,
             "proprio": proprio, "current_rgb_sha256": image_hashes, "history": history.copy()}
 
 
 def validate_actor(value):
-    if not isinstance(value, dict) or set(value) != ACTOR_KEYS or value["protocol"] != VERSION:
+    if not isinstance(value, dict) or set(value) != ACTOR_KEYS:
         raise ValueError("Exact actor protocol whitelist required")
     return actor_input(value["task"], value["active_instruction"], value["proprio"],
-                       value["current_rgb_sha256"], value["history"])
+                       value["current_rgb_sha256"], value["history"], protocol=value["protocol"])
+
+
+def system_for_protocol(protocol):
+    codec = codec_for_protocol(protocol)
+    return SYSTEM if codec is None else SYSTEM + BODY_SYSTEM
 
 
 def prompt(actor):
@@ -113,15 +121,15 @@ def prompt(actor):
     return (f"Task: {v['task']}\nActive instruction: {v['active_instruction']}\n"
             f"Current proprioception: {json.dumps(v['proprio'], sort_keys=True, separators=(',', ':'))}\n"
             f"Recent executed motions, oldest first: {json.dumps(v['history'])}\n"
-            "Available motions: " + ", ".join(TOKENS) + "\nNext motion:")
+            "Available motions: " + ", ".join(motion_tokens(codec_for_protocol(v["protocol"]))) + "\nNext motion:")
 
 
 def inference_row(actor):
-    return {"protocol": VERSION, "actor": validate_actor(actor), "text": prompt(actor)}
+    return {"protocol": validate_actor(actor)["protocol"], "actor": validate_actor(actor), "text": prompt(actor)}
 
 
 def training_row(actor, target):
-    if target not in TOKENS: raise ValueError("Unknown target motion")
+    if target not in motion_tokens(codec_for_protocol(validate_actor(actor)["protocol"])): raise ValueError("Unknown target motion")
     # This constructs a protocol row, NOT an outcome/review release certificate.
     return {**inference_row(actor), "target": target}
 
@@ -159,12 +167,13 @@ def parse_request(value, *, registered_instructions):
     return inference_row(actor), images
 
 
-def from_capture(folder, model, *, capture_sha256, expected_clock, calibration_sha256):
+def from_capture(folder, model, *, capture_sha256, expected_clock, calibration_sha256, protocol=VERSION):
     """Read a CURRENT frozen capture only; never open private teacher ledgers.
 
     The caller supplies hashes from the independently reviewed run manifest.
     Output binding is audit metadata, never passed to actor_input/prompt.
     """
+    codec_for_protocol(protocol)
     folder = Path(folder)
     check_sha(capture_sha256)
     if sha(folder/"capture.json") != capture_sha256: raise ValueError("Capture bytes changed")
@@ -185,5 +194,5 @@ def from_capture(folder, model, *, capture_sha256, expected_clock, calibration_s
                              calibration_sha256=calibration_sha256)
     hashes = {v: c["files_sha256"][v+".png"] for v in CAMERAS}
     binding = {"capture_sha256": capture_sha256, "calibration_sha256": calibration_sha256,
-               "clock": dict(c["clock"]), "protocol": VERSION, "not_actor_input": True}
+               "clock": dict(c["clock"]), "protocol": protocol, "not_actor_input": True}
     return proprio, hashes, binding

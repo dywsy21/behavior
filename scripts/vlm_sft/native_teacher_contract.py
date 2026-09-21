@@ -119,7 +119,7 @@ def compile_candidates(states, actions):
     return out
 
 
-def actor_input(task, instruction, proprio, image_hashes, history):
+def actor_input(task, instruction, proprio, image_hashes, history, *, action_codec=None):
     """Explicit projection; no source frame, hidden ID/pose, future or verdict."""
     validate_proprio(proprio)
     if not isinstance(task, str) or not task or not isinstance(instruction, str) or not instruction:
@@ -128,10 +128,13 @@ def actor_input(task, instruction, proprio, image_hashes, history):
         raise ValueError("Three current RGB identities required")
     if any(not isinstance(v, str) or len(v) != 64 for v in image_hashes.values()):
         raise ValueError("Image hashes required")
-    if len(history) > 5 or any(t not in TOKENS for t in history):
+    from native_motion_codec import tokens as motion_tokens
+    if len(history) > 5 or any(t not in motion_tokens(action_codec) for t in history):
         raise ValueError("Only actually executed native history")
-    return {"task": task, "active_instruction": instruction, "proprio": proprio,
+    result={"task": task, "active_instruction": instruction, "proprio": proprio,
             "current_rgb_sha256": image_hashes, "history": list(history)}
+    if action_codec is not None:result["action_codec"]=action_codec
+    return result
 
 
 def validate_approval(value, request):

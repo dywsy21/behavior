@@ -8,7 +8,7 @@ from common import sha,write_json
 from native_evaluation import VARIANTS
 from native_eval_prepare import STARTS,ROOT,SCHEMA
 from native_actor_protocol import validate_actor
-from native_execution import authorization_profile,PRECLOSE_PROFILE
+from native_execution import authorization_profile,PRECLOSE_PROFILE,WORKSPACE_PROFILE,TIMING_PROFILES,actor_protocol
 
 
 def summarize(root):
@@ -26,11 +26,14 @@ def summarize(root):
                     raise ValueError("Registered paired identities changed")
                 profile=authorization_profile(auth)
                 storage_profile=(auth.get("storage") or {}).get("profile")
-                if profile==PRECLOSE_PROFILE:
-                    from native_storage import DIVERSE_STORAGE_PROFILE,validate_spec
-                    if (not validate_spec(auth) or storage_profile!=DIVERSE_STORAGE_PROFILE or
+                if profile in TIMING_PROFILES:
+                    from native_storage import DIVERSE_STORAGE_PROFILE,WORKSPACE_STORAGE_PROFILE,validate_spec
+                    expected=WORKSPACE_STORAGE_PROFILE if profile==WORKSPACE_PROFILE else DIVERSE_STORAGE_PROFILE
+                    if (not validate_spec(auth) or storage_profile!=expected or
                             (m.get("storage") or {}).get("profile")!=storage_profile):
                         raise ValueError("Paired new execution/storage identity changed")
+                    if profile==WORKSPACE_PROFILE and m.get("protocol")!=actor_protocol(profile):
+                        raise ValueError("Paired workspace actor protocol changed")
                 identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile,storage_profile))
                 row["execution_profile"]=profile
                 row["status"]="INCOMPLETE_ATTEMPT"

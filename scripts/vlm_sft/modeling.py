@@ -9,16 +9,17 @@ import time
 from PIL import Image
 
 from common import CAMERAS, SYSTEM, TOKENS, VERSION
+from native_motion_codec import codec_for_protocol, tokens as motion_tokens
 
 
 def messages(row, images):
     if set(images)!=set(CAMERAS):raise ValueError("Three onboard views required")
     system=SYSTEM
     if "protocol" in row:
-        from native_actor_protocol import VERSION as POSE_VERSION, SYSTEM as POSE_SYSTEM, prompt
-        if row["protocol"]!=POSE_VERSION or row["text"]!=prompt(row["actor"]):
+        from native_actor_protocol import system_for_protocol, prompt
+        if row["protocol"]!=row["actor"]["protocol"] or row["text"]!=prompt(row["actor"]):
             raise ValueError("Unknown/mismatched versioned actor prefix")
-        system=POSE_SYSTEM
+        system=system_for_protocol(row["protocol"])
     content=[]
     for view in CAMERAS:
         img=images[view].convert("RGB")
@@ -50,7 +51,8 @@ def encode(processor,row,images,*,supervised):
     # Build the training input from the *identical inference prefix*. Tokenizing
     # assistant messages separately can silently introduce a different think block.
     target=row["target"]
-    if target not in TOKENS:raise ValueError("Unknown target")
+    vocabulary=motion_tokens(codec_for_protocol(row["protocol"])) if "protocol" in row else TOKENS
+    if target not in vocabulary:raise ValueError("Unknown target")
     response=processor.tokenizer.encode(target,add_special_tokens=False)+[eos_id(processor)]
     if not 2<=len(response)<=16 or any(x is None or x<0 for x in response):raise ValueError("Unexpected response encoding")
     result={k:v.clone() for k,v in prefix.items()}
@@ -125,13 +127,14 @@ def load_model(model_path,*,adapter=None,train=False,cfg=None):
     return model,processor
 
 
-def decode(model,processor,encoded):
+def decode(model,processor,encoded,*,action_codec=None):
     import torch
     inputs={k:v.to("cuda") for k,v in encoded.items() if k!="labels"}
     prefix=inputs["input_ids"].shape[1]
     trie={}
     eos=eos_id(processor)
-    for token in TOKENS:
+    vocabulary=motion_tokens(action_codec)
+    for token in vocabulary:
         node=trie
         for value in processor.tokenizer.encode(token,add_special_tokens=False):node=node.setdefault(value,{})
         node[eos]={}
@@ -145,6 +148,6 @@ def decode(model,processor,encoded):
             prefix_allowed_tokens_fn=allowed,eos_token_id=eos,pad_token_id=processor.tokenizer.pad_token_id)
     torch.cuda.synchronize();elapsed=time.perf_counter()-start
     answer=processor.tokenizer.decode(result[0,prefix:],skip_special_tokens=True).strip()
-    if answer not in TOKENS:raise RuntimeError("Constrained decoder violated action vocabulary")
+    if answer not in vocabulary:raise RuntimeError("Constrained decoder violated action vocabulary")
     return {"prediction":answer,"latency_s":elapsed,"input_tokens":prefix,
             "output_tokens":int(result.shape[1]-prefix),"input_ids_sha256":hashlib.sha256(inputs["input_ids"].cpu().numpy().tobytes()).hexdigest()}

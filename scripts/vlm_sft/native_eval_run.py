@@ -32,7 +32,9 @@ from native_teacher_collect import (REPO,ADAPTER,CalibratedRobot,OnboardRGBD,nat
     capture_snapshot,implementation_digest,preserved_session,rest_screen)
 from native_teacher_artifacts import ArtifactBudget,write_calibration,action_evidence_bound,json_bytes
 from native_teacher_reference_contract import check_actual_joint_bounds
-from native_execution import authorization_profile,metadata as execution_metadata,require_dataset_profile
+from native_execution import (authorization_profile,metadata as execution_metadata,require_dataset_profile,
+    actor_protocol,TIMING_PROFILES,WORKSPACE_PROFILE,workspace_budget_ok)
+from native_motion_codec import BODY_TOKENS
 
 BUDGET={"resets":1,"max_decisions":12,"new_controls_including_final_hold":420,
     "seconds_after_reset":1200,"initialization_seconds":900,"run_MiB":384,"total_MiB":6144}
@@ -45,7 +47,7 @@ def require_evaluation(auth,code,executor,prepared,variant,output,data_sha):
     instance=prepared["source"][2]
     if (auth.get("schema")!=SCHEMA or auth.get("authorize_evaluation") is not True or
             auth.get("code_commit")!=code or auth.get("executor_digest")!=executor or
-            auth.get("protocol")!=VERSION or auth.get("dataset_sha256")!=data_sha or
+            auth.get("protocol")!=actor_protocol(execution_profile) or auth.get("dataset_sha256")!=data_sha or
             auth.get("source")!=prepared["source"] or auth.get("variant")!=variant or variant not in VARIANTS or
             auth.get("physical_gpu")!=3 or type(auth.get("physical_gpu")) is not int or
             auth.get("specified_hand") is not None or auth.get("oracle_actor_feedback") is not False or
@@ -70,7 +72,7 @@ def load_service(auth,code,data_sha):
     if sha(path)!=auth.get("service_identity_sha256"):raise ValueError("Released service identity changed")
     identity=json.loads(path.read_text())
     require_same_pipeline(auth,identity)
-    if (identity.get("code_commit")!=code or identity.get("protocol")!=VERSION or identity.get("dataset_sha256")!=data_sha or
+    if (identity.get("code_commit")!=code or identity.get("protocol")!=actor_protocol(authorization_profile(auth)) or identity.get("dataset_sha256")!=data_sha or
             identity.get("physical_gpu")!=3 or identity.get("port")!=8919 or identity.get("max_calls")!=48):
         raise ValueError("Exact paired service/model/data identity required")
     with urlopen("http://127.0.0.1:8919/health",timeout=10) as response:health=json.load(response)
@@ -82,8 +84,8 @@ def load_service(auth,code,data_sha):
             answer=json.load(response)
         if any(answer.get(k)!=identity[k] for k in ("adapter_sha256","dataset_sha256","code_commit","training_result_sha256")):
             raise ValueError("Per-call model/source/dataset identity drift")
-        if authorization_profile(auth)==PRECLOSE_PROFILE and (
-                answer.get("execution_profile")!=PRECLOSE_PROFILE or
+        if authorization_profile(auth) in TIMING_PROFILES and (
+                authorization_profile(answer)!=authorization_profile(auth) or
                 answer.get("storage_profile")!=identity["storage"]["profile"]):
             raise ValueError("Per-call execution/storage profile drift")
         return answer
@@ -106,7 +108,7 @@ def main():
     identity,remote=(load_service(auth,code,data_sha) if nn is None else (None,None))
     storage=activate_storage(auth,a.output);check_storage(storage);a.output.mkdir(parents=True,exist_ok=False)
     writer=ArtifactBudget(a.output,ROOT,384*1024**2,6144*1024**2);current_writer=writer
-    writer.write_json(a.output/"manifest.json",{"code_commit":code,"protocol":VERSION,"authorization":auth,
+    writer.write_json(a.output/"manifest.json",{"code_commit":code,"protocol":auth["protocol"],"authorization":auth,
         "preparation":prepared,"dataset_sha256":data_sha,"service_identity":identity,"budget":BUDGET,
         "oracle_actor_feedback":False,"specified_hand":None,"paid_prefix_not_full_task_SR":True,
         "storage":None if storage is None else storage.check()})
@@ -215,7 +217,8 @@ def main():
                 before,hashes,depths,geometry,receipt=capture(folder/"before")
                 clock={"prefix_control":prefix_count,"native_control":controls}
                 actor=actor_input(session.observation()["task"],prepared["active_instruction"],
-                    runtime_proprio(model,before,clock=receipt["clock"],expected_clock=clock,calibration_sha256=model.sha),hashes,history[-5:])
+                    runtime_proprio(model,before,clock=receipt["clock"],expected_clock=clock,calibration_sha256=model.sha),hashes,history[-5:],
+                    protocol=auth["protocol"])
                 raw={v:(folder/"before"/(v+".png")).read_bytes() for v in CAMERAS}
                 if nn is None:neural_requests+=1
                 answer=choose(a.variant,actor,raw,nn=nn,remote=remote);token=answer["prediction"]
@@ -227,7 +230,7 @@ def main():
                 except RuntimeError as exc:
                     decision.update(status="REJECTED_NO_MOTION",reason=str(exc));stop="PUBLIC_PREFLIGHT_STOP"
                     writer.write_json(folder/"execution.json",decision);break
-                if controls+servo.total_ticks+12>419:
+                if controls+servo.total_ticks+12>419 or not workspace_budget_ok(token,servo.total_ticks,420-controls,12-index):
                     decision.update(status="REJECTED_NO_MOTION",reason="Whole macro/settle/final-hold budget")
                     stop="CONTROL_BUDGET";writer.write_json(folder/"execution.json",decision);break
                 try:

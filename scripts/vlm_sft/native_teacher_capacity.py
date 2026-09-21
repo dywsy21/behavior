@@ -11,7 +11,10 @@ H09Y_ROOT = "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only"
 H09Y_STARTS = {(1,264,114,993),(1,310,192,392),(1,264,114,989),(1,310,192,388),(1,264,114,985)}
 DIVERSE_PROFILE = "near_h09y_diverse_grasp384_v1"
 DIVERSE_STARTS = {(1,310,192,380),(1,264,114,969)}
-H09Y_PROFILES = (H09Y_PROFILE, DIVERSE_PROFILE)
+WORKSPACE_PROFILE = "near_h09z_workspace_grasp384_v1"
+# CPU implementation does not authorize or invent additional physical starts.
+WORKSPACE_STARTS = frozenset()
+H09Y_PROFILES = (H09Y_PROFILE, DIVERSE_PROFILE, WORKSPACE_PROFILE)
 
 
 def capacity_limits(release):
@@ -29,7 +32,7 @@ def capacity_limits(release):
         expected={"run_MiB":384,"total_MiB":6144}
         source=release.get("source",[]);prefix=release.get("paid_prefix_controls")
         if (not isinstance(source,list) or len(source)!=3 or any(type(v) is not int for v in source) or
-                type(prefix) is not int or (*source,prefix) not in (DIVERSE_STARTS if profile==DIVERSE_PROFILE else H09Y_STARTS) or
+                type(prefix) is not int or (*source,prefix) not in ({DIVERSE_PROFILE:DIVERSE_STARTS,WORKSPACE_PROFILE:WORKSPACE_STARTS}.get(profile,H09Y_STARTS)) or
                 release.get("experiment_root")!=H09Y_ROOT or release.get("held_out_instance_groups")!=[[1,1],[1,71]] or
                 type(release.get("registered_gpu")) is not int or release["registered_gpu"]!=3 or
                 type(release.get("initialization_seconds")) is not int or release["initialization_seconds"]!=900 or
