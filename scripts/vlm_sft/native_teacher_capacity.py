@@ -15,7 +15,8 @@ WORKSPACE_PROFILE = "near_h09z_workspace_grasp384_v1"
 # Registered separately from execution authority; old failed outputs stay intact.
 WORKSPACE_STARTS = frozenset({(1,310,192,380),(1,310,192,388)})
 CARRY_PROFILE = "near_h09z_carry_duration_body2_grasp384_v1"
-CARRY_STARTS = frozenset({(1,310,192,388),(1,310,192,380)})
+CARRY_ADDITIONAL_START = (1,264,114,953)
+CARRY_STARTS = frozenset({(1,310,192,388),(1,310,192,380),CARRY_ADDITIONAL_START})
 H09Y_PROFILES = (H09Y_PROFILE, DIVERSE_PROFILE, WORKSPACE_PROFILE, CARRY_PROFILE)
 
 

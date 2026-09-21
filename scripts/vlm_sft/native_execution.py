@@ -74,10 +74,13 @@ def authorization_profile(value, *, collection=False):
                 value.get("seed_profile") != SEED_PROFILE):
             raise ValueError("New gripper collection requires explicit H09Y precontact-v2")
         if profile in TIMING_PROFILES:
-            from native_storage import DIVERSE_STORAGE_PROFILE, WORKSPACE_STORAGE_PROFILE, CARRY_STORAGE_PROFILE, validate_spec
-            from native_teacher_capacity import capacity_limits
+            from native_storage import (DIVERSE_STORAGE_PROFILE, WORKSPACE_STORAGE_PROFILE, CARRY_STORAGE_PROFILE,
+                                        CARRY953_STORAGE_PROFILE,validate_spec)
+            from native_teacher_capacity import capacity_limits,CARRY_ADDITIONAL_START
             capacity_limits(value)
             storage = {WORKSPACE_PROFILE:WORKSPACE_STORAGE_PROFILE,CARRY_PROFILE:CARRY_STORAGE_PROFILE}.get(profile,DIVERSE_STORAGE_PROFILE)
+            if profile==CARRY_PROFILE and (*value['source'],value['paid_prefix_controls'])==CARRY_ADDITIONAL_START:
+                storage=CARRY953_STORAGE_PROFILE
             if not validate_spec(value) or value["storage"]["profile"] != storage:
                 raise ValueError("Diverse collection requires its exact explicit storage profile")
     return profile
@@ -251,11 +254,14 @@ def require_pipeline_profile(release, dataset):
     profile = authorization_profile(release)
     if (profile in WORKSPACE_PROFILES or dataset.get("protocol")==actor_protocol(WORKSPACE_PROFILE) or
             any(authorization_profile(r) in WORKSPACE_PROFILES for r in dataset["runs"])):
-        from native_storage import WORKSPACE_STORAGE_PROFILE,CARRY_STORAGE_PROFILE,validate_spec
+        from native_storage import WORKSPACE_STORAGE_PROFILE,CARRY_STORAGE_PROFILES,CARRY953_STORAGE_PROFILE,validate_spec
+        storage_profiles=CARRY_STORAGE_PROFILES if profile==CARRY_PROFILE else (WORKSPACE_STORAGE_PROFILE,)
+        if any(run.get('group')==[1,114] and run.get('prefix')==953 for run in dataset['runs']):
+            storage_profiles=(CARRY953_STORAGE_PROFILE,)
         require_dataset_profile(dataset,profile)
         if (profile not in WORKSPACE_PROFILES or release.get("protocol")!=actor_protocol(profile) or
                 dataset.get("protocol")!=actor_protocol(profile) or not validate_spec(release) or
-                release["storage"]["profile"]!=(CARRY_STORAGE_PROFILE if profile==CARRY_PROFILE else WORKSPACE_STORAGE_PROFILE)):
+                release["storage"]["profile"] not in storage_profiles):
             raise ValueError("Workspace pipeline requires exact new codec/protocol/storage")
         if profile==CARRY_PROFILE:
             from native_carry_admission import require_carry_reviews
