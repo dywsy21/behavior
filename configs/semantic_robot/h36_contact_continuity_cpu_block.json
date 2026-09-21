@@ -2,7 +2,7 @@
   "experiment_id": "H36-reviewed-contact-current-RGBD-continuity-cpu-v1",
   "owner": "Codex-parent",
   "registered_bjt": "2026-09-21T22:13:00+08:00",
-  "status": "REGISTERED_CPU_ONLY",
+  "status": "COMPLETED_INSUFFICIENT_FEATURES_NO_TRACK_FALLBACK",
   "hypothesis": "Existing forward/backward RGB-D feature tracking around the semantically approved117 contact may retain current visible surface correspondence into118 even when the VLM cannot identify the partial object.",
   "source_commit": "42f38b7cc73fbdb3f7ce88fedf7f7c5024518fb9",
   "snapshots": [117,118],
@@ -15,5 +15,13 @@
   "new_controls": 0,
   "new_resets": 0,
   "acceptance": "Full saved-pixel/point checks and manual inspection of correspondence evidence. A valid local track is correspondence, not target segmentation, grasp or motion authorization.",
-  "deployment_authorized": false
+  "deployment_authorized": false,
+  "actual": {
+    "seconds": 1.907482344075106,
+    "result_sha256": "baec32ccff5b2a2e168c57606ee9c0275ba11885a2117a6fec0fbd9d716a26a5",
+    "seed_features_by_head_left_right": [1,0,0],
+    "valid_tracks": 0,
+    "manual_review": "Parent viewed the full head117/118 pair with exact previous contact cross; all six RAW already H32 reviewed. The reference lies on a narrow low-texture red handle surface. Wrist views do not expose the seed.",
+    "conclusion": "Existing strict local RGB-D tracker cannot support contact continuity here. Do not lower its8-point/depth/self-exclusion thresholds or continue moving from old coordinates. Larger visual reference/reidentification remains untested."
+  }
 }
