@@ -1,0 +1,19 @@
+{
+  "experiment_id": "H36-reviewed-contact-current-RGBD-continuity-cpu-v1",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-21T22:13:00+08:00",
+  "status": "REGISTERED_CPU_ONLY",
+  "hypothesis": "Existing forward/backward RGB-D feature tracking around the semantically approved117 contact may retain current visible surface correspondence into118 even when the VLM cannot identify the partial object.",
+  "source_commit": "42f38b7cc73fbdb3f7ce88fedf7f7c5024518fb9",
+  "snapshots": [117,118],
+  "reference": "H33 real semantic117 choice5 only; original H30 ray and H35 newly preferred point are not substituted after seeing track results",
+  "camera_policy": "Run existing point_tracks with existing stable/spatial feature settings on each of three calibrated cameras; report every failure, no tuned fallback",
+  "inputs": "Original saved CURRENT RAW/RGB-D, robot-only self geometry/q and H33 semantic surface selection; no object IDs/poses/segmentation/contact truth",
+  "max_cpu_seconds": 900,
+  "max_output_MiB": 64,
+  "new_model_calls": 0,
+  "new_controls": 0,
+  "new_resets": 0,
+  "acceptance": "Full saved-pixel/point checks and manual inspection of correspondence evidence. A valid local track is correspondence, not target segmentation, grasp or motion authorization.",
+  "deployment_authorized": false
+}
