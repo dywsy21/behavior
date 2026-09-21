@@ -1,0 +1,15 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-21T17:55:00+08:00",
+  "fixed_source": "1cf0d1f8c3663aeba906f829ec4a66de35c413fb",
+  "base_source": "9ff2e280f944f46c456e0edc9a057e36e8716254",
+  "status": "CPU_code_review_passed_actual_inactive_preparation_pending",
+  "all_changed_paths_reviewed": 5,
+  "independent_tests": {"SFT": 163, "SFT_seconds": 6.321, "public": 410, "public_seconds": 6.952},
+  "findings": "No additional blocker. Exact two TRAIN192 starts and two _ws45 paths/aliases only; old profiles reject new paths; workspace cannot overwrite old failures. Unknown/heldout/retry/GPU2 paths fail. Missing collection grant still fails require_release. Shared-cache old specification remains unchanged.",
+  "public_executor_unchanged": "1fcc505cb570c0fa215c408b2ae78d904819dc95b40bbbe117a560106ad97f4c",
+  "teacher_motion_outcome_coverage_unchanged": true,
+  "new_resets": 0,
+  "training_updates": 0,
+  "next": "Read complete actual two inactive releases and prepare bindings, remote runtime/source and true dynamic resource check; then separate parent handoff of p380 only. Full first trajectory audit before p388. No lowered training gate."
+}

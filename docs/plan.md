@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 17:55（北京时间）两起点1cf父代码独审通过/H25终止定位（Codex）：** 全5路径逐行审、独立163 SFT/6.321s＋410公共/6.952s，旧profile拒新`_ws45`、新profile不可覆盖旧路径/重试/heldout，teacher与1fcc不动，receipt `h09z_starts_1cf0d1f_parent_review.json`；下一实际inactive/prepare父审后只首380。H25官方默认timeout日志是人类均长1.5×=3224，实际第3225控制terminal=true且无额外hold；最后合法RGB-D有135内点，非第三次恢复/视觉失败。旧stop_reason标签误写DURING_SEARCH_REANCHOR，保留原证据并更正解释；最终三RAW本人看/整视频解码过，无抓取，完整数值重放/清单与副本仍在做。
+
+**2026-09-21 17:50（北京时间）H25原回合结束/官方失败（Codex）：** 2630126已退出，result为180决策/3225控制/326模型、6654.199s、official_success=false，记录终止`OFFICIAL_EPISODE_TERMINATED_DURING_SEARCH_REANCHOR`（真实终止原因/无额外hold需全链核对，不按名称猜原因）；预算未扩。完整证据正在本地传输/全链审，旧模型2629456仍在，审后只停自有空闲服务。H30新827远端真实3.10环境449项25.991s过、digest99a06248…95674，准备完未新物理。Astra两起点仍CPU，不将旧失败称微调效果。
+
 **2026-09-21 17:46（北京时间）H28/H29独审全部闭合/H30后继登记（Codex/Astra）：** 固定82754f1（已push）P2独审6个真实zero-tick servo＋实际step正常/异常全过；449公共/9.378s＋162 SFT/6.196s，报告e8a13cfb…3a5e，原preview/H29独立405源SHA/81输入核验aaa94039…c2f2仍成立。父另H30登记原H25退出全审后的2个同源24动作工程门→条件唯一零前缀192/6144/7200s回合，同27B，新增workspace和已审进展修复，不换成功门；配置`h30_workspace_progress_physical_block.json`。仅远端独立827 worktree/CPU准备中，旧线上未动；Astra另≤900s两`_ws45`inactive准备，新微调仍待合格数据。
 
 **2026-09-21 17:43:48（北京时间）H09Z两起点独立版本登记（Codex/Astra）：** 父已独审9ff native45全实现，另`h09z_workspace_collection_parent_block.json`登记最多2次TRAIN192/p380、p388/seed0，唯一`_ws45`目录不覆盖旧失败。先≤900s CPU仅容量/名称/cache alias窄增量及inactive，固定独审/实际门后只放首条；每轨仍12宏420新含hold/1200＋900/384MiB、1body、0模型，第一全账本/所有RAW父审后才第二。目标是检验身体协同能否解除已证实IK卡点；不降低32覆盖门，不扩heldout或训练规模。新120真实更新与六物理配对仍待。
