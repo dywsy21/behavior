@@ -1,0 +1,11 @@
+{
+  "seed_sha256": "476a6ef7f262a9c189e78f05bd9646e27e3a0c1c490095c72750b44c0b20f9a0",
+  "identity_sha256": "1bcd79479fb86197f461fc1a76ff08e03e009dc651b42ed71911cfa5bac1df40",
+  "goal_pose_sha256": "d0476fccee8505240bf2607d05c61f70e960e8ce07df1f526fe17b7ef1858f0c",
+  "reviewer": "Codex-parent",
+  "decision": "approve",
+  "reviewed_source_current_and_terminal_views": true,
+  "reviewed_contact_update_and_control_ledger": true,
+  "local_outcome_and_pose_accepted": true,
+  "reason": "Independent complete 101-file inventory, exact596 prefix plus590 segment actions,1199 control accounting,604 causal oracle samples and actual final hold checked. All69 captured PNGs personally reviewed in temporal three-view sheets, plus6 unscaled key RAW views. Right hand approaches, closes on bin rim and lifts it; measured target rise0.332790m and final12 relative drift2.551um agree. Approved offline TRAIN114 reference pose only; no reference action is native BC, no VLM or full-task success claim. Evidence: artifacts/agentic-vlm-goal-20260918/h09y_reference_parent_audit.py, inventory0b8686cea346b2b33cddc50dfae0796e19abf1e449ffe5de4680cdf167533142."
+}
