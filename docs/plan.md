@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 14:10（北京时间）新夹爪首工程门真实启动/采训接线已合入（Codex）：** 14:09:50.297361 BJT唯一2602697/GPU3启动`gripper_v1_gates/gate_radio_gripper_v1`，source13bd/digest1fcc、target余80,939MiB/仅H22已核200MiB辅助context，独立新runtime与全env、实核screenshots路径0700；原24/1536/1200s＋900init/384MiB，0模型/0prefix，现在初始化，第二门未启。`launch_radio.json`含准确命令/身份/零新树起点；旧H22不动。父已把独审fa24接线合入，140整合回归待；SERVER/两block真实状态已同步，不能将新门提交当GRASP/训练成功。
+
 **2026-09-21 14:09（北京时间）SFT新profile父终审通过/物理门前置完成（Codex/Astra）：** 父固定fa24c3f完整11路径独审＋140/3.059s过，公共executor逐字同13bd、digest1fcc505c…97f4c；新/旧receipt、整个trajectory review、dataset provenance、三配对策略均显式同模式，未改物理成功门。robo新独立`semantic_gripper_13bd4bb`干净410/18.756s过，GPU3仅原H22已识别200MiB辅助context、余80,939MiB，源/NVMe余量过，首门待实际提交。Astra fa24源140/6.993s与114989 inactive/精确989前缀/v2种子/cache门1.611s过，grant仍false；另≤600s CPU只预备原192388/114985两个inactive，不增reset或重构源。父H22同d7已85决策1859控制，末距约.362m，仍未持握。
 
 **2026-09-21 14:05（北京时间）公共独审闭合/新夹爪两物理工程门登记（Codex/Astra）：** Astra固定13bd四实现路径/18新组完整独审、独立410/6.665s、保存态32文件18命令1.753s复算无阻塞（report b6eea655…f078）；旧W10行仍coverage=false。新collector/eval正确要求同executor且gripper flag=true的两task工程门，原239/d7门不能充数。因此父登记新**仅2reset顺序工程门**（task0/138、3/242/GPU3，24/1536/1200s＋900init/384MiB各、0模型/0prefix），新独立NVMe结果1GiB/runtime16GiB，32/80GiB余量，全部H22守卫＋新flag，首门全审后才第二；`configs/semantic_robot/gripper_v1_engineering_block.json`。Astra同时CPU收敛全链profile与114989 inactive，暂不占GPU3；父H22 GPU2原回合不停/源不动。新门尚未提交，后继原剩3near逐条114989→192388→114985仍须两门/接线/人工审，不提前称已训。
