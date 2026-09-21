@@ -2,7 +2,7 @@
   "experiment_id": "H09Z-explicit-paired-evaluation-wall2100-v1",
   "owner": "Astra-vlm_sft_resume_20260921",
   "registered_bjt": "2026-09-21T22:45:00+08:00",
-  "status": "NARROW_CPU_IMPLEMENTATION_REQUESTED_NO_NEW_RESETS",
+  "status": "FIXED_6f32887_INDEPENDENT_PARENT_SOURCE_REVIEW_PASSED",
   "evidence": "Existing8ad evaluation renders every prefix control and counts it in1200s; current953 run took roughly16min to reach native0. The predeclared heldout1038 prefix risks spending nearly all evaluation time before policy execution. No heldout image/label inspection is needed for this timing conclusion.",
   "hypothesis": "A uniform2100s reset-to-end limit accommodates original paid prefixes and the predeclared14macro/640control policy budget without altering simulator dynamics or granting more decisions.",
   "max_cpu_seconds": 900,
@@ -11,5 +11,7 @@
   "limits_unchanged": {"initialization_seconds":900,"macros":14,"native_controls_including_final_hold":640,"run_MiB":384,"total_MiB":6144,"training_updates":120,"training_seconds":2700,"service_neural_calls":56},
   "new_physics_authorized": false,
   "training_authorized": false,
+  "source_commit": "6f3288770f72b727a114d596cd5b98f577adc8c1",
+  "parent_review": "configs/vlm_sft/h09z_evalwall_6f32887_parent_review.json",
   "deployment_requires": "Fixed source, independent parent diff/tests, exact new inactive documents and collected-data full parent review. Existing8ad inactive configs retained, not relabelled. No rendering/teacher/outcome/coverage changes."
 }

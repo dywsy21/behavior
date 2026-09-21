@@ -1,0 +1,27 @@
+{
+  "status": "INDEPENDENT_SOURCE_REVIEW_PASSED_EXACT_DATA_TRAINING_RELEASE_PENDING",
+  "reviewer": "Codex-parent",
+  "reviewed_at_bjt": "2026-09-21T23:00:00+08:00",
+  "source_commit": "6f3288770f72b727a114d596cd5b98f577adc8c1",
+  "base_execution_commit": "8ad336e186a36476d51e3586ca7a35191ce990cb",
+  "source_review_passed": true,
+  "public_executor_unchanged": "8fdfcd3e1b8bdfd95530eec09710d1c44efc215885b49c64c1a82f55bbc501a8",
+  "full_diff_review": "All7 changed paths read, plus complete summary and runner budget/call/control/result context. src/semantic_robot, scripts/semantic_robot, native_train/native_serve/native_dataset byte-identical to independently reviewed8ad.",
+  "profile": "h09z-paired-grasp-wall2100-v1",
+  "checks": [
+    "Only explicit nonnull exact tag plus CARRY admits2100; old default1200 unchanged.",
+    "Six auth/manifest/result slots share source/data/protocol/storage/executor/core and time-profile; mixed1200/2100 rejected, including incomplete manifests.",
+    "Actual step, decision loop and post-capture prequery boundaries use exact authorized wall; no changed render, action, macro, reset or success predicate.",
+    "Summary rejects nonfinite, bool, negative or over-budget elapsed and non-int/mixed budgets; original six slots and denominator2 per variant preserved.",
+    "Original collection8ad and old failure evidence stay immutable; prospective train/service/evaluation use this new common source."
+  ],
+  "independent_local_tests": {"suite":"tests/vlm_sft","count":201,"seconds":5.651,"passed":true},
+  "author_tests": {"sft":201,"seconds":5.828,"public":420,"public_seconds":7.313},
+  "remote_author_tests": {"python":"actual VLA3.10/numpy1.26.4, CUDA hidden","count":201,"seconds":13.541,"passed":true},
+  "limits": "Cooperative elapsed checks, not asynchronous interruption of native Kit calls. Final reserved hold remains required and final elapsed still scored against exact budget.",
+  "blocking_findings": [],
+  "authorize_training": false,
+  "authorize_service": false,
+  "authorize_evaluation": false,
+  "next": "Read actual full34-row dataset/coverage/SHAs and inactive training config, then hand over fresh120 including numerical2-step gate on GPU3. No additional data reset."
+}

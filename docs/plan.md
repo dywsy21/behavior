@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 23:00（北京时间）六评时限窄修父独审通过（Codex/Astra）：** 固定6f328877七路径全读、完整summary/控制与query上下文审，父独立201/5.651s过；公共8fdf及训练/服务/数据源码与8ad逐字不变。明确新tag才CARRY2100，旧1200不变，六槽授权/manifest/result/summary拒混且非有限/越时结果不计成功，动作/渲染/判据不变；receipt `h09z_evalwall_6f32887_parent_review.json`。子23:00前原900s内完成远端3.10/201/13.541s，正式34行coverage与新八inactive准备中；接真实SHA后立即放fresh120，不增加采集或训练研究。
+
 **2026-09-21 22:58（北京时间）旧父服务封存退出/H38只条件登记（Codex）：** H30＋静态探针共305调用，完整calls/identity已双端SHA核（8cec1891…b2e77/7894a21b…ccb1a）到本地`h30_server_complete_archive`；22:56:55仅TERM准确2673116，后核退出、GPU2与3各81152MiB空，队友0/1不动。H30配置旧running字段同步为官方timeout失败；全证据保留。`h38_appearance_physical_block.json`仅条件登记2顺序工程门＋1原起点回合（原24/1536/1200和192/6144/7200，官方3224不改），须6f独审后才新物理；独审留到子训练运行空档。无新父模型/重置。
 
 **2026-09-21 22:53（北京时间）新953整条父审通过（Codex）：** 241文件101,265,514B/清单65da1ee6…9abec0全核，8宏全部实际23D/q/grip、168payload/72depth及275物理更新独立3.216s过；本人亲看全部72 RAW＋3原分辨图。桶升36.251mm、首实际CLOSE后手升28.741mm、末12相对漂移31.507μm/.00523°；body右手保持误差.355895mm，仍原门。与969/989起点11.747/22.383mm，非近重复。receipt `h09z_native_114953_wall2100_parent_review.json`/report6e638a3b…acdcc，包含准确2100/1343.595s时限provenance；旧953失败仍0BC。五整轨预计34宏，下一正式3.10 coverage和窄eval时限新源独审后立即fresh120，不新增采集。
