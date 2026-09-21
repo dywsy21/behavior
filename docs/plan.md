@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 20:33（北京时间）reader闭合/第二carry提交/H30首次无进展拦截（Codex/Astra）：** 父已读核真实3.10/3.11首388报告84d95bb4…a0bec/aee1c814…69af，152条真实23D、6宏反馈及226物理帧精确回放过（5.372/5.169s）；仅本地3.12有末位float兼容限制，不改02d/历史receipt，正式dataset/train用已验3.10。20:24交原第二380后，唯一2686721于20:26:16.980029/GPU3提交02d/8fdf/core0808，active002944c2…28f4e/launch411aadee…945a9，bootstrap=false绑定cac0208/e7c628物理审；完整动态门1.372s过，20:28仍初始化。原14/640含hold/2body/1200＋900/384MiB不变，0新模型/训练/第三reset，完成后父全审；4候选26宏仍不足32，fresh120/六配对继续待。父H30在20:31有2450控制/118决策开始/203调用，距.133m未持握；H29首次拦截三次实际前进共46.1mm却接触点误差增加1.83mm（预期减44.1mm），不据此声称碰撞或物体移动，继续原回合观察恢复。
+
 **2026-09-21 20:21（北京时间）首新carry整条父审通过/reader浮点边界待核（Codex/Astra）：** 原2680442正常退出，完整184文件66,219,466B/清单ff4af44c…7457全核，625控制/6宏BACK18 DOWN25 CLOSE18 UP44 UP26 UP21（0body），226原oracle更新及末hold全部独核3.048s；桶升32.832mm、首实际CLOSE后手升29.742mm、末12相对漂移1.223μm，真实局部SUCCEEDED。全部54 RAW本人看＋4原分辨率复查，W396初态差13.892mm/1.401°非近重复；组合receipt `h09z_native_192388_carry_parent_review.json`，物理集成和单条候选通过，**非VLM/官方任务成功、未release BC**。现4候选26宏仍少于32；子发现新包在本地3.12 dataset精确float比较拒（命令逐位一致，反馈约1e-14），另≤300s核真实3.10/3.11新6宏，不热改02d或放宽动作/成功门。待该票闭合再交原第二380；120更新和六配对仍未开始。H30继续2123控制/99决策开始/163调用，约.176m、无持握。
 
 **2026-09-21 20:14（北京时间）H31原拒绝点真实越过（Astra/Codex）：** 2680442于20:13:32实查prefix388/native162；第4宏RIGHT_UP实际native109→153共44tick TARGET_REACHED，motion_timing仍cap75/required44/.0125rad每tick/5settle/success_claim=false，随后固定12settle进行中。右手物理held/contact=true、LocalOutcome仍IN_PROGRESS/stable0、0body；明确仅长于原40上限的真实执行完成，尚非整段成功/父全审/新增BC。原run/预算继续，第二380和微调/配对未启动。
