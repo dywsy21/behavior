@@ -1,0 +1,50 @@
+{
+  "experiment_id": "H25-refined-odometry-physical-validation",
+  "owner": "Codex-parent",
+  "registered_at_bjt": "2026-09-21T15:12:00+08:00",
+  "status": "registered_not_started_wait_child_Kit_initialization",
+  "hypothesis": "Fixed bidirectional feature localization can reduce online RGB-D support failures while retaining all original geometry and motion limits, permitting progress beyond H22's pregrasp stop.",
+  "code_commit": "a62846238a5dbbb566d697fd93e6ee6ebf5793af",
+  "executor_digest": "afd1ec55ab872853c400a1c17f8d52a15076cd590feffc6afd0484e004f89a55",
+  "source": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_tracking_a628462",
+  "preconditions": "H24 full353 old/new350/352 zero regressions, parent425 and independent425 and remote425 passed, independent P2 closed. No live source updates.",
+  "gpu": 2,
+  "gpu_uuid": "GPU-3e4fda8c-536e-5899-e877-b8be97032fe0",
+  "gpu_policy": "Before gate/model free>=70GiB; before fullstart with own loaded27B free>=20GiB. Only exact known child fa24 PID/mainGPU3 auxiliary context<=512MiB allowed in addition to own bound service. No GPU0/1 use. Child SFT/data have priority; avoid concurrent Kit initialization.",
+  "output_root": "/mnt/nvme_tmp/robodojo_agentic_20260921/h25_refined_odometry",
+  "result_cap_GiB": 4,
+  "runtime_root": "/mnt/nvme_tmp/robodojo_harness_runtime_20260921/gripper_v1_gates",
+  "runtime_cap_GiB": 16,
+  "cache_policy": "Reuse only parent's completed H23 software runtime; previous2602697/2609041 exited. No scene snapshot, child directory sharing, new weight copy, deletion or migration. Full physical reset each run.",
+  "minimum_free_GiB": {"sda": 32, "nvme": 80},
+  "gates": {
+    "runs": ["gate_radio_h25", "gate_plates_h25"],
+    "tasks": [0, 3], "instances": [138, 242], "split": "train", "seed": 0,
+    "max_resets": 2, "sequential": true,
+    "max_decisions_each": 24, "max_controls_each_including_hold": 1536,
+    "max_seconds_each_after_reset": 1200, "initialization_monitor_seconds": 900,
+    "max_MiB_each": 384, "model_calls": 0,
+    "expert_prefix_controls": 0, "saved_policy_prefix_controls": 0,
+    "dependency": "Complete numeric/image evidence and video decoding after first before second; exact new executor/profile mandatory."
+  },
+  "conditional_fullstart": {
+    "run": "radio_h25_fullstart", "max_resets": 1, "task": 0, "instance": 138,
+    "split": "train", "seed": 0, "max_decisions": 192,
+    "max_controls_including_hold": 6144, "max_seconds_after_reset": 7200,
+    "initialization_monitor_seconds": 900, "max_GiB": 3,
+    "expert_prefix_controls": 0, "saved_policy_prefix_controls": 0,
+    "dependency": "Both new same-source engineering gates fully reviewed, exact model identity and available resources. No automatic retry."
+  },
+  "model": {
+    "path": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917/models/Qwen3.8-27B",
+    "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0", "port": 8927,
+    "max_calls": 431, "dtype": "bfloat16", "backend": "transformers-sdpa",
+    "thinking": false, "max_images": 9, "head_max_side": 640, "training_updates": 0
+  },
+  "flags": "All H22 flags plus independently validated gripper-completion-v1 and new odometry-match-refinement; fixed joint RGBD/6 controls, original solver/quality/motion limits and SEARCH two-recovery budget.",
+  "comparison": "H22 original train138 same model/task/seed/budgets. Adds reviewed gripper semantics too, so combined engineering validation rather than isolated randomized feature ablation. H24 all-pair comparison isolates frontend on identical saved inputs. Gripper behavior cannot account for pre-close odometry changes.",
+  "metrics": ["Official full-task termination", "actual held/lift and subgoal progress", "every motion rejection/recovery and reason", "control/model/time/storage counts"],
+  "stop": "Any original safety/quality failure not covered by existing SEARCH recovery, official termination, registered time/control/model/storage budget. Safe final hold. Archive evidence before stopping own idle model. No automatic new reset or threshold relaxation.",
+  "runtime": "3.9.1 development, not official 3.9.2",
+  "child_scope_unchanged": "Astra fa24 data/120-update SFT/six paired local tests remain separate; this block does not replace or modify them."
+}
