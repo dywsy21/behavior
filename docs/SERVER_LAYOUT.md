@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 13:12当前：** H22两gate2573658/2584009均已退出，全量约671MB本地`artifacts/agentic-vlm-goal-20260918/h22_gates_bundle`双端SHA/全链/视频/RAW审闭合；父d7不可变源保留，下一8926模型及原起点尚待实际启动。子2575671失败退出，350文件146,779,410B完整本地子worktree `artifacts/h09y-resume-20260921/native_complete/native_t1_i114_p0993`，0正BC；旧10e1与参考/失败全部保留，新b306仅CPU构造显式sidecar。GPU2/3实查空，0/1队友不动。
+
 **2026-09-21 12:48当前：** 父2573658已退出，`h22_self_odometry/gate_radio_h22`24动作417控制工程通过，完整本地`artifacts/agentic-vlm-goal-20260918/h22_gates_bundle/gate_radio_h22`及三主SHA/全链/视频/RAW审闭合；父runtime约7.75GB保留复用，第二门尚未开。子2575671/GPU3 `h09y_grasp_only/native_t1_i114_p0993`已完成993来源前缀，原生采集中，不是训练。父子共享的只是硬件；各自Kit目录独立。
 
 **2026-09-21 12:29当前：** 父H22 d7固定源首sim2573658/GPU2启动，新结果`/mnt/nvme_tmp/robodojo_agentic_20260921/h22_self_odometry`，runtime `/mnt/nvme_tmp/robodojo_harness_runtime_20260921/h22_self_odometry`（上限16GiB，顺序父sim复用，不共享子Kit）。Astra新固定`git_worktrees/vlm_sft_h09y_10e1e6c`负责原生/SFT，数据seed双亲审已过；其显式shared cache只指原TRAIN114已完成runtime的global/cache，其他run证据独立。GPU3约209MiB是父Kit辅助context，不是队友新训练，父已允许身份明确≤512MiB且余≥70GiB时子单次开sim。所有旧cache/证据保留。
