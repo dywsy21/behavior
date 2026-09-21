@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 21:10（北京时间）H30正式失败结束/953单次条件父审（Codex/Astra）：** 21:06:58实核2673899退出，3225控制/165决策/290模型调用/6093.041s，official_success=false，终止标签`OFFICIAL_EPISODE_TERMINATED_DURING_SEARCH_REANCHOR`；完整链审待，不称成功或自动重跑。GPU3实空81152MiB。子新ced2691七路径父全读、181独立4.959s过，公共源码逐字同02d/8fdf；唯一TRAIN114/e264/p953 inactive6e28a76c…d1c54、prepare452e6bed…55437、CPU33865529…286f3全核，父receipt `h09z_train953_ced2691_parent_review.json`只条件交一个14宏/640新含hold/2body/1200＋900/384MiB的GPU3采集，须动态空卡/源/盘/原436＋cac门，无自动重试。正式3.10已验4轨26宏（4CLOSE/13lift/9preclose），仍32门拒，fresh120/六评未启。H33实现472公共/174SFT初回归过，真实117/118/120保存态6组仅stub边界1.561s过；新增排队reposition也受abstain拦截，最终回归/独审待，0新模型物理。
+
 **2026-09-21 20:51（北京时间）第二carry失败全审闭合（Codex）：** 全252文件94,996,845B/清单4f8da67a…bc578核完；8宏全部真实q/grip/23D重放、175payload/75depth及277物理帧含末hold4.407s过；本人看全部75 RAW＋2原分辨率关键图。668=380＋288含hold，两body后右手保持误差.407/.460mm，仍无闭爪/接触/持握、桶升0，0BC。receipt `h09z_native_192380_carry_failure_parent_review.json`、数值report5c918a75…dbb6d；原两reset完整结束，不自动第三。Astra原20:48:18–20:58:18只读候选票继续，父继续H33默认关闭实现；H30原回合不动。
 
 **2026-09-21 20:48（北京时间）第二carry失败/有限替代数据定位（Codex/Astra）：** 2686721于20:46:47确认退出；380＋288新含末hold=668，8宏/两个body实际到位，但第9无safe decreasing proposal；wall809.423s、0CLOSE/无held/contact/0BC，不能用局部body改善冒充成功。全包封存/父全RAW与物理审进行中，现仍4条26宏未够32。Astra另≤600s CPU只读第9实际态与原TRAIN192/114最多2个更早非近重复候选（优先已成功114969之前），不读heldout、不改02d/teacher/覆盖/成功门、不新reset；父审后另登记一个最有依据的替代，不围绕380无限加接口。H33默认关闭接触复核CPU票20:46起1800s登记；数据终审优先，尚无新实现/部署，H30原回合继续。
