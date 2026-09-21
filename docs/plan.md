@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 14:09（北京时间）SFT新profile父终审通过/物理门前置完成（Codex/Astra）：** 父固定fa24c3f完整11路径独审＋140/3.059s过，公共executor逐字同13bd、digest1fcc505c…97f4c；新/旧receipt、整个trajectory review、dataset provenance、三配对策略均显式同模式，未改物理成功门。robo新独立`semantic_gripper_13bd4bb`干净410/18.756s过，GPU3仅原H22已识别200MiB辅助context、余80,939MiB，源/NVMe余量过，首门待实际提交。Astra fa24源140/6.993s与114989 inactive/精确989前缀/v2种子/cache门1.611s过，grant仍false；另≤600s CPU只预备原192388/114985两个inactive，不增reset或重构源。父H22同d7已85决策1859控制，末距约.362m，仍未持握。
+
+**2026-09-21 14:05（北京时间）公共独审闭合/新夹爪两物理工程门登记（Codex/Astra）：** Astra固定13bd四实现路径/18新组完整独审、独立410/6.665s、保存态32文件18命令1.753s复算无阻塞（report b6eea655…f078）；旧W10行仍coverage=false。新collector/eval正确要求同executor且gripper flag=true的两task工程门，原239/d7门不能充数。因此父登记新**仅2reset顺序工程门**（task0/138、3/242/GPU3，24/1536/1200s＋900init/384MiB各、0模型/0prefix），新独立NVMe结果1GiB/runtime16GiB，32/80GiB余量，全部H22守卫＋新flag，首门全审后才第二；`configs/semantic_robot/gripper_v1_engineering_block.json`。Astra同时CPU收敛全链profile与114989 inactive，暂不占GPU3；父H22 GPU2原回合不停/源不动。新门尚未提交，后继原剩3near逐条114989→192388→114985仍须两门/接线/人工审，不提前称已训。
+
 **2026-09-21 14:02（北京时间）新profile公共终测/后继父审工具（Codex）：** 13bd4bb在225基础补完部署gate模式/实际几何/硬失败绑定，全410/6.842s通过并push，公共API稳定交Astra独审。父`audit_native_grasp_parent.py`只在忽略artifacts新增显式source/executor/profile参数与新夹爪18条q/开度/实际23维命令及receipt重算，旧模式默认保留；已语法校验，**未有新完整采集可实际验收该分支**。两失败原件保留，SERVER已同步32文件完整本地。H22原76决策1650控制，首次已见右臂forward，仍PICK APPROACH/未持握；GPU3不提前reset，等profile固定终审。
 
 **2026-09-21 13:59（北京时间）core冻结/入口身份补齐与H22进入抓取接近（Codex）：** 225d87d公共core已407/6.720s通过并push供Astra独审；父追加部署入口工程门必须同gripper_completion_v1、结果保存该位及新模式强制实际geometry guards，3条真实入口AST回归（含视觉失败优先于完成）过，未改API或活跃源。新18组回归/全410终测中。H22同原起点已72决策1578控制、goal1 PICK APPROACH；本人看d69未缩放head确认桌上红收音机，导航只是观测验证的子目标完成，仍未抓住/无官方成功。Astra接线继续，0新采集/训练。
