@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 14:02（北京时间）新profile公共终测/后继父审工具（Codex）：** 13bd4bb在225基础补完部署gate模式/实际几何/硬失败绑定，全410/6.842s通过并push，公共API稳定交Astra独审。父`audit_native_grasp_parent.py`只在忽略artifacts新增显式source/executor/profile参数与新夹爪18条q/开度/实际23维命令及receipt重算，旧模式默认保留；已语法校验，**未有新完整采集可实际验收该分支**。两失败原件保留，SERVER已同步32文件完整本地。H22原76决策1650控制，首次已见右臂forward，仍PICK APPROACH/未持握；GPU3不提前reset，等profile固定终审。
+
 **2026-09-21 13:59（北京时间）core冻结/入口身份补齐与H22进入抓取接近（Codex）：** 225d87d公共core已407/6.720s通过并push供Astra独审；父追加部署入口工程门必须同gripper_completion_v1、结果保存该位及新模式强制实际geometry guards，3条真实入口AST回归（含视觉失败优先于完成）过，未改API或活跃源。新18组回归/全410终测中。H22同原起点已72决策1578控制、goal1 PICK APPROACH；本人看d69未缩放head确认桌上红收音机，导航只是观测验证的子目标完成，仍未抓住/无官方成功。Astra接线继续，0新采集/训练。
 
 **2026-09-21 13:55（北京时间）gripper-v1实现与保存态对照完成（Codex）：** 新默认关闭公共语义已接Task/GroundedHarness及部署入口，纯位移/旋转/原成功门不变；视觉测量硬失败仍覆盖命令完成，抓取只进VERIFY。406回归6.696s过，新增禁止增大发散包络后终测待。新192392全部32 SHA＋18逐步真实q/开度对照.731s：新旧18条动作逐位相同，原2.983310mm误差原样留存，新报命令完成但holding UNKNOWN；不重标旧失败、不产生正BC。逐tick底盘速度未存，离线用有限零仅影响此分支不使用的base_integral，不称物理重演。`docs/experiments/2026-09-21-gripper-command-completion.md`说明设计/证据；下一固定core交Astra独审、父审其全链profile，再开原剩余采集；H22原到67决策1488控制仍未终态。

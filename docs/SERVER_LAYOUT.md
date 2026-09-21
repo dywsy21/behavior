@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 14:02当前：** 新192392失败完整32文件10,424,297B已到子worktree `artifacts/h09y-resume-20260921/native_complete/native_t1_i192_p0392`并父全SHA/控制/6RAW审闭合，不再传输中。新gripper公共修复225＋13bd仅Git/本地CPU，尚未部署新服务器源；H22仍原d7/2588439＋2589106/GPU2。父新增忽略目录保存态对照`artifacts/agentic-vlm-goal-20260918/gripper_saved_state_comparison.py`；父audit脚本增加显式新执行profile/逐条夹爪命令和receipt重算分支，只语法校验，待新完整采集实审，不称新数据已过。
+
 **2026-09-21 13:33当前：** 2592963已退出，`native_t1_i192_p0392`失败包保留、正封存，GPU3释放待下一明确单次安排，不是已训模型。父2588439/2589106同d7仍原回合；本地新增`artifacts/agentic-vlm-goal-20260918/h22_window_diagnostic`仅保存三相机四对离线诊断（含原47MB机器人标定），不当完整run或新在线策略。
 
 **2026-09-21 13:20当前：** Astra新GPU3 2592963初始化，输出`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0392`及相邻log/launch，固定`git_worktrees/vlm_sft_h09y_b306684`（准确SHA b306684ff3a8cf7b3dfc2182b522d2094eef0a5c）；授权a634e83e…ef227/newteacher f5ac944a…5141/父review90044cf，旧inactive仍false。只新run runtime复用已审global/cache别名，0/1不触；父H22原进程继续，源码不得热改。
