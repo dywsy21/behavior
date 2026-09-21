@@ -1,0 +1,42 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-21T18:24:28+08:00",
+  "run": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0380_ws45",
+  "source": "1cf0d1f8c3663aeba906f829ec4a66de35c413fb",
+  "executor_sha256": "1fcc505cb570c0fa215c408b2ae78d904819dc95b40bbbe117a560106ad97f4c",
+  "inventory_sha256": "8abc670d552d3b9d8f4071cfcc2a251a4d28f87ffae6f5679a22d00246e5b394",
+  "local_bundle": "/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09y-resume-20260921/native_complete/native_t1_i192_p0380_ws45",
+  "complete_failed_run_audit_passed": true,
+  "positive_BC_admitted": false,
+  "files": 195,
+  "bytes": 71982083,
+  "total_controls_including_final_hold": 604,
+  "expert_prefix_controls": 380,
+  "native_controls_including_final_hold": 224,
+  "capture_sets": 19,
+  "payload_hashes": 133,
+  "depth_hashes": 57,
+  "physical_frames": 213,
+  "macros": ["RIGHT_BACK", "RIGHT_DOWN", "RIGHT_BACK", "RIGHT_DOWN", "TORSO_DOWN_KEEP_EEF", "RIGHT_DOWN"],
+  "public_qualification_checks": 6,
+  "actual_q_grip_23D_servo_replays": 6,
+  "numeric_seconds": 3.409360865945928,
+  "body_motion": {
+    "macro": 4,
+    "actual_controls": 26,
+    "end_error_m": {"left": 0.000007260140975974867, "right": 0.00040717130186768694, "torso": 0.00041497313434274517},
+    "settled_hand_displacement_m": {"left": 0.000007464149904765669, "right": 0.00040697076366624666},
+    "original_unchanged_tolerances_passed": true,
+    "following_actual_arm_motion_reached": true
+  },
+  "manual_review": {
+    "personally_viewed_raw_images": 57,
+    "scope": "All before/after/after_settle x head/left/right for six executed macros, and three RAW at the seventh rejected proposal; additionally full-resolution body-settled head and final right wrist.",
+    "observation": "Right fingers remain open beside the bin. Body adjustment and subsequent downward hand displacement are visible; no grasp or bin lift. All three body stages included, no cherry-picked success frame.",
+    "sheets": "artifacts/agentic-vlm-goal-20260918/native_t1_i192_p0380_ws45_parent_sheet_{0,1,2,3}.jpg"
+  },
+  "outcome": {"CLOSE_issued": false, "known_finger_contact_or_held_either_hand": false, "target_rise_m": 0.0, "local_GRASP": false, "official_success_claim": false},
+  "failure": "No safe decreasing teacher proposal at seventh action; original single-body allowance already consumed, cause of next rejection still under bounded read-only diagnosis.",
+  "limits": "Public depth NOT_A_BASE_MOVE does not certify scene sweep safety; private contact log certifies only its existing finger/held/forbidden interface, not all robot-environment contact forces. No success relabeling, model training, automatic reset or data-release gate change.",
+  "next": "Finish original saved-state diagnosis, then explicitly decide whether the registered second388 start is informative; it remains inactive. Fresh120 training and six paired evaluations remain required after genuine data gate pass."
+}
