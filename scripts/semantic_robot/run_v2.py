@@ -100,6 +100,8 @@ def main():
                    help="Opt-in fixed action-internal RGB-D sampling; zero preserves legacy behavior")
     p.add_argument("--odometry-self-exclusion",action="store_true",
                    help="Exclude current robot-only visual geometry at both RGB-D correspondence endpoints")
+    p.add_argument("--odometry-match-refinement",action="store_true",
+                   help="Explicit fixed bidirectional LK localization before unchanged RGB-D geometry checks")
     p.add_argument("--search-motion-recovery",action="store_true",
                    help="Opt-in at most two open-hand search reference resets after measured HOLD; never old-pose recovery")
     p.add_argument("--approach-progress",action="store_true",help="Veto repeated near-field base advances without observed contact progress")
@@ -152,6 +154,9 @@ def main():
     if args.odometry_self_exclusion and not (grounded and args.grasp_motion and args.visual_odometry and
             args.odometry_estimator=="rgbd_joint" and args.odometry_substep_controls==6):
         raise ValueError("Robot self exclusion requires fresh robot geometry and six-control joint RGB-D")
+    if args.odometry_match_refinement and not (grounded and args.odometry_self_exclusion and
+            args.visual_odometry and args.odometry_estimator=="rgbd_joint" and args.odometry_substep_controls==6):
+        raise ValueError("Match refinement requires current robot exclusion and fixed six-control joint RGB-D")
     if args.search_motion_recovery and not (grounded and args.robot_geometry_guards and
             args.held_object_inspection and args.odometry_estimator=="rgbd_joint" and
             args.odometry_substep_controls==6 and args.prefix==0 and not args.replay_prefix_spec):
@@ -174,6 +179,7 @@ def main():
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
                 g.get("odometry_substep_controls",0)==args.odometry_substep_controls and
                 g.get("odometry_self_exclusion",False)==args.odometry_self_exclusion and
+                g.get("odometry_match_refinement",False)==args.odometry_match_refinement and
                 g.get("search_motion_recovery",False)==args.search_motion_recovery and
                 g.get("approach_progress",False)==args.approach_progress and
                 g.get("persistent_grasp_tracks",False)==args.persistent_grasp_tracks and
@@ -222,6 +228,7 @@ def main():
                 "visual_odometry":args.visual_odometry,
                 "odometry_substep_controls":args.odometry_substep_controls,
                 "odometry_self_exclusion":args.odometry_self_exclusion,
+                "odometry_match_refinement":args.odometry_match_refinement,
                 "search_motion_recovery":args.search_motion_recovery,
                 "robot_geometry_guards":args.robot_geometry_guards,
                 "approach_reorientation":args.approach_reorientation,
@@ -426,7 +433,8 @@ def main():
                 if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion,
                     odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress,persistent_grasp_tracks=args.persistent_grasp_tracks,
                     spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery,
-                    odometry_self_exclusion=args.odometry_self_exclusion)
+                    odometry_self_exclusion=args.odometry_self_exclusion,
+                    odometry_match_refinement=args.odometry_match_refinement)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -447,7 +455,8 @@ def main():
             gate_motion=None
             if args.visual_odometry and not policy:
                 from semantic_robot.v2.odometry import RGBDMotion
-                gate_motion=RGBDMotion(args.odometry_estimator,exclude_robot=args.odometry_self_exclusion)
+                gate_motion=RGBDMotion(args.odometry_estimator,exclude_robot=args.odometry_self_exclusion,
+                                      refine_matches=args.odometry_match_refinement)
             substep_motion=None
             if args.odometry_substep_controls:
                 from semantic_robot.v2.substep_odometry import SubstepMotion
@@ -811,6 +820,7 @@ def main():
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "odometry_substep_controls":args.odometry_substep_controls,
                       "odometry_self_exclusion":args.odometry_self_exclusion,
+                      "odometry_match_refinement":args.odometry_match_refinement,
                       "search_motion_recovery":args.search_motion_recovery,
                       "held_object_inspection":args.held_object_inspection,
                       "persistent_grasp_tracks":args.persistent_grasp_tracks,

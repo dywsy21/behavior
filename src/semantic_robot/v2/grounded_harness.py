@@ -271,11 +271,15 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False,odometry_match_refinement=False):
         self.model,self.servo,self.harness=model,servo,harness
         if odometry_self_exclusion and not visual_odometry:
             raise ValueError("Robot-self exclusion requires visual odometry")
         self.odometry_self_exclusion=odometry_self_exclusion
+        if (type(odometry_match_refinement) is not bool or
+                (odometry_match_refinement and not (visual_odometry and odometry_self_exclusion and odometry_estimator=="rgbd_joint"))):
+            raise ValueError("Match refinement requires explicit self-excluded joint RGB-D")
+        self.odometry_match_refinement=odometry_match_refinement
         if approach_progress and not visual_odometry:raise ValueError("Approach progress requires measured visual motion")
         from .approach_progress import ApproachProgress
         self.approach_monitor=ApproachProgress() if approach_progress else None
@@ -313,7 +317,8 @@ class GroundedController:
             self.grasp_verifier=GraspMotionVerifier(persistent_tracks=persistent_grasp_tracks,spatial_seed_features=spatial_grasp_features)
         if visual_odometry:
             from .odometry import RGBDMotion
-            self.motion=RGBDMotion(odometry_estimator,exclude_robot=odometry_self_exclusion)
+            self.motion=RGBDMotion(odometry_estimator,exclude_robot=odometry_self_exclusion,
+                                  refine_matches=odometry_match_refinement)
 
     @property
     def can_replan_stop(self):

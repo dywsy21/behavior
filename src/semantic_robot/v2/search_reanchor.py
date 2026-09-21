@@ -92,8 +92,10 @@ class SearchReanchor:
         receipt["attempt"] = self.attempts
         self.history.append(receipt)
         use_self = c.odometry_self_exclusion
-        factory = motion_factory or (lambda: SubstepMotion(RGBDMotion("rgbd_joint", exclude_robot=True)
-                                                            if use_self else RGBDMotion("rgbd_joint")))
+        options = {"exclude_robot": True} if use_self else {}
+        if c.odometry_match_refinement:
+            options["refine_matches"] = True
+        factory = motion_factory or (lambda: SubstepMotion(RGBDMotion("rgbd_joint", **options)))
         motion = factory()
         images, depths, sensor = observe("search_reanchor_before")
         state = state_now()
