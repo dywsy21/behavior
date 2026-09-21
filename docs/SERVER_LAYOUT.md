@@ -6,6 +6,7 @@
 
 ## 1. 总览
 
+**2026-09-21 11:42当前：** H21原354348已退出，`radio_h21_fullstart`保留1,126,807,369B、98决策/2118控制/164calls/official=false；完整本地`artifacts/agentic-vlm-goal-20260918/h21_fullstart_bundle`传输中。353691/8925自有模型的identity/calls已在`h21_server_complete_archive/server_h21`双端SHA验证后TERM并确认退出；GPU2/3空，GPU0/1队友保留。SDA只余44GiB，NVMe约2.7TiB，不删除任何文件。后继拟新增独立runtime缓存根到NVMe（16GiB上限），原H09Y6GiB结果根不变，配置尚待独审/实核；reference_train114_v1尚未启动，旧inactive不改。
 **2026-09-19 22:50当前：** H21原354348/353691仍占GPU3，策略1128控制后PICK APPROACH；两个工程门完整本地`artifacts/agentic-vlm-goal-20260918/h21_gates_bundle/`已双端SHA/全链复核。Astra新不可变`git_worktrees/vlm_sft_h09y_a6cde5d`仅CPU，真实准备`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/reference_prepare_train114_v1/task_1`，manifest61eebc47…62d3；同root `authorization_train114_inactive.json`仍false/52498d6c…c4d，物理`reference_train114_v1`尚不存在。不要将参考准备当训练数据或重复提交。原源/历史所有结果保留。
 
 **2026-09-19 22:17当前：** H21唯一原起点354348/GPU3于22:16:17 BJT启动初始化，NVMe根`h21_search_reanchor/radio_h21_fullstart`/相邻log/launch_policy.json；353691/8925同cc服务ready、起始0/431。两源相同固定`semantic_reanchor_cc249c9`不可热pull；两旧门退出、完整本地归档仍传输。Astra无新GPU任务。
