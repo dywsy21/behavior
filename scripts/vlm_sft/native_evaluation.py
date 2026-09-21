@@ -12,7 +12,8 @@ from native_actor_protocol import VERSION,validate_actor,request_payload,finite,
 from native_teacher_artifacts import json_bytes
 from semantic_robot.v2.protocol import ROTATIONS
 from semantic_robot.v2.servo import SafeServo
-from native_execution import validate_profile,servo_limits,metadata as execution_metadata,completed
+from native_execution import (validate_profile,servo_limits,metadata as execution_metadata,completed,
+    PublicGripperHistory,preclose_translation,timing_metadata)
 from semantic_robot.v2.grounding import LocalDepthGuard,observed_cloud
 
 VARIANTS=("base","finetuned","proprio_history_nn")
@@ -46,33 +47,14 @@ class NearestNeighbor:
             "neighbor_training_id":self.rows[i]["id"],"squared_distance":float(distances[j]),"images_used":False}
 
 
-class PublicExecution:
+class PublicExecution(PublicGripperHistory):
     """Gripper command state changes only at an actual control issuance."""
     def __init__(self,grips,*,execution_profile=None):
         self.execution_profile=validate_profile(execution_profile)
-        self.grips=finite(grips,(2,)).copy()
-        if np.any(abs(self.grips)>1):raise ValueError("Native gripper command range")
-        self.close_seen={a:bool(self.grips[i]<.999) for i,a in enumerate(("left","right"))}
-
-    def issued(self,command):
-        command=finite(command,(23,));g=command[[14,22]]
-        if np.any(abs(g)>1):raise ValueError("Native gripper command range")
-        self.grips=g.copy()
-        for i,arm in enumerate(("left","right")):
-            if g[i]<.999:self.close_seen[arm]=True
+        super().__init__(grips)
 
     def completed(self,token,feedback):
         return completed(token,feedback,profile=self.execution_profile)
-
-    def rotation_qualified(self,arm,state,model):
-        if arm not in ("left","right") or self.close_seen.get(arm) is not False:return False
-        try:
-            i=("left","right").index(arm);metadata=model.spec["metadata"]
-            reference=finite(metadata["grasp_region_reference_gripper_m"],(2,))
-            actual=finite(state.gripper,(2,))
-            return bool(.999<=self.grips[i]<=1 and metadata["grasp_region_reference_fully_open"].get(arm) is True and
-                actual[i]>=.0495 and abs(actual[i]-reference[i])<=.0005)
-        except (KeyError,TypeError,ValueError):return False
 
     def preflight(self,token,state,model,depths,geometry,*,capture_receipt,expected_clock):
         check_clock(expected_clock);check_clock(capture_receipt["clock"])
@@ -87,7 +69,8 @@ class PublicExecution:
         action=token_to_action(token);arm=action.part
         if token.endswith("_OPEN") and self.close_seen.get(token.split("_")[0].lower(),True):
             raise RuntimeError("Fixed GRASP preserves issued CLOSE latch")
-        carry=True
+        qualified=preclose_translation(action,state,model,self,self.execution_profile)
+        carry=not qualified
         hand_rotation=action.move in ROTATIONS and arm in ("left","right")
         if hand_rotation:
             if not self.rotation_qualified(arm,state,model):raise RuntimeError("No public full-open rotation qualification")
@@ -98,7 +81,8 @@ class PublicExecution:
         if not allowed:raise RuntimeError(reason)
         servo=SafeServo(model,state,gripper_command=self.grips,limits=servo_limits(self.execution_profile))
         if not servo.begin(action,state,carry=carry) or servo.total_ticks>40:raise RuntimeError(servo.status)
-        return servo,{**execution_metadata(self.execution_profile),"carry":carry,"robot_geometry_guards":True,"amount":action.amount(carry),
+        return servo,{**execution_metadata(self.execution_profile),**timing_metadata(self.execution_profile,qualified),
+            "carry":carry,"robot_geometry_guards":True,"amount":action.amount(carry),
             "public_full_open_rotation_qualification":hand_rotation,
             "empty_hand_or_environment_contact_not_certified":True,"depth":guard.receipt(),"depth_check":reason}
 

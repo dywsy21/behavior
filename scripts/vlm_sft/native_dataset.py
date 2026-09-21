@@ -20,6 +20,9 @@ from native_teacher_artifacts import load_calibration
 from native_teacher_outcomes import LocalOutcome
 from native_teacher_policy import validate_train_group
 from native_execution import authorization_profile,metadata as execution_metadata,completed as execution_completed
+from native_execution import PRECLOSE_PROFILE,PublicGripperHistory,preclose_translation,timing_metadata
+from common import token_to_action
+from semantic_robot.v2.protocol import ROTATIONS
 
 VERSION="h09y-reviewed-native-grasp-v1"
 TRAIN={(1,192),(1,114)}
@@ -39,6 +42,8 @@ def check_execution(record,request,execution,profile):
         raise ValueError("Incomplete or action-mismatched execution receipt")
     if profile is not None and execution["control_end"]-execution["control_start"]!=execution["feedback"]["control_ticks"]:
         raise ValueError("Completion receipt does not match the actual control ledger")
+    if profile==PRECLOSE_PROFILE and execution["feedback"].get("carry") is not request["preflight"].get("carry"):
+        raise ValueError("Actual servo timing differs from the public preflight receipt")
 
 
 def checked_images(row):
@@ -55,6 +60,24 @@ def checked_images(row):
         if image.format!="PNG" or image.size!=(n,n):raise ValueError("Wrong raw onboard image layout")
         result[view]=image.convert("RGB").resize((256,256),Image.Resampling.LANCZOS)
     return result
+
+
+def check_public_timing(request, token, before, model, commands, prefix, control_start):
+    """Independently replay issued command latch; never trust teacher flags."""
+    if prefix < 1 or len(commands) < prefix+control_start:
+        raise ValueError("Complete paid prefix and actual local command history required")
+    history=PublicGripperHistory(np.asarray(commands[prefix-1]["action23"])[[14,22]])
+    for row in commands[prefix:prefix+control_start]:history.issued(row["action23"])
+    state=model.state(np.asarray(before["q"]),np.asarray(before["gripper"]),np.zeros(3))
+    action=token_to_action(token)
+    qualified=preclose_translation(action,state,model,history,PRECLOSE_PROFILE)
+    receipt=request["preflight"]
+    expected=timing_metadata(PRECLOSE_PROFILE,qualified)
+    carry=not (qualified or action.move in ROTATIONS)
+    if (any(type(receipt.get(k)) is not type(v) or receipt[k]!=v for k,v in expected.items()) or
+            receipt.get("carry") is not carry or receipt.get("amount")!=action.amount(carry) or
+            (action.move in ROTATIONS and not history.rotation_qualified(action.part,state,model))):
+        raise ValueError("Public timing receipt differs from actual command history/full-open calibration")
 
 
 def verified_run(entry,counts):
@@ -112,6 +135,8 @@ def verified_run(entry,counts):
                 execution["control_start"]!=last_end or execution["control_end"]<=last_end):
             raise ValueError("Wrong same-state/action/history or incomplete execution")
         before=read(folder/"before/capture.json");after=read(folder/"after_settle/capture.json")
+        if execution_profile==PRECLOSE_PROFILE:
+            check_public_timing(request,token,before,model,normal,prefix,execution["control_start"])
         expected_clock={"prefix_control":prefix,"native_control":execution["control_start"]}
         proprio,hashes,binding=protocol.from_capture(folder/"before",model,capture_sha256=request["capture_sha256"],
             expected_clock=expected_clock,calibration_sha256=model.sha)

@@ -19,6 +19,7 @@ from native_dataset import load_dataset,checked_images
 from modeling import collate,encode,load_model,supervised_loss,eos_id
 from native_reference_profile import ROOT as EXPERIMENT_ROOT
 from native_storage import activate as activate_storage
+from native_execution import require_pipeline_profile,metadata as execution_metadata
 
 REPO=Path(__file__).resolve().parents[2]
 BASE="/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917/models/Qwen3.5-2B"
@@ -65,6 +66,7 @@ def main():
     release=json.loads(a.authorization.read_text());require_training(release,code,sha(a.config),sha(a.data/"dataset.json"))
     if a.output.resolve()!=EXPERIMENT_ROOT/"training_v1":raise ValueError("Only the registered fresh training output")
     rows,dataset=load_dataset(a.data,require_gate=True)
+    require_pipeline_profile(release,dataset)
     if os.environ.get("CUDA_VISIBLE_DEVICES")!="3":raise ValueError("Separately handed-over GPU3 only")
     storage=activate_storage(release,a.output);check_storage(storage);base_files=base_identity()
     a.output.mkdir(parents=True,exist_ok=False);start=time.monotonic()
@@ -89,6 +91,7 @@ def run_training(a,cfg,code,rows,dataset,storage,base_files,start):
     budget();model,processor=load_model(BASE,train=True,cfg=cfg);eos=eos_id(processor);budget()
     params=[p for p in model.parameters() if p.requires_grad]
     identity={"protocol":VERSION,"code_commit":code,"config_sha256":sha(a.config),"dataset_sha256":sha(a.data/"dataset.json"),
+        **execution_metadata(require_pipeline_profile(json.loads(a.authorization.read_text()),dataset)),
         "authorization_sha256":sha(a.authorization),"base_model":BASE,**base_files,
         "physical_gpu":3,"config":cfg,"torch":torch.__version__,"transformers":transformers.__version__,"peft":peft.__version__,
         "rows":len(rows),"whole_runs":len(dataset["runs"]),"old_adapter_loaded":False,"eos":eos,"started_unix":time.time(),

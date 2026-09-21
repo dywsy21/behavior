@@ -9,12 +9,15 @@ COMPLETE_PROFILE = "near_complete384"
 H09Y_PROFILE = "near_h09y_grasp384"
 H09Y_ROOT = "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only"
 H09Y_STARTS = {(1,264,114,993),(1,310,192,392),(1,264,114,989),(1,310,192,388),(1,264,114,985)}
+DIVERSE_PROFILE = "near_h09y_diverse_grasp384_v1"
+DIVERSE_STARTS = {(1,310,192,380),(1,264,114,969)}
+H09Y_PROFILES = (H09Y_PROFILE, DIVERSE_PROFILE)
 
 
 def capacity_limits(release):
     """No implicit enlargement, mixed profiles or bool-as-int budgets."""
     profile = release.get("capacity_profile", LEGACY_PROFILE)
-    if type(profile) is not str or profile not in (LEGACY_PROFILE, COMPLETE_PROFILE,H09Y_PROFILE):
+    if type(profile) is not str or profile not in (LEGACY_PROFILE, COMPLETE_PROFILE,*H09Y_PROFILES):
         raise ValueError("Unknown native-teacher capacity profile")
     expected = {"run_MiB": 100, "total_MiB": 384}
     if profile == COMPLETE_PROFILE:
@@ -22,11 +25,11 @@ def capacity_limits(release):
         if (release.get("experiment_root") != H09W_ROOT or
                 release.get("prior_experiment_roots") != [LEGACY_ROOT]):
             raise ValueError("Exact new NVMe and preserved original experiment roots required")
-    elif profile == H09Y_PROFILE:
+    elif profile in H09Y_PROFILES:
         expected={"run_MiB":384,"total_MiB":6144}
         source=release.get("source",[]);prefix=release.get("paid_prefix_controls")
         if (not isinstance(source,list) or len(source)!=3 or any(type(v) is not int for v in source) or
-                type(prefix) is not int or (*source,prefix) not in H09Y_STARTS or
+                type(prefix) is not int or (*source,prefix) not in (DIVERSE_STARTS if profile==DIVERSE_PROFILE else H09Y_STARTS) or
                 release.get("experiment_root")!=H09Y_ROOT or release.get("held_out_instance_groups")!=[[1,1],[1,71]] or
                 type(release.get("registered_gpu")) is not int or release["registered_gpu"]!=3 or
                 type(release.get("initialization_seconds")) is not int or release["initialization_seconds"]!=900 or
@@ -41,7 +44,7 @@ def capacity_limits(release):
 
 
 def validate_collection_location(release,output,gpu):
-    if release.get("capacity_profile")!=H09Y_PROFILE:return
+    if release.get("capacity_profile") not in H09Y_PROFILES:return
     _,_,instance=release["source"];prefix=release["paid_prefix_controls"]
     if gpu!=3 or Path(output).resolve()!=Path(H09Y_ROOT)/f"native_t1_i{instance}_p{prefix:04d}":
         raise ValueError("Only the exact singly registered H09Y collection output/GPU")

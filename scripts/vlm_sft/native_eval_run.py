@@ -65,9 +65,11 @@ def require_evaluation(auth,code,executor,prepared,variant,output,data_sha):
 
 
 def load_service(auth,code,data_sha):
+    from native_execution import require_same_pipeline,PRECLOSE_PROFILE
     path=ROOT/"service_v1/identity.json"
     if sha(path)!=auth.get("service_identity_sha256"):raise ValueError("Released service identity changed")
     identity=json.loads(path.read_text())
+    require_same_pipeline(auth,identity)
     if (identity.get("code_commit")!=code or identity.get("protocol")!=VERSION or identity.get("dataset_sha256")!=data_sha or
             identity.get("physical_gpu")!=3 or identity.get("port")!=8919 or identity.get("max_calls")!=48):
         raise ValueError("Exact paired service/model/data identity required")
@@ -80,6 +82,10 @@ def load_service(auth,code,data_sha):
             answer=json.load(response)
         if any(answer.get(k)!=identity[k] for k in ("adapter_sha256","dataset_sha256","code_commit","training_result_sha256")):
             raise ValueError("Per-call model/source/dataset identity drift")
+        if authorization_profile(auth)==PRECLOSE_PROFILE and (
+                answer.get("execution_profile")!=PRECLOSE_PROFILE or
+                answer.get("storage_profile")!=identity["storage"]["profile"]):
+            raise ValueError("Per-call execution/storage profile drift")
         return answer
     return identity,remote
 
@@ -94,6 +100,8 @@ def main():
     execution_profile=authorization_profile(auth)
     data_sha=sha(a.data/"dataset.json");require_evaluation(auth,code,implementation_digest(),prepared,a.variant,a.output,data_sha)
     rows,dataset=load_dataset(a.data);require_dataset_profile(dataset,execution_profile)
+    from native_execution import require_pipeline_profile
+    require_pipeline_profile(auth,dataset)
     nn=NearestNeighbor(rows) if a.variant=="proprio_history_nn" else None
     identity,remote=(load_service(auth,code,data_sha) if nn is None else (None,None))
     storage=activate_storage(auth,a.output);check_storage(storage);a.output.mkdir(parents=True,exist_ok=False)

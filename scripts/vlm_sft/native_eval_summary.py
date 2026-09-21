@@ -8,7 +8,7 @@ from common import sha,write_json
 from native_evaluation import VARIANTS
 from native_eval_prepare import STARTS,ROOT,SCHEMA
 from native_actor_protocol import validate_actor
-from native_execution import authorization_profile
+from native_execution import authorization_profile,PRECLOSE_PROFILE
 
 
 def summarize(root):
@@ -25,7 +25,13 @@ def summarize(root):
                         m.get("oracle_actor_feedback") is not False or m.get("specified_hand") is not None):
                     raise ValueError("Registered paired identities changed")
                 profile=authorization_profile(auth)
-                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile))
+                storage_profile=(auth.get("storage") or {}).get("profile")
+                if profile==PRECLOSE_PROFILE:
+                    from native_storage import DIVERSE_STORAGE_PROFILE,validate_spec
+                    if (not validate_spec(auth) or storage_profile!=DIVERSE_STORAGE_PROFILE or
+                            (m.get("storage") or {}).get("profile")!=storage_profile):
+                        raise ValueError("Paired new execution/storage identity changed")
+                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile,storage_profile))
                 row["execution_profile"]=profile
                 row["status"]="INCOMPLETE_ATTEMPT"
             if result_path.exists():

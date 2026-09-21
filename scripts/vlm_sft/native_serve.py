@@ -13,6 +13,7 @@ from native_actor_protocol import VERSION,parse_request
 from native_dataset import load_dataset
 from native_train import BASE,base_identity,check_storage
 from native_storage import activate as activate_storage
+from native_execution import require_pipeline_profile,require_same_pipeline,metadata as execution_metadata,PRECLOSE_PROFILE
 from modeling import load_model,encode,decode
 from native_reference_profile import ROOT as EXPERIMENT_ROOT
 
@@ -43,7 +44,8 @@ def main():
         raise ValueError("Separate exact-model/data/protocol service authorization required")
     if os.environ.get("CUDA_VISIBLE_DEVICES")!="3":raise ValueError("Separately handed-over GPU3 only")
     if a.output.resolve()!=EXPERIMENT_ROOT/"service_v1":raise ValueError("Only the registered model service output")
-    rows,_=load_dataset(a.data);adapter,training,checkpoint=validate_checkpoint(a.training,data_sha)
+    rows,dataset=load_dataset(a.data);adapter,training,checkpoint=validate_checkpoint(a.training,data_sha)
+    execution_profile=require_pipeline_profile(auth,dataset);require_same_pipeline(auth,training)
     instructions=sorted({r["actor"]["active_instruction"] for r in rows})
     storage=activate_storage(auth,a.output);check_storage(storage);base_files=base_identity()
     if any(training.get(k)!=value for k,value in base_files.items()):raise ValueError("Base weights/config/tokenizer differ from training")
@@ -53,6 +55,7 @@ def main():
     model,processor=load_model(BASE,adapter=adapter)
     check_storage(storage)
     identity={"protocol":VERSION,"code_commit":code,"dataset_sha256":data_sha,"adapter_sha256":checkpoint["adapter_sha256"],
+        **execution_metadata(execution_profile),
         **base_files,"physical_gpu":3,"port":8919,"training_result_sha256":sha(a.training/"result.json"),
         "authorization_sha256":sha(a.authorization),
         "storage":None if storage is None else storage.check(),
@@ -74,6 +77,8 @@ def main():
                 with model.disable_adapter() if value["variant"]=="base" else nullcontext():result=decode(model,processor,x)
                 result.update(call=calls,variant=value["variant"],protocol=VERSION,adapter_sha256=identity["adapter_sha256"],dataset_sha256=data_sha,
                     code_commit=code,training_result_sha256=identity["training_result_sha256"])
+                if execution_profile==PRECLOSE_PROFILE:
+                    result.update(execution_profile=execution_profile,storage_profile=identity["storage"]["profile"])
                 ledger.write(json.dumps({"unix":time.time(),"actor":value["actor"],"result":result})+"\n");self.send(200,result)
             except Exception as exc:
                 ledger.write(json.dumps({"unix":time.time(),"error":repr(exc),"calls":calls})+"\n");self.send(400,{"error":str(exc),"calls":calls})
