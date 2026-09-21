@@ -32,7 +32,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False,multicamera_inspection=False,approach_reorientation=False,approach_body_options=False):
+    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False,multicamera_inspection=False,approach_reorientation=False,approach_body_options=False,workspace_posture=False):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -48,6 +48,8 @@ class GroundedHarness(TaskHarness):
         self.contact_geometry=bool(contact_geometry)
         self.approach_reorientation=bool(approach_reorientation)
         self.approach_body_options=bool(approach_body_options)
+        self.workspace_posture=bool(workspace_posture)
+        self.workspace_close_seen={"left":False,"right":False}
         self.active_grasp_probe=bool(active_grasp_probe)
         self.grasp_probe_attempts={}
         self.grasp_probe={"eligible":False,"reason":"NOT_OBSERVED"}
@@ -149,6 +151,7 @@ class GroundedHarness(TaskHarness):
         # an explicit OPEN completes or grasp evidence really verifies holding.
         if action.move=="close" and (feedback.get("control_ticks",0)>0 or execution_completed(action,feedback)):
             for arm in (("left","right") if action.part=="both" else (action.part,)):
+                if arm in self.workspace_close_seen:self.workspace_close_seen[arm]=True
                 if arm in self.possible_contact_after_close:self.possible_contact_after_close[arm]=True
                 if arm in self.pending_grasp and self.goal.kind=="pick":self.pending_grasp[arm]=True
         super().executed(action,feedback)
@@ -180,6 +183,10 @@ class GroundedHarness(TaskHarness):
                 return inspection_palette(arm,self.carry,self.inspection_budget_aware) if self.hold_verified[arm] else (HOLD,)
             if self.search_reference=="unknown" and any(self.hold_verified.values()):return (HOLD,)
         palette=super().palette()
+        if self.workspace_posture and self.goal.kind=="pick" and self.goal.hand in ("left","right") and self.stage in ("APPROACH","ALIGN"):
+            # Tentative palette only: current open/history/depth/servo and a
+            # useful bounded followup are required before offering any of these.
+            palette+=tuple(Action("torso",move,"fine") for move in ("up","down","forward","back"))
         from .approach_reorientation import eligible
         if eligible(self):
             palette += tuple(Action(self.goal.hand, move, scale, "tool")
@@ -600,6 +607,12 @@ class GroundedController:
         open_command=bool(np.all((self.servo.grips >= .999) & (self.servo.grips <= 1.)) and np.all(state.gripper >= .0495))
         posture_mode=eligible(self.harness) and open_command
         body_mode=self.harness.approach_body_options and unladen_pick_approach(self.harness) and open_command
+        from .workspace_posture import qualification as workspace_qualification, preview as workspace_preview
+        workspace=workspace_qualification(self.harness,state,self.servo.grips,self.model) if self.harness.workspace_posture else None
+        if workspace is not None:
+            workspace["checks"]["robot_geometry_guards"]=bool(self.servo.limits.robot_geometry_guards)
+            workspace["eligible"]=all(workspace["checks"].values())
+        workspace_mode=bool(workspace and workspace["eligible"])
         if self.harness.approach_reorientation and self.harness.stage=="APPROACH" and not posture_mode:
             # A measured open jaw cannot override a pending CLOSE command.
             palette=tuple(a for a in palette if not (a.part in ("left","right","both") and a.move in ROTATIONS))
@@ -734,6 +747,54 @@ class GroundedController:
                 # preflight. Append so every fine direction is checked first.
                 micro=Action("base",action.move,"micro")
                 if micro in palette and micro not in tested:queue.append(micro)
+        workspace_trials=[]; workspace_lookahead=None
+        if workspace_mode and self.target.get("valid"):
+            moderate=[]
+            for row in rows:
+                a=Action(**row["action"])
+                if a.part!=self.harness.goal.hand or a.move not in TRANSLATIONS or a.scale not in ("fine","coarse"):continue
+                distances=self._expected_distances(a,state)
+                if distances is None:continue
+                gain=self.target["distance_to_active_closing_center_m"]-float(np.mean(list(distances.values())))
+                if gain>1e-6:moderate.append((a,row,gain))
+            # Only a currently observed workspace blockage warrants extra body
+            # preflights. 2mm progress is retained but is not a moderate reach.
+            blocked=bool(moderate and not any(row["accepted"] for a,row,gain in moderate))
+            followups=[];directions=[]
+            for a,row,gain in sorted(moderate,key=lambda v:(v[0].scale!="fine",-v[2])):
+                if row["accepted"] or row["reason"] not in ("UNREACHABLE_OR_COLLISION_BLOCKED","DURATION_LIMIT_EXCEEDED","CARTESIAN_PATH_DEVIATION","TRAJECTORY_LIMIT_OR_COLLISION"):continue
+                direction=self._translation_direction(a,state)
+                if any(float(direction@old)>.995 for old in directions):continue
+                followups.append(a);directions.append(direction)
+                if len(followups)==3:break
+            if blocked and followups:
+                for move in ("up","down","forward","back"):
+                    require_time(deadline)
+                    action=Action("torso",move,"fine")
+                    ok,reason=self.depth_guard.check(action,False)
+                    trial=None
+                    if ok:
+                        trial=SafeServo(self.model,state,self.servo.grips.copy(),self.servo.limits)
+                        ok=trial.begin(action,state,False)
+                        reason="KINEMATIC_PATH_FEASIBLE" if ok else trial.status
+                    require_time(deadline)
+                    row={"action":asdict(action),"accepted":bool(ok),"reason":reason,"offered_to_policy":False}
+                    if ok:
+                        row["planned_ticks"]=trial.total_ticks
+                        workspace_trials.append((action,trial))
+                    rows.append(row)
+                workspace_lookahead=workspace_preview(self.model,state,self.servo.grips.copy(),self.servo.limits,
+                    self.harness.goal.hand,self.target["point_base_m"],workspace_trials,followups,deadline)
+                for row in rows:
+                    found=next((r for r in workspace_lookahead["rows"] if r["torso"]==row["action"]),None)
+                    if found is None:continue
+                    row["workspace_posture_after"]=found["summary"]
+                    gain=found["summary"]["best_two_command_gain_m"]
+                    if gain is not None and gain>1e-3:
+                        allowed.append(Action(**row["action"]))
+                        row["offered_to_policy"]=True
+            workspace.update(trigger="MODERATE_IMPROVING_ARM_PATHS_BLOCKED" if blocked else "NO_MODERATE_WORKSPACE_BLOCKAGE",
+                             blocked_followups=[asdict(a) for a in followups],preview=workspace_lookahead)
         reorientation=None
         if (posture_mode and rotation_trials and self.target.get("valid")
                 and not any(r["accepted"] and r["action"]["part"]==self.harness.goal.hand
@@ -772,7 +833,7 @@ class GroundedController:
                 navigation["phase"]="APPROACH_OR_SAFE_REPOSITION"
             for row in rows:row["offered_to_policy"]=Action(**row["action"]) in allowed
         self.harness.candidate_receipt={"state_q":state.q.tolist(),"command_grip_latch":self.servo.grips.tolist(),
-            "tested":rows,"preflight_s":time.perf_counter()-started,"max_nonhold_preflights":limit,
+            "tested":rows,"preflight_s":time.perf_counter()-started,"max_nonhold_preflights":limit+(4 if workspace_mode else 0),
             "depth_guard":self.depth_guard.receipt(),"fresh_execution_recheck_required":True,
             "navigation":navigation}
         if self.harness.approach_reorientation:
@@ -782,6 +843,8 @@ class GroundedController:
                 "all_existing_fine_body_directions_before_rejected_micro_fallback":True,
                 "all_options_require_current_depth_servo_and_progress_checks":True,
                 "prediction_not_execution_or_complete_environment_safety":True}
+        if self.harness.workspace_posture:
+            self.harness.candidate_receipt["workspace_posture"]=workspace
         if not allowed:
             self.harness.stop_reason="NO_SAFE_ACTION_AT_CURRENT_STATE"
         return tuple(allowed)

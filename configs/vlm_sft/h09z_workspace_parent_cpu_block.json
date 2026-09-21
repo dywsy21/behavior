@@ -1,0 +1,19 @@
+{
+  "experiment_id": "H09Z-native-compensated-torso-CPU",
+  "owner": "Astra-vlm_sft_resume_20260921",
+  "independent_reviewer": "Codex-parent",
+  "registered_bjt": "2026-09-21T16:55:00+08:00",
+  "status": "CPU_implementation_only_no_physical_authorization",
+  "hypothesis": "Native body-first supervision can escape the demonstrated arm-only workspace blockage and provide diverse whole successful GRASP trajectories without relabeling expert torso motions or failures.",
+  "design_report_sha256": "1814bac3aa1579854bd9e692c6a17998d544d07aa77be1cf9e7ee6575cff45bb",
+  "base_source": "572c9ebc5c277b94d74714a2c1f4cc8ebd43ba14",
+  "required_public_executor_digest": "1fcc505cb570c0fa215c408b2ae78d904819dc95b40bbbe117a560106ad97f4c",
+  "ownership": ["scripts/vlm_sft", "tests/vlm_sft", "configs/vlm_sft new author-owned files", "own experiment document"],
+  "contract": "Explicit native45 codec/actor protocol: unchanged41 plus four TORSO_{UP,DOWN,FORWARD,BACK}_KEEP_EEF, existing fine/base1cm compensated BOTH-hand pose semantics. Old common vocabulary/version/expert codec untouched. New shared BOTH-hand calibrated-open/current-issued-OPEN/no-local-CLOSE qualification; partial CLOSE then OPEN stays ineligible; absence of contact is not certified. Private teacher additionally requires both hands known no-held/no-external-contact. First-action-only4x3 bounded offline fallback after all ordinary decreasing arm paths fail; fresh actual capture after body, no synthetic oracle/BC or old-depth hypothetical reprojection.",
+  "limits": "One torso correction per trajectory, counts within original12macros/420new-controls-including-hold/1200s. Reserve first body+settle+one predicted followup+settle+finalhold control budget; do not promise that followup. No recursion, reset or threshold changes. Revisit guard remains active.",
+  "CPU_budget": {"wall_seconds": 2400, "GPU": "none", "new_resets": 0, "new_controls": 0, "model_calls": 0, "training_updates": 0},
+  "validation": "Old151SFT/410public, old41 exact behavior, new45 encode/decode/history/prompt and all base-FT-NN identity, missing/mixed/partial-CLOSE rejection, unsafe/negative lookahead and bounded counts, dataset whole-run original W+114989 compatibility, torso never counted as lift. H27 same saved capture fixed-case numerical comparison only; do not mark physical success.",
+  "safe_scope": "Existing SafeServo robot/self collision and NOT_A_BASE_MOVE depth limitation explicitly retained, NOT certified scene sweep. No observing-arm guard bypass or new all-link depth guard in this ticket. Later actual collection requires separately registered starts/caps, fixed source, independent review and full actual-contact/RAW audit. No aliases or new active authorization now.",
+  "training_eval_unchanged": "Original whole4-trajectories/32macros and eachTRAIN>=2 coverage, independent parent manual review, fresh2B120 updates incl2-step/reload gates and six paired heldout local trials remain required. Current2644402/p969 stays572; H25 staysa628. Do not stop the overall user work at CPU completion.",
+  "stop": "At CPU deadline report fixed tested implementation or exact blocker; preserve partial work. No source/profile switch underneath live jobs, no automatic physical launch and no lowered dataset gate."
+}

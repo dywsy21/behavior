@@ -1,0 +1,17 @@
+{
+  "experiment_id": "H27-saved-body-workspace",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-21T16:46:00+08:00",
+  "status": "completed_five_robot_only_pairs_passed_no_physics",
+  "result": {"report": "artifacts/agentic-vlm-goal-20260918/h27_saved_body_workspace.json", "sha256": "3153a7f83ec7cf6267f4e309e742136a51e51ffd7d0ce371360b599574ae4768", "seconds": 7.5954142570262775, "body_preflights": 8, "body_passed": 8, "following_preflights": 24, "pairs_passed": 5, "passing_pairs": "fine torso down -> any of DOWN/PITCH_PLUS/FORWARD; fine torso forward -> PITCH_PLUS/FORWARD. All3mm torso alternatives have0 followup successes.", "down_posture_predicted_hand_drift_m": {"left": 0.00000486780002703001, "right": 0.00040609922047458335}, "down_posture_ticks": 26, "down_then_arm_pair_ticks": [52,45,47], "not_physical_success": true},
+  "hypothesis": "When all improving single-arm actions fail at a near-extended posture, an existing torso repositioning primitive that preserves BOTH hand poses can create space for those same arm motions. This is a generic body/arm coordination issue, not a task-specific VLM prompt or permission to weaken IK precision.",
+  "source": "/home/wsy/behavior_worktrees/review-preclose-572c9eb",
+  "code_commit": "572c9ebc5c277b94d74714a2c1f4cc8ebd43ba14",
+  "executor_digest": "1fcc505cb570c0fa215c408b2ae78d904819dc95b40bbbe117a560106ad97f4c",
+  "input_run": "/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09y-resume-20260921/native_complete/native_t1_i192_p0380",
+  "capture_sha256": "58228e46968bcb9bc03cc29e6a43ada3a28b0543c00e5d9f203d51bd886c2034",
+  "cases": "Existing torso up/down/forward/back, micro3mm and fine10mm (8 first actions), then each original RIGHT_DOWN/PITCH_PLUS/FORWARD at its actual predicted end state only if the first whole original preflight passes. All three baseline arm rejections are already measured by H26.",
+  "budgets": {"wall_seconds": 600, "maximum_first_preflights": 8, "maximum_following_preflights": 24, "max_output_MiB": 8, "GPU": "none", "new_controls": 0, "resets": 0, "model_calls": 0, "training_updates": 0},
+  "unchanged": "Original SafeServo/pose precision,18D coupled solver, all original collision/interpolation/timing constraints, original3mm/10mm torso amounts, no perturbation or scene truth in deployment inputs. Carry=false only hypothetical unladen posture scope; not a new permission in current actor.",
+  "stop": "Fixed cases or wall budget; failed first actions have no followup. No online application, dataset token/schema expansion, physical reset, privilege leakage or change to child572/H25a628. A CPU-feasible pair is not a physical success or safe contact proof."
+}

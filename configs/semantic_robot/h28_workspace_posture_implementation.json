@@ -1,0 +1,16 @@
+{
+  "experiment_id": "H28-public-workspace-posture-preview",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-21T16:51:00+08:00",
+  "status": "CPU_implementation_and_author_regressions_complete_independent_review_pending",
+  "author_validation": {"public_tests": 441, "public_seconds": 9.244, "SFT_compatibility_tests": 151, "SFT_seconds": 5.150, "saved_regression_seconds": 4.408536792034283, "saved_regression_sha256": "c09b6c6e22683e6d751f2cf03ce43c9fb11dd082763b98a2ca9b812569b35461", "all_eight_H27_body_plans_identical": true, "all_four_micro_previews_rejected": true, "all_eight_translation_followups_match_H27": true, "target_for_score_regression": "explicit synthetic direction, not an observed affordance and not deployed"},
+  "hypothesis": "The public harness currently offers torso micro motions but not the existing fine compensating posture and its arm-reachability consequence. A bounded preview can expose useful body-first moves when improving moderate arm translations are blocked, without lowering any control tolerance or claiming grasp success.",
+  "base_code": "6664b52",
+  "evidence": {"H26": "8f822d0b7fdff4db1c8d1ccebf1c293144a2ff57d8dfed0b4ec24323f79e9218", "H27": "3153a7f83ec7cf6267f4e309e742136a51e51ffd7d0ce371360b599574ae4768"},
+  "scope": "Default-off public workspace-posture flag; single-hand PICK APPROACH/ALIGN, valid observed RGBD target, calibrated full-open BOTH hands and OPEN latches, no recorded CLOSE/contact/load/hazard. Preserve original old candidate budget, add at most4 existing fine torso directions and at most3 already blocked improving arm translation followups per accepted torso. Current body depth/servo checks required; following commands are robot-only predictions, never queued/executed or environment-safety claims. Only first action may be offered; reobserve/recheck after every actual action.",
+  "ownership": ["src/semantic_robot/v2", "scripts/semantic_robot", "tests/semantic_robot", "configs/semantic_robot", "docs/plan.md"],
+  "unchanged": "SafeServo, action amounts, pose/collision/path/timing thresholds, VLM/checkpoint, existing default behavior, H25 frozena628 and child2644402 frozen572. No native data/vocabulary changes in this parent block.",
+  "budget": {"CPU_wall_seconds": 1800, "new_resets": 0, "model_calls": 0, "training_updates": 0, "GPU": "none"},
+  "validation": "Fail-closed unknown/closed/reopened/load/hazard/stage tests, bounded counts, preflight identity and prediction-only tests, old default regressions, deterministic all H27 saved cases. Fixed commit and independent review before any later separately registered physical validation.",
+  "stop": "CPU budget or blocking safety error; keep partial work and evidence, no auto-online deployment or reset."
+}

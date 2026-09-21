@@ -61,7 +61,7 @@ def secondary_error_report(message):
         pass  # Even a broken stderr must not suppress the original exception.
 
 
-def bounded_gate(grounded=False,multicamera=False):
+def bounded_gate(grounded=False,multicamera=False,workspace=False):
     actions = [HOLD, Action("right","up"), Action("right","down"),
             Action("left","forward","micro"), Action("left","back","micro"),
             Action("right","yaw_plus","micro","tool"), Action("right","yaw_minus","micro","tool"),
@@ -76,6 +76,10 @@ def bounded_gate(grounded=False,multicamera=False):
         actions[13:15]=[Action("base","yaw_plus","coarse"),Action("base","yaw_minus","coarse")]
     if multicamera:
         actions[7:9]=[Action("left","roll_plus","coarse","tool"),Action("left","roll_minus","coarse","tool")]
+    if workspace:
+        # The opt-in profile must exercise its 1cm compensating body scale,
+        # rather than accepting a gate that only checked legacy3mm pulses.
+        actions[9:11]=[Action("torso","up","fine"),Action("torso","down","fine")]
     return actions
 
 
@@ -95,6 +99,7 @@ def main():
                    help="Separate bounded OPEN/CLOSE command completion from pose precision and grasp success")
     p.add_argument("--approach-reorientation",action="store_true",help="Opt-in unladen wrist candidates and bounded robot-only two-command reach preview")
     p.add_argument("--approach-body-options",action="store_true",help="Opt-in all existing unladen far-pick body directions before individual safety preflight")
+    p.add_argument("--workspace-posture",action="store_true",help="Opt-in bounded fine torso posture previews when moderate single-arm reaches are blocked")
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid","rgbd_joint"),default="pnp")
     p.add_argument("--odometry-substep-controls",type=int,choices=(0,6),default=0,
                    help="Opt-in fixed action-internal RGB-D sampling; zero preserves legacy behavior")
@@ -142,6 +147,10 @@ def main():
         raise ValueError("Approach reorientation requires the reviewed robot geometry guards")
     if args.approach_body_options and not args.robot_geometry_guards:
         raise ValueError("Approach body options require the reviewed robot geometry guards")
+    if args.workspace_posture and not args.robot_geometry_guards:
+        raise ValueError("Workspace posture requires the reviewed robot geometry guards")
+    if args.workspace_posture and (args.prefix or args.replay_prefix_spec):
+        raise ValueError("Workspace posture requires original-start issued-command history")
     if args.held_object_inspection and not args.grasp_motion:raise ValueError("Held inspection requires registered verified anchors")
     if args.persistent_grasp_tracks and not args.grasp_motion:raise ValueError("Persistent tracks require registered verification")
     if args.spatial_grasp_features and not args.persistent_grasp_tracks:raise ValueError("Spatial features require persistent tracks")
@@ -176,6 +185,7 @@ def main():
                 g.get("gripper_completion_v1",False)==args.gripper_completion_v1 and
                 g.get("approach_reorientation",False)==args.approach_reorientation and
                 g.get("approach_body_options",False)==args.approach_body_options and
+                g.get("workspace_posture",False)==args.workspace_posture and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
                 g.get("odometry_substep_controls",0)==args.odometry_substep_controls and
                 g.get("odometry_self_exclusion",False)==args.odometry_self_exclusion and
@@ -233,6 +243,7 @@ def main():
                 "robot_geometry_guards":args.robot_geometry_guards,
                 "approach_reorientation":args.approach_reorientation,
                 "approach_body_options":args.approach_body_options,
+                "workspace_posture":args.workspace_posture,
                 "active_grasp_probe":args.active_grasp_probe,"privileged_audit_is_actor_input":False,
                 "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
@@ -426,7 +437,7 @@ def main():
                 else:
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection,approach_reorientation=args.approach_reorientation,approach_body_options=args.approach_body_options) if grounded else TaskHarness(goals)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection,approach_reorientation=args.approach_reorientation,approach_body_options=args.approach_body_options,workspace_posture=args.workspace_posture) if grounded else TaskHarness(goals)
                 if replay is not None:
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
@@ -451,7 +462,7 @@ def main():
                 draw.text((8,1065),f"Expert {prefix_count} + saved-policy {replay_count} prefix not shown. 30Hz sim /15fps.",fill="white")
                 video.append_data(np.asarray(canvas))
 
-            gate = bounded_gate(grounded,args.multicamera_inspection)
+            gate = bounded_gate(grounded,args.multicamera_inspection,args.workspace_posture)
             gate_motion=None
             if args.visual_odometry and not policy:
                 from semantic_robot.v2.odometry import RGBDMotion
@@ -598,6 +609,16 @@ def main():
                 if stop_before_motion(deadline,controls,row,decisions,manager):break
                 wall = time.perf_counter()
                 state = state_now()  # recheck actual joints after model latency
+                if args.workspace_posture and manager and action.part=="torso" and action.scale=="fine":
+                    from semantic_robot.v2.workspace_posture import execution_check
+                    workspace_check=execution_check(manager,state,servo.grips,model,servo.limits,action)
+                    write(directory/"workspace_posture_execution_check.json",workspace_check)
+                    if not workspace_check["eligible"]:
+                        reason="WORKSPACE_POSTURE_QUALIFICATION_CHANGED"
+                        manager.stop_reason=reason
+                        row.update(accepted_before_motion=False,stop_reason=reason)
+                        decisions.append(row)
+                        break
                 carry=(inspection_carry(manager,action) if args.multicamera_inspection and manager else bool(manager and manager.carry))
                 accepted = servo.begin(action,state,carry=carry)
                 free_actor_motion=bool(controller and controller.is_held_search and action.part==free_observing_hand(manager))
@@ -817,6 +838,7 @@ def main():
                       "gripper_completion_v1":args.gripper_completion_v1,
                       "approach_reorientation":args.approach_reorientation,
                       "approach_body_options":args.approach_body_options,
+                      "workspace_posture":args.workspace_posture,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "odometry_substep_controls":args.odometry_substep_controls,
                       "odometry_self_exclusion":args.odometry_self_exclusion,
