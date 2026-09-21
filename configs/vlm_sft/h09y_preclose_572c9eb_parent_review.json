@@ -1,0 +1,29 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_at_bjt": "2026-09-21T16:00:00+08:00",
+  "code_commit": "572c9ebc5c277b94d74714a2c1f4cc8ebd43ba14",
+  "reviewed_diff_base": "071a748",
+  "reviewed_paths": 15,
+  "code_review_passed": true,
+  "unresolved_findings": [],
+  "public_src_and_scripts_identical_to": "13bd4bb716b386bc7624d05d03f38e77286470ae",
+  "executor_digest": "1fcc505cb570c0fa215c408b2ae78d904819dc95b40bbbe117a560106ad97f4c",
+  "independent_SFT_tests": {"passed": 151, "seconds": 3.547},
+  "independent_public_tests": {"passed": 410, "seconds": 8.704},
+  "independent_saved_state_probe": {
+    "script": "artifacts/agentic-vlm-goal-20260918/parent_preclose_572c9eb_audit.py",
+    "seconds": 8.42369947291445,
+    "verified_archived_files": 53,
+    "actual_captures": 2,
+    "profile_and_per_hand_latch_cases": 18,
+    "collector_and_public_execution_equal": true,
+    "first_DOWN_remains_unreachable": true,
+    "second_DOWN_new_qualified_ticks": 25,
+    "second_DOWN_new_max_joint_tick_rad": 0.023995705885919927,
+    "old_profile_or_same_hand_closed_reopened_remains_duration_rejected": true,
+    "new_physical_controls": 0
+  },
+  "qualification_limits": "Current calibrated full-open aperture plus actual last OPEN and no local issued CLOSE; never certifies holding or absence of contact. Same-arm close latch survives failed/partial execution and subsequent OPEN. Only fine/base single-arm translation uses original normal timing, with unchanged1cm/IK/collision/path/40tick guards.",
+  "pipeline": "Collector, actual-issued-history dataset admission, training, service and base/FT/NN evaluation explicitly bind the new profile; legacy/default profiles and unknown-profile refusal remain. Exact two new capacity/cache starts only.",
+  "scope": "Fixed-source CPU review only. Separate current remote CPU/source/resource checks and single-run handoff required. No training until original coverage passes; no failed trajectory relabeling;120 updates and6 physical comparisons remain pending."
+}

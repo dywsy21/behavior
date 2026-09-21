@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 16:00（北京时间）SFT public接近profile父独审通过（Codex）：** 固定572c9eb全15路径审完，独立151/3.547s＋410/8.704s过；公共src/runner逐字同13bd、仍1fcc。另本人新probe8.424s核失败192388全部53SHA/两原capture/三profile×左右闭后重开18组合，collector/public逐项一致；首态仍不可达，第二仅新profile同手未CLOSE为25tick/.023996rad，闭同手后仍原时长拒、不假称空手无接触。parent receipt已落`h09y_preclose_572c9eb_parent_review.json`；下一等新不可变远端CPU/两inactive与动态资源后仅交首192380，0新reset/训练。父H25原sim2630126已场景加载/校准，模型与源码不热改。
+
+**2026-09-21 15:57（北京时间）H25唯一零前缀完整回合真实提交/子固定接线交审（Codex/Astra）：** 2629456用14.498s ready，实际health准确a628/原revision/BF16/5.7/817decoder、0/431调用；15:56:10.319904唯一2630126/GPU2启动`radio_h25_fullstart`，task0/train138/seed0、两前缀0/原192决策6144含hold/7200s＋900init/3GiB，模型后余28,439MiB，正在初始化，不是成功。Astra572c9eb已固定新public接近profile15路径，原1fcc字节不变，作者151＋410和两失败保存态回归通过；父独立完整差异/151测试进行中，仅后继CPU准备，尚0新增数据reset/训练。新TRAIN采集须父终审与初始化交接，原120更新＋六物理对照仍待。
+
 **2026-09-21 15:55（北京时间）H25原模型真实提交（Codex）：** 两门parent review已绑定result SHA，15:54:57.254226唯一2629456/GPU2/8927启动同27B、准确a628/afd1/revision1d4b、原431calls；实核空卡81152MiB、root672.113MB/runtime7.777GB和盘门。仅模型初始化/0场景重置，原fullstart尚未提交，待ready身份与≥20GiB余量。完整launch在H25根`launch_model.json`，旧失败/所有门证据保留。
 
 **2026-09-21 15:54（北京时间）H25双工程门终审通过（Codex）：** 第二2626095已退出，24/418/262.784s、gate_ok；父完整319,315,295B远端26.945s重算76新LK/joint段、144主hash/104同帧/22链/4BASE/4真实夹爪receipt，全视频解码过、本人逐看7张厨房与双腕开闭RAW。三SHA dd0d5f6c…a0ad9/986bdbdc…85526/eaf27367…0cccf；本地完整传输中，不冒称已齐。两门均0模型/两前缀0，只有工程验证，下一执行原已登记同27B模型＋单次零前缀完整任务（192/6144/7200s/431calls），不是增加reset。Astra新接近profile仍CPU负例测试，120更新/六评未开始。Git干净ff-only pull/fetch完成，main仍33677bd。
