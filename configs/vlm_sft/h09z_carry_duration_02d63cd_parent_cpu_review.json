@@ -1,0 +1,46 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-21T19:52:00+08:00",
+  "review_passed": true,
+  "code_commit": "02d63cdc86fdbe6df056e93600c0022b711741d2",
+  "executor_digest": "8fdfcd3e1b8bdfd95530eec09710d1c44efc215885b49c64c1a82f55bbc501a8",
+  "core_commit": "0808ee8d811b78d1cd34d1da33c30abc705a66d1",
+  "carry_duration_v1": true,
+  "original_safety_and_rate_limits_unchanged": true,
+  "scope": "Independent review of owned affabb5 and final02d delta; public0808 independently reviewed by Astra. CPU only, no new physical success claim.",
+  "tests": {
+    "parent_SFT": {"passed":174,"seconds":6.145},
+    "parent_public": {"passed":420,"seconds":7.392,"PYTHONPATH":"src"},
+    "initial_public_invocation": "Missing PYTHONPATH caused import errors; corrected invocation passes without code changes.",
+    "remote_python310": {"SFT_passed":174,"SFT_seconds":14.930,"public_passed":420,"public_seconds":22.468},
+    "remote_python311": {"SFT_passed":174,"SFT_seconds":12.657,"public_passed":420,"public_seconds":21.474}
+  },
+  "parent_saved_state_probe": {
+    "path":"artifacts/agentic-vlm-goal-20260918/h31_native_parent_probe.json",
+    "sha256":"775333c9b7c12aade94e7aba11dee0c15c3eb48a23291d5481ea87c81f9236bb",
+    "helper_sha256":"60b37a5cb193e6c5643b21bdc6ca5001e3f3310bfa143b456be24d84d150021a",
+    "seconds":5.619618815951981,"full_inventories_checked":[110,195],
+    "old_fine40_rejects_new44_accepted":true,"collector_common_public_plan_identical":true,
+    "plan_sha256":"724ebf92d715f71241b7e630c15dc700b5ab669379d87e6b8586c45d651304aa",
+    "original_arm_IK_guards_and_post_CLOSE_body_refusal_preserved":true,
+    "second_body_counterfactual_available_and_third_refused":true,"physical_controls":0
+  },
+  "cross_python_actual_q": {
+    "report_sha256":"0e9f1dbbedd9700e78f738a733d6b4acc9fd7f0967f3c3311849ed63c0a2500d",
+    "inputs_sha256":["5326e56d8256b248fd103965962d516c180e947b714ba7fcf87cb08571ad7d47","13018717638fe52e32c2d12030b75c7b706a4b9800c6409cc0dc00e0851ac2c7"],
+    "actual_commands":200,"macros":9,"exact_dataset_fields_equal":true,"tolerance_added":false,
+    "limitation":"Old per-tick base velocity was not saved; no reconstructed base_integral claim. Timing receipts are CPU counterfactuals; old records unchanged."
+  },
+  "inactive_preparations_checked": {
+    "388":{"authorization_sha256":"792636de919977e2d2c2923511fc26b80474de0a149b488ec6b98a1b54cde6c3","preparation_sha256":"8b2e0553442b3acda26dbfb0e8d23c84a793f55084d1be5d39acf9b3333c0ee0"},
+    "380":{"authorization_sha256":"97c1301f24d6a9bcdb2a375c69025f71d195467c0db3a7628efb0524060f4a02","preparation_sha256":"821211094bdd2b3e8f6bce5383adb1f099904ff756353e2b01040782c60efd2f"}
+  },
+  "conditional_first_handoff": {
+    "run_name":"native_t1_i192_p0388_ws45_cd1_b2","GPU":3,"max_resets":1,
+    "prefix_controls":388,"max_macros":14,"new_controls_including_final_hold":640,
+    "seconds_after_reset":1200,"initialization_seconds":900,"run_MiB":384,
+    "requires_dynamic_source_GPU_storage_checks":true,"automatic_retry":false,
+    "next_380_training_service_evaluation":"Not released: whole first388 actual extended carry, physical ledger and parent RAW review required; original coverage gates unchanged."
+  },
+  "physical_integration_passed":false,"training_started":false,"success_claim":false
+}
