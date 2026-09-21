@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 12:13（北京时间）H09Y参考实终态/共享软件cache后继设计（Codex/Astra）：** 唯一2564237已退出，作者核1199 issued=completed、末hold完成、strict GRASP stable12、REFERENCE_LOCAL_SUCCEEDED、0模型/failure=null；result SHA1208c9bc…7e0c/trace f1b13d3c…c88c。这是新的TRAIN114离线pose seed，非native BC或VLM效果，完整包/父物理与RAW审仍待。作者查runtime8.19GB主项global/cache/texturecache约7.1GiB。父明确批准在剩余CPU票实现**新显式profile**：只有各run的OG global/cache可alias到已完成reference的精确cache目标，local/data/log/tmp/证据仍独立；限定owner/实际NVMe/software，完整scandir拒未知不可读、其他symlink/循环/escape，同一目标仅计一次。16GiB/6GiB/32/80门不变、旧profile不改、不删搬旧数据；固定独审后才后继物理。父H22 d7不可变远端392/18.749s、总20.926s过，digest e7631fc5…b33d；首次普通fetch只跟main致SHA未找到，在0物理下补精确feature refspec成功，未重写原source。仍待Astra独审，不启动父物理。
+
 **2026-09-21 12:05（北京时间）H22全保存态门通过/H21证据全审闭合（Codex）：** 固定d7c8028c08a14f78bc6bb055b22692cdd451154c对H21全部356实际片段逐一重算，基线355/356，新自身过滤356/356，0退化/1故障段恢复、176.570s；输入hash/FK及基线计数/状态均精确核回。不是只挑末段，也不是新闭环效果，完整摘要`h21_fullstart_bundle/h22_saved_fullrun_summary.json`。父H21另18.279s完整核588主RGB-D hash、97整链＋1完整失败链、356段/712FK、65次BASE整动作消费、2118连续控制（末hold仅marker，2117个23维向量）、全视频解码过，三主SHA原值全同。CPU实现提前完成，稳定d7已交Astra≤900s独立只读终审；下一仅≤300s远端不可变源/CPU校验，无新物理或阈值改动。
 
 **2026-09-21 12:03（北京时间）H22实现/固定审准备（Codex）：** 新默认关闭`--odometry-self-exclusion`已接实际每帧robot-only盒、q/夹爪/控制/RGB-D绑定、两端匹配过滤、整链结束快照及SEARCH新参考，不降阈值/扩恢复；392/9.370s回归（11新组）通过。设计`docs/experiments/2026-09-21-h22-robot-self-odometry.md`；整轮H21固定保存片段重算和完整证据audit仍在原1800s CPU块执行，不把末11段当全轮验收。H09Y作者11:57:51核本轮screenshots为空、仅owner mode000→0700后全scandir442文件/243目录/206614275B，无不可读/symlink/跨盘；原66运行源未改，后继存储拒不可读补丁仍待审。没有新父模拟器/模型或新VLM训练。

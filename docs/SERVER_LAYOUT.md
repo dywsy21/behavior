@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 12:13当前：** reference_train114_v1/2564237已退出1199控制，result+QUARANTINED_pose_seed完整包正封存，GPU3空；本轮runtime约8.19GB保留，下一拟各独立run仅global/cache别名复用reference精确7.1GiB纹理cache，不移删，配置尚待独审。父新`git_worktrees/semantic_selfodom_d7c8028`准确d7/digest e7631fc5、392远端CPU通过，仅源码无父sim/model。H21本地全链/视频审已经完成，不再待审。
+
 **2026-09-21 11:57当前：** Astra唯一2564237/GPU3参考于11:55:20.952981 BJT初始化提交，source`git_worktrees/vlm_sft_h09y_66f6188`不可热改；run`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/reference_train114_v1`及相邻`.log/.launch.json`，runtime`/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/reference_train114_v1`。本轮runtime一个screenshots mode000正在独立核计，不能据partial du报全cache；未训练。父GPU2尚无新进程。
 
 **2026-09-21 11:51当前：** H21完整主包已在本地`artifacts/agentic-vlm-goal-20260918/h21_fullstart_bundle/`，result/steps/video三SHA全同远端，传输不再运行；全链审待。失败段诊断单独在`h21_failure_probe/`，仅CPU。66f6188存储父审通过，GPU3单参考条件交Astra，实际新source/进程/缓存创建待作者回执，不能按本条当已运行。父H22仅CPU，不占GPU2。
