@@ -8,6 +8,7 @@ from common import sha,write_json
 from native_evaluation import VARIANTS
 from native_eval_prepare import STARTS,ROOT,SCHEMA
 from native_actor_protocol import validate_actor
+from native_execution import authorization_profile
 
 
 def summarize(root):
@@ -23,7 +24,9 @@ def summarize(root):
                         auth.get("variant")!=variant or prepared.get("prefix_controls")!=item["prefix"] or
                         m.get("oracle_actor_feedback") is not False or m.get("specified_hand") is not None):
                     raise ValueError("Registered paired identities changed")
-                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"]))
+                profile=authorization_profile(auth)
+                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile))
+                row["execution_profile"]=profile
                 row["status"]="INCOMPLETE_ATTEMPT"
             if result_path.exists():
                 r=json.loads(result_path.read_text())
@@ -44,7 +47,7 @@ def summarize(root):
             actor_path=run/"decision_00/request.json"
             if actor_path.exists():actors[(instance,variant)]=validate_actor(json.loads(actor_path.read_text())["actor"])
             rows.append(row)
-    if len(identities)>1:raise ValueError("Comparison does not share exact source/protocol/TRAIN dataset")
+    if len(identities)>1:raise ValueError("Comparison does not share exact source/protocol/TRAIN dataset/execution profile")
     paired=[]
     for instance in STARTS:
         group=[actors.get((instance,v)) for v in VARIANTS]

@@ -19,6 +19,7 @@ import native_actor_protocol as protocol
 from native_teacher_artifacts import load_calibration
 from native_teacher_outcomes import LocalOutcome
 from native_teacher_policy import validate_train_group
+from native_execution import authorization_profile,metadata as execution_metadata,completed as execution_completed
 
 VERSION="h09y-reviewed-native-grasp-v1"
 TRAIN={(1,192),(1,114)}
@@ -27,6 +28,17 @@ HELDOUT=[[1,1],[1,71]]
 
 def read(path):return json.loads(Path(path).read_text())
 def lines(path):return [json.loads(x) for x in Path(path).read_text().splitlines()]
+
+
+def check_execution(record,request,execution,profile):
+    token=record["token"]
+    if any(authorization_profile(value)!=profile for value in (execution,record,request["preflight"])):
+        raise ValueError("Mixed execution profile within a trajectory")
+    if (token not in TOKENS or request["token"]!=token or execution["token"]!=token or
+            not execution_completed(token,execution["feedback"],profile=profile)):
+        raise ValueError("Incomplete or action-mismatched execution receipt")
+    if profile is not None and execution["control_end"]-execution["control_start"]!=execution["feedback"]["control_ticks"]:
+        raise ValueError("Completion receipt does not match the actual control ledger")
 
 
 def checked_images(row):
@@ -60,6 +72,9 @@ def verified_run(entry,counts):
         if sha(actual[name])!=item["sha256"] or actual[name].stat().st_size!=item["bytes"]:
             raise ValueError("Reviewed run bytes changed")
     manifest=read(run/"manifest.json");result=read(run/"result.json")
+    execution_profile=authorization_profile(manifest["authorization"],collection=True)
+    if authorization_profile(review)!=execution_profile:
+        raise ValueError("Independent review must bind the same execution profile")
     if (manifest["code"]!=review["source"] or manifest.get("robot_geometry_guards") is not True or
             result.get("status")!="COLLECTED_QUARANTINED_NOT_SFT" or result.get("model_calls")!=0 or
             any("failure" in name.lower() for name in actual)):
@@ -90,8 +105,8 @@ def verified_run(entry,counts):
     for i,folder in enumerate(folders):
         record=read(folder/"QUARANTINED_record.json");request=read(folder/"request.json")
         execution=read(folder/"native_execution.json");token=record["token"]
-        if (token not in TOKENS or request["token"]!=token or execution["token"]!=token or
-                execution["feedback"]["status"]!="TARGET_REACHED" or record["native_trace_sha256"]!=sha(folder/"native_execution.json") or
+        check_execution(record,request,execution,execution_profile)
+        if (record["native_trace_sha256"]!=sha(folder/"native_execution.json") or
                 record["actor"]!=request["actor"] or record["actor"]["history"]!=history[-5:] or
                 record["actor"]["proprio"]!=read(folder/"before/proprio.json") or
                 execution["control_start"]!=last_end or execution["control_end"]<=last_end):
@@ -123,7 +138,8 @@ def verified_run(entry,counts):
         row={**protocol.training_row(actor,token),"id":sha(inventory)[:16]+f"_{i:02d}",
              "images":{v:str(folder/"before"/(v+".png")) for v in CAMERAS},
              "provenance":{"group":list(group),"episode":manifest["source"]["episode"],"prefix":prefix,
-                "macro":i,"hand":arm,"run_inventory_sha256":sha(inventory),"review_sha256":sha(review_path),**binding}}
+                "macro":i,"hand":arm,"run_inventory_sha256":sha(inventory),"review_sha256":sha(review_path),
+                **execution_metadata(execution_profile),**binding}}
         checked_images(row);records.append(row);history.append(token)
     if last_end+1!=result["native_controls"]:raise ValueError("Unaccounted post-macro controls")
     oracle=LocalOutcome(spec);oracle.update(initial["frame"])
@@ -134,6 +150,7 @@ def verified_run(entry,counts):
     if oracle.update(final["frame"])!=final["verdict"] or final["verdict"]["outcome"]!="SUCCEEDED":
         raise ValueError("No preserved physical GRASP success at final hold")
     return records,{"group":list(group),"prefix":prefix,"macros":len(records),"hand":arm,
+        **execution_metadata(execution_profile),
         "inventory_sha256":sha(inventory),"review_sha256":sha(review_path),"initial_proprio":records[0]["actor"]["proprio"],
         "measured_rotation_degrees":rotation_degrees}
 
@@ -175,6 +192,9 @@ def load_dataset(folder,*,require_gate=True):
             any(sum(row["provenance"]["run_inventory_sha256"]==run["inventory_sha256"] for row in rows)!=run["macros"] for run in manifest["runs"])):
         raise ValueError("Exact unique whole-run row membership required")
     if any(tuple(r["provenance"]["group"]) not in TRAIN for r in rows):raise ValueError("Heldout leaked into BC")
+    profiles={run["inventory_sha256"]:authorization_profile(run) for run in manifest["runs"]}
+    if any(authorization_profile(row["provenance"])!=profiles[row["provenance"]["run_inventory_sha256"]] for row in rows):
+        raise ValueError("Row execution provenance differs from its reviewed run")
     if coverage(rows,manifest["runs"])!=manifest["coverage"] or (require_gate and not manifest["coverage"]["passed"]):
         raise ValueError("Registered whole-trajectory coverage is incomplete")
     for row in rows:checked_images(row)

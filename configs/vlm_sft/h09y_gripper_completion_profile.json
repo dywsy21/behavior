@@ -1,0 +1,16 @@
+{
+  "execution_profile": "gripper-command-completion-v1",
+  "authorize_collection": false,
+  "authorize_evaluation": false,
+  "collection_requires_capacity_profile": "near_h09y_grasp384",
+  "collection_requires_seed_profile": "h09y-grasp-precontact-v2",
+  "servo_limits": {"robot_geometry_guards": true, "gripper_completion_v1": true},
+  "gripper_receipt_status": "GRIPPER_COMMAND_COMPLETED",
+  "pose_tracking_status_preserved": true,
+  "receipt_validator": "semantic_robot.v2.servo.execution_completed",
+  "grasp_success_claim": false,
+  "old_missing_profile_behavior": "legacy TARGET_REACHED only",
+  "paired_variants": ["base", "finetuned", "proprio_history_nn"],
+  "physical_success_and_coverage_gates": "unchanged",
+  "note": "Metadata only, not a reset grant. Each actual run needs its own source/executor/review/storage-bound active authorization."
+}
