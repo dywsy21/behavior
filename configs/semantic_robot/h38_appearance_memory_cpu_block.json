@@ -2,7 +2,7 @@
   "experiment_id": "H38-bounded-appearance-reference-implementation-v1",
   "owner": "Codex-parent",
   "registered_bjt": "2026-09-21T22:33:00+08:00",
-  "status": "CPU_IMPLEMENTATION_IN_PROGRESS",
+  "status": "CPU_IMPLEMENTATION_COMPLETE_INDEPENDENT_REVIEW_PENDING",
   "hypothesis": "Retaining only a recently semantically confirmed raw contact crop can reduce target identity loss during unladen single-arm approach, while all actionable geometry is recomputed from the current snapshot.",
   "evidence": "H37 fixed3-case probe2bce7bc48e1efb1631dd6608ff0a560d5119d9302d3710887fc3094391db24ec; local static recovery only",
   "base_commit": "727256b54d1474e09ff5532e665ce108e68cab68",
@@ -14,5 +14,12 @@
   "new_resets": 0,
   "gpu_allocation": "None; GPU3 child collection/training uninterrupted",
   "acceptance": "Unit tests for exact pixels/provenance, stale/wrong-goal and loaded exclusion, call budgets, failure/expiry, no copied coordinates, same-frame controller receipt and default-old behavior; independent code review before any deployment. New physical tests require separate finite registration.",
-  "deployment_authorized": false
+  "deployment_authorized": false,
+  "actual": {
+    "new_tests": 15,
+    "public_tests": {"count": 487, "seconds": 10.235},
+    "parent_branch_sft_tests": {"count": 174, "seconds": 5.631},
+    "saved_pipeline": {"seconds": 0.5889051120029762, "sha256": "a1be56d2067a27b0a7888d58e7ec544b19c618b96b5ee6b7a5d0ea18d9948292", "exact_archived_model_questions": 3, "new_model_calls": 0},
+    "new_physical_success_claim": false
+  }
 }

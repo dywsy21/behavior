@@ -337,7 +337,7 @@ SURFACE_SYSTEM = """Choose a visible contact surface for the CURRENT target, not
 
 
 class RefinedGroundedPolicy(GroundedPolicy):
-    def __init__(self,*args,max_refinements=16,near_contact_review=False,**kwargs):
+    def __init__(self,*args,max_refinements=16,near_contact_review=False,appearance_memory=False,**kwargs):
         super().__init__(*args,**kwargs)
         if "ground" not in self.identity.get("finite_choice_kinds",[]):
             raise ValueError("Service must support constrained surface choices before a refined run")
@@ -348,6 +348,25 @@ class RefinedGroundedPolicy(GroundedPolicy):
             raise ValueError("Explicit boolean contact review mode required")
         from .contact_review import NearContactReview
         self.contact_review = NearContactReview() if near_contact_review else None
+        if type(appearance_memory) is not bool or appearance_memory and not near_contact_review:
+            raise ValueError("Appearance memory requires explicit near contact review")
+        from .appearance_memory import AppearanceMemory
+        self.appearance_memory = AppearanceMemory() if appearance_memory else None
+
+    def observe(self,harness,state,bundle):
+        memory=getattr(self,"appearance_memory",None)
+        prepared=memory.begin(harness,state,bundle) if memory is not None else None
+        if prepared is None:
+            return super().observe(harness,state,bundle)
+        from .appearance_memory import SYSTEM
+        views,text,provenance=prepared
+        result,payload=self._call("observe",SYSTEM,text,views)
+        evidence=GroundedEvidence.parse(result["text"])
+        if (evidence.other_views or evidence.target_reference!="unknown" or
+                any(getattr(evidence,k) is not None for k in ("enclosed","co_moving","supported","effect"))):
+            raise ValueError("Appearance reidentification cannot establish holding or completion")
+        return evidence,{"result":result,"request":payload,"validation":provenance,
+                         "appearance_reference_image":views.images[-1].copy()}
 
     def refine(self,evidence,harness,state,bundle,depths,model,*,_bimanual_contact=False):
         if harness.goal.kind=="pick" and harness.goal.hand=="both":
@@ -380,12 +399,20 @@ class RefinedGroundedPolicy(GroundedPolicy):
                  "original_evidence":asdict(evidence),"robot_controls":0}
         reviewer=None if _bimanual_contact else getattr(self,"contact_review",None)
         request=reviewer.request(harness,state,evidence,target,model) if reviewer is not None else None
+        memory=None if _bimanual_contact else getattr(self,"appearance_memory",None)
+        if memory is not None and memory.used_for(harness,state,bundle.current_raw) and evidence.visible:
+            # Reference appearance establishes no current geometry. Recheck a
+            # current surface even if its initial depth happens to be smooth.
+            request={**request,"required":True,"reason":"APPEARANCE_REQUIRES_CURRENT_SURFACE"}
         forced=bool(request and request["required"])
         def finish(current,call,detail,views):
             if reviewer is not None:
                 selected=bool(detail.get("attempted") and detail.get("choice",{}).get("candidate_id") is not None)
                 detail["near_contact_review"]=reviewer.finish(request,harness,state,current,
                     localize_target(current,depths,model,state.q),selected,bundle.current_raw)
+            if memory is not None:
+                detail["appearance_memory"]=memory.update(harness,state,current,
+                    localize_target(current,depths,model,state.q),bundle,model,detail)
             return current,call,detail,views
         if (not evidence.visible or (target["valid"] and not forced) or harness.stage in
                 ("GRASP","VERIFY_GRASP","RELEASE","VERIFY_PLACE","VERIFY_SUPPORT","VERIFY_EFFECT")):

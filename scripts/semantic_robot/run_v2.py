@@ -90,6 +90,7 @@ def main():
     p.add_argument("--harness", choices=("v2","grounded"), default="v2")
     p.add_argument("--refine-grounding",action="store_true",help="Opt-in bounded crop/surface-choice perception")
     p.add_argument("--near-contact-review",action="store_true",help="Review valid near-field PICK contacts on entry/view change/jump; abstention stops point-guided approach")
+    p.add_argument("--appearance-memory",action="store_true",help="Keep a bounded raw appearance hint after current semantic surface confirmation; never reuse old coordinates")
     p.add_argument("--visual-odometry",action="store_true",help="Use quality-gated onboard RGB-D motion for coverage")
     p.add_argument("--active-grasp-probe",action="store_true",help="Bounded exploratory close; original grasp verification remains mandatory")
     p.add_argument("--contact-geometry",action="store_true",help="Experimental finger guides/tool translations; not mixed into the feedback-only comparison")
@@ -143,6 +144,8 @@ def main():
         raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.near_contact_review and not (grounded and args.refine_grounding and args.visual_odometry):
         raise ValueError("Near contact review requires grounded refinement and measured visual motion")
+    if args.appearance_memory and not args.near_contact_review:
+        raise ValueError("Appearance memory requires explicit near contact review")
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
     if args.robot_geometry_guards and not args.grasp_motion:
         raise ValueError("Robot geometry guards require fresh grounded robot geometry")
@@ -186,6 +189,7 @@ def main():
                 g.get("harness","v2")==args.harness and
                 g.get("refine_grounding",False)==args.refine_grounding and
                 g.get("near_contact_review",False)==args.near_contact_review and
+                g.get("appearance_memory",False)==args.appearance_memory and
                 g.get("visual_odometry",False)==args.visual_odometry and
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("grasp_motion",False)==args.grasp_motion and
@@ -229,7 +233,7 @@ def main():
     policy = policy_class(args.uri,args.expected_revision,max_calls=1+2*args.max_decisions+
         (2 if grounded else 0)+(16 if args.refine_grounding else 0)+(4 if args.held_object_inspection else 0),
         structured_planning=args.structured_planning,
-        **({"near_contact_review":args.near_contact_review} if args.refine_grounding else {})) if args.mode=="agent" else None
+        **({"near_contact_review":args.near_contact_review,"appearance_memory":args.appearance_memory} if args.refine_grounding else {})) if args.mode=="agent" else None
     if policy and args.held_object_inspection and "reference" not in policy.identity.get("finite_choice_kinds",[]):
         raise ValueError("Held inspection requires a text-only reference service")
     # B15's tracking-anchor prompt did not improve the two failing states.
@@ -246,6 +250,7 @@ def main():
                 "harness":args.harness,"max_strategy_replans":2 if grounded else 0,
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
                 "near_contact_review":args.near_contact_review,
+                "appearance_memory":args.appearance_memory,
                 "visual_odometry":args.visual_odometry,
                 "odometry_substep_controls":args.odometry_substep_controls,
                 "odometry_self_exclusion":args.odometry_self_exclusion,
@@ -558,6 +563,8 @@ def main():
                         if manager.stop_reason:
                             row["stop_reason"]=manager.stop_reason;decisions.append(row);break
                     observation, call = policy.observe(manager,state,bundle)
+                    if "appearance_reference_image" in call:
+                        call["appearance_reference_image"].save(directory/"REFERENCE_APPEARANCE_NOT_CURRENT.png")
                     save_call(directory,"observation",call)
                     if args.refine_grounding:
                         observation,call,receipt,detail_views=policy.refine(observation,manager,state,bundle,depths,model)
@@ -849,6 +856,7 @@ def main():
                       "stop_reason":stop_reason,"harness":args.harness,"sensor_check_count":len(sensor_checks),
                       "refine_grounding":args.refine_grounding,"surface_choices":getattr(policy,"refinements",0),
                       "near_contact_review":args.near_contact_review,
+                      "appearance_memory":args.appearance_memory,
                       "visual_odometry":args.visual_odometry,
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
