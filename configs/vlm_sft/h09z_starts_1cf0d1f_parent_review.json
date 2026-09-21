@@ -3,7 +3,8 @@
   "reviewed_bjt": "2026-09-21T17:55:00+08:00",
   "fixed_source": "1cf0d1f8c3663aeba906f829ec4a66de35c413fb",
   "base_source": "9ff2e280f944f46c456e0edc9a057e36e8716254",
-  "status": "CPU_code_review_passed_actual_inactive_preparation_pending",
+  "status": "CPU_and_both_actual_inactive_preparations_passed_first380_conditional_handoff",
+  "actual_preparation_review": {"completed_bjt": "2026-09-21T17:57:00+08:00", "complete_inactive_and_report_read": [380,388], "all_four_actual_files_SHA_checked_each": true, "actual_prefix_shapes": [[380,23],[388,23]], "common_first380_exact_same_source": true, "inactive_sha256": ["2319f0c326ecb15a6302eebb23e805a91893714d7ad57de2564fec678bc953b0", "7d6a83e2d8483acd834a7d28b4e3077bc71577951808faf82c89b1978b303764"], "prepare_report_sha256": ["cc47fa6cfc54fd96074402a3d9acf078dda4e155f75b6b3a7a5357399b1b58f8", "19a9ab7ccfe960d7e8682aa55bb8dbfd268eccb5bb0ea781197affd9d4596523"], "remote_3_10_tests": {"SFT": 163, "seconds": 13.608, "public": 410, "public_seconds": 21.451}, "tokenizer_45_actual_roundtrip": true},
   "all_changed_paths_reviewed": 5,
   "independent_tests": {"SFT": 163, "SFT_seconds": 6.321, "public": 410, "public_seconds": 6.952},
   "findings": "No additional blocker. Exact two TRAIN192 starts and two _ws45 paths/aliases only; old profiles reject new paths; workspace cannot overwrite old failures. Unknown/heldout/retry/GPU2 paths fail. Missing collection grant still fails require_release. Shared-cache old specification remains unchanged.",
@@ -11,5 +12,5 @@
   "teacher_motion_outcome_coverage_unchanged": true,
   "new_resets": 0,
   "training_updates": 0,
-  "next": "Read complete actual two inactive releases and prepare bindings, remote runtime/source and true dynamic resource check; then separate parent handoff of p380 only. Full first trajectory audit before p388. No lowered training gate."
+  "next": "Only first p380 handoff, after fresh source/1fcc gates/GPU3 empty>=70GiB/storage checks; unique active and single submit. p388 remains inactive until full first physical/RAW parent audit. No lowered training gate or implicit train/eval activation."
 }

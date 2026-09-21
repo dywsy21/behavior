@@ -1,0 +1,23 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-21T17:58:00+08:00",
+  "source": "a62846238a5dbbb566d697fd93e6ee6ebf5793af",
+  "run": "/mnt/nvme_tmp/robodojo_agentic_20260921/h25_refined_odometry/radio_h25_fullstart",
+  "complete_numeric_RAW_video_audit_passed": true,
+  "result_sha256": "5ddce792738e487111afb7be9f39a832d916c129adadc2870d23886f3b7a919d",
+  "steps_sha256": "76fd89a97aca4c1fcf9272194b739844c2eb9da4c2dbe806694d3a198fc398e9",
+  "video_sha256": "f7a0225bec36e6248e4c160eab83be715e94632315687a8ede0872df6bb5518a",
+  "full_inventory_sha256": "36bf9af3cba71f4af1ad5831a842f20f5bb153209220ac5ba7046dbe38f9365d",
+  "full_numeric_report_sha256": "6ca9773714cf6d6f1faa77d9826f801793533758e3788d935b5a2b3335855c2a",
+  "files": 7568,
+  "bytes": 1828843455,
+  "reconstructed": {"ordinary_RGBD_measurements": 537, "reanchor_measurements": 4, "current_bound_robot_frames": 723, "main_RGBD_hashes": 1080, "consumed_base_motions": 142, "controls": 3225, "seconds": 203.80402358761057},
+  "outcome": {"official_success": false, "decisions": 180, "controls": 3225, "model_calls": 326, "wall_s": 6654.199000920169, "expert_prefix": 0, "saved_policy_prefix": 0, "assisted_objects_in_all_post_action_audits": "none", "no_verified_grasp": true},
+  "termination": "Default task human-demo1.5x timeout3224, actual control3225 terminal during fifth tick of ordinary base-forward action179. Valid lastRGBD135inliers. No third reanchor, no extra physics after terminal. Preserved raw stop_reason mistakenly says DURING_SEARCH_REANCHOR; audit interprets actual controls, not this label.",
+  "video": {"all_frames_decoded": true, "frames": 1612, "width": 640, "height": 1088, "fps": 15, "seconds": 107.466667, "duration_is_recorded_frames_not_walltime": true},
+  "manual_RAW": {"head_decisions": [0,46,97,100,127,179], "additional_final_views": ["left_wrist","right_wrist"], "personally_reviewed": true, "observation": "Navigation reaches the table and the right hand remains beside the red radio; final radio remains on tabletop, fingers open. Repeated close-range approach without verified grasp. Appearance alone does not certify contact force or object displacement."},
+  "local_video_and_summary_hashes_checked": true,
+  "local_complete_payload_copy": "still transferring; not claimed complete",
+  "archive": "Original complete remote run preserved immutable with full7568-file SHA inventory; complete independent numeric replay uses original source. No evidence deletion. Local copy continues independently.",
+  "limitations": "Single development original-start trial, runtime3.9.1 not official3.9.2. No training in this run. Improved odometry survival is not task success. H29 saved-input mechanism diagnosis is not a new policy rollout."
+}

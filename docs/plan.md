@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 17:57（北京时间）首workspace真实采集交接/原H25全链审闭（Codex/Astra）：** 两inactive及全部prepare本体父审和每组4文件SHA/23D形状/共同前380逐位同源均过，Astra实际3.10 163/13.608＋410/21.451及45token门过；只放固定1cf/public1fcc首`native_t1_i192_p0380_ws45`在动态空GPU3≥70GiB/盘门后单次启动，388/训练仍inactive。父H25全537普通＋4恢复测量、723帧/1080图深hash/3225账本重算203.804s过（6ca97737…55c2a），7568文件清单36bf9af3…9365d、视频1612帧107.467s全解码/最终三RAW本人看，无持握；完整副本仍在传，原远端证据保留。下一父停已完成自有服务，等子过reset再H30首门。Git只doc顶部冲突，保留子所有新增历史后0d8f009已push，不改两冻结执行源。
+
 **2026-09-21 17:55（北京时间）两起点1cf父代码独审通过/H25终止定位（Codex）：** 全5路径逐行审、独立163 SFT/6.321s＋410公共/6.952s，旧profile拒新`_ws45`、新profile不可覆盖旧路径/重试/heldout，teacher与1fcc不动，receipt `h09z_starts_1cf0d1f_parent_review.json`；下一实际inactive/prepare父审后只首380。H25官方默认timeout日志是人类均长1.5×=3224，实际第3225控制terminal=true且无额外hold；最后合法RGB-D有135内点，非第三次恢复/视觉失败。旧stop_reason标签误写DURING_SEARCH_REANCHOR，保留原证据并更正解释；最终三RAW本人看/整视频解码过，无抓取，完整数值重放/清单与副本仍在做。
 
 **2026-09-21 17:50（北京时间）H25原回合结束/官方失败（Codex）：** 2630126已退出，result为180决策/3225控制/326模型、6654.199s、official_success=false，记录终止`OFFICIAL_EPISODE_TERMINATED_DURING_SEARCH_REANCHOR`（真实终止原因/无额外hold需全链核对，不按名称猜原因）；预算未扩。完整证据正在本地传输/全链审，旧模型2629456仍在，审后只停自有空闲服务。H30新827远端真实3.10环境449项25.991s过、digest99a06248…95674，准备完未新物理。Astra两起点仍CPU，不将旧失败称微调效果。
