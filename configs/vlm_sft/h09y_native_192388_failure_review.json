@@ -1,0 +1,27 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_at_bjt": "2026-09-21T15:38:00+08:00",
+  "source": "fa24c3f4b99956a9131ddff6df756e608b2a3fa1",
+  "execution_profile": "gripper-command-completion-v1",
+  "inventory_sha256": "2892860524ff424a8115608555757e5179e6126ed5231f21d8cb1c1b75c60022",
+  "status": "complete_failure_evidence_independently_reviewed",
+  "verified_files_including_siblings": 53, "bytes_including_siblings": 17538142,
+  "run_files": 50, "run_bytes": 17518036,
+  "exact_prefix": 388, "controls_including_final_hold": 441,
+  "native_controls_including_final_hold": 53,
+  "captures": 4, "payload_hashes": 28, "depth_hashes": 12,
+  "oracle_updates": 42, "actual_BACK_commands_reconstructed": 28,
+  "numeric_seconds": 1.0875403059180826,
+  "manual_RAW_views": 12,
+  "manual_scope": "teacher00 before/after/after_settle and unexecuted teacher01 before, all three cameras personally inspected. Open right hand near brown bin, small backward correction, no closure/lift/holding observed. Physical records independently show held=false throughout. Original-resolution data retained.",
+  "local_success": false, "candidate_single_trajectory_accepted": false,
+  "positive_BC": 0, "BC_released": false, "training_updates": 0,
+  "failure": "Only BACK executed, then DOWN duration limit; earlier initial DOWN was singular IK rejection.",
+  "root_diagnosis_report_sha256": "af061b98b14c01ffa38ba14d648103fcf9a62a28d65feb7e9a56939307c961e6",
+  "parent_saved_state_causal_test": {
+    "new_physics": 0, "seconds": 0.5981433120323345, "same_displacement_m": 0.01,
+    "initial_state_carry_true_and_false": "UNREACHABLE_OR_COLLISION_BLOCKED",
+    "second_state_carry_true": "DURATION_LIMIT_EXCEEDED",
+    "second_state_carry_false": "All original begin/trajectory checks pass,25ticks,max_joint_step.023995705885919927rad<original.025; not a physical replay or success."
+  }
+}

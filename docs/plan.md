@@ -14,6 +14,12 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 15:38（北京时间）时序因果确认/显式public接近profile票（Codex/Astra）：** 父同两保存态.598s对照：初始DOWN两速度都拒IK，第二DOWN同1cm在carry=True拒44>40、原非carry速度完整轨迹门过25tick/最大q步.023996<原.025；未增加上限或改精度。192388完整失败父receipt已落，原诊断票收敛。Astra另≤1800s CPU负责默认旧路不变的新显式profile：只“未发过CLOSE＋同手实际标定全开＋OPEN latch”的fine单臂平移走原普通时序，不能宣称无接触/已空手；资格未知/闭爪后/持物lift/BASE/BOTH仍原慢速。collector与三eval用同public资格、输入/真实动作/准入/train/serve绑定一致；原1cm/IK/碰撞/轨迹走廊/40与420/成功门不动，公共executor1fcc不改，连同精确两起点storage/capacity负例固定后父审，0新物理。H25首完整352.723MB已本地且本人7RAW全看/远端完整视频和76求解器复核过，第二门仍原登记单次待实际提交。
+
+**2026-09-21 15:37（北京时间）失败根因分层/首H25全几何重算通过（Codex/Astra）：** 父192388全53文件/441控制、4capture28payload12depth/42oracle及28真实BACK命令独立1.088s核过，本人看全部12 RAW；全程未持握，0BC。Astraaf061b98…61e6保存态精确复现：首DOWN是奇异位姿64迭代仍3.622mm，随后BACK合法；第二DOWN位置.491mm/.136°已可达/自体余78mm，但carry=True将关节每步限速减半，需44tick超过fine40才拒绝，不是深度碰撞或grid-close资格。未改门/源。父下一≤600s CPU仅对这两保存态比较同1cm动作的原carry true/false，在保持IK/碰撞/40tick原门下检验时序因果；尚不改线上或放新采集。H25首76段完整LK/原joint重算＋144主hash104帧22链4BASE/4夹爪receipt37.935s通过，视频整解码过，三SHA固定437f4a64…e2258/cdb157a6…50b4a/cd9dbdcd…1ba36；完整本地传输与7RAW审中，第二门尚待。
+
+**2026-09-21 15:31（北京时间）192388真实负例/H25首门通过待全审（Codex/Astra）：** 子2619909退出，388＋52普通native＋hold=441，RIGHT_BACK单宏后`No safe decreasing teacher proposal`、366.526s/0正BC；完整53文件17,538,142B已本地，清单28928605…60022。第二目标误差12.014mm，唯一改善DOWN被SafeServo的IK/自体几何拒，非depth_guard；“grid-close复用空手资格”假设不符合本次证据，尚不能定具体根因。先暂停新profile/两新reset，原1200s CPU票内子精确保存态拒绝诊断、父全证据/图像审，不降门。父2622414也退出，H25首门24/417/313.314s、gate_ok/0模型，完整LK逐段重算/视频及RAW审正在做；第二门尚未启。
+
 **2026-09-21 15:27（北京时间）两异起点有限替代票（Codex/Astra）：** 父核CPU e7465652…62f3两候选完整source/原17合法标签/位姿与局限；取消未运行的114985（inactive/原件保留），条件替代为192380＋114969共最多2reset/净增1，原每条12宏420新含hold/1200s＋900init/384MiB、6/16GiB与32/80GiB余量不变。参考几何估11/7宏只是可行性，非物理保证。fa24硬名单/alias正确拒新prefix，因此Astra先另≤1200s CPU显式新capacity/storage profile和train/serve/eval全接线、旧权限不扩大、公共1fcc/teacher/成功门不改；父独审固定源后逐条放，不在活跃2619909可见树加alias。`h09y_earlier_two_parent_block.json`已登记，现0新reset/训练，原120更新/六配对继续必须完成。父H25首原RAW壁炉场景已本人核，对应工程门运行中。
 
 **2026-09-21 15:25（北京时间）H25开始实控/暂停近重复旧985（Codex/Astra）：** 父2622414于15:24:01 reset，保存首6实际控制/新LK门执行中，原预算不变。子只读几何报告指出旧待采114985与已收989初始位姿参考差仅.816mm/.081°，很可能违反原3mm/.75°近重复门，**985继续inactive、不消耗其reset**；参考预测不冒充新settle真值。候选更早192380/114969正在原≤600s CPU票核完整来源/实际当前388差，尚未放新增reset/训练，不降覆盖门。
