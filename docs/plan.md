@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 18:50（北京时间）第二388失败完整父审闭合（Codex）：** 110文件38,094,243B/清单a44f9121…e6371全核、498控制/3宏逐tick q/grip/23D和原oracle1.590s过，10capture70payload30depth/97普通＋初末=99物理帧，全部30 RAW本人看。末12帧右手held/contact与相对稳定成立，但桶只升3.638mm、从首CLOSE(t468)手升.793mm，无验证抬升/0正BC；receipt `h09z_native_192388_ws45_failure_parent_review.json`。两原workspace采集额度用尽并完整保留。Astra双body只读设计aa0dff82…1bb6在467s内闭，父已全读、暂不实现；新UP根因票18:49:47–18:59:47运行中，不把闭爪即成功或把此失败归单body次数。
+
 **2026-09-21 18:48（北京时间）第二388已闭爪但抬升前失败，非单body耗尽（Codex/Astra）：** 子完整初报RIGHT_BACK18→RIGHT_DOWN25→RIGHT_CLOSE18，0body；第四唯一RIGHT_UP无safe提案，failure420.593s，388＋109普通＋1末hold=498。末态right held/contact=true但未升起/IN_PROGRESS，CLOSE命令完成而pose仍偏3.434mm/1.557°，不能等同GRASP成功、0正BC。全包正封存待父全部RAW/账本审；Astra原双body600s设计须注明不能修此反例，暂不实现。封存后另≤600s只读唯一UP原IK/精度/carry/时序及最多6个原fine同手平移，0物理/不放宽持物body限制；父H30第二2669109仍原初始化。
 
 **2026-09-21 18:46（北京时间）H30原第二门唯一启动（Codex）：** 2669109于18:45:22.507036/GPU2空81152MiB提交`gate_plates_h30`，固定827/99a062，原24/1536/1200＋900/384MiB、0模型，初始化中。18:44首提交在Popen之前碰到子2666104正退出（nvidia旧快照但cmdline已空）而安全拒；18:44:59实查子PID/所有自有GPU context已退出后重新核原未启动stage，只有本次产生reset/launch，不是重跑场景/放宽身份门。子388终态仍待完整证据，不将退出当成功；父源码和各自缓存均不动。
