@@ -30,6 +30,7 @@ from native_teacher_seed import extract_seed,seed_identity
 from common import sha
 from native_teacher_toggle import verify_installed_dependency,TOGGLE_SHA
 from native_reference_profile import validate_execution_location,check_initialization_deadline
+from native_storage import activate as activate_storage
 
 
 def main():
@@ -43,10 +44,11 @@ def main():
     ref,spec,prefix,segment,source_states,binding=load_reference(a.prepared,release,code,implementation_digest(),json.loads(counts_path.read_text()))
     validate_execution_location(release,a.output,a.gpu)
     verify_installed_dependency()
+    storage=activate_storage(release,a.output)
     a.output.mkdir(parents=True,exist_ok=False)
     budget=release["budget"];writer=ArtifactBudget(a.output,release["experiment_root"],budget["run_MiB"]*1024**2,budget["total_MiB"]*1024**2)
-    if shutil.disk_usage(a.output).free<80*1024**3:raise RuntimeError("Disk reserve: no reset")
-    if release.get("reference_profile") is not None and any(shutil.disk_usage(m).free<80*1024**3 for m in ("/mnt/sdc1","/mnt/nvme_tmp")):
+    if storage is None and shutil.disk_usage(a.output).free<80*1024**3:raise RuntimeError("Disk reserve: no reset")
+    if storage is None and release.get("reference_profile") is not None and any(shutil.disk_usage(m).free<80*1024**3 for m in ("/mnt/sdc1","/mnt/nvme_tmp")):
         raise RuntimeError("Both-filesystem reserve: no reset")
     os.environ["OMNIGIBSON_GPU_ID"]=str(a.gpu);os.environ["BEHAVIOR_ACTION_STEPS"]="1"
     os.environ.setdefault("OMNIGIBSON_HEADLESS","1");os.environ.setdefault("OMNI_KIT_ACCEPT_EULA","YES")
@@ -62,7 +64,8 @@ def main():
     writer.write_json(a.output/"manifest.json",{"code":code,"authorization":release,"binding":binding,"identity":identity,
                      "models":0,"actor":None,"training_eligible":False,"reference_actions_are_not_native_BC":True,
                      "source_validation":"exact_actions_identity_clock; exported_proprio_error_diagnostic_only",
-                     "installed_toggle_source_sha256":TOGGLE_SHA})
+                     "installed_toggle_source_sha256":TOGGLE_SHA,
+                     "storage":None if storage is None else storage.check()})
     completed=issued=0;terminal=False;primary=None;started=None;kin=reader=None;grips=None
     trace=private=None;rows=[];captures=[];final_hold=False;current_writer=writer
     def error(exc):
@@ -77,6 +80,7 @@ def main():
         import omnigibson as og
         try:
             check_initialization_deadline(release,time.monotonic()-initialization_started)
+            if storage is not None:storage.check()
             session.reset();started=time.monotonic();env=session.evaluator.env
             kin=CalibratedRobot(env.robots[0]);grips=np.clip(kin.state().gripper/.05*2-1,-1,1)
             # Cooperative boundary checks; constructor/reset are native blocking
@@ -100,7 +104,9 @@ def main():
                 command=np.asarray(command,dtype=np.float32)
                 if command.shape!=(23,) or not np.isfinite(command).all():raise ValueError("Finite native23 command required")
                 line=json.dumps({"phase":phase,"issued_control":issued+1,"actual_action23":command.tolist()},allow_nan=False)+"\n"
-                if not cleanup and shutil.disk_usage(a.output).free<80*1024**3:raise RuntimeError("Disk reserve")
+                if not cleanup:
+                    if storage is not None:storage.check()
+                    elif shutil.disk_usage(a.output).free<80*1024**3:raise RuntimeError("Disk reserve")
                 if cleanup:writer.check(len(line.encode()),cleanup=True)
                 else:current_writer.check(len(line.encode())+16384)
                 # Record issuance BEFORE env.step; completion is separate. A

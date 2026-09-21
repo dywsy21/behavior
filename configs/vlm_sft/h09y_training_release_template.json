@@ -1,0 +1,14 @@
+{
+  "authorize_training": false,
+  "reviewer": "",
+  "code_commit": "REPLACE_WITH_REVIEWED_IMMUTABLE_SOURCE",
+  "config_sha256": "REPLACE_WITH_EXACT_CONFIG_SHA256",
+  "dataset_sha256": "REPLACE_AFTER_AT_LEAST_FOUR_REVIEWED_COMPLETE_TRAJECTORIES",
+  "storage": {
+    "profile": "h09y-nvme-runtime-20260921-v1",
+    "runtime_root": "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921",
+    "runtime_max_MiB": 16384,
+    "nvme_min_free_GiB": 80,
+    "sda_min_free_GiB": 32
+  }
+}

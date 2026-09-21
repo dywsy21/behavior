@@ -241,7 +241,7 @@ class NativeTeacherTests(unittest.TestCase):
             namespace={"np":np,"time":__import__("time"),"session":types.SimpleNamespace(reset=lambda:resets.append(1),
                        evaluator=types.SimpleNamespace(env=env)),"CalibratedRobot":lambda _:kin,"OnboardRGBD":lambda _:None,
                        "artifacts":artifacts,"write_calibration":write_calibration,"native_action":native_action,
-                       "report_failure":report_failure,"x":types.SimpleNamespace(output=root),"near":False,"native_limit":200}
+                       "report_failure":report_failure,"x":types.SimpleNamespace(output=root),"near":False,"native_limit":200,"h09y":False,"storage":None}
             exec(compile(ast.fix_missing_locations(ast.Module(body=[function],type_ignores=[])),"real_collector_cleanup","exec"),namespace)
             controls,prefix,error=namespace["exercise"]()
             self.assertEqual((controls,prefix,len(steps),len(resets)),(1,0,1,1))

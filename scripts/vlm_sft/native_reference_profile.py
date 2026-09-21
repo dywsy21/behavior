@@ -12,8 +12,11 @@ BUDGET = {"max_controls": 1199, "tail_controls": 12, "final_hold_controls": 1,
 
 
 def validate_profile(release, manifest, row):
+    from native_storage import validate_spec
+    new_storage=validate_spec(release)
     profile = release.get("reference_profile")
     if profile is None:
+        if new_storage:raise ValueError("New storage profile is only for the explicit H09Y reference")
         if "reference_profile" in manifest or "purpose" in manifest:
             raise ValueError("New preparation cannot use an old reference authorization")
         return None

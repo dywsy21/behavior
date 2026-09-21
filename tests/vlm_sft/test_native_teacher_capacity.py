@@ -94,5 +94,19 @@ class CapacityTests(unittest.TestCase):
         self.assertEqual(bound,358805493)
         self.assertLess(bound,384*MIB);self.assertGreater(bound,192*MIB)
 
+    def test_h09y_is_explicit_five_starts_not_extension_of_old_profile(self):
+        release=self.release();release.update(capacity_profile=capacity.H09Y_PROFILE,experiment_root=capacity.H09Y_ROOT,
+            source=[1,264,114],paid_prefix_controls=993,held_out_instance_groups=[[1,1],[1,71]],registered_gpu=3,
+            initialization_seconds=900,seconds_after_reset=1200,total_MiB=6144)
+        for key in ('prior_experiment_roots','combined_total_MiB'):release.pop(key)
+        self.assertEqual(capacity.capacity_limits(release),(384*MIB,6144*MIB))
+        capacity.validate_collection_location(release,Path(capacity.H09Y_ROOT)/'native_t1_i114_p0993',3)
+        for mutation in ({'source':[1,200,1]},{'paid_prefix_controls':994},{'total_MiB':512},
+                         {'registered_gpu':True},{'held_out_instance_groups':[]},{'initialization_seconds':900.0},
+                         {'prior_experiment_roots':[]},{'experiment_root':capacity.H09W_ROOT}):
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):capacity.capacity_limits({**release,**mutation})
+        for output,gpu in ((Path(capacity.H09Y_ROOT)/'retry',3),(Path(capacity.H09Y_ROOT)/'native_t1_i114_p0993',1)):
+            with self.assertRaises(ValueError):capacity.validate_collection_location(release,output,gpu)
+
 
 if __name__=='__main__':unittest.main()
