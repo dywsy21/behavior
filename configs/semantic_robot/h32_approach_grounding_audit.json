@@ -1,0 +1,22 @@
+{
+  "experiment_id": "H32-readonly-approach-grounding-audit",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-21T20:36:00+08:00",
+  "status": "RUNNING_READONLY",
+  "main_hypothesis": "Repeated approach failure may include changes of the observed contact point or view, not simply lack of feasible arm commands. Audit actual RGB-D geometry and bounded candidate choices before changing the harness.",
+  "source_commit": "82754f151d506bcd4042926071d93d30d14e6748",
+  "parent_code_at_registration": "2e47961",
+  "run": "/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/radio_h30_fullstart",
+  "task": 0,
+  "TRAIN_instance": 138,
+  "seed": 0,
+  "controls_or_model_calls": 0,
+  "new_resets": 0,
+  "GPU": null,
+  "wall_seconds": 1200,
+  "local_evidence_MiB": 256,
+  "audit_scope": "All completed decision summaries through123; full current RAW/RGB-D/proprio at117,118,120 and only additional states needed to resolve coordinate/view discrepancies.",
+  "comparisons": ["successive observed contact estimates transported by measured body transform", "recorded image pixel versus actual visible target", "moderate arm gain and workspace trigger versus actual feasible commands"],
+  "stops": ["1200s reached", "256MiB reached", "cause established or missing evidence identified"],
+  "prohibitions": ["no change to live827 or child02d", "no success relabeling", "no target truth in actor", "no new physical reset or model calls"]
+}
