@@ -1,0 +1,22 @@
+{
+  "experiment_id": "H26-saved-state-IK-local-minimum-probe",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-21T16:40:00+08:00",
+  "status": "completed_no_feasible_endpoint_or_path_CPU_only",
+  "completed_bjt": "2026-09-21T16:42:00+08:00",
+  "result": {"report": "artifacts/agentic-vlm-goal-20260918/h26_saved_ik_probe.json", "sha256": "8f822d0b7fdff4db1c8d1ccebf1c293144a2ff57d8dfed0b4ec24323f79e9218", "seconds": 6.962323375046253, "cases": 33, "initial_joint_bound_rejections": 6, "endpoint_passed": 0, "original_path_gate_passed": 0, "conclusion": "All27 admissible seeds converge to essentially identical failing position/orientation compromises; no evidence that merely changing initialization fixes this pose. Does not prove global unreachability. No solver change justified from this probe."},
+  "hypothesis": "The original bounded damped IK fails near a singular arm posture even though a different kinematic initialization could satisfy the same requested pose and original full trajectory constraints. Failure of this finite search does not prove global unreachability.",
+  "code_commit": "572c9ebc5c277b94d74714a2c1f4cc8ebd43ba14",
+  "source": "/home/wsy/behavior_worktrees/review-preclose-572c9eb",
+  "executor_digest": "1fcc505cb570c0fa215c408b2ae78d904819dc95b40bbbe117a560106ad97f4c",
+  "run": "/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09y-resume-20260921/native_complete/native_t1_i192_p0380",
+  "inventory_sha256": "0f6fb4b1fedda8f349fc2dae0cb29f66ad34aedb9b805fcbdfdcb0f74c5671f1",
+  "capture": "teacher_04/before/capture.json",
+  "capture_sha256": "58228e46968bcb9bc03cc29e6a43ada3a28b0543c00e5d9f203d51bd886c2034",
+  "comparison": "Original begin versus same target with eleven deterministic initial guesses, each at most64 original solve iterations; check final positional/rotation tolerance and original interpolation/path/collision/timing gates from the ACTUAL initial state.",
+  "actions": ["RIGHT_DOWN", "RIGHT_PITCH_PLUS", "RIGHT_FORWARD"],
+  "initial_guesses": "Actual q; right elbow q14 offsets +/-0.15,+/-0.35,+/-0.70rad; smallest right-Jacobian singular vector +/-0.25rad; two seed47 uniform +/-0.3rad seven-right-joint perturbations. Bounds/collision reject seed; never physically execute a perturbed start.",
+  "actual_tolerance_note": "Translation:2.5mm/1.5deg. Fine3deg rotation:2.5mm/0.75deg, not1.5deg. All unchanged.",
+  "budget": {"max_wall_seconds": 600, "GPU": "none", "new_resets": 0, "new_controls": 0, "new_model_calls": 0, "training_updates": 0, "max_output_MiB": 8, "max_solver_iterations_each": 64, "random_seed": 47},
+  "stop": "Stop at fixed cases or wall limit, preserve rejected cases, no additional search or live source changes. Any promising solution is CPU-only and requires separate reviewed implementation and physical preregistration before use. Child114969 remains572 and H25 remainsa628."
+}
