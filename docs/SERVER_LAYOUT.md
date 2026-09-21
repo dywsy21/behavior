@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 18:46当前：** 父新`h30_workspace_progress/gate_plates_h30`/2669109/GPU2于18:45:22.507036初始化，同级`gate_plates_h30.log`/`launch_plates.json`，仍固定`semantic_workspace_82754f1`和父独立暖缓存；radio首门完整本地在`artifacts/agentic-vlm-goal-20260918/h30_gates_bundle/gate_radio_h30`且父全链/RAW/独立复核已过。子第二`h09y_grasp_only/native_t1_i192_p0388_ws45`/2666104已退出、终态完整包待，第一380_ws45全195文件在子worktree native_complete/且父57RAW失败审已闭。连接18:37后曾SSH协商超时，单次`KexAlgorithms=curve25519-sha256`＋StrictHostKeyChecking=yes已恢复；未改服务器/本地ATrust中继或持久配置。不要按旧PID重启采集，0/1队友不动。
+
 **2026-09-21 18:20当前：** 父H30首`/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/gate_radio_h30`/2661586与子`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0380_ws45`/2659018均已退出；父24/442工程通过待全审，子6宏/603控制但未抓取失败、0BC。父源码`git_worktrees/semantic_workspace_82754f1`及自身`robodojo_harness_runtime_20260921/gripper_v1_gates`缓存保留，子固定`git_worktrees/vlm_sft_h09z_1cf0d1f`/独立缓存保留，不热改/删。GPU2/3当前两进程已释放，后继第二gate/388均未启动；0/1队友不动。
 
 **2026-09-21 15:40当前：** H25首2622414已退出，完整本地`artifacts/agentic-vlm-goal-20260918/h25_gates_bundle/gate_radio_h25`与远端全76段/三SHA/视频/7RAW审完成。第二`h25_refined_odometry/gate_plates_h25`新2626095/GPU2于15:39:50.845790启动，相邻log/launch_plates.json；仍冻结a628/afd1源及父H23自身runtime。子192388/2619909失败退出，完整本地53文件父审闭合，Astra现在只CPU改私有profile，GPU3无主任务；旧fa24和失败保留。
