@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 16:03（北京时间）新192380单次采集交接（Codex/Astra）：** Astra原1800s CPU票于16:02:14/1415s收敛；robo独立`vlm_sft_h09y_572c9eb`准确572/1fcc/clean，151/9.465s＋410/19.517s，VLA3.10 train/serve导入过。父已读两新profile边界与首完整inactive/prepare/window来源并核本地三SHA（report e362ce7b…a8f5、inactive067721e6…28e26、prepareeb9c353e…30f7b），确为TRAIN192/e310/p380/seed0、非未来动作BC；首77,257B完整包到齐。**现只交GPU3一次192380，380前缀＋≤420新含hold/12宏/1200s＋900init/384MiB，原root6/runtime16GiB及32/80GiB余量**；须启动前再动态门，唯一可许父2630126/mainGPU2辅助≤512MiB。H25已实控避免双初始化。第二114969保持inactive/不自动续跑；成功后父全轨迹手审/覆盖门仍必须，120更新和六评未启动。
+
+**2026-09-21 16:02（北京时间）H25已实控/第二门本地证据闭合（Codex）：** 原2630126于15:58:09 reset，首壁炉RAW本人看过，16:01实查81控制/第4决策在搜索；同源/原预算继续，未抓取或官方成功。第二gate完整319,315,295B本地另13.313s全76LK/joint/104帧/144hash/22链/4gripper重核、三主SHA同远端/整视频解码过，已闭合非只远端审。子572独审合入8e6e01d并push，整合151/4.304s＋425/6.934s通过；不改变两个冻结运行源。Astra新两inactive已CPU来源/seed/shared v3核过，首handoff正在读，仍未新reset/训练。
+
 **2026-09-21 16:00（北京时间）SFT public接近profile父独审通过（Codex）：** 固定572c9eb全15路径审完，独立151/3.547s＋410/8.704s过；公共src/runner逐字同13bd、仍1fcc。另本人新probe8.424s核失败192388全部53SHA/两原capture/三profile×左右闭后重开18组合，collector/public逐项一致；首态仍不可达，第二仅新profile同手未CLOSE为25tick/.023996rad，闭同手后仍原时长拒、不假称空手无接触。parent receipt已落`h09y_preclose_572c9eb_parent_review.json`；下一等新不可变远端CPU/两inactive与动态资源后仅交首192380，0新reset/训练。父H25原sim2630126已场景加载/校准，模型与源码不热改。
 
 **2026-09-21 15:57（北京时间）H25唯一零前缀完整回合真实提交/子固定接线交审（Codex/Astra）：** 2629456用14.498s ready，实际health准确a628/原revision/BF16/5.7/817decoder、0/431调用；15:56:10.319904唯一2630126/GPU2启动`radio_h25_fullstart`，task0/train138/seed0、两前缀0/原192决策6144含hold/7200s＋900init/3GiB，模型后余28,439MiB，正在初始化，不是成功。Astra572c9eb已固定新public接近profile15路径，原1fcc字节不变，作者151＋410和两失败保存态回归通过；父独立完整差异/151测试进行中，仅后继CPU准备，尚0新增数据reset/训练。新TRAIN采集须父终审与初始化交接，原120更新＋六物理对照仍待。
