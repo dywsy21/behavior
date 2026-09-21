@@ -1,4 +1,6 @@
 import copy
+import hashlib
+import json
 import os
 from pathlib import Path
 import sys
@@ -14,6 +16,66 @@ from native_reference_profile import validate_profile
 
 
 class NativeStorageTests(unittest.TestCase):
+    def test_shared_spec_exact_nested_fields_and_no_implicit_profile_change(self):
+        self.assertTrue(storage.validate_spec({"storage":storage.SHARED_SPEC}))
+        for key,value in (("owner_uid",True),("owner_name","other"),("allowed_aliases",[]),
+                          ("mutable_software_cache_not_evidence",1),("canonical_target","/tmp/other")):
+            spec=copy.deepcopy(storage.SHARED_SPEC);spec["shared_og_cache"][key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):storage.validate_spec({"storage":spec})
+        with self.assertRaises(ValueError):storage.RuntimeStorage({"storage":storage.SHARED_SPEC},storage.EXPERIMENT_ROOT/"retry")
+
+    def test_shared_alias_counted_once_but_unknown_loop_escape_and_hidden_items_refused(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);target=root/"canonical";target.mkdir();(target/"data").write_bytes(b"123")
+            one=root/"run1/cache";one.parent.mkdir();one.symlink_to(target,target_is_directory=True)
+            two=root/"run2/cache";two.parent.mkdir();two.symlink_to(target,target_is_directory=True)
+            device=root.stat().st_dev;aliases={one:target,two:target}
+            self.assertEqual(storage.tree_bytes(root,device,aliases),3)
+            with self.assertRaises(ValueError):storage.tree_bytes(root,device)
+            unknown=root/"unknown";unknown.symlink_to(target,target_is_directory=True)
+            with self.assertRaises(ValueError):storage.tree_bytes(root,device,aliases)
+            unknown.unlink();two.unlink();two.symlink_to(two)
+            with self.assertRaises(ValueError):storage.tree_bytes(root,device,aliases)
+            two.unlink();two.symlink_to(root.parent,target_is_directory=True)
+            with self.assertRaises(ValueError):storage.tree_bytes(root,device,aliases)
+            two.unlink();two.symlink_to(target,target_is_directory=True)
+            hidden=target/"hidden";hidden.mkdir();hidden.chmod(0)
+            try:
+                with self.assertRaises(PermissionError):storage.tree_bytes(root,device,aliases)
+            finally:hidden.chmod(0o700)
+
+    def test_shared_create_software_owner_exit_and_independent_run_local_paths(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);nvme=root/"nvme";sda=root/"sda";nvme.mkdir();sda.mkdir()
+            exp=nvme/"experiment";runtime=nvme/"runtime";target=runtime/"reference_train114_v1/omnigibson/global/cache"
+            target.mkdir(parents=True);(target/"texture").write_bytes(b"123")
+            reference=exp/"reference_train114_v1";reference.mkdir(parents=True);(reference/"result.json").write_bytes(b"completed")
+            launch=reference.with_suffix(".launch.json");launch.write_text(json.dumps({"pid":2147483646}))
+            software=sda/"software";software.write_bytes(b"fixed")
+            spec=copy.deepcopy(storage.SHARED_SPEC);spec["shared_og_cache"]["reference_result_sha256"]=hashlib.sha256(b"completed").hexdigest()
+            with patch.multiple(storage,NVME=nvme,SDA=sda,EXPERIMENT_ROOT=exp,RUNTIME_ROOT=runtime,
+                    SHARED_TARGET=target,SHARED_OWNER=os.getuid(),SHARED_SPEC=spec,
+                    SHARED_SOFTWARE={str(software):hashlib.sha256(b"fixed").hexdigest()}),patch(
+                    "pwd.getpwuid",return_value=SimpleNamespace(pw_name="robodojo")),patch.object(
+                    storage.os.path,"ismount",return_value=True),patch.object(
+                    storage.shutil,"disk_usage",return_value=SimpleNamespace(free=100*1024**3)):
+                guards=[]
+                for name in storage.SHARED_RUNS[:2]:
+                    out=exp/name
+                    with patch.dict(os.environ,storage.runtime_environment(out)):
+                        guard=storage.RuntimeStorage({"storage":spec},out);guard.create();guards.append(guard)
+                        self.assertEqual(guard.check()["runtime_bytes"],3)
+                        self.assertEqual((guard.root/"omnigibson/global/cache").resolve(),target)
+                        self.assertFalse((guard.root/"omnigibson/local").is_symlink())
+                self.assertNotEqual(guards[0].expected["TMPDIR"],guards[1].expected["TMPDIR"])
+                with patch.dict(os.environ,guards[-1].expected):
+                    software.write_bytes(b"changed")
+                    with self.assertRaisesRegex(ValueError,"software changed"):guards[-1].check()
+                    software.write_bytes(b"fixed");launch.write_text(json.dumps({"pid":os.getpid()}))
+                    with self.assertRaisesRegex(ValueError,"must have exited"):guards[-1].check()
+                    launch.write_text(json.dumps({"pid":2147483646}))
+                    with patch("pwd.getpwuid",return_value=SimpleNamespace(pw_name="other")),self.assertRaises(ValueError):guards[-1].check()
+
     def test_explicit_exact_profile_and_no_legacy_mixing(self):
         self.assertFalse(storage.validate_spec({}))
         self.assertTrue(storage.validate_spec({"storage":storage.SPEC}))

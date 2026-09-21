@@ -26,6 +26,31 @@ from native_eval_summary import summarize
 
 
 class EvalEntrypointTests(unittest.TestCase):
+    def test_actual_runner_rechecks_live_state_after_policy_latency(self):
+        from unittest.mock import Mock
+        tree=ast.parse((ROOT/"scripts/vlm_sft/native_eval_run.py").read_text())
+        fn=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=="preflight_at_execution")
+        before=NS(q=np.zeros(18),gripper=np.ones(2)*.05)
+        policy=Mock();model=object();receipt={};depths={};geometry={}
+        for field in (None,"q","gripper"):
+            current=copy.deepcopy(before)
+            if field:getattr(current,field)[0]+=.001
+            state=Mock(return_value=current);policy.reset_mock()
+            ns={"np":np,"state":state,"model":model,"policy":policy,"prefix_count":832,"controls":12}
+            exec(compile(ast.fix_missing_locations(ast.Module(body=[fn],type_ignores=[])),"actual_live_preflight","exec"),ns)
+            if field:
+                with self.assertRaisesRegex(RuntimeError,"stale token"):
+                    ns["preflight_at_execution"]("RIGHT_UP",before,depths,geometry,receipt)
+                policy.preflight.assert_not_called()
+            else:
+                ns["preflight_at_execution"]("RIGHT_UP",before,depths,geometry,receipt)
+                self.assertIs(policy.preflight.call_args.args[1],current)
+            state.assert_called_once_with()
+        # The actual loop calls this fresh-state boundary, not only a tested
+        # helper disconnected from the runner.
+        self.assertEqual(sum(isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and
+            n.func.id=="preflight_at_execution" for n in ast.walk(tree)),1)
+
     def test_missing_comparison_slots_are_not_completed_or_excluded(self):
         with tempfile.TemporaryDirectory() as d:
             result=summarize(d)

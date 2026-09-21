@@ -178,6 +178,12 @@ def main():
             def capture(folder,layout=None):
                 return capture_snapshot(folder,model,state,onboard,kin.native_self_boxes,og.sim.render,
                     {"prefix_control":prefix_count,"native_control":controls},a.output,current_writer,expected_layout=layout)
+            def preflight_at_execution(token,before,depths,geometry,receipt):
+                current=state()
+                if not np.array_equal(current.q,before.q) or not np.array_equal(current.gripper,before.gripper):
+                    raise RuntimeError("Robot changed while the policy was deciding; reject stale token")
+                return policy.preflight(token,current,model,depths,geometry,capture_receipt=receipt,
+                    expected_clock={"prefix_control":prefix_count,"native_control":controls})
             for command in prefix:step(command,"prefix")
             # Qualification begins at the pause with actual last issued grips;
             # it is not an assertion that an open hand cannot contact anything.
@@ -200,8 +206,7 @@ def main():
                 writer.write_json(folder/"request.json",{"actor":actor,"response":answer,"capture_sha256":sha(folder/"before/capture.json")})
                 decision={"index":index,"token":token,"control_start":controls,"response":answer};decisions.append(decision)
                 try:
-                    servo,preflight=policy.preflight(token,before,model,depths,geometry,capture_receipt=receipt,
-                        expected_clock={"prefix_control":prefix_count,"native_control":controls})
+                    servo,preflight=preflight_at_execution(token,before,depths,geometry,receipt)
                 except RuntimeError as exc:
                     decision.update(status="REJECTED_NO_MOTION",reason=str(exc));stop="PUBLIC_PREFLIGHT_STOP"
                     writer.write_json(folder/"execution.json",decision);break

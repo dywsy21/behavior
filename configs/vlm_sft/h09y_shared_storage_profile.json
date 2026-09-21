@@ -1,0 +1,36 @@
+{
+  "profile": "h09y-nvme-shared-og-cache-20260921-v2",
+  "runtime_root": "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921",
+  "runtime_max_MiB": 16384,
+  "nvme_min_free_GiB": 80,
+  "sda_min_free_GiB": 32,
+  "shared_og_cache": {
+    "canonical_target": "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/reference_train114_v1/omnigibson/global/cache",
+    "owner_uid": 1003,
+    "owner_name": "robodojo",
+    "allowed_aliases": [
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/native_t1_i114_p0993/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/native_t1_i192_p0392/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/native_t1_i114_p0989/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/native_t1_i192_p0388/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/native_t1_i114_p0985/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/eval_t1_i1_base_v1/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/eval_t1_i1_finetuned_v1/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/eval_t1_i1_proprio_history_nn_v1/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/eval_t1_i71_base_v1/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/eval_t1_i71_finetuned_v1/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/eval_t1_i71_proprio_history_nn_v1/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/training_v1/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/service_v1/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/eval_prepare_i1_v1/omnigibson/global/cache",
+      "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/eval_prepare_i71_v1/omnigibson/global/cache"
+    ],
+    "software_sha256": {
+      "/mnt/sdc1/xhz/BEHAVIOR2026/BEHAVIOR-1K/OmniGibson/omnigibson/macros.py": "5e8ebb1a00fa3e864c5a4984f126442e91b6653f5869977ecddbf4039ea73228",
+      "/mnt/sdc1/xhz/BEHAVIOR2026/BEHAVIOR-1K/OmniGibson/omnigibson/simulator.py": "d800c2832f24962c440c4781ebfdb4ea78c74aac37d2c74ee7894ae430f1e2a9",
+      "/mnt/sdc1/xhz/BEHAVIOR2026/BEHAVIOR-1K/OmniGibson/omnigibson/omnigibson_5_1_0.kit": "1aec3eda2c9841a060070c16305ea90c72c92a56cf0c973084b88f61b23f140d"
+    },
+    "mutable_software_cache_not_evidence": true,
+    "reference_result_sha256": "1208c9bc86c40bc89cdfaae96362a769c23e34e6ed237d2231ed05ddfb8d7e0c"
+  }
+}
