@@ -58,6 +58,20 @@ class FeatureTrackingTests(unittest.TestCase):
             _,keep,_=refine_matches(image,image,points,points)
         tracking.assert_not_called();self.assertFalse(keep.any())
 
+    def test_subpixel_rounding_cannot_shrink_the_three_by_three_depth_patch(self):
+        image,_=self.data();old=np.array([[157.,60.]],np.float32);good=np.ones((1,1),np.uint8)
+        for x,want in [(158.49,True),(158.5,True),(158.51,False),(158.75,False)]:
+            forward=np.array([[[x,60.]]],np.float32)
+            with patch('cv2.calcOpticalFlowPyrLK',side_effect=[(forward,good,None),(old[:,None],good,None)]) as tracker:
+                _,keep,_=refine_matches(image,image,old,old)
+            self.assertIs(bool(keep[0]),want)
+            self.assertEqual(tracker.call_count,2 if want else 1)
+        # The same rule applies to initial proposals, the old endpoint and y.
+        for points in (np.array([[158.75,60.]]),np.array([[60.,118.75]])):
+            with patch('cv2.calcOpticalFlowPyrLK') as tracker:
+                _,keep,_=refine_matches(image,image,points,points)
+            tracker.assert_not_called();self.assertFalse(keep.any())
+
     def test_forward_failure_nonfinite_and_outside_do_not_reach_backward(self):
         image,points=self.data();n=len(points)
         for out,status in [(points[:,None].astype(np.float32),np.zeros((n,1),np.uint8)),

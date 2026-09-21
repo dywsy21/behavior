@@ -24,8 +24,11 @@ def refine_matches(before, after, old_uv, proposed_uv):
 
     def inside(uv):
         # A full depth patch must remain available after tracking as well.
+        rounded = np.rint(uv)
         return (np.isfinite(uv).all(axis=1) & (uv[:, 0] >= 1) & (uv[:, 0] < width-1)
-                & (uv[:, 1] >= 1) & (uv[:, 1] < height-1))
+                & (uv[:, 1] >= 1) & (uv[:, 1] < height-1)
+                & (rounded[:, 0] >= 1) & (rounded[:, 0] <= width-2)
+                & (rounded[:, 1] >= 1) & (rounded[:, 1] <= height-2))
 
     output = proposed.copy()
     accepted = np.zeros(len(old), dtype=bool)
