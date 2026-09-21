@@ -21,7 +21,7 @@ TaskHarness和GroundedHarness只据此进入VERIFY_GRASP/VERIFY_PLACE并保留�
 
 ## 验证与下一步
 
-15组新回归覆盖默认旧行为、左右/双手开闭、活动/非活动手、末态关节/自碰撞/非有限值、短序列/途中硬停、receipt篡改、禁止增大发散包络、非夹爪动作与harness只进入验证。加入包络上限及视觉测量失败不能覆盖的回归后，全407测试通过（6.720s）。
+18组新回归覆盖默认旧行为、左右/双手开闭、活动/非活动手、末态关节/自碰撞/非有限值、短序列/途中硬停、receipt篡改、禁止增大发散包络、非夹爪动作与harness只进入验证，以及真实入口的工程门模式绑定、实际几何要求、视觉失败优先级。基础core225的407测试通过（6.720s）；部署入口小增量不改公共API。
 
 真实192392保存态18个逐步q/开度的新旧命令对照已完成（.731s）：全部18条23维命令逐位相同、末态误差独立复现；旧TRACKING_FAILED、新GRIPPER_COMMAND_COMPLETED并保留pose_tracking_status=TRACKING_FAILED，所有末态执行检查通过，holding仍UNKNOWN。来源32文件全SHA再核；逐tick底盘速度未存，此离线对照用有限零占位，只影响夹爪完成不使用的base_integral，**不冒充完整动力学重演或新物理成功**。脚本在父忽略目录`artifacts/agentic-vlm-goal-20260918/gripper_saved_state_comparison.py`。原失败仍失败/0正BC。
 

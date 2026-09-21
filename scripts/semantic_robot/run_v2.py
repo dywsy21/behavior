@@ -134,6 +134,8 @@ def main():
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
     if args.robot_geometry_guards and not args.grasp_motion:
         raise ValueError("Robot geometry guards require fresh grounded robot geometry")
+    if args.gripper_completion_v1 and not args.robot_geometry_guards:
+        raise ValueError("Gripper command completion requires the reviewed robot geometry guards")
     if args.approach_reorientation and not args.robot_geometry_guards:
         raise ValueError("Approach reorientation requires the reviewed robot geometry guards")
     if args.approach_body_options and not args.robot_geometry_guards:
@@ -166,6 +168,7 @@ def main():
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("robot_geometry_guards",False)==args.robot_geometry_guards and
+                g.get("gripper_completion_v1",False)==args.gripper_completion_v1 and
                 g.get("approach_reorientation",False)==args.approach_reorientation and
                 g.get("approach_body_options",False)==args.approach_body_options and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
@@ -802,6 +805,7 @@ def main():
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
                       "robot_geometry_guards":args.robot_geometry_guards,
+                      "gripper_completion_v1":args.gripper_completion_v1,
                       "approach_reorientation":args.approach_reorientation,
                       "approach_body_options":args.approach_body_options,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,

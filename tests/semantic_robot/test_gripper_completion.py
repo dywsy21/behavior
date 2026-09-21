@@ -1,5 +1,8 @@
 """Command execution is distinct from nominal IK precision and grasp outcome."""
 import copy
+import ast
+from pathlib import Path
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -27,6 +30,48 @@ def completed(action=Action("right", "close"), drift=.0029833103417, enabled=Tru
 
 
 class GripperCompletionTests(unittest.TestCase):
+    def runner_tree(self):
+        return ast.parse((Path(__file__).resolve().parents[2]/"scripts/semantic_robot/run_v2.py").read_text())
+
+    def test_runner_binds_gate_completion_profile_and_saves_it(self):
+        tree = self.runner_tree()
+        condition = next(n for n in ast.walk(tree) if isinstance(n, ast.Compare)
+                         and ast.unparse(n.left) == "g.get('gripper_completion_v1', False)")
+        code = compile(ast.Expression(body=condition), "actual_gate_profile_condition", "eval")
+        for gate, requested, expected in (({}, False, True), ({}, True, False),
+                                         ({"gripper_completion_v1": True}, True, True),
+                                         ({"gripper_completion_v1": True}, False, False)):
+            self.assertEqual(eval(code, {"g": gate, "args": SimpleNamespace(gripper_completion_v1=requested)}), expected)
+        values = [v for n in ast.walk(tree) if isinstance(n, ast.Dict) for k, v in zip(n.keys, n.values)
+                  if isinstance(k, ast.Constant) and k.value == "gripper_completion_v1"]
+        self.assertEqual(len(values), 1)
+        self.assertEqual(ast.unparse(values[0]), "args.gripper_completion_v1")
+
+    def test_runner_requires_fresh_geometry_guards_for_new_profile(self):
+        node = next(n for n in ast.walk(self.runner_tree()) if isinstance(n, ast.If)
+                    and ast.unparse(n.test) == "args.gripper_completion_v1 and (not args.robot_geometry_guards)")
+        code = compile(ast.fix_missing_locations(ast.Module(body=[node], type_ignores=[])), "actual_geometry_requirement", "exec")
+        with self.assertRaises(ValueError):
+            exec(code, {"args": SimpleNamespace(gripper_completion_v1=True, robot_geometry_guards=False)})
+        exec(code, {"args": SimpleNamespace(gripper_completion_v1=True, robot_geometry_guards=True)})
+
+    def test_actual_runner_motion_failure_overrides_completed_gripper(self):
+        node = next(n for n in ast.walk(self.runner_tree()) if isinstance(n, ast.If)
+                    and ast.unparse(n.test) == "motion_fault")
+        code = compile(ast.fix_missing_locations(ast.Module(body=[node], type_ignores=[])), "actual_motion_failure", "exec")
+        _, _, servo, end, _ = completed()
+        raw = servo.finish(end)
+        manager = SimpleNamespace(stop_reason=None, motion_receipt=None)
+        scope = {"motion_fault": True, "feedback": raw, "raw_servo_feedback": raw,
+                 "action": servo.action, "execution_completed": execution_completed,
+                 "substep_result": {"valid": False, "reason": "NOT_ENOUGH_MATCHES"},
+                 "terminal": False, "manager": manager}
+        exec(code, scope)
+        self.assertEqual(raw["status"], GRIPPER_COMPLETED)
+        self.assertEqual(scope["feedback"]["status"], "VISUAL_ODOMETRY_GATE_FAILED")
+        self.assertEqual(manager.stop_reason, "VISUAL_ODOMETRY_UNCERTAIN")
+        self.assertFalse(execution_completed(servo.action, scope["feedback"]))
+
     def test_opt_in_preserves_raw_pose_failure_and_unknown_holding(self):
         _, _, servo, end, commands = completed()
         feedback = servo.finish(end)
