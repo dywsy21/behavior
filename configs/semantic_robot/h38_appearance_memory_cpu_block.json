@@ -1,0 +1,18 @@
+{
+  "experiment_id": "H38-bounded-appearance-reference-implementation-v1",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-21T22:33:00+08:00",
+  "status": "CPU_IMPLEMENTATION_IN_PROGRESS",
+  "hypothesis": "Retaining only a recently semantically confirmed raw contact crop can reduce target identity loss during unladen single-arm approach, while all actionable geometry is recomputed from the current snapshot.",
+  "evidence": "H37 fixed3-case probe2bce7bc48e1efb1631dd6608ff0a560d5119d9302d3710887fc3094391db24ec; local static recovery only",
+  "base_commit": "727256b54d1474e09ff5532e665ce108e68cab68",
+  "allowed_scope": ["src/semantic_robot/v2/appearance_memory.py", "src/semantic_robot/v2/policy.py", "scripts/semantic_robot/run_v2.py", "tests/semantic_robot/test_appearance_memory.py", "docs/experiments/2026-09-21-h38-appearance-memory.md"],
+  "design": "Default off; requires H33. Keep one raw crop only after a genuine current surface selection with same-frame binding; exact goal identity,8-observation TTL,clear after missing target/abstention/loading/ineligible stage. H37 short3CURRENT+reference observation only for eligible unladen single-hand PICK. Returned claims remain unknown. Current surface recheck shared original16-refinement cap, no stale point fallback or success-state mutation. Old mode unchanged.",
+  "max_cpu_seconds": 1800,
+  "new_model_calls": 0,
+  "new_controls": 0,
+  "new_resets": 0,
+  "gpu_allocation": "None; GPU3 child collection/training uninterrupted",
+  "acceptance": "Unit tests for exact pixels/provenance, stale/wrong-goal and loaded exclusion, call budgets, failure/expiry, no copied coordinates, same-frame controller receipt and default-old behavior; independent code review before any deployment. New physical tests require separate finite registration.",
+  "deployment_authorized": false
+}

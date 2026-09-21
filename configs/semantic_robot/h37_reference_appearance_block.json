@@ -1,8 +1,9 @@
 {
   "experiment_id": "H37-prior-approved-appearance-current-reidentification-v1",
   "owner": "Codex-parent",
-  "registered_bjt": "2026-09-21T22:31:00+08:00",
-  "status": "REGISTERED_NOT_RUN",
+  "registered_bjt": "2026-09-21T22:26:14+08:00",
+  "registration_time_correction": "Initial written22:31 was a transcription error; original727256b commit occurred22:26:14, before actual22:28:46 launch. No budget or sample change.",
+  "status": "COMPLETED_STATIC_IDENTITY_RECOVERY_NOT_PHYSICAL_SUCCESS",
   "hypothesis": "A raw appearance reference from an independently semantically approved previous contact can help identify a partially occluded target in new current images without transporting the old coordinate.",
   "client_commit": "42f38b7cc73fbdb3f7ce88fedf7f7c5024518fb9",
   "reference": "Exact H33 decision117 CURRENT_HEAD_CROP_RAW.png and original pick goal; no target UV, robot position, depth, object ID or prior success claim in the observation question.",
@@ -20,5 +21,14 @@
   "training_updates": 0,
   "output": "/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/h37_reference_appearance_v1",
   "acceptance": "Parent checks every original/crop/selected point:118 must recover the actual object rather than table or gripper,120 must not regress,0 must remain absent. Current RGB-D and semantic surface confirmation are mandatory for any future movement. This is only static development evidence, not grasp or official success.",
-  "deployment_authorized": false
+  "deployment_authorized": false,
+  "launch": {"pid": 2711156, "started_bjt": "2026-09-21T22:28:46.769305+08:00", "diagnostic_source_sha256": "025cc0a14c9d311ab978d72b60ded2fa9471a0ebb25de5f1778344a2af3efa2b"},
+  "actual": {
+    "real_model_calls": 5,
+    "seconds": 40.929879372008145,
+    "service_calls_after": 305,
+    "result_sha256": "2bce7bc48e1efb1631dd6608ff0a560d5119d9302d3710887fc3094391db24ec",
+    "manual_review": "Parent viewed both complete numbered crops and unmarked crops, prior appearance crop, full118head and all original9RAW already inspected.118 choice4 and120 choice0 are on the red radio body, not robot/table.0 remains absent.118's initially invalid depth led to original refine, hence near-required=false but a real current semantic surface selection exists; do not claim its confirmed_current_contact flag was true.",
+    "conclusion": "Static identity recovery on the one failing development state with no regression on the other two controls. Not a verified graspable pose or motion authorization. Candidate implementation must clear stale identity across goals/loading/expiry and still validate fresh current surfaces. No physical success claim."
+  }
 }
