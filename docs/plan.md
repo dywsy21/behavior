@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 15:17（北京时间）两候选真实数据准入/覆盖不足（Codex/Astra）：** W＋新114989经实际`native_dataset.load_dataset`全链核验为14行/2轨迹、TRAIN各1、2CLOSE/7lift/5preclose、真实rotation、无近重复/失败正BC，明确`INSUFFICIENT_DO_NOT_TRAIN`，不是口头估计；子artifacts `dataset_w_114989_v1`保留，源review d9545dd2…177002。原192388/2619909仍初始化。另授权Astra监控空档≤600s **CPU只读**研究2个更早且异于现起点的TRAIN候选（原动作数组/12macro可达/位姿间距），不读heldout、不新reset/改fa24；若原剩两条不足，先登记有限附加采集，不能降门凑训练。父H25仍等待子reset，未启动。
+
 **2026-09-21 15:16（北京时间）原192388单次真实采集启动（Codex/Astra）：** Astra15:14:33.082132唯一2619909/GPU3启动原`native_t1_i192_p0388`，fa24/1fcc、active d7cb7049…0fc6e、launch a0974f24…1291c；真实1.272s资源/来源门过，当前初始化，12/420新含hold/1200＋900/384MiB与原6/16GiB、32/80GiB余量不变，0模型。启动器曾在写active/起进程前发现code字段位置错误，修到manifest后本次才提交，没消耗额外reset。父H25只准备单次launcher与保存态完整LK重算审计，不新源码/物理；等子reset。Git有限重fetch及干净ff-only pull已成功，origin/main仍33677bd，4db5a16已push。
 
 **2026-09-21 15:12（北京时间）H25有限在线验证登记（Codex）：** H24修复终审后另登记GPU2两顺序工程门（task0/138、3/242，各24/1536含hold/1200s＋900init/384MiB）＋条件单次task0原起点（192/6144/7200s/431calls，零两前缀），同a628/afd1、固定旧27B、新gripper＋LK、原阈值/两次SEARCH不变；`h25_refined_odometry_block.json`。新NVMe结果4GiB，复用已结束父H23 runtime16GiB/保32与80GiB，0/1不触。等Astra192388过初始化再启，现无新父进程；数据线fa24/120更新/六评不变。9338bc8已push；早先fetch TLS失败尚未冒称同步main，下一有限重试。
