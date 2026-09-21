@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 19:09（北京时间）H30第二门全审通过（Codex）：** 固定827/原helper189750全82段/110自体帧/144RGB-D hash/23链/4base重算24.665s；完整328,476,013B副本三主SHA一致，220帧视频全解码和16 RAW本人看。d9上抬仍原零tick安全拒，d10下移33tick左/右EEF .151/.148mm，4夹爪命令完成/原精度过；非抓取/官方成功。receipt `h30_plates_gate_parent_review.json`，下一原27B/8929＋唯一原起点，仍未启动。H31真实388保存态对照：旧40限时拒，新半速轨迹44tick过所有原路径门，仅CPU非物理成功；继续单测/独审。
+
+**2026-09-21 19:05（北京时间）抬升根因闭合/有界后继实施（Codex/Astra）：** Astra原600s票18:58:49闭合，388唯一UP已7次IK到.386mm/.116°、机器人余隙78.216mm；carry半速导致需44tick而fine固定40拒绝，非接触漂移必需原因，报告cb692fe6…89ac2。父H31≤1800s CPU只增默认关闭持物平移时间伸缩（原速度/IK/碰撞/精度不变，移动时长上限×2、末5tick不翻倍）；子19:04:50–19:44:50≤2400s只owned模块接新45词表carry-duration＋2body profile，旧profile不变。新两单次388→380仅inactive，14宏/640新含hold/1200＋900/384MiB，父源审及新真实集成门后逐次放行；32覆盖门不降，新120训练/六同profile配对仍未开始。配置`h31_carry_duration_cpu_block.json`。H30第二2669109已退出24/442/275.935s、gate_ok=true，完整数值/RAW/视频审运行中，原27B零前缀后继未启动，不热改827。
+
 **2026-09-21 18:50（北京时间）第二388失败完整父审闭合（Codex）：** 110文件38,094,243B/清单a44f9121…e6371全核、498控制/3宏逐tick q/grip/23D和原oracle1.590s过，10capture70payload30depth/97普通＋初末=99物理帧，全部30 RAW本人看。末12帧右手held/contact与相对稳定成立，但桶只升3.638mm、从首CLOSE(t468)手升.793mm，无验证抬升/0正BC；receipt `h09z_native_192388_ws45_failure_parent_review.json`。两原workspace采集额度用尽并完整保留。Astra双body只读设计aa0dff82…1bb6在467s内闭，父已全读、暂不实现；新UP根因票18:49:47–18:59:47运行中，不把闭爪即成功或把此失败归单body次数。
 
 **2026-09-21 18:48（北京时间）第二388已闭爪但抬升前失败，非单body耗尽（Codex/Astra）：** 子完整初报RIGHT_BACK18→RIGHT_DOWN25→RIGHT_CLOSE18，0body；第四唯一RIGHT_UP无safe提案，failure420.593s，388＋109普通＋1末hold=498。末态right held/contact=true但未升起/IN_PROGRESS，CLOSE命令完成而pose仍偏3.434mm/1.557°，不能等同GRASP成功、0正BC。全包正封存待父全部RAW/账本审；Astra原双body600s设计须注明不能修此反例，暂不实现。封存后另≤600s只读唯一UP原IK/精度/carry/时序及最多6个原fine同手平移，0物理/不放宽持物body限制；父H30第二2669109仍原初始化。

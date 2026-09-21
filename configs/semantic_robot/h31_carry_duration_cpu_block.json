@@ -1,0 +1,15 @@
+{
+  "experiment_id": "H31-carry-time-scaling-v1",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-21T19:05:00+08:00",
+  "status": "CPU_IMPLEMENTATION_ONLY",
+  "CPU_seconds": 1800,
+  "code_base": "6f064c1",
+  "hypothesis": "The carry half-speed rule and unchanged fine40 time ceiling reject an otherwise reachable lift. Explicitly scale the finite moving-time ceiling with carry speed while preserving all path and feedback safety checks.",
+  "evidence": {"report_sha256": "cb692fe622c49efda95195b9ba5e122cb2f62248d637145bfc60483e78c89ac2", "state": "native_t1_i192_p0388_ws45/macro003 rejected following state", "original_ticks_needed": 44, "original_fine_cap": 40, "IK_position_error_m": 0.000386136, "IK_rotation_error_deg": 0.116331},
+  "implementation": {"default": false, "API": "ServoLimits.carry_duration_v1", "qualifies": "carry and left/right/both arm translation only", "cap_formula": "2 * (original_cap - 5) + 5", "micro_fine_coarse_caps": [43,75,123], "joint_tick_unchanged": 0.0125, "settling_ticks_unchanged": 5, "unchanged": ["action displacement", "IK", "joint bounds", "self-collision", "Cartesian path envelope", "feedback divergence and stall", "scene depth gate", "all non-qualifying action timing"]},
+  "validation": ["unit tests for old/new limits and actual carry plan", "original saved388 UP full finite path replay", "legacy public and SFT regressions", "Astra independent source review"],
+  "not_authorized_by_CPU_block": ["hot source edit", "new model calls", "physical reset", "training", "success relabeling"],
+  "child_conditional_followup": {"owner": "Astra-vlm_sft_resume_20260921", "CPU_start_bjt": "2026-09-21T19:04:50+08:00", "CPU_seconds": 2400, "new_profile": "explicit native45 carry-duration plus maximum2 actual-issued pre-CLOSE torso macros", "new_run_suffix": "_ws45_cd1_b2", "starts_order": [388,380], "task": 1, "TRAIN_instance": 192, "episode": 310, "seed": 0, "max_resets_each": 1, "macros_each": 14, "new_controls_including_hold_each": 640, "seconds_after_reset_each": 1200, "initialization_seconds_each": 900, "MiB_each": 384, "result_root_GiB": 6, "runtime_GiB": 16, "free_GiB": {"sda":32,"nvme":80}, "GPU": 3, "physical_status": "inactive_pending_fixed_source_parent_review_and_resources", "first388": "New carry integration verification; inherited old gates cover only unchanged behavior, NOT new carry timing.", "next380_training_eval_dependency": "Full new388 actual carry integration parent numeric/RAW review", "training_coverage_unchanged": true, "fresh_training_updates": 120, "paired_eval_trials": 6, "eval_limits_each": {"macros":14,"new_controls_including_hold":640,"seconds_after_reset":1200,"initialization_seconds":900}, "new_neural_service_calls": 56, "old_profiles_and_48call_limit_unchanged": true},
+  "parallel_parent_H30": "Original827 source and two-gate conditional fullstart remain unchanged; do not deploy H31 into that run."
+}
