@@ -294,8 +294,11 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False,odometry_match_refinement=False):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False,odometry_match_refinement=False,near_contact_review=False):
         self.model,self.servo,self.harness=model,servo,harness
+        if type(near_contact_review) is not bool or (near_contact_review and not visual_odometry):
+            raise ValueError("Contact review requires explicit measured visual motion")
+        self.near_contact_review=near_contact_review
         if odometry_self_exclusion and not visual_odometry:
             raise ValueError("Robot-self exclusion requires visual odometry")
         self.odometry_self_exclusion=odometry_self_exclusion
@@ -371,7 +374,7 @@ class GroundedController:
         self.pending_motion=None
         return receipt
 
-    def observe(self,evidence,state,depths,depth_receipt,images=None,self_geometry=None):
+    def observe(self,evidence,state,depths,depth_receipt,images=None,self_geometry=None,contact_review_receipt=None):
         manager=self.harness
         self.goal_changed=False
         observed_goal_index=manager.index
@@ -392,6 +395,11 @@ class GroundedController:
                              co_moving=all_claims(row.co_moving for row in contacts))
         else:
             self.target=localize_target(evidence,depths,self.model,state.q)
+            if self.near_contact_review:
+                from .contact_review import apply_review
+                self.target=apply_review(self.target,contact_review_receipt,manager,state,evidence,images)
+            elif contact_review_receipt is not None:
+                raise ValueError("Contact review receipt supplied to disabled controller")
         self.centers=self.model.grasp_centers(state.q)
         manager.grounding=self.target
         camera=self.model.spec["metadata"]["cameras"]["head"]
@@ -618,6 +626,11 @@ class GroundedController:
         from .wall_budget import require_time
         require_time(deadline)
         if self.goal_changed:return (HOLD,)
+        if self.near_contact_review and self.target.get("reason")=="VISIBLE_TARGET_CONTACT_UNCONFIRMED":
+            self.harness.candidate_receipt={"reason":"CONTACT_REVIEW_ABSTAINED",
+                "near_contact_review":self.target["near_contact_review"],
+                "tested":[{"action":asdict(HOLD),"accepted":True,"reason":"NO_POINT_GUIDED_MOTION"}]}
+            return (HOLD,)
         palette=self.harness.palette()
         from .approach_reorientation import eligible, preview, unladen_pick_approach
         open_command=bool(np.all((self.servo.grips >= .999) & (self.servo.grips <= 1.)) and np.all(state.gripper >= .0495))
@@ -908,6 +921,8 @@ class GroundedController:
     def search_action(self,state):
         """One finite pulse, not a hidden multi-step macro or VLM fiction."""
         if self.goal_changed:return HOLD,{"source":"goal_transition_barrier","reason":"OBSERVE_NEW_GOAL_FIRST"}
+        if self.near_contact_review and self.target.get("reason")=="VISIBLE_TARGET_CONTACT_UNCONFIRMED":
+            return HOLD,{"source":"near_contact_review_veto","reason":"CONTACT_REVIEW_ABSTAINED"}
         if self.is_held_search:raise ValueError("Held affordance cannot use world-heading search")
         if self.reposition is not None and self.reposition_left>0:
             action,reason=self.reposition,"BOUNDED_REPOSITION_WITH_CURRENT_DEPTH"

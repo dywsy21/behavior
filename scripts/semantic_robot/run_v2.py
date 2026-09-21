@@ -89,6 +89,7 @@ def main():
     p.add_argument("--mode", choices=("gate","agent"), default="gate")
     p.add_argument("--harness", choices=("v2","grounded"), default="v2")
     p.add_argument("--refine-grounding",action="store_true",help="Opt-in bounded crop/surface-choice perception")
+    p.add_argument("--near-contact-review",action="store_true",help="Review valid near-field PICK contacts on entry/view change/jump; abstention stops point-guided approach")
     p.add_argument("--visual-odometry",action="store_true",help="Use quality-gated onboard RGB-D motion for coverage")
     p.add_argument("--active-grasp-probe",action="store_true",help="Bounded exploratory close; original grasp verification remains mandatory")
     p.add_argument("--contact-geometry",action="store_true",help="Experimental finger guides/tool translations; not mixed into the feedback-only comparison")
@@ -140,6 +141,8 @@ def main():
     grounded=args.harness=="grounded"
     if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe or args.contact_geometry or args.grasp_motion) and not grounded:
         raise ValueError("Surface refinement requires the grounded sensor contract")
+    if args.near_contact_review and not (grounded and args.refine_grounding and args.visual_odometry):
+        raise ValueError("Near contact review requires grounded refinement and measured visual motion")
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
     if args.robot_geometry_guards and not args.grasp_motion:
         raise ValueError("Robot geometry guards require fresh grounded robot geometry")
@@ -182,6 +185,7 @@ def main():
         if {g["task"] for g in gates} != {0,3} or not all(g["gate_ok"] and g["implementation_digest"] == digest and
                 g.get("harness","v2")==args.harness and
                 g.get("refine_grounding",False)==args.refine_grounding and
+                g.get("near_contact_review",False)==args.near_contact_review and
                 g.get("visual_odometry",False)==args.visual_odometry and
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("grasp_motion",False)==args.grasp_motion and
@@ -224,7 +228,8 @@ def main():
     policy_class=RefinedGroundedPolicy if args.refine_grounding else GroundedPolicy if grounded else VLMPolicy
     policy = policy_class(args.uri,args.expected_revision,max_calls=1+2*args.max_decisions+
         (2 if grounded else 0)+(16 if args.refine_grounding else 0)+(4 if args.held_object_inspection else 0),
-        structured_planning=args.structured_planning) if args.mode=="agent" else None
+        structured_planning=args.structured_planning,
+        **({"near_contact_review":args.near_contact_review} if args.refine_grounding else {})) if args.mode=="agent" else None
     if policy and args.held_object_inspection and "reference" not in policy.identity.get("finite_choice_kinds",[]):
         raise ValueError("Held inspection requires a text-only reference service")
     # B15's tracking-anchor prompt did not improve the two failing states.
@@ -240,6 +245,7 @@ def main():
                 "actor_modalities":["rgb","depth_linear","proprio"] if grounded else ["rgb","proprio"],
                 "harness":args.harness,"max_strategy_replans":2 if grounded else 0,
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
+                "near_contact_review":args.near_contact_review,
                 "visual_odometry":args.visual_odometry,
                 "odometry_substep_controls":args.odometry_substep_controls,
                 "odometry_self_exclusion":args.odometry_self_exclusion,
@@ -455,7 +461,7 @@ def main():
                     odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress,persistent_grasp_tracks=args.persistent_grasp_tracks,
                     spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery,
                     odometry_self_exclusion=args.odometry_self_exclusion,
-                    odometry_match_refinement=args.odometry_match_refinement)
+                    odometry_match_refinement=args.odometry_match_refinement,near_contact_review=args.near_contact_review)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -561,7 +567,8 @@ def main():
                             for label,img in zip(detail_views.labels,detail_views.images):
                                 if "CROP" in label or "CANDIDATES" in label:img.save(directory/(label+".png"))
                     if controller:
-                        controller.observe(observation,state,depths,depth_receipt,images=bundle.current_raw,self_geometry=self_geometry)
+                        controller.observe(observation,state,depths,depth_receipt,images=bundle.current_raw,self_geometry=self_geometry,
+                            contact_review_receipt=receipt.get("near_contact_review") if args.near_contact_review else None)
                         if controller.replan_needed:
                             recovery,call=policy.recover(manager,state,bundle,controller.replan_needed)
                             save_call(directory,"recovery",call)
@@ -841,6 +848,7 @@ def main():
                       "official_success":bool(done.get("success",False)),"final_goal_status":done.get("goal_status",{}),
                       "stop_reason":stop_reason,"harness":args.harness,"sensor_check_count":len(sensor_checks),
                       "refine_grounding":args.refine_grounding,"surface_choices":getattr(policy,"refinements",0),
+                      "near_contact_review":args.near_contact_review,
                       "visual_odometry":args.visual_odometry,
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,

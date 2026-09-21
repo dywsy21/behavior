@@ -337,15 +337,19 @@ SURFACE_SYSTEM = """Choose a visible contact surface for the CURRENT target, not
 
 
 class RefinedGroundedPolicy(GroundedPolicy):
-    def __init__(self,*args,max_refinements=16,**kwargs):
+    def __init__(self,*args,max_refinements=16,near_contact_review=False,**kwargs):
         super().__init__(*args,**kwargs)
         if "ground" not in self.identity.get("finite_choice_kinds",[]):
             raise ValueError("Service must support constrained surface choices before a refined run")
         if type(max_refinements) is not int or not 1<=max_refinements<=16:
             raise ValueError("Bounded refinement budget required")
         self.max_refinements,self.refinements=max_refinements,0
+        if type(near_contact_review) is not bool:
+            raise ValueError("Explicit boolean contact review mode required")
+        from .contact_review import NearContactReview
+        self.contact_review = NearContactReview() if near_contact_review else None
 
-    def refine(self,evidence,harness,state,bundle,depths,model):
+    def refine(self,evidence,harness,state,bundle,depths,model,*,_bimanual_contact=False):
         if harness.goal.kind=="pick" and harness.goal.hand=="both":
             # At most ONE extra model choice per decision, shared 16-call cap.
             # Refine a supplied per-hand ray only; never manufacture a missing
@@ -361,7 +365,7 @@ class RefinedGroundedPolicy(GroundedPolicy):
                 goal=replace(harness.goal,hand=contact.hand,
                              done_when="This hand and the other hand both support the same target after a lift.")
                 scope=SimpleNamespace(goal=goal,stage=harness.stage)
-                refined,call,detail,views=self.refine(single,scope,state,bundle,depths,model)
+                refined,call,detail,views=self.refine(single,scope,state,bundle,depths,model,_bimanual_contact=True)
                 updated=replace(contact,view=refined.view,target_uv=refined.target_uv,
                                 enclosed=refined.enclosed,co_moving=refined.co_moving)
                 result=replace(evidence,hand_contacts=tuple(updated if row.hand==contact.hand else row
@@ -374,18 +378,27 @@ class RefinedGroundedPolicy(GroundedPolicy):
         target=localize_target(evidence,depths,model,state.q)
         receipt={"attempted":False,"original_target":target,"refinements_used":self.refinements,
                  "original_evidence":asdict(evidence),"robot_controls":0}
-        if (not evidence.visible or target["valid"] or harness.stage in
+        reviewer=None if _bimanual_contact else getattr(self,"contact_review",None)
+        request=reviewer.request(harness,state,evidence,target,model) if reviewer is not None else None
+        forced=bool(request and request["required"])
+        def finish(current,call,detail,views):
+            if reviewer is not None:
+                selected=bool(detail.get("attempted") and detail.get("choice",{}).get("candidate_id") is not None)
+                detail["near_contact_review"]=reviewer.finish(request,harness,state,current,
+                    localize_target(current,depths,model,state.q),selected,bundle.current_raw)
+            return current,call,detail,views
+        if (not evidence.visible or (target["valid"] and not forced) or harness.stage in
                 ("GRASP","VERIFY_GRASP","RELEASE","VERIFY_PLACE","VERIFY_SUPPORT","VERIFY_EFFECT")):
             receipt["reason"]="NOT_NEEDED_OR_VERIFICATION_STAGE"
-            return evidence,None,receipt,None
+            return finish(evidence,None,receipt,None)
         if self.refinements>=self.max_refinements:
             receipt["reason"]="REFINEMENT_BUDGET_EXHAUSTED"
-            return evidence,None,receipt,None
+            return finish(evidence,None,receipt,None)
         proposals=surface_candidates(evidence,depths,model,state.q)
         receipt["proposals"]=proposals
         if not proposals["candidates"]:
             receipt["reason"]="NO_STABLE_SURFACE_PROPOSALS"
-            return evidence,None,receipt,None
+            return finish(evidence,None,receipt,None)
         views=refinement_bundle(bundle,proposals)
         allowed=(SurfaceChoice(),*(SurfaceChoice(c["id"]) for c in proposals["candidates"]))
         text=json.dumps(surface_selection_context(harness.goal,harness.stage,proposals))
@@ -395,7 +408,11 @@ class RefinedGroundedPolicy(GroundedPolicy):
         choice=SurfaceChoice.parse(result["text"])
         if choice not in allowed:raise ValueError("Choice not proposed in the current snapshot")
         refined=select_surface(evidence,choice,proposals)
+        if forced and choice.candidate_id is not None:
+            # The crop question selects a surface, not enclosure or completion
+            # at this newly selected contact. Do not transport the old claims.
+            refined=replace(refined,enclosed=None,co_moving=None,effect=None)
         receipt.update(attempted=True,refinements_used=self.refinements,choice=asdict(choice),
                        reason="MODEL_ABSTAINED" if choice.candidate_id is None else "MODEL_SELECTED_CURRENT_SURFACE",
                        refined_evidence=asdict(refined),refined_target=localize_target(refined,depths,model,state.q))
-        return refined,{"result":result,"request":payload},receipt,views
+        return finish(refined,{"result":result,"request":payload},receipt,views)
