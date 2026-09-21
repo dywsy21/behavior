@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 18:06（北京时间）H25本地完整副本校验闭合（Codex）：** `artifacts/agentic-vlm-goal-20260918/h25_fullstart_bundle/radio_h25_fullstart`全部7568文件对原远端清单逐SHA核0错误，steps76fd89a9…398e9，先前“仍在传”已完成；额外动作统计：pick后133决策76次base forward、全180次没有CLOSE，非抓后掉落。原remote receipt保持当时审阅状态，实际本地完成在此补记，不改原结果/清单。子2659018仍初始化，18:05:06日志已有robot-specific pose但无账本，不冒称reset；父H30尚未启动。
+
 **2026-09-21 18:01（北京时间）首workspace采集实际提交（Astra/Codex）：** 2659018于18:00:26.290424唯一启动GPU3/固定1cf/public1fcc/`native_t1_i192_p0380_ws45`，active c6641f54…7bb、launch1b6ee3d4…9dff6。真实source/双门/seed/准备/容量/空GPU3 81152MiB/旧父PID退出重查1.262s过，正在初始化，不把提交当reset或成功；原380前缀＋12宏420新/1body/1200＋900不变，第二388和训练仍inactive。父H30严格等其过reset才首gate/GPU2；仅此精确PID/mainGPU3辅助≤512MiB可在新gate资源核验出现。
 
 **2026-09-21 18:00（北京时间）H25自有服务释放/H30仅等子初始化（Codex）：** 全审receipt c09b7e31…e0af7已Git e317086及远端结果旁归档；精确核2629456/旧cwd/8927/输出和policy已退出后SIGTERM，实际GPU2/3均0MiB、两PID均不存在，0/1队友进程未动。H30≤900s CPU准备闭合，固定827/source/digest/449远端及启动/审计工具就绪；不再改源，只等已交子首380过reset后新首gate。114969旧数据审计helper扩展45后的兼容重跑2.422s过（初版误假定所有动作有torso字段，修为核真实同字段集合），新body尚无物理结果；完整旧视频本地可看，全部副本继续传。
