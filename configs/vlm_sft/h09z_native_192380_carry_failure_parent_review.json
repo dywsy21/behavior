@@ -1,0 +1,40 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-21T20:51:00+08:00",
+  "run": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0380_ws45_cd1_b2",
+  "source": "02d63cdc86fdbe6df056e93600c0022b711741d2",
+  "executor_sha256": "8fdfcd3e1b8bdfd95530eec09710d1c44efc215885b49c64c1a82f55bbc501a8",
+  "inventory_sha256": "4f8da67adb430e044e11a5b0f4bd430dc21331b50a2084893b89177e027bc578",
+  "local_bundle": "/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09y-resume-20260921/native_complete/native_t1_i192_p0380_ws45_cd1_b2",
+  "complete_failed_run_audit_passed": true,
+  "positive_BC_admitted": false,
+  "files": 252,
+  "bytes": 94996845,
+  "total_controls_including_final_hold": 668,
+  "expert_prefix_controls": 380,
+  "native_controls_including_final_hold": 288,
+  "capture_sets": 25,
+  "payload_hashes": 175,
+  "depth_hashes": 75,
+  "physical_frames": 277,
+  "macros": ["RIGHT_BACK", "RIGHT_DOWN", "RIGHT_BACK", "RIGHT_DOWN", "TORSO_DOWN_KEEP_EEF", "RIGHT_DOWN", "TORSO_FORWARD_KEEP_EEF", "RIGHT_PITCH_PLUS"],
+  "public_qualification_checks": 8,
+  "actual_q_grip_23D_servo_replays": 8,
+  "numeric_seconds": 4.407261019106954,
+  "numeric_report_sha256": "5c918a7509222d075a6871aa8eadfb2cd11569a1b03de6fc70574f33f78dbb6d",
+  "body_motion": [
+    {"macro":4,"actual_controls":26,"settled_hand_displacement_m":{"left":0.000007464149904765669,"right":0.00040697076366624666}},
+    {"macro":6,"actual_controls":20,"settled_hand_displacement_m":{"left":0.000005431273515209594,"right":0.00045976358047862537}}
+  ],
+  "manual_review": {
+    "personally_viewed_raw_images": 75,
+    "additional_full_resolution_checks": ["teacher_06/after_settle/head.png", "teacher_08/before/right_wrist.png"],
+    "scope": "All before/after/after_settle x three cameras for8 executed macros, plus all3 RAW at rejected macro9.",
+    "observation": "Fingers remain open beside bin. Both body motions preserve hand placement within original numeric limits; final pitch changes wrist view but no closure or bin lift occurs.",
+    "sheets": "artifacts/agentic-vlm-goal-20260918/h31_carry380_review/native_t1_i192_p0380_ws45_cd1_b2_parent_sheet_{0,1,2,3,4}.jpg"
+  },
+  "outcome": {"CLOSE_issued":false,"known_finger_contact_or_held_either_hand":false,"target_rise_m":0.0,"local_GRASP":false,"official_success_claim":false},
+  "failure": "No safe decreasing teacher proposal at macro9; both actual-issued body allowances already consumed. Exact rejection diagnosis remains separate.",
+  "limits": "Neither body improvement nor an executed pitch is GRASP success. Final hold has physical ledger but no invented RGB. All failure files retained; no positive BC release or fresh training yet.",
+  "next": "Original600s TRAIN-only saved-state and at-most2 candidate audit; no reset authority in this receipt. Coverage remains26<32; fresh120 training and6 paired physical evaluations still required."
+}

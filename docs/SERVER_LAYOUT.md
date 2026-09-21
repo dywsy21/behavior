@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 20:51当前：** 第二carry380/2686721已退出，完整252文件94,996,845B在子本地`artifacts/h09y-resume-20260921/native_complete/native_t1_i192_p0380_ws45_cd1_b2`，清单4f8da67a…bc578；父全数值/75 RAW失败审闭合，0BC。旧全部source/runtime/active/inactive/失败保留，GPU3目前不新reset/训练；Astra仅原600s只读替代数据准备。父H30仍原2673116/2673899，源不可热改。
+
 **2026-09-21 20:33当前：** 首carry388/2680442已退出，完整184文件66,219,466B在子本地`artifacts/h09y-resume-20260921/native_complete/native_t1_i192_p0388_ws45_cd1_b2`，全数值和54 RAW父审闭合。原第二380唯一2686721/GPU3于20:26:16提交；同冻结`vlm_sft_h09z_cd_02d63cd`，输出`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0380_ws45_cd1_b2`及相邻log/launch，授权同根`authorization_native_t1_i192_p0380_ws45_cd1_b2_02d63cd_active.json`（002944c2…28f4e）。首物理receipt独立Git源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_reviews_cac0208`，CPU receipt仍`vlm_sft_reviews_436b9a7`；原inactive不改。父2673899/GPU2继续原827回合，不能热pull任一源。
 
 **2026-09-21 19:59提交、20:08实控确认：** 新子2680442/GPU3于19:57:28提交，源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09z_cd_02d63cd`固定02d/8fdf、结果`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0388_ws45_cd1_b2`及同stem log/launch，授权同根`authorization_native_t1_i192_p0388_ws45_cd1_b2_02d63cd_active.json`。父审Git独立源已从真实active/launch核为`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_reviews_436b9a7`（更正先前推测目录名）；本地审计reader固定`/home/wsy/behavior_worktrees/vlm-carry-02d-parent-review`。20:06已prefix146/native0。父2673116/2673899仍原H30/GPU2，任何运行源不可热改；两新旧失败证据均保留。
