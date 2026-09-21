@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 16:06（北京时间）新profile数据父审工具就绪/H25证据索引（Codex）：** 本地ignored `audit_native_grasp_parent.py`显式增加新public profile，只在该模式逐宏重放真实已发gripper历史、carry资格以及全部23维servo命令/实际q反馈；原v1和旧输入不变。旧已审114989作为工具回归1.269s全128文件/1130控制再过，原成功结论不重复计为新样本；新192380结果仍未出。H25设计/组合对照限制、双门完整证据、真实部署与预算另整理到`experiments/2026-09-21-h25-online-refined-odometry.md`，原完整任务继续，不新源/新reset/额外模型。
+
 **2026-09-21 16:03（北京时间）新192380单次采集交接（Codex/Astra）：** Astra原1800s CPU票于16:02:14/1415s收敛；robo独立`vlm_sft_h09y_572c9eb`准确572/1fcc/clean，151/9.465s＋410/19.517s，VLA3.10 train/serve导入过。父已读两新profile边界与首完整inactive/prepare/window来源并核本地三SHA（report e362ce7b…a8f5、inactive067721e6…28e26、prepareeb9c353e…30f7b），确为TRAIN192/e310/p380/seed0、非未来动作BC；首77,257B完整包到齐。**现只交GPU3一次192380，380前缀＋≤420新含hold/12宏/1200s＋900init/384MiB，原root6/runtime16GiB及32/80GiB余量**；须启动前再动态门，唯一可许父2630126/mainGPU2辅助≤512MiB。H25已实控避免双初始化。第二114969保持inactive/不自动续跑；成功后父全轨迹手审/覆盖门仍必须，120更新和六评未启动。
 
 **2026-09-21 16:02（北京时间）H25已实控/第二门本地证据闭合（Codex）：** 原2630126于15:58:09 reset，首壁炉RAW本人看过，16:01实查81控制/第4决策在搜索；同源/原预算继续，未抓取或官方成功。第二gate完整319,315,295B本地另13.313s全76LK/joint/104帧/144hash/22链/4gripper重核、三主SHA同远端/整视频解码过，已闭合非只远端审。子572独审合入8e6e01d并push，整合151/4.304s＋425/6.934s通过；不改变两个冻结运行源。Astra新两inactive已CPU来源/seed/shared v3核过，首handoff正在读，仍未新reset/训练。
