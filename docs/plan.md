@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 12:59（北京时间）GRASP模板阶段错配实证/第二门已运行（Codex/Astra）：** 作者复算TRAIN114：reference993到terminal相对EEF角差24.0265°/10.5398mm；首次指接触997仍差23.6583°/3.7969mm，首次held+contact1008却已仅.024812°/24.30μm，此后到1199几乎不变。现terminal seed在抓前要求抓后姿态，疑似解释7次yaw，不能简单归为VLM无能/训练差，也不先扩12宏。原≤600s CPU内再拆目标/手各自世界运动，并对两已成功TRAIN参考给因果首次接触前unheld/no-contact候选；不查heldout挑模板、不改成功阈值/旧seed/旧失败，父候选审后才另登记显式v2实现。首失败350文件146,779,410B封存/下载进行中、0正BC；原192/p392暂不沿旧模板抢跑。父第二2584009已过初始化到至少134控制/7动作，无故障；首厨房head本人核原起点，`h22_gate_previews/plates_first.png`，原预算/源不变。
+
 **2026-09-21 12:53（北京时间）首native预算终止/父第二门真实提交（Codex/Astra）：** 子2575671已退出：993前缀＋382普通native＋末hold（末数待全账本）/12宏/828.284s，failure=`Bounded teacher ended without local completion`、IN_PROGRESS/stable0，0正BC。初核10次抓前修正（7yaw−/2pitch＋/1右移），第11宏才CLOSE、第12宏仅UP一次；实际末右手held/contact但仅约1cm抬升，不能冒充原3cm成功。Astra≤600s CPU完整封存/逐宏及reference相对姿态诊断，不重跑/扩宏/降门；原下一192392/114989 CPU来源已备好，物理仍待后继明确。父按原依赖核两旧sim退出/GPU2空/完整容量树后，于12:52:24.257286唯一2584009提交task3 `gate_plates_h22`，相同d7/e763/24/1536/1200s/384MiB/0模型，复用父自身appdata，无新源或缓存删搬。第一门本地状态已同步config，不再pending；新VLM训练仍未启动。
 
 **2026-09-21 12:48（北京时间）H22首门本地证据闭合/子进入原生微动作（Codex/Astra）：** 352.8MB首门已完整本地，父另4.015s复核全链/144主hash/104self帧/三主SHA、整视频解码过，亲看首head及两手开闭4张RAW；`h22_gates_bundle/gate_radio_h22`不再传输中。子12:46:55已完成993 paidprefix并进入native，RIGHT_RIGHT/RIGHT_YAW_MINUS各真实到达，尚未抓取/新训练；父gate退出窗口后子前缀约2.41控制/s，保留争用线索不当因果实验。仅追加≤300s CPU预备原下一192/p392及114/p989来源绑定，无额外物理/重置。父第二gate仍待子首条完整退出。
