@@ -1,0 +1,16 @@
+{
+  "experiment_id": "H33-near-contact-review-v1",
+  "owner": "Codex-parent",
+  "started_bjt": "2026-09-21T20:46:00+08:00",
+  "status": "CPU_IMPLEMENTATION_RUNNING",
+  "wall_seconds": 1800,
+  "base_commit": "f90b54a",
+  "hypothesis": "A bounded current-image semantic contact review on near-field entry, camera change or compensated point jump can prevent smooth-background targets from being treated as valid reach goals.",
+  "GPU": null,
+  "new_resets": 0,
+  "new_model_calls": 0,
+  "regression_evidence": "H32 d117/118/120 full54 file hashes and original frozen827 sensor data",
+  "implementation_scope": ["default-off contact review scheduler", "existing finite surface-choice model call with shared16 allowance", "abstention invalidates contact but preserves visible object", "same-frame receipt binding", "explicit runner identity and gates", "unit and full public regressions"],
+  "unchanged": ["all arm/base/carry speeds", "IK/collision/depth quality guards", "physical success", "child02d data/training source", "active827 H30 source"],
+  "deployment_dependency": "Independent source review and separately registered finite model/physical validation. This CPU record authorizes neither."
+}
