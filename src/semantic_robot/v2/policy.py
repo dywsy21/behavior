@@ -16,6 +16,7 @@ from .grounding import localize_target
 from .bimanual import BimanualEvidence, HandContact, contact_evidence
 from .prompt_context import actor_context
 from .structured_planning import COMPLETE_PLAN_INSTRUCTION, DECODER_COMMIT, schema_digest
+from .wall_budget import require_time, WallTimeBudgetReached
 
 PLAN_SYSTEM = """Plan robot manipulation using visible observations and the task, not imagined object locations. Return only a JSON array of subgoals. Each has exactly kind, target, hand, done_when, level. kind is pick, place, press, open, close or navigate. hand is left, right or both. level is a boolean: true for transport requiring orientation preservation. Use short visually identifiable target descriptions, not hidden simulator IDs. done_when is an observable criterion, not 'command issued'. A pick and place are separate goals. Opening containers before filling is normally necessary. Allow uncertainty: the controller will search rather than assume a target is already visible. At most 16 goals. Example: [{"kind":"pick","target":"red radio","hand":"right","done_when":"radio moves with right gripper after a small lift","level":false},{"kind":"press","target":"visible power button of held radio","hand":"left","done_when":"power indicator visibly changes","level":false}]. Never describe task success from a close command."""
 
@@ -32,9 +33,11 @@ class TruncatedPolicyOutput(ValueError):
         self.call = {"result": result, "request": payload}
 
 
-def call_service(uri, kind, system, text, bundle, allowed=(), timeout=120, response_schema=None):
+def call_service(uri, kind, system, text, bundle, allowed=(), timeout=120, response_schema=None, deadline=None):
+    require_time(deadline)
     images = []
     for label, image in zip(bundle.labels, bundle.images):
+        require_time(deadline)
         buffer = BytesIO(); image.save(buffer, format="PNG")
         images.append({"label": label, "png": base64.b64encode(buffer.getvalue()).decode()})
     payload = {"kind": kind, "system": system, "text": text, "images": images,
@@ -43,9 +46,16 @@ def call_service(uri, kind, system, text, bundle, allowed=(), timeout=120, respo
         payload["response_schema"] = response_schema
     started = time.perf_counter()
     request = Request(uri, json.dumps(payload).encode(), {"Content-Type": "application/json"})
+    left=require_time(deadline)
+    if left is not None:timeout=min(timeout,left)
     with urlopen(request, timeout=timeout) as response:
         result = json.load(response)
     result["roundtrip_s"] = time.perf_counter()-started
+    try:
+        require_time(deadline)
+    except WallTimeBudgetReached as exc:
+        exc.call={"result":result,"request":payload,"cancelled_after_deadline":True}
+        raise
     if result.get("hit_token_cap"):
         raise TruncatedPolicyOutput(result, payload)
     return result, payload
@@ -85,6 +95,7 @@ class VLMPolicy:
     def __init__(self, uri, expected_revision, max_calls=160, structured_planning=False):
         self.uri, self.max_calls, self.calls = uri, max_calls, 0
         self.structured_planning, self.last_call = bool(structured_planning), None
+        self.deadline = None
         with urlopen(uri, timeout=10) as response:
             self.identity = json.load(response)
         if self.identity.get("revision") != expected_revision or self.identity.get("protocol") != "semantic-v2":
@@ -95,14 +106,16 @@ class VLMPolicy:
             raise ValueError("Exact structured-planning schema service required")
 
     def _call(self, *args, **kwargs):
+        self.last_call = None
+        require_time(getattr(self,"deadline",None))
         if self.calls >= self.max_calls:
             raise RuntimeError("Episode model-call budget exhausted")
         self.calls += 1
         self.last_call = None
         try:
-            result, payload = call_service(self.uri, *args, **kwargs)
-        except TruncatedPolicyOutput as exc:
-            self.last_call = exc.call
+            result, payload = call_service(self.uri, *args, deadline=getattr(self,"deadline",None), **kwargs)
+        except (TruncatedPolicyOutput,WallTimeBudgetReached) as exc:
+            self.last_call = getattr(exc,"call",None)
             raise
         self.last_call = {"result": result, "request": payload}
         return result, payload
@@ -289,6 +302,10 @@ class GroundedPolicy(VLMPolicy):
         text=actor_context(harness,state,bundle,allowed)
         text+="\nChoose one feasible command below; indices bind the scores, output ONLY its JSON:\n"+"\n".join(f"{index}: {a.text()}" for index,a in enumerate(allowed))
         system=ACTION_SYSTEM+" Prefer measurable progress toward the grounded contact region; review predicted distance gains and failed paths. For navigation, follow the navigation receipt: face the visible destination before approaching it; hand-to-surface distance is NOT a navigation completion test. The 2mm option remains available near limits. Do not repeatedly HOLD with good depth and a safe improving action. Grasp orientation/contact quality still require the raw views; a surface point is not a full grasp pose."
+        if getattr(harness,"approach_reorientation",False):
+            system += " During unloaded APPROACH, a fixed wrist pose can block reaching. When coarse translations are blocked, reorientation_after predicts whether a currently feasible wrist rotation could unlock a subsequent coarse reach. Consider such a pose change instead of indefinitely inching toward a joint limit, even when the rotation itself has near-zero distance gain. These two-command previews assume a stationary observed surface and certify only robot kinematics/self-collision, NOT environment clearance, visibility, grasp orientation or success. Choose ONLY the currently offered rotation, never its predicted followup; the next observation and safety checks must decide the next command. Use raw images to reject an unsafe-looking rotation."
+        if getattr(harness,"approach_body_options",False):
+            system += " An unloaded far-target approach may also offer base turns and alternate translations. All have current depth and robot preflight checks, not full scene collision certification. If repeated arm advances approach a joint limit, consider a feasible body reposition using the raw images and measured outcomes; do not assume the straight-ahead option is the only route. Base fine/micro translations are 6/2cm, turns 3/1 degrees. Predicted contact-distance gain assumes a stationary visible surface and is not a grasp-pose score or success. Choose one action only and observe its actual effect before another."
         if getattr(harness,"contact_geometry",True):
             system += " For tool-frame TRANSLATIONS, forward/back are +/- local X, left/right +/- local Y, up/down +/- local Z (axis labels, not camera directions); use target_minus_center_tool_m to choose signs. Robot-only yellow contact strips and their polygon show the calibrated finger region at the current open aperture, not a target detection. An object close to the center but outside this region still needs alignment. If the region is visibly empty/below the target, align before CLOSE even when an exploratory close is offered; do not infer enclosure from the 4cm attempt bound. Choose a graspable narrow part, and change pose/approach if advancing only displaces the object."
         if harness.grasp_probe.get("eligible"):

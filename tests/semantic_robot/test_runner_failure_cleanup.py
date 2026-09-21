@@ -23,7 +23,7 @@ def fake_environment(*args, **kwargs):
 
 
 class RunnerFailureCleanupTests(unittest.TestCase):
-    def run_handler(self, fault=None, terminal=False, primary=True):
+    def run_handler(self, fault=None, terminal=False, primary=True, issued_grips=None):
         path = Path(__file__).resolve().parents[2]/"scripts/semantic_robot/run_v2.py"
         module = ast.parse(path.read_text())
         main = next(x for x in module.body if isinstance(x, ast.FunctionDef) and x.name == "main")
@@ -36,6 +36,7 @@ class RunnerFailureCleanupTests(unittest.TestCase):
                              body=[outer], decorator_list=[])
         errors = []; records = []; error = RuntimeError("PRIMARY")
         trace, video, servo = Mock(), Mock(), Mock()
+        servo.grips=[1.,1.]
         def writer(path, value):
             if fault in ("all_write", path.name): raise OSError("WRITE_SECONDARY")
             records.append((path.name, copy.deepcopy(value)))
@@ -50,6 +51,7 @@ class RunnerFailureCleanupTests(unittest.TestCase):
                   args=SimpleNamespace(gpu=3, odometry_substep_controls=6, max_controls=12),
                   controls=6, out=VirtualPath(), write=writer, policy=None, phase="CONTROL", reset_completed=True,
                   terminal=terminal, prefix_count=0, replay_count=0, decisions=[], digest="test", servo=servo,
+                  last_issued_grips=issued_grips,
                   step=step, state_now=state_now, trace=trace, video=video, json=json, sys=sys,
                   primary_error=error, secondary_error_report=errors.append)
         exec(compile(ast.fix_missing_locations(ast.Module(body=[inner, fn], type_ignores=[])), str(path), "exec"), ns)
@@ -76,6 +78,12 @@ class RunnerFailureCleanupTests(unittest.TestCase):
         ns, caught, primary, _ = self.run_handler(terminal=True)
         self.assertIs(caught, primary); ns["step"].assert_not_called()
         self.assertEqual(ns["controls"], 6)
+
+    def test_cancelled_new_open_or_close_is_not_applied_by_cleanup(self):
+        ns,caught,primary,_=self.run_handler(issued_grips=[-1.,1.])
+        self.assertIs(caught,primary)
+        self.assertEqual(ns["servo"].grips,[-1.,1.])
+        ns["step"].assert_called_once()
 
     def test_close_error_without_primary_is_not_silently_discarded(self):
         ns, caught, _, _ = self.run_handler(fault="trace_close", primary=False)

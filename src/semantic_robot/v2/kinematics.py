@@ -6,6 +6,7 @@ It is accepted only after prediction is tested at other poses against the robot.
 """
 import hashlib
 import json
+import math
 from collections import OrderedDict
 
 import numpy as np
@@ -58,6 +59,36 @@ def adjoint(T, screw):
     return np.r_[R @ screw[:3] + np.cross(p, w), w]
 
 
+def _compile_twist(screw):
+    """Constant terms of the same SE(3) exponential as se3_exp.
+
+    A robot calibration's screws do not change with q. Precompute their
+    normalization and products instead of rebuilding them for every IK
+    collision probe. Keep se3_exp/evaluate as the independent Jacobian path.
+    """
+    v, w = screw[:3], screw[3:]
+    norm = float(np.linalg.norm(w))
+    if norm < 1e-10:
+        return (norm, v.copy(), None, None, None, None)
+    wx = skew(w / norm)
+    square = wx @ wx
+    vn = v / norm
+    return (norm, vn, wx, square, wx @ vn, square @ vn)
+
+
+def _compiled_exp(terms, value):
+    norm, v, wx, square, wv, wwv = terms
+    result = np.eye(4)
+    if norm < 1e-10:
+        result[:3, 3] = v * value
+    else:
+        theta = norm * value
+        sine, one_minus_cosine = math.sin(theta), 1. - math.cos(theta)
+        result[:3, :3] += sine * wx + one_minus_cosine * square
+        result[:3, 3] = theta * v + one_minus_cosine * wv + (theta - sine) * wwv
+    return result
+
+
 class RobotModel:
     def __init__(self, calibration):
         self.spec = calibration
@@ -78,6 +109,7 @@ class RobotModel:
         # Preflight evaluates many candidate poses; collision FK does not need
         # Jacobians. A bounded, instance-local cache avoids recomputing them.
         self._fk_cache = OrderedDict()
+        self._compiled_links = {}
 
     @staticmethod
     def from_reference(q, lower, upper, poses, jacobians, metadata=None):
@@ -111,13 +143,27 @@ class RobotModel:
 
     def forward(self, q, name):
         q = finite(q, (18,))
+        home, screws = self.links[name]
+        # Links are normally immutable calibration. Detect explicit replacement
+        # AND in-place edits, so neither compiled constants nor pose-cache hits
+        # can silently keep stale geometry in tests or calibration tooling.
+        fingerprint = (home.tobytes(), screws.tobytes(), self.reference.tobytes())
+        cached = self._compiled_links.get(name)
+        if cached is None or cached[0] != fingerprint:
+            if cached is not None:
+                self._fk_cache.clear()
+            terms = tuple((i, _compile_twist(screws[:, i])) for i in range(18)
+                          if np.any(screws[:, i]))
+            self._compiled_links[name] = (fingerprint, terms)
+        else:
+            terms = cached[1]
         key = (q.astype(np.float64).tobytes(), name)
         if key not in self._fk_cache:
-            home, screws = self.links[name]
             T = np.eye(4)
-            for i, value in enumerate(q-self.reference):
-                if value and np.any(screws[:, i]):
-                    T = T @ se3_exp(screws[:, i], value)
+            delta = q - self.reference
+            for i, constant in terms:
+                if delta[i]:
+                    T = T @ _compiled_exp(constant, delta[i])
             self._fk_cache[key] = T @ home
             if len(self._fk_cache) > 512:
                 self._fk_cache.popitem(last=False)

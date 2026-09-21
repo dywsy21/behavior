@@ -8,9 +8,9 @@ import numpy as np
 
 from .grounding import LocalDepthGuard, localize_target, observed_cloud
 from .harness import TaskHarness
-from .protocol import Action, HOLD, TRANSLATIONS, VIEWS, strict_json
+from .protocol import Action, HOLD, TRANSLATIONS, ROTATIONS, VIEWS, strict_json
 from .search import CoverageSearch
-from .servo import SafeServo
+from .servo import SafeServo, execution_completed
 from .bimanual import localize_hand_contacts, all_claims
 from .navigation import navigation_workspace_check
 from .motion_feedback import observed_motion_feedback
@@ -32,7 +32,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False,multicamera_inspection=False):
+    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False,multicamera_inspection=False,approach_reorientation=False,approach_body_options=False):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -46,6 +46,8 @@ class GroundedHarness(TaskHarness):
         self.possible_contact_after_close={"left":False,"right":False}
         self.last_gripper=None
         self.contact_geometry=bool(contact_geometry)
+        self.approach_reorientation=bool(approach_reorientation)
+        self.approach_body_options=bool(approach_body_options)
         self.active_grasp_probe=bool(active_grasp_probe)
         self.grasp_probe_attempts={}
         self.grasp_probe={"eligible":False,"reason":"NOT_OBSERVED"}
@@ -139,18 +141,18 @@ class GroundedHarness(TaskHarness):
     def executed(self,action,feedback):
         probe=(self.grasp_probe.get("eligible") and self.stage=="ALIGN" and
                action==Action(self.goal.hand,"close"))
-        if probe and (feedback.get("control_ticks",0)>0 or feedback["status"]=="TARGET_REACHED"):
+        if probe and (feedback.get("control_ticks",0)>0 or execution_completed(action,feedback)):
             self.grasp_probe_attempts[self.index]=self.grasp_probe_attempts.get(self.index,0)+1
         widths=feedback.get("finger_mean_m")
         self.last_gripper=np.asarray(widths,dtype=float).copy() if widths is not None else None
         # Even an interrupted close may have made contact. Keep the latch until
         # an explicit OPEN completes or grasp evidence really verifies holding.
-        if action.move=="close" and (feedback.get("control_ticks",0)>0 or feedback["status"]=="TARGET_REACHED"):
+        if action.move=="close" and (feedback.get("control_ticks",0)>0 or execution_completed(action,feedback)):
             for arm in (("left","right") if action.part=="both" else (action.part,)):
                 if arm in self.possible_contact_after_close:self.possible_contact_after_close[arm]=True
                 if arm in self.pending_grasp and self.goal.kind=="pick":self.pending_grasp[arm]=True
         super().executed(action,feedback)
-        if feedback["status"]=="TARGET_REACHED" and action.move in ("close","open"):
+        if execution_completed(action,feedback) and action.move in ("close","open"):
             arms=("left","right") if action.part=="both" else (action.part,)
             for arm in arms:
                 if arm in self.pending_grasp:
@@ -158,7 +160,7 @@ class GroundedHarness(TaskHarness):
                     elif self.goal.kind=="pick":self.pending_grasp[arm]=True
                 if action.move=="open" and arm in feedback.get("gripper_open_at_calibrated_aperture",[]):
                     self.possible_contact_after_close[arm]=False
-        if probe and feedback["status"]=="TARGET_REACHED":
+        if probe and execution_completed(action,feedback):
             self.events.append({"event":"UNVERIFIED_GRASP_PROBE","goal":self.index,
                                 "attempt":self.grasp_probe_attempts[self.index],"success_claim":False})
             self.transition("VERIFY_GRASP")
@@ -178,6 +180,10 @@ class GroundedHarness(TaskHarness):
                 return inspection_palette(arm,self.carry,self.inspection_budget_aware) if self.hold_verified[arm] else (HOLD,)
             if self.search_reference=="unknown" and any(self.hold_verified.values()):return (HOLD,)
         palette=super().palette()
+        from .approach_reorientation import eligible
+        if eligible(self):
+            palette += tuple(Action(self.goal.hand, move, scale, "tool")
+                             for move in ROTATIONS for scale in ("coarse", "fine"))
         if (not self.stop_reason and self.stage=="ALIGN" and self.goal.kind=="pick"
                 and self.grasp_probe.get("eligible")):
             palette += (Action(self.goal.hand,"close"),)
@@ -231,6 +237,7 @@ class GroundedHarness(TaskHarness):
                        active_grasp_probe=self.grasp_probe.copy())
         if self.multicamera_inspection:context["possible_contact_after_any_close"]=self.possible_contact_after_close.copy()
         if hasattr(self,"approach_progress"):context["approach_progress"]=self.approach_progress
+        if hasattr(self,"search_reanchor"):context["search_reanchor"]=self.search_reanchor
         return context
 
 
@@ -264,8 +271,11 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False):
         self.model,self.servo,self.harness=model,servo,harness
+        if odometry_self_exclusion and not visual_odometry:
+            raise ValueError("Robot-self exclusion requires visual odometry")
+        self.odometry_self_exclusion=odometry_self_exclusion
         if approach_progress and not visual_odometry:raise ValueError("Approach progress requires measured visual motion")
         from .approach_progress import ApproachProgress
         self.approach_monitor=ApproachProgress() if approach_progress else None
@@ -283,6 +293,12 @@ class GroundedController:
         self.pending_motion=None
         self.pending_exploratory=True
         self.goal_changed=False
+        self.search_recovery=None
+        if search_motion_recovery:
+            if not visual_odometry or odometry_estimator!="rgbd_joint":
+                raise ValueError("Search reanchor requires unchanged joint RGB-D motion")
+            from .search_reanchor import SearchReanchor
+            self.search_recovery=SearchReanchor()
         from .held_inspection import HeldInspection
         self.inspector=HeldInspection(budget_aware=harness.inspection_budget_aware) if harness.held_inspection_enabled else None
         if harness.multicamera_inspection:
@@ -297,16 +313,19 @@ class GroundedController:
             self.grasp_verifier=GraspMotionVerifier(persistent_tracks=persistent_grasp_tracks,spatial_seed_features=spatial_grasp_features)
         if visual_odometry:
             from .odometry import RGBDMotion
-            self.motion=RGBDMotion(odometry_estimator)
+            self.motion=RGBDMotion(odometry_estimator,exclude_robot=odometry_self_exclusion)
 
     @property
     def can_replan_stop(self):
         return (self.harness.stop_reason == "RECOVERY_BUDGET_EXHAUSTED"
                 and self.harness.replans < self.max_replans)
 
-    def update_motion(self,images,depths,state):
+    def update_motion(self,images,depths,state, *, robot_frame=None, control=None):
         if self.motion is None:raise ValueError("Visual motion was not enabled")
-        receipt=self.motion.observe(images,depths,self.model,state.q)
+        kwargs=(dict(robot_frame=robot_frame,gripper=state.gripper,control=control) if self.odometry_self_exclusion else {})
+        if not self.odometry_self_exclusion and (robot_frame is not None or control is not None):
+            raise ValueError("Self frame supplied to disabled robot exclusion")
+        receipt=self.motion.observe(images,depths,self.model,state.q,**kwargs)
         self.harness.motion_receipt=receipt
         if not receipt["valid"]:
             # Never turn an unreliable velocity integral into new coverage.
@@ -567,14 +586,23 @@ class GroundedController:
         return {"range_m":float(np.linalg.norm(point[:2])),
                 "bearing_deg":math.degrees(math.atan2(point[1],point[0]))}
 
-    def candidates(self,state):
+    def candidates(self,state,deadline=None):
+        from .wall_budget import require_time
+        require_time(deadline)
         if self.goal_changed:return (HOLD,)
         palette=self.harness.palette()
+        from .approach_reorientation import eligible, preview, unladen_pick_approach
+        open_command=bool(np.all((self.servo.grips >= .999) & (self.servo.grips <= 1.)) and np.all(state.gripper >= .0495))
+        posture_mode=eligible(self.harness) and open_command
+        body_mode=self.harness.approach_body_options and unladen_pick_approach(self.harness) and open_command
+        if self.harness.approach_reorientation and self.harness.stage=="APPROACH" and not posture_mode:
+            # A measured open jaw cannot override a pending CLOSE command.
+            palette=tuple(a for a in palette if not (a.part in ("left","right","both") and a.move in ROTATIONS))
         bimanual=self.harness.goal.kind=="pick" and self.harness.goal.hand=="both"
-        limit=40 if bimanual else self.max_preflights
+        limit=40 if bimanual else 32 if posture_mode or body_mode else self.max_preflights
         if self.depth_guard is None:
             raise RuntimeError("Current RGB-D observation required before proposing motion")
-        rows=[]; proposed=[]
+        rows=[]; proposed=[]; ranked=[]; rotation_trials=[]
         if self.target.get("valid") and self.harness.stage not in ("GRASP","RELEASE","VERIFY_GRASP","VERIFY_PLACE","VERIFY_SUPPORT","VERIFY_EFFECT"):
             ranked=[]
             before=self.target.get("mean_contact_distance_m",self.target["distance_to_active_closing_center_m"])
@@ -611,7 +639,17 @@ class GroundedController:
                 if action.part=="base" and action.move in TRANSLATIONS and action.scale==("micro" if self.harness.stage=="ALIGN" else "fine"):
                     distance=self._expected_point(action,state)
                     if distance is not None: body.append((distance,action))
-            proposed.extend(a for _,a in sorted(body,key=lambda x:x[0])[:1])
+            if body_mode:
+                # Keep alternate directions, INCLUDING turns, until they have
+                # passed the current depth/servo checks. Pre-pruning to one
+                # predicted best translation hid every feasible alternative
+                # when that translation was blocked. Negative predicted gains
+                # are not filtered: a short reposition may be necessary.
+                body=[(self._expected_point(a,state),a) for a in palette
+                      if a.part=="base" and a.scale=="fine"]
+                proposed.extend(a for d,a in sorted(body,key=lambda x:float("inf") if x[0] is None else x[0]))
+            else:
+                proposed.extend(a for _,a in sorted(body,key=lambda x:x[0])[:1])
             if self.harness.stage=="RECOVER":
                 proposed=[a for a in palette if a.part in (*self.harness.arms,"both") and a.move in ("back","up")]+proposed
             open_action=Action(self.harness.goal.hand,"open")
@@ -623,6 +661,10 @@ class GroundedController:
             rotations=[action for action in palette if action.move in
                        ("roll_plus","roll_minus","pitch_plus","pitch_minus","yaw_plus","yaw_minus")
                        and action.part in (*self.harness.arms,"both")]
+            if posture_mode:
+                # One direction per slot. A rejected existing 8deg primitive
+                # gets its existing 3deg fallback below; no amplitude changes.
+                rotations=[action for action in rotations if action.scale=="coarse"]
             if bimanual:rotations.sort(key=lambda action:action.part=="both")
             for action in rotations:
                 if len(proposed)<limit: proposed.append(action)
@@ -645,6 +687,7 @@ class GroundedController:
         queue=[HOLD,*dict.fromkeys(proposed[:limit])]
         tested=set()
         while queue and len(tested-{HOLD})<limit:
+            require_time(deadline)
             action=queue.pop(0)
             if action in tested:continue
             tested.add(action)
@@ -658,9 +701,12 @@ class GroundedController:
                 trial=SafeServo(self.model,state,self.servo.grips.copy(),self.servo.limits)
                 ok=trial.begin(action,state,self.harness.carry)
                 reason="KINEMATIC_PATH_FEASIBLE" if ok else trial.status
+            require_time(deadline)
             row={"action":asdict(action),"accepted":bool(ok),"reason":reason}
             if ok:
                 allowed.append(action)
+                if posture_mode and action.part==self.harness.goal.hand and action.move in ROTATIONS:
+                    rotation_trials.append((action,trial))
                 row["planned_ticks"]=trial.total_ticks
                 if self.target.get("valid"):
                     distances=self._expected_distances(action,state,trial)
@@ -672,12 +718,34 @@ class GroundedController:
                         row["gain_objective"]="mean_active_contact_distance; stage gates use maximum"
             rows.append(row)
             if (not ok and action.part in (*self.harness.arms,"both")
-                    and action.move in TRANSLATIONS and action.scale=="coarse"):
+                    and (action.move in TRANSLATIONS or (posture_mode and action.move in ROTATIONS)) and action.scale=="coarse"):
                 # A rejected 3cm move does NOT imply that only 2mm is possible.
                 # Try the existing 1cm command before its micro sibling; every
                 # attempt still counts toward the unchanged preflight budget.
                 middle=Action(action.part,action.move,"fine",action.frame)
                 if middle in palette and middle not in tested:queue.insert(0,middle)
+            if not ok and body_mode and action.part=="base" and action.scale=="fine":
+                # A shorter *existing* pulse still requires its own full
+                # preflight. Append so every fine direction is checked first.
+                micro=Action("base",action.move,"micro")
+                if micro in palette and micro not in tested:queue.append(micro)
+        reorientation=None
+        if (posture_mode and rotation_trials and self.target.get("valid")
+                and not any(r["accepted"] and r["action"]["part"]==self.harness.goal.hand
+                            and r["action"]["move"] in TRANSLATIONS and r["action"]["scale"]=="coarse" for r in rows)):
+            future=[]; directions=[]
+            for gain,action in ranked:
+                if gain<=0 or action.scale!="coarse" or action.part!=self.harness.goal.hand:continue
+                direction=self._translation_direction(action,state)
+                if any(float(direction@old)>.995 for old in directions):continue
+                future.append(action);directions.append(direction)
+                if len(future)==3:break
+            if future:
+                reorientation=preview(self.model,state,self.servo.grips.copy(),self.servo.limits,
+                    self.harness.goal.hand,self.target["point_base_m"],rotation_trials,future,deadline=deadline)
+                for row in rows:
+                    match=next((r for r in reorientation["rows"] if r["rotation"]==row["action"]),None)
+                    if match is not None:row["reorientation_after"]=match["summary"]
         navigation=None
         if self.target.get("valid") and self.harness.goal.kind=="navigate" and self.harness.stage=="APPROACH":
             navigation={"current":self._navigation_geometry(),"rule":"face_visible_destination_before_approaching",
@@ -702,6 +770,13 @@ class GroundedController:
             "tested":rows,"preflight_s":time.perf_counter()-started,"max_nonhold_preflights":limit,
             "depth_guard":self.depth_guard.receipt(),"fresh_execution_recheck_required":True,
             "navigation":navigation}
+        if self.harness.approach_reorientation:
+            self.harness.candidate_receipt["approach_reorientation"]={"eligible":bool(posture_mode),"preview":reorientation}
+        if self.harness.approach_body_options:
+            self.harness.candidate_receipt["approach_body_options"]={"eligible":bool(body_mode),
+                "all_existing_fine_body_directions_before_rejected_micro_fallback":True,
+                "all_options_require_current_depth_servo_and_progress_checks":True,
+                "prediction_not_execution_or_complete_environment_safety":True}
         if not allowed:
             self.harness.stop_reason="NO_SAFE_ACTION_AT_CURRENT_STATE"
         return tuple(allowed)
@@ -775,6 +850,8 @@ class GroundedController:
                        "search":self.search.context(),"depth_guard":self.depth_guard.receipt()}
 
     def executed(self,action,feedback):
+        if self.search_recovery is not None and action.move=="close":
+            self.search_recovery.ever_closed=True
         if self.is_held_search:self.inspector.executed(self.harness)
         exploratory=self.harness.stage in ("SEARCH","RECOVER") and not self.goal_changed
         if self.motion is None:self.search.executed(feedback,exploratory=exploratory)

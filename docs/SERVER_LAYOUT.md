@@ -6,6 +6,101 @@
 
 ## 1. 总览
 
+**2026-09-21 13:33当前：** 2592963已退出，`native_t1_i192_p0392`失败包保留、正封存，GPU3释放待下一明确单次安排，不是已训模型。父2588439/2589106同d7仍原回合；本地新增`artifacts/agentic-vlm-goal-20260918/h22_window_diagnostic`仅保存三相机四对离线诊断（含原47MB机器人标定），不当完整run或新在线策略。
+
+**2026-09-21 13:20当前：** Astra新GPU3 2592963初始化，输出`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0392`及相邻log/launch，固定`git_worktrees/vlm_sft_h09y_b306684`（准确SHA b306684ff3a8cf7b3dfc2182b522d2094eef0a5c）；授权a634e83e…ef227/newteacher f5ac944a…5141/父review90044cf，旧inactive仍false。只新run runtime复用已审global/cache别名，0/1不触；父H22原进程继续，源码不得热改。
+
+**2026-09-21 13:14当前：** 父GPU2新27B2588439/8926已ready，原起点sim2589106初始化，均固定`git_worktrees/semantic_selfodom_d7c8028`；新输出`h22_self_odometry/server_h22`、`radio_h22_fullstart`与相邻log/`launch_server.json`、`launch_policy.json`，复用父自己NVMe runtime。Astra两v2 sidecar只在`h09y_grasp_only/precontact_seeds_v2/train{192,114}.json`，旧reference未改；固定新b306 CPU，GPU3尚无新physical或训练。
+
+**2026-09-21 13:12当前：** H22两gate2573658/2584009均已退出，全量约671MB本地`artifacts/agentic-vlm-goal-20260918/h22_gates_bundle`双端SHA/全链/视频/RAW审闭合；父d7不可变源保留，下一8926模型及原起点尚待实际启动。子2575671失败退出，350文件146,779,410B完整本地子worktree `artifacts/h09y-resume-20260921/native_complete/native_t1_i114_p0993`，0正BC；旧10e1与参考/失败全部保留，新b306仅CPU构造显式sidecar。GPU2/3实查空，0/1队友不动。
+
+**2026-09-21 12:48当前：** 父2573658已退出，`h22_self_odometry/gate_radio_h22`24动作417控制工程通过，完整本地`artifacts/agentic-vlm-goal-20260918/h22_gates_bundle/gate_radio_h22`及三主SHA/全链/视频/RAW审闭合；父runtime约7.75GB保留复用，第二门尚未开。子2575671/GPU3 `h09y_grasp_only/native_t1_i114_p0993`已完成993来源前缀，原生采集中，不是训练。父子共享的只是硬件；各自Kit目录独立。
+
+**2026-09-21 12:29当前：** 父H22 d7固定源首sim2573658/GPU2启动，新结果`/mnt/nvme_tmp/robodojo_agentic_20260921/h22_self_odometry`，runtime `/mnt/nvme_tmp/robodojo_harness_runtime_20260921/h22_self_odometry`（上限16GiB，顺序父sim复用，不共享子Kit）。Astra新固定`git_worktrees/vlm_sft_h09y_10e1e6c`负责原生/SFT，数据seed双亲审已过；其显式shared cache只指原TRAIN114已完成runtime的global/cache，其他run证据独立。GPU3约209MiB是父Kit辅助context，不是队友新训练，父已允许身份明确≤512MiB且余≥70GiB时子单次开sim。所有旧cache/证据保留。
+
+**2026-09-21 12:13当前：** reference_train114_v1/2564237已退出1199控制，result+QUARANTINED_pose_seed完整包正封存，GPU3空；本轮runtime约8.19GB保留，下一拟各独立run仅global/cache别名复用reference精确7.1GiB纹理cache，不移删，配置尚待独审。父新`git_worktrees/semantic_selfodom_d7c8028`准确d7/digest e7631fc5、392远端CPU通过，仅源码无父sim/model。H21本地全链/视频审已经完成，不再待审。
+
+**2026-09-21 11:57当前：** Astra唯一2564237/GPU3参考于11:55:20.952981 BJT初始化提交，source`git_worktrees/vlm_sft_h09y_66f6188`不可热改；run`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/reference_train114_v1`及相邻`.log/.launch.json`，runtime`/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/reference_train114_v1`。本轮runtime一个screenshots mode000正在独立核计，不能据partial du报全cache；未训练。父GPU2尚无新进程。
+
+**2026-09-21 11:51当前：** H21完整主包已在本地`artifacts/agentic-vlm-goal-20260918/h21_fullstart_bundle/`，result/steps/video三SHA全同远端，传输不再运行；全链审待。失败段诊断单独在`h21_failure_probe/`，仅CPU。66f6188存储父审通过，GPU3单参考条件交Astra，实际新source/进程/缓存创建待作者回执，不能按本条当已运行。父H22仅CPU，不占GPU2。
+
+**2026-09-21 11:42当前：** H21原354348已退出，`radio_h21_fullstart`保留1,126,807,369B、98决策/2118控制/164calls/official=false；完整本地`artifacts/agentic-vlm-goal-20260918/h21_fullstart_bundle`传输中。353691/8925自有模型的identity/calls已在`h21_server_complete_archive/server_h21`双端SHA验证后TERM并确认退出；GPU2/3空，GPU0/1队友保留。SDA只余44GiB，NVMe约2.7TiB，不删除任何文件。后继拟新增独立runtime缓存根到NVMe（16GiB上限），原H09Y6GiB结果根不变，配置尚待独审/实核；reference_train114_v1尚未启动，旧inactive不改。
+**2026-09-19 22:50当前：** H21原354348/353691仍占GPU3，策略1128控制后PICK APPROACH；两个工程门完整本地`artifacts/agentic-vlm-goal-20260918/h21_gates_bundle/`已双端SHA/全链复核。Astra新不可变`git_worktrees/vlm_sft_h09y_a6cde5d`仅CPU，真实准备`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/reference_prepare_train114_v1/task_1`，manifest61eebc47…62d3；同root `authorization_train114_inactive.json`仍false/52498d6c…c4d，物理`reference_train114_v1`尚不存在。不要将参考准备当训练数据或重复提交。原源/历史所有结果保留。
+
+**2026-09-19 22:17当前：** H21唯一原起点354348/GPU3于22:16:17 BJT启动初始化，NVMe根`h21_search_reanchor/radio_h21_fullstart`/相邻log/launch_policy.json；353691/8925同cc服务ready、起始0/431。两源相同固定`semantic_reanchor_cc249c9`不可热pull；两旧门退出、完整本地归档仍传输。Astra无新GPU任务。
+
+**2026-09-19 22:15当前：** H21原两门已完成全链/视频/首图审计；GPU3现在唯一新353691/8925模型加载，`h21_search_reanchor/server_h21`与相邻log/launch_server.json，源仍`semantic_reanchor_cc249c9`不可热改。策略尚未启，0新训练；本地h21_gates_bundle仍在完整传输。
+
+**2026-09-19 22:14当前：** H21两门328327/328328已退出，原NVMe根两个result通过（417/418控制），固定cc源保留；完整本地`artifacts/agentic-vlm-goal-20260918/h21_gates_bundle/`在传输/核验，未启动新服务或策略。GPU3待父下一个原登记完整回合，Astra仍仅CPU。
+
+**2026-09-19 21:56当前：** H09W317744已退出，`h09w_native_complete/native_task1_v1`保留107.34MB/724控制/局部GRASP成功但隔离，完整本地子`artifacts/h09w-native-task1-v1/complete/`正在全核。GPU3现在父唯一两H21门328327/328328，新`/mnt/nvme_tmp/robodojo_agentic_20260919/h21_search_reanchor`/两个相邻log/launch_gates.json，固定`semantic_reanchor_cc249c9`，不能热改。新VLM服务和完整策略尚未启，队友进程不触。
+
+**2026-09-19 21:52当前：** H21新不可变`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_reanchor_cc249c9`固定cc249c9/digest2445784a，仅381 CPU通过，无新物理/model。旧bd46同目录前缀的CPU副本保留。H09W仍原317744/GPU3/f991，初态完整本地子worktree`artifacts/h09w-native-task1-v1/initial/`，父3 RAW/7payload+3depth hash审过，后态待。
+
+**2026-09-19 21:38当前：** H09W唯一PID317744/GPU3于21:37:50 BJT启动初始化，新NVMe `robodojo_vlm_sft_20260919/h09w_native_complete/native_task1_v1`与相邻log/launch.json；active授权位于原SDA根`authorization_h09w_native_task1_v1.json`SHAea4c255c…4d57，固定f991/239源不可热改。当前无本轮VLM服务/训练，父H21仅CPU379通过待独立审。队友GPU0/1/2与313698副context不动。
+
+**2026-09-19 21:35当前：** 父旧模型209877已身份核验/21call与identity双端SHA归档后TERM并确认退出，本地`artifacts/agentic-vlm-goal-20260918/h19_server_complete_archive/server_h19_fullenv/`。GPU3余80,939MiB，队友313698副context不触；GPU1的247595/8790 `rl_radio_dense_20260919/code/model_service.py`与313698 `local_baseline.py --post-training`属于队友，禁止终止。新固定SFT源`git_worktrees/vlm_sft_h09w_f9916db`只CPU验收过；拟新NVMe `/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09w_native_complete/native_task1_v1`刚单次放行，真实PID待作者回执，不称运行/训练。父H21仅本地CPU，不热改原0d/f991。
+
+**2026-09-19 21:24当前：** 中断恢复后核209877/GPU3/8924仍旧固定0d服务，211843/213880均已退出。H19完整本地`artifacts/agentic-vlm-goal-20260918/h19_fullstart_bundle/`三主SHA/视频解码过；H09V完整包在子worktree`artifacts/h09v-native-task1-v1/complete/`且父完整账本审通过，非成功训练数据。Astra新f9916db仅容量CPU源码；拟NVMe `robodojo_vlm_sft_20260919/h09w_native_complete`尚未放新物理。GPU1现15,277MiB、GPU2 4,035MiB，须核现进程而非沿用旧空闲；不触队友，sdc余128.49GB/NVMe2.94TB。
+
+**2026-09-19 08:39当前：** H19原起点211843现已退出/官方false，原`radio_h19_fullstart`300,907,179B、469控制/21调用/617.439s保留，因462→468视觉运动段质量拒绝。GPU3仅209877/8924模型空闲21/431；不用旧192预算继续同run。父新只CPU诊断，完整H19本地包下载中。08:38“父仍运行”是较早轮询，已更正；H09V213880也已退出，Astra收尾完整证据/新容量设计。
+
+**2026-09-19 08:38当前：** H09V213880已退出，原`h09v_native_task1_v1`89,949,654B/失败、8macro、396+267控制及真实末hold保留，完整本地包下载中；不是已训checkpoint/完整GRASP成功。GPU1释放待后继另票，原100MiB run不重跑或修改，Astra先收尾体积/物理证据。父209877模型及211843/H19仍原源运行。
+
+**2026-09-19 08:28当前：** Astra GPU1唯一213880于08:27:09 BJT提交`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/h09v_native_task1_v1`、相邻log；active授权SHA08162a72…5430d1，固定`vlm_sft_h09v_123837d`不热改，尚无正BC/新训练。父GPU3模型209877和原起点211843都在运行；211843在GPU1有约209MiB副context但主sim仍GPU3，不以此停队友。两路预算互不挪用，原root所有失败保留。
+
+**2026-09-19 08:24当前：** H19实际服务209877/GPU3/8924、`server_h19_fullenv`已ready；唯一原起点211843于08:23:31 BJT提交`/mnt/nvme_tmp/robodojo_agentic_20260919/h19_combined_fullstart/radio_h19_fullstart`，同0d不可变源、零两类前缀，原192/6144/7200s。模型完整PYTHONPATH必须是`/mnt/sdc1/robodojo/behavior_dev/semantic_structured_20260919/deps_817f944:/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917/deps:<固定source>/src`：前者decoder817，后者HF5.7.0；共享HF4.57.1不识别qwen3_5。**模拟器不加载这两个overlay**。208180/208920均加载前失败/0calls/已退出，两个日志保留。Astra新不可变`git_worktrees/vlm_sft_h09v_123837d`仅CPU81＋331过、near396准备78,412B，GPU1仍空待父放行，不是已采集/训练。
+
+**2026-09-19 08:13当前：** H19首次208180因launcher遗漏decoder overlay在加载前退出/0调用，`server_h19.log`保留；新208920/GPU3/8924于08:12:35提交`server_h19_envfix`，源仍不可变0d。模型服务必须复用已固定`/mnt/sdc1/robodojo/behavior_dev/semantic_structured_20260919/deps_817f944`，以`PYTHONPATH=<该overlay>:<固定source>/src`加载；虚拟环境自身没有该依赖，不要重复安装/改共享环境。原起点agent未启动。
+
+**2026-09-19 08:09当前：** H19两门203694/203695通过/退出，完整链/主SHA/视频已父核，新GPU3服务208180于08:09:01 BJT提交，端口8924、`h19_combined_fullstart/server_h19`及log、固定`semantic_combined_0d34ec7`源；原起点agent未启。完整门副本正传本地h19_gates_bundle；原server_h15/156556结束，不再调用。Astra仍≤600s格点教师CPU，GPU1无新物理/训练。
+
+**2026-09-19 07:56当前：** H19新NVMe根已创建、`gate_radio_h19`203694与`gate_plates_h19`203695/GPU3于07:55:56 BJT提交，固定不可变`semantic_combined_0d34ec7`/621bd7c5，同名log与`launch_gates.json`，累计≤4GiB。两个门尚在初始化，不重启/热改。旧156556已确认退出；新8924模型和原起点策略均未启动。GPU1仍留Astra，不触GPU0队友。
+
+**2026-09-19 07:54当前：** 新Git不可变`git_worktrees/semantic_combined_0d34ec7`仅CPU368通过/digest621bd7c5…c916；H19物理根仍未启动。旧156556空闲190账本已完整本地`h15_server_complete_archive/server_h15`双端SHA核后仅发TERM，需核退出；原server_h15所有结果保留，不再新调用。AstraGPU1仅CPU准备，无新模拟器或训练。
+
+**2026-09-19 07:50当前：** H17 192585已退出，147,454,991B完整run在本地`artifacts/agentic-vlm-goal-20260918/h17_matched_bundle/radio_h17_matched_approach`；GPU3仅旧156556模型空闲190/215，GPU1当前空给Astra。P3完整70文件本地子worktree、双端SHA全过，父seed人工审通过但尚无native训练样本。H19新NVMe根`/mnt/nvme_tmp/robodojo_agentic_20260919/h19_combined_fullstart`仅预登记≤4GiB，尚未创建/运行，旧所有根及不可变源保留。
+
+**2026-09-19 07:36当前：** P3 196049/196046已退出，原`h09u_reference_task1_v3`20,782,245B/465控制/reference局部成功，seed仍隔离、完整本地下载核验中。`/mnt/nvme_tmp/robodojo_agentic_20260919/h18_cpu`仅31,428B旧/新保存态CPU结果，无新模型/仿真；不可变ada源CPU/独立审通过。H17旧341/192585原回合未在此记录为结束，勿重复启动。
+
+**2026-09-19 07:32当前：** GPU1新P3 `vlm_sft_native_teacher_20260919/h09u_reference_task1_v3`196049（壳196046），07:27:19 BJT提交，固定aff、授权00a798b1…594b4a1，原源/失败留存。GPU3 H17 192585已通过1392前缀并实际策略运行，仍同341；模型156556不变。新`git_worktrees/semantic_fastfk_ada39f7`只做CPU、不挂任何物理任务；H17双门完整本地`h17_gates_bundle`全SHA/运动链/视频通过。
+
+**2026-09-19 07:16当前：** H17两门186948/186949退出且完整链/视频通过；唯一`radio_h17_matched_approach`192585/GPU3于07:15:32 BJT初始化，新NVMe同根/相邻log，固定`semantic_body_3411489`；原156556模型8923保持170/215起。局部是1392保存策略前缀，不是零前缀成功率。GPU1无新采集，Astra只核上游时钟；所有旧失败留存。
+
+**2026-09-19 07:11当前：** H17 GPU3原186948/186949各已200控制、尚未门完成；NVMe输出原处，局部未启。GPU1 P2 185102已退出，原`h09u_reference_task1_v2`保留166控制/时序验证失败；完整本地作者`artifacts/h09u-reference-task1-v2/run`，双端全SHA审计进行中，非成功seed。模型156556保持旧源空闲。
+
+**2026-09-19 07:02当前：** 新目录已真实创建：`/mnt/nvme_tmp/robodojo_agentic_20260919/h17_body_options`，仅H17有限新输出，累计1GiB；GPU3门`gate_radio_h17`186948/`gate_plates_h17`186949＋同名log初始化，runtime `git_worktrees/semantic_body_3411489`/digest b2d14390…c78df，禁止热改。旧root7,406,026,563B/旧模型156556保留原盘，局部run未启。GPU1 P2 Python185102（壳185097），原root `h09u_reference_task1_v2`＋log、独立26e源/新授权60d420…7d5ea；旧P1失败保留；尚未训练。
+
+**2026-09-19 06:50当前：** H17新不可变`git_worktrees/semantic_body_4b56b03`354 CPU通过/digest a4ecacc0…2d499，无新物理/输出目录；GPU3旧156556/8923真实170/215，43剩余配额足。GPU1参考179879已退出，失败完整本地在子worktree `artifacts/h09u-reference-task1-v1/run`（17文件6,585,894B、全SHA过，165控制含hold）；原服务器目录/9b源保留不改。新NVMe拟输出仍未创建，余2.7TiB，原盘余约81GiB；旧父root7,406,026,563B，仍遵原7GiB，不把换盘抹成零历史。
+
+**2026-09-19 06:39当前：** Astra GPU1唯一参考回放179879（壳179878），固定`git_worktrees/vlm_sft_h09u_9b52faa`，`vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`及同级log；只TRAIN192、164原prefix＋288完整技能段＋13收尾，不是新VLM训练。授权同root `authorization_h09u_reference_task1_v1.json`/SHA44e2c2cd…8454f1。保持旧目录/源不热改，未启动task0。H16本地`h16_matched_bundle`已完整传完、三主SHA过。
+
+**2026-09-19 06:36当前：** H16唯一175529已退出、218新控制/22调用/官方false；完整新结果171,088,570B正在本地`h16_matched_bundle`归档。GPU3仅原156556模型保留，累计170/215调用（待账本再核），不热改。H09U运行源`git_worktrees/vlm_sft_h09u_9b52faa`已CPU/父审，下一只task1参考回放GPU1，拟`vlm_sft_native_teacher_20260919/h09u_reference_task1_v1`，尚未PID；prepared仍原`h09u_reference_prepare_v2`，旧失败累计不抹除。双H16门本地`h16_gates_bundle`已完整SHA/288主hash/视频解码通过。
+
+**2026-09-19 06:24盘核验：** `/mnt/nvme_tmp`实际挂载`/dev/mapper/vg_nvme-lv_nvme_tmp`、XFS/rw、3.5TiB总/约2.7TiB可用，目录1777，robodojo用户可写；**不是已消失的/mnt/tmp1**。拟新独立输出父目录`/mnt/nvme_tmp/robodojo_agentic_20260919`尚未创建/未迁移文件，后继实验需记录有限预算/真实路径；不把tmp名字当可删除依据、不改队友现有内容。原SDA盘仍保余80GiB，H16不换盘热改。
+
+**2026-09-19 06:15当前：** GPU3唯一新局部策略`agentic_vlm_goal_20260918/radio_h16_matched_approach`175529（同名log）初始化，source仍`semantic_reorientation_2c546d2`；模型156556/8923旧5cf/148起。双H16门完整288主hash/304段签名-FK/8BASE通过，完整本地包仍下载；不要重启门或热改2c。H09U只有CPU准备新不可变7b源/本地草稿，无新采集或训练。
+
+**2026-09-19 06:12当前：** `gate_radio_h16`172069与`gate_plates_h16`172070已退出、result两门通过（417/418控制），2c源不可变保留。完整副本传向本地`artifacts/agentic-vlm-goal-20260918/h16_gates_bundle`，链审计待；`radio_h16_matched_approach`尚未启动。GPU3仍仅旧模型156556/148calls，GPU1留给Astra。
+
+**2026-09-19 06:06当前：** 新不可变`git_worktrees/semantic_reorientation_2c546d2`341远端CPU/真实source绑定通过，独立复审通过。父root下`gate_radio_h16`172069、`gate_plates_h16`172070/GPU3初始化中，日志同名`.log`，不得热改该源；模型156556/8923仍5cf/148calls空闲。H16局部保存前缀回合未启。Astra H09U只CPU修种子/因果与回放入口，GPU1空，无新SFT采集或训练。
+
+**2026-09-19 05:53当前：** `git_worktrees/semantic_reorientation_1c7ddee`干净不可变、339 CPU与H15原1392前缀SHA/新SEARCH校验通过（digest c654f420…dedd229），仅待独立审，无H16模拟器进程。旧0e源码保留，其来源校验拒绝发生在reset前。GPU3模型156556/8923仍旧5cf源/148calls空闲，GPU1仍空给Astra H09T；新物理尚未放行。H15完整本地`h15_fullstart_bundle/radio_h15_fullstart`540主RGB-D hash/全视频/主SHA通过，旁边partial_scp是中断复制保留的部分副本，不是唯一结果。
+
+**2026-09-19 05:23当前：** H15策略158357与task1采集163349均已退出；GPU1空闲，GPU3仅模型156556/8923空闲148调用。`radio_h15_fullstart`官方false/90决策/1914控制、完整1,073,873,438B正传本地`artifacts/agentic-vlm-goal-20260918/h15_fullstart_bundle`；服务器父root6,570,536,733B、磁盘余87,953,440,768B，仍须守7GiB/余80GiB。task1 `pilot_v2/task_1`最终164prefix/91native含finally hold，两完整接近标签，第三后验写前超量失败；全SFT root85,022,736B，task3未启动。源码/失败不删不热改。
+
+**2026-09-19 05:01当前：** GPU1唯一新collector163349，04:59:09.866提交`vlm_sft_native_teacher_20260919/pilot_v2/task_1`/同级log，固定`git_worktrees/vlm_sft_native_68dacca`，只TRAIN192/164前缀。还未有教师样本/训练，task3未放行。GPU3同H15模型156556/策略158357仍运行，不热改任何活跃源。
+
+**2026-09-19 04:58当前：** 父H15 GPU3模型156556/8923＋策略158357仍同源运行；局部d51/52拒底盘前进，未有最终成功。新采集不可变源`git_worktrees/vlm_sft_native_68dacca`已36测试/真实来源核验通过；`vlm_sft_native_teacher_20260919/authorization_remaining_two_68dacca.json`已激活SHA599298a3…78795，仅准原剩余`pilot_v2/task_1`/GPU1启动（待PID），task3未放行。旧失败`pilot_v1/task_0`304prefix/0native不删，完整压缩故障包在`artifact_budget_fix_68dacca/task0_failure_full.tar.gz`，本地作者artifacts同名包已SHA核验；累计root约54.62MB包含原47MB失败，100MiB不扩大。
+
+**2026-09-19 04:43当前：** H15 GPU3模型156556/8923＋唯一策略158357正在原起点搜索，不热改5cfbb89；两r1完整本地`h15_gates_bundle`已288主RGB-D hash/两全视频解码、夹爪开闭人工面板通过。GPU1采集156956已体积故障中断退出，`vlm_sft_native_teacher_20260919/pilot_v1/task_0`保留大标定与`budget_operator_stop.json`，无final_hold/候选/训练，task1/3未启。下一只CPU修collector，旧1509源不改；父根5702020154B、盘余88910872576B，仍在7GiB/80GiB边界内。
+
+**2026-09-19 04:36当前：** GPU3 `agentic_vlm_goal_20260918/server_h15`156556/8923同5cfbb89 ready0/215，唯一`radio_h15_fullstart`158357零前缀初始化；两r1门已过并退出，完整本地`h15_gates_bundle`传完。GPU1交给Astra：`vlm_sft_native_teacher_20260919/pilot_v1/task_0`156956及相邻log，源码`git_worktrees/vlm_sft_native_1509b7a`，授权`authorization_first_three.json`，只启动第一个TRAIN70，未训练。parent source`semantic_geometry_5cfbb89`与collector source均不可热改。旧132309已退出，104调用本地归档保留。
+
+**2026-09-19 04:23当前：** 新`gate_radio_h15_r1`152337与`gate_plates_h15_r1`152335/GPU3已初始化提交，源`git_worktrees/semantic_geometry_5cfbb89`/digest239cb591，独立API复审通过；原H15失败目录保留。新model/fullstart/collector未启动，GPU1旧132309仍104空闲。下方“未启动”按时间保留为历史。
+
+**2026-09-19 04:22当前：** H15两门149129/149131已reset后标定失败并退出，0控制；完整本地`h15_failed_gate_bundle`两failure SHA一致。API修正新源`git_worktrees/semantic_geometry_5cfbb89`仅331 CPU通过，独立审查待，`gate_radio_h15_r1`/`gate_plates_h15_r1`未启动。`h13_server_archive/server_h13`104调用及身份已完整下载/SHA核验；132309/GPU1/8922尚未停止，GPU3空。下方“初始化中”仅历史，禁止按旧PID复跑。
+
 **2026-09-19 04:15当前：** GPU3新`agentic_vlm_goal_20260918/gate_radio_h15`149129/`gate_plates_h15`149131及同名日志已提交初始化，源`git_worktrees/semantic_geometry_b6f0845`不可变/digestb71737e4。尚无H15模型或原起点策略；旧132309/GPU1/8922仍104空闲。根4831846809B/余83.70GiB为启动前检查；不要复用下方旧工程门/旧运行状态。
 
 **2026-09-19 04:07当前：** 新CPU-only不可变源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_geometry_e9abf39`，329测试通过，未新物理。H14完整本地包已三SHA/视频解码完成，下条“下载中”是历史。Astra独立`/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919/prepare_v1`为三个TRAIN参考前缀/9视频（799441B），不是正标签；本地完整小包在`/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09s-prepare-v1`。旧132309/GPU1仍104空闲，GPU3空，盘余约83.72GiB，未启动新训练。
@@ -136,7 +231,7 @@
 
 **2026-09-18 12:06 H-07真实状态：** `radio_27b_v1`与`plates_27b_v1`因首轮/次轮观察字段契约失败退出，分别18 HOLD新控制/0控制；以各`failure.json`为终态，没有`result.json`，不是仍在运行/有效SR。`server_27b_v2`6次生成已停（4104006退出，两模拟器4104443/4104495也退出），没有新模型权重。`pilots_v1.tar`与本地SHA8817a4c2…一致，含两run/日志/服务逐调用；`plates_pilot_v1.tar`为此前单独保存的同次task3失败证据。新字段兼容修复只在Git本地进行，尚无新物理run；下方启动记录为历史。
 
-**2026-09-18 11:54覆盖下方H-07运行状态：** 9993fab最新两门已完成（共同digest88a8c268…），首帧人工核验通过。新`server_27b_v2`（4104006/GPU3/8907、最多218调用）正在服务；H-07根`radio_27b_v1`/`plates_27b_v1`及同级`.log`为本轮新两策略短测，已提交、结果待验，勿与H-06同名run混淆。`semantic_grounded_9993fab`正在使用，禁止热pull/修改。`gates_v3.tar`新两门证据已与本地SHA一致，旧gates/static不覆盖。[实时计划](plan.md)
+**2026-09-18 11:51覆盖下方H-07运行状态：** 9993fab最新两门已完成（共同digest88a8c268…），首帧人工核验通过。新`server_27b_v2`（4104006/GPU3/8907、最多218调用）正在服务；H-07根`radio_27b_v1`/`plates_27b_v1`及同级`.log`为本轮新两策略短测，已提交、结果待验，勿与H-06同名run混淆。`semantic_grounded_9993fab`正在使用，禁止热pull/修改。`gates_v3.tar`新两门证据已与本地SHA一致，旧gates/static不覆盖。[实时计划](plan.md)
 
 **2026-09-18 11:48 H-07（Codex，首帧修复复验运行中）：** 根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_grounded_20260918`，最新独立源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grounded_9993fab`，分支`feat/semantic-agent-grounded-20260918`。`gate_radio_v1`/`gate_plates_v1`初始化失败、0控制；d2da0ac的`gate_radio_v2`/`gate_plates_v2`控制完成，但task3初图陈旧，不能放行新源。新增`gate_radio_v3`/`gate_plates_v3`及同级`.log`正在重新验证RGB-D同步。`static_27b_v1`已6次静态调用/0执行，task3陈旧帧只算schema检查；`server_27b_v1`已停止。`gates_and_static_v2.tar`为233MiB证据归档，本地传输目标`/home/wsy/behavior/artifacts/semantic-agent-grounded-20260918/`，产物均不入Git。权重只读复用下方H-06的27B，未复制/下载；新策略尚未启动。[设计](SEMANTIC_AGENT_GROUNDED.md)
 

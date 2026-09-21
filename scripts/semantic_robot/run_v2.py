@@ -33,7 +33,7 @@ from semantic_robot.v2.kinematics import RobotModel
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.policy import VLMPolicy
 from semantic_robot.v2.protocol import Action, HOLD, TRANSLATIONS, ROTATIONS
-from semantic_robot.v2.servo import SafeServo, ServoLimits
+from semantic_robot.v2.servo import SafeServo, ServoLimits, execution_completed
 from semantic_robot.v2.vision import prepare_views
 from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.grounding import observed_cloud, LocalDepthGuard
@@ -44,6 +44,8 @@ from semantic_robot.v2.multicamera_inspection import inspection_carry, free_obse
 from semantic_robot.v2.arm_observation_guard import ObservingArmGuard
 from semantic_robot.v2.observer_gate import choose_gate_pair
 from semantic_robot.v2.motion_feedback import observed_motion_feedback
+from semantic_robot.v2.wall_budget import expired, stop_before_motion
+from semantic_robot.v2.run_budget import validate_run_budget
 
 
 def implementation_digest():
@@ -89,9 +91,17 @@ def main():
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
     p.add_argument("--robot-geometry-guards", action="store_true",
                    help="Opt-in actual robot depth self-exclusion and fully-open hand/body collision envelopes")
+    p.add_argument("--gripper-completion-v1", action="store_true",
+                   help="Separate bounded OPEN/CLOSE command completion from pose precision and grasp success")
+    p.add_argument("--approach-reorientation",action="store_true",help="Opt-in unladen wrist candidates and bounded robot-only two-command reach preview")
+    p.add_argument("--approach-body-options",action="store_true",help="Opt-in all existing unladen far-pick body directions before individual safety preflight")
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid","rgbd_joint"),default="pnp")
     p.add_argument("--odometry-substep-controls",type=int,choices=(0,6),default=0,
                    help="Opt-in fixed action-internal RGB-D sampling; zero preserves legacy behavior")
+    p.add_argument("--odometry-self-exclusion",action="store_true",
+                   help="Exclude current robot-only visual geometry at both RGB-D correspondence endpoints")
+    p.add_argument("--search-motion-recovery",action="store_true",
+                   help="Opt-in at most two open-hand search reference resets after measured HOLD; never old-pose recovery")
     p.add_argument("--approach-progress",action="store_true",help="Veto repeated near-field base advances without observed contact progress")
     p.add_argument("--held-object-inspection",action="store_true",help="Explicit semantic reference and bounded held-object relative inspection")
     p.add_argument("--persistent-grasp-tracks",action="store_true",help="Identity-bound persistent features and stable-depth corner selection; original grasp evidence thresholds")
@@ -109,11 +119,10 @@ def main():
     p.add_argument("--max-decisions", type=int, default=48)
     p.add_argument("--max-controls", type=int, default=1536)
     p.add_argument("--max-seconds", type=int, default=1200)
+    p.add_argument("--budget-profile", choices=("pilot","fullstart192"), default="pilot",
+                   help="Explicitly registered original-start extension; gates and prefixes keep pilot limits")
     args = p.parse_args()
-    # H-08's user-authorized iterative block permits a full *measured* sweep
-    # plus local manipulation. Per-run smaller declared limits remain binding.
-    if not (0 <= args.prefix <= 448 and args.max_decisions in range(1,97) and 1 <= args.max_controls <= 3072 and 1 <= args.max_seconds <= 2400):
-        raise ValueError("Registered pilot budget exceeded")
+    validate_run_budget(args)
     if args.task == 3 and args.prefix:
         raise ValueError("Task3 has no registered expert prefix")
     if subprocess.check_output(["git","-C",str(REPO),"status","--porcelain"],text=True).strip():
@@ -125,6 +134,10 @@ def main():
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
     if args.robot_geometry_guards and not args.grasp_motion:
         raise ValueError("Robot geometry guards require fresh grounded robot geometry")
+    if args.approach_reorientation and not args.robot_geometry_guards:
+        raise ValueError("Approach reorientation requires the reviewed robot geometry guards")
+    if args.approach_body_options and not args.robot_geometry_guards:
+        raise ValueError("Approach body options require the reviewed robot geometry guards")
     if args.held_object_inspection and not args.grasp_motion:raise ValueError("Held inspection requires registered verified anchors")
     if args.persistent_grasp_tracks and not args.grasp_motion:raise ValueError("Persistent tracks require registered verification")
     if args.spatial_grasp_features and not args.persistent_grasp_tracks:raise ValueError("Spatial features require persistent tracks")
@@ -134,6 +147,13 @@ def main():
         raise ValueError("Measured approach progress and explicit estimator require visual odometry")
     if args.odometry_substep_controls and not args.visual_odometry:
         raise ValueError("Action-internal sampling requires visual odometry")
+    if args.odometry_self_exclusion and not (grounded and args.grasp_motion and args.visual_odometry and
+            args.odometry_estimator=="rgbd_joint" and args.odometry_substep_controls==6):
+        raise ValueError("Robot self exclusion requires fresh robot geometry and six-control joint RGB-D")
+    if args.search_motion_recovery and not (grounded and args.robot_geometry_guards and
+            args.held_object_inspection and args.odometry_estimator=="rgbd_joint" and
+            args.odometry_substep_controls==6 and args.prefix==0 and not args.replay_prefix_spec):
+        raise ValueError("Search reanchor requires original-start guarded joint RGB-D and semantic reference")
     action_control_limit=args.max_controls-(1 if args.odometry_substep_controls else 0)
     if args.mode == "agent":
         if not args.expected_revision or len(args.gate_result) != 2:
@@ -146,8 +166,12 @@ def main():
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("robot_geometry_guards",False)==args.robot_geometry_guards and
+                g.get("approach_reorientation",False)==args.approach_reorientation and
+                g.get("approach_body_options",False)==args.approach_body_options and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
                 g.get("odometry_substep_controls",0)==args.odometry_substep_controls and
+                g.get("odometry_self_exclusion",False)==args.odometry_self_exclusion and
+                g.get("search_motion_recovery",False)==args.search_motion_recovery and
                 g.get("approach_progress",False)==args.approach_progress and
                 g.get("persistent_grasp_tracks",False)==args.persistent_grasp_tracks and
                 g.get("spatial_grasp_features",False)==args.spatial_grasp_features and
@@ -187,13 +211,18 @@ def main():
                 "window_sha":sha(path),"robot_sha":ROBOT_SHA,"model_identity":policy.identity if policy else None,
                 "training_updates":0,"evaluator":"v3.9.1-development-not-official-v3.9.2",
                 "actor_scene_truth":False,"prefix_is_expert_not_agent":bool(args.prefix),
-                "matched_grasp_feedback_diagnostic":bool(args.replay_prefix_spec),
+                "matched_grasp_feedback_diagnostic":False,
+                "diagnostic_replay_requested":bool(args.replay_prefix_spec),
                 "actor_modalities":["rgb","depth_linear","proprio"] if grounded else ["rgb","proprio"],
                 "harness":args.harness,"max_strategy_replans":2 if grounded else 0,
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
                 "visual_odometry":args.visual_odometry,
                 "odometry_substep_controls":args.odometry_substep_controls,
+                "odometry_self_exclusion":args.odometry_self_exclusion,
+                "search_motion_recovery":args.search_motion_recovery,
                 "robot_geometry_guards":args.robot_geometry_guards,
+                "approach_reorientation":args.approach_reorientation,
+                "approach_body_options":args.approach_body_options,
                 "active_grasp_probe":args.active_grasp_probe,"privileged_audit_is_actor_input":False,
                 "native_library_path":os.environ.get("LD_LIBRARY_PATH", "")}
     write(out/"manifest.json",manifest)
@@ -203,7 +232,11 @@ def main():
         from semantic_robot.v2.saved_prefix import load_saved_prefix
         replay=load_saved_prefix(args.replay_prefix_spec,task=args.task,prefix=args.prefix,window_sha=sha(path),robot_sha=ROBOT_SHA)
         write(out/"replay_prefix_source.json",replay["receipt"])
+        manifest["diagnostic_replay_purpose"]=replay["receipt"]["purpose"]
+        manifest["matched_grasp_feedback_diagnostic"]=replay["receipt"]["purpose"]=="matched_grasp_feedback_diagnostic"
+        write(out/"manifest.json",manifest)
     controls, prefix_count, replay_count, terminal = 0,0,0,False
+    last_issued_grips=None
     info, decisions, checks, failures = {},[],[],[]
     sensor_checks=[]
     controller=None
@@ -239,6 +272,7 @@ def main():
                         if controls>=args.max_controls:
                             raise RuntimeError("Reserved safe-hold slot is unavailable")
                         stop_record["attempted"]=True
+                        if last_issued_grips is not None:servo.grips[:]=last_issued_grips
                         step(servo.safe_hold(state_now())); controls+=1
                         stop_record.update(completed=True,control_after=controls)
                         trace.write(json.dumps({"control":controls,"safety_stop":True,"after_exception":True})+"\n")
@@ -275,17 +309,31 @@ def main():
             def observation_now(label):
                 if onboard is None:
                     return environment.observation()["images"],{},{}
-                q_before=kin.state().q.copy()
+                native_before=kin.state()
+                q_before=native_before.q.copy()
                 images,depths,receipt=onboard.read(model,render=og.sim.render)
-                q_after=kin.state().q
+                native_after=kin.state()
+                q_after=native_after.q
                 if np.max(np.abs(q_before-q_after))>1e-5:
                     raise RuntimeError("Robot moved during render-only observation barrier")
+                if args.odometry_self_exclusion and not np.array_equal(native_before.gripper,native_after.gripper):
+                    raise RuntimeError("Fingers moved during robot-self RGB-D observation barrier")
                 check={"label":label,"cameras":receipt}
                 sensor_checks.append(check)
                 write(out/"sensor_checks.json",sensor_checks)
                 if receipt["head"]["valid_fraction"]<.1:
                     raise RuntimeError("Head depth not initialized/usable; refusing blind grounded run")
                 return images,depths,receipt
+
+            def capture_self_frame(control,images,depths,current_state):
+                from semantic_robot.v2.self_odometry import make_frame
+                before=state_now()
+                geometry=kin.native_self_boxes()  # Actual fingers, not transported open-pose boxes.
+                after=state_now()
+                if any(not np.array_equal(getattr(current_state,key),getattr(s,key))
+                       for key in ("q","gripper") for s in (before,after)):
+                    raise RuntimeError("Robot changed while binding current self geometry")
+                return make_frame(images,depths,model,current_state,control,geometry)
 
             def check_fk(label):
                 check = {"label":label,"errors":kin.compare(model)}
@@ -299,7 +347,11 @@ def main():
                         raise RuntimeError(f"Portable robot/camera FK mismatch {label}/{name}: {errors}")
 
             def step(action, render=True):
-                nonlocal info,terminal
+                nonlocal info,terminal,last_issued_grips
+                # begin() can change the desired grip before any real control.
+                # Cleanup must preserve the last ISSUED command, not a newly
+                # selected close/open that was cancelled by a deadline.
+                last_issued_grips=np.asarray(action)[[14,22]].copy()
                 with og.sim.render_on_step(render):
                     obs, _, terminated, truncated, info = env.step(action,n_render_iterations=1)
                 evaluator = environment.evaluator
@@ -319,7 +371,10 @@ def main():
             check_fk("after_prefix")
             if replay is not None:
                 phase="MATCHED_DIAGNOSTIC_SAVED_ACTION_REPLAY"
+                replay_started=time.perf_counter()
                 for i,action in enumerate(replay["actions"]):
+                    if time.perf_counter()-replay_started>=600:
+                        raise TimeoutError("Registered saved-prefix replay 600s budget")
                     if step(action,render=True):raise RuntimeError("Terminated during diagnostic action replay")
                     replay_count+=1
                     if i%64==63:check_fk(f"replay_{i+1}")
@@ -332,10 +387,14 @@ def main():
             previous_grips = (replay["actions"][-1,[14,22]] if replay is not None else
                               None if not prefix_count else np.asarray(prefix[-1])[[14,22]])
             servo = SafeServo(model,state,gripper_command=previous_grips,
-                              limits=ServoLimits(robot_geometry_guards=args.robot_geometry_guards))
+                              limits=ServoLimits(robot_geometry_guards=args.robot_geometry_guards,
+                                                 gripper_completion_v1=args.gripper_completion_v1))
+            if last_issued_grips is None:last_issued_grips=servo.grips.copy()
             video = imageio.get_writer(str(out/"rollout.mp4"),fps=15,codec="libx264",quality=7,macro_block_size=2)
             previous = None
             started = time.perf_counter()
+            deadline = started + args.max_seconds
+            if policy:policy.deadline=deadline
             phase="INITIAL_OBSERVATION"
             first_images,first_depth,first_receipt=observation_now("after_prefix")
             first = prepare_views(first_images,model,state.q,grounded=grounded,gripper=state.gripper,show_finger_regions=args.contact_geometry)
@@ -357,13 +416,14 @@ def main():
                 else:
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection) if grounded else TaskHarness(goals)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection,approach_reorientation=args.approach_reorientation,approach_body_options=args.approach_body_options) if grounded else TaskHarness(goals)
                 if replay is not None:
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
                 if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion,
                     odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress,persistent_grasp_tracks=args.persistent_grasp_tracks,
-                    spatial_grasp_features=args.spatial_grasp_features)
+                    spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery,
+                    odometry_self_exclusion=args.odometry_self_exclusion)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -384,7 +444,7 @@ def main():
             gate_motion=None
             if args.visual_odometry and not policy:
                 from semantic_robot.v2.odometry import RGBDMotion
-                gate_motion=RGBDMotion(args.odometry_estimator)
+                gate_motion=RGBDMotion(args.odometry_estimator,exclude_robot=args.odometry_self_exclusion)
             substep_motion=None
             if args.odometry_substep_controls:
                 from semantic_robot.v2.substep_odometry import SubstepMotion
@@ -402,8 +462,10 @@ def main():
                     if manager: manager.stop_reason="DISK_RESERVE_REACHED"
                     break
                 state = state_now()
+                motion_frame=None
                 if saved_end_snapshot is not None:
-                    previous_control,end_q,end_gripper,images,depths,depth_receipt=saved_end_snapshot
+                    previous_control,end_q,end_gripper,images,depths,depth_receipt=saved_end_snapshot[:6]
+                    if args.odometry_self_exclusion:motion_frame=saved_end_snapshot[6]
                     if (previous_control!=controls or not np.array_equal(end_q,state.q)
                             or not np.array_equal(end_gripper,state.gripper)):
                         raise RuntimeError("Control/state changed before end-frame reuse")
@@ -412,7 +474,11 @@ def main():
                     images,depths,depth_receipt=observation_now(f"decision_{decision}")
                 bundle = prepare_views(images,model,state.q,previous,grounded=grounded,gripper=state.gripper,show_finger_regions=args.contact_geometry)
                 directory = out/f"decision_{decision:03d}"; directory.mkdir()
-                self_geometry=kin.native_self_boxes() if args.grasp_motion else None
+                if args.odometry_self_exclusion and motion_frame is None:
+                    motion_frame=capture_self_frame(controls,images,depths,state)
+                self_geometry=(motion_frame["geometry"] if args.odometry_self_exclusion else
+                               kin.native_self_boxes() if args.grasp_motion else None)
+                if motion_frame is not None:write(directory/"robot_motion_frame.json",motion_frame)
                 if self_geometry is not None:write(directory/"robot_self_geometry.json",self_geometry)
                 for label,img in zip(bundle.labels,bundle.images): img.save(directory/(label+".png"))
                 write(directory/"proprio.json",{"q":state.q.tolist(),"gripper":state.gripper.tolist(),"geometry":bundle.geometry})
@@ -430,13 +496,16 @@ def main():
                     if not audit["chassis_self_depth"]["available"]:
                         row["error"]="MISSING_ROBOT_SELF_GEOMETRY";failures.append(row);decisions.append(row);break
                 if gate_motion is not None:
-                    receipt=gate_motion.observe(images,depths,model,state.q)
+                    motion_kwargs=(dict(robot_frame=motion_frame,gripper=state.gripper,control=controls)
+                                   if args.odometry_self_exclusion else {})
+                    receipt=gate_motion.observe(images,depths,model,state.q,**motion_kwargs)
                     write(directory/"visual_odometry.json",receipt)
                     if not receipt["valid"]:
                         row["error"]="VISUAL_ODOMETRY_GATE_FAILED";failures.append(row);decisions.append(row);break
                 if policy:
                     if args.visual_odometry:
-                        receipt=controller.update_motion(images,depths,state)
+                        motion_kwargs=(dict(robot_frame=motion_frame,control=controls) if args.odometry_self_exclusion else {})
+                        receipt=controller.update_motion(images,depths,state,**motion_kwargs)
                         write(directory/"visual_odometry.json",receipt)
                         # A prior exhausted local-recovery window may enter a
                         # bounded strategy replan. Valid odometry must not turn
@@ -488,7 +557,7 @@ def main():
                             write(directory/"action_selection.json",selection)
                             row["selection_source"]=selection["source"]
                     elif controller:
-                        allowed=controller.candidates(state)
+                        allowed=controller.candidates(state,deadline=deadline)
                         write(directory/"candidates.json",manager.candidate_receipt)
                         if manager.stop_reason:
                             row["stop_reason"]=manager.stop_reason; decisions.append(row); break
@@ -514,6 +583,7 @@ def main():
                         gate[7],gate[8]=forward,back
                     action = gate[decision]
                 row["action"] = asdict(action)
+                if stop_before_motion(deadline,controls,row,decisions,manager):break
                 wall = time.perf_counter()
                 state = state_now()  # recheck actual joints after model latency
                 carry=(inspection_carry(manager,action) if args.multicamera_inspection and manager else bool(manager and manager.carry))
@@ -541,8 +611,12 @@ def main():
                         decisions.append(row)
                         break
                 row["accepted_before_motion"] = accepted
+                # IK and fresh sensor preflight also take time. No ordinary
+                # control is allowed merely because selection began in budget.
+                if stop_before_motion(deadline,controls,row,decisions,manager):break
                 previous = bundle.current_raw
                 motion_fault=False
+                budget_interrupted=False
                 substep_result=None
                 def sample_substep():
                     nonlocal saved_end_snapshot
@@ -553,14 +627,26 @@ def main():
                     np.savez_compressed(location/"depth.npz",head=sample_depths["head"])
                     write(location/"depth_receipt.json",{"head":sample_receipts["head"]})
                     write(location/"proprio.json",{"q":sample_state.q.tolist(),"gripper":sample_state.gripper.tolist()})
-                    measured=substep_motion.sample(sample_images,sample_depths,model,sample_state.q,controls)
+                    sample_frame=(capture_self_frame(controls,sample_images,sample_depths,sample_state)
+                                  if args.odometry_self_exclusion else None)
+                    if sample_frame is not None:write(location/"robot_motion_frame.json",sample_frame)
+                    motion_kwargs=(dict(robot_frame=sample_frame,gripper=sample_state.gripper) if args.odometry_self_exclusion else {})
+                    measured=substep_motion.sample(sample_images,sample_depths,model,sample_state.q,controls,**motion_kwargs)
                     write(location/"visual_odometry.json",measured)
                     saved_end_snapshot=(controls,sample_state.q.copy(),sample_state.gripper.copy(),sample_images,sample_depths,sample_receipts)
+                    if args.odometry_self_exclusion:saved_end_snapshot+=(sample_frame,)
                     return measured["valid"]
                 if accepted:
-                    if substep_motion is not None:substep_motion.begin(controls)
                     while not servo.done and servo.ticks<servo.total_ticks and controls<action_control_limit:
+                        if expired(deadline):
+                            budget_interrupted=True
+                            break
+                        if substep_motion is not None and controls==row["control_start"]:
+                            substep_motion.begin(controls)
                         command = servo.next_action(state_now())
+                        # next_action mutates the servo clock; producing and
+                        # issuing this ONE control is an atomic budget quantum.
+                        # Never produce it if the preceding check has expired.
                         ended = step(command,render=(controls%2==1 or servo.ticks==servo.total_ticks or servo.done))
                         controls += 1
                         trace.write(json.dumps({"control":controls,"decision":decision,"action23":command.tolist(),"terminal":ended})+"\n")
@@ -569,7 +655,16 @@ def main():
                             if not sample_substep():
                                 motion_fault=True
                                 break
-                        if ended or time.perf_counter()-started>=args.max_seconds: break
+                        if ended:break
+                        if expired(deadline):
+                            budget_interrupted=True
+                            break
+                    if budget_interrupted and controls==row["control_start"]:
+                        # Deadline may cross AFTER the second outer check.
+                        # No control means no motion chain to finish or deliver,
+                        # and no selected grip becomes an issued command.
+                        stop_before_motion(deadline,controls,row,decisions,manager)
+                        break
                     if substep_motion is not None:
                         if controls>substep_motion.last and not sample_substep():motion_fault=True
                         substep_result=substep_motion.finish(controls,interrupted=bool(terminal or
@@ -581,7 +676,7 @@ def main():
                 raw_servo_feedback=feedback  # Later adjudication creates copies; preserve original status.
                 if motion_fault:
                     feedback={**feedback,"visual_gate_failure":substep_result}
-                    if feedback["status"] in ("TARGET_REACHED","BASE_TRACKING_FAILED"):
+                    if execution_completed(action,raw_servo_feedback) or feedback["status"]=="BASE_TRACKING_FAILED":
                         feedback["status"]="VISUAL_ODOMETRY_GATE_FAILED"
                     if manager:
                         manager.motion_receipt=substep_result
@@ -595,7 +690,7 @@ def main():
                     # odometer reference; never judge it from the next zero-step
                     # duplicate frame or the unreliable instantaneous qvel sum.
                     if substep_motion is not None:
-                        _,_,_,post_images,post_depths,post_receipt=saved_end_snapshot
+                        _,_,_,post_images,post_depths,post_receipt=saved_end_snapshot[:6]
                     else:
                         post_images,post_depths,post_receipt=observation_now(f"post_base_gate_{decision}")
                     post_state=state_now()
@@ -605,7 +700,12 @@ def main():
                     np.savez_compressed(post/"depth.npz",**post_depths)
                     write(post/"depth_receipt.json",post_receipt)
                     write(post/"proprio.json",{"q":post_state.q.tolist(),"gripper":post_state.gripper.tolist()})
-                    motion_receipt=gate_motion.observe(post_images,post_depths,model,post_state.q)
+                    motion_kwargs={}
+                    if args.odometry_self_exclusion:
+                        post_frame=saved_end_snapshot[6]
+                        write(post/"robot_motion_frame.json",post_frame)
+                        motion_kwargs=dict(robot_frame=post_frame,gripper=post_state.gripper,control=controls)
+                    motion_receipt=gate_motion.observe(post_images,post_depths,model,post_state.q,**motion_kwargs)
                     write(post/"visual_odometry.json",motion_receipt)
                     write(post/"raw_servo_feedback.json",raw_servo_feedback)
                     if not motion_receipt["valid"] or motion_receipt.get("initial",False):
@@ -618,21 +718,67 @@ def main():
                 # Stored separately AFTER motion, NEVER added to feedback,
                 # manager context, RGB-D bundle, or neural model requests.
                 write(directory/"PRIVILEGED_POST_ACTION_GRASP_AUDIT.json",grasp_audit(env.robots[0]))
-                row.update(feedback=feedback,control_end=controls,wall_s=time.perf_counter()-wall)
+                row.update(feedback=feedback,control_end=controls,wall_s=time.perf_counter()-wall,
+                           wall_budget_interrupted=budget_interrupted)
                 decisions.append(row); trace.write(json.dumps(row)+"\n")
                 if controller: controller.executed(action,feedback)
                 elif manager: manager.executed(action,feedback)
+                if budget_interrupted and manager and not terminal:
+                    # Keep incomplete odometry as incomplete, but distinguish
+                    # the known budget interruption from a sensor failure.
+                    manager.stop_reason="WALL_TIME_BUDGET_REACHED_DURING_ACTION"
+                if controller and controller.search_recovery is not None and motion_fault and not budget_interrupted:
+                    recovery_dir=directory/"search_reanchor";recovery_dir.mkdir()
+                    def save_reanchor_snapshot(control, raw_images, raw_depths, receipts, current_state):
+                        location=recovery_dir/f"control_{control:06d}";location.mkdir()
+                        for view in ("head","left_wrist","right_wrist"):
+                            Image.fromarray(raw_images[view+"_rgb"].transpose(1,2,0)).save(location/("CURRENT_"+view.upper()+"_RAW.png"))
+                        np.savez_compressed(location/"depth.npz",**raw_depths)
+                        write(location/"depth_receipt.json",receipts)
+                        write(location/"proprio.json",{"q":current_state.q.tolist(),"gripper":current_state.gripper.tolist(),"control":control})
+                        if controller.odometry_self_exclusion:
+                            frame=capture_self_frame(control,raw_images,raw_depths,current_state)
+                            write(location/"robot_motion_frame.json",frame)
+                            return frame
+                    anchor_hold=servo.safe_hold(state_now()).copy()
+                    def issue_reanchor_hold():
+                        nonlocal controls
+                        if controls>=action_control_limit or expired(deadline):
+                            raise RuntimeError("Recovery control budget expired before issue")
+                        ended=step(anchor_hold,render=True)
+                        controls+=1
+                        trace.write(json.dumps({"control":controls,"reanchor_after_decision":decision,
+                            "action23":anchor_hold.tolist(),"terminal":ended})+"\n")
+                        if controls%2==0:capture("SENSING HOLD: NEW LOCAL REFERENCE, NO SUCCESS CLAIM")
+                        return ended
+                    reanchor, new_snapshot=controller.search_recovery.attempt(controller,substep_result,
+                        controls=controls,action_limit=action_control_limit,terminal=terminal,deadline=deadline,
+                        observe=observation_now,state_now=state_now,issue_hold=issue_reanchor_hold,
+                        save_snapshot=save_reanchor_snapshot)
+                    write(recovery_dir/"receipt.json",reanchor)
+                    row["search_reanchor"]={k:v for k,v in reanchor.items() if k!="chain"}
+                    manager.search_reanchor=controller.search_recovery.context()
+                    if reanchor["valid"]:
+                        substep_motion=controller.motion
+                        saved_end_snapshot=new_snapshot
+                        previous=None  # No previous-image comparison across the unknown gap.
+                    elif terminal:
+                        manager.stop_reason="OFFICIAL_EPISODE_TERMINATED_DURING_SEARCH_REANCHOR"
+                    elif expired(deadline):
+                        manager.stop_reason="WALL_TIME_BUDGET_REACHED_DURING_SEARCH_REANCHOR"
                 check_fk(f"decision_{decision}")
                 write(out/"progress.json",{"controls":controls,"decisions":len(decisions),"last":row})
                 print(json.dumps(row),flush=True)
-                if not policy and accepted and (motion_fault or feedback["status"] not in ("TARGET_REACHED",)):
+                if not policy and accepted and (motion_fault or not execution_completed(action,feedback)):
                     failures.append(row); break  # diagnose, do not push further after a failed gate
             # Explicit zero base velocity / preserve grippers on EVERY exit path.
             if not terminal and servo is not None and controls < args.max_controls:
+                if last_issued_grips is not None:servo.grips[:]=last_issued_grips
                 step(servo.safe_hold(state_now())); controls += 1
                 trace.write(json.dumps({"control":controls,"safety_stop":True})+"\n")
             done = info.get("done",{}) if isinstance(info,dict) else {}
-            reached = [r for r in decisions if r.get("feedback",{}).get("status")=="TARGET_REACHED"]
+            reached = [r for r in decisions if "action" in r and
+                       execution_completed(Action(**r["action"]),r.get("feedback",{}))]
             gate_ok = args.mode=="gate" and not failures and len(decisions)==len(gate) and len(reached)>=16
             if grounded and args.mode=="gate":
                 required={13,14,19,20,21,22}
@@ -644,7 +790,9 @@ def main():
                 stop_reason=("OFFICIAL_EPISODE_TERMINATED" if terminal else "CONTROL_BUDGET_REACHED" if controls>=args.max_controls
                              else "WALL_TIME_BUDGET_REACHED" if time.perf_counter()-started>=args.max_seconds else "DECISION_BUDGET_REACHED")
             result = {"status":"complete","task":args.task,"controls":controls,"prefix_controls":prefix_count,
-                      "diagnostic_replay_controls":replay_count,"matched_grasp_feedback_diagnostic":replay is not None,
+                      "diagnostic_replay_controls":replay_count,
+                      "diagnostic_replay_purpose":replay["receipt"]["purpose"] if replay is not None else None,
+                      "matched_grasp_feedback_diagnostic":replay is not None and replay["receipt"]["purpose"]=="matched_grasp_feedback_diagnostic",
                       "decisions":decisions,"gate_ok":gate_ok,"implementation_digest":digest,
                       "calibration_sha":model.sha,"fk_check_count":len(checks),"gate_failures":failures,
                       "official_success":bool(done.get("success",False)),"final_goal_status":done.get("goal_status",{}),
@@ -654,8 +802,12 @@ def main():
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
                       "robot_geometry_guards":args.robot_geometry_guards,
+                      "approach_reorientation":args.approach_reorientation,
+                      "approach_body_options":args.approach_body_options,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "odometry_substep_controls":args.odometry_substep_controls,
+                      "odometry_self_exclusion":args.odometry_self_exclusion,
+                      "search_motion_recovery":args.search_motion_recovery,
                       "held_object_inspection":args.held_object_inspection,
                       "persistent_grasp_tracks":args.persistent_grasp_tracks,
                       "spatial_grasp_features":args.spatial_grasp_features,

@@ -31,6 +31,26 @@ class CoverageSearch:
         self.search_rotation_rad=0.
         self.last_seen_heading=None
         self.misses=0
+        self.local_epoch=0
+        self.unknown_spans=[]
+        self.unknown_budget_travel_m=0.
+        self.unknown_budget_rotation_rad=0.
+        self.suppress_next_novelty=False
+
+    def new_local_epoch(self, start, end):
+        if (type(start) is not int or type(end) is not int or not 0 <= start < end <= start+24
+                or self.local_epoch >= 2):
+            raise ValueError("At most two bounded unknown search spans per episode")
+        self.local_epoch+=1
+        self.unknown_spans.append([start,end])
+        # These are budget CHARGES, not measured or guaranteed physical bounds.
+        # Preserve all prior measured spend; never obtain free search by losing VO.
+        self.unknown_budget_travel_m+=.18
+        self.unknown_budget_rotation_rad+=.30
+        self.heading=0.;self.xy=np.zeros(2);self.origin=np.zeros(2)
+        self.covered=set();self.nodes=[];self.last_seen_heading=None
+        self.observed_heading=0.;self.new_coverage=False;self.misses=0
+        self.suppress_next_novelty=True
 
     def executed(self, feedback,exploratory=True):
         # Use actual measured displacement, including failed/partial motions.
@@ -73,6 +93,10 @@ class CoverageSearch:
                 if abs(wrap(center-self.observed_heading))<=half_fov:
                     self.covered.add(index)
         self.new_coverage=len(self.covered)>before
+        if self.suppress_next_novelty:
+            # Establishing a coordinate origin is not newly executed exploration.
+            self.new_coverage=False
+            self.suppress_next_novelty=False
         if visible:
             if target_bearing_rad is not None and not math.isfinite(target_bearing_rad):
                 raise ValueError("Observed target bearing must be finite")
@@ -90,7 +114,8 @@ class CoverageSearch:
         return len(self.covered)==self.bins
 
     def propose(self):
-        if self.search_travel_m>1.2 or self.search_rotation_rad>4*math.pi:
+        if (self.search_travel_m+self.unknown_budget_travel_m>1.2 or
+                self.search_rotation_rad+self.unknown_budget_rotation_rad>4*math.pi):
             return None,"SEARCH_TRAVEL_BUDGET"
         if self.complete:
             return None,"LOCAL_VIEW_SWEEP_COMPLETE_TARGET_NOT_FOUND"
@@ -105,6 +130,12 @@ class CoverageSearch:
 
     def context(self):
         return {"frame":"integrated_body_odometry_not_global_truth",
+                "local_reference_epoch":self.local_epoch,"unknown_motion_control_spans":list(self.unknown_spans),
+                "cross_epoch_pose_or_coverage_available":self.local_epoch==0,
+                "unknown_search_budget_charge_m":self.unknown_budget_travel_m,
+                "unknown_search_budget_charge_rad":self.unknown_budget_rotation_rad,
+                "budget_charges_are_not_measured_displacements":True,
+                "measured_path_excludes_unknown_actions_and_reanchor_holds":self.local_epoch>0,
                 "observed_heading_deg":round(math.degrees(self.observed_heading),2),
                 "covered_heading_bins":sorted(self.covered),"total_bins":self.bins,
                 "new_observation_coverage":self.new_coverage,"sweep_complete":self.complete,

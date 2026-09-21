@@ -1,0 +1,27 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-19T22:50:00+08:00",
+  "code_commit": "a6cde5dd57ecdee3ec047982809da100c5e58967",
+  "executor_digest": "239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b",
+  "scope": "Single TRAIN114 full expert reference preparation and explicit bounded reference profile; not native BC or actor training",
+  "independent_tests": {"sft": 99, "sft_seconds": 2.398, "harness": 331, "harness_seconds": 6.272},
+  "actual_remote_preparation": {
+    "manifest_sha256": "61eebc477ffb7777d1b18092cdc395fe6ef7a55bf6c13f169d45b7f7cfe762d3",
+    "inactive_authorization_sha256": "52498d6c41d6a85875daadc434e488ef138de9c9cd41cbf7174ae40f3baf6c4d",
+    "array_shapes": [[596,23],[590,23],[591,61]],
+    "independent_negative_rejections": 24,
+    "independent_audit_seconds": 0.05849739210680127,
+    "authorization_file_unchanged_and_inactive": true,
+    "physical_output_does_not_exist": true
+  },
+  "blocking_findings": [],
+  "review_approved": true,
+  "physical_stage_released": false,
+  "resource_dependency": "Parent H21 policy354348 and model353691 must finish and GPU3 must be explicitly handed over before a single active authorization is written.",
+  "conditional_reference": {"source":[1,264,114],"gpu":3,"resets":1,"controls":1199,"seconds_after_reset":1200,"initialization_seconds":900,"run_MiB":80,"root_MiB":6144,"model_calls":0},
+  "initialization_deadline_is_cooperative_not_asynchronous": true,
+  "successful_reference_requires_parent_physical_and_RAW_review": true,
+  "native_collection_authorized": false,
+  "dataset_release_authorized": false,
+  "training_authorized": false
+}

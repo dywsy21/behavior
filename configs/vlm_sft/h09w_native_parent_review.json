@@ -1,0 +1,144 @@
+{
+  "status": "parent_independent_numeric_and_stratified_RAW_review_passed",
+  "source": "f9916dbb2f5679c0b9a2d6fbd19480e222aa7b07",
+  "inventory_sha256": "1f8b2f307ee20b021e2817f30b15430476bdab2dad71ed0636c1fb5fd6388025",
+  "verified_files": 295,
+  "bytes": 107345578,
+  "controls": 724,
+  "ordinary_trace": 723,
+  "exact_expert_prefix": 396,
+  "oracle_updates_including_initial_and_hold": 317,
+  "captures": 30,
+  "payload_hashes": 210,
+  "depth_hashes": 90,
+  "macro_summary": [
+    {
+      "macro": 0,
+      "token": "RIGHT_LEFT",
+      "candidate_controls": [
+        409,
+        426
+      ],
+      "settled_tick": 438
+    },
+    {
+      "macro": 1,
+      "token": "RIGHT_YAW_PLUS",
+      "candidate_controls": [
+        439,
+        456
+      ],
+      "settled_tick": 468
+    },
+    {
+      "macro": 2,
+      "token": "RIGHT_LEFT",
+      "candidate_controls": [
+        469,
+        486
+      ],
+      "settled_tick": 498
+    },
+    {
+      "macro": 3,
+      "token": "RIGHT_ROLL_MINUS",
+      "candidate_controls": [
+        499,
+        516
+      ],
+      "settled_tick": 528
+    },
+    {
+      "macro": 4,
+      "token": "RIGHT_YAW_PLUS",
+      "candidate_controls": [
+        529,
+        546
+      ],
+      "settled_tick": 558
+    },
+    {
+      "macro": 5,
+      "token": "RIGHT_CLOSE",
+      "candidate_controls": [
+        559,
+        576
+      ],
+      "settled_tick": 588
+    },
+    {
+      "macro": 6,
+      "token": "RIGHT_UP",
+      "candidate_controls": [
+        589,
+        616
+      ],
+      "settled_tick": 628
+    },
+    {
+      "macro": 7,
+      "token": "RIGHT_UP",
+      "candidate_controls": [
+        629,
+        650
+      ],
+      "settled_tick": 662
+    },
+    {
+      "macro": 8,
+      "token": "RIGHT_UP",
+      "candidate_controls": [
+        663,
+        681
+      ],
+      "settled_tick": 693
+    },
+    {
+      "macro": 9,
+      "token": "RIGHT_UP",
+      "candidate_controls": [
+        694,
+        711
+      ],
+      "settled_tick": 723
+    }
+  ],
+  "final_target_rise_m": 0.036972180008888245,
+  "final_hand_rise_m": 0.038466036319732666,
+  "final12_relative_translation_m": 0.000003138882052824707,
+  "final12_relative_angle_deg": 0.001209342196134245,
+  "local_success": true,
+  "official_success": null,
+  "VLM_training_updates": 0,
+  "BC_released": false,
+  "seconds": 1.4842439040075988,
+  "manual_review": {
+    "initial_three_raw_previously_reviewed": true,
+    "after_settle_head_macros": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "after_settle_both_wrists_macros": [
+      0,
+      3,
+      5,
+      8,
+      9
+    ],
+    "total_distinct_raw": 23,
+    "observations": "Brown floor bin next to the right hand; pregrasp corrections, finger closure on the bin wall/rim and continued co-motion through lift agree with the token sequence and physical evidence. Left camera mostly floor; no independent visual certificate of contact safety or exact metric lift. No post-hold RGB exists; tick724 uses actual control/physics evidence.",
+    "scope": "Candidate single-trajectory GRASP data accepted; raw quarantine unchanged; no automatic dataset/training release, independent instance split and new observation protocol required."
+  },
+  "reviewed_at_bjt": "2026-09-19T22:06:00+08:00",
+  "reviewer": "Codex-parent",
+  "evidence_root": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09w_native_complete/native_task1_v1",
+  "candidate_single_trajectory_accepted": true
+}

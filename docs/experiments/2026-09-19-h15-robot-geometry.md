@@ -22,8 +22,16 @@ H14复制H13全部1482条23维控制，68观测边界的关节与指口差均0�
 
 证据：`h15_geometry_production_preflight.json`、`h15_chassis_ablation.json`、`h15_gate_radio_chassis.json`、`h15_gate_plates_chassis.json`，均在上述本地artifact根；无新模型/控制/训练。本地329测试6.522s、robo不可变`semantic_geometry_e9abf39`同329测试13.866s通过。
 
-## 尚未完成
+## 独立审查、工程门与当前策略
 
 独立审查发现当前自体盒未校验刚体变换，畸形缩放可抹除近障而保留足量远处可见射线；`b6f0845`修正为SE(3)验证及缩放/镜像/投影负例。本地330/4.971s、robo330/14.042s、116态复测35.797156s通过，结论不变。Astra独立329及增量5通过，128随机OBB与精确求交无差；实际URDF/USD四指均单轴平移，两旧门12开闭状态包络数值越界最大2.19μm，运行故障safe-hold保持原夹爪latch且底盘归零。最终无剩余代码阻塞。
 
 04:15双新同源工程门149129/149131已提交初始化，尚未通过。反事实检查没有证明机器人真实停得住、不会新增遮挡或可完成任务；不能报告新的成功率。新SFT采集器必须实际启用此开关/新深度过滤并使用新门，不能只在授权文案里写“修过”。后续仿真预算见`configs/semantic_robot/h15_robot_geometry_block.json`，旧H13不原样重启。
+
+04:17两门reset后标定失败，0控制/模型：安装generic Robot仅对可换手型号创建end_effector属性，固定r1pro没有该字段。不是模型能力或安全动作验证结果。`5cfbb89`改为模型+has_end_effector_variants识别，固定手允许、变体必须gripper、未知拒绝；331本地5.195s/robo13.860s通过，几何/阈值不变，独立增量审待。新两r1修复复验单独登记，尚未执行；旧两reset已计数。完整本地`h15_failed_gate_bundle`及两failure SHA `c5971b86ab62081656dba343b9b358b2b4d74d484c3180399f069c02476c2057`已核验。
+
+04:34更新：Astra核实际安装构造/API并通过6项增量测试后，r1两门真实完成、退出，radio417控制/192.543427s，plates418/181.452797s；各24命令中22到达、2原躯干动作零控制拒绝。实际源`5cfbb894ae5d2331847261be9889f509d1fa6d79`，执行器digest`239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b`，机器人几何开关实际为true。两result SHA分别`2460d1020f0b7254c88373d2e3f172754ebee8c3b57d118786861e959c135e19`、`b7117a5ea816ee437dfb0cf85f4de3ab6c45553be955f4353138cc76efbc7f75`。父13.063653s逐段审152段、304次head RGB-D hash/FK、8次BASE完整消费，SE3重算零差。
+
+04:43归档更新：完整两门已在本地`artifacts/agentic-vlm-goal-20260918/h15_gates_bundle`，288主RGB-D hash零差、两result与robo一致、两全视频解码成功。本人已看初始head及两门panel02/03的左右夹爪开闭（三视角），并非逐帧看全部视频。验证的是动作链及接口，不是新任务成功率。
+
+04:36提交的唯一`radio_h15_fullstart`158357与`server_h15`156556同在GPU3、同5cfbb89与原冻结27B权重。真实0专家/重放前缀、新规划；原96决策/3072控制/2400s/215调用上限不变。04:43已执行搜索，尚无最终结果；不热改运行源，不从工程门或保存态反事实推断成功。

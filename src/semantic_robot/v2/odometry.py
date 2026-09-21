@@ -111,8 +111,11 @@ def solve_rgbd_correspondences(points_before,pixels_after,points_after,K,camera_
 
 
 class RGBDMotion:
-    def __init__(self,estimator="pnp"):
+    def __init__(self,estimator="pnp", *, exclude_robot=False):
         import cv2
+        if type(exclude_robot) is not bool or (exclude_robot and estimator!="rgbd_joint"):
+            raise ValueError("Robot self exclusion is an explicit joint RGB-D option")
+        self.exclude_robot=exclude_robot
         if estimator not in ("pnp","rgbd_rigid","rgbd_joint"):raise ValueError("Explicit RGB-D estimator required")
         if estimator=="rgbd_joint":
             from .joint_odometry import solve_joint_correspondences
@@ -124,8 +127,14 @@ class RGBDMotion:
         self.sift=cv2.SIFT_create(nfeatures=2000);self.matcher=cv2.BFMatcher()
         self.previous=None
 
-    def observe(self,images,depths,model,q):
+    def observe(self,images,depths,model,q, *, robot_frame=None, gripper=None, control=None):
         cv2=self.cv2
+        self_signature=None
+        if self.exclude_robot:
+            from .self_odometry import validate_frame
+            self_signature=validate_frame(robot_frame,images,depths,model,q,gripper,control)
+        elif robot_frame is not None or gripper is not None or control is not None:
+            raise ValueError("Robot metadata supplied to disabled self exclusion")
         rgb=np.asarray(images["head_rgb"])
         if rgb.shape[0]==3:rgb=rgb.transpose(1,2,0)
         camera=model.spec["metadata"]["cameras"]["head"]
@@ -136,10 +145,15 @@ class RGBDMotion:
         T=model.forward(q,"camera_head");K=np.asarray(camera["K"])
         current={"keypoints":keypoints,"descriptors":descriptors,"depth":depth.copy(),"camera":T,
                  "rgb_sha256":hashlib.sha256(rgb.tobytes()).hexdigest(),"depth_sha256":hashlib.sha256(depth.tobytes()).hexdigest()}
+        if self.exclude_robot:
+            import copy
+            current.update(robot_geometry=copy.deepcopy(robot_frame["geometry"]),robot_frame_sha256=self_signature)
         previous,self.previous=self.previous,current
         receipt={"source":"onboard_head_RGBD_with_robot_camera_FK","no_scene_truth":True,
                  "velocity_integral_not_used":True,"current_rgb_sha256":current["rgb_sha256"],
                  "current_depth_sha256":current["depth_sha256"]}
+        if self.exclude_robot:
+            receipt.update(robot_self_exclusion=True,current_robot_frame_sha256=self_signature)
         if previous is None:return {**receipt,"valid":True,"initial":True,"body_delta":[0.,0.,0.],"reason":"REFERENCE_ONLY_NO_COVERAGE_CLAIM"}
         receipt["previous_rgb_sha256"]=previous["rgb_sha256"]
         pairs=(self.matcher.knnMatch(previous["descriptors"],descriptors,k=2)
@@ -157,4 +171,9 @@ class RGBDMotion:
                 if not .05<z<5. or not np.isfinite(patch).all() or np.ptp(patch)>.03:break
                 good.append(np.linalg.solve(K,np.r_[uv,1.])*z)
             if len(good)==2:oldpoints.append(good[0]);newpoints.append(good[1]);pixels.append(uv1)
+        if self.exclude_robot:
+            from .self_odometry import world_correspondences
+            oldpoints,pixels,newpoints,excluded=world_correspondences(oldpoints,pixels,newpoints,
+                previous["camera"],T,previous["robot_geometry"],current["robot_geometry"])
+            receipt.update(previous_robot_frame_sha256=previous["robot_frame_sha256"],robot_self_filter=excluded)
         return {**receipt,**self.solve(oldpoints,pixels,newpoints,K,previous["camera"],T)}

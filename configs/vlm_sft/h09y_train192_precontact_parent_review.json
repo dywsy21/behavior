@@ -1,0 +1,15 @@
+{
+  "schema": "h09y-precontact-seed-review-v2",
+  "seed_profile": "h09y-grasp-precontact-v2",
+  "seed_sha256": "7de89a346108c9f024b624706c180373c011e432678c8e83b5fed9ecd0ae336e",
+  "identity_sha256": "3112679618e78529452ffff7e19ed608a05d4ed490755bb59d5561b258093cc7",
+  "goal_pose_sha256": "de80112ccccfe8350abde38174a882ba40722834193c40cd94446dd2f858f0ba",
+  "selection_sha256": "1ded187ec6d8c3d7a1bfb6126af5058df85c16889908702ae378e6f331c13a13",
+  "reviewer": "Codex-parent",
+  "decision": "approve",
+  "reviewed_source_current_and_terminal_views": true,
+  "reviewed_contact_update_and_control_ledger": true,
+  "reviewed_precontact_phase_and_half_closed_aperture": true,
+  "local_outcome_and_pose_accepted": true,
+  "reason": "2026-09-21 13:14 BJT: independent parent review of fixed b306684 and 129 tests/3.659s; original complete successful P3 reference already numerically and visually approved by h09u_p3_seed_parent_review.json. Independently recomputed sidecar pose, selection, trace hashes and actual unheld/no-target-contact tick398 before first contact399 and held411; 14 target-stationary frames, registered stability uses last12. Actual32.0223mm aperture is half-closed evidence ONLY, never fully-open evidence or an execution target. No exact398 RGB exists; personally reviewed bracketing374/404 wrist RAW, not falsely claiming exact-frame imagery. Legacy trace lacks held_any/external-contact fields; no invented empty-all-object label. Approves offline target-relative EEF seed only, not positive BC, new reset authorization, training release or official success. Preserve original reference/terminal seed and successful H09W trajectory."
+}
