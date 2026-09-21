@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 15:16当前：** GPU3唯一新2619909于15:14:33.082132提交原`h09y_grasp_only/native_t1_i192_p0388`，相邻`.log/.launch.json`和`authorization_native_t1_i192_p0388_fa24_active.json`；同fa24/1fcc不可热改，初始化中。父H25 GPU2尚未启动，launcher/audit仅在本地忽略artifacts准备。所有既有证据/源/缓存保留。
+
 **2026-09-21 15:12当前：** 114989/2612363已退出且完整128文件父数值/24RAW审通过，本地完整包在子worktree `artifacts/h09y-resume-20260921/native_complete/native_t1_i114_p0989`。父H22与两个gripper门均完成完整本地/远端审，旧partial保留。新干净CPU树`git_worktrees/semantic_tracking_a628462`（a628/afd1）已425＋140通过，不热改；H25拟新结果`/mnt/nvme_tmp/robodojo_agentic_20260921/h25_refined_odometry`尚未运行，复用仅父已结束`/mnt/nvme_tmp/robodojo_harness_runtime_20260921/gripper_v1_gates`。Astra原192388正在单次提交准备，GPU3；父GPU2待子初始化完成，0/1队友不触。
 
 **2026-09-21 14:44当前：** 两父gripper sim均退出；Astra GPU3唯一2612363于14:41:57.469571启动`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i114_p0989`及同级log/launch，新授权`authorization_native_t1_i114_p0989_fa24_active.json`，固定原fa24不可热改。父H24只本地CPU，GPU2空。H22全包已到`artifacts/agentic-vlm-goal-20260918/h22_fullstart_complete_tar/radio_h22_fullstart`，两夹爪门到`gripper_v1_gates_bundle`，第二门/策略的本地全核待；旧partial仍保留，不删任何副本。

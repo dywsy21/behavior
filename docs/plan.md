@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 15:16（北京时间）原192388单次真实采集启动（Codex/Astra）：** Astra15:14:33.082132唯一2619909/GPU3启动原`native_t1_i192_p0388`，fa24/1fcc、active d7cb7049…0fc6e、launch a0974f24…1291c；真实1.272s资源/来源门过，当前初始化，12/420新含hold/1200＋900/384MiB与原6/16GiB、32/80GiB余量不变，0模型。启动器曾在写active/起进程前发现code字段位置错误，修到manifest后本次才提交，没消耗额外reset。父H25只准备单次launcher与保存态完整LK重算审计，不新源码/物理；等子reset。Git有限重fetch及干净ff-only pull已成功，origin/main仍33677bd，4db5a16已push。
+
 **2026-09-21 15:12（北京时间）H25有限在线验证登记（Codex）：** H24修复终审后另登记GPU2两顺序工程门（task0/138、3/242，各24/1536含hold/1200s＋900init/384MiB）＋条件单次task0原起点（192/6144/7200s/431calls，零两前缀），同a628/afd1、固定旧27B、新gripper＋LK、原阈值/两次SEARCH不变；`h25_refined_odometry_block.json`。新NVMe结果4GiB，复用已结束父H23 runtime16GiB/保32与80GiB，0/1不触。等Astra192388过初始化再启，现无新父进程；数据线fa24/120更新/六评不变。9338bc8已push；早先fetch TLS失败尚未冒称同步main，下一有限重试。
 
 **2026-09-21 15:10（北京时间）114989父全审通过/H24纯CPU闭合（Codex）：** 新轨迹全128文件51,701,653B（run125/51,682,498B）、989精确前缀/1130连续控制、12capture/84payload/36depth/130oracle及18闭爪真实命令/receipt独立1.214s通过；本人看全部24前后RAW及3原分辨关键图，目标升40.154mm、手升28.856mm、末12稳定漂移.103mm/.00513°，单条局部GRASP准入receipt `h09y_native_114989_parent_review.json`，仍非训练效果/整任务SR。下一只放原TRAIN192/p388单次，不降覆盖门、不自动114985。H24于15:07在原1800s内CPU结束：a628父425/6.615s、独审425/6.887s、robo425/20.271s＋SFT140/6.660s；P2关闭，新全353/121.926s仍350→352/0退化，report SHA acd5fc0c…18435，无新物理。父工作树进度dirty仅fetch未pull，fetch网络返回尚待；不改冻结fa24。
