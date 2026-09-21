@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 13:14当前：** 父GPU2新27B2588439/8926已ready，原起点sim2589106初始化，均固定`git_worktrees/semantic_selfodom_d7c8028`；新输出`h22_self_odometry/server_h22`、`radio_h22_fullstart`与相邻log/`launch_server.json`、`launch_policy.json`，复用父自己NVMe runtime。Astra两v2 sidecar只在`h09y_grasp_only/precontact_seeds_v2/train{192,114}.json`，旧reference未改；固定新b306 CPU，GPU3尚无新physical或训练。
+
 **2026-09-21 13:12当前：** H22两gate2573658/2584009均已退出，全量约671MB本地`artifacts/agentic-vlm-goal-20260918/h22_gates_bundle`双端SHA/全链/视频/RAW审闭合；父d7不可变源保留，下一8926模型及原起点尚待实际启动。子2575671失败退出，350文件146,779,410B完整本地子worktree `artifacts/h09y-resume-20260921/native_complete/native_t1_i114_p0993`，0正BC；旧10e1与参考/失败全部保留，新b306仅CPU构造显式sidecar。GPU2/3实查空，0/1队友不动。
 
 **2026-09-21 12:48当前：** 父2573658已退出，`h22_self_odometry/gate_radio_h22`24动作417控制工程通过，完整本地`artifacts/agentic-vlm-goal-20260918/h22_gates_bundle/gate_radio_h22`及三主SHA/全链/视频/RAW审闭合；父runtime约7.75GB保留复用，第二门尚未开。子2575671/GPU3 `h09y_grasp_only/native_t1_i114_p0993`已完成993来源前缀，原生采集中，不是训练。父子共享的只是硬件；各自Kit目录独立。

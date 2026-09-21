@@ -1,0 +1,15 @@
+{
+  "schema": "h09y-precontact-seed-review-v2",
+  "seed_profile": "h09y-grasp-precontact-v2",
+  "seed_sha256": "a62976c556b38e1be9029335cdb106dc9610da54295609d337e3f1d0d1704da2",
+  "identity_sha256": "1bcd79479fb86197f461fc1a76ff08e03e009dc651b42ed71911cfa5bac1df40",
+  "goal_pose_sha256": "8facdc5fd640834c3922f370f88e695ba3696e4e09e053452faaa30ec025703f",
+  "selection_sha256": "571f1b3bf8bb73fec36c67a7bc0e807b5a1b192a9de0cb546ed8ce35daf970a3",
+  "reviewer": "Codex-parent",
+  "decision": "approve",
+  "reviewed_source_current_and_terminal_views": true,
+  "reviewed_contact_update_and_control_ledger": true,
+  "reviewed_precontact_phase_and_half_closed_aperture": true,
+  "local_outcome_and_pose_accepted": true,
+  "reason": "2026-09-21 13:14 BJT: independent parent review of fixed b306684 and 129 tests/3.659s. Original101-file successful1199-control reference completely reviewed in h09y_train114_seed_parent_review.json, including all69 images plus6 RAW. Independently reproduced exact sidecar pose/selection/SHA: tick996 is unheld/no-target-finger-contact before997 contact and1008 held,15 target-stationary frames with last12 used by rule. Aperture23.6602mm is explicitly half-closed, not execution input or full-open qualification. Exact996 RGB not saved; personally viewed bracketing986/1016 wrist RAW. Target rotates23.3304deg versus hand.7580deg during997-1008, supporting precontact rather than terminal grasp pose. Old failed native350 files/1376controls/372oracle plus72 temporal views independently reviewed and remain0positiveBC. Approves offline EEF goal only, not acquired successful data, training release, new reset or official success; all old reference/seed/failure and strict lift/stability checks preserved."
+}
