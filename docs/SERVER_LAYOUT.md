@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 15:22当前：** 新父2622414/GPU2于15:21:19.811081启动`h25_refined_odometry/gate_radio_h25`及相邻log、launch_radio.json，固定`semantic_tracking_a628462`源码，复用仅父已结束H23暖runtime7.777GB/16GiB。子2619909/GPU3已过reset执行原192388；两Kit可能有彼此卡上约200MiB辅助context，须精确PID/cwd/mainGPU绑定，不触0/1。父第二门/27B/零前缀policy尚未启动。
+
 **2026-09-21 15:16当前：** GPU3唯一新2619909于15:14:33.082132提交原`h09y_grasp_only/native_t1_i192_p0388`，相邻`.log/.launch.json`和`authorization_native_t1_i192_p0388_fa24_active.json`；同fa24/1fcc不可热改，初始化中。父H25 GPU2尚未启动，launcher/audit仅在本地忽略artifacts准备。所有既有证据/源/缓存保留。
 
 **2026-09-21 15:12当前：** 114989/2612363已退出且完整128文件父数值/24RAW审通过，本地完整包在子worktree `artifacts/h09y-resume-20260921/native_complete/native_t1_i114_p0989`。父H22与两个gripper门均完成完整本地/远端审，旧partial保留。新干净CPU树`git_worktrees/semantic_tracking_a628462`（a628/afd1）已425＋140通过，不热改；H25拟新结果`/mnt/nvme_tmp/robodojo_agentic_20260921/h25_refined_odometry`尚未运行，复用仅父已结束`/mnt/nvme_tmp/robodojo_harness_runtime_20260921/gripper_v1_gates`。Astra原192388正在单次提交准备，GPU3；父GPU2待子初始化完成，0/1队友不触。
