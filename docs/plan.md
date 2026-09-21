@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 11:54（北京时间）H21自身几何污染实证/H22有限CPU实现（Codex）：** 原≤900s诊断提前完成：末4动作11对RGB-D基线计数/状态全部精确重现；仅用同帧q、robot-only link盒排除自身点，前10段仍有效，失败2111→2117由32/92=.3478变为48/77=.6234、双向中位误差1.013→.224/.219px，原25/.45/1px等质量门完全不改。3.497s、0新物理/模型；保存态手指开度不变才允许FK搬运，部署不能把静态指形套到闭爪。证据`artifacts/agentic-vlm-goal-20260918/h21_failure_probe/{audit_robot_matches.py,self_exclusion_diagnostic.jsonl}`。完整H21主包已传完，result/steps/video三SHA与远端一致；完整链全审尚待。**下一H22仅≤1800s CPU**：父独占里程计/runner/测试，默认关闭的新robot-self过滤，实际每次采样的机器人几何和q/夹爪/控制钟绑定，缺失陈旧拒绝，保留原六步整链与质量门；固定全段保存态回归＋单元/独立审后才另登记物理。不是已证明闭环或完整成功，不扩大APPROACH恢复或改成功阈值。
+
+**2026-09-21 11:54（北京时间）H09Y存储增量父独审通过/单参考条件交接（Codex/Astra）：** 固定66f61889e9f98b3a1fcc3f489ea4214b911bdc3c六文件完整独审，独立102 SFT/2.027s通过（作者112含未交接后继代码，不能混记）。新profile启动前env/实际NVMe挂载、全runtime16GiB/源32GiB/NVMe80GiB门及普通控制连续检查，cleanup不受普通门阻塞，旧profile不改；无阻塞发现。GPU3交Astra仅原TRAIN114单参考，必须新不可变Git源/真实来源manifest61eebc47/新env与实际空卡/容量CPU门通过后才绑定新授权启动，原inactive不动；1199控制含末hold、1200s+900初始化、80MiB/root6GiB、0模型。未启动即不称运行，完成父全证据/RAW手审后另放原生采集；后继训练/评测代码仍单独待审。
+
 **2026-09-21 11:42（北京时间）H21真实终态/后继诊断与存储分离登记（Codex）：** 原354348已退出：98决策、2118控制含末hold、164调用、4341.671s、两前缀0、official=false，右手PICK尚未闭爪。第97次底盘micro前进的2111→2117段32/92内点（.3478<.45，另双向中位投影约1.013px），旧搜索恢复明确不适用APPROACH，0次实际probe；原末表面点距离约.164m，不当抓取。本人已看d97和2117真实head，不能凭近似静止图片断言无碰撞，当前诊断只记录assisted objects双手null；完整1.127GB证据正在本地h21_fullstart_bundle归档。父已核空连接与准确PID/source、完整164calls/identity双端SHA(c2e7995d…7fc8/080292aa…2c49)后TERM自己的353691并确认退出，队友不动。下一≤900s只读CPU：对末4动作/固定RGB-D段核自己手臂特征对里程计的污染与原质量门，无新模拟器/模型，不先放宽阈值或扩大恢复适用场景。
 
 **2026-09-21 11:42（北京时间）H09Y存储配置修订待实现/独审（Codex/Astra）：** 真实OG宏支持OMNIGIBSON_APPDATA_PATH；安装simulator把portable-root和global cache/data绑定其下，仍有环境EXP_PATH两小文件copy，不谎称SDA完全只读。新方案显式区分NVMe输出/缓存与read-mostly来源盘：原实验6GiB不变，另独立本轮runtime缓存上限16GiB，NVMe原80GiB余量门不降；SDA源/环境盘改为明确32GiB保留门（不是悄改原双盘80），须所有本轮OG/temp/CUDA/shader/Torch/HF等新增写入路径固定到NVMe并验证解析挂载，禁HOME改写/共享环境热改/旧缓存删除，启动及控制/更新边界持续检查。Astra在原3600s票内先交独立最小storage/profile commit，父终审和实际CPU路径门前不启动参考；未知写入或容量超限仍停。GPU3留SFT，当前空GPU2留父后继harness，物理阶段和原成功判据均未扩大。
