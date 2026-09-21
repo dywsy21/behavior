@@ -2,7 +2,7 @@
   "experiment_id": "H34-current-image-abstention-feedback-probe-v1",
   "owner": "Codex-parent",
   "registered_bjt": "2026-09-21T21:37:00+08:00",
-  "status": "REGISTERED_NOT_CALLED",
+  "status": "COMPLETED_NEGATIVE_DO_NOT_DEPLOY",
   "hypothesis": "Giving the observer its actual public null-surface result may let it re-localize the visible target in another current view instead of repeating an unconfirmed wrist contact.",
   "client_commit": "42f38b7cc73fbdb3f7ce88fedf7f7c5024518fb9",
   "source_snapshot": "H30 decision118, exact original9 images/system/context except one added public review-feedback field",
@@ -19,5 +19,14 @@
   "training_updates": 0,
   "output": "/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/h34_feedback_saved_v1",
   "acceptance": "Parent manually checks new pixel and any selected surface on exact RAW. Can support or reject prompt feedback integration, never physical success.",
-  "no_physical_or_deployment_authority": true
+  "no_physical_or_deployment_authority": true,
+  "actual": {
+    "real_model_calls": 1,
+    "seconds": 7.70891912188381,
+    "service_calls_after": 294,
+    "result_sha256": "191ac2ded48748855890a050f59220ecedf9056871010b84c2a19ae143fbf4b3",
+    "local_bundle": "artifacts/agentic-vlm-goal-20260918/h34_feedback_saved_v1",
+    "parent_manual_review": "Exact CURRENT head RAW personally viewed: red radio remains visible at lower centre near right gripper. New observer nevertheless returned visible=false/view=none. All9 image inputs were pixel-identical to original call.",
+    "conclusion": "Public rejection feedback did not recover localization on this saved case. It caused a false-negative response, not a verified improvement. Do not deploy this prompt or spend the unused second call as a retry."
+  }
 }
