@@ -165,11 +165,18 @@ def release_reviewed_record(record, post):
         raise ValueError("Missing independently reviewable post-action judgment")
     token = validate_approval(record["approval"], record["request"])
     executed = record["execution"]
+    from native_execution import authorization_profile,completed
+    profile=authorization_profile(record["request"])
+    # Old manual records had only the execution summary. New semantics require
+    # the complete original receipt; a summary status can never opt them in.
+    feedback=record.get("feedback",{"status":executed["status"]})
     if (token is None or executed["token"] != token or executed["action"] != asdict(token_to_action(token)) or
-            executed["status"] != "TARGET_REACHED" or executed["interrupted"] or
+            executed["status"] != feedback.get("status") or not completed(token,feedback,profile=profile) or executed["interrupted"] or
             executed["native_controls"] <= 0 or not executed["native_trace_sha256"] or
             not record.get("post_observation_sha256") or record.get("settle_passed") is not True):
         raise ValueError("Approved primitive must actually finish; legality is not correctness")
+    if profile is not None and executed["native_controls"]!=feedback["control_ticks"]:
+        raise ValueError("Actual control count must match the new completion receipt")
     return {"actor": record["request"]["actor"], "target": token,
             "source_group": record["request"]["source_group"],
             "label_basis": "manual_current_state_teacher_and_reviewed_native_execution",

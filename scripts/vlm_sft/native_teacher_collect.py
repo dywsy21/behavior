@@ -34,7 +34,8 @@ from native_teacher_contract import (SCHEMA, digest, actor_input, validate_appro
                                      verify_prepared_source, verify_loaded_window)
 from native_teacher_artifacts import (ArtifactBudget, write_calibration, json_bytes,
                                      capture_layout, capture_upper_bound, action_evidence_bound)
-from semantic_robot.v2.servo import SafeServo, ServoLimits, native_action
+from semantic_robot.v2.servo import SafeServo, native_action
+from native_execution import authorization_profile, metadata as execution_metadata, servo_limits, completed as execution_completed
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.grounding import observed_cloud, LocalDepthGuard
@@ -72,6 +73,7 @@ def rest_screen(states):
 
 
 def require_release(value, code, executor):
+    execution_profile=authorization_profile(value, collection=True)
     near=value.get("schema")==NEAR_SCHEMA
     if "seed_profile" in value:
         from native_teacher_pregrasp_seed import PROFILE as PRECONTACT_PROFILE
@@ -100,6 +102,7 @@ def require_release(value, code, executor):
     gates = [json.loads(Path(p).read_text()) for p in value["engineering_gate_paths"]]
     if len(gates) != 2 or {g["task"] for g in gates} != {0, 3} or not all(
             g["gate_ok"] is True and g.get("robot_geometry_guards") is True and
+            g.get("gripper_completion_v1",False) is (execution_profile is not None) and
             g["implementation_digest"] == executor for g in gates):
         raise ValueError("Both matching engineering gates required; old H13 gates are insufficient")
 
@@ -154,7 +157,7 @@ def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, cl
     return after, hashes, depths, geometry, evidence
 
 
-def native_preflight(model, state, grips, action, depths, geometry, rotation_evidence=None):
+def native_preflight(model, state, grips, action, depths, geometry, rotation_evidence=None, *, execution_profile=None):
     from semantic_robot.v2.protocol import ROTATIONS
     from native_teacher_policy import empty_hand_rotation_allowed
     carry=True
@@ -167,10 +170,10 @@ def native_preflight(model, state, grips, action, depths, geometry, rotation_evi
                             self_geometry=geometry)
     allowed, reason = guard.check(action, carry=carry)
     servo = SafeServo(model, state, gripper_command=grips,
-                      limits=ServoLimits(robot_geometry_guards=True))
+                      limits=servo_limits(execution_profile))
     if not allowed or not servo.begin(action, state, carry=carry) or servo.total_ticks > 40:
         raise RuntimeError("Native preflight rejected: "+reason+" / "+servo.status)
-    return servo, {"robot_geometry_guards": True,"carry":carry,"amount":action.amount(carry), "depth_guard": guard.receipt(),
+    return servo, {**execution_metadata(execution_profile),"robot_geometry_guards": True,"carry":carry,"amount":action.amount(carry), "depth_guard": guard.receipt(),
                    "depth_check": reason, "servo_status": servo.status,
                    "q": state.q.tolist(), "gripper": state.gripper.tolist()}
 
@@ -188,6 +191,7 @@ def main():
         raise ValueError("Clean immutable source required")
     release = json.loads(x.authorization.read_text())
     require_release(release, code, implementation_digest())
+    execution_profile = authorization_profile(release, collection=True)
     validate_collection_location(release,x.output,x.gpu)
     h09y=release.get("capacity_profile")==H09Y_PROFILE
     wall_limit=1200 if h09y else 900
@@ -378,7 +382,8 @@ def main():
                     for token in ranked:
                         try:
                             candidate, preflight = native_preflight(model, before, grips, token_to_action(token), depths, geometry,
-                                {"frame":teacher_frame,"close_issued":teacher.close_issued} if near else None)
+                                {"frame":teacher_frame,"close_issued":teacher.close_issued} if near else None,
+                                execution_profile=execution_profile)
                             choice = token, candidate, preflight
                             break
                         except RuntimeError as exc: rejected.append({"token": token, "reason": str(exc)})
@@ -401,13 +406,14 @@ def main():
                                 step(servo.next_action(state()), "candidate")
                             feedback = servo.finish(state())
                             reserved.write_json(folder/"native_execution.json", {"token": token, "control_start": start_control,
-                                "control_end": controls, "feedback": feedback})
+                                "control_end": controls, "feedback": feedback, **execution_metadata(execution_profile)})
                             capture(folder/"after", layout)
-                            if feedback["status"] != "TARGET_REACHED": raise RuntimeError("Teacher native execution failed")
+                            if not execution_completed(token, feedback, profile=execution_profile): raise RuntimeError("Teacher native execution failed")
                             teacher_token = None
                             settle(); capture(folder/"after_settle", layout)
                             teacher.executed(token, teacher_frame); history.append(token)
                             reserved.write_json(folder/"QUARANTINED_record.json", {"actor": actor, "token": token,
+                                **execution_metadata(execution_profile),
                                 "native_trace_sha256": sha(folder/"native_execution.json"), "local_outcome": teacher_outcome.result,
                                 "training_eligible": False, "whole_trajectory_terminal_review_required": True})
                             completed.append(str(folder))
@@ -447,7 +453,8 @@ def main():
                 action = token_to_action(token); carry = True  # Never infer unloaded from a gripper command/aperture.
                 if action.part == "base":
                     raise ValueError("First manipulation pilot excludes BASE pending H14 deployment-safe body guard")
-                servo, preflight = native_preflight(model, now, grips, action, depths, geometry)
+                servo, preflight = native_preflight(model, now, grips, action, depths, geometry,
+                                                    execution_profile=execution_profile)
                 preflight["before_capture_sha256"] = request["before_capture_sha256"]
                 preflight["no_physics_since_capture"] = controls == capture_receipt["clock"]["native_control"]
                 if not preflight["no_physics_since_capture"]:
@@ -471,14 +478,14 @@ def main():
                                    "actions": native_actions, "feedback": feedback})
                         _, post_hashes, _, _, _ = capture(folder/"after", layout)
                         stable_hashes = None
-                        if feedback["status"] == "TARGET_REACHED":
+                        if execution_completed(token, feedback, profile=execution_profile):
                             settle()
                             _, stable_hashes, _, _, _ = capture(folder/"after_settle", layout)
                         record = {"request": request, "approval": approval,
                                   "execution": {"token": token, "action": asdict(action), "status": feedback["status"],
                                                 "native_controls": len(native_actions),
                                                 "post_action_settle_controls": controls-start_control-len(native_actions),
-                                                "interrupted": feedback["status"] != "TARGET_REACHED",
+                                                "interrupted": not execution_completed(token, feedback, profile=execution_profile),
                                                 "native_trace_sha256": sha(folder/"native_execution.json")},
                                   "feedback": feedback, "post_observation_sha256": digest({"immediate": post_hashes, "settled": stable_hashes}),
                                   "settle_passed": stable_hashes is not None,
@@ -486,7 +493,7 @@ def main():
                         reserved.write_json(folder/"QUARANTINED_record.json", record); completed.append(str(folder))
                 finally:
                     current_writer = artifacts
-                if feedback["status"] != "TARGET_REACHED": raise RuntimeError("Native action failed; no corrective retry")
+                if not execution_completed(token, feedback, profile=execution_profile): raise RuntimeError("Native action failed; no corrective retry")
                 history.append(token)
         except BaseException as exc:
             record_error(exc)

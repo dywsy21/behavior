@@ -32,12 +32,16 @@ from native_teacher_collect import (REPO,ADAPTER,CalibratedRobot,OnboardRGBD,nat
     capture_snapshot,implementation_digest,preserved_session,rest_screen)
 from native_teacher_artifacts import ArtifactBudget,write_calibration,action_evidence_bound,json_bytes
 from native_teacher_reference_contract import check_actual_joint_bounds
+from native_execution import authorization_profile,metadata as execution_metadata,require_dataset_profile
 
 BUDGET={"resets":1,"max_decisions":12,"new_controls_including_final_hold":420,
     "seconds_after_reset":1200,"initialization_seconds":900,"run_MiB":384,"total_MiB":6144}
 
 
 def require_evaluation(auth,code,executor,prepared,variant,output,data_sha):
+    execution_profile=authorization_profile(auth)
+    if execution_profile is not None and any(k in auth for k in ("seed_profile","capacity_profile","authorize_offline_teacher")):
+        raise ValueError("Paired evaluation cannot mix private collection profiles")
     instance=prepared["source"][2]
     if (auth.get("schema")!=SCHEMA or auth.get("authorize_evaluation") is not True or
             auth.get("code_commit")!=code or auth.get("executor_digest")!=executor or
@@ -54,7 +58,9 @@ def require_evaluation(auth,code,executor,prepared,variant,output,data_sha):
         raise ValueError("Exact bounded single-reset evaluation profile required")
     gates=[json.loads(Path(p).read_text()) for p in auth["engineering_gate_paths"]]
     if len(gates)!=2 or {g["task"] for g in gates}!={0,3} or any(
-            g.get("gate_ok") is not True or g.get("robot_geometry_guards") is not True or g.get("implementation_digest")!=executor for g in gates):
+            g.get("gate_ok") is not True or g.get("robot_geometry_guards") is not True or
+            g.get("gripper_completion_v1",False) is not (execution_profile is not None) or
+            g.get("implementation_digest")!=executor for g in gates):
         raise ValueError("Matching reviewed robot execution gates required")
 
 
@@ -85,8 +91,10 @@ def main():
     code=subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip()
     if subprocess.check_output(["git","-C",str(REPO),"status","--porcelain"],text=True).strip():raise ValueError("Clean immutable runtime required")
     auth=json.loads(a.authorization.read_text());prepared,prefix=verify(a.prepared,auth["preparation_sha256"])
+    execution_profile=authorization_profile(auth)
     data_sha=sha(a.data/"dataset.json");require_evaluation(auth,code,implementation_digest(),prepared,a.variant,a.output,data_sha)
-    rows,_=load_dataset(a.data);nn=NearestNeighbor(rows) if a.variant=="proprio_history_nn" else None
+    rows,dataset=load_dataset(a.data);require_dataset_profile(dataset,execution_profile)
+    nn=NearestNeighbor(rows) if a.variant=="proprio_history_nn" else None
     identity,remote=(load_service(auth,code,data_sha) if nn is None else (None,None))
     storage=activate_storage(auth,a.output);check_storage(storage);a.output.mkdir(parents=True,exist_ok=False)
     writer=ArtifactBudget(a.output,ROOT,384*1024**2,6144*1024**2);current_writer=writer
@@ -187,7 +195,7 @@ def main():
             for command in prefix:step(command,"prefix")
             # Qualification begins at the pause with actual last issued grips;
             # it is not an assertion that an open hand cannot contact anything.
-            policy=PublicExecution(grips);settle()
+            policy=PublicExecution(grips,execution_profile=execution_profile);settle()
             from native_teacher_og import PrivilegedReader
             spec=json.loads((a.prepared/"PRIVATE_scoring_spec.json").read_text())
             reader=PrivilegedReader(env,spec);initial=reader.read(prefix_count+controls)
@@ -204,7 +212,8 @@ def main():
                 if nn is None:neural_requests+=1
                 answer=choose(a.variant,actor,raw,nn=nn,remote=remote);token=answer["prediction"]
                 writer.write_json(folder/"request.json",{"actor":actor,"response":answer,"capture_sha256":sha(folder/"before/capture.json")})
-                decision={"index":index,"token":token,"control_start":controls,"response":answer};decisions.append(decision)
+                decision={"index":index,"token":token,"control_start":controls,"response":answer,
+                    **execution_metadata(execution_profile)};decisions.append(decision)
                 try:
                     servo,preflight=preflight_at_execution(token,before,depths,geometry,receipt)
                 except RuntimeError as exc:
@@ -220,7 +229,7 @@ def main():
                         feedback=servo.finish(state());active_token=None
                         decision.update(control_end=controls,status=feedback["status"],feedback=feedback)
                         reservation.write_json(folder/"execution.json",decision);capture(folder/"after",receipt["array_layout"])
-                        if feedback["status"]!="TARGET_REACHED":raise RuntimeError("Actual servo did not reach target")
+                        if not policy.completed(token,feedback):raise RuntimeError("Actual servo execution did not complete")
                         history.append(token);settle();capture(folder/"after_settle",receipt["array_layout"])
                 finally:current_writer=writer;active_token=None
                 writer.write_json(folder/"completed.json",{"clock":{"prefix_control":prefix_count,"native_control":controls},"history":history[-5:]})
