@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 21:12（北京时间）H33 CPU实施闭合待独审（Codex）：** 默认关闭近场表面复核、同帧RAW/状态receipt及弃权HOLD已实现，含SEARCH/RECOVER同帧切接近与排队reposition两种绕过防护；16原预算/所有运动和成功门不变。最终472/10.278s＋174/6.964s通过；保存态6组只用stub的边界报告e939256b…4faf45，不称真实模型/物理改善。设计`experiments/2026-09-21-h33-near-contact-review.md`；原1800s票内结束。先固定窄代码供Astra在953运行时独审，再另登记保存态真实模型验证，未自动开新回合。953单次交接68a2db5/c07db850…8aa16已发送，真实PID仍待。
+
 **2026-09-21 21:10（北京时间）H30正式失败结束/953单次条件父审（Codex/Astra）：** 21:06:58实核2673899退出，3225控制/165决策/290模型调用/6093.041s，official_success=false，终止标签`OFFICIAL_EPISODE_TERMINATED_DURING_SEARCH_REANCHOR`；完整链审待，不称成功或自动重跑。GPU3实空81152MiB。子新ced2691七路径父全读、181独立4.959s过，公共源码逐字同02d/8fdf；唯一TRAIN114/e264/p953 inactive6e28a76c…d1c54、prepare452e6bed…55437、CPU33865529…286f3全核，父receipt `h09z_train953_ced2691_parent_review.json`只条件交一个14宏/640新含hold/2body/1200＋900/384MiB的GPU3采集，须动态空卡/源/盘/原436＋cac门，无自动重试。正式3.10已验4轨26宏（4CLOSE/13lift/9preclose），仍32门拒，fresh120/六评未启。H33实现472公共/174SFT初回归过，真实117/118/120保存态6组仅stub边界1.561s过；新增排队reposition也受abstain拦截，最终回归/独审待，0新模型物理。
 
 **2026-09-21 20:51（北京时间）第二carry失败全审闭合（Codex）：** 全252文件94,996,845B/清单4f8da67a…bc578核完；8宏全部真实q/grip/23D重放、175payload/75depth及277物理帧含末hold4.407s过；本人看全部75 RAW＋2原分辨率关键图。668=380＋288含hold，两body后右手保持误差.407/.460mm，仍无闭爪/接触/持握、桶升0，0BC。receipt `h09z_native_192380_carry_failure_parent_review.json`、数值report5c918a75…dbb6d；原两reset完整结束，不自动第三。Astra原20:48:18–20:58:18只读候选票继续，父继续H33默认关闭实现；H30原回合不动。
