@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 13:33当前：** 2592963已退出，`native_t1_i192_p0392`失败包保留、正封存，GPU3释放待下一明确单次安排，不是已训模型。父2588439/2589106同d7仍原回合；本地新增`artifacts/agentic-vlm-goal-20260918/h22_window_diagnostic`仅保存三相机四对离线诊断（含原47MB机器人标定），不当完整run或新在线策略。
+
 **2026-09-21 13:20当前：** Astra新GPU3 2592963初始化，输出`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0392`及相邻log/launch，固定`git_worktrees/vlm_sft_h09y_b306684`（准确SHA b306684ff3a8cf7b3dfc2182b522d2094eef0a5c）；授权a634e83e…ef227/newteacher f5ac944a…5141/父review90044cf，旧inactive仍false。只新run runtime复用已审global/cache别名，0/1不触；父H22原进程继续，源码不得热改。
 
 **2026-09-21 13:14当前：** 父GPU2新27B2588439/8926已ready，原起点sim2589106初始化，均固定`git_worktrees/semantic_selfodom_d7c8028`；新输出`h22_self_odometry/server_h22`、`radio_h22_fullstart`与相邻log/`launch_server.json`、`launch_policy.json`，复用父自己NVMe runtime。Astra两v2 sidecar只在`h09y_grasp_only/precontact_seeds_v2/train{192,114}.json`，旧reference未改；固定新b306 CPU，GPU3尚无新physical或训练。
