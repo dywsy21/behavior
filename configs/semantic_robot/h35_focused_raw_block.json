@@ -17,7 +17,8 @@
   "new_resets": 0,
   "new_controls": 0,
   "training_updates": 0,
-  "output": "/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/h35_focused_raw_v1",
+  "output": "/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/h35_focused_raw_v2",
+  "prequery_transport_failure": "Original v1 SSH session disconnected after manifest creation; no matching probe process remained and service ledger stayed294. Original manifest-only directory retained. v2 uses durable detached stdout; this does not grant extra model calls or new samples.",
   "acceptance": "Parent manually checks all4 states/RAW and new UV/surface proposals, including absent control; requires no bad table point accepted. Static localization only, not grasp or physical SR.",
   "deployment_authorized": false
 }
