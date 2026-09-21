@@ -1,0 +1,41 @@
+{
+  "status": "independent_fixed_source_review_passed_for_registered_CPU_scope",
+  "reviewer": "Codex-parent",
+  "reviewed_at_bjt": "2026-09-21T17:34:00+08:00",
+  "commit": "9ff2e280f944f46c456e0edc9a057e36e8716254",
+  "review_worktree": "/home/wsy/behavior_worktrees/review-native45-9ff2e28",
+  "source_paths_reviewed": 20,
+  "public_src_runner_and_legacy_common_diff_from_572": "empty",
+  "public_executor_digest": "1fcc505cb570c0fa215c408b2ae78d904819dc95b40bbbe117a560106ad97f4c",
+  "independent_tests": {"SFT": 162, "SFT_seconds": 6.173, "public": 410, "public_seconds": 8.241},
+  "parent_additional_probe": {
+    "report": "artifacts/agentic-vlm-goal-20260918/h09z_native45_parent_probe.json",
+    "sha256": "62a14cbf895bcdf747d3a9ce59475932fa707b77e1a36eb087ce9726a9d0672c",
+    "seconds": 6.904425611020997,
+    "capture_sha256": "58228e46968bcb9bc03cc29e6a43ada3a28b0543c00e5d9f203d51bd886c2034",
+    "all_four_body_endpoints_and_twelve_original_followups_match_H27": true,
+    "original_followups_passed": 5,
+    "selected_first_action_only": "TORSO_DOWN_KEEP_EEF",
+    "planned_body_ticks": 26,
+    "collector_base_finetuned_NN_first_plan_identical": true,
+    "additional_saved_state_negative_checks": 12,
+    "state_and_gripper_history_not_mutated_by_prediction": true,
+    "old14_data_rows_action_images_proprio_history_exact": true,
+    "new_three_run_dataset_sha256": "e5d9247ca653bfc7f309912556ad467383884f60442519e5aee7d81a35036a5f",
+    "dataset_coverage": "3 trajectories/20 macros/3 CLOSE/10 lift/7 preclose;192 one,114 two; no near duplicates; require_gate correctly rejects"
+  },
+  "reviewed_invariants": [
+    "Explicit native45 preserves old41 token IDs/order/semantics; no relabeling of expert torso commands",
+    "Same selected actor protocol, supervised prefix, constrained decoder, history, nearest-neighbor dimension and exact service identities",
+    "Both current calibrated-full-open and irreversible actual-issued CLOSE histories; partial CLOSE and reopen cannot requalify",
+    "Only one actual body command; original12 macros/420 controls includes settle and final hold; shared worst-case followup reserve",
+    "PRIVATE offline4x3 predictions are not actor images, target observations, contact truth, success or BC",
+    "Fresh actual capture after body; original teacher revisit guard and full success predicate unchanged",
+    "Complete trajectory dataset admission preserves physical outcomes and actual executed command reconstruction",
+    "No physical starts registered and no additional cache aliases granted by this source"
+  ],
+  "remaining_limits": "Existing torso depth check does not certify environment sweep. First physical trajectories require full actual-contact/RAW review. A later named-start registration must add unique output names, because old192380/192388 evidence already occupies legacy basenames; preserve it. The32-macro coverage gate, fresh120 updates and six paired physical evaluations remain unfulfilled.",
+  "authorizes_new_physical_start": false,
+  "authorizes_training": false,
+  "official_success": null
+}
