@@ -2,6 +2,7 @@
 import ast
 import copy
 import json
+from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
@@ -71,6 +72,64 @@ class WorkspacePostureTests(unittest.TestCase):
                                          'gripper_open_at_calibrated_aperture':['left','right']})
         self.assertTrue(h.workspace_close_seen['left'])
         self.assertFalse(h.possible_contact_after_close['left'])
+
+    def test_zero_tick_vetoed_close_is_latched_only_when_issued(self):
+        model,state,h,servo,_=setup()
+        close=Action('right','close')
+        self.assertTrue(servo.begin(close,state))
+        self.assertEqual(h.workspace_close_seen,{'left':False,'right':False})
+        with patch.object(servo.collision,'clearance',return_value=-1.):
+            command=servo.next_action(state)
+        self.assertEqual(servo.ticks,0)
+        self.assertEqual(servo.status,'ROBOT_COLLISION_RISK')
+        np.testing.assert_array_equal(command[[14,22]],[1,-1])
+        h.issued(command)
+        h.executed(close,{'status':servo.status,'control_ticks':0,'finger_mean_m':[.05,.05]})
+        opened=command.copy();opened[[14,22]]=1;h.issued(opened)
+        h.executed(Action('right','open'),{'status':'TARGET_REACHED','control_ticks':18,'finger_mean_m':[.05,.05],
+                    'gripper_open_at_calibrated_aperture':['left','right']})
+        self.assertEqual(h.workspace_close_seen,{'left':False,'right':True})
+        self.assertFalse(qualification(h,state,[1,1],model)['eligible'])
+
+    def test_issued_validation_rejects_without_modifying_history(self):
+        _,_,h,_,_=setup()
+        command=np.zeros(23);command[[14,22]]=1
+        for invalid in (command[:22],command.reshape(1,23),command+np.nan,
+                        np.where(np.arange(23)==14,1.01,command)):
+            with self.assertRaises(ValueError):h.issued(invalid)
+            self.assertFalse(any(h.workspace_close_seen.values()))
+        h.issued(command)
+        self.assertFalse(any(h.workspace_close_seen.values()))
+
+    def test_real_runner_records_at_issuance_even_when_env_step_raises(self):
+        tree=ast.parse((Path(__file__).resolve().parents[2]/'scripts/semantic_robot/run_v2.py').read_text())
+        node=copy.deepcopy(next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='step'))
+        node.body=[ast.Global(names=n.names) if isinstance(n,ast.Nonlocal) else n for n in node.body]
+        code=compile(ast.fix_missing_locations(ast.Module(body=[node],type_ignores=[])),'actual_robot_issuance','exec')
+        for failure in (None,'enter','env','exit'):
+            _,_,h,_,_=setup();calls=[]
+            @contextmanager
+            def render(_):
+                if failure=='enter':raise RuntimeError('render enter')
+                yield
+                if failure=='exit':raise RuntimeError('render exit')
+            def env_step(action,**kwargs):
+                self.assertTrue(h.workspace_close_seen['right'])
+                np.testing.assert_array_equal(scope['last_issued_grips'],[1,-1])
+                calls.append(action.copy())
+                if failure=='env':raise RuntimeError('partial env step')
+                return object(),0,False,False,{}
+            evaluator=SimpleNamespace(_preprocess_obs=lambda x:x,_sync_lights_and_get_obs=lambda x:x)
+            scope=dict(np=np,grounded=True,manager=h,info={},terminal=False,last_issued_grips=None,
+                og=SimpleNamespace(sim=SimpleNamespace(render_on_step=render)),env=SimpleNamespace(step=env_step),
+                environment=SimpleNamespace(evaluator=evaluator))
+            exec(code,scope);command=np.zeros(23);command[[14,22]]=[1,-1]
+            if failure:
+                with self.assertRaises(RuntimeError):scope['step'](command)
+            else:self.assertFalse(scope['step'](command))
+            self.assertEqual(h.workspace_close_seen['right'],failure!='enter')
+            self.assertEqual(len(calls),int(failure!='enter'))
+            if failure=='enter':self.assertIsNone(scope['last_issued_grips'])
 
     def test_stage_hazard_enclosure_target_or_goal_restrictions(self):
         changes=[lambda h:setattr(h,'stage','GRASP'),lambda h:setattr(h,'stage','SEARCH'),

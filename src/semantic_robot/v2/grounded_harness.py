@@ -140,6 +140,22 @@ class GroundedHarness(TaskHarness):
         # two-hand verification has not yet passed.
         return super().carry or (self.goal.level and any(self.pending_grasp.values()))
 
+    def issued(self,command):
+        """Record actual robot commands, including partial/failed execution.
+
+        Call at the env.step boundary, not when proposing or beginning an
+        action. A zero-tick rejected arm motion can still issue a closing HOLD.
+        This irreversible history is not contact or holding evidence.
+        """
+        value=np.asarray(command,dtype=float)
+        if value.shape!=(23,) or not np.isfinite(value).all():
+            raise ValueError("Issued robot command must be finite 23D")
+        grips=value[[14,22]]
+        if np.any(np.abs(grips)>1):
+            raise ValueError("Issued gripper commands must lie in [-1,1]")
+        for arm,grip in zip(("left","right"),grips):
+            if grip<.999:self.workspace_close_seen[arm]=True
+
     def executed(self,action,feedback):
         probe=(self.grasp_probe.get("eligible") and self.stage=="ALIGN" and
                action==Action(self.goal.hand,"close"))

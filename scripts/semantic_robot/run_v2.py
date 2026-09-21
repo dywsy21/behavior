@@ -372,8 +372,12 @@ def main():
                 # begin() can change the desired grip before any real control.
                 # Cleanup must preserve the last ISSUED command, not a newly
                 # selected close/open that was cancelled by a deadline.
-                last_issued_grips=np.asarray(action)[[14,22]].copy()
                 with og.sim.render_on_step(render):
+                    # Record immediately before issuance: env.step may fail
+                    # after a partial control, even when servo ticks stay zero.
+                    # A render-context entry failure sends no command.
+                    if grounded and manager is not None:manager.issued(action)
+                    last_issued_grips=np.asarray(action)[[14,22]].copy()
                     obs, _, terminated, truncated, info = env.step(action,n_render_iterations=1)
                 evaluator = environment.evaluator
                 evaluator.obs = evaluator._preprocess_obs(evaluator._sync_lights_and_get_obs(obs))
