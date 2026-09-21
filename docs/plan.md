@@ -14,6 +14,14 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 16:33（北京时间）192380完整失败父审闭合（Codex）：** 全137文件49,789,116B/清单0f6fb4b1…671f1本地独核，380精确前缀＋148新含末hold=528，13capture/91payload/39depth/137物理帧、4公开时序资格及87真实23D宏命令重放2.328s过；本人逐看四宏全部前/后/settle及第五拒绝前共39RAW。两手始终未held/无指接触，桶升0，确认0正BC，receipt `h09y_native_192380_failure_review.json`。拒绝根因仍等原16:35前CPU票，不以q14接近零猜定奇异性；第二114969未启。H25同原回合60决策/1343控制/88模型无错误，右手接近估.727m，仍无持握或官方成功。
+
+**2026-09-21 16:25（北京时间）新192380失败/第五步有限只读诊断（Codex/Astra）：** 2636439在16:24:15轮询已退出，380前缀＋147普通native、4宏BACK→DOWN→BACK→DOWN均TARGET_REACHED/新资格carry=false，未CLOSE，520.311s后`No safe decreasing teacher proposal`、0正BC；末hold/完整包仍审中。不能以新速度真实可执行冒充GRASP/训练效果。Astra下一另≤600s CPU只读精确第五proposal的全部原候选、IK/碰撞/时长/grid-close拒因，保存证据，不改572/门、不新reset；父接全部图像和物理账本独审。原114969仍inactive，待失败全审后再交原第2候选；120训练/六评未启动，覆盖仍不足。
+
+**2026-09-21 16:24（北京时间）新时序已进入真实DOWN/初态父图审（Codex/Astra）：** Astra16:22:12核2636439已380prefix＋58native，首RIGHT_BACK完成/新公开资格true/carry=false/1cm，第二RIGHT_DOWN已实控，旧首DOWN的IK拒绝保留；还未闭爪或成功，0正BC/新训练。父下载首capture三RAW本人逐看：棕色地面桶靠右手，两夹爪张开，画面与GRASP trash can一致，不能从图像单独认证无接触。小包`artifacts/agentic-vlm-goal-20260918/h09y_192380_initial`只初态，不称完整轨迹；全控制/结果仍待。父同时亲看H25 d46原HEAD，红色收音机清楚在桌面，同原回合继续接近。
+
+**2026-09-21 16:21（北京时间）H25转入右手抓取子目标（Codex）：** 原回合已47完成决策/1086控制、62模型ledger/0服务错误；保存d46为goal1 `pick radio receiver on the table`/right/APPROACH，估计手—目标距离1.084m，双手持握验证均false。只记高层阶段切换，不称导航官方成功或抓取成功；同原预算继续。Astra仍原380前缀/新profile采集，没有新训练可报告。
+
 **2026-09-21 16:17（北京时间）新192380已过reset（Astra/Codex）：** 16:16:08实际核2636439已校准并连续完成23/380原前缀、0native；collector没有单列reset时刻，故只记录此时之前完成，不推造精确秒。当前校准/控制账本3.127MB，runtime9.226GB<16，实际env/shared精确alias吻合；原1200s预算继续、未新reset，父待完成后全部图像/物理审与训练覆盖门。
 
 **2026-09-21 16:16（北京时间）H25进入首导航接近阶段（Codex）：** 原2630126已40完成决策/960控制、49模型ledger/0服务错误；保存d36 harness为goal0 `navigate table in the living room`/APPROACH，d38–39已实际fine底盘前移。两次原恢复不再追加，目前没有持握/官方成功；继续原192/6144/7200s预算。Astra2636439仍原新192380初始化/前缀路线，尚未出完整新样本或训练。
