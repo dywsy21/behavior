@@ -28,9 +28,10 @@ def summarize(root):
                 profile=authorization_profile(auth)
                 storage_profile=(auth.get("storage") or {}).get("profile")
                 if profile in TIMING_PROFILES:
-                    from native_storage import DIVERSE_STORAGE_PROFILE,WORKSPACE_STORAGE_PROFILE,CARRY_STORAGE_PROFILE,validate_spec
-                    expected={WORKSPACE_PROFILE:WORKSPACE_STORAGE_PROFILE,CARRY_PROFILE:CARRY_STORAGE_PROFILE}.get(profile,DIVERSE_STORAGE_PROFILE)
-                    if (not validate_spec(auth) or storage_profile!=expected or
+                    from native_storage import DIVERSE_STORAGE_PROFILE,WORKSPACE_STORAGE_PROFILE,CARRY_STORAGE_PROFILES,validate_spec
+                    expected=(CARRY_STORAGE_PROFILES if profile==CARRY_PROFILE else
+                        (WORKSPACE_STORAGE_PROFILE if profile==WORKSPACE_PROFILE else DIVERSE_STORAGE_PROFILE,))
+                    if (not validate_spec(auth) or storage_profile not in expected or
                             (m.get("storage") or {}).get("profile")!=storage_profile):
                         raise ValueError("Paired new execution/storage identity changed")
                     if profile in WORKSPACE_PROFILES and m.get("protocol")!=actor_protocol(profile):
