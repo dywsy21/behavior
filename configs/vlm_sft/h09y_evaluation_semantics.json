@@ -1,0 +1,24 @@
+{
+  "status": "PROSPECTIVE_NOT_PHYSICAL_AUTHORIZATION",
+  "authorize_evaluation": false,
+  "protocol": "h09x-current-robot-pose-v1",
+  "policies": ["base", "finetuned", "proprio_history_nn"],
+  "heldout": [
+    {"task": 1, "episode": 200, "instance": 1, "seed": 0, "prefix": 832, "stratum": "expert_left_hand_start_pose_OOD"},
+    {"task": 1, "episode": 247, "instance": 71, "seed": 0, "prefix": 1038, "stratum": "expert_right_hand_start_pose"}
+  ],
+  "instruction_hand_constraint": null,
+  "unchanged_instruction": "verb=GRASP; target=trash can; source=floors",
+  "posthoc_success": "Either hand must INDEPENDENTLY satisfy the full causal GRASP predicate through final hold; no cross-hand pooling",
+  "explicitly_hand_constrained_instruction_requires_that_hand": true,
+  "report": ["per_hand", "actual_successful_hands", "any_hand_local_success", "expert_start_pose_stratum"],
+  "oracle_changes_policy_feedback_or_stop": false,
+  "max_total_resets": 6,
+  "per_episode": {"max_native_macros": 12, "max_new_controls_including_settle_and_hold": 420, "after_reset_seconds": 1200, "initialization_seconds": 900},
+  "max_model_calls": 48,
+  "fixed_service_port": 8919,
+  "physical_gpu": 3,
+  "heldout_seed_or_teacher_required": false,
+  "public_rotation_qualification": "current calibrated fully-open aperture and actual issued gripper latch, never held/contact/seed truth",
+  "public_rotation_is_not_empty_hand_or_environment_contact_certificate": true
+}

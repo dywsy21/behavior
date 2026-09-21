@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import sys
 
 from native_reference_profile import ROOT as EXPERIMENT_ROOT
@@ -53,6 +54,29 @@ def existing_parent(path):
     return path
 
 
+def tree_bytes(root,device):
+    """Never use rglob's silent permission-error skipping for a hard cap."""
+    root=Path(root)
+    if not root.exists():return 0
+    total=0;pending=[root]
+    while pending:
+        folder=pending.pop();mode=folder.lstat().st_mode
+        if (not stat.S_ISDIR(mode) or not mode&0o444 or not mode&0o111 or
+                not os.access(folder,os.R_OK|os.X_OK)):
+            raise PermissionError("Unreadable runtime cache directory: "+str(folder))
+        with os.scandir(folder) as entries:
+            for entry in entries:
+                info=entry.stat(follow_symlinks=False)
+                if stat.S_ISLNK(info.st_mode):raise ValueError("Uncounted runtime cache symlink is forbidden")
+                if info.st_dev!=device:raise ValueError("Runtime cache crosses a filesystem")
+                if stat.S_ISDIR(info.st_mode):pending.append(Path(entry.path))
+                elif stat.S_ISREG(info.st_mode):
+                    if not info.st_mode&0o444 or not os.access(entry.path,os.R_OK):raise PermissionError(entry.path)
+                    total+=info.st_size
+                else:raise ValueError("Unexpected special runtime cache entry: "+entry.path)
+    return total
+
+
 class RuntimeStorage:
     def __init__(self,release,output):
         if not validate_spec(release):raise ValueError("No explicit new storage profile")
@@ -76,12 +100,7 @@ class RuntimeStorage:
         self.paths()
         if shutil.disk_usage(NVME).free<80*1024**3 or shutil.disk_usage(SDA).free<32*1024**3:
             raise RuntimeError("Explicit NVMe80/SDA32 free-space gate")
-        size=0
-        for path in RUNTIME_ROOT.rglob("*"):
-            if path.is_symlink():raise ValueError("Uncounted runtime cache symlink is forbidden")
-            if path.is_file():
-                if path.stat().st_dev!=NVME.stat().st_dev:raise ValueError("Runtime cache crosses a filesystem")
-                size+=path.stat().st_size
+        size=tree_bytes(RUNTIME_ROOT,NVME.stat().st_dev)
         if size>=16384*1024**2:raise RuntimeError("Whole new runtime cache exceeds 16 GiB")
         return {"profile":PROFILE,"runtime_root":str(RUNTIME_ROOT),"run_runtime_root":str(self.root),
             "runtime_bytes":size,"environment":self.expected,"source_environment_fully_readonly":False,
@@ -90,6 +109,10 @@ class RuntimeStorage:
     def create(self):
         receipt=self.check()
         for key in CACHE_SUBDIRS:Path(self.expected[key]).mkdir(parents=True,exist_ok=True)
+        # Kit creates this empty directory as mode000 on this installation.
+        # Create it readably in the NEW per-run root before importing Kit;
+        # never chmod an existing path or modify an old cache automatically.
+        (self.root/"omnigibson/local/data/documents/Kit/shared/screenshots").mkdir(mode=0o700,parents=True,exist_ok=True)
         self.check();return receipt
 
 

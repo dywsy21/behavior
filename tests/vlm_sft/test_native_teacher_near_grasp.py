@@ -244,7 +244,7 @@ class NearTeacherTests(unittest.TestCase):
         def fail(*a,**k):raise primary
         state=NS(q=np.zeros(18),gripper=np.ones(2)*.05)
         ns={'np':np,'json':json,'near':True,'native_limit':420,'issued_native':12,'issued_prefix':396,'controls':12,'prefix_count':396,
-            'terminal':False,'grips':np.ones(2),'teacher_frame':None,'teacher_reader':None,'started':0,
+            'terminal':False,'grips':np.ones(2),'teacher_frame':None,'teacher_reader':None,'started':0,'wall_limit':900,'storage':None,
             'time':NS(monotonic=lambda:1),'shutil':NS(disk_usage=lambda p:NS(free=90*1024**3)),
             'x':NS(output=Path('/unused')),'state':lambda:state,'model':NS(lower=-np.ones(18),upper=np.ones(18)),
             'check_actual_joint_bounds':check_actual_joint_bounds,'issue_trace':stream,

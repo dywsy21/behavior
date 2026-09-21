@@ -1,0 +1,34 @@
+{
+  "schema": "h09y-heldout-grasp-evaluation-v1",
+  "authorize_evaluation": false,
+  "reviewer": "",
+  "code_commit": "REVIEWED_IMMUTABLE_SOURCE",
+  "executor_digest": "239cb591f178099f20e9a9ba6d7cd3ce04aa5ccfe183840ebe1ff78ac2f40b9b",
+  "protocol": "h09x-current-robot-pose-v1",
+  "dataset_sha256": "REVIEWED_COMPLETE_DATASET",
+  "preparation_sha256": "EXACT_HELDOUT_PREPARATION",
+  "service_identity_sha256": "ACTUAL_AUTHORIZED_SERVICE_IDENTITY",
+  "source": [1, 200, 1],
+  "variant": "base",
+  "physical_gpu": 3,
+  "specified_hand": null,
+  "oracle_actor_feedback": false,
+  "experiment_root": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only",
+  "engineering_gate_paths": [],
+  "budget": {
+    "resets": 1,
+    "max_decisions": 12,
+    "new_controls_including_final_hold": 420,
+    "seconds_after_reset": 1200,
+    "initialization_seconds": 900,
+    "run_MiB": 384,
+    "total_MiB": 6144
+  },
+  "storage": {
+    "profile": "h09y-nvme-runtime-20260921-v1",
+    "runtime_root": "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921",
+    "runtime_max_MiB": 16384,
+    "nvme_min_free_GiB": 80,
+    "sda_min_free_GiB": 32
+  }
+}

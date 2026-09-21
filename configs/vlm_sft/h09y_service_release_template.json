@@ -1,0 +1,18 @@
+{
+  "authorize_service": false,
+  "reviewer": "",
+  "code_commit": "REVIEWED_IMMUTABLE_SOURCE",
+  "dataset_sha256": "REVIEWED_COMPLETE_DATASET",
+  "training_result_sha256": "ACTUAL_COMPLETE_120_UPDATE_RESULT",
+  "protocol": "h09x-current-robot-pose-v1",
+  "physical_gpu": 3,
+  "max_calls": 48,
+  "port": 8919,
+  "storage": {
+    "profile": "h09y-nvme-runtime-20260921-v1",
+    "runtime_root": "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921",
+    "runtime_max_MiB": 16384,
+    "nvme_min_free_GiB": 80,
+    "sda_min_free_GiB": 32
+  }
+}

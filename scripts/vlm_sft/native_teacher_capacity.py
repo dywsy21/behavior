@@ -6,12 +6,15 @@ LEGACY_ROOT = "/mnt/sdc1/robodojo/behavior_dev/vlm_sft_native_teacher_20260919"
 H09W_ROOT = "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09w_native_complete"
 LEGACY_PROFILE = "near100"
 COMPLETE_PROFILE = "near_complete384"
+H09Y_PROFILE = "near_h09y_grasp384"
+H09Y_ROOT = "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only"
+H09Y_STARTS = {(1,264,114,993),(1,310,192,392),(1,264,114,989),(1,310,192,388),(1,264,114,985)}
 
 
 def capacity_limits(release):
     """No implicit enlargement, mixed profiles or bool-as-int budgets."""
     profile = release.get("capacity_profile", LEGACY_PROFILE)
-    if type(profile) is not str or profile not in (LEGACY_PROFILE, COMPLETE_PROFILE):
+    if type(profile) is not str or profile not in (LEGACY_PROFILE, COMPLETE_PROFILE,H09Y_PROFILE):
         raise ValueError("Unknown native-teacher capacity profile")
     expected = {"run_MiB": 100, "total_MiB": 384}
     if profile == COMPLETE_PROFILE:
@@ -19,12 +22,29 @@ def capacity_limits(release):
         if (release.get("experiment_root") != H09W_ROOT or
                 release.get("prior_experiment_roots") != [LEGACY_ROOT]):
             raise ValueError("Exact new NVMe and preserved original experiment roots required")
+    elif profile == H09Y_PROFILE:
+        expected={"run_MiB":384,"total_MiB":6144}
+        source=release.get("source",[]);prefix=release.get("paid_prefix_controls")
+        if (not isinstance(source,list) or len(source)!=3 or any(type(v) is not int for v in source) or
+                type(prefix) is not int or (*source,prefix) not in H09Y_STARTS or
+                release.get("experiment_root")!=H09Y_ROOT or release.get("held_out_instance_groups")!=[[1,1],[1,71]] or
+                type(release.get("registered_gpu")) is not int or release["registered_gpu"]!=3 or
+                type(release.get("initialization_seconds")) is not int or release["initialization_seconds"]!=900 or
+                any(k in release for k in ("prior_experiment_roots","combined_total_MiB"))):
+            raise ValueError("Exact new H09Y TRAIN start/GPU/root/init/heldout profile required")
     elif any(k in release for k in ("prior_experiment_roots", "combined_total_MiB")):
         raise ValueError("Cross-root fields require the explicit complete capacity profile")
     for key, value in expected.items():
         if type(release.get(key)) is not int or release[key] != value:
             raise ValueError("Mixed or malformed native-teacher capacity limits")
     return expected["run_MiB"]*MIB, expected["total_MiB"]*MIB
+
+
+def validate_collection_location(release,output,gpu):
+    if release.get("capacity_profile")!=H09Y_PROFILE:return
+    _,_,instance=release["source"];prefix=release["paid_prefix_controls"]
+    if gpu!=3 or Path(output).resolve()!=Path(H09Y_ROOT)/f"native_t1_i{instance}_p{prefix:04d}":
+        raise ValueError("Only the exact singly registered H09Y collection output/GPU")
 
 
 class CombinedArtifactBudget(ArtifactBudget):

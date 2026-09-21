@@ -45,12 +45,13 @@ class NativeStorageTests(unittest.TestCase):
                             free=(79 if p==nvme else 100)*1024**3)),self.assertRaises(RuntimeError):guard.check()
                     file=guard.root/"tmp/file";file.write_bytes(b"123")
                     self.assertEqual(guard.check()["runtime_bytes"],3)
-                    large=SimpleNamespace(is_symlink=lambda:False,is_file=lambda:True,
-                        stat=lambda:SimpleNamespace(st_dev=nvme.stat().st_dev,st_size=16384*1024**2))
-                    with patch.object(Path,"rglob",return_value=[large]),self.assertRaises(RuntimeError):guard.check()
-                    foreign=SimpleNamespace(is_symlink=lambda:False,is_file=lambda:True,
-                        stat=lambda:SimpleNamespace(st_dev=nvme.stat().st_dev+1,st_size=0))
-                    with patch.object(Path,"rglob",return_value=[foreign]),self.assertRaises(ValueError):guard.check()
+                    with patch.object(storage,"tree_bytes",return_value=16384*1024**2),self.assertRaises(RuntimeError):guard.check()
+                    with self.assertRaises(ValueError):storage.tree_bytes(runtime,nvme.stat().st_dev+1)
+                    with patch.object(storage.os,"scandir",side_effect=PermissionError("unreadable")),self.assertRaises(PermissionError):guard.check()
+                    unreadable=guard.root/"mode000";unreadable.mkdir();unreadable.chmod(0)
+                    try:
+                        with self.assertRaises(PermissionError):guard.check()
+                    finally:unreadable.chmod(0o700)
                     link=guard.root/"tmp/outside";link.symlink_to(sda,target_is_directory=True)
                     with self.assertRaises(ValueError):guard.check()
 

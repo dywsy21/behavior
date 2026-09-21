@@ -44,7 +44,8 @@ from run_v2 import implementation_digest
 from replay_contact_audit import preserved_session, report_failure
 from native_teacher_near_grasp import SCHEMA as NEAR_SCHEMA
 from native_teacher_reference_contract import check_actual_joint_bounds,source_state_diagnostic
-from native_teacher_capacity import capacity_limits,near_artifact_budget
+from native_teacher_capacity import capacity_limits,near_artifact_budget,H09Y_PROFILE,validate_collection_location
+from native_storage import activate as activate_storage,validate_spec as validate_storage_spec
 
 PILOT_TOKENS = [t for t in TOKENS if not t.startswith("BASE_") and
                 not any(axis in t for axis in ("ROLL", "PITCH", "YAW"))]
@@ -72,6 +73,8 @@ def rest_screen(states):
 
 def require_release(value, code, executor):
     near=value.get("schema")==NEAR_SCHEMA
+    if validate_storage_spec(value) and value.get("capacity_profile")!=H09Y_PROFILE:
+        raise ValueError("New storage requires the explicit H09Y collection profile")
     if near:
         capacity_limits(value)
         if any(type(value.get(k)) is not int for k in ("max_resets","max_candidates_per_instance",
@@ -86,7 +89,7 @@ def require_release(value, code, executor):
         raise ValueError("A separately reviewed H14-fixed executor and new pilot authorization are required")
     if near and (value.get("authorize_offline_teacher") is not True or value.get("allow_known_empty_rotation") is not True or
                  value.get("allow_grasp_cell_attempt") is not True or
-                 value.get("native_controls_max")!=420 or value.get("seconds_after_reset")!=900 or
+                 value.get("native_controls_max")!=420 or value.get("seconds_after_reset")!=(1200 if value.get("capacity_profile")==H09Y_PROFILE else 900) or
                  value.get("max_teacher_primitives")!=12 or value.get("model_calls")!=0 or
                  not isinstance(value.get("experiment_root"),str)):
         raise ValueError("Exact one-reset near-grasp budget/rotation authorization required")
@@ -181,6 +184,9 @@ def main():
         raise ValueError("Clean immutable source required")
     release = json.loads(x.authorization.read_text())
     require_release(release, code, implementation_digest())
+    validate_collection_location(release,x.output,x.gpu)
+    h09y=release.get("capacity_profile")==H09Y_PROFILE
+    wall_limit=1200 if h09y else 900
     near=release.get("schema")==NEAR_SCHEMA
     native_limit=420 if near else 200
     if near and x.teacher_config is None:raise ValueError("Near-grasp release cannot enable the manual pilot")
@@ -209,6 +215,7 @@ def main():
             verify_installed_dependency()
         if teacher_spec["verb"] == "PLACE_IN":
             raise ValueError("PLACE_IN all-corners volume adapter not yet independently validated; no reset")
+    storage=activate_storage(release,x.output)
     x.output.mkdir(parents=True, exist_ok=False)
     artifacts = (near_artifact_budget(x.output,release) if near else
                  ArtifactBudget(x.output, x.prepared.resolve().parent.parent))
@@ -216,6 +223,8 @@ def main():
     import shutil
     if shutil.disk_usage(x.output).free < 80*1024**3:
         raise RuntimeError("Disk reserve: no reset")
+    if storage is None and h09y and any(shutil.disk_usage(m).free<80*1024**3 for m in ("/mnt/sdc1","/mnt/nvme_tmp")):
+        raise RuntimeError("Both-filesystem reserve before reset")
     os.environ["OMNIGIBSON_GPU_ID"] = str(x.gpu); os.environ["BEHAVIOR_ACTION_STEPS"] = "1"
     os.environ.setdefault("OMNIGIBSON_HEADLESS", "1"); os.environ.setdefault("OMNI_KIT_ACCEPT_EULA", "YES")
     sys.path.insert(0, str(ADAPTER))
@@ -247,10 +256,17 @@ def main():
                 {"issued_prefix":issued_prefix,"completed_prefix":prefix_count,"issued_native":issued_native,
                  "completed_native":controls,"inflight_may_have_executed":issued_prefix+issued_native!=prefix_count+controls},cleanup=True)
             except BaseException:pass
+    initialization_started=time.monotonic()
     with preserved_session(lambda: OfficialEvaluatorSession(window, gpu=x.gpu), record_error, lambda: first_error) as session:
         import omnigibson as og
         try:
+            if h09y and time.monotonic()-initialization_started>=900:raise TimeoutError("Initialization cap before reset")
+            if storage is not None:storage.check()
             session.reset(); started = time.monotonic(); env = session.evaluator.env
+            if h09y:
+                # Establish cleanup capability before rejecting a late reset.
+                kin=CalibratedRobot(env.robots[0]);grips=np.clip(kin.state().gripper/.05*2-1,-1,1)
+                if time.monotonic()-initialization_started>=900:raise TimeoutError("Initialization cap after reset")
             kin = CalibratedRobot(env.robots[0]); model = kin.calibrate(grounded=True)
             onboard = OnboardRGBD(env)
             # Establish the reset grip latch before any artifact-budget failure,
@@ -269,10 +285,11 @@ def main():
                 nonlocal controls, prefix_count, terminal, grips, teacher_frame,issued_native,issued_prefix
                 if terminal or (kind != "prefix" and (issued_native if near else controls) >= native_limit-1):
                     raise RuntimeError("Terminal/control budget; final stop slot reserved")
-                if time.monotonic()-started >= 900:
+                if time.monotonic()-started >= wall_limit:
                     raise TimeoutError("Pilot wall budget")
                 if shutil.disk_usage(x.output).free < 80*1024**3:
                     raise RuntimeError("Disk reserve exhausted; no additional control")
+                if storage is not None:storage.check()
                 if near:check_actual_joint_bounds(state(),model)
                 line = json.dumps({"phase": kind, "prefix_control": prefix_count+int(kind=="prefix"),
                                    "native_control": controls+int(kind!="prefix"),
