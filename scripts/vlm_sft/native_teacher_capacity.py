@@ -12,8 +12,8 @@ H09Y_STARTS = {(1,264,114,993),(1,310,192,392),(1,264,114,989),(1,310,192,388),(
 DIVERSE_PROFILE = "near_h09y_diverse_grasp384_v1"
 DIVERSE_STARTS = {(1,310,192,380),(1,264,114,969)}
 WORKSPACE_PROFILE = "near_h09z_workspace_grasp384_v1"
-# CPU implementation does not authorize or invent additional physical starts.
-WORKSPACE_STARTS = frozenset()
+# Registered separately from execution authority; old failed outputs stay intact.
+WORKSPACE_STARTS = frozenset({(1,310,192,380),(1,310,192,388)})
 H09Y_PROFILES = (H09Y_PROFILE, DIVERSE_PROFILE, WORKSPACE_PROFILE)
 
 
@@ -48,8 +48,10 @@ def capacity_limits(release):
 
 def validate_collection_location(release,output,gpu):
     if release.get("capacity_profile") not in H09Y_PROFILES:return
+    capacity_limits(release)
     _,_,instance=release["source"];prefix=release["paid_prefix_controls"]
-    if gpu!=3 or Path(output).resolve()!=Path(H09Y_ROOT)/f"native_t1_i{instance}_p{prefix:04d}":
+    suffix="_ws45" if release["capacity_profile"]==WORKSPACE_PROFILE else ""
+    if gpu!=3 or Path(output).resolve()!=Path(H09Y_ROOT)/f"native_t1_i{instance}_p{prefix:04d}{suffix}":
         raise ValueError("Only the exact singly registered H09Y collection output/GPU")
 
 

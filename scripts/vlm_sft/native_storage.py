@@ -41,9 +41,11 @@ DIVERSE_SPEC={**SHARED_SPEC,"profile":DIVERSE_STORAGE_PROFILE,"shared_og_cache":
     **SHARED_SPEC["shared_og_cache"],
     "allowed_aliases":[str(RUNTIME_ROOT/name/"omnigibson/global/cache") for name in DIVERSE_RUNS]}}
 WORKSPACE_STORAGE_PROFILE="h09z-nvme-shared-og-cache-workspace-v1"
-# No extra run/alias is granted by the CPU-only implementation.
-WORKSPACE_RUNS=DIVERSE_RUNS
-WORKSPACE_SPEC={**DIVERSE_SPEC,"profile":WORKSPACE_STORAGE_PROFILE}
+# Two separately registered paths; previous profiles do not acquire these aliases.
+WORKSPACE_RUNS=DIVERSE_RUNS+("native_t1_i192_p0380_ws45","native_t1_i192_p0388_ws45")
+WORKSPACE_SPEC={**DIVERSE_SPEC,"profile":WORKSPACE_STORAGE_PROFILE,"shared_og_cache":{
+    **DIVERSE_SPEC["shared_og_cache"],
+    "allowed_aliases":[str(RUNTIME_ROOT/name/"omnigibson/global/cache") for name in WORKSPACE_RUNS]}}
 CACHE_SUBDIRS={"OMNIGIBSON_APPDATA_PATH":"omnigibson","TMPDIR":"tmp",
     "TMP":"tmp","TEMP":"tmp",
     "CUDA_CACHE_PATH":"cuda","__GL_SHADER_DISK_CACHE_PATH":"gl",
