@@ -5,6 +5,7 @@
   "status":"first_engineering_gate_initializing",
   "first_gate_process":{"pid":2573658,"submitted_bjt":"2026-09-21T12:28:38.946899+08:00","run":"gate_radio_h22","gpu":2,"result_pending":true},
   "gpu_admission":"No unknown/model/training process on target GPU; allow identified other parent/child Kit auxiliary context<=512MiB with exact PID/main-device binding; free>=70GiB for a new simulator before model loading.",
+  "second_gate_dependency":"After first H22 gate and child first native2575671 exit; avoid concurrent Kit initialization/control contention without extending either live budget.",
   "hypothesis":"Exclude actual current robot visual-link points before rigid scene odometry, retaining all quality thresholds, to remove self-motion pollution seen in H21.",
   "code_commit":"d7c8028c08a14f78bc6bb055b22692cdd451154c",
   "implementation_digest":"e7631fc5778ca26777f29dbd44ec7607ad8de5d17c39c655c3c51bfc63b9b33d",
