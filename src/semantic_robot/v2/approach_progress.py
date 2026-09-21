@@ -52,7 +52,10 @@ class ApproachProgress:
             not loaded and action is not None and action.part=="base" and
             action.move in ("forward","back","left","right") and
             feedback is not None and feedback.get("status")=="TARGET_REACHED" and measured and
-            distance is not None and old["distance"] is not None and max(distance,old["distance"])<=.10 and
+            # Failure of predicted progress matters at any observed distance.
+            # The 0.10 m cutoff missed repeated advances at 0.11-0.15 m, even
+            # though the same measured static-target prediction kept failing.
+            distance is not None and old["distance"] is not None and
             set(points)==set(old["points"]) and body[:3,3]@np.asarray(TRANSLATIONS[action.move])>=.012)
         if not eligible:self.window=[];return self.context()
         inv=np.linalg.inv(body)

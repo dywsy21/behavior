@@ -37,15 +37,48 @@ class ApproachProgressTests(unittest.TestCase):
         self.assertTrue(p.allowed(Action("base","forward")))
         self.assertEqual(len(p.window),1)
 
-    def test_missing_measurement_far_target_navigation_and_loaded_hand_abstain(self):
+    def test_missing_measurement_navigation_and_loaded_hand_abstain(self):
         for changes in ({"motion":{"valid":False}}, {"kind":"navigate"}, {"stage":"VERIFY_GRASP"},
                         {"loaded":True}, {"points":{}}, {"feedback":{"status":"BASE_TRACKING_FAILED"}}):
             p=ApproachProgress()
             for i in range(5):self.sample(p,i,**changes)
             self.assertEqual(p.context()["blocked_base_directions"],[])
+
+    def test_nonprogress_is_not_exempt_outside_old_ten_centimetre_gate(self):
+        for distance in (.1001,.14,.5,1.2):
+            with self.subTest(distance=distance):
+                p=ApproachProgress()
+                for i in range(4):self.sample(p,i,distance)
+                self.assertFalse(p.allowed(Action("base","forward")))
+                self.assertEqual(p.context()["evidence"][0]["executions"],[1,2,3])
+                self.assertTrue(p.context()["evidence"][0]["not_proof_of_collision_or_object_motion"])
+
+    def test_far_approach_with_measured_gain_remains_allowed(self):
         p=ApproachProgress()
-        for i in range(5):self.sample(p,i,.5)
-        self.assertEqual(p.blocked,{})
+        for i in range(16):
+            self.sample(p,i,.65-.018*i)
+            self.assertTrue(p.allowed(Action("base","forward")))
+
+    def test_approach_crossing_old_distance_boundary_preserves_progress(self):
+        p=ApproachProgress()
+        for i,distance in enumerate((.145,.127,.109,.091,.073,.055)):
+            self.sample(p,i,distance)
+            self.assertTrue(p.allowed(Action("base","forward")))
+
+    def test_far_target_still_requires_three_distinct_measured_advances(self):
+        p=ApproachProgress();self.sample(p,0,.14)
+        for _ in range(5):self.sample(p,1,.14)
+        self.sample(p,2,.14)
+        self.assertTrue(p.allowed(Action("base","forward")))
+        self.sample(p,3,.14)
+        self.assertFalse(p.allowed(Action("base","forward")))
+
+    def test_far_target_tiny_body_motion_does_not_fake_qualifying_progress_window(self):
+        p=ApproachProgress();body=np.eye(4);body[0,3]=.006
+        for i in range(5):
+            self.sample(p,i,.14,motion={"valid":True,"body_transform_current_in_previous":body})
+        self.assertEqual(p.context()["recent_measured_attempts"],[])
+        self.assertTrue(p.allowed(Action("base","forward")))
 
     def test_unknown_target_open_or_new_pixel_cannot_forget_veto(self):
         for changes in ({"points":{}},{"action":Action("right","open")},{"distance":.025}):
