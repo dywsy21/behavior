@@ -1,0 +1,12 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-21T21:58:00+08:00",
+  "code_commit": "33e236218f0f23556c4de5dddea907018402d80e",
+  "scope": "Full7-line native_eval_summary delta, containing function and all6 new test methods; owned experiment documentation",
+  "independent_tests": {"SFT_suite":187,"seconds":5.626,"passed":true},
+  "findings": "No blocker. Accepts either exact known carry storage identity, while comparisons still reject mixed storage, source, dataset, executor or carry core and retain original episode budgets and denominator2 per variant.",
+  "public_executor_unchanged_from_ced2691": true,
+  "new_tree_cpu_preflight_permitted": true,
+  "training_data_release": false,
+  "physical_or_training_success_claim": false
+}

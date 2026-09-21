@@ -1,0 +1,41 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-21T21:58:00+08:00",
+  "run": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i114_p0953_ws45_cd1_b2",
+  "source": "ced2691d24d0caebb7367fdbb0896fd44bb61c36",
+  "executor_sha256": "8fdfcd3e1b8bdfd95530eec09710d1c44efc215885b49c64c1a82f55bbc501a8",
+  "inventory_sha256": "3e736053206c39fdd3918557f03179f80418c12931327458e947e62d6cf37b5e",
+  "complete_failed_run_audit_passed": true,
+  "positive_BC_admitted": false,
+  "files": 204,
+  "bytes": 84921462,
+  "controls_including_final_hold": 1202,
+  "expert_prefix_controls": 953,
+  "native_controls_including_final_hold": 249,
+  "wall_seconds_after_reset": 1200.53609239636,
+  "actual_q_grip_23D_servo_replays": 7,
+  "capture_sets": 20,
+  "payload_hashes": 140,
+  "depth_hashes": 60,
+  "physical_frames": 238,
+  "numeric_seconds": 3.1305553580168635,
+  "numeric_report": "artifacts/agentic-vlm-goal-20260918/h35_953_failed_review_report.json",
+  "numeric_report_sha256": "6b4aa71ad20e6e160babad20ba9b4aafecd323d69601b4fd51ab8a5b12c400ba",
+  "manual_review": {
+    "personally_viewed_raw_images": 60,
+    "all_existing_before_after_after_settle_x_three_cameras": true,
+    "additional_full_resolution_checks": ["teacher_04/after/right_wrist.png", "teacher_06/after/head.png"],
+    "observation": "Open right fingers approach bin rim, CLOSE contacts rim, two UP macros lift it. Last macro has only before/after captures and7 of12 settle ticks before timeout. No missing after_settle image or positive record invented."
+  },
+  "outcome": {
+    "final_right_held_and_finger_contact": true,
+    "target_rise_m": 0.02658665180206299,
+    "hand_rise_since_first_CLOSE_m": 0.019169867038726807,
+    "last12_relative_drift_m": 0.000010108403211569275,
+    "local_GRASP": "IN_PROGRESS",
+    "stable_ticks": 0,
+    "official_success_claim": false
+  },
+  "limits": "Grasp predicates require more lift and stable ticks. Even the last macro lacks a completed QUARANTINED record; no part of this failed trajectory is released as positive BC. It is not a VLM rollout.",
+  "next": "Read-only timing/remaining-action audit for an explicitly registered sufficient-wall successor; no automatic retry granted by this receipt."
+}

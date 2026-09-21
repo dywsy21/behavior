@@ -1,0 +1,23 @@
+{
+  "experiment_id": "H35-current-RAW-focused-localization-v1",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-21T21:58:00+08:00",
+  "status": "REGISTERED_NOT_CALLED",
+  "hypothesis": "Separating current object localization from history/robot guides/negative feedback may recover accurate visible contact identification without copying an all-false example or preferring the active wrist.",
+  "client_commit": "42f38b7cc73fbdb3f7ce88fedf7f7c5024518fb9",
+  "saved_decisions_in_order": [0,117,118,120],
+  "sample_selection": "One original initial search snapshot as absent-target control; all three predeclared H32 near-contact snapshots, no outcome-dependent replacements",
+  "input": "Only the same3 CURRENT RAW images and exact current subgoal from each archived observation. No PREVIOUS/guide frames, geometry, old target answers, failure feedback or oracle input.",
+  "protocol": "One localization call per state with short explicit neutral field specification. Unknown enclosure/co-motion/support/effect are forced null. Existing H33 refinement algorithm may add at most one surface query per state. No sample retries.",
+  "baseline": "Reuse all4 archived H30 observations; H34 negative feedback result retained separately. This compound input intervention is not a causal ablation of each prompt component.",
+  "model_service": "existing2673116/8929/GPU2, original27B revision1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0,294 calls before",
+  "max_new_model_calls": 8,
+  "wall_seconds": 300,
+  "output_MiB": 128,
+  "new_resets": 0,
+  "new_controls": 0,
+  "training_updates": 0,
+  "output": "/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/h35_focused_raw_v1",
+  "acceptance": "Parent manually checks all4 states/RAW and new UV/surface proposals, including absent control; requires no bad table point accepted. Static localization only, not grasp or physical SR.",
+  "deployment_authorized": false
+}
