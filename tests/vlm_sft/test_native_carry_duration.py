@@ -230,6 +230,7 @@ class CarryNativeTests(unittest.TestCase):
                 'native_limit':640,'controls':12,'prefix_count':388,'issued_native':12,'issued_prefix':388,'terminal':False,
                 'grips':np.ones(2),'teacher_frame':None,'teacher_reader':None,'public_history':PublicGripperHistory([1,1]),
                 'workspace_quota':quota,'policy':policy,'last_info':{},'reader':None,'started':0,'wall_limit':1200,
+                'budget':{'seconds_after_reset':1200},
                 'time':NS(monotonic=lambda:1),'storage':None,'check_storage':lambda *a:None,
                 'check_actual_joint_bounds':lambda *a:None,'state':lambda:state,'model':object(),
                 'shutil':NS(disk_usage=lambda *a:NS(free=100*1024**3)),'x':NS(output=Path('/unused')),

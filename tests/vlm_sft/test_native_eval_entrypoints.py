@@ -124,6 +124,7 @@ class EvalEntrypointTests(unittest.TestCase):
         policy=PublicExecution([1,1]);writer=NS(check=lambda *a:None,append_text=lambda s,line:s.write(line))
         ns={"np":np,"json":json,"controls":12,"prefix_count":832,"issued_native":12,"issued_prefix":832,
             "grips":np.ones(2),"terminal":False,"last_info":{},"started":0,"time":NS(monotonic=lambda:1),
+            "budget":{"seconds_after_reset":1200},
             "check_storage":lambda *a:None,"storage":None,"check_actual_joint_bounds":lambda *a:None,
             "state":lambda:state,"model":object(),"current_writer":writer,"trace":completed,"issue_trace":issued,
             "reader":object(),"measure":lambda:measurements.append({"held":True,"forbidden_contacts":True}),

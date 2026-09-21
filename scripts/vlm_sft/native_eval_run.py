@@ -38,11 +38,23 @@ from native_motion_codec import BODY_TOKENS
 
 BUDGET={"resets":1,"max_decisions":12,"new_controls_including_final_hold":420,
     "seconds_after_reset":1200,"initialization_seconds":900,"run_MiB":384,"total_MiB":6144}
+EVALUATION_TIME_PROFILE="h09z-paired-grasp-wall2100-v1"
 
 
-def evaluation_budget(profile):
+def evaluation_budget(profile,time_profile=None):
+    if time_profile is not None and (type(time_profile) is not str or time_profile!=EVALUATION_TIME_PROFILE or profile!=CARRY_PROFILE):
+        raise ValueError("Only the explicit CARRY paired2100 evaluation time profile")
     macros,controls=episode_limits(profile)
-    return {**BUDGET,'max_decisions':macros,'new_controls_including_final_hold':controls}
+    return {**BUDGET,'max_decisions':macros,'new_controls_including_final_hold':controls,
+        'seconds_after_reset':2100 if time_profile is not None else 1200}
+
+
+def evaluation_time_profile(auth):
+    if 'evaluation_time_profile' not in auth:return None
+    value=auth['evaluation_time_profile']
+    if value is None:raise ValueError("Explicit evaluation time profile cannot be null")
+    evaluation_budget(authorization_profile(auth),value)
+    return value
 
 
 def require_evaluation(auth,code,executor,prepared,variant,output,data_sha):
@@ -61,7 +73,7 @@ def require_evaluation(auth,code,executor,prepared,variant,output,data_sha):
             Path(output).resolve()!=ROOT/f"eval_t1_i{instance}_{variant}_v1"):
         raise ValueError("Separate exact six-slot evaluation authorization required")
     budget=auth.get("budget")
-    expected=evaluation_budget(execution_profile)
+    expected=evaluation_budget(execution_profile,evaluation_time_profile(auth))
     if not isinstance(budget,dict) or set(budget)!=set(expected) or any(type(budget[k]) is not int or budget[k]!=v for k,v in expected.items()):
         raise ValueError("Exact bounded single-reset evaluation profile required")
     from native_carry_admission import require_engineering_gates
@@ -104,7 +116,9 @@ def main():
     auth=json.loads(a.authorization.read_text())
     execution_profile=authorization_profile(auth)
     prepared,prefix=verify(a.prepared,auth['preparation_sha256'],execution_profile=execution_profile)
-    macro_limit,native_limit=episode_limits(execution_profile);budget=evaluation_budget(execution_profile)
+    time_profile=evaluation_time_profile(auth)
+    time_identity={} if time_profile is None else {'evaluation_time_profile':time_profile}
+    macro_limit,native_limit=episode_limits(execution_profile);budget=evaluation_budget(execution_profile,time_profile)
     data_sha=sha(a.data/"dataset.json");require_evaluation(auth,code,implementation_digest(),prepared,a.variant,a.output,data_sha)
     rows,dataset=load_dataset(a.data);require_dataset_profile(dataset,execution_profile)
     from native_execution import require_pipeline_profile
@@ -116,7 +130,7 @@ def main():
     writer.write_json(a.output/"manifest.json",{"code_commit":code,"protocol":auth["protocol"],"authorization":auth,
         "preparation":prepared,"dataset_sha256":data_sha,"service_identity":identity,"budget":budget,
         "oracle_actor_feedback":False,"specified_hand":None,"paid_prefix_not_full_task_SR":True,
-        "storage":None if storage is None else storage.check()})
+        "storage":None if storage is None else storage.check(),**time_identity})
     os.environ["OMNIGIBSON_GPU_ID"]="3";os.environ["BEHAVIOR_ACTION_STEPS"]="1"
     os.environ.setdefault("OMNIGIBSON_HEADLESS","1");os.environ.setdefault("OMNI_KIT_ACCEPT_EULA","YES")
     sys.path.insert(0,str(ADAPTER))
@@ -176,7 +190,7 @@ def main():
             def step(command,phase):
                 nonlocal controls,prefix_count,issued_native,issued_prefix,grips,terminal,last_info
                 if terminal or (phase!="prefix" and issued_native>=native_limit-1):raise RuntimeError("Terminal/control limit; final hold reserved")
-                if time.monotonic()-started>=1200:raise TimeoutError("Reset-to-end budget exhausted")
+                if time.monotonic()-started>=budget['seconds_after_reset']:raise TimeoutError("Reset-to-end budget exhausted")
                 check_storage(storage);check_actual_joint_bounds(state(),model)
                 command=np.asarray(command,np.float32)
                 if command.shape!=(23,) or not np.isfinite(command).all():raise ValueError("Finite native23 action required")
@@ -222,7 +236,7 @@ def main():
             initial["finger_opening"]=dict(zip(("left","right"),state().gripper.tolist()))
             writer.write_json(a.output/"PRIVATE_initial.json",{"spec":spec,"frame":initial,"baseline_contacts":reader.baseline_receipt})
             for index in range(macro_limit):
-                if time.monotonic()-started>=1200:raise TimeoutError("No new call after deadline")
+                if time.monotonic()-started>=budget['seconds_after_reset']:raise TimeoutError("No new call after deadline")
                 folder=a.output/f"decision_{index:02d}";folder.mkdir()
                 before,hashes,depths,geometry,receipt=capture(folder/"before")
                 clock={"prefix_control":prefix_count,"native_control":controls}
@@ -230,6 +244,8 @@ def main():
                     runtime_proprio(model,before,clock=receipt["clock"],expected_clock=clock,calibration_sha256=model.sha),hashes,history[-5:],
                     protocol=auth["protocol"])
                 raw={v:(folder/"before"/(v+".png")).read_bytes() for v in CAMERAS}
+                if time_profile is not None and time.monotonic()-started>=budget['seconds_after_reset']:
+                    raise TimeoutError("No new call after snapshot deadline")
                 if nn is None:neural_requests+=1
                 answer=choose(a.variant,actor,raw,nn=nn,remote=remote);token=answer["prediction"]
                 writer.write_json(folder/"request.json",{"actor":actor,"response":answer,"capture_sha256":sha(folder/"before/capture.json")})
@@ -297,7 +313,7 @@ def main():
                 "final_hold":final_hold,"score":score,"manifest_sha256":sha(a.output/"manifest.json"),
                 "official_success":bool(official) if isinstance(official,(bool,np.bool_)) else None,
                 "wall_seconds_after_reset":None if started is None else time.monotonic()-started,
-                "fixed_local_skill_only":True,"full_task_success_rate_claim":False},cleanup=True)
+                "fixed_local_skill_only":True,"full_task_success_rate_claim":False,**time_identity},cleanup=True)
     if first_error is not None:raise first_error
 
 

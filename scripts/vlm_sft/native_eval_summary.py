@@ -26,6 +26,16 @@ def summarize(root):
                         m.get("oracle_actor_feedback") is not False or m.get("specified_hand") is not None):
                     raise ValueError("Registered paired identities changed")
                 profile=authorization_profile(auth)
+                from native_eval_run import evaluation_budget,evaluation_time_profile
+                time_profile=evaluation_time_profile(auth)
+                time_identity={} if time_profile is None else {'evaluation_time_profile':time_profile}
+                if {k:m[k] for k in ('evaluation_time_profile',) if k in m}!=time_identity:
+                    raise ValueError("Paired manifest evaluation time identity differs")
+                budget=evaluation_budget(profile,time_profile)
+                if profile==CARRY_PROFILE and any(not isinstance(b,dict) or set(b)!=set(budget) or
+                        any(type(b[k]) is not int or b[k]!=v for k,v in budget.items())
+                        for b in (m.get('budget'),auth.get('budget'))):
+                    raise ValueError("New paired episode budgets differ")
                 storage_profile=(auth.get("storage") or {}).get("profile")
                 if profile in TIMING_PROFILES:
                     from native_storage import DIVERSE_STORAGE_PROFILE,WORKSPACE_STORAGE_PROFILE,CARRY_STORAGE_PROFILES,validate_spec
@@ -43,23 +53,24 @@ def summarize(root):
                     check_sha(auth.get('executor_digest'));require_carry_reviews(auth)
                     if auth.get('code_commit')!=m['code_commit']:raise ValueError("Actual paired code differs from authorization")
                     extra=(auth['executor_digest'],auth['carry_duration_core_commit'])
-                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile,storage_profile,*extra))
+                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile,storage_profile,time_profile,*extra))
+                row.update(time_identity)
                 row["execution_profile"]=profile
                 row["status"]="INCOMPLETE_ATTEMPT"
             if result_path.exists():
                 r=json.loads(result_path.read_text())
                 macros,controls=episode_limits(profile)
-                if profile==CARRY_PROFILE:
-                    from native_eval_run import evaluation_budget
-                    if m.get('budget')!=evaluation_budget(profile) or auth.get('budget')!=evaluation_budget(profile):
-                        raise ValueError("New paired episode budgets differ")
+                if {k:r[k] for k in ('evaluation_time_profile',) if k in r}!=time_identity:
+                    raise ValueError("Paired result evaluation time identity differs")
                 if r.get("manifest_sha256")!=sha(run/"manifest.json") or r.get("variant")!=variant or r.get("instance")!=instance:
                     raise ValueError("Result is not bound to this paired run")
+                elapsed=r.get("wall_seconds_after_reset",float("inf"))
+                within_wall=bool(type(elapsed) in (int,float) and np.isfinite(elapsed) and 0<=elapsed<=budget['seconds_after_reset'])
                 valid=(r.get("status")=="COMPLETE" and r.get("final_hold") is True and
                     not (run/"failure.json").exists() and r.get("issued_native")==r.get("native_controls") and
                     r.get("issued_prefix")==r.get("prefix_controls")==item["prefix"] and
                     1<=r["native_controls"]<=controls and len(r.get("decisions",[]))<=macros and
-                    r.get("wall_seconds_after_reset",float("inf"))<=1200)
+                    within_wall)
                 row.update(status=r.get("status"),valid_bounded_result=valid,result_sha256=sha(result_path),
                     counted_local_success=bool(valid and r.get("score",{}).get("any_hand_local_success") is True),
                     score=r.get("score"),official_success_diagnostic=r.get("official_success"),

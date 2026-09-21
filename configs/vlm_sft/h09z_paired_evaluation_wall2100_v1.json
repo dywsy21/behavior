@@ -1,0 +1,31 @@
+{
+  "schema": "h09z-paired-evaluation-wall2100-registration-v1",
+  "owner": "Astra-vlm-sft",
+  "cpu_started_bjt": "2026-09-21T22:45:33+08:00",
+  "cpu_max_seconds": 900,
+  "authorize_training": false,
+  "authorize_service": false,
+  "authorize_evaluation": false,
+  "evaluation_time_profile": "h09z-paired-grasp-wall2100-v1",
+  "execution_profile": "gripper-command-completion-v1-public-preclose-translation-v1-compensated-torso-v1-carry-duration-v1-body2",
+  "source_data_collector_commit_unchanged": "8ad336e186a36476d51e3586ca7a35191ce990cb",
+  "executor_digest_unchanged": "8fdfcd3e1b8bdfd95530eec09710d1c44efc215885b49c64c1a82f55bbc501a8",
+  "heldout_sources": [[1, 200, 1, 832], [1, 247, 71, 1038]],
+  "variants": ["base", "finetuned", "proprio_history_nn"],
+  "total_resets": 6,
+  "per_slot": {
+    "seconds_after_reset": 2100,
+    "initialization_seconds": 900,
+    "max_decisions": 14,
+    "new_controls_including_final_hold": 640,
+    "workspace_macros_max": 2,
+    "run_MiB": 384
+  },
+  "result_root_MiB": 6144,
+  "runtime_root_MiB": 16384,
+  "service_neural_calls_max_unchanged": 56,
+  "training_updates_including_gate_unchanged": 120,
+  "training_wall_seconds_unchanged": 2700,
+  "default_evaluation_wall_seconds_unchanged": 1200,
+  "reason": "All paid prefix controls include rendering and wall time; real953 prefix used about16min and longer1038 would consume most of1200. One prospective uniform six-slot time profile, before any heldout evaluation. No rendering/motion/success/coverage change, extra reset, current-source mutation, oracle policy feedback, or model/checkpoint selection."
+}
