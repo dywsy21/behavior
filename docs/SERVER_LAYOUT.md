@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 13:20当前：** Astra新GPU3 2592963初始化，输出`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0392`及相邻log/launch，固定`git_worktrees/vlm_sft_h09y_b306684`（准确SHA b306684ff3a8cf7b3dfc2182b522d2094eef0a5c）；授权a634e83e…ef227/newteacher f5ac944a…5141/父review90044cf，旧inactive仍false。只新run runtime复用已审global/cache别名，0/1不触；父H22原进程继续，源码不得热改。
+
 **2026-09-21 13:14当前：** 父GPU2新27B2588439/8926已ready，原起点sim2589106初始化，均固定`git_worktrees/semantic_selfodom_d7c8028`；新输出`h22_self_odometry/server_h22`、`radio_h22_fullstart`与相邻log/`launch_server.json`、`launch_policy.json`，复用父自己NVMe runtime。Astra两v2 sidecar只在`h09y_grasp_only/precontact_seeds_v2/train{192,114}.json`，旧reference未改；固定新b306 CPU，GPU3尚无新physical或训练。
 
 **2026-09-21 13:12当前：** H22两gate2573658/2584009均已退出，全量约671MB本地`artifacts/agentic-vlm-goal-20260918/h22_gates_bundle`双端SHA/全链/视频/RAW审闭合；父d7不可变源保留，下一8926模型及原起点尚待实际启动。子2575671失败退出，350文件146,779,410B完整本地子worktree `artifacts/h09y-resume-20260921/native_complete/native_t1_i114_p0993`，0正BC；旧10e1与参考/失败全部保留，新b306仅CPU构造显式sidecar。GPU2/3实查空，0/1队友不动。

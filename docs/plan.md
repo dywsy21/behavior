@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 13:20（北京时间）v2首原生真实提交（Codex/Astra）：** Astra于13:19:18.280287单次2592963/GPU3启动`h09y_grasp_only/native_t1_i192_p0392`，固定b306/239、tick398 v2 seed7de89…336e、父review90044cf；active a634e83e…ef227/teacher f5ac944a…5141，精确392×23来源/factory/完整旧reference/新seed/shared-storage/预算实门.807s过。GPU3余80,943MiB，仅父2589106已识别200MiB辅助context；原12宏420新控制含hold/1200s＋900init/384MiB/0模型，现在初始化，不能称已成功采集或训练。父H22同2589106已有4决策96控制无故障，继续唯一原起点预算。
+
 **2026-09-21 13:17（北京时间）v2集成/原下一near单次交接（Codex/Astra）：** 父将已独审b306合入ac1fa5a，整合129/3.094s＋392/6.859s通过，远端活跃d7未改。H22原2589106已13:16:06 reset/校准完，首head本人确认原壁炉起点、首次plan执行中。为避初始化叠跑，现才放Astra原剩余4个near中的**TRAIN192/p392唯一一条**：b306/双receipt90044cf/v2侧文件、实际source/cache/GPU门过后1reset，原12宏420新控制含hold/1200s＋900init/384MiB、6GiB/16GiB不变；尚待准确PID，不称已采集。禁止自动后继或重试旧114993，完成全轨迹父手审再推进新训练。
 
 **2026-09-21 13:14（北京时间）H22原起点真实启动/抓前v2独审通过（Codex）：** 双门完整审后GPU2实际0MiB/源d7干净/全容量树合格，于13:13:14.549421启动模型2588439/8926，加载19.307s，身份/固定revision/两overlay/0调用逐项过；13:14:06.223157唯一原起点sim2589106已提交初始化，两前缀0、原192/6144/7200s/431call/3GiB不变，剩28,439MiB给sim，不抢队友。receipt `h22_self_odometry/launch_{server,policy}.json`。父完整独审b306六路径＋129/3.659s通过，新侧文件两seed SHA7de89a34…336e/a62976c5…4da2与精确selection/原trace独立重算吻合；两新`configs/vlm_sft/h09y_train{192,114}_precontact_parent_review.json`只批准offline EEF种子。Astra可CPU核新授权/同成功轨迹准入，下一原near192/p392必须等父Kit过初始化和固定源码/实际资源门后单次交接，不把已审seed当正BC；新训练仍未启。
