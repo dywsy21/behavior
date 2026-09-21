@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 12:48当前：** 父2573658已退出，`h22_self_odometry/gate_radio_h22`24动作417控制工程通过，完整本地`artifacts/agentic-vlm-goal-20260918/h22_gates_bundle/gate_radio_h22`及三主SHA/全链/视频/RAW审闭合；父runtime约7.75GB保留复用，第二门尚未开。子2575671/GPU3 `h09y_grasp_only/native_t1_i114_p0993`已完成993来源前缀，原生采集中，不是训练。父子共享的只是硬件；各自Kit目录独立。
+
 **2026-09-21 12:29当前：** 父H22 d7固定源首sim2573658/GPU2启动，新结果`/mnt/nvme_tmp/robodojo_agentic_20260921/h22_self_odometry`，runtime `/mnt/nvme_tmp/robodojo_harness_runtime_20260921/h22_self_odometry`（上限16GiB，顺序父sim复用，不共享子Kit）。Astra新固定`git_worktrees/vlm_sft_h09y_10e1e6c`负责原生/SFT，数据seed双亲审已过；其显式shared cache只指原TRAIN114已完成runtime的global/cache，其他run证据独立。GPU3约209MiB是父Kit辅助context，不是队友新训练，父已允许身份明确≤512MiB且余≥70GiB时子单次开sim。所有旧cache/证据保留。
 
 **2026-09-21 12:13当前：** reference_train114_v1/2564237已退出1199控制，result+QUARANTINED_pose_seed完整包正封存，GPU3空；本轮runtime约8.19GB保留，下一拟各独立run仅global/cache别名复用reference精确7.1GiB纹理cache，不移删，配置尚待独审。父新`git_worktrees/semantic_selfodom_d7c8028`准确d7/digest e7631fc5、392远端CPU通过，仅源码无父sim/model。H21本地全链/视频审已经完成，不再待审。
