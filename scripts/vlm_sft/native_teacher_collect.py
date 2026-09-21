@@ -45,8 +45,10 @@ from run_v2 import implementation_digest
 from replay_contact_audit import preserved_session, report_failure
 from native_teacher_near_grasp import SCHEMA as NEAR_SCHEMA
 from native_teacher_reference_contract import check_actual_joint_bounds,source_state_diagnostic
-from native_teacher_capacity import capacity_limits,near_artifact_budget,H09Y_PROFILE,validate_collection_location
+from native_teacher_capacity import capacity_limits,near_artifact_budget,H09Y_PROFILE,H09Y_PROFILES,DIVERSE_PROFILE,validate_collection_location
 from native_storage import activate as activate_storage,validate_spec as validate_storage_spec
+from native_execution import PublicGripperHistory,preclose_translation,timing_metadata,PRECLOSE_PROFILE
+from native_storage import DIVERSE_STORAGE_PROFILE
 
 PILOT_TOKENS = [t for t in TOKENS if not t.startswith("BASE_") and
                 not any(axis in t for axis in ("ROLL", "PITCH", "YAW"))]
@@ -77,10 +79,15 @@ def require_release(value, code, executor):
     near=value.get("schema")==NEAR_SCHEMA
     if "seed_profile" in value:
         from native_teacher_pregrasp_seed import PROFILE as PRECONTACT_PROFILE
-        if value["seed_profile"] != PRECONTACT_PROFILE or not near or value.get("capacity_profile") != H09Y_PROFILE:
+        if value["seed_profile"] != PRECONTACT_PROFILE or not near or value.get("capacity_profile") not in H09Y_PROFILES:
             raise ValueError("Unknown/mixed precontact seed profile; old releases retain v1")
-    if validate_storage_spec(value) and value.get("capacity_profile")!=H09Y_PROFILE:
+    if validate_storage_spec(value) and value.get("capacity_profile") not in H09Y_PROFILES:
         raise ValueError("New storage requires the explicit H09Y collection profile")
+    if (execution_profile==PRECLOSE_PROFILE or value.get("capacity_profile")==DIVERSE_PROFILE or
+            (value.get("storage") or {}).get("profile")==DIVERSE_STORAGE_PROFILE):
+        if (execution_profile!=PRECLOSE_PROFILE or value.get("capacity_profile")!=DIVERSE_PROFILE or
+                (value.get("storage") or {}).get("profile")!=DIVERSE_STORAGE_PROFILE):
+            raise ValueError("Diverse collection requires all three explicitly matching new profiles")
     if near:
         capacity_limits(value)
         if any(type(value.get(k)) is not int for k in ("max_resets","max_candidates_per_instance",
@@ -95,7 +102,7 @@ def require_release(value, code, executor):
         raise ValueError("A separately reviewed H14-fixed executor and new pilot authorization are required")
     if near and (value.get("authorize_offline_teacher") is not True or value.get("allow_known_empty_rotation") is not True or
                  value.get("allow_grasp_cell_attempt") is not True or
-                 value.get("native_controls_max")!=420 or value.get("seconds_after_reset")!=(1200 if value.get("capacity_profile")==H09Y_PROFILE else 900) or
+                 value.get("native_controls_max")!=420 or value.get("seconds_after_reset")!=(1200 if value.get("capacity_profile") in H09Y_PROFILES else 900) or
                  value.get("max_teacher_primitives")!=12 or value.get("model_calls")!=0 or
                  not isinstance(value.get("experiment_root"),str)):
         raise ValueError("Exact one-reset near-grasp budget/rotation authorization required")
@@ -157,15 +164,18 @@ def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, cl
     return after, hashes, depths, geometry, evidence
 
 
-def native_preflight(model, state, grips, action, depths, geometry, rotation_evidence=None, *, execution_profile=None):
+def native_preflight(model, state, grips, action, depths, geometry, rotation_evidence=None, *, execution_profile=None, public_history=None):
     from semantic_robot.v2.protocol import ROTATIONS
     from native_teacher_policy import empty_hand_rotation_allowed
-    carry=True
+    if public_history is not None and not np.array_equal(public_history.grips,np.asarray(grips)):
+        raise ValueError("Public history must bind the actual last issued gripper command")
+    qualified=preclose_translation(action,state,model,public_history,execution_profile)
+    carry=not qualified
     if action.move in ROTATIONS:
         if (rotation_evidence is None or not empty_hand_rotation_allowed(action.part,state,
                 rotation_evidence["frame"],grips,model,rotation_evidence["close_issued"])):
             raise RuntimeError("Rotation requires current known-empty calibrated-open hand and no CLOSE latch")
-        carry=False  # ONLY rotation. Existing fine translations remain 1cm.
+        carry=False  # Rotation eligibility remains the stricter offline check.
     guard = LocalDepthGuard(observed_cloud(depths, model, state.q), model, state.q, depths,
                             self_geometry=geometry)
     allowed, reason = guard.check(action, carry=carry)
@@ -173,7 +183,8 @@ def native_preflight(model, state, grips, action, depths, geometry, rotation_evi
                       limits=servo_limits(execution_profile))
     if not allowed or not servo.begin(action, state, carry=carry) or servo.total_ticks > 40:
         raise RuntimeError("Native preflight rejected: "+reason+" / "+servo.status)
-    return servo, {**execution_metadata(execution_profile),"robot_geometry_guards": True,"carry":carry,"amount":action.amount(carry), "depth_guard": guard.receipt(),
+    return servo, {**execution_metadata(execution_profile),**timing_metadata(execution_profile,qualified),
+                   "robot_geometry_guards": True,"carry":carry,"amount":action.amount(carry), "depth_guard": guard.receipt(),
                    "depth_check": reason, "servo_status": servo.status,
                    "q": state.q.tolist(), "gripper": state.gripper.tolist()}
 
@@ -193,7 +204,7 @@ def main():
     require_release(release, code, implementation_digest())
     execution_profile = authorization_profile(release, collection=True)
     validate_collection_location(release,x.output,x.gpu)
-    h09y=release.get("capacity_profile")==H09Y_PROFILE
+    h09y=release.get("capacity_profile") in H09Y_PROFILES
     wall_limit=1200 if h09y else 900
     near=release.get("schema")==NEAR_SCHEMA
     native_limit=420 if near else 200
@@ -253,7 +264,7 @@ def main():
               "models": 0, "training_eligible": False, "no_restore_or_automatic_recovery": True})
     controls = 0; prefix_count = 0; issued_native = 0; issued_prefix = 0
     terminal = False; first_error = None; started = None
-    kin = None; grips = None; trace = issue_trace = None; history = []; completed = []
+    kin = None; grips = None; trace = issue_trace = None; history = []; completed = []; public_history = None
     teacher_reader = teacher_outcome = teacher_trace = None
     teacher_token = None; teacher_frame = None
     def record_error(exc):
@@ -308,6 +319,7 @@ def main():
                 # if env.step throws after partial physical execution.
                 if near:current_writer.append_text(issue_trace,line)
                 grips = np.asarray(command)[[14,22]].copy()
+                if public_history is not None:public_history.issued(command)
                 if kind=="prefix":issued_prefix+=1
                 else:issued_native+=1
                 with og.sim.render_on_step(True):
@@ -348,6 +360,9 @@ def main():
                 return capture_snapshot(folder, model, state, onboard, kin.native_self_boxes, og.sim.render,
                                         {"prefix_control": prefix_count, "native_control": controls}, x.output, current_writer,
                                         expected_layout=layout)
+            # Start the same local-pause latch as evaluation, before settling.
+            # Every attempted control updates it BEFORE env.step, even on failure.
+            public_history=PublicGripperHistory(grips)
             settle()
             if teacher_spec is not None:
                 from native_teacher_policy import PoseTeacher
@@ -383,7 +398,7 @@ def main():
                         try:
                             candidate, preflight = native_preflight(model, before, grips, token_to_action(token), depths, geometry,
                                 {"frame":teacher_frame,"close_issued":teacher.close_issued} if near else None,
-                                execution_profile=execution_profile)
+                                execution_profile=execution_profile,public_history=public_history)
                             choice = token, candidate, preflight
                             break
                         except RuntimeError as exc: rejected.append({"token": token, "reason": str(exc)})
@@ -454,7 +469,7 @@ def main():
                 if action.part == "base":
                     raise ValueError("First manipulation pilot excludes BASE pending H14 deployment-safe body guard")
                 servo, preflight = native_preflight(model, now, grips, action, depths, geometry,
-                                                    execution_profile=execution_profile)
+                                                    execution_profile=execution_profile,public_history=public_history)
                 preflight["before_capture_sha256"] = request["before_capture_sha256"]
                 preflight["no_physics_since_capture"] = controls == capture_receipt["clock"]["native_control"]
                 if not preflight["no_physics_since_capture"]:
@@ -506,6 +521,7 @@ def main():
                             {"issued_native":issued_native+1,"action23":stop.tolist()},cleanup=True)
                         except BaseException as exc:record_error(exc)
                     issued_native+=1
+                    if public_history is not None:public_history.issued(stop)
                     env.step(stop, n_render_iterations=1); controls += 1
                     artifacts.write_json(x.output/"final_hold.json", {"completed": True, "native_controls": controls,
                                          "prefix_controls": prefix_count, "action23": stop.tolist()}, cleanup=True)

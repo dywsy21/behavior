@@ -135,7 +135,8 @@ class NearTeacherTests(unittest.TestCase):
         reject=MagicMock(side_effect=RuntimeError('fixture fresh depth veto'));store=MagicMock()
         ns={'teacher':teacher,'teacher_frame':f,'teacher_reader':NS(goal=lambda:goal,base=lambda:np.eye(4)),
             'before':s,'grips':g,'model':m,'artifacts':store,'folder':Path('/not-written'),
-            'depths':{},'geometry':None,'near':True,'execution_profile':None,'native_preflight':reject,'token_to_action':token_to_action}
+            'depths':{},'geometry':None,'near':True,'execution_profile':None,'public_history':None,
+            'native_preflight':reject,'token_to_action':token_to_action}
         fragment=ast.Module(body=copy.deepcopy(loop.body[start:end+1]),type_ignores=[])
         with self.assertRaisesRegex(RuntimeError,'No safe'):exec(compile(ast.fix_missing_locations(fragment),'actual_selection','exec'),ns)
         self.assertEqual(reject.call_count,1);self.assertEqual(ns['ranked'],['RIGHT_FORWARD'])
@@ -237,6 +238,7 @@ class NearTeacherTests(unittest.TestCase):
             with self.assertRaises(ValueError):require_release(release,'code','executor')
 
     def test_partial_step_close_keeps_latch_and_issued_ledger_not_fake_completion(self):
+        from native_execution import PublicGripperHistory
         tree=ast.parse((ROOT/'scripts/vlm_sft/native_teacher_collect.py').read_text())
         fn=copy.deepcopy(next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='step'))
         fn.body[0]=ast.Global(names=fn.body[0].names)
@@ -244,7 +246,8 @@ class NearTeacherTests(unittest.TestCase):
         def fail(*a,**k):raise primary
         state=NS(q=np.zeros(18),gripper=np.ones(2)*.05)
         ns={'np':np,'json':json,'near':True,'native_limit':420,'issued_native':12,'issued_prefix':396,'controls':12,'prefix_count':396,
-            'terminal':False,'grips':np.ones(2),'teacher_frame':None,'teacher_reader':None,'started':0,'wall_limit':900,'storage':None,
+            'terminal':False,'grips':np.ones(2),'public_history':PublicGripperHistory([1,1]),
+            'teacher_frame':None,'teacher_reader':None,'started':0,'wall_limit':900,'storage':None,
             'time':NS(monotonic=lambda:1),'shutil':NS(disk_usage=lambda p:NS(free=90*1024**3)),
             'x':NS(output=Path('/unused')),'state':lambda:state,'model':NS(lower=-np.ones(18),upper=np.ones(18)),
             'check_actual_joint_bounds':check_actual_joint_bounds,'issue_trace':stream,
@@ -256,6 +259,9 @@ class NearTeacherTests(unittest.TestCase):
         else:self.fail('partial failure swallowed')
         self.assertEqual(ns['issued_native'],13);self.assertEqual(ns['controls'],12)
         self.assertEqual(ns['grips'][1],-1);self.assertEqual(json.loads(stream.getvalue())['action23'][22],-1)
+        self.assertIs(ns['public_history'].close_seen['right'],True)
+        command[22]=1;ns['public_history'].issued(command)
+        self.assertIs(ns['public_history'].close_seen['right'],True)
 
 
 if __name__=='__main__':unittest.main()

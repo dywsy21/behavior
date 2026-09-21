@@ -35,6 +35,11 @@ SHARED_SPEC={**SPEC,"profile":SHARED_PROFILE,"shared_og_cache":{
     "allowed_aliases":[str(RUNTIME_ROOT/name/"omnigibson/global/cache") for name in SHARED_RUNS],
     "software_sha256":SHARED_SOFTWARE,"mutable_software_cache_not_evidence":True,
     "reference_result_sha256":"1208c9bc86c40bc89cdfaae96362a769c23e34e6ed237d2231ed05ddfb8d7e0c"}}
+DIVERSE_STORAGE_PROFILE="h09y-nvme-shared-og-cache-diverse-20260921-v3"
+DIVERSE_RUNS=SHARED_RUNS+("native_t1_i192_p0380","native_t1_i114_p0969")
+DIVERSE_SPEC={**SHARED_SPEC,"profile":DIVERSE_STORAGE_PROFILE,"shared_og_cache":{
+    **SHARED_SPEC["shared_og_cache"],
+    "allowed_aliases":[str(RUNTIME_ROOT/name/"omnigibson/global/cache") for name in DIVERSE_RUNS]}}
 CACHE_SUBDIRS={"OMNIGIBSON_APPDATA_PATH":"omnigibson","TMPDIR":"tmp",
     "TMP":"tmp","TEMP":"tmp",
     "CUDA_CACHE_PATH":"cuda","__GL_SHADER_DISK_CACHE_PATH":"gl",
@@ -48,7 +53,8 @@ CACHE_SUBDIRS={"OMNIGIBSON_APPDATA_PATH":"omnigibson","TMPDIR":"tmp",
 def validate_spec(release):
     if "storage" not in release:return False
     spec=release["storage"]
-    expected=SHARED_SPEC if isinstance(spec,dict) and spec.get("profile")==SHARED_PROFILE else SPEC
+    expected=({SHARED_PROFILE:SHARED_SPEC,DIVERSE_STORAGE_PROFILE:DIVERSE_SPEC}.get(spec.get("profile"),SPEC)
+              if isinstance(spec,dict) else SPEC)
     # Canonical JSON also rejects bool-as-int inside nested shared bindings.
     if not isinstance(spec,dict) or json.dumps(spec,sort_keys=True)!=json.dumps(expected,sort_keys=True):
         raise ValueError("Exact explicit NVMe runtime storage profile required")
@@ -113,9 +119,11 @@ class RuntimeStorage:
         if not validate_spec(release):raise ValueError("No explicit new storage profile")
         self.output=Path(output).resolve();self.expected=runtime_environment(self.output)
         self.root=RUNTIME_ROOT/self.output.name
-        self.shared=release["storage"]["profile"]==SHARED_PROFILE
-        if self.shared and self.output.name not in SHARED_RUNS:raise ValueError("Unregistered shared-cache run")
-        self.aliases={RUNTIME_ROOT/name/"omnigibson/global/cache":SHARED_TARGET for name in SHARED_RUNS} if self.shared else {}
+        self.profile=release["storage"]["profile"]
+        self.shared=self.profile in (SHARED_PROFILE,DIVERSE_STORAGE_PROFILE)
+        runs=DIVERSE_RUNS if self.profile==DIVERSE_STORAGE_PROFILE else SHARED_RUNS
+        if self.shared and self.output.name not in runs:raise ValueError("Unregistered shared-cache run")
+        self.aliases={RUNTIME_ROOT/name/"omnigibson/global/cache":SHARED_TARGET for name in runs} if self.shared else {}
 
     def paths(self):
         if not os.path.ismount(NVME):raise ValueError("NVMe path is not an actual mount")
@@ -151,7 +159,7 @@ class RuntimeStorage:
             raise RuntimeError("Explicit NVMe80/SDA32 free-space gate")
         size=tree_bytes(RUNTIME_ROOT,NVME.stat().st_dev,self.aliases)
         if size>=16384*1024**2:raise RuntimeError("Whole new runtime cache exceeds 16 GiB")
-        return {"profile":SHARED_PROFILE if self.shared else PROFILE,"runtime_root":str(RUNTIME_ROOT),"run_runtime_root":str(self.root),
+        return {"profile":self.profile,"runtime_root":str(RUNTIME_ROOT),"run_runtime_root":str(self.root),
             "runtime_bytes":size,"environment":self.expected,"source_environment_fully_readonly":False,
             "mutable_shared_software_cache":str(SHARED_TARGET) if self.shared else None,
             "shared_aliases":{str(k):str(v) for k,v in self.aliases.items()},
