@@ -106,6 +106,9 @@ def check_actual_workspace(token,before,after,execution,model,commands,telemetry
         if recomputed[field]!=execution["feedback"][field]:raise ValueError("Measured body completion differs from saved receipt")
     if profile==CARRY_PROFILE and recomputed['motion_timing']!=execution['feedback'].get('motion_timing'):
         raise ValueError("New duration receipt differs from actual measured command replay")
+    if profile==CARRY_PROFILE and any(recomputed.get(k)!=execution['feedback'].get(k)
+            for k in ('pose_tracking_status','gripper_execution')):
+        raise ValueError("New gripper receipt differs from actual measured command replay")
     settled=model.state(np.asarray(after["q"]),np.asarray(after["gripper"]),np.zeros(3))
     if token in BODY_TOKENS and not servo._within(settled.poses):raise ValueError("Body/KEEP_EEF semantics lost during settle")
 
@@ -131,6 +134,9 @@ def verified_run(entry,counts,*,export_codec=None):
         raise ValueError("Workspace trajectory requires explicit new dataset codec")
     if authorization_profile(review)!=execution_profile:
         raise ValueError("Independent review must bind the same execution profile")
+    if execution_profile==CARRY_PROFILE and any(not manifest['authorization'].get(k) or
+            review.get(k)!=manifest['authorization'][k] for k in ('executor_digest','carry_duration_core_commit')):
+        raise ValueError("Independent whole-run review must bind the exact new executor/core")
     if (manifest["code"]!=review["source"] or manifest.get("robot_geometry_guards") is not True or
             result.get("status")!="COLLECTED_QUARANTINED_NOT_SFT" or result.get("model_calls")!=0 or
             any("failure" in name.lower() for name in actual)):

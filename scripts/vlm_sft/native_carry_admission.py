@@ -61,7 +61,7 @@ def require_engineering_gates(auth,executor,*,bootstrap=False):
     gates=[(Path(p),json.loads(Path(p).read_text())) for p in auth["engineering_gate_paths"]]
     if len(gates)!=2 or {g["task"] for _,g in gates}!={0,3}:raise ValueError("Both engineering gates required")
     if profile==CARRY_PROFILE:
-        if auth.get("engineering_gate_inheritance")!=INHERITANCE or executor!=auth.get("executor_digest"):
+        if json.dumps(auth.get("engineering_gate_inheritance"),sort_keys=True)!=json.dumps(INHERITANCE,sort_keys=True) or executor!=auth.get("executor_digest"):
             raise ValueError("Explicit old-gate partial inheritance, never a new duration claim")
         require_carry_reviews(auth,bootstrap=bootstrap)
         for path,g in gates:

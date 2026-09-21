@@ -14,7 +14,7 @@ from native_dataset import load_dataset
 from native_train import BASE,base_identity,check_storage
 from native_storage import activate as activate_storage
 from native_execution import (require_pipeline_profile,require_same_pipeline,metadata as execution_metadata,
-    TIMING_PROFILES,action_codec,actor_protocol,authorization_profile,service_call_limit)
+    TIMING_PROFILES,action_codec,actor_protocol,authorization_profile,service_call_limit,CARRY_PROFILE)
 from native_motion_codec import tokens as motion_tokens
 from modeling import load_model,encode,decode
 from native_reference_profile import ROOT as EXPERIMENT_ROOT
@@ -65,6 +65,8 @@ def main():
         "authorization_sha256":sha(a.authorization),
         "storage":None if storage is None else storage.check(),
         "max_calls":call_limit,"tokens":list(motion_tokens(action_codec(execution_profile))),"instructions":instructions,"variants":["base","finetuned"],"old_adapter_loaded":False}
+    if execution_profile==CARRY_PROFILE:
+        identity.update({k:auth[k] for k in ('executor_digest','carry_duration_core_commit')})
     write_json(a.output/"identity.json",identity);ledger=(a.output/"calls.jsonl").open("x",buffering=1);calls=0
     class Handler(BaseHTTPRequestHandler):
         def send(self,status,value):

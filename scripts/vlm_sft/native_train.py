@@ -102,6 +102,10 @@ def run_training(a,cfg,code,rows,dataset,storage,base_files,start):
         "trainable_parameters":sum(p.numel() for p in params),
         "storage":None if storage is None else storage.check(),
         "trainable_parameter_names":[n for n,p in model.named_parameters() if p.requires_grad]}
+    from native_execution import CARRY_PROFILE,authorization_profile
+    release=json.loads(a.authorization.read_text())
+    if authorization_profile(release)==CARRY_PROFILE:
+        identity.update({k:release[k] for k in ('executor_digest','carry_duration_core_commit')})
     write_json(a.output/"identity.json",identity)
     cache={r["id"]:encode(processor,r,checked_images(r),supervised=True) for r in rows};budget()
     def batch(batch_rows):return {k:v.to("cuda") for k,v in collate([cache[r["id"]] for r in batch_rows],processor.tokenizer.pad_token_id).items()}

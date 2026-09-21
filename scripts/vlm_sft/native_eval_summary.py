@@ -35,7 +35,14 @@ def summarize(root):
                         raise ValueError("Paired new execution/storage identity changed")
                     if profile in WORKSPACE_PROFILES and m.get("protocol")!=actor_protocol(profile):
                         raise ValueError("Paired workspace actor protocol changed")
-                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile,storage_profile))
+                extra=()
+                if profile==CARRY_PROFILE:
+                    from native_actor_protocol import check_sha
+                    from native_carry_admission import require_carry_reviews
+                    check_sha(auth.get('executor_digest'));require_carry_reviews(auth)
+                    if auth.get('code_commit')!=m['code_commit']:raise ValueError("Actual paired code differs from authorization")
+                    extra=(auth['executor_digest'],auth['carry_duration_core_commit'])
+                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile,storage_profile,*extra))
                 row["execution_profile"]=profile
                 row["status"]="INCOMPLETE_ATTEMPT"
             if result_path.exists():

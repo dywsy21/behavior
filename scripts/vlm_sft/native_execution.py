@@ -49,7 +49,7 @@ def validate_profile(value):
 
 def authorization_profile(value, *, collection=False):
     if "execution_profile" not in value:
-        if "action_codec" in value:raise ValueError("Codec without execution profile")
+        if "action_codec" in value or any(k in value for k in CARRY_CONTRACT):raise ValueError("Codec/budget without execution profile")
         return None
     profile = value["execution_profile"]
     if profile not in (PROFILE, *TIMING_PROFILES):
@@ -279,6 +279,9 @@ def require_same_pipeline(release, identity):
                 release.get("protocol")!=actor_protocol(profile) or
                 (identity.get("storage") or {}).get("profile")!=(release.get("storage") or {}).get("profile")):
             raise ValueError("Workspace training/service/evaluation identity differs")
+        if profile==CARRY_PROFILE and any(not release.get(k) or release[k]!=identity.get(k)
+                for k in ('code_commit','executor_digest','carry_duration_core_commit')):
+            raise ValueError("Carry pipeline exact immutable source/core/executor differs")
         return
     if profile == PRECLOSE_PROFILE or authorization_profile(identity) == PRECLOSE_PROFILE:
         if (authorization_profile(identity) != profile or

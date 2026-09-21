@@ -219,7 +219,10 @@ class WorkspaceTests(unittest.TestCase):
         tree=ast.parse((ROOT/'scripts/vlm_sft/native_eval_run.py').read_text())
         calls=[n for n in ast.walk(tree) if isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='workspace_budget_ok']
         self.assertEqual(len(calls),1)
-        self.assertEqual([ast.unparse(a) for a in calls[0].args],['token','servo.total_ticks','420 - controls','12 - index'])
+        self.assertEqual([ast.unparse(a) for a in calls[0].args],['token','servo.total_ticks','native_limit - controls','macro_limit - index','execution_profile'])
+        from native_execution import episode_limits,CARRY_PROFILE
+        self.assertEqual(episode_limits(WORKSPACE_PROFILE),(12,420))
+        self.assertEqual(episode_limits(CARRY_PROFILE),(14,640))
 
     def test_actual_supervised_encoding_and_constrained_45_decoder(self):
         import torch

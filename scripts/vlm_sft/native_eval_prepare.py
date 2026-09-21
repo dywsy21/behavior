@@ -41,6 +41,10 @@ def select(counts,audit,instance):
 def prepare(counts_path,audit_path,robot_template,instance,storage_spec=None,*,execution_profile=None):
     from native_execution import CARRY_PROFILE,episode_limits,metadata
     if execution_profile not in (None,CARRY_PROFILE):raise ValueError("Unknown explicit heldout preparation profile")
+    if execution_profile==CARRY_PROFILE:
+        from native_storage import CARRY_STORAGE_PROFILE,validate_spec
+        if (not validate_spec({'storage':storage_spec}) or storage_spec['profile']!=CARRY_STORAGE_PROFILE):
+            raise ValueError("New heldout preparation requires its exact new storage profile")
     _,control_limit=episode_limits(execution_profile)
     import pyarrow.parquet as pq
     from prepare import LABELS,RELEASE
