@@ -171,12 +171,39 @@ class WorkspaceTests(unittest.TestCase):
         for controls,macros in ((90,2),(100,1),(True,2)):
             self.assertFalse(workspace_budget_ok(token,26,controls,macros))
         self.assertTrue(workspace_budget_ok('RIGHT_UP',18,1,1))
-        self.assertEqual(capacity.WORKSPACE_STARTS,frozenset())
-        self.assertEqual(storage.WORKSPACE_RUNS,storage.DIVERSE_RUNS)
+        self.assertEqual(capacity.WORKSPACE_STARTS,frozenset({(1,310,192,380),(1,310,192,388)}))
+        self.assertEqual(storage.WORKSPACE_RUNS,storage.DIVERSE_RUNS+('native_t1_i192_p0380_ws45','native_t1_i192_p0388_ws45'))
         a=authorization();a.update(**metadata(WORKSPACE_PROFILE),capacity_profile=capacity.WORKSPACE_PROFILE,storage=storage.WORKSPACE_SPEC)
-        with self.assertRaises(ValueError):authorization_profile(a,collection=True)
+        self.assertEqual(authorization_profile(a,collection=True),WORKSPACE_PROFILE)
         for cfg in (CONFIG,WORKSPACE_CONFIG):validate_config(cfg)
         with self.assertRaises(ValueError):validate_config({**WORKSPACE_CONFIG,'max_updates_including_gate':121})
+
+    def test_workspace_two_exact_paths_do_not_grant_old_profiles_or_retries(self):
+        from native_teacher_collect import require_release
+        for prefix in (380,388):
+            a=authorization();a.update(**metadata(WORKSPACE_PROFILE),capacity_profile=capacity.WORKSPACE_PROFILE,
+                storage=copy.deepcopy(storage.WORKSPACE_SPEC),paid_prefix_controls=prefix,authorize_collection=False)
+            name=f'native_t1_i192_p{prefix:04d}_ws45';output=Path(capacity.H09Y_ROOT)/name
+            capacity.validate_collection_location(a,output,3)
+            self.assertEqual(authorization_profile(a,collection=True),WORKSPACE_PROFILE)
+            with self.assertRaises(ValueError):require_release(a,'unreleased','unreleased')
+            for wrong in (name.removesuffix('_ws45'),name+'_retry',name.replace('_ws45','_ws46')):
+                with self.assertRaises(ValueError):capacity.validate_collection_location(a,output.parent/wrong,3)
+            with self.assertRaises(ValueError):capacity.validate_collection_location(a,output,2)
+            for old in (capacity.H09Y_PROFILE,capacity.DIVERSE_PROFILE):
+                with self.assertRaises(ValueError):capacity.validate_collection_location({**a,'capacity_profile':old},output,3)
+            for old in (storage.SHARED_SPEC,storage.DIVERSE_SPEC):
+                with self.assertRaises(ValueError):storage.RuntimeStorage({'storage':old},output)
+            gate=storage.RuntimeStorage(a,output)
+            self.assertEqual(gate.aliases[storage.RUNTIME_ROOT/name/'omnigibson/global/cache'],storage.SHARED_TARGET)
+        for source,prefix in (([1,310,192],396),([1,310,192],392),([1,264,114],969),([1,200,1],832),([1,247,71],1038)):
+            with self.assertRaises(ValueError):capacity.capacity_limits({**a,'source':source,'paid_prefix_controls':prefix})
+        old=set(storage.DIVERSE_SPEC['shared_og_cache']['allowed_aliases'])
+        new=set(storage.WORKSPACE_SPEC['shared_og_cache']['allowed_aliases'])
+        self.assertEqual(new-old,{str(storage.RUNTIME_ROOT/f'native_t1_i192_p{p:04d}_ws45'/'omnigibson/global/cache') for p in (380,388)})
+        with self.assertRaises(ValueError):storage.RuntimeStorage(a,output.parent/'native_t1_i192_p0380_ws45_retry')
+        mixed=copy.deepcopy(storage.WORKSPACE_SPEC);mixed['shared_og_cache']['allowed_aliases']=sorted(old)
+        with self.assertRaises(ValueError):storage.validate_spec({'storage':mixed})
 
     def test_dataset_train_service_eval_identity_strictly_shared(self):
         fields=metadata(WSPACE:=WORKSPACE_PROFILE)
