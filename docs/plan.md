@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 23:08（北京时间）34宏正式准入／单次fresh120放行（Codex/Astra）：** 正式3.10耗时21.666s，5整轨/34宏、TRAIN192×2＋114×3、5CLOSE/16lift/13preclose、真实旋转/0近重复/0失败BC通过；父核manifest、34唯一行、五父审绑定及八inactive。dataset5b2b5ee0…d693c、rows ef1a62fa…1310cc；`h09z_fresh120_34rows_6f32887_parent_release.json`仅放一轮6f/2B fresh120（含2步真实数值/重载门、2700s、256MiB/GPU3），不是已启动或训练成功。Astra动态空卡/盘/唯一输出检查后报PID；service/六评留待真实adapter。干净pull/fetch已同步，main未有新进度；H38独审安排实际训练空档。
+
 **2026-09-21 23:02（北京时间）父数据receipt显式字段补全（Codex）：** 正式3.10在新953父receipt缺CARRY_CONTRACT四显式字段时正确拒绝，未写dataset/未启动训练。父补已审不变的carry_duration_v1=true、2body、14宏、640含hold；物理结论/清单/代码/2100时限不变，原405e3a7证据仍保留。子使用新v2 sources绑定新receipt SHA再做正式34行覆盖，不代签/降门。
 
 **2026-09-21 23:00（北京时间）六评时限窄修父独审通过（Codex/Astra）：** 固定6f328877七路径全读、完整summary/控制与query上下文审，父独立201/5.651s过；公共8fdf及训练/服务/数据源码与8ad逐字不变。明确新tag才CARRY2100，旧1200不变，六槽授权/manifest/result/summary拒混且非有限/越时结果不计成功，动作/渲染/判据不变；receipt `h09z_evalwall_6f32887_parent_review.json`。子23:00前原900s内完成远端3.10/201/13.541s，正式34行coverage与新八inactive准备中；接真实SHA后立即放fresh120，不增加采集或训练研究。
