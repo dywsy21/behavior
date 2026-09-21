@@ -1,0 +1,32 @@
+{
+  "experiment_id": "H09Z-actual-workspace-collection",
+  "owner": "Astra-vlm_sft_resume_20260921",
+  "reviewer": "Codex-parent",
+  "registered_bjt": "2026-09-21T17:43:48+08:00",
+  "status": "registered_capacity_delta_and_inactive_preparation_only",
+  "hypothesis": "The independently checked native45 body-first fallback can overcome the actual arm-workspace rejection on two earlier TRAIN192 starts, creating genuine successful whole trajectories with actual body supervision rather than synthetic labels.",
+  "base_source": "9ff2e280f944f46c456e0edc9a057e36e8716254",
+  "public_executor_sha256": "1fcc505cb570c0fa215c408b2ae78d904819dc95b40bbbe117a560106ad97f4c",
+  "CPU_delta": {"max_seconds": 900, "scope": "Register only two exact WORKSPACE_STARTS, unique _ws45 output names and corresponding runtime aliases; tests against old profile/paths/heldout/reuse; prepare two inactive releases on a fixed clean source. No motion, teacher, outcome or coverage changes."},
+  "starts": [
+    {"task": 1, "episode": 310, "instance": 192, "split": "train", "seed": 0, "prefix_controls": 380, "name": "native_t1_i192_p0380_ws45"},
+    {"task": 1, "episode": 310, "instance": 192, "split": "train", "seed": 0, "prefix_controls": 388, "name": "native_t1_i192_p0388_ws45"}
+  ],
+  "source_of_seeds": "Same accepted TRAIN192 expert demonstration, two previously attempted and fully audited failures under old arm-only execution. Preserve those failures. Initial poses must remain distinct from each other and W/p396 under the unchanged near-duplicate gate.",
+  "max_resets": 2,
+  "sequential": true,
+  "per_run": {"max_macros": 12, "max_new_controls_including_hold": 420, "max_actual_body": 1, "seconds_after_reset": 1200, "initialization_seconds": 900, "max_MiB": 384, "model_calls": 0, "training_updates": 0},
+  "GPU": 3,
+  "GPU_start_free_GiB": 70,
+  "auxiliary_contexts": "Only <=512MiB from exact independently verified parent H25 PID2630126, cwd semantic_tracking_a628462, --gpu2 and matching mainGPU2. Recheck on every launch; if exited, require absent; no unknown contexts or GPU0/1 interference.",
+  "output_root": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only",
+  "result_root_MiB": 6144,
+  "runtime_root": "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921",
+  "runtime_root_MiB": 16384,
+  "free_GiB": {"sda": 32, "nvme": 80},
+  "physical_dependency": "Fixed exact capacity/storage delta independently reviewed, actual inactive prepare/source/gates/resource checks, explicit parent stage handoff. First complete actual23D/contact/outcome/RGBD all-file and manual image audit before second. No autonomous second launch or reset retry.",
+  "limits": "No claim of full scene sweep safety: original robot checks plus public open/history qualification and offline private known-empty/no-contact only. Inspect full body execution/contact trace and before/after both-hand RAW. All actual actions must be retained; failed runs supply zero positive BC.",
+  "unchanged_training_gate": "Whole parent-reviewed successes only, >=4 trajectories, each TRAIN instance>=2, >=32 macros, >=4 CLOSE, >=8 lift, >=8 preclose, >=4 non-HOLD tokens, >=1deg actual rotation; same-instance initial differences >=3mm or >=.75deg. No padding or heldout leakage.",
+  "next": "On true gate pass, fresh Qwen3.5-2B native45 120 updates and six original paired heldout physical trials remain required; reaching the collection/CPU milestone is not the user outcome.",
+  "stop": "Per-run budget or real failure, preserve complete evidence and examine cause. No additional start, success relabeling, reset retry or lowered gate in this block."
+}

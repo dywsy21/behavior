@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 17:46（北京时间）H28/H29独审全部闭合/H30后继登记（Codex/Astra）：** 固定82754f1（已push）P2独审6个真实zero-tick servo＋实际step正常/异常全过；449公共/9.378s＋162 SFT/6.196s，报告e8a13cfb…3a5e，原preview/H29独立405源SHA/81输入核验aaa94039…c2f2仍成立。父另H30登记原H25退出全审后的2个同源24动作工程门→条件唯一零前缀192/6144/7200s回合，同27B，新增workspace和已审进展修复，不换成功门；配置`h30_workspace_progress_physical_block.json`。仅远端独立827 worktree/CPU准备中，旧线上未动；Astra另≤900s两`_ws45`inactive准备，新微调仍待合格数据。
+
+**2026-09-21 17:43:48（北京时间）H09Z两起点独立版本登记（Codex/Astra）：** 父已独审9ff native45全实现，另`h09z_workspace_collection_parent_block.json`登记最多2次TRAIN192/p380、p388/seed0，唯一`_ws45`目录不覆盖旧失败。先≤900s CPU仅容量/名称/cache alias窄增量及inactive，固定独审/实际门后只放首条；每轨仍12宏420新含hold/1200＋900/384MiB、1body、0模型，第一全账本/所有RAW父审后才第二。目标是检验身体协同能否解除已证实IK卡点；不降低32覆盖门，不扩heldout或训练规模。新120真实更新与六物理配对仍待。
+
 **2026-09-21 17:42（北京时间）H28独审P2真实发送历史修复中（Codex/Astra）：** Astra其余公共/保存态/405原输入核验均闭合，但发现servo首tick拒绝仍可发含CLOSE的hold，旧`executed`零tick漏记，随后OPEN错误恢复workspace资格。父另≤600s CPU窄修：唯一真实`env.step`前调用不可逆`issued(23D)`，包括部分异常/cleanup，不把未发送提案记入；渲染上下文进入失败也不记。新3回归含真实零tickservo/实际runner异常路径、19专项已过2.441s，整套及独审delta待。线上a628/子1fcc不动。H25原164决策3010控制295模型，仍未持握；新SFT尚未开始，下一补数据而非停在CPU。
 
 同块17:44作者整套449公共/9.313s＋162 SFT/6.200s通过，无新物理；固定修复delta交Astra原审票内复核。原已父审9ff子模块同时合入，不改其冻结远端运行源。
