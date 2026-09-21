@@ -73,6 +73,10 @@ def rest_screen(states):
 
 def require_release(value, code, executor):
     near=value.get("schema")==NEAR_SCHEMA
+    if "seed_profile" in value:
+        from native_teacher_pregrasp_seed import PROFILE as PRECONTACT_PROFILE
+        if value["seed_profile"] != PRECONTACT_PROFILE or not near or value.get("capacity_profile") != H09Y_PROFILE:
+            raise ValueError("Unknown/mixed precontact seed profile; old releases retain v1")
     if validate_storage_spec(value) and value.get("capacity_profile")!=H09Y_PROFILE:
         raise ValueError("New storage requires the explicit H09Y collection profile")
     if near:
@@ -209,7 +213,8 @@ def main():
         review_path = Path(release["pose_review_path"])
         if sha(review_path) != release.get("pose_review_sha256"):
             raise ValueError("Unregistered independent pose review")
-        validate_seed_release(seed_path, review_path, teacher_spec, ref, release["seed_reference_preparation_sha256"])
+        validate_seed_release(seed_path, review_path, teacher_spec, ref, release["seed_reference_preparation_sha256"],
+                              profile=release.get("seed_profile"))
         if teacher_spec["verb"] == "PRESS":
             from native_teacher_toggle import verify_installed_dependency
             verify_installed_dependency()

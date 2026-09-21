@@ -1,0 +1,15 @@
+{
+  "schema": "h09y-precontact-seed-review-v2",
+  "seed_profile": "h09y-grasp-precontact-v2",
+  "seed_sha256": "FILL_EXACT_SIDECAR_SHA",
+  "identity_sha256": "FILL_IDENTITY_DIGEST",
+  "goal_pose_sha256": "FILL_PRECONTACT_POSE_DIGEST",
+  "selection_sha256": "FILL_SELECTION_DIGEST",
+  "reviewer": "",
+  "decision": "pending",
+  "reviewed_source_current_and_terminal_views": false,
+  "reviewed_contact_update_and_control_ledger": false,
+  "reviewed_precontact_phase_and_half_closed_aperture": false,
+  "local_outcome_and_pose_accepted": false,
+  "reason": "Inactive template: independent full-reference and precontact-phase review required; not physical authorization."
+}

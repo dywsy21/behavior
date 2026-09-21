@@ -18,8 +18,13 @@ def seed_identity(reference, spec):
             "segment_start":label["segment_start"], "segment_end":label["segment_end"], "official_mode":"train", "seed":0}
 
 
-def validate_seed_release(seed_path, review_path, spec, reference, preparation_sha):
+def validate_seed_release(seed_path, review_path, spec, reference, preparation_sha, *, profile=None):
     """Bind source, exact pose, successful full ledger AND independent review."""
+    if profile is not None:
+        from native_teacher_pregrasp_seed import PROFILE, validate_pregrasp_release
+        if profile != PROFILE:
+            raise ValueError("Unknown explicit pose-seed profile")
+        return validate_pregrasp_release(seed_path, review_path, spec, reference, preparation_sha)
     seed_path, review_path = Path(seed_path), Path(review_path)
     if sha(seed_path) != spec["pose_evidence_sha256"]: raise ValueError("Seed bytes changed")
     seed, review = json.loads(seed_path.read_text()), json.loads(review_path.read_text())
