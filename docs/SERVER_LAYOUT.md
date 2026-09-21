@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 15:40当前：** H25首2622414已退出，完整本地`artifacts/agentic-vlm-goal-20260918/h25_gates_bundle/gate_radio_h25`与远端全76段/三SHA/视频/7RAW审完成。第二`h25_refined_odometry/gate_plates_h25`新2626095/GPU2于15:39:50.845790启动，相邻log/launch_plates.json；仍冻结a628/afd1源及父H23自身runtime。子192388/2619909失败退出，完整本地53文件父审闭合，Astra现在只CPU改私有profile，GPU3无主任务；旧fa24和失败保留。
+
 **2026-09-21 15:22当前：** 新父2622414/GPU2于15:21:19.811081启动`h25_refined_odometry/gate_radio_h25`及相邻log、launch_radio.json，固定`semantic_tracking_a628462`源码，复用仅父已结束H23暖runtime7.777GB/16GiB。子2619909/GPU3已过reset执行原192388；两Kit可能有彼此卡上约200MiB辅助context，须精确PID/cwd/mainGPU绑定，不触0/1。父第二门/27B/零前缀policy尚未启动。
 
 **2026-09-21 15:16当前：** GPU3唯一新2619909于15:14:33.082132提交原`h09y_grasp_only/native_t1_i192_p0388`，相邻`.log/.launch.json`和`authorization_native_t1_i192_p0388_fa24_active.json`；同fa24/1fcc不可热改，初始化中。父H25 GPU2尚未启动，launcher/audit仅在本地忽略artifacts准备。所有既有证据/源/缓存保留。

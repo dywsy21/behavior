@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 15:40（北京时间）H25第二原定门提交/首本地全核闭合（Codex）：** 首完整352,723,286B本地再21.845s重算全部76新LK/joint段/144主hash/104帧/4gripper，三SHA同远端且整视频解码过。15:39:50.845790唯一2626095/GPU2启动`gate_plates_h25`，同a628/afd1、空卡81152MiB、原24/1536/1200＋900/384MiB，root累计352.760MB/runtime7.777GB；正在初始化，27B/完整任务未启。Astra只CPU新public接近profile，192388失败不重标，120训练/六评仍待。
+
 **2026-09-21 15:38（北京时间）时序因果确认/显式public接近profile票（Codex/Astra）：** 父同两保存态.598s对照：初始DOWN两速度都拒IK，第二DOWN同1cm在carry=True拒44>40、原非carry速度完整轨迹门过25tick/最大q步.023996<原.025；未增加上限或改精度。192388完整失败父receipt已落，原诊断票收敛。Astra另≤1800s CPU负责默认旧路不变的新显式profile：只“未发过CLOSE＋同手实际标定全开＋OPEN latch”的fine单臂平移走原普通时序，不能宣称无接触/已空手；资格未知/闭爪后/持物lift/BASE/BOTH仍原慢速。collector与三eval用同public资格、输入/真实动作/准入/train/serve绑定一致；原1cm/IK/碰撞/轨迹走廊/40与420/成功门不动，公共executor1fcc不改，连同精确两起点storage/capacity负例固定后父审，0新物理。H25首完整352.723MB已本地且本人7RAW全看/远端完整视频和76求解器复核过，第二门仍原登记单次待实际提交。
 
 **2026-09-21 15:37（北京时间）失败根因分层/首H25全几何重算通过（Codex/Astra）：** 父192388全53文件/441控制、4capture28payload12depth/42oracle及28真实BACK命令独立1.088s核过，本人看全部12 RAW；全程未持握，0BC。Astraaf061b98…61e6保存态精确复现：首DOWN是奇异位姿64迭代仍3.622mm，随后BACK合法；第二DOWN位置.491mm/.136°已可达/自体余78mm，但carry=True将关节每步限速减半，需44tick超过fine40才拒绝，不是深度碰撞或grid-close资格。未改门/源。父下一≤600s CPU仅对这两保存态比较同1cm动作的原carry true/false，在保持IK/碰撞/40tick原门下检验时序因果；尚不改线上或放新采集。H25首76段完整LK/原joint重算＋144主hash104帧22链4BASE/4夹爪receipt37.935s通过，视频整解码过，三SHA固定437f4a64…e2258/cdb157a6…50b4a/cd9dbdcd…1ba36；完整本地传输与7RAW审中，第二门尚待。
