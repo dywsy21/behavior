@@ -96,6 +96,8 @@ def main():
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid","rgbd_joint"),default="pnp")
     p.add_argument("--odometry-substep-controls",type=int,choices=(0,6),default=0,
                    help="Opt-in fixed action-internal RGB-D sampling; zero preserves legacy behavior")
+    p.add_argument("--odometry-self-exclusion",action="store_true",
+                   help="Exclude current robot-only visual geometry at both RGB-D correspondence endpoints")
     p.add_argument("--search-motion-recovery",action="store_true",
                    help="Opt-in at most two open-hand search reference resets after measured HOLD; never old-pose recovery")
     p.add_argument("--approach-progress",action="store_true",help="Veto repeated near-field base advances without observed contact progress")
@@ -143,6 +145,9 @@ def main():
         raise ValueError("Measured approach progress and explicit estimator require visual odometry")
     if args.odometry_substep_controls and not args.visual_odometry:
         raise ValueError("Action-internal sampling requires visual odometry")
+    if args.odometry_self_exclusion and not (grounded and args.grasp_motion and args.visual_odometry and
+            args.odometry_estimator=="rgbd_joint" and args.odometry_substep_controls==6):
+        raise ValueError("Robot self exclusion requires fresh robot geometry and six-control joint RGB-D")
     if args.search_motion_recovery and not (grounded and args.robot_geometry_guards and
             args.held_object_inspection and args.odometry_estimator=="rgbd_joint" and
             args.odometry_substep_controls==6 and args.prefix==0 and not args.replay_prefix_spec):
@@ -163,6 +168,7 @@ def main():
                 g.get("approach_body_options",False)==args.approach_body_options and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
                 g.get("odometry_substep_controls",0)==args.odometry_substep_controls and
+                g.get("odometry_self_exclusion",False)==args.odometry_self_exclusion and
                 g.get("search_motion_recovery",False)==args.search_motion_recovery and
                 g.get("approach_progress",False)==args.approach_progress and
                 g.get("persistent_grasp_tracks",False)==args.persistent_grasp_tracks and
@@ -210,6 +216,7 @@ def main():
                 "refine_grounding":args.refine_grounding,"max_surface_choices":16 if args.refine_grounding else 0,
                 "visual_odometry":args.visual_odometry,
                 "odometry_substep_controls":args.odometry_substep_controls,
+                "odometry_self_exclusion":args.odometry_self_exclusion,
                 "search_motion_recovery":args.search_motion_recovery,
                 "robot_geometry_guards":args.robot_geometry_guards,
                 "approach_reorientation":args.approach_reorientation,
@@ -300,17 +307,31 @@ def main():
             def observation_now(label):
                 if onboard is None:
                     return environment.observation()["images"],{},{}
-                q_before=kin.state().q.copy()
+                native_before=kin.state()
+                q_before=native_before.q.copy()
                 images,depths,receipt=onboard.read(model,render=og.sim.render)
-                q_after=kin.state().q
+                native_after=kin.state()
+                q_after=native_after.q
                 if np.max(np.abs(q_before-q_after))>1e-5:
                     raise RuntimeError("Robot moved during render-only observation barrier")
+                if args.odometry_self_exclusion and not np.array_equal(native_before.gripper,native_after.gripper):
+                    raise RuntimeError("Fingers moved during robot-self RGB-D observation barrier")
                 check={"label":label,"cameras":receipt}
                 sensor_checks.append(check)
                 write(out/"sensor_checks.json",sensor_checks)
                 if receipt["head"]["valid_fraction"]<.1:
                     raise RuntimeError("Head depth not initialized/usable; refusing blind grounded run")
                 return images,depths,receipt
+
+            def capture_self_frame(control,images,depths,current_state):
+                from semantic_robot.v2.self_odometry import make_frame
+                before=state_now()
+                geometry=kin.native_self_boxes()  # Actual fingers, not transported open-pose boxes.
+                after=state_now()
+                if any(not np.array_equal(getattr(current_state,key),getattr(s,key))
+                       for key in ("q","gripper") for s in (before,after)):
+                    raise RuntimeError("Robot changed while binding current self geometry")
+                return make_frame(images,depths,model,current_state,control,geometry)
 
             def check_fk(label):
                 check = {"label":label,"errors":kin.compare(model)}
@@ -398,7 +419,8 @@ def main():
                     bootstrap_unverified_pick(manager,replay,state)
                 if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion,
                     odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress,persistent_grasp_tracks=args.persistent_grasp_tracks,
-                    spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery)
+                    spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery,
+                    odometry_self_exclusion=args.odometry_self_exclusion)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -419,7 +441,7 @@ def main():
             gate_motion=None
             if args.visual_odometry and not policy:
                 from semantic_robot.v2.odometry import RGBDMotion
-                gate_motion=RGBDMotion(args.odometry_estimator)
+                gate_motion=RGBDMotion(args.odometry_estimator,exclude_robot=args.odometry_self_exclusion)
             substep_motion=None
             if args.odometry_substep_controls:
                 from semantic_robot.v2.substep_odometry import SubstepMotion
@@ -437,8 +459,10 @@ def main():
                     if manager: manager.stop_reason="DISK_RESERVE_REACHED"
                     break
                 state = state_now()
+                motion_frame=None
                 if saved_end_snapshot is not None:
-                    previous_control,end_q,end_gripper,images,depths,depth_receipt=saved_end_snapshot
+                    previous_control,end_q,end_gripper,images,depths,depth_receipt=saved_end_snapshot[:6]
+                    if args.odometry_self_exclusion:motion_frame=saved_end_snapshot[6]
                     if (previous_control!=controls or not np.array_equal(end_q,state.q)
                             or not np.array_equal(end_gripper,state.gripper)):
                         raise RuntimeError("Control/state changed before end-frame reuse")
@@ -447,7 +471,11 @@ def main():
                     images,depths,depth_receipt=observation_now(f"decision_{decision}")
                 bundle = prepare_views(images,model,state.q,previous,grounded=grounded,gripper=state.gripper,show_finger_regions=args.contact_geometry)
                 directory = out/f"decision_{decision:03d}"; directory.mkdir()
-                self_geometry=kin.native_self_boxes() if args.grasp_motion else None
+                if args.odometry_self_exclusion and motion_frame is None:
+                    motion_frame=capture_self_frame(controls,images,depths,state)
+                self_geometry=(motion_frame["geometry"] if args.odometry_self_exclusion else
+                               kin.native_self_boxes() if args.grasp_motion else None)
+                if motion_frame is not None:write(directory/"robot_motion_frame.json",motion_frame)
                 if self_geometry is not None:write(directory/"robot_self_geometry.json",self_geometry)
                 for label,img in zip(bundle.labels,bundle.images): img.save(directory/(label+".png"))
                 write(directory/"proprio.json",{"q":state.q.tolist(),"gripper":state.gripper.tolist(),"geometry":bundle.geometry})
@@ -465,13 +493,16 @@ def main():
                     if not audit["chassis_self_depth"]["available"]:
                         row["error"]="MISSING_ROBOT_SELF_GEOMETRY";failures.append(row);decisions.append(row);break
                 if gate_motion is not None:
-                    receipt=gate_motion.observe(images,depths,model,state.q)
+                    motion_kwargs=(dict(robot_frame=motion_frame,gripper=state.gripper,control=controls)
+                                   if args.odometry_self_exclusion else {})
+                    receipt=gate_motion.observe(images,depths,model,state.q,**motion_kwargs)
                     write(directory/"visual_odometry.json",receipt)
                     if not receipt["valid"]:
                         row["error"]="VISUAL_ODOMETRY_GATE_FAILED";failures.append(row);decisions.append(row);break
                 if policy:
                     if args.visual_odometry:
-                        receipt=controller.update_motion(images,depths,state)
+                        motion_kwargs=(dict(robot_frame=motion_frame,control=controls) if args.odometry_self_exclusion else {})
+                        receipt=controller.update_motion(images,depths,state,**motion_kwargs)
                         write(directory/"visual_odometry.json",receipt)
                         # A prior exhausted local-recovery window may enter a
                         # bounded strategy replan. Valid odometry must not turn
@@ -593,9 +624,14 @@ def main():
                     np.savez_compressed(location/"depth.npz",head=sample_depths["head"])
                     write(location/"depth_receipt.json",{"head":sample_receipts["head"]})
                     write(location/"proprio.json",{"q":sample_state.q.tolist(),"gripper":sample_state.gripper.tolist()})
-                    measured=substep_motion.sample(sample_images,sample_depths,model,sample_state.q,controls)
+                    sample_frame=(capture_self_frame(controls,sample_images,sample_depths,sample_state)
+                                  if args.odometry_self_exclusion else None)
+                    if sample_frame is not None:write(location/"robot_motion_frame.json",sample_frame)
+                    motion_kwargs=(dict(robot_frame=sample_frame,gripper=sample_state.gripper) if args.odometry_self_exclusion else {})
+                    measured=substep_motion.sample(sample_images,sample_depths,model,sample_state.q,controls,**motion_kwargs)
                     write(location/"visual_odometry.json",measured)
                     saved_end_snapshot=(controls,sample_state.q.copy(),sample_state.gripper.copy(),sample_images,sample_depths,sample_receipts)
+                    if args.odometry_self_exclusion:saved_end_snapshot+=(sample_frame,)
                     return measured["valid"]
                 if accepted:
                     while not servo.done and servo.ticks<servo.total_ticks and controls<action_control_limit:
@@ -651,7 +687,7 @@ def main():
                     # odometer reference; never judge it from the next zero-step
                     # duplicate frame or the unreliable instantaneous qvel sum.
                     if substep_motion is not None:
-                        _,_,_,post_images,post_depths,post_receipt=saved_end_snapshot
+                        _,_,_,post_images,post_depths,post_receipt=saved_end_snapshot[:6]
                     else:
                         post_images,post_depths,post_receipt=observation_now(f"post_base_gate_{decision}")
                     post_state=state_now()
@@ -661,7 +697,12 @@ def main():
                     np.savez_compressed(post/"depth.npz",**post_depths)
                     write(post/"depth_receipt.json",post_receipt)
                     write(post/"proprio.json",{"q":post_state.q.tolist(),"gripper":post_state.gripper.tolist()})
-                    motion_receipt=gate_motion.observe(post_images,post_depths,model,post_state.q)
+                    motion_kwargs={}
+                    if args.odometry_self_exclusion:
+                        post_frame=saved_end_snapshot[6]
+                        write(post/"robot_motion_frame.json",post_frame)
+                        motion_kwargs=dict(robot_frame=post_frame,gripper=post_state.gripper,control=controls)
+                    motion_receipt=gate_motion.observe(post_images,post_depths,model,post_state.q,**motion_kwargs)
                     write(post/"visual_odometry.json",motion_receipt)
                     write(post/"raw_servo_feedback.json",raw_servo_feedback)
                     if not motion_receipt["valid"] or motion_receipt.get("initial",False):
@@ -692,6 +733,10 @@ def main():
                         np.savez_compressed(location/"depth.npz",**raw_depths)
                         write(location/"depth_receipt.json",receipts)
                         write(location/"proprio.json",{"q":current_state.q.tolist(),"gripper":current_state.gripper.tolist(),"control":control})
+                        if controller.odometry_self_exclusion:
+                            frame=capture_self_frame(control,raw_images,raw_depths,current_state)
+                            write(location/"robot_motion_frame.json",frame)
+                            return frame
                     anchor_hold=servo.safe_hold(state_now()).copy()
                     def issue_reanchor_hold():
                         nonlocal controls
@@ -757,6 +802,7 @@ def main():
                       "approach_body_options":args.approach_body_options,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
                       "odometry_substep_controls":args.odometry_substep_controls,
+                      "odometry_self_exclusion":args.odometry_self_exclusion,
                       "search_motion_recovery":args.search_motion_recovery,
                       "held_object_inspection":args.held_object_inspection,
                       "persistent_grasp_tracks":args.persistent_grasp_tracks,

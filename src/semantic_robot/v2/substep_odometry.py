@@ -53,11 +53,23 @@ class SubstepMotion:
         self.active = False
         self.pending = None
         self.failed = False
+        self.exclude_robot = getattr(estimator, "exclude_robot", False) is True
 
-    def observe(self, images, depths, model, q):
+    def _bound(self, images, depths, model, q, robot_frame, gripper, control):
+        current = signature(images, depths, model, q)
+        if self.exclude_robot:
+            from .self_odometry import validate_frame
+            current.update(robot_frame_sha256=validate_frame(robot_frame, images, depths, model, q, gripper, control),
+                           control=control)
+            return current, dict(robot_frame=robot_frame, gripper=gripper, control=control)
+        if robot_frame is not None or gripper is not None or control is not None:
+            raise ValueError("Self frame supplied to disabled robot exclusion")
+        return current, {}
+
+    def observe(self, images, depths, model, q, *, robot_frame=None, gripper=None, control=None):
         if self.active:
             raise ValueError("An action must finish before delivery")
-        current = signature(images, depths, model, q)
+        current, kwargs = self._bound(images, depths, model, q, robot_frame, gripper, control)
         if self.pending is not None:
             # Runner reuses the exact end-of-action snapshot at the SAME control
             # count. Do not recompute only the final subinterval as the full move.
@@ -67,7 +79,7 @@ class SubstepMotion:
             return copy.deepcopy(receipt)
         if self.failed:
             raise ValueError("A failed motion chain cannot be restarted")
-        receipt = self.estimator.observe(images, depths, model, q)
+        receipt = self.estimator.observe(images, depths, model, q, **kwargs)
         self.reference = current
         if not receipt.get("valid"):
             self.failed = True
@@ -79,18 +91,21 @@ class SubstepMotion:
             raise ValueError("Valid consumed reference and integer action start required")
         if hasattr(self, "last") and control != self.last:
             raise ValueError("Unmeasured controls between actions are forbidden")
+        if self.exclude_robot and control != self.reference["control"]:
+            raise ValueError("Robot self reference belongs to a different control clock")
         self.active = True
         self.start = self.last = control
         self.before = copy.deepcopy(self.reference)
         self.total = np.eye(4)
         self.segments = []
 
-    def sample(self, images, depths, model, q, control):
+    def sample(self, images, depths, model, q, control, *, robot_frame=None, gripper=None):
         if (not self.active or self.failed or type(control) is not int
                 or not 0 < control-self.last <= self.interval):
             raise ValueError("Positive bounded control gap required; no skipped interval")
-        current = signature(images, depths, model, q)
-        receipt = copy.deepcopy(self.estimator.observe(images, depths, model, q))
+        current, kwargs = self._bound(images, depths, model, q, robot_frame, gripper,
+                                      control if self.exclude_robot else None)
+        receipt = copy.deepcopy(self.estimator.observe(images, depths, model, q, **kwargs))
         valid = receipt.get("valid") is True and not receipt.get("initial", False)
         if valid:
             self.total = self.total @ checked_transform(receipt)
@@ -115,6 +130,9 @@ class SubstepMotion:
                   "previous_rgb_sha256": self.before["rgb_sha256"],
                   "current_rgb_sha256": self.reference["rgb_sha256"],
                   "current_depth_sha256": self.reference["depth_sha256"]}
+        if self.exclude_robot:
+            result.update(robot_self_exclusion=True, previous_robot_frame_sha256=self.before["robot_frame_sha256"],
+                          current_robot_frame_sha256=self.reference["robot_frame_sha256"])
         if self.failed:
             result["reason"] = "SUBSTEP_RGBD_QUALITY_FAILED_NO_PARTIAL_CREDIT"
         elif interrupted:

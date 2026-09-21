@@ -1,6 +1,6 @@
 {
   "reviewer": "Codex-parent",
-  "reviewed_bjt": "2026-09-21T11:54:00+08:00",
+"reviewed_bjt": "2026-09-21T11:51:00+08:00",
   "code_commit": "66f61889e9f98b3a1fcc3f489ea4214b911bdc3c",
   "scope": "Six-file explicit NVMe runtime storage increment; original a6cde5d reference contract already reviewed",
   "independent_tests": {"sft": 102, "seconds": 2.027},

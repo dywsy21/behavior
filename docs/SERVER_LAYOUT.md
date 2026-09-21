@@ -6,7 +6,9 @@
 
 ## 1. 总览
 
-**2026-09-21 11:54当前：** H21完整主包已在本地`artifacts/agentic-vlm-goal-20260918/h21_fullstart_bundle/`，result/steps/video三SHA全同远端，传输不再运行；全链审待。失败段诊断单独在`h21_failure_probe/`，仅CPU。66f6188存储父审通过，GPU3单参考条件交Astra，实际新source/进程/缓存创建待作者回执，不能按本条当已运行。父H22仅CPU，不占GPU2。
+**2026-09-21 11:57当前：** Astra唯一2564237/GPU3参考于11:55:20.952981 BJT初始化提交，source`git_worktrees/vlm_sft_h09y_66f6188`不可热改；run`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/reference_train114_v1`及相邻`.log/.launch.json`，runtime`/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/reference_train114_v1`。本轮runtime一个screenshots mode000正在独立核计，不能据partial du报全cache；未训练。父GPU2尚无新进程。
+
+**2026-09-21 11:51当前：** H21完整主包已在本地`artifacts/agentic-vlm-goal-20260918/h21_fullstart_bundle/`，result/steps/video三SHA全同远端，传输不再运行；全链审待。失败段诊断单独在`h21_failure_probe/`，仅CPU。66f6188存储父审通过，GPU3单参考条件交Astra，实际新source/进程/缓存创建待作者回执，不能按本条当已运行。父H22仅CPU，不占GPU2。
 
 **2026-09-21 11:42当前：** H21原354348已退出，`radio_h21_fullstart`保留1,126,807,369B、98决策/2118控制/164calls/official=false；完整本地`artifacts/agentic-vlm-goal-20260918/h21_fullstart_bundle`传输中。353691/8925自有模型的identity/calls已在`h21_server_complete_archive/server_h21`双端SHA验证后TERM并确认退出；GPU2/3空，GPU0/1队友保留。SDA只余44GiB，NVMe约2.7TiB，不删除任何文件。后继拟新增独立runtime缓存根到NVMe（16GiB上限），原H09Y6GiB结果根不变，配置尚待独审/实核；reference_train114_v1尚未启动，旧inactive不改。
 **2026-09-19 22:50当前：** H21原354348/353691仍占GPU3，策略1128控制后PICK APPROACH；两个工程门完整本地`artifacts/agentic-vlm-goal-20260918/h21_gates_bundle/`已双端SHA/全链复核。Astra新不可变`git_worktrees/vlm_sft_h09y_a6cde5d`仅CPU，真实准备`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/reference_prepare_train114_v1/task_1`，manifest61eebc47…62d3；同root `authorization_train114_inactive.json`仍false/52498d6c…c4d，物理`reference_train114_v1`尚不存在。不要将参考准备当训练数据或重复提交。原源/历史所有结果保留。
@@ -215,7 +217,7 @@
 
 **2026-09-18 12:06 H-07真实状态：** `radio_27b_v1`与`plates_27b_v1`因首轮/次轮观察字段契约失败退出，分别18 HOLD新控制/0控制；以各`failure.json`为终态，没有`result.json`，不是仍在运行/有效SR。`server_27b_v2`6次生成已停（4104006退出，两模拟器4104443/4104495也退出），没有新模型权重。`pilots_v1.tar`与本地SHA8817a4c2…一致，含两run/日志/服务逐调用；`plates_pilot_v1.tar`为此前单独保存的同次task3失败证据。新字段兼容修复只在Git本地进行，尚无新物理run；下方启动记录为历史。
 
-**2026-09-18 11:54覆盖下方H-07运行状态：** 9993fab最新两门已完成（共同digest88a8c268…），首帧人工核验通过。新`server_27b_v2`（4104006/GPU3/8907、最多218调用）正在服务；H-07根`radio_27b_v1`/`plates_27b_v1`及同级`.log`为本轮新两策略短测，已提交、结果待验，勿与H-06同名run混淆。`semantic_grounded_9993fab`正在使用，禁止热pull/修改。`gates_v3.tar`新两门证据已与本地SHA一致，旧gates/static不覆盖。[实时计划](plan.md)
+**2026-09-18 11:51覆盖下方H-07运行状态：** 9993fab最新两门已完成（共同digest88a8c268…），首帧人工核验通过。新`server_27b_v2`（4104006/GPU3/8907、最多218调用）正在服务；H-07根`radio_27b_v1`/`plates_27b_v1`及同级`.log`为本轮新两策略短测，已提交、结果待验，勿与H-06同名run混淆。`semantic_grounded_9993fab`正在使用，禁止热pull/修改。`gates_v3.tar`新两门证据已与本地SHA一致，旧gates/static不覆盖。[实时计划](plan.md)
 
 **2026-09-18 11:48 H-07（Codex，首帧修复复验运行中）：** 根`/mnt/sdc1/robodojo/behavior_dev/semantic_agent_grounded_20260918`，最新独立源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_grounded_9993fab`，分支`feat/semantic-agent-grounded-20260918`。`gate_radio_v1`/`gate_plates_v1`初始化失败、0控制；d2da0ac的`gate_radio_v2`/`gate_plates_v2`控制完成，但task3初图陈旧，不能放行新源。新增`gate_radio_v3`/`gate_plates_v3`及同级`.log`正在重新验证RGB-D同步。`static_27b_v1`已6次静态调用/0执行，task3陈旧帧只算schema检查；`server_27b_v1`已停止。`gates_and_static_v2.tar`为233MiB证据归档，本地传输目标`/home/wsy/behavior/artifacts/semantic-agent-grounded-20260918/`，产物均不入Git。权重只读复用下方H-06的27B，未复制/下载；新策略尚未启动。[设计](SEMANTIC_AGENT_GROUNDED.md)
 

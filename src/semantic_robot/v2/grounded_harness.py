@@ -271,8 +271,11 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False):
         self.model,self.servo,self.harness=model,servo,harness
+        if odometry_self_exclusion and not visual_odometry:
+            raise ValueError("Robot-self exclusion requires visual odometry")
+        self.odometry_self_exclusion=odometry_self_exclusion
         if approach_progress and not visual_odometry:raise ValueError("Approach progress requires measured visual motion")
         from .approach_progress import ApproachProgress
         self.approach_monitor=ApproachProgress() if approach_progress else None
@@ -310,16 +313,19 @@ class GroundedController:
             self.grasp_verifier=GraspMotionVerifier(persistent_tracks=persistent_grasp_tracks,spatial_seed_features=spatial_grasp_features)
         if visual_odometry:
             from .odometry import RGBDMotion
-            self.motion=RGBDMotion(odometry_estimator)
+            self.motion=RGBDMotion(odometry_estimator,exclude_robot=odometry_self_exclusion)
 
     @property
     def can_replan_stop(self):
         return (self.harness.stop_reason == "RECOVERY_BUDGET_EXHAUSTED"
                 and self.harness.replans < self.max_replans)
 
-    def update_motion(self,images,depths,state):
+    def update_motion(self,images,depths,state, *, robot_frame=None, control=None):
         if self.motion is None:raise ValueError("Visual motion was not enabled")
-        receipt=self.motion.observe(images,depths,self.model,state.q)
+        kwargs=(dict(robot_frame=robot_frame,gripper=state.gripper,control=control) if self.odometry_self_exclusion else {})
+        if not self.odometry_self_exclusion and (robot_frame is not None or control is not None):
+            raise ValueError("Self frame supplied to disabled robot exclusion")
+        receipt=self.motion.observe(images,depths,self.model,state.q,**kwargs)
         self.harness.motion_receipt=receipt
         if not receipt["valid"]:
             # Never turn an unreliable velocity integral into new coverage.

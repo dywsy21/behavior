@@ -91,12 +91,15 @@ class SearchReanchor:
         self.attempts += 1
         receipt["attempt"] = self.attempts
         self.history.append(receipt)
-        factory = motion_factory or (lambda: SubstepMotion(RGBDMotion("rgbd_joint")))
+        use_self = c.odometry_self_exclusion
+        factory = motion_factory or (lambda: SubstepMotion(RGBDMotion("rgbd_joint", exclude_robot=True)
+                                                            if use_self else RGBDMotion("rgbd_joint")))
         motion = factory()
         images, depths, sensor = observe("search_reanchor_before")
         state = state_now()
-        save_snapshot(controls, images, depths, sensor, state)
-        initial = motion.observe(images, depths, c.model, state.q)
+        robot_frame = save_snapshot(controls, images, depths, sensor, state)
+        kwargs = dict(robot_frame=robot_frame, gripper=state.gripper, control=controls) if use_self else {}
+        initial = motion.observe(images, depths, c.model, state.q, **kwargs)
         if initial.get("valid") is not True or initial.get("initial") is not True:
             receipt["reason"] = "NEW_REFERENCE_INITIALIZATION_FAILED"
             return receipt, None
@@ -113,8 +116,9 @@ class SearchReanchor:
             if offset % 6 == 0:
                 images, depths, sensor = observe("search_reanchor_probe")
                 state = state_now()
-                save_snapshot(controls+offset, images, depths, sensor, state)
-                measured = motion.sample(images, depths, c.model, state.q, controls+offset)
+                robot_frame = save_snapshot(controls+offset, images, depths, sensor, state)
+                kwargs = dict(robot_frame=robot_frame, gripper=state.gripper) if use_self else {}
+                measured = motion.sample(images, depths, c.model, state.q, controls+offset, **kwargs)
                 if not measured["valid"]:
                     receipt["chain"] = motion.finish(controls+offset, interrupted=True)
                     receipt["reason"] = "HOLD_RGBD_QUALITY_FAILED_NO_RETRY"
@@ -162,6 +166,8 @@ class SearchReanchor:
         h.search_reanchor = self.context()
         h.stop_reason = None
         snapshot = (controls+self.hold_controls, state.q.copy(), state.gripper.copy(), images, depths, sensor)
+        if use_self:
+            snapshot += (robot_frame,)
         return receipt, snapshot
 
     def context(self):
