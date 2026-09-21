@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 12:32（北京时间）H09Y首原生真实提交/已审代码集成（Codex/Astra）：** 12:31:21.951814 BJT唯一2575671/GPU3 `h09y_grasp_only/native_t1_i114_p0993`实际启动初始化，固定10e1/239、993精确前缀，active SHAfd1f63f2…4980、父seed/source review701。全source/factory/seed/shared-storage/GPU准入1.019s过；GPU3仅父辅助200MiB、余80943MiB，未改其他门。原12宏420新控制/1200s＋900init/384MiB/0模型，无后继自动run。父已将独审66/e331/10合入799c7ee并push，本地整合392/7.673s＋121/1.465s通过；远端d7/10活跃源码不变。父首gate2573658仍场景初始化，新16GiB树全遍历193MB过，第二gate/新模型/训练仍未启。
+
 **2026-09-21 12:29（北京时间）H22首门真实提交/双Kit辅助context明确（Codex）：** 12:28:38.946899 BJT唯一2573658/GPU2 `h22_self_odometry/gate_radio_h22`已提交，准确d7/e763、新父NVMe runtime及所有cache env、新screenshots0700、GPU2启动前0MiB；只原首task0门，仍初始化，task3/model/完整任务均未启。receipt `launch_gate_radio.json`与相邻log。父Kit在GPU3创建已识别约209MiB辅助context，Astra发现后未擅杀/启动；本次明确允许对方已核Kit PID/实际主卡绑定的≤512MiB辅助占用，目标GPU仍free≥70GiB且无其他未知/训练/模型进程，不能机械要求绝对0MiB。Astra首114/993其余source/seed/storage门已过，按此门准单次启动；实际PID待，非已训练。
 
 **2026-09-21 12:27（北京时间）H22独立终审过/两顺序物理门登记（Codex/Astra）：** Astra固定d7完整核心审、392/7.680s及独立全356保存态184.279s再次355→356/0退化通过，无阻塞；父GPU2实查0MiB、GPU3仍Astra、0/1队友。新`configs/semantic_robot/h22_self_odometry_block.json`登记：先task0/3两个**顺序**同源原起点工程门各24/1536/1200s/384MiB/0模型，再条件唯一task0原起点192/6144/7200s、同27B/431call；新增同帧证据使门体积预算明确改384MiB，原H21不追改。结果新NVMe根4GiB，父独立新runtime16GiB/源32与NVMe80余量，所有新cache/temp隔离，顺序复用自己的OG软件目录但不共享子进程/队友实例；完整树周期核为合作式监控，不冒充原子硬限。新source已固定d7，未改运行源/阈值；首gate尚未提交。上一seed终审记录12:26为估计时刻，实际12:25，本条更正。
