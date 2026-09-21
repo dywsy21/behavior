@@ -2,7 +2,7 @@
   "experiment_id": "H35-current-RAW-focused-localization-v1",
   "owner": "Codex-parent",
   "registered_bjt": "2026-09-21T21:58:00+08:00",
-  "status": "REGISTERED_NOT_CALLED",
+  "status": "COMPLETED_KEY_FAILURE_NOT_RECOVERED_DO_NOT_DEPLOY",
   "hypothesis": "Separating current object localization from history/robot guides/negative feedback may recover accurate visible contact identification without copying an all-false example or preferring the active wrist.",
   "client_commit": "42f38b7cc73fbdb3f7ce88fedf7f7c5024518fb9",
   "saved_decisions_in_order": [0,117,118,120],
@@ -20,5 +20,14 @@
   "output": "/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/h35_focused_raw_v2",
   "prequery_transport_failure": "Original v1 SSH session disconnected after manifest creation; no matching probe process remained and service ledger stayed294. Original manifest-only directory retained. v2 uses durable detached stdout; this does not grant extra model calls or new samples.",
   "acceptance": "Parent manually checks all4 states/RAW and new UV/surface proposals, including absent control; requires no bad table point accepted. Static localization only, not grasp or physical SR.",
-  "deployment_authorized": false
+  "deployment_authorized": false,
+  "actual": {
+    "real_model_calls": 6,
+    "seconds_including_client_recovery": 216.9518083431758,
+    "service_calls_after": 300,
+    "client_recovery": "After one original decision0 answer, client asserted a wrong all-goal-index0 assumption. Resumed only117/118/120 within original300s using exact archived plan/index; reused0 verbatim. No query repeated.",
+    "result_sha256": "3a57dc39679945b0f1d0af8548a9c5385452a3d4dd4a21758c80bfeb2551f64d",
+    "parent_manual_review": "All3 initial RAW, both new surface guides/crops personally viewed; all9 near-state RAW previously viewed. 0 correctly absent;117 choice2 on red handle surface;118 falsely invisible despite radio in head;120 choice2 on red body surface.",
+    "conclusion": "No recovery of critical118. Do not integrate the shortened current-only prompt as an effective fix. These four development snapshots do not establish a general perception score or physical improvement."
+  }
 }
