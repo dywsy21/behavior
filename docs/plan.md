@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 20:21（北京时间）首新carry整条父审通过/reader浮点边界待核（Codex/Astra）：** 原2680442正常退出，完整184文件66,219,466B/清单ff4af44c…7457全核，625控制/6宏BACK18 DOWN25 CLOSE18 UP44 UP26 UP21（0body），226原oracle更新及末hold全部独核3.048s；桶升32.832mm、首实际CLOSE后手升29.742mm、末12相对漂移1.223μm，真实局部SUCCEEDED。全部54 RAW本人看＋4原分辨率复查，W396初态差13.892mm/1.401°非近重复；组合receipt `h09z_native_192388_carry_parent_review.json`，物理集成和单条候选通过，**非VLM/官方任务成功、未release BC**。现4候选26宏仍少于32；子发现新包在本地3.12 dataset精确float比较拒（命令逐位一致，反馈约1e-14），另≤300s核真实3.10/3.11新6宏，不热改02d或放宽动作/成功门。待该票闭合再交原第二380；120更新和六配对仍未开始。H30继续2123控制/99决策开始/163调用，约.176m、无持握。
+
 **2026-09-21 20:14（北京时间）H31原拒绝点真实越过（Astra/Codex）：** 2680442于20:13:32实查prefix388/native162；第4宏RIGHT_UP实际native109→153共44tick TARGET_REACHED，motion_timing仍cap75/required44/.0125rad每tick/5settle/success_claim=false，随后固定12settle进行中。右手物理held/contact=true、LocalOutcome仍IN_PROGRESS/stable0、0body；明确仅长于原40上限的真实执行完成，尚非整段成功/父全审/新增BC。原run/预算继续，第二380和微调/配对未启动。
 
 **2026-09-21 20:08（北京时间）已审子实现整合/原采集实控（Codex/Astra）：** 将固定02d合入父协作分支；重复cherry-pick历史造成owned文件冲突，逐项先核父版本与affabb5前一版完全相同，再保留已审02d精确字节；子实验文档只增533行、父证据不删，公共src/runner对父HEAD零差异。整合174/6.754s＋459/9.778s通过，不改服务器冻结源。新audit reader旧388兼容回归1.595s/110文件/99物理帧/3宏过，报告c7cbc610…5de9；旧失败不重标/不计新样本。子2680442于20:04:35已实控prefix66，20:06:01到146/native0；正在原1200s时钟，未有新抬升结果。父H30 d70–75连续fine前伸，观测距.510→.461m、未抓取，暂无证据指workspace触发错误，不为此临时改线上门。
