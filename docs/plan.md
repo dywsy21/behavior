@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 12:53（北京时间）首native预算终止/父第二门真实提交（Codex/Astra）：** 子2575671已退出：993前缀＋382普通native＋末hold（末数待全账本）/12宏/828.284s，failure=`Bounded teacher ended without local completion`、IN_PROGRESS/stable0，0正BC。初核10次抓前修正（7yaw−/2pitch＋/1右移），第11宏才CLOSE、第12宏仅UP一次；实际末右手held/contact但仅约1cm抬升，不能冒充原3cm成功。Astra≤600s CPU完整封存/逐宏及reference相对姿态诊断，不重跑/扩宏/降门；原下一192392/114989 CPU来源已备好，物理仍待后继明确。父按原依赖核两旧sim退出/GPU2空/完整容量树后，于12:52:24.257286唯一2584009提交task3 `gate_plates_h22`，相同d7/e763/24/1536/1200s/384MiB/0模型，复用父自身appdata，无新源或缓存删搬。第一门本地状态已同步config，不再pending；新VLM训练仍未启动。
+
 **2026-09-21 12:48（北京时间）H22首门本地证据闭合/子进入原生微动作（Codex/Astra）：** 352.8MB首门已完整本地，父另4.015s复核全链/144主hash/104self帧/三主SHA、整视频解码过，亲看首head及两手开闭4张RAW；`h22_gates_bundle/gate_radio_h22`不再传输中。子12:46:55已完成993 paidprefix并进入native，RIGHT_RIGHT/RIGHT_YAW_MINUS各真实到达，尚未抓取/新训练；父gate退出窗口后子前缀约2.41控制/s，保留争用线索不当因果实验。仅追加≤300s CPU预备原下一192/p392及114/p989来源绑定，无额外物理/重置。父第二gate仍待子首条完整退出。
 
 **2026-09-21 12:44（北京时间）H22首门真实完成/全链远端审过（Codex）：** 2573658已退出，task0 gate24决策/417控制/428.596s、gate_ok=true/0模型/两前缀0。父8.510s独核144主RGB-D hash、104实际绑定self帧、76段/22完整链/4次BASE整链消费及417连续控制，整视频解码过。首门中自身匹配实际排除0，故只证明接线与原动作回归，不能宣称新过滤已在真实故障场景起效。结果352,783,635B/384MiB内；result44f71b47…c367/stepsd3b06bc7…5196/video806f7a93…fc61。完整本地`h22_gates_bundle`传输中，不当已到齐；第二gate按原排程待子首native2575671退出，模型/新训练仍未启。
