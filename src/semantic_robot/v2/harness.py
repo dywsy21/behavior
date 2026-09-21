@@ -9,6 +9,7 @@ from dataclasses import asdict, dataclass
 import numpy as np
 
 from .protocol import Action, Evidence, HOLD, ROTATIONS, TRANSLATIONS, strict_json
+from .servo import execution_completed
 
 
 @dataclass(frozen=True)
@@ -138,7 +139,7 @@ class TaskHarness:
             # Hold first. Repeated danger consumes finite recovery; no auto-release.
             self.recover("VISUAL_"+evidence.hazard.upper()+"_SUSPECTED")
             return
-        if self.feedback and self.feedback["status"] != "TARGET_REACHED":
+        if self.feedback and not execution_completed(self.last_action, self.feedback):
             self.recover(self.feedback["status"])
             self.feedback = None  # event consumed once, not on every subsequent view
             return
@@ -154,7 +155,8 @@ class TaskHarness:
                 self.recover("PREVIOUS_HOLD_LOST_OR_UNCERTAIN")
                 return
         if self.stage == "RECOVER":
-            recovered_action = self.executions > self.recovery_entered_after and self.feedback and self.feedback["status"] == "TARGET_REACHED"
+            recovered_action = (self.executions > self.recovery_entered_after and self.feedback
+                                and execution_completed(self.last_action, self.feedback))
             if recovered_action and self.last_action.move == "open" and self.goal.kind == "pick":
                 self.transition("ALIGN" if evidence.visible else "SEARCH")
             elif recovered_action and evidence.visible and evidence.hazard == "none" and self.last_action.move not in ("hold", "close"):
@@ -297,7 +299,7 @@ class TaskHarness:
         self.executions += 1
         self.last_action, self.feedback = action, feedback
         self.history.append({"action": asdict(action), "feedback": feedback, "stage": self.stage})
-        if feedback["status"] == "TARGET_REACHED":
+        if execution_completed(action, feedback):
             if self.stage == "GRASP" and action.move == "close":
                 self.transition("VERIFY_GRASP")
             elif self.stage == "RELEASE" and action.move == "open":

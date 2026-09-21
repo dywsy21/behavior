@@ -33,7 +33,7 @@ from semantic_robot.v2.kinematics import RobotModel
 from semantic_robot.v2.og_calibration import CalibratedRobot
 from semantic_robot.v2.policy import VLMPolicy
 from semantic_robot.v2.protocol import Action, HOLD, TRANSLATIONS, ROTATIONS
-from semantic_robot.v2.servo import SafeServo, ServoLimits
+from semantic_robot.v2.servo import SafeServo, ServoLimits, execution_completed
 from semantic_robot.v2.vision import prepare_views
 from semantic_robot.v2.onboard import OnboardRGBD
 from semantic_robot.v2.grounding import observed_cloud, LocalDepthGuard
@@ -91,6 +91,8 @@ def main():
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
     p.add_argument("--robot-geometry-guards", action="store_true",
                    help="Opt-in actual robot depth self-exclusion and fully-open hand/body collision envelopes")
+    p.add_argument("--gripper-completion-v1", action="store_true",
+                   help="Separate bounded OPEN/CLOSE command completion from pose precision and grasp success")
     p.add_argument("--approach-reorientation",action="store_true",help="Opt-in unladen wrist candidates and bounded robot-only two-command reach preview")
     p.add_argument("--approach-body-options",action="store_true",help="Opt-in all existing unladen far-pick body directions before individual safety preflight")
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid","rgbd_joint"),default="pnp")
@@ -385,7 +387,8 @@ def main():
             previous_grips = (replay["actions"][-1,[14,22]] if replay is not None else
                               None if not prefix_count else np.asarray(prefix[-1])[[14,22]])
             servo = SafeServo(model,state,gripper_command=previous_grips,
-                              limits=ServoLimits(robot_geometry_guards=args.robot_geometry_guards))
+                              limits=ServoLimits(robot_geometry_guards=args.robot_geometry_guards,
+                                                 gripper_completion_v1=args.gripper_completion_v1))
             if last_issued_grips is None:last_issued_grips=servo.grips.copy()
             video = imageio.get_writer(str(out/"rollout.mp4"),fps=15,codec="libx264",quality=7,macro_block_size=2)
             previous = None
@@ -673,7 +676,7 @@ def main():
                 raw_servo_feedback=feedback  # Later adjudication creates copies; preserve original status.
                 if motion_fault:
                     feedback={**feedback,"visual_gate_failure":substep_result}
-                    if feedback["status"] in ("TARGET_REACHED","BASE_TRACKING_FAILED"):
+                    if execution_completed(action,raw_servo_feedback) or feedback["status"]=="BASE_TRACKING_FAILED":
                         feedback["status"]="VISUAL_ODOMETRY_GATE_FAILED"
                     if manager:
                         manager.motion_receipt=substep_result
@@ -766,7 +769,7 @@ def main():
                 check_fk(f"decision_{decision}")
                 write(out/"progress.json",{"controls":controls,"decisions":len(decisions),"last":row})
                 print(json.dumps(row),flush=True)
-                if not policy and accepted and (motion_fault or feedback["status"] not in ("TARGET_REACHED",)):
+                if not policy and accepted and (motion_fault or not execution_completed(action,feedback)):
                     failures.append(row); break  # diagnose, do not push further after a failed gate
             # Explicit zero base velocity / preserve grippers on EVERY exit path.
             if not terminal and servo is not None and controls < args.max_controls:
@@ -774,7 +777,8 @@ def main():
                 step(servo.safe_hold(state_now())); controls += 1
                 trace.write(json.dumps({"control":controls,"safety_stop":True})+"\n")
             done = info.get("done",{}) if isinstance(info,dict) else {}
-            reached = [r for r in decisions if r.get("feedback",{}).get("status")=="TARGET_REACHED"]
+            reached = [r for r in decisions if "action" in r and
+                       execution_completed(Action(**r["action"]),r.get("feedback",{}))]
             gate_ok = args.mode=="gate" and not failures and len(decisions)==len(gate) and len(reached)>=16
             if grounded and args.mode=="gate":
                 required={13,14,19,20,21,22}

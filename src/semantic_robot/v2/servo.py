@@ -13,6 +13,56 @@ from semantic_robot.control import finite, pose_error
 from .protocol import Action, ROTATIONS, TRANSLATIONS, VIEWS
 
 
+GRIPPER_COMPLETION_VERSION = "gripper-command-completion-v1"
+GRIPPER_COMPLETED = "GRIPPER_COMMAND_COMPLETED"
+
+
+def execution_completed(action, feedback):
+    """Execution receipt, never a grasp/release/task-success predicate.
+
+    Legacy positional receipts retain their meaning. A new gripper receipt is
+    accepted only for its exact OPEN/CLOSE action, with the original pose errors
+    still visible. Bare status strings and partial/unsafe receipts fail closed.
+    """
+    if not isinstance(feedback, dict) or "visual_gate_failure" in feedback:
+        return False
+    if feedback.get("status") == "TARGET_REACHED":
+        return True
+    if (feedback.get("status") != GRIPPER_COMPLETED or not isinstance(action, Action)
+            or action.move not in ("open", "close") or action.part not in ("left", "right", "both")):
+        return False
+    try:
+        r = feedback["gripper_execution"]
+        expected = {"micro": 12, "fine": 18, "coarse": 24}[action.scale]
+        if (r["version"] != GRIPPER_COMPLETION_VERSION or r["part"] != action.part or r["move"] != action.move
+                or r["command_complete"] is not True or r["success_claim"] is not False
+                or feedback["holding"] != "UNKNOWN"
+                or feedback["official_success"] != "NOT_AVAILABLE_TO_ACTOR"
+                or any(type(v) is not int or v != expected for v in
+                       (r["planned_control_ticks"], r["executed_control_ticks"], feedback["control_ticks"]))
+                or set(r["final_state_checks"]) != {"finite_proprio", "joint_bounds", "robot_collision_free",
+                      "active_hand_within_divergence_envelope", "inactive_hand_within_pose_tolerance"}
+                or any(v is not True for v in r["final_state_checks"].values())):
+            return False
+        limits = r["limits"]
+        p, a, ip, ia = (float(limits[k]) for k in
+                       ("active_position_m", "active_angle_deg", "inactive_position_m", "inactive_angle_deg"))
+        if not (0 < p <= .018 and 0 < a <= 9.000000001 and ip == .0025 and ia == 1.5):
+            return False
+        active = ("left", "right") if action.part == "both" else (action.part,)
+        nominal = True
+        for arm in ("left", "right"):
+            pe, ae = float(feedback["target_error_m"][arm]), float(feedback["orientation_error_deg"][arm])
+            if not np.isfinite([pe, ae]).all() or min(pe, ae) < 0:
+                return False
+            nominal = nominal and pe <= ip and ae <= ia
+            if pe > (p if arm in active else ip) or ae > (a if arm in active else ia):
+                return False
+        return feedback["pose_tracking_status"] == ("TARGET_REACHED" if nominal else "TRACKING_FAILED")
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return False
+
+
 def native_action(q, grips, velocity=(0., 0., 0.)):
     q, grips = finite(q, (18,)), finite(grips, (2,))
     vel = finite(velocity, (3,)) / [.75, .75, 1.]
@@ -90,6 +140,7 @@ class RobotCollisionGuard:
 @dataclass(frozen=True)
 class ServoLimits:
     robot_geometry_guards: bool = False
+    gripper_completion_v1: bool = False
     joint_margin: float = .001
     joint_tick: float = .025
     orientation_weight: float = .15  # metres per radian, explicit unlike v1
@@ -97,6 +148,11 @@ class ServoLimits:
     divergent_angle: float = np.deg2rad(9)
     stall_ticks: int = 5
     emergency_ticks: int = 3
+
+    def __post_init__(self):
+        if self.gripper_completion_v1 and not (0 < self.divergent_position <= .018
+                                               and 0 < self.divergent_angle <= np.deg2rad(9)):
+            raise ValueError("Gripper completion v1 cannot enlarge the original divergence envelope")
 
 
 class SafeServo:
@@ -239,11 +295,42 @@ class SafeServo:
     def safe_hold(self, state):
         return native_action(state.q, self.grips)
 
+    def _gripper_v1(self):
+        return bool(self.limits.gripper_completion_v1 and self.action is not None
+                    and self.action.move in ("open", "close"))
+
+    def _gripper_checks(self, state):
+        """Public proprioception only; not contact or environment certification."""
+        finite_state = (np.isfinite(state.q).all() and np.isfinite(state.gripper).all()
+                        and np.isfinite(state.base_velocity).all()
+                        and all(np.isfinite(np.r_[p, q]).all() and np.linalg.norm(q) > 1e-8
+                                for p, q in state.poses.values()))
+        bounds = bool(finite_state and np.all(state.q >= self.model.lower+self.limits.joint_margin-1e-5)
+                      and np.all(state.q <= self.model.upper-self.limits.joint_margin+1e-5))
+        collision_free = bool(finite_state and self.collision.clearance(state.q) >= 0)
+        active = ("left", "right") if self.action.part == "both" else (self.action.part,)
+        errors = self._errors(state.poses, self.targets) if finite_state else {}
+        def within(arms, position, angle):
+            return bool(finite_state and all(np.linalg.norm(errors[n][:3]) <= position
+                                            and np.linalg.norm(errors[n][3:]) <= angle for n in arms))
+        return {"finite_proprio": bool(finite_state), "joint_bounds": bounds,
+                "robot_collision_free": collision_free,
+                "active_hand_within_divergence_envelope": within(active, self.limits.divergent_position, self.limits.divergent_angle),
+                "inactive_hand_within_pose_tolerance": within([n for n in ("left", "right") if n not in active],
+                                                               self.pos_tolerance, self.rot_tolerance)}
+
     def next_action(self, state):
         if self.done:
             raise RuntimeError("No running micro-action")
         if not np.isfinite(state.q).all():
             raise ValueError("Non-finite proprioception; simulator must stop")
+        if self._gripper_v1():
+            checks = self._gripper_checks(state)
+            if not checks["finite_proprio"]:
+                raise ValueError("Non-finite gripper proprioception; simulator must stop")
+            if not checks["joint_bounds"]:
+                self.abort("JOINT_STATE_OUT_OF_BOUNDS")
+                return self.safe_hold(state)
         errors = self._errors(state.poses, self.last_expected)
         bad = any(np.linalg.norm(e[:3]) > self.limits.divergent_position or np.linalg.norm(e[3:]) > self.limits.divergent_angle for e in errors.values())
         self.divergent = self.divergent+1 if bad else 0
@@ -291,9 +378,20 @@ class SafeServo:
         return native_action(q, self.grips, velocity)
 
     def finish(self, state):
+        gripper_checks = self._gripper_checks(state) if self._gripper_v1() else None
         if self.status == "RUNNING":
             if self.ticks < self.total_ticks:
                 self.abort("INTERRUPTED")
+            elif gripper_checks is not None:
+                # This is a completed command, not TARGET_REACHED and not a
+                # grasp. Contact may deflect the held arm beyond IK precision.
+                # Check the *post-step* state, including the final control tick.
+                reasons = {"finite_proprio": "NONFINITE_PROPRIOCEPTION",
+                           "joint_bounds": "JOINT_STATE_OUT_OF_BOUNDS",
+                           "robot_collision_free": "ROBOT_COLLISION_RISK",
+                           "active_hand_within_divergence_envelope": "TRACKING_DIVERGED",
+                           "inactive_hand_within_pose_tolerance": "TRACKING_FAILED"}
+                self.status = next((reasons[k] for k, ok in gripper_checks.items() if not ok), GRIPPER_COMPLETED)
             elif self.action.part == "base":
                 residual = self.base_integral-self.velocity_delta
                 self.status = "TARGET_REACHED" if np.linalg.norm(residual[:2]) < .012 and abs(residual[2]) < np.deg2rad(2) else "BASE_TRACKING_FAILED"
@@ -308,7 +406,7 @@ class SafeServo:
         observed_open=[name for i,name in enumerate(("left","right")) if self.grips[i]>0
                        and opening is not None and calibrated_open.get(name,False)
                        and np.isfinite(state.gripper[i]) and abs(state.gripper[i]-opening[i])<=.0005]
-        return {"status": self.status, "control_ticks": self.ticks, "joint_limit_ticks": self.limit_ticks,
+        result = {"status": self.status, "control_ticks": self.ticks, "joint_limit_ticks": self.limit_ticks,
                 "target_error_m": {n: float(np.linalg.norm(e[:3])) for n, e in errors.items()},
                 "orientation_error_deg": {n: float(np.rad2deg(np.linalg.norm(e[3:]))) for n, e in errors.items()},
                 "eef_delta_m": {n: (state.poses[n][0]-self.start.poses[n][0]).tolist() for n in ("left", "right")},
@@ -316,3 +414,14 @@ class SafeServo:
                 "gripper_open_at_calibrated_aperture": observed_open,
                 "base_integral": self.base_integral.tolist(), "carry": self.carry,
                 "holding": "UNKNOWN", "official_success": "NOT_AVAILABLE_TO_ACTOR"}
+        if gripper_checks is not None:
+            result["pose_tracking_status"] = "TARGET_REACHED" if self._within(state.poses) else "TRACKING_FAILED"
+            result["gripper_execution"] = {"version": GRIPPER_COMPLETION_VERSION,
+                "part": self.action.part, "move": self.action.move,
+                "planned_control_ticks": self.total_ticks, "executed_control_ticks": self.ticks,
+                "command_complete": self.ticks == self.total_ticks and self.status == GRIPPER_COMPLETED,
+                "final_state_checks": gripper_checks, "success_claim": False,
+                "limits": {"active_position_m": self.limits.divergent_position,
+                           "active_angle_deg": float(np.rad2deg(self.limits.divergent_angle)),
+                           "inactive_position_m": self.pos_tolerance, "inactive_angle_deg": 1.5}}
+        return result

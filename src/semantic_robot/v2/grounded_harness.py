@@ -10,7 +10,7 @@ from .grounding import LocalDepthGuard, localize_target, observed_cloud
 from .harness import TaskHarness
 from .protocol import Action, HOLD, TRANSLATIONS, ROTATIONS, VIEWS, strict_json
 from .search import CoverageSearch
-from .servo import SafeServo
+from .servo import SafeServo, execution_completed
 from .bimanual import localize_hand_contacts, all_claims
 from .navigation import navigation_workspace_check
 from .motion_feedback import observed_motion_feedback
@@ -141,18 +141,18 @@ class GroundedHarness(TaskHarness):
     def executed(self,action,feedback):
         probe=(self.grasp_probe.get("eligible") and self.stage=="ALIGN" and
                action==Action(self.goal.hand,"close"))
-        if probe and (feedback.get("control_ticks",0)>0 or feedback["status"]=="TARGET_REACHED"):
+        if probe and (feedback.get("control_ticks",0)>0 or execution_completed(action,feedback)):
             self.grasp_probe_attempts[self.index]=self.grasp_probe_attempts.get(self.index,0)+1
         widths=feedback.get("finger_mean_m")
         self.last_gripper=np.asarray(widths,dtype=float).copy() if widths is not None else None
         # Even an interrupted close may have made contact. Keep the latch until
         # an explicit OPEN completes or grasp evidence really verifies holding.
-        if action.move=="close" and (feedback.get("control_ticks",0)>0 or feedback["status"]=="TARGET_REACHED"):
+        if action.move=="close" and (feedback.get("control_ticks",0)>0 or execution_completed(action,feedback)):
             for arm in (("left","right") if action.part=="both" else (action.part,)):
                 if arm in self.possible_contact_after_close:self.possible_contact_after_close[arm]=True
                 if arm in self.pending_grasp and self.goal.kind=="pick":self.pending_grasp[arm]=True
         super().executed(action,feedback)
-        if feedback["status"]=="TARGET_REACHED" and action.move in ("close","open"):
+        if execution_completed(action,feedback) and action.move in ("close","open"):
             arms=("left","right") if action.part=="both" else (action.part,)
             for arm in arms:
                 if arm in self.pending_grasp:
@@ -160,7 +160,7 @@ class GroundedHarness(TaskHarness):
                     elif self.goal.kind=="pick":self.pending_grasp[arm]=True
                 if action.move=="open" and arm in feedback.get("gripper_open_at_calibrated_aperture",[]):
                     self.possible_contact_after_close[arm]=False
-        if probe and feedback["status"]=="TARGET_REACHED":
+        if probe and execution_completed(action,feedback):
             self.events.append({"event":"UNVERIFIED_GRASP_PROBE","goal":self.index,
                                 "attempt":self.grasp_probe_attempts[self.index],"success_claim":False})
             self.transition("VERIFY_GRASP")
