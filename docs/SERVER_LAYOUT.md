@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 14:44当前：** 两父gripper sim均退出；Astra GPU3唯一2612363于14:41:57.469571启动`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i114_p0989`及同级log/launch，新授权`authorization_native_t1_i114_p0989_fa24_active.json`，固定原fa24不可热改。父H24只本地CPU，GPU2空。H22全包已到`artifacts/agentic-vlm-goal-20260918/h22_fullstart_complete_tar/radio_h22_fullstart`，两夹爪门到`gripper_v1_gates_bundle`，第二门/策略的本地全核待；旧partial仍保留，不删任何副本。
+
 **2026-09-21 14:31当前：** GPU3第二新夹爪sim2609041/14:30:31.442203已启动`gripper_v1_gates/gate_plates_gripper_v1`及相邻log/launch_plates.json；仍固定13bd源/自身NVMe runtime，首radio人工审receipt同根。首gate完整本地包仍传；小原图审包已在`artifacts/agentic-vlm-goal-20260918/gripper_gate_previews/radio`。GPU2空闲，没有新H22模型或policy。
 
 **2026-09-21 14:29当前：** H22策略2589106及164调用模型2588439均已退出，完整服务在本地`artifacts/agentic-vlm-goal-20260918/h22_server_complete_archive/server_h22`双SHA核验；完整策略包改传`h22_fullstart_complete_tar/radio_h22_fullstart`，旧慢scp的`h22_fullstart_bundle`是不完整保留件。新夹爪2602697也已退出，第一门352.65MB完整传`gripper_v1_gates_bundle`，远端全链审过、本地RAW待；第二门尚未启动。服务器所有源/证据/cache保留，GPU2/3当前无这三个自有进程，0/1队友不动。不要把上述下载目录存在当完整。

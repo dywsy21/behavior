@@ -111,11 +111,14 @@ def solve_rgbd_correspondences(points_before,pixels_after,points_after,K,camera_
 
 
 class RGBDMotion:
-    def __init__(self,estimator="pnp", *, exclude_robot=False):
+    def __init__(self,estimator="pnp", *, exclude_robot=False, refine_matches=False):
         import cv2
         if type(exclude_robot) is not bool or (exclude_robot and estimator!="rgbd_joint"):
             raise ValueError("Robot self exclusion is an explicit joint RGB-D option")
         self.exclude_robot=exclude_robot
+        if type(refine_matches) is not bool or (refine_matches and estimator!="rgbd_joint"):
+            raise ValueError("Match refinement is an explicit joint RGB-D option")
+        self.refine_matches=refine_matches
         if estimator not in ("pnp","rgbd_rigid","rgbd_joint"):raise ValueError("Explicit RGB-D estimator required")
         if estimator=="rgbd_joint":
             from .joint_odometry import solve_joint_correspondences
@@ -141,10 +144,12 @@ class RGBDMotion:
         if rgb.shape!=(camera["height"],camera["width"],3) or rgb.dtype!=np.uint8:
             raise ValueError("Current calibrated raw head RGB required for motion")
         depth=validate_depth(depths["head"],camera)
-        keypoints,descriptors=self.sift.detectAndCompute(cv2.cvtColor(rgb,cv2.COLOR_RGB2GRAY),None)
+        gray=cv2.cvtColor(rgb,cv2.COLOR_RGB2GRAY)
+        keypoints,descriptors=self.sift.detectAndCompute(gray,None)
         T=model.forward(q,"camera_head");K=np.asarray(camera["K"])
         current={"keypoints":keypoints,"descriptors":descriptors,"depth":depth.copy(),"camera":T,
                  "rgb_sha256":hashlib.sha256(rgb.tobytes()).hexdigest(),"depth_sha256":hashlib.sha256(depth.tobytes()).hexdigest()}
+        if self.refine_matches:current["gray"]=gray.copy()
         if self.exclude_robot:
             import copy
             current.update(robot_geometry=copy.deepcopy(robot_frame["geometry"]),robot_frame_sha256=self_signature)
@@ -158,12 +163,21 @@ class RGBDMotion:
         receipt["previous_rgb_sha256"]=previous["rgb_sha256"]
         pairs=(self.matcher.knnMatch(previous["descriptors"],descriptors,k=2)
                if previous["descriptors"] is not None and descriptors is not None else [])
-        oldpoints=[];newpoints=[];pixels=[]
+        oldpoints=[];newpoints=[];pixels=[];matched_pixels=[]
         for pair in pairs:
             if len(pair)!=2 or pair[0].distance>=.7*pair[1].distance:continue
             match=pair[0]
             uv0=np.asarray(previous["keypoints"][match.queryIdx].pt)
             uv1=np.asarray(keypoints[match.trainIdx].pt)
+            matched_pixels.append((uv0,uv1))
+        if self.refine_matches:
+            from .feature_tracking import refine_matches
+            old=np.asarray([pair[0] for pair in matched_pixels],dtype=float).reshape(-1,2)
+            proposed=np.asarray([pair[1] for pair in matched_pixels],dtype=float).reshape(-1,2)
+            refined,accepted,tracking=refine_matches(previous["gray"],gray,old,proposed)
+            matched_pixels=list(zip(old[accepted],refined[accepted]))
+            receipt["feature_match_refinement"]=tracking
+        for uv0,uv1 in matched_pixels:
             good=[]
             for uv,d in ((uv0,previous["depth"]),(uv1,depth)):
                 x,y=np.rint(uv).astype(int);patch=d[max(0,y-1):y+2,max(0,x-1):x+2]
