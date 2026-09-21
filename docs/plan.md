@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 18:08（北京时间）双线真实运行/父H30首工程门启动（Codex/Astra）：** 子2659018于18:06:57已实际连续67/380 prefix，确认reset完成（不捏造精确时刻）；父其后18:07:33.142763唯一2661586/GPU2启动`h30_workspace_progress/gate_radio_h30`，固定827/digest99a062，原24/1536/1200＋900/384MiB、0模型。启动前free80943MiB，唯一子辅助200MiB精确PID/cwd/mainGPU3/launch核通过；父初始化中、第二gate/模型未开。双方冻结源码/独立缓存不改，子新数据后全审→覆盖门→120更新/六配对仍待。
+
 **2026-09-21 18:06（北京时间）H25本地完整副本校验闭合（Codex）：** `artifacts/agentic-vlm-goal-20260918/h25_fullstart_bundle/radio_h25_fullstart`全部7568文件对原远端清单逐SHA核0错误，steps76fd89a9…398e9，先前“仍在传”已完成；额外动作统计：pick后133决策76次base forward、全180次没有CLOSE，非抓后掉落。原remote receipt保持当时审阅状态，实际本地完成在此补记，不改原结果/清单。子2659018仍初始化，18:05:06日志已有robot-specific pose但无账本，不冒称reset；父H30尚未启动。
 
 **2026-09-21 18:01（北京时间）首workspace采集实际提交（Astra/Codex）：** 2659018于18:00:26.290424唯一启动GPU3/固定1cf/public1fcc/`native_t1_i192_p0380_ws45`，active c6641f54…7bb、launch1b6ee3d4…9dff6。真实source/双门/seed/准备/容量/空GPU3 81152MiB/旧父PID退出重查1.262s过，正在初始化，不把提交当reset或成功；原380前缀＋12宏420新/1body/1200＋900不变，第二388和训练仍inactive。父H30严格等其过reset才首gate/GPU2；仅此精确PID/mainGPU3辅助≤512MiB可在新gate资源核验出现。
