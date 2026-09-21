@@ -14,7 +14,8 @@ from semantic_robot.v2.protocol import ROTATIONS
 from semantic_robot.v2.servo import SafeServo
 from native_execution import (validate_profile,servo_limits,metadata as execution_metadata,completed,
     PublicGripperHistory,preclose_translation,timing_metadata)
-from native_execution import action_codec,actor_protocol,workspace_qualified,workspace_metadata,WORKSPACE_PROFILE
+from native_execution import (action_codec,actor_protocol,workspace_qualified,workspace_metadata,WORKSPACE_PROFILE,
+    CARRY_PROFILE,WorkspaceQuota,primitive_tick_limit)
 from semantic_robot.v2.grounding import LocalDepthGuard,observed_cloud
 
 VARIANTS=("base","finetuned","proprio_history_nn")
@@ -58,15 +59,21 @@ class PublicExecution(PublicGripperHistory):
         self.execution_profile=validate_profile(execution_profile)
         super().__init__(grips)
         self.workspace_seen=False;self.pending_workspace=False
+        self.workspace_quota=WorkspaceQuota(self.execution_profile)
 
     def issued(self,command):
         super().issued(command)
         if self.pending_workspace:self.workspace_seen=True
+        if self.execution_profile==CARRY_PROFILE:self.workspace_quota.issued(command)
+
+    def cancel_pending(self):
+        self.pending_workspace=False;self.workspace_quota.cancel_pending()
 
     def completed(self,token,feedback):
         return completed(token,feedback,profile=self.execution_profile)
 
     def preflight(self,token,state,model,depths,geometry,*,capture_receipt,expected_clock):
+        if self.execution_profile==CARRY_PROFILE:self.cancel_pending()
         check_clock(expected_clock);check_clock(capture_receipt["clock"])
         if (capture_receipt["clock"]!=expected_clock or capture_receipt["kinematic_model_sha256"]!=model.sha or
                 not np.array_equal(finite(capture_receipt["q"],(18,)),state.q) or
@@ -81,7 +88,8 @@ class PublicExecution(PublicGripperHistory):
             raise RuntimeError("Fixed GRASP preserves issued CLOSE latch")
         qualified=preclose_translation(action,state,model,self,self.execution_profile)
         body=workspace_qualified(action,state,model,self,self.execution_profile)
-        if action.part=="torso" and (not body or self.workspace_seen):raise RuntimeError("Workspace unqualified or one-body budget spent")
+        spent=not self.workspace_quota.available() if self.execution_profile==CARRY_PROFILE else self.workspace_seen
+        if action.part=="torso" and (not body or spent):raise RuntimeError("Workspace unqualified or body budget spent")
         carry=not (qualified or body)
         hand_rotation=action.move in ROTATIONS and arm in ("left","right")
         if hand_rotation:
@@ -92,8 +100,9 @@ class PublicExecution(PublicGripperHistory):
         allowed,reason=guard.check(action,carry)
         if not allowed:raise RuntimeError(reason)
         servo=SafeServo(model,state,gripper_command=self.grips,limits=servo_limits(self.execution_profile))
-        if not servo.begin(action,state,carry=carry) or servo.total_ticks>40:raise RuntimeError(servo.status)
+        if not servo.begin(action,state,carry=carry) or servo.total_ticks>primitive_tick_limit(action,carry,self.execution_profile):raise RuntimeError(servo.status)
         self.pending_workspace=body
+        if self.execution_profile==CARRY_PROFILE:self.workspace_quota.arm(token)
         return servo,{**execution_metadata(self.execution_profile),**timing_metadata(self.execution_profile,qualified),
             **workspace_metadata(action,body,self.execution_profile),
             "carry":carry,"robot_geometry_guards":True,"amount":action.amount(carry),

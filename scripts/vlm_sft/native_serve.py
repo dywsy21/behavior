@@ -14,7 +14,7 @@ from native_dataset import load_dataset
 from native_train import BASE,base_identity,check_storage
 from native_storage import activate as activate_storage
 from native_execution import (require_pipeline_profile,require_same_pipeline,metadata as execution_metadata,
-    TIMING_PROFILES,action_codec,actor_protocol,authorization_profile)
+    TIMING_PROFILES,action_codec,actor_protocol,authorization_profile,service_call_limit)
 from native_motion_codec import tokens as motion_tokens
 from modeling import load_model,encode,decode
 from native_reference_profile import ROOT as EXPERIMENT_ROOT
@@ -41,9 +41,10 @@ def main():
     if subprocess.check_output(["git","-C",str(repo),"status","--porcelain"],text=True).strip():raise ValueError("Immutable source required")
     auth=json.loads(a.authorization.read_text());data_sha=sha(a.data/"dataset.json")
     expected_protocol=actor_protocol(authorization_profile(auth))
+    call_limit=service_call_limit(authorization_profile(auth))
     if (auth.get("authorize_service") is not True or auth.get("code_commit")!=code or auth.get("dataset_sha256")!=data_sha or
             auth.get("training_result_sha256")!=sha(a.training/"result.json") or not auth.get("reviewer") or
-            auth.get("protocol")!=expected_protocol or auth.get("physical_gpu")!=3 or auth.get("max_calls")!=48 or auth.get("port")!=8919):
+            auth.get("protocol")!=expected_protocol or auth.get("physical_gpu")!=3 or type(auth.get('max_calls')) is not int or auth.get("max_calls")!=call_limit or auth.get("port")!=8919):
         raise ValueError("Separate exact-model/data/protocol service authorization required")
     if os.environ.get("CUDA_VISIBLE_DEVICES")!="3":raise ValueError("Separately handed-over GPU3 only")
     if a.output.resolve()!=EXPERIMENT_ROOT/"service_v1":raise ValueError("Only the registered model service output")
@@ -63,7 +64,7 @@ def main():
         **base_files,"physical_gpu":3,"port":8919,"training_result_sha256":sha(a.training/"result.json"),
         "authorization_sha256":sha(a.authorization),
         "storage":None if storage is None else storage.check(),
-        "max_calls":48,"tokens":list(motion_tokens(action_codec(execution_profile))),"instructions":instructions,"variants":["base","finetuned"],"old_adapter_loaded":False}
+        "max_calls":call_limit,"tokens":list(motion_tokens(action_codec(execution_profile))),"instructions":instructions,"variants":["base","finetuned"],"old_adapter_loaded":False}
     write_json(a.output/"identity.json",identity);ledger=(a.output/"calls.jsonl").open("x",buffering=1);calls=0
     class Handler(BaseHTTPRequestHandler):
         def send(self,status,value):
@@ -74,7 +75,7 @@ def main():
             nonlocal calls
             try:
                 size=int(self.headers.get("Content-Length","0"))
-                if self.path!="/motion" or not 1<=size<=13*1024**2 or calls>=48:raise ValueError("Endpoint/size/call cap")
+                if self.path!="/motion" or not 1<=size<=13*1024**2 or calls>=call_limit:raise ValueError("Endpoint/size/call cap")
                 value=json.loads(self.rfile.read(size));row,images=parse_request(value,registered_instructions=instructions)
                 if row["protocol"]!=expected_protocol:raise ValueError("Request action protocol differs from this service")
                 check_storage(storage)

@@ -20,8 +20,8 @@ from native_teacher_artifacts import load_calibration
 from native_teacher_outcomes import LocalOutcome
 from native_teacher_policy import validate_train_group
 from native_execution import authorization_profile,metadata as execution_metadata,completed as execution_completed
-from native_execution import (PRECLOSE_PROFILE,TIMING_PROFILES,WORKSPACE_PROFILE,PublicGripperHistory,
-    preclose_translation,timing_metadata,action_codec,workspace_qualified,workspace_metadata,servo_limits)
+from native_execution import (PRECLOSE_PROFILE,TIMING_PROFILES,WORKSPACE_PROFILE,WORKSPACE_PROFILES,CARRY_PROFILE,PublicGripperHistory,
+    preclose_translation,timing_metadata,action_codec,workspace_qualified,workspace_metadata,servo_limits,episode_limits,body_limit,WorkspaceQuota)
 from native_motion_codec import (token_to_action,tokens as motion_tokens,codec_for_protocol,
     protocol_for_codec,VERSION as WORKSPACE_CODEC,BODY_TOKENS)
 from semantic_robot.v2.protocol import ROTATIONS
@@ -86,12 +86,13 @@ def check_public_timing(request, token, before, model, commands, prefix, control
     return state,history
 
 
-def check_actual_workspace(token,before,after,execution,model,commands,telemetry,prefix,history):
+def check_actual_workspace(token,before,after,execution,model,commands,telemetry,prefix,history,profile=WORKSPACE_PROFILE):
     """Reproduce every issued body command using actual per-tick measured q."""
     from semantic_robot.v2.servo import SafeServo
     state=model.state(np.array(before["q"]),np.array(before["gripper"]),np.zeros(3))
-    servo=SafeServo(model,state,gripper_command=history.grips,limits=servo_limits(WORKSPACE_PROFILE))
-    if not servo.begin(token_to_action(token,WORKSPACE_CODEC),state,carry=False):raise ValueError("Recorded torso no longer passes original robot preflight")
+    servo=SafeServo(model,state,gripper_command=history.grips,limits=servo_limits(profile))
+    carry=execution['feedback']['carry'] if profile==CARRY_PROFILE else False
+    if not servo.begin(token_to_action(token,action_codec(profile)),state,carry=carry):raise ValueError("Recorded motion no longer passes bound robot preflight")
     start,end=execution["control_start"],execution["control_end"]
     if end-start!=servo.total_ticks:raise ValueError("Incomplete compensated body action")
     for control in range(start+1,end+1):
@@ -103,8 +104,10 @@ def check_actual_workspace(token,before,after,execution,model,commands,telemetry
     recomputed=servo.finish(state)
     for field in ("status","control_ticks","joint_limit_ticks","target_error_m","orientation_error_deg","carry","eef_delta_m"):
         if recomputed[field]!=execution["feedback"][field]:raise ValueError("Measured body completion differs from saved receipt")
+    if profile==CARRY_PROFILE and recomputed['motion_timing']!=execution['feedback'].get('motion_timing'):
+        raise ValueError("New duration receipt differs from actual measured command replay")
     settled=model.state(np.asarray(after["q"]),np.asarray(after["gripper"]),np.zeros(3))
-    if not servo._within(settled.poses):raise ValueError("Body/KEEP_EEF semantics lost during settle")
+    if token in BODY_TOKENS and not servo._within(settled.poses):raise ValueError("Body/KEEP_EEF semantics lost during settle")
 
 
 def verified_run(entry,counts,*,export_codec=None):
@@ -124,7 +127,7 @@ def verified_run(entry,counts,*,export_codec=None):
             raise ValueError("Reviewed run bytes changed")
     manifest=read(run/"manifest.json");result=read(run/"result.json")
     execution_profile=authorization_profile(manifest["authorization"],collection=True)
-    if execution_profile==WORKSPACE_PROFILE and export_codec!=WORKSPACE_CODEC:
+    if execution_profile in WORKSPACE_PROFILES and export_codec!=WORKSPACE_CODEC:
         raise ValueError("Workspace trajectory requires explicit new dataset codec")
     if authorization_profile(review)!=execution_profile:
         raise ValueError("Independent review must bind the same execution profile")
@@ -152,11 +155,14 @@ def verified_run(entry,counts,*,export_codec=None):
             hold["native_controls"]!=result["native_controls"] or prefix+hold["native_controls"]!=len(normal)+1):
         raise ValueError("Whole-trajectory final hold missing")
     folders=[run/Path(p).name for p in result["samples"]]
-    if folders!=[run/f"teacher_{i:02d}" for i in range(len(folders))] or not 1<=len(folders)<=12:
+    macro_limit,control_limit=episode_limits(execution_profile)
+    if (folders!=[run/f"teacher_{i:02d}" for i in range(len(folders))] or not 1<=len(folders)<=macro_limit or
+            (execution_profile==CARRY_PROFILE and not 1<=hold['native_controls']<=control_limit)):
         raise ValueError("Whole macro sequence required")
     model=load_calibration(run);records=[];history=[];tokens={};last_end=12;rotation_degrees=[];body_count=0
     physical=lines(run/"PRIVATE_teacher_trace.jsonl")
     telemetry={row["frame"]["tick"]:row for row in physical}
+    quota=WorkspaceQuota(execution_profile)
     for i,folder in enumerate(folders):
         record=read(folder/"QUARANTINED_record.json");request=read(folder/"request.json")
         execution=read(folder/"native_execution.json");token=record["token"]
@@ -169,12 +175,17 @@ def verified_run(entry,counts,*,export_codec=None):
         before=read(folder/"before/capture.json");after=read(folder/"after_settle/capture.json")
         if execution_profile in TIMING_PROFILES:
             _,command_history=check_public_timing(request,token,before,model,normal,prefix,execution["control_start"],execution_profile)
-        if execution_profile==WORKSPACE_PROFILE and record["actor"].get("action_codec")!=WORKSPACE_CODEC:
+        if execution_profile in WORKSPACE_PROFILES and record["actor"].get("action_codec")!=WORKSPACE_CODEC:
             raise ValueError("Collection action history lacks exact workspace codec")
         if token in BODY_TOKENS:
             body_count+=1
-            if body_count>1:raise ValueError("Only one actual workspace action per trajectory")
-            check_actual_workspace(token,before,after,execution,model,normal,telemetry,prefix,command_history)
+            if body_count>body_limit(execution_profile):raise ValueError("Actual workspace macro count exceeds its source profile")
+        if execution_profile==CARRY_PROFILE:
+            quota.arm(token)
+            for control in range(execution['control_start']+1,execution['control_end']+1):quota.issued(normal[prefix+control-1]['action23'])
+            if quota.count!=body_count:raise ValueError("Workspace count does not match actual first-issuance ledger")
+        if token in BODY_TOKENS or execution_profile==CARRY_PROFILE:
+            check_actual_workspace(token,before,after,execution,model,normal,telemetry,prefix,command_history,execution_profile)
         expected_clock={"prefix_control":prefix,"native_control":execution["control_start"]}
         proprio,hashes,binding=protocol.from_capture(folder/"before",model,capture_sha256=request["capture_sha256"],
             expected_clock=expected_clock,calibration_sha256=model.sha,protocol=export_protocol)
@@ -260,7 +271,7 @@ def load_dataset(folder,*,require_gate=True):
         raise ValueError("Exact unique whole-run row membership required")
     if any(tuple(r["provenance"]["group"]) not in TRAIN for r in rows):raise ValueError("Heldout leaked into BC")
     profiles={run["inventory_sha256"]:authorization_profile(run) for run in manifest["runs"]}
-    if WORKSPACE_PROFILE in profiles.values() and codec!=WORKSPACE_CODEC:raise ValueError("Workspace data exported under old codec")
+    if any(p in WORKSPACE_PROFILES for p in profiles.values()) and codec!=WORKSPACE_CODEC:raise ValueError("Workspace data exported under old codec")
     if any(authorization_profile(row["provenance"])!=profiles[row["provenance"]["run_inventory_sha256"]] for row in rows):
         raise ValueError("Row execution provenance differs from its reviewed run")
     if coverage(rows,manifest["runs"])!=manifest["coverage"] or (require_gate and not manifest["coverage"]["passed"]):
