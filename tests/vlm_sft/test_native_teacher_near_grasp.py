@@ -137,7 +137,8 @@ class NearTeacherTests(unittest.TestCase):
             'before':s,'grips':g,'model':m,'artifacts':store,'folder':Path('/not-written'),
             'depths':{},'geometry':None,'near':True,'execution_profile':None,'public_history':None,
             'native_preflight':reject,'token_to_action':token_to_action,
-            'WORKSPACE_PROFILE':__import__('native_execution').WORKSPACE_PROFILE}
+            'WORKSPACE_PROFILE':__import__('native_execution').WORKSPACE_PROFILE,
+            'WORKSPACE_PROFILES':__import__('native_execution').WORKSPACE_PROFILES}
         fragment=ast.Module(body=copy.deepcopy(loop.body[start:end+1]),type_ignores=[])
         with self.assertRaisesRegex(RuntimeError,'No safe'):exec(compile(ast.fix_missing_locations(fragment),'actual_selection','exec'),ns)
         self.assertEqual(reject.call_count,1);self.assertEqual(ns['ranked'],['RIGHT_FORWARD'])
@@ -242,7 +243,9 @@ class NearTeacherTests(unittest.TestCase):
         from native_execution import PublicGripperHistory
         tree=ast.parse((ROOT/'scripts/vlm_sft/native_teacher_collect.py').read_text())
         fn=copy.deepcopy(next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='step'))
-        fn.body[0]=ast.Global(names=fn.body[0].names)
+        class Globalize(ast.NodeTransformer):
+            def visit_Nonlocal(self,node):return ast.Global(names=node.names)
+        fn=Globalize().visit(fn)
         primary=RuntimeError('partial step fault');stream=io.StringIO();command=np.zeros(23);command[[14,22]]=[1,-1]
         def fail(*a,**k):raise primary
         state=NS(q=np.zeros(18),gripper=np.ones(2)*.05)
@@ -253,7 +256,8 @@ class NearTeacherTests(unittest.TestCase):
             'x':NS(output=Path('/unused')),'state':lambda:state,'model':NS(lower=-np.ones(18),upper=np.ones(18)),
             'check_actual_joint_bounds':check_actual_joint_bounds,'issue_trace':stream,
             'current_writer':NS(check=lambda *a:None,append_text=lambda s,v:s.write(v)),
-            'og':NS(sim=NS(render_on_step=lambda v:nullcontext())),'env':NS(step=fail)}
+            'og':NS(sim=NS(render_on_step=lambda v:nullcontext())),'env':NS(step=fail),
+            'execution_profile':None,'CARRY_PROFILE':__import__('native_execution').CARRY_PROFILE}
         exec(compile(ast.fix_missing_locations(ast.Module(body=[fn],type_ignores=[])),'actual_step','exec'),ns)
         try:ns['step'](command,'candidate')
         except RuntimeError as exc:self.assertIs(exc,primary)

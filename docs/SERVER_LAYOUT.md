@@ -6,7 +6,7 @@
 
 ## 1. 总览
 
-**2026-09-21 19:59当前：** 新子2680442/GPU3于19:57:28提交，源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09z_cd_02d63cd`固定02d/8fdf、结果`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0388_ws45_cd1_b2`及同stem log/launch，授权同根`authorization_native_t1_i192_p0388_ws45_cd1_b2_02d63cd_active.json`。父审Git独立源`git_worktrees/vlm_sft_h09z_reviews_436b9a7`具体实际目录以子launch为准；本地审计reader固定`/home/wsy/behavior_worktrees/vlm-carry-02d-parent-review`。父2673116/2673899仍原H30/GPU2，任何运行源不可热改；两新旧失败证据均保留。
+**2026-09-21 19:59提交、20:08实控确认：** 新子2680442/GPU3于19:57:28提交，源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09z_cd_02d63cd`固定02d/8fdf、结果`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i192_p0388_ws45_cd1_b2`及同stem log/launch，授权同根`authorization_native_t1_i192_p0388_ws45_cd1_b2_02d63cd_active.json`。父审Git独立源已从真实active/launch核为`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_reviews_436b9a7`（更正先前推测目录名）；本地审计reader固定`/home/wsy/behavior_worktrees/vlm-carry-02d-parent-review`。20:06已prefix146/native0。父2673116/2673899仍原H30/GPU2，任何运行源不可热改；两新旧失败证据均保留。
 
 **2026-09-21 19:17当前：** 父GPU2唯一模型2673116/8929已ready，原起点2673899于19:16:33.203375初始化；固定源`git_worktrees/semantic_workspace_82754f1`/827不热改。结果`/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress/server_h30`与`radio_h30_fullstart`、同级log/launch_model/policy，父独立暖runtime同上。两H30 gate均退出，全本地在`artifacts/agentic-vlm-goal-20260918/h30_gates_bundle/`且父数值/RAW/视频审过。子两旧ws45均失败退出，完整110/195文件各在子worktree native_complete/，父全审闭；新duration/body2仍CPU/inactive，GPU3未新物理。SSH仍可偶发断连，提交前必须核同输出进程和独占文件，不能见断线就重跑。
 

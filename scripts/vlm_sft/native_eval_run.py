@@ -33,11 +33,16 @@ from native_teacher_collect import (REPO,ADAPTER,CalibratedRobot,OnboardRGBD,nat
 from native_teacher_artifacts import ArtifactBudget,write_calibration,action_evidence_bound,json_bytes
 from native_teacher_reference_contract import check_actual_joint_bounds
 from native_execution import (authorization_profile,metadata as execution_metadata,require_dataset_profile,
-    actor_protocol,TIMING_PROFILES,WORKSPACE_PROFILE,workspace_budget_ok)
+    actor_protocol,TIMING_PROFILES,WORKSPACE_PROFILE,CARRY_PROFILE,workspace_budget_ok,episode_limits,service_call_limit)
 from native_motion_codec import BODY_TOKENS
 
 BUDGET={"resets":1,"max_decisions":12,"new_controls_including_final_hold":420,
     "seconds_after_reset":1200,"initialization_seconds":900,"run_MiB":384,"total_MiB":6144}
+
+
+def evaluation_budget(profile):
+    macros,controls=episode_limits(profile)
+    return {**BUDGET,'max_decisions':macros,'new_controls_including_final_hold':controls}
 
 
 def require_evaluation(auth,code,executor,prepared,variant,output,data_sha):
@@ -56,14 +61,11 @@ def require_evaluation(auth,code,executor,prepared,variant,output,data_sha):
             Path(output).resolve()!=ROOT/f"eval_t1_i{instance}_{variant}_v1"):
         raise ValueError("Separate exact six-slot evaluation authorization required")
     budget=auth.get("budget")
-    if not isinstance(budget,dict) or set(budget)!=set(BUDGET) or any(type(budget[k]) is not int or budget[k]!=v for k,v in BUDGET.items()):
+    expected=evaluation_budget(execution_profile)
+    if not isinstance(budget,dict) or set(budget)!=set(expected) or any(type(budget[k]) is not int or budget[k]!=v for k,v in expected.items()):
         raise ValueError("Exact bounded single-reset evaluation profile required")
-    gates=[json.loads(Path(p).read_text()) for p in auth["engineering_gate_paths"]]
-    if len(gates)!=2 or {g["task"] for g in gates}!={0,3} or any(
-            g.get("gate_ok") is not True or g.get("robot_geometry_guards") is not True or
-            g.get("gripper_completion_v1",False) is not (execution_profile is not None) or
-            g.get("implementation_digest")!=executor for g in gates):
-        raise ValueError("Matching reviewed robot execution gates required")
+    from native_carry_admission import require_engineering_gates
+    require_engineering_gates(auth,executor)
 
 
 def load_service(auth,code,data_sha):
@@ -71,12 +73,13 @@ def load_service(auth,code,data_sha):
     path=ROOT/"service_v1/identity.json"
     if sha(path)!=auth.get("service_identity_sha256"):raise ValueError("Released service identity changed")
     identity=json.loads(path.read_text())
+    call_limit=service_call_limit(authorization_profile(auth))
     require_same_pipeline(auth,identity)
     if (identity.get("code_commit")!=code or identity.get("protocol")!=actor_protocol(authorization_profile(auth)) or identity.get("dataset_sha256")!=data_sha or
-            identity.get("physical_gpu")!=3 or identity.get("port")!=8919 or identity.get("max_calls")!=48):
+            identity.get("physical_gpu")!=3 or identity.get("port")!=8919 or identity.get("max_calls")!=call_limit):
         raise ValueError("Exact paired service/model/data identity required")
     with urlopen("http://127.0.0.1:8919/health",timeout=10) as response:health=json.load(response)
-    if {k:v for k,v in health.items() if k!="calls"}!=identity or not 0<=health.get("calls",-1)<48:
+    if {k:v for k,v in health.items() if k!="calls"}!=identity or not 0<=health.get("calls",-1)<call_limit:
         raise ValueError("Service health/identity/call budget changed")
     def remote(request):
         body=json.dumps(request,allow_nan=False).encode()
@@ -98,8 +101,10 @@ def main():
     p.add_argument("--variant",choices=VARIANTS,required=True);a=p.parse_args()
     code=subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip()
     if subprocess.check_output(["git","-C",str(REPO),"status","--porcelain"],text=True).strip():raise ValueError("Clean immutable runtime required")
-    auth=json.loads(a.authorization.read_text());prepared,prefix=verify(a.prepared,auth["preparation_sha256"])
+    auth=json.loads(a.authorization.read_text())
     execution_profile=authorization_profile(auth)
+    prepared,prefix=verify(a.prepared,auth['preparation_sha256'],execution_profile=execution_profile)
+    macro_limit,native_limit=episode_limits(execution_profile);budget=evaluation_budget(execution_profile)
     data_sha=sha(a.data/"dataset.json");require_evaluation(auth,code,implementation_digest(),prepared,a.variant,a.output,data_sha)
     rows,dataset=load_dataset(a.data);require_dataset_profile(dataset,execution_profile)
     from native_execution import require_pipeline_profile
@@ -109,7 +114,7 @@ def main():
     storage=activate_storage(auth,a.output);check_storage(storage);a.output.mkdir(parents=True,exist_ok=False)
     writer=ArtifactBudget(a.output,ROOT,384*1024**2,6144*1024**2);current_writer=writer
     writer.write_json(a.output/"manifest.json",{"code_commit":code,"protocol":auth["protocol"],"authorization":auth,
-        "preparation":prepared,"dataset_sha256":data_sha,"service_identity":identity,"budget":BUDGET,
+        "preparation":prepared,"dataset_sha256":data_sha,"service_identity":identity,"budget":budget,
         "oracle_actor_feedback":False,"specified_hand":None,"paid_prefix_not_full_task_SR":True,
         "storage":None if storage is None else storage.check()})
     os.environ["OMNIGIBSON_GPU_ID"]="3";os.environ["BEHAVIOR_ACTION_STEPS"]="1"
@@ -120,7 +125,7 @@ def main():
     if (window.task_name!="picking_up_trash" or window.official_mode!="train" or window.seed!=0 or
             window.instance_id!=prepared["source"][2] or not np.array_equal(window.frozen_window().prefix_actions,prefix)):
         raise ValueError("Factory did not load the exact heldout reset/prefix")
-    verify(a.prepared,auth["preparation_sha256"])
+    verify(a.prepared,auth["preparation_sha256"],execution_profile=execution_profile)
     controls=prefix_count=issued_native=issued_prefix=0;terminal=False;first_error=None;started=None;kin=None
     grips=None;policy=None;reader=None;initial=None;final=None;frames=[];tokens={};history=[];decisions=[];last_info={}
     trace=issue_trace=private=None;final_hold=False;stop="DECISION_BUDGET";active_token=None;neural_requests=0
@@ -170,7 +175,7 @@ def main():
                 return f
             def step(command,phase):
                 nonlocal controls,prefix_count,issued_native,issued_prefix,grips,terminal,last_info
-                if terminal or (phase!="prefix" and issued_native>=419):raise RuntimeError("Terminal/control limit; final hold reserved")
+                if terminal or (phase!="prefix" and issued_native>=native_limit-1):raise RuntimeError("Terminal/control limit; final hold reserved")
                 if time.monotonic()-started>=1200:raise TimeoutError("Reset-to-end budget exhausted")
                 check_storage(storage);check_actual_joint_bounds(state(),model)
                 command=np.asarray(command,np.float32)
@@ -178,11 +183,16 @@ def main():
                 line=json.dumps({"phase":phase,"prefix_control":prefix_count+int(phase=="prefix"),
                     "native_control":controls+int(phase!="prefix"),"action23":command.tolist()},allow_nan=False)+"\n"
                 current_writer.check(2*len(line.encode())+(16384 if reader else 0))
-                current_writer.append_text(issue_trace,line);grips=command[[14,22]].copy()
-                if policy is not None:policy.issued(command)
-                if phase=="prefix":issued_prefix+=1
-                else:issued_native+=1
-                with og.sim.render_on_step(True):obs,_,terminated,truncated,last_info=env.step(command,n_render_iterations=1)
+                def mark_issued():
+                    nonlocal grips,issued_prefix,issued_native
+                    current_writer.append_text(issue_trace,line);grips=command[[14,22]].copy()
+                    if policy is not None:policy.issued(command)
+                    if phase=='prefix':issued_prefix+=1
+                    else:issued_native+=1
+                if execution_profile!=CARRY_PROFILE:mark_issued()
+                with og.sim.render_on_step(True):
+                    if execution_profile==CARRY_PROFILE:mark_issued()
+                    obs,_,terminated,truncated,last_info=env.step(command,n_render_iterations=1)
                 if phase=="prefix":prefix_count+=1
                 else:controls+=1
                 terminal=bool(terminated or truncated);current_writer.append_text(trace,line)
@@ -211,7 +221,7 @@ def main():
             reader=PrivilegedReader(env,spec);initial=reader.read(prefix_count+controls)
             initial["finger_opening"]=dict(zip(("left","right"),state().gripper.tolist()))
             writer.write_json(a.output/"PRIVATE_initial.json",{"spec":spec,"frame":initial,"baseline_contacts":reader.baseline_receipt})
-            for index in range(12):
+            for index in range(macro_limit):
                 if time.monotonic()-started>=1200:raise TimeoutError("No new call after deadline")
                 folder=a.output/f"decision_{index:02d}";folder.mkdir()
                 before,hashes,depths,geometry,receipt=capture(folder/"before")
@@ -230,11 +240,12 @@ def main():
                 except RuntimeError as exc:
                     decision.update(status="REJECTED_NO_MOTION",reason=str(exc));stop="PUBLIC_PREFLIGHT_STOP"
                     writer.write_json(folder/"execution.json",decision);break
-                if controls+servo.total_ticks+12>419 or not workspace_budget_ok(token,servo.total_ticks,420-controls,12-index):
+                if controls+servo.total_ticks+12>native_limit-1 or not workspace_budget_ok(token,servo.total_ticks,native_limit-controls,macro_limit-index,execution_profile):
                     decision.update(status="REJECTED_NO_MOTION",reason="Whole macro/settle/final-hold budget")
                     stop="CONTROL_BUDGET";writer.write_json(folder/"execution.json",decision);break
                 try:
-                    with writer.transaction(action_evidence_bound(receipt["array_layout"])) as reservation:
+                    bound=action_evidence_bound(receipt['array_layout'],max_controls=servo.total_ticks+12) if execution_profile==CARRY_PROFILE else action_evidence_bound(receipt['array_layout'])
+                    with writer.transaction(bound) as reservation:
                         current_writer=reservation;active_token=token;reservation.write_json(folder/"preflight.json",preflight)
                         while not servo.done and servo.ticks<servo.total_ticks:step(servo.next_action(state()),"candidate")
                         feedback=servo.finish(state());active_token=None
@@ -242,12 +253,15 @@ def main():
                         reservation.write_json(folder/"execution.json",decision);capture(folder/"after",receipt["array_layout"])
                         if not policy.completed(token,feedback):raise RuntimeError("Actual servo execution did not complete")
                         history.append(token);settle();capture(folder/"after_settle",receipt["array_layout"])
-                finally:current_writer=writer;active_token=None
+                finally:
+                    if execution_profile==CARRY_PROFILE:policy.cancel_pending()
+                    current_writer=writer;active_token=None
                 writer.write_json(folder/"completed.json",{"clock":{"prefix_control":prefix_count,"native_control":controls},"history":history[-5:]})
                 print(json.dumps({"decision":index,"token":token,"controls":controls,"variant":a.variant}),flush=True)
         except BaseException as exc:error(exc);stop="ERROR"
         finally:
-            if kin is not None and grips is not None and not terminal and issued_native<420:
+            if execution_profile==CARRY_PROFILE and policy is not None:policy.cancel_pending()
+            if kin is not None and grips is not None and not terminal and issued_native<native_limit:
                 try:
                     command=np.asarray(native_action(kin.state().q,grips),np.float32)
                     writer.write_json(a.output/"final_hold_attempt.json",{"issued_native":issued_native+1,"action23":command.tolist()},cleanup=True)

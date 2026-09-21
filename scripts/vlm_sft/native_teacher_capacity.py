@@ -14,7 +14,9 @@ DIVERSE_STARTS = {(1,310,192,380),(1,264,114,969)}
 WORKSPACE_PROFILE = "near_h09z_workspace_grasp384_v1"
 # Registered separately from execution authority; old failed outputs stay intact.
 WORKSPACE_STARTS = frozenset({(1,310,192,380),(1,310,192,388)})
-H09Y_PROFILES = (H09Y_PROFILE, DIVERSE_PROFILE, WORKSPACE_PROFILE)
+CARRY_PROFILE = "near_h09z_carry_duration_body2_grasp384_v1"
+CARRY_STARTS = frozenset({(1,310,192,388),(1,310,192,380)})
+H09Y_PROFILES = (H09Y_PROFILE, DIVERSE_PROFILE, WORKSPACE_PROFILE, CARRY_PROFILE)
 
 
 def capacity_limits(release):
@@ -32,7 +34,7 @@ def capacity_limits(release):
         expected={"run_MiB":384,"total_MiB":6144}
         source=release.get("source",[]);prefix=release.get("paid_prefix_controls")
         if (not isinstance(source,list) or len(source)!=3 or any(type(v) is not int for v in source) or
-                type(prefix) is not int or (*source,prefix) not in ({DIVERSE_PROFILE:DIVERSE_STARTS,WORKSPACE_PROFILE:WORKSPACE_STARTS}.get(profile,H09Y_STARTS)) or
+                type(prefix) is not int or (*source,prefix) not in ({DIVERSE_PROFILE:DIVERSE_STARTS,WORKSPACE_PROFILE:WORKSPACE_STARTS,CARRY_PROFILE:CARRY_STARTS}.get(profile,H09Y_STARTS)) or
                 release.get("experiment_root")!=H09Y_ROOT or release.get("held_out_instance_groups")!=[[1,1],[1,71]] or
                 type(release.get("registered_gpu")) is not int or release["registered_gpu"]!=3 or
                 type(release.get("initialization_seconds")) is not int or release["initialization_seconds"]!=900 or
@@ -50,7 +52,7 @@ def validate_collection_location(release,output,gpu):
     if release.get("capacity_profile") not in H09Y_PROFILES:return
     capacity_limits(release)
     _,_,instance=release["source"];prefix=release["paid_prefix_controls"]
-    suffix="_ws45" if release["capacity_profile"]==WORKSPACE_PROFILE else ""
+    suffix={WORKSPACE_PROFILE:"_ws45",CARRY_PROFILE:"_ws45_cd1_b2"}.get(release["capacity_profile"],"")
     if gpu!=3 or Path(output).resolve()!=Path(H09Y_ROOT)/f"native_t1_i{instance}_p{prefix:04d}{suffix}":
         raise ValueError("Only the exact singly registered H09Y collection output/GPU")
 

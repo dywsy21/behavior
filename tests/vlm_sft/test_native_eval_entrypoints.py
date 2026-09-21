@@ -114,7 +114,9 @@ class EvalEntrypointTests(unittest.TestCase):
     def test_real_evaluation_step_latches_before_partial_failure_and_never_uses_measured_truth(self):
         tree=ast.parse((ROOT/"scripts/vlm_sft/native_eval_run.py").read_text())
         fn=copy.deepcopy(next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=="step"))
-        fn.body[0]=ast.Global(names=fn.body[0].names)
+        class Globalize(ast.NodeTransformer):
+            def visit_Nonlocal(self,node):return ast.Global(names=node.names)
+        fn=Globalize().visit(fn)
         command=np.zeros(23,np.float32);command[[14,22]]=[1,-1]
         state=NS(q=np.zeros(18),gripper=np.ones(2)*.05);issued=io.StringIO();completed=io.StringIO();measurements=[]
         def fail(*args,**kwargs):raise RuntimeError("partially executed CLOSE")
@@ -126,7 +128,8 @@ class EvalEntrypointTests(unittest.TestCase):
             "state":lambda:state,"model":object(),"current_writer":writer,"trace":completed,"issue_trace":issued,
             "reader":object(),"measure":lambda:measurements.append({"held":True,"forbidden_contacts":True}),
             "policy":policy,"og":NS(sim=NS(render_on_step=lambda _:nullcontext())),
-            "env":NS(step=fail),"session":NS(evaluator=evaluator)}
+            "env":NS(step=fail),"session":NS(evaluator=evaluator),"native_limit":420,
+            "execution_profile":None,"CARRY_PROFILE":__import__('native_execution').CARRY_PROFILE}
         exec(compile(ast.fix_missing_locations(ast.Module(body=[fn],type_ignores=[])),"real_evaluation_step","exec"),ns)
         with self.assertRaisesRegex(RuntimeError,"partially"):ns["step"](command,"candidate")
         self.assertEqual((ns["issued_native"],ns["controls"]),(13,12));self.assertTrue(policy.close_seen["right"])

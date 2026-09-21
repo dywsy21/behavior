@@ -38,7 +38,14 @@ def select(counts,audit,instance):
     return row
 
 
-def prepare(counts_path,audit_path,robot_template,instance,storage_spec=None):
+def prepare(counts_path,audit_path,robot_template,instance,storage_spec=None,*,execution_profile=None):
+    from native_execution import CARRY_PROFILE,episode_limits,metadata
+    if execution_profile not in (None,CARRY_PROFILE):raise ValueError("Unknown explicit heldout preparation profile")
+    if execution_profile==CARRY_PROFILE:
+        from native_storage import CARRY_STORAGE_PROFILE,validate_spec
+        if (not validate_spec({'storage':storage_spec}) or storage_spec['profile']!=CARRY_STORAGE_PROFILE):
+            raise ValueError("New heldout preparation requires its exact new storage profile")
+    _,control_limit=episode_limits(execution_profile)
     import pyarrow.parquet as pq
     from prepare import LABELS,RELEASE
     from native_teacher_reference_prepare import LABEL_COLUMNS
@@ -71,7 +78,7 @@ def prepare(counts_path,audit_path,robot_template,instance,storage_spec=None):
     write_json(folder/"PRIVATE_scoring_spec.json",spec)
     window={"kind":"native_oracle_low_window","immutable":True,"window_id":f"h09y-heldout-t1-i{instance}",
         "task_name":"picking_up_trash","official_mode":"train","instance_id":instance,"seed":0,
-        "max_steps":len(prefix)+421,"robot_config_path":str(robot),"robot_config_sha256":ROBOT_SHA,
+        "max_steps":len(prefix)+control_limit+1,"robot_config_path":str(robot),"robot_config_sha256":ROBOT_SHA,
         "max_chunks":1,"execute_steps":1,"prefix_actions_path":str(folder/"prefix.npy"),
         "prefix_actions_sha256":sha(folder/"prefix.npy"),"semantic_subgoal":{"parent_goal":"picking_up_trash",
             "active_skills_semantic_json":"[]","active_skills_text":INSTRUCTION}}
@@ -81,13 +88,18 @@ def prepare(counts_path,audit_path,robot_template,instance,storage_spec=None):
         "specified_hand":None,"source_audit_sha256":AUDIT_SHA,"counts_sha256":COUNTS_SHA,
         "files_sha256":{n:sha(folder/n) for n in ("prefix.npy","window.json","PRIVATE_scoring_spec.json")},
         "new_resets":0,"training_eligible":False,"teacher_pose_seed":None}
+    if execution_profile is not None:manifest.update(metadata(execution_profile))
     write_json(folder/"preparation.json",manifest);return manifest
 
 
-def verify(prepared,expected_sha):
+def verify(prepared,expected_sha,*,execution_profile=None):
+    from native_execution import CARRY_PROFILE,authorization_profile,episode_limits
+    _,control_limit=episode_limits(execution_profile)
     folder=Path(prepared).resolve();mp=folder/"preparation.json"
     if sha(mp)!=expected_sha:raise ValueError("Exact heldout preparation identity required")
     m=json.loads(mp.read_text());instance=m["source"][2]
+    if authorization_profile(m)!=(CARRY_PROFILE if execution_profile==CARRY_PROFILE else None):
+        raise ValueError("Heldout preparation episode profile mismatch")
     if type(instance) is not int or instance not in STARTS:raise ValueError("Not an evaluation instance")
     item=STARTS[instance]
     if (m.get("schema")!=SCHEMA or m.get("purpose")!="HELDOUT_EVALUATION_NEVER_BC" or
@@ -103,7 +115,7 @@ def verify(prepared,expected_sha):
             not np.all((prefix[-1,[14,22]]>=.999)&(prefix[-1,[14,22]]<=1)) or
             window.get("task_name")!="picking_up_trash" or window.get("official_mode")!="train" or
             window.get("instance_id")!=instance or type(window.get("seed")) is not int or window["seed"]!=0 or
-            window.get("max_steps")!=len(prefix)+421 or window.get("max_chunks")!=1 or window.get("execute_steps")!=1 or
+            window.get("max_steps")!=len(prefix)+control_limit+1 or window.get("max_chunks")!=1 or window.get("execute_steps")!=1 or
             window.get("robot_config_sha256")!=ROBOT_SHA or sha(window["robot_config_path"])!=ROBOT_SHA or
             Path(window["prefix_actions_path"]).resolve()!=folder/"prefix.npy" or
             window.get("prefix_actions_sha256")!=m["files_sha256"]["prefix.npy"] or
@@ -116,5 +128,6 @@ if __name__=="__main__":
     p=argparse.ArgumentParser();p.add_argument("--counts",required=True);p.add_argument("--source-audit",required=True)
     p.add_argument("--robot-template",required=True);p.add_argument("--instance",type=int,choices=tuple(STARTS),required=True)
     p.add_argument("--storage-profile",type=Path)
+    p.add_argument("--execution-profile")
     a=p.parse_args();print(json.dumps(prepare(a.counts,a.source_audit,a.robot_template,a.instance,
-        None if a.storage_profile is None else json.loads(a.storage_profile.read_text())),indent=2))
+        None if a.storage_profile is None else json.loads(a.storage_profile.read_text()),execution_profile=a.execution_profile),indent=2))

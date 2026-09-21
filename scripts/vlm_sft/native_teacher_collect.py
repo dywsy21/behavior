@@ -49,8 +49,8 @@ from native_teacher_capacity import capacity_limits,near_artifact_budget,H09Y_PR
 from native_storage import activate as activate_storage,validate_spec as validate_storage_spec
 from native_execution import PublicGripperHistory,preclose_translation,timing_metadata,PRECLOSE_PROFILE
 from native_storage import DIVERSE_STORAGE_PROFILE
-from native_execution import (WORKSPACE_PROFILE,TIMING_PROFILES,action_codec,
-    workspace_qualified,workspace_metadata)
+from native_execution import (WORKSPACE_PROFILE,WORKSPACE_PROFILES,CARRY_PROFILE,TIMING_PROFILES,action_codec,
+    workspace_qualified,workspace_metadata,episode_limits,primitive_tick_limit,WorkspaceQuota)
 from native_motion_codec import token_to_action as native_token_action, BODY_TOKENS
 
 PILOT_TOKENS = [t for t in TOKENS if not t.startswith("BASE_") and
@@ -79,6 +79,7 @@ def rest_screen(states):
 
 def require_release(value, code, executor):
     execution_profile=authorization_profile(value, collection=True)
+    macro_limit,control_limit=episode_limits(execution_profile)
     near=value.get("schema")==NEAR_SCHEMA
     if "seed_profile" in value:
         from native_teacher_pregrasp_seed import PROFILE as PRECONTACT_PROFILE
@@ -86,7 +87,7 @@ def require_release(value, code, executor):
             raise ValueError("Unknown/mixed precontact seed profile; old releases retain v1")
     if validate_storage_spec(value) and value.get("capacity_profile") not in H09Y_PROFILES:
         raise ValueError("New storage requires the explicit H09Y collection profile")
-    if execution_profile!=WORKSPACE_PROFILE and (execution_profile==PRECLOSE_PROFILE or value.get("capacity_profile")==DIVERSE_PROFILE or
+    if execution_profile not in WORKSPACE_PROFILES and (execution_profile==PRECLOSE_PROFILE or value.get("capacity_profile")==DIVERSE_PROFILE or
             (value.get("storage") or {}).get("profile")==DIVERSE_STORAGE_PROFILE):
         if (execution_profile!=PRECLOSE_PROFILE or value.get("capacity_profile")!=DIVERSE_PROFILE or
                 (value.get("storage") or {}).get("profile")!=DIVERSE_STORAGE_PROFILE):
@@ -101,20 +102,16 @@ def require_release(value, code, executor):
     if (value.get("schema") not in (SCHEMA,NEAR_SCHEMA) or value.get("authorize_collection") is not True or
             value.get("collector_commit") != code or value.get("executor_digest") != executor or
             value.get("h14_body_and_finger_safety_reviewed") is not True or not value.get("reviewer") or
-            value.get("max_resets") != (1 if near else 3) or value.get("max_candidates_per_instance") != (12 if near else 3)):
+            value.get("max_resets") != (1 if near else 3) or value.get("max_candidates_per_instance") != (macro_limit if near else 3)):
         raise ValueError("A separately reviewed H14-fixed executor and new pilot authorization are required")
     if near and (value.get("authorize_offline_teacher") is not True or value.get("allow_known_empty_rotation") is not True or
                  value.get("allow_grasp_cell_attempt") is not True or
-                 value.get("native_controls_max")!=420 or value.get("seconds_after_reset")!=(1200 if value.get("capacity_profile") in H09Y_PROFILES else 900) or
-                 value.get("max_teacher_primitives")!=12 or value.get("model_calls")!=0 or
+                 value.get("native_controls_max")!=control_limit or value.get("seconds_after_reset")!=(1200 if value.get("capacity_profile") in H09Y_PROFILES else 900) or
+                 value.get("max_teacher_primitives")!=macro_limit or value.get("model_calls")!=0 or
                  not isinstance(value.get("experiment_root"),str)):
         raise ValueError("Exact one-reset near-grasp budget/rotation authorization required")
-    gates = [json.loads(Path(p).read_text()) for p in value["engineering_gate_paths"]]
-    if len(gates) != 2 or {g["task"] for g in gates} != {0, 3} or not all(
-            g["gate_ok"] is True and g.get("robot_geometry_guards") is True and
-            g.get("gripper_completion_v1",False) is (execution_profile is not None) and
-            g["implementation_digest"] == executor for g in gates):
-        raise ValueError("Both matching engineering gates required; old H13 gates are insufficient")
+    from native_carry_admission import require_engineering_gates
+    require_engineering_gates(value,executor,bootstrap=execution_profile==CARRY_PROFILE and value.get('paid_prefix_controls')==388)
 
 
 def capture_snapshot(folder, model, state_now, onboard, geometry_now, render, clock, budget_root=None, writer=None,
@@ -186,7 +183,7 @@ def native_preflight(model, state, grips, action, depths, geometry, rotation_evi
     allowed, reason = guard.check(action, carry=carry)
     servo = SafeServo(model, state, gripper_command=grips,
                       limits=servo_limits(execution_profile))
-    if not allowed or not servo.begin(action, state, carry=carry) or servo.total_ticks > 40:
+    if not allowed or not servo.begin(action, state, carry=carry) or servo.total_ticks > primitive_tick_limit(action,carry,execution_profile):
         raise RuntimeError("Native preflight rejected: "+reason+" / "+servo.status)
     return servo, {**execution_metadata(execution_profile),**timing_metadata(execution_profile,qualified),
                    **workspace_metadata(action,body,execution_profile),
@@ -213,7 +210,8 @@ def main():
     h09y=release.get("capacity_profile") in H09Y_PROFILES
     wall_limit=1200 if h09y else 900
     near=release.get("schema")==NEAR_SCHEMA
-    native_limit=420 if near else 200
+    macro_limit,native_limit=episode_limits(execution_profile)
+    if not near:native_limit=200
     if near and x.teacher_config is None:raise ValueError("Near-grasp release cannot enable the manual pilot")
     ref, expected_prefix, source_binding = verify_prepared_source(x.prepared, release)
     teacher_spec = None
@@ -221,7 +219,7 @@ def main():
         from native_teacher_policy import validate_spec, validate_train_group
         if (release.get("authorize_offline_teacher") is not True or
                 sha(x.teacher_config) != release.get("teacher_config_sha256") or
-                not 1 <= release.get("max_teacher_primitives", 0) <= (12 if near else 6)):
+                not 1 <= release.get("max_teacher_primitives", 0) <= (macro_limit if near else 6)):
             raise ValueError("New bounded offline-teacher authorization required BEFORE reset")
         teacher_spec = json.loads(x.teacher_config.read_text())
         validate_spec(teacher_spec, ref)
@@ -271,6 +269,7 @@ def main():
     controls = 0; prefix_count = 0; issued_native = 0; issued_prefix = 0
     terminal = False; first_error = None; started = None
     kin = None; grips = None; trace = issue_trace = None; history = []; completed = []; public_history = None
+    workspace_quota=WorkspaceQuota(execution_profile)
     teacher_reader = teacher_outcome = teacher_trace = None
     teacher_token = None; teacher_frame = None
     def record_error(exc):
@@ -323,12 +322,17 @@ def main():
                 current_writer.check(len(line.encode("utf-8")))  # BEFORE env.step, including expert prefix.
                 # Once issued, a CLOSE command must also be the cleanup latch
                 # if env.step throws after partial physical execution.
-                if near:current_writer.append_text(issue_trace,line)
-                grips = np.asarray(command)[[14,22]].copy()
-                if public_history is not None:public_history.issued(command)
-                if kind=="prefix":issued_prefix+=1
-                else:issued_native+=1
+                def mark_issued():
+                    nonlocal grips,issued_prefix,issued_native
+                    if near:current_writer.append_text(issue_trace,line)
+                    grips=np.asarray(command)[[14,22]].copy()
+                    if public_history is not None:public_history.issued(command)
+                    if execution_profile==CARRY_PROFILE and kind=='candidate':workspace_quota.issued(command)
+                    if kind=='prefix':issued_prefix+=1
+                    else:issued_native+=1
+                if execution_profile!=CARRY_PROFILE:mark_issued()
                 with og.sim.render_on_step(True):
+                    if execution_profile==CARRY_PROFILE:mark_issued()
                     obs, _, terminated, truncated, _ = env.step(command, n_render_iterations=1)
                 if kind == "prefix": prefix_count += 1
                 else: controls += 1
@@ -410,7 +414,7 @@ def main():
                             choice = token, candidate, preflight
                             break
                         except RuntimeError as exc: rejected.append({"token": token, "reason": str(exc)})
-                    if choice is None and execution_profile==WORKSPACE_PROFILE:
+                    if choice is None and execution_profile in WORKSPACE_PROFILES:
                         from native_teacher_workspace import fallback
                         def body_preflight(token):
                             return native_preflight(model,before,grips,native_token_action(token,action_codec(execution_profile)),
@@ -418,7 +422,7 @@ def main():
                         choice,workspace_receipt=fallback(model=model,state=before,frame=teacher_frame,
                             goal_world=teacher_reader.goal(),base_world=teacher_reader.base(),hand=teacher_spec["hand"],
                             history=public_history,ranked=ranked,rejected=rejected,profile=execution_profile,
-                            used=workspace_used,remaining_controls=native_limit-controls,
+                            used=workspace_quota.count if execution_profile==CARRY_PROFILE else workspace_used,remaining_controls=native_limit-controls,
                             remaining_macros=release["max_teacher_primitives"]-index,preflight=body_preflight)
                         artifacts.write_json(folder/"PRIVATE_workspace_prediction.json",workspace_receipt)
                     if choice is None: raise RuntimeError("No safe decreasing teacher proposal; no retry/reset")
@@ -426,10 +430,11 @@ def main():
                     if controls+servo.total_ticks+12 > native_limit-1:
                         raise RuntimeError("Insufficient whole primitive + settle budget BEFORE action")
                     layout = receipt["array_layout"]
-                    if shutil.disk_usage(x.output).free < 80*1024**3+action_evidence_bound(layout):
+                    evidence_bound=action_evidence_bound(layout,max_controls=servo.total_ticks+12) if execution_profile==CARRY_PROFILE else action_evidence_bound(layout)
+                    if shutil.disk_usage(x.output).free < 80*1024**3+evidence_bound:
                         raise RuntimeError("Insufficient physical disk reserve for whole action evidence")
                     try:
-                        with artifacts.transaction(action_evidence_bound(layout)) as reserved:
+                        with artifacts.transaction(evidence_bound) as reserved:
                             current_writer = reserved; teacher_token = token
                             reserved.write_json(folder/"request.json", {"actor": actor, "token": token,
                                 "private_proposal_order": ranked, "rejected": rejected, "preflight": preflight,
@@ -437,6 +442,7 @@ def main():
                                 "capture_sha256": sha(folder/"before/capture.json"), "training_eligible": False})
                             start_control = controls
                             if token in BODY_TOKENS:workspace_used=True
+                            if execution_profile==CARRY_PROFILE:workspace_quota.arm(token)
                             while not servo.done and servo.ticks < servo.total_ticks:
                                 step(servo.next_action(state()), "candidate")
                             feedback = servo.finish(state())
@@ -453,6 +459,7 @@ def main():
                                 "training_eligible": False, "whole_trajectory_terminal_review_required": True})
                             completed.append(str(folder))
                     finally:
+                        workspace_quota.cancel_pending()
                         current_writer = artifacts; teacher_token = None
                     if teacher_outcome.result["outcome"] == "SUCCEEDED": break
                 artifacts.write_json(x.output/"PRIVATE_local_outcome.json", teacher_outcome.result)

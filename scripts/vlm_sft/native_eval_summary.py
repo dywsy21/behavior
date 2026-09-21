@@ -8,7 +8,8 @@ from common import sha,write_json
 from native_evaluation import VARIANTS
 from native_eval_prepare import STARTS,ROOT,SCHEMA
 from native_actor_protocol import validate_actor
-from native_execution import authorization_profile,PRECLOSE_PROFILE,WORKSPACE_PROFILE,TIMING_PROFILES,actor_protocol
+from native_execution import (authorization_profile,PRECLOSE_PROFILE,WORKSPACE_PROFILE,WORKSPACE_PROFILES,CARRY_PROFILE,
+    TIMING_PROFILES,actor_protocol,episode_limits)
 
 
 def summarize(root):
@@ -27,24 +28,36 @@ def summarize(root):
                 profile=authorization_profile(auth)
                 storage_profile=(auth.get("storage") or {}).get("profile")
                 if profile in TIMING_PROFILES:
-                    from native_storage import DIVERSE_STORAGE_PROFILE,WORKSPACE_STORAGE_PROFILE,validate_spec
-                    expected=WORKSPACE_STORAGE_PROFILE if profile==WORKSPACE_PROFILE else DIVERSE_STORAGE_PROFILE
+                    from native_storage import DIVERSE_STORAGE_PROFILE,WORKSPACE_STORAGE_PROFILE,CARRY_STORAGE_PROFILE,validate_spec
+                    expected={WORKSPACE_PROFILE:WORKSPACE_STORAGE_PROFILE,CARRY_PROFILE:CARRY_STORAGE_PROFILE}.get(profile,DIVERSE_STORAGE_PROFILE)
                     if (not validate_spec(auth) or storage_profile!=expected or
                             (m.get("storage") or {}).get("profile")!=storage_profile):
                         raise ValueError("Paired new execution/storage identity changed")
-                    if profile==WORKSPACE_PROFILE and m.get("protocol")!=actor_protocol(profile):
+                    if profile in WORKSPACE_PROFILES and m.get("protocol")!=actor_protocol(profile):
                         raise ValueError("Paired workspace actor protocol changed")
-                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile,storage_profile))
+                extra=()
+                if profile==CARRY_PROFILE:
+                    from native_actor_protocol import check_sha
+                    from native_carry_admission import require_carry_reviews
+                    check_sha(auth.get('executor_digest'));require_carry_reviews(auth)
+                    if auth.get('code_commit')!=m['code_commit']:raise ValueError("Actual paired code differs from authorization")
+                    extra=(auth['executor_digest'],auth['carry_duration_core_commit'])
+                identities.add((m["code_commit"],m["protocol"],m["dataset_sha256"],profile,storage_profile,*extra))
                 row["execution_profile"]=profile
                 row["status"]="INCOMPLETE_ATTEMPT"
             if result_path.exists():
                 r=json.loads(result_path.read_text())
+                macros,controls=episode_limits(profile)
+                if profile==CARRY_PROFILE:
+                    from native_eval_run import evaluation_budget
+                    if m.get('budget')!=evaluation_budget(profile) or auth.get('budget')!=evaluation_budget(profile):
+                        raise ValueError("New paired episode budgets differ")
                 if r.get("manifest_sha256")!=sha(run/"manifest.json") or r.get("variant")!=variant or r.get("instance")!=instance:
                     raise ValueError("Result is not bound to this paired run")
                 valid=(r.get("status")=="COMPLETE" and r.get("final_hold") is True and
                     not (run/"failure.json").exists() and r.get("issued_native")==r.get("native_controls") and
                     r.get("issued_prefix")==r.get("prefix_controls")==item["prefix"] and
-                    1<=r["native_controls"]<=420 and len(r.get("decisions",[]))<=12 and
+                    1<=r["native_controls"]<=controls and len(r.get("decisions",[]))<=macros and
                     r.get("wall_seconds_after_reset",float("inf"))<=1200)
                 row.update(status=r.get("status"),valid_bounded_result=valid,result_sha256=sha(result_path),
                     counted_local_success=bool(valid and r.get("score",{}).get("any_hand_local_success") is True),

@@ -5,8 +5,8 @@ Predictions are not captured observations, scene clearance, or positive BC.
 import numpy as np
 from scipy.spatial.transform import Rotation
 from native_motion_codec import BODY_TOKENS, token_to_action
-from native_execution import (WORKSPACE_PROFILE, action_codec, workspace_qualified,
-    servo_limits, preclose_translation,workspace_budget_ok)
+from native_execution import (WORKSPACE_PROFILE,WORKSPACE_PROFILES,CARRY_PROFILE,body_limit, action_codec, workspace_qualified,
+    servo_limits, preclose_translation,workspace_budget_ok,primitive_tick_limit)
 from native_teacher_policy import empty_hand_rotation_allowed
 from native_teacher_outcomes import rigid
 from semantic_robot.v2.protocol import ROTATIONS, TRANSLATIONS
@@ -18,9 +18,12 @@ def fallback(*, model,state,frame,goal_world,base_world,hand,history,ranked,reje
     receipt={"not_actor_input":True,"not_success_evidence":True,"predicted_not_executed":True,
         "body_trials":[],"max_body_trials":4,"max_followups_per_body":3,
         "scene_sweep_clearance_certified":False,"selected_first_token":None}
-    if profile!=WORKSPACE_PROFILE:return None,receipt
+    if profile not in WORKSPACE_PROFILES:return None,receipt
+    if profile==CARRY_PROFILE and (type(used) is not int or not 0<=used<=body_limit(profile)):
+        raise ValueError("Actual nonnegative integer body macro count required")
+    exhausted=used>=body_limit(profile) if profile==CARRY_PROFILE else bool(used)
     prototype=token_to_action(BODY_TOKENS[0],action_codec(profile))
-    if (used or frame.get("forbidden_contacts") or remaining_macros<2 or not ranked or len(rejected)!=len(ranked) or
+    if (exhausted or frame.get("forbidden_contacts") or remaining_macros<2 or not ranked or len(rejected)!=len(ranked) or
             [r["token"] for r in rejected]!=ranked or
             not workspace_qualified(prototype,state,model,history,profile) or
             not all(empty_hand_rotation_allowed(a,state,frame,history.grips,model,history.close_seen[a])
@@ -54,11 +57,12 @@ def fallback(*, model,state,frame,goal_world,base_world,hand,history,ranked,reje
                 "position_tolerance_m":trial.pos_tolerance,"angle_tolerance_deg":float(np.rad2deg(trial.rot_tolerance))}
             row["following"].append(item)
             if not accepted:continue
-            total=body.total_ticks+12+40+12+1
+            if trial.total_ticks>primitive_tick_limit(action,carry,profile):continue
+            total=body.total_ticks+12+(75 if profile==CARRY_PROFILE else 40)+12+1
             value=cost(trial.joint_plan[-1])
             item.update(planned_ticks=trial.total_ticks,predicted_private_cost=value,
                         reserved_controls_including_settles_and_hold=total)
-            if value<initial-1e-6 and workspace_budget_ok(token,body.total_ticks,remaining_controls,remaining_macros):
+            if value<initial-1e-6 and workspace_budget_ok(token,body.total_ticks,remaining_controls,remaining_macros,profile):
                 choices.append((value,body.total_ticks+trial.total_ticks,ordinal,index,token,body,body_receipt))
     if not choices:
         receipt["reason"]="NO_BOUNDED_ORIGINAL_GATE_TWO_STEP_IMPROVEMENT";return None,receipt
