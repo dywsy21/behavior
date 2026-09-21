@@ -93,6 +93,8 @@ def main():
                    help="Opt-in actual robot depth self-exclusion and fully-open hand/body collision envelopes")
     p.add_argument("--gripper-completion-v1", action="store_true",
                    help="Separate bounded OPEN/CLOSE command completion from pose precision and grasp success")
+    p.add_argument("--carry-duration-v1", action="store_true",
+                   help="Scale bounded arm-translation moving time with carry half-speed; preserve safety limits")
     p.add_argument("--approach-reorientation",action="store_true",help="Opt-in unladen wrist candidates and bounded robot-only two-command reach preview")
     p.add_argument("--approach-body-options",action="store_true",help="Opt-in all existing unladen far-pick body directions before individual safety preflight")
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid","rgbd_joint"),default="pnp")
@@ -136,6 +138,8 @@ def main():
         raise ValueError("Robot geometry guards require fresh grounded robot geometry")
     if args.gripper_completion_v1 and not args.robot_geometry_guards:
         raise ValueError("Gripper command completion requires the reviewed robot geometry guards")
+    if args.carry_duration_v1 and not (args.robot_geometry_guards and args.gripper_completion_v1):
+        raise ValueError("Carry duration v1 requires robot geometry guards and explicit gripper completion")
     if args.approach_reorientation and not args.robot_geometry_guards:
         raise ValueError("Approach reorientation requires the reviewed robot geometry guards")
     if args.approach_body_options and not args.robot_geometry_guards:
@@ -169,6 +173,7 @@ def main():
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("robot_geometry_guards",False)==args.robot_geometry_guards and
                 g.get("gripper_completion_v1",False)==args.gripper_completion_v1 and
+                g.get("carry_duration_v1",False)==args.carry_duration_v1 and
                 g.get("approach_reorientation",False)==args.approach_reorientation and
                 g.get("approach_body_options",False)==args.approach_body_options and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
@@ -391,7 +396,8 @@ def main():
                               None if not prefix_count else np.asarray(prefix[-1])[[14,22]])
             servo = SafeServo(model,state,gripper_command=previous_grips,
                               limits=ServoLimits(robot_geometry_guards=args.robot_geometry_guards,
-                                                 gripper_completion_v1=args.gripper_completion_v1))
+                                                 gripper_completion_v1=args.gripper_completion_v1,
+                                                 carry_duration_v1=args.carry_duration_v1))
             if last_issued_grips is None:last_issued_grips=servo.grips.copy()
             video = imageio.get_writer(str(out/"rollout.mp4"),fps=15,codec="libx264",quality=7,macro_block_size=2)
             previous = None
@@ -806,6 +812,7 @@ def main():
                       "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
                       "robot_geometry_guards":args.robot_geometry_guards,
                       "gripper_completion_v1":args.gripper_completion_v1,
+                      "carry_duration_v1":args.carry_duration_v1,
                       "approach_reorientation":args.approach_reorientation,
                       "approach_body_options":args.approach_body_options,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,
