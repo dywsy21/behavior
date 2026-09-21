@@ -58,7 +58,12 @@ CARRY953_RUNS=CARRY_RUNS+("native_t1_i114_p0953_ws45_cd1_b2",)
 CARRY953_SPEC={**CARRY_SPEC,"profile":CARRY953_STORAGE_PROFILE,"shared_og_cache":{
     **CARRY_SPEC["shared_og_cache"],
     "allowed_aliases":[str(RUNTIME_ROOT/name/"omnigibson/global/cache") for name in CARRY953_RUNS]}}
-CARRY_STORAGE_PROFILES=(CARRY_STORAGE_PROFILE,CARRY953_STORAGE_PROFILE)
+WALL2100_STORAGE_PROFILE="h09z-nvme-shared-og-cache-train953-wall2100-v1"
+WALL2100_RUNS=CARRY953_RUNS+("native_t1_i114_p0953_ws45_cd1_b2_wall2100",)
+WALL2100_SPEC={**CARRY953_SPEC,"profile":WALL2100_STORAGE_PROFILE,"shared_og_cache":{
+    **CARRY953_SPEC["shared_og_cache"],
+    "allowed_aliases":[str(RUNTIME_ROOT/name/"omnigibson/global/cache") for name in WALL2100_RUNS]}}
+CARRY_STORAGE_PROFILES=(CARRY_STORAGE_PROFILE,CARRY953_STORAGE_PROFILE,WALL2100_STORAGE_PROFILE)
 CACHE_SUBDIRS={"OMNIGIBSON_APPDATA_PATH":"omnigibson","TMPDIR":"tmp",
     "TMP":"tmp","TEMP":"tmp",
     "CUDA_CACHE_PATH":"cuda","__GL_SHADER_DISK_CACHE_PATH":"gl",
@@ -73,7 +78,7 @@ def validate_spec(release):
     if "storage" not in release:return False
     spec=release["storage"]
     expected=({SHARED_PROFILE:SHARED_SPEC,DIVERSE_STORAGE_PROFILE:DIVERSE_SPEC,WORKSPACE_STORAGE_PROFILE:WORKSPACE_SPEC,
-               CARRY_STORAGE_PROFILE:CARRY_SPEC,CARRY953_STORAGE_PROFILE:CARRY953_SPEC}.get(spec.get("profile"),SPEC)
+               CARRY_STORAGE_PROFILE:CARRY_SPEC,CARRY953_STORAGE_PROFILE:CARRY953_SPEC,WALL2100_STORAGE_PROFILE:WALL2100_SPEC}.get(spec.get("profile"),SPEC)
               if isinstance(spec,dict) else SPEC)
     # Canonical JSON also rejects bool-as-int inside nested shared bindings.
     if not isinstance(spec,dict) or json.dumps(spec,sort_keys=True)!=json.dumps(expected,sort_keys=True):
@@ -142,7 +147,7 @@ class RuntimeStorage:
         self.profile=release["storage"]["profile"]
         self.shared=self.profile in (SHARED_PROFILE,DIVERSE_STORAGE_PROFILE,WORKSPACE_STORAGE_PROFILE,*CARRY_STORAGE_PROFILES)
         runs={DIVERSE_STORAGE_PROFILE:DIVERSE_RUNS,WORKSPACE_STORAGE_PROFILE:WORKSPACE_RUNS,
-              CARRY_STORAGE_PROFILE:CARRY_RUNS,CARRY953_STORAGE_PROFILE:CARRY953_RUNS}.get(self.profile,SHARED_RUNS)
+              CARRY_STORAGE_PROFILE:CARRY_RUNS,CARRY953_STORAGE_PROFILE:CARRY953_RUNS,WALL2100_STORAGE_PROFILE:WALL2100_RUNS}.get(self.profile,SHARED_RUNS)
         if self.shared and self.output.name not in runs:raise ValueError("Unregistered shared-cache run")
         self.aliases={RUNTIME_ROOT/name/"omnigibson/global/cache":SHARED_TARGET for name in runs} if self.shared else {}
 

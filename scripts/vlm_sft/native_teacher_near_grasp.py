@@ -87,11 +87,13 @@ def prepare(folder,output,start,expected_manifest,counts_path,excluded,*,capacit
 
 
 def verify_prepared(prepared,release):
-    from native_teacher_capacity import CARRY_PROFILE,CARRY_STARTS
+    from native_teacher_capacity import CARRY_PROFILE,CARRY_STARTS,WALL2100_PROFILE
     prepared=Path(prepared).resolve();mp=prepared.parent/"preparation.json"
     if sha(mp)!=release.get("preparation_manifest_sha256"):raise ValueError("Unregistered later-prefix preparation")
     m=json.loads(mp.read_text());counts_path=Path(release["train_counts_path"])
-    extended=release.get('capacity_profile')==CARRY_PROFILE
+    # Wall-only registration reuses the exact existing953x23/640-control file;
+    # its separate release does not rewrite that source preparation identity.
+    extended=release.get('capacity_profile') in (CARRY_PROFILE,WALL2100_PROFILE)
     controls,macros=(640,14) if extended else (420,12)
     if (m.get('native_controls_max')!=controls or m.get('max_teacher_primitives')!=macros or
             m.get('capacity_profile')!=(CARRY_PROFILE if extended else None) or

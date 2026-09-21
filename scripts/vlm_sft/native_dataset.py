@@ -35,6 +35,34 @@ def read(path):return json.loads(Path(path).read_text())
 def lines(path):return [json.loads(x) for x in Path(path).read_text().splitlines()]
 
 
+def collection_time_metadata(run,release,result,review):
+    from native_teacher_capacity import WALL2100_PROFILE,capacity_limits,validate_collection_location
+    if release.get('capacity_profile')!=WALL2100_PROFILE:
+        if 'collection_time_budget' in result:raise ValueError("Old collection cannot acquire a new wall receipt")
+        return {}
+    capacity_limits(release)
+    # Archived evidence may be read from a verified local copy. Its unique run
+    # name must still resolve to the originally authorized collection namespace.
+    validate_collection_location(release,Path(release['experiment_root'])/Path(run).name,3)
+    budget=result.get('collection_time_budget');elapsed=budget.get('wall_seconds_after_reset') if isinstance(budget,dict) else None
+    if (not isinstance(budget,dict) or set(budget)!={'capacity_profile','seconds_after_reset','wall_seconds_after_reset'} or
+            budget['capacity_profile']!=WALL2100_PROFILE or type(budget['seconds_after_reset']) is not int or budget['seconds_after_reset']!=2100 or
+            type(elapsed) not in (int,float) or not np.isfinite(elapsed) or not 0<elapsed<=2100 or
+            review.get('capacity_profile')!=WALL2100_PROFILE or type(review.get('seconds_after_reset')) is not int or review['seconds_after_reset']!=2100):
+        raise ValueError("Exact independently reviewed wall2100 completion receipt required")
+    return {'collection_capacity_profile':WALL2100_PROFILE,'collection_seconds_after_reset':2100}
+
+
+def checked_collection_time_provenance(value):
+    from native_teacher_capacity import WALL2100_PROFILE
+    keys=('collection_capacity_profile','collection_seconds_after_reset')
+    if not any(k in value for k in keys):return {}
+    if (value.get(keys[0])!=WALL2100_PROFILE or type(value.get(keys[1])) is not int or value[keys[1]]!=2100 or
+            value.get('group')!=[1,114] or value.get('prefix')!=953 or authorization_profile(value)!=CARRY_PROFILE):
+        raise ValueError("Exact new collection wall provenance required")
+    return {k:value[k] for k in keys}
+
+
 def check_execution(record,request,execution,profile):
     token=record["token"]
     if any(authorization_profile(value)!=profile for value in (execution,record,request["preflight"])):
@@ -141,6 +169,7 @@ def verified_run(entry,counts,*,export_codec=None):
             result.get("status")!="COLLECTED_QUARANTINED_NOT_SFT" or result.get("model_calls")!=0 or
             any("failure" in name.lower() for name in actual)):
         raise ValueError("Only complete successful native collection runs")
+    collection_time=collection_time_metadata(run,manifest['authorization'],result,review)
     group=validate_train_group({"source":manifest["source"]},counts,HELDOUT)
     if group not in TRAIN:raise ValueError("Unregistered training instance")
     initial=read(run/"PRIVATE_teacher_initial.json");spec=initial["spec"]
@@ -219,7 +248,7 @@ def verified_run(entry,counts,*,export_codec=None):
              "images":{v:str(folder/"before"/(v+".png")) for v in CAMERAS},
              "provenance":{"group":list(group),"episode":manifest["source"]["episode"],"prefix":prefix,
                 "macro":i,"hand":arm,"run_inventory_sha256":sha(inventory),"review_sha256":sha(review_path),
-                **execution_metadata(execution_profile),**binding}}
+                **execution_metadata(execution_profile),**collection_time,**binding}}
         checked_images(row);records.append(row);history.append(token)
     if last_end+1!=result["native_controls"]:raise ValueError("Unaccounted post-macro controls")
     oracle=LocalOutcome(spec);oracle.update(initial["frame"])
@@ -230,7 +259,7 @@ def verified_run(entry,counts,*,export_codec=None):
     if oracle.update(final["frame"])!=final["verdict"] or final["verdict"]["outcome"]!="SUCCEEDED":
         raise ValueError("No preserved physical GRASP success at final hold")
     return records,{"group":list(group),"prefix":prefix,"macros":len(records),"hand":arm,
-        **execution_metadata(execution_profile),
+        **execution_metadata(execution_profile),**collection_time,
         "inventory_sha256":sha(inventory),"review_sha256":sha(review_path),"initial_proprio":records[0]["actor"]["proprio"],
         "measured_rotation_degrees":rotation_degrees}
 
@@ -277,6 +306,9 @@ def load_dataset(folder,*,require_gate=True):
         raise ValueError("Exact unique whole-run row membership required")
     if any(tuple(r["provenance"]["group"]) not in TRAIN for r in rows):raise ValueError("Heldout leaked into BC")
     profiles={run["inventory_sha256"]:authorization_profile(run) for run in manifest["runs"]}
+    collection_times={run['inventory_sha256']:checked_collection_time_provenance(run) for run in manifest['runs']}
+    if any(checked_collection_time_provenance(row['provenance'])!=collection_times[row['provenance']['run_inventory_sha256']] for row in rows):
+        raise ValueError("Row collection wall provenance differs from its reviewed run")
     if any(p in WORKSPACE_PROFILES for p in profiles.values()) and codec!=WORKSPACE_CODEC:raise ValueError("Workspace data exported under old codec")
     if any(authorization_profile(row["provenance"])!=profiles[row["provenance"]["run_inventory_sha256"]] for row in rows):
         raise ValueError("Row execution provenance differs from its reviewed run")

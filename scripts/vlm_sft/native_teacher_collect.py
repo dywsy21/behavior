@@ -45,7 +45,7 @@ from run_v2 import implementation_digest
 from replay_contact_audit import preserved_session, report_failure
 from native_teacher_near_grasp import SCHEMA as NEAR_SCHEMA
 from native_teacher_reference_contract import check_actual_joint_bounds,source_state_diagnostic
-from native_teacher_capacity import capacity_limits,near_artifact_budget,H09Y_PROFILE,H09Y_PROFILES,DIVERSE_PROFILE,validate_collection_location
+from native_teacher_capacity import capacity_limits,near_artifact_budget,H09Y_PROFILE,H09Y_PROFILES,DIVERSE_PROFILE,validate_collection_location,collection_wall_seconds,WALL2100_PROFILE
 from native_storage import activate as activate_storage,validate_spec as validate_storage_spec
 from native_execution import PublicGripperHistory,preclose_translation,timing_metadata,PRECLOSE_PROFILE
 from native_storage import DIVERSE_STORAGE_PROFILE
@@ -106,7 +106,7 @@ def require_release(value, code, executor):
         raise ValueError("A separately reviewed H14-fixed executor and new pilot authorization are required")
     if near and (value.get("authorize_offline_teacher") is not True or value.get("allow_known_empty_rotation") is not True or
                  value.get("allow_grasp_cell_attempt") is not True or
-                 value.get("native_controls_max")!=control_limit or value.get("seconds_after_reset")!=(1200 if value.get("capacity_profile") in H09Y_PROFILES else 900) or
+                 value.get("native_controls_max")!=control_limit or value.get("seconds_after_reset")!=collection_wall_seconds(value) or
                  value.get("max_teacher_primitives")!=macro_limit or value.get("model_calls")!=0 or
                  not isinstance(value.get("experiment_root"),str)):
         raise ValueError("Exact one-reset near-grasp budget/rotation authorization required")
@@ -208,7 +208,7 @@ def main():
     execution_profile = authorization_profile(release, collection=True)
     validate_collection_location(release,x.output,x.gpu)
     h09y=release.get("capacity_profile") in H09Y_PROFILES
-    wall_limit=1200 if h09y else 900
+    wall_limit=collection_wall_seconds(release)
     near=release.get("schema")==NEAR_SCHEMA
     macro_limit,native_limit=episode_limits(execution_profile)
     if not near:native_limit=200
@@ -575,8 +575,14 @@ def main():
                 except BaseException as exc: record_error(exc)
         if first_error is not None: raise first_error
         try:
+            collection_time={}
+            if release.get('capacity_profile')==WALL2100_PROFILE:
+                elapsed=time.monotonic()-started
+                if elapsed>wall_limit:raise TimeoutError("Complete wall2100 trajectory including final hold exceeded wall budget")
+                collection_time={'collection_time_budget':{'capacity_profile':WALL2100_PROFILE,
+                    'seconds_after_reset':wall_limit,'wall_seconds_after_reset':elapsed}}
             artifacts.write_json(x.output/"result.json", {"status": "COLLECTED_QUARANTINED_NOT_SFT", "prefix_controls": prefix_count,
-                       "native_controls": controls, "samples": completed, "model_calls": 0, "official_success_claim": False})
+                       "native_controls": controls, "samples": completed, "model_calls": 0, "official_success_claim": False,**collection_time})
         except BaseException as exc:
             record_error(exc); raise first_error
 

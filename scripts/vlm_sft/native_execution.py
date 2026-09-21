@@ -65,22 +65,23 @@ def authorization_profile(value, *, collection=False):
         raise ValueError("Old execution profiles cannot acquire new duration or episode limits")
     if collection:
         from native_teacher_capacity import (H09Y_PROFILE, DIVERSE_PROFILE, WORKSPACE_PROFILE as WORKSPACE_CAPACITY,
-                                             CARRY_PROFILE as CARRY_CAPACITY)
+                                             CARRY_PROFILE as CARRY_CAPACITY,WALL2100_PROFILE)
         from native_teacher_near_grasp import SCHEMA
         from native_teacher_pregrasp_seed import PROFILE as SEED_PROFILE
         capacity = {PRECLOSE_PROFILE:DIVERSE_PROFILE,WORKSPACE_PROFILE:WORKSPACE_CAPACITY,
                     CARRY_PROFILE:CARRY_CAPACITY}.get(profile,H09Y_PROFILE)
+        if profile==CARRY_PROFILE and value.get('capacity_profile')==WALL2100_PROFILE:capacity=WALL2100_PROFILE
         if (value.get("schema") != SCHEMA or value.get("capacity_profile") != capacity or
                 value.get("seed_profile") != SEED_PROFILE):
             raise ValueError("New gripper collection requires explicit H09Y precontact-v2")
         if profile in TIMING_PROFILES:
             from native_storage import (DIVERSE_STORAGE_PROFILE, WORKSPACE_STORAGE_PROFILE, CARRY_STORAGE_PROFILE,
-                                        CARRY953_STORAGE_PROFILE,validate_spec)
+                                        CARRY953_STORAGE_PROFILE,WALL2100_STORAGE_PROFILE,validate_spec)
             from native_teacher_capacity import capacity_limits,CARRY_ADDITIONAL_START
             capacity_limits(value)
             storage = {WORKSPACE_PROFILE:WORKSPACE_STORAGE_PROFILE,CARRY_PROFILE:CARRY_STORAGE_PROFILE}.get(profile,DIVERSE_STORAGE_PROFILE)
             if profile==CARRY_PROFILE and (*value['source'],value['paid_prefix_controls'])==CARRY_ADDITIONAL_START:
-                storage=CARRY953_STORAGE_PROFILE
+                storage=WALL2100_STORAGE_PROFILE if capacity==WALL2100_PROFILE else CARRY953_STORAGE_PROFILE
             if not validate_spec(value) or value["storage"]["profile"] != storage:
                 raise ValueError("Diverse collection requires its exact explicit storage profile")
     return profile
@@ -254,10 +255,13 @@ def require_pipeline_profile(release, dataset):
     profile = authorization_profile(release)
     if (profile in WORKSPACE_PROFILES or dataset.get("protocol")==actor_protocol(WORKSPACE_PROFILE) or
             any(authorization_profile(r) in WORKSPACE_PROFILES for r in dataset["runs"])):
-        from native_storage import WORKSPACE_STORAGE_PROFILE,CARRY_STORAGE_PROFILES,CARRY953_STORAGE_PROFILE,validate_spec
+        from native_storage import WORKSPACE_STORAGE_PROFILE,CARRY_STORAGE_PROFILES,CARRY953_STORAGE_PROFILE,WALL2100_STORAGE_PROFILE,validate_spec
+        from native_teacher_capacity import WALL2100_PROFILE
         storage_profiles=CARRY_STORAGE_PROFILES if profile==CARRY_PROFILE else (WORKSPACE_STORAGE_PROFILE,)
         if any(run.get('group')==[1,114] and run.get('prefix')==953 for run in dataset['runs']):
             storage_profiles=(CARRY953_STORAGE_PROFILE,)
+        if any(run.get('collection_capacity_profile')==WALL2100_PROFILE for run in dataset['runs']):
+            storage_profiles=(WALL2100_STORAGE_PROFILE,)
         require_dataset_profile(dataset,profile)
         if (profile not in WORKSPACE_PROFILES or release.get("protocol")!=actor_protocol(profile) or
                 dataset.get("protocol")!=actor_protocol(profile) or not validate_spec(release) or

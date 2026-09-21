@@ -17,7 +17,13 @@ WORKSPACE_STARTS = frozenset({(1,310,192,380),(1,310,192,388)})
 CARRY_PROFILE = "near_h09z_carry_duration_body2_grasp384_v1"
 CARRY_ADDITIONAL_START = (1,264,114,953)
 CARRY_STARTS = frozenset({(1,310,192,388),(1,310,192,380),CARRY_ADDITIONAL_START})
-H09Y_PROFILES = (H09Y_PROFILE, DIVERSE_PROFILE, WORKSPACE_PROFILE, CARRY_PROFILE)
+WALL2100_PROFILE = "near_h09z_train953_wall2100_grasp384_v1"
+H09Y_PROFILES = (H09Y_PROFILE, DIVERSE_PROFILE, WORKSPACE_PROFILE, CARRY_PROFILE, WALL2100_PROFILE)
+
+
+def collection_wall_seconds(release):
+    profile=release.get("capacity_profile")
+    return 2100 if profile==WALL2100_PROFILE else 1200 if profile in H09Y_PROFILES else 900
 
 
 def capacity_limits(release):
@@ -35,12 +41,14 @@ def capacity_limits(release):
         expected={"run_MiB":384,"total_MiB":6144}
         source=release.get("source",[]);prefix=release.get("paid_prefix_controls")
         if (not isinstance(source,list) or len(source)!=3 or any(type(v) is not int for v in source) or
-                type(prefix) is not int or (*source,prefix) not in ({DIVERSE_PROFILE:DIVERSE_STARTS,WORKSPACE_PROFILE:WORKSPACE_STARTS,CARRY_PROFILE:CARRY_STARTS}.get(profile,H09Y_STARTS)) or
+                type(prefix) is not int or (*source,prefix) not in ({DIVERSE_PROFILE:DIVERSE_STARTS,WORKSPACE_PROFILE:WORKSPACE_STARTS,CARRY_PROFILE:CARRY_STARTS,WALL2100_PROFILE:{CARRY_ADDITIONAL_START}}.get(profile,H09Y_STARTS)) or
                 release.get("experiment_root")!=H09Y_ROOT or release.get("held_out_instance_groups")!=[[1,1],[1,71]] or
                 type(release.get("registered_gpu")) is not int or release["registered_gpu"]!=3 or
                 type(release.get("initialization_seconds")) is not int or release["initialization_seconds"]!=900 or
                 any(k in release for k in ("prior_experiment_roots","combined_total_MiB"))):
             raise ValueError("Exact new H09Y TRAIN start/GPU/root/init/heldout profile required")
+        if profile==WALL2100_PROFILE and (type(release.get('seconds_after_reset')) is not int or release['seconds_after_reset']!=2100):
+            raise ValueError("Only the explicitly registered2100-second collection wall")
     elif any(k in release for k in ("prior_experiment_roots", "combined_total_MiB")):
         raise ValueError("Cross-root fields require the explicit complete capacity profile")
     for key, value in expected.items():
@@ -53,7 +61,7 @@ def validate_collection_location(release,output,gpu):
     if release.get("capacity_profile") not in H09Y_PROFILES:return
     capacity_limits(release)
     _,_,instance=release["source"];prefix=release["paid_prefix_controls"]
-    suffix={WORKSPACE_PROFILE:"_ws45",CARRY_PROFILE:"_ws45_cd1_b2"}.get(release["capacity_profile"],"")
+    suffix={WORKSPACE_PROFILE:"_ws45",CARRY_PROFILE:"_ws45_cd1_b2",WALL2100_PROFILE:"_ws45_cd1_b2_wall2100"}.get(release["capacity_profile"],"")
     if gpu!=3 or Path(output).resolve()!=Path(H09Y_ROOT)/f"native_t1_i{instance}_p{prefix:04d}{suffix}":
         raise ValueError("Only the exact singly registered H09Y collection output/GPU")
 
