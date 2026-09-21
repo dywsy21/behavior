@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 20:14（北京时间）H31原拒绝点真实越过（Astra/Codex）：** 2680442于20:13:32实查prefix388/native162；第4宏RIGHT_UP实际native109→153共44tick TARGET_REACHED，motion_timing仍cap75/required44/.0125rad每tick/5settle/success_claim=false，随后固定12settle进行中。右手物理held/contact=true、LocalOutcome仍IN_PROGRESS/stable0、0body；明确仅长于原40上限的真实执行完成，尚非整段成功/父全审/新增BC。原run/预算继续，第二380和微调/配对未启动。
+
 **2026-09-21 20:08（北京时间）已审子实现整合/原采集实控（Codex/Astra）：** 将固定02d合入父协作分支；重复cherry-pick历史造成owned文件冲突，逐项先核父版本与affabb5前一版完全相同，再保留已审02d精确字节；子实验文档只增533行、父证据不删，公共src/runner对父HEAD零差异。整合174/6.754s＋459/9.778s通过，不改服务器冻结源。新audit reader旧388兼容回归1.595s/110文件/99物理帧/3宏过，报告c7cbc610…5de9；旧失败不重标/不计新样本。子2680442于20:04:35已实控prefix66，20:06:01到146/native0；正在原1200s时钟，未有新抬升结果。父H30 d70–75连续fine前伸，观测距.510→.461m、未抓取，暂无证据指workspace触发错误，不为此临时改线上门。
 
 **2026-09-21 19:59（北京时间）首新carry采集唯一实际提交（Astra/Codex）：** 2680442于19:57:28.640281/GPU3启动`native_t1_i192_p0388_ws45_cd1_b2`，仍02d/8fdf/core0808；active e629a697…915e、launch019bc0bd…ee73，父Git436b9a7/daf900已绑定。源/seed/旧双门/真实factory/盘和精确2673899辅助卡门1.332s过，初始化中、未称reset/成功；14/640含hold/2body/1200＋900/384MiB，0模型，第二380/训练/服务/六评仍未启。父已为数据全审建立本地冻结02d reader，并将ignored审计helper显式分支加入新时序/逐tick反馈/2body/全9视图和14/640检查，旧profile上限不改，实际新数据待到齐；H30原回合继续1545控制/71决策开始/110调用，约.510m未持握。

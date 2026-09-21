@@ -5,6 +5,7 @@
   "status": "CPU_INDEPENDENT_REVIEW_PASSED_FIRST388_CONDITIONAL_HANDOFF",
   "independent_reviews": {"Astra_public_core":"0808 single-commit 420 tests and saved388/380 regression passed","parent_owned_integration":"02d63cd 174 SFT plus420 public; full110/195 inventories and actual states5.620s passed","parent_receipt":"configs/vlm_sft/h09z_carry_duration_02d63cd_parent_cpu_review.json","physical_integration_passed":false},
   "implementation_commit": "0808ee8d811b78d1cd34d1da33c30abc705a66d1",
+  "first_physical_observed": {"run":"native_t1_i192_p0388_ws45_cd1_b2","pid":2680442,"source":"02d63cdc86fdbe6df056e93600c0022b711741d2","started_bjt":"2026-09-21T19:57:28.640281+08:00","observation_bjt":"2026-09-21T20:13:32.209+08:00","actual_prefix":388,"actual_native":162,"first_extended_UP_ticks":44,"first_extended_UP_status":"TARGET_REACHED","local_outcome":"IN_PROGRESS","parent_whole_run_review_passed":false,"training_started":false},
   "author_tests": {"focused":10,"public":459,"public_seconds":9.823,"legacy_SFT":163,"legacy_SFT_seconds":6.426},
   "saved_state_full_path_review": {"report_sha256":"dc1a56f533e3938101e7aaa419c4852faa0ae255920f897b31f922f1c3047591","seconds":0.36425030906684697,"old_refused":true,"new_planned_ticks":44,"maximum_joint_step":0.012493869683407877,"maximum_corridor_error_m":0.001405278983433601,"robot_clearance_m":0.078215664175463,"physical_controls":0},
   "CPU_seconds": 1800,
