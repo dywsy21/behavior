@@ -20,8 +20,10 @@ from native_teacher_artifacts import load_calibration
 from native_teacher_outcomes import LocalOutcome
 from native_teacher_policy import validate_train_group
 from native_execution import authorization_profile,metadata as execution_metadata,completed as execution_completed
-from native_execution import PRECLOSE_PROFILE,PublicGripperHistory,preclose_translation,timing_metadata
-from common import token_to_action
+from native_execution import (PRECLOSE_PROFILE,TIMING_PROFILES,WORKSPACE_PROFILE,PublicGripperHistory,
+    preclose_translation,timing_metadata,action_codec,workspace_qualified,workspace_metadata,servo_limits)
+from native_motion_codec import (token_to_action,tokens as motion_tokens,codec_for_protocol,
+    protocol_for_codec,VERSION as WORKSPACE_CODEC,BODY_TOKENS)
 from semantic_robot.v2.protocol import ROTATIONS
 
 VERSION="h09y-reviewed-native-grasp-v1"
@@ -37,18 +39,19 @@ def check_execution(record,request,execution,profile):
     token=record["token"]
     if any(authorization_profile(value)!=profile for value in (execution,record,request["preflight"])):
         raise ValueError("Mixed execution profile within a trajectory")
-    if (token not in TOKENS or request["token"]!=token or execution["token"]!=token or
+    if (token not in motion_tokens(action_codec(profile)) or request["token"]!=token or execution["token"]!=token or
             not execution_completed(token,execution["feedback"],profile=profile)):
         raise ValueError("Incomplete or action-mismatched execution receipt")
     if profile is not None and execution["control_end"]-execution["control_start"]!=execution["feedback"]["control_ticks"]:
         raise ValueError("Completion receipt does not match the actual control ledger")
-    if profile==PRECLOSE_PROFILE and execution["feedback"].get("carry") is not request["preflight"].get("carry"):
+    if profile in TIMING_PROFILES and execution["feedback"].get("carry") is not request["preflight"].get("carry"):
         raise ValueError("Actual servo timing differs from the public preflight receipt")
 
 
 def checked_images(row):
     """NO legacy protocol fallback and NO image path trusted without bytes."""
-    if row.get("protocol")!=protocol.VERSION or row.get("text")!=protocol.prompt(row["actor"]):
+    codec_for_protocol(row.get("protocol"))
+    if row.get("protocol")!=row["actor"].get("protocol") or row.get("text")!=protocol.prompt(row["actor"]):
         raise ValueError("Required H09X actor protocol/prefix missing")
     if set(row.get("images",{}))!=set(CAMERAS):raise ValueError("Exactly three image paths required")
     result={}
@@ -62,25 +65,50 @@ def checked_images(row):
     return result
 
 
-def check_public_timing(request, token, before, model, commands, prefix, control_start):
+def check_public_timing(request, token, before, model, commands, prefix, control_start, profile=PRECLOSE_PROFILE):
     """Independently replay issued command latch; never trust teacher flags."""
     if prefix < 1 or len(commands) < prefix+control_start:
         raise ValueError("Complete paid prefix and actual local command history required")
     history=PublicGripperHistory(np.asarray(commands[prefix-1]["action23"])[[14,22]])
     for row in commands[prefix:prefix+control_start]:history.issued(row["action23"])
     state=model.state(np.asarray(before["q"]),np.asarray(before["gripper"]),np.zeros(3))
-    action=token_to_action(token)
-    qualified=preclose_translation(action,state,model,history,PRECLOSE_PROFILE)
+    action=token_to_action(token,action_codec(profile))
+    qualified=preclose_translation(action,state,model,history,profile)
+    body=workspace_qualified(action,state,model,history,profile)
     receipt=request["preflight"]
-    expected=timing_metadata(PRECLOSE_PROFILE,qualified)
-    carry=not (qualified or action.move in ROTATIONS)
+    expected={**timing_metadata(profile,qualified),**workspace_metadata(action,body,profile)}
+    carry=not (qualified or body or action.move in ROTATIONS)
     if (any(type(receipt.get(k)) is not type(v) or receipt[k]!=v for k,v in expected.items()) or
             receipt.get("carry") is not carry or receipt.get("amount")!=action.amount(carry) or
+            (action.part=="torso" and not body) or
             (action.move in ROTATIONS and not history.rotation_qualified(action.part,state,model))):
         raise ValueError("Public timing receipt differs from actual command history/full-open calibration")
+    return state,history
 
 
-def verified_run(entry,counts):
+def check_actual_workspace(token,before,after,execution,model,commands,telemetry,prefix,history):
+    """Reproduce every issued body command using actual per-tick measured q."""
+    from semantic_robot.v2.servo import SafeServo
+    state=model.state(np.array(before["q"]),np.array(before["gripper"]),np.zeros(3))
+    servo=SafeServo(model,state,gripper_command=history.grips,limits=servo_limits(WORKSPACE_PROFILE))
+    if not servo.begin(token_to_action(token,WORKSPACE_CODEC),state,carry=False):raise ValueError("Recorded torso no longer passes original robot preflight")
+    start,end=execution["control_start"],execution["control_end"]
+    if end-start!=servo.total_ticks:raise ValueError("Incomplete compensated body action")
+    for control in range(start+1,end+1):
+        command=servo.next_action(state)
+        if not np.array_equal(command,np.asarray(commands[prefix+control-1]["action23"])):
+            raise ValueError("Torso action does not reproduce actual issued23D commands")
+        actual=telemetry[prefix+control]
+        state=model.state(np.asarray(actual["actual_q"]),np.asarray(actual["actual_gripper"]),np.zeros(3))
+    recomputed=servo.finish(state)
+    for field in ("status","control_ticks","joint_limit_ticks","target_error_m","orientation_error_deg","carry","eef_delta_m"):
+        if recomputed[field]!=execution["feedback"][field]:raise ValueError("Measured body completion differs from saved receipt")
+    settled=model.state(np.asarray(after["q"]),np.asarray(after["gripper"]),np.zeros(3))
+    if not servo._within(settled.poses):raise ValueError("Body/KEEP_EEF semantics lost during settle")
+
+
+def verified_run(entry,counts,*,export_codec=None):
+    export_protocol=protocol_for_codec(export_codec)
     run=Path(entry["run"]).resolve();inventory=Path(entry["inventory"]);review_path=Path(entry["review"])
     protocol.check_sha(entry["review_sha256"])
     if sha(review_path)!=entry["review_sha256"]:raise ValueError("Independent review bytes changed")
@@ -96,6 +124,8 @@ def verified_run(entry,counts):
             raise ValueError("Reviewed run bytes changed")
     manifest=read(run/"manifest.json");result=read(run/"result.json")
     execution_profile=authorization_profile(manifest["authorization"],collection=True)
+    if execution_profile==WORKSPACE_PROFILE and export_codec!=WORKSPACE_CODEC:
+        raise ValueError("Workspace trajectory requires explicit new dataset codec")
     if authorization_profile(review)!=execution_profile:
         raise ValueError("Independent review must bind the same execution profile")
     if (manifest["code"]!=review["source"] or manifest.get("robot_geometry_guards") is not True or
@@ -124,7 +154,9 @@ def verified_run(entry,counts):
     folders=[run/Path(p).name for p in result["samples"]]
     if folders!=[run/f"teacher_{i:02d}" for i in range(len(folders))] or not 1<=len(folders)<=12:
         raise ValueError("Whole macro sequence required")
-    model=load_calibration(run);records=[];history=[];tokens={};last_end=12;rotation_degrees=[]
+    model=load_calibration(run);records=[];history=[];tokens={};last_end=12;rotation_degrees=[];body_count=0
+    physical=lines(run/"PRIVATE_teacher_trace.jsonl")
+    telemetry={row["frame"]["tick"]:row for row in physical}
     for i,folder in enumerate(folders):
         record=read(folder/"QUARANTINED_record.json");request=read(folder/"request.json")
         execution=read(folder/"native_execution.json");token=record["token"]
@@ -135,11 +167,17 @@ def verified_run(entry,counts):
                 execution["control_start"]!=last_end or execution["control_end"]<=last_end):
             raise ValueError("Wrong same-state/action/history or incomplete execution")
         before=read(folder/"before/capture.json");after=read(folder/"after_settle/capture.json")
-        if execution_profile==PRECLOSE_PROFILE:
-            check_public_timing(request,token,before,model,normal,prefix,execution["control_start"])
+        if execution_profile in TIMING_PROFILES:
+            _,command_history=check_public_timing(request,token,before,model,normal,prefix,execution["control_start"],execution_profile)
+        if execution_profile==WORKSPACE_PROFILE and record["actor"].get("action_codec")!=WORKSPACE_CODEC:
+            raise ValueError("Collection action history lacks exact workspace codec")
+        if token in BODY_TOKENS:
+            body_count+=1
+            if body_count>1:raise ValueError("Only one actual workspace action per trajectory")
+            check_actual_workspace(token,before,after,execution,model,normal,telemetry,prefix,command_history)
         expected_clock={"prefix_control":prefix,"native_control":execution["control_start"]}
         proprio,hashes,binding=protocol.from_capture(folder/"before",model,capture_sha256=request["capture_sha256"],
-            expected_clock=expected_clock,calibration_sha256=model.sha)
+            expected_clock=expected_clock,calibration_sha256=model.sha,protocol=export_protocol)
         if record["actor"]["current_rgb_sha256"]!=hashes or before["clock"]!=expected_clock or after["clock"]!={
                 "prefix_control":prefix,"native_control":execution["control_end"]+12}:
             raise ValueError("Capture/action clock drift")
@@ -159,7 +197,7 @@ def verified_run(entry,counts):
             if normal[prefix+control-1]["phase"]!="candidate":raise ValueError("Wrong executed action phase")
             tokens[prefix+control]=token
         last_end=execution["control_end"]+12
-        actor=protocol.actor_input(record["actor"]["task"],record["actor"]["active_instruction"],proprio,hashes,history[-5:])
+        actor=protocol.actor_input(record["actor"]["task"],record["actor"]["active_instruction"],proprio,hashes,history[-5:],protocol=export_protocol)
         row={**protocol.training_row(actor,token),"id":sha(inventory)[:16]+f"_{i:02d}",
              "images":{v:str(folder/"before"/(v+".png")) for v in CAMERAS},
              "provenance":{"group":list(group),"episode":manifest["source"]["episode"],"prefix":prefix,
@@ -168,7 +206,7 @@ def verified_run(entry,counts):
         checked_images(row);records.append(row);history.append(token)
     if last_end+1!=result["native_controls"]:raise ValueError("Unaccounted post-macro controls")
     oracle=LocalOutcome(spec);oracle.update(initial["frame"])
-    for row in lines(run/"PRIVATE_teacher_trace.jsonl"):
+    for row in physical:
         verdict=oracle.update(row["frame"],tokens.get(row["frame"]["tick"]))
         if verdict!=row["verdict"] or verdict["outcome"] in ("UNKNOWN","FAILED"):
             raise ValueError("Actual full physical outcome chain invalid")
@@ -208,9 +246,13 @@ def coverage(rows,runs):
 
 def load_dataset(folder,*,require_gate=True):
     folder=Path(folder);manifest=read(folder/"dataset.json")
-    if manifest.get("schema")!=VERSION or manifest.get("protocol")!=protocol.VERSION or sha(folder/"train.jsonl")!=manifest["rows_sha256"]:
+    codec=codec_for_protocol(manifest.get("protocol"))
+    if (manifest.get("schema")!=VERSION or manifest.get("action_codec")!=codec or
+            sha(folder/"train.jsonl")!=manifest["rows_sha256"]):
         raise ValueError("Exact new dataset/protocol identity required")
     rows=lines(folder/"train.jsonl")
+    if any(r.get("protocol")!=manifest["protocol"] or r.get("target") not in motion_tokens(codec) for r in rows):
+        raise ValueError("Mixed dataset row protocol or motion codec")
     if not rows or len({r["id"] for r in rows})!=len(rows):raise ValueError("Unique actual training rows required")
     run_ids=[r["inventory_sha256"] for r in manifest["runs"]]
     if (len(set(run_ids))!=len(run_ids) or any(r["provenance"]["run_inventory_sha256"] not in run_ids for r in rows) or
@@ -218,6 +260,7 @@ def load_dataset(folder,*,require_gate=True):
         raise ValueError("Exact unique whole-run row membership required")
     if any(tuple(r["provenance"]["group"]) not in TRAIN for r in rows):raise ValueError("Heldout leaked into BC")
     profiles={run["inventory_sha256"]:authorization_profile(run) for run in manifest["runs"]}
+    if WORKSPACE_PROFILE in profiles.values() and codec!=WORKSPACE_CODEC:raise ValueError("Workspace data exported under old codec")
     if any(authorization_profile(row["provenance"])!=profiles[row["provenance"]["run_inventory_sha256"]] for row in rows):
         raise ValueError("Row execution provenance differs from its reviewed run")
     if coverage(rows,manifest["runs"])!=manifest["coverage"] or (require_gate and not manifest["coverage"]["passed"]):
@@ -228,18 +271,19 @@ def load_dataset(folder,*,require_gate=True):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--sources",type=Path,required=True);p.add_argument("--counts",type=Path,required=True)
-    p.add_argument("--output",type=Path,required=True);a=p.parse_args()
+    p.add_argument("--output",type=Path,required=True);p.add_argument("--action-codec",choices=(WORKSPACE_CODEC,));a=p.parse_args()
     from native_teacher_group_prepare import COUNTS_SHA
     if sha(a.counts)!=COUNTS_SHA:raise ValueError("Immutable TRAIN exclusions required")
     entries=read(a.sources);rows=[];runs=[]
     if not isinstance(entries,list) or not 1<=len(entries)<=6:raise ValueError("Bounded six-run admission")
     for entry in entries:
-        batch,receipt=verified_run(entry,read(a.counts));rows.extend(batch);runs.append(receipt)
+        batch,receipt=verified_run(entry,read(a.counts),export_codec=a.action_codec);rows.extend(batch);runs.append(receipt)
     if len({r["inventory_sha256"] for r in runs})!=len(runs):raise ValueError("Duplicate whole trajectory")
     a.output.mkdir(parents=True,exist_ok=False)
     (a.output/"train.jsonl").write_text("".join(json.dumps(r,allow_nan=False)+"\n" for r in rows))
     gate=coverage(rows,runs)
-    write_json(a.output/"dataset.json",{"schema":VERSION,"protocol":protocol.VERSION,"runs":runs,"coverage":gate,
+    codec_fields={} if a.action_codec is None else {"action_codec":a.action_codec}
+    write_json(a.output/"dataset.json",{"schema":VERSION,"protocol":protocol_for_codec(a.action_codec),**codec_fields,"runs":runs,"coverage":gate,
         "rows_sha256":sha(a.output/"train.jsonl"),"source_list_sha256":sha(a.sources),"counts_sha256":COUNTS_SHA,
         "status":"READY_FOR_SEPARATE_TRAINING_AUTHORIZATION" if gate["passed"] else "INSUFFICIENT_DO_NOT_TRAIN",
         "original_quarantine_unchanged":True,"full_task_success_claim":False})

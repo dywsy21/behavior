@@ -40,6 +40,10 @@ DIVERSE_RUNS=SHARED_RUNS+("native_t1_i192_p0380","native_t1_i114_p0969")
 DIVERSE_SPEC={**SHARED_SPEC,"profile":DIVERSE_STORAGE_PROFILE,"shared_og_cache":{
     **SHARED_SPEC["shared_og_cache"],
     "allowed_aliases":[str(RUNTIME_ROOT/name/"omnigibson/global/cache") for name in DIVERSE_RUNS]}}
+WORKSPACE_STORAGE_PROFILE="h09z-nvme-shared-og-cache-workspace-v1"
+# No extra run/alias is granted by the CPU-only implementation.
+WORKSPACE_RUNS=DIVERSE_RUNS
+WORKSPACE_SPEC={**DIVERSE_SPEC,"profile":WORKSPACE_STORAGE_PROFILE}
 CACHE_SUBDIRS={"OMNIGIBSON_APPDATA_PATH":"omnigibson","TMPDIR":"tmp",
     "TMP":"tmp","TEMP":"tmp",
     "CUDA_CACHE_PATH":"cuda","__GL_SHADER_DISK_CACHE_PATH":"gl",
@@ -53,7 +57,7 @@ CACHE_SUBDIRS={"OMNIGIBSON_APPDATA_PATH":"omnigibson","TMPDIR":"tmp",
 def validate_spec(release):
     if "storage" not in release:return False
     spec=release["storage"]
-    expected=({SHARED_PROFILE:SHARED_SPEC,DIVERSE_STORAGE_PROFILE:DIVERSE_SPEC}.get(spec.get("profile"),SPEC)
+    expected=({SHARED_PROFILE:SHARED_SPEC,DIVERSE_STORAGE_PROFILE:DIVERSE_SPEC,WORKSPACE_STORAGE_PROFILE:WORKSPACE_SPEC}.get(spec.get("profile"),SPEC)
               if isinstance(spec,dict) else SPEC)
     # Canonical JSON also rejects bool-as-int inside nested shared bindings.
     if not isinstance(spec,dict) or json.dumps(spec,sort_keys=True)!=json.dumps(expected,sort_keys=True):
@@ -120,8 +124,8 @@ class RuntimeStorage:
         self.output=Path(output).resolve();self.expected=runtime_environment(self.output)
         self.root=RUNTIME_ROOT/self.output.name
         self.profile=release["storage"]["profile"]
-        self.shared=self.profile in (SHARED_PROFILE,DIVERSE_STORAGE_PROFILE)
-        runs=DIVERSE_RUNS if self.profile==DIVERSE_STORAGE_PROFILE else SHARED_RUNS
+        self.shared=self.profile in (SHARED_PROFILE,DIVERSE_STORAGE_PROFILE,WORKSPACE_STORAGE_PROFILE)
+        runs={DIVERSE_STORAGE_PROFILE:DIVERSE_RUNS,WORKSPACE_STORAGE_PROFILE:WORKSPACE_RUNS}.get(self.profile,SHARED_RUNS)
         if self.shared and self.output.name not in runs:raise ValueError("Unregistered shared-cache run")
         self.aliases={RUNTIME_ROOT/name/"omnigibson/global/cache":SHARED_TARGET for name in runs} if self.shared else {}
 

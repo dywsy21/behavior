@@ -136,7 +136,8 @@ class NearTeacherTests(unittest.TestCase):
         ns={'teacher':teacher,'teacher_frame':f,'teacher_reader':NS(goal=lambda:goal,base=lambda:np.eye(4)),
             'before':s,'grips':g,'model':m,'artifacts':store,'folder':Path('/not-written'),
             'depths':{},'geometry':None,'near':True,'execution_profile':None,'public_history':None,
-            'native_preflight':reject,'token_to_action':token_to_action}
+            'native_preflight':reject,'token_to_action':token_to_action,
+            'WORKSPACE_PROFILE':__import__('native_execution').WORKSPACE_PROFILE}
         fragment=ast.Module(body=copy.deepcopy(loop.body[start:end+1]),type_ignores=[])
         with self.assertRaisesRegex(RuntimeError,'No safe'):exec(compile(ast.fix_missing_locations(fragment),'actual_selection','exec'),ns)
         self.assertEqual(reject.call_count,1);self.assertEqual(ns['ranked'],['RIGHT_FORWARD'])

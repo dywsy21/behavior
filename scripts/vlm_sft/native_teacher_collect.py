@@ -49,6 +49,9 @@ from native_teacher_capacity import capacity_limits,near_artifact_budget,H09Y_PR
 from native_storage import activate as activate_storage,validate_spec as validate_storage_spec
 from native_execution import PublicGripperHistory,preclose_translation,timing_metadata,PRECLOSE_PROFILE
 from native_storage import DIVERSE_STORAGE_PROFILE
+from native_execution import (WORKSPACE_PROFILE,TIMING_PROFILES,action_codec,
+    workspace_qualified,workspace_metadata)
+from native_motion_codec import token_to_action as native_token_action, BODY_TOKENS
 
 PILOT_TOKENS = [t for t in TOKENS if not t.startswith("BASE_") and
                 not any(axis in t for axis in ("ROLL", "PITCH", "YAW"))]
@@ -83,7 +86,7 @@ def require_release(value, code, executor):
             raise ValueError("Unknown/mixed precontact seed profile; old releases retain v1")
     if validate_storage_spec(value) and value.get("capacity_profile") not in H09Y_PROFILES:
         raise ValueError("New storage requires the explicit H09Y collection profile")
-    if (execution_profile==PRECLOSE_PROFILE or value.get("capacity_profile")==DIVERSE_PROFILE or
+    if execution_profile!=WORKSPACE_PROFILE and (execution_profile==PRECLOSE_PROFILE or value.get("capacity_profile")==DIVERSE_PROFILE or
             (value.get("storage") or {}).get("profile")==DIVERSE_STORAGE_PROFILE):
         if (execution_profile!=PRECLOSE_PROFILE or value.get("capacity_profile")!=DIVERSE_PROFILE or
                 (value.get("storage") or {}).get("profile")!=DIVERSE_STORAGE_PROFILE):
@@ -170,7 +173,9 @@ def native_preflight(model, state, grips, action, depths, geometry, rotation_evi
     if public_history is not None and not np.array_equal(public_history.grips,np.asarray(grips)):
         raise ValueError("Public history must bind the actual last issued gripper command")
     qualified=preclose_translation(action,state,model,public_history,execution_profile)
-    carry=not qualified
+    body=workspace_qualified(action,state,model,public_history,execution_profile)
+    if action.part=="torso" and not body:raise RuntimeError("Explicit both-open/no-issued-CLOSE workspace qualification required")
+    carry=not (qualified or body)
     if action.move in ROTATIONS:
         if (rotation_evidence is None or not empty_hand_rotation_allowed(action.part,state,
                 rotation_evidence["frame"],grips,model,rotation_evidence["close_issued"])):
@@ -184,6 +189,7 @@ def native_preflight(model, state, grips, action, depths, geometry, rotation_evi
     if not allowed or not servo.begin(action, state, carry=carry) or servo.total_ticks > 40:
         raise RuntimeError("Native preflight rejected: "+reason+" / "+servo.status)
     return servo, {**execution_metadata(execution_profile),**timing_metadata(execution_profile,qualified),
+                   **workspace_metadata(action,body,execution_profile),
                    "robot_geometry_guards": True,"carry":carry,"amount":action.amount(carry), "depth_guard": guard.receipt(),
                    "depth_check": reason, "servo_status": servo.status,
                    "q": state.q.tolist(), "gripper": state.gripper.tolist()}
@@ -386,11 +392,13 @@ def main():
                 teacher_trace = (x.output/"PRIVATE_teacher_trace.jsonl").open("x", buffering=1)
                 teacher = PoseTeacher(teacher_spec,allow_empty_rotation=near,
                     allow_grasp_cell_attempt=near and release.get("allow_grasp_cell_attempt") is True)
+                workspace_used=False
                 for index in range(release["max_teacher_primitives"]):
                     folder = x.output/f"teacher_{index:02d}"; folder.mkdir()
                     before, hashes, depths, geometry, receipt = capture(folder/"before")
                     teacher_reader.check_local_fk(before, teacher_frame)
-                    actor = actor_input(session.observation()["task"], ref["active_instruction"], runtime_proprio(before), hashes, history[-5:])
+                    actor = actor_input(session.observation()["task"], ref["active_instruction"], runtime_proprio(before), hashes, history[-5:],
+                                        action_codec=action_codec(execution_profile))
                     ranked = teacher.ranked(before, teacher_frame, teacher_reader.goal(), teacher_reader.base(),grips,model)
                     artifacts.write_json(folder/"PRIVATE_proposal.json", teacher.proposal_receipt)
                     choice = None; rejected = []
@@ -402,6 +410,17 @@ def main():
                             choice = token, candidate, preflight
                             break
                         except RuntimeError as exc: rejected.append({"token": token, "reason": str(exc)})
+                    if choice is None and execution_profile==WORKSPACE_PROFILE:
+                        from native_teacher_workspace import fallback
+                        def body_preflight(token):
+                            return native_preflight(model,before,grips,native_token_action(token,action_codec(execution_profile)),
+                                depths,geometry,execution_profile=execution_profile,public_history=public_history)
+                        choice,workspace_receipt=fallback(model=model,state=before,frame=teacher_frame,
+                            goal_world=teacher_reader.goal(),base_world=teacher_reader.base(),hand=teacher_spec["hand"],
+                            history=public_history,ranked=ranked,rejected=rejected,profile=execution_profile,
+                            used=workspace_used,remaining_controls=native_limit-controls,
+                            remaining_macros=release["max_teacher_primitives"]-index,preflight=body_preflight)
+                        artifacts.write_json(folder/"PRIVATE_workspace_prediction.json",workspace_receipt)
                     if choice is None: raise RuntimeError("No safe decreasing teacher proposal; no retry/reset")
                     token, servo, preflight = choice
                     if controls+servo.total_ticks+12 > native_limit-1:
@@ -417,6 +436,7 @@ def main():
                                 "private_proposal_basis": teacher.proposal_receipt,
                                 "capture_sha256": sha(folder/"before/capture.json"), "training_eligible": False})
                             start_control = controls
+                            if token in BODY_TOKENS:workspace_used=True
                             while not servo.done and servo.ticks < servo.total_ticks:
                                 step(servo.next_action(state()), "candidate")
                             feedback = servo.finish(state())

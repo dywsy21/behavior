@@ -14,7 +14,7 @@ import time
 
 import numpy as np
 from common import sha,write_json
-from native_actor_protocol import VERSION
+from native_actor_protocol import VERSION,WORKSPACE_VERSION
 from native_dataset import load_dataset,checked_images
 from modeling import collate,encode,load_model,supervised_loss,eos_id
 from native_reference_profile import ROOT as EXPERIMENT_ROOT
@@ -28,10 +28,12 @@ CONFIG={"protocol":VERSION,"base_model":BASE,"physical_gpu":3,"seed":41,
         "lora_rank":16,"lora_alpha":32,"lora_dropout":.05,"learning_rate":5e-5,
         "effective_batch_size":8,"microbatch":2,"max_updates_including_gate":120,
         "max_wall_seconds":2700,"max_artifact_MiB":256,"old_adapter":None}
+WORKSPACE_CONFIG={**CONFIG,"protocol":WORKSPACE_VERSION}
 
 
 def validate_config(cfg):
-    if set(cfg)!=set(CONFIG) or any(type(cfg[k]) is not type(v) or cfg[k]!=v for k,v in CONFIG.items()):
+    expected=WORKSPACE_CONFIG if cfg.get("protocol")==WORKSPACE_VERSION else CONFIG
+    if set(cfg)!=set(expected) or any(type(cfg[k]) is not type(v) or cfg[k]!=v for k,v in expected.items()):
         raise ValueError("Exact prospective fresh H09Y training budget/protocol required")
 
 
@@ -67,10 +69,12 @@ def main():
     if a.output.resolve()!=EXPERIMENT_ROOT/"training_v1":raise ValueError("Only the registered fresh training output")
     rows,dataset=load_dataset(a.data,require_gate=True)
     require_pipeline_profile(release,dataset)
+    if cfg["protocol"]!=dataset["protocol"] or release.get("protocol",cfg["protocol"])!=cfg["protocol"]:
+        raise ValueError("Training config/data/authorization protocol mismatch")
     if os.environ.get("CUDA_VISIBLE_DEVICES")!="3":raise ValueError("Separately handed-over GPU3 only")
     storage=activate_storage(release,a.output);check_storage(storage);base_files=base_identity()
     a.output.mkdir(parents=True,exist_ok=False);start=time.monotonic()
-    write_json(a.output/"launch.json",{"pid":os.getpid(),"code_commit":code,"protocol":VERSION,
+    write_json(a.output/"launch.json",{"pid":os.getpid(),"code_commit":code,"protocol":cfg["protocol"],
         "authorization_sha256":sha(a.authorization),"dataset_sha256":sha(a.data/"dataset.json"),
         "config_sha256":sha(a.config),"started_unix":time.time(),"status":"STARTING_NOT_COMPLETE"})
     try:return run_training(a,cfg,code,rows,dataset,storage,base_files,start)
@@ -90,7 +94,7 @@ def run_training(a,cfg,code,rows,dataset,storage,base_files,start):
     torch.set_num_threads(4);torch.set_num_interop_threads(1);torch.manual_seed(41);np.random.seed(41);random.seed(41)
     budget();model,processor=load_model(BASE,train=True,cfg=cfg);eos=eos_id(processor);budget()
     params=[p for p in model.parameters() if p.requires_grad]
-    identity={"protocol":VERSION,"code_commit":code,"config_sha256":sha(a.config),"dataset_sha256":sha(a.data/"dataset.json"),
+    identity={"protocol":cfg["protocol"],"code_commit":code,"config_sha256":sha(a.config),"dataset_sha256":sha(a.data/"dataset.json"),
         **execution_metadata(require_pipeline_profile(json.loads(a.authorization.read_text()),dataset)),
         "authorization_sha256":sha(a.authorization),"base_model":BASE,**base_files,
         "physical_gpu":3,"config":cfg,"torch":torch.__version__,"transformers":transformers.__version__,"peft":peft.__version__,
@@ -162,7 +166,7 @@ def run_training(a,cfg,code,rows,dataset,storage,base_files,start):
                     del restored,original,reloaded,inputs;torch.cuda.empty_cache();model.train();budget()
             save(120)
         write_json(a.output/"result.json",{"status":"COMPLETE","optimizer_updates":steps,"wall_seconds":time.monotonic()-start,
-            "protocol":VERSION,"dataset_sha256":sha(a.data/"dataset.json"),"checkpoints":checkpoints,
+            "protocol":cfg["protocol"],"dataset_sha256":sha(a.data/"dataset.json"),"checkpoints":checkpoints,
             "identity_sha256":sha(a.output/"identity.json"),"policy_effect_evaluated":False})
     except BaseException as exc:
         write_json(a.output/"failure.json",{"error":repr(exc),"optimizer_updates":steps,"wall_seconds":time.monotonic()-start,
