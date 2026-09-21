@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 12:29当前：** 父H22 d7固定源首sim2573658/GPU2启动，新结果`/mnt/nvme_tmp/robodojo_agentic_20260921/h22_self_odometry`，runtime `/mnt/nvme_tmp/robodojo_harness_runtime_20260921/h22_self_odometry`（上限16GiB，顺序父sim复用，不共享子Kit）。Astra新固定`git_worktrees/vlm_sft_h09y_10e1e6c`负责原生/SFT，数据seed双亲审已过；其显式shared cache只指原TRAIN114已完成runtime的global/cache，其他run证据独立。GPU3约209MiB是父Kit辅助context，不是队友新训练，父已允许身份明确≤512MiB且余≥70GiB时子单次开sim。所有旧cache/证据保留。
+
 **2026-09-21 12:13当前：** reference_train114_v1/2564237已退出1199控制，result+QUARANTINED_pose_seed完整包正封存，GPU3空；本轮runtime约8.19GB保留，下一拟各独立run仅global/cache别名复用reference精确7.1GiB纹理cache，不移删，配置尚待独审。父新`git_worktrees/semantic_selfodom_d7c8028`准确d7/digest e7631fc5、392远端CPU通过，仅源码无父sim/model。H21本地全链/视频审已经完成，不再待审。
 
 **2026-09-21 11:57当前：** Astra唯一2564237/GPU3参考于11:55:20.952981 BJT初始化提交，source`git_worktrees/vlm_sft_h09y_66f6188`不可热改；run`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/reference_train114_v1`及相邻`.log/.launch.json`，runtime`/mnt/nvme_tmp/robodojo_vlm_runtime_20260921/reference_train114_v1`。本轮runtime一个screenshots mode000正在独立核计，不能据partial du报全cache；未训练。父GPU2尚无新进程。

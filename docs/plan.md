@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 12:29（北京时间）H22首门真实提交/双Kit辅助context明确（Codex）：** 12:28:38.946899 BJT唯一2573658/GPU2 `h22_self_odometry/gate_radio_h22`已提交，准确d7/e763、新父NVMe runtime及所有cache env、新screenshots0700、GPU2启动前0MiB；只原首task0门，仍初始化，task3/model/完整任务均未启。receipt `launch_gate_radio.json`与相邻log。父Kit在GPU3创建已识别约209MiB辅助context，Astra发现后未擅杀/启动；本次明确允许对方已核Kit PID/实际主卡绑定的≤512MiB辅助占用，目标GPU仍free≥70GiB且无其他未知/训练/模型进程，不能机械要求绝对0MiB。Astra首114/993其余source/seed/storage门已过，按此门准单次启动；实际PID待，非已训练。
+
 **2026-09-21 12:27（北京时间）H22独立终审过/两顺序物理门登记（Codex/Astra）：** Astra固定d7完整核心审、392/7.680s及独立全356保存态184.279s再次355→356/0退化通过，无阻塞；父GPU2实查0MiB、GPU3仍Astra、0/1队友。新`configs/semantic_robot/h22_self_odometry_block.json`登记：先task0/3两个**顺序**同源原起点工程门各24/1536/1200s/384MiB/0模型，再条件唯一task0原起点192/6144/7200s、同27B/431call；新增同帧证据使门体积预算明确改384MiB，原H21不追改。结果新NVMe根4GiB，父独立新runtime16GiB/源32与NVMe80余量，所有新cache/temp隔离，顺序复用自己的OG软件目录但不共享子进程/队友实例；完整树周期核为合作式监控，不冒充原子硬限。新source已固定d7，未改运行源/阈值；首gate尚未提交。上一seed终审记录12:26为估计时刻，实际12:25，本条更正。
 
 **2026-09-21 12:26（北京时间）H09Y第二seed与全采训源码父审通过/首原生条件放行（Codex）：** 父独立101文件SHA、596前缀＋590逐维来源动作、1199控制、604因果oracle/末hold、89capture与12depth SHA过（2.098s）；亲看全部69图时间面板及6未缩放关键RAW，右手抓桶边后提起与实测0.332790m/末12相对漂移2.551μm一致。`configs/vlm_sft/h09y_train114_seed_parent_review.json`仅批准offline seed，原隔离/非BC不变。固定10e1增量6路径完整审、121/2.763s过，无新阻塞；e331实际W准入10行/1.657s正确仍coverage=false，篡改review被拒。`h09y_pipeline_parent_review.json`不是已训练。**只放原顺序首例TRAIN114/p993/GPU3**：新固定10e1源/239 digest、确切seed与来源父review绑定、新shared profile/真实空卡容量/source门后1reset，≤12宏420新控制含hold、1200s＋900初始化、384MiB/根6GiB/缓存16GiB；完整后父手审，再决定原剩余采集，禁止自动重复失败。父H22仍待独审，不抢GPU3。上一记录估计12:24时间应为实际12:22，本条明确更正。
