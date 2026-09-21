@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 14:29（北京时间）首新夹爪门实测通过/H22服务归档释放（Codex）：** 2602697已退出，24决策/417控制/292.808s、gate_ok、0模型，父远端完整144主hash/104绑定帧/76段22链4BASE＋4夹爪18条命令和实际末状态receipt重算7.914s通过；原定位门无改，完整352,648,130B下载及RAW人工审中，第二门未启。H22已核164调用全ledger与identity双端SHA后仅TERM自己的2588439，确认服务/策略均退出；GPU2释放，不触队友。原慢scp仅停止本地复制进程、部分副本保留，完整包改压缩单流传`h22_fullstart_complete_tar`；末段25自体点确实排除，78unique/45inlier而中位1.0284px导致失败，保存态CPU原≤1200s诊断继续，不放宽1px。Git fetch main仍33677bd，当前仅本人进度dirty故未pull，不热改运行源。
+
+**2026-09-21 14:18（北京时间）H22再次视觉定位中止/有限保存态根因核查（Codex）：** 原回合result已落：98决策/2118含末hold控制/164调用/3565.854s、两前缀0、official=false，停`VISUAL_ODOMETRY_UNCERTAIN`，未持握；末APPROACH估距.143m，本人看d94真实手已接近收音机。不能把保存态旧356段全通过泛化为在线修复成功。父下一**≤1200s CPU/0新模型/0物理**封存本轮完整证据，核最终2111→2117段的实际self过滤/匹配/几何与旧故障差异，优先查接线再谈多视角，不降质量门、不自动重跑。GPU3新夹爪2602697于14:16:39已到场景reset，原2门预算继续；Astra fa24三inactive准备齐备、0采集/训练，原微调目标不取消。父idle27B待全部服务账本归档验证后再释放，未提前记为已停。
+
 **2026-09-21 14:10（北京时间）新夹爪首工程门真实启动/采训接线已合入（Codex）：** 14:09:50.297361 BJT唯一2602697/GPU3启动`gripper_v1_gates/gate_radio_gripper_v1`，source13bd/digest1fcc、target余80,939MiB/仅H22已核200MiB辅助context，独立新runtime与全env、实核screenshots路径0700；原24/1536/1200s＋900init/384MiB，0模型/0prefix，现在初始化，第二门未启。`launch_radio.json`含准确命令/身份/零新树起点；旧H22不动。父已把独审fa24接线合入，140整合回归待；SERVER/两block真实状态已同步，不能将新门提交当GRASP/训练成功。
 
 **2026-09-21 14:09（北京时间）SFT新profile父终审通过/物理门前置完成（Codex/Astra）：** 父固定fa24c3f完整11路径独审＋140/3.059s过，公共executor逐字同13bd、digest1fcc505c…97f4c；新/旧receipt、整个trajectory review、dataset provenance、三配对策略均显式同模式，未改物理成功门。robo新独立`semantic_gripper_13bd4bb`干净410/18.756s过，GPU3仅原H22已识别200MiB辅助context、余80,939MiB，源/NVMe余量过，首门待实际提交。Astra fa24源140/6.993s与114989 inactive/精确989前缀/v2种子/cache门1.611s过，grant仍false；另≤600s CPU只预备原192388/114985两个inactive，不增reset或重构源。父H22同d7已85决策1859控制，末距约.362m，仍未持握。

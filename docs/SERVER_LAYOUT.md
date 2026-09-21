@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-21 14:29当前：** H22策略2589106及164调用模型2588439均已退出，完整服务在本地`artifacts/agentic-vlm-goal-20260918/h22_server_complete_archive/server_h22`双SHA核验；完整策略包改传`h22_fullstart_complete_tar/radio_h22_fullstart`，旧慢scp的`h22_fullstart_bundle`是不完整保留件。新夹爪2602697也已退出，第一门352.65MB完整传`gripper_v1_gates_bundle`，远端全链审过、本地RAW待；第二门尚未启动。服务器所有源/证据/cache保留，GPU2/3当前无这三个自有进程，0/1队友不动。不要把上述下载目录存在当完整。
+
 **2026-09-21 14:10当前：** 新父GPU3 sim2602697/14:09:50.297361启动首工程门。新源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_gripper_13bd4bb`固定13bd/1fcc，结果`/mnt/nvme_tmp/robodojo_agentic_20260921/gripper_v1_gates/gate_radio_gripper_v1`及同级log/launch_radio.json，独立runtime`/mnt/nvme_tmp/robodojo_harness_runtime_20260921/gripper_v1_gates`（16GiB，两门顺序复用自身目录）。Astra新`git_worktrees/vlm_sft_h09y_fa24c3f`只CPU140已过，114989 inactive文件在原`h09y_grasp_only`根/授权false；尚无新采集或训练。GPU2仍H22，0/1队友，不能热改任一源。
 
 **2026-09-21 14:02当前：** 新192392失败完整32文件10,424,297B已到子worktree `artifacts/h09y-resume-20260921/native_complete/native_t1_i192_p0392`并父全SHA/控制/6RAW审闭合，不再传输中。新gripper公共修复225＋13bd仅Git/本地CPU，尚未部署新服务器源；H22仍原d7/2588439＋2589106/GPU2。父新增忽略目录保存态对照`artifacts/agentic-vlm-goal-20260918/gripper_saved_state_comparison.py`；父audit脚本增加显式新执行profile/逐条夹爪命令和receipt重算分支，只语法校验，待新完整采集实审，不称新数据已过。
