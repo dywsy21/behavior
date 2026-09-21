@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 11:31（北京时间）G-AV1中断恢复/双线续接（Codex）：** 上轮属实质进展：已审a6参考源码合入、99/381整合回归及H21两门完整本地审闭合，不重做。本地477e380干净、pull/fetch同步，main仍33677bd；旧Astra不在agent列表，子树68e81e6保留14份dirty/untracked实现，不覆盖。父核H21原354348已退出、353691旧服务仍在；GPU2现空闲、GPU0/1队友不动。**原盘余量已降至44GiB，低于原80GiB门，新参考/训练暂不启动；NVMe仍约2.7TiB，先核新增输出/缓存能否完整隔离，不能删队友数据或悄悄降低门。** 按用户要求恢复一个Astra max，独占原子树SFT源码/测试/config/实验文档，先≤3600s CPU恢复release/训练/部署最小链并固定commit交父审，不能只交框架便结束实际SFT目标；父独占harness、共享计划与独立review。后续仍按原2TRAIN/2heldout、120固定更新和配对物理结果逐阶段推进；旧TRAIN114参考已审a6可复用，但须重新满足存储/GPU门并明确单次交接。官方原起点>0%仍未证实。
+
 **2026-09-19 22:50（北京时间）H09Y第二TRAIN参考父独审通过/未放GPU（Codex）：** 完整核读固定a6cde5d新profile、来源prepare、完整reference执行/契约与测试，独立99/2.398s＋331/6.272s通过；远端真实manifest61eebc47…62d3和596×23/590×23/591×61逐字节绑定、24个inactive/heldout/身份/预算/路径负例0.0585s通过，原授权仍false、0reset/模型。`configs/vlm_sft/h09y_reference_parent_review.json`仅认可单TRAIN114参考代码；GPU3仍父H21，未启动1199控制参考，更未训练。已审源码合入cecfe39、整合99/2.192s＋381/7.386s通过，实际CPU摘要68e81e6另合ff1b1ce并push，未改运行源。Astra继续原≤3600s剩余CPU接release/train/service。原合法GRASP指令不指定手，因此后继两手各自独立、只事后oracle评分，any-hand可算该局部技能；不得跨手拼条件或将seed手别漏入actor，专家左手留出是姿态OOD而非强制选手。明确指定手的合法指令仍按指定手验收。
 
 **2026-09-19 22:48（北京时间）H21双门本地完整审闭合（Codex）：** 原tar传输已退出0；完整`artifacts/agentic-vlm-goal-20260918/h21_gates_bundle/`父重核7.561s通过，288主RGB-D hash/44整链/152段/304 FK端点/8 BASE消费/835连续控制，六个result/steps/video SHA与远端完全一致；不再是传输中。原354348于22:47已1128控制、decision49/68调用，已切右手PICK的APPROACH、仍0次恢复，未抓取/官方成功；所有活跃源及预算不改，GPU0/1/2队友保留。
