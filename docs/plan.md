@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 12:27（北京时间）H22独立终审过/两顺序物理门登记（Codex/Astra）：** Astra固定d7完整核心审、392/7.680s及独立全356保存态184.279s再次355→356/0退化通过，无阻塞；父GPU2实查0MiB、GPU3仍Astra、0/1队友。新`configs/semantic_robot/h22_self_odometry_block.json`登记：先task0/3两个**顺序**同源原起点工程门各24/1536/1200s/384MiB/0模型，再条件唯一task0原起点192/6144/7200s、同27B/431call；新增同帧证据使门体积预算明确改384MiB，原H21不追改。结果新NVMe根4GiB，父独立新runtime16GiB/源32与NVMe80余量，所有新cache/temp隔离，顺序复用自己的OG软件目录但不共享子进程/队友实例；完整树周期核为合作式监控，不冒充原子硬限。新source已固定d7，未改运行源/阈值；首gate尚未提交。上一seed终审记录12:26为估计时刻，实际12:25，本条更正。
+
 **2026-09-21 12:26（北京时间）H09Y第二seed与全采训源码父审通过/首原生条件放行（Codex）：** 父独立101文件SHA、596前缀＋590逐维来源动作、1199控制、604因果oracle/末hold、89capture与12depth SHA过（2.098s）；亲看全部69图时间面板及6未缩放关键RAW，右手抓桶边后提起与实测0.332790m/末12相对漂移2.551μm一致。`configs/vlm_sft/h09y_train114_seed_parent_review.json`仅批准offline seed，原隔离/非BC不变。固定10e1增量6路径完整审、121/2.763s过，无新阻塞；e331实际W准入10行/1.657s正确仍coverage=false，篡改review被拒。`h09y_pipeline_parent_review.json`不是已训练。**只放原顺序首例TRAIN114/p993/GPU3**：新固定10e1源/239 digest、确切seed与来源父review绑定、新shared profile/真实空卡容量/source门后1reset，≤12宏420新控制含hold、1200s＋900初始化、384MiB/根6GiB/缓存16GiB；完整后父手审，再决定原剩余采集，禁止自动重复失败。父H22仍待独审，不抢GPU3。上一记录估计12:24时间应为实际12:22，本条明确更正。
 
 **2026-09-21 12:24（北京时间）H09Y完整训练链独审/参考手审进行中（Codex）：** 父固定e331bd4只读review树已完整读release/train/service/eval主链，独立117/2.264s通过；发现评测调用在模型返回后仍给旧state做预检，作者已在新固定10e1e6c改为即时q/夹爪核验，漂移即拒旧token，连同显式共享cache增量交父终审。1199参考完整101文件/26,055,522B及69 RAW已到本地`h09y-resume-20260921/complete/reference_train114_v1`，作者双端SHA核过；父全物理/RAW审与10e1独审现在≤1800s CPU块，不重复reset。作者远端10e1/121测试2.504s及真实shared-profile只读门0.048s过，全runtime7,766,633,417B，尚0 alias创建/后继物理/模型。H22独立保存态审仍在执行；父模型全依赖CPU预检8.130s通过、0权重加载，后续两门及原起点预算尚未放行。
