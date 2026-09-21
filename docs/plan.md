@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 18:48（北京时间）第二388已闭爪但抬升前失败，非单body耗尽（Codex/Astra）：** 子完整初报RIGHT_BACK18→RIGHT_DOWN25→RIGHT_CLOSE18，0body；第四唯一RIGHT_UP无safe提案，failure420.593s，388＋109普通＋1末hold=498。末态right held/contact=true但未升起/IN_PROGRESS，CLOSE命令完成而pose仍偏3.434mm/1.557°，不能等同GRASP成功、0正BC。全包正封存待父全部RAW/账本审；Astra原双body600s设计须注明不能修此反例，暂不实现。封存后另≤600s只读唯一UP原IK/精度/carry/时序及最多6个原fine同手平移，0物理/不放宽持物body限制；父H30第二2669109仍原初始化。
+
 **2026-09-21 18:46（北京时间）H30原第二门唯一启动（Codex）：** 2669109于18:45:22.507036/GPU2空81152MiB提交`gate_plates_h30`，固定827/99a062，原24/1536/1200＋900/384MiB、0模型，初始化中。18:44首提交在Popen之前碰到子2666104正退出（nvidia旧快照但cmdline已空）而安全拒；18:44:59实查子PID/所有自有GPU context已退出后重新核原未启动stage，只有本次产生reset/launch，不是重跑场景/放宽身份门。子388终态仍待完整证据，不将退出当成功；父源码和各自缓存均不动。
 
 **2026-09-21 18:44（北京时间）SSH临时连接恢复/原采集一直在执行（Codex）：** 默认连接卡SSH2_MSG_KEX_ECDH_REPLY，Windows本地23117由仍运行的ATrustWslRelay提供；只对本次连接选择现代curve25519-sha256并保留严格host-key验证后true/真实状态读取均成功，没有修改服务器/中继或持久SSH配置，不能据此断言唯一网络根因。18:43:43实际2666104仍活、388prefix＋61native，已过reset且未重置；原时钟/预算不重计。父GPU2仅精确子辅助209MiB/余80943MiB，SDA43.34GiB/NVMe2703.27GiB、父根/缓存门正常；现提交原第二H30 plates单次门，PID待回执，不冒称已启动完成。
