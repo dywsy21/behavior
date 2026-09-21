@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 16:12（北京时间）H25两搜索失败直接原因/完整审计准备（Codex）：** 只读已完成d17/408→426、d19/462→480链：末段均`INSUFFICIENT_JOINT_RGBD_SUPPORT`，24内点低于原25；双向投影.631/.639与.800/.841px、3D3.228/3.149mm，自体排除0；不是H22末段>1px的同一触发条件。不改正在运行源/门/恢复次数。另本地ignored `h25_full_evidence_audit.py`完成语法检查，供结束后全段原LK/joint＋控制/恢复链独核；尚未执行完整结果审，不把脚本存在当通过。Astra2636439仍原单次预算，120更新/六评等待真实数据。
+
+**2026-09-21 16:10（北京时间）新192380唯一真实启动/H25仍有定位失败（Codex/Astra）：** Astra16:09:14.311193唯一2636439/GPU3提交`native_t1_i192_p0380`，固定572/1fcc/new profile、原12/420/1200＋900/384MiB，真实全来源/父receipt/双gate/动态盘GPU1.062s过；active80b32b48…77685、launch69633fb5…0c428，初始化中/0模型。先前fetch main遗漏父feature对象造成CPU启动门停止，显式取准确8e6后闭合，之前0reset，未绕过审查。第二114969仍inactive。父H25已636控制/26决策，同原回合在d17、d19两次视觉定位不确定后各实际HOLD重新参考并继续搜索，原两次恢复用完，**新前端不是彻底解决**，未抓取或官方成功；保存故障，不放宽门或追加reset。
+
 **2026-09-21 16:06（北京时间）新profile数据父审工具就绪/H25证据索引（Codex）：** 本地ignored `audit_native_grasp_parent.py`显式增加新public profile，只在该模式逐宏重放真实已发gripper历史、carry资格以及全部23维servo命令/实际q反馈；原v1和旧输入不变。旧已审114989作为工具回归1.269s全128文件/1130控制再过，原成功结论不重复计为新样本；新192380结果仍未出。H25设计/组合对照限制、双门完整证据、真实部署与预算另整理到`experiments/2026-09-21-h25-online-refined-odometry.md`，原完整任务继续，不新源/新reset/额外模型。
 
 **2026-09-21 16:03（北京时间）新192380单次采集交接（Codex/Astra）：** Astra原1800s CPU票于16:02:14/1415s收敛；robo独立`vlm_sft_h09y_572c9eb`准确572/1fcc/clean，151/9.465s＋410/19.517s，VLA3.10 train/serve导入过。父已读两新profile边界与首完整inactive/prepare/window来源并核本地三SHA（report e362ce7b…a8f5、inactive067721e6…28e26、prepareeb9c353e…30f7b），确为TRAIN192/e310/p380/seed0、非未来动作BC；首77,257B完整包到齐。**现只交GPU3一次192380，380前缀＋≤420新含hold/12宏/1200s＋900init/384MiB，原root6/runtime16GiB及32/80GiB余量**；须启动前再动态门，唯一可许父2630126/mainGPU2辅助≤512MiB。H25已实控避免双初始化。第二114969保持inactive/不自动续跑；成功后父全轨迹手审/覆盖门仍必须，120更新和六评未启动。
