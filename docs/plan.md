@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-21 15:27（北京时间）两异起点有限替代票（Codex/Astra）：** 父核CPU e7465652…62f3两候选完整source/原17合法标签/位姿与局限；取消未运行的114985（inactive/原件保留），条件替代为192380＋114969共最多2reset/净增1，原每条12宏420新含hold/1200s＋900init/384MiB、6/16GiB与32/80GiB余量不变。参考几何估11/7宏只是可行性，非物理保证。fa24硬名单/alias正确拒新prefix，因此Astra先另≤1200s CPU显式新capacity/storage profile和train/serve/eval全接线、旧权限不扩大、公共1fcc/teacher/成功门不改；父独审固定源后逐条放，不在活跃2619909可见树加alias。`h09y_earlier_two_parent_block.json`已登记，现0新reset/训练，原120更新/六配对继续必须完成。父H25首原RAW壁炉场景已本人核，对应工程门运行中。
+
+**2026-09-21 15:25（北京时间）H25开始实控/暂停近重复旧985（Codex/Astra）：** 父2622414于15:24:01 reset，保存首6实际控制/新LK门执行中，原预算不变。子只读几何报告指出旧待采114985与已收989初始位姿参考差仅.816mm/.081°，很可能违反原3mm/.75°近重复门，**985继续inactive、不消耗其reset**；参考预测不冒充新settle真值。候选更早192380/114969正在原≤600s CPU票核完整来源/实际当前388差，尚未放新增reset/训练，不降覆盖门。
+
 **2026-09-21 15:22（北京时间）H25首工程门真实提交（Codex）：** 子192388已15:19:30 reset/实际前缀控制后，父15:21:19.811081唯一2622414/GPU2启动`h25_refined_odometry/gate_radio_h25`，相邻log/launch_radio.json，同a628/afd1、全部原守卫＋gripper/LK，24/1536/1200s＋900init/384MiB/0模型两前缀0。实查只子2619909辅助200MiB、余80943MiB，结果新0B/自有暖runtime7,777,080,001B，完整盘门过；正在初始化，不冒称门已过。第二门/模型/完整任务尚未启，子fa24不热改。
 
 **2026-09-21 15:17（北京时间）两候选真实数据准入/覆盖不足（Codex/Astra）：** W＋新114989经实际`native_dataset.load_dataset`全链核验为14行/2轨迹、TRAIN各1、2CLOSE/7lift/5preclose、真实rotation、无近重复/失败正BC，明确`INSUFFICIENT_DO_NOT_TRAIN`，不是口头估计；子artifacts `dataset_w_114989_v1`保留，源review d9545dd2…177002。原192388/2619909仍初始化。另授权Astra监控空档≤600s **CPU只读**研究2个更早且异于现起点的TRAIN候选（原动作数组/12macro可达/位姿间距），不读heldout、不新reset/改fa24；若原剩两条不足，先登记有限附加采集，不能降门凑训练。父H25仍等待子reset，未启动。

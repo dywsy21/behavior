@@ -1,0 +1,31 @@
+{
+  "experiment_id": "H09Y-two-distinct-earlier-TRAIN-starts",
+  "owner": "Astra-vlm_sft_resume_20260921",
+  "independent_reviewer": "Codex-parent",
+  "registered_at_bjt": "2026-09-21T15:27:00+08:00",
+  "status": "CPU_implementation_only_physical_release_pending",
+  "hypothesis": "Earlier geometrically distinct TRAIN starts supply missing pre-close corrections and whole grasp diversity, without relabeling failures or duplicating near-identical stopped states.",
+  "CPU_ticket": {"max_seconds": 1200, "new_resets": 0, "model_calls": 0, "training_updates": 0, "scope": "Explicit new capacity and shared-cache storage profiles for only the two named starts; old profile permissions unchanged, full train/service/eval wiring, negative tests and inactive preparation. No shared executor, actor, teacher or success-gate change."},
+  "base_code_commit": "fa24c3f4b99956a9131ddff6df756e608b2a3fa1",
+  "final_code_commit": null,
+  "required_executor_digest": "1fcc505cb570c0fa215c408b2ae78d904819dc95b40bbbe117a560106ad97f4c",
+  "source_feasibility_report": "/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09y-resume-20260921/earlier_train_feasibility_v1.json",
+  "source_feasibility_sha256": "e74656524eec3dc954f011f20278535dfa699a69defa49ba9000a757b82762f3",
+  "unexecuted_old_start": {"instance": 114, "prefix": 985, "status": "cancelled_for_this_block_inactive_artifacts_preserved", "reason": "Reference pose differs from admitted989 settled start by only .816mm/.081deg, below existing3mm/.75deg near-duplicate gate; proxy not claimed as new physical measurement."},
+  "candidates": [
+    {"task": 1, "instance": 192, "episode": 310, "prefix": 380, "run": "native_t1_i192_p0380", "reference_distance_to_admitted_same_instance_m": 0.03159304854812712, "reference_angle_deg": 3.272635661429784, "ideal_preclose_macros": 6, "ideal_total_with_close_four_lifts": 11},
+    {"task": 1, "instance": 114, "episode": 264, "prefix": 969, "run": "native_t1_i114_p0969", "reference_distance_to_admitted_same_instance_m": 0.010821937013883327, "reference_angle_deg": 0.6830619976442966, "ideal_preclose_macros": 2, "ideal_total_with_close_four_lifts": 7}
+  ],
+  "feasibility_limitations": "Measured successful reference poses and ideal1cm/3deg kinematics are not newly settled poses, IK/depth safety, contact feasibility or a proven physical macro upper bound. All actual gates stay hard and may reject.",
+  "conditional_physical_budget": {"new_resets_max": 2, "net_increase_vs_cancelled985": 1, "sequential": true, "gpu": 3, "split": "train", "seed": 0, "macros_each": 12, "new_controls_each_including_final_hold": 420, "seconds_each_after_reset": 1200, "initialization_monitor_seconds": 900, "MiB_each": 384, "model_calls": 0, "total_paid_prefix_controls": 1349, "reset_or_branch_restore_retries": 0},
+  "output_root": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only",
+  "result_cap_GiB": 6,
+  "runtime_root": "/mnt/nvme_tmp/robodojo_vlm_runtime_20260921",
+  "runtime_cap_GiB": 16,
+  "minimum_free_GiB": {"sda": 32, "nvme": 80},
+  "prerequisites": ["Parent independent code review and actual negative/profile tests", "Current192388 exited and complete evidence reviewed", "New immutable source via Git and exact two engineering gates matching executor1fcc", "Parent individual launch handoff and current GPU/disk checks", "No new alias/root visible to active old-profile2619909", "No overlapping parent/child Kit initialization"],
+  "data_admission_unchanged": "Whole successful trajectory only, parent numeric and all before/after RAW review; at least4 trajectories, eachTRAIN>=2,32macros,4CLOSE,8lift,8preclose,4nonHOLDtokens,actualrotation>=1deg; same-instance start distance<3mm AND angle<.75deg rejected. Heldout1/71 and original validation excluded.",
+  "training_unchanged": "Fresh2B120 updates including2-step gradient/reload gate, rank16alpha32drop.05 LR5e-5 batch8 seed41, max2700s GPU3, final120 checkpoint only. No training before coverage passes.",
+  "evaluation_unchanged": "Two heldout instances x base/FT/nonvisualNN = six paired bounded local physical trials. Same final execution/source protocol for variants. Local GRASP not official full-task SR.",
+  "stop": "Any physical safety/outcome/code/profile error or budget; archive and diagnose without automatic retry/additional reset. Coverage failure remains failure, no synthetic positive padding or threshold reduction."
+}
