@@ -1,0 +1,20 @@
+{
+  "experiment_id": "H09AA-completion39-candidate-v1",
+  "owner": "Astra-max-vlm_sft_resume_20260921",
+  "completion_protocol": "h09aa-completion-request-v1",
+  "sidecar_schema": "h09aa-reviewed-completion-state-v1",
+  "dataset_sha256": "5b2b5ee01f1f325cc5f35b1665a014170237f284c605038d75ad2a40ad0d693c",
+  "rows_sha256": "ef1a62fad44c8bab863a6f6ec7548aab4817f9b1c806e226d0ab81dfef1310cc",
+  "expected_rows": {"CONTINUE": 34, "REQUEST_VERIFY": 5},
+  "actor_fields_unchanged": true,
+  "motion_codec_unchanged": "h09z-native-keep-eef-45-v1",
+  "terminal_motion_label": null,
+  "terminal_motion_loss": false,
+  "maximum_cpu_seconds": 1200,
+  "new_resets": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "runtime_early_stop_implemented": false,
+  "completion_dataset_released": false,
+  "next": "Independent parent source, provenance and all five terminal/last-before three-view review; separate integration authorization required."
+}
