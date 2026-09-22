@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 11:25（北京时间）H09AA父独立数据/代码审登记（Codex）：** 新ccb16f2已补terminal HOLD底盘零速与verdict/frame同tick，父独立只读树`completion39-parent-review`，≤900s/0物理训练调用，票`h09aa_parent_review_ticket.json`。全39同态标签/历史/动作mask与原TRAIN34逐项核、全部5末态＋5末前态共30 RAW亲审，完成前不release训练。6f4旧候选保留，子原票内新ccb实际构造尚待；父不把小数据文件存在当验收。
+
 **2026-09-22 11:24（北京时间）H42保存态公开验证闭合（Codex）：** 唯一helper退出0，原27B183→195恰12调用、0物理；完整小包本地/远端result e86b2820…95721相同。本人逐看12次所选RAW，TRAIN114989/FT/NN均由原RGB-D刚体跟踪确认持握，分别第2/3/2次真实UP后；FT首无有效深度保留UNKNOWN，不手点重试。重要边界：NN公开持握tick1238早于原严格局部完成1261，所以不能“持握即停/即成功”，须学习的REQUEST_VERIFY＋公开证据协同；模型TRAIN note把已抬物称在地上，该文字不作判据。receipt `h42_public_completion_parent_review.json`；这是3条已知抓取保存态正诊断，不是误报率/新物理成功。H09AA父源码初审发现末HOLD未拒非零base与verdict/frame时钟不一致，已交子原票内修；真实旧5源不受该漏洞指控，39新数据尚未release。
 
 **2026-09-22 11:17（北京时间）H42准备核验通过/保存态调用提交（Codex）：** 三原run全部12capture的7文件、depth数组、模型SHA、实际q和12settle时钟绑定已CPU核过，0模型；TRAIN114989真实为闭爪后3个UP而非登记文字的2个，已按实际4帧纠正case，仍原12调用/11:29截止。下一唯一保存态helper用既有2777940/8930、183/431起，输出`h38_appearance/h42_completion_replay`；无模拟器/动作控制，不能据此作新物理成功。旧5个TRAIN/FT/NN源都不改。

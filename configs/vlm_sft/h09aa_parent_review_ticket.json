@@ -1,0 +1,9 @@
+{
+  "task_id": "H09AA-parent-independent-review",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-22T11:25:00+08:00",
+  "source_commit": "ccb16f2ee268504c9bffde37179b4a06abcdf6e4",
+  "budget": {"wall_seconds": 900, "model_calls": 0, "training_updates": 0, "physical_resets": 0},
+  "scope": ["Independent review of pure completion schema and39-row builder, including fixed terminal hold checks", "Own negative input checks and targeted/full native tests", "All39 same-state labels and motion masks/history/actor binding against original TRAIN34", "Personally inspect all5 terminal positives and5 last-before negatives in all3 cameras", "No training release until all checks pass; partial or unavailable evidence stays pending"],
+  "not_in_scope": ["Public harness runtime modification", "New data collection or heldout labels", "New optimizer/model calls"]
+}
