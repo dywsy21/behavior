@@ -87,9 +87,12 @@ def check_child_process(review, row, all_apps):
     actual = subprocess.check_output(['git', '-C', str(CHILD_SOURCE), 'rev-parse', 'HEAD'], text=True).strip()
     require(actual == CHILD_COMMIT, 'Child source changed')
     launch_path = Path(review['output'] + '.launch.json')
-    require(sha(launch_path) == review['launch_sha256'] and read(launch_path)['pid'] == review['pid'],
+    launch = read(launch_path)
+    require(sha(launch_path) == review['launch_sha256'] and launch['pid'] == review['pid'],
             'Child launch/PID mismatch')
     arguments = proc.joinpath('cmdline').read_bytes().split(bytes([0]))
+    require(arguments == [os.fsencode(part) for part in launch['command']] + [b''],
+            'Child actual argv differs from reviewed launch')
     require(b'--output' in arguments and arguments[arguments.index(b'--output') + 1] == review['output'].encode(),
             'Child actual output mismatch')
     require(any(Path(os.fsdecode(arg)).name == 'native_eval_run.py' for arg in arguments if arg),
