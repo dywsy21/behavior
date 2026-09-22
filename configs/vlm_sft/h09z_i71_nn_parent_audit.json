@@ -1,0 +1,18 @@
+{
+  "reviewer": "Codex-parent",
+  "completed_bjt": "2026-09-22T11:08:16+08:00",
+  "variant": "proprio_history_nn",
+  "code_commit": "6f3288770f72b727a114d596cd5b98f577adc8c1",
+  "inventory_sha256": "23358f8abb4059acee008a374732354b6d0314f6739dd343f9d6178d53584ce9",
+  "result_sha256": "c15fe33cc9d1e656298fcb10a91c4958716dc0cbce5e817f6dc244ed3da03b7a",
+  "numeric_report_local": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/i71_nn_parent_numeric.json",
+  "numeric_report_sha256": "c605c0a30cf0697181e8baafe738e357602e397d29aa1dcc10178a8b341760a1",
+  "numeric_seconds": 1.9515198019798845,
+  "verified": {"files": 288, "bytes": 108496855, "captures": 29, "payloads": 203, "rgb_hashes": 87, "depth_hashes": 87, "total_controls_including_hold": 1384, "native_controls_including_hold": 346, "physical_frames": 335, "neural_requests": 0, "all_ten_nn_predictions_recomputed_from_hash_bound_train34": true},
+  "original_predicate_timecourse": {"first_success_tick": 1261, "last_success_tick": 1369, "success_frames": 109, "right_held_frames": 254, "right_finger_contact_frames": 266, "max_target_rise_m": 0.06911659240722656, "first_forbidden_tick": 1370, "first_forbidden_robot_link": "torso_link2"},
+  "manual_raw_review": {"reviewed_by_parent": true, "all_three_views_at": ["decision_00/before", "decision_02/after", "decision_05/after", "decision_08/after", "decision_09/after"], "images": 15, "observations": "Correct bucket is beside right hand; fingers visibly close over the rim, subsequent wrist views keep rim and fingers in similar relative pose. Head view crops the close target at frame edge. Exact lift height and torso contact come from the original full physical chain, not a claim that every contact is visually visible."},
+  "strict_terminal_local_success": false,
+  "official_task_success": false,
+  "limitations": ["Same paid1038-control expert prefix, one heldout instance now used for development diagnosis, not a full-task trial", "Posthoc original score timecourse is not a changed early-stop endpoint", "No continuous video or per-tick actual-q evidence claimed", "NN and FT both acquire intermediate local grasp, so current comparison does not establish a unique visual-generalization advantage for FT"],
+  "parent_review_complete": true
+}
