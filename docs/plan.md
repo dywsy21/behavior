@@ -14,7 +14,9 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
-**2026-09-22 13:26（北京时间）SSH只读连接再次中断/H09AD准备不伪造封存（Codex/Astra）：** 父三次只读全链审、子seal后只读查/原ssh均Connection closed，未新reset/重发模型，最后实证两gate和八态client均已退出。子完整16response观察备份db10328f…a48df本地，但不能冒充远端正式inventory/ledger SHA。父查同一Windows原relay/上游banner，不改认证配置；H09AD开工依赖窄改为收到完整观察快照即可1800s CPU实现，原始完整封存/父审仍严格前置新物理，避免网络恢复前伪报完成。另已确认唯一个严格同图同态state00旧实际RIGHT_BACK→新RIGHT_DOWN，后续新物理须验证，不预设动作改善。
+**2026-09-22 13:30（北京时间）H44两门父完整验收闭合/有条件完整回合可继续（Codex）：** 第二门远端实际3.11全审30.368s过，144hash/110self帧/82段/23链/442含末HOLD，329,473,109B；本人16RAW＋12视频抽帧、220帧完整解码，20预览件双端SHA同，receipt `h44_gate_plates_parent_review.json`。完整本地tar失败partial保留，不能当齐全；可由完整远端审＋本地视觉证据先满足原launch门，不须重置。Windows直接原SSH上游stdio仍用原严格knownhost/key，13:27:48只读成功，未改relay/VPN/认证，稳定性待观察。子H09AD新runtime须外置独立根且旧＋新总≤16GiB，避免9de旧精确alias名单拒绝；票已窄补，CPU截止仍13:56:55不变。
+
+**2026-09-22 13:26（北京时间）SSH只读连接再次中断/H09AD准备不伪造封存（Codex/Astra；13:27更正连接次数）：** 父前两次stdin只读全链审、子seal后只读查/原sshConnection closed；第三次改python -c的全审已成功30.368s，延迟取回不能误记三次全失败。未新reset/重发模型，两gate和八态client均已退出。子完整16response观察备份db10328f…a48df本地，但不能冒充正式inventory/ledger SHA。Windows原relay/上游都返回同SSH banner，未改认证配置；H09AD起点13:26:55/截止13:56:55，0查询/新物理，原始完整封存/父审仍前置新物理。第二门大包下载EOF退出，保留partial不称齐全。另唯一个严格同图同态state00旧实际RIGHT_BACK→新RIGHT_DOWN已确认，后续须验证，不预设动作改善。
 
 **2026-09-22 13:23（北京时间）八态作者实测8/8、登记单次物理后继准备（Codex/Astra）：** 子2839158已退出，16decision/22issued=22completed/0error/120.721s；新状态CCCCCV CV与六CONTINUE/两REQUEST真值全同，旧全REQUEST/早6。双方CONTINUE交集0，不能由本轮声称motion不退步；事后history连续≥3UP也8/8，不证明视觉泛化。完整原始包待父审。登记H09AD：子封存交付后≤1800s CPU独立实现一次原i71/1038前缀的新模型request-stop局部诊断，父独审600s后另精确放行；当前0reset/训练。请求只停控制待评分，不冒充H43验证/官方成功，原严格物理判据不变。H44第二门已退出442控/292.846s自报通过，父全RAW已看，远端只读全审两次连接中断未产生可用结果，未重提任何模拟器；本地大包传输中。
 

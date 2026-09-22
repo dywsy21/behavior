@@ -36,6 +36,7 @@
     "no_actual_launch_under_this_ticket": true
   },
   "resource_preparation": [
+    "Explicit compatibility amendment13:29: active9de rejects any new alias inside its original runtime root. Use the new isolated /mnt/nvme_tmp/robodojo_vlm_requeststop_runtime_20260922 for this single future run, not an unused old i1 slot. Before/after initialization and each control/query, new wrapper checks both roots' actual combined size≤16GiB with the shared actual target counted once, exact approved alias only, original owner/device/32GiB+80GiB reserve checks. Existing9de and old root remain untouched. No root/alias is created during CPU preparation.",
     "Read-only plan exact new runtime/result paths, original16GiB runtime/6GiB result/global disk reserves; never copy or delete caches blindly. One explicitly checked shared OG cache alias may follow the original reviewed scheme.",
     "Old2762269/8919 may need retirement to preserve simulator free-memory gate. First archive complete service_v1 identity/calls and exact launch, revalidate PID/cwd/argv/starttime/UID/health25/56/no client and all SHA. Do not signal it under this CPU ticket; parent exact retirement release later.",
     "Keep new2833894 service9de alive; parent H44 model/policy on GPU2 have priority for initial startup, later own exact parent simulator auxiliary context may be documented. Never touch0/1 or unidentified processes."
