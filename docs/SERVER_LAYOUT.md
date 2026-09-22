@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 08:44当前：** 父第二2770041/GPU2初始化在`h38_appearance/gate_plates_h38`及同名log、`launch_plates.json`；新Git launcher固定`semantic_h38_launch_2434abf`，证据树`semantic_h38_review_12a2708`，实际实验仍`semantic_appearance_6f528b5`不可热改。首radio父receipt已由Git证据树核e8dd89b5…15a87后独占写入结果根`gate_radio_parent_review.json`，非源码复制。子2766293首配对与2762269模型仍GPU3。
+
 **2026-09-22 08:42当前：** 父首2763244已退出，radio全量982文件本地`artifacts/agentic-vlm-goal-20260918/h38_gates_bundle/gate_radio_h38`完整/主SHA/数字/关键RAW/视频审通过；远端原证据保留。子2766293在`h09y_grasp_only/eval_t1_i1_base_v1`评测中，主GPU3/父GPU2准确200MiB辅助，服务2762269/8919仍原6f。新2434 launcher独审通过，拟Git独立树`semantic_h38_launch_2434abf`；第二门尚未启动，旧a905与6f实验源不热改。
 
 **2026-09-22 08:14当前：** 父H38首2763244/GPU2初始化：`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/gate_radio_h38`及同根`gate_radio_h38.log/launch_radio.json`，实验源`semantic_appearance_6f528b5`不可热改；Git独审receipt在`semantic_h38_review_0fba734`，launcher在`semantic_h38_launch_a90522f`。Astra原2762269/8919/GPU3服务ready，两固定eval准备进行中，尚无新eval Kit；0/1队友不动，首初始化不并发。
