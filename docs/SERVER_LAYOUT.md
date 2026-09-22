@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 12:24当前：** 子已核新的只读Git源`git_worktrees/vlm_sft_h09ab_completion_9deafb1`、预检小包`h09y_grasp_only/completion_9deafb1_cpu_ready/`存在，`training_completion_v1`/`service_completion_v1`此前核absent，未提交新进程。父只读launcher源`git_worktrees/h44_launcher_dda73a3`实核clean，但`h44_reachability`结果根仍未创建；31b新远端树创建请求在SSH banner阶段失败，不能当存在。SSH当前不可用，旧2777940/2762269实时状态未知、未发送停止命令，0/1未碰；恢复后重核，不用旧观测声称GPU空闲。
+
 **2026-09-22 11:57当前：** 父H43只读Git树`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_completion_6b39740`仅CPU、没有sim/model；实际3.11报告`h38_appearance/h43_saved_cpu_6b39740.json`完整本地同SHA15aa08ba…4b8d4。旧2777940/8930仍195/431、2762269/8919仍25/56，其余原物理run都已结束，不重启；新服务8931仅规划。
 
 **2026-09-22 11:36当前：** 子新只读源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09aa_completion_ccb16f2`，新小候选在`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/completion39_ccb16f2_v1`；旧6f4候选不改。39状态父审已闭合，但无新训练/物理；两个旧模型服务原195/431和25/56保持，不把候选目录当已训权重。

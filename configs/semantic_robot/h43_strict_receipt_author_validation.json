@@ -1,0 +1,21 @@
+{
+  "task_id": "H43-strict-close-receipt-fix",
+  "owner": "Codex-parent",
+  "completed_local_bjt": "2026-09-22T12:24:00+08:00",
+  "source_commit": "31b2ed0a8ecfc096ad02c011b6e5d11be192882f",
+  "module_sha256": "be133733fc221b6edc5726cc460f1514577040fa9565495099a5ea4322170fa2",
+  "tests_sha256": "0ac46ee3977dc342c33319896a0a149a7205dc941d75ed707f4bb074b82dee4e",
+  "local_validation_passed": true,
+  "targeted_tests": 15,
+  "targeted_seconds": 0.957,
+  "public_tests": 552,
+  "public_seconds": 24.969,
+  "saved_replay_seconds": 18.137043891008943,
+  "saved_replay_sha256": "0e666c21408898cc4f7a9fbcd57cd566e9243080dd4fbb6b14fbd9d97b9ca752",
+  "all_three_prior_saved_positive_and_final_invisible_negative_preserved": true,
+  "new_model_calls": 0,
+  "new_resets": 0,
+  "deployed": false,
+  "remaining": "Independent <=300s delta review; actual3.11 fixed-delta replay not run because repeated SSH banner timeout. Prior6b actual3.11 is not relabelled as31b evidence. No author-budget extension or remote launch assumed.",
+  "original_blocked_review_sha256": "7d4b280d0f7bb64be44c99a420073104186626f883529fea8c879c92dd9ee2d4"
+}
