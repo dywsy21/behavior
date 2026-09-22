@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 13:08当前：** 首H44完整本地`artifacts/agentic-vlm-goal-20260918/h44_gates_bundle/gate_radio_h44`已364,299,272B全核，远端原件保留。Git独立`git_worktrees/h44_gate_reviews_ebbcee5`已存在，首门receipt在H44根；新服务8931父仅已放行尚等真实PID，8932和第二门未启动。子120完整17件本地在子worktree `artifacts/h09y-resume-20260921/training_completion_complete/`，两checkpoint都齐且父审过。
+
 **2026-09-22 12:57当前：** 父2822518已退出，首H44工程门结果在原目录，完整364,299,272B正下载本地`artifacts/agentic-vlm-goal-20260918/h44_gates_bundle/gate_radio_h44`；第二门与8932尚未启动。子120原run终态f1da27ca…f07e2与17文件inventory7a3ac101…adc3已封存，8931未启动，0/1未动。
 
 **2026-09-22 12:49当前：** 子2816348已退出，`h09y_grasp_only/training_completion_v1/adapter_0120`是真实120新终权重（d6b011b2…6d8a），同run的result/账本正封存，不能删除旧`training_v1`；新8931服务尚未启动。父2822518仍首H44原run，未启动第二门/新27B。
