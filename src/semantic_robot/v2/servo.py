@@ -149,10 +149,15 @@ class ServoLimits:
     stall_ticks: int = 5
     emergency_ticks: int = 3
     carry_duration_v1: bool = False
+    joint_boundary_start_v1: bool = False
 
     def __post_init__(self):
         if type(self.carry_duration_v1) is not bool:
             raise ValueError("Carry duration v1 must be an explicit boolean")
+        if type(self.joint_boundary_start_v1) is not bool:
+            raise ValueError("Joint boundary start v1 must be an explicit boolean")
+        if self.joint_boundary_start_v1 and (not np.isfinite(self.joint_margin) or self.joint_margin < 0):
+            raise ValueError("Finite nonnegative planning margin required")
         if self.gripper_completion_v1 and not (0 < self.divergent_position <= .018
                                                and 0 < self.divergent_angle <= np.deg2rad(9)):
             raise ValueError("Gripper completion v1 cannot enlarge the original divergence envelope")
@@ -176,6 +181,20 @@ class SafeServo:
         self.grips = finite(gripper_command, (2,)) if gripper_command is not None else np.clip(state.gripper/.05*2-1, -1, 1)
         self.done, self.status, self.ticks = True, "IDLE", 0
         self.action = None
+        self.plan_lower = self.model.lower + self.limits.joint_margin
+        self.plan_upper = self.model.upper - self.limits.joint_margin
+
+    def _physical_state_valid(self, q, tolerance=0.):
+        q = np.asarray(q)
+        return bool(q.shape == self.model.lower.shape and np.isfinite(q).all()
+                    and np.all(q >= self.model.lower-tolerance)
+                    and np.all(q <= self.model.upper+tolerance))
+
+    def _planned_state_valid(self, q, tolerance=0.):
+        q = np.asarray(q)
+        return bool(q.shape == self.plan_lower.shape and np.isfinite(q).all()
+                    and np.all(q >= self.plan_lower-tolerance)
+                    and np.all(q <= self.plan_upper+tolerance))
 
     def _errors(self, poses, targets):
         return {name: pose_error(targets[name], poses[name]) for name in targets}
@@ -193,8 +212,8 @@ class SafeServo:
         weight = np.r_[np.ones(3), np.full(3, self.limits.orientation_weight)]
         J = np.vstack([jac[name][:, self.columns]*weight[:, None] for name in targets])
         error = np.concatenate([pose_error(targets[name], poses[name])*weight for name in targets])
-        delta = bounded_ik(J, .8*error, q[self.columns], self.model.lower[self.columns]+self.limits.joint_margin,
-                           self.model.upper[self.columns]-self.limits.joint_margin, step)
+        delta = bounded_ik(J, .8*error, q[self.columns], self.plan_lower[self.columns],
+                           self.plan_upper[self.columns], step)
         cost = self._cost(poses, targets)
         for scale in (1., .5, .25, .125):
             candidate = q.copy(); candidate[self.columns] += scale*delta
@@ -221,7 +240,17 @@ class SafeServo:
         self.columns, self.velocity_delta = np.array([], dtype=int), np.zeros(3)
         self.previous_cost, self.last_expected = None, self.targets
         self.pos_tolerance, self.rot_tolerance = .0025, np.deg2rad(1.5)
-        if np.any(state.q < self.model.lower+self.limits.joint_margin-1e-5) or np.any(state.q > self.model.upper-self.limits.joint_margin+1e-5):
+        self.plan_lower = self.model.lower + self.limits.joint_margin
+        self.plan_upper = self.model.upper - self.limits.joint_margin
+        if self.limits.joint_boundary_start_v1:
+            # A legal measured boundary pose is not an illegal command. Keep
+            # the usual inset, except permit holding/retreating from this exact
+            # start; never extend it farther toward the occupied hard limit.
+            if not self._physical_state_valid(state.q) or np.any(self.plan_lower > self.plan_upper):
+                return self.abort("JOINT_STATE_OUT_OF_BOUNDS")
+            self.plan_lower = np.minimum(self.plan_lower, state.q)
+            self.plan_upper = np.maximum(self.plan_upper, state.q)
+        elif np.any(state.q < self.plan_lower-1e-5) or np.any(state.q > self.plan_upper+1e-5):
             return self.abort("JOINT_STATE_OUT_OF_BOUNDS")
         if self.collision.clearance(state.q) < 0:
             return self.abort("ROBOT_COLLISION_RISK")
@@ -285,6 +314,8 @@ class SafeServo:
             t = min(1.,(i+1)/moving_ticks)
             u = 10*t**3-15*t**4+6*t**5
             q = state.q+u*delta
+            if self.limits.joint_boundary_start_v1 and not self._planned_state_valid(q, 1e-12):
+                return self.abort("JOINT_COMMAND_OUT_OF_BOUNDS")
             if (np.max(np.abs(q-previous)) > joint_tick+1e-9 or
                     self.collision.clearance(q) < 0 or self.collision.clearance((q+previous)/2) < 0):
                 return self.abort("TRAJECTORY_LIMIT_OR_COLLISION")
@@ -321,6 +352,8 @@ class SafeServo:
                                 for p, q in state.poses.values()))
         bounds = bool(finite_state and np.all(state.q >= self.model.lower+self.limits.joint_margin-1e-5)
                       and np.all(state.q <= self.model.upper-self.limits.joint_margin+1e-5))
+        if self.limits.joint_boundary_start_v1:
+            bounds = bool(finite_state and self._physical_state_valid(state.q, 1e-5))
         collision_free = bool(finite_state and self.collision.clearance(state.q) >= 0)
         active = ("left", "right") if self.action.part == "both" else (self.action.part,)
         errors = self._errors(state.poses, self.targets) if finite_state else {}
@@ -338,6 +371,9 @@ class SafeServo:
             raise RuntimeError("No running micro-action")
         if not np.isfinite(state.q).all():
             raise ValueError("Non-finite proprioception; simulator must stop")
+        if self.limits.joint_boundary_start_v1 and not self._physical_state_valid(state.q, 1e-5):
+            self.abort("JOINT_STATE_OUT_OF_BOUNDS")
+            raise ValueError("Physical joint limit exceeded; no candidate command may be issued")
         if self._gripper_v1():
             checks = self._gripper_checks(state)
             if not checks["finite_proprio"]:
@@ -389,10 +425,20 @@ class SafeServo:
         self.ticks += 1
         if self.ticks == self.total_ticks:
             velocity[:] = 0
-        return native_action(q, self.grips, velocity)
+        command = native_action(q, self.grips, velocity)
+        if self.limits.joint_boundary_start_v1:
+            # Check the actually serialized float32 command too. The tiny
+            # allowance is representation error, not a wider physical range.
+            actual_q = np.r_[command[3:14], command[15:22]]
+            if not self._planned_state_valid(actual_q, 1e-7) or not self._physical_state_valid(actual_q, 1e-7):
+                self.abort("JOINT_COMMAND_OUT_OF_BOUNDS")
+                raise ValueError("Joint command outside the start-bounded range; no candidate may be issued")
+        return command
 
     def finish(self, state):
         gripper_checks = self._gripper_checks(state) if self._gripper_v1() else None
+        if self.limits.joint_boundary_start_v1 and not self._physical_state_valid(state.q, 1e-5):
+            self.abort("JOINT_STATE_OUT_OF_BOUNDS")
         if self.status == "RUNNING":
             if self.ticks < self.total_ticks:
                 self.abort("INTERRUPTED")
@@ -428,6 +474,18 @@ class SafeServo:
                 "gripper_open_at_calibrated_aperture": observed_open,
                 "base_integral": self.base_integral.tolist(), "carry": self.carry,
                 "holding": "UNKNOWN", "official_success": "NOT_AVAILABLE_TO_ACTOR"}
+        if self.limits.joint_boundary_start_v1:
+            result["joint_boundary_start"] = {
+                "version": "physical-start-planning-inset-v1",
+                "planning_margin_rad": self.limits.joint_margin,
+                "start_q": self.start.q.tolist(),
+                "planning_lower": self.plan_lower.tolist(),
+                "planning_upper": self.plan_upper.tolist(),
+                "physical_lower": self.model.lower.tolist(),
+                "physical_upper": self.model.upper.tolist(),
+                "actual_state_numerical_tolerance_rad": 1e-5,
+                "command_float32_tolerance_rad": 1e-7,
+                "success_claim": False}
         if self.limits.carry_duration_v1:
             result["motion_timing"] = {
                 "version": "carry_duration_v1",
