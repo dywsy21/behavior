@@ -137,6 +137,40 @@ class JointBoundaryStartTests(unittest.TestCase):
         np.testing.assert_array_equal(s.plan_upper, model.upper-.001)
         np.testing.assert_array_equal(s.plan_lower, model.lower+.001)
 
+    def test_all_emergency_holds_obey_the_same_serialized_range(self):
+        model, state = self.boundary()
+        for q16 in (model.upper[16]-4e-7, model.upper[16]+5e-6):
+            for reason in ("direct_hold", "collision", "divergence", "stall"):
+                with self.subTest(q16=q16, reason=reason):
+                    s = self.servo(model, state)
+                    self.assertTrue(s.begin(Action("left", "up"), state))
+                    bad = copy.deepcopy(state); bad.q[16] = q16
+                    with self.assertRaises(ValueError):
+                        if reason == "direct_hold":
+                            s.safe_hold(bad)
+                        elif reason == "collision":
+                            with patch.object(s.collision, "clearance", return_value=-.001):
+                                s.next_action(bad)
+                        elif reason == "divergence":
+                            bad.poses["left"][0][0] += .019
+                            for _ in range(3): s.next_action(bad)
+                        else:
+                            s.ticks = s.total_ticks-5
+                            s.stalled = s.limits.stall_ticks-1
+                            s.previous_cost = 0.
+                            s.next_action(bad)
+                    self.assertEqual(s.status, "JOINT_COMMAND_OUT_OF_BOUNDS")
+
+    def test_safe_abort_hold_still_returns_when_inside_bounds(self):
+        model, state = self.boundary()
+        s = self.servo(model, state); s.begin(Action("left", "up"), state)
+        with patch.object(s.collision, "clearance", return_value=-.001):
+            command = s.next_action(state)
+        self.assertEqual(s.status, "ROBOT_COLLISION_RISK")
+        q = np.r_[command[3:14], command[15:22]]
+        self.assertTrue(np.all(q>=s.plan_lower-1e-7))
+        self.assertTrue(np.all(q<=s.plan_upper+1e-7))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 09:10当前：** 父零两前缀完整回合2778838/GPU2初始化，结果`h38_appearance/radio_h38_fullstart`/相邻log、`launch_policy.json`；模型2777940/8930 ready、11.542s加载、提交前0/431。实验源仍6f528b5，launcher2434/证据ab94，不热改。子2775696已reset/prefix，原6f/GPU3；父sim可能在GPU3创建辅助context，后续子FT启动须准确新2778838/launch绑定，不能沿用已死2763244。
+
 **2026-09-22 09:06当前：** 父新27B2777940/GPU2/8930加载，结果`h38_appearance/server_h38`、`server_h38.log`/`launch_model.json`，真实源仍`semantic_appearance_6f528b5`；plate父receipt已Git核41b6d0ea…b9ca7后到结果根`gate_plates_parent_review.json`。编排证据最新独立`semantic_h38_review_ab94f88`，launcher2434不变。子2775696/GPU3在原i71/base初始化、2762269/8919服务1call；policy尚未提交。H39仅本地f166默认关，不能热pull任何现用树。
 
 **2026-09-22 09:01当前：** 父H38两gate进程已退出/完整数值及关键RAW/视频父审通过，plates原328,270,062B保留。当地小预览`artifacts/agentic-vlm-goal-20260918/h38_gate_plates_preview`齐，完整`h38_gates_bundle/gate_plates_h38`仍传输；27B8930与fullstart待真实启动。子原i1/base失败已26件全SHA本地，原两个i1槽暂停，三个i71按新dce顺序交接；服务器服务2762269/8919仍原6f，尚待新i71真实PID。

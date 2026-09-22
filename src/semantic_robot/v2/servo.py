@@ -337,8 +337,20 @@ class SafeServo:
         self.status, self.done = reason, True
         return False
 
+    def _checked_command(self, q, velocity=(0., 0., 0.)):
+        command = native_action(q, self.grips, velocity)
+        if self.limits.joint_boundary_start_v1:
+            # Every returned command, including emergency HOLD branches, uses
+            # this same serialized-range check. Holding a measured out-of-range
+            # coordinate is not an exception to the command safety contract.
+            actual_q = np.r_[command[3:14], command[15:22]]
+            if not self._planned_state_valid(actual_q, 1e-7) or not self._physical_state_valid(actual_q, 1e-7):
+                self.abort("JOINT_COMMAND_OUT_OF_BOUNDS")
+                raise ValueError("Joint command outside the start-bounded range; no candidate may be issued")
+        return command
+
     def safe_hold(self, state):
-        return native_action(state.q, self.grips)
+        return self._checked_command(state.q)
 
     def _gripper_v1(self):
         return bool(self.limits.gripper_completion_v1 and self.action is not None
@@ -422,17 +434,10 @@ class SafeServo:
         self.last_expected = current
         t = self.ticks/(self.total_ticks-1)
         velocity = self.velocity_delta*np.sin(np.pi*t)**2 / ((self.total_ticks-1)/(2*self.hz))
-        self.ticks += 1
-        if self.ticks == self.total_ticks:
+        if self.ticks+1 == self.total_ticks:
             velocity[:] = 0
-        command = native_action(q, self.grips, velocity)
-        if self.limits.joint_boundary_start_v1:
-            # Check the actually serialized float32 command too. The tiny
-            # allowance is representation error, not a wider physical range.
-            actual_q = np.r_[command[3:14], command[15:22]]
-            if not self._planned_state_valid(actual_q, 1e-7) or not self._physical_state_valid(actual_q, 1e-7):
-                self.abort("JOINT_COMMAND_OUT_OF_BOUNDS")
-                raise ValueError("Joint command outside the start-bounded range; no candidate may be issued")
+        command = self._checked_command(q, velocity)
+        self.ticks += 1
         return command
 
     def finish(self, state):
