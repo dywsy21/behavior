@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 12:35（北京时间）H44独审通过/旧父服务封存，训练前动态门（Codex/Astra）：** launcher dda73a3独审340s/550＋59自有检查，报告da569c2e…aaf5全读原样纳Git，197 runtime不含H43。父旧2777940精确cwd/完整argv/starttime/clean源码/195调用/无旧client已只读核，server两文件＋两launch完整本地四SHA同，旧服务仍未TERM；下一按已登记票只释放该父进程再首门。子训练提交前先后见未知GPU3小进程2813382/2814576，均未放宽名单/未杀、现自然退出；原唯一120未因这些拒绝消费步数，新active/Popen真实回执待。不能把动态预检当训练已开始。
+
 **2026-09-22 12:30（北京时间）robo连接恢复/H43修后独审闭合（Codex/Astra）：** Windows到原23117中继/上游都返回SSH，只有WSL本地转发路径失效；临时Windows stdio字节转接＋Linux原ssh/HostKeyAlias/known_hosts/私钥严格认证成功，hostname llmvideo26/04:29:06UTC。未改VPN/relay/认证配置或密钥ACL，Windows ssh直接读Linux key因ACL被拒的尝试未放宽权限。连接恢复已通知子立即优先唯一训练，父不替子提交。H43 31b独立delta111s/552＋自有1正10负/三保存态过，报告6c886a06…fbab原样纳Git；仅本地3.12，不冒称已做新3.11/物理。H44独审继续，旧服务尚未停。
 
 **2026-09-22 12:24（北京时间）SSH中继阻塞，未提交训练或新物理（Codex/Astra）：** 双方多次curve25519只读连接在banner exchange超时；TCP到127.0.0.1:23117可连但不返回SSH版本，Windows监听PID12592仍在，父只读查中继、不改认证/隧道。子9de已放行但active/Popen/新output均未创建；不能说训练运行中。H43修后31b本地作者验证闭合，实际3.11新重放未执行明确保留缺项；原6b实测不冒充新证据。连接阻塞期子先做已登记H43 delta/H44独审，父查链路；恢复后立即以训练为先，所有旧进程/证据不动。

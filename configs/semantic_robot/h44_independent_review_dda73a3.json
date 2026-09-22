@@ -1,0 +1,59 @@
+{
+  "task_id": "H44-one-shot-launcher-independent-review",
+  "reviewer": "Astra-max-vlm_sft_resume_20260921",
+  "source_commit": "197c2ba7bc941c9850e71217164f1fd9538b03cb",
+  "implementation_digest": "e5ce7b5843c495a33fca56c247888f6733988b739397fc4f7931d5fd15596b30",
+  "launcher_commit": "dda73a3a43682baa4805ac5e50146bb4454bcb22",
+  "launcher_sha256": "e6301f89941bc6f1731652261e343d1da760880828c65937aa104bc7e98a8665",
+  "launcher_tests_sha256": "ec59afa8d556f90e970de2eac3cf68e1ac3a10a26f19029754bd73992f96259d",
+  "started_bjt": "2026-09-22T12:27:07+08:00",
+  "completed_bjt": "2026-09-22T12:32:47+08:00",
+  "seconds": 340,
+  "budget_seconds": 600,
+  "independent_review_passed": true,
+  "blocking_findings": [],
+  "scope": [
+    "All289 launcher lines and92 test lines read",
+    "H44 experiment config and independent review ticket read",
+    "Complete difference from unchanged independently reviewed launch_h38",
+    "Real fixed197 local parser/source/digest gates for all four commands",
+    "Nine gate flags and complete parent numeric/RAW/video/result hash dependency",
+    "Exact archived child context process-binding negatives with mocked proc, no current PID allowance"
+  ],
+  "validation": {
+    "public_tests": 550,
+    "seconds": 18.97,
+    "own_probe": {
+      "cases": 59,
+      "seconds": 0.1149120160844177,
+      "report": "h44_independent_probe_dda73a3.json",
+      "sha256": "367a1853d341783d97cf05460559c4ba1ba83b11b1b7ccd75726049f160068c2",
+      "actual_frozen_source_cli_stages": 4,
+      "missing_dependency_negatives": 6,
+      "wrong_or_nonboolean_gate_flags_rejected": true,
+      "gate_review_hash_and_identity_negatives": true,
+      "child_argv_cwd_dirty_source_main_gpu_and_memory_negatives": true
+    },
+    "source_197_actual_local_digest_matches": true,
+    "old_h38_launcher_diff_from_2434abf": "empty",
+    "launcher_frozen_worktree_clean": true,
+    "new_resets": 0,
+    "new_model_calls": 0,
+    "new_training_updates": 0
+  },
+  "confirmed": [
+    "Exact197 runtime, three added flags, GPU2 UUID and fixed8932/revision431 model identity",
+    "Zero expert/policy prefixes, two task-specific24/1536/1200 gates before192/6144/7200 policy",
+    "Unique output/log/launch and same-output process refusal; oldH38 model/policy must be absent",
+    "Only previously reviewed exact6f evaluation PID can be an auxiliary context; no generic low-memory exception",
+    "Unknown GPU process, storage free/cap, dirty source and mismatched independent launcher review block submission",
+    "No H43, H09AB, native runtime or training source change"
+  ],
+  "limitations": [
+    "This review is CPU-only, not new physical integration or official success.",
+    "Current GPU/process/port/resource checks still must run at each real submission.",
+    "Initialization900s and evidence-size budgets are explicitly monitored externally, not newly made automatic by this launcher adaptation.",
+    "Own new tests used actual local frozen197 parser and mocked dynamic process records; no new remote3.11 claim during transport interruption.",
+    "The review was paused to prioritize training submission after network recovery; that submission was independently blocked before Popen by an unknown GPU3 process."
+  ]
+}
