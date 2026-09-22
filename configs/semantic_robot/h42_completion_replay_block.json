@@ -1,5 +1,8 @@
 {
   "task_id": "H42-public-grasp-completion-replay-v1",
+  "status": "COMPLETED_SAVED_SENSOR_DIAGNOSTIC_NOT_DEPLOYED",
+  "actual_model_calls": 12,
+  "result_sha256": "e86b28203f0cc756c3635658ddb3033edff3118b05294b476889626404795721",
   "owner": "Codex-parent",
   "registered_bjt": "2026-09-22T11:14:00+08:00",
   "hypothesis": "The existing registered RGB-D grasp verifier can reuse already executed lift observations to corroborate a completion request without commanding additional lifts or reading simulator holding truth",

@@ -1,0 +1,24 @@
+{
+  "owner": "Codex-parent",
+  "completed_bjt": "2026-09-22T11:24:00+08:00",
+  "status": "SAVED_SENSOR_DIAGNOSTIC_COMPLETED_NOT_DEPLOYED",
+  "source_commit": "197c2ba7bc941c9850e71217164f1fd9538b03cb",
+  "helper_sha256": "6620568799e8829af69fefe852d0231e08e5cbf3b5dee155845a9ba2d9e63d50",
+  "result_sha256": "e86b28203f0cc756c3635658ddb3033edff3118b05294b476889626404795721",
+  "result_remote": "/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/h42_completion_replay/result.json",
+  "result_local": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h42_completion_replay/result.json",
+  "actual_calls": [184,185,186,187,188,189,190,191,192,193,194,195],
+  "model_calls": 12,
+  "physical_controls": 0,
+  "training_updates": 0,
+  "public_only_inputs": ["Current raw RGB for legal target localization", "Hash-bound current native RGB-D/q/gripper/self-link geometry", "Actual executed CLOSE and three UPs, command feedback and exact capture clocks"],
+  "frame_checks": {"captures": 12, "per_capture_payloads": 7, "array_depth_hashes": true, "calibration_sha_bound": true, "actual_settle_controls": 12, "model_retry": false, "hand_corrected_pixels": false},
+  "manual_review": {"selected_view_raw_images_personally_reviewed": 12, "train": "Four head images identify the brown trash can beside the closed right fingers; tracking uses wrist RGB-D around the 3D surface localized from the head", "ft": "Four wrist frames reviewed against returned points; first localization has invalid target depth and remains UNKNOWN, subsequent points are on brown can surface", "nn": "Four wrist frames identify the brown can wall/rim beside the right fingers", "model_note_limit": "The TRAIN localization note says on the floor even after lifting; this free-text note is not used as support/holding/completion evidence"},
+  "results": [
+    {"case": "TRAIN114989", "first_public_holding_tick": 1099, "first_public_holding_after_lifts": 2, "terminal_public_holding": true},
+    {"case": "FT_i71_development", "first_public_holding_tick": 1244, "first_public_holding_after_lifts": 3, "terminal_public_holding": true, "first_localization_depth_invalid": true},
+    {"case": "NN_i71_development", "first_public_holding_tick": 1238, "first_public_holding_after_lifts": 2, "terminal_public_holding": true, "original_strict_skill_first_success_tick": 1261}
+  ],
+  "limitations": ["Counterfactual replay adapter initializes VERIFY_GRASP/pending from an actually recorded CLOSE; original deployed native loop had no such adapter", "No changed verifier threshold, new lift, simulator object input or physical deployment", "Public holding can precede the stricter local skill completion predicate: never equate it to a skill/official success", "Three selected known-grasp sequences, no false-positive-rate or cross-task-generalization estimate", "One failed localization is retained, not repaired", "All i71 data remains development diagnosis and never enters TRAIN"],
+  "next": "Connect learned REQUEST_VERIFY to existing observed holding history under a new reviewed runtime contract; do not automatically stop from public holding alone"
+}
