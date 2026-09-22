@@ -1,0 +1,36 @@
+{
+  "task_id": "H09AB-completion-training-integration",
+  "owner": "Astra-max-vlm_sft_resume_20260921",
+  "registered_bjt": "2026-09-22T11:39:00+08:00",
+  "hypothesis": "The motion-only adapter lacks completion supervision; a separately queried status task with retained motion BC can learn to request verification before destructive extra lifts.",
+  "implementation_budget": {"wall_seconds": 2400, "physical_resets": 0, "model_calls": 0, "training_updates": 0},
+  "inputs": {
+    "data_source_commit": "ccb16f2ee268504c9bffde37179b4a06abcdf6e4",
+    "states_sha256": "2fd27d707ad86e7fd6c09662000e99af26c0b1d686bbe9ff92b3c6aa8604fa99",
+    "dataset_sha256": "085d0a06eb590d0f390337951ca47ba412009010e69cd51a8665d838e8aba0fd",
+    "parent_review": "configs/vlm_sft/h09aa_completion39_parent_review.json",
+    "initial_adapter_sha256": "4e993ff4f5ca7221e4fcdc61ad302ac644b3a27fe7ef2c25b57516ac21debf83"
+  },
+  "ownership": ["New native_completion_* protocol/training/service modules and dedicated tests/config/doc", "Do not edit public src/semantic_robot or old native training/evaluation implementations"],
+  "contract": [
+    "Preserve exactly six public actor fields and native45 action meanings; no private labels, instance ids, capture clocks or result fields in prompts",
+    "Use a separate versioned two-class status prompt/output CONTINUE or REQUEST_VERIFY; never reuse the old Next motion prompt for a status target",
+    "A CONTINUE decision uses the original motion query on the same frozen actor/RGB snapshot; REQUEST_VERIFY returns motion null and is not a success claim",
+    "Retain original34 motion examples and use39 reviewed states for status only; no fictional HOLD action target for terminal states",
+    "Training encoder/response-only EOS masks must have real-model gates; strict service request/response identities and total call budget",
+    "Parent owns public verifier adapter. Stop at independently reviewed implementation before any GPU run; no simulator integration in this CPU ticket"
+  ],
+  "prospective_single_training_recipe_after_independent_release": {
+    "parent_checkpoint": "training_v1/adapter_0120", "new_updates_including_gate": 120,
+    "wall_seconds": 2700, "gpu": 3, "seed": 41, "learning_rate": 0.00005,
+    "lora_rank": 16, "lora_alpha": 32, "lora_dropout": 0.05,
+    "effective_batch": 8, "microbatch": 2,
+    "per_update_examples": "4 original motion BC plus 2 CONTINUE status and 2 REQUEST_VERIFY status; trajectory-balanced sampling within each category",
+    "loss": "Equal weight motion and status response-only CE; do not select checkpoint by heldout or training accuracy",
+    "vision_and_projector": "Frozen as in original120", "output_MiB": 384,
+    "not_yet_authorized": true
+  },
+  "validation": ["Full native regression suite", "Own strict-schema/leakage/mask/history/duplicate/sha/old-adapter/config/call-budget negative tests", "Prepare actual-environment CPU import/projection tests without CUDA/model calls", "Parent independent final code review"],
+  "stop_conditions": ["Deadline or resource cap", "Unexpected source/input mutation", "Training requires independent exact source/config/data authorization; never self-authorize"],
+  "permissions": "Execute directly under current Full Access/approval never. External authentication boundaries are not bypassed."
+}

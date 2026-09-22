@@ -1,0 +1,11 @@
+{
+  "task_id": "H43-public-completion-adapter",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-22T11:39:00+08:00",
+  "hypothesis": "Existing actual post-CLOSE RGB-D motion can verify a learned completion request without issuing another potentially destructive lift.",
+  "budget": {"wall_seconds": 1800, "model_calls": 0, "physical_resets": 0, "training_updates": 0},
+  "inputs": ["H42 twelve saved localization results and original captures", "Existing GraspMotionVerifier/RGBDMotion and calibrated R1Pro geometry", "H09AA public actor and reviewed data contract"],
+  "scope": ["New pure public history-to-grasp-verification adapter plus tests", "Only current task goal, actual issued CLOSE/UP records and onboard RGB-D/proprio; no private files", "At most current bounded consecutive lift history with exact captured clocks and execution identity", "Return public holding evidence or UNKNOWN; never official/local success", "Use unchanged verifier thresholds and no additional actions", "Saved H42 positive replay plus negative counterexamples; independent review required before runtime deployment"],
+  "non_goals": ["Automatically stop on public holding alone", "Modify original outcome scoring", "Change native45 controller or original matched results", "Train using i71/i1", "Physical deployment under this CPU ticket"],
+  "cross_stream": "Child owns native completion training/service. Parent owns src/semantic_robot/v2/skill_completion.py and its tests. Runtime bridge receives a versioned REQUEST_VERIFY; detailed callable signature coordinated before integration."
+}
