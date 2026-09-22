@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 12:40（北京时间）两路真实并行：H44首门启动/训练已过2步数值门（Codex/Astra）：** 系统Python3.12具pidfd，重复精确身份/四SHA/195calls/无client后仅旧2777940于12:39:27 TERM，确认退出且GPU2空，0文件删除。新H44首radio门2822518于12:39:43.512777启动，197/e5ce源不热改、原24/1536/1200＋900、384MiB，当前初始化，不是gate成功。子2816348最新实报14更新/227.06s、三类别native/custom门与372 tensor更新/重载logit误差0，2gate计入120、稳态约3.8s/步；H09AC12:39:44起CPU1200s独立实现，训练继续原预算。
+
 **2026-09-22 12:38（北京时间）H09AB唯一训练实际运行/H09AC后继登记（Codex/Astra）：** 子2816348实际12:34:24.726517启动固定9de，GPU3原仅旧2762269且free75595MiB，dynamic10.414s过；active97698cd8…c2ca/launch eed9999b…2032，`h09y_grasp_only/training_completion_v1`及相邻log，120含2gate/2700s/384MiB，终态待。后继H09AC先1200s CPU准备固定FT6＋NN2保存态双adapter诊断，独审300s后才≤32 query/600s，私有标签只评分；不新增reset/训练，不把保存态当SR。父旧服务retire首probe因该3.11构建无pidfd_open在信号前失败，后续首门前置test正确拒、0新reset；转查系统Python支持，未停错进程。
 
 **2026-09-22 12:35（北京时间）H44独审通过/旧父服务封存，训练前动态门（Codex/Astra）：** launcher dda73a3独审340s/550＋59自有检查，报告da569c2e…aaf5全读原样纳Git，197 runtime不含H43。父旧2777940精确cwd/完整argv/starttime/clean源码/195调用/无旧client已只读核，server两文件＋两launch完整本地四SHA同，旧服务仍未TERM；下一按已登记票只释放该父进程再首门。子训练提交前先后见未知GPU3小进程2813382/2814576，均未放宽名单/未杀、现自然退出；原唯一120未因这些拒绝消费步数，新active/Popen真实回执待。不能把动态预检当训练已开始。
