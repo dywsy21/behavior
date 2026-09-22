@@ -1,0 +1,14 @@
+{
+  "task_id": "H43-strict-close-receipt-fix",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-22T12:17:00+08:00",
+  "author_seconds": 600,
+  "independent_delta_review_seconds": 300,
+  "hypothesis": "Reuse original execution_completed instead of a partial CLOSE receipt check, so unsafe or incomplete recorded commands cannot qualify a public verification window.",
+  "scope": ["One strict execution_completed gate using the exact fine CLOSE", "Complete realistic test receipt and negative safety/version/duration cases", "Same saved H42 responses positive/negative replay; no threshold changes"],
+  "model_calls": 0,
+  "training_updates": 0,
+  "physical_resets": 0,
+  "old_source": "6b397408f4017ad1613cea98246dbdc86aca1d0c",
+  "deployment": "Prohibited until fixed-source independent delta review. This fix does not block child's isolated120 training or alter H44 runtime."
+}

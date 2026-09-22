@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 12:17（北京时间）H09AB父独审闭合/单次120放行，H43另修安全记录（Codex）：** 9de全部新模块及旧loader/loss已审，220/6.718s＋自有33检查/0.277s过；逐核真实73 mask/960采样、同snapshot后端篡改隔离、调用上限、授权反例和CE全量/截取梯度一致。`h09ab_parent_training_release.json`仅交GPU3从原0120再120（含2 gate）、2700s/384MiB，实际启动待子动态门；不放新service/sim。Astra独审H43发现CLOSE只验部分receipt，可接纳缺安全字段/碰撞false，原6b暂不通过；父另600s窄修复用原execution_completed，300s独立delta审，0物理/调用，不阻塞训练或H44。
+
 **2026-09-22 12:13（北京时间）H44作者准备闭合/H09AB终版独审中（Codex）：** launcher冻结dda73a3/e6301f89，7专项＋550公共/15.828s通过；真实远端3.11两个clean源码/精确digest、全部四命令和三新CLI标志核过，新结果根仍不存在、旧服务未动。作者900s票内闭合，receipt `h44_launcher_author_validation.json`，下一Astra≤600s独审优先放实训空档。子H09AB最终9deafb1已于12:09交付，父220 native/6.718s过（本地archive1 skip），正独查服务同态/数据掩码/120更新门；训练未启动。Astra H43独审12:10:25–12:20:25进行中，GPU0/1不动。
 
 **2026-09-22 12:05（北京时间）H09AB固定首版交审/H44 launcher准备（Codex/Astra）：** 子351b279已完整实现状态/训练/双adapter服务，作者220 native/6.483s＋420公共/7.370s，实际3.10 220/15.303s和73真实processor22.891s过（未载权重），原34编码逐tensor同旧；CPU报告source_commit被data同名覆盖，子窄修字段并保留旧报告，不改训练。父登记≤1800s独审，最终release只绑定修后固定码。H44一次性launcher按原已审H38窄适配197c2ba/三开关/8932/新根，7专项过，全公共回归在跑；独审另600s排子实训空档。更正H44前条登记分钟：实际12:00:43（票已精确更正），作者deadline12:15:43，不借更正延长。
