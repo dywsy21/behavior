@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 11:53（北京时间）H43作者回归/保存态通过（Codex）：** 13专项/0.708s＋543公共/20.388s＋174旧native/6.170s过；新snapshot/render barrier/数组与7文件绑定均要求真实。最终模块三H42原响应重放14.304s，同[FFTT]/[FFFT]/[FFTT]，每条脚本令末态目标不可见均UNKNOWN；报告309dabac…93c38，0新模型/物理，不能当误报率/新成功。源冻结及实际3.11CPU复核、Astra独审待，未部署；设计见`experiments/2026-09-22-h43-public-completion.md`。子H09AB仍原2400s CPU实现中，训练精确release尚未交。
+
+**2026-09-22 11:47（北京时间）H43公开请求验证主体实现（Codex）：** 新`src/semantic_robot/v2/skill_completion.py`仅读取hash绑定公开capture/已完成CLOSE＋2–4连续UP，校准、自体排除、相同时钟/关节/夹爪链和请求当帧均先核，原RGB-D持握阈值不变；同tick重render不算新抬升，使用请求当前图像，不消费VLM自报holding。语法过、保存H42三序列原响应复算与反例待，0部署/新调用；子H09AB已11:39:40实际开始至12:19:40，服务8931/64总query、原0120对新0120＋120身份及新目录范围已澄清，仍CPU未训。
+
 **2026-09-22 11:39（北京时间）H09AB/H43并行后继登记（Codex/Astra）：** 数据审已闭，子≤2400s CPU实现独立状态query＋保留原motion BC训练/服务、父≤1800s CPU实现公开历史持握验证adapter；各自0调用/训练/reset，票`h09ab_completion_training_ticket.json`、`h43_public_completion_cpu_ticket.json`。后继只预登记从原0120再120更新/2700s/GPU3/同LoRA与LR、每步4motion＋2负status＋2正status，代码独审/真实mask门与精确release前不启动；不是又做数据采集或5000步搜索。公开验证仅返回持握证据/UNKNOWN，不能持握即官方或技能完成，两路接口协调后再有限配对。
 
 **2026-09-22 11:36（北京时间）H09AA39行父终审闭合（Codex）：** ccb新候选实际11:27:40由子票内完成；父独立208/6.192s，3.705s全39同态/117RGB/40源hash/原34完全一致/5完整物理判据链和25反例通过，本人全部5末态＋5末前态×3相机30RAW亲审。首自写审计器漏送实际CLOSE token导致stable counter不符，已按原执行时钟修审计，未改生产标签/门。receipt `h09aa_completion39_parent_review.json`绑定states2fd27d70…4fa99与dataset085d0a06…a0fd；仅数据合格，须独立状态formatter/代码审后才能训，不能拿原motion prompt教新状态。邻近图像很相似、仅2 TRAIN实例，后续须防止把抬升次数记忆当视觉泛化。H42/原六槽失败结论不改，0新物理训练。
