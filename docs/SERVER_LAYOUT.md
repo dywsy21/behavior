@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 12:30当前：** WSL到12723117握手路径异常，但Windows原ATrustWslRelay及上游SSH正常；本地忽略工具`artifacts/agentic-vlm-goal-20260918/robo_windows_stdio_ssh.py`只做一次性stdio转接给Linux原ssh（原严格host key和私钥保留），成功到同一llmvideo26。无持久配置/密钥权限/中继变化。不要按前条断线推断服务器停机或重启已有任务；新训练实际进程待子回执。
+
 **2026-09-22 12:24当前：** 子已核新的只读Git源`git_worktrees/vlm_sft_h09ab_completion_9deafb1`、预检小包`h09y_grasp_only/completion_9deafb1_cpu_ready/`存在，`training_completion_v1`/`service_completion_v1`此前核absent，未提交新进程。父只读launcher源`git_worktrees/h44_launcher_dda73a3`实核clean，但`h44_reachability`结果根仍未创建；31b新远端树创建请求在SSH banner阶段失败，不能当存在。SSH当前不可用，旧2777940/2762269实时状态未知、未发送停止命令，0/1未碰；恢复后重核，不用旧观测声称GPU空闲。
 
 **2026-09-22 11:57当前：** 父H43只读Git树`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_completion_6b39740`仅CPU、没有sim/model；实际3.11报告`h38_appearance/h43_saved_cpu_6b39740.json`完整本地同SHA15aa08ba…4b8d4。旧2777940/8930仍195/431、2762269/8919仍25/56，其余原物理run都已结束，不重启；新服务8931仅规划。

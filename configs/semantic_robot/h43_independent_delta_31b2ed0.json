@@ -1,0 +1,57 @@
+{
+  "task_id": "H43-strict-receipt-independent-delta-review",
+  "reviewer": "Astra-max-vlm_sft_resume_20260921",
+  "source_commit": "31b2ed0a8ecfc096ad02c011b6e5d11be192882f",
+  "baseline_commit": "6b397408f4017ad1613cea98246dbdc86aca1d0c",
+  "implementation_digest": "7d7c2686396865c745e1c85e6d9fd3b345f2f75da21ee1c3b01f0c43ee7c7b93",
+  "module_sha256": "be133733fc221b6edc5726cc460f1514577040fa9565495099a5ea4322170fa2",
+  "tests_sha256": "0ac46ee3977dc342c33319896a0a149a7205dc941d75ed707f4bb074b82dee4e",
+  "started_bjt": "2026-09-22T12:24:19+08:00",
+  "completed_bjt": "2026-09-22T12:26:10+08:00",
+  "seconds": 111,
+  "budget_seconds": 300,
+  "independent_review_passed": true,
+  "blocking_findings": [],
+  "original_blocked_report_sha256": "7d4b280d0f7bb64be44c99a420073104186626f883529fea8c879c92dd9ee2d4",
+  "scope": "Complete five-line production delta, fixture schema and new tests/documentation read; exact original execution_completed now applies to every CLOSE and UP before localization.",
+  "validation": {
+    "public_tests": 552,
+    "public_seconds": 24.463,
+    "independent_probe": {
+      "positive": 1,
+      "negative": 10,
+      "seconds": 0.4228095170110464,
+      "all_negative_zero_localization": true,
+      "all_negative_unknown": true,
+      "report": "h43_strict_delta_probe_31b2ed0.json",
+      "sha256": "12e66d8a0a2b0a005c2840a2525e77d45a43a15860be0621b4fa38360b380cf7",
+      "probe_source_sha256": "6654ef028b586f6850be15bf455801651c70167c46e16fc529c57311689ccf3e",
+      "synthetic_registration_not_physical_evidence": true
+    },
+    "saved_actual_capture_response_replay": {
+      "seconds": 16.356780721922405,
+      "report": "h43_saved_independent_31b2ed0.json",
+      "sha256": "e4a670319e3d5b6f99d1c2935abc12459ae57ffc8aa360f7d9237300bc309b1d",
+      "sequences": {
+        "train114989": "FFTT",
+        "ft_i71": "FFFT",
+        "nn_i71": "FFTT"
+      },
+      "all_final_invisible_scripted_negative": false,
+      "new_model_calls": 0,
+      "new_physical_controls": 0
+    },
+    "servo_grasp_motion_odometry_diff_from_baseline": "empty",
+    "frozen_worktree_clean": true
+  },
+  "claims": [
+    "Original6b is not retrospectively approved.",
+    "Strict receipt compatibility and saved-state regression pass; this is not a new physical or learned completion effect.",
+    "Public holding remains explicitly not skill or official success.",
+    "No 9de/6f running source changed; no weights/model query/reset."
+  ],
+  "runtime_limitations": [
+    "Local Python3.12 CPU only for this delta; remote3.11 remains unavailable because SSH has no banner. Do not claim it was run.",
+    "Future simulator bridge must independently bind requested public snapshot and existing actual motion references."
+  ]
+}
