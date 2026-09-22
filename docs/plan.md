@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 13:26（北京时间）SSH只读连接再次中断/H09AD准备不伪造封存（Codex/Astra）：** 父三次只读全链审、子seal后只读查/原ssh均Connection closed，未新reset/重发模型，最后实证两gate和八态client均已退出。子完整16response观察备份db10328f…a48df本地，但不能冒充远端正式inventory/ledger SHA。父查同一Windows原relay/上游banner，不改认证配置；H09AD开工依赖窄改为收到完整观察快照即可1800s CPU实现，原始完整封存/父审仍严格前置新物理，避免网络恢复前伪报完成。另已确认唯一个严格同图同态state00旧实际RIGHT_BACK→新RIGHT_DOWN，后续新物理须验证，不预设动作改善。
+
 **2026-09-22 13:23（北京时间）八态作者实测8/8、登记单次物理后继准备（Codex/Astra）：** 子2839158已退出，16decision/22issued=22completed/0error/120.721s；新状态CCCCCV CV与六CONTINUE/两REQUEST真值全同，旧全REQUEST/早6。双方CONTINUE交集0，不能由本轮声称motion不退步；事后history连续≥3UP也8/8，不证明视觉泛化。完整原始包待父审。登记H09AD：子封存交付后≤1800s CPU独立实现一次原i71/1038前缀的新模型request-stop局部诊断，父独审600s后另精确放行；当前0reset/训练。请求只停控制待评分，不冒充H43验证/官方成功，原严格物理判据不变。H44第二门已退出442控/292.846s自报通过，父全RAW已看，远端只读全审两次连接中断未产生可用结果，未重提任何模拟器；本地大包传输中。
 
 **2026-09-22 13:17（北京时间）H09AC真实保存态查询启动/完成语义边界核清（Codex/Astra）：** 子2839158于13:15:49.307096单次提交19ea，576文件/八态绑定与service health0预检10.035s过，active e9dac7f3…ed049/launch e016d457…c980d，原16decision≤32query/600s/16MiB且0reset；结果待。父核原LocalOutcome要求目标rise30mm＋手rise25mm＋12实际tick稳定，而公开持握仅两注册抬升/手累计范数15mm且z12mm，因此NN公开真早于严格完成有定义依据，不应调低私有成功门。已请子结果补纯history次数的事后诊断基线（0额外调用、不改原比较），防止误报视觉泛化；当前无新阈值修改。

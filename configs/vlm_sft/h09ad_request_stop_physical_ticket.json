@@ -6,7 +6,7 @@
   "dependencies": ["Finish sealing original H09AC inputs16responses22calls and hand them to parent", "Parent independently accepts that evidence", "New standalone client source and exact runtime preparation independently reviewed before any simulator start"],
   "implementation_budget": {"wall_seconds": 1800, "new_model_queries": 0, "new_training_updates": 0, "new_resets": 0},
   "parent_independent_review_seconds": 600,
-  "start": "After original H09AC sealed handoff; report real CPU start/deadline. Do not silently extend if implementation is incomplete.",
+  "start": "After original complete16-response observation snapshot handoff, CPU-only implementation may proceed while SSH-blocked original-ledger sealing is pending. Full original H09AC seal and parent review remain mandatory before physical release. Report real CPU start/deadline; do not silently extend if implementation is incomplete.",
   "ownership": "New standalone completion physical diagnostic runner/profile/tests/config and own experiment doc in your isolated branch. Reuse original native_eval_run/execution/actor/capture/outcome helpers read-only. Do not edit or pull live9de service, frozen19ea saved client, old6f eval, public8fdf executor, outcomes, original45 codec or any old result. You are not alone: parent owns H44 and public harness; teammates GPU0/1 remain untouched.",
   "protocol": [
     "Same original task1/source247/instance71/seed0 preparation, exactly1038 original expert controls and same original legal GRASP instruction. No starting from a saved successful or later ground-truth-selected state.",
