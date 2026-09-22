@@ -1,5 +1,19 @@
 # H09AB: separately queried completion requests
 
+2026-09-22 13:08:16.931337 BJT: after parent complete17-file/960-draw/two-weight
+independent audit19be16b8…c475df, the sole new service PID2833894 was submitted
+on immutable9de. Parent release4aba001ea1a1d82c02a38e85d36e256820315ffb,
+file a77945a91fb771e332010cd2c835ca42c386ce402e885834144d032990d37c7c.
+Active35150b2e…8d4fc, launch f8d8754b…86967c, ROOT/service_completion_v1
+and sibling log/launch; startup preflight10.388 s, GPU3 free75595 MiB with
+only the exact preserved idle2762269. Port8931/64 total model queries,
+initialization300 s; ready identity and any inference await their actual gates.
+No new optimizer update or reset. Both weights are now fully local, all17 files
+and134,947,808 B exactly checked. Parent training audit also found motion CE
+first/last20 rose .0010842→.046536 while status CE fell .17552→.00004864;
+therefore subsequent diagnostics must include actual motion predictions, not
+only total training loss. This start is not evidence of learned stopping.
+
 2026-09-22 12:55 BJT completion correction to the historical RUNNING entry:
 the sole PID2816348 has exited after exactly120 updates/707.996937 s, including
 the first2 gradient gates. All960 seed41 draws exactly match the registered
