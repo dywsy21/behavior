@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 08:22（北京时间）H38首门完成／完整证据审进行中（Codex）：** 2763244已退出，24动作/442控制/302.790s、gate_ok=true/无gate_failure，零两前缀；result572cd877…9339、steps3f0fda61…83ca、video68f60b96…e53b，完整364,335,034B保留。这是基础控制工程门，official_success=false不作为任务成功。父现在原6f源码做全RGB-D/实际关节与夹爪/里程计链独立重算并持久到同根`gate_radio_h38_parent_numeric.jsonl`；完整本地副本rsync可续传至`h38_gates_bundle/gate_radio_h38`，尚未称到齐/全审通过。Astra首eval初始化已在08:18父reset实控证据后放行。
+
 **2026-09-22 08:18（北京时间）六配对精确交接（Codex/Astra）：** 父独核两heldout全部4文件/实际832×23与1038×23前缀、六份新inactive SHA/统一2100/14/640；实际远端3.10两factory与8919真实health/cwd/argv同5136服务身份、0调用核0.388s过。`h09z_six_paired_evaluation_parent_release.json`一次交原六槽/每variant分母2、失败保留，不增reset或训练；首评等父2763244首reset实际control>0，允许准确绑定的父≤512MiB辅助context而非未知进程。完整训练17文件134,794,815B本地已由子全SHA过；此前父两远端权重独核不变。harness首门08:15仍初始化，不称通过。
 
 **2026-09-22 08:14（北京时间）H38首工程门真实启动（Codex）：** 唯一2763244/GPU2于08:13:27.522589提交`h38_appearance/gate_radio_h38`，冻结6f528b5/11df、独审dd50429e/a905 launcher/faaa均过；24决策/1536含hold/1200＋900初始化/384MiB，零两前缀。GPU2提交前实空81152MiB，父runtime7,829,957,337B<16GiB，旧H30进程退出、证据未动。当前初始化不是gate通过；首reset/实控后让Astra起首eval，不等整门，第二门/原起点仍按原前置审查条件。
