@@ -1,0 +1,25 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-22T08:54:00+08:00",
+  "decision": "CONTINUE_ORIGINAL_THREE_I71_SLOTS_ONLY_PAUSE_UNUSED_I1",
+  "original_six_release_sha256": "36fa3faff7a3f643916fd33f65a0a5136b6c19379dea1a1da37cf4e6505191cc",
+  "source_commit": "6f3288770f72b727a114d596cd5b98f577adc8c1",
+  "diagnosis_sha256": "21cf9aef84d07bb7cda3aef66e0915ff6b787fb44eae16eec325232fb3c69aed",
+  "allowed_original_slots": [
+    "eval_t1_i71_base_v1",
+    "eval_t1_i71_finetuned_v1",
+    "eval_t1_i71_proprio_history_nn_v1"
+  ],
+  "paused_original_slots": [
+    "eval_t1_i1_finetuned_v1",
+    "eval_t1_i1_proprio_history_nn_v1"
+  ],
+  "additional_resets": 0,
+  "training_updates": 0,
+  "changed_executor_or_budget": false,
+  "pair_order": "i71 base then finetuned then proprio_history_nn; original identical source/prepared/seed and per-run limits remain",
+  "i1": "Retain original safety-rejected attempt; report all originally registered instances and non-run status. Not evidence of weight quality.",
+  "i71": "Last frozen commanded q is inside inset, not a measured actual-state certificate. Runner retains original live safeguards.",
+  "metrics": "Report actual i71 three-way paired local GRASP separately n=1. Do not relabel this as the originally intended n=2 complete paired study or official full-task success.",
+  "gpu_coordination": "Parent plates2770041 has completed and exited. Child can take Kit init now; parent model loading not Kit initialization. Parent next policy Kit waits child reset."
+}

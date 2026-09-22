@@ -1,0 +1,22 @@
+{
+  "experiment_id": "H39-physical-start-vs-planning-inset-cpu-v1",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-22T08:51:00+08:00",
+  "status": "CPU_DESIGN_AND_IMPLEMENTATION_ONLY_NOT_DEPLOYED",
+  "hypothesis": "A physically legal demonstration handoff can lie inside the planning safety inset; treating that as an illegal measured state prevents every action before policy quality can be evaluated. Separate legal physical state from conservative commanded planning range, without moving closer to a hard limit.",
+  "evidence": {
+    "run": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/eval_t1_i1_base_v1",
+    "q_index": 16,
+    "actual_rad": 1.047196626663208,
+    "physical_upper_rad": 1.0471980571746826,
+    "original_planning_margin_rad": 0.001,
+    "scope": "First saved actual state, not an inferred every-tick onset. Full child root-cause receipt and first failure archive pending."
+  },
+  "base_parent_commit": "2e38e73",
+  "source_ownership": ["src/semantic_robot/v2/servo.py", "tests/semantic_robot/test_joint_boundary_start.py", "docs/experiments/2026-09-22-h39-joint-boundary-start.md"],
+  "budget": {"cpu_seconds": 1800, "new_gpu_calls": 0, "physical_resets": 0, "training_updates": 0},
+  "candidate": "Default-off explicit mode; legal measured hard-bound start only. Plan bounds retain existing inset where possible, extend no further than that measured starting coordinate where necessary, and remain within calibrated physical limits. Interior starts unchanged; no coordinate clipping or target relabeling. All collision, timing, tracking and carry constraints retained.",
+  "acceptance": ["Old default byte/behavior regression", "Out-of-hard-limit, nonfinite and malformed state refused", "Real heldout saved state cannot be rejected only for inset occupancy", "No commanded path advances farther toward the occupied bound", "Inactive joints and active bounded IK both respect the distinct ranges", "Existing gripper completion and trajectory checks retained", "Independent review before any deployment"],
+  "prohibited": "No hot change to H38 6f528b5 or SFT 6f32887, no training data/weights/source identity rewrite, no lowering actual hard-limit/collision/success checks, no new reset under this ticket.",
+  "next": "After evidence and CPU review choose prospective common evaluator compatibility contract; preserve original i1 failure and do not compare old/new executor as a pure weight effect. Actual paired evaluation separately registered."
+}
