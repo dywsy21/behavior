@@ -57,8 +57,18 @@ class CompletionTests(unittest.TestCase):
             execution = {"token": token, "control_start": clock, "control_end": clock + 18,
                 "feedback": {"status": status, "control_ticks": 18}}
             if i == 0:
-                execution["feedback"]["gripper_execution"] = {"part": "right", "move": "close",
-                    "command_complete": True, "success_claim": False, "executed_control_ticks": 18}
+                execution["feedback"].update(holding="UNKNOWN", official_success="NOT_AVAILABLE_TO_ACTOR",
+                    pose_tracking_status="TARGET_REACHED", target_error_m={"left": 0., "right": 0.},
+                    orientation_error_deg={"left": 0., "right": 0.})
+                execution["feedback"]["gripper_execution"] = {
+                    "version": "gripper-command-completion-v1", "part": "right", "move": "close",
+                    "command_complete": True, "success_claim": False,
+                    "planned_control_ticks": 18, "executed_control_ticks": 18,
+                    "final_state_checks": {k: True for k in ("finite_proprio", "joint_bounds",
+                        "robot_collision_free", "active_hand_within_divergence_envelope",
+                        "inactive_hand_within_pose_tolerance")},
+                    "limits": {"active_position_m": .018, "active_angle_deg": 9.,
+                        "inactive_position_m": .0025, "inactive_angle_deg": 1.5}}
             path = directory / "execution.json"; dump(path, execution)
             self.records.append(ExecutedMotionRef(token, path, sha(path), before, after)); clock += 30
         self.current = self.records[-1].after
@@ -165,6 +175,34 @@ class CompletionTests(unittest.TestCase):
     def test_success_claim_is_not_gripper_command_receipt(self):
         self.modify_execution(0,lambda d:d["feedback"]["gripper_execution"].update(success_claim=True))
         self.assertFalse(self.verify()["public_holding_verified"]);self.locate.assert_not_called()
+
+    def test_close_requires_original_full_safe_execution_receipt(self):
+        original = self.records[0]
+        original_bytes = original.execution_path.read_bytes()
+        cases = [lambda f: f["gripper_execution"].update(version="unknown"),
+                 lambda f: f["gripper_execution"]["final_state_checks"].update(robot_collision_free=False),
+                 lambda f: f["gripper_execution"].update(planned_control_ticks=17),
+                 lambda f: f["gripper_execution"].update(executed_control_ticks=18.0),
+                 lambda f: f["gripper_execution"].pop("limits"),
+                 lambda f: f["gripper_execution"].pop("final_state_checks"),
+                 lambda f: f.update(visual_gate_failure="failed"),
+                 lambda f: f.update(holding="TRUE"),
+                 lambda f: f["target_error_m"].update(right=.019),
+                 lambda f: f["orientation_error_deg"].update(left=2.)]
+        for index, mutate in enumerate(cases):
+            with self.subTest(case=index):
+                original.execution_path.write_bytes(original_bytes)
+                self.records[0] = original
+                self.modify_execution(0, lambda e: mutate(e["feedback"]))
+                self.assertEqual(self.verify()["status"], "UNKNOWN")
+                self.locate.assert_not_called()
+        original.execution_path.write_bytes(original_bytes)
+        self.records[0] = original
+
+    def test_completed_up_with_explicit_visual_failure_is_not_accepted(self):
+        self.modify_execution(1, lambda e: e["feedback"].update(visual_gate_failure="CURRENT_DEPTH_REJECTED"))
+        self.assertEqual(self.verify()["status"], "UNKNOWN")
+        self.locate.assert_not_called()
 
     def test_missing_request_deadline_or_motion_status_no_calls(self):
         for status in ("CONTINUE","SUCCEEDED",True,None):

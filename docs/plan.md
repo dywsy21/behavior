@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 12:21（北京时间）H43严格动作记录作者回归通过（Codex）：** 原6b独审P2完整报告7d4b280d…e2d4原样纳Git；新所有CLOSE/UP复用原strict helper，15专项/0.957s＋552公共/24.969s与三保存态18.137s正/负全过，报告0e666c21…a752，数值序列不变。当前冻结修后源并做实际3.11保存态核，后续300s独立delta审；0新物理/调用，不冒称已部署。子单次训练release已交，真实启动待回执。
+
+**2026-09-22 12:19（北京时间）H43严格执行记录窄修实现（Codex）：** Astra补充UP显式visual_gate_failure同样应拒，故新adapter对CLOSE与全部UP统一复用原execution_completed，保留原时钟/18tick/捕获与持握阈值；测试改完整真实schema并加10 CLOSE负例＋1 UP视觉失败，回归/原H42保存态重放待，0部署。仍原12:17起600s修复票，非额外物理；9de训练与197 H44源完全不改。
+
 **2026-09-22 12:17（北京时间）H09AB父独审闭合/单次120放行，H43另修安全记录（Codex）：** 9de全部新模块及旧loader/loss已审，220/6.718s＋自有33检查/0.277s过；逐核真实73 mask/960采样、同snapshot后端篡改隔离、调用上限、授权反例和CE全量/截取梯度一致。`h09ab_parent_training_release.json`仅交GPU3从原0120再120（含2 gate）、2700s/384MiB，实际启动待子动态门；不放新service/sim。Astra独审H43发现CLOSE只验部分receipt，可接纳缺安全字段/碰撞false，原6b暂不通过；父另600s窄修复用原execution_completed，300s独立delta审，0物理/调用，不阻塞训练或H44。
 
 **2026-09-22 12:13（北京时间）H44作者准备闭合/H09AB终版独审中（Codex）：** launcher冻结dda73a3/e6301f89，7专项＋550公共/15.828s通过；真实远端3.11两个clean源码/精确digest、全部四命令和三新CLI标志核过，新结果根仍不存在、旧服务未动。作者900s票内闭合，receipt `h44_launcher_author_validation.json`，下一Astra≤600s独审优先放实训空档。子H09AB最终9deafb1已于12:09交付，父220 native/6.718s过（本地archive1 skip），正独查服务同态/数据掩码/120更新门；训练未启动。Astra H43独审12:10:25–12:20:25进行中，GPU0/1不动。

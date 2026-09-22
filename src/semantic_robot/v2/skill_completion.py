@@ -20,6 +20,7 @@ from .harness import Goal
 from .odometry import RGBDMotion
 from .protocol import Action
 from .self_odometry import make_frame
+from .servo import execution_completed
 
 VERSION = "h43-public-grasp-request-v1"
 VIEWS = ("head", "left_wrist", "right_wrist")
@@ -225,6 +226,10 @@ def prepare_window(model, goal, records, request_capture, deadline):
                 after.snapshot_id <= before.snapshot_id or
                 (previous is not None and (not _same_state(previous, before) or before.snapshot_id < previous.snapshot_id))):
             raise ValueError("Recorded execution and actual settled sensor clocks disagree")
+        # Preserve the executor's complete command contract, including explicit
+        # visual failures on UP and all versioned safety checks on CLOSE.
+        if not execution_completed(Action(goal.hand, "close" if i == 0 else "up", "fine"), feedback):
+            raise ValueError("Strict public execution completion receipt failed")
         if i == 0:
             closing = feedback.get("gripper_execution", {})
             if (closing.get("part") != goal.hand or closing.get("move") != "close" or

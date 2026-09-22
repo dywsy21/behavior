@@ -5,7 +5,7 @@
   "author_seconds": 600,
   "independent_delta_review_seconds": 300,
   "hypothesis": "Reuse original execution_completed instead of a partial CLOSE receipt check, so unsafe or incomplete recorded commands cannot qualify a public verification window.",
-  "scope": ["One strict execution_completed gate using the exact fine CLOSE", "Complete realistic test receipt and negative safety/version/duration cases", "Same saved H42 responses positive/negative replay; no threshold changes"],
+  "scope": ["One original execution_completed gate on every exact fine CLOSE/UP; includes visual_gate_failure rejection for UP reported by independent reviewer12:18", "Complete realistic test receipt and negative safety/version/duration/UP visual-failure cases", "Same saved H42 responses positive/negative replay; no threshold changes"],
   "model_calls": 0,
   "training_updates": 0,
   "physical_resets": 0,

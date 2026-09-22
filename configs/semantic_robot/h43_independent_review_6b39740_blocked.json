@@ -1,0 +1,98 @@
+{
+  "task_id": "H43-independent-review",
+  "source_commit": "6b397408f4017ad1613cea98246dbdc86aca1d0c",
+  "module_sha256": "80e92646e0068f256bc6419b1734b76884039c6561ce8de8dfda9e2de2138907",
+  "reviewer": "Astra-max-vlm_sft_resume_20260921",
+  "started_bjt": "2026-09-22T12:10:25+08:00",
+  "completed_utc": "2026-09-22 04:19:08 UTC",
+  "deadline_bjt": "2026-09-22T12:20:25+08:00",
+  "independent_review_passed": false,
+  "blocking_findings": [
+    {
+      "priority": 2,
+      "id": "EXECUTION_RECEIPT_NOT_STRICTLY_CONSUMED",
+      "path": "src/semantic_robot/v2/skill_completion.py",
+      "lines": [
+        222,
+        237
+      ],
+      "description": "prepare_window manually checks a partial CLOSE receipt and status-only UP completion instead of the existing execution_completed helper. Four invalid CLOSE receipts and one UP with explicit visual_gate_failure can reach PUBLIC_HOLDING_VERIFIED under synthetic successful registration while execution_completed rejects them.",
+      "close_cases": [
+        "unknown gripper version",
+        "explicit failed robot_collision_free check",
+        "planned ticks 17 versus actual 18",
+        "missing strict version/state/limits/pose receipt fields"
+      ],
+      "up_case": {
+        "feedback_status": "TARGET_REACHED",
+        "visual_gate_failure": "CURRENT_DEPTH_REJECTED",
+        "strict_helper_result": false,
+        "synthetic_public_holding_verified": true,
+        "localization_calls": 3
+      },
+      "requested_fix": "Use the unchanged strict execution_completed(Action(hand, close/up, fine), feedback) on EVERY recorded action, retaining existing strict statuses, clocks, endpoint and request bindings. Complete test fixtures with real schema. No relaxation of physical/vision/skill gates.",
+      "physical_claim": false
+    }
+  ],
+  "validation": {
+    "public_tests": {
+      "passed": 543,
+      "seconds": 16.026
+    },
+    "native_legacy_tests": {
+      "passed": 174,
+      "seconds": 8.34
+    },
+    "saved_response_replay": {
+      "seconds": 14.222397478,
+      "report": "h43_saved_independent_6b39740.json",
+      "sha256": "8d9143ac4b48fbcf516fb186f7dda89624e99fd085123a427d4b853eea0a4e40",
+      "sequences": {
+        "train114989": "FFTT",
+        "ft_i71": "FFFT",
+        "nn_i71": "FFTT"
+      },
+      "all_three_final_invisible_negative": "UNKNOWN",
+      "new_model_calls": 0,
+      "new_physical_controls": 0
+    },
+    "independent_close_probe": {
+      "seconds": 0.249297707,
+      "report": "h43_independent_probe_6b39740.json",
+      "sha256": "1e2ad68f18391a5f51391297e6eeba681bc0e60bf332ba76e8d383d53e0ca06e",
+      "source": "h43_independent_probe.py",
+      "source_sha256": "8344befb52b85cf33e8478db5419e7049af65c3a9bf43839232f6a45abcfab51",
+      "cases": 4,
+      "all_four_window_admitted": true,
+      "all_four_strict_helper": false,
+      "all_four_synthetic_public_holding_verified": true
+    },
+    "additional_up_probe": {
+      "seconds": 0.214380876,
+      "synthetic_tracking_stub": true,
+      "new_calls": 0
+    }
+  },
+  "reviewed": [
+    "Complete304-line skill_completion module",
+    "Complete224-line test module",
+    "Design45-line document",
+    "Original strict execution_completed helper",
+    "GraspMotionVerifier current-frame and repeated-lift aggregation",
+    "Robot-only self-odometry exclusions",
+    "All saved response replay endpoints and current visibility negative results"
+  ],
+  "positive_boundaries": [
+    "No oracle/private scene state imported",
+    "No actuation or model calls in these CPU checks",
+    "Current final frame, not prior positive, determines verification",
+    "Explicitly not_skill_success/not_official_task_success",
+    "Capture RGB-D bytes/clock/q/grip/render and actual same-hand CLOSE->UP chain are bound"
+  ],
+  "limitations": [
+    "Synthetic probes establish admission defects, not physical holding.",
+    "Saved responses are previous observations, not new physics or a learned completion policy.",
+    "Runtime integration remains separate and is not released by this report."
+  ],
+  "next": "Parent accepted P2 and owns a separate frozen delta fix/review. Original6b remains unapproved. Prioritize independently released H09AB one-shot training; do not wait for H43 fix or H44."
+}

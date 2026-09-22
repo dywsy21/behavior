@@ -43,3 +43,9 @@ H09AB负责学习“现在应请求验收吗”，H43只回答“已有的公开
 证据：本地`artifacts/agentic-vlm-goal-20260918/h43_saved_replay_author_v2.json`，SHA `309dabac76708c1a39afc9ac5f2939e9d38eac28c430898c13ff14f1e4593c38`；早期无snapshot检查的v1保留，不能替代最终代码证据。
 
 关键限制：NN公开持握早于原严格局部技能完成。因此不能收到这个布尔值就自动认定GRASP完成。下一步是独立源码审查、精确版本的学习请求＋公开验证接线，再用新的同起点预算比较原0120和completion增量权重。旧i71终态失败和官方0保持不变。
+
+## 独审发现与严格动作记录修复
+
+2026-09-22 12:19独审原6b未通过：手写部分CLOSE字段检查漏掉原执行器的版本、完整安全状态和计划时长；UP也遗漏显式visual_gate_failure否决。原失败报告完整保留在`configs/semantic_robot/h43_independent_review_6b39740_blocked.json`，不能把作者正例通过当独审通过。
+
+父12:17起另600秒CPU窄修，对所有CLOSE/UP先调用原`execution_completed`，不改执行器、跟踪阈值或成功判据。真实schema测试补齐，10种CLOSE记录缺失/不安全与UP视觉失败均在任何定位前返回UNKNOWN。15专项/0.957秒、552公共/24.969秒过；同三保存态正/负复算18.137秒保持原结果，新报告`artifacts/agentic-vlm-goal-20260918/h43_strict_receipt_saved_author.json`，SHA`0e666c21408898cc4f7a9fbcd57cd566e9243080dd4fbb6b14fbd9d97b9ca752`。修后固定版本仍须≤300秒独立delta审，0部署/新调用/控制；不影响独立VLM训练及H44的197运行源。
