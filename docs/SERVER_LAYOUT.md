@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 12:57当前：** 父2822518已退出，首H44工程门结果在原目录，完整364,299,272B正下载本地`artifacts/agentic-vlm-goal-20260918/h44_gates_bundle/gate_radio_h44`；第二门与8932尚未启动。子120原run终态f1da27ca…f07e2与17文件inventory7a3ac101…adc3已封存，8931未启动，0/1未动。
+
 **2026-09-22 12:49当前：** 子2816348已退出，`h09y_grasp_only/training_completion_v1/adapter_0120`是真实120新终权重（d6b011b2…6d8a），同run的result/账本正封存，不能删除旧`training_v1`；新8931服务尚未启动。父2822518仍首H44原run，未启动第二门/新27B。
 
 **2026-09-22 12:40当前：** 旧父2777940已确认退出，完整本地`artifacts/agentic-vlm-goal-20260918/h38_server_complete_archive/`两server＋两launch SHA同，远端旧证据/cache全部保留。新父2822518/GPU2于12:39:43.512777BJT提交首门，源`git_worktrees/semantic_nearpose_197c2ba`；结果`/mnt/nvme_tmp/robodojo_agentic_20260921/h44_reachability/gate_radio_h44`、相邻`.log`与`launch_radio.json`；继续复用父自己`robodojo_harness_runtime_20260921/gripper_v1_gates`，禁止热改。子2816348/GPU3训练仍原9de/原输出；没有新8931/8932服务。
