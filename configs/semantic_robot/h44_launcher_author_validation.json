@@ -1,0 +1,27 @@
+{
+  "task_id": "H44-one-shot-launcher",
+  "owner": "Codex-parent",
+  "completed_bjt": "2026-09-22T12:13:00+08:00",
+  "status": "AUTHOR_PASSED_INDEPENDENT_REVIEW_PENDING_NOT_LAUNCHED",
+  "launcher_commit": "dda73a3a43682baa4805ac5e50146bb4454bcb22",
+  "launcher_sha256": "e6301f89941bc6f1731652261e343d1da760880828c65937aa104bc7e98a8665",
+  "test_sha256": "ec59afa8d556f90e970de2eac3cf68e1ac3a10a26f19029754bd73992f96259d",
+  "runtime_source_commit": "197c2ba7bc941c9850e71217164f1fd9538b03cb",
+  "runtime_digest": "e5ce7b5843c495a33fca56c247888f6733988b739397fc4f7931d5fd15596b30",
+  "tests": {"targeted": 7, "targeted_seconds": 0.002, "public": 550, "public_seconds": 15.828},
+  "actual_remote_cpu": {
+    "python": "/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python",
+    "launcher_source": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/h44_launcher_dda73a3",
+    "both_sources_clean": true,
+    "launcher_help_passed": true,
+    "runtime_help_contains_three_new_flags": true,
+    "runtime_digest_and_launcher_sha_match": true,
+    "all_four_command_arrays_inspected": true,
+    "new_result_root_exists": false
+  },
+  "old_service_retired": false,
+  "new_model_calls": 0,
+  "new_resets": 0,
+  "training_updates": 0,
+  "remaining": "Independent launcher review; then exact old-service archival/retirement and one-shot staged physical run. Child120 training takes priority over launcher review."
+}
