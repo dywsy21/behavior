@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 12:38（北京时间）H09AB唯一训练实际运行/H09AC后继登记（Codex/Astra）：** 子2816348实际12:34:24.726517启动固定9de，GPU3原仅旧2762269且free75595MiB，dynamic10.414s过；active97698cd8…c2ca/launch eed9999b…2032，`h09y_grasp_only/training_completion_v1`及相邻log，120含2gate/2700s/384MiB，终态待。后继H09AC先1200s CPU准备固定FT6＋NN2保存态双adapter诊断，独审300s后才≤32 query/600s，私有标签只评分；不新增reset/训练，不把保存态当SR。父旧服务retire首probe因该3.11构建无pidfd_open在信号前失败，后续首门前置test正确拒、0新reset；转查系统Python支持，未停错进程。
+
 **2026-09-22 12:35（北京时间）H44独审通过/旧父服务封存，训练前动态门（Codex/Astra）：** launcher dda73a3独审340s/550＋59自有检查，报告da569c2e…aaf5全读原样纳Git，197 runtime不含H43。父旧2777940精确cwd/完整argv/starttime/clean源码/195调用/无旧client已只读核，server两文件＋两launch完整本地四SHA同，旧服务仍未TERM；下一按已登记票只释放该父进程再首门。子训练提交前先后见未知GPU3小进程2813382/2814576，均未放宽名单/未杀、现自然退出；原唯一120未因这些拒绝消费步数，新active/Popen真实回执待。不能把动态预检当训练已开始。
 
 **2026-09-22 12:30（北京时间）robo连接恢复/H43修后独审闭合（Codex/Astra）：** Windows到原23117中继/上游都返回SSH，只有WSL本地转发路径失效；临时Windows stdio字节转接＋Linux原ssh/HostKeyAlias/known_hosts/私钥严格认证成功，hostname llmvideo26/04:29:06UTC。未改VPN/relay/认证配置或密钥ACL，Windows ssh直接读Linux key因ACL被拒的尝试未放宽权限。连接恢复已通知子立即优先唯一训练，父不替子提交。H43 31b独立delta111s/552＋自有1正10负/三保存态过，报告6c886a06…fbab原样纳Git；仅本地3.12，不冒称已做新3.11/物理。H44独审继续，旧服务尚未停。

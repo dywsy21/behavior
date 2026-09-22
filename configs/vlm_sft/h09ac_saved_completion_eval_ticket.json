@@ -1,0 +1,31 @@
+{
+  "task_id": "H09AC-saved-state-completion-diagnostic",
+  "owner": "Astra-max-vlm_sft_resume_20260921",
+  "registered_bjt": "2026-09-22T12:38:00+08:00",
+  "hypothesis": "The new adapter should request verification near actual local completion, retaining motion imitation and avoiding the late destructive-lift pattern; public holding alone can occur before strict completion.",
+  "implementation_budget": {"wall_seconds": 1200, "new_training_updates": 0, "new_model_queries": 0, "new_resets": 0},
+  "parent_independent_review_seconds": 300,
+  "start": "After actual warmstart is safely running; monitor its numeric gates first. This does not authorize another training or physical run.",
+  "scope": "A new standalone native_completion_saved_eval module, focused tests and config. Never change live9de train/service, original native45 actor, original outcomes or old evaluation runs.",
+  "fixed_inputs": {
+    "executable_and_service_commit": "9deafb1b65cc9e0c3c91371af0eb2f815b063774",
+    "variants": ["motion_only_0120", "completion_0120_plus120"],
+    "FT_i71_captures": ["decision_00/before", "decision_01/after_settle", "decision_02/after_settle", "decision_03/after_settle", "decision_04/after_settle", "decision_05/after_settle"],
+    "NN_i71_captures": ["decision_04/after_settle", "decision_05/after_settle"],
+    "selection_reason": "Fixed before any new model response: pregrasp, close, staged lifts, first documented success; NN second lift is the known public-holding/strict-completion disagreement, not a hand-picked response success.",
+    "evidence": "Existing parent-complete inventory-bound i71 FT/NN runs only; retain development-set label, never add to training. Verify exact task/instruction, model calibration, full public capture files, completed motion history and source inventory SHA. Private outcome data is offline scoring only."
+  },
+  "contract": [
+    "Construct only original six actor fields with from_capture and exact actually completed history; use old legal instruction and current three RGBs.",
+    "Both variants get identical frozen public actor/pixels. No instance id, path, tick, physical result, expected status, source variant or verifier verdict in prompts.",
+    "Use already implemented9de /decision endpoint/status->motion transaction; each actual query counts to original64 service cap.",
+    "At most8 states times2 variants=16 decisions and32 model queries; one unique request id each, no retries, stop on error and preserve partial evidence.",
+    "Expected status comes from unchanged original LocalOutcome result at this exact state, not future success or gripper closure. Missing exact endpoint outcome means report unknown, not invent labels.",
+    "Optionally report known H42 public-verifier corroboration only when exact capture SHA matches; original H42 responses may be CPU-replayed through reviewed31b. Label these saved responses, zero new perception, not online physical validation.",
+    "Report full confusion matrix/raw predictions, early/late requests and motion outputs, not just accuracy. Always-request and never-request trivial baselines must be shown.",
+    "This is a saved-state development diagnostic, not a new simulator success rate or independent generalization claim. Original FT/NN terminal failures stay unchanged."
+  ],
+  "prospective_inference_after_parent_release": {"port": 8931, "service_total_query_cap": 64, "this_block_max_queries": 32, "wall_seconds": 600, "new_resets": 0, "new_training_updates": 0, "new_output": "completion_saved_eval_v1", "max_MiB": 16},
+  "dependencies": ["Actual new120 terminal weights and result independently checked", "Parent exact-result service release before loading new service", "Frozen new evaluator independently reviewed before32-query block"],
+  "stop": "At implementation deadline or any source/snapshot/outcome ambiguity, stop and report; no automatic model retries, extra data or retraining."
+}

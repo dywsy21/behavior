@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 12:38当前：** 子唯一训练2816348于12:34:24.726517BJT提交，固定`git_worktrees/vlm_sft_h09ab_completion_9deafb1`不热改；结果`h09y_grasp_only/training_completion_v1`、同stem`.log/.launch.json`，同根active97698cd8…c2ca，2700s/120。父旧2777940尚未停止：3.11 pidfd探针提前失败，0信号；新`git_worktrees/h44_review_03a0e9c`真实Git建好，H44首sim尚未启动。两个未知小GPU3 PID已自然退出，未停止任何队友任务。
+
 **2026-09-22 12:30当前：** WSL到12723117握手路径异常，但Windows原ATrustWslRelay及上游SSH正常；本地忽略工具`artifacts/agentic-vlm-goal-20260918/robo_windows_stdio_ssh.py`只做一次性stdio转接给Linux原ssh（原严格host key和私钥保留），成功到同一llmvideo26。无持久配置/密钥权限/中继变化。不要按前条断线推断服务器停机或重启已有任务；新训练实际进程待子回执。
 
 **2026-09-22 12:24当前：** 子已核新的只读Git源`git_worktrees/vlm_sft_h09ab_completion_9deafb1`、预检小包`h09y_grasp_only/completion_9deafb1_cpu_ready/`存在，`training_completion_v1`/`service_completion_v1`此前核absent，未提交新进程。父只读launcher源`git_worktrees/h44_launcher_dda73a3`实核clean，但`h44_reachability`结果根仍未创建；31b新远端树创建请求在SSH banner阶段失败，不能当存在。SSH当前不可用，旧2777940/2762269实时状态未知、未发送停止命令，0/1未碰；恢复后重核，不用旧观测声称GPU空闲。
