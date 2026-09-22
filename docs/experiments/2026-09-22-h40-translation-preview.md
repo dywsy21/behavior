@@ -23,4 +23,6 @@ H38实际第75次决策的同一机器人状态：直接前伸3cm过不了原IK�
 
 作者519公共测试/13.554s、174 SFT测试/6.082s通过，包含默认关闭、保持动作集合、未知负载/闭爪/近场未确认拒绝、只读状态、过期预算、陈旧试验绑定、提示无假想关节数组、公共入口准确传参/同版本门。首合成测试中已有方向去重保留wrist-frame BACK（等价base UP），断言改成物理方向判断；生产实现未因此改变。
 
-保存态复算、独立审查待；任何物理部署需要另行前瞻登记，不能沿用此CPU票或偷偷加入已在跑的对照。
+固定代码3f2c153实际3.11解释器复算d75/4.763s：新模块3次预测中，forward-fine后coarse仍拒；up-head/base-fine后coarse通过、两步收益34.86/31.33mm、55/56预测tick。原q/命令锁存不变；report `h38_appearance/h40_d075_committed_predictor.json` SHA93df5940…b1cd。这复用了当时已depth准入的第一步与新模块，不是新完整controller/actor物理闭环。作者900s票已闭合。
+
+独立审查通过：Astra366s，独立519公共＋174 SFT、28自有反例和完整runner gate检查、保存态1.969s复算一致；报告`configs/semantic_robot/h40_independent_review_20260922.json` SHA4f47454a…b0b26。任何物理部署仍需要另行前瞻登记，不能沿用此CPU票或偷偷加入已在跑的对照。

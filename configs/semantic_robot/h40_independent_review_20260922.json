@@ -1,0 +1,67 @@
+{
+  "reviewer": "Astra-max-vlm_sft_resume_20260921",
+  "source_commit": "3f2c1539641dc83aa0b6be0d90e587ef4c78460f",
+  "implementation_digest": "c0ab5b62325a699327a13782c3debb32cacdaf94f008770ab3ece21082bad64f",
+  "module_sha256": "f84104861d1652f7aa6e09fa4b7088dd077f0b43f5725d711da513449d5605bb",
+  "runner_sha256": "f57106f16ecee7a1117bb0dd791df575aed293c2c36abc650003a987f4dec2b4",
+  "readonly_worktree": "/home/wsy/behavior_worktrees/review-h40-3f2c153",
+  "started_bjt": "2026-09-22T10:25:23+08:00",
+  "validation_completed_bjt": "2026-09-22T10:31:29+08:00",
+  "validation_elapsed_seconds": 366,
+  "budget_seconds": 600,
+  "independent_review_passed": true,
+  "blocking_findings": [],
+  "reviewed_paths": [
+    "src/semantic_robot/v2/approach_translation.py",
+    "src/semantic_robot/v2/grounded_harness.py",
+    "src/semantic_robot/v2/prompt_context.py",
+    "src/semantic_robot/v2/policy.py",
+    "scripts/semantic_robot/run_v2.py",
+    "tests/semantic_robot/test_approach_translation.py",
+    "docs/experiments/2026-09-22-h40-translation-preview.md",
+    "configs/semantic_robot/h40_translation_preview_cpu_block.json"
+  ],
+  "validation": {
+    "interpreter": "/home/wsy/miniconda3/bin/python",
+    "public_unittests": {"count": 519, "seconds": 14.096, "passed": true},
+    "sft_unittests": {"count": 174, "seconds": 6.465, "passed": true},
+    "independent_negative_and_gate_probe": {
+      "cases": 28,
+      "seconds": 2.299635593080893,
+      "sha256": "3ab63b70a96757eda4af5991b696ebea01d67d08fcd02cdf4092aa6f74f8732c",
+      "path": "h40_independent_probe_20260922.json",
+      "passed": true
+    },
+    "independent_saved_d075_recomputation": {
+      "seconds": 1.9687586539657786,
+      "direct_coarse": "UNREACHABLE_OR_COLLISION_BLOCKED",
+      "followups_accepted": [false, true, true],
+      "maximum_float_difference_from_parent": 1.1102230246251565e-16,
+      "comparison_tolerance_for_computed_report_only": 1e-10,
+      "sha256": "a15a7c307800e9421e3159fd05b98d7ca2544466fb586045b32d0605d245d022",
+      "path": "h40_saved_d075_independent_local.json",
+      "passed": true,
+      "servo_motion_success_thresholds_changed": false
+    }
+  },
+  "review_conclusions": [
+    "Default-off branch preserves the offered palette and existing primitive/execution guards; only already accepted current fine translations receive annotations.",
+    "Single-hand visible safe unloaded APPROACH, distance greater than 0.10 m, measured full opening and open command latches are required. Unknown load flags, closed latches, near/contact abstention and current depth veto do not produce the new hint.",
+    "At most three distinct accepted fine first paths and one actually robot-path-rejected improving coarse followup are used. No predicted followup is appended to the palette or queued.",
+    "Trials bind exact model, limits, action, state q, gripper and commanded latch. Deadlines are checked before and after predicted preflight.",
+    "Actor summaries disclose robot-only prediction and lack of future environment authorization. No future q plan or privileged scene truth enters the new actor context.",
+    "Independent execution of the complete real gate predicate rejects missing/wrong new flags, wrong source digest, missing task and other guard mismatch; default missing flag remains legacy.",
+    "The real runner still selects exactly one currently offered action and rereads actual state before the unchanged servo execution check. No preview execution mechanism was introduced."
+  ],
+  "limitations": [
+    "Public open/latch qualification is not an absolute empty-hand or no-environment-contact certificate.",
+    "The followup has no future depth observation and is robot-only; no complete swept-scene safety, grasp pose or success claim is warranted.",
+    "Saved d075 recomputation reuses already depth-accepted first actions and fixed robot data. It is not a new full scene/controller/actor rollout.",
+    "The old H38 subsequently progressed without this feature; no permanent-deadlock or physical success-rate improvement claim.",
+    "Neither active/frozen native6f nor the existing H38 source was modified or redeployed. Physical deployment needs a separate prospective authorization."
+  ],
+  "new_resets": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "deployment_authorized_by_this_report": false
+}

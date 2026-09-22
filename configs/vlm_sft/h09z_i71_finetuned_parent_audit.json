@@ -1,0 +1,30 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-22T10:37:00+08:00",
+  "code_commit": "6f3288770f72b727a114d596cd5b98f577adc8c1",
+  "numeric_report": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/i71_ft_parent_numeric.json",
+  "numeric_report_sha256": "dc67db62d0f5dea7347ffd218ed9f792795c97693eab3cbb6295da48c413d467",
+  "complete_evidence": "/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09y-resume-20260921/evaluation_evidence/eval_t1_i71_finetuned_v1",
+  "inventory_sha256": "5c8416d8b6f8648c2bf0ea84de5b4cd57fdf842a49b8f74f5e241a9822412fcc",
+  "files": 288,
+  "bytes": 107360898,
+  "all_saved_numeric_evidence_checked": true,
+  "manual_RAW_review": {
+    "frames": ["decision_00/before", "decision_02/after", "decision_05/after", "decision_08/after", "decision_09/after"],
+    "views": ["head", "left_wrist", "right_wrist"],
+    "count": 15,
+    "findings": "The correct trash can is beside the right hand; fingers change from open to closing around its rim. Subsequent wrist views retain the can while the left hand remains separate. Head view crops much of the near can. Exact lift and torso collision rely on complete physical records, not a claim that all geometry is visible in these sampled images."
+  },
+  "original_predicate_recomputed_without_changes": true,
+  "first_local_success_tick": 1232,
+  "last_local_success_tick": 1322,
+  "intermediate_success_frames": 91,
+  "right_held_frames": 229,
+  "target_max_rise_m": 0.06287385523319244,
+  "first_forbidden_contact_tick": 1323,
+  "first_forbidden_contact": "target trash_can_116 against robot torso_link2",
+  "terminal_local_success": false,
+  "terminal_reason": "NEW_FORBIDDEN_PHYSICAL_CONTACT",
+  "conclusion": "The trained actor acquired grasp-and-lift behavior in this one heldout local start, then continued acting and ended in collision. This is intermediate skill evidence, not a successful terminal trial or full-task success rate.",
+  "limitations": ["Single heldout instance with paid1038 expert prefix", "15 of87 RAW manually inspected; all87 RGB/depth hashes checked", "Actual robot q only at saved captures, not every control", "No continuous-video audit or early-stop rescore claim", "Original assisted-grasp simulator semantics retained; no independent grip-force test"]
+}
