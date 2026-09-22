@@ -1,0 +1,41 @@
+{
+  "reviewer": "Codex-parent",
+  "passed": true,
+  "inventory_sha256": "9c5d73b4ff10812db254212ad994b512db8adc4442e5631e8c130fd526b14c2e",
+  "files": 391,
+  "bytes": 143074963,
+  "captures": 40,
+  "payloads": 280,
+  "rgb_hashes": 120,
+  "depth_hashes": 120,
+  "controls": 1447,
+  "native_controls_including_final_hold": 409,
+  "complete_decisions": 13,
+  "partial_last_candidate_ticks": 6,
+  "tokens": {
+    "LEFT_FORWARD": 14
+  },
+  "physical_frames": 398,
+  "target_max_displacement_m": 0.0,
+  "target_max_rise_m": 0.0,
+  "held_frames": 0,
+  "finger_contact_frames": 0,
+  "local_success": false,
+  "official_task_SR_claim": false,
+  "manually_viewed_RAW": {
+    "decisions": [
+      0,
+      4,
+      9,
+      13
+    ],
+    "views": [
+      "head",
+      "left_wrist",
+      "right_wrist"
+    ],
+    "count": 12
+  },
+  "limits": "All commands and saved physical frames checked. No invented actual-q per tick or continuous video; 12 of 120 RAW personally viewed. Hand selection was not specified in actor input, but visible target stayed by right hand while policy moved left.",
+  "seconds": 1.599733002949506
+}
