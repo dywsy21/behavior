@@ -1,5 +1,21 @@
 # H09AB: separately queried completion requests
 
+2026-09-22 12:55 BJT completion correction to the historical RUNNING entry:
+the sole PID2816348 has exited after exactly120 updates/707.996937 s, including
+the first2 gradient gates. All960 seed41 draws exactly match the registered
+480 motion/240 CONTINUE/240 REQUEST_VERIFY mixture. Both checkpoints have372
+finite language-LoRA tensors; all3-category save/reload logit errors are zero.
+Formal3.10 CPU audit7.033 s passed without loading weights into a model or any
+extra update. Terminal adapter
+d6b011b26bf6955d4c3fa6b79cff87a8acd67406c6b5add1c4428f3273ab6d8a;
+result f1da27ca96f70be1d701ea6a566c46bb6d71abb7b7a8d7d5f0f82d0d5fff07e2.
+Sealed17-file inventory134,947,808 B SHA
+7a3ac1015f01a9651043cf5b15151ebfafb26ca450eaaf9fe911e3c32fedadc3.
+Remote ROOT/training_completion_v1 and its siblings remain unchanged. Local
+small evidence is own artifacts/h09y-resume-20260921/training_completion_complete;
+full adapter download is separate. Parent independent audit and service grant
+are still required. Training completion is not evidence of learned stopping.
+
 2026-09-22 12:34:24.726517 BJT actual one-shot training submitted, PID2816348,
 fixed9de/8fdf. Parent releasea5410f980d36c927f024c723f009802bd93e5c6e,
 file SHA285943a7035dcf67041c627b5b05b57e0ad44fbe9d735e3ce7155cf18f2e20e9.

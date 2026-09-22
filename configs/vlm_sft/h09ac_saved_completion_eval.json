@@ -1,0 +1,28 @@
+{
+  "version": "h09ac-eight-saved-completion-v1",
+  "service_code_commit": "9deafb1b65cc9e0c3c91371af0eb2f815b063774",
+  "variants": ["motion_only_0120", "completion_0120_plus120"],
+  "selection": [
+    ["eval_t1_i71_finetuned_v1", "decision_00/before"],
+    ["eval_t1_i71_finetuned_v1", "decision_01/after_settle"],
+    ["eval_t1_i71_finetuned_v1", "decision_02/after_settle"],
+    ["eval_t1_i71_finetuned_v1", "decision_03/after_settle"],
+    ["eval_t1_i71_finetuned_v1", "decision_04/after_settle"],
+    ["eval_t1_i71_finetuned_v1", "decision_05/after_settle"],
+    ["eval_t1_i71_proprio_history_nn_v1", "decision_04/after_settle"],
+    ["eval_t1_i71_proprio_history_nn_v1", "decision_05/after_settle"]
+  ],
+  "inventories": {
+    "eval_t1_i71_finetuned_v1": "5c8416d8b6f8648c2bf0ea84de5b4cd57fdf842a49b8f74f5e241a9822412fcc",
+    "eval_t1_i71_proprio_history_nn_v1": "23358f8abb4059acee008a374732354b6d0314f6739dd343f9d6178d53584ce9"
+  },
+  "public_saved_report_sha256": "e4a670319e3d5b6f99d1c2935abc12459ae57ffc8aa360f7d9237300bc309b1d",
+  "max_decisions": 16,
+  "max_queries": 32,
+  "service_max_calls": 64,
+  "wall_seconds": 600,
+  "output_MiB": 16,
+  "new_resets": 0,
+  "new_training_updates": 0,
+  "development_diagnostic_not_SR": true
+}
