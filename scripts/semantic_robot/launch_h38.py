@@ -26,6 +26,10 @@ OLD_GATES = Path('/mnt/nvme_tmp/robodojo_agentic_20260921/gripper_v1_gates')
 OLD_RUN = Path('/mnt/nvme_tmp/robodojo_agentic_20260921/h30_workspace_progress')
 GPU_UUID = 'GPU-3e4fda8c-536e-5899-e877-b8be97032fe0'
 PORT = 8930
+CHILD_SOURCE = Path('/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09z_evalwall_6f32887')
+CHILD_COMMIT = '6f3288770f72b727a114d596cd5b98f577adc8c1'
+CHILD_ROOT = Path('/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only')
+CHILD_GPU = 'GPU-c67cdb9d-ec23-7ca0-dce9-14a61c24c46b'
 FLAGS = (
     'refine-grounding', 'visual-odometry', 'active-grasp-probe', 'grasp-motion',
     'robot-geometry-guards', 'approach-reorientation', 'approach-body-options',
@@ -57,6 +61,43 @@ def check_review(review, launcher_sha):
     require(review.get('launcher_sha256') == launcher_sha, 'Review/launcher mismatch')
     require(review.get('reviewer') == 'Astra-max-vlm_sft_resume_20260921', 'Independent reviewer identity')
     require(review.get('blocking_findings') == [], 'Unresolved review finding')
+
+
+def check_child_binding(review, row):
+    """Only an explicitly reviewed exact evaluation PID may have a tiny context."""
+    allowed = {str(CHILD_ROOT / f'eval_t1_i{i}_{v}_v1')
+               for i in (1, 71) for v in ('base', 'finetuned', 'proprio_history_nn')}
+    require(review.get('reviewer') == 'Codex-parent', 'Exact parent context review required')
+    require(type(review.get('pid')) is int and review['pid'] > 0
+            and str(review['pid']) == row[1] and row[0] == GPU_UUID, 'Auxiliary PID mismatch')
+    require(type(review.get('main_gpu')) is int and review['main_gpu'] == 3
+            and type(review.get('max_auxiliary_MiB')) is int and review['max_auxiliary_MiB'] == 512
+            and 0 < int(row[2]) <= 512, 'Auxiliary context size/GPU mismatch')
+    require(review.get('source') == str(CHILD_SOURCE) and review.get('code_commit') == CHILD_COMMIT,
+            'Unknown child source')
+    require(review.get('output') in allowed, 'Unknown child evaluation slot')
+    require(isinstance(review.get('launch_sha256'), str) and len(review['launch_sha256']) == 64,
+            'Exact child launch hash required')
+
+
+def check_child_process(review, row, all_apps):
+    check_child_binding(review, row)
+    proc = Path('/proc', row[1])
+    require(proc.joinpath('cwd').resolve() == CHILD_SOURCE, 'Child cwd changed')
+    actual = subprocess.check_output(['git', '-C', str(CHILD_SOURCE), 'rev-parse', 'HEAD'], text=True).strip()
+    require(actual == CHILD_COMMIT, 'Child source changed')
+    launch_path = Path(review['output'] + '.launch.json')
+    require(sha(launch_path) == review['launch_sha256'] and read(launch_path)['pid'] == review['pid'],
+            'Child launch/PID mismatch')
+    arguments = proc.joinpath('cmdline').read_bytes().split(bytes([0]))
+    require(b'--output' in arguments and arguments[arguments.index(b'--output') + 1] == review['output'].encode(),
+            'Child actual output mismatch')
+    require(any(Path(os.fsdecode(arg)).name == 'native_eval_run.py' for arg in arguments if arg),
+            'Not the registered evaluation runner')
+    require(any(app[0] == CHILD_GPU and app[1] == row[1] for app in all_apps),
+            'Child not actually present on main GPU3')
+    return {'pid': review['pid'], 'main_gpu': 3, 'auxiliary_MiB': int(row[2]),
+            'output': review['output'], 'launch_sha256': review['launch_sha256']}
 
 
 def tree_bytes(base, cap_gib):
@@ -133,6 +174,8 @@ def main():
     parser.add_argument('stage', choices=('radio', 'plates', 'model', 'policy'))
     parser.add_argument('--review', required=True, type=Path)
     parser.add_argument('--review-sha256', required=True)
+    parser.add_argument('--child-context-review', type=Path,
+                        help='Optional exact reviewed PID/launch binding, never a blanket auxiliary-process allowance')
     args = parser.parse_args()
     require(sha(args.review) == args.review_sha256, 'Review file hash changed')
     check_review(read(args.review), sha(Path(__file__)))
@@ -163,9 +206,12 @@ def main():
         text=True).splitlines()]
     target = [row for row in apps if row[0] == GPU_UUID]
     own_model = read(ROOT / 'launch_model.json')['pid'] if args.stage == 'policy' else None
-    # Fail closed even for a small child auxiliary context. Parent must inspect
-    # it and schedule a non-overlapping startup, never kill or silently allow it.
-    require(all(int(row[1]) == own_model for row in target), 'Unregistered GPU2 process')
+    auxiliary = []
+    for row in target:
+        if int(row[1]) == own_model:
+            continue
+        require(args.child_context_review is not None, 'Unregistered GPU2 process')
+        auxiliary.append(check_child_process(read(args.child_context_review), row, apps))
     environment = read(OLD_GATES / 'launch_radio.json')['environment']
     environment['PYTHONPATH'] = str(SOURCE / 'src')
     for key, value in environment.items():
@@ -219,6 +265,7 @@ def main():
               'command': command, 'environment': {k: env[k] for k in environment},
               'CUDA_VISIBLE_DEVICES': env.get('CUDA_VISIBLE_DEVICES', 'unset_for_simulator'),
               'gpu_before': gpu, 'tree_bytes_before': sizes, 'health_before': health,
+              'allowed_auxiliary_contexts': auxiliary,
               'independent_review': str(args.review), 'independent_review_sha256': args.review_sha256,
               'launcher_sha256': sha(Path(__file__)), 'physical_new_resets': 0 if args.stage == 'model' else 1,
               'initialization_monitor_seconds': 900, 'max_MiB': 3072 if args.stage == 'policy' else 384}

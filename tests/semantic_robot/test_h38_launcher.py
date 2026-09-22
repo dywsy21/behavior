@@ -50,6 +50,22 @@ class H38LauncherTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(RuntimeError):
                 module.check_review({**receipt, field: value}, 'exact')
 
+    def test_only_exact_child_evaluation_context_is_eligible(self):
+        receipt = {'reviewer':'Codex-parent', 'pid':77, 'main_gpu':3, 'max_auxiliary_MiB':512,
+                   'source':str(module.CHILD_SOURCE), 'code_commit':module.CHILD_COMMIT,
+                   'output':str(module.CHILD_ROOT / 'eval_t1_i1_base_v1'), 'launch_sha256':'a'*64}
+        row = [module.GPU_UUID, '77', '209']
+        module.check_child_binding(receipt, row)
+        for key, value in (('reviewer','someone'), ('pid',78), ('pid',True), ('main_gpu',2),
+                           ('max_auxiliary_MiB',1024), ('source','/tmp'), ('code_commit','old'),
+                           ('output',str(module.CHILD_ROOT / 'training_v1')), ('launch_sha256','')):
+            with self.subTest(key=key,value=value), self.assertRaises(RuntimeError):
+                module.check_child_binding({**receipt,key:value}, row)
+        for changed in ([module.GPU_UUID,'78','209'], [module.CHILD_GPU,'77','209'],
+                        [module.GPU_UUID,'77','513'], [module.GPU_UUID,'77','0']):
+            with self.subTest(row=changed), self.assertRaises(RuntimeError):
+                module.check_child_binding(receipt, changed)
+
 
 if __name__ == '__main__':
     unittest.main()

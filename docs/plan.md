@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 08:26（北京时间）首配对已启动／已知辅助context窄适配待审（Codex/Astra）：** 子唯一2766293于08:24:00.599651/GPU3启动i1/base，active a79bb0d1…bfcf、launch efd8066d…8d66b，原预算/6f不变，仍初始化。父首门全数值38.248s通过：144主hash/110自体帧/82段/23整链/4底盘消费，4夹爪实际命令完成，躯干上移原预检拒而下移33tick保持手误差约.22mm；RAW/视频与完整下载仍待。父仅Git launcher增加显式“某一已父核六槽子PID/launch/source、GPU3主进程、GPU2≤512MiB辅助”选项，默认仍拒未知；用于两路真实并行，不改6f实验源/动作/预算，独审前不使用新launcher。
+
 **2026-09-22 08:22（北京时间）H38首门完成／完整证据审进行中（Codex）：** 2763244已退出，24动作/442控制/302.790s、gate_ok=true/无gate_failure，零两前缀；result572cd877…9339、steps3f0fda61…83ca、video68f60b96…e53b，完整364,335,034B保留。这是基础控制工程门，official_success=false不作为任务成功。父现在原6f源码做全RGB-D/实际关节与夹爪/里程计链独立重算并持久到同根`gate_radio_h38_parent_numeric.jsonl`；完整本地副本rsync可续传至`h38_gates_bundle/gate_radio_h38`，尚未称到齐/全审通过。Astra首eval初始化已在08:18父reset实控证据后放行。
 
 **2026-09-22 08:18（北京时间）六配对精确交接（Codex/Astra）：** 父独核两heldout全部4文件/实际832×23与1038×23前缀、六份新inactive SHA/统一2100/14/640；实际远端3.10两factory与8919真实health/cwd/argv同5136服务身份、0调用核0.388s过。`h09z_six_paired_evaluation_parent_release.json`一次交原六槽/每variant分母2、失败保留，不增reset或训练；首评等父2763244首reset实际control>0，允许准确绑定的父≤512MiB辅助context而非未知进程。完整训练17文件134,794,815B本地已由子全SHA过；此前父两远端权重独核不变。harness首门08:15仍初始化，不称通过。
