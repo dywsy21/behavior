@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 11:57当前：** 父H43只读Git树`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_completion_6b39740`仅CPU、没有sim/model；实际3.11报告`h38_appearance/h43_saved_cpu_6b39740.json`完整本地同SHA15aa08ba…4b8d4。旧2777940/8930仍195/431、2762269/8919仍25/56，其余原物理run都已结束，不重启；新服务8931仅规划。
+
 **2026-09-22 11:36当前：** 子新只读源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09aa_completion_ccb16f2`，新小候选在`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/completion39_ccb16f2_v1`；旧6f4候选不改。39状态父审已闭合，但无新训练/物理；两个旧模型服务原195/431和25/56保持，不把候选目录当已训权重。
 
 **2026-09-22 11:24当前：** H42保存态12查询已完成，无sim；远端`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/h42_completion_replay`与本地`artifacts/agentic-vlm-goal-20260918/h42_completion_replay`完整小包，result e86b2820…95721。父27B2777940/8930现195/431、子2B2762269/8919仍25/56，原NN已退出，无新物理训练。H41新CPU树不热改，所有旧证据保留。

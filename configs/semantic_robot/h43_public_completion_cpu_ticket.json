@@ -1,5 +1,7 @@
 {
   "task_id": "H43-public-completion-adapter",
+  "status": "AUTHOR_COMPLETED_INDEPENDENT_REVIEW_PENDING_NOT_DEPLOYED",
+  "author_receipt": "configs/semantic_robot/h43_author_validation.json",
   "owner": "Codex-parent",
   "registered_bjt": "2026-09-22T11:39:00+08:00",
   "hypothesis": "Existing actual post-CLOSE RGB-D motion can verify a learned completion request without issuing another potentially destructive lift.",

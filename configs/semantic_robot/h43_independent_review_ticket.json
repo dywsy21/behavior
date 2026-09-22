@@ -1,0 +1,10 @@
+{
+  "task_id": "H43-independent-review",
+  "owner": "Astra-max-vlm_sft_resume_20260921",
+  "start_condition": "After freezing own H09AB implementation; parent reviews H09AB simultaneously, so do not delay its fixed delivery to review this",
+  "source_commit": "6b397408f4017ad1613cea98246dbdc86aca1d0c",
+  "budget": {"wall_seconds": 600, "model_calls": 0, "training_updates": 0, "physical_resets": 0},
+  "scope": ["Read-only review src/semantic_robot/v2/skill_completion.py and tests", "Independent negative cases for stale request, partial history, source identity, current render binding, endpoints and no privilege", "Reproduce fixed H42 saved response replay using same known evidence, never query a model", "Check no earlier positive is accepted after a bad current endpoint and public holding never claims skill success"],
+  "outputs": ["Fixed code/digest, actual start/end, tests and reproducible findings", "Small independent review receipt under owned artifacts; no edit to reviewed source"],
+  "permissions": "Current Full Access/approval never; no escalation request or external boundary bypass"
+}

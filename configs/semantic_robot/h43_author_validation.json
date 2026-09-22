@@ -1,0 +1,27 @@
+{
+  "task_id": "H43-public-completion-adapter",
+  "owner": "Codex-parent",
+  "completed_bjt": "2026-09-22T11:57:00+08:00",
+  "status": "AUTHOR_PASSED_INDEPENDENT_REVIEW_PENDING_NOT_DEPLOYED",
+  "source_commit": "6b397408f4017ad1613cea98246dbdc86aca1d0c",
+  "module_sha256": "80e92646e0068f256bc6419b1734b76884039c6561ce8de8dfda9e2de2138907",
+  "tests_sha256": "001411f0c3f361a6269f3e6eff42eb60bdab06a470fd43bb9b1c2ed3a2c447de",
+  "local_tests": {"targeted": 13, "targeted_seconds": 0.708, "public": 543, "public_seconds": 20.388, "native_at_source": 174, "native_seconds": 6.170},
+  "saved_replay": {
+    "local_seconds": 14.304427564959042,
+    "local_report_sha256": "309dabac76708c1a39afc9ac5f2939e9d38eac28c430898c13ff14f1e4593c38",
+    "actual_simulator_python": "/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python",
+    "actual_simulator_python_version": "3.11.15",
+    "remote_seconds": 20.915347181726247,
+    "remote_report": "/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/h43_saved_cpu_6b39740.json",
+    "remote_and_local_copy_sha256": "15aa08bacff07c0b17d2b29ae6d5895134bb14f10e4477bb5a0dd9296924b8d4",
+    "cases": {"train114989": [false,false,true,true], "ft_i71": [false,false,false,true], "nn_i71": [false,false,true,true]},
+    "unchanged_h42_boolean_results": true,
+    "scripted_final_target_unavailable_negatives": 3,
+    "all_scripted_negatives_unknown": true,
+    "actual_model_calls": 0,
+    "physical_controls": 0,
+    "not_a_false_positive_rate_estimate": true
+  },
+  "limits": ["Public holding is not strict skill completion", "Only GRASP history supported", "No new physical endpoint result", "Independent review and new runtime integration still required"]
+}
