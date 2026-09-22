@@ -1,0 +1,13 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-22T09:03:00+08:00",
+  "pid": 2775696,
+  "main_gpu": 3,
+  "max_auxiliary_MiB": 512,
+  "source": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09z_evalwall_6f32887",
+  "code_commit": "6f3288770f72b727a114d596cd5b98f577adc8c1",
+  "output": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/eval_t1_i71_base_v1",
+  "launch_sha256": "255df251eb5df2a1a11b6b6863e28ddd190dcebc255ffd4c1ffe5484fb8761dc",
+  "parent_read_actual_argv_and_launch_sha": true,
+  "scope": "Exact PID only; independently reviewed2434 launcher must dynamically recheck clean source,cwd,full actual argv,signed launch and actual GPU3 plus GPU2<=512MiB. No assertion that an auxiliary context has already appeared."
+}
