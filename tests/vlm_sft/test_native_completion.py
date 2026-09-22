@@ -61,11 +61,14 @@ class CompletionTests(unittest.TestCase):
         terminal_hold_check(cap, hold, final, command)
         for field, value in (("completed", False), ("native_controls", 345), ("native_controls", True), ("prefix_controls", 395)):
             with self.assertRaises(ValueError): terminal_hold_check(cap, {**hold, field: value}, final, command)
-        for index in (3, 14, 22):
+        for index in (0, 1, 2, 3, 14, 22):
             wrong = copy.deepcopy(hold); wrong["action23"][index] += .001
             with self.assertRaises(ValueError): terminal_hold_check(cap, wrong, final, command)
         wrong = copy.deepcopy(final); wrong["frame"]["tick"] += 1
         with self.assertRaises(ValueError): terminal_hold_check(cap, hold, wrong, command)
+        for tick in (723, 725, True):
+            wrong = copy.deepcopy(final); wrong["verdict"]["tick"] = tick
+            with self.assertRaises(ValueError): terminal_hold_check(cap, hold, wrong, command)
 
     def test_sidecar_keeps_public_actor_and_masks_terminal_motion(self):
         _, _, _, actor, raw = actor_fixtures.PoseProtocolTests().fixture()

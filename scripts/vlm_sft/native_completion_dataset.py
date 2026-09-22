@@ -71,6 +71,8 @@ def terminal_hold_check(capture, hold, final, last_command):
             hold["prefix_controls"] != capture["clock"]["prefix_control"] or
             type(hold.get("native_controls")) is not int or hold["native_controls"] != capture["clock"]["native_control"] + 1 or
             type(final["frame"]["tick"]) is not int or final["frame"]["tick"] != sum(capture["clock"].values()) + 1 or
+            type(final["verdict"].get("tick")) is not int or final["verdict"]["tick"] != final["frame"]["tick"] or
+            not np.array_equal(command[:3], np.zeros(3)) or
             not np.array_equal(np.r_[command[3:14], command[15:22]], q) or
             not np.array_equal(command[[14, 22]], previous[[14, 22]])):
         raise ValueError("Exact next one-control pose/grip-preserving hold required")
