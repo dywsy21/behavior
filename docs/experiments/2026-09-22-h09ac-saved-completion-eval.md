@@ -1,5 +1,53 @@
 # H09AC: eight fixed development states, two adapters
 
+## Actual diagnostic result,2026-09-22 13:18 BJT
+
+After exact parent releasebc9556316a3dda44fb756655cd0cd20739155de5 /
+e46a893a…31de9a, the sole client2839158 started13:15:49.307096 BJT,
+immutable19ea, service2833894/9de/identityffea4c97…559c8. Activee9dac7f3…8ed049,
+launche016d457…6c980d. Real3.10 complete-input/identity preflight10.035 s passed.
+At13:18:33 the client had exited with COMPLETE,16 decisions,22 actual issued
+and completed queries,0 errors,120.720811 s. No query retry, training or reset.
+
+| Fixed state | Exact-clock label | Original0120 status | New0120+120 status | New motion if CONTINUE |
+| --- | --- | --- | --- | --- |
+| FT before00 | CONTINUE | REQUEST_VERIFY | CONTINUE | RIGHT_DOWN |
+| FT after01 | CONTINUE | REQUEST_VERIFY | CONTINUE | RIGHT_CLOSE |
+| FT after02 | CONTINUE | REQUEST_VERIFY | CONTINUE | RIGHT_UP |
+| FT after03 | CONTINUE | REQUEST_VERIFY | CONTINUE | RIGHT_UP |
+| FT after04 | CONTINUE | REQUEST_VERIFY | CONTINUE | RIGHT_UP |
+| FT after05 | REQUEST_VERIFY | REQUEST_VERIFY | REQUEST_VERIFY | Not queried |
+| NN after04 | CONTINUE | REQUEST_VERIFY | CONTINUE | RIGHT_UP |
+| NN after05 | REQUEST_VERIFY | REQUEST_VERIFY | REQUEST_VERIFY | Not queried |
+
+Original0120 under the new status interface equals always-request:2 true,
+6 early requests,0 true continues. The completion-trained adapter matches all
+eight labels. Never-request has6 correct continues and2 missed requests.
+An explicitly posthoc public-history rule (at least3 trailing same-hand UP
+tokens) also matches all8: this is not visual generalization evidence or a
+validated general stopping rule. NN after04 remains the important public
+holding=true/strict-completion=false state. Both original physical terminal
+failures remain unchanged; no new simulator SR was measured.
+
+Within this new interface, the old adapter never queried motion, so there are
+zero jointly-CONTINUE states and conditional null is not an action error.
+A separate zero-new-call historical check provides exactly one strict motion
+comparison: FT before00 has byte-identical RGB hashes, the exact same six-field
+actor and identical1153-token motion input hash1d1f4281…5f5d4 as the old actual
+query. Old output RIGHT_BACK changed to new RIGHT_DOWN. The new DOWN was not
+executed, so benefit/harm is unknown. Four other historical next-before frames
+have matching text-token hashes/motions but different RGB bytes and are not
+counted as exact-image comparisons. Motion preservation is not established.
+
+All16 raw responses and observed22-call sequence are local in own artifacts
+`h09y-resume-20260921/h09ac_observed_monitor_final.json`, SHA
+db10328f99fefd9f08f7e04d8f7c0c0a370b2d8f4b0e085b0cc1be95904a48df.
+This is an observed transport copy, not the remote result-file checksum.
+At13:24 both the temporary strict stdio transport and original strict SSH
+closed during read-only seal checks. The formal remote seal's existence and
+complete service-ledger download remain unverified; no blind resubmission was
+made. Parent full-result review is pending. No source/result was rewritten.
+
 Implementation closed12:59:07 BJT,1163/1200 s, fixed/pushed
 19ea59db69bb33398558d0f3acd8468d9efee53b. Formal remote3.10 runs229 tests/
 16.072 s (one optional local-only archive skip); public420/8.969 s is unchanged.
