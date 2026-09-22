@@ -14,6 +14,10 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 09:37（北京时间）H39入口默认关接入/作者CPU通过（Codex）：** `run_v2.py`显式CLI、前置依赖、同版本工程门匹配、ServoLimits传参与结果记录完成；17针对、509公共11.175s、174 SFT5.871s通过。新测试首次缺完整标定fixture已改用既有calibrated_fixture，不放松几何门；三处退出HOLD仍走b991检查。原两运行源/子native profile不动，独审待子FT初始化空档，0部署/额外物理。
+
+**2026-09-22 09:35（北京时间）H39公共runner窄接入登记（Codex）：** b991已独审core增加显式默认关CLI、前置依赖、工程门版本匹配与结果记录，900s CPU/0物理/0调用/0训练，`h39_runner_cpu_block.json`；不改子native profile或活跃两路源。父负责实现与回归，独审安排在子FT初始化空档，不阻塞原配对。尚未部署或新增成功证据。
+
 **2026-09-22 09:34（北京时间）原i71后两槽编排父审通过／两路已实控（Codex/Astra）：** 冻结helper f925b7fe…9d9全读、独立3正/19反例0.003s通过，receipt `h09z_i71_aux_launcher_parent_review_20260922.json`；只动态识别当前父2778838的准确主/辅助context，原FT→NN槽无需再等授权，0增reset/换源/重训。作者实际210s完成、09:24迟取回如实保留。子09:30:27原i71已1038前缀/native20，首LEFT_FORWARD通过公共预检并执行；父H38实1038控/45决策/59调用，已看到目标并进入接近而非仍全程SEARCH，无抓取或官方成功声明。干净pull/fetch、main仍33677bd。
 
 **2026-09-22 09:16（北京时间）H39最终独审PASS／后续子辅助context精确交接（Codex/Astra）：** Astra原票488s验证闭合，b991/fe3a8b49独立504/11.281s＋174/5.245s、真实3.11九反例0非法返回/10.332s、i1保存态45再核11.631s旧0/new44；父全读1c57c78e…b0361并逐字纳Git。旧f166 P2保留，core仍默认关未部署，RIGHT_PITCH_PLUS原时长门仍拒。新`h09z_h38_parent_auxiliary_context.json`只绑定现父2778838/65c31…/GPU2主及GPU3≤512MiB供子后两原i71槽；子须窄改编排并父审全argv/主卡/清源动态门，不改运行6f或加reset。H38继续原预算SEARCH，SFT i71原前缀继续。
