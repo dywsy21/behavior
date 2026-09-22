@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 08:09当前：** 子新服务2762269/GPU3于08:08:44提交，`h09y_grasp_only/service_v1`及相邻log/launch/新active，端口8919、terminal120/56calls/固定6f源；health/六评尚待。父`git_worktrees/semantic_h38_launch_a90522f`是新Git一次性launcher树，不是实验导入树；实际H38仍用`semantic_appearance_6f528b5`，尚无新父GPU进程，独审进行中。两个已结束训练adapter本地传输仍未假称完整。
+
 **2026-09-22 08:00当前：** 原唯一训练2729336已完成退出：`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/training_v1`（实际昨23:10启动、533.614s/120步）及相邻`training_v1.log/.launch.json`，末权重`adapter_0120` SHA4e993ff4…bf83；固定`git_worktrees/vlm_sft_h09z_evalwall_6f32887`不改，GPU3子核为空。service8919/六评尚未启动。父H38尚无物理/模型，旧H30全证据保留；本地新增`launch_h38.py`仅待独审的Git启动编排，不覆盖真实实验6f528b5源。
 
 **2026-09-21 22:58当前：** 原子953/2708026已完成并退出，241文件完整本地/父全部72RAW与物理审闭合；新训练尚未启动。父旧模型2673116/8929已完整305调用账本封存并TERM退出，GPU2/3此时实空81152MiB，0/1队友不动。H38新`git_worktrees/semantic_appearance_6f528b5`只CPU487/33.069s过、待独审；拟结果根`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance`尚未运行。不可删除旧H30全证据或把其不完整本地大包当齐全。
