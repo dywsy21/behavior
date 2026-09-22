@@ -1,0 +1,107 @@
+{
+  "source_commit": "6f528b5e6d49950331e08f11217d7f5659038b45",
+  "review_tree_commit": "a90522f8822049e168ddc4fa6420215658f98d0a",
+  "implementation_digest": "11dfd7199b44bbed04a01deeb20962e4711ca05312e586e25125ee8ee419dfa6",
+  "launcher_sha256": "faaa018dc9138af606b23d37a0753fc1f194bb33fb85813685cf5ac728474c93",
+  "reviewer": "Astra-max-vlm_sft_resume_20260921",
+  "independent_review_passed": true,
+  "blocking_findings": [],
+  "review_started_bjt": "2026-09-22T08:04:26+08:00",
+  "review_finished_bjt": "2026-09-22T08:11:22+08:00",
+  "review_wall_seconds": 416,
+  "validation": {
+    "public_unittests": {
+      "tests": 491,
+      "seconds": 11.072,
+      "passed": true
+    },
+    "related_SFT_regression": {
+      "tests": 174,
+      "seconds": 6.009,
+      "passed": true
+    },
+    "independent_probes": [
+      "actual_stop_reason_clears_memory",
+      "nonfinite_current_state_rejected",
+      "non_uint8_CURRENT_pixels_rejected",
+      {
+        "actual_GPU_gate": "radio",
+        "apps": "",
+        "free_MiB": 81152,
+        "accepted": true
+      },
+      {
+        "actual_GPU_gate": "radio",
+        "apps": "GPU-3e4fda8c-536e-5899-e877-b8be97032fe0, 77, 1",
+        "free_MiB": 81152,
+        "accepted": false
+      },
+      {
+        "actual_GPU_gate": "plates",
+        "apps": "",
+        "free_MiB": 70656,
+        "accepted": false
+      },
+      {
+        "actual_GPU_gate": "model",
+        "apps": "OTHER_GPU, 77, 40000",
+        "free_MiB": 81152,
+        "accepted": true
+      },
+      {
+        "actual_GPU_gate": "policy",
+        "apps": "GPU-3e4fda8c-536e-5899-e877-b8be97032fe0, 99, 50000",
+        "free_MiB": 25600,
+        "accepted": true
+      },
+      {
+        "actual_GPU_gate": "policy",
+        "apps": "GPU-3e4fda8c-536e-5899-e877-b8be97032fe0, 77, 1",
+        "free_MiB": 25600,
+        "accepted": false
+      }
+    ],
+    "exact_saved_pipeline_sha256": "1e41bd868ed5421cfa7d7481c0c985b722aebb6c17a536e91d8f9a119140c1ba",
+    "saved_pipeline_source_helper_sha256": "13c198d4725061c214fafbf7181027df7391aab5657b0015b88ccfcbf06506b1",
+    "saved_neural_inputs": 3,
+    "exact_images_per_input": [
+      6,
+      4,
+      6
+    ],
+    "all_question_pixels_prompts_and_allowed_choices_exact": true,
+    "current_surface_choices": 2,
+    "old_source_report_identical_except_timing": true,
+    "geometry_float_tails": [
+      {
+        "path": "target.views[0].point_base_m[0]",
+        "absolute_difference": 1.1102230246251565e-16
+      },
+      {
+        "path": "target.point_base_m[0]",
+        "absolute_difference": 1.1102230246251565e-16
+      },
+      {
+        "path": "target.projected_same_point_checks[0].expected_depth_m",
+        "absolute_difference": 5.551115123125783e-17
+      },
+      {
+        "path": "target.projected_same_point_checks[1].expected_depth_m",
+        "absolute_difference": 4.163336342344337e-17
+      }
+    ]
+  },
+  "boundaries": [
+    "Default-off behavior preserved; appearance mode requires near-contact mode.",
+    "Reference crop conveys only appearance; CURRENT three RAW views supply new localization and mandatory fresh surface selection within original16 shared budget.",
+    "Same-frame q/gripper/RGB/goal/stage binding; TTL8 ordinary observations, visibility/abstention/load/goal/terminal stop invalidation.",
+    "No held/contact/object-pose privileged input or copied prior actionable coordinates; memory cannot certify holding/completion.",
+    "Launcher uses exact reviewed6f source and public digest, zero-prefix fixed stages/GPU2, prior complete numeric+RAW+video gate reviews, one-shot outputs and unknown GPU2 process rejection.",
+    "Declared startup capacity gates do not themselves prove later simulator quality; original runtime/safety/outcome gates and parent full-run review still apply.",
+    "Only saved117->118 questions replayed. No new model call, hardware physics, graspability or official-SR claim."
+  ],
+  "new_model_calls": 0,
+  "new_resets": 0,
+  "new_controls": 0,
+  "probe_seconds": 1.2832734360126778
+}

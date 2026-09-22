@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 08:12（北京时间）H38独审闭合／首Kit槽交父（Codex/Astra）：** 父全读核Astra原报告dd50429e…13b2并逐字纳Git，416s内491＋174及实际117→118三旧问题全图/全prompt独核通过，另真实launcher未知小context/错PID/低余量拒；无阻塞、0模型物理。固定6f528b5/11df与a905 launcher/faaa放原两顺序gate，源/安全/16额度/官方时限不变。父先占首Kit初始化槽，Astra继续真实service/prep；父首reset实控后让子起首eval，不等整个gate，避免同时初始化。此条不是已启动或真实抓取改善。
+
 **2026-09-22 08:09（北京时间）2B真实服务已提交／H38独审进行中（Astra/Codex）：** 原6f/terminal120唯一2762269于08:08:44.450978启动8919服务，active13829de4…c60da/launch3b519f44…9722f、动态资源与父d84门5.244s通过，56调用/无重训；health及两固定heldout准备待核，0评测reset。H38独立491/11.072s通过，继续实际历史问答与launcher未知GPU进程拒绝边界，仍原08:14:26截止，未放父物理。父Git独立launcher树`semantic_h38_launch_a90522f`已就绪，准确faaa018d…74c93，原6f实验源干净；忽略目录gate审计器增加显式H38源/flags/原carry时长重放，仅语法过、待真实gate。
 
 **2026-09-22 08:05（北京时间）真实120独立终审／服务交接（Codex）：** 父15小件SHA、seed41完整重建960次抽样/34TRAIN、120连续有限正梯度及全部身份核通过（report d495d574…5a6a8）；远端两权重另独立SHA/372有限language-LoRA张量/16,819,200参数核0.236s过，确认原PID退出。训练533.614s/134.8MB，前后20步均CE .58148→.03198仅代表拟合。`h09z_fresh120_parent_audit_service_release.json`放原8919/56调用服务＋两个固定heldout准备（0reset），六物理待实际身份。此刻GPU2/3实空81152MiB，sdc1余57.61GiB/NVMe2700.23GiB；两权重本地仍下载，不假称齐全。Astra H38独审08:04:26开始，截止08:14:26，服务提交优先。
