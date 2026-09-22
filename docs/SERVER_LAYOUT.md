@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 09:14当前：** 父H38两门各982文件完整本地`h38_gates_bundle/gate_radio_h38`（364,335,034B）与`gate_plates_h38`（328,270,062B），三个主SHA/数值/关键RAW/视频已核，远端原证据保留。2778838原起点已reset且实控96/4决策，2777940/8930在6调用；两路原固定源码不改。子2775696原i71前缀运行；下一子Kit无须再等父reset，但须核当前准确辅助PID。
+
 **2026-09-22 09:10当前：** 父零两前缀完整回合2778838/GPU2初始化，结果`h38_appearance/radio_h38_fullstart`/相邻log、`launch_policy.json`；模型2777940/8930 ready、11.542s加载、提交前0/431。实验源仍6f528b5，launcher2434/证据ab94，不热改。子2775696已reset/prefix，原6f/GPU3；父sim可能在GPU3创建辅助context，后续子FT启动须准确新2778838/launch绑定，不能沿用已死2763244。
 
 **2026-09-22 09:06当前：** 父新27B2777940/GPU2/8930加载，结果`h38_appearance/server_h38`、`server_h38.log`/`launch_model.json`，真实源仍`semantic_appearance_6f528b5`；plate父receipt已Git核41b6d0ea…b9ca7后到结果根`gate_plates_parent_review.json`。编排证据最新独立`semantic_h38_review_ab94f88`，launcher2434不变。子2775696/GPU3在原i71/base初始化、2762269/8919服务1call；policy尚未提交。H39仅本地f166默认关，不能热pull任何现用树。

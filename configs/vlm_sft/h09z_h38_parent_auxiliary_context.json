@@ -1,0 +1,23 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-22T09:16:00+08:00",
+  "pid": 2778838,
+  "main_gpu": 2,
+  "main_gpu_uuid": "GPU-3e4fda8c-536e-5899-e877-b8be97032fe0",
+  "auxiliary_gpu": 3,
+  "max_gpu3_MiB": 512,
+  "source": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_appearance_6f528b5",
+  "source_commit": "6f528b5e6d49950331e08f11217d7f5659038b45",
+  "output": "/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/radio_h38_fullstart",
+  "launch_path": "/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/launch_policy.json",
+  "launch_sha256": "65c31eb0247850fcd837600539559accc3a52621e159ebea71182cfeac7be6cd",
+  "expected_interpreter": "/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python",
+  "expected_runner_argument": "scripts/semantic_robot/run_v2.py",
+  "allowed_remaining_slots": [
+    "eval_t1_i71_finetuned_v1",
+    "eval_t1_i71_proprio_history_nn_v1"
+  ],
+  "actual_parent_reset_verified_bjt": "2026-09-22T09:12:24+08:00",
+  "verified_controls": 48,
+  "scope": "Only if this exact process remains present: main GPU2 and <=512MiB auxiliary GPU3, clean source,cwd,full actual argv equal signed launch, actual --gpu2 and exact output. No unknown process allowance or replacement PID, no extra reset/calls/source/budget changes."
+}

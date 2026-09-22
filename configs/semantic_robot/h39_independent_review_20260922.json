@@ -1,0 +1,65 @@
+{
+  "reviewer": "Astra-max-vlm_sft_resume_20260921",
+  "started_bjt": "2026-09-22T09:05:14+08:00",
+  "validation_completed_bjt": "2026-09-22T09:13:22+08:00",
+  "elapsed_seconds": 488,
+  "budget_seconds": 600,
+  "source_commit": "b991d1c8390ca386c5b8bb8a1b3989bfaf6d01b8",
+  "reviewed_base_commit": "f166fc63d82dfa99ee31d46ee480b68902e26436",
+  "implementation_digest": "fe3a8b4972c7d7ec5fcada57a681f1490df8846a4062ce7f63f4c5f94080fa93",
+  "servo_sha256": "5583f59e27622da452c50ef80bb7a9bfc50bb2c4299fd119c334052954578909",
+  "independent_review_passed": true,
+  "blocking_findings": [],
+  "resolved_findings": [
+    {
+      "priority": "P2",
+      "affected_commit": "f166fc63d82dfa99ee31d46ee480b68902e26436",
+      "finding": "Collision/divergence/stall fallback returned safe_hold before the new serialized command bound check.",
+      "reproduction": "Using the actual i1 calibration with an explicitly perturbed current q16 at hard_upper+5e-6 (inside the existing actual-state tolerance), collision and divergence returned q16=1.0472030639648438, 5.0067901611328125e-6 beyond the physical upper. A still physically legal q16=hard_upper-4e-7 also produced a command 1.0723721313166124e-6 beyond the action start bound.",
+      "fix": "b991d1c routes safe_hold and ordinary commands through _checked_command; rejected commands do not increment ordinary candidate ticks.",
+      "verification": "All independent original runtime counterexamples reject without returning a command under b991d1c; ordinary legal retreat remains accepted. Local 3.12 and actual robo 3.11 agree."
+    }
+  ],
+  "tests": {
+    "f166_public": {"count": 502, "seconds": 11.103, "passed": true},
+    "f166_sft": {"count": 174, "seconds": 6.223, "passed": true},
+    "final_public": {"count": 504, "seconds": 11.281, "passed": true},
+    "final_sft": {"count": 174, "seconds": 5.245, "passed": true},
+    "independent_runtime_cases": 9,
+    "final_runtime_returned_command_violations": 0,
+    "runtime_py311_seconds": 10.331821748055518,
+    "runtime_py312_seconds": 5.2416753800353035,
+    "original_i1_45_servo_py311_seconds": 11.630777280777693,
+    "original_i1_45_servo_py312_seconds": 4.187424428993836,
+    "original_i1_legacy_accepted": 0,
+    "original_i1_new_servo_accepted": 44
+  },
+  "evidence": {
+    "capture_sha256": "42d0ce54269254ef7cd3e6e1d775db87204b808641abe205ecfdd1e5f185d472",
+    "calibration_sha256": "fdef2328bb83ca6c2a9987a04ae9b8935438260d7ccdeca53bcdf482e5a30e35",
+    "runtime_py311": {"file": "h39_runtime_b991d1c_independent_py311.json", "sha256": "28a4b0f9b3918fd9989182a2cc692aecf1944570cd01f9a66e71a9b73979e319"},
+    "runtime_py312": {"file": "h39_runtime_b991d1c_independent_py312.json", "sha256": "c0816bd2db88c32e36fcc6b20cebf884543e269f11584bce2da299638c62c14f"},
+    "saved_i1_final_py311": {"file": "h39_saved_i1_independent_b991d1c_py311.json", "sha256": "48aad1c174d026e654a58c8dd7aad7717a60d30d38bbf6243a1a9964f0dd591a"},
+    "saved_i1_original_candidate_py311": {"file": "h39_saved_i1_independent_f166fc6_py311.json", "sha256": "f8b6d27f7d8cc101bd874ceebc6f2d6c5d6a3939502519755ad1c009e62a00d4"}
+  },
+  "boundaries": [
+    "Default remains off; old interior trajectories and commands remain covered by the regression tests.",
+    "New begin requires finite actual q strictly inside physical hard bounds; planning inset extends only as far as this action's observed start.",
+    "No clipping of observed q, no widened collision, Cartesian tracking, joint speed, duration or grasp success thresholds.",
+    "Actual-state 1e-5 and serialized-command 1e-7 numerical tolerances remain distinct.",
+    "The saved 45-token check covers servo reachability/preflight, not complete camera/depth public safety, actual execution, physical grasp or BC.",
+    "No runner integration or deployment authorized by this review; active SFT evaluation source 6f328877 is unchanged.",
+    "Robot-only collision approximation and no complete scene sweep guarantee are unchanged."
+  ],
+  "new_model_calls": 0,
+  "new_resets": 0,
+  "new_training_updates": 0,
+  "active_evaluation_monitor": {
+    "pid": 2775696,
+    "observed_bjt": "2026-09-22T09:13:00.292217+08:00",
+    "completed_prefix": 301,
+    "completed_native": 0,
+    "service_confirmed_calls": 1,
+    "initialization_seconds": 332.8619331768714
+  }
+}

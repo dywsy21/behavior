@@ -2,7 +2,9 @@
   "experiment_id": "H39-physical-start-vs-planning-inset-cpu-v1",
   "owner": "Codex-parent",
   "registered_bjt": "2026-09-22T08:51:00+08:00",
-  "status": "CPU_DESIGN_AND_IMPLEMENTATION_ONLY_NOT_DEPLOYED",
+  "status": "INDEPENDENT_REVIEW_PASSED_B991D1C_NOT_DEPLOYED",
+  "final_code_commit": "b991d1c8390ca386c5b8bb8a1b3989bfaf6d01b8",
+  "independent_review": {"path":"configs/semantic_robot/h39_independent_review_20260922.json","sha256":"1c57c78e1520f8e7d7921688a5614a28003c95dc424738f5da17adf5073b0361"},
   "hypothesis": "A physically legal demonstration handoff can lie inside the planning safety inset; treating that as an illegal measured state prevents every action before policy quality can be evaluated. Separate legal physical state from conservative commanded planning range, without moving closer to a hard limit.",
   "evidence": {
     "run": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/eval_t1_i1_base_v1",
