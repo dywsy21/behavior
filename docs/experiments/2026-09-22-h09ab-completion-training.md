@@ -61,9 +61,14 @@ queries. No retry or repeated request id. Old2762269/8919 is untouched.
 
 Author local220 native tests/6.483 s pass, including12 new tests; first public
 test invocation omitted PYTHONPATH and had20 import errors, not production
-failures. Correct source-path public regression and real3.10 CPU preflight are
-pending at this initial freeze. Real preflight loads config/processor only,
-checks all73 masks and exact old34 encodings; no model weights or CUDA.
+failures. Correct source-path public420/7.370 s passes. Fixed351b279 remote
+3.10/NumPy1.26/transformers5.7/PEFT0.18 passes220 tests/15.303 s (one optional
+local-archive test skipped). Real CPU preflight22.891 s passes all73 response
+masks/train-infer prefixes and all34 exact old encodings, no model weights or
+CUDA. Its first report inadvertently let the data's source_commit overwrite
+the preflight source_commit in the JSON merge; preserved as v1 and corrected
+by naming provenance data_source_commit. No model input/target or source gate
+changed. A new immutable source/v2 report is required for final handoff.
 
 Parent H43 owns verify_grasp_request and physical capture/history validation.
 This ticket only exposes a callback bridge; a future jointly reviewed runtime

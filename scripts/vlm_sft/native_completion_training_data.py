@@ -45,7 +45,7 @@ def load_reviewed(completion, motion, review):
             if sha(Path(path)) != expected: raise ValueError("Original reviewed source evidence changed")
     return examples, {"dataset_sha256": DATA_SHA, "states_sha256": STATES_SHA, "review_sha256": REVIEW_SHA,
         "motion_dataset_sha256": MOTION_DATA_SHA, "motion_rows_sha256": MOTION_ROWS_SHA,
-        "source_commit": DATA_SOURCE, "motion_examples": 34, "status_examples": 39,
+        "data_source_commit": DATA_SOURCE, "motion_examples": 34, "status_examples": 39,
         "whole_runs": 5, "original_coverage": original_manifest["coverage"]}
 
 
