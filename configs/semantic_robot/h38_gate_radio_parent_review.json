@@ -1,0 +1,97 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-22T08:42:00+08:00",
+  "run": "/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/gate_radio_h38",
+  "code_commit": "6f528b5e6d49950331e08f11217d7f5659038b45",
+  "implementation_digest": "11dfd7199b44bbed04a01deeb20962e4711ca05312e586e25125ee8ee419dfa6",
+  "full_numeric_and_RAW_review_passed": true,
+  "video_review_passed": true,
+  "result_sha256": "572cd877454eb144c06231d25517848e02f8599f60a69eee938202107a579339",
+  "steps_sha256": "3f0fda61b31c777d4acb78fb2113485bc6984f816a807bc50edfbb9e445f83ca",
+  "video_sha256": "68f60b96f42d30712e0639756644570458d4eef61207a7cd6262630e35f5e53b",
+  "numeric": {
+    "seconds": 38.2481634397991,
+    "report": "artifacts/agentic-vlm-goal-20260918/h38_gates_bundle/gate_radio_h38_parent_numeric.jsonl",
+    "report_sha256": "85ea0843ab49bd21415b0446effd184c4da8d1dd2f829297a53d23dfd2f6f457",
+    "main_RGBD_hashes": 144,
+    "actual_bound_self_frames": 110,
+    "segments": 82,
+    "complete_chains": 23,
+    "base_consumptions": 4,
+    "controls_including_final_hold": 442,
+    "bytes": 364335034
+  },
+  "gate": {
+    "reported_ok": true,
+    "decisions": 24,
+    "failures": [],
+    "wall_s": 302.78963912976906,
+    "model_calls": 0,
+    "official_success": false,
+    "expert_prefix_controls": 0,
+    "saved_policy_prefix_controls": 0
+  },
+  "body": {
+    "up_decision9": {
+      "accepted": false,
+      "controls": 0,
+      "original_refusal_recomputed": true
+    },
+    "down_decision10": {
+      "accepted": true,
+      "controls": 33,
+      "end_error_m": {
+        "left": 0.00022111572001259216,
+        "right": 0.00021793520092465283,
+        "torso": 0.0004626559608896036
+      },
+      "exact_commands_at_recorded_pre_q": 6,
+      "commands_equal_unlimited_plan": 30,
+      "all_command_kinematic_envelopes_checked": true
+    },
+    "scope": "Actual q recorded every6 controls; no exact missing-tick dynamics reconstruction. UP is safe preflight refusal, not executed direction."
+  },
+  "grippers": {
+    "decisions": [
+      19,
+      20,
+      21,
+      22
+    ],
+    "all_actual_command_completion_and_pose_reached": true,
+    "grasp_claim": false
+  },
+  "manual_RAW": {
+    "personally_viewed": true,
+    "count": 16,
+    "scope": "Initial head; decisions9/10/11 all3views; right19/20/21 and left21/22/23. Stratified critical review, not all72 main RGB images.",
+    "all_16_preview_SHA_match_remote": true,
+    "sheet": "artifacts/agentic-vlm-goal-20260918/h38_gate_radio_preview_parent_raw_sheet.jpg",
+    "observations": "Expected room and posture changes; no visible hand jump during compensated DOWN. Right and left close/open visible in corresponding wrist sequence. Dark near-field wrist areas retained; empty-hand engineering actions, no grasp or task-success claim."
+  },
+  "video": {
+    "complete_decode_passed": true,
+    "frames": 220,
+    "fps": 15,
+    "seconds": 14.666666666666666,
+    "personally_viewed_frames": [
+      0,
+      19,
+      39,
+      59,
+      79,
+      99,
+      119,
+      139,
+      159,
+      179,
+      199,
+      219
+    ],
+    "sheet": "artifacts/agentic-vlm-goal-20260918/gate_radio_h38_video_review.jpg"
+  },
+  "local_complete_copy": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_gates_bundle/gate_radio_h38",
+  "regular_files": 982,
+  "main_three_SHA_match_remote": true,
+  "limitation": "Not model performance, task success, all-scene collision certificate, or all-frame manual review. Second plates gate still required before model/fullstart. Development simulator3.9.1 not official3.9.2."
+}

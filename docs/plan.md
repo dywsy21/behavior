@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 08:42（北京时间）首门完整父审闭合／第二门就绪（Codex/Astra）：** radio982文件364,335,034B完整本地到齐；原38.248s数值全核、本人16关键RAW及220帧全解码/12人工帧、主三SHA与16预览SHA均通过，receipt `h38_gate_radio_parent_review.json`。不是全部72主图人工检查或任务成功，UP安全拒/仅DOWN实控不改。Astra2434 launcher窄独审214s、5测试＋10动态反例过，报告9e16048e…01f逐字纳Git；未部署44e失败版。当前实际2766293在GPU2有200MiB辅助/主GPU3，精确context receipt只许该PID/完整argv/6f源/efd8066d launch再次动态核。下一原第二plates，不增预算；六子配对继续，父首门无重复审跑。干净pull/fetch同main33677bd。
+
 **2026-09-22 08:33（北京时间）launcher窄审发现并修复命令绑定缺口（Codex/Astra）：** 44e未部署，Astra原300s票88s内用真实2766293 launch构造3个错runner/variant/prepared反例均被接纳，P2报告823a8335…3d6bf保留。父4e0856e先加完整实际argv==已签launch.command，再限定真实3.11解释器/绝对runner及dirty拒；只改Git launcher，原6f评测/父gate源、预算及现回合都不动，待同票复验。子首评08:30:08已reset/prefix21，真实初始化328.474s；父第一门16RAW＋220帧全解码/12抽帧本人已看，三主SHA与完整38.248s数字审相符，预览SHA及最终receipt收尾，不以下载进度阻塞已齐的必要验收。
 
 **2026-09-22 08:26（北京时间）首配对已启动／已知辅助context窄适配待审（Codex/Astra）：** 子唯一2766293于08:24:00.599651/GPU3启动i1/base，active a79bb0d1…bfcf、launch efd8066d…8d66b，原预算/6f不变，仍初始化。父首门全数值38.248s通过：144主hash/110自体帧/82段/23整链/4底盘消费，4夹爪实际命令完成，躯干上移原预检拒而下移33tick保持手误差约.22mm；RAW/视频与完整下载仍待。父仅Git launcher增加显式“某一已父核六槽子PID/launch/source、GPU3主进程、GPU2≤512MiB辅助”选项，默认仍拒未知；用于两路真实并行，不改6f实验源/动作/预算，独审前不使用新launcher。

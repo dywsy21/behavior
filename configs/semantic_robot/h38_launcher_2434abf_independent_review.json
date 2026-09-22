@@ -1,0 +1,71 @@
+{
+  "source_commit": "6f528b5e6d49950331e08f11217d7f5659038b45",
+  "implementation_digest": "11dfd7199b44bbed04a01deeb20962e4711ca05312e586e25125ee8ee419dfa6",
+  "launcher_commit": "2434abf466a59115d59e6736022b9c522d70e74a",
+  "launcher_sha256": "6d603602f2e27bf13897068a6e076ae1c68fd32b4fe72b8e30fec255bcd53c49",
+  "reviewer": "Astra-max-vlm_sft_resume_20260921",
+  "independent_review_passed": true,
+  "blocking_findings": [],
+  "original_h38_source_review_sha256": "dd50429e87d2a788891bf2f969aa1bb8637e4dfd198e96d14ad5b91c559d13b2",
+  "author_tests_independently_run": "5 tests PASS 0.001s",
+  "dynamic_process_probes": [
+    {
+      "name": "exact_real_launch_positive",
+      "accepted": true,
+      "error": null
+    },
+    {
+      "name": "wrong_script_path_same_basename",
+      "accepted": false,
+      "error": "RuntimeError('Child actual argv differs from reviewed launch')"
+    },
+    {
+      "name": "actual_variant_differs_from_signed_launch",
+      "accepted": false,
+      "error": "RuntimeError('Child actual argv differs from reviewed launch')"
+    },
+    {
+      "name": "actual_prepare_differs_from_signed_launch",
+      "accepted": false,
+      "error": "RuntimeError('Child actual argv differs from reviewed launch')"
+    },
+    {
+      "name": "wrong_cwd",
+      "accepted": false,
+      "error": "RuntimeError('Child cwd changed')"
+    },
+    {
+      "name": "wrong_commit",
+      "accepted": false,
+      "error": "RuntimeError('Child source changed')"
+    },
+    {
+      "name": "wrong_launch_hash",
+      "accepted": false,
+      "error": "RuntimeError('Child launch/PID mismatch')"
+    },
+    {
+      "name": "wrong_launch_pid",
+      "accepted": false,
+      "error": "RuntimeError('Child launch/PID mismatch')"
+    },
+    {
+      "name": "not_present_on_main_gpu3",
+      "accepted": false,
+      "error": "RuntimeError('Child not actually present on main GPU3')"
+    },
+    {
+      "name": "dirty_child_source",
+      "accepted": false,
+      "error": "RuntimeError('Dirty child source')"
+    }
+  ],
+  "started_bjt": "2026-09-22T08:30:05+08:00",
+  "finished_bjt": "2026-09-22T08:33:39+08:00",
+  "ticket_wall_seconds": 214,
+  "bounds": "Read-only launcher-only delta; original dd504 H38 source/protocol/16-call and physical-gate review remains unchanged. No new model, reset, source edit or relaxed GPU allowance.",
+  "new_gpu_calls": 0,
+  "new_physical_resets": 0,
+  "parent_source_edits": 0,
+  "probe_seconds": 0.0030887980246916413
+}

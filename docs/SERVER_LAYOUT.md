@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 08:42当前：** 父首2763244已退出，radio全量982文件本地`artifacts/agentic-vlm-goal-20260918/h38_gates_bundle/gate_radio_h38`完整/主SHA/数字/关键RAW/视频审通过；远端原证据保留。子2766293在`h09y_grasp_only/eval_t1_i1_base_v1`评测中，主GPU3/父GPU2准确200MiB辅助，服务2762269/8919仍原6f。新2434 launcher独审通过，拟Git独立树`semantic_h38_launch_2434abf`；第二门尚未启动，旧a905与6f实验源不热改。
+
 **2026-09-22 08:14当前：** 父H38首2763244/GPU2初始化：`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/gate_radio_h38`及同根`gate_radio_h38.log/launch_radio.json`，实验源`semantic_appearance_6f528b5`不可热改；Git独审receipt在`semantic_h38_review_0fba734`，launcher在`semantic_h38_launch_a90522f`。Astra原2762269/8919/GPU3服务ready，两固定eval准备进行中，尚无新eval Kit；0/1队友不动，首初始化不并发。
 
 **2026-09-22 08:09当前：** 子新服务2762269/GPU3于08:08:44提交，`h09y_grasp_only/service_v1`及相邻log/launch/新active，端口8919、terminal120/56calls/固定6f源；health/六评尚待。父`git_worktrees/semantic_h38_launch_a90522f`是新Git一次性launcher树，不是实验导入树；实际H38仍用`semantic_appearance_6f528b5`，尚无新父GPU进程，独审进行中。两个已结束训练adapter本地传输仍未假称完整。

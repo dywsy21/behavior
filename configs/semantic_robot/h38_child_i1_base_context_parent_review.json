@@ -1,0 +1,14 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-22T08:42:00+08:00",
+  "pid": 2766293,
+  "main_gpu": 3,
+  "max_auxiliary_MiB": 512,
+  "source": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09z_evalwall_6f32887",
+  "code_commit": "6f3288770f72b727a114d596cd5b98f577adc8c1",
+  "output": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/eval_t1_i1_base_v1",
+  "launch_sha256": "efd8066d1ca120baebad414d897efd2f8f19c13f4403c8a0d3aa0ab1cce8d66b",
+  "observed_auxiliary_MiB": 200,
+  "observed_main_MiB": 12642,
+  "scope": "Actual cmdline/cwd/clean fixed source/signed launch and main GPU3 must be checked again dynamically. Only this currently observed PID; never blanket allowance, no team processes touched."
+}
