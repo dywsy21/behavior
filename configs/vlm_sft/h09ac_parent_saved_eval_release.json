@@ -1,0 +1,43 @@
+{
+  "task_id": "H09AC-single-eight-state-paired-diagnostic",
+  "reviewer": "Codex-parent",
+  "released_bjt": "2026-09-22T13:12:00+08:00",
+  "code_commit": "19ea59db69bb33398558d0f3acd8468d9efee53b",
+  "config_sha256": "62bd024bea2a1d025ddda040d5e87398e187f97ca68ad3bab64e059f110d1ae6",
+  "inputs_sha256": "971ba21e150b118ae32743e5395726887c331d4a13700cb3541596d2ece60383",
+  "service_code_commit": "9deafb1b65cc9e0c3c91371af0eb2f815b063774",
+  "service_identity_sha256": "ffea4c97e4c1131c09ce49f65f84c17610898fb517cd2414ca52d827f59559c8",
+  "candidate_adapter_sha256": "d6b011b26bf6955d4c3fa6b79cff87a8acd67406c6b5add1c4428f3273ab6d8a",
+  "training_result_sha256": "f1da27ca96f70be1d701ea6a566c46bb6d71abb7b7a8d7d5f0f82d0d5fff07e2",
+  "initial_calls": 0,
+  "authorize_saved_eval": true,
+  "authorize_training": false,
+  "authorize_physical": false,
+  "max_queries": 32,
+  "wall_seconds": 600,
+  "output_MiB": 16,
+  "output": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/completion_saved_eval_v1",
+  "service_pid": 2833894,
+  "service_port": 8931,
+  "service_max_calls": 64,
+  "client_launches": 1,
+  "decisions": 16,
+  "states": 8,
+  "new_resets": 0,
+  "independent_source_review_sha256": "8f25292d091b550d572e1de0ad5b6dab7b9d0cbf31063517f0f631ca1a1ec700",
+  "complete_training_audit_sha256": "19be16b8a32d74ca034d512b5fcbfced57977ab1bc8e7a20cb6bf763e9c475df",
+  "service_ready_sha256": "3d1e64d0086546f46426fa599414c88ac64e2c9b149327a11b9852e714f45e53",
+  "parent_verified_service": "Exact actual base weight/config/tokenizer match completed training; exact adapters,9de/config/active,one instruction,identitySHA and health=identity+SHA+calls0 checked. Initial base-model-path audit assertion was corrected to the real three-field base_identity schema; production and model unchanged.",
+  "before_launch": [
+    "Revalidate exact identity/health still0; no other client and fresh output/launch",
+    "Immutable19ea client and9de service, use original eight inputs/config; no retries or extra queries",
+    "Parent H44 plates simulator2834349 may have a small GPU3 auxiliary context; do not alter it or teammate0/1"
+  ],
+  "report": [
+    "Complete original input/decision/service-call ledgers and all raw predictions",
+    "Confusion including early/late requests and always/never baselines",
+    "Motion outputs for both CONTINUE cases; conditional missing motion is not an action error",
+    "No new simulator SR or retrospective terminal-outcome change"
+  ],
+  "stopping": "One block, stop on identity/source/resource discrepancy, error or budget. Every issued failed query counts; do not restart on transport interruption. Further physical or training work needs a separately recorded bounded decision."
+}
