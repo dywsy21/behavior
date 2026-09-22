@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 11:36当前：** 子新只读源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/vlm_sft_h09aa_completion_ccb16f2`，新小候选在`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/completion39_ccb16f2_v1`；旧6f4候选不改。39状态父审已闭合，但无新训练/物理；两个旧模型服务原195/431和25/56保持，不把候选目录当已训权重。
+
 **2026-09-22 11:24当前：** H42保存态12查询已完成，无sim；远端`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/h42_completion_replay`与本地`artifacts/agentic-vlm-goal-20260918/h42_completion_replay`完整小包，result e86b2820…95721。父27B2777940/8930现195/431、子2B2762269/8919仍25/56，原NN已退出，无新物理训练。H41新CPU树不热改，所有旧证据保留。
 
 **2026-09-22 11:04当前：** 新Git源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_nearpose_197c2ba`仅CPU/197c2ba、不挂模拟器；真实3.11保存态报告在`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/h41_d101_committed_controller.json`，0新物理。原NN2792187已退出，完整run `h09y_grasp_only/eval_t1_i71_proprio_history_nn_v1`在原子NVMe根封存288文件108,496,855B，子本地evaluation_evidence同名下载/核验待最终回执；不要重启。父27B2777940/8930与子2B2762269/8919仍原源，0/1队友不动。

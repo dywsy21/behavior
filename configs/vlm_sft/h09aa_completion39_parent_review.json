@@ -1,0 +1,38 @@
+{
+  "task_id": "H09AA-parent-independent-review",
+  "owner": "Codex-parent",
+  "completed_bjt": "2026-09-22T11:36:45+08:00",
+  "status": "REVIEWED_DATA_ONLY_TRAINING_INTEGRATION_REQUIRED",
+  "source_commit": "ccb16f2ee268504c9bffde37179b4a06abcdf6e4",
+  "states_sha256": "2fd27d707ad86e7fd6c09662000e99af26c0b1d686bbe9ff92b3c6aa8604fa99",
+  "dataset_sha256": "085d0a06eb590d0f390337951ca47ba412009010e69cd51a8665d838e8aba0fd",
+  "manual_list_sha256": "005a8b0cb7d08da01054f3b559931f99419f769a3ca9a7d4d696ab346665b4d6",
+  "local_image_map_sha256": "6b1338d75ff5c4f875966b5244da440c3243f690617af622279289fac408e419",
+  "independent_native_tests": {"passed": 208, "seconds": 6.192},
+  "independent_actual_data_audit": {
+    "helper": "artifacts/agentic-vlm-goal-20260918/audit_h09aa_parent.py",
+    "seconds": 3.7049524990143254,
+    "states": 39, "source_file_hashes": 40, "same_state_capture_proprio_history_checks": 39,
+    "rgb_hashes": 117, "unchanged_original_motion_rows": 34, "terminal_request_without_motion": 5,
+    "own_negative_cases": 25, "full_original_physical_verdict_chains_recomputed": true,
+    "initial_auditor_error": "First helper omitted actual CLOSE token delivery to LocalOutcome; corrected auditor to use recorded execution clock/token ranges. Production labels and thresholds unchanged."
+  },
+  "manual_review": {
+    "reviewer": "Codex-parent personally viewed original unedited images",
+    "all_three_cameras": true, "states": 10, "images": 30,
+    "strata": "All five terminal positives and all five last-before CONTINUE states",
+    "observations": [
+      "TRAIN192 prefix396: head shows brown bin at right gripper; wrist shows rim between fingers in both frames; left view mostly floor.",
+      "TRAIN114 prefix989: same brown bin and kitchen; right wrist shows wall/rim stable between fingers, tiny ground-relative difference.",
+      "TRAIN114 prefix969: target at right gripper; wrist rim/floor shift agrees with another short lift, no visible drop.",
+      "TRAIN192 prefix388: dining scene target at right gripper; terminal wrist maintains rim relation.",
+      "TRAIN114 prefix953: kitchen bin at right; continued lift and stable terminal view, no identity mismatch."
+    ],
+    "limitations": "Adjacent images are visually very similar. Exact lift/stability labels rely on independently recomputed offline physics, not claiming sub-centimetre clearance is visually proved. Two TRAIN instances only; count/history memorization remains possible."
+  },
+  "actor_whitelist": ["protocol", "task", "active_instruction", "proprio", "current_rgb_sha256", "history"],
+  "heldout_i1_i71_used_for_training": false,
+  "request_verify_is_success": false,
+  "release_scope": "Eligible only for a separately versioned completion-request training formatter. Legacy motion prompt must not instruct the new status target.",
+  "new_model_calls": 0, "new_training_updates": 0, "new_physical_resets": 0
+}
