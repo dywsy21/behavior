@@ -86,10 +86,15 @@ def check_child_process(review, row, all_apps):
     require(proc.joinpath('cwd').resolve() == CHILD_SOURCE, 'Child cwd changed')
     actual = subprocess.check_output(['git', '-C', str(CHILD_SOURCE), 'rev-parse', 'HEAD'], text=True).strip()
     require(actual == CHILD_COMMIT, 'Child source changed')
+    require(not subprocess.check_output(['git', '-C', str(CHILD_SOURCE), 'status', '--porcelain'],
+                                        text=True).strip(), 'Dirty child source')
     launch_path = Path(review['output'] + '.launch.json')
     launch = read(launch_path)
     require(sha(launch_path) == review['launch_sha256'] and launch['pid'] == review['pid'],
             'Child launch/PID mismatch')
+    require(launch['command'][:2] == ['/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python',
+                                     str(CHILD_SOURCE / 'scripts/vlm_sft/native_eval_run.py')],
+            'Wrong child interpreter or absolute runner')
     arguments = proc.joinpath('cmdline').read_bytes().split(bytes([0]))
     require(arguments == [os.fsencode(part) for part in launch['command']] + [b''],
             'Child actual argv differs from reviewed launch')
