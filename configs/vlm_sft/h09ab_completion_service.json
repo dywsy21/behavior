@@ -1,0 +1,10 @@
+{
+  "protocol": "h09ab-separate-status-motion-v1",
+  "actor_protocol": "h09z-current-robot-pose-workspace-v1",
+  "motion_codec": "h09z-native-keep-eef-45-v1",
+  "physical_gpu": 3,
+  "port": 8931,
+  "max_calls": 64,
+  "variants": ["motion_only_0120", "completion_0120_plus120"],
+  "max_artifact_MiB": 384
+}

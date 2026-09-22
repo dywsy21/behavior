@@ -1,0 +1,22 @@
+{
+  "protocol": "h09ab-separate-status-motion-v1",
+  "actor_protocol": "h09z-current-robot-pose-workspace-v1",
+  "motion_codec": "h09z-native-keep-eef-45-v1",
+  "base_model": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917/models/Qwen3.5-2B",
+  "physical_gpu": 3,
+  "seed": 41,
+  "lora_rank": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "learning_rate": 0.00005,
+  "effective_batch_size": 8,
+  "microbatch": 2,
+  "max_updates_including_gate": 120,
+  "max_wall_seconds": 2700,
+  "max_artifact_MiB": 384,
+  "initial_adapter_sha256": "4e993ff4f5ca7221e4fcdc61ad302ac644b3a27fe7ef2c25b57516ac21debf83",
+  "per_update": [4, 2, 2],
+  "motion_status_loss_weights": [0.5, 0.5],
+  "sampling": "trajectory_balanced_within_category_seed41",
+  "terminal_checkpoint": 120
+}
