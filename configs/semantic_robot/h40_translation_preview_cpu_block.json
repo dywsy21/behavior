@@ -1,0 +1,15 @@
+{
+  "experiment_id": "H40-existing-translation-preview-cpu-v1",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-22T10:17:00+08:00",
+  "base_commit": "9a5d6c78ddeb7baa84697e519722fbccbe1c3724",
+  "status": "AUTHOR_TESTS_PASSED_SAVED_STATE_AND_REVIEW_PENDING_NOT_DEPLOYED",
+  "author_validation": {"public_tests": 519, "public_seconds": 13.554, "sft_tests": 174, "sft_seconds": 6.082, "initial_test_failure": "Synthetic UP can be represented as wrist-frame BACK after existing direction deduplication; assertion corrected to physical base direction, implementation unchanged."},
+  "hypothesis": "Displaying a bounded two-command prediction for already feasible small arm translations can expose setup movements that unlock a blocked coarse reach, without adding actions or relaxing execution safety.",
+  "evidence": "H38 saved decision075: direct forward3cm fails original IK even at256 iterations, while existing up1cm then forward3cm passes original robot-only tests. Current H38 subsequently progressed on its own; no claim of permanent deadlock.",
+  "budget": {"cpu_wall_seconds": 900, "physical_resets": 0, "model_calls": 0, "training_updates": 0},
+  "scope": ["new approach_translation module", "grounded_harness current candidate annotations", "prompt_context and policy display", "run_v2 explicit default-off option and exact gate identity", "targeted tests and documentation"],
+  "constraints": ["At most3 existing currently accepted fine translations x1 currently rejected coarse translation", "Single visible unladen PICK APPROACH only; actual open fingers and open command latches", "Original depth, robot, speed, duration and success guards unchanged", "No scene truth, new palette entries, action queue or execution of predicted followup", "No live H38/SFT source changes; native SFT profile unchanged"],
+  "acceptance": ["Default regression unchanged", "Input freshness and deadline tests", "Bounded synthetic blocked-then-unlocked test", "Public/SFT regression", "Independent code review before any deployment"],
+  "next": "CPU implementation only; any physical evaluation requires a separate prospective protocol after current runs."
+}

@@ -104,6 +104,7 @@ def main():
     p.add_argument("--joint-boundary-start-v1", action="store_true",
                    help="Allow legal boundary starts without commanding farther toward a hard joint limit")
     p.add_argument("--approach-reorientation",action="store_true",help="Opt-in unladen wrist candidates and bounded robot-only two-command reach preview")
+    p.add_argument("--approach-translation-preview",action="store_true",help="Opt-in at most3 robot-only followups for existing accepted fine arm translations")
     p.add_argument("--approach-body-options",action="store_true",help="Opt-in all existing unladen far-pick body directions before individual safety preflight")
     p.add_argument("--workspace-posture",action="store_true",help="Opt-in bounded fine torso posture previews when moderate single-arm reaches are blocked")
     p.add_argument("--odometry-estimator",choices=("pnp","rgbd_rigid","rgbd_joint"),default="pnp")
@@ -159,6 +160,8 @@ def main():
         raise ValueError("Joint boundary starts require robot geometry guards and explicit gripper completion")
     if args.approach_reorientation and not args.robot_geometry_guards:
         raise ValueError("Approach reorientation requires the reviewed robot geometry guards")
+    if args.approach_translation_preview and not (args.approach_reorientation and args.robot_geometry_guards):
+        raise ValueError("Translation preview requires unloaded approach and robot geometry guards")
     if args.approach_body_options and not args.robot_geometry_guards:
         raise ValueError("Approach body options require the reviewed robot geometry guards")
     if args.workspace_posture and not args.robot_geometry_guards:
@@ -202,6 +205,7 @@ def main():
                 g.get("carry_duration_v1",False)==args.carry_duration_v1 and
                 g.get("joint_boundary_start_v1",False)==args.joint_boundary_start_v1 and
                 g.get("approach_reorientation",False)==args.approach_reorientation and
+                g.get("approach_translation_preview",False)==args.approach_translation_preview and
                 g.get("approach_body_options",False)==args.approach_body_options and
                 g.get("workspace_posture",False)==args.workspace_posture and
                 g.get("odometry_estimator","pnp")==args.odometry_estimator and
@@ -263,6 +267,7 @@ def main():
                 "search_motion_recovery":args.search_motion_recovery,
                 "robot_geometry_guards":args.robot_geometry_guards,
                 "approach_reorientation":args.approach_reorientation,
+                "approach_translation_preview":args.approach_translation_preview,
                 "approach_body_options":args.approach_body_options,
                 "workspace_posture":args.workspace_posture,
                 "active_grasp_probe":args.active_grasp_probe,"privileged_audit_is_actor_input":False,
@@ -464,7 +469,7 @@ def main():
                 else:
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection,approach_reorientation=args.approach_reorientation,approach_body_options=args.approach_body_options,workspace_posture=args.workspace_posture) if grounded else TaskHarness(goals)
+                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection,approach_reorientation=args.approach_reorientation,approach_body_options=args.approach_body_options,workspace_posture=args.workspace_posture,approach_translation_preview=args.approach_translation_preview) if grounded else TaskHarness(goals)
                 if replay is not None:
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
@@ -871,6 +876,7 @@ def main():
                       "carry_duration_v1":args.carry_duration_v1,
                       "joint_boundary_start_v1":args.joint_boundary_start_v1,
                       "approach_reorientation":args.approach_reorientation,
+                      "approach_translation_preview":args.approach_translation_preview,
                       "approach_body_options":args.approach_body_options,
                       "workspace_posture":args.workspace_posture,
                       "odometry_estimator":args.odometry_estimator,"approach_progress":args.approach_progress,

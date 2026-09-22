@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 10:15当前：** 父2778838/2777940仍原H38源，首本地镜像传输已退出0但运行尚未结束，`h38_fullstart_bundle/radio_h38_fullstart`依然是待补齐的在途副本，不可据此删远端。保存态两报告`h38_appearance/h38_d075_reach_probe.json`与`h38_d075_ik_continuation.json`已完整本地SHA核。子原FT2785064已1038前缀后接管；base391件完整本地及父审已闭，H39默认关入口独审过但未部署。
+
 **2026-09-22 09:44当前：** 子原i71/base2775696已退出，远端391文件143,074,963B封存，本地子worktree下载中。原FT2785064于09:42:42启动，输出`h09y_grasp_only/eval_t1_i71_finetuned_v1`及相邻log/launch，仍固定6f。父2778838/2777940仍H38同源；本地`artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart`开始运行中备份，明确不完整，必须终态后补齐/SHA核验。H39新入口a3d6c14只本地CPU、待独审、无部署。
 
 **2026-09-22 09:14当前：** 父H38两门各982文件完整本地`h38_gates_bundle/gate_radio_h38`（364,335,034B）与`gate_plates_h38`（328,270,062B），三个主SHA/数值/关键RAW/视频已核，远端原证据保留。2778838原起点已reset且实控96/4决策，2777940/8930在6调用；两路原固定源码不改。子2775696原i71前缀运行；下一子Kit无须再等父reset，但须核当前准确辅助PID。

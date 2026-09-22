@@ -81,7 +81,7 @@ def actor_context(harness, state, bundle, allowed=()):
     for index, action in enumerate(allowed):
         row = next((row for row in tested if row.get("action") == asdict(action)), None)
         score={"command_index": index, **(selected(row, ("accepted", "reason", "planned_ticks",
-            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after", "reorientation_after", "workspace_posture_after")) if row else {})}
+            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after", "reorientation_after", "workspace_posture_after", "translation_after")) if row else {})}
         if getattr(harness,"multicamera_inspection",False) and "inspection_after" in score:
             # Hand identity is already bound by the canonical command and the
             # single shared reference. Do not repeat it for all 42 candidates.
@@ -106,6 +106,11 @@ def actor_context(harness, state, bundle, allowed=()):
             **selected(lookahead,("trigger","source","scene_truth","future_state_is_prediction","future_actions_not_authorized"))}
     if getattr(harness,"approach_body_options",False):
         preflight["approach_body_options"]=receipt.get("approach_body_options",{})
+    if getattr(harness,"approach_translation_preview",False):
+        setup=receipt.get("approach_translation_preview") or {}
+        lookahead=setup.get("preview") or {}
+        preflight["approach_translation_preview"]={"eligible":setup.get("eligible",False),
+            **selected(lookahead,("trigger","source","scene_truth","future_state_is_prediction","future_actions_not_authorized"))}
     if getattr(harness,"workspace_posture",False):
         workspace=receipt.get("workspace_posture") or {}
         lookahead=workspace.get("preview") or {}

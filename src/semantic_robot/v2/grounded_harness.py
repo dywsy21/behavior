@@ -32,7 +32,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False,multicamera_inspection=False,approach_reorientation=False,approach_body_options=False,workspace_posture=False):
+    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False,multicamera_inspection=False,approach_reorientation=False,approach_body_options=False,workspace_posture=False,approach_translation_preview=False):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -47,6 +47,9 @@ class GroundedHarness(TaskHarness):
         self.last_gripper=None
         self.contact_geometry=bool(contact_geometry)
         self.approach_reorientation=bool(approach_reorientation)
+        self.approach_translation_preview=bool(approach_translation_preview)
+        if self.approach_translation_preview and not self.approach_reorientation:
+            raise ValueError("Translation preview requires the unloaded approach eligibility contract")
         self.approach_body_options=bool(approach_body_options)
         self.workspace_posture=bool(workspace_posture)
         self.workspace_close_seen={"left":False,"right":False}
@@ -635,6 +638,7 @@ class GroundedController:
         from .approach_reorientation import eligible, preview, unladen_pick_approach
         open_command=bool(np.all((self.servo.grips >= .999) & (self.servo.grips <= 1.)) and np.all(state.gripper >= .0495))
         posture_mode=eligible(self.harness) and open_command
+        translation_mode=self.harness.approach_translation_preview and posture_mode and self.servo.limits.robot_geometry_guards
         body_mode=self.harness.approach_body_options and unladen_pick_approach(self.harness) and open_command
         from .workspace_posture import qualification as workspace_qualification, preview as workspace_preview
         workspace=workspace_qualification(self.harness,state,self.servo.grips,self.model) if self.harness.workspace_posture else None
@@ -649,7 +653,7 @@ class GroundedController:
         limit=40 if bimanual else 32 if posture_mode or body_mode else self.max_preflights
         if self.depth_guard is None:
             raise RuntimeError("Current RGB-D observation required before proposing motion")
-        rows=[]; proposed=[]; ranked=[]; rotation_trials=[]
+        rows=[]; proposed=[]; ranked=[]; rotation_trials=[]; translation_trials=[]
         if self.target.get("valid") and self.harness.stage not in ("GRASP","RELEASE","VERIFY_GRASP","VERIFY_PLACE","VERIFY_SUPPORT","VERIFY_EFFECT"):
             ranked=[]
             before=self.target.get("mean_contact_distance_m",self.target["distance_to_active_closing_center_m"])
@@ -763,6 +767,9 @@ class GroundedController:
                         before=self.target.get("mean_contact_distance_m",self.target["distance_to_active_closing_center_m"])
                         row["predicted_distance_gain_m"]=round(before-float(np.mean(list(distances.values()))),5)
                         row["gain_objective"]="mean_active_contact_distance; stage gates use maximum"
+                if (translation_mode and action.part==self.harness.goal.hand and action.move in TRANSLATIONS
+                        and action.scale=="fine" and row.get("predicted_distance_gain_m",0)>0):
+                    translation_trials.append((action,trial,row["predicted_distance_gain_m"]))
             rows.append(row)
             if (not ok and action.part in (*self.harness.arms,"both")
                     and (action.move in TRANSLATIONS or (posture_mode and action.move in ROTATIONS)) and action.scale=="coarse"):
@@ -841,6 +848,26 @@ class GroundedController:
                 for row in rows:
                     match=next((r for r in reorientation["rows"] if r["rotation"]==row["action"]),None)
                     if match is not None:row["reorientation_after"]=match["summary"]
+        translation_lookahead=None
+        if (translation_mode and translation_trials and self.target.get("valid")
+                and not any(r["accepted"] and r["action"]["part"]==self.harness.goal.hand
+                            and r["action"]["move"] in TRANSLATIONS and r["action"]["scale"]=="coarse" for r in rows)):
+            from .approach_translation import preview as translation_preview, ROBOT_PATH_REJECTIONS
+            blocked={Action(**r["action"]) for r in rows if not r["accepted"] and r["reason"] in ROBOT_PATH_REJECTIONS}
+            followup=next((a for gain,a in ranked if gain>0 and a.part==self.harness.goal.hand
+                           and a.scale=="coarse" and a in blocked),None)
+            if followup is not None:
+                first=[];directions=[]
+                for action,trial,gain in sorted(translation_trials,key=lambda v:-v[2]):
+                    direction=self._translation_direction(action,state)
+                    if any(float(direction@old)>.995 for old in directions):continue
+                    first.append((action,trial));directions.append(direction)
+                    if len(first)==3:break
+                translation_lookahead=translation_preview(self.model,state,self.servo.grips.copy(),self.servo.limits,
+                    self.harness.goal.hand,self.target["point_base_m"],first,followup,deadline)
+                for row in rows:
+                    match=next((r for r in translation_lookahead["rows"] if r["translation"]==row["action"]),None)
+                    if match is not None:row["translation_after"]=match["summary"]
         navigation=None
         if self.target.get("valid") and self.harness.goal.kind=="navigate" and self.harness.stage=="APPROACH":
             navigation={"current":self._navigation_geometry(),"rule":"face_visible_destination_before_approaching",
@@ -867,6 +894,8 @@ class GroundedController:
             "navigation":navigation}
         if self.harness.approach_reorientation:
             self.harness.candidate_receipt["approach_reorientation"]={"eligible":bool(posture_mode),"preview":reorientation}
+        if self.harness.approach_translation_preview:
+            self.harness.candidate_receipt["approach_translation_preview"]={"eligible":bool(translation_mode),"preview":translation_lookahead}
         if self.harness.approach_body_options:
             self.harness.candidate_receipt["approach_body_options"]={"eligible":bool(body_mode),
                 "all_existing_fine_body_directions_before_rejected_micro_fallback":True,
