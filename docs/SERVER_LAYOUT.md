@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 13:17当前：** 8931/2833894已ready identity ffea4c97…959c8；新唯一只读保存态client2839158在`git_worktrees/vlm_sft_h09ac_saved_19ea59d`，结果`h09y_grasp_only/completion_saved_eval_v1`及相邻log/launch、同根新active e9dac7f3…ed049。固定八态调用服务，不开模拟器；父第二H44门2834349仍原GPU2。0/1/旧2762269不动。
+
 **2026-09-22 13:09当前：** 新子2833894/GPU3真实原9de服务，结果`h09y_grasp_only/service_completion_v1`及相邻`.log/.launch.json`，端口8931初始化中，不热改；旧2762269/8919保留。父2834349/GPU2真实第二门，源`semantic_nearpose_197c2ba`，输出`h44_reachability/gate_plates_h44`及`gate_plates_h44.log/launch_plates.json`，原暖runtime继续复用。新8932/零前缀完整策略仍未启动。
 
 **2026-09-22 13:08当前：** 首H44完整本地`artifacts/agentic-vlm-goal-20260918/h44_gates_bundle/gate_radio_h44`已364,299,272B全核，远端原件保留。Git独立`git_worktrees/h44_gate_reviews_ebbcee5`已存在，首门receipt在H44根；新服务8931父仅已放行尚等真实PID，8932和第二门未启动。子120完整17件本地在子worktree `artifacts/h09y-resume-20260921/training_completion_complete/`，两checkpoint都齐且父审过。
