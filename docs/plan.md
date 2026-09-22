@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 08:47（北京时间）首配对安全拒绝终态，后继FT先暂停提交（Codex/Astra）：** 子2766293于08:46:03实核退出，832前缀＋13新含hold=845控、1000.229s，原模型首1call返BASE_FORWARD后`PUBLIC_PREFLIGHT_STOP/JOINT_STATE_OUT_OF_BOUNDS`，0候选动作，两侧局部false；不是已证明抓取策略能力差。服务1条成功/health短超时来自同步生成，未重启。Astra负责≤600s CPU只读：具体越界关节/原阈值/首次时刻及同态其它动作是否同拒，封存完整失败；第二FT不因父reset自动提交，先判断起点或动作相关问题。不改旧判据/预算/结果或追加reset，父plates继续。
+
 **2026-09-22 08:44（北京时间）第二H38工程门真实启动（Codex）：** 唯一2770041于08:43:27.348403/GPU2提交`h38_appearance/gate_plates_h38`，原24/1536含hold/1200＋900初始化/384MiB、零两前缀；2434/6d603 launcher与12a2708 Git证据树固定，真实6f528b5/11df源不改。精确2766293主GPU3/辅助GPU2 200MiB再次动态绑定通过，父root364,382,631B/runtime7,829,960,278B原限内。当前初始化，非通过；Astra保持首i1/base，后继Kit等父reset错峰。coordinator只fetch/worktree，main不热pull；默认fetch仅main导致未解析2434，改明确fetch本分支成功，未提交重复物理。
 
 **2026-09-22 08:42（北京时间）首门完整父审闭合／第二门就绪（Codex/Astra）：** radio982文件364,335,034B完整本地到齐；原38.248s数值全核、本人16关键RAW及220帧全解码/12人工帧、主三SHA与16预览SHA均通过，receipt `h38_gate_radio_parent_review.json`。不是全部72主图人工检查或任务成功，UP安全拒/仅DOWN实控不改。Astra2434 launcher窄独审214s、5测试＋10动态反例过，报告9e16048e…01f逐字纳Git；未部署44e失败版。当前实际2766293在GPU2有200MiB辅助/主GPU3，精确context receipt只许该PID/完整argv/6f源/efd8066d launch再次动态核。下一原第二plates，不增预算；六子配对继续，父首门无重复审跑。干净pull/fetch同main33677bd。
