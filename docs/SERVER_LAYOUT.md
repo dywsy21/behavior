@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 08:14当前：** 父H38首2763244/GPU2初始化：`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/gate_radio_h38`及同根`gate_radio_h38.log/launch_radio.json`，实验源`semantic_appearance_6f528b5`不可热改；Git独审receipt在`semantic_h38_review_0fba734`，launcher在`semantic_h38_launch_a90522f`。Astra原2762269/8919/GPU3服务ready，两固定eval准备进行中，尚无新eval Kit；0/1队友不动，首初始化不并发。
+
 **2026-09-22 08:09当前：** 子新服务2762269/GPU3于08:08:44提交，`h09y_grasp_only/service_v1`及相邻log/launch/新active，端口8919、terminal120/56calls/固定6f源；health/六评尚待。父`git_worktrees/semantic_h38_launch_a90522f`是新Git一次性launcher树，不是实验导入树；实际H38仍用`semantic_appearance_6f528b5`，尚无新父GPU进程，独审进行中。两个已结束训练adapter本地传输仍未假称完整。
 
 **2026-09-22 08:00当前：** 原唯一训练2729336已完成退出：`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/training_v1`（实际昨23:10启动、533.614s/120步）及相邻`training_v1.log/.launch.json`，末权重`adapter_0120` SHA4e993ff4…bf83；固定`git_worktrees/vlm_sft_h09z_evalwall_6f32887`不改，GPU3子核为空。service8919/六评尚未启动。父H38尚无物理/模型，旧H30全证据保留；本地新增`launch_h38.py`仅待独审的Git启动编排，不覆盖真实实验6f528b5源。
