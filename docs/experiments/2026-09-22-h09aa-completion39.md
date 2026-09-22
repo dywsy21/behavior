@@ -21,6 +21,11 @@ success assertion. The six-field public actor and existing public text/images
 stay unchanged. All private outcomes/reviews are offline label provenance,
 never actor inputs. No i1/i71 observations or labels enter these sidecars.
 
+The saved text is only the original public-input record: its old motion-only
+output instruction is not suitable for training completion JSON directly.
+A separately reviewed versioned output formatter is required in a future
+training-integration ticket; it is deliberately absent from this data block.
+
 Outputs are39 candidate state rows, a10-state three-view manual-review list
 (each trajectory's final before-macro negative and terminal positive), and a
 hash-bound manifest marked CANDIDATE_PENDING_PARENT_REVIEW_NO_TRAINING.
