@@ -1,0 +1,46 @@
+{
+  "task_id": "H09AD-request-stop-local-physical-diagnostic",
+  "owner": "Astra-max-vlm_sft_resume_20260921",
+  "registered_bjt": "2026-09-22T13:23:00+08:00",
+  "hypothesis": "The completed120-plus120 model can preserve a newly achieved grasp by requesting verification before the destructive extra lifts seen in original i71FT. Eight saved-state labels alone cannot establish this.",
+  "dependencies": ["Finish sealing original H09AC inputs16responses22calls and hand them to parent", "Parent independently accepts that evidence", "New standalone client source and exact runtime preparation independently reviewed before any simulator start"],
+  "implementation_budget": {"wall_seconds": 1800, "new_model_queries": 0, "new_training_updates": 0, "new_resets": 0},
+  "parent_independent_review_seconds": 600,
+  "start": "After original H09AC sealed handoff; report real CPU start/deadline. Do not silently extend if implementation is incomplete.",
+  "ownership": "New standalone completion physical diagnostic runner/profile/tests/config and own experiment doc in your isolated branch. Reuse original native_eval_run/execution/actor/capture/outcome helpers read-only. Do not edit or pull live9de service, frozen19ea saved client, old6f eval, public8fdf executor, outcomes, original45 codec or any old result. You are not alone: parent owns H44 and public harness; teammates GPU0/1 remain untouched.",
+  "protocol": [
+    "Same original task1/source247/instance71/seed0 preparation, exactly1038 original expert controls and same original legal GRASP instruction. No starting from a saved successful or later ground-truth-selected state.",
+    "Current public six-field actor and three current onboard RGBs, exact actually executed history; HTTP9de /decision only completion_0120_plus120. Record identity/capture binding and every issued query. No privileged target/hold/outcome/path/clock labels enter actor or prompt.",
+    "CONTINUE executes returned original native45 motion with unchanged CARRY_PROFILE/servo, original calibration,23control mapping, workspace limits and12 real settle controls. No macro substitution, manual grasp, retries or private-state correction.",
+    "REQUEST_VERIFY has null motion and ends this local diagnostic with stop_reason MODEL_REQUEST_VERIFY, actor_success_claim false. Preserve original final one-control safety HOLD; no extra lift, release, scripted transport or automatic high-level advance.",
+    "This tests request/stop timing only: no claim that REQUEST_VERIFY verifies skill success. H43 is not deployed or bypassed here; no public_holding_verified truth is fabricated. Independently score final strict LocalOutcome using unchanged physical measurements, including final HOLD, and official environment verdict separately. Early/wrong request must remain failure/unknown under that score.",
+    "Record both strict final terminal outcome and any transient earlier success interval, all collisions/hold/lift evidence, exact model responses, first requested clock, video, every actual control and final safety action. Original FT/NN terminal failures remain unchanged.",
+    "Original source/model/init/elapsed/storage guards and safe failure behavior stay. A model/HTTP error is terminal with preserved evidence; no double Popen or reset on connection interruption. Service remaining total64 cap is shared and never reset."
+  ],
+  "prospective_physical_after_exact_release": {
+    "runs": 1,
+    "physical_gpu": 3,
+    "task": 1,
+    "source_episode": 247,
+    "instance": 71,
+    "seed": 0,
+    "expert_prefix_controls": 1038,
+    "max_decisions": 14,
+    "max_new_controls_including_final_hold": 640,
+    "max_model_queries": 28,
+    "max_seconds_after_reset_including_prefix": 2100,
+    "initialization_seconds": 900,
+    "output_MiB": 384,
+    "output_name": "eval_completion_t1_i71_requeststop_v1",
+    "weights": "9de service8931, completion_0120_plus120 d6b011b26bf6955d4c3fa6b79cff87a8acd67406c6b5add1c4428f3273ab6d8a",
+    "no_actual_launch_under_this_ticket": true
+  },
+  "resource_preparation": [
+    "Read-only plan exact new runtime/result paths, original16GiB runtime/6GiB result/global disk reserves; never copy or delete caches blindly. One explicitly checked shared OG cache alias may follow the original reviewed scheme.",
+    "Old2762269/8919 may need retirement to preserve simulator free-memory gate. First archive complete service_v1 identity/calls and exact launch, revalidate PID/cwd/argv/starttime/UID/health25/56/no client and all SHA. Do not signal it under this CPU ticket; parent exact retirement release later.",
+    "Keep new2833894 service9de alive; parent H44 model/policy on GPU2 have priority for initial startup, later own exact parent simulator auxiliary context may be documented. Never touch0/1 or unidentified processes."
+  ],
+  "validation": ["Dedicated fake-service CONTINUE/REQUEST/no-motion/identity/call-cap/deadline/private-input tests", "Strict original executor and outcome unchanged; actual current capture/history and final HOLD clock integration tests", "Formal simulator Python3.11 CPU dry preparation/source/config/import checks, zero new simulator/model query", "Parent final independent review of entire new source and exact physical grant prerequisites"],
+  "interpretation": "Single development instance, prefix-conditioned local skill diagnostic, not a new full-task success rate, not a fair full benchmark, and not proof of visual generalization. Compare actual original i71FT terminal failure only with explicit method and trajectory differences; saved-state first new motion RIGHT_DOWN versus original initial RIGHT_BACK is an acknowledged changed-action risk.",
+  "stop": "At CPU budget or any unresolved contract/resource/identity mismatch, preserve work and report. No automatic additional training, data collection, extra instance/reset or remaining-model-call use."
+}
