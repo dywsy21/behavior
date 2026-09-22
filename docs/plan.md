@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 08:00（北京时间）原单次训练已完成，未重复提交（Astra/Codex）：** 启动SSH断连后，恢复时只读核原2729336已退出；实际2026-09-21 23:10:26.897687提交、120步/533.614s，result COMPLETE/c35ddebd…14c3，末adapter4e993ff4…bf83。子核真实native/custom CE同1.742855、372 LoRA张量更新、重载logit差0，均包含在原120内；父待完整小包/账本复核后转原六配对，尚无模型物理效果。父H38新增一次性Git launcher与4项测试通过（源固定6f528b5不变、独审/两门/显存/唯一输出与账本检查），仍0新父物理，待独审；旧时间记录保留，不能把跨夜恢复时间算训练时长。
+
 **2026-09-21 23:08（北京时间）34宏正式准入／单次fresh120放行（Codex/Astra）：** 正式3.10耗时21.666s，5整轨/34宏、TRAIN192×2＋114×3、5CLOSE/16lift/13preclose、真实旋转/0近重复/0失败BC通过；父核manifest、34唯一行、五父审绑定及八inactive。dataset5b2b5ee0…d693c、rows ef1a62fa…1310cc；`h09z_fresh120_34rows_6f32887_parent_release.json`仅放一轮6f/2B fresh120（含2步真实数值/重载门、2700s、256MiB/GPU3），不是已启动或训练成功。Astra动态空卡/盘/唯一输出检查后报PID；service/六评留待真实adapter。干净pull/fetch已同步，main未有新进度；H38独审安排实际训练空档。
 
 **2026-09-21 23:02（北京时间）父数据receipt显式字段补全（Codex）：** 正式3.10在新953父receipt缺CARRY_CONTRACT四显式字段时正确拒绝，未写dataset/未启动训练。父补已审不变的carry_duration_v1=true、2body、14宏、640含hold；物理结论/清单/代码/2100时限不变，原405e3a7证据仍保留。子使用新v2 sources绑定新receipt SHA再做正式34行覆盖，不代签/降门。

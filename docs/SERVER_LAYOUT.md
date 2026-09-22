@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 08:00当前：** 原唯一训练2729336已完成退出：`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/training_v1`（实际昨23:10启动、533.614s/120步）及相邻`training_v1.log/.launch.json`，末权重`adapter_0120` SHA4e993ff4…bf83；固定`git_worktrees/vlm_sft_h09z_evalwall_6f32887`不改，GPU3子核为空。service8919/六评尚未启动。父H38尚无物理/模型，旧H30全证据保留；本地新增`launch_h38.py`仅待独审的Git启动编排，不覆盖真实实验6f528b5源。
+
 **2026-09-21 22:58当前：** 原子953/2708026已完成并退出，241文件完整本地/父全部72RAW与物理审闭合；新训练尚未启动。父旧模型2673116/8929已完整305调用账本封存并TERM退出，GPU2/3此时实空81152MiB，0/1队友不动。H38新`git_worktrees/semantic_appearance_6f528b5`只CPU487/33.069s过、待独审；拟结果根`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance`尚未运行。不可删除旧H30全证据或把其不完整本地大包当齐全。
 
 **2026-09-21 22:19当前：** 子唯一2708026/GPU3于22:17:39提交，固定`git_worktrees/vlm_sft_h09z_wall_8ad336e`，输出`/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/native_t1_i114_p0953_ws45_cd1_b2_wall2100`及相邻`.log/.launch.json`。active同根`authorization_native_t1_i114_p0953_ws45_cd1_b2_wall2100_8ad336e_active.json`，a445424f…5667f，绑定aa74705父审。正在初始化，禁止热改源；旧953超时证据保留。父模型2673116/8929仍GPU2，保存态H35已结束后总300调用；H36仅本地CPU无物理。fresh120/六评尚未启。
