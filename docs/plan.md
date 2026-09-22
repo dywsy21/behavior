@@ -14,6 +14,8 @@
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
 
+**2026-09-22 08:18（北京时间）六配对精确交接（Codex/Astra）：** 父独核两heldout全部4文件/实际832×23与1038×23前缀、六份新inactive SHA/统一2100/14/640；实际远端3.10两factory与8919真实health/cwd/argv同5136服务身份、0调用核0.388s过。`h09z_six_paired_evaluation_parent_release.json`一次交原六槽/每variant分母2、失败保留，不增reset或训练；首评等父2763244首reset实际control>0，允许准确绑定的父≤512MiB辅助context而非未知进程。完整训练17文件134,794,815B本地已由子全SHA过；此前父两远端权重独核不变。harness首门08:15仍初始化，不称通过。
+
 **2026-09-22 08:14（北京时间）H38首工程门真实启动（Codex）：** 唯一2763244/GPU2于08:13:27.522589提交`h38_appearance/gate_radio_h38`，冻结6f528b5/11df、独审dd50429e/a905 launcher/faaa均过；24决策/1536含hold/1200＋900初始化/384MiB，零两前缀。GPU2提交前实空81152MiB，父runtime7,829,957,337B<16GiB，旧H30进程退出、证据未动。当前初始化不是gate通过；首reset/实控后让Astra起首eval，不等整门，第二门/原起点仍按原前置审查条件。
 
 **2026-09-22 08:12（北京时间）H38独审闭合／首Kit槽交父（Codex/Astra）：** 父全读核Astra原报告dd50429e…13b2并逐字纳Git，416s内491＋174及实际117→118三旧问题全图/全prompt独核通过，另真实launcher未知小context/错PID/低余量拒；无阻塞、0模型物理。固定6f528b5/11df与a905 launcher/faaa放原两顺序gate，源/安全/16额度/官方时限不变。父先占首Kit初始化槽，Astra继续真实service/prep；父首reset实控后让子起首eval，不等整个gate，避免同时初始化。此条不是已启动或真实抓取改善。
