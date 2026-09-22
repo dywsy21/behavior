@@ -1,0 +1,27 @@
+{
+  "task_id": "H44-reachability-repair-validation",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-22T12:02:00+08:00",
+  "hypothesis": "The independently reviewed boundary-start, fine-translation preview and8–10cm pose-gap fixes remove measured harness dead ends without weakening physical safety or changing action amplitudes.",
+  "source_commit": "197c2ba7bc941c9850e71217164f1fd9538b03cb",
+  "implementation_digest": "e5ce7b5843c495a33fca56c247888f6733988b739397fc4f7931d5fd15596b30",
+  "source": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_nearpose_197c2ba",
+  "root": "/mnt/nvme_tmp/robodojo_agentic_20260921/h44_reachability",
+  "model": "Same frozen Qwen3.8-27B revision1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0, BF16, thinking=false, structured decoder817f944; no training",
+  "new_flags_relative_h38": ["joint-boundary-start-v1", "approach-translation-preview", "near-pose-gap"],
+  "preparation": {"launcher_cpu_wall_seconds": 900, "independent_review_seconds": 600, "training_updates": 0, "model_calls": 0, "physical_resets": 0},
+  "registered_physical_budget_after_review": {
+    "gpu": 2,
+    "gpu_uuid": "GPU-3e4fda8c-536e-5899-e877-b8be97032fe0",
+    "gate_radio": {"task": 0, "seed": 0, "prefix": 0, "resets": 1, "decisions": 24, "controls": 1536, "seconds_after_reset": 1200, "initialization_seconds": 900, "MiB": 384},
+    "gate_plates": {"task": 3, "seed": 0, "prefix": 0, "resets": 1, "decisions": 24, "controls": 1536, "seconds_after_reset": 1200, "initialization_seconds": 900, "MiB": 384},
+    "conditional_radio_fullstart": {"task": 0, "instance": 138, "split": "TRAIN-development", "seed": 0, "expert_prefix": 0, "policy_prefix": 0, "resets": 1, "decisions": 192, "controls": 6144, "seconds_after_reset": 7200, "initialization_seconds": 900, "MiB": 3072},
+    "model_service": {"port": 8932, "max_calls": 431, "new_output": "server_h44"},
+    "root_GiB": 4, "existing_runtime_GiB": 16, "sdc1_reserve_GiB": 32, "nvme_reserve_GiB": 80
+  },
+  "dependencies": ["Exact source H39/H40/H41 independent reviews already passed", "New one-shot launcher independently reviewed before any process launch", "Both same-source same-flag engineering gates fully reviewed before single fullstart", "Preserve all original H38/FT/NN results and failure denominators"],
+  "old_service": "After exact PID/cwd/argv/health and no active H38 client checks, archive final2777940/8930 health and ledger then SIGTERM only that owned service to free GPU2. Never stop unrelated or teammate processes.",
+  "coordination": "Astra GPU3 training may run concurrently; stagger simulator initialization. No broad allowance for unidentified auxiliary GPU contexts. Do not delay fixed child training delivery for this launcher review; review during its training if feasible.",
+  "stopping": ["Any launch/source/resource/gate failure stops subsequent stages", "No automatic retry/reset or replacement episode", "Original official time limit and success criterion unchanged", "At registered budget stop and report; no silent extra rollout"],
+  "claims": "Combined engineering-fix validation, not attribution to a single component or statistically established success-rate improvement. H43 is not in this runtime."
+}
