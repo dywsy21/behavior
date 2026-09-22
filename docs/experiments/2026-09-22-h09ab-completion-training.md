@@ -1,5 +1,21 @@
 # H09AB: separately queried completion requests
 
+2026-09-22 12:34:24.726517 BJT actual one-shot training submitted, PID2816348,
+fixed9de/8fdf. Parent releasea5410f980d36c927f024c723f009802bd93e5c6e,
+file SHA285943a7035dcf67041c627b5b05b57e0ad44fbe9d735e3ce7155cf18f2e20e9.
+New active97698cd8…e7c2ca, launch eed9999b…62032, ROOT/training_completion_v1
+and sibling .log/.launch.json. Dynamic source/data/storage/idle old-service and
+GPU3 gates10.414 s passed with75595 MiB free. Original2762269 remains idle25/56.
+An earlier preflight refused transient unknown GPU3 PID2813382 before writing
+active/output or starting training; it and later2814576 naturally exited, with
+no identity claim, termination or allowance added. SSH banner failures also
+preceded any submission; parent-provided byte transport to the same existing
+relay preserved original strict LinuxSSH authentication. No repeated training.
+Status is RUNNING, not completion: actual CE/gradient/reload gates,120 updates,
+2700 s/384 MiB and parent result review remain mandatory. Service/physics are
+not released by this launch. Independent H43 original receipt defect and narrow
+31b fix, plus H44 launcher CPU reviews, are separate and do not change9de.
+
 2026-09-22 12:09:00 BJT implementation/real-environment handoff: fixed
 9deafb1b65cc9e0c3c91371af0eb2f815b063774,1760/2400 s. Real3.10 final220 tests/
 14.675 s (one local-only archive skip); actual73 processor masks/prefixes and
