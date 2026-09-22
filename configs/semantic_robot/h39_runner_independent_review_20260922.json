@@ -1,0 +1,40 @@
+{
+  "reviewer": "Astra-max-vlm_sft_resume_20260921",
+  "started_bjt": "2026-09-22T09:42:48+08:00",
+  "validation_completed_bjt": "2026-09-22T09:46:07+08:00",
+  "elapsed_seconds": 199,
+  "budget_seconds": 300,
+  "source_commit": "a3d6c1487e321e9de5e6587e84760d2b2d1bd4b5",
+  "implementation_digest": "20a2c54b5c135b7ab444447acc731ee659bed8de22576d0a22515d567fdad50e",
+  "runner_sha256": "70653a8c109cd3eba22242ec80fe513d0e0d5cb06d3547e8b44a6fed5f7108ea",
+  "servo_sha256": "5583f59e27622da452c50ef80bb7a9bfc50bb2c4299fd119c334052954578909",
+  "core_review_sha256": "1c57c78e1520f8e7d7921688a5614a28003c95dc424738f5da17adf5073b0361",
+  "independent_review_passed": true,
+  "blocking_findings": [],
+  "tests": {
+    "public": {"count": 509, "seconds": 10.731, "passed": true},
+    "sft": {"count": 174, "seconds": 5.788, "passed": true},
+    "independent_complete_gate_predicate": {"positive": 2, "negative": 8, "seconds": 0.007033018977381289, "passed": true}
+  },
+  "independent_probe": {
+    "file": "h39_runner_a3d6c14_independent_probe.json",
+    "sha256": "f3a5141cd5594707aecb75bbbcdc6a26f7bea41a21d5c34ab82e818994efdd3d"
+  },
+  "reviewed_behavior": [
+    "CLI defaults false and only explicit flag enables this mode.",
+    "Geometry and explicit gripper dependencies reject before output creation or simulator initialization.",
+    "Both task gates must match the actual implementation digest and boundary mode; a missing or false old field cannot back a true request.",
+    "The unique ServoLimits constructor receives the flag and the final result records it; manifest args also retain the requested mode.",
+    "Core bytes exactly equal independently reviewed b991d1c; no native SFT code change or relaxation of old safety/outcome criteria.",
+    "All three direct runner safe_hold sites at lines318,806,840 use the same checked core, with no alternate native_action bypass introduced.",
+    "An out-of-range cleanup HOLD may refuse to return a command; recorded_session preserves the primary exception and records the secondary stop error. This is not a guarantee that a HOLD is always issued.",
+    "Legacy matching gates remain valid only for the legacy false mode and the same implementation, not as evidence for the new opt-in mode."
+  ],
+  "new_model_calls": 0,
+  "new_resets": 0,
+  "new_training_updates": 0,
+  "deployment_authorized": false,
+  "active_sft_source_unchanged": "6f3288770f72b727a114d596cd5b98f577adc8c1",
+  "active_sft_finetuned_pid": 2785064,
+  "limitations": "Read-only entrypoint/core wiring review, not a new physical control gate, paired evaluation outcome, or full-task success claim."
+}
