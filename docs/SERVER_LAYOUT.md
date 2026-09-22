@@ -6,6 +6,8 @@
 
 ## 1. 总览
 
+**2026-09-22 11:04当前：** 新Git源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/semantic_nearpose_197c2ba`仅CPU/197c2ba、不挂模拟器；真实3.11保存态报告在`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/h41_d101_committed_controller.json`，0新物理。原NN2792187已退出，完整run `h09y_grasp_only/eval_t1_i71_proprio_history_nn_v1`在原子NVMe根封存288文件108,496,855B，子本地evaluation_evidence同名下载/核验待最终回执；不要重启。父27B2777940/8930与子2B2762269/8919仍原源，0/1队友不动。
+
 **2026-09-22 10:37当前：** H38原policy2778838已退出、27B模型2777940/8930仍在；完整本地`h38_fullstart_bundle/radio_h38_fullstart`补齐成功1,197,520,315B，三主SHA一致，末原trace缺一条HOLD action23如实记录，远端证据不删。H40仅新CPU树`semantic_translation_3f2c153`/独审通过未部署。子FT2785064已退出，288件107,360,898B在子worktree evaluation_evidence/且父数值/15RAW过；原NN2792187同6f于10:23:39已启动，准确结果目录见launch4613bde5…f4b1f，不在此推断目录名，尚未终态。
 
 **2026-09-22 10:15当前：** 父2778838/2777940仍原H38源，首本地镜像传输已退出0但运行尚未结束，`h38_fullstart_bundle/radio_h38_fullstart`依然是待补齐的在途副本，不可据此删远端。保存态两报告`h38_appearance/h38_d075_reach_probe.json`与`h38_d075_ik_continuation.json`已完整本地SHA核。子原FT2785064已1038前缀后接管；base391件完整本地及父审已闭，H39默认关入口独审过但未部署。
