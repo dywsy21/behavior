@@ -32,7 +32,7 @@ def parse_recovery(text):
 
 
 class GroundedHarness(TaskHarness):
-    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False,multicamera_inspection=False,approach_reorientation=False,approach_body_options=False,workspace_posture=False,approach_translation_preview=False):
+    def __init__(self, goals, *, active_grasp_probe=False,contact_geometry=True,held_inspection=False,reference_from_planner=False,inspection_budget_aware=False,multicamera_inspection=False,approach_reorientation=False,approach_body_options=False,workspace_posture=False,approach_translation_preview=False,near_pose_gap=False):
         super().__init__(goals)
         self.grounding={}
         self.search_context={}
@@ -52,6 +52,9 @@ class GroundedHarness(TaskHarness):
             raise ValueError("Translation preview requires the unloaded approach eligibility contract")
         self.approach_body_options=bool(approach_body_options)
         self.workspace_posture=bool(workspace_posture)
+        self.near_pose_gap=bool(near_pose_gap)
+        if self.near_pose_gap and not self.approach_reorientation:
+            raise ValueError("Near pose gap requires explicit approach reorientation")
         self.workspace_close_seen={"left":False,"right":False}
         self.active_grasp_probe=bool(active_grasp_probe)
         self.grasp_probe_attempts={}
@@ -210,6 +213,10 @@ class GroundedHarness(TaskHarness):
         if eligible(self):
             palette += tuple(Action(self.goal.hand, move, scale, "tool")
                              for move in ROTATIONS for scale in ("coarse", "fine"))
+        from .near_pose_gap import eligible as near_pose_eligible
+        if near_pose_eligible(self):
+            palette += tuple(Action(self.goal.hand, move, scale, "tool")
+                             for move in ROTATIONS for scale in ("micro", "fine"))
         if (not self.stop_reason and self.stage=="ALIGN" and self.goal.kind=="pick"
                 and self.grasp_probe.get("eligible")):
             palette += (Action(self.goal.hand,"close"),)
@@ -318,6 +325,7 @@ class GroundedController:
         self.hand_targets={}
         self.centers={}
         self.depth_guard=None
+        self.near_pose_geometry=None
         self.reposition=None
         self.reposition_left=0
         self.replan_needed=None
@@ -415,6 +423,7 @@ class GroundedController:
             raise ValueError("Fresh robot-only geometry required by enabled guard")
         self.depth_guard=LocalDepthGuard(observed_cloud(depths,self.model,state.q),self.model,state.q,depths,
                                         self_geometry=self_geometry if precise_geometry else None)
+        if manager.near_pose_gap:self.near_pose_geometry=copy.deepcopy(self_geometry)
         distance=None
         if self.target["valid"]:
             points=self._points_for_arms()
@@ -868,6 +877,55 @@ class GroundedController:
                 for row in rows:
                     match=next((r for r in translation_lookahead["rows"] if r["translation"]==row["action"]),None)
                     if match is not None:row["translation_after"]=match["summary"]
+        near_pose=None;near_additional=0
+        if self.harness.near_pose_gap:
+            from .near_pose_gap import qualification as near_qualification
+            near_pose=near_qualification(self.harness,state,self.servo.grips,self.model,self.servo.limits)
+            gains={a:gain for gain,a in ranked}
+            improving=[r for r in rows if r["action"]["part"]==self.harness.goal.hand
+                       and r["action"]["move"] in TRANSLATIONS and gains.get(Action(**r["action"]),0)>1e-6]
+            blocked=bool(improving and not any(r["accepted"] for r in improving))
+            near_pose.update(trigger="ALL_IMPROVING_ARM_TRANSLATIONS_BLOCKED" if blocked else "NO_FULL_ARM_BLOCKAGE",
+                             max_additional_preflights=15,additional_preflights=0)
+            if near_pose["eligible"] and blocked:
+                from .arm_observation_guard import ObservingArmGuard
+                observed=observed_cloud(self.depth_guard.depth_images,self.model,state.q,stride=6)
+                guard=ObservingArmGuard(self.model,state.q,observed,self.near_pose_geometry,self.harness.goal.hand)
+                extra=[a for a in self.harness.palette() if a.part==self.harness.goal.hand
+                       and a.move in ROTATIONS and a.scale in ("micro","fine") and a.frame=="tool"]
+                retreat=[];directions=[]
+                for gain,a in sorted(ranked,key=lambda v:v[0]):
+                    if gain>=0 or a.part!=self.harness.goal.hand or a.scale!="fine" or a in tested:continue
+                    direction=self._translation_direction(a,state)
+                    if any(float(direction@old)>.995 for old in directions):continue
+                    retreat.append(a);directions.append(direction)
+                    if len(retreat)==3:break
+                extra=list(dict.fromkeys(extra+retreat))
+                if len(extra)>15:raise ValueError("Near pose option budget exceeded")
+                for action in extra:
+                    if action in tested:continue
+                    require_time(deadline);near_additional+=1;tested.add(action)
+                    ok,reason=self.depth_guard.check(action,False)
+                    trial=None;sweep={"safe":False,"reason":"CURRENT_PREFLIGHT_REJECTED"}
+                    if ok:
+                        trial=SafeServo(self.model,state,self.servo.grips.copy(),self.servo.limits)
+                        ok=trial.begin(action,state,False)
+                        reason="KINEMATIC_PATH_FEASIBLE" if ok else trial.status
+                    if ok:
+                        safe,check=guard.check(trial.joint_plan)
+                        sweep={"safe":bool(safe),**check};ok=bool(safe)
+                        if not ok:reason=check["reason"]
+                    require_time(deadline)
+                    row={"action":asdict(action),"accepted":bool(ok),"reason":reason,
+                         "near_pose_gap_option":True,"near_pose_sweep":sweep}
+                    if ok:
+                        allowed.append(action);row["planned_ticks"]=trial.total_ticks
+                        distances=self._expected_distances(action,state,trial)
+                        if distances is not None:
+                            row["predicted_per_hand_distance_m"]={a:round(d,5) for a,d in distances.items()}
+                            row["predicted_distance_gain_m"]=round(self.target["distance_to_active_closing_center_m"]-max(distances.values()),5)
+                    rows.append(row)
+                near_pose["additional_preflights"]=near_additional
         navigation=None
         if self.target.get("valid") and self.harness.goal.kind=="navigate" and self.harness.stage=="APPROACH":
             navigation={"current":self._navigation_geometry(),"rule":"face_visible_destination_before_approaching",
@@ -889,7 +947,7 @@ class GroundedController:
                 navigation["phase"]="APPROACH_OR_SAFE_REPOSITION"
             for row in rows:row["offered_to_policy"]=Action(**row["action"]) in allowed
         self.harness.candidate_receipt={"state_q":state.q.tolist(),"command_grip_latch":self.servo.grips.tolist(),
-            "tested":rows,"preflight_s":time.perf_counter()-started,"max_nonhold_preflights":limit+(4 if workspace_mode else 0),
+            "tested":rows,"preflight_s":time.perf_counter()-started,"max_nonhold_preflights":limit+(4 if workspace_mode else 0)+near_additional,
             "depth_guard":self.depth_guard.receipt(),"fresh_execution_recheck_required":True,
             "navigation":navigation}
         if self.harness.approach_reorientation:
@@ -903,6 +961,8 @@ class GroundedController:
                 "prediction_not_execution_or_complete_environment_safety":True}
         if self.harness.workspace_posture:
             self.harness.candidate_receipt["workspace_posture"]=workspace
+        if self.harness.near_pose_gap:
+            self.harness.candidate_receipt["near_pose_gap"]=near_pose
         if not allowed:
             self.harness.stop_reason="NO_SAFE_ACTION_AT_CURRENT_STATE"
         return tuple(allowed)

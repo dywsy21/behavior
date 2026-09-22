@@ -1,0 +1,14 @@
+{
+  "experiment_id": "H41-near-pose-gap-cpu-v1",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-22T10:45:00+08:00",
+  "base_commit": "5b2a982",
+  "status": "IMPLEMENTING_DEFAULT_OFF_NOT_DEPLOYED",
+  "hypothesis": "The APPPROACH8–10cm interval currently suppresses both far wrist rotations and near ALIGN rotations; when all improving arm translations fail, existing small pose/retreat actions should remain inspectable behind an additional visible-depth sweep veto.",
+  "evidence": "Original H38 d10182.97mm:10 existing small rotations and3 retreats pass original robot checks and additional sampled visible-depth sweep; none were offered. Two pitch-plus rotations remain rejected. Not a scene-clearance or success certificate.",
+  "budget": {"author_cpu_wall_seconds": 1200, "independent_review_seconds": 600, "physical_resets": 0, "model_calls": 0, "training_updates": 0},
+  "scope": ["Explicit default-off near-pose qualification and helper", "Only the existing8–10cm APPROACH/ALIGN gap", "At most12 existing micro/fine rotations plus3 already-palette fine retreat directions when all improving arm translations rejected", "Negative-only current observed-arm depth sweep", "Fresh RGB-D and actual-state recheck at execution boundary", "CLI, gate identity, manifests, tests and design notes"],
+  "constraints": ["Single-hand PICK only; no carry or current/prior CLOSE uncertainty; calibrated open fingers and open command latches", "Current near-contact semantic confirmation required; collision/no_progress hazards rejected; occlusion alone is not a motion certificate", "No safety threshold, action amplitude, success predicate, live H38 or native SFT source changes", "No automatic sequence or forced action; model still chooses one actually offered command", "Deadline and existing run/control budgets unchanged"],
+  "acceptance": ["Default behavior regression unchanged", "Unknown/closed/stale/outside-gap inputs fail closed", "Observed obstacle veto applies to every new option and fresh execution path", "Never executes a preflight-only or rejected option", "Bounded saved-state comparison plus public/SFT regression and independent review before deployment"],
+  "next": "No physical authorization under this ticket. Stop at1200s and record any unfinished validation rather than extend."
+}

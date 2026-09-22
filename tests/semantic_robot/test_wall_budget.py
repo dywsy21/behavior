@@ -84,7 +84,7 @@ class WallBudgetTests(unittest.TestCase):
             def begin(*a,**kw):calls.append(1);clock.now=2.;return True
             ns={"action":HOLD,"row":{"control_start":7},"controls":7,"decisions":[],"deadline":1.,
                 "manager":SimpleNamespace(carry=False,stop_reason=None),"servo":SimpleNamespace(begin=begin),
-                "controller":None,"args":SimpleNamespace(multicamera_inspection=False,workspace_posture=False,mode="agent"),
+                "controller":None,"args":SimpleNamespace(multicamera_inspection=False,workspace_posture=False,near_pose_gap=False,mode="agent"),
                 "asdict":asdict,"time":SimpleNamespace(perf_counter=lambda:clock.now),"state_now":lambda:None,
                 "stop_before_motion":stop_before_motion}
             with patch("semantic_robot.v2.wall_budget.time.perf_counter",side_effect=lambda:clock.now):exec(code,ns)

@@ -81,7 +81,7 @@ def actor_context(harness, state, bundle, allowed=()):
     for index, action in enumerate(allowed):
         row = next((row for row in tested if row.get("action") == asdict(action)), None)
         score={"command_index": index, **(selected(row, ("accepted", "reason", "planned_ticks",
-            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after", "reorientation_after", "workspace_posture_after", "translation_after")) if row else {})}
+            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after", "reorientation_after", "workspace_posture_after", "translation_after", "near_pose_gap_option")) if row else {})}
         if getattr(harness,"multicamera_inspection",False) and "inspection_after" in score:
             # Hand identity is already bound by the canonical command and the
             # single shared reference. Do not repeat it for all 42 candidates.
@@ -111,6 +111,9 @@ def actor_context(harness, state, bundle, allowed=()):
         lookahead=setup.get("preview") or {}
         preflight["approach_translation_preview"]={"eligible":setup.get("eligible",False),
             **selected(lookahead,("trigger","source","scene_truth","future_state_is_prediction","future_actions_not_authorized"))}
+    if getattr(harness,"near_pose_gap",False):
+        preflight["near_pose_gap"]={**selected(receipt.get("near_pose_gap") or {},("eligible","trigger")),
+            "sampled_visible_depth_veto_not_full_scene_clearance":True,"fresh_execution_RGBD_recheck_required":True}
     if getattr(harness,"workspace_posture",False):
         workspace=receipt.get("workspace_posture") or {}
         lookahead=workspace.get("preview") or {}
