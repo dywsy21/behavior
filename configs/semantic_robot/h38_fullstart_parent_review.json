@@ -1,0 +1,23 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-22T10:44:00+08:00",
+  "source_commit": "6f528b5e6d49950331e08f11217d7f5659038b45",
+  "run": "/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/radio_h38_fullstart",
+  "local_complete_copy": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart",
+  "bytes": 1197520315,
+  "result_sha256": "88ac4c8d491d7545059913d9dd46d0184ef3783cffa254df80b19b13ffb8664c",
+  "steps_sha256": "679f17423a59bc621852226720b717ac617fb64ae676aacf81bc4e9e92db5d15",
+  "video_sha256": "436f29e81c163e135de6f00362a52d6ec261ac32fc3f2758a9c29ece8a5b7aec",
+  "numeric_report_sha256": "4066d88f6fc02c452a55f904cf6c9902d3648617332d88fa6759bf4848034d07",
+  "numeric_validation": {"seconds": 128.30923898285255, "main_hashes": 612, "robot_frames": 476, "segments": 374, "complete_chains": 101, "base_consumptions": 69, "appearance_updates": 11, "appearance_reference_uses": 10},
+  "video_review": {"decoded_all_frames": 1106, "fps": 15, "sampled_and_personally_viewed_frames": [0,100,200,301,401,502,602,703,803,904,1004,1105], "duration_seconds": 73.73333333333333, "not_full_1106_frame_manual_review": true},
+  "image_review": {"raw_three_views": [51,91], "raw_head_and_right_wrist": [100,101], "additional_unmarked_wrist_crop": [101], "all_11_marked_near_contact_surfaces": [91,92,93,94,95,96,97,98,99,100,101], "findings": "Target identity remained the radio, but most selected contacts were on its broad front body; d100 selected the top handle then d101 switched to a different low front surface from the wrist view. Surface identity confirmation is not stable grasp-affordance/pose selection."},
+  "controls": 2213,
+  "decisions": 102,
+  "model_calls": 183,
+  "official_success": false,
+  "stop_reason": "NO_MOTION_PROGRESS",
+  "expert_prefix_controls": 0,
+  "saved_policy_prefix_controls": 0,
+  "trace_limitations": ["Final control2213 is recorded as safety_stop without action23; original missing command vector is not fabricated", "Final candidate was interrupted by servo stall, not official terminal; only subsequent separate safety HOLD recorded", "All original RGB-D chains recomputed; failed chain101 is preserved as non-certifying", "Robot-only path feasibility and confirmed radio identity do not prove grasp pose or scene clearance"]
+}

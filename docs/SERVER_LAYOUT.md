@@ -6,7 +6,7 @@
 
 ## 1. 总览
 
-**2026-09-22 10:37当前：** H38原policy2778838已退出、27B模型2777940/8930仍在；完整本地`h38_fullstart_bundle/radio_h38_fullstart`补齐成功1,197,520,315B，三主SHA一致，末原trace缺一条HOLD action23如实记录，远端证据不删。H40仅新CPU树`semantic_translation_3f2c153`/独审通过未部署。子FT2785064已退出，288件107,360,898B在子worktree evaluation_evidence/且父数值/15RAW过；原NN2792187同6f于10:23:39已启动`h09y_grasp_only/eval_t1_i71_nn_v1`，结果目录名以其launch为准，尚未终态。
+**2026-09-22 10:37当前：** H38原policy2778838已退出、27B模型2777940/8930仍在；完整本地`h38_fullstart_bundle/radio_h38_fullstart`补齐成功1,197,520,315B，三主SHA一致，末原trace缺一条HOLD action23如实记录，远端证据不删。H40仅新CPU树`semantic_translation_3f2c153`/独审通过未部署。子FT2785064已退出，288件107,360,898B在子worktree evaluation_evidence/且父数值/15RAW过；原NN2792187同6f于10:23:39已启动，准确结果目录见launch4613bde5…f4b1f，不在此推断目录名，尚未终态。
 
 **2026-09-22 10:15当前：** 父2778838/2777940仍原H38源，首本地镜像传输已退出0但运行尚未结束，`h38_fullstart_bundle/radio_h38_fullstart`依然是待补齐的在途副本，不可据此删远端。保存态两报告`h38_appearance/h38_d075_reach_probe.json`与`h38_d075_ik_continuation.json`已完整本地SHA核。子原FT2785064已1038前缀后接管；base391件完整本地及父审已闭，H39默认关入口独审过但未部署。
 
