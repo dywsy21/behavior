@@ -1,0 +1,23 @@
+{
+  "reviewer": "Codex-parent",
+  "reviewed_bjt": "2026-09-22T09:31:55+08:00",
+  "decision": "PASS_ORIGINAL_I71_REMAINING_TWO_SLOTS_ONLY",
+  "launcher_sha256": "f925b7fe13683b587135bc62480de17eb3b92ef2cfae2f46cca4022dabb829d9",
+  "author_probe_sha256": "efad0343127b7546b3b8dc1a9a20225685f4fcd9bc6fd646493351e24218f0ac",
+  "independent_probe": {
+    "path": "artifacts/agentic-vlm-goal-20260918/i71_aux_helper_parent_probe.json",
+    "sha256": "03bd6ceefa32a8cdcaa2ebcbc7244489526847e43799ed21244fb07303e14821",
+    "positive_cases": 3,
+    "negative_cases": 19,
+    "seconds": 0.0029992639319971204,
+    "scope": "Independent AST guard tests plus complete caller source review; actual PID probe belongs to the author and is not represented as independently rerun."
+  },
+  "reviewed_contract": "Signed Git receipt and SHA; full actual argv equals signed launch; exact interpreter, runner, GPU2 main PID/UUID, output, clean source and cwd; GPU3 auxiliary at most 512MiB. Unknown contexts rejected. Original preceding-result, uniqueness, dataset, service, budget and source guards unchanged.",
+  "allowed_remaining_slots": ["eval_t1_i71_finetuned_v1", "eval_t1_i71_proprio_history_nn_v1"],
+  "original_resume_receipt_sha256": "1d425f857516d17ef503266947d557d994163cd6d6452e8cc173fecfccadae31",
+  "executor_commit": "6f3288770f72b727a114d596cd5b98f577adc8c1",
+  "additional_resets": 0,
+  "training_updates": 0,
+  "changed_executor_or_budget": false,
+  "timing_note": "Author changes/probe finished at 09:21:30, 210 seconds after the 09:18 ticket; report retrieval at 09:24:21 was late. No work extension or reset hidden by that late delivery."
+}
