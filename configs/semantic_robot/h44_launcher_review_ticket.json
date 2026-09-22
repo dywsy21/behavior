@@ -1,0 +1,10 @@
+{
+  "task_id": "H44-one-shot-launcher-independent-review",
+  "owner": "Astra-max-vlm_sft_resume_20260921",
+  "start_condition": "After own H09AB fixed delivery and H43 review; preferably while single released120 training is running, never delay that training handoff",
+  "runtime_source_commit": "197c2ba7bc941c9850e71217164f1fd9538b03cb",
+  "runtime_digest": "e5ce7b5843c495a33fca56c247888f6733988b739397fc4f7931d5fd15596b30",
+  "budget": {"wall_seconds": 600, "training_updates": 0, "model_calls": 0, "physical_resets": 0},
+  "scope": ["New launch_h44.py is a fixed experiment adaptation of independently reviewed launch_h38.py; original launcher unchanged", "Check exact source, three new flags, old H38 process exclusion, port8932, fresh outputs and exact model identity", "Check all nine gate flags plus full review/hash before next stage", "Retain strict source/call/storage/process/one-shot checks and no broad GPU auxiliary allowance", "Verify registered gate/fullstart budgets and zero expert/policy prefix", "Own negative tests and read-only actual-source argv/parser/digest checks"],
+  "output": "A small independent receipt including source_commit, implementation_digest, launcher_sha256, reviewer, independent_review_passed and blocking_findings. No physical launch by reviewer."
+}

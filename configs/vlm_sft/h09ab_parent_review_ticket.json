@@ -1,0 +1,10 @@
+{
+  "task_id": "H09AB-parent-independent-training-review",
+  "owner": "Codex-parent",
+  "registered_bjt": "2026-09-22T12:05:00+08:00",
+  "budget": {"wall_seconds": 1800, "training_updates": 0, "model_calls": 0, "physical_resets": 0},
+  "source_initial": "351b2798b0d45969974ae12cd33e00e00fba77b5",
+  "source_note": "Author found preflight source_commit report-key shadowing and is fixing only that field. Final review and any release must bind the final immutable commit, never this stale reporting version.",
+  "scope": ["Read all new formatter, dataset, encoder, runtime, trainer and server paths", "Check exact original0120 warmstart and4 motion+2 negative status+2 positive status sampling", "Strict response-only/EOS/train-infer equivalence and no private-to-actor field flow", "Model/adapter/identity/budget/storage/authorization failure cases", "Independent native test suite and own negative probes", "Read actual3.10 processor/mask reports and inactive exact configurations"],
+  "release": "Only a separately written exact-code/data/config/weight grant can authorize one120-update GPU3 run. No new simulator/service deployment under this review ticket."
+}

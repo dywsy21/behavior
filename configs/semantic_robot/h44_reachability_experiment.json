@@ -1,7 +1,9 @@
 {
   "task_id": "H44-reachability-repair-validation",
   "owner": "Codex-parent",
-  "registered_bjt": "2026-09-22T12:02:00+08:00",
+  "registered_bjt": "2026-09-22T12:00:43+08:00",
+  "launcher_author_started_bjt": "2026-09-22T12:00:43+08:00",
+  "launcher_author_deadline_bjt": "2026-09-22T12:15:43+08:00",
   "hypothesis": "The independently reviewed boundary-start, fine-translation preview and8–10cm pose-gap fixes remove measured harness dead ends without weakening physical safety or changing action amplitudes.",
   "source_commit": "197c2ba7bc941c9850e71217164f1fd9538b03cb",
   "implementation_digest": "e5ce7b5843c495a33fca56c247888f6733988b739397fc4f7931d5fd15596b30",
