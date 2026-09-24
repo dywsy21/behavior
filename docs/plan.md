@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 01:10（北京时间）：Z-01最新请求复核，等待完整公开包/路线输入（Codex）
+
+- 本分支clean pull成功，接口实现保持`963efcf`，沿用原21 CPU与修后独审；本轮未改源码、未重复测试。上游fetch仍`1fee179`、另一分支相关目录无差异、公开artifact SHA不变；官方项目页/Release/Issue #32仍未找到完整promoted bundle。Recovery执行框架或一次Pi0.5 fallback不能替代缺失的演化恢复程序。
+- 01:08:25只读robo（UTC17:08:25）：四个xhz训练3294346–3294349存活、各73644MiB、四卡free7489/7489/7489/7488MiB。0新模型/仿真/训练/信号/服务器修改。用户指定的G0.5＋公开演化Critic/Recovery效果仍未测，不写0%或已完成接入。
+- [报告](experiments/2026-09-24-zetta-g05.md)已补当前核验。下一需完整公开bundle及工具实现链接，或用户明确转为自行构建适配变体；七项特权特征与R1Pro恢复映射仍待，不自动演化。主工作区plan/任务板同步本任务优先级；不被历史agentic goal带回其他实验。
+
 ### 2026-09-24 20:19（北京时间）：Z-01按当前请求交接，完整公开Recovery仍缺（Codex）
 
 - 本轮只核对用户指定的“冻结G0.5＋作者公开演化Critic/Recovery”。Z-01干净分支pull成功；上游fetch仍为`1fee179`，另一分支相关文件无差异，公开Releases仍无发布。原JSON SHA不变，1 critic/0 recovery，不能加载为完整CandidateBundle；不把Recovery执行框架当演化好的规则。既有21 CPU/修后独审仍有效，本轮未重复测试、未改实现。
