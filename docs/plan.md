@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 21:37（北京时间）：H53唯一原始场景检查运行中（Codex）
+
+- 固定`ab01d2777084cfa8ccf72a56748a0fb6a296b92d`已push/robo独立`git_worktrees/shared_scene_ab01d27`；双端36 CPU、修后独审、13外部依赖及实时资源门过，四训练仍原PID/各73644MiB/各卡free7489。唯一launch UTC13:37:43.218613，supervisor3469426。
+- run/runtime `h53_original_scene_v1`，原始TRAIN138/seed0，一Session/600s/原512辅助4096主卡3072余量，0前缀/actor模型训练。场景/三RGB-D/退出结果待，不能把提交当通过；不重提/不动四训练。
+
 ### 2026-09-24 21:27（北京时间）：H53启动桥复审通过，场景runner仍仅CPU（Codex）
 
 21:36修后独审通过：36/36 CPU，未发现剩余实质阻塞；开始固定Git与远端同测试/实时资源预检。尚无H53仿真进程；origin/main最新fetch仍33677bd，本地dirty均本票，未强pull或改队友源码。

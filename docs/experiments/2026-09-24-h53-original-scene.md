@@ -45,3 +45,5 @@ H52b已证明显式GPU3/禁多卡/低纹理缓存的空Kit可以启动；还不�
 - 新私有runtime预定：`/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h53_original_scene_v1`。
 - 本地完整小包预定：`artifacts/agentic-vlm-goal-20260918/h53_original_scene_bundle_v1`。
 - 实际run尚未启动，以上预定目录不当作已存在；实际结果和源码commit启动后追加。
+
+21:37北京时间实际启动：源码`ab01d2777084cfa8ccf72a56748a0fb6a296b92d`，独立`git_worktrees/shared_scene_ab01d27`。双端36 CPU、修后独审、依赖与实时资源门过；上述新run/runtime现已创建。唯一launch UTC13:37:43.218613，supervisor3469426，真实场景与终态待验。
