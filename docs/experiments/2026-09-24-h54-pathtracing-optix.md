@@ -45,3 +45,5 @@ H53b无viewer仍在机器人/渲染初始化时超过主卡4096MiB增量门，�
 22:22北京时间补充：已核安装版SimulationApp构造会把`totalSpp`重置为每帧`spp=4`，故CLI16本身无效。现于明确拥有的empty app创建完成后重应用profile，再执行原严格设置读回；原OG的RT2覆盖则仍在空sim边界重应用。场景/相机存在后只校验，不再设置。52项目标CPU通过，包括两阶段覆盖及完整mock worker/原reset链；原582项semantic_robot回归通过。初审未见其他边界阻塞，修后独审待。`/rtx/post/aa/op=0`只指禁后处理AA，不把它混称路径追踪的采样pattern键；OptiX设置为true也不独自证明native实际执行了OptiX，真实Kit日志/图像仍须验收。
 
 22:23修后独审闭合，52/52目标CPU/语法/diff通过，无实质阻塞；开始固定commit和远端同测试/16依赖/四卡资源门，未提交H54进程。
+
+22:24源码已固定`7e706be67514c261aef94917b1bfa561478f2f80`/远端`git_worktrees/shared_scene_7e706be`，52远端CPU/16依赖过。但实时GPU0出现PID3480326 C+G39MiB，非注册四训练，严格身份门拒绝；未调用launch、未创建run/runtime、无H54 worker。正在只读核身份，原四训练仍各73644，不发信号/绕过检查。
