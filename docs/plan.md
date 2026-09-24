@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 21:56（北京时间）：H53b唯一无旁观者相机场景检查运行中（Codex）
+
+- 固定`8f0812e5375d8331bb47d5628180b9e43f1e30c5`已push/robo独立`git_worktrees/shared_scene_8f0812e`，双端41 CPU、修后独审、14依赖/实时资源门过。唯一launch UTC13:56:48.554197，supervisor3473931，输出/runtime `h53b_no_viewer_v1`。
+- 只关闭非actor viewer；三原分辨率相机/物理/原始TRAIN138/seed0/600s/原显存门不变。0前缀/actor模型训练，真实场景/深度/资源结果待；不重提，四原训练仍各73644MiB保留。
+
 ### 2026-09-24 21:55（北京时间）：H53b关闭非actor旁观者相机CPU完成（Codex）
 
 21:55独审闭合：41 CPU、语法/diff检查通过，无实质阻塞。原profile显式恢复DISABLE_VIEWER=False也已补回归，避免未来同进程配置串用；当前CLI仍独立进程。开始固定Git/远端同门，尚无新GPU进程。
