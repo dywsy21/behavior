@@ -42,3 +42,18 @@ CPU72–75/4 Kit线程、纹理streaming0.01/16MiB、多GPU禁用/主GPU3不变�
 22:49修后独审通过，独立67/67与diff检查过，无其他实质阻塞；按原预算进入Git固定/远端CPU及真实配置转换预检，不把mock通过当相机创建或显存通过。
 
 22:49实际启动：固定`4cd5b0adda144455e4c66495d050d26b001f9852`/远端`git_worktrees/shared_scene_4cd5b0a`，67远端CPU/21依赖/原YAML真实OmegaConf深复制与roundtrip/Hydra target解析均过（全程未导入torch/OG/Isaac），实时原四训练/显存门通过。唯一launch UTC14:49:25.195096，supervisor3489219，run/runtime现已创建；源不可热改，原预算不变，真正scene/三RGB-D/终态待。
+
+## 实际结果与归档（23:02北京时间）
+
+H55未通过：3489219/3489226已退出，监管602.738772275s，worker -15，600s wall budget触发（error字符串沿用底座H52标签，不代表本票未载scene）。原scene日志360.992s Imported scene，原机器人构造随后开始；Kit563.718s出现内部240×240 render resolution及A100 DLSS-RR不支持警告。末600.251s外层reset/load/捕获/actor/前缀/模型/训练均0，预配置已实际传入原Evaluator，但wrapper后验与三RAW未形成。
+
+743资源样本全核：GPU0/1/2/3自有峰456/416/416/3317MiB，整卡增量峰470/422/422/3349MiB，最低free7018/7068/7068/4138MiB；四训练样本全部原PID/73644MiB，退出各卡free约7489MiB。**未触显存门，不等于整个初始化最终峰值已可容纳；不能与更早因显存终止的H53b作最终峰值等阶段比较。** 也不能把A100警告时间关联当作证明超时由该插件唯一造成。未临时延长时间、增加显存或重跑。
+
+完整8件本地`artifacts/agentic-vlm-goal-20260918/h55_preconfigured_cameras_bundle_v1`已取回，四主SHA与远端一致，原source/run/runtime保留：
+
+- launch `c87a1f86904572c897e99c1fa54201f5382baef4adc8dca5fb6fa78580b7f09c`
+- supervisor `87c9371879bf02e4bef0eb09139c5e9b98a8afe44b07cfb8f80fd0aaa740c79a`
+- worker `12dcd92b854998b9eb1645f9bcc688715d265b4621bd2efec497a67a6bb3eda3`
+- kit `9b26483b70ba48de8355fe807b10e95f2ba50ee11fd556e623093334b5830a06`
+
+后继考虑H56：在H55同相机前移配置之上仅换已有独审的PathTracing/OptiX兼容profile，单独登记，保持原600s与显存门、冷新runtime和physics。此时H55是camera-config固定的对照；不回到1080的H54b，也不在H55结果里混称PT作用。H54b继续未运行，H56在CPU/独审前不启动。

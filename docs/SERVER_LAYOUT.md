@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 23:02北京时间H55归档闭合：** 完整8件本地`artifacts/agentic-vlm-goal-20260918/h55_preconfigured_cameras_bundle_v1`，4主SHA双端一致，743资源样本已核；无活跃H55进程，全部源/run/runtime/cache保留。四原训练不动，暂无新H56目录/运行。
+
+**2026-09-24 23:00北京时间H55终态：** 3489219/3489226退出，600s wall终止（监管602.739s/-15），不是显存门；source/run/runtime全保留。四原训练仍各73644/free已恢复，无H55活跃GPU；完整8件本地`artifacts/agentic-vlm-goal-20260918/h55_preconfigured_cameras_bundle_v1`归档中，目录存在不当完整证据。
+
 **2026-09-24 22:49北京时间H55提交：** 固定`4cd5b0adda144455e4c66495d050d26b001f9852`/独立`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_scene_4cd5b0a`，唯一launch UTC14:49:25.195096，supervisor3489219。run `/mnt/nvme_tmp/robodojo_agentic_20260924/h55_preconfigured_cameras_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h55_preconfigured_cameras_v1`，当前初始化，不热改或删缓存。四原训练保留，0新actor模型训练；旧H53/H54证据全保留，H54b未启动。
 
 **2026-09-24 22:29北京时间H54归档闭合：** 完整8件本地`artifacts/agentic-vlm-goal-20260918/h54_pathtracing_bundle_v1`，4主SHA双端一致/42样本审完；源/run/runtime全保留，无H54活动进程。原四训练不动，新原始场景图像仍无。

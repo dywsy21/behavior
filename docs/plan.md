@@ -10,12 +10,21 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 23:00（北京时间）：H55触600s墙钟终止，未触显存门（Codex）
+
+23:02归档闭合：743样本/全8件本地4主SHA核同，GPU3自有峰3317/增量3349，四训练恒73644。后继准备独立H56，在H55 early camera配置上仅切已有PT/OptiX兼容profile，仍原600s/显存门/冷runtime/physics，不加时或回到1080；先CPU/独审/新预算，不是H55已成功。
+
+- 3489219/3489226已退出，监管602.739s/worker -15，error为600s wall budget（共享底座遗留错误文本H52并非实际空Kit）；末600.251s GPU3整卡增量3349MiB/自有3317、free4138，原四训练仍各73644，退出余量恢复。
+- 已实际传入三720/480 early RGB-D配置、Imported scene于360.992s；563.718s日志出现240内部render resolution/DLSS-RR A100不支持警告，外层reset/load/capture均0，无实际camera wrapper终验。**不能称完成相机创建、最终峰值已优化或完整SR**。原预算终止、未临时加时/加显存；完整8件归档中，source/run/runtime保留，H54b仍未跑。下一基于全日志判断原renderer兼容性后继，不盲重提。
+
 ### 2026-09-24 22:53（北京时间）：按压的几何参考点静态风险已证实存在（Codex，只读）
 
 - 原H55/3489219+3489226仍按600s运行，152s样本资源过、scene加载中，尚无RGB-D。并行只读核官方toggle.py SHA `a7a88f4a…fd3b`：需要finger-object真实contact＋finger/marker overlap连续5次状态更新；不是距离小或夹爪中心到达即可。
 - 当前press和pick共用closing-gap centre距离/前瞻，press没有独立工具准备，portable finger几何只在完全open参考有效；这是静态接触接口风险，**不能说历史全部失败已定位于此**。详见`experiments/2026-09-24-press-contact-contract-audit.md`。未改actor/训练/活跃源/新增GPU；后继按通用contact frame与真实开度设计，先等H55结果，不读对象特权状态入actor。
 
 ### 2026-09-24 22:49（北京时间）：H55唯一原场景检查运行中（Codex）
+
+22:56阶段更新：实际log已`Imported scene 0`（worker360.992s），进入原R1Pro加载；409.879s资源样本通过，GPU3整卡增量1128MiB。外层reset/camera验收尚未完成，不以当前较低显存推定最终峰值。
 
 - 固定`4cd5b0adda144455e4c66495d050d26b001f9852`/robo独立`git_worktrees/shared_scene_4cd5b0a`，双端67 CPU、582本地接口、修后独审/21依赖及实际原YAML→OmegaConf→Hydra target CPU门通过。唯一launch UTC14:49:25.195096，supervisor3489219；run/runtime `h55_preconfigured_cameras_v1`现已创建。
 - 原TRAIN138/seed0/600s/4096主512辅助3072余量、0actor前缀模型训练；只将3相机首次配置为最终RGB-D，不启PathTracing、不改physics。真实图像/初始化及资源结果待，不重复提交；四原训练保留，完整SR仍未获得。
