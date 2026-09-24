@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 20:58北京时间H52终态：** 3464856/3464863已退出（worker -15），辅助GPU0新增436MiB/自有422MiB越注册384MiB门，0 app.update/0任务。原四训练仍各73644MiB，四卡free恢复7489MiB。上条源/run/runtime保留作为失败证据，不是常驻仿真或可复用run。
+
 **2026-09-24 20:57北京时间H52提交：** 独立源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_simulator_701abfa`，supervisor3464856；输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h52_empty_kit_v1`，私有缓存/portable-root在`/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h52_empty_kit_v1`。仅一次空Kit300s/8 update，不载任务/模型，不改共享环境；实际终态待，四原训练保留。
 
 **2026-09-24 20:33北京时间H51收尾：** 3460478/3460488已exit0/完整12调用，峰4534MiB/最低free2950MiB，退出GPU2恢复7489MiB。全包`artifacts/agentic-vlm-goal-20260918/h51_shared_bundle_v1`及双SHA/12图原生服务像素核同；原生定位仍有语义错误，未部署。原source/run/cache保留，四训练不动。

@@ -33,13 +33,25 @@
 
 首轮独审发现失败未传播、直达内部入口、spawn中断窗口和Kit argv问题，现已修复。20:55 Epicurus修后窄独审与独立15 CPU通过，远端同解释器CPU尚待。20:47只读原四训练/7489MiB余量、三个外部依赖SHA再次核同；**未启动**。必须看到 worker `updates_complete`、实际设置一致、8 update、干净退出、全程资源记录以及原四训练仍在，才算空启动通过；进程退出0本身不是通过。通过后如需完整场景必须另登记、另验证；不能据此宣布官方 success rate >0%。
 
-## 依据
-
 ## 真实提交
 
 代码`701abfad5b23daadd6388c32ba915d72a45fe926`已push，robo独立源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_simulator_701abfa`。双端15 CPU通过，实际启动前完整GPU/graphics快照只见四原训练，各free7489MiB。
 
-唯一launch UTC `2026-09-24T12:56:57.903775+00:00`，supervisor `3464856`，输出/runtime如上。当前运行中，资源/实际设置/8 update/终态尚待；不可重复提交。
+唯一launch UTC `2026-09-24T12:56:57.903775+00:00`，supervisor `3464856`，worker `3464863`，输出/runtime如上。已经终止，不可重复提交。
+
+## 实测结果：辅助卡额度中止，尚未完成启动
+
+监管用时3.536819808s，worker退出-15，停在`constructing_app`，0 app.update/任务/reset/控制/模型/训练。第四个资源样本在3.222s看到GPU0自有C+G **422MiB**、卡增量 **436MiB**，超过384MiB辅助卡额度；GPU1自有12MiB，GPU2/GPU3尚无自有context。监管只对3464863发SIGTERM；退出后四原训练均在且各73644MiB，全卡free恢复7489MiB。4个完整样本已审。
+
+这不是OOM，不证明主卡预算不够，更不证明真实场景不能共存。Kit日志表明实际argv包含`activeGpu=3`/`physics cudaDevice=3`/`multiGpu=False`、正确private portable-root且无`--worker`；但应用构造尚未返回，运行时设置读回和GPU选卡结果**未验收**。需查GPU枚举的辅助上下文和renderer编号，不直接放宽旧门强跑。
+
+全7文件已取回 `artifacts/agentic-vlm-goal-20260918/h52_empty_kit_bundle_v1`，三项SHA双端一致：
+
+- launch: `456cbc5289e8b02aada29cb0344901c84ca24df70b4656ab77edc464795425b8`
+- supervisor: `dee50c8544ff92ccbdb71608bfc192cb8a1fc7962dc500fb249675728ca51e25`
+- worker: `51fe420adbe276f9134df2e290b1cc63fb52ebed937853e93f5ae8e55ca25ad5`
+
+完整goal未完成；静态/资源实验均不计完整success rate。
 
 ## 依据
 

@@ -10,6 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 20:58（北京时间）：H52空启动被辅助GPU额度门停止（Codex）
+
+21:01归档闭合：全7文件本地`artifacts/agentic-vlm-goal-20260918/h52_empty_kit_bundle_v1`，launch/supervisor/worker三SHA双端一致，4样本和完整日志已审；详见H52报告。当前选卡只是传参确认，尚未读回或确认实际render GPU。
+
+- 3464856监管/3464863 worker已结束：3.537s，worker -15，仅构造Kit/0 update。末次样本GPU0自有C+G422MiB/卡增量436MiB超过非主卡384MiB；GPU1另12MiB，GPU3尚无自有context。不是主卡OOM，也不据此断言场景不可能共存。原四训练仍各73644MiB，退出四卡free均7489MiB。
+- 源701abfa/失败run全保留，正在取回完整资源与日志证据；不复用H52目录或自动追加。下一只读核Kit GPU枚举/选卡机制及历史辅助context，不直接放宽门强跑。0任务/reset/模型/训练，完整goal未完成。
+- 已核公开BDDL `bddl3/bddl/activity_definitions/turning_on_radio/problem0.bddl`：goal仅`toggled_on radio_receiver`，不要求持有。与H38公开文字一致，支持后继去掉“必须先拿起”的规划偏置；此规范只用于设计审计，不向actor提供隐藏位置或完成真值。
+
 ### 2026-09-24 20:57（北京时间）：H52唯一空启动实测运行中（Codex）
 
 - 固定源码`701abfad5b23daadd6388c32ba915d72a45fe926`已push/robo独立`git_worktrees/shared_simulator_701abfa`，双端15 CPU与修后独审过；启动前四原训练各73644MiB/全卡free7489MiB，三个依赖SHA核同。唯一launch UTC12:56:57.903775，supervisor3464856。
