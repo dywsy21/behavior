@@ -18,6 +18,7 @@ import probe_shared_vlm as shared
 from semantic_robot.v2.affordance import SurfaceChoice
 from semantic_robot.v2.finite_localization import region_request, surface_request, region_surfaces, region_boxes
 from semantic_robot.v2.harness import Goal
+from semantic_robot.v2.native_grounding import native_request, SYSTEM as NATIVE_SYSTEM
 from test_v2 import fixture
 
 
@@ -56,6 +57,42 @@ class FiniteProbeTests(unittest.TestCase):
         with self.assertRaises(ValueError): probe.validate_spec(changed)
         changed = copy.deepcopy(repair); changed["non_torch_allowance_mib"] = 513
         with self.assertRaises(ValueError): probe.validate_spec(changed)
+
+    def test_native_experiment_has_new_frozen_cases_and_same_resources(self):
+        spec = json.loads((REPO / "configs/semantic_robot/h51_native_grounding_probe.json").read_text())
+        probe.validate_spec(spec)
+        self.assertEqual(spec["max_calls"], 12)
+        for key in (*probe.H50_RESOURCES, *probe.H50_MODEL_FIELDS):
+            self.assertEqual(spec[key], self.spec[key])
+        old = {(c["source_run"], c["capture"], c["goal"]["target"]) for c in self.spec["cases"]}
+        new = {(c["source_run"], c["capture"], c["goal"]["target"]) for c in spec["cases"]}
+        self.assertEqual(len(new), 4)
+        self.assertFalse(old & new)
+        for key, value in (("max_calls", 13), ("max_seconds", 601), ("non_torch_allowance_mib", 513),
+                           ("image_max_side", 640), ("seed", 18), ("simulator_resets", 1)):
+            changed = copy.deepcopy(spec); changed[key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError): probe.validate_spec(changed)
+        for replacement in (self.spec["cases"], list(reversed(spec["cases"]))):
+            changed = copy.deepcopy(spec); changed["cases"] = replacement
+            with self.assertRaises(ValueError): probe.validate_spec(changed)
+        changed = copy.deepcopy(spec); changed["cases"][0]["goal"]["target"] = "use an old answer"
+        with self.assertRaises(ValueError): probe.validate_spec(changed)
+
+    def test_native_requests_keep_full_current_raw_and_no_decoder_choices(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path); arguments, binding = probe.load_case(self.make_capture(root))
+            baseline = probe.baseline_request(arguments, binding)
+            for mode in ("point", "box"):
+                request = native_request(arguments["goal"], "head", arguments["raw"]["head"], binding, mode)
+                self.assertEqual(probe.validate_request(request), 128)
+                self.assertEqual(request.system, NATIVE_SYSTEM)
+                self.assertEqual(request.allowed, ())
+                self.assertEqual(request.binding, baseline.binding)
+                np.testing.assert_array_equal(request.images[0], baseline.images[0])
+                for change in (dict(allowed=(SurfaceChoice(),)), dict(system=shared.STATIC_SYSTEM),
+                               dict(images=request.images * 2), dict(phase="native_other")):
+                    with self.subTest(mode=mode, change=change), self.assertRaises(ValueError):
+                        probe.validate_request(replace(request, **change))
 
     def test_case_contract_no_private_sources_free_uv_or_unpinned_fields(self):
         for key, value in (("view", "right_wrist"), ("format", "private"), ("capture", "../secret"),

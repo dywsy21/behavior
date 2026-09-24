@@ -10,6 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 20:23（北京时间）：恢复G-AV1/H51原生定位真实对照准备（Codex）
+
+20:24补充：91 CPU、四真实输入完整prepare及探针窄独审通过；spec SHA76b0e7e3…，不读取旧回答、box不成抓点、0新GPU调用。下一固定Git和远端同门后单次探针，详见H51报告。
+
+- 上一轮是Zetta独立任务交接，对agentic完整成功目标未产生新进展；当前用户明确续接G-AV1，Z-01缺包不阻塞本路线。保留并检查H51已有草稿，当前23e5b48、origin/main33677bd，dirty仅本票源码，已fetch未强pull；20:18只读四训练仍在，不重启旧探针。
+- H51核心原生点/框工具已完成14新＋21旧CPU及独审；本次补齐不同于H50的四query固定配置和探针锁定，登记最多12调用（每query自由UV/原生point/box各一次）、600s worker/900s监管、原GPU2/4864+512MiB/至少2048MiB余量，同4B NF4/320/seed17，无reset/训练/重试。完整配置`configs/semantic_robot/h51_native_grounding_probe.json`，case canonical SHA 5f6847b6…。
+- 四保存态均为历史开发诊断，不是四个独立盲测：H38 radio d060、H44 fridge d012、task1 i71 prefix1038 d00、H44 radio d000查询不存在plate。人工已看原图；旧回答/人工坐标不输入。原生框只为区域，不能变成抓点/持有/成功。下一新探针CPU/窄独审、固定Git单次GPU，再据全量语义结果决定真实闭环；最终仍需零前缀官方完整成功。
+
 ### 2026-09-24 20:19（北京时间）：Z-01按当前请求交接，完整公开Recovery仍缺（Codex）
 
 - 本轮只核对用户指定的“冻结G0.5＋作者公开演化Critic/Recovery”。Z-01干净分支pull成功；上游fetch仍为`1fee179`，另一分支相关文件无差异，公开Releases仍无发布。原JSON SHA不变，1 critic/0 recovery，不能加载为完整CandidateBundle；不把Recovery执行框架当演化好的规则。既有21 CPU/修后独审仍有效，本轮未重复测试、未改实现。

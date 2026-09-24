@@ -1,4 +1,4 @@
-"""H50: four frozen heterogeneous target queries, <=12 calls, no controls.
+"""H50/H51: four frozen target queries, <=12 calls, no controls.
 
 Uses the H46/H49 pinned NF4 model and shared-training resource protections.
 Only public RGB-D, robot calibration/proprioception and a preregistered target
@@ -31,6 +31,7 @@ from semantic_robot.v2.finite_localization import SelectionRequest, SelectionRep
 from semantic_robot.v2.grounding import validate_depth
 from semantic_robot.v2.harness import Goal
 from semantic_robot.v2.kinematics import RobotModel
+from semantic_robot.v2.native_grounding import locate_native, SYSTEM as NATIVE_SYSTEM
 from semantic_robot.v2.protocol import VIEWS
 from semantic_robot.v2.skill_completion import CaptureRef, read_capture
 
@@ -45,6 +46,7 @@ H50_RESOURCES = {
 H50_MODEL_FIELDS = ("model", "revision", "model_files", "quantization", "chat_stop_policy")
 H50_MODEL_SHA256 = "4130b5766db85b08b80af4948b5aba272fb9e82405b654acc769467feb7b2e6f"
 H50_CASES_SHA256 = "5846788db1516fd08b8a341947466dbcd4320c3041cb99937260bfc328a257ea"
+H51_CASES_SHA256 = "5f6847b6ca2f38794e76268d6286b3f13bb4a3602053cddeee3b150a30b2279b"
 
 
 def expected_files(case):
@@ -62,11 +64,12 @@ def expected_files(case):
 
 
 def validate_spec(spec):
-    limits = {"H50-finite-localization-v1": 12, "H50b-explicit-choice-contract-v1": 8}
+    limits = {"H50-finite-localization-v1": 12, "H50b-explicit-choice-contract-v1": 8,
+              "H51-native-protocol-v1": 12}
     if (spec.get("experiment") not in limits or spec.get("max_calls") != limits[spec["experiment"]] or
             spec.get("training_steps") != 0 or spec.get("simulator_resets") != 0 or
             spec.get("not_success_rate") is not True or spec.get("quantization") != shared.NF4_POLICY):
-        raise ValueError("Exact no-physics H50/H50b experiment and call limit required")
+        raise ValueError("Exact preregistered no-physics experiment and call limit required")
     shared.validate_resource_bounds(spec)
     for key, expected in H50_RESOURCES.items():
         if type(spec.get(key)) is not type(expected) or spec[key] != expected:
@@ -77,11 +80,13 @@ def validate_spec(spec):
     if digest != H50_MODEL_SHA256:
         raise ValueError("Frozen H50 model manifest or inference policy changed")
     cases = spec["cases"]
-    if spec["experiment"] == "H50b-explicit-choice-contract-v1":
+    case_locks = {"H50b-explicit-choice-contract-v1": H50_CASES_SHA256,
+                  "H51-native-protocol-v1": H51_CASES_SHA256}
+    if spec["experiment"] in case_locks:
         case_digest = hashlib.sha256(json.dumps(cases, sort_keys=True,
                                     separators=(",", ":"), allow_nan=False).encode()).hexdigest()
-        if case_digest != H50_CASES_SHA256:
-            raise ValueError("H50b must retain the identical four preregistered H50 queries")
+        if case_digest != case_locks[spec["experiment"]]:
+            raise ValueError("Experiment must retain its identical four preregistered queries")
     if not isinstance(cases, list) or len(cases) != 4 or len({c["id"] for c in cases}) != 4:
         raise ValueError("Exactly four uniquely named frozen cases required")
     for case in cases:
@@ -253,7 +258,7 @@ def run(spec_path, output):
                        hit_token_cap=len(ids) >= cap)
             save("progress.json")
             (folder / "call.json").write_text(json.dumps(row, indent=2, allow_nan=False))
-            if request.phase != "baseline" and (len(ids) >= cap or raw_text not in allowed):
+            if request.phase != "baseline" and (len(ids) >= cap or (allowed and raw_text not in allowed)):
                 raise ValueError("Incomplete/noncanonical/outside-offered response; no repair or retry")
             del ids, inputs, encoded
             gc.collect(); torch.cuda.empty_cache()
@@ -265,7 +270,7 @@ def run(spec_path, output):
             result["cases"].append(row); save("progress.json")
             # A paired baseline sees the same raw head and target, not the
             # candidate grids. Its answer is recorded but never fed forward.
-            if spec["experiment"] == "H50-finite-localization-v1":
+            if spec["experiment"] in ("H50-finite-localization-v1", "H51-native-protocol-v1"):
                 request = baseline_request(arguments, binding)
                 reply = choose(request)
                 try:
@@ -279,10 +284,20 @@ def run(spec_path, output):
                 # Reuse H50's published baseline for analysis only. No old
                 # answer is read by this worker or included in model inputs.
                 row["baseline"] = {"status": "not_rerun", "reference": "H50-finite-localization-v1"}
-            target = locate_target(**arguments, choose=choose, deadline=deadline)
-            row.update(status="complete", localization=target.receipt,
-                       evidence=asdict(target.for_frame(arguments["frame_id"], arguments["goal"], arguments["raw"],
-                                        arguments["depths"], arguments["model"], arguments["state"])))
+            if spec["experiment"] == "H51-native-protocol-v1":
+                native_args = {key: value for key, value in arguments.items() if key != "views"}
+                for mode in ("point", "box"):
+                    target = locate_native(**native_args, view=case["view"], mode=mode,
+                                           choose=choose, deadline=deadline)
+                    # This result contains no implicit box-centre evidence.
+                    row["native_" + mode] = asdict(target.for_frame(**native_args))
+                row["evidence"] = row["native_point"]["evidence"]
+                row["status"] = "complete"
+            else:
+                target = locate_target(**arguments, choose=choose, deadline=deadline)
+                row.update(status="complete", localization=target.receipt,
+                           evidence=asdict(target.for_frame(arguments["frame_id"], arguments["goal"], arguments["raw"],
+                                            arguments["depths"], arguments["model"], arguments["state"])))
             save("progress.json")
             print(json.dumps({"id": case["id"], "evidence": row["evidence"], "calls_so_far": len(result["calls"])}), flush=True)
         result["status"] = "complete"
@@ -304,14 +319,18 @@ def baseline_request(arguments, binding):
 
 def validate_request(request):
     from semantic_robot.v2.affordance import SurfaceChoice
-    sizes = {"baseline": 1, "region": 2, "surface": 4}
+    sizes = {"baseline": 1, "region": 2, "surface": 4, "native_point": 1, "native_box": 1}
     if (request.phase not in sizes or len(request.images) != sizes[request.phase] or
             len(request.labels) != len(request.images) or len(set(request.labels)) != len(request.labels)):
-        raise ValueError("Exact baseline/region/surface image count required")
+        raise ValueError("Exact registered phase image count required")
     if request.phase == "baseline":
         if request.allowed or request.system != shared.STATIC_SYSTEM:
             raise ValueError("Unchanged unconstrained minimal static baseline required")
         return 320
+    if request.phase in ("native_point", "native_box"):
+        if request.allowed or request.system != NATIVE_SYSTEM:
+            raise ValueError("Native one-RAW grounding is unconstrained and uses its registered system")
+        return 128
     if (not 1 <= len(request.allowed) <= 13 or len(set(request.allowed)) != len(request.allowed) or
             not all(type(c) is SurfaceChoice for c in request.allowed) or SurfaceChoice() not in request.allowed):
         raise ValueError("Bounded canonical choices including abstention required")

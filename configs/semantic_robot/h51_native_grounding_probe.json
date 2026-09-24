@@ -1,0 +1,146 @@
+{
+  "experiment": "H51-native-protocol-v1",
+  "owner": "Codex-parent",
+  "hypothesis": "Compare the old minimal free-UV interface with Qwen native 0..1000 point_2d and bbox_2d on four newly registered development queries. Test a full interface, not a scale-only intervention. Boxes never become contact points.",
+  "not_success_rate": true,
+  "training_steps": 0,
+  "simulator_resets": 0,
+  "gpu": 2,
+  "gpu_uuid": "GPU-3e4fda8c-536e-5899-e877-b8be97032fe0",
+  "training_pids": [
+    3294348
+  ],
+  "allocator_limit_mib": 4864,
+  "non_torch_allowance_mib": 512,
+  "reserve_mib": 2048,
+  "max_seconds": 600,
+  "supervisor_seconds": 900,
+  "seed": 17,
+  "image_max_side": 320,
+  "model": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917/models/Qwen3.5-4B",
+  "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "model_files": {
+    "config.json": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+    "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+    "merges.txt": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d",
+    "model.safetensors.index.json": "cf3f798ee02ba45f9622aa8892a47369ab667d0afbf154ee7c2212de42e6302d",
+    "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+    "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+    "tokenizer_config.json": "316230d6a809701f4db5ea8f8fc862bc3a6f3229c937c174e674ff3ca0a64ac8",
+    "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+    "vocab.json": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003",
+    "model.safetensors-00001-of-00002.safetensors": "26a93f066e1916adb13453dae5a0c707c0fbc71299ed98779571a907b8e74c61",
+    "model.safetensors-00002-of-00002.safetensors": "cb544bd9bfae93dc59b0f22b292f5933573854a7f9b97835c67060d7d910e188"
+  },
+  "cases": [
+    {
+      "id": "radio_head_d060",
+      "source_run": "/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/radio_h38_fullstart",
+      "capture": "decision_060",
+      "format": "run_v2",
+      "view": "head",
+      "goal": {
+        "kind": "pick",
+        "target": "radio receiver on the table",
+        "hand": "right",
+        "done_when": "independent feedback required",
+        "level": false
+      },
+      "files_sha256": {
+        "decision_060/CURRENT_HEAD_RAW.png": "65238b6b6b7d1727938ab923062c559f6a1e20032a6aa0422bec194b4871a545",
+        "decision_060/CURRENT_LEFT_WRIST_RAW.png": "7c22944f23c62c79be152d324d1d650bf01e8709d1d735d3927583dcaf62b299",
+        "decision_060/CURRENT_RIGHT_WRIST_RAW.png": "1833010adc851a763109d06284429a40ed3cc795e1d392b84711bb596e668e9b",
+        "decision_060/depth.npz": "7d9e1fc26a4084ab08a4b5bd9c628a4690c8e09261d97ca4e0ccc88af3315493",
+        "decision_060/depth_receipt.json": "91c19f756cf2c9139afeeb5f312e146ba927cdfa8b8c9b65df4e244aad158586",
+        "decision_060/proprio.json": "b61a04c7d5965ada230b0b5fd6533b5cc93c11c657c9c3ebb03f6496c7ba1913",
+        "robot_calibration.json": "69d3ff5794b1c42ce8f80f2136a01e7e6a290e13a5638a6e14727b2dc1981ea7"
+      }
+    },
+    {
+      "id": "refrigerator_handle_h44_d012",
+      "source_run": "/mnt/nvme_tmp/robodojo_agentic_20260921/h44_reachability/gate_plates_h44",
+      "capture": "decision_012",
+      "format": "run_v2",
+      "view": "head",
+      "goal": {
+        "kind": "open",
+        "target": "handle of the refrigerator",
+        "hand": "right",
+        "done_when": "independent feedback required",
+        "level": false
+      },
+      "files_sha256": {
+        "decision_012/CURRENT_HEAD_RAW.png": "b55c7e8d266368279f877438de79acdb29e826c868f16c73c4d6dcaa7b9e7707",
+        "decision_012/CURRENT_LEFT_WRIST_RAW.png": "b38c8af48ab04813b7990c28f49341fcd89fa311305849faeea1964f6486e0e1",
+        "decision_012/CURRENT_RIGHT_WRIST_RAW.png": "fa2774d428f97f05a1b2c0527dbfa37b3d07e879704207718752866782892d11",
+        "decision_012/depth.npz": "1fd263fb5741ecb624cc319486b4bcbd9d021940322dd2a6518fe95809784c63",
+        "decision_012/depth_receipt.json": "f20f0529a102fa228468645db1ab24b1d14ee9885bfff72ae1e1a64db277b175",
+        "decision_012/proprio.json": "cb1f38a7ae24c43f44435c1141b6783c7dabe3be2eff86b2b0adeecd6b45a352",
+        "robot_calibration.json": "7c6fd5bbcc328de2210fba4e33d68546150b657bed01c9e3bc58c35cc323bb78"
+      }
+    },
+    {
+      "id": "bin_i71_d00",
+      "source_run": "/mnt/nvme_tmp/robodojo_vlm_sft_20260919/h09y_grasp_only/eval_t1_i71_base_v1",
+      "capture": "decision_00/before",
+      "format": "capture_v1",
+      "view": "head",
+      "goal": {
+        "kind": "pick",
+        "target": "trash can",
+        "hand": "right",
+        "done_when": "independent feedback required",
+        "level": false
+      },
+      "files_sha256": {
+        "decision_00/before/capture.json": "e05cd4c18882df7f0a57d1f774bfb5b4009e9ebe470c294801a659dd1a08026e",
+        "robot_calibration.json.gz": "575023cfed04b7f0d22250f5304896bf4cd9247cc5cc7419e743798e26629ce4"
+      }
+    },
+    {
+      "id": "plate_absent_h44_radio_d000",
+      "source_run": "/mnt/nvme_tmp/robodojo_agentic_20260921/h44_reachability/gate_radio_h44",
+      "capture": "decision_000",
+      "format": "run_v2",
+      "view": "head",
+      "goal": {
+        "kind": "pick",
+        "target": "plate with food",
+        "hand": "both",
+        "done_when": "independent feedback required",
+        "level": false
+      },
+      "files_sha256": {
+        "decision_000/CURRENT_HEAD_RAW.png": "d5a31aef03526154453fd3cf003530a9c62a785109b11493b034a48601b1a79f",
+        "decision_000/CURRENT_LEFT_WRIST_RAW.png": "3c13ca224a17858ae6f401b68ccdf7f8d569c2eb18a1a6078cc54a1f755e2a98",
+        "decision_000/CURRENT_RIGHT_WRIST_RAW.png": "14818a6f46eb3c51424e977a0194ab05649d2c2eff4ad31415fbcfb3df11537d",
+        "decision_000/depth.npz": "d0680bed2a1f19caf90d2ad4463cb596e9df57d4fcfa7371e4bfc1249d10155b",
+        "decision_000/depth_receipt.json": "ff4e6ffde4a844f4d91e4eaf70d1f23a3798775dd8351083fedea7ef700c870f",
+        "decision_000/proprio.json": "a1ab9e729f07ef66000947b44ed61b28f00046618025b04bf46e3f45f1f9768a",
+        "robot_calibration.json": "69d3ff5794b1c42ce8f80f2136a01e7e6a290e13a5638a6e14727b2dc1981ea7"
+      }
+    }
+  ],
+  "stop": "Exactly four frozen queries times baseline/native-point/native-box: at most 12 calls, unchanged 600s worker/900s supervisor and memory limits, no retry/reset/training.",
+  "chat_stop_policy": {
+    "model_default_eos_id": 248044,
+    "tokenizer_eos_id": 248046,
+    "generation_eos_ids": [
+      248044,
+      248046
+    ]
+  },
+  "quantization": {
+    "method": "bitsandbytes-nf4",
+    "compute_dtype": "bfloat16",
+    "double_quant": true,
+    "skip_modules": [
+      "lm_head",
+      "model.visual"
+    ],
+    "bitsandbytes_version": "0.49.2",
+    "accelerate_version": "1.8.1"
+  },
+  "max_calls": 12,
+  "comparison": "Each query uses the same current head RAW, frozen 4B NF4 model and 320 cap/greedy seed17. Three independent calls: old free-UV, native point, native box. No branch reads any other answer. Different schemas/prompt lengths and system text are interface-level differences, not a single-variable coordinate-scale experiment. Historical development states, not independent blind success-rate evaluation."
+}
