@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 20:57（北京时间）：H52唯一空启动实测运行中（Codex）
+
+- 固定源码`701abfad5b23daadd6388c32ba915d72a45fe926`已push/robo独立`git_worktrees/shared_simulator_701abfa`，双端15 CPU与修后独审过；启动前四原训练各73644MiB/全卡free7489MiB，三个依赖SHA核同。唯一launch UTC12:56:57.903775，supervisor3464856。
+- 输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h52_empty_kit_v1`，独立runtime `robodojo_sim_runtime_20260924/h52_empty_kit_v1`。仍仅空Kit/8 update/300s＋自有清理，无task/reset/机器人控制/模型/训练；实际阶段和资源结果待，不重提、不把启动当通过。
+
 ### 2026-09-24 20:37（北京时间）：H52共享模拟器空启动资源门开始（Codex）
 
 20:55进展：独审发现失败未传播、内部入口可绕过reservation、spawn中断窗口与Kit argv泄漏，已修并增至15项CPU通过，修后独审通过。新增一次性token/父PID/私有环境核验、GPU设置读回、只清理自有child及原子回执；尚无GPU/物理启动。报告`experiments/2026-09-24-h52-empty-simulator.md`固定依赖SHA/一次300s/8 update预算。当前dirty仅本票，已fetch、未强pull，origin/main仍33677bd；20:47四原训练仍各73644MiB/各卡free7489MiB。下一固定Git、远端同CPU/资源后唯一提交。

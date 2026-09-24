@@ -35,4 +35,12 @@
 
 ## 依据
 
+## 真实提交
+
+代码`701abfad5b23daadd6388c32ba915d72a45fe926`已push，robo独立源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_simulator_701abfa`。双端15 CPU通过，实际启动前完整GPU/graphics快照只见四原训练，各free7489MiB。
+
+唯一launch UTC `2026-09-24T12:56:57.903775+00:00`，supervisor `3464856`，输出/runtime如上。当前运行中，资源/实际设置/8 update/终态尚待；不可重复提交。
+
+## 依据
+
 [NVIDIA RTX renderer settings](https://docs.omniverse.nvidia.com/materials-and-rendering/latest/rtx-renderer_common.html) 说明纹理流预算；[Isaac Sim 5.1 性能指南](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/reference_material/sim_performance_optimization_handbook.html) 提供相关性能设置。最终以本机固定安装源码与实际读回为准，不把文档预算当总显存隔离承诺。
