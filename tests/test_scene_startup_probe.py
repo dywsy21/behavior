@@ -21,8 +21,10 @@ from test_simulator_startup_probe import fixture
 @contextmanager
 def profile():
     keys = ('ENTRYPOINT', 'OUTPUT', 'RUNTIME', 'WALL_SECONDS', 'SUCCESS_FIELDS',
-            'BUDGET_DETAILS', 'DEPENDENCIES', 'FIXED_ENV')
-    with patch.multiple(base, **{k: getattr(base, k) for k in keys}):
+            'BUDGET_DETAILS', 'DEPENDENCIES', 'FIXED_ENV', 'PROFILE_SETTINGS',
+            'PROFILE_APP_CONFIG', 'RUNTIME_SETTINGS')
+    with patch.multiple(base, **{k: getattr(base, k) for k in keys}), \
+         patch.object(scene, 'PATH_TRACING', False), patch.object(scene, 'DISABLE_VIEWER', False):
         scene.configure_profile()
         yield
 
@@ -186,6 +188,13 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
                 self.assertEqual(json.loads((Path(folder)/'worker.json').read_text())['phase'], 'close_failed')
 
     def test_worker_captures_original_reset_without_actor_or_prefix_controls(self):
+        self._exercise_worker(False)
+
+    def test_pathtracing_worker_reapplies_native_overrides_and_original_og_mode_before_scene(self):
+        self._exercise_worker(True)
+
+    def _exercise_worker(self, use_pathtracing):
+        import shared_pathtracing as renderer
         images, depths, sensors = capture_fixture()
         factory = ModuleType('native_oracle_low_v1.official_factory'); factory.__file__ = str(scene.FACTORY)
         factory.DEFAULT_EVAL_ROOT = getattr(scene, 'EVAL_ROOT', Path('/mnt/sdc1/robodojo/behavior_eval'))
@@ -198,15 +207,29 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
         class Imports:
             Evaluator: object
             gm: object
-        imports = Imports(Mock(return_value=original),SimpleNamespace()); factory._lazy_official_imports = Mock(return_value=imports)
+        @contextmanager
+        def unlocked(): yield
+        gm=SimpleNamespace(RENDER_VIEWER_CAMERA=True,unlocked=unlocked)
+        imports = Imports(Mock(return_value=original),gm); factory._lazy_official_imports = Mock(return_value=imports)
         @contextmanager
         def original_session(window, *, gpu, imports):
+            if use_pathtracing:
+                og.launch(physics_dt=.008,device='cuda:3')
+                renderer.read_checked(settings)  # The Environment now starts scene loading.
             evaluator=imports.Evaluator('cfg'); evaluator.reset(); evaluator.load_task_instance(138)
             yield SimpleNamespace(reset=evaluator.reset,evaluator=evaluator)
         factory.OfficialEvaluatorSession = Mock(side_effect=original_session)
         package = ModuleType('native_oracle_low_v1'); package.official_factory = factory
-        og = ModuleType('omnigibson'); og.__path__ = []; og.sim = SimpleNamespace(render=Mock())
-        og_startup = ModuleType('omnigibson.simulator'); og_startup.__file__ = str(scene.OG_SOURCE)
+        og = ModuleType('omnigibson'); og.__path__ = []; og.app = None
+        sim=SimpleNamespace(render=Mock(),scenes=[],viewer_camera=None)
+        og.sim = None if use_pathtracing else sim
+        source=Path(__file__).resolve() if use_pathtracing else scene.OG_SOURCE
+        og_startup = ModuleType('omnigibson.simulator'); og_startup.__file__ = str(source)
+        def original_launch(**kwargs):
+            settings.set('/rtx/rendermode','RealTimePathTracing')
+            og.app=app; og.sim=sim
+            return sim
+        og.launch=og_startup._launch_simulator=Mock(side_effect=original_launch)
         og.simulator = og_startup
         sensor = SimpleNamespace(sensors={view: SimpleNamespace(image_width=d.shape[1], image_height=d.shape[0])
                                          for view, d in depths.items()})
@@ -220,7 +243,9 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
         backend.__file__ = str(base.REPO/'src/semantic_robot/og_backend.py')
         isaac = ModuleType('isaacsim'); isaac.SimulationApp = Mock()
         carb = ModuleType('carb'); carb.settings = ModuleType('carb.settings')
-        carb.settings.get_settings = Mock(return_value=SimpleNamespace(get=base.RUNTIME_SETTINGS.__getitem__))
+        values=base.RUNTIME_SETTINGS.copy()
+        settings=SimpleNamespace(get=values.get,set=values.__setitem__)
+        carb.settings.get_settings = Mock(return_value=settings)
         app = Mock(); app.is_running.return_value = False
         @contextmanager
         def startup(*args, **kwargs):
@@ -234,13 +259,27 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
              patch.object(base.signal, 'pthread_sigmask'), patch.dict(sys.modules, modules), \
              patch.object(scene.inspect, 'getfile', return_value=str(base.APP_SOURCE)), \
              patch.object(base, 'construct_app', return_value=app), patch.object(scene, 'private_og_startup', startup), \
-             patch.object(sys, 'path', list(sys.path)):
+             patch.object(sys, 'path', list(sys.path)), patch.object(scene,'OG_SOURCE',source), \
+             patch.object(scene,'EXTRA_DEPENDENCIES',{**scene.EXTRA_DEPENDENCIES,
+                 **({source:hashlib.sha256(source.read_bytes()).hexdigest()} if use_pathtracing else {})}):
+            if use_pathtracing:
+                import probe_scene_pathtracing
+                probe_scene_pathtracing.configure_profile()
+                base.OUTPUT=Path(folder)
+                values.update(renderer.SETTINGS)
+                values['/rtx/pathtracing/totalSpp']=4  # Native app reset ignores our CLI16.
             scene.scene_worker()
             record = json.loads((Path(folder)/'worker.json').read_text())
             self.assertEqual({k:record[k] for k in base.SUCCESS_FIELDS}, base.SUCCESS_FIELDS)
             self.assertEqual(len(record['artifacts_sha256']), 6)
             for name, digest in record['artifacts_sha256'].items():
                 self.assertEqual(hashlib.sha256((Path(folder)/name).read_bytes()).hexdigest(), digest)
+            if use_pathtracing:
+                self.assertEqual(record['pathtracing_initial_settings'],renderer.SETTINGS)
+                self.assertEqual(record['pathtracing']['original_render_mode'],'RealTimePathTracing')
+                self.assertEqual(record['pathtracing_actual_settings'],renderer.SETTINGS)
+                self.assertTrue(record['pathtracing_profile_verified'])
+                og.launch.assert_called_once_with(physics_dt=.008,device='cuda:3')
         self.assertEqual(original.reset.call_count,2); original.load_task_instance.assert_called_once_with(138)
         env.step.assert_not_called()
         window.frozen_window.assert_not_called(); self.assertEqual(og.sim.render.call_count, 4)

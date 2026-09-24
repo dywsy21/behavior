@@ -10,6 +10,15 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 22:16（北京时间）：H54原分辨率PathTracing/OptiX兼容性CPU接线（Codex）
+
+22:23修后独审闭合：52/52目标CPU、语法/diff过，无实质阻塞；开始Git固定及远端同测/16依赖/实时四卡资源门。尚无H54进程，不把源准备当场景完成。
+
+22:22更新：修复安装版SimulationApp将累计16覆盖成每帧4的初始化顺序问题；empty app及empty sim两明确边界重应用，live场景后只校验。52目标CPU（含完整H54 mock链）及原582接口回归过，初审无其他阻塞、修后独审待；预注册`experiments/2026-09-24-h54-pathtracing-optix.md`。未提交GPU、资源门不变。
+
+- H53b全负例已固定b11932b。官方RTX特性表明确A100不支持DLSS-RR、支持OptiX；新版及legacy实时文档均称RR非可选，故不按“换legacy即解决”实现。准备独立H54 `PathTracing`＋OptiX、禁DLSS后处理、4spp/16累计采样，保持三actor原分辨率、场景/材质/灯光/物理、无viewer、原600s/4096主512辅助3072余量；0模型训练前缀控制。
+- 这是渲染模式兼容性/资源假设，不保证更省显存/更快，也不保持像素同分布。仅本进程公开og.launch返回、任何scene/actor sensor创建之前设profile，原官方launch/reset/load流程不跳过；CPU/独审/单次预算先行，尚未改活跃源或提交GPU。四原训练保留，最终仍需零前缀官方完整成功。
+
 ### 2026-09-24 22:07（北京时间）：H53b仍被主卡增量门停止，原四训练保留（Codex）
 
 22:11归档：全8件本地`h53b_no_viewer_bundle_v1`/4主SHA双端核同，704样本全审。GPU3增量峰4245、自有4212，四训练样本均73644。新静态定位：OG启动后强设`RealTimePathTracing`/rt2=True，而A100日志明确RR不支持；正在核其模式依赖/官方legacy路径，尚无改码或新GPU运行。详见H53b报告，不将警告时间关联当精确显存分摊。

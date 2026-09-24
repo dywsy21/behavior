@@ -59,6 +59,8 @@ GPU_SETTINGS = {'/renderer/activeGpu': 3, '/physics/cudaDevice': 3,
                 '/renderer/multiGpu/enabled': False, '/renderer/multiGpu/autoEnable': False,
                 '/renderer/multiGpu/maxGpuCount': 1}
 RUNTIME_SETTINGS = {**SETTINGS, **GPU_SETTINGS}
+PROFILE_SETTINGS = {}  # Optional explicitly registered rendering profile only.
+PROFILE_APP_CONFIG = {}
 ROUTES = {'CUDA_CACHE_PATH': 'cuda', 'TORCH_HOME': 'torch', 'TRITON_CACHE_DIR': 'triton',
           'TORCHINDUCTOR_CACHE_DIR': 'inductor', 'XDG_CACHE_HOME': 'xdg', 'TMPDIR': 'tmp',
           'TMP': 'tmp', 'TEMP': 'tmp', '__GL_SHADER_DISK_CACHE_PATH': 'gl',
@@ -179,7 +181,8 @@ def claim_stage(mode, commit):
 
 
 def app_configuration():
-    extra = [f'--{key}={str(value).lower()}' for key, value in SETTINGS.items()]
+    extra = [f'--{key}={str(value).lower() if type(value) is bool else value}'
+             for key, value in {**SETTINGS, **PROFILE_SETTINGS}.items()]
     extra += ['--/app/tokens/omni_global_cache=' + str(RUNTIME / 'cache'),
               '--/app/tokens/omni_global_data=' + str(RUNTIME / 'data'),
               '--/renderer/multiGpu/autoEnable=false', '--/app/extensions/registryEnabled=false',
@@ -189,7 +192,7 @@ def app_configuration():
             'max_gpu_count': 1,
             'width': 320, 'height': 320, 'limit_cpu_threads': 4,
             'disable_viewport_updates': True, 'enable_crashreporter': False,
-            'extra_args': extra}
+            'extra_args': extra, **PROFILE_APP_CONFIG}
 
 
 def construct_app(factory):

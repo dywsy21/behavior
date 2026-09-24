@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 from dataclasses import replace
 import hashlib
 import importlib
@@ -39,12 +40,17 @@ EXTRA_DEPENDENCIES = {
     ICON: ICON_SHA, INSTALLED_ICON: ICON_SHA,
 }
 DISABLE_VIEWER = False  # H53 default; the separate H53b CLI opts in.
+PATH_TRACING = False  # H54 is a separate, image-distribution-changing profile.
 
 
 def configure_profile():
     """Called only by this immutable CLI, never as an import side effect."""
-    global DISABLE_VIEWER
+    global DISABLE_VIEWER, PATH_TRACING
     DISABLE_VIEWER = False
+    PATH_TRACING = False
+    supervisor.PROFILE_SETTINGS = {}
+    supervisor.PROFILE_APP_CONFIG = {}
+    supervisor.RUNTIME_SETTINGS = {**supervisor.SETTINGS, **supervisor.GPU_SETTINGS}
     supervisor.ENTRYPOINT = Path(__file__).resolve()
     supervisor.OUTPUT = Path('/mnt/nvme_tmp/robodojo_agentic_20260924/h53_original_scene_v1')
     supervisor.RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h53_original_scene_v1')
@@ -238,6 +244,10 @@ def scene_worker():
             created_app = supervisor.construct_app(SimulationApp)
             import carb.settings
             settings = carb.settings.get_settings()
+            if PATH_TRACING:
+                # Native SimulationApp overwrites totalSpp with its per-frame
+                # spp; fix only this owned empty app before strict readback.
+                record['pathtracing_initial_settings'] = pathtracing.apply_settings(settings)
             actual = {key: settings.get(key) for key in supervisor.RUNTIME_SETTINGS}
             supervisor.validate_settings(actual)
             record.update(phase='loading_scene', actual_settings=actual)
@@ -246,7 +256,12 @@ def scene_worker():
 
         bindings = {(supervisor.OG_KIT, supervisor.EXPERIENCE): supervisor.DEPENDENCIES[supervisor.OG_KIT],
                     (ICON, INSTALLED_ICON): ICON_SHA}
-        with private_og_startup(og_startup, source_sha256=EXTRA_DEPENDENCIES[OG_SOURCE],
+        renderer_context = nullcontext()
+        if PATH_TRACING:
+            import shared_pathtracing as pathtracing
+            renderer_context = pathtracing.before_scene(og, og_startup,
+                source_sha256=EXTRA_DEPENDENCIES[OG_SOURCE], record=record, write=supervisor.write)
+        with renderer_context, private_og_startup(og_startup, source_sha256=EXTRA_DEPENDENCIES[OG_SOURCE],
                 experience=supervisor.EXPERIENCE, copy_bindings=bindings, construct=construct) as bridge:
             record['startup_bridge'] = bridge
             record['session_constructions'] = 1
@@ -259,6 +274,8 @@ def scene_worker():
                     environment.reset()
                     record['explicit_final_resets'] = 1
                     validate_viewer_after_scene(imports.gm, og.sim, record)
+                    if PATH_TRACING:
+                        pathtracing.validate_after_scene(og, record)
                     env = environment.evaluator.env
                     robot = env.robots[0]
                     if robot.action_dim != 23:
@@ -276,6 +293,8 @@ def scene_worker():
                     images, depths, sensors = sensor.read(model, render=render_only)
                     after = array(robot.get_joint_positions()).copy()
                     validate_capture(before, after, images, depths, sensors)
+                    if PATH_TRACING:
+                        pathtracing.validate_after_scene(og, record)
                     if (record['onboard_render_calls'] != 4 or record['official_api_resets'] != 2 or
                             record['load_frozen_instance_calls'] != 1 or
                             any(e['status'] != 'completed' for e in record['official_api_events'])):
