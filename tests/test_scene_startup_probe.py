@@ -26,14 +26,15 @@ def profile():
             'PROFILE_APP_CONFIG', 'RUNTIME_SETTINGS')
     with patch.multiple(base, **{k: getattr(base, k) for k in keys}), \
          patch.object(scene, 'PATH_TRACING', False), patch.object(scene, 'DISABLE_VIEWER', False), \
-         patch.object(scene, 'PRECONFIGURE_CAMERAS', False), patch.object(scene, 'CAMERA_PATH_TRACING_ALLOWED', False):
+         patch.object(scene, 'PRECONFIGURE_CAMERAS', False), patch.object(scene, 'CAMERA_PATH_TRACING_ALLOWED', False), \
+         patch.object(scene, 'CAMERA_RESOLUTION_PROFILE', 'full_v1'):
         scene.configure_profile()
         yield
 
 
-def capture_fixture():
+def capture_fixture(resolutions=None):
     images, depths, receipts = {}, {}, {}
-    for view, size in (('head', 720), ('left_wrist', 480), ('right_wrist', 480)):
+    for view, size in (resolutions or {'head': 720, 'left_wrist': 480, 'right_wrist': 480}).items():
         rgb = np.zeros((3, size, size), dtype=np.uint8); rgb[0] = 150
         images[view + '_rgb'] = rgb
         depths[view] = np.ones((size, size), dtype=np.float32)
@@ -204,9 +205,15 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
     def test_compatible_camera_worker_checks_both_renderer_and_camera_contracts(self):
         self._exercise_worker(True, native_render_mode='RaytracedLighting', use_cameras=True)
 
-    def _exercise_worker(self, use_pathtracing, native_render_mode='RealTimePathTracing', use_cameras=False):
+    def test_reduced_camera_worker_keeps_original_reset_and_actual_intrinsics(self):
+        self._exercise_worker(True, native_render_mode='RaytracedLighting', use_cameras=True, reduced=True)
+
+    def _exercise_worker(self, use_pathtracing, native_render_mode='RealTimePathTracing', use_cameras=False, reduced=False):
         import shared_pathtracing as renderer
-        images, depths, sensors = capture_fixture()
+        import shared_camera_config as cameras
+        selected_profile = 'shared_v1' if reduced else 'full_v1'
+        sizes = cameras.resolutions(selected_profile)
+        images, depths, sensors = capture_fixture(sizes)
         factory = ModuleType('native_oracle_low_v1.official_factory'); factory.__file__ = str(scene.FACTORY)
         factory.DEFAULT_EVAL_ROOT = getattr(scene, 'EVAL_ROOT', Path('/mnt/sdc1/robodojo/behavior_eval'))
         window = SimpleNamespace(frozen_window=Mock(side_effect=AssertionError('No prefix replay')))
@@ -219,15 +226,16 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
             from test_preconfigured_cameras import config_fixture, environment_fixture, EnvironmentWrapper
             import shared_camera_config as cameras
             cfg = config_fixture()
-            camera_env, specs = environment_fixture()
+            camera_env, specs = environment_fixture(selected_profile)
             robot.name = camera_env.robots[0].name
             robot.sensors = camera_env.robots[0].sensors
             env._eval_robot_config = camera_env._eval_robot_config
         def construct_evaluator(actual_cfg):
             if use_cameras:
                 self.assertEqual(actual_cfg['env_wrapper']['_target_'], cameras.PRECONFIGURED_WRAPPER)
-                self.assertEqual(actual_cfg['robot']['sensor_config']['zed_link:Camera:0']['sensor_kwargs']['image_height'], 720)
-                original.env = cameras.wrap_preconfigured(env)
+                self.assertEqual(actual_cfg['robot']['sensor_config']['zed_link:Camera:0']['sensor_kwargs']['image_height'], sizes['head'])
+                self.assertEqual(actual_cfg['env_wrapper'].get('resolution_profile', 'full_v1'), selected_profile)
+                original.env = cameras.wrap_preconfigured(env, selected_profile)
             return original
         @dataclass(frozen=True)
         class Imports:
@@ -260,7 +268,9 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
             return sim
         og.launch=og_startup._launch_simulator=Mock(side_effect=original_launch)
         og.simulator = og_startup
-        sensor = SimpleNamespace(sensors={view: SimpleNamespace(image_width=d.shape[1], image_height=d.shape[0])
+        sensor = SimpleNamespace(sensors={view: SimpleNamespace(image_width=d.shape[1], image_height=d.shape[0],
+                                         intrinsic_matrix=np.array([[d.shape[1],0,d.shape[1]/2],
+                                                                    [0,d.shape[0],d.shape[0]/2],[0,0,1]]))
                                          for view, d in depths.items()})
         def read(model, *, render):
             for _ in range(4): render()
@@ -296,7 +306,11 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
              patch.object(renderer,'_CONSUMED',set()), \
              patch.object(scene,'EXTRA_DEPENDENCIES',{**scene.EXTRA_DEPENDENCIES,
                  **({source:hashlib.sha256(source.read_bytes()).hexdigest()} if use_pathtracing else {})}):
-            if use_pathtracing and use_cameras:
+            if reduced:
+                import probe_scene_reduced_cameras
+                probe_scene_reduced_cameras.configure_profile()
+                base.OUTPUT = Path(folder)
+            elif use_pathtracing and use_cameras:
                 import probe_scene_compatible_cameras
                 probe_scene_compatible_cameras.configure_profile()
                 base.OUTPUT = Path(folder)
@@ -329,6 +343,14 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
                 self.assertEqual(record['camera_after_capture'], record['camera_initialization'])
                 self.assertEqual(scene.PATH_TRACING, use_pathtracing)
                 self.assertEqual(cfg, config_fixture())
+            self.assertIs(record['input_resolution_changed'], reduced)
+            if reduced:
+                self.assertTrue(record['camera_intrinsics_verified'])
+                self.assertEqual(record['camera_intrinsics']['head']['K'][0][0], 512)
+                self.assertEqual(record['camera_configuration']['configured_camera_pixels'], 466944)
+                onboard.OnboardRGBD.assert_called_once_with(original.env, resolutions=sizes)
+            else:
+                onboard.OnboardRGBD.assert_called_once_with(original.env)
         self.assertEqual(original.reset.call_count,2); original.load_task_instance.assert_called_once_with(138)
         env.step.assert_not_called()
         window.frozen_window.assert_not_called(); self.assertEqual(og.sim.render.call_count, 4)

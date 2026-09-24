@@ -11,7 +11,16 @@ from .grounding import validate_depth
 
 
 class OnboardRGBD:
-    def __init__(self, env):
+    def __init__(self, env, *, resolutions=None):
+        # Explicit experiment profiles may change resolution before the robot
+        # is initialized. Never infer an allowed shape from a live camera and
+        # thereby silently accept a mismatched/legacy calibration.
+        expected_sizes = {"head":720, "left_wrist":480, "right_wrist":480}
+        if resolutions is not None:
+            if (type(resolutions) is not dict or set(resolutions) != set(expected_sizes) or
+                    any(type(size) is not int or size <= 0 for size in resolutions.values())):
+                raise ValueError("Exact three positive integer camera resolutions required")
+            expected_sizes = resolutions.copy()
         robot=env.robots[0]
         self.sensors={}
         parents={"head":"zed_link", "left_wrist":"left_realsense_link", "right_wrist":"right_realsense_link"}
@@ -25,11 +34,11 @@ class OnboardRGBD:
             # Reassigning even the SAME resolution destroys/recreates render
             # products and can invalidate initialized PhysX articulation views.
             # This adapter is strictly read-only, not another sensor wrapper.
-            expected=720 if view=="head" else 480
+            expected=expected_sizes[view]
             if set(sensor.modalities)!={"rgb","depth_linear"}:
                 raise ValueError("Official RGB-D wrapper must configure modalities before robot initialization")
             if (sensor.image_height,sensor.image_width)!=(expected,expected):
-                raise ValueError("Official RGB-D resolution mismatch; no live sensor reconfiguration")
+                raise ValueError("Registered RGB-D resolution mismatch; no live sensor reconfiguration")
             self.sensors[view]=sensor
         self.snapshot_id=0
 

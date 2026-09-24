@@ -43,15 +43,17 @@ DISABLE_VIEWER = False  # H53 default; the separate H53b CLI opts in.
 PATH_TRACING = False  # H54 is a separate, image-distribution-changing profile.
 PRECONFIGURE_CAMERAS = False  # H55 moves final config before sensor creation.
 CAMERA_PATH_TRACING_ALLOWED = False  # Only the separately registered H56 opts in.
+CAMERA_RESOLUTION_PROFILE = 'full_v1'  # H57 alone selects shared_v1 before creation.
 
 
 def configure_profile():
     """Called only by this immutable CLI, never as an import side effect."""
-    global DISABLE_VIEWER, PATH_TRACING, PRECONFIGURE_CAMERAS, CAMERA_PATH_TRACING_ALLOWED
+    global DISABLE_VIEWER, PATH_TRACING, PRECONFIGURE_CAMERAS, CAMERA_PATH_TRACING_ALLOWED, CAMERA_RESOLUTION_PROFILE
     DISABLE_VIEWER = False
     PATH_TRACING = False
     PRECONFIGURE_CAMERAS = False
     CAMERA_PATH_TRACING_ALLOWED = False
+    CAMERA_RESOLUTION_PROFILE = 'full_v1'
     supervisor.PROFILE_SETTINGS = {}
     supervisor.PROFILE_APP_CONFIG = {}
     supervisor.RUNTIME_SETTINGS = {**supervisor.SETTINGS, **supervisor.GPU_SETTINGS}
@@ -108,8 +110,10 @@ def validate_viewer_after_scene(gm, sim, record):
         record['viewer_camera_absent'] = True
 
 
-def validate_capture(before, after, images, depths, sensors):
+def validate_capture(before, after, images, depths, sensors, resolution_profile='full_v1'):
     import numpy as np
+    from shared_camera_config import resolutions
+    sizes = resolutions(resolution_profile)
     if (before.shape != after.shape or before.size == 0 or not np.isfinite(before).all() or
             not np.isfinite(after).all() or np.max(np.abs(after-before)) > 1e-5):
         raise ValueError('Robot changed during render-only RGB-D capture')
@@ -119,11 +123,11 @@ def validate_capture(before, after, images, depths, sensors):
     for view in sensors:
         rgb = images[view + '_rgb']
         depth, receipt = depths[view], sensors[view]
-        expected = (3, 720, 720) if view == 'head' else (3, 480, 480)
+        expected = (3, sizes[view], sizes[view])
         if rgb.shape != expected or rgb.dtype != np.uint8:
-            raise ValueError('Original RGB resolution/uint8 contract changed')
+            raise ValueError('Registered RGB resolution/uint8 contract changed')
         if depth.shape != expected[1:] or depth.dtype != np.float32:
-            raise ValueError('Original floating depth resolution changed')
+            raise ValueError('Registered floating depth resolution changed')
         valid_fraction = float((np.isfinite(depth) & (depth>.025) & (depth<4.)).mean())
         # Preserve invalid pixels as captured. They are not synthesized surfaces;
         # compare the actual finite-depth coverage with the claimed coverage.
@@ -178,6 +182,8 @@ def trace_session_imports(imports, record):
         nonlocal constructed
         if constructed: raise ValueError('Only one evaluator construction permitted')
         constructed = True
+        if CAMERA_RESOLUTION_PROFILE != 'full_v1' and not PRECONFIGURE_CAMERAS:
+            raise ValueError('Alternate resolutions require preconfigured cameras')
         if PRECONFIGURE_CAMERAS:
             if PATH_TRACING and not CAMERA_PATH_TRACING_ALLOWED:
                 raise ValueError('H55 must not combine camera initialization with a renderer change')
@@ -185,7 +191,7 @@ def trace_session_imports(imports, record):
             if Path(cameras.__file__).resolve() != (supervisor.REPO/'scripts/semantic_robot/shared_camera_config.py').resolve():
                 raise ValueError('Preconfigured camera wrapper source was shadowed')
             plain = imports.OmegaConf.to_container(cfg, resolve=True)
-            modified, receipt = cameras.prepare_config(plain)
+            modified, receipt = cameras.prepare_config(plain, CAMERA_RESOLUTION_PROFILE)
             record['camera_configuration'] = receipt
             supervisor.write('worker.json', record)
             cfg = imports.OmegaConf.create(modified)
@@ -302,7 +308,10 @@ def scene_worker():
                     robot = env.robots[0]
                     if robot.action_dim != 23:
                         raise ValueError('Original R1Pro 23-control embodiment required')
-                    sensor = OnboardRGBD(env)
+                    sensor = (OnboardRGBD(env, resolutions=cameras.resolutions(CAMERA_RESOLUTION_PROFILE))
+                              if CAMERA_RESOLUTION_PROFILE != 'full_v1' else OnboardRGBD(env))
+                    if CAMERA_RESOLUTION_PROFILE != 'full_v1':
+                        intrinsics_before = cameras.camera_intrinsics(sensor.sensors, array, CAMERA_RESOLUTION_PROFILE)
                     metadata = {view: {'width': camera.image_width, 'height': camera.image_height}
                                 for view, camera in sensor.sensors.items()}
                     model = SimpleNamespace(spec={'metadata': {'cameras': metadata}})
@@ -314,10 +323,16 @@ def scene_worker():
                         record['onboard_render_calls'] += 1
                     images, depths, sensors = sensor.read(model, render=render_only)
                     after = array(robot.get_joint_positions()).copy()
-                    validate_capture(before, after, images, depths, sensors)
+                    validate_capture(before, after, images, depths, sensors, CAMERA_RESOLUTION_PROFILE)
                     if PRECONFIGURE_CAMERAS:
                         record['camera_after_capture'] = cameras.validate_wrapper(env, record['camera_configuration']['cameras'])
                         record['preconfigured_cameras_verified'] = True
+                    if CAMERA_RESOLUTION_PROFILE != 'full_v1':
+                        intrinsics_after = cameras.camera_intrinsics(sensor.sensors, array, CAMERA_RESOLUTION_PROFILE)
+                        if intrinsics_before != intrinsics_after:
+                            raise ValueError('Camera intrinsics changed during render-only capture')
+                        record['camera_intrinsics'] = intrinsics_after
+                        record['camera_intrinsics_verified'] = True
                     if PATH_TRACING:
                         pathtracing.validate_after_scene(og, record)
                     if (record['onboard_render_calls'] != 4 or record['official_api_resets'] != 2 or
@@ -340,7 +355,8 @@ def scene_worker():
                                   shared_install_writes=bridge['shared_install_writes'],
                                   artifacts_sha256={name: hashlib.sha256(
                                       (supervisor.OUTPUT/name).read_bytes()).hexdigest() for name in artifacts},
-                                  input_resolution_changed=False, privileged_scene_state_used=False)
+                                  input_resolution_changed=CAMERA_RESOLUTION_PROFILE != 'full_v1',
+                                  privileged_scene_state_used=False)
                     supervisor.write('worker.json', record)
                 except BaseException as error:
                     record.update(phase='failed', error=repr(error), seconds=time.monotonic()-started)

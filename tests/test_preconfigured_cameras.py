@@ -60,9 +60,9 @@ class EnvironmentWrapper:
     def __getattr__(self, name): return getattr(self.env, name)
 
 
-def environment_fixture():
+def environment_fixture(resolution_profile='full_v1'):
     robot = config_fixture()['robot']
-    specs = cameras.camera_specs(robot['name'], robot['eval'])
+    specs = cameras.camera_specs(robot['name'], robot['eval'], resolution_profile)
     live_robot = SimpleNamespace(name=robot['name'], sensors={s['name']: Camera(s) for s in specs.values()})
     env = SimpleNamespace(robots=[live_robot], _eval_robot_config=deepcopy(robot['eval']),
                           load_observation_space=Mock(side_effect=AssertionError('Premature reload')),
