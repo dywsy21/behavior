@@ -10,6 +10,24 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 21:27（北京时间）：H53启动桥复审通过，场景runner仍仅CPU（Codex）
+
+21:36修后独审通过：36/36 CPU，未发现剩余实质阻塞；开始固定Git与远端同测试/实时资源预检。尚无H53仿真进程；origin/main最新fetch仍33677bd，本地dirty均本票，未强pull或改队友源码。
+
+21:35修复：36 CPU过；实际三路RGB/depth/receipt精确校验（原shape/dtype/RAW SHA/有效比例/4刷新0控制）及独立render计数，私有Evaluator实例代理观测外层reset→load138→reset完成事件，失败不计成功；sensor/backend来源核本Git。预算/实例不变，runner修后独审待，仍未部署/启动。
+
+21:32独审待修：runner需实际验证三路depth/RAW哈希与render回执，以及观测初始reset/load-instance事件，不能仅以冻结源码推断计数；当前32＋2原相机回归均过但不够放行，尚无GPU启动。另绑定实际sensor/backend导入来源；修后重新独审，不改变实例或预算。
+
+21:29登记：H53 runner/common delta合计32 CPU过（15监管＋9桥＋8场景），原始Session/窗口/机器人/外部wrapper等SHA核定；独审runner待。单次600s/1Session/原512辅助4096主卡3072余量，0前缀/actor/模型/训练。详细预注册`experiments/2026-09-24-h53-original-scene.md`；未提交实测，不复用旧run。
+
+- 修复独审发现的跨context重复启动/逸出闭包漏洞：按源路径进程级one-shot，首次尝试即永久消费、失败不重试、嵌套拒绝、退出失效；9项桥接测试及修后独审过，未操作GPU或共享安装。
+- H53独立runner已草拟，共享监管仅增加入口/终态/预算字段以保留H52b默认。正在补原场景/无控制/相机内容反例及冻结外部Session依赖；尚未提交、部署、加载场景。仍单次原始TRAIN138/seed0/0前缀/0模型/0训练，既有四训练不动。
+
+### 2026-09-24 21:15（北京时间）：H53进程私有OG启动桥接开始（Codex）
+
+- 已核原`_launch_app`完整流程：除两个apps复制外还负责MDL、关stage、热键和backend等；不能只预建app跳过这些初始化。新桥接保留原函数，仅将SHA一致的两次copy改为校验后no-op，并在该模块的短暂代理内改用H52b已验构造器，离开/异常恢复所有引用；不patch全局shutil/已安装文件。
+- 当前仅CPU实现`shared_og_startup.py`与反例测试，H53尚未载任务。后继runner须冻结原Session/模拟器/icon/window/robot SHA，严格原始TRAIN138/seed0/零前缀；登记一session，官方init reset/load-instance及一次最终reset，三RGB-D render-only捕获，0 actor控制/模型/训练，独审与实际资源门后才提交。
+
 ### 2026-09-24 21:09（北京时间）：H52b真实GPU3与资源验收闭合，下一任务场景接口（Codex）
 
 - 29样本与全kit.log已审：GPU3是唯一active、UUID c67cdb9d匹配，llvmpipe被跳过、无`[Error]`。自有峰GPU0/1/2/3=454/416/416/568MiB；主卡增量峰598、最低free6891MiB，全卡原训练保留并恢复7489。8更新/8实际设置/退出0，**仅空应用通过，未测任务图像/场景**。

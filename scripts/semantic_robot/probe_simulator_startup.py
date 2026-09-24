@@ -24,6 +24,10 @@ import time
 import xml.etree.ElementTree as ET
 
 REPO = Path(__file__).resolve().parents[2]
+ENTRYPOINT = Path(__file__).resolve()
+SUCCESS_FIELDS = {'phase': 'updates_complete', 'app_updates': 8}
+BUDGET_DETAILS = {'app_updates': 8, 'task_loads': 0, 'simulator_resets': 0,
+                  'robot_controls': 0, 'model_calls': 0}
 PYTHON = Path('/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python')
 ISAAC = Path('/mnt/sdc1/xhz/miniconda3/envs/behavior/lib/python3.11/site-packages/isaacsim')
 EXPERIENCE = ISAAC / 'apps/omnigibson_5_1_0.kit'
@@ -164,7 +168,7 @@ def claim_stage(mode, commit):
         if (parent.get('pid') != os.getppid() or parent.get('source_commit') != commit or
                 parent.get('token_sha256') != token_sha):
             raise ValueError('Worker not spawned by the reserved supervisor')
-        expected_args = [str(PYTHON), str(Path(__file__).resolve()), '--supervise']
+        expected_args = [str(PYTHON), str(ENTRYPOINT), '--supervise']
         actual_args = Path('/proc', str(os.getppid()), 'cmdline').read_bytes().split(b'\0')
         if actual_args != [os.fsencode(a) for a in expected_args] + [b'']:
             raise ValueError('Unexpected supervisor command')
@@ -300,7 +304,7 @@ def supervise():
         old_mask = signal.pthread_sigmask(signal.SIG_BLOCK, set(previous))
         try:
             with (OUTPUT / 'worker.log').open('x') as log:
-                child = subprocess.Popen([str(PYTHON), str(Path(__file__).resolve()), '--worker'],
+                child = subprocess.Popen([str(PYTHON), str(ENTRYPOINT), '--worker'],
                     env=env, cwd=REPO, stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
                     start_new_session=True)
             receipt.update(status='running', worker_pid=child.pid)
@@ -318,8 +322,8 @@ def supervise():
         if child.returncode != 0:
             raise RuntimeError('H52 worker failed with exit code ' + str(child.returncode))
         record = json.loads((OUTPUT / 'worker.json').read_text())
-        if record.get('phase') != 'updates_complete' or record.get('app_updates') != 8:
-            raise RuntimeError('H52 worker did not complete the registered empty updates')
+        if any(type(record.get(k)) is not type(v) or record[k] != v for k, v in SUCCESS_FIELDS.items()):
+            raise RuntimeError('Simulator worker did not complete the registered profile')
         receipt.update(status='completed', exit_code=child.returncode)
     except BaseException as error:
         failure = error
@@ -360,14 +364,13 @@ def launch():
     receipt = {'status': 'reserved', 'source_commit': commit, 'utc': datetime.now(timezone.utc).isoformat(),
                'token_sha256': hashlib.sha256(env['H52_LAUNCH_TOKEN'].encode()).hexdigest(),
                'output': str(OUTPUT), 'runtime': str(RUNTIME), 'gpu_before': before,
-               'budget': {'seconds': WALL_SECONDS, 'app_updates': 8, 'task_loads': 0,
-                          'simulator_resets': 0, 'robot_controls': 0, 'model_calls': 0,
+               'budget': {'seconds': WALL_SECONDS, **BUDGET_DETAILS,
                           'main_gpu_mib': 4096, 'auxiliary_gpu_mib': AUXILIARY_MIB,
                           'preflight_free_mib': 7168, 'runtime_free_mib': 3072},
                'app_config': app_configuration()}
     write('launch.json', receipt)
     with (OUTPUT / 'supervisor.log').open('x') as log:
-        child = subprocess.Popen([str(PYTHON), str(Path(__file__).resolve()), '--supervise'],
+        child = subprocess.Popen([str(PYTHON), str(ENTRYPOINT), '--supervise'],
             cwd=REPO, env=env, stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
             start_new_session=True)
     receipt.update(status='supervisor_started', supervisor_pid=child.pid)
