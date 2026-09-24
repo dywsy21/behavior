@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 22:11北京时间H53b归档闭合：** 上条完整8件现已到本地`artifacts/agentic-vlm-goal-20260918/h53b_no_viewer_bundle_v1`，4主SHA双端核同/704资源样本已审。所有源/run/runtime保留；无新仿真/模型，四原训练保留。
+
+**2026-09-24 22:07北京时间H53b终态：** 3473931/3473956均退出（worker -15），主卡4096MiB增量门触发，原run/runtime/source完整保留；四训练仍原PID/各73644MiB，显存已回收。完整8件向本地`artifacts/agentic-vlm-goal-20260918/h53b_no_viewer_bundle_v1`归档待核，不能将目录存在当完成；不是活跃场景或已获观测。
+
 **2026-09-24 21:56北京时间H53b提交：** 源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_scene_8f0812e`，supervisor3473931；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h53b_no_viewer_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h53b_no_viewer_v1`。只关闭非actor viewer，仍原600s/显存门/三原相机/物理，0模型训练控制。旧H53负例全保留，四原训练不动；实际终态待验。
 
 **2026-09-24 21:51北京时间H53证据闭合：** 完整8文件在本地`artifacts/agentic-vlm-goal-20260918/h53_original_scene_bundle_v1`，四主SHA双端一致；604样本已审。旧source/run/runtime及已生成的shader缓存均保留，无新H53b运行或目录；四原训练保留。
