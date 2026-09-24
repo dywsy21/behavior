@@ -10,6 +10,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 20:19（北京时间）：Z-01按当前请求交接，完整公开Recovery仍缺（Codex）
+
+- 本轮只核对用户指定的“冻结G0.5＋作者公开演化Critic/Recovery”。Z-01干净分支pull成功；上游fetch仍为`1fee179`，另一分支相关文件无差异，公开Releases仍无发布。原JSON SHA不变，1 critic/0 recovery，不能加载为完整CandidateBundle；不把Recovery执行框架当演化好的规则。既有21 CPU/修后独审仍有效，本轮未重复测试、未改实现。
+- 20:18:31只读robo：四个xhz训练PID3294346–3294349全在，各73644MiB，四卡各空7489MiB。0新模型/仿真/训练/进程信号/环境修改；G0.5＋OmniGibson共享资源尚未验证。现有Critic七项特权特征迁移亦未解决，**效果未测，不是0%或已完成接入**。
+- 证据：独立`feat/zetta-g05-20260924`的`docs/experiments/2026-09-24-zetta-g05.md`及`results/2026-09-24-zetta-recheck-2018.json`。下一需要完整公开bundle链接，或明确改做自行构建的适配变体；不擅自演化/用替代Recovery给出效果。
+
+- 续接保护：原H51未提交CPU工具/探针草稿保留，本轮没有部署或调用GPU；不因旧active goal覆盖当前Zetta请求。当前主工作区有这些修改，仅fetch、不强pull；origin/main仍33677bd，Z-01在独立干净worktree同步。
+
+### 2026-09-24 20:05（北京时间）：H51原生定位工具开始实现（Codex）
+
+- 上一goal turn判定为实质进展：H50/H50b完成真实共享GPU对照并排除“只补候选文字就足够”的假设。当前clean fetch/pull成功，基点df625ad、origin/main仍33677bd；20:04只读确认四训练3294346–3294349均73644MiB、各卡free7489MiB，旧H50进程均不存在，不重启。
+- H51主要假设：按Qwen原生`point_2d`/`bbox_2d`的0–1000协议直接询问当前RAW，可避免粗网格覆盖不足/数字标记绑定负担。唯一负责人Codex，先CPU实现/负例与独审；空检测/多目标/越界/错字段拒绝，点经当前公共RGB-D核验，框只提供区域、不能自动变成抓点/持有。旧actor/训练/物理不改。
+- 后续只登记不同于H50四query的异质保存态，比较原自由UV与原生点/框整套接口，不能单独归因于坐标缩放。GPU调用尚未开始，具体输入/commit/预算在源准备后冻结；完整目标仍是零专家/旧策略前缀官方成功，不把静态定位当完成。
+
 ### 2026-09-24 20:01（北京时间）：H50/H50b收尾，完整证据通过；下一H51原生定位协议CPU（Codex）
 
 - H50b监管已exit0/99.308s（worker83.929s），峰4514MiB/最低free2970MiB、退出GPU2恢复7489MiB。全包本地`artifacts/agentic-vlm-goal-20260918/h50b_shared_bundle_v1`，result SHA`eea25744684e0b2949f3b293d355a458bc8dce2a545b103f458d80a16bb8e64a`、最终supervisor SHA`db3cd5f4ed7200d6134bfa0c60433e4b23b06b3fbd556474749f1b6ffd72ce0b`双端一致；早先running监管SHA不是终态。7条call和20图原生/320像素全部核同，四原训练均在。
