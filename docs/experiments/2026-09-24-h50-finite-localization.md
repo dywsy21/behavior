@@ -58,10 +58,16 @@ H48/H49发现4B能识别红白收音机，但自由UV会落在它上方的桌面
 
 本地完整包`artifacts/agentic-vlm-goal-20260918/h50_shared_bundle_v1`。result SHA`8b51daa0b653d740c9fe76ddbae422b552070210301c3a9eecd5e772d629121d`、supervisor SHA`6957ebaef7f75b7462f5d27867ecbd3988085bfb5a42fa675debec44abc57d8a`已双端一致。没有新训练/模拟器reset，所有模型答案均未进入actor。
 
-## H50b：一次实际输出契约修复复验（未启动）
+## H50b：一次实际输出契约修复复验（运行中）
 
 发现可定位实现缺口：region/surface提示要求从列出的JSON中选，但新请求text没有列出JSON，只有解码器收到了allowed；旧policy会明确列出。补`choice_suffix`让模型可见文本包括与decoder完全相同的候选（含null），传输前检查一致；缺失/错列表反例拒绝。不改原图、网格、点生成、语义描述、解码grammar、模型或控制阈值。不能先假定这就是全部错误的原因。
 
 同四原query，配置`h50b_explicit_choice_probe.json`，case全文canonical SHA固定`5846788db1516fd08b8a341947466dbcd4320c3041cb99937260bfc328a257ea`。最多8finite、0baseline重跑、600/900/4864+512/2048/原GPU2训练身份/seed17保持；不读取旧输出进模型。第一层图和公共源完全相同；如果本轮区域选择不同，第二层裁剪自然不同，不强行复用旧答案指定区域。0训练/reset，无重试或追加样本。
 
 75 CPU过（21核心/旧affordance＋10探针＋44旧共享），修后窄独审通过。先核这一工程遗漏，结果后再决定定位工具设计；不增加网格密度或针对四图手调位置来制造正确率。H50本地12条call与result逐项一致、全部28图原生及实际320像素SHA均核同。
+
+实际源码`3b66f6532ecc3d01705ffd1e656e7bf317f075a6`，robo独立`git_worktrees/shared_small_vlm_3b66f65`；双端75 CPU和四输入prepare通过。唯一launch UTC11:55:44.099579、supervisor3457820，spec SHA`586b3966d1441fdf36fc0c7129fc9b7bf2a291ca93a47deb4ef80323e35820ca`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h50b_explicit_choice_v1`及同stem回执/log，cache `robodojo_vlm_runtime_20260924/h50b`。完整结果待。
+
+## 后续协议线索（尚未测试）
+
+19:56只读查看[Qwen官方2d grounding notebook](https://github.com/QwenLM/Qwen3-VL/blob/main/cookbooks/2d_grounding.ipynb)的source cells：标准点`point_2d`/框`bbox_2d`采用0–1000相对坐标，显示时分别按宽高/1000转换。官方仓库[Qwen3.5对应问答](https://github.com/QwenLM/Qwen3.8/discussions/56)也指向此协议；仓库现重定向名称不改变实际冻结4B权重。此前0–1自由UV与编号任务都不是这个原生形式；这是待核的接口差异，不是已经证明的失败根因。若后续设计采用原生输出，仍必须检查真实表面/弃权与时间状态，不能把bbox中心直接当抓点，不能复用这几图无限提示搜索。

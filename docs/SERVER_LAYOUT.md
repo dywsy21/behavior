@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 19:56北京时间H50b提交：** supervisor3457820；独立固定源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_small_vlm_3b66f65`，run `/mnt/nvme_tmp/robodojo_agentic_20260924/h50b_explicit_choice_v1`及同stem回执/log，新cache `robodojo_vlm_runtime_20260924/h50b`。最多8保存态有限选择，无训练/模拟器，原H50包/源保留。
+
 **2026-09-24 19:53北京时间H50终态：** supervisor3454291/worker3454299退出0，run完整在本地`artifacts/agentic-vlm-goal-20260918/h50_shared_bundle_v1`且result/supervisor双端SHA核同；GPU2回收至7489MiB，四训练仍原PID/73644MiB。原82b源/run/cache保留，语义审不通过，不是在线actor；H50b尚仅本地CPU。
 
 **2026-09-24 19:45北京时间H50已提交：** supervisor3454291，固定`shared_small_vlm_82b7ef0`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h50_finite_localization_v1`及同stem launch/supervisor/log，独立cache `/mnt/nvme_tmp/robodojo_vlm_runtime_20260924/h50`。仅保存态最多12调用，未启模拟器/新训练；四原训练不动。

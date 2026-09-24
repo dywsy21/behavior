@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 19:56（北京时间）：H50b显式选项契约复验运行中（Codex）
+
+- 新固定`3b66f6532ecc3d01705ffd1e656e7bf317f075a6`已push/robo独立`git_worktrees/shared_small_vlm_3b66f65`，双端75 CPU/同四输入prepare/窄独审过。唯一launch UTC11:55:44.099579、supervisor3457820，spec SHA`586b3966d1441fdf36fc0c7129fc9b7bf2a291ca93a47deb4ef80323e35820ca`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h50b_explicit_choice_v1`及同stem回执/log，新cache`robodojo_vlm_runtime_20260924/h50b`。
+- 只补actual text中与decoder相同的JSON选项，最多8finite/0baseline/原资源/600/900，0reset训练；结果待，不重复提交。另只读核Qwen官方2d_grounding cookbook，其原生点/框是0–1000而非旧自由UV提示的0–1；这是后续模型接口核对线索，尚未新探针/部署，不预先声称因果或效果。
+
 ### 2026-09-24 19:53（北京时间）：H50人工全审不通过，H50b仅修显式选项契约（Codex）
 
 19:54补充：H50b窄独审闭合、75 CPU通过；H50本地12条call回执与result一致，全部28图原生/实际320像素指纹均核同。准备固定新Git/远端CPU后单次复验，不改原82b7ef0运行源。
