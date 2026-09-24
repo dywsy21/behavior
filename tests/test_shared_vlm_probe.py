@@ -254,6 +254,10 @@ class QuantizationTests(unittest.TestCase):
                      get_output_embeddings=lambda: SimpleNamespace(weight=parameter),
                      hf_device_map={"": 0}, get_memory_footprint=lambda: 123)
         self.assertEqual(probe.validate_nf4_model(model, Fake4bit, "bf16")["linear4bit_count"], 1)
+        del model.hf_device_map  # Transformers may omit this optional attribute on a single GPU.
+        receipt = probe.validate_nf4_model(model, Fake4bit, "bf16")
+        self.assertIsNone(receipt["device_map_metadata"])
+        self.assertEqual(receipt["actual_parameter_devices"], ["cuda:0"])
         modules[0][1].compute_dtype = "float32"
         with self.assertRaisesRegex(ValueError, "compute dtype"):
             probe.validate_nf4_model(model, Fake4bit, "bf16")

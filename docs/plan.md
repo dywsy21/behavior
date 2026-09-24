@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 18:16（北京时间）：H46可选回执属性兼容失败/窄修复闭合（Codex）
+
+- 完整result确认worker3442790仅17.415s、calls=[]，量化后在读取可选`hf_device_map`回执字段报AttributeError；不是量化/跨卡/dtype检查失败，也没有语义输出。两自有进程已退出、四训练仍在，完整包正归档`artifacts/agentic-vlm-goal-20260918/h46_shared_bundle_v1`，原run保留。
+- 已改为可选元数据允许缺失，同时独立记录真实参数设备集合；前置逐参数`cuda:0`/NF4/BF16/double-quant断言完全不变。31 CPU含缺属性/CPU负例及独审通过；另CPU读5.7源码确认后续`get_memory_footprint`真实存在。不存在用硬编码设备表冒充实际放置。
+- 登记H46b同权重/输入/预算的单次兼容复验，4调用/600/900及显存保护不变，新spec `h46b_shared_4b_nf4_probe.json`，输出另建`h46b_shared_4b_nf4_v1`，不覆盖v1，不增加训练/物理。
+
+### 2026-09-24 18:13（北京时间）：H46冻结4B NF4单次探针已提交（Codex）
+
+- 已push并在robo新建固定`824f6592aea8fb50fc26e534d96e5e8f70cf7edb`的`git_worktrees/shared_small_vlm_824f659`，远端3.10/31 CPU/0.110s过，修后独审闭合。唯一回执UTC10:12:55.370550，supervisor3442782；spec SHA`e4e2ca000c0400ac52222fcc9d0abe788a121cb10b2a8ab8622e712a626f3432`，输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h46_shared_4b_nf4_v1`及同stem launch/supervisor/log，独立cache `robodojo_vlm_runtime_20260924/h46`。
+- 仍原4请求/600s/外层900s、同显存限额与GPU2训练PID；提交前四卡free7489MiB，0训练/物理。实际量化装载/生成/语义均待结果，不能把提交或CPU测试当可用；下一完整记录优先，不再用日志尾部推断完成调用数。
+
 ### 2026-09-24 18:07（北京时间）：H46同资源4B NF4候选实现/预算登记（Codex）
 
 18:12补充：独审指出仅看配置不足以证明BF16计算，已加实际Linear4bit compute_dtype/双量化状态、全部vision参数及tied输出embedding dtype检查并记录；错误compute/vision/output反例通过。31 CPU及修后窄独审闭合，0新4B调用；下一固定Git单次探针。4B CPU也实核默认EOS248044、chat EOS248046，既有显式策略适用。

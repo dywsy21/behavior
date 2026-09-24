@@ -58,3 +58,5 @@ H45由99caf682在17:46提交，supervisor3438643/worker3438651。worker18.823s�
 登记一次H46：与H45b相同4请求/30图/320、seed17、greedy、600s/外层900s、4864+512MiB且保留2048，0新训练/物理。只比较可部署候选，容量与量化同时变了，不作单因素归因。31 CPU过、独审待，实际4B模型尚未加载。量化路径在`from_pretrained`内就分配GPU，完整预算检查也明确前移到它之前；原BF16路径不改。
 
 18:12：31 CPU及修后窄独审通过；增加并验证真实compute/vision/tied output BF16 dtype、nested double-quant，错误dtype三分支均拒绝，不只凭config作标签。4B的EOS两ID已CPU确认一致于H45b策略。H45b本地与远端完整result/supervisor SHA也已核同。
+
+H46实际824f659/3442782/3442790于18:12:55提交，worker17.415s/0生成，在构造回执读取可选`hf_device_map`时AttributeError；前面的真实量化/dtype/placement检查已走过，但没有完整生成结果，不能算候选通过。修复只容许该元数据缺失，仍逐参数要求cuda:0并记录实际集合；31 CPU/独审通过，同配方H46b新run单次复验，不覆盖旧证据或放宽保护。

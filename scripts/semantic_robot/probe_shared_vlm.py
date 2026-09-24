@@ -297,7 +297,8 @@ def validate_nf4_model(model, linear_class, expected_dtype):
     if any(str(parameter.device) != "cuda:0" for parameter in model.parameters()):
         raise ValueError("unexpected CPU/disk/other-device model placement")
     return {"linear4bit_count": len(quantized), "linear4bit_names": [name for name, _ in quantized],
-            "vision_quantized": False, "device_map": model.hf_device_map,
+            "vision_quantized": False, "device_map_metadata": getattr(model, "hf_device_map", None),
+            "actual_parameter_devices": sorted({str(parameter.device) for parameter in model.parameters()}),
             "compute_dtypes": sorted({str(module.compute_dtype) for _, module in quantized}),
             "visual_parameter_dtypes": sorted({str(parameter.dtype) for parameter in visual}),
             "output_embedding_dtype": str(output_weight.dtype), "double_quantized": True,
