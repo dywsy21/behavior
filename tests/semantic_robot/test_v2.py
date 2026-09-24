@@ -28,8 +28,14 @@ def fixture():
     for view in ("head", "left_wrist", "right_wrist"):
         poses["camera_"+view] = (np.array([0.,0.,2.]), np.array([0.,0.,0.,1.]))
         jac["camera_"+view] = np.zeros((6,18))
+    poses["link:base_link"] = (np.zeros(3),np.array([0.,0.,0.,1.]))
+    jac["link:base_link"] = np.zeros((6,18))
     meta = {"cameras": {view: {"K": [[70,0,50],[0,70,50],[0,0,1]], "width":100, "height":100}
                         for view in ("head", "left_wrist", "right_wrist")}}
+    # A small explicit synthetic base surface, not an absent-geometry bypass.
+    meta["base_visual_surface"] = {"source":"robot_base_visual_mesh_only","scene_truth":False,
+        "link":"link:base_link","vertices":[[-.2,-.2,.05],[.2,-.2,.05],[.2,.2,.05],[-.2,.2,.05]],
+        "faces":[[0,1,2],[0,2,3]]}
     model = RobotModel.from_reference(q, np.full(18,-2.), np.full(18,2.), poses, jac, meta)
     return model, model.state(q, np.array([.05,.05]), np.zeros(3))
 

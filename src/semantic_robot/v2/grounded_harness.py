@@ -6,7 +6,7 @@ from dataclasses import asdict, replace
 
 import numpy as np
 
-from .grounding import LocalDepthGuard, localize_target, observed_cloud
+from .grounding import LocalDepthGuard, localize_target, observed_cloud, target_self_veto_reason
 from .harness import TaskHarness
 from .protocol import Action, HOLD, TRANSLATIONS, ROTATIONS, VIEWS, strict_json
 from .search import CoverageSearch
@@ -68,6 +68,7 @@ class GroundedHarness(TaskHarness):
         self.reference_from_planner=bool(reference_from_planner)
         self.reference_receipts={}
         self.held_inspection={}
+        self.target_geometry_veto=None
 
     @property
     def search_reference(self):
@@ -100,8 +101,25 @@ class GroundedHarness(TaskHarness):
                      or self.last_gripper[i]>=.0015)]
 
     def observe(self,evidence,state,geometry=None,measured_progress=None):
-        self.resolve_reference(evidence)
         self.last_gripper=np.asarray(state.gripper,dtype=float).copy()
+        veto=target_self_veto_reason(self.grounding)
+        self.target_geometry_veto=None
+        if veto:
+            # Preserve the exact model claim for audit, but never use a robot
+            # self point to confirm enclosure, support, motion, or task effect.
+            self.target_geometry_veto={"reason":veto,"raw_evidence":asdict(evidence),
+                "semantic_claims_suppressed":True,"requires_fresh_observation":True}
+            fields=dict(visible=False,view="none",target_uv=None,enclosed=None,
+                        co_moving=None,supported=None,effect=None)
+            for key,value in (("other_views",()),("hand_contacts",()),("target_reference","unknown")):
+                if hasattr(evidence,key):fields[key]=value
+            self.confirmations=0
+            self.grasp_probe={**self.grasp_probe,"eligible":False,"reason":veto}
+            # Still process physical loss/hazard/budgets through the usual path.
+            result=super().observe(replace(evidence,**fields),state,geometry,measured_progress)
+            self.events.append({"event":"TARGET_GEOMETRY_VETO","reason":veto,"goal":self.index})
+            return result
+        self.resolve_reference(evidence)
         return super().observe(evidence,state,geometry,measured_progress)
 
     def recover(self,event):
@@ -192,6 +210,7 @@ class GroundedHarness(TaskHarness):
         self.grasp_probe={**self.grasp_probe,"eligible":False}
 
     def palette(self):
+        if target_self_veto_reason(self.grounding):return (HOLD,)
         if self.possibly_loaded_arms() and self.stage not in ("VERIFY_GRASP","GRASP"):
             return (HOLD,)
         if self.held_inspection_enabled and self.stage in ("SEARCH","RECOVER") and self.observation and not self.observation.visible:
@@ -268,6 +287,7 @@ class GroundedHarness(TaskHarness):
                        strategy_replans=self.replans, recent_replans=self.replan_history[-2:],
                        egocentric_motion=self.motion_receipt, unverified_close_latches=self.pending_grasp.copy(),
                        active_grasp_probe=self.grasp_probe.copy())
+        context["target_geometry_veto"]=self.target_geometry_veto
         if self.multicamera_inspection:context["possible_contact_after_any_close"]=self.possible_contact_after_close.copy()
         if hasattr(self,"approach_progress"):context["approach_progress"]=self.approach_progress
         if hasattr(self,"search_reanchor"):context["search_reanchor"]=self.search_reanchor
@@ -390,7 +410,6 @@ class GroundedController:
         self.goal_changed=False
         observed_goal_index=manager.index
         observed_kind,observed_arms=manager.goal.kind,manager.arms
-        manager.resolve_reference(evidence)
         bimanual=manager.goal.kind=="pick" and manager.goal.hand=="both"
         self.hand_targets=localize_hand_contacts(evidence,depths,self.model,state.q) if bimanual else {}
         if bimanual:
@@ -413,6 +432,7 @@ class GroundedController:
                 raise ValueError("Contact review receipt supplied to disabled controller")
         self.centers=self.model.grasp_centers(state.q)
         manager.grounding=self.target
+        if target_self_veto_reason(self.target) is None:manager.resolve_reference(evidence)
         camera=self.model.spec["metadata"]["cameras"]["head"]
         target_bearing=(math.atan2(self.target["point_base_m"][1],self.target["point_base_m"][0])
                         if self.target["valid"] else None)
@@ -638,6 +658,11 @@ class GroundedController:
         from .wall_budget import require_time
         require_time(deadline)
         if self.goal_changed:return (HOLD,)
+        veto=target_self_veto_reason(self.target)
+        if veto:
+            self.harness.candidate_receipt={"reason":veto,"requires_fresh_observation":True,
+                "tested":[{"action":asdict(HOLD),"accepted":True,"reason":"TARGET_GEOMETRY_VETO"}]}
+            return (HOLD,)
         if self.near_contact_review and self.target.get("reason")=="VISIBLE_TARGET_CONTACT_UNCONFIRMED":
             self.harness.candidate_receipt={"reason":"CONTACT_REVIEW_ABSTAINED",
                 "near_contact_review":self.target["near_contact_review"],
@@ -974,6 +999,7 @@ class GroundedController:
                     h.stage in ("SEARCH","RECOVER") and h.observation and not h.observation.visible)
 
     def inspection_candidates(self,state):
+        if target_self_veto_reason(self.target):return self.candidates(state)
         if not self.is_held_search:raise ValueError("No current held-object search")
         allowed,receipt=self.inspector.candidates(self.model,state,self.harness,self.servo,self.depth_guard)
         self.harness.candidate_receipt=receipt
@@ -988,6 +1014,8 @@ class GroundedController:
         The original four-observation window bounds this to three probes.
         """
         h=self.harness
+        veto=target_self_veto_reason(self.target)
+        if veto:return HOLD,{"source":"target_geometry_veto","reason":veto,"success_claim":False}
         if self.grasp_verifier is None or h.goal.kind!="pick" or h.stage!="VERIFY_GRASP":
             raise ValueError("Registered grasp verification is not active")
         obs=h.observation
@@ -1010,6 +1038,8 @@ class GroundedController:
     def search_action(self,state):
         """One finite pulse, not a hidden multi-step macro or VLM fiction."""
         if self.goal_changed:return HOLD,{"source":"goal_transition_barrier","reason":"OBSERVE_NEW_GOAL_FIRST"}
+        veto=target_self_veto_reason(self.target)
+        if veto:return HOLD,{"source":"target_geometry_veto","reason":veto,"requires_fresh_observation":True}
         if self.near_contact_review and self.target.get("reason")=="VISIBLE_TARGET_CONTACT_UNCONFIRMED":
             return HOLD,{"source":"near_contact_review_veto","reason":"CONTACT_REVIEW_ABSTAINED"}
         if self.is_held_search:raise ValueError("Held affordance cannot use world-heading search")

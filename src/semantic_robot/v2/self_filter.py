@@ -58,6 +58,12 @@ class ChassisSurface:
 
     def mask(self, points, T_link):
         points=np.asarray(points,dtype=float).reshape(-1,3)
+        T_link=np.asarray(T_link,dtype=float)
+        if (not np.isfinite(points).all() or T_link.shape!=(4,4) or not np.isfinite(T_link).all()
+                or not np.allclose(T_link[3],[0,0,0,1],rtol=0,atol=1e-8)
+                or not np.allclose(T_link[:3,:3].T@T_link[:3,:3],np.eye(3),rtol=0,atol=1e-6)
+                or not np.isclose(np.linalg.det(T_link[:3,:3]),1.,rtol=0,atol=1e-6)):
+            raise ValueError("Finite points and current rigid robot FK required")
         local=(points-T_link[:3,3])@T_link[:3,:3]
         eligible=np.flatnonzero(np.all((local>=self.lower-self.tolerance_m)&(local<=self.upper+self.tolerance_m),axis=1))
         mask=np.zeros(len(points),dtype=bool)

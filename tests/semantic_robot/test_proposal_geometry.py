@@ -14,6 +14,8 @@ def inputs(mesh=True):
     if mesh:
         spec['metadata']['base_visual_surface']={'source':'robot_base_visual_mesh_only','scene_truth':False,
             'link':'link:base_link','vertices':[[-2,-2,1],[2,-2,1],[2,2,1],[-2,2,1]],'faces':[[0,1,2],[0,2,3]]}
+    else:
+        spec['metadata'].pop('base_visual_surface',None)
     model=RobotModel(spec)
     raw={v:np.zeros((100,100,3),np.uint8) for v in spec['metadata']['cameras']}
     depths={v:np.ones((100,100),np.float32) for v in raw}

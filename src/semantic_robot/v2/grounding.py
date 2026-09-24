@@ -2,6 +2,7 @@
 
 The output is an uncertain visible surface point, not an object pose or grasp
 certificate. Occluded/depth-discontinuous/mutually inconsistent points abstain.
+Known chassis surfaces are vetoed; missing chassis calibration also abstains.
 """
 from dataclasses import asdict, dataclass
 import math
@@ -9,6 +10,7 @@ import math
 import numpy as np
 
 from .protocol import Evidence, VIEWS, strict_json, TRANSLATIONS
+from .self_filter import chassis_depth_mask
 from .vision import project
 
 
@@ -54,6 +56,17 @@ class GroundedEvidence(Evidence):
 # Contact localization and near-field grasp tracking share this sensor domain.
 # The navigation obstacle cloud keeps its separately scoped range.
 MIN_CONTACT_DEPTH_M = .025
+SELF_VETO_REASONS = frozenset(("TARGET_ON_ROBOT_CHASSIS", "ROBOT_SELF_GEOMETRY_UNAVAILABLE"))
+
+
+def target_self_veto_reason(target):
+    """Keep a negative self check through bimanual/contact-review wrappers."""
+    candidates = [target, *target.get("hand_contacts", {}).values()]
+    for candidate in candidates:
+        for row in (candidate, *candidate.get("views", ())):
+            if row.get("reason") in SELF_VETO_REASONS:
+                return row["reason"]
+    return None
 
 
 def validate_depth(value, camera):
@@ -109,11 +122,13 @@ def check_projected_contact(point, primary_view, depths, model, q):
 
 def localize_target(evidence, depth_images, model, q):
     result = {"valid":False, "source":"VLM_pixel_plus_onboard_depth",
-              "surface_point_not_object_pose":True, "views":[], "reason":"TARGET_NOT_VISIBLE"}
+              "surface_point_not_object_pose":True, "views":[], "reason":"TARGET_NOT_VISIBLE",
+              "known_chassis_exclusion_only":True, "complete_robot_exclusion":False,
+              "target_identity_established_by_geometry":False}
     if not evidence.visible:
         return result
     entries = [{"view":evidence.view, "target_uv":evidence.target_uv}, *getattr(evidence,"other_views",())]
-    points, rows = [], []
+    points, rows, self_rejections = [], [], []
     cameras = model.spec["metadata"]["cameras"]
     for entry in entries:
         view, uv = entry["view"], np.asarray(entry["target_uv"])
@@ -123,6 +138,24 @@ def localize_target(evidence, depth_images, model, q):
             row["reason"] = "DEPTH_MISSING"; continue
         camera = cameras[view]; depth = validate_depth(depth_images[view], camera)
         x,y = np.rint(uv*(np.array([camera["width"],camera["height"]])-1)).astype(int)
+        pixel_z = float(depth[y,x])
+        if not np.isfinite(pixel_z) or not MIN_CONTACT_DEPTH_M < pixel_z < 4.:
+            row["reason"] = "TARGET_PIXEL_DEPTH_MISSING"; continue
+        # Check the actual selected ray BEFORE any neighbourhood quality gate.
+        # Otherwise an edge/hole can discard a known self hit, allowing another
+        # view to launder it into an apparently valid target.
+        T = model.forward(q,"camera_"+view)
+        pixel_point = unproject([[x,y]],[pixel_z],camera["K"],T)[0]
+        own, receipt = chassis_depth_mask(model,q,pixel_point[None])
+        row["chassis_self_check"] = dict(receipt, checked_points=1,
+            selected_pixel_on_chassis=bool(own[0]) if receipt["available"] else None,
+            aggregate_on_chassis=None)
+        if not receipt["available"]:
+            row["reason"] = "ROBOT_SELF_GEOMETRY_UNAVAILABLE"
+            self_rejections.append(row["reason"]); continue
+        if own[0]:
+            row["reason"] = "TARGET_ON_ROBOT_CHASSIS"
+            self_rejections.append(row["reason"]); continue
         patch = depth[max(0,y-2):y+3,max(0,x-2):x+3]
         valid = patch[np.isfinite(patch) & (patch > MIN_CONTACT_DEPTH_M) & (patch < 4.)]
         if valid.size < max(5, .6*patch.size):
@@ -130,17 +163,35 @@ def localize_target(evidence, depth_images, model, q):
         z = float(np.median(valid)); spread = float(np.quantile(valid,.9)-np.quantile(valid,.1))
         if spread > max(.015, z*.04):
             row["reason"] = "DEPTH_EDGE_AMBIGUOUS"; row["spread_m"]=spread; continue
-        T = model.forward(q,"camera_"+view)
         point = unproject([[x,y]],[z],camera["K"],T)[0]
+        # The aggregate estimate independently needs the same negative gate.
+        own, receipt = chassis_depth_mask(model,q,point[None])
+        row["chassis_self_check"].update(receipt, checked_points=2,
+            aggregate_on_chassis=bool(own[0]) if receipt["available"] else None)
+        if not receipt["available"]:
+            row["reason"] = "ROBOT_SELF_GEOMETRY_UNAVAILABLE"
+            self_rejections.append(row["reason"]); continue
+        if own[0]:
+            row["reason"] = "TARGET_ON_ROBOT_CHASSIS"
+            self_rejections.append(row["reason"]); continue
         row.update(valid=True, depth_m=z, spread_m=spread, point_base_m=point.tolist())
         points.append(point)
     result["views"] = rows
+    # A second view must not launder a self-surface claim in the first view.
+    if self_rejections:
+        result["reason"] = self_rejections[0]; return result
     if not points:
         result["reason"]="NO_VALID_TARGET_DEPTH"; return result
     if len(points)>1 and max(np.linalg.norm(a-b) for a in points for b in points) > .07:
         result["reason"]="MULTIVIEW_TARGET_DISAGREEMENT"; return result
+    mean_point = np.mean(points,axis=0)
+    own, receipt = chassis_depth_mask(model,q,mean_point[None])
+    result["chassis_self_check"] = dict(receipt, mean_point_on_chassis=bool(own[0]) if receipt["available"] else None)
+    if not receipt["available"] or own[0]:
+        result["reason"] = "ROBOT_SELF_GEOMETRY_UNAVAILABLE" if not receipt["available"] else "TARGET_ON_ROBOT_CHASSIS"
+        return result
     result.update(valid=True, reason="OBSERVED_SURFACE_ESTIMATE",
-                  point_base_m=np.mean(points,axis=0).tolist(), valid_views=len(points))
+                  point_base_m=mean_point.tolist(), valid_views=len(points))
     if not getattr(evidence,"other_views",()):
         checks=check_projected_contact(result["point_base_m"],evidence.view,depth_images,model,q)
         result["projected_same_point_checks"]=checks
