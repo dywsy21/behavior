@@ -10,7 +10,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 23:09（北京时间）：H56唯一兼容渲染场景检查运行中（Codex）
+
+- 短暂SSH断连已只读核源码/run未创建后恢复；固定`d7ed21efcad7af313a6b0f72f7c5155d3230ab49`/robo `git_worktrees/shared_scene_d7ed21e`，双端71 CPU、独审/23依赖/实际YAML转换/实时资源门均过。唯一launch UTC15:09:30.708713，supervisor3496762，run/runtime `h56_compatible_cameras_v1`已创建。
+- 相比H55保持early三相机，只切PT/OptiX；原600s/4096主512辅助3072余量/冷runtime/physics/0actor前缀模型训练不变。两套真实相机/renderer终验待，非已获RGB-D或SR，不重复提交/不热改四训练与源码。
+
 ### 2026-09-24 23:04（北京时间）：H56兼容renderer＋提前camera组合接线、71 CPU通过（Codex）
+
+23:07同步状态：本地已固定/push `d7ed21efcad7af313a6b0f72f7c5155d3230ab49`；远端fetch/worktree/CPU预检这条SSH超时无输出，**该命令不含launch**，未提交仿真。只读核`shared_scene_d7ed21e`是否已创建后续接，不能假称远端测试完成或重复启动。
+
+23:08只读恢复：远端15:07:47UTC核H56 source和run都不存在，GPU只有原四训练/各73644；确认无重复工作后才重新同步源码/CPU预检，仍不含launch。
 
 23:06独审闭合：独立复跑71/71/diff过，未见实质阻塞；两套严格终验/23依赖/原资源门保留。准备Git固定与远端同门，尚未启动H56。
 

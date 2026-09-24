@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-24 23:09（北京时间）H56唯一运行中：Codex固定d7ed21e/双端71 CPU、23依赖/独审/实际资源门过，supervisor3496762；原600s/显存/early camera/physics，0actor模型训练。SSH恢复后已核无重复run，四训练保留；实际图像/资源终态待，不称goal完成。
+
 2026-09-24 23:04（北京时间）H56由Codex负责原600s/显存门内的PT/OptiX兼容性检查，保持H55early三camera配置/physics；71 CPU过/独审待，未启动GPU。H54b仍不跑；四原训练/队友职责保留，完整零前缀SR仍未获得。
 
 2026-09-24 23:00（北京时间）H55结束未过：602.739s/600s墙钟、worker -15，末GPU3增量3349MiB未越4096；scene已导入但外层reset/三RGB-D仍0。Codex归档及核A100原renderer兼容性，非已验证显存改善或SR；四训练保留/余量恢复，不临时加时或直接重提。
