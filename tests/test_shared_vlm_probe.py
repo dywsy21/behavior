@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import Mock
 import subprocess
+from types import SimpleNamespace
 
 from PIL import Image
 
@@ -186,6 +187,39 @@ class ModelManifestTests(unittest.TestCase):
         self.file.symlink_to(self.root / "original.json")
         with self.assertRaises(ValueError):
             probe.validate_model_files(self.root, self.manifest)
+
+
+class ChatStopTests(unittest.TestCase):
+    def setUp(self):
+        self.tokenizer = SimpleNamespace(eos_token="<|im_end|>", eos_token_id=248046,
+                       convert_tokens_to_ids=lambda name: {"<|endoftext|>": 248044, "<|im_end|>": 248046}[name])
+        self.generation = SimpleNamespace(eos_token_id=248044)
+        self.policy = dict(model_default_eos_id=248044, tokenizer_eos_id=248046,
+                           generation_eos_ids=[248044, 248046])
+
+    def test_original_missing_chat_eos_still_rejected_without_opt_in(self):
+        with self.assertRaisesRegex(ValueError, "mismatch"):
+            probe.configure_chat_stops(self.tokenizer, self.generation, None)
+
+    def test_explicit_policy_preserves_text_end_and_adds_chat_end(self):
+        receipt = probe.configure_chat_stops(self.tokenizer, self.generation, self.policy)
+        self.assertEqual(receipt["original_generation_eos"], 248044)
+        self.assertEqual(self.generation.eos_token_id, [248044, 248046])
+
+    def test_matching_existing_model_unchanged(self):
+        self.generation.eos_token_id = [248044, 248046]
+        probe.configure_chat_stops(self.tokenizer, self.generation, None)
+        self.assertEqual(self.generation.eos_token_id, [248044, 248046])
+
+    def test_wrong_stop_identity_rejected(self):
+        self.tokenizer.eos_token_id = 123
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            probe.configure_chat_stops(self.tokenizer, self.generation, self.policy)
+
+    def test_arbitrary_early_stopping_override_rejected(self):
+        self.policy["generation_eos_ids"] = [248044, 248046, 123]
+        with self.assertRaisesRegex(ValueError, "unsupported"):
+            probe.configure_chat_stops(self.tokenizer, self.generation, self.policy)
 
 
 if __name__ == "__main__":

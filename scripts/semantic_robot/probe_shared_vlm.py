@@ -231,6 +231,27 @@ def finite_choices(tokenizer, model, lines, prefix):
     return allowed
 
 
+def configure_chat_stops(tokenizer, generation_config, policy):
+    """Explicit pinned chat deployment override; never trim/repair model output."""
+    original = generation_config.eos_token_id
+    if policy is not None:
+        expected = {"model_default_eos_id": 248044, "tokenizer_eos_id": 248046,
+                    "generation_eos_ids": [248044, 248046]}
+        if policy != expected:
+            raise ValueError("unsupported chat stop policy")
+        if (original != expected["model_default_eos_id"] or tokenizer.eos_token_id != expected["tokenizer_eos_id"]
+                or tokenizer.eos_token != "<|im_end|>"
+                or tokenizer.convert_tokens_to_ids("<|endoftext|>") != 248044
+                or tokenizer.convert_tokens_to_ids("<|im_end|>") != 248046):
+            raise ValueError("pinned chat stop-token identity changed")
+        generation_config.eos_token_id = list(expected["generation_eos_ids"])
+    eos = generation_config.eos_token_id
+    if tokenizer.eos_token_id not in (eos if isinstance(eos, list) else [eos]):
+        raise ValueError("structured tokenizer/model stop-token mismatch")
+    return {"original_generation_eos": original, "tokenizer_eos": tokenizer.eos_token_id,
+            "effective_generation_eos": eos, "explicit_policy": policy}
+
+
 def run(spec_path, output):
     spec = json.loads(spec_path.read_text()); validate_spec(spec)
     require_source_and_device(spec)
@@ -274,12 +295,11 @@ def run(spec_path, output):
         tokenizer_data = build_token_enforcer_tokenizer_data(processor.tokenizer)
         model = AutoModelForImageTextToText.from_pretrained(model_path, local_files_only=True,
                     dtype=torch.bfloat16, attn_implementation="sdpa")
+        result["chat_stops"] = configure_chat_stops(processor.tokenizer, model.generation_config,
+                                                     spec.get("chat_stop_policy"))
         result["gpu_before_model_allocation"] = gpu_snapshot(spec["gpu"])
         check_resources(result["gpu_before_model_allocation"], spec, own_pid=os.getpid(), before_load=True)
         model = model.to("cuda").eval()
-        eos = model.generation_config.eos_token_id
-        if processor.tokenizer.eos_token_id not in (eos if isinstance(eos, list) else [eos]):
-            raise ValueError("structured tokenizer/model stop-token mismatch")
         result.update(load_seconds=time.monotonic()-started, transformers=transformers.__version__,
                       torch=torch.__version__, model=str(model_path), revision=spec["revision"],
                       dtype="bfloat16", image_max_side=spec["image_max_side"])

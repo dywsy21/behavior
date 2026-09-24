@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 17:47北京时间H45终态：** supervisor3438643已退出；原v1在模型/tokenizer EOS一致性门失败，0生成，四训练3294346–3294349保留且无新worker GPU进程。原run和cache保留诊断，下一只读查根因；下条17:46提交记录非仍在运行。
+
+**2026-09-24 17:46北京时间H45提交：** 唯一supervisor3438643，源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_small_vlm_99caf68`固定99caf682，不热改；四请求结果`/mnt/nvme_tmp/robodojo_agentic_20260924/h45_shared_2b_v1`及同stem launch/supervisor/log，独立cache`/mnt/nvme_tmp/robodojo_vlm_runtime_20260924/h45`。模型实际推理/worker结果待核，不将启动当ready；其余四训练保留。
+
 **2026-09-24 17:32北京时间只读实核：** robo四卡各free7489MiB；xhz训练3294346–3294349仍在，旧父/子服务2762269、2833894已退出。下方9月22日“当前”均历史而非活跃依据。Git同步入口`/mnt/sdc1/robodojo/behavior`为clean main；运行副本仍新建独立`behavior_dev/git_worktrees/`。小2B原权重在`behavior_dev/semantic_agent_20260917/models/Qwen3.5-2B`，结构解码依赖在`behavior_dev/semantic_structured_20260919/deps_817f944`；H38原保存态在`/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/radio_h38_fullstart`。新H45尚无GPU进程。`/mnt/tmp1`、`/mnt/nvme0`当前不存在，勿复用旧磁盘假设；现用NVMe是`/mnt/nvme_tmp`。
 
 更新：2026-09-13。本文件中的服务器路径属于`ssh robo`，不是本地路径。**源码走GitHub push/pull，数据、权重、环境、完整实验结果不走Git。**

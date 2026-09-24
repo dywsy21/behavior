@@ -10,6 +10,25 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 17:51（北京时间）：H45 EOS根因/完整失败证据归档，H45b兼容修复登记（Codex）
+
+17:53补充：H45b窄独审通过，LMFE与finite-choice两条停止路径一致，无提前截断/输出修复；26 CPU过。固定新Git后只发一次复验，原v1源和结果不动。
+
+- 原v1完整包在本地`artifacts/agentic-vlm-goal-20260918/h45_shared_bundle_v1`；worker3438651实际18.823s/0调用，监管27.538s/exit1，自有采样峰值4810MiB、最低空闲2674MiB，退出后恢复7489MiB。result SHA`02775d9c61a5df9ac92fd38cac2431e71ea5b4a3f74a53bd275093a0525f89b5`，supervisor SHA`88325174c6cecf5aa75838b8712fd8e1428f4e03e02d06bfb9352217436475d1`。仅说明装载这一步通过余量门，不代表推理峰值可行。
+- CPU实核：无独立generation_config，内嵌text_config默认EOS248044=`<|endoftext|>`；tokenizer EOS248046=`<|im_end|>`。新显式部署策略仅在这些准确身份匹配时保留248044并加入248046，原始/有效配置记入结果，不改权重、parser或修输出。原v1不会重用。26 CPU过，窄独审待。
+- 登记H45b一次新兼容复验，仍原4保存态/30图/320/greedy/BF16/seed17、4调用/600s/监管900s、4864+512MiB且至少2048余量，GPU2同训练PID；新spec `h45b_shared_small_vlm_chatstops_probe.json`。新源码/独审固定后才发，0新模拟器/训练，不自动扩大资源或调用预算。
+
+### 2026-09-24 17:47（北京时间）：H45首探针生成前EOS不兼容退出（Codex）
+
+- 固定99caf68单次加载走到`structured tokenizer/model stop-token mismatch`拒绝，0生成请求、0新物理/训练；supervisor3438643已退出，17:46:58四个原训练PID仍各73644MiB，新worker显存已回收。不能把它归类为显存不足或VLM语义失败，也不能把权重加载当推理通过。
+- 完整result/supervisor证据待取回；下一只读CPU核实2B实际tokenizer/内嵌text_config/default generation EOS的差别，基于根因决定显式停止符兼容修复和新的独立受限测试。原v1保留、绝不复用输出或暗重试；尚无模拟器资源可用性/SR新结论。
+
+### 2026-09-24 17:46（北京时间）：H45单次共享2B探针已提交（Codex，运行中待结果）
+
+- Git`99caf682f57b2741371a62636a8e604a1f76dc35`已push并在robo建立独立`git_worktrees/shared_small_vlm_99caf68`，远端3.10实跑21 CPU/0.111s过。普通SSH/首次Git推送延迟已通过原严格认证的Windows直连stdio恢复，未改持久网络设置，未重复提交模型实验。
+- 唯一启动回执UTC09:46:00.897950（BJT17:46），supervisor3438643；spec SHA`8ae2a9a5afdffe5d5a13b64bdd298202e104c8fe262379afcb743a9d53b799a8`。结果根`/mnt/nvme_tmp/robodojo_agentic_20260924/h45_shared_2b_v1`及同stem `.launch.json/.supervisor.json/.log`；独立cache在`/mnt/nvme_tmp/robodojo_vlm_runtime_20260924/h45`。4请求/600s/外层900s，0新训练/reset。
+- 这仅确认supervisor启动，未确认模型已加载或完成推理。下一检查真实worker/完整结果、进程显存峰值与四训练存活，再人工核输出；不提前报告可用或成功率。
+
 ### 2026-09-24 17:41（北京时间）：H45独审修后闭合，准备单次真实探针（Codex）
 
 - 独审指出两项启动阻塞并已修正：固定完整10文件清单（不存在的generation_config新增也拒绝）；大文件hash/CPU模型加载期间可能资源变化，首次CUDA及to(cuda)前均重新核完整余量。只用精确CUDA UUID，自身已占context扣账且总进程超过5376MiB也停。修后21 CPU/独立复审/diff-check通过，4真实请求像素审沿用，不重复物理门。

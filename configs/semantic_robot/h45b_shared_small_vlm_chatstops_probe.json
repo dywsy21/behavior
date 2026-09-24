@@ -1,0 +1,69 @@
+{
+  "experiment": "H45b-shared-small-vlm-chatstops-v1",
+  "owner": "Codex-parent",
+  "hypothesis": "Frozen 2B can answer current actor-facing semantic requests under a bounded allocator while existing training remains untouched.",
+  "not_success_rate": true,
+  "training_steps": 0,
+  "simulator_resets": 0,
+  "gpu": 2,
+  "gpu_uuid": "GPU-3e4fda8c-536e-5899-e877-b8be97032fe0",
+  "training_pids": [
+    3294348
+  ],
+  "allocator_limit_mib": 4864,
+  "non_torch_allowance_mib": 512,
+  "reserve_mib": 2048,
+  "max_seconds": 600,
+  "supervisor_seconds": 900,
+  "seed": 17,
+  "image_max_side": 320,
+  "model": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917/models/Qwen3.5-2B",
+  "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+  "model_files": {
+    "config.json": "ed1c1723241f23f7f4e23430759cbd7dcfb4103cbdfe052bfe7626b57c2615b4",
+    "chat_template.jinja": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
+    "merges.txt": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d",
+    "model.safetensors.index.json": "aca8afed9da75b0f050b408d270766fd77627f1af401e240f61c3b47d0db02f9",
+    "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+    "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+    "tokenizer_config.json": "49e2b6e395f959f077f1e992b338919c0d4a9732fc6e613995e06557f843500c",
+    "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+    "vocab.json": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003",
+    "model.safetensors-00001-of-00001.safetensors": "aa33250c4fc64891ddfaba3a314fd9542ea371843c387178b425fbcc5ed680b1"
+  },
+  "source_run": "/mnt/nvme_tmp/robodojo_agentic_20260921/h38_appearance/radio_h38_fullstart",
+  "cases": [
+    {
+      "receipt": "planner.json",
+      "sha256": "bc0ec7c4900db52535a0dcac58a6de5edd909f44558ca82c304e75a084caf7b3"
+    },
+    {
+      "receipt": "decision_000/observation.json",
+      "sha256": "0db62ed8c728891c75cc88064f47e25b103799f49b2df6e11f9d8e9c690a20b1"
+    },
+    {
+      "receipt": "decision_091/observation.json",
+      "sha256": "f9c257a99fd8a51587fd7e0f63dd9ae3e67213806dd4608d8aff6ba0835193e0"
+    },
+    {
+      "receipt": "decision_091/action.json",
+      "sha256": "56e22dcf5fceeba6f5f38ae3ad487da027a8ea581d8783f1f00ae85b93fe6009"
+    }
+  ],
+  "comparison": "Original stored actor requests, identical text/views/choices; images explicitly reduced from maximum 640 to 320 pixels. Not a controlled model-only comparison. H45b explicitly adds tokenizer chat-end EOS alongside existing text-end EOS; weights and prompts unchanged.",
+  "stop": "Stop only this new worker on resource identity/headroom changes, allocator OOM, deadline or four completed calls. No retry, training, simulator or old-service restart.",
+  "chat_stop_policy": {
+    "model_default_eos_id": 248044,
+    "tokenizer_eos_id": 248046,
+    "generation_eos_ids": [
+      248044,
+      248046
+    ]
+  },
+  "predecessor": {
+    "run": "/mnt/nvme_tmp/robodojo_agentic_20260924/h45_shared_2b_v1",
+    "source_commit": "99caf682f57b2741371a62636a8e604a1f76dc35",
+    "completed_generations": 0,
+    "outcome": "failed before generation at EOS consistency gate; retain unchanged"
+  }
+}
