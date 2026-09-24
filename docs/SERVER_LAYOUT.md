@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 19:45北京时间H50已提交：** supervisor3454291，固定`shared_small_vlm_82b7ef0`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h50_finite_localization_v1`及同stem launch/supervisor/log，独立cache `/mnt/nvme_tmp/robodojo_vlm_runtime_20260924/h50`。仅保存态最多12调用，未启模拟器/新训练；四原训练不动。
+
+**2026-09-24 19:44北京时间H50准备：** 新固定源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_small_vlm_82b7ef0`（82b7ef0c5c9982c35aa8e755bbfc5f94f5038c8d），双端73 CPU/四真实输入prepare及独审通过。四xhz训练3294346–3294349仍各73644MiB，各卡free7489MiB；尚无新H50 worker/模拟器，原run不改。
+
 ## 2026-09-24 19:09（北京时间）Z-01复核
 
 四个xhz训练3294346–3294349均仍在，各占73644MiB、运行20:25:59；四卡各free7489MiB。没有新的Zetta部署/服务/仿真run，代码仍仅在本地`/home/wsy/behavior_worktrees/zetta-g05-20260924`（实现963efcf）及Git实验分支；上游只读源码仍`/home/wsy/zetta-embodiment-upstream-20260924`（1fee179）。完整演化Recovery bundle未找到；G0.5＋OmniGibson共享当前余量未测，不借此调整现有训练。详细状态见plan最新Z-01记录。

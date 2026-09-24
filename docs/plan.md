@@ -10,7 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 19:45（北京时间）：H50有限区域配对探针运行中（Codex）
+
+- 固定`82b7ef0`、双端73 CPU/修后独审过。唯一launch UTC11:45:12.591784、supervisor3454291，spec SHA`da4ce6dc8d84fd316cda5306d9440eaa7721d36fa8f8a708a4f092dda419359e`；输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h50_finite_localization_v1`及同stem launch/supervisor/log，新cache`robodojo_vlm_runtime_20260924/h50`。
+- 最多4自由UV＋8有限选择、600s worker/900s外层、原GPU2精确身份/显存保护，0reset/训练。全部实际输出/语义与资源结果待验，不把提交当定位成功，不重复启动；四xhz训练保留。
+
 ### 2026-09-24 19:44（北京时间）：H50探针独审资源冻结缺陷已修，仍未调用GPU（Codex）
+
+19:44补充：修后窄独审闭合；固定`82b7ef0c5c9982c35aa8e755bbfc5f94f5038c8d`已push并在robo新独立`git_worktrees/shared_small_vlm_82b7ef0`通过同73 CPU及全部四输入prepare。四xhz训练仍原3294346–3294349各73644MiB、各卡free7489MiB，尚未新增模型调用；准备仅提交一次登记探针。
 
 - 独审复现共享范围门允许把H50非Torch allowance从512改至2048MiB，并允许GPU/PID漂移。已增加H50专用精确资源身份/4864+512/2048/600/900/320/seed17门，以及模型路径/revision/全部文件SHA/量化/EOS的冻结指纹；没有修改共享旧探针的边界。修后9探针＋44旧＋20核心共73 CPU与diff检查通过，窄复审待。
 - 原e9b80f9尚未部署/启动，没有碰训练。完成复核后使用新commit独立worktree，只发登记的12调用上限探针；原三捕获四目标和公开输入不变。

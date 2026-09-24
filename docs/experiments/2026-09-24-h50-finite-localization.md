@@ -1,6 +1,6 @@
 # H50：有限区域与表面选择，替代小VLM自由坐标
 
-Owner：Codex。当前仅CPU接口通过，模型对照尚未开始；不能报告定位提升或完整成功率。
+Owner：Codex。当前双端73 CPU及修后独审通过；19:45北京时间单次模型对照已提交，结果待验，不能报告定位提升或完整成功率。
 
 ## 假设与接口
 
@@ -14,9 +14,11 @@ H48/H49发现4B能识别红白收音机，但自由UV会落在它上方的桌面
 
 独审发现只检查spec hash会漏掉live FK数组原地修改，已修并加五类变异测试。15新接口测试＋5旧affordance通过，核心修后独审通过。探针首8新测试＋旧共享44测试通过；窄审另发现共享范围门不等于H50精确冻结，已补GPU/UUID/PID、全部预算/seed和模型全清单/量化/EOS身份锁定及反例，修后回归/复审待。机器人完整标定约45.2MiB，故仅SHA固定的标定文件允许64MiB，其余文件限32MiB；没有扩大GPU预算。
 
-## 单次配对实验（未开始）
+## 单次配对实验（运行中）
 
-固定配置：`configs/semantic_robot/h50_finite_localization_probe.json`。实现提交在实际启动时补全。
+固定配置：`configs/semantic_robot/h50_finite_localization_probe.json`。实现提交`82b7ef0c5c9982c35aa8e755bbfc5f94f5038c8d`；robo独立源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_small_vlm_82b7ef0`，73 CPU与全部真实输入prepare通过。
+
+唯一launch UTC2026-09-24T11:45:12.591784，supervisor3454291；spec SHA`da4ce6dc8d84fd316cda5306d9440eaa7721d36fa8f8a708a4f092dda419359e`。run `/mnt/nvme_tmp/robodojo_agentic_20260924/h50_finite_localization_v1`及同stem回执/log，独立cache `robodojo_vlm_runtime_20260924/h50`。提交非成功，完整输出待验。
 
 | 查询 | 历史捕获 | 目标/人工先验检查（不进入模型） |
 | --- | --- | --- |
@@ -38,7 +40,7 @@ H48/H49发现4B能识别红白收音机，但自由UV会落在它上方的桌面
 - [x] 核心接口/弃权/绑定/静态与时序边界，CPU及独审。
 - [x] 四目标的所有公共源文件hash/render barrier本地核验。
 - [x] 有界配对探针与CPU回归。
-- [ ] 探针独审、固定源码、服务器CPU及资源检查。
+- [x] 探针独审、固定源码、服务器CPU及资源检查。
 - [ ] 单次全部输出人工审核和完整资源证据归档。
 - [ ] 决定接口是否可部署，独立验证共享模拟器资源和控制兼容性。
 - [ ] 零专家/旧策略前缀完整回合的官方成功；goal仍未达成。
