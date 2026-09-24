@@ -19,3 +19,26 @@
 00:27修审更新：独审指出连续xyxy框的上界应保留width/height，且像素应floor而非round，否则最后一行/列或1像素框会被错误采样。已修正半开像素约定，新增末行/列、右下角、1像素、部分负边界和完全越界负例；目标29/29 CPU通过。仅采样域修正，原检测框/阈值不变，窄复审中；未执行实测。拟冻结本次Git后，由外部timeout严格执行60s（额外15s只作清理）的单次本地CPU运行。
 
 00:28修后独审通过：独立复跑29/29及diff检查无剩余实质阻塞。v2全部30文件和四case绑定已在准备阶段核定，实际150.344MiB偏差如上；下一固定commit、核输出目录不存在，再唯一启动。本次启动/结果文件将记录真实source_commit，不用文档自引用SHA。
+
+## 实际结果（00:29北京时间）
+
+固定源码`9a76d08f9243ac08fc1f01aae1b8e12a42598525`；本地唯一运行PID3660660，外部timeout60s/清理15s，exit0、6.428561535s，12查询/10框、每框144个深度有效样本。0模型/新仿真/训练；不是成功率评测。
+
+| 原query | base surface重合 / 有效样本 | 比例 | H58既有人审（不是新独立标签） |
+| --- | ---: | ---: | --- |
+| radio head | 0 / 144 | 0% | 正确目标区域 |
+| radio left_wrist | 123 / 144 | 85.42% | 本体误检 |
+| radio right_wrist | 128 / 144 | 88.89% | 本体误检 |
+| refrigerator handle head | 0 / 144 | 0% | 两把手共同区域，未消歧 |
+| refrigerator handle left_wrist | 131 / 144 | 90.97% | 本体误检 |
+| refrigerator handle right_wrist | 129 / 144 | 89.58% | 本体误检 |
+| bin head | 0 / 144 | 0% | 正确可见区域 |
+| bin left_wrist | 无框 | 不适用 | 正确弃权 |
+| bin right_wrist | 0 / 144 | 0% | 正确桶区域，不能按大框全拒绝 |
+| absent plate head | 无框 | 不适用 | 正确弃权 |
+| absent plate left_wrist | 131 / 144 | 90.97% | 本体误检 |
+| absent plate right_wrist | 129 / 144 | 89.58% | 本体误检 |
+
+完整result：`artifacts/agentic-vlm-goal-20260918/h60_proposal_geometry_v1/result.json`，SHA `eb6b85bab705eb12a60a4aee5680fe034ef3f76a8d56877ac6105758a1e08d20`。主agent核全部10框和两空结果，不挑选只报好例。
+
+结论：这批腕图误检确实主要覆盖机器人底座外壳，公开本体几何能提供直接排除依据；单靠检测置信度不够。**没有从这12查询拟合reject阈值，没有部署mask，也未证明完整本体排除/目标识别/闭环成功。** 下一应把已知本体排除接在候选表面/点层，而不是把未重合残余像素自动当目标或采用框中心。

@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 00:29北京时间H60本地完成：** `artifacts/agentic-vlm-goal-20260918/h60_proposal_geometry_v1/result.json`，source9a76d08、exit0/6.429s、12查询10框，SHA `eb6b85bab705eb12a60a4aee5680fe034ef3f76a8d56877ac6105758a1e08d20`。只读现有v2输入，无模型/服务器run/新仿真；原两输入目录及全部服务器原件保留。
+
 **2026-09-25 00:22北京时间H59归档闭合：** 本地`artifacts/agentic-vlm-goal-20260918/h59_warm_cache_bundle_v1`完整9件/约4.4MiB，9 SHA双端一致、327样本四训练身份/73644MiB恒定；旧source/run/runtime/cache均保留且无人重启。当前无自有GPU/仿真，H60仅本地CPU准备。
 
 **2026-09-25 00:21北京时间H60公共输入：** 本地完整30件`artifacts/agentic-vlm-goal-20260918/h60_public_inputs_v2`，157646923B/150.344MiB，四case递归原SHA全过；比准备估计150MiB多0.344MiB，已如实记偏差，不追加复制。旧v1为55s截断的部分副本，保留但禁止使用。全部原服务器数据未修改。
