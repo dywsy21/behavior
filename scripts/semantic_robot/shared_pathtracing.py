@@ -93,8 +93,12 @@ def before_scene(og, simulator, *, source_sha256, record, write):
             raise ValueError('Rendering profile cannot modify an occupied simulator or live camera')
         settings = get_settings()
         receipt['original_render_mode'] = settings.get('/rtx/rendermode')
-        if receipt['original_render_mode'] != 'RealTimePathTracing':
-            raise ValueError('Frozen OG constructor did not follow expected renderer setup')
+        # H54 observed the native stack returning the known legacy mode after
+        # OG's RT2 assignment and play/stop updates. That mutable setting is not
+        # an identity proof. Source/alias/empty-scene checks above stay strict;
+        # the resulting PT settings below and after capture must still match.
+        if receipt['original_render_mode'] not in ('RealTimePathTracing', 'RaytracedLighting'):
+            raise ValueError('Unexpected pre-scene native renderer mode')
         receipt['actual_settings_before_scene'] = apply_settings(settings)
         receipt['applied_before_scene'] = True
         write('worker.json', record)

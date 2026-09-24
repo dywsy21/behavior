@@ -64,3 +64,13 @@ H53b无viewer仍在机器人/渲染初始化时超过主卡4096MiB增量门，�
 - kit.log `baf67982f7cf36b10d42a08957f22fac9bca4ec93d469dfd3389b8d9f7c1dba4`
 
 正只读查设置来源；factory/官方Evaluator/既有chunk wrapper无renderer模式赋值。后继若修前置模式检查，仍须保持准确source/alias/空scene/无viewer、一调用、最终PT严格读回及所有资源门，不接受unknown配置，另用新run记录，不掩盖这次负例。
+
+## H54b：修正前置mode断言的单次后继（22:32登记）
+
+负责人Codex，唯一变化是允许初始化结束时实际观察到的合法`RaytracedLighting`，与原允许的`RealTimePathTracing`并列；不放行unknown/null，不更改最终目标PT十项/资源/来源/alias/空scene/无viewer/唯一调用。来源推断更正：OG虽在setter写RT2，其后还会play/stop和native app更新，**不能用最终可变设置值证明是否执行了原构造**。完整Kit日志没有记录每次设置writer，具体把mode改回的原生路径未确定，不声称已证明某个SDK回调负责。已核安装Kit UI将这两值列为合法实时renderer，官方factory/wrapper未改mode。
+
+同一冻结外部环境/16依赖/原始TRAIN138/seed0、同PT/OptiX4spp/16累计/原三相机/物理/冷新runtime/CPU4；**另一次600s/1Session/原4096主512辅助3072余量，0actor前缀模型训练**。原H54源7e706be/33.874s失败全保留，既非重用run也不是修改正在运行的源码。入口仍`probe_scene_pathtracing.py`，新准确commit与run启动后记录。
+
+新run `/mnt/nvme_tmp/robodojo_agentic_20260924/h54b_pathtracing_v1`，新runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h54b_pathtracing_v1`，本地包 `artifacts/agentic-vlm-goal-20260918/h54b_pathtracing_bundle_v1`，现在均未提交/创建。新增legacy前值接受、后值漂移拒绝及完整worker链回归，修后独审和双端同测过才唯一提交；不是放宽实际renderer验收。失败后不自行加资源。
+
+22:35优先级调整：H54b独立复审/54 CPU过，但未部署/提交GPU，暂缓执行。另发现原r1pro配置三路1080初始化、环境完成后wrapper才变为head720/腕480，属于比渲染模式更直接的启动缓冲浪费。先做独立H55相机最终配置前移、最终分辨率/物理不变，原renderer对照；不把H54b写成已运行或把H55改善归给PT。H54全部证据/源码保留。

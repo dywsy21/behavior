@@ -127,6 +127,15 @@ assert not any(k in sys.modules for k in ('torch','isaacsim','omnigibson','carb'
                 with self.assertRaises(ValueError): og.launch()
             self.assertEqual(settings.get('/rtx/rendermode'),'unknown')
 
+    def test_observed_native_legacy_mode_is_accepted_only_before_profile_not_after(self):
+        with fake_route() as (og,sim,settings,record,write,digest):
+            settings.set('/rtx/rendermode','RaytracedLighting')
+            with renderer.before_scene(og,sim,source_sha256=digest,record=record,write=write): og.launch()
+            self.assertEqual(record['pathtracing']['original_render_mode'],'RaytracedLighting')
+            renderer.validate_after_scene(og,record)
+            settings.set('/rtx/rendermode','RaytracedLighting')
+            with self.assertRaises(ValueError): renderer.validate_after_scene(og,record)
+
     def test_setter_ignored_or_late_settings_drift_fails(self):
         with fake_route() as (og,sim,settings,record,write,digest):
             settings.set=Mock()

@@ -193,7 +193,10 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
     def test_pathtracing_worker_reapplies_native_overrides_and_original_og_mode_before_scene(self):
         self._exercise_worker(True)
 
-    def _exercise_worker(self, use_pathtracing):
+    def test_pathtracing_worker_handles_observed_legacy_mode_before_scene(self):
+        self._exercise_worker(True,native_render_mode='RaytracedLighting')
+
+    def _exercise_worker(self, use_pathtracing, native_render_mode='RealTimePathTracing'):
         import shared_pathtracing as renderer
         images, depths, sensors = capture_fixture()
         factory = ModuleType('native_oracle_low_v1.official_factory'); factory.__file__ = str(scene.FACTORY)
@@ -226,7 +229,7 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
         source=Path(__file__).resolve() if use_pathtracing else scene.OG_SOURCE
         og_startup = ModuleType('omnigibson.simulator'); og_startup.__file__ = str(source)
         def original_launch(**kwargs):
-            settings.set('/rtx/rendermode','RealTimePathTracing')
+            settings.set('/rtx/rendermode',native_render_mode)
             og.app=app; og.sim=sim
             return sim
         og.launch=og_startup._launch_simulator=Mock(side_effect=original_launch)
@@ -260,6 +263,7 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
              patch.object(scene.inspect, 'getfile', return_value=str(base.APP_SOURCE)), \
              patch.object(base, 'construct_app', return_value=app), patch.object(scene, 'private_og_startup', startup), \
              patch.object(sys, 'path', list(sys.path)), patch.object(scene,'OG_SOURCE',source), \
+             patch.object(renderer,'_CONSUMED',set()), \
              patch.object(scene,'EXTRA_DEPENDENCIES',{**scene.EXTRA_DEPENDENCIES,
                  **({source:hashlib.sha256(source.read_bytes()).hexdigest()} if use_pathtracing else {})}):
             if use_pathtracing:
@@ -276,7 +280,7 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
                 self.assertEqual(hashlib.sha256((Path(folder)/name).read_bytes()).hexdigest(), digest)
             if use_pathtracing:
                 self.assertEqual(record['pathtracing_initial_settings'],renderer.SETTINGS)
-                self.assertEqual(record['pathtracing']['original_render_mode'],'RealTimePathTracing')
+                self.assertEqual(record['pathtracing']['original_render_mode'],native_render_mode)
                 self.assertEqual(record['pathtracing_actual_settings'],renderer.SETTINGS)
                 self.assertTrue(record['pathtracing_profile_verified'])
                 og.launch.assert_called_once_with(physics_dt=.008,device='cuda:3')

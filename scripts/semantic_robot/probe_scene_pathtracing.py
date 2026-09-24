@@ -1,4 +1,4 @@
-"""H54: bounded original scene with PathTracing/OptiX, unchanged sensor sizes."""
+"""H54b: accept the observed native pre-scene mode; final PT checks unchanged."""
 import argparse
 from pathlib import Path
 
@@ -12,8 +12,8 @@ def configure_profile():
     scene.PATH_TRACING = True
     base = scene.supervisor
     base.ENTRYPOINT = Path(__file__).resolve()
-    base.OUTPUT = Path('/mnt/nvme_tmp/robodojo_agentic_20260924/h54_pathtracing_v1')
-    base.RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h54_pathtracing_v1')
+    base.OUTPUT = Path('/mnt/nvme_tmp/robodojo_agentic_20260924/h54b_pathtracing_v1')
+    base.RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h54b_pathtracing_v1')
     base.PROFILE_SETTINGS = pathtracing.SETTINGS.copy()
     base.PROFILE_APP_CONFIG = pathtracing.APP_CONFIG.copy()
     base.RUNTIME_SETTINGS = {**base.RUNTIME_SETTINGS, **base.PROFILE_SETTINGS}

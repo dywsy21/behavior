@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 22:35（北京时间）：确认相机先1080再降尺寸的初始化浪费，H54b暂缓（Codex）
+
+- 新直接源码证据：冻结r1pro.yaml `VisionSensor.sensor_kwargs`为1080×1080；Evaluator先完整`og.Environment(configs=cfg)`，之后才instantiate RGBDFullResWrapper。现有chunk wrapper此时逐相机加depth，并将head设720、腕设480。因此H53系列机器人初始化先承受三路1080缓冲，之前“保持原三相机720/480”只约束最终捕获，**不能据此推定启动期间已是最终分辨率**；更正此前未区分两阶段的描述。
+- H54b窄复审/54 CPU已过但未部署/启动，先保存为就绪候选。优先H55只CPU设计：在相机创建前按机器人元数据配置最终RGB-D尺寸，并让wrapper只校验、不重建live camera；保留官方scene/reset/load/物理、最终三路观测和原共享资源门。先核真实per-sensor配置机制/独审/新单次预算，不同时改renderer或放宽额度，四训练不动。
+
+### 2026-09-24 22:32（北京时间）：H54b修正原生前置mode断言，仍CPU/待独审（Codex）
+
+22:33：54目标CPU/diff通过，窄修后独审待；未提交GPU。
+
+- H54负例已固定8f965be/全8件4SHA。仅将实际观察到的合法RaytracedLighting加入前置值集合，不将可变setting当原构造身份证据；具体native writer无日志证明，如实未定。来源/alias/实际空scene/无viewer/one-shot、最终PT十项在scene前后及捕获后的严格检查不变，unknown仍拒绝。
+- H54b另登记一次原600s/4096主512辅助3072余量/原三相机物理冷runtime/0控制模型训练，入口同文件、新`h54b_pathtracing_v1`；测试及修后独审先行，未部署/提交GPU，四训练保留。详见H54报告后继段，非显存加额重跑。
+
 ### 2026-09-24 22:27（北京时间）：H54空sim前置mode检查失败，未加载任务（Codex）
 
 22:29归档闭合：全8件本地`h54_pathtracing_bundle_v1`/4主SHA核同，42资源样本四训练恒73644，主卡峰仅597MiB增量。不是OOM/显存门；factory/既有chunk wrapper/官方Evaluator无mode赋值，继续查native设置来源。未追加GPU。
