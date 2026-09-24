@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 11:39（北京时间）：转入用户新任务Z-01（Codex）
+
+用户要求Zetta公开演化Critic/Recovery＋冻结G0.5接入BEHAVIOR；旧agentic VLM目标保持暂停，不自动续H44/H09。新任务从最新main `33677bd`建独立`feat/zetta-g05-20260924`，进度见`/home/wsy/behavior_worktrees/zetta-g05-20260924/docs/plan.md`。上游固定`1fee179644d52c32fa5a7728751cf0853a29b9c0`。11:38只读核实robo四卡各占约73.7GB/利用率93–100%，均既有训练；先来源审计/CPU接入，不动训练、不启动新GPU负载。
+
+11:48实质结果：新分支`98a7a9d`完成23维G0.5协议/恢复清缓存边界及18 CPU测试；上游原版加载公开artifact报缺`generation`，实际1 critic/0 recovery、7个特权依赖。完整公开演化包尚不可得，四卡均xhz现有训练；0模型加载/训练/仿真，未测SR，不把CPU准备称完整接入。详细报告`/home/wsy/behavior_worktrees/zetta-g05-20260924/docs/experiments/2026-09-24-zetta-g05.md`，独立代码review进行中。等待用户补充公开bundle链接/另选明确的适配变体；旧H44/H09不续跑。
+
 每完成一项实质工作或出现状态变化，立即更新本区及相关待办；规则见[AGENTS.md](../AGENTS.md)。记录时间、负责人/任务ID、做了什么、真实结果与证据、剩余问题和下一步；不等整轮工作结束才补写，不以聊天消息代替落盘。
 
 ### 2026-09-18 22:32（北京时间）：G-AV1持续目标：agentic VLM官方完整任务成功率>0
