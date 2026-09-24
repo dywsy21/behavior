@@ -43,6 +43,20 @@ class FiniteProbeTests(unittest.TestCase):
             spec = copy.deepcopy(self.spec); spec[key] = value
             with self.subTest(key=key), self.assertRaises(ValueError): probe.validate_spec(spec)
 
+    def test_contract_repair_has_eight_calls_and_identical_frozen_cases(self):
+        repair = json.loads((REPO / "configs/semantic_robot/h50b_explicit_choice_probe.json").read_text())
+        probe.validate_spec(repair)
+        self.assertEqual(repair["max_calls"], 8)
+        self.assertEqual(repair["cases"], self.spec["cases"])
+        for key in (*probe.H50_RESOURCES, *probe.H50_MODEL_FIELDS):
+            self.assertEqual(repair[key], self.spec[key])
+        changed = copy.deepcopy(repair); changed["max_calls"] = 12
+        with self.assertRaises(ValueError): probe.validate_spec(changed)
+        changed = copy.deepcopy(repair); changed["cases"][0]["goal"]["target"] = "different object"
+        with self.assertRaises(ValueError): probe.validate_spec(changed)
+        changed = copy.deepcopy(repair); changed["non_torch_allowance_mib"] = 513
+        with self.assertRaises(ValueError): probe.validate_spec(changed)
+
     def test_case_contract_no_private_sources_free_uv_or_unpinned_fields(self):
         for key, value in (("view", "right_wrist"), ("format", "private"), ("capture", "../secret"),
                            ("source_run", "relative"), ("target_uv", [.4, .5])):
@@ -113,11 +127,15 @@ class FiniteProbeTests(unittest.TestCase):
             with self.assertRaises(ValueError): probe.validate_request(replace(request, allowed=(SurfaceChoice(),)))
             region = region_request(arguments["goal"], "head", arguments["raw"]["head"], binding)
             self.assertEqual(probe.validate_request(region), 32)
+            with self.assertRaisesRegex(ValueError, "Model-visible choices"):
+                probe.validate_request(replace(region, text=region.text.split("\nChoose exactly one")[0]))
             with self.assertRaises(ValueError): probe.validate_request(replace(region, allowed=region.allowed[:-1]))
             box = region_boxes(100, 100)[4]
             candidates = region_surfaces("head", box, arguments["depths"], arguments["model"], arguments["state"])
             surface = surface_request(arguments["goal"], "head", arguments["raw"]["head"], binding, box, candidates)
             self.assertEqual(probe.validate_request(surface), 32)
+            with self.assertRaisesRegex(ValueError, "Model-visible choices"):
+                probe.validate_request(replace(surface, text=surface.text.replace('{"candidate_id":null}', '{"candidate_id":99}')))
             with self.assertRaises(ValueError): probe.validate_request(replace(surface, images=surface.images[:2]))
             with self.assertRaises(ValueError): probe.validate_request(replace(surface, allowed=surface.allowed[1:]))
 

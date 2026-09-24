@@ -27,7 +27,7 @@ from PIL import Image
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 import probe_shared_vlm as shared
-from semantic_robot.v2.finite_localization import SelectionRequest, SelectionReply, bind_frame, locate_target
+from semantic_robot.v2.finite_localization import SelectionRequest, SelectionReply, bind_frame, locate_target, choice_suffix
 from semantic_robot.v2.grounding import validate_depth
 from semantic_robot.v2.harness import Goal
 from semantic_robot.v2.kinematics import RobotModel
@@ -44,6 +44,7 @@ H50_RESOURCES = {
 # This pins all model-file hashes and the EOS/quantization policy, not just a name.
 H50_MODEL_FIELDS = ("model", "revision", "model_files", "quantization", "chat_stop_policy")
 H50_MODEL_SHA256 = "4130b5766db85b08b80af4948b5aba272fb9e82405b654acc769467feb7b2e6f"
+H50_CASES_SHA256 = "5846788db1516fd08b8a341947466dbcd4320c3041cb99937260bfc328a257ea"
 
 
 def expected_files(case):
@@ -61,10 +62,11 @@ def expected_files(case):
 
 
 def validate_spec(spec):
-    if (spec.get("experiment") != "H50-finite-localization-v1" or spec.get("max_calls") != 12 or
+    limits = {"H50-finite-localization-v1": 12, "H50b-explicit-choice-contract-v1": 8}
+    if (spec.get("experiment") not in limits or spec.get("max_calls") != limits[spec["experiment"]] or
             spec.get("training_steps") != 0 or spec.get("simulator_resets") != 0 or
             spec.get("not_success_rate") is not True or spec.get("quantization") != shared.NF4_POLICY):
-        raise ValueError("Exactly the no-physics twelve-call H50 experiment required")
+        raise ValueError("Exact no-physics H50/H50b experiment and call limit required")
     shared.validate_resource_bounds(spec)
     for key, expected in H50_RESOURCES.items():
         if type(spec.get(key)) is not type(expected) or spec[key] != expected:
@@ -75,6 +77,11 @@ def validate_spec(spec):
     if digest != H50_MODEL_SHA256:
         raise ValueError("Frozen H50 model manifest or inference policy changed")
     cases = spec["cases"]
+    if spec["experiment"] == "H50b-explicit-choice-contract-v1":
+        case_digest = hashlib.sha256(json.dumps(cases, sort_keys=True,
+                                    separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+        if case_digest != H50_CASES_SHA256:
+            raise ValueError("H50b must retain the identical four preregistered H50 queries")
     if not isinstance(cases, list) or len(cases) != 4 or len({c["id"] for c in cases}) != 4:
         raise ValueError("Exactly four uniquely named frozen cases required")
     for case in cases:
@@ -167,7 +174,7 @@ def run(spec_path, output):
     shared.validate_model_files(Path(spec["model"]), spec["model_files"])
     prepared = [load_case(case) for case in spec["cases"]]
     output.mkdir(parents=True, exist_ok=False)
-    result = {"status": "running", "not_success_rate": True, "success_rate": None,
+    result = {"status": "running", "experiment": spec["experiment"], "not_success_rate": True, "success_rate": None,
               "simulator_resets": 0, "training_steps": 0, "pid": os.getpid(), "calls": [], "cases": [],
               "source_commit": subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
               "spec_sha256": shared.sha(spec_path)}
@@ -258,15 +265,20 @@ def run(spec_path, output):
             result["cases"].append(row); save("progress.json")
             # A paired baseline sees the same raw head and target, not the
             # candidate grids. Its answer is recorded but never fed forward.
-            request = baseline_request(arguments, binding)
-            reply = choose(request)
-            try:
-                if result["calls"][-1]["hit_token_cap"]:
-                    raise ValueError("Truncated baseline output")
-                row["baseline"] = {"schema_valid": True,
-                    "evidence": shared.parse_static_location(reply.text, "static_head_raw_v1")}
-            except ValueError as error:
-                row["baseline"] = {"schema_valid": False, "error": str(error)}
+            if spec["experiment"] == "H50-finite-localization-v1":
+                request = baseline_request(arguments, binding)
+                reply = choose(request)
+                try:
+                    if result["calls"][-1]["hit_token_cap"]:
+                        raise ValueError("Truncated baseline output")
+                    row["baseline"] = {"schema_valid": True,
+                        "evidence": shared.parse_static_location(reply.text, "static_head_raw_v1")}
+                except ValueError as error:
+                    row["baseline"] = {"schema_valid": False, "error": str(error)}
+            else:
+                # Reuse H50's published baseline for analysis only. No old
+                # answer is read by this worker or included in model inputs.
+                row["baseline"] = {"status": "not_rerun", "reference": "H50-finite-localization-v1"}
             target = locate_target(**arguments, choose=choose, deadline=deadline)
             row.update(status="complete", localization=target.receipt,
                        evidence=asdict(target.for_frame(arguments["frame_id"], arguments["goal"], arguments["raw"],
@@ -305,6 +317,8 @@ def validate_request(request):
         raise ValueError("Bounded canonical choices including abstention required")
     if request.phase == "region" and request.allowed != (SurfaceChoice(), *(SurfaceChoice(i) for i in range(9))):
         raise ValueError("Exactly nine regions plus abstention required")
+    if not request.text.endswith(choice_suffix(request.allowed)):
+        raise ValueError("Model-visible choices differ from constrained-decoder choices")
     return 32
 
 

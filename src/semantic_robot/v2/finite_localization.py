@@ -149,6 +149,11 @@ class LocatedTarget:
         return self.evidence
 
 
+def choice_suffix(allowed):
+    """The choices seen by the model must equal those enforced by decoding."""
+    return "\nChoose exactly one JSON line:\n" + "\n".join(choice.text() for choice in allowed)
+
+
 def region_request(goal, view, raw, binding):
     original = Image.fromarray(raw).copy()
     guide = original.copy()
@@ -163,6 +168,7 @@ def region_request(goal, view, raw, binding):
                        "grid": "3 rows x 3 columns, row-major IDs 0..8",
                        "region_is_not_object_detection": True})
     allowed = (SurfaceChoice(), *(SurfaceChoice(i) for i in range(9)))
+    text += choice_suffix(allowed)
     return SelectionRequest("region", binding, REGION_SYSTEM, text, (original, guide),
                             ("CURRENT_" + view.upper() + "_RAW",
                              "CURRENT_" + view.upper() + "_REGION_GRID_NOT_OBJECT_LABELS"), allowed)
@@ -215,6 +221,7 @@ def surface_request(goal, view, raw, binding, box, candidates):
     labels = tuple("CURRENT_" + view.upper() + suffix for suffix in
                    ("_RAW", "_CROP_LOCATION_NOT_OBJECT_BOX", "_CROP_RAW", "_SURFACE_CANDIDATES_NOT_OBJECT_LABELS"))
     allowed = (SurfaceChoice(), *(SurfaceChoice(c["id"]) for c in candidates))
+    text += choice_suffix(allowed)
     return SelectionRequest("surface", binding, SURFACE_SYSTEM, text,
                             (original, overview, crop, guide), labels, allowed)
 

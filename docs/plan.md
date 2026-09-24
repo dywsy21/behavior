@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 19:53（北京时间）：H50人工全审不通过，H50b仅修显式选项契约（Codex）
+
+19:54补充：H50b窄独审闭合、75 CPU通过；H50本地12条call回执与result一致，全部28图原生/实际320像素指纹均核同。准备固定新Git/远端CPU后单次复验，不改原82b7ef0运行源。
+
+- 全部12原始输出、三张当前RAW、四裁剪候选图已本人审。三个可见目标的区域选择合理，但表面都错：radio选10桌面（6/7在radio）、把手选5门面（该稀疏网格根本未覆盖细把手）、垃圾桶选5地面（2在桶内壁）；不可见plate还误选0墙面。自由UV也不可靠，但plate基线正确弃权。不能部署，未获得定位/官方SR提升。
+- 完整本地`h50_shared_bundle_v1`，result SHA`8b51daa0b653d740c9fe76ddbae422b552070210301c3a9eecd5e772d629121d`、supervisor SHA`6957ebaef7f75b7462f5d27867ecbd3988085bfb5a42fa675debec44abc57d8a`双端核同；四原训练均仍各73644MiB。详细审计见H50报告。
+- 确认工程缺口：新locator要求“列出的JSON”，实际text没有候选列表，而旧refinement会显式列出。已给region/surface添加与decoder严格相同的完整JSON选择（含null），加缺失/错列表拒绝测试；75 CPU过、窄独审待。H50b只作一次同四query契约复验、最多8finite，不重跑基线、不加载旧答案、0reset/训练，原模型/资源/600/900与候选算法不变。配置`h50b_explicit_choice_probe.json`，尚未GPU；不是继续无目的提示搜索，不先把失败都归因于遗漏。
+
+### 2026-09-24 19:48（北京时间）：H50全部请求完成，尚不部署（Codex）
+
+- 原3454291/3454299已exit0；worker108.580s/监管124.841s，采样自有峰值4534MiB/最低free2950MiB、退出GPU2恢复7489MiB且原训练3294348仍73644MiB。0新物理/训练/SR。全部12调用已完成，不能把格式通过当定位通过。
+- 初读发现不可见餐盘也被有限选择指向图像左上背景，radio/垃圾桶选点疑似偏离；全包正在取回`artifacts/agentic-vlm-goal-20260918/h50_shared_bundle_v1`，逐项人工审后再给完整判断，不上线。另定位到请求文字要求“选列出的JSON”但H50探针只把allowed传入解码器，未把列表呈现给模型，正做传输契约核验；不先假定所有语义错误都由此造成。
+
 ### 2026-09-24 19:45（北京时间）：H50有限区域配对探针运行中（Codex）
 
 - 固定`82b7ef0`、双端73 CPU/修后独审过。唯一launch UTC11:45:12.591784、supervisor3454291，spec SHA`da4ce6dc8d84fd316cda5306d9440eaa7721d36fa8f8a708a4f092dda419359e`；输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h50_finite_localization_v1`及同stem launch/supervisor/log，新cache`robodojo_vlm_runtime_20260924/h50`。

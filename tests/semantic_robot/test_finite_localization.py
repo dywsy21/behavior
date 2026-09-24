@@ -127,6 +127,20 @@ class FiniteLocalizationTests(unittest.TestCase):
         self.assertNotIn("point_base_m", second.text)
         self.assertNotIn("done_when", second.text)
 
+    def test_model_text_contains_exact_decoder_choices_including_abstention(self):
+        self.run_locator([7, 5])
+        for request in self.requests:
+            header, choices = request.text.split("\nChoose exactly one JSON line:\n")
+            self.assertEqual(json.loads(header)["target"], self.goal.target)
+            self.assertEqual(choices.splitlines(), [choice.text() for choice in request.allowed])
+            self.assertEqual(choices.splitlines()[0], '{"candidate_id":null}')
+        # Depth holes preserve original IDs; absent points must not be offered.
+        candidates = [{"id": 2, "pixel_xy": [45, 45]}, {"id": 11, "pixel_xy": [61, 61]}]
+        request = surface_request(self.goal, "head", self.raw["head"], self.binding(),
+                                  region_boxes(100, 100)[4], candidates)
+        self.assertEqual(request.text.split("\nChoose exactly one JSON line:\n")[1].splitlines(),
+                         ['{"candidate_id":null}', '{"candidate_id":2}', '{"candidate_id":11}'])
+
     def test_binding_rejects_other_capture_goal_camera_depth_q_or_grip(self):
         result = self.run_locator([4, 5])
         with self.assertRaises(ValueError):
