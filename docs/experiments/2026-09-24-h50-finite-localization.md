@@ -1,6 +1,6 @@
 # H50：有限区域与表面选择，替代小VLM自由坐标
 
-Owner：Codex。H50已完成且人工语义审不通过，不部署；正在准备一次输出选项契约修复H50b。没有新的完整成功率。
+Owner：Codex。H50/H50b均已完成；选项契约修复带来局部改善，但定位仍不可靠，不部署。没有新的完整成功率。
 
 ## 假设与接口
 
@@ -58,7 +58,7 @@ H48/H49发现4B能识别红白收音机，但自由UV会落在它上方的桌面
 
 本地完整包`artifacts/agentic-vlm-goal-20260918/h50_shared_bundle_v1`。result SHA`8b51daa0b653d740c9fe76ddbae422b552070210301c3a9eecd5e772d629121d`、supervisor SHA`6957ebaef7f75b7462f5d27867ecbd3988085bfb5a42fa675debec44abc57d8a`已双端一致。没有新训练/模拟器reset，所有模型答案均未进入actor。
 
-## H50b：一次实际输出契约修复复验（运行中）
+## H50b：一次实际输出契约修复复验（已完成）
 
 发现可定位实现缺口：region/surface提示要求从列出的JSON中选，但新请求text没有列出JSON，只有解码器收到了allowed；旧policy会明确列出。补`choice_suffix`让模型可见文本包括与decoder完全相同的候选（含null），传输前检查一致；缺失/错列表反例拒绝。不改原图、网格、点生成、语义描述、解码grammar、模型或控制阈值。不能先假定这就是全部错误的原因。
 
@@ -66,7 +66,22 @@ H48/H49发现4B能识别红白收音机，但自由UV会落在它上方的桌面
 
 75 CPU过（21核心/旧affordance＋10探针＋44旧共享），修后窄独审通过。先核这一工程遗漏，结果后再决定定位工具设计；不增加网格密度或针对四图手调位置来制造正确率。H50本地12条call与result逐项一致、全部28图原生及实际320像素SHA均核同。
 
-实际源码`3b66f6532ecc3d01705ffd1e656e7bf317f075a6`，robo独立`git_worktrees/shared_small_vlm_3b66f65`；双端75 CPU和四输入prepare通过。唯一launch UTC11:55:44.099579、supervisor3457820，spec SHA`586b3966d1441fdf36fc0c7129fc9b7bf2a291ca93a47deb4ef80323e35820ca`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h50b_explicit_choice_v1`及同stem回执/log，cache `robodojo_vlm_runtime_20260924/h50b`。完整结果待。
+实际源码`3b66f6532ecc3d01705ffd1e656e7bf317f075a6`，robo独立`git_worktrees/shared_small_vlm_3b66f65`；双端75 CPU和四输入prepare通过。唯一launch UTC11:55:44.099579、supervisor3457820/worker3457828，spec SHA`586b3966d1441fdf36fc0c7129fc9b7bf2a291ca93a47deb4ef80323e35820ca`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h50b_explicit_choice_v1`及同stem回执/log，cache `robodojo_vlm_runtime_20260924/h50b`。
+
+最终exit0，worker83.929s/监管99.308s，峰4514MiB/最低free2970MiB、退出7489MiB，四训练仍在。7/8上限调用：plate第一层null而没有发第2层。首region48.479s含冷编译，后热生成0.701–0.826s，不能拿H50的热region与此首调用比较速度，也不是机器人Hz。
+
+| 目标 | H50→H50b | 人工复核 |
+| --- | --- | --- |
+| radio | region7/point10→region7/point6 | 桌面变到机身边缘；不是稳健内部接触点或抓姿认证 |
+| refrigerator handle | region5/point5不变 | 仍门面，候选不覆盖细把手，应弃权却未弃权 |
+| plate not visible | region0/point0→region null | 正确拒绝；接口修复有局部效果 |
+| trash can | region7/point5不变 | 仍桶外地面，不可用 |
+
+本人核全部输出及对应RAW/候选图。7个可配对调用的原生与缩放图指纹、system、allowed逐项相同，实际text恰仅增加候选JSON suffix。该证据支持修复在这几条开发请求上有作用，但不足以证明50任务泛化；不能把radio边缘当成功抓取，或把plate的安全弃权算完整任务成功。
+
+完整包`artifacts/agentic-vlm-goal-20260918/h50b_shared_bundle_v1`，7条call与result一致、20图原生与320像素hash全部一致。result SHA`eea25744684e0b2949f3b293d355a458bc8dce2a545b103f458d80a16bb8e64a`，最终supervisor SHA`db3cd5f4ed7200d6134bfa0c60433e4b23b06b3fbd556474749f1b6ffd72ce0b`双端核同；19:57读取的running监管SHA已被终态取代，不能作最终证据。
+
+本组到此结束，不部署，不继续调这四图的提示/网格。下一H51先做原生协议CPU工具，异质新输入与GPU预算另行冻结。
 
 ## 后续协议线索（尚未测试）
 

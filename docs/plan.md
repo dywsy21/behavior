@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 20:01（北京时间）：H50/H50b收尾，完整证据通过；下一H51原生定位协议CPU（Codex）
+
+- H50b监管已exit0/99.308s（worker83.929s），峰4514MiB/最低free2970MiB、退出GPU2恢复7489MiB。全包本地`artifacts/agentic-vlm-goal-20260918/h50b_shared_bundle_v1`，result SHA`eea25744684e0b2949f3b293d355a458bc8dce2a545b103f458d80a16bb8e64a`、最终supervisor SHA`db3cd5f4ed7200d6134bfa0c60433e4b23b06b3fbd556474749f1b6ffd72ce0b`双端一致；早先running监管SHA不是终态。7条call和20图原生/320像素全部核同，四原训练均在。
+- 本人逐图审核后，明确只支持两项开发态改善：plate正确弃权、radio由远离物体的桌面变到机身边缘；radio仍不是可靠内部接触点/抓姿，handle/trash仍错。7个可配对请求逐项验证同system/原图/缩放图/allowed，仅新增候选JSON文字；没有把执行数少一次或冷启动差异当精度/速度提升。候选未覆盖细把手、模型把桶外地面当目标两个问题依然存在。**不部署、不报告新完整SR，goal未完成。**
+- 关闭这四图的网格/提示迭代，不重跑H45–H50b。下一具体H51（尚未实现/未调用）：按官方Qwen原生0–1000 `point_2d`/`bbox_2d`写严格的单当前RAW定位工具，统一转换到原生传感器像素；先CPU测试非方图、边界、空检测、歧义、多框、重复键、frame绑定，bbox不能自动变成抓点/持有证明。随后另登记不同保存态的小测试，不能再次选这四query刷答案。公开深度/时序验证和原FM/H44执行器保持；模拟器共享显存仍未实测，不能降低旧门硬跑或动四训练。
+
+### 2026-09-24 19:58（北京时间）：H50b生成完成，显式选项改善弃权但非充分修复（Codex）
+
+- 原worker3457828 result已complete/83.929s、7/8上限调用（plate第一层null省一次）。radio由桌面ID10变ID6物体边缘，plate由背景0变正确null；冰箱把手和垃圾桶仍选ID5门面/地面，不以局部两项改变宣布定位已可靠。首region48.479s含冷编译，后热生成0.701–0.826s；不与H50热首region混比吞吐。
+- 初读监管尚running/采样峰4514MiB、最低free2970MiB，等待最终退出回执；完整包取回`h50b_shared_bundle_v1`，逐张像素核验/终态SHA待。0物理训练，仍不部署；后续应改定位工具/候选覆盖与语义验证，而不是为这四图再调网格或坐标。原H50及所有失败保留。
+
 ### 2026-09-24 19:56（北京时间）：H50b显式选项契约复验运行中（Codex）
 
 - 新固定`3b66f6532ecc3d01705ffd1e656e7bf317f075a6`已push/robo独立`git_worktrees/shared_small_vlm_3b66f65`，双端75 CPU/同四输入prepare/窄独审过。唯一launch UTC11:55:44.099579、supervisor3457820，spec SHA`586b3966d1441fdf36fc0c7129fc9b7bf2a291ca93a47deb4ef80323e35820ca`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h50b_explicit_choice_v1`及同stem回执/log，新cache`robodojo_vlm_runtime_20260924/h50b`。
