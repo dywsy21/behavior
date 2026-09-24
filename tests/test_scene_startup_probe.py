@@ -27,6 +27,7 @@ def profile():
     with patch.multiple(base, **{k: getattr(base, k) for k in keys}), \
          patch.object(scene, 'PATH_TRACING', False), patch.object(scene, 'DISABLE_VIEWER', False), \
          patch.object(scene, 'PRECONFIGURE_CAMERAS', False), patch.object(scene, 'CAMERA_PATH_TRACING_ALLOWED', False), \
+         patch.object(scene, 'WORKER_PREPARE', None), \
          patch.object(scene, 'CAMERA_RESOLUTION_PROFILE', 'full_v1'):
         scene.configure_profile()
         yield

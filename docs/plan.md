@@ -10,6 +10,26 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 00:04（北京时间）：H58全12图人工审闭合，H59私有热缓存CPU实现中（Codex）
+
+00:10修审闭合：H59独立复跑89/89/diff，路径/源不动/复制计入600s/旧profile均无阻塞；原582接口回归也过。准备固定Git/新远端worktree、同测/23依赖/缓存来源/实时GPU门后唯一launch，尚未启动。H58全部语义与负例报告一起提交，不以工程就绪当成功。
+
+00:08准备更新：H59作者89/89目标CPU/diff过（含8缓存/旧接口），独审中；未部署/新sim。H58原两PID均不存在，完整12 RAW检查保留，不重复模型调用。
+
+- H58完整19文件（7回执/log＋12 RAW）取回，result/supervisor/launch SHA双端核同，12 RAW像素SHA全与原输入一致；主agent逐张查看全部12。radio head紧框、fridge head框覆盖两把手未解左右、bin head/右腕覆盖可见桶；plate head与bin左腕正确无框。其余6腕图都把机器人近场壳体误判目标（0.48–0.75），不采用“高置信度即真目标”或“大框全拒绝”。原固定输出保留，不重刷阈值/prompt，尚未部署/无SR。
+- 下一定位需本体几何＋当前proprio/RGB-D的self-exclusion，已有head区域提议仍不等于接触面；不得用对象GT。详见H58报告全12表。CPU 5.225–6.466s/图不当GPUHz。
+- H59只改缓存起点：新`probe_scene_warm_cache.py`/`shared_cached_runtime.py`复制已退出H57的4类缓存，原源保持只读，manifest4170件/7715899668B/SHA730cba12…45f5c已只读核；排除含进程锁的DerivedDataCache、Kit DB、临时USD、生成Python、appdata。仍H57三RGB-D/physics/PT/600s（复制也计入）/原显存，0actor模型训练。CPU负例/独审待，未启动。
+
+### 2026-09-25 00:01（北京时间）：H58 CPU十二查询完成，逐图语义验收中（Codex）
+
+- 原3510163/3510168 exit0且reaped，监管84.558s/worker83.238s、加载12.671s、12/12输出、CUDA未初始化；四原训练仍各73644MiB，无新GPU。三head有检测/缺席plate head无框，但多腕图出现近全画面框，不能先判可部署。
+- 完整RAW/回执取回和全12人工审下一；初步每调用5.225–6.466s，仅CPU静态耗时、不是GPU/闭环Hz或SR。保留固定阈值/全部负例，不按这12条调参重刷。H57缓存只读manifest在核，尚无新仿真。
+
+### 2026-09-24 23:59（北京时间）：H58固定12 RAW的CPU检测实测运行中（Codex）
+
+- 冻结`01e60457f14c5533de4f9493024fba1c52689e5a`/robo独立`git_worktrees/text_detector_01e6045`，双端23 CPU/修后独审/全部9权重SHA与12原始像素SHA prepare过。唯一launch UTC15:58:39.789044，supervisor3510163；run `h58_text_detector_cpu_v1`、runtime `robodojo_vlm_runtime_20260924/h58_cpu`创建。
+- 12查询/600s＋15s自有清理、CPU68–71/4线程/FP32/0CUDA、无新sim/训练。实际输出/时间/全12图人工审待，不把提交当检测可用或SR；不重复提交。H57已经退出、四原训练保留。
+
 ### 2026-09-24 23:58（北京时间）：H58修后独审闭合，准备远端CPU单次测试（Codex）
 
 - 原manifest与hard timeout问题及复审补充的TERM孤儿窗口均修：Popen归属前信号遮罩、只清理自有worker、15s清理、异常仍写终态并恢复handler。双人23/23目标CPU/diff过，未部署/推理；下一固定Git/robo新worktree、原12输入真实SHA prepare后唯一launch，仍0GPU/训练/模拟器。

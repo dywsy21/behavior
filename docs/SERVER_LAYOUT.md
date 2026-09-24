@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 00:04北京时间H58全包闭合：** 本地`artifacts/agentic-vlm-goal-20260918/h58_text_detector_bundle_v1`，19文件/12 RAW像素全核，三主要JSON SHA双端一致；3510163/3510168已退出。原source/run/runtime与659MiB模型全保留，检测器未在线部署。H59拟新20260925 run/runtime目录，当前仅CPU源码，旧H57四缓存4170件/7.19GiB只读核定，不改原缓存/四训练。
+
+**2026-09-24 23:59北京时间H58提交：** 冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/text_detector_01e6045`/01e60457f14c5533de4f9493024fba1c52689e5a；唯一launch UTC15:58:39.789044/supervisor3510163。输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h58_text_detector_cpu_v1`、独立runtime `/mnt/nvme_tmp/robodojo_vlm_runtime_20260924/h58_cpu`已创建；仅CPU12查询，0新GPU/模拟器/训练，实际结果待。不可热改源码或重复提交。
+
 **2026-09-24 23:55北京时间H57归档闭合：** 全8件约4.8MiB本地`artifacts/agentic-vlm-goal-20260918/h57_reduced_cameras_bundle_v1`，全部8SHA双端核同/736样本已核。原73c1123/source/run/runtime保留；不重复启动，后继仅只读检查私有缓存，四训练不动。H58运行尚未创建。
 
 **2026-09-24 23:50北京时间H57终态：** 3503152/3503159均退出，600s活动墙钟停止，监管602.342s/-15；未完成RGB-D/外层reset。原73c1123 source、run/runtime均保留；完整8件向本地`artifacts/agentic-vlm-goal-20260918/h57_reduced_cameras_bundle_v1`归档中，目录存在不当完成。GPU仅四原训练/各73644MiB，空闲恢复。H58全9模型SHA已核，运行目录尚未创建，代码修审中。

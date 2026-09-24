@@ -44,16 +44,18 @@ PATH_TRACING = False  # H54 is a separate, image-distribution-changing profile.
 PRECONFIGURE_CAMERAS = False  # H55 moves final config before sensor creation.
 CAMERA_PATH_TRACING_ALLOWED = False  # Only the separately registered H56 opts in.
 CAMERA_RESOLUTION_PROFILE = 'full_v1'  # H57 alone selects shared_v1 before creation.
+WORKER_PREPARE = None  # H59 only: copied stopped-run caches inside the worker budget.
 
 
 def configure_profile():
     """Called only by this immutable CLI, never as an import side effect."""
-    global DISABLE_VIEWER, PATH_TRACING, PRECONFIGURE_CAMERAS, CAMERA_PATH_TRACING_ALLOWED, CAMERA_RESOLUTION_PROFILE
+    global DISABLE_VIEWER, PATH_TRACING, PRECONFIGURE_CAMERAS, CAMERA_PATH_TRACING_ALLOWED, CAMERA_RESOLUTION_PROFILE, WORKER_PREPARE
     DISABLE_VIEWER = False
     PATH_TRACING = False
     PRECONFIGURE_CAMERAS = False
     CAMERA_PATH_TRACING_ALLOWED = False
     CAMERA_RESOLUTION_PROFILE = 'full_v1'
+    WORKER_PREPARE = None
     supervisor.PROFILE_SETTINGS = {}
     supervisor.PROFILE_APP_CONFIG = {}
     supervisor.RUNTIME_SETTINGS = {**supervisor.SETTINGS, **supervisor.GPU_SETTINGS}
@@ -235,6 +237,8 @@ def scene_worker():
     started = time.monotonic()
     created_app = None
     try:
+        if WORKER_PREPARE is not None:
+            WORKER_PREPARE(record)
         sys.path.insert(0, str(ADAPTER))
         sys.path.insert(0, str(supervisor.REPO / 'src'))
         import numpy as np
