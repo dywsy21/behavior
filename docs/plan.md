@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 22:26（北京时间）：H54唯一PathTracing/OptiX场景检查运行中（Codex）
+
+- 短暂3480326在只读查身份前已自行退出，用途未确认；22:24:55及后续严格资源门仅原四训练，各73644MiB。未发信号/增加白名单；预定目录核实不存在后才唯一launch。
+- 固定7e706be67514c261aef94917b1bfa561478f2f80/远端`shared_scene_7e706be`，双端52 CPU、独审/16依赖过；唯一launch UTC14:26:05.076513，supervisor3485875，run/runtime `h54_pathtracing_v1`。原600s/显存门/三相机/0前缀actor模型训练；真实图像/资源/终态待，不重复提交，四训练不动。
+
 ### 2026-09-24 22:24（北京时间）：H54双端52 CPU过，实时未知GPU进程门阻止启动（Codex）
 
 - 固定7e706be67514c261aef94917b1bfa561478f2f80已push/robo独立`git_worktrees/shared_scene_7e706be`；双端52 CPU、修后独审/16依赖过。启动前GPU0新PID3480326 C+G/39MiB，非注册四训练，原严格身份门拒绝；**未调用launch、无H54 run/runtime或GPU worker**。
