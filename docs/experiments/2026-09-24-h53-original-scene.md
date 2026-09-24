@@ -47,3 +47,11 @@ H52b已证明显式GPU3/禁多卡/低纹理缓存的空Kit可以启动；还不�
 - 实际run尚未启动，以上预定目录不当作已存在；实际结果和源码commit启动后追加。
 
 21:37北京时间实际启动：源码`ab01d2777084cfa8ccf72a56748a0fb6a296b92d`，独立`git_worktrees/shared_scene_ab01d27`。双端36 CPU、修后独审、依赖与实时资源门过；上述新run/runtime现已创建。唯一launch UTC13:37:43.218613，supervisor3469426，真实场景与终态待验。
+
+21:43中间诊断：worker3469433已完成Kit构造/8设置读回、正在首次`RtPso async group`编译；312.292s样本主卡自有948MiB/free6511，尚无外层reset完成或RGB-D。进程约3核CPU持续工作，因此暂不能把等待认作死锁/OOM或模型失败。[NVIDIA 5.1安装说明](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/install_container.html)说明首次shader缓存会延长启动，[官方缓存说明](https://docs.omniverse.nvidia.com/ovas/latest/architecture/shader-cache.html)说明驱动需先编译scene shaders；这只解释候选瓶颈，不保证本run在预算内完成。维持600s原预算，保留自身新缓存以便终态后诊断，不动共享缓存/安装。
+
+21:45终态：监管469.196490910s，worker -15，错误`Shared GPU reserve would be violated`；最后采样467.181870019s GPU3 free2984低于3072MiB。主卡自有进程4084MiB不等于整卡新增：整卡从73664升78169，新增4505MiB，也超过4096新增上限；余量门先报错。仍在loading_scene，外层reset/load事件空、0RGB-D、0actor/model/train。四原训练均保留/退出free7489/7489/7489/7488MiB。完整证据与内存来源诊断待，不直接提高额度或宣称无法在任何配置共存。
+
+21:51完整归档：全部8件在本地`artifacts/agentic-vlm-goal-20260918/h53_original_scene_bundle_v1`，604资源样本与完整kit/worker日志已审。launch SHA`a0d05b2ed9fbfca1e2816ede28232bdf84890d34dc5654946af05cbab7114efd`、supervisor`68fc9c7fe2f1696b5af39797f521c441b2703b38e310b1a5cc2820ebbd1c195d`、worker`8cf2b19213738cac0e83b37b8106eda2ec71d96b9d211dea3f795784178de816`、kit.log`f066feeb7da04c36fcf8bc54acd6c231d815518a869ddfcc739497c696935431`均双端核同。实际GPU3唯一active，llvmpipe跳过，无`[Error]`；一OG launch/一app construction/两个核验copy no-op，无安装写入。GPU0/1/2/3自有峰456/416/416/4084MiB，整卡增量峰470/422/422/4505，最低free7018/7068/7068/2984MiB。
+
+根因候选而非完成归因：Kit日志305.423s开始默认Replicator view，370.252s警告A100不支持当前DLSS-RR正确降噪，392.320s挂接rgb，392.420s才出现OG欢迎页，随后加载scene。监管321.542s增量过1GiB、386.830s约2.8GiB、408.753s约3.6GiB，再467.182s触线。已核冻结`simulator.py:543`：`gm.RENDER_VIEWER_CAMERA=True`时，headless仍初始化1280×720旁观者VisionSensor；这不是actor的三路相机。官方Evaluator目录未引用此viewer。下一H53b仅检验关闭这一路是否节省足够资源，保留物理、actor原分辨率及所有显存/600s门；不把时间关联直接当全部显存的精确分摊，也不同时更改DLSS或提高预算。

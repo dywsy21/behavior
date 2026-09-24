@@ -10,7 +10,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 21:45（北京时间）：H53原始场景加载被显存余量门停止（Codex）
+
+21:51归档闭合：完整8文件已本地`h53_original_scene_bundle_v1`，604样本/四主SHA双端核同/全log已审，GPU3实际active、两个copy no-op核真。静态新根因候选：OG headless仍默认创建1280×720旁观者相机，在任务加载前就初始化RT渲染；不属于actor三相机。下一H53b只关闭`gm.RENDER_VIEWER_CAMERA`，原head720/腕480、物理、显存门与600s不变，先CPU/独审再单次检查；无提升结论/尚未实现启动，旧run全保留。
+
+- supervisor3469426/worker3469433已结束，监管469.196s、worker -15；末采样467.182s GPU3 free2984<3072MiB，自有4084MiB但整卡相对基线新增4505MiB（两者不可混用）。仅到loading_scene，外层reset/load事件0，RGB-D/actor/model/train均0；不是任务SR失败、不是已获相机可用结论。
+- 四原训练3294346–3294349仍各73644MiB，退出free7489/7489/7489/7488MiB；只停自有worker。既有source/run/runtime保留，正在归档全日志/资源样本并查几何/纹理/初始化增长；不直接提高额度重跑。完整goal未完成。
+
 ### 2026-09-24 21:37（北京时间）：H53唯一原始场景检查运行中（Codex）
+
+21:43只读定位：H53仍首次RtPso异步编译（日志已约190s），进程CPU持续运行，主卡约948MiB/四训练保留，尚无reset/相机。不临时增600s上限。等待中另核现有press接口：`grounded_harness.py:429/577`对非pick仍用grasp closing center作距离；`harness.py:288`仅open/close类提供夹爪准备动作。故消除radio强制pick提示后还须验证通用press接触点/工具姿态，不能直接宣称现有press可用。仅静态风险，未改actor/新增GPU/物理或声称失败因果已证实。
 
 - 固定`ab01d2777084cfa8ccf72a56748a0fb6a296b92d`已push/robo独立`git_worktrees/shared_scene_ab01d27`；双端36 CPU、修后独审、13外部依赖及实时资源门过，四训练仍原PID/各73644MiB/各卡free7489。唯一launch UTC13:37:43.218613，supervisor3469426。
 - run/runtime `h53_original_scene_v1`，原始TRAIN138/seed0，一Session/600s/原512辅助4096主卡3072余量，0前缀/actor模型训练。场景/三RGB-D/退出结果待，不能把提交当通过；不重提/不动四训练。

@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 21:51北京时间H53证据闭合：** 完整8文件在本地`artifacts/agentic-vlm-goal-20260918/h53_original_scene_bundle_v1`，四主SHA双端一致；604样本已审。旧source/run/runtime及已生成的shader缓存均保留，无新H53b运行或目录；四原训练保留。
+
+**2026-09-24 21:45北京时间H53终态：** 3469426/3469433结束（worker -15），场景加载在主卡free2984MiB时触发3072余量门；469.196s，0外层reset/三路捕获。上条source/run/runtime保留为失败证据，不是活跃场景。四训练仍原PID/各73644，退出全卡free约7489MiB；小包归档中，勿删除已生成私有shader缓存。
+
 **2026-09-24 21:37北京时间H53提交：** 源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_scene_ab01d27`，supervisor3469426；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h53_original_scene_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h53_original_scene_v1`。一次600s原始场景/RGB-D检查、0模型训练前缀控制；四原训练保留，不热改源码/共享环境。实际完成/资源待验，不是已就绪常驻场景。
 
 **2026-09-24 21:09北京时间H52b终态闭合：** 3465781/3465792退出0，空Kit8 update/8设置/真实GPU3 active通过；自有峰454/416/416/568MiB，主卡最低free6891。全8文件本地`artifacts/agentic-vlm-goal-20260918/h52b_explicit_gpu_bundle_v1`，四SHA核同；四原训练均在/free恢复7489。source/run/runtime保留，不是常驻场景，未加载任务。
