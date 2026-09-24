@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 19:10（北京时间）：按最新Zetta请求复核Z-01，公开完整Recovery产物仍缺（Codex）
+
+- 本次只处理“冻结G0.5＋作者公开演化Critic/Recovery”，未继续H50或启动新agentic实验；旧goal未完成，不用历史目标覆盖最新请求。当前分支及Z-01分支均clean pull成功，origin/main仍`33677bd`；Z-01实现保持独立`feat/zetta-g05-20260924`、代码`963efcf`，未部署/未合main。
+- 上游fetch后main仍`1fee179`、另一公开分支`747be406`；两分支相关Critic/Recovery目录无差异，Releases无包。公开JSON仍只有1 critic/0 recovery，其Recovery名字无对应完整规则；公开执行框架需要外部`recovery_rules[].steps`，不能当作已演化产物。7项特权特征依赖也未解决。
+- 19:09:03只读robo确认四个xhz训练3294346–3294349均仍在，各73644MiB，四卡各free7489MiB；0发信号/环境修改/新模型/训练/仿真。G0.5＋OmniGibson能否安全共享仍未测，不从下午小VLM静态测试外推。缺包是独立阻塞，当前**效果未测，不是0%成功率**。
+- 沿用原21 CPU与修后独审，不重复完成的测试。完整新增复核在`/home/wsy/behavior_worktrees/zetta-g05-20260924/docs/experiments/2026-09-24-zetta-g05.md`及相邻`results/2026-09-24-zetta-recheck.json`；下一需要用户提供完整公开bundle链接，或明确改走自行构建的适配变体。未自建Recovery冒充作者成果、未启动演化campaign。
+
 ### 2026-09-24 18:58（北京时间）：H45–H49静态筛查收尾，全部证据已归档；goal未完成（Codex）
 
 - 重连后H49全包已完整本地`artifacts/agentic-vlm-goal-20260918/h49_shared_bundle_v1`，result/supervisor两SHA与远端一致（见下条）；自有探针全部结束，四原训练3294346–3294349仍各73644MiB。H49监管exit0/97.159s、峰值4534MiB/最低free2950MiB，最终GPU2 free7489MiB。44 CPU及各次独审通过，未改训练环境、未热改H44 actor、0新模拟器reset/训练。

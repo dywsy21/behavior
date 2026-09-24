@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+## 2026-09-24 19:09（北京时间）Z-01复核
+
+四个xhz训练3294346–3294349均仍在，各占73644MiB、运行20:25:59；四卡各free7489MiB。没有新的Zetta部署/服务/仿真run，代码仍仅在本地`/home/wsy/behavior_worktrees/zetta-g05-20260924`（实现963efcf）及Git实验分支；上游只读源码仍`/home/wsy/zetta-embodiment-upstream-20260924`（1fee179）。完整演化Recovery bundle未找到；G0.5＋OmniGibson共享当前余量未测，不借此调整现有训练。详细状态见plan最新Z-01记录。
+
 **2026-09-24 18:58北京时间最终核验：** H49监管exit0，所有本轮自有探针已退出；四训练3294346–3294349仍各73644MiB，GPU2回收后free7489MiB。H49全包现已完整在`artifacts/agentic-vlm-goal-20260918/h49_shared_bundle_v1`且两主SHA与远端一致，取代下方“空目录/待归档”的临时状态。远端各run/cache/源码不删；H50尚未启动、没有新VLM HTTP服务或模拟器。
 
 **2026-09-24 18:56北京时间H49收尾：** 远端result已明确worker3450194四回答完成/87.931s；取完整包/监管回执遇SSH banner超时。本地`artifacts/agentic-vlm-goal-20260918/h49_shared_bundle_v1`暂空，不是完整归档；保留远端及所有原run，禁止因断连重提。监管最终退出/最新GPU快照待只读重连核验。
