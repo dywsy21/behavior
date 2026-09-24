@@ -40,3 +40,5 @@ CPU72–75/4 Kit线程、纹理streaming0.01/16MiB、多GPU禁用/主GPU3不变�
 22:48更新：初审发现基类Wrapper的属性代理语义也参与receipt存储，已将`utils/python_utils.py` SHA `2d6ba4bc43b07a4e266f3b7048de2cd72efcb39f817acadeafb9488577a88869`纳入冻结和profile回归，总21外部依赖。原67目标CPU＋582接口回归通过，修后窄独审待；尚无GPU进程。
 
 22:49修后独审通过，独立67/67与diff检查过，无其他实质阻塞；按原预算进入Git固定/远端CPU及真实配置转换预检，不把mock通过当相机创建或显存通过。
+
+22:49实际启动：固定`4cd5b0adda144455e4c66495d050d26b001f9852`/远端`git_worktrees/shared_scene_4cd5b0a`，67远端CPU/21依赖/原YAML真实OmegaConf深复制与roundtrip/Hydra target解析均过（全程未导入torch/OG/Isaac），实时原四训练/显存门通过。唯一launch UTC14:49:25.195096，supervisor3489219，run/runtime现已创建；源不可热改，原预算不变，真正scene/三RGB-D/终态待。

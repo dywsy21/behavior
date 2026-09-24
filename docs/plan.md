@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 22:49（北京时间）：H55唯一原场景检查运行中（Codex）
+
+- 固定`4cd5b0adda144455e4c66495d050d26b001f9852`/robo独立`git_worktrees/shared_scene_4cd5b0a`，双端67 CPU、582本地接口、修后独审/21依赖及实际原YAML→OmegaConf→Hydra target CPU门通过。唯一launch UTC14:49:25.195096，supervisor3489219；run/runtime `h55_preconfigured_cameras_v1`现已创建。
+- 原TRAIN138/seed0/600s/4096主512辅助3072余量、0actor前缀模型训练；只将3相机首次配置为最终RGB-D，不启PathTracing、不改physics。真实图像/初始化及资源结果待，不重复提交；四原训练保留，完整SR仍未获得。
+
 ### 2026-09-24 22:42（北京时间）：H55相机创建配置前移已接线、CPU验证中（Codex）
 
 22:45更新：67项本地CPU及完整H55 mock worker/原reset链过，独审进行中；单次原600s/显存预算已登记`experiments/2026-09-24-h55-preconfigured-cameras.md`。未部署/提交GPU。
