@@ -12,6 +12,8 @@
 
 ### 2026-09-24 11:39（北京时间）：转入用户新任务Z-01（Codex）
 
+11:54交接：独立review指出并已修正跨tick消费旧缓存问题，最终21 CPU/修后独审通过，无GPU部署；完整公开演化包仍缺且四卡现有训练占用。新分支已同步，CPU准备不等于完整接入/成功率。下一等待完整bundle链接或用户明确选择自行构建适配版；不自动恢复旧goal或启动新演化/训练。
+
 用户要求Zetta公开演化Critic/Recovery＋冻结G0.5接入BEHAVIOR；旧agentic VLM目标保持暂停，不自动续H44/H09。新任务从最新main `33677bd`建独立`feat/zetta-g05-20260924`，进度见`/home/wsy/behavior_worktrees/zetta-g05-20260924/docs/plan.md`。上游固定`1fee179644d52c32fa5a7728751cf0853a29b9c0`。11:38只读核实robo四卡各占约73.7GB/利用率93–100%，均既有训练；先来源审计/CPU接入，不动训练、不启动新GPU负载。
 
 11:48实质结果：新分支`98a7a9d`完成23维G0.5协议/恢复清缓存边界及18 CPU测试；上游原版加载公开artifact报缺`generation`，实际1 critic/0 recovery、7个特权依赖。完整公开演化包尚不可得，四卡均xhz现有训练；0模型加载/训练/仿真，未测SR，不把CPU准备称完整接入。详细报告`/home/wsy/behavior_worktrees/zetta-g05-20260924/docs/experiments/2026-09-24-zetta-g05.md`，独立代码review进行中。等待用户补充公开bundle链接/另选明确的适配变体；旧H44/H09不续跑。
