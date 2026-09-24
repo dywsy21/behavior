@@ -2,6 +2,8 @@
 
 ## 2026-09-24 Z-01只读检查（覆盖下面旧活跃进程快照）
 
+19:09:03（北京时间）复核：相同xhz训练PID3294346–3294349均仍在，各占73644MiB、已运行20:25:59；四卡各空7489MiB。仍无服务器Zetta部署/服务/仿真run，未改环境/源码/训练。G0.5＋OmniGibson能否共享此余量尚未验证；完整公开演化bundle仍缺，未为缺包任务抢占GPU。
+
 11:38（北京时间）GPU0–3均有账号xhz的训练PID3294346–3294349，各占约73.7GB，利用率93–100%，不能按9月14/22日记录当空卡。Zetta工作仅在本地独立`/home/wsy/behavior_worktrees/zetta-g05-20260924`；上游只读`/home/wsy/zetta-embodiment-upstream-20260924`，**尚无服务器Zetta部署/服务/仿真run**。主权重目录只读确认有`/mnt/sdc1/robodojo/checkpoints/G05/g05-base`，未加载/选作BEHAVIOR正式对照；具体模型版本须另核验。现有源码/环境/训练不改。
 
 更新：2026-09-13。本文件中的服务器路径属于`ssh robo`，不是本地路径。**源码走GitHub push/pull，数据、权重、环境、完整实验结果不走Git。**

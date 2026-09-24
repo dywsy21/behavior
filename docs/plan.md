@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 19:10（北京时间）：Z-01最新公开产物与训练资源复核，效果仍未测（Codex）
+
+- 本次按用户最新“冻结G0.5＋公开演化Critic/Recovery”请求处理；本分支clean pull成功，代码仍`963efcf`，不恢复旧agentic实验。fetch核实上游main仍`1fee179`、另一公开分支`747be406`，相关Critic/Recovery目录无差异，Releases无包；没有找到被引用的完整promoted bundle。
+- 已区分公开Recovery执行框架和演化产物：框架依赖外部`recovery_rules[].steps`，并不补齐现有JSON的缺失Recovery；Critic的7项特权特征依赖不变。未用工具原语/测试fixture/重调G0.5冒充原Recovery，也未启动自己的演化campaign。
+- 19:09:03只读robo：xhz训练3294346–3294349全在，各73644MiB，四卡各空7489MiB；没有停止训练、改环境或启动模型/模拟器。G0.5＋OmniGibson共享此余量的可行性未验证，不将小VLM静态探针结论外推；缺包是独立阻塞。
+- 源码未改，沿用11:54的21 CPU及修后独审，不重复旧测试；本次0模型/0仿真/0训练，**成功率未测，不是0%**。证据见[报告](experiments/2026-09-24-zetta-g05.md)与[复核记录](experiments/results/2026-09-24-zetta-recheck.json)。下一需要完整公开bundle链接，或用户明确改为自行构建适配变体；未默认扩展实验。
+
 ### 2026-09-24 11:39（北京时间）：Z-01 Zetta公开Critic/Recovery接入G0.5（Codex）
 
 **11:54交接：** 修后独立review确认缓存时钟问题已闭合，21 CPU全通过、无剩余实质代码发现，未部署/未合main。现阶段安全可做项已完成；完整公开promoted bundle不可得＋四卡训练占用阻止用户指定的真实对照，成功率未测，不标方法无效或任务完成。下一须用户提供完整包或明确选择自行构建适配变体，再确认空闲资源及有限配对预算。旧agentic目标保持暂停。
