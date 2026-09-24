@@ -1,0 +1,53 @@
+{
+  "status": "BLOCKED_RELEASE_AND_EMBODIMENT",
+  "upstream_commit": "1fee179644d52c32fa5a7728751cf0853a29b9c0",
+  "artifact": "scripts/experiments/critic-recovery-v3.json",
+  "artifact_sha256": "3b90203f33058b36d3e2b6efc3794e16649a3b282080376b9863aef85265cac0",
+  "artifact_candidate_id": "stage2-refine-goal-progress-stagnation-authoritative-fallback-v2",
+  "referenced_but_unavailable_promoted_bundle_sha256": "8941b7e30cad0ba997adbea04acdd26e7920c9ec73830a002753becc1026c8a6",
+  "artifact_suite": "libero_goal_swap",
+  "critic_rule_count": 1,
+  "recovery_rule_count": 0,
+  "upstream_bundle_load_error": {"type": "KeyError", "message": "'generation'"},
+  "public_only_critic_error": {
+    "type": "KeyError",
+    "message": "'critic feature is unavailable: privileged.task.goal.progress'"
+  },
+  "feature_requirements": {
+    "required_features": [
+      "command.available", "episode.terminated", "episode.truncated",
+      "privileged.available",
+      "privileged.entity.main_table_plate_region.distance_to_eef_m",
+      "privileged.joint.wooden_cabinet_1_middle_level.normalized",
+      "privileged.task.goal.progress", "privileged.task.goal.progress_available",
+      "privileged.task.semantic_available", "privileged.task.success"
+    ],
+    "privileged_features": [
+      "privileged.available",
+      "privileged.entity.main_table_plate_region.distance_to_eef_m",
+      "privileged.joint.wooden_cabinet_1_middle_level.normalized",
+      "privileged.task.goal.progress", "privileged.task.goal.progress_available",
+      "privileged.task.semantic_available", "privileged.task.success"
+    ],
+    "unavailable_public_features": [
+      "privileged.available",
+      "privileged.entity.main_table_plate_region.distance_to_eef_m",
+      "privileged.joint.wooden_cabinet_1_middle_level.normalized",
+      "privileged.task.goal.progress", "privileged.task.goal.progress_available",
+      "privileged.task.semantic_available", "privileged.task.success"
+    ],
+    "public_observation_compatible": false
+  },
+  "synthetic_rule_test": {
+    "label": "SYNTHETIC_UPSTREAM_CRITIC_ONLY_NOT_BEHAVIOR",
+    "proposal_counts": [0, 0, 1, 0],
+    "triggered_rule_id": "critic-goal-progress-stagnant-distractor-v2",
+    "environment_write": false
+  },
+  "behavior_recovery_executor": "NOT_IMPLEMENTED_NO_RELEASED_PROGRAM",
+  "g05_model_loads": 0,
+  "model_inference_calls": 0,
+  "simulator_resets": 0,
+  "training_steps": 0,
+  "success_rate": null
+}
