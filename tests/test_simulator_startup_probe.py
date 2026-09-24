@@ -60,7 +60,7 @@ class SimulatorProbeTests(unittest.TestCase):
 
     def test_incremental_and_process_memory_caps_independent_of_each_other(self):
         for u in probe.GPU_UUIDS:
-            cap = 4096 if u == probe.MAIN_GPU else 384
+            cap = 4096 if u == probe.MAIN_GPU else 512
             changed = fixture(); changed[u]['used_mib'] += cap
             changed[u]['free_mib'] -= cap
             changed[u]['processes'].append({'pid': 1234, 'type': 'C+G', 'used_mib': cap})
@@ -79,7 +79,8 @@ class SimulatorProbeTests(unittest.TestCase):
                      ('/rtx-transient/resourcemanager/enableTextureStreaming', 1),
                      ('/rtx-transient/resourcemanager/texturestreaming/streamingBudgetMB', 0),
                      ('/renderer/activeGpu', 0), ('/physics/cudaDevice', 2),
-                     ('/renderer/multiGpu/enabled', True)):
+                     ('/renderer/multiGpu/enabled', True), ('/renderer/multiGpu/autoEnable', True),
+                     ('/renderer/multiGpu/maxGpuCount', 2)):
             changed = probe.RUNTIME_SETTINGS.copy(); changed[k] = v
             with self.subTest(key=k, value=v), self.assertRaises(ValueError): probe.validate_settings(changed)
 
@@ -88,11 +89,14 @@ class SimulatorProbeTests(unittest.TestCase):
         self.assertEqual(config['active_gpu'], 3)
         self.assertEqual(config['physics_gpu'], 3)
         self.assertFalse(config['multi_gpu'])
+        self.assertEqual(config['max_gpu_count'], 1)
         self.assertTrue(config['headless'])
         self.assertEqual(config['limit_cpu_threads'], 4)
         self.assertNotIn('open_usd', config)
         self.assertIn('--/rtx-transient/resourcemanager/texturestreaming/memoryBudget=0.01', config['extra_args'])
         self.assertIn('--/app/extensions/registryEnabled=false', config['extra_args'])
+        self.assertIn('--/renderer/multiGpu/autoEnable=false', config['extra_args'])
+        self.assertIn('--/log/file=' + str(probe.OUTPUT/'kit.log'), config['extra_args'])
         env, dirs = probe.environment()
         self.assertNotIn('CUDA_VISIBLE_DEVICES', env)
         self.assertNotIn('PYTHONPATH', env)
@@ -136,6 +140,10 @@ class SimulatorProbeTests(unittest.TestCase):
                  patch.object(probe.subprocess, 'Popen', return_value=Mock(pid=1234)) as popen, patch('builtins.print'):
                 probe.launch()
                 self.assertEqual(popen.call_args.args[0][-1], '--supervise')
+                budget = json.loads((root/'run/launch.json').read_text())['budget']
+                self.assertEqual(budget['auxiliary_gpu_mib'], 512)
+                self.assertEqual(budget['main_gpu_mib'], 4096)
+                self.assertEqual(budget['runtime_free_mib'], 3072)
                 with self.assertRaises(FileExistsError): probe.launch()
                 self.assertEqual(popen.call_count, 1)
 

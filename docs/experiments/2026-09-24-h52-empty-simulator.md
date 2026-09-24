@@ -53,6 +53,21 @@
 
 完整goal未完成；静态/资源实验均不计完整success rate。
 
+## H52b：唯一显式选卡后继（21:03北京时间预登记）
+
+负责人仍Codex。H52首次运行已完整封存，**不复用run、不中途修改限额、不改旧701abfa源码**。最新脚本另登记一次 `h52b_explicit_gpu_v1`，仍300s主动工作＋30s终止清理、8 update、0task/reset/控制/模型/训练。
+
+唯一假设：显式禁止自动多卡、最多一个渲染GPU后，Kit能够把主设备设为GPU3，并将启动枚举产生的非主卡上下文限制在512MiB。H52的422MiB发生在GPU表出现前，不能确定是临时枚举还是选错主设备；不先宣称根因已证实。
+
+- `multi_gpu=False`之外增加`/renderer/multiGpu/autoEnable=false`、`max_gpu_count=1`，两项都严格运行时读回。
+- 将**本次新探针**辅助上下文额度从384登记为512MiB，以观察已见422MiB之后的选卡日志；原GPU3 4096MiB、启动全卡free7168MiB、运行全卡free3072MiB、原训练身份和超限只停自有child全部保持。再越界不继续提高额度。
+- 日志明确写入新OUTPUT的`kit.log`，开启INFO以审实际gpu.foundation GPU表；设置键读回并不等于真实设备选择验收。CUDA可见性不用于替代Vulkan隔离，不改驱动/安装/Xorg。
+- 不再重跑旧H44门，不载入任务；旧H52/H44的预算/证据保留。新输出 `/mnt/nvme_tmp/robodojo_agentic_20260924/h52b_explicit_gpu_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h52b_explicit_gpu_v1`。
+
+作者及独立15 CPU通过，Epicurus的delta独审通过；source commit即将固定，当前未启动。通过空应用仍不能放行完整场景或报告新SR。
+
+依据：[Isaac Sim 5.1 Setup Tips](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/install_faq.html) 列出autoEnable/maxGpuCount；安装版SimulationApp源码第416–420行已读，max_gpu_count确实转为renderer设置。[NVIDIA Linux Troubleshooting](https://docs.omniverse.nvidia.com/dev-guide/latest/linux-troubleshooting.html) 提醒核gpu.foundation实际GPU表，CUDA可见性并不控制Vulkan渲染选卡。不同文档对编号描述不完全一致，因此需要本机实测表和UUID/PCI信息，不只信传参。
+
 ## 依据
 
 [NVIDIA RTX renderer settings](https://docs.omniverse.nvidia.com/materials-and-rendering/latest/rtx-renderer_common.html) 说明纹理流预算；[Isaac Sim 5.1 性能指南](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/reference_material/sim_performance_optimization_handbook.html) 提供相关性能设置。最终以本机固定安装源码与实际读回为准，不把文档预算当总显存隔离承诺。

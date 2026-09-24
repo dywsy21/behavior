@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 21:03（北京时间）：H52b显式选卡空启动后继登记（Codex）
+
+- H52完整负例已固定da0aa44，未重试原run。只读核官方5.1文档/安装源码：active_gpu只设置renderer键，max_gpu_count有正式配置，自动多GPU有独立autoEnable键；CUDA环境变量不能保证Vulkan隔离。原H52在GPU表输出前即停止，422MiB不够区分枚举辅助context和选错主卡。
+- 新唯一假设：显式autoEnable=false/maxGpuCount=1下，Kit可用GPU3作主设备，并将枚举用辅助上下文控制在512MiB。**新注册辅助额度384→512MiB**仅这次空启动，不改H44/原H52、主卡4096/全卡3072余量不变；仅一次300s＋清理/8 update，0任务/reset/控制/模型训练。开启私有kit.log以核实际GPU表，GPU配置严格读回；再越界不继续涨额度。
+- 负责人Codex；作者及独立15 CPU通过、delta独审通过，尚未启动。新输出/runtime均`h52b_explicit_gpu_v1`，下一固定Git/远端同门后单次提交。完整场景/actor/SR仍另验，不把空Kit可用当完成。
+
 ### 2026-09-24 20:58（北京时间）：H52空启动被辅助GPU额度门停止（Codex）
 
 21:01归档闭合：全7文件本地`artifacts/agentic-vlm-goal-20260918/h52_empty_kit_bundle_v1`，launch/supervisor/worker三SHA双端一致，4样本和完整日志已审；详见H52报告。当前选卡只是传参确认，尚未读回或确认实际render GPU。

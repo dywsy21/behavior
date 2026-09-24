@@ -1,4 +1,4 @@
-"""H52: one empty Kit startup under shared-GPU supervision; no task or action.
+"""H52b: one empty Kit startup with explicit renderer GPU isolation settings.
 
 The existing H44 launcher and installed simulator sources are not modified.
 Texture streaming limits are not a hard total-VRAM cap; the independent parent
@@ -34,8 +34,8 @@ DEPENDENCIES = {
     OG_KIT: '1aec3eda2c9841a060070c16305ea90c72c92a56cf0c973084b88f61b23f140d',
     APP_SOURCE: '7cbaa6f00e935a6f14bf1c28ec0db089fd924e931f3b0deee07a822f9b7d0090',
 }
-OUTPUT = Path('/mnt/nvme_tmp/robodojo_agentic_20260924/h52_empty_kit_v1')
-RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h52_empty_kit_v1')
+OUTPUT = Path('/mnt/nvme_tmp/robodojo_agentic_20260924/h52b_explicit_gpu_v1')
+RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h52b_explicit_gpu_v1')
 GPU_UUIDS = (
     'GPU-c0299c97-edd5-82e6-bec9-876e775ad9d1',
     'GPU-c4369c36-5c93-9920-dc4d-a3ec3594d51f',
@@ -45,13 +45,16 @@ GPU_UUIDS = (
 TRAINING = dict(zip(GPU_UUIDS, (3294346, 3294347, 3294348, 3294349)))
 MAIN_GPU = GPU_UUIDS[3]
 WALL_SECONDS = 300
+AUXILIARY_MIB = 512
 SETTINGS = {
     '/rtx-transient/resourcemanager/enableTextureStreaming': True,
     '/rtx-transient/resourcemanager/texturestreaming/memoryBudget': 0.01,
     '/rtx-transient/resourcemanager/texturestreaming/streamingBudgetMB': 16,
 }
-RUNTIME_SETTINGS = {**SETTINGS, '/renderer/activeGpu': 3, '/physics/cudaDevice': 3,
-                    '/renderer/multiGpu/enabled': False}
+GPU_SETTINGS = {'/renderer/activeGpu': 3, '/physics/cudaDevice': 3,
+                '/renderer/multiGpu/enabled': False, '/renderer/multiGpu/autoEnable': False,
+                '/renderer/multiGpu/maxGpuCount': 1}
+RUNTIME_SETTINGS = {**SETTINGS, **GPU_SETTINGS}
 ROUTES = {'CUDA_CACHE_PATH': 'cuda', 'TORCH_HOME': 'torch', 'TRITON_CACHE_DIR': 'triton',
           'TORCHINDUCTOR_CACHE_DIR': 'inductor', 'XDG_CACHE_HOME': 'xdg', 'TMPDIR': 'tmp',
           'TMP': 'tmp', 'TEMP': 'tmp', '__GL_SHADER_DISK_CACHE_PATH': 'gl',
@@ -104,7 +107,7 @@ def check_resources(current, baseline=None, own_pid=None):
         if row['free_mib'] < (7168 if baseline is None else 3072):
             raise RuntimeError('Shared GPU reserve would be violated')
         if baseline is not None:
-            cap = 4096 if uuid == MAIN_GPU else 384
+            cap = 4096 if uuid == MAIN_GPU else AUXILIARY_MIB
             if row['used_mib'] - baseline[uuid]['used_mib'] > cap:
                 raise RuntimeError('Incremental shared GPU memory cap exceeded')
             if any(p['pid'] == own_pid and p['used_mib'] > cap for p in row['processes']):
@@ -175,9 +178,11 @@ def app_configuration():
     extra = [f'--{key}={str(value).lower()}' for key, value in SETTINGS.items()]
     extra += ['--/app/tokens/omni_global_cache=' + str(RUNTIME / 'cache'),
               '--/app/tokens/omni_global_data=' + str(RUNTIME / 'data'),
-              '--/app/extensions/registryEnabled=false', '--/log/level=error',
-              '--/log/fileLogLevel=error', '--/log/outputStreamLevel=error']
+              '--/renderer/multiGpu/autoEnable=false', '--/app/extensions/registryEnabled=false',
+              '--/log/level=info', '--/log/file=' + str(OUTPUT / 'kit.log'),
+              '--/log/fileLogLevel=info', '--/log/outputStreamLevel=warning']
     return {'headless': True, 'multi_gpu': False, 'active_gpu': 3, 'physics_gpu': 3,
+            'max_gpu_count': 1,
             'width': 320, 'height': 320, 'limit_cpu_threads': 4,
             'disable_viewport_updates': True, 'enable_crashreporter': False,
             'extra_args': extra}
@@ -356,7 +361,9 @@ def launch():
                'token_sha256': hashlib.sha256(env['H52_LAUNCH_TOKEN'].encode()).hexdigest(),
                'output': str(OUTPUT), 'runtime': str(RUNTIME), 'gpu_before': before,
                'budget': {'seconds': WALL_SECONDS, 'app_updates': 8, 'task_loads': 0,
-                          'simulator_resets': 0, 'robot_controls': 0, 'model_calls': 0},
+                          'simulator_resets': 0, 'robot_controls': 0, 'model_calls': 0,
+                          'main_gpu_mib': 4096, 'auxiliary_gpu_mib': AUXILIARY_MIB,
+                          'preflight_free_mib': 7168, 'runtime_free_mib': 3072},
                'app_config': app_configuration()}
     write('launch.json', receipt)
     with (OUTPUT / 'supervisor.log').open('x') as log:
