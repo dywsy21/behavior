@@ -34,3 +34,20 @@ H55在600s内完成scene导入并进入相机渲染，但未完成Evaluator/rese
 23:06独立窄审通过，复跑71/71/diff过，确认两套终验/组合默认关闭/23依赖并集与原资源门无缺失；准备Git固定及服务器同门，尚未运行。单次通过也只能说明本组合能否在这次冷启动额度内完成，不做强因果/速度归因。
 
 23:09实际提交：固定`d7ed21efcad7af313a6b0f72f7c5155d3230ab49`/`git_worktrees/shared_scene_d7ed21e`，服务器71 CPU/23依赖/原YAML真实转换/Hydra target与资源门过。此前仅同步命令SSH超时（不含launch），只读核源码/run均不存在后才续接，没有重复提交。唯一launch UTC15:09:30.708713，supervisor3496762，原目录/预算；真实scene/三RGB-D/renderer终验及资源结果待，不算实际OptiX执行或相机成功。
+
+## 实际终态：共享显存门拒绝（23:20北京时间核）
+
+supervisor3496762/worker3496769均已退出，监管586.1263798456639s、worker -15；721资源样本，末583.8972022924572s GPU3整卡78131MiB/free3022，自有4433MiB，较baseline73665增量4466MiB。首抛出检查为3072余量不足，同时4096增量与自有额度亦越界；不是600s墙钟、不是已观察到OOM。退出四训练原PID/各73644MiB仍在，free恢复7489/7489/7489/7488。
+
+原scene在367.798s导入；kit567.670s给Replicator及Replicator_01分配render view。early camera配置/两个原生边界十项PT设置读回正确，但camera wrapper、外层reset/load、三RGB-D及最终renderer身份均未完成。不能凭两条view日志声称三相机已完整就绪，不能将profile读回当作实际OptiX执行/图像验收。0模型、训练、actor和前缀，无新任务成功率。
+
+全8件本地归档与SHA核验进行中；source、run和冷runtime全部保留。不自动放宽显存、延长或重复相同配置，下一以全日志审实际缓冲/相机负载，另写独立工程方案。H55超时与H56显存停止发生在不完全相同阶段，不能据此定量声称某renderer提速或省显存。
+
+23:23归档已闭合：完整8件4.9MiB在上述本地全包，以下四主SHA与远端一致：
+
+- launch `ca9c29f1b7b89e44ac16a5e000ae1be87e0ff10824094997c5aea96449901f3d`
+- supervisor `209b16a909792f6ae89f26f1e9dcd8f279f30b45aca588bfa612bb89bd14894c`
+- worker `15e700a3afcd430e86effb95c0bf1a9939c6ffd9076eb487a6bbb351cba4c8ab`
+- kit `46fb48f4aaa1dc584455d6bda8028649a220c97d1878bc0445b3bc3babfa0536`
+
+全部721样本：GPU0/1/2/3自有峰456/416/416/4433MiB，整卡增量峰470/422/422/4466，最低free7018/7068/7068/3022；原训练身份/各73644MiB每条一致。主卡581.46s75107→583.10s77552→583.90s78131，与两个render view分配日志时间相近，不能凭此精确分解BVH/纹理/相机buffer占比。Kit23.120s确有OptiX7.5 adaptor创建，仍不等于三路去噪图像通过；末未出现H55的DLSS-RR unsupported警告，缺警告也不是全兼容证明。

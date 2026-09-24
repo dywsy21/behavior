@@ -10,6 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 23:20（北京时间）：H56触共享显存门停止，0 RGB-D；SAM3官方权重当前无访问权（Codex）
+
+23:23归档闭合：全8件/4.9MiB已本地、4主SHA双端一致；全部721样本训练身份/73644MiB不变。主卡从581.46s75107到583.10s77552、583.90s78131，增长集中在render view创建附近，日志不足以将每字节归因于相机。下一H57拟只减head512/双腕320实际像素，全部视角/物理/renderer/显存门保留，准确内参与RGB-D校验先CPU/独审，尚未新GPU。SAM3异步询问已有授权路径，其他工作不等待。
+
+- 核真实3496762/3496769已退出，监管586.126s/worker -15；末583.897s主卡free3022低于3072，整卡增量4466MiB/自有4433也超过4096。四训练仍原3294346–3294349/各73644MiB，退出free恢复7489/7489/7489/7488。不是时间超限/OOM或任务失败率；外层reset/load/actor/RGB-D均0，完整8件归档中，所有source/run/runtime保留。
+- 实际scene Imported367.798s、kit567.670s开始给两个Replicator view分配renderer；两处PT设置早期读回正确，但无camera/renderer终验或可用图像，不能称兼容性已通过。下一先审全量资源/渲染日志，再决定按真实相机分辨率降低缓冲的独立方案，不直接加显存或重复同配置。
+- 最新goal允许SAM3；只读官方SAM3及robo既有认证的config HEAD，revision `3c879f39826c281e95690f02c7821c4de09afae7`/manual gate返回401 GatedRepoError，已知两个模型根未找到SAM3。没有下载受限权重/申请授权/改共享环境；不绕过门禁。其可选替代及通用按压接触接口仍可做CPU准备，零前缀官方完整成功仍未获得。
+
 ### 2026-09-24 23:09（北京时间）：H56唯一兼容渲染场景检查运行中（Codex）
 
 - 短暂SSH断连已只读核源码/run未创建后恢复；固定`d7ed21efcad7af313a6b0f72f7c5155d3230ab49`/robo `git_worktrees/shared_scene_d7ed21e`，双端71 CPU、独审/23依赖/实际YAML转换/实时资源门均过。唯一launch UTC15:09:30.708713，supervisor3496762，run/runtime `h56_compatible_cameras_v1`已创建。

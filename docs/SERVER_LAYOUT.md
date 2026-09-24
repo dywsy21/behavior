@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 23:23北京时间H56归档闭合：** 本地完整8件4.9MiB位于`artifacts/agentic-vlm-goal-20260918/h56_compatible_cameras_bundle_v1`，四主SHA双端一致、721资源样本已核。原源/run/runtime全保留；GPU仅四原训练，无新H57运行。
+
+**2026-09-24 23:20北京时间H56终态：** 3496762/3496769均退出，586.126s/worker -15，主卡3072余量/4096增量保护触发，0 RGB-D。原d7ed21e source、run/runtime全保留，完整8件正向本地`artifacts/agentic-vlm-goal-20260918/h56_compatible_cameras_bundle_v1`归档；目录存在不等于归档完整。四原训练仍各73644，余量恢复，无自有GPU进程。
+
 **2026-09-24 23:09北京时间H56提交：** 固定源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_scene_d7ed21e`/`d7ed21efcad7af313a6b0f72f7c5155d3230ab49`，唯一launch UTC15:09:30.708713，supervisor3496762。run `/mnt/nvme_tmp/robodojo_agentic_20260924/h56_compatible_cameras_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h56_compatible_cameras_v1`已创建，原600s/显存，初始化中；源不可热改。四训练保留，旧所有失败与缓存保留，无新训练或actor模型。
 
 **2026-09-24 23:02北京时间H55归档闭合：** 完整8件本地`artifacts/agentic-vlm-goal-20260918/h55_preconfigured_cameras_bundle_v1`，4主SHA双端一致，743资源样本已核；无活跃H55进程，全部源/run/runtime/cache保留。四原训练不动，暂无新H56目录/运行。
