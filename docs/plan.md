@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 22:53（北京时间）：按压的几何参考点静态风险已证实存在（Codex，只读）
+
+- 原H55/3489219+3489226仍按600s运行，152s样本资源过、scene加载中，尚无RGB-D。并行只读核官方toggle.py SHA `a7a88f4a…fd3b`：需要finger-object真实contact＋finger/marker overlap连续5次状态更新；不是距离小或夹爪中心到达即可。
+- 当前press和pick共用closing-gap centre距离/前瞻，press没有独立工具准备，portable finger几何只在完全open参考有效；这是静态接触接口风险，**不能说历史全部失败已定位于此**。详见`experiments/2026-09-24-press-contact-contract-audit.md`。未改actor/训练/活跃源/新增GPU；后继按通用contact frame与真实开度设计，先等H55结果，不读对象特权状态入actor。
+
 ### 2026-09-24 22:49（北京时间）：H55唯一原场景检查运行中（Codex）
 
 - 固定`4cd5b0adda144455e4c66495d050d26b001f9852`/robo独立`git_worktrees/shared_scene_4cd5b0a`，双端67 CPU、582本地接口、修后独审/21依赖及实际原YAML→OmegaConf→Hydra target CPU门通过。唯一launch UTC14:49:25.195096，supervisor3489219；run/runtime `h55_preconfigured_cameras_v1`现已创建。
