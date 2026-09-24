@@ -29,8 +29,17 @@ class FiniteProbeTests(unittest.TestCase):
         probe.validate_spec(self.spec)
         for key, value in (("max_calls", 13), ("training_steps", 1), ("simulator_resets", 1),
                            ("allocator_limit_mib", 5000), ("reserve_mib", 2000),
+                           ("non_torch_allowance_mib", 513), ("non_torch_allowance_mib", 2048),
+                           ("gpu", 1), ("gpu_uuid", "another-gpu"), ("training_pids", [123]),
+                           ("seed", 18), ("allocator_limit_mib", 4863), ("reserve_mib", 2049),
                            ("supervisor_seconds", 901), ("max_seconds", 601), ("image_max_side", 640),
                            ("quantization", None)):
+            spec = copy.deepcopy(self.spec); spec[key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError): probe.validate_spec(spec)
+
+    def test_model_manifest_and_inference_policy_are_frozen(self):
+        for key, value in (("model", "/another/model"), ("revision", "another-revision"),
+                           ("model_files", {"config.json": "0" * 64}), ("chat_stop_policy", None)):
             spec = copy.deepcopy(self.spec); spec[key] = value
             with self.subTest(key=key), self.assertRaises(ValueError): probe.validate_spec(spec)
 

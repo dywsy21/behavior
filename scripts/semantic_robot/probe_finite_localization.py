@@ -34,6 +34,17 @@ from semantic_robot.v2.kinematics import RobotModel
 from semantic_robot.v2.protocol import VIEWS
 from semantic_robot.v2.skill_completion import CaptureRef, read_capture
 
+H50_RESOURCES = {
+    "gpu": 2, "gpu_uuid": "GPU-3e4fda8c-536e-5899-e877-b8be97032fe0",
+    "training_pids": [3294348], "allocator_limit_mib": 4864,
+    "non_torch_allowance_mib": 512, "reserve_mib": 2048,
+    "max_seconds": 600, "supervisor_seconds": 900, "image_max_side": 320, "seed": 17,
+}
+# Canonical JSON of these exact fields in the preregistered H50 configuration.
+# This pins all model-file hashes and the EOS/quantization policy, not just a name.
+H50_MODEL_FIELDS = ("model", "revision", "model_files", "quantization", "chat_stop_policy")
+H50_MODEL_SHA256 = "4130b5766db85b08b80af4948b5aba272fb9e82405b654acc769467feb7b2e6f"
+
 
 def expected_files(case):
     capture = Path(case["capture"])
@@ -55,6 +66,14 @@ def validate_spec(spec):
             spec.get("not_success_rate") is not True or spec.get("quantization") != shared.NF4_POLICY):
         raise ValueError("Exactly the no-physics twelve-call H50 experiment required")
     shared.validate_resource_bounds(spec)
+    for key, expected in H50_RESOURCES.items():
+        if type(spec.get(key)) is not type(expected) or spec[key] != expected:
+            raise ValueError("Frozen H50 resource identity or budget changed: " + key)
+    model_profile = {key: spec.get(key) for key in H50_MODEL_FIELDS}
+    digest = hashlib.sha256(json.dumps(model_profile, sort_keys=True,
+                            separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+    if digest != H50_MODEL_SHA256:
+        raise ValueError("Frozen H50 model manifest or inference policy changed")
     cases = spec["cases"]
     if not isinstance(cases, list) or len(cases) != 4 or len({c["id"] for c in cases}) != 4:
         raise ValueError("Exactly four uniquely named frozen cases required")
