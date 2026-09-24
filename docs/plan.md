@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 23:04（北京时间）：H56兼容renderer＋提前camera组合接线、71 CPU通过（Codex）
+
+23:06独审闭合：独立复跑71/71/diff过，未见实质阻塞；两套严格终验/23依赖/原资源门保留。准备Git固定与远端同门，尚未启动H56。
+
+- H55完整负例已固定ab368ee。新`probe_scene_compatible_cameras.py`保留H55相机配置，唯一新增已独审PT/OptiX profile及专用组合许可；默认及H53/H54/H55入口不混用，23依赖，完整mock链同时严格核renderer/相机/原reset。
+- 71目标CPU/diff通过，独审待；预注册`experiments/2026-09-24-h56-compatible-cameras.md`。原600s/4096主512辅助3072余量/冷runtime/0actor前缀模型训练，不延长H55、不回到1080、不改四训练。尚未部署/启动GPU，真实原场景图像仍未获得。
+
 ### 2026-09-24 23:00（北京时间）：H55触600s墙钟终止，未触显存门（Codex）
 
 23:02归档闭合：743样本/全8件本地4主SHA核同，GPU3自有峰3317/增量3349，四训练恒73644。后继准备独立H56，在H55 early camera配置上仅切已有PT/OptiX兼容profile，仍原600s/显存门/冷runtime/physics，不加时或回到1080；先CPU/独审/新预算，不是H55已成功。

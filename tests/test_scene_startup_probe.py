@@ -26,7 +26,7 @@ def profile():
             'PROFILE_APP_CONFIG', 'RUNTIME_SETTINGS')
     with patch.multiple(base, **{k: getattr(base, k) for k in keys}), \
          patch.object(scene, 'PATH_TRACING', False), patch.object(scene, 'DISABLE_VIEWER', False), \
-         patch.object(scene, 'PRECONFIGURE_CAMERAS', False):
+         patch.object(scene, 'PRECONFIGURE_CAMERAS', False), patch.object(scene, 'CAMERA_PATH_TRACING_ALLOWED', False):
         scene.configure_profile()
         yield
 
@@ -201,6 +201,9 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
     def test_preconfigured_camera_worker_keeps_original_session_and_no_live_rebuild(self):
         self._exercise_worker(False, use_cameras=True)
 
+    def test_compatible_camera_worker_checks_both_renderer_and_camera_contracts(self):
+        self._exercise_worker(True, native_render_mode='RaytracedLighting', use_cameras=True)
+
     def _exercise_worker(self, use_pathtracing, native_render_mode='RealTimePathTracing', use_cameras=False):
         import shared_pathtracing as renderer
         images, depths, sensors = capture_fixture()
@@ -293,16 +296,21 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
              patch.object(renderer,'_CONSUMED',set()), \
              patch.object(scene,'EXTRA_DEPENDENCIES',{**scene.EXTRA_DEPENDENCIES,
                  **({source:hashlib.sha256(source.read_bytes()).hexdigest()} if use_pathtracing else {})}):
-            if use_pathtracing:
+            if use_pathtracing and use_cameras:
+                import probe_scene_compatible_cameras
+                probe_scene_compatible_cameras.configure_profile()
+                base.OUTPUT = Path(folder)
+            elif use_pathtracing:
                 import probe_scene_pathtracing
                 probe_scene_pathtracing.configure_profile()
                 base.OUTPUT=Path(folder)
-                values.update(renderer.SETTINGS)
-                values['/rtx/pathtracing/totalSpp']=4  # Native app reset ignores our CLI16.
-            if use_cameras:
+            elif use_cameras:
                 import probe_scene_preconfigured_cameras
                 probe_scene_preconfigured_cameras.configure_profile()
                 base.OUTPUT = Path(folder)
+            if use_pathtracing:
+                values.update(renderer.SETTINGS)
+                values['/rtx/pathtracing/totalSpp']=4  # Native app reset ignores our CLI16.
             scene.scene_worker()
             record = json.loads((Path(folder)/'worker.json').read_text())
             self.assertEqual({k:record[k] for k in base.SUCCESS_FIELDS}, base.SUCCESS_FIELDS)
@@ -319,7 +327,7 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
                 self.assertTrue(record['preconfigured_cameras_verified'])
                 self.assertEqual(record['camera_configuration']['cameras'], specs)
                 self.assertEqual(record['camera_after_capture'], record['camera_initialization'])
-                self.assertFalse(scene.PATH_TRACING)
+                self.assertEqual(scene.PATH_TRACING, use_pathtracing)
                 self.assertEqual(cfg, config_fixture())
         self.assertEqual(original.reset.call_count,2); original.load_task_instance.assert_called_once_with(138)
         env.step.assert_not_called()

@@ -42,14 +42,16 @@ EXTRA_DEPENDENCIES = {
 DISABLE_VIEWER = False  # H53 default; the separate H53b CLI opts in.
 PATH_TRACING = False  # H54 is a separate, image-distribution-changing profile.
 PRECONFIGURE_CAMERAS = False  # H55 moves final config before sensor creation.
+CAMERA_PATH_TRACING_ALLOWED = False  # Only the separately registered H56 opts in.
 
 
 def configure_profile():
     """Called only by this immutable CLI, never as an import side effect."""
-    global DISABLE_VIEWER, PATH_TRACING, PRECONFIGURE_CAMERAS
+    global DISABLE_VIEWER, PATH_TRACING, PRECONFIGURE_CAMERAS, CAMERA_PATH_TRACING_ALLOWED
     DISABLE_VIEWER = False
     PATH_TRACING = False
     PRECONFIGURE_CAMERAS = False
+    CAMERA_PATH_TRACING_ALLOWED = False
     supervisor.PROFILE_SETTINGS = {}
     supervisor.PROFILE_APP_CONFIG = {}
     supervisor.RUNTIME_SETTINGS = {**supervisor.SETTINGS, **supervisor.GPU_SETTINGS}
@@ -177,7 +179,7 @@ def trace_session_imports(imports, record):
         if constructed: raise ValueError('Only one evaluator construction permitted')
         constructed = True
         if PRECONFIGURE_CAMERAS:
-            if PATH_TRACING:
+            if PATH_TRACING and not CAMERA_PATH_TRACING_ALLOWED:
                 raise ValueError('H55 must not combine camera initialization with a renderer change')
             import shared_camera_config as cameras
             if Path(cameras.__file__).resolve() != (supervisor.REPO/'scripts/semantic_robot/shared_camera_config.py').resolve():
