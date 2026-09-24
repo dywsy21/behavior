@@ -10,6 +10,15 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 20:37（北京时间）：H52共享模拟器空启动资源门开始（Codex）
+
+20:55进展：独审发现失败未传播、内部入口可绕过reservation、spawn中断窗口与Kit argv泄漏，已修并增至15项CPU通过，修后独审通过。新增一次性token/父PID/私有环境核验、GPU设置读回、只清理自有child及原子回执；尚无GPU/物理启动。报告`experiments/2026-09-24-h52-empty-simulator.md`固定依赖SHA/一次300s/8 update预算。当前dirty仅本票，已fetch、未强pull，origin/main仍33677bd；20:47四原训练仍各73644MiB/各卡free7489MiB。下一固定Git、远端同CPU/资源后唯一提交。
+
+- H51全量失败/局部改善已固定36f0262，不继续刷四query。唯一新假设：现有Isaac5.1/OG3.9.1的空Kit实例，在进程内限制纹理缓存后可在GPU3与原训练共存，为后续真实闭环判定资源空间。不是降低H44旧门跑完整场景；不载任务、不reset、不控制、不调模型，预计仅一次空启动＋8次app.update，300s外层上限。
+- 只用已存在、与OG源核同的experience，不让OG启动函数重写共享apps文件；独立源码/cache/portable-root。固定GPU3、原四训练PID，各卡启动free至少7168MiB/运行余量3072MiB；主卡新增用量最多4096MiB、其他卡最多384MiB，轮询完整compute/graphics进程，超限只终止自有子进程。纹理缓存预算不是总显存硬隔离，实际峰值需测，不能承诺零训练吞吐影响。
+- CPU接口与窄独审先行，具体source/外部依赖SHA固定后才单次提交；当前未启动H52。空Kit通过也不证明完整任务场景可共存，后继仍需单独场景资源/感知/物理验证。仍以完整零前缀官方成功为最终goal。
+- 新静态诊断（未改actor）：H38原planner输入任务仅为“Turn on the radio receiver that's on the table in the living room.”，但TASK_ADVICE与PLAN_SYSTEM示例强制倾向先拿起/双手操作；这可能增加非必要抓取难度。证据`h38_fullstart_bundle/radio_h38_fullstart/planner.json`与`src/semantic_robot/prompts.py`。后继应验证通用“只计划必需操作、稳定台面操作优先于无必要搬起”的规划，而不是把抓起当任务真值；目前未测新plan/成功率。
+
 ### 2026-09-24 20:30（北京时间）：H51全部12调用完成，原生协议不是充分修复（Codex）
 
 20:33归档闭合：全包已本地，result/supervisor两完整SHA与远端一致，12条call和全部原生/320像素核同；采样自有峰4534MiB/最低free2950MiB，全部12调用已审。完整结果`docs/experiments/2026-09-24-h51-native-grounding.md`及results同名JSON；不把radio/bin静态点改善当可抓姿或完整SR。
