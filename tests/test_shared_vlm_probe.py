@@ -222,5 +222,68 @@ class ChatStopTests(unittest.TestCase):
             probe.configure_chat_stops(self.tokenizer, self.generation, self.policy)
 
 
+class QuantizationTests(unittest.TestCase):
+    def setUp(self):
+        self.versions = lambda name: {"bitsandbytes": "0.49.2", "accelerate": "1.8.1"}[name]
+
+    def test_default_preserves_bf16_loading(self):
+        self.assertEqual(probe.quantization_options(None, None, None), {})
+
+    def test_exact_nf4_single_visible_device_and_vision_exclusion(self):
+        config = Mock()
+        options = probe.quantization_options(probe.NF4_POLICY, SimpleNamespace(bfloat16="bf16"), config, self.versions)
+        self.assertEqual(options["device_map"], {"": 0})
+        config.assert_called_once_with(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype="bf16",
+                                       bnb_4bit_use_double_quant=True, llm_int8_skip_modules=["lm_head", "model.visual"])
+
+    def test_unknown_policy_or_dependency_rejected(self):
+        with self.assertRaisesRegex(ValueError, "unregistered"):
+            probe.quantization_options({"method": "int8"}, None, None, self.versions)
+        with self.assertRaisesRegex(ValueError, "dependency changed"):
+            probe.quantization_options(probe.NF4_POLICY, None, None, lambda _: "changed")
+
+    def test_actual_tensor_and_vision_checks(self):
+        class Fake4bit:
+            weight = SimpleNamespace(quant_state=SimpleNamespace(quant_type="nf4", nested=True))
+            compute_dtype = "bf16"
+        modules = [("model.language_model.linear", Fake4bit()), ("model.visual", object())]
+        parameter = SimpleNamespace(device="cuda:0", dtype="bf16", is_floating_point=lambda: True)
+        model = SimpleNamespace(is_loaded_in_4bit=True, named_modules=lambda: iter(modules),
+                     parameters=lambda: iter([parameter]),
+                     named_parameters=lambda: iter([("model.visual.linear.weight", parameter)]),
+                     get_output_embeddings=lambda: SimpleNamespace(weight=parameter),
+                     hf_device_map={"": 0}, get_memory_footprint=lambda: 123)
+        self.assertEqual(probe.validate_nf4_model(model, Fake4bit, "bf16")["linear4bit_count"], 1)
+        modules[0][1].compute_dtype = "float32"
+        with self.assertRaisesRegex(ValueError, "compute dtype"):
+            probe.validate_nf4_model(model, Fake4bit, "bf16")
+        modules[0][1].compute_dtype = "bf16"
+        parameter.dtype = "float32"
+        with self.assertRaisesRegex(ValueError, "visual dtype"):
+            probe.validate_nf4_model(model, Fake4bit, "bf16")
+        parameter.dtype = "bf16"
+        output = SimpleNamespace(dtype="float32", is_floating_point=lambda: True)
+        model.get_output_embeddings = lambda: SimpleNamespace(weight=output)
+        with self.assertRaisesRegex(ValueError, "output/tied embedding"):
+            probe.validate_nf4_model(model, Fake4bit, "bf16")
+        model.get_output_embeddings = lambda: SimpleNamespace(weight=parameter)
+        modules.append(("model.visual.attention", Fake4bit()))
+        with self.assertRaisesRegex(ValueError, "unexpectedly quantized"):
+            probe.validate_nf4_model(model, Fake4bit, "bf16")
+
+    def test_cpu_offload_rejected(self):
+        class Fake4bit:
+            weight = SimpleNamespace(quant_state=SimpleNamespace(quant_type="nf4", nested=True))
+            compute_dtype = "bf16"
+        parameter = SimpleNamespace(dtype="bf16", is_floating_point=lambda: True, device="cpu")
+        model = SimpleNamespace(is_loaded_in_4bit=True,
+                     named_modules=lambda: iter([("model.language_model.linear", Fake4bit()), ("model.visual", object())]),
+                     parameters=lambda: iter([parameter]),
+                     named_parameters=lambda: iter([("model.visual.linear.weight", parameter)]),
+                     get_output_embeddings=lambda: SimpleNamespace(weight=parameter))
+        with self.assertRaisesRegex(ValueError, "placement"):
+            probe.validate_nf4_model(model, Fake4bit, "bf16")
+
+
 if __name__ == "__main__":
     unittest.main()

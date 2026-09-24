@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 17:57北京时间H45b终态：** 首次生成触发自有allocator OOM后已退出，四训练保留且四卡free7489MiB；H45b目录为失败证据非活跃服务，勿重启或覆盖。新官方评测未开始。
+
+**2026-09-24 17:54北京时间H45b提交：** 唯一supervisor3440248，固定`git_worktrees/shared_small_vlm_380b9de`；输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h45b_shared_2b_v1`及同stem launch/supervisor/log，cache `robodojo_vlm_runtime_20260924/h45b`。已确认提交、真实生成结果待验；原H45全包本地`artifacts/agentic-vlm-goal-20260918/h45_shared_bundle_v1`已与远端result/supervisor SHA核同。
+
 **2026-09-24 17:47北京时间H45终态：** supervisor3438643已退出；原v1在模型/tokenizer EOS一致性门失败，0生成，四训练3294346–3294349保留且无新worker GPU进程。原run和cache保留诊断，下一只读查根因；下条17:46提交记录非仍在运行。
 
 **2026-09-24 17:46北京时间H45提交：** 唯一supervisor3438643，源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_small_vlm_99caf68`固定99caf682，不热改；四请求结果`/mnt/nvme_tmp/robodojo_agentic_20260924/h45_shared_2b_v1`及同stem launch/supervisor/log，独立cache`/mnt/nvme_tmp/robodojo_vlm_runtime_20260924/h45`。模型实际推理/worker结果待核，不将启动当ready；其余四训练保留。

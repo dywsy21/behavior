@@ -35,3 +35,26 @@ H45由99caf682在17:46提交，supervisor3438643/worker3438651。worker18.823s�
 实际CPU读取显示，缺独立generation配置时默认只用text_config的248044（文本结束），而tokenizer的对话结束是248046。H45b显式保留二者作为生成停止符，且三项准确身份都要匹配；不改本地模型文件或删改生成文字。原v1严格检查不放松，新配置单独opt-in，原输出保留。26 CPU已过，独立窄审待；后续单次复验预算/输入与H45相同，没有新模型搜索/训练/物理。
 
 17:53独立窄审通过：LMFE结束符在有效集合内，有限动作trie只在完整候选后放行两个EOS，无截断修补；26 CPU过，下一冻结源码后单次复验。原v1及现有训练不动。
+
+## H45b真实结果（完整结果纠正尾日志误读）
+
+380b9de于17:54提交，supervisor3440248/worker3440256，实际worker81.745s/监管91.162s，3条完成、第4条OOM。17:57聊天/计划曾仅凭tail误判为0完成，现明确更正，不隐去已经生成的弱回答。
+
+| 请求 | 输入/输出token | 生成时间 | 结果 |
+| --- | ---: | ---: | --- |
+| 初始规划 | 1175 / 150 | 54.436s | 语法合法，但把关闭夹爪写成对radio的close子目标，并重复navigate |
+| 初态观察 | 2813 / 62 | 2.299s | 目标不可见，与RAW一致 |
+| d91近场观察 | 3275 / 96 | 3.509s | 错报不可见；本人在原head RAW可清楚看到红色radio |
+| d91动作 | 5908 / 未生成 | — | FLA/Triton L2norm autotune申请256MiB触发自有allocator上限 |
+
+前三条均通过语法不等于有用。54s包含首次内核/调优等冷启动成本，不能与后两条不同请求直接当模型纯速度对比。峰值allocator记录4591.701MiB、采样进程5278MiB、最低空闲2206MiB；失败后恢复7489MiB，四训练保留。OOM来源是原生FLA Triton调优，不可假定关闭Torch Dynamo就能消除它。
+
+本地全包`artifacts/agentic-vlm-goal-20260918/h45b_shared_bundle_v1`；result SHA `44088517b0296f90abc9c46e14d8e2e63bee35de6b59d75a9fde3145baa69a1a`，supervisor SHA `2a6f58f01cd8b0e5fa874417096f75384753d15397a33e912eabb11df32e6058`。没有新模拟器回合/成功率，本轮不直接放行该2B配方；先评估现有4B量化是否提供更合理的容量/资源平衡。
+
+## H46：同资源的4B NF4候选
+
+已有冻结4B revision851bf6e及完整11文件SHA，现有bitsandbytes0.49.2/accelerate1.8.1，不安装升级共享环境。加载时NF4+double-quant，BF16计算，vision与lm_head不量化；加载后核真实Linear4bit/NF4状态、vision排除和唯一可见GPU，不使用自动跨卡映射或CPU/disk offload。实现依据[Transformers官方bitsandbytes接口](https://huggingface.co/docs/transformers/en/quantization/bitsandbytes)及本机5.7.0 quantizer代码实际支持的skip-module路径，不据此承诺无精度损失。
+
+登记一次H46：与H45b相同4请求/30图/320、seed17、greedy、600s/外层900s、4864+512MiB且保留2048，0新训练/物理。只比较可部署候选，容量与量化同时变了，不作单因素归因。31 CPU过、独审待，实际4B模型尚未加载。量化路径在`from_pretrained`内就分配GPU，完整预算检查也明确前移到它之前；原BF16路径不改。
+
+18:12：31 CPU及修后窄独审通过；增加并验证真实compute/vision/tied output BF16 dtype、nested double-quant，错误dtype三分支均拒绝，不只凭config作标签。4B的EOS两ID已CPU确认一致于H45b策略。H45b本地与远端完整result/supervisor SHA也已核同。

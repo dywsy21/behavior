@@ -10,6 +10,32 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 18:07（北京时间）：H46同资源4B NF4候选实现/预算登记（Codex）
+
+18:12补充：独审指出仅看配置不足以证明BF16计算，已加实际Linear4bit compute_dtype/双量化状态、全部vision参数及tied输出embedding dtype检查并记录；错误compute/vision/output反例通过。31 CPU及修后窄独审闭合，0新4B调用；下一固定Git单次探针。4B CPU也实核默认EOS248044、chat EOS248046，既有显式策略适用。
+
+- 实核现有4B完整11文件SHA与旧两shard版本一致（revision851bf6e）；已有bitsandbytes0.49.2/accelerate1.8.1，0下载/安装/训练。新可选NF4+double-quant、BF16计算，只量化语言Linear，明确排除vision/lm_head且加载后核真实NF4参数/全模型唯一CUDA放置，禁止auto device-map/CPU offload，不把配置字符串当量化已生效。
+- CPU31测试过，新量化路径在真正CUDA量化加载前重新核全余量，原BF16路径保留。独审待；新配置`h46_shared_4b_nf4_probe.json`、一次4同请求/600s/监管900s、同GPU2/4864+512MiB/2048余量、0新reset/训练，拟run `h46_shared_4b_nf4_v1`。更换了容量和精度，只是部署候选筛查，不声称单变量提升/4B必更好。
+- 独审/固定Git后才发，不增加调用样本、不给actor补人工物体位置，不重启旧H44门/27B服务，不把此前3语法通过当方法有效。
+
+### 2026-09-24 18:02（北京时间）：H45b全量结果更正/小2B语义弱点确认（Codex）
+
+- **更正17:57仅看日志尾部的误判：实际完成3条回答，第四条5908token动作请求才OOM，不是首请求失败/0回答。** 全包已本地`artifacts/agentic-vlm-goal-20260918/h45b_shared_bundle_v1`；worker81.745s/监管91.162s，采样自有峰值5278MiB、最低free2206MiB。result SHA`44088517b0296f90abc9c46e14d8e2e63bee35de6b59d75a9fde3145baa69a1a`，supervisor SHA`2a6f58f01cd8b0e5fa874417096f75384753d15397a33e912eabb11df32e6058`。
+- 三条格式均通过，但本人对照RAW：规划54.436s/150token，把关闭夹爪误写为对象`close`子目标；初态“不可见”2.299s合理；d91近场“不可见”3.509s漏掉head里明显的红色收音机。当前2B/320/复杂上下文不能直接作为完整agent放行，不从语法通过推论有效。
+- 完整trace是FLA原生Triton L2norm自动调优申请256MiB，**并非Torch编译开关就能确定消除**，不能盲加TORCHDYNAMO_DISABLE。4B原冻结权重已存在，bitsandbytes0.49.2/accelerate1.8.1也在现有只读环境；下一优先评估更强4B的显式4bit部署候选（无新训练/安装），而非降低安全余量硬塞2B。先模型全清单/协议/资源CPU准备和独审，再登记单次同4请求限额；尚无新4B调用或物理。
+
+### 2026-09-24 17:57（北京时间）：H45b首次生成触及allocator保护上限（Codex）
+
+**此条“首请求/0回答”是仅凭尾日志产生的错误判断，已由上方18:02完整证据更正为3完成＋第4条失败；此处保留更正历史，不作为当前结果。**
+
+- 实际已过EOS一致性，worker3440256开始首请求，Triton自动调优的`get_empty_cache_for_benchmark()`额外申请256MiB触发本进程4.75GiB allocator上限，非整卡显存耗尽（报错仍约2.23GiB空闲）。0已完成回答；原四训练PID保留，17:56:26后实查四卡均free7489MiB，无worker显存残留。不能据此判模型语义弱，也不放宽保护额度。
+- 下一只读完整trace/模型编译路径，判断能否禁用纯性能自动调优以去掉临时工作区；若实现则另登记相同输入/预算的新兼容实验，原H45b失败结果完整保留，不默认重启。新官方SR/物理仍0。
+
+### 2026-09-24 17:54（北京时间）：H45b显式chat EOS单次复验已提交（Codex）
+
+- 新固定`380b9ded1f6a9a1d6c93dce925d4d4afdd1324aa`已push/远端独立`git_worktrees/shared_small_vlm_380b9de`，真实3.10/26 CPU/0.117s过，独审闭合。唯一回执UTC09:54:18.862642，supervisor3440248，spec SHA`07c0077fa343712a72850d2532015ca7397adba00152248ed3d0c15c4a3406de`；结果`/mnt/nvme_tmp/robodojo_agentic_20260924/h45b_shared_2b_v1`及同stem监管/launch/log。
+- 原输入/权重/资源和4调用/600/900预算不变，仅显式停止符兼容。启动不等于模型推理通过，结果待验；原H45失败包双端result/supervisor SHA一致，未删未覆盖，四训练仍原PID，0新reset/训练。
+
 ### 2026-09-24 17:51（北京时间）：H45 EOS根因/完整失败证据归档，H45b兼容修复登记（Codex）
 
 17:53补充：H45b窄独审通过，LMFE与finite-choice两条停止路径一致，无提前截断/输出修复；26 CPU过。固定新Git后只发一次复验，原v1源和结果不动。

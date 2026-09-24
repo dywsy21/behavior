@@ -18,6 +18,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime, timezone
+from importlib.metadata import version
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
@@ -252,6 +253,57 @@ def configure_chat_stops(tokenizer, generation_config, policy):
             "effective_generation_eos": eos, "explicit_policy": policy}
 
 
+NF4_POLICY = {"method": "bitsandbytes-nf4", "compute_dtype": "bfloat16", "double_quant": True,
+              "skip_modules": ["lm_head", "model.visual"],
+              "bitsandbytes_version": "0.49.2", "accelerate_version": "1.8.1"}
+
+
+def quantization_options(policy, torch_module, config_class, dependency_version=version):
+    if policy is None:
+        return {}
+    if policy != NF4_POLICY:
+        raise ValueError("unregistered quantization policy")
+    for package in ("bitsandbytes", "accelerate"):
+        if dependency_version(package) != policy[package + "_version"]:
+            raise ValueError(f"pinned quantization dependency changed: {package}")
+    return {"quantization_config": config_class(load_in_4bit=True, bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch_module.bfloat16, bnb_4bit_use_double_quant=True,
+                llm_int8_skip_modules=list(policy["skip_modules"])),
+            "device_map": {"": 0}, "low_cpu_mem_usage": True}
+
+
+def validate_nf4_model(model, linear_class, expected_dtype):
+    quantized = [(name, module) for name, module in model.named_modules() if isinstance(module, linear_class)]
+    if not quantized or not getattr(model, "is_loaded_in_4bit", False):
+        raise ValueError("requested model did not load in 4bit")
+    if any(name == "lm_head" or name.startswith("model.visual") for name, _ in quantized):
+        raise ValueError("vision encoder or tied output unexpectedly quantized")
+    if not any(name.startswith("model.visual") for name, _ in model.named_modules()):
+        raise ValueError("expected vision module identity missing")
+    if any(getattr(getattr(module.weight, "quant_state", None), "quant_type", None) != "nf4"
+           for _, module in quantized):
+        raise ValueError("NF4 tensors not actually materialized")
+    if any(not getattr(module.weight.quant_state, "nested", False) for _, module in quantized):
+        raise ValueError("registered double quantization not actually present")
+    if any(module.compute_dtype != expected_dtype for _, module in quantized):
+        raise ValueError("actual quantized compute dtype differs from BF16")
+    visual = [parameter for name, parameter in model.named_parameters() if name.startswith("model.visual.")]
+    if not visual or any(not parameter.is_floating_point() or parameter.dtype != expected_dtype for parameter in visual):
+        raise ValueError("actual skipped visual dtype differs from BF16")
+    # Read output embedding directly: named_parameters omits tied lm_head weights.
+    output_weight = model.get_output_embeddings().weight
+    if not output_weight.is_floating_point() or output_weight.dtype != expected_dtype:
+        raise ValueError("actual output/tied embedding dtype differs from BF16")
+    if any(str(parameter.device) != "cuda:0" for parameter in model.parameters()):
+        raise ValueError("unexpected CPU/disk/other-device model placement")
+    return {"linear4bit_count": len(quantized), "linear4bit_names": [name for name, _ in quantized],
+            "vision_quantized": False, "device_map": model.hf_device_map,
+            "compute_dtypes": sorted({str(module.compute_dtype) for _, module in quantized}),
+            "visual_parameter_dtypes": sorted({str(parameter.dtype) for parameter in visual}),
+            "output_embedding_dtype": str(output_weight.dtype), "double_quantized": True,
+            "footprint_bytes": model.get_memory_footprint()}
+
+
 def run(spec_path, output):
     spec = json.loads(spec_path.read_text()); validate_spec(spec)
     require_source_and_device(spec)
@@ -275,7 +327,7 @@ def run(spec_path, output):
     try:
         import torch
         import transformers
-        from transformers import AutoModelForImageTextToText, AutoProcessor
+        from transformers import AutoModelForImageTextToText, AutoProcessor, BitsAndBytesConfig
         from lmformatenforcer import JsonSchemaParser
         from lmformatenforcer.integrations.transformers import build_token_enforcer_tokenizer_data, build_transformers_prefix_allowed_tokens_fn
         from semantic_robot.v2.structured_planning import decoder_identity
@@ -293,16 +345,28 @@ def run(spec_path, output):
         torch.cuda.set_per_process_memory_fraction(spec["allocator_limit_mib"] * 1024**2 / total, 0)
         processor = AutoProcessor.from_pretrained(model_path, local_files_only=True)
         tokenizer_data = build_token_enforcer_tokenizer_data(processor.tokenizer)
+        quantized_options = quantization_options(spec.get("quantization"), torch, BitsAndBytesConfig)
+        if quantized_options:
+            # Quantized loader allocates during from_pretrained: recheck BEFORE it.
+            result["gpu_before_quantized_load"] = gpu_snapshot(spec["gpu"])
+            check_resources(result["gpu_before_quantized_load"], spec, own_pid=os.getpid(), before_load=True)
         model = AutoModelForImageTextToText.from_pretrained(model_path, local_files_only=True,
-                    dtype=torch.bfloat16, attn_implementation="sdpa")
+                    dtype=torch.bfloat16, attn_implementation="sdpa", **quantized_options)
         result["chat_stops"] = configure_chat_stops(processor.tokenizer, model.generation_config,
                                                      spec.get("chat_stop_policy"))
-        result["gpu_before_model_allocation"] = gpu_snapshot(spec["gpu"])
-        check_resources(result["gpu_before_model_allocation"], spec, own_pid=os.getpid(), before_load=True)
-        model = model.to("cuda").eval()
+        if quantized_options:
+            import bitsandbytes as bnb
+            result["quantization"] = {"policy": spec["quantization"],
+                                      "actual": validate_nf4_model(model, bnb.nn.Linear4bit, torch.bfloat16)}
+        else:
+            result["gpu_before_model_allocation"] = gpu_snapshot(spec["gpu"])
+            check_resources(result["gpu_before_model_allocation"], spec, own_pid=os.getpid(), before_load=True)
+            model = model.to("cuda")
+        model.eval()
         result.update(load_seconds=time.monotonic()-started, transformers=transformers.__version__,
                       torch=torch.__version__, model=str(model_path), revision=spec["revision"],
-                      dtype="bfloat16", image_max_side=spec["image_max_side"])
+                      dtype="nf4_weights_bfloat16_compute" if quantized_options else "bfloat16",
+                      image_max_side=spec["image_max_side"])
         for case, (request, messages, images) in zip(spec["cases"], requests):
             check_resources(gpu_snapshot(spec["gpu"]), spec, own_pid=os.getpid(), before_load=False)
             schema = validate_response_schema(request, True)
