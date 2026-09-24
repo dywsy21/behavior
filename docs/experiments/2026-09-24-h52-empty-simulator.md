@@ -68,6 +68,28 @@
 
 依据：[Isaac Sim 5.1 Setup Tips](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/install_faq.html) 列出autoEnable/maxGpuCount；安装版SimulationApp源码第416–420行已读，max_gpu_count确实转为renderer设置。[NVIDIA Linux Troubleshooting](https://docs.omniverse.nvidia.com/dev-guide/latest/linux-troubleshooting.html) 提醒核gpu.foundation实际GPU表，CUDA可见性并不控制Vulkan渲染选卡。不同文档对编号描述不完全一致，因此需要本机实测表和UUID/PCI信息，不只信传参。
 
+## H52b终态：空Kit/选卡/资源通过，任务渲染未测
+
+worker3465792与监管3465781均退出0；启动20.065438164s、worker20.076754204s、监管23.388254539s。全部8 update与8项实际设置核同，29个完整资源样本通过。GPU表明确只有GPU3 `Yes: 0`，UUID前缀`c67cdb9d`与注册的物理GPU3一致；GPU0/1/2未激活，`llvmpipe`软件adapter被跳过。日志无`[Error]`，RTX Hydra engine已创建；仍未载场景/生成任务相机图片，因此不声称图像质量或完整场景可行已验证。
+
+| 物理GPU | 自有PID采样峰MiB | 卡新增采样峰MiB | 最低free MiB |
+| --- | ---: | ---: | ---: |
+| 0 | 454 | 468 | 7020 |
+| 1 | 416 | 422 | 7068 |
+| 2 | 416 | 422 | 7068 |
+| 3（唯一active） | 568 | 598 | 6891 |
+
+所以前次GPU0先出现context**不等于最终用GPU0渲染**，可观察到非主卡仍有初始化上下文。不能单独归因于autoEnable/max1：H52在相应阶段前就被较小额度中止，两次并非等预算完成的比较。原四训练全程仍在、各73644MiB；退出全卡free恢复7489MiB，未发训练信号。无新训练、任务、reset、机器人控制或SR。
+
+全8文件在 `artifacts/agentic-vlm-goal-20260918/h52b_explicit_gpu_bundle_v1`；四项SHA已双端核同：
+
+- launch: `d3cfa67d268d51a642799feab823d269b1341f977fd94c4e4fbe248156e780a2`
+- supervisor: `e2e27652facfc970ec95523d7b3b69ff466fd887a896fcad94167e3683e199ab`
+- worker: `2377f7cd0be850181bbed13867992aa58b70278a5fe93e0e979e35d989acac00`
+- kit.log: `ca275d3aed31091fe11d24a384ffa6eb287a230bc455d9af72fcde5a39e165c0`
+
+下一：保留现有安装/四训练，在独立进程中将已验启动设置接到原OfficialEvaluatorSession；先仅一个原始task0场景及三相机RGB-D检查，另登记预算/版本/源审查，无actor动作。不能沿用空启动结论直接放行完整闭环。
+
 ## 依据
 
 [NVIDIA RTX renderer settings](https://docs.omniverse.nvidia.com/materials-and-rendering/latest/rtx-renderer_common.html) 说明纹理流预算；[Isaac Sim 5.1 性能指南](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/reference_material/sim_performance_optimization_handbook.html) 提供相关性能设置。最终以本机固定安装源码与实际读回为准，不把文档预算当总显存隔离承诺。

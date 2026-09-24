@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 21:09（北京时间）：H52b真实GPU3与资源验收闭合，下一任务场景接口（Codex）
+
+- 29样本与全kit.log已审：GPU3是唯一active、UUID c67cdb9d匹配，llvmpipe被跳过、无`[Error]`。自有峰GPU0/1/2/3=454/416/416/568MiB；主卡增量峰598、最低free6891MiB，全卡原训练保留并恢复7489。8更新/8实际设置/退出0，**仅空应用通过，未测任务图像/场景**。
+- 全8文件`artifacts/agentic-vlm-goal-20260918/h52b_explicit_gpu_bundle_v1`，launch/supervisor/worker/kit.log四SHA双端一致，完整摘要见H52报告。前次GPU0 context不能据此当作选错渲染主卡；不把本次通过单独归因于autoEnable（同时改变辅助额度）。不重跑H52系列。
+- 下一H53先CPU接线：沿原OfficialEvaluatorSession，进程内注入已验启动设置并核同已有apps资源，禁止重写共享安装；另登记单原始task0场景/三RGB-D/资源预算后才提交。当前未实现/未载任务/未改actor，goal完整官方成功仍未获得。
+
+### 2026-09-24 21:07（北京时间）：H52b空应用完成，实际渲染设备仍待全日志验收（Codex）
+
+- 3465781/3465792已正常退出0，worker20.077s/监管23.388s，8 update；8个设置（含active3/physics3/禁多卡/autoEnable=false/max1）实际读回匹配。四原训练保留，退出全卡free7489MiB。
+- 全8文件正取回`h52b_explicit_gpu_bundle_v1`，仍需核资源峰、实际GPU表和renderer错误。**仅app_ready不证明有可用渲染器**，不开任务/不宣布场景可共存或新SR。原四训练不动。
+
 ### 2026-09-24 21:05（北京时间）：H52b唯一显式选卡空启动运行中（Codex）
 
 - 固定`1483f2493c4dc450b7077ee7d1db418cf618d7c1`已push/robo独立`git_worktrees/shared_simulator_1483f24`，双端15 CPU/独审/外部依赖与全部GPU预检通过。唯一launch UTC13:05:18.053589，supervisor3465781，run/runtime `h52b_explicit_gpu_v1`。
