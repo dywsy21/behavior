@@ -10,6 +10,21 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 18:38（北京时间）：H47负例块替换未改善，登记H48最小视觉能力诊断（Codex）
+
+- H47已4调用完成/exit0，worker106.461s/监管116.300s，峰值5038MiB、最低free2446MiB，GPU2退出后7489MiB。原d0/d91回答复现H46b；中性提示两条仍不可见，且均`hazard:null`违反原解析。近场描述“只有天花板和地板”对应腕图而漏掉清楚的head目标，**去负例块不是充分修复，不部署H47**。两对全部人工检查、无择优重试。
+- 完整本地`artifacts/agentic-vlm-goal-20260918/h47_shared_bundle_v1`；result SHA`c98d02ac09e05fc197bd262d91a75854c31f8cb26ec84f25a3bc7cedf7f7a145`、supervisor SHA`31da22053d20ca7fb5f7b37112ec5dbb8f379566d0c645ed58e820158e07f8c9`。0新reset/训练/SR；下一远端SHA终验并固定文档。
+- H48主要假设：小模型的当前接口负担/多图干扰掩盖了基础视觉能力。登记同冻结4B NF4/320/seed17和显存/600/900边界，d0/d91各“当前head RAW一图”与“当前三相机RAW”配对，恰4调用、0reset/训练。每条只问原公开子目标中的目标定位，不带历史、机器人叠图、坐标状态或完成判断，单独静态输出协议，**不得转换成持有/完成证据供actor使用**。与旧接口比较改变了多个因素，只作能力诊断；新两组之间仅视图数不同。先CPU/独审，尚未运行；不人工指定物体坐标。
+
+18:41补充：H48实现/42 CPU通过；真实输入四条均由原公开goal与原图恢复，pairs文本一致、各1/3图，省略图仍先做全部hash核验。静态parser拒绝非当前视图、假布尔/非有限坐标/额外effect字段，不生成时序证据。18:43独立窄审通过，无actor回送路径；自由note仍必须人工审，不能只凭类型有效断言语义。H47全包两SHA已双端核同、四训练原PID不变。
+
+### 2026-09-24 18:34（北京时间）：H47负例提示配对探针运行中（Codex）
+
+- 固定`cb8ced57b314ccb53d93214644ad088f5d7bb5e6`已push/robo新独立`git_worktrees/shared_small_vlm_cb8ced5`，双端36 CPU/独审过。唯一launch UTC10:34:37.660131、supervisor3446566，spec SHA`49b39d74ebb288cdcf3b566bae40153ff7d1656d6aee4c42d75d11efa81d1fa4`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h47_neutral_observation_v1`及同stem launch/supervisor/log，独立cache `robodojo_vlm_runtime_20260924/h47`。
+- 恰4配对调用、600s/900s、GPU2显存保护与四原训练不变，0训练/reset。下一完整输出＋人工图像核对；另只读CPU核验processor的真实pixel/grid输入，不加载模型/GPU，防止只按PNG存在断言视觉输入有效。
+
+18:35 CPU输入核验：真实processor输出d0/d91分别6/9图、600/900个image占位、pixel张量2400×1536/3600×1536，均有限非零方差（0.508/0.517）、CUDA未初始化；排除图像在模板阶段完全丢失/空输入，但不证明模型确实理解。回执`artifacts/agentic-vlm-goal-20260918/h47_processor_cpu_check.json`；原H44 Kit日志无显存峰值记录，仍不能断言模拟器也能在当前空隙运行。
+
 ### 2026-09-24 18:26（北京时间）：H46b四条完成/资源通过但观察漏检，H47单因素登记（Codex）
 
 18:31补充：H47已实现显式paired profile与有效公开请求回执，36 CPU通过；真实两对30图恢复/SHA核验、各对user消息/图像逐项相同，仅system例子块改变。18:32独立窄审闭合，0新GPU调用；未改live harness或旧run。即使新提示改善，也只归因于整个注册例子块替换，不能拆分断言某几个字的独立因果。

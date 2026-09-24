@@ -112,6 +112,13 @@ class BudgetTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             probe.validate_spec(self.spec)
 
+    def test_static_paired_spec(self):
+        spec = json.loads((ROOT / "configs/semantic_robot/h48_static_localization_probe.json").read_text())
+        probe.validate_spec(spec)
+        spec["cases"][0]["request_profile"] = "original"
+        with self.assertRaises(ValueError):
+            probe.validate_spec(spec)
+
     def test_stop_only_owned_process_and_escalate(self):
         child = Mock(); child.poll.return_value = None
         child.wait.side_effect = [subprocess.TimeoutExpired("owned", 15), 0]
@@ -213,6 +220,59 @@ class SavedRequestTests(unittest.TestCase):
             probe.apply_request_profile({**original, "system": valid, "kind": "plan"}, probe.NEUTRAL_PROFILE)
         with self.assertRaises(ValueError):
             probe.apply_request_profile(original, "unregistered")
+
+    def add_other_view(self):
+        label = "PREVIOUS_RIGHT_WRIST_RAW"
+        image = Image.new("RGB", (320, 320), (99, 21, 15)); image.save(self.root / (label + ".png"))
+        self.record["request_without_pixel_duplicates"]["images"].append(dict(label=label))
+        self.record["result"]["images"].append(dict(label=label, size=list(image.size),
+                                                   pixels_sha256=hashlib.sha256(image.tobytes()).hexdigest()))
+        return label
+
+    def test_static_uses_only_original_goal_and_current_raw(self):
+        self.add_other_view()
+        self.record["request_without_pixel_duplicates"]["text"] = json.dumps({
+            "current_goal": {"kind": "pick", "target": "public object", "done_when": "unused"},
+            "current_robot": {"unused_coordinates": [1, 2, 3]}})
+        case = self.write(); case["request_profile"] = "static_head_raw_v1"
+        request, messages, receipts = probe.load_saved_request(self.root, case, 320)
+        self.assertEqual(json.loads(request["text"]), dict(target="public object", goal_kind="pick"))
+        self.assertEqual([r["label"] for r in receipts], [self.label])
+        self.assertEqual(request["images"], [dict(label=self.label)])
+        self.assertEqual(len(messages[1]["content"]), 3)
+        self.assertNotIn("unused", str(messages))
+
+    def test_static_still_checks_omitted_original_image(self):
+        omitted = self.add_other_view()
+        case = self.write(); case["request_profile"] = "static_head_raw_v1"
+        Image.new("RGB", (320, 320), (0, 0, 0)).save(self.root / (omitted + ".png"))
+        with self.assertRaisesRegex(ValueError, "RGB pixels"):
+            probe.load_saved_request(self.root, case, 320)
+
+    def test_static_missing_views_rejected(self):
+        case = self.write(); case["request_profile"] = "static_three_raw_v1"
+        with self.assertRaisesRegex(ValueError, "current RAW view absent"):
+            probe.load_saved_request(self.root, case, 320)
+
+
+class StaticLocalizationTests(unittest.TestCase):
+    def setUp(self):
+        self.visible = dict(visible=True, view="head", target_uv=[0.4, 0.5], note="Public visible object.")
+
+    def test_valid_visible_and_invisible(self):
+        parsed = probe.parse_static_location(json.dumps(self.visible), "static_head_raw_v1")
+        self.assertEqual(parsed, self.visible)
+        self.assertNotIn("effect", parsed)
+        probe.parse_static_location(json.dumps(dict(visible=False, view="none", target_uv=None,
+                                                    note="Object not identified.")), "static_three_raw_v1")
+
+    def test_bad_types_coordinates_unsupplied_view_and_extra_facts(self):
+        for change in (dict(visible=1), dict(view="right_wrist"), dict(target_uv=[True, .4]),
+                       dict(target_uv=[float("nan"), .4]), dict(target_uv=[1.1, .4]),
+                       dict(effect=True), dict(note=""), dict(visible=False)):
+            with self.subTest(change=change):
+                with self.assertRaises(ValueError):
+                    probe.parse_static_location(json.dumps({**self.visible, **change}), "static_head_raw_v1")
 
 
 class ModelManifestTests(unittest.TestCase):

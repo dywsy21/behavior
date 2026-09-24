@@ -11,6 +11,7 @@ import argparse
 import gc
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -30,6 +31,48 @@ NEGATIVE_EXAMPLE = dict(visible=False, view="none", target_uv=None, enclosed=Non
                         co_moving=None, supported=None, effect=None, hazard="none",
                         note="Target not identified in current views.", other_views=[],
                         target_reference="unknown")
+STATIC_PROFILES = {
+    "static_head_raw_v1": ("CURRENT_HEAD_RAW",),
+    "static_three_raw_v1": ("CURRENT_HEAD_RAW", "CURRENT_LEFT_WRIST_RAW", "CURRENT_RIGHT_WRIST_RAW"),
+}
+STATIC_SYSTEM = """Inspect the CURRENT RAW camera images and locate the requested target if identifiable. The target description is a request, not proof that the target is present. Use only these images; do not assume a target is being held or that any action succeeded.
+Return one JSON object with exactly four keys: visible, view, target_uv, note.
+visible is a boolean indicating whether the requested target is identifiable in an image. view is head, left_wrist, right_wrist, or none. If visible, choose the clearest supplied view and put target_uv=[horizontal,vertical] at the visible target centre, normalized to [0,1]. If not identifiable, view must be none and target_uv must be null. note is one short sentence describing the actual visible appearance or scene. Do not guess coordinates for an unseen target. No plan, action, holding claim, or task completion claim."""
+
+
+def static_request(request, profile):
+    """A diagnostic locator, not a replacement for temporal actor evidence."""
+    if request["kind"] != "observe" or request["allowed"] or "response_schema" in request:
+        raise ValueError("static diagnostic requires an unconstrained saved observation")
+    goal = json.loads(request["text"])["current_goal"]
+    if (goal["kind"] not in ("navigate", "pick", "place", "press", "open", "close") or
+            not isinstance(goal["target"], str) or not goal["target"].strip()):
+        raise ValueError("original public goal required")
+    return {**request, "system": STATIC_SYSTEM,
+            "text": json.dumps({"target": goal["target"], "goal_kind": goal["kind"]}),
+            "images": [{"label": label} for label in STATIC_PROFILES[profile]]}
+
+
+def parse_static_location(text, profile):
+    """Strictly validate static facts, never manufacture holding/done evidence."""
+    from semantic_robot.v2.protocol import strict_json
+    value = strict_json(text)
+    if not isinstance(value, dict) or set(value) != {"visible", "view", "target_uv", "note"}:
+        raise ValueError("exact static localization fields required")
+    if (type(value["visible"]) is not bool or not isinstance(value["view"], str) or
+            not isinstance(value["note"], str) or not 1 <= len(value["note"]) <= 320):
+        raise ValueError("static localization types or note length")
+    supplied = {label.removeprefix("CURRENT_").removesuffix("_RAW").lower()
+                for label in STATIC_PROFILES[profile]}
+    if not value["visible"]:
+        if value["view"] != "none" or value["target_uv"] is not None:
+            raise ValueError("invisible target must have no view/coordinates")
+    else:
+        uv = value["target_uv"]
+        if (value["view"] not in supplied or not isinstance(uv, list) or len(uv) != 2 or
+                any(type(v) not in (int, float) or not math.isfinite(v) or not 0 <= v <= 1 for v in uv)):
+            raise ValueError("visible target requires supplied view and finite normalized coordinates")
+    return value
 
 
 def apply_request_profile(request, profile):
@@ -61,14 +104,15 @@ def validate_spec(spec):
         if len({case["receipt"] for case in cases}) != 4 or any(
                 case.get("request_profile", "original") != "original" for case in cases):
             raise ValueError("exactly four unique original requests required")
-    elif kind == "paired_neutral_observation_v1":
+    elif kind in ("paired_neutral_observation_v1", "paired_static_localization_v1"):
+        profiles = ("original", NEUTRAL_PROFILE) if kind == "paired_neutral_observation_v1" else tuple(STATIC_PROFILES)
         sources = {(case["receipt"], case["sha256"]) for case in cases}
         identities = {(case["receipt"], case["sha256"], case.get("request_profile", "original"))
                       for case in cases}
         expected = {(path, digest, profile) for path, digest in sources
-                    for profile in ("original", NEUTRAL_PROFILE)}
+                    for profile in profiles}
         if len(sources) != 2 or len(identities) != 4 or identities != expected:
-            raise ValueError("exactly two frozen original/neutral observation pairs required")
+            raise ValueError("exactly two frozen registered observation pairs required")
         if any(not case["receipt"].endswith("/observation.json") for case in cases):
             raise ValueError("paired probe only permits original observation receipts")
     else:
@@ -250,8 +294,20 @@ def load_saved_request(root, case, max_side):
         image_receipts.append({"label": label, "original_served": expected, "size": list(small.size),
                                "pixels_sha256": hashlib.sha256(small.tobytes()).hexdigest()})
         content += [{"type": "text", "text": label}, {"type": "image", "image": small}]
+    profile = case.get("request_profile", "original")
+    if profile in STATIC_PROFILES:
+        # Verify ALL original inputs first, including views omitted by this
+        # explicit diagnostic. Then select only the registered CURRENT RAW set.
+        selected = STATIC_PROFILES[profile]
+        if not set(selected) <= set(labels):
+            raise ValueError("required current RAW view absent from original request")
+        positions = [labels.index(label) for label in selected]
+        content = [part for pos in positions for part in content[2 * pos:2 * pos + 2]]
+        image_receipts = [image_receipts[pos] for pos in positions]
+        request = static_request(request, profile)
+    else:
+        request = apply_request_profile(request, profile)
     content.append({"type": "text", "text": request["text"]})
-    request = apply_request_profile(request, case.get("request_profile", "original"))
     messages = [{"role": "system", "content": request["system"]}, {"role": "user", "content": content}]
     return request, messages, image_receipts
 
@@ -450,7 +506,10 @@ def run(spec_path, output):
                 if request["kind"] == "plan":
                     parse_plan(normalized)
                 elif request["kind"] == "observe":
-                    GroundedEvidence.parse(normalized)
+                    if row["request_profile"] in STATIC_PROFILES:
+                        parse_static_location(normalized, row["request_profile"])
+                    else:
+                        GroundedEvidence.parse(normalized)
                 else:
                     Action.parse(normalized)
                     if normalized not in request["allowed"]:
