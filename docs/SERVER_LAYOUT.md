@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 18:58北京时间最终核验：** H49监管exit0，所有本轮自有探针已退出；四训练3294346–3294349仍各73644MiB，GPU2回收后free7489MiB。H49全包现已完整在`artifacts/agentic-vlm-goal-20260918/h49_shared_bundle_v1`且两主SHA与远端一致，取代下方“空目录/待归档”的临时状态。远端各run/cache/源码不删；H50尚未启动、没有新VLM HTTP服务或模拟器。
+
+**2026-09-24 18:56北京时间H49收尾：** 远端result已明确worker3450194四回答完成/87.931s；取完整包/监管回执遇SSH banner超时。本地`artifacts/agentic-vlm-goal-20260918/h49_shared_bundle_v1`暂空，不是完整归档；保留远端及所有原run，禁止因断连重提。监管最终退出/最新GPU快照待只读重连核验。
+
+**2026-09-24 18:52北京时间H49提交：** supervisor3450186，固定`git_worktrees/shared_small_vlm_2a9b62f`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h49_static_resolution_v1`及同stem回执/log，cache `robodojo_vlm_runtime_20260924/h49`。仅单head分辨率4调用，原四训练保留；0模拟器/服务部署。
+
 **2026-09-24 18:47北京时间H48终态：** 3448413/3448423已exit0，完整包`artifacts/agentic-vlm-goal-20260918/h48_shared_bundle_v1`，原run/cache不删；GPU2恢复7489MiB。H49仅CPU准备，尚无新进程，未开模拟器。
 
 **2026-09-24 18:44北京时间H48提交：** supervisor3448413，固定`git_worktrees/shared_small_vlm_c81a90c`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h48_static_localization_v1`及同stem回执/log，独立cache `robodojo_vlm_runtime_20260924/h48`。仅静态4调用，不是HTTP服务/新模拟器；四训练不动。
