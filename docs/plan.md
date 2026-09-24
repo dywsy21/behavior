@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 21:55（北京时间）：H53b关闭非actor旁观者相机CPU完成（Codex）
+
+21:55独审闭合：41 CPU、语法/diff检查通过，无实质阻塞。原profile显式恢复DISABLE_VIEWER=False也已补回归，避免未来同进程配置串用；当前CLI仍独立进程。开始固定Git/远端同门，尚无新GPU进程。
+
+- H53完整负例/604样本已固定97292f7。新独立`probe_scene_without_viewer.py`只在app/sim创建前设官方进程内`RENDER_VIEWER_CAMERA=False`，完成须实际viewer不存在；原H53入口默认不变，旧安装/运行源不动。
+- 作者41 CPU过，独审待。预注册`experiments/2026-09-24-h53b-no-viewer.md`：同原始TRAIN138/0前缀/三原分辨率相机/物理/600s/4096主512辅助3072余量，另一次有界场景检查；新冷runtime，不放宽资源、不改DLSS、不装模型训练。未部署/启动，四原训练保留。
+
 ### 2026-09-24 21:45（北京时间）：H53原始场景加载被显存余量门停止（Codex）
 
 21:51归档闭合：完整8文件已本地`h53_original_scene_bundle_v1`，604样本/四主SHA双端核同/全log已审，GPU3实际active、两个copy no-op核真。静态新根因候选：OG headless仍默认创建1280×720旁观者相机，在任务加载前就初始化RT渲染；不属于actor三相机。下一H53b只关闭`gm.RENDER_VIEWER_CAMERA`，原head720/腕480、物理、显存门与600s不变，先CPU/独审再单次检查；无提升结论/尚未实现启动，旧run全保留。

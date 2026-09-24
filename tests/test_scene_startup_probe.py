@@ -195,8 +195,10 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
         env = SimpleNamespace(robots=[robot], step=Mock(side_effect=AssertionError('No actor control')))
         original = SimpleNamespace(env=env, reset=Mock(), load_task_instance=Mock())
         @dataclass(frozen=True)
-        class Imports: Evaluator: object
-        imports = Imports(Mock(return_value=original)); factory._lazy_official_imports = Mock(return_value=imports)
+        class Imports:
+            Evaluator: object
+            gm: object
+        imports = Imports(Mock(return_value=original),SimpleNamespace()); factory._lazy_official_imports = Mock(return_value=imports)
         @contextmanager
         def original_session(window, *, gpu, imports):
             evaluator=imports.Evaluator('cfg'); evaluator.reset(); evaluator.load_task_instance(138)

@@ -38,10 +38,13 @@ EXTRA_DEPENDENCIES = {
     ROBOT_CONFIG: ROBOT_SHA,
     ICON: ICON_SHA, INSTALLED_ICON: ICON_SHA,
 }
+DISABLE_VIEWER = False  # H53 default; the separate H53b CLI opts in.
 
 
 def configure_profile():
     """Called only by this immutable CLI, never as an import side effect."""
+    global DISABLE_VIEWER
+    DISABLE_VIEWER = False
     supervisor.ENTRYPOINT = Path(__file__).resolve()
     supervisor.OUTPUT = Path('/mnt/nvme_tmp/robodojo_agentic_20260924/h53_original_scene_v1')
     supervisor.RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h53_original_scene_v1')
@@ -71,6 +74,28 @@ def validate_window(window):
         raise ValueError('Exact original task0 TRAIN138/seed0/robot required')
     if hashlib.sha256(Path(window.robot_config_path).read_bytes()).hexdigest() != ROBOT_SHA:
         raise ValueError('Installed robot config changed')
+
+
+def configure_viewer_before_launch(gm, og, record):
+    if not DISABLE_VIEWER:
+        return
+    if og.app is not None or og.sim is not None:
+        raise ValueError('Viewer selection must precede any simulator/application')
+    # Official process-local macro; never edit installed macros or resize/remove
+    # a live sensor (which can invalidate the initialized physics handles).
+    with gm.unlocked():
+        gm.RENDER_VIEWER_CAMERA = False
+    if gm.RENDER_VIEWER_CAMERA is not False:
+        raise ValueError('Viewer disable setting was not applied')
+    record['render_viewer_camera'] = False
+    supervisor.write('worker.json', record)
+
+
+def validate_viewer_after_scene(gm, sim, record):
+    if DISABLE_VIEWER:
+        if gm.RENDER_VIEWER_CAMERA is not False or sim.viewer_camera is not None:
+            raise ValueError('Unused viewer camera was still created')
+        record['viewer_camera_absent'] = True
 
 
 def validate_capture(before, after, images, depths, sensors):
@@ -202,6 +227,7 @@ def scene_worker():
         OnboardRGBD, array = onboard.OnboardRGBD, backend.array
         if Path(og_startup.__file__).resolve() != OG_SOURCE.resolve():
             raise ValueError('Unexpected installed simulator import')
+        configure_viewer_before_launch(imports.gm, og, record)
 
         def construct():
             nonlocal created_app
@@ -232,6 +258,7 @@ def scene_worker():
                     record['phase'] = 'final_original_reset'; supervisor.write('worker.json', record)
                     environment.reset()
                     record['explicit_final_resets'] = 1
+                    validate_viewer_after_scene(imports.gm, og.sim, record)
                     env = environment.evaluator.env
                     robot = env.robots[0]
                     if robot.action_dim != 23:
