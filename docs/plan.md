@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 20:26（北京时间）：H51原生定位对照运行中（Codex）
+
+- 固定源码`06360d389de3d75422cc35906b2675515832922d`已push，robo独立`git_worktrees/shared_small_vlm_06360d3`通过同91 CPU/四输入prepare；20:25四训练原PID各73644MiB、free7489MiB。唯一launch UTC12:26:08.432985，supervisor3460478；spec SHA`76b0e7e366ff921c1dbf30b57d280833e3476a4c7698d5979684b45089347f61`。
+- 输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h51_native_protocol_v1`及同stem监管/launch/log，新cache`robodojo_vlm_runtime_20260924/h51`。仍最多12/600s/900s/原共享显存保护，0reset训练；实际模型输出与完整语义结果待，不重复提交，不把CPU/启动当成功。
+
 ### 2026-09-24 20:23（北京时间）：恢复G-AV1/H51原生定位真实对照准备（Codex）
 
 20:24补充：91 CPU、四真实输入完整prepare及探针窄独审通过；spec SHA76b0e7e3…，不读取旧回答、box不成抓点、0新GPU调用。下一固定Git和远端同门后单次探针，详见H51报告。
