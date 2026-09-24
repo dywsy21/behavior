@@ -128,10 +128,15 @@ def validate_spec(spec):
             raise ValueError("exactly two single-head 320/640 pairs required")
     else:
         raise ValueError("unregistered probe kind")
+    validate_resource_bounds(spec, max_image_side=640 if kind == "paired_static_resolution_v1" else 320)
+
+
+def validate_resource_bounds(spec, *, max_image_side=320):
+    """Shared hard limits; each entry point separately validates its workload."""
     bounds = {"allocator_limit_mib": (1, 4864), "reserve_mib": (2048, 8192),
               "non_torch_allowance_mib": (512, 2048), "max_seconds": (1, 600),
               "supervisor_seconds": (1, 900),
-              "image_max_side": (1, 640 if kind == "paired_static_resolution_v1" else 320)}
+              "image_max_side": (1, max_image_side)}
     for key, (low, high) in bounds.items():
         if type(spec[key]) is not int or not low <= spec[key] <= high:
             raise ValueError(f"outside probe resource bound: {key}")
@@ -159,12 +164,15 @@ def stop_owned_child(child):
             child.wait(timeout=15)
 
 
-def supervise(spec_path, output):
-    spec = json.loads(spec_path.read_text()); validate_spec(spec)
+def supervise(spec_path, output, *, validator=None, entrypoint=None):
+    spec = json.loads(spec_path.read_text()); (validator or validate_spec)(spec)
+    script = Path(entrypoint or __file__).resolve()
+    if not script.is_file() or not script.is_relative_to(REPO / "scripts" / "semantic_robot"):
+        raise ValueError("Worker entrypoint must belong to the pinned source tree")
     require_source_and_device(spec)
     check_resources(gpu_snapshot(spec["gpu"]), spec, own_pid=os.getpid(), before_load=True)
     started = time.monotonic()
-    child = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--worker",
+    child = subprocess.Popen([sys.executable, str(script), "--worker",
                               "--spec", str(spec_path), "--output", str(output)], start_new_session=True)
     receipt = {"supervisor_pid": os.getpid(), "worker_pid": child.pid, "status": "running",
                "started_utc": datetime.now(timezone.utc).isoformat(), "resource_samples": []}
@@ -197,9 +205,12 @@ def supervise(spec_path, output):
         terminal.write_text(json.dumps(receipt, indent=2))
 
 
-def launch(spec_path, output):
+def launch(spec_path, output, *, validator=None, entrypoint=None):
     """Exclusive launch receipt prevents accidental retries after SSH interruption."""
-    spec = json.loads(spec_path.read_text()); validate_spec(spec)
+    spec = json.loads(spec_path.read_text()); (validator or validate_spec)(spec)
+    script = Path(entrypoint or __file__).resolve()
+    if not script.is_file() or not script.is_relative_to(REPO / "scripts" / "semantic_robot"):
+        raise ValueError("Supervisor entrypoint must belong to the pinned source tree")
     require_source_and_device(spec)
     check_resources(gpu_snapshot(spec["gpu"]), spec, own_pid=os.getpid(), before_load=True)
     if output.exists():
@@ -211,7 +222,7 @@ def launch(spec_path, output):
                    "utc": datetime.now(timezone.utc).isoformat(), "output": str(output)}
         launch_file.write(json.dumps(receipt, indent=2)); launch_file.flush()
         with output.with_suffix(".log").open("x") as log:
-            supervisor = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--supervise",
+            supervisor = subprocess.Popen([sys.executable, str(script), "--supervise",
                          "--spec", str(spec_path), "--output", str(output)], stdin=subprocess.DEVNULL,
                          stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
         receipt.update(status="supervisor_started", supervisor_pid=supervisor.pid)
