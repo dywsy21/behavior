@@ -1,8 +1,9 @@
 """One bounded, no-physics small-VLM probe alongside an identified training job.
 
-Uses only previously saved actor requests and their exact recorded images. The
-only input change is explicit image downsampling. No labels, private traces,
-ground-truth correction, repeated output selection, training, or simulator.
+Uses previously saved public actor requests and their exact recorded images.
+Explicit variants are image downsampling and a registered paired prompt test.
+No labels, private traces, ground-truth correction, output selection, training,
+or simulator.
 """
 from __future__ import annotations
 
@@ -23,14 +24,55 @@ from importlib.metadata import version
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 LABEL = re.compile(r"(?:CURRENT|PREVIOUS)_(?:HEAD|LEFT_WRIST|RIGHT_WRIST)_(?:RAW|ROBOT_GUIDE_NOT_OBJECT_LABELS)")
+NEUTRAL_PROFILE = "neutral_observation_fields_v1"
+EXAMPLE_MARKER = "Return only JSON with exactly these fields:\n"
+NEGATIVE_EXAMPLE = dict(visible=False, view="none", target_uv=None, enclosed=None,
+                        co_moving=None, supported=None, effect=None, hazard="none",
+                        note="Target not identified in current views.", other_views=[],
+                        target_reference="unknown")
+
+
+def apply_request_profile(request, profile):
+    """One opt-in prompt intervention; never alter task, images, or evidence."""
+    if profile == "original":
+        return request
+    if profile != NEUTRAL_PROFILE or request["kind"] != "observe":
+        raise ValueError("unregistered request profile or non-observation request")
+    if request["system"].count(EXAMPLE_MARKER) != 1:
+        raise ValueError("expected single observation example marker")
+    before, rest = request["system"].split(EXAMPLE_MARKER)
+    example, after = rest.split("\n", 1)
+    if json.loads(example) != NEGATIVE_EXAMPLE:
+        raise ValueError("pinned observation example changed")
+    neutral = ("Return only JSON with exactly these keys (choose values from the images):\n"
+               + ", ".join(NEGATIVE_EXAMPLE) + "\n")
+    return {**request, "system": before + neutral + after}
 
 
 def validate_spec(spec):
     if (spec.get("training_steps") != 0 or spec.get("simulator_resets") != 0 or
             spec.get("not_success_rate") is not True):
         raise ValueError("saved-request-only experiment required")
-    if len(spec["cases"]) != 4 or len({case["receipt"] for case in spec["cases"]}) != 4:
-        raise ValueError("exactly four unique frozen requests required")
+    cases = spec["cases"]
+    if len(cases) != 4:
+        raise ValueError("exactly four frozen calls required")
+    kind = spec.get("probe_kind", "original_requests")
+    if kind == "original_requests":
+        if len({case["receipt"] for case in cases}) != 4 or any(
+                case.get("request_profile", "original") != "original" for case in cases):
+            raise ValueError("exactly four unique original requests required")
+    elif kind == "paired_neutral_observation_v1":
+        sources = {(case["receipt"], case["sha256"]) for case in cases}
+        identities = {(case["receipt"], case["sha256"], case.get("request_profile", "original"))
+                      for case in cases}
+        expected = {(path, digest, profile) for path, digest in sources
+                    for profile in ("original", NEUTRAL_PROFILE)}
+        if len(sources) != 2 or len(identities) != 4 or identities != expected:
+            raise ValueError("exactly two frozen original/neutral observation pairs required")
+        if any(not case["receipt"].endswith("/observation.json") for case in cases):
+            raise ValueError("paired probe only permits original observation receipts")
+    else:
+        raise ValueError("unregistered probe kind")
     bounds = {"allocator_limit_mib": (1, 4864), "reserve_mib": (2048, 8192),
               "non_torch_allowance_mib": (512, 2048), "max_seconds": (1, 600),
               "supervisor_seconds": (1, 900), "image_max_side": (1, 320)}
@@ -209,6 +251,7 @@ def load_saved_request(root, case, max_side):
                                "pixels_sha256": hashlib.sha256(small.tobytes()).hexdigest()})
         content += [{"type": "text", "text": label}, {"type": "image", "image": small}]
     content.append({"type": "text", "text": request["text"]})
+    request = apply_request_profile(request, case.get("request_profile", "original"))
     messages = [{"role": "system", "content": request["system"]}, {"role": "user", "content": content}]
     return request, messages, image_receipts
 
@@ -386,7 +429,9 @@ def run(spec_path, output):
                 options["prefix_allowed_tokens_fn"] = build_transformers_prefix_allowed_tokens_fn(tokenizer_data, JsonSchemaParser(schema))
             cap = {"plan": 1024, "observe": 320, "act": 64}[request["kind"]]
             row = {"case": case["receipt"], "kind": request["kind"], "input_tokens": prefix,
-                   "images": images, "request_sha256": case["sha256"], "status": "issued"}
+                   "images": images, "request_sha256": case["sha256"], "status": "issued",
+                   "request_profile": case.get("request_profile", "original"),
+                   "effective_public_request": request}
             result["calls"].append(row)
             (output / "progress.json").write_text(json.dumps(result, indent=2))
             torch.cuda.synchronize(); before = time.monotonic()

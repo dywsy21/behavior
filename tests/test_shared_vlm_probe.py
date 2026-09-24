@@ -88,6 +88,30 @@ class BudgetTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             probe.validate_spec(self.spec)
 
+    def test_paired_neutral_spec_and_rejections(self):
+        paired = json.loads((ROOT / "configs/semantic_robot/h47_neutral_observation_probe.json").read_text())
+        probe.validate_spec(paired)
+        for key, value in [("request_profile", "arbitrary"), ("receipt", "planner.json"),
+                           ("sha256", "changed")]:
+            with self.subTest(key=key):
+                changed = json.loads(json.dumps(paired))
+                changed["cases"][1][key] = value
+                with self.assertRaises(ValueError):
+                    probe.validate_spec(changed)
+        paired["cases"][1] = paired["cases"][0]
+        with self.assertRaises(ValueError):
+            probe.validate_spec(paired)
+
+    def test_original_probe_cannot_silently_change_prompt(self):
+        self.spec["cases"][0]["request_profile"] = probe.NEUTRAL_PROFILE
+        with self.assertRaises(ValueError):
+            probe.validate_spec(self.spec)
+
+    def test_unknown_probe_kind_rejected(self):
+        self.spec["probe_kind"] = "arbitrary"
+        with self.assertRaises(ValueError):
+            probe.validate_spec(self.spec)
+
     def test_stop_only_owned_process_and_escalate(self):
         child = Mock(); child.poll.return_value = None
         child.wait.side_effect = [subprocess.TimeoutExpired("owned", 15), 0]
@@ -159,6 +183,36 @@ class SavedRequestTests(unittest.TestCase):
         case["receipt"] = "../outside.json"
         with self.assertRaisesRegex(ValueError, "path or SHA"):
             probe.load_saved_request(self.root, case, 320)
+
+    def test_neutral_profile_only_replaces_example_block(self):
+        prefix, suffix = "Public context. ", "visible: choose from images.\nNo invented details."
+        original_system = prefix + probe.EXAMPLE_MARKER + json.dumps(probe.NEGATIVE_EXAMPLE) + "\n" + suffix
+        self.record["request_without_pixel_duplicates"]["system"] = original_system
+        case = self.write()
+        original, old_messages, old_images = probe.load_saved_request(self.root, case, 320)
+        case["request_profile"] = probe.NEUTRAL_PROFILE
+        neutral, new_messages, new_images = probe.load_saved_request(self.root, case, 320)
+        self.assertEqual(new_images, old_images)
+        self.assertEqual(new_messages[1], old_messages[1])
+        self.assertEqual({k: v for k, v in neutral.items() if k != "system"},
+                         {k: v for k, v in original.items() if k != "system"})
+        self.assertTrue(neutral["system"].startswith(prefix))
+        self.assertTrue(neutral["system"].endswith(suffix))
+        self.assertNotIn("Target not identified", neutral["system"])
+        self.assertEqual(original["system"], original_system)
+
+    def test_neutral_missing_modified_or_duplicate_marker_rejected(self):
+        original = self.record["request_without_pixel_duplicates"]
+        valid = probe.EXAMPLE_MARKER + json.dumps(probe.NEGATIVE_EXAMPLE) + "\nunchanged tail"
+        for system in ("no marker", valid + probe.EXAMPLE_MARKER,
+                       valid.replace('"visible": false', '"visible": true')):
+            with self.subTest(system=system):
+                with self.assertRaises(ValueError):
+                    probe.apply_request_profile({**original, "system": system}, probe.NEUTRAL_PROFILE)
+        with self.assertRaises(ValueError):
+            probe.apply_request_profile({**original, "system": valid, "kind": "plan"}, probe.NEUTRAL_PROFILE)
+        with self.assertRaises(ValueError):
+            probe.apply_request_profile(original, "unregistered")
 
 
 class ModelManifestTests(unittest.TestCase):

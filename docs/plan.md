@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 18:26（北京时间）：H46b四条完成/资源通过但观察漏检，H47单因素登记（Codex）
+
+18:31补充：H47已实现显式paired profile与有效公开请求回执，36 CPU通过；真实两对30图恢复/SHA核验、各对user消息/图像逐项相同，仅system例子块改变。18:32独立窄审闭合，0新GPU调用；未改live harness或旧run。即使新提示改善，也只归因于整个注册例子块替换，不能拆分断言某几个字的独立因果。
+
+- H46b固定eacdc0f、worker3443636已exit0，4/4格式通过，worker129.742s/监管139.878s；采样进程峰值5318MiB、最低free2166MiB，退出后7489MiB，原四训练3294346–3294349仍各73644MiB。真实248层NF4，vision/输出BF16且全参数cuda:0。完整包已本地`artifacts/agentic-vlm-goal-20260918/h46b_shared_bundle_v1`，result SHA`f9465e8d1ba87be4bea8bdcd330ac6c6b35044336b434eb684b4608581391728`、supervisor SHA`bedd4fed55d12845be4208194137152c55a0f3b56cbedcbf72e81094570e8626`双端一致。
+- 本人检查全部输出：计划59.105s合理；初态observe22.402s说不可见（结论合理但“只有地板/机器人”的描述不完整）；d91 observe7.555s仍漏掉head明确可见radio；act17.143s为right/forward/coarse/base，与原动作一致，但它独立用了旧公开上下文，**不是基于本轮错误observe完成闭环**。不能把4/4格式通过当方法有效，0新物理/官方SR。
+- 新主要假设：observe提示中填好的整份negative JSON被小模型复制。登记H47唯一Codex负责人：同冻结4B NF4/320/seed17/资源限额，d0与d91各作原提示/去掉具体答案值的中性字段说明配对，恰4调用/600s/外层900s、0reset/训练。只改该提示片段，保留全部图像/文字/解析及原始失败；不补人工坐标/GT，不自动放行模拟器。先实现/CPU/独审再固定Git启动，尚未调用。
+
+### 2026-09-24 18:18（北京时间）：H46b同配方单次兼容复验提交（Codex）
+
+- 新源`eacdc0fe25b0656d5ba0c302d414168b412e38b2`已push/robo独立`git_worktrees/shared_small_vlm_eacdc0f`，实际3.10/31 CPU/0.117s过，独审闭合。唯一回执UTC10:18:36.383537，supervisor3443628，spec SHA`633989e4ae30d99f945c5bebfbf86094712caf93e0b963991abf97ed3cb60b50`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h46b_shared_4b_nf4_v1`及同stem监管/launch/log，cache `robodojo_vlm_runtime_20260924/h46b`。原4调用/600/900和显存保护不变，仍0新物理训练。
+- H46旧全包已本地：worker17.415s/监管29.576s/0生成，采样自有4136MiB/最低free3348MiB；result SHA`bf5405b11f5528b3f6104eeda99e0d19b731a08f94b8d0c858813cf01d478152`、supervisor SHA`1b7d5b89f31191f855e4916ecdfc43c599a90fa5f6911d2a19ce19daceb7dd39`，不由装载较省显存提前推论推理/方法有效。下一核H46b全量输出。
+
 ### 2026-09-24 18:16（北京时间）：H46可选回执属性兼容失败/窄修复闭合（Codex）
 
 - 完整result确认worker3442790仅17.415s、calls=[]，量化后在读取可选`hf_device_map`回执字段报AttributeError；不是量化/跨卡/dtype检查失败，也没有语义输出。两自有进程已退出、四训练仍在，完整包正归档`artifacts/agentic-vlm-goal-20260918/h46_shared_bundle_v1`，原run保留。

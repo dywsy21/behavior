@@ -1,10 +1,14 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 18:26北京时间H46b终态：** 3443628/3443636已退出0，4调用完成，原四训练仍在且各卡恢复7489MiB。原run/cache保留，完整本地`artifacts/agentic-vlm-goal-20260918/h46b_shared_bundle_v1`两主SHA与远端一致；不是活跃HTTP服务。H47仅CPU准备，未运行。
+
+**2026-09-24 18:18北京时间H46b提交：** 唯一supervisor3443628，固定`git_worktrees/shared_small_vlm_eacdc0f`；结果`/mnt/nvme_tmp/robodojo_agentic_20260924/h46b_shared_4b_nf4_v1`及同stem launch/supervisor/log，cache `robodojo_vlm_runtime_20260924/h46b`。实际完整推理结果待核；旧H46已全量本地保留，训练均未终止。
+
 **2026-09-24 18:16北京时间H46终态：** supervisor3442782/worker3442790均已退出，result明确0生成/17.415s，缺可选设备映射回执属性；原目录保留，本地全包`artifacts/agentic-vlm-goal-20260918/h46_shared_bundle_v1`下载核验中。H46b仅兼容修复准备，尚未提交；四训练保持原PID。
 
 **2026-09-24 18:13北京时间H46提交：** 唯一supervisor3442782，固定`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_small_vlm_824f659`；结果`/mnt/nvme_tmp/robodojo_agentic_20260924/h46_shared_4b_nf4_v1`及同stem launch/supervisor/log，cache `robodojo_vlm_runtime_20260924/h46`。实际4B量化/推理结果待核，四训练保留；H45/H45b均已结束并完整本地保存。
 
-**2026-09-24 17:57北京时间H45b终态：** 首次生成触发自有allocator OOM后已退出，四训练保留且四卡free7489MiB；H45b目录为失败证据非活跃服务，勿重启或覆盖。新官方评测未开始。
+**2026-09-24 17:57北京时间H45b终态：** 已退出，18:02完整结果更正为前三条生成完成/第4条自有allocator OOM（非首次生成失败）；四训练保留且四卡free7489MiB。H45b目录为失败证据非活跃服务，勿重启或覆盖。新官方评测未开始。
 
 **2026-09-24 17:54北京时间H45b提交：** 唯一supervisor3440248，固定`git_worktrees/shared_small_vlm_380b9de`；输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h45b_shared_2b_v1`及同stem launch/supervisor/log，cache `robodojo_vlm_runtime_20260924/h45b`。已确认提交、真实生成结果待验；原H45全包本地`artifacts/agentic-vlm-goal-20260918/h45_shared_bundle_v1`已与远端result/supervisor SHA核同。
 
