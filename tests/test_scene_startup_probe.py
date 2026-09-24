@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from copy import deepcopy
 from dataclasses import dataclass
 import hashlib
 import json
@@ -24,7 +25,8 @@ def profile():
             'BUDGET_DETAILS', 'DEPENDENCIES', 'FIXED_ENV', 'PROFILE_SETTINGS',
             'PROFILE_APP_CONFIG', 'RUNTIME_SETTINGS')
     with patch.multiple(base, **{k: getattr(base, k) for k in keys}), \
-         patch.object(scene, 'PATH_TRACING', False), patch.object(scene, 'DISABLE_VIEWER', False):
+         patch.object(scene, 'PATH_TRACING', False), patch.object(scene, 'DISABLE_VIEWER', False), \
+         patch.object(scene, 'PRECONFIGURE_CAMERAS', False):
         scene.configure_profile()
         yield
 
@@ -196,7 +198,10 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
     def test_pathtracing_worker_handles_observed_legacy_mode_before_scene(self):
         self._exercise_worker(True,native_render_mode='RaytracedLighting')
 
-    def _exercise_worker(self, use_pathtracing, native_render_mode='RealTimePathTracing'):
+    def test_preconfigured_camera_worker_keeps_original_session_and_no_live_rebuild(self):
+        self._exercise_worker(False, use_cameras=True)
+
+    def _exercise_worker(self, use_pathtracing, native_render_mode='RealTimePathTracing', use_cameras=False):
         import shared_pathtracing as renderer
         images, depths, sensors = capture_fixture()
         factory = ModuleType('native_oracle_low_v1.official_factory'); factory.__file__ = str(scene.FACTORY)
@@ -206,26 +211,44 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
         robot = SimpleNamespace(action_dim=23, get_joint_positions=Mock(return_value=np.zeros(31)))
         env = SimpleNamespace(robots=[robot], step=Mock(side_effect=AssertionError('No actor control')))
         original = SimpleNamespace(env=env, reset=Mock(), load_task_instance=Mock())
+        cfg = 'cfg'
+        if use_cameras:
+            from test_preconfigured_cameras import config_fixture, environment_fixture, EnvironmentWrapper
+            import shared_camera_config as cameras
+            cfg = config_fixture()
+            camera_env, specs = environment_fixture()
+            robot.name = camera_env.robots[0].name
+            robot.sensors = camera_env.robots[0].sensors
+            env._eval_robot_config = camera_env._eval_robot_config
+        def construct_evaluator(actual_cfg):
+            if use_cameras:
+                self.assertEqual(actual_cfg['env_wrapper']['_target_'], cameras.PRECONFIGURED_WRAPPER)
+                self.assertEqual(actual_cfg['robot']['sensor_config']['zed_link:Camera:0']['sensor_kwargs']['image_height'], 720)
+                original.env = cameras.wrap_preconfigured(env)
+            return original
         @dataclass(frozen=True)
         class Imports:
             Evaluator: object
             gm: object
+            OmegaConf: object
         @contextmanager
         def unlocked(): yield
         gm=SimpleNamespace(RENDER_VIEWER_CAMERA=True,unlocked=unlocked)
-        imports = Imports(Mock(return_value=original),gm); factory._lazy_official_imports = Mock(return_value=imports)
+        omega = SimpleNamespace(to_container=lambda cfg, resolve: deepcopy(cfg), create=deepcopy)
+        imports = Imports(Mock(side_effect=construct_evaluator),gm,omega); factory._lazy_official_imports = Mock(return_value=imports)
         @contextmanager
         def original_session(window, *, gpu, imports):
-            if use_pathtracing:
+            if use_pathtracing or use_cameras:
                 og.launch(physics_dt=.008,device='cuda:3')
+            if use_pathtracing:
                 renderer.read_checked(settings)  # The Environment now starts scene loading.
-            evaluator=imports.Evaluator('cfg'); evaluator.reset(); evaluator.load_task_instance(138)
+            evaluator=imports.Evaluator(cfg); evaluator.reset(); evaluator.load_task_instance(138)
             yield SimpleNamespace(reset=evaluator.reset,evaluator=evaluator)
         factory.OfficialEvaluatorSession = Mock(side_effect=original_session)
         package = ModuleType('native_oracle_low_v1'); package.official_factory = factory
         og = ModuleType('omnigibson'); og.__path__ = []; og.app = None
         sim=SimpleNamespace(render=Mock(),scenes=[],viewer_camera=None)
-        og.sim = None if use_pathtracing else sim
+        og.sim = None if use_pathtracing or use_cameras else sim
         source=Path(__file__).resolve() if use_pathtracing else scene.OG_SOURCE
         og_startup = ModuleType('omnigibson.simulator'); og_startup.__file__ = str(source)
         def original_launch(**kwargs):
@@ -255,6 +278,10 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
             kwargs['construct']()
             yield {'launch_calls':1, 'app_constructions':1, 'verified_copy_noops':[{},{}], 'shared_install_writes':0}
         modules = {m.__name__:m for m in (factory, package, og, og_startup, onboard, backend, isaac, carb, carb.settings)}
+        if use_cameras:
+            wrapper_module = ModuleType('omnigibson.envs.env_wrapper')
+            wrapper_module.EnvironmentWrapper = EnvironmentWrapper
+            modules[wrapper_module.__name__] = wrapper_module
         with profile(), tempfile.TemporaryDirectory() as folder, patch.object(base, 'OUTPUT', Path(folder)), \
              patch.object(base, 'identity', return_value='f'*40), patch.object(base, 'claim_stage'), \
              patch.object(base, 'snapshot', return_value=fixture()), patch.object(scene, 'validate_window'), \
@@ -272,6 +299,10 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
                 base.OUTPUT=Path(folder)
                 values.update(renderer.SETTINGS)
                 values['/rtx/pathtracing/totalSpp']=4  # Native app reset ignores our CLI16.
+            if use_cameras:
+                import probe_scene_preconfigured_cameras
+                probe_scene_preconfigured_cameras.configure_profile()
+                base.OUTPUT = Path(folder)
             scene.scene_worker()
             record = json.loads((Path(folder)/'worker.json').read_text())
             self.assertEqual({k:record[k] for k in base.SUCCESS_FIELDS}, base.SUCCESS_FIELDS)
@@ -284,6 +315,12 @@ assert not any(x in sys.modules for x in ('torch', 'isaacsim', 'omnigibson'))
                 self.assertEqual(record['pathtracing_actual_settings'],renderer.SETTINGS)
                 self.assertTrue(record['pathtracing_profile_verified'])
                 og.launch.assert_called_once_with(physics_dt=.008,device='cuda:3')
+            if use_cameras:
+                self.assertTrue(record['preconfigured_cameras_verified'])
+                self.assertEqual(record['camera_configuration']['cameras'], specs)
+                self.assertEqual(record['camera_after_capture'], record['camera_initialization'])
+                self.assertFalse(scene.PATH_TRACING)
+                self.assertEqual(cfg, config_fixture())
         self.assertEqual(original.reset.call_count,2); original.load_task_instance.assert_called_once_with(138)
         env.step.assert_not_called()
         window.frozen_window.assert_not_called(); self.assertEqual(og.sim.render.call_count, 4)

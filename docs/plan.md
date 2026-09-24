@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 22:42（北京时间）：H55相机创建配置前移已接线、CPU验证中（Codex）
+
+22:45更新：67项本地CPU及完整H55 mock worker/原reset链过，独审进行中；单次原600s/显存预算已登记`experiments/2026-09-24-h55-preconfigured-cameras.md`。未部署/提交GPU。
+
+22:48更新：原582接口回归过，初审仅补基类Wrapper属性代理源码SHA冻结及profile断言（21依赖）；67目标CPU重过、修后独审待。无新GPU，不将CPU回执视为实际相机加载成功。
+
+22:49修后独审闭合：独立复跑67/67、diff过，无其余实质阻塞。开始Git固定及远端同测/真实YAML转换/21依赖/资源门，尚无H55 GPU。
+
+- 当前分支pull/fetch核新；14:40UTC四训练仍原3294346–3294349/各73644MiB，无自有GPU进程。确认安装版Robot支持per-link sensor_config，create_sensor默认与整个class条目复制可保留；不改共享安装/原robot YAML。
+- 新`shared_camera_config.py`纯配置复制＋只读wrapper，`probe_scene_preconfigured_cameras.py`独立默认关闭profile；从元数据派生三相机key，首次创建即720/480 RGB-D，保留原wrapper的articulation后space reload。严格核非相机cfg不变、initial/current尺寸与sensor/render-product身份；没有live setter、删相机或改physics。H55保持H53b原renderer，不叠加H54b。
+- 正补CPU反例/完整mock链及独审，尚未提交GPU。拟同原TRAIN138/seed0/1Session/600s/4096主512辅助3072余量、0actor前缀模型训练，准确预算见后续H55票；成功率仍未获得。H54b就绪暂缓。
+
 ### 2026-09-24 22:35（北京时间）：确认相机先1080再降尺寸的初始化浪费，H54b暂缓（Codex）
 
 - 新直接源码证据：冻结r1pro.yaml `VisionSensor.sensor_kwargs`为1080×1080；Evaluator先完整`og.Environment(configs=cfg)`，之后才instantiate RGBDFullResWrapper。现有chunk wrapper此时逐相机加depth，并将head设720、腕设480。因此H53系列机器人初始化先承受三路1080缓冲，之前“保持原三相机720/480”只约束最终捕获，**不能据此推定启动期间已是最终分辨率**；更正此前未区分两阶段的描述。

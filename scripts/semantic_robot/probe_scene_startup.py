@@ -41,13 +41,15 @@ EXTRA_DEPENDENCIES = {
 }
 DISABLE_VIEWER = False  # H53 default; the separate H53b CLI opts in.
 PATH_TRACING = False  # H54 is a separate, image-distribution-changing profile.
+PRECONFIGURE_CAMERAS = False  # H55 moves final config before sensor creation.
 
 
 def configure_profile():
     """Called only by this immutable CLI, never as an import side effect."""
-    global DISABLE_VIEWER, PATH_TRACING
+    global DISABLE_VIEWER, PATH_TRACING, PRECONFIGURE_CAMERAS
     DISABLE_VIEWER = False
     PATH_TRACING = False
+    PRECONFIGURE_CAMERAS = False
     supervisor.PROFILE_SETTINGS = {}
     supervisor.PROFILE_APP_CONFIG = {}
     supervisor.RUNTIME_SETTINGS = {**supervisor.SETTINGS, **supervisor.GPU_SETTINGS}
@@ -174,7 +176,22 @@ def trace_session_imports(imports, record):
         nonlocal constructed
         if constructed: raise ValueError('Only one evaluator construction permitted')
         constructed = True
-        return EvaluatorTrace(original_factory(cfg))
+        if PRECONFIGURE_CAMERAS:
+            if PATH_TRACING:
+                raise ValueError('H55 must not combine camera initialization with a renderer change')
+            import shared_camera_config as cameras
+            if Path(cameras.__file__).resolve() != (supervisor.REPO/'scripts/semantic_robot/shared_camera_config.py').resolve():
+                raise ValueError('Preconfigured camera wrapper source was shadowed')
+            plain = imports.OmegaConf.to_container(cfg, resolve=True)
+            modified, receipt = cameras.prepare_config(plain)
+            record['camera_configuration'] = receipt
+            supervisor.write('worker.json', record)
+            cfg = imports.OmegaConf.create(modified)
+        original = original_factory(cfg)
+        if PRECONFIGURE_CAMERAS:
+            record['camera_initialization'] = cameras.validate_wrapper(original.env, receipt['cameras'])
+            supervisor.write('worker.json', record)
+        return EvaluatorTrace(original)
     return replace(imports, Evaluator=construct)
 
 
@@ -277,6 +294,9 @@ def scene_worker():
                     if PATH_TRACING:
                         pathtracing.validate_after_scene(og, record)
                     env = environment.evaluator.env
+                    if PRECONFIGURE_CAMERAS:
+                        import shared_camera_config as cameras
+                        cameras.validate_wrapper(env, record['camera_configuration']['cameras'])
                     robot = env.robots[0]
                     if robot.action_dim != 23:
                         raise ValueError('Original R1Pro 23-control embodiment required')
@@ -293,6 +313,9 @@ def scene_worker():
                     images, depths, sensors = sensor.read(model, render=render_only)
                     after = array(robot.get_joint_positions()).copy()
                     validate_capture(before, after, images, depths, sensors)
+                    if PRECONFIGURE_CAMERAS:
+                        record['camera_after_capture'] = cameras.validate_wrapper(env, record['camera_configuration']['cameras'])
+                        record['preconfigured_cameras_verified'] = True
                     if PATH_TRACING:
                         pathtracing.validate_after_scene(og, record)
                     if (record['onboard_render_calls'] != 4 or record['official_api_resets'] != 2 or
