@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 01:10（北京时间）：Z-01按最新请求核验，直接复用仍待完整公开包（Codex）
+
+- 本轮处理用户最新的“BEHAVIOR＋冻结G0.5＋作者已演化Critic/Recovery”，不恢复旧G-AV1仿真；原goal保持资源blocked，不能用它覆盖当前请求。两工作分支均clean pull/fetch成功；Z-01代码仍`963efcf`，原21 CPU与修后独审不重复运行。
+- 实际fetch上游仍`1fee179`，另一分支`747be406`相关目录无差异；原演化JSON SHA `3b90203f33058b36d3e2b6efc3794e16649a3b282080376b9863aef85265cac0`不变，1 critic/0 recovery。最新官方项目页/Release/Issue #32仍没有找到可加载的完整promoted bundle。Recovery框架类与单次Pi0.5 fallback不等于缺失的演化恢复程序，七项特权特征问题仍在。
+- 01:08:25只读robo（UTC17:08:25）：四个xhz训练3294346–3294349仍在、各73644MiB，四卡free7489/7489/7489/7488MiB。本轮0模型/仿真/训练/信号/服务器改动，G0.5＋仿真效果未测；不把未运行记作0%成功。
+- 下一必须获得完整公开bundle及工具实现链接，或由用户明确改为自行构建适配变体；未默认启动演化。证据和原接口在独立`feat/zetta-g05-20260924`、`/home/wsy/behavior_worktrees/zetta-g05-20260924/docs/experiments/2026-09-24-zetta-g05.md`。安全可做的原接口准备已保留，当前需要产物/路线输入，不反复刷相同预检。
+
 ### 2026-09-25 01:02（北京时间）：第三轮资源阻塞核验，goal已标记blocked（Codex）
 
 - 上一轮归类为progress：H62真实公共传感器回放已exit0/9.162s，源码454c91c、完整结果/边界摘要bc3e810均已push。复核结果明确`model_calls=0/control_steps=0/success_rate=null/not_success_rate=true`；不能支持完整零前缀官方SR>0，目标未完成。
