@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 00:22北京时间H59归档闭合：** 本地`artifacts/agentic-vlm-goal-20260918/h59_warm_cache_bundle_v1`完整9件/约4.4MiB，9 SHA双端一致、327样本四训练身份/73644MiB恒定；旧source/run/runtime/cache均保留且无人重启。当前无自有GPU/仿真，H60仅本地CPU准备。
+
+**2026-09-25 00:21北京时间H60公共输入：** 本地完整30件`artifacts/agentic-vlm-goal-20260918/h60_public_inputs_v2`，157646923B/150.344MiB，四case递归原SHA全过；比准备估计150MiB多0.344MiB，已如实记偏差，不追加复制。旧v1为55s截断的部分副本，保留但禁止使用。全部原服务器数据未修改。
+
+**2026-09-25 00:17北京时间H59终态：** 3511153/3511162已退出，259.068s/-15，共享显存门触发，0 RGB-D。原7369749 source、20260925 run/runtime及复制缓存全保留；9件日志/回执/manifest向本地`artifacts/agentic-vlm-goal-20260918/h59_warm_cache_bundle_v1`归档待。四原训练保留且余量恢复，无自有GPU/新sim。
+
+**2026-09-25 00:11北京时间H59提交：** 源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_scene_7369749`/73697490118bfff04117a7aa1dc430cc721c55b2；唯一launch UTC16:10:51.337094/supervisor3511153。run `/mnt/nvme_tmp/robodojo_agentic_20260925/h59_warm_cache_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h59_warm_cache_v1`创建；原600s含复制，0actor模型训练，真实终态待。旧H57源/缓存保留只读，四原训练不动。
+
 **2026-09-25 00:04北京时间H58全包闭合：** 本地`artifacts/agentic-vlm-goal-20260918/h58_text_detector_bundle_v1`，19文件/12 RAW像素全核，三主要JSON SHA双端一致；3510163/3510168已退出。原source/run/runtime与659MiB模型全保留，检测器未在线部署。H59拟新20260925 run/runtime目录，当前仅CPU源码，旧H57四缓存4170件/7.19GiB只读核定，不改原缓存/四训练。
 
 **2026-09-24 23:59北京时间H58提交：** 冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/text_detector_01e6045`/01e60457f14c5533de4f9493024fba1c52689e5a；唯一launch UTC15:58:39.789044/supervisor3510163。输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h58_text_detector_cpu_v1`、独立runtime `/mnt/nvme_tmp/robodojo_vlm_runtime_20260924/h58_cpu`已创建；仅CPU12查询，0新GPU/模拟器/训练，实际结果待。不可热改源码或重复提交。
