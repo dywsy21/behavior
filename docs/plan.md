@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 22:27（北京时间）：H54空sim前置mode检查失败，未加载任务（Codex）
+
+22:29归档闭合：全8件本地`h54_pathtracing_bundle_v1`/4主SHA核同，42资源样本四训练恒73644，主卡峰仅597MiB增量。不是OOM/显存门；factory/既有chunk wrapper/官方Evaluator无mode赋值，继续查native设置来源。未追加GPU。
+
+- 3485875/3485882已结束，监管33.874s/worker进程exit0但receipt明确failed，故监管正确拒绝成功。empty app十项PT设置实际读回过；原og.launch返回时mode实际为`RaytracedLighting`，与本票过窄的`RealTimePathTracing`断言不符，第二次apply未执行。初步为启动验收假设错误，不是显存越界或方法失败。
+- 外层reset/load/RGB-D/actor/前缀/模型/训练均0；四原训练各73644MiB且显存回收。原7e706be/run/runtime保留，正归档全包/只读核模式变更来源，未直接放宽资源重跑。完整goal未完成。
+
 ### 2026-09-24 22:26（北京时间）：H54唯一PathTracing/OptiX场景检查运行中（Codex）
 
 - 短暂3480326在只读查身份前已自行退出，用途未确认；22:24:55及后续严格资源门仅原四训练，各73644MiB。未发信号/增加白名单；预定目录核实不存在后才唯一launch。

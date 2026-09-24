@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 22:29北京时间H54归档闭合：** 完整8件本地`artifacts/agentic-vlm-goal-20260918/h54_pathtracing_bundle_v1`，4主SHA双端一致/42样本审完；源/run/runtime全保留，无H54活动进程。原四训练不动，新原始场景图像仍无。
+
+**2026-09-24 22:27北京时间H54终态：** 3485875/3485882退出，worker进程exit0但receipt failed（原launch返回mode与断言不符）；监管33.874s拒绝通过。原source/run/runtime保留，无活跃H54 sim，四训练仍原PID/各73644MiB、余量回收；完整小包正归档，不当任务效果。
+
 **2026-09-24 22:26北京时间H54提交：** 固定源`git_worktrees/shared_scene_7e706be`；supervisor3485875，唯一launch UTC14:26:05.076513。run `/mnt/nvme_tmp/robodojo_agentic_20260924/h54_pathtracing_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h54_pathtracing_v1`现已创建，不热改。短暂3480326自行退出/后续原资源门过，四训练保留；H54实际图像与终态待验，非任务SR。
 
 **2026-09-24 22:24北京时间H54源码准备：** 独立`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_scene_7e706be`固定7e706be67514c261aef94917b1bfa561478f2f80，双端52 CPU/16依赖过。GPU0新未知3480326/39MiB触预检门，未调用launch，预定`h54_pathtracing_v1`输出/runtime尚未创建；不得将独立源码目录当运行成功，不停止此新进程。

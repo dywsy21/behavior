@@ -49,3 +49,18 @@ H53b无viewer仍在机器人/渲染初始化时超过主卡4096MiB增量门，�
 22:24源码已固定`7e706be67514c261aef94917b1bfa561478f2f80`/远端`git_worktrees/shared_scene_7e706be`，52远端CPU/16依赖过。但实时GPU0出现PID3480326 C+G39MiB，非注册四训练，严格身份门拒绝；未调用launch、未创建run/runtime、无H54 worker。正在只读核身份，原四训练仍各73644，不发信号/绕过检查。
 
 22:26实际提交：短暂3480326在查身份时已自行退出，用途未知；22:24:55及之后仅原四训练，原严格身份/显存门重新通过，未增加白名单或停止任何外部进程。确认预定目录不存在后唯一launch UTC14:26:05.076513，supervisor3485875，固定source7e706be；run/runtime现已创建，原预算不变，真实图像/资源/退出结果待验，不重提。
+
+## H54实际未通过及归档（22:29北京时间）
+
+监管33.874304785s，3485875/3485882已结束；worker native退出0但worker receipt明确failed，监管正确拒绝成功。empty app已实际读回全部18项（原8＋PT10）设置；原og.launch返回后`/rtx/rendermode`却是`RaytracedLighting`，触本实现过窄的`RealTimePathTracing`前置断言，未执行第二次apply。即源码曾set RT2，并不证明多次native update后这个可变状态仍RT2；不能以这次失败否定PT/OptiX能力。
+
+外层reset/load、RGB-D、actor/前缀/模型/训练均0；未载任务scene。42样本全部四训练各73644MiB、退出原余量恢复。GPU0/1/2/3自有峰456/416/416/568MiB，增量470/422/422/597，最低free7018/7068/7068/6891；不是显存门失败。所有source/runtime/run保留。
+
+全部8件在本地`artifacts/agentic-vlm-goal-20260918/h54_pathtracing_bundle_v1`，4主SHA双端一致：
+
+- launch `4caf0ccb5368c741f300559c20a5ff74a9605f92ca7f3cea663300ba9f6f6f4b`
+- supervisor `8cc71e19a3403560bf9a03e2d6a46884e6bf7cdd1a8f4f4d2adcfbb08cd8a942`
+- worker `86f5c3dee15935daeecb5af8538c91b6fdb7cc5df3be977447c19d62b5dbff05`
+- kit.log `baf67982f7cf36b10d42a08957f22fac9bca4ec93d469dfd3389b8d9f7c1dba4`
+
+正只读查设置来源；factory/官方Evaluator/既有chunk wrapper无renderer模式赋值。后继若修前置模式检查，仍须保持准确source/alias/空scene/无viewer、一调用、最终PT严格读回及所有资源门，不接受unknown配置，另用新run记录，不掩盖这次负例。
