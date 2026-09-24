@@ -1,0 +1,192 @@
+"""CPU-only tests for the bounded shared-GPU saved-request diagnostic."""
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import Mock
+import subprocess
+
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+MODULE = importlib.util.spec_from_file_location("probe_shared_vlm", ROOT / "scripts/semantic_robot/probe_shared_vlm.py")
+probe = importlib.util.module_from_spec(MODULE)
+MODULE.loader.exec_module(probe)
+
+
+class ResourceTests(unittest.TestCase):
+    def setUp(self):
+        self.spec = dict(gpu=2, gpu_uuid="gpu-test", training_pids=[40], reserve_mib=2048,
+                         allocator_limit_mib=4864, non_torch_allowance_mib=512)
+        self.snapshot = dict(index=2, uuid="gpu-test", free_mib=7489, apps=[dict(pid=40, used_mib=73644)])
+
+    def check(self, before=True):
+        probe.check_resources(self.snapshot, self.spec, own_pid=41, before_load=before)
+
+    def test_exact_initial_budget(self):
+        self.check()
+        self.snapshot["free_mib"] = 7423
+        with self.assertRaisesRegex(ValueError, "headroom"):
+            self.check()
+
+    def test_own_process_not_treated_as_peer(self):
+        self.snapshot["apps"].append(dict(pid=41, used_mib=4500))
+        self.snapshot["free_mib"] = 2048
+        self.check(False)
+        self.snapshot["free_mib"] = 2047
+        with self.assertRaisesRegex(ValueError, "headroom"):
+            self.check(False)
+
+    def test_new_or_missing_peer_fails_closed(self):
+        self.snapshot["apps"].append(dict(pid=42, used_mib=100))
+        with self.assertRaisesRegex(ValueError, "process identity"):
+            self.check()
+        self.snapshot["apps"] = []
+        with self.assertRaisesRegex(ValueError, "process identity"):
+            self.check()
+
+    def test_wrong_gpu_rejected(self):
+        self.snapshot["uuid"] = "different"
+        with self.assertRaisesRegex(ValueError, "GPU identity"):
+            self.check()
+
+    def test_recheck_accounts_for_only_own_existing_context(self):
+        self.snapshot["apps"].append(dict(pid=41, used_mib=400))
+        self.snapshot["free_mib"] = 7489 - 400
+        self.check()
+        self.snapshot["free_mib"] = 5000
+        self.check(False)
+        with self.assertRaisesRegex(ValueError, "headroom"):
+            self.check(True)
+
+    def test_non_torch_overhead_cannot_overrun_total_limit(self):
+        self.snapshot["apps"].append(dict(pid=41, used_mib=5377))
+        with self.assertRaisesRegex(ValueError, "total GPU memory budget"):
+            self.check(False)
+
+
+class BudgetTests(unittest.TestCase):
+    def setUp(self):
+        self.spec = json.loads((ROOT / "configs/semantic_robot/h45_shared_small_vlm_probe.json").read_text())
+
+    def test_frozen_spec(self):
+        probe.validate_spec(self.spec)
+
+    def test_limits_cannot_be_expanded(self):
+        for key, value in [("allocator_limit_mib", 8000), ("max_seconds", 3600),
+                           ("reserve_mib", 0), ("image_max_side", 640), ("training_steps", 1)]:
+            with self.subTest(key=key):
+                changed = dict(self.spec); changed[key] = value
+                with self.assertRaises(ValueError):
+                    probe.validate_spec(changed)
+
+    def test_duplicate_or_extra_case_rejected(self):
+        self.spec["cases"] = [self.spec["cases"][0]] * 4
+        with self.assertRaises(ValueError):
+            probe.validate_spec(self.spec)
+
+    def test_stop_only_owned_process_and_escalate(self):
+        child = Mock(); child.poll.return_value = None
+        child.wait.side_effect = [subprocess.TimeoutExpired("owned", 15), 0]
+        probe.stop_owned_child(child)
+        child.terminate.assert_called_once_with()
+        child.kill.assert_called_once_with()
+        self.assertEqual(child.wait.call_count, 2)
+
+    def test_exited_worker_not_signaled(self):
+        child = Mock(); child.poll.return_value = 0
+        probe.stop_owned_child(child)
+        child.terminate.assert_not_called(); child.kill.assert_not_called()
+
+
+class SavedRequestTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.label = "CURRENT_HEAD_RAW"
+        image = Image.new("RGB", (800, 400), (30, 40, 50))
+        image.save(self.root / (self.label + ".png"))
+        image.thumbnail((640, 640))
+        self.record = {
+            "request_without_pixel_duplicates": dict(kind="observe", system="public system", text="public text",
+                                                       images=[dict(label=self.label)], allowed=[]),
+            "result": {"images": [dict(label=self.label, size=list(image.size),
+                                        pixels_sha256=hashlib.sha256(image.tobytes()).hexdigest())]},
+            "privileged_unused": {"target_world_pose": [999, 999, 999]},
+        }
+
+    def write(self):
+        path = self.root / "receipt.json"
+        path.write_text(json.dumps(self.record))
+        return dict(receipt=path.name, sha256=probe.sha(path))
+
+    def test_public_request_and_all_images_only(self):
+        request, messages, receipts = probe.load_saved_request(self.root, self.write(), 320)
+        self.assertEqual(request["text"], "public text")
+        self.assertEqual(receipts[0]["size"], [320, 160])
+        self.assertNotIn("target_world_pose", str(messages))
+        self.assertEqual(messages[1]["content"][0]["text"], self.label)
+
+    def test_changed_pixels_rejected(self):
+        case = self.write()
+        Image.new("RGB", (800, 400), (1, 2, 3)).save(self.root / (self.label + ".png"))
+        with self.assertRaisesRegex(ValueError, "RGB pixels"):
+            probe.load_saved_request(self.root, case, 320)
+
+    def test_changed_receipt_rejected(self):
+        case = self.write()
+        self.record["request_without_pixel_duplicates"]["text"] = "changed"
+        self.write()
+        with self.assertRaisesRegex(ValueError, "SHA"):
+            probe.load_saved_request(self.root, case, 320)
+
+    def test_private_extra_request_field_rejected(self):
+        self.record["request_without_pixel_duplicates"]["private_pose"] = [1, 2, 3]
+        with self.assertRaisesRegex(ValueError, "public actor request"):
+            probe.load_saved_request(self.root, self.write(), 320)
+
+    def test_image_order_identity_rejected(self):
+        self.record["result"]["images"][0]["label"] = "CURRENT_LEFT_WRIST_RAW"
+        with self.assertRaisesRegex(ValueError, "identity mismatch"):
+            probe.load_saved_request(self.root, self.write(), 320)
+
+    def test_path_escape_rejected(self):
+        case = self.write()
+        case["receipt"] = "../outside.json"
+        with self.assertRaisesRegex(ValueError, "path or SHA"):
+            probe.load_saved_request(self.root, case, 320)
+
+
+class ModelManifestTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.file = self.root / "config.json"; self.file.write_text("{}")
+        self.manifest = {self.file.name: probe.sha(self.file)}
+
+    def test_complete_snapshot_with_download_cache(self):
+        (self.root / ".cache").mkdir()
+        probe.validate_model_files(self.root, self.manifest)
+
+    def test_added_generation_configuration_rejected(self):
+        (self.root / "generation_config.json").write_text('{"eos_token_id": 123}')
+        with self.assertRaisesRegex(ValueError, "manifest"):
+            probe.validate_model_files(self.root, self.manifest)
+
+    def test_changed_config_rejected(self):
+        self.file.write_text('{"eos_token_id": 123}')
+        with self.assertRaisesRegex(ValueError, "file changed"):
+            probe.validate_model_files(self.root, self.manifest)
+
+    def test_symlink_and_extra_folder_rejected(self):
+        self.file.rename(self.root / "original.json")
+        self.file.symlink_to(self.root / "original.json")
+        with self.assertRaises(ValueError):
+            probe.validate_model_files(self.root, self.manifest)
+
+
+if __name__ == "__main__":
+    unittest.main()
