@@ -108,6 +108,34 @@ class HandoffTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.client.policy_step(observation(), step_index=5)
 
+    def test_gap_without_handoff_blocks_before_consuming_remote_suffix(self):
+        self.client.reset_episode()
+        self.client.policy_step(observation(), step_index=0)
+        with self.assertRaises(ValueError):
+            self.client.policy_step(observation(), step_index=2)
+        self.assertEqual(len(self.transport.calls), 2)
+        with self.assertRaises(RuntimeError):
+            self.client.policy_step(observation(), step_index=3)
+        self.client.recovery_finished()
+        self.client.policy_step(observation(), step_index=21)
+        self.client.policy_step(observation(), step_index=22)
+
+    def test_reset_jump_only_allows_first_action_not_following_gap(self):
+        self.client.reset_episode()
+        self.client.policy_step(observation(), step_index=0)
+        self.client.recovery_started()
+        self.client.recovery_finished()
+        self.client.policy_step(observation(), step_index=21)
+        with self.assertRaises(ValueError):
+            self.client.policy_step(observation(), step_index=23)
+        self.assertEqual(len(self.transport.calls), 4)
+
+    def test_contiguous_policy_steps_work(self):
+        self.client.reset_episode()
+        for step in range(40):
+            self.client.policy_step(observation(), step_index=step)
+        self.assertEqual(len(self.transport.calls), 41)
+
     def test_rejects_invalid_ticks_without_io(self):
         self.client.reset_episode()
         for step in (-1, 1.5, True):

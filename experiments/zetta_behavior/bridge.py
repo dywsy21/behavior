@@ -65,6 +65,7 @@ class FrozenG05ClientBoundary:
         self._request = request
         self._needs_reset = True
         self._last_step: int | None = None
+        self._fresh_chunk = False
 
     def reset_episode(self) -> None:
         # Mark unready *before* I/O: a failed reset must not reuse a stale chunk.
@@ -73,6 +74,7 @@ class FrozenG05ClientBoundary:
         if not isinstance(reply, Mapping) or dict(reply) != {"__reset__": True}:
             raise ValueError("G0.5 did not acknowledge cache reset")
         self._last_step = None
+        self._fresh_chunk = True
         self._needs_reset = False
 
     def recovery_started(self) -> None:
@@ -90,8 +92,12 @@ class FrozenG05ClientBoundary:
             raise RuntimeError("reset/acknowledged recovery handoff required")
         if type(step_index) is not int or step_index < 0:
             raise ValueError("step_index must be a nonnegative control-step integer")
-        if self._last_step is not None and step_index <= self._last_step:
-            raise ValueError("each policy request must use a newer control step")
+        if self._last_step is not None:
+            if step_index <= self._last_step or (
+                not self._fresh_chunk and step_index != self._last_step + 1
+            ):
+                self._needs_reset = True
+                raise ValueError("control clock discontinuity requires a cache-reset handoff")
         if not isinstance(raw_obs, dict) or not all(
             key in raw_obs for key in ("images", "state", "task")
         ) or "__reset__" in raw_obs:
@@ -102,6 +108,7 @@ class FrozenG05ClientBoundary:
         self._needs_reset = True
         command = action23_from_g05(self._request(raw_obs))
         self._last_step = step_index
+        self._fresh_chunk = False
         self._needs_reset = False
         return command
 

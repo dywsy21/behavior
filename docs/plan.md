@@ -12,6 +12,10 @@
 
 ### 2026-09-24 11:39（北京时间）：Z-01 Zetta公开Critic/Recovery接入G0.5（Codex）
 
+**11:54交接：** 修后独立review确认缓存时钟问题已闭合，21 CPU全通过、无剩余实质代码发现，未部署/未合main。现阶段安全可做项已完成；完整公开promoted bundle不可得＋四卡训练占用阻止用户指定的真实对照，成功率未测，不标方法无效或任务完成。下一须用户提供完整包或明确选择自行构建适配变体，再确认空闲资源及有限配对预算。旧agentic目标保持暂停。
+
+**11:52更新：** 初稿`98a7a9d`与原线程进度`a6c66f5`均已push。独立review指出未reset的控制tick跳跃会消费旧动作chunk，已在独立实验bridge修复：只有ACK reset后的首请求可跨恢复步数，之后必须逐tick连续；不连续先阻塞且不发请求。新增3回归、共21 CPU通过（0.012s），修后独审复核待。源审计JSON再次与真实上游重跑结果完全相同，0GPU/仿真；公开bundle/资源阻塞不变。
+
 **11:48更新：** 已实现`experiments/zetta_behavior/{bridge,preflight}.py`的23维原始动作/恢复清缓存边界与固定上游产物审计；18个本地CPU测试通过，原版Critic合成四步proposal `[0,0,1,0]`。实际`CandidateBundle.from_dict`读公开文件报`KeyError: generation`，1 critic/0 recovery，7个特权特征；无公开特征替代或Recovery执行器。独立review待，绝非完整接入/SR。Releases无包，Issue #32交叉印证缺包；已询问用户是否有单独下载链接，尚待。证据与下一步见[报告](experiments/2026-09-24-zetta-g05.md)/[机器结果](experiments/results/2026-09-24-zetta-preflight.json)。现有训练均xhz账号/约13h，0训练/仿真/模型调用，不挤占四卡。
 
 - 用户最新任务：冻结G0.5，接入Zetta公开演化产物验证BEHAVIOR；本任务不恢复旧agentic VLM训练/演化。独立分支`feat/zetta-g05-20260924`从最新`origin/main=33677bd`创建，工作树`/home/wsy/behavior_worktrees/zetta-g05-20260924`。旧线程最新证据仍在`feat/semantic-agent-grounded-20260918=f17cfb0`，不覆盖其历史。
