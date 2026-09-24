@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 21:05（北京时间）：H52b唯一显式选卡空启动运行中（Codex）
+
+- 固定`1483f2493c4dc450b7077ee7d1db418cf618d7c1`已push/robo独立`git_worktrees/shared_simulator_1483f24`，双端15 CPU/独审/外部依赖与全部GPU预检通过。唯一launch UTC13:05:18.053589，supervisor3465781，run/runtime `h52b_explicit_gpu_v1`。
+- 仍一次空Kit300s/8 update/512辅助/4096主卡/3072全卡余量，0任务模型训练。实际选卡表、设置、资源和终态待验；不重提或继续加额度，四原训练不动。
+
 ### 2026-09-24 21:03（北京时间）：H52b显式选卡空启动后继登记（Codex）
 
 - H52完整负例已固定da0aa44，未重试原run。只读核官方5.1文档/安装源码：active_gpu只设置renderer键，max_gpu_count有正式配置，自动多GPU有独立autoEnable键；CUDA环境变量不能保证Vulkan隔离。原H52在GPU表输出前即停止，422MiB不够区分枚举辅助context和选错主卡。

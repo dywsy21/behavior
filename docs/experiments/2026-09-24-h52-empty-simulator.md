@@ -64,7 +64,7 @@
 - 日志明确写入新OUTPUT的`kit.log`，开启INFO以审实际gpu.foundation GPU表；设置键读回并不等于真实设备选择验收。CUDA可见性不用于替代Vulkan隔离，不改驱动/安装/Xorg。
 - 不再重跑旧H44门，不载入任务；旧H52/H44的预算/证据保留。新输出 `/mnt/nvme_tmp/robodojo_agentic_20260924/h52b_explicit_gpu_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h52b_explicit_gpu_v1`。
 
-作者及独立15 CPU通过，Epicurus的delta独审通过；source commit即将固定，当前未启动。通过空应用仍不能放行完整场景或报告新SR。
+作者及独立15 CPU通过，Epicurus的delta独审通过；固定source `1483f2493c4dc450b7077ee7d1db418cf618d7c1`，远端`git_worktrees/shared_simulator_1483f24`同15 CPU/资源/依赖核验通过。唯一launch UTC13:05:18.053589，supervisor3465781，当前运行中。通过空应用仍不能放行完整场景或报告新SR。
 
 依据：[Isaac Sim 5.1 Setup Tips](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/install_faq.html) 列出autoEnable/maxGpuCount；安装版SimulationApp源码第416–420行已读，max_gpu_count确实转为renderer设置。[NVIDIA Linux Troubleshooting](https://docs.omniverse.nvidia.com/dev-guide/latest/linux-troubleshooting.html) 提醒核gpu.foundation实际GPU表，CUDA可见性并不控制Vulkan渲染选卡。不同文档对编号描述不完全一致，因此需要本机实测表和UUID/PCI信息，不只信传参。
 
