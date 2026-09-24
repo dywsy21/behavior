@@ -1,0 +1,40 @@
+{
+  "task_id": "Z-01",
+  "owner": "Codex",
+  "recorded_at": "2026-09-24T20:19:00+08:00",
+  "implementation_commit": "963efcf0508fa209c65b1fb56bd15f88c9dea63a",
+  "public_main": "1fee179644d52c32fa5a7728751cf0853a29b9c0",
+  "public_other_branch": "747be406940e4fd559902bbefe984492a153c2a3",
+  "artifact_sha256": "3b90203f33058b36d3e2b6efc3794e16649a3b282080376b9863aef85265cac0",
+  "complete_promoted_bundle_located": false,
+  "public_releases_count": 0,
+  "prior_cpu_tests_passed": 21,
+  "prior_tests_rerun": false,
+  "resource_observed_at": "2026-09-24T12:18:31Z",
+  "training_owner": "xhz",
+  "training_pids": [
+    3294346,
+    3294347,
+    3294348,
+    3294349
+  ],
+  "training_process_memory_mib_each": 73644,
+  "gpu_free_memory_mib": [
+    7489,
+    7489,
+    7489,
+    7489
+  ],
+  "g05_and_simulator_shared_resource_feasibility": "UNTESTED",
+  "new_model_loads": 0,
+  "new_simulator_resets": 0,
+  "new_training_steps": 0,
+  "signals_sent_to_training": 0,
+  "success_rate": null,
+  "next_required_input": "Complete published bundle URL, or explicit choice to build an adapted variant",
+  "sources": [
+    "https://github.com/air-embodied-brain/Zetta-Embodiment",
+    "https://github.com/air-embodied-brain/Zetta-Embodiment/releases",
+    "https://github.com/air-embodied-brain/Zetta-Embodiment/issues/32"
+  ]
+}
