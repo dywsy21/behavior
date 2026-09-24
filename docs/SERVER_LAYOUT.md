@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 00:56北京时间H62本地完成：** source454c91c，PID3668125已exit0/9.162s；本地`artifacts/agentic-vlm-goal-20260918/h62_target_self_replay_v1/result.json` SHA `e977f15aafa4754c0221c995bd58f34017260bf984c8e82e9c4748cf951ac60e`。原H51/H60/v2输入均未修改，没有新的robo源码worktree、模型或模拟器进程；四原训练保持。
+
 **2026-09-25 00:44北京时间H61交接：** self-veto修复目前仅本地本分支源码/测试/文档，尚未创建新的robo实验worktree或部署模型/仿真。00:37只读核原四训练3294346–3294349均各73644MiB，free7489/7489/7489/7488MiB，无自有GPU进程；原H59等run/source/runtime/cache保留，后续需资源协调，不热改旧目录。
 
 **2026-09-25 00:29北京时间H60本地完成：** `artifacts/agentic-vlm-goal-20260918/h60_proposal_geometry_v1/result.json`，source9a76d08、exit0/6.429s、12查询10框，SHA `eb6b85bab705eb12a60a4aee5680fe034ef3f76a8d56877ac6105758a1e08d20`。只读现有v2输入，无模型/服务器run/新仿真；原两输入目录及全部服务器原件保留。
