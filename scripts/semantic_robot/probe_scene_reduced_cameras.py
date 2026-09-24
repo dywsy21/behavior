@@ -17,6 +17,7 @@ def configure_profile():
                            'camera_intrinsics_verified': True}
     base.BUDGET_DETAILS = {**base.BUDGET_DETAILS,
         'initial_camera_resolution': 'head512/wrists320', 'input_resolution_changed': True,
+        'actor_camera_resolution_changed': True,
         'camera_resolution_profile': 'shared_v1', 'configured_camera_pixels': 466944,
         'camera_views_removed': 0}
 

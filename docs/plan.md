@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 23:34（北京时间）：H57单次三视角降像素验证运行中（Codex）
+
+- 固定`73c11236c36cf63b789a158050ac89a1b38b483f`/robo `git_worktrees/shared_scene_73c1123`，双端81 CPU/582旧接口、修后独审/23依赖/真实YAML与资源门过。唯一launch UTC15:34:22.948928，supervisor3503152，run/runtime `h57_reduced_cameras_v1`已创建；600s/显存/三视角/物理不变，0actor模型训练，实际RGB-D待，不重复提交。
+- launch内继承H53b的`actor_camera_resolution_changed:false`与本票`input_resolution_changed:true`、head512/腕320字段矛盾，属于回执标记漏覆盖，**实际已降低相机像素**，以明确profile/config和后续真实shape为准。保留原launch/source不热改，下一本地窄修metadata并加断言；不据错误旧字段宣称分辨率没变。
+
+### 2026-09-24 23:34（北京时间）：H58公开目标检测器准备，不依赖SAM3授权（Codex）
+
+23:37准备进度：唯一下载3504210已退出，日志9/9文件13s完成，目录659MiB；完整manifest/权重SHA正核，尚未模型推理/新GPU。H57原3503152/3503159仍加载中（133.906s样本过），没有重启。另H57预算metadata漏标已本地修、81重过/窄独审通过，仅未来receipt字段，不改正在运行的73c1123。
+
+- 官方GroundingDINO-tiny revision a2bb814/689359096B safetensors及LFS SHA已核，ungated；既有torch2.7.1/TF4.57.1 CPU类与实际postprocess签名可用，无环境安装。登记`experiments/2026-09-24-h58-text-detector.md`：≤2GiB/600s单revision下载、后续拟H51四目标×三RAW的12次有界CPU筛查（非12独立实例），框不当接触点/任务成功。
+- 当前仅准备，未下载/推理/新GPU；SAM3授权路径异步等待但其他工作继续。H57固定73c1123双端81/独审/23依赖及实际YAML/资源门过，单次launch已提交待回执，不重复提交；四训练不变。
+
 ### 2026-09-24 23:28（北京时间）：H57只降低实际RGB-D像素的实现/CPU验证中（Codex）
 
 23:33修后独审闭合：独立复跑81/81、diff过，真实adapter接缝已覆盖，无剩余实质阻塞；准备固定Git/远端同测、原YAML/Hydra及23依赖/资源门，尚未提交GPU。

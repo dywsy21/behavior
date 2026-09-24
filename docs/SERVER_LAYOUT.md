@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 23:37北京时间H58权重准备：** 公开GroundingDINO tiny固定revision a2bb814下载在`/mnt/nvme_tmp/robodojo_grounding_models_20260924/grounding-dino-tiny_a2bb814`，659MiB/9件；唯一timeout父3504210已退出，日志同父目录`download_a2bb814.log`显示9/9完成，完整SHA核验待，不加载未核权重。独立HF下载缓存同父`hf/`保留；未改共享环境、0新GPU。H57仍原73c1123/3503152+3503159运行。
+
+**2026-09-24 23:34北京时间H57提交：** 固定`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_scene_73c1123`/73c11236c36cf63b789a158050ac89a1b38b483f；唯一launch UTC15:34:22.948928/supervisor3503152，run `/mnt/nvme_tmp/robodojo_agentic_20260924/h57_reduced_cameras_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260924/h57_reduced_cameras_v1`已创建。原600s/显存、三相机512/320，初始化中，不热改。旧所有失败/source/cache保留、四原训练保留。
+
 **2026-09-24 23:23北京时间H56归档闭合：** 本地完整8件4.9MiB位于`artifacts/agentic-vlm-goal-20260918/h56_compatible_cameras_bundle_v1`，四主SHA双端一致、721资源样本已核。原源/run/runtime全保留；GPU仅四原训练，无新H57运行。
 
 **2026-09-24 23:20北京时间H56终态：** 3496762/3496769均退出，586.126s/worker -15，主卡3072余量/4096增量保护触发，0 RGB-D。原d7ed21e source、run/runtime全保留，完整8件正向本地`artifacts/agentic-vlm-goal-20260918/h56_compatible_cameras_bundle_v1`归档；目录存在不等于归档完整。四原训练仍各73644，余量恢复，无自有GPU进程。

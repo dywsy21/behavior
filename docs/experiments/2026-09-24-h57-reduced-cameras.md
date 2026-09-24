@@ -23,3 +23,5 @@ head720→512，双腕480→320，总979200→466944像素（减少约52.3%）�
 23:31独审发现并修复真实接口缺口：首79目标及582旧接口虽过，OnboardRGBD构造仍硬编码原720/480，mock替身掩盖了与512/320冲突。为真实adapter添加显式三尺寸mapping，默认保留官方尺寸，未知键/bool/非正或非整数拒绝；不删尺寸校验、不从live sensor自动猜测允许值。增加真实adapter构造及4render/read检查，完整worker mock现在也断言实际参数。修后重测与复审待，仍未launch。
 
 23:33修后独审通过，独立复跑81/81与diff过；真实adapter/完整worker参数、profile恢复/三视角/renderer/物理及资源门均无剩余阻塞。下一冻结commit/服务器同测和原YAML转换/23依赖/资源门，尚未运行。
+
+23:34实际launch：`73c11236c36cf63b789a158050ac89a1b38b483f`/`git_worktrees/shared_scene_73c1123`，双端81、修后582旧接口、独审及原YAML/OmegaConf/Hydra/23依赖/资源门均过。UTC15:34:22.948928/supervisor3503152，原输出与新runtime创建，实际图像/内参/资源终态待。**原launch继承了H53b的`actor_camera_resolution_changed:false`旧标记，漏覆盖；本次明确改变了相机实际尺寸**，其`input_resolution_changed:true`、`shared_v1`/head512双腕320及后续实际shape才与实施一致。保留原launch/source，不能篡改运行证据；下一本地修metadata并补断言，不重跑本次。

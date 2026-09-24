@@ -43,11 +43,13 @@ assert not any(m in sys.modules for m in ('torch','omnigibson','isaacsim','carb'
             self.assertTrue(base.SUCCESS_FIELDS['input_resolution_changed'])
             self.assertTrue(base.SUCCESS_FIELDS['camera_intrinsics_verified'])
             self.assertEqual(base.BUDGET_DETAILS['camera_views_removed'], 0)
+            self.assertIs(base.BUDGET_DETAILS['actor_camera_resolution_changed'], True)
             for key in ('robot_controls','model_calls','training_steps','expert_prefix_controls','old_policy_prefix_controls'):
                 self.assertEqual(base.BUDGET_DETAILS[key], 0)
             compatible.configure_profile()
             self.assertEqual(scene.CAMERA_RESOLUTION_PROFILE, 'full_v1')
             self.assertNotIn('camera_intrinsics_verified', base.SUCCESS_FIELDS)
+            self.assertIs(base.BUDGET_DETAILS['actor_camera_resolution_changed'], False)
 
     def test_config_preserves_every_non_resolution_camera_field_and_all_physics(self):
         original = config_fixture()
