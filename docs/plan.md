@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 23:58（北京时间）：H58修后独审闭合，准备远端CPU单次测试（Codex）
+
+- 原manifest与hard timeout问题及复审补充的TERM孤儿窗口均修：Popen归属前信号遮罩、只清理自有worker、15s清理、异常仍写终态并恢复handler。双人23/23目标CPU/diff过，未部署/推理；下一固定Git/robo新worktree、原12输入真实SHA prepare后唯一launch，仍0GPU/训练/模拟器。
+- H57完整负例已提交/push3c83ea0（前ac5f58e TLS重试也成功）。只读证实其私有texturecache7.1GiB、CUDA9.4MiB、portable/cache190MiB；因此每次新冷runtime会重做这部分工作，但尚不能断言耗时占比或复用能解显存/完成初始化。下一先核只读缓存来源/树，研究独立复制复用，不改四原训练或延长原H57。
+
 ### 2026-09-24 23:50（北京时间）：H57到600s停止，H58独审两项修复中（Codex）
 
 23:55归档/修复进度：H57全8件约4.8MiB本地、8 SHA双端一致；736样本四训练恒73644，主卡自有峰1891/增量1937MiB，最后日志kit506.103s首个Replicator view分配，无RGB-D，不能与H56完整失败阶段作最终峰值对比。下一只读核私有缓存/冷启动开销，不加时或改物理。H58两项已修，23 CPU（含manifest全9改删增、完整/缺件/partial/异常/TERM/KILL终态）过，修后独审待，无GPU/推理。
