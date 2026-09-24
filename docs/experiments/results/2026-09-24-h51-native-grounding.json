@@ -1,0 +1,197 @@
+{
+  "status": "all_complete_receipts_and_pixels_match",
+  "model_calls": 12,
+  "original_and_served_images_checked": 12,
+  "result_sha256": "3769f632eb2593237e8403d6e7d3b8c3d5ac75cdc5e87a5220a8414ff54723f6",
+  "supervisor_sha256": "3aea60757713b8fabc0c409b1a46a13a7f459f60d3da282eecc40d65f64fe0cf",
+  "worker_seconds": 140.2537259142846,
+  "supervisor_seconds": 156.58369405195117,
+  "sampled_peak_own_mib": 4534,
+  "sampled_min_free_mib": 2950,
+  "cases": [
+    {
+      "id": "radio_head_d060",
+      "baseline": {
+        "schema_valid": false,
+        "error": "visible target requires supplied view and finite normalized coordinates"
+      },
+      "point_pixels": [
+        288,
+        554
+      ],
+      "point_reason": "MODEL_POINT_PLUS_VALID_DEPTH_NOT_IDENTITY_PROOF",
+      "bbox_pixels": [
+        244,
+        510,
+        360,
+        596
+      ]
+    },
+    {
+      "id": "refrigerator_handle_h44_d012",
+      "baseline": {
+        "schema_valid": false,
+        "error": "visible target requires supplied view and finite normalized coordinates"
+      },
+      "point_pixels": [
+        539,
+        259
+      ],
+      "point_reason": "MODEL_POINT_PLUS_VALID_DEPTH_NOT_IDENTITY_PROOF",
+      "bbox_pixels": [
+        526,
+        72,
+        562,
+        365
+      ]
+    },
+    {
+      "id": "bin_i71_d00",
+      "baseline": {
+        "schema_valid": true,
+        "evidence": {
+          "visible": true,
+          "view": "head",
+          "target_uv": [
+            0.68,
+            0.92
+          ],
+          "note": "A brown trash can is visible on the floor in the lower right of the image."
+        }
+      },
+      "point_pixels": [
+        460,
+        686
+      ],
+      "point_reason": "MODEL_POINT_PLUS_VALID_DEPTH_NOT_IDENTITY_PROOF",
+      "bbox_pixels": [
+        388,
+        619,
+        467,
+        720
+      ]
+    },
+    {
+      "id": "plate_absent_h44_radio_d000",
+      "baseline": {
+        "schema_valid": true,
+        "evidence": {
+          "visible": false,
+          "view": "none",
+          "target_uv": null,
+          "note": "The image shows a living room with a fireplace, TV, and kitchen area in the background; no plate with food is visible."
+        }
+      },
+      "point_pixels": [
+        705,
+        252
+      ],
+      "point_reason": "POINT_DEPTH_REJECTED",
+      "bbox_pixels": [
+        669,
+        251,
+        684,
+        263
+      ]
+    }
+  ],
+  "call_metrics": [
+    {
+      "call": 1,
+      "phase": "baseline",
+      "input_tokens": 318,
+      "output_tokens": 66,
+      "generation_seconds": 54.27037502732128
+    },
+    {
+      "call": 2,
+      "phase": "native_point",
+      "input_tokens": 253,
+      "output_tokens": 37,
+      "generation_seconds": 3.024020664393902
+    },
+    {
+      "call": 3,
+      "phase": "native_box",
+      "input_tokens": 242,
+      "output_tokens": 47,
+      "generation_seconds": 5.155050067231059
+    },
+    {
+      "call": 4,
+      "phase": "baseline",
+      "input_tokens": 317,
+      "output_tokens": 70,
+      "generation_seconds": 5.635994451120496
+    },
+    {
+      "call": 5,
+      "phase": "native_point",
+      "input_tokens": 252,
+      "output_tokens": 36,
+      "generation_seconds": 3.024298039264977
+    },
+    {
+      "call": 6,
+      "phase": "native_box",
+      "input_tokens": 241,
+      "output_tokens": 46,
+      "generation_seconds": 3.8416979759931564
+    },
+    {
+      "call": 7,
+      "phase": "baseline",
+      "input_tokens": 315,
+      "output_tokens": 67,
+      "generation_seconds": 5.540287389419973
+    },
+    {
+      "call": 8,
+      "phase": "native_point",
+      "input_tokens": 250,
+      "output_tokens": 34,
+      "generation_seconds": 2.9141729790717363
+    },
+    {
+      "call": 9,
+      "phase": "native_box",
+      "input_tokens": 239,
+      "output_tokens": 45,
+      "generation_seconds": 4.0575904827564955
+    },
+    {
+      "call": 10,
+      "phase": "baseline",
+      "input_tokens": 316,
+      "output_tokens": 59,
+      "generation_seconds": 4.771953472867608
+    },
+    {
+      "call": 11,
+      "phase": "native_point",
+      "input_tokens": 251,
+      "output_tokens": 35,
+      "generation_seconds": 2.9566041249781847
+    },
+    {
+      "call": 12,
+      "phase": "native_box",
+      "input_tokens": 240,
+      "output_tokens": 45,
+      "generation_seconds": 3.7200640412047505
+    }
+  ],
+  "manual_review": {
+    "reviewer": "Codex-parent",
+    "reviewed_all_calls": true,
+    "reviewed_all_four_raw_images": true,
+    "findings": {
+      "radio": "Point on radio body and reasonable whole-object box; neither a graspable-contact or grasp-pose proof.",
+      "refrigerator_handle": "Point on door/dispenser-side background rather than the thin handle. Box vertically overshoots and misses upper-right handle.",
+      "bin": "Point on visible inner bucket wall. Box covers only part of visible bin; not full-object segmentation or a graspable rim point.",
+      "absent_plate": "Both native forms hallucinate a target in distant kitchen. Point rejected by depth, not semantic abstention. Old free-UV baseline correctly reports absent."
+    },
+    "conclusion": "Native protocol alone insufficient; no deployment and no new complete-task success rate.",
+    "next": "Separate current visual presence/identity from location; validate simulator sharing independently, preserve current training."
+  }
+}

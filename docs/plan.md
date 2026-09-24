@@ -10,6 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 20:30（北京时间）：H51全部12调用完成，原生协议不是充分修复（Codex）
+
+20:33归档闭合：全包已本地，result/supervisor两完整SHA与远端一致，12条call和全部原生/320像素核同；采样自有峰4534MiB/最低free2950MiB，全部12调用已审。完整结果`docs/experiments/2026-09-24-h51-native-grounding.md`及results同名JSON；不把radio/bin静态点改善当可抓姿或完整SR。
+
+- 原3460478/3460488已exit0，worker140.254s/监管156.584s，退出GPU2恢复7489MiB、3294348训练仍73644MiB。收音机point[288,554]、桶[460,686]在物体上；细把手[539,259]仍偏到门面，框[526,72,562,365]也没完整覆盖实际把手。缺席plate仍生成point[705,252]/box而不是[]，仅该point被深度门拒绝；不能宣称原生输出可靠或直接部署。
+- 4原图和12原始答案已本人核，基线radio/handle分别给不存在的none/right_wrist视图被拒；bin/absentplate基线有效。完整包正取回`artifacts/agentic-vlm-goal-20260918/h51_shared_bundle_v1`；远端result SHA3769f632…、最终supervisor SHA3aea6075…已读，本地全量指纹待核。0新物理/训练/SR。
+- 后继需要把公开图像的可见性/身份判断与坐标生成分开，原生box只能辅助区域定位，不提供抓姿/holding。另正只读核安装版Kit低显存配置，原H44的70/20GiB资源门不降低硬跑；模拟器共存仍未实测。不继续对这四query调prompt或冒充已达完整goal。
+
 ### 2026-09-24 20:26（北京时间）：H51原生定位对照运行中（Codex）
 
 - 固定源码`06360d389de3d75422cc35906b2675515832922d`已push，robo独立`git_worktrees/shared_small_vlm_06360d3`通过同91 CPU/四输入prepare；20:25四训练原PID各73644MiB、free7489MiB。唯一launch UTC12:26:08.432985，supervisor3460478；spec SHA`76b0e7e366ff921c1dbf30b57d280833e3476a4c7698d5979684b45089347f61`。

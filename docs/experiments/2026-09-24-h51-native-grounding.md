@@ -1,6 +1,6 @@
 # H51：Qwen原生点／框协议对照
 
-Owner：Codex。2026-09-24。当前状态：20:26单次真实GPU探针运行中；不是成功率评测。
+Owner：Codex。2026-09-24。当前状态：全部12调用完成并人工审核，原生协议有局部定位改善但仍有细部偏差和缺席幻觉，不能直接部署；不是成功率评测。
 
 ## 唯一主要假设
 
@@ -39,4 +39,15 @@ H50b仍有粗网格漏掉细把手及目标外选点。H51检验直接使用模�
 
 ## 结果
 
-固定源`06360d389de3d75422cc35906b2675515832922d`，远端`git_worktrees/shared_small_vlm_06360d3`同91 CPU/四输入prepare通过。唯一launch UTC12:26:08.432985、supervisor3460478，spec SHA与上文一致；上述run/cache现已创建。实际输出、终态资源和全量人工审核待，不重复启动。
+固定源`06360d389de3d75422cc35906b2675515832922d`，远端`git_worktrees/shared_small_vlm_06360d3`同91 CPU/四输入prepare通过。唯一launch UTC12:26:08.432985、supervisor3460478/worker3460488；exit0，worker140.254s/监管156.584s，采样峰4534MiB/最低free2950MiB，退出GPU2恢复7489MiB、训练3294348仍73644MiB。
+
+| query | 原自由UV | 原生point／box人工审 |
+| --- | --- | --- |
+| radio | visible=true却view=none，拒绝；UV也偏到左上桌面 | point[288,554]在机身，box[244,510,360,596]基本包住radio；不是握把/可执行抓姿 |
+| handle | 声称并未输入的right_wrist，拒绝 | point[539,259]在门面/饮水区旁，不在细把手；box[526,72,562,365]上界过高且漏掉右上把手 |
+| bin | 正确head可见且UV[.68,.92]在桶壁 | point[460,686]在桶内壁；box[388,619,467,720]只包部分可见桶，不是完整框或可抓桶沿 |
+| absent plate | 正确不可见 | 原生point[705,252]/box[669,251,684,263]均幻觉远处厨房目标；point仅因深度拒绝，不能当语义弃权成功 |
+
+本人已核全部12原始答案、4张原生RAW。12条call.json与result逐项一致，全部12原生/320服务像素SHA核同，每query三请求用同RAW/binding且不读彼此答案。完整本地`artifacts/agentic-vlm-goal-20260918/h51_shared_bundle_v1`；result SHA `3769f632eb2593237e8403d6e7d3b8c3d5ac75cdc5e87a5220a8414ff54723f6`、最终supervisor SHA `3aea60757713b8fabc0c409b1a46a13a7f459f60d3da282eecc40d65f64fe0cf`已与远端一致。机器指标及人工结论见[摘要](results/2026-09-24-h51-native-grounding.json)。
+
+热point生成2.91–3.03s、box3.72–5.16s；首baseline54.27s含冷启动，不能与热调用直接比，也不是完整机器人Hz。0训练/控制/reset，未接actor。关闭本组四query提示迭代；后继需分离可见性/身份与精定位，不能以有效深度替代语义判断。模拟器共存尚未验证、完整零前缀官方成功仍未达成。

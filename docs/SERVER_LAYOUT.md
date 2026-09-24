@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 20:33北京时间H51收尾：** 3460478/3460488已exit0/完整12调用，峰4534MiB/最低free2950MiB，退出GPU2恢复7489MiB。全包`artifacts/agentic-vlm-goal-20260918/h51_shared_bundle_v1`及双SHA/12图原生服务像素核同；原生定位仍有语义错误，未部署。原source/run/cache保留，四训练不动。
+
 **2026-09-24 20:26北京时间H51提交：** supervisor3460478，新固定源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/shared_small_vlm_06360d3`、run `/mnt/nvme_tmp/robodojo_agentic_20260924/h51_native_protocol_v1`及同stem回执/log，cache `/mnt/nvme_tmp/robodojo_vlm_runtime_20260924/h51`。GPU2最多12静态调用/600s/900s监管，非模拟器或训练；四xhz训练仍原PID且保留，source/cache不可热改。
 
 **2026-09-24 20:18:31（北京时间）Z-01只读资源复核：** 四个xhz训练3294346–3294349仍在，各73644MiB，四卡各空7489MiB；没有Zetta服务器部署、模型或模拟器run，未发信号/改环境。Z-01仍为本地`/home/wsy/behavior_worktrees/zetta-g05-20260924`独立分支，具体产物缺口见该分支报告；不得由小VLM显存结论推定G0.5＋仿真可共存。
