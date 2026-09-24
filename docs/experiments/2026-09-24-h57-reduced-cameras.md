@@ -25,3 +25,9 @@ head720→512，双腕480→320，总979200→466944像素（减少约52.3%）�
 23:33修后独审通过，独立复跑81/81与diff过；真实adapter/完整worker参数、profile恢复/三视角/renderer/物理及资源门均无剩余阻塞。下一冻结commit/服务器同测和原YAML转换/23依赖/资源门，尚未运行。
 
 23:34实际launch：`73c11236c36cf63b789a158050ac89a1b38b483f`/`git_worktrees/shared_scene_73c1123`，双端81、修后582旧接口、独审及原YAML/OmegaConf/Hydra/23依赖/资源门均过。UTC15:34:22.948928/supervisor3503152，原输出与新runtime创建，实际图像/内参/资源终态待。**原launch继承了H53b的`actor_camera_resolution_changed:false`旧标记，漏覆盖；本次明确改变了相机实际尺寸**，其`input_resolution_changed:true`、`shared_v1`/head512双腕320及后续实际shape才与实施一致。保留原launch/source，不能篡改运行证据；下一本地修metadata并补断言，不重跑本次。
+
+23:50终态核验：原supervisor3503152/worker3503159已退出，监管602.342047845s/worker -15，触600s墙钟（共享底座错误字符串仍称H52 empty-startup，实际是H57场景）。736资源样本，最后600.145540s主卡75043MiB/free6110/自有1348，增量1378；四训练仍原PID/各73644MiB且退出余量恢复。scene Imported381.161s，仍`loading_scene`、外层reset/load0、RGB-D0，无实际K/shape/renderer终验，不能推定最终资源峰值或工程通过。完整8件归档/全样本与尾日志分析中，不临时加时、不再盲降像素。
+
+23:55完整归档闭合：全8件/约4.8MiB在上述本地bundle、8 SHA双端核同。全部736资源样本原四训练恒73644MiB；辅助自有峰456/416/416、增量峰470/422/422，主卡自有峰1891/增量1937/最低free5550MiB。末尾kit506.103s记录首个Replicator view分配，随后506.121s NvFlow加载，至预算没有后续日志/可用图像。未见Error文本不等于通过，更不能由不同初始化进度断言H57最终比H56省多少显存。
+
+主要证据SHA：launch `0be0c4848f111cb28e5fe364fd65ae90803ab50e75b7153fde69a29f7ea71497`；supervisor `24b4ac54ac5fbae55c3eb936c971585364030dbac379cf890fae74037410d4c2`；worker `ee9123998043d18c832acfcaabd86717b0f341f9bbdad820e405b864afc46a1a`；kit.log `f9a05b53b4f13309dfd83793989157afde930ad6332f98d01620465109ee1897`。原worker/source不修写，错误metadata的未来修复另在ac5f58e。下一只读核冷缓存与初始化开销，未重提/未扩时或资源。

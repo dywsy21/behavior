@@ -22,3 +22,9 @@ robo只读官方HuggingFace API/HEAD已核：revision `a2bb814dd30d776dcf7e30523
 当前H57工程检查使用GPU3/CPU72–75，H58准备不与之新增GPU竞争；四原训练不改、不停。没有新的SR证据。
 
 23:37下载阶段：唯一timeout父3504210已退出，公开9文件13s下载日志完成，模型目录659MiB；完整SHA核验进行中。既有GPU上只有原训练与H57，尚未加载检测器或新推理。没有升级Torch/Transformers。
+
+23:43：全9件SHA核闭合，权重匹配官方LFS，精确manifest在`configs/semantic_robot/h58_text_detector_cpu.json`。`probe_text_detector.py`已实现固定12输入、recursive原SHA校验、真实RAW像素回执、FP32 CPU/自有600s timeout、单次claim和全预测保存；不调用GPU/模拟器，输出`/mnt/nvme_tmp/robodojo_agentic_20260924/h58_text_detector_cpu_v1`、独立缓存`/mnt/nvme_tmp/robodojo_vlm_runtime_20260924/h58_cpu`均未创建。单测/独审/服务器真实prepare在执行前完成，尚未推理。
+
+23:50初审：20 CPU检查过，但非权重8件manifest未精确锁定、GNU timeout结束时无负责写terminal的父进程，属于真实准备缺口。修复为全9件canonical摘要冻结、独立Python supervisor监管600s及15s清理并原子记终态，补正常/异常/TERM/KILL用例；复审前不launch。范围与12输入/CPU/不接actor不变。
+
+23:55修后作者23/23 CPU与diff通过：全9件manifest canonical SHA锁`046922670d986c772d797b0276079ec530456db2afe73fe198aec78e9e9104f7`，token/commit/spec/保留父PID及单次claim，supervisor独立记600s活动＋15s清理终态，完整12预期ID/exit0/CPU标记才通过。正常/partial/缺件/异常/TERM/KILL/spawn失败均有用例，超时保留原worker最后状态，以supervisor终态为准。修后独审待，尚未部署/推理。

@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 23:50（北京时间）：H57到600s停止，H58独审两项修复中（Codex）
+
+23:55归档/修复进度：H57全8件约4.8MiB本地、8 SHA双端一致；736样本四训练恒73644，主卡自有峰1891/增量1937MiB，最后日志kit506.103s首个Replicator view分配，无RGB-D，不能与H56完整失败阶段作最终峰值对比。下一只读核私有缓存/冷启动开销，不加时或改物理。H58两项已修，23 CPU（含manifest全9改删增、完整/缺件/partial/异常/TERM/KILL终态）过，修后独审待，无GPU/推理。
+
+- 核原3503152/3503159均退出，H57监管602.342s/worker -15，600s墙钟触发，末GPU3自有1348MiB/增量1378，未触显存门；scene导入381.161s，但外层reset/load/RGB-D仍0，不能说最终显存峰值降低或相机兼容成功。四原训练3294346–3294349仍各73644MiB，退出free恢复7489/7489/7489/7488。保留73c1123源码/run/runtime，完整8件归档/全样本分析中，不直接追加时长或降低像素重跑。
+- H58初审发现非权重8件manifest可改及hard timeout无terminal回执；尚未运行。下一固定完整9件摘要、由Python supervisor拥有单worker并在600s/15s清理后写终态，补失败/超时测试并复审；CPU12查询/原预算不变。本次fetch核origin/main仍33677bd，未pull原因是本票未提交源码/文档；原ac5f58e push尚待安全重试，不覆盖任何工作。
+
+### 2026-09-24 23:43（北京时间）：H58完整权重已核，12查询CPU探针实现/测试中（Codex）
+
+- 9文件完整SHA已从服务器核，权重匹配官方LFS SHA1a2412ef…f3，写入`configs/semantic_robot/h58_text_detector_cpu.json`；新`probe_text_detector.py`只原H51四公开目标×三RAW/12调用，固定.4/.3、FP32 CPU/4线程68–71/600s，禁CUDA/联网、无新sim/训练或actor。全部输入仍递归原SHA校验，所有阈值后输出均保留，不把框中心当接触点。
+- CPU负例及独审待，尚未推理；H57仍唯一原3503152/3503159/73c1123源，不重提。上一文档/metadata提交ac5f58e push遇本地Git TLS失败，未宣称已同步；H57源码73c1123已此前成功push，运行不受影响，下一安全重试push。
+
 ### 2026-09-24 23:34（北京时间）：H57单次三视角降像素验证运行中（Codex）
 
 - 固定`73c11236c36cf63b789a158050ac89a1b38b483f`/robo `git_worktrees/shared_scene_73c1123`，双端81 CPU/582旧接口、修后独审/23依赖/真实YAML与资源门过。唯一launch UTC15:34:22.948928，supervisor3503152，run/runtime `h57_reduced_cameras_v1`已创建；600s/显存/三视角/物理不变，0actor模型训练，实际RGB-D待，不重复提交。
