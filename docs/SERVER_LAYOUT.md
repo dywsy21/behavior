@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-24 18:47北京时间H48终态：** 3448413/3448423已exit0，完整包`artifacts/agentic-vlm-goal-20260918/h48_shared_bundle_v1`，原run/cache不删；GPU2恢复7489MiB。H49仅CPU准备，尚无新进程，未开模拟器。
+
+**2026-09-24 18:44北京时间H48提交：** supervisor3448413，固定`git_worktrees/shared_small_vlm_c81a90c`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h48_static_localization_v1`及同stem回执/log，独立cache `robodojo_vlm_runtime_20260924/h48`。仅静态4调用，不是HTTP服务/新模拟器；四训练不动。
+
 **2026-09-24 18:38北京时间H47终态：** supervisor3446566/worker3446574已exit0，GPU2恢复7489MiB；原run/cache保留，完整小包在`artifacts/agentic-vlm-goal-20260918/h47_shared_bundle_v1`。H47中性提示未有效，不是部署服务；H48仅CPU设计，0新物理。
 
 **2026-09-24 18:34北京时间H47提交：** supervisor3446566，固定`git_worktrees/shared_small_vlm_cb8ced5`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h47_neutral_observation_v1`及同stem回执/log，cache `robodojo_vlm_runtime_20260924/h47`。仅4保存态配对，实际结果待；四训练不动，未开模拟器。

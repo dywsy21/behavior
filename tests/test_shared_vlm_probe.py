@@ -119,6 +119,21 @@ class BudgetTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             probe.validate_spec(spec)
 
+    def test_resolution_pairs_only_single_head_and_registered_sizes(self):
+        spec = json.loads((ROOT / "configs/semantic_robot/h49_static_resolution_probe.json").read_text())
+        probe.validate_spec(spec)
+        for key, value in (("image_max_side", 1280), ("image_max_side", 320.0),
+                           ("request_profile", "static_three_raw_v1")):
+            with self.subTest(key=key, value=value):
+                changed = json.loads(json.dumps(spec)); changed["cases"][0][key] = value
+                with self.assertRaises(ValueError):
+                    probe.validate_spec(changed)
+
+    def test_per_call_resolution_cannot_bypass_old_budget(self):
+        self.spec["cases"][0]["image_max_side"] = 640
+        with self.assertRaises(ValueError):
+            probe.validate_spec(self.spec)
+
     def test_stop_only_owned_process_and_escalate(self):
         child = Mock(); child.poll.return_value = None
         child.wait.side_effect = [subprocess.TimeoutExpired("owned", 15), 0]

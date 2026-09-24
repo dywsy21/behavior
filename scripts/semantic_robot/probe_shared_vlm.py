@@ -100,6 +100,8 @@ def validate_spec(spec):
     if len(cases) != 4:
         raise ValueError("exactly four frozen calls required")
     kind = spec.get("probe_kind", "original_requests")
+    if kind != "paired_static_resolution_v1" and any("image_max_side" in case for case in cases):
+        raise ValueError("per-call resolution is only allowed in the registered single-head resolution test")
     if kind == "original_requests":
         if len({case["receipt"] for case in cases}) != 4 or any(
                 case.get("request_profile", "original") != "original" for case in cases):
@@ -115,11 +117,21 @@ def validate_spec(spec):
             raise ValueError("exactly two frozen registered observation pairs required")
         if any(not case["receipt"].endswith("/observation.json") for case in cases):
             raise ValueError("paired probe only permits original observation receipts")
+    elif kind == "paired_static_resolution_v1":
+        sources = {(case["receipt"], case["sha256"]) for case in cases}
+        identities = {(case["receipt"], case["sha256"], case.get("request_profile"), case.get("image_max_side"))
+                      for case in cases}
+        expected = {(path, digest, "static_head_raw_v1", side) for path, digest in sources for side in (320, 640)}
+        if (len(sources) != 2 or len(identities) != 4 or identities != expected or spec["image_max_side"] != 640 or
+                any(not case["receipt"].endswith("/observation.json") or type(case.get("image_max_side")) is not int
+                    for case in cases)):
+            raise ValueError("exactly two single-head 320/640 pairs required")
     else:
         raise ValueError("unregistered probe kind")
     bounds = {"allocator_limit_mib": (1, 4864), "reserve_mib": (2048, 8192),
               "non_torch_allowance_mib": (512, 2048), "max_seconds": (1, 600),
-              "supervisor_seconds": (1, 900), "image_max_side": (1, 320)}
+              "supervisor_seconds": (1, 900),
+              "image_max_side": (1, 640 if kind == "paired_static_resolution_v1" else 320)}
     for key, (low, high) in bounds.items():
         if type(spec[key]) is not int or not low <= spec[key] <= high:
             raise ValueError(f"outside probe resource bound: {key}")
@@ -412,7 +424,7 @@ def run(spec_path, output):
     model_path = Path(spec["model"])
     # Hash on CPU before creating a context; no model download or pip install.
     validate_model_files(model_path, spec["model_files"])
-    requests = [load_saved_request(Path(spec["source_run"]), case, spec["image_max_side"])
+    requests = [load_saved_request(Path(spec["source_run"]), case, case.get("image_max_side", spec["image_max_side"]))
                 for case in spec["cases"]]
     output.mkdir(parents=True, exist_ok=False)
     started = time.monotonic()
@@ -487,6 +499,7 @@ def run(spec_path, output):
             row = {"case": case["receipt"], "kind": request["kind"], "input_tokens": prefix,
                    "images": images, "request_sha256": case["sha256"], "status": "issued",
                    "request_profile": case.get("request_profile", "original"),
+                   "image_max_side": case.get("image_max_side", spec["image_max_side"]),
                    "effective_public_request": request}
             result["calls"].append(row)
             (output / "progress.json").write_text(json.dumps(result, indent=2))

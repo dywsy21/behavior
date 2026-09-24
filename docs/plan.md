@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-24 18:47（北京时间）：H48识别明显改善/坐标仍不可靠，登记H49分辨率对照（Codex）
+
+- H48 c81a90c已4调用完成、worker88.405s/监管99.263s、峰值4534MiB/最低free2950MiB，GPU2退出后7489MiB。d0单head正确描述壁炉/TV/长凳且不可见；三RAW却visible:true同时view:none/UV:null而被parser拒绝。d91两路都认出红白radio，但单head UV[.54,.72]人工对照落在radio上方桌面，三RAW[.55,.78]在物体边缘，不是可靠中心/抓点。输入由完整观察3275token降到318/532，热调用约4.5–5.3s；不能把冷启动51s当稳定延迟。
+- 本人审了全部4输出和原RAW；识别改善支持“复杂接口会掩盖基础视觉能力”，但因改了多个因素，不能单独归因于history或某行提示；定位/时序反馈仍未解决，不直接上线。完整本地`artifacts/agentic-vlm-goal-20260918/h48_shared_bundle_v1`，result SHA`94d0eec1e70fe72d21b63dac0fd2f6ef73c92218fe8e19675e761ede35ee8a40`、supervisor SHA`dae4a92fb45bd30cd1d60e70c1681f3f7abf3906d141666b9c4b1c2a67c3d0cc`。
+- H49唯一Codex负责人，主假设：保留全部当前head视野、仅提高320→640，能改善静态定位而仍满足资源边界。两原状态各320/640一head RAW配对4调用；同4B NF4/静态prompt/greedy/seed17/600s/900s/4864+512/2048余量，0reset/训练。只此显式单图profile可640，不放开9图640或显存保护，不加入人工位置。先CPU/独审；这是本轮最后一个静态分辨率对照，结果后汇总接口取舍，不自动继续同两态调提示。
+
+18:50补充：H49单图分辨率白名单/成对条件及旧probe拒绝case override已实现，44 CPU通过，实际四条输入除320/640像素外完全一致（640与原服务RGB SHA相同）；18:51独审通过，无旧预算/多图640绕过。H48本地/远端两主SHA核同、四训练未变。
+
+### 2026-09-24 18:44（北京时间）：H48最小定位四调用运行中（Codex）
+
+- 独立源码`c81a90ce8bdcdb97ee7a110c83d38e1d71068bf4`已push/robo `git_worktrees/shared_small_vlm_c81a90c`，双端42 CPU/独审通过。UTC10:44:17.415749唯一supervisor3448413，spec SHA`762ee49f7846c59cc14b3ef7fe3919b3d67e8c0ffbe8cd98778d45366d85c34b`；run `/mnt/nvme_tmp/robodojo_agentic_20260924/h48_static_localization_v1`及同stem launch/supervisor/log、cache `robodojo_vlm_runtime_20260924/h48`。
+- 原4调用/600s/900s/显存保护，0reset/训练，不改变实际actor。结果与人工语义审待，不重复启动。
+
 ### 2026-09-24 18:38（北京时间）：H47负例块替换未改善，登记H48最小视觉能力诊断（Codex）
 
 - H47已4调用完成/exit0，worker106.461s/监管116.300s，峰值5038MiB、最低free2446MiB，GPU2退出后7489MiB。原d0/d91回答复现H46b；中性提示两条仍不可见，且均`hazard:null`违反原解析。近场描述“只有天花板和地板”对应腕图而漏掉清楚的head目标，**去负例块不是充分修复，不部署H47**。两对全部人工检查、无择优重试。
