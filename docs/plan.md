@@ -10,6 +10,10 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 11:27（北京时间）：Z-01公开包仍缺，未追加运行（Codex）
+
+本条请求复核：clean pull/fetch后原上游1fee179、JSON SHA及1 critic/0 recovery不变；Releases/Issue #32没有补齐完整包。11:26:09只读四xhz训练3294346–3294349仍各73644MiB、free7489/7489/7489/7488MiB。0新模型/仿真/训练/远端修改，原963efcf/21 CPU为既有准备而非新结果；效果未测。下一需完整Recovery/工具链接或用户明确自建适配；不自动演化、不把一次G0.5 fallback冒充作者Recovery。详情见[报告](experiments/2026-09-24-zetta-g05.md)。
+
 ### 2026-09-25 10:53（北京时间）：Z-01本条请求核验，仍待完整Recovery产物（Codex）
 
 - 本分支clean pull无更新，上游fetch仍`1fee179`/`747be40`，原公开artifact SHA一致；官方原文件/Release/Issue #32未提供完整Recovery。既有接口963efcf/21 CPU及独审保留，本轮不重复实现或测试，不以框架类/Pi0.5 fallback冒充作者演化程序。
