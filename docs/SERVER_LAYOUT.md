@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 14:33北京时间H69归档完成：** 10件4441121B已完整取回`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h69_native_gate_bundle_v1`，全10SHA双端一致（H69实验文档清单）；原run/source/runtime保留。worker.json证reset1/load138完成，旧native_profile是较早快照；没有图像、动作或新运行。
+
+**2026-09-25 14:23北京时间H69终态：** 原3564979/3564992已结束、监管failed/519.433s，初始化PT settings漂移，0gate动作。`native_full_5e4ce75`源、H69 run/runtime/cache全保留；自有GPU已释放，GPU0队友3564916保留。小包正准备取回`artifacts/agentic-vlm-goal-20260918/h69_native_gate_bundle_v1`，尚未创建/验全，禁止把目录存在当归档完成；不得重启本次run。
+
 **2026-09-25 14:12北京时间H69唯一提交：** 新固定source `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/native_full_5e4ce75`/5e4ce75623c9b658977a14ad0c6dfb5f6ebe9abb；UTC06:11:57.224739监管3564979。run `/mnt/nvme_tmp/robodojo_agentic_20260925/h69_native_gate_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h69_native_gate_v1`已创建；原单次2400s/24动作，初始化状态待。旧d45c487仅CPU预检保留，所有活跃源不可热改。提交时四卡空、GPU0队友自行结束，未发信号。
 
 **2026-09-25 14:05北京时间H69准备：** 新Git clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/native_full_d45c487` 固定d45c487208a1f03abf402720026682155b56b6db，只运行102 CPU和23依赖/资源预检，未GPU/场景。预定`/mnt/nvme_tmp/robodojo_agentic_20260925/h69_native_gate_v1`及同stem sim_runtime仍不存在。GPU0队友已自然轮换为3563718/12462MiB，其余空；归属门最后小delta修审中，新源待，不修改此预检副本或队友工作。

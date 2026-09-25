@@ -213,6 +213,12 @@ def supervise(base):
             base.write('supervisor.json', receipt)
             check_resources(current, before, child.pid)
             time.sleep(2)
+        failure_path = ROOT/'gate/native_failure.json'
+        if failure_path.exists():
+            native = json.loads(failure_path.read_text())
+            receipt['native_failure'] = native.get('native_failure')
+            receipt['pathtracing_differences'] = native.get('pathtracing_differences')
+            raise RuntimeError('Native session failed: ' + str(receipt['native_failure']))
         if child.returncode != 0:
             raise RuntimeError('Gate worker exit code ' + str(child.returncode))
         if time.monotonic() - started > WALL_SECONDS:
@@ -267,7 +273,7 @@ def launch(base):
                'gpu_before': before}
     base.write('launch.json', receipt)
     with (ROOT/'supervisor.log').open('x') as log:
-        child = subprocess.Popen([str(base.PYTHON), str(Path(__file__).resolve()), '--supervise'],
+        child = subprocess.Popen([str(base.PYTHON), str(base.ENTRYPOINT), '--supervise'],
             cwd=base.REPO, env=env, stdin=subprocess.DEVNULL, stdout=log,
             stderr=subprocess.STDOUT, start_new_session=True)
     receipt.update(status='supervisor_started', supervisor_pid=child.pid)

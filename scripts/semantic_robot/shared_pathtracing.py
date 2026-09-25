@@ -4,10 +4,13 @@ Keep the official simulator constructor, physics setup, scene and sensors. The
 public launch wrapper only selects renderer settings after the original empty
 simulator returns, before Environment starts loading its scene or robot.
 """
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 import hashlib
+import json
 from pathlib import Path
-from threading import Lock
+from threading import Lock, RLock
+import time
+import traceback
 
 
 SETTINGS = {
@@ -35,12 +38,69 @@ def get_settings():
     return carb.settings.get_settings()
 
 
-def read_checked(settings):
+def read_checked(settings, record=None):
     actual = {key: settings.get(key) for key in SETTINGS}
-    if any(type(actual[key]) is not type(value) or actual[key] != value
-           for key, value in SETTINGS.items()):
-        raise ValueError('Registered PathTracing/OptiX settings changed')
+    differences = {key: {'expected': value, 'actual': actual[key],
+                        'actual_type': type(actual[key]).__name__}
+                   for key, value in SETTINGS.items()
+                   if type(actual[key]) is not type(value) or actual[key] != value}
+    if record is not None:
+        # Keep the failing values too. H69 previously only saved the earlier
+        # passing snapshot, so its exception could not identify the conflict.
+        record['pathtracing_actual_settings'] = actual
+        record['pathtracing_differences'] = differences
+        record['pathtracing_profile_verified'] = not differences
+    if differences:
+        raise ValueError('Registered PathTracing/OptiX settings changed: ' +
+                         json.dumps(differences, sort_keys=True))
     return actual
+
+
+@contextmanager
+def observe_changes(settings, record, write):
+    """Read-only Carb notifications after the empty-simulator boundary.
+
+    No corrective setters, per-frame polling or installed-source modification.
+    A bounded trace is persisted immediately, before native shutdown can exit
+    Python. Python stacks identify Python callers, not a native C++ backtrace.
+    """
+    receipt = {'initial': read_checked(settings), 'events': [], 'notifications': 0,
+               'dropped': 0, 'errors': [], 'settings_writes': 0, 'max_events': 64}
+    record['pathtracing_change_trace'] = receipt
+    lock, subscriptions = RLock(), []
+    started = time.monotonic()
+
+    def changed(key):
+        def callback(_item, event_type):
+            with lock:
+                receipt['notifications'] += 1
+                try:
+                    if len(receipt['events']) >= receipt['max_events']:
+                        receipt['dropped'] += 1
+                        return
+                    receipt['events'].append({
+                        'key': key, 'event_type': str(event_type),
+                        'elapsed_seconds': time.monotonic() - started,
+                        'actual': {k: settings.get(k) for k in SETTINGS},
+                        'python_stack': traceback.format_stack(limit=20)[:-1],
+                    })
+                    write('pathtracing_changes.json', receipt)
+                except BaseException as error:
+                    # Carb may swallow callback exceptions; retain them and
+                    # fail at the validation boundary, never silently pass.
+                    if len(receipt['errors']) < 8:
+                        receipt['errors'].append(repr(error))
+        return callback
+
+    try:
+        for key in SETTINGS:
+            subscriptions.append(settings.subscribe_to_node_change_events(key, changed(key)))
+        write('pathtracing_changes.json', receipt)
+        yield receipt
+    finally:
+        for subscription in subscriptions:
+            settings.unsubscribe_to_change_events(subscription)
+        write('pathtracing_changes.json', receipt)
 
 
 def apply_settings(settings):
@@ -57,12 +117,19 @@ def validate_after_scene(og, record):
     if (receipt.get('launch_calls') != 1 or receipt.get('applied_before_scene') is not True or
             og.sim is None or og.sim.viewer_camera is not None):
         raise ValueError('PathTracing was not applied at the registered empty-simulator boundary')
-    record['pathtracing_actual_settings'] = read_checked(get_settings())
-    record['pathtracing_profile_verified'] = True
+    read_checked(get_settings(), record)
+    trace = record.get('pathtracing_change_trace', {})
+    if trace.get('errors') or trace.get('dropped', 0):
+        record['pathtracing_profile_verified'] = False
+        raise ValueError('Renderer change trace incomplete')
+    if any(type(event['actual'].get(key)) is not type(value) or event['actual'][key] != value
+           for event in trace.get('events', []) for key, value in SETTINGS.items()):
+        record['pathtracing_profile_verified'] = False
+        raise ValueError('Renderer settings changed during the observed live session')
 
 
 @contextmanager
-def before_scene(og, simulator, *, source_sha256, record, write):
+def before_scene(og, simulator, *, source_sha256, record, write, trace_write=None):
     """One public launch attempt, no hot sensor changes, restore only wrapper."""
     source = Path(simulator.__file__).resolve()
     if hashlib.sha256(source.read_bytes()).hexdigest() != source_sha256:
@@ -75,6 +142,7 @@ def before_scene(og, simulator, *, source_sha256, record, write):
             raise RuntimeError('Rendering profile launch already reserved or attempted')
         _ACTIVE.add(source)
     active = True
+    observers = ExitStack()
     receipt = {'launch_calls': 0, 'applied_before_scene': False,
                'original_simulator_sha256': source_sha256, 'renderer': 'PathTracing',
                'image_distribution_changed': True, 'shared_install_writes': 0}
@@ -102,15 +170,20 @@ def before_scene(og, simulator, *, source_sha256, record, write):
         receipt['actual_settings_before_scene'] = apply_settings(settings)
         receipt['applied_before_scene'] = True
         write('worker.json', record)
+        if trace_write is not None:
+            observers.enter_context(observe_changes(settings, record, trace_write))
         return result
 
     og.launch = launch
     try:
         yield receipt
     finally:
-        with _GATE:
-            active = False
-            _ACTIVE.remove(source)
-        og.launch = original
+        try:
+            observers.close()
+        finally:
+            with _GATE:
+                active = False
+                _ACTIVE.remove(source)
+            og.launch = original
         # Do not restore renderer settings after live cameras exist. This owned
         # process closes its app; no installed file or another process changed.

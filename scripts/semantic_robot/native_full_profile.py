@@ -3,16 +3,18 @@
 Only this process owns the application and changes the in-memory launch route.
 No shared SDK file, physics configuration, task instance or sensor is hot edited.
 """
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 import inspect
 import importlib
 import importlib.util
 import os
 from pathlib import Path
+import sys
+import traceback
 
 NAME = 'a100_full_v1'
 DEPENDENCY_FILES = (
-    'native_full_profile.py', 'launch_h69.py', 'probe_scene_compatible_cameras.py',
+    'native_full_profile.py', 'launch_h69.py', 'launch_h70.py', 'probe_scene_compatible_cameras.py',
     'probe_scene_preconfigured_cameras.py', 'probe_scene_without_viewer.py',
     'probe_scene_startup.py', 'probe_simulator_startup.py',
     'shared_og_startup.py', 'shared_pathtracing.py', 'shared_camera_config.py',
@@ -23,7 +25,7 @@ def checked_helpers():
     folder = Path(__file__).resolve().parent
     modules = {}
     for filename in DEPENDENCY_FILES:
-        if filename in ('native_full_profile.py', 'launch_h69.py'):
+        if filename in ('native_full_profile.py', 'launch_h69.py', 'launch_h70.py'):
             continue
         name = Path(filename).stem
         spec = importlib.util.find_spec(name)
@@ -63,6 +65,47 @@ def prepare_imports(imports, record, *, instance_id):
     import probe_scene_startup as scene
     # Same audited camera preparation plus completed reset/load event tracing.
     return scene.trace_session_imports(imports, record, instance_id=instance_id)
+
+
+@contextmanager
+def preserve_failure(record, write):
+    """Enter INSIDE the native session so evidence precedes its __exit__."""
+    try:
+        yield
+    except BaseException as error:
+        if 'native_failure' not in record:
+            record['native_failure'] = {'error': repr(error), 'phase': record.get('phase'),
+                                        'traceback': traceback.format_exc()}
+            # Separate from run_v2's action-phase failure/safe-hold receipt.
+            try:
+                write('native_failure.json', record)
+                write('native_profile.json', record)
+            except BaseException as secondary:
+                print(f'Native failure {error!r}; saving also failed {secondary!r}', file=sys.stderr, flush=True)
+        raise
+
+
+@contextmanager
+def initialized_session(context, validate, record, write):
+    # The stack is outside the diagnostic boundary: enter/validation failures
+    # persist before native __exit__, but exceptions from the caller's action
+    # loop are never relabelled as initialization/renderer failures.
+    with ExitStack() as stack:
+        with preserve_failure(record, write):
+            environment = stack.enter_context(context)
+            validate(environment, 1)
+        yield environment
+        # Successful caller path only. Run before SDK shutdown, while cameras
+        # and Carb are still live; never replace an original action exception.
+        with preserve_failure(record, write):
+            validate(environment, 2)
+
+
+def checked_reset(environment, validate, record, write):
+    with preserve_failure(record, write):
+        result = environment.reset()
+        validate(environment, 2)
+        return result
 
 
 @contextmanager
@@ -116,20 +159,18 @@ def session(factory, window, *, gpu, output, runtime):
         def __init__(self, original): self.original = original
         def __getattr__(self, key): return getattr(self.original, key)
         def reset(self):
-            result = self.original.reset()
-            validate(self.original, 2)
-            return result
+            return checked_reset(self.original, validate, record, base.write)
 
     bindings = {(base.OG_KIT, base.EXPERIENCE): base.DEPENDENCIES[base.OG_KIT],
                 (scene.ICON, scene.INSTALLED_ICON): scene.ICON_SHA}
     try:
         with renderer.before_scene(og, startup, source_sha256=scene.EXTRA_DEPENDENCIES[scene.OG_SOURCE],
-                record=record, write=save), private_og_startup(startup,
+                record=record, write=save, trace_write=base.write), private_og_startup(startup,
                 source_sha256=scene.EXTRA_DEPENDENCIES[scene.OG_SOURCE], experience=base.EXPERIENCE,
                 copy_bindings=bindings, construct=construct_app) as bridge:
             record['startup_bridge'] = bridge
-            with factory.OfficialEvaluatorSession(window, gpu=3, imports=imports) as environment:
-                validate(environment, 1)
+            with initialized_session(factory.OfficialEvaluatorSession(window, gpu=3, imports=imports),
+                    validate, record, base.write) as environment:
                 yield CheckedEnvironment(environment)
     finally:
         # The external watchdog also bounds native shutdown, which may exit

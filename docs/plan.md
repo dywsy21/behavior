@@ -10,9 +10,36 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 14:35（北京时间）：H70有限设置追踪准备（Codex）
+
+14:41最终独审闭合：13目标＋18native gate＋11PT独立通过，两项阻塞已关闭、无新实质代码阻塞；父110相邻过1.047s。仅放行原登记唯一900s诊断，不冒充真实Carb线程/SDK执行。准备固定源/Git同步，未launch。
+
+14:39独审修复：缩窄异常保存边界，仅enter/初始化检查/二次reset/成功后的最终检查，不能把caller动作失败伪报native；最后检查移到SDK shutdown前，最后一次reset后的漂移、临时恢复、记录错误或超限均拒绝成功，保留动作原异常。13目标CPU过0.040s，最终独审/相邻回归待；未launch。
+
+14:37回归：新8项0.021s、相邻105项0.938s、完整semantic703中698通过/5 SDK skip（28.342s），diff clean；独审进行中。两次最初测试命令有装载错误（误写不存在的模块名、未指定src），已按正确路径完整重跑；不是源码/物理失败。尚未GPU/launch。14:36只读核GPU0队友3564916/12548MiB，其余空、两盘各约1.9TiB余量，未干预。
+
+- H69完整证据父审/独审一致；新增read-only Carb节点追踪（最多64条实际值/调用栈）、断言先保存差异、SDK退出前原错误持久化及监管根错误传播。未加入任何纠正setter/放宽renderer门，旧H69不重启。
+- 新H70预登记一次900s/24gate/1536control，仍0模型训练/前缀，GPU3≤24GiB/辅助512MiB/全卡8GiB余量，独立run/runtime/source；原设置/任务/物理完全保持。代码已本地实现，CPU/独审和实际固定源均待，不称已定位具体覆盖者。
+- 目的先恢复能可信观察/控制的真实harness；微调继续受H66视觉对照与人工检查约束，不重复39条猜历史数据。完整官方SR仍未达到。
+
+### 2026-09-25 14:28（北京时间）：H69失败记录更正/诊断续接（Codex）
+
+14:33归档完成：完整10件4441121B双端SHA全同，清单见H69文档，本地`h69_native_gate_bundle_v1`；214资源样本主卡峰5247MiB，辅助456/416/416，退出GPU全释放/队友保留。不是显存失败，无图像/动作产物。正沿原生renderer/camera初始化调用查覆盖来源；不重跑H69。
+
+- 实读 `gate/worker.json` 证实原API reset1、load138各一次且completed；下条14:23“0完成reset”是读取较早native_profile快照造成的错误，现明确更正。最终外层reset0、gate动作0、VLM/训练0，仍无任务SR分母。
+- 已fetch，无新upstream/main；3份本轮自己的进度文档dirty故未pull、未覆盖。安装源码仅发现构造器的RT设置和SimulationApp reset_render_settings会写注册字段；报错瞬间actual未保存，具体字段/触发者尚不能断言。下一取回完整10件证据并修复退出前诊断保存，不同配置盲重试。
+
+### 2026-09-25 14:23（北京时间）：H69真实完整场景gate结束未通过（Codex）
+
+- 原唯一5e4ce75运行监管`failed / 519.433s`；worker退出0但无result，严格监管拒绝通过。真实stderr在约497.9s报`Registered PathTracing/OptiX settings changed`，不是显存不足或动作失败；尚0完成reset/0gate动作/0VLM训练，没有SR分母或press结果。
+- supervisor3564979/worker3564992已结束、after_exit自有SID全部GPU释放，2/3恢复81152MiB，GPU0队友3564916/12546MiB保留。source/run/runtime/cache全保留，不重启本次已消费的单次运行。
+- 正归档完整日志/状态并定位被改写的renderer具体字段与安装调用链；`FileNotFoundError(result)`只是缺失终态的次级监管错误，不能代替真实根因。需修复初始化异常的提前保存及真正profile冲突，不能放宽检查或热改SDK后直接重试。完整任务SR仍未达到；微调数据视觉对照仍待。
+
 ### 2026-09-25 14:12（北京时间）：H69唯一完整场景gate已提交（Codex）
 
 14:14实际运行核验：监管`running`、worker3564992；约77.45s记录`loading_scene`，1 app/1原startup、PT已在scene前应用且实际GPU3设置过，原720/480三相机配置过、0共享安装写入、0完成reset/动作/模型。主自有852MiB，辅助240/200/200MiB；GPU0新队友3564916/12462MiB正常共存。无failure；继续原run，不改源/预算。
+
+14:18原native日志新事件：相对313.398s实际Imported scene0，随后开始创建R1Pro；324.36s监管仍running，主自有932MiB/辅助240/200/200，GPU0外部任务仍正常。尚未完成reset/相机捕获或gate动作，粗phase仍loading_scene，不将其误报为已通过；保留原2400s，不追加或热改。
 
 - 固定源`5e4ce75623c9b658977a14ad0c6dfb5f6ebe9abb`，robo双端105邻接/独审/23安装依赖/资源门过；唯一launch UTC06:11:57.224739，supervisor3564979。run `robodojo_agentic_20260925/h69_native_gate_v1`、runtime同stem已创建；真实child/初始化状态正在核，不重复提交。
 - 原一次24decision/1536control/动作1200s、总2400s＋30清理/主GPU3≤24GiB/辅助SID合计512MiB/全卡8GiB余量保持；0actor/VLM/训练/专家或旧policy前缀。提交时四卡均空，先前GPU0队友进程又自然退出，没有干预。基础gate不是press验收或完整任务SR，goal仍未完成；微调视觉对照仍待。

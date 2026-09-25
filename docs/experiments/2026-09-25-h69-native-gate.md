@@ -1,5 +1,26 @@
 # H69：空闲卡上的同源完整场景基础gate
 
+## 真实终态与归档（2026-09-25 14:33北京时间，Codex）
+
+唯一5e4ce75运行failed，519.4327845s。worker退出0但没有result，监管正确拒绝通过；根异常为初始化后`Registered PathTracing/OptiX settings changed`，尚缺报错时具体actual，不能断言改写字段或触发者。原官方reset1和load138各1且completed（证据`gate/worker.json`），最终外层reset0、gate/control/VLM/训练0，不是任务失败样本或press验收。
+
+完整10件4441121B已从原run取回`artifacts/agentic-vlm-goal-20260918/h69_native_gate_bundle_v1`并逐件双端SHA一致。214次资源样本：worker主GPU3峰5247MiB、辅助0/1/2峰456/416/416MiB，未触显存门；退出后三卡空、GPU0队友3564916/12546MiB仍在。不能把原较早native_profile快照中的0reset当终态；不重启H69。
+
+| 相对文件 | SHA256 |
+| --- | --- |
+| launch.json | 0bd58c0cad051036c232ce9697ad26467672e9b5cec25b6f6499123a310c5bdc |
+| supervisor.log | 8721c4f35052b8f21247f6c0f31ffe82777c0e158311bf4234f0fa53647fcc4a |
+| supervisor.claim.json | eec7d964b1b7897930ecdbc6ae02081e493a6734cdf406d3e750de2f11ad43da |
+| worker.log | a74e63c514f87b30db0b040958309137a2d6f84834b33d9a451d3b48afbee300 |
+| supervisor.json | 3a3bee89eeb1d3eddf2af00f3814808496afcc97c3122fc882b7952077c64ee6 |
+| gate/manifest.json | 17c61ee037df89fa73ffd9feaaa5e8e1b9fe8a157438578568c018bd96556338 |
+| gate/steps.jsonl | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 |
+| gate/worker.json | 172fe348547cf48fe7ff98a884b6c7cf6ff0488c44585c46319680e6b4bce6ed |
+| gate/native_profile.json | b87ae4ee51e6985a15543ffe0924b1c8ded23be59981d4eb2b1ca02b257dd68c |
+| gate/kit.log | 2fcdfe7ee595651bdc549045a0db34130969a7ad1d4fc374d4ffcdb92c10deee |
+
+以下为原始预登记/执行史，不覆盖上方终态。
+
 2026-09-25 13:46北京时间预登记，owner Codex；基线7a1b203（H68），运行源码待实现/独审后固定。四卡原训练已自然退出，不是获准停止它们；GPU0/1仍留团队。
 
 唯一假设：解除共享显存限制后，已修正的真实手指/本体排除/动作内RGB-D反馈能在完整原场景下通过现有基础动作gate。它不验证VLM语义、press接触或任务SR；不把gate固定动作当agent策略。
