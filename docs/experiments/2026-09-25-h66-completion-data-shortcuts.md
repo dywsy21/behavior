@@ -77,3 +77,19 @@ Codex重新按“能否从图直接给出这个label”而非“私有标签是�
 后继数据版本必须同时具备：每实际control的原生before/after clock；每3路图的同状态ReferenceTime；命令成功与物理/视觉结果分离；稳定窗口按真实simulation seconds和采样间隔解释，不把逻辑步数冒充物理tick。同一记录既有动作时钟也有相机时钟，错位或漏推进直接隔离，不用训练弥补。
 
 旧39条及旧120步权重保持原版本、原结论，不重标或伪装成新协议。新训练仍先解决可见监督与同历史负例：目标/部件可见性、相对位置、短时共同运动/滑落，遮挡=UNKNOWN；不让视觉模型猜不可见的稳定tick阈值。H73的I/O实跑是此前置工程验收，尚未构造/发布新数据或重训。
+
+## 16:59北京时间：新视觉数据的来源与九图人工检查
+
+本人核H09R counts原件SHA `d94850ebfeadeef8b28f618e543ebae7cb7a18bd127c5d79ba6f4c18c0f015e3`及筛选代码。原5%留出、H09 val/test和开发task0/i138、task3/i242已经排除；但其旧`additional_train`仍列task1/i1和i71（之后才成为native eval）。现有native_dataset另传HELDOUT正确阻止它们；**不能把旧cohort单独当未来新数据的训练许可**。后继来源仍须并集排除所有后来留出/开发实例，不能用H71–H74保存态扩充训练。
+
+本次只从既有合法参考片抽9张首帧检查，不重放仿真、不生成动作/完成标签。来源root `/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09s-prepare-v1`，task0/i70/e66/frame1170，task1/i192/e310/frame164，task3/i30/e629/frame3473；三个reference SHA和九个clip SHA全部与原preparation/reference对上。原片是384像素人工预览、17帧，不能冒称已满足720/480 RAW训练契约。
+
+| 来源 | head本人所见 | left_wrist本人所见 | right_wrist本人所见 |
+| --- | --- | --- | --- |
+| radio/i70 | 红白收音机在右手旁清楚可见；按钮细节不足 | 桌面/反光/少量机器人边缘，无所问收音机 | 近距离外壳和白边可见，不能据此标出按钮 |
+| bin/i192 | 图下边缘只露一小段棕色桶，单图身份不充分 | 桶口/桶沿和内壁明显可见 | 左上角部分桶口/内壁可见，目标不完整 |
+| plate/i30 | 盛食物餐盘、右手及敞开冰箱可见 | 机器人自身结构/地面，无所问餐盘 | 食物/盘沿及指尖近景可见，不能由单帧证明夹紧或稳定持有 |
+
+这组三任务多视角来源有“全物体可见／局部可见／不可见”差异，适合作为后继部件/可见性监督候选，而不是GRASP完成或正确动作标签。仍欠额外来源实例、同类目标的视角内正负对照、原生分辨率与完整人工标注；没有发布新训练集，也没有把9图检查称为全部数据审完。
+
+新本地预览目录`artifacts/agentic-vlm-goal-20260918/h66_train_source_preview_v1`，文件`t{0,1,3}_{head,left_wrist,right_wrist}.png`。按head/left/right顺序的PNG SHA256前8分别为：t0 `6a621995/51985cdd/b7fba290`；t1 `21708c62/6622187b/47a7b350`；t3 `e955ba83/523201b4/7bbbf45d`。不改原视频/reference，不回灌开发/旧eval，不据此声称微调或SR提升。

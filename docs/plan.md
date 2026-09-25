@@ -12,6 +12,10 @@
 
 ### 2026-09-25 16:54（北京时间）：H74唯一原生复验运行中（Codex）
 
+16:59已本人检查三合法TRAIN来源9张首帧，reference/九clip SHA全核；可见性/局部遮挡可提供监督，但按钮、抓紧/稳定不能凭这些帧标真。图在h66_train_source_preview_v1，H66逐视角记录；只是384预览，尚非新RAW训练集。已明确后继不使用H71–H74开发实例，0新标签发布/训练。
+
+16:58微调来源检查：已核H09R counts SHA d94850eb…015e3，明确排除开发TRAIN138/242及原5%/H09留出；其旧additional_train还包含后来eval的task1 i1/i71，后继必须继续并集排除，不能只看cohort。已定位未被保护的既有TRAIN70/192/30三份17帧参考片，只准备本人检查9张首帧是否能支持可见部件监督，非新训练标签/动作BC。H74 worker3597396仍原预算loading_scene，源不动。
+
 - 源4781860399a25d67693e0d6b754cf28a5b696ba5/digest86702d8a…bb0c；双端132 CPU/独审/依赖与资源过，唯一launch UTC08:53:53.496210，supervisor3597389。新h74_graph_lifecycle_v1 run/runtime已创建，实际worker/初始化正在核。
 - 原一次1200s＋30清理/24gate/1536controls/0模型训练预算；GPU0队友3564916保持，不热改或重提。此前只证明一条安全hold的4ticks，真实三路时间与全动作仍待，不称修复成功或SR提升。
 
