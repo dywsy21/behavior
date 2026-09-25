@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 18:54北京时间归档：** H77本地h77_task3_gate_bundle_v1全1011件348660187B规范聚合a43cc772…dec45已双端验全/独审过；首次截断残片h77_interrupted_transfer_v1保留。H78本地h78_presence_results_v1仅16件轻量回执252232B、聚合ec62be5e…f3f7双端同，不含adapter权重/缓存；完整训练源/run/两个权重均仍保留服务器，未移动或上线。
+
+**2026-09-25 18:49北京时间H78终态：** 原3619960/3619988结束、监管completed/exit0/275.165s、自有GPU全释放；source/run/日志保留。新80步视觉adapter在 `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h78_presence_v1/training/adapter_0080`，safetensors SHA0e1a239675ded85922faea3ab728cbd31646a6fb852ad1195622c3555349396f，仅离线视觉组件，未部署动作服务。小结果本地归档/终审待；H79尚无新远端目录。
+
+**2026-09-25 18:42北京时间H78启动：** 新Git clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/visual_presence_64c34bd` 固定64c34bd133c4498c3fda52919a92a5161bce034a，真实HF overlay/十模型文件/数据和资源门及18CPU过。唯一launch UTC10:41:19.063300、supervisor3619960，run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h78_presence_v1`已建，原80更新1800s/112调用/GPU2预算，真实worker待核，不热改/重提。H77首次传输截断，保留残片于本地h77_interrupted_transfer_v1，正只补815件，不动远端全包。
+
 **2026-09-25 18:32北京时间H77终态：** 原3613503/3613510已结束exit0/监管completed，task3普通gate通过，原source/run/runtime保留；本地`artifacts/agentic-vlm-goal-20260918/h77_task3_gate_bundle_v1`全包正在下载，SHA/资源释放终态正核，不当已验全。H78尚无远端训练source/run。
 
 **2026-09-25 18:14北京时间H77启动：** source task3_gate_3f7cfa6冻结，唯一launch UTC10:12:52.551680、supervisor3613503，h77_task3_gate_v1 run/runtime已创建，真实child/初始化待核；1200s＋30清理/0模型训练。0/1队友保持，源不可热改。H78只有本地CPU实现，远端训练目录/进程尚无。
