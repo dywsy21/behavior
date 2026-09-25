@@ -25,3 +25,25 @@
 15:46唯一原生提交：robo clean `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/observation_clock_b59498f`，118 CPU1.910s/24＋3依赖/资产/资源门过。原normal digest6e50eb1b…0661e保持、diagnostic digest ab1306a356945c872a1ea0a7fe1187f4cecd1a26bb8663c4b8d3c6a8ccd83fdc。launch UTC07:46:36.616892/supervisor3585374；GPU0队友3564916/12548MiB保持、1/2/3空。预算不变，真实初始化/终态待，不重提。
 
 15:51只读候选核对：[NVIDIA Isaac5.1官方文档](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/replicator_tutorials/troubleshooting.html#async-rendering-and-frame-skipping)记录throttling把asyncRendering切true时可能丢帧，但服务器安装`isaacsim.core.throttling/config/extension.toml:27`已经默认enable_async=false；不据文档假定本run命中，不热改。另从已安装SimulationContext.step看render=True依赖app.update，而render=False显式physics step；默认dt正确不能代替实测每control物理推进。H72时钟用于区分这项替代解释，原输入/控制/预算不改。
+
+## 实际终态与初步根因（16:05北京时间）
+
+738.518454s，监管completed仅表示诊断完整；普通gate_ok=false，12决策/232controls，末1安全保持。supervisor3585374/worker3585381均已退出；GPU只剩队友3564916/12548MiB。0模型/训练/前缀，不是完整SR样本。
+
+443事件journal SHA `0f8cde334a22613d1bd8b9fe05a078b05ad1015a11f2d6dc4d53ac41531c4999` 已在本地匹配。capture_return47–50对应base开始与三个6control段，初步数值：
+
+| snapshot | physics index | sim time(s) | PhysX相对起点X(mm) | head depth SHA前缀 |
+| --- | ---: | ---: | ---: | --- |
+| 47 | 553 | 4.608333574 | 0 | 11ad4e4a20bf |
+| 48 | 569 | 4.741666914 | -5.8223 | d0b9bc05f9d3 |
+| 49 | 585 | 4.875000254 | -30.9960 | d0b9bc05f9d3 |
+| 50 | 597 | 4.975000259 | -34.8881 | 770baae43d90 |
+
+- 18次控制应推进0.6s/72physics ticks，实际0.366667s/44ticks；不是单靠默认dt作推断。现有journal只在变化时记录state，不能据此给每次未推进调用编号，须在修复中记录每次before/after。
+- 48→49 PhysX移动25.174mm而depth完全重复，Fabric全443条的位移与PhysX相同；每次capture内time/index未变。故当前证据支持物理推进不足与观测buffer滞后并存，不支持“全部是里程计比例错”或“只是Fabric没更新”。
+- 142条new_state_clock相邻差都是4ticks，实际原生tensor为CPU torch.Tensor，仍承认额外读的观测者效应。
+- 后继候选：显式physics-only env.step并逐调用断言4ticks/1/30s；按原生render完成与reference timestamp取三路RGB-D，而非用4次调用或图像差分冒充freshness。安装API需先核，再单独冻结测试；不改物理参数/目标门、不泄露诊断真值。
+
+完整归档/逐段receipt绑定和独立审查正在进行，尚未新launch或宣布修复成立。
+
+16:07归档与绑定完成：529件210241629B，规范排序path/bytes/SHA清单聚合`3df519b44ff2fe2fd093dde6f33de50eb7a954c1952c9a7c1d680ec8e77e95f9`双端全同；本地`artifacts/agentic-vlm-goal-20260918/h72_observation_clock_bundle_v1`。四receipt分别绑定control213/219/225/231与snapshot47/48/49/50，action_motion三个原区间对应，无额外控制。独审继续，0新launch。

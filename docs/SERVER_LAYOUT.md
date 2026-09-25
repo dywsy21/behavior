@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 16:07北京时间H72完整归档：** 本地`artifacts/agentic-vlm-goal-20260918/h72_observation_clock_bundle_v1`全529件210241629B；规范排序path/bytes/SHA清单聚合`3df519b44ff2fe2fd093dde6f33de50eb7a954c1952c9a7c1d680ec8e77e95f9`双端全同。旧源/run/runtime/队友任务保留，无新模型或仿真。
+
+**2026-09-25 16:03北京时间H72终态：** 原supervisor3585374/worker3585381已退出，738.518s/诊断completed但普通gate_failed；源/run/runtime完整保留。443事件私有journal已封存，正取回`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h72_observation_clock_bundle_v1`，未称完整核验。GPU仅队友3564916/12548MiB，无自有模型/训练/仿真。
+
 **2026-09-25 15:46北京时间H72提交：** 固定observation_clock_b59498f源码；唯一UTC07:46:36.616892、supervisor3585374，h72_observation_clock_v1 run/runtime现已创建。1200s＋30清理/24动作，初始化待；不可热改或重复提交。H71与其他旧目录/队友任务保留。
 
 **2026-09-25 15:46北京时间H72准备：** Git新clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/observation_clock_b59498f` 固定b59498f834bfb86e79f920ddf0f9708b0fb4764e；118 CPU1.910s、24＋3安装依赖/资源门过。预定run `/mnt/nvme_tmp/robodojo_agentic_20260925/h72_observation_clock_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h72_observation_clock_v1`提交前不存在；正唯一launch，实际运行待核。H71及所有原目录/队友3564916保留。

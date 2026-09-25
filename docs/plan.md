@@ -10,7 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 16:03（北京时间）：H72诊断完成、底盘失败复现（Codex）
+
+16:07完整归档/父核：529件210241629B，path/bytes/SHA规范清单聚合3df519b44ff2fe2fd093dde6f33de50eb7a954c1952c9a7c1d680ec8e77e95f9双端完全同；47–50已绑定213/219/225/231原始receipt。安装Replicator1.12.27源码/对应官方API支持delta_time=0及wait_for_render=True，但会初始化图/控制timeline，需审计副作用与真实reference time而不能直接当修复成立。H73分离控制/取图接口准备，尚0新launch。
+
+16:05核心数值核对：journal完整443行/SHA匹配。snapshot47→50（213→231）物理time4.6083336→4.9750003/index553→597，18control仅44physics ticks/0.366667s而非72/0.6s；真实PhysX后退34.888mm。48→49真实移动25.174mm、Fabric完全同PhysX但head depth逐bit重复，4render内时钟未动。两问题并存：渲染驱动control漏推进＋相机buffer未按状态更新；不能只改视觉或拿raw速度积分当真值。逐段文件绑定/独审和完整归档待，无新launch。
+
+- 原唯一b59498f运行738.518s/监管completed，仅表示私有诊断完成；真实gate仍failed，12决策/232controls含末1安全保持，底盘视觉后退30.867mm/目标60mm。443条原生时钟/PhysX/Fabric/逐render图指纹完整封存，journal SHA0f8cde33…c4999，根因尚待逐段对照，不能当actor/SR通过。
+- supervisor3585374/worker3585381均已退出，GPU仅队友3564916/12548MiB；0模型/新训练/前缀。完整run正取回本地h72_observation_clock_bundle_v1，未称已归档完成；下一物理位姿—图像—时间数值核对/独审后才决定接口修复。fetch本分支0/0/main无更新，保留自己的进度dirty故未pull。
+
 ### 2026-09-25 15:46（北京时间）：H72唯一原生诊断运行中（Codex）
+
+15:56实际进展：原native约514/516s分别完成reset1/2验证，553.747s首HOLD18controls完成；worker3585381继续运行，无初始化/新接口错误。私有审计已进入动作阶段，完整底盘数据/终态待，不将首动作当gate/SR完成。
 
 15:51只读来源核对：[NVIDIA5.1丢帧说明](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/replicator_tutorials/troubleshooting.html#async-rendering-and-frame-skipping)提及throttling开启async；但安装extension.toml的enable_async默认false，不能照搬判根因。原native仍loading_scene，约243s/0audit，保持源/预算，等真实时钟/PhysX/图像。没有新模型/训练或追加run。
 
