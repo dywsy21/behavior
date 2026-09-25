@@ -1,0 +1,3538 @@
+{
+  "schema": "h82-parent-corrected-grounding-v1",
+  "status": "FINAL_REVIEW_PASSED",
+  "reviewer": "Codex parent (/root), manual visual inspection; not an independent second human annotator",
+  "reviewed_at": "2026-09-25T22:55:00+08:00",
+  "starting_code_commit": "4485a894e3ff522ac45784750728ebbeae0d7fd0",
+  "protocol": "visual-grounding-v1",
+  "label_origin": "parent_manual_visual_correction",
+  "source_pins": {
+    "manifest_sha256": "916ecc58b0817983f322dde5ae5db7f835b68b27d6e41902e53f1ec17b8b19a7",
+    "predictions_sha256": "a231bbab2c4fa66f7f8fda304f2ef73c73ab0eff8c6ac1f9fb3bfc6fc7fb5cf1",
+    "frozen_h76_review_sha256": "3159ed61cb56778343e360e282a9fbb68b64e5dd7d770d0346397fa1380dd136",
+    "input_protocol_sha256": "4b0d80a200a0553839e4d6fa00df1e5978d13aa40fa22d858029397e574309d7",
+    "h83_parent_review_sha256": "a4c3628141056a2b2e31a2e8b6a36297c442a32a87d0a0a3945b0d7972a82010"
+  },
+  "scope": {
+    "primary_unique_images": 81,
+    "source_train_groups": 9,
+    "present": 32,
+    "absent": 41,
+    "uncertain": 8,
+    "positive_boxes": 33,
+    "eligible_image_only_train": 73,
+    "quarantined_uncertain": 8,
+    "repeat_examples_excluded": 16,
+    "new_source_images": 0,
+    "new_teacher_generations": 0,
+    "new_training_updates": 0,
+    "new_controls": 0
+  },
+  "usage": {
+    "approved_modality": "current_raw_rgb_and_query_to_visibility_and_boxes_only",
+    "never_for": [
+      "action_BC",
+      "holding_or_contact",
+      "completion_or_success",
+      "independent_eval",
+      "automatic_teacher_quality_approval",
+      "H80_bulk_training_release"
+    ],
+    "source_history": "All nine groups were already TRAIN and used for H78 training/H81-H82 development calibration; not new independent data. Original H82 teacher score remains 69/81 and N precision 37/42.",
+    "uncertain_policy": "Retain explicit uncertain target in audit; exclude all eight from exported definite P/N training rows.",
+    "box_convention": "Manual integer edge coordinates in native pixels; floor x1/y1 and ceil x2/y2 when normalized to 0..1000. Axis-aligned visible extents only; occluders can lie inside the rectangle, hidden bounds are not extrapolated."
+  },
+  "final_overlay_review": {
+    "records_sha256": "aae016678b086c91659d3e81e157f87cc6bbe9ea4d96393090ef3280f064b8f9",
+    "reviewed_at": "2026-09-25T22:55:00+08:00",
+    "all_pages_inspected_by_parent": true,
+    "known_issues_remaining": 0,
+    "pages": [
+      {
+        "path": "artifacts/agentic-vlm-goal-20260918/h82_corrected_review_sheets_v1/corrected_00.jpg",
+        "ids": [
+          "t0_i135_e120_f000000_head",
+          "t0_i135_e120_f000000_left_wrist",
+          "t0_i135_e120_f000000_right_wrist",
+          "t0_i135_e120_f000810_head",
+          "t0_i135_e120_f000810_left_wrist",
+          "t0_i135_e120_f000810_right_wrist",
+          "t0_i135_e120_f001458_head",
+          "t0_i135_e120_f001458_left_wrist",
+          "t0_i135_e120_f001458_right_wrist"
+        ],
+        "sha256": "d2b29275ab9eba960b86385a4f4e0171270deca14027c66a72c1a8170416b06f"
+      },
+      {
+        "path": "artifacts/agentic-vlm-goal-20260918/h82_corrected_review_sheets_v1/corrected_01.jpg",
+        "ids": [
+          "t0_i31_e28_f000000_head",
+          "t0_i31_e28_f000000_left_wrist",
+          "t0_i31_e28_f000000_right_wrist",
+          "t0_i31_e28_f001417_head",
+          "t0_i31_e28_f001417_left_wrist",
+          "t0_i31_e28_f001417_right_wrist",
+          "t0_i31_e28_f002550_head",
+          "t0_i31_e28_f002550_left_wrist",
+          "t0_i31_e28_f002550_right_wrist"
+        ],
+        "sha256": "42a60028ad9e90b03088cc7d2c6914fec0103d5e23fbe366139ab1d640b0e252"
+      },
+      {
+        "path": "artifacts/agentic-vlm-goal-20260918/h82_corrected_review_sheets_v1/corrected_02.jpg",
+        "ids": [
+          "t0_i70_e66_f000000_head",
+          "t0_i70_e66_f000000_left_wrist",
+          "t0_i70_e66_f000000_right_wrist",
+          "t0_i70_e66_f001229_head",
+          "t0_i70_e66_f001229_left_wrist",
+          "t0_i70_e66_f001229_right_wrist",
+          "t0_i70_e66_f002213_head",
+          "t0_i70_e66_f002213_left_wrist",
+          "t0_i70_e66_f002213_right_wrist"
+        ],
+        "sha256": "63c9d61baf8e94b3d115baab84841cce54a995256cc3cfacdc26731c32198411"
+      },
+      {
+        "path": "artifacts/agentic-vlm-goal-20260918/h82_corrected_review_sheets_v1/corrected_03.jpg",
+        "ids": [
+          "t1_i194_e312_f000000_head",
+          "t1_i194_e312_f000000_left_wrist",
+          "t1_i194_e312_f000000_right_wrist",
+          "t1_i194_e312_f000859_head",
+          "t1_i194_e312_f000859_left_wrist",
+          "t1_i194_e312_f000859_right_wrist",
+          "t1_i194_e312_f001547_head",
+          "t1_i194_e312_f001547_left_wrist",
+          "t1_i194_e312_f001547_right_wrist"
+        ],
+        "sha256": "d8d162e12b559f1759606b5373eaec018681e3545bbcd4dcae9994c05f553b75"
+      },
+      {
+        "path": "artifacts/agentic-vlm-goal-20260918/h82_corrected_review_sheets_v1/corrected_04.jpg",
+        "ids": [
+          "t1_i8_e205_f000000_head",
+          "t1_i8_e205_f000000_left_wrist",
+          "t1_i8_e205_f000000_right_wrist",
+          "t1_i8_e205_f003116_head",
+          "t1_i8_e205_f003116_left_wrist",
+          "t1_i8_e205_f003116_right_wrist",
+          "t1_i8_e205_f005609_head",
+          "t1_i8_e205_f005609_left_wrist",
+          "t1_i8_e205_f005609_right_wrist"
+        ],
+        "sha256": "338e5ed9cc8ca01b89f74787ecc073254faad3dfc73de1be92d33aea69568078"
+      },
+      {
+        "path": "artifacts/agentic-vlm-goal-20260918/h82_corrected_review_sheets_v1/corrected_05.jpg",
+        "ids": [
+          "t1_i278_e377_f000000_head",
+          "t1_i278_e377_f000000_left_wrist",
+          "t1_i278_e377_f000000_right_wrist",
+          "t1_i278_e377_f002623_head",
+          "t1_i278_e377_f002623_left_wrist",
+          "t1_i278_e377_f002623_right_wrist",
+          "t1_i278_e377_f004721_head",
+          "t1_i278_e377_f004721_left_wrist",
+          "t1_i278_e377_f004721_right_wrist"
+        ],
+        "sha256": "3c62d7c7a0f26ada131055239cbcb5f8945e1236b6e0f9f4f68a38c2eb279250"
+      },
+      {
+        "path": "artifacts/agentic-vlm-goal-20260918/h82_corrected_review_sheets_v1/corrected_06.jpg",
+        "ids": [
+          "t3_i96_e678_f000000_head",
+          "t3_i96_e678_f000000_left_wrist",
+          "t3_i96_e678_f000000_right_wrist",
+          "t3_i96_e678_f006750_head",
+          "t3_i96_e678_f006750_left_wrist",
+          "t3_i96_e678_f006750_right_wrist",
+          "t3_i96_e678_f012150_head",
+          "t3_i96_e678_f012150_left_wrist",
+          "t3_i96_e678_f012150_right_wrist"
+        ],
+        "sha256": "238c3cf7dbcbcf7814c528190912913ebf09bdf36cdb0f9b867bbe33ef31c314"
+      },
+      {
+        "path": "artifacts/agentic-vlm-goal-20260918/h82_corrected_review_sheets_v1/corrected_07.jpg",
+        "ids": [
+          "t3_i146_e711_f000000_head",
+          "t3_i146_e711_f000000_left_wrist",
+          "t3_i146_e711_f000000_right_wrist",
+          "t3_i146_e711_f007556_head",
+          "t3_i146_e711_f007556_left_wrist",
+          "t3_i146_e711_f007556_right_wrist",
+          "t3_i146_e711_f013601_head",
+          "t3_i146_e711_f013601_left_wrist",
+          "t3_i146_e711_f013601_right_wrist"
+        ],
+        "sha256": "24d4e0ebf8c01418cdb5d20628878a3576de52b2011dff163d52683fc63730ac"
+      },
+      {
+        "path": "artifacts/agentic-vlm-goal-20260918/h82_corrected_review_sheets_v1/corrected_08.jpg",
+        "ids": [
+          "t3_i252_e769_f000000_head",
+          "t3_i252_e769_f000000_left_wrist",
+          "t3_i252_e769_f000000_right_wrist",
+          "t3_i252_e769_f007051_head",
+          "t3_i252_e769_f007051_left_wrist",
+          "t3_i252_e769_f007051_right_wrist",
+          "t3_i252_e769_f012691_head",
+          "t3_i252_e769_f012691_left_wrist",
+          "t3_i252_e769_f012691_right_wrist"
+        ],
+        "sha256": "dcf02c039a591392c7c1daf5dfc59e6af40e3d87b00438da51787b06afae36ed"
+      }
+    ],
+    "native_overlay_rechecks": [
+      "t3_i96_e678_f006750_right_wrist",
+      "t3_i146_e711_f007556_right_wrist",
+      "t0_i70_e66_f001229_left_wrist"
+    ],
+    "limitations": "Single Codex-parent manual review, not independent multi-human consensus or pixel-mask ground truth. No claim of mathematically zero annotation error."
+  },
+  "rows": [
+    {
+      "id": "t0_i135_e120_f000000_head",
+      "task": 0,
+      "instance": 135,
+      "episode": 120,
+      "frame": 0,
+      "view": "head",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i135_e120_f000000_head.png",
+      "png_sha256": "760bef3523b7c4d4550c57a61224397b72de4bf33d050e70f21ce253ebaf850c",
+      "pixels_sha256": "6c81f86e3fb5f5db05961e22d64482ee35c32128fe55f710e91edf6a663bcd28",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            688,
+            615,
+            825,
+            725
+          ]
+        ]
+      },
+      "source_review_note": "Head red radio on coffee table; both wrists self-occluded.",
+      "boxes_px": [
+        [
+          493,
+          445,
+          596,
+          523
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            684,
+            618,
+            828,
+            727
+          ]
+        ]
+      },
+      "review_note": "Red radio body, white trim and visible handle on table; exclude cast shadow.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i135_e120_f000000_left_wrist",
+      "task": 0,
+      "instance": 135,
+      "episode": 120,
+      "frame": 0,
+      "view": "left_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i135_e120_f000000_left_wrist.png",
+      "png_sha256": "3381032d7153e3d82d9feb6addb76214bffb653f9f3e175a8005eddef4de125c",
+      "pixels_sha256": "f6c99dea0c5638dc3ab31eb0d9a6cb9a2dc898a165f7d070260434c8b2cc3525",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head red radio on coffee table; both wrists self-occluded.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i135_e120_f000000_right_wrist",
+      "task": 0,
+      "instance": 135,
+      "episode": 120,
+      "frame": 0,
+      "view": "right_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i135_e120_f000000_right_wrist.png",
+      "png_sha256": "5af1433e640ffbc4fa7928bef44d5f9b36201514f3d7883eab9b1bdd8cbbcf70",
+      "pixels_sha256": "c95538c9f545681ff9f926303e6e75afda06426d6086ca9959ae8c619922730e",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head red radio on coffee table; both wrists self-occluded.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i135_e120_f000810_head",
+      "task": 0,
+      "instance": 135,
+      "episode": 120,
+      "frame": 810,
+      "view": "head",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i135_e120_f000810_head.png",
+      "png_sha256": "a467efcde95f170412d8cb6b4b8b91ad54c21a63e1d24437344fe90c5d806f7f",
+      "pixels_sha256": "c7190d25fdc237cdb634d69546784859d835d56c4e426124359028a727c11dd7",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            545,
+            682,
+            662,
+            802
+          ]
+        ]
+      },
+      "source_review_note": "Head and right show red/white radio; left shows table and fingers.",
+      "boxes_px": [
+        [
+          394,
+          489,
+          482,
+          577
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            547,
+            679,
+            670,
+            802
+          ]
+        ]
+      },
+      "review_note": "Radio body and trim below robot forearm; box visible pixels only, not occluding hand.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i135_e120_f000810_left_wrist",
+      "task": 0,
+      "instance": 135,
+      "episode": 120,
+      "frame": 810,
+      "view": "left_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i135_e120_f000810_left_wrist.png",
+      "png_sha256": "ac286bc57930443f058d23781d91ed783ca4f268260192e77cd024304e6c3a1a",
+      "pixels_sha256": "cc0f0b318f58edd0a62d22b563114cc8ef53127673c20321fba8c91e01794450",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head and right show red/white radio; left shows table and fingers.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i135_e120_f000810_right_wrist",
+      "task": 0,
+      "instance": 135,
+      "episode": 120,
+      "frame": 810,
+      "view": "right_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i135_e120_f000810_right_wrist.png",
+      "png_sha256": "190c886d252b0cbc8ecfd7df93ae8a6fe2c45fe4f8244ac1b6153c83b2311600",
+      "pixels_sha256": "fa0050607ddf7a8831a1c1689f237f5d834b74d178f7f94aef9bb73b16ae15a1",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            247,
+            0,
+            836,
+            762
+          ]
+        ]
+      },
+      "source_review_note": "Head and right show red/white radio; left shows table and fingers.",
+      "boxes_px": [
+        [
+          118,
+          0,
+          403,
+          365
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            245,
+            0,
+            840,
+            761
+          ]
+        ]
+      },
+      "review_note": "Radio with body, knobs and handle; clipped at top; not table or robot fingers.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i135_e120_f001458_head",
+      "task": 0,
+      "instance": 135,
+      "episode": 120,
+      "frame": 1458,
+      "view": "head",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i135_e120_f001458_head.png",
+      "png_sha256": "dda0b4331f42cd8373de51d02e80bc18e9a06ef9d450a2bac51d1472bc287718",
+      "pixels_sha256": "9f16ce293c94c64636c846377280e881316d39df375307c05802b5d50ce0d6e5",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            540,
+            608,
+            665,
+            795
+          ]
+        ]
+      },
+      "source_review_note": "Head radio and close right radio/handle fragment; left table/self. No stable-grasp label.",
+      "boxes_px": [
+        [
+          389,
+          439,
+          481,
+          574
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            540,
+            609,
+            669,
+            798
+          ]
+        ]
+      },
+      "review_note": "Upright red/white radio with visible loop handle; exclude adjacent gripper.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i135_e120_f001458_left_wrist",
+      "task": 0,
+      "instance": 135,
+      "episode": 120,
+      "frame": 1458,
+      "view": "left_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i135_e120_f001458_left_wrist.png",
+      "png_sha256": "1c415250e60ead9fc061881650c8c21adea7149754823439ac76184cca8c604a",
+      "pixels_sha256": "9ab8065177c7c764cab39dad54bf896ebaae42e969ae230798b79886a0886958",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head radio and close right radio/handle fragment; left table/self. No stable-grasp label.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i135_e120_f001458_right_wrist",
+      "task": 0,
+      "instance": 135,
+      "episode": 120,
+      "frame": 1458,
+      "view": "right_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i135_e120_f001458_right_wrist.png",
+      "png_sha256": "50902964b869f99cf383019c8795777df222ead16720891866b9c24662aad63a",
+      "pixels_sha256": "e6b43b779f27a27bab26e31348ab961231270295d7ab9aa69d27be423fb30030",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            207,
+            0,
+            712,
+            878
+          ]
+        ]
+      },
+      "source_review_note": "Head radio and close right radio/handle fragment; left table/self. No stable-grasp label.",
+      "boxes_px": [
+        [
+          97,
+          0,
+          373,
+          480
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            202,
+            0,
+            778,
+            1000
+          ]
+        ]
+      },
+      "review_note": "Include radio knobs at right and visible black loop below red body. The old box cut both; top and bottom are image-clipped.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i31_e28_f000000_head",
+      "task": 0,
+      "instance": 31,
+      "episode": 28,
+      "frame": 0,
+      "view": "head",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i31_e28_f000000_head.png",
+      "png_sha256": "d66e43197857ab21ceba0136e5c22bd1aad3b538bd91bc3711efa6651bb589e2",
+      "pixels_sha256": "26e76a99b50f09e1944dae50e8727b7c4b21ed524194320e7489c3455e1e1c8d",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head sofa/doorway, no radio pixels; both wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i31_e28_f000000_left_wrist",
+      "task": 0,
+      "instance": 31,
+      "episode": 28,
+      "frame": 0,
+      "view": "left_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i31_e28_f000000_left_wrist.png",
+      "png_sha256": "eaaaf8826f32441fab2f45c1a60c6a0579b303cd608e18d735af266595821e9e",
+      "pixels_sha256": "675a9424251e76f44e59b5f79cf5fa73b8ae966822d34d0106e04620806f7c96",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head sofa/doorway, no radio pixels; both wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i31_e28_f000000_right_wrist",
+      "task": 0,
+      "instance": 31,
+      "episode": 28,
+      "frame": 0,
+      "view": "right_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i31_e28_f000000_right_wrist.png",
+      "png_sha256": "046630f9b0299203379778abff151034caa68fa4ae970928b339301565ad6a65",
+      "pixels_sha256": "941083d5e9e205e97a763a265fc838a43b1d84c54b6ecf7f09057e60c5d8c041",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head sofa/doorway, no radio pixels; both wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i31_e28_f001417_head",
+      "task": 0,
+      "instance": 31,
+      "episode": 28,
+      "frame": 1417,
+      "view": "head",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i31_e28_f001417_head.png",
+      "png_sha256": "29ed1d1dc5dfd20f2728754c1563b9d8206d19ca7981ef0353890fa0ba80519f",
+      "pixels_sha256": "6439f8d5e3aa084fa86b311ab4bfa8bf9cd36da6bfd3ef61826e4724afffad18",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            446,
+            555,
+            596,
+            696
+          ]
+        ]
+      },
+      "source_review_note": "Head radio on table; wrist views table only.",
+      "boxes_px": [
+        [
+          321,
+          401,
+          434,
+          502
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            445,
+            556,
+            603,
+            698
+          ]
+        ]
+      },
+      "review_note": "Radio on table, including white trim and handle; not its shadow.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i31_e28_f001417_left_wrist",
+      "task": 0,
+      "instance": 31,
+      "episode": 28,
+      "frame": 1417,
+      "view": "left_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i31_e28_f001417_left_wrist.png",
+      "png_sha256": "36a97a0a9fe1be3a56f99b07cbbf2d3c2bf294e5f1ba398d6024f1bc736cd73d",
+      "pixels_sha256": "db2c46cebe8110ebef037cc323b6b306087e7117b49deee1fabe595f02bcb091",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head radio on table; wrist views table only.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i31_e28_f001417_right_wrist",
+      "task": 0,
+      "instance": 31,
+      "episode": 28,
+      "frame": 1417,
+      "view": "right_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i31_e28_f001417_right_wrist.png",
+      "png_sha256": "71abee2c6977b83ff76ba9866b0dc6c29757b407e3796bd3756ee6ab8352764a",
+      "pixels_sha256": "c2749d5a60bec87a8954ef693a374870261110bffc60458b955a03aef55107b3",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head radio on table; wrist views table only.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i31_e28_f002550_head",
+      "task": 0,
+      "instance": 31,
+      "episode": 28,
+      "frame": 2550,
+      "view": "head",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i31_e28_f002550_head.png",
+      "png_sha256": "8875e522fdced80572c06b91ea9f299321d9358c3cea68d4454fe55859d03020",
+      "pixels_sha256": "ce844925f9490031922a1ffcb265bdce3c240781062f95c0b34ce2140cfdb852",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            608,
+            467,
+            725,
+            615
+          ]
+        ]
+      },
+      "source_review_note": "Head radio; both wrists predominantly robot/floor.",
+      "boxes_px": [
+        [
+          437,
+          333,
+          525,
+          446
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            606,
+            462,
+            730,
+            620
+          ]
+        ]
+      },
+      "review_note": "Radio on table with small upper handle and black side features.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i31_e28_f002550_left_wrist",
+      "task": 0,
+      "instance": 31,
+      "episode": 28,
+      "frame": 2550,
+      "view": "left_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i31_e28_f002550_left_wrist.png",
+      "png_sha256": "25cc38ccf652e2062fbcefa7333efc19c7c46f6b71ee7d473050b970ea606ae1",
+      "pixels_sha256": "ea5eda6ea87ec050f334b45018e0b545b81547692ef72815a3efbccbda5231ad",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head radio; both wrists predominantly robot/floor.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i31_e28_f002550_right_wrist",
+      "task": 0,
+      "instance": 31,
+      "episode": 28,
+      "frame": 2550,
+      "view": "right_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i31_e28_f002550_right_wrist.png",
+      "png_sha256": "e596cd60d7b50a188d2442bc36f1f743351c8f38633e84f8ada8176ba45d26b5",
+      "pixels_sha256": "2d2e3e631eb0ad87477f322932497a6ba14e8cedee20a11b3cb5f532a15e0682",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head radio; both wrists predominantly robot/floor.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i70_e66_f000000_head",
+      "task": 0,
+      "instance": 70,
+      "episode": 66,
+      "frame": 0,
+      "view": "head",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i70_e66_f000000_head.png",
+      "png_sha256": "91394d069df753a98fb45e5207bcb20a642ae2bbb76dbc1ddc42b5d486f78b7e",
+      "pixels_sha256": "9ded5b30168baf2856743830211e3243c53275030462151523717a28ee1bc046",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Raw720 checked: head dining area/table edge without radio; both wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i70_e66_f000000_left_wrist",
+      "task": 0,
+      "instance": 70,
+      "episode": 66,
+      "frame": 0,
+      "view": "left_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i70_e66_f000000_left_wrist.png",
+      "png_sha256": "4aadf985b4c464dbb85330f8a726c88e3adf045c2c40e85cbb1db5a965408b7d",
+      "pixels_sha256": "cd27e6a2a93260f1b59e2e75cf724f5ec713fdaf36db4d81c1fec522c02eb175",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Raw720 checked: head dining area/table edge without radio; both wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i70_e66_f000000_right_wrist",
+      "task": 0,
+      "instance": 70,
+      "episode": 66,
+      "frame": 0,
+      "view": "right_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i70_e66_f000000_right_wrist.png",
+      "png_sha256": "4bc2c8ec31ea1a8688ad4acc4e41720a81298fdd3219477ea525b51da81e5127",
+      "pixels_sha256": "cd0f5ac256a69c2f0981368a852f3e4432def7ca17289c42817892b04dd00043",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Raw720 checked: head dining area/table edge without radio; both wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i70_e66_f001229_head",
+      "task": 0,
+      "instance": 70,
+      "episode": 66,
+      "frame": 1229,
+      "view": "head",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i70_e66_f001229_head.png",
+      "png_sha256": "ba788cf9ef275e7a1e1de8ffaa72673ddec6c2946e38d915d43e1c280ac000be",
+      "pixels_sha256": "3c8b22a22bea9a0d54c9d3e06845307766775172ee1cd080283a09f3983ebfe8",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            407,
+            537,
+            652,
+            752
+          ]
+        ]
+      },
+      "source_review_note": "Head radio front; left partial radio edge with knob; right close red/white casing.",
+      "boxes_px": [
+        [
+          292,
+          386,
+          471,
+          547
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            405,
+            536,
+            655,
+            760
+          ]
+        ]
+      },
+      "review_note": "Front of radio, speaker dial and outer handle. Robot fingers are occluders, not target.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i70_e66_f001229_left_wrist",
+      "task": 0,
+      "instance": 70,
+      "episode": 66,
+      "frame": 1229,
+      "view": "left_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i70_e66_f001229_left_wrist.png",
+      "png_sha256": "b7fcc458bff2523a9d218d2f2cb13e94e632e5f628811b76dab408868d7b30ae",
+      "pixels_sha256": "146ee48816a586ff860c608610a28f6b2e228253dceb9c36dd0f1c98d89cddcb",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Head radio front; left partial radio edge with knob; right close red/white casing.",
+      "boxes_px": [
+        [
+          312,
+          0,
+          480,
+          206
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            650,
+            0,
+            1000,
+            430
+          ]
+        ]
+      },
+      "review_note": "Identifiable close red/white radio side and round black/red knob in upper-right. Previously uncertain; do not label nearby mirror/gripper as radio.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i70_e66_f001229_right_wrist",
+      "task": 0,
+      "instance": 70,
+      "episode": 66,
+      "frame": 1229,
+      "view": "right_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i70_e66_f001229_right_wrist.png",
+      "png_sha256": "32bc5b1c9512f1bf7ff7872afeefe7f6213ac403a59fd34ef5d673caf69b79cb",
+      "pixels_sha256": "99d92f877682dd20ec10181ad73ce684840f063b071654d0293f951d4cb021ab",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head radio front; left partial radio edge with knob; right close red/white casing.",
+      "boxes_px": [
+        [
+          0,
+          0,
+          365,
+          480
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            761,
+            1000
+          ]
+        ]
+      },
+      "review_note": "Identifiable red body and broad white stripe fill left/top/bottom of image. Black gripper occludes it; previous absent was incorrect.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i70_e66_f002213_head",
+      "task": 0,
+      "instance": 70,
+      "episode": 66,
+      "frame": 2213,
+      "view": "head",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i70_e66_f002213_head.png",
+      "png_sha256": "e02dcbd79fec499183e2c90bc11fc58a6fad4d5ec6e7e72f9e6c6c2df2886897",
+      "pixels_sha256": "6663d4790431b204a45ff7777c90be95977af127da2d2a0e0a2da3b1a115c0c1",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            570,
+            570,
+            695,
+            730
+          ]
+        ]
+      },
+      "source_review_note": "Head radio; both wrists identifiable red/white casing and handle fragments.",
+      "boxes_px": [
+        [
+          406,
+          409,
+          502,
+          527
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            563,
+            568,
+            698,
+            732
+          ]
+        ]
+      },
+      "review_note": "Single red/white radio on table, include handle and body, not reflection.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i70_e66_f002213_left_wrist",
+      "task": 0,
+      "instance": 70,
+      "episode": 66,
+      "frame": 2213,
+      "view": "left_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i70_e66_f002213_left_wrist.png",
+      "png_sha256": "be112f15d603f43f44ab4b8ac3a1a2244dabaf001623a82666a256db75475a10",
+      "pixels_sha256": "c0ff4477c23e0fd9f4d242eec63b009555e2d7e59cc09fafae9018d80bb0c816",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            107,
+            0,
+            652,
+            338
+          ]
+        ]
+      },
+      "source_review_note": "Head radio; both wrists identifiable red/white casing and handle fragments.",
+      "boxes_px": [
+        [
+          39,
+          0,
+          312,
+          161
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            81,
+            0,
+            650,
+            336
+          ]
+        ]
+      },
+      "review_note": "Top-clipped radio with black rail and loop. Include left upper corner cut by old box.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t0_i70_e66_f002213_right_wrist",
+      "task": 0,
+      "instance": 70,
+      "episode": 66,
+      "frame": 2213,
+      "view": "right_wrist",
+      "query": "the radio",
+      "split": "visual_train",
+      "image": "images/t0_i70_e66_f002213_right_wrist.png",
+      "png_sha256": "eb7da9715967c0fb169c4be29b5bf0db2eac58c74663376a735fa157acaa4c0b",
+      "pixels_sha256": "bdf4c3d990e48d4067d28271ec80082230fbab69d713e103d4c1662a3279295b",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            142,
+            0,
+            545,
+            475
+          ]
+        ]
+      },
+      "source_review_note": "Head radio; both wrists identifiable red/white casing and handle fragments.",
+      "boxes_px": [
+        [
+          65,
+          0,
+          263,
+          225
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            135,
+            0,
+            548,
+            469
+          ]
+        ]
+      },
+      "review_note": "Top-clipped radio, white end and loop at bottom; exclude table lamp reflection.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i194_e312_f000000_head",
+      "task": 1,
+      "instance": 194,
+      "episode": 312,
+      "frame": 0,
+      "view": "head",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i194_e312_f000000_head.png",
+      "png_sha256": "7eedd43c90b145375b534dfffbf212d0fb593e760f2930798da0ae4c4757ac2e",
+      "pixels_sha256": "9210c963d6f6bfa79ff0a2667bac2960c8c1d640618cdf7d67b06e1baf196fbd",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            478,
+            545,
+            528,
+            615
+          ]
+        ]
+      },
+      "source_review_note": "Raw720 confirms small floor wastebasket distinct from cans; wrists self.",
+      "boxes_px": [
+        [
+          345,
+          391,
+          378,
+          440
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            479,
+            543,
+            525,
+            612
+          ]
+        ]
+      },
+      "review_note": "Small cylindrical open wastebasket on floor; include rim and outer bottom, exclude floor shadow.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i194_e312_f000000_left_wrist",
+      "task": 1,
+      "instance": 194,
+      "episode": 312,
+      "frame": 0,
+      "view": "left_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i194_e312_f000000_left_wrist.png",
+      "png_sha256": "fb18fe298dc6382b3a4576a8cee0b547472b397fba49cf5a27f5728f5ceb9f9d",
+      "pixels_sha256": "b3174d72eba77a9457733dcc60d367aab359e021fec871869c48b5f53783fcca",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Raw720 confirms small floor wastebasket distinct from cans; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i194_e312_f000000_right_wrist",
+      "task": 1,
+      "instance": 194,
+      "episode": 312,
+      "frame": 0,
+      "view": "right_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i194_e312_f000000_right_wrist.png",
+      "png_sha256": "5ef54ddaba29129110908beeed69b49912b87334e98055ad76c35fc910685ae7",
+      "pixels_sha256": "db8e8e1d9a9f0e9ae47be57c118606a6e4688ca2661e8c6b5e64c657ebb1e29d",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Raw720 confirms small floor wastebasket distinct from cans; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i194_e312_f000859_head",
+      "task": 1,
+      "instance": 194,
+      "episode": 312,
+      "frame": 859,
+      "view": "head",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i194_e312_f000859_head.png",
+      "png_sha256": "ac02871bf96fae4835f178acd55652b469f9e64e90cd84f7983e6a018c93080e",
+      "pixels_sha256": "3f4e9c5d779bec14f557332e81751039a0bf731f2dca91cc7162e47c996bd8f7",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            568,
+            672,
+            738,
+            868
+          ]
+        ]
+      },
+      "source_review_note": "Head bin opening; right bin rim/wall. Left orange can occludes a brown fragment: single-view basket identity uncertain (raw checked).",
+      "boxes_px": [
+        [
+          410,
+          485,
+          535,
+          620
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            569,
+            673,
+            744,
+            862
+          ]
+        ]
+      },
+      "review_note": "Tilted wastebasket rim/body under hands; soda can is a different object and does not define this box.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i194_e312_f000859_left_wrist",
+      "task": 1,
+      "instance": 194,
+      "episode": 312,
+      "frame": 859,
+      "view": "left_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i194_e312_f000859_left_wrist.png",
+      "png_sha256": "b4a14a1fe8b5f429f9c3e3ed6dd4015b00587729605a32d2e424a72f8215ed57",
+      "pixels_sha256": "6a55b9cfba559fe68d1dd371ac58fa4d05016d6d1bc3e2e227c92123f454422f",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "U",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            312,
+            188,
+            757,
+            498
+          ]
+        ]
+      },
+      "source_review_note": "Head bin opening; right bin rim/wall. Left orange can occludes a brown fragment: single-view basket identity uncertain (raw checked).",
+      "boxes_px": [],
+      "target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "review_note": "Large orange can obscures most of a brown curved candidate. Its identity as a wastebasket cannot be confirmed from this single view. Remove teacher's guessed box and use uncertain.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": false,
+      "quarantine_reason": "identity_or_food_qualifier_unresolved_from_current_image"
+    },
+    {
+      "id": "t1_i194_e312_f000859_right_wrist",
+      "task": 1,
+      "instance": 194,
+      "episode": 312,
+      "frame": 859,
+      "view": "right_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i194_e312_f000859_right_wrist.png",
+      "png_sha256": "92a3d621055220090c9ae7c7faf38873eeabc0ac8fccc5347607e6e1460d4c8f",
+      "pixels_sha256": "3ea7b36279815a10e682a64d3bad2365adb24bb0dee6f1bffe6305b0ac4c2f0b",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            238,
+            442,
+            1000
+          ]
+        ]
+      },
+      "source_review_note": "Head bin opening; right bin rim/wall. Left orange can occludes a brown fragment: single-view basket identity uncertain (raw checked).",
+      "boxes_px": [
+        [
+          0,
+          0,
+          259,
+          480
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            540,
+            1000
+          ]
+        ]
+      },
+      "review_note": "Image-clipped basket rim, gray exterior and brown interior. Old box omitted the upper exterior and right extent.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i194_e312_f001547_head",
+      "task": 1,
+      "instance": 194,
+      "episode": 312,
+      "frame": 1547,
+      "view": "head",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i194_e312_f001547_head.png",
+      "png_sha256": "68144541e7ef3494e98eaa41b5a477138f16efcec89c2610f56f0bedbbd783e1",
+      "pixels_sha256": "28ec65c961bbac16a642bb8d622b8ec81f29f46dc1ca31ceb394803a5791f3e6",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            578,
+            658,
+            728,
+            842
+          ]
+        ]
+      },
+      "source_review_note": "Head bin; left floor. Parent raw recheck after independent review: right only gray wall, orange fragment and fingers, insufficient single-view basket identity. Corrected P to U before any model call/training; no cross-view or episode inference.",
+      "boxes_px": [
+        [
+          414,
+          475,
+          528,
+          605
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            575,
+            659,
+            734,
+            841
+          ]
+        ]
+      },
+      "review_note": "Open wastebasket body and rim below right hand. Contents do not imply task success.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i194_e312_f001547_left_wrist",
+      "task": 1,
+      "instance": 194,
+      "episode": 312,
+      "frame": 1547,
+      "view": "left_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i194_e312_f001547_left_wrist.png",
+      "png_sha256": "fa88d8d2489abc47aa5d3baf5dd283f591747f88e536d9677f5f3d45cf929d4e",
+      "pixels_sha256": "db43f524a2f40e407873584cdd77a72f83367fae5094596b6fdd896a8e4adaea",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head bin; left floor. Parent raw recheck after independent review: right only gray wall, orange fragment and fingers, insufficient single-view basket identity. Corrected P to U before any model call/training; no cross-view or episode inference.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i194_e312_f001547_right_wrist",
+      "task": 1,
+      "instance": 194,
+      "episode": 312,
+      "frame": 1547,
+      "view": "right_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i194_e312_f001547_right_wrist.png",
+      "png_sha256": "6d9fac0dfe015e68b8cc775971d6083241a3ba32cb83b87f4a5950bbf43a1458",
+      "pixels_sha256": "0d3a641a8cda52f522cd21a9957e176bde4cae17367ed0eef19df737cf332431",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "U",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Head bin; left floor. Parent raw recheck after independent review: right only gray wall, orange fragment and fingers, insufficient single-view basket identity. Corrected P to U before any model call/training; no cross-view or episode inference.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "review_note": "Occluded brown/gray container side with cans, without sufficiently diagnostic full contour. Retain conservative uncertain, no guessed box.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": false,
+      "quarantine_reason": "identity_or_food_qualifier_unresolved_from_current_image"
+    },
+    {
+      "id": "t1_i8_e205_f000000_head",
+      "task": 1,
+      "instance": 8,
+      "episode": 205,
+      "frame": 0,
+      "view": "head",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i8_e205_f000000_head.png",
+      "png_sha256": "c643687800fb398deff3b2ec76f497f13db3f8fcc8235029b99a780cea8e7d7a",
+      "pixels_sha256": "a01320b7d5594024b4387e89a5f71f2928f7689414469f462280fcadb3d20ba9",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head dining area, target not identified; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i8_e205_f000000_left_wrist",
+      "task": 1,
+      "instance": 8,
+      "episode": 205,
+      "frame": 0,
+      "view": "left_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i8_e205_f000000_left_wrist.png",
+      "png_sha256": "6f085f15c8ab417a5275e932bb9f61d031fe282cab9482f589dbd01684c6e199",
+      "pixels_sha256": "3e70c2f2d299ba5287d1f0e93fb73b4dd4bc8bf0cbd7f3661cdb31678dd3a3d6",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head dining area, target not identified; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i8_e205_f000000_right_wrist",
+      "task": 1,
+      "instance": 8,
+      "episode": 205,
+      "frame": 0,
+      "view": "right_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i8_e205_f000000_right_wrist.png",
+      "png_sha256": "759d5749e9f0250d7c11bba50a07aba23577e47b4e18f209341cb286199f6198",
+      "pixels_sha256": "3385a5c0a020c6194bbb33fa0302b70c25fc1a38e48a42442abdf0d53e7d6493",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head dining area, target not identified; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i8_e205_f003116_head",
+      "task": 1,
+      "instance": 8,
+      "episode": 205,
+      "frame": 3116,
+      "view": "head",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i8_e205_f003116_head.png",
+      "png_sha256": "64c2f8fcbb830d3d575dcd1dcce4d514278631ceb43fd824c810899c240598aa",
+      "pixels_sha256": "c7dd5791f0a3817116e16d9eb86e5215f3f41f920ec5265f7de1f5794c0922d0",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            541,
+            795,
+            698,
+            1000
+          ]
+        ]
+      },
+      "source_review_note": "Head basket; left floor/robot; right basket rim with can inside.",
+      "boxes_px": [
+        [
+          388,
+          573,
+          504,
+          720
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            538,
+            795,
+            700,
+            1000
+          ]
+        ]
+      },
+      "review_note": "Open wastebasket at lower image border. Clip extent at border, not extrapolated body.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i8_e205_f003116_left_wrist",
+      "task": 1,
+      "instance": 8,
+      "episode": 205,
+      "frame": 3116,
+      "view": "left_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i8_e205_f003116_left_wrist.png",
+      "png_sha256": "d6f90ee4e5cbe4406f070a29bf3798390eb437dcc7a5f231e9cf89bce3dbdc5e",
+      "pixels_sha256": "fbb5fec6254a90a39436242be16a4c6df0f7c0ddfebd1bf84f77123d62e3bc96",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head basket; left floor/robot; right basket rim with can inside.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i8_e205_f003116_right_wrist",
+      "task": 1,
+      "instance": 8,
+      "episode": 205,
+      "frame": 3116,
+      "view": "right_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i8_e205_f003116_right_wrist.png",
+      "png_sha256": "59338293650e9bf49143633504f15362ad69753f6934e17e589194ed6db52580",
+      "pixels_sha256": "1c4b64d742b45e02d1559becf0b82100b462329fff241cb87ac9046efaed08a6",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            508,
+            1000
+          ]
+        ]
+      },
+      "source_review_note": "Head basket; left floor/robot; right basket rim with can inside.",
+      "boxes_px": [
+        [
+          0,
+          0,
+          259,
+          480
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            540,
+            1000
+          ]
+        ]
+      },
+      "review_note": "Curved brown/gray rim and inside of basket; both vertical ends clipped; exclude robot fingers.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i8_e205_f005609_head",
+      "task": 1,
+      "instance": 8,
+      "episode": 205,
+      "frame": 5609,
+      "view": "head",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i8_e205_f005609_head.png",
+      "png_sha256": "f3de9384a66789488c21695cbcf8527d94113f2f8c8a7ea097a7d0bd24bf532a",
+      "pixels_sha256": "e22ed8ce5ff6ae8bc68fff742d86eb1a5b6f6fa73fe563af239e43fa3432f577",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            642,
+            742,
+            802,
+            928
+          ]
+        ]
+      },
+      "source_review_note": "Head basket; left floor; right identifiable basket opening and cans.",
+      "boxes_px": [
+        [
+          460,
+          534,
+          583,
+          670
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            638,
+            741,
+            810,
+            931
+          ]
+        ]
+      },
+      "review_note": "Full visible wastebasket opening and gray lower exterior under right hand; exclude gripper.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i8_e205_f005609_left_wrist",
+      "task": 1,
+      "instance": 8,
+      "episode": 205,
+      "frame": 5609,
+      "view": "left_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i8_e205_f005609_left_wrist.png",
+      "png_sha256": "5fc4345f77d1438689c7a744ffd7065214ffeeb481055e7e48d3a80158b0efef",
+      "pixels_sha256": "12039a8a42273658efc303febcb6fc5c8792a70fa8bb3da168644b3a537e2a51",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head basket; left floor; right identifiable basket opening and cans.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i8_e205_f005609_right_wrist",
+      "task": 1,
+      "instance": 8,
+      "episode": 205,
+      "frame": 5609,
+      "view": "right_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i8_e205_f005609_right_wrist.png",
+      "png_sha256": "bb55b24d3386c50941c94a374b32c87e951035134afc5928ae5a5d8f2a9b7ee1",
+      "pixels_sha256": "155066a7d8465d2ffe834dc13bf7c04e49d1aa524884f03cbab2c18ced00bdcd",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Head basket; left floor; right identifiable basket opening and cans.",
+      "boxes_px": [
+        [
+          0,
+          0,
+          258,
+          480
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            538,
+            1000
+          ]
+        ]
+      },
+      "review_note": "Clearly curved basket rim, gray outside and brown interior with cans. Previously uncertain; visible geometry supports basket, not contact or success.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i278_e377_f000000_head",
+      "task": 1,
+      "instance": 278,
+      "episode": 377,
+      "frame": 0,
+      "view": "head",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i278_e377_f000000_head.png",
+      "png_sha256": "3af9f4e2c6934aa687d08ba06b9b7099dae6d13577acdaa1e4477c864e6e8492",
+      "pixels_sha256": "1dff606e814acadfe7a99a320eab8dab8be56a69aca10cd56c1edf3ca52c58c9",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head kitchen; both wrists self, target not identified.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i278_e377_f000000_left_wrist",
+      "task": 1,
+      "instance": 278,
+      "episode": 377,
+      "frame": 0,
+      "view": "left_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i278_e377_f000000_left_wrist.png",
+      "png_sha256": "9625f4e235a3d92d00f4002747cd5515cdbd5a194033366fcb9b76b1eedca2af",
+      "pixels_sha256": "7d26229921adb4c4f83169143b7b3700c88bd17554e55c319f325c5d49ce7d55",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Head kitchen; both wrists self, target not identified.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Robot camera/hand housing and floor only; this black/gray housing is not the wastebasket. Correct uncertain to image-level absent.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i278_e377_f000000_right_wrist",
+      "task": 1,
+      "instance": 278,
+      "episode": 377,
+      "frame": 0,
+      "view": "right_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i278_e377_f000000_right_wrist.png",
+      "png_sha256": "6ef9220169abf45af1c40c36f7e7eb2972b9fc3fc186c71ad248e3f90c6b1822",
+      "pixels_sha256": "8415a6e329aabef45f70570177d73581d002ba42feebe460116d349989a987bd",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head kitchen; both wrists self, target not identified.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i278_e377_f002623_head",
+      "task": 1,
+      "instance": 278,
+      "episode": 377,
+      "frame": 2623,
+      "view": "head",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i278_e377_f002623_head.png",
+      "png_sha256": "6441c65dc563fa8dabcb6ddbb8ffbb32d29890dc39b421ce4855c31b5f421ad4",
+      "pixels_sha256": "4e0b3ae4fb23c695e6acb4822fd875a397c5d0f66bccb6fd50534f8fdcc22b19",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            745,
+            412,
+            975,
+            608
+          ]
+        ]
+      },
+      "source_review_note": "Head basket; left blue can is NOT basket; right basket rim/interior.",
+      "boxes_px": [
+        [
+          538,
+          298,
+          711,
+          441
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            747,
+            413,
+            988,
+            613
+          ]
+        ]
+      },
+      "review_note": "Visible wastebasket rim, gray outer body and bottom at right. Do not include right arm.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i278_e377_f002623_left_wrist",
+      "task": 1,
+      "instance": 278,
+      "episode": 377,
+      "frame": 2623,
+      "view": "left_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i278_e377_f002623_left_wrist.png",
+      "png_sha256": "68afea0a1f7eacaa31c9184d6eae4153f919a8b74523477dda3e0444c4d2046a",
+      "pixels_sha256": "b08224ff4dd3e75e2ea605e2d086cd6ca07aa04cef334384aa4972962dd6325a",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head basket; left blue can is NOT basket; right basket rim/interior.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i278_e377_f002623_right_wrist",
+      "task": 1,
+      "instance": 278,
+      "episode": 377,
+      "frame": 2623,
+      "view": "right_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i278_e377_f002623_right_wrist.png",
+      "png_sha256": "0b75376942da98f41c0399a5f2622f5d0c622f2fca88d3346cbaee612077333e",
+      "pixels_sha256": "790a18f56715c48d42a13ecb7b45d1269d37a41400f85a8454bd4132d84879ca",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            523,
+            1000
+          ]
+        ]
+      },
+      "source_review_note": "Head basket; left blue can is NOT basket; right basket rim/interior.",
+      "boxes_px": [
+        [
+          0,
+          0,
+          259,
+          480
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            540,
+            1000
+          ]
+        ]
+      },
+      "review_note": "Clipped basket wall/rim enclosing orange can. The box is for basket, not the can or gripper.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i278_e377_f004721_head",
+      "task": 1,
+      "instance": 278,
+      "episode": 377,
+      "frame": 4721,
+      "view": "head",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i278_e377_f004721_head.png",
+      "png_sha256": "69d993ba004900df815ab45f006bb5a055250c6e8738780fb5ebb04c1a0db7ee",
+      "pixels_sha256": "6f5dcab8d88c5fa108dd4ba4a264db1036405e1f76fa389b7687777334463432",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            718,
+            452,
+            962,
+            648
+          ]
+        ]
+      },
+      "source_review_note": "Head basket; left floor; right basket wall/rim around can.",
+      "boxes_px": [
+        [
+          517,
+          327,
+          697,
+          468
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            718,
+            454,
+            969,
+            650
+          ]
+        ]
+      },
+      "review_note": "Wastebasket including brown rim and gray exterior, with both cans inside; no inferred completion.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i278_e377_f004721_left_wrist",
+      "task": 1,
+      "instance": 278,
+      "episode": 377,
+      "frame": 4721,
+      "view": "left_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i278_e377_f004721_left_wrist.png",
+      "png_sha256": "718a8dd707dd273c9114a4f3bcef41aa13259a34e3778c4651a9f81fa0b7fe3f",
+      "pixels_sha256": "d4a9883eeda5d60e3b8122575fd432ed4c5daffa50bd5116c91e6ee78bc0955c",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head basket; left floor; right basket wall/rim around can.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t1_i278_e377_f004721_right_wrist",
+      "task": 1,
+      "instance": 278,
+      "episode": 377,
+      "frame": 4721,
+      "view": "right_wrist",
+      "query": "the wastebasket",
+      "split": "visual_train",
+      "image": "images/t1_i278_e377_f004721_right_wrist.png",
+      "png_sha256": "08b3c5de76680a85a210e500271b5962e0cf03d3b80235dc27a6b9cad205fb21",
+      "pixels_sha256": "a08506b6ff258fe7e3da9dc485a9485970a00bbe6ad526a3c60080da74f7ad81",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head basket; left floor; right basket wall/rim around can.",
+      "boxes_px": [
+        [
+          0,
+          0,
+          259,
+          480
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            540,
+            1000
+          ]
+        ]
+      },
+      "review_note": "Identifiable curved basket wall, rim and interior around blue can. Previous absent missed the close-up basket.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i96_e678_f000000_head",
+      "task": 3,
+      "instance": 96,
+      "episode": 678,
+      "frame": 0,
+      "view": "head",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i96_e678_f000000_head.png",
+      "png_sha256": "c34811680d4a67d00be2439a233c287dd33db71df5834b5f2beb79fd5c51849f",
+      "pixels_sha256": "c61a7291a95833d688a7f56037bb07c5b8ef146943e0a61a1050540b73653d16",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head kitchen/door, no identified food plate; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i96_e678_f000000_left_wrist",
+      "task": 3,
+      "instance": 96,
+      "episode": 678,
+      "frame": 0,
+      "view": "left_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i96_e678_f000000_left_wrist.png",
+      "png_sha256": "71443e5a0bd7608f277ba3f94fa6be5f9718e610fc950074223e4839d0de9af0",
+      "pixels_sha256": "42d40a94101b6291a18f733fd6965993daaec351a012a32ca04490d3572decd5",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head kitchen/door, no identified food plate; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i96_e678_f000000_right_wrist",
+      "task": 3,
+      "instance": 96,
+      "episode": 678,
+      "frame": 0,
+      "view": "right_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i96_e678_f000000_right_wrist.png",
+      "png_sha256": "52e45544481a0e24320ec5a35e1cda9272dea7ac88b2b3aaf3fa9b334e169c55",
+      "pixels_sha256": "42e5c88876142909f124eee84504051ac66550194179c8f662a897297727b903",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head kitchen/door, no identified food plate; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i96_e678_f006750_head",
+      "task": 3,
+      "instance": 96,
+      "episode": 678,
+      "frame": 6750,
+      "view": "head",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i96_e678_f006750_head.png",
+      "png_sha256": "611eb5c8a88c6a648d7da4d60a43059476c3444bdee8c0b0247a492ac859e294",
+      "pixels_sha256": "68e482b03171a98ed0db60bb18a7af57b9200b44b74ddd469c2ebbcbe0167026",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            482,
+            515,
+            745,
+            785
+          ]
+        ]
+      },
+      "source_review_note": "Head pizza on plate; left floor/robot; right plate rim and pizza visibly present. No level/stability claim.",
+      "boxes_px": [
+        [
+          344,
+          374,
+          537,
+          567
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            477,
+            519,
+            746,
+            788
+          ]
+        ]
+      },
+      "review_note": "Include broad white plate below pizza; the target is not just the food disk.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i96_e678_f006750_left_wrist",
+      "task": 3,
+      "instance": 96,
+      "episode": 678,
+      "frame": 6750,
+      "view": "left_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i96_e678_f006750_left_wrist.png",
+      "png_sha256": "f3ef41fe6167f451e2124aa8b9203272de114e376a0d9eeeba87bc29c2e12d15",
+      "pixels_sha256": "cc82da4951d50bf4f8da21c4ab4c9fada927fc265c54dfa6812b0d35b3ebb80c",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head pizza on plate; left floor/robot; right plate rim and pizza visibly present. No level/stability claim.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i96_e678_f006750_right_wrist",
+      "task": 3,
+      "instance": 96,
+      "episode": 678,
+      "frame": 6750,
+      "view": "right_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i96_e678_f006750_right_wrist.png",
+      "png_sha256": "405224b7928aa8522d974932ade28ee7f4dda85df6d4ecd0418ff3daf5a1e5bf",
+      "pixels_sha256": "230c319a7447311fa6f4c7f24bff5d2da716dd1ea62be90076cd6c83b375e119",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            315,
+            488
+          ]
+        ]
+      },
+      "source_review_note": "Head pizza on plate; left floor/robot; right plate rim and pizza visibly present. No level/stability claim.",
+      "boxes_px": [
+        [
+          16,
+          0,
+          257,
+          480
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            33,
+            0,
+            536,
+            1000
+          ]
+        ]
+      },
+      "review_note": "Fix known food-only box: visible pizza at left AND tall white supporting plate through image bottom. Do not infer hidden plate contour.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i96_e678_f012150_head",
+      "task": 3,
+      "instance": 96,
+      "episode": 678,
+      "frame": 12150,
+      "view": "head",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i96_e678_f012150_head.png",
+      "png_sha256": "444f021ce7f493c014f5ffdfadb3ad4bd8e9ac444a46e31e0a4c5797cba9b9b2",
+      "pixels_sha256": "8ab15fe1c16645488bd98f00626076c9432db0a0419d1d6c60b32a22e8fd6d72",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "U",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head cut-off white plate candidate and right plate backside; cannot establish holding-food qualifier; left floor/self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "review_note": "Only small white vessel/plate fragments at bottom image border; no food-bearing surface can be established. Correct absent to uncertain; do not infer food from earlier frames.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": false,
+      "quarantine_reason": "identity_or_food_qualifier_unresolved_from_current_image"
+    },
+    {
+      "id": "t3_i96_e678_f012150_left_wrist",
+      "task": 3,
+      "instance": 96,
+      "episode": 678,
+      "frame": 12150,
+      "view": "left_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i96_e678_f012150_left_wrist.png",
+      "png_sha256": "f79afacc1cb836a52ca3c56f6ed7a1630569f3713a2d23b673de8944e4b976f8",
+      "pixels_sha256": "784b29ab4fa7c5e635ce7785a5ca62e6aaa814a98d648d33f120e59eb2b8f3a2",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Head cut-off white plate candidate and right plate backside; cannot establish holding-food qualifier; left floor/self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Clearly empty bowl/interior and robot gripper, not an identifiable food-bearing plate. Correct uncertain to image-level absent, without a world-state or success claim.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i96_e678_f012150_right_wrist",
+      "task": 3,
+      "instance": 96,
+      "episode": 678,
+      "frame": 12150,
+      "view": "right_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i96_e678_f012150_right_wrist.png",
+      "png_sha256": "c1431a8f54a772e0dfaef89956d3c499e82399f895d0b375645ce9d37fd40747",
+      "pixels_sha256": "b3fb9226f1f90ce9409e90e7de6672664c74da4ee0aa023c4a0854f3927515cd",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "U",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Head cut-off white plate candidate and right plate backside; cannot establish holding-food qualifier; left floor/self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "review_note": "Cropped/occluded white plate-like surface without visible food; cannot establish the food qualifier from this view. Retain uncertain and do not guess box or infer earlier food remains.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": false,
+      "quarantine_reason": "identity_or_food_qualifier_unresolved_from_current_image"
+    },
+    {
+      "id": "t3_i146_e711_f000000_head",
+      "task": 3,
+      "instance": 146,
+      "episode": 711,
+      "frame": 0,
+      "view": "head",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i146_e711_f000000_head.png",
+      "png_sha256": "4449fe966f650017132bcedc3a66004fbed5c5406bf482480903edc40b08cd82",
+      "pixels_sha256": "87539cd9021107cd815af5bd91d567291f2b9730615f4e9c6d9f136857d56b3c",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head living area, no identified food plate; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i146_e711_f000000_left_wrist",
+      "task": 3,
+      "instance": 146,
+      "episode": 711,
+      "frame": 0,
+      "view": "left_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i146_e711_f000000_left_wrist.png",
+      "png_sha256": "98c7c745f04dce921a74cca7eb4ebf2d26e0cc6cde23cc352967c21902a70b58",
+      "pixels_sha256": "245841fa3dbe2117884b5fe55ea9b19b8932bf40f1ced1a2b1ebce7a829bdd1d",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head living area, no identified food plate; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i146_e711_f000000_right_wrist",
+      "task": 3,
+      "instance": 146,
+      "episode": 711,
+      "frame": 0,
+      "view": "right_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i146_e711_f000000_right_wrist.png",
+      "png_sha256": "2a7de9d1da016116879679d002c91753928345d6b29719b25c74d9c7b2116813",
+      "pixels_sha256": "9c0eb562f116a3d64f664124a585b1bd40ea124dfb77b1d940019fae6a2fbb90",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head living area, no identified food plate; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i146_e711_f007556_head",
+      "task": 3,
+      "instance": 146,
+      "episode": 711,
+      "frame": 7556,
+      "view": "head",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i146_e711_f007556_head.png",
+      "png_sha256": "8a2a528326d47991a4c1551aad4c0909698a88bd13a91bd2d195f537eed279ba",
+      "pixels_sha256": "370cb6489af7db1f0019e7aa5cbd82e69c0650a54661fb05d0ed9882a2a7142c",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            638,
+            522,
+            862,
+            662
+          ]
+        ]
+      },
+      "source_review_note": "Head plate/pizza; right plate edge/pizza; left floor.",
+      "boxes_px": [
+        [
+          456,
+          378,
+          623,
+          480
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            633,
+            525,
+            866,
+            667
+          ]
+        ]
+      },
+      "review_note": "Food AND entire visible white supporting plate, not pizza alone; no grasp/success inference.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i146_e711_f007556_left_wrist",
+      "task": 3,
+      "instance": 146,
+      "episode": 711,
+      "frame": 7556,
+      "view": "left_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i146_e711_f007556_left_wrist.png",
+      "png_sha256": "c4065107ce04d62426166185c7b09dba8fd7a86436318a517cbc27f16d7ab128",
+      "pixels_sha256": "31603069f4e84634466da480e15483760dd09dd2fa19e205f63820a064807dd9",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head plate/pizza; right plate edge/pizza; left floor.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i146_e711_f007556_right_wrist",
+      "task": 3,
+      "instance": 146,
+      "episode": 711,
+      "frame": 7556,
+      "view": "right_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i146_e711_f007556_right_wrist.png",
+      "png_sha256": "fbf8d841d617bf208f58a4a1960ce7750f9bd345f36c494e7f4020c55d708193",
+      "pixels_sha256": "12cc85d168c24cc80fa1f1e02d1e6476ba43d1ed8e6b5a45c95720d11cf00e50",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            712,
+            898
+          ]
+        ]
+      },
+      "source_review_note": "Head plate/pizza; right plate edge/pizza; left floor.",
+      "boxes_px": [
+        [
+          0,
+          0,
+          437,
+          435
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            911,
+            907
+          ]
+        ]
+      },
+      "review_note": "Food at left plus white supporting plate extending to upper-right and lower tip. Old box cut off right portion of plate.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i146_e711_f013601_head",
+      "task": 3,
+      "instance": 146,
+      "episode": 711,
+      "frame": 13601,
+      "view": "head",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i146_e711_f013601_head.png",
+      "png_sha256": "f5b397dcd91bc107d7315bfc814d6762368c59c1872ca8d67c07489e0f5a4f4b",
+      "pixels_sha256": "48f542c3cd248b8233b65d4519424867896fa9fc211fbf8b9b3381aaee96225f",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "U",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Cut-off plate candidates at head bottom; right plate backside, food cannot be verified; left floor.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "review_note": "Only small white vessel/plate fragments at bottom image border; no food-bearing surface can be established. Correct absent to uncertain; do not infer food from earlier frames.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": false,
+      "quarantine_reason": "identity_or_food_qualifier_unresolved_from_current_image"
+    },
+    {
+      "id": "t3_i146_e711_f013601_left_wrist",
+      "task": 3,
+      "instance": 146,
+      "episode": 711,
+      "frame": 13601,
+      "view": "left_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i146_e711_f013601_left_wrist.png",
+      "png_sha256": "7eaab2428db4c582d0cbb25c7a37fd5859a1e0d949ffe7b62f248c55bb17afc3",
+      "pixels_sha256": "8864b174afe83aa22e27459af413fdaab62e2df2d39b0664b810a68af05c730c",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Cut-off plate candidates at head bottom; right plate backside, food cannot be verified; left floor.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Clearly empty bowl/interior and robot gripper, not an identifiable food-bearing plate. Correct uncertain to image-level absent, without a world-state or success claim.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i146_e711_f013601_right_wrist",
+      "task": 3,
+      "instance": 146,
+      "episode": 711,
+      "frame": 13601,
+      "view": "right_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i146_e711_f013601_right_wrist.png",
+      "png_sha256": "f3f1bf53b62ab8cfb6ee2c4e678f9963a6d16a874877a4531d131478ebfc6f7b",
+      "pixels_sha256": "31badf9a08c272232dc420ea918f157b47969e7a0d662d97487e1e8d3053c41c",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "U",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Cut-off plate candidates at head bottom; right plate backside, food cannot be verified; left floor.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "review_note": "Cropped/occluded white plate-like surface without visible food; cannot establish the food qualifier from this view. Retain uncertain and do not guess box or infer earlier food remains.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": false,
+      "quarantine_reason": "identity_or_food_qualifier_unresolved_from_current_image"
+    },
+    {
+      "id": "t3_i252_e769_f000000_head",
+      "task": 3,
+      "instance": 252,
+      "episode": 769,
+      "frame": 0,
+      "view": "head",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i252_e769_f000000_head.png",
+      "png_sha256": "a4774f64689b7ee8eb0eafa3e143fc512129b1b0d23d37f21e5164b4615f1758",
+      "pixels_sha256": "7ef711251d4c2eff4aaad641648195a77639db1d799e09fafcb98102c6ff1131",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            631,
+            481,
+            731,
+            529
+          ],
+          [
+            741,
+            479,
+            856,
+            525
+          ]
+        ]
+      },
+      "source_review_note": "Raw720 shows TWO plates holding pizza plus empty dishes; existential visibility yes, unique-instance pixel/grasp target NOT approved; wrists self.",
+      "boxes_px": [
+        [
+          452,
+          350,
+          534,
+          383
+        ],
+        [
+          532,
+          348,
+          618,
+          380
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            627,
+            486,
+            742,
+            532
+          ],
+          [
+            738,
+            483,
+            859,
+            528
+          ]
+        ]
+      },
+      "review_note": "TWO visible food-bearing white plates on table; one box per plate plus food. Exclude the two empty bowls.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i252_e769_f000000_left_wrist",
+      "task": 3,
+      "instance": 252,
+      "episode": 769,
+      "frame": 0,
+      "view": "left_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i252_e769_f000000_left_wrist.png",
+      "png_sha256": "d16afbdcbc646b60ad5a149ec2dd2fbc282d003424e875193890bd6bc8aee83d",
+      "pixels_sha256": "588703c25c2239a725e6ee440f01f1042e83473bcaa44260c5dd5de5e78eda7f",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Raw720 shows TWO plates holding pizza plus empty dishes; existential visibility yes, unique-instance pixel/grasp target NOT approved; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i252_e769_f000000_right_wrist",
+      "task": 3,
+      "instance": 252,
+      "episode": 769,
+      "frame": 0,
+      "view": "right_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i252_e769_f000000_right_wrist.png",
+      "png_sha256": "dc94aeb78fea5ec83fc4dba49f0e838fa9d2a6767bc2e780dd90bc879654b384",
+      "pixels_sha256": "b3cb243566edb9c50a1e62d57e8dc3060720b1dbe004cb29a6ca0f01fc030bdb",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Raw720 shows TWO plates holding pizza plus empty dishes; existential visibility yes, unique-instance pixel/grasp target NOT approved; wrists self.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i252_e769_f007051_head",
+      "task": 3,
+      "instance": 252,
+      "episode": 769,
+      "frame": 7051,
+      "view": "head",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i252_e769_f007051_head.png",
+      "png_sha256": "05dfe9d4bee738768626e71ced2623cd8903ef35e4e4106d23f539cf7d80ea30",
+      "pixels_sha256": "77833c453de0ac3923821d17e7fe838db16df33aba10ad2ce2d3290d33950fd8",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            505,
+            452,
+            708,
+            595
+          ]
+        ]
+      },
+      "source_review_note": "Head and right plate with pizza, open refrigerator; left floor. No placement/completion claim.",
+      "boxes_px": [
+        [
+          364,
+          325,
+          512,
+          429
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            505,
+            451,
+            712,
+            596
+          ]
+        ]
+      },
+      "review_note": "Pizza and entire visible white plate, with partial gripper occlusion; no refrigerator or hand in target extent.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i252_e769_f007051_left_wrist",
+      "task": 3,
+      "instance": 252,
+      "episode": 769,
+      "frame": 7051,
+      "view": "left_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i252_e769_f007051_left_wrist.png",
+      "png_sha256": "bf4612df40971ee059bbee3984e40248d20da829e4928255870fc68280c581b8",
+      "pixels_sha256": "d5a12164c6e04604f242721cec6dade60c2359cd8cd90a73f01e37cba8d2075a",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head and right plate with pizza, open refrigerator; left floor. No placement/completion claim.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Only non-target scene/robot pixels are identifiable in this image. No identifiable queried object; this is not a claim about hidden objects or world state.",
+      "raw_native_reviewed": false,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i252_e769_f007051_right_wrist",
+      "task": 3,
+      "instance": 252,
+      "episode": 769,
+      "frame": 7051,
+      "view": "right_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i252_e769_f007051_right_wrist.png",
+      "png_sha256": "b6741f58b018ca13fac971aaba0ccddd7c9fc1c6ba438837a72e8eaf6defb493",
+      "pixels_sha256": "3cc82b4a000f616fe026b60f2fb7ecb8c3da8af0491c5bbcb0aa01cd61ebe44b",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "P",
+      "source_teacher_target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            810,
+            860
+          ]
+        ]
+      },
+      "source_review_note": "Head and right plate with pizza, open refrigerator; left floor. No placement/completion claim.",
+      "boxes_px": [
+        [
+          0,
+          0,
+          398,
+          416
+        ]
+      ],
+      "target": {
+        "visibility": "present",
+        "boxes": [
+          [
+            0,
+            0,
+            830,
+            867
+          ]
+        ]
+      },
+      "review_note": "Close food-bearing plate; include right white plate rim and lower tip, exclude gripper.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i252_e769_f012691_head",
+      "task": 3,
+      "instance": 252,
+      "episode": 769,
+      "frame": 12691,
+      "view": "head",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i252_e769_f012691_head.png",
+      "png_sha256": "f93a67862109b425fbe71656ee76a7c236399c4fee2b3bd608dbbdc7e31cf74e",
+      "pixels_sha256": "2dc4d0fd229d3aee83f630fd90334b195b834ef8771f696325ab09c423019ba2",
+      "resolution": [
+        720,
+        720
+      ],
+      "frozen_visibility": "U",
+      "source_teacher_target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "source_review_note": "Head bottom plate fragments; right plate backside, food qualifier hidden; left floor.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "review_note": "Only small white vessel/plate fragments at bottom image border; no food-bearing surface can be established. Correct absent to uncertain; do not infer food from earlier frames.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": false,
+      "quarantine_reason": "identity_or_food_qualifier_unresolved_from_current_image"
+    },
+    {
+      "id": "t3_i252_e769_f012691_left_wrist",
+      "task": 3,
+      "instance": 252,
+      "episode": 769,
+      "frame": 12691,
+      "view": "left_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i252_e769_f012691_left_wrist.png",
+      "png_sha256": "6941fdd5d90afa411f6c9b02a3ad0a10ce084adf9139a8a4a3d61728d6838f20",
+      "pixels_sha256": "5429ab24bbbc5fd68f9e5df15ab21b28feeea42b2ee2acbddea224b4296254e4",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "N",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Head bottom plate fragments; right plate backside, food qualifier hidden; left floor.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "absent",
+        "boxes": []
+      },
+      "review_note": "Clearly empty bowl/interior and robot gripper, not an identifiable food-bearing plate. Correct uncertain to image-level absent, without a world-state or success claim.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": true,
+      "quarantine_reason": null
+    },
+    {
+      "id": "t3_i252_e769_f012691_right_wrist",
+      "task": 3,
+      "instance": 252,
+      "episode": 769,
+      "frame": 12691,
+      "view": "right_wrist",
+      "query": "the plate holding food",
+      "split": "visual_train",
+      "image": "images/t3_i252_e769_f012691_right_wrist.png",
+      "png_sha256": "8768cfab6497110db84ecbde0b7c41d9759e1736845d8867babb4b63382f4275",
+      "pixels_sha256": "1d3782319540f4aa667261f7644d171e18961cb476a23a10e39e5c9c5236ed6b",
+      "resolution": [
+        480,
+        480
+      ],
+      "frozen_visibility": "U",
+      "source_teacher_target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "source_review_note": "Head bottom plate fragments; right plate backside, food qualifier hidden; left floor.",
+      "boxes_px": [],
+      "target": {
+        "visibility": "uncertain",
+        "boxes": []
+      },
+      "review_note": "Cropped/occluded white plate-like surface without visible food; cannot establish the food qualifier from this view. Retain uncertain and do not guess box or infer earlier food remains.",
+      "raw_native_reviewed": true,
+      "overview_reviewed": true,
+      "training_eligible": false,
+      "quarantine_reason": "identity_or_food_qualifier_unresolved_from_current_image"
+    }
+  ]
+}

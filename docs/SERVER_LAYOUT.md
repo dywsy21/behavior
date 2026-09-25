@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 23:02北京时间标签修复归档：** 新Git修订记录`configs/vlm_sft/h82_parent_corrected_grounding_v1.json`（SHA ec82887d…32b2f），本地正式导出`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h82_corrected_grounding_release_v2/{train.jsonl,quarantine.jsonl,release.json}`，73明确监督/8不确定隔离；`h82_corrected_review_sheets_v1`为9张本人审阅框图与32原尺寸正例框图，仅人审不可作模型输入。加固前`h82_corrected_grounding_release_v1`保留但已被v2替代。原图仍在本地`h76_raw_review_bundle_v1`及远端`/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h76_raw_review_v1`；H82原预测仍在远端`h82_reference_calibration_v1/calibration/predictions.jsonl`。本轮未向服务器创建新的导出/source/run或修改原数据；团队可Git同步代码/修订配置后，在新checkout用严格工具重建（必须核原源SHA与最终9页SHA），不能覆盖活跃目录。H80批量标签及长训尚未放行。
+
 **2026-09-25 22:03北京时间数据验收归档：** 服务器H80原包仍在`/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h80_expanded_raw_v1/raw`，SHA/内容未变；仅只读全验与60帧原视频复解码，CPU诊断3647162/3648297均退出，无新服务器source/run/模型。新150原PNG（32,086,408B）在本地`artifacts/agentic-vlm-goal-20260918/qa_h80_new150_v1/images`，`human_only_sheets`为本人审查拼图，不能作模型输入；取回文件和像素SHA全核。复核证据在同级`qa_h80_20260925_*.json*`，小结/证据SHA进入`docs/experiments/2026-09-25-h80-data-quality-acceptance.json`。RAW候选验收通过，标签/长训不放行；旧源/失败run和队友四卡训练未动。
 
 **2026-09-25 21:31北京时间受阻交接：** 21:27:24（UTC13:27:24.842229）只读核四卡xhz3641677–3641680均live，free7569/7489/7489/7549MiB；自有H83的3641622/3641648均不存在。H83 v1/v2保持原failed/无预测状态；`/mnt/nvme_tmp/robodojo_agentic_20260925/h79_synchronous_actor_v1`仍不存在，未新建远端source/run/runtime。H80封存原图、H83原失败证据和旧runtime权限原样保留，CPU准备修复仅Git提交6888450。goal已blocked；资源恢复后须新冻结source/run，不覆盖或重启v1/v2，不热改队友源码。

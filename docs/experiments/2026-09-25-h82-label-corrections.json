@@ -1,0 +1,167 @@
+{
+  "status": "KNOWN_H82_LABEL_ISSUES_CLOSED_73_DEFINITE_RELEASED_8_UNCERTAIN_QUARANTINED",
+  "owner": "Codex parent (/root)",
+  "checked_at": "2026-09-25T23:00:48+08:00",
+  "source_pins": {
+    "manifest_sha256": "916ecc58b0817983f322dde5ae5db7f835b68b27d6e41902e53f1ec17b8b19a7",
+    "predictions_sha256": "a231bbab2c4fa66f7f8fda304f2ef73c73ab0eff8c6ac1f9fb3bfc6fc7fb5cf1",
+    "frozen_h76_review_sha256": "3159ed61cb56778343e360e282a9fbb68b64e5dd7d770d0346397fa1380dd136",
+    "input_protocol_sha256": "4b0d80a200a0553839e4d6fa00df1e5978d13aa40fa22d858029397e574309d7",
+    "h83_parent_review_sha256": "a4c3628141056a2b2e31a2e8b6a36297c442a32a87d0a0a3945b0d7972a82010"
+  },
+  "review_file": "configs/vlm_sft/h82_parent_corrected_grounding_v1.json",
+  "review_sha256": "ec82887dcf4157240cc0b9f4d866c80a3880963c4972f369145cee3fee332b2f",
+  "records_sha256": "aae016678b086c91659d3e81e157f87cc6bbe9ea4d96393090ef3280f064b8f9",
+  "unique_images": 81,
+  "source_train_groups": [
+    "t0_i135",
+    "t0_i31",
+    "t0_i70",
+    "t1_i194",
+    "t1_i278",
+    "t1_i8",
+    "t3_i146",
+    "t3_i252",
+    "t3_i96"
+  ],
+  "by_task": {
+    "0": {
+      "present": 13,
+      "absent": 14
+    },
+    "1": {
+      "present": 12,
+      "absent": 13,
+      "uncertain": 2
+    },
+    "3": {
+      "absent": 14,
+      "present": 7,
+      "uncertain": 6
+    }
+  },
+  "exported_counts": {
+    "train": {
+      "present": 32,
+      "absent": 41
+    },
+    "quarantine": {
+      "uncertain": 8
+    }
+  },
+  "visibility_corrections": [
+    {
+      "id": "t0_i70_e66_f001229_left_wrist",
+      "old": "uncertain",
+      "corrected": "present",
+      "reason": "Identifiable close red/white radio side and round black/red knob in upper-right. Previously uncertain; do not label nearby mirror/gripper as radio."
+    },
+    {
+      "id": "t0_i70_e66_f001229_right_wrist",
+      "old": "absent",
+      "corrected": "present",
+      "reason": "Identifiable red body and broad white stripe fill left/top/bottom of image. Black gripper occludes it; previous absent was incorrect."
+    },
+    {
+      "id": "t1_i194_e312_f000859_left_wrist",
+      "old": "present",
+      "corrected": "uncertain",
+      "reason": "Large orange can obscures most of a brown curved candidate. Its identity as a wastebasket cannot be confirmed from this single view. Remove teacher's guessed box and use uncertain."
+    },
+    {
+      "id": "t1_i8_e205_f005609_right_wrist",
+      "old": "uncertain",
+      "corrected": "present",
+      "reason": "Clearly curved basket rim, gray outside and brown interior with cans. Previously uncertain; visible geometry supports basket, not contact or success."
+    },
+    {
+      "id": "t1_i278_e377_f000000_left_wrist",
+      "old": "uncertain",
+      "corrected": "absent",
+      "reason": "Robot camera/hand housing and floor only; this black/gray housing is not the wastebasket. Correct uncertain to image-level absent."
+    },
+    {
+      "id": "t1_i278_e377_f004721_right_wrist",
+      "old": "absent",
+      "corrected": "present",
+      "reason": "Identifiable curved basket wall, rim and interior around blue can. Previous absent missed the close-up basket."
+    },
+    {
+      "id": "t3_i96_e678_f012150_head",
+      "old": "absent",
+      "corrected": "uncertain",
+      "reason": "Only small white vessel/plate fragments at bottom image border; no food-bearing surface can be established. Correct absent to uncertain; do not infer food from earlier frames."
+    },
+    {
+      "id": "t3_i96_e678_f012150_left_wrist",
+      "old": "uncertain",
+      "corrected": "absent",
+      "reason": "Clearly empty bowl/interior and robot gripper, not an identifiable food-bearing plate. Correct uncertain to image-level absent, without a world-state or success claim."
+    },
+    {
+      "id": "t3_i146_e711_f013601_head",
+      "old": "absent",
+      "corrected": "uncertain",
+      "reason": "Only small white vessel/plate fragments at bottom image border; no food-bearing surface can be established. Correct absent to uncertain; do not infer food from earlier frames."
+    },
+    {
+      "id": "t3_i146_e711_f013601_left_wrist",
+      "old": "uncertain",
+      "corrected": "absent",
+      "reason": "Clearly empty bowl/interior and robot gripper, not an identifiable food-bearing plate. Correct uncertain to image-level absent, without a world-state or success claim."
+    },
+    {
+      "id": "t3_i252_e769_f012691_head",
+      "old": "absent",
+      "corrected": "uncertain",
+      "reason": "Only small white vessel/plate fragments at bottom image border; no food-bearing surface can be established. Correct absent to uncertain; do not infer food from earlier frames."
+    },
+    {
+      "id": "t3_i252_e769_f012691_left_wrist",
+      "old": "uncertain",
+      "corrected": "absent",
+      "reason": "Clearly empty bowl/interior and robot gripper, not an identifiable food-bearing plate. Correct uncertain to image-level absent, without a world-state or success claim."
+    }
+  ],
+  "manual_boxes_redrawn": 33,
+  "native_images_reviewed": 44,
+  "overview_images_reviewed": 81,
+  "final_overlay_pages_reviewed": 9,
+  "native_overlay_rechecks": [
+    "t3_i96_e678_f006750_right_wrist",
+    "t3_i146_e711_f007556_right_wrist",
+    "t0_i70_e66_f001229_left_wrist"
+  ],
+  "release_dir": "artifacts/agentic-vlm-goal-20260918/h82_corrected_grounding_release_v2",
+  "release_receipt_sha256": "ae69c45ed1baeb6a266ab3b66eaea657a217ea093d30fe57a02afd7d0833b2ef",
+  "release": {
+    "status": "HUMAN_CORRECTED_IMAGE_ONLY_RELEASE",
+    "counts": {
+      "train": 73,
+      "quarantine": 8
+    },
+    "review_sha256": "ec82887dcf4157240cc0b9f4d866c80a3880963c4972f369145cee3fee332b2f",
+    "records_sha256": "aae016678b086c91659d3e81e157f87cc6bbe9ea4d96393090ef3280f064b8f9",
+    "files": {
+      "train.jsonl": "50a5f7a3d72483f13874ea78cdafe13b1532b686e3ae141c0782d0fa478565b5",
+      "quarantine.jsonl": "848a1e504ec1f11b751f60d3322ee1d5d141c6a6e6b98d46b11798055567b6e2"
+    },
+    "new_source_images": 0,
+    "new_training_updates": 0,
+    "h80_bulk_release": false,
+    "historical_teacher_correct": 69,
+    "historical_teacher_total": 81
+  },
+  "review_sheets_receipt_sha256": "b282fc821f882b3cff5687e82285e16efd61d17248166e7c46aee76976d5bb45",
+  "earlier_release_v1": "preserved; superseded before final provenance hardening; do not use",
+  "h80_bulk_labels_released": false,
+  "new_training_updates": 0,
+  "new_controls": 0,
+  "new_teacher_generations": 0,
+  "limits": [
+    "Single Codex-parent visual review, not independent multi-human ground truth or pixel masks.",
+    "H82 teacher original69/81 and N37/42 remain unchanged.",
+    "73 existing TRAIN images do not constitute five-hour data; eight uncertain targets are not definite labels.",
+    "No action, contact, holding or success supervision and no independent-eval claim."
+  ]
+}
