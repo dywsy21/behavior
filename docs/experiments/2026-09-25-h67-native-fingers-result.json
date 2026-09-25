@@ -1,0 +1,71 @@
+{
+  "experiment": "H67",
+  "owner": "Codex",
+  "source_commit": "95a7bfeefdb14ca80ada14c16865f2d0a9033b6e",
+  "status": "completed",
+  "supervisor_exit_code": 0,
+  "supervisor_seconds": 428.8302019480616,
+  "worker_seconds": 424.40937355998904,
+  "remote_run": "/mnt/nvme_tmp/robodojo_agentic_20260925/h67_native_fingers_v1",
+  "local_bundle": "artifacts/agentic-vlm-goal-20260918/h67_native_fingers_bundle_v1",
+  "bundle_files": 10,
+  "bundle_bytes": 2719917,
+  "parent_verified_all_file_hashes": true,
+  "parent_recomputed_all_saved_native_vs_portable_transforms": true,
+  "independent_native_geometry_and_resource_review_passed": true,
+  "calibrations": 1,
+  "measured_samples": 9,
+  "distinct_requested_configurations": 8,
+  "last_sample_returns_to_reference": true,
+  "explicit_physics_steps": 9,
+  "authored_vertices_per_sample": 1912,
+  "calibration_model_sha256": "9020000de30b13e90763a1baeb8c648f3929552700b66849c4364125847b6ac7",
+  "maximum_errors": {
+    "finger_link_position_m": 2.933474179252903e-7,
+    "finger_link_angle_rad": 3.3236365226748946e-7,
+    "authored_vertex_position_m": 2.94886023806014e-7,
+    "body_link_position_m": 2.584986306358229e-7,
+    "body_link_angle_rad": 3.229957332711691e-7,
+    "requested_to_measured_finger_position_m": 0.002296299301087856,
+    "requested_to_measured_body_q_max_abs": 4.675391812725138e-5
+  },
+  "preregistered_limits": {
+    "fk_position_m": 0.00025,
+    "fk_angle_rad": 0.001,
+    "sample_finger_coverage_m": 0.005,
+    "sample_body_q_coverage_max_abs": 0.003
+  },
+  "gpu_resource_samples": 542,
+  "observed_gpu_peaks": [
+    {"gpu": 0, "own_mib": 456, "increment_mib": 470, "minimum_free_mib": 7018},
+    {"gpu": 1, "own_mib": 416, "increment_mib": 422, "minimum_free_mib": 7068},
+    {"gpu": 2, "own_mib": 416, "increment_mib": 422, "minimum_free_mib": 7068},
+    {"gpu": 3, "own_mib": 932, "increment_mib": 969, "minimum_free_mib": 6519}
+  ],
+  "original_training_pids": [3294346, 3294347, 3294348, 3294349],
+  "training_memory_mib_each_all_samples": 73644,
+  "owned_processes_absent_after_exit": true,
+  "file_sha256": {
+    "launch.json": "521ba3fce7a72fc1a2a0899b8295fa6dc189eed53be5cafd859885ed054603e2",
+    "supervisor.json": "cef4a47732db49ed7811ce6fbbc6c32fe2610a3e2c683e42e6c56d90db958ce5",
+    "supervisor.claim.json": "8f5f199e7969e292dcf093d79a9d3b236c8a0310d6dca6181245efb4639894e4",
+    "worker.claim.json": "51f8c47c5bd8e55e2ffd5f9223ca4a5a96201b712c5ce648f91b4a59ec064f39",
+    "worker.json": "a6c383efe4c5d340dfefed4ed327c8e6dbd1151a63612dd1af9967d35b323f7c",
+    "samples.json": "8c7cd871b1914e67fc17423309a70d4cf0a4068cdb009e8d9bd481e3795fb661",
+    "calibration.json": "48a24627b065397cde7272a8ab1d328a57d96cb183805268090b85f52c38229f",
+    "worker.log": "64e49b21458a8ee8a7747c0bf20c320dc76c5aad4e9f4e6a668824be568524fd",
+    "supervisor.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kit.log": "ce51c98de2b62706d24d5fc43a2404eaebba6c807ece78b47d68f028f5b5ceb7"
+  },
+  "limits_of_evidence": [
+    "robot-only scene; not a task rollout",
+    "native float32 simulator geometry agreement; not real-world control accuracy",
+    "5/25/45mm openings and asymmetric pairs; 0/50mm hard stops not tested",
+    "wrist offsets only plus/minus 0.12 rad; no whole-workspace certificate",
+    "authored geometry transported by native link frames; not cooked/contact surface verification",
+    "no cameras; diagnostic calibration is not a production camera calibration",
+    "no model, training, task success or new supervised examples"
+  ],
+  "success_rate": null,
+  "not_success_rate": true
+}

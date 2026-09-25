@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 12:59（北京时间）H67归档完成：** 原supervisor3553910/worker3553917均退出，428.830s/exit0，九个实测点通过；10件2719917B完整本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h67_native_fingers_bundle_v1`与远端十SHA全同，清单在`docs/experiments/2026-09-25-h67-native-fingers-result.json`。原source/run/runtime全保留但无人继续运行；诊断calibration没有相机，禁止拿它覆盖生产calibration。四训练保持/显存回收，无新VLM或训练。
+
 **2026-09-25 12:47（北京时间）H67单次启动：** 固定`native_fingers_95a7bfe`/95a7bfe源码，run `/mnt/nvme_tmp/robodojo_agentic_20260925/h67_native_fingers_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h67_native_fingers_v1`已创建；launch UTC04:46:35.487310、supervisor3553910。9/9服务器CPU、17依赖和资源门均过，原四训练各73644MiB保留。尚未完成真实几何；不要热改/重提/移动该run/source/runtime。
 
 **2026-09-25 12:45（北京时间）H67新源码：** Git已显式fetch本实验分支，新建干净detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/native_fingers_95a7bfe`，commit `95a7bfeefdb14ca80ada14c16865f2d0a9033b6e`。准备robo CPU/真实安装依赖和资源预检；未启动app/robot。预注册run `/mnt/nvme_tmp/robodojo_agentic_20260925/h67_native_fingers_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h67_native_fingers_v1`尚未创建；只读H64资产JSON，不热改H64/H59或任何训练目录。
