@@ -15,7 +15,7 @@
 - 已知12处可见性错误修正；32正例/33框按原图重新标定，覆盖收音机把手、垃圾桶外壁、完整白盘和同图双食物盘。本人81图overview＋44原尺寸检查，最终9页81图/33框全审并3关键原尺寸框复查，无未处理已知问题。8 U保留不确定且排除明确监督，不造确定性；单主代理图审不宣称数学零误差。完整修订记录`configs/vlm_sft/h82_parent_corrected_grounding_v1.json` SHA ec82887d…32b2f，报告见[修复验收](experiments/2026-09-25-h82-label-corrections.md)及同名JSON。
 - 新导出工具`scripts/vlm_sft/reviewed_grounding.py`已落实独审三项加固；首尾核原manifest/gold/teacher/H83保护/81 PNG与像素/9图审页，再单一review SHA封存。12新目标/完整27 grounding测试通过；独审再次12/12、真实81图/9页同SHA重建/73与8临时导出均过。正式本地`artifacts/agentic-vlm-goal-20260918/h82_corrected_grounding_release_v2`已完成：32 P＋41 N训练条目，8 U隔离；v1加固前产物保留不再使用。独立再次逐条核81导出路径/SHA/目标/权限/文件SHA全过。
 - 原H76/H82全部历史证据不改，原teacher仍69/81、N37/42未过门；原16 repeat、27 validation、H83十保护组均未回灌。此73条只是既有9个TRAIN组的图像定位监督，**不等于H80批量标签完成、五小时数据备齐或完整SR改善**。本轮0新teacher调用/训练/仿真，未接触服务器源/run/队友任务；总体goal仍未完成，H83/批量标注与真正长训待后续资源及质量验收。
-- Git最初TLS失败/直连超时后fetch成功，HEAD/upstream起点4485a89、main33677bd无新变化；本轮小配置/代码/测试/报告/计划正检查后commit/push，原图和导出数据留artifacts不入Git。
+- Git最初TLS失败/直连超时后fetch成功，HEAD/upstream起点4485a89、main33677bd无新变化。23:03本轮小配置/代码/测试/报告/计划已commit并push **2a0180a579eeda4b4869744bfb74d9017632847d**；提交后clean pull确认up-to-date，push后HEAD/upstream相同。仅8个小文件入Git，图像/导出留artifacts；终核新review ec82887d、旧gold3159ed61/teacher a231bbab的完整SHA与验收一致。
 
 ### 2026-09-25 22:42（北京时间）：按用户要求修复已发现的标签，独立人工修订版进行中（Codex / QA-H82-FIX）
 
