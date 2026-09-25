@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 14:43北京时间H70启动：** 固定上条3642dd7源，唯一launch UTC06:43:02.583122、supervisor3572777，预定 `h70_renderer_trace_v1` run/runtime现已创建；900s/0模型训练，具体child/初始化核对中。GPU0队友3564916保留，源/run/runtime/cache不可热改或重启。
+
+**2026-09-25 14:42北京时间H70源码：** Git fetch后新clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/renderer_trace_3642dd7`，固定3642dd77867cb39f743397771e3d016aa516c115；真实CPU/依赖/资源预检中，未launch。run/runtime拟分别为 `/mnt/nvme_tmp/robodojo_agentic_20260925/h70_renderer_trace_v1` 与 `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h70_renderer_trace_v1`，原H69和队友目录未改。
+
 **2026-09-25 14:33北京时间H69归档完成：** 10件4441121B已完整取回`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h69_native_gate_bundle_v1`，全10SHA双端一致（H69实验文档清单）；原run/source/runtime保留。worker.json证reset1/load138完成，旧native_profile是较早快照；没有图像、动作或新运行。
 
 **2026-09-25 14:23北京时间H69终态：** 原3564979/3564992已结束、监管failed/519.433s，初始化PT settings漂移，0gate动作。`native_full_5e4ce75`源、H69 run/runtime/cache全保留；自有GPU已释放，GPU0队友3564916保留。小包正准备取回`artifacts/agentic-vlm-goal-20260918/h69_native_gate_bundle_v1`，尚未创建/验全，禁止把目录存在当归档完成；不得重启本次run。
