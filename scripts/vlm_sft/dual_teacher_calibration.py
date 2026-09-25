@@ -167,8 +167,7 @@ def agreement_report(grounding,critic,rows):
             'training_label_release':False,'proposals':proposals}
 
 
-def run(output):
-    import calibrate_grounding_teacher as worker
+def run(output,*,worker):
     cfg=worker.CONFIG;root=worker.ROOT
     if output!=root/'calibration' or os.environ.get('CUDA_VISIBLE_DEVICES')!=worker.GPU_UUID:
         raise ValueError('Registered H83 output and physical GPU2 only')

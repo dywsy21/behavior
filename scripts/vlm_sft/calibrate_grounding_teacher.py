@@ -33,7 +33,7 @@ def configure_profile(name):
     if name not in ('h81','h82','h83'):raise ValueError('Unregistered teacher profile')
     if name in ('h82','h83'):
         import reference_grounding as protocol
-        ROOT=ROOT.parent/('h82_reference_calibration_v1' if name=='h82' else 'h83_dual_teacher_v1')
+        ROOT=ROOT.parent/('h82_reference_calibration_v1' if name=='h82' else 'h83_dual_teacher_v2')
     else:
         import visual_grounding as protocol
         ROOT=ROOT.parent/'h81_grounding_calibration_v1'
@@ -106,7 +106,9 @@ def report(predictions,rows):
 def run(output):
     if PROFILE=='h83':
         from dual_teacher_calibration import run as dual_run
-        return dual_run(output)
+        # The CLI executes this file as __main__. Re-importing it in the dual
+        # worker creates a second module with the default H81 configuration.
+        return dual_run(output,worker=sys.modules[__name__])
     if output!=ROOT/'calibration' or os.environ.get('CUDA_VISIBLE_DEVICES')!=GPU_UUID:
         raise ValueError('Fixed calibration run and physical GPU2 only')
     output.mkdir(exist_ok=False);started=time.monotonic();examples=0

@@ -1,6 +1,8 @@
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
+import runpy
 import sys
 import tempfile
 import unittest
@@ -31,12 +33,44 @@ class DualTeacherTests(unittest.TestCase):
         launcher.configure_profile('h83')
         self.assertEqual(launcher.ROOT,worker.ROOT);self.assertEqual(launcher.CONFIG['protocol'],dual.VERSION)
         self.assertEqual(launcher.CONFIG['max_examples'],300)
-        self.assertEqual(launcher.command()[3],'2700s');self.assertIn('h83_dual_teacher_v1',launcher.command()[-1])
+        self.assertEqual(launcher.command()[3],'2700s');self.assertIn('h83_dual_teacher_v2',launcher.command()[-1])
         with patch.object(dual,'load_rows',return_value=('rows',[],{})):
             self.assertEqual(worker.training_rows(),('rows',[],{}))
         launcher.configure_profile('h82');self.assertEqual(launcher.command()[3],'1800s')
         self.assertEqual(launcher.CONFIG['max_examples'],97)
         self.assertEqual(launcher.CONFIG['max_gpu_mib'],71680)
+
+    def test_actual_main_passes_configured_module_not_second_h81_import(self):
+        worker.configure_profile('h81')
+        output=worker.ROOT.parent/'h83_dual_teacher_v2'/'calibration'
+        seen=[]
+        def capture(path,*,worker):
+            self.assertEqual(path,output)
+            self.assertEqual(worker.__name__,'__main__')
+            self.assertEqual(worker.PROFILE,'h83')
+            self.assertEqual(worker.ROOT/'calibration',path)
+            self.assertEqual(worker.CONFIG['max_examples'],300)
+            seen.append(worker)
+        with patch.object(sys,'argv',['calibrate_grounding_teacher.py','--profile','h83','--output',str(output)]),\
+                patch.object(dual,'run',side_effect=capture):
+            runpy.run_path(str(REPO/'scripts/vlm_sft/calibrate_grounding_teacher.py'),run_name='__main__')
+        self.assertEqual(len(seen),1)
+        self.assertEqual(worker.PROFILE,'h81')  # Deliberately stale second module.
+
+    def test_dual_worker_uses_injected_profile_before_any_model_load(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'launch.json').write_text('{}')
+            class BeforeModel(RuntimeError):pass
+            def stop_before_model():raise BeforeModel('CPU entry probe')
+            injected=SimpleNamespace(ROOT=root,CONFIG={'max_seconds':2700,'max_bytes':1024**3},
+                                     GPU_UUID='fixed-gpu',clean_commit=stop_before_model)
+            with patch.dict(os.environ,{'CUDA_VISIBLE_DEVICES':'fixed-gpu'}),\
+                    patch.object(dual,'load_model') as model, self.assertRaises(BeforeModel):
+                dual.run(root/'calibration',worker=injected)
+            model.assert_not_called()
+            result=json.loads((root/'calibration/failure.json').read_text())
+            self.assertEqual(result['generated_examples'],0)
+            self.assertIn('CPU entry probe',result['error'])
 
     def fixtures(self):
         review=json.loads(dual.REVIEW.read_text());first=json.loads(dual.references.RAW_REVIEW.read_text())

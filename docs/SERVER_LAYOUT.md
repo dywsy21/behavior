@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 21:02北京时间 H83 v1失败保留：** 3640389/3640426已结束，2.778s/exit1，在配置入口门失败且0生成/未加载模型；四卡释放。四原始回执本地`artifacts/agentic-vlm-goal-20260918/h83_failed_entry_v1`，旧8cee00c源/run不改。修后拟另建h83_dual_teacher_v2，尚0launch。
+
+**2026-09-25 20:59北京时间 H83运行中：** `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h83_dual_teacher_v1` 已创建，UTC12:59:14.778065、supervisor3640389/source8cee00c。原300生成/2700＋30s/0训练控制预算，结果在`calibration/`；不要重提或热改。GPU0队友原进程自然结束，四卡预检均空，仍仅给本轮GPU2。
+
+**2026-09-25 20:58北京时间 H83新源：** Git独立clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/dual_teacher_8cee00c` 固定8cee00cacccdb0b0fac1a045ccbaf0cf3c8de59e，真实双processor/CPU预检中。预定NVMe `h83_dual_teacher_v1` 尚未启动；旧source/run均保留。
+
 **2026-09-25 20:50北京时间 H82完成/H83准备：** H82监管completed/exit0/436.930s，3635181/3635188结束，自有GPU释放，原source/run保留；本地7小结果`h82_reference_results_v1`、本人81图/30框`h82_parent_review_sheets_v1`。第二批H80人审150原图已全SHA核完，位于`h80_second_raw_review_150_v2`；首传被截断的9216B残片单独留在`h80_second_interrupted_transfer_v2`，不是有效图片。H83只有本地代码/冻结金标，尚无远端新worktree/run/模型。
 
 **2026-09-25 20:22北京时间 H82 运行中：** run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h82_reference_calibration_v1` 已创建，UTC12:21:29.057581/supervisor3635181/source234d6f8；冻结source保持。原97调用/1800＋30s/GPU2预算，结果在`calibration/`，日志/监管回执在run上层。不要重提或热改。
