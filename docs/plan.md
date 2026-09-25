@@ -10,7 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 17:36（北京时间）：H75唯一原生复验运行中（Codex）
+
+- 固定source c54ade102f6675e00e03649cb71b2ccfd182dbcd/digest7bad2e9021b6a48dd298e571b213c19e763453b8c593ba871afbc404f0c765f8，robo干净独立render_batch_c54ade1/149同源CPU3.019s、安装源/资产/资源门过；唯一launch UTC09:36:06.136403，supervisor3603301。真实worker/初始化正在核，不重提或热改。
+- 原task0 TRAIN138零前缀、一次1200s＋30清理/24gate/1536controls/0模型训练预算；GPU0队友3564916保留。新run/runtime h75_render_batch_v1已建，三路新鲜性/原动作门/完整SR仍待，不能把启动当通过。
+
 ### 2026-09-25 17:20（北京时间）：H75原生逐产品批次检查准备（Codex）
+
+17:35源已固定并push c54ade1，正从Git创建robo独立render_batch_c54ade1并执行149同源CPU/原安装依赖＋6同步pin/资源预检，0launch；旧source/run和队友不动。
 
 17:34补齐真实runner异常闭包“弃读→唯一hold→close”顺序回归；最终738项/733pass5skip27.723s、149邻接1.498s全过，无新实现改动。即将固定源并双端预检，0launch。
 
