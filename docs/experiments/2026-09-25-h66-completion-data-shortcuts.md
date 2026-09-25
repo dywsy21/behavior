@@ -61,3 +61,11 @@ Codex重新按“能否从图直接给出这个label”而非“私有标签是�
 原`native_execution.json`（SHA `0f9e08bac4dbedb151cc0b3484d5e6bee5c3247303142fb811816b21f8943208`）记录18control闭爪，右EEF位置误差2.98331mm/姿态1.29924°、平均指开度5.62875mm，status=TRACKING_FAILED，holding=UNKNOWN，且**没有新版gripper_execution回执**。它不能被事后伪装成新版GRIPPER_COMMAND_COMPLETED。当前源码已有独立闭爪命令完成协议；此次不是重复宣称新增该修复，而是避免给后继视觉数据引入旧执行器语义造成的错标签。
 
 图像SHA可定位：p0392 before头/腕 `c1cc3ee5`/`b1872132`，after头/腕 `65a2ae79`/`65c08f82`；W396 teacher06头/腕 `99c6e14c`/`68f666ac`；i114 teacher01头/腕 `8dc33651`/`891866ab`（均SHA256前8，原文件保留）。这个三状态候选不能提供视觉“成功/失败”对照；后继应采集真实抓空/共同抬升/滑落短序列，并将执行器版本和物理标注独立留在离线provenance。0新增样本发布/训练/模型请求。
+
+## 15:09北京时间：接近阶段的多视角可观察性（Codex人工检查）
+
+本人检查另外八RAW：TRAIN192/W396 teacher00、05的before头/腕，TRAIN114/p0969 teacher00、02的before头/腕。W396 teacher00腕图主要是桶外壁/地面、05已看到桶内/桶沿；114两态均看到桶内和长孔，指尖只有图像边缘的局部轮廓。对应头图可以定位右手和桶，但精细两指接触区很小/部分遮挡。因此这些图可支持“目标可见/部件出现”之类标签，不足以自动支持精确接触/握持/完成标签；不是新发现陈旧图或训练已有效。
+
+路径根同上：W396 `h09w-native-task1-v1/complete/native_task1_v1`；114 `h09y-resume-20260921/native_complete/native_t1_i114_p0969`。各before头/腕SHA前8：W396/00 `fd680d6f`/`036586a9`、W396/05 `4addd785`/`3fd7c775`、114/00 `ac093da5`/`4bfa6a12`、114/02 `6387681d`/`c9043fed`。没有重标、训练集发布或新模型调用。
+
+输入实现也明确区分：旧native SFT actor把三原图各缩至256，当前grounded agent服务允许640且有局部观察。不能把它们当相同视觉输入或同一执行协议。后续视觉监督先建立多视角/短时证据及UNKNOWN的协议；单纯给旧39条换分辨率不能解决不可观察标签和历史捷径。
