@@ -12,6 +12,16 @@
 
 ### 2026-09-25 19:00（北京时间）：用户扩大数据/长微调指令，H79暂停（Codex）
 
+21:25 H79目录准备独审通过，独15/15；确认真实base.environment路由均互异直接子目录，无创建冲突，tree_bytes未跳过任何目录/容量门。CPU增量可提交，真实Kit及actor仍未验证/0launch。本轮实质进展是清除一个未来闭环入口阻塞；H83质量校准与约五小时数据/微调仍受同一四卡资源条件阻塞（第2次连续goal turn），不标goal完成或提前blocked。
+
+21:24 H79补真实launch函数集成回归（只替换子进程创建，目录函数走真实路径），证实700私有目录和回执在Popen之前准备完成；15目标/27同步邻接0.358s过，先前738语义回归不变。独审仍待，无新服务器source/run，GPU资源及五小时数据的阻塞尚未解除。
+
+21:22 H79准备修复完整semantic738项/733pass5SDKskip（36.050s）过，26同步邻接0.232s/14目标0.384s过，独审待。新建目录后模拟Kit重复mkdir(mode000)仍700且严格tree_bytes实际计入截图字节；旧不可读、越界/别名和容量上限继续拒绝。未碰服务器旧权限/进程；四卡资源仍由live训练占用，数据标注/五小时微调/完整SR都待。
+
+21:21 CPU准备有实质修复：只读H77确认`portable/data/documents/Kit/shared/screenshots`为robodojo-owned mode000，旧tree_bytes严格计量确会拒绝。H79 launcher改为只在全新私有runtime预创建700目录、绑定回执后再spawn；不chmod旧路径、不跟link、不跳过计量/容量门、不改变H75/H77 harness digest。14目标CPU0.384s通过，完整回归与独审进行；0服务器写入/仿真/模型，用户长数据方向和H79暂停不变。
+
+21:19 goal续接核验：上一轮分类为progress（扩原图/人工金标、修CLI、真实资源失败改变下一步）；本次fallback只读确认xhz3641677–3641680均live/11分钟，四卡余7489–7569MiB，自有已退出。首SSH观察45s超时未当终态或重启。资源阻塞第2连续goal turn，等待用户协调不新增GPU；同时处理H79已知screenshots(mode000)计量阻塞的CPU准备，仍保持actor暂停/0launch，不以准备代码替代五小时数据或完整SR。
+
 21:13 H83资源中断已核：自有3641622/3641648退出、空calibration/0预测，四回执双端SHA全同（本地h83_resource_stop_v2）；新xhz3641677–3641680从step40000续至max100000，每卡约73.5GiB，不中断。H80扣H83十组后390组37,440学生原图候选，三已校准目标task共22,464；同来源相机dHash≤8诊断保留37,145，不称语义唯一或标签发布。计数/证据在experiments/2026-09-25-h83-resource-stop-and-raw-counts.json。当前等待空卡/用户协调，不重提旧run；仍须H83真实质量＋框审、扩标/本人抽查、新协议吞吐和约五小时微调，goal未完成。
 
 21:10 H83 v2遇外部资源变化自动停止：监管10.828s/exit−15，Unknown GPU2 process，worker尚无输出；四卡新训练各73.4–73.7GiB，余7.4–7.6GiB，低于原共享8GiB余量。只清理自有worker，不动新训练；正在核实际进程/零生成与归档，异步请用户选择等待自然释放或协调空卡。不重提v2或继续占GPU，五小时合格数据/长训仍未完成。另本地push回执报同SHA ref竞态，ls-remote与robo均确认远端已是d31ec1d，无分叉/force操作。

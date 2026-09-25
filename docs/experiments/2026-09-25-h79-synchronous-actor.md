@@ -1,5 +1,11 @@
 # H79：修复时钟后的原始起点 VLM 闭环
 
+**21:22北京时间更新：仍暂停/0launch，已做CPU准备修复。** 只读H77 runtime实证：`portable/data/documents/Kit/shared/screenshots`为robodojo-owned mode000，因而不能用旧严格tree_bytes计量。H79改在全新私有runtime、启动任何进程前预建700截图目录，启动回执记录路径，supervisor重验owner/同盘/可读性；既有目录、别名和路径越界一律拒绝，不chmod旧run、不略过内容/磁盘容量门。14目标CPU0.384s与26同步邻接0.232s通过，完整semantic及独审进行。原H75/H77 harness digest与全部资源/动作预算不变；真实Kit后续是否保持权限仍待资源恢复后验证，不能把本地准备当SDK或SR通过。
+
+21:24：完整semantic738项/733pass5SDKskip（36.050s）通过；补真实launch路径集成后15目标/27同步邻接（0.358s）过，确认preparation及回执先于Popen。独审尚待，未创建远端新源或run。
+
+21:25独审通过（独15/15），放行仅CPU准备增量提交；真实Kit是否保持700、完整actor与SR仍待，用户数据/长微调优先级和H79暂停状态保持。
+
 **19:00北京时间状态：用户新指令转向扩大数据及至少五小时规模的微调，本实验暂停、0launch。** 启动器本地11目标CPU/完整738基础回归（733pass5SDKskip）通过，但独审未结束；真实H77 runtime的旧tree_bytes拒绝Kit生成的screenshots目录，须修后独审再考虑恢复，不能把本文件预算视为正在运行。
 
 2026-09-25；唯一负责人 Codex；实现/审查中，尚未启动。H78视觉组件训练是独立实验，不把其adapter自动部署，不改变已有27B模型或actor提示。

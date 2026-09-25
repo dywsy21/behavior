@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 21:25北京时间只读诊断：** H77旧runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h77_task3_gate_v1/portable/data/documents/Kit/shared/screenshots` 实为robodojo-owned mode000，保持原状。只在本地H79 launcher增加未来新runtime预建700的CPU准备，并经独审；没有创建远端H79 source/run或chmod旧路径。四卡xhz3641677–3641680在21:18复核均live，约73.6GiB/卡，自有H83进程不存在。
+
 **2026-09-25 21:13北京时间资源归属与归档：** 四GPU新任务为xhz PID3641677–3641680（续G0.5 step40000→100000），不触碰。H83自有3641622/3641648均已不存在，v2 calibration空、0预测；四文件20,505B已在`artifacts/agentic-vlm-goal-20260918/h83_resource_stop_v2`双端SHA验全。精确清单/RAW候选计数见`docs/experiments/2026-09-25-h83-resource-stop-and-raw-counts.json`；原源/run保留。
 
 **2026-09-25 21:10北京时间 H83 v2资源中断：** 3641622监管failed/10.828s，worker3641648被自有组清理，exit−15；新外部四卡训练各约73.5GiB，未发任何外部信号。v2原源/run/回执保留，实际GPU PID正只读核；不重启v2，不把原图包当五小时训练数据发布。

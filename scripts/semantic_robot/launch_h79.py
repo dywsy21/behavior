@@ -10,6 +10,7 @@ import secrets
 import shutil
 import signal
 import socket
+import stat
 import subprocess
 import sys
 import time
@@ -35,9 +36,42 @@ PREREQUISITES = (
     ('h75_render_batch_v1', 0, 'd1cc900f093ed37d0078f5776652a0344b010c05e6404660a2010cf8d7b24bab'),
     ('h77_task3_gate_v1', 3, '530904075e8f47654ef36399867d25661e64e60ede0843a2a77ffbd0552d7863'),
 )
+SCREENSHOTS = Path('portable/data/documents/Kit/shared/screenshots')
 
 
 def read(path): return json.loads(path.read_text())
+
+
+def check_runtime_preparation(receipt):
+    """Do not repair permissions, follow aliases, or exempt uncountable data."""
+    expected = {'schema':'h79-readable-kit-runtime-v1', 'runtime':str(RUNTIME),
+                'screenshots':str(RUNTIME / SCREENSHOTS)}
+    if receipt != expected: raise ValueError('Exact private runtime preparation receipt required')
+    root = RUNTIME.lstat()
+    for path in [RUNTIME, *(RUNTIME / Path(*SCREENSHOTS.parts[:i]) for i in range(1,len(SCREENSHOTS.parts)+1))]:
+        info = path.lstat()
+        if (not stat.S_ISDIR(info.st_mode) or info.st_dev != root.st_dev or info.st_uid != os.getuid() or
+                info.st_mode & 0o500 != 0o500 or not os.access(path,os.R_OK | os.X_OK)):
+            raise ValueError('Uncountable private runtime directory: ' + str(path))
+    return expected
+
+
+def prepare_runtime(folders):
+    """Pre-create Kit's mode000-prone leaf in a NEW owned per-run tree only."""
+    if not RUNTIME.is_absolute() or RUNTIME.parent.resolve() != RUNTIME.parent:
+        raise ValueError('Exact non-redirected runtime parent required')
+    if RUNTIME.exists() or RUNTIME.is_symlink(): raise FileExistsError('Never repair/reuse an existing runtime')
+    folders = list(folders)
+    if len(folders) != len(set(folders)) or any(
+            not p.is_absolute() or not p.is_relative_to(RUNTIME) or '..' in p.parts or p == RUNTIME for p in folders):
+        raise ValueError('Runtime routes must be distinct descendants of the reserved root')
+    RUNTIME.mkdir(mode=0o700)
+    for path in folders: path.mkdir(parents=True,exist_ok=False)
+    # This is the path observed under the H75/H77 portable profile, not the
+    # different omnigibson/local path used by the old reference replay profile.
+    (RUNTIME / SCREENSHOTS).mkdir(mode=0o700,parents=True,exist_ok=False)
+    return check_runtime_preparation({'schema':'h79-readable-kit-runtime-v1', 'runtime':str(RUNTIME),
+                                      'screenshots':str(RUNTIME / SCREENSHOTS)})
 
 
 def sha(path):
@@ -225,14 +259,16 @@ def launch(base):
     model = model_identity()
     with socket.socket() as sock:
         if sock.connect_ex(('127.0.0.1',PORT)) == 0: raise RuntimeError('Reserved service port occupied')
-    if ROOT.exists() or RUNTIME.exists(): raise FileExistsError('Never reuse a submitted episode')
+    if ROOT.exists() or ROOT.is_symlink() or RUNTIME.exists() or RUNTIME.is_symlink():
+        raise FileExistsError('Never reuse a submitted episode')
     ROOT.mkdir(parents=True)
     env, folders = base.environment()
-    for path in folders: path.mkdir(parents=True,exist_ok=False)
+    runtime_preparation = prepare_runtime(folders)
     env['H52_LAUNCH_TOKEN'] = secrets.token_hex(24)
     receipt = {'status':'reserved', 'source_commit':code, 'output':str(ROOT), 'runtime':str(RUNTIME),
                'utc':datetime.now(timezone.utc).isoformat(), 'commands':commands(base),
                'model_identity':model, 'gpu_before':before, 'wall_seconds':WALL_SECONDS,
+               'runtime_preparation':runtime_preparation,
                'cleanup_seconds':60, 'token_sha256':hashlib.sha256(env['H52_LAUNCH_TOKEN'].encode()).hexdigest()}
     write('launch.json',receipt)
     with (ROOT/'supervisor.log').open('x') as log:
@@ -247,6 +283,7 @@ def supervise(base):
     base.claim_stage('supervisor',code)
     launch_receipt = read(ROOT/'launch.json')
     if launch_receipt['commands'] != commands(base): raise ValueError('Launch commands changed')
+    check_runtime_preparation(launch_receipt.get('runtime_preparation'))
     start = time.monotonic(); children = {}; failure = None
     receipt = {'status':'starting', 'source_commit':code, 'supervisor_pid':os.getpid(),
                'samples':[], 'baseline':before, 'wall_seconds':WALL_SECONDS}

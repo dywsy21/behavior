@@ -5,6 +5,7 @@ from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
+import stat
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -25,10 +26,73 @@ def configured(root):
         base=SimpleNamespace(REPO=launch.REPO,PYTHON=Path('/python'))
         stack.enter_context(patch.object(launch.gate,'configure',return_value=base))
         stack.enter_context(patch.object(launch,'ROOT',root))
+        stack.enter_context(patch.object(launch,'RUNTIME',root/'runtime'))
         yield launch.configure()
 
 
 class SynchronousActorLaunchTests(unittest.TestCase):
+    def test_launch_prepares_private_leaf_before_supervisor_spawn(self):
+        with tempfile.TemporaryDirectory() as tmp,configured(Path(tmp)/'run') as base,ExitStack() as stack:
+            base.environment=lambda:({'SAFE':'only'},[launch.RUNTIME/'portable',launch.RUNTIME/'cache'])
+            stack.enter_context(patch.object(launch,'preflight',return_value=('code',self.snapshot())))
+            stack.enter_context(patch.object(launch,'model_identity',return_value={'exact':True}))
+            sock=stack.enter_context(patch.object(launch.socket,'socket'))
+            sock.return_value.__enter__.return_value.connect_ex.return_value=1
+            def spawn(*args,**kwargs):
+                receipt=launch.read(launch.ROOT/'launch.json')
+                launch.check_runtime_preparation(receipt['runtime_preparation'])
+                self.assertEqual(receipt['status'],'reserved')
+                self.assertEqual(stat.S_IMODE((launch.RUNTIME/launch.SCREENSHOTS).stat().st_mode),0o700)
+                return SimpleNamespace(pid=123)
+            proc=stack.enter_context(patch.object(launch.subprocess,'Popen',side_effect=spawn))
+            stack.enter_context(patch('builtins.print'))
+            launch.launch(base)
+            proc.assert_called_once()
+            self.assertEqual(launch.read(launch.ROOT/'launch.json')['status'],'supervisor_started')
+
+    def test_new_runtime_leaf_survives_kit_create_and_strict_tree_count(self):
+        with tempfile.TemporaryDirectory() as tmp,configured(Path(tmp)):
+            receipt=launch.prepare_runtime([launch.RUNTIME/'cache',launch.RUNTIME/'portable',launch.RUNTIME/'data'])
+            leaf=launch.RUNTIME/launch.SCREENSHOTS
+            self.assertEqual(stat.S_IMODE(leaf.stat().st_mode),0o700)
+            leaf.mkdir(mode=0,parents=True,exist_ok=True)  # Kit's repeated creation cannot remove access.
+            (leaf/'test.png').write_bytes(b'actual screenshot bytes')
+            self.assertEqual(launch.check_runtime_preparation(receipt),receipt)
+            def path(value):return Path(tmp) if str(value)=='/mnt/nvme_tmp' else Path(value)
+            with patch('launch_h44.Path',side_effect=path):
+                self.assertEqual(launch.tree_bytes(launch.RUNTIME,16),23)
+                with self.assertRaisesRegex(RuntimeError,'Tree cap'):
+                    launch.tree_bytes(launch.RUNTIME,1e-12)
+                linked=launch.RUNTIME/'alias';linked.symlink_to(leaf)
+                with self.assertRaisesRegex(RuntimeError,'Unexpected file/link'):
+                    launch.tree_bytes(launch.RUNTIME,16)
+
+    def test_existing_unreadable_runtime_and_outside_routes_are_never_repaired(self):
+        with tempfile.TemporaryDirectory() as tmp,configured(Path(tmp)):
+            outside=Path(tmp)/'outside'
+            with self.assertRaises(ValueError):launch.prepare_runtime([outside])
+            self.assertFalse(outside.exists());self.assertFalse(launch.RUNTIME.exists())
+            launch.RUNTIME.mkdir(mode=0o700)
+            leaf=launch.RUNTIME/launch.SCREENSHOTS;leaf.mkdir(parents=True)
+            leaf.chmod(0)
+            try:
+                with self.assertRaises(FileExistsError):launch.prepare_runtime([])
+                receipt={'schema':'h79-readable-kit-runtime-v1','runtime':str(launch.RUNTIME),'screenshots':str(leaf)}
+                with self.assertRaises(ValueError):launch.check_runtime_preparation(receipt)
+                self.assertEqual(stat.S_IMODE(leaf.stat().st_mode),0)
+            finally:leaf.chmod(0o700)  # Only our disposable fixture, not production repair.
+
+    def test_runtime_rejects_broken_alias_and_changed_receipt(self):
+        with tempfile.TemporaryDirectory() as tmp,configured(Path(tmp)):
+            launch.RUNTIME.symlink_to(Path(tmp)/'missing',target_is_directory=True)
+            with self.assertRaises(FileExistsError):launch.prepare_runtime([])
+            launch.RUNTIME.unlink()
+            receipt=launch.prepare_runtime([launch.RUNTIME/'portable'])
+            with self.assertRaises(ValueError):launch.check_runtime_preparation({**receipt,'screenshots':'/unrelated'})
+            leaf=launch.RUNTIME/launch.SCREENSHOTS
+            leaf.rmdir();leaf.symlink_to(Path(tmp),target_is_directory=True)
+            with self.assertRaises(ValueError):launch.check_runtime_preparation(receipt)
+
     def test_same_complete_harness_digest_and_explicit_actor_parser(self):
         from run_v2 import implementation_digest
         from semantic_robot.v2.run_budget import validate_run_budget
@@ -164,7 +228,9 @@ class SynchronousActorLaunchTests(unittest.TestCase):
             stack.enter_context(patch.object(launch.os,'sched_getaffinity',return_value=set(range(80))))
             proc=stack.enter_context(patch.object(launch.subprocess,'Popen',return_value=fake))
             cleanup=stack.enter_context(patch.object(launch,'stop_owned_group'))
-            launch.write('launch.json',{'commands':launch.commands(base),'model_identity':{'exact':True}})
+            runtime=launch.prepare_runtime([launch.RUNTIME/'portable'])
+            launch.write('launch.json',{'commands':launch.commands(base),'model_identity':{'exact':True},
+                                      'runtime_preparation':runtime})
             with self.assertRaisesRegex(RuntimeError,'Model exited before readiness'):launch.supervise(base)
             self.assertEqual(proc.call_count,1);cleanup.assert_called_once_with(fake)
             self.assertTrue(proc.call_args.kwargs['start_new_session'])
