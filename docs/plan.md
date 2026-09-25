@@ -10,6 +10,21 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 16:49（北京时间）：H74生命周期修复与新单次复验准备（Codex）
+
+16:52最终独审/CPU闭合：独立46/46；父132邻接0.940s、全semantic726/721pass5skip28.388s、diff过。H73归档聚合独审重算一致。准备固定Git并在robo新worktree做依赖/资源及同源测试，当前0launch；仅放行预登记一次native复验，非actor/SR通过。
+
+- 已完成原生非嵌套graph编辑、HydraTexture固定path attach/detach、初始化/清理零时钟连续审计及监管优先根错误；61重点CPU过0.388s、完整semantic726/721pass5skip29.034s，最终邻接/独审进行。所有修改仅本地，0新run/模型训练。
+- 新H74预登记一次1200s＋30清理、task0 TRAIN138原reset/0前缀、24gate/1536controls，原GPU3≤24GiB/辅助≤512MiB/全卡8GiB余量；固定Git/双端预检后才启动。H73已全归档，不重跑旧源或关闭USD保护。
+- 安装API未直接证明ReferenceTime等于physics累积时间；另记原生timeline时间域用于实际核对，未猜偏移或放宽严格匹配。原三相机/控制参数/成功门不变，真实同步与完整SR仍待。详见H74文档，微调不复用未通过的新PT执行标签。
+
+### 2026-09-25 16:38（北京时间）：H73初始化失败，未进入控制测试（Codex）
+
+- 唯一f2f985b运行548.036s后failed；reset2/load1与原native profile过，新增ReferenceTime attach在原render product创建USD节点，未进入`og.sim.editing_usd()`；SDK延迟到INITIAL_OBSERVATION的首render才抛出。最终日志有失败capture、一次安全hold（实际＋4ticks）及失败close，而非中间读取的空日志。0gate动作/模型训练，不算同步接口或SR通过。
+- 16:40完整终态核对更正：close另报HydraTexture无split（原生detach需路径字符串）；原根错误未被覆盖。after_exit自有GPU全释放、队友3564916保持。16:46全包19件51922695B双端规范聚合SHA010024c43e09a83245987db34aea82826ecdf6b1643846d8feef411171bd3a9f完全同，已在本地h73_synchronous_io_bundle_v1。
+- 监管只识别native_failure.json，后续缺result又显示FileNotFoundError，属于失败汇总遗漏，需保留通用failure根错误。原run/source/runtime保持；正在核安装编辑context语义、清理/时钟副作用并归档，不重复原H73或关闭SDK保护。
+- Git干净后fetch/pull均已同步，main仍33677bd；下一只修接口生命周期与错误报告，先CPU/独审再登记新单次预算。微调仍等待正确时序与可见监督。
+
 ### 2026-09-25 16:27（北京时间）：H73唯一同步I/O原生复验运行中（Codex）
 
 16:30数据侧只读诊断：旧native_teacher_collect把env.step计数传为teacher physics tick、12次调用作稳定窗口，缺真实时钟核验；因此后继新PT采集必须同步升级原生控制/相机时间证据，不能直接继承旧标签协议。证据/版本限定写H66，未倒推旧RT数据全错或新训。H73实际worker3591749已进入loading_scene，原预算/source保持。

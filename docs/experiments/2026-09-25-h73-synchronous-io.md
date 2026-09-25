@@ -24,3 +24,9 @@
 16:25最终独审通过：独立38/38，父最终123邻接0.996s及diff过；异常保真/生命周期/时钟连续/默认关闭兼容问题全闭合。GPU0队友3564916/12548MiB、1/2/3空，准备固定源/Git后robo预检。仍0launch，实际ReferenceTime帧关联/AA/PT/timeline副作用与控制效果待原生验证。
 
 16:27唯一原生启动：固定f2f985bba378867c130b8f108cb5f8fca4781c1b，新worktree synchronous_io_f2f985b；robo123 CPU1.992s/24＋3安装源/资产/资源全过，digest `6c11bf96a2c30158342a25c0518fee808ae3eebd560b36fb1d03273c027d487c`。launch UTC08:26:51.081005/supervisor3591742，run/runtime已建；原预算0VLM训练/前缀，GPU0队友3564916保留。真实child/初始化待核，不重提或热改。
+
+16:38终态failed：监管548.03579971008s，最后采样545.4905s；reset2/load1和native profile通过，但ReferenceTime attach创建`/Render/PostProcess/SDGPipeline/Replicator_02_ReferenceTime`时未进入`og.sim.editing_usd()`，被原USD-Fabric一致性保护拒绝。16:40完整终态更正中间快照：异常延迟到INITIAL_OBSERVATION首render才抛出（不是attach直接raise），failure记录0 gate controls/模型调用；native_io最终3行不是空：失败capture index33/time0.2750000143、安全hold实际index33→37/time＋1/30s、失败close（HydraTexture无split）。未验证ReferenceTime/完整动作时钟，不能把一次hold当接口通过。
+
+监管只处理native_failure.json，未优先通用failure，缺后续result变成FileNotFoundError，后继需修汇总。原件保留，安装context/生命周期副作用审计与全包校验进行；不重试同配置，不关闭USD保护或改共享SDK。
+
+16:46完整归档完成：本地`artifacts/agentic-vlm-goal-20260918/h73_synchronous_io_bundle_v1`全19件51922695B，排序path/bytes/SHA JSON聚合`010024c43e09a83245987db34aea82826ecdf6b1643846d8feef411171bd3a9f`双端完全一致。after_exit全部自有GPU释放、GPU0队友3564916保持。安装simulator.py d800c283…f1e2a9明确edit context不允许嵌套、exit同步Fabric；annotators.py确认detach(list)未解包HydraTexture，vision_sensor使用`.path`；后继遵循真实API而不关guard。

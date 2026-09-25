@@ -35,6 +35,40 @@ def result_fixture():
 
 
 class NativeFullGateTests(unittest.TestCase):
+    def test_generic_failure_is_preserved_even_when_native_shutdown_exits_zero(self):
+        for exit_code in (0,1):
+            with self.subTest(exit_code=exit_code),profile(),tempfile.TemporaryDirectory() as folder:
+                root=Path(folder)
+                with patch.object(launch,'ROOT',root/'run'),patch.object(launch,'RUNTIME',root/'cache'):
+                    base=launch.configure();(launch.ROOT/'gate').mkdir(parents=True)
+                    primary={'error':'RuntimeError(USD_PRIMARY)','phase':'INITIAL_OBSERVATION'}
+                    (launch.ROOT/'gate/failure.json').write_text(json.dumps(primary))
+                    child=Mock(pid=123,returncode=exit_code);child.poll.return_value=exit_code
+                    with patch.object(launch,'identity',return_value='f'*40), \
+                         patch.object(base,'claim_stage'),patch.object(base,'snapshot',return_value=resources()), \
+                         patch.object(launch,'stop_owned_group'), \
+                         patch.object(launch.os,'sched_getaffinity',return_value={72,73,74,75}), \
+                         patch.object(launch.os,'sched_setaffinity'), \
+                         patch.object(launch.subprocess,'Popen',return_value=child):
+                        with self.assertRaisesRegex(RuntimeError,'USD_PRIMARY'):launch.supervise(base)
+                    saved=json.loads((launch.ROOT/'supervisor.json').read_text())
+                    self.assertEqual(saved['primary_failure_file'],'failure.json')
+                    self.assertEqual(saved['worker_failures']['failure.json'],primary)
+                    self.assertEqual(saved['exit_code'],exit_code)
+
+    def test_failure_reports_keep_both_files_and_fail_closed_on_malformed_receipts(self):
+        with tempfile.TemporaryDirectory() as folder,patch.object(launch,'ROOT',Path(folder)):
+            root=Path(folder)/'gate';root.mkdir();receipt={}
+            (root/'failure.json').write_text(json.dumps({'error':'ACTION_PRIMARY'}))
+            (root/'native_failure.json').write_text(json.dumps({'native_failure':{'error':'NATIVE_SECONDARY'}}))
+            with self.assertRaisesRegex(RuntimeError,'ACTION_PRIMARY'):launch.raise_worker_failure(receipt)
+            self.assertEqual(len(receipt['worker_failures']),2)
+            (root/'native_failure.json').write_text('{bad')
+            with self.assertRaisesRegex(RuntimeError,'ACTION_PRIMARY'):launch.raise_worker_failure(receipt)
+            self.assertIn('receipt_error',receipt['worker_failures']['native_failure.json'])
+            (root/'failure.json').write_text('[]')
+            with self.assertRaisesRegex(RuntimeError,'receipt_error'):launch.raise_worker_failure(receipt)
+
     def test_same_named_adapter_helper_cannot_replace_digest_bound_source(self):
         shadow = ModuleType('shared_pathtracing')
         shadow.__file__ = '/adapter/shared_pathtracing.py'

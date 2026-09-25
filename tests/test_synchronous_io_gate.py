@@ -18,6 +18,24 @@ from semantic_robot.v2.synchronous_io import VIEWS
 
 
 class SynchronousGateTests(unittest.TestCase):
+    def test_h74_has_new_paths_same_gate_budget_and_fixed_source_dependency(self):
+        import launch_h74
+        from native_full_profile import DEPENDENCY_FILES
+        with ExitStack() as stack:
+            for key in ('ROOT','RUNTIME','WALL_SECONDS','FLAGS','identity','validate_result'):
+                stack.enter_context(patch.object(launch.gate,key,getattr(launch.gate,key)))
+            fake=SimpleNamespace(REPO=Path('/source'),PYTHON=Path('/python'))
+            stack.enter_context(patch.object(launch.gate,'configure',return_value=fake))
+            base=launch_h74.configure();args=launch.gate.command(base)
+            self.assertEqual(launch.gate.ROOT.name,'h74_graph_lifecycle_v1')
+            self.assertEqual(launch.gate.RUNTIME.name,'h74_graph_lifecycle_v1')
+            self.assertEqual(launch.gate.WALL_SECONDS,1200)
+            self.assertEqual(args.count('--synchronous-io-v1'),1)
+            self.assertEqual(args[args.index('--prefix')+1],'0')
+            self.assertEqual(args[args.index('--max-controls')+1],'1536')
+            self.assertEqual(base.ENTRYPOINT,Path(launch_h74.__file__).resolve())
+            self.assertIn('launch_h74.py',DEPENDENCY_FILES)
+
     def test_launch_keeps_registered_identity_flags_and_budgets(self):
         with ExitStack() as stack:
             for key in ('ROOT','RUNTIME','WALL_SECONDS','FLAGS','identity','validate_result'):
@@ -43,7 +61,8 @@ class SynchronousGateTests(unittest.TestCase):
         result=result_fixture();result.update(synchronous_io_v1=True,controls=1)
         before={'simulation_time':1.,'physics_index':120}
         after={'simulation_time':1.+1/30,'physics_index':124}
-        rows=[{'kind':'control','call':1,'before':before,'after':after,'completed':True,
+        rows=[{'kind':'initialize','before':before,'after':before,'completed':True},
+              {'kind':'control','call':1,'before':before,'after':after,'completed':True,
                'actual_render_on_step':False,'render_requested':True},
               {'kind':'capture','capture':1,'before':after,'after':after,'completed':True,
                'references':{v:{'referenceTimeNumerator':124,'referenceTimeDenominator':120} for v in VIEWS}},
@@ -65,10 +84,11 @@ class SynchronousGateTests(unittest.TestCase):
             folder=Path(tmp)/'gate';folder.mkdir()
             result,rows,sensors=self.fixture(folder);self.save(folder,result,rows,sensors)
             launch.validate_result(result,'digest')
-            variants=[lambda r,s:r[0]['after'].update(physics_index=120),
+            variants=[lambda r,s:r[1]['after'].update(physics_index=120),
                       lambda r,s:r[0].update(completed=False),
-                      lambda r,s:r[1]['references']['head'].update(referenceTimeNumerator=120),
-                      lambda r,s:r[1].update(before={'simulation_time':2.,'physics_index':240}),
+                      lambda r,s:r[2]['references']['head'].update(referenceTimeNumerator=120),
+                      lambda r,s:r[2].update(before={'simulation_time':2.,'physics_index':240}),
+                      lambda r,s:r.pop(0),
                       lambda r,s:r.pop(),
                       lambda r,s:s[0]['cameras']['head']['native_time'].update(physics_index=120),
                       lambda r,s:s.clear()]

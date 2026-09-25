@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 16:46北京时间H73终态/归档：** 原3591742/3591749已结束、548.036s/failed，首capture抛deferred USD guard、一次安全hold＋4ticks、close参数错误，非普通gate通过。19件51922695B全包在`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h73_synchronous_io_bundle_v1`，规范聚合SHA010024c4…3a9f双端一致；原source/run/runtime全保留。自有GPU释放，GPU0队友3564916/12548MiB保留。
+
 **2026-09-25 16:27北京时间H73启动：** source synchronous_io_f2f985b固定，launch UTC08:26:51.081005/supervisor3591742，h73_synchronous_io_v1 run/runtime已创建；1200s＋30清理/0模型训练，真实child及初始化待。源不可热改，禁止重复launch，全部旧产物和队友3564916保留。
 
 **2026-09-25 16:26北京时间H73预检：** 新Git clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/synchronous_io_f2f985b`固定f2f985bba378867c130b8f108cb5f8fca4781c1b；123 CPU1.992s/24＋3依赖/资源门过。预定run `/mnt/nvme_tmp/robodojo_agentic_20260925/h73_synchronous_io_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h73_synchronous_io_v1`尚未存在；正在唯一launch，真实回执待。队友GPU0保持，旧源/产物全保留。

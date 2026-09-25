@@ -179,6 +179,35 @@ def stop_owned_group(child):
     raise RuntimeError('Owned process group did not disappear within cleanup budget')
 
 
+def raise_worker_failure(receipt):
+    """Prefer the recorded primary error to missing downstream result files.
+
+    Native shutdown can exit zero after an action exception. Preserve both
+    receipts, including a damaged receipt, before interpreting exit status.
+    """
+    found={}
+    for name in ('failure.json','native_failure.json'):
+        path=ROOT/'gate'/name
+        if not path.exists():continue
+        try:
+            value=json.loads(path.read_text())
+            if not isinstance(value,dict):raise ValueError('Failure receipt must be an object')
+            found[name]=value
+        except Exception as error:
+            found[name]={'receipt_error':repr(error),'path':str(path)}
+    if not found:return
+    receipt['worker_failures']=found
+    if 'native_failure.json' in found:
+        native=found['native_failure.json']
+        receipt['native_failure']=native.get('native_failure')
+        receipt['pathtracing_differences']=native.get('pathtracing_differences')
+    name=next(iter(found))
+    primary=found[name]
+    receipt['primary_failure_file']=name
+    raise RuntimeError('Native worker failed ('+name+'): '+str(
+        primary.get('error',primary.get('native_failure',primary))))
+
+
 def supervise(base):
     commit = identity(base)
     base.claim_stage('supervisor', commit)
@@ -213,12 +242,7 @@ def supervise(base):
             base.write('supervisor.json', receipt)
             check_resources(current, before, child.pid)
             time.sleep(2)
-        failure_path = ROOT/'gate/native_failure.json'
-        if failure_path.exists():
-            native = json.loads(failure_path.read_text())
-            receipt['native_failure'] = native.get('native_failure')
-            receipt['pathtracing_differences'] = native.get('pathtracing_differences')
-            raise RuntimeError('Native session failed: ' + str(receipt['native_failure']))
+        raise_worker_failure(receipt)
         if child.returncode != 0:
             raise RuntimeError('Gate worker exit code ' + str(child.returncode))
         if time.monotonic() - started > WALL_SECONDS:

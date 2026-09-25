@@ -7,13 +7,27 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import numpy as np
-from semantic_robot.v2.synchronous_io import SynchronousIO, reference_seconds, attach_references, PLAY_SIMULATIONS, VIEWS
+from semantic_robot.v2.synchronous_io import (SynchronousIO, reference_seconds, attach_references,
+    configured_adapter, graph_edit, PLAY_SIMULATIONS, VIEWS)
 
 
 class FakeSim:
     current_time=1.
     current_time_step_index=120
     rendering=True
+    def __init__(self):
+        self.editing=False;self.edits=[];self.edit_ticks=0
+        self.edit_enter_error=self.edit_exit_error=None
+    @contextmanager
+    def editing_usd(self):
+        if self.editing:raise AssertionError('Nested edit context')
+        if self.edit_enter_error is not None:raise self.edit_enter_error
+        self.editing=True;self.edits.append('enter')
+        try:yield
+        finally:
+            self.editing=False;self.edits.append('exit')
+            self.advance(self.edit_ticks)
+            if self.edit_exit_error is not None:raise self.edit_exit_error
     def get_physics_dt(self):return 1/120
     def get_sim_step_dt(self):return 1/30
     def get_rendering_dt(self):return 1/30
@@ -75,10 +89,13 @@ class SynchronousIOTests(unittest.TestCase):
         self.io.synchronize();self.assertEqual(self.io.captures,2)
 
     def test_one_stale_camera_rejects_all_and_preserves_evidence(self):
+        self.io.render_time=Mock(side_effect=[12.,12.])
         self.refs['right_wrist'].get_data=lambda:{'referenceTimeNumerator':119,'referenceTimeDenominator':120}
         with self.assertRaisesRegex(RuntimeError,'ReferenceTime'):self.io.synchronize()
         self.assertEqual(self.io.captures,0);self.assertTrue(self.settings[PLAY_SIMULATIONS])
         self.assertAlmostEqual(self.rows[-1]['reference_seconds']['right_wrist'],119/120)
+        self.assertEqual(self.rows[-1]['timeline_before'],12.)
+        self.assertEqual(self.rows[-1]['timeline_after'],12.)
 
     def test_capture_that_steps_physics_is_rejected(self):
         self.capture.side_effect=lambda **kwargs:self.sim.advance()
@@ -177,18 +194,89 @@ class SynchronousIOTests(unittest.TestCase):
         io.close();io.release.assert_called_once()
 
     def test_partial_attach_and_detach_failures_keep_original_and_cleanup_all(self):
-        sensors={v:SimpleNamespace(render_product='rp_'+v) for v in ('head','left_wrist','right_wrist')}
+        sensors={v:SimpleNamespace(render_product='/rp_'+v) for v in ('head','left_wrist','right_wrist')}
         annos=[Mock(),Mock(),Mock()];annos[1].attach.side_effect=RuntimeError('attach failed')
         annos[0].detach.side_effect=OSError('detach also failed')
         with self.assertRaisesRegex(RuntimeError,'attach failed'):
-            attach_references(sensors,Mock(side_effect=annos))
-        annos[0].detach.assert_called_once_with(['rp_head'])
-        annos[1].detach.assert_called_once_with(['rp_left_wrist'])
+            attach_references(sensors,Mock(side_effect=annos),edit=self.sim.editing_usd)
+        annos[0].detach.assert_called_once_with(['/rp_head'])
+        annos[1].detach.assert_called_once_with(['/rp_left_wrist'])
         annos[2].attach.assert_not_called()
+        self.assertEqual(self.sim.edits,['enter','exit','enter','exit'])
         annos=[Mock(),Mock(),Mock()]
-        refs,release=attach_references(sensors,Mock(side_effect=annos))
+        refs,release=attach_references(sensors,Mock(side_effect=annos),edit=self.sim.editing_usd)
         self.assertEqual(set(refs),VIEWS);release()
         for view,anno in zip(sensors,annos):anno.detach.assert_called_once_with([sensors[view].render_product])
+
+    def configured(self):
+        sensors={v:SimpleNamespace(render_product=SimpleNamespace(path='/Render/'+v)) for v in sorted(VIEWS)}
+        annos=[]
+        for view in sensors:
+            def check(paths):
+                self.assertTrue(self.sim.editing)
+                self.assertTrue(all(isinstance(p,str) and p.startswith('/Render/') for p in paths))
+            anno=Mock(attach=Mock(side_effect=check),detach=Mock(side_effect=check),
+                      get_data=lambda:{'referenceTimeNumerator':120,'referenceTimeDenominator':120})
+            annos.append(anno)
+        io=configured_adapter(self.sim,sensors,Mock(side_effect=annos),self.capture,self.api,self.rows.append)
+        return io,sensors,annos
+
+    def test_real_product_paths_and_all_graph_lifecycles_have_non_nested_context(self):
+        io,sensors,annos=self.configured()
+        self.capture.side_effect=lambda **kw:self.assertTrue(self.sim.editing)
+        io.synchronize()
+        # Cleanup must detach the captured original path, not a later sensor property.
+        original=[sensor.render_product.path for sensor in sensors.values()]
+        for sensor in sensors.values():sensor.render_product=SimpleNamespace(path='/wrong')
+        io.close()
+        for anno,path in zip(annos,original):
+            anno.attach.assert_called_once_with([path]);anno.detach.assert_called_once_with([path])
+        self.assertEqual(self.sim.edits,['enter','exit']*3)
+        self.assertEqual([r['kind'] for r in self.rows],['initialize','capture','close'])
+        self.assertTrue(all(r['completed'] and r['before']==r['after'] for r in self.rows))
+
+    def test_missing_product_path_rejected_before_any_graph_edit(self):
+        factory=Mock();sensors={v:SimpleNamespace(render_product=None) for v in VIEWS}
+        with self.assertRaisesRegex(ValueError,'product path'):
+            configured_adapter(self.sim,sensors,factory,self.capture,self.api,self.rows.append)
+        factory.assert_not_called();self.assertEqual(self.sim.edits,[])
+        self.assertFalse(self.rows[0]['completed'])
+
+    def test_graph_context_exit_cannot_hide_primary_or_suppress_it(self):
+        self.sim.edit_exit_error=OSError('SYNC_SECONDARY')
+        with self.assertRaisesRegex(RuntimeError,'GRAPH_PRIMARY'):
+            with graph_edit(self.sim.editing_usd):raise RuntimeError('GRAPH_PRIMARY')
+        self.assertFalse(self.sim.editing)
+        with self.assertRaisesRegex(OSError,'SYNC_SECONDARY'):
+            with graph_edit(self.sim.editing_usd):pass
+        self.sim.edit_enter_error=ValueError('ENTER_PRIMARY')
+        with self.assertRaisesRegex(ValueError,'ENTER_PRIMARY'):
+            with graph_edit(self.sim.editing_usd):self.fail('No graph call')
+
+    def test_initialize_checks_context_exit_clock_and_releases_all(self):
+        self.sim.edit_ticks=4
+        with self.assertRaisesRegex(RuntimeError,'initialization advanced'):self.configured()
+        self.assertFalse(self.rows[-1]['completed'])
+        self.assertEqual(self.sim.edits,['enter','exit']*2)
+        self.assertEqual(self.rows[-1]['after']['physics_index'],128)
+
+    def test_capture_and_close_include_context_exit_clock(self):
+        io,_,_=self.configured();self.sim.edit_ticks=4
+        with self.assertRaisesRegex(RuntimeError,'capture advanced'):io.synchronize()
+        self.assertFalse(self.rows[-1]['completed'])
+        with self.assertRaisesRegex(RuntimeError,'close clock changed'):io.close()
+        self.assertFalse(self.rows[-1]['completed'])
+
+    def test_partial_attach_failure_original_survives_exit_and_cleanup_errors(self):
+        sensors={v:SimpleNamespace(render_product='/Render/'+v) for v in sorted(VIEWS)}
+        annos=[Mock(),Mock(),Mock()]
+        annos[1].attach.side_effect=RuntimeError('ATTACH_PRIMARY')
+        self.sim.edit_exit_error=OSError('EXIT_SECONDARY')
+        with self.assertRaisesRegex(RuntimeError,'ATTACH_PRIMARY'):
+            configured_adapter(self.sim,sensors,Mock(side_effect=annos),self.capture,self.api,self.rows.append)
+        self.assertEqual(self.sim.edits,['enter','exit']*2)
+        annos[0].detach.assert_called_once();annos[1].detach.assert_called_once()
+        annos[2].attach.assert_not_called();self.assertFalse(self.rows[0]['completed'])
 
     def test_onboard_waits_before_reading_and_binds_native_receipt(self):
         from semantic_robot.v2.onboard import OnboardRGBD

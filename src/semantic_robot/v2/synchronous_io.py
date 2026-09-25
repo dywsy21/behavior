@@ -23,6 +23,36 @@ VIEWS = {'head', 'left_wrist', 'right_wrist'}
 PLAY_SIMULATIONS = '/app/player/playSimulations'
 
 
+def native_clock(sim):
+    value = {'simulation_time': float(sim.current_time),
+             'physics_index': int(sim.current_time_step_index)}
+    if not math.isfinite(value['simulation_time']) or value['physics_index'] < 0:
+        raise ValueError('Invalid native simulation clock')
+    return value
+
+
+@contextmanager
+def graph_edit(edit):
+    """Use OG's USD/Fabric transaction without hiding the original error.
+
+    The installed context is non-nestable and synchronizes Fabric on exit.
+    A synchronization error must not replace an earlier graph/API error.
+    """
+    context = edit()
+    context.__enter__()
+    try:
+        yield
+    except BaseException:
+        primary = sys.exc_info()
+        try: context.__exit__(*primary)
+        except BaseException as secondary:
+            try: print('USD/Fabric context exit also failed: '+repr(secondary),file=sys.stderr)
+            except BaseException: pass
+        raise
+    else:
+        context.__exit__(None,None,None)
+
+
 def validate_installed():
     for path, expected in INSTALLED.items():
         if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
@@ -43,12 +73,14 @@ def reference_seconds(value):
 
 
 class SynchronousIO:
-    def __init__(self, sim, references, capture, settings, record, release=lambda:None):
+    def __init__(self, sim, references, capture, settings, record, release=lambda:None,
+                 render_time=None):
         if set(references) != VIEWS: raise ValueError('All three camera timestamps required')
         self.sim, self.references, self.capture_native = sim, references, capture
         self.settings, self.record = settings, record
         self.controls = self.captures = self.attempts = 0
         self.release, self.closed = release, False
+        self.render_time = render_time  # Diagnostic only; never substitutes the physics clock.
         self._check_rates()
 
     def _check_rates(self):
@@ -59,11 +91,7 @@ class SynchronousIO:
             raise ValueError('Registered 120Hz physics/30Hz action/render rates changed')
 
     def clock(self):
-        value = {'simulation_time': float(self.sim.current_time),
-                 'physics_index': int(self.sim.current_time_step_index)}
-        if not math.isfinite(value['simulation_time']) or value['physics_index'] < 0:
-            raise ValueError('Invalid native simulation clock')
-        return value
+        return native_clock(self.sim)
 
     def _record(self, row):
         if sys.exc_info()[0] is None:
@@ -132,12 +160,14 @@ class SynchronousIO:
         old_play = self.settings.get(PLAY_SIMULATIONS)
         if type(old_play) is not bool: raise ValueError('Unknown native playSimulations state')
         try:
+            if self.render_time is not None:row['timeline_before']=float(self.render_time())
             self.render_only()
             # Same process-private suppression used by SimulationContext.render.
             # Replicator initialization/updates must never add physical steps.
             self.settings.set(PLAY_SIMULATIONS, False)
             self.capture_native(delta_time=0.0, pause_timeline=False, wait_for_render=True, rt_subframes=4)
             row['after'] = self.clock()
+            if self.render_time is not None:row['timeline_after']=float(self.render_time())
             raw = {view:anno.get_data() for view,anno in self.references.items()}
             row['raw_reference_repr'] = {view:repr(value) for view,value in raw.items()}
             seconds = {view:reference_seconds(value) for view,value in raw.items()}
@@ -166,20 +196,29 @@ class SynchronousIO:
             self._record(row)
 
 
-def attach_references(sensors, factory):
+def attach_references(sensors, factory, *, edit):
     """Exception-safe attachment to existing products; never recreate them."""
-    references={}
+    references,paths={},{}
+    # Snapshot real paths before creating any graph node. Replicator 1.12.27
+    # accepts HydraTexture on attach, but its detach(list) fails to unwrap it.
+    for view,sensor in sensors.items():
+        product=sensor.render_product
+        path=product if isinstance(product,str) else getattr(product,'path',None)
+        if not isinstance(path,str) or not path.startswith('/'):
+            raise ValueError('Existing render product path required')
+        paths[view]=path
     def release():
-        errors=[]
-        for view,anno in references.items():
-            try:anno.detach([sensors[view].render_product])
-            except BaseException as error:errors.append(error)
-        if errors:raise errors[0]
+        with graph_edit(edit):
+            errors=[]
+            for view,anno in references.items():
+                try:anno.detach([paths[view]])
+                except BaseException as error:errors.append(error)
+            if errors:raise errors[0]
     try:
-        for view,sensor in sensors.items():
-            if sensor.render_product is None:raise ValueError('Existing render product required')
-            anno=factory('ReferenceTime');references[view]=anno
-            anno.attach([sensor.render_product])
+        with graph_edit(edit):
+            for view in sensors:
+                anno=factory('ReferenceTime');references[view]=anno
+                anno.attach([paths[view]])
     except BaseException:
         try:release()
         except BaseException as secondary:
@@ -189,18 +228,45 @@ def attach_references(sensors, factory):
     return references,release
 
 
+def configured_adapter(sim, sensors, factory, capture, settings, record, render_time=None):
+    """Clock-audited lifecycle, also executable without the native SDK in tests."""
+    if set(sensors) != VIEWS: raise ValueError('Exact existing onboard cameras required')
+    row={'kind':'initialize','before':native_clock(sim),'completed':False}
+    release=None
+    try:
+        references,release=attach_references(sensors,factory,edit=sim.editing_usd)
+        def capture_graph(**kwargs):
+            # Orchestrator initialization also creates graph nodes. Do not
+            # disable OG's guard or wrap an entire action/episode in this scope.
+            with graph_edit(sim.editing_usd):capture(**kwargs)
+        io=SynchronousIO(sim,references,capture_graph,settings,record,release,render_time)
+        row['after']=io.clock()
+        if row['after']!=row['before']:raise RuntimeError('I/O initialization advanced physics')
+        row['completed']=True
+        record(row)
+        return io
+    except BaseException as error:
+        row.update(error=repr(error),completed=False)
+        if release is not None:
+            try:release()
+            except BaseException as secondary:row['cleanup_error']=repr(secondary)
+        try:row['after']=native_clock(sim)
+        except BaseException as secondary:row['after_clock_error']=repr(secondary)
+        try:record(row)
+        except BaseException as secondary:
+            try:print('I/O initialization evidence also failed: '+repr(secondary),file=sys.stderr)
+            except BaseException:pass
+        raise
+
+
 def native_adapter(sim, sensors, record):
     validate_installed()
     import carb.settings
     import omni.replicator.core as rep
+    import omni.timeline
     expected = next(path for path in INSTALLED if path.name == 'orchestrator.py')
     if Path(inspect.getfile(rep.orchestrator.step)).resolve() != expected:
         raise ValueError('Synchronous capture implementation shadowed')
-    if set(sensors) != VIEWS: raise ValueError('Exact existing onboard cameras required')
-    references,release=attach_references(sensors,rep.AnnotatorRegistry.get_annotator)
-    try:
-        return SynchronousIO(sim,references,rep.orchestrator.step,carb.settings.get_settings(),record,release)
-    except BaseException:
-        try:release()
-        except BaseException:pass  # Preserve original initialization error.
-        raise
+    return configured_adapter(sim,sensors,rep.AnnotatorRegistry.get_annotator,
+                              rep.orchestrator.step,carb.settings.get_settings(),record,
+                              omni.timeline.get_timeline_interface().get_current_time)

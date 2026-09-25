@@ -29,13 +29,14 @@ def validate_result(result, digest):
     expected={'controls':len(control),'attempts':len(control),'captures':len(capture),
               'journal_sha256':hashlib.sha256(raw).hexdigest()}
     if (result.get('native_io') != expected or len(control)!=result['controls'] or
-            not capture or rows[-1].get('kind')!='close' or
+            not capture or rows[0].get('kind')!='initialize' or rows[-1].get('kind')!='close' or
+            sum(r.get('kind')=='initialize' for r in rows)!=1 or
             sum(r.get('kind')=='close' for r in rows)!=1 or
             any(r.get('completed') is not True for r in rows)):
         raise ValueError('Incomplete native I/O journal')
     cursor=rows[0]['before']
     for row in rows:
-        if row.get('kind') not in ('control','capture','close') or row['before']!=cursor:
+        if row.get('kind') not in ('initialize','control','capture','close') or row['before']!=cursor:
             raise ValueError('Unaccounted clock advancement between I/O transactions')
         if row['kind']!='control' and row['after']!=cursor:
             raise ValueError('Non-control transaction advanced physics')
