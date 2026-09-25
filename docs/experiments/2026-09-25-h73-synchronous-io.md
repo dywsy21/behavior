@@ -22,3 +22,5 @@
 完整semantic720/715通过5本地SDKskip28.385s，60重点3.231s过；初次全量AST测试缺新增closure造成13错误已修后重跑，另一次邻接模块名写错已纠正。最终独审/源固定/native API真实验证待。legacy fixed-four-render receipt新增unverified标记；旧SFT completion仍要求旧屏障协议，不将H73回执无检查混入训练，本轮未训模型。
 
 16:25最终独审通过：独立38/38，父最终123邻接0.996s及diff过；异常保真/生命周期/时钟连续/默认关闭兼容问题全闭合。GPU0队友3564916/12548MiB、1/2/3空，准备固定源/Git后robo预检。仍0launch，实际ReferenceTime帧关联/AA/PT/timeline副作用与控制效果待原生验证。
+
+16:27唯一原生启动：固定f2f985bba378867c130b8f108cb5f8fca4781c1b，新worktree synchronous_io_f2f985b；robo123 CPU1.992s/24＋3安装源/资产/资源全过，digest `6c11bf96a2c30158342a25c0518fee808ae3eebd560b36fb1d03273c027d487c`。launch UTC08:26:51.081005/supervisor3591742，run/runtime已建；原预算0VLM训练/前缀，GPU0队友3564916保留。真实child/初始化待核，不重提或热改。

@@ -10,7 +10,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 16:27（北京时间）：H73唯一同步I/O原生复验运行中（Codex）
+
+- 固定运行源f2f985bba378867c130b8f108cb5f8fca4781c1b/digest6c11bf96…d487c，双端123 CPU/独审/依赖与资源门过；唯一launch UTC08:26:51.081005/supervisor3591742，实际child/初始化正在核。
+- 原单次1200s＋30清理/24动作1536controls/0模型训练，GPU0队友3564916保留。run/runtime `h73_synchronous_io_v1`已创建，不重提或热改。新同步接口真实frame/tick正确性与原gate均待，不称已修好或任务SR提升。
+
 ### 2026-09-25 16:10（北京时间）：H73同步I/O修复准备（Codex）
+
+16:26真实预检通过：robo clean f2f985b/123 CPU1.992s，24＋3安装依赖、资产和资源门全过，digest6c11bf96a2c30158342a25c0518fee808ae3eebd560b36fb1d03273c027d487c，run/runtime未存在。正在提交唯一1200s H73，回执待，不重复提交。
+
+16:26源已固定/push：f2f985bba378867c130b8f108cb5f8fca4781c1b。正从Git创建robo独立synchronous_io_f2f985b并做123同源CPU/24＋3依赖/资源预检，0launch，不热改任何旧run/source。
 
 16:25最终CPU/独审闭合：父123相邻0.996s、全semantic720/715pass5skip28.385s；独立38/38，所有所提代码阻塞已关闭。只读GPU0队友3564916/12548MiB、1/2/3空，两盘约1.9TiB余量。准备固定commit后新robo worktree/原生依赖预检；0launch，ReferenceTime和物理同步真实效果仍待，不能把CPU过当修复成立。
 
