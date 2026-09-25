@@ -12,6 +12,16 @@
 
 ### 2026-09-25 17:36（北京时间）：H75唯一原生复验运行中（Codex）
 
+17:47真实同步已有实证：原run119control均＋4ticks、27capture/read均通过；逐RP FrameNumber=437和scheduled/completed437/30同批，基线全局431/30、上一RP427/30后严格推进，physics509/4.2416669秒捕获前后不动。175行native_io完整至当时，已越过H74首capture失败；原动作gate与完整SR仍待，预算不变。
+
+17:40微调侧H76原分辨率审查采样器准备：固定合法additional_train的12来源实例，36态/108图，按实例先分视觉train/val，排除后继留出；只图像，不自动动作/完成label。CPU一次240s/1GiB/0GPU训练预算，代码/测试/独审待，尚未提取或发布。H75 worker3603308真实运行/loading_scene，源不动。
+
+17:43 H76父193全SFT/5目标过，独审进行。0提取前增加排除旧状态已训练i114/i192，避免熟悉的训练实例落入新视觉val；旧TRAIN身份不改，分组仍不按图或模型效果选择。H75原进程/预算不变。
+
+17:51 H76审查整改：原错保留、原子manifest/seal、实际prepare成功/失败/预算路径及精确来源/固定frame/9-3 split/零调用/封存验证齐；10目标0.215s、全SFT198/1986.176s过，最终独审待，0提取。首集成暴露tuple/list持久化不一致，已修并全重跑。H75已285controls/58capture-read、0I/O失败；24动作终态仍待。
+
+17:53 H76独审通过10/10/0.188s，先前可复现的重封存合同绕过已闭，diff过。准备Git新独立CPU源/真实meta与quarantine及解码环境预检，再一次108图提取；目前0提取/训练，H75原run不动。
+
 - 固定source c54ade102f6675e00e03649cb71b2ccfd182dbcd/digest7bad2e9021b6a48dd298e571b213c19e763453b8c593ba871afbc404f0c765f8，robo干净独立render_batch_c54ade1/149同源CPU3.019s、安装源/资产/资源门过；唯一launch UTC09:36:06.136403，supervisor3603301。真实worker/初始化正在核，不重提或热改。
 - 原task0 TRAIN138零前缀、一次1200s＋30清理/24gate/1536controls/0模型训练预算；GPU0队友3564916保留。新run/runtime h75_render_batch_v1已建，三路新鲜性/原动作门/完整SR仍待，不能把启动当通过。
 

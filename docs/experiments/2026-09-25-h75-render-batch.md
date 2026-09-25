@@ -25,3 +25,5 @@ GPU3自有≤24576MiB、0/1/2辅助各≤512MiB、全卡≥8192MiB余量，CPU72
 17:34非阻塞测试缺口也已补：真实runner AST异常闭包验证弃读在唯一安全hold之前、close在后，且弃读发生于原异常上下文。最终738项/733pass5skip27.723s、149邻接1.498s全过；未增加行为或预算，准备固定source。
 
 17:36唯一启动：robo独立clean render_batch_c54ade1固定c54ade102f6675e00e03649cb71b2ccfd182dbcd，149同源CPU3.019s/原安装依赖＋6同步pin/资产/资源过。digest `7bad2e9021b6a48dd298e571b213c19e763453b8c593ba871afbc404f0c765f8`；launch UTC09:36:06.136403、supervisor3603301，run/runtime已创建。真实worker/初始化待；0模型训练，保留队友GPU0/3564916，所有源/预算固定，不热改或重提。
+
+17:47实际同步路径已运行：worker3603308、119controls/27capture-read/1prime/1initialize全部completed，共175journal行。第27次baseline schedule427/30、global431/30，三RP旧frame427；完成后schedule/global/三RP437/30精确相等，原生type=FrameNumber，三产品分别Replicator_02/head、Replicator/left、Replicator_01/right，RGB/depth实际hostPtr绑各自产品；physics509/time4.241666887886822全capture/read不动。证明安装API与当前批次契约已实际通过这些采样，不代表完整24gate或任务SR，原预算继续。
