@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 10:53（北京时间）：Z-01本条请求核验，仍待完整Recovery产物（Codex）
+
+- 本分支clean pull无更新，上游fetch仍`1fee179`/`747be40`，原公开artifact SHA一致；官方原文件/Release/Issue #32未提供完整Recovery。既有接口963efcf/21 CPU及独审保留，本轮不重复实现或测试，不以框架类/Pi0.5 fallback冒充作者演化程序。
+- 10:51:52只读robo（UTC02:51:52）：四xhz训练3294346–3294349全在、各73644MiB，四卡free7489/7489/7489/7488MiB。0新模型/仿真/训练/信号/环境修改，效果仍未测。下一需完整公开bundle与工具链接，或用户明确选择自行构建的适配变体；不自动扩大为演化campaign。详见[报告](experiments/2026-09-24-zetta-g05.md)。
+
 ### 2026-09-25 01:10（北京时间）：Z-01最新请求复核，等待完整公开包/路线输入（Codex）
 
 - 本分支clean pull成功，接口实现保持`963efcf`，沿用原21 CPU与修后独审；本轮未改源码、未重复测试。上游fetch仍`1fee179`、另一分支相关目录无差异、公开artifact SHA不变；官方项目页/Release/Issue #32仍未找到完整promoted bundle。Recovery执行框架或一次Pi0.5 fallback不能替代缺失的演化恢复程序。
