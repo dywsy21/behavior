@@ -21,3 +21,21 @@
 15:03最终增量：113邻接0.970s，独立16 renderer、11 PT、3 compatible、18 native-gate和diff通过，无剩余实质代码阻塞；父/worker来源硬门确认有效，未修改安装文件，0H71 GPU。下一固定运行源、robo实际24依赖及资源预检后唯一原生运行。
 
 15:06唯一提交：运行源0189148d7a77cb86420925f3e21f8a485ffca3f0，新clean Git worktree `aa_prerequisite_0189148`；真实113 CPU1.944s、24安装依赖、资产/资源门通过，两新run/runtime不存在后才创建。launch UTC07:05:54.900657、supervisor3578340；GPU0队友3564916/12548MiB保持，1/2/3提交时空。真实初始化/终态待，不重提。
+
+15:12只读补核（不改变当前实验）：[官方API](https://docs.omniverse.nvidia.com/kit/docs/omni_replicator/1.11.35/source/extensions/omni.replicator.core/docs/API.html)把post/aa/op列为RealTime设置，PT采样滤波则是pathtracing/aa/op；[PT文档](https://docs.omniverse.nvidia.com/materials-and-rendering/latest/rtx-renderer_pt.html)也区分此项。H70原kit日志仅证明该字段漂移使我们的断言停止，不能由此直接声称实际PT图像已坏或DLSS执行失败。安装源检索有多处官方测试使用limitedOps=false，但没有找到首camera native更新的Python setter。H71仍严格按原条件完成，若失败先区分真实renderer故障与检查合同过度限制，不中途放宽、也不据“PT文档没写”就认定完全无影响。
+
+15:15实际进展：supervisor running/564.172s，worker3578347；native_profile/worker均reset2/load1且无差异，首HOLD18ticks TARGET_REACHED（EEF误差约0.8/1.4微米）。两个追踪通知仅spp/totalSpp同值恢复、AA0/limitedOps=false保持。候选已越过原初始化故障，但后续24gate、有效RGB-D和终态资源仍待，不提前称harness全部通过。
+
+15:18初始图人工审：本地`artifacts/agentic-vlm-goal-20260918/h71_initial_preview_v1`是5件局部预览，不是完整run。本人看全部三RAW，头图可见壁炉/房间和厨房方向、目标收音机尚不在视野；两腕大部分是机器人本体近景、不是黑屏也不能当目标。PT初始图较软，后续视觉里程计及模型语义仍须实测，不能由有限深度替代这些验证。
+
+RGB形状分别720²/480²/480²，非零像素比例均1；深度三个float32视图有限正数比例均1，头0.8415303–6.9996419m、左腕0.0766893–0.8394450m、右腕0.0766885–0.8424187m。这里只排除空图/空深度，不独立证明外参/尺度。
+
+5件双端SHA256核同：
+
+| 文件 | SHA256 |
+| --- | --- |
+| CURRENT_HEAD_RAW.png | 5ad14d1099add12405661379d2811ed9c2bc585850039341de8acd66df97f235 |
+| CURRENT_LEFT_WRIST_RAW.png | e0541d9164b067ad33ccb3877144f2be01def8144e488940c110e54d3467dd97 |
+| CURRENT_RIGHT_WRIST_RAW.png | 84d0ab94446810f1b7e0d5f9ba7e4b0f81d4a401fdc947984af0e5246b7a30fa |
+| initial_depth.npz | 3981e8732b47746fdddd5ebd68613b2eee931c81566520929602198e18b6bcd1 |
+| manifest.json | 3fafb6ff98b0fff1a3d2cd8427682bc3b27ff524a7b26f455bdd2799374c318c |
