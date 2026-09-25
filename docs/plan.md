@@ -10,7 +10,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 16:54（北京时间）：H74唯一原生复验运行中（Codex）
+
+- 源4781860399a25d67693e0d6b754cf28a5b696ba5/digest86702d8a…bb0c；双端132 CPU/独审/依赖与资源过，唯一launch UTC08:53:53.496210，supervisor3597389。新h74_graph_lifecycle_v1 run/runtime已创建，实际worker/初始化正在核。
+- 原一次1200s＋30清理/24gate/1536controls/0模型训练预算；GPU0队友3564916保持，不热改或重提。此前只证明一条安全hold的4ticks，真实三路时间与全动作仍待，不称修复成功或SR提升。
+
 ### 2026-09-25 16:49（北京时间）：H74生命周期修复与新单次复验准备（Codex）
+
+16:54真实预检过：robo clean4781860/132 CPU2.024s、原24＋3同步安装依赖/资产/资源均过，digest86702d8af9df0fb93eadfdc4af950da9b5997d3c68c8a76bfdab77195bc1bb0c；新run/runtime不存在，队友GPU0/3564916保留。正在提交唯一H74，真实启动回执待，不重复提交。
+
+16:53源已固定并push：4781860399a25d67693e0d6b754cf28a5b696ba5。正从Git创建独立robo graph_lifecycle_4781860并执行132同源CPU/依赖/资源预检，尚0launch；原H73与队友源码不动。
 
 16:52最终独审/CPU闭合：独立46/46；父132邻接0.940s、全semantic726/721pass5skip28.388s、diff过。H73归档聚合独审重算一致。准备固定Git并在robo新worktree做依赖/资源及同源测试，当前0launch；仅放行预登记一次native复验，非actor/SR通过。
 

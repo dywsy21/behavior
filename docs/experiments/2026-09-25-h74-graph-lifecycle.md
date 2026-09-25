@@ -20,3 +20,5 @@
 安装依据：OmniGibson simulator.py SHA d800c2832f24962c440c4781ebfdb4ea78c74aac37d2c74ee7894ae430f1e2a9；Replicator1.12.27 annotators/orchestrator沿H73三源pin。[同版本官方API](https://docs.omniverse.nvidia.com/kit/docs/omni_replicator/1.12.27/source/extensions/omni.replicator.core/docs/API.html)。无共享SDK修改。
 
 16:52本地最终回归/独审：132邻接0.940s、完整semantic726/721pass5skip28.388s，独立46/46过，H73归档19件/SHA独立重算一致。仅放行新固定源下预登记一次原生复验；实际ReferenceTime时钟域和graph副作用仍待，未称任何SR/新训练收益。准备Git固定与robo同源预检，0launch。
+
+16:54真实唯一启动：固定4781860399a25d67693e0d6b754cf28a5b696ba5，新Git worktree graph_lifecycle_4781860；robo132 CPU2.024s/24＋3安装源/资产/资源门全过，digest86702d8af9df0fb93eadfdc4af950da9b5997d3c68c8a76bfdab77195bc1bb0c。launch UTC08:53:53.496210/监管3597389，run/runtime已建；worker和实际初始化待核，原0模型训练/前缀，GPU0队友3564916保留。源冻结，不重提或热改。
