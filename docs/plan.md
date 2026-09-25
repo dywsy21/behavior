@@ -10,7 +10,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 14:12（北京时间）：H69唯一完整场景gate已提交（Codex）
+
+14:14实际运行核验：监管`running`、worker3564992；约77.45s记录`loading_scene`，1 app/1原startup、PT已在scene前应用且实际GPU3设置过，原720/480三相机配置过、0共享安装写入、0完成reset/动作/模型。主自有852MiB，辅助240/200/200MiB；GPU0新队友3564916/12462MiB正常共存。无failure；继续原run，不改源/预算。
+
+- 固定源`5e4ce75623c9b658977a14ad0c6dfb5f6ebe9abb`，robo双端105邻接/独审/23安装依赖/资源门过；唯一launch UTC06:11:57.224739，supervisor3564979。run `robodojo_agentic_20260925/h69_native_gate_v1`、runtime同stem已创建；真实child/初始化状态正在核，不重复提交。
+- 原一次24decision/1536control/动作1200s、总2400s＋30清理/主GPU3≤24GiB/辅助SID合计512MiB/全卡8GiB余量保持；0actor/VLM/训练/专家或旧policy前缀。提交时四卡均空，先前GPU0队友进程又自然退出，没有干预。基础gate不是press验收或完整任务SR，goal仍未完成；微调视觉对照仍待。
+
 ### 2026-09-25 13:46（北京时间）：H69完整场景基础gate准备（Codex）
+
+14:12启动前通过：新运行源已push并在robo创建clean `git_worktrees/native_full_5e4ce75`/`5e4ce75623c9b658977a14ad0c6dfb5f6ebe9abb`；105 CPU过2.496s、23依赖/资产/资源/空间门过，GPU0队友3563718保留，1/2/3空。H69 run/runtime不存在，现提交唯一launch；实际监管回执待，不重复提交。
 
 14:10最后资源delta审结：105邻接CPU过1.294s、独立18目标及diff过，无剩余实质阻塞；own SID按卡合计、退出无残留、空session不给旧数字PGID发信号均闭合。准备固定新的运行commit，原d45c487仅CPU预检、0launch；原一次2400s/24decision预算不变。
 

@@ -29,3 +29,5 @@
 14:08明确“我们”的归属是Popen创建的隔离SID及其所有PID，而不只是leader：按每卡合计受主24GiB/辅助512MiB限制，退出后带原SID拒残留。清理枚举这个SID的所有PGID，处理leader已退出和新子组；不对外部SID发信号。独审反例已补，104邻接CPU过1.290s，最终delta独审待；0launch。
 
 14:10最终delta闭合：空session不发旧数字PGID信号的反例加入后，105邻接过1.294s，独立18目标及diff过、无剩余实质阻塞。新运行源待固定；原d45c487仅CPU预检，0物理启动，预算不追加。
+
+14:14真实运行：源码`5e4ce75623c9b658977a14ad0c6dfb5f6ebe9abb`、双端105（robo2.496s）/23依赖过；唯一launch UTC06:11:57.224739，supervisor3564979/worker3564992。77.45s监管running/原生loading_scene，1 app/原startup、PT before-scene、GPU3实际配置及720/480相机配置已过，无failure；还没有完成reset/真实gate动作或RGB-D验收。主自有852MiB、辅助240/200/200，GPU0队友3564916/12462MiB共存。路径/原预算保持。
