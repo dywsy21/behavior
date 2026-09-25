@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 15:24北京时间H71归档闭合：** 全527件208990160B在`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h71_native_gate_bundle_v1`，排序path/bytes/SHA256清单的规范JSON聚合`06d00843c1db781e5ec041ff6c7b12cf23bfd84d9a85688babbafd47f71eb3c9`双端一致。包括完整视频/标定/逐动作RGB-D；原远端源/run/runtime仍保留，自有GPU已释放，不重启旧run。
+
+**2026-09-25 15:20北京时间H71终态：** supervisor3578340/worker3578347均已退出，732.701s/exit0/监管failed；AA初始化过但底盘视觉位移门失败。自有GPU全释放、队友3564916/12548MiB保持。原source/run/runtime保留；完整run将取回`artifacts/agentic-vlm-goal-20260918/h71_native_gate_bundle_v1`，已有h71_initial_preview_v1只有5件已核SHA，不混称完整归档。
+
 **2026-09-25 15:06北京时间H71启动：** 固定aa_prerequisite_0189148源；唯一launch UTC07:05:54.900657、supervisor3578340，run `/mnt/nvme_tmp/robodojo_agentic_20260925/h71_aa_prerequisite_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h71_aa_prerequisite_v1`已建。实际child/初始化待核，1200s＋30清理；原所有源/run/cache和队友任务保留。
 
 **2026-09-25 15:06北京时间H71准备：** Git新clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/aa_prerequisite_0189148` 固定0189148d7a77cb86420925f3e21f8a485ffca3f0，113 CPU/24安装依赖/资源门通过；H71 run/runtime不存在，正在提交唯一launch，尚未把提交当运行成功。GPU0队友3564916保留，其余空；原H69/H70目录保留。

@@ -39,3 +39,13 @@ RGB形状分别720²/480²/480²，非零像素比例均1；深度三个float32�
 | CURRENT_RIGHT_WRIST_RAW.png | 84d0ab94446810f1b7e0d5f9ba7e4b0f81d4a401fdc947984af0e5246b7a30fa |
 | initial_depth.npz | 3981e8732b47746fdddd5ebd68613b2eee931c81566520929602198e18b6bcd1 |
 | manifest.json | 3fafb6ff98b0fff1a3d2cd8427682bc3b27ff524a7b26f455bdd2799374c318c |
+
+## 终态：15:20–15:24北京时间
+
+原唯一run共732.7008375860751s，worker退出0，supervisor严格failed。12决策/232controls（末1安全保持），10个TARGET_REACHED、decision09躯干上被预检拒绝/0执行，decision11底盘后退BASE_TRACKING_FAILED。因此更正早期口头“前11动作通过”：不是11次实际执行成功。reset2/load138一次及最终renderer验证均完成，4设置通知仅同值spp/totalSpp，AA0与limitedOps=false保持；本票修复已实际越过旧失败点，但完整控制gate未通过。
+
+底盘目标-60mm，速度积分raw=-57.2719mm（不能当真值），RGB-D整段=-30.9136mm、29.0864mm残差触发原12mm门；0模型/训练/专家或旧policy前缀，不是完整SR回合。监管/worker均已退出，自有显存全部释放，GPU0队友3564916/12548MiB保持。
+
+全包本地`artifacts/agentic-vlm-goal-20260918/h71_native_gate_bundle_v1`，527件208990160B。双端将所有相对path/bytes/sha256按路径排序、JSON sort_keys=True/separators=(',',':')所得聚合SHA `06d00843c1db781e5ec041ff6c7b12cf23bfd84d9a85688babbafd47f71eb3c9`相同，逐文件身份被全量核验。关键SHA：result `e3f7550f8044d13bbc400d1046336aebf3d4a972422d10ab6bd93e6bf50fc41f`；supervisor `b590d9b1bec88ad9c801edd6951a66e69ad99ed713fa3016a08fbf5dd355cb1a`；视频 `d4637364e89af9382f11abb431eecab0dadfdbeea1ab7445be3b36ddf962b373`；动作011链 `769a169a5969429d4ba71854328675ef6e35b89b550f473e14c633505b897180`。
+
+已验证的采样线索：control219与225的head深度逐bit相同（raw depth SHA `d0b9bc05f9d3071ac25081e7f1ca5cb3a0b9f045a0a207fb92a05bfb363a26f2`），RGB MAE0.0402469/255；中段估计1.34微米、560inliers，前段-5.8368mm/后段-25.0781mm。receipt虽然均写4render屏障且snapshot48→49，这不是原生渲染帧时间戳。不能只凭新snapshot/非同RGB噪声宣称fresh，也不能据非零命令宣称真实身体必然位移。下一只读检查SDK帧更新/时钟并CPU重放；0新launch、不降低位移门。
