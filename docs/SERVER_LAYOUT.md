@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 18:05北京时间全包核验：** H75本地h75_render_batch_bundle_v1全1011件353971986B，聚合7bacff5c207b6d150efad739ac9430c1bd47b1d4086e216ad8348964ffc778f6双端同；首次180s截断的depth残片保存在h75_interrupted_transfer_v1，补齐后不混入全包。H76本地h76_raw_review_bundle_v1全111件23028615B，聚合48f78c51d3550b9cba5dfca62cd1af6798693093e1694dca88786ca3a9ebfa48双端同；人审拼图另放h76_human_sheets_v1（只供人看，非模型输入）。H77仅登记，远端新run/source尚未创建。
+
+**2026-09-25 18:01北京时间H75/H76终态：** H75原3603301/3603308退出0/1038.626s，24动作普通gate通过，自有GPU释放；原source/run/runtime保留，本地h75_render_batch_bundle_v1正在下载不可当验全。H76原CPU采集exit0/real7.09s，36态108图已在本地`artifacts/agentic-vlm-goal-20260918/h76_raw_review_bundle_v1`，22928169B图像；training_eligible全false，图审/双端聚合待，原远端source/run保留。GPU0队友3564916不动。
+
 **2026-09-25 17:54北京时间H76候选提取提交：** Git独立clean `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/visual_review_71a050d`固定71a050db68bba7b92acc6baff524407eef68abd7。纯CPU48–49、270s外限，新run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h76_raw_review_v1`，旁侧`h76_raw_review_v1.stdout.log`含time/exit上下文；完整108图及人工审查尚待，禁止按目录存在当数据发布。0GPU/新训练，H75独立源/所有旧产物保持。
 
 **2026-09-25 17:36北京时间H75启动：** Git clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/render_batch_c54ade1`固定c54ade102f6675e00e03649cb71b2ccfd182dbcd；149 CPU3.019s/安装源/资源门过，唯一launch UTC09:36:06.136403/supervisor3603301。run `/mnt/nvme_tmp/robodojo_agentic_20260925/h75_render_batch_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h75_render_batch_v1`已建，原1200s＋30清理/0模型训练。实际worker/初始化待，源冻结，不重提；旧产物及队友3564916保留。

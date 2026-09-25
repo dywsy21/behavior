@@ -10,6 +10,22 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 18:05（北京时间）：H75/H76完整归档，H77第二姿态门准备（Codex）
+
+18:11 H75终态独审/哈希/冻结validator回放全过，底盘back−55.93mm/forward＋56.25mm、yaw±0.121rad有三路/RAW实证；仍0SR。H77父32目标/738全量（733pass5skip）与独立8项过，只待固定Git/robo新worktree预检后唯一启动。
+
+18:10 H76本人图审落盘：36条三视角逐项记录、4原图复查，保守P/N/U只供有限视觉存在性实验；不批准动作BC/稳定抓持/任务完成/上线。绑定原manifest916ecc58…b19a7，原采集仍不可训练。H77启动器32目标/邻接CPU0.386s过、完整semantic/独审进行，未launch。
+
+- H75全1011件353971986B聚合7bacff5c…78f6双端一致；首次下载180s截断，保留唯一depth.npz残片于h75_interrupted_transfer_v1，仅补136缺失/不全文件后验全。独审正在逐动作/位移检查。精确更正：24检查中torso up安全预检拒绝零执行，其余19 TARGET_REACHED＋4夹爪命令完成；不是24项均执行到位，普通门仍全部通过。
+- H76全111件23028615B聚合48f78c51…fa48双端同；本人已逐格看完108张（三视角/36状态），另原图复查3张。发现task3初始两盘同类目标，以及末段盘背遮挡食物，不能用演示进度/单帧偷标food-supported或成功；逐项审查记录准备中，全部仍不可训练。
+- H77只换task3 TRAIN242、保持H75完整harness digest/所有原门，预登记一次1200s/24动作/1536controls/0模型训练。新实验启动器不改worker，实现及独审中，尚未launch。证据/预算见H77文档。
+
+### 2026-09-25 18:01（北京时间）：H75普通动作门真实通过，H76原图提取完成（Codex）
+
+- H75固定c54ade1唯一run完整结束1038.626s/exit0/监管completed：24决策、440控制/1760真实physics ticks、88逐产品同步capture/read，原底盘及其余动作门通过，0 I/O失败；不是完整任务SR。自有进程/显存已释放，队友3564916保留。全包正在取回h75_render_batch_bundle_v1，独立终态复核待，不以部分下载当归档完成。
+- H76固定71a050d一次提取exit0：36态/108原图（720×720/480×480）、22928169B，程序计6.962s/外层real7.09s；精确来源/frame/SHA/分组校验过，training_eligible仍全false。已取回h76_raw_review_bundle_v1，接下来本人检查所有图及记录，未发布标签或新训。
+- Git clean fetch/pull均up to date。下一只登记同一harness实现的task3独立基础gate，再决定actor；视觉微调必须先完成新样本审查与匹配输入输出协议，不沿用旧39态的历史捷径标签。
+
 ### 2026-09-25 17:54（北京时间）：H76原图审查候选唯一提取提交（Codex）
 
 - 固定71a050db68bba7b92acc6baff524407eef68abd7，robo独立visual_review_71a050d；同源10 CPU0.350s、真实5个episode meta SHA/隔离区/36预选frame/12实例分组及依赖过（av14.2.0/pyarrow22.0.0/Pillow10.2.0）。原0/中间/90%帧全部不在quarantine，无替换。
