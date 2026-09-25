@@ -3,6 +3,7 @@ import math
 import time
 import copy
 from dataclasses import asdict, replace
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -103,6 +104,9 @@ class GroundedHarness(TaskHarness):
     def observe(self,evidence,state,geometry=None,measured_progress=None):
         self.last_gripper=np.asarray(state.gripper,dtype=float).copy()
         veto=target_self_veto_reason(self.grounding)
+        if (self.goal.kind=="press" and "press_reference" in self.grounding and
+                self.grounding["press_reference"].get("valid") is not True):
+            veto="PRESS_REFERENCE_UNAVAILABLE"
         self.target_geometry_veto=None
         if veto:
             # Preserve the exact model claim for audit, but never use a robot
@@ -324,8 +328,15 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False,odometry_match_refinement=False,near_contact_review=False):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False,odometry_match_refinement=False,near_contact_review=False,press_finger_surfaces=None):
         self.model,self.servo,self.harness=model,servo,harness
+        from .press_reference import FingerSurfaceAsset
+        if press_finger_surfaces is not None and not isinstance(press_finger_surfaces, FingerSurfaceAsset):
+            raise ValueError("Compiled robot finger asset required")
+        self.press_asset=press_finger_surfaces
+        self.press_reference=None
+        self.press_reference_key=None
+        self.press_snapshot=None
         if type(near_contact_review) is not bool or (near_contact_review and not visual_odometry):
             raise ValueError("Contact review requires explicit measured visual motion")
         self.near_contact_review=near_contact_review
@@ -407,6 +418,109 @@ class GroundedController:
         self.pending_motion=None
         return receipt
 
+    @property
+    def uses_press_surface(self):
+        return self.press_asset is not None and self.harness.goal.kind=="press"
+
+    def _observation_centers(self,state):
+        centers=self.model.grasp_centers(state.q)
+        if not self.uses_press_surface:return centers
+        manager=self.harness;arm=manager.goal.hand
+        key=(manager.index,manager.goal.kind,manager.goal.target,arm)
+        self.press_snapshot={"q":state.q.copy(),"gripper":state.gripper.copy(),
+                             "fingers":copy.deepcopy(state.finger_qpos),"goal_key":key}
+        if key!=self.press_reference_key:
+            self.press_reference=None;self.press_reference_key=key
+        # No placeholder closing centre may become a press metric.
+        for active in manager.arms:centers[active]=None
+        row={"valid":False,"blocked":False,"reason":"CURRENT_TARGET_UNAVAILABLE"}
+        try:
+            if arm not in ("left","right"):raise ValueError("Single free press hand required")
+            if (manager.held[arm] is not None or manager.hold_verified[arm] or manager.pending_grasp[arm]
+                    or manager.possible_contact_after_close[arm]):
+                raise ValueError("Press hand is held or possibly loaded")
+            self.press_asset.context(self.model,state.q,state.finger_qpos)
+            if self.press_reference is None and self.target.get("valid"):
+                self.press_reference=self.press_asset.bind(self.model,state.q,state.finger_qpos,
+                    arm=arm,goal_key=key,target_base=self.target["point_base_m"])
+                if self.press_reference is None:raise ValueError("No exposed inset finger patch for current target")
+            if self.press_reference is not None and self.target.get("valid"):
+                row={**self.press_asset.resolve(self.press_reference,self.model,state.q,state.finger_qpos,
+                     target_base=self.target["point_base_m"]),
+                     "valid":True,"blocked":False}
+                centers[arm]=np.asarray(row["point_base_m"])
+        except ValueError as error:
+            row={"valid":False,"blocked":True,"reason":str(error),"physical_contact_evidence":False}
+            self.target={**self.target,"valid":False,"reason":"PRESS_REFERENCE_UNAVAILABLE"}
+        self.target["press_reference"]=row
+        return centers
+
+    def press_execution_check(self,state,action):
+        """Recheck after VLM latency, on ALL selection routes; never move here."""
+        if not self.uses_press_surface or action==HOLD:
+            return {"eligible":True,"reason":"LEGACY_OR_HOLD"}
+        manager=self.harness;arm=manager.goal.hand
+        key=(manager.index,manager.goal.kind,manager.goal.target,arm)
+        snapshot=self.press_snapshot
+        reason=None
+        if snapshot is None or snapshot["goal_key"]!=key:
+            reason="PRESS_OBSERVATION_GOAL_CHANGED"
+        elif (np.max(np.abs(state.q-snapshot["q"]))>1e-5 or
+                np.max(np.abs(state.gripper-snapshot["gripper"]))>1e-6 or
+                state.finger_qpos is None or snapshot["fingers"] is None or
+                set(state.finger_qpos)!=set(snapshot["fingers"]) or
+                any(abs(state.finger_qpos[n]-snapshot["fingers"][n])>1e-6 for n in state.finger_qpos)):
+            reason="PRESS_OBSERVATION_ROBOT_CHANGED"
+        elif (arm not in ("left","right") or manager.held[arm] is not None or manager.hold_verified[arm]
+                or manager.pending_grasp[arm] or manager.possible_contact_after_close[arm]):
+            reason="PRESS_HAND_POSSIBLY_LOADED"
+        elif self.target.get("press_reference",{}).get("blocked"):
+            reason="PRESS_REFERENCE_UNAVAILABLE"
+        elif (self.press_reference is None or not self.target.get("valid")) and manager.stage not in ("SEARCH","RECOVER"):
+            reason="PRESS_REFERENCE_NOT_BOUND"
+        elif self.press_reference is not None and self.target.get("valid"):
+            if self.press_reference.goal_key!=key:reason="PRESS_REFERENCE_GOAL_CHANGED"
+            else:
+                try:self.press_asset.resolve(self.press_reference,self.model,state.q,state.finger_qpos,
+                      target_base=self.target["point_base_m"])
+                except ValueError:reason="PRESS_REFERENCE_CHANGED"
+        return {"eligible":reason is None,"reason":reason or "SAME_OBSERVATION_PRESS_REFERENCE",
+                "reference_id":self.press_reference.record()["reference_id"] if self.press_reference else None,
+                "not_contact_or_environment_safety_evidence":True}
+
+    def _distance(self):
+        return self.target.get("distance_to_active_reference_m",self.target.get("distance_to_active_closing_center_m"))
+
+    def press_trial_check(self,state,action,trial,deadline=None):
+        """Validate fixed-face geometry, not task success or full swept safety."""
+        from .wall_budget import require_time
+        require_time(deadline)
+        current=self.press_execution_check(state,action)
+        if not current["eligible"] or not self.uses_press_surface or action==HOLD:return current
+        if not self.target.get("valid"):
+            return {**current,"reason":"SEARCH_WITHOUT_POINT_GUIDANCE"}
+        if action.move in ("open","close"):
+            return {"eligible":False,"reason":"PRESS_FUTURE_APERTURE_UNMODELED"}
+        plan=trial.joint_plan
+        if plan is None and action.part!="base":
+            return {"eligible":False,"reason":"PRESS_REAL_JOINT_PLAN_REQUIRED"}
+        samples=[trial]
+        if plan is not None:
+            # The actual finite servo plan plus segment midpoints, not a
+            # Cartesian extrapolation. This is a sampled check, not a proof
+            # about every intermediate continuous configuration.
+            samples=[];previous=state.q
+            for q in plan:
+                for sample in ((previous+q)/2,q):
+                    samples.append(SimpleNamespace(joint_plan=np.asarray([sample])))
+                previous=q
+        for index,sample in enumerate(samples):
+            require_time(deadline)
+            if self._expected_distances(action,state,sample) is None:
+                return {"eligible":False,"reason":"PRESS_PLANNED_FACE_OR_CHANNEL_INVALID","failed_sample":index}
+        return {"eligible":True,"reason":"PRESS_SAME_FACE_CHECKED","checked_poses":len(samples),
+                "base_endpoint_only":plan is None,"not_continuous_sweep_or_contact_evidence":True}
+
     def observe(self,evidence,state,depths,depth_receipt,images=None,self_geometry=None,contact_review_receipt=None):
         manager=self.harness
         self.goal_changed=False
@@ -432,7 +546,7 @@ class GroundedController:
                 self.target=apply_review(self.target,contact_review_receipt,manager,state,evidence,images)
             elif contact_review_receipt is not None:
                 raise ValueError("Contact review receipt supplied to disabled controller")
-        self.centers=self.model.grasp_centers(state.q)
+        self.centers=self._observation_centers(state)
         manager.grounding=self.target
         if target_self_veto_reason(self.target) is None:manager.resolve_reference(evidence)
         camera=self.model.spec["metadata"]["cameras"]["head"]
@@ -451,12 +565,13 @@ class GroundedController:
             points=self._points_for_arms()
             distances={a:float(np.linalg.norm(points[a]-self.centers[a])) for a in manager.arms}
             distance=max(distances.values())
-            self.target["distance_to_active_closing_center_m"]=distance
+            self.target["distance_to_active_reference_m" if self.uses_press_surface else "distance_to_active_closing_center_m"]=distance
             self.target["mean_contact_distance_m"]=float(np.mean(list(distances.values())))
             self.target["per_hand_distance_m"]=distances
-            self.target["target_minus_center_base_m"]={a:(points[a]-self.centers[a]).round(4).tolist() for a in manager.arms}
+            vector_name="target_minus_reference" if self.uses_press_surface else "target_minus_center"
+            self.target[vector_name+"_base_m"]={a:(points[a]-self.centers[a]).round(4).tolist() for a in manager.arms}
             if manager.contact_geometry:
-                self.target["target_minus_center_tool_m"]={a:(self.model.forward(state.q,a)[:3,:3].T@(points[a]-self.centers[a])).round(4).tolist() for a in manager.arms}
+                self.target[vector_name+"_tool_m"]={a:(self.model.forward(state.q,a)[:3,:3].T@(points[a]-self.centers[a])).round(4).tolist() for a in manager.arms}
         co_motion=True
         for arm in manager.arms:
             previous=self.previous
@@ -484,7 +599,7 @@ class GroundedController:
             if not context["valid"]:manager.stop_reason=manager.stop_reason or "NO_VERIFIED_HELD_ANCHOR"
         if self.approach_monitor is not None:
             points=self._points_for_arms() if self.target.get("valid") else {}
-            poses={a:self.model.forward(state.q,a).copy() for a in manager.arms}
+            poses={a:self.model.forward(state.q,a).copy() for a in manager.arms if self.centers[a] is not None}
             for arm in poses:poses[arm][:3,3]=self.centers[arm]
             manager.approach_progress=self.approach_monitor.observe(goal_index=manager.index,
                 kind=manager.goal.kind,stage=manager.stage,points=points,poses=poses,
@@ -544,7 +659,7 @@ class GroundedController:
         if self.replan_needed and manager.replans>=self.max_replans:
             manager.stop_reason="STRATEGY_REPLAN_BUDGET_EXHAUSTED"
             self.replan_needed=None
-        self.previous={"target":self.target,"hand_targets":self.hand_targets,"centers":{a:p.copy() for a,p in self.centers.items()},
+        self.previous={"target":self.target,"hand_targets":self.hand_targets,"centers":{a:None if p is None else p.copy() for a,p in self.centers.items()},
                        "distance":distance,"progress_distance":progress_distance,"goal_index":observed_goal_index}
 
     def apply_recovery(self,value):
@@ -597,6 +712,12 @@ class GroundedController:
                 for a in self.harness.arms}
 
     def _expected_distances(self, action, state, trial=None):
+        if self.uses_press_surface and (not self.target.get("valid") or self.press_reference is None or action.move in ("open","close")):
+            return None  # Current aperture is not a prediction of a gripper change.
+        if self.uses_press_surface and self.press_reference.goal_key!=(self.harness.index,self.harness.goal.kind,self.harness.goal.target,self.harness.goal.hand):
+            return None
+        if self.uses_press_surface and action.move in ROTATIONS and (trial is None or trial.joint_plan is None):
+            return None
         points=self._points_for_arms()
         centers=self.centers
         reference=None
@@ -628,6 +749,24 @@ class GroundedController:
                     c,s=math.cos(angle),math.sin(angle)
                     R=np.array([[c,-s,0],[s,c,0],[0,0,1]])
                     points={a:R@p for a,p in points.items()}
+        if self.uses_press_surface:
+            q=state.q;shift=np.zeros(3)
+            if trial is not None and trial.joint_plan is not None:
+                q=trial.joint_plan[-1]
+            elif action.part!="base" and action.move in TRANSLATIONS and action.part in (*self.harness.arms,"both"):
+                direction=self._translation_direction(action,state)
+                if direction is None:return None
+                shift=direction*action.amount(self.harness.carry)
+            # For rough direction ranking only, a rigid translation is
+            # equivalent to translating the target oppositely. Actual accepted
+            # arm proposals below MUST use their real joint plan.
+            try:
+                row=self.press_asset.resolve(self.press_reference,self.model,q,state.finger_qpos,
+                    target_base=points[self.press_reference.arm]-shift)
+            except ValueError:return None
+            centers={**centers,self.press_reference.arm:np.asarray(row["point_base_m"])+shift}
+        elif action.part=="base":
+            pass
         elif trial is not None and trial.joint_plan is not None:
             centers=self.model.grasp_centers(trial.joint_plan[-1])
         elif action.move in TRANSLATIONS and action.part in (*self.harness.arms,"both"):
@@ -660,6 +799,9 @@ class GroundedController:
         from .wall_budget import require_time
         require_time(deadline)
         if self.goal_changed:return (HOLD,)
+        if self.uses_press_surface and self.target.get("press_reference",{}).get("blocked"):
+            self.harness.candidate_receipt={"press_reference":self.target["press_reference"],"permitted":"HOLD_ONLY"}
+            return (HOLD,)
         veto=target_self_veto_reason(self.target)
         if veto:
             self.harness.candidate_receipt={"reason":veto,"requires_fresh_observation":True,
@@ -692,7 +834,7 @@ class GroundedController:
         rows=[]; proposed=[]; ranked=[]; rotation_trials=[]; translation_trials=[]
         if self.target.get("valid") and self.harness.stage not in ("GRASP","RELEASE","VERIFY_GRASP","VERIFY_PLACE","VERIFY_SUPPORT","VERIFY_EFFECT"):
             ranked=[]
-            before=self.target.get("mean_contact_distance_m",self.target["distance_to_active_closing_center_m"])
+            before=self.target.get("mean_contact_distance_m",self._distance())
             for action in palette:
                 if action.move in TRANSLATIONS and action.part in (*self.harness.arms,"both"):
                     distances=self._expected_distances(action,state)
@@ -788,6 +930,10 @@ class GroundedController:
                 trial=SafeServo(self.model,state,self.servo.grips.copy(),self.servo.limits)
                 ok=trial.begin(action,state,self.harness.carry)
                 reason="KINEMATIC_PATH_FEASIBLE" if ok else trial.status
+                if ok and self.uses_press_surface:
+                    press_check=self.press_trial_check(state,action,trial,deadline)
+                    ok=press_check["eligible"]
+                    if not ok:reason=press_check["reason"]
             require_time(deadline)
             row={"action":asdict(action),"accepted":bool(ok),"reason":reason}
             if ok:
@@ -800,7 +946,7 @@ class GroundedController:
                     if distances is not None:
                         row["predicted_target_distance_m"]=round(max(distances.values()),5)
                         row["predicted_per_hand_distance_m"]={a:round(d,5) for a,d in distances.items()}
-                        before=self.target.get("mean_contact_distance_m",self.target["distance_to_active_closing_center_m"])
+                        before=self.target.get("mean_contact_distance_m",self._distance())
                         row["predicted_distance_gain_m"]=round(before-float(np.mean(list(distances.values()))),5)
                         row["gain_objective"]="mean_active_contact_distance; stage gates use maximum"
                 if (translation_mode and action.part==self.harness.goal.hand and action.move in TRANSLATIONS
@@ -827,7 +973,7 @@ class GroundedController:
                 if a.part!=self.harness.goal.hand or a.move not in TRANSLATIONS or a.scale not in ("fine","coarse"):continue
                 distances=self._expected_distances(a,state)
                 if distances is None:continue
-                gain=self.target["distance_to_active_closing_center_m"]-float(np.mean(list(distances.values())))
+                gain=self._distance()-float(np.mean(list(distances.values())))
                 if gain>1e-6:moderate.append((a,row,gain))
             # Only a currently observed workspace blockage warrants extra body
             # preflights. 2mm progress is retained but is not a moderate reach.
@@ -950,7 +1096,7 @@ class GroundedController:
                         distances=self._expected_distances(action,state,trial)
                         if distances is not None:
                             row["predicted_per_hand_distance_m"]={a:round(d,5) for a,d in distances.items()}
-                            row["predicted_distance_gain_m"]=round(self.target["distance_to_active_closing_center_m"]-max(distances.values()),5)
+                            row["predicted_distance_gain_m"]=round(self._distance()-max(distances.values()),5)
                     rows.append(row)
                 near_pose["additional_preflights"]=near_additional
         navigation=None

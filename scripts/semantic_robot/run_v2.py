@@ -102,6 +102,7 @@ def main():
     p.add_argument("--contact-geometry",action="store_true",help="Experimental finger guides/tool translations; not mixed into the feedback-only comparison")
     p.add_argument("--finger-kinematics",action="store_true",
                    help="Record and compare named finger FK; does not enable a pressing policy")
+    p.add_argument("--press-finger-surfaces",help="Experimental pinned H64 asset: fixed exposed finger reference for PRESS; requires named finger FK and robot geometry guards")
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
     p.add_argument("--robot-geometry-guards", action="store_true",
                    help="Opt-in actual robot depth self-exclusion and fully-open hand/body collision envelopes")
@@ -161,6 +162,13 @@ def main():
     if args.grasp_motion and not args.visual_odometry:raise ValueError("Grasp registration requires measured RGB-D body motion")
     if args.robot_geometry_guards and not args.grasp_motion:
         raise ValueError("Robot geometry guards require fresh grounded robot geometry")
+    if args.press_finger_surfaces and not (grounded and args.finger_kinematics and args.robot_geometry_guards):
+        raise ValueError("Press surfaces require grounded named finger FK and current robot geometry guards")
+    press_asset=None
+    if args.press_finger_surfaces:
+        from semantic_robot.v2.press_reference import load_pinned_asset
+        press_asset=load_pinned_asset(args.press_finger_surfaces)
+    press_asset_sha=press_asset.asset_sha256 if press_asset is not None else None
     if args.gripper_completion_v1 and not args.robot_geometry_guards:
         raise ValueError("Gripper command completion requires the reviewed robot geometry guards")
     if args.carry_duration_v1 and not (args.robot_geometry_guards and args.gripper_completion_v1):
@@ -211,6 +219,7 @@ def main():
                 g.get("visual_odometry",False)==args.visual_odometry and
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("finger_kinematics",False)==args.finger_kinematics and
+                g.get("press_finger_asset_sha256")==press_asset_sha and
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("robot_geometry_guards",False)==args.robot_geometry_guards and
                 g.get("gripper_completion_v1",False)==args.gripper_completion_v1 and
@@ -274,6 +283,7 @@ def main():
                 "near_contact_review":args.near_contact_review,
                 "appearance_memory":args.appearance_memory,
                 "visual_odometry":args.visual_odometry,
+                "press_finger_asset_sha256":press_asset_sha,
                 "odometry_substep_controls":args.odometry_substep_controls,
                 "odometry_self_exclusion":args.odometry_self_exclusion,
                 "odometry_match_refinement":args.odometry_match_refinement,
@@ -430,6 +440,12 @@ def main():
                 return terminal
 
             check_fk("reset")
+            if press_asset is not None:
+                press_state=state_now()
+                press_calibration,_=press_asset.context(model,press_state.q,press_state.finger_qpos)
+                write(out/"press_asset_calibration_check.json",{
+                    "asset_sha256":press_asset_sha,"active_calibration_sha256":press_calibration,
+                    "named_links_and_joints_match":True,"not_cooked_or_contact_evidence":True})
             phase="EXPERT_PREFIX"
             prefix = window.frozen_window().prefix_actions[:args.prefix]
             for i, action in enumerate(prefix):
@@ -496,7 +512,8 @@ def main():
                     odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress,persistent_grasp_tracks=args.persistent_grasp_tracks,
                     spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery,
                     odometry_self_exclusion=args.odometry_self_exclusion,
-                    odometry_match_refinement=args.odometry_match_refinement,near_contact_review=args.near_contact_review)
+                    odometry_match_refinement=args.odometry_match_refinement,near_contact_review=args.near_contact_review,
+                    press_finger_surfaces=press_asset)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -670,6 +687,14 @@ def main():
                 if stop_before_motion(deadline,controls,row,decisions,manager):break
                 wall = time.perf_counter()
                 state = state_now()  # recheck actual joints after model latency
+                if controller and controller.uses_press_surface:
+                    press_check=controller.press_execution_check(state,action)
+                    write(directory/"press_reference_execution_check.json",press_check)
+                    if not press_check["eligible"]:
+                        manager.stop_reason=press_check["reason"]
+                        row.update(accepted_before_motion=False,stop_reason=press_check["reason"])
+                        decisions.append(row)
+                        break
                 if args.workspace_posture and manager and action.part=="torso" and action.scale=="fine":
                     from semantic_robot.v2.workspace_posture import execution_check
                     workspace_check=execution_check(manager,state,servo.grips,model,servo.limits,action)
@@ -682,6 +707,15 @@ def main():
                         break
                 carry=(inspection_carry(manager,action) if args.multicamera_inspection and manager else bool(manager and manager.carry))
                 accepted = servo.begin(action,state,carry=carry)
+                if accepted and controller and controller.uses_press_surface:
+                    press_plan_check=controller.press_trial_check(state,action,servo,deadline)
+                    write(directory/"press_reference_plan_check.json",press_plan_check)
+                    if not press_plan_check["eligible"]:
+                        servo.abort(press_plan_check["reason"])
+                        manager.stop_reason=press_plan_check["reason"]
+                        row.update(accepted_before_motion=False,stop_reason=press_plan_check["reason"])
+                        decisions.append(row)
+                        break
                 near_option=bool(args.near_pose_gap and manager and any(r.get("action")==asdict(action)
                     and r.get("near_pose_gap_option") is True for r in manager.candidate_receipt.get("tested",[])))
                 if accepted and near_option:
@@ -921,6 +955,7 @@ def main():
                       "visual_odometry":args.visual_odometry,
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"finger_kinematics":args.finger_kinematics,"grasp_motion":args.grasp_motion,
+                      "press_finger_asset_sha256":press_asset_sha,
                       "robot_geometry_guards":args.robot_geometry_guards,
                       "gripper_completion_v1":args.gripper_completion_v1,
                       "carry_duration_v1":args.carry_duration_v1,

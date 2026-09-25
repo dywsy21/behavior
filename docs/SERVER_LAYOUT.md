@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 12:06（北京时间）H64结果/后继源码：** 唯一真实导出使用干净`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/finger_collision_0f8321d`（0f8321d），结果`/mnt/nvme_tmp/robodojo_agentic_20260925/h64_finger_collision_asset_v1/result.json`、657333B、SHA `5f2cbf18b989eb22bc98665f48538c6cc306679d3be94ab4de46f2af7b4c6f04`；完整本地同名`artifacts/agentic-vlm-goal-20260918/h64_finger_collision_asset_v1/result.json`双端核同，人工图/数值在`inspection_v1/`。SDK9/9无skip、导出5.940s已退出，无GPU/SimulationApp/训练；11:34:50原四训练仍在。H65还只有本地主工作树未提交实现，未创建远端新版本。同步checkout的fetch仅main，后续须显式fetch实验分支再新建固定worktree，不热改旧源。
+
 **2026-09-25 11:26:09（北京时间）只读复核：** 四个xhz训练3294346–3294349仍在、各73644MiB，free7489/7489/7489/7488MiB；本轮无新服务器源码/环境/模型/仿真修改。更正下条10:51的本地H63状态：其独审缺口已于11:05修复，H63/H64已分别固定11dfe4b/0f8321d并push，但H64真实SDK/资产导出尚未运行，不能据此推定已部署。Z-01仍缺完整Recovery、未部署，工作目录不变。
 
 **2026-09-25 10:51:52北京时间只读复核：** xhz训练3294346–3294349仍在、各73644MiB，四卡free7489/7489/7489/7488MiB；无本轮新模型、仿真、训练或远端源码/环境修改。Z-01接口仍在本地独立`/home/wsy/behavior_worktrees/zetta-g05-20260924`及其Git分支，缺完整公开Recovery而未部署；H63未提交实现也仅在本地、两项独审阻塞未修，不可视为新服务器运行版本。
