@@ -22,3 +22,11 @@
 16:52本地最终回归/独审：132邻接0.940s、完整semantic726/721pass5skip28.388s，独立46/46过，H73归档19件/SHA独立重算一致。仅放行新固定源下预登记一次原生复验；实际ReferenceTime时钟域和graph副作用仍待，未称任何SR/新训练收益。准备Git固定与robo同源预检，0launch。
 
 16:54真实唯一启动：固定4781860399a25d67693e0d6b754cf28a5b696ba5，新Git worktree graph_lifecycle_4781860；robo132 CPU2.024s/24＋3安装源/资产/资源门全过，digest86702d8af9df0fb93eadfdc4af950da9b5997d3c68c8a76bfdab77195bc1bb0c。launch UTC08:53:53.496210/监管3597389，run/runtime已建；worker和实际初始化待核，原0模型训练/前缀，GPU0队友3564916保留。源冻结，不重提或热改。
+
+17:04终态failed/557.1601756205782s：reset2/load1和原native profile过；initialize、orchestrator调用、close已越过H73两种错误，native_io共4行（initialize、失败capture、成功安全hold、成功close）。首capture物理index33/time0.27500001434236765前后完全相同；timeline before/after均0.20000001043081284；三路原生ReferenceTime均132/30=4.4，故原严格相等门失败。0gate动作/模型调用/训练；hold实际index33→37，一次4ticks。
+
+监管正确报告failure.json的ReferenceTime错误，不再缺result掩盖。当前证据不能单凭三个不同数值判断“旧图”还是“不同参考时间域”，尤其不能强减4.125秒凑相等。下一核安装原生生成/调度/完成时间的关联，只允许真实render批次与冻结物理状态绑定；普通gate/SR尚未通过。原证据完整保留，归档/独审待。
+
+17:10归档闭合：本地h74_graph_lifecycle_bundle_v1共19件51920371B，规范path/bytes/SHA聚合`a87d40a474000ac0e15ecad63804202fa03f697ee345850a2045e7e4fe6357bd`双端一致。after_exit自有GPU均释放，队友GPU0/3564916保持。
+
+安装源补充：orchestrator.py:421–425从`/Orchestrator/OgnReadFabricTime`的fabricFrameTime Numerator/Denominator读取参考域；annotators_default.py:2218–2225的ReferenceTime模板输入是全局PostProcessDispatcher，render_product_idxs=()，并非每个相机独立完成计数。不能把三份相等4.4当独立三路新鲜性证据；下一需核真实RGB/depth产品绑定和同批完成，不能仅删physics相等门或减offset。旧H73设计对此假定已撤回。

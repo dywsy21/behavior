@@ -14,7 +14,7 @@ import traceback
 
 NAME = 'a100_full_v1'
 DEPENDENCY_FILES = (
-    'native_full_profile.py', 'launch_h69.py', 'launch_h70.py', 'launch_h71.py', 'launch_h73.py', 'launch_h74.py', 'probe_scene_compatible_cameras.py',
+    'native_full_profile.py', 'launch_h69.py', 'launch_h70.py', 'launch_h71.py', 'launch_h73.py', 'launch_h74.py', 'launch_h75.py', 'probe_scene_compatible_cameras.py',
     'probe_scene_preconfigured_cameras.py', 'probe_scene_without_viewer.py',
     'probe_scene_startup.py', 'probe_simulator_startup.py',
     'shared_og_startup.py', 'shared_pathtracing.py', 'shared_camera_config.py',
@@ -25,7 +25,7 @@ def checked_helpers():
     folder = Path(__file__).resolve().parent
     modules = {}
     for filename in DEPENDENCY_FILES:
-        if filename in ('native_full_profile.py', 'launch_h69.py', 'launch_h70.py', 'launch_h71.py', 'launch_h73.py', 'launch_h74.py'):
+        if filename in ('native_full_profile.py', 'launch_h69.py', 'launch_h70.py', 'launch_h71.py', 'launch_h73.py', 'launch_h74.py', 'launch_h75.py'):
             continue
         name = Path(filename).stem
         spec = importlib.util.find_spec(name)

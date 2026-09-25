@@ -42,7 +42,7 @@ class OnboardRGBD:
             self.sensors[view]=sensor
         self.snapshot_id=0
 
-    def read(self, model, *, render, synchronize=None):
+    def read(self, model, *, render, synchronize=None, verify_read=None):
         # Reset / teleports can leave annotator buffers at the PRE-reset pose.
         # Do not trust get_obs() alone. Render-only updates flush the same
         # asynchronous sensor pipeline used by the official light synchronizer.
@@ -50,13 +50,15 @@ class OnboardRGBD:
         if not callable(render):
             raise ValueError("Explicit current-frame render barrier required")
         if synchronize is None:
+            if verify_read is not None: raise ValueError('Read verifier without synchronization')
             for _ in range(4):render()
             time_receipt = None
         else:
-            if not callable(synchronize): raise ValueError('Callable native synchronization required')
+            if not callable(synchronize) or not callable(verify_read):
+                raise ValueError('Callable native synchronization and post-read verification required')
             time_receipt = synchronize()
             if (set(time_receipt) != set(self.sensors) or
-                    any(r.get('reference_time_verified') is not True or r.get('physics_ticks_in_capture') != 0
+                    any(r.get('render_batch_verified') is not True or r.get('physics_ticks_in_capture') != 0
                         for r in time_receipt.values())):
                 raise ValueError('Incomplete synchronized RGB-D receipt')
         self.snapshot_id+=1
@@ -84,6 +86,7 @@ class OnboardRGBD:
                            "same_sensor_current_render":True,"render_barrier_updates":4,
                            "snapshot_id":self.snapshot_id,"control_steps_in_capture":0}
             receipt[view]['render_barrier_updates'] = 4 if time_receipt is None else 1
-            receipt[view]['freshness_proof'] = 'legacy_fixed_updates_unverified' if time_receipt is None else 'native_reference_time'
+            receipt[view]['freshness_proof'] = 'legacy_fixed_updates_unverified' if time_receipt is None else 'native_render_batch_v2'
             if time_receipt is not None: receipt[view]['native_time'] = time_receipt[view]
+        if verify_read is not None: verify_read(receipt)
         return images,depths,receipt

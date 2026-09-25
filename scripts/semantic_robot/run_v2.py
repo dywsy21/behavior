@@ -363,6 +363,10 @@ def main():
                             "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
                 except BaseException as record_error:
                     secondary_error_report(f"Original failure {exc!r}; recording also failed {record_error!r}")
+                if native_io is not None:
+                    try:native_io.abandon_read_after_failure()
+                    except BaseException as cleanup_error:
+                        secondary_error_report(f"RGB-D failure cleanup also failed: {cleanup_error!r}")
                 # The opt-in path reserves one control slot for this stop. Save
                 # the first error BEFORE attempting cleanup; a secondary stop
                 # error must never replace the diagnostic that caused it.
@@ -422,7 +426,7 @@ def main():
                     return environment.observation()["images"],{},{}
                 native_before=kin.state()
                 q_before=native_before.q.copy()
-                sync_kwargs={"synchronize":native_io.synchronize} if native_io is not None else {}
+                sync_kwargs={"synchronize":native_io.synchronize,"verify_read":native_io.verify_read} if native_io is not None else {}
                 images,depths,receipt=onboard.read(model,render=og.sim.render,**sync_kwargs)
                 if native_io is not None:
                     latest_verified_image=(images,receipt['head']['native_time']['simulation_time'])
@@ -1062,7 +1066,8 @@ def main():
                 native_io.close()
                 io_trace.flush()
                 result['native_io']={'controls':native_io.controls,'attempts':native_io.attempts,
-                                     'captures':native_io.captures,'journal_sha256':sha(out/'native_io.jsonl')}
+                                     'captures':native_io.captures,'reads':native_io.reads,'primes':native_io.primes,
+                                     'journal_sha256':sha(out/'native_io.jsonl')}
             write(out/"result.json",result)
     except BaseException as exc:
         try:

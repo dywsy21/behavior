@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import numpy as np
+from render_batch_fixture import batch_fixture, camera_receipts
 from semantic_robot.v2.synchronous_io import (SynchronousIO, reference_seconds, attach_references,
     configured_adapter, graph_edit, PLAY_SIMULATIONS, VIEWS)
 
@@ -46,8 +47,17 @@ class SynchronousIOTests(unittest.TestCase):
         self.sim=FakeSim();self.rows=[];self.settings={PLAY_SIMULATIONS:True}
         self.api=SimpleNamespace(get=self.settings.get,set=lambda k,v:self.settings.__setitem__(k,v))
         self.refs={v:Mock(get_data=lambda:{'referenceTimeNumerator':120,'referenceTimeDenominator':120}) for v in VIEWS}
-        self.capture=Mock()
-        self.io=SynchronousIO(self.sim,self.refs,self.capture,self.api,lambda row:self.rows.append(copy.deepcopy(row)))
+        self.batch= batch_fixture(131)
+        self.capture=Mock(side_effect=self.advance_capture)
+        self.io=SynchronousIO(self.sim,self.refs,self.capture,self.api,lambda row:self.rows.append(copy.deepcopy(row)),
+                              batch_state=lambda:copy.deepcopy(self.batch))
+
+    def advance_capture(self,**kwargs):
+        self.batch=batch_fixture(self.batch['scheduled']['numerator']+1)
+
+    def finish(self,io=None):
+        io=io or self.io
+        receipt=io.synchronize();io.verify_read(camera_receipts(receipt));return receipt
 
     def test_physics_only_exact_step_even_when_render_requested(self):
         with self.io.control(render_requested=True):
@@ -78,24 +88,30 @@ class SynchronousIOTests(unittest.TestCase):
         self.assertTrue(self.sim.rendering);self.assertFalse(self.rows[-1]['completed'])
         self.assertEqual(self.rows[-1]['after']['physics_index'],124)
 
-    def test_matching_three_camera_times_and_zero_physics_capture(self):
-        def capture(**kwargs):self.assertFalse(self.settings[PLAY_SIMULATIONS])
+    def test_matching_render_batches_need_not_equal_physics_time(self):
+        def capture(**kwargs):
+            self.assertFalse(self.settings[PLAY_SIMULATIONS]);self.advance_capture()
         self.capture.side_effect=capture
-        receipt=self.io.synchronize()
-        self.capture.assert_called_once_with(delta_time=0.,pause_timeline=False,wait_for_render=True,rt_subframes=4)
+        receipt=self.finish()
+        self.assertEqual(self.capture.call_count,2)  # Exactly one discarded prime.
+        self.capture.assert_called_with(delta_time=0.,pause_timeline=False,wait_for_render=True,rt_subframes=4)
         self.assertEqual(set(receipt),VIEWS);self.assertEqual(self.sim.current_time_step_index,120)
         self.assertTrue(self.settings[PLAY_SIMULATIONS]);self.assertTrue(self.rows[-1]['completed'])
         # Repeated static-state captures are valid; no image-difference rule.
-        self.io.synchronize();self.assertEqual(self.io.captures,2)
+        self.finish();self.assertEqual(self.io.captures,2)
+        self.assertEqual((self.io.primes,self.io.reads,self.capture.call_count),(1,2,3))
 
     def test_one_stale_camera_rejects_all_and_preserves_evidence(self):
         self.io.render_time=Mock(side_effect=[12.,12.])
-        self.refs['right_wrist'].get_data=lambda:{'referenceTimeNumerator':119,'referenceTimeDenominator':120}
-        with self.assertRaisesRegex(RuntimeError,'ReferenceTime'):self.io.synchronize()
+        def capture(**kw):
+            self.advance_capture()
+            if self.io.primes:
+                self.batch['cameras']['right_wrist']['frame']['rationalTimeOfSimNumerator']-=1
+        self.capture.side_effect=capture
+        with self.assertRaisesRegex(ValueError,'mixed render-product'):self.io.synchronize()
         self.assertEqual(self.io.captures,0);self.assertTrue(self.settings[PLAY_SIMULATIONS])
-        self.assertAlmostEqual(self.rows[-1]['reference_seconds']['right_wrist'],119/120)
+        self.assertEqual(self.rows[-1]['batch']['cameras']['right_wrist']['frame']['rationalTimeOfSimNumerator'],132)
         self.assertEqual(self.rows[-1]['timeline_before'],12.)
-        self.assertEqual(self.rows[-1]['timeline_after'],12.)
 
     def test_capture_that_steps_physics_is_rejected(self):
         self.capture.side_effect=lambda **kwargs:self.sim.advance()
@@ -142,7 +158,7 @@ class SynchronousIOTests(unittest.TestCase):
         self.capture.side_effect=RuntimeError('PRIMARY_CAPTURE')
         with self.assertRaisesRegex(RuntimeError,'PRIMARY_CAPTURE'):self.io.synchronize()
         self.assertIn('restore failed',self.rows[-1]['restore_error'])
-        self.settings[PLAY_SIMULATIONS]=True;self.capture.side_effect=None
+        self.settings[PLAY_SIMULATIONS]=True;self.capture.side_effect=self.advance_capture
         with self.assertRaisesRegex(OSError,'restore failed'):self.io.synchronize()
         self.assertFalse(self.rows[-1]['completed'])
 
@@ -218,21 +234,24 @@ class SynchronousIOTests(unittest.TestCase):
             anno=Mock(attach=Mock(side_effect=check),detach=Mock(side_effect=check),
                       get_data=lambda:{'referenceTimeNumerator':120,'referenceTimeDenominator':120})
             annos.append(anno)
-        io=configured_adapter(self.sim,sensors,Mock(side_effect=annos),self.capture,self.api,self.rows.append)
+        io=configured_adapter(self.sim,sensors,Mock(side_effect=annos),self.capture,self.api,self.rows.append,
+                              batch_reader=lambda refs:copy.deepcopy(self.batch))
         return io,sensors,annos
 
     def test_real_product_paths_and_all_graph_lifecycles_have_non_nested_context(self):
         io,sensors,annos=self.configured()
-        self.capture.side_effect=lambda **kw:self.assertTrue(self.sim.editing)
-        io.synchronize()
+        def capture(**kw):
+            self.assertTrue(self.sim.editing);self.advance_capture()
+        self.capture.side_effect=capture
+        self.finish(io)
         # Cleanup must detach the captured original path, not a later sensor property.
         original=[sensor.render_product.path for sensor in sensors.values()]
         for sensor in sensors.values():sensor.render_product=SimpleNamespace(path='/wrong')
         io.close()
         for anno,path in zip(annos,original):
             anno.attach.assert_called_once_with([path]);anno.detach.assert_called_once_with([path])
-        self.assertEqual(self.sim.edits,['enter','exit']*3)
-        self.assertEqual([r['kind'] for r in self.rows],['initialize','capture','close'])
+        self.assertEqual(self.sim.edits,['enter','exit']*4)
+        self.assertEqual([r['kind'] for r in self.rows],['initialize','prime','capture','read','close'])
         self.assertTrue(all(r['completed'] and r['before']==r['after'] for r in self.rows))
 
     def test_missing_product_path_rejected_before_any_graph_edit(self):
@@ -291,12 +310,49 @@ class SynchronousIOTests(unittest.TestCase):
         def synchronize():
             result=self.io.synchronize();ready.append(True);return result
         render=Mock()
-        images,depths,receipt=adapter.read(model,render=render,synchronize=synchronize)
+        images,depths,receipt=adapter.read(model,render=render,synchronize=synchronize,verify_read=self.io.verify_read)
         render.assert_not_called()
         for v in VIEWS:
-            self.assertEqual(receipt[v]['freshness_proof'],'native_reference_time')
+            self.assertEqual(receipt[v]['freshness_proof'],'native_render_batch_v2')
             self.assertEqual(receipt[v]['native_time']['physics_index'],120)
             self.assertEqual(receipt[v]['render_barrier_updates'],1)
+
+    def test_torn_reads_or_physics_during_copy_fail_before_return(self):
+        for mode in ('render','physics','receipt','hash'):
+            self.setUp()
+            times=self.io.synchronize();receipts=camera_receipts(times)
+            if mode=='render':self.advance_capture()
+            if mode=='physics':self.sim.advance()
+            if mode=='receipt':receipts['head']['native_time']['capture']=999
+            if mode=='hash':receipts['head']['rgb_sha256']='bad'
+            with self.subTest(mode=mode),self.assertRaises((RuntimeError,ValueError)):
+                self.io.verify_read(receipts)
+            self.assertFalse(self.rows[-1]['completed']);self.assertEqual(self.io.reads,0)
+
+    def test_pending_read_blocks_control_or_another_capture(self):
+        self.io.synchronize()
+        with self.assertRaisesRegex(RuntimeError,'Unverified'):
+            with self.io.control(render_requested=False):self.fail('must not step')
+        with self.assertRaisesRegex(RuntimeError,'not verified'):self.io.synchronize()
+        with self.assertRaisesRegex(RuntimeError,'normal path'):self.io.abandon_read_after_failure()
+        try:raise RuntimeError('PIXEL_COPY_FAILURE')
+        except RuntimeError:self.io.abandon_read_after_failure()
+        self.assertEqual(self.rows[-1]['kind'],'abandoned_read')
+        self.assertFalse(self.rows[-1]['completed'])
+        with self.io.control(render_requested=False):self.sim.advance()  # The one emergency hold remains possible.
+
+    def test_baseline_is_read_after_force_render_not_before(self):
+        self.io.primes=1
+        self.sim.render=lambda:self.advance_capture()
+        self.capture.side_effect=None  # A returned API call alone proves nothing.
+        with self.assertRaisesRegex(ValueError,'did not advance'):self.io.synchronize()
+
+    def test_first_prime_is_discarded_and_must_complete_at_zero_physics(self):
+        self.finish()
+        self.assertEqual([r['kind'] for r in self.rows],['prime','capture','read'])
+        self.assertTrue(self.rows[0]['discarded'])
+        self.assertEqual(self.rows[0]['before'],self.rows[0]['after'])
+        self.assertLess(self.rows[0]['batch']['scheduled']['numerator'],self.rows[1]['batch']['scheduled']['numerator'])
 
 
 if __name__=='__main__':unittest.main()

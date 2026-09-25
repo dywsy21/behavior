@@ -74,7 +74,7 @@ Codex重新按“能否从图直接给出这个label”而非“私有标签是�
 
 本轮只读追到具体调用：`native_teacher_collect.py:step` 使用render_on_step(True)，随后计数prefix/native control并调用`teacher_reader.read(prefix_count+controls)`；`LocalOutcome`虽称physics tick，实际传入的是逻辑control序号，12个settle也是12次env.step。H72的新PT分支已实证18次调用仅推进44/72预期physics ticks，并且RGB-D可滞后真实状态。这足以禁止把新PT分支照搬进旧采集器而不校验时钟，但**不能倒推此前不同renderer的全部TRAIN标签错误**。
 
-后继数据版本必须同时具备：每实际control的原生before/after clock；每3路图的同状态ReferenceTime；命令成功与物理/视觉结果分离；稳定窗口按真实simulation seconds和采样间隔解释，不把逻辑步数冒充物理tick。同一记录既有动作时钟也有相机时钟，错位或漏推进直接隔离，不用训练弥补。
+后继数据版本必须同时具备：每实际control的原生before/after clock；三路图的同状态渲染完成证据；命令成功与物理/视觉结果分离；稳定窗口按真实simulation seconds和采样间隔解释，不把逻辑步数冒充物理tick。同一记录既有动作时钟也有相机时钟，错位或漏推进直接隔离，不用训练弥补。17:30依据H74安装源更正：原措辞“每3路图ReferenceTime”不够，该annotator实际接全局信号且不同于physics时间域；H75正补逐产品帧标识与复制后同批检查，尚未真实验收。
 
 旧39条及旧120步权重保持原版本、原结论，不重标或伪装成新协议。新训练仍先解决可见监督与同历史负例：目标/部件可见性、相对位置、短时共同运动/滑落，遮挡=UNKNOWN；不让视觉模型猜不可见的稳定tick阈值。H73的I/O实跑是此前置工程验收，尚未构造/发布新数据或重训。
 

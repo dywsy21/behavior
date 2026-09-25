@@ -10,6 +10,26 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 17:20（北京时间）：H75原生逐产品批次检查准备（Codex）
+
+17:34补齐真实runner异常闭包“弃读→唯一hold→close”顺序回归；最终738项/733pass5skip27.723s、149邻接1.498s全过，无新实现改动。即将固定源并双端预检，0launch。
+
+17:33独审/回归闭合：父完整semantic737/732pass5skip27.865s、144邻接1.050s；独立38目标及diff过，H74全19件聚合独审重算一致。尚无native支持或SR结论；准备固定Git、新robo worktree和同源CPU/6同步源pin/资源预检，后才唯一启动。
+
+17:29本地实现/首回归：逐RP原生帧、实际两输入同dispatcher检查、一次prime弃帧、精确同批/前进、复制后复核与哈希、连续日志/监管已实现；62目标CPU0.594s/diff过，完整semantic与最终独审进行。审查指出的元数据中途变化反例已补全局＋逐RP重读；0远端新run/模型训练，真实SDK帧契约仍待。
+
+- 安装源确认ReferenceTime全局信号不能证明三路完成；已找到原生SdFrameIdentifier与逐产品PostProcessDispatch，准备绑定真实RGB/depth产品、同批完成/严格前进以及复制后再验。撤回physics=Fabric数值相等假定，不猜offset，不放宽原动作门。
+- H75预登记一次1200s/24动作1536controls、task0 TRAIN138零前缀、0模型训练，原GPU3/余量限制；先CPU/独审/固定Git与双端预检。当前0新launch，H74完整归档与队友保持。详见H75文档，微调仍不使用旧图/开发实例作新监督。
+- 已fetch团队远端，本分支0/0；自己的H74终态文档未提交故不pull，保留所有修改。
+
+### 2026-09-25 17:04（北京时间）：H74生命周期修复通过首捕获路径，时间匹配仍失败（Codex）
+
+17:10进一步安装源定位：orchestrator读取OgnReadFabricTime的fabricFrameTime，非SimulationContext计数；ReferenceTime默认模板直接连全局PostProcessDispatcher（render_product_idxs=()），三路相等不能当三个独立RP已完成。下一修复须绑定实际RGB/depth render-product的批次完成，不只是删相等检查。H74全19件51920371B聚合a87d40a4…357bd双端同/自有GPU释放，队友3564916保留。
+
+- 唯一4781860运行557.160s后failed，reset2/load1过；initialize零物理推进、首orchestrator调用和最终close均无旧USD/Texture错误，异常后唯一hold实际＋4ticks。0gate动作/模型训练，不能称普通gate或SR通过。
+- 三路ReferenceTime均132/30=4.4；同一capture physics33/0.2750000143、timeline0.2000000104前后完全未动。严格直接相等门失败，原始数值与根错误已正确保留/监管报告。这只证明三种观测数值不同，不能单凭它断言旧图、恒偏移或取图已经正确。
+- 下一核原生reference生成/调度完成域，采用可验证同一渲染批次而非猜时间offset；原run/source不重提热改，先封存/独审再做新版本。微调仍无新发布，H66九图来源审查已写入Git。
+
 ### 2026-09-25 16:54（北京时间）：H74唯一原生复验运行中（Codex）
 
 16:59已本人检查三合法TRAIN来源9张首帧，reference/九clip SHA全核；可见性/局部遮挡可提供监督，但按钮、抓紧/稳定不能凭这些帧标真。图在h66_train_source_preview_v1，H66逐视角记录；只是384预览，尚非新RAW训练集。已明确后继不使用H71–H74开发实例，0新标签发布/训练。

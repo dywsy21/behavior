@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 
 class VirtualPath:
@@ -23,7 +23,7 @@ def fake_environment(*args, **kwargs):
 
 
 class RunnerFailureCleanupTests(unittest.TestCase):
-    def run_handler(self, fault=None, terminal=False, primary=True, issued_grips=None):
+    def run_handler(self, fault=None, terminal=False, primary=True, issued_grips=None, native=False):
         path = Path(__file__).resolve().parents[2]/"scripts/semantic_robot/run_v2.py"
         module = ast.parse(path.read_text())
         main = next(x for x in module.body if isinstance(x, ast.FunctionDef) and x.name == "main")
@@ -42,6 +42,10 @@ class RunnerFailureCleanupTests(unittest.TestCase):
             records.append((path.name, copy.deepcopy(value)))
         state = object(); servo.safe_hold.return_value = [0., 0., 0., -1.]
         state_now = Mock(return_value=state); step = Mock()
+        lifecycle=Mock()
+        if native:
+            step=lifecycle.step
+            lifecycle.io.abandon_read_after_failure.side_effect=lambda:self.assertIs(sys.exc_info()[1],error)
         if fault == "state": state_now.side_effect = RuntimeError("STATE_SECONDARY")
         if fault == "step": step.side_effect = RuntimeError("STEP_SECONDARY")
         if fault == "trace_write": trace.write.side_effect = OSError("TRACE_SECONDARY")
@@ -52,7 +56,7 @@ class RunnerFailureCleanupTests(unittest.TestCase):
                   args=SimpleNamespace(gpu=3, odometry_substep_controls=6, max_controls=12),
                   controls=6, out=VirtualPath(), write=writer, policy=None, phase="CONTROL", reset_completed=True,
                   terminal=terminal, prefix_count=0, replay_count=0, decisions=[], digest="test", servo=servo,
-                  last_issued_grips=issued_grips,native_io=None,
+                  last_issued_grips=issued_grips,native_io=lifecycle.io if native else None,lifecycle=lifecycle,
                   step=step, state_now=state_now, trace=trace, video=video, io_trace=io_trace, json=json, sys=sys,
                   primary_error=error, secondary_error_report=errors.append)
         exec(compile(ast.fix_missing_locations(ast.Module(body=[inner, fn], type_ignores=[])), str(path), "exec"), ns)
@@ -80,6 +84,12 @@ class RunnerFailureCleanupTests(unittest.TestCase):
         ns, caught, primary, _ = self.run_handler(terminal=True)
         self.assertIs(caught, primary); ns["step"].assert_not_called()
         self.assertEqual(ns["controls"], 6)
+
+    def test_real_runner_abandons_failed_read_in_exception_context_before_single_hold(self):
+        ns,caught,primary,_=self.run_handler(native=True)
+        self.assertIs(caught,primary)
+        self.assertEqual(ns['lifecycle'].method_calls,[call.io.abandon_read_after_failure(),
+            call.step([0.,0.,0.,-1.]),call.io.close()])
 
     def test_cancelled_new_open_or_close_is_not_applied_by_cleanup(self):
         ns,caught,primary,_=self.run_handler(issued_grips=[-1.,1.])
