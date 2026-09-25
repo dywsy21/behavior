@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 11:11（北京时间）：H63已固定；H64实际手指碰撞资产准备（Codex）
+
+11:18实现更新：四指凸包导出及索引/变换校验已实现，SDK包/库仅诊断进程配置后可用，实报USD0.24.5。38相关CPU中34通过、4个真实USD内存stage测试因本地无SDK而明确skip，必须在robo安装SDK下8/8过才实读asset。独审指出事后elapsed不能保证上限及SDK身份未固定，已补0.24.5/安装路径校验；实际运行将由外层`timeout --kill-after=10s 60s`强制，工具进程终态才是完成依据。尚未导出真实mesh或改actor。
+
+11:20独审增补：collision自身或中间parent若有独立RigidBodyAPI就不属于named finger，已从prim起逐级拒绝并加两种实际SDK反例；原生门现9项，必须全过。650旧全量646过/4skip不作为该delta验证，修后全量/最终独审进行中；0真实asset导出/物理。
+
+11:22修后本地651项中646通过/5真实SDK测试明确skip（17.244s），独立最终复审无剩余代码阻塞、同4pass/5skip核验；下一固定Git源、robo9项SDK全过后唯一60s资产读取。未把未执行的SDK门、cooked几何、当前FK或接触算通过。
+
+- H63实现`11dfe4b`已push、主工作树干净；642/642 CPU及独审通过，仍默认关闭，native多开度和接触物理未验。原G-AV1目标及资源限制不变，Zetta不查询。
+- H64主假设：press用夹持空隙中心而非真实手指碰撞表面，可能导致接近指标和实际接触脱节。已只读定位robo R1Pro 3.8.2资产：四指由多个`convexHull`碰撞mesh组成且各有非均匀缩放；视觉mesh/AABB/assisted-grasp条带均不可代替。USD SHA `6029617cdd3aefce981428058a1c82cffe6af20ae61dc5be1da7334342c3bc52`，yaml SHA `63f841cffd5c499102416a797a22fa5b4cbaf146539df7dde8a4a1053e2326f1`。
+- 先用独立CPU/USD读取器导出四指**资产声明**的碰撞分片及link局部坐标，0 SimulationApp/CUDA/模型/训练/场景reset/任务样本；owner Codex，源commit待固定，单次实读≤60s、2CPU、只读原126MiB机器人USD+3.3KiB定义，输出≤2MiB，不改共享环境。它不是PhysX cooked表面/接触offset或实际当前FK的验收；异常停止，不把盒子回退作为表面。
+- SDK默认不可直接import pxr，已定位安装内的原USD库，只在诊断子进程配置包/动态库路径；此前缺`libusd_tf`及`libpython`导入失败尚未打开资产，不是仿真失败。下一导出、校验缩放/手指归属/坐标及样本人工检查，再定义press固定接触参考，不能先让actor执行未验几何。
+
 ### 2026-09-25 10:56（北京时间）：G-AV1续接，修H63独审缺口后继续接触执行（Codex）
 
 11:02实现更新：摘要现绑定全部semantic_robot递归Python及两个runner，用相对路径/内容SHA；命名finger self-frame v2贯通原生保存、RGBD/Substep、controller、reanchor、runner三处与completion调用，拒绝缺读数/降版本/同均值替换并保留legacy。12新回归连同相关63/63过（0.525s），diff过，全量及原独审复核进行中。10:56:06只读四原训练仍在/同余量；0新GPU/仿真，下一只读查机器人碰撞资产而非把夹持条带冒充按压面。
