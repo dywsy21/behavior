@@ -54,7 +54,7 @@ class NativeRendererDiagnosticsTests(unittest.TestCase):
         def write(name, data): snapshots.append((name, deepcopy(data)))
         with renderer.observe_changes(settings, record, write) as trace:
             self.assertEqual(settings.writes, 0)
-            self.assertEqual(len(settings.callbacks), 10)
+            self.assertEqual(len(settings.callbacks), len(renderer.SETTINGS))
             settings.set('/rtx/pathtracing/totalSpp', 4)
             first = trace['events'][0]
             self.assertEqual(first['key'], '/rtx/pathtracing/totalSpp')
@@ -198,7 +198,7 @@ class NativeRendererDiagnosticsTests(unittest.TestCase):
                 with renderer.before_scene(og, sim, source_sha256=digest,
                         record=record, write=write, trace_write=Mock()):
                     og.launch()
-                    self.assertEqual(len(settings.callbacks), 10)
+                    self.assertEqual(len(settings.callbacks), len(renderer.SETTINGS))
                     settings.set('/rtx/pathtracing/spp', 8)
                     with self.assertRaises(ValueError): renderer.validate_after_scene(og, record)
                 self.assertFalse(settings.callbacks)
@@ -241,6 +241,57 @@ class NativeRendererDiagnosticsTests(unittest.TestCase):
                 self.assertEqual(receipt['status'], 'failed')
                 self.assertEqual(receipt['native_failure'], failure['native_failure'])
                 self.assertEqual(receipt['pathtracing_differences'], failure['pathtracing_differences'])
+
+    def test_non_dlss_prerequisite_is_set_before_aa_and_never_touches_physics(self):
+        settings = ObservableSettings()
+        settings.values.update({'/rtx-transient/post/aa/limitedOps': True, '/rtx/post/aa/op': 3})
+        observed = []; original = settings.set
+        def set_and_check(key, value):
+            if key == '/rtx/post/aa/op':
+                self.assertIs(settings.get('/rtx-transient/post/aa/limitedOps'), False)
+            observed.append(key); original(key, value)
+        settings.set = set_and_check
+        renderer.apply_settings(settings)
+        self.assertEqual(set(observed), set(renderer.SETTINGS))
+        self.assertEqual(settings.get('/physics/unchanged'), 42)
+        self.assertIs(settings.get('/rtx-transient/post/aa/limitedOps'), False)
+        settings.values['/rtx-transient/post/aa/limitedOps'] = True
+        with self.assertRaisesRegex(ValueError, 'limitedOps'): renderer.read_checked(settings)
+
+    def test_h71_distinct_ticket_keeps_control_gpu_caps_and_adds_only_aa_prerequisite(self):
+        import launch_h71
+        from test_scene_startup_probe import profile
+        gate = launch_h71.gate
+        with profile(), patch.object(gate, 'ROOT'), patch.object(gate, 'RUNTIME'), patch.object(gate, 'WALL_SECONDS'):
+            base = launch_h71.configure()
+            self.assertEqual(gate.ROOT.name, 'h71_aa_prerequisite_v1')
+            self.assertEqual(gate.WALL_SECONDS, 1200)
+            self.assertEqual(base.ENTRYPOINT, Path(launch_h71.__file__).resolve())
+            self.assertIn('launch_h71.py', native.DEPENDENCY_FILES)
+            args = gate.command(base)
+            self.assertEqual(args[args.index('--max-controls')+1], '1536')
+            self.assertEqual(args[args.index('--max-decisions')+1], '24')
+            self.assertIn('--/rtx-transient/post/aa/limitedOps=false', base.app_configuration()['extra_args'])
+            for path, digest in renderer.INSTALLED_DEPENDENCIES.items():
+                self.assertEqual(base.DEPENDENCIES[path], digest)
+
+    def test_installed_aa_implementation_missing_or_changed_rejects_before_gpu_import(self):
+        import launch_h71
+        from test_scene_startup_probe import profile
+        gate = launch_h71.gate
+        with profile(), patch.object(gate, 'ROOT'), patch.object(gate, 'RUNTIME'), patch.object(gate, 'WALL_SECONDS'):
+            base = launch_h71.configure()
+            dependencies = renderer.INSTALLED_DEPENDENCIES.copy()
+            self.assertTrue(all(base.DEPENDENCIES[p] == d for p,d in dependencies.items()))
+            with patch.object(base, 'DEPENDENCIES', dependencies), \
+                 patch.object(base, 'PYTHON', Path(sys.executable)), \
+                 patch.object(base.importlib.metadata, 'version', return_value='5.1.0.0'), \
+                 patch.object(base.subprocess, 'check_output', return_value=''), \
+                 patch.dict(base.os.environ, {'CUDA_VISIBLE_DEVICES':''}):
+                for exists in (False, True):
+                    with self.subTest(exists=exists), patch.object(Path, 'is_file', return_value=exists), \
+                         patch.object(Path, 'read_bytes', return_value=b'wrong installation'):
+                        with self.assertRaisesRegex(ValueError, 'dependency changed'): base.identity()
 
 
 if __name__ == '__main__': unittest.main()

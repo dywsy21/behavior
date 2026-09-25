@@ -42,7 +42,7 @@ assert not any(k in sys.modules for k in ('torch','isaacsim','omnigibson','carb'
             self.assertEqual(base.PROFILE_SETTINGS, renderer.SETTINGS)
             self.assertEqual(base.PROFILE_APP_CONFIG, renderer.APP_CONFIG)
             for key, value in renderer.SETTINGS.items(): self.assertEqual(base.RUNTIME_SETTINGS[key], value)
-            self.assertEqual(len(base.DEPENDENCIES), 23)
+            self.assertEqual(len(base.DEPENDENCIES), 24)
 
     def test_original_h55_h54_profiles_clear_combination_permission(self):
         import probe_scene_pathtracing as pt

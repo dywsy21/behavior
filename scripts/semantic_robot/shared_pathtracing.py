@@ -12,9 +12,18 @@ from threading import Lock, RLock
 import time
 import traceback
 
+INSTALLED_DEPENDENCIES = {
+    Path('/mnt/sdc1/xhz/miniconda3/envs/behavior/lib/python3.11/site-packages/isaacsim/extscache/'
+         'omni.replicator.core-1.12.27+107.3.3.lx64.r.cp311/omni/replicator/core/scripts/settings.py'):
+        'e4901268a16048062fe5c33bb3507752a907cb17fa7f4b6797835d8687816006',
+}
 
 SETTINGS = {
     '/rtx/rendermode': 'PathTracing',
+    # Replicator's own non-DLSS AA selection clears this restriction first.
+    # H71 tests this omitted prerequisite against H70's first-camera aa/op=3.
+    # Configure before any sensor exists; never repair settings per frame.
+    '/rtx-transient/post/aa/limitedOps': False,
     '/rtx/post/aa/op': 0,
     '/rtx/pathtracing/dlss/enabled': False,
     '/rtx/pathtracing/spp': 4,
@@ -161,6 +170,7 @@ def before_scene(og, simulator, *, source_sha256, record, write, trace_write=Non
             raise ValueError('Rendering profile cannot modify an occupied simulator or live camera')
         settings = get_settings()
         receipt['original_render_mode'] = settings.get('/rtx/rendermode')
+        receipt['original_aa_limited_ops'] = settings.get('/rtx-transient/post/aa/limitedOps')
         # H54 observed the native stack returning the known legacy mode after
         # OG's RT2 assignment and play/stop updates. That mutable setting is not
         # an identity proof. Source/alias/empty-scene checks above stay strict;

@@ -20,7 +20,7 @@ def configure_profile():
     base.SUCCESS_FIELDS = {**base.SUCCESS_FIELDS, 'pathtracing_profile_verified': True}
     base.BUDGET_DETAILS = {**base.BUDGET_DETAILS, 'renderer': 'PathTracing',
                           'image_distribution_changed': True, 'spp': 4, 'total_spp': 16}
-    base.DEPENDENCIES = {**base.DEPENDENCIES,
+    base.DEPENDENCIES = {**base.DEPENDENCIES, **pathtracing.INSTALLED_DEPENDENCIES,
         scene.OG/'omnigibson/__init__.py': 'c7867c236051fd8994c75973284b5e88b2637c5b8ab1fece9c6e29bdbd9ca03f',
         scene.OG/'omnigibson/envs/env_base.py': 'ab3e0cefd46a583a8fa9e8ccd42e5cc29590f0b9efddfb0a6f34dab74e4f6c7c'}
 

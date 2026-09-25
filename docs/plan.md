@@ -10,7 +10,30 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 14:54（北京时间）：H71最小配套AA修复准备（Codex）
+
+15:03最终delta通过：113邻接0.970s；独立16 renderer/11 PT/3 compatible/18 native-gate与diff均通过，无剩余实质代码阻塞。父/worker都绑定24安装依赖。fetch后本分支0/0、main无新进度；保留自己的未提交实现故不pull。准备固定源并做robo预检，仍0H71 launch，不把CPU过当原生修复已成立。
+
+14:59独审来源门修正：将已实读Replicator1.12.27/settings.py精确SHA加入配置依赖表，父launch和worker的identity都检查（由共用profile配置），不是只在文档列SHA。新增缺文件/改字节拒绝CPU用例，16目标过0.055s；24依赖全量与最终独审待，无新launch。
+
+14:57回归：15目标0.045s、112邻接1.015s及全semantic703中698pass/5 SDKskip29.912s，diff过；独审H70真实产物/本票最小delta仍在。还没有新服务器run/source，0新模型训练。
+
+14:55 H70归档已闭合：12件4553758B/全12 SHA双端一致，209资源样本主自有峰5199MiB，5通知仅AA实际漂移、其他4通知恢复原值；完整清单见H70文档，两个PID确已退出。H71新15目标CPU过0.045s，完整邻接/独审进行，仍0新launch。
+
+- 只补`limitedOps=false`并纳入设置读回/追踪，仍在原空app/空sim边界设置，未每帧改写、未改图像/物理/控制目标门。NVIDIA官方记录与已安装Replicator源码支持这个候选；实际因果修复待检，不提前称完成。
+- 新H71一次总1200s＋30清理，为已知约510s冷启后原24gate/1536controls留时间；原GPU3≤24GiB/辅助512MiB/全卡8GiB余量/4CPU，0模型训练前缀。新源/run/runtime预登记，CPU/独审/实际运行待；H70和队友目录保持。
+
+### 2026-09-25 14:53（北京时间）：H70定位完成、gate仍失败（Codex）
+
+- 3642dd7唯一运行508.514s/worker exit0/监管failed，原异常与actual/diff在SDK退出前正确保存且监管引用根错误。reset1/load138各1完成、最终reset0/动作0/模型训练0；不是任务SR样本。
+- 唯一漂移字段`/rtx/post/aa/op:0→3`，原生相机首次render更新触发，其他PT项保持；真实native变更通知及调用栈拿到。新诊断目标完成，但真实控制gate仍未通过。全部自有GPU释放、队友3564916/12548MiB保留，12件证据向本地取回校验中。
+- 已核服务器Replicator设置实现与NVIDIA官方changelog：非DLSS/非DLAA需关闭`/rtx-transient/post/aa/limitedOps`，原profile遗漏此配套字段。它是当前有依据的修复假设，不宣称已由H70证明该flag的因果性；下一单独H71仅增加这一前置配置再复验，不逐帧改回值/放松断言。
+
 ### 2026-09-25 14:43（北京时间）：H70唯一诊断运行中（Codex）
+
+14:51捕获真实改写：第1条Carb事件为`/rtx/post/aa/op` 0→3（DLSS），其余9注册项仍原值；event相对订阅367.061s，Python栈指向首相机`VisionSensor._post_load → clipping_range → og.sim.render → app.update`。可确定初始化阶段/具体字段，真正native默认值写入者仍须核，不能把Python栈最上层误认成C++setter。监管446.81s仍running，0外层reset/动作，不热改或放宽门；下一核默认AA恢复机制，等本票严格终态。
+
+14:49原run新事件：native相对05:05.583已Imported scene0，随后创建R1Pro；监管345.08s仍running，真实设置追踪0events/0errors。尚未完成reset/任何动作，不把场景导入当gate通过；原900s不变。
 
 14:46并行人工数据复核：看原TRAIN八RAW，p0392旧闭爪TRACKING_FAILED后桶沿仍可见在两指间，与成功来源相似；其回执无新版gripper_execution、右EEF误差2.983mm，不能直接当视觉“抓空”负例或事后升级成新完成协议。证据写H66；未新标注/训练。H70约172.4s仍loading_scene、追踪0事件/0错误，不改原900s或源码。
 

@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 14:55北京时间H70归档完成：** 完整12件4553758B本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h70_renderer_trace_bundle_v1`，12SHA全部双端一致；清单见H70文档，3572777/3572784已不在进程表，原所有源/run/runtime保留。H71尚未创建远端source/run/runtime或新进程。
+
+**2026-09-25 14:53北京时间H70终态：** 监管failed/508.514s、真实AA0→3根错误完整保存，after_exit自有GPU全释放，GPU0队友3564916保留。原3642dd7 source/run/runtime全保留且不得重启；完整12件向本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h70_renderer_trace_bundle_v1`取回中，SHA验全待。
+
 **2026-09-25 14:43北京时间H70启动：** 固定上条3642dd7源，唯一launch UTC06:43:02.583122、supervisor3572777，预定 `h70_renderer_trace_v1` run/runtime现已创建；900s/0模型训练，具体child/初始化核对中。GPU0队友3564916保留，源/run/runtime/cache不可热改或重启。
 
 **2026-09-25 14:42北京时间H70源码：** Git fetch后新clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/renderer_trace_3642dd7`，固定3642dd77867cb39f743397771e3d016aa516c115；真实CPU/依赖/资源预检中，未launch。run/runtime拟分别为 `/mnt/nvme_tmp/robodojo_agentic_20260925/h70_renderer_trace_v1` 与 `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h70_renderer_trace_v1`，原H69和队友目录未改。
