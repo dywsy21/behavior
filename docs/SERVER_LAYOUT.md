@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 19:43北京时间H81启动回执：** 原预定run h81_grounding_calibration_v1已创建，UTC11:42:37.786391、supervisor3629245、冻结be1aca5；97生成/1800s/70GiB GPU2/0训练动作预算，模型worker实际阶段待核，不重复启动。旧27B文件和H78adapter均未改。
+
+**2026-09-25 19:42北京时间H81源码：** 新Git独立 `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/grounding_teacher_be1aca5` 固定be1aca51430126061f03826ed4b0d3b332c4ac60；8 CPU/真实HF overlay通过，正在模型完整SHA/资源预检后唯一提交。预定run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h81_grounding_calibration_v1`，真实创建/监管PID待。H80已运行的expanded_visual_f303355与run均不改。
+
 **2026-09-25 19:31北京时间H80启动：** 独立clean Git `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/expanded_visual_f303355` 固定f303355b5453aaa4937207b619dd938e076a7846；run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h80_expanded_raw_v1`，原图在`raw/`、监管/日志在上层，UTC11:30:47.050789、supervisor3626434。一次7200s/20GiB/CPU48–55、0GPU/模型/训练，采集运行状态待监控；不要热改源或覆盖run。H81定位teacher仅本地草稿，服务器未新建。
 
 **2026-09-25 18:54北京时间归档：** H77本地h77_task3_gate_bundle_v1全1011件348660187B规范聚合a43cc772…dec45已双端验全/独审过；首次截断残片h77_interrupted_transfer_v1保留。H78本地h78_presence_results_v1仅16件轻量回执252232B、聚合ec62be5e…f3f7双端同，不含adapter权重/缓存；完整训练源/run/两个权重均仍保留服务器，未移动或上线。
