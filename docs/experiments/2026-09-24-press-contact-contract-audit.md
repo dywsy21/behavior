@@ -27,3 +27,13 @@ robo安装`/mnt/sdc1/xhz/BEHAVIOR2026/BEHAVIOR-1K/OmniGibson/omnigibson/object_s
 4. 先CPU刚体变换/开度/单双手/held-arm保护反例，再单个有界局部工程检查；确认资源与视觉输入可靠后才另登记零前缀闭环。不为task0手写按钮轨迹或为50任务各写控制器。
 
 当前优先仍是H55取得真实RGB-D并核共享资源；本审计不改变正在运行的H55代码/预算，不启动H54b或新训练。
+
+## 2026-09-25 12:52北京时间续查：保持动作与效果时序
+
+当前主源95a7bfe；H67单体原生检验独立运行中，未热改它或启动另一个场景。安装toggle.py SHA仍为上文a7a88f4a，规则没有新变化，不将此次复读说成新发现。
+
+新核对实际执行调用链：`v2/servo.py::begin`对HOLD仍设置12/18/24个控制tick，保持RUNNING；`run_v2.py`的accepted循环照常逐tick调用`servo.next_action→step`。因此“HOLD只有墙钟等待、不推进物理”这一疑点**不成立**。
+
+但`v2/harness.py`的INTERACT分支只在`effect=True && last_action.move != "hold"`时进入VERIFY_EFFECT。未来显式的press-hold如果继续被当成普通HOLD，保持期间出现的可见效果不会立即进入验证。普通HOLD也用于安全停止/预算与感知等待，不能简单全局删除这个条件来放行模型自报。
+
+后继press状态机应为“工具准备→接近→受限接触推进→有计数的保持→撤回/再观察”保留专用执行回执；效果仍来自合法新观察，成功仍由官方终态单独统计。H65的HOLD几何豁免是现有安全停止路径，不应未经校验就转用为主动press-hold许可。本次仅静态定位接口依赖，未实现该状态机，也未证明历史失败发生在此分支。

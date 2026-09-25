@@ -19,6 +19,16 @@
 12:40准备完成：全semantic681中676通过/5本地SDK skip（16.935s），独立9/9过1.466s且无可复现阻塞；补compare抛异常前立即保存coverage，不改变几何门。下一固定源/真实安装依赖及资源预检后单次原生运行。
 
 12:42启动前更正：实际SDK smooth gripper reset把两指目标平均并广播为position targets。H67覆盖门预先改为5mm（仍拒绝两指坍缩为均值，三档开度不重叠），FK0.25mm/.001rad精度门不变；目的区分真实控制跟踪漂移和坐标计算误差，0新app/样本时修改，不是看到物理结果后放宽。固定该controller SHA，补1mm真实漂移覆盖回归，delta独审后固定源。
+
+12:44源已固定并push：`95a7bfeefdb14ca80ada14c16865f2d0a9033b6e`；delta父9/9（0.750s）、独立9/9（0.780s）及diff过，覆盖门均值反例仍拒绝。正通过Git显式fetch实验分支、新建detached `git_worktrees/native_fingers_95a7bfe`，不是热改旧源；真实依赖/资源门与唯一原生启动尚待。
+
+12:46真实预检通过：新robo source干净，9/9 CPU过2.362s、17个安装/资产SHA及实际原YAML转单体配置过；四训练仍各73644MiB/free7489/7489/7489/7488MiB，无其他GPU进程，run/runtime均不存在。已提交唯一H67 launch，回执/实际启动待，不重复提交；600s及原资源门保持。
+
+12:47运行中：真实launch UTC04:46:35.487310、supervisor3553910，source95a7bfe；原定run/runtime已创建，原600s/四训练/共享显存门保持。只提交一次，真实九姿态覆盖/FK结果未出；无actor/VLM/训练/任务成功计数。
+
+12:52并行只读接口诊断：原toggle.py SHA未变，旧接触规则不重复计成果；新沿真实servo/runner核HOLD会实际推进12/18/24 control ticks，排除“只等墙钟”。INTERACT却明确忽略last_action=hold时的effect，未来press-hold须专用执行回执/验证阶段，不全局放开普通安全HOLD；[原press审计新增节](experiments/2026-09-24-press-contact-contract-audit.md)。未修改活跃源、未新增场景/控制或认定历史失败唯一根因。
+
+12:54运行新事件：worker日志空Scene于相对00:05:56.782导入、随后构造R1Pro；粗phase仍constructing_app但pathtracing已applied_before_scene，不能误报“app未创建”。6:27时worker累计CPU17:48，冷初始化有明显开销，具体分解待。仍0九姿态样本/0VLM/训练，保留原600s，不因仍加载自动加时。
 - 补查余下TRAIN失败归档：i192 p0380/ws45/388无CLOSE或UP、p0392只CLOSE；i114 p0953超时前仅2UP，p0993最终仅1UP且物理仍IN_PROGRESS，不能作为“≥3UP但视觉未完成”的直接对照，不改label、不造正向BC。所查源均在原H09 native_complete，未读取eval来训练；新微调仍需真实对照或明确隔离非视觉捷径的配方。
 
 - 上一goal turn归类progress：H64真实资产/人工审、H65修复及H66真实数据捷径统计均完成并push至0ee11d7，非仅重复状态。当前clean pull/fetch成功，main无新提交；goal仍原reset/零专家或旧policy前缀的完整官方SR>0，尚未达到，Zetta不处理。

@@ -30,3 +30,14 @@ H09AB已真实完成120更新，但8态诊断的history规则也能全部猜中�
 两fold独立在TRAIN选择的阈值都是3。唯一阈值误报为`1f8b2f307ee20b02_09_continue`，即W396第三次UP后、第四次UP前；原同tick标签保持CONTINUE。Exact history及完整无图公开输入的异标签冲突组均为0，因此这批数据并不要求模型必须使用视觉才能拟合。**这不是证明VLM完全没用视觉，也不是98.53%成功率。**
 
 后继决定：不直接续训原39；优先从已审TRAIN轨迹寻找“相同/近似完成动作历史，但未握住、滑落或不应继续动作”的真实状态。失败动作不会转正向BC；不清楚的视觉状态保留UNKNOWN。若现有轨迹无这类对照，则如实记录缺口，另注册小批公共感知/状态数据而非偷偷使用旧eval。最终需图像对照与真实闭环两种检验，不能只看状态CE。
+
+## 既有TRAIN失败归档覆盖核对（12:45北京时间）
+
+只读根目录`/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09y-resume-20260921/native_complete`的8个`failure.json`来源；逐核原request、native_execution的feedback及控制起止（不是把request存在当执行成功）。
+
+- i192 p0380、p0380_ws45、p0380_ws45_cd1_b2、p0388均没有CLOSE/UP执行。
+- i192 p0388_ws45只执行CLOSE；p0392的CLOSE本身TRACKING_FAILED。均无执行UP。
+- i114 p0953_ws45_cd1_b2超时前两次UP分别37/25控制tick、TARGET_REACHED；不是完整任务或独立抓取成功。
+- i114 p0993只一次UP、28tick、TARGET_REACHED；最终私有local verdict仍IN_PROGRESS，真实握持/接触记录不使它自动成为完成正类。
+
+这8条都没有“执行≥3次UP但视觉未完成”的直接对照，因此不能简单追加来声称H66揭示的末尾UP捷径已经解决。本次未构造/重标/训练，也未将失败动作作BC；后继需要新状态覆盖，或明确限制非视觉输入的训练消融并检验其视觉依赖。

@@ -49,3 +49,9 @@ H64输入JSON SHA `5f2cbf18b989eb22bc98665f48538c6cc306679d3be94ab4de46f2af7b4c6
 当前状态：9新CPU通过0.797s、39启动/保护回归通过0.705s、全semantic681中676过/5本地SDK skip（16.935s）。独立9/9过1.466s、无可复现阻塞；仅提示compare抛异常前coverage证据可更完整，已加即时保存。原生run未启动，不将本地mock当SDK验收。
 
 12:42（北京时间）**启动前登记更正**：原覆盖门0.1mm改为5mm，但FK误差0.25mm/.001rad不变。只读SDK源码证实smooth gripper的reset no-op将两指目标平均，compute_control广播后送joint position targets，一步物理可能产生真实跟踪漂移。本票应比较实际姿态的FK，而不是检验控制器跟踪teleport目标。5mm范围仍使10%/50%/90%三档彼此分离，20%/80%非对称两指至少相差20mm；完全恢复均值的15mm偏差仍被拒绝。变更时0新app/robot/原生样本，未在看结果后调门；原始0.1mm登记留此明确更正。实际gripper controller SHA新增到启动依赖。
+
+## 原生单次启动
+
+源`95a7bfeefdb14ca80ada14c16865f2d0a9033b6e`；远端干净worktree `git_worktrees/native_fingers_95a7bfe`。服务器9/9 CPU过2.362s，17份依赖SHA/实际YAML/资源门过，UTC04:46:35.487310（北京时间12:46:35）唯一启动，supervisor3553910/worker3553917。当前运行中，未得到九姿态结果。
+
+12:53只读日志显示空Scene在相对00:05:56.782导入，随后开始R1Pro构造；进程6分27秒时累计CPU17分48秒，仍在做初始化。此时不能按worker的粗粒度`constructing_app`字段误判仍未创建app：pathtracing回执已证实空simulator构造成功。尚未越过run_samples入口，0关节样本/0VLM。冷启动开销是实测现象，具体耗时分解尚未完成，不把它当显存已够完整场景或任务有效。
