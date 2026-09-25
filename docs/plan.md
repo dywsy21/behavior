@@ -12,6 +12,8 @@
 
 ### 2026-09-25 14:43（北京时间）：H70唯一诊断运行中（Codex）
 
+14:46并行人工数据复核：看原TRAIN八RAW，p0392旧闭爪TRACKING_FAILED后桶沿仍可见在两指间，与成功来源相似；其回执无新版gripper_execution、右EEF误差2.983mm，不能直接当视觉“抓空”负例或事后升级成新完成协议。证据写H66；未新标注/训练。H70约172.4s仍loading_scene、追踪0事件/0错误，不改原900s或源码。
+
 - 固定3642dd77867cb39f743397771e3d016aa516c115，双端110 CPU/独审/23实依赖过；唯一launch UTC06:43:02.583122，supervisor3572777。run `h70_renderer_trace_v1`/同stem runtime已创建，实际child/初始化正在核。
 - 一次总900s＋30清理、至多24gate/1536controls、主GPU3≤24GiB/辅助512MiB/全卡8GiB余量；0模型/训练/专家旧policy前缀。GPU0队友3564916保留。源码不可热改，不能重复提交；尚无新的具体renderer覆盖事件或SR。
 

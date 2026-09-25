@@ -51,3 +51,13 @@ Codex重新按“能否从图直接给出这个label”而非“私有标签是�
 实际原动作回执是18控制的RIGHT_UP、右EEF上移9.77094mm；再含12控制settle，q18最大变化0.0814122。像素检查head MAE1.23367/255、right_wrist3.54707/255，明显非字节相同。没有新增模型或物理运行。
 
 后继微调标签应区分两层：视觉支路监督`目标可见/部件位置/手指与物体关系/短时间的共同运动或滑落（看不清=UNKNOWN）`；是否满足执行窗口、是否应该结束由另一个使用实际执行回执的验证协议负责。先准备真正可见的状态对照及跨来源实例拆分，不能拿原39条改个prompt就宣称纠正了视觉捷径。当前只完成这四RAW的可观察性复核，未释放新训练集或新权重。
+
+## 14:46北京时间：闭爪失败不等于视觉抓空（Codex人工再审）
+
+趁H70真实场景初始化，只读原TRAIN八张RAW：i192/p0392 `teacher_00/{before,after}/{head,right_wrist}`、成功来源i192/W396 `teacher_06/before/{head,right_wrist}`、i114/p0989 `teacher_01/before/{head,right_wrist}`。失败来源根为上文`native_complete`，W396根为`h09w-native-task1-v1/complete/native_task1_v1`。未读取旧eval，也没有构造新训练标签。
+
+本人看到p0392闭爪后桶沿处于两指之间，和W396闭爪后的腕图关系相似；头图也能见到右手贴在桶沿。因此不能把这条旧run的`TRACKING_FAILED`直接当“抓空/已滑落”的视觉负例。闭爪前后图有明显指形变化，非陈旧字节。这一观察只确认可见的相对关系，不能确认握持力、离地或稳定物理tick，均保留UNKNOWN。
+
+原`native_execution.json`（SHA `0f9e08bac4dbedb151cc0b3484d5e6bee5c3247303142fb811816b21f8943208`）记录18control闭爪，右EEF位置误差2.98331mm/姿态1.29924°、平均指开度5.62875mm，status=TRACKING_FAILED，holding=UNKNOWN，且**没有新版gripper_execution回执**。它不能被事后伪装成新版GRIPPER_COMMAND_COMPLETED。当前源码已有独立闭爪命令完成协议；此次不是重复宣称新增该修复，而是避免给后继视觉数据引入旧执行器语义造成的错标签。
+
+图像SHA可定位：p0392 before头/腕 `c1cc3ee5`/`b1872132`，after头/腕 `65a2ae79`/`65c08f82`；W396 teacher06头/腕 `99c6e14c`/`68f666ac`；i114 teacher01头/腕 `8dc33651`/`891866ab`（均SHA256前8，原文件保留）。这个三状态候选不能提供视觉“成功/失败”对照；后继应采集真实抓空/共同抬升/滑落短序列，并将执行器版本和物理标注独立留在离线provenance。0新增样本发布/训练/模型请求。
