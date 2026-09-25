@@ -10,7 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 15:06（北京时间）：H71唯一原生复验运行中（Codex）
+
+- 固定0189148d7a77cb86420925f3e21f8a485ffca3f0，113服务器CPU/24依赖及资源门通过；唯一launch UTC07:05:54.900657，supervisor3578340，真实child/初始化待核。
+- 原一次总1200s＋30清理/24gate/1536controls，GPU3≤24GiB、辅助≤512MiB、全卡8GiB余量；0VLM/训练/专家旧policy前缀，GPU0队友3564916保留。run/runtime `h71_aa_prerequisite_v1`已建，不重复提交或热改。微调可见标签对照仍待；未宣称原生修复或完整SR成立。
+
 ### 2026-09-25 14:54（北京时间）：H71最小配套AA修复准备（Codex）
+
+15:06真实预检通过：已push运行源0189148d7a77cb86420925f3e21f8a485ffca3f0；robo新clean detached aa_prerequisite_0189148，113 CPU1.944s/24安装依赖/资产/空间/资源门全过，H71 run/runtime不存在。GPU0队友3564916/12548MiB保留、1/2/3空；现提交唯一1200s/24动作launch，实际回执待，不重复提交。
 
 15:03最终delta通过：113邻接0.970s；独立16 renderer/11 PT/3 compatible/18 native-gate与diff均通过，无剩余实质代码阻塞。父/worker都绑定24安装依赖。fetch后本分支0/0、main无新进度；保留自己的未提交实现故不pull。准备固定源并做robo预检，仍0H71 launch，不把CPU过当原生修复已成立。
 

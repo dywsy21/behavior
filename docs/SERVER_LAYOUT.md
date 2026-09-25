@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 15:06北京时间H71启动：** 固定aa_prerequisite_0189148源；唯一launch UTC07:05:54.900657、supervisor3578340，run `/mnt/nvme_tmp/robodojo_agentic_20260925/h71_aa_prerequisite_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h71_aa_prerequisite_v1`已建。实际child/初始化待核，1200s＋30清理；原所有源/run/cache和队友任务保留。
+
+**2026-09-25 15:06北京时间H71准备：** Git新clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/aa_prerequisite_0189148` 固定0189148d7a77cb86420925f3e21f8a485ffca3f0，113 CPU/24安装依赖/资源门通过；H71 run/runtime不存在，正在提交唯一launch，尚未把提交当运行成功。GPU0队友3564916保留，其余空；原H69/H70目录保留。
+
 **2026-09-25 14:55北京时间H70归档完成：** 完整12件4553758B本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h70_renderer_trace_bundle_v1`，12SHA全部双端一致；清单见H70文档，3572777/3572784已不在进程表，原所有源/run/runtime保留。H71尚未创建远端source/run/runtime或新进程。
 
 **2026-09-25 14:53北京时间H70终态：** 监管failed/508.514s、真实AA0→3根错误完整保存，after_exit自有GPU全释放，GPU0队友3564916保留。原3642dd7 source/run/runtime全保留且不得重启；完整12件向本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h70_renderer_trace_bundle_v1`取回中，SHA验全待。
