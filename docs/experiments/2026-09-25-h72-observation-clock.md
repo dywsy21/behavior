@@ -23,3 +23,5 @@
 15:45最终审结：父118邻接过0.991s、完整semantic703中698过/5skip28.842s；独立14目标0.059s，三项已关闭、无新实质阻塞。固定运行源b59498f834bfb86e79f920ddf0f9708b0fb4764e已push，robo新worktree/CPU预检中，仍0launch。私有native API/真实backend和物理诊断尚待。
 
 15:46唯一原生提交：robo clean `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/observation_clock_b59498f`，118 CPU1.910s/24＋3依赖/资产/资源门过。原normal digest6e50eb1b…0661e保持、diagnostic digest ab1306a356945c872a1ea0a7fe1187f4cecd1a26bb8663c4b8d3c6a8ccd83fdc。launch UTC07:46:36.616892/supervisor3585374；GPU0队友3564916/12548MiB保持、1/2/3空。预算不变，真实初始化/终态待，不重提。
+
+15:51只读候选核对：[NVIDIA Isaac5.1官方文档](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/replicator_tutorials/troubleshooting.html#async-rendering-and-frame-skipping)记录throttling把asyncRendering切true时可能丢帧，但服务器安装`isaacsim.core.throttling/config/extension.toml:27`已经默认enable_async=false；不据文档假定本run命中，不热改。另从已安装SimulationContext.step看render=True依赖app.update，而render=False显式physics step；默认dt正确不能代替实测每control物理推进。H72时钟用于区分这项替代解释，原输入/控制/预算不改。

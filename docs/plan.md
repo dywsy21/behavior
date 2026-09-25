@@ -12,6 +12,8 @@
 
 ### 2026-09-25 15:46（北京时间）：H72唯一原生诊断运行中（Codex）
 
+15:51只读来源核对：[NVIDIA5.1丢帧说明](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/replicator_tutorials/troubleshooting.html#async-rendering-and-frame-skipping)提及throttling开启async；但安装extension.toml的enable_async默认false，不能照搬判根因。原native仍loading_scene，约243s/0audit，保持源/预算，等真实时钟/PhysX/图像。没有新模型/训练或追加run。
+
 - 运行源b59498f834bfb86e79f920ddf0f9708b0fb4764e，audit digest ab1306a356945c872a1ea0a7fe1187f4cecd1a26bb8663c4b8d3c6a8ccd83fdc；双端118/独审/24＋3依赖/资源过后，唯一launch UTC07:46:36.616892、supervisor3585374。真实child与初始化正在核。
 - 原1200s＋30清理/24gate/1536controls，0VLM/训练/专家旧policy前缀，GPU0队友3564916保留。新h72_observation_clock_v1 run/runtime已创建，不重提/热改；CPU通过不当真实因果或完整SR，微调仍等待可见监督对照。
 
