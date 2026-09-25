@@ -10,6 +10,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 15:30（北京时间）：H72私有时钟/位移诊断准备（Codex）
+
+15:44最终时序限定：额外观测可能同步GPU，已改为先head指纹再物理位姿，记录两部分耗时/真实backend，摘要显式并非与H71时序完全相同；不复现不能排除旧发布滞后。118邻接与最终独审进行，原24动作/1200s预算不变，0launch。
+
+15:41根因审计补强：实读robot→XFormPrim发现默认位姿来自Fabric，不能独立证明物理移动；诊断现直读既有PhysX tensor named base_footprint并与Fabric并记、均不进控制。三新增SDK源SHA父/worker硬验。独审要求的真实base执行/完整capture链与failure提前seal已修，117邻接过0.959s，最终独审待；仍0launch。
+
+15:34本地实现：独立probe/launch和10项新测试完成，55邻接CPU过0.178s/diff过（最初测试模块命名未装载，已正确全重跑）；独审进行。诊断返回原state/images对象，不新增render/physics，日志在原result写入前封存；普通gate digest不可互用。尚无远端源码/run/模型训练。
+
+15:36回归：完整semantic703中698pass/5SDKskip27.774s、114启动/诊断邻接0.974s过；另一初次邻接命令写错一个旧模块名，已纠正全重跑，不隐去失败装载。只读核GPU0队友3564916/12548MiB，1/2/3空；尚未launch，独审与原生位姿API核对中。
+
+- H71保存态50次capture中11对相邻head depth完全重复；其中许多是静止头部/同一控制时刻，不能一概称滞后。异常待核的是219→225底盘非零命令段。安装源证SensorBase无Python缓存，默认physics120/render30/action30，render会Fabric.force_update；仍无真实运行时钟/位移证据。
+- 下一独立H72只加审计：原24动作/原4次render屏障/同task0 TRAIN138，记录真实time/index、仅审计机器人相对位移和每次render的head RGB-D指纹。0actor/训练，特权位姿不参与控制或模型；诊断digest隔离，不能放行普通actor。
+- 单次≤1200s＋30清理、≤1536controls，GPU3原24GiB/辅助512MiB/全卡8GiB余量；先本地CPU/独审/固定Git，新run/runtime，不热改H71或共享SDK。当前尚未实现/启动，物理原因与完整SR仍待。
+
 ### 2026-09-25 15:20（北京时间）：H71初始化修复成立、基础gate停于底盘位移不一致（Codex）
 
 15:24完整归档：527件208990160B，本地h71_native_gate_bundle_v1全量排序path/bytes/SHA清单聚合06d00843…71eb3c9双端完全同。动作011的219→225两帧head depth逐bit相同，RGB MAE0.04025/255，视觉该段1.34微米/560inliers；前/后两段-5.84/-25.08mm。四render屏障及snapshot_id递增并未证明传感器freshness，正在查原生采样时序/physics clock；raw积分不当真值，未新仿真/模型/训练。
