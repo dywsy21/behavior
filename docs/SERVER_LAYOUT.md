@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 18:32北京时间H77终态：** 原3613503/3613510已结束exit0/监管completed，task3普通gate通过，原source/run/runtime保留；本地`artifacts/agentic-vlm-goal-20260918/h77_task3_gate_bundle_v1`全包正在下载，SHA/资源释放终态正核，不当已验全。H78尚无远端训练source/run。
+
+**2026-09-25 18:14北京时间H77启动：** source task3_gate_3f7cfa6冻结，唯一launch UTC10:12:52.551680、supervisor3613503，h77_task3_gate_v1 run/runtime已创建，真实child/初始化待核；1200s＋30清理/0模型训练。0/1队友保持，源不可热改。H78只有本地CPU实现，远端训练目录/进程尚无。
+
+**2026-09-25 18:12北京时间H77源码预检：** Git独立clean `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/task3_gate_3f7cfa6`固定3f7cfa6fb6b765d3e9fccd87678ee6105c8c05ad；32 CPU0.461s/安装/资产/H75 SHA/资源过。正唯一launch，预定h77_task3_gate_v1 run/runtime提交前不存在，真实回执待；原全部产物和GPU0队友保留，不热改旧源。
+
 **2026-09-25 18:05北京时间全包核验：** H75本地h75_render_batch_bundle_v1全1011件353971986B，聚合7bacff5c207b6d150efad739ac9430c1bd47b1d4086e216ad8348964ffc778f6双端同；首次180s截断的depth残片保存在h75_interrupted_transfer_v1，补齐后不混入全包。H76本地h76_raw_review_bundle_v1全111件23028615B，聚合48f78c51d3550b9cba5dfca62cd1af6798693093e1694dca88786ca3a9ebfa48双端同；人审拼图另放h76_human_sheets_v1（只供人看，非模型输入）。H77仅登记，远端新run/source尚未创建。
 
 **2026-09-25 18:01北京时间H75/H76终态：** H75原3603301/3603308退出0/1038.626s，24动作普通gate通过，自有GPU释放；原source/run/runtime保留，本地h75_render_batch_bundle_v1正在下载不可当验全。H76原CPU采集exit0/real7.09s，36态108图已在本地`artifacts/agentic-vlm-goal-20260918/h76_raw_review_bundle_v1`，22928169B图像；training_eligible全false，图审/双端聚合待，原远端source/run保留。GPU0队友3564916不动。

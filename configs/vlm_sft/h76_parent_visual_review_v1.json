@@ -12,7 +12,7 @@
     "U": "UNCERTAIN: candidate fragment/object is visible but the queried identity or qualifier cannot be confirmed from this single image"
   },
   "review_method": "12 human-only 3x3 indexed sheets: each raw wrist at native480, head preview480; raw720/480 reopened for small/ambiguous details. No sheet, frame index, episode, camera label or progress is model input.",
-  "raw_rechecks": ["t0_i70_e66_f000000_head", "t1_i194_e312_f000000_head", "t1_i194_e312_f000859_left_wrist", "t3_i252_e769_f000000_head"],
+  "raw_rechecks": ["t0_i70_e66_f000000_head", "t1_i194_e312_f000000_head", "t1_i194_e312_f000859_left_wrist", "t3_i252_e769_f000000_head", "t1_i194_e312_f001547_right_wrist"],
   "rows": [
     {"id":"t0_i135_e120_f000000","labels":["P","N","N"],"note":"Head red radio on coffee table; both wrists self-occluded."},
     {"id":"t0_i135_e120_f000810","labels":["P","N","P"],"note":"Head and right show red/white radio; left shows table and fingers."},
@@ -28,7 +28,7 @@
     {"id":"t0_i53_e50_f001665","labels":["P","P","P"],"note":"Head radio; left partial front/casing; right close radio body and handle."},
     {"id":"t1_i194_e312_f000000","labels":["P","N","N"],"note":"Raw720 confirms small floor wastebasket distinct from cans; wrists self."},
     {"id":"t1_i194_e312_f000859","labels":["P","U","P"],"note":"Head bin opening; right bin rim/wall. Left orange can occludes a brown fragment: single-view basket identity uncertain (raw checked)."},
-    {"id":"t1_i194_e312_f001547","labels":["P","N","P"],"note":"Head bin; left floor; right partial basket rim/wall/interior."},
+    {"id":"t1_i194_e312_f001547","labels":["P","N","U"],"note":"Head bin; left floor. Parent raw recheck after independent review: right only gray wall, orange fragment and fingers, insufficient single-view basket identity. Corrected P to U before any model call/training; no cross-view or episode inference."},
     {"id":"t1_i8_e205_f000000","labels":["N","N","N"],"note":"Head dining area, target not identified; wrists self."},
     {"id":"t1_i8_e205_f003116","labels":["P","N","P"],"note":"Head basket; left floor/robot; right basket rim with can inside."},
     {"id":"t1_i8_e205_f005609","labels":["P","N","P"],"note":"Head basket; left floor; right identifiable basket opening and cans."},

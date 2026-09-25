@@ -10,6 +10,29 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 18:32（北京时间）：H77第二姿态普通门通过（Codex）
+
+18:34 H78最终独审放行：8H78＋10H76/三脚本编译通过，全部所提阻塞已闭；父206全SFT/最终18重点3.677s过，8同harness digest0.186s不变。准备固定Git/new robo工作树、真实overlay导入/模型十文件与资源预检后唯一80步对照；仍0模型训练，不把CPU通过当微调收益。
+
+18:33终态量化：1065.715s（reset后循环497.087s）、19 TARGET_REACHED＋4夹爪命令完成＋1torso安全拒绝；与H75相同，不能称24个运动全到位。result SHA53090407…d7863，全1011件348660187B远端聚合a43cc772…dec45，本地下载/独审待；自有GPU已全释放，队友3564916/12548MiB保留，official_success=false。
+
+- 固定3f7cfa6/H75同完整digest，原task3 TRAIN242唯一run已completed/exit0：24门、440控制/88capture-read、0I/O失败、gate_ok=true/无原动作门失败。源/runtime/原结果保留；非模型任务SR。监管实际耗时、分类计数/资源释放与全包正核，本地h77_task3_gate_bundle_v1正在下载，不以部分包当验全。
+- H78完整SFT206/206 CPU7.375s、18重点3.717s通过，最后环境/恢复一致性独审待。准备固定Git/新robo源，原80总更新/1800s/112调用预算不增，尚未新训或上线。
+
+### 2026-09-25 18:14（北京时间）：H77唯一运行，H78可见性对照实现中（Codex）
+
+18:31 H77原run403controls/81capture-read，0I/O错，最终24门待。H78修审补全真实tensor/因果mask/EOS、80步及四轮原图/灰图证据验收；18目标CPU过。已只读核真实HF5.7 overlay而非共享4.57.1，显式锁Python/六包版本及关键模块路径，不升级环境；最终回归/独审待，尚0新训练。
+
+18:22 H78初稿16目标/204全SFT CPU过，独审进行。按审查补齐完整2B十文件SHA/根目录缺省配置锁定、query×尺寸TRAIN多数基线，明确灰图仍保留相机尺寸代理。父复开第5原图i194/f1547右腕将P改U（0调用/训练前），现43P/54N/11U；旧标注保留Git。H77仍原进程loading_scene，不占额外GPU。
+
+- H77 launch UTC10:12:52.551680，supervisor3613503，source3f7cfa6/原digest，真实初始化待读；1200s/24/0模型训练预算不变，不热改或重提。
+- H78拟在H77退出后，fresh2B/rank8单图存在性组件80总更新，固定81/27图片按实例划分、原图/灰图前后对照；1800s/112生成/1GiB/GPU2≤24GiB，先CPU/独审，尚0新GPU/训练。输入无帧/相机/轨迹名与动作历史，不把标签当接触或完成真值，详见H78文档。
+
+### 2026-09-25 18:12（北京时间）：H77双端预检通过，正在唯一提交（Codex）
+
+- 源3f7cfa6fb6b765d3e9fccd87678ee6105c8c05ad已push，robo新clean detached task3_gate_3f7cfa6；32同源CPU0.461s、安装源/资产/H75 prerequisite SHA/digest/资源门过。原H75 worker实现digest7bad2e90…65f8完全未改。
+- 正提交task3 TRAIN242/seed0原reset零前缀唯一gate，1200s含初始化＋30清理/24动作1536controls/0模型训练，实际回执待；不重提。GPU0队友3564916保留，1/2/3空。H76人审P44/N54/U10，按实例train81/val27，尚0新训；下一准备匹配单图输入的有限视觉对照，不放大成完整SR。
+
 ### 2026-09-25 18:05（北京时间）：H75/H76完整归档，H77第二姿态门准备（Codex）
 
 18:11 H75终态独审/哈希/冻结validator回放全过，底盘back−55.93mm/forward＋56.25mm、yaw±0.121rad有三路/RAW实证；仍0SR。H77父32目标/738全量（733pass5skip）与独立8项过，只待固定Git/robo新worktree预检后唯一启动。
