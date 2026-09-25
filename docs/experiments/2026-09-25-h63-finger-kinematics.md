@@ -37,3 +37,11 @@
 2. `self_odometry.make_frame/validate_frame`仍只保存和验证q与平均gripper。capture前后检查不能防止后续把保存帧用于另一种同均值手形。审查已实际复现该替换仍返回有效digest；需将命名finger位置贯通保存帧版本、validator、odometry/substep、controller、runner及reanchor，同时覆盖legacy兼容和缺失输入拒绝。
 
 上文“保存帧保留两指身份”的表述仅对已扩展snapshot及capture时检查成立，不是self-odometry全链路验收。629 CPU通过不代表这两项已修复。当前转处理用户最新Zetta请求，全部H63源码修改保留、开关默认关闭，不部署、不合入；恢复H63时先修两项、补实际反例测试并重新独审，再考虑native物理检验。0新增物理结果或SR。
+
+## 11:03修复验证（北京时间）
+
+按G-AV1 goal续接，两项已实现修复：实际递归semantic_robot代码、runner及run_sim以相对路径/内容SHA绑定；self frame新增命名finger的v2版本，沿RGBDMotion、SubstepMotion、controller、reanchor、runner gate/中途/末帧及completion观察传递实际值。当前值缺失、帧降版本、同均值不对称替换、校准名字/范围/均值不符均拒绝；旧模型的旧frame不加新字段。
+
+新增12用例覆盖实际runner/digest AST、真实RGB-D estimator/controller调用、Substep末帧交付、实际reanchor及schema反例。相关63/63通过（0.525s），全量641/641通过（16.502s）；原审查者复核进行中。代码commit待独审后固定，开关仍默认关闭；未native多开度/真实碰撞面核验或启动新仿真，不宣称按压改善及完整成功。
+
+11:05最终CPU/复审：独审另指出named state+无finger校准旧model可生成v2，已加拒绝及逆向真实make/validate反例。现13新帧/digest用例，相关64/64（0.399s）、全量642/642（16.108s）通过；原独审最终确认三个问题均关闭、无剩余实质代码发现，独立最新30/30指/帧回归通过。默认关闭策略与native/物理/SR未验边界不变。

@@ -4,6 +4,7 @@ All inputs are robot proprioception / robot kinematics; no scene object access.
 Targets are latched per semantic unit, not repeatedly added each physics tick.
 """
 from dataclasses import dataclass
+from collections.abc import Mapping
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -18,6 +19,22 @@ def finite(value, shape):
     return value.copy()
 
 
+def named_finger_positions(value):
+    """Measured joints, never reconstruct two fingers from their mean opening."""
+    if value is None:
+        return None
+    if not isinstance(value, Mapping) or not 1 <= len(value) <= 32:
+        raise ValueError("Named finger joint positions required")
+    result = {}
+    for name, position in value.items():
+        if not isinstance(name, str) or not name or len(name) > 128:
+            raise ValueError("Invalid finger joint name")
+        if isinstance(position, (bool, np.bool_, str)):
+            raise ValueError("Finger position must be a finite scalar")
+        result[name] = float(finite(position, ()))
+    return result
+
+
 @dataclass
 class RobotState:
     q: np.ndarray  # trunk[4], left[7], right[7]
@@ -27,6 +44,7 @@ class RobotState:
     jacobians: dict  # each [6,18], in the same frame, columns ordered as q
     gripper: np.ndarray  # measured finger openings, [left_mean,right_mean] meters
     base_velocity: np.ndarray  # body-local vx,vy,wz, no global position
+    finger_qpos: dict | None = None  # optional measured joint-name -> metres, not means
 
     def __post_init__(self):
         for key in ("q", "lower", "upper"):
@@ -35,6 +53,7 @@ class RobotState:
             raise ValueError("Bad joint limits")
         self.gripper = finite(self.gripper, (2,))
         self.base_velocity = finite(self.base_velocity, (3,))
+        self.finger_qpos = named_finger_positions(self.finger_qpos)
         for name in ("left", "right", "torso"):
             pos, quat = self.poses[name]
             pos, quat = finite(pos, (3,)), finite(quat, (4,))
@@ -42,6 +61,12 @@ class RobotState:
                 raise ValueError("Expected normalized XYZW quaternion")
             self.poses[name] = (pos, quat)
             self.jacobians[name] = finite(self.jacobians[name], (6, 18))
+
+    def proprio_record(self):
+        result = {"q": self.q.tolist(), "gripper": self.gripper.tolist()}
+        if self.finger_qpos is not None:
+            result["finger_joint_positions_m"] = dict(self.finger_qpos)
+        return result
 
 
 def dls(jacobian, error, damping=.025, max_joint_step=.025):

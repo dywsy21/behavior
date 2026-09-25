@@ -101,6 +101,8 @@ class SearchReanchor:
         state = state_now()
         robot_frame = save_snapshot(controls, images, depths, sensor, state)
         kwargs = dict(robot_frame=robot_frame, gripper=state.gripper, control=controls) if use_self else {}
+        if use_self and state.finger_qpos is not None:
+            kwargs["finger_qpos"] = state.finger_qpos
         initial = motion.observe(images, depths, c.model, state.q, **kwargs)
         if initial.get("valid") is not True or initial.get("initial") is not True:
             receipt["reason"] = "NEW_REFERENCE_INITIALIZATION_FAILED"
@@ -120,6 +122,8 @@ class SearchReanchor:
                 state = state_now()
                 robot_frame = save_snapshot(controls+offset, images, depths, sensor, state)
                 kwargs = dict(robot_frame=robot_frame, gripper=state.gripper) if use_self else {}
+                if use_self and state.finger_qpos is not None:
+                    kwargs["finger_qpos"] = state.finger_qpos
                 measured = motion.sample(images, depths, c.model, state.q, controls+offset, **kwargs)
                 if not measured["valid"]:
                     receipt["chain"] = motion.finish(controls+offset, interrupted=True)
@@ -168,7 +172,9 @@ class SearchReanchor:
         h.search_reanchor = self.context()
         h.stop_reason = None
         snapshot = (controls+self.hold_controls, state.q.copy(), state.gripper.copy(), images, depths, sensor)
-        if use_self:
+        if getattr(state, "finger_qpos", None) is not None:
+            snapshot += (robot_frame if use_self else None, dict(state.finger_qpos))
+        elif use_self:
             snapshot += (robot_frame,)
         return receipt, snapshot
 

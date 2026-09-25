@@ -49,8 +49,14 @@ from semantic_robot.v2.run_budget import validate_run_budget
 
 
 def implementation_digest():
-    paths = sorted((REPO/"src/semantic_robot/v2").glob("*.py")) + [Path(__file__)]
-    return hashlib.sha256(b"".join(p.name.encode()+p.read_bytes() for p in paths)).hexdigest()
+    # Bind the actual proprio/control sources too, not only v2's wrappers.
+    # Relative paths distinguish equal basenames without tying a gate to one
+    # checkout directory. Older incomplete digests intentionally do not match.
+    paths = set((REPO/"src/semantic_robot").rglob("*.py"))
+    paths.update((Path(__file__), REPO/"scripts/semantic_robot/run_sim.py"))
+    records = [(p.relative_to(REPO).as_posix(), hashlib.sha256(p.read_bytes()).hexdigest())
+               for p in sorted(paths)]
+    return hashlib.sha256(json.dumps(records, separators=(",", ":")).encode()).hexdigest()
 
 
 def secondary_error_report(message):
@@ -94,6 +100,8 @@ def main():
     p.add_argument("--visual-odometry",action="store_true",help="Use quality-gated onboard RGB-D motion for coverage")
     p.add_argument("--active-grasp-probe",action="store_true",help="Bounded exploratory close; original grasp verification remains mandatory")
     p.add_argument("--contact-geometry",action="store_true",help="Experimental finger guides/tool translations; not mixed into the feedback-only comparison")
+    p.add_argument("--finger-kinematics",action="store_true",
+                   help="Record and compare named finger FK; does not enable a pressing policy")
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
     p.add_argument("--robot-geometry-guards", action="store_true",
                    help="Opt-in actual robot depth self-exclusion and fully-open hand/body collision envelopes")
@@ -144,7 +152,7 @@ def main():
         raise RuntimeError("Immutable clean source required")
     digest = implementation_digest()
     grounded=args.harness=="grounded"
-    if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe or args.contact_geometry or args.grasp_motion) and not grounded:
+    if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe or args.contact_geometry or args.grasp_motion or args.finger_kinematics) and not grounded:
         raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.near_contact_review and not (grounded and args.refine_grounding and args.visual_odometry):
         raise ValueError("Near contact review requires grounded refinement and measured visual motion")
@@ -202,6 +210,7 @@ def main():
                 g.get("appearance_memory",False)==args.appearance_memory and
                 g.get("visual_odometry",False)==args.visual_odometry and
                 g.get("contact_geometry",False)==args.contact_geometry and
+                g.get("finger_kinematics",False)==args.finger_kinematics and
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("robot_geometry_guards",False)==args.robot_geometry_guards and
                 g.get("gripper_completion_v1",False)==args.gripper_completion_v1 and
@@ -346,7 +355,7 @@ def main():
             onboard=OnboardRGBD(env) if grounded else None
             phase="ROBOT_CALIBRATION"
             kin = CalibratedRobot(env.robots[0])
-            model = kin.calibrate(grounded=grounded)
+            model = kin.calibrate(grounded=grounded, fingers=args.finger_kinematics)
             write(out/"robot_calibration.json",model.spec)
             write(out/"robot_metadata.json",kin.receipt())
             fd = model.finite_difference_error(model.reference)
@@ -356,7 +365,8 @@ def main():
 
             def state_now():
                 native = kin.state()
-                return model.state(native.q,native.gripper,native.base_velocity)
+                return model.state(native.q,native.gripper,native.base_velocity,
+                                   native.finger_qpos if args.finger_kinematics else None)
 
             def observation_now(label):
                 if onboard is None:
@@ -370,6 +380,8 @@ def main():
                     raise RuntimeError("Robot moved during render-only observation barrier")
                 if args.odometry_self_exclusion and not np.array_equal(native_before.gripper,native_after.gripper):
                     raise RuntimeError("Fingers moved during robot-self RGB-D observation barrier")
+                if args.finger_kinematics and native_before.finger_qpos != native_after.finger_qpos:
+                    raise RuntimeError("Individual fingers moved during RGB-D observation barrier")
                 check={"label":label,"cameras":receipt}
                 sensor_checks.append(check)
                 write(out/"sensor_checks.json",sensor_checks)
@@ -385,6 +397,8 @@ def main():
                 if any(not np.array_equal(getattr(current_state,key),getattr(s,key))
                        for key in ("q","gripper") for s in (before,after)):
                     raise RuntimeError("Robot changed while binding current self geometry")
+                if current_state.finger_qpos is not None and any(current_state.finger_qpos != s.finger_qpos for s in (before,after)):
+                    raise RuntimeError("Individual fingers changed while binding robot geometry")
                 return make_frame(images,depths,model,current_state,control,geometry)
 
             def check_fk(label):
@@ -529,6 +543,9 @@ def main():
                     if (previous_control!=controls or not np.array_equal(end_q,state.q)
                             or not np.array_equal(end_gripper,state.gripper)):
                         raise RuntimeError("Control/state changed before end-frame reuse")
+                    if args.finger_kinematics and (len(saved_end_snapshot) != 8 or
+                                                  saved_end_snapshot[7] != state.finger_qpos):
+                        raise RuntimeError("Individual finger state changed before end-frame reuse")
                     saved_end_snapshot=None
                 else:
                     images,depths,depth_receipt=observation_now(f"decision_{decision}")
@@ -541,7 +558,9 @@ def main():
                 if motion_frame is not None:write(directory/"robot_motion_frame.json",motion_frame)
                 if self_geometry is not None:write(directory/"robot_self_geometry.json",self_geometry)
                 for label,img in zip(bundle.labels,bundle.images): img.save(directory/(label+".png"))
-                write(directory/"proprio.json",{"q":state.q.tolist(),"gripper":state.gripper.tolist(),"geometry":bundle.geometry})
+                write(directory/"proprio.json",{**state.proprio_record(),"geometry":bundle.geometry})
+                if args.finger_kinematics:
+                    write(directory/"robot_finger_geometry.json",model.finger_geometry(state.q,state.finger_qpos))
                 if grounded:
                     np.savez_compressed(directory/"depth.npz",**depths)
                     write(directory/"depth_receipt.json",depth_receipt)
@@ -558,6 +577,8 @@ def main():
                 if gate_motion is not None:
                     motion_kwargs=(dict(robot_frame=motion_frame,gripper=state.gripper,control=controls)
                                    if args.odometry_self_exclusion else {})
+                    if args.odometry_self_exclusion and state.finger_qpos is not None:
+                        motion_kwargs["finger_qpos"]=state.finger_qpos
                     receipt=gate_motion.observe(images,depths,model,state.q,**motion_kwargs)
                     write(directory/"visual_odometry.json",receipt)
                     if not receipt["valid"]:
@@ -717,15 +738,19 @@ def main():
                     Image.fromarray(sample_images["head_rgb"].transpose(1,2,0)).save(location/"CURRENT_HEAD_RAW.png")
                     np.savez_compressed(location/"depth.npz",head=sample_depths["head"])
                     write(location/"depth_receipt.json",{"head":sample_receipts["head"]})
-                    write(location/"proprio.json",{"q":sample_state.q.tolist(),"gripper":sample_state.gripper.tolist()})
+                    write(location/"proprio.json",sample_state.proprio_record())
                     sample_frame=(capture_self_frame(controls,sample_images,sample_depths,sample_state)
                                   if args.odometry_self_exclusion else None)
                     if sample_frame is not None:write(location/"robot_motion_frame.json",sample_frame)
                     motion_kwargs=(dict(robot_frame=sample_frame,gripper=sample_state.gripper) if args.odometry_self_exclusion else {})
+                    if args.odometry_self_exclusion and sample_state.finger_qpos is not None:
+                        motion_kwargs["finger_qpos"]=sample_state.finger_qpos
                     measured=substep_motion.sample(sample_images,sample_depths,model,sample_state.q,controls,**motion_kwargs)
                     write(location/"visual_odometry.json",measured)
                     saved_end_snapshot=(controls,sample_state.q.copy(),sample_state.gripper.copy(),sample_images,sample_depths,sample_receipts)
-                    if args.odometry_self_exclusion:saved_end_snapshot+=(sample_frame,)
+                    if args.finger_kinematics:
+                        saved_end_snapshot+=(sample_frame,dict(sample_state.finger_qpos))
+                    elif args.odometry_self_exclusion:saved_end_snapshot+=(sample_frame,)
                     return measured["valid"]
                 if accepted:
                     while not servo.done and servo.ticks<servo.total_ticks and controls<action_control_limit:
@@ -790,12 +815,14 @@ def main():
                         Image.fromarray(post_images[view+"_rgb"].transpose(1,2,0)).save(post/("CURRENT_"+view.upper()+"_RAW.png"))
                     np.savez_compressed(post/"depth.npz",**post_depths)
                     write(post/"depth_receipt.json",post_receipt)
-                    write(post/"proprio.json",{"q":post_state.q.tolist(),"gripper":post_state.gripper.tolist()})
+                    write(post/"proprio.json",post_state.proprio_record())
                     motion_kwargs={}
                     if args.odometry_self_exclusion:
                         post_frame=saved_end_snapshot[6]
                         write(post/"robot_motion_frame.json",post_frame)
                         motion_kwargs=dict(robot_frame=post_frame,gripper=post_state.gripper,control=controls)
+                        if post_state.finger_qpos is not None:
+                            motion_kwargs["finger_qpos"]=post_state.finger_qpos
                     motion_receipt=gate_motion.observe(post_images,post_depths,model,post_state.q,**motion_kwargs)
                     write(post/"visual_odometry.json",motion_receipt)
                     write(post/"raw_servo_feedback.json",raw_servo_feedback)
@@ -826,7 +853,7 @@ def main():
                             Image.fromarray(raw_images[view+"_rgb"].transpose(1,2,0)).save(location/("CURRENT_"+view.upper()+"_RAW.png"))
                         np.savez_compressed(location/"depth.npz",**raw_depths)
                         write(location/"depth_receipt.json",receipts)
-                        write(location/"proprio.json",{"q":current_state.q.tolist(),"gripper":current_state.gripper.tolist(),"control":control})
+                        write(location/"proprio.json",{**current_state.proprio_record(),"control":control})
                         if controller.odometry_self_exclusion:
                             frame=capture_self_frame(control,raw_images,raw_depths,current_state)
                             write(location/"robot_motion_frame.json",frame)
@@ -893,7 +920,7 @@ def main():
                       "appearance_memory":args.appearance_memory,
                       "visual_odometry":args.visual_odometry,
                       "active_grasp_probe":args.active_grasp_probe,
-                      "contact_geometry":args.contact_geometry,"grasp_motion":args.grasp_motion,
+                      "contact_geometry":args.contact_geometry,"finger_kinematics":args.finger_kinematics,"grasp_motion":args.grasp_motion,
                       "robot_geometry_guards":args.robot_geometry_guards,
                       "gripper_completion_v1":args.gripper_completion_v1,
                       "carry_duration_v1":args.carry_duration_v1,

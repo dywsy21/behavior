@@ -177,12 +177,21 @@ class RobotModel:
         return {arm: (self.forward(q, arm) @ np.r_[points.get(arm, [0., 0., 0.]), 1.])[:3]
                 for arm in ("left", "right")}
 
-    def state(self, q, gripper, base_velocity):
+    def state(self, q, gripper, base_velocity, finger_qpos=None):
         poses, jac = {}, {}
         for name in ("left", "right", "torso"):
             T, jac[name] = self.evaluate(q, name)
             poses[name] = (T[:3, 3], Rotation.from_matrix(T[:3, :3]).as_quat())
-        return RobotState(q, self.lower, self.upper, poses, jac, gripper, base_velocity)
+        return RobotState(q, self.lower, self.upper, poses, jac, gripper, base_velocity, finger_qpos)
+
+    def finger_geometry(self, q, finger_qpos):
+        """Actual separate finger joints; legacy calibration explicitly abstains."""
+        from .finger_kinematics import FingerKinematics
+        spec = self.spec.get("metadata", {}).get("finger_kinematics")
+        if spec is None or finger_qpos is None:
+            return {"valid": False, "reason": "NAMED_FINGER_CALIBRATION_OR_PROPRIO_UNAVAILABLE"}
+        return FingerKinematics(spec).geometry(
+            {arm: self.forward(q, arm) for arm in ("left", "right")}, finger_qpos)
 
     def grasp_regions(self, q, gripper):
         """Reference-opening finger regions only; changed aperture ABSTAINS.

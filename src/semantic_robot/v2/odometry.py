@@ -130,13 +130,13 @@ class RGBDMotion:
         self.sift=cv2.SIFT_create(nfeatures=2000);self.matcher=cv2.BFMatcher()
         self.previous=None
 
-    def observe(self,images,depths,model,q, *, robot_frame=None, gripper=None, control=None):
+    def observe(self,images,depths,model,q, *, robot_frame=None, gripper=None, control=None, finger_qpos=None):
         cv2=self.cv2
         self_signature=None
         if self.exclude_robot:
             from .self_odometry import validate_frame
-            self_signature=validate_frame(robot_frame,images,depths,model,q,gripper,control)
-        elif robot_frame is not None or gripper is not None or control is not None:
+            self_signature=validate_frame(robot_frame,images,depths,model,q,gripper,control,finger_qpos=finger_qpos)
+        elif robot_frame is not None or gripper is not None or control is not None or finger_qpos is not None:
             raise ValueError("Robot metadata supplied to disabled self exclusion")
         rgb=np.asarray(images["head_rgb"])
         if rgb.shape[0]==3:rgb=rgb.transpose(1,2,0)

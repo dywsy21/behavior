@@ -109,6 +109,59 @@ class CalibratedRobot(OGKinematics):
         return {arm:np.mean([side.mean(axis=0) for side in sides],axis=0)
                 for arm,sides in self.native_grasp_regions().items()}
 
+    def finger_kinematics(self, state):
+        """Export only the R1Pro robot's named prismatic fingers, not contacts."""
+        from .finger_kinematics import FingerKinematics, SOURCE, link_reference
+        if not r1pro_parallel_hand_supported(self.robot):
+            raise ValueError("Finger calibration requires the supported R1Pro parallel hand")
+        joints = array(self.robot.get_joint_positions())
+        all_jac = array(self.api.get_all_relative_jacobians(self.path))
+        if all_jac.shape[0] != 1 or all_jac.shape[-1] - len(joints) not in (0, 6):
+            raise ValueError("Unexpected native finger Jacobian layout")
+        offset = all_jac.shape[-1] - len(joints)
+        all_jac = all_jac[0]
+        all_names = list(self.robot.joints)
+        joint_indices = {arm: array(self.robot.gripper_control_idx[arm]).astype(int)
+                         for arm in ("left", "right")}
+        all_fingers = np.r_[joint_indices["left"], joint_indices["right"]]
+        if len(all_fingers) != 4 or len(set(all_fingers)) != 4:
+            raise ValueError("Four independent native finger joints required")
+        spec = {"version": 1, "frame": "eef", "source": SOURCE, "scene_truth": False,
+                "embodiment": "R1Pro_parallel_prismatic_jaws", "arms": {}}
+        for arm in ("left", "right"):
+            names = list(self.robot.finger_joint_names[arm])
+            indices = joint_indices[arm]
+            if len(indices) != 2 or [all_names[int(i)] for i in indices] != names:
+                raise ValueError("Native finger indices and joint names disagree")
+            if state.finger_qpos is None or any(state.finger_qpos[n] != float(joints[i])
+                                                for n, i in zip(names, indices)):
+                raise ValueError("Robot moved while exporting finger reference")
+            eef = transform(*state.poses[arm])
+            eef_row = self.api.get_link_index(self.path, self.links[arm]) - 1
+            if eef_row < 0 or np.max(np.abs(all_jac[eef_row][:, all_fingers + offset])) > 1e-7:
+                raise ValueError("EEF must be independent of both finger pairs")
+            row = {"joint_names": names, "q_reference": joints[indices].tolist(),
+                   "lower": array(self.robot.joint_lower_limits)[indices].tolist(),
+                   "upper": array(self.robot.joint_upper_limits)[indices].tolist(), "links": {}}
+            other = joint_indices["right" if arm == "left" else "left"]
+            for name in self.robot.finger_link_names[arm]:
+                index = self.api.get_link_index(self.path, name) - 1
+                if index < 0 or np.max(np.abs(all_jac[index][:, other + offset])) > 1e-7:
+                    raise ValueError("Finger link is not independent of the opposite hand")
+                p, quat = (array(v) for v in self.api.get_link_relative_position_orientation(self.path, name))
+                entry = link_reference(eef, transform(p, quat),
+                                       all_jac[index][:, indices + offset], self.local_com(name))
+                points = [array(point.position).tolist()
+                          for definitions in (self.robot.assisted_grasp_start_points,
+                                              self.robot.assisted_grasp_end_points)
+                          for point in definitions[arm] if point.link_name == name]
+                entry["grasp_strip_points_local_m"] = points
+                row["links"][name] = entry
+            spec["arms"][arm] = row
+        FingerKinematics(spec).geometry(
+            {arm: transform(*state.poses[arm]) for arm in ("left", "right")}, state.finger_qpos)
+        return spec
+
     def local_com(self, name):
         if not hasattr(self, "_local_com"):
             self._local_com = {}
@@ -123,7 +176,7 @@ class CalibratedRobot(OGKinematics):
                 state.jacobians[name], state.poses[name][1], self.local_com(link))
         return state
 
-    def calibrate(self, grounded=False):
+    def calibrate(self, grounded=False, fingers=False):
         import omnigibson.lazy as lazy
         state = self.state()
         poses, jacobians = dict(state.poses), dict(state.jacobians)
@@ -182,6 +235,8 @@ class CalibratedRobot(OGKinematics):
                     "jacobian_point": "link_origin_corrected_from_physx_com",
                     "local_link_com": {name: value.tolist() for name, value in self._local_com.items()},
                     "collision": "3cm arm capsules, 8cm wrist separation; not environment mesh collision"}
+        if fingers:
+            metadata["finger_kinematics"] = self.finger_kinematics(state)
         if grounded:
             metadata["base_visual_surface"]=self.base_visual_surface()
             metadata["robot_visual_boxes_reference"]=self.native_self_boxes()
@@ -233,4 +288,17 @@ class CalibratedRobot(OGKinematics):
                     error=max(float(np.linalg.norm(np.asarray(pred)-real,axis=1).max())
                               for pred,real in zip(row["sides_base_m"],actual[arm]))
                     result["grasp_region_"+arm]={"position_m":error,"angle_rad":0.}
+        if "finger_kinematics" in model.spec["metadata"]:
+            geometry = model.finger_geometry(state.q, state.finger_qpos)
+            if not geometry["valid"]:
+                raise ValueError("Current named finger geometry unavailable for native comparison")
+            for arm, links in geometry["arms"].items():
+                for name, row in links.items():
+                    predicted = np.asarray(row["T_base_link"])
+                    p, quat = (array(v) for v in self.api.get_link_relative_position_orientation(self.path, name))
+                    actual = transform(p, quat)
+                    result["finger_" + arm + "_" + name] = {
+                        "position_m": float(np.linalg.norm(predicted[:3, 3] - actual[:3, 3])),
+                        "angle_rad": float(np.linalg.norm(Rotation.from_matrix(
+                            predicted[:3, :3] @ actual[:3, :3].T).as_rotvec()))}
         return result

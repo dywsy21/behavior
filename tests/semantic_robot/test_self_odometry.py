@@ -168,9 +168,12 @@ class SelfOdometryTests(unittest.TestCase):
         node=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=="capture_self_frame")
         code=compile(ast.fix_missing_locations(ast.Module(body=[node],type_ignores=[])),"actual_self_capture","exec")
         kin=Mock();kin.native_self_boxes.return_value=self.geometry
-        for key in ("q","gripper",None):
+        for key in ("q","gripper","finger_qpos",None):
+            self.state.finger_qpos={"finger0":.02,"finger1":.03} if key=="finger_qpos" else None
             after=copy.deepcopy(self.state)
-            if key is not None:getattr(after,key)[0]+=.01
+            if key=="finger_qpos":
+                after.finger_qpos["finger0"]+=.001;after.finger_qpos["finger1"]-=.001
+            elif key is not None:getattr(after,key)[0]+=.01
             state_now=Mock(side_effect=[self.state,after])
             ns={"np":np,"kin":kin,"model":self.model,"state_now":state_now};exec(code,ns)
             if key is None:

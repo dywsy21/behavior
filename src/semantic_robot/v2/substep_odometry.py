@@ -55,21 +55,25 @@ class SubstepMotion:
         self.failed = False
         self.exclude_robot = getattr(estimator, "exclude_robot", False) is True
 
-    def _bound(self, images, depths, model, q, robot_frame, gripper, control):
+    def _bound(self, images, depths, model, q, robot_frame, gripper, control, finger_qpos):
         current = signature(images, depths, model, q)
         if self.exclude_robot:
             from .self_odometry import validate_frame
-            current.update(robot_frame_sha256=validate_frame(robot_frame, images, depths, model, q, gripper, control),
+            current.update(robot_frame_sha256=validate_frame(robot_frame, images, depths, model, q, gripper, control,
+                                                            finger_qpos=finger_qpos),
                            control=control)
-            return current, dict(robot_frame=robot_frame, gripper=gripper, control=control)
-        if robot_frame is not None or gripper is not None or control is not None:
+            kwargs = dict(robot_frame=robot_frame, gripper=gripper, control=control)
+            if finger_qpos is not None:
+                kwargs["finger_qpos"] = finger_qpos
+            return current, kwargs
+        if robot_frame is not None or gripper is not None or control is not None or finger_qpos is not None:
             raise ValueError("Self frame supplied to disabled robot exclusion")
         return current, {}
 
-    def observe(self, images, depths, model, q, *, robot_frame=None, gripper=None, control=None):
+    def observe(self, images, depths, model, q, *, robot_frame=None, gripper=None, control=None, finger_qpos=None):
         if self.active:
             raise ValueError("An action must finish before delivery")
-        current, kwargs = self._bound(images, depths, model, q, robot_frame, gripper, control)
+        current, kwargs = self._bound(images, depths, model, q, robot_frame, gripper, control, finger_qpos)
         if self.pending is not None:
             # Runner reuses the exact end-of-action snapshot at the SAME control
             # count. Do not recompute only the final subinterval as the full move.
@@ -99,12 +103,12 @@ class SubstepMotion:
         self.total = np.eye(4)
         self.segments = []
 
-    def sample(self, images, depths, model, q, control, *, robot_frame=None, gripper=None):
+    def sample(self, images, depths, model, q, control, *, robot_frame=None, gripper=None, finger_qpos=None):
         if (not self.active or self.failed or type(control) is not int
                 or not 0 < control-self.last <= self.interval):
             raise ValueError("Positive bounded control gap required; no skipped interval")
         current, kwargs = self._bound(images, depths, model, q, robot_frame, gripper,
-                                      control if self.exclude_robot else None)
+                                      control if self.exclude_robot else None, finger_qpos)
         receipt = copy.deepcopy(self.estimator.observe(images, depths, model, q, **kwargs))
         valid = receipt.get("valid") is True and not receipt.get("initial", False)
         if valid:

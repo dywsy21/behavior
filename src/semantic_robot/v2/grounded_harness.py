@@ -385,6 +385,8 @@ class GroundedController:
     def update_motion(self,images,depths,state, *, robot_frame=None, control=None):
         if self.motion is None:raise ValueError("Visual motion was not enabled")
         kwargs=(dict(robot_frame=robot_frame,gripper=state.gripper,control=control) if self.odometry_self_exclusion else {})
+        if self.odometry_self_exclusion and state.finger_qpos is not None:
+            kwargs["finger_qpos"]=state.finger_qpos
         if not self.odometry_self_exclusion and (robot_frame is not None or control is not None):
             raise ValueError("Self frame supplied to disabled robot exclusion")
         receipt=self.motion.observe(images,depths,self.model,state.q,**kwargs)

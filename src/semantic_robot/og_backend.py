@@ -53,9 +53,19 @@ class OGKinematics:
             jacobians[name] = jac[0, row][:, self.indices + offset]
         # Native proprio getter computes local base velocities; whitelist selected fields.
         proprio = self.robot._get_proprioception_dict()
+        finger_positions = {}
+        for arm in ("left", "right"):
+            names = self.robot.finger_joint_names[arm]
+            indices = array(self.robot.gripper_control_idx[arm]).astype(int)
+            if len(names) != len(indices) or len(set(names)) != len(names):
+                raise ValueError("Named finger joints do not match native control indices")
+            for name, index in zip(names, indices):
+                if name in finger_positions:
+                    raise ValueError("Duplicate finger joint name across arms")
+                finger_positions[name] = float(joint[index])
         return RobotState(joint[self.indices], self.lower, self.upper, poses, jacobians,
                           np.array([array(proprio[f"gripper_{arm}_qpos"]).mean() for arm in ("left", "right")]),
-                          array(proprio["base_qvel"]))
+                          array(proprio["base_qvel"]), finger_positions)
 
     def receipt(self):
         return {"native_action_dim": 23, "joint_indices": self.indices.tolist(), "links": self.links,

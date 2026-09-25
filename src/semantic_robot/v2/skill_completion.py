@@ -274,8 +274,10 @@ def verify_grasp_request(model, goal, records, request_capture, *, localize, dea
             _deadline(deadline)
             rgb = {v + "_rgb": frame.images[v] for v in VIEWS}
             robot_frame = make_frame(rgb, frame.depths, model, frame.state, frame.control, frame.geometry)
+            finger_kwargs = ({"finger_qpos": frame.state.finger_qpos}
+                             if frame.state.finger_qpos is not None else {})
             odometry = motion.observe(rgb, frame.depths, model, frame.state.q, robot_frame=robot_frame,
-                                      gripper=frame.state.gripper, control=frame.control)
+                                      gripper=frame.state.gripper, control=frame.control, **finger_kwargs)
             result["localization_calls"] += 1
             evidence = localize(frame, goal)
             _deadline(deadline)

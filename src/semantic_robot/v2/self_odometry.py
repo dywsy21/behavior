@@ -9,11 +9,14 @@ import json
 
 import numpy as np
 
+from semantic_robot.control import named_finger_positions
 from .grasp_motion import robot_point_mask
 from .grounding import validate_depth
 
 
 VERSION = "current_robot_self_odometry_v1"
+FINGER_VERSION = "current_robot_self_odometry_v2_named_fingers"
+FINGER_KEY = "finger_joint_positions_m"
 
 
 def digest(value):
@@ -60,12 +63,16 @@ def make_frame(images, depths, model, state, control, geometry):
     frame = {"version": VERSION, "control": control, "q": state.q.tolist(),
              "gripper": state.gripper.tolist(), "sensors": sensor_hashes(images, depths, model),
              "geometry": copy.deepcopy(geometry)}
-    validate_frame(frame, images, depths, model, state.q, state.gripper, control)
+    if state.finger_qpos is not None:
+        frame.update(version=FINGER_VERSION)
+        frame[FINGER_KEY] = named_finger_positions(state.finger_qpos)
+    validate_frame(frame, images, depths, model, state.q, state.gripper, control,
+                   finger_qpos=state.finger_qpos)
     return frame
 
 
-def validate_frame(frame, images, depths, model, q, gripper, control):
-    if (not isinstance(frame, dict) or frame.get("version") != VERSION or
+def validate_frame(frame, images, depths, model, q, gripper, control, *, finger_qpos=None):
+    if (not isinstance(frame, dict) or frame.get("version") not in (VERSION, FINGER_VERSION) or
             type(control) is not int or control < 0 or
             type(frame.get("control")) is not int or frame["control"] != control):
         raise ValueError("Current robot self frame and exact integer control clock required")
@@ -75,6 +82,31 @@ def validate_frame(frame, images, depths, model, q, gripper, control):
         if (actual.shape != shape or recorded.shape != shape or
                 not np.isfinite(actual).all() or not np.array_equal(actual, recorded)):
             raise ValueError("Robot self frame has stale or unknown " + key)
+    finger_spec = model.spec["metadata"].get("finger_kinematics")
+    needs_fingers = (finger_spec is not None or finger_qpos is not None or
+                     FINGER_KEY in frame or frame["version"] == FINGER_VERSION)
+    if needs_fingers:
+        if finger_spec is None:
+            raise ValueError("Named finger self frame requires robot finger calibration")
+        # An omitted current reading or a downgraded frame cannot silently use
+        # the old mean-only contract after finger kinematics is enabled.
+        if frame["version"] != FINGER_VERSION:
+            raise ValueError("Named finger state cannot use a legacy self frame")
+        measured = named_finger_positions(finger_qpos)
+        recorded = named_finger_positions(frame.get(FINGER_KEY))
+        if measured is None or recorded is None or measured != recorded:
+            raise ValueError("Robot self frame has stale or unknown individual finger positions")
+        if finger_spec is not None:
+            from .finger_kinematics import FingerKinematics
+            fingers = FingerKinematics(finger_spec)
+            if set(measured) != fingers.joint_names:
+                raise ValueError("Self frame finger names do not match robot calibration")
+            for i, arm in enumerate(("left", "right")):
+                names, _, lower, upper, _ = fingers.arms[arm]
+                values = np.asarray([measured[n] for n in names])
+                if (np.any(values < lower - 1e-5) or np.any(values > upper + 1e-5) or
+                        not np.isclose(np.mean(values), gripper[i], atol=1e-7, rtol=0)):
+                    raise ValueError("Self frame finger limits or measured mean disagree")
     if frame.get("sensors") != sensor_hashes(images, depths, model):
         raise ValueError("Robot self frame does not belong to these RGB-D bytes")
     checked_geometry(frame.get("geometry"), model)
