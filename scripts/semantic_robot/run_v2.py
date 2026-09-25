@@ -54,6 +54,8 @@ def implementation_digest():
     # checkout directory. Older incomplete digests intentionally do not match.
     paths = set((REPO/"src/semantic_robot").rglob("*.py"))
     paths.update((Path(__file__), REPO/"scripts/semantic_robot/run_sim.py"))
+    from native_full_profile import DEPENDENCY_FILES
+    paths.update(REPO/"scripts/semantic_robot"/name for name in DEPENDENCY_FILES)
     records = [(p.relative_to(REPO).as_posix(), hashlib.sha256(p.read_bytes()).hexdigest())
                for p in sorted(paths)]
     return hashlib.sha256(json.dumps(records, separators=(",", ":")).encode()).hexdigest()
@@ -137,6 +139,8 @@ def main():
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--replay-prefix-spec",help="Hash-pinned saved-action diagnostic warm start, counted separately from policy")
     p.add_argument("--gpu", type=int, default=3)
+    p.add_argument("--native-profile", choices=("original", "a100_full_v1"), default="original")
+    p.add_argument("--native-runtime", help="Separately reserved private A100 cache/portable root")
     p.add_argument("--uri", default="http://127.0.0.1:8907")
     p.add_argument("--expected-revision")
     p.add_argument("--structured-planning", action="store_true")
@@ -148,6 +152,10 @@ def main():
                    help="Explicitly registered original-start extension; gates and prefixes keep pilot limits")
     args = p.parse_args()
     validate_run_budget(args)
+    if args.native_profile != "original" and (args.gpu != 3 or not args.native_runtime):
+        raise ValueError("A100 profile requires physical GPU3 and private runtime")
+    if args.native_profile == "original" and args.native_runtime:
+        raise ValueError("Native runtime supplied without its explicit profile")
     if args.task == 3 and args.prefix:
         raise ValueError("Task3 has no registered expert prefix")
     if subprocess.check_output(["git","-C",str(REPO),"status","--porcelain"],text=True).strip():
@@ -216,6 +224,7 @@ def main():
             raise ValueError("Model identity and both task pose gates required")
         gates = [json.loads(Path(path).read_text()) for path in args.gate_result]
         if {g["task"] for g in gates} != {0,3} or not all(g["gate_ok"] and g["implementation_digest"] == digest and
+                g.get("native_profile", "original")==args.native_profile and
                 g.get("harness","v2")==args.harness and
                 g.get("refine_grounding",False)==args.refine_grounding and
                 g.get("near_contact_review",False)==args.near_contact_review and
@@ -257,6 +266,13 @@ def main():
     os.environ["BEHAVIOR_ACTION_STEPS"] = "1"
     sys.path.insert(0,str(ADAPTER))
     from native_oracle_low_v1.official_factory import load_official_oracle_window, OfficialEvaluatorSession
+    session_factory=OfficialEvaluatorSession
+    if args.native_profile != "original":
+        import native_full_profile
+        from native_oracle_low_v1 import official_factory
+        def session_factory(window, *, gpu):
+            return native_full_profile.session(official_factory, window, gpu=gpu,
+                output=out, runtime=args.native_runtime)
     from PIL import Image, ImageDraw
     import imageio.v2 as imageio
     path = WINDOWS/WINDOW_NAMES[args.task]/"window.json"
@@ -276,6 +292,7 @@ def main():
     # Retain it for static reproduction, not as the production default.
     manifest = {"code_commit":subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip(),
                 "implementation_digest":digest, "args":vars(args), "instance":window.instance_id,
+                "native_profile":args.native_profile,
                 "task":args.task,"task_name":window.task_name,"split":"train","seed":0,
                 "window_sha":sha(path),"robot_sha":ROBOT_SHA,"model_identity":policy.identity if policy else None,
                 "training_updates":0,"evaluator":"v3.9.1-development-not-official-v3.9.2",
@@ -324,7 +341,7 @@ def main():
     @contextmanager
     def recorded_session():
         nonlocal controls
-        with OfficialEvaluatorSession(window,gpu=args.gpu) as environment:
+        with session_factory(window,gpu=args.gpu) as environment:
             try:
                 yield environment
             except BaseException as exc:
@@ -971,6 +988,7 @@ def main():
                 stop_reason=("OFFICIAL_EPISODE_TERMINATED" if terminal else "CONTROL_BUDGET_REACHED" if controls>=args.max_controls
                              else "WALL_TIME_BUDGET_REACHED" if time.perf_counter()-started>=args.max_seconds else "DECISION_BUDGET_REACHED")
             result = {"status":"complete","task":args.task,"controls":controls,"prefix_controls":prefix_count,
+                      "native_profile":args.native_profile,
                       "diagnostic_replay_controls":replay_count,
                       "diagnostic_replay_purpose":replay["receipt"]["purpose"] if replay is not None else None,
                       "matched_grasp_feedback_diagnostic":replay is not None and replay["receipt"]["purpose"]=="matched_grasp_feedback_diagnostic",

@@ -148,14 +148,16 @@ def validate_capture(before, after, images, depths, sensors, resolution_profile=
             raise ValueError('Head RGB appears blank')
 
 
-def trace_session_imports(imports, record):
+def trace_session_imports(imports, record, *, instance_id=138):
     """Observe the three outer Session API calls, not internal settling steps.
 
     Wrap only the newly created evaluator instance; installed classes and shared
     modules are untouched. A completed event is recorded only after it returns.
     """
     original_factory = imports.Evaluator
-    sequence = [('reset', None), ('load_task_instance', 138), ('reset', None)]
+    if type(instance_id) is not int or instance_id < 0:
+        raise ValueError('Frozen nonnegative integer instance required')
+    sequence = [('reset', None), ('load_task_instance', instance_id), ('reset', None)]
     record['official_api_events'] = []
     record['official_api_resets'] = record['load_frozen_instance_calls'] = 0
     constructed = False

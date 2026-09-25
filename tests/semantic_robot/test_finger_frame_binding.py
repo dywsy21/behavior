@@ -207,6 +207,10 @@ class ImplementationDigestTests(unittest.TestCase):
         self.files = ("src/semantic_robot/control.py", "src/semantic_robot/og_backend.py",
                       "src/semantic_robot/v2/control.py", "src/semantic_robot/v2/nested/model.py",
                       "scripts/semantic_robot/run_v2.py", "scripts/semantic_robot/run_sim.py")
+        import sys
+        sys.path.insert(0, str(RUNNER.parent))
+        from native_full_profile import DEPENDENCY_FILES
+        self.files += tuple('scripts/semantic_robot/' + p for p in DEPENDENCY_FILES)
 
     def build(self, name):
         root = self.root / name

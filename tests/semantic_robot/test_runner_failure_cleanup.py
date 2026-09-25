@@ -47,7 +47,7 @@ class RunnerFailureCleanupTests(unittest.TestCase):
         if fault == "trace_write": trace.write.side_effect = OSError("TRACE_SECONDARY")
         if fault == "trace_close": trace.close.side_effect = OSError("CLOSE_SECONDARY")
         if fault == "video_close": video.close.side_effect = OSError("CLOSE_SECONDARY")
-        ns = dict(contextmanager=contextmanager, OfficialEvaluatorSession=fake_environment, window=None,
+        ns = dict(contextmanager=contextmanager, session_factory=fake_environment, window=None,
                   args=SimpleNamespace(gpu=3, odometry_substep_controls=6, max_controls=12),
                   controls=6, out=VirtualPath(), write=writer, policy=None, phase="CONTROL", reset_completed=True,
                   terminal=terminal, prefix_count=0, replay_count=0, decisions=[], digest="test", servo=servo,

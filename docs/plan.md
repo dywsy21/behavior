@@ -10,6 +10,21 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 13:46（北京时间）：H69完整场景基础gate准备（Codex）
+
+14:01最终独审闭合：修后全部102邻接CPU过1.318s、完整703中698过/5本地SDK skip（30.638s）；独立59通过且无剩余实质阻塞，另独立无GPU孤儿进程组验证清理成功。补helper预载/实际origin双绑定，防ADAPTER同名阴影。准备固定Git、robo依赖/CPU/资源预检；0物理启动，完整SR未变。
+
+13:49实现更新：默认关闭的`native_full_profile.py`接入实际runner、profile/全部复用startup模块参与gate摘要；`launch_h69.py`单次预约/独立2400s监管/只清理自己的child已实现。新9项＋旧startup/camera/finger绑定共92 CPU过0.970s，完整semantic与独审进行中；还没有robo运行。H68 7a1b203已push确认。
+
+13:52新资源：05:49:21 UTC GPU0队友3561374/12462MiB，GPU1/2/3空。H69尚未launch，门细化为0/1既有PID/baseline只读保留、2/3启动独占，限制我们辅助512MiB与相对增量、各卡8GiB余量；新未知PID停自己，不动队友。已补GPU0既有12GiB＋本进程400MiB允许、513拒绝回归；该delta与独审/完整回归待，原单次预算不变。
+
+13:57独审修复：补退出后/验收后wall复核；清理显式自有PGID（含leader已退出及getpgid竞态），12+12s给最终采样留余量；launcher纳摘要并严格比manifest commit/完整args/138/train/seed0/零训练模型和result所有flags。原reset/load事件复用实调用追踪。100邻接过1.249s，最后delta再验及独审进行；初703全量的12失败均为旧AST装置仍注入OfficialEvaluatorSession名字，改为真实session_factory后在重跑，不称原全量过。尚未部署/仿真。
+
+13:58修后：100邻接过1.311s、完整703中698pass/5本地SDK skip过28.959s；再补真实argparse/manifest对照，本票14过0.066s、diff clean，最终独审待。未新增GPU/模型/训练/场景，下一固定commit及robo实依赖/资源门。
+
+- H68固定7a1b203，最终703回归/独审过；新票只验原task0 TRAIN138/seed0完整场景基础动作，不直接放行press，不重复H67。采用已审进程私有PT与720/480三相机配置，renderer分布变化显式记入门，0模型/训练/专家或旧policy前缀。
+- 单次24decision/1536control/动作1200s、外墙钟2400s＋30清理，GPU3≤24GiB且保留8GiB、辅助每卡≤512MiB、CPU72–75；未知进程/资源或原测量门失败停止，不自动追加。当前只有[预登记](experiments/2026-09-25-h69-native-gate.md)，新入口实现/独审/源码固定/真实启动均待。完整官方SR仍未达到。
+
 ### 2026-09-25 13:14（北京时间）：H68按压执行协议实现中（Codex）
 
 13:42修后验收：22目标CPU及最终独审通过（独立11.827s）；最后逐tick实际面/通道反例加入后，完整semantic703项中698通过/5本地SDK skip（28.906s），diff clean。两项原独审阻塞已关闭，默认仍关闭；只验理想plant/合成RGB-D链，不当真实接触或SR。准备固定Git，下一单独登记空闲GPU3完整场景基础gate，不直接放行press策略。
