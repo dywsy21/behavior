@@ -19,3 +19,7 @@
 独审两缺口已修：必须验证decision11真执行和完整base链对应的每snapshot六条前/后render序列及RGB-D SHA；不能靠“12决策”或两行日志放行。失败时在native context退出前封存partial摘要，secondary保存失败不覆盖原错。诊断完成仍不等于gate通过，0launch；最终回归/独审待。
 
 观测者效应限定：额外get_obs和PhysX张量读取可能同步GPU，虽没有新增render/physics，异步时序仍不与H71完全相同。现每事件先读head/取指纹，再读PhysX/Fabric，并记录两部分monotonic耗时和实际张量backend/device。若H72不再出现重复图，不能单凭它排除H71的发布滞后；需考虑额外读引入的等待。摘要明确instrumented_timing_not_identical_to_H71=true。
+
+15:45最终审结：父118邻接过0.991s、完整semantic703中698过/5skip28.842s；独立14目标0.059s，三项已关闭、无新实质阻塞。固定运行源b59498f834bfb86e79f920ddf0f9708b0fb4764e已push，robo新worktree/CPU预检中，仍0launch。私有native API/真实backend和物理诊断尚待。
+
+15:46唯一原生提交：robo clean `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/observation_clock_b59498f`，118 CPU1.910s/24＋3依赖/资产/资源门过。原normal digest6e50eb1b…0661e保持、diagnostic digest ab1306a356945c872a1ea0a7fe1187f4cecd1a26bb8663c4b8d3c6a8ccd83fdc。launch UTC07:46:36.616892/supervisor3585374；GPU0队友3564916/12548MiB保持、1/2/3空。预算不变，真实初始化/终态待，不重提。
