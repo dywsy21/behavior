@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 17:54（北京时间）：H76原图审查候选唯一提取提交（Codex）
+
+- 固定71a050db68bba7b92acc6baff524407eef68abd7，robo独立visual_review_71a050d；同源10 CPU0.350s、真实5个episode meta SHA/隔离区/36预选frame/12实例分组及依赖过（av14.2.0/pyarrow22.0.0/Pillow10.2.0）。原0/中间/90%帧全部不在quarantine，无替换。
+- 正唯一执行108原图提取，CPU48–49从外层taskset开始限制，240s内部/270s远端timeout/330sSSH、1GiB；外层time/exit保存在h76_raw_review_v1.stdout.log，run在/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h76_raw_review_v1。真实完成与parent人工图审待，全部training_eligible=false，0模型/控制/训练。
+- H75仍固定c54ade1原预算，最新409controls/82capture-read、0I/O错误；尚未看到24动作终态，不热改或扩大。
+
 ### 2026-09-25 17:36（北京时间）：H75唯一原生复验运行中（Codex）
 
 17:47真实同步已有实证：原run119control均＋4ticks、27capture/read均通过；逐RP FrameNumber=437和scheduled/completed437/30同批，基线全局431/30、上一RP427/30后严格推进，physics509/4.2416669秒捕获前后不动。175行native_io完整至当时，已越过H74首capture失败；原动作gate与完整SR仍待，预算不变。

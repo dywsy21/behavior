@@ -17,3 +17,5 @@
 提取/人工检查后先看是否真有跨实例、视角内可见/不可见和可定位部件覆盖。没有覆盖就如实列缺口；具备后另登记短微调＋同split零微调对照，保持训练/推理输入协议一致。此集不是新独立完整任务测试，不把静态定位改善称SR提升。
 
 17:53本地实现/审查闭合：10目标0.215s、全SFT198/1986.176s、独立10/10/0.188s与diff过。修正了首集成tuple/list持久化、失败写证据盖原错、部分文件误收及重新seal绕过source/预算合同；真实prepare mock覆盖成功108图、失败、SHA篡改、seal后超时、错误组/frame/split及缺启动回执。尚0真实提取/训练；先固定Git并核robo真实依赖/meta/quarantine，CPU过不当真实图已合格。
+
+17:54唯一提交：source71a050db68bba7b92acc6baff524407eef68abd7/visual_review_71a050d，robo10测试0.350s，真实episode meta/quarantine SHA和36固定frame全过。av14.2.0/pyarrow22.0.0/Pillow10.2.0，实际外层补taskset48,49让import也受两CPU限制；270s timeout＋5s kill/330s SSH，stdout/time保存在新run旁侧.log。尚未确认108图完成/原始尺寸/人工标注，没有训练发布。最终split来源：t0 train135/31/70 val53；t1 train194/8/278 val185；t3 train96/146/252 val220。

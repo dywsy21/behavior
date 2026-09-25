@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 17:54北京时间H76候选提取提交：** Git独立clean `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/visual_review_71a050d`固定71a050db68bba7b92acc6baff524407eef68abd7。纯CPU48–49、270s外限，新run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h76_raw_review_v1`，旁侧`h76_raw_review_v1.stdout.log`含time/exit上下文；完整108图及人工审查尚待，禁止按目录存在当数据发布。0GPU/新训练，H75独立源/所有旧产物保持。
+
 **2026-09-25 17:36北京时间H75启动：** Git clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/render_batch_c54ade1`固定c54ade102f6675e00e03649cb71b2ccfd182dbcd；149 CPU3.019s/安装源/资源门过，唯一launch UTC09:36:06.136403/supervisor3603301。run `/mnt/nvme_tmp/robodojo_agentic_20260925/h75_render_batch_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h75_render_batch_v1`已建，原1200s＋30清理/0模型训练。实际worker/初始化待，源冻结，不重提；旧产物及队友3564916保留。
 
 **2026-09-25 17:10北京时间H74终态/归档：** 3597389/3597396运行结束、557.160s/failed，原ReferenceTime跨域直接相等失败；19件51920371B全包`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h74_graph_lifecycle_bundle_v1`，聚合a87d40a4…357bd双端同。原source/run/runtime全部保留，自有GPU释放、GPU0队友3564916/12548MiB保持；未新增H75或训练。
