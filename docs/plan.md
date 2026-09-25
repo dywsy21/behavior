@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 16:10（北京时间）：H73同步I/O修复准备（Codex）
+
+16:25最终CPU/独审闭合：父123相邻0.996s、全semantic720/715pass5skip28.385s；独立38/38，所有所提代码阻塞已关闭。只读GPU0队友3564916/12548MiB、1/2/3空，两盘约1.9TiB余量。准备固定commit后新robo worktree/原生依赖预检；0launch，ReferenceTime和物理同步真实效果仍待，不能把CPU过当修复成立。
+
+16:23回归/审查：完整semantic720中715pass/5SDKskip28.385s，60重点3.231s通过。独审指出的原异常被时钟/restore次错覆盖、附加annotator生命周期、postprocess旁路tick及legacy context回归均已修，增加反例；正在最终独审。初次完整13报错为AST夹具缺新closure变量，已修后全重跑；一次邻接误写模块名也已纠正重跑，不把装载错误隐去。仍0服务器源码/run/训练。
+
+16:15本地实现完成初稿：默认关闭控制时钟context、原生同步ReferenceTime、逐步/逐capture日志、源digest/actor gate配置匹配、独立H73监管及视频使用最近已验证帧标时；84目标/邻接CPU过0.695s，完整回归/独审进行中，无新launch。H72独审确认两故障/归档，但更正下文归因措辞：直接证据只证实control调用与物理tick不一一对应，具体render=True链是安装源支持的候选，H73需逐调用验证。H72最后hold也只发出调用、0实际tick，不能称已生效；H73正常/异常最多一次hold均经同一时钟检查，不无限补步。
+
+- 已锁定H72两类实际故障，准备默认关闭的显式physics-only控制＋原生同步RGB-D/ReferenceTime；不调整底盘增益、目标门、相机或物理参数，0模型训练/特权输入。安装API已读，真实时间对应与副作用仍需native验证。
+- 单独预登记H73一次1200s＋30清理/原24动作1536controls，原GPU3/辅助/余量限制，task0 TRAIN138零前缀。先CPU/独审/固定Git；当前0新launch，详见H73文档。H72原件已全部归档，旧故障不掩盖或补写为成功。
+
 ### 2026-09-25 16:03（北京时间）：H72诊断完成、底盘失败复现（Codex）
 
 16:07完整归档/父核：529件210241629B，path/bytes/SHA规范清单聚合3df519b44ff2fe2fd093dde6f33de50eb7a954c1952c9a7c1d680ec8e77e95f9双端完全同；47–50已绑定213/219/225/231原始receipt。安装Replicator1.12.27源码/对应官方API支持delta_time=0及wait_for_render=True，但会初始化图/控制timeline，需审计副作用与真实reference time而不能直接当修复成立。H73分离控制/取图接口准备，尚0新launch。

@@ -141,6 +141,7 @@ def main():
     p.add_argument("--gpu", type=int, default=3)
     p.add_argument("--native-profile", choices=("original", "a100_full_v1"), default="original")
     p.add_argument("--native-runtime", help="Separately reserved private A100 cache/portable root")
+    p.add_argument("--synchronous-io-v1", action="store_true", help="Explicit physics clock and timestamp-verified native RGB-D")
     p.add_argument("--uri", default="http://127.0.0.1:8907")
     p.add_argument("--expected-revision")
     p.add_argument("--structured-planning", action="store_true")
@@ -162,6 +163,9 @@ def main():
         raise RuntimeError("Immutable clean source required")
     digest = implementation_digest()
     grounded=args.harness=="grounded"
+    if args.synchronous_io_v1 and (not grounded or args.native_profile != "a100_full_v1"
+                                   or args.odometry_substep_controls!=6):
+        raise ValueError("Synchronous I/O requires grounded A100 and the six-control/reserved-stop profile")
     if (args.refine_grounding or args.visual_odometry or args.active_grasp_probe or args.contact_geometry or args.grasp_motion or args.finger_kinematics) and not grounded:
         raise ValueError("Surface refinement requires the grounded sensor contract")
     if args.near_contact_review and not (grounded and args.refine_grounding and args.visual_odometry):
@@ -225,6 +229,7 @@ def main():
         gates = [json.loads(Path(path).read_text()) for path in args.gate_result]
         if {g["task"] for g in gates} != {0,3} or not all(g["gate_ok"] and g["implementation_digest"] == digest and
                 g.get("native_profile", "original")==args.native_profile and
+                g.get("synchronous_io_v1",False)==args.synchronous_io_v1 and
                 g.get("harness","v2")==args.harness and
                 g.get("refine_grounding",False)==args.refine_grounding and
                 g.get("near_contact_review",False)==args.near_contact_review and
@@ -292,7 +297,7 @@ def main():
     # Retain it for static reproduction, not as the production default.
     manifest = {"code_commit":subprocess.check_output(["git","-C",str(REPO),"rev-parse","HEAD"],text=True).strip(),
                 "implementation_digest":digest, "args":vars(args), "instance":window.instance_id,
-                "native_profile":args.native_profile,
+                "native_profile":args.native_profile,"synchronous_io_v1":args.synchronous_io_v1,
                 "task":args.task,"task_name":window.task_name,"split":"train","seed":0,
                 "window_sha":sha(path),"robot_sha":ROBOT_SHA,"model_identity":policy.identity if policy else None,
                 "training_updates":0,"evaluator":"v3.9.1-development-not-official-v3.9.2",
@@ -335,6 +340,7 @@ def main():
     sensor_checks=[]
     controller=None
     video, manager, servo, state = None,None,None,None
+    native_io, io_trace, latest_verified_image = None,None,None
     trace = (out/"steps.jsonl").open("x",buffering=1)
     phase,reset_completed="SESSION_INITIALIZATION",False
 
@@ -377,6 +383,10 @@ def main():
                     except BaseException as record_error:
                         secondary_error_report(f"Safety hold receipt {stop_record!r}; recording failed {record_error!r}")
                 raise
+            finally:
+                # Successful path closes BEFORE sealing result below. Failure
+                # path releases time annotators while native APIs are still live.
+                if native_io is not None:native_io.close()
     try:
         with recorded_session() as environment:
             import omnigibson as og
@@ -386,6 +396,11 @@ def main():
             env = environment.evaluator.env
             phase="READ_ONLY_ONBOARD_ADAPTER"
             onboard=OnboardRGBD(env) if grounded else None
+            if args.synchronous_io_v1:
+                from semantic_robot.v2.synchronous_io import native_adapter
+                io_trace=(out/"native_io.jsonl").open("x",buffering=1)
+                native_io=native_adapter(og.sim,onboard.sensors,
+                    lambda row:io_trace.write(json.dumps(row,allow_nan=False)+"\n"))
             phase="ROBOT_CALIBRATION"
             kin = CalibratedRobot(env.robots[0])
             model = kin.calibrate(grounded=grounded, fingers=args.finger_kinematics)
@@ -402,11 +417,15 @@ def main():
                                    native.finger_qpos if args.finger_kinematics else None)
 
             def observation_now(label):
+                nonlocal latest_verified_image
                 if onboard is None:
                     return environment.observation()["images"],{},{}
                 native_before=kin.state()
                 q_before=native_before.q.copy()
-                images,depths,receipt=onboard.read(model,render=og.sim.render)
+                sync_kwargs={"synchronize":native_io.synchronize} if native_io is not None else {}
+                images,depths,receipt=onboard.read(model,render=og.sim.render,**sync_kwargs)
+                if native_io is not None:
+                    latest_verified_image=(images,receipt['head']['native_time']['simulation_time'])
                 native_after=kin.state()
                 q_after=native_after.q
                 if np.max(np.abs(q_before-q_after))>1e-5:
@@ -450,16 +469,24 @@ def main():
                 # begin() can change the desired grip before any real control.
                 # Cleanup must preserve the last ISSUED command, not a newly
                 # selected close/open that was cancelled by a deadline.
-                with og.sim.render_on_step(render):
+                boundary=(native_io.control(render_requested=render) if native_io is not None
+                          else og.sim.render_on_step(render))
+                with boundary:
                     # Record immediately before issuance: env.step may fail
                     # after a partial control, even when servo ticks stay zero.
                     # A render-context entry failure sends no command.
                     if grounded and manager is not None:manager.issued(action)
                     last_issued_grips=np.asarray(action)[[14,22]].copy()
                     obs, _, terminated, truncated, info = env.step(action,n_render_iterations=1)
-                evaluator = environment.evaluator
-                evaluator.obs = evaluator._preprocess_obs(evaluator._sync_lights_and_get_obs(obs))
-                terminal = bool(terminated or truncated)
+                    terminal = bool(terminated or truncated)
+                    if native_io is not None:
+                        if render:native_io.render_only()
+                        evaluator = environment.evaluator
+                        evaluator.obs = evaluator._preprocess_obs(evaluator._sync_lights_and_get_obs(obs))
+                if native_io is None:
+                    # Preserve the legacy render-context lifetime when opt-out.
+                    evaluator = environment.evaluator
+                    evaluator.obs = evaluator._preprocess_obs(evaluator._sync_lights_and_get_obs(obs))
                 return terminal
 
             check_fk("reset")
@@ -540,7 +567,7 @@ def main():
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
-                images = environment.observation()["images"]
+                images = latest_verified_image[0] if native_io is not None else environment.observation()["images"]
                 canvas = Image.new("RGB",(640,1088),(15,20,28))
                 canvas.paste(Image.fromarray(images["head_rgb"].transpose(1,2,0)).resize((640,640)),(0,0))
                 for x,name in ((0,"left_wrist_rgb"),(320,"right_wrist_rgb")):
@@ -550,7 +577,10 @@ def main():
                 draw.text((8,992),label[:98],fill="white")
                 draw.text((8,1017),f"Stage: {manager.stage if manager else 'KINEMATIC GATE'} | {servo.status}",fill="white")
                 draw.text((8,1042),"Observed/commanded is not official success. Inference wait omitted.",fill="white")
-                draw.text((8,1065),f"Expert {prefix_count} + saved-policy {replay_count} prefix not shown. 30Hz sim /15fps.",fill="white")
+                if native_io is not None:
+                    draw.text((8,1065),f"Latest verified camera time {latest_verified_image[1]:.4f}s; held between captures.",fill="white")
+                else:
+                    draw.text((8,1065),f"Expert {prefix_count} + saved-policy {replay_count} prefix not shown. 30Hz sim /15fps.",fill="white")
                 video.append_data(np.asarray(canvas))
 
             gate = bounded_gate(grounded,args.multicamera_inspection,args.workspace_posture)
@@ -993,6 +1023,7 @@ def main():
                       "diagnostic_replay_purpose":replay["receipt"]["purpose"] if replay is not None else None,
                       "matched_grasp_feedback_diagnostic":replay is not None and replay["receipt"]["purpose"]=="matched_grasp_feedback_diagnostic",
                       "decisions":decisions,"gate_ok":gate_ok,"implementation_digest":digest,
+                      "synchronous_io_v1":args.synchronous_io_v1,
                       "calibration_sha":model.sha,"fk_check_count":len(checks),"gate_failures":failures,
                       "official_success":bool(done.get("success",False)),"final_goal_status":done.get("goal_status",{}),
                       "stop_reason":stop_reason,"harness":args.harness,"sensor_check_count":len(sensor_checks),
@@ -1027,6 +1058,11 @@ def main():
                       "final_harness":manager.context() if manager else None,
                       "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
                       "full_task_success_rate_claim":False}
+            if native_io is not None:
+                native_io.close()
+                io_trace.flush()
+                result['native_io']={'controls':native_io.controls,'attempts':native_io.attempts,
+                                     'captures':native_io.captures,'journal_sha256':sha(out/'native_io.jsonl')}
             write(out/"result.json",result)
     except BaseException as exc:
         try:
@@ -1040,7 +1076,7 @@ def main():
     finally:
         primary_active=sys.exc_info()[1] is not None
         cleanup_errors=[]
-        for resource in (trace,video):
+        for resource in (trace,video,io_trace):
             if resource is None:continue
             try:resource.close()
             except BaseException as cleanup_error:

@@ -99,7 +99,7 @@ def identity(base):
 def expected_args(base):
     expected = {'uri': 'http://127.0.0.1:8907', 'expected_revision': None,
                 'gate_result': [], 'replay_prefix_spec': None,
-                'contact_geometry': False, 'budget_profile': 'pilot'}
+                'contact_geometry': False, 'budget_profile': 'pilot', 'synchronous_io_v1':False}
     integer = {'task', 'gpu', 'prefix', 'max_decisions', 'max_controls', 'max_seconds',
                'odometry_substep_controls'}
     parts = iter(command(base)[2:])

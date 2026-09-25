@@ -42,14 +42,23 @@ class OnboardRGBD:
             self.sensors[view]=sensor
         self.snapshot_id=0
 
-    def read(self, model, *, render):
+    def read(self, model, *, render, synchronize=None):
         # Reset / teleports can leave annotator buffers at the PRE-reset pose.
         # Do not trust get_obs() alone. Render-only updates flush the same
         # asynchronous sensor pipeline used by the official light synchronizer.
         # No env.step / physics action / object query is permitted in this hook.
         if not callable(render):
             raise ValueError("Explicit current-frame render barrier required")
-        for _ in range(4):render()
+        if synchronize is None:
+            for _ in range(4):render()
+            time_receipt = None
+        else:
+            if not callable(synchronize): raise ValueError('Callable native synchronization required')
+            time_receipt = synchronize()
+            if (set(time_receipt) != set(self.sensors) or
+                    any(r.get('reference_time_verified') is not True or r.get('physics_ticks_in_capture') != 0
+                        for r in time_receipt.values())):
+                raise ValueError('Incomplete synchronized RGB-D receipt')
         self.snapshot_id+=1
         images,depths,receipt={},{},{}
         for view,sensor in self.sensors.items():
@@ -74,4 +83,7 @@ class OnboardRGBD:
                            "depth_sha256":hashlib.sha256(depth.tobytes()).hexdigest(),
                            "same_sensor_current_render":True,"render_barrier_updates":4,
                            "snapshot_id":self.snapshot_id,"control_steps_in_capture":0}
+            receipt[view]['render_barrier_updates'] = 4 if time_receipt is None else 1
+            receipt[view]['freshness_proof'] = 'legacy_fixed_updates_unverified' if time_receipt is None else 'native_reference_time'
+            if time_receipt is not None: receipt[view]['native_time'] = time_receipt[view]
         return images,depths,receipt

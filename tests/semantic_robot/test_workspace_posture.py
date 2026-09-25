@@ -107,11 +107,13 @@ class WorkspacePostureTests(unittest.TestCase):
         node.body=[ast.Global(names=n.names) if isinstance(n,ast.Nonlocal) else n for n in node.body]
         code=compile(ast.fix_missing_locations(ast.Module(body=[node],type_ignores=[])),'actual_robot_issuance','exec')
         for failure in (None,'enter','env','exit'):
-            _,_,h,_,_=setup();calls=[]
+            _,_,h,_,_=setup();calls=[];render_active=[False]
             @contextmanager
             def render(_):
                 if failure=='enter':raise RuntimeError('render enter')
-                yield
+                render_active[0]=True
+                try:yield
+                finally:render_active[0]=False
                 if failure=='exit':raise RuntimeError('render exit')
             def env_step(action,**kwargs):
                 self.assertTrue(h.workspace_close_seen['right'])
@@ -119,8 +121,10 @@ class WorkspacePostureTests(unittest.TestCase):
                 calls.append(action.copy())
                 if failure=='env':raise RuntimeError('partial env step')
                 return object(),0,False,False,{}
-            evaluator=SimpleNamespace(_preprocess_obs=lambda x:x,_sync_lights_and_get_obs=lambda x:x)
-            scope=dict(np=np,grounded=True,manager=h,info={},terminal=False,last_issued_grips=None,
+            def sync_obs(value):
+                self.assertFalse(render_active[0]);return value
+            evaluator=SimpleNamespace(_preprocess_obs=lambda x:x,_sync_lights_and_get_obs=sync_obs)
+            scope=dict(np=np,grounded=True,manager=h,info={},terminal=False,last_issued_grips=None,native_io=None,
                 og=SimpleNamespace(sim=SimpleNamespace(render_on_step=render)),env=SimpleNamespace(step=env_step),
                 environment=SimpleNamespace(evaluator=evaluator))
             exec(code,scope);command=np.zeros(23);command[[14,22]]=[1,-1]

@@ -47,3 +47,7 @@
 完整归档/逐段receipt绑定和独立审查正在进行，尚未新launch或宣布修复成立。
 
 16:07归档与绑定完成：529件210241629B，规范排序path/bytes/SHA清单聚合`3df519b44ff2fe2fd093dde6f33de50eb7a954c1952c9a7c1d680ec8e77e95f9`双端全同；本地`artifacts/agentic-vlm-goal-20260918/h72_observation_clock_bundle_v1`。四receipt分别绑定control213/219/225/231与snapshot47/48/49/50，action_motion三个原区间对应，无额外控制。独审继续，0新launch。
+
+16:15独审闭合：上述聚合/全部443 journal/4端点/3段数值独立全同。PhysX分段-5.8223/-25.1736/-3.8922mm，视觉-5.8985/-0.0018/-24.9665mm；中段被漏算、随后大部分延迟计入。RGB变SHA但MAE仅0.041/255，hash变化也不能证明fresh。
+
+结论限定/更正：尚未逐env.step记录render参数，直接证实的是control与physics推进不一一对应；归因到render=True为安装源支持的候选，不当已完成干预验证。H72末控制232虽写safety_stop，两个最后journal事件均index597/同位姿，因此仅“发出一次hold调用”，没有物理生效证据。raw积分乘44/72与真实总位移差0.111mm是诊断一致性，不将该比例用于修正控制或里程计。

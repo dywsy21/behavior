@@ -35,7 +35,7 @@ class RunnerFailureCleanupTests(unittest.TestCase):
         fn = ast.FunctionDef(name="exercise", args=ast.arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]),
                              body=[outer], decorator_list=[])
         errors = []; records = []; error = RuntimeError("PRIMARY")
-        trace, video, servo = Mock(), Mock(), Mock()
+        trace, video, servo, io_trace = Mock(), Mock(), Mock(), Mock()
         servo.grips=[1.,1.]
         def writer(path, value):
             if fault in ("all_write", path.name): raise OSError("WRITE_SECONDARY")
@@ -47,12 +47,13 @@ class RunnerFailureCleanupTests(unittest.TestCase):
         if fault == "trace_write": trace.write.side_effect = OSError("TRACE_SECONDARY")
         if fault == "trace_close": trace.close.side_effect = OSError("CLOSE_SECONDARY")
         if fault == "video_close": video.close.side_effect = OSError("CLOSE_SECONDARY")
+        if fault == "io_close": io_trace.close.side_effect = OSError("CLOSE_SECONDARY")
         ns = dict(contextmanager=contextmanager, session_factory=fake_environment, window=None,
                   args=SimpleNamespace(gpu=3, odometry_substep_controls=6, max_controls=12),
                   controls=6, out=VirtualPath(), write=writer, policy=None, phase="CONTROL", reset_completed=True,
                   terminal=terminal, prefix_count=0, replay_count=0, decisions=[], digest="test", servo=servo,
-                  last_issued_grips=issued_grips,
-                  step=step, state_now=state_now, trace=trace, video=video, json=json, sys=sys,
+                  last_issued_grips=issued_grips,native_io=None,
+                  step=step, state_now=state_now, trace=trace, video=video, io_trace=io_trace, json=json, sys=sys,
                   primary_error=error, secondary_error_report=errors.append)
         exec(compile(ast.fix_missing_locations(ast.Module(body=[inner, fn], type_ignores=[])), str(path), "exec"), ns)
         caught = None
@@ -62,11 +63,12 @@ class RunnerFailureCleanupTests(unittest.TestCase):
 
     def test_primary_survives_each_record_stop_and_close_failure(self):
         for fault in (None, "failure.json", "all_write", "safety_hold_after_failure.json", "state", "step",
-                      "trace_write", "trace_close", "video_close"):
+                      "trace_write", "trace_close", "video_close", "io_close"):
             with self.subTest(fault=fault):
                 ns, caught, primary, records = self.run_handler(fault)
                 self.assertIs(caught, primary)
                 ns["trace"].close.assert_called_once(); ns["video"].close.assert_called_once()
+                ns["io_trace"].close.assert_called_once()
                 if fault not in ("state", "step"):
                     self.assertEqual(ns["controls"], 7)
                     ns["step"].assert_called_once_with([0., 0., 0., -1.])
