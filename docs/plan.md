@@ -10,6 +10,22 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 12:21（北京时间）：H67机器人单体原生手指核验准备（Codex）
+
+12:34实现更新：安装API只读核实原CPU PhysX、30/120Hz、无sensor的空Scene支持；已新增独立H67脚本及[九姿态/阈值/预算预登记](experiments/2026-09-25-h67-native-fingers.md)。实际赋值后只进1物理步，实测覆盖再比FK及全部声明mesh顶点，一次参考校准不重拟合；CPU/独审待，尚未创建新app或robot。原H65/生产harness开关不变。
+
+12:37验证更新：9新CPU用例过0.797s（含真实sample loop的九次/中途失败计数，native APIs用mock，不冒充原生）；39启动/保护回归过0.705s，diff过。完整semantic回归及独审进行中。一次只读SSH banner超时未执行远端操作，未创建新仿真run；继续核对实际SDK/gripper控制更新行为。
+
+12:40准备完成：全semantic681中676通过/5本地SDK skip（16.935s），独立9/9过1.466s且无可复现阻塞；补compare抛异常前立即保存coverage，不改变几何门。下一固定源/真实安装依赖及资源预检后单次原生运行。
+
+12:42启动前更正：实际SDK smooth gripper reset把两指目标平均并广播为position targets。H67覆盖门预先改为5mm（仍拒绝两指坍缩为均值，三档开度不重叠），FK0.25mm/.001rad精度门不变；目的区分真实控制跟踪漂移和坐标计算误差，0新app/样本时修改，不是看到物理结果后放宽。固定该controller SHA，补1mm真实漂移覆盖回归，delta独审后固定源。
+- 补查余下TRAIN失败归档：i192 p0380/ws45/388无CLOSE或UP、p0392只CLOSE；i114 p0953超时前仅2UP，p0993最终仅1UP且物理仍IN_PROGRESS，不能作为“≥3UP但视觉未完成”的直接对照，不改label、不造正向BC。所查源均在原H09 native_complete，未读取eval来训练；新微调仍需真实对照或明确隔离非视觉捷径的配方。
+
+- 上一goal turn归类progress：H64真实资产/人工审、H65修复及H66真实数据捷径统计均完成并push至0ee11d7，非仅重复状态。当前clean pull/fetch成功，main无新提交；goal仍原reset/零专家或旧policy前缀的完整官方SR>0，尚未达到，Zetta不处理。
+- 主要假设：在多个独立finger开度及两手关节姿态下，H63/H65的局部手指FK与原生PhysX link poses一致；它是后续press真实闭环的必要前置，不用CPU盒子或参考姿态自洽替代。先核安装API，再固定独立脚本/原R1Pro资产，拟单次**机器人单体**场景，不加载任务/房间、不运行actor、无训练，不作为任务SR分母。
+- owner Codex，源commit待固定；CPU回归每次≤120s，拟单体原生检验≤600s＋已有监管清理，主GPU3≤4096MiB、其他≤512MiB、各卡运行余量≥3072MiB/预检≥7168MiB不变，4CPU（72–75），单次只读观测/有限关节校准样本。不修改共享安装/其他进程/旧source，预算耗尽或任何资源/几何不符停止，禁止直接重试。
+- 12:20:21只读原四训练3294346–3294349仍各73644MiB，余量7489/7489/7489/7488MiB；当前尚0新GPU/app/robot实例。此单体测试若能容纳，不意味着完整任务场景显存问题解决；cooked接触offset/真实按压状态机与正式评估仍后继。
+
 ### 2026-09-25 12:16（北京时间）：H66真实TRAIN39诊断完成，明确微调数据缺口（Codex）
 
 - 固定并push`a79907016c42eb3784438eec495bb41e1a5975bf`后，原唯一60s/2CPU统计exit0、0.171s；结果`artifacts/agentic-vlm-goal-20260918/h66_train39_shortcuts_v1/result.json` SHA `89b8a864d6daef148aafded92dcc4e9a98d4a1cbd00738b04d16ce553f7e0587`。本人已核全部39预测/两fold；原数据未改、0新模型/训练/物理。
