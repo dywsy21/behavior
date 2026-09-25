@@ -39,7 +39,14 @@ def configure():
     return base
 
 
-def check_resources(current, baseline=None, own_pid=None):
+def belongs_to_session(pid, session_id):
+    if session_id is None: return False
+    if pid == session_id: return True
+    try: return os.getsid(pid) == session_id
+    except ProcessLookupError: return False
+
+
+def check_resources(current, baseline=None, own_pid=None, *, require_released=False):
     base = scene.supervisor
     if set(current) != set(base.GPU_UUIDS) or (baseline is not None and set(baseline) != set(current)):
         raise ValueError('Unknown physical GPU set')
@@ -54,10 +61,16 @@ def check_resources(current, baseline=None, own_pid=None):
                 raise RuntimeError('Preflight GPU reserve violated')
             continue
         existing = {p['pid'] for p in baseline[uuid]['processes']}
-        if any(p['pid'] not in existing | {own_pid} for p in row['processes']):
+        allocated = uuid in base.GPU_UUIDS[2:]
+        owned = {p['pid'] for p in row['processes'] if belongs_to_session(p['pid'], own_pid)}
+        if require_released and owned:
+            raise RuntimeError('Owned GPU session has not been released')
+        if allocated and any(p['pid'] not in existing | owned for p in row['processes']):
             raise RuntimeError('Unknown compute/graphics process; stop only our worker')
-        if (row['used_mib'] - baseline[uuid]['used_mib'] > cap or
-                any(p['pid'] == own_pid and p['used_mib'] > cap for p in row['processes'])):
+        # Team-owned0/1 may start/end jobs normally. Their allocations are not
+        # ours; enforce our exact PID and shared headroom, not a frozen roster.
+        if ((allocated and row['used_mib'] - baseline[uuid]['used_mib'] > cap) or
+                sum(p['used_mib'] for p in row['processes'] if p['pid'] in owned) > cap):
             raise RuntimeError('Registered GPU memory cap exceeded')
         if row['free_mib'] < 8192:
             raise RuntimeError('Registered GPU reserve violated')
@@ -122,6 +135,18 @@ def validate_result(result, digest):
         raise ValueError('Incomplete or over-budget physical gate')
 
 
+def owned_groups(session_id):
+    groups = set()  # Never signal an unobserved/recycled old numeric group ID.
+    for entry in Path('/proc').iterdir():
+        if not entry.name.isdigit(): continue
+        pid = int(entry.name)
+        try:
+            if os.getsid(pid) == session_id: groups.add(os.getpgid(pid))
+        except ProcessLookupError:
+            continue
+    return groups
+
+
 def stop_owned_group(child):
     """Stop only the process group/session created by this Popen call.
 
@@ -135,17 +160,19 @@ def stop_owned_group(child):
         if actual_pgid != pgid:
             raise RuntimeError('Owned child no longer has its isolated process group')
     for sig in (signal.SIGTERM, signal.SIGKILL):
-        try: os.killpg(pgid, sig)
-        except ProcessLookupError:
-            child.wait(timeout=1)
-            return
         # Reserve five seconds for the final nvidia-smi snapshot and one for
         # receipts within the separately registered30s cleanup allowance.
         deadline = time.monotonic() + 12
         while time.monotonic() < deadline:
+            for group in owned_groups(pgid):
+                try: os.killpg(group, sig)
+                except ProcessLookupError: pass
             child.poll()
-            try: os.killpg(pgid, 0)
-            except ProcessLookupError:
+            alive = False
+            for group in owned_groups(pgid):
+                try: os.killpg(group, 0); alive = True
+                except ProcessLookupError: pass
+            if not alive:
                 child.wait(timeout=1)
                 return
             time.sleep(.1)
@@ -210,7 +237,8 @@ def supervise(base):
         receipt.update(seconds=time.monotonic()-started, exit_code=None if child is None else child.returncode)
         try:
             receipt['after_exit'] = base.snapshot()
-            check_resources(receipt['after_exit'], before)
+            check_resources(receipt['after_exit'], before,
+                            None if child is None else child.pid, require_released=True)
         except BaseException as error:
             failure = failure or error; receipt.update(status='failed', after_exit_error=repr(error))
         if time.monotonic() - cleanup_started > 30:

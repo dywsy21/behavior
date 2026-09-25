@@ -12,6 +12,12 @@
 
 ### 2026-09-25 13:46（北京时间）：H69完整场景基础gate准备（Codex）
 
+14:10最后资源delta审结：105邻接CPU过1.294s、独立18目标及diff过，无剩余实质阻塞；own SID按卡合计、退出无残留、空session不给旧数字PGID发信号均闭合。准备固定新的运行commit，原d45c487仅CPU预检、0launch；原一次2400s/24decision预算不变。
+
+14:05远端准备：d45c487已push、新clean detached `git_worktrees/native_full_d45c487`；robo102 CPU过2.551s、23安装依赖/资产SHA/空间/资源门过，run/runtime均不存在，0launch。GPU0队友任务从3561374自然换成3563718/同12462MiB。启动前只修资源归属：0/1可正常换任务，只限我们PID辅助≤512MiB和各卡8GiB余量；2/3保持独占与增量门。新源/小delta复审后再唯一launch，不发其他PID信号，不扩我们配额。旧d45c487源保留、未物理使用。
+
+14:08归属修验：独审指出只按主PID会漏自己的GPU helper，已改为隔离session/SID所有PID按卡合计、退出后保留SID要求无残留；cleanup只枚举/清自己SID的所有PGID，不碰真正外部队友。104邻接CPU过1.290s（含合计超额、leader消失、第二子组及释放反例）、diff clean；此delta最终独审待，仍0launch，配额/物理预算不变。
+
 14:01最终独审闭合：修后全部102邻接CPU过1.318s、完整703中698过/5本地SDK skip（30.638s）；独立59通过且无剩余实质阻塞，另独立无GPU孤儿进程组验证清理成功。补helper预载/实际origin双绑定，防ADAPTER同名阴影。准备固定Git、robo依赖/CPU/资源预检；0物理启动，完整SR未变。
 
 13:49实现更新：默认关闭的`native_full_profile.py`接入实际runner、profile/全部复用startup模块参与gate摘要；`launch_h69.py`单次预约/独立2400s监管/只清理自己的child已实现。新9项＋旧startup/camera/finger绑定共92 CPU过0.970s，完整semantic与独审进行中；还没有robo运行。H68 7a1b203已push确认。

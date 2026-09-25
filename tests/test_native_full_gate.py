@@ -86,8 +86,12 @@ assert not any(k in sys.modules for k in ('torch','isaacsim','omnigibson','carb'
         for index in range(4):
             bad = deepcopy(own); key = list(bad)[index]
             bad[key]['processes'].append({'pid': 99, 'used_mib': 1, 'type': 'G'})
-            with self.assertRaises(RuntimeError): launch.check_resources(bad, rows, 42)
+            if index >= 2:
+                with self.assertRaises(RuntimeError): launch.check_resources(bad, rows, 42)
+            else:
+                launch.check_resources(bad, rows, 42)
             bad = deepcopy(own); bad[key]['used_mib'] = 24577 if index == 3 else 513
+            bad[key]['processes'][0]['used_mib'] = bad[key]['used_mib']
             with self.assertRaises(RuntimeError): launch.check_resources(bad, rows, 42)
         with self.assertRaises(RuntimeError): launch.check_resources(own)
         bad = resources(); bad.pop(next(iter(bad)))
@@ -111,6 +115,23 @@ assert not any(k in sys.modules for k in ('torch','isaacsim','omnigibson','carb'
         launch.check_resources(current, baseline, 42)
         current[gpu0]['processes'][-1]['used_mib'] = 513
         with self.assertRaises(RuntimeError): launch.check_resources(current, baseline, 42)
+        current[gpu0]['processes'][-1]['used_mib'] = 400
+        current[gpu0]['processes'][0] = {'pid':3563718, 'type':'C', 'used_mib':30000}
+        current[gpu0].update(used_mib=30400, free_mib=50752)
+        launch.check_resources(current, baseline, 42)
+        current[gpu0]['free_mib'] = 8191
+        with self.assertRaises(RuntimeError): launch.check_resources(current, baseline, 42)
+
+    def test_owned_gpu_helper_is_counted_in_aggregate_and_must_exit(self):
+        baseline = resources(); current = resources(); gpu0 = next(iter(current))
+        current[gpu0]['processes'] = [{'pid':42, 'type':'G', 'used_mib':300},
+                                     {'pid':99, 'type':'C', 'used_mib':300}]
+        with patch.object(launch.os, 'getsid', return_value=42):
+            with self.assertRaisesRegex(RuntimeError, 'memory cap'): launch.check_resources(current, baseline, 42)
+            current[gpu0]['processes'][0]['used_mib'] = 100
+            launch.check_resources(current, baseline, 42)
+            with self.assertRaisesRegex(RuntimeError, 'not been released'):
+                launch.check_resources(current, baseline, 42, require_released=True)
 
     def test_exit_zero_not_enough_for_gate_pass(self):
         result = result_fixture(); launch.validate_result(result, 'digest')
@@ -177,7 +198,8 @@ assert not any(k in sys.modules for k in ('torch','isaacsim','omnigibson','carb'
 
     def test_cleanup_targets_owned_group_even_after_its_leader_exits(self):
         child = Mock(pid=4321); child.poll.return_value = 0
-        with patch.object(launch.os, 'killpg', side_effect=[None, ProcessLookupError]) as kill:
+        with patch.object(launch, 'owned_groups', return_value={4321}), \
+             patch.object(launch.os, 'killpg', side_effect=[None, ProcessLookupError]) as kill:
             launch.stop_owned_group(child)
         self.assertEqual(kill.call_args_list[0].args, (4321, launch.signal.SIGTERM))
         self.assertEqual(kill.call_args_list[1].args, (4321, 0))
@@ -187,9 +209,26 @@ assert not any(k in sys.modules for k in ('torch','isaacsim','omnigibson','carb'
             with self.assertRaises(RuntimeError): launch.stop_owned_group(child)
             kill.assert_not_called()
         with patch.object(launch.os, 'getpgid', side_effect=ProcessLookupError), \
+             patch.object(launch, 'owned_groups', return_value={4321}), \
              patch.object(launch.os, 'killpg', side_effect=[None, ProcessLookupError]) as kill:
             launch.stop_owned_group(child)
             self.assertEqual(kill.call_args_list[0].args, (4321, launch.signal.SIGTERM))
+
+    def test_cleanup_also_stops_owned_session_helpers_in_another_group(self):
+        child = Mock(pid=4321); child.poll.return_value = 0
+        events = []
+        def kill(group, sig):
+            events.append((group, sig))
+            if sig == 0: raise ProcessLookupError
+        with patch.object(launch, 'owned_groups', return_value={4321, 4322}), patch.object(launch.os, 'killpg', side_effect=kill):
+            launch.stop_owned_group(child)
+        self.assertEqual({group for group,sig in events if sig == launch.signal.SIGTERM}, {4321,4322})
+
+    def test_cleanup_empty_session_never_signals_an_old_numeric_group_id(self):
+        child = Mock(pid=4321); child.poll.return_value = 0
+        with patch.object(launch, 'owned_groups', return_value=set()), patch.object(launch.os, 'killpg') as kill:
+            launch.stop_owned_group(child)
+        kill.assert_not_called(); child.wait.assert_called_once()
 
     def test_all_manifest_arguments_source_instance_and_zero_model_are_bound(self):
         with profile():
