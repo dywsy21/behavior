@@ -69,3 +69,11 @@ Codex重新按“能否从图直接给出这个label”而非“私有标签是�
 路径根同上：W396 `h09w-native-task1-v1/complete/native_task1_v1`；114 `h09y-resume-20260921/native_complete/native_t1_i114_p0969`。各before头/腕SHA前8：W396/00 `fd680d6f`/`036586a9`、W396/05 `4addd785`/`3fd7c775`、114/00 `ac093da5`/`4bfa6a12`、114/02 `6387681d`/`c9043fed`。没有重标、训练集发布或新模型调用。
 
 输入实现也明确区分：旧native SFT actor把三原图各缩至256，当前grounded agent服务允许640且有局部观察。不能把它们当相同视觉输入或同一执行协议。后续视觉监督先建立多视角/短时证据及UNKNOWN的协议；单纯给旧39条换分辨率不能解决不可观察标签和历史捷径。
+
+## 16:30北京时间：H72实测故障对新微调采集的约束
+
+本轮只读追到具体调用：`native_teacher_collect.py:step` 使用render_on_step(True)，随后计数prefix/native control并调用`teacher_reader.read(prefix_count+controls)`；`LocalOutcome`虽称physics tick，实际传入的是逻辑control序号，12个settle也是12次env.step。H72的新PT分支已实证18次调用仅推进44/72预期physics ticks，并且RGB-D可滞后真实状态。这足以禁止把新PT分支照搬进旧采集器而不校验时钟，但**不能倒推此前不同renderer的全部TRAIN标签错误**。
+
+后继数据版本必须同时具备：每实际control的原生before/after clock；每3路图的同状态ReferenceTime；命令成功与物理/视觉结果分离；稳定窗口按真实simulation seconds和采样间隔解释，不把逻辑步数冒充物理tick。同一记录既有动作时钟也有相机时钟，错位或漏推进直接隔离，不用训练弥补。
+
+旧39条及旧120步权重保持原版本、原结论，不重标或伪装成新协议。新训练仍先解决可见监督与同历史负例：目标/部件可见性、相对位置、短时共同运动/滑落，遮挡=UNKNOWN；不让视觉模型猜不可见的稳定tick阈值。H73的I/O实跑是此前置工程验收，尚未构造/发布新数据或重训。

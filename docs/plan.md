@@ -12,6 +12,8 @@
 
 ### 2026-09-25 16:27（北京时间）：H73唯一同步I/O原生复验运行中（Codex）
 
+16:30数据侧只读诊断：旧native_teacher_collect把env.step计数传为teacher physics tick、12次调用作稳定窗口，缺真实时钟核验；因此后继新PT采集必须同步升级原生控制/相机时间证据，不能直接继承旧标签协议。证据/版本限定写H66，未倒推旧RT数据全错或新训。H73实际worker3591749已进入loading_scene，原预算/source保持。
+
 - 固定运行源f2f985bba378867c130b8f108cb5f8fca4781c1b/digest6c11bf96…d487c，双端123 CPU/独审/依赖与资源门过；唯一launch UTC08:26:51.081005/supervisor3591742，实际child/初始化正在核。
 - 原单次1200s＋30清理/24动作1536controls/0模型训练，GPU0队友3564916保留。run/runtime `h73_synchronous_io_v1`已创建，不重提或热改。新同步接口真实frame/tick正确性与原gate均待，不称已修好或任务SR提升。
 
