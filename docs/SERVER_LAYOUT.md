@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 12:18（北京时间）本轮交接：** H65源码ab3b58a与H66审计a799070已push到本实验分支，仍未部署新的远端VLM/仿真。12:13:14只读核四原xhz训练3294346–3294349各73644MiB、free7489/7489/7489/7488MiB；没有本轮自有GPU进程。H66真实统计仅在本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h66_train39_shortcuts_v1/result.json`（SHA `89b8a864d6daef148aafded92dcc4e9a98d4a1cbd00738b04d16ce553f7e0587`），原39输入留在既有`/home/wsy/behavior_worktrees/vlm-sft-native-teacher-20260919/artifacts/h09y-resume-20260921/completion39_ccb16f2_v1/states.jsonl`，未修改或释放新训练数据。
+
 **2026-09-25 12:06（北京时间）H64结果/后继源码：** 唯一真实导出使用干净`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/finger_collision_0f8321d`（0f8321d），结果`/mnt/nvme_tmp/robodojo_agentic_20260925/h64_finger_collision_asset_v1/result.json`、657333B、SHA `5f2cbf18b989eb22bc98665f48538c6cc306679d3be94ab4de46f2af7b4c6f04`；完整本地同名`artifacts/agentic-vlm-goal-20260918/h64_finger_collision_asset_v1/result.json`双端核同，人工图/数值在`inspection_v1/`。SDK9/9无skip、导出5.940s已退出，无GPU/SimulationApp/训练；11:34:50原四训练仍在。H65还只有本地主工作树未提交实现，未创建远端新版本。同步checkout的fetch仅main，后续须显式fetch实验分支再新建固定worktree，不热改旧源。
 
 **2026-09-25 11:26:09（北京时间）只读复核：** 四个xhz训练3294346–3294349仍在、各73644MiB，free7489/7489/7489/7488MiB；本轮无新服务器源码/环境/模型/仿真修改。更正下条10:51的本地H63状态：其独审缺口已于11:05修复，H63/H64已分别固定11dfe4b/0f8321d并push，但H64真实SDK/资产导出尚未运行，不能据此推定已部署。Z-01仍缺完整Recovery、未部署，工作目录不变。
