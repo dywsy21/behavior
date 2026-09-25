@@ -10,6 +10,23 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-25 10:53（北京时间）：按本条Zetta请求复核，公开Recovery仍缺；H63独审问题保留（Codex）
+
+- 本轮按最新消息处理“冻结G0.5＋作者已演化Critic/Recovery”。主工作区有H63未提交修改，故只fetch、不pull、不覆盖；独立Z-01工作树clean pull成功。上游fetch仍`1fee179`、另一分支`747be40`，原公开JSON SHA仍`3b90203f33058b36d3e2b6efc3794e16649a3b282080376b9863aef85265cac0`；网页原文件、Release及Issue #32没有补齐可加载Recovery。现有21 CPU/963efcf是此前结果，本轮不重复旧测试或启动替代演化。
+- 10:51:52只读robo（UTC02:51:52）：四个xhz训练3294346–3294349存活，各73644MiB，空闲7489/7489/7489/7488MiB；本轮0新模型/训练/仿真/信号/服务器修改。G0.5＋Zetta的物理效果仍未测，缺包独立于资源问题；下一需要完整产物及工具链接，或用户明确改变为自行构建适配变体。详细证据保留在独立Z-01报告。
+- H63独审实际发现两项阻塞：实现digest遗漏`control.py/og_backend.py/run_sim.py`等运行依赖；保存的self-odometry frame只绑定q和平均gripper，可接受不同的不对称finger状态。629 CPU通过没有覆盖后一反例，不能当验收通过。两项尚未修复；全部H63源码修改保留、开关默认关闭，不部署、不合入，见[H63报告](experiments/2026-09-25-h63-finger-kinematics.md)。active goal仍是G-AV1，不以本次Zetta核验标完成或改写其目标。
+
+### 2026-09-25 10:31（北京时间）：按新goal恢复G-AV1，Zetta暂停；H63手指几何接线（Codex）
+
+10:40实现更新：命名finger proprio、独立EEF-frame两指FK、原生导出/比较、`--finger-kinematics`显式记录及渲染/快照绑定已接线；15新用例与旧相关合计66 CPU通过（0.537s），初次mock Jacobian少一维的测试fixture错误已修。旧press仍未改成接触面执行；全量CPU与独审进行中，0GPU/训练/仿真，不把本接口称物理效果。
+
+10:43验证更新：首轮全量627中实际捕获函数的AST回归缺新args闭包，已改由当前state是否携带finger位置决定绑定检查，保持旧闭包接口；增加同均值不对称变化、真实state_now opt-in及reanchor复制快照反例。现17新用例、相关41/41及全量629/629通过（16.392s）；独审待，尚未native物理检验或获得SR。
+
+- 用户明确“zetta别管了”，恢复原reset/零专家或旧策略前缀的agentic VLM完整官方SR>0目标。上一goal turn只有Z-01复核，对此目标归类no progress；本轮clean pull/fetch成功、HEAD053fdcf。当前goal真实active；这是上次blocked后的首次恢复，阻塞审计重新计数，不立即再标blocked。
+- 10:26:31只读robo：四个xhz训练3294346–3294349仍存活、各73644MiB、free7489/7489/7489/7488MiB，旧H59两进程不存在。小VLM可跑而完整仿真未过原资源门；已非阻塞询问是否允许仅一次最多5.25GiB/至少保留2GiB的受保护仿真复验，未获答复前不改变原额度、不停训练。
+- H63主假设：公开proprio目前把每只手两指位置平均成一个数，portable q18不含finger DOF，导致按压无法使用随实际开度变化的手指参考。先补**机器人资产/当前两指proprio→可移植finger FK**及运行记录，不把open参考条带、夹持空隙中心或AABB角点当真实接触面。owner Codex，现有分支新代码commit待固定；仅CPU单次回归≤120s、0GPU/模型/训练/重置/新任务样本。原按压合同审计为直接依据。
+- 先实现命名joint位置传递、机器人原生参考/Jacobian导出、CPU双手/不对称开度/刚体变换/旧接口回归及独审；后继须真实native FK核验、接触面选择与press状态机/动作前瞻接线，再原reset物理评测。不能把该基础几何CPU通过当按压改善或完整任务成功。
+
 ### 2026-09-25 01:10（北京时间）：Z-01按最新请求核验，直接复用仍待完整公开包（Codex）
 
 - 本轮处理用户最新的“BEHAVIOR＋冻结G0.5＋作者已演化Critic/Recovery”，不恢复旧G-AV1仿真；原goal保持资源blocked，不能用它覆盖当前请求。两工作分支均clean pull/fetch成功；Z-01代码仍`963efcf`，原21 CPU与修后独审不重复运行。
