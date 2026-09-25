@@ -1,0 +1,1567 @@
+{
+  "schema": "h83-dual-teacher-review-v1",
+  "reviewer": "Codex parent (/root)",
+  "reviewed_at": "2026-09-25T20:39:00+08:00",
+  "approved_for": "bounded_dual_teacher_calibration_only",
+  "training_eligible": false,
+  "source_manifest_sha256": "43fe21488f0855985622db846b02991dbbc337316e2583f685fe8076a3aa8bcd",
+  "raw_root": "/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h80_expanded_raw_v1/raw",
+  "views": [
+    "head",
+    "left_wrist",
+    "right_wrist"
+  ],
+  "image_count": 150,
+  "counts": {
+    "P": 37,
+    "N": 108,
+    "U": 5
+  },
+  "core_images": 90,
+  "control_images": 60,
+  "teacher_outputs_seen_before_labeling": false,
+  "heldout_validation_or_test_used": false,
+  "excluded_groups": [
+    [
+      0,
+      10
+    ],
+    [
+      0,
+      11
+    ],
+    [
+      0,
+      14
+    ],
+    [
+      0,
+      17
+    ],
+    [
+      0,
+      31
+    ],
+    [
+      0,
+      48
+    ],
+    [
+      0,
+      70
+    ],
+    [
+      0,
+      74
+    ],
+    [
+      0,
+      79
+    ],
+    [
+      0,
+      94
+    ],
+    [
+      0,
+      114
+    ],
+    [
+      0,
+      132
+    ],
+    [
+      0,
+      135
+    ],
+    [
+      0,
+      159
+    ],
+    [
+      0,
+      175
+    ],
+    [
+      0,
+      193
+    ],
+    [
+      0,
+      272
+    ],
+    [
+      1,
+      8
+    ],
+    [
+      1,
+      12
+    ],
+    [
+      1,
+      22
+    ],
+    [
+      1,
+      27
+    ],
+    [
+      1,
+      65
+    ],
+    [
+      1,
+      114
+    ],
+    [
+      1,
+      132
+    ],
+    [
+      1,
+      148
+    ],
+    [
+      1,
+      192
+    ],
+    [
+      1,
+      194
+    ],
+    [
+      1,
+      211
+    ],
+    [
+      1,
+      215
+    ],
+    [
+      1,
+      221
+    ],
+    [
+      1,
+      251
+    ],
+    [
+      1,
+      260
+    ],
+    [
+      1,
+      273
+    ],
+    [
+      1,
+      278
+    ],
+    [
+      1,
+      280
+    ],
+    [
+      1,
+      290
+    ],
+    [
+      2,
+      53
+    ],
+    [
+      2,
+      55
+    ],
+    [
+      3,
+      19
+    ],
+    [
+      3,
+      23
+    ],
+    [
+      3,
+      26
+    ],
+    [
+      3,
+      35
+    ],
+    [
+      3,
+      92
+    ],
+    [
+      3,
+      96
+    ],
+    [
+      3,
+      114
+    ],
+    [
+      3,
+      146
+    ],
+    [
+      3,
+      205
+    ],
+    [
+      3,
+      212
+    ],
+    [
+      3,
+      231
+    ],
+    [
+      3,
+      240
+    ],
+    [
+      3,
+      252
+    ],
+    [
+      3,
+      254
+    ],
+    [
+      3,
+      257
+    ],
+    [
+      3,
+      279
+    ],
+    [
+      3,
+      280
+    ],
+    [
+      4,
+      43
+    ],
+    [
+      4,
+      126
+    ]
+  ],
+  "protect_groups_in_future_student_releases": [
+    [
+      0,
+      104
+    ],
+    [
+      0,
+      7
+    ],
+    [
+      1,
+      120
+    ],
+    [
+      1,
+      141
+    ],
+    [
+      2,
+      58
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      3,
+      60
+    ],
+    [
+      3,
+      160
+    ],
+    [
+      4,
+      234
+    ],
+    [
+      4,
+      42
+    ]
+  ],
+  "notes": {
+    "0:7": "Radio front, top and side views are identifiable; empty table/robot-shell wrist views are absent.",
+    "0:104": "Radio side/back visible in right wrist through middle; left wrist sees speaker face at f2239. Initial/final wrists show the robot.",
+    "1:120": "Open wastebasket and contents/rim identifiable in several views. Full-resolution f6279 head recheck shows sufficient open rim and contents for P.",
+    "1:141": "Only generic outer gray curves at three right-wrist times, and a mostly occluded brown cavity at f3177 left, cannot alone establish wastebasket identity. Last head contains only a tiny bottom-edge arc: U. No cross-view identity inference.",
+    "2:2": "Radio query used as cross-task negative control. No identifiable radio/candidate fragment in these images; candles, cabinet, pumpkin and dark pot are not radio labels.",
+    "2:58": "Radio query cross-task negative control; drawers/candles/pumpkins/robot parts are not radio targets.",
+    "3:60": "Visible food and white plate at f2593/f5186. Full-resolution f5186 right recheck confirms food edge beside plate face. Fridge/sink/empty dishes are not plate-with-food positives.",
+    "3:160": "Visible food on plate at f3513/f7026; later visible empty bowl and sink dishes are negative, not task-success labels.",
+    "4:42": "Radio query cross-scene negative control. Metallic jars/microwave/sausages and robot parts are not radios; not annotations of new task4 object classes.",
+    "4:234": "Radio query cross-scene negative control; no radio candidate. No jar/food/contact/action labels inferred."
+  },
+  "raw_review": "All 10 sheets/150 original-source views checked by parent; source PNG hashes verified. Six additional full-resolution rechecks. Initial interrupted copy kept separately; 34 missing/partial images repaired and all150 verified.",
+  "rows": [
+    {
+      "id": "t0_i104_e95_f000000",
+      "task": 0,
+      "instance": 104,
+      "episode": 95,
+      "frame": 0,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t0_i104_e95_f000000_head.png",
+        "left_wrist": "images/t0_i104_e95_f000000_left_wrist.png",
+        "right_wrist": "images/t0_i104_e95_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "0e9a7719837dee06a9dfca50af690c9d4298ab961bc445c053b74e6c00108074",
+        "left_wrist": "2aa21f5a4ee8888be30ae0cd9bae99dc7aaaac4522d226928ad59dc25ce2155a",
+        "right_wrist": "149713fd62a565978af7d1e0909ea75720cc44957f8863919b1f99e38b5f333a"
+      }
+    },
+    {
+      "id": "t0_i104_e95_f001120",
+      "task": 0,
+      "instance": 104,
+      "episode": 95,
+      "frame": 1120,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "P"
+      ],
+      "images": {
+        "head": "images/t0_i104_e95_f001120_head.png",
+        "left_wrist": "images/t0_i104_e95_f001120_left_wrist.png",
+        "right_wrist": "images/t0_i104_e95_f001120_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "f9fd52e14262df8f0312fda3c8fca2b1b779e992c43203b1d81e8cfb2f4d7e98",
+        "left_wrist": "126b0443bf822214b9beb44a930817a9ed9395bce9e9c7a77f3b4fd99ed94c02",
+        "right_wrist": "0461f24793fd887481278300a8473ad49e820e0265cf0ebe93d55586d3d04e4f"
+      }
+    },
+    {
+      "id": "t0_i104_e95_f002239",
+      "task": 0,
+      "instance": 104,
+      "episode": 95,
+      "frame": 2239,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "P",
+        "P"
+      ],
+      "images": {
+        "head": "images/t0_i104_e95_f002239_head.png",
+        "left_wrist": "images/t0_i104_e95_f002239_left_wrist.png",
+        "right_wrist": "images/t0_i104_e95_f002239_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "1da6ee3510ec8dff953b30ee05e1d2ec11967192815715aaa40d9e32cbe4d4af",
+        "left_wrist": "73cd5638ffac86dddb3bd389ec45dddb22c5960937580ef33b04c98f70f94af3",
+        "right_wrist": "71f0c9274ecfd87e210b3aa5730491d256965f07fecf64667488462999da8228"
+      }
+    },
+    {
+      "id": "t0_i104_e95_f003219",
+      "task": 0,
+      "instance": 104,
+      "episode": 95,
+      "frame": 3219,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "P"
+      ],
+      "images": {
+        "head": "images/t0_i104_e95_f003219_head.png",
+        "left_wrist": "images/t0_i104_e95_f003219_left_wrist.png",
+        "right_wrist": "images/t0_i104_e95_f003219_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "56d2a916c5201d32c2fd09aa82848a265b65c6fac7a32babc74dcbe4ebf8beeb",
+        "left_wrist": "c8e9d935f194b61c63024eaa0f373bb3ed1c6a757b80cf056ee38d7b07b58360",
+        "right_wrist": "cb9d8edb1f87fb0783f9225b4cabc26656789784c2084eedb44b15f96e32ae3a"
+      }
+    },
+    {
+      "id": "t0_i104_e95_f004339",
+      "task": 0,
+      "instance": 104,
+      "episode": 95,
+      "frame": 4339,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t0_i104_e95_f004339_head.png",
+        "left_wrist": "images/t0_i104_e95_f004339_left_wrist.png",
+        "right_wrist": "images/t0_i104_e95_f004339_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "36e8d9afbf4943e677745516e09a83cf6796309fe6ded4c1a96d19fb0e67851a",
+        "left_wrist": "f8b7686b57b6dcc379a2a6170709c00b92927e71a6eb58e41ac8b6fcb57b5e15",
+        "right_wrist": "eb44ae2afe2620bf0b489a79102000ccc12d8bc915432e41dca036e034db81f3"
+      }
+    },
+    {
+      "id": "t0_i7_e6_f000000",
+      "task": 0,
+      "instance": 7,
+      "episode": 6,
+      "frame": 0,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t0_i7_e6_f000000_head.png",
+        "left_wrist": "images/t0_i7_e6_f000000_left_wrist.png",
+        "right_wrist": "images/t0_i7_e6_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "924f6d6e0c4fe867c555fce2d60237d77e70bbf2416f10831a7906965dc40587",
+        "left_wrist": "c5a1e161c7503b4b6cd69ea2e276ffb15657e4fb181c5926e81e1caf179a971f",
+        "right_wrist": "f5a68be49f54aef2e9c1133cd99d8c10c1b51ccdce728a47f38873fff7c9eb19"
+      }
+    },
+    {
+      "id": "t0_i7_e6_f000594",
+      "task": 0,
+      "instance": 7,
+      "episode": 6,
+      "frame": 594,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t0_i7_e6_f000594_head.png",
+        "left_wrist": "images/t0_i7_e6_f000594_left_wrist.png",
+        "right_wrist": "images/t0_i7_e6_f000594_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "0fcbeec4ccbc6fc2d1c16d2bc3a74c39c456491b30ccff9250c67191f0ec807a",
+        "left_wrist": "46197ff62d3d8561a776de6a2d47e6e9525719882fcf3153336004ce7ecf6306",
+        "right_wrist": "973df582f09cc5c595fc1bbca2252f4463c3e3cdcfc7e43f43a1476369732d99"
+      }
+    },
+    {
+      "id": "t0_i7_e6_f001189",
+      "task": 0,
+      "instance": 7,
+      "episode": 6,
+      "frame": 1189,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "P"
+      ],
+      "images": {
+        "head": "images/t0_i7_e6_f001189_head.png",
+        "left_wrist": "images/t0_i7_e6_f001189_left_wrist.png",
+        "right_wrist": "images/t0_i7_e6_f001189_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "35bd9bbde95313c0becf51ff89f721e546a4e3bbb19f68fa7919a7fd04aa46be",
+        "left_wrist": "dbcfca9a08c99917b2620ff538b5dd18b7ac1b66e3ba4c1a17148c5d4d616b44",
+        "right_wrist": "c511000cb16966d2a3bd03f52b22269bae1212ae4ff53c2ed8f6dd40ae836d27"
+      }
+    },
+    {
+      "id": "t0_i7_e6_f001709",
+      "task": 0,
+      "instance": 7,
+      "episode": 6,
+      "frame": 1709,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "P",
+        "P"
+      ],
+      "images": {
+        "head": "images/t0_i7_e6_f001709_head.png",
+        "left_wrist": "images/t0_i7_e6_f001709_left_wrist.png",
+        "right_wrist": "images/t0_i7_e6_f001709_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "ea3d1f346cb8426434bcd811e1ce8ecfc1189960a304123bc52005ac1b0a53ba",
+        "left_wrist": "8dd72ab3115a89d73f2b69d4e129835631a9914e6297e5840381adcc33354f1f",
+        "right_wrist": "a7feb95e529e18555947d1029e7305c2d06aa7be5267e1b7c69ce5cc1feb34bd"
+      }
+    },
+    {
+      "id": "t0_i7_e6_f002303",
+      "task": 0,
+      "instance": 7,
+      "episode": 6,
+      "frame": 2303,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t0_i7_e6_f002303_head.png",
+        "left_wrist": "images/t0_i7_e6_f002303_left_wrist.png",
+        "right_wrist": "images/t0_i7_e6_f002303_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "3af840a5b1c757e6fa42ea066b8bcf5dbbc29b1b7a6ff8b6e8fd2fa657b9696c",
+        "left_wrist": "6791930750e99be180318f834799dedb31347ca56f375acc2e2955da6865628e",
+        "right_wrist": "6db8915eabe468cb3e7b729f11513363b81c397aecacb3048ba31e0efc525fe6"
+      }
+    },
+    {
+      "id": "t1_i120_e268_f000000",
+      "task": 1,
+      "instance": 120,
+      "episode": 268,
+      "frame": 0,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t1_i120_e268_f000000_head.png",
+        "left_wrist": "images/t1_i120_e268_f000000_left_wrist.png",
+        "right_wrist": "images/t1_i120_e268_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "097aa56b398976e78bb87cb713f1fec25e9561c9a2339b1fdce731db51aaa7fb",
+        "left_wrist": "33035a89f88b74864d46ce2fde3743a39dc56438f28cf10a9717c82b2991ca50",
+        "right_wrist": "390d77e7347693a4a5b49d0549862a8917e9b10954241b76bc4f1c6ee1fef0d4"
+      }
+    },
+    {
+      "id": "t1_i120_e268_f001620",
+      "task": 1,
+      "instance": 120,
+      "episode": 268,
+      "frame": 1620,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "P"
+      ],
+      "images": {
+        "head": "images/t1_i120_e268_f001620_head.png",
+        "left_wrist": "images/t1_i120_e268_f001620_left_wrist.png",
+        "right_wrist": "images/t1_i120_e268_f001620_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "1c901f3e1361009513e0275432f72d11bb084e180d628a9f9575cf5e519255a8",
+        "left_wrist": "f38b69ad78b8ec90ee17db3f95311a6737e2e272c6697a0c5f61667834a1ee3e",
+        "right_wrist": "65ae692aa717a750f90716e7abaa9a086d3582b5c97cf8c55586b6a1aae0a2fc"
+      }
+    },
+    {
+      "id": "t1_i120_e268_f003241",
+      "task": 1,
+      "instance": 120,
+      "episode": 268,
+      "frame": 3241,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "P",
+        "P"
+      ],
+      "images": {
+        "head": "images/t1_i120_e268_f003241_head.png",
+        "left_wrist": "images/t1_i120_e268_f003241_left_wrist.png",
+        "right_wrist": "images/t1_i120_e268_f003241_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "1298a275bcbf55a407c4d8a698259b32c7a58d17d6cee053b2629fa824220f84",
+        "left_wrist": "e987d01fff97b707e5de248b36a34a94675db982edf4e46bc036d8adab49b972",
+        "right_wrist": "3f16188a624c27842ef213c4016796565689f611a0846f9d644e86e4cef169aa"
+      }
+    },
+    {
+      "id": "t1_i120_e268_f004659",
+      "task": 1,
+      "instance": 120,
+      "episode": 268,
+      "frame": 4659,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "P"
+      ],
+      "images": {
+        "head": "images/t1_i120_e268_f004659_head.png",
+        "left_wrist": "images/t1_i120_e268_f004659_left_wrist.png",
+        "right_wrist": "images/t1_i120_e268_f004659_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "781ea49964a82669cbafeca610ed1132302e6e8bcb15d41c8b192ed73c05d293",
+        "left_wrist": "4fc4491d82a5cccd0d0bb9cbca772aaa4fbab788461a1b124aae3aac552be378",
+        "right_wrist": "db2729022e3c19c68017c0c897b7a47b03d5fdf735248080c4c316955b1981fd"
+      }
+    },
+    {
+      "id": "t1_i120_e268_f006279",
+      "task": 1,
+      "instance": 120,
+      "episode": 268,
+      "frame": 6279,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t1_i120_e268_f006279_head.png",
+        "left_wrist": "images/t1_i120_e268_f006279_left_wrist.png",
+        "right_wrist": "images/t1_i120_e268_f006279_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "15d35cb14a1b468a2bd2a82b50d49e1259fe1a1affdaf22c3a11e0c3108046c1",
+        "left_wrist": "3ac4537b5e3a6090bf2a770518a631ef442b4479dd0e09941d761b03d468a980",
+        "right_wrist": "113f7cf86575c13a3049f2819e71d6c74af742b03923f5ed9930c7853bca292b"
+      }
+    },
+    {
+      "id": "t1_i141_e286_f000000",
+      "task": 1,
+      "instance": 141,
+      "episode": 286,
+      "frame": 0,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t1_i141_e286_f000000_head.png",
+        "left_wrist": "images/t1_i141_e286_f000000_left_wrist.png",
+        "right_wrist": "images/t1_i141_e286_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "b486629ff5227e00cb2f3a46f11584779cddf8352af33a3dc3525679cf07636e",
+        "left_wrist": "5824d8982faf52c077beb04573026d64742855cbca520a749d217a13c2705523",
+        "right_wrist": "d85538a747533c0ccb465572fc8760d431fa8d864160e5dbfb91834f1e43beb0"
+      }
+    },
+    {
+      "id": "t1_i141_e286_f001589",
+      "task": 1,
+      "instance": 141,
+      "episode": 286,
+      "frame": 1589,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "U"
+      ],
+      "images": {
+        "head": "images/t1_i141_e286_f001589_head.png",
+        "left_wrist": "images/t1_i141_e286_f001589_left_wrist.png",
+        "right_wrist": "images/t1_i141_e286_f001589_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "81cdfc403b376bc2edb15ffe00ee06c1643f4b2428e00d24a7f26aecc95672df",
+        "left_wrist": "81b3ae6955ff150bfdbfade1707a94d6367ef87a3873c3f3acbad49e5c57cb93",
+        "right_wrist": "f9e91b1f5ed726a0eb91c02d699a4b17aa80f8541bef11e07c747ad8c80cd828"
+      }
+    },
+    {
+      "id": "t1_i141_e286_f003177",
+      "task": 1,
+      "instance": 141,
+      "episode": 286,
+      "frame": 3177,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "U",
+        "U"
+      ],
+      "images": {
+        "head": "images/t1_i141_e286_f003177_head.png",
+        "left_wrist": "images/t1_i141_e286_f003177_left_wrist.png",
+        "right_wrist": "images/t1_i141_e286_f003177_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "c7d0938918fd21cc47b073c7d1e044a7b72d695b1c4e76e605a387db64b96fc6",
+        "left_wrist": "cc4e3b611cffcd5421fc84b3bc483ef090d53af3b4d2f3ff252ae2e9ac7bae91",
+        "right_wrist": "c1c65d8b8ac0b7d30e1b8b5b4f7453de723ec2cc23bba12cd4ac65b18a5d5ab3"
+      }
+    },
+    {
+      "id": "t1_i141_e286_f004567",
+      "task": 1,
+      "instance": 141,
+      "episode": 286,
+      "frame": 4567,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "U"
+      ],
+      "images": {
+        "head": "images/t1_i141_e286_f004567_head.png",
+        "left_wrist": "images/t1_i141_e286_f004567_left_wrist.png",
+        "right_wrist": "images/t1_i141_e286_f004567_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "fce1604858d4d0a3eda23c980d6ffd4f6989d189caf61a5ce2af3ed00884bc68",
+        "left_wrist": "33ba5578e34ff249efc003a42681b4bd193bea6d3ee88988e2107f909ff01f93",
+        "right_wrist": "f6038d60e49d1756f5c3a56aaf53d0b9c612db5b98762550e408837eb2758025"
+      }
+    },
+    {
+      "id": "t1_i141_e286_f006156",
+      "task": 1,
+      "instance": 141,
+      "episode": 286,
+      "frame": 6156,
+      "split": "train",
+      "query": "the wastebasket",
+      "stratum": "core_targets",
+      "labels": [
+        "U",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t1_i141_e286_f006156_head.png",
+        "left_wrist": "images/t1_i141_e286_f006156_left_wrist.png",
+        "right_wrist": "images/t1_i141_e286_f006156_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "d2e9ecb89611aca7a0ba2b9c1b801996699d37e4560f27aa436c319f88bd5f46",
+        "left_wrist": "59fd84d430a63711c2c6ddeaee8ff1b93440bf4cfbf55cf10c13602775bcea49",
+        "right_wrist": "a980d59ecb35a19e4f52f7cfd895a852786f3a23793ea41ab86ed7215fe594bc"
+      }
+    },
+    {
+      "id": "t2_i58_e452_f000000",
+      "task": 2,
+      "instance": 58,
+      "episode": 452,
+      "frame": 0,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i58_e452_f000000_head.png",
+        "left_wrist": "images/t2_i58_e452_f000000_left_wrist.png",
+        "right_wrist": "images/t2_i58_e452_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "74c8533abc4fa2e8709f4395a9eb927909beaa440fe0884d7629ecc778f5b1e7",
+        "left_wrist": "413132b66ff30a1919a14fc9f97d712830fa12663ad8423bde1daa5dc448ae26",
+        "right_wrist": "6e92e70edb81e21ac78c5ddab9be4de192f0d3a8e7f0e683b37460ed573465a0"
+      }
+    },
+    {
+      "id": "t2_i58_e452_f004217",
+      "task": 2,
+      "instance": 58,
+      "episode": 452,
+      "frame": 4217,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i58_e452_f004217_head.png",
+        "left_wrist": "images/t2_i58_e452_f004217_left_wrist.png",
+        "right_wrist": "images/t2_i58_e452_f004217_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "727bd4232d4c048f5702f4cf57378563fbef0e0eef99bb95bae47117f309b428",
+        "left_wrist": "9ecfa3fff22d8fdb2f663dbee44ba6a9231ebfd8eecb1979645f80b82eb9698a",
+        "right_wrist": "82f0fe81e6b381dc6bca721b21a163c0b5f8c1065435366e5c83a8951b23de86"
+      }
+    },
+    {
+      "id": "t2_i58_e452_f008434",
+      "task": 2,
+      "instance": 58,
+      "episode": 452,
+      "frame": 8434,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i58_e452_f008434_head.png",
+        "left_wrist": "images/t2_i58_e452_f008434_left_wrist.png",
+        "right_wrist": "images/t2_i58_e452_f008434_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "a61e8ae56bcaaa78cacfbcce56a550be0e9a8843880b872899ae2cbeeac78446",
+        "left_wrist": "2ee15e018a86282d4a937a5c25217771db0b73e9ec7074fd4f2f3089f4ba6726",
+        "right_wrist": "f4d9d4d296128d71a1b4d91011a4082511f1edd37b8146cb163413d11e273ea2"
+      }
+    },
+    {
+      "id": "t2_i58_e452_f012123",
+      "task": 2,
+      "instance": 58,
+      "episode": 452,
+      "frame": 12123,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i58_e452_f012123_head.png",
+        "left_wrist": "images/t2_i58_e452_f012123_left_wrist.png",
+        "right_wrist": "images/t2_i58_e452_f012123_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "3271cdb420fb2016039bada2668a77219026ac2244cf25e271405bbeaf2f98e2",
+        "left_wrist": "7b3087e574b9e316d0240efdb27a74d1748557043e1d0681042eecce7fbf3576",
+        "right_wrist": "cfdb0a54bdfb5371630f1927c5939b3501a1c692927961e360aea7cef57ba8c4"
+      }
+    },
+    {
+      "id": "t2_i58_e452_f016340",
+      "task": 2,
+      "instance": 58,
+      "episode": 452,
+      "frame": 16340,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i58_e452_f016340_head.png",
+        "left_wrist": "images/t2_i58_e452_f016340_left_wrist.png",
+        "right_wrist": "images/t2_i58_e452_f016340_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "b06612262f139ab3270a738c68c54c42cd76659e9c8233f11befe7acc00c7e65",
+        "left_wrist": "87df0ea2774a44d5c63f5181a9e72c756fc0299db2cb326df023907349c7e242",
+        "right_wrist": "8d886d70c1e41e46ccbc3487c9eff6c0ae6a19a0a72133b6af6edd08e562dade"
+      }
+    },
+    {
+      "id": "t2_i2_e401_f000000",
+      "task": 2,
+      "instance": 2,
+      "episode": 401,
+      "frame": 0,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i2_e401_f000000_head.png",
+        "left_wrist": "images/t2_i2_e401_f000000_left_wrist.png",
+        "right_wrist": "images/t2_i2_e401_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "e5635f4898c97660fee616a359fd0b03ebf2a2f80cd4c05d7b4115714aafe649",
+        "left_wrist": "0604e2acb0b5b40f63ab72dbb490cd9d0b62a1905d5e9a3278d23df8840e72ac",
+        "right_wrist": "4d676807df5ee9b0ce23422f8792a373678be3548507a6619c1a4a5dd5eb6894"
+      }
+    },
+    {
+      "id": "t2_i2_e401_f003453",
+      "task": 2,
+      "instance": 2,
+      "episode": 401,
+      "frame": 3453,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i2_e401_f003453_head.png",
+        "left_wrist": "images/t2_i2_e401_f003453_left_wrist.png",
+        "right_wrist": "images/t2_i2_e401_f003453_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "7e2cf30e53653e9fb31a5899a0aa73813ec4c3afbf890010f7a1d9ccb4ba7116",
+        "left_wrist": "cb1e07419b82545760e11145e3ab76a6101b782a8a254429f4526864da637a48",
+        "right_wrist": "210d797861de25a6d686a56084bf5bafc7419d57bc1b7c661873db8985d5fcd7"
+      }
+    },
+    {
+      "id": "t2_i2_e401_f006906",
+      "task": 2,
+      "instance": 2,
+      "episode": 401,
+      "frame": 6906,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i2_e401_f006906_head.png",
+        "left_wrist": "images/t2_i2_e401_f006906_left_wrist.png",
+        "right_wrist": "images/t2_i2_e401_f006906_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "853936dd66b3c9b2155ed2ab0af1a77cf27fee1e9809e67b49b8edfbcd1809ce",
+        "left_wrist": "05fb10c0a8c5cc91171bbcf804bed1fa931567d45c3f0653d3f06a8a311ec5c9",
+        "right_wrist": "9053f50da227d7479f197e83ef7ff9268078b567f94eed17a9b6aec0770a79cd"
+      }
+    },
+    {
+      "id": "t2_i2_e401_f009927",
+      "task": 2,
+      "instance": 2,
+      "episode": 401,
+      "frame": 9927,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i2_e401_f009927_head.png",
+        "left_wrist": "images/t2_i2_e401_f009927_left_wrist.png",
+        "right_wrist": "images/t2_i2_e401_f009927_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "04d232b521b1a5215dcd40f6ac1ee5eb2625b98d8785c28fea0344c35200c59c",
+        "left_wrist": "1af4b87d053af213b8a22338be4ec436de70dbf10ac5e4c8e37c4b080a963bf5",
+        "right_wrist": "0585dcb8bd74b0b412c7acffb354245ad07b0c53630ff6da1618c21e4eabb3ea"
+      }
+    },
+    {
+      "id": "t2_i2_e401_f013380",
+      "task": 2,
+      "instance": 2,
+      "episode": 401,
+      "frame": 13380,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t2_i2_e401_f013380_head.png",
+        "left_wrist": "images/t2_i2_e401_f013380_left_wrist.png",
+        "right_wrist": "images/t2_i2_e401_f013380_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "e657d60143a8e02f185fcea56d143ef9da810175234d57669aa0d51749709d5e",
+        "left_wrist": "c6d263a675317cc1fbd90190858d4ef7400ac7ae6b2e967351b1ae0cd336b4ed",
+        "right_wrist": "71e4cbc649782de5b6eb2c2a02ba33b70f0e0d859635e6e6ee3929d9574ac2e9"
+      }
+    },
+    {
+      "id": "t3_i60_e657_f000000",
+      "task": 3,
+      "instance": 60,
+      "episode": 657,
+      "frame": 0,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t3_i60_e657_f000000_head.png",
+        "left_wrist": "images/t3_i60_e657_f000000_left_wrist.png",
+        "right_wrist": "images/t3_i60_e657_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "1eac202fcba584104c0c4b54fd8f37f5e609994becfebcfe632846fef5cbb912",
+        "left_wrist": "39b71386a8c51f72b26975914bd86cd2c3f57d65a4287055effc7854117c6dfc",
+        "right_wrist": "9c92f9c856453319c9d9489751db666bb00abd346f57f8d13cf02d7c26be31c4"
+      }
+    },
+    {
+      "id": "t3_i60_e657_f002593",
+      "task": 3,
+      "instance": 60,
+      "episode": 657,
+      "frame": 2593,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "P"
+      ],
+      "images": {
+        "head": "images/t3_i60_e657_f002593_head.png",
+        "left_wrist": "images/t3_i60_e657_f002593_left_wrist.png",
+        "right_wrist": "images/t3_i60_e657_f002593_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "0b6813203a504883e9eb2b0c8d4edd71be9bd6d2ce382c7d7df6c6220989c14c",
+        "left_wrist": "cb1bee0505f8165af7aa6f4be617776af67f5ca469dcfd32aeb6db855c615388",
+        "right_wrist": "ba192125a07fe4e61d398dadb4fb54d1e629a3bf8d05bae31a595608863b7837"
+      }
+    },
+    {
+      "id": "t3_i60_e657_f005186",
+      "task": 3,
+      "instance": 60,
+      "episode": 657,
+      "frame": 5186,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "P"
+      ],
+      "images": {
+        "head": "images/t3_i60_e657_f005186_head.png",
+        "left_wrist": "images/t3_i60_e657_f005186_left_wrist.png",
+        "right_wrist": "images/t3_i60_e657_f005186_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "7c70aa1c37fa9e93e6c9820fcf8f0eb95c5c70c72e29c1bd1d933ca8385459b7",
+        "left_wrist": "0a4ea6480a7513411478da1536eb07b6efe099d3e3d6d45520caea772ab22572",
+        "right_wrist": "8ac0837799b6270390ea3f1c100b5995aee2b22aaf7d02057bcce77ba519356c"
+      }
+    },
+    {
+      "id": "t3_i60_e657_f007455",
+      "task": 3,
+      "instance": 60,
+      "episode": 657,
+      "frame": 7455,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t3_i60_e657_f007455_head.png",
+        "left_wrist": "images/t3_i60_e657_f007455_left_wrist.png",
+        "right_wrist": "images/t3_i60_e657_f007455_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "e3e4c9d7beccb2eb6caee1ba5dc6834d03aef310aaefe6388cd1fe6f673127bd",
+        "left_wrist": "f593457aa266f64773cd2d70cd9d702c10f468186fb46eac90de30b20b83538b",
+        "right_wrist": "d371c206b124d17762241d58cfff99186ff71ec720b6dfcf7366ef805c875697"
+      }
+    },
+    {
+      "id": "t3_i60_e657_f010048",
+      "task": 3,
+      "instance": 60,
+      "episode": 657,
+      "frame": 10048,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t3_i60_e657_f010048_head.png",
+        "left_wrist": "images/t3_i60_e657_f010048_left_wrist.png",
+        "right_wrist": "images/t3_i60_e657_f010048_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "aef7d920d5907a5cef8acec48fb46870d4e871da1b36a5e976aca7539581bddd",
+        "left_wrist": "33df6ff604efa0c4ff9d051ace22b1d6cdde048728d5b2e465ccbc71e660519c",
+        "right_wrist": "fb6fdf1afb85bc242ab1e960bc3df4092d952b3aaf967d928e9d5f36b86ba7e6"
+      }
+    },
+    {
+      "id": "t3_i160_e720_f000000",
+      "task": 3,
+      "instance": 160,
+      "episode": 720,
+      "frame": 0,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t3_i160_e720_f000000_head.png",
+        "left_wrist": "images/t3_i160_e720_f000000_left_wrist.png",
+        "right_wrist": "images/t3_i160_e720_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "f2ca4e8e27b6e1c6568e1b28ce4204703a32396d029e4cee68222c786da77855",
+        "left_wrist": "392ad68279283822567fc6e72ca5effd89d1a1cf945a18486529b4d7b89e65e9",
+        "right_wrist": "23cd15cd9b4c4c4d1a6b0cb8cf16158395f3873d2fbfcf6e3fe4220b9f9974c8"
+      }
+    },
+    {
+      "id": "t3_i160_e720_f003513",
+      "task": 3,
+      "instance": 160,
+      "episode": 720,
+      "frame": 3513,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "P"
+      ],
+      "images": {
+        "head": "images/t3_i160_e720_f003513_head.png",
+        "left_wrist": "images/t3_i160_e720_f003513_left_wrist.png",
+        "right_wrist": "images/t3_i160_e720_f003513_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "8ea72f395db49cc76032cdc5f61c4320fd56be78f371f5a0ce40af7785baa3a3",
+        "left_wrist": "b046254d2ad3b095e7e10164f06c186cf3bf91f64954666684a32cf3a1062480",
+        "right_wrist": "5341ed20e531a276d4192b228115e74b4f950842bed949a8bd827c96d3b84af0"
+      }
+    },
+    {
+      "id": "t3_i160_e720_f007026",
+      "task": 3,
+      "instance": 160,
+      "episode": 720,
+      "frame": 7026,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "P",
+        "N",
+        "P"
+      ],
+      "images": {
+        "head": "images/t3_i160_e720_f007026_head.png",
+        "left_wrist": "images/t3_i160_e720_f007026_left_wrist.png",
+        "right_wrist": "images/t3_i160_e720_f007026_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "2689a316fae3a65c72c1f519ad82b53ee851904c5d86adf011bc66fa816ce898",
+        "left_wrist": "e8b1627861b2e1d28fdbafa39266b2c7bd3bc46f47780ed5e52d5a8cbfaeee53",
+        "right_wrist": "bca7a06e45a7021222c04b97093c5bdace4d94082739d7332f0fb695260fae91"
+      }
+    },
+    {
+      "id": "t3_i160_e720_f010099",
+      "task": 3,
+      "instance": 160,
+      "episode": 720,
+      "frame": 10099,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t3_i160_e720_f010099_head.png",
+        "left_wrist": "images/t3_i160_e720_f010099_left_wrist.png",
+        "right_wrist": "images/t3_i160_e720_f010099_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "e792fbb93ecd2458c48c80dbffa43f01eaf44a4e5c0911aedf7560962a9f0530",
+        "left_wrist": "70b246581bbdd15d917840a07b8d427931e1e40dc9d5684126384cf74d1cf05b",
+        "right_wrist": "e6e31fb9c7725c4cb615578197a8790cc43530e82781bc884933c47b25bc78a8"
+      }
+    },
+    {
+      "id": "t3_i160_e720_f013612",
+      "task": 3,
+      "instance": 160,
+      "episode": 720,
+      "frame": 13612,
+      "split": "train",
+      "query": "the plate holding food",
+      "stratum": "core_targets",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t3_i160_e720_f013612_head.png",
+        "left_wrist": "images/t3_i160_e720_f013612_left_wrist.png",
+        "right_wrist": "images/t3_i160_e720_f013612_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "2f4558719073351579c582982410c31675c9562af5c1bcccb3af94525c082866",
+        "left_wrist": "585242c870b0961051cb8734ce57157f6eb6373146ca9c82909e4230c609932e",
+        "right_wrist": "9c1c16dcafac7350c2f057c97f0dc304777df8c017c897bf2333156e41a22de0"
+      }
+    },
+    {
+      "id": "t4_i234_e951_f000000",
+      "task": 4,
+      "instance": 234,
+      "episode": 951,
+      "frame": 0,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i234_e951_f000000_head.png",
+        "left_wrist": "images/t4_i234_e951_f000000_left_wrist.png",
+        "right_wrist": "images/t4_i234_e951_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "9a3abb3498dba59fd40fb736a355135557e0387e20bc17f4a0d4901a87f9e1fc",
+        "left_wrist": "cfaa412df92fc229faaa492ed7bb97b31fe892234ded6553163dddd3ed8c6adb",
+        "right_wrist": "43ac64a6eb0540231e6e7d411ed7a3673e227427c1a93e2a198ec5cc1518fc3d"
+      }
+    },
+    {
+      "id": "t4_i234_e951_f003050",
+      "task": 4,
+      "instance": 234,
+      "episode": 951,
+      "frame": 3050,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i234_e951_f003050_head.png",
+        "left_wrist": "images/t4_i234_e951_f003050_left_wrist.png",
+        "right_wrist": "images/t4_i234_e951_f003050_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "f7d771704d86616efd23691dd83295462478d7ecba1b95c13e522470ac68a33d",
+        "left_wrist": "4f51564000dfb7d65f1b868790f221e0bd61ec7ca3533979ef89b43518b679e7",
+        "right_wrist": "da0b85ce1f3cb99f3bee0f105fb28c1fac9ddab0b7f4f0e4147852ad28f68d4f"
+      }
+    },
+    {
+      "id": "t4_i234_e951_f006100",
+      "task": 4,
+      "instance": 234,
+      "episode": 951,
+      "frame": 6100,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i234_e951_f006100_head.png",
+        "left_wrist": "images/t4_i234_e951_f006100_left_wrist.png",
+        "right_wrist": "images/t4_i234_e951_f006100_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "425998b3c62f042fc8d7ed9c08e171c99392c5d5a084c05c3c20cff3f16ff731",
+        "left_wrist": "510f24da883d94518ea0ab3fd2e143158c63b051826a6acfaa96a15ec7346285",
+        "right_wrist": "7168c93df8d921cf4342743492ba9a03a1208c73365519e60547bbe7bd11f3dc"
+      }
+    },
+    {
+      "id": "t4_i234_e951_f008769",
+      "task": 4,
+      "instance": 234,
+      "episode": 951,
+      "frame": 8769,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i234_e951_f008769_head.png",
+        "left_wrist": "images/t4_i234_e951_f008769_left_wrist.png",
+        "right_wrist": "images/t4_i234_e951_f008769_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "682f9ebc346156aef9347fbf3f8e8849a4bcb074d0a856be02be1421564d245c",
+        "left_wrist": "d3600d10e581c8ac0d3c1906a80a6d4b4a19caec431324bf09ac964ad20c9106",
+        "right_wrist": "dd6ae6db00b6c9b88febc02fe7ae6398fcd8d380298a557974a3fc200ad2b955"
+      }
+    },
+    {
+      "id": "t4_i234_e951_f011819",
+      "task": 4,
+      "instance": 234,
+      "episode": 951,
+      "frame": 11819,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i234_e951_f011819_head.png",
+        "left_wrist": "images/t4_i234_e951_f011819_left_wrist.png",
+        "right_wrist": "images/t4_i234_e951_f011819_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "2414bcd64bc789d28f9db6e7e5c29621c870129ff3e060f4b0e2ced5c9928281",
+        "left_wrist": "ef1e71a1d1a5399e33eca87bc6d2fb745633c214f31d6018de1bfd53ce654b79",
+        "right_wrist": "479e2990cc3d5d0655af626407e6d0280ced08ab73927c04b5abae0b460960f8"
+      }
+    },
+    {
+      "id": "t4_i42_e839_f000000",
+      "task": 4,
+      "instance": 42,
+      "episode": 839,
+      "frame": 0,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i42_e839_f000000_head.png",
+        "left_wrist": "images/t4_i42_e839_f000000_left_wrist.png",
+        "right_wrist": "images/t4_i42_e839_f000000_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "0b235e7d4548d260f6aa52dbfedd23506dab98721b8562e36e807c95aad42ed3",
+        "left_wrist": "5e8b5281ceedb94e9cc836cc3d8c53bf9f9cd4b66233c62bf0507f2daa46f3e3",
+        "right_wrist": "14efff3930bbbd5cff455e61be1b186ff10405d6289dd9fef0473fee5d3964b0"
+      }
+    },
+    {
+      "id": "t4_i42_e839_f003340",
+      "task": 4,
+      "instance": 42,
+      "episode": 839,
+      "frame": 3340,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i42_e839_f003340_head.png",
+        "left_wrist": "images/t4_i42_e839_f003340_left_wrist.png",
+        "right_wrist": "images/t4_i42_e839_f003340_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "ebe8df56f3b5129d88a4294f182d47a53fbd13b72fd1e088c470222b7837f686",
+        "left_wrist": "03353a25985d0398b47f9e4883c54dc9b7b0048e933913b715c7fb47df1f5665",
+        "right_wrist": "e593a2734e66565beecf341e8e06c30a155290a745ab619600f1aebef8657cdd"
+      }
+    },
+    {
+      "id": "t4_i42_e839_f006680",
+      "task": 4,
+      "instance": 42,
+      "episode": 839,
+      "frame": 6680,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i42_e839_f006680_head.png",
+        "left_wrist": "images/t4_i42_e839_f006680_left_wrist.png",
+        "right_wrist": "images/t4_i42_e839_f006680_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "283c345d87b7ba70821ac73cd02212d6ef37245ed472fd4029c811a7a0e87cea",
+        "left_wrist": "e9ecca4319bdae6be79f8493eff20fd3b6051b4db563a28a1525f575457e8a75",
+        "right_wrist": "6ceabd3808b46fbbd5801df7f2e42065a47919fc3ad48920bac27b5103d91153"
+      }
+    },
+    {
+      "id": "t4_i42_e839_f009602",
+      "task": 4,
+      "instance": 42,
+      "episode": 839,
+      "frame": 9602,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i42_e839_f009602_head.png",
+        "left_wrist": "images/t4_i42_e839_f009602_left_wrist.png",
+        "right_wrist": "images/t4_i42_e839_f009602_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "b37bde8cd36bc3cc7c1e4338b715e4b9c7da402cc24e975f110f335a25cb31fd",
+        "left_wrist": "52bd4ae9baaa50ae5b9763571c77301a2a131b6309b7847bc17f9d23f363e1d7",
+        "right_wrist": "29304ee95323f606a3041b62741cd2f038d0aa1fc1d08e0a6bc2399a18e917de"
+      }
+    },
+    {
+      "id": "t4_i42_e839_f012942",
+      "task": 4,
+      "instance": 42,
+      "episode": 839,
+      "frame": 12942,
+      "split": "train",
+      "query": "the radio",
+      "stratum": "cross_task_negative_control",
+      "labels": [
+        "N",
+        "N",
+        "N"
+      ],
+      "images": {
+        "head": "images/t4_i42_e839_f012942_head.png",
+        "left_wrist": "images/t4_i42_e839_f012942_left_wrist.png",
+        "right_wrist": "images/t4_i42_e839_f012942_right_wrist.png"
+      },
+      "png_sha256": {
+        "head": "55b363d3a610fb8e7706b34a7e426b32e3438acc8eeb93146983bf965a4923ce",
+        "left_wrist": "e59a521046cbeadd3ee3229b768ba5bf5d3ae30d4f6f2ba1352f8118c6048cc4",
+        "right_wrist": "552f4391fb837e0e9b65156c400c713b5e7797593bcc209f816664b46b3f3992"
+      }
+    }
+  ],
+  "limits": [
+    "This is a TRAIN-derived labeling-method development set, not an independent final model test.",
+    "Labels are presence/absence/uncertainty only. No gold boxes, physical contact, actions or success labels.",
+    "Tasks2/4 are radio-query negative controls, not new positive object categories.",
+    "Only a generic gray outer curve or tiny boundary fragment is U; do not identify it through another camera or future frame."
+  ]
+}

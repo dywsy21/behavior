@@ -1,0 +1,18 @@
+{
+  "schema": "h82-parent-teacher-review-v1",
+  "reviewer": "Codex parent (/root)",
+  "reviewed_at": "2026-09-25T20:35:00+08:00",
+  "code_commit": "234d6f89f9abc98996354d31c25a8b1a19d759af",
+  "predictions_sha256": "a231bbab2c4fa66f7f8fda304f2ef73c73ab0eff8c6ac1f9fb3bfc6fc7fb5cf1",
+  "images_reviewed": 81,
+  "positive_images_reviewed": 29,
+  "positive_boxes_reviewed": 30,
+  "correct_visibility": 69,
+  "training_label_release": false,
+  "automatic_expansion_approved": false,
+  "frozen_h76_labels_changed": false,
+  "rejected_box_ids": ["t3_i96_e678_f006750_right_wrist"],
+  "box_note": "The listed box surrounds pizza alone and excludes much of its supporting white plate. Other boxes correspond to target pixels but some occluded wrist extents are coarse; no gold IoU. Do not release boxes just because visibility is correct.",
+  "visibility_note": "Radio side-view and bucket recognition improved strongly. Remaining misses include almost-full-frame radio/bucket fragments; three plate fragments at head bottom borders are U in frozen labels but called N. One largely occluded wastebasket candidate is called P despite frozen U. Preserve all old labels and report the failed N-precision gate.",
+  "next": "Fresh-source, pre-human-labeled development sample for selective dual-teacher agreement; discard disagreement/U, no threshold relaxation or automatic full expansion."
+}

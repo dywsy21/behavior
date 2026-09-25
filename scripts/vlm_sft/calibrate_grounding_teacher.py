@@ -30,16 +30,20 @@ BASE_CONFIG=CONFIG.copy()
 def configure_profile(name):
     """Explicit CLI profile; historical H81 frozen worktrees are never changed."""
     global ROOT,CONFIG,PROFILE,input_protocol
-    if name not in ('h81','h82'):raise ValueError('Unregistered teacher profile')
-    if name=='h82':
+    if name not in ('h81','h82','h83'):raise ValueError('Unregistered teacher profile')
+    if name in ('h82','h83'):
         import reference_grounding as protocol
-        ROOT=ROOT.parent/'h82_reference_calibration_v1'
+        ROOT=ROOT.parent/('h82_reference_calibration_v1' if name=='h82' else 'h83_dual_teacher_v1')
     else:
         import visual_grounding as protocol
         ROOT=ROOT.parent/'h81_grounding_calibration_v1'
     input_protocol=protocol;PROFILE=name
     CONFIG={**BASE_CONFIG,'protocol':protocol.VERSION}
-    if name=='h82':CONFIG['reference_spec_sha256']=sha(protocol.SPEC)
+    if name in ('h82','h83'):CONFIG['reference_spec_sha256']=sha(protocol.SPEC)
+    if name=='h83':
+        import dual_teacher_calibration as dual
+        CONFIG.update(protocol=dual.VERSION,parent_review_sha256=sha(dual.REVIEW),max_seconds=2700,outer_seconds=2730,
+                      max_examples=300,primary_batch=8,repeat_batch=0,max_bytes=1024**3)
 
 
 def encode(processor,row,image):return input_protocol.encode(processor,row,image)
@@ -61,6 +65,9 @@ def model_identity():
 
 
 def training_rows():
+    if PROFILE=='h83':
+        from dual_teacher_calibration import load_rows as dual_rows
+        return dual_rows()
     rows,identity=load_rows(DATA)
     selected=sorted((r for r in rows if r['split']=='visual_train'),key=lambda r:r['id'])
     if len(selected)!=81 or len({(r['task'],r['instance']) for r in selected})!=9:
@@ -97,6 +104,9 @@ def report(predictions,rows):
 
 
 def run(output):
+    if PROFILE=='h83':
+        from dual_teacher_calibration import run as dual_run
+        return dual_run(output)
     if output!=ROOT/'calibration' or os.environ.get('CUDA_VISIBLE_DEVICES')!=GPU_UUID:
         raise ValueError('Fixed calibration run and physical GPU2 only')
     output.mkdir(exist_ok=False);started=time.monotonic();examples=0
@@ -164,5 +174,5 @@ def run(output):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',required=True,type=Path)
-    parser.add_argument('--profile',choices=('h81','h82'),default='h81')
+    parser.add_argument('--profile',choices=('h81','h82','h83'),default='h81')
     args=parser.parse_args();configure_profile(args.profile);run(args.output)

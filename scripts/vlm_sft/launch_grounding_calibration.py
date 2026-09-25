@@ -52,7 +52,7 @@ def check_resources(current,baseline=None,sid=None,*,released=False):
 
 
 def command():
-    return ['/usr/bin/timeout','--signal=TERM','--kill-after=10s','1800s',str(PYTHON),
+    return ['/usr/bin/timeout','--signal=TERM','--kill-after=10s',str(CONFIG['max_seconds'])+'s',str(PYTHON),
             str(REPO/'scripts/vlm_sft/calibrate_grounding_teacher.py'),'--profile',PROFILE,'--output',str(ROOT/'calibration')]
 
 
@@ -62,6 +62,9 @@ def load_processor(path):
 
 
 def validate_result(code):
+    if PROFILE=='h83':
+        from dual_teacher_calibration import validate_result as validate_dual
+        return validate_dual(ROOT,code,CONFIG)
     folder=ROOT/'calibration';launch=json.loads((ROOT/'launch.json').read_text())
     if (folder/'failure.json').exists():raise ValueError('Teacher worker recorded failure')
     result=json.loads((folder/'result.json').read_text());identity=json.loads((folder/'identity.json').read_text())
@@ -220,5 +223,5 @@ def supervise():
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--supervise',action='store_true')
-    parser.add_argument('--profile',choices=('h81','h82'),default='h81')
+    parser.add_argument('--profile',choices=('h81','h82','h83'),default='h81')
     args=parser.parse_args();configure_profile(args.profile);supervise() if args.supervise else launch()

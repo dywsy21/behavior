@@ -14,6 +14,8 @@ H78 step10→80的70次真实更新平均1.1360s、batch8，约7.04图/s。五�
 
 ## 数据隔离与标签准入
 
+20:26 计数澄清：400 TRAIN来源组中有24个登记历史TRAIN复用（task0/1/3分别6/9/9），因此只可称376个相对历史新增TRAIN组，不能称400个全新实例。validation/test各40组与47个历史TRAIN组均相交0；这是原设计允许的训练复用，不是留出泄漏。准备第二批150原图人审时显式排除了全部历史TRAIN以及第一批审图的十组，选中task0 i104/i7、task1 i120/i141、task2 i58/i2、task3 i60/i160、task4 i234/i42；没有读取新val/test来改prompt。
+
 - 固定按来源(task,instance)分组，图像/teacher输出前决定split；原逐task最后10演示对应的5%整实例、H09 val/test、后继开发实例、H76三个视觉val实例全部排除。新val/test还排除所有已知H09/H76/native-state训练实例；新训练可以包含旧训练实例，但不冒充新实例。固定meta/quarantine/review SHA。
 - 时间抽样覆盖整段，至少1s间隔，不用演示末帧或技能区间结束推断成功。原quarantine严格排除，保持原720/480像素和解码时间误差≤半帧；记录原视频路径/大小/mtime、frame/PTS、图像SHA。
 - 原图采集只输出`REVIEW_PENDING`，不是训练发布。标注teacher先在已人工审过的TRAIN图片上校准与测吞吐；其输出只是伪标签，要做分任务/视角/距离/遮挡/类别/置信度抽查。缺失/矛盾/低置信样本隔离，人工审查只会由父Codex亲自做，保留可定位记录。

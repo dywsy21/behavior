@@ -1,5 +1,11 @@
 # H82：训练来源参考图辅助的标注校准
 
+终态（2026-09-25 20:35北京时间）：source234d6f89f9abc98996354d31c25a8b1a19d759af，监管completed/exit0/436.930s，97生成/0训练控制，自有GPU释放。69/81=85.19%，P precision28/29=96.55%/recall28/32=87.5%，N precision37/42=88.10%未过原90%门。三task0/1/3分别25/27、23/27、21/27；U4/8，不能合并N/U冒称通过。**不准全量自动扩标。**
+
+本人复查全部81图、29个P图的30框，记录`configs/vlm_sft/h82_parent_teacher_review_v1.json`；t3_i96_e678_f006750_right_wrist框只含披萨而漏盘子，已单列拒绝。其他框有部分遮挡粗框，无IoU金标。predictions SHAa231bbab2c4fa66f7f8fda304f2ef73c73ab0eff8c6ac1f9fb3bfc6fc7fb5cf1，本地小包`h82_reference_results_v1`、人工图`h82_parent_review_sheets_v1`。下一H83是新来源上严格双teacher一致筛选，另注册/不修改H82阈值或冻结金标。
+
+以下保留运行前登记。
+
 2026-09-25 20:05 北京时间；唯一负责人 Codex。**准备中，0 新生成/训练/控制。** 代码 commit 待审查后固定；新 run 预定 `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h82_reference_calibration_v1`。
 
 ## 假设与固定对照

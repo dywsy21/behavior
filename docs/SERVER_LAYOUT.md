@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 20:50北京时间 H82完成/H83准备：** H82监管completed/exit0/436.930s，3635181/3635188结束，自有GPU释放，原source/run保留；本地7小结果`h82_reference_results_v1`、本人81图/30框`h82_parent_review_sheets_v1`。第二批H80人审150原图已全SHA核完，位于`h80_second_raw_review_150_v2`；首传被截断的9216B残片单独留在`h80_second_interrupted_transfer_v2`，不是有效图片。H83只有本地代码/冻结金标，尚无远端新worktree/run/模型。
+
+**2026-09-25 20:22北京时间 H82 运行中：** run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h82_reference_calibration_v1` 已创建，UTC12:21:29.057581/supervisor3635181/source234d6f8；冻结source保持。原97调用/1800＋30s/GPU2预算，结果在`calibration/`，日志/监管回执在run上层。不要重提或热改。
+
+**2026-09-25 20:19北京时间 H82 源：** 新 Git clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/reference_teacher_234d6f8` 固定234d6f89f9abc98996354d31c25a8b1a19d759af；服务器remote默认仅抓main，已显式抓本实验feature再创建新目录，无旧源热更新。真实15 CPU3.385s通过；当前校验七TRAIN参考及81条四图输入，0launch。预定run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h82_reference_calibration_v1` 尚未创建。
+
+**H81本地归档核验完成：** `h81_grounding_results_v1` 七件221937B，排序path/bytes/SHA规范JSON聚合4450a1fa5599d9387d1a9cec050f6703a593331fbbee17a0827f351cf7b2c329双端完全相同；不含27B权重，原run全部保留。
+
 **2026-09-25 20:05北京时间 H80/H81 终态：** 两者均 completed/exit0，自有进程退出；H80 `raw/` 42,240 原图、9,334,445,089B，manifest SHA43fe21488f0855985622db846b02991dbbc337316e2583f685fe8076a3aa8bcd，无训练标签。H81 97 输出工程完整但质量未过。原冻结 source/run 保留；本地 `artifacts/agentic-vlm-goal-20260918/h80_raw_review_150_v1` 保存150已核SHA原图，`h81_grounding_results_v1` 保存7件小结果；对应 `h80_parent_review_sheets_v1`/`h81_parent_review_sheets_v1` 是人审图，禁止作训练输入。H82 尚无远端新目录。
 
 **2026-09-25 19:43北京时间H81启动回执：** 原预定run h81_grounding_calibration_v1已创建，UTC11:42:37.786391、supervisor3629245、冻结be1aca5；97生成/1800s/70GiB GPU2/0训练动作预算，模型worker实际阶段待核，不重复启动。旧27B文件和H78adapter均未改。
