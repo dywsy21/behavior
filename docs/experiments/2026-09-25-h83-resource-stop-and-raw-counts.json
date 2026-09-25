@@ -1,0 +1,92 @@
+{
+  "observed_utc": "2026-09-25T13:12:55Z",
+  "owner": "Codex",
+  "source_commit": "d31ec1d1eb6646d8513a419254dab93ce2f05434",
+  "run": "/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h83_dual_teacher_v2",
+  "status": "RESOURCE_STOPPED_BEFORE_PREDICTIONS",
+  "supervisor_seconds": 10.827890068292618,
+  "exit_code": -15,
+  "generated_examples": 0,
+  "training_updates": 0,
+  "new_controls": 0,
+  "quality_conclusion": "NOT_MEASURED",
+  "model_generation_evidence_files_present": false,
+  "other_training": {
+    "owner": "xhz",
+    "pids": [
+      3641677,
+      3641678,
+      3641679,
+      3641680
+    ],
+    "resume_step": 40000,
+    "max_steps": 100000,
+    "not_interrupted": true
+  },
+  "inventory": {
+    "train_candidate_images_after_h83_group_exclusion": 37440,
+    "groups": 390,
+    "task_images": {
+      "0": 7488,
+      "1": 7488,
+      "2": 7488,
+      "3": 7488,
+      "4": 7488
+    },
+    "calibrated_query_task_images": 22464,
+    "within_source_view_dhash_greedy_diagnostic_only": {
+      "0": {
+        "kept": 37434,
+        "removed": 6
+      },
+      "4": {
+        "kept": 37358,
+        "removed": 82
+      },
+      "8": {
+        "kept": 37145,
+        "removed": 295
+      },
+      "16": {
+        "kept": 36547,
+        "removed": 893
+      }
+    },
+    "training_eligible": false,
+    "calibration_directory_exists": true,
+    "old_owned_pids_alive": {
+      "3641622": false,
+      "3641648": false
+    },
+    "h83_v2_files": [
+      {
+        "path": "launch.json",
+        "bytes": 14443,
+        "sha256": "c3aa5eaf4ece196322ed9b0cd3e854586c628cce5f4d1a015f68cffdadf90b2e"
+      },
+      {
+        "path": "supervisor.json",
+        "bytes": 5118,
+        "sha256": "a092b0c352e4ec33882063915bf3e85a38a780793aca1a5516d60920c9c095f2"
+      },
+      {
+        "path": "supervisor.log",
+        "bytes": 944,
+        "sha256": "460391da1f0c715cb3de4ab40dc92303cbc79cc490cd94339d4b3252ba13125e"
+      },
+      {
+        "path": "worker.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "limitations": [
+    "RAW candidates, no label or training release",
+    "dHash diagnostic is within source and view only, not semantic uniqueness",
+    "Only tasks 0/1/3 currently have registered target teachers; tasks 2/4 not calibrated for their own targets",
+    "Five-hour new-protocol training throughput not yet measured"
+  ],
+  "local_archive": "artifacts/agentic-vlm-goal-20260918/h83_resource_stop_v2",
+  "all_four_archive_file_sha256_verified_both_ends": true
+}

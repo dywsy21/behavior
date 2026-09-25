@@ -1,5 +1,9 @@
 # H83：新来源人工金标上的双模型选择性标注校准
 
+**当前状态（2026-09-25 21:13北京时间）：v2被外部四卡训练挤占后停止，0预测/0训练；质量未测，不准扩标。** 固定d31ec1d1eb6646d8513a419254dab93ce2f05434，真实8 CPU3.746s过；UTC13:06:57.177079/监管3641622、worker3641648，10.827890s后资源门停自有组，exit−15。随后核两个自有PID均不存在，calibration目录为空，没有identity/predictions/result；模型生成尚未开始。队友xhz PID3641677–3641680正从step40000续训至max100000，每卡约73.5GiB，不触碰。没有盲目重提或放宽显存门，等自然释放或用户协调。
+
+四件原回执本地`h83_resource_stop_v2`与远端SHA全同，见`2026-09-25-h83-resource-stop-and-raw-counts.json`；v1失败源/run也保留。资源恢复后要先核真实进程、固定新source/new run与准确GPU预算，不能再次写v2；原金标/300生成/质量门不变。
+
 2026-09-25 20:41北京时间；owner Codex，准备中，0新调用/训练/控制。源commit待CPU/独审后固定。预定run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h83_dual_teacher_v1`。
 
 21:00更新：source8cee00c的v1已失败/2.778s/exit1，0生成、未加载模型；CLI作为__main__配置H83，dual.run重新导入另一个默认H81模块，output保护拦截。原run保留。修复为显式传入已配置模块，并用真实runpy CLI及真实worker前置路径回归覆盖；修后新source/run **h83_dual_teacher_v2**。仍原150图/300生成/2700＋30s预算与冻结金标、阈值；不是标签质量重试或自动加预算，CPU与独审后才重提。

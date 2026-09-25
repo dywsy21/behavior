@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 21:13北京时间资源归属与归档：** 四GPU新任务为xhz PID3641677–3641680（续G0.5 step40000→100000），不触碰。H83自有3641622/3641648均已不存在，v2 calibration空、0预测；四文件20,505B已在`artifacts/agentic-vlm-goal-20260918/h83_resource_stop_v2`双端SHA验全。精确清单/RAW候选计数见`docs/experiments/2026-09-25-h83-resource-stop-and-raw-counts.json`；原源/run保留。
+
+**2026-09-25 21:10北京时间 H83 v2资源中断：** 3641622监管failed/10.828s，worker3641648被自有组清理，exit−15；新外部四卡训练各约73.5GiB，未发任何外部信号。v2原源/run/回执保留，实际GPU PID正只读核；不重启v2，不把原图包当五小时训练数据发布。
+
+**2026-09-25 21:07北京时间 H83 v2运行中：** 新run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h83_dual_teacher_v2`，UTC13:06:57.177079、监管3641622、固定dual_entry_d31ec1d源。原300生成/2700＋30s；不要热改/重复launch，v1另留原位。
+
+**2026-09-25 21:06北京时间 H83修复源：** 新Git clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/dual_entry_d31ec1d` 固定d31ec1d1eb6646d8513a419254dab93ce2f05434，真实8CPU3.746s过；原run保留。新v2 launcher正核完整身份后唯一提交，回执待。
+
 **2026-09-25 21:02北京时间 H83 v1失败保留：** 3640389/3640426已结束，2.778s/exit1，在配置入口门失败且0生成/未加载模型；四卡释放。四原始回执本地`artifacts/agentic-vlm-goal-20260918/h83_failed_entry_v1`，旧8cee00c源/run不改。修后拟另建h83_dual_teacher_v2，尚0launch。
 
 **2026-09-25 20:59北京时间 H83运行中：** `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h83_dual_teacher_v1` 已创建，UTC12:59:14.778065、supervisor3640389/source8cee00c。原300生成/2700＋30s/0训练控制预算，结果在`calibration/`；不要重提或热改。GPU0队友原进程自然结束，四卡预检均空，仍仅给本轮GPU2。
