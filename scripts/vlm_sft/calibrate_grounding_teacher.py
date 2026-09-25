@@ -12,7 +12,8 @@ from modeling import collate, eos_id, load_model
 from prepare_visual_review import atomic_json,sha
 from train_visual_presence import clean_commit,environment_identity,GPU_UUID,OVERLAY
 from visual_presence import load_rows,checked_image,metrics
-from visual_grounding import VERSION,encode,decode_response
+import visual_grounding as input_protocol
+from visual_grounding import VERSION,decode_response
 
 REPO=Path(__file__).resolve().parents[2]
 ROOT=Path('/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h81_grounding_calibration_v1')
@@ -22,6 +23,29 @@ CONFIG={'protocol':VERSION,'seed':41,'max_seconds':1800,'cleanup_seconds':30,'ou
         'cpu_ids':[56,57,58,59],'max_gpu_mib':71680,'allocator_mib':70656,
         'max_bytes':512*1024**2,'max_examples':97,'max_new_tokens':192,'primary_batch':4,'repeat_batch':8}
 LABELS={'present':'P','absent':'N','uncertain':'U'}
+PROFILE='h81'
+BASE_CONFIG=CONFIG.copy()
+
+
+def configure_profile(name):
+    """Explicit CLI profile; historical H81 frozen worktrees are never changed."""
+    global ROOT,CONFIG,PROFILE,input_protocol
+    if name not in ('h81','h82'):raise ValueError('Unregistered teacher profile')
+    if name=='h82':
+        import reference_grounding as protocol
+        ROOT=ROOT.parent/'h82_reference_calibration_v1'
+    else:
+        import visual_grounding as protocol
+        ROOT=ROOT.parent/'h81_grounding_calibration_v1'
+    input_protocol=protocol;PROFILE=name
+    CONFIG={**BASE_CONFIG,'protocol':protocol.VERSION}
+    if name=='h82':CONFIG['reference_spec_sha256']=sha(protocol.SPEC)
+
+
+def encode(processor,row,image):return input_protocol.encode(processor,row,image)
+
+
+def input_messages(query,image):return input_protocol.messages(query,image)
 
 
 def model_identity():
@@ -45,6 +69,12 @@ def training_rows():
     # for an answer or inflate independent-image counts.
     import hashlib
     repeated=sorted(selected,key=lambda r:hashlib.sha256(('h81-repeat-41:'+r['id']).encode()).hexdigest())[:16]
+    if PROFILE=='h82':
+        references=input_protocol.identity()
+        groups={(r['task'],r['instance']) for r in selected}
+        if any((r['task'],r['instance']) in groups for r in references['references']):
+            raise ValueError('Reference instances overlap calibration sources')
+        identity={**identity,'teacher_references':references}
     return selected,repeated,identity
 
 
@@ -134,4 +164,5 @@ def run(output):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',required=True,type=Path)
-    args=parser.parse_args();run(args.output)
+    parser.add_argument('--profile',choices=('h81','h82'),default='h81')
+    args=parser.parse_args();configure_profile(args.profile);run(args.output)

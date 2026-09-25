@@ -1,0 +1,202 @@
+{
+  "schema": "h82-reference-gallery-v1",
+  "approved_for": "bounded_teacher_reference_calibration_only",
+  "reviewer": "Codex parent (/root)",
+  "source_manifest_sha256": "43fe21488f0855985622db846b02991dbbc337316e2583f685fe8076a3aa8bcd",
+  "raw_root": "/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h80_expanded_raw_v1/raw",
+  "references": [
+    {
+      "name": "radio_front",
+      "query": "the radio",
+      "role": "positive",
+      "id": "t0_i94_e88_f001955_left_wrist",
+      "task": 0,
+      "instance": 94,
+      "split": "train",
+      "path": "images/t0_i94_e88_f001955_left_wrist.png",
+      "png_sha256": "f3afb9fd519e051cb2763a2436dfa0ce3cf72be34cb26a2c239988f4ccdd8423",
+      "original_size": [
+        480,
+        480
+      ],
+      "crop_xyxy": [
+        0,
+        0,
+        423,
+        282
+      ],
+      "description": "Red speaker face and pale case; robot gripper is not the target.",
+      "reviewed_size": [
+        256,
+        171
+      ],
+      "reviewed_pixels_sha256": "e1cf8d26b57f9ac3b03c69e825b676bc2dcdd53b345b3255047431bb87f557ed"
+    },
+    {
+      "name": "radio_profile",
+      "query": "the radio",
+      "role": "positive",
+      "id": "t0_i114_e102_f000959_head",
+      "task": 0,
+      "instance": 114,
+      "split": "train",
+      "path": "images/t0_i114_e102_f000959_head.png",
+      "png_sha256": "c91134e8fa0467ad19086455386eb52e2b02e61f6e83a133026e3e938fa1988d",
+      "original_size": [
+        720,
+        720
+      ],
+      "crop_xyxy": [
+        78,
+        546,
+        241,
+        653
+      ],
+      "description": "Same target class from the top/side; speaker face need not be visible.",
+      "reviewed_size": [
+        163,
+        107
+      ],
+      "reviewed_pixels_sha256": "39e8c5cdbb0131bddf01ada27e638e8a396609b172e7c47185dc675f7998fda3"
+    },
+    {
+      "name": "basket_whole",
+      "query": "the wastebasket",
+      "role": "positive",
+      "id": "t1_i221_e334_f001097_head",
+      "task": 1,
+      "instance": 221,
+      "split": "train",
+      "path": "images/t1_i221_e334_f001097_head.png",
+      "png_sha256": "49e8b8385b2a7b6ff3aebda321adf41ca654c477227d94711d9ccad84eccc68d",
+      "original_size": [
+        720,
+        720
+      ],
+      "crop_xyxy": [
+        410,
+        544,
+        533,
+        695
+      ],
+      "description": "Open brown-gray tapered wastebasket with visible interior and rim.",
+      "reviewed_size": [
+        123,
+        151
+      ],
+      "reviewed_pixels_sha256": "75b71ea019bba444bed92737c273f61603cb8ce3a069636d03fd0dc46c107b9f"
+    },
+    {
+      "name": "basket_partial",
+      "query": "the wastebasket",
+      "role": "positive",
+      "id": "t1_i148_e293_f003180_right_wrist",
+      "task": 1,
+      "instance": 148,
+      "split": "train",
+      "path": "images/t1_i148_e293_f003180_right_wrist.png",
+      "png_sha256": "b378f897af705e75a38c6d3b7e3243e8c357dae32e142a0e9966298b121b2b0e",
+      "original_size": [
+        480,
+        480
+      ],
+      "crop_xyxy": [
+        0,
+        0,
+        228,
+        270
+      ],
+      "description": "Cropped near view of wastebasket interior and rim; black gripper is not part of the target.",
+      "reviewed_size": [
+        216,
+        256
+      ],
+      "reviewed_pixels_sha256": "fdb71ef7396caefed13a9eb6e1e74f063112d95165e7c3c62b69ebed3c247eed"
+    },
+    {
+      "name": "plate_food_front",
+      "query": "the plate holding food",
+      "role": "positive",
+      "id": "t3_i212_e747_f003784_head",
+      "task": 3,
+      "instance": 212,
+      "split": "train",
+      "path": "images/t3_i212_e747_f003784_head.png",
+      "png_sha256": "a67712728f37a96330a00d463efe5c3a21f0c9ff9fee44388de6ce586a48e28f",
+      "original_size": [
+        720,
+        720
+      ],
+      "crop_xyxy": [
+        283,
+        346,
+        448,
+        466
+      ],
+      "description": "White plate with visible pizza on its upper surface.",
+      "reviewed_size": [
+        165,
+        120
+      ],
+      "reviewed_pixels_sha256": "867a293f47ce20d8ecc32af244e5d1cb9d6a7a27fbeebb90cd88fea8caa444b3"
+    },
+    {
+      "name": "plate_food_partial",
+      "query": "the plate holding food",
+      "role": "positive",
+      "id": "t3_i114_e692_f004291_right_wrist",
+      "task": 3,
+      "instance": 114,
+      "split": "train",
+      "path": "images/t3_i114_e692_f004291_right_wrist.png",
+      "png_sha256": "0a078accfe0e095e6a3397272aaf9c202c0a211defdcb4615e3d0f06c86e3f36",
+      "original_size": [
+        480,
+        480
+      ],
+      "crop_xyxy": [
+        0,
+        0,
+        270,
+        285
+      ],
+      "description": "Near edge view with both white plate and visible food; do not infer food from a bare plate back.",
+      "reviewed_size": [
+        243,
+        256
+      ],
+      "reviewed_pixels_sha256": "90cb00987fe77c953f2aec796268d97b1d945a00a7c6f72c2f4716d667ed4b1e"
+    },
+    {
+      "name": "robot_body",
+      "query": "*",
+      "role": "negative",
+      "id": "t0_i94_e88_f000000_left_wrist",
+      "task": 0,
+      "instance": 94,
+      "split": "train",
+      "path": "images/t0_i94_e88_f000000_left_wrist.png",
+      "png_sha256": "a7e7512c682c41911f1e7da3b7b7a87be0440d3c6b5d7a8361606753b00f9eb1",
+      "original_size": [
+        480,
+        480
+      ],
+      "crop_xyxy": [
+        0,
+        0,
+        480,
+        480
+      ],
+      "description": "Robot body and gripper, not a radio, wastebasket or plate holding food.",
+      "reviewed_size": [
+        256,
+        256
+      ],
+      "reviewed_pixels_sha256": "725060b9fbdbf22cfdb1f51544c100334fc6424ee7faf8948f8be35897aacae5"
+    }
+  ],
+  "teacher_only": true,
+  "training_eligible": false,
+  "reviewed_at": "2026-09-25T20:09:00+08:00",
+  "review_note": "Parent personally inspected all seven exact crops on references.jpg, plus the six original target images. Positive crops show identifiable target appearance; negative shows robot shell. Background/grippers remain in some crops and must not be targeted. No calibration-image answer supplied."
+}

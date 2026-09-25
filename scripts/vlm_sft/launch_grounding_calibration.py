@@ -13,17 +13,24 @@ import subprocess
 import sys
 import time
 
+import calibrate_grounding_teacher as worker
 from calibrate_grounding_teacher import (ROOT,REPO,CONFIG,GPU_UUID,model_identity,training_rows,report,
-                                         clean_commit,environment_identity)
+                                         clean_commit,environment_identity,input_messages)
 from train_visual_presence import model_pythonpath
 from prepare_visual_review import atomic_json,sha
 from visual_presence import checked_image
-from visual_grounding import messages,decode_response
+from visual_grounding import decode_response
 sys.path.insert(0,str(REPO/'scripts/semantic_robot'))
 from launch_h69 import belongs_to_session,stop_owned_group
 from probe_simulator_startup import snapshot,GPU_UUIDS
 
 PYTHON=Path('/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python')
+PROFILE='h81'
+
+
+def configure_profile(name):
+    global ROOT,CONFIG,PROFILE
+    worker.configure_profile(name);ROOT=worker.ROOT;CONFIG=worker.CONFIG;PROFILE=name
 
 
 def check_resources(current,baseline=None,sid=None,*,released=False):
@@ -46,7 +53,7 @@ def check_resources(current,baseline=None,sid=None,*,released=False):
 
 def command():
     return ['/usr/bin/timeout','--signal=TERM','--kill-after=10s','1800s',str(PYTHON),
-            str(REPO/'scripts/vlm_sft/calibrate_grounding_teacher.py'),'--output',str(ROOT/'calibration')]
+            str(REPO/'scripts/vlm_sft/calibrate_grounding_teacher.py'),'--profile',PROFILE,'--output',str(ROOT/'calibration')]
 
 
 def load_processor(path):
@@ -76,12 +83,18 @@ def validate_result(code):
     expected_keys={'id','phase','query','expected_visibility','png_sha256','protocol','size','blind','resized_pixels_sha256',
                    'input_tokens','input_ids_sha256','text','parsed','format_valid','error','has_eos','output_tokens',
                    'batch_seconds','training_eligible','manual_box_review','generated_token_ids'}
+    if PROFILE=='h82':expected_keys|={'reference_spec_sha256','reference_inputs'}
     originals={r['id']:r for r in train};primary=[];repeats=[]
     expected_pairs=[('primary',r['id']) for r in train]+[('repeat',r['id']) for r in repeated]
     if [(r.get('phase'),r.get('id')) for r in rows]!=expected_pairs:raise ValueError('Duplicated or unregistered teacher calls')
     processor=load_processor(launch['model_identity']['path'])
+    reference_receipts={}
     for p in rows:
-        r=originals[p['id']];_,input_receipt=messages(r['query'],checked_image(r))
+        r=originals[p['id']];_,input_receipt=input_messages(r['query'],checked_image(r))
+        if PROFILE=='h82':
+            if r['id'] not in reference_receipts:
+                _,reference_receipts[r['id']]=worker.encode(processor,r,checked_image(r))
+            input_receipt=reference_receipts[r['id']]
         if (set(p)!=expected_keys or p['query']!=r['query'] or p['expected_visibility']!=r['label'] or
                 p['png_sha256']!=r['png_sha256'] or p['training_eligible'] is not False or p['manual_box_review']!='PENDING' or
                 any(p[k]!=v for k,v in input_receipt.items()) or type(p['input_tokens']) is not int or
@@ -135,7 +148,7 @@ def preflight():
 
 def launch():
     code,environment,data,before=preflight();identity=model_identity()
-    if ROOT.exists():raise FileExistsError('H81 already reserved; no automatic retry')
+    if ROOT.exists():raise FileExistsError(PROFILE+' already reserved; no automatic retry')
     ROOT.mkdir(parents=True);token=secrets.token_hex(24)
     env=dict(os.environ,CUDA_VISIBLE_DEVICES=GPU_UUID,PYTHONPATH=model_pythonpath(),PYTHONDONTWRITEBYTECODE='1',
              PYTHONUNBUFFERED='1',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',OMP_NUM_THREADS='4',
@@ -147,7 +160,7 @@ def launch():
              'token_sha256':hashlib.sha256(token.encode()).hexdigest(),'status':'reserved'}
     atomic_json(ROOT/'launch.json',receipt)
     with (ROOT/'supervisor.log').open('x') as log:
-        child=subprocess.Popen([str(PYTHON),str(Path(__file__).resolve()),'--supervise'],cwd=REPO,env=env,
+        child=subprocess.Popen([str(PYTHON),str(Path(__file__).resolve()),'--profile',PROFILE,'--supervise'],cwd=REPO,env=env,
             stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
     receipt.update(status='supervisor_started',supervisor_pid=child.pid)
     try:atomic_json(ROOT/'launch.json',receipt)
@@ -207,4 +220,5 @@ def supervise():
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--supervise',action='store_true')
-    args=parser.parse_args();supervise() if args.supervise else launch()
+    parser.add_argument('--profile',choices=('h81','h82'),default='h81')
+    args=parser.parse_args();configure_profile(args.profile);supervise() if args.supervise else launch()

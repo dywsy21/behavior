@@ -1,0 +1,551 @@
+{
+  "schema": "h80-parent-raw-review-v1",
+  "reviewer": "Codex parent (/root)",
+  "reviewed_at": "2026-09-25T19:56:00+08:00",
+  "manifest_sha256": "43fe21488f0855985622db846b02991dbbc337316e2583f685fe8076a3aa8bcd",
+  "source_code_commit": "f303355b5453aaa4937207b619dd938e076a7846",
+  "images_reviewed": 150,
+  "states_reviewed": 50,
+  "train_only": true,
+  "training_eligible": false,
+  "approved_for": "raw_candidate_integrity_and_teacher_reference_selection_only",
+  "not_approved_for": [
+    "automatic_pseudo_labels",
+    "five_hour_training",
+    "contact_or_success_labels"
+  ],
+  "checks": [
+    "source PNG SHA matched on all 150 locally copied images",
+    "parent viewed all 10 sheets containing all 150 selected views",
+    "5 tasks x 2 train instances x 5 time points x 3 cameras",
+    "no obvious corrupt, wrong-channel or copied-camera image found in this sample"
+  ],
+  "limits": [
+    "not manual review of all 42240 images",
+    "not proof of all frame synchronization beyond half-frame automated checks",
+    "perceptually similar frames remain; exact/dhash uniqueness is not semantic diversity",
+    "sample has no object box or presence labels yet"
+  ],
+  "groups": [
+    {
+      "task": 0,
+      "instance": 94,
+      "states": [
+        {
+          "id": "t0_i94_e88_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "bd704795d2427d87a11536c2c6432af99d5857b22473619559a68f54129e8a2e",
+            "left_wrist": "a7e7512c682c41911f1e7da3b7b7a87be0440d3c6b5d7a8361606753b00f9eb1",
+            "right_wrist": "0d24fe307864eeb7ef3f96545e15fd7b5f39bbcb831069fbdab00e4b6619cdda"
+          }
+        },
+        {
+          "id": "t0_i94_e88_f000680",
+          "frame": 680,
+          "png_sha256": {
+            "head": "0c99951a241b9f7cc0f7ae0945bd383d219bafededca58375e0c4788451bb17e",
+            "left_wrist": "c41a02e8ff1fad0d953b2acb89bb53663d10f05d0a297a5e7b83e3016136658d",
+            "right_wrist": "304de6967e2f685b516f5c763ef964aa2c743b09ea8b87d958d1237370ff6267"
+          }
+        },
+        {
+          "id": "t0_i94_e88_f001360",
+          "frame": 1360,
+          "png_sha256": {
+            "head": "e761ce31faa98250fa436c9c86f3fc31bf2ac11f4d75fa43c49175b3484a7c8e",
+            "left_wrist": "3fd7310dee962276087cb56f40c72fb7f92d7d726db7a5649fe0d8d4793df036",
+            "right_wrist": "fc389d976548af7c8e23853421b239395b6328d7a7015500f34ef5b133157f62"
+          }
+        },
+        {
+          "id": "t0_i94_e88_f001955",
+          "frame": 1955,
+          "png_sha256": {
+            "head": "b385b7ed75aa2386952212232c75815e89643025f9954f63aa8b17a81003a758",
+            "left_wrist": "f3afb9fd519e051cb2763a2436dfa0ce3cf72be34cb26a2c239988f4ccdd8423",
+            "right_wrist": "322176b476aa179cf785af25976602044b70f1093480ba9237cc7bd2bd4874ab"
+          }
+        },
+        {
+          "id": "t0_i94_e88_f002635",
+          "frame": 2635,
+          "png_sha256": {
+            "head": "7bef826ae34a98421bc4197a5ed315d5f5cab45c42e70d7e52919610a8f1efe0",
+            "left_wrist": "56fcff0e12e3bfcac82e7a63064b2c2b5098cc8581738bb5e9f69331e4520e18",
+            "right_wrist": "7ef12fe0a1a23c2db6095479c18ff7f633028ce389b37c5cd7885e07c062b921"
+          }
+        }
+      ],
+      "note": "30Hz时间段/三相机内容相符；中段左右腕分别看到收音机正面/侧面，首尾腕图是机器人机身。物体远近、遮挡变化真实；无明显颜色/解码错位。"
+    },
+    {
+      "task": 0,
+      "instance": 114,
+      "states": [
+        {
+          "id": "t0_i114_e102_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "c2792ccbd26a39ae209a5650b3efa6b4c532cfb253c46c9f36ff035edd96f51b",
+            "left_wrist": "863f049346748f55a93675f9c3a2c51bd9cc1cef292cbb7adfe424deca7161fe",
+            "right_wrist": "1e48c37a74aaf940bbce2631bc0c616e4b831672731b7687c8365c14c60579ed"
+          }
+        },
+        {
+          "id": "t0_i114_e102_f000959",
+          "frame": 959,
+          "png_sha256": {
+            "head": "c91134e8fa0467ad19086455386eb52e2b02e61f6e83a133026e3e938fa1988d",
+            "left_wrist": "1061a7bd705d7901fba090d2d2b382f4b004456db1f0173640de5db9a6adb103",
+            "right_wrist": "9acf1b289ce17c8ee9b11c240ba6151199897cdcf27651f3167bb5a00896c5d7"
+          }
+        },
+        {
+          "id": "t0_i114_e102_f001919",
+          "frame": 1919,
+          "png_sha256": {
+            "head": "2459ec062a9a4cf60b5b5ea5fa2a9173d3eeaf6397ab36587628fc8b7e3ae3f4",
+            "left_wrist": "66f311e38cc09a7277282735ee8f6590e1202e8dcff91790dae9146c793521fe",
+            "right_wrist": "b7183f765aac5abd1be7c40596fa718600072f114096d7d824ab1a31d71dd2cd"
+          }
+        },
+        {
+          "id": "t0_i114_e102_f002759",
+          "frame": 2759,
+          "png_sha256": {
+            "head": "30bd154ac50274dfb21e00add40ca316af4c0ec4c69c6b2c4c2a17231837969a",
+            "left_wrist": "4044c059a2843b011947f3fce0b5498b1088ad648920c20bf402fc94bb716065",
+            "right_wrist": "20ccb9ecfc663f639421e1481eef7e59b84659c6d787073e3f8bc94366f23ace"
+          }
+        },
+        {
+          "id": "t0_i114_e102_f003718",
+          "frame": 3718,
+          "png_sha256": {
+            "head": "1523a189f2bccdf09c8524fb1e6836f8484dc7797dc42be0a346be15e63c6620",
+            "left_wrist": "b8b036ab934040e61d21ca58b903df760abbfabe08d3bed0f23e59a7f8551011",
+            "right_wrist": "3faa5f00a49f919a34d1a352d793295480507534af53163851658f911909b446"
+          }
+        }
+      ],
+      "note": "左手附近收音机侧面/顶部与头图姿态一致，右腕常只有地面或小边缘；中段两图近似是连续持物视角，不将exact hash唯一当语义完全独立。"
+    },
+    {
+      "task": 1,
+      "instance": 148,
+      "states": [
+        {
+          "id": "t1_i148_e293_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "c1b91a756308890d08f3adcde24948f08ba081fa26c480e9efa252dfb06acd96",
+            "left_wrist": "ce579ca1d1791bf07db1031489a050b8726d116513da9826e3ef512f11907f3c",
+            "right_wrist": "c74aad604d05cf0e23dcd7ba73e1f01427c0a5a858508566b79948f168730c33"
+          }
+        },
+        {
+          "id": "t1_i148_e293_f001590",
+          "frame": 1590,
+          "png_sha256": {
+            "head": "598ecff2598f985793deaaa47bc2ba6475ad7a9d6bb3d6d4f2fff1c59afdc3fd",
+            "left_wrist": "cb7c1eb713c565b9e05af53bb9529199626c988389e028feafc68f07ee82a85c",
+            "right_wrist": "cffda72bad03d4b498bc8f3dd70c7554974efa94718db16da5489b022573f162"
+          }
+        },
+        {
+          "id": "t1_i148_e293_f003180",
+          "frame": 3180,
+          "png_sha256": {
+            "head": "48d51b0a227f1d7cc376281472298f66ef45228314fe9578dd0c8b02d1e1dfec",
+            "left_wrist": "41b4a836606d2a36543f408c892b255f81672665c803dde28a0035e6a5509779",
+            "right_wrist": "b378f897af705e75a38c6d3b7e3243e8c357dae32e142a0e9966298b121b2b0e"
+          }
+        },
+        {
+          "id": "t1_i148_e293_f004572",
+          "frame": 4572,
+          "png_sha256": {
+            "head": "54011ec24818e56413d4f12af9c52af09f132c815be0e7840cfe6b824f628fad",
+            "left_wrist": "b764a84a7b819aab05c0f43677eb552c1f76dfaed1ca2e2ec20c2d2647f5bca4",
+            "right_wrist": "a4897e3b833e4375fcfb74a52770a82cb3a2e0d6ea024c8bf26b3700ee83c104"
+          }
+        },
+        {
+          "id": "t1_i148_e293_f006162",
+          "frame": 6162,
+          "png_sha256": {
+            "head": "636a44384d53ec10b02037531b20b5a9bc8da3b258175d53221ac9f4b20b5562",
+            "left_wrist": "1ea222cfc618de936a6a6eaef02530ee27b867e893fb88b6b6f1925964463c55",
+            "right_wrist": "f856b70c4d2705612686b5a2efb7021ba3652db3b95bafdf4e67452721aa64fd"
+          }
+        }
+      ],
+      "note": "垃圾桶内部/外缘、汽水罐顶面与头图动作阶段相符；初态机身占据腕图，末态桶在地面。没有从末帧推定任务成功。"
+    },
+    {
+      "task": 1,
+      "instance": 221,
+      "states": [
+        {
+          "id": "t1_i221_e334_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "a5af4cd47caf891ff9afa209d87e69b0bcec69028226123a498cc138ca581b08",
+            "left_wrist": "89554860cd3f75e000210eaab72960566dd316581de7f538b3c934fd460cd9cb",
+            "right_wrist": "47918f337527a2876943b15f34d52ec30bdbd6d859d4841915c7dfdfc3bd0c66"
+          }
+        },
+        {
+          "id": "t1_i221_e334_f001097",
+          "frame": 1097,
+          "png_sha256": {
+            "head": "49e8b8385b2a7b6ff3aebda321adf41ca654c477227d94711d9ccad84eccc68d",
+            "left_wrist": "41546c7be0ed0225a99778dfd77a51fbf396feafa8ce230dfbcf19060b5488bc",
+            "right_wrist": "3b3080b7920aa9daa8f735a85f35f70f6379ea5e1d98e44122871930870b0a57"
+          }
+        },
+        {
+          "id": "t1_i221_e334_f002193",
+          "frame": 2193,
+          "png_sha256": {
+            "head": "946e85dfcf85f4749ed849f992445c412b15b407b9b701f3918a8c7351ff5375",
+            "left_wrist": "aad89b19a027bd5964388ec9ed5579cbd0d6b7ac61be55c03a0d93ffcfa5be64",
+            "right_wrist": "0fb24e5da9fdbc7027998e1c5fb6c8ef9364822edf6451cc37f6fd27f14353e5"
+          }
+        },
+        {
+          "id": "t1_i221_e334_f003152",
+          "frame": 3152,
+          "png_sha256": {
+            "head": "338dd13b66b53948c415a4880c2eaab04aa2ad58cabd746fe4f3e6f293489a70",
+            "left_wrist": "8969db161205850ff7c50ca13c3ee4677a2d76f0888b9952f744bad191945502",
+            "right_wrist": "03d93d23b8a69719a4abc1ac8f17a7a0de14e530006d4f95049a15c05dfe1f3c"
+          }
+        },
+        {
+          "id": "t1_i221_e334_f004249",
+          "frame": 4249,
+          "png_sha256": {
+            "head": "4c600d1d22a2749e95d991dc6aa621716322fb522a9802826d6101b752e97f74",
+            "left_wrist": "da9dd6fd251fab712466d11467de07f506ec6fa47c5b6d5976e3fadd39d43357",
+            "right_wrist": "6d45a87416cefbc3ad178fd106c5d7459c603f93104cc6ff7ae6d5d159e69376"
+          }
+        }
+      ],
+      "note": "头图可见远处垃圾桶，后续右腕桶侧壁、左腕罐顶符合同时刻双手视角；深遮挡是有效原始观测，不伪造可见性。"
+    },
+    {
+      "task": 2,
+      "instance": 53,
+      "states": [
+        {
+          "id": "t2_i53_e447_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "4128172354981b634e7bc96226f972125cff2023f31125f46b52ff7cb15f2d1d",
+            "left_wrist": "8a5b790d64123232bc849f5bf686db0c82a78c66ceddf0dfce66f7abe36dd154",
+            "right_wrist": "2f6894119db9c07fff73523f676dd15a7a09fe82bb860a4fd0b218fce63b3d32"
+          }
+        },
+        {
+          "id": "t2_i53_e447_f003577",
+          "frame": 3577,
+          "png_sha256": {
+            "head": "14fb291514a78fd230ad63b0d2a93497d99b4532e65bfe59e63371811263926e",
+            "left_wrist": "ceba9df20fb7aaa5609db71117c900353116d6601f04b26e91083f703e64b23c",
+            "right_wrist": "bdcdf0835026e6674c7aa8070dfe0da9adbe1568c18483c4527b53d4f0e8ff7e"
+          }
+        },
+        {
+          "id": "t2_i53_e447_f007155",
+          "frame": 7155,
+          "png_sha256": {
+            "head": "db3985c1bf155835b0e8613234c75e8f039223b20842a7144eacd78e7848ad53",
+            "left_wrist": "05261154604e75ea3ce9660bd69f7b637368c5fb044512ebed683caebce4d248",
+            "right_wrist": "df3f3c186f7a9bf740725efbeb33d23a726f73deda52e39d8c6b5fe8990e1c5a"
+          }
+        },
+        {
+          "id": "t2_i53_e447_f010285",
+          "frame": 10285,
+          "png_sha256": {
+            "head": "51fddb5e0d90ed4bbccd523940d9907032eda1b21820b4f70fe18bc303afaa9f",
+            "left_wrist": "e301a7102233d6e4a2722d75eeea0207bd6db693a8cb4dbeb01c7b311bc85aa1",
+            "right_wrist": "700e2893eee67f199339f6ba2b1cbdbb582cc870684452748f2418468bc24218"
+          }
+        },
+        {
+          "id": "t2_i53_e447_f013862",
+          "frame": 13862,
+          "png_sha256": {
+            "head": "85741d56f17f19a2aaa3f0de35c47ca4202e60f69af648996d8d5d20f9600c62",
+            "left_wrist": "01b139a3211d9da82f9be2c92d00b7d69c8ca6c10cf1e35a09637886560bbd49",
+            "right_wrist": "3e2fc9698f7c8abab5eb8d2ca28fa92c962b4ed2472da04b82c5d65b2ea8d80e"
+          }
+        }
+      ],
+      "note": "三视角显示不同时间的蜡烛、南瓜及柜内物体；近处蜡烛截断/南瓜边缘真实，原分辨率与时间标签一致。"
+    },
+    {
+      "task": 2,
+      "instance": 55,
+      "states": [
+        {
+          "id": "t2_i55_e449_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "05604efc9f535709265a044654f62fd8ae4a3ce8b341d36149269e20187a111f",
+            "left_wrist": "aa538ad79b76a57e870a439a351b3e48029759bbeebb10c76e9232ce1311f49b",
+            "right_wrist": "dc2d9fe6ddbc4760503b914d1bec87c37b28fd2177e3093968ed7bff88901f89"
+          }
+        },
+        {
+          "id": "t2_i55_e449_f003685",
+          "frame": 3685,
+          "png_sha256": {
+            "head": "168fbd5f54d69fe39e75652879c627eaf1f4996eec55e533d5e0e12e70eec35c",
+            "left_wrist": "7916216d2420ec5e3be6b9fa4986ed84e9918cc47eb795d24e197b1e2a101067",
+            "right_wrist": "9f6e7a49634e20e7d4d12ecf89f1a70033abbf8d5758e77845f179f214263725"
+          }
+        },
+        {
+          "id": "t2_i55_e449_f007371",
+          "frame": 7371,
+          "png_sha256": {
+            "head": "2d8f3666c0accf851bf0faead8cfb8e97bb257db0e3560ea419b7a0681d94f06",
+            "left_wrist": "272501fbf238f3dc73e930b3a3d1855b10a0343df7e2ccc3027e97aea1cbc643",
+            "right_wrist": "b90a97c6d76f2a87080d3ae9c74b7efb00a0f83533484d8d4991061526647713"
+          }
+        },
+        {
+          "id": "t2_i55_e449_f010596",
+          "frame": 10596,
+          "png_sha256": {
+            "head": "4aaa21ad50a36f5e869c33a68d1809f82cc245cf9fa8c3c26bebd4529894b672",
+            "left_wrist": "e8e1a12337312bdc560a337419f9046c8d4dce81e5d0449acc1a0316d8b73dbb",
+            "right_wrist": "96a1ddb1ab5ea71f88655300a93cec4392158e9ac543060b06b33e3924a82ec0"
+          }
+        },
+        {
+          "id": "t2_i55_e449_f014281",
+          "frame": 14281,
+          "png_sha256": {
+            "head": "39853582cfc3643ae773e9273ba2f22ad9d502f4df7f28fa281a16dbfa9c99f2",
+            "left_wrist": "d4f2466c8c11d09027d95c843dee72e982d5d7c35226b5bfac16312e69ba5be7",
+            "right_wrist": "d138efd9dc15f274c886e57cea90aacc75d220fa2a1fa5fe00f83c143887a90e"
+          }
+        }
+      ],
+      "note": "柜内蜡烛/黑色坩埚/南瓜分别出现在不同段；没有据技能区间或末态画面附加成功标签。"
+    },
+    {
+      "task": 3,
+      "instance": 114,
+      "states": [
+        {
+          "id": "t3_i114_e692_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "db66364bbc7aeddc751584a3b2016ff9331b13fca7fce47221cac46aa6309908",
+            "left_wrist": "732669cf70486bbbdcb54d018b88cf9bbb1e1258db42f8d5eebec32a07f9a4e7",
+            "right_wrist": "9070ff3de745a53c14e6f70b36d9e770b80b19ec24db7538f951168290163172"
+          }
+        },
+        {
+          "id": "t3_i114_e692_f004291",
+          "frame": 4291,
+          "png_sha256": {
+            "head": "9f76c6872878c6587ad713d0e70d30afea416b22be46df6d328dae4e9c062590",
+            "left_wrist": "6f72d26fcb03237d4aedf3dbece3e1bdbbf0d0adcfe6d551bf9002b5db885c40",
+            "right_wrist": "0a078accfe0e095e6a3397272aaf9c202c0a211defdcb4615e3d0f06c86e3f36"
+          }
+        },
+        {
+          "id": "t3_i114_e692_f008582",
+          "frame": 8582,
+          "png_sha256": {
+            "head": "683521f373d667675eb9d45d6323f02eace251c55482a7b61444e29838d17a8b",
+            "left_wrist": "8d603a7d5e49e62b5034e62d0768fa95513e03b44da8b961a8430e7f9ba99ca0",
+            "right_wrist": "a22d21687d2f80a4c8d3328415c4dda40abf69918d161e47d99816f8371441e4"
+          }
+        },
+        {
+          "id": "t3_i114_e692_f012337",
+          "frame": 12337,
+          "png_sha256": {
+            "head": "2fe9d96b0d391d834f16df515df9f02a97e6b0b68878df3481bf4991bb2bff02",
+            "left_wrist": "63f94e1ca207e55aae8bc65c6021f7322005415ceb353ba2b1d6065a3a7428f9",
+            "right_wrist": "52e32b6b08eeb8735f5ee0d5a47323ab576e4a3b3e03dd5b663ec03ffbf8bda5"
+          }
+        },
+        {
+          "id": "t3_i114_e692_f016628",
+          "frame": 16628,
+          "png_sha256": {
+            "head": "bde80675ee440e2afb9a1bc3670f6ac835f91d1f79f6ea2b34258cbee93a8c14",
+            "left_wrist": "a765720396c36c0051b67f83ee59bad29ec4afd24c715779c40a8aa490fb4509",
+            "right_wrist": "ea808f943246b775174ae8ed295cd4fca7e3a6834fb5a67317774b846dfbad00"
+          }
+        }
+      ],
+      "note": "头/右腕食物盘近景一致；后段开冰箱与水槽碗可见，腕图并非统一主相机复用。"
+    },
+    {
+      "task": 3,
+      "instance": 212,
+      "states": [
+        {
+          "id": "t3_i212_e747_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "c5b4161b05717d5185b0c73dc6333f7279e0da560eb7b51b17ff4bd6b4b76365",
+            "left_wrist": "88e6b527e2d96ee9e9c3883d101452a4ecdacabbd201c56f963f2b4a87418571",
+            "right_wrist": "9ca5520b03c0b0b324910b9ef74a438f4fb199776aacc1b1ed03bd7d6fec925e"
+          }
+        },
+        {
+          "id": "t3_i212_e747_f003784",
+          "frame": 3784,
+          "png_sha256": {
+            "head": "a67712728f37a96330a00d463efe5c3a21f0c9ff9fee44388de6ce586a48e28f",
+            "left_wrist": "7d0317ddf8bf9fece4f0be66e0eebe818ebf3039f0c7d6f557a1786fc801f293",
+            "right_wrist": "cbe9128e461b992cf7beeed91c5eac75dd5b59ac8ded5eb2a8df234fad030db1"
+          }
+        },
+        {
+          "id": "t3_i212_e747_f007567",
+          "frame": 7567,
+          "png_sha256": {
+            "head": "a04429f67e57c44e489f1b7ac9fbf2751ae5f8d688132555141cd260e44a95cc",
+            "left_wrist": "dc3fe178d7b262e7632e24a1dc3256bfdda5a793bc9c0e49925d5a5031fe4f53",
+            "right_wrist": "2e0c46e3517a3c971818121be7bae73b20a5b1925b281ebcda12da8c4a6570d1"
+          }
+        },
+        {
+          "id": "t3_i212_e747_f010878",
+          "frame": 10878,
+          "png_sha256": {
+            "head": "f80f4dd72135cec3e58f8fb189e3506ddeef3a1d68f985ceab7e0d2aad1639b1",
+            "left_wrist": "71f7698c890ad6ce920cfda7e53b55fe4d188a9d5c2921688db05c0ecd308e7c",
+            "right_wrist": "b0488e15a2a357422728ae82438b3c35957cd10cfde78e2493079ebb20adc2d3"
+          }
+        },
+        {
+          "id": "t3_i212_e747_f014662",
+          "frame": 14662,
+          "png_sha256": {
+            "head": "48b55621b25b04bd77125d5972e0f2162c76b98599b7dfec8df6e251bdfda703",
+            "left_wrist": "5b28f47bc4ae2ed1011808b85f58bed3b43e9f326fa58511c37a7b7ed7b2422b",
+            "right_wrist": "2d5bd1f6f4929db45d8e0f12a9407b3dcee1a76b4ea8bd3e551f2849740729d8"
+          }
+        }
+      ],
+      "note": "披萨盘/白碗近景、地面及机器人部件都有；不能将仅有白色盘背或碗内面的画面自动标成带食物盘。"
+    },
+    {
+      "task": 4,
+      "instance": 43,
+      "states": [
+        {
+          "id": "t4_i43_e840_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "ed3ae99c8874aed0a154ebdc50f4c0d64f42da51998ba65f1bede690956a825d",
+            "left_wrist": "f44900b28664dc8f64780a3124e827120ba729516e6c8dea99abc399ccbbc75f",
+            "right_wrist": "fb8baf3bede4104658c73f82ee84f6b53ba5e6e8732a036e9163df0963d8de4f"
+          }
+        },
+        {
+          "id": "t4_i43_e840_f003372",
+          "frame": 3372,
+          "png_sha256": {
+            "head": "9c3c31a34c9e21d4eb062e313611a7465dd8c40615e3ee6a1b048f071e8fe50a",
+            "left_wrist": "1e03d6e96ae985367a1cc06f35bf086fba86a589fb3e8498820fdbc087651535",
+            "right_wrist": "191d6bce0b6d74aa3389d7e92b1573c1e1a323eabc8ec6ddef24acbc41b43a54"
+          }
+        },
+        {
+          "id": "t4_i43_e840_f006744",
+          "frame": 6744,
+          "png_sha256": {
+            "head": "c22e33f35fbbff467aa8382ebc49f626998214134cf69f49a659dd8fcba7d2cf",
+            "left_wrist": "5954a91349996370cda878d34627afbfb467f8011fffbcb178167c6881dc473c",
+            "right_wrist": "3e87f61f9d1b665c51d41a2ab70dcc9356adcb6970420b8278585c0abedccb92"
+          }
+        },
+        {
+          "id": "t4_i43_e840_f009694",
+          "frame": 9694,
+          "png_sha256": {
+            "head": "a3e9aab70ccddc695593fc105ec21c27cbd1430eaf43621b21200538eef6da2f",
+            "left_wrist": "ff6c18518c42f0b585712f2dfce741f88c582e041c5fe716dae102fa84b87747",
+            "right_wrist": "35d37a3c97ea630b2602ca0f5f404d795d5267ee7d1461d8edf5b1123937124f"
+          }
+        },
+        {
+          "id": "t4_i43_e840_f013066",
+          "frame": 13066,
+          "png_sha256": {
+            "head": "d37c3056135a3e6378b87e413d3bb53b7854e1d0687e8d5648280c64ee2d38b1",
+            "left_wrist": "0524bad47a3051cc16e630b7222c56ecbbdf82e6e1407fb9e1e5e3cf971c6de5",
+            "right_wrist": "6992eff340805b69cd93124535fe98d04be4a43bfc1464d5ac5c775c9b26c1bf"
+          }
+        }
+      ],
+      "note": "另一厨房场景，金属铰链罐/微波炉/砧板与原任务素材一致；罐近景裁切严重但非损坏帧。"
+    },
+    {
+      "task": 4,
+      "instance": 126,
+      "states": [
+        {
+          "id": "t4_i126_e880_f000000",
+          "frame": 0,
+          "png_sha256": {
+            "head": "fa88807f232abf0535f575a14b98ececbdf474bfdc93e0771535b2b6d0eeedd4",
+            "left_wrist": "95abfea6ff6dcfec57087dfe5686a03d910657f94c7c7a82fe45a936599cdf69",
+            "right_wrist": "6c9a6fdfa554f386e707c7b7341d4e7836a1f29d4e8df8d939a29f5c0eb01ed7"
+          }
+        },
+        {
+          "id": "t4_i126_e880_f002743",
+          "frame": 2743,
+          "png_sha256": {
+            "head": "ee02a9e4aaf5cd2bbe0e1a0b1c81b75fa17eb8ef797ed2312fa48e0d5782be41",
+            "left_wrist": "fecf7c2df3c6b1e5f379aaa5e4d2af8f793ce685de7d8e4d652e4e6699e5bd00",
+            "right_wrist": "24a07c00122b6c770d2809e6d77734f3ac510ab718887642e123801030fc9607"
+          }
+        },
+        {
+          "id": "t4_i126_e880_f005486",
+          "frame": 5486,
+          "png_sha256": {
+            "head": "9d2c540f65e7010f1ed776d72fd732d254e3b147618fbff188861e3f0aba8735",
+            "left_wrist": "1556c0c8ae428fd2acc30fb05cffbb200ffc2b7fa672fcc0f17f2c2849502de5",
+            "right_wrist": "83bcb9a82bddaf603e9b88c21e31a29b078579a58e2655af2e0fe246b1c3343b"
+          }
+        },
+        {
+          "id": "t4_i126_e880_f007886",
+          "frame": 7886,
+          "png_sha256": {
+            "head": "1e24965bf729c1f73aa50e19036d0e7e0703d790d9c94f7ab759c809a7ea50ba",
+            "left_wrist": "df2be8c1cfe2444d70b38c0051af1c8dec0e33b4ea10e7e3972a85c01b0c2938",
+            "right_wrist": "1e9bd441af224d77fc4cea8bae1e0e4ecdbb9973b253093b57ab10d7f858a1b2"
+          }
+        },
+        {
+          "id": "t4_i126_e880_f010629",
+          "frame": 10629,
+          "png_sha256": {
+            "head": "6cce52ba29e6fa9bbef631f321ab7f31221206010674d710fb11d09146ebfb1b",
+            "left_wrist": "8b6f305015b30141d9dc57c607011ec0778e9364542976b16b640a7fd34e1d5e",
+            "right_wrist": "9f96f983c5c108f3a6aee172f2ae16c141f891d5250d076c5da1856da10698e9"
+          }
+        }
+      ],
+      "note": "头/右腕金属罐及香肠方向一致；镜面/低多边形外观容易造成通用VLM类别误认，需原图参考标注而非推测动作结果。"
+    }
+  ]
+}

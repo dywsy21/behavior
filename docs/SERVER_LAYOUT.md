@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 20:05北京时间 H80/H81 终态：** 两者均 completed/exit0，自有进程退出；H80 `raw/` 42,240 原图、9,334,445,089B，manifest SHA43fe21488f0855985622db846b02991dbbc337316e2583f685fe8076a3aa8bcd，无训练标签。H81 97 输出工程完整但质量未过。原冻结 source/run 保留；本地 `artifacts/agentic-vlm-goal-20260918/h80_raw_review_150_v1` 保存150已核SHA原图，`h81_grounding_results_v1` 保存7件小结果；对应 `h80_parent_review_sheets_v1`/`h81_parent_review_sheets_v1` 是人审图，禁止作训练输入。H82 尚无远端新目录。
+
 **2026-09-25 19:43北京时间H81启动回执：** 原预定run h81_grounding_calibration_v1已创建，UTC11:42:37.786391、supervisor3629245、冻结be1aca5；97生成/1800s/70GiB GPU2/0训练动作预算，模型worker实际阶段待核，不重复启动。旧27B文件和H78adapter均未改。
 
 **2026-09-25 19:42北京时间H81源码：** 新Git独立 `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/grounding_teacher_be1aca5` 固定be1aca51430126061f03826ed4b0d3b332c4ac60；8 CPU/真实HF overlay通过，正在模型完整SHA/资源预检后唯一提交。预定run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h81_grounding_calibration_v1`，真实创建/监管PID待。H80已运行的expanded_visual_f303355与run均不改。

@@ -1,0 +1,30 @@
+{
+  "schema": "h81-parent-teacher-review-v1",
+  "reviewer": "Codex parent (/root)",
+  "reviewed_at": "2026-09-25T19:56:00+08:00",
+  "source_code_commit": "be1aca51430126061f03826ed4b0d3b332c4ac60",
+  "predictions_sha256": "64a4c1c90e43e5a0d78d052187ef5e9a7e276c9face4bfeb7cba00f3fd459565",
+  "unique_primary_images_reviewed": 81,
+  "positive_images_reviewed": 12,
+  "positive_boxes_reviewed": 13,
+  "human_artifacts": "artifacts/agentic-vlm-goal-20260918/h81_parent_review_sheets_v1",
+  "original_frozen_labels_changed": false,
+  "training_label_release": false,
+  "automatic_expansion_approved": false,
+  "visibility_correct": 41,
+  "visibility_total": 81,
+  "positive_box_assessment": "All 13 predictions point at the queried target in the current image. Several close wrist boxes include occluding grippers/background. No manually drawn gold boxes; this is not an IoU claim or blanket box-label approval.",
+  "findings": [
+    "Radio side/top views are often missed or uncertain, even when red-white body is visibly identifiable.",
+    "Close wastebasket interior/rim views are often missed or uncertain.",
+    "Many robot-shell or unrelated wrist images are uncertain instead of absent.",
+    "Plates with visible food are usually recognized; a plate back cannot prove food remains on top.",
+    "A few frozen labels involve severe fragments; retain the original baseline, do not relabel to improve the teacher score."
+  ],
+  "limits": [
+    "TRAIN-only teacher calibration, not heldout generalization or full robot success.",
+    "Domain/class-appearance mismatch is a supported hypothesis, not a proven exclusive cause.",
+    "Format validity and successful process exit do not make these labels training-ready."
+  ],
+  "next": "One separately registered TRAIN-reference appearance calibration; no mass pseudo-label release from H81."
+}
