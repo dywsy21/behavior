@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 13:28（北京时间）资源变化：** 05:26:11及05:27:32 UTC两次核四卡used0/free81152MiB，原xhz训练3294346–3294349均已不在进程表，未发送任何信号、未查其训练结果作成功判断。旧所有源码/run/cache保留；H68还仅本地未提交、0新服务器源/模型/仿真。之后仅拟使用原分配2/3卡，0/1留团队，必须新固定worktree/预算。
+
 **2026-09-25 12:59（北京时间）H67归档完成：** 原supervisor3553910/worker3553917均退出，428.830s/exit0，九个实测点通过；10件2719917B完整本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h67_native_fingers_bundle_v1`与远端十SHA全同，清单在`docs/experiments/2026-09-25-h67-native-fingers-result.json`。原source/run/runtime全保留但无人继续运行；诊断calibration没有相机，禁止拿它覆盖生产calibration。四训练保持/显存回收，无新VLM或训练。
 
 **2026-09-25 12:47（北京时间）H67单次启动：** 固定`native_fingers_95a7bfe`/95a7bfe源码，run `/mnt/nvme_tmp/robodojo_agentic_20260925/h67_native_fingers_v1`、runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/h67_native_fingers_v1`已创建；launch UTC04:46:35.487310、supervisor3553910。9/9服务器CPU、17依赖和资源门均过，原四训练各73644MiB保留。尚未完成真实几何；不要热改/重提/移动该run/source/runtime。

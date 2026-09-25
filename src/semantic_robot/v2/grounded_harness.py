@@ -70,6 +70,7 @@ class GroundedHarness(TaskHarness):
         self.reference_receipts={}
         self.held_inspection={}
         self.target_geometry_veto=None
+        self.press_cycle=None  # Installed only by an explicitly enabled controller.
 
     @property
     def search_reference(self):
@@ -124,6 +125,10 @@ class GroundedHarness(TaskHarness):
             self.events.append({"event":"TARGET_GEOMETRY_VETO","reason":veto,"goal":self.index})
             return result
         self.resolve_reference(evidence)
+        if self.press_cycle is not None and self.goal.kind=="press":
+            # The dedicated executor owns the effect gate. Ordinary non-HOLD
+            # moves and model claims cannot skip stabilization/dwell/retraction.
+            evidence=replace(evidence,effect=None)
         return super().observe(evidence,state,geometry,measured_progress)
 
     def recover(self,event):
@@ -295,6 +300,7 @@ class GroundedHarness(TaskHarness):
         if self.multicamera_inspection:context["possible_contact_after_any_close"]=self.possible_contact_after_close.copy()
         if hasattr(self,"approach_progress"):context["approach_progress"]=self.approach_progress
         if hasattr(self,"search_reanchor"):context["search_reanchor"]=self.search_reanchor
+        if self.press_cycle is not None:context["press_cycle"]=self.press_cycle.context()
         return context
 
 
@@ -328,7 +334,7 @@ class GroundedController:
     max_preflights=24
     max_replans=2
 
-    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False,odometry_match_refinement=False,near_contact_review=False,press_finger_surfaces=None):
+    def __init__(self, model, servo, harness, visual_odometry=False,grasp_motion=False,odometry_estimator="pnp",approach_progress=False,persistent_grasp_tracks=False,spatial_grasp_features=False,search_motion_recovery=False,odometry_self_exclusion=False,odometry_match_refinement=False,near_contact_review=False,press_finger_surfaces=None,press_cycle_v1=False):
         self.model,self.servo,self.harness=model,servo,harness
         from .press_reference import FingerSurfaceAsset
         if press_finger_surfaces is not None and not isinstance(press_finger_surfaces, FingerSurfaceAsset):
@@ -337,6 +343,15 @@ class GroundedController:
         self.press_reference=None
         self.press_reference_key=None
         self.press_snapshot=None
+        if type(press_cycle_v1) is not bool:
+            raise ValueError("Press cycle must be explicitly enabled or disabled")
+        self.press_cycle=None
+        if press_cycle_v1:
+            if not (servo.limits.robot_geometry_guards and visual_odometry and odometry_self_exclusion):
+                raise ValueError("Press cycle requires robot guards and self-excluded action RGB-D motion")
+            from .press_cycle import PressCycle
+            self.press_cycle=PressCycle(self)
+        harness.press_cycle=self.press_cycle
         if type(near_contact_review) is not bool or (near_contact_review and not visual_odometry):
             raise ValueError("Contact review requires explicit measured visual motion")
         self.near_contact_review=near_contact_review
@@ -390,7 +405,8 @@ class GroundedController:
 
     @property
     def can_replan_stop(self):
-        return (self.harness.stop_reason == "RECOVERY_BUDGET_EXHAUSTED"
+        return (not (self.press_cycle is not None and self.press_cycle.stop_reason)
+                and self.harness.stop_reason == "RECOVERY_BUDGET_EXHAUSTED"
                 and self.harness.replans < self.max_replans)
 
     def update_motion(self,images,depths,state, *, robot_frame=None, control=None):
@@ -433,6 +449,12 @@ class GroundedController:
             self.press_reference=None;self.press_reference_key=key
         # No placeholder closing centre may become a press metric.
         for active in manager.arms:centers[active]=None
+        if self.press_cycle is not None and not self.press_cycle.tool_ready:
+            self.target={**self.target,"valid":False,"reason":"PRESS_TOOL_PREPARATION_REQUIRED",
+                "press_reference":{"valid":False,"blocked":bool(manager.stop_reason),
+                    "reason":self.press_cycle.stop_reason or "AWAIT_ACTUAL_STABLE_FINGER_SAMPLES",
+                    "physical_contact_evidence":False}}
+            return centers
         row={"valid":False,"blocked":False,"reason":"CURRENT_TARGET_UNAVAILABLE"}
         try:
             if arm not in ("left","right"):raise ValueError("Single free press hand required")
@@ -521,7 +543,7 @@ class GroundedController:
         return {"eligible":True,"reason":"PRESS_SAME_FACE_CHECKED","checked_poses":len(samples),
                 "base_endpoint_only":plan is None,"not_continuous_sweep_or_contact_evidence":True}
 
-    def observe(self,evidence,state,depths,depth_receipt,images=None,self_geometry=None,contact_review_receipt=None):
+    def observe(self,evidence,state,depths,depth_receipt,images=None,self_geometry=None,contact_review_receipt=None,control=None):
         manager=self.harness
         self.goal_changed=False
         observed_goal_index=manager.index
@@ -546,6 +568,9 @@ class GroundedController:
                 self.target=apply_review(self.target,contact_review_receipt,manager,state,evidence,images)
             elif contact_review_receipt is not None:
                 raise ValueError("Contact review receipt supplied to disabled controller")
+        if self.press_cycle is not None:
+            if target_self_veto_reason(self.target) is None:manager.resolve_reference(evidence)
+            self.press_cycle.begin_observation(state,control)
         self.centers=self._observation_centers(state)
         manager.grounding=self.target
         if target_self_veto_reason(self.target) is None:manager.resolve_reference(evidence)
@@ -629,6 +654,12 @@ class GroundedController:
             manager.stage_age=0
         # Do not feed off-screen / cross-camera 2D EEF distances into progress.
         manager.observe(evidence,state,geometry=None,measured_progress=internal)
+        if self.press_cycle is not None and self.press_cycle.after_observation(evidence,state):
+            # Two fresh post-retraction visual claims, not official truth.
+            # This call cannot be reached through a VLM-provided receipt.
+            manager.observation=evidence
+            manager._complete_goal()
+            manager.completed[-1]["press_execution_and_observation"]=self.press_cycle.context()
         if manager.index!=observed_goal_index:
             if self.inspector is not None and observed_kind=="pick":
                 for arm in observed_arms:
@@ -659,11 +690,15 @@ class GroundedController:
         if self.replan_needed and manager.replans>=self.max_replans:
             manager.stop_reason="STRATEGY_REPLAN_BUDGET_EXHAUSTED"
             self.replan_needed=None
+        if self.press_cycle is not None and self.press_cycle.stop_reason:
+            self.replan_needed=None  # A cycle safety stop is not a strategy retry.
         self.previous={"target":self.target,"hand_targets":self.hand_targets,"centers":{a:None if p is None else p.copy() for a,p in self.centers.items()},
                        "distance":distance,"progress_distance":progress_distance,"goal_index":observed_goal_index}
 
     def apply_recovery(self,value):
         manager=self.harness
+        if self.press_cycle is not None and self.press_cycle.stop_reason:
+            raise ValueError("A stopped press execution cannot be cleared by a VLM replan")
         if not self.replan_needed or manager.replans>=self.max_replans:
             raise ValueError("Recovery is not currently authorized")
         if manager.stop_reason not in (None,"RECOVERY_BUDGET_EXHAUSTED"):
@@ -799,6 +834,8 @@ class GroundedController:
         from .wall_budget import require_time
         require_time(deadline)
         if self.goal_changed:return (HOLD,)
+        if self.press_cycle is not None and self.press_cycle.owns_selection:
+            return self.press_cycle.candidates(state,deadline)
         if self.uses_press_surface and self.target.get("press_reference",{}).get("blocked"):
             self.harness.candidate_receipt={"press_reference":self.target["press_reference"],"permitted":"HOLD_ONLY"}
             return (HOLD,)

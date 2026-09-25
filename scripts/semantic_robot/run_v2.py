@@ -103,6 +103,7 @@ def main():
     p.add_argument("--finger-kinematics",action="store_true",
                    help="Record and compare named finger FK; does not enable a pressing policy")
     p.add_argument("--press-finger-surfaces",help="Experimental pinned H64 asset: fixed exposed finger reference for PRESS; requires named finger FK and robot geometry guards")
+    p.add_argument("--press-cycle-v1",action="store_true",help="Experimental measured tool stabilization / bounded press hold and retreat; requires fixed press surfaces")
     p.add_argument("--grasp-motion",action="store_true",help="Repeated RGB-D target tracking with actual robot-only finger exclusion")
     p.add_argument("--robot-geometry-guards", action="store_true",
                    help="Opt-in actual robot depth self-exclusion and fully-open hand/body collision envelopes")
@@ -164,6 +165,9 @@ def main():
         raise ValueError("Robot geometry guards require fresh grounded robot geometry")
     if args.press_finger_surfaces and not (grounded and args.finger_kinematics and args.robot_geometry_guards):
         raise ValueError("Press surfaces require grounded named finger FK and current robot geometry guards")
+    if args.press_cycle_v1 and not (args.press_finger_surfaces and args.odometry_self_exclusion
+                                    and args.odometry_substep_controls==6):
+        raise ValueError("Press cycle requires fixed surfaces and same-action self-excluded six-control RGB-D motion")
     press_asset=None
     if args.press_finger_surfaces:
         from semantic_robot.v2.press_reference import load_pinned_asset
@@ -220,6 +224,7 @@ def main():
                 g.get("contact_geometry",False)==args.contact_geometry and
                 g.get("finger_kinematics",False)==args.finger_kinematics and
                 g.get("press_finger_asset_sha256")==press_asset_sha and
+                g.get("press_cycle_v1",False)==args.press_cycle_v1 and
                 g.get("grasp_motion",False)==args.grasp_motion and
                 g.get("robot_geometry_guards",False)==args.robot_geometry_guards and
                 g.get("gripper_completion_v1",False)==args.gripper_completion_v1 and
@@ -284,6 +289,7 @@ def main():
                 "appearance_memory":args.appearance_memory,
                 "visual_odometry":args.visual_odometry,
                 "press_finger_asset_sha256":press_asset_sha,
+                "press_cycle_v1":args.press_cycle_v1,
                 "odometry_substep_controls":args.odometry_substep_controls,
                 "odometry_self_exclusion":args.odometry_self_exclusion,
                 "odometry_match_refinement":args.odometry_match_refinement,
@@ -513,7 +519,7 @@ def main():
                     spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery,
                     odometry_self_exclusion=args.odometry_self_exclusion,
                     odometry_match_refinement=args.odometry_match_refinement,near_contact_review=args.near_contact_review,
-                    press_finger_surfaces=press_asset)
+                    press_finger_surfaces=press_asset,press_cycle_v1=args.press_cycle_v1)
                 write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
@@ -629,7 +635,8 @@ def main():
                                 if "CROP" in label or "CANDIDATES" in label:img.save(directory/(label+".png"))
                     if controller:
                         controller.observe(observation,state,depths,depth_receipt,images=bundle.current_raw,self_geometry=self_geometry,
-                            contact_review_receipt=receipt.get("near_contact_review") if args.near_contact_review else None)
+                            contact_review_receipt=receipt.get("near_contact_review") if args.near_contact_review else None,
+                            control=controls)
                         if controller.replan_needed:
                             recovery,call=policy.recover(manager,state,bundle,controller.replan_needed)
                             save_call(directory,"recovery",call)
@@ -644,6 +651,15 @@ def main():
                         action=HOLD
                         row["selection_source"]="goal_transition_barrier_no_model_call"
                         write(directory/"action_selection.json",{"source":row["selection_source"],"reason":"OLD_TARGET_INVALIDATED_OBSERVE_NEW_GOAL_FIRST"})
+                    elif controller and controller.press_cycle is not None and controller.press_cycle.owns_selection:
+                        allowed=controller.candidates(state,deadline=deadline)
+                        write(directory/"candidates.json",manager.candidate_receipt)
+                        if manager.stop_reason:
+                            row["stop_reason"]=manager.stop_reason;decisions.append(row);break
+                        action=allowed[0]
+                        row["selection_source"]="bounded_measured_press_executor"
+                        write(directory/"action_selection.json",{"source":row["selection_source"],
+                              "action":asdict(action),"press_cycle":controller.press_cycle.context()})
                     elif controller and ((not observation.visible and manager.stage in ("SEARCH","RECOVER")) or controller.reposition_left>0):
                         if controller.is_held_search:
                             allowed=controller.inspection_candidates(state)
@@ -760,6 +776,11 @@ def main():
                 # IK and fresh sensor preflight also take time. No ordinary
                 # control is allowed merely because selection began in budget.
                 if stop_before_motion(deadline,controls,row,decisions,manager):break
+                if controller and controller.press_cycle is not None and not controller.goal_changed:
+                    if not controller.press_cycle.begin_execution(action,state,controls):
+                        row.update(accepted_before_motion=False,stop_reason=manager.stop_reason)
+                        decisions.append(row)
+                        break
                 previous = bundle.current_raw
                 motion_fault=False
                 budget_interrupted=False
@@ -800,6 +821,10 @@ def main():
                         ended = step(command,render=(controls%2==1 or servo.ticks==servo.total_ticks or servo.done))
                         controls += 1
                         trace.write(json.dumps({"control":controls,"decision":decision,"action23":command.tolist(),"terminal":ended})+"\n")
+                        if controller and controller.press_cycle is not None and not controller.goal_changed:
+                            if not controller.press_cycle.post_step(state_now(),controls,command):
+                                servo.abort(controller.press_cycle.stop_reason)
+                                break
                         if controls%2==0: capture(action.text())
                         if substep_motion is not None and controls-substep_motion.last>=args.odometry_substep_controls:
                             if not sample_substep():
@@ -870,6 +895,10 @@ def main():
                 # Stored separately AFTER motion, NEVER added to feedback,
                 # manager context, RGB-D bundle, or neural model requests.
                 write(directory/"PRIVILEGED_POST_ACTION_GRASP_AUDIT.json",grasp_audit(env.robots[0]))
+                if controller and controller.press_cycle is not None and not controller.goal_changed:
+                    feedback=controller.press_cycle.finish_execution(action,feedback,state,controls,
+                        interrupted=bool(budget_interrupted or terminal or motion_fault),motion_receipt=substep_result)
+                    write(directory/"press_execution.json",feedback.get("press_execution",{}))
                 row.update(feedback=feedback,control_end=controls,wall_s=time.perf_counter()-wall,
                            wall_budget_interrupted=budget_interrupted)
                 decisions.append(row); trace.write(json.dumps(row)+"\n")
@@ -956,6 +985,7 @@ def main():
                       "active_grasp_probe":args.active_grasp_probe,
                       "contact_geometry":args.contact_geometry,"finger_kinematics":args.finger_kinematics,"grasp_motion":args.grasp_motion,
                       "press_finger_asset_sha256":press_asset_sha,
+                      "press_cycle_v1":args.press_cycle_v1,
                       "robot_geometry_guards":args.robot_geometry_guards,
                       "gripper_completion_v1":args.gripper_completion_v1,
                       "carry_duration_v1":args.carry_duration_v1,
