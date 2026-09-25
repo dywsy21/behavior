@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-25 19:31北京时间H80启动：** 独立clean Git `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/expanded_visual_f303355` 固定f303355b5453aaa4937207b619dd938e076a7846；run `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h80_expanded_raw_v1`，原图在`raw/`、监管/日志在上层，UTC11:30:47.050789、supervisor3626434。一次7200s/20GiB/CPU48–55、0GPU/模型/训练，采集运行状态待监控；不要热改源或覆盖run。H81定位teacher仅本地草稿，服务器未新建。
+
 **2026-09-25 18:54北京时间归档：** H77本地h77_task3_gate_bundle_v1全1011件348660187B规范聚合a43cc772…dec45已双端验全/独审过；首次截断残片h77_interrupted_transfer_v1保留。H78本地h78_presence_results_v1仅16件轻量回执252232B、聚合ec62be5e…f3f7双端同，不含adapter权重/缓存；完整训练源/run/两个权重均仍保留服务器，未移动或上线。
 
 **2026-09-25 18:49北京时间H78终态：** 原3619960/3619988结束、监管completed/exit0/275.165s、自有GPU全释放；source/run/日志保留。新80步视觉adapter在 `/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h78_presence_v1/training/adapter_0080`，safetensors SHA0e1a239675ded85922faea3ab728cbd31646a6fb852ad1195622c3555349396f，仅离线视觉组件，未部署动作服务。小结果本地归档/终审待；H79尚无新远端目录。
