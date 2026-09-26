@@ -10,6 +10,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-26 17:17（北京时间）：H85本人完成50实例动作—图像抽查，仍非最终SFT发布（Codex / H85-ACTION-DATA）
+
+- 主代理逐一查看50张三时间×三相机人审图，覆盖50个不同TRAIN实例/450幅原图视图、每task10例、十种分层各5例；全部实际分层无fallback。逐例观察与限制冻结于`configs/vlm_sft/h85_parent_action_review_v1.json`，SHA **ca5401b5b789f4d880267608dbb22810cfd48fb2eb85767bb03d87b5e21ccb12**。仅320px人审拼图检查，不伪称450张原尺寸精细标注或全部256,214窗口无误。
+- 抽样中未发现已确认的跨场景/相机错配或明显时序跳变。确有腕图遮挡、启动展开、带物导航、动作前准备与动作后收手；这些是真实演示过程，未删除、未硬改成成功/失败。技能说明是区间意图，不能监督为即时完成状态；夹爪开闭也不是握持真值。
+- 本地复核review/corpus manifest SHA、50唯一ID与实例、每task/分层数量、全部50实体人审图SHA、TRAIN-only及450引用通过；既有独审者另行只读核验上述项目、人审图解码、时间容差及准入限制全部通过（本地未存450原PNG，不冒充再次逐张原PNG核验）。原服务器封存manifest的PENDING保持历史事实，由此独立人审回执关联，不改旧源。0新模型/训练/仿真，队友任务不动。
+- 下一步仍为最终组合动作输出/执行契约、真实RGB训练加载与token/截断验证、至少3h有效训练容量。中间集与抽查均不能替代这些，`training_eligible:false`/goal active保持；尚未改变部署接口或启动长训。
+- 交接前本地按原unittest入口复跑20项动作相关CPU回归，20/20通过（0.308s），`git diff --check`通过；本轮只有人审JSON/来源说明/协作文档变更，准备通过Git提交同步，图像与大manifest不入库。
+
+### 2026-09-26 17:13（北京时间）：H85本人图审20/50，来源答疑已核对（Codex / H85-ACTION-DATA）
+
+- 50人审图＋manifest共51件/13,932,316B已本地完整取回并逐SHA核过，路径`artifacts/agentic-vlm-goal-20260918/h85_action_review_v1`；manifest SHA19900e355372542fbe3504692980fcaf41b58dee75ae4f2544bbd98cbf2447bc。此前17:04“取回中”已完成；450原PNG留服务器，不改源。
+- 主代理已亲看task0/1各10个TRAIN实例的当前/t+8/t+16三视角，20/50逐例观察存`configs/vlm_sft/h85_parent_action_review_v1.json`（IN_PROGRESS）。未发现已确认的场景/相机错配；启动展开、腕图遮挡、夹爪命令不等于握持/成功等限制逐例保留。余30例未审，不称全量通过或最终SFT发布。
+- 核实H80来源是官方演示视频的480实例/14,080时刻×3相机，非新模拟器采集/AI生成；后补可见性/框与原轨迹23D动作是不同监督。当前Git fetch已同步HEAD/upstream a64896e、main33677bd，保留本线程图审/计划未提交内容不强pull。无新训练/GPU/仿真；接续余30图审，动作协议/加载器及至少3h实际吞吐仍待。
+
 ### 2026-09-26 16:35（北京时间）：动作产率实测完成，旧单方向接口不适合原样扩量（Codex / H85-ACTION-DATA）
 
 16:46中间构造器及16个相关CPU回归通过；独审提出的来源链绑定、split物理隔离/逐条来源及三相机引用、视频时钟范围均已补齐，最终复核中。真实元数据复算386/40/40来源，过滤前窗口上限226,420 TRAIN＋24,279 val＋21,880 test，尚不是实际合格量。新实现`scripts/vlm_sft/prepare_expert_action_corpus.py`，设计/审计表见[H85动作数据](experiments/2026-09-26-h85-expert-action-data.md)；本轮尚未启动全量构造。
@@ -19,6 +33,8 @@
 16:53唯一构造进程exit0，466来源/256,214窗口/418,873,059B写出，最后分片305.626s；正在独立取回最终manifest、逐466 shard SHA、全部样本split/身份/三视角时间引用重数（≤300s CPU，计入本阶段余量）。这是真实原23D动作中间集，不是最终微动作标签或已完成三小时准备；尚不作训练发布。下一步训练部分分层原图/后续帧人工审查，另固定输出与加载协议。
 
 16:54:06独立全量复核完成：466 shard SHA、256,214唯一ID及每条split/身份/三相机时间引用全过；TRAIN **212,500**、validation **23,009**、test **20,705**。manifest双端SHA851b3cd9709f5dc9db2b378078ece93e9cc1f625278f0afa05994db5e82787e4，完整manifest与独立QA在本地`h85_action_data_v1/corpus_v1_{manifest,independent_qa}.json`。原进程已退出。下一CPU解码/人工审查50个TRAIN不同实例（每task10，base/torso/左右臂/双臂/夹爪/混合与早中晚分层，缺类显式fallback），每例t/t+8/t+16三相机共450原PNG＋50仅人审拼图；≤900s/512MiB/0GPU，计本阶段余量。未来帧只供标签审查，不进入actor输入，原留出不看图调参。
+
+17:04图审准备唯一run已exit0：固定a64896ea594a3548389c84d936cdff3926e41407，新robo `action_review_a64896e`，`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_action_review_v1`已50不同TRAIN实例/450原PNG＋50人审图/108,315,110B。20相关CPU与独审通过（源根/软链输出保护补齐，gripper分层仅指窗口内target切换，不是holding）。完整manifest及50人审图向本地取回中；本人尚未看图，不把解码退出当人工通过。原数据与队友GPU不动，最终动作协议/三小时吞吐仍未完成。
 
 - 固定9f9aee68fe85c8b15eb34a02f74d83b8215a87c8，新robo worktree `action_capacity_9f9aee6`、`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_capacity_v2/audit`，20 TRAIN来源/183,288帧扫描18.669s、exit0，进程已退出；10 CPU测试与独审过。完整结果本地`artifacts/agentic-vlm-goal-20260918/h85_action_data_v1/capacity_v2_result.json`，双端SHA f8fd2e8514749be09180a330387bcd5e4a210fdc2a6ebcb5fe7f5b32758a80ba。
 - 10,840合规同技能窗口仅946旧方向候选，其中890底盘/56操作；36个手臂位移/旋转候选仅6端点幅度兼容、30不兼容，另20夹爪命令不宣称抓取真值。主要拒收为mixed base5727、torso1784、曲线手臂884、双臂771；这不是完成率，且不能据6个必要几何检查放行native动作监督。继续原单方向codec扩量会放大底盘偏置，停止沿此法发布大量伪动作。
