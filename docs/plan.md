@@ -10,6 +10,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-26 19:27（北京时间）：H85真实四进程数据通路通过，CPU准备完成（Codex / H85-ACTION-DATA）
+
+- 固定 **9c38fec96d974e4c6e7120d6a650d9a6ee5ab754** / `h85_benchmark_cpu_v1`已 **32.907s、exit0**、主进程 **3713855**（UTC11:26:16.690启动）已退出；服务器60目标回归另4.985s过。真实四spawn loader完整读 **256唯一TRAIN窗口/768当前RGB**、182不同实例，task0–4分别12/31/86/76/51条，全部索引/来源/回答token/整段token/leftpad/CPU tensor核对通过。不是256独立实例或等task采样。
+- 全TRAIN最短/最长门为`t0_i209_e162_f000336`（1242总/107回答tokens）和`t3_i2_e601_f009296`（2481总/1315回答tokens），实际多进程加载均过，没有截断或未来RGB输入。构造的精确256顺序/386 TRAIN shard身份已固定，后续无需另挑“小而容易”的样本。
+- launch/sampling/result共135,348B已双端SHA取回`artifacts/agentic-vlm-goal-20260918/h85_benchmark_cpu_v1`，本地再对全部256索引/唯一ID/实例/task数、128 microbatch token/长度及源manifest/旧QA核过。result SHA **074759c50cb981b21e201c3cfeb564a489d5074446f3b1473e60687f45c0e01e**，sampling SHA **f3dc6a4a9a286df209044973afab18da443c1d92aac66cbad30c6a89d485ed66**。0模型权重/训练/CUDA初始化/仿真。
+- 19:27:06只读确认xhz **3641677–3641680**仍live、elapsed22:20:01，各卡余7489–7569MiB；`h85_training_capacity_v1`尚不存在，未启动GPU基准/后台等待抢占。遵守用户自然等待，不动队友任何任务。
+- **CPU准备已完，下一步直接沿9c38fec固定入口做资源复核；空闲后一次32更新GPU基准，再核3h容量，不重复构造/审图或增设无关CPU门。** GPU forward/backward/吞吐未测，所以goal active、`training_eligible:false`保持。本轮是新增实测证据的progress；当前剩余资源阻塞不能写成已经完成，也未满足连续三次无进展blocked条件。
+
+### 2026-09-26 19:26（北京时间）：H85四进程训练数据CPU预检已提交（Codex / H85-ACTION-DATA）
+
+- 固定并push **9c38fec96d974e4c6e7120d6a650d9a6ee5ab754**；首次push遇TLS中断，限定重试成功。robo新干净detached源`trajectory_capacity_9c38fec`已通过Git建立，旧活跃源码/数据不改。
+- 唯一命令已提交：先服务器60 CPU目标回归，再`prepare_trajectory_benchmark.py`，输出新`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_benchmark_cpu_v1`及同级`.stdout.log`。实际worker/终态待核，不重复启动。
+- 原登记600s内部/外630+5s、8CPU/4spawn worker、4MiB结果、256唯一TRAIN窗口/768当前RGB；0GPU初始化/模型权重/训练/控制。CPU预检不作为三小时训练容量，GPU32更新基准仍未启动，须等队友原训练自然退出。
+
 ### 2026-09-26 19:03（北京时间）：H85续接真实训练容量入口，四卡仍为队友任务（Codex / H85-ACTION-DATA）
 
 19:16训练公共模块、32更新worker、只管理自有session的监管入口已实现；本地54项CPU目标回归通过，新增序列化/回执回归终核和独审中。窗口采样是全TRAIN窗口均匀无放回，不称实例/任务均衡；梯度累积按完整有效batch的监督token平均，已与单大batch梯度逐参数对照通过。另准备固定新源后一次`h85_benchmark_cpu_v1`：原256预定TRAIN窗口/768当前图、4 spawn loader、≤600s内部/外630+5s、8CPU/4MiB/0模型权重GPU训练，验证真正多进程加载及全TRAIN最长序列，结果不作为GPU吞吐。尚未建立远端新源/run，GPU基准未启动；此CPU步骤用原样本读取，不新采演示。

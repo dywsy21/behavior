@@ -32,6 +32,21 @@ GPU2若出现外部新任务或资源/数值/时间超限，只终止本次新�
 
 ## 当前状态
 
+**2026-09-26 19:27北京时间实测：CPU准备已完成，GPU基准未运行。** 新冻结9c38fec96d974e4c6e7120d6a650d9a6ee5ab754，run `/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_benchmark_cpu_v1`耗时32.907秒/exit0，服务器60回归4.985秒通过；全部256不同TRAIN窗口/768当前图经四spawn读取与batch核验，来自182实例，task0–4分别12/31/86/76/51条。最短/最长门实际1242/2481总tokens，后者回答1315，均完整加载。
+
+本地完整launch/sampling/result及transfer在`artifacts/agentic-vlm-goal-20260918/h85_benchmark_cpu_v1`。result SHA `074759c50cb981b21e201c3cfeb564a489d5074446f3b1473e60687f45c0e01e`，sampling SHA `f3dc6a4a9a286df209044973afab18da443c1d92aac66cbad30c6a89d485ed66`。双端SHA、全部256ID/全顺序/来源计数及128 microbatch的token/长度在本地独立核过。0模型权重/训练/CUDA初始化，不把32.907秒视为训练速度。
+
+19:27:06四卡原xhz3641677–3641680仍live、elapsed22:20:01，GPU基准目录尚不存在。下一无需重新准备数据，待资源自然释放后，在同一冻结源码按既定命令运行一次；运行前先核真实资源和源码干净，不能据以下命令存在当作已经启动：
+
+```text
+PYTHONPATH=/mnt/sdc1/robodojo/behavior_dev/semantic_agent_20260917/deps:<固定源码>/src
+/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python scripts/vlm_sft/launch_trajectory_benchmark.py --run
+```
+
+启动时还需设置HF_HUB_OFFLINE=1/PYTHONDONTWRITEBYTECODE=1并用外层1850秒＋35秒清理兜底，内部监管限制1800＋30秒；不热改、重试或超预算继续。真实GPU forward/backward/吞吐/三小时容量仍未验证，候选`training_eligible:false`保持。
+
+### 准备阶段记录
+
 2026-09-26 19:16北京时间：代码和CPU测试准备中，初54项通过、独审中；原四卡队友任务19:00:29仍live。尚未运行上述CPU新入口或GPU基准，无吞吐实测、无3h容量结论。当前数据`training_eligible:false`保持。最后以真实结果和对应源码commit更新，不把文档中的配方当作已执行实验。
 
 19:19增量58目标回归3.381秒通过；覆盖不等token微批的逐参数梯度等价、全局无放回/极值gate、spawn序列化排除AV句柄、掩码/审计ID隔离、容量公式及伪造回执拒收、外来GPU2任务只清本次child并保留主失败。两新worker入口本地CPU导入通过，不触发模型加载。仍待独审/真实四进程预检与GPU基准，不把CPU测试称forward/backward实测。
