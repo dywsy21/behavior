@@ -44,7 +44,7 @@
 
 新`trajectory_modeling.py`候选输入为head448×448、左右腕320×320，经原2B processor应得到三grid与396视觉tokens。目标上限1536、总上下文4096，超过即报错而非截断；训练回答接在与推理完全相同的前缀后，仅回答与原生EOS参与loss。配套`trajectory_images.py`在固定SHA回执前提下绑定当前实例ID/三相机/原图尺寸/时间及文件和像素SHA；不能以正确tensor形状代替来源验证。28项codec/加载/编码回归通过，含跨case同clock、未来帧、左右腕交换及变长JSON尾部loss对完整causal CE一致性。
 
-`audit_trajectory_encoding.py`只使用既有50 TRAIN人审例的150当前PNG和原2B processor非权重资产，验证真实prefix/视觉payload/回答监督与左padding，限600s CPU/2MiB新结果。**真实processor运行待完成**；不加载GPU模型、改变原modeling/native_train入口或声称三小时容量已验证。
+`audit_trajectory_encoding.py`只使用既有50 TRAIN人审例的150当前PNG和原2B processor非权重资产，验证真实prefix/视觉payload/回答监督与左padding。固定26439a1真实运行16.090秒、exit0，50/50通过；完整prefix p50 1166/max1189，回答p50 480/max976，总长p50 1659/max2153。结果`h85_encoding_v1/result.json` SHA8ef15cbfec342c69eddf886c2d836528c3f9d6d4ec3591b567e1b9b591bed428，0CUDA初始化/权重加载/训练。CPU编码检查p50 0.120秒含重复校验，不能当GPU训练吞吐或生成延迟；也不代表全量样本均不超长。
 
 下一步需实际token分布、三RGB加载、真实chat-template/assistant-only loss/EOS及无截断检查，再评估数据采样和至少3小时有效训练容量。若目标太长，应据实评估候选，不用旧视觉分类吞吐冒充新动作协议。
 

@@ -10,11 +10,24 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-26 18:13（北京时间）：H85真实三图编码通过，转入全量SFT样本构造（Codex / H85-ACTION-DATA）
+
+18:27全量构造器`prepare_trajectory_sft.py`、text-prefix等价展开、当前原视频reader及`TrajectoryDataset`已本地实现；先前37项通过。独审提出seal需重验实际输出/全部源video和硬超时两点，已补最终输出树/逐文件SHA/大小/行数/视频身份及篡改反例；正式worker固定外层`timeout --kill-after=10s 1830s`、内部1800s，失败或缺manifest不发布。50证据join/错像素、reader时钟/close与prepared-loader opt-in等新集成回归及增量独审正在终核；尚未启动全量远端run/改原数据或占GPU。
+
+2026-09-26 18:32（北京时间）全41 CPU回归及独立增量审查通过（本地3.084s，独审另行复跑）；prepared-loader严格显式opt-in与CPU tensor边界已补反例。说明见[全量SFT数据接口](experiments/2026-09-26-h85-composite-sft-dataset.md)。接下来固定Git新源、唯一`h85_sft_v1` CPU导出；长训/三小时容量与线上执行仍未放行。
+
+- 固定26439a1、新`trajectory_encoding_26439a1`/`h85_encoding_v1`完成16.090s、exit0，PID3709274已退出。50个已审TRAIN实例/150当前原PNG的身份、时间、原尺寸/像素SHA、逐相机真实tensor、训练/推理同前缀、回答＋EOS监督及变长leftpad全过；服务器28回归另过。0CUDA初始化、0模型权重/训练/控制。
+- 实际完整前缀p50 **1166**/max **1189** tokens，回答p50 **480**/max **976**，总长p50 **1659**/max **2153**；本50例均无需截断。每例CPU编码检查p50 0.120s（包含重复处理/校验，不是GPU训练吞吐）。本地完整两结果118,778B在`artifacts/agentic-vlm-goal-20260918/h85_encoding_v1`，result SHA **8ef15cbfec342c69eddf886c2d836528c3f9d6d4ec3591b567e1b9b591bed428**，rows SHA **2f9d780d8295560b537e24165552d6504ea806e71ab860777e4cf7bfad3750c3**；双端SHA及50唯一ID/任务/150图重数通过。
+- 下一主代理构造完整VLM动作样本与按原视频实际加载入口：沿既有466实例/256,214窗口，保留train/val/test，输出当前actor字段、JSON动作目标、token长度和私有原图引用，不重采演示、不改线上接口。先本地回归/独审，再新固定源CPU≤1800s/4worker/8核、≤4GiB输出、0 GPU/训练/仿真，超过序列上限只隔离并报告不截断。另用既有50例核新视频加载与原PNG像素一致，≤600s CPU，禁止把全量文本目标构造当全量图像精细人工审查。
+- goal仍待全量可用格式、实际训练加载及至少3h有效训练容量；四GPU占用不妨碍上述CPU工作，不把中间结果当完成。
+
 ### 2026-09-26 18:02（北京时间）：H85续接真实三图训练编码验证（Codex / H85-ACTION-DATA）
 
 18:07新CPU入口`audit_trajectory_encoding.py`及当前PNG绑定/三图编码共28项定向回归通过（0.515s），实际封存manifest的50例与人审记录集合匹配通过。独审指出的跨case同clock回执误配已加完整实例ID/路径绑定及反例；入口独审待最终意见，尚未远端执行。18:07只读GPU核xhz3641677–3641680均live（elapsed75601s），每卡仍73.6GiB左右；不抢GPU、不停队友。原图/原源未改。
 
-18:11独审增量通过，独立28回归/真实50例manifest join全部过，未见阻止登记CPU worker的问题；代码准备固定Git并使用新worktree/新`h85_encoding_v1`。GPU forward/backward、实际生成和三小时容量明确尚未验证，不把入口测试当最终发布。
+18:09独审增量通过，独立28回归/真实50例manifest join全部过，未见阻止登记CPU worker的问题；代码准备固定Git并使用新worktree/新`h85_encoding_v1`。GPU forward/backward、实际生成和三小时容量明确尚未验证，不把入口测试当最终发布。
+
+18:10已commit/push **26439a15cbfac3df12ff953376e1627260786976**，robo新干净detached `trajectory_encoding_26439a1`；唯一CPU命令已提交（先远端28测试、后真实50例worker），预定输出`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_encoding_v1`/同级`.stdout.log`。当前worker回执/实际终态待核，不重提、不热改固定源；无新GPU模型/训练。
 
 - 上一goal turn主要回答来源问题，归类为no-progress；虽收回24项已有测试终态，未把来源说明当数据目标完成。本轮fetch确认HEAD/upstream534ece8一致、main33677bd，保留本线程未提交CPU加载器草稿而不强pull。
 - 继续已登记≤600s CPU/50既有TRAIN例/150当前原PNG/≤2MiB回执检查；主代理实现实际AutoProcessor worker，绑定封存manifest、人审记录、当前原图时间/像素与注册2B tokenizer/processor文件。测试训练/推理同前缀、回答与EOS监督、无截断及逐相机真实视觉张量，不加载模型权重/不占GPU/不启动训练或仿真。
