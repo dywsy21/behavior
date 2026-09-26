@@ -10,6 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-26 19:33（北京时间）：H85目标标记blocked，等待队友训练自然结束（Codex / H85-ACTION-DATA）
+
+- 上一goal turn为progress（真实四进程256窗口/768RGB通过）；本轮为verified wait：19:30:59只读核 **3641677–3641680**均仍为xhz/live、elapsed22:23:54，GPU2余7489MiB、利用率100%。固定robo源码仍干净 **9c38fec96d974e4c6e7120d6a650d9a6ee5ab754**，GPU基准目录`h85_training_capacity_v1`不存在。
+- 实际执行已有入口`launch_trajectory_benchmark.py --preflight`，在资源门明确拒绝：`GPU2 must be idle with at least64GiB free`，exit1，未加载权重/启动worker/创建run。是预期资源拒绝，不是动作数据或训练代码失败；原CPU通过结果不重做。
+- 同一组队友训练持续占用已跨至少三个连续goal turn保持（当前live PID/连续运行时长与18:07、19:00、19:27证据相符）。前期仍有实质CPU工作所以继续推进；现CPU准备已全部完成，真实GPU前反向/吞吐无法继续，符合外部状态变化依赖，已调用goal工具标记 **blocked而非complete**。更正历史“连续三次无进展”的简写：条件是同一阻塞跨至少三轮且当前已无有意义的安全推进，不要求抹去期间CPU进展。
+- 不打断队友、不挤剩余显存、不启动新长训、不设置后台抢占或自动重试。用户已选择自然等待，无需再次要求其停队友任务。恢复条件：这组进程自然退出且GPU2空闲；届时沿已冻结9c38fec和原计划只跑一次32更新容量基准，得到真实吞吐后再判断≥3h，数据`training_eligible:false`暂不改。
+- 本地Git已干净fetch/pull到4fdb9a5，未改代码/原数据或新增CPU门；本条和任务板记录等待资源状态。全部既有样本、人工审查、CPU回执和基准入口均保留。
+
 ### 2026-09-26 19:27（北京时间）：H85真实四进程数据通路通过，CPU准备完成（Codex / H85-ACTION-DATA）
 
 - 固定 **9c38fec96d974e4c6e7120d6a650d9a6ee5ab754** / `h85_benchmark_cpu_v1`已 **32.907s、exit0**、主进程 **3713855**（UTC11:26:16.690启动）已退出；服务器60目标回归另4.985s过。真实四spawn loader完整读 **256唯一TRAIN窗口/768当前RGB**、182不同实例，task0–4分别12/31/86/76/51条，全部索引/来源/回答token/整段token/leftpad/CPU tensor核对通过。不是256独立实例或等task采样。

@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-26 19:33北京时间H85等待资源：** 19:30:59只读核xhz3641677–3641680仍live/elapsed22:23:54；`trajectory_capacity_9c38fec`源码干净，`h85_training_capacity_v1`仍不存在。现有入口`--preflight`实际exit1拒绝已占用GPU2，未加载权重或创建run/source/worker。goal blocked，原数据、CPU证据及队友训练不改；自然释放后沿既有固定源码恢复32更新基准，无后台自动抢占。
+
 **2026-09-26 19:27北京时间H85训练数据CPU预检完成：** 新干净Git源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/trajectory_capacity_9c38fec`固定9c38fec96d974e4c6e7120d6a650d9a6ee5ab754；唯一`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_benchmark_cpu_v1`已32.907s/exit0，256窗口/768RGB四spawn读取过，同级stdout保留。launch/sampling/result共135,348B在本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h85_benchmark_cpu_v1`，result SHA074759c5…0e01e、sampling f3dc6a4a…85ed66，双端核过。GPU基准候选`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_training_capacity_v1`在19:27只读确认尚不存在；四卡xhz3641677–3641680仍live，不自动抢占，不改旧数据/源。
 
 **2026-09-26 18:58北京时间H85最终CPU读取完成：** 独立源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/trajectory_dataset_155f7a3`固定155f7a3f3ecc049690a5e62db05d04ce495b7a92；唯一`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_dataset_check_v1`已20.914s/exit0，PID3712332已退出，同级stdout保留。launch/result共91,020B及transfer已本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h85_dataset_check_v1`，result SHA b5f59acf…ea73a；全256,214窗口重数及50 TRAIN真实item/150RGB/leftpad通过。0GPU权重/训练，仍需实际训练吞吐，原SFT/视频/旧source不变。

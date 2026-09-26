@@ -32,6 +32,8 @@ GPU2若出现外部新任务或资源/数值/时间超限，只终止本次新�
 
 ## 当前状态
 
+**19:33资源等待更新：** goal已标记blocked而非完成。19:30:59队友3641677–3641680仍live（elapsed22:23:54），固定9c38fec干净；实际GPU启动入口`--preflight`在占用门拒绝并exit1，0权重/worker/run创建。CPU工作无新增缺口，继续等待原训练自然结束；GPU forward/backward、吞吐和≥3h容量保持未证实，不因数据数量或预检拒绝改结论。
+
 **2026-09-26 19:27北京时间实测：CPU准备已完成，GPU基准未运行。** 新冻结9c38fec96d974e4c6e7120d6a650d9a6ee5ab754，run `/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_benchmark_cpu_v1`耗时32.907秒/exit0，服务器60回归4.985秒通过；全部256不同TRAIN窗口/768当前图经四spawn读取与batch核验，来自182实例，task0–4分别12/31/86/76/51条。最短/最长门实际1242/2481总tokens，后者回答1315，均完整加载。
 
 本地完整launch/sampling/result及transfer在`artifacts/agentic-vlm-goal-20260918/h85_benchmark_cpu_v1`。result SHA `074759c50cb981b21e201c3cfeb564a489d5074446f3b1473e60687f45c0e01e`，sampling SHA `f3dc6a4a9a286df209044973afab18da443c1d92aac66cbad30c6a89d485ed66`。双端SHA、全部256ID/全顺序/来源计数及128 microbatch的token/长度在本地独立核过。0模型权重/训练/CUDA初始化，不把32.907秒视为训练速度。
