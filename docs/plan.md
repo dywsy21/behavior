@@ -10,6 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-26 16:35（北京时间）：动作产率实测完成，旧单方向接口不适合原样扩量（Codex / H85-ACTION-DATA）
+
+16:46中间构造器及16个相关CPU回归通过；独审提出的来源链绑定、split物理隔离/逐条来源及三相机引用、视频时钟范围均已补齐，最终复核中。真实元数据复算386/40/40来源，过滤前窗口上限226,420 TRAIN＋24,279 val＋21,880 test，尚不是实际合格量。新实现`scripts/vlm_sft/prepare_expert_action_corpus.py`，设计/审计表见[H85动作数据](experiments/2026-09-26-h85-expert-action-data.md)；本轮尚未启动全量构造。
+
+- 固定9f9aee68fe85c8b15eb34a02f74d83b8215a87c8，新robo worktree `action_capacity_9f9aee6`、`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_capacity_v2/audit`，20 TRAIN来源/183,288帧扫描18.669s、exit0，进程已退出；10 CPU测试与独审过。完整结果本地`artifacts/agentic-vlm-goal-20260918/h85_action_data_v1/capacity_v2_result.json`，双端SHA f8fd2e8514749be09180a330387bcd5e4a210fdc2a6ebcb5fe7f5b32758a80ba。
+- 10,840合规同技能窗口仅946旧方向候选，其中890底盘/56操作；36个手臂位移/旋转候选仅6端点幅度兼容、30不兼容，另20夹爪命令不宣称抓取真值。主要拒收为mixed base5727、torso1784、曲线手臂884、双臂771；这不是完成率，且不能据6个必要几何检查放行native动作监督。继续原单方向codec扩量会放大底盘偏置，停止沿此法发布大量伪动作。
+- 下一阶段构造可追溯动作中间集：复用H80合法分组，排除H83/H84共14校准组，最多386 TRAIN＋40 validation＋40 test来源，步长16/动作16帧；当前61D proprio＋三相机同帧视频引用＋原23D expert动作完整保留，不压成单方向、不补虚假success、不把未来状态放入actor。只CPU≤1800s/4worker/8核、新盘≤20GiB、最多350,000唯一窗口，0模型训练/仿真；新目录封存，原源不改。先构造/校验动作与图像时钟，训练输出协议/图像加载/本人分层审图及3h实测吞吐另验收；中间集不是最终训练发布。组合动作接口问题已非阻塞询问用户，部署接口尚未变更。
+
 ### 2026-09-26 16:08（北京时间）：新goal明确为三小时规模的动作监督数据，启动动作来源/接口产率审计（Codex / H85-ACTION-DATA）
 
 16:27续接：上轮仅解释来源，按新动作goal为no-progress；已重新fetch确认HEAD/upstream均d67b658、main33677bd，保留本线程未提交H85不强pull。完成审计器的已验字节快照读取、末尾源/代码SHA复验、episode元数据唯一性及身份匹配、最终900s预算门；7/7目标CPU测试通过，独审复核中，真实20来源扫描尚未启动。16:10:55只读证据`artifacts/agentic-vlm-goal-20260918/h85_action_data_v1/source_resource_probe.json`确认原23D动作/61D状态、labels SHA666f8fc0和quarantine94e6d4d6，四GPU仍队友3641677–3641680；不调用标注模型、不动其任务。当前仍0新合格动作样本，下一步固定Git新worktree执行已登记的CPU审计。
