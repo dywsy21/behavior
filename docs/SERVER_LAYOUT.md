@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-26 18:58北京时间H85最终CPU读取完成：** 独立源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/trajectory_dataset_155f7a3`固定155f7a3f3ecc049690a5e62db05d04ce495b7a92；唯一`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_dataset_check_v1`已20.914s/exit0，PID3712332已退出，同级stdout保留。launch/result共91,020B及transfer已本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h85_dataset_check_v1`，result SHA b5f59acf…ea73a；全256,214窗口重数及50 TRAIN真实item/150RGB/leftpad通过。0GPU权重/训练，仍需实际训练吞吐，原SFT/视频/旧source不变。
+
 **2026-09-26 18:45北京时间H85 SFT构造完成：** `/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_sft_v1`共466来源/256214窗口、533021603B Parquet，363.425s/exit0/PID3710639已退出。原source `trajectory_sft_8cc536f`及同级stdout保留。manifest SHAfb95625b…1fbad9、preflight SHA559dbe65…648a9两小文件299326B已完整取回本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h85_sft_v1`；本地不复制全部分片/原视频。候选格式构造完毕不等于三小时训练发布，下一Dataset检查须新源/新run。
 
 **2026-09-26 18:35北京时间H85全量SFT提交：** 新干净Git源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/trajectory_sft_8cc536f`固定8cc536f5200368a7f7e22c67aec29f40dbc585af；唯一CPU命令已提交，预定输出`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_sft_v1`/同级`.stdout.log`。先41测试，后原256,214窗口导出，1800s内/外层1830+10s/4worker/8CPU/4GiB，0 GPU训练。实际回执待核；旧所有数据/run/source不动。

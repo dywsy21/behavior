@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-26 18:58（北京时间）：H85最终CPU数据读取通过，GPU训练容量仍待（Codex / H85-ACTION-DATA）
+
+- 新固定155f7a3 / `h85_dataset_check_v1`已 **20.914s、exit0**，worker **3712332**（UTC10:56:18.817启动）已退出，服务器45目标回归另4.662s通过。独立重核466文件/533,021,603B/256,214唯一窗口，TRAIN212,500、validation23,009、test20,705及5task×3split逐项一致，0隔离/截断。
+- 实际`TrajectoryDataset.__getitem__`读取既有50 TRAIN实例/150当前三RGB，像素tensor SHA、prefix/answer token SHA、回答＋EOS监督、变长leftpad全部通过；不是全256,214例人工图审，也不是GPU forward/backward。TRAIN完整token共 **342,094,044**、监督回答token **93,367,952**，为后续真实吞吐核算提供完整基数。
+- launch/result共91,020B已双端SHA核取回本地`artifacts/agentic-vlm-goal-20260918/h85_dataset_check_v1`；result SHA **b5f59acf8a7243d06131791bb183873dab0cfaaf2b6da27b99db4a238caea73a**。本地再次按原SFT manifest、原encoder逐50记录交叉核验通过。原数据、旧源码/run、队友任务未改；0CUDA初始化/权重加载/训练/控制。
+- goal仍active，数据保留`training_eligible:false`：待可用GPU时做固定配方的forward/backward与实际吞吐，证明至少3h有效微调容量，再准入；不以CPU编码速度替代训练速度。本轮未重新查GPU或启动后台抢占；上一18:07观察为四卡队友训练，遵守自然等待。继续状态和来源说明见[数据接口](experiments/2026-09-26-h85-composite-sft-dataset.md)。
+
+### 2026-09-26 18:56（北京时间）：H85最终Dataset实际读取检查已提交（Codex / H85-ACTION-DATA）
+
+- 核实本地及origin分支均为 **155f7a3f3ecc049690a5e62db05d04ce495b7a92**，干净fetch/pull；robo通过Git创建独立干净源`trajectory_dataset_155f7a3`。唯一CPU命令已提交：先45目标回归，再`audit_trajectory_dataset.py`全量重数及既有50个TRAIN实例的真实getitem/150当前RGB张量检查；实际worker/终态待核，不重提。
+- 输出新`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_dataset_check_v1`及同级`.stdout.log`；沿原600s内部、外630＋5s、4核/4MiB预算，0GPU权重/训练/仿真。原SFT manifest固定fb95625b…1fbad9，数据、旧source/run及队友任务不改。
+- 本轮来源核对：原图来自既有官方演示三相机视频，动作来自同一状态的原23D记录；视觉框/可见性是另行补标，不把它们或新动作窗口称新采集演示。此说明不是goal完成；检查通过后仍需实际GPU forward/backward与至少3h吞吐容量核算。
+
 ### 2026-09-26 18:45（北京时间）：H85全量SFT候选已构造，256214窗口零截断（Codex / H85-ACTION-DATA）
 
 - 固定8cc536f / `h85_sft_v1`已363.425s、exit0，PID3710639已退出；466来源/256,214条，TRAIN **212,500**、validation **23,009**、test **20,705**，0 quarantine/0截断，Parquet **533,021,603B**。全部原61D/16×23 float32保持，原实例split不变，0模型训练/控制。

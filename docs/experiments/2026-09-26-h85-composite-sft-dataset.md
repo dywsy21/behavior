@@ -36,7 +36,13 @@
 
 最终Dataset字段顺序修复：存储JSON会排序键，而原prompt使用`actor_from_state`的字段顺序；loader先核actor内容一致，再按原生顺序重建prompt，避免语义相同但token顺序不同。按真实导出排序的回归已复现旧问题并验证修复，连同独立重数工具共45目标测试及独审通过；QA精确验证超长隔离原因和5task×3split计数。
 
-全量Dataset实际item加载、GPU forward/backward及至少3小时有效微调容量：**待验证**。不要用CPU分词速度或原有视觉分类训练速度代替此动作协议的训练吞吐。
+2026-09-26 18:58北京时间，最终CPU读取检查已完成：固定`155f7a3f3ecc049690a5e62db05d04ce495b7a92`，独立run `/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_dataset_check_v1`，20.914秒/exit0；服务器45目标回归4.662秒通过。独立重核全部466文件/533,021,603B和256,214唯一窗口，原split及逐task计数一致、0隔离；实际getitem读取50既有TRAIN例/150当前原图，视觉tensor SHA、输入及回答token、EOS监督和变长leftpad全通过。不是对全部窗口逐个RGB解码或人工查看的证明。
+
+该审计重新汇总TRAIN完整输入＋回答共 **342,094,044 tokens**，其中受监督回答 **93,367,952 tokens**；validation完整/回答37,192,128/10,250,637，test33,293,883/9,053,906。这是各split一次遍历的数据基数，不是训练吞吐或已经消费的token数。CPU单例读取/编码中位0.236秒不代表GPU训练速度。
+
+完整launch/result在本地`artifacts/agentic-vlm-goal-20260918/h85_dataset_check_v1`，result SHA `b5f59acf8a7243d06131791bb183873dab0cfaaf2b6da27b99db4a238caea73a`；双端SHA、原manifest计数及50例与原encoder逐项交叉核验通过。0CUDA初始化/模型权重/训练/控制，原SFT封存产物未修改。
+
+GPU forward/backward及至少3小时有效微调容量：**仍待验证**，`training_eligible:false`保持。不要用CPU分词速度或原有视觉分类训练速度代替此动作协议的训练吞吐。
 
 后续必须按实际可用TRAIN数量和真实训练样本/秒核算：三个小时需要`10800 × 实测样本/秒`次样本展示，并报告覆盖的唯一实例/窗口及epoch数。不能用极小数据反复重复凑时间，也不把高CE/低CE直接当任务成功率。当前只是为后续50任务实验筛方法，未授权全任务重建或正式训练。
 
