@@ -1,0 +1,62 @@
+{
+  "schema": "h84-cpu-preparation-acceptance-v1",
+  "owner": "Codex parent (/root)",
+  "status": "CPU_QUEUE_AND_RESUME_VERIFIED_LABELS_PENDING",
+  "base_commit": "4241ffcb462f2d141d2e0ea61dc70fdcfd9c82a4",
+  "builder_sha256": "a331957684fe4bca3be9cb9bf737dfaca68abe1a51270186ae96089b5d6c950a",
+  "plan_sha256": "65ad5ffc8d8694199721d7ba01465da2d162433ca5a07e97e8f15e6ef73bf3e7",
+  "human_gold_sha256": "4078311ec2a7ceb1c378cd0a9e10452388f6fed32508422fe3cafb9404ef901b",
+  "manifest_sha256": "43fe21488f0855985622db846b02991dbbc337316e2583f685fe8076a3aa8bcd",
+  "local_root": "artifacts/agentic-vlm-goal-20260918/h84_full_label_cpu_v1",
+  "current_queue": "queue_v2",
+  "queue_sha256": "209f42451a9ff35864ddf8ff23dc871157b969ef04994d43945537eab5625995",
+  "queue_build_seconds": 1.6103387639959692,
+  "queue_images": 42240,
+  "queue_pairs": 126720,
+  "queue_shards": 660,
+  "images_by_role": {"student_candidate":37056,"annotation_calibration":1344,"validation":1920,"test":1920},
+  "pairs_by_role": {"student_candidate":110784,"annotation_calibration":4416,"validation":5760,"test":5760},
+  "protected_train_groups": 14,
+  "empty_resume": {"path":"resume_empty_v2/resume.json","sha256":"33c6570b399e6223509d38cde6a1f57672fc17f770bf3ac7b0a6f07a0cb95e17","PENDING":126720,"accepted_labels":0},
+  "metadata_transfer_receipt": {"path":"source_metadata/transfer_receipt.json","sha256":"ac080fb7d2dc9e621fffb71a1d24277c23161313211f313d66ce6d8632e08c64"},
+  "raw_and_sheet_verification": {"path":"cpu_review_v1/verification.json","sha256":"227ee63ce648a131cf9e338e8b20371b68ca1e0a79f32663f0f6b68fd2c5b831","seconds":3.198404319002293,"verified_png_and_rgb":60},
+  "parent_final_presence_page_review": {
+    "status": "PASSED_FOR_PRESENCE_CALIBRATION_SEED_ONLY",
+    "reviewer": "Codex parent (/root)",
+    "original_unique_images": 60,
+    "presence_pairs": 120,
+    "native_resolution_rechecks": 7,
+    "counts": {"P":24,"N":94,"U":2},
+    "all_four_final_pages_personally_inspected": true,
+    "known_unresolved_label_mismatches": 0,
+    "uncertain_remains_quarantined": true,
+    "boxes_gold": false,
+    "pages": [
+      {"name":"task2_instance163_presence.png","sha256":"5c16321a4794e574dc97bae0193bf0ec937bf3801b79183a31bf721b43806106"},
+      {"name":"task2_instance253_presence.png","sha256":"a5eb59035496d59e4a6aa32b84ab1671ba5b6eef92e7557960ed61a6269ac5d7"},
+      {"name":"task4_instance235_presence.png","sha256":"16f5bcab1b724674f2292989c484f864410c93aeb2337fec1ac9631ca932443f"},
+      {"name":"task4_instance280_presence.png","sha256":"bf46c34fa08fb62e644029c4adb597c70da209935ac896b523ed278e97831fe4"}
+    ]
+  },
+  "validation": {
+    "target_unittest": {"passed":15,"failed":0,"seconds":0.388},
+    "grounding_regression_unittest": {"passed":27,"failed":0,"seconds":3.330},
+    "independent_code_review": "Jason h63_finger_review: repaired duplicate-key and incomplete-seal validation; 15 tests and full actual queue_v2/resume independently passed; did not review image labels",
+    "old_queue_v1": "PRESERVED_BUT_SUPERSEDED; current builder verification rejects it"
+  },
+  "last_resource_check": {"path":"final_resource_check.json","sha256":"8d5b0b6c491cd3e76f127676dbd1895c5ccdd88d412f517388d4a3d16b89e2c8","utc":"2026-09-26T03:08:28.083199+00:00"},
+  "gpu_free_mib": [7569,7489,7489,7549],
+  "teammate_pids_untouched": [3641677,3641678,3641679,3641680],
+  "new_model_calls": 0,
+  "training_updates": 0,
+  "controls": 0,
+  "annotation_quality_gate_passed": false,
+  "batch_labels_released": 0,
+  "training_eligible": false,
+  "remaining": [
+    "Dedicated positive/negative and bounding-box calibration for all 14 queries; four new seeds have insufficient positive support",
+    "New frozen supervised GPU worker/run after teammate GPU naturally frees; verify real model/token provenance and register bounded budget",
+    "Calibration, measured throughput, then batch proposals and stratified parent image/box review",
+    "No five-hour training release or full-task success improvement yet; overall goal not complete"
+  ]
+}

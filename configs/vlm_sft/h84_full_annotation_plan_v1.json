@@ -1,0 +1,55 @@
+{
+  "schema": "h84-full-annotation-plan-v1",
+  "raw_root": "/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h80_expanded_raw_v1/raw",
+  "metadata_sha256": {
+    "manifest.json": "43fe21488f0855985622db846b02991dbbc337316e2583f685fe8076a3aa8bcd",
+    "source_plan.json": "6861c88e3436e2c430f35db521c1d8cdef836fd3dcbf5871e7d026435f700c1f",
+    "images.jsonl": "1bd05ab8bb8981628a728d18134af246bae357a180da9802581502776e8ef67d",
+    "complete.json": "2ce0d30ed6767218e17345fba96d1eef1a27769feb9be9b0beba59aad2271c10",
+    "tasks.jsonl": "80bddeab4c6c4ab6944ba932ce63c48fdc9a1220f90a1f558382334a19ef5921",
+    "source_feature_schema.json": "3af83ae00e71a999518553f6ba72da957dfc76930f5b8614cccffe86011f8c1a"
+  },
+  "review_files": {
+    "configs/vlm_sft/h83_parent_dual_teacher_review_v1.json": "a4c3628141056a2b2e31a2e8b6a36297c442a32a87d0a0a3945b0d7972a82010",
+    "configs/vlm_sft/h84_task24_parent_presence_v1.json": "4078311ec2a7ceb1c378cd0a9e10452388f6fed32508422fe3cafb9404ef901b"
+  },
+  "actor_protocol_file": "scripts/vlm_sft/visual_grounding.py",
+  "actor_protocol_sha256": "4b0d80a200a0553839e4d6fa00df1e5978d13aa40fa22d858029397e574309d7",
+  "queries_by_task": {
+    "0": ["the radio"],
+    "1": ["a soda can", "the wastebasket"],
+    "2": ["a pumpkin", "a candle", "a cabinet", "the cauldron", "a table"],
+    "3": ["the plate holding food", "a refrigerator", "a bowl", "a sink"],
+    "4": ["a hinged jar", "a cooked bratwurst", "a cabinet"]
+  },
+  "shard_size": 192,
+  "expected": {"states":14080,"images":42240,"groups":480,"jobs":126720,"protected_train_groups":14},
+  "inference_input_allowlist": ["CURRENT_RAW", "query"],
+  "forbidden_actor_inputs": ["task_description", "task_id", "instance", "frame", "gold", "privileged_state", "temporal_neighbor"],
+  "quality_policy": {
+    "calibration_status": "NOT_PASSED",
+    "unit": "each query separately; also report per task and camera",
+    "minimum_accepted_positive": 20,
+    "minimum_accepted_negative": 20,
+    "minimum_positive_precision": 0.95,
+    "minimum_negative_precision": 0.95,
+    "minimum_candidate_coverage": 0.5,
+    "minimum_manually_reviewed_box_correctness": 0.95,
+    "critical_systematic_errors_allowed": 0,
+    "all_disagreements_invalid_and_uncertain": "MANUAL_REVIEW_REQUIRED",
+    "uncertain_in_definite_training": false,
+    "agreement_is_ground_truth": false,
+    "automatic_training_release": false,
+    "heldout_prompt_tuning_or_student_training": false,
+    "heldout_labels_must_remain_sealed_from_prompt_tuning": true
+  },
+  "execution": {
+    "phase": "CPU_PREPARATION_ONLY",
+    "new_model_calls": 0,
+    "training_updates": 0,
+    "simulator_controls": 0,
+    "gpu_wait": "teammate_training_natural_exit_only",
+    "gpu_budget": "NOT_REGISTERED; calibrate and measure throughput before bulk inference",
+    "trained_critic_limit": "H78/H83 radio, wastebasket and food-plate support cannot certify new object queries"
+  }
+}
