@@ -14,6 +14,12 @@
 
 16:46中间构造器及16个相关CPU回归通过；独审提出的来源链绑定、split物理隔离/逐条来源及三相机引用、视频时钟范围均已补齐，最终复核中。真实元数据复算386/40/40来源，过滤前窗口上限226,420 TRAIN＋24,279 val＋21,880 test，尚不是实际合格量。新实现`scripts/vlm_sft/prepare_expert_action_corpus.py`，设计/审计表见[H85动作数据](experiments/2026-09-26-h85-expert-action-data.md)；本轮尚未启动全量构造。
 
+16:48全量中间构造已实际运行（原16:46“待运行”更新）：独审通过，固定commit **8e179837581bd6698b84f574e4fd789b2ef72f62**/新robo `action_corpus_8e17983`，唯一输出`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_native23_corpus_v1`。原1800s CPU预算，30s内已72来源/8557窗口，未把进度当完成；不热改此源码或重提run。最终manifest、RGB实际解码、本人动作图审和训练协议仍待。
+
+16:53唯一构造进程exit0，466来源/256,214窗口/418,873,059B写出，最后分片305.626s；正在独立取回最终manifest、逐466 shard SHA、全部样本split/身份/三视角时间引用重数（≤300s CPU，计入本阶段余量）。这是真实原23D动作中间集，不是最终微动作标签或已完成三小时准备；尚不作训练发布。下一步训练部分分层原图/后续帧人工审查，另固定输出与加载协议。
+
+16:54:06独立全量复核完成：466 shard SHA、256,214唯一ID及每条split/身份/三相机时间引用全过；TRAIN **212,500**、validation **23,009**、test **20,705**。manifest双端SHA851b3cd9709f5dc9db2b378078ece93e9cc1f625278f0afa05994db5e82787e4，完整manifest与独立QA在本地`h85_action_data_v1/corpus_v1_{manifest,independent_qa}.json`。原进程已退出。下一CPU解码/人工审查50个TRAIN不同实例（每task10，base/torso/左右臂/双臂/夹爪/混合与早中晚分层，缺类显式fallback），每例t/t+8/t+16三相机共450原PNG＋50仅人审拼图；≤900s/512MiB/0GPU，计本阶段余量。未来帧只供标签审查，不进入actor输入，原留出不看图调参。
+
 - 固定9f9aee68fe85c8b15eb34a02f74d83b8215a87c8，新robo worktree `action_capacity_9f9aee6`、`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_capacity_v2/audit`，20 TRAIN来源/183,288帧扫描18.669s、exit0，进程已退出；10 CPU测试与独审过。完整结果本地`artifacts/agentic-vlm-goal-20260918/h85_action_data_v1/capacity_v2_result.json`，双端SHA f8fd2e8514749be09180a330387bcd5e4a210fdc2a6ebcb5fe7f5b32758a80ba。
 - 10,840合规同技能窗口仅946旧方向候选，其中890底盘/56操作；36个手臂位移/旋转候选仅6端点幅度兼容、30不兼容，另20夹爪命令不宣称抓取真值。主要拒收为mixed base5727、torso1784、曲线手臂884、双臂771；这不是完成率，且不能据6个必要几何检查放行native动作监督。继续原单方向codec扩量会放大底盘偏置，停止沿此法发布大量伪动作。
 - 下一阶段构造可追溯动作中间集：复用H80合法分组，排除H83/H84共14校准组，最多386 TRAIN＋40 validation＋40 test来源，步长16/动作16帧；当前61D proprio＋三相机同帧视频引用＋原23D expert动作完整保留，不压成单方向、不补虚假success、不把未来状态放入actor。只CPU≤1800s/4worker/8核、新盘≤20GiB、最多350,000唯一窗口，0模型训练/仿真；新目录封存，原源不改。先构造/校验动作与图像时钟，训练输出协议/图像加载/本人分层审图及3h实测吞吐另验收；中间集不是最终训练发布。组合动作接口问题已非阻塞询问用户，部署接口尚未变更。
