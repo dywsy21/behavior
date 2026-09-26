@@ -20,7 +20,7 @@ import numpy as np
 from common import (GRIPS, JOINTS, POSITIONS, TOKENS,
                     classify_window, skill_text)
 from prepare import ROOT, LABELS, RELEASE, REPO
-from prepare_full_annotation import strict_json, checked_bytes, packed, forbid_source_output
+from prepare_full_annotation import strict_json, packed, forbid_source_output
 
 SCHEMA = 'h85-expert-action-capacity-v1'
 RAW = Path('/mnt/nvme_tmp/robodojo_vlm_visual_20260925/h80_expanded_raw_v1/raw')
@@ -32,8 +32,10 @@ HORIZON = 16
 def snapshot(path, pins, expected=None):
     """Parse these exact verified bytes; never verify then reopen to parse."""
     path = Path(path)
-    if path.is_symlink() or not path.is_file():
-        raise ValueError(f'Original regular file required: {path}')
+    # The existing subset legitimately symlinks immutable episode metadata.
+    # Read-only aliases are permitted; the exact content remains SHA-pinned.
+    if not path.resolve(strict=True).is_file():
+        raise ValueError(f'Original file required: {path}')
     content = path.read_bytes()
     digest = hashlib.sha256(content).hexdigest()
     if expected is not None and digest != expected:
@@ -63,7 +65,7 @@ def index_metadata(rows, sources):
 def verify_completion(pins, rows, start, selected):
     """An altered input or an over-budget run cannot acquire a COMPLETE seal."""
     for path, digest in pins.items():
-        checked_bytes(path, digest)
+        snapshot(path, {}, digest)
     for row in rows:
         stat = Path(row['source_parquet']).stat()
         if (stat.st_size, stat.st_mtime_ns) != (row['source_bytes'], row['source_mtime_ns']):

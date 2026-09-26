@@ -78,6 +78,15 @@ class CapacityTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 audit.verify_completion(pins,[],time.monotonic(),[])
 
+    def test_readonly_source_alias_is_content_pinned(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'actual';path.write_bytes(b'original')
+            alias=Path(tmp)/'alias';alias.symlink_to(path)
+            pins={};content=audit.snapshot(alias,pins,hashlib.sha256(b'original').hexdigest())
+            self.assertEqual(content,b'original')
+            path.write_bytes(b'changed')
+            with self.assertRaises(ValueError):audit.snapshot(alias,{},pins[str(alias)])
+
     def test_metadata_duplicates_and_identity_mismatch_rejected(self):
         source={'task':2,'instance':3,'episode':4,'frames':20}
         row={'task_index':2,'task_instance_id':3,'episode_index':4,'length':20}
