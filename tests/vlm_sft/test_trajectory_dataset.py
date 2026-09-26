@@ -41,7 +41,9 @@ class DatasetTests(unittest.TestCase):
         encoded = modeling.encode(self.processor, actor, images, target=target)
         for image in images.values(): image.close()
         n = prefix['input_ids'].shape[1]
-        row.update(actor_json=json.dumps(actor), target_json=target, prefix_tokens=n,
+        # The exporter canonicalizes stored JSON keys; model prompts preserve
+        # the native actor_from_state insertion order instead of storage order.
+        row.update(actor_json=json.dumps(actor, sort_keys=True), target_json=target, prefix_tokens=n,
                    target_tokens=encoded['input_ids'].shape[1] - n, total_tokens=encoded['input_ids'].shape[1],
                    prefix_ids_sha256=ids_digest(prefix['input_ids'][0].tolist()),
                    target_ids_sha256=ids_digest(encoded['input_ids'][0, n:].tolist()),

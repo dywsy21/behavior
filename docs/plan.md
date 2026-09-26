@@ -10,11 +10,24 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-26 18:45（北京时间）：H85全量SFT候选已构造，256214窗口零截断（Codex / H85-ACTION-DATA）
+
+- 固定8cc536f / `h85_sft_v1`已363.425s、exit0，PID3710639已退出；466来源/256,214条，TRAIN **212,500**、validation **23,009**、test **20,705**，0 quarantine/0截断，Parquet **533,021,603B**。全部原61D/16×23 float32保持，原实例split不变，0模型训练/控制。
+- 完整输入＋回答p50 **1573**/max **2481** tokens，回答p50 **401**/max **1315**，全部适配既定4096/1536上限。native float32最大joint **0.000550031662rad**（包括float32 cast误差）、base normalized **0.002499990165**、grip **0**，均过逐tick量化/插值＋实际cast界，未伪称所有native误差严格小于float64的0.00055。
+- 新原视频reader的50既有TRAIN例/150当前图像pixel SHA均与原PNG一致，文本展开逐token SHA与已验证真实processor一致。完整manifest与preflight共299,326B已本地`artifacts/agentic-vlm-goal-20260918/h85_sft_v1`，双端SHA/466来源/所有split总数复核过：manifest **fb95625b265b564cb07cb481615a2f3fead194c26c18bfd65a70da77441fbad9**，preflight **559dbe65d99c81a10288741c88e6896cc4f73026f40a227f13975f3981f648a9**。
+- 本地最终Dataset的JSON字段顺序修复及独立全量重数/50例真实训练item检查器完成，43 CPU回归通过（3.025s），独审中；将用新固定源、独立`h85_dataset_check_v1`，≤600s CPU/4MiB/0 GPU模型。尚未把此候选放行为三小时长训；仍需实际Dataset验证及GPU forward/backward/吞吐容量。
+
+2026-09-26 18:50（北京时间）增量45项目标测试（本地3.050s、独审另跑）与独审通过，精确quarantine原因及5task×3split计数硬比较已补；准备固定新Git源执行唯一`h85_dataset_check_v1`，600s内部/外630+5s，重新核全量文件并实际读50既有TRAIN案例。原SFT产物/8cc536f源码与队友任务不改。
+
 ### 2026-09-26 18:13（北京时间）：H85真实三图编码通过，转入全量SFT样本构造（Codex / H85-ACTION-DATA）
 
 18:27全量构造器`prepare_trajectory_sft.py`、text-prefix等价展开、当前原视频reader及`TrajectoryDataset`已本地实现；先前37项通过。独审提出seal需重验实际输出/全部源video和硬超时两点，已补最终输出树/逐文件SHA/大小/行数/视频身份及篡改反例；正式worker固定外层`timeout --kill-after=10s 1830s`、内部1800s，失败或缺manifest不发布。50证据join/错像素、reader时钟/close与prepared-loader opt-in等新集成回归及增量独审正在终核；尚未启动全量远端run/改原数据或占GPU。
 
 2026-09-26 18:32（北京时间）全41 CPU回归及独立增量审查通过（本地3.084s，独审另行复跑）；prepared-loader严格显式opt-in与CPU tensor边界已补反例。说明见[全量SFT数据接口](experiments/2026-09-26-h85-composite-sft-dataset.md)。接下来固定Git新源、唯一`h85_sft_v1` CPU导出；长训/三小时容量与线上执行仍未放行。
+
+18:35已固定/push **8cc536f5200368a7f7e22c67aec29f40dbc585af**，robo干净detached新源`trajectory_sft_8cc536f`。唯一命令已提交（先远端41测试、再外层1830+10s全量worker），新输出`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_sft_v1`及同级`.stdout.log`；实际launch/阶段待核，不因会话返回早而重启，不热改源码。仍0 GPU模型权重/训练/控制。
+
+18:38实际worker3710639已UTC10:36:08.784启动且只读确认live/elapsed140s，服务器41测试4.266s过；原50例文本展开/原视频像素preflight通过后已240来源/84,364窗口，暂0超长隔离，运行中非完成。准备最终Dataset实加载时发现存储actor JSON排序与原prompt字段顺序不一致；用真实导出排序复现2项失败，已在本地getter改为校验字段后按`actor_from_state`统一顺序编码，41项回归恢复通过（3.001s）。该模块不被本次构造worker调用，不热改8cc536f固定源、不重做原始目标；下一新源单独验证Dataset实际item/视觉tensor/输入输出token及全量重新计数，≤600s CPU/0训练，仍只取既有50 TRAIN例图像。
 
 - 固定26439a1、新`trajectory_encoding_26439a1`/`h85_encoding_v1`完成16.090s、exit0，PID3709274已退出。50个已审TRAIN实例/150当前原PNG的身份、时间、原尺寸/像素SHA、逐相机真实tensor、训练/推理同前缀、回答＋EOS监督及变长leftpad全过；服务器28回归另过。0CUDA初始化、0模型权重/训练/控制。
 - 实际完整前缀p50 **1166**/max **1189** tokens，回答p50 **480**/max **976**，总长p50 **1659**/max **2153**；本50例均无需截断。每例CPU编码检查p50 0.120s（包含重复处理/校验，不是GPU训练吞吐）。本地完整两结果118,778B在`artifacts/agentic-vlm-goal-20260918/h85_encoding_v1`，result SHA **8ef15cbfec342c69eddf886c2d836528c3f9d6d4ec3591b567e1b9b591bed428**，rows SHA **2f9d780d8295560b537e24165552d6504ea806e71ab860777e4cf7bfad3750c3**；双端SHA及50唯一ID/任务/150图重数通过。

@@ -89,7 +89,9 @@ class TrajectoryDataset:
         if self._reader is None: self._reader = CurrentVideoReader()
         images, _ = self._reader.read(row, source)
         try:
-            result = modeling.encode(self.processor, actor, images, target=row['target_json'])
+            # Storage JSON is key-sorted, while the frozen prompt has the native
+            # actor_from_state order. Equal dicts alone do not mean equal tokens.
+            result = modeling.encode(self.processor, actual, images, target=row['target_json'])
         finally:
             for image in images.values(): image.close()
         import torch

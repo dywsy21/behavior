@@ -30,6 +30,14 @@
 
 41项CPU定向回归与独审通过，覆盖原23D映射、token还原、因果输入、跨实例/跨相机/未来帧错配、真实大小/哈希绑定、长JSON CE、输出/源篡改、quarantine、Dataset split与CPU输出。已有真实2B processor的50例/150原PNG检查通过，完整输入＋回答最长2153 tokens；这只是样本级证据。
 
-全量导出与新的原视频preflight：**待真实run结果**。全量Dataset实际item加载、GPU forward/backward及至少3小时有效微调容量：**待验证**。不要用CPU分词速度或原有视觉分类训练速度代替此动作协议的训练吞吐。
+全量导出已真实完成：固定8cc536f5200368a7f7e22c67aec29f40dbc585af，run `/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_sft_v1`，363.425秒、exit0。466来源/256,214条全部接受，0隔离/截断，Parquet533,021,603字节；TRAIN212,500/validation23,009/test20,705。manifest SHA `fb95625b265b564cb07cb481615a2f3fead194c26c18bfd65a70da77441fbad9`。
+
+全量完整序列p50 1573/max2481，回答p50 401/max1315。原视频preflight 50例/150当前RGB的像素SHA对原PNG完全一致，文字展开逐token SHA对真实processor完全一致。完整manifest/preflight已在本地`artifacts/agentic-vlm-goal-20260918/h85_sft_v1`核验归档，大分片和原视频仍只留服务器。
+
+最终Dataset字段顺序修复：存储JSON会排序键，而原prompt使用`actor_from_state`的字段顺序；loader先核actor内容一致，再按原生顺序重建prompt，避免语义相同但token顺序不同。按真实导出排序的回归已复现旧问题并验证修复，连同独立重数工具共45目标测试及独审通过；QA精确验证超长隔离原因和5task×3split计数。
+
+全量Dataset实际item加载、GPU forward/backward及至少3小时有效微调容量：**待验证**。不要用CPU分词速度或原有视觉分类训练速度代替此动作协议的训练吞吐。
 
 后续必须按实际可用TRAIN数量和真实训练样本/秒核算：三个小时需要`10800 × 实测样本/秒`次样本展示，并报告覆盖的唯一实例/窗口及epoch数。不能用极小数据反复重复凑时间，也不把高CE/低CE直接当任务成功率。当前只是为后续50任务实验筛方法，未授权全任务重建或正式训练。
+
+训练必须跨任务/实例打乱采样；Dataset按实例存储的顺序只是文件索引，不是训练顺序。直接从索引0顺序跑几小时可能只覆盖前几个任务。后续配方应同时核唯一窗口/实例覆盖与加载效率，不用重复相邻样本制造训练容量。
