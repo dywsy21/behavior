@@ -40,6 +40,12 @@
 
 `audit_trajectory_codec.py`在固定corpus与原2B tokenizer上检查20个TRAIN来源（每task4），每来源最多600条时间分散窗口，总≤12,000、CPU≤1200s、输出≤64MiB，0模型权重加载/训练/机器人动作。目标计数含原生EOS，并与相同量化精度的逐tick JSON作对照；text-only prefix明确不是完整多图chat tensor。结果无训练准入。
 
+真实审计已完成：固定534ece87e6c9eb601d073fd56dc1ba50ab460bdf、63.828秒、9,150窗口全过，进程已退出。回答token（含EOS）p50=390/p90=704/p95=807/p99=958.51/max=1192，27条超过1024；dense对照p50=1317，总token比0.32437。native float32最坏joint0.000549957rad/base0.002499968/grip0。完整本地`artifacts/agentic-vlm-goal-20260918/h85_codec_v1`，result SHA f9947409015e49fb37366a59fc3efbe079027bb65d06c789bcc5eff3d1b57693。字符/token缩短不代表解码够快，实际生成与GPU训练吞吐仍待。
+
+新`trajectory_modeling.py`候选输入为head448×448、左右腕320×320，经原2B processor应得到三grid与396视觉tokens。目标上限1536、总上下文4096，超过即报错而非截断；训练回答接在与推理完全相同的前缀后，仅回答与原生EOS参与loss。配套`trajectory_images.py`在固定SHA回执前提下绑定当前实例ID/三相机/原图尺寸/时间及文件和像素SHA；不能以正确tensor形状代替来源验证。28项codec/加载/编码回归通过，含跨case同clock、未来帧、左右腕交换及变长JSON尾部loss对完整causal CE一致性。
+
+`audit_trajectory_encoding.py`只使用既有50 TRAIN人审例的150当前PNG和原2B processor非权重资产，验证真实prefix/视觉payload/回答监督与左padding，限600s CPU/2MiB新结果。**真实processor运行待完成**；不加载GPU模型、改变原modeling/native_train入口或声称三小时容量已验证。
+
 下一步需实际token分布、三RGB加载、真实chat-template/assistant-only loss/EOS及无截断检查，再评估数据采样和至少3小时有效训练容量。若目标太长，应据实评估候选，不用旧视觉分类吞吐冒充新动作协议。
 
 部署另需接入当前观测时钟、真实关节界限、逐tick跟踪与碰撞/急停等原生执行约束。本codec只还原数值，**不会调用机器人，合法JSON不是执行授权**。不得用这份离线候选绕过原线上安全门。

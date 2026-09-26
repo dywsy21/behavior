@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-09-26 17:50北京时间H85 codec归档：** `/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_codec_v1`（source `composite_codec_534ece8`）已63.828s/9,150窗口完成，PID3707521退出；同级`.stdout.log`保留。完整`result.json`18,533B/SHAf9947409…57693与`rows.jsonl`6,121,955B/SHA260c41d7…13ab已核取回本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h85_codec_v1`，旧源码/run不改。这是CPU格式/token审计，不是训练发布或部署执行器；暂无新GPU模型/训练。
+
 **2026-09-26 17:17北京时间H85图审归档：** 固定`action_review_a64896e`源码的一次CPU导出已53.130s/exit0，服务器`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_action_review_v1`保留450原PNG＋50人审图/108,315,110B；本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h85_action_review_v1`保留manifest＋50人审图/13,932,316B及transfer回执，51件SHA已核。主代理已完成50例抽查，Git人审记录`configs/vlm_sft/h85_parent_action_review_v1.json`通过review manifest SHA19900e35…2447bc关联旧产物；不回写封存manifest、不将人审拼图/未来帧作actor输入。无新GPU进程或训练发布，动作中间数据/源视频/队友任务不动。
 
 **2026-09-26 16:54北京时间H85中间集完成：** `/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_native23_corpus_v1`已466分片、256,214窗口、418,873,059B，原8e17983构造进程退出。manifest SHA851b3cd9709f5dc9db2b378078ece93e9cc1f625278f0afa05994db5e82787e4；`shards/train`212,500条，`validation`23,009条，`test`20,705条。完整manifest和独立QA已到本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h85_action_data_v1`；原source/run保持冻结，不覆盖。实际像素抽检/本人图审、VLM协议和三小时微调准入仍未完成，禁止因parquet存在直接长训。

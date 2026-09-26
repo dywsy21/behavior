@@ -10,11 +10,34 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-26 18:02（北京时间）：H85续接真实三图训练编码验证（Codex / H85-ACTION-DATA）
+
+18:07新CPU入口`audit_trajectory_encoding.py`及当前PNG绑定/三图编码共28项定向回归通过（0.515s），实际封存manifest的50例与人审记录集合匹配通过。独审指出的跨case同clock回执误配已加完整实例ID/路径绑定及反例；入口独审待最终意见，尚未远端执行。18:07只读GPU核xhz3641677–3641680均live（elapsed75601s），每卡仍73.6GiB左右；不抢GPU、不停队友。原图/原源未改。
+
+18:11独审增量通过，独立28回归/真实50例manifest join全部过，未见阻止登记CPU worker的问题；代码准备固定Git并使用新worktree/新`h85_encoding_v1`。GPU forward/backward、实际生成和三小时容量明确尚未验证，不把入口测试当最终发布。
+
+- 上一goal turn主要回答来源问题，归类为no-progress；虽收回24项已有测试终态，未把来源说明当数据目标完成。本轮fetch确认HEAD/upstream534ece8一致、main33677bd，保留本线程未提交CPU加载器草稿而不强pull。
+- 继续已登记≤600s CPU/50既有TRAIN例/150当前原PNG/≤2MiB回执检查；主代理实现实际AutoProcessor worker，绑定封存manifest、人审记录、当前原图时间/像素与注册2B tokenizer/processor文件。测试训练/推理同前缀、回答与EOS监督、无截断及逐相机真实视觉张量，不加载模型权重/不占GPU/不启动训练或仿真。
+- 这只验证真实加载的首个小样本；全量SFT格式构造和至少3h有效训练容量仍待，不缩小最终目标。现有线上接口、原始数据、旧run与队友工作不改。
+
+### 2026-09-26 17:50（北京时间）：H85真实token审计通过，9150窗口均可还原但输出仍不短（Codex / H85-ACTION-DATA）
+
+18:00续接核验：上一轮未收回的本地trajectory测试已正常结束，24/24通过（0.396s），包含当前图像时间/相机/原尺寸/像素SHA绑定反例与变长回答loss-mask回归。`trajectory_images.py`/`trajectory_modeling.py`及测试仍为未提交草稿，真实50例AutoProcessor检查尚未执行，不当作全量加载或训练发布通过。本轮按用户来源问题只读核对H80抽帧代码/验收与H85来源记录；Git fetch确认HEAD/upstream无差异、main33677bd，因本线程未提交工作保留而未pull，无新增远端run/模型/训练。
+
+- 唯一`534ece8`/`h85_codec_v1`完成63.828s、20 TRAIN来源/9,150窗口，PID3707521已退出；result SHA **f9947409015e49fb37366a59fc3efbe079027bb65d06c789bcc5eff3d1b57693**、rows SHA **260c41d7b7fd26ac9053d00204b5faf69eff955824ba77409785c41cfe4913ab**，两文件6,140,488B本地完整`artifacts/agentic-vlm-goal-20260918/h85_codec_v1`并独立重数/唯一ID/任务数通过。
+- 固定2B tokenizer下回答含EOS：p50 **390**、p90 **704**、p95 **807**、max **1192**；27条>1024。逐tick同量化对照p50 1317，总token比 **0.32437**。当前1536回答上限覆盖本样本，不擅自截到1024；只是TRAIN样本格式可用性，不是实际解码速度或完整dataset上下文保证。
+- native float32最坏joint **0.000549957rad**、base normalized **0.002499968**、grip **0**，原始23D全部保留；全部窗口解码/分词原文往返过。text-only prefix p50 749/max780，尚不含三图/chat开销。没有GPU模型/训练/仿真，线上接口未改。
+- 下一CPU阶段在余1200s阶段预算内追加≤600s/50既有TRAIN图审案例（150当前原PNG）实际2B AutoProcessor检查：三图448/320/320、真实视觉张量/顺序、相同推理前缀、assistant-only/EOS/左padding/4096上下文，≤2MiB新回执、0模型权重加载/训练/控制。`trajectory_modeling.py`单元5项、合计18/18已过，独审及真实worker准备中，不重做图审或新采样，不热改旧run。
+
 ### 2026-09-26 17:25（北京时间）：H85继续离线组合动作协议与真实token可用性检查（Codex / H85-ACTION-DATA）
 
 17:34离线`native_trajectory_codec.py`与9项边界/因果性/native23打包回归通过；50既有人审窗口实际encode/decode全过，最坏逐tick joint0.00054574rad/base normalized0.00239571/gripper0，正文长度中位615字符、max1202字符（不是token数）。明确不是现有单微动作或已上线接口，也无安全/成功证书；原源保留。独审和真实2B tokenizer审计准备中，部署协议/最终SFT仍未放行。
 
 17:42 codec＋`audit_trajectory_codec.py`共13 CPU回归与独审/增量native float32终核通过；真实固定TRAIN清单预期20来源/9,150抽样行，尚未运行不报实测。说明见[离线组合动作候选](experiments/2026-09-26-h85-composite-action-protocol.md)。17:38只读核四队友xhz PID3641677–3641680仍live、elapsed20:31:39，各GPU余7.5GiB左右；不抢资源/不启动模型。接下来固定Git新独立源码、新`h85_codec_v1` CPU run执行，旧源/数据不热改。
+
+17:45已固定并push **534ece87e6c9eb601d073fd56dc1ba50ab460bdf**，robo新干净detached `composite_codec_534ece8`；唯一CPU审计命令已提交，先跑服务器13回归后新输出`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_codec_v1`，同级`.stdout.log`。当前实际终态/计数待核，不能重提或热改；原1200s/12k/64MiB/0GPU预算不变。
+
+17:48服务器13回归通过，实际worker3707521/UTC09:45:17.685564启动后唯一命令已exit0；完整result/rows正在取回独立重数，暂不报token实测。另本地新增`trajectory_modeling.py`与5项输入/回答mask/无截断/三视角回归，合计18/18过（0.268s），只是单元CPU，不冒充真实processor或GPU训练验证；旧源码/线上服务未改。
 
 - 上一goal turn归类为progress：新增50实例本人逐例图审/独立一致性证据，非仅来源答疑；提交86c7766已干净fetch/pull，main33677bd。继续剩余真实SFT目标，不重做已完成中间集或视觉抽查。
 - 主假设：保留原23D的短时组合计划可避免单方向标签的底盘偏置，同时通过受误差约束的分组关键帧降低VLM输出长度。主代理独占新离线codec/测试及格式审计，不改现有线上actor/servo默认行为；未答复的组合接口选择不当作部署授权。
