@@ -14,7 +14,7 @@ source scripts/infra/activate_a800_training.sh
 
 数据配置：`configs/data/behavior2026_r1pro_rgb.yaml`，100任务、三RGB、本地只读禁止隐式Hub补齐、沿用23D原动作/61D原状态映射。正式训练前还要完整下载hash回执、顶层Mixture首样本、选定checkpoint/配方/预算；不把下方单episode reader门当完整训练step。没有新下载模型权重，`models/`是预留目录。
 
-16:08切源中：旧v4已按用户要求停止，改alpha镜像直连的v5待启动；最新运行身份见下方下载进展。完成只认对应新run的`complete.json`且`video_mode=rgb`、26,350件全部校验，不按进程存在或文件数百分比当字节进度。
+下载已切alpha镜像直连v5：lc2 `tmux ls`，日志`logs/dataset-rgb-alpha-v5.log`，回执`runs/dataset_rgb_alpha_20260927_v5/`。完成只认该run的`complete.json`且`video_mode=rgb`、26,350件全部校验，不按进程存在或文件数百分比当字节进度。
 
 ## 范围与安全
 
@@ -98,8 +98,12 @@ Tree对照在大消息改善但没有解决链路上限；小消息更慢，不�
 
 ## 下载进展
 
-**v4已停止，v5切源中。** v4冻结`src/infra-2023037`，lc2 tmux`behavior-rgb-20260927-v4`，原python990576/pane990574；`logs/dataset-rgb-v4.log`/`runs/dataset_rgb_20260927_v4`。用户16:06要求改镜像直连后已TERM旧python，最后日志13,200件/2,198,439,397B，无depth；文件数主要是小标注，按字节仍约0.20%。原RGB文件/partial全部保留复用。
+**v5镜像直连运行中，v4已停止。** v5固定`075c5d36ba8c3601d218cac33491b64233ac30d8`、`src/infra-075c5d3`；lc2 tmux`behavior-rgb-alpha-20260927-v5`，python991067/pane991065，日志`logs/dataset-rgb-alpha-v5.log`、回执`runs/dataset_rgb_alpha_20260927_v5`。8并发/1TiB reserve/固定1.077TB RGB scope，SSH断开仍继续。启动前本地10测试0.046s、服务器10测试0.349s均过，独审通过。16:12已有新文件写入并通过官方hash，13,400件/2,199,773,897B完成校验；前13,200左右是复验旧完整文件，**不把启动后几秒的复验吞吐当互联网下载速度**。
 
-新路线只将下载数据endpoint改为`https://alpha.hf-mirror.com`，不信任镜像提供的内容哈希。启动需`--official-manifest manifests/hf_official_files.json`，先核固定官方manifest SHA502c…5b22，再逐文件核size/SHA；没有该清单就拒绝镜像入口。该进程清除大小写HTTP/HTTPS/ALL_PROXY，`NO_PROXY=*`，`HF_HUB_DISABLE_XET=1`走HTTP直连（不另协商Xet CAS）。实际HF客户端2504B仓库文件在1.312s通过官方Git blob hash；用户多源速度对照不作为持续速度承诺。v5还未启动，待审过源码冻结；不启动正式训练。
+v4冻结`src/infra-2023037`，原lc2 tmux`behavior-rgb-20260927-v4`/python990576已停止，旧run/log保留。用户16:06要求切镜像后TERM旧python，最后日志13,200件/2,198,439,397B，无depth；小标注件数多，按字节约0.20%。原RGB文件/partial全部保留复用。
+
+新路线只将下载数据endpoint改为`https://alpha.hf-mirror.com`，不信任镜像提供的内容哈希。启动需`--official-manifest manifests/hf_official_files.json`，先核固定官方manifest SHA502c…5b22，再逐文件核size/SHA；没有该清单就拒绝镜像入口。该进程清除大小写HTTP/HTTPS/ALL_PROXY，`NO_PROXY=*`，`HF_HUB_DISABLE_XET=1`走HTTP直连（不另协商Xet CAS）。实际HF客户端2504B仓库文件在1.312s通过官方Git blob hash；用户多源速度对照不作为持续速度承诺。没有改系统代理/既有xray服务，不启动正式训练。
+
+16:13真实进程环境和连接复核通过：代理环境键全无、NO_PROXY=*、禁Xet；8连接全部从10.19.7.2直达153.121.43.79:443，无127.0.0.1:10809。回执14,167件/2,205,646,710B，其中897新路径/6,747,826B不在v4回执中；证明镜像实际新下载，而不是只改配置/重验旧文件。当前在小annotation阶段，不用这一阶段字节率估算全部视频耗时。
 
 旧v2遇HTTP中断后退出；旧v3在用户改范围时已由主线程TERM，保留3,627件/5.270GB回执。此前17件/3.194GB深度是旧遗留，不删除、不继续下载、不计入新scope；官方metadata仍声明depth属预期。全部旧日志/完整文件/`.incomplete`保留。新run完成只证明RGB选定集合齐全，不证明目录没有历史depth。
