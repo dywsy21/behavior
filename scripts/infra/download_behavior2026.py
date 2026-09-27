@@ -19,6 +19,9 @@ REVISION = "4f50b44796641a4d526a19d9aeadc8aa51e2f2c2"
 RGB_KEYS = frozenset(("observation.rgb.zed_link_camera_0",
                       "observation.rgb.left_realsense_link_camera_0",
                       "observation.rgb.right_realsense_link_camera_0"))
+OFFICIAL_MANIFEST_SHA256 = "502c11870eb0bce85e2ad94a75f32d30aad5ae2963480f7b5f73f6c8cabf5b22"
+DOWNLOAD_ENDPOINTS = ("https://huggingface.co", "https://alpha.hf-mirror.com",
+                      "https://hf-mirror.com", "https://hf-mirror.net")
 
 
 class DiskAdmission:
@@ -66,6 +69,26 @@ def digest(path, algorithm):
     return h.hexdigest()
 
 
+def load_official_manifest(path):
+    """Reuse the already authenticated official manifest, never mirror-provided hashes."""
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != OFFICIAL_MANIFEST_SHA256:
+        raise ValueError("Cached official manifest SHA256 mismatch")
+    data = json.loads(raw)
+    if data["revision"] != REVISION:
+        raise ValueError("Cached official manifest revision mismatch")
+    items = []
+    for entry in data["files"]:
+        validate_path(entry["rfilename"])
+        if entry["size"] is None or not entry["blob_id"]:
+            raise ValueError("Missing authoritative file metadata")
+        item = dict(path=entry["rfilename"], size=entry["size"], blob_id=entry["blob_id"])
+        if entry.get("lfs"):
+            item["sha256"] = entry["lfs"]["sha256"]
+        items.append(item)
+    return items
+
+
 def verify_file(root, item):
     path = root / str(validate_path(item["path"]))
     if path.is_symlink() or not path.is_file() or path.stat().st_size != item["size"]:
@@ -104,10 +127,16 @@ def main():
     ap.add_argument("--reserve-gib", type=int, default=1024)
     ap.add_argument("--video-mode", choices=("rgb", "all"), default="rgb",
                     help="rgb keeps all non-video files but excludes depth videos")
+    ap.add_argument("--download-endpoint", choices=DOWNLOAD_ENDPOINTS,
+                    type=lambda s: s.rstrip("/"), default=DOWNLOAD_ENDPOINTS[0])
+    ap.add_argument("--official-manifest", type=Path,
+                    help="Previously fetched official file list, checked against a pinned SHA256")
     ap.add_argument("--manifest-only", action="store_true")
     args = ap.parse_args()
     if not 1 <= args.workers <= 8 or args.reserve_gib < 512:
         ap.error("Use 1..8 workers and at least 512 GiB free-space reserve")
+    if args.download_endpoint != DOWNLOAD_ENDPOINTS[0] and not args.official_manifest:
+        ap.error("Mirror downloads require the pinned --official-manifest")
     args.root.mkdir(parents=True, exist_ok=True)
     args.run.mkdir(parents=True, exist_ok=True)
     with (args.root / ".behavior-download.lock").open("a+") as lock:
@@ -115,21 +144,24 @@ def main():
         from huggingface_hub import HfApi, hf_hub_download
         from requests.exceptions import ChunkedEncodingError, ConnectionError, Timeout, HTTPError
 
-        # Manifest hashes always come from the official Hub, not a mirror.
-        info = HfApi(endpoint="https://huggingface.co", token=False).dataset_info(
-            REPO, revision=REVISION, files_metadata=True, timeout=90)
-        if info.sha != REVISION:
-            raise ValueError("Repository revision mismatch")
-        items = []
-        for entry in info.siblings:
-            validate_path(entry.rfilename)
-            if entry.size is None or not entry.blob_id:
-                raise ValueError("Missing authoritative file metadata")
-            item = dict(path=entry.rfilename, size=entry.size, blob_id=entry.blob_id)
-            if entry.lfs:
-                item["sha256"] = entry.lfs.sha256
-            if include_file(item["path"], args.video_mode):
+        # Content hashes always come from the official Hub, never the download mirror.
+        if args.official_manifest:
+            items = load_official_manifest(args.official_manifest)
+        else:
+            info = HfApi(endpoint="https://huggingface.co", token=False).dataset_info(
+                REPO, revision=REVISION, files_metadata=True, timeout=90)
+            if info.sha != REVISION:
+                raise ValueError("Repository revision mismatch")
+            items = []
+            for entry in info.siblings:
+                validate_path(entry.rfilename)
+                if entry.size is None or not entry.blob_id:
+                    raise ValueError("Missing authoritative file metadata")
+                item = dict(path=entry.rfilename, size=entry.size, blob_id=entry.blob_id)
+                if entry.lfs:
+                    item["sha256"] = entry.lfs.sha256
                 items.append(item)
+        items = [item for item in items if include_file(item["path"], args.video_mode)]
         # Metadata and the first chunk of each modality are useful for early I/O checks.
         def priority(item):
             name = item["path"]
@@ -142,10 +174,14 @@ def main():
                         if (args.root / x["path"]).is_file() else x["size"] for x in items)
         free = shutil.disk_usage(args.root).free
         manifest = dict(repo=REPO, revision=REVISION, video_mode=args.video_mode,
+                        download_endpoint=args.download_endpoint,
+                        official_manifest_sha256=(OFFICIAL_MANIFEST_SHA256
+                                                  if args.official_manifest else None),
                         files=items, total_bytes=total,
                         created_utc=datetime.now(timezone.utc).isoformat())
         write_json(args.run / "manifest.json", manifest)
         print(json.dumps(dict(stage="manifest", video_mode=args.video_mode,
+                              download_endpoint=args.download_endpoint,
                               files=len(items), total_bytes=total,
                               remaining_bytes=remaining, free_bytes=free)), flush=True)
         if free < remaining + args.reserve_gib * 2**30:
@@ -167,6 +203,7 @@ def main():
                 download_retry(lambda: hf_hub_download(
                     REPO, filename=item["path"], repo_type="dataset",
                     revision=REVISION, local_dir=args.root, token=False,
+                    endpoint=args.download_endpoint,
                     force_download=target.exists()),
                     (ChunkedEncodingError, ConnectionError, Timeout, HTTPError))
                 if not verify_file(args.root, item):
@@ -185,6 +222,7 @@ def main():
                         receipt.flush()
                         if verified_count % 100 == 0 or item["size"] > 2**30:
                             status = dict(stage="downloading", video_mode=args.video_mode,
+                                          download_endpoint=args.download_endpoint,
                                           verified_files=verified_count,
                                           verified_bytes=verified_bytes, total_files=len(items),
                                           total_bytes=total, elapsed_s=time.monotonic()-started)
@@ -196,6 +234,7 @@ def main():
                     raise
         write_json(args.run / "complete.json", dict(
             repo=REPO, revision=REVISION, video_mode=args.video_mode,
+            download_endpoint=args.download_endpoint,
             verified_files=verified_count,
             verified_bytes=verified_bytes, elapsed_s=time.monotonic()-started,
             completed_utc=datetime.now(timezone.utc).isoformat()))

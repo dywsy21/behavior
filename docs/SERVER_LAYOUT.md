@@ -6,6 +6,9 @@
 - 独立共享根：`/data/workspace/wsy/behavior2026`（lc3本地ext4，lc1/2 NFS4.2；lc4仅此子目录新挂NFS，不遮盖其原本地workspace）；`datasets/`官方原数据、`models/`权重、`envs/`四节点共用环境、`tools/`工具/Python、`src/behavior`冻结editable源码、`manifests/`清单、`logs/`和`runs/`运行证据。lc4挂载重启不保持，恢复命令见集群说明。
 - 2026-09-27用户最新数据范围：`datasets/2026-challenge-demos`只下载三路RGB＋动作/标注/meta，26,350件/1,077,039,763,530B；排除全部depth/raw。旧v3已停，已取得的少量depth保留但不继续下载、不计入新scope完成率。
 - 下载环境`envs/download`为Python3.10.19；环境/数据准备状态和网络实测见[集群说明](infra/A800_CLUSTER.md)。该根新建，不含其他用户旧文件；数据和env不提交Git。
+- 最终训练环境`envs/g05-py310-cu128`（Py3.10.19/Torch2.7.1+cu128＋NPP）；editable源码已固定`src/infra-a5c9821`，四节点默认导入路径一致。`src/behavior`保留原b42c739安装历史，不是当前源码。激活`source /data/workspace/wsy/behavior2026/src/infra-a5c9821/scripts/infra/activate_a800_training.sh`；运行中不可改shared env/源码，切新代码用独立worktree＋进程级PYTHONPATH。
+- RGB下载切源中：原lc2 tmux`behavior-rgb-20260927-v4`/python990576已停止；原冻结`src/infra-2023037`、`runs/dataset_rgb_20260927_v4`和`logs/dataset-rgb-v4.log`保留。按用户要求改alpha镜像直连的新run待启动，最新身份见集群说明；当前训练配置本地缺文件会拒绝启动，不自行补深度。
+- 通信证据`runs/network_20260927`；四节点CPU组件与真实无depth视图证据`runs/environment_20260927`。新env三机24GPU本机验收全部过，lc4仅CPU；建议每机独立8卡，不默认三机大梯度同步。`models/`尚未下载新权重。
 
 ## 原robo记录（保留）
 

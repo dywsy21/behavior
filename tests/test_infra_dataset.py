@@ -1,8 +1,12 @@
 import hashlib
+import json
+import io
+from contextlib import redirect_stderr
 import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 _spec = importlib.util.spec_from_file_location(
     "infra_download", Path(__file__).resolve().parents[1] / "scripts/infra/download_behavior2026.py")
@@ -14,6 +18,33 @@ download_retry = _module.download_retry
 
 
 class DatasetIntegrityTests(unittest.TestCase):
+    def test_mirror_requires_official_manifest_before_writing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "data"
+            argv = ["download", "--root", str(root), "--run", str(Path(tmp) / "run"),
+                    "--download-endpoint", "https://alpha.hf-mirror.com"]
+            with patch("sys.argv", argv), redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as error:
+                    _module.main()
+            self.assertEqual(error.exception.code, 2)
+            self.assertFalse(root.exists())
+
+    def test_cached_official_manifest_is_pinned_and_normalized(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "official.json"
+            raw = json.dumps(dict(revision=_module.REVISION, files=[dict(
+                rfilename="data/chunk-000/file-000.parquet", size=7, blob_id="git-id",
+                lfs=dict(sha256="f"*64))])).encode()
+            path.write_bytes(raw)
+            with self.assertRaisesRegex(ValueError, "SHA256 mismatch"):
+                _module.load_official_manifest(path)
+            with patch.object(_module, "OFFICIAL_MANIFEST_SHA256", hashlib.sha256(raw).hexdigest()):
+                self.assertEqual(_module.load_official_manifest(path), [dict(
+                    path="data/chunk-000/file-000.parquet", size=7, blob_id="git-id", sha256="f"*64)])
+                with patch.object(_module, "REVISION", "different"):
+                    with self.assertRaisesRegex(ValueError, "revision mismatch"):
+                        _module.load_official_manifest(path)
+
     def test_rgb_scope_excludes_only_unrequested_videos(self):
         for camera in ("zed_link_camera_0", "left_realsense_link_camera_0",
                        "right_realsense_link_camera_0"):

@@ -10,6 +10,21 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-27 16:08（北京时间）：按用户要求切换alpha镜像直连（Codex / INFRA-A800）
+
+- 用户提供多源对照，明确要求镜像直连。主线程已TERM旧v4 python990576，最后日志13,200件/2,198,439,397B，原RGB文件/partial/回执保留；不会并行双写。新v5还未启动，待新源冻结，不再称v4运行中。
+- 已真实验证HF客户端直连`alpha.hf-mirror.com`协议：清除全部大小写HTTP/HTTPS/ALL_PROXY，NO_PROXY=*、HF_HUB_DISABLE_XET=1，固定revision的.gitattributes在1.312s下载2,504B，官方Git blob SHA完全一致。不是新一轮多源测速，也不承诺稳态带宽。
+- 下载器新增显式镜像endpoint＋强制官方缓存manifest（固定SHA502c1187…5b22），不从镜像取内容hash；去掉对代理官方API的启动依赖，仍逐文件校验、RGB-only、续传和1TiB reserve。原9 CPU测试通过，新增“缺官方manifest先拒绝、不创建目录”回归终核/独审中；正式下载将禁Xet避免另走CAS，不改系统代理。
+- 16:09最新10项CPU测试0.046s通过、镜像差异独审无阻断；准备固定新commit后服务器复核同10项并唯一启动v5。env、训练源a5c9821保持，不因下载切源重新跑GPU。
+- 训练共享环境收尾已完成：重指a5c9821后finetune --help再次exit0、源码干净；最终freeze SHA d9c1b187…85d367e，uv.lock SHA15fdaf64…9643f2。接下来只处理下载切源与记录，不追加GPU测试或训练。
+
+### 2026-09-27 16:03（北京时间）：共享基础环境与RGB reader验收完成，下载持续（Codex / INFRA-A800）
+
+- 固定a5c9821服务器**9 reader测试0.091s过**、独审过；`lc3_rgb_reader_v2.json`真实无depth视图/原六视频metadata、episode0首sample成功：动作32×23、状态1×61、头720×720/两腕480×480、0Hub调用/0CUDA。回执SHA679e27f0…b6e544双端同；旧v1失败因验收单帧维度断言，不改reader张量协议。
+- 全部自有env验收进程结束后，仅重指自有g05 editable到冻结`src/infra-a5c9821`；四机不加PYTHONPATH实际导入均为该路径。环境和代码始终仅共享一份；新最终freeze在`manifests/g05-environment-final-20260927.txt`。源b42c739及下载中2023037均未热改，最终finetune help复验中，0正式训练/模型新权重。
+- 四CPU组件/三机24GPU结果及网络JSON已归档本地`artifacts/a800-setup-20260927`，关键8回执双端SHA全同。共享路径/激活/依赖补充/单机建议已写`docs/infra/A800_CLUSTER.md`和SERVER_LAYOUT；AGENTS补新版100任务及RGB-only/shared-env边界，原50任务历史不裁成新版全集。
+- 下载v4 python990576仍live，16:02回执**11,128件/2,182,766,678B**，manifest/verified均0 depth；1.077TB按字节约0.20%，小标注件数多不能冒充已下42%体积。`complete.json`尚不存在。剩余是全量下载hash、完整profile顶层getitem和训练权重/配方/预算；不把环境或底层首sample通过写成正式训练完成。
+
 ### 2026-09-27 15:59（北京时间）：四机组件通过，真实RGB reader验收口径纠正（Codex / INFRA-A800）
 
 - 共享env补NPP后lc1/2/3/4的`*_components_v2.json`全部passed：相同Torch/cu128、transformers/datasets/peft/G05两policy导入、3×720×720 RGB实际TorchCodec解码和32行23D动作/61D状态，官方manifest/3文件hash通过；均无CUDA初始化。三机此前24卡GPU检查已全过，lc4仅CPU。

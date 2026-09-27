@@ -2,11 +2,25 @@
 
 负责人：Codex。开始：2026-09-27（北京时间）。代码分支：`infra/a800-cluster-20260927`。
 
+## 当前可用入口
+
+训练基础环境、四节点共享路径、真实RGB reader和前三节点全部24卡烟测已通过；**完整1.077TB数据仍在下载，没有启动正式训练**。共享env当前editable源码固定`a5c9821`，四节点不额外设置PYTHONPATH时也均导入同一路径：
+
+```bash
+cd /data/workspace/wsy/behavior2026/src/infra-a5c9821
+source scripts/infra/activate_a800_training.sh
+# 只激活环境，不启动训练
+```
+
+数据配置：`configs/data/behavior2026_r1pro_rgb.yaml`，100任务、三RGB、本地只读禁止隐式Hub补齐、沿用23D原动作/61D原状态映射。正式训练前还要完整下载hash回执、顶层Mixture首样本、选定checkpoint/配方/预算；不把下方单episode reader门当完整训练step。没有新下载模型权重，`models/`是预留目录。
+
+16:08切源中：旧v4已按用户要求停止，改alpha镜像直连的v5待启动；最新运行身份见下方下载进展。完成只认对应新run的`complete.json`且`video_mode=rgb`、26,350件全部校验，不按进程存在或文件数百分比当字节进度。
+
 ## 范围与安全
 
 - 用户授权训练基础设施准备、BEHAVIOR 2026数据下载及通信测试，不含正式大规模训练。
-- lc1–lc3：`10.19.7.1`–`10.19.7.3`，SSH用户`user`、端口22。lc4（`.4`）不启动任务。
-- 共享盘预期`/data/workspace`，由`.3`提供；用户报告剩余约5T，须现场核验。
+- lc1–lc3：`10.19.7.1`–`10.19.7.3`，SSH用户`user`、端口22。lc4（`.4`）仅CPU导入/读取验证，不启动GPU负载。
+- 共享盘由`.3`提供，已现场核验约5TiB可用；任务目录映射见环境状态。
 - 凭据仅交互输入，不写命令行、配置、日志或Git。VPN SOCKS仅监听loopback；保留SSH主机密钥检查，不修改全局路由/信任库。VPN网关为用户指定地址，观测证书自签且2023年已过期，不将其描述为已验证可信证书。
 - lc-connect v0.1.0 Linux amd64包SHA256：`4eaa5461d69800c5b61d9ed807b5b89feea90d53e87ffa05960d186b6dcc3571`，已与release核对。
 
@@ -52,9 +66,18 @@ sudo mount -t nfs4 -o rw,vers=4.2,hard,timeo=600,retrans=2 \
   10.19.7.3:/data/workspace/wsy/behavior2026 /data/workspace/wsy/behavior2026
 ```
 
-隔离Python3.10.19、`envs/download`（huggingface-hub0.35.0）已可用。`src/behavior`固定b42c739作为editable安装源，禁止热pull；新任务改代码用独立worktree和明确源码路径。`envs/g05-py310-cu128`已按uv.lock完成267包安装、Torch2.7.1+cu128实际CPU导入通过；datasets3.6.0/transformers4.57.1保持锁版本，完整入口/解码/新环境GPU验证仍待。排除本轮不需要的仿真包/deepspeed/FA4，以SDPA为后备，不代表OmniGibson/ZeRO后端已安装。
+隔离Python3.10.19、`envs/download`（huggingface-hub0.35.0）已可用。最初`src/behavior`固定b42c739用于安装；所有验收进程结束后已将自有env editable重新指向冻结`src/infra-a5c9821`，保留旧checkout、不热pull。新任务用独立worktree并为该进程显式设置`PYTHONPATH=<new_source>/src`，不要为切代码反复重装大家共用的env。`envs/g05-py310-cu128`按uv.lock装267包，再补一个NPP运行库；Torch2.7.1+cu128、datasets3.6.0、transformers4.57.1、peft0.18.0、TorchCodec0.4.0+cu128保持版本。排除本轮不需要的仿真包/deepspeed/FA4，以SDPA为后备，不代表OmniGibson/ZeRO后端已安装。
 
 安装v1网络超时、v2传递仿真依赖egl-probe缺CMake、v3两个NVIDIA wheel中断；均保留日志。v4将`pypi.nvidia.com,pypi.nvidia.cn`放入进程级NO_PROXY后55.53s准备＋16.20s安装完成，缓存复用，不改版本/驱动。PyPI预取两包过慢已停止，最终走锁定NVIDIA官方URL和SHA。环境冻结清单`manifests/g05-environment-freeze.txt`。FFmpeg4.4.2相关Ubuntu包仅解压到自有tools；通过`scripts/infra/activate_a800_training.sh`设置局部动态库路径，不能改全局LD配置。共享env今后有运行任务时不能uv sync/升级。
+
+TorchCodec的cu128 wheel即使CPU解码也链接NPP，首次真实检查报`libnppicc.so.12`缺失；已补官方`nvidia-npp-cu12==12.3.3.100`，精确wheel/SHA在`configs/infra/a800-runtime-extra.txt`，仅加局部npp/lib路径，没有系统CUDA/驱动安装。重建env时在uv sync后执行`uv pip install --python <env>/bin/python --no-deps --require-hashes -r configs/infra/a800-runtime-extra.txt`。最终包清单`manifests/g05-environment-final-20260927.txt`保留全部版本和editable路径。
+
+验收证据（共享`runs/environment_20260927`）：
+
+- 四节点`lc{1,2,3,4}_components_v2.json`：真实依赖与两G05 policy导入、官方manifest/3文件SHA、32行23D动作/61D状态、TorchCodec三帧头RGB720×720，全部passed、零CUDA初始化。
+- `lc3_rgb_reader_v2.json`：原始六视频meta不改，隔离symlink视图只给三RGB＋首Parquet；正式RGB配置的时间查询经过实际LeRobotDataset初始化和episode0首样本，动作32×23、状态1×61、头3×720×720/两腕3×480×480、0Hub调用/0CUDA全部passed，SHA`679e27f065c6461bb4ea5995fa01a661688285b2f1bd063b2c269f0dadb6e544`。首版验收脚本将单帧CHW误认成TCHW已纠正，失败日志/视图仍保留，不更改实际张量协议。
+- 固定a5c9821服务器9 reader回归0.091s通过、独审通过；下载器8回归也通过。新RGB scope贯穿cache检查、Hub allowlist、实际解码，`local_files_only`使缺已选视频报错而不是自动补齐/静默跳过来源；None保持原全相机兼容。
+- 本地仅存小结果`artifacts/a800-setup-20260927/{network_20260927,environment_20260927}`，关键回执双端SHA一致，没有复制训练数据。
 
 ## NCCL进展
 
@@ -71,6 +94,12 @@ sudo mount -t nfs4 -o rw,vers=4.2,hard,timeo=600,retrans=2 \
 
 Tree对照在大消息改善但没有解决链路上限；小消息更慢，不作为全局默认。首次误将`NCCL_ALGO=Tree`施加所有collective，导致不支持Tree的AllGather初始化失败，旧失败日志保留；改为官方2.24+支持的`NCCL_ALGO=allreduce:Tree`后通过。生产默认不强制算法。建议使用**单节点8卡DDP**；每节点独立配方/seed可以并行，不必让三机每步同步大梯度。跨机全参前需要管理员排查可用IB布线/交换机、P2P挂起；不能靠改训练batch就把10GbE变成高速互联。
 
+新自有cu128环境最终各节点8卡复验（每尺寸3预热＋3测量，≤150s）：lc1/2/3均exit0，BF16前反向/归约数值全部通过，256MiB中位90.378/90.512/90.819ms，峰值320MiB/rank。`own_cu128_lc{1,2,3}.json`，三个probe已退出，没有正式训练；lc4GPU未测。
+
 ## 下载进展
 
-v2首次100件/160.6MB核hash通过后，约1.2GiB落盘处遇HTTP大流中断，进程已退出，旧日志/完整文件/.incomplete保留。下载器已加最多5次网络重试（2/4/8/16s退避，权限/hash/磁盘错误不重试）；7项CPU测试与独审验收。Xet头RGB206,429,692B已过官方SHA`9f73b8c262f655e4c39193fdc07fa928c17f98e186879cd9df8b21c52ab91692`。新冻结`src/infra-a9be0cb`/a9be0cb74aea31be42b53a84292fee46faf725ff在lc2 tmux`behavior-data-20260927-v3`运行（PID989140），`logs/dataset-download-v3.log`/`runs/dataset_download_20260927_v3`；Xet分块、8文件×8分块并发、额外chunk cache禁用、顺序写，不依赖本地VPN持续在线。**全集未完成，不启动正式训练。**
+**v4已停止，v5切源中。** v4冻结`src/infra-2023037`，lc2 tmux`behavior-rgb-20260927-v4`，原python990576/pane990574；`logs/dataset-rgb-v4.log`/`runs/dataset_rgb_20260927_v4`。用户16:06要求改镜像直连后已TERM旧python，最后日志13,200件/2,198,439,397B，无depth；文件数主要是小标注，按字节仍约0.20%。原RGB文件/partial全部保留复用。
+
+新路线只将下载数据endpoint改为`https://alpha.hf-mirror.com`，不信任镜像提供的内容哈希。启动需`--official-manifest manifests/hf_official_files.json`，先核固定官方manifest SHA502c…5b22，再逐文件核size/SHA；没有该清单就拒绝镜像入口。该进程清除大小写HTTP/HTTPS/ALL_PROXY，`NO_PROXY=*`，`HF_HUB_DISABLE_XET=1`走HTTP直连（不另协商Xet CAS）。实际HF客户端2504B仓库文件在1.312s通过官方Git blob hash；用户多源速度对照不作为持续速度承诺。v5还未启动，待审过源码冻结；不启动正式训练。
+
+旧v2遇HTTP中断后退出；旧v3在用户改范围时已由主线程TERM，保留3,627件/5.270GB回执。此前17件/3.194GB深度是旧遗留，不删除、不继续下载、不计入新scope；官方metadata仍声明depth属预期。全部旧日志/完整文件/`.incomplete`保留。新run完成只证明RGB选定集合齐全，不证明目录没有历史depth。
