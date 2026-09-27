@@ -89,9 +89,17 @@ def main():
         raise AssertionError("Raw control dimensions or prediction horizon changed")
     if not torch.isfinite(sample["action"]).all():
         raise AssertionError("Nonfinite action")
+    raw_shapes = {meta["lerobot_key"]: tuple(meta["raw_shape"])
+                  for meta in emb["shape_meta"]["images"]}
     for key in selected:
-        if sample[key].shape[0] != config["obs_size"] or not torch.isfinite(sample[key]).all():
-            raise AssertionError(f"Invalid image sample: {key}")
+        # LeRobot's public reader squeezes a singleton time axis; Base restores
+        # it later. Do not confuse CHW's channel count with the observation count.
+        expected_shape = raw_shapes[key]
+        if config["obs_size"] > 1:
+            expected_shape = (config["obs_size"], *expected_shape)
+        if (tuple(sample[key].shape) != expected_shape or not torch.isfinite(sample[key]).all()
+                or sample[key].min() < 0 or sample[key].max() > 1):
+            raise AssertionError(f"Invalid image sample: {key}, {sample[key].shape}, expected {expected_shape}")
     if torch.cuda.is_initialized():
         raise AssertionError("CPU reader check initialized CUDA")
     report = dict(status="passed", host=socket.gethostname(), revision=REVISION,

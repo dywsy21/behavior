@@ -1323,8 +1323,9 @@ class LeRobotDataset(torch.utils.data.Dataset):
         if self.image_transforms is not None and self.load_images:
             image_keys = self.meta.camera_keys
             for cam in image_keys:
-                if cam in item:
-                    item[cam] = self.image_transforms(item[cam])
+                if cam in self.meta.video_keys and cam not in self.read_video_keys:
+                    continue
+                item[cam] = self.image_transforms(item[cam])
 
         # Add task as a string
         if item["task_index"].dim() == 0:

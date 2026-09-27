@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-27 15:59（北京时间）：四机组件通过，真实RGB reader验收口径纠正（Codex / INFRA-A800）
+
+- 共享env补NPP后lc1/2/3/4的`*_components_v2.json`全部passed：相同Torch/cu128、transformers/datasets/peft/G05两policy导入、3×720×720 RGB实际TorchCodec解码和32行23D动作/61D状态，官方manifest/3文件hash通过；均无CUDA初始化。三机此前24卡GPU检查已全过，lc4仅CPU。
+- 66c67b3独审无新阻断，服务器8 reader回归0.079s通过。真实无depth视图的episode0已经完成构造和取样、32×23动作检查，但v1验收脚本误把单帧CHW的3当作时间维，exit1，不能记passed。已定位reader公开接口`frames.squeeze(0)`，仅修验收形状判断；真实loader不为迁就测试改张量协议。另transform收紧为仅跳过明确未选择的video，新增缺已选图像报错回归。
+- 本门是底层实际reader＋正式配置的offset构造，不是完整Mixture/训练step验收。全量下载完后仍须正式profile顶层getitem/权重与配方预检；本轮不提前加载全部未完成数据或启动训练。下载v4持续运行（实际python990576，tmux pane990574），旧源/失败视图/回执保留。
+
 ### 2026-09-27 15:55（北京时间）：新环境24卡验收通过，RGB-only真实reader修复（Codex / INFRA-A800）
 
 - 新共享Torch2.7.1+cu128在lc1/2/3各8rank本机all-reduce和BF16前反向全部exit0，峰值约320MiB/卡；256MiB分别90.378/90.512/90.819ms。证据`runs/network_20260927/own_cu128_lc*.json`，非借用旧env；三个probe已退出，lc4未启动CUDA。

@@ -75,6 +75,12 @@ class VideoScopeTests(unittest.TestCase):
             self.create(video_keys=[RGB], local_files_only=True)
         self.hub.assert_not_called()
 
+    def test_transform_does_not_hide_a_missing_requested_frame(self):
+        ds = self.create(video_keys=[RGB], local_files_only=True, image_transforms=lambda x: x)
+        with patch.object(ds, "_query_videos", return_value={}):
+            with self.assertRaises(KeyError):
+                ds[0]
+
     def test_default_scope_still_requires_depth(self):
         with self.assertRaises(FileNotFoundError):
             self.create(local_files_only=True)
