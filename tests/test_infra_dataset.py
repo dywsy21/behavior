@@ -10,9 +10,42 @@ _module = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_module)
 validate_path, verify_file = _module.validate_path, _module.verify_file
 DiskAdmission = _module.DiskAdmission
+download_retry = _module.download_retry
 
 
 class DatasetIntegrityTests(unittest.TestCase):
+    def test_stream_retry_is_bounded(self):
+        from requests.exceptions import ChunkedEncodingError
+        attempts = []
+        sleeps = []
+        def broken():
+            attempts.append(1)
+            raise ChunkedEncodingError("broken stream")
+        with self.assertRaises(ChunkedEncodingError):
+            download_retry(broken, (ChunkedEncodingError,), sleep=sleeps.append)
+        self.assertEqual(len(attempts), 5)
+        self.assertEqual(sleeps, [2, 4, 8, 16])
+
+    def test_http_error_classification(self):
+        from requests import Response
+        from requests.exceptions import HTTPError
+        for status, expected in [(401, 1), (403, 1), (404, 1), (429, 5), (503, 5)]:
+            calls = []
+            response = Response()
+            response.status_code = status
+            def fail():
+                calls.append(1)
+                raise HTTPError(response=response)
+            with self.assertRaises(HTTPError):
+                download_retry(fail, (HTTPError,), sleep=lambda _: None)
+            self.assertEqual(len(calls), expected)
+
+    def test_stream_retry_does_not_hide_hash_errors(self):
+        def invalid():
+            raise ValueError("bad digest")
+        with self.assertRaises(ValueError):
+            download_retry(invalid, (ConnectionError,), sleep=lambda _: None)
+
     def test_inflight_reserve_and_release(self):
         admission = DiskAdmission(lambda: 100, 60)
         with admission.admit(30):

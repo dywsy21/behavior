@@ -10,6 +10,30 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-27 15:20（北京时间）：8卡主机传输对照通过，下载连接中断修复（Codex / INFRA-A800）
+
+- 单机新`nccl_8_shm.json`已exit0；只加进程级`NCCL_P2P_DISABLE=1`后四种负载数值全部正确、8rank BF16前反向通过，峰值CUDA分配335,546,880B。1/16/64/256MiB中位延迟0.458/5.776/22.797/90.409ms，busBW4.010/5.083/5.152/5.196GB/s。结论限定为PCIe P2P路径相关挂起与可用workaround，尚未证明ACS/驱动哪个底层原因；不改系统配置。
+- 两机lc1+lc2、16rank同脚本/同workaround正在`nccl-16-lc{1,2}.log`，≤300s，不启动第三组直至本组释放。
+- 下载v2在约1.2GiB落盘时遇真实`requests.ChunkedEncodingError`，主进程988592已退出，完整/部分文件和失败日志全部保留；先前100件hash通过证据有效，但不能继续称下载运行中。已实现5次上限网络重试、不重试权限/hash/磁盘错误，复审中；正在≤180s单文件Xet分块通路检验，通过后新冻结源续传，不从头重下完整文件。
+
+### 2026-09-27 15:18（北京时间）：下载实读通过，单机NCCL默认P2P挂起定位中（Codex / INFRA-A800）
+
+- v2下载已真实完成首100件/160,624,144B的逐文件hash，非仅tmux启动；官方meta实际确认V3、100task/20,000episode/210,916,774帧/30Hz、23D动作/61D状态、三路RGB＋depth。全集仍下载中。
+- lc1默认8卡probe近147s仍无回执、各卡约0.65GiB且100%利用率，nvidia-smi P2P能力矩阵虽全OK但不等于真实传输通过；/dev/shm约504GiB未满、memlock充分。已只对本次确认的torchrun391235发送TERM，原失败日志保留，不动其他任务。
+- 在原单机300s预算剩余额度内追加≤140s定位：仅本进程`NCCL_P2P_DISABLE=1`，DEBUG=INFO，走主机通信作为对照；新`logs/nccl-8-shm.log`。不改驱动、ACS/IOMMU、全局NCCL配置或交换机；2/3机测试须此先通，不能把挂起时的GPU100%说成有效利用。
+
+### 2026-09-27 15:15（北京时间）：冻结源码修复完成，下载与通信实测启动（Codex / INFRA-A800）
+
+- 通过Git建成独立干净`src/infra-9208a07`，真实HEAD9208a07c851afbaab078087f299245f3cf598856，服务器4项CPU测试通过；不pull正在安装环境的旧src/behavior。
+- lc2唯一耐断线tmux `behavior-data-20260927-v2`已提交（pane988592），官方数据输出`datasets/2026-challenge-demos`，日志`logs/dataset-download-v2.log`、回执`runs/dataset_download_20260927_v2`；8线程、逐文件hash、1TiB reserve。下载进度待实际回执，不将后台创建当完成。
+- lc1新`nccl-8-v2.log`运行中，固定审过脚本、≤300s/每卡≤2GiB/无训练；先临时只读使用已有`/data/workspace/minnan/envs/starvla/bin/python`的Torch2.7.1+cu126，不安装/修改队友env。自有cu128环境仍在安装，后续须单独验收，不能冒充已在自有新env验证。
+
+### 2026-09-27 15:14（北京时间）：基础设施源码已审、首次远端入口失败保留（Codex / INFRA-A800）
+
+- 下载器/NCCL脚本4项CPU测试与独审通过，已commit/push9208a07。磁盘保留门是有意保守的全在途预留，近门可提前停止并低并发续传；这一非安全性限制已写集群说明。
+- 远端首次Git fetch遇HTTP2错误，冻结worktree未建成；随后下载和8卡probe入口因脚本不存在退出，**没有数据下载完成或GPU结果**。保留`logs/dataset-download-v1.log`、`logs/nccl-8.log`失败证据，不将提交启动写成功。现通过lc2既有代理/HTTP1.1做一次Git同步修复，须实际路径/commit/CPU测试通过后另用v2日志运行。
+- 官方与镜像32MiB范围读取均206/字节数正确，分别约4.98/2.70MB/s，选择官方+lc2代理，不经本地VPN搬运TB数据。G05隔离依赖安装仍在进行，无正式训练。
+
 ### 2026-09-27 15:11（北京时间）：A800 TCP全矩阵完成、官方数据清单固定（Codex / INFRA-A800）
 
 - 12项TCP（3节点对×P1/P4×正反向）已exit0，实际9.350–9.415Gbps，多流没有翻倍，符合当前layer2 LACP的单对瓶颈。证据共享`runs/network_20260927`，表见`docs/infra/A800_CLUSTER.md`；未用此直接冒充DDP训练效率。NCCL仍待。

@@ -71,6 +71,20 @@ def write_json(path, value):
     tmp.replace(path)
 
 
+def download_retry(operation, retryable, sleep=time.sleep):
+    """Bounded retry of broken HTTP streams; preserve .incomplete range-resume state."""
+    for attempt in range(5):
+        try:
+            return operation()
+        except retryable as error:
+            status = getattr(getattr(error, "response", None), "status_code", None)
+            if (status is not None and status != 429 and status < 500) or attempt == 4:
+                raise
+            print(json.dumps(dict(stage="network_retry", attempt=attempt+1,
+                                  error_type=type(error).__name__)), flush=True)
+            sleep(2**(attempt+1))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--root", required=True, type=Path)
@@ -86,6 +100,7 @@ def main():
     with (args.root / ".behavior-download.lock").open("a+") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         from huggingface_hub import HfApi, hf_hub_download
+        from requests.exceptions import ChunkedEncodingError, ConnectionError, Timeout, HTTPError
 
         # Manifest hashes always come from the official Hub, not a mirror.
         info = HfApi(endpoint="https://huggingface.co", token=False).dataset_info(
@@ -133,9 +148,11 @@ def main():
             if verify_file(args.root, item):
                 return item
             with admission.admit(item["size"]):
-                hf_hub_download(REPO, filename=item["path"], repo_type="dataset",
-                                revision=REVISION, local_dir=args.root, token=False,
-                                force_download=target.exists())
+                download_retry(lambda: hf_hub_download(
+                    REPO, filename=item["path"], repo_type="dataset",
+                    revision=REVISION, local_dir=args.root, token=False,
+                    force_download=target.exists()),
+                    (ChunkedEncodingError, ConnectionError, Timeout, HTTPError))
                 if not verify_file(args.root, item):
                     raise ValueError(f"Hash/size mismatch: {item['path']}")
             return item
