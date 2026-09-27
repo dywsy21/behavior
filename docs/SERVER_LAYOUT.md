@@ -2,8 +2,9 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
-- 接入：WSL `ssh lc1/lc2/lc3`，本地`~/.ssh/lc-a800.conf`，lc-connect SOCKS127.0.0.1:1080；凭据不在仓库。lc4不运行任务。
-- 独立共享根：`/data/workspace/wsy/behavior2026`（lc3本地ext4，lc1/2 NFS4.2）；`datasets/`官方原数据、`models/`权重、`envs/`隔离环境、`tools/`工具/Python、`src/behavior`Git同步checkout、`manifests/`清单、`logs/`和`runs/`运行证据。
+- 接入：WSL `ssh lc1/lc2/lc3/lc4`，本地`~/.ssh/lc-a800.conf`，lc-connect SOCKS127.0.0.1:1080；凭据不在仓库。lc4只CPU验证、不启动GPU负载。
+- 独立共享根：`/data/workspace/wsy/behavior2026`（lc3本地ext4，lc1/2 NFS4.2；lc4仅此子目录新挂NFS，不遮盖其原本地workspace）；`datasets/`官方原数据、`models/`权重、`envs/`四节点共用环境、`tools/`工具/Python、`src/behavior`冻结editable源码、`manifests/`清单、`logs/`和`runs/`运行证据。lc4挂载重启不保持，恢复命令见集群说明。
+- 2026-09-27用户最新数据范围：`datasets/2026-challenge-demos`只下载三路RGB＋动作/标注/meta，26,350件/1,077,039,763,530B；排除全部depth/raw。旧v3已停，已取得的少量depth保留但不继续下载、不计入新scope完成率。
 - 下载环境`envs/download`为Python3.10.19；环境/数据准备状态和网络实测见[集群说明](infra/A800_CLUSTER.md)。该根新建，不含其他用户旧文件；数据和env不提交Git。
 
 ## 原robo记录（保留）

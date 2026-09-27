@@ -1,4 +1,4 @@
-"""Pinned, resumable public dataset download; no training or credential storage."""
+"""Pinned, resumable public dataset download (RGB by default); no credential storage."""
 from __future__ import annotations
 
 import argparse
@@ -16,6 +16,9 @@ import threading
 
 REPO = "behavior-1k/2026-challenge-demos"
 REVISION = "4f50b44796641a4d526a19d9aeadc8aa51e2f2c2"
+RGB_KEYS = frozenset(("observation.rgb.zed_link_camera_0",
+                      "observation.rgb.left_realsense_link_camera_0",
+                      "observation.rgb.right_realsense_link_camera_0"))
 
 
 class DiskAdmission:
@@ -43,6 +46,14 @@ def validate_path(name):
     if p.is_absolute() or ".." in p.parts or not p.parts:
         raise ValueError(f"Unsafe repository path: {name!r}")
     return p
+
+
+def include_file(name, video_mode):
+    validate_path(name)
+    if video_mode not in ("rgb", "all"):
+        raise ValueError("Unknown video selection")
+    return (video_mode == "all" or not name.startswith("videos/")
+            or name.split("/")[1] in RGB_KEYS)
 
 
 def digest(path, algorithm):
@@ -91,6 +102,8 @@ def main():
     ap.add_argument("--run", required=True, type=Path)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--reserve-gib", type=int, default=1024)
+    ap.add_argument("--video-mode", choices=("rgb", "all"), default="rgb",
+                    help="rgb keeps all non-video files but excludes depth videos")
     ap.add_argument("--manifest-only", action="store_true")
     args = ap.parse_args()
     if not 1 <= args.workers <= 8 or args.reserve_gib < 512:
@@ -115,7 +128,8 @@ def main():
             item = dict(path=entry.rfilename, size=entry.size, blob_id=entry.blob_id)
             if entry.lfs:
                 item["sha256"] = entry.lfs.sha256
-            items.append(item)
+            if include_file(item["path"], args.video_mode):
+                items.append(item)
         # Metadata and the first chunk of each modality are useful for early I/O checks.
         def priority(item):
             name = item["path"]
@@ -127,10 +141,12 @@ def main():
         remaining = sum(max(0, x["size"] - (args.root / x["path"]).stat().st_size)
                         if (args.root / x["path"]).is_file() else x["size"] for x in items)
         free = shutil.disk_usage(args.root).free
-        manifest = dict(repo=REPO, revision=REVISION, files=items, total_bytes=total,
+        manifest = dict(repo=REPO, revision=REVISION, video_mode=args.video_mode,
+                        files=items, total_bytes=total,
                         created_utc=datetime.now(timezone.utc).isoformat())
         write_json(args.run / "manifest.json", manifest)
-        print(json.dumps(dict(stage="manifest", files=len(items), total_bytes=total,
+        print(json.dumps(dict(stage="manifest", video_mode=args.video_mode,
+                              files=len(items), total_bytes=total,
                               remaining_bytes=remaining, free_bytes=free)), flush=True)
         if free < remaining + args.reserve_gib * 2**30:
             raise RuntimeError("Insufficient disk space including reserve; nothing downloaded")
@@ -168,7 +184,8 @@ def main():
                         receipt.write(json.dumps(item) + "\n")
                         receipt.flush()
                         if verified_count % 100 == 0 or item["size"] > 2**30:
-                            status = dict(stage="downloading", verified_files=verified_count,
+                            status = dict(stage="downloading", video_mode=args.video_mode,
+                                          verified_files=verified_count,
                                           verified_bytes=verified_bytes, total_files=len(items),
                                           total_bytes=total, elapsed_s=time.monotonic()-started)
                             write_json(args.run / "status.json", status)
@@ -178,7 +195,8 @@ def main():
                         future.cancel()
                     raise
         write_json(args.run / "complete.json", dict(
-            repo=REPO, revision=REVISION, verified_files=verified_count,
+            repo=REPO, revision=REVISION, video_mode=args.video_mode,
+            verified_files=verified_count,
             verified_bytes=verified_bytes, elapsed_s=time.monotonic()-started,
             completed_utc=datetime.now(timezone.utc).isoformat()))
 

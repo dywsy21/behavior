@@ -14,6 +14,21 @@ download_retry = _module.download_retry
 
 
 class DatasetIntegrityTests(unittest.TestCase):
+    def test_rgb_scope_excludes_only_unrequested_videos(self):
+        for camera in ("zed_link_camera_0", "left_realsense_link_camera_0",
+                       "right_realsense_link_camera_0"):
+            rgb = f"videos/observation.rgb.{camera}/chunk-000/file-000.mp4"
+            depth = f"videos/observation.depth_linear.{camera}/chunk-000/file-000.mp4"
+            self.assertTrue(_module.include_file(rgb, "rgb"))
+            self.assertFalse(_module.include_file(depth, "rgb"))
+            self.assertTrue(_module.include_file(depth, "all"))
+        for name in ("data/chunk-000/file-000.parquet", "meta/info.json",
+                     "annotations/task-0000/episode_00000001.json", "README.md", "LICENSE"):
+            self.assertTrue(_module.include_file(name, "rgb"))
+        with self.assertRaises(ValueError):
+            _module.include_file("meta/info.json", "unknown")
+        self.assertFalse(_module.include_file("videos/observation.rgb.unknown/file.mp4", "rgb"))
+
     def test_stream_retry_is_bounded(self):
         from requests.exceptions import ChunkedEncodingError
         attempts = []
