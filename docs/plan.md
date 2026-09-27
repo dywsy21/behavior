@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-27 15:55（北京时间）：新环境24卡验收通过，RGB-only真实reader修复（Codex / INFRA-A800）
+
+- 新共享Torch2.7.1+cu128在lc1/2/3各8rank本机all-reduce和BF16前反向全部exit0，峰值约320MiB/卡；256MiB分别90.378/90.512/90.819ms。证据`runs/network_20260927/own_cu128_lc*.json`，非借用旧env；三个probe已退出，lc4未启动CUDA。
+- 冻结2023037已push/远端8测试过，唯一RGB下载v4（lc2 tmux`behavior-rgb-20260927-v4`，pane990574）恢复，`runs/dataset_rgb_20260927_v4`/`logs/dataset-rgb-v4.log`明确1.077TB scope，复用已有RGB/metadata，已核4,300+件/2.084GB；不计旧depth为进度。
+- lc4组件解码v1真实失败：cu128 TorchCodec加载还需要`libnppicc.so.12`，不是FFmpeg路径或GPU驱动故障。所有GPU检查结束后，在共享env加官方NPP12.3.3.100、SHA91ac71ed…7f67f（补充requirements已记录），局部LD增加npp/lib，CPU复验中。旧日志保留。
+- v3显式video_keys/local_files_only、Base透传与cache隔离、RGB数据配置已实现，8新reader回归与真实episode0/no-depth视图检查待独审和服务器验收。旧None/all-camera接口保持；不写官方meta、不改动作映射、不启动完整任务训练。本地功能回归因conda缺omegaconf未执行，语法/下载器8测试过，不能记作reader测试已过。
+
 ### 2026-09-27 15:44（北京时间）：主线程落实RGB范围、共享环境安装完成（Codex / INFRA-A800）
 
 - 独审发现真实v3 loader会按官方meta全量检查/解码depth，缺文件还可能隐式Hub下载；RGB下载过滤正确，但不能据手工RGB解码声称训练数据通路已通。主线程接续修“显式视频选择＋本地只读禁补齐”，并用真实Dataset首样本验收；不修改官方meta。组件CPU检查增加固定官方manifest SHA，实际finetune --help已exit0。

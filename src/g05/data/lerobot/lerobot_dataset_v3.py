@@ -574,6 +574,8 @@ class LeRobotDataset(torch.utils.data.Dataset):
         video_backend: str | None = None,
         batch_encoding_size: int = 1,
         in_memory: bool = False,
+        video_keys: list[str] | None = None,
+        local_files_only: bool = False,
     ):
         """
         2 modes are available for instantiating this class, depending on 2 different use cases:
@@ -697,6 +699,10 @@ class LeRobotDataset(torch.utils.data.Dataset):
         self.revision = revision if revision else CODEBASE_VERSION
         self.load_images = load_images
         self.in_memory = in_memory
+        # None preserves the upstream all-camera behavior. An explicit list is
+        # the complete video read/download scope, not merely temporal offsets.
+        self._requested_video_keys = None if video_keys is None else list(video_keys)
+        self.local_files_only = bool(local_files_only)
         self.video_backend = video_backend if video_backend else get_safe_default_codec()
         self.delta_indices = None
         self.batch_encoding_size = batch_encoding_size
@@ -719,6 +725,13 @@ class LeRobotDataset(torch.utils.data.Dataset):
         self.meta = LeRobotDatasetMetadata(
             self.repo_id, self.root, self.revision, force_cache_sync=force_cache_sync
         )
+        if self._requested_video_keys is not None:
+            unknown = set(self._requested_video_keys) - set(self.meta.video_keys)
+            if unknown or len(set(self._requested_video_keys)) != len(self._requested_video_keys):
+                raise ValueError(f"Unknown or duplicate requested video keys: {video_keys}")
+            queried = set(self.delta_timestamps or {}) & set(self.meta.video_keys)
+            if not queried.issubset(self._requested_video_keys):
+                raise ValueError("delta_timestamps requests a video outside video_keys")
         self._image_columns = [key for key, ft in self.features.items() if ft["dtype"] == "image"]
 
         # Track dataset state for efficient incremental writing
@@ -735,6 +748,11 @@ class LeRobotDataset(torch.utils.data.Dataset):
             if not self._check_cached_episodes_sufficient():
                 raise FileNotFoundError("Cached dataset doesn't contain all requested episodes")
         except (AssertionError, FileNotFoundError, NotADirectoryError):
+            if self.local_files_only:
+                raise FileNotFoundError(
+                    f"Local dataset is incomplete for the requested episodes/videos: {self.root}; "
+                    "automatic Hub download is disabled"
+                ) from None
             self.download(download_videos)
             self.hf_dataset = self.load_hf_dataset()
             self._refresh_hf_dataset_views()
@@ -840,6 +858,8 @@ class LeRobotDataset(torch.utils.data.Dataset):
         allow_patterns: list[str] | str | None = None,
         ignore_patterns: list[str] | str | None = None,
     ) -> None:
+        if getattr(self, "local_files_only", False):
+            raise RuntimeError("automatic Hub download is disabled (local_files_only=True)")
         snapshot_download(
             self.repo_id,
             repo_type="dataset",
@@ -857,21 +877,30 @@ class LeRobotDataset(torch.utils.data.Dataset):
         """
         # TODO(rcadene, aliberts): implement faster transfer
         # https://huggingface.co/docs/huggingface_hub/en/guides/download#faster-downloads
-        ignore_patterns = None if (download_videos and self.load_images) else "videos/"
+        ignore_patterns = None if (download_videos and self.load_images) else "videos/**"
         files = None
         if self.episodes is not None:
             files = self.get_episodes_file_paths()
+        elif getattr(self, "_requested_video_keys", None) is not None:
+            files = ["data/**", "meta/**", "annotations/**", "README.md", "LICENSE", ".gitattributes"]
+            files += [f"videos/{key}/**" for key in self.read_video_keys]
         self.pull_from_repo(allow_patterns=files, ignore_patterns=ignore_patterns)
+
+    @property
+    def read_video_keys(self) -> list[str]:
+        """Selected video columns without altering authoritative source metadata."""
+        requested = getattr(self, "_requested_video_keys", None)
+        return list(self.meta.video_keys) if requested is None else list(requested)
 
     def get_episodes_file_paths(self) -> list[Path]:
         episodes = (
             self.episodes if self.episodes is not None else list(range(self.meta.total_episodes))
         )
         fpaths = [str(self.meta.get_data_file_path(ep_idx)) for ep_idx in episodes]
-        if len(self.meta.video_keys) > 0 and self.load_images:
+        if self.read_video_keys and self.load_images:
             video_files = [
                 str(self.meta.get_video_file_path(ep_idx, vid_key))
-                for vid_key in self.meta.video_keys
+                for vid_key in self.read_video_keys
                 for ep_idx in episodes
             ]
             fpaths += video_files
@@ -1040,9 +1069,9 @@ class LeRobotDataset(torch.utils.data.Dataset):
             return False
 
         # Check if all required video files exist
-        if len(self.meta.video_keys) > 0 and self.load_images:
+        if self.read_video_keys and self.load_images:
             for ep_idx in requested_episodes:
-                for vid_key in self.meta.video_keys:
+                for vid_key in self.read_video_keys:
                     video_path = self.root / self.meta.get_video_file_path(ep_idx, vid_key)
                     if not video_path.exists():
                         return False
@@ -1141,7 +1170,7 @@ class LeRobotDataset(torch.utils.data.Dataset):
         query_indices: dict[str, list[int]] | None = None,
     ) -> dict[str, list[float]]:
         query_timestamps = {}
-        for key in self.meta.video_keys:
+        for key in self.read_video_keys:
             if query_indices is not None and key in query_indices:
                 timestamps = self.hf_dataset[query_indices[key]]["timestamp"]
                 query_timestamps[key] = torch.stack(timestamps).tolist()
@@ -1285,7 +1314,7 @@ class LeRobotDataset(torch.utils.data.Dataset):
             for key, val in query_result.items():
                 item[key] = val
 
-        if len(self.meta.video_keys) > 0 and self.during_training and self.load_images:
+        if self.read_video_keys and self.during_training and self.load_images:
             current_ts = item["timestamp"].item()
             query_timestamps = self._get_query_timestamps(current_ts, query_indices)
             video_frames = self._query_videos(query_timestamps, ep_idx)
@@ -1294,7 +1323,8 @@ class LeRobotDataset(torch.utils.data.Dataset):
         if self.image_transforms is not None and self.load_images:
             image_keys = self.meta.camera_keys
             for cam in image_keys:
-                item[cam] = self.image_transforms(item[cam])
+                if cam in item:
+                    item[cam] = self.image_transforms(item[cam])
 
         # Add task as a string
         if item["task_index"].dim() == 0:
@@ -1923,6 +1953,8 @@ class MultiLeRobotDataset(torch.utils.data.Dataset):
         load_images: bool = True,
         video_backend: str | None = None,
         in_memory: bool = False,
+        video_keys: list[str] | None = None,
+        local_files_only: bool = False,
     ):
         super().__init__()
         self.dataset_dirs = dataset_dirs
@@ -1951,9 +1983,13 @@ class MultiLeRobotDataset(torch.utils.data.Dataset):
                     load_images=load_images,
                     video_backend=video_backend,
                     in_memory=self.in_memory,
+                    video_keys=video_keys,
+                    local_files_only=local_files_only,
                 )
                 self._datasets.append(_dataset)
             except Exception as e:
+                if local_files_only:
+                    raise  # Never silently omit an incomplete local training source.
                 # logging.error(e)
                 logging.error(f"Exception while process ds_root: {ds_root}, ds_name: {ds_name}")
                 traceback.print_exc()

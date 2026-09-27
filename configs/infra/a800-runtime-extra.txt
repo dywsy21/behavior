@@ -1,0 +1,3 @@
+# TorchCodec 0.4.0+cu128 loads NPP even for CPU decoding. Official wheel,
+# SHA matched against PyPI metadata; supplements (does not replace) uv.lock.
+https://pypi.nvidia.com/nvidia-npp-cu12/nvidia_npp_cu12-12.3.3.100-py3-none-manylinux_2_27_x86_64.whl --hash=sha256:91ac71ed5455035d640bec51ccfebe2a81623d007b37f2f24c55db22a7a7f67f

@@ -1,0 +1,30 @@
+# Infrastructure-ready RGB-only full-dataset profile, NOT approval to start training.
+# Original metadata stays untouched; local_files_only prevents implicit Hub downloads.
+# Reuse the audited R1Pro 23D raw action / 61D raw state -> 27D model mapping.
+_target_: g05.data.mixture_lerobot_dataset.MixtureLerobotDataset
+use_weight_normalization: true
+use_weight_for_sampling: false
+action_size: 32
+past_action_size: 0
+obs_size: 1
+obs_stride_second: 0.0
+val_set_proportion: 0.05
+val_split_mode: task_stratified
+is_training_set: true
+processors: ${oc.load:configs/data/behavior5_r1pro_memlite.yaml,processors}
+embodiment_datasets:
+  galaxea_r1pro:
+    type: g05.data.base_lerobot_datasetV3.BaseLerobotDatasetV3
+    embodiment_type: galaxea_r1pro
+    lerobot_ds_version: '3.0'
+    shape_meta: ${oc.load:configs/data/behavior5_r1pro_memlite.yaml,processors.galaxea_r1pro.shape_meta}
+    stats_downsample_rate: 1000
+    local_files_only: true
+    video_keys:
+    - observation.rgb.zed_link_camera_0
+    - observation.rgb.left_realsense_link_camera_0
+    - observation.rgb.right_realsense_link_camera_0
+    dataset_groups:
+    - weight: 1.0
+      dataset_dirs:
+      - /data/workspace/wsy/behavior2026/datasets/2026-challenge-demos

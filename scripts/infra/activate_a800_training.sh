@@ -3,7 +3,7 @@
 export BEHAVIOR_CLUSTER_ROOT=/data/workspace/wsy/behavior2026
 export VIRTUAL_ENV="$BEHAVIOR_CLUSTER_ROOT/envs/g05-py310-cu128"
 export PATH="$VIRTUAL_ENV/bin:$BEHAVIOR_CLUSTER_ROOT/tools/ffmpeg/usr/bin:$PATH"
-export LD_LIBRARY_PATH="$BEHAVIOR_CLUSTER_ROOT/tools/ffmpeg/usr/lib/x86_64-linux-gnu:$BEHAVIOR_CLUSTER_ROOT/tools/ffmpeg/usr/lib/x86_64-linux-gnu/pulseaudio:$BEHAVIOR_CLUSTER_ROOT/tools/ffmpeg/usr/lib/x86_64-linux-gnu/blas:$BEHAVIOR_CLUSTER_ROOT/tools/ffmpeg/usr/lib/x86_64-linux-gnu/lapack${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="$VIRTUAL_ENV/lib/python3.10/site-packages/nvidia/npp/lib:$BEHAVIOR_CLUSTER_ROOT/tools/ffmpeg/usr/lib/x86_64-linux-gnu:$BEHAVIOR_CLUSTER_ROOT/tools/ffmpeg/usr/lib/x86_64-linux-gnu/pulseaudio:$BEHAVIOR_CLUSTER_ROOT/tools/ffmpeg/usr/lib/x86_64-linux-gnu/blas:$BEHAVIOR_CLUSTER_ROOT/tools/ffmpeg/usr/lib/x86_64-linux-gnu/lapack${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export HF_HOME="$BEHAVIOR_CLUSTER_ROOT/tools/hf-cache"
 export HF_HUB_DISABLE_IMPLICIT_TOKEN=1
 export TOKENIZERS_PARALLELISM=false

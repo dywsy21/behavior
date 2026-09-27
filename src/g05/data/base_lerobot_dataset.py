@@ -84,11 +84,14 @@ class BaseLerobotDataset(torch.utils.data.Dataset):
     _cache_hit_count = 0  # tracks how many datasets were reused from cache (for summary log)
 
     @staticmethod
-    def _make_cache_key(dataset_dirs, delta_timestamps, tolerances_s, load_images, in_memory=False):
+    def _make_cache_key(dataset_dirs, delta_timestamps, tolerances_s, load_images, in_memory=False,
+                        video_keys=None, local_files_only=False):
         ds_key = tuple(sorted(dataset_dirs))
         dt_key = tuple(sorted((k, tuple(v)) for k, v in delta_timestamps.items()))
         tol_key = tuple(sorted(tolerances_s.items()))
-        return (ds_key, dt_key, tol_key, bool(load_images), bool(in_memory))
+        video_key = None if video_keys is None else tuple(video_keys)
+        return (ds_key, dt_key, tol_key, bool(load_images), bool(in_memory),
+                video_key, bool(local_files_only))
 
     @classmethod
     def clear_cache(cls):
@@ -127,10 +130,14 @@ class BaseLerobotDataset(torch.utils.data.Dataset):
         override_fps: Optional[int] = None,
         load_images: Optional[bool] = None,
         in_memory: bool = False,
+        video_keys: Optional[List[str]] = None,
+        local_files_only: bool = False,
         **kwargs,
     ):
         assert len(dataset_dirs) > 0, "At least one dataset directory is required"
         assert past_action_size == 0
+        if lerobot_ds_version != "3.0" and (video_keys is not None or local_files_only):
+            raise ValueError("Explicit video_keys/local_files_only currently require LeRobot 3.0")
 
         self.dataset_dirs = dataset_dirs
         self.shape_meta = shape_meta
@@ -295,12 +302,16 @@ class BaseLerobotDataset(torch.utils.data.Dataset):
             tolerances_s,
             self.load_images,
             self.in_memory,
+            video_keys,
+            local_files_only,
         )
         if cache_key in BaseLerobotDataset._multi_dataset_cache and lerobot_ds_version == "3.0":
             self.multi_dataset = BaseLerobotDataset._multi_dataset_cache[cache_key]
             BaseLerobotDataset._cache_hit_count += 1
             logger.debug(f"Reusing cached MultiLeRobotDataset (cache hit)")
         else:
+            read_options = (dict(video_keys=video_keys, local_files_only=local_files_only)
+                            if lerobot_ds_version == "3.0" else {})
             self.multi_dataset = MultiLeRobotDataset(
                 dataset_dirs=self.dataset_dirs,
                 episodes=episodes,
@@ -308,6 +319,7 @@ class BaseLerobotDataset(torch.utils.data.Dataset):
                 tolerances_s=tolerances_s,
                 load_images=self.load_images,
                 in_memory=self.in_memory,
+                **read_options,
             )
             BaseLerobotDataset._multi_dataset_cache[cache_key] = self.multi_dataset
             logger.debug(f"MultiLeRobotDataset initialized in {time.time() - start_time:.2f}s")
