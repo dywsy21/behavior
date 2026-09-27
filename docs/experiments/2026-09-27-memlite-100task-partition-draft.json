@@ -1,0 +1,69 @@
+{
+  "status": "discussion_draft_not_training_authorization",
+  "owner": "Codex / PLAN-MEM100",
+  "date": "2026-09-27",
+  "dataset": "behavior-1k/2026-challenge-demos",
+  "revision": "4f50b44796641a4d526a19d9aeadc8aa51e2f2c2",
+  "evidence_directory": "artifacts/memlite-100task-design-20260927",
+  "tasks_sha256": "8d8222310c3611316c6e5fe822a8dd3c6e552b32bcfddd10870c0672bfb8427c",
+  "skill_summary_sha256": "811375498518c84ca671b18109e7ff959cd7d2d0e4037cdded305bc1334f0e11",
+  "info_sha256": "24c77f7a984bcee775e666203881a946b11a899f524fbc2405922b2109757874",
+  "episode_metadata": {
+    "files": 100,
+    "bytes": 5903691,
+    "episodes": 20000,
+    "frames": 210916774,
+    "episodes_per_task": 200,
+    "unique_instances_per_task": 200,
+    "file_manifest_sha256": "57d3ec6c6ea663e0303b3f0a2e6b8afb50d1e3c7a4b2fab558c8dfd3db287846",
+    "file_manifest_hash_rule": "Sort episode-meta-*.parquet by filename; rows have file,size,sha256; hash UTF-8 json.dumps(rows,sort_keys=True,separators=(',',':'))."
+  },
+  "method": "Manual coarse task-description families; declared per-family quotas; fix tasks 0/77/89 to A; assign remaining tasks in descending raw-frame order to the eligible least-loaded group; apply deterministic improving same-family pair swaps excluding the fixed tasks.",
+  "limitations": [
+    "Task families below are manual coarse labels, not measured per-task skill histograms.",
+    "Frame counts include all demonstrations; recompute training-only effective windows after preserving original holdouts and validating annotation timing.",
+    "Balanced frame volume is not proof of equal compute, transfer benefit or optimal partitioning.",
+    "Main task ownership is disjoint, but training data must overlap through shared all-task and recovery pools.",
+    "No model, annotation release or training job was created from this draft."
+  ],
+  "families": {
+    "electronics_attachment": [0,34,35,63,66,77,78,89,92,98],
+    "food_container_dishes": [3,4,8,10,11,12,17,20,24,25,47,50,64,67,81,83,85,91,97],
+    "large_multiobject_transport": [2,9,13,14,15,16,21,23,26,27,28,29,58,65,74,88],
+    "general_pick_sort": [1,5,6,7,18,19,22,52,53,54,55,56,59,61,68,73,75,76,80,82,84,86,87,90,94,99],
+    "contact_cleaning": [31,32,33,36,37,38,39,57,60,69,71,79,93],
+    "cooking_cutting": [30,40,41,42,43,44,45,46,48,49,51,62,70,72,95,96]
+  },
+  "groups": {
+    "A": {
+      "task_ids": [0,5,7,9,10,12,14,17,18,21,27,30,33,36,40,44,48,61,62,68,71,77,78,79,80,81,82,83,86,88,89,94,96,97],
+      "tasks": 34,
+      "episodes": 6800,
+      "raw_frames": 70305682,
+      "family_counts": [4,6,5,9,4,6]
+    },
+    "B": {
+      "task_ids": [3,6,11,13,19,20,22,24,25,26,28,31,34,37,38,41,42,43,47,50,51,52,55,57,58,63,65,72,73,76,87,92,93],
+      "tasks": 33,
+      "episodes": 6600,
+      "raw_frames": 70305868,
+      "family_counts": [3,7,5,8,5,5]
+    },
+    "C": {
+      "task_ids": [1,2,4,8,15,16,23,29,32,35,39,45,46,49,53,54,56,59,60,64,66,67,69,70,74,75,84,85,90,91,95,98,99],
+      "tasks": 33,
+      "episodes": 6600,
+      "raw_frames": 70305224,
+      "family_counts": [3,6,6,9,4,5]
+    }
+  },
+  "proposed_specialist_sampling_when_recovery_is_released": {
+    "main_group": 0.6,
+    "all_100_tasks_shared": 0.3,
+    "verified_cross_task_corrective_action_windows": 0.1
+  },
+  "proposed_specialist_sampling_without_released_recovery": {
+    "main_group": 0.7,
+    "all_100_tasks_shared": 0.3
+  }
+}

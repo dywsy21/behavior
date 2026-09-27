@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-27 16:54（北京时间）Codex / PLAN-MEM100完成[百任务训练讨论提案](experiments/2026-09-27-memlite-100task-training-design.md)及34/33/33[主任务分组草案](experiments/2026-09-27-memlite-100task-partition-draft.json)，已核官方全部20k小metadata和robo旧A4/B-final配置/回执；不是新训练授权、标注发布或最优分组结论。建议共享高层/共同低层起点及跨组正常/纠正数据；现有数据/RL owner不变，未给任何节点分配实际作业。下一须确认提案、整合后期MEM-Lite源码与35技能协议、校验旧新split/归一化、完成新标签QA与8卡准入。用户本轮明确暂不连接lc1–lc4、不重连lc-connect/ec cli/VPN，保护队友会话；仅robo允许只读核查，A80016:12下载状态不冒充此刻实测。
+
 2026-09-27 16:12（北京时间）INFRA-A800数据路线已按用户要求切alpha镜像直连：新唯一lc2 python991067/tmux`behavior-rgb-alpha-20260927-v5`/冻结075c5d3；官方固定manifest SHA与逐文件hash保持，10回归/独审/客户端协议实际验证过。旧v4停止但文件保留复用；基础env和训练源a5c9821不改，正式训练仍待完整下载与配方准入。
 
 2026-09-27 16:03（北京时间）INFRA-A800主线程已完成共享训练基础环境、四节点CPU导入/解码、前三节点24卡本机BF16/NCCL、9项RGB loader回归和真实无depth视图首样本验证；源码a5c9821/共享env见SERVER_LAYOUT，建议单机8卡DDP。数据下载v4仍由lc2后台唯一进程990576继续，目标1.077TB，不能据环境通过启动未下齐的数据。剩余：全量hash完成、正式profile顶层getitem、权重/配方/预算批准后才可正式训练；不改变原数据/RL分工，不动robo任务。
