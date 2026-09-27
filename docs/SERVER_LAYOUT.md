@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+## 新A800集群（2026-09-27，独立于robo）
+
+- 接入：WSL `ssh lc1/lc2/lc3`，本地`~/.ssh/lc-a800.conf`，lc-connect SOCKS127.0.0.1:1080；凭据不在仓库。lc4不运行任务。
+- 独立共享根：`/data/workspace/wsy/behavior2026`（lc3本地ext4，lc1/2 NFS4.2）；`datasets/`官方原数据、`models/`权重、`envs/`隔离环境、`tools/`工具/Python、`src/behavior`Git同步checkout、`manifests/`清单、`logs/`和`runs/`运行证据。
+- 下载环境`envs/download`为Python3.10.19；环境/数据准备状态和网络实测见[集群说明](infra/A800_CLUSTER.md)。该根新建，不含其他用户旧文件；数据和env不提交Git。
+
+## 原robo记录（保留）
+
 **2026-09-26 19:33北京时间H85等待资源：** 19:30:59只读核xhz3641677–3641680仍live/elapsed22:23:54；`trajectory_capacity_9c38fec`源码干净，`h85_training_capacity_v1`仍不存在。现有入口`--preflight`实际exit1拒绝已占用GPU2，未加载权重或创建run/source/worker。goal blocked，原数据、CPU证据及队友训练不改；自然释放后沿既有固定源码恢复32更新基准，无后台自动抢占。
 
 **2026-09-26 19:27北京时间H85训练数据CPU预检完成：** 新干净Git源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/trajectory_capacity_9c38fec`固定9c38fec96d974e4c6e7120d6a650d9a6ee5ab754；唯一`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_benchmark_cpu_v1`已32.907s/exit0，256窗口/768RGB四spawn读取过，同级stdout保留。launch/sampling/result共135,348B在本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h85_benchmark_cpu_v1`，result SHA074759c5…0e01e、sampling f3dc6a4a…85ed66，双端核过。GPU基准候选`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_training_capacity_v1`在19:27只读确认尚不存在；四卡xhz3641677–3641680仍live，不自动抢占，不改旧数据/源。
