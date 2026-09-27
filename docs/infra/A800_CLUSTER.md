@@ -12,6 +12,8 @@ source scripts/infra/activate_a800_training.sh
 # 只激活环境，不启动训练
 ```
 
+日常Git协作和最新文档入口是`/data/workspace/wsy/behavior2026/src/behavior`，跟踪`infra/a800-cluster-20260927`；在env已移走且确认没有运行者后才做干净ff-only同步。它不承担当前下载/训练运行，运行者继续使用冻结worktree，禁止对这些运行源pull。
+
 数据配置：`configs/data/behavior2026_r1pro_rgb.yaml`，100任务、三RGB、本地只读禁止隐式Hub补齐、沿用23D原动作/61D原状态映射。正式训练前还要完整下载hash回执、顶层Mixture首样本、选定checkpoint/配方/预算；不把下方单episode reader门当完整训练step。没有新下载模型权重，`models/`是预留目录。
 
 下载已切alpha镜像直连v5：lc2 `tmux ls`，日志`logs/dataset-rgb-alpha-v5.log`，回执`runs/dataset_rgb_alpha_20260927_v5/`。完成只认该run的`complete.json`且`video_mode=rgb`、26,350件全部校验，不按进程存在或文件数百分比当字节进度。
@@ -66,7 +68,7 @@ sudo mount -t nfs4 -o rw,vers=4.2,hard,timeo=600,retrans=2 \
   10.19.7.3:/data/workspace/wsy/behavior2026 /data/workspace/wsy/behavior2026
 ```
 
-隔离Python3.10.19、`envs/download`（huggingface-hub0.35.0）已可用。最初`src/behavior`固定b42c739用于安装；所有验收进程结束后已将自有env editable重新指向冻结`src/infra-a5c9821`，保留旧checkout、不热pull。新任务用独立worktree并为该进程显式设置`PYTHONPATH=<new_source>/src`，不要为切代码反复重装大家共用的env。`envs/g05-py310-cu128`按uv.lock装267包，再补一个NPP运行库；Torch2.7.1+cu128、datasets3.6.0、transformers4.57.1、peft0.18.0、TorchCodec0.4.0+cu128保持版本。排除本轮不需要的仿真包/deepspeed/FA4，以SDPA为后备，不代表OmniGibson/ZeRO后端已安装。
+隔离Python3.10.19、`envs/download`（huggingface-hub0.35.0）已可用。最初`src/behavior`固定b42c739用于安装；所有验收进程结束后已将自有env editable重新指向冻结`src/infra-a5c9821`。此后才将无运行者的`src/behavior`ff-only同步作为协作文档入口；b42c739历史仍在Git，其他旧实验worktree不改，不是热pull运行源。新任务用独立worktree并为该进程显式设置`PYTHONPATH=<new_source>/src`，不要为切代码反复重装大家共用的env。`envs/g05-py310-cu128`按uv.lock装267包，再补一个NPP运行库；Torch2.7.1+cu128、datasets3.6.0、transformers4.57.1、peft0.18.0、TorchCodec0.4.0+cu128保持版本。排除本轮不需要的仿真包/deepspeed/FA4，以SDPA为后备，不代表OmniGibson/ZeRO后端已安装。
 
 安装v1网络超时、v2传递仿真依赖egl-probe缺CMake、v3两个NVIDIA wheel中断；均保留日志。v4将`pypi.nvidia.com,pypi.nvidia.cn`放入进程级NO_PROXY后55.53s准备＋16.20s安装完成，缓存复用，不改版本/驱动。PyPI预取两包过慢已停止，最终走锁定NVIDIA官方URL和SHA。环境冻结清单`manifests/g05-environment-freeze.txt`。FFmpeg4.4.2相关Ubuntu包仅解压到自有tools；通过`scripts/infra/activate_a800_training.sh`设置局部动态库路径，不能改全局LD配置。共享env今后有运行任务时不能uv sync/升级。
 

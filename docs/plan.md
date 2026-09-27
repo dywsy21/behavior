@@ -12,6 +12,7 @@
 
 ### 2026-09-27 16:12（北京时间）：alpha直连下载实际恢复（Codex / INFRA-A800）
 
+- 16:16确认四节点env均已指向a5c9821、所有验收退出后，将无运行者且干净的`src/behavior`从b42c739 ff-only同步至249dba5，作为Git协作/最新文档入口；当前下载075c5d3和训练a5c9821两个冻结源均未改。安装旧commit仍保留Git历史，避免队友打开共享主目录却读到最早的准备计划；文档提交后再同步此非运行checkout。
 - 16:13进一步核真实`/proc/991067/environ`：大小写HTTP/HTTPS/ALL_PROXY全部不存在、NO_PROXY=*、HF_HUB_DISABLE_XET=1；8条活跃TCP均为`10.19.7.2 → 153.121.43.79:443`，无loopback代理连接。14,167件/2,205,646,710B已核，其中897个新路径/6,747,826B不在v4回执中，证明确有新下载而非只有旧文件复验；尚在小annotation阶段，不报告稳态视频吞吐。
 - 镜像源码已commit/push并冻结`075c5d36ba8c3601d218cac33491b64233ac30d8`，服务器10回归0.349s过。唯一新lc2 tmux`behavior-rgb-alpha-20260927-v5`、python991067/pane991065在16:11启动；日志`logs/dataset-rgb-alpha-v5.log`，回执`runs/dataset_rgb_alpha_20260927_v5`。旧v4已确认退出，不重复写同一root。
 - 实际新manifest指定alpha、固定官方SHA502c…5b22、26,350件/1,077,039,763,530B/0 depth。首13,200左右是旧文件复验，之后新文件持续hash通过；16:12为13,400件/2,199,773,897B，不能把旧文件复验速度当镜像网速。完成回执仍未生成。

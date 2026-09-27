@@ -3,10 +3,10 @@
 ## 新A800集群（2026-09-27，独立于robo）
 
 - 接入：WSL `ssh lc1/lc2/lc3/lc4`，本地`~/.ssh/lc-a800.conf`，lc-connect SOCKS127.0.0.1:1080；凭据不在仓库。lc4只CPU验证、不启动GPU负载。
-- 独立共享根：`/data/workspace/wsy/behavior2026`（lc3本地ext4，lc1/2 NFS4.2；lc4仅此子目录新挂NFS，不遮盖其原本地workspace）；`datasets/`官方原数据、`models/`权重、`envs/`四节点共用环境、`tools/`工具/Python、`src/behavior`冻结editable源码、`manifests/`清单、`logs/`和`runs/`运行证据。lc4挂载重启不保持，恢复命令见集群说明。
+- 独立共享根：`/data/workspace/wsy/behavior2026`（lc3本地ext4，lc1/2 NFS4.2；lc4仅此子目录新挂NFS，不遮盖其原本地workspace）；`datasets/`官方原数据、`models/`权重、`envs/`四节点共用环境、`tools/`工具/Python、`src/behavior`Git协作与最新文档入口（非运行源）、`manifests/`清单、`logs/`和`runs/`运行证据。lc4挂载重启不保持，恢复命令见集群说明。
 - 2026-09-27用户最新数据范围：`datasets/2026-challenge-demos`只下载三路RGB＋动作/标注/meta，26,350件/1,077,039,763,530B；排除全部depth/raw。旧v3已停，已取得的少量depth保留但不继续下载、不计入新scope完成率。
 - 下载环境`envs/download`为Python3.10.19；环境/数据准备状态和网络实测见[集群说明](infra/A800_CLUSTER.md)。该根新建，不含其他用户旧文件；数据和env不提交Git。
-- 最终训练环境`envs/g05-py310-cu128`（Py3.10.19/Torch2.7.1+cu128＋NPP）；editable源码已固定`src/infra-a5c9821`，四节点默认导入路径一致。`src/behavior`保留原b42c739安装历史，不是当前源码。激活`source /data/workspace/wsy/behavior2026/src/infra-a5c9821/scripts/infra/activate_a800_training.sh`；运行中不可改shared env/源码，切新代码用独立worktree＋进程级PYTHONPATH。
+- 最终训练环境`envs/g05-py310-cu128`（Py3.10.19/Torch2.7.1+cu128＋NPP）；editable源码已固定`src/infra-a5c9821`，四节点默认导入路径一致。`src/behavior`在移走env引用/无运行者后才ff-only同步协作分支；原b42c739安装历史由Git保留。激活`source /data/workspace/wsy/behavior2026/src/infra-a5c9821/scripts/infra/activate_a800_training.sh`；运行中不可改shared env/源码，切新代码用独立worktree＋进程级PYTHONPATH。
 - RGB下载唯一运行：lc2 tmux`behavior-rgb-alpha-20260927-v5`/python991067（pane991065），冻结`src/infra-075c5d3`；alpha镜像直连、禁代理/Xet、官方manifest固定SHA、8并发/1TiB reserve。`runs/dataset_rgb_alpha_20260927_v5`与`logs/dataset-rgb-alpha-v5.log`为新证据；v4已停，旧文件/log/source不删。当前训练配置本地缺文件会拒绝启动，不自行补深度。
 - 通信证据`runs/network_20260927`；四节点CPU组件与真实无depth视图证据`runs/environment_20260927`。新env三机24GPU本机验收全部过，lc4仅CPU；建议每机独立8卡，不默认三机大梯度同步。`models/`尚未下载新权重。
 
