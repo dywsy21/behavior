@@ -12,6 +12,8 @@
 
 ## 原robo记录（保留）
 
+**2026-09-28 16:55北京时间50k RL首轮完成：** 冻结运行源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_4a28cac`（4a28cac4cbf4e8d4d94bec48366de1af40c662df），最终run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_fp32`；`rl_batch_001_updates_0010.pt`为7,622,997,197B AE/noise/critic＋优化器delta，SHA4ccbe449c350807b96a473841cfa1cd1ab46aae6e59b0365b7066c8b2b8a1d36，需原Sep23 50k父权重及FP32 AE，不能当整模型直接给旧eval。actor10/critic4、独立CPU有限性/步数验过，尚无更新后SR。`rollout_000.pt`、全部回执/worker视频留原位，所有旧e1/e1_v2/v3/v4/update/probe失败证据保留。两最终视频和17轻量回执/日志已SHA取回`/home/wsy/behavior/artifacts/g05-50k-rl-20260928/e1_fp32-final`；不复制7.6GB权重到本地/Git。自有监管/learner/两sim退出，四卡释放；私有runtime `rl_g05_50k_e1_fp32`不删除。详细身份/下一评测边界见[E1结果](experiments/2026-09-28-g05-50k-rl-e1.md)。
+
 **2026-09-26 19:33北京时间H85等待资源：** 19:30:59只读核xhz3641677–3641680仍live/elapsed22:23:54；`trajectory_capacity_9c38fec`源码干净，`h85_training_capacity_v1`仍不存在。现有入口`--preflight`实际exit1拒绝已占用GPU2，未加载权重或创建run/source/worker。goal blocked，原数据、CPU证据及队友训练不改；自然释放后沿既有固定源码恢复32更新基准，无后台自动抢占。
 
 **2026-09-26 19:27北京时间H85训练数据CPU预检完成：** 新干净Git源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/trajectory_capacity_9c38fec`固定9c38fec96d974e4c6e7120d6a650d9a6ee5ab754；唯一`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_benchmark_cpu_v1`已32.907s/exit0，256窗口/768RGB四spawn读取过，同级stdout保留。launch/sampling/result共135,348B在本地`/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h85_benchmark_cpu_v1`，result SHA074759c5…0e01e、sampling f3dc6a4a…85ed66，双端核过。GPU基准候选`/mnt/nvme_tmp/robodojo_vlm_actions_20260926/h85_training_capacity_v1`在19:27只读确认尚不存在；四卡xhz3641677–3641680仍live，不自动抢占，不改旧数据/源。

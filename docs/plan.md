@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 16:55（北京时间）：首轮RL权重与视频核验交接完成（Codex / RL-G05-50K-E1）
+
+- 4a28cac/e1_fp32的`rl_batch_001_updates_0010.pt`完整SHA **4ccbe449c350807b96a473841cfa1cd1ab46aae6e59b0365b7066c8b2b8a1d36**独立重算一致；CPU反序列化核322个AE tensors/634,609,691参数全部FP32且有限，AE/noise Adam所有330状态真实step10，critic6状态step4。保存格式是依赖原50k的delta，不是可直接交给旧eval入口的整模型；尚未做delta部署闭环。
+- 两最终课程视频已取回`/home/wsy/behavior/artifacts/g05-50k-rl-20260928/e1_fp32-final/`，17个小回执/原始日志＋2视频SHA双端全同。本人查看全部39个自主采样帧及instance1课程起点：1右手抓持、左手接触按钮后灯绿，对应1369官方成功；138旋转收音机、降至桌面后释放，512控制未开机，未见掉到地面。均是**更新前TRAIN课程**，不报RL后成功率。
+- 2977实际控制/192 capture和read全完成，控制每次4物理tick、相机I/O不推进时钟；监管/learner/两sim均退出，16:50只读核四卡0MiB。最终累计9861控制/5110.680秒活动墙钟，原预算内；不再采样或自动追加评测。
+- [E1最终结果与加载约束](experiments/2026-09-28-g05-50k-rl-e1.md)、[机器摘要](experiments/2026-09-28-g05-50k-rl-e1-results.json)和SERVER_LAYOUT同步。接入门完成，方法有效性未证；下一须独立review及另登记原初态配对评测（50k BF16、50k FP32、RL FP32，隔离精度变化），不自动启动。旧goal/其他成员/所有旧run保持。
+
+### 2026-09-28 16:48（北京时间）：首轮RL真实10步完成并保存（Codex / RL-G05-50K-E1）
+
+- 原4a28cac/e1_fp32真实completed/learner exit0，actor **10** accepted、critic4、1 batch；新run2977控制/0 pending、监管1414.409秒，含全部失败/诊断的累计**9861控制/5110.680秒（85.18分钟活动墙钟）**，未超原10k/2h。最后全39路径max KL **.0003758073**（门.01），surrogate通过，实际AE参数改变有逐步记录。
+- 已生成`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_fp32/rl_batch_001_updates_0010.pt`（7,622,997,197 bytes）；正在独立核SHA/CPU加载元数据、资源退出和最终视频。部署需原50k父权重＋此delta、**FP32 AE**，不能按旧BF16直接推理。
+- 唯一新batch来自更新前TRAIN课程：39 chunks/613自主控制/1官方成功，不是RL后完整SR。按注册不再采样/启动评测；下一完成权重交接与文档，方法效果需另登记公平原初态评测预算，独立队友review后才合main。
+
 ### 2026-09-28 16:39（北京时间）：首两次真实RL actor更新已通过（Codex / RL-G05-50K-E1）
 
 - e1_fp32真实actor_updates=2/critic_updates=4。首候选AE1e-8全39条max KL .0118354被拒，回溯至AE1e-9/sigma1e-8后首步max KL **.000143409**、第二步**.000183016**，各自minibatch surrogate变好，全路径门.01未放宽。首步361,089,116个AE参数改变、max delta1.86265e-9，第二步216,528,387个改变；不是仅优化器计数/critic学习。
