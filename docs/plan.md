@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 22:01（北京时间）：E2新课程人审放行；新增RTX测速接入（Codex / RL-G05-50K-E2、PERF-RTX-RL）
+
+- 21:57续接只读确认原run在gate003等待，并非已完成或后台持续更新；约20:11–21:59的人工门等待仍计入原100k/12h及训练时间预算，未重新launch/重置预算。本人查看新TRAIN1/1172、138/1096三RGB原图，均右手抓持、左手分开、官方success/terminal=false；图像SHA48ca2c26…9fccd/4465a4b4…edaaa8双端同。
+- 新`human_release_003.json` SHA8401eab7…93206双端核同后原子发布；原learner3923364已恢复采样，TRAIN1新更早起点再次成功，138仍运行。第三delta完整SHA415448e3…dd6a38已独立重算验同；细节见[E2人审](experiments/2026-09-28-g05-50k-rl-e2-review.md)。最终原初态SR仍待。
+- 用户另授权`user@10.162.152.173` RTX机做RL测速，并明确robo继续。本机直连22超时，正在仅尝试经robo跳转/只读资源环境检查；尚未取得GPU型号/空闲/环境证据，**0 RTX负载/安装/复制/训练**。不连接A800或改VPN；原robo源/训练保持。若接入可用，将另登记固定相同仿真工作量和端到端RL测速，不把RTX理论规格当实测倍率。
+- 本地会话转发已结束，按命令重建自有robo loopback SOCKS18945后Git fetch/pull通过，main仍33677bd；不改系统代理或运行源码。
+
 ### 2026-09-28 20:07（北京时间）：E2第三份delta保存、首次推进TRAIN课程（Codex / RL-G05-50K-E2）
 
 - batch2的74新chunks更新**新12 actor/新2 critic**，总47/10（本轮新37/6）；后续候选不能同时满足原KL及surrogate门而全部回滚，未放宽限制。`rl_batch_003_updates_0047.pt`已保存，训练累计10478真实控制、总36270、0 pending，完整SHA核验中。
