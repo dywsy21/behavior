@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 22:28（北京时间）：RTX公钥授权/硬件核验完成；E2第四份delta通过（Codex / PERF-RTX-RL、RL-G05-50K-E2）
+
+- 用户明确授权追加本机公钥；通过交互式SSH认证和`ssh-copy-id`仅添加1把现有ED25519公钥，未将密码写入脚本/参数文件/Git。目标`/home/user/.ssh/authorized_keys`162→270B，700目录/600文件、user所有；独立BatchMode＋指定本机identity免密登录成功，已有授权保留。此前认证阻塞已解除，不再重复请求登录。
+- 目标hostname **teai-g1**、Ubuntu22.04/6.8、**1×RTX4090 24564MiB**/driver580.178.04，0计算进程/15MiB，CPU Ultra9 285K/24逻辑核、125GiB RAM；根盘677GiB空。有非本任务CPU服务（约两核级），不停止它们；未发现BEHAVIOR/Isaac环境，conda envs空。新隔离准备目录拟`/home/user/behavior_rl_speed_20260928`（核不存在），0目标GPU启动。
+- robo依赖实测OG3.9.1/BDDL3.7.0/Isaac5.1.0.0/Torch2.7.0+cu128；官方SDK源26f2c7ef仅setup/.gitignore脏，运行py文件保持。资产33G＋机器人2.8G＋实例619M，仿真env21G；准备只读复用到RTX隔离目录，不搬走或热改robo。RTX24G小于此前约28GiB learner峰值，先固定同画质仿真测速，再如实判断单机完整RL或跨机组合可行性，不偷换精度/算法后宣称纯硬件提速。
+- E2 batch3新20 actor/2 critic完成，总67/12（本轮新57/8），TRAIN1 prefix1172后173控制成功、138/1096后1024未成。`rl_batch_004_updates_0067.pt`完整SHA **d7ed2e8370ddc9eb88ac6d3eabb802b9270430b87dda31e04326d8ad12911425**独立核同；训练累计13943控制/总39735/0 pending。原run进入batch4，同(1172,1096)再次采样且1已成功，最终固定6对SR待；原100k/12h预算/source不变。
+
 ### 2026-09-28 22:08（北京时间）：RTX网络可达，登录授权仍缺；robo第四批更新中（Codex / PERF-RTX-RL、RL-G05-50K-E2）
 
 - 22:14已只读核原A100同256控制测速53.31285秒串行/28.04052秒双sim并行；[RTX测速记录与口径](experiments/2026-09-28-rl-rtx-speed.md)明确仿真/端到端、卡数、精度、相机/物理和跨机传输的公平比较约束。没有RTX实测或新GPU探针；登录授权仍待，robo原batch3更新继续。

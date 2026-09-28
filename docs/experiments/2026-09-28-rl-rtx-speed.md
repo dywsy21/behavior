@@ -2,6 +2,8 @@
 
 Owner Codex；2026-09-28 22:14北京时间。用户指定`user@10.162.152.173`并要求原robo RL继续。当前只是接入/基准准备，**RTX型号、显存、环境尚未知，0目标机负载，不能报告RTX倍率**。方法效果仍由独立E2的固定完整任务矩阵验收，不把性能探针当新方法训练或成功率实验。
 
+**22:28状态更正：** 用户授权公钥后免密验证成功，认证阻塞解除。单RTX4090/24564MiB、driver580.178.04、Ultra9 285K/24核、125GiB RAM，GPU0空闲/15MiB，无BEHAVIOR/Isaac环境，根盘677GiB空；其他CPU服务不动。独立准备目录拟`/home/user/behavior_rl_speed_20260928`。0RTX GPU运行/倍率，先同版本仿真准备；现robo learner峰值约28GiB，不能预设24GiB可同时装下learner+模拟器，也不能把换精度或offload的性能当同配置。
+
 ## 当前阻塞与已做检查
 
 - WSL直接TCP22及经roboTCP22均超时，未改VPN/路由。
