@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 11:10（北京时间）：v2通过解码预检并继续原评测（Codex / EVAL-G05-100K）
+
+- v1监管162.18s后failed保留，自有3837175/3837180/3837181均已退出、0有效窗口/控制。v2固定`9a00ffb`、全新robo worktree，双端7 CPU回归及带既有NPP路径的真实TorchCodec导入过，未改共享env。
+- 新唯一监管**3838095**，run `/mnt/nvme_tmp/robodojo_g05_100k_eval_20260928/v2`；原100×2固定窗口/7320控制预算不扩。100k/40k正在加载/评测，闭环仍待offline与FM一致性门；不是训练或方法成功。
+
 ### 2026-09-28 11:09（北京时间）：100k严格恢复通过，评测解码启动路径修复（Codex / EVAL-G05-100K）
 
 - v1两checkpoint均946/946精确恢复、0缺失/partial/mismatch/unexpected；100k配置SHA c9ab6bf2…44ec5、stats846bcbea…b19与原train-only一致。随后首个RGB加载发现本次启动未带原`activate_g05.sh`的npp/lib路径，TorchCodec在dataset重试中卡住，两份offline JSONL均0行、0模型评测/0仿真控制。
