@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 14:59（北京时间）：E1_v3多回合观察器适配已恢复（Codex / RL-G05-50K-E1）
+
+- 固定`3c939e4`，robo独立`behavior_dev/git_worktrees/g05_50k_rl_3c939e4`；2新增所有权回归＋34原frame/I/O回归双端过，原父SHA再次核同。新监管**3900857**，run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_v3`，新runtime `rl_g05_50k_e1_v3`。
+- 累计旧64控制/1107.343秒已扣，manifest和监管只放行9936控制/6092秒；不覆盖旧e1/e1_v2数据/源/缓存。显式owned registry复用与已实测物理handle重绑一起验证；多回合采样、吞吐、起点图审、概率/梯度门仍未完成，actor/critic累计0更新。
+
 ### 2026-09-28 14:53（北京时间）：物理重置修复实测通过，观察器重复注册门需适配（Codex / RL-G05-50K-E1）
 
 - 14:56实现`OwnedFrameRegistration`显式所有权token：只注册一次，后续必须是同一registry/同一native模板对象且dataclass定义完全未改，才允许重新attach；默认单回合重复注册拒绝保持。2新回归＋7 render-batch＋27 I/O旧回归通过（首个旧测试调用缺PYTHONPATH失败，补正确src路径后全部过）；无SDK修改。e1_v3将连同独立复制的7.1GiB/worker渲染缓存复用，减少重复shader冷编译，source/预算仍独立固定。
