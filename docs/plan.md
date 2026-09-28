@@ -12,6 +12,7 @@
 
 ### 2026-09-28 14:26（北京时间）：E1唯一监管启动，模型/双仿真准入运行中（Codex / RL-G05-50K-E1）
 
+- 14:31加载回执核过：946/946严格恢复、原三SHA不变；AE634,609,691参数可训，其余2,225,425,216冻结。learner3884658，sim3884670/3884672；两进程实际render/physics GPU为2/3、原PathTracing设置过，正在冷场景构造，尚0控制。GPU1未分配作业但Kit枚举存在约415MiB辅助context，不把“不分配”误写成绝对零占用。另修正身份口径：真实policy使用**共享torch RNG1700**，manifest worker1的候选1701未实际应用，不用于可重复性声明（专家吞吐测试不依赖policy RNG）。
 - 冻结源`578889e41c2a6ee961f7f1a51beeefd3a7351a33`，robo独立`behavior_dev/git_worktrees/g05_50k_rl_578889e`；双端17项CPU回归过，parent完整SHA仍c465044b…2f6d48。manifest核得e0/instance1 first terminal1364→prefix1268；e121/138 first terminal1192→prefix1096，皆TRAIN/seed0；源parquet/annotation/提取动作SHA已存。
 - 新监管**3884651**，run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1`，GPU0 learner＋GPU2/3独立sim，准确learner/worker PID见run/pids.json；按原10,000实际控制/7200秒启动，先544控制暖机/匹配吞吐，再2364专家控制课程及主代理图审/模型概率梯度门，才能训练。启动前四GPU0MiB；当前提交运行不等于训练更新、并发收益或方法有效。
 - 源/runtime已冻结不热改。新权重仅`rl_batch_*_updates_*.pt` delta，不覆盖父权重；全阶段日志/时钟/视频留run。下一核真实初始化/并行吞吐、人工检查两起点并签SHA，未通过不得放行PPO；未扩大到100任务，旧goal/其他成员不动。
