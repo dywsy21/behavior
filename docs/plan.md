@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 22:36（北京时间）：RTX独立CPU准备入口与分支就绪（Codex / PERF-RTX-RL）
+
+- 新`feat/rl-rtx-speed-20260928`从最新main33677bd建并ff纳入ef519a2，后续本分支统一记录RTX探针与原E2进度；原robo冻结源7b20615不变、不热pull。新`rtx_bootstrap.py`固定官方SDK26f2c7ef/Py3.11/Torch2.7cu128/Isaac5.1，独立目录、0GPU/0控制/0训练、2h CPU准备上限和≥200GiB盘余量；本地语法/安全路径检查中，尚未提交远端准备作业。
+- 16MiB端到端只读试传45秒未完、2MiB单端读取含握手4.045/1.011秒；不把该小样本当稳态带宽或GPU速度。优先新机官方包源安装、资产另核版本，避免盲目复制几十GiB。详见[RTX登记](experiments/2026-09-28-rl-rtx-speed.md)。原robo第五批更新继续，最终完整SR待。
+
 ### 2026-09-28 22:28（北京时间）：RTX公钥授权/硬件核验完成；E2第四份delta通过（Codex / PERF-RTX-RL、RL-G05-50K-E2）
 
 - 用户明确授权追加本机公钥；通过交互式SSH认证和`ssh-copy-id`仅添加1把现有ED25519公钥，未将密码写入脚本/参数文件/Git。目标`/home/user/.ssh/authorized_keys`162→270B，700目录/600文件、user所有；独立BatchMode＋指定本机identity免密登录成功，已有授权保留。此前认证阻塞已解除，不再重复请求登录。

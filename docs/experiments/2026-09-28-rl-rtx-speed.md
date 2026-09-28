@@ -4,6 +4,15 @@ Owner Codex；2026-09-28 22:14北京时间。用户指定`user@10.162.152.173`�
 
 **22:28状态更正：** 用户授权公钥后免密验证成功，认证阻塞解除。单RTX4090/24564MiB、driver580.178.04、Ultra9 285K/24核、125GiB RAM，GPU0空闲/15MiB，无BEHAVIOR/Isaac环境，根盘677GiB空；其他CPU服务不动。独立准备目录拟`/home/user/behavior_rl_speed_20260928`。0RTX GPU运行/倍率，先同版本仿真准备；现robo learner峰值约28GiB，不能预设24GiB可同时装下learner+模拟器，也不能把换精度或offload的性能当同配置。
 
+## 22:36 CPU环境准备登记（GPU探针仍未启动）
+
+独立分支`feat/rl-rtx-speed-20260928`从最新main33677bd建立、ff纳入E2截至ef519a2的源与进度；后续本分支同时追踪原E2真实状态，原7b20615运行源不动。`scripts/rl/rtx_bootstrap.py`仅在teai-g1/user运行，独立新env、SDK和runtime根，不sudo、不改已有conda/base或驱动，不连接A800。
+
+- 一次≤7200秒CPU/下载安装准备，最多8逻辑核、数学库1–2线程，GPU不可见/0模拟器launch/0控制/0训练；全程保留≥200GiB磁盘，启动另要求100GiB空间余量。安装失败保留日志/未完目录，不删除或自动重建覆盖；未完成不当环境可用。
+- SDK固定robo实际26f2c7ef7b9cf96bd0414f81e1e751e493762779（OG3.9.1/BDDL3.7），Python3.11、Torch2.7.0/cu128、NumPy1.26.0、Isaac5.1.0原版本。新版本官方文档不用于自动升级旧实验，5.1硬件要求已核[官方说明](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/requirements.html)。
+- 现有SSH数据通道16MiB端到端试传45秒未完成，两个单独2MiB读取分别4.045秒(robo)/1.011秒(RTX)，含握手且不是稳态带宽。故不盲目迁移几十GiB环境/权重；优先RTX官方包源安装，资产另核精确版本和下载大小。试传只读/丢弃数据，不改生产权重。
+- 安装结果仅CPU包版本证明；真实GPU导入、必要资产SHA、相机/物理门以及正式测速必须另登记通过后启动，不能拿安装成功当速度结果。
+
 ## 当前阻塞与已做检查
 
 - WSL直接TCP22及经roboTCP22均超时，未改VPN/路由。
