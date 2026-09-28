@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 22:08（北京时间）：RTX网络可达，登录授权仍缺；robo第四批更新中（Codex / PERF-RTX-RL、RL-G05-50K-E2）
+
+- 10.162.152.173从WSL直连/经robo TCP22均超时；Windows侧SSH可达。已用Windows进程内原始TCP stdio通道让Linux SSH沿同一网络到达目标，**未改VPN、路由、系统代理或复制私钥**；两端现有身份均返回`Permission denied (publickey,password)`，因此尚不能核GPU/环境/启动测速。已异步请用户授权本机公钥或提供现有SSH配置/密钥路径，不请求明文密码/私钥。
+- 临时本地TCP探针脚本`/tmp/behavior-rtx-ssh.ZEhkD7/rtx_tcp_proxy.ps1`的`-File`执行受Windows策略拒绝，未修改执行策略；等价进程内`-Command`通道实际连到SSH并收到认证拒绝。目标机**0安装/源码复制/训练/负载**；GPU型号/速度仍未知，不报告RTX倍率。
+- robo gate003放行后新75 chunks/reward1采样完成，进入batch3更新，actor49/critic12快照（总计，本轮新39/8），无最终SR。原作业/源码/预算继续，不因RTX接入阻塞而停训或重置；下一新delta及更早课程闭环、最终固定6对评测。
+
 ### 2026-09-28 22:01（北京时间）：E2新课程人审放行；新增RTX测速接入（Codex / RL-G05-50K-E2、PERF-RTX-RL）
 
 - 21:57续接只读确认原run在gate003等待，并非已完成或后台持续更新；约20:11–21:59的人工门等待仍计入原100k/12h及训练时间预算，未重新launch/重置预算。本人查看新TRAIN1/1172、138/1096三RGB原图，均右手抓持、左手分开、官方success/terminal=false；图像SHA48ca2c26…9fccd/4465a4b4…edaaa8双端同。
