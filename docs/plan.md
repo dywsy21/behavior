@@ -12,6 +12,7 @@
 
 ### 2026-09-28 16:34（北京时间）：FP32新课程图审通过（Codex / RL-G05-50K-E1）
 
+- 16:35 FP32同精度原生FM与32×23 CPU decode逐位相等；old logp/KL/autograd误差均0、AE grad18225.98有限、冻结层无梯度。相同噪声对原BF16父推理的normalized-valid RMSE **.00094014**、max abs **.00483859**（单起点，不是性能分数），明确bitwise_equal=false。`e1_fp32/probability_gate.json`已存；首128自主控制通过/0更新，继续唯一新batch。
 - 原4a28cac/e1_fp32已回放2364真实TRAIN控制，累计**9248**；还剩752控制，当前0自主/0更新。两新起点均held radio_89/官方未成功/未终止；本人查看新三RGB图，1右抓柄左靠近旋钮、138右手旋转抓持左臂分开，三相机正常，未据图判成功。
 - 新本地`artifacts/g05-50k-rl-20260928/e1_fp32-worker{0,1}-curriculum.png`与远端SHA db2a95e1…30ad87/7be6808f…b856c3核同；已签独立human_release放行。下一实际FP32 FM/23D动作/旧路径概率与梯度门，原预算不变。
 
