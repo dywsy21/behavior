@@ -24,6 +24,7 @@ def main(worker, port):
     out=OUT/f'worker_{worker}'; out.mkdir(exist_ok=False)
     sys.path.insert(0,str(REPO/'scripts/semantic_robot'))
     import native_rl_profile
+    from rl_reset_boundary import close_before_reset
     sys.path.insert(0,str(ADAPTER))
     from native_oracle_low_v1 import official_factory as factory
     from semantic_robot.v2.synchronous_io import native_adapter
@@ -48,6 +49,14 @@ def main(worker, port):
         with native_rl_profile.session(factory,window,gpu=spec['gpu'],output=out,
                 runtime=RUNTIME/f'worker_{worker}') as session:
             try: yield session
+            except BaseException as error:
+                # Official __exit__ may close Kit and exit Python itself.
+                # Persist/send the PRIMARY error before entering that cleanup.
+                row=dict(error=repr(error),traceback=traceback.format_exc(),controls=controls,episode=episode)
+                save(out/'primary_failure.json',row)
+                try: send(conn,row)
+                except BaseException: pass
+                raise
             finally:
                 if video is not None: video.close(); video=None
                 if io is not None:
@@ -88,7 +97,8 @@ def main(worker, port):
 
             def reset():
                 nonlocal io,episode,episode_controls,terminal,success,video
-                if io is not None: io.close(); io=None
+                if io is not None:
+                    close_before_reset(io,og.sim,env.robots[0],io_write); io=None
                 if video is not None: video.close(); video=None
                 session.reset()
                 episode+=1; episode_controls=0; terminal=success=False
@@ -104,7 +114,7 @@ def main(worker, port):
                 if op=='reset': send(conn,reset()); continue
                 if op=='observe': send(conn,observe(command.get('tag','observation'))); continue
                 if op!='step' or terminal: raise ValueError('Only live step/reset/observe/close commands allowed')
-                actions=np.asarray(command['actions'],dtype=np.float32)
+                actions=np.array(command['actions'],dtype=np.float32,copy=True)
                 if actions.ndim!=2 or actions.shape[1]!=23 or not 1<=len(actions)<=16 or not np.isfinite(actions).all():
                     raise ValueError('Invalid action chunk')
                 if io.clock()!=current_clock: raise ValueError('Physics advanced while waiting for learner')

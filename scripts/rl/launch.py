@@ -20,6 +20,7 @@ def model_env():
 
 def supervise():
     start=time.monotonic(); process=None; result=dict(source_commit=commit(),supervisor=os.getpid(),status='starting')
+    wall=json.loads((OUT/'manifest.json').read_text())['max_active_wall_seconds']
     try:
         # Recheck immediately before GPU use. Never compete with an observed job.
         usage=subprocess.check_output(['nvidia-smi','--query-gpu=index,memory.used','--format=csv,noheader,nounits'],text=True)
@@ -29,7 +30,7 @@ def supervise():
             process=subprocess.Popen([MODEL_PY,str(REPO/'scripts/rl/learner.py')],cwd=REPO,env=model_env(),
                                      stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
         result.update(status='running',learner=process.pid); save(OUT/'supervisor.json',result,replace=True)
-        try: code=process.wait(timeout=7200)
+        try: code=process.wait(timeout=wall)
         except subprocess.TimeoutExpired:
             result['reason']='registered_wall_limit'; os.killpg(process.pid,signal.SIGTERM)
             try: code=process.wait(timeout=30)

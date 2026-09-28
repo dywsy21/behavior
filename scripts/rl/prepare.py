@@ -1,13 +1,38 @@
 """Extract two original TRAIN curriculum prefixes; no held-out labels used."""
 import json
+import math
+import os
 import numpy as np
 import pyarrow.parquet as pq
-from common import DATA, RAW, OUT, TEMPLATE, PARENT, PARENT_SHA, commit, sha, save
+from common import DATA, RAW, OUT, PREVIOUS, TEMPLATE, PARENT, PARENT_SHA, commit, sha, save
 
 
 def main():
     OUT.mkdir(parents=True,exist_ok=False)
     source=commit()
+    if PREVIOUS.is_dir():
+        previous=json.loads((PREVIOUS/'manifest.json').read_text())
+        supervisor=json.loads((PREVIOUS/'supervisor.json').read_text())
+        status=json.loads((PREVIOUS/'status.json').read_text())
+        pids=json.loads((PREVIOUS/'pids.json').read_text())
+        for pid in [supervisor['supervisor'],pids['learner'],*pids['simulators']]:
+            # Zombie supervisors cannot hold CUDA/runtime resources.
+            path=f'/proc/{pid}/stat'
+            if os.path.exists(path) and open(path).read().rsplit(')',1)[1].split()[0]!='Z':
+                raise ValueError('Previous experiment process still alive')
+        if supervisor['status']!='failed' or status['pending_controls'] or status['actor_updates']:
+            raise ValueError('Only this pre-update failed integration may be continued')
+        if previous['parent_sha256']!=PARENT_SHA or sha(PARENT)!=PARENT_SHA:
+            raise ValueError('Parent changed')
+        for worker in previous['workers']:
+            if sha(worker['actions'])!=worker['actions_sha256']: raise ValueError('TRAIN actions changed')
+            worker['policy_seed']=1700
+        previous.update(source_commit=source,max_controls=10000-status['controls'],
+            max_active_wall_seconds=7200-math.ceil(supervisor['seconds']),policy_rng='shared torch/CUDA seed1700',
+            continued_from=str(PREVIOUS),prior_controls=status['controls'],prior_active_seconds=supervisor['seconds'])
+        save(OUT/'manifest.json',previous)
+        print('CONTINUATION',previous['max_controls'],previous['max_active_wall_seconds'],flush=True)
+        return
     if sha(PARENT) != PARENT_SHA: raise ValueError('Parent checkpoint changed')
     meta=pq.read_table(DATA/'meta/episodes/chunk-000/file-000.parquet').to_pylist()
     holdout={r['task_instance_id'] for r in meta if int(r['episode_index'])%200 >=190}

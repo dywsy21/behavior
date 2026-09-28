@@ -173,6 +173,9 @@ class Experiment:
         result=self.adapter.equivalence_gate(context,prepared)
         _,trace=self.adapter.sample(context)
         lp,_=self.adapter.score(context,move(trace,'cuda:0'))
+        grad_mode_error=float((lp.detach()-trace['old_logp'].to('cuda:0')).abs())
+        if grad_mode_error>.002: raise ValueError('Gradient-mode old-path identity failed')
+        result['grad_mode_old_path_logp_error']=grad_mode_error
         self.actor_optimizer.zero_grad(set_to_none=True)
         # Identity-ratio policy-gradient smoke test, without optimizer update.
         loss=ppo_objective(lp,trace['old_logp'].to('cuda:0'),torch.tensor(1.,device='cuda:0'))
@@ -338,7 +341,7 @@ class Experiment:
                     self.replay(sorted(completed),self.prefix,phase='expert_prefix',parallel=self.parallel)
                     for w in completed:
                         if self.latest[w]['terminal']: raise ValueError('Repeated curriculum replay became terminal')
-                if time.monotonic()-self.started>6900: break
+                if time.monotonic()-self.started>self.manifest['max_active_wall_seconds']-300: break
             self.phase='completed'; self.status(full_task_success_rate_claim=False)
         except BaseException as error:
             self.phase='failed'; self.status(error=repr(error))

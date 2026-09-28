@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 14:43（北京时间）：重置边界修复与剩余预算续接准备（Codex / RL-G05-50K-E1）
+
+- 已核原io32 control/capture/read/close时钟均过；随后仍playing的`scene.restore`即使空对象remove也先dump joints，却拿到无效articulation view。相机reference detach后的handles失效是当前最强定位，不能仅凭EOF称双GPU冲突。
+- 新`rl_reset_boundary.py`在detach前记录真实qpos/qvel/held，detach后调用官方`sim.update_handles()`，严格要求物理时钟不变、qpos/qvel最大差≤1e-6、held相同后才官方reset。模拟失效句柄/错误推进时钟CPU测试通过；**真实重复reset尚待**，不热改SDK、旧源或物理规则。并将primary异常在Kit退出前保存/回传，修复原EOF遮盖问题。
+- 新run预定`e1_v2`/新runtime，剩余9968控制/6632s由旧真实终态派生；验证旧PID退出后仅复制旧编译缓存到新私有目录，不共享写入、不删旧证据。修正共享RNG1700的manifest，新增启用autograd时的旧路径概率恒等门。下一冻结新Git源后真实恢复，当前无GPU进程/actor更新。
+
+### 2026-09-28 14:37（北京时间）：E1暖机32控制通过，首次常驻重置失败自动停止（Codex / RL-G05-50K-E1）
+
+- 原578889e/e1监管3884651真实failed/567.775s、actor/critic更新均0、实际32控制（每worker16）/pending0；四GPU已归零，自有learner/sim退出。两实例均已生成reset_000.png、完成16控制，错误发生在随后官方reset，不是模型动作或CUDA OOM；尚无可报告双仿真加速。
+- 两个sim同一栈：`Evaluator.reset → scene.restore → batch_remove_objects → removing_objects.dump_state → entity.get_joint_positions`，articulation view读出None。学习器EOF是模拟器退出的次生表现；正在核RGB-D I/O生命周期/物理handles失效来源。原视频、steps、io、源码/runtime保留，不删缓存/改SDK。
+- 修复后仅可继续本轮剩余**9968控制 / 6632秒活动墙钟**（扣567.775s；不以新run重置总预算），使用新冻结源/新run。先证明相同常驻reset可重复有效，再做吞吐与课程/概率门；不因失败自动追加方法试验。
+
 ### 2026-09-28 14:26（北京时间）：E1唯一监管启动，模型/双仿真准入运行中（Codex / RL-G05-50K-E1）
 
 - 14:31加载回执核过：946/946严格恢复、原三SHA不变；AE634,609,691参数可训，其余2,225,425,216冻结。learner3884658，sim3884670/3884672；两进程实际render/physics GPU为2/3、原PathTracing设置过，正在冷场景构造，尚0控制。GPU1未分配作业但Kit枚举存在约415MiB辅助context，不把“不分配”误写成绝对零占用。另修正身份口径：真实policy使用**共享torch RNG1700**，manifest worker1的候选1701未实际应用，不用于可重复性声明（专家吞吐测试不依赖policy RNG）。

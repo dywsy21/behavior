@@ -15,8 +15,10 @@ PARENT = RUN/'checkpoints/step_50000.pt'
 PARENT_SHA = 'c465044b025a487c42fddce17d45059b314a547e1b672f27cbdbbb7cfe2f6d48'
 MODEL_PY = '/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python'
 SIM_PY = '/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python'
-OUT = Path('/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1')
-RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e1')
+PREVIOUS = Path('/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1')
+OUT = Path('/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_v2')
+PREVIOUS_RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e1')
+RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e1_v2')
 ADAPTER = Path('/mnt/sdc1/robodojo/behavior_dev/GalaxeaVLA_memlite_coordination_dev_20260908/sim_runtime/production_native_oracle_low_v1')
 TEMPLATE = Path('/mnt/sdc1/robodojo/behavior_dev/direct_execution_L6rqZ6_20260910/c1_windows_v2_matched/c1v2-matched-t0-train-e121-f448-grasp/window.json')
 
@@ -58,6 +60,7 @@ def recv(conn, timeout=900):
 
 
 def sim_env(worker):
+    import shutil
     sys.path.insert(0,str(REPO/'scripts/semantic_robot'))
     import probe_simulator_startup as base
     runtime=RUNTIME/f'worker_{worker}'
@@ -67,6 +70,11 @@ def sim_env(worker):
     env.update({k:str(runtime/v) for k,v in base.ROUTES.items()})
     for sub in set(base.ROUTES.values())|{'portable','cache','data'}:
         (runtime/sub).mkdir(parents=True,exist_ok=True)
+    # Only immutable-ish compiler caches from VERIFIED DEAD previous workers;
+    # real copies, never hardlinks/shared writable runtimes or old Kit settings.
+    for sub in ('cuda','torch','triton','inductor'):
+        source=PREVIOUS_RUNTIME/f'worker_{worker}'/sub
+        if source.is_dir(): shutil.copytree(source,runtime/sub,dirs_exist_ok=True)
     (runtime/'portable/data/documents/Kit/shared/screenshots').mkdir(parents=True,mode=0o700)
     env.update(OMNIGIBSON_GPU_ID=str(worker+2), OMNIGIBSON_HEADLESS='1',OMNIGIBSON_NO_OMNI_LOGS='0',
         BEHAVIOR_ACTION_STEPS='1',MEMLITE_SIM_TRACE_PATH='',PYTHONPATH=str(REPO/'src')+':'+str(REPO),
