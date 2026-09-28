@@ -12,6 +12,7 @@
 
 ### 2026-09-28 16:20（北京时间）：FP32-AE剩余预算唯一启动（Codex / RL-G05-50K-E1）
 
+- 16:29两sim就绪并进入原TRAIN课程回放，首384实际控制通过（两实例各192），0自主控制/0更新；原PID/source/1batch预算继续，无新错误。
 - 16:23原五任务BC前反向预检通过；learner3913974、sim3914160/3914163运行中，当前冷初始化/0新控制/0参数更新。后续仍须新的课程图审和FP32实际模型门，不以BC通过代替。
 - 新冻结`4a28cac4cbf4e8d4d94bec48366de1af40c662df`，robo独立`behavior_dev/git_worktrees/g05_50k_rl_4a28cac`；11针对性测试双端通过，原50k完整SHA/两TRAIN控制SHA/模拟器端diff零再次核过。`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_fp32`监管**3913967**已唯一启动；仅剩3116控制/3503秒/1 batch，上限12 accepted步，不额外benchmark。
 - AE采样/PPO FP32（TF32关），VLM BF16冻结，原五task FM BC配方保持；旧BF16 rollout只列provenance，不再放入训练字段/本轮训练。新课程图审、同精度原生FM/真实23D动作等价、旧概率/梯度门及实际更新待；提交启动不等于训出新策略。
