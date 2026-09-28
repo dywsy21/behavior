@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 19:09（北京时间）：E2首个新actor更新真实通过（Codex / RL-G05-50K-E2）
+
+- 原batch0真实actor总11（**本轮新1**）、critic总6（新2）。新rollout候选AE1e-8/noise1e-7原尺度直接accepted，所有71路径max KL **.0006732941**＜.01，surrogate -.064441→-.090562；498,602,297个AE参数改变，max abs delta1.4901161e-8，不是仅更新计数/critic。
+- `e2_v1/learner.jsonl`留每步候选/BC/参数变化，GPU0约28GiB，双sim在on-policy更新期间等待、不采旧策略混合流；累计29287控制不增。继续本批原两epoch，checkpoint与更新后闭环仍待；尚无原初态SR提升证据，不因此扩预算。
+
 ### 2026-09-28 19:08（北京时间）：E2首批71片段进入PPO更新（Codex / RL-G05-50K-E2）
 
 - 新on-policy TRAIN batch0共71chunks/**1131自主控制**：1在107步官方成功、138在1024步未成功截断，reward合计1；原前缀2364，训练已耗3495实际控制，总E2 **29287/0 pending**。`rollout_000.pt`已收集保存，phase updating/71samples；当前10 actor/4 critic仍是继承值，真实新增更新/新delta待验。
