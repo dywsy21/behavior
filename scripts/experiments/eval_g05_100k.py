@@ -29,6 +29,7 @@ MODEL_PY = '/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python'
 SIM_PY = '/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python'
 PORT = 8931
 SEED = 17
+MODEL_CALL_LIMIT = 460
 TASKS = ('turning_on_radio', 'picking_up_trash', 'putting_away_Halloween_decorations',
          'cleaning_up_plates_and_food', 'can_meat')
 LIMITS = (3224, 1024, 1024, 1024, 1024)
@@ -56,7 +57,8 @@ def commit():
 
 
 def checkpoint(step):
-    if step not in (40000, 100000): raise ValueError('Only registered comparison/final weights')
+    if type(step) is not int or step not in range(10000, 100001, 10000):
+        raise ValueError('Only the ten saved checkpoints in this run')
     return RUN / f'checkpoints/step_{step}.pt'
 
 
@@ -191,7 +193,7 @@ def offline(step, cfg, policy, processor):
     return dataset
 
 
-async def serve(cfg, policy, processor):
+async def serve(cfg, policy, processor, step=100000):
     import torch
     import numpy as np
     import websockets
@@ -203,7 +205,7 @@ async def serve(cfg, policy, processor):
     # FM is generated BEFORE AR and is the selected action in this dual-head
     # configuration. Confirm equality before omitting the unused AR diagnostic.
     policy.discrete_action = False
-    identity = dict(checkpoint=str(checkpoint(100000)), checkpoint_sha256=sha(checkpoint(100000)),
+    identity = dict(checkpoint=str(checkpoint(step)), checkpoint_sha256=sha(checkpoint(step)), checkpoint_step=step,
         source_commit=commit(), action_source='fm', obs_steps=1, predicted_steps=32, execute_steps=16,
         predict_cot=False, memlite=False, robot_action_dim=23, port=PORT)
     save(OUT/'identity.json', identity)
@@ -219,7 +221,7 @@ async def serve(cfg, policy, processor):
             raw = request['observation']
             if set(raw) != {'images','state','task','embodiment_type','frequency'} or float(raw['frequency']) != 30:
                 raise ValueError('Deployment observation allowlist violated')
-            if calls >= 460: raise RuntimeError('Registered model-call budget exhausted')
+            if calls >= MODEL_CALL_LIMIT: raise RuntimeError('Registered model-call budget exhausted')
             start = time.monotonic()
             with torch.inference_mode(): action = inferencer.infer([build_obs_dict(raw,processor)])[0]
             chunk = vector_chunk(action)
@@ -301,7 +303,7 @@ def simulate(task):
                     canvas.paste(Image.fromarray(images['head_rgb'].transpose(1,2,0)).resize((720,720)),(0,48))
                     for i,key in enumerate(('left_wrist_rgb','right_wrist_rgb')):
                         canvas.paste(Image.fromarray(images[key].transpose(1,2,0)).resize((240,240)),(720,48+i*240))
-                    ImageDraw.Draw(canvas).text((8,12),f'G05-Qwen3.5 100k | {TASKS[task]} | control {controls} | FM',fill='white')
+                    ImageDraw.Draw(canvas).text((8,12),f'G05-Qwen3.5 step {identity.get("checkpoint_step",100000)} | {TASKS[task]} | control {controls} | FM',fill='white')
                     video.append_data(np.asarray(canvas))
                     if controls == 0:
                         canvas.save(out/'initial.png')
@@ -456,7 +458,7 @@ def main():
     if args.mode in ('offline','serve'):
         cfg, policy, processor = load_model(args.step)
         offline(args.step,cfg,policy,processor)
-        if args.mode == 'serve': asyncio.run(serve(cfg,policy,processor))
+        if args.mode == 'serve': asyncio.run(serve(cfg,policy,processor,step=args.step))
     elif args.mode == 'simulate': simulate(args.task)
     elif args.mode == 'launch': launch()
     else: supervise()
