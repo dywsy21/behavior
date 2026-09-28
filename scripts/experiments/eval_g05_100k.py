@@ -23,8 +23,8 @@ import traceback
 
 REPO = Path(__file__).resolve().parents[2]
 RUN = Path('/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z')
-OUT = Path('/mnt/nvme_tmp/robodojo_g05_100k_eval_20260928/v3')
-RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/eval_g05_100k_20260928_v3')
+OUT = Path('/mnt/nvme_tmp/robodojo_g05_100k_eval_20260928/v4')
+RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/eval_g05_100k_20260928_v4')
 MODEL_PY = '/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python'
 SIM_PY = '/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python'
 PORT = 8931
@@ -150,6 +150,8 @@ def offline(step, cfg, policy, processor):
     with (OUT/f'offline_{step}.jsonl').open('x', buffering=1) as trace:
         for number, window in enumerate(windows):
             sample = dataset[window['index']]
+            # The existing collator pops the nested samples field in place.
+            task = sample['samples']['command']
             batch = collate_fn_pad_sequences([sample], padding_input_id=processor.pad_token_id)
             batch = dict_apply(batch, lambda t: t.to('cuda:0') if isinstance(t, torch.Tensor) else t)
             set_global_seed(19000+number)
@@ -157,7 +159,7 @@ def offline(step, cfg, policy, processor):
                 _, loss = policy(batch)
             values = {k:float(v) for k,v in loss.items()}
             if not all(torch.isfinite(torch.tensor(v)) for v in values.values()): raise ValueError('Nonfinite eval loss')
-            row = dict(window, task=sample['samples']['command'], losses=values)
+            row = dict(window, task=task, losses=values)
             rows.append(row); trace.write(json.dumps(row, ensure_ascii=False)+'\n')
             print('OFFLINE', step, number+1, values, flush=True)
     groups = defaultdict(list)
