@@ -5,7 +5,6 @@ The existing robo RL run is deliberately outside this process's scope.
 """
 from __future__ import annotations
 
-import importlib.metadata
 import json
 import os
 from pathlib import Path
@@ -101,8 +100,10 @@ def main():
                               'msgpack', 'msgpack-numpy', 'imageio-ffmpeg'])
         run('cpu_versions', [str(ENV/'bin/python'), '-c',
             'import importlib.metadata as m,json; '
-            'print(json.dumps({p:m.version(p) for p in '
-            '("omnigibson","bddl","isaacsim","torch","numpy")},sort_keys=True))'])
+            'expected={"omnigibson":"3.9.1","bddl":"3.7.0","isaacsim":"5.1.0.0",'
+            '"torch":"2.7.0+cu128","numpy":"1.26.0"}; '
+            'actual={p:m.version(p) for p in expected}; print(json.dumps(actual,sort_keys=True)); '
+            'assert actual==expected,(actual,expected)'])
         write(OUT / 'status.json', dict(base, stage='installed_cpu_metadata_only',
               status='completed', seconds=time.monotonic()-started,
               actual_gpu_import_test=False, scene_or_speed_verified=False))
