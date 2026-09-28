@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 15:46（北京时间）：首PPO候选KL过大已回滚，暂停继续采样（Codex / RL-G05-50K-E1）
+
+- 15:52物理最终1840＋2072＝3912控制（含status未回收的32 pending），本轮合计**6884控制/3373.414秒**，原预算余3116控制/3826秒；四卡0MiB、自有三PID退出。新`e1_update_v1`仅复用旧39条，最多900秒/0新控制/两epoch最多10个accepted步，每步最多5次同梯度回溯。KL改为全39条中**最大值≤.01**、minibatch surrogate不得变差，较原平均门更严；每次拒绝恢复参数/Adam/LR/梯度。3项CPU回溯测试已过，特别保护Adam CPU step tensor不被snapshot别名污染。真实新更新待。
+- e1_v4/learner.jsonl首候选full-path mean KL **36.7274**（门.01），真实触发AE/sigma/Adam完整回滚；actor_updates=0、critic_updates=4，`rl_batch_001_updates_0000.pt` SHA6dcbfb3d…f085d是**仅critic已学习的delta，不是已RL改进策略**。
+- 为避免同一过大步长继续消耗昂贵回放，核PID/cwd后仅TERM自有learner3905709，由其正常收尾两sim；旧视频/39条on-policy latent路径/父权重/源码保留。最终控制和墙钟正按物理step日志核算，绝不按旧status少算pending。
+- 下一在新冻结源对**同一未发生actor更新的39条轨迹**作有界optimizer步长回溯（显式修订固定LR首候选；不除7360、不放宽.01门），0新增仿真控制、仍扣原总预算。先检回滚权重/旧路径概率/CPU优化器回溯测试，通过才更新并存独立delta；不能为开训绕开安全门或宣称方法已提升SR。
+
 ### 2026-09-28 15:43（北京时间）：首批39片段/620自主控制已进入更新（Codex / RL-G05-50K-E1）
 
 - e1_v4首批真实policy：TRAIN instance1在前缀1268后的**108**控制触发官方success/terminated（episode总1376）；138前缀1096后512控制预算截断，未成功，后段right held为空。共39 chunks/620 policy控制/1次reward，`rollout_000.pt`保存后进入updating；本run2984＋旧2972＝累计5956控制。

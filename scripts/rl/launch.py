@@ -18,7 +18,7 @@ def model_env():
     return env
 
 
-def supervise():
+def supervise(entry='learner'):
     start=time.monotonic(); process=None; result=dict(source_commit=commit(),supervisor=os.getpid(),status='starting')
     wall=json.loads((OUT/'manifest.json').read_text())['max_active_wall_seconds']
     try:
@@ -27,7 +27,7 @@ def supervise():
         values={int(a):int(b) for a,b in (line.split(',') for line in usage.strip().splitlines())}
         if any(values[gpu]>512 for gpu in (0,2,3)): raise RuntimeError('Registered GPUs are not idle')
         with (OUT/'learner.stdout.log').open('x') as log:
-            process=subprocess.Popen([MODEL_PY,str(REPO/'scripts/rl/learner.py')],cwd=REPO,env=model_env(),
+            process=subprocess.Popen([MODEL_PY,str(REPO/f'scripts/rl/{entry}.py')],cwd=REPO,env=model_env(),
                                      stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
         result.update(status='running',learner=process.pid); save(OUT/'supervisor.json',result,replace=True)
         try: code=process.wait(timeout=wall)
@@ -45,12 +45,13 @@ def supervise():
         save(OUT/'supervisor.json',result,replace=True)
 
 
-def launch():
+def launch(entry='learner'):
     manifest=json.loads((OUT/'manifest.json').read_text())
     if manifest['source_commit']!=commit(): raise ValueError('Frozen source differs from manifest')
+    if manifest.get('entry','learner')!=entry: raise ValueError('Registered experiment entry differs')
     save(OUT/'launch_claim.json',dict(source_commit=commit(),utc=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())))
     with (OUT/'supervisor.stdout.log').open('x') as log:
-        process=subprocess.Popen([sys.executable,str(REPO/'scripts/rl/launch.py'),'--supervise'],cwd=REPO,
+        process=subprocess.Popen([sys.executable,str(REPO/'scripts/rl/launch.py'),'--supervise','--entry',entry],cwd=REPO,
             env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'),stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
     print(json.dumps(dict(supervisor_pid=process.pid,output=str(OUT))))
 
@@ -58,4 +59,5 @@ def launch():
 if __name__=='__main__':
     p=argparse.ArgumentParser(); g=p.add_mutually_exclusive_group(required=True)
     g.add_argument('--launch',action='store_true');g.add_argument('--supervise',action='store_true')
-    args=p.parse_args(); (launch if args.launch else supervise)()
+    p.add_argument('--entry',choices=('learner','offline_update'),default='learner')
+    args=p.parse_args(); (launch if args.launch else supervise)(args.entry)
