@@ -2,6 +2,14 @@
 import torch
 
 
+def float32_prefix(kv):
+    from g05.models.kv_cache import SparseKVCache
+    if kv.recurrent_states or kv.conv_states:
+        raise ValueError('Expected cross-attention-only AE')
+    return SparseKVCache({k:v.float() for k,v in kv.key_cache.items()},
+                         {k:v.float() for k,v in kv.value_cache.items()})
+
+
 def cpu_postprocess_inputs(action, batch):
     # Do not copy vision tensors/KV caches: the inverse transform needs only
     # these fields, and the processor's normalizer statistics live on CPU.

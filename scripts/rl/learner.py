@@ -21,6 +21,7 @@ import torch
 from common import (REPO,OUT,PARENT_SHA,MODEL_PY,SIM_PY,commit,save,send,recv,sim_env,sha)
 from g05.rl.flow_ppo import (ControlBudget,NoiseHead,ValueHead,gae,ppo_objective)
 from g05.rl.g05_adapter import G05FlowAdapter,move
+from g05.rl.trust_region import bounded_adam_step
 
 
 def cpu_tree(x):
@@ -113,15 +114,25 @@ class Experiment:
         self.cfg,self.policy,self.processor=baseline.load_model(50000)
         torch.manual_seed(1700); torch.cuda.manual_seed_all(1700)
         self.noise=NoiseHead().to('cuda:0'); self.critic=ValueHead().to('cuda:0')
-        self.adapter=G05FlowAdapter(self.policy,self.processor,self.noise)
+        precision=self.manifest.get('ae_precision','bfloat16')
+        if precision not in ('bfloat16','float32'): raise ValueError('Unregistered AE precision')
+        if precision=='float32':
+            torch.set_float32_matmul_precision('highest')
+            torch.backends.cuda.matmul.allow_tf32=False
+            if any(p.dtype!=torch.float32 for p in self.policy.model.action_expert.parameters()):
+                raise ValueError('FP32-AE requires original FP32 master parameters')
+        self.adapter=G05FlowAdapter(self.policy,self.processor,self.noise,ae_autocast=precision=='bfloat16')
         self.actor_parameters=list(self.policy.model.action_expert.parameters())
+        rates=self.manifest['learning_rates']
         self.actor_optimizer=torch.optim.AdamW([
-            dict(params=self.actor_parameters,lr=1e-6),dict(params=self.noise.parameters(),lr=1e-5)],weight_decay=0)
-        self.critic_optimizer=torch.optim.AdamW(self.critic.parameters(),lr=1e-4,weight_decay=0)
+            dict(params=self.actor_parameters,lr=rates['action_expert']),dict(params=self.noise.parameters(),lr=rates['noise'])],weight_decay=0)
+        self.critic_optimizer=torch.optim.AdamW(self.critic.parameters(),lr=rates['critic'],weight_decay=0)
         save(OUT/'trainable.json',dict(actor_parameters=sum(p.numel() for p in self.actor_parameters),
             frozen_parameters=sum(p.numel() for p in self.policy.parameters() if not p.requires_grad),
             trainable_names=[n for n,p in self.policy.named_parameters() if p.requires_grad],
-            policy_training=self.policy.training,noise_initial=.01))
+            policy_training=self.policy.training,noise_initial=.01,ae_precision=precision,
+            vlm_precision='bfloat16',auxiliary_bc_precision='original bfloat16 FM recipe',
+            matmul_allow_tf32=torch.backends.cuda.matmul.allow_tf32))
 
     def benchmark(self):
         self.phase='benchmark'; self.status()
@@ -301,8 +312,9 @@ class Experiment:
                 self.timecheck(); group=indices[start:start+8]
                 # CPU rollback includes Adam moments and step numbers. No
                 # rejected candidate may remain deployed to the simulators.
-                backup=dict(ae=cpu_tree(self.policy.model.action_expert.state_dict()),
-                    noise=cpu_tree(self.noise.state_dict()),optimizer=cpu_tree(self.actor_optimizer.state_dict()))
+                backtracking=self.manifest.get('bounded_backtracking',False)
+                backup=(None if backtracking else dict(ae=cpu_tree(self.policy.model.action_expert.state_dict()),
+                    noise=cpu_tree(self.noise.state_dict()),optimizer=cpu_tree(self.actor_optimizer.state_dict())))
                 self.actor_optimizer.zero_grad(set_to_none=True); losses=[]; before_kls=[]
                 for i in group:
                     context=move(rows[i]['context'],'cuda:0'); trace=move(rows[i]['trace'],'cuda:0')
@@ -317,6 +329,42 @@ class Experiment:
                 bc,bc_details=self.auxiliary_bc(self.actor_updates)
                 (.1*bc).backward()
                 grad=float(torch.nn.utils.clip_grad_norm_(self.actor_parameters+list(self.noise.parameters()),.5,error_if_nonfinite=True))
+                if backtracking:
+                    original_ae=cpu_tree(self.policy.model.action_expert.state_dict())
+                    def evaluate():
+                        values=[]; deltas=[]; surrogate=0.
+                        for i,row in enumerate(rows):
+                            self.timecheck()
+                            lp,kl=self.adapter.score(move(row['context'],'cuda:0'),move(row['trace'],'cuda:0'))
+                            delta=float(lp-row['trace']['old_logp'].to('cuda:0'))
+                            values.append(float(kl)); deltas.append(abs(delta))
+                            if i in group and abs(delta)<=60:
+                                surrogate+=float(ppo_objective(lp,row['trace']['old_logp'].to('cuda:0'),
+                                    advantages[i].to('cuda:0')))/len(group)
+                        safe=max(deltas)<=60
+                        return dict(mean_kl=float(np.mean(values)),max_kl=max(values),max_abs_logratio=max(deltas),
+                            surrogate=surrogate if safe else None,before_surrogate=sum(losses),
+                            surrogate_improved=bool(safe and surrogate<=sum(losses)+1e-6))
+                    def trial(row):
+                        self.log.write(json.dumps(dict(event='backtracking_trial',epoch=epoch,
+                            update=self.actor_updates,**row),allow_nan=False)+'\n')
+                        self.status(last_trial=row)
+                    result=bounded_adam_step(self.actor_parameters+list(self.noise.parameters()),
+                        self.actor_optimizer,evaluate,on_trial=trial)
+                    if not result['accepted']:
+                        self.log.write(json.dumps(dict(event='bounded_backtracking_exhausted',epoch=epoch))+'\n'); return
+                    changes=[(v.detach().cpu()-original_ae[n]).abs()
+                             for n,v in self.policy.model.action_expert.state_dict().items()]
+                    changed=sum(int(torch.count_nonzero(x)) for x in changes)
+                    if not changed: raise ValueError('Accepted update did not change AE parameters')
+                    self.actor_updates+=1
+                    self.log.write(json.dumps(dict(event='actor_update',update=self.actor_updates,ppo=sum(losses),
+                        bc=bc_details,gradient_norm=grad,ae_changed_parameters=changed,
+                        ae_max_abs_change=max(float(x.max()) for x in changes),**result['trials'][-1]),allow_nan=False)+'\n')
+                    self.status(last_path_kl=result['trials'][-1]['max_kl'])
+                    del original_ae,changes
+                    if self.actor_updates>=self.manifest.get('max_actor_updates',1000000): return
+                    continue
                 self.actor_optimizer.step()
                 with torch.no_grad():
                     after=[float(self.adapter.score(move(rows[i]['context'],'cuda:0'),move(rows[i]['trace'],'cuda:0'))[1]) for i in group]
@@ -347,7 +395,9 @@ class Experiment:
         os.replace(tmp,path)
         save(path.with_suffix('.json'),dict(path=str(path),sha256=sha(path),parent_sha256=PARENT_SHA,
             actor_updates=self.actor_updates,critic_updates=self.critic_updates,controls=self.budget.used,
-            deployment='load parent then strict action_expert delta; original ODE, no additional transition noise'))
+            ae_precision=self.manifest.get('ae_precision','bfloat16'),
+            deployment=('load parent then strict AE delta; VLM bfloat16; AE '+self.manifest.get('ae_precision','bfloat16')+
+                        ' with matching prefix cache dtype; 10-step ODE, no additional transition noise')))
 
     def run(self):
         try:
@@ -361,6 +411,7 @@ class Experiment:
                 torch.save(dict(rows=rows,advantages=advantages,returns=returns),OUT/f'rollout_{self.batches:03d}.pt')
                 self.update(rows,advantages,returns); self.batches+=1; self.checkpoint()
                 del rows
+                if self.batches>=self.manifest.get('max_batches',1000000): break
                 if completed:
                     required=sum(self.prefix[w]+16 for w in completed)
                     if self.budget.remaining<required: break

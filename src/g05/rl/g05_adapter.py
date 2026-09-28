@@ -7,11 +7,19 @@ from g05.models.kv_cache import SparseKVCache
 from g05.models.g05.inferencer import PolicyInferencer
 from g05.utils.common.pytorch_utils import dict_apply
 from .flow_ppo import PAD_DIMS, gaussian_logp, gaussian_kl
-from .native_decode import cpu_postprocess_inputs
+from .native_decode import cpu_postprocess_inputs,float32_prefix
 
 
 def move(value, device):
     return dict_apply(value,lambda t:t.detach().to(device) if isinstance(t,torch.Tensor) else t)
+
+
+class Float32AEReference:
+    """Native FM helper with the SAME frozen prefix information upcast for AE."""
+    def __init__(self,model): self.original=model
+    def __getattr__(self,key): return getattr(self.original,key)
+    def _build_prefix_action_kv(self,*args):
+        return float32_prefix(self.original._build_prefix_action_kv(*args))
 
 
 class G05FlowAdapter:
@@ -19,6 +27,7 @@ class G05FlowAdapter:
         self.policy,self.processor,self.noise=policy,processor,noise
         self.model=policy.model; self.fm=self.model.fm_helper; self.device='cuda:0'
         self.ae_autocast=ae_autocast
+        self.reference_model=self.model if ae_autocast else Float32AEReference(self.model)
         self.infer=PolicyInferencer(policy,processor,device=self.device)
         if (self.fm.time_convention!='pi_convention' or self.fm.num_inference_steps!=10 or
                 self.fm.horizon_steps!=32 or self.fm.action_dim!=27 or self.fm.zero_pad_action_target or
@@ -33,7 +42,7 @@ class G05FlowAdapter:
         dtype=next(iter(state.pixel_values.values())).dtype
         mask,pos=self.model.build_action_mask_and_position_ids(state.attention_mask,action_len=32,
             position_ids_prefix=state.position_ids,split_index=state.attention_mask.size(1),dtype=dtype,action_causal=False)
-        kv=self.model._build_prefix_action_kv(state.kv_cache,state.kv_cache.num_items())
+        kv=self.reference_model._build_prefix_action_kv(state.kv_cache,state.kv_cache.num_items())
         if kv.recurrent_states or kv.conv_states: raise ValueError('Unexpected recurrent AE conditioning')
         return dict(mask=mask,pos=pos,keys=dict(kv.key_cache),values=dict(kv.value_cache),
                     feature=state.last_hidden.float(),dtype=dtype)
@@ -105,13 +114,24 @@ class G05FlowAdapter:
     def equivalence_gate(self,context,prepared):
         p,batch,state=prepared
         rng=torch.cuda.get_rng_state()
-        with torch.autocast('cuda',dtype=torch.bfloat16):
-            native=self.fm.infer(self.model,state.attention_mask,state.pixel_values,state.kv_cache,
+        with torch.autocast('cuda',dtype=torch.bfloat16,enabled=self.ae_autocast):
+            native=self.fm.infer(self.reference_model,state.attention_mask,state.pixel_values,state.kv_cache,
                 action_dim_is_pad=batch['action_dim_is_pad'],position_ids_override=state.position_ids)
         torch.cuda.set_rng_state(rng)
         ours,_=self.sample(context,stochastic=False)
         difference=float((native-ours).abs().max())
         if not torch.equal(native,ours): raise ValueError(f'Zero-added-noise decoder differs: {difference}')
+        precision_difference={}
+        if not self.ae_autocast:
+            after=torch.cuda.get_rng_state(); torch.cuda.set_rng_state(rng)
+            with torch.autocast('cuda',dtype=torch.bfloat16):
+                bf16=self.fm.infer(self.model,state.attention_mask,state.pixel_values,state.kv_cache,
+                    action_dim_is_pad=batch['action_dim_is_pad'],position_ids_override=state.position_ids)
+            torch.cuda.set_rng_state(after)
+            delta=(ours-bf16).float(); delta[:,:,PAD_DIMS]=0
+            precision_difference=dict(bf16_parent_max_abs_difference=float(delta.abs().max()),
+                bf16_parent_normalized_valid_rmse=float(delta.square().sum().div(32*23).sqrt()),
+                bf16_parent_bitwise_equal=bool(torch.equal(ours,bf16)))
         # Validate the real 23D robot boundary as well as normalized latents.
         decoded=self.decode(ours,prepared)
         native_batch=move(dict(batch,action=native,selected_action_source='fm'),'cpu')
@@ -127,4 +147,5 @@ class G05FlowAdapter:
         if error>.002 or abs(float(kl))>1e-6: raise ValueError('Old-path probability identity failed')
         return dict(zero_noise_max_difference=difference,old_path_logp_error=error,path_kl=float(kl),
                     scored_transitions=10*32*23, frozen_features=True,
-                    native_cpu_decode_equal=True,decoded_shape=list(decoded.shape))
+                    native_cpu_decode_equal=True,decoded_shape=list(decoded.shape),
+                    ae_precision='bfloat16' if self.ae_autocast else 'float32',**precision_difference)
