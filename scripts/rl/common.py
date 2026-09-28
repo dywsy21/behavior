@@ -16,9 +16,11 @@ PARENT_SHA = 'c465044b025a487c42fddce17d45059b314a547e1b672f27cbdbbb7cfe2f6d48'
 MODEL_PY = '/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python'
 SIM_PY = '/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python'
 PREVIOUS = Path('/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_precision_probe')
-OUT = Path('/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_fp32')
-PREVIOUS_RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e1_v4')
-RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e1_fp32')
+OUT = Path(os.environ.get('BEHAVIOR_RL_OUT','/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_fp32'))
+PREVIOUS_RUNTIME = Path(os.environ.get('BEHAVIOR_RL_PREVIOUS_RUNTIME',
+    '/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e1_v4'))
+RUNTIME = Path(os.environ.get('BEHAVIOR_RL_RUNTIME',
+    '/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e1_fp32'))
 ADAPTER = Path('/mnt/sdc1/robodojo/behavior_dev/GalaxeaVLA_memlite_coordination_dev_20260908/sim_runtime/production_native_oracle_low_v1')
 TEMPLATE = Path('/mnt/sdc1/robodojo/behavior_dev/direct_execution_L6rqZ6_20260910/c1_windows_v2_matched/c1v2-matched-t0-train-e121-f448-grasp/window.json')
 
@@ -59,11 +61,12 @@ def recv(conn, timeout=900):
     return result
 
 
-def sim_env(worker):
+def sim_env(worker, pool=None):
     import shutil
     sys.path.insert(0,str(REPO/'scripts/semantic_robot'))
     import probe_simulator_startup as base
-    runtime=RUNTIME/f'worker_{worker}'
+    if pool not in (None,'baseline','training','final'): raise ValueError('Unregistered simulator pool')
+    runtime=(RUNTIME if pool is None else RUNTIME/pool)/f'worker_{worker}'
     runtime.mkdir(parents=True,exist_ok=False)
     env=dict(os.environ); env.pop('CUDA_VISIBLE_DEVICES',None)
     env.update(base.FIXED_ENV)

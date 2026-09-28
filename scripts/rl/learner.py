@@ -54,7 +54,7 @@ class Experiment:
 
     def timecheck(self):
         if time.monotonic()-self.started>self.manifest['max_active_wall_seconds']:
-            raise TimeoutError('Registered two-hour active-wall budget exhausted')
+            raise TimeoutError('Registered active-wall budget exhausted')
 
     def issue(self,worker,actions,phase):
         self.timecheck(); count=len(actions); self.budget.reserve(count)
@@ -250,6 +250,7 @@ class Experiment:
 
     def rollout(self):
         rows={w:[] for w in self.active}; completed=set(); count=0
+        episode_limit=self.manifest.get('episode_controls',512)
         while count<128 and self.budget.remaining>=16*len(self.active):
             self.timecheck(); pending={}
             for w in self.active:
@@ -260,7 +261,7 @@ class Experiment:
                 actions=self.adapter.decode(x,prepared)
                 row=dict(context=move(context,'cpu'),trace=trace,value=value,episode=self.latest[w]['episode'],
                          raw_observation=self.latest[w]['observation'])
-                n=min(16,512-self.policy_controls[w],self.budget.remaining)
+                n=min(16,episode_limit-self.policy_controls[w],self.budget.remaining)
                 if n<1: completed.add(w); continue
                 reserved=self.issue(w,actions[:n],'policy')
                 pending[w]=(row,reserved)
@@ -273,7 +274,8 @@ class Experiment:
                 context,_=self.prepare_worker(w)
                 with torch.no_grad(): next_value=float(self.critic(context['feature']).item())
                 row.update(rewards=reply['rewards'],terminated=reply['terminated'],
-                    truncated=reply['truncated'] or self.policy_controls[w]>=512,next_value=next_value)
+                    truncated=reply['truncated'] or self.policy_controls[w]>=episode_limit,next_value=next_value)
+                row.update(split='train',worker=w,instance=self.manifest['workers'][w]['instance'])
                 rows[w].append(row); count+=1
                 if reply['success']: self.successes+=1
                 if row['terminated'] or row['truncated']: completed.add(w)
@@ -287,13 +289,15 @@ class Experiment:
         return flat,torch.tensor(advantages),torch.tensor(returns),completed
 
     def update(self,rows,advantages,returns):
+        if self.manifest.get('entry')=='method' and any(r.get('split')!='train' for r in rows):
+            raise ValueError('Evaluation data must never enter PPO/critic')
         self.phase='updating'; self.status(batch_samples=len(rows),batch_reward=sum(sum(r['rewards']) for r in rows))
         if len(rows)<8:
             self.log.write(json.dumps(dict(event='skip_short_batch',n=len(rows)))+'\n'); return
         features=torch.cat([r['context']['feature'] for r in rows]).to('cuda:0')
         targets=returns.to('cuda:0')
         # Warm critic on the first REAL return batch before any AE update.
-        for epoch in range(4 if self.batches==0 else 2):
+        for epoch in range(self.manifest.get('critic_steps_per_batch',4 if self.batches==0 else 2)):
             pred=self.critic(features)
             loss=.5*(pred-targets).square().mean()
             self.critic_optimizer.zero_grad(set_to_none=True); loss.backward()
@@ -350,7 +354,8 @@ class Experiment:
                             update=self.actor_updates,**row),allow_nan=False)+'\n')
                         self.status(last_trial=row)
                     result=bounded_adam_step(self.actor_parameters+list(self.noise.parameters()),
-                        self.actor_optimizer,evaluate,on_trial=trial)
+                        self.actor_optimizer,evaluate,on_trial=trial,
+                        scales=tuple(self.manifest.get('backtracking_scales',(1.,.1,.01,.001,.0001))))
                     if not result['accepted']:
                         self.log.write(json.dumps(dict(event='bounded_backtracking_exhausted',epoch=epoch))+'\n'); return
                     changes=[(v.detach().cpu()-original_ae[n]).abs()

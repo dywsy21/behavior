@@ -6,7 +6,7 @@ from unittest.mock import patch
 from types import SimpleNamespace
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts/semantic_robot'))
-from native_rl_profile import traced_imports
+from native_rl_profile import traced_imports,session
 
 
 @dataclass
@@ -16,6 +16,16 @@ class Imports:
 
 
 class ProfileTests(unittest.TestCase):
+    def test_public_sessions_require_explicit_evaluation_role(self):
+        with patch.dict('os.environ',{'CUDA_VISIBLE_DEVICES':''}):
+            with self.assertRaisesRegex(ValueError,'split'):
+                with session(None,SimpleNamespace(official_mode='public_test'),gpu=2,output=None,runtime=None):
+                    pass
+            with self.assertRaisesRegex(ValueError,'split'):
+                with session(None,SimpleNamespace(official_mode='train'),gpu=2,output=None,runtime=None,
+                             evaluation_only=True):
+                    pass
+
     def test_fixed_instance_multiple_official_resets_and_event_failure(self):
         class Env:
             env='robot'

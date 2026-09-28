@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 17:33（北京时间）：E2续训/配对评测实现及本地61项回归完成（Codex / RL-G05-50K-E2）
+
+- 新`method.py/prepare_method.py`与`g05/rl/protocol.py`串联冻结父BF16锚/FP32基线→E1恢复续训→固定最后合法delta/文件重新加载→同六对FP32评测。独立baseline/training/final进程池、eval严禁专家动作/训练流、每worker独立RNG、物体/机器人reset一致性、未完成非terminal样本不能作完整SR、全程统一控制账/给final预留预算均实现；不热改旧4a28cac或共享SDK/env。
+- 每新rollout恢复注册候选LR并有限半步回溯，所有路径max KL≤.01保持；3个连续TRAIN成功才前移课程，新起点人审门、零奖励/零更新三batch停止、保存前后strict恢复与冻结梯度门保持。中断时回收已派发控制，未核销pending/非正常pool退出阻断后续评测。
+- 本地**61回归**（19 RL＋3 profile＋5 flow＋27 I/O＋7 render）通过，语法/差异检查过；首次生命周期测试的模块mock导致Torch重导入已修正后重跑。真实模型完整导入本地因缺omegaconf不可做，转服务器原MODEL_PY验证，不安装/改环境。当前0新GPU任务/0新控制/0SR，下一冻结Git、服务器回归/父与delta SHA再核、唯一启动。
+
+### 2026-09-28 17:15（北京时间）：用户批准继续RL，以配对成功率验收（Codex / RL-G05-50K-E2）
+
+- 最新用户“继续RL。我要看到成功率提升”授权继续训练/效果验证；新`feat/g05-50k-rl-e2-20260928`从最新origin/main建立并ff纳入E1 d715326，旧goal不重启。本轮登记总**100,000实际控制/43,200秒活动墙钟**（含训练专家前缀、基线/最终评测与失败），非无限搜索/全任务大训练；0新GPU启动。
+- 17:08只读robo四A100均0MiB，NVMe约1.7TiB空。本地Git直连/默认代理TLS失败；只经自有robo loopback SOCKS端口18945按命令转发Git，已pull/fetch成功、main仍33677bd，不改系统代理/VPN/远端源码。服务器Git fetch也成功；无活跃RL/训练，不动其他节点。
+- 已核官方radio public实例301/302文件存在，预登记policy seeds17/23/41、env seed0、每回合3224控制、0前缀；主比较原50k FP32与最终RL FP32各6回合，另原50k BF16每实例seed17精度锚2回合。301是既有开发例，302及该矩阵也按本轮开发验证报告，不称盲测/全50任务SR；全部样本固定，不按结果换例。
+- 从E1 FP32 delta＋优化器续接，真实TRAIN1/138新on-policy采样、五task原TRAIN FM BC防遗忘；训练≤50k实际控制/最多16个新batch/400个新actor步，保留最终6回合的控制/时间预算。分离训练/评测池、同精度部署/权重恢复、每worker独立eval RNG与reset身份检查正在实现；具体准入/失败停机见[E2登记](experiments/2026-09-28-g05-50k-rl-e2.md)。不能承诺一定提升，必须报告原始n/N和配对变化。
+
 ### 2026-09-28 16:55（北京时间）：首轮RL权重与视频核验交接完成（Codex / RL-G05-50K-E1）
 
 - 4a28cac/e1_fp32的`rl_batch_001_updates_0010.pt`完整SHA **4ccbe449c350807b96a473841cfa1cd1ab46aae6e59b0365b7066c8b2b8a1d36**独立重算一致；CPU反序列化核322个AE tensors/634,609,691参数全部FP32且有限，AE/noise Adam所有330状态真实step10，critic6状态step4。保存格式是依赖原50k的delta，不是可直接交给旧eval入口的整模型；尚未做delta部署闭环。

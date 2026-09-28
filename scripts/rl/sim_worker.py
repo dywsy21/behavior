@@ -15,13 +15,17 @@ import numpy as np
 from common import REPO, OUT, RUNTIME, ADAPTER, TEMPLATE, sha, send, recv, save
 
 
-def main(worker, port):
-    spec=json.loads((OUT/'manifest.json').read_text())['workers'][worker]
-    if spec['worker'] != worker or spec['split']!='train': raise ValueError('Wrong worker identity')
+def main(worker, port, pool=None):
+    manifest=json.loads((OUT/'manifest.json').read_text())
+    spec=(manifest['workers'] if pool is None else manifest['sim_pools'][pool])[worker]
+    from g05.rl.protocol import validate_worker,validate_phase
+    evaluation=pool in ('baseline','final')
+    validate_worker(spec,evaluation=evaluation)
+    if spec['worker'] != worker: raise ValueError('Wrong worker identity')
     cores=set(range(72+8*worker,80+8*worker))
     if not cores <= os.sched_getaffinity(0): raise ValueError('Registered CPU affinity unavailable')
     os.sched_setaffinity(0,cores)
-    out=OUT/f'worker_{worker}'; out.mkdir(exist_ok=False)
+    out=(OUT if pool is None else OUT/pool)/f'worker_{worker}'; out.mkdir(parents=True,exist_ok=False)
     sys.path.insert(0,str(REPO/'scripts/semantic_robot'))
     import native_rl_profile
     from rl_reset_boundary import close_before_reset
@@ -32,9 +36,11 @@ def main(worker, port):
     from semantic_robot.v2.onboard import OnboardRGBD
     import imageio.v2 as imageio
     from PIL import Image, ImageDraw
-    if sha(spec['actions'])!=spec['actions_sha256']: raise ValueError('Changed TRAIN controls')
+    if not evaluation and sha(spec['actions'])!=spec['actions_sha256']: raise ValueError('Changed TRAIN controls')
+    if evaluation and sha(spec['instance_file'])!=spec['instance_file_sha256']:
+        raise ValueError('Changed official evaluation instance')
     window=replace(factory.load_official_oracle_window(TEMPLATE),task_name=spec['task'],
-                   official_mode='train',instance_id=spec['instance'],seed=spec['seed'],max_steps=None)
+                   official_mode=spec['split'],instance_id=spec['instance'],seed=spec['seed'],max_steps=None)
     conn=Client(('127.0.0.1',port),authkey=bytes.fromhex(os.environ['BEHAVIOR_RL_IPC_KEY']))
     send(conn,dict(hello=worker,pid=os.getpid()))
     tasks=factory.load_task_instructions(factory.DEFAULT_TASKS_PATH)
@@ -49,7 +55,8 @@ def main(worker, port):
     def owned_session():
         nonlocal video,io
         with native_rl_profile.session(factory,window,gpu=spec['gpu'],output=out,
-                runtime=RUNTIME/f'worker_{worker}') as session:
+                runtime=(RUNTIME if pool is None else RUNTIME/pool)/f'worker_{worker}',
+                evaluation_only=evaluation) as session:
             try: yield session
             except BaseException as error:
                 # Official __exit__ may close Kit and exit Python itself.
@@ -89,7 +96,7 @@ def main(worker, port):
                 canvas.paste(Image.fromarray(images['head_rgb'].transpose(1,2,0)).resize((720,720)),(0,48))
                 for i,key in enumerate(('left_wrist_rgb','right_wrist_rgb')):
                     canvas.paste(Image.fromarray(images[key].transpose(1,2,0)).resize((240,240)),(720,48+i*240))
-                ImageDraw.Draw(canvas).text((8,12),f'RL G05-50k TRAIN {spec["instance"]} | ep {episode} | {tag} | control {controls}',fill='white')
+                ImageDraw.Draw(canvas).text((8,12),f'RL G05-50k {spec["split"]} {spec["instance"]} | ep {episode} | {tag} | episode control {episode_controls} | total {controls}',fill='white')
                 video.append_data(np.asarray(canvas))
                 if tag in ('reset','curriculum_start'): canvas.save(out/f'{tag}_{episode:03d}.png')
                 held={arm:obj.name if obj is not None else None for arm,obj in env.robots[0]._ag_obj_in_hand.items()}
@@ -106,7 +113,19 @@ def main(worker, port):
                 episode+=1; episode_controls=0; terminal=success=False
                 io=native_adapter(og.sim,reader.sensors,io_write,registration=frame_registration)
                 video=imageio.get_writer(out/f'episode_{episode:03d}.mp4',fps=30/16,codec='libx264',quality=7,macro_block_size=None)
-                return observe('reset')
+                result=observe('reset')
+                if pool is not None:
+                    physical={}
+                    for obj in sorted(env.scene.objects,key=lambda x:x.name):
+                        pos,quat=obj.get_position_orientation()
+                        physical[obj.name]=np.concatenate([array(pos).ravel(),array(quat).ravel()]).astype(float).tolist()
+                    robot=env.robots[0]
+                    physical['__robot_joints__']=np.concatenate([array(robot.get_joint_positions()).ravel(),
+                        array(robot.get_joint_velocities()).ravel()]).astype(float).tolist()
+                    if not all(np.isfinite(v).all() for v in physical.values()): raise ValueError('Invalid reset state')
+                    save(out/f'reset_state_{episode:03d}.json',physical)
+                    result['reset_state']=physical
+                return result
 
             send(conn,dict(ready=True,worker=worker,pid=os.getpid(),**reset()))
             while True:
@@ -116,6 +135,7 @@ def main(worker, port):
                 if op=='reset': send(conn,reset()); continue
                 if op=='observe': send(conn,observe(command.get('tag','observation'))); continue
                 if op!='step' or terminal: raise ValueError('Only live step/reset/observe/close commands allowed')
+                if pool is not None: validate_phase(spec,command['phase'])
                 actions=np.array(command['actions'],dtype=np.float32,copy=True)
                 if actions.ndim!=2 or actions.shape[1]!=23 or not 1<=len(actions)<=16 or not np.isfinite(actions).all():
                     raise ValueError('Invalid action chunk')
@@ -131,7 +151,8 @@ def main(worker, port):
                     if won and not terminated: raise RuntimeError('Official success without termination')
                     held={arm:obj.name if obj is not None else None for arm,obj in env.robots[0]._ag_obj_in_hand.items()}
                     log.write(json.dumps(dict(control=controls,episode=episode,phase=command['phase'],
-                        action=action.tolist(),success=won,terminated=bool(terminated),truncated=bool(truncated),held=held))+'\n')
+                        episode_control=episode_controls,action=action.tolist(),success=won,
+                        terminated=bool(terminated),truncated=bool(truncated),held=held))+'\n')
                     if terminal: break
                 result=observe(command['phase'])
                 result.update(rewards=rewards,terminated=bool(terminated),truncated=bool(truncated),
@@ -153,5 +174,6 @@ def main(worker, port):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(); p.add_argument('--worker',type=int,choices=(0,1),required=True)
-    p.add_argument('--port',type=int,required=True); args=p.parse_args()
-    main(args.worker,args.port)
+    p.add_argument('--port',type=int,required=True)
+    p.add_argument('--pool',choices=('baseline','training','final')); args=p.parse_args()
+    main(args.worker,args.port,args.pool)

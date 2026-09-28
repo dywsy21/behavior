@@ -55,11 +55,12 @@ def traced_imports(imports, record, *, instance_id, write):
 
 
 @contextmanager
-def session(factory, window, *, gpu, output, runtime):
+def session(factory, window, *, gpu, output, runtime, evaluation_only=False):
     if type(gpu) is not int or gpu not in (2,3) or os.environ.get('CUDA_VISIBLE_DEVICES'):
         raise ValueError('RL simulators require unremapped physical GPU2 or GPU3')
-    if window.official_mode != 'train':
-        raise ValueError('RL accepts TRAIN instances only')
+    expected_mode='public_test' if evaluation_only else 'train'
+    if window.official_mode != expected_mode:
+        raise ValueError('Persistent session split differs from explicit role')
     scene, base = original_profile.configure(output, runtime)
     # Process-local registration: do not change existing evaluation defaults.
     base.RUNTIME_SETTINGS = dict(base.RUNTIME_SETTINGS,
@@ -73,7 +74,8 @@ def session(factory, window, *, gpu, output, runtime):
     if Path(startup.__file__).resolve() != scene.OG_SOURCE.resolve():
         raise ValueError('Unexpected native simulator source')
     record = dict(profile='a100_full_rl_v1', gpu=gpu, instance=window.instance_id,
-                  split='train', source_commit=base.identity(), shared_install_writes=0,
+                  split=expected_mode, evaluation_only=evaluation_only,
+                  source_commit=base.identity(), shared_install_writes=0,
                   renderer='PathTracing', resolution_profile='full_v1')
     def write(row): base.write('native_rl_profile.json', row)
     scene.configure_viewer_before_launch(imports.gm, og, record)

@@ -79,13 +79,14 @@ class G05FlowAdapter:
         return mean,std
 
     @torch.no_grad()
-    def sample(self,context,*,stochastic=True):
-        x=torch.randn(1,32,27,device=self.device,dtype=context['dtype']); x[:,:,PAD_DIMS]=0
+    def sample(self,context,*,stochastic=True,generator=None):
+        x=torch.randn(1,32,27,device=self.device,dtype=context['dtype'],generator=generator); x[:,:,PAD_DIMS]=0
         t=torch.ones(1,device=self.device,dtype=context['dtype'])
         xs=[x.clone()]; means=[]; stds=[]; times=[]; lp=torch.tensor(0.,device=self.device)
         for _ in range(10):
             mean,std=self.transition(context,x,t)
-            following=mean+std*torch.randn_like(x) if stochastic else mean
+            following=(mean+std*torch.randn(x.shape,device=x.device,dtype=x.dtype,generator=generator)
+                       if stochastic else mean)
             following[:,:,PAD_DIMS]=0
             if stochastic: lp+=gaussian_logp(following,mean,std)
             means.append(mean); stds.append(std); times.append(t.clone()); xs.append(following)

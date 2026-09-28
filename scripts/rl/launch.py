@@ -59,5 +59,5 @@ def launch(entry='learner'):
 if __name__=='__main__':
     p=argparse.ArgumentParser(); g=p.add_mutually_exclusive_group(required=True)
     g.add_argument('--launch',action='store_true');g.add_argument('--supervise',action='store_true')
-    p.add_argument('--entry',choices=('learner','offline_update','precision_probe'),default='learner')
+    p.add_argument('--entry',choices=('learner','offline_update','precision_probe','method'),default='learner')
     args=p.parse_args(); (launch if args.launch else supervise)(args.entry)
