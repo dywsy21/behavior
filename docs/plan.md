@@ -10,8 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 16:38（北京时间）：唯一FP32 batch收齐并进入更新（Codex / RL-G05-50K-E1）
+
+- 原e1_fp32新39 chunks/613自主控制/1官方reward（TRAIN1后缀101成功，138后缀512截断），`rollout_000.pt`已保存。新run2977＋既有6884＝累计**9861真实控制**，0 pending；余139不足另起课程，按注册只做本batch更新，不再采样。
+- 16:37状态已updating，实际accepted与delta保存待；不能把这次更新前课程1/2当RL后完整SR。原4a28cac/监管3913967/总时间限保持。
+
 ### 2026-09-28 16:34（北京时间）：FP32新课程图审通过（Codex / RL-G05-50K-E1）
 
+- 16:36新FP32 on-policy的TRAIN1在prefix1268后**101**自主控制官方success/terminated（总1369），右手仍held radio；学习器reward1，另一实例继续。此时0 actor/critic更新，101 vs旧BF16的108不是RL改善，更不是独立SR。
 - 16:35 FP32同精度原生FM与32×23 CPU decode逐位相等；old logp/KL/autograd误差均0、AE grad18225.98有限、冻结层无梯度。相同噪声对原BF16父推理的normalized-valid RMSE **.00094014**、max abs **.00483859**（单起点，不是性能分数），明确bitwise_equal=false。`e1_fp32/probability_gate.json`已存；首128自主控制通过/0更新，继续唯一新batch。
 - 原4a28cac/e1_fp32已回放2364真实TRAIN控制，累计**9248**；还剩752控制，当前0自主/0更新。两新起点均held radio_89/官方未成功/未终止；本人查看新三RGB图，1右抓柄左靠近旋钮、138右手旋转抓持左臂分开，三相机正常，未据图判成功。
 - 新本地`artifacts/g05-50k-rl-20260928/e1_fp32-worker{0,1}-curriculum.png`与远端SHA db2a95e1…30ad87/7be6808f…b856c3核同；已签独立human_release放行。下一实际FP32 FM/23D动作/旧路径概率与梯度门，原预算不变。
