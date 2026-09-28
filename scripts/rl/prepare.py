@@ -27,9 +27,11 @@ def main():
         for worker in previous['workers']:
             if sha(worker['actions'])!=worker['actions_sha256']: raise ValueError('TRAIN actions changed')
             worker['policy_seed']=1700
-        previous.update(source_commit=source,max_controls=10000-status['controls'],
-            max_active_wall_seconds=7200-math.ceil(supervisor['seconds']),policy_rng='shared torch/CUDA seed1700',
-            continued_from=str(PREVIOUS),prior_controls=status['controls'],prior_active_seconds=supervisor['seconds'])
+        used=previous.get('prior_controls',0)+status['controls']
+        elapsed=previous.get('prior_active_seconds',0.)+supervisor['seconds']
+        previous.update(source_commit=source,max_controls=10000-used,
+            max_active_wall_seconds=7200-math.ceil(elapsed),policy_rng='shared torch/CUDA seed1700',
+            continued_from=str(PREVIOUS),prior_controls=used,prior_active_seconds=elapsed)
         save(OUT/'manifest.json',previous)
         print('CONTINUATION',previous['max_controls'],previous['max_active_wall_seconds'],flush=True)
         return

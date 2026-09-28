@@ -28,6 +28,7 @@ def main(worker, port):
     sys.path.insert(0,str(ADAPTER))
     from native_oracle_low_v1 import official_factory as factory
     from semantic_robot.v2.synchronous_io import native_adapter
+    from semantic_robot.v2.render_batch import OwnedFrameRegistration
     from semantic_robot.v2.onboard import OnboardRGBD
     import imageio.v2 as imageio
     from PIL import Image, ImageDraw
@@ -40,6 +41,7 @@ def main(worker, port):
     log=(out/'steps.jsonl').open('x',buffering=1)
     iolog=(out/'io.jsonl').open('x',buffering=1)
     controls=episode_controls=0; episode=-1
+    frame_registration=OwnedFrameRegistration()
     terminal=success=False; io=None; video=None; current_clock=None
     def array(x): return x.detach().cpu().numpy() if hasattr(x,'detach') else np.asarray(x)
     def io_write(row): iolog.write(json.dumps(dict(worker=worker,episode=episode,**row))+'\n')
@@ -102,7 +104,7 @@ def main(worker, port):
                 if video is not None: video.close(); video=None
                 session.reset()
                 episode+=1; episode_controls=0; terminal=success=False
-                io=native_adapter(og.sim,reader.sensors,io_write)
+                io=native_adapter(og.sim,reader.sensors,io_write,registration=frame_registration)
                 video=imageio.get_writer(out/f'episode_{episode:03d}.mp4',fps=30/16,codec='libx264',quality=7,macro_block_size=None)
                 return observe('reset')
 

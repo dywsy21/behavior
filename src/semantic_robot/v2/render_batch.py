@@ -103,6 +103,29 @@ def register_frame_annotator(rep, synthetic):
         output_data_type=None, output_is_2d=False)
 
 
+class OwnedFrameRegistration:
+    """Opt-in reuse across episodes, never adoption/overwrite of another node.
+
+    Keep BOTH identity and a deep copy of the native dataclass definition, so
+    replacement or in-place mutation cannot masquerade as our registration.
+    Default one-shot callers continue to reject any prior registration.
+    """
+    def __init__(self):
+        self.template = self.definition = self.registry = None
+
+    def ensure(self, rep, synthetic):
+        from copy import deepcopy
+        registry = synthetic._ogn_templates_registry
+        if self.template is None:
+            register_frame_annotator(rep, synthetic)
+            self.template = registry[FRAME_ANNOTATOR]
+            self.definition = deepcopy(self.template)
+            self.registry = registry
+        elif (registry is not self.registry or registry.get(FRAME_ANNOTATOR) is not self.template
+                or self.template != self.definition):
+            raise ValueError('Owned render-batch registration was replaced or changed')
+
+
 def native_batch(sensors, references, orchestrator, graph):
     """Read only already-existing native metadata; never evaluate/update graph."""
     dispatcher = graph.get_node_by_path('/Render/PostProcess/SDGPipeline/PostProcessDispatcher')

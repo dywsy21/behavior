@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 14:53（北京时间）：物理重置修复实测通过，观察器重复注册门需适配（Codex / RL-G05-50K-E1）
+
+- 14:56实现`OwnedFrameRegistration`显式所有权token：只注册一次，后续必须是同一registry/同一native模板对象且dataclass定义完全未改，才允许重新attach；默认单回合重复注册拒绝保持。2新回归＋7 render-batch＋27 I/O旧回归通过（首个旧测试调用缺PYTHONPATH失败，补正确src路径后全部过）；无SDK修改。e1_v3将连同独立复制的7.1GiB/worker渲染缓存复用，减少重复shader冷编译，source/预算仍独立固定。
+- a2469da/e1_v2两sim各16控制后`reset_handle_rebind`实测qpos/qvel差**0**、held保持、时间/index完全不变；官方reset_count均到3（初始两次＋常驻一次），证明上一无效articulation问题已修复。原始io/native_rl_profile回执在各worker目录。
+- 后续创建新I/O时，旧`register_frame_annotator`按单回合安全设计拒绝同名`BehaviorRenderBatchV1`二次注册；primary错误已正确保存/回传，不再被EOF遮蔽。e1_v2真实failed/539.568s/32控制/0更新、四卡释放；合计64控制/1107.343s，下一只余9936控制/6092秒。
+- 下一为RL增加“进程内本线程拥有且定义未改的注册复用”，仍每次重新绑定实际相机、完整验frame/time；不覆盖第三方注册，不降低共享单次入口默认守卫。新源/新run才续接，旧证据与源码保持；PPO和吞吐仍待。
+
 ### 2026-09-28 14:43（北京时间）：E1_v2剩余预算恢复已唯一启动（Codex / RL-G05-50K-E1）
 
 - 新冻结源`a2469da`，robo `behavior_dev/git_worktrees/g05_50k_rl_a2469da`；新reset边界回归双端通过（总18针对性测试），原父SHA再次核同。旧supervisor/learner/两sim均退出后，续接manifest由旧终态实算9968控制/6632s。

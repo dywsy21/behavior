@@ -330,7 +330,7 @@ def configured_adapter(sim, sensors, factory, capture, settings, record, render_
         raise
 
 
-def native_adapter(sim, sensors, record):
+def native_adapter(sim, sensors, record, *, registration=None):
     validate_installed()
     import carb.settings
     import omni.replicator.core as rep
@@ -340,7 +340,13 @@ def native_adapter(sim, sensors, record):
     expected = next(path for path in INSTALLED if path.name == 'orchestrator.py')
     if Path(inspect.getfile(rep.orchestrator.step)).resolve() != expected:
         raise ValueError('Synchronous capture implementation shadowed')
-    register_frame_annotator(rep,SyntheticData)
+    if registration is None:
+        register_frame_annotator(rep,SyntheticData)
+    else:
+        from .render_batch import OwnedFrameRegistration
+        if type(registration) is not OwnedFrameRegistration:
+            raise ValueError('Explicit owned frame-registration token required')
+        registration.ensure(rep,SyntheticData)
     return configured_adapter(sim,sensors,rep.AnnotatorRegistry.get_annotator,
                               rep.orchestrator.step,carb.settings.get_settings(),record,
                               omni.timeline.get_timeline_interface().get_current_time,
