@@ -10,8 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 15:43（北京时间）：首批39片段/620自主控制已进入更新（Codex / RL-G05-50K-E1）
+
+- e1_v4首批真实policy：TRAIN instance1在前缀1268后的**108**控制触发官方success/terminated（episode总1376）；138前缀1096后512控制预算截断，未成功，后段right held为空。共39 chunks/620 policy控制/1次reward，`rollout_000.pt`保存后进入updating；本run2984＋旧2972＝累计5956控制。
+- 此批来自尚未更新的父权重＋探索噪声，不叫RL改进/原始reset SR；critic/PPO实际步数与新delta尚待核验。原c24692d/监管3905702/总预算保持。
+
 ### 2026-09-28 15:39（北京时间）：修复版课程新图审通过（Codex / RL-G05-50K-E1）
 
+- 15:41首个TRAIN课程回合（worker0/instance1）在自主后缀触发官方success，学习器successes=1；另一实例继续。**此时actor/critic均0更新，这是父权重＋探索噪声的训练课程奖励，不是RL效果提升或完整SR。** 原run/status与worker0/steps保留，下一两回合收集结束后更新。
 - 15:40真实模型所有门通过：新增32×23 CPU后处理与原生逐元素相等；零噪声/旧路径/autograd误差均0，完整7360项KL0，AE grad17895.506有限、冻结层无梯度。原两sim已完成首32自主policy控制，无错误；此时0奖励/0更新，`e1_v4/probability_gate.json`为证据。
 - 原c24692d/e1_v4两新课程episode0已完成2364真实专家控制；累计5336控制/0参数更新。两实例依旧右手held=radio_89、官方未成功/未终止，本人审阅各新三RGB拼图，与原注册课程姿态定性一致，无空白相机；未据图判任务成功。
 - 本地`artifacts/g05-50k-rl-20260928/e1_v4-worker{0,1}-curriculum.png`双端SHA分别2692e293…8f07de、96584efd…4a29f，已签独立新`e1_v4/human_release.json`，未复用旧图签名。下一CPU动作等价门与自主采样/PPO；总预算/源码保持，仍不报方法有效。
