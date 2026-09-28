@@ -15,9 +15,10 @@ def move(value, device):
 
 
 class G05FlowAdapter:
-    def __init__(self, policy, processor, noise):
+    def __init__(self, policy, processor, noise, *, ae_autocast=True):
         self.policy,self.processor,self.noise=policy,processor,noise
         self.model=policy.model; self.fm=self.model.fm_helper; self.device='cuda:0'
+        self.ae_autocast=ae_autocast
         self.infer=PolicyInferencer(policy,processor,device=self.device)
         if (self.fm.time_convention!='pi_convention' or self.fm.num_inference_steps!=10 or
                 self.fm.horizon_steps!=32 or self.fm.action_dim!=27 or self.fm.zero_pad_action_target or
@@ -53,7 +54,7 @@ class G05FlowAdapter:
 
     def velocity(self,context,latent,time):
         ae=self.model.action_expert
-        with torch.autocast('cuda',dtype=torch.bfloat16):
+        with torch.autocast('cuda',dtype=torch.bfloat16,enabled=self.ae_autocast):
             with torch.autocast('cuda',enabled=False):
                 embeds=ae.embed(latent.float()); tcond=ae.encode_time(time.float())
             hidden=ae(inputs_embeds=embeds,attention_mask=context['mask'],position_ids=context['pos'],

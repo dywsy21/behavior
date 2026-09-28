@@ -10,8 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 16:03（北京时间）：五档回溯全拒绝，转零采样数值诊断（Codex / RL-G05-50K-E1）
+
+- e1_update_v1真实completed/trust_region_exhausted，0 actor更新/0新控制，critic仍继承4步。AE LR1e-6/1e-7/1e-8/1e-9/1e-10对应全39路径max KL113.33/6.1263/5.2453/4.7125/5.1649；最小步长仍不随幅度收敛到0，不能声称简单降LR已解决或存出RL actor。全部候选恢复，原权重保持。
+- 下一只做≤600秒/0新控制的数值探针：同权重重复评分、无变化的restore、LR0的Adam no-op、极小步长的FP32权重及BF16量化变化、相同latent的FP32-AE前向对照，区分恢复/优化器错误与混合精度舍入。此为诊断，不接受新权重、不修改概率门/部署精度，不自动扩大仿真或重训。
+
 ### 2026-09-28 15:55（北京时间）：同批轨迹回溯续接已唯一启动（Codex / RL-G05-50K-E1）
 
+- 15:57原50k与回滚AE逐参数相等/actor Adam初态空、39条旧路径重算门及五task BC预检全部通过，learner3911042进入offline_updating；此时0 accepted actor、继承critic4步，0新控制。`retained_batch_gate.json`留证，正在有限步长候选检查。
 - 新冻结`1e4642e`、robo独立`behavior_dev/git_worktrees/g05_50k_rl_1e4642e`，3项CPU回溯回归双端通过。旧真实控制/父SHA/critic-only checkpoint SHA再核后，`e1_update_v1`监管**3911035**已启动，GPU0/最多900秒/**0新增仿真控制**，不启动sim。累计6884控制/3373.414秒为继承基数，原10k/2h总限保持；实际actor更新待核。
 - 旧两个episode0视频已取回本地`artifacts/g05-50k-rl-20260928/e1_v4-train{1,138}-before-update.mp4`，SHA bd7b9c1f…726d8a/6614f5d8…caa0a7双端一致。本人查看全部自主部分采样帧（1的7＋课程起点，138的32）：1左手接触旋钮后灯变绿，与1376官方成功一致；138右臂转动并将radio降至桌面附近，未完成开机，后段物理held为空；未将其说成掉到地上。两者全为更新前、TRAIN中途课程证据。
 
