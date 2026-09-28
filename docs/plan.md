@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 16:20（北京时间）：FP32-AE剩余预算唯一启动（Codex / RL-G05-50K-E1）
+
+- 新冻结`4a28cac4cbf4e8d4d94bec48366de1af40c662df`，robo独立`behavior_dev/git_worktrees/g05_50k_rl_4a28cac`；11针对性测试双端通过，原50k完整SHA/两TRAIN控制SHA/模拟器端diff零再次核过。`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_fp32`监管**3913967**已唯一启动；仅剩3116控制/3503秒/1 batch，上限12 accepted步，不额外benchmark。
+- AE采样/PPO FP32（TF32关），VLM BF16冻结，原五task FM BC配方保持；旧BF16 rollout只列provenance，不再放入训练字段/本轮训练。新课程图审、同精度原生FM/真实23D动作等价、旧概率/梯度门及实际更新待；提交启动不等于训出新策略。
+
 ### 2026-09-28 16:15（北京时间）：定位BF16量化跳变，准备同预算新FP32采样（Codex / RL-G05-50K-E1）
 
 - `2caa67f/e1_precision_probe`completed/133.086秒/0控制/0 accepted，最后父权重和概率恒等恢复过，4卡释放。重复评分/原样restore/LR0的BF16 logp与KL均0，排除这些测试中的恢复/Adam无动作漂移。LR1e-10只改最大1.164e-10，却有3648个AE参数的BF16转换值跳档，六条BF16 KL1.410–2.908；FP32同更新KL为数值0。LR1e-8时BF16 KL1.613–3.243，FP32仅.000117–.001258；1e-7的FP32 KL.001744–.124630。控制变量证据将主要原因定位为**BF16前向量化不连续＋长路径概率放大**，不是单纯学习率不够低。原manifest/identity/final_restore/learner.jsonl完整保留。
