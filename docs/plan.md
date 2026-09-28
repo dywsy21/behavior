@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 13:47（北京时间）：50k RL设计讨论与真实接口审计（Codex / RL-G05-50K-DESIGN）
+
+- 用户希望基于指定50k讨论RL全部细节；本轮仅查资料/只读代码与robo原配置，**0新采样/训练/模型或环境修改**。父权重仍c465044b…2f6d48，旧SFT/AR goal保持blocked，其他成员RL职责不改。
+- 实查10步pi-convention、32预测/16执行、23真实维/4补零、非因果AE；原SFT `joint_training=false`、CE教VLM/FM教AE，当前noMEM/单帧三RGB，不套用A4六帧LoRA约定。现eval无latent/log-prob/reward数据，A100 session还硬限定GPU3及单回合reset计数，不能直接称已有PPO框架。
+- [讨论稿](experiments/2026-09-28-g05-50k-rl-design.md)锁定主候选Flow-Noise/PPO更新AE、冻结VLM，DSRL仅吞吐受阻时备选；写清路径概率、chunk折扣、奖励/课程/分割、防遗忘、部署采样差异、数据与持续reset缺口和有界验收。折扣/吞吐算术已核，文档差异检查通过；候选超参/预算未启动，public_test301不回灌。下一与用户讨论关键选择、与RL owner确认实现边界后另登记实验。
+
 ### 2026-09-28 13:27（北京时间）：50k评测与两视频核验交接完成（Codex / EVAL-G05-50K）
 
 - 最终[报告](experiments/2026-09-28-g05-50k-eval.md)与[机器可读结果](experiments/2026-09-28-g05-50k-results.json)：radio301在2539控制官方成功/0专家前缀；trash1024短诊断0 held/未成功。本人检查全部159＋64录像采样帧及两张原尺寸末帧：radio右手抓持后左手操作按钮区域；trash空手到厨房垃圾桶附近后停滞，未见拾罐/投放。不把两段混算50% SR，也不将单例称总体最优。
