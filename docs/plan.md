@@ -12,6 +12,7 @@
 
 ### 2026-09-28 15:25（北京时间）：CPU decode修复版剩余预算启动（Codex / RL-G05-50K-E1）
 
+- 15:27五task原TRAIN BC forward/backward全部通过，FM分别.04906/.03481/.05069/.03065/.05960（单窗口准入值，不是eval趋势），冻结层无梯度/0 optimizer步；证据`e1_v4/bc_preflight.json`。learner3905709、sim3905968/3905971已冷初始化，原监管继续，未回放/更新。
 - 新冻结`c24692d55a8b58fa5ab510325f8ec47836b1f06b`，robo独立`behavior_dev/git_worktrees/g05_50k_rl_c24692d`；2项CPU/CUDA native decode＋5项flow单测双端通过，原模拟器端完整diff为零。新监管**3905702**，run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_v4`。
 - 父SHA再次核同、旧PID结束、4卡空闲后唯一启动；manifest仅7028控制/4997秒，已累计的2972控制/2202.721秒不重置。继承e1_v3并发收据/SHA，不重做吞吐；先五任务TRAIN BC前反向预检，再两sim课程回放/新图审与真实CPU动作等价门。仍0 actor/critic更新，未报告RL收益；运行源码不热改。
 
