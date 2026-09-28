@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 12:49（北京时间）：50k同条件仿真唯一启动（Codex / EVAL-G05-50K）
+
+- 12:51实际actor3867386/8933已ready，50k SHA **c465044b025a487c42fddce17d45059b314a547e1b672f27cbdbbb7cfe2f6d48**；946严格恢复和load元数据与旧离线一致，身份为50k/FM/noMEM/1帧/23D。radio模拟器3867656开始初始化，尚无动作或成功结论。
+- 源码固定**0df8a171e3568b62bf16b65b801ec0b6aaa779ab**，robo独立`behavior_dev/git_worktrees/eval_g05_50k_0df8a17`；双端18 CPU回归通过、原两入口与18acacf零差异，50k旧100窗证据和真实decoder导入门过，启动前四卡空。
+- 新监管**3867381**，run `/mnt/nvme_tmp/robodojo_g05_50k_eval_20260928/v1`已唯一提交；实际加载、权重SHA/首帧与闭环结果待。原radio3224/trash1024/266调用/60min、0新离线/训练不变，下一核actor ready与真实控制；不热改运行源、不重复启动。
+
 ### 2026-09-28 12:45（北京时间）：按用户新要求转测50k，20k已停止（Codex / EVAL-G05-50K）
 
 - 用户12:42改看五万步；已核身份后只TERM原20k task1组3862994，停在176控制。监管3856250收尾/actor3857787退出，四卡0MiB；raw supervisor failed/−15按用户主动取消解释，不记模型/仿真故障。radio完整证据和旧source/run保留，不续跑20k/100k余下任务。
