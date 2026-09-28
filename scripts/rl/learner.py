@@ -126,22 +126,29 @@ class Experiment:
     def benchmark(self):
         self.phase='benchmark'; self.status()
         for w in (0,1): self.latest[w]=recv(self.connections[w],1200)
-        # Warm both cameras/physics; then exactly matched 128 controls/worker.
-        warm=self.replay([0,1],{0:16,1:16},phase='benchmark_warmup')
-        self.reset([0,1])
-        serial=self.replay([0,1],{0:128,1:128},phase='benchmark_serial',parallel=False)
-        self.reset([0,1])
-        parallel=self.replay([0,1],{0:128,1:128},phase='benchmark_parallel')
-        speedup=serial['seconds']/parallel['seconds']
-        result=dict(warmup=warm,serial=serial,parallel=parallel,speedup=speedup,
-            includes_per_chunk_observation=True,excludes_initialization=True,
-            definition='same 256 controls, serial dispatch versus concurrent dispatch, both native processes resident')
+        receipt=self.manifest.get('benchmark_receipt')
+        if receipt:
+            if sha(receipt['path'])!=receipt['sha256']: raise ValueError('Throughput evidence changed')
+            result=json.loads(Path(receipt['path']).read_text())
+            result=dict(result,reused_from=receipt,additional_benchmark_controls=0)
+        else:
+            # Warm both cameras/physics; then exactly matched 128 controls/worker.
+            warm=self.replay([0,1],{0:16,1:16},phase='benchmark_warmup')
+            self.reset([0,1])
+            serial=self.replay([0,1],{0:128,1:128},phase='benchmark_serial',parallel=False)
+            self.reset([0,1])
+            parallel=self.replay([0,1],{0:128,1:128},phase='benchmark_parallel')
+            result=dict(warmup=warm,serial=serial,parallel=parallel,speedup=serial['seconds']/parallel['seconds'],
+                includes_per_chunk_observation=True,excludes_initialization=True,
+                definition='same 256 controls, serial dispatch versus concurrent dispatch, both native processes resident')
         save(OUT/'throughput.json',result)
         # Keep both TRAIN instances but fall back to serial step dispatch when
         # concurrent execution does not materially improve measured throughput.
-        self.parallel=speedup>1.1
+        self.parallel=result['speedup']>1.1
         self.status(throughput=result,use_parallel=self.parallel)
-        self.reset([0,1]); self.replay([0,1],self.prefix,phase='expert_prefix',parallel=self.parallel)
+        if not receipt: self.reset([0,1])
+        self.phase='curriculum_replay'
+        self.replay([0,1],self.prefix,phase='expert_prefix',parallel=self.parallel)
         for w in (0,1):
             send(self.connections[w],dict(op='observe',tag='curriculum_start'))
             self.latest[w]=recv(self.connections[w])
@@ -188,6 +195,9 @@ class Experiment:
                       frozen_gradient_leak=False,optimizer_steps=0)
         self.actor_optimizer.zero_grad(set_to_none=True)
         save(OUT/'probability_gate.json',result)
+
+    def prepare_bc(self):
+        self.phase='bc_preflight'; self.status()
         from g05.utils.data.processor_utils import instantiate_dataset
         self.dataset=instantiate_dataset(self.cfg,is_training_set=True); self.dataset.set_processor(self.processor)
         child=self.dataset.datasets[0]
@@ -200,6 +210,23 @@ class Experiment:
             self.bc_indices.append(start+(end-start-32)//2)
         save(OUT/'bc_windows.json',dict(episodes=[0,200,400,600,800],indices=self.bc_indices,
                                        source='original 95% TRAIN only',weight=.1))
+        # Exercise every task's actual dataset/collator/FM backward BEFORE
+        # costly simulator initialization/replay. No optimizer step or RNG drift.
+        rng=torch.get_rng_state(); cuda_rng=torch.cuda.get_rng_state_all(); receipts=[]
+        numpy_rng=np.random.get_state(); python_rng=random.getstate()
+        for i in range(5):
+            self.timecheck(); self.actor_optimizer.zero_grad(set_to_none=True)
+            loss,details=self.auxiliary_bc(i); loss.backward()
+            grads=[p.grad for p in self.actor_parameters if p.grad is not None]
+            if not grads or not all(torch.isfinite(g).all() for g in grads):
+                raise ValueError('Invalid original TRAIN BC gradients')
+            if any(p.grad is not None for p in self.policy.parameters() if not p.requires_grad):
+                raise ValueError('BC gradient leaked into frozen parent')
+            receipts.append(dict(task=i,details=details,optimizer_steps=0))
+        self.actor_optimizer.zero_grad(set_to_none=True)
+        torch.set_rng_state(rng); torch.cuda.set_rng_state_all(cuda_rng)
+        np.random.set_state(numpy_rng); random.setstate(python_rng)
+        save(OUT/'bc_preflight.json',dict(tasks=receipts,optimizer_steps=0,frozen_gradient_leak=False))
 
     def auxiliary_bc(self,index):
         from g05.utils.data.data_utils import collate_fn_pad_sequences
@@ -324,7 +351,7 @@ class Experiment:
 
     def run(self):
         try:
-            self.spawn(); self.load(); self.benchmark(); self.gates()
+            self.load(); self.prepare_bc(); self.spawn(); self.benchmark(); self.gates()
             while self.budget.remaining>=16*len(self.active):
                 self.phase='collecting'; self.status()
                 rows,advantages,returns,completed=self.rollout()

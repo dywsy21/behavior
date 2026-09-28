@@ -7,6 +7,7 @@ from g05.models.kv_cache import SparseKVCache
 from g05.models.g05.inferencer import PolicyInferencer
 from g05.utils.common.pytorch_utils import dict_apply
 from .flow_ppo import PAD_DIMS, gaussian_logp, gaussian_kl
+from .native_decode import cpu_postprocess_inputs
 
 
 def move(value, device):
@@ -94,7 +95,7 @@ class G05FlowAdapter:
     def decode(self,x,prepared):
         from scripts.experiments.eval_g05_100k import vector_chunk
         p,batch,_=prepared
-        batch=dict(batch,action=x,selected_action_source='fm')
+        batch=cpu_postprocess_inputs(x,batch)
         action=self.infer._postprocess_single(batch,0,p.sub_processor,
             **({'raw_state_anchor':p.raw_state_anchor} if p.raw_state_anchor is not None else {}))
         return vector_chunk(action)
@@ -110,9 +111,19 @@ class G05FlowAdapter:
         ours,_=self.sample(context,stochastic=False)
         difference=float((native-ours).abs().max())
         if not torch.equal(native,ours): raise ValueError(f'Zero-added-noise decoder differs: {difference}')
+        # Validate the real 23D robot boundary as well as normalized latents.
+        decoded=self.decode(ours,prepared)
+        native_batch=move(dict(batch,action=native,selected_action_source='fm'),'cpu')
+        native_action=self.infer._postprocess_single(native_batch,0,p.sub_processor,
+            **({'raw_state_anchor':p.raw_state_anchor} if p.raw_state_anchor is not None else {}))
+        from scripts.experiments.eval_g05_100k import vector_chunk
+        import numpy as np
+        if not np.array_equal(decoded,vector_chunk(native_action)):
+            raise ValueError('Decoded 23D controls differ from native CPU postprocessing')
         _,trace=self.sample(context)
         lp,kl=self.score(context,move(trace,self.device))
         error=float((lp-trace['old_logp'].to(self.device)).abs())
         if error>.002 or abs(float(kl))>1e-6: raise ValueError('Old-path probability identity failed')
         return dict(zero_noise_max_difference=difference,old_path_logp_error=error,path_kl=float(kl),
-                    scored_transitions=10*32*23, frozen_features=True)
+                    scored_transitions=10*32*23, frozen_features=True,
+                    native_cpu_decode_equal=True,decoded_shape=list(decoded.shape))

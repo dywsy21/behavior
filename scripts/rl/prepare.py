@@ -2,9 +2,10 @@
 import json
 import math
 import os
+import subprocess
 import numpy as np
 import pyarrow.parquet as pq
-from common import DATA, RAW, OUT, PREVIOUS, TEMPLATE, PARENT, PARENT_SHA, commit, sha, save
+from common import DATA, RAW, OUT, PREVIOUS, TEMPLATE, PARENT, PARENT_SHA, REPO, commit, sha, save
 
 
 def main():
@@ -14,7 +15,8 @@ def main():
         previous=json.loads((PREVIOUS/'manifest.json').read_text())
         supervisor=json.loads((PREVIOUS/'supervisor.json').read_text())
         status=json.loads((PREVIOUS/'status.json').read_text())
-        pids=json.loads((PREVIOUS/'pids.json').read_text())
+        pids=(json.loads((PREVIOUS/'pids.json').read_text()) if (PREVIOUS/'pids.json').is_file()
+              else dict(learner=supervisor['learner'],simulators=[]))
         for pid in [supervisor['supervisor'],pids['learner'],*pids['simulators']]:
             # Zombie supervisors cannot hold CUDA/runtime resources.
             path=f'/proc/{pid}/stat'
@@ -32,6 +34,19 @@ def main():
         previous.update(source_commit=source,max_controls=10000-used,
             max_active_wall_seconds=7200-math.ceil(elapsed),policy_rng='shared torch/CUDA seed1700',
             continued_from=str(PREVIOUS),prior_controls=used,prior_active_seconds=elapsed)
+        receipt=PREVIOUS/'throughput.json'
+        if receipt.is_file():
+            result=json.loads(receipt.read_text())
+            if result['serial']['controls']!=256 or result['parallel']['controls']!=256:
+                raise ValueError('Unexpected matched-workload receipt')
+            # Reuse only if the complete simulator-side implementation is unchanged.
+            simulator_paths=['scripts/rl/sim_worker.py','scripts/semantic_robot/native_rl_profile.py',
+                'scripts/semantic_robot/rl_reset_boundary.py','scripts/semantic_robot/shared_og_startup.py',
+                'src/semantic_robot/v2']
+            subprocess.run(['git','-C',str(REPO),'diff','--exit-code',supervisor['source_commit'],source,
+                            '--',*simulator_paths],check=True)
+            previous['benchmark_receipt']=dict(path=str(receipt),sha256=sha(receipt),
+                source_commit=supervisor['source_commit'],simulator_implementation_unchanged=True)
         save(OUT/'manifest.json',previous)
         print('CONTINUATION',previous['max_controls'],previous['max_active_wall_seconds'],flush=True)
         return

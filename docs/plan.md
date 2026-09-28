@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 15:20（北京时间）：真实FM/概率/梯度门通过，CPU后处理接口失败（Codex / RL-G05-50K-E1）
+
+- e1_v3/probability_gate.json实际零噪声maxdiff=0、旧路径logp差=0、KL=0、autograd logp差=0；7360项全计，AE grad norm18960.365有限且冻结层无梯度。五任务原TRAIN BC窗口索引建立通过；尚未执行BC backward。
+- 首次policy decode复用原normalizer时，RL适配器漏掉原推理器的CPU回传，`normalizer.py:526`的CPU scale/offset遇CUDA动作；在派发动作前失败。修复应在RL decode恢复原CPU后处理边界，不热改normalizer/运行源。e1_v3实际2908控制/1095.379秒/0更新，监管与sim已退出、四卡释放。
+- 累计2972控制/2202.721秒；下一仅剩7028控制/4997秒，新冻结run继续。已完成并发比较不重复，保留引用/SHA；先做原TRAIN BC forward/backward准入并增加实际23维decode校验，避免昂贵回放后再发现模型接口错误。
+
 ### 2026-09-28 15:17（北京时间）：两TRAIN课程起点本人图审通过，放行模型门（Codex / RL-G05-50K-E1）
 
 - 原3c939e4/e1_v3两前缀1268/1096实际结束；本run2908＋旧64＝累计2972控制，尚0 actor/critic更新。两实例均right held=radio_89，末条物理记录success/terminated/truncated均false，未拿专家成功当policy奖励。
