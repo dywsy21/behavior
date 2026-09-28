@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 19:01（北京时间）：E2首对TRAIN起点本人图审通过（Codex / RL-G05-50K-E2）
+
+- 本run gate000新TRAIN1/138前缀1268/1096完成，2364课程控制＋25792基线＝**28156**、0 pending。两官方success/terminal均false、右手held radio_89；本人审两新三RGB原图，1抓柄且左手近按钮，138倾斜抓持且左手分开，输入/姿态合理。
+- 本地`artifacts/g05-50k-rl-20260928/e2_v1-training/gate-000/`双PNG SHA aeff217d…437d3/9fef572e…4224c与远端同，签独立human_release_000（SHA43b18273…da4ee）放行，不复用旧图或public图。详细[E2人审](experiments/2026-09-28-g05-50k-rl-e2-review.md)；下一概率/梯度门和首批新on-policy采样，actor10/critic4仅继承，本轮更新仍待。
+
 ### 2026-09-28 18:55（北京时间）：E2 TRAIN池就绪、开始真实课程复放（Codex / RL-G05-50K-E2）
 
 - 原双TRAIN sim3932010/3932017场景/机器人/原生三相机就绪，phase已training_curriculum/batch0；从官方TRAIN1/138原初态完整复放1268/1096控制前缀，所有控制仍计入原100k/12h，未从public起点训练。
