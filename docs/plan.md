@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 12:09（北京时间）：最低FM权重筛选唯一启动（Codex / EVAL-G05-BEST）
+
+- 冻结源码**18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff**，robo独立`behavior_dev/git_worktrees/eval_g05_best_18acacf`；双端14 CPU回归、原40k/100k完整性复用检查与真实decoder导入门均过。启动前四GPU0MiB、可用RAM849GiB，未动队友进程。
+- 唯一监管**3856250**，新run `/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1`；先四GPU分批评8个未评候选，再按全十同窗FM选择并自动进入radio/trash同条件有限诊断。原800新窗/4248控制/266调用/75min/0训练预算不变。当前提交运行不代表已有排名/成功率，下一检查candidate输出与选择回执。
+
 ### 2026-09-28 12:05（北京时间）：按新指令停止100k，转为最低固定eval权重筛选（Codex / EVAL-G05-BEST）
 
 - 用户最新要求“选一个eval loss最低的ckpt来测试”，替代100k余下五task序列。11:59仅对已核自有task2进程组3849914发TERM；12:00原监管3839451退出并清理actor3839457，四卡均0MiB。原supervisor回执记failed/子进程−15，**原因是用户改任务主动停止，不计模型/仿真故障**。task2保留192控制的中断片段，task3/4未启动；前两完整预算视频和原source/run都保留。

@@ -20,8 +20,8 @@ Owner：Codex / EVAL-G05-BEST；分支`eval/g05-100k-20260928`。2026-09-28用�
 
 ## 证据位置与当前状态
 
-- 新入口：`scripts/experiments/eval_g05_best.py`；14 CPU回归已过，source commit及launch PID实际启动后记录。
+- 新入口：`scripts/experiments/eval_g05_best.py`；双端14 CPU回归已过，实际source **18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff**、新独立`behavior_dev/git_worktrees/eval_g05_best_18acacf`。
 - 新输出：`/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1`，`candidates/<step>/`为新离线记录，`selection.json`为全十排名/选择理由，`identity.json`为实际部署权重SHA，`task_0/`/`task_1/`为闭环。
 - 私有runtime：`/mnt/nvme_tmp/robodojo_sim_runtime_20260925/eval_g05_best_20260928_v1`。
 - 本地：`/home/wsy/behavior/artifacts/g05-best-eval-20260928/`（视频/原始行不入Git）。
-- **12:05北京时间：尚未launch，最低者与闭环结果均待。** 原100k v4四个自有进程均已退出，task2中断192控制、其余未启动；不继续旧序列。
+- **12:09北京时间：监管3856250已唯一launch，最低者与闭环结果均待。** 原100k v4自有进程均已退出，task2中断192控制、其余未启动；不继续旧序列。启动前四卡空/849GiB RAM可用，原证据与decoder门通过，不据提交启动宣称模型效果。
