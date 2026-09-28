@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 13:15（北京时间）：50k收音机官方成功且视频核验完成（Codex / EVAL-G05-50K）
+
+- 13:15 video/steps/I/O/result四SHA双端验同；本人审完159录像采样帧/5页与原尺寸末帧：先导航到茶几，右手抓起红色收音机，再以左手接近正面按钮区域，符合随后官方成功。1505–2539连续1035控制held=radio_89，2539唯一success=true/terminated=true/truncated=false；所有159 capture/read、2539 control时钟门过。完整视频已本地展示；不是凭抓持自报成功，亦不是多次SR。
+- 原v1/task_0 result已真实完成：**2539控制/159调用，official_success=true、环境终止、reason=environment_done**，1110.7595s含初始化，早于3224预算；同public_test301/环境0/policy17/原始reset、0专家前缀/0oracle技能。20k/100k各3224均无抓持/未成功，本单例出现实质推进；不外推总体SR或独立盲测表现。
+- 50k SHA c465044b…2f6d48/source0df8a17保持；完整视频/steps/I/O已在本地`artifacts/g05-50k-eval-20260928/v1/task_0`。监管继续原trash1024预算/模拟器3872745，不因为成功加任务/训练；下一完成第二回合证据与对照交接。
+
 ### 2026-09-28 13:05（北京时间）：50k出现收音机抓持，尚未完成任务（Codex / EVAL-G05-50K）
 
 - 原run v1/task_0逐步物理记录：**control1505首次右手held=radio_89，持续至当前1696**，此前20k/100k各3224控制均无held。当前0官方success，不能把抓住当“打开收音机”完成；完整视频尚未封口、人审待。
