@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 19:21（北京时间）：E2首个新delta保存、第二批真实复放启动（Codex / RL-G05-50K-E2）
+
+- batch0最终**新7 actor/新2 critic**（总17/6），最后accepted全71路径max KL .0099881；下一组有限候选不能同时通过KL和surrogate检查，均回滚并结束本批更新，未放宽门/强行凑18步。
+- 已保存`e2_v1/rl_batch_001_updates_0017.pt`，receipt SHA **896c696570c78437c47585ec9c407e99bb44da9c17c0a88da8c60364d212076a**（独立重算中）；必须原50k＋此delta、FP32 AE部署。train_batch_000.json记录1在107自主步成功、138在1024步未成；这是更新前训练课程，不是最终SR。
+- 原run已进入batch1相同1268/1096课程复放，用新17-step策略采新on-policy；prefix组合未变，沿已审起点规则，不创建重复审批/重复作业。首两TRAIN闭合视频取回/自主帧人审中，最终固定同六对评测未运行，原100k/12h不变。
+
 ### 2026-09-28 19:09（北京时间）：E2首个新actor更新真实通过（Codex / RL-G05-50K-E2）
 
 - 原batch0真实actor总11（**本轮新1**）、critic总6（新2）。新rollout候选AE1e-8/noise1e-7原尺度直接accepted，所有71路径max KL **.0006732941**＜.01，surrogate -.064441→-.090562；498,602,297个AE参数改变，max abs delta1.4901161e-8，不是仅更新计数/critic。
