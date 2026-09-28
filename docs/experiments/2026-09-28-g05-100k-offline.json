@@ -1,0 +1,140 @@
+{
+  "source_commit": "060aeac069d36edabfee86ce1cef8c9e5e1479af",
+  "ckpt100k_sha256": "f0646f3569b708b49923b9d5c869f5102971adacc2adce03b095080127b6dbed",
+  "paired_windows": 100,
+  "identical_locators": true,
+  "unique_episodes": 50,
+  "overall": {
+    "fm_loss": {
+      "step_40000": 0.12040020193904638,
+      "step_100000": 0.14935900626238435,
+      "increase_percent": 24.052122718198277,
+      "worse_windows": 72
+    },
+    "ce_loss": {
+      "step_40000": 2.553601983487606,
+      "step_100000": 2.845715417265892,
+      "increase_percent": 11.439270319618444,
+      "worse_windows": 95
+    }
+  },
+  "per_task": [
+    {
+      "task_id": 0,
+      "task": "Turn on the radio receiver that's on the table in the living room.",
+      "windows": 20,
+      "fm_loss": {
+        "step_40000": 0.1308034673333168,
+        "step_100000": 0.15898591205477713,
+        "increase_percent": 21.545640414596278,
+        "worse_windows": 14
+      },
+      "ce_loss": {
+        "step_40000": 2.632753688097,
+        "step_100000": 2.9861810386180876,
+        "increase_percent": 13.424246716241473,
+        "worse_windows": 20
+      }
+    },
+    {
+      "task_id": 1,
+      "task": "Put the three cans of soda from the living room inside the trash can in the kitchen.",
+      "windows": 20,
+      "fm_loss": {
+        "step_40000": 0.11867769975215196,
+        "step_100000": 0.15792955353390425,
+        "increase_percent": 33.07432977191702,
+        "worse_windows": 16
+      },
+      "ce_loss": {
+        "step_40000": 2.747846084833145,
+        "step_100000": 3.0512114644050596,
+        "increase_percent": 11.040115428820885,
+        "worse_windows": 18
+      }
+    },
+    {
+      "task_id": 2,
+      "task": "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.",
+      "windows": 20,
+      "fm_loss": {
+        "step_40000": 0.15340021785814315,
+        "step_100000": 0.1931689651682973,
+        "increase_percent": 25.92483105006429,
+        "worse_windows": 15
+      },
+      "ce_loss": {
+        "step_40000": 2.828338485956192,
+        "step_100000": 3.1190322935581207,
+        "increase_percent": 10.277900224649095,
+        "worse_windows": 19
+      }
+    },
+    {
+      "task_id": 3,
+      "task": "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.",
+      "windows": 20,
+      "fm_loss": {
+        "step_40000": 0.08357921314891428,
+        "step_100000": 0.10632322756573558,
+        "increase_percent": 27.21252517213575,
+        "worse_windows": 12
+      },
+      "ce_loss": {
+        "step_40000": 1.9383371338248252,
+        "step_100000": 2.1631720036268236,
+        "increase_percent": 11.599368648442642,
+        "worse_windows": 18
+      }
+    },
+    {
+      "task_id": 4,
+      "task": "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.",
+      "windows": 20,
+      "fm_loss": {
+        "step_40000": 0.11554041160270571,
+        "step_100000": 0.1303873729892075,
+        "increase_percent": 12.850016007865861,
+        "worse_windows": 15
+      },
+      "ce_loss": {
+        "step_40000": 2.620734524726868,
+        "step_100000": 2.9089802861213685,
+        "increase_percent": 10.998663110470597,
+        "worse_windows": 20
+      }
+    }
+  ],
+  "bootstrap": {
+    "fm_loss": {
+      "paired_episode_mean_delta_ci95": [
+        0.01966053755953908,
+        0.03891138516832143
+      ],
+      "resamples": 10000,
+      "episodes": 50,
+      "seed": 20260928,
+      "method": "paired episode-cluster percentile bootstrap; descriptive development sample"
+    },
+    "ce_loss": {
+      "paired_episode_mean_delta_ci95": [
+        0.2636462026834488,
+        0.3198917520046234
+      ],
+      "resamples": 10000,
+      "episodes": 50,
+      "seed": 20260928,
+      "method": "paired episode-cluster percentile bootstrap; descriptive development sample"
+    }
+  },
+  "limitations": [
+    "100 fixed windows, not complete validation set",
+    "No full-task success inferred from CE/FM",
+    "Public_test301 is development; new simulator uses A100 PathTracing",
+    "Training and evaluation both use legacy dummy normalization for base_qvel/trunk_qpos; not silently changed"
+  ],
+  "rows_sha256": {
+    "step40000": "1ec9db7258d03ea3d84bd8cca079b76938547c0b3574f5922519fc2d5ee405b6",
+    "step100000": "a17091ad803b68b77744674a0ae483f82409287e08cd0e230164982373113464"
+  }
+}
