@@ -10,8 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 15:39（北京时间）：修复版课程新图审通过（Codex / RL-G05-50K-E1）
+
+- 原c24692d/e1_v4两新课程episode0已完成2364真实专家控制；累计5336控制/0参数更新。两实例依旧右手held=radio_89、官方未成功/未终止，本人审阅各新三RGB拼图，与原注册课程姿态定性一致，无空白相机；未据图判任务成功。
+- 本地`artifacts/g05-50k-rl-20260928/e1_v4-worker{0,1}-curriculum.png`双端SHA分别2692e293…8f07de、96584efd…4a29f，已签独立新`e1_v4/human_release.json`，未复用旧图签名。下一CPU动作等价门与自主采样/PPO；总预算/源码保持，仍不报方法有效。
+
 ### 2026-09-28 15:25（北京时间）：CPU decode修复版剩余预算启动（Codex / RL-G05-50K-E1）
 
+- 15:34两sim初始场景/物理/相机就绪，进入原TRAIN专家回放（首32实际控制过），复用原并发receipt而未额外benchmark；尚未到课程起点/策略采样，0更新。原PID、代码、预算保持。
 - 15:27五task原TRAIN BC forward/backward全部通过，FM分别.04906/.03481/.05069/.03065/.05960（单窗口准入值，不是eval趋势），冻结层无梯度/0 optimizer步；证据`e1_v4/bc_preflight.json`。learner3905709、sim3905968/3905971已冷初始化，原监管继续，未回放/更新。
 - 新冻结`c24692d55a8b58fa5ab510325f8ec47836b1f06b`，robo独立`behavior_dev/git_worktrees/g05_50k_rl_c24692d`；2项CPU/CUDA native decode＋5项flow单测双端通过，原模拟器端完整diff为零。新监管**3905702**，run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_v4`。
 - 父SHA再次核同、旧PID结束、4卡空闲后唯一启动；manifest仅7028控制/4997秒，已累计的2972控制/2202.721秒不重置。继承e1_v3并发收据/SHA，不重做吞吐；先五任务TRAIN BC前反向预检，再两sim课程回放/新图审与真实CPU动作等价门。仍0 actor/critic更新，未报告RL收益；运行源码不热改。
