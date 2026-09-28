@@ -10,8 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 19:08（北京时间）：E2首批71片段进入PPO更新（Codex / RL-G05-50K-E2）
+
+- 新on-policy TRAIN batch0共71chunks/**1131自主控制**：1在107步官方成功、138在1024步未成功截断，reward合计1；原前缀2364，训练已耗3495实际控制，总E2 **29287/0 pending**。`rollout_000.pt`已收集保存，phase updating/71samples；当前10 actor/4 critic仍是继承值，真实新增更新/新delta待验。
+- 原全路径max KL≤.01/有界回溯/五task TRAIN BC保持；本批课程1/2不与完整reset基线0/6混报。下一核accepted步、真实AE参数变化、checkpoint保存，之后只采新on-policy批次；原预算不扩大。
+
 ### 2026-09-28 19:01（北京时间）：E2首对TRAIN起点本人图审通过（Codex / RL-G05-50K-E2）
 
+- 19:05首个TRAIN1课程回合在1268前缀后**107自主控制**触发官方success/terminated（总1375、右手仍held）；真实训练reward1，TRAIN138继续原1024自主上限。此时actor仍10继承/本轮新0，是本批更新前课程结果，不称RL后原初态SR提升。
 - 19:04恢复后的真实模型门通过：同FP32原生FM及32×23 CPU decode逐位相等，完整7360项old logp/KL及autograd误差0，AE梯度17531.06有限、冻结层无梯度泄漏，0门内optimizer步。首128自主控制/8chunks已采样，actor仍10继承/本轮新0、奖励尚0，`probability_gate.json`留证；继续原首批采样而非再启动作业。
 - 本run gate000新TRAIN1/138前缀1268/1096完成，2364课程控制＋25792基线＝**28156**、0 pending。两官方success/terminal均false、右手held radio_89；本人审两新三RGB原图，1抓柄且左手近按钮，138倾斜抓持且左手分开，输入/姿态合理。
 - 本地`artifacts/g05-50k-rl-20260928/e2_v1-training/gate-000/`双PNG SHA aeff217d…437d3/9fef572e…4224c与远端同，签独立human_release_000（SHA43b18273…da4ee）放行，不复用旧图或public图。详细[E2人审](experiments/2026-09-28-g05-50k-rl-e2-review.md)；下一概率/梯度门和首批新on-policy采样，actor10/critic4仅继承，本轮更新仍待。
