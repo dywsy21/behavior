@@ -1,0 +1,239 @@
+{
+  "experiment_id": "EVAL-G05-50K",
+  "source_commit": "0df8a171e3568b62bf16b65b801ec0b6aaa779ab",
+  "identity": {
+    "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_50000.pt",
+    "checkpoint_sha256": "c465044b025a487c42fddce17d45059b314a547e1b672f27cbdbbb7cfe2f6d48",
+    "checkpoint_step": 50000,
+    "source_commit": "0df8a171e3568b62bf16b65b801ec0b6aaa779ab",
+    "action_source": "fm",
+    "obs_steps": 1,
+    "predicted_steps": 32,
+    "execute_steps": 16,
+    "predict_cot": false,
+    "memlite": false,
+    "robot_action_dim": 23,
+    "port": 8933
+  },
+  "supervisor": {
+    "status": "completed",
+    "source_commit": "0df8a171e3568b62bf16b65b801ec0b6aaa779ab",
+    "checkpoint_step": 50000,
+    "selection_reason": "explicit_user_request",
+    "training_updates": 0,
+    "started_utc": "2026-09-28T04:49:16Z",
+    "seconds": 1924.953617750667,
+    "owned_returncodes": {
+      "3867386": -15,
+      "3867656": 0,
+      "3872745": 0
+    }
+  },
+  "training_updates": 0,
+  "new_offline_windows": 0,
+  "full_task_success_rate_claim": false,
+  "results": [
+    {
+      "task_id": 0,
+      "official_result": {
+        "task": "turning_on_radio",
+        "instance": 301,
+        "controls": 2539,
+        "model_calls": 159,
+        "official_success": true,
+        "env_terminated_or_truncated": true,
+        "reason": "environment_done",
+        "max_controls": 3224,
+        "seconds": 1110.7595090065151,
+        "status": "completed",
+        "full_task_success_rate_claim": false,
+        "local_partial_episode": false,
+        "source_commit": "0df8a171e3568b62bf16b65b801ec0b6aaa779ab",
+        "checkpoint_sha256": "c465044b025a487c42fddce17d45059b314a547e1b672f27cbdbbb7cfe2f6d48"
+      },
+      "held_controls": 1035,
+      "first_held_control": 1505,
+      "last_held_control": 2539,
+      "held_objects": [
+        "radio_89"
+      ],
+      "success_controls": [
+        2539
+      ],
+      "io_kinds": {
+        "initialize": 1,
+        "prime": 1,
+        "capture": 159,
+        "read": 159,
+        "control": 2539,
+        "close": 1
+      },
+      "io_checks_pass": true,
+      "inference_seconds": {
+        "median": 0.4907397944480181,
+        "mean": 0.5448999613781208,
+        "max": 9.121280580759048
+      },
+      "first_capture_clock": {
+        "simulation_time": 0.27500001434236765,
+        "physics_index": 33
+      },
+      "sha256": {
+        "rollout.mp4": "b187bddbe75d8b8e43f1a800877cbb5b1338426b6b82c8dee7e2494400fb4414",
+        "steps.jsonl": "b98613e3f791a31b52d56be39f1aa04625ec96256e659b257554ac36994588b3",
+        "io.jsonl": "dd4a7399fcb39ab07e7cdf1f556b123c944a8c8c9ea99b0a1152ec399f07ce47",
+        "result.json": "773c5e10e1a7d78fa105fb98dc2a59dda10bc3d6e6d4d89cdccc6d1ec24da072"
+      },
+      "video": {
+        "programs": [],
+        "streams": [
+          {
+            "width": 960,
+            "height": 768,
+            "r_frame_rate": "47/25",
+            "duration": "84.574468",
+            "nb_frames": "159"
+          }
+        ],
+        "format": {
+          "size": "14022744"
+        }
+      },
+      "local_artifacts": "/home/wsy/behavior/artifacts/g05-50k-eval-20260928/v1/task_0",
+      "remote_artifacts": "/mnt/nvme_tmp/robodojo_g05_50k_eval_20260928/v1/task_0"
+    },
+    {
+      "task_id": 1,
+      "official_result": {
+        "task": "picking_up_trash",
+        "instance": 301,
+        "controls": 1024,
+        "model_calls": 64,
+        "official_success": false,
+        "env_terminated_or_truncated": false,
+        "reason": "registered_control_budget",
+        "max_controls": 1024,
+        "seconds": 739.6906996900216,
+        "status": "completed",
+        "full_task_success_rate_claim": false,
+        "local_partial_episode": true,
+        "source_commit": "0df8a171e3568b62bf16b65b801ec0b6aaa779ab",
+        "checkpoint_sha256": "c465044b025a487c42fddce17d45059b314a547e1b672f27cbdbbb7cfe2f6d48"
+      },
+      "held_controls": 0,
+      "first_held_control": null,
+      "last_held_control": null,
+      "held_objects": [],
+      "success_controls": [],
+      "io_kinds": {
+        "initialize": 1,
+        "prime": 1,
+        "capture": 64,
+        "read": 64,
+        "control": 1024,
+        "close": 1
+      },
+      "io_checks_pass": true,
+      "inference_seconds": {
+        "median": 0.4964352548122406,
+        "mean": 0.5015880797873251,
+        "max": 0.5879978341981769
+      },
+      "first_capture_clock": {
+        "simulation_time": 0.27500001434236765,
+        "physics_index": 33
+      },
+      "sha256": {
+        "rollout.mp4": "c4267a66687bcb754a085f35a689980463690f538edcef3539483446b9beaac6",
+        "steps.jsonl": "605c8525eec271bb3e071e4bb221242383c00fc2d7469b27e3c7f70647a1d7da",
+        "io.jsonl": "39e69470c61dd156b660f13931c662329a9dafc1f4e80ccdc5160239c8d6f5f2",
+        "result.json": "b638e04ba456aa58c2d93b7526416971a4ad60b3ead98c7e3f39dd179ecf8312"
+      },
+      "video": {
+        "programs": [],
+        "streams": [
+          {
+            "width": 960,
+            "height": 768,
+            "r_frame_rate": "47/25",
+            "duration": "34.042553",
+            "nb_frames": "64"
+          }
+        ],
+        "format": {
+          "size": "6035976"
+        }
+      },
+      "local_artifacts": "/home/wsy/behavior/artifacts/g05-50k-eval-20260928/v1/task_1",
+      "remote_artifacts": "/mnt/nvme_tmp/robodojo_g05_50k_eval_20260928/v1/task_1"
+    }
+  ],
+  "audit_time_bjt": "2026-09-28 13:26:00 +08:00",
+  "registered_budget": {
+    "control_limits": [
+      3224,
+      1024
+    ],
+    "total_controls": 4248,
+    "model_calls": 266,
+    "wall_seconds": 3600,
+    "environment_seed": 0,
+    "policy_seed": 17,
+    "expert_prefix": 0,
+    "oracle_skill": 0,
+    "split": "public_test",
+    "instance": 301,
+    "development_instance": true
+  },
+  "actual": {
+    "controls": 3563,
+    "model_calls": 223,
+    "supervisor_seconds": 1924.953617750667,
+    "automatic_retry": false
+  },
+  "reused_fixed_validation": {
+    "samples": 100,
+    "unique_episodes": 50,
+    "fm_loss": 0.12508756996598094,
+    "ce_loss": 2.6157305455207824,
+    "rows_sha256": "bbadff3fb036e95ae957a92da9639a66de5579abbc82bad070a392f874b56997",
+    "full_validation": false
+  },
+  "manual_review": {
+    "reviewer": "Codex primary agent",
+    "radio": {
+      "sampled_video_frames_reviewed": 159,
+      "contact_sheets": 5,
+      "full_size_last_observation_reviewed": true,
+      "description": "导航至茶几，右手抓起红色收音机，保持抓持；随后左手伸向正面按钮区域，逐控制官方判据在2539成功。",
+      "last_video_control": 2528,
+      "unfilmed_terminal_controls": 11
+    },
+    "trash": {
+      "sampled_video_frames_reviewed": 64,
+      "contact_sheets": 2,
+      "full_size_last_observation_reviewed": true,
+      "description": "未见拾取客厅地面的饮料罐，空手走入厨房、靠近垃圾桶后基本停滞；短预算内未见投放。",
+      "last_video_control": 1008,
+      "unfilmed_terminal_controls": 16
+    },
+    "limitations": [
+      "每16控制采一录像帧，并非全部物理帧；成功依据为官方判据，不是仅凭视频或held。",
+      "radio为单个反复开发实例成功，trash只是1024控制短诊断，不计算1/2整体成功率。",
+      "与20k/100k同配置/预算/seed，PathTracing像素存在小幅非确定差异；不能据单例证明总体最优。"
+    ]
+  },
+  "supervisor_sha256": "35d16692336d57c046dafe4774bdfe1528f28f47dd762ce86fe53b4576a1d468",
+  "cleanup": {
+    "checked_utc": "2026-09-28T05:21:46Z",
+    "all_four_gpus_memory_used_mib": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "owned_processes_absent": true,
+    "actor_sigterm": "normal_supervisor_cleanup_after_two_completed_simulators",
+    "source_and_artifacts_preserved": true
+  }
+}

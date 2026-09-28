@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 13:27（北京时间）：50k评测与两视频核验交接完成（Codex / EVAL-G05-50K）
+
+- 最终[报告](experiments/2026-09-28-g05-50k-eval.md)与[机器可读结果](experiments/2026-09-28-g05-50k-results.json)：radio301在2539控制官方成功/0专家前缀；trash1024短诊断0 held/未成功。本人检查全部159＋64录像采样帧及两张原尺寸末帧：radio右手抓持后左手操作按钮区域；trash空手到厨房垃圾桶附近后停滞，未见拾罐/投放。不把两段混算50% SR，也不将单例称总体最优。
+- 本地`/home/wsy/behavior/artifacts/g05-50k-eval-20260928/v1/task_0/rollout.mp4`与`task_1/rollout.mp4`已完整归档；各video/steps/I/O/result及最终supervisor共9 SHA双端核同，所有223 camera capture/read与3563 control时钟门通过。50k权重c465044b…2f6d48、冻结运行source0df8a17保持，原数据/权重/视频均保留。
+- 监管completed/32.08min、两个sim exit0，自有PID全退出、四GPU释放；0新训练/离线forward，未扩任务或重启旧goal。当前请求执行完毕，后续多实例成功率或继续训练须另登记预算，不能由本次成功自动追加。
+
+### 2026-09-28 13:22（北京时间）：50k两回合结束、GPU释放，最后视频取回中（Codex / EVAL-G05-50K）
+
+- v1/task_1完成原1024控制/64调用/739.6907s含初始化，官方success=false、环境未终止、到短诊断预算停止；不是完整任务失败率。radio仍为2539控制官方成功。总实际3563控制/223调用/0训练/0新增离线，未扩预算。
+- supervisor真实completed/1924.9536s，两个模拟器3867656/3872745均exit0，actor3867386由监管正常TERM收尾；四卡已0MiB。原source/run/runtime/权重保留，不因radio成功追加回合。
+- task1视频/steps/I/O与最终监管回执正取回本地`artifacts/g05-50k-eval-20260928/v1`；下一本人审完64录像采样帧、核SHA/时钟，完成报告与Git交接。
+
 ### 2026-09-28 13:15（北京时间）：50k收音机官方成功且视频核验完成（Codex / EVAL-G05-50K）
 
 - 13:15 video/steps/I/O/result四SHA双端验同；本人审完159录像采样帧/5页与原尺寸末帧：先导航到茶几，右手抓起红色收音机，再以左手接近正面按钮区域，符合随后官方成功。1505–2539连续1035控制held=radio_89，2539唯一success=true/terminated=true/truncated=false；所有159 capture/read、2539 control时钟门过。完整视频已本地展示；不是凭抓持自报成功，亦不是多次SR。
