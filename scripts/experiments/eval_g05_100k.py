@@ -23,8 +23,8 @@ import traceback
 
 REPO = Path(__file__).resolve().parents[2]
 RUN = Path('/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z')
-OUT = Path('/mnt/nvme_tmp/robodojo_g05_100k_eval_20260928/v2')
-RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/eval_g05_100k_20260928_v2')
+OUT = Path('/mnt/nvme_tmp/robodojo_g05_100k_eval_20260928/v3')
+RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/eval_g05_100k_20260928_v3')
 MODEL_PY = '/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python'
 SIM_PY = '/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python'
 PORT = 8931
@@ -106,7 +106,9 @@ def load_model(step):
     cfg.ckpt_path, cfg.run_dir = str(checkpoint(step)), str(RUN)
     cfg.model.model_arch.hf_processor_path = '/mnt/sdc1/robodojo/checkpoints/G05/qwen3_5_2b_base_processor'
     cfg.tokenizer.vq_config.ckpt_dir = str(RUN/'action_tokenizer.pt')
-    cfg.model.model_weights_to_bf16 = True
+    # Preserve the training recipe's fp32 parameters + bf16 autocast. A full
+    # bf16 weight cast is valid for serving but not this fused CE implementation.
+    cfg.model.model_weights_to_bf16 = False
     cfg.model.use_torch_compile = False
     if (cfg.model.model_arch._target_ != 'g05.models.g05.g05_policy_qwen35.G05PolicyQwen35'
             or cfg.data.obs_size != 1 or cfg.data.val_split_mode != 'task_stratified'
@@ -128,7 +130,7 @@ def load_model(step):
     save(OUT/f'load_{step}.json', dict(source_commit=commit(), checkpoint=str(checkpoint(step)),
         checkpoint_bytes=checkpoint(step).stat().st_size, load_receipts=receipts,
         config_sha256=sha(RUN/'.hydra/config.yaml'), stats_sha256=sha(RUN/'dataset_stats.json'),
-        action_tokenizer_sha256=sha(RUN/'action_tokenizer.pt'), dtype='bf16_with_original_fp32_exceptions'))
+        action_tokenizer_sha256=sha(RUN/'action_tokenizer.pt'), dtype='original_fp32_weights_bf16_autocast'))
     return cfg, policy, processor
 
 
