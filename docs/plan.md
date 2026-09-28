@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 14:43（北京时间）：E1_v2剩余预算恢复已唯一启动（Codex / RL-G05-50K-E1）
+
+- 新冻结源`a2469da`，robo `behavior_dev/git_worktrees/g05_50k_rl_a2469da`；新reset边界回归双端通过（总18针对性测试），原父SHA再次核同。旧supervisor/learner/两sim均退出后，续接manifest由旧终态实算9968控制/6632s。
+- 新监管**3893490**，run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_v2`，新私有runtime `rl_g05_50k_e1_v2`，只使用剩余预算；实际reset修复/双仿真收益/课程及PPO准入仍待，不报已训练。旧32控制/0更新和所有证据保留。
+- 主代理已看旧e1两原始reset三RGB拼图（本地`artifacts/g05-50k-rl-20260928/e1-worker{0,1}-reset.png`）：instance1可见桌上红色收音机，138面对壁炉/厨房，初始腕视图有机身遮挡；这是初始化图，不是未取得的课程起点审查，更未据此签训练放行。
+
 ### 2026-09-28 14:43（北京时间）：重置边界修复与剩余预算续接准备（Codex / RL-G05-50K-E1）
 
 - 已核原io32 control/capture/read/close时钟均过；随后仍playing的`scene.restore`即使空对象remove也先dump joints，却拿到无效articulation view。相机reference detach后的handles失效是当前最强定位，不能仅凭EOF称双GPU冲突。
