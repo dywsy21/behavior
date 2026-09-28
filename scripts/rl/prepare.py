@@ -1,0 +1,52 @@
+"""Extract two original TRAIN curriculum prefixes; no held-out labels used."""
+import json
+import numpy as np
+import pyarrow.parquet as pq
+from common import DATA, RAW, OUT, TEMPLATE, PARENT, PARENT_SHA, commit, sha, save
+
+
+def main():
+    OUT.mkdir(parents=True,exist_ok=False)
+    source=commit()
+    if sha(PARENT) != PARENT_SHA: raise ValueError('Parent checkpoint changed')
+    meta=pq.read_table(DATA/'meta/episodes/chunk-000/file-000.parquet').to_pylist()
+    holdout={r['task_instance_id'] for r in meta if int(r['episode_index'])%200 >=190}
+    entries=[]
+    # Two source episodes, each 96 controls BEFORE the first recorded terminal.
+    # The simulator must independently confirm the replayed start is nonterminal.
+    for worker,episode in enumerate((0,121)):
+        row=next(r for r in meta if r['episode_index']==episode)
+        if row['task_instance_id'] in holdout or row['task_index'] != 0: raise ValueError('Split leakage')
+        path=DATA/f'data/chunk-{row["data/chunk_index"]:03d}/file-{row["data/file_index"]:03d}.parquet'
+        rows=pq.read_table(path,filters=[('episode_index','=',episode)],
+            columns=['frame_index','action','next.reward','next.terminated','next.truncated']).to_pylist()
+        rows.sort(key=lambda r:r['frame_index'])
+        if [r['frame_index'] for r in rows] != list(range(row['length'])): raise ValueError('Non-contiguous demo')
+        done=next(r['frame_index'] for r in rows if r['next.terminated'])
+        if rows[done]['next.reward'] != 1 or done<224: raise ValueError('No recorded successful first terminal')
+        prefix=done-96
+        if any(r['next.terminated'] or r['next.truncated'] for r in rows[:prefix]): raise ValueError('Terminal prefix')
+        actions=np.asarray([r['action'] for r in rows],dtype=np.float32)
+        if actions.shape != (row['length'],23) or not np.isfinite(actions).all(): raise ValueError('Invalid demo controls')
+        file=OUT/f'demo_{episode}.npy'; np.save(file,actions)
+        annotation=RAW/row['annotation_path']
+        entry=dict(worker=worker,gpu=worker+2,task='turning_on_radio',task_id=0,split='train',episode=episode,
+            instance=int(row['task_instance_id']),seed=0,policy_seed=1700+worker,first_recorded_terminal=done,
+            prefix_controls=prefix,actions=str(file),actions_sha256=sha(file),source_parquet=str(path),
+            source_parquet_sha256=sha(path),annotation=str(annotation),annotation_sha256=sha(annotation),
+            metadata=row, actor_oracle_fields=False)
+        entries.append(entry)
+    manifest=dict(source_commit=source,parent=str(PARENT),parent_sha256=PARENT_SHA,workers=entries,
+        max_controls=10000,max_active_wall_seconds=7200,rollout_chunks=128,chunk_controls=16,
+        episode_controls=512,critic_warmup_batches=1,ppo_epochs=2,minibatch=8,clip=.05,target_path_kl=.01,
+        learning_rates=dict(action_expert=1e-6,noise=1e-5,critic=1e-4),bc_weight=.1,
+        noise=dict(initial=.01,low=.003,high=.03),gamma_control=.9998,lambda_chunk=.95,
+        reward='once-only official success +1',snapshot_reset=False,legacy_window_template=str(TEMPLATE),
+        template_purpose='robot config only; no old oracle label admitted',
+        claim='bounded integration, not method success-rate evaluation')
+    save(OUT/'manifest.json',manifest)
+    print(json.dumps({k:v for k,v in manifest.items() if k!='workers'},indent=2))
+    print('CURRICULUM',[(r['episode'],r['instance'],r['prefix_controls'],r['first_recorded_terminal']) for r in entries])
+
+
+if __name__=='__main__': main()

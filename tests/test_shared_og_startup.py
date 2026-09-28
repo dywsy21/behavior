@@ -54,6 +54,12 @@ class SharedOGStartupTests(unittest.TestCase):
         self.copy.assert_not_called(); self.original_factory.assert_not_called()
         self.factory.assert_called_once_with()
 
+    def test_explicit_second_physical_gpu_without_relaxing_default(self):
+        self.config.update(active_gpu=2, physics_gpu=2)
+        with private_og_startup(self.module, source_sha256=hashlib.sha256(b'frozen source').hexdigest(),
+                experience=self.experience, copy_bindings=self.pairs, construct=self.factory, gpu=2):
+            self.assertEqual(self.module._launch_app(), 'bounded_app')
+
     def test_changed_source_resource_or_live_app_rejected_before_constructor(self):
         mutations = ('source', 'destination', 'live')
         for what in mutations:

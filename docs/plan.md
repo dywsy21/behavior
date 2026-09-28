@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 14:24（北京时间）：E1独立实现完成，准备冻结准入（Codex / RL-G05-50K-E1）
+
+- 新`src/g05/rl/`完整路径概率/GAE/噪声/critic、原生G05适配和`scripts/rl/`有界双仿真PPO入口；新持久TRAIN profile保留原单回合profile默认行为，仅共享startup新增显式gpu参数。17项CPU回归、语法/差异门通过；尚无GPU采样/更新，未独立团队review，不合main。
+- 原数据核实e121/instance138共1637帧，但first terminal/reward1在1192；旧annotation还含成功后的放回动作。新课程从e0/instance1及e121/138首次成功前96控制回放，真实仿真须非terminal并经主代理两起点RGB人审才放行；旧oracle sidecar不当训练标签。不用未经验证的状态快照，reset后全部真实回放并计预算。
+- [本轮完整登记](experiments/2026-09-28-g05-50k-rl-e1.md)明确batch128上限/成对回合完即flush、critic先在同一真实return批预热、低于8样本或零成功不做actor更新、超KL连Adam回滚、五task TRAIN FM防遗忘。总10k控制/2h不变，下一固定Git到robo新worktree，CPU/数据核验后唯一启动；实际多仿真收益尚未实测。
+
+### 2026-09-28 14:02（北京时间）：用户批准50k RL接入，先验证双仿真（Codex / RL-G05-50K-E1）
+
+- 用户接受TRAIN演示中途起点课程，明确要求确认多仿真并按方案开训；Codex在新独立分支`feat/g05-50k-rl-20260928`实施本轮接入，未接管其他成员长期RL任务。已从最新origin/main建立worktree并ff纳入883bc94评测/讨论证据；无新团队RL远端分支或活动训练进程，旧goal不重启。
+- 13:57只读robo四张A100 80GB全部0MiB；RAM约849GiB available、NVMe约1.8TiB空。拟GPU0模型/学习，GPU2/3独立常驻仿真，先同动作量单进程顺序与双进程并行吞吐比较，实测图像/时钟/重置后再决定并发度，不承诺线性加速。
+- 原父权重c465044b…2f6d48、观察/归一化/10步FM/32预测16执行保持。接入总上限10,000真实控制或2h活动墙钟（含吞吐动作、课程前缀和校验），只验证管线与学习信号；100k/12h方法门未批准。当前只读准备/实现中，0新GPU采样/训练，实际run、实例/seed及固定commit将在启动前登记。
+
 ### 2026-09-28 13:47（北京时间）：50k RL设计讨论与真实接口审计（Codex / RL-G05-50K-DESIGN）
 
 - 用户希望基于指定50k讨论RL全部细节；本轮仅查资料/只读代码与robo原配置，**0新采样/训练/模型或环境修改**。父权重仍c465044b…2f6d48，旧SFT/AR goal保持blocked，其他成员RL职责不改。
