@@ -1,0 +1,342 @@
+{
+  "selected_step": 20000,
+  "primary_metric": "fixed_100_window_fm_loss",
+  "tie_breaks": [
+    "ce_loss",
+    "earlier_step"
+  ],
+  "candidates": [
+    {
+      "step": 20000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_20000.pt",
+      "fm_loss": 0.11863463228568434,
+      "ce_loss": 2.5151049846410753,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.12288114475086331,
+          "ce_loss": 2.6175180077552795
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.12461871434934438,
+          "ce_loss": 2.7019268035888673
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.14853984687943012,
+          "ce_loss": 2.7521233677864076
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.08135609093587845,
+          "ce_loss": 1.9110285311937332
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.11577736451290548,
+          "ce_loss": 2.5929282128810884
+        }
+      },
+      "rows_sha256": "c22e8953702d24826b2250f81ce5791ae292d8e7458dff9a01d10d07c2fe2f61",
+      "source_commit": "18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff",
+      "reused": false,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1/candidates/20000"
+    },
+    {
+      "step": 40000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_40000.pt",
+      "fm_loss": 0.12040020193904638,
+      "ce_loss": 2.553601983487606,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.1308034673333168,
+          "ce_loss": 2.632753688097
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.11867769975215196,
+          "ce_loss": 2.747846084833145
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.15340021785814315,
+          "ce_loss": 2.828338485956192
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.08357921314891428,
+          "ce_loss": 1.9383371338248252
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.11554041160270571,
+          "ce_loss": 2.620734524726868
+        }
+      },
+      "rows_sha256": "1ec9db7258d03ea3d84bd8cca079b76938547c0b3574f5922519fc2d5ee405b6",
+      "source_commit": "060aeac069d36edabfee86ce1cef8c9e5e1479af",
+      "reused": true,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_100k_eval_20260928/v4"
+    },
+    {
+      "step": 30000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_30000.pt",
+      "fm_loss": 0.12124455522745847,
+      "ce_loss": 2.54079995572567,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.12217010343447328,
+          "ce_loss": 2.6318025469779966
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.11630637769121677,
+          "ce_loss": 2.7112220287323
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.15238940657582134,
+          "ce_loss": 2.807680386304855
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.08693930124863983,
+          "ce_loss": 1.9323418408632278
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.1284175871871412,
+          "ce_loss": 2.6209529757499697
+        }
+      },
+      "rows_sha256": "c795d543035115b12c97247096a5e9ceadad7cfd8638dbd69528651db0b3968a",
+      "source_commit": "18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff",
+      "reused": false,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1/candidates/30000"
+    },
+    {
+      "step": 10000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_10000.pt",
+      "fm_loss": 0.1244717401219532,
+      "ce_loss": 2.530298900306225,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.12494345474988222,
+          "ce_loss": 2.60816775560379
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.12711988454684614,
+          "ce_loss": 2.7014545142650603
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.17123859750572593,
+          "ce_loss": 2.7848703622817994
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.08624775107018649,
+          "ce_loss": 1.9460591658949853
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.11280901273712515,
+          "ce_loss": 2.610942703485489
+        }
+      },
+      "rows_sha256": "5b5e693309afed89387a1f4afa40937f8b22cee50e69ddfa7c752a623bf5843e",
+      "source_commit": "18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff",
+      "reused": false,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1/candidates/10000"
+    },
+    {
+      "step": 50000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_50000.pt",
+      "fm_loss": 0.12508756996598094,
+      "ce_loss": 2.6157305455207824,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.13329564658924936,
+          "ce_loss": 2.720838302373886
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.13158585873898118,
+          "ce_loss": 2.8026552319526674
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.15361054479144515,
+          "ce_loss": 2.8645944356918336
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.0896525647956878,
+          "ce_loss": 2.0125890254974363
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.11729323491454124,
+          "ce_loss": 2.677975732088089
+        }
+      },
+      "rows_sha256": "bbadff3fb036e95ae957a92da9639a66de5579abbc82bad070a392f874b56997",
+      "source_commit": "18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff",
+      "reused": false,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1/candidates/50000"
+    },
+    {
+      "step": 60000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_60000.pt",
+      "fm_loss": 0.1315732699027285,
+      "ce_loss": 2.662649631500244,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.13783992519602178,
+          "ce_loss": 2.7902180671691896
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.14130910160019994,
+          "ce_loss": 2.843953377008438
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.16056419753003864,
+          "ce_loss": 2.9263180911540987
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.09253150229342282,
+          "ce_loss": 2.0137935101985933
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.12562162289395928,
+          "ce_loss": 2.7389651119709013
+        }
+      },
+      "rows_sha256": "fc9ec3bd72c3f2f48b495b632e51eb29212f8669455eac6d96503ef96b4ab049",
+      "source_commit": "18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff",
+      "reused": false,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1/candidates/60000"
+    },
+    {
+      "step": 70000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_70000.pt",
+      "fm_loss": 0.1389446815662086,
+      "ce_loss": 2.7302289378643034,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.14756102552637457,
+          "ce_loss": 2.8588416159152983
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.14811229556798935,
+          "ce_loss": 2.918427938222885
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.17375499771442265,
+          "ce_loss": 2.9979185104370116
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.10060718648601323,
+          "ce_loss": 2.0761094272136686
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.1246879025362432,
+          "ce_loss": 2.799847197532654
+        }
+      },
+      "rows_sha256": "d3e0ca144632596736616e2cfd0f91dc5aec4deb1d232d6bd1b966998cd63457",
+      "source_commit": "18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff",
+      "reused": false,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1/candidates/70000"
+    },
+    {
+      "step": 80000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_80000.pt",
+      "fm_loss": 0.14627605262445287,
+      "ce_loss": 2.7957681894302366,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.15791426645591855,
+          "ce_loss": 2.9443255186080934
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.1527902950416319,
+          "ce_loss": 2.998687666654587
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.18565275908913464,
+          "ce_loss": 3.0645932793617248
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.10305407689884305,
+          "ce_loss": 2.119025719165802
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.13196886563673615,
+          "ce_loss": 2.852208763360977
+        }
+      },
+      "rows_sha256": "4a0c2d23a468d31f0af6188be12e9854513358554a5fa3816b0b745883eb500e",
+      "source_commit": "18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff",
+      "reused": false,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1/candidates/80000"
+    },
+    {
+      "step": 90000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_90000.pt",
+      "fm_loss": 0.14836169609799982,
+      "ce_loss": 2.834029697775841,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.15752678755670785,
+          "ce_loss": 2.9731717884540556
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.15762746285181492,
+          "ce_loss": 3.0361490547657013
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.19076274535618723,
+          "ce_loss": 3.104678100347519
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.10619206146802754,
+          "ce_loss": 2.1561447352170946
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.12969942325726153,
+          "ce_loss": 2.9000048100948335
+        }
+      },
+      "rows_sha256": "ac3b807470f170bb407239d295dc11c21e431e294c3f267e3ab2fa44d7372096",
+      "source_commit": "18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff",
+      "reused": false,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_best_eval_20260928/v1/candidates/90000"
+    },
+    {
+      "step": 100000,
+      "checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_100000.pt",
+      "fm_loss": 0.14935900626238435,
+      "ce_loss": 2.845715417265892,
+      "per_task": {
+        "Turn on the radio receiver that's on the table in the living room.": {
+          "fm_loss": 0.15898591205477713,
+          "ce_loss": 2.9861810386180876
+        },
+        "Put the three cans of soda from the living room inside the trash can in the kitchen.": {
+          "fm_loss": 0.15792955353390425,
+          "ce_loss": 3.0512114644050596
+        },
+        "Place each of the two pumpkins and all three candles from the living room inside a cabinet in the living room (use any cabinet), then make sure every cabinet is closed, and position the cauldron so it is next to a table in the living room.": {
+          "fm_loss": 0.1931689651682973,
+          "ce_loss": 3.1190322935581207
+        },
+        "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.": {
+          "fm_loss": 0.10632322756573558,
+          "ce_loss": 2.1631720036268236
+        },
+        "Open the kitchen cabinet, take out the two hinged jars, open them, place exactly two cooked bratwursts from the chopping board on the countertop into each jar, then close both jars, put them back inside the cabinet, and close the cabinet.": {
+          "fm_loss": 0.1303873729892075,
+          "ce_loss": 2.9089802861213685
+        }
+      },
+      "rows_sha256": "a17091ad803b68b77744674a0ae483f82409287e08cd0e230164982373113464",
+      "source_commit": "060aeac069d36edabfee86ce1cef8c9e5e1479af",
+      "reused": true,
+      "evidence": "/mnt/nvme_tmp/robodojo_g05_100k_eval_20260928/v4"
+    }
+  ],
+  "paired_locators": true,
+  "unique_heldout_episodes": 50,
+  "windows_per_task": 20,
+  "seed_scheme": "19000+window_number",
+  "new_windows": 800,
+  "reused_windows": 200,
+  "full_validation": false,
+  "selection_split": "original_task_stratified_5_percent_development_validation",
+  "source_commit": "18acacf6ac81b1fa122fd0bfdcfaf2a18ed888ff",
+  "training_updates": 0,
+  "selection_sha256": "64d7a783e24b41d6cc84402080976dc4e54d0f81ebce20560120f85ae45c31b4",
+  "selected_checkpoint_sha256": "8684c123ab40738fdf3b3bcd66b2c8c78f130f93c99667827c04e2a02efa5dd5"
+}
