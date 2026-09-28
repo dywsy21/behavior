@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 17:38（北京时间）：E2冻结源与服务器真实环境准入通过（Codex / RL-G05-50K-E2）
+
+- `7b20615617a0c447bc55cd790c677ad6323abd0a`已Git推送，新服务器clean worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_e2_7b20615`；MODEL_PY真实完整method导入通过，**61回归双端通过**（模型19+5、模拟器3+27+7），没有装库/热改SDK。
+- 正在准备唯一`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1`及私有`rl_g05_50k_e2_v1`，完整父/续训SHA、旧runtime无进程、TRAIN split与301/302冻结文件逐项核验；尚未提交训练/仿真启动。原100k/12h与固定14评测回合不变，实际GPU/课程与SR门仍待。
+
 ### 2026-09-28 17:33（北京时间）：E2续训/配对评测实现及本地61项回归完成（Codex / RL-G05-50K-E2）
 
 - 新`method.py/prepare_method.py`与`g05/rl/protocol.py`串联冻结父BF16锚/FP32基线→E1恢复续训→固定最后合法delta/文件重新加载→同六对FP32评测。独立baseline/training/final进程池、eval严禁专家动作/训练流、每worker独立RNG、物体/机器人reset一致性、未完成非terminal样本不能作完整SR、全程统一控制账/给final预留预算均实现；不热改旧4a28cac或共享SDK/env。
