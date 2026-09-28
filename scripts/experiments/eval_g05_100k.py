@@ -23,8 +23,8 @@ import traceback
 
 REPO = Path(__file__).resolve().parents[2]
 RUN = Path('/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z')
-OUT = Path('/mnt/nvme_tmp/robodojo_g05_100k_eval_20260928/v1')
-RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/eval_g05_100k_20260928_v1')
+OUT = Path('/mnt/nvme_tmp/robodojo_g05_100k_eval_20260928/v2')
+RUNTIME = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925/eval_g05_100k_20260928_v2')
 MODEL_PY = '/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python'
 SIM_PY = '/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python'
 PORT = 8931
@@ -350,6 +350,8 @@ def model_env(gpu):
                PYTHONUNBUFFERED='1', OMP_NUM_THREADS='2', OPENBLAS_NUM_THREADS='1',
                HF_HUB_OFFLINE='1', TRANSFORMERS_OFFLINE='1', TOKENIZERS_PARALLELISM='false')
     env['PYTHONPATH'] = str(REPO/'src')+':'+str(REPO)
+    npp = '/mnt/sdc1/robodojo/GalaxeaVLA/.venv/lib/python3.10/site-packages/nvidia/npp/lib'
+    env['LD_LIBRARY_PATH'] = ':'.join([npp,*[p for p in env.get('LD_LIBRARY_PATH','').split(':') if p and p!=npp]])
     return env
 
 
@@ -427,6 +429,8 @@ def launch():
     used=subprocess.check_output(['nvidia-smi','--query-gpu=memory.used','--format=csv,noheader,nounits'],text=True)
     if len(used.splitlines())!=4 or any(int(x)>512 for x in used.splitlines()): raise RuntimeError('Expected currently idle GPUs')
     with socket.socket() as sock: sock.bind(('127.0.0.1',PORT))
+    subprocess.run([MODEL_PY,'-c','from torchcodec.decoders import VideoDecoder; print("CPU decoder import passed")'],
+                   env=model_env(0),check=True,timeout=60)
     OUT.mkdir(parents=True,exist_ok=False)
     save(OUT/'launch.json',dict(source_commit=revision,owner='Codex/EVAL-G05-100K',
         model_run=str(RUN),steps=[40000,100000],fixed_eval_windows=100,

@@ -27,6 +27,11 @@ class BudgetTests(unittest.TestCase):
         with self.assertRaises(ValueError): evaluation.checkpoint(5000)
         self.assertEqual(evaluation.checkpoint(100000).name,'step_100000.pt')
 
+    def test_private_decoder_library_path(self):
+        env=evaluation.model_env(1)
+        self.assertEqual(env['CUDA_VISIBLE_DEVICES'],'1')
+        self.assertTrue(env['LD_LIBRARY_PATH'].split(':')[0].endswith('/nvidia/npp/lib'))
+
     def test_vector_order_and_no_missing_base(self):
         import numpy as np
         keys=('base_qvel','trunk_qpos','left_arm','left_gripper','right_arm','right_gripper')

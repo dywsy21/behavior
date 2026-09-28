@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 11:09（北京时间）：100k严格恢复通过，评测解码启动路径修复（Codex / EVAL-G05-100K）
+
+- v1两checkpoint均946/946精确恢复、0缺失/partial/mismatch/unexpected；100k配置SHA c9ab6bf2…44ec5、stats846bcbea…b19与原train-only一致。随后首个RGB加载发现本次启动未带原`activate_g05.sh`的npp/lib路径，TorchCodec在dataset重试中卡住，两份offline JSONL均0行、0模型评测/0仿真控制。
+- 已精确向自有3837180/3837181进程组发TERM，由原监管收尾；不触碰其他进程。原v1/source保留。相同现有NPP路径下CPU TorchCodec import实际通过；修复只在新入口子进程LD_LIBRARY_PATH，不安装/修改环境、模型或原数据。
+- 新v2/new冻结源只继续原未消费100×2样本/7320控制预算；加入launch前CPU解码器导入门和路径回归测试，仍无自动重试。下一核旧进程退出、提交新源后启动；当前尚无效果结论。
+
 ### 2026-09-28 11:06（北京时间）：100k有限评测已启动（Codex / EVAL-G05-100K）
 
 - 固定代码`33f4068477467a6e9fb0bdc81595fe96d05be802`，robo独立`behavior_dev/git_worktrees/eval_g05_100k_33f4068`，双端6个CPU测试及既有A100 profile全部SDK依赖/解释器身份检查通过。65个训练模型/processor/tokenizer源码中64个SHA相同，唯一HL_END新增开关默认true保持原token注册；数据新增RGB选项默认未启用，未替换训练预处理含义。
