@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-28 17:40（北京时间）：E2唯一监管已启动（Codex / RL-G05-50K-E2）
+
+- 准备门完整父SHA/续训delta SHA、原TRAIN动作和holdout检查、301/302官方文件SHA均过；robo启动前四卡0MiB。冻结`7b20615617a0c447bc55cd790c677ad6323abd0a`，唯一监管**3923357**已提交，run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1`，私有runtime `rl_g05_50k_e2_v1`。
+- 原100k控制/43200秒；先真实权重/优化器恢复预检与8个固定基线回合，再TRAIN续训（≤50k控制/16batch/400新actor步）、最后同6回合FP32评测。提交启动不等于新更新或SR提升；实际learner/worker PID和准入阶段以run回执为准，下一核真实加载与双仿真状态，不重复launch、不热改源。
+
 ### 2026-09-28 17:38（北京时间）：E2冻结源与服务器真实环境准入通过（Codex / RL-G05-50K-E2）
 
 - `7b20615617a0c447bc55cd790c677ad6323abd0a`已Git推送，新服务器clean worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_e2_7b20615`；MODEL_PY真实完整method导入通过，**61回归双端通过**（模型19+5、模拟器3+27+7），没有装库/热改SDK。
