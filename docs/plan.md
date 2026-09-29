@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 12:34（北京时间）：E2固定最终评测恢复已提交（Codex / RL-G05-50K-E2）
+
+- 831de53真实MODEL_PY导入及完整CPU审计通过：基线25,792＋TRAIN23,166＝48,958逐条物理账同，旧进程均退出；原基线、父/94-update delta、实例SHA核同。新`e2_final_recovery_v1`唯一supervisor3999475已提交，正在加载/初始化；最终SR尚未产生，不把launch当完成。
+- GPU0/2/3启动前空闲，原源/权重/数据保持；本次≤10,800秒/19,344控制，累计扣原29,703秒/48,958控制，0新更新。新runtime `rl_g05_50k_e2_final_recovery_v1`，原物理reset参考随manifest固定；完整run/日志与结果见[目录表](SERVER_LAYOUT.md)。RTX CPU安装仍独立运行。
+
 ### 2026-09-29 12:32（北京时间）：RTX环境安装已提交；E2恢复源码双端验证（Codex / PERF-RTX-RL、RL-G05-50K-E2）
 
 - RTX新隔离Git源码`/home/user/behavior_rl_speed_20260928/src/behavior`固定3410ef9/clean detached；CPU bootstrap唯一PID2623015，run `runs/bootstrap_v1`，根部`bootstrap-launch.stdout.log`及各阶段日志。原2h/8CPU/0GPU/≥200GiB reserve预算，不改驱动/base/其他服务。直接Git两次TLS/连接失败后通过自有loopback SSH18946→本地18945只给Git子进程代理下载成功，未改全局代理/VPN/路由；实际包安装/场景/倍率待。
