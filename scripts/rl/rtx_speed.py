@@ -13,8 +13,24 @@ import xml.etree.ElementTree as ET
 import numpy as np
 
 from common import REPO, OUT, RUNTIME, SIM_PY, commit, save, sha, send, recv, sim_env
-from rtx_paths import ROOT, host_guard
+from rtx_paths import ROOT, host_guard, cores
 from g05.rl.protocol import check_reset
+
+
+def spawn_simulators(children, listener, secret):
+    # Workers validate their inherited allowed mask before narrowing it. Pinning
+    # this controller first would accidentally restrict BOTH children to 16–17.
+    required = cores(0) | cores(1) | {16, 17}
+    if not required <= os.sched_getaffinity(0):
+        raise ValueError('Registered simulator/controller CPU partition unavailable')
+    for w in (0, 1):
+        env = sim_env(w)
+        env['BEHAVIOR_RL_IPC_KEY'] = secret.hex()
+        with (OUT/f'sim_{w}.stdout.log').open('x') as log:
+            children.append(subprocess.Popen([SIM_PY,str(REPO/'scripts/rl/sim_worker.py'),
+                '--worker',str(w),'--port',str(listener.address[1])], cwd=REPO, env=env,
+                stdout=log, stderr=subprocess.STDOUT))
+    os.sched_setaffinity(0, {16, 17})
 
 
 def snapshot():
@@ -33,7 +49,6 @@ def controller():
     host_guard()
     manifest = json.loads((OUT/'manifest.json').read_text())
     if commit() != manifest['source_commit']: raise ValueError('Frozen probe source changed')
-    os.sched_setaffinity(0, {16, 17})
     started = time.monotonic(); controls = 0
     children = []; connections = {}; pending = {}; latest = {}
     secret = os.urandom(32)
@@ -92,13 +107,7 @@ def controller():
     try:
         status('initializing')
         actions = {r['worker']:np.load(r['actions'], allow_pickle=False) for r in manifest['workers']}
-        for w in (0, 1):
-            env = sim_env(w)
-            env['BEHAVIOR_RL_IPC_KEY'] = secret.hex()
-            with (OUT/f'sim_{w}.stdout.log').open('x') as log:
-                children.append(subprocess.Popen([SIM_PY,str(REPO/'scripts/rl/sim_worker.py'),
-                    '--worker',str(w),'--port',str(listener.address[1])], cwd=REPO, env=env,
-                    stdout=log, stderr=subprocess.STDOUT))
+        spawn_simulators(children, listener, secret)
         save(OUT/'pids.json', dict(controller=os.getpid(), simulators=[p.pid for p in children]))
         for _ in (0, 1):
             conn = listener.accept(); hello = recv(conn, 30); w = hello['hello']
