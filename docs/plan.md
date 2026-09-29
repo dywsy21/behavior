@@ -10,6 +10,21 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 16:08（北京时间）：Jev 主干实现与真实认证通过（Codex / JEV-01）
+
+- 新增原生TypeSafe客户端/grounded组合policy、显式task0计划及离线复决策入口，`run_v2.py --controller jev`只替换动作/恢复/语义reference，VLM仅感知；不改servo、安全门、模型权重。设计和边界见[接入文档](experiments/2026-09-29-jev-control.md)。新增13回归通过，完整harness回归与独审进行中，尚未部署控制。
+- 一次真实工程probe返回固定 `jev-1.13.0`，未授权状态HOLD、335/31 input/output tokens、RTT0.843s；不是效果或完整延迟结论。密钥只存仓库外本地0600文件，0 Git/日志泄漏、0远端密钥复制；当前40次预算已用1次。
+- 16:04只读 `ssh robo` 核四卡显存/利用率为0，NVMe余1.6T；不占用/中断任务、不连接A800。新actor会改变代码摘要，仍必须通过新版本两task工程门才允许闭环；下一先冻结实现、真实历史状态非执行测试，不拿旧门直接放行。
+- 16:07本地完整 `tests/semantic_robot` 回归**751项/29.832s通过，5项环境相关skip**；异常清理测试的预期stderr不是本次故障。独审仍在进行，新增API不替换现有执行安全门。离线有效弃权单独报告；不会重新问同一状态直到模型给动作。
+- 16:11按独审补上两请求期间的context绑定与执行前fresh RGB-D/proprio/控制计数/仿真时钟完全一致门，只允许同步仿真；任何漂移都弃用旧决定，不自动重问。HTTPException也统一脱敏，BadStatusLine/IncompleteRead回归过，现15新增测试通过。独审有一次误发的**假key**接口请求返回400（违反本次只读无网络委托，已要求停止网络），无真实凭据读取/使用、无控制/用户数据；与主线程真实认证probe区分记录。
+
+### 2026-09-29 15:55（北京时间）：切换 Jev 控制接入（Codex / JEV-01，进行中）
+
+- 按用户最新要求暂停本线程 VLM agentic 控制/微调推进，改接 TypeSafe Jev；旧 H84/H85 数据、等待记录及队友任务保留，不把旧 goal 标成完成。已干净 fetch/pull；新独立分支 `feat/jev-control-20260929` 从最新 origin/main 建立，再 ff 合入现有框架 `3c23cbf`，不改其他 checkout 或活跃服务器源码。
+- 官方核查：Jev 1.13 仅文本输入，用户参考 `openroboto-ai/jev-robot-control` 固定 `7a4ed8b72c3c17d7aa790678ed9660df67c10dd3` 是带模拟器几何/接触状态的单次 xArm 实验，不是 BEHAVIOR RGB 成功率。接入采用官方 TypeSafe endpoint、固定 `jev-1.13.0`；密钥不进 Git/日志，不发送 OpenRouter。
+- 本轮假设：已有 RGB-D/proprio 观测与安全候选不变，仅把决策改为 Jev 的有界 typed choice，能降低动作选择延迟且保持协议合法性；不承诺修复感知错误或任务成功。owner Codex；先 CPU 单测和最多 40 次 API 调用/15 分钟的合成边界＋既有开发状态离线测试，0 新训练/场景重置/控制步；遇认证、模型身份、schema、安全或预算问题即停止。真实仿真需本阶段通过、空闲资源与新冻结代码后另记小预算。
+- 下一实现独立客户端、现有 grounded harness adapter、无 VLM 动作/恢复路由、明确的手写任务子目标输入及数据来源审计；视觉模块可作感知，不得向 Jev 输入模拟器特权真值。不连接 lc1–lc4/VPN、不改共享环境。
+
 ### 2026-09-29 15:10（北京时间）：逐loss梯度与训练顺序提案完成（Codex / PLAN-MEM100-GRAD）
 
 - 已写[梯度与训练设计](experiments/2026-09-29-memlite-gradient-training-design.md)，覆盖H/O/低层LoRA/AE参数归属、AR字段加权、FM→KV→LoRA、反馈头detach/联合两阶段、离散技能/记忆时间边界、独立optimizer和闭环纠正流程；五份实际核查源码路径/SHA均登记。visualize按静态结构选Mermaid说明，不生成交互网页或改模型。

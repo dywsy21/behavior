@@ -1,0 +1,195 @@
+{
+  "schema": "jev-saved-sources-v1",
+  "sources": {
+    "h38": {
+      "manifest_sha256": "809832a96d6ad37d7f6468df63c344930fa2588310b9c3c514d00583e26365e4",
+      "code_commit": "6f528b5e6d49950331e08f11217d7f5659038b45",
+      "implementation_digest": "11dfd7199b44bbed04a01deeb20962e4711ca05312e586e25125ee8ee419dfa6",
+      "window_sha": "93731a793ed550bae225e148d872b97d42e331a709e2fd0cd33bd1ccf76ccbd8",
+      "task": 0,
+      "instance": 138,
+      "model_identity": {
+        "protocol": "semantic-v2",
+        "model": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917/models/Qwen3.8-27B",
+        "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+        "code_commit": "6f528b5e6d49950331e08f11217d7f5659038b45",
+        "max_calls": 431,
+        "calls": 0,
+        "load_s": 11.541921375319362,
+        "dtype": "bfloat16",
+        "backend": "transformers-sdpa",
+        "thinking": false,
+        "torch": "2.7.1+cu128",
+        "transformers": "5.7.0",
+        "gpu": "NVIDIA A100 80GB PCIe",
+        "visible_devices": "2",
+        "image_max_side": 640,
+        "wrist_no_upsampling": true,
+        "max_images": 9,
+        "training_updates": 0,
+        "action_grammar": "per-request scoped explicit JSON",
+        "finite_choice_kinds": [
+          "act",
+          "ground",
+          "reference"
+        ],
+        "structured_planning_schemas": [
+          "task_plan_v1",
+          "recovery_v1"
+        ],
+        "planning_schema_sha256": "0308a1278ed77ac0cdd0acd484472ae0a96fefa03dadb4ff40f7af590a0d71a9",
+        "structured_decoder": {
+          "package": "lm-format-enforcer",
+          "version": "0.11.3",
+          "commit": "817f944fcc8851917c40300a47f62d1defc3ffc3"
+        }
+      }
+    },
+    "h25": {
+      "manifest_sha256": "d31a76c5415ced11e38cfeb1e288a8731c23387dc8b7e5d82324a2059df45c38",
+      "code_commit": "a62846238a5dbbb566d697fd93e6ee6ebf5793af",
+      "implementation_digest": "afd1ec55ab872853c400a1c17f8d52a15076cd590feffc6afd0484e004f89a55",
+      "window_sha": "93731a793ed550bae225e148d872b97d42e331a709e2fd0cd33bd1ccf76ccbd8",
+      "task": 0,
+      "instance": 138,
+      "model_identity": {
+        "protocol": "semantic-v2",
+        "model": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917/models/Qwen3.8-27B",
+        "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+        "code_commit": "a62846238a5dbbb566d697fd93e6ee6ebf5793af",
+        "max_calls": 431,
+        "calls": 0,
+        "load_s": 14.498324663378298,
+        "dtype": "bfloat16",
+        "backend": "transformers-sdpa",
+        "thinking": false,
+        "torch": "2.7.1+cu128",
+        "transformers": "5.7.0",
+        "gpu": "NVIDIA A100 80GB PCIe",
+        "visible_devices": "2",
+        "image_max_side": 640,
+        "wrist_no_upsampling": true,
+        "max_images": 9,
+        "training_updates": 0,
+        "action_grammar": "per-request scoped explicit JSON",
+        "finite_choice_kinds": [
+          "act",
+          "ground",
+          "reference"
+        ],
+        "structured_planning_schemas": [
+          "task_plan_v1",
+          "recovery_v1"
+        ],
+        "planning_schema_sha256": "0308a1278ed77ac0cdd0acd484472ae0a96fefa03dadb4ff40f7af590a0d71a9",
+        "structured_decoder": {
+          "package": "lm-format-enforcer",
+          "version": "0.11.3",
+          "commit": "817f944fcc8851917c40300a47f62d1defc3ffc3"
+        }
+      }
+    },
+    "h10": {
+      "manifest_sha256": "81dff3f64f3ace9c30601e66d843888f49953d27ecba50411358277aeb0c11bb",
+      "code_commit": "dfe7c96f552bd182cdeb76d761ca2324f48be403",
+      "implementation_digest": "128f5595a2bd29d34d9f297bdfd6a2c0303da41b9b4c08f04960bd139119a73c",
+      "window_sha": "93731a793ed550bae225e148d872b97d42e331a709e2fd0cd33bd1ccf76ccbd8",
+      "task": 0,
+      "instance": 138,
+      "model_identity": {
+        "protocol": "semantic-v2",
+        "model": "/mnt/sdc1/robodojo/behavior_dev/semantic_agent_v2_20260917/models/Qwen3.8-27B",
+        "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+        "code_commit": "465bc8561496c97615f8d48604010f5f5b3555c3",
+        "max_calls": 368,
+        "calls": 2,
+        "load_s": 10.19927801610902,
+        "dtype": "bfloat16",
+        "backend": "transformers-sdpa",
+        "thinking": false,
+        "torch": "2.7.1+cu128",
+        "transformers": "5.7.0",
+        "gpu": "NVIDIA A100 80GB PCIe",
+        "visible_devices": "1",
+        "image_max_side": 640,
+        "wrist_no_upsampling": true,
+        "max_images": 9,
+        "training_updates": 0,
+        "action_grammar": "per-request scoped explicit JSON",
+        "finite_choice_kinds": [
+          "act",
+          "ground",
+          "reference"
+        ]
+      }
+    }
+  },
+  "states": [
+    {
+      "source": "h38",
+      "decision": 32,
+      "action_sha256": "4a6d98a8b79d807c934bec43d505e75481a82a0b071007e359940452441e5356",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_032/action.json"
+    },
+    {
+      "source": "h38",
+      "decision": 43,
+      "action_sha256": "e24ced397ce785ed7a2598e6601fcaa462e69233a8d4c46721a9e1a1717c73fc",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_043/action.json"
+    },
+    {
+      "source": "h38",
+      "decision": 44,
+      "action_sha256": "286f2b126c14714ed5f2ae05231b2cc6c5594bacc02ecce81201a5e63ea817e2",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_044/action.json"
+    },
+    {
+      "source": "h38",
+      "decision": 48,
+      "action_sha256": "d59eefb36be9423e27c62fbf6e8e2212d45eadd7db17433aa55827932896315f",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_048/action.json"
+    },
+    {
+      "source": "h38",
+      "decision": 68,
+      "action_sha256": "71e0b5ce94b0b222f9bc2b5a33029686409468d8497856099b0ed3ad66e0a57c",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_068/action.json"
+    },
+    {
+      "source": "h38",
+      "decision": 91,
+      "action_sha256": "56e22dcf5fceeba6f5f38ae3ad487da027a8ea581d8783f1f00ae85b93fe6009",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_091/action.json"
+    },
+    {
+      "source": "h38",
+      "decision": 100,
+      "action_sha256": "a8009a247863fa32240e6bf93780f970bdbb659c0bc255157e9ea0ec9bdc627c",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_100/action.json"
+    },
+    {
+      "source": "h38",
+      "decision": 101,
+      "action_sha256": "77bcb28c0cf044697fb36d84bd70991d5ea4f9dc0e3cc823cf8cb2aede4c579b",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_101/action.json"
+    },
+    {
+      "source": "h25",
+      "decision": 159,
+      "action_sha256": "4e4a791718ce323e4552941420a68ac3a6761ed694fec4d4176fdf16acd56564",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h25_fullstart_bundle/radio_h25_fullstart/decision_159/action.json"
+    },
+    {
+      "source": "h25",
+      "decision": 160,
+      "action_sha256": "677316569782832103202bf8e2c94ba49f876618037ae809930e8cb34f74c643",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h25_fullstart_bundle/radio_h25_fullstart/decision_160/action.json"
+    },
+    {
+      "source": "h10",
+      "decision": 4,
+      "action_sha256": "6a64a4ec282700404ed412f95cb98080ddb092c23fdc20910329de7f6efacb07",
+      "local_reference": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/matched_failed_bundle/radio_h10_matched/decision_004/action.json"
+    }
+  ]
+}

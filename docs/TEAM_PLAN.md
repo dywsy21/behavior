@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-29 15:55（北京时间）Codex / JEV-01：用户暂停本线程 VLM agentic 控制，改做 Jev typed-decision 接入现有 grounded harness；旧 H84/H85 不继续自动开训，数据/旧未完成状态保留。owner 本线程 Codex，独立 `feat/jev-control-20260929`；先 CPU＋最多40次API/15分钟离线验证，0新GPU训练/仿真重置。视觉仅负责观测、数值与安全检查仍代码负责，禁止 simulator truth 注入 actor；其他成员数据/RL/A800作业与职责不变。闭环预算待离线准入与资源实查后登记，不连接 lc1–lc4/VPN。
+
 2026-09-29 15:10（北京时间）Codex / PLAN-MEM100-GRAD完成本地高低层梯度路径核查，形成[训练与梯度补充设计](experiments/2026-09-29-memlite-gradient-training-design.md)：高低层独立SFT可并行、低层AE＋LoRA联合、反馈头固定高层热身后才考虑高层内部联合，闭环按同状态纠正数据协同。更正旧提案“字段独立归一”及0.25可直接用于完整outcome模式的口径。新增准入依赖为逐loss梯度/optimizer覆盖、稀疏反馈8rank归一和高层版本绑定校准；均待实施，不更改队友数据/RL职责，不分配节点或启动作业。本轮未连接任何服务器或VPN。
 
 2026-09-27 16:54（北京时间）Codex / PLAN-MEM100完成[百任务训练讨论提案](experiments/2026-09-27-memlite-100task-training-design.md)及34/33/33[主任务分组草案](experiments/2026-09-27-memlite-100task-partition-draft.json)，已核官方全部20k小metadata和robo旧A4/B-final配置/回执；不是新训练授权、标注发布或最优分组结论。建议共享高层/共同低层起点及跨组正常/纠正数据；现有数据/RL owner不变，未给任何节点分配实际作业。下一须确认提案、整合后期MEM-Lite源码与35技能协议、校验旧新split/归一化、完成新标签QA与8卡准入。用户本轮明确暂不连接lc1–lc4、不重连lc-connect/ec cli/VPN，保护队友会话；仅robo允许只读核查，A80016:12下载状态不冒充此刻实测。

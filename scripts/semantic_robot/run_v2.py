@@ -69,6 +69,13 @@ def secondary_error_report(message):
         pass  # Even a broken stderr must not suppress the original exception.
 
 
+def policy_accounting(policy):
+    result = {"model_calls": policy.calls if policy else 0}
+    if policy is not None and hasattr(policy, "accounting"):
+        result.update(policy.accounting())
+    return result
+
+
 def bounded_gate(grounded=False,multicamera=False,workspace=False):
     actions = [HOLD, Action("right","up"), Action("right","down"),
             Action("left","forward","micro"), Action("left","back","micro"),
@@ -144,6 +151,12 @@ def main():
     p.add_argument("--synchronous-io-v1", action="store_true", help="Explicit physics clock and timestamp-verified native RGB-D")
     p.add_argument("--uri", default="http://127.0.0.1:8907")
     p.add_argument("--expected-revision")
+    p.add_argument("--controller", choices=("vlm", "jev"), default="vlm",
+                   help="jev uses TypeSafe for decisions; uri remains a perception-only observer")
+    p.add_argument("--jev-task-plan", help="Explicit task-bound goal JSON; required for Jev, no VLM planner")
+    p.add_argument("--typesafe-key-file", help="Owner-only credential file; otherwise TYPESAFE_API_KEY. Never pass the key itself")
+    p.add_argument("--jev-max-calls", type=int, default=104)
+    p.add_argument("--jev-timeout", type=float, default=20.)
     p.add_argument("--structured-planning", action="store_true")
     p.add_argument("--gate-result", action="append", default=[])
     p.add_argument("--max-decisions", type=int, default=48)
@@ -153,6 +166,16 @@ def main():
                    help="Explicitly registered original-start extension; gates and prefixes keep pilot limits")
     args = p.parse_args()
     validate_run_budget(args)
+    if args.controller == "jev":
+        if (args.harness != "grounded" or not args.jev_task_plan or args.structured_planning
+                or args.replay_prefix_spec or not args.synchronous_io_v1):
+            raise ValueError("Jev requires synchronous grounded explicit-task-plan mode, not VLM planning or saved-plan replay")
+        if not 1 <= args.jev_max_calls <= 400 or not 0 < args.jev_timeout <= 60:
+            raise ValueError("Bounded Jev API count/timeout required")
+        from semantic_robot.v2.jev_policy import load_task_plan
+        load_task_plan(args.jev_task_plan, args.task)  # before creating output or simulator
+    elif args.jev_task_plan or args.typesafe_key_file:
+        raise ValueError("Jev credentials/task plan supplied without --controller jev")
     if args.native_profile != "original" and (args.gpu != 3 or not args.native_runtime):
         raise ValueError("A100 profile requires physical GPU3 and private runtime")
     if args.native_profile == "original" and args.native_runtime:
@@ -291,6 +314,12 @@ def main():
         (2 if grounded else 0)+(16 if args.refine_grounding else 0)+(4 if args.held_object_inspection else 0),
         structured_planning=args.structured_planning,
         **({"near_contact_review":args.near_contact_review,"appearance_memory":args.appearance_memory} if args.refine_grounding else {})) if args.mode=="agent" else None
+    if policy is not None and args.controller == "jev":
+        from semantic_robot.v2.jev_client import JevClient
+        from semantic_robot.v2.jev_policy import JevGroundedPolicy
+        policy = JevGroundedPolicy(policy, JevClient(key_file=args.typesafe_key_file,
+            max_calls=args.jev_max_calls, timeout=args.jev_timeout),
+            task_id=args.task, task_plan=args.jev_task_plan)
     if policy and args.held_object_inspection and "reference" not in policy.identity.get("finite_choice_kinds",[]):
         raise ValueError("Held inspection requires a text-only reference service")
     # B15's tracking-anchor prompt did not improve the two failing states.
@@ -360,7 +389,7 @@ def main():
                     if not (out/"failure.json").exists():
                         write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
                             "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
-                            "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
+                            **policy_accounting(policy),"implementation_digest":digest})
                 except BaseException as record_error:
                     secondary_error_report(f"Original failure {exc!r}; recording also failed {record_error!r}")
                 if native_io is not None:
@@ -624,6 +653,10 @@ def main():
                 else:
                     images,depths,depth_receipt=observation_now(f"decision_{decision}")
                 bundle = prepare_views(images,model,state.q,previous,grounded=grounded,gripper=state.gripper,show_finger_regions=args.contact_geometry)
+                jev_before = None
+                if args.controller == "jev" and policy is not None:
+                    from semantic_robot.v2.jev_freshness import snapshot as jev_snapshot, freshness_check
+                    jev_before = jev_snapshot(state, images, depths, depth_receipt, controls)
                 directory = out/f"decision_{decision:03d}"; directory.mkdir()
                 if args.odometry_self_exclusion and motion_frame is None:
                     motion_frame=capture_self_frame(controls,images,depths,state)
@@ -719,7 +752,7 @@ def main():
                                 row["stop_reason"]=manager.stop_reason;decisions.append(row);break
                             action,call=policy.act_feasible(manager,state,bundle,allowed)
                             save_call(directory,"action",call)
-                            row["selection_source"]="VLM_preflighted_relative_held_inspection"
+                            row["selection_source"]=("Jev" if args.controller == "jev" else "VLM")+"_preflighted_relative_held_inspection"
                         else:
                             action,selection=controller.search_action(state)
                             write(directory/"action_selection.json",selection)
@@ -738,7 +771,7 @@ def main():
                         else:
                             action,call=policy.act_feasible(manager,state,bundle,allowed)
                             save_call(directory,"action",call)
-                            row["selection_source"]="VLM_among_current_preflighted_actions"
+                            row["selection_source"]=("Jev" if args.controller == "jev" else "VLM")+"_among_current_preflighted_actions"
                     else:
                         action, call = policy.act(manager,state,bundle)
                         save_call(directory,"action",call)
@@ -754,6 +787,17 @@ def main():
                 if stop_before_motion(deadline,controls,row,decisions,manager):break
                 wall = time.perf_counter()
                 state = state_now()  # recheck actual joints after model latency
+                if jev_before is not None:
+                    fresh_images, fresh_depths, fresh_receipt = observation_now(f"preexecute_jev_{decision}")
+                    state = state_now()
+                    jev_check = freshness_check(jev_before,
+                        jev_snapshot(state, fresh_images, fresh_depths, fresh_receipt, controls))
+                    write(directory/"jev_execution_freshness.json", jev_check)
+                    if not jev_check["passed"]:
+                        manager.stop_reason = jev_check["reason"]
+                        row.update(accepted_before_motion=False, stop_reason=manager.stop_reason)
+                        decisions.append(row)
+                        break
                 if controller and controller.uses_press_surface:
                     press_check=controller.press_execution_check(state,action)
                     write(directory/"press_reference_execution_check.json",press_check)
@@ -1060,7 +1104,7 @@ def main():
                       "multicamera_inspection":args.multicamera_inspection,
                       "semantic_reference_calls":getattr(policy,"reference_calls",0),
                       "final_harness":manager.context() if manager else None,
-                      "model_calls":policy.calls if policy else 0,"terminal":terminal,"wall_s":time.perf_counter()-started,
+                      **policy_accounting(policy),"terminal":terminal,"wall_s":time.perf_counter()-started,
                       "full_task_success_rate_claim":False}
             if native_io is not None:
                 native_io.close()
@@ -1074,7 +1118,7 @@ def main():
             if not (out/"failure.json").exists():
                 write(out/"failure.json",{"error":repr(exc),"phase":phase,"reset_completed":reset_completed,
                     "controls":controls,"prefix_controls":prefix_count,"diagnostic_replay_controls":replay_count,"decisions":decisions,
-                    "model_calls":policy.calls if policy else 0,"implementation_digest":digest})
+                    **policy_accounting(policy),"implementation_digest":digest})
         except BaseException as record_error:
             secondary_error_report(f"Original failure {exc!r}; outer recording also failed {record_error!r}")
         raise

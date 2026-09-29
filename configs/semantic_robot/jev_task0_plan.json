@@ -1,0 +1,8 @@
+{
+  "schema": "jev-task-plan-v1",
+  "task_id": 0,
+  "goals": [
+    {"kind": "pick", "target": "the radio specified by the task", "hand": "right", "done_when": "the identified radio follows the right hand through a measured verification lift", "level": false},
+    {"kind": "press", "target": "the power button of the radio held in the right hand", "hand": "left", "done_when": "the radio's power indicator visibly changes to its on state", "level": false}
+  ]
+}

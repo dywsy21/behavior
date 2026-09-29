@@ -86,7 +86,7 @@ class WallBudgetTests(unittest.TestCase):
                 "manager":SimpleNamespace(carry=False,stop_reason=None),"servo":SimpleNamespace(begin=begin),
                 "controller":None,"args":SimpleNamespace(multicamera_inspection=False,workspace_posture=False,near_pose_gap=False,mode="agent"),
                 "asdict":asdict,"time":SimpleNamespace(perf_counter=lambda:clock.now),"state_now":lambda:None,
-                "stop_before_motion":stop_before_motion}
+                "stop_before_motion":stop_before_motion,"jev_before":None}
             with patch("semantic_robot.v2.wall_budget.time.perf_counter",side_effect=lambda:clock.now):exec(code,ns)
             self.assertEqual(len(calls),0 if before else 1)
             self.assertEqual(ns["decisions"][0]["feedback"]["control_ticks"],0)
