@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 21:02（北京时间）：JEV-03 gate0唯一启动（Codex，运行中）
+
+- robo新冻结`jev_all_6b4ce13`、6b4ce13/f03ba506…23cc695，服务器Python3.11.15实际82项目标回归22.678s通过、worktree clean；独审/本地785证据保持，不对运行源pull。
+- 新gate0监管PID4066908，run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_all_20260929_gate0_v1`，GPU1/CPU88–91；task0 TRAIN138 seed0、24检查/1536controls/1800s总、0模型/训练。仅取得启动回执，实际工程门待，不算任务成功率。
+- 上线前明确gate0/gate3/episode1三run均未提交；队友4022589/4022893/4022896存活，sim affinity72–87保持（RL主进程本身0–95，共享CPU不改）。下一按监管/原生IO核门，过后同冻结源gate3→唯一Jev闭环，不扩预算。
+
 ### 2026-09-29 21:00（北京时间）：JEV-03续接，robo已恢复可达，准备冻结部署（Codex）
 
 - 按最新“继续”只续模拟器闭环，未重跑已完成API/旧训练。已clean fetch/pull至6b4ce13，origin/main无遗漏提交；旧VLM数据goal仍blocked，不改标。12:58:46 UTC直接`ssh robo`实际返回llmvideo26，连接恢复；未改VPN/SSH配置。

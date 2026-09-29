@@ -1,10 +1,10 @@
 # robo服务器文件位置与保留规则
 
-## Jev全策略决策（2026-09-29，JEV-03，尚未部署）
+## Jev全策略决策（2026-09-29，JEV-03）
 
 - 本地`/home/wsy/behavior_worktrees/jev-20260929`、`feat/jev-control-20260929`，新版本`launch_jev_closedloop.py`只注册`gate0/gate3/episode1`，不能用它重放旧JEV-02。
-- 计划run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_all_20260929_<stage>_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/jev_all_20260929_<stage>_v1`；**尚未创建/运行**。恢复robo通道后另建冻结源码worktree，旧源不热改。
-- 离线`probe_jev_all.py`读取本地SHA固定的H38传感器/旧actor请求，仅API决策，0控制。报告见[JEV-03](experiments/2026-09-29-jev-all-decisions.md)。20:48北京时间本机`127.0.0.1:23117`无监听，`ssh robo`暂断；不自行改VPN。
+- run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_all_20260929_<stage>_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/jev_all_20260929_<stage>_v1`；21:02 gate0监管4066908已唯一启动，gate3/episode1仍未提交。新冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_all_6b4ce13`，commit6b4ce13、implementation f03ba5064ddfbd5815da8ea5a88dfc2c0a06e311fe823569ab70e35df23cc695；禁止热改。
+- 离线`probe_jev_all.py`已17真实API/7状态通过、0控制。报告见[JEV-03](experiments/2026-09-29-jev-all-decisions.md)。20:48暂断后，20:58:46北京时间直接ssh已实返llmvideo26；未改VPN/配置。WSL看不到Linux监听不单独证明Windows relay离线，备用一次性stdio工具仍见下方历史接入记录。
 
 ## Jev闭环（2026-09-29，JEV-02，历史冻结源）
 
