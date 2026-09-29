@@ -90,6 +90,8 @@ B-final真实架构`G05PolicyMEMLitePlannerOutcome`，运行模式`planner_only`
 
 ## 6. 分阶段训练，不假装FM梯度能穿过高层文字
 
+2026-09-29补充：[逐loss梯度与具体训练顺序](2026-09-29-memlite-gradient-training-design.md)。高低层参数分离、SFT可并行；低层AE＋LoRA联合FM，反馈头先固定一版高层独训，再视验证结果决定高层内部联合。下节旧候选权重不能直接当已实现配置：B-final实际按token加权统一归一；memory0.25仅在planner-only开放，完整planner-outcome旧合同要求1.0。
+
 | 阶段 | 训练内容 | 主要验收 |
 | --- | --- | --- |
 | 0：迁移/准入 | Git整合真实A4/B代码、百任务协议与split；CPU检查＋小批前反向/保存回读 | 完整恢复、正确mask/时钟、各模块真实更新、8rank覆盖 |
@@ -123,7 +125,7 @@ B-final真实架构`G05PolicyMEMLitePlannerOutcome`，运行模式`planner_only`
 | 视觉/历史 | 3×6帧，先保留256×256和16/30秒历史间隔 | 冻结视觉塔，沿用已验A4路径；不能套obs_size=1配置 |
 | 动作 | 预测32、执行前16，全部23真实控制 | 抓取阶段缩短执行到8只作后续对照；训练/部署时钟必须一致 |
 | FM | 原时间约定/Beta采样，4噪声样本，10推理积分步 | 4个噪声不是4个独立机器人状态；首轮不叠加KI/执行段加权 |
-| 高层监督 | 规划字段CE；memory字段初始0.25；有标签outcome CE权重候选0.5 | 各字段/有标签样本独立归一，记录梯度；0.5尚未验证，不造标签补数 |
+| 高层监督 | 先沿用planner-only token级CE，memory token权重0.25；有标签后先独训outcome head | 9/29更正：旧代码是按有效token权重统一归一，不是字段独立归一。完整高层联合时旧合同要求memory1.0；0.25＋outcome0.5及字段独立归一需另行实现/验收，不是现成配方 |
 | 数据加载 | 每rank先2–4 workers，prefetch2、persistent/pinned | 三节点共NFS，先测data wait/真实窗口吞吐，再增并发 |
 | 验证/保存 | 每500更新固定分层诊断；每5000做覆盖全部留出episode的预登记窗口检查并存完整状态 | 固定噪声/时间，分task/skill/动作组，不能只保存总loss |
 

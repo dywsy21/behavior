@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 15:10（北京时间）：逐loss梯度与训练顺序提案完成（Codex / PLAN-MEM100-GRAD）
+
+- 已写[梯度与训练设计](experiments/2026-09-29-memlite-gradient-training-design.md)，覆盖H/O/低层LoRA/AE参数归属、AR字段加权、FM→KV→LoRA、反馈头detach/联合两阶段、离散技能/记忆时间边界、独立optimizer和闭环纠正流程；五份实际核查源码路径/SHA均登记。visualize按静态结构选Mermaid说明，不生成交互网页或改模型。
+- 已同步修订9/27提案中CE归一和memory权重模式限制，并更新TEAM准入依赖；原分工/节点作业不变。文档diff空白检查通过，未运行大模型/梯度测试，因此逐loss更新验收、8rank稀疏反馈、代码迁移、标签校准仍明确待实施。
+- 这是设计答复，不是训练完成/新成功率证据；0服务器连接、0VPN操作、0新训练/仿真。下一在训练授权与代码/数据准入满足后落实独立SFT及结果头阶段，不自动开启百任务训练。
+
+### 2026-09-29 15:04（北京时间）：高低层训练与梯度路径核查（Codex / PLAN-MEM100-GRAD）
+
+- 用户本轮要求解释联合/分离训练与每项loss的梯度，范围为设计讨论。已干净pull/fetch本分支，并只读本地A4阶段、B-parent-format及C1归档代码；未连接robo/A800、未重连VPN/ec cli、未启动训练或改运行代码。
+- 已核`FMHelper.train_step`：`fm.joint_training=true`是不detach低层VLM KV，使FM更新低层AE＋LoRA，不是更新高层。高层规划/记忆是同一AR CE的字段；B-final的planner-only模式不构造outcome head loss。归档C1有冻结高层、仅训练结果头的独立路径，不代表该头已经训练/校准。
+- 更正上轮提案的实现口径：旧高层CE为按token加权后统一归一，并非已经按字段独立归一；memory权重0.25只在planner-only配置开放，旧完整planner-outcome模式要求1.0。高层`planner_vlm`组也包含存在的上下文projector/proprio参数，不能照搬低层“全冻结上下文编码器”的说明。
+- 正在整理逐loss/参数表及“先独立SFT、结果头热身、再有界数据协同”的具体提案；百任务源码整合、标签QA、梯度验收和正式开训仍未执行。
+
 ### 2026-09-27 16:54（北京时间）：百任务训练提案与分组草案完成（Codex / PLAN-MEM100）
 
 - 形成[完整训练设计](experiments/2026-09-27-memlite-100task-training-design.md)与[机器可读分组草案](experiments/2026-09-27-memlite-100task-partition-draft.json)：旧A4/B-final用途与缺口、Git整合、35技能、旧holdout保留、归一化与动作时钟、分阶段高低层/反馈训练、候选超参、恢复泛化验证和单24GB提交约束均写明。所有新预算/配方均为待确认建议，0新训练/仿真/模型迁移；三节点/队友职责未实际变更。
