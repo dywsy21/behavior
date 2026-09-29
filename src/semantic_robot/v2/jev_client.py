@@ -100,7 +100,15 @@ def validate_response(value, questions, model):
         if (not all(probability(p) for p in probs.values()) or
                 abs(sum(probs.values()) - 1) > .005 or
                 not probability(answer.get("confidence"))):
-            raise JevError("Invalid Choice probability distribution")
+            # Numeric-only diagnostics, never echoed server strings/headers.
+            finite_probs = all(type(p) in (int, float) and math.isfinite(p) for p in probs.values())
+            mass = sum(probs.values()) if finite_probs else None
+            confidence = answer.get("confidence")
+            safe_conf = confidence if type(confidence) in (int, float) and math.isfinite(confidence) else None
+            raise JevError("Invalid Choice probability distribution: " + json.dumps({
+                "option_count": len(probs), "probability_sum": mass,
+                "invalid_probability_count": sum(not probability(p) for p in probs.values()),
+                "confidence": safe_conf}, allow_nan=False))
         if probs[selected] + 1e-7 < max(probs.values()):
             raise JevError("Choice disagrees with distribution")
     usage = value.get("usage")
