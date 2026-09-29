@@ -15,6 +15,8 @@ Owner Codex；2026-09-28 22:14北京时间。用户指定`user@10.162.152.173`�
 
 ## 当前阻塞与已做检查
 
+**09-29 12:32续接状态（替代下方早期认证阻塞）：** 免密正常；直接Git TLS/443两次失败，使用仅本任务的SSH loopback18946→本地robo SOCKS18945，Git子进程代理完成克隆。源码3410ef9干净detached，唯一CPU安装PID2623015，run `/home/user/behavior_rl_speed_20260928/runs/bootstrap_v1`。8CPU/2h/0GPU/磁盘reserve守卫实际启用；不修改系统网络、驱动或共享env。尚无RTX仿真/速度结果，后续以status实测为准。原robo E2已到训练截止退出，正在同预算恢复其缺失final矩阵，并非因RTX而停训。
+
 - WSL直接TCP22及经roboTCP22均超时，未改VPN/路由。
 - Windows SSH可到目标；通过仅该进程的Windows TCP stdio通道，Linux SSH也能到目标。两边现有SSH身份均被`user`拒绝（publickey/password），等待用户配置公钥或给出已有授权的SSH配置/密钥路径。没有索取、复制或记录密码/私钥。
 - 尚未在目标创建目录、装环境、复制权重/资产或开GPU任务；因此以下是验收口径，不是已运行记录。实际GPU/时间/控制步/更新预算须在资源与环境核验后、任何GPU启动前登记。

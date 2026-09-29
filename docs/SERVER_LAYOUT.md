@@ -4,7 +4,7 @@
 
 - 用户指定`user@10.162.152.173`，实测hostname `teai-g1`，单RTX4090/24GiB、Ubuntu22.04、Ultra9 285K/24核、125GiB RAM，根盘约677GiB空。原CPU服务保留，不停止；无BEHAVIOR/Isaac环境，当前无GPU计算进程。
 - WSL直连/经robo不通，Windows网络可达；使用仅SSH子进程的Windows TCP stdio通道，无VPN/路由/全局代理改变。用户授权追加本机现有ED25519公钥，免密已实测通过；密码不写文件/Git。
-- 本任务隔离根**拟**`/home/user/behavior_rl_speed_20260928`（22:23确认尚不存在），用于独立代码/环境/资产/runtime/run；不把计划路径当已建或测速通过。准备与结果见[RTX测速记录](experiments/2026-09-28-rl-rtx-speed.md)，robo E2保持原位置继续。
+- 本任务隔离根`/home/user/behavior_rl_speed_20260928`已于09-29建立；`src/behavior`固定3410ef9（运行中不可pull），`src/BEHAVIOR-1K`固定SDK，`envs/sim`独立环境。12:32唯一CPU bootstrap2623015，`runs/bootstrap_v1/{launch,status}.json`及阶段log、根`bootstrap-launch.stdout.log`；原2h/0GPU预算，安装/仿真/测速未验收。准备与结果见[RTX测速记录](experiments/2026-09-28-rl-rtx-speed.md)。
 
 ## 新A800集群（2026-09-27，独立于robo）
 

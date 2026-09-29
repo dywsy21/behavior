@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 12:32（北京时间）：RTX环境安装已提交；E2恢复源码双端验证（Codex / PERF-RTX-RL、RL-G05-50K-E2）
+
+- RTX新隔离Git源码`/home/user/behavior_rl_speed_20260928/src/behavior`固定3410ef9/clean detached；CPU bootstrap唯一PID2623015，run `runs/bootstrap_v1`，根部`bootstrap-launch.stdout.log`及各阶段日志。原2h/8CPU/0GPU/≥200GiB reserve预算，不改驱动/base/其他服务。直接Git两次TLS/连接失败后通过自有loopback SSH18946→本地18945只给Git子进程代理下载成功，未改全局代理/VPN/路由；实际包安装/场景/倍率待。
+- E2仅final恢复源码831de53已push并Git冻结到robo `git_worktrees/g05_50k_rl_final_831de53`，27项本地/robo回归均过；原运行源不变。正在CPU核原父/最后delta SHA、逐条48,958物理账和基线；新eval尚未launch。精确范围见E2登记，不重训、不换评测矩阵。
+
 ### 2026-09-29 12:28（北京时间）：E2根因及有界final恢复入口（Codex / RL-G05-50K-E2）
 
 - 两TRAIN原日志明确是7200秒等待人审通信超时，01:11各自退出；并非actor异常或已做失败SR。最终权重完整SHA aee508c4…54444f核同，总94/16、新84/12；完成的是6训练batch，编号007仅训练截止保存。原最后三次TRAIN1同1172起点173/250/217控制成功，138仍全部未成，不选择性宣称改善。
