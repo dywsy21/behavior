@@ -8,6 +8,19 @@ from g05.rl.trust_region import bounded_adam_step,cpu_copy
 
 
 class TrustRegionTests(unittest.TestCase):
+    def test_dense_recipe_checks_mean_and_tail_without_relaxing_rollback(self):
+        p=torch.nn.Parameter(torch.tensor([1.]))
+        opt=torch.optim.AdamW([p],lr=.1,weight_decay=0);p.grad=torch.ones_like(p)
+        rejected=bounded_adam_step([p],opt,lambda:dict(mean_kl=.03,max_kl=.06),
+                                   limit=.1,mean_limit=.02,scales=(1.,))
+        self.assertFalse(rejected['accepted']);self.assertEqual(float(p),1.)
+        rejected=bounded_adam_step([p],opt,lambda:dict(mean_kl=.01,max_kl=.11),
+                                   limit=.1,mean_limit=.02,scales=(1.,))
+        self.assertFalse(rejected['accepted']);self.assertFalse(opt.state)
+        accepted=bounded_adam_step([p],opt,lambda:dict(mean_kl=.01,max_kl=.06),
+                                   limit=.1,mean_limit=.02,scales=(1.,))
+        self.assertTrue(accepted['accepted']);self.assertEqual(float(opt.state[p]['step']),1.)
+
     def test_retries_same_gradient_not_accumulated_adam_steps(self):
         p=torch.nn.Parameter(torch.tensor([1.],dtype=torch.float64))
         opt=torch.optim.AdamW([p],lr=.1,weight_decay=0)

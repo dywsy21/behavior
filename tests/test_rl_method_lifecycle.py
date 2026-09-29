@@ -24,9 +24,24 @@ finally:
     else: sys.modules['learner']=old_learner
 base=method.Experiment
 from g05.rl.flow_ppo import ControlBudget
+from test_rl_automatic_curriculum import fixture
 
 
 class LifecycleTests(unittest.TestCase):
+    def test_automatic_course_does_not_wait_for_release_or_sleep(self):
+        e=self.bare();spec,row=fixture()
+        other=dict(spec,worker=1,gpu=3,instance=138)
+        e.manifest.update(curriculum_admission='automatic',workers=[spec,other])
+        e.prefix={0:1076,1:1076};e.connections={0:object(),1:object()};e.status=lambda **kw:None
+        row['held']={'left':None,'right':'device'}
+        with patch.object(method,'send'),patch.object(method,'recv',return_value=row),\
+                patch.object(method,'save') as save,patch.object(method,'sha',return_value='image-hash'),\
+                patch.object(method.time,'sleep',side_effect=AssertionError('must not wait')):
+            e.review_curriculum(0)
+        self.assertEqual(e.phase,'automatic_curriculum_passed')
+        self.assertEqual(len(save.call_args_list),2)
+        self.assertFalse(any('human_release' in str(call.args[0]) for call in save.call_args_list))
+
     def bare(self):
         e=method.MethodExperiment.__new__(method.MethodExperiment)
         e.manifest={'max_active_wall_seconds':500}; e.started=time.monotonic()

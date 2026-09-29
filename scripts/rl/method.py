@@ -19,6 +19,7 @@ from common import OUT,REPO,SIM_PY,PARENT_SHA,save,sha,send,recv,sim_env
 from learner import Experiment,cpu_tree
 from g05.rl.g05_adapter import G05FlowAdapter,move
 from g05.rl.protocol import EVAL_SEEDS,EVAL_LIMIT,paired_summary,next_prefix,check_reset
+from g05.rl.rewards import has_learning_signal
 
 
 class TrainingCutoff(RuntimeError):
@@ -28,7 +29,7 @@ class TrainingCutoff(RuntimeError):
 class MethodExperiment(Experiment):
     def __init__(self):
         super().__init__()
-        if self.manifest['entry']!='method': raise ValueError('Wrong experiment role')
+        if self.manifest['entry'] not in ('method','method_dense'): raise ValueError('Wrong experiment role')
         self.pool=None; self.evaluations=[]; self.reset_references={}
         self.parent_ae=None; self.last_checkpoint=None; self.start_updates=10
         self.pool_history=[]; self.training_started=None; self.stop_reason=None
@@ -217,6 +218,13 @@ class MethodExperiment(Experiment):
             images.append(dict(worker=w,path=str(file),sha256=sha(file),prefix=self.prefix[w],
                 held=row['held'],success=False,terminal=False,instance=self.manifest['workers'][w]['instance']))
         gate=OUT/f'curriculum_gate_{batch:03d}.json'; save(gate,dict(images=images,batch=batch))
+        if self.manifest.get('curriculum_admission')=='automatic':
+            from g05.rl.curriculum import check_curriculum
+            checks=[check_curriculum(self.manifest['workers'][w],self.latest[w],self.prefix[w]) for w in (0,1)]
+            save(OUT/f'curriculum_auto_{batch:03d}.json',dict(batch=batch,checks=checks,
+                accepted=True,human_review_required=False))
+            self.phase='automatic_curriculum_passed'; self.status(batch=batch)
+            return
         self.phase='awaiting_curriculum_review'; self.status(gate=str(gate),images=images)
         release=OUT/f'human_release_{batch:03d}.json'
         while not release.is_file():
@@ -249,7 +257,7 @@ class MethodExperiment(Experiment):
             self.phase='training_curriculum'; self.status(batch=batch,prefixes=self.prefix)
             self.replay([0,1],self.prefix,phase='expert_prefix',parallel=True)
             pair=tuple(self.prefix[w] for w in (0,1))
-            if pair not in reviewed:
+            if pair not in reviewed or self.manifest.get('curriculum_admission')=='automatic':
                 self.review_curriculum(batch); reviewed.add(pair)
             elif any(r['success'] or r['terminal'] for r in self.latest.values()):
                 raise ValueError('Repeated curriculum prefix became terminal')
@@ -261,12 +269,19 @@ class MethodExperiment(Experiment):
             torch.save(dict(rows=rows,advantages=advantages,returns=returns,prefixes=dict(self.prefix)),
                        OUT/f'rollout_{batch:03d}.pt')
             rewards=sum(sum(r['rewards']) for r in rows); before=self.actor_updates
+            signal_present=has_learning_signal(rows,dense=self.manifest.get('reward') is not None)
             for group,key in zip(self.actor_optimizer.param_groups,('action_expert','noise')):
                 group['lr']=self.manifest['learning_rates'][key]
             self.update(rows,advantages,returns); self.batches+=1; self.checkpoint()
             self.last_checkpoint=OUT/f'rl_batch_{self.batches:03d}_updates_{self.actor_updates:04d}.pt'
             detail=dict(batch=batch,chunks=len(rows),reward=rewards,new_actor_updates=self.actor_updates-before,
                 checkpoint=str(self.last_checkpoint),controls=self.budget.used-start_controls,episodes=[])
+            if self.manifest.get('reward') is not None:
+                detail.update(official_reward=sum(sum(r['official_rewards']) for r in rows),
+                    shaping_reward=sum(sum(r['shaping_rewards']) for r in rows),
+                    nonzero_shaping_controls=sum(abs(v)>1e-9 for r in rows for v in r['shaping_rewards']),
+                    policy_controls=sum(len(r['rewards']) for r in rows),
+                    reward_is_complete_task_success=False)
             for w in (0,1):
                 won=bool(self.latest[w]['success']); recent[w].append(won)
                 first=self.manifest['workers'][w]['first_recorded_terminal']
@@ -278,7 +293,7 @@ class MethodExperiment(Experiment):
                 self.prefix[w]=following
             save(OUT/f'train_batch_{batch:03d}.json',detail)
             self.log.write(json.dumps(dict(event='training_batch',**detail))+'\n')
-            zero_rewards=zero_rewards+1 if rewards==0 else 0
+            zero_rewards=zero_rewards+1 if not signal_present else 0
             zero_updates=zero_updates+1 if self.actor_updates==before else 0
             del rows
             if zero_rewards>=3 or zero_updates>=3:

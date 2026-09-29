@@ -12,7 +12,7 @@ def cpu_copy(value):
     return deepcopy(value)
 
 
-def bounded_adam_step(parameters, optimizer, evaluate, *, limit=.01,
+def bounded_adam_step(parameters, optimizer, evaluate, *, limit=.01, mean_limit=None,
                       scales=(1.,.1,.01,.001,.0001), on_trial=lambda row:None):
     """Try SAME clipped gradient at decreasing LR; no new environment samples.
 
@@ -20,6 +20,9 @@ def bounded_adam_step(parameters, optimizer, evaluate, *, limit=.01,
     surrogate_improved. Any exception restores weights, moments, LR and grads.
     The first accepted trial keeps its reduced LR for subsequent minibatches.
     """
+    if not math.isfinite(limit) or limit <= 0 or (mean_limit is not None and
+            (not math.isfinite(mean_limit) or not 0 < mean_limit <= limit)):
+        raise ValueError('Positive registered KL limits required')
     parameters=list(parameters)
     if not scales or any(not 0<s<=1 for s in scales) or list(scales)!=sorted(set(scales),reverse=True):
         raise ValueError('Strictly decreasing positive step scales required')
@@ -47,7 +50,9 @@ def bounded_adam_step(parameters, optimizer, evaluate, *, limit=.01,
             optimizer.step()
             with torch.no_grad(): metrics=evaluate()
             value=float(metrics['max_kl'])
+            mean=float(metrics['mean_kl']) if mean_limit is not None else None
             accepted=(math.isfinite(value) and -.002<=value<=limit
+                      and (mean is None or (math.isfinite(mean) and -.002<=mean<=mean_limit))
                       and metrics.get('surrogate_improved',True))
             row=dict(scale=scale,learning_rates=[g['lr'] for g in optimizer.param_groups],
                      accepted=bool(accepted),**metrics)

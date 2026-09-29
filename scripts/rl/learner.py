@@ -22,6 +22,7 @@ from common import (REPO,OUT,PARENT_SHA,MODEL_PY,SIM_PY,commit,save,send,recv,si
 from g05.rl.flow_ppo import (ControlBudget,NoiseHead,ValueHead,gae,ppo_objective)
 from g05.rl.g05_adapter import G05FlowAdapter,move
 from g05.rl.trust_region import bounded_adam_step
+from g05.rl.rewards import has_learning_signal
 
 
 def cpu_tree(x):
@@ -275,6 +276,16 @@ class Experiment:
                 with torch.no_grad(): next_value=float(self.critic(context['feature']).item())
                 row.update(rewards=reply['rewards'],terminated=reply['terminated'],
                     truncated=reply['truncated'] or self.policy_controls[w]>=episode_limit,next_value=next_value)
+                if self.manifest.get('reward') is not None:
+                    if (not all(k in reply for k in ('official_rewards','shaping_rewards','reward_details'))
+                            or any(len(reply[k])!=len(reply['rewards']) for k in
+                                   ('official_rewards','shaping_rewards','reward_details'))):
+                        raise ValueError('Missing dense reward audit or misaligned control rewards')
+                    if any(abs(total-official-dense)>1e-8 for total,official,dense in
+                           zip(reply['rewards'],reply['official_rewards'],reply['shaping_rewards'])):
+                        raise ValueError('Shaped reward sum mismatch')
+                    row.update(official_rewards=reply['official_rewards'],shaping_rewards=reply['shaping_rewards'],
+                               reward_details=reply['reward_details'])
                 row.update(split='train',worker=w,instance=self.manifest['workers'][w]['instance'])
                 rows[w].append(row); count+=1
                 if reply['success']: self.successes+=1
@@ -285,11 +296,13 @@ class Experiment:
             if set(self.active)<=completed: break
         flat=[]; advantages=[]; returns=[]
         for w in self.active:
-            adv,ret=gae(rows[w]); flat+=rows[w]; advantages+=adv.tolist(); returns+=ret.tolist()
+            adv,ret=gae(rows[w],gamma=self.manifest.get('gamma_control',.9998),
+                        lam=self.manifest.get('lambda_chunk',.95))
+            flat+=rows[w]; advantages+=adv.tolist(); returns+=ret.tolist()
         return flat,torch.tensor(advantages),torch.tensor(returns),completed
 
     def update(self,rows,advantages,returns):
-        if self.manifest.get('entry')=='method' and any(r.get('split')!='train' for r in rows):
+        if self.manifest.get('entry') in ('method','method_dense') and any(r.get('split')!='train' for r in rows):
             raise ValueError('Evaluation data must never enter PPO/critic')
         self.phase='updating'; self.status(batch_samples=len(rows),batch_reward=sum(sum(r['rewards']) for r in rows))
         if len(rows)<8:
@@ -304,16 +317,22 @@ class Experiment:
             torch.nn.utils.clip_grad_norm_(self.critic.parameters(),.5,error_if_nonfinite=True)
             self.critic_optimizer.step(); self.critic_updates+=1
         rewards=sum(sum(r['rewards']) for r in rows)
-        if rewards==0:
+        if not has_learning_signal(rows,dense=self.manifest.get('reward') is not None):
             self.log.write(json.dumps(dict(event='skip_actor_zero_success',samples=len(rows),critic_loss=float(loss)))+'\n')
             return
         # Preserve rollout-time value/GAE. Critic warmup must not retroactively
         # change the old-policy advantage estimator within this PPO batch.
         advantages=(advantages-advantages.mean())/advantages.std(unbiased=False).clamp_min(1e-6)
-        for epoch in range(2):
+        clip=float(self.manifest.get('clip',.05))
+        max_kl=float(self.manifest.get('target_path_kl',.01))
+        mean_kl_limit=self.manifest.get('target_mean_path_kl')
+        for epoch in range(self.manifest.get('ppo_epochs',2)):
             indices=list(range(len(rows))); self.rng.shuffle(indices)
             for start in range(0,len(indices),8):
                 self.timecheck(); group=indices[start:start+8]
+                if self.manifest.get('reset_candidate_lr_each_minibatch',False):
+                    for param_group,key in zip(self.actor_optimizer.param_groups,('action_expert','noise')):
+                        param_group['lr']=self.manifest['learning_rates'][key]
                 # CPU rollback includes Adam moments and step numbers. No
                 # rejected candidate may remain deployed to the simulators.
                 backtracking=self.manifest.get('bounded_backtracking',False)
@@ -325,13 +344,13 @@ class Experiment:
                     lp,kl=self.adapter.score(context,trace)
                     if float(kl.detach())<-.002: raise ValueError('Negative conditional Gaussian KL')
                     before_kls.append(float(kl.detach()))
-                    if before_kls[-1]>.01:
+                    if before_kls[-1]>max_kl:
                         self.actor_optimizer.zero_grad(set_to_none=True)
                         self.log.write(json.dumps(dict(event='early_stop_prior_path_kl',kl=before_kls[-1]))+'\n'); return
-                    loss=ppo_objective(lp,trace['old_logp'],advantages[i].to('cuda:0'))/len(group)
+                    loss=ppo_objective(lp,trace['old_logp'],advantages[i].to('cuda:0'),clip=clip)/len(group)
                     loss.backward(); losses.append(float(loss.detach()))
                 bc,bc_details=self.auxiliary_bc(self.actor_updates)
-                (.1*bc).backward()
+                (self.manifest.get('bc_weight',.1)*bc).backward()
                 grad=float(torch.nn.utils.clip_grad_norm_(self.actor_parameters+list(self.noise.parameters()),.5,error_if_nonfinite=True))
                 if backtracking:
                     original_ae=cpu_tree(self.policy.model.action_expert.state_dict())
@@ -344,7 +363,7 @@ class Experiment:
                             values.append(float(kl)); deltas.append(abs(delta))
                             if i in group and abs(delta)<=60:
                                 surrogate+=float(ppo_objective(lp,row['trace']['old_logp'].to('cuda:0'),
-                                    advantages[i].to('cuda:0')))/len(group)
+                                    advantages[i].to('cuda:0'),clip=clip))/len(group)
                         safe=max(deltas)<=60
                         return dict(mean_kl=float(np.mean(values)),max_kl=max(values),max_abs_logratio=max(deltas),
                             surrogate=surrogate if safe else None,before_surrogate=sum(losses),
@@ -355,6 +374,7 @@ class Experiment:
                         self.status(last_trial=row)
                     result=bounded_adam_step(self.actor_parameters+list(self.noise.parameters()),
                         self.actor_optimizer,evaluate,on_trial=trial,
+                        limit=max_kl,mean_limit=mean_kl_limit,
                         scales=tuple(self.manifest.get('backtracking_scales',(1.,.1,.01,.001,.0001))))
                     if not result['accepted']:
                         self.log.write(json.dumps(dict(event='bounded_backtracking_exhausted',epoch=epoch))+'\n'); return

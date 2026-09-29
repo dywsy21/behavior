@@ -20,6 +20,9 @@ def main(worker, port, pool=None):
     spec=(manifest['workers'] if pool is None else manifest['sim_pools'][pool])[worker]
     from g05.rl.protocol import validate_worker,validate_phase
     evaluation=pool in ('baseline','final')
+    dense_config=manifest.get('reward') if pool=='training' else None
+    if dense_config is not None and (spec['split']!='train' or spec.get('evaluation_only')):
+        raise ValueError('Dense reward is TRAIN-only')
     if SIM_PROFILE == 'rtx4090_speed_v1':
         from rtx_paths import validate_worker
     validate_worker(spec,evaluation=evaluation)
@@ -61,6 +64,7 @@ def main(worker, port, pool=None):
     controls=episode_controls=0; episode=-1
     frame_registration=OwnedFrameRegistration()
     terminal=success=False; io=None; video=None; current_clock=None
+    reward_provider=None; reward_snapshot=None
     def array(x): return x.detach().cpu().numpy() if hasattr(x,'detach') else np.asarray(x)
     def io_write(row): iolog.write(json.dumps(dict(worker=worker,episode=episode,**row))+'\n')
     @contextmanager
@@ -90,7 +94,7 @@ def main(worker, port, pool=None):
             reader=OnboardRGBD(env)
 
             def observe(tag):
-                nonlocal current_clock
+                nonlocal current_clock,reward_snapshot
                 capture=io.synchronize(); images={}; receipts={}
                 for view,sensor in reader.sensors.items():
                     obs,_=sensor.get_obs()
@@ -113,16 +117,25 @@ def main(worker, port, pool=None):
                 if tag in ('reset','curriculum_start'): canvas.save(out/f'{tag}_{episode:03d}.png')
                 held={arm:obj.name if obj is not None else None for arm,obj in env.robots[0]._ag_obj_in_hand.items()}
                 # Privileged diagnostics remain OUTSIDE the actor observation.
-                return dict(observation=raw,clock=current_clock,held=held,success=success,terminal=terminal,
+                result=dict(observation=raw,clock=current_clock,held=held,success=success,terminal=terminal,
                             episode=episode,episode_controls=episode_controls,total_controls=controls)
+                if reward_provider is not None:
+                    reward_snapshot=reward_provider.snapshot(official_success=success)
+                    if io.clock()!=current_clock: raise ValueError('Reward observation advanced physics')
+                    result['reward_state']=reward_snapshot
+                return result
 
             def reset():
-                nonlocal io,episode,episode_controls,terminal,success,video
+                nonlocal io,episode,episode_controls,terminal,success,video,reward_provider,reward_snapshot
                 if io is not None:
                     close_before_reset(io,og.sim,env.robots[0],io_write); io=None
                 if video is not None: video.close(); video=None
                 session.reset()
                 episode+=1; episode_controls=0; terminal=success=False
+                if dense_config is not None:
+                    from g05.rl.rewards import GoalGeometryPotential
+                    reward_provider=GoalGeometryPotential(env,dense_config)
+                    save(out/f'reward_binding_{episode:03d}.json',reward_provider.identity)
                 io=native_adapter(og.sim,reader.sensors,io_write,registration=frame_registration)
                 video=imageio.get_writer(out/f'episode_{episode:03d}.mp4',fps=30/16,codec='libx264',quality=7,macro_block_size=None)
                 result=observe('reset')
@@ -155,23 +168,44 @@ def main(worker, port, pool=None):
                 if actions.ndim!=2 or actions.shape[1]!=23 or not 1<=len(actions)<=16 or not np.isfinite(actions).all():
                     raise ValueError('Invalid action chunk')
                 if io.clock()!=current_clock: raise ValueError('Physics advanced while waiting for learner')
-                rewards=[]; terminated=truncated=False; start=time.monotonic()
+                rewards=[]; official_rewards=[]; shaping_rewards=[]; reward_details=[]
+                terminated=truncated=False; start=time.monotonic()
                 for action in actions:
+                    before_reward=reward_snapshot
                     with io.control(render_requested=False):
                         _,_,terminated,truncated,info=env.step(action,n_render_iterations=1)
                     controls+=1; episode_controls+=1
                     won=bool(info.get('done',{}).get('success',False))
-                    rewards.append(float(won and not success)); success=success or won
+                    official=float(won and not success); success=success or won
                     terminal=bool(terminated or truncated)
                     if won and not terminated: raise RuntimeError('Official success without termination')
+                    detail=None
+                    if reward_provider is not None:
+                        after_reward=reward_provider.snapshot(official_success=won)
+                        if command['phase']=='policy':
+                            from g05.rl.rewards import shaped_reward
+                            detail=shaped_reward(official,before_reward['potential'],after_reward['potential'],
+                                terminated=bool(terminated),gamma=dense_config['gamma'],weight=dense_config['weight'])
+                            detail.update(goal_fraction=after_reward['goal_fraction'],
+                                approach=after_reward['approach'],hand_distances=after_reward['hand_distances'])
+                        reward_snapshot=after_reward
+                    rewards.append(detail['total'] if detail is not None else official)
+                    official_rewards.append(official)
+                    shaping_rewards.append(detail['shaping'] if detail is not None else 0.)
+                    reward_details.append(detail)
                     held={arm:obj.name if obj is not None else None for arm,obj in env.robots[0]._ag_obj_in_hand.items()}
-                    log.write(json.dumps(dict(control=controls,episode=episode,phase=command['phase'],
+                    entry=dict(control=controls,episode=episode,phase=command['phase'],
                         episode_control=episode_controls,action=action.tolist(),success=won,
-                        terminated=bool(terminated),truncated=bool(truncated),held=held))+'\n')
+                        terminated=bool(terminated),truncated=bool(truncated),held=held)
+                    if reward_provider is not None: entry['reward']=detail
+                    log.write(json.dumps(entry,allow_nan=False)+'\n')
                     if terminal: break
                 result=observe(command['phase'])
                 result.update(rewards=rewards,terminated=bool(terminated),truncated=bool(truncated),
                               actual_controls=len(rewards),seconds=time.monotonic()-start)
+                if reward_provider is not None:
+                    result.update(official_rewards=official_rewards,shaping_rewards=shaping_rewards,
+                                  reward_details=reward_details)
                 send(conn,result)
     except BaseException as error:
         row=dict(error=repr(error),traceback=traceback.format_exc(),controls=controls,episode=episode)

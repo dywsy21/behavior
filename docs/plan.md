@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 14:47（北京时间）：E3三项实现与本地回归通过，准备冻结部署（Codex / RL-G05-50K-E3）
+
+- 新`rewards/curriculum/dense_recipe`、`prepare_dense/method_dense`已实现；learner显式接入新clip/epochs/KL双阈值/每minibatch LR恢复及有shaping无官方成功的更新；worker仅TRAIN端读目标几何，actor字段白名单保持，final仍仅官方success。每回合自动课程不读取human_release，新规则已进AGENTS，旧运行源不变。
+- 本地43 RL回归＋5 flow＋3 native profile＋4 RTX profile通过，33 RL模块语法过；新增执行真实`learner.update`的微型CPU模型测试，证明clip=.1、mean/max KL=.02/.1、4epochs、每步候选LR重新1e-7/1e-6生效，零和shaping也能更新。往返差分、terminal/timeout、目标绑定/negation、相机空白/NaN/泄漏均覆盖。
+- 已只读加载旧TRAIN观察确认真实格式为单时刻head720/wrist480 uint8、30Hz、state字典，与自动门一致。下一步commit/push、新robo冻结源内重跑测试和身份准入，再启动一份已登记有界续训；此刻尚未启动新GPU，不能称奖励在真实场景或成功率已验证。
+
+### 2026-09-29 14:34（北京时间）：用户指定三项修改，E3独立实现中（Codex / RL-G05-50K-E3）
+
+- 用户要求“更新更激进、奖励稍密、去掉课程人审”。已pull/fetch，main仍33677bd；从main新建`feat/rl-dense-aggressive-20260929`并ff纳入已push的de06726，本地独立worktree同名。robo四A100空闲、无旧RL进程；旧run/source/权重保持，不用subagent、不接管其他成员任务。
+- 本轮继续94-update而非擅自丢弃delta：AE候选LR1e-7/noise1e-6、clip .1、平均完整路径KL .02/单路径上限 .1、有界回滚与minibatch候选LR恢复；加入小权重目标谓词进展＋目标几何接近的potential差分，官方成功仍+1。无成功但有shaping信号也可更新，不再用零官方成功直接停训。
+- 课程仍以真实演示前缀/连续官方成功推进，取消human_release等待，改逐回合自动检查与可定位日志；AGENTS已写明用户最新规则。精确配方/预算见[E3登记](experiments/2026-09-29-g05-50k-rl-e3.md)，当前仅实施/CPU验证准备，0新GPU。下一步是奖励反投机/训练分割/配置生效/自动课程测试，再冻结源码与实际小闭环准入。
+
 ### 2026-09-29 13:51（北京时间）：按用户要求复核RL配置/有效训练量，仅说明未重启（Codex / RL-G05-50K-E2）
 
 - 已pull/fetch、只读核原E2 manifest/父配置、与冻结7b20615无差异的学习器核心及本地SHA回执；[实际配置复核](experiments/2026-09-29-g05-50k-rl-config-audit.md)记录完整算法/课程/奖励/精度。AE候选LR1e-8，84有效更新中44步更低、最低1.953125e-11；125候选/41拒绝，三批回溯耗尽提前结束。
