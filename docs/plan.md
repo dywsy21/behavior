@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 17:41（北京时间）：JEV-02 gate0真实启动（Codex，运行中）
+
+- 源码固定`ced02feb3a830cd3e0c83081f15e818810f106d0`，implementation `32020e10…553d5ed`；独审最终无阻断，robo 77目标/原生CPU测试1.513s过，干净独立worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_closedloop_ced02fe`。未改队友源码/环境。
+- 唯一gate0监管PID4030656、run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_20260929_gate0_v1`，GPU1/CPU88–91，24动作/1536控制/1800s含启动＋60s清理；task0 TRAIN138/seed0，0模型请求/训练。当前仅启动回执，初始化/门通过均待真实结果；不会当作任务成功率。
+- 下一读取native/GPU/逐控制证据，成功后同冻结源gate3；未过则停止扩展定位，不重复提交现目录。密钥还未复制robo。
+
 ### 2026-09-29 17:40（北京时间）：JEV-02运行前审查闭合，准备真实门（Codex）
 
 - 独审提出的动作阶段wall核验、60s清理超时、环境key隔离已修；新增只含允许元数据的Jev持久请求账本，与observer账本/结果各自核账。765全回归/29.923s（5skip）及41 native过；再补有效abstain作为无动作策略终止、与真实网络/协议异常区分，36针对测试过，小增量独审中。
