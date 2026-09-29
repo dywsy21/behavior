@@ -10,11 +10,21 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 18:48（北京时间）：JEV-02首条闭环完成未成功，第二条运行中（Codex）
+
+- episode1监管completed/actor exit0，1283.362s总、373controls、16observer调用、**0 Jev请求**；官方`success=false`、goal未满足，停止`VISUAL_ODOMETRY_UNCERTAIN`。16次观察目标不可见，现有measured_search_controller转向搜索后两次观测恢复预算耗尽；不是Jev作出了错误抓取选择，也不能据此评价Jev本体。结果SHA `77bd8c74…ffe840f60`，监管SHA `63f1b786…e8a1b348`；自有模型按监管TERM、清理0.689s，队友进程保持。
+- 18:44唯一启动episode2，监管4050934/model4050986/actor4051071，`jev_20260929_episode2_v1`；同ced02fe、GPU1、TRAIN138/seed0及原预算，不换模型/prompt/阈值。18:48实查actor_running/场景初始化，未重复启动。当前只可报告整个管线0/1，不能写0/3或JeV动作成功率。
+- 本人已看episode1决策014原始头帧：正对大面积明亮玻璃门，未见明显收音机；此为追踪失效的视觉线索，具体数值原因继续读原回执，不凭图片下定论。下一核原odometry/恢复记录、归档视频与逐步结果，并完成剩余既定重复试验；不追加训练或放松安全门。
+- 18:51原回执定位完成：决策013/014/015中断时分别22/20个稳定匹配、24个唯一匹配，低于固定25门；自身遮挡过滤移除0点，不是机械臂自遮挡误剔除。两次12-control HOLD恢复均通过，但恢复后继续同方向yaw搜索，未解决低特征视角；真实有效累计旋转90.7°，未完成全周搜索。16观察全negative、Jev0次；保持模型与阈值，待重复结果。
+- episode1视频与result/supervisor已取回本地`artifacts/jev-control-20260929/closedloop/episode1/`且双端SHA一致；视频`f4d8178d…25a7e4e`、640×1088/15fps/12.4s，省略推理等待，不是602.358s动作墙时或1283.362s总墙时。一次尝试复制不存在的`trace.jsonl`报错；实际完整逐决策记录在result.decisions，已核16条，不造缺失trace。
+
 ### 2026-09-29 18:21（北京时间）：JEV-02两task工程门通过，首条任务闭环启动（Codex）
 
 - gate3同冻结`ced02fe` completed/actor exit0，1098.185s总/568.489s动作；24检查、23实际执行完成＋1预检拒绝、440controls/112同步采集、gate_ok=true/无失败，清理0.368s/资源释放过。result SHA `128d4b1b…fe74240`；native journal `ec4e9d99…2bc71d02`。两task门和新freshness真实验证完成，不等于Jev任务SR。
 - 已唯一启动episode1，监管4042627，run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_20260929_episode1_v1`；task0 TRAIN138/seed0/原始起点，仍用ced02fe/GPU1，原96决策/3072控制/2400s动作/3600s总、Jev208/视觉215请求上限。模型校验/感知加载、模拟器初始化与真实决策待；没有提前报成功/失败。
 - gate3结果/manifest/监管正归档本地`artifacts/jev-control-20260929/closedloop/gate3/`。下一核首条原生/请求/动作/官方终态及视频；无基础设施/协议错误后继续既定episode2/3，不换prompt/权重或追加训练，不动队友RL。
+- 18:24 episode1实际进度：固定权重hash/观察服务health通过，model4042957、sim actor4043062均已启动，GPU1共置监管正常；尚在新场景初始化/0 observer调用，不能算Jev闭环效果。此次冷启动包含约2分多的权重核验/加载，任务控制时间另计。
+- 18:34真实首条控制：原reset/load138/reset/native门过；第1次视觉observe返回目标不可见（57 tokens/48.414s生成，是否一次性冷启动开销待后续）；已1决策/24controls，已有measured_search_controller选择base yaw_plus coarse且TARGET_REACHED，Jev请求仍0。明确区分脚本搜索和Jev选择，未发生抓取或任务成功。
 
 ### 2026-09-29 18:02（北京时间）：JEV-02 gate0完整通过，gate3运行中（Codex）
 

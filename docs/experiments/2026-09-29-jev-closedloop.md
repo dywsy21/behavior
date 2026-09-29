@@ -1,6 +1,6 @@
 # JEV-02：原始起点模拟器闭环
 
-负责人Codex；用户授权真实闭环/成功率；独立分支`feat/jev-control-20260929`。状态：**gate0/3均过、episode1运行中**，尚无新SR。源码固定`ced02feb3a830cd3e0c83081f15e818810f106d0`、implementation `32020e102a10fffb106564ed640857090cf6dcd43fe6a63c98e1e2567553d5ed`。
+负责人Codex；用户授权真实闭环/成功率；独立分支`feat/jev-control-20260929`。18:48北京时间状态：**gate0/3均过、episode1官方失败、episode2运行中**。整体管线暂为0/1，但第一条0 Jev请求，不能视作Jev动作选择效果。源码固定`ced02feb3a830cd3e0c83081f15e818810f106d0`、implementation `32020e102a10fffb106564ed640857090cf6dcd43fe6a63c98e1e2567553d5ed`。
 
 ## 假设与预算
 
@@ -38,5 +38,15 @@ robo队友RL进程4022589（GPU0）、4022893/4022896（GPU2/3）保持不动。
 - 独立最终36目标/代码增量审查通过。gate0监管4030656/actor4030665已completed/exit0：1185.018s总、590.471s动作；24检查完成/440控制/112同步采集、gate_ok=true/无失败；native journal SHA `3df7c0bf7d09838e2f08577e79a8b1f57f4ccfa9ca47dbedfa8cdf0a7d6e1955`，GPU清理通过。实际GPU1 renderer/physics均核为1；初始头帧本人已看，双端SHA `af324a2b8616bdc00ca73e8ecd694e8e248f76b478510b24ddcfa3399c0979d0`。
 - gate3监管4036929已completed/actor exit0，1098.185s总/568.489s动作；24检查、23执行完成/1预检拒绝、440控制112采集、清理0.368s。result SHA `128d4b1bd4b7490e2035b281021746dc48ddc4d11bc7908da66e491b8fe74240`，native journal `ec4e9d99614356e4327e3be5ff9d2e89d9f5fc3cbe5502fa22193c772bc71d02`。两门0模型/训练，不算SR。
 - 18:21 episode1监管4042627启动，同冻结源/GPU1/原始TRAIN138 seed0，96决策/3072控制/2400s动作/3600s总；实际模型/控制/官方结果仍待。
+- episode1已完整结束：监管completed/actor exit0、1283.362s总、373controls，官方success=false/goal未满足。16次observer调用，0 Jev请求；现有搜索控制器尚未找到目标即因VISUAL_ODOMETRY_UNCERTAIN及恢复预算耗尽停止。完整管线失败，不等于Jev选择了错误动作。result SHA `77bd8c74c3a2923e4ca0e699ba14c867ac6634e52d30aab498d3b70ffe840f60`，supervisor SHA `63f1b78657a3d10c8adde41b239224e9ecfd37f45e4738725bba7756e8a1b348`。清理0.689s通过，所有失败记录保留。
+- 18:44 episode2监管4050934唯一启动，18:48核model4050986/actor4051071处于初始化；同源/模型/原始实例/预算，不在试验间修改策略。episode3仍待，不能将未跑项写进SR分母。
 - gate0精确计数：24检查，23实际执行完成（19到达/4夹爪命令完成），1被可达性/碰撞预检拒绝；全24项freshness通过。result双端SHA `0b30649ff6d9df2573cf66f317144e52b67afe2b5e35c850a99f9056d4dab580`。
 - 17:43用户key已私有传至上述robo路径，目录0700/文件0600/owner robodojo核过；没有向视觉服务/日志/Git暴露，尚无新API请求。
+
+## 第一条失败定位（不是Jev模型失败归因）
+
+16条选择来源全部为`measured_search_controller`，16次视觉observe全为目标不可见，13条转向完成、3条中断。第013/014次失败子段只有22/20个有效RGB-D匹配，第015次28个匹配去重后24个，均不足固定25点门；自身过滤均移除0点，未进入新的几何求解，因此这三处不能归因为优化器发散或机器人mask误剔除。原始证据在各`decision_013..015/action_motion.json`；静态hold后能通过，但下一转向仍丢跟踪。
+
+两次恢复仅通过12个HOLD控制建立**新的局部**参考，不恢复丢失位移/旧覆盖，也不改变搜索方向；随后继续yaw_plus进入相似玻璃门视角。本人已检查决策004/014头帧，后者大部分为明亮玻璃。可确认瓶颈是低特征匹配＋恢复不改变视角；尚未逐帧人工证明全部视觉negative都正确，也未测试Jev真实选动作。只读证据不用于修改当前三次试验。
+
+第一条action wall602.358s，其中视觉生成累计169.364s，16次中位7.221s、首48.414s/第二18.684s；Jev0次所以无本轮Jev延迟。总墙时1283.362s含冷启动。视频已归档`artifacts/jev-control-20260929/closedloop/episode1/rollout.mp4`，双端SHA `f4d8178d7a44697f0d2401c5670236e73fd874fa2b22bcb2613c6904e25a7e4e`，640×1088/15fps/12.4s（省略模型等待，非实时墙钟）。`result.json`含全16条decision；本run没有`trace.jsonl`，一次多文件复制因此exit1，但结果/监管/视频实际均完整且hash核同，不能把复制退出码误说成actor错误。
