@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 15:59（北京时间）：102 delta/优化器真实恢复，无时限作业进入仿真初始化（Codex / RL-G05-50K-E3）
+
+- `e3_no_wall_v1/resume_load.json`完整SHA/严格恢复通过，actor102/critic24/optimizer_restored=true、FP32 AE；`status.json`实际继承8458控制/0 pending/2批/成功1。五task原TRAIN BC前反向通过、0优化器步、冻结层无梯度，未从父50k或94重新开始。
+- 监管4022582/learner4022589运行，TRAIN sims4022893/4022896启动，当前`training_initializing`，还没有本次重启后的自主采样/新actor。两墙钟null已实际载入，51服务器CPU＋1 CUDA跳过回归和累计预算恢复验证通过；保留原步数与所有非墙钟停止、final安排，不把重启当额外实验。
+- plan/TEAM/SERVER及实验文档已同步新路径和当前状态；后续同一作业自动课程/采样/PPO及固定六对final。现有完整任务SR证据仍只是旧0/6→0/6，新E3未评，TRAIN1/4仅末段局部计数，不宣称改善。
+
 ### 2026-09-29 15:57（北京时间）：无8h/12h墙钟的E3已唯一重新启动（Codex / RL-G05-50K-E3）
 
 - `e3_no_wall_v1`在UTC07:56:38启动，源码25d868e，监管4022582/learner4022589为running；实际manifest两时间上限均null，已继承8458控制/2批/102 actor/24 critic的准入状态，当前加载权重/准备sim，严格恢复回执与自主采样待确认。旧ef99d92四进程已退出，不存在双份训练。

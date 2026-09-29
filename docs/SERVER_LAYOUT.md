@@ -22,6 +22,8 @@
 
 ## 原robo记录（保留）
 
+**2026-09-29 15:59北京时间E3恢复确认：** 新`e3_no_wall_v1/resume_load.json`102/24/Adam严格恢复通过，`bc_preflight.json`五TRAIN任务过；`status.json`8458控制/0 pending/2批，TRAIN sims4022893/4022896初始化。新source25d868e保持冻结，后续当前状态只读新run，不再把原e3_dense_v1的人工停机failed当在训失败。
+
 **2026-09-29 15:57北京时间E3无时限续接：** 当前新run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e3_no_wall_v1`，Git冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_no_wall_25d868e`（25d868ebad96f85608aa069d4355801afae35ac3）。UTC07:56:38，监管4022582/learner4022589，加载中；manifest两墙钟为null，累计控制/批次/更新上限不重置。`prior_control_audit.json`保存旧8458控制和16 pending精确补账依据；新状态仍查`status.json/supervisor.json/resume_load.json`，不热pull新源。
 
 **旧e3_dense_v1已按用户修订停止：** 原四PID全退出，两sim均exit0；最后`rl_batch_002_updates_0102.pt`及对应JSON完整SHA b27e670d494cd2cd9bec51e97ba95a67202e4da9cad2f107e835d635a7793335，保留原位供新run加载。`operator_restart_request.json/operator_close_nudge.json`说明SIGTERM人为续接及通信收尾；原`closed.clean=false`与pending16/失败回执不篡改，真实两sim关闭/逐条账3866＋4592=8458已核。2批全部3410自主控制/8新actor保留，余704控制是中断前缀也扣预算。
