@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-29 15:45（北京时间）Codex/E3：用户取消8h训练限制；正实现批次落盘保账续接，同时去掉总12h墙钟，原80k TRAIN/100k总控制、64批/2000新actor和final六对保持。旧ef99d92仍运行/actor101、首delta98已保存；新入口测试中，尚未切换。仅改Codex同一E3，不扩大任务/试验数、不动其他成员/RTX/env。
+
 2026-09-29 15:12（北京时间）Codex/E3：两TRAIN自动课程/真实FM门/1362控制dense奖励审计通过，首两步actor94→96直接接受AE1e-7/noise1e-6、critic16→20；首批仍updating、未有新delta/完整SR。ef99d92原监管4014322继续，无人审等待；原8h TRAIN/12h总限及固定六对final，其他成员/RTX范围不变，不合main。
 
 2026-09-29 14:52（北京时间）Codex/E3已唯一启动：ef99d92/`e3_dense_v1`监管4014322、learner4014329，身份/源/父delta和42项服务器CPU测试通过（1 CUDA项CPU模式跳过）。当前模型加载，0新成功率结论；自动课程、8h TRAIN/12h总限/同六对final，其他成员不动。

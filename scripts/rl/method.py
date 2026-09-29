@@ -20,6 +20,7 @@ from learner import Experiment,cpu_tree
 from g05.rl.g05_adapter import G05FlowAdapter,move
 from g05.rl.protocol import EVAL_SEEDS,EVAL_LIMIT,paired_summary,next_prefix,check_reset
 from g05.rl.rewards import has_learning_signal
+from g05.rl.time_limits import training_deadline
 
 
 class TrainingCutoff(RuntimeError):
@@ -38,6 +39,8 @@ class MethodExperiment(Experiment):
 
     def timecheck(self):
         super().timecheck()
+        if self.pool=='final' and time.monotonic()>=getattr(self,'final_deadline',float('inf')):
+            raise TimeoutError('Registered final-evaluation timeout')
         if (self.pool=='training' and hasattr(self,'training_deadline')
                 and time.monotonic()>=self.training_deadline):
             raise TrainingCutoff('Registered training deadline; preserve final evaluation reserve')
@@ -99,6 +102,8 @@ class MethodExperiment(Experiment):
     def spawn_pool(self,pool):
         if self.processes or self.connections: raise ValueError('Previous pool still owned')
         self.pool=pool; self.phase=pool+'_initializing'; self.status()
+        if pool=='final' and self.manifest.get('max_active_wall_seconds') is None:
+            self.final_deadline=time.monotonic()+self.manifest['final_eval_reserved_seconds']
         self.pool_start_controls=self.budget.used
         (OUT/pool).mkdir(exist_ok=False)
         secret=os.urandom(32); self.listener=Listener(('127.0.0.1',0),authkey=secret)
@@ -240,12 +245,14 @@ class MethodExperiment(Experiment):
 
     def train(self):
         if self.pool!='training': raise ValueError('Only TRAIN pool may train')
-        self.training_started=time.monotonic(); start_controls=self.budget.used
+        resume=self.manifest.get('training_resume',{})
+        self.training_started=time.monotonic(); start_controls=self.budget.used-resume.get('controls',0)
         self.training_start_controls=start_controls
-        self.training_deadline=min(self.training_started+self.manifest['max_training_seconds'],
-            self.started+self.manifest['max_active_wall_seconds']-self.manifest['final_eval_reserved_seconds'])
-        recent={0:[],1:[]}; reviewed=set(); zero_rewards=zero_updates=0; self.parallel=True
-        for batch in range(self.manifest['max_batches']):
+        self.training_deadline=training_deadline(self.manifest,started=self.started,training_started=self.training_started)
+        recent={w:list(resume.get('recent',{}).get(str(w),[])) for w in (0,1)}; reviewed=set()
+        zero_rewards=resume.get('zero_rewards',0); zero_updates=resume.get('zero_updates',0); self.parallel=True
+        first_batch=self.batches
+        for batch in range(first_batch,self.manifest['max_batches']):
             if (time.monotonic()>self.training_deadline-600 or
                     self.actor_updates-self.start_updates>=self.manifest['max_new_actor_updates']):
                 self.stop_reason='registered_training_time_or_update_limit'; break
@@ -253,7 +260,7 @@ class MethodExperiment(Experiment):
             if (self.budget.used-start_controls+needed>self.manifest['max_training_controls'] or
                     self.budget.remaining-needed<self.manifest['final_eval_reserved_controls']):
                 self.stop_reason='reserve_final_evaluation_controls'; break
-            if batch: self.reset([0,1])
+            if batch>first_batch: self.reset([0,1])
             self.phase='training_curriculum'; self.status(batch=batch,prefixes=self.prefix)
             self.replay([0,1],self.prefix,phase='expert_prefix',parallel=True)
             pair=tuple(self.prefix[w] for w in (0,1))
@@ -261,7 +268,7 @@ class MethodExperiment(Experiment):
                 self.review_curriculum(batch); reviewed.add(pair)
             elif any(r['success'] or r['terminal'] for r in self.latest.values()):
                 raise ValueError('Repeated curriculum prefix became terminal')
-            if batch==0: self.gates()
+            if batch==first_batch: self.gates()
             self.phase='collecting'; self.status(batch=batch,prefixes=self.prefix)
             rows,advantages,returns,completed=self.rollout()
             if not rows: self.stop_reason='empty_training_rollout'; break

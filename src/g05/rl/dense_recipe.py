@@ -1,5 +1,6 @@
 """Explicit E3 opt-in; historical E1/E2 defaults remain unchanged."""
 from math import isfinite
+from g05.rl.time_limits import NO_TRAINING_WALL, active_wall_limit
 
 REWARD = dict(kind='goal_geometry_potential_v1', weight=.2, gamma=.9998,
               goal_weight=.7, distance_scale=.25)
@@ -10,13 +11,25 @@ def validate_recipe(manifest):
         bounded_backtracking=True, reset_candidate_lr_each_minibatch=True,
         clip=.1, target_path_kl=.1, target_mean_path_kl=.02, ppo_epochs=4,
         critic_steps_per_batch=4, bc_weight=.1, gamma_control=.9998, lambda_chunk=.95,
-        episode_controls=1024, max_controls=100000, max_active_wall_seconds=43200,
-        max_training_controls=80000, max_training_seconds=28800, max_batches=64,
+        episode_controls=1024, max_controls=100000,
+        max_training_controls=80000, max_batches=64,
         max_new_actor_updates=2000, max_actor_updates=2094,
         final_eval_reserved_controls=19344, final_eval_reserved_seconds=10800)
     for key, value in expected.items():
         if manifest.get(key) != value:
             raise ValueError(f'Unregistered E3 setting {key}')
+    if manifest.get('time_limit_override') == NO_TRAINING_WALL:
+        if active_wall_limit(manifest) is not None:
+            raise ValueError('Requested no-wall continuation still has a global time limit')
+        state=manifest.get('training_resume',{})
+        if (not 0 < state.get('batches',0) < 64 or not 0 < state.get('controls',0) < 80000
+                or not 94 <= state.get('actor_updates',0) < 2094
+                or state.get('critic_updates',0) != 16+4*state['batches']
+                or state.get('zero_rewards',3) >= 3 or state.get('zero_updates',3) >= 3
+                or set(state.get('recent',{})) != {'0','1'}):
+            raise ValueError('Missing or exhausted cumulative E3 continuation state')
+    elif manifest.get('max_active_wall_seconds') != 43200 or manifest.get('max_training_seconds') != 28800:
+        raise ValueError('Unregistered original E3 time limits')
     if (manifest.get('reward') != REWARD
             or manifest.get('learning_rates') != dict(action_expert=1e-7, noise=1e-6, critic=1e-4)
             or manifest.get('backtracking_scales') != [1., .5, .25, .125, .0625, .03125]):

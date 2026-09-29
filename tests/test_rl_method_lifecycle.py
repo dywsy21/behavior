@@ -57,6 +57,50 @@ class LifecycleTests(unittest.TestCase):
         e.started=time.monotonic()-501
         with self.assertRaises(TimeoutError): e.timecheck()
 
+    def test_no_wall_training_but_final_timeout_and_control_budget_remain(self):
+        from g05.rl.time_limits import NO_TRAINING_WALL
+        e=self.bare(); e.started=time.monotonic()-100000
+        e.manifest.update(entry='method_dense',max_active_wall_seconds=None,
+                          max_training_seconds=None,time_limit_override=NO_TRAINING_WALL)
+        e.training_deadline=float('inf'); e.timecheck()
+        e.pool='final'; e.final_deadline=time.monotonic()-1
+        with self.assertRaisesRegex(TimeoutError,'final-evaluation'): e.timecheck()
+        with self.assertRaises(RuntimeError): e.budget.reserve(101)
+
+    def test_resumed_train_uses_cumulative_budget_batch_and_curriculum_history(self):
+        from g05.rl.time_limits import NO_TRAINING_WALL
+        e=self.bare(); e.manifest.update(entry='method_dense',max_active_wall_seconds=None,
+            max_training_seconds=None,time_limit_override=NO_TRAINING_WALL,
+            training_resume=dict(controls=8000,recent={'0':[True,True],'1':[]},zero_rewards=0,zero_updates=0),
+            max_batches=3,max_new_actor_updates=2000,max_training_controls=8100,
+            final_eval_reserved_controls=19344,episode_controls=16,curriculum_admission='automatic',
+            learning_rates=dict(action_expert=1e-7,noise=1e-6),
+            workers=[dict(instance=1,first_recorded_terminal=100),dict(instance=138,first_recorded_terminal=100)])
+        e.budget=ControlBudget(100000); e.budget.used=8000
+        e.batches=2; e.actor_updates=102; e.start_updates=94; e.prefix={0:10,1:10}
+        e.stop_reason=None; e.last_checkpoint=None; e.status=lambda **kw:None
+        e.actor_optimizer=type('Optimizer',(),{'param_groups':[{},{}]})()
+        e.latest={0:dict(success=True,episode=0),1:dict(success=False,episode=0)}
+        e.policy_controls={0:16,1:16}; checks=[]
+        e.reset=lambda workers:self.fail('New sim already at reset; do not reset again')
+        e.review_curriculum=lambda batch:checks.append(('review',batch))
+        e.gates=lambda:checks.append(('gates',None))
+        e.replay=lambda *a,**kw:setattr(e.budget,'used',e.budget.used+20)
+        def rollout():
+            e.budget.used+=32
+            return [dict(split='train',rewards=[1.])],[],[],{0,1}
+        e.rollout=rollout
+        e.update=lambda *args:setattr(e,'actor_updates',e.actor_updates+1)
+        e.checkpoint=lambda:None
+        with patch.object(method,'save') as write,patch.object(method.torch,'save'):
+            e.train()
+        self.assertEqual(e.training_start_controls,0)
+        self.assertEqual((e.batches,e.budget.used,e.actor_updates),(3,8052,103))
+        self.assertEqual(checks,[('review',2),('gates',None)])
+        self.assertEqual(e.prefix[0],0)  # prior two wins + this win progress the course
+        self.assertEqual(write.call_args.args[1]['controls'],8052)
+        self.assertEqual(write.call_args.args[1]['new_actor_updates'],9)
+
     def test_actual_not_reserved_controls_are_counted_and_no_double_dispatch(self):
         e=self.bare(); module=sys.modules.get(base.__module__)
         # The imported class retains the original globals after the temporary

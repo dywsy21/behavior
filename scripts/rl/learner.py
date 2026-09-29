@@ -23,6 +23,7 @@ from g05.rl.flow_ppo import (ControlBudget,NoiseHead,ValueHead,gae,ppo_objective
 from g05.rl.g05_adapter import G05FlowAdapter,move
 from g05.rl.trust_region import bounded_adam_step
 from g05.rl.rewards import has_learning_signal
+from g05.rl.time_limits import active_wall_limit
 
 
 def cpu_tree(x):
@@ -54,7 +55,8 @@ class Experiment:
         print('RL_STATUS',json.dumps(row),flush=True)
 
     def timecheck(self):
-        if time.monotonic()-self.started>self.manifest['max_active_wall_seconds']:
+        wall=active_wall_limit(self.manifest)
+        if wall is not None and time.monotonic()-self.started>wall:
             raise TimeoutError('Registered active-wall budget exhausted')
 
     def issue(self,worker,actions,phase):

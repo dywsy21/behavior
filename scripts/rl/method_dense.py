@@ -4,6 +4,7 @@ from pathlib import Path
 import signal
 import time
 import traceback
+import torch
 
 from common import OUT, save, sha
 from learner import cpu_tree
@@ -20,6 +21,11 @@ class DenseExperiment(MethodExperiment):
         self.evaluations = list(self.manifest['prior_evaluations'])
         validate_baseline(self.evaluations)
         self.reset_references = {int(k): v for k, v in self.manifest['reset_references'].items()}
+        resumed=self.manifest.get('training_resume')
+        if resumed:
+            self.budget.used=resumed['controls']
+            self.batches=resumed['batches']
+            self.successes=resumed['successes']
         for row in self.evaluations:
             self.eval_log.write(json.dumps(row)+'\n')
 
@@ -36,6 +42,16 @@ class DenseExperiment(MethodExperiment):
         save(OUT/f'reward_audit_{self.batches:03d}.json', audit)
         return super().update(rows, advantages, returns)
 
+    def gates(self):
+        # A repeated deployment check must not consume the resumed sampling RNG.
+        if not self.manifest.get('training_resume'):
+            return super().gates()
+        cpu=torch.get_rng_state(); cuda=torch.cuda.get_rng_state_all()
+        try:
+            return super().gates()
+        finally:
+            torch.set_rng_state(cpu); torch.cuda.set_rng_state_all(cuda)
+
     def run(self):
         try:
             for path, expected in self.manifest['audit_input_sha256'].items():
@@ -44,9 +60,10 @@ class DenseExperiment(MethodExperiment):
             self.load()
             self.parent_ae = cpu_tree(self.policy.model.action_expert.state_dict())
             self.restore_delta(self.manifest['resume_checkpoint'], self.manifest['resume_sha256'], optimizer=True)
-            if self.actor_updates != 94 or self.critic_updates != 16:
+            resumed=self.manifest.get('training_resume',dict(actor_updates=94,critic_updates=16))
+            if self.actor_updates != resumed['actor_updates'] or self.critic_updates != resumed['critic_updates']:
                 raise ValueError('Wrong E2 continuation counts')
-            self.start_updates = self.actor_updates
+            self.start_updates = 94  # Entire E3, not a fresh 2000-update budget after a restart.
             self.prepare_bc()
             self.spawn_pool('training')
             try:
@@ -85,6 +102,7 @@ class DenseExperiment(MethodExperiment):
                 checkpoint_sha256=receipt['sha256'], actor_updates=self.actor_updates,
                 new_actor_updates=self.actor_updates-self.start_updates, controls=self.budget.used,
                 seconds=time.monotonic()-self.started, training_stop_reason=self.stop_reason,
+                prior_active_seconds=self.manifest.get('prior_active_seconds',0),
                 reward_shaping_used_for_success_metric=False, prior_baselines_reused=True)
             save(OUT/'result.json', result)
             self.phase = 'completed'

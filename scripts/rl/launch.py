@@ -7,6 +7,7 @@ import subprocess
 import sys
 import time
 from common import REPO,OUT,MODEL_PY,commit,save
+from g05.rl.time_limits import active_wall_limit
 
 
 def model_env():
@@ -20,7 +21,7 @@ def model_env():
 
 def supervise(entry='learner'):
     start=time.monotonic(); process=None; result=dict(source_commit=commit(),supervisor=os.getpid(),status='starting')
-    wall=json.loads((OUT/'manifest.json').read_text())['max_active_wall_seconds']
+    wall=active_wall_limit(json.loads((OUT/'manifest.json').read_text()))
     try:
         # Recheck immediately before GPU use. Never compete with an observed job.
         usage=subprocess.check_output(['nvidia-smi','--query-gpu=index,memory.used','--format=csv,noheader,nounits'],text=True)
