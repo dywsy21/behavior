@@ -10,6 +10,22 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 22:32（北京时间）：JEV-04新gate0唯一启动（Codex，运行中）
+
+- 同冻结211a6f8，新完整implementation `459f7f38425f86204a3eba5c82d2edf89c34f76b86a39c8ee495e478e1fe0076`；API资格的源码/契约/模板/持久账本在启动器通过。gate0监管4087367/actor4087380，run `jev_plan_20260929_gate0_v1`、physical GPU1/CPU88–91，24检查/1536controls/1800s总，0模型/训练；实际loading_scene，尚非门通过。
+- 一次SSH查询被中继断开，随后只读重连已恢复并核实原进程，未重复提交。新gate3/episode1均未提交；按新门→唯一追加闭环继续，不热改运行源。
+- 22:34 API四件result/calls/trials/request_templates已取回本地`artifacts/jev-control-20260929/planning_contract/api_v1`并双端SHA核同，result `9ecfbffc…fbb1c3f`。新计划第二问10次均goal_1（API返回1.0），仅同输入重复一致性，不是校准概率、独立任务鲁棒性或SR。gate0仍loading_scene/监管正常。
+
+### 2026-09-29 22:31（北京时间）：JEV-04真实API首批通过，接续新源工程门（Codex）
+
+- 固定211a6f8的`jev_plan_20260929_api_v1` exit0/qualified=true：25真实请求/25有效响应；原失败第二问3/3仍弃权，新官方原文完整计划10/10为goal_0→goal_1，2/2冲突文本负例仍弃权。21594输入/950输出tokens，0GPU/控制/重置/训练；支持规划输入契约修复，但未隔离每处文字的单独贡献、不是任务成功率。
+- API calls SHA `53293508…b91646a8`、trials `bcb801cc…1f83e4c`，v3契约`dd985a90…2dbca0d8`；全部失败/对照都保留，未靠循环重试择优。下一同一冻结源新gate0→gate3各原工程预算，之后获准唯一task0原始起点闭环；暂不花更多API，无新训练。
+
+### 2026-09-29 22:30（北京时间）：JEV-04冻结211a6f8部署，首批真实API准备启动（Codex）
+
+- Git新worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_plan_211a6f8`固定`211a6f8d7dac6b038c6b44ccf04c9eb2c6175ee5`、clean；robo模拟器Python下53项目标回归0.309s通过。本地795/独审证据同版本，未热改任何旧源/共享env。
+- 提交唯一CPU run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_plan_20260929_api_v1`，3旧第二问＋10完整新计划＋2冲突文本，25 API/900s分批上界、0GPU/控制/重置/训练；固定真实失败receipt与私有key文件，不打印key。下一按全部回执判qual，不能以进程启动当作通过；API总授权仍不限。
+
 ### 2026-09-29 22:29（北京时间）：JEV-04最终795项CPU检查与独审通过，准备冻结API批次（Codex）
 
 - 最终全套795项/34.894s通过、5环境skip；独审53目标检查通过、无剩余实质阻断。同时覆盖首次command弃权正常结果及零动作integration=false，非成功分母不再因合法弃权被抹掉；网络/协议错误仍独立失败，真实策略动作仍逐control核账。
