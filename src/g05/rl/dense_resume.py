@@ -2,6 +2,29 @@
 from g05.rl.protocol import next_prefix
 
 
+def reconcile_operator_stop(closed, physical_counts, unresolved, *, operator_nudge):
+    """Resolve ONLY a requested stop's interrupted reply using both worker receipts.
+
+    This does not forgive missing physical logs, killed sims, or unknown controls.
+    The caller must verify sequential per-control logs and all old PIDs exited.
+    """
+    if (closed['exits']!=[0,0] or closed['reported_controls']!=physical_counts
+            or len(physical_counts)!=2 or any(type(n) is not int or n<0 for n in physical_counts)):
+        raise ValueError('Simulator exit/receipt/physical count mismatch')
+    total=sum(physical_counts); pending=closed['pending_controls']
+    if closed['clean'] and pending==0 and total==closed['ledger_controls']:
+        return dict(controls=total,reconciled_pending_controls=0,original_close_clean=True)
+    if (not operator_nudge or type(pending) is not int or not 0<pending<=32
+            or unresolved.get('budget_pending')!=pending
+            or any(k not in ('0','1') or type(n) is not int or not 0<n<=16
+                   for k,n in unresolved.get('pending',{}).items())
+            or sum(unresolved.get('pending',{}).values())!=pending
+            or total!=closed['ledger_controls']+pending):
+        raise ValueError('Unresolved stop cannot be exactly reconciled from worker physics')
+    return dict(controls=total,reconciled_pending_controls=pending,original_close_clean=False,
+                evidence='both simulators exited0; both close counts equal complete sequential physical logs')
+
+
 def resume_state(manifest, batches, checkpoint, physical_controls):
     if not batches or len(batches)>=manifest['max_batches']:
         raise ValueError('Need completed, non-exhausted training batches')

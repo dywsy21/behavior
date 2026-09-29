@@ -10,10 +10,25 @@ from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
 from g05.rl.time_limits import NO_TRAINING_WALL,active_wall_limit,training_deadline
-from g05.rl.dense_resume import resume_state,safe_restart_boundary
+from g05.rl.dense_resume import resume_state,safe_restart_boundary,reconcile_operator_stop
 
 
 class TimeResumeTests(unittest.TestCase):
+    def test_interrupted_reply_is_debited_only_with_two_matching_physical_close_receipts(self):
+        counts=[3866,4592]
+        closed=dict(reported_controls=counts,ledger_controls=8442,exits=[0,0],pending_controls=16,clean=False)
+        unresolved=dict(pending={'1':16},budget_pending=16)
+        result=reconcile_operator_stop(closed,counts,unresolved,operator_nudge=True)
+        self.assertEqual((result['controls'],result['reconciled_pending_controls']),(8458,16))
+        self.assertFalse(result['original_close_clean'])
+        with self.assertRaises(ValueError):
+            reconcile_operator_stop(closed,counts,unresolved,operator_nudge=False)
+        for bad in [dict(closed,exits=[0,-15]),dict(closed,ledger_controls=8441),
+                    dict(closed,reported_controls=[3866,4591]),dict(closed,pending_controls=32)]:
+            with self.assertRaises(ValueError):reconcile_operator_stop(bad,counts,unresolved,operator_nudge=True)
+        good=dict(closed,clean=True,pending_controls=0,ledger_controls=8458)
+        self.assertEqual(reconcile_operator_stop(good,counts,{},operator_nudge=False)['reconciled_pending_controls'],0)
+
     def test_finite_default_unchanged(self):
         m=dict(max_active_wall_seconds=43200,max_training_seconds=28800,final_eval_reserved_seconds=10800)
         self.assertEqual(active_wall_limit(m),43200)

@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 15:53（北京时间）：旧E3退出，通信中断的16步已实物对账（Codex / RL-G05-50K-E3）
+
+- 第一次SIGTERM落在大图IPC `recv_bytes`中，旧close重复收包阻塞；UTC07:52:02核同PID/starttime及原SystemExit后，仅追加一次SIGTERM中断cleanup收包，不碰其他进程。两sim最终均exit0、各自close回执3866/4592控制；原监管/learner/两sim全退出。
+- 旧ledger8442＋pending16，完整连续steps日志和两sim独立close均合8458，差恰好是那16个已执行但回复被打断的专家前缀动作。原`closed.clean=false`/failure/未决账全部保留，不伪造clean；新续接显式对账为8458累计控制、0新未决，所有3410自主控制正好对应两完整batch，无丢失PPO样本或actor更新。
+- 新prepare加入仅适用于已登记操作停机、两sim正常退出/两回执和逐条日志完全相符的精确补账检查；新增反例测试中。最新delta102及Adam/critic24保持，尚未新GPU启动；下一新冻结源通过检查后准备/启动无墙钟续接。
+
+### 2026-09-29 15:49（北京时间）：无时限版本双端通过，旧E3批次落盘后发出续接停机（Codex / RL-G05-50K-E3）
+
+- 新源码64be463fa15a9aac48388266d1bf831a789613a1已Git部署独立`git_worktrees/g05_50k_rl_no_wall_64be463`并ff-only同步；本地51项RL回归通过，原服务器解释器50通过/1 CUDA项CPU模式跳过，实际entry导入通过。测试实际监管`wait(timeout=None)`、10万秒TRAIN不触发旧墙钟、final独立超时及累计预算/课程恢复；不修改ef99d92源/env。
+- UTC07:49:23只向原learner4014329发SIGTERM，触发于完整第二批落盘后的第三次专家前缀：actor102/critic24、已完成2批。选择`e3_dense_v1/rl_batch_002_updates_0102.pt`，回执SHA b27e670d494cd2cd9bec51e97ba95a67202e4da9cad2f107e835d635a7793335；不是退回94或98。`operator_restart_request.json`记录准确PID/starttime/源码/已保存权重/用户原因。
+- 旧池正在关闭，真实物理账/完整SHA/退出准入随后检查，尚未启动`e3_no_wall_v1`；新run会把中断前缀的已执行控制也扣进原预算。当前短暂续接停机，不将其标为训练异常或新SR结果。
+
 ### 2026-09-29 15:45（北京时间）：用户取消训练时限，准备保账续接（Codex / RL-G05-50K-E3）
 
 - 用户要求去掉8小时限制；同步撤除会间接截断训练的12h总墙钟，保留累计80k TRAIN/100k总物理控制、64批/2000新actor、官方六对final与数值/无信号停止，final阶段单独3h和IPC超时不变。当前ef99d92进程的时限已经载入内存，不能只改manifest假称生效，也不热改活跃源码。

@@ -8,7 +8,7 @@ import pyarrow.parquet as pq
 
 from common import OUT,RUNTIME,PREVIOUS_RUNTIME,DATA,PARENT,PARENT_SHA,commit,save,sha
 from g05.rl.dense_recipe import validate_recipe
-from g05.rl.dense_resume import resume_state
+from g05.rl.dense_resume import resume_state,reconcile_operator_stop
 from g05.rl.protocol import validate_worker
 from g05.rl.recovery import count_physical_steps
 from g05.rl.time_limits import NO_TRAINING_WALL
@@ -42,17 +42,22 @@ def main():
             or failure['error']!="SystemExit('Owned E3 stopped by signal 15')"):
         raise ValueError('Old run stopped for a different reason; do not silently restart')
     closed=read(PRIOR/'training/closed.json')
-    if not closed['clean'] or closed['pending_controls'] or closed['exits']!=[0,0]:
-        raise ValueError('Unresolved physical controls or simulator close failure')
     counts=[]; policy_controls=0
     for worker in (0,1):
         path=PRIOR/f'training/worker_{worker}/steps.jsonl'
         inputs[str(path)]=sha(path)
         rows=[json.loads(line) for line in path.read_text().splitlines()]
         counts.append(count_physical_steps(rows,allowed_phases={'expert_prefix','policy'}))
+        worker_close=read(PRIOR/f'training/worker_{worker}_closed.json')
+        if (not worker_close['closed'] or worker_close['total_controls']!=counts[-1]
+                or rows[-1]['phase']!='expert_prefix'):
+            raise ValueError('Missing exact physical close receipt or stop after prefix boundary')
         policy_controls+=sum(r['phase']=='policy' for r in rows)
-    if counts!=closed['reported_controls'] or sum(counts)!=closed['ledger_controls']:
-        raise ValueError('Old physical ledger differs from clean-close receipt')
+    unresolved=read(PRIOR/'unresolved_training.json') if (PRIOR/'unresolved_training.json').exists() else {}
+    nudge=read(PRIOR/'operator_close_nudge.json') if (PRIOR/'operator_close_nudge.json').exists() else {}
+    reconciliation=reconcile_operator_stop(closed,counts,unresolved,
+        operator_nudge=(nudge.get('pid')==request['learner_pid'] and nudge.get('signal')=='SIGTERM'
+                        and nudge.get('no_actor_update_or_new_control_dispatch') is True))
     batches=[read(p) for p in sorted(PRIOR.glob('train_batch_*.json'))]
     checkpoint=Path(batches[-1]['checkpoint']); receipt=read(checkpoint.with_suffix('.json'))
     if (str(checkpoint)!=request['checkpoint'] or sha(checkpoint)!=request['checkpoint_sha256']
@@ -90,7 +95,8 @@ def main():
     save(OUT/'manifest.json',manifest)
     save(OUT/'prior_control_audit.json',dict(worker_controls=counts,controls=sum(counts),
         policy_controls=policy_controls,completed_batches=len(batches),all_updates_preserved=True,
-        checkpoint=str(checkpoint),sha256=receipt['sha256'],training_resume=progress))
+        checkpoint=str(checkpoint),sha256=receipt['sha256'],training_resume=progress,
+        stop_reconciliation=reconciliation))
     print(json.dumps(dict(run=str(OUT),source=manifest['source_commit'],training_resume=progress,
                          max_training_seconds=None,max_active_wall_seconds=None,new_gpu_processes=0)))
 
