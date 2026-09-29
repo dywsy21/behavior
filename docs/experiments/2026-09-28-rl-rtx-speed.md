@@ -31,6 +31,8 @@ robo实际资产VERSION为behavior-1k-assets **3.9.0**、robot-assets **3.8.2**�
 
 原legacy factory/runtime/chunk/trace四源码已按原字节及SHA纳入`rtx_legacy/`，只用于Git部署目标机；原robo活跃源无修改。新机路径/显卡适配与CPU检查尚待，不能拿源码复制当仿真已跑通。
 
+12:48：assets_v1首文件约90MiB停滞后exit28/152.166秒，未解压、0完整归档。新range续接入口只接受该已退出v1，扣153秒、剩7047秒，4并发×16MiB HTTP206，拼接全SHA；原2h不重置，分段缓存额外约30GiB也仍在≥200GiB余量守卫内。新run拟assets_v2，源码/launch回执待，不能拿失败的v1当下载完成。
+
 原不可变证据：robo `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_v3/throughput.json`；2026-09-28 22:10再次只读核对。两个独立常驻sim、TRAIN1/138各128个原演示控制，共256控制，同reset/动作序列，chunk16后读取观测：
 
 | 项目 | 实际控制 | 秒 | 控制/秒 |

@@ -5,6 +5,7 @@
 - 用户指定`user@10.162.152.173`，实测hostname `teai-g1`，单RTX4090/24GiB、Ubuntu22.04、Ultra9 285K/24核、125GiB RAM，根盘约677GiB空。原CPU服务保留，不停止；无BEHAVIOR/Isaac环境，当前无GPU计算进程。
 - WSL直连/经robo不通，Windows网络可达；使用仅SSH子进程的Windows TCP stdio通道，无VPN/路由/全局代理改变。用户授权追加本机现有ED25519公钥，免密已实测通过；密码不写文件/Git。
 - 本任务隔离根`/home/user/behavior_rl_speed_20260928`已于09-29建立；`src/behavior`固定3410ef9（运行中不可pull），`src/BEHAVIOR-1K`固定SDK，`envs/sim`独立环境。12:32唯一CPU bootstrap2623015，`runs/bootstrap_v1/{launch,status}.json`及阶段log、根`bootstrap-launch.stdout.log`；原2h/0GPU预算，安装/仿真/测速未验收。准备与结果见[RTX测速记录](experiments/2026-09-28-rl-rtx-speed.md)。
+- 09-29 12:44资产准备独立source `src/assets_e615516`（e615516），唯一PID2635447、`runs/assets_v1`/根`assets-launch.stdout.log`；下载缓存`cache/asset_zips`，解压位置`datasets/{behavior-1k-assets,omnigibson-robot-assets,2026-challenge-task-instances}`。≤2h/1CPU/0GPU、固定3.9.0/3.8.2版本，完整SHA及场景验收待；此时不能启动依赖未完目录的仿真。
 
 ## 新A800集群（2026-09-27，独立于robo）
 

@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 12:48（北京时间）：RTX下载停滞，准备同预算分段恢复（Codex / PERF-RTX-RL）
+
+- assets_v1的首108.5MB实例归档下载到约90MiB后持续60秒低速，152.166秒/exit28失败，PID2635447已退出；未解压、0已验完整文件/0GPU，原部分归档与日志保留。新`rtx_asset_resume.py`只允许已停v1一次恢复，扣153秒、余7047秒，4并发16MiB HTTP206分段、最后拼接整文件SHA，仍只原三归档且≥200GiB reserve；缓存分段额外约30GiB，不删除旧证据。尚未launch。
+- RTX路径/worker opt-in适配也在独立本地分支实现中，robo默认与正在运行的831de53冻结源未动；不能以本地代码存在当环境/仿真通过。E2 final首组每例1040控制快照，0完整新回合，继续原矩阵。
+
+### 2026-09-29 12:44（北京时间）：E2真实部署门通过、RTX资产准备启动（Codex / RL-G05-50K-E2、PERF-RTX-RL）
+
+- final恢复3999482已从保存94-update delta进入seed17真实控制，两个原始reset与旧基线逐物体/关节max差均0；FM零噪声差/旧路径误差/KL均0、原23D CPU解码相等。352总控制快照/每例176，尚无完整episode结果。新reset PNG双端SHA1fde0042…e06e、a693eb41…1df0已取回`artifacts/g05-50k-rl-20260928/e2-final-recovery/reset/`，本人图审中；不据此声称SR提升。
+- 12:45本人已看两完整reset三视图：301朝电视/壁炉，302朝楼梯/沙发，腕部视角处于默认收臂姿态；三路不是空白或串图，官方物理初态与基线完全同。只是起点与图像检查，不是任务完成标签。
+- RTX资产source `src/assets_e615516`已Git冻结，唯一CPU PID2635447，`runs/assets_v1`及根`assets-launch.stdout.log`；原2h/1核/0GPU范围，下载三固定归档。bootstrap2623015仍在SDK fetch（约137MiB已接收），两个准备作业独立、不热改源码/env，GPU测速仍待。
+
 ### 2026-09-29 12:39（北京时间）：RTX固定资产准备与legacy依赖Git化（Codex / PERF-RTX-RL）
 
 - 已只读核robo资产3.9.0/robot3.8.2。新机HF直连失败但镜像固定revision可达，1MiB range真实206/3.17s（含连接，不外推稳态）；三归档大小/SHA已写`rtx_assets.py`，新独立1CPU/2h/0GPU/≥200GiB reserve/约30GiB下载，尚未launch。官方版本与镜像完整hash后仍需关键运行资产双端匹配，不把下载当准入。
