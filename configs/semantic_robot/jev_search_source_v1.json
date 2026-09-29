@@ -1,0 +1,15 @@
+{
+  "schema": "jev-search-source-v1",
+  "source": "H38 TRAIN138 seed0 decision000 original-start sensor snapshot",
+  "purpose": "Offline new search-palette reconstruction; no control or physical success claim",
+  "files": {
+    "robot_calibration.json": "69d3ff5794b1c42ce8f80f2136a01e7e6a290e13a5638a6e14727b2dc1981ea7",
+    "manifest.json": "809832a96d6ad37d7f6468df63c344930fa2588310b9c3c514d00583e26365e4",
+    "decision_000/proprio.json": "a1ab9e729f07ef66000947b44ed61b28f00046618025b04bf46e3f45f1f9768a",
+    "decision_000/depth.npz": "d0680bed2a1f19caf90d2ad4463cb596e9df57d4fcfa7371e4bfc1249d10155b",
+    "decision_000/depth_receipt.json": "54b174c3cf0447ad35572b25462539aa41bdd16dc641bb013d6a709fbbdc5766",
+    "decision_000/observation.json": "0db62ed8c728891c75cc88064f47e25b103799f49b2df6e11f9d8e9c690a20b1",
+    "decision_000/harness.json": "db56c2485216f42e505536811fd6b92fb292d13d8bf6d857bbc8db4e2a042a4f",
+    "decision_000/robot_self_geometry.json": "0193cadd7ebbfe33d51349a3e414d0dcd933f56ff67eb09ca56ad6700de1c3c3"
+  }
+}

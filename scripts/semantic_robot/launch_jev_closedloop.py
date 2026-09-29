@@ -1,4 +1,4 @@
-"""JEV-02: two engineering gates, then up to three original-start episodes.
+"""JEV-03: two new engineering gates, then one Jev-owned original-start episode.
 
 Each stage is explicitly launched once in a new private runtime. No automatic
 retry, training, shared-source edits, or termination of another session.
@@ -28,12 +28,13 @@ from native_full_profile import configure_gpu
 
 gate, sync = common.gate, common.synchronous
 REPO = Path(__file__).resolve().parents[2]
-STAGES = ('gate0','gate3','episode1','episode2','episode3')
+STAGES = ('gate0','gate3','episode1')
 RUN_PARENT = Path('/mnt/nvme_tmp/robodojo_agentic_20260925')
 RUNTIME_PARENT = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925')
 KEY_FILE = Path('/mnt/sdc1/robodojo/.config/behavior/credentials/typesafe.key')
 PORT = 8986
-OBSERVER_CALLS, JEV_CALLS = 215, 208
+OBSERVER_CALLS, JEV_CALLS = 151, 192
+DECISIONS, CONTROLS = 64, 2048
 FLAGS = tuple(f for f in sync.ORIGINAL_FLAGS if f != 'structured-planning') + ('synchronous-io-v1',)
 STAGE = None
 ROOT = RUNTIME = None
@@ -42,7 +43,7 @@ ROOT = RUNTIME = None
 def read(path): return json.loads(path.read_text())
 
 
-def stage_root(stage): return RUN_PARENT / ('jev_20260929_' + stage + '_v1')
+def stage_root(stage): return RUN_PARENT / ('jev_all_20260929_' + stage + '_v1')
 
 
 def configure(stage):
@@ -65,7 +66,7 @@ def is_actor(): return STAGE.startswith('episode')
 def commands(base):
     actor = gate.command(base)
     changes = {'--gpu':'1', '--task':'3' if STAGE == 'gate3' else '0'}
-    if is_actor(): changes.update({'--mode':'agent','--max-decisions':'96','--max-controls':'3072','--max-seconds':'2400'})
+    if is_actor(): changes.update({'--mode':'agent','--max-decisions':str(DECISIONS),'--max-controls':str(CONTROLS),'--max-seconds':'2400'})
     for flag, value in changes.items(): actor[actor.index(flag)+1] = value
     if is_actor():
         actor += ['--uri',f'http://127.0.0.1:{PORT}','--expected-revision',common.REVISION,
@@ -135,7 +136,6 @@ def health():
 
 def prerequisites(digest):
     required = ['gate0'] if STAGE == 'gate3' else ['gate0','gate3'] if is_actor() else []
-    if STAGE in ('episode2','episode3'): required.append('episode'+str(int(STAGE[-1])-1))
     receipts = {}
     for stage in required:
         folder = stage_root(stage)
@@ -194,8 +194,8 @@ def validate_basic(result,digest):
         raise ValueError('Incomplete result or wrong source/profile/controller')
     validate_wall(result.get('wall_s'),is_actor())
     decisions = result.get('decisions',[])
-    if (not isinstance(decisions,list) or not 1 <= len(decisions) <= (96 if is_actor() else 24) or
-            type(result.get('controls')) is not int or not 1 <= result['controls'] <= (3072 if is_actor() else 1536)):
+    if (not isinstance(decisions,list) or not 1 <= len(decisions) <= (DECISIONS if is_actor() else 24) or
+            type(result.get('controls')) is not int or not 1 <= result['controls'] <= (CONTROLS if is_actor() else 1536)):
         raise ValueError('Control/decision budget mismatch')
     executed = [r for r in decisions if r.get('accepted_before_motion')]
     if any(r.get('jev_freshness_passed') is not True for r in executed):
@@ -210,6 +210,9 @@ def validate_basic(result,digest):
         raise ValueError('Incomplete official outcome/API accounting')
     if is_actor() and result['stop_reason'] == 'JEV_DECISION_STATE_CHANGED':
         raise ValueError('Frozen-state contract failed; abort evaluation expansion')
+    if is_actor():
+        from semantic_robot.v2.jev_control import validate_actor_ownership
+        validate_actor_ownership(result)
 
 
 def validate_completion(base,code,digest):
@@ -225,7 +228,8 @@ def validate_completion(base,code,digest):
     if is_actor():
         # The combined identity nests the unchanged perception-only identity.
         identity = manifest['model_identity']
-        if identity.get('controller') != 'jev' or identity.get('model') != 'jev-1.13.0':
+        if (identity.get('controller') != 'jev' or identity.get('model') != 'jev-1.13.0'
+                or identity.get('decision_scope') != 'jev_all_strategy_choices_v2'):
             raise ValueError('Wrong Jev identity')
         check_health(identity['observer_only'],code,initial=True)
     elif manifest['model_identity'] is not None: raise ValueError('Engineering gate used a model')
@@ -238,7 +242,12 @@ def validate_completion(base,code,digest):
                 result['observer_calls'] != len(ledger) or final['calls'] != len(ledger) or
                 result['model_calls'] != result['observer_calls']+result['jev_requests']):
             raise ValueError('Perception-only ledger/accounting mismatch')
-        validate_jev_ledger([json.loads(x) for x in (ROOT/'gate/jev_calls.jsonl').read_text().splitlines()],result)
+        jev_ledger = [json.loads(x) for x in (ROOT/'gate/jev_calls.jsonl').read_text().splitlines()]
+        validate_jev_ledger(jev_ledger,result)
+        from semantic_robot.v2.jev_control import validate_actor_ownership
+        ownership = validate_actor_ownership(result, jev_ledger,
+            [json.loads(x) for x in (ROOT/'gate/steps.jsonl').read_text().splitlines()])
+        common.write('decision_ownership.json', ownership)
     native = read(ROOT/'gate/native_profile.json')
     if (native.get('physical_gpu') != 1 or
         [(r['name'],r['instance'],r['status']) for r in native['official_api_events']] !=
@@ -279,7 +288,7 @@ def supervise(base):
     start = time.monotonic(); children = {}; failure = None
     receipt = dict(status='starting',source_commit=code,implementation_digest=digest,stage=STAGE,
         supervisor_pid=os.getpid(),baseline=before,wall_seconds=reserved['wall_seconds'],samples=[])
-    def interrupted(sig,_): raise InterruptedError('JEV-02 signal '+str(sig))
+    def interrupted(sig,_): raise InterruptedError('JEV-03 signal '+str(sig))
     previous = {sig:signal.signal(sig,interrupted) for sig in (signal.SIGTERM,signal.SIGINT)}
     def monitor():
         if time.monotonic()-start >= receipt['wall_seconds']: raise TimeoutError('Total stage wall budget')

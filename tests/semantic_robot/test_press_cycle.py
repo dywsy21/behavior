@@ -40,6 +40,37 @@ def synthetic_motion(start, end, delta=(0., 0., 0.)):
 
 
 class PressCycleTests(unittest.TestCase):
+    def test_jev_purposeful_hold_requires_model_binding_and_no_reuse(self):
+        self.observe()
+        offered=self.cycle.candidates(self.state,model_selects=True)
+        self.assertEqual(offered,(HOLD,));self.assertIsNone(self.cycle.selected)
+        with self.assertRaises(ValueError):self.cycle.bind_model_choice(HOLD,self.control+1)
+        self.cycle.bind_model_choice(HOLD,self.control)
+        self.assertEqual(self.cycle.selected,("PREPARE",HOLD,self.control))
+        with self.assertRaises(ValueError):self.cycle.bind_model_choice(HOLD,self.control)
+        self.assertTrue(self.cycle.begin_execution(HOLD,self.state,self.control))
+
+    def test_jev_press_can_select_non_argmin_among_all_checked_directions(self):
+        self.prepare()
+        self.assertEqual(self.cycle.phase,"ADVANCE")
+        # Isolate routing from geometry: both options satisfy the same unchanged
+        # gain/depth/servo/surface contract. The worse gain must remain selectable.
+        class Trial:
+            status="TEST_ONLY"
+            def __init__(self,*a):pass
+            def begin(self,*a):return True
+        distances={"up":self.c._distance()-.0005,"left":self.c._distance()-.001}
+        with patch("semantic_robot.v2.press_cycle.SafeServo",Trial), \
+             patch.object(self.c.depth_guard,"check",side_effect=lambda a,*_:(a.move in distances,"TEST_ONLY")), \
+             patch.object(self.c,"press_trial_check",return_value={"eligible":True,"reason":"TEST_ONLY"}), \
+             patch.object(self.c,"_expected_point",side_effect=lambda a,*_:distances[a.move]):
+            offered=self.cycle.candidates(self.state,model_selects=True)
+        self.assertEqual(set(offered),{Action("right","up","micro"),Action("right","left","micro")})
+        self.assertIsNone(self.cycle.selected)
+        chosen=Action("right","up","micro")
+        self.cycle.bind_model_choice(chosen,self.control)
+        self.assertEqual(self.cycle.selected,("ADVANCE",chosen,self.control))
+
     def setUp(self):
         old, old_state, self.geometry = calibrated_fixture()
         spec = copy.deepcopy(old.spec)

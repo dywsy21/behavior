@@ -1,9 +1,15 @@
 # robo服务器文件位置与保留规则
 
-## Jev闭环（2026-09-29，JEV-02）
+## Jev全策略决策（2026-09-29，JEV-03，尚未部署）
+
+- 本地`/home/wsy/behavior_worktrees/jev-20260929`、`feat/jev-control-20260929`，新版本`launch_jev_closedloop.py`只注册`gate0/gate3/episode1`，不能用它重放旧JEV-02。
+- 计划run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_all_20260929_<stage>_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/jev_all_20260929_<stage>_v1`；**尚未创建/运行**。恢复robo通道后另建冻结源码worktree，旧源不热改。
+- 离线`probe_jev_all.py`读取本地SHA固定的H38传感器/旧actor请求，仅API决策，0控制。报告见[JEV-03](experiments/2026-09-29-jev-all-decisions.md)。20:48北京时间本机`127.0.0.1:23117`无监听，`ssh robo`暂断；不自行改VPN。
+
+## Jev闭环（2026-09-29，JEV-02，历史冻结源）
 
 - 冻结源码：`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_closedloop_ced02fe`，commit `ced02feb3a830cd3e0c83081f15e818810f106d0`；本地开发 `/home/wsy/behavior_worktrees/jev-20260929` / `feat/jev-control-20260929`。当前运行源禁止热pull/修改。
-- 启动器：`scripts/semantic_robot/launch_jev_closedloop.py --stage gate0/gate3/episode1/episode2/episode3 --launch`，各新目录一次性、手动按结果推进；详情/预算/当前实际完成状态见[实验文档](experiments/2026-09-29-jev-closedloop.md)和plan顶部。
+- 历史ced02fe启动器：`scripts/semantic_robot/launch_jev_closedloop.py --stage gate0/gate3/episode1/episode2/episode3 --launch`，仅描述旧冻结源；gate0/3、episode1/2已完成且不得重用目录，episode3未启动。详情见[实验文档](experiments/2026-09-29-jev-closedloop.md)和plan顶部。
 - 产物根 `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_20260929_<stage>_v1`；runtime根 `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/jev_20260929_<stage>_v1`。`gate/`是沿用目录名，不表示actor是工程门；身份看manifest。包含`result.json`、`rollout.mp4`、`native_io.jsonl`、逐决策；actor另有`jev_calls.jsonl`和`server/calls.jsonl`，模型/动作统计分开。
 - GPU1独占主要计算（感知+模拟器），保留队友GPU0/2/3和跨卡小上下文；模拟器Python仍`/mnt/sdc1/xhz/miniconda3/envs/behavior/bin/python`，感知Python仍GalaxeaVLA `.venv/bin/python`。观察服务仅loopback8986且只随actor阶段存在；不训练、无G0.5/MEM-Lite权重更新。
 - TypeSafe key置robo仓库外`/mnt/sdc1/robodojo/.config/behavior/credentials/typesafe.key`，目录0700/文件0600；禁止读出打印/提交/发给视觉服务，启动器拒绝继承TYPESAFE_API_KEY环境。不是模型/数据归档，不因清盘迁移或删除。

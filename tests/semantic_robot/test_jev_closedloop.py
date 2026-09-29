@@ -1,3 +1,5 @@
+import argparse
+import ast
 import copy
 import os
 from pathlib import Path
@@ -97,12 +99,31 @@ class ClosedLoopTests(unittest.TestCase):
                     self.assertTrue(args['synchronous_io_v1'])
                     if stage.startswith('episode'):
                         self.assertEqual(args['controller'],'jev')
-                        self.assertEqual(args['jev_max_calls'],208)
+                        self.assertEqual(args['jev_max_calls'],192)
+                        self.assertEqual(args['max_decisions'],64)
+                        self.assertEqual(args['max_controls'],2048)
                         self.assertEqual(len(args['gate_result']),2)
                     else:
                         self.assertEqual(args['controller'],'vlm')
                         self.assertIsNone(args['typesafe_key_file'])
                         self.assertEqual(args['task'],int(stage[-1]))
+
+    def test_new_campaign_arguments_equal_actual_runner_parser(self):
+        from semantic_robot.v2.run_budget import validate_run_budget
+        source=launch.REPO/'scripts/semantic_robot/run_v2.py'
+        main=next(n for n in ast.parse(source.read_text()).body if isinstance(n,ast.FunctionDef) and n.name=='main')
+        end=next(i for i,n in enumerate(main.body) if isinstance(n,ast.Assign) and isinstance(n.value,ast.Call)
+                 and isinstance(n.value.func,ast.Attribute) and n.value.func.attr=='parse_args')
+        code=compile(ast.fix_missing_locations(ast.Module(body=main.body[:end+1],type_ignores=[])),str(source),'exec')
+        base=SimpleNamespace(PYTHON=Path('/python'),REPO=launch.REPO)
+        for stage in launch.STAGES:
+            root=launch.stage_root(stage)
+            with patch.object(launch.gate,'FLAGS',launch.FLAGS), \
+                 patch.multiple(launch,STAGE=stage,ROOT=root,RUNTIME=launch.RUNTIME_PARENT/root.name), \
+                 patch.object(sys,'argv',launch.commands(base)['actor'][1:]):
+                ns={'argparse':argparse};exec(code,ns)
+                self.assertEqual(vars(ns['args']),launch.expected_args(base))
+                validate_run_budget(ns['args'])
 
 
 if __name__=='__main__': unittest.main()

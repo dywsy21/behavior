@@ -225,13 +225,14 @@ class PolicyTests(unittest.TestCase):
         self.assertIn("do NOT select", command_rubric(value["commands"]["command_000"]))
         self.assertEqual(len(value["commands"]), len(allowed))
 
-    def test_sole_hold_is_local_and_sole_move_has_abstention(self):
+    def test_sole_hold_requires_jev_and_sole_move_has_abstention(self):
         h, state, bundle, allowed = context()
-        c = client(Opener([{"intent": "wait"}, {"command": "abstain"}]))
+        c = client(Opener([{"intent": "wait"}, {"command": "command_000"},
+                           {"intent": "wait"}, {"command": "abstain"}]))
         engine = JevDecisionPolicy(c)
         action, _ = engine.select(json.loads(actor_context(h, state, bundle, (HOLD,))), (HOLD,))
         self.assertEqual(action, HOLD)
-        self.assertEqual(c.calls, 0)
+        self.assertEqual(c.calls, 2)
         with self.assertRaisesRegex(JevError, "abstained"):
             engine.select(json.loads(actor_context(h, state, bundle, (allowed[1],))), (allowed[1],))
 
@@ -247,27 +248,28 @@ class PolicyTests(unittest.TestCase):
     def test_adapter_observer_never_plans_acts_or_recovers(self):
         h, state, bundle, allowed = context()
         observer = SimpleNamespace(identity={"revision": "test"}, calls=0, last_call=None, deadline=None)
-        opener = Opener([{"intent": "approach"}, {"command": "command_001"}, {"recovery": "hold"}])
+        opener = Opener([{"next_goal":"goal_0"},{"next_goal":"goal_1"},
+                         {"intent": "approach"}, {"command": "command_001"}, {"recovery": "hold"}])
         plan = Path(__file__).resolve().parents[2] / "configs/semantic_robot/jev_task0_plan.json"
         policy = JevGroundedPolicy(observer, client(opener), task_id=0, task_plan=plan)
         policy.deadline = time.perf_counter() + 30
         goals, receipt = policy.plan(0, "turn on radio", bundle)
         self.assertEqual(goals[0].hand, "right")
         self.assertEqual(goals[1].hand, "left")
-        self.assertEqual(policy.calls, 0)
+        self.assertEqual(policy.calls, 2)
         action, _ = policy.act_feasible(h, state, bundle, allowed)
         self.assertEqual(action, allowed[1])
         recovery, _ = policy.recover(h, state, bundle, "TEST")
         self.assertEqual(recovery["strategy"], "hold")
         self.assertEqual(observer.calls, 0)
-        self.assertEqual(policy.calls, 3)
+        self.assertEqual(policy.calls, 5)
         self.assertEqual(h.completed, [])
         with self.assertRaises(JevError):
             policy.act(h, state, bundle)
         h.stop_reason = "STOPPED"
         with self.assertRaises(JevError):
             policy.act_feasible(h, state, bundle, allowed)
-        self.assertEqual(policy.calls, 3)
+        self.assertEqual(policy.calls, 5)
 
     def test_task_plan_does_not_transfer_to_wrong_task(self):
         plan = Path(__file__).resolve().parents[2] / "configs/semantic_robot/jev_task0_plan.json"

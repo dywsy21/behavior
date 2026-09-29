@@ -606,6 +606,7 @@ def main():
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
                 manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection,approach_reorientation=args.approach_reorientation,approach_body_options=args.approach_body_options,workspace_posture=args.workspace_posture,approach_translation_preview=args.approach_translation_preview,near_pose_gap=args.near_pose_gap) if grounded else TaskHarness(goals)
+                manager.jev_decision_owner = args.controller == "jev"
                 if replay is not None:
                     from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
                     bootstrap_unverified_pick(manager,replay,state)
@@ -749,7 +750,22 @@ def main():
                     write(directory/"harness.json",manager.context())
                     if manager.stop_reason:
                         row["stop_reason"] = manager.stop_reason; decisions.append(row); break
-                    if controller and controller.goal_changed:
+                    if args.controller == "jev":
+                        from semantic_robot.v2.jev_control import candidates as jev_candidates, authority as jev_authority
+                        allowed, mode = jev_candidates(controller, state, deadline)
+                        write(directory/"candidates.json", manager.candidate_receipt)
+                        if manager.stop_reason:
+                            row["stop_reason"] = manager.stop_reason; decisions.append(row); break
+                        action, call = select_feasible_action(policy, manager, state, bundle, allowed)
+                        save_call(directory, "action", call)
+                        row["selection_source"] = "Jev_all_" + mode
+                        if action is not None:
+                            row["jev_authority"] = jev_authority(action, call, allowed)
+                            if mode == "press_protocol":
+                                controller.press_cycle.bind_model_choice(action, controls)
+                        write(directory/"action_selection.json", {"source": row["selection_source"],
+                            "jev_authority": row.get("jev_authority"), "no_script_selection": True})
+                    elif controller and controller.goal_changed:
                         action=HOLD
                         row["selection_source"]="goal_transition_barrier_no_model_call"
                         write(directory/"action_selection.json",{"source":row["selection_source"],"reason":"OLD_TARGET_INVALIDATED_OBSERVE_NEW_GOAL_FIRST"})
@@ -1043,6 +1059,12 @@ def main():
                             write(location/"robot_motion_frame.json",frame)
                             return frame
                     anchor_hold=servo.safe_hold(state_now()).copy()
+                    reanchor_authorization = None
+                    if args.controller == "jev":
+                        reanchor_authorization, reanchor_call = policy.choose_reanchor(
+                            controller, state_now(), bundle, substep_result, controls=controls,
+                            action_limit=action_control_limit, terminal=terminal)
+                        if reanchor_call is not None: save_call(recovery_dir, "jev_selection", reanchor_call)
                     def issue_reanchor_hold():
                         nonlocal controls
                         if controls>=action_control_limit or expired(deadline):
@@ -1050,13 +1072,14 @@ def main():
                         ended=step(anchor_hold,render=True)
                         controls+=1
                         trace.write(json.dumps({"control":controls,"reanchor_after_decision":decision,
-                            "action23":anchor_hold.tolist(),"terminal":ended})+"\n")
+                            "action23":anchor_hold.tolist(),"terminal":ended,
+                            "jev_recovery_authorization":reanchor_authorization})+"\n")
                         if controls%2==0:capture("SENSING HOLD: NEW LOCAL REFERENCE, NO SUCCESS CLAIM")
                         return ended
                     reanchor, new_snapshot=controller.search_recovery.attempt(controller,substep_result,
                         controls=controls,action_limit=action_control_limit,terminal=terminal,deadline=deadline,
                         observe=observation_now,state_now=state_now,issue_hold=issue_reanchor_hold,
-                        save_snapshot=save_reanchor_snapshot)
+                        save_snapshot=save_reanchor_snapshot,authorization=reanchor_authorization)
                     write(recovery_dir/"receipt.json",reanchor)
                     row["search_reanchor"]={k:v for k,v in reanchor.items() if k!="chain"}
                     manager.search_reanchor=controller.search_recovery.context()

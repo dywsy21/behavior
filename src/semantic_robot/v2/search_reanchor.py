@@ -70,7 +70,7 @@ class SearchReanchor:
         }
 
     def attempt(self, c, failed, *, controls, action_limit, terminal, deadline,
-                observe, state_now, issue_hold, save_snapshot, motion_factory=None):
+                observe, state_now, issue_hold, save_snapshot, motion_factory=None, authorization=None):
         """Callbacks own recorded controls/captures; no simulator state access.
 
         issue_hold returns terminal and MUST issue exactly one ordinary control.
@@ -85,6 +85,14 @@ class SearchReanchor:
         receipt = {"valid": False, "source": "bounded_new_local_search_reference", "checks": checks,
                    "failed_motion_not_recovered": True, "success_claim": False,
                    "control_start": controls, "control_end": controls, "attempt": self.attempts}
+        if getattr(c.harness, "jev_decision_owner", False):
+            receipt["jev_recovery_authorization"] = copy.deepcopy(authorization)
+            checks["jev_requested_stationary_probe"] = bool(isinstance(authorization, dict)
+                and authorization.get("schema") == "jev-search-recovery-choice-v1"
+                and authorization.get("model") == "jev-1.13.0"
+                and type(authorization.get("call")) is int and authorization["call"] > 0
+                and authorization.get("choice") == "measure_stationary_reference"
+                and authorization.get("failed_span") == [failed.get("control_start"), failed.get("control_end")])
         if not all(checks.values()):
             receipt["reason"] = "SEARCH_REANCHOR_INELIGIBLE"
             return receipt, None

@@ -281,6 +281,8 @@ class GroundedPolicy(VLMPolicy):
         if not bimanual and not getattr(harness,"contact_geometry",True):system=GROUNDED_OBSERVE_CORE
         if getattr(harness,"held_inspection_enabled",False) and not harness.reference_from_planner:system=reference_observation_system(system)
         if self.trackable_grasp_anchor:instruction+=grasp_tracking_instruction(harness)
+        if getattr(harness,"jev_decision_owner",False):
+            instruction += " Your role is perception ONLY, not robot control. In note, describe one or two CURRENT visible scene facts useful for viewpoint reasoning even when the target is absent: landmarks/surfaces at image-left/centre/right, occlusion, glare or large textureless regions. Explicitly say these are image locations, not robot-frame directions. Do not recommend actions, invent an off-screen target, or merely repeat the example negative note. Jev will make all strategy choices."
         result,payload=self._call("observe",system+instruction,text,bundle)
         evidence = (BimanualEvidence if bimanual else GroundedEvidence).parse(result["text"])
         if evidence.other_views:

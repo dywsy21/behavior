@@ -17,11 +17,13 @@ from .target_reference import REFERENCE_SYSTEM, reference_context
 from .wall_budget import require_time
 
 TACTICS = {
+    "search": "Select when the current target is not visible: choose an offered search viewpoint using measured coverage, scene description and previous failures. Both turn directions are choices; do not blindly continue into a low-texture/reflective view after tracking failed.",
     "approach": "Select when facts.approach_progress_available is true and facts.immediate_hazard is false: continue the current navigation/reach. Missing grasp evidence is normal BEFORE grasping; do not wait for it.",
     "reorient": "Select when facts.rotation_option_available is true and translations stagnate: try an offered unloaded wrist pose change. No loaded-hand rotation override.",
     "reposition": "Select when facts.body_option_available is true and workspace/viewpoint needs changing. During navigation use its explicit phase, not hand distance.",
     "grasp": "Select when facts.close_attempt_available is true: a bounded close attempt, followed by independent grasp verification. Does not imply holding.",
-    "lift_or_carry": "Select when facts.verified_holding is true and the stage requests transport. Preserve grip/orientation; verification lifting is separately managed by the executor.",
+    "lift_or_carry": "Select when facts.verified_holding is true and the stage requests transport. Preserve grip/orientation.",
+    "verify": "Select a checked sensing action in VERIFY_GRASP or a purposeful PRESS phase. A verification lift, stabilization or dwell still requires your command choice; it does not itself certify success.",
     "release": "Select only when facts.release_stage is true and an opening is offered; release onto a support, not in midair.",
     "inspect": "Select when facts.inspection_option_available is true: missing affordance calls for an offered informative viewpoint change, NOT automatic waiting.",
     "wait": "Select for facts.immediate_hazard, or no supported useful candidate. Unverified grasp BEFORE approach, rejected OTHER commands, generic safety caveats and UNKNOWN target_reference do not alone justify waiting.",
@@ -54,12 +56,36 @@ def load_task_plan(path, task_id):
     if len(raw) > 20_000:
         raise ValueError("Bounded task plan required")
     value = json.loads(raw)
-    if (set(value) != {"schema", "task_id", "goals"} or value["schema"] != "jev-task-plan-v1"
+    if (set(value) != {"schema", "task_id", "goals", "dependencies", "target_references"} or value["schema"] != "jev-task-plan-v2"
             or type(value["task_id"]) is not int or value["task_id"] != task_id):
         raise ValueError("Explicit plan must match this task")
     goals = parse_plan(json.dumps(value["goals"]))
-    return goals, {"source": "explicit_task_strategy_not_current_state",
-                   "sha256": hashlib.sha256(raw).hexdigest(), "task_id": task_id}
+    dependencies, references = value["dependencies"], value["target_references"]
+    n = len(goals)
+    if (not isinstance(dependencies, list) or len(dependencies) != n or
+            not isinstance(references, list) or len(references) != n or
+            len(set(json.dumps(asdict(g), sort_keys=True) for g in goals)) != n or
+            any(not isinstance(d, list) or any(type(i) is not int or not 0 <= i < n for i in d)
+                or len(set(d)) != len(d) for d in dependencies) or
+            any(r not in ("world", "held_left", "held_right") for r in references)):
+        raise ValueError("Explicit unique goals, dependency DAG and target-reference constraints required")
+    completed = set()
+    while len(completed) < n:
+        eligible = {i for i in range(n) if i not in completed and set(dependencies[i]) <= completed}
+        if not eligible: raise ValueError("Task dependencies contain a cycle")
+        completed.update(eligible)
+    for i, ref in enumerate(references):
+        if not ref.startswith("held_"): continue
+        ancestors, todo = set(), list(dependencies[i])
+        while todo:
+            j = todo.pop()
+            if j in ancestors: continue
+            ancestors.add(j); todo.extend(dependencies[j])
+        if not any(goals[j].kind == "pick" and goals[j].hand in (ref[5:], "both") for j in ancestors):
+            raise ValueError("Held-part goal needs an explicit prior pick by its holding hand")
+    return goals, {"source": "explicit_task_requirements_not_current_state",
+                   "sha256": hashlib.sha256(raw).hexdigest(), "task_id": task_id,
+                   "dependencies": dependencies, "target_references": references}
 
 
 def score_rows(context):
@@ -131,9 +157,10 @@ def decision_state(context, allowed):
     keep = ("goal_index", "goal", "stage", "holding_verified_by_observation_and_proprio",
             "held_target_claims", "carry_constraints", "unverified_close_latches", "possible_contact_after_any_close",
             "stop_reason", "active_grasp_probe", "approach_progress", "target_reference", "held_inspection",
-            "target_surface_estimate")
+            "target_surface_estimate", "search", "egocentric_motion", "search_reanchor", "press_cycle",
+            "strategy_replans", "recent_replans", "events", "jev_plan")
     result["harness"] = {k: scope[k] for k in keep if k in scope}
-    result["harness"]["recent_executed"] = scope.get("recent_executed", [])[-2:]
+    result["harness"]["recent_executed"] = scope.get("recent_executed", [])[-5:]
     return result
 
 
@@ -141,6 +168,9 @@ def command_rubric(row):
     """Short natural-language criteria; arithmetic remains in Python."""
     command, score = row["command"], row["current_preflight"]
     if row["role"] == "hold":
+        if score.get("purpose") in ("PREPARE", "DWELL", "VERIFY"):
+            return ("HOLD for the checked press measurement phase " + score["purpose"] +
+                    "; this purposeful bounded stabilization/measurement is not task success. You may abstain instead.")
         return ("HOLD all joints. Select for an immediate hazard or no supported useful move; "
                 "do NOT select just because grasping is not yet verified during approach, or because other commands were rejected.")
     label = " / ".join(command[k] for k in ("part", "move", "scale", "frame"))
@@ -169,12 +199,8 @@ class JevDecisionPolicy:
         self.last_call = None
         state = decision_state(context, allowed)
         require_time(self.client.deadline)
-        # No need to spend money or invent a second option when HOLD is all that
-        # remains. A sole moving option still competes with a no-actuation abort.
-        if tuple(allowed) == (HOLD,):
-            result = {"text": HOLD.text(), "source": "executor_only_hold_available", "jev_calls": 0}
-            self.last_call = {"result": result, "request": {"images": []}}
-            return HOLD, self.last_call
+        # Even a deliberate sensing HOLD is Jev's choice, not a hidden actor.
+        # Hard safety stops happen outside this function and issue no new choice.
         first, intent_receipt = self.client.evaluate(state, {"intent": choice(
             CONTROL_RULES + " Choose the immediate tactic. It cannot change the goal, unlock forbidden commands, or mark a goal done.", TACTICS)})
         self.last_call = intent_receipt
@@ -193,6 +219,13 @@ class JevDecisionPolicy:
             raise JevAbstained("Jev abstained; no action authorized")
         action = allowed[int(selected.removeprefix("command_"))]
         self.last_call["result"]["text"] = action.text()
+        self.last_call["result"]["jev_authority"] = {
+            "schema": "jev-action-choice-v2", "model": self.client.model,
+            "command_call": self.client.calls, "selected_option": selected,
+            "action": asdict(action),
+            "allowed_sha256": hashlib.sha256(json.dumps([asdict(a) for a in allowed],
+                sort_keys=True, allow_nan=False).encode()).hexdigest(),
+        }
         require_time(self.client.deadline)
         return action, self.last_call
 
@@ -200,8 +233,8 @@ class JevDecisionPolicy:
 class JevGroundedPolicy:
     """Drop-in run_v2 adapter. The observer is NEVER called for act/plan/recover.
 
-    Jev owns action, recovery and semantic-reference decisions. A reviewed
-    explicit goal list replaces the VLM planner; the existing observer may only
+    Jev owns plan ordering, action, recovery and semantic-reference decisions.
+    A reviewed goal list constrains the task vocabulary; the observer may only
     locate/refine visible targets and report evidence. No training is needed.
     """
     def __init__(self, observer, client, *, task_id, task_plan):
@@ -210,11 +243,13 @@ class JevGroundedPolicy:
         self.goals, self.plan_identity = load_task_plan(task_plan, task_id)
         self.task_id, self._deadline = task_id, None
         self.last_call, self.reference_calls = None, 0
+        self.planned_goals = None
 
     @property
     def identity(self):
         return {"protocol": "semantic-v2", "controller": "jev", **self.client.identity,
                 "observer_only": self.observer.identity, "task_plan": self.plan_identity,
+                "decision_scope": "jev_all_strategy_choices_v2",
                 "finite_choice_kinds": ["reference"], "vlm_action_calls": 0,
                 "vlm_plan_calls": 0, "vlm_recovery_calls": 0}
 
@@ -245,10 +280,33 @@ class JevGroundedPolicy:
         require_time(self.deadline)
         if task_id != self.task_id:
             raise ValueError("Task plan identity changed")
-        self.last_call = {"request": {"images": [], "task": instruction},
-                          "result": {"text": json.dumps([asdict(g) for g in self.goals]), **self.plan_identity,
-                                     "model_calls": 0}}
-        return list(self.goals), self.last_call
+        if self.planned_goals is not None:
+            raise JevError("Task plan already selected; no hidden replanning/reset")
+        remaining = dict(enumerate(self.goals))
+        ordered, receipts, chosen_indices = [], [], set()
+        while remaining:
+            options = {f"goal_{index}": json.dumps(asdict(goal), ensure_ascii=False)
+                       for index, goal in remaining.items()
+                       if set(self.plan_identity["dependencies"][index]) <= chosen_indices}
+            options["abstain"] = "These goal requirements cannot form a justified plan; stop before issuing robot commands."
+            result, receipt = self.client.evaluate({"task_instruction": instruction,
+                "requirements_not_observed_facts": [asdict(g) for g in self.goals],
+                "selected_prefix_not_executed": [asdict(g) for g in ordered]}, {"next_goal": choice(
+                "Choose the next required subgoal in a complete executable plan. Preserve the user-specified hands and targets. "
+                "Respect dependencies: first obtain an object before acting on a part of that held object. "
+                "This is planning, not evidence that anything has happened. Do not skip requirements.", options)})
+            self.last_call = receipt
+            receipts.append(receipt)
+            selected = result["answers"]["next_goal"]["choice"]
+            if selected == "abstain": raise JevAbstained("Jev declined the task plan; no action authorized")
+            index = int(selected.removeprefix("goal_"))
+            chosen_indices.add(index)
+            ordered.append(remaining.pop(index))
+        self.planned_goals = tuple(ordered)
+        self.last_call = {"request": {"images": [], "task": instruction}, "result": {
+            "text": json.dumps([asdict(g) for g in ordered]), "source": "jev_selected_goal_order",
+            "task_requirements": self.plan_identity, "planning_calls": receipts, "model_calls": len(receipts)}}
+        return list(ordered), self.last_call
 
     def _observe(self, method, *args):
         self.last_call = None
@@ -307,26 +365,75 @@ class JevGroundedPolicy:
         self.last_call = receipt
         return recovery, receipt
 
+    def choose_reanchor(self, controller, state, bundle, failed, *, controls, action_limit, terminal):
+        """Request a bounded stationary sensor probe, never blind escape motion."""
+        recovery = controller.search_recovery
+        checks = recovery.checks(controller, state, failed, terminal)
+        checks["endpoint_current"] = failed.get("control_end") == controls
+        checks["control_budget"] = controls+recovery.hold_controls <= action_limit
+        require_time(self.deadline)
+        if not all(checks.values()):
+            return None, None  # Physical/measurement veto is not a strategy choice.
+        context = json.loads(actor_context(controller.harness, state, bundle))
+        context["visual_claim_before_failed_motion_not_current"] = context.pop("current_visual_evidence")
+        context["preflight_before_failed_motion_not_current"] = context.pop("CURRENT preflight receipt")
+        scope = context["harness"]
+        scope["surface_before_failed_motion_not_current"] = scope.pop("target_surface_estimate", {})
+        scope["egocentric_motion"] = {"valid": False, "reason": failed.get("reason"),
+                                      "unknown_displacement_not_estimated": True}
+        segments = failed.get("segments") or []
+        measured = segments[-1].get("measurement", {}) if segments else {}
+        context["tracking_failure"] = {k: measured[k] for k in
+            ("reason", "matches", "unique_matches", "inliers") if k in measured}
+        context["unknown_motion_span"] = [failed["control_start"], failed["control_end"]]
+        context["eligible_stationary_probe"] = {"checks": checks, "controls": recovery.hold_controls,
+            "attempts_used": recovery.attempts, "max_attempts": recovery.max_attempts,
+            "does_not_recover_unknown_displacement_or_old_coverage": True}
+        result, receipt = self.client.evaluate(context, {"tracking_recovery": choice(
+            "Tracking failed. Choose whether to run the offered stationary measurement protocol. "
+            "It issues only 12 bounded HOLD controls and must pass unchanged RGB-D checks. "
+            "It does NOT undo failed motion. If it succeeds YOU must choose a useful next view; "
+            "repeating a move into glare/textureless glass may fail again. Otherwise stop safely.", {
+                "measure_stationary_reference": "Measure a new local reference with the offered stationary protocol; next motion remains a new Jev decision.",
+                "stop": "End this attempt without a recovery motion or new reference."})})
+        authorization = {"schema": "jev-search-recovery-choice-v1", "model": self.client.model,
+            "call": self.client.calls, "choice": result["answers"]["tracking_recovery"]["choice"],
+            "failed_span": context["unknown_motion_span"],
+            "failed_action": asdict(controller.harness.last_action),
+            "tracking_failure": context["tracking_failure"]}
+        receipt["result"]["recovery_authorization"] = authorization
+        self.last_call = receipt
+        return authorization, receipt
+
     def resolve_target_reference(self, harness):
         require_time(self.deadline)
         if not harness.held_inspection_enabled or not harness.reference_from_planner:
             raise ValueError("Explicit semantic reference mode required")
+        if harness.goal not in self.goals:
+            raise JevError("Unknown goal cannot obtain a task reference")
+        required = self.plan_identity["target_references"][self.goals.index(harness.goal)]
+        if required.startswith("held_") and not harness.hold_verified[required[5:]]:
+            harness.stop_reason = "TASK_DEPENDENCY_REQUIRES_VERIFIED_HOLD"
+            return None
         if harness.index in harness.target_references:
             reference = harness.search_reference
+            if reference not in (required, "unknown"):
+                raise JevError("Cached reference violates task dependency")
             if reference.startswith("held_") and not harness.hold_verified[reference[5:]]:
                 harness.stop_reason = "TARGET_REFERENCE_REQUIRES_VERIFIED_HOLD"
-            return None
-        if not any(harness.hold_verified.values()):
-            harness.bind_reference("world", "no_verified_held_reference_available")
             return None
         if self.reference_calls >= 4:
             harness.stop_reason = "SEMANTIC_REFERENCE_CALL_BUDGET_REACHED"
             return None
-        options = {"world": "An independent world target, not a held object's part.",
-                   "unknown": "Relationship cannot be established from the supplied claims."}
+        options = {"unknown": "Relationship cannot be established from the supplied claims."}
+        if required == "world":
+            options["world"] = "An independent world target, not a held object's part."
         for hand in ("left", "right"):
-            if harness.hold_verified[hand] and harness.held[hand] is not None:
+            if required == "held_"+hand and harness.hold_verified[hand] and harness.held[hand] is not None:
                 options["held_" + hand] = f"A component of the object previously verified held by the {hand} hand, regardless of which hand will act."
+        if len(options) < 2:
+            harness.stop_reason = "TASK_DEPENDENCY_REQUIRES_HELD_OBJECT_CLAIM"
+            return None
         self.reference_calls += 1
         result, receipt = self.client.evaluate(reference_context(harness), {
             "reference": choice(REFERENCE_SYSTEM, options)})

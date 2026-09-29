@@ -716,10 +716,10 @@ class GroundedController:
         strategy=value["strategy"]
         if strategy in ("scan_left","scan_right"):
             self.search.direction=1 if strategy=="scan_left" else -1
-            if manager.observation.visible:
+            if manager.observation.visible and not getattr(manager, "jev_decision_owner", False):
                 self.reposition=Action("base","yaw_plus" if self.search.direction>0 else "yaw_minus","coarse")
                 self.reposition_left=1
-        elif strategy.startswith("move_"):
+        elif strategy.startswith("move_") and not getattr(manager, "jev_decision_owner", False):
             self.reposition=Action("base",strategy[5:],"fine")
             self.reposition_left=5  # <=30cm, 5 fresh depth checks / observations
         elif strategy=="retry_approach" and manager.observation.visible:

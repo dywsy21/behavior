@@ -214,7 +214,8 @@ class JevClient:
         self.output_tokens += result["usage"]["output_tokens"]
         self.validated_responses += 1
         result["roundtrip_s"] = time.perf_counter() - started
-        self.record("validated", usage=result["usage"], roundtrip_s=result["roundtrip_s"])
+        self.record("validated", usage=result["usage"], roundtrip_s=result["roundtrip_s"],
+                    selections={name: answer["choice"] for name, answer in result["answers"].items()})
         # Match the harness receipt convention; no headers/key/raw response.
         self.last_call = {"result": result, "request": {**payload, "images": []}}
         require_time(self.deadline)  # late answers must never authorize motion

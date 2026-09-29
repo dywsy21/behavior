@@ -95,6 +95,36 @@ class SearchReanchorTests(unittest.TestCase):
         self.assertTrue(receipt["initial"]);self.assertEqual(self.c.search.heading,0)
         self.assertEqual(pending["status"],"INTERRUPTED")
 
+    def test_jev_mode_requires_explicit_matching_probe_authorization(self):
+        auth=dict(schema="jev-search-recovery-choice-v1",model="jev-1.13.0",call=7,
+                  choice="measure_stationary_reference",failed_span=[24,36])
+        for bad in (None,{},dict(auth,choice="stop"),dict(auth,call=True),dict(auth,failed_span=[12,24])):
+            self.setup();self.h.jev_decision_owner=True
+            result,_=self.attempt(authorization=bad)
+            self.assertFalse(result["valid"]);self.assertEqual(self.issued,[])
+            self.assertEqual(self.captures,[])
+        self.setup();self.h.jev_decision_owner=True
+        result,_=self.attempt(authorization=auth)
+        self.assertTrue(result["valid"]);self.assertEqual(len(self.issued),12)
+        self.assertEqual(result["jev_recovery_authorization"],auth)
+
+    def test_jev_probe_question_marks_old_visuals_and_geometry_as_old(self):
+        from semantic_robot.v2.jev_policy import JevGroundedPolicy
+        from test_jev import client, Opener
+        self.setup();self.h.jev_decision_owner=True
+        plan=Path(__file__).resolve().parents[2]/"configs/semantic_robot/jev_task0_plan.json"
+        opener=Opener([{"tracking_recovery":"stop"}])
+        policy=JevGroundedPolicy(SimpleNamespace(calls=0,identity={}),client(opener),task_id=0,task_plan=plan)
+        auth,_=policy.choose_reanchor(self.c,self.state,SimpleNamespace(geometry={}),self.failed,
+            controls=36,action_limit=60,terminal=False)
+        self.assertEqual(auth["choice"],"stop")
+        state=json.loads(opener.requests[0][0].data)["state"]
+        self.assertNotIn("current_visual_evidence",state)
+        self.assertNotIn("target_surface_estimate",state["harness"])
+        self.assertFalse(state["harness"]["egocentric_motion"]["valid"])
+        self.assertIn("visual_claim_before_failed_motion_not_current",state)
+        self.assertEqual(self.issued,[])
+
     def test_ineligible_has_no_sensor_call_no_control_and_no_state_reset(self):
         mutations=[lambda:setattr(self.h,"stage","APPROACH"),
             lambda:setattr(self.h,"stop_reason","SELF_COLLISION"),
@@ -227,6 +257,7 @@ class SearchReanchorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             ns={"controller":self.c,"manager":self.h,"servo":self.c.servo,"directory":Path(folder),
                 "motion_fault":True,"budget_interrupted":False,"substep_result":self.failed,
+                "args":SimpleNamespace(controller="vlm"),
                 "action_control_limit":60,"deadline":None,"terminal":False,"decision":19,
                 "state_now":lambda:self.state,"observation_now":lambda label:(images,depths,{}),
                 "step":step,"trace":trace,"capture":lambda label:None,"expired":expired,

@@ -74,6 +74,7 @@ class PressCycle:
         self.key = None
         self.phase = "IDLE"
         self.selected = None
+        self.offered = ()
         self.running = None
         self.last_receipt = None
         self.observation_control = None
@@ -115,6 +116,7 @@ class PressCycle:
         self.manager.stop_reason = self.manager.stop_reason or self.stop_reason
         self.phase = "STOPPED"
         self.selected = None
+        self.offered = ()
         return False
 
     def transition(self, phase):
@@ -164,6 +166,7 @@ class PressCycle:
         self.observation_control = control
         self.observation_q = state.q.copy()
         self.selected = None
+        self.offered = ()
         if self.running is not None:
             self.stop("PRESS_EXECUTION_NOT_FINISHED")
             return
@@ -226,7 +229,7 @@ class PressCycle:
                 self.stop("PRESS_EFFECT_UNVERIFIED")
         return False
 
-    def candidates(self, state, deadline=None):
+    def candidates(self, state, deadline=None, *, model_selects=False):
         """Finite original primitives; no invented target poses or hand aperture."""
         require_time(deadline)
         if not self.owns_selection:
@@ -264,6 +267,8 @@ class PressCycle:
                         ok, reason = False, "PRESS_NOT_AN_AWAY_OPTION"
             tested.append({"action": asdict(action), "accepted": bool(ok), "reason": reason,
                            "predicted_distance_m": distance})
+            if distance is not None:
+                tested[-1]["predicted_distance_gain_m"] = self.c._distance()-distance
             if ok:
                 score = (distance if self.phase == "ADVANCE" else -distance) if distance is not None else 0.
                 accepted.append((score, action))
@@ -272,11 +277,24 @@ class PressCycle:
         if not accepted:
             self.stop("PRESS_NO_CHECKED_"+self.phase+"_ACTION")
             return (HOLD,)
+        if model_selects:
+            self.selected = None
+            self.offered = tuple(item[1] for item in accepted)
+            self.manager.candidate_receipt["selector"] = "Jev_required_no_internal_argmin"
+            for row in tested: row["purpose"] = self.phase
+            return self.offered
         # Safety HOLD is available as an opt-out, but only this exact internal
         # selection gets a purpose receipt. No VLM-supplied purpose is accepted.
         action = min(accepted, key=lambda item: item[0])[1]
         self.selected = (self.phase, action, self.observation_control)
         return (action,)
+
+    def bind_model_choice(self, action, control):
+        if (not self.owns_selection or self.manager.stop_reason or control != self.observation_control
+                or action not in self.offered or self.selected is not None):
+            raise ValueError("PRESS_MODEL_CHOICE_NOT_CURRENTLY_OFFERED")
+        self.selected = (self.phase, action, control)
+        self.offered = ()
 
     def begin_execution(self, action, state, control):
         if not self.active:

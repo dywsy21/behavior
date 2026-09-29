@@ -67,7 +67,11 @@ def actor_context(harness, state, bundle, allowed=()):
         "recoveries", "strategy_replans", "recent_replans", "stop_reason", "events", "search", "active_grasp_probe", "approach_progress", "target_reference", "held_inspection", "possible_contact_after_any_close"))
     scope["target_surface_estimate"] = contact_summary(context.get("target_surface_estimate", {}))
     scope["egocentric_motion"] = selected(context.get("egocentric_motion", {}),
-        ("valid", "reason", "body_delta", "body_translation_z_m"))
+        ("valid", "reason", "body_delta", "body_translation_z_m", "matches", "unique_matches", "inliers"))
+    if getattr(harness, "jev_decision_owner", False):
+        scope["jev_plan"] = [asdict(g) for g in harness.goals]
+        scope["search_reanchor"] = context.get("search_reanchor", {})
+        scope["press_cycle"] = context.get("press_cycle", {})
     scope["recent_executed"] = [{"action": row.get("action"), "stage": row.get("stage"),
         "feedback": selected(row.get("feedback", {}), ("status", "control_ticks", "joint_limit_ticks",
         "target_error_m", "orientation_error_deg", "eef_delta_m", "finger_mean_m", "empty_grasp_suspected",
@@ -81,7 +85,7 @@ def actor_context(harness, state, bundle, allowed=()):
     for index, action in enumerate(allowed):
         row = next((row for row in tested if row.get("action") == asdict(action)), None)
         score={"command_index": index, **(selected(row, ("accepted", "reason", "planned_ticks",
-            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after", "reorientation_after", "workspace_posture_after", "translation_after", "near_pose_gap_option")) if row else {})}
+            "predicted_distance_gain_m", "predicted_per_hand_distance_m", "navigation_after", "inspection_after", "reorientation_after", "workspace_posture_after", "translation_after", "near_pose_gap_option", "search_prediction", "purpose")) if row else {})}
         if getattr(harness,"multicamera_inspection",False) and "inspection_after" in score:
             # Hand identity is already bound by the canonical command and the
             # single shared reference. Do not repeat it for all 42 candidates.
