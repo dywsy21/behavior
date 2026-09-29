@@ -10,11 +10,24 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 21:25（北京时间）：JEV-03 gate3唯一启动（Codex，运行中）
+
+- 同冻结6b4ce13，新run `jev_all_20260929_gate3_v1`、监管4073456，task3 TRAIN242/seed0、GPU1/CPU88–91，原24检查/1536controls/1800s总上限；实际监管actor_running、原生constructing_application，尚无动作门结果。
+- gate0已完成且启动器新源/资源/前门验证通过；本地归档在`/home/wsy/behavior/artifacts/jev-control-20260929/all_decisions/gate0/`进行中。episode1仍未提交，通过gate3才运行；0新模型/训练，不改队友或运行源码。
+- 21:27 gate0七件结果/manifest/native/steps/video/监管/启动回执已双端SHA核同，14.6s视频（省略等待）抽帧本人已看；无图像异常，工程结果不推导抓取/官方成功。gate3仍loading_scene、监管正常。
+
+### 2026-09-29 21:24（北京时间）：JEV-03 gate0完整通过，接续gate3（Codex）
+
+- 固定6b4ce13/f03ba506…23cc695，新gate0监管completed、actor exit0；1122.174s总/567.300s动作，24检查中19 TARGET_REACHED＋4 GRIPPER_COMMAND_COMPLETED、1可达性/碰撞预检拒绝，全部freshness通过、gate_failures空。440controls/112同步capture-read，0模型/训练；这不是抓取成功或任务SR。
+- run `jev_all_20260929_gate0_v1`；result SHA `85e9d5f24f5e9a6d174f26f1f3cf16705befadbe54753753b6d0277063dd4cd2`，native journal `1075bcb1…2d39b52`。自有进程正常退出、1.881s清理，监管退出核GPU1余80941MiB；队友状态自然变化，不对其进程操作。
+- 下一同冻结源唯一gate3 TRAIN242/seed0，保持24检查/1536controls/1800s总；通过才启动既定一次task0 Jev全决策闭环。归档小回执/视频至本地ignored artifacts，不热改运行源、不追加评测/训练预算。
+
 ### 2026-09-29 21:02（北京时间）：JEV-03 gate0唯一启动（Codex，运行中）
 
 - robo新冻结`jev_all_6b4ce13`、6b4ce13/f03ba506…23cc695，服务器Python3.11.15实际82项目标回归22.678s通过、worktree clean；独审/本地785证据保持，不对运行源pull。
 - 新gate0监管PID4066908，run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_all_20260929_gate0_v1`，GPU1/CPU88–91；task0 TRAIN138 seed0、24检查/1536controls/1800s总、0模型/训练。仅取得启动回执，实际工程门待，不算任务成功率。
 - 上线前明确gate0/gate3/episode1三run均未提交；队友4022589/4022893/4022896存活，sim affinity72–87保持（RL主进程本身0–95，共享CPU不改）。下一按监管/原生IO核门，过后同冻结源gate3→唯一Jev闭环，不扩预算。
+- 21:12实测原生reset/load138/reset全部completed、physical GPU1/profile通过；第一项18controls、TARGET_REACHED、freshness=true，正式进入动作检查。冷启动至此约585s；仍不是24项工程门或任务成功。
 
 ### 2026-09-29 21:00（北京时间）：JEV-03续接，robo已恢复可达，准备冻结部署（Codex）
 
