@@ -10,7 +10,6 @@ import sys
 import time
 import traceback
 import xml.etree.ElementTree as ET
-import numpy as np
 
 from common import REPO, OUT, RUNTIME, SIM_PY, commit, save, sha, send, recv, sim_env
 from rtx_paths import ROOT, host_guard, cores
@@ -46,6 +45,7 @@ def snapshot():
 
 
 def controller():
+    import numpy as np
     host_guard()
     manifest = json.loads((OUT/'manifest.json').read_text())
     if commit() != manifest['source_commit']: raise ValueError('Frozen probe source changed')
