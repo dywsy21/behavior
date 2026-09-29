@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 21:00（北京时间）：JEV-03续接，robo已恢复可达，准备冻结部署（Codex）
+
+- 按最新“继续”只续模拟器闭环，未重跑已完成API/旧训练。已clean fetch/pull至6b4ce13，origin/main无遗漏提交；旧VLM数据goal仍blocked，不改标。12:58:46 UTC直接`ssh robo`实际返回llmvideo26，连接恢复；未改VPN/SSH配置。
+- 实查GPU1余80736MiB、仅队友4022893/4022896各200MiB跨卡上下文；原队友RL4022589占GPU0、两sim占2/3，均保持。NVMe余1.4T、8986未占、robo私有key owner/mode600通过（未读出内容）；不以此前“无Linux监听”单独推断Windows中继是否存在。
+- 仅Git同步feature ref，在新`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_all_6b4ce13`固定6b4ce1375f6a27b02b3011384a5845f55aae85b3，implementation f03ba5064ddfbd5815da8ea5a88dfc2c0a06e311fe823569ab70e35df23cc695；CPU复验及真实新gate待。原预算保持：gate0/3各24检查/1536controls/1800s总，之后唯一task0 TRAIN138 seed0、64决策/2048controls/3600s总，0训练；资源/协议故障停，不自动追加。
+
 ### 2026-09-29 20:54（北京时间）：JEV-03真实API非执行检查通过；仿真待robo转发（Codex）
 
 - 固定已push实现`2fc92984021db2a1481842e7203435fa4fa97e8e`，独审最终通过、785项/28.847s过（5skip）。唯一`all_choices_probe_v1`已exit0：17实际请求/17有效响应/0错误，7/7旧状态均候选内非HOLD选择、0弃权；新搜索状态Jev选base forward micro，不再脚本单向yaw。计划pick右手→press左手、reference world。0控制/重置/训练，**不能称成功率或实际执行有效**。
