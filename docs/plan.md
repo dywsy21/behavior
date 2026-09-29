@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 18:21（北京时间）：JEV-02两task工程门通过，首条任务闭环启动（Codex）
+
+- gate3同冻结`ced02fe` completed/actor exit0，1098.185s总/568.489s动作；24检查、23实际执行完成＋1预检拒绝、440controls/112同步采集、gate_ok=true/无失败，清理0.368s/资源释放过。result SHA `128d4b1b…fe74240`；native journal `ec4e9d99…2bc71d02`。两task门和新freshness真实验证完成，不等于Jev任务SR。
+- 已唯一启动episode1，监管4042627，run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_20260929_episode1_v1`；task0 TRAIN138/seed0/原始起点，仍用ced02fe/GPU1，原96决策/3072控制/2400s动作/3600s总、Jev208/视觉215请求上限。模型校验/感知加载、模拟器初始化与真实决策待；没有提前报成功/失败。
+- gate3结果/manifest/监管正归档本地`artifacts/jev-control-20260929/closedloop/gate3/`。下一核首条原生/请求/动作/官方终态及视频；无基础设施/协议错误后继续既定episode2/3，不换prompt/权重或追加训练，不动队友RL。
+
 ### 2026-09-29 18:02（北京时间）：JEV-02 gate0完整通过，gate3运行中（Codex）
 
 - 同冻结`ced02fe`的gate0监管completed/actor exit0、1185.018s总墙时/590.471s动作阶段；24检查完成、440controls、112capture/read、1discarded prime，gate_ok=true/无gate_failures。完整native journal SHA `3df7c0bf…a7d6e1955`；退出资源核验过、清理0.370s。0模型/训练/任务成功率；不得把工程门说成Jev任务成功。
