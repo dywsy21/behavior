@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 15:02（北京时间）：E3真实奖励目标绑定通过，开始课程回放（Codex / RL-G05-50K-E3）
+
+- 监管/learner原PID继续，TRAIN sims4014591/4014604完成场景初始化并开始原专家前缀；快照累计256真实控制、各128，actor仍94/critic16。初始化约9分钟是模拟器启动，不是人审等待；没有新自主成功或更新结论。
+- 两实例`training/worker_{0,1}/reward_binding_000.json`均从BDDL的`radio_receiver.n.01_1`解析到真实`radio_89`，geometry=`toggle_marker`、goal_count1、skipped空；实际API与登记吻合，不是退回随意桌面距离。公开actor输入未加奖励字段，下一自动起点/真实shaping和accepted更新仍待。
+
 ### 2026-09-29 14:52（北京时间）：E3唯一续训作业已启动（Codex / RL-G05-50K-E3）
 
 - 原父/94-update delta/原TRAIN demo/旧完整六对/旧PID/预留磁盘准入全部通过，真实MODEL_PY入口导入成功。冻结ef99d92、run `e3_dense_v1`于UTC06:51:43提交，监管4014322/learner4014329为running，当前加载/初始化；尚无新actor或成功率结果，启动不当作验证成功。
