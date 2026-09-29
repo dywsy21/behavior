@@ -1,6 +1,6 @@
 # JEV-02：原始起点模拟器闭环
 
-负责人Codex；用户授权真实闭环/成功率；独立分支`feat/jev-control-20260929`。状态：独审和双端CPU验证通过，**gate0运行中**，尚无新SR。源码固定`ced02feb3a830cd3e0c83081f15e818810f106d0`、implementation `32020e102a10fffb106564ed640857090cf6dcd43fe6a63c98e1e2567553d5ed`。
+负责人Codex；用户授权真实闭环/成功率；独立分支`feat/jev-control-20260929`。状态：独审和双端CPU验证通过，**gate0通过、gate3运行中**，尚无新SR。源码固定`ced02feb3a830cd3e0c83081f15e818810f106d0`、implementation `32020e102a10fffb106564ed640857090cf6dcd43fe6a63c98e1e2567553d5ed`。
 
 ## 假设与预算
 
@@ -35,5 +35,7 @@ robo队友RL进程4022589（GPU0）、4022893/4022896（GPU2/3）保持不动。
 
 - 本地36针对测试通过；最终完整semantic_robot **766项/29.724s，5skip**；原生启动相关41项通过，包含GPU1 bridge；robo同冻结源77项1.513s过。
 - 独审修复阶段wall有限/上限、清理60s上限及env key隔离；新增逐请求Jev持久账本，对齐attempt/validated/error、token总数，凭据/headers/响应体不入账。有效abstain正常终止、无普通动作，可作为策略失败计入分母；真实协议/网络异常和时钟契约失败停止扩展。
-- 独立最终36目标/代码增量审查通过。17:41北京时间唯一gate0监管4030656/actor4030665已启动，GPU1 renderer/physics实际均核为1，尚在场景加载；工程门结果、API闭环、成功率和视频仍待。
+- 独立最终36目标/代码增量审查通过。gate0监管4030656/actor4030665已completed/exit0：1185.018s总、590.471s动作；24检查完成/440控制/112同步采集、gate_ok=true/无失败；native journal SHA `3df7c0bf7d09838e2f08577e79a8b1f57f4ccfa9ca47dbedfa8cdf0a7d6e1955`，GPU清理通过。实际GPU1 renderer/physics均核为1；初始头帧本人已看，双端SHA `af324a2b8616bdc00ca73e8ecd694e8e248f76b478510b24ddcfa3399c0979d0`。
+- 18:02 gate3监管4036929运行中；API闭环、成功率仍待。0模型/训练，不将工程门算SR。
+- gate0精确计数：24检查，23实际执行完成（19到达/4夹爪命令完成），1被可达性/碰撞预检拒绝；全24项freshness通过。result双端SHA `0b30649ff6d9df2573cf66f317144e52b67afe2b5e35c850a99f9056d4dab580`。
 - 17:43用户key已私有传至上述robo路径，目录0700/文件0600/owner robodojo核过；没有向视觉服务/日志/Git暴露，尚无新API请求。

@@ -10,12 +10,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 18:02（北京时间）：JEV-02 gate0完整通过，gate3运行中（Codex）
+
+- 同冻结`ced02fe`的gate0监管completed/actor exit0、1185.018s总墙时/590.471s动作阶段；24检查完成、440controls、112capture/read、1discarded prime，gate_ok=true/无gate_failures。完整native journal SHA `3df7c0bf…a7d6e1955`；退出资源核验过、清理0.370s。0模型/训练/任务成功率；不得把工程门说成Jev任务成功。
+- 精确口径：24检查中23动作实际执行完成（19 TARGET_REACHED、4 GRIPPER_COMMAND_COMPLETED），1在可达性/碰撞预检拒绝；不是24个动作都执行成功。result SHA `0b30649f…d4dab580`双端一致，全部24项freshness通过。
+- 18:01:51提交唯一gate3，监管4036929，`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_20260929_gate3_v1`，同代码/physical GPU1、task3 TRAIN242/seed0、原24动作/1536controls/1800s上限。其结果待；gate0结果/manifest/监管正取回本地`artifacts/jev-control-20260929/closedloop/gate0/`，不改源run。
+- gate0原始头帧本人已看：正常720×720场景起点，不是专家接近前缀；双端PNG SHA `af324a2b…c0979d0`一致。下一gate3通过后，仍按最多3次task0原始起点Jev闭环预算运行，不追加训练/改变队友RL。
+
 ### 2026-09-29 17:41（北京时间）：JEV-02 gate0真实启动（Codex，运行中）
 
 - 源码固定`ced02feb3a830cd3e0c83081f15e818810f106d0`，implementation `32020e10…553d5ed`；独审最终无阻断，robo 77目标/原生CPU测试1.513s过，干净独立worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_closedloop_ced02fe`。未改队友源码/环境。
 - 唯一gate0监管PID4030656、run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_20260929_gate0_v1`，GPU1/CPU88–91，24动作/1536控制/1800s含启动＋60s清理；task0 TRAIN138/seed0，0模型请求/训练。当前仅启动回执，初始化/门通过均待真实结果；不会当作任务成功率。
 - 下一读取native/GPU/逐控制证据，成功后同冻结源gate3；未过则停止扩展定位，不重复提交现目录。密钥还未复制robo。
 - 17:43补充：已实测`/renderer/activeGpu=1`和`/physics/cudaDevice=1`，场景仍加载中；最终全回归766项/29.724s（5skip）过。为后续actor安全传输用户key至robo仓库外私有credentials路径，目录0700/文件0600/owner robodojo已核，仅路径/权限入记录，无内容输出/新API调用；位置见SERVER_LAYOUT。本条更新前述“未复制”的时态，不改旧离线JEV-01历史。
+- 17:52真实进展：原始reset/load138/reset序列和native profile均过；已2动作/51controls，右手up为TARGET_REACHED。`gate/decision_000/jev_execution_freshness.json`实测passed且render_pixels_changed=true、changed_fields=[]，证实同物理状态新渲染不必像素相同，修正契约能实际放行；不是24动作门或SR已完成。
 
 ### 2026-09-29 17:40（北京时间）：JEV-02运行前审查闭合，准备真实门（Codex）
 
