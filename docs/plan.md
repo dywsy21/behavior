@@ -10,11 +10,22 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 22:51（北京时间）：JEV-04新gate3唯一启动（Codex，运行中）
+
+- 同211a6f8冻结源，`jev_plan_20260929_gate3_v1`监管4092867已唯一提交，task3 TRAIN242/seed0、GPU1/CPU88–91，24检查/1536controls/1800s总/60s清理；启动器已核新API资格和源身份。实际门结果待，episode1未提交；0模型/训练、不热改运行源。
+- 22:53 gate0七件回执/14.6s视频已完整取回`/home/wsy/behavior/artifacts/jev-control-20260929/planning_contract/gate0/`，双端SHA全同，result `3bcb6ed1…363da9`；本人抽帧查看夹爪与三路画面，无黑帧，工程视频不计任务完成。gate3 actor4092878实际loading_scene；未重复启动。
+
+### 2026-09-29 22:51（北京时间）：JEV-04新gate0通过，接续同源gate3（Codex）
+
+- `jev_plan_20260929_gate0_v1`同211a6f8/459f7f38监管completed、actor exit0；24检查中19 TARGET_REACHED、4夹爪完成、1安全预检拒绝，全部执行freshness过、gate_ok=true/无失败。440controls/112同步采集，总1104.496s/动作565.021s/清理0.384s；native journal SHA `1a58136a…18808e`。这是执行协议工程验证，不是task成功。
+- 下一同冻结源唯一gate3 TRAIN242/seed0（24检查/1536controls/1800s总），过后唯一追加task0原始起点闭环。0训练、不热改源码/共享env、不动队友；gate0回执/视频将归档本地planning_contract。续接已fetch确认main无遗漏，当前仅自有plan记录未提交故未强pull。
+
 ### 2026-09-29 22:32（北京时间）：JEV-04新gate0唯一启动（Codex，运行中）
 
 - 同冻结211a6f8，新完整implementation `459f7f38425f86204a3eba5c82d2edf89c34f76b86a39c8ee495e478e1fe0076`；API资格的源码/契约/模板/持久账本在启动器通过。gate0监管4087367/actor4087380，run `jev_plan_20260929_gate0_v1`、physical GPU1/CPU88–91，24检查/1536controls/1800s总，0模型/训练；实际loading_scene，尚非门通过。
 - 一次SSH查询被中继断开，随后只读重连已恢复并核实原进程，未重复提交。新gate3/episode1均未提交；按新门→唯一追加闭环继续，不热改运行源。
 - 22:34 API四件result/calls/trials/request_templates已取回本地`artifacts/jev-control-20260929/planning_contract/api_v1`并双端SHA核同，result `9ecfbffc…fbb1c3f`。新计划第二问10次均goal_1（API返回1.0），仅同输入重复一致性，不是校准概率、独立任务鲁棒性或SR。gate0仍loading_scene/监管正常。
+- 22:41新gate0原生native_profile_validated，reset/load138/reset均completed、physical GPU1正确，进入动作检查；尚无最终门结果，不提前统计成功。
 
 ### 2026-09-29 22:31（北京时间）：JEV-04真实API首批通过，接续新源工程门（Codex）
 

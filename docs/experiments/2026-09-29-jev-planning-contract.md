@@ -40,3 +40,5 @@
 22:31：冻结`211a6f8d7dac6b038c6b44ccf04c9eb2c6175ee5`、robo53目标0.309s通过；真实api_v1共25请求/25有效，旧第二问3/3弃权、新官方原文完整计划10/10完成、冲突负例2/2弃权，qualified=true。21594输入/950输出tokens，0控制/重置/训练；支持本轮接口修复，不是完整任务SR或对每一处文字改动的单独消融。result SHA `9ecfbffc722d24328e509f54fd26984999eb60f637085cc2f5f225f76fbb1c3f`。
 
 22:32：新implementation `459f7f38425f86204a3eba5c82d2edf89c34f76b86a39c8ee495e478e1fe0076`，gate0已唯一启动监管4087367（24检查/1800s原门预算），正在加载场景；gate3及唯一episode待。
+
+22:51：gate0已completed/actor exit0，24检查过（19到达、4夹爪完成、1安全预检拒绝），440controls/112同步采集，总1104.496s/动作565.021s/清理0.384s、全部执行freshness通过。新gate3已唯一提交监管4092867，保持同源及原预算；工程门不能代替任务成功率，episode尚未提交。
