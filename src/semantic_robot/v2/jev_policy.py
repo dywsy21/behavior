@@ -56,9 +56,12 @@ def load_task_plan(path, task_id):
     if len(raw) > 20_000:
         raise ValueError("Bounded task plan required")
     value = json.loads(raw)
-    if (set(value) != {"schema", "task_id", "goals", "dependencies", "target_references"} or value["schema"] != "jev-task-plan-v2"
+    if (set(value) != {"schema", "task_id", "goals", "dependencies", "target_references", "official_instruction", "strategy_provenance"} or value["schema"] != "jev-task-plan-v3"
             or type(value["task_id"]) is not int or value["task_id"] != task_id):
         raise ValueError("Explicit plan must match this task")
+    if any(not isinstance(value[k], str) or not value[k].strip() or len(value[k]) > 4000
+           for k in ("official_instruction", "strategy_provenance")):
+        raise ValueError("Pinned official instruction and explicit strategy provenance required")
     goals = parse_plan(json.dumps(value["goals"]))
     dependencies, references = value["dependencies"], value["target_references"]
     n = len(goals)
@@ -85,7 +88,58 @@ def load_task_plan(path, task_id):
             raise ValueError("Held-part goal needs an explicit prior pick by its holding hand")
     return goals, {"source": "explicit_task_requirements_not_current_state",
                    "sha256": hashlib.sha256(raw).hexdigest(), "task_id": task_id,
-                   "dependencies": dependencies, "target_references": references}
+                   "dependencies": dependencies, "target_references": references,
+                   "official_instruction": value["official_instruction"],
+                   "official_instruction_sha256": hashlib.sha256(value["official_instruction"].encode()).hexdigest(),
+                   "strategy_provenance": value["strategy_provenance"]}
+
+
+def planning_request(goals, identity, instruction, ordered_indices):
+    """The live runner and non-actuating probe share this exact request builder.
+
+    This orders future goals, never certifies current state or authorizes motion.
+    Dependencies constrain order here; the existing runtime checks remain the
+    authority on whether any held-object action may actually execute.
+    """
+    if instruction != identity["official_instruction"]:
+        raise JevError("Official task instruction differs from the qualified task contract")
+    selected = set()
+    for index in ordered_indices:
+        if (type(index) is not int or not 0 <= index < len(goals) or index in selected
+                or not set(identity["dependencies"][index]) <= selected):
+            raise ValueError("Invalid hypothetical plan prefix")
+        selected.add(index)
+    eligible = [i for i in range(len(goals)) if i not in selected
+                and set(identity["dependencies"][i]) <= selected]
+    if not eligible:
+        raise ValueError("No remaining eligible planning slot")
+    state = {
+        "phase": "ORDER_FUTURE_PLAN_NOT_EXECUTION",
+        "official_task_instruction_verbatim": instruction,
+        "strategy_constraints": {
+            "provenance": identity["strategy_provenance"],
+            "required_goals": {f"goal_{i}": asdict(g) for i, g in enumerate(goals)},
+        },
+        "dependency_order": {f"goal_{i}": [f"goal_{j}" for j in deps]
+                             for i, deps in enumerate(identity["dependencies"])},
+        "hypothetical_plan_prefix": [f"goal_{i}" for i in ordered_indices],
+        "next_plan_slot": len(ordered_indices),
+        "eligible_next_goal_ids": [f"goal_{i}" for i in eligible],
+        "current_execution_evidence": "Not requested for ordering a future plan. No step has executed; no holding or success is asserted.",
+        "execution_contract": "At runtime every goal still requires fresh observations, verified physical preconditions and separate Jev action choices. A failed earlier goal never unlocks a dependent goal.",
+    }
+    options = {f"goal_{i}": "Append this FUTURE step after the hypothetical prefix: " +
+               json.dumps(asdict(goals[i]), ensure_ascii=False) for i in eligible}
+    options["abstain"] = "The task and strategy requirements are contradictory or cannot form a coherent future plan. Stop; do not force a goal choice."
+    questions = {"next_goal": choice(
+        "Build a complete future plan, one slot at a time, not an immediate robot command. "
+        "Choose a remaining eligible goal consistent with the official task and the separately stated user strategy. "
+        "Dependency eligibility means the prerequisite is ALREADY EARLIER IN THE HYPOTHETICAL PLAN, not already executed. "
+        "For planning, consider the selected prefix's intended postconditions conditionally: after a planned pick succeeds, a planned held-object press can follow. "
+        "Do not demand a current grasp, image, action or success certificate to ORDER that future press. "
+        "These hypothetical postconditions are NOT observed facts and authorize NO motion. "
+        "Preserve all required hands and goals; abstain for an inconsistent plan, not merely because execution has not started.", options)}
+    return state, questions
 
 
 def score_rows(context):
@@ -244,6 +298,7 @@ class JevGroundedPolicy:
         self.task_id, self._deadline = task_id, None
         self.last_call, self.reference_calls = None, 0
         self.planned_goals = None
+        self.planning_started = False
 
     @property
     def identity(self):
@@ -280,32 +335,31 @@ class JevGroundedPolicy:
         require_time(self.deadline)
         if task_id != self.task_id:
             raise ValueError("Task plan identity changed")
-        if self.planned_goals is not None:
+        if self.planning_started:
             raise JevError("Task plan already selected; no hidden replanning/reset")
-        remaining = dict(enumerate(self.goals))
-        ordered, receipts, chosen_indices = [], [], set()
-        while remaining:
-            options = {f"goal_{index}": json.dumps(asdict(goal), ensure_ascii=False)
-                       for index, goal in remaining.items()
-                       if set(self.plan_identity["dependencies"][index]) <= chosen_indices}
-            options["abstain"] = "These goal requirements cannot form a justified plan; stop before issuing robot commands."
-            result, receipt = self.client.evaluate({"task_instruction": instruction,
-                "requirements_not_observed_facts": [asdict(g) for g in self.goals],
-                "selected_prefix_not_executed": [asdict(g) for g in ordered]}, {"next_goal": choice(
-                "Choose the next required subgoal in a complete executable plan. Preserve the user-specified hands and targets. "
-                "Respect dependencies: first obtain an object before acting on a part of that held object. "
-                "This is planning, not evidence that anything has happened. Do not skip requirements.", options)})
-            self.last_call = receipt
-            receipts.append(receipt)
-            selected = result["answers"]["next_goal"]["choice"]
-            if selected == "abstain": raise JevAbstained("Jev declined the task plan; no action authorized")
-            index = int(selected.removeprefix("goal_"))
-            chosen_indices.add(index)
-            ordered.append(remaining.pop(index))
-        self.planned_goals = tuple(ordered)
+        # Check the instruction before spending a request, even on the first slot.
+        planning_request(self.goals, self.plan_identity, instruction, [])
+        self.planning_started = True
+        ordered, receipts, chosen_indices = [], [], []
         self.last_call = {"request": {"images": [], "task": instruction}, "result": {
-            "text": json.dumps([asdict(g) for g in ordered]), "source": "jev_selected_goal_order",
-            "task_requirements": self.plan_identity, "planning_calls": receipts, "model_calls": len(receipts)}}
+            "source": "jev_selected_goal_order", "planning_status": "in_progress",
+            "task_requirements": self.plan_identity, "planning_calls": receipts,
+            "selected_goal_ids": [], "model_calls": 0}}
+        while len(ordered) < len(self.goals):
+            state, questions = planning_request(self.goals, self.plan_identity, instruction, chosen_indices)
+            result, receipt = self.client.evaluate(state, questions)
+            receipts.append(receipt)
+            self.last_call["result"]["model_calls"] = len(receipts)
+            selected = result["answers"]["next_goal"]["choice"]
+            if selected == "abstain":
+                self.last_call["result"]["planning_status"] = "abstained_no_action"
+                raise JevAbstained("Jev declined the task plan; no action authorized")
+            index = int(selected.removeprefix("goal_"))
+            chosen_indices.append(index)
+            ordered.append(self.goals[index])
+            self.last_call["result"]["selected_goal_ids"].append(selected)
+        self.planned_goals = tuple(ordered)
+        self.last_call["result"].update(text=json.dumps([asdict(g) for g in ordered]), planning_status="complete")
         return list(ordered), self.last_call
 
     def _observe(self, method, *args):

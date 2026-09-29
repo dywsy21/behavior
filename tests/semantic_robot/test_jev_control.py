@@ -136,7 +136,7 @@ class RouteTests(unittest.TestCase):
     def test_plan_and_world_reference_are_model_choices_not_shortcuts(self):
         opener=Opener([{"next_goal":"goal_0"},{"next_goal":"goal_1"},{"reference":"world"}])
         p=JevGroundedPolicy(SimpleNamespace(calls=0,identity={}),client(opener),task_id=0,task_plan=PLAN)
-        goals,receipt=p.plan(0,"turn on radio",None)
+        goals,receipt=p.plan(0,p.plan_identity["official_instruction"],None)
         self.assertEqual(goals,p.goals)
         self.assertEqual(receipt["result"]["source"],"jev_selected_goal_order")
         with self.assertRaises(JevError):p.plan(0,"again",None)
@@ -149,7 +149,7 @@ class RouteTests(unittest.TestCase):
     def test_dependency_is_hard_constraint_not_prompt_only(self):
         opener=Opener([{"next_goal":"goal_1"}])
         p=JevGroundedPolicy(SimpleNamespace(calls=0,identity={}),client(opener),task_id=0,task_plan=PLAN)
-        with self.assertRaises(JevError):p.plan(0,"turn on radio",None)
+        with self.assertRaises(JevError):p.plan(0,p.plan_identity["official_instruction"],None)
         options=json.loads(opener.requests[0][0].data)["questions"]["next_goal"]["criteria"]
         self.assertNotIn("goal_1",options)
         h,_,_,_=context();h.goals=p.goals;h.index=1

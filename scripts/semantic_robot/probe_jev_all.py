@@ -100,7 +100,7 @@ def main():
                 api.deadline=time.perf_counter()+600
                 policy=JevGroundedPolicy(SimpleNamespace(calls=0,identity={}),api,task_id=0,
                     task_plan=REPO/"configs/semantic_robot/jev_task0_plan.json")
-                goals,receipt=policy.plan(0,"Turn on the radio: use the right hand to hold it, the left to press its button.",None)
+                goals,receipt=policy.plan(0,policy.plan_identity["official_instruction"],None)
                 write("plan.json",receipt)
                 h=GroundedHarness(goals);h.held_inspection_enabled=h.reference_from_planner=True
                 write("reference.json",policy.resolve_target_reference(h))

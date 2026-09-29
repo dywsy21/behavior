@@ -123,16 +123,48 @@ def authority(action, receipt, allowed):
 
 
 def validate_actor_ownership(result, ledger=None, controls=None):
-    """Completed run is not accepted as a Jev control test without execution."""
+    """Audit execution, or a separately labelled valid no-action plan outcome."""
     rows = [r for r in result.get("decisions", []) if r.get("accepted_before_motion")
             and r.get("control_end", 0) > r.get("control_start", 0)]
-    if not rows:
+    planning_stop = result.get("stop_reason") == "JEV_PLAN_ABSTAINED"
+    action_stop = result.get("stop_reason") == "JEV_ABSTAINED"
+    if not rows and not planning_stop and not action_stop:
         raise JevError("No Jev-selected action executed; control integration not validated")
     calls, probe_controls = [], 0
     validated = {} if ledger is None else {r["call"]: r for r in ledger if r.get("event") == "validated"}
     def check_ledger(call, question, option):
         if ledger is not None and validated.get(call, {}).get("selections", {}).get(question) != option:
             raise JevError("Executed choice differs from durable Jev response")
+    if planning_stop:
+        proof = result.get("planning_abstention") or {}
+        prefix = proof.get("selected_goal_ids")
+        if (rows or result.get("decisions") != [] or result.get("observer_calls") != 0
+                or result.get("prefix_controls") != 0 or result.get("diagnostic_replay_controls") != 0
+                or type(result.get("controls")) is not int or not 0 <= result["controls"] <= 1
+                or proof.get("question") != "next_goal" or proof.get("choice") != "abstain"
+                or proof.get("plan_complete") is not False or not isinstance(prefix, list)
+                or any(not isinstance(x, str) or not x.startswith("goal_") for x in prefix)
+                or len(set(prefix)) != len(prefix) or type(proof.get("call")) is not int
+                or proof["call"] != len(prefix) + 1 or proof["call"] != result.get("jev_requests")):
+            raise JevError("Invalid zero-action planning-abstention outcome")
+        for number, option in enumerate(prefix, 1):
+            check_ledger(number, "next_goal", option)
+        check_ledger(proof["call"], "next_goal", "abstain")
+    if action_stop:
+        last = result.get("decisions", [])[-1] if result.get("decisions") else {}
+        proof = last.get("jev_abstention") or {}
+        if (last.get("accepted_before_motion") is not False or "action" in last
+                or last.get("stop_reason") != "JEV_ABSTAINED"
+                or not last.get("selection_source", "").startswith("Jev_all_")
+                or proof.get("question") != "command" or proof.get("choice") != "abstain"
+                or type(proof.get("call")) is not int or proof["call"] < 2
+                or proof["call"] != result.get("jev_requests")):
+            raise JevError("Invalid command-abstention outcome")
+        check_ledger(proof["call"], "command", "abstain")
+        if not rows and (len(result["decisions"]) != 1 or result.get("prefix_controls") != 0
+                         or result.get("diagnostic_replay_controls") != 0
+                         or type(result.get("controls")) is not int or not 0 <= result["controls"] <= 1):
+            raise JevError("Unowned control before first-command abstention")
     for row in rows:
         proof = row.get("jev_authority", {})
         call = proof.get("command_call")
@@ -185,6 +217,8 @@ def validate_actor_ownership(result, ledger=None, controls=None):
                         or tick.get("jev_recovery_authorization") != recovery.get("jev_recovery_authorization")):
                     raise JevError("Issued unowned recovery control")
     return {"normal_actions_executed": len(rows), "jev_owned_actions": len(rows),
+            "control_integration_validated": bool(rows), "planning_abstained_no_action": planning_stop,
+            "command_abstained": action_stop,
             "jev_requested_probe_controls": probe_controls,
             "non_jev_strategy_actions": 0, "safety_stop_is_not_policy_action": True,
             "durable_choices_checked": ledger is not None, "all_control_ticks_checked": controls is not None}

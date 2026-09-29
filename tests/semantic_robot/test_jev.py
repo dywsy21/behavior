@@ -253,7 +253,7 @@ class PolicyTests(unittest.TestCase):
         plan = Path(__file__).resolve().parents[2] / "configs/semantic_robot/jev_task0_plan.json"
         policy = JevGroundedPolicy(observer, client(opener), task_id=0, task_plan=plan)
         policy.deadline = time.perf_counter() + 30
-        goals, receipt = policy.plan(0, "turn on radio", bundle)
+        goals, receipt = policy.plan(0, policy.plan_identity["official_instruction"], bundle)
         self.assertEqual(goals[0].hand, "right")
         self.assertEqual(goals[1].hand, "left")
         self.assertEqual(policy.calls, 2)

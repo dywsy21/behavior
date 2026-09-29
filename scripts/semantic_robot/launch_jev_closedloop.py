@@ -1,4 +1,4 @@
-"""JEV-03: two new engineering gates, then one Jev-owned original-start episode.
+"""JEV-04: new planning contract, two new gates, one additional original-start episode.
 
 Each stage is explicitly launched once in a new private runtime. No automatic
 retry, training, shared-source edits, or termination of another session.
@@ -33,6 +33,7 @@ RUN_PARENT = Path('/mnt/nvme_tmp/robodojo_agentic_20260925')
 RUNTIME_PARENT = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925')
 KEY_FILE = Path('/mnt/sdc1/robodojo/.config/behavior/credentials/typesafe.key')
 PORT = 8986
+PLANNING_VALIDATION = RUN_PARENT / 'jev_plan_20260929_api_v1/result.json'
 OBSERVER_CALLS, JEV_CALLS = 151, 192
 DECISIONS, CONTROLS = 64, 2048
 FLAGS = tuple(f for f in sync.ORIGINAL_FLAGS if f != 'structured-planning') + ('synchronous-io-v1',)
@@ -43,7 +44,7 @@ ROOT = RUNTIME = None
 def read(path): return json.loads(path.read_text())
 
 
-def stage_root(stage): return RUN_PARENT / ('jev_all_20260929_' + stage + '_v1')
+def stage_root(stage): return RUN_PARENT / ('jev_plan_20260929_' + stage + '_v1')
 
 
 def configure(stage):
@@ -150,6 +151,41 @@ def prerequisites(digest):
     return receipts
 
 
+def planning_qualification():
+    from probe_jev_planning import digest, qualification
+    from semantic_robot.v2.jev_policy import load_task_plan, planning_request
+    value = read(PLANNING_VALIDATION)
+    goals, identity = load_task_plan(REPO/'configs/semantic_robot/jev_task0_plan.json', 0)
+    templates = [planning_request(goals, identity, identity['official_instruction'], prefix) for prefix in ([], [0])]
+    repeats = value.get('repetitions')
+    if (value.get('schema') != 'jev04-planning-validation-v1' or value.get('model') != 'jev-1.13.0'
+            or value.get('qualified') is not True or value.get('dry_run') is not False or value.get('error')
+            or type(repeats) is not int or repeats < 10 or not qualification(value.get('rows', []), repeats)
+            or value.get('contract_sha256') != identity['sha256']
+            or value.get('official_instruction') != identity['official_instruction']
+            or value.get('request_template_sha256') != [digest(dict(state=s, questions=q)) for s, q in templates]
+            or value.get('policy_sha256') != common.sha(REPO/'src/semantic_robot/v2/jev_policy.py')
+            or value.get('client_sha256') != common.sha(REPO/'src/semantic_robot/v2/jev_client.py')
+            or value.get('probe_sha256') != common.sha(REPO/'scripts/semantic_robot/probe_jev_planning.py')
+            or value.get('api_requests') != 5+2*repeats or value.get('validated_responses') != 5+2*repeats
+            or any(type(value.get(k)) is not int or value[k] != 0 for k in ('new_controls','new_resets','training_updates'))):
+        raise ValueError('Exact-input planning API validation not qualified for this source')
+    folder = PLANNING_VALIDATION.parent
+    if any(value.get(name+'_sha256') != common.sha(folder/(name+'.jsonl')) for name in ('calls','trials')):
+        raise ValueError('Planning validation trace changed')
+    ledger = [json.loads(line) for line in (folder/'calls.jsonl').read_text().splitlines()]
+    validate_jev_ledger(ledger, dict(jev_requests=value['api_requests'],
+        jev_input_tokens=value['input_tokens'],jev_output_tokens=value['output_tokens']))
+    trials = [json.loads(line) for line in (folder/'trials.jsonl').read_text().splitlines()]
+    if [trial['summary'] for trial in trials] != value['rows']:
+        raise ValueError('Planning validation summary omits or changes trials')
+    choices = [r['selections'].get('next_goal') for r in ledger if r['event'] == 'validated']
+    if choices[3:] != ['goal_0','goal_1']*repeats + ['abstain','abstain']:
+        raise ValueError('Planning validation differs from durable model choices')
+    return {'path':str(PLANNING_VALIDATION),'sha256':common.sha(PLANNING_VALIDATION),
+            'repetitions':repeats,'official_instruction_sha256':identity['official_instruction_sha256']}
+
+
 def preflight(base):
     if 'TYPESAFE_API_KEY' in os.environ:
         raise ValueError('Use only the private key file; inherited TypeSafe credential environment forbidden')
@@ -157,6 +193,7 @@ def preflight(base):
     from run_v2 import implementation_digest
     digest = implementation_digest()
     prior = prerequisites(digest)
+    prior['planning_validation'] = planning_qualification()
     before = base.snapshot(); check_resources(before)
     if is_actor():
         from semantic_robot.v2.jev_client import load_key
@@ -194,7 +231,8 @@ def validate_basic(result,digest):
         raise ValueError('Incomplete result or wrong source/profile/controller')
     validate_wall(result.get('wall_s'),is_actor())
     decisions = result.get('decisions',[])
-    if (not isinstance(decisions,list) or not 1 <= len(decisions) <= (DECISIONS if is_actor() else 24) or
+    minimum_decisions = 0 if is_actor() and result.get('stop_reason') == 'JEV_PLAN_ABSTAINED' else 1
+    if (not isinstance(decisions,list) or not minimum_decisions <= len(decisions) <= (DECISIONS if is_actor() else 24) or
             type(result.get('controls')) is not int or not 1 <= result['controls'] <= (CONTROLS if is_actor() else 1536)):
         raise ValueError('Control/decision budget mismatch')
     executed = [r for r in decisions if r.get('accepted_before_motion')]
@@ -288,7 +326,7 @@ def supervise(base):
     start = time.monotonic(); children = {}; failure = None
     receipt = dict(status='starting',source_commit=code,implementation_digest=digest,stage=STAGE,
         supervisor_pid=os.getpid(),baseline=before,wall_seconds=reserved['wall_seconds'],samples=[])
-    def interrupted(sig,_): raise InterruptedError('JEV-03 signal '+str(sig))
+    def interrupted(sig,_): raise InterruptedError('JEV-04 signal '+str(sig))
     previous = {sig:signal.signal(sig,interrupted) for sig in (signal.SIGTERM,signal.SIGINT)}
     def monitor():
         if time.monotonic()-start >= receipt['wall_seconds']: raise TimeoutError('Total stage wall budget')
@@ -330,6 +368,8 @@ def supervise(base):
         result=validate_completion(base,code,digest);monitor()
         receipt.update(status='completed',official_success=result['official_success'],controls=result['controls'],
             decisions=len(result['decisions']),stop_reason=result['stop_reason'])
+        if is_actor():
+            receipt['control_integration_validated'] = read(ROOT/'decision_ownership.json')['control_integration_validated']
     except BaseException as error:
         failure=error;receipt.update(status='failed',error=repr(error))
     finally:

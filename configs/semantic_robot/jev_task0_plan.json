@@ -1,6 +1,8 @@
 {
-  "schema": "jev-task-plan-v2",
+  "schema": "jev-task-plan-v3",
   "task_id": 0,
+  "official_instruction": "Turn on the radio receiver that's on the table in the living room.",
+  "strategy_provenance": "User-requested strategy: use the right hand to pick up the radio, then the left hand to press its power button.",
   "dependencies": [[], [0]],
   "target_references": ["world", "held_right"],
   "goals": [

@@ -48,6 +48,22 @@ from semantic_robot.v2.wall_budget import expired, stop_before_motion
 from semantic_robot.v2.run_budget import validate_run_budget
 
 
+def select_initial_plan(policy, task, instruction, bundle):
+    """Valid model abstention is a policy outcome, not a transport failure."""
+    from semantic_robot.v2.jev_client import JevAbstained
+    try:
+        goals, receipt = policy.plan(task, instruction, bundle)
+        return goals, receipt, None
+    except JevAbstained:
+        receipt = policy.last_call
+        result = receipt.get("result", {}) if isinstance(receipt, dict) else {}
+        if (result.get("planning_status") != "abstained_no_action" or not result.get("planning_calls")
+                or result["planning_calls"][-1]["result"]["answers"]["next_goal"]["choice"] != "abstain"):
+            raise RuntimeError("Planning abstention lacks its validated choice receipt")
+        return None, receipt, {"call": policy.client.calls, "question": "next_goal", "choice": "abstain",
+                               "selected_goal_ids": list(result["selected_goal_ids"]), "plan_complete": False}
+
+
 def implementation_digest():
     # Bind the actual proprio/control sources too, not only v2's wrappers.
     # Relative paths distinguish equal basenames without tying a gate to one
@@ -387,6 +403,7 @@ def main():
     sensor_checks=[]
     controller=None
     video, manager, servo, state = None,None,None,None
+    planning_abstention = None
     native_io, io_trace, latest_verified_image = None,None,None
     trace = (out/"steps.jsonl").open("x",buffering=1)
     phase,reset_completed="SESSION_INITIALIZATION",False
@@ -600,23 +617,24 @@ def main():
             if policy:
                 phase="INITIAL_PLAN"
                 if replay is None:
-                    goals, call = policy.plan(args.task,environment.observation()["task"],first)
+                    goals, call, planning_abstention = select_initial_plan(policy,args.task,environment.observation()["task"],first)
                     save_call(out,"planner",call)
                 else:
                     goals=replay["plan"]
                     write(out/"planner_source.json",{"source":"hash_pinned_saved_plan_for_matched_diagnostic","not_new_model_plan":True})
-                manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection,approach_reorientation=args.approach_reorientation,approach_body_options=args.approach_body_options,workspace_posture=args.workspace_posture,approach_translation_preview=args.approach_translation_preview,near_pose_gap=args.near_pose_gap) if grounded else TaskHarness(goals)
-                manager.jev_decision_owner = args.controller == "jev"
-                if replay is not None:
-                    from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
-                    bootstrap_unverified_pick(manager,replay,state)
-                if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion,
-                    odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress,persistent_grasp_tracks=args.persistent_grasp_tracks,
-                    spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery,
-                    odometry_self_exclusion=args.odometry_self_exclusion,
-                    odometry_match_refinement=args.odometry_match_refinement,near_contact_review=args.near_contact_review,
-                    press_finger_surfaces=press_asset,press_cycle_v1=args.press_cycle_v1)
-                write(out/"plan.json",[asdict(g) for g in goals])
+                if planning_abstention is None:
+                    manager = GroundedHarness(goals,active_grasp_probe=args.active_grasp_probe,contact_geometry=args.contact_geometry,held_inspection=args.held_object_inspection,reference_from_planner=args.held_object_inspection,inspection_budget_aware=args.inspection_budget_aware,multicamera_inspection=args.multicamera_inspection,approach_reorientation=args.approach_reorientation,approach_body_options=args.approach_body_options,workspace_posture=args.workspace_posture,approach_translation_preview=args.approach_translation_preview,near_pose_gap=args.near_pose_gap) if grounded else TaskHarness(goals)
+                    manager.jev_decision_owner = args.controller == "jev"
+                    if replay is not None:
+                        from semantic_robot.v2.saved_prefix import bootstrap_unverified_pick
+                        bootstrap_unverified_pick(manager,replay,state)
+                    if grounded: controller=GroundedController(model,servo,manager,visual_odometry=args.visual_odometry,grasp_motion=args.grasp_motion,
+                        odometry_estimator=args.odometry_estimator,approach_progress=args.approach_progress,persistent_grasp_tracks=args.persistent_grasp_tracks,
+                        spatial_grasp_features=args.spatial_grasp_features,search_motion_recovery=args.search_motion_recovery,
+                        odometry_self_exclusion=args.odometry_self_exclusion,
+                        odometry_match_refinement=args.odometry_match_refinement,near_contact_review=args.near_contact_review,
+                        press_finger_surfaces=press_asset,press_cycle_v1=args.press_cycle_v1)
+                    write(out/"plan.json",[asdict(g) for g in goals])
 
             def capture(label):
                 images = latest_verified_image[0] if native_io is not None else environment.observation()["images"]
@@ -642,7 +660,7 @@ def main():
                 gate_motion=RGBDMotion(args.odometry_estimator,exclude_robot=args.odometry_self_exclusion,
                                       refine_matches=args.odometry_match_refinement)
             substep_motion=None
-            if args.odometry_substep_controls:
+            if args.odometry_substep_controls and planning_abstention is None:
                 from semantic_robot.v2.substep_odometry import SubstepMotion
                 substep_motion=SubstepMotion(controller.motion if controller else gate_motion,args.odometry_substep_controls)
                 if controller:controller.motion=substep_motion
@@ -650,6 +668,8 @@ def main():
             saved_end_snapshot=None
             phase="BOUNDED_CONTROL_OR_AGENT_LOOP"
             for decision in range(args.max_decisions):
+                if planning_abstention is not None:
+                    break  # No dummy goal, perception, fallback action or silent retry.
                 recoverable_stop=bool(controller and controller.can_replan_stop)
                 if controls>=action_control_limit or time.perf_counter()-started>=args.max_seconds or terminal or (manager and manager.stop_reason and not recoverable_stop):
                     break
@@ -821,6 +841,10 @@ def main():
                     if not manager or manager.stop_reason != "JEV_ABSTAINED":
                         raise RuntimeError("Missing action without a valid abstention")
                     row.update(accepted_before_motion=False,stop_reason=manager.stop_reason)
+                    if args.controller == "jev":
+                        if call["result"].get("answers", {}).get("command", {}).get("choice") != "abstain":
+                            raise RuntimeError("Action abstention lacks its validated choice receipt")
+                        row["jev_abstention"]={"call":policy.client.calls,"question":"command","choice":"abstain"}
                     decisions.append(row)
                     break
                 row["action"] = asdict(action)
@@ -1111,6 +1135,8 @@ def main():
                 gate_ok=bool(gate_ok and required <= {r["decision"] for r in reached} and sensor_checks and
                              "grasp_centers_eef" in model.spec["metadata"])
             stop_reason=manager.stop_reason if manager else "CONTROL_GATE_COMPLETE" if gate_ok else "CONTROL_GATE_FAILED"
+            if planning_abstention is not None:
+                stop_reason="JEV_PLAN_ABSTAINED"
             if policy and stop_reason is None:
                 stop_reason=("OFFICIAL_EPISODE_TERMINATED" if terminal else "CONTROL_BUDGET_REACHED" if controls>=args.max_controls
                              else "WALL_TIME_BUDGET_REACHED" if time.perf_counter()-started>=args.max_seconds else "DECISION_BUDGET_REACHED")
@@ -1125,6 +1151,7 @@ def main():
                       "calibration_sha":model.sha,"fk_check_count":len(checks),"gate_failures":failures,
                       "official_success":bool(done.get("success",False)),"final_goal_status":done.get("goal_status",{}),
                       "stop_reason":stop_reason,"harness":args.harness,"sensor_check_count":len(sensor_checks),
+                      "planning_abstention":planning_abstention,
                       "refine_grounding":args.refine_grounding,"surface_choices":getattr(policy,"refinements",0),
                       "near_contact_review":args.near_contact_review,
                       "appearance_memory":args.appearance_memory,

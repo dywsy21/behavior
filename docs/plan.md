@@ -10,6 +10,25 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 22:29（北京时间）：JEV-04最终795项CPU检查与独审通过，准备冻结API批次（Codex）
+
+- 最终全套795项/34.894s通过、5环境skip；独审53目标检查通过、无剩余实质阻断。同时覆盖首次command弃权正常结果及零动作integration=false，非成功分母不再因合法弃权被抹掉；网络/协议错误仍独立失败，真实策略动作仍逐control核账。
+- v3官方指令与上次现场receipt逐字符相同；API资格门额外绑定policy/client/probe源码SHA、两个真实输入模板、全部25 attempt/validated与实际选择/summary/hash。CPU通过不称API通过或任务有效。
+- 下一提交/push固定新源、robo新worktree，服务器目标回归后运行唯一`jev_plan_20260929_api_v1`（3旧第二问＋10完整新计划＋2冲突负例、25次上界/900s），通过再新两工程门与获准单次闭环。总API授权不设上限但不自动重试任一试验；本轮尚无实际API/仿真/训练。
+
+### 2026-09-29 22:23（北京时间）：JEV-04契约/正常弃权/同入口探针实现，CPU及独审中（Codex）
+
+- v3任务配置固定官方原文并标明用户策略来源；`planning_request`由probe/live共用，原文漂移在API前拒绝，明确hypothetical prefix只限定未来顺序，真实held/安全前提未放松；部分计划回执全保存，同一policy弃权后不可暗中重试。
+- 独审指出合法plan弃权仍被当worker异常，已新增正常`JEV_PLAN_ABSTAINED`路径：不造dummy goal/不入动作loop、官方结果与唯一safe-stop照常保留；零动作审计须有持久Jev弃权证明且`control_integration_validated=false`，不当作动作接入通过。51目标CPU检查通过，全套/独审进行中，无实际API/新仿真/训练。
+- 首批新`probe_jev_planning.py`登记旧真实失败第二问3次＋同官方原文新完整计划10次＋2明确冲突任务文本负例，至多25 API/900s/0GPU控制；不限全程API总量但每批固定样本/新目录、全部失败保留。通过标准10/10完整计划且2/2冲突弃权，不用“反复重试到成功”代替通过。拟run `jev_plan_20260929_api_v1`。
+- 由于本次修复涉及run_v2和弃权收尾，采用新全包digest重跑task0/3两工程门（各24检查/1536controls/1800s总），再唯一追加task0（原64决策/2048controls/3600s总）。新run前缀`jev_plan_20260929_*_v1`，启动器检查规划qual源/契约/输入hash与新两门，不移用JEV-03 gate。下一独审→冻结/API→GPU原预算验证。
+
+### 2026-09-29 22:12（北京时间）：JEV-04获准追加闭环，API验证不限总次数（Codex，进行中）
+
+- 用户明确“追加。不限量api验证。”：解除上条6 API总量限制，允许基于证据继续API接口验证；仿真仍追加1条task0 TRAIN138/seed0原始起点（64决策/2048controls/2400s动作/3600s总），不据此扩训练或无限sim重置。0训练、27B仅感知、Jev所有策略选择/弃权和安全门保持。
+- owner本线程Codex，假设是统一官方原文/用户策略来源、区分假想计划顺序和实际执行前提可消除JEV-03入口弃权歧义。先修公共planning输入及同入口探针/CPU回归，固定版本后分批真实API验证，全部成功和弃权都留账，不挑成功重试冒充通过；确认稳定才新冻结源闭环。源码/实际API批次与run启动后追加记录，未部署。
+- 已clean fetch/pull至8482c85，origin/main无新遗漏；22:12 robo直连可达，四卡0MiB、NVMe余1.4T、旧自有三PID无存活。只用GPU1原共置资源，不动其他机器/环境。旧VLM数据goal仍blocked，不改标。若执行协议变更则明确新增必要工程验证，不能冒称旧全量digest仍匹配。
+
 ### 2026-09-29 22:00（北京时间）：JEV-03失败证据归档及输入缺口报告完成（Codex）
 
 - 两新gate各7件、episode11件回执/初始PNG均取回`/home/wsy/behavior/artifacts/jev-control-20260929/all_decisions/`并双端SHA核同；本人检查两门视频抽帧和episode首帧。episode native journal只有1次异常安全停止，与0策略control一致；不存在可展示的任务动作视频，不造SR。
