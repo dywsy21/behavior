@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 16:14（北京时间）：Jev 固定源码历史状态验证启动（Codex / JEV-01，运行中）
+
+- 实现已提交 `829ab60`，包括独审提出的陈旧状态门、HTTP异常脱敏、分开API/observer/已知token计数、固定来源manifest＋actor请求SHA；25项目标回归过，最终全套复验进行中。旧753项复验唯一错误为runner AST测试夹具缺新增`jev_before`变量，已修夹具，不放松执行门。
+- 原40次/15分钟预算内，选定11个已有task0开发状态：H38导航/到达/接近8例、H25恢复/对齐2例、H10持物按钮搜索1例；来源与SHA见 `configs/semantic_robot/jev_saved_sources_v1.json`。将用真实API做一次烟测＋最多22次非执行决策（唯一HOLD可少调用），新run `/home/wsy/behavior/artifacts/jev-control-20260929/saved_v1`；0新GPU/仿真/动作/训练，不上传原图或事后诊断。
+- 这是离线接口/决策检查，不证明完整任务效果；不将旧错误感知当真实位置标签，不以接近距离改善代表抓取。下一核实际结果、延迟、合法选择/弃权及坏选择，再确定是否值得闭环。
+
 ### 2026-09-29 16:08（北京时间）：Jev 主干实现与真实认证通过（Codex / JEV-01）
 
 - 新增原生TypeSafe客户端/grounded组合policy、显式task0计划及离线复决策入口，`run_v2.py --controller jev`只替换动作/恢复/语义reference，VLM仅感知；不改servo、安全门、模型权重。设计和边界见[接入文档](experiments/2026-09-29-jev-control.md)。新增13回归通过，完整harness回归与独审进行中，尚未部署控制。
