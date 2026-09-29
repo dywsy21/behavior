@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 20:54（北京时间）：JEV-03真实API非执行检查通过；仿真待robo转发（Codex）
+
+- 固定已push实现`2fc92984021db2a1481842e7203435fa4fa97e8e`，独审最终通过、785项/28.847s过（5skip）。唯一`all_choices_probe_v1`已exit0：17实际请求/17有效响应/0错误，7/7旧状态均候选内非HOLD选择、0弃权；新搜索状态Jev选base forward micro，不再脚本单向yaw。计划pick右手→press左手、reference world。0控制/重置/训练，**不能称成功率或实际执行有效**。
+- 动作双请求往返和中位1.235s（1.153–1.658s），不含视觉/预检/servo/仿真；110734/2359 input/output与账本核同。result SHA `f98b9d70…63e96b0`、ledger `f6ecb41c…35ad942`，本地完整输入/选择/账本位于`/home/wsy/behavior/artifacts/jev-control-20260929/all_choices_probe_v1`；轻量[结果](experiments/2026-09-29-jev-all-decisions-results.json)及[说明](experiments/2026-09-29-jev-all-decisions.md)纳入Git。
+- 20:54再次18s有界`ssh robo hostname`超时，别名仍127.0.0.1:23117且本机无监听。已请用户恢复原转发；未改VPN、未动队友、无新远端run/GPU/模拟器。剩余为通道恢复后核资源、Git冻结部署、新两task工程门及唯一task0闭环；不追加API搜prompt或训练，不把任务标成已完成。
+
+### 2026-09-29 20:53（北京时间）：JEV-03固定源码真实API探针运行中（Codex）
+
+- 实现已独审、固定并push `2fc92984021db2a1481842e7203435fa4fa97e8e`；最终785项/28.847s过、5skip。新17-call入口dry全7状态通过，SHA源/15搜索候选均核验，不使用合成物理标签。
+- 唯一真实run本地`/home/wsy/behavior/artifacts/jev-control-20260929/all_choices_probe_v1`，17请求/600s上限、0控制/重置/训练；持久账本已27行，实际网络调用进行中，不能提前报全部通过或SR。私有key仅凭据文件加载，不写日志/Git。下一读取真实选择/计数/延迟及错误；robo通道仍断，未部署/启动模拟器。
+
 ### 2026-09-29 20:51（北京时间）：JEV-03独审通过、依赖/凭据修复闭合，准备固定API探针（Codex）
 
 - 独审最终无剩余实质阻断；显式DAG/held reference、拒绝继承环境凭据＋live私有key文件/dry不读key已补回归。最近完整784项/27.625s过、5skip；另新增JEV-03各stage真实argparse与manifest逐字段/预算一致检查9项过，最终全套再验中。
