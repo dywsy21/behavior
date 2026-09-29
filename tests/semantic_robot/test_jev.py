@@ -17,7 +17,7 @@ from semantic_robot.v2.jev_client import (
     validate_response,
 )
 from semantic_robot.v2.jev_policy import (
-    JevDecisionPolicy, JevGroundedPolicy, decision_state, load_task_plan,
+    JevDecisionPolicy, JevGroundedPolicy, command_rubric, decision_state, load_task_plan,
 )
 from semantic_robot.v2.prompt_context import actor_context
 from semantic_robot.v2.protocol import Action, HOLD
@@ -187,6 +187,17 @@ class PolicyTests(unittest.TestCase):
         second = json.loads(opener.requests[1][0].data)
         self.assertEqual(second["state"]["chosen_tactic_not_new_evidence"], "approach")
         self.assertEqual(receipt["result"]["text"], allowed[1].text())
+
+    def test_progress_facts_do_not_require_grasp_before_approach(self):
+        h, state, bundle, allowed = context()
+        h.grounding = {"valid": True}
+        value = decision_state(json.loads(actor_context(h, state, bundle, allowed)), allowed)
+        self.assertTrue(value["facts"]["approach_progress_available"])
+        self.assertFalse(value["facts"]["verified_holding"])
+        self.assertFalse(value["facts"]["immediate_hazard"])
+        self.assertIn("gain 2.00 mm", command_rubric(value["commands"]["command_001"]))
+        self.assertIn("do NOT select", command_rubric(value["commands"]["command_000"]))
+        self.assertEqual(len(value["commands"]), len(allowed))
 
     def test_sole_hold_is_local_and_sole_move_has_abstention(self):
         h, state, bundle, allowed = context()
