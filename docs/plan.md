@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 15:06（北京时间）：E3自动起点/真实FM门通过，已自主采样（Codex / RL-G05-50K-E3）
+
+- `curriculum_auto_000.json`两TRAIN前缀1076/1096均automatic accepted，无human_release文件/人工签名/等待。原head720、双wrist480三RGB/30Hz/state和物理时钟通过；每例从合法非terminal起点继续，actor仍94，不能称RL已改善。
+- `probability_gate.json`在真实A100上零额外噪声与原生同精度FM maxdiff0、old logp/KL/autograd误差0、32×23 CPU解码相同、冻结层无梯度；AE有效梯度13202.72（裁剪前），准入本身0优化器步。
+- 快照32 chunks/512自主控制进入采样，逐控制reward已存在正负差分：例1左手到真实按钮由起点0.545m到约0.174m，示例shaping +2.087e-5；例138同量附近示例−8.760e-7，均官方reward0。这是奖励接线/物理进展信号，不是新权重或完整任务成功。下一步首批reward_audit与accepted更新，原8h/12h预算保持。
+
 ### 2026-09-29 15:02（北京时间）：E3真实奖励目标绑定通过，开始课程回放（Codex / RL-G05-50K-E3）
 
 - 监管/learner原PID继续，TRAIN sims4014591/4014604完成场景初始化并开始原专家前缀；快照累计256真实控制、各128，actor仍94/critic16。初始化约9分钟是模拟器启动，不是人审等待；没有新自主成功或更新结论。
