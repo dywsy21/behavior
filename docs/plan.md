@@ -15,6 +15,7 @@
 - 源码固定`ced02feb3a830cd3e0c83081f15e818810f106d0`，implementation `32020e10…553d5ed`；独审最终无阻断，robo 77目标/原生CPU测试1.513s过，干净独立worktree `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_closedloop_ced02fe`。未改队友源码/环境。
 - 唯一gate0监管PID4030656、run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_20260929_gate0_v1`，GPU1/CPU88–91，24动作/1536控制/1800s含启动＋60s清理；task0 TRAIN138/seed0，0模型请求/训练。当前仅启动回执，初始化/门通过均待真实结果；不会当作任务成功率。
 - 下一读取native/GPU/逐控制证据，成功后同冻结源gate3；未过则停止扩展定位，不重复提交现目录。密钥还未复制robo。
+- 17:43补充：已实测`/renderer/activeGpu=1`和`/physics/cudaDevice=1`，场景仍加载中；最终全回归766项/29.724s（5skip）过。为后续actor安全传输用户key至robo仓库外私有credentials路径，目录0700/文件0600/owner robodojo已核，仅路径/权限入记录，无内容输出/新API调用；位置见SERVER_LAYOUT。本条更新前述“未复制”的时态，不改旧离线JEV-01历史。
 
 ### 2026-09-29 17:40（北京时间）：JEV-02运行前审查闭合，准备真实门（Codex）
 
