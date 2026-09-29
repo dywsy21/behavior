@@ -1,12 +1,14 @@
 # JEV-03：Jev主导所有策略选择
 
-负责人本线程Codex，分支`feat/jev-control-20260929`。用户2026-09-29明确要求；旧JEV-02两条0 Jev请求的0/2结果保留，不是Jev能力测评。**实现已固定推送`2fc9298`、独审与785项CPU回归通过（5skip），真实17次API/7状态非执行检查通过；21:24新gate0已通过，gate3及唯一完整任务闭环待。** 20:58直接SSH已恢复，未修改VPN/SSH配置；不能仅由WSL无本地监听推断Windows中继不可达。
+负责人本线程Codex，分支`feat/jev-control-20260929`。用户2026-09-29明确要求；旧JEV-02两条0 Jev请求的0/2结果保留，不是Jev能力测评。**实现已固定推送`2fc9298`、独审与785项CPU回归通过（5skip），真实17次API/7状态非执行检查通过；21:43新gate0/3均通过，21:44唯一完整任务闭环已提交，结果待。** 20:58直接SSH已恢复，未修改VPN/SSH配置；不能仅由WSL无本地监听推断Windows中继不可达。
 
 ## 21:24北京时间：工程门进展
 
 robo冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_all_6b4ce13`，commit `6b4ce1375f6a27b02b3011384a5845f55aae85b3`（相对2fc9298仅文档）、implementation `f03ba5064ddfbd5815da8ea5a88dfc2c0a06e311fe823569ab70e35df23cc695`；服务器82项目标回归通过。新gate0 TRAIN138/seed0完成：24检查中23动作执行完成、1安全预检拒绝，全部freshness通过；440controls/112同步采集，1122.174s总/567.300s动作，actor exit0、清理1.881s、退出资源检查通过。0模型请求，不能当作Jev任务成功率。result SHA `85e9d5f24f5e9a6d174f26f1f3cf16705befadbe54753753b6d0277063dd4cd2`。
 
-下一保持同一冻结源/原预算运行唯一gate3，双门通过才运行一次task0原始起点。下方20:54连接阻塞是历史状态，已解除；不重复非执行API探针。
+21:43追加：gate3 TRAIN242/seed0也通过，同样24检查/23完成＋1预检拒绝、440controls/112同步采集、freshness全过；1099.388s总/565.398s动作、清理0.381s，result SHA `d5cbc69bcc7a25237169be5f59f8c1fbee663f84c08108040ed6bff277557ef1`。两门各七件回执/视频均双端SHA核同，头部/腕部抽帧本人已检查。
+
+21:44唯一episode1已提交，监管4079377、同6b4ce13源，原task0 TRAIN138 seed0、64决策/2048controls/3600s总预算；初始模型身份校验/加载中，实际Jev控制及官方结果待。下方20:54连接阻塞是历史状态，已解除；不重复非执行API探针。
 
 ## 20:54北京时间：本轮实际结果
 

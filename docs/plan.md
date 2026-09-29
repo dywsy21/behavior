@@ -10,11 +10,23 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 21:44（北京时间）：JEV-03唯一task0原始起点闭环已提交（Codex，运行中）
+
+- 同6b4ce13/f03ba506冻结源、stage episode1，监管4079377、run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_all_20260929_episode1_v1`；启动器已核两新gate，3600s总上限。正在权重身份/观察服务启动阶段，实际JeV动作与官方结果均待，不能以启动回执冒充闭环通过。
+- 任务TRAIN138 seed0、0专家前缀，Jev全策略选择/27B仅观察，原64决策/2048controls/2400s动作、192 Jev/151 observer请求、GPU1共置保持；gate3七件回执/视频正在取回，不训练、不追加第二条，不改运行源与队友作业。
+- 21:46 gate3七件文件也已双端SHA核同，result `d5cbc69b…77557ef1`/video `0374d183…6a57a3f5`；本人查看头部/腕部抽帧，场景与task0不同且图像正常。完整本地证据`artifacts/jev-control-20260929/all_decisions/gate3`。episode模型身份核验启动中，未以0观测计失败。
+
+### 2026-09-29 21:43（北京时间）：JEV-03两工程门通过，准备唯一Jev闭环（Codex）
+
+- 新gate3同6b4ce13 completed、actor exit0：1099.388s总/565.398s动作，24检查（19 TARGET_REACHED/4 GRIPPER_COMMAND_COMPLETED/1安全预检拒绝），全部freshness过、gate_ok=true/无失败；440controls/112同步采集，native SHA `f3545b76…fadc8cad`，清理0.381s。0模型/训练，不是task3任务成功。
+- gate0/gate3新source门均通过；下一仅一次task0 TRAIN138/seed0原始起点，Jev全策略选择、27B只感知，仍≤64决策/2048controls/2400s动作/3600s总、Jev192/observer151请求。新run `jev_all_20260929_episode1_v1`，GPU1共置、不热改源/环境、不动队友、不追加第二条。
+
 ### 2026-09-29 21:25（北京时间）：JEV-03 gate3唯一启动（Codex，运行中）
 
 - 同冻结6b4ce13，新run `jev_all_20260929_gate3_v1`、监管4073456，task3 TRAIN242/seed0、GPU1/CPU88–91，原24检查/1536controls/1800s总上限；实际监管actor_running、原生constructing_application，尚无动作门结果。
 - gate0已完成且启动器新源/资源/前门验证通过；本地归档在`/home/wsy/behavior/artifacts/jev-control-20260929/all_decisions/gate0/`进行中。episode1仍未提交，通过gate3才运行；0新模型/训练，不改队友或运行源码。
 - 21:27 gate0七件结果/manifest/native/steps/video/监管/启动回执已双端SHA核同，14.6s视频（省略等待）抽帧本人已看；无图像异常，工程结果不推导抓取/官方成功。gate3仍loading_scene、监管正常。
+- 21:34 gate3冷启动后native_profile_validated，reset/load242/reset均completed、physical GPU1正确；即将进入24项动作检查，尚无最终gate结果，不提前计任务成功。
 
 ### 2026-09-29 21:24（北京时间）：JEV-03 gate0完整通过，接续gate3（Codex）
 

@@ -22,7 +22,7 @@
   "training_updates": 0,
   "full_task_success_rate": null,
   "simulation_status_at_offline_probe": "not_started_robo_ssh_forward_unavailable",
-  "simulation_progress_note": "SSH recovered. JEV-03 gate0 passed, gate3 running at 2026-09-29 21:27 Asia/Shanghai; no new task-success result yet. See companion Markdown and docs/plan.md. Other numbers in this JSON describe only the completed offline probe.",
+  "simulation_progress_note": "SSH recovered. JEV-03 gate0/gate3 passed; unique episode1 submitted at 2026-09-29 21:44 Asia/Shanghai, no task result yet. See companion Markdown and docs/plan.md. Other numbers in this JSON describe only the completed offline probe.",
   "tests": {"semantic_robot": {"run": 785, "skipped": 5, "failures": 0, "errors": 0, "seconds": 28.847}},
   "other_test_limitations": "Three historical-launcher failures and missing pytest reproduced unchanged on fec5d79; not claimed as passing."
 }
