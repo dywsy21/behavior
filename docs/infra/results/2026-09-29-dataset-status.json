@@ -1,0 +1,151 @@
+{
+  "checked_utc": "2026-09-29T13:52:39.598647+00:00",
+  "root": "/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master",
+  "scope": {
+    "repo": "behavior-1k/2026-challenge-demos",
+    "revision": "4f50b44796641a4d526a19d9aeadc8aa51e2f2c2",
+    "video_mode": "rgb"
+  },
+  "totals": {
+    "expected_files": 26350,
+    "expected_bytes": 1077039763530,
+    "size_matched_files": 26012,
+    "size_matched_bytes": 1012892726380,
+    "missing_files": 337,
+    "wrong_size_files": 1,
+    "present_bytes": 1012892728940,
+    "remaining_expected_bytes": 64147037150
+  },
+  "by_category": {
+    "data": {
+      "expected_files": 955,
+      "expected_bytes": 74558696633,
+      "size_matched_files": 955,
+      "size_matched_bytes": 74558696633,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 74558696633
+    },
+    "meta": {
+      "expected_files": 104,
+      "expected_bytes": 5977742,
+      "size_matched_files": 104,
+      "size_matched_bytes": 5977742,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 5977742
+    },
+    "videos/observation.rgb.left_realsense_link_camera_0": {
+      "expected_files": 1117,
+      "expected_bytes": 215852639464,
+      "size_matched_files": 1117,
+      "size_matched_bytes": 215852639464,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 215852639464
+    },
+    "videos/observation.rgb.right_realsense_link_camera_0": {
+      "expected_files": 1119,
+      "expected_bytes": 216418530281,
+      "size_matched_files": 1119,
+      "size_matched_bytes": 216418530281,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 216418530281
+    },
+    "videos/observation.rgb.zed_link_camera_0": {
+      "expected_files": 3050,
+      "expected_bytes": 569990749398,
+      "size_matched_files": 2713,
+      "size_matched_bytes": 505843714752,
+      "missing_files": 337,
+      "wrong_size_files": 0,
+      "present_bytes": 505843714752
+    },
+    ".gitattributes": {
+      "expected_files": 1,
+      "expected_bytes": 2504,
+      "size_matched_files": 0,
+      "size_matched_bytes": 0,
+      "missing_files": 0,
+      "wrong_size_files": 1,
+      "present_bytes": 2560
+    },
+    "LICENSE": {
+      "expected_files": 1,
+      "expected_bytes": 1081,
+      "size_matched_files": 1,
+      "size_matched_bytes": 1081,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 1081
+    },
+    "README.md": {
+      "expected_files": 1,
+      "expected_bytes": 1506,
+      "size_matched_files": 1,
+      "size_matched_bytes": 1506,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 1506
+    },
+    "annotations": {
+      "expected_files": 20002,
+      "expected_bytes": 213164921,
+      "size_matched_files": 20002,
+      "size_matched_bytes": 213164921,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 213164921
+    }
+  },
+  "missing_examples": [
+    "videos/observation.rgb.zed_link_camera_0/chunk-084/file-028.mp4",
+    "videos/observation.rgb.zed_link_camera_0/chunk-084/file-029.mp4",
+    "videos/observation.rgb.zed_link_camera_0/chunk-084/file-030.mp4",
+    "videos/observation.rgb.zed_link_camera_0/chunk-085/file-000.mp4",
+    "videos/observation.rgb.zed_link_camera_0/chunk-085/file-001.mp4",
+    "videos/observation.rgb.zed_link_camera_0/chunk-085/file-002.mp4",
+    "videos/observation.rgb.zed_link_camera_0/chunk-085/file-003.mp4",
+    "videos/observation.rgb.zed_link_camera_0/chunk-085/file-004.mp4",
+    "videos/observation.rgb.zed_link_camera_0/chunk-085/file-005.mp4",
+    "videos/observation.rgb.zed_link_camera_0/chunk-085/file-006.mp4"
+  ],
+  "wrong_size_examples": [
+    {
+      "path": ".gitattributes",
+      "actual": 2560,
+      "expected": 2504
+    }
+  ],
+  "free_bytes": 4439066804224,
+  "verification": "manifest paths and exact sizes only; no new full-file content hash pass",
+  "owner": "Codex / INFRA-A800-STATUS",
+  "mode": "read_only_status_audit",
+  "runtime": {
+    "host": "lc2/a800-2",
+    "source": "ModelScope fduTristin/2026-challenge-demos@master",
+    "pid": 1032615,
+    "tmux": "behavior-data",
+    "last_process_check_utc": "2026-09-29T13:53:33+00:00",
+    "downloader_completed_files": 26017,
+    "downloader_total_files": 26350,
+    "downloader_eta": "01:27:38 (estimate, not guarantee)",
+    "job_modified_by_this_audit": false
+  },
+  "connectivity": {
+    "client": "lc-connect v0.1.0",
+    "bind_interface": "eth2",
+    "socks_bind": "127.0.0.1:1080",
+    "http_bind": "127.0.0.1:1081",
+    "system_routes_modified": false,
+    "credentials_saved_in_report": false
+  },
+  "notes": [
+    "Original flat Hugging Face layout is no longer the data root. The later downloader uses a nested ModelScope cache snapshot.",
+    "The size audit finished at the checked_utc timestamp. The later terminal count is newer and includes repository support files; do not conflate it with official-size matches.",
+    "No full content-hash verification was performed, and the old alpha completion receipt is absent.",
+    "One .gitattributes file differs in size (2560 vs 2504 bytes); data/video files present at audit time match manifest sizes.",
+    "No training, downloader restart, data migration, or teammate process termination was performed."
+  ]
+}

@@ -10,6 +10,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 21:53（北京时间）：恢复ec连接，确认数据仍在下载（Codex / INFRA-A800-STATUS）
+
+- 用户最新明确授权重新连接ec cli并查看服务器状态，覆盖之前暂不连接的限制。初次认证通过但隧道超时；实测默认路由经另一VPN网卡，单进程绑定可用`eth2`后lc-connect及lc2 SSH恢复。仅监听loopback1080/1081，未修改系统路由、停其他VPN或动队友任务；凭据不写入文档/Git。
+- 发现后续下载已切换到ModelScope `fduTristin/2026-challenge-demos@master`：lc2 tmux`behavior-data`、PID1032615持续运行，21:53终端26,017/26,350，ETA约1:27（仅瞬时估计）。原alpha v5和后续hf-mirror续跑均未有complete回执，不再沿用旧“alpha运行中”的状态；本轮没有重启/接管下载。
+- 对固定官方RGB清单26,350路径逐项stat：21:52快照26,012件大小匹配、1,012,892,726,380B/1,077,039,763,530B，**94.044%字节**；337个头部RGB视频尚缺，约64.147GB。955动作Parquet、20,002标注、104元数据、1117左腕/1119右腕视频全部存在且大小匹配；另`.gitattributes`为2560而非2504B。未新做全内容hash，不能称完整官方校验通过。
+- 真实数据根变为`/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master`，外层只是cache_dir；训练reader不能直接沿用旧平铺根。小体积证据见[状态JSON](infra/results/2026-09-29-dataset-status.json)，目录/团队/集群文档同步。下一待当前下载自然完成，再做官方内容身份校验与训练根配置核对；本轮仅状态检查，未创建监控或启动训练。
+
 ### 2026-09-29 15:10（北京时间）：逐loss梯度与训练顺序提案完成（Codex / PLAN-MEM100-GRAD）
 
 - 已写[梯度与训练设计](experiments/2026-09-29-memlite-gradient-training-design.md)，覆盖H/O/低层LoRA/AE参数归属、AR字段加权、FM→KV→LoRA、反馈头detach/联合两阶段、离散技能/记忆时间边界、独立optimizer和闭环纠正流程；五份实际核查源码路径/SHA均登记。visualize按静态结构选Mermaid说明，不生成交互网页或改模型。

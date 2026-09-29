@@ -4,7 +4,13 @@
 
 ## 当前可用入口
 
-训练基础环境、四节点共享路径、真实RGB reader和前三节点全部24卡烟测已通过；**完整1.077TB数据仍在下载，没有启动正式训练**。共享env当前editable源码固定`a5c9821`，四节点不额外设置PYTHONPATH时也均导入同一路径：
+**2026-09-29 21:53北京时间只读复查：数据尚未下完。** 后续任务已改ModelScope `fduTristin/2026-challenge-demos@master`，lc2 tmux`behavior-data`/PID1032615运行中；21:52逐路径/大小核约1.013/1.077TB（94.044%），尚缺337段头部RGB约64.147GB，21:53终端26,017/26,350且仍推进。动作/标注/meta/双腕RGB已按大小齐全，但未重做全内容hash；`.gitattributes`有一处大小不同。状态证据见[JSON](results/2026-09-29-dataset-status.json)。
+
+真实数据根现在是`/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master`。不要把ModelScope的外层cache_dir当旧HF平铺数据根。下载完成后须按固定官方manifest核内容身份，再核reader根；本轮未改配置、未重启下载或训练。原alpha/后续hf-mirror任务无complete且已退出，下文9/27下载进展只作历史证据，不是实时状态。
+
+本次lc-connect认证通过后，默认底层socket走另一VPN网卡超时；实测`curl --interface eth2`可达，再仅给lc-connect加`--bind-interface eth2 --disable-multi-line`恢复，SOCKS/HTTP仍只绑定loopback1080/1081。没有修改系统路由/其他VPN；网卡名是本机本次观测，不应在别的机器盲用。凭据只交互输入，不写本文件。
+
+9/27已验收的训练基础环境、四节点共享路径、真实RGB reader和前三节点24卡烟测保留；**没有据本次状态检查启动正式训练，也未重新核验四节点环境**。9/27共享env editable源码固定`a5c9821`，当时四节点不额外设置PYTHONPATH时均导入同一路径：
 
 ```bash
 cd /data/workspace/wsy/behavior2026/src/infra-a5c9821
@@ -16,7 +22,7 @@ source scripts/infra/activate_a800_training.sh
 
 数据配置：`configs/data/behavior2026_r1pro_rgb.yaml`，100任务、三RGB、本地只读禁止隐式Hub补齐、沿用23D原动作/61D原状态映射。正式训练前还要完整下载hash回执、顶层Mixture首样本、选定checkpoint/配方/预算；不把下方单episode reader门当完整训练step。没有新下载模型权重，`models/`是预留目录。
 
-下载已切alpha镜像直连v5：lc2 `tmux ls`，日志`logs/dataset-rgb-alpha-v5.log`，回执`runs/dataset_rgb_alpha_20260927_v5/`。完成只认该run的`complete.json`且`video_mode=rgb`、26,350件全部校验，不按进程存在或文件数百分比当字节进度。
+历史alpha镜像v5日志`logs/dataset-rgb-alpha-v5.log`、回执`runs/dataset_rgb_alpha_20260927_v5/`保留。该旧run未完成，不能用它判断新ModelScope作业；新数据需独立对照固定官方RGB清单核路径/大小/内容，不按进程存在或文件数百分比当字节进度。
 
 ## 范围与安全
 

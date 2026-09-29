@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-29 21:53（北京时间）Codex / INFRA-A800-STATUS按用户最新授权恢复ec并只读检查lc2：后续ModelScope下载PID1032615/tmux`behavior-data`仍运行，约94.0%字节、余64.1GB头部RGB；旧alpha回执不是当前任务。动作/标注/meta/双腕RGB按大小已齐，内容hash未全验；实际snapshot根见SERVER_LAYOUT及[证据](infra/results/2026-09-29-dataset-status.json)。不更改数据/RL owner、不接管下载、不启动训练；待下载完成后核官方SHA及数据根，不将终端99%件数当完整数据准入。
+
 2026-09-29 15:10（北京时间）Codex / PLAN-MEM100-GRAD完成本地高低层梯度路径核查，形成[训练与梯度补充设计](experiments/2026-09-29-memlite-gradient-training-design.md)：高低层独立SFT可并行、低层AE＋LoRA联合、反馈头固定高层热身后才考虑高层内部联合，闭环按同状态纠正数据协同。更正旧提案“字段独立归一”及0.25可直接用于完整outcome模式的口径。新增准入依赖为逐loss梯度/optimizer覆盖、稀疏反馈8rank归一和高层版本绑定校准；均待实施，不更改队友数据/RL职责，不分配节点或启动作业。本轮未连接任何服务器或VPN。
 
 2026-09-27 16:54（北京时间）Codex / PLAN-MEM100完成[百任务训练讨论提案](experiments/2026-09-27-memlite-100task-training-design.md)及34/33/33[主任务分组草案](experiments/2026-09-27-memlite-100task-partition-draft.json)，已核官方全部20k小metadata和robo旧A4/B-final配置/回执；不是新训练授权、标注发布或最优分组结论。建议共享高层/共同低层起点及跨组正常/纠正数据；现有数据/RL owner不变，未给任何节点分配实际作业。下一须确认提案、整合后期MEM-Lite源码与35技能协议、校验旧新split/归一化、完成新标签QA与8卡准入。用户本轮明确暂不连接lc1–lc4、不重连lc-connect/ec cli/VPN，保护队友会话；仅robo允许只读核查，A80016:12下载状态不冒充此刻实测。
