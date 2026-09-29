@@ -23,6 +23,14 @@ Owner Codex；2026-09-28 22:14北京时间。用户指定`user@10.162.152.173`�
 
 ## 已验证的A100仿真参考
 
+### 09-29 12:39：资产准备登记（与GPU测速分开）
+
+robo实际资产VERSION为behavior-1k-assets **3.9.0**、robot-assets **3.8.2**，与SDK26f2c7常量吻合。官方HF endpoint在新机不可达，hf-mirror API/固定revision文件可达；固定仓库revision `9f0d57d465726976ed98138d3f8b8ca3e2186775` 和三LFS SHA/大小写入`rtx_assets.py`。镜像提供下载，不把镜像元数据等同于与robo运行资产完全一致；完成后仍需关键场景/实例/robot依赖实际核同。
+
+一次独立CPU资产准备≤7200秒/1核/0GPU，仅三公共归档共32,207,221,278B（约30GiB），不下载演示RGB/depth/raw或模型。独立`ROOT/datasets`与`cache/asset_zips`、`runs/assets_v1`，新路径不覆盖、全文件SHA后才解压、拒绝路径穿越/符号链接/异常膨胀，全程盘余量≥200GiB。原下载/未完文件失败保留，不自动删除或重启预算。密钥不从公共仓库获取/不入Git；后续只在已授权两机间私下复用原有效资源访问配置。GPU/仿真测量仍未放行。
+
+原legacy factory/runtime/chunk/trace四源码已按原字节及SHA纳入`rtx_legacy/`，只用于Git部署目标机；原robo活跃源无修改。新机路径/显卡适配与CPU检查尚待，不能拿源码复制当仿真已跑通。
+
 原不可变证据：robo `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_v3/throughput.json`；2026-09-28 22:10再次只读核对。两个独立常驻sim、TRAIN1/138各128个原演示控制，共256控制，同reset/动作序列，chunk16后读取观测：
 
 | 项目 | 实际控制 | 秒 | 控制/秒 |

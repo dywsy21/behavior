@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 12:39（北京时间）：RTX固定资产准备与legacy依赖Git化（Codex / PERF-RTX-RL）
+
+- 已只读核robo资产3.9.0/robot3.8.2。新机HF直连失败但镜像固定revision可达，1MiB range真实206/3.17s（含连接，不外推稳态）；三归档大小/SHA已写`rtx_assets.py`，新独立1CPU/2h/0GPU/≥200GiB reserve/约30GiB下载，尚未launch。官方版本与镜像完整hash后仍需关键运行资产双端匹配，不把下载当准入。
+- 原factory/runtime/chunk/trace四源码通过apply_patch纳入`rtx_legacy/`，四SHA与robo原件全同，最小init不导出无关serving组件；新机用Git同步，原robo文件不动。环境bootstrap仍在官方SDK fetch，新final评测仍初始化；无RTX速度或完整新SR可报。
+
 ### 2026-09-29 12:34（北京时间）：E2固定最终评测恢复已提交（Codex / RL-G05-50K-E2）
 
 - 831de53真实MODEL_PY导入及完整CPU审计通过：基线25,792＋TRAIN23,166＝48,958逐条物理账同，旧进程均退出；原基线、父/94-update delta、实例SHA核同。新`e2_final_recovery_v1`唯一supervisor3999475已提交，正在加载/初始化；最终SR尚未产生，不把launch当完成。
