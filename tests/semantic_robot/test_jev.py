@@ -144,6 +144,20 @@ class ClientTests(unittest.TestCase):
             c.evaluate({"too_big": "x" * 100_001}, q)
         self.assertEqual(c.calls, 0)
 
+    def test_native_two_decimal_probability_mass_kept_not_renormalized(self):
+        q = {"q": choice("Pick", {str(i): "option" for i in range(8)})}
+        value = answer(q)
+        probs = {str(i): p for i, p in enumerate((.80, .10, .08, .01, 0., 0., 0., 0.))}
+        value["answers"]["q"]["probabilities"] = probs
+        result = validate_response(value, q, MODEL)
+        self.assertEqual(result["answers"]["q"]["probabilities"], probs)
+        self.assertFalse(result["probability_validation"]["q"]["locally_renormalized"])
+        self.assertAlmostEqual(result["probability_validation"]["q"]["raw_probability_sum"], .99)
+        for bad in (.75, .80333):
+            value["answers"]["q"]["probabilities"]["0"] = bad
+            with self.assertRaises(JevError):
+                validate_response(value, q, MODEL)
+
     def test_private_file_and_env(self):
         with tempfile.TemporaryDirectory() as root:
             path = Path(root) / "key"

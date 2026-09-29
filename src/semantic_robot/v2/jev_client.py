@@ -81,6 +81,22 @@ def probability(value):
     return type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1
 
 
+def distribution_receipt(probs):
+    """Native API has returned two-decimal probabilities summing to .99.
+
+    Preserve raw values/argmax. Permit at most two percentage points ONLY for
+    values on the .01 grid, further bounded by their rounding envelope. This is
+    transport compatibility, never a physical-success or confidence gate.
+    """
+    valid = all(probability(p) for p in probs.values())
+    quantized = valid and all(abs(p * 100 - round(p * 100)) <= 1e-9 for p in probs.values())
+    mass = sum(probs.values()) if valid else None
+    tolerance = min(.02, .005 * len(probs)) + 1e-9 if quantized else 1e-6
+    return {"raw_probability_sum": mass, "two_decimal_grid": quantized,
+            "mass_tolerance": tolerance, "locally_renormalized": False,
+            "passed": valid and abs(mass - 1) <= tolerance}
+
+
 def validate_response(value, questions, model):
     if not isinstance(value, dict) or value.get("model") != model:
         raise JevError("Unexpected TypeSafe model identity")
@@ -97,8 +113,7 @@ def validate_response(value, questions, model):
             raise JevError("Choice outside current options")
         if not isinstance(probs, dict) or set(probs) != set(question["criteria"]):
             raise JevError("Choice probability options mismatch")
-        if (not all(probability(p) for p in probs.values()) or
-                abs(sum(probs.values()) - 1) > .005 or
+        if (not distribution_receipt(probs)["passed"] or
                 not probability(answer.get("confidence"))):
             # Numeric-only diagnostics, never echoed server strings/headers.
             finite_probs = all(type(p) in (int, float) and math.isfinite(p) for p in probs.values())
@@ -118,7 +133,8 @@ def validate_response(value, questions, model):
     # Explicitly select fields; never persist arbitrary echoed server content.
     return {"model": model, "answers": {
         name: {k: answers[name][k] for k in ("type", "choice", "probabilities", "confidence")}
-        for name in questions}, "usage": {k: usage[k] for k in ("input_tokens", "output_tokens")}}
+        for name in questions}, "usage": {k: usage[k] for k in ("input_tokens", "output_tokens")},
+        "probability_validation": {name: distribution_receipt(answers[name]["probabilities"]) for name in questions}}
 
 
 class JevClient:
