@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-29 16:24（北京时间）Codex / JEV-01接口与离线阶段完成：`feat/jev-control-20260929`/代码df50c40，最终6旧状态真实API均输出合法非HOLD动作，选择中位1.314s；757回归过（5skip），总39/40请求、0训练/仿真/物理动作。首轮全HOLD与概率精度失败保留，不能称完整任务效果。后续owner仍本线程：新版本两task工程门→有界单task闭环；未分配/启动GPU作业，其他成员与A800进度不改。旧VLM agentic训练推进暂停，视觉可仅供Jev感知；完整证据见[报告](experiments/2026-09-29-jev-control.md)。
+
 2026-09-29 15:55（北京时间）Codex / JEV-01：用户暂停本线程 VLM agentic 控制，改做 Jev typed-decision 接入现有 grounded harness；旧 H84/H85 不继续自动开训，数据/旧未完成状态保留。owner 本线程 Codex，独立 `feat/jev-control-20260929`；先 CPU＋最多40次API/15分钟离线验证，0新GPU训练/仿真重置。视觉仅负责观测、数值与安全检查仍代码负责，禁止 simulator truth 注入 actor；其他成员数据/RL/A800作业与职责不变。闭环预算待离线准入与资源实查后登记，不连接 lc1–lc4/VPN。
 
 2026-09-29 15:10（北京时间）Codex / PLAN-MEM100-GRAD完成本地高低层梯度路径核查，形成[训练与梯度补充设计](experiments/2026-09-29-memlite-gradient-training-design.md)：高低层独立SFT可并行、低层AE＋LoRA联合、反馈头固定高层热身后才考虑高层内部联合，闭环按同状态纠正数据协同。更正旧提案“字段独立归一”及0.25可直接用于完整outcome模式的口径。新增准入依赖为逐loss梯度/optimizer覆盖、稀疏反馈8rank归一和高层版本绑定校准；均待实施，不更改队友数据/RL职责，不分配节点或启动作业。本轮未连接任何服务器或VPN。

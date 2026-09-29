@@ -1,0 +1,149 @@
+{
+  "schema": "jev-control-pilot-summary-v1",
+  "status": "offline_decision_trial_complete_simulator_not_run",
+  "code_commit": "df50c4071ecfb4395dbdba1ce92a41d58c78ed73",
+  "run_result_path": "/home/wsy/behavior/artifacts/jev-control-20260929/saved_v3/result.json",
+  "run_result_sha256": "6219c2113d54f56e4d7b29477f7e2f010cadd71f536641ba0664bf19865d818a",
+  "model": "jev-1.13.0",
+  "api_requests_final_run": 13,
+  "api_requests_total_with_review_dummy": 39,
+  "api_requests_real_credential_total": 38,
+  "new_sim_resets": 0,
+  "new_controls": 0,
+  "training_updates": 0,
+  "valid_nonhold_choices": 6,
+  "tested_states": 6,
+  "not_a_task_success_rate": true,
+  "median_selector_s": 1.31410897600108,
+  "historical_vlm_median_selector_s_not_same_time_or_modality": 4.1706599816679955,
+  "final_run_known_input_tokens": 83575,
+  "final_run_known_input_cost_usd": 0.00351015,
+  "tests": {
+    "run": 757,
+    "skipped": 5,
+    "outcome": "OK",
+    "seconds": 29.504
+  },
+  "rows": [
+    {
+      "source_request_sha256": "4a6d98a8b79d807c934bec43d505e75481a82a0b071007e359940452441e5356",
+      "source": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_032/action.json",
+      "stage": "APPROACH",
+      "intent": "approach",
+      "action": {
+        "part": "base",
+        "move": "yaw_plus",
+        "scale": "coarse",
+        "frame": "base"
+      },
+      "selector_wall_s": 2.1582792199988035,
+      "historical_vlm_selector_wall_s": 8.232678387314081,
+      "confidence_not_success": 0.36,
+      "predicted_distance_gain_m": 0.0065,
+      "inspection_prediction": null,
+      "executed": false
+    },
+    {
+      "source_request_sha256": "d59eefb36be9423e27c62fbf6e8e2212d45eadd7db17433aa55827932896315f",
+      "source": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_048/action.json",
+      "stage": "APPROACH",
+      "intent": "approach",
+      "action": {
+        "part": "base",
+        "move": "forward",
+        "scale": "fine",
+        "frame": "base"
+      },
+      "selector_wall_s": 1.165984370996739,
+      "historical_vlm_selector_wall_s": 4.151953422930092,
+      "confidence_not_success": 0.22,
+      "predicted_distance_gain_m": 0.0492,
+      "inspection_prediction": null,
+      "executed": false
+    },
+    {
+      "source_request_sha256": "71e0b5ce94b0b222f9bc2b5a33029686409468d8497856099b0ed3ad66e0a57c",
+      "source": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_068/action.json",
+      "stage": "APPROACH",
+      "intent": "approach",
+      "action": {
+        "part": "base",
+        "move": "left",
+        "scale": "fine",
+        "frame": "base"
+      },
+      "selector_wall_s": 2.9791075729990553,
+      "historical_vlm_selector_wall_s": 4.189366540405899,
+      "confidence_not_success": 0.58,
+      "predicted_distance_gain_m": 0.0191,
+      "inspection_prediction": null,
+      "executed": false
+    },
+    {
+      "source_request_sha256": "77bcb28c0cf044697fb36d84bd70991d5ea4f9dc0e3cc823cf8cb2aede4c579b",
+      "source": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h38_fullstart_bundle/radio_h38_fullstart/decision_101/action.json",
+      "stage": "APPROACH",
+      "intent": "approach",
+      "action": {
+        "part": "torso",
+        "move": "down",
+        "scale": "micro",
+        "frame": "base"
+      },
+      "selector_wall_s": 1.0547361499993713,
+      "historical_vlm_selector_wall_s": 3.8123424132354558,
+      "confidence_not_success": 0.59,
+      "predicted_distance_gain_m": 0.0004,
+      "inspection_prediction": null,
+      "executed": false
+    },
+    {
+      "source_request_sha256": "677316569782832103202bf8e2c94ba49f876618037ae809930e8cb34f74c643",
+      "source": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/h25_fullstart_bundle/radio_h25_fullstart/decision_160/action.json",
+      "stage": "ALIGN",
+      "intent": "approach",
+      "action": {
+        "part": "right",
+        "move": "forward",
+        "scale": "fine",
+        "frame": "base"
+      },
+      "selector_wall_s": 1.3041712090016517,
+      "historical_vlm_selector_wall_s": 3.972421429120004,
+      "confidence_not_success": 0.48,
+      "predicted_distance_gain_m": 0.0073,
+      "inspection_prediction": null,
+      "executed": false
+    },
+    {
+      "source_request_sha256": "6a64a4ec282700404ed412f95cb98080ddb092c23fdc20910329de7f6efacb07",
+      "source": "/home/wsy/behavior/artifacts/agentic-vlm-goal-20260918/matched_failed_bundle/radio_h10_matched/decision_004/action.json",
+      "stage": "SEARCH",
+      "intent": "inspect",
+      "action": {
+        "part": "right",
+        "move": "forward",
+        "scale": "coarse",
+        "frame": "base"
+      },
+      "selector_wall_s": 1.3240467430005083,
+      "historical_vlm_selector_wall_s": 5.442034634761512,
+      "confidence_not_success": 0.22,
+      "predicted_distance_gain_m": null,
+      "inspection_prediction": {
+        "observer_camera": "head",
+        "bearing_after_deg": 51.0756,
+        "pointing_gain_deg": 1.7555,
+        "in_image_bounds": true,
+        "range_m": 0.9043,
+        "prior_anchor_uv": [
+          0.7457,
+          0.9672
+        ],
+        "side_separation_from_head_deg": 0.0,
+        "relative_pose_novelty_margin": 3.7338
+      },
+      "executed": false
+    }
+  ]
+}
