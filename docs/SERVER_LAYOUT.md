@@ -22,6 +22,8 @@
 
 ## 原robo记录（保留）
 
+**2026-09-29 15:12北京时间E3实际更新：** 原监管4014322/learner4014329、TRAIN sims4014591/4014604继续，`e3_dense_v1`首批updating、actor96/critic20。`curriculum_auto_000.json`为无需human_release的真实准入，`probability_gate.json`为GPU概率/梯度门，`reward_audit_000.json`为1362自主控制奖励审计，`learner.jsonl`记录候选与真实accepted更新；尚未有新batch delta/最终SR。只读这些文件查状态，不pull活跃ef99d92源码。
+
 **2026-09-29 14:52北京时间E3启动：** 上述新`e3_dense_v1`已唯一监管4014322/learner4014329运行，UTC06:51:43、源码ef99d92；模型加载阶段。`manifest/launch_claim/supervisor.json`已产生，后续`status.json`和`learner.stdout.log`为状态；原source/旧权重不热改。精确预算/自动课程和奖励见[E3登记](experiments/2026-09-29-g05-50k-rl-e3.md)。
 
 **2026-09-29 14:50北京时间E3部署：** 新独立源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_dense_ef99d92`固定ef99d92d0f718c12a1d4f54f54906c627ea0ba59，准备`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_dense_v1`与runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e3_dense_v1`。续E2 94-update、TRAIN自动课程；`curriculum_auto_NNN.json`取代等待human_release，`reward_binding_*.json/reward_audit_*.json`与steps日志记录奖励物理来源。此时身份prepare中、未GPU启动；原E2所有目录保持。

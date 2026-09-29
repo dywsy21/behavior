@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 15:12（北京时间）：E3新学习率两步真实接受，交付无人值守续训（Codex / RL-G05-50K-E3）
+
+- 首批两TRAIN回合共1362自主控制/3534含前缀控制、0 pending，官方成功1（来自更新前94策略，不是RL提升）；`reward_audit_000.json`核1362控制均有状态相关potential变化，official reward1、signed shaping合计−0.06828938，actor观察不含奖励。负和来自有正有负的差分，不改成只给正奖励。
+- `learner.jsonl`首次两步actor95/96均直接接受候选AE1e-7/noise1e-6，未回溯；整批路径mean KL .00115825/.00485644、max .02286556/.08018479，均满足新.02/.1双阈值，AE分别约6.05亿/6.04亿标量实际变化。critic16→20，首批仍updating、尚未保存新batch delta，不能把2步称整批完成。
+- 自动课程/真实概率梯度/密集奖励接线及有效更新已通过；原唯一监管继续，8h TRAIN/12h总限和固定六对final不变，无人工放行等待，无完整新SR结论。代码ef99d92冻结；本地pull/fetch再次无新团队main（33677bd）。下一步按原作业完成批次/保存delta/同六对官方评测，不追加运行或热改源码。
+
 ### 2026-09-29 15:06（北京时间）：E3自动起点/真实FM门通过，已自主采样（Codex / RL-G05-50K-E3）
 
 - `curriculum_auto_000.json`两TRAIN前缀1076/1096均automatic accepted，无human_release文件/人工签名/等待。原head720、双wrist480三RGB/30Hz/state和物理时钟通过；每例从合法非terminal起点继续，actor仍94，不能称RL已改善。
