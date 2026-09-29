@@ -139,7 +139,7 @@ def validate_response(value, questions, model):
 
 class JevClient:
     def __init__(self, *, key_file=None, api_key=None, max_calls=40, timeout=20.0,
-                 model=MODEL, opener=None):
+                 model=MODEL, opener=None, journal=None):
         if type(max_calls) is not int or max_calls < 1 or not 0 < timeout <= 60:
             raise ValueError("Finite request count and 0..60s timeout required")
         if model != MODEL:
@@ -154,6 +154,12 @@ class JevClient:
         self.validated_responses = 0
         self.deadline, self.last_call = None, None
         self._opener = opener if opener is not None else build_opener(NoRedirect())
+        if journal is not None and not callable(journal): raise ValueError("Callable request journal required")
+        self._journal = journal
+
+    def record(self, event, **fields):
+        if self._journal is not None:
+            self._journal({"call":self.calls,"model":self.model,"event":event,**fields})
 
     @property
     def identity(self):
@@ -184,6 +190,7 @@ class JevClient:
                           "Content-Type": "application/json", "Accept": "application/json"}, method="POST")
         self.calls += 1  # failed/timeout requests consume budget too
         started = time.perf_counter()
+        self.record("attempt", request_bytes=len(raw), question_names=list(questions))
         try:
             with self._opener.open(request, timeout=min(self.timeout, left) if left is not None else self.timeout) as response:
                 if response.geturl() != ENDPOINT:
@@ -195,13 +202,19 @@ class JevClient:
                 raise JevError("TypeSafe response contained credential; receipt suppressed")
             result = validate_response(strict_response(data), questions, self.model)
         except HTTPError as exc:
+            self.record("http_error", http_status=exc.code)
             raise JevError(f"TypeSafe HTTP {exc.code}; no retry or actuation") from None
         except (URLError, TimeoutError, OSError, HTTPException):
+            self.record("network_error")
             raise JevError("TypeSafe network/timeout failure; no retry or actuation") from None
+        except (JevError, ValueError):
+            self.record("rejected_response")
+            raise
         self.input_tokens += result["usage"]["input_tokens"]
         self.output_tokens += result["usage"]["output_tokens"]
         self.validated_responses += 1
         result["roundtrip_s"] = time.perf_counter() - started
+        self.record("validated", usage=result["usage"], roundtrip_s=result["roundtrip_s"])
         # Match the harness receipt convention; no headers/key/raw response.
         self.last_call = {"result": result, "request": {**payload, "images": []}}
         require_time(self.deadline)  # late answers must never authorize motion

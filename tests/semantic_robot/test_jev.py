@@ -76,6 +76,18 @@ def context():
 
 
 class ClientTests(unittest.TestCase):
+    def test_durable_attempt_and_result_accounting_has_no_credentials(self):
+        records=[]
+        c=client(journal=records.append)
+        c.evaluate({}, {"q":choice("Pick",{"a":"A","b":"B"})})
+        self.assertEqual([r['event'] for r in records],['attempt','validated'])
+        self.assertNotIn(KEY,json.dumps(records))
+        records=[]
+        opener=SimpleNamespace(open=lambda *a,**kw:(_ for _ in ()).throw(URLError(KEY)))
+        with self.assertRaises(JevError): client(opener,journal=records.append).evaluate({}, {"q":choice("Pick",{"a":"A","b":"B"})})
+        self.assertEqual([r['event'] for r in records],['attempt','network_error'])
+        self.assertNotIn(KEY,json.dumps(records))
+
     def test_official_native_endpoint_no_credential_in_receipt(self):
         opener = Opener()
         c = client(opener)

@@ -9,6 +9,7 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import secrets
@@ -150,6 +151,8 @@ def prerequisites(digest):
 
 
 def preflight(base):
+    if 'TYPESAFE_API_KEY' in os.environ:
+        raise ValueError('Use only the private key file; inherited TypeSafe credential environment forbidden')
     code = sync.identity(base)
     from run_v2 import implementation_digest
     digest = implementation_digest()
@@ -163,6 +166,23 @@ def preflight(base):
     return code,digest,prior,before
 
 
+def validate_wall(value,actor):
+    if type(value) not in (int,float) or not math.isfinite(value) or not 0 <= value <= (2405 if actor else 1205):
+        raise ValueError('Action-phase wall budget exceeded or missing')
+
+
+def validate_jev_ledger(rows,result):
+    attempts=[r for r in rows if r.get('event')=='attempt']
+    valid=[r for r in rows if r.get('event')=='validated']
+    n=result['jev_requests']
+    if (len(rows)!=2*n or [(r.get('call'),r.get('event')) for r in rows] !=
+            [(i,event) for i in range(1,n+1) for event in ('attempt','validated')] or
+            any(r.get('model')!='jev-1.13.0' for r in rows) or len(attempts)!=n or len(valid)!=n or
+            sum(r['usage']['input_tokens'] for r in valid)!=result['jev_input_tokens'] or
+            sum(r['usage']['output_tokens'] for r in valid)!=result['jev_output_tokens']):
+        raise ValueError('Jev durable request/response accounting mismatch')
+
+
 def validate_basic(result,digest):
     exact = dict(status='complete',task=3 if STAGE == 'gate3' else 0,physical_gpu=1,
         prefix_controls=0,diagnostic_replay_controls=0,implementation_digest=digest,
@@ -172,6 +192,7 @@ def validate_basic(result,digest):
     exact.update({f.replace('-','_'):True for f in FLAGS})
     if any(type(result.get(k)) is not type(v) or result[k] != v for k,v in exact.items()):
         raise ValueError('Incomplete result or wrong source/profile/controller')
+    validate_wall(result.get('wall_s'),is_actor())
     decisions = result.get('decisions',[])
     if (not isinstance(decisions,list) or not 1 <= len(decisions) <= (96 if is_actor() else 24) or
             type(result.get('controls')) is not int or not 1 <= result['controls'] <= (3072 if is_actor() else 1536)):
@@ -187,6 +208,8 @@ def validate_basic(result,digest):
             not 0 <= result.get('observer_calls',-1) <= OBSERVER_CALLS or
             result.get('jev_requests_without_validated_response') != 0):
         raise ValueError('Incomplete official outcome/API accounting')
+    if is_actor() and result['stop_reason'] == 'JEV_DECISION_STATE_CHANGED':
+        raise ValueError('Frozen-state contract failed; abort evaluation expansion')
 
 
 def validate_completion(base,code,digest):
@@ -215,6 +238,7 @@ def validate_completion(base,code,digest):
                 result['observer_calls'] != len(ledger) or final['calls'] != len(ledger) or
                 result['model_calls'] != result['observer_calls']+result['jev_requests']):
             raise ValueError('Perception-only ledger/accounting mismatch')
+        validate_jev_ledger([json.loads(x) for x in (ROOT/'gate/jev_calls.jsonl').read_text().splitlines()],result)
     native = read(ROOT/'gate/native_profile.json')
     if (native.get('physical_gpu') != 1 or
         [(r['name'],r['instance'],r['status']) for r in native['official_api_events']] !=
@@ -300,6 +324,7 @@ def supervise(base):
     except BaseException as error:
         failure=error;receipt.update(status='failed',error=repr(error))
     finally:
+        cleanup_started = time.monotonic()
         for kind in ('actor','model'):
             if kind not in children: continue
             try: stop_owned_group(children[kind])
@@ -310,6 +335,10 @@ def supervise(base):
             check_resources(receipt['after_exit'],before,{k:p.pid for k,p in children.items()},released=True)
         except BaseException as error:
             failure=failure or error;receipt.update(status='failed',after_exit_error=repr(error))
+        receipt['cleanup_seconds'] = time.monotonic()-cleanup_started
+        if receipt['cleanup_seconds'] > 60:
+            failure=failure or TimeoutError('Cleanup budget exceeded')
+            receipt.update(status='failed',cleanup_overrun=True)
         receipt.update(seconds=time.monotonic()-start,exit_codes={k:p.returncode for k,p in children.items()})
         common.write('supervisor.json',receipt)
         for sig,handler in previous.items(): signal.signal(sig,handler)

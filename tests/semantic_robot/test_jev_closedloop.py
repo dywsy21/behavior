@@ -12,6 +12,40 @@ from native_full_profile import configure_gpu
 
 
 class ClosedLoopTests(unittest.TestCase):
+    def test_valid_abstention_ends_without_fabricating_an_action(self):
+        from run_v2 import select_feasible_action
+        from semantic_robot.v2.jev_client import JevAbstained,JevError
+        manager=SimpleNamespace(stop_reason=None)
+        def abstain(*args): raise JevAbstained('no command selected')
+        policy=SimpleNamespace(act_feasible=abstain,last_call={'result':{'choice':'abstain'}})
+        action,receipt=select_feasible_action(policy,manager,None,None,())
+        self.assertIsNone(action)
+        self.assertEqual(manager.stop_reason,'JEV_ABSTAINED')
+        self.assertEqual(receipt,policy.last_call)
+        def failed(*args):raise JevError('network failure')
+        policy.act_feasible=failed
+        with self.assertRaises(JevError):select_feasible_action(policy,manager,None,None,())
+
+    def test_wall_receipt_finite_and_bounded(self):
+        for actor in (False,True):
+            launch.validate_wall(0.,actor)
+            launch.validate_wall(2405 if actor else 1205,actor)
+            for bad in (None,True,float('nan'),float('inf'),-1,2406 if actor else 1206):
+                with self.assertRaises(ValueError):launch.validate_wall(bad,actor)
+
+    def test_inherited_key_environment_rejected_before_any_other_action(self):
+        with patch.dict(os.environ,{'TYPESAFE_API_KEY':'dummy-do-not-inherit'}):
+            with self.assertRaisesRegex(ValueError,'inherited TypeSafe'):launch.preflight(None)
+
+    def test_separate_durable_jev_ledger(self):
+        rows=[dict(call=1,model='jev-1.13.0',event='attempt'),
+            dict(call=1,model='jev-1.13.0',event='validated',usage=dict(input_tokens=7,output_tokens=2))]
+        result=dict(jev_requests=1,jev_input_tokens=7,jev_output_tokens=2)
+        launch.validate_jev_ledger(rows,result)
+        for bad in (rows[:1],rows[::-1],rows+rows):
+            with self.assertRaises(ValueError):launch.validate_jev_ledger(bad,result)
+        with self.assertRaises(ValueError):launch.validate_jev_ledger(rows,{**result,'jev_input_tokens':8})
+
     def setUp(self):
         self.uuids = launch.gate.scene.supervisor.GPU_UUIDS
         self.before = {u:dict(used_mib=400 if i==1 else 8000,free_mib=80738 if i==1 else 72000,

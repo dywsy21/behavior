@@ -76,6 +76,16 @@ def policy_accounting(policy):
     return result
 
 
+def select_feasible_action(policy, manager, state, bundle, allowed):
+    """A valid Jev abstention ends the episode, not a protocol-error retry."""
+    from semantic_robot.v2.jev_client import JevAbstained
+    try:
+        return policy.act_feasible(manager,state,bundle,allowed)
+    except JevAbstained:
+        manager.stop_reason = "JEV_ABSTAINED"
+        return None, policy.last_call
+
+
 def bounded_gate(grounded=False,multicamera=False,workspace=False):
     actions = [HOLD, Action("right","up"), Action("right","down"),
             Action("left","forward","micro"), Action("left","back","micro"),
@@ -318,8 +328,15 @@ def main():
     if policy is not None and args.controller == "jev":
         from semantic_robot.v2.jev_client import JevClient
         from semantic_robot.v2.jev_policy import JevGroundedPolicy
+        jev_journal = out/"jev_calls.jsonl"
+        with jev_journal.open("x"): pass
+        def record_jev(event):
+            # Only allowlisted accounting, never headers/credentials/errors.
+            with jev_journal.open("a") as stream:
+                stream.write(json.dumps(event,allow_nan=False)+"\n")
+                stream.flush(); os.fsync(stream.fileno())
         policy = JevGroundedPolicy(policy, JevClient(key_file=args.typesafe_key_file,
-            max_calls=args.jev_max_calls, timeout=args.jev_timeout),
+            max_calls=args.jev_max_calls, timeout=args.jev_timeout,journal=record_jev),
             task_id=args.task, task_plan=args.jev_task_plan)
     if policy and args.held_object_inspection and "reference" not in policy.identity.get("finite_choice_kinds",[]):
         raise ValueError("Held inspection requires a text-only reference service")
@@ -751,7 +768,7 @@ def main():
                             write(directory/"candidates.json",manager.candidate_receipt)
                             if manager.stop_reason:
                                 row["stop_reason"]=manager.stop_reason;decisions.append(row);break
-                            action,call=policy.act_feasible(manager,state,bundle,allowed)
+                            action,call=select_feasible_action(policy,manager,state,bundle,allowed)
                             save_call(directory,"action",call)
                             row["selection_source"]=("Jev" if args.controller == "jev" else "VLM")+"_preflighted_relative_held_inspection"
                         else:
@@ -770,7 +787,7 @@ def main():
                             if manager.stop_reason:
                                 row["stop_reason"]=manager.stop_reason;decisions.append(row);break
                         else:
-                            action,call=policy.act_feasible(manager,state,bundle,allowed)
+                            action,call=select_feasible_action(policy,manager,state,bundle,allowed)
                             save_call(directory,"action",call)
                             row["selection_source"]=("Jev" if args.controller == "jev" else "VLM")+"_among_current_preflighted_actions"
                     else:
@@ -784,6 +801,12 @@ def main():
                             row["error"]=pair["reason"];failures.append(row);decisions.append(row);break
                         gate[7],gate[8]=forward,back
                     action = gate[decision]
+                if action is None:
+                    if not manager or manager.stop_reason != "JEV_ABSTAINED":
+                        raise RuntimeError("Missing action without a valid abstention")
+                    row.update(accepted_before_motion=False,stop_reason=manager.stop_reason)
+                    decisions.append(row)
+                    break
                 row["action"] = asdict(action)
                 if stop_before_motion(deadline,controls,row,decisions,manager):break
                 wall = time.perf_counter()

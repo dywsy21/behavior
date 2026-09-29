@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 17:40（北京时间）：JEV-02运行前审查闭合，准备真实门（Codex）
+
+- 独审提出的动作阶段wall核验、60s清理超时、环境key隔离已修；新增只含允许元数据的Jev持久请求账本，与observer账本/结果各自核账。765全回归/29.923s（5skip）及41 native过；再补有效abstain作为无动作策略终止、与真实网络/协议异常区分，36针对测试过，小增量独审中。
+- 旧H75证据支持的freshness/GPU1代码将一起最终冻结。第一次robo部署因该checkout的origin.fetch仅跟踪main而没有取到新commit，**worktree未创建/0仿真**；已显式fetch本实验分支成功，不改其他分支或远端配置。下一新冻结SHA创建独立worktree/CPU回归，唯一启动gate0；之后gate3和actor按原预算依次准入。
+
 ### 2026-09-29 17:32（北京时间）：JEV-02单卡启动与freshness修复完成本地回归（Codex）
 
 - 新有界启动器、显式physical GPU1、两task门/actor同GPU绑定和分开observer/Jev核账已实现；31目标＋761全回归（5skip）＋39原生启动测试过，独审进行中，未启动仿真。实验设计/路径/3次上限见[JEV-02](experiments/2026-09-29-jev-closedloop.md)。
