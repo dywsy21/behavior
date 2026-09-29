@@ -1,0 +1,153 @@
+{
+  "schema": "jev03-simulator-summary-v1",
+  "updated_at": "2026-09-29T22:00:00+08:00",
+  "code_commit": "6b4ce1375f6a27b02b3011384a5845f55aae85b3",
+  "implementation_commit": "2fc92984021db2a1481842e7203435fa4fa97e8e",
+  "implementation_digest": "f03ba5064ddfbd5815da8ea5a88dfc2c0a06e311fe823569ab70e35df23cc695",
+  "run_root": "/mnt/nvme_tmp/robodojo_agentic_20260925",
+  "source_root": "/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_all_6b4ce13",
+  "local_artifacts": "/home/wsy/behavior/artifacts/jev-control-20260929/all_decisions",
+  "training_updates": 0,
+  "gates": [
+    {
+      "stage": "gate0",
+      "run": "jev_all_20260929_gate0_v1",
+      "task": 0,
+      "instance": 138,
+      "split": "train",
+      "seed": 0,
+      "status": "completed",
+      "gate_ok": true,
+      "checks": 24,
+      "executed_checks": 23,
+      "preflight_rejected_checks": 1,
+      "all_freshness_passed": true,
+      "controls": 440,
+      "captures": 112,
+      "reads": 112,
+      "model_calls": 0,
+      "total_seconds": 1122.173729739152,
+      "action_phase_seconds": 567.2997945696115,
+      "cleanup_seconds": 1.8812400195747614,
+      "hashes": {
+        "result.json": "85e9d5f24f5e9a6d174f26f1f3cf16705befadbe54753753b6d0277063dd4cd2",
+        "manifest.json": "7d0f463ff12ce348d9f610134de74971bda83ed8faac656ae5a0f5858980a164",
+        "native_io.jsonl": "1075bcb147fccda3d6aaeed6f62393999c46cf8d1ef659f3e858f0a7f2d39b52",
+        "steps.jsonl": "9a64785970307b799d78d64d66f4b15aec8a2fd2930fbe600818200d6c992e99",
+        "rollout.mp4": "eaf9f19b510efbd5e2bfa7340c38af7367a7e8277fd547cac4adf564e64e1c09",
+        "supervisor.json": "355f9b2d8eb8c6da3e2bbada70a98a13674ff4c31f7eda63a5fc55f121af129d",
+        "launch.json": "ac5402dd6dbf254f21fdc4a87bfb99fbf25a4dda8f9f56ccb266bc211725b05c"
+      }
+    },
+    {
+      "stage": "gate3",
+      "run": "jev_all_20260929_gate3_v1",
+      "task": 3,
+      "instance": 242,
+      "split": "train",
+      "seed": 0,
+      "status": "completed",
+      "gate_ok": true,
+      "checks": 24,
+      "executed_checks": 23,
+      "preflight_rejected_checks": 1,
+      "all_freshness_passed": true,
+      "controls": 440,
+      "captures": 112,
+      "reads": 112,
+      "model_calls": 0,
+      "total_seconds": 1099.3880429398268,
+      "action_phase_seconds": 565.3980009360239,
+      "cleanup_seconds": 0.3813718631863594,
+      "hashes": {
+        "result.json": "d5cbc69bcc7a25237169be5f59f8c1fbee663f84c08108040ed6bff277557ef1",
+        "manifest.json": "4fef8cef950a01f6ee2a989478ebf105b73cf341c616b9480ea5bf0e750b2ac8",
+        "native_io.jsonl": "f3545b76e7ed0e7c0867e2527c31b0f2e3dc32ccf110931914135240fadc8cad",
+        "steps.jsonl": "57461ddcf36bc6828c9d61ae46639627466abbce586fc66326d18a17fd321802",
+        "rollout.mp4": "0374d1835c515615c96bada032415a534e2f4dc823310f5fe4e20aee6a57a3f5",
+        "supervisor.json": "cec926ac05231191a920d72364e7423348c30e8af17818162ac2a5ed759f0a72",
+        "launch.json": "9d52273161ffb4bbe1f0ccbe42e2c1b94391e54800853480643f79a7b2fdd676"
+      }
+    }
+  ],
+  "episode": {
+    "run": "jev_all_20260929_episode1_v1",
+    "task": 0,
+    "task_name": "turning_on_radio",
+    "instance": 138,
+    "split": "train",
+    "seed": 0,
+    "prefix_controls": 0,
+    "diagnostic_replay_controls": 0,
+    "supervisor_status": "failed",
+    "phase": "INITIAL_PLAN",
+    "failure": "JevAbstained('Jev declined the task plan; no action authorized')",
+    "budget": {
+      "max_decisions": 64,
+      "max_controls": 2048,
+      "action_seconds": 2400,
+      "total_seconds": 3600,
+      "jev_requests": 192,
+      "observer_requests": 151
+    },
+    "selected_plan_prefix": [
+      "goal_0"
+    ],
+    "next_selection": "abstain",
+    "next_probabilities": {
+      "goal_1": 0.38,
+      "abstain": 0.62
+    },
+    "confidence": 0.24,
+    "jev_requests": 2,
+    "validated_responses": 2,
+    "observer_calls": 0,
+    "input_tokens": 1224,
+    "output_tokens": 76,
+    "policy_decisions": 0,
+    "policy_controls": 0,
+    "safety_stop_controls": 1,
+    "total_native_controls": 1,
+    "official_success": null,
+    "official_terminal": null,
+    "official_goal_status": null,
+    "decision_ownership_validation_completed": false,
+    "total_seconds": 648.3105508061126,
+    "cleanup_seconds": 0.6859854022040963,
+    "exit_codes": {
+      "actor": 0,
+      "model": -15
+    },
+    "owned_processes_released": true,
+    "video_available": false,
+    "initial_frame_available": true,
+    "hashes": {
+      "failure.json": "f3be91f12a593e11fb3119bb1c72fe706807bfb01136cd191929c85d24f15729",
+      "last_policy_call_before_failure.json": "4cb60701d374b0e77ce566984e7ff9ee508c230e208a9f4ed3be551b80bc3f43",
+      "jev_calls.jsonl": "3a1e72d97ce2732662c1dd915784b6a48517bd32612276ca1959a0c00f514869",
+      "manifest.json": "4b510a4ea90da690a4091a2a211076606930ddc67544ff762a4219cb83daed25",
+      "native_profile.json": "733916636e6dbe8bdf4de5c5cf78a0ead61d9a7cabe0be3975b47c5a55ea41a3",
+      "native_io.jsonl": "b993586e6c80ba89710d0467bb86876d9af35a12ae2ab1b11dca5b87cb1d2d0c",
+      "steps.jsonl": "34017447333651cff3974173090a36b37096c5deaffec634d4802981ab4d7d44",
+      "safety_hold_after_failure.json": "b91c450ce6d653d354d34ce13d54110c4d38d36f40f29d8e0834673802fc3945",
+      "CURRENT_HEAD_RAW.png": "e3d7815e6012d49deb259f48f813e4396cfab59d4e35090e79ad3b326accd066",
+      "supervisor.json": "1e1f711634b5f2d0ce10fd2687bcba5c6db4efe6ea265bf2b572037261e39b96",
+      "launch.json": "50b56b28299fbb4255998d7487212e1fb66810b58954e750cb704da38344e21a"
+    }
+  },
+  "statistics": {
+    "submitted_task_attempts": 1,
+    "task_attempts_with_policy_actuation": 0,
+    "officially_scored_episodes": 0,
+    "confirmed_successes": 0,
+    "full_task_success_rate": null,
+    "note": "Planning abstention before any strategy action. Engineering gates are not task successes. No completed official outcome or qualified Jev-action episode; not an estimate of across-instance success rate."
+  },
+  "confirmed_validation_gap": {
+    "offline_instruction": "Turn on the radio: use the right hand to hold it, the left to press its button.",
+    "live_instruction": "Turn on the radio receiver that's on the table in the living room.",
+    "same_planning_input": false
+  },
+  "suspected_prompt_issue": "Planning asks to order hypothetical future goals, but also says to first obtain the object before acting on its held part. selected_prefix_not_executed may invite an execution-precondition interpretation. The API has no reason field, so this remains an inference.",
+  "next_run_status": "not_authorized_or_started; user asked whether to approve planning-contract repair, at most six non-actuating API requests and one further bounded episode"
+}

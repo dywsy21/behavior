@@ -10,11 +10,27 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 22:00（北京时间）：JEV-03失败证据归档及输入缺口报告完成（Codex）
+
+- 两新gate各7件、episode11件回执/初始PNG均取回`/home/wsy/behavior/artifacts/jev-control-20260929/all_decisions/`并双端SHA核同；本人检查两门视频抽帧和episode首帧。episode native journal只有1次异常安全停止，与0策略control一致；不存在可展示的任务动作视频，不造SR。
+- 新[机器结果](experiments/2026-09-29-jev-all-decisions-simulator-results.json)及[JEV-03报告](experiments/2026-09-29-jev-all-decisions.md)记录真实失败、原文与探针改写的确定差异、计划/执行前提混淆的推测及最小修复。原离线结果保留并注明不等价，不覆盖旧0/2。
+- 已请求用户确认“同官方输入契约修复→至多6 API非执行检查→追加1次原预算闭环”，目前未收到新确认、未改源码/新增API/仿真/训练；下一依确认继续，原单条预算不自动扩展。所有自有进程已退出，计划/结果在安全检查点Git同步。
+- 22:02轻量JSON对两gate的result/supervisor、episode failure/supervisor/安全停止/API账本逐字段一致性检查通过；原17-call离线摘要仍保持独立0controls口径。仅文档/小JSON提交，不上传原始日志、图像、视频或凭据。
+
+### 2026-09-29 21:56（北京时间）：JEV-03唯一闭环在规划第二问弃权，0策略动作（Codex）
+
+- `jev_all_20260929_episode1_v1`已退出：监管failed，648.311s总/清理0.686s；不是网络、schema或模拟器崩溃。Jev两次真实有效响应，先选goal_0，再对goal_1/abstain选abstain（0.38/0.62，confidence0.24），INITIAL_PLAN阶段停止；0 observer/0策略决策、0策略controls，异常收尾另有1次安全HOLD。无result.json/动作视频/官方终态，不冒称已测SR或Jev动作闭环通过。
+- failure SHA `f3be91f1…24f15729`，supervisor `1e1f7116…1e39b96`；实际ledger键是event=validated，2/2合法响应、1224/76输入/输出tokens。自有4079377/4079879/4080008均退出，四GPU目前均空（队友自然结束，本线程未发信号给他们）。
+- 已定位一处确定的验证缺口：非执行探针用“右手持物左手按键”的改写指令，真实模拟器给“Turn on the radio receiver that's on the table in the living room.”；不是同一planning输入。第二问还把“未执行的pick前缀”与“先拿到才操作持物部件”并置，存在计划排序/实际执行条件混淆风险；模型无理由字段，不能把推断写成确定心理原因。
+- 本轮唯一sim预算已用，停止扩展，不重跑/训练/反复API试prompt。下一归档真实失败输入和安全停止证据、收窄修复方案；若要新真实试验需登记并确认新一条预算，不能把旧门/离线通过当作已验证效果。
+
 ### 2026-09-29 21:44（北京时间）：JEV-03唯一task0原始起点闭环已提交（Codex，运行中）
 
 - 同6b4ce13/f03ba506冻结源、stage episode1，监管4079377、run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_all_20260929_episode1_v1`；启动器已核两新gate，3600s总上限。正在权重身份/观察服务启动阶段，实际JeV动作与官方结果均待，不能以启动回执冒充闭环通过。
 - 任务TRAIN138 seed0、0专家前缀，Jev全策略选择/27B仅观察，原64决策/2048controls/2400s动作、192 Jev/151 observer请求、GPU1共置保持；gate3七件回执/视频正在取回，不训练、不追加第二条，不改运行源与队友作业。
 - 21:46 gate3七件文件也已双端SHA核同，result `d5cbc69b…77557ef1`/video `0374d183…6a57a3f5`；本人查看头部/腕部抽帧，场景与task0不同且图像正常。完整本地证据`artifacts/jev-control-20260929/all_decisions/gate3`。episode模型身份核验启动中，未以0观测计失败。
+- 21:47模型4079879实际加载/health通过，actor4080008启动、监管actor_running，GPU1共置；正在原始task0场景初始化。尚无Jev实际动作/官方终态，继续原预算监控。
+- 21:54原始场景native_profile_validated，reset/load138/reset均completed、GPU1正确；进入真实观察/决策阶段，Jev实际动作与终态仍需后续回执，初始化不计任务成功。
 
 ### 2026-09-29 21:43（北京时间）：JEV-03两工程门通过，准备唯一Jev闭环（Codex）
 

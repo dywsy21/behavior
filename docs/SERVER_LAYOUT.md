@@ -3,7 +3,7 @@
 ## Jev全策略决策（2026-09-29，JEV-03）
 
 - 本地`/home/wsy/behavior_worktrees/jev-20260929`、`feat/jev-control-20260929`，新版本`launch_jev_closedloop.py`只注册`gate0/gate3/episode1`，不能用它重放旧JEV-02。
-- run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_all_20260929_<stage>_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/jev_all_20260929_<stage>_v1`；21:43 gate0/3均completed/各440controls/gate_ok，21:44唯一episode1监管4079377启动、结果待。新冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_all_6b4ce13`，commit6b4ce13、implementation f03ba5064ddfbd5815da8ea5a88dfc2c0a06e311fe823569ab70e35df23cc695；禁止热改。本地回执/视频归档`/home/wsy/behavior/artifacts/jev-control-20260929/all_decisions/<stage>/`。
+- run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_all_20260929_<stage>_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/jev_all_20260929_<stage>_v1`；gate0/3均completed/各440controls/gate_ok，唯一episode1在INITIAL_PLAN第二问弃权，0策略动作/1安全停止、无官方result或视频。21:57自有监管4079377/model4079879/actor4080008均退出，目录不得复用。冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_all_6b4ce13`，commit6b4ce13、implementation f03ba5064ddfbd5815da8ea5a88dfc2c0a06e311fe823569ab70e35df23cc695；保留不改。两门回执/视频与episode失败回执/初始PNG归档`/home/wsy/behavior/artifacts/jev-control-20260929/all_decisions/<stage>/`，均已双端SHA校验。
 - 离线`probe_jev_all.py`已17真实API/7状态通过、0控制。报告见[JEV-03](experiments/2026-09-29-jev-all-decisions.md)。20:48暂断后，20:58:46北京时间直接ssh已实返llmvideo26；未改VPN/配置。WSL看不到Linux监听不单独证明Windows relay离线，备用一次性stdio工具仍见下方历史接入记录。
 
 ## Jev闭环（2026-09-29，JEV-02，历史冻结源）
