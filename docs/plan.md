@@ -10,6 +10,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 14:52（北京时间）：E3唯一续训作业已启动（Codex / RL-G05-50K-E3）
+
+- 原父/94-update delta/原TRAIN demo/旧完整六对/旧PID/预留磁盘准入全部通过，真实MODEL_PY入口导入成功。冻结ef99d92、run `e3_dense_v1`于UTC06:51:43提交，监管4014322/learner4014329为running，当前加载/初始化；尚无新actor或成功率结果，启动不当作验证成功。
+- 训练≤8h/80k含前缀控制/64批/2000新actor，总≤12h/100k控制，预留六对评测；从E2的next_prefix1076/1096开始，自动课程检查取代人审等待，最终原reset/官方success判据不变。下一步核真实目标绑定/奖励轨迹/自动门/首次accepted更新；不重复launch、不热改源或env。
+
+### 2026-09-29 14:50（北京时间）：E3冻结源码双端测试完成，身份准入中（Codex / RL-G05-50K-E3）
+
+- ef99d92d0f718c12a1d4f54f54906c627ea0ba59已push，robo独立`git_worktrees/g05_50k_rl_dense_ef99d92`完成对应分支ff-only同步后固定detached/clean；43项RL测试在原MODEL_PY中42通过、1项需CUDA的边界测试因显式CPU模式跳过（本地已过），没有假报43项服务器GPU验收。
+- 原解释器实际入口导入及`prepare_dense`正核父/delta/demo/旧完整评测/旧PID/SHA、400GiB预留和新run不覆盖门；尚未启动GPU。原E2/SFT/共享环境不改；预算、课程无人工等待和同六对验收均按登记。
+
 ### 2026-09-29 14:47（北京时间）：E3三项实现与本地回归通过，准备冻结部署（Codex / RL-G05-50K-E3）
 
 - 新`rewards/curriculum/dense_recipe`、`prepare_dense/method_dense`已实现；learner显式接入新clip/epochs/KL双阈值/每minibatch LR恢复及有shaping无官方成功的更新；worker仅TRAIN端读目标几何，actor字段白名单保持，final仍仅官方success。每回合自动课程不读取human_release，新规则已进AGENTS，旧运行源不变。

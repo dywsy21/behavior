@@ -22,6 +22,10 @@
 
 ## 原robo记录（保留）
 
+**2026-09-29 14:52北京时间E3启动：** 上述新`e3_dense_v1`已唯一监管4014322/learner4014329运行，UTC06:51:43、源码ef99d92；模型加载阶段。`manifest/launch_claim/supervisor.json`已产生，后续`status.json`和`learner.stdout.log`为状态；原source/旧权重不热改。精确预算/自动课程和奖励见[E3登记](experiments/2026-09-29-g05-50k-rl-e3.md)。
+
+**2026-09-29 14:50北京时间E3部署：** 新独立源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_dense_ef99d92`固定ef99d92d0f718c12a1d4f54f54906c627ea0ba59，准备`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_dense_v1`与runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e3_dense_v1`。续E2 94-update、TRAIN自动课程；`curriculum_auto_NNN.json`取代等待human_release，`reward_binding_*.json/reward_audit_*.json`与steps日志记录奖励物理来源。此时身份prepare中、未GPU启动；原E2所有目录保持。
+
 **2026-09-29 13:33北京时间E2 final完成：** `e2_final_recovery_v1`监管3999475/learner3999482/两sim3999687、3999703均退出，completed/exit0，四A100 0MiB；结果0/6→0/6，原最后delta与失败run不动。26轻量文件和6完整视频全SHA本地验同，位于`/home/wsy/behavior/artifacts/g05-50k-rl-20260928/e2-final-recovery/`（`receipts/`、`rl-{301,302}-seed{17,23,41}/`）；训练12回执在同父`e2-summary-receipts/`。机读摘要已Git跟踪`docs/experiments/2026-09-29-g05-50k-rl-e2-result.json`，原权重不入Git；没有新E3运行目录或训练。
 
 **2026-09-29 12:34北京时间E2 final恢复：** 冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_final_831de53`（831de53f3575aff007acfa890990b82369b34c0f），run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1`，监管3999475；runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e2_final_recovery_v1`。`prior_control_audit.json`证明旧账闭合，`frozen_final_selection.json`固定旧最后`e2_v1/rl_batch_007_updates_0094.pt`（SHA aee508c4…54444f）；`final/`为同六对新视频/物理日志，结果待。原e2_v1已failed退出，数据/源/权重原位保留，不再重启或覆盖。
