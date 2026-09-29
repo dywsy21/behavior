@@ -176,8 +176,8 @@ def main():
         load_task_plan(args.jev_task_plan, args.task)  # before creating output or simulator
     elif args.jev_task_plan or args.typesafe_key_file:
         raise ValueError("Jev credentials/task plan supplied without --controller jev")
-    if args.native_profile != "original" and (args.gpu != 3 or not args.native_runtime):
-        raise ValueError("A100 profile requires physical GPU3 and private runtime")
+    if args.native_profile != "original" and (args.gpu not in (1,3) or not args.native_runtime):
+        raise ValueError("A100 profile requires physical GPU1/3 and private runtime")
     if args.native_profile == "original" and args.native_runtime:
         raise ValueError("Native runtime supplied without its explicit profile")
     if args.task == 3 and args.prefix:
@@ -252,6 +252,7 @@ def main():
         gates = [json.loads(Path(path).read_text()) for path in args.gate_result]
         if {g["task"] for g in gates} != {0,3} or not all(g["gate_ok"] and g["implementation_digest"] == digest and
                 g.get("native_profile", "original")==args.native_profile and
+                g.get("physical_gpu",3)==args.gpu and
                 g.get("synchronous_io_v1",False)==args.synchronous_io_v1 and
                 g.get("harness","v2")==args.harness and
                 g.get("refine_grounding",False)==args.refine_grounding and
@@ -654,7 +655,7 @@ def main():
                     images,depths,depth_receipt=observation_now(f"decision_{decision}")
                 bundle = prepare_views(images,model,state.q,previous,grounded=grounded,gripper=state.gripper,show_finger_regions=args.contact_geometry)
                 jev_before = None
-                if args.controller == "jev" and policy is not None:
+                if args.synchronous_io_v1 and (args.controller == "jev" or args.mode == "gate"):
                     from semantic_robot.v2.jev_freshness import snapshot as jev_snapshot, freshness_check
                     jev_before = jev_snapshot(state, images, depths, depth_receipt, controls)
                 directory = out/f"decision_{decision:03d}"; directory.mkdir()
@@ -793,9 +794,11 @@ def main():
                     jev_check = freshness_check(jev_before,
                         jev_snapshot(state, fresh_images, fresh_depths, fresh_receipt, controls))
                     write(directory/"jev_execution_freshness.json", jev_check)
+                    row["jev_freshness_passed"] = jev_check["passed"]
                     if not jev_check["passed"]:
-                        manager.stop_reason = jev_check["reason"]
-                        row.update(accepted_before_motion=False, stop_reason=manager.stop_reason)
+                        if manager: manager.stop_reason = jev_check["reason"]
+                        else: failures.append({"decision":decision,"error":jev_check["reason"]})
+                        row.update(accepted_before_motion=False, stop_reason=jev_check["reason"])
                         decisions.append(row)
                         break
                 if controller and controller.uses_press_surface:
@@ -1066,6 +1069,7 @@ def main():
                 stop_reason=("OFFICIAL_EPISODE_TERMINATED" if terminal else "CONTROL_BUDGET_REACHED" if controls>=args.max_controls
                              else "WALL_TIME_BUDGET_REACHED" if time.perf_counter()-started>=args.max_seconds else "DECISION_BUDGET_REACHED")
             result = {"status":"complete","task":args.task,"controls":controls,"prefix_controls":prefix_count,
+                      "physical_gpu":args.gpu,"controller":args.controller,
                       "native_profile":args.native_profile,
                       "diagnostic_replay_controls":replay_count,
                       "diagnostic_replay_purpose":replay["receipt"]["purpose"] if replay is not None else None,

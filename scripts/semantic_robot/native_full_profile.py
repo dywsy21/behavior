@@ -44,12 +44,23 @@ def checked_helpers():
 _LOCAL_HELPERS = checked_helpers()
 
 
-def configure(output, runtime):
+def configure_gpu(base, gpu):
+    """Explicit physical GPU selection; no device remapping or SDK writes."""
+    if type(gpu) is not int or gpu not in (1, 3) or os.environ.get('CUDA_VISIBLE_DEVICES'):
+        raise ValueError('A100 profile requires unremapped physical GPU1 or GPU3')
+    base.MAIN_GPU = base.GPU_UUIDS[gpu]
+    base.PROFILE_APP_CONFIG = {**base.PROFILE_APP_CONFIG, 'active_gpu': gpu, 'physics_gpu': gpu}
+    base.RUNTIME_SETTINGS = {**base.RUNTIME_SETTINGS, '/renderer/activeGpu': gpu, '/physics/cudaDevice': gpu}
+    base.FIXED_ENV = {**base.FIXED_ENV, 'OMNIGIBSON_GPU_ID': str(gpu)}
+
+
+def configure(output, runtime, *, gpu=3):
     helpers = checked_helpers()
     profile = helpers['probe_scene_compatible_cameras']
     scene = helpers['probe_scene_startup']
     profile.configure_profile()
     base = scene.supervisor
+    configure_gpu(base, gpu)
     base.OUTPUT, base.RUNTIME = Path(output).resolve(), Path(runtime).resolve()
     if not base.OUTPUT.is_dir() or not base.RUNTIME.is_dir():
         raise ValueError('Separately reserved output/runtime required')
@@ -110,10 +121,8 @@ def checked_reset(environment, validate, record, write):
 
 @contextmanager
 def session(factory, window, *, gpu, output, runtime):
-    if type(gpu) is not int or gpu != 3 or os.environ.get('CUDA_VISIBLE_DEVICES'):
-        raise ValueError('A100 profile uses unremapped physical GPU3')
-    scene, base = configure(output, runtime)
-    imports = factory._lazy_official_imports(og_root=scene.OG, eval_root=scene.EVAL_ROOT, gpu=3)
+    scene, base = configure(output, runtime, gpu=gpu)
+    imports = factory._lazy_official_imports(og_root=scene.OG, eval_root=scene.EVAL_ROOT, gpu=gpu)
     checked_helpers()
     import omnigibson as og
     import omnigibson.simulator as startup
@@ -124,7 +133,7 @@ def session(factory, window, *, gpu, output, runtime):
         raise ValueError('Unexpected native simulator source')
     record = {'profile': NAME, 'phase': 'before_application', 'image_distribution_changed': True,
               'renderer': 'PathTracing', 'resolution_profile': 'full_v1',
-              'source_commit': base.identity(), 'shared_install_writes': 0}
+              'source_commit': base.identity(), 'shared_install_writes': 0, 'physical_gpu': gpu}
     # The borrowed adapters write phase receipts; keep them in a distinct file.
     def save(_name, value):
         base.write('native_profile.json', value)
@@ -167,9 +176,9 @@ def session(factory, window, *, gpu, output, runtime):
         with renderer.before_scene(og, startup, source_sha256=scene.EXTRA_DEPENDENCIES[scene.OG_SOURCE],
                 record=record, write=save, trace_write=base.write), private_og_startup(startup,
                 source_sha256=scene.EXTRA_DEPENDENCIES[scene.OG_SOURCE], experience=base.EXPERIENCE,
-                copy_bindings=bindings, construct=construct_app) as bridge:
+                copy_bindings=bindings, construct=construct_app, gpu=gpu) as bridge:
             record['startup_bridge'] = bridge
-            with initialized_session(factory.OfficialEvaluatorSession(window, gpu=3, imports=imports),
+            with initialized_session(factory.OfficialEvaluatorSession(window, gpu=gpu, imports=imports),
                     validate, record, base.write) as environment:
                 yield CheckedEnvironment(environment)
     finally:

@@ -328,23 +328,42 @@ class PolicyTests(unittest.TestCase):
 
     def test_freshness_blocks_sensor_joint_clock_and_control_drift(self):
         import numpy as np
-        from semantic_robot.v2.jev_freshness import snapshot, freshness_check, VIEWS
+        from semantic_robot.v2.jev_freshness import snapshot, freshness_check, array_digest, VIEWS
+        from semantic_robot.v2.render_batch import make_receipts
+        from render_batch_fixture import batch_fixture, camera_receipts
         _, state, _, _ = context()
-        images = {v + "_rgb": np.zeros((3, 4, 4), dtype=np.uint8) for v in VIEWS}
+        images = {v + "_rgb": np.arange(48,dtype=np.uint8).reshape(3,4,4) for v in VIEWS}
         depths = {v: np.ones((4, 4), dtype=np.float32) for v in VIEWS}
-        receipts = {v: {"native_time": {"simulation_time": 1.}} for v in VIEWS}
-        before = snapshot(state, images, depths, receipts, 0)
-        self.assertTrue(freshness_check(before, snapshot(state, images, depths, receipts, 0))["passed"])
-        for field in ("controls", "sensors", "proprio", "finger_qpos"):
-            changed = copy.deepcopy(before)
+        def receipts(capture):
+            r = camera_receipts(make_receipts(batch_fixture(131+capture),
+                {"simulation_time":1.,"physics_index":120},capture))
+            for v in VIEWS:
+                r[v]["rgb_sha256"] = array_digest(images[v+"_rgb"].transpose(1,2,0))["sha256"]
+                r[v]["depth_sha256"] = array_digest(depths[v])["sha256"]
+            return r
+        before = snapshot(state, images, depths, receipts(1), 0)
+        after = snapshot(state, images, depths, receipts(2), 0)
+        self.assertTrue(freshness_check(before, after)["passed"])
+        self.assertFalse(freshness_check(before, before)["passed"])
+        for field in ("controls", "clock", "sensors", "proprio", "finger_qpos"):
+            changed = copy.deepcopy(after)
             changed[field] = "changed"
             self.assertFalse(freshness_check(before, changed)["passed"])
+        stale = receipts(2)
         depths["head"][0, 0] = 2.
-        after = snapshot(state, images, depths, receipts, 0)
-        self.assertFalse(freshness_check(before, after)["passed"])
+        # Different renderer samples are valid only with verified new buffers.
+        with self.assertRaises(ValueError): snapshot(state, images, depths, stale, 0)
+        after = snapshot(state, images, depths, receipts(2), 0)
+        self.assertTrue(freshness_check(before, after)["passed"])
         self.assertNotEqual(before["sensors"]["head"], after["sensors"]["head"])
         with self.assertRaises(ValueError):
             snapshot(state, images, depths, {v: {} for v in VIEWS}, 0)
+        torn = receipts(2);torn["head"]["native_time"]["physics_index"] += 1
+        with self.assertRaises(ValueError): snapshot(state, images, depths, torn, 0)
+        invalid = receipts(2);invalid["head"]["native_time"]["render_batch_verified"] = False
+        with self.assertRaises(ValueError): snapshot(state, images, depths, invalid, 0)
+        changed = copy.deepcopy(after);changed["batch"]["cameras"]["head"]["render_product"] = "/OTHER"
+        self.assertFalse(freshness_check(before, changed)["passed"])
 
     def test_reference_routes_holding_hand_not_working_hand(self):
         h, _, _, _ = context()

@@ -38,9 +38,20 @@ class SharedOGStartupTests(unittest.TestCase):
         self.assertEqual(self.module.lazy.isaacsim.other, 'kept')
         return self.module.lazy.isaacsim.SimulationApp(self.config, experience=str(self.experience))
 
-    def context(self):
+    def context(self, gpu=3):
         return private_og_startup(self.module, source_sha256=hashlib.sha256(b'frozen source').hexdigest(),
-            experience=self.experience, copy_bindings=self.pairs, construct=self.factory)
+            experience=self.experience, copy_bindings=self.pairs, construct=self.factory, gpu=gpu)
+
+    def test_explicit_gpu1_checks_both_renderer_and_physics(self):
+        self.config.update(active_gpu=1,physics_gpu=1)
+        with self.context(gpu=1):
+            self.assertEqual(self.module._launch_app(),'bounded_app')
+        self.factory.assert_called_once_with()
+
+    def test_gpu1_rejects_stale_gpu3_settings(self):
+        with self.context(gpu=1):
+            with self.assertRaises(ValueError): self.module._launch_app()
+        self.factory.assert_not_called()
 
     def test_exact_original_route_and_restoration_without_install_writes(self):
         before = self.module.shutil, self.module.lazy, self.module._launch_app

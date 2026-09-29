@@ -26,13 +26,15 @@ class _Proxy:
 
 
 @contextmanager
-def private_og_startup(module, *, source_sha256, experience, copy_bindings, construct):
+def private_og_startup(module, *, source_sha256, experience, copy_bindings, construct, gpu=3):
     """Exactly one OG launch in this process; restore module references on exit.
 
     copy_bindings maps (source, existing destination) to their common SHA256.
     Unexpected copies, changed installed bytes or an already live app fail.
     No global shutil or installed isaacsim module is monkey-patched.
     """
+    if type(gpu) is not int or gpu not in (1, 3):
+        raise ValueError('Unregistered physical GPU')
     if not callable(construct) or module.og.app is not None:
         raise ValueError('Fresh process and explicit registered constructor required')
     if hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest() != source_sha256:
@@ -71,7 +73,7 @@ def private_og_startup(module, *, source_sha256, experience, copy_bindings, cons
         return str(destination)
 
     def app_factory(config, *, experience):
-        expected = {'headless': True, 'multi_gpu': False, 'active_gpu': 3, 'physics_gpu': 3}
+        expected = {'headless': True, 'multi_gpu': False, 'active_gpu': gpu, 'physics_gpu': gpu}
         if (set(config) != set(expected) or any(type(config[k]) is not type(v) or config[k] != v
                                                for k, v in expected.items())):
             raise ValueError('OG requested a different headless/GPU configuration')
