@@ -1,0 +1,60 @@
+{
+  "files": {
+    "window-original.json": {
+      "source": "/mnt/sdc1/robodojo/behavior_dev/direct_execution_L6rqZ6_20260910/c1_windows_v2_matched/c1v2-matched-t0-train-e121-f448-grasp/window.json",
+      "bytes": 1340,
+      "sha256": "93731a793ed550bae225e148d872b97d42e331a709e2fd0cd33bd1ccf76ccbd8"
+    },
+    "tasks.jsonl": {
+      "source": "/mnt/sdc1/xhz/BEHAVIOR2026/2026-challenge-demos/meta/tasks.jsonl",
+      "bytes": 22202,
+      "sha256": "8d8222310c3611316c6e5fe822a8dd3c6e552b32bcfddd10870c0672bfb8427c"
+    },
+    "demo_0.npy": {
+      "source": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1/demo_0.npy",
+      "bytes": 180080,
+      "sha256": "38f6c3427026098a8beca5ed5fca240f1a44750e7017312098b9163a8efa35e1"
+    },
+    "reference_reset_1.json": {
+      "source": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/training/worker_0/reset_state_000.json",
+      "bytes": 22977,
+      "sha256": "50a2adbe2a84f69bd83db202971602bf87b8d639872dd8b8f540db7972fcb4c0"
+    },
+    "demo_121.npy": {
+      "source": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1/demo_121.npy",
+      "bytes": 150732,
+      "sha256": "f4d0ec56e9b522d9b08c8d36fcfc3c359bf5dcdb5d841e1a69a851b5731c6b13"
+    },
+    "reference_reset_138.json": {
+      "source": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/training/worker_1/reset_state_000.json",
+      "bytes": 22977,
+      "sha256": "4f80471d60ec2f83989dce4f76017d3fe11fe412418f42c99d748cb7538a630b"
+    }
+  },
+  "workers": [
+    {
+      "worker": 0,
+      "task": "turning_on_radio",
+      "task_id": 0,
+      "instance": 1,
+      "episode": 0,
+      "split": "train",
+      "seed": 0,
+      "prefix_controls": 1268,
+      "first_recorded_terminal": 1364,
+      "actions_sha256": "38f6c3427026098a8beca5ed5fca240f1a44750e7017312098b9163a8efa35e1"
+    },
+    {
+      "worker": 1,
+      "task": "turning_on_radio",
+      "task_id": 0,
+      "instance": 138,
+      "episode": 121,
+      "split": "train",
+      "seed": 0,
+      "prefix_controls": 1096,
+      "first_recorded_terminal": 1192,
+      "actions_sha256": "f4d0ec56e9b522d9b08c8d36fcfc3c359bf5dcdb5d841e1a69a851b5731c6b13"
+    }
+  ]
+}

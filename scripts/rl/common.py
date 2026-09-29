@@ -24,6 +24,15 @@ RUNTIME = Path(os.environ.get('BEHAVIOR_RL_RUNTIME',
 ADAPTER = Path('/mnt/sdc1/robodojo/behavior_dev/GalaxeaVLA_memlite_coordination_dev_20260908/sim_runtime/production_native_oracle_low_v1')
 TEMPLATE = Path('/mnt/sdc1/robodojo/behavior_dev/direct_execution_L6rqZ6_20260910/c1_windows_v2_matched/c1v2-matched-t0-train-e121-f448-grasp/window.json')
 
+SIM_PROFILE = os.environ.get('BEHAVIOR_RL_SIM_PROFILE', 'robo_a100')
+if SIM_PROFILE == 'rtx4090_speed_v1':
+    import rtx_paths
+    rtx_paths.host_guard()
+    OUT, RUNTIME, ADAPTER, TEMPLATE = rtx_paths.OUT, rtx_paths.RUNTIME, rtx_paths.ADAPTER, rtx_paths.TEMPLATE
+    SIM_PY = str(rtx_paths.ENV/'bin/python')
+elif SIM_PROFILE != 'robo_a100':
+    raise ValueError('Unknown simulator platform profile')
+
 
 def sha(path):
     h=hashlib.sha256()
@@ -62,6 +71,8 @@ def recv(conn, timeout=900):
 
 
 def sim_env(worker, pool=None):
+    if SIM_PROFILE == 'rtx4090_speed_v1':
+        return rtx_paths.environment(worker, pool)
     import shutil
     sys.path.insert(0,str(REPO/'scripts/semantic_robot'))
     import probe_simulator_startup as base

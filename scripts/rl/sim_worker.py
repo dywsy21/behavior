@@ -12,7 +12,7 @@ import time
 import traceback
 import numpy as np
 
-from common import REPO, OUT, RUNTIME, ADAPTER, TEMPLATE, sha, send, recv, save
+from common import REPO, OUT, RUNTIME, ADAPTER, TEMPLATE, SIM_PROFILE, sha, send, recv, save
 
 
 def main(worker, port, pool=None):
@@ -20,14 +20,22 @@ def main(worker, port, pool=None):
     spec=(manifest['workers'] if pool is None else manifest['sim_pools'][pool])[worker]
     from g05.rl.protocol import validate_worker,validate_phase
     evaluation=pool in ('baseline','final')
+    if SIM_PROFILE == 'rtx4090_speed_v1':
+        from rtx_paths import validate_worker
     validate_worker(spec,evaluation=evaluation)
     if spec['worker'] != worker: raise ValueError('Wrong worker identity')
     cores=set(range(72+8*worker,80+8*worker))
+    if SIM_PROFILE == 'rtx4090_speed_v1':
+        from rtx_paths import cores as rtx_cores
+        cores=rtx_cores(worker)
     if not cores <= os.sched_getaffinity(0): raise ValueError('Registered CPU affinity unavailable')
     os.sched_setaffinity(0,cores)
     out=(OUT if pool is None else OUT/pool)/f'worker_{worker}'; out.mkdir(parents=True,exist_ok=False)
     sys.path.insert(0,str(REPO/'scripts/semantic_robot'))
-    import native_rl_profile
+    if SIM_PROFILE == 'rtx4090_speed_v1':
+        import rtx_profile as native_rl_profile
+    else:
+        import native_rl_profile
     from rl_reset_boundary import close_before_reset
     sys.path.insert(0,str(ADAPTER))
     from native_oracle_low_v1 import official_factory as factory
@@ -43,7 +51,11 @@ def main(worker, port, pool=None):
                    official_mode=spec['split'],instance_id=spec['instance'],seed=spec['seed'],max_steps=None)
     conn=Client(('127.0.0.1',port),authkey=bytes.fromhex(os.environ['BEHAVIOR_RL_IPC_KEY']))
     send(conn,dict(hello=worker,pid=os.getpid()))
-    tasks=factory.load_task_instructions(factory.DEFAULT_TASKS_PATH)
+    if SIM_PROFILE == 'rtx4090_speed_v1':
+        from rtx_paths import TASKS
+        tasks=factory.load_task_instructions(TASKS)
+    else:
+        tasks=factory.load_task_instructions(factory.DEFAULT_TASKS_PATH)
     log=(out/'steps.jsonl').open('x',buffering=1)
     iolog=(out/'io.jsonl').open('x',buffering=1)
     controls=episode_controls=0; episode=-1
@@ -114,7 +126,7 @@ def main(worker, port, pool=None):
                 io=native_adapter(og.sim,reader.sensors,io_write,registration=frame_registration)
                 video=imageio.get_writer(out/f'episode_{episode:03d}.mp4',fps=30/16,codec='libx264',quality=7,macro_block_size=None)
                 result=observe('reset')
-                if pool is not None:
+                if pool is not None or SIM_PROFILE == 'rtx4090_speed_v1':
                     physical={}
                     for obj in sorted(env.scene.objects,key=lambda x:x.name):
                         pos,quat=obj.get_position_orientation()
@@ -136,6 +148,9 @@ def main(worker, port, pool=None):
                 if op=='observe': send(conn,observe(command.get('tag','observation'))); continue
                 if op!='step' or terminal: raise ValueError('Only live step/reset/observe/close commands allowed')
                 if pool is not None: validate_phase(spec,command['phase'])
+                if SIM_PROFILE == 'rtx4090_speed_v1':
+                    from rtx_paths import validate_phase as validate_rtx_phase
+                    validate_rtx_phase(command['phase'])
                 actions=np.array(command['actions'],dtype=np.float32,copy=True)
                 if actions.ndim!=2 or actions.shape[1]!=23 or not 1<=len(actions)<=16 or not np.isfinite(actions).all():
                     raise ValueError('Invalid action chunk')

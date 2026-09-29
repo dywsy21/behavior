@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 12:57（北京时间）：RTX分段下载已完成两归档；仿真适配CPU检查（Codex / PERF-RTX-RL）
+
+- 新assets_v2源4d97eba、PID2647737已启动，扣原153秒不重置预算；143.7秒时实例108,543,852B和robot641,004,353B两归档整SHA/解压完成，现下载31.46GB物件资产。bootstrap2623015仍SDK fetch，尚无可运行env/RTX GPU。
+- 新`rtx_paths/rtx_profile`显式host/user/单GPU0/两固定TRAIN约束，保持同renderer/相机/物理/I/O与legacy byte SHA；common/worker只有opt-in分支，现robo冻结831de53不受本地改动影响。4项profile＋27原RL回归通过，实际新机依赖/图像门尚待。新测速控制器与CPU prepare已写，语法/测试中；固定544控制/3600s/0模型更新登记见RTX文档，尚未GPU启动。
+- 六个小fixture（两原TRAIN动作/任务文字/旧模板/两原物理reset）约400KB已从robo取回本地`artifacts/rtx-speed-20260929/fixtures`，全六SHA同，正在同步RTX；只Git提交路径/hash清单，不把npy或凭据提交。E2 final首组每例2928控制快照，仍等完整结果。
+
 ### 2026-09-29 12:48（北京时间）：RTX下载停滞，准备同预算分段恢复（Codex / PERF-RTX-RL）
 
 - assets_v1的首108.5MB实例归档下载到约90MiB后持续60秒低速，152.166秒/exit28失败，PID2635447已退出；未解压、0已验完整文件/0GPU，原部分归档与日志保留。新`rtx_asset_resume.py`只允许已停v1一次恢复，扣153秒、余7047秒，4并发16MiB HTTP206分段、最后拼接整文件SHA，仍只原三归档且≥200GiB reserve；缓存分段额外约30GiB，不删除旧证据。尚未launch。
