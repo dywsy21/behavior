@@ -22,6 +22,8 @@
 
 ## 原robo记录（保留）
 
+**2026-09-29 13:33北京时间E2 final完成：** `e2_final_recovery_v1`监管3999475/learner3999482/两sim3999687、3999703均退出，completed/exit0，四A100 0MiB；结果0/6→0/6，原最后delta与失败run不动。26轻量文件和6完整视频全SHA本地验同，位于`/home/wsy/behavior/artifacts/g05-50k-rl-20260928/e2-final-recovery/`（`receipts/`、`rl-{301,302}-seed{17,23,41}/`）；训练12回执在同父`e2-summary-receipts/`。机读摘要已Git跟踪`docs/experiments/2026-09-29-g05-50k-rl-e2-result.json`，原权重不入Git；没有新E3运行目录或训练。
+
 **2026-09-29 12:34北京时间E2 final恢复：** 冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_final_831de53`（831de53f3575aff007acfa890990b82369b34c0f），run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1`，监管3999475；runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e2_final_recovery_v1`。`prior_control_audit.json`证明旧账闭合，`frozen_final_selection.json`固定旧最后`e2_v1/rl_batch_007_updates_0094.pt`（SHA aee508c4…54444f）；`final/`为同六对新视频/物理日志，结果待。原e2_v1已failed退出，数据/源/权重原位保留，不再重启或覆盖。
 
 **2026-09-28 17:40北京时间E2运行中：** 新冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_e2_7b20615`（7b20615617a0c447bc55cd790c677ad6323abd0a），run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1`，监管3923357；私有runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e2_v1`。`baseline/`、`training/`、`final/`分别是独立sim池/录像/物理日志，`evaluations.jsonl`只作效果统计，绝不进PPO。`status.json/supervisor.json/pids.json`查当前状态，`curriculum_gate_NNN.json`对应人工release等待，`rl_batch_*.pt`保存新delta，最终`result.json`仅完整配对后产生。原E1父/权重/所有运行目录原位保留，运行源和环境禁止热改；此刻提交启动，不是SR已改善。

@@ -1,0 +1,339 @@
+{
+  "schema": "g05_50k_rl_e2_result_v1",
+  "owner": "Codex",
+  "verified_at": "2026-09-29T13:32:00+08:00",
+  "experiment": "RL-G05-50K-E2",
+  "training_source_commit": "7b20615617a0c447bc55cd790c677ad6323abd0a",
+  "final_source_commit": "831de53f3575aff007acfa890990b82369b34c0f",
+  "parent_checkpoint": "/mnt/sdc1/robodojo/outputs/g05/r1pro/behavior5_nomem_bs8_4gpu_20260923T135319Z/checkpoints/step_50000.pt",
+  "parent_sha256": "c465044b025a487c42fddce17d45059b314a547e1b672f27cbdbbb7cfe2f6d48",
+  "result": {
+    "n": 6,
+    "before_successes": 0,
+    "after_successes": 0,
+    "before_rate": 0,
+    "after_rate": 0,
+    "difference": 0,
+    "improved_pairs": 0,
+    "regressed_pairs": 0,
+    "pairs": [
+      {
+        "instance": 301,
+        "policy_seed": 17,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 301,
+        "policy_seed": 23,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 301,
+        "policy_seed": 41,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 302,
+        "policy_seed": 17,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 302,
+        "policy_seed": 23,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 302,
+        "policy_seed": 41,
+        "before": false,
+        "after": false
+      }
+    ],
+    "scope": "radio development matrix; not blind or all-task success rate",
+    "statistically_significant_claim": false,
+    "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/rl_batch_007_updates_0094.pt",
+    "checkpoint_sha256": "aee508c41fa03b044e8c21d2c12b763b96d643f2b864d50495e1ab3bc554444f",
+    "actor_updates": 94,
+    "new_actor_updates": 84,
+    "new_training_updates": 0,
+    "controls": 19344,
+    "seconds": 3197.801034416072,
+    "cumulative_controls": 68302,
+    "cumulative_active_seconds": 32900.801035918295,
+    "prior_run": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1",
+    "training_stop_reason": "registered_training_deadline"
+  },
+  "supervisor": {
+    "source_commit": "831de53f3575aff007acfa890990b82369b34c0f",
+    "supervisor": 3999475,
+    "status": "completed",
+    "learner": 3999482,
+    "exit_code": 0,
+    "seconds": 3202.725254558027
+  },
+  "closed": {
+    "reported_controls": [
+      9672,
+      9672
+    ],
+    "ledger_controls": 19344,
+    "exits": [
+      0,
+      0
+    ],
+    "pending_controls": 0,
+    "clean": true
+  },
+  "physical_audit": [
+    {
+      "instance": 301,
+      "seed": 17,
+      "controls": 3224,
+      "success": false,
+      "held_changes": [
+        {
+          "control": 1,
+          "held": {
+            "left": null,
+            "right": null
+          }
+        },
+        {
+          "control": 2030,
+          "held": {
+            "left": null,
+            "right": "radio_89"
+          }
+        }
+      ],
+      "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_0/episode_001.mp4",
+      "video_bytes": 17580318,
+      "video_sha256": "b2464d772559d3c48c01886294123b08982517b4ad8540b78eb6be4dba3fb27e"
+    },
+    {
+      "instance": 301,
+      "seed": 23,
+      "controls": 3224,
+      "success": false,
+      "held_changes": [
+        {
+          "control": 1,
+          "held": {
+            "left": null,
+            "right": null
+          }
+        }
+      ],
+      "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_0/episode_002.mp4",
+      "video_bytes": 17985262,
+      "video_sha256": "1a71343bbb1667cb22e854e2ad745a2dbf85121fdc398e28cd2dbc805b4d6b2a"
+    },
+    {
+      "instance": 301,
+      "seed": 41,
+      "controls": 3224,
+      "success": false,
+      "held_changes": [
+        {
+          "control": 1,
+          "held": {
+            "left": null,
+            "right": null
+          }
+        }
+      ],
+      "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_0/episode_003.mp4",
+      "video_bytes": 18134428,
+      "video_sha256": "ffe083199a3e121eedcf19248296c542470a6ee5721113f76c51068e92cb2563"
+    },
+    {
+      "instance": 302,
+      "seed": 17,
+      "controls": 3224,
+      "success": false,
+      "held_changes": [
+        {
+          "control": 1,
+          "held": {
+            "left": null,
+            "right": null
+          }
+        }
+      ],
+      "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_1/episode_001.mp4",
+      "video_bytes": 18715518,
+      "video_sha256": "4a9221d7543e6a29e50a749277f7fd4a0a6fb513c7c322541d28e5f73ee5cccf"
+    },
+    {
+      "instance": 302,
+      "seed": 23,
+      "controls": 3224,
+      "success": false,
+      "held_changes": [
+        {
+          "control": 1,
+          "held": {
+            "left": null,
+            "right": null
+          }
+        }
+      ],
+      "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_1/episode_002.mp4",
+      "video_bytes": 18708227,
+      "video_sha256": "5607f76180b803c8344463a7926476cc4a804e90d74026b9ca614f3a28754560"
+    },
+    {
+      "instance": 302,
+      "seed": 41,
+      "controls": 3224,
+      "success": false,
+      "held_changes": [
+        {
+          "control": 1,
+          "held": {
+            "left": null,
+            "right": null
+          }
+        }
+      ],
+      "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_1/episode_003.mp4",
+      "video_bytes": 17428519,
+      "video_sha256": "13fc045f1633dc9d983e83c681af0e1a61c04ce35c39ce49569b825f33613294"
+    }
+  ],
+  "reset_checks": {
+    "rl_fp32_seed17_reset.json": {
+      "checks": [
+        {
+          "instance": 301,
+          "max_abs_difference": 0,
+          "episode": 1
+        },
+        {
+          "instance": 302,
+          "max_abs_difference": 0,
+          "episode": 1
+        }
+      ]
+    },
+    "rl_fp32_seed23_reset.json": {
+      "checks": [
+        {
+          "instance": 301,
+          "max_abs_difference": 2.9802322387695312e-8,
+          "episode": 2
+        },
+        {
+          "instance": 302,
+          "max_abs_difference": 2.9802322387695312e-8,
+          "episode": 2
+        }
+      ]
+    },
+    "rl_fp32_seed41_reset.json": {
+      "checks": [
+        {
+          "instance": 301,
+          "max_abs_difference": 0,
+          "episode": 3
+        },
+        {
+          "instance": 302,
+          "max_abs_difference": 2.9802322387695312e-8,
+          "episode": 3
+        }
+      ]
+    }
+  },
+  "cumulative_supervisor_active_seconds": 32905.72525455803,
+  "training_summary": {
+    "completed_batches": 6,
+    "chunks": 446,
+    "autonomous_controls": 7098,
+    "autonomous_controls_by_instance": {
+      "1": 954,
+      "138": 6144
+    },
+    "successes_by_instance": {
+      "1": 6,
+      "138": 0
+    },
+    "official_rewards": 6,
+    "new_actor_updates": 84,
+    "total_actor_updates": 94,
+    "total_critic_updates": 16,
+    "accepted_max_path_kl": 0.00999799370765686,
+    "bc_original_train_episodes": [
+      0,
+      200,
+      400,
+      600,
+      800
+    ],
+    "bc_window_count": 5,
+    "earliest_autonomous_prefix": {
+      "1": 1172,
+      "138": 1096
+    },
+    "gate006_released": false,
+    "gate006_policy_controls": 0,
+    "original_run_status": "failed; final evaluation recovered separately without further training"
+  },
+  "secondary_progress": {
+    "any_held_before": 3,
+    "any_held_after": 1,
+    "denominator": 6,
+    "is_complete_task_success": false,
+    "causal_or_statistically_significant_claim": false
+  },
+  "manual_review": {
+    "all_6_final_videos_verified_and_viewed": true,
+    "frames_per_final_video": 18,
+    "final_frames_total": 108,
+    "training_batches_reviewed": [
+      0,
+      1,
+      5
+    ],
+    "training_autonomous_frames_reviewed": 217,
+    "local_final_artifacts": "/home/wsy/behavior/artifacts/g05-50k-rl-20260928/e2-final-recovery",
+    "review_document": "docs/experiments/2026-09-28-g05-50k-rl-e2-review.md"
+  },
+  "receipt_sha256": {
+    "evaluations.jsonl": "d203b532370bac5c72597626302050d579f84dbbc9f3f52c9a8bfd1cd0d61795",
+    "final/closed.json": "4c4275590dd8c7e003d0fa23ccf3b902c2ec9b70500c4ea485d0015f51100209",
+    "final/rl_fp32_deployment_gate.json": "b6c5963e02282f0bd569c6f7361dd191c302ffa65eb6052f87a985a134d2713a",
+    "final/rl_fp32_instance301_seed17.json": "580a99ac47729d8366ae3cad38f27447feb06612fc81da2814e363d61eaf3833",
+    "final/rl_fp32_instance301_seed23.json": "fc9a7b593f7297d6e630322654fbb1d02bcbb9ef4dc800925f9fea8a2971649f",
+    "final/rl_fp32_instance301_seed41.json": "fd8c3649c75167c24a142b291e092683b930c339b70db67481dd93a3acbd8951",
+    "final/rl_fp32_instance302_seed17.json": "ddddf1d8f4134ce74a4a18cba9ffcbdde81b9bea8faac501b97101d0a530e743",
+    "final/rl_fp32_instance302_seed23.json": "e3ef3c8bef87dc4aff94d1b07e0f1f13676e4e0ae05958e33fd235f66b348fbd",
+    "final/rl_fp32_instance302_seed41.json": "70859e813acfc6ef0f31a7b910eb99201d4e481a4b30bc4a458beec0a51ac6b0",
+    "final/rl_fp32_seed17_reset.json": "0d6b21d6c07753d1c793edd27bf1d47d0c2da8e30f6c4ef476d6cc13efcc4a92",
+    "final/rl_fp32_seed23_reset.json": "c5ffe789548c385cd95d09cf8b34a5799de895ac4c97e9bf58d9e2adb37c7b25",
+    "final/rl_fp32_seed41_reset.json": "aee122ee4fe07009f32ded152ba3d8bc2fe966733fea20c7151c486e625bca8a",
+    "final/worker_0_closed.json": "91794d136b5f07199e09fbe2f357c0db3ab439b9632c5401b852038c99cfb277",
+    "final/worker_1_closed.json": "91794d136b5f07199e09fbe2f357c0db3ab439b9632c5401b852038c99cfb277",
+    "final_deployment_load.json": "fb819d383a8601df2d205ff740ddd049dfb48d25823d1133d92daade869644e0",
+    "frozen_final_selection.json": "06bd84b258ceaad789343eea34d081b11c353e472402df26739891a88779bc7b",
+    "launch_claim.json": "f08b5ae8bcd2d79a14c46c656479a378c6db7fb7c78aa2aa1c11ec3eb9898701",
+    "learner.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "load_50000.json": "73f2226e31e317e58788c161d3922a12e3c2a538ebc9fe994a9321c1f92fe027",
+    "manifest.json": "473eaffbd7466f44271a1d915f532a80a91c33b736ac00c9800022f7cc415e46",
+    "pids.json": "8e141a7eddaf01aa18f39ccc5e5ad8973afff02077c162773f30b17618595de7",
+    "prior_control_audit.json": "8dc5bbd635a045b7aa73ec0ddf81cd706f13fbf7eac459e67a89ae1f2aed7b20",
+    "result.json": "b5f89ba42a68b303774374e0bbe1fd645fd74968a5ea5613c22fd5a006928e37",
+    "status.json": "cf077007bd9eba722b8a176713d9d6011b8885bf23b7d0622e168511d9d49fc9",
+    "supervisor.json": "2b5676eb2336bfe8a4b426222f5b9dc33f6483d0992db885c3c3156ef8dd3cb3",
+    "trainable.json": "08b499bab3dc29ed4be902921aa1af1af879d2d7b1f299a1a5dfd0773c7b53ae"
+  },
+  "training_receipts_verified": true,
+  "recommend_promoting_delta_over_parent": false,
+  "next_method_experiment_started": false,
+  "conclusion": "No complete-task success-rate gain on the fixed six-pair radio development matrix; limited post-grasp training coverage, not proof that general RL cannot work."
+}
