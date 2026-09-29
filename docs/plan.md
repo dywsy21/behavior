@@ -10,6 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 19:05（北京时间）：JEV-02两条真实闭环均未成功，停止重复扩展（Codex）
+
+- episode2监管completed/actor exit0，1212.321s总/604.336s动作阶段、16决策/367controls，官方success=false、goal0未满足，stop VISUAL_ODOMETRY_UNCERTAIN；16 observer、0 Jev请求。模型按监管TERM，自有清理0.696s；不是网络/进程崩溃退出。证据run `jev_20260929_episode2_v1`，源码仍ced02fe。
+- 合计task0 turning_on_radio/TRAIN138 seed0/原始起点 **0/2**，两个都止于搜索跟踪，未发生Jev动作选择。执行19:01已登记止损：第三条未启动，3次只是上限；不把0/2当独立跨实例SR、Jev能力否定或固定n=3评测，也不把gate3工程门算成task3任务成功。
+- 下一仅归档第二条视频/完整轻量回执、双端hash与释放资源核查、写最终报告并Git提交。本轮不改阈值/搜prompt/追加训练或新修复轮；后续方法评测首先须解决搜索可达性/低特征跟踪，才有机会真实比较Jev决策。
+- 19:09归档/终核完成：两条result、supervisor、视频、steps/native journal已双端SHA核同，episode2视频`d7afa078…10fb93b`/12.2s；两条1Hz头部抽帧本人已看，均转向玻璃门。第二条16个实际不同头帧、全部negative/无token cap、366条23D动作＋1安全停止；三次失配22/20/21，两个局部参考恢复都过。自有4050934/4050986/4051071均退出、队友4022589/4022893/4022896保持，远端episode3目录不存在。结果/限制/下一最小修复见[JEV-02报告](experiments/2026-09-29-jev-closedloop.md)及[JSON](experiments/2026-09-29-jev-closedloop-results.json)，本条随结果摘要纳入交接提交；开发评测收尾，不把Jev动作验证缺口标成完成。
+- 19:11最终机器一致性检查过：汇总两条逐项对原result/supervisor（控制/决策/官方结果/墙时/请求/退出码），8个关键结果/监管/native/video hash全部通过；两个steps也已双端核同。仅轻量JSON/报告/计划入Git，视频原日志留ignored artifacts及robo，不覆盖活跃源码；本轮无后续后台自有进程。
+
 ### 2026-09-29 18:48（北京时间）：JEV-02首条闭环完成未成功，第二条运行中（Codex）
 
 - episode1监管completed/actor exit0，1283.362s总、373controls、16observer调用、**0 Jev请求**；官方`success=false`、goal未满足，停止`VISUAL_ODOMETRY_UNCERTAIN`。16次观察目标不可见，现有measured_search_controller转向搜索后两次观测恢复预算耗尽；不是Jev作出了错误抓取选择，也不能据此评价Jev本体。结果SHA `77bd8c74…ffe840f60`，监管SHA `63f1b786…e8a1b348`；自有模型按监管TERM、清理0.689s，队友进程保持。
@@ -19,6 +27,7 @@
 - episode1视频与result/supervisor已取回本地`artifacts/jev-control-20260929/closedloop/episode1/`且双端SHA一致；视频`f4d8178d…25a7e4e`、640×1088/15fps/12.4s，省略推理等待，不是602.358s动作墙时或1283.362s总墙时。一次尝试复制不存在的`trace.jsonl`报错；实际完整逐决策记录在result.decisions，已核16条，不造缺失trace。
 - 18:56 episode2原reset/load138/reset/native验证通过，实际1决策/24controls、转向TARGET_REACHED；首视觉observe49.069s/negative，仍0 Jev选择。episode1的实际trace文件`steps.jsonl`与native journal均已归档并核hash：372条23D控制＋16决策摘要＋1安全停止记号，对应native373次控制；16个当前头帧hash各不相同、无token cap命中，排除重复旧帧或截断被当negative的解释。
 - 19:01预算使用决策（episode2仍运行、7决策/168控制时登记）：3次是上限而非必须烧完；若第二条也为0 Jev请求＋同类搜索里程计失败，则以2条完整失败收尾，不启动第三条，保留全部分母/标记未跑原因，不据此估计Jev本体SR。若进入Jev且无工程故障，则按原上限继续；不在当前试验间改源码/prompt，也不自动追加新修复轮次。这是观察首条后的小规模提前止损，不是预先固定n=3的统计试验。
+- 19:04 episode2第14次决策发生INTERRUPTED、已完成第一次12-control新局部参考恢复，当前336controls/15次observe全negative、持久Jev账本0行；失败阶段与首条一致，尚未有最终官方结果，不提前计入分母。下一等待原2次恢复上限自然结束并核账，不人工终止一个尚在进展的有效试验。
 
 ### 2026-09-29 18:21（北京时间）：JEV-02两task工程门通过，首条任务闭环启动（Codex）
 

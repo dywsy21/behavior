@@ -1,6 +1,29 @@
 # JEV-02：原始起点模拟器闭环
 
-负责人Codex；用户授权真实闭环/成功率；独立分支`feat/jev-control-20260929`。18:48北京时间状态：**gate0/3均过、episode1官方失败、episode2运行中**。整体管线暂为0/1，但第一条0 Jev请求，不能视作Jev动作选择效果。源码固定`ced02feb3a830cd3e0c83081f15e818810f106d0`、implementation `32020e102a10fffb106564ed640857090cf6dcd43fe6a63c98e1e2567553d5ed`。
+负责人Codex；用户授权真实闭环/成功率；独立分支`feat/jev-control-20260929`。19:05北京时间状态：**gate0/3均过、两条完整任务均官方失败（0/2）**。两条均0 Jev请求，不能视作Jev动作选择效果；执行提前止损，不启动第三条。源码固定`ced02feb3a830cd3e0c83081f15e818810f106d0`、implementation `32020e102a10fffb106564ed640857090cf6dcd43fe6a63c98e1e2567553d5ed`。
+
+## 本轮最终结果
+
+仅task0 `turning_on_radio`，TRAIN实例138/seed0，原始起点、无专家前缀，两次全新进程/场景重置。模型/控制器/阈值不变；同一已用开发实例的两次重复，不是两种独立任务或盲测。结果由官方`done.success=false`与`goal_status.unsatisfied=[0]`判定，均为完整有效的管线失败，不删分母。
+
+| 试验 | 官方任务成功 | 控制步 / 决策 | 视觉观察 / Jev请求 | 动作阶段 / 总墙时 | 终止原因 |
+| --- | --- | --- | --- | --- | --- |
+| episode1 | 否 | 373 / 16 | 16 / 0 | 602.358s / 1283.362s | VISUAL_ODOMETRY_UNCERTAIN |
+| episode2 | 否 | 367 / 16 | 16 / 0 | 604.336s / 1212.321s | VISUAL_ODOMETRY_UNCERTAIN |
+
+**端到端管线成功率0/2（0%）；Jev实际动作选择能力未测到，不能记成Jev模型SR=0%。** 两条均只执行现有搜索控制器，13次转向完成、3次跟踪中断、2次局部参考恢复；没有抓取/按钮动作。两次actor exit0、监管completed，全部已执行动作的freshness门通过，无API/协议/资源故障。task3仅做工程门，未测任务成功率；其他任务本轮未测。原最多3次上限未耗尽，第三条按19:01自适应止损规则不启动，不称固定样本数统计评测。
+
+episode2 result SHA `c364a5faeab498e35b82bf5c4083047ab78a23d74a3eee23cd5e81a0c299449b`，supervisor SHA `753897ea4c929a5e123723ce8fb50baaff98957144fd5fe094b7f564a700f9dc`，native journal SHA `e3f7be8632e1c958837ab04e575ac55fd2e20c863edb4de7f87d7283532af268`；actor/model自有进程退出，清理0.696s，19:06 `nvidia-smi`仅剩原队友4022589/4022893/4022896，GPU1仅两个各200MiB跨卡上下文。
+
+两条完整result/manifest/supervisor、逐23D控制`steps.jsonl`、同步原生`native_io.jsonl`、视觉请求`calls.jsonl`及`rollout.mp4`均已取回本地`/home/wsy/behavior/artifacts/jev-control-20260929/closedloop/episode{1,2}/`；结果/监管/视频/控制日志和原生日志双端SHA一致。第二条视频SHA `d7afa078f27204cf6636c587e9e443e4442b96e74895d12b536ac23b210fb93b`，12.2s播放，省略推理等待。两条1Hz头部抽帧图本人均已检查，轨迹相似、都终止于玻璃门视角；这不是逐像素目标负例金标验收。可机器读取的汇总见[结果JSON](2026-09-29-jev-closedloop-results.json)。
+
+第二条的决策013/014/015失败分别为25个匹配去重后22个、20个稳定匹配、21个稳定匹配，均低于25门，自身过滤均剔除0点。第一条对应22/20/24。因此失败不是一个偶然API响应，更换动作决策模型并没有消除它之前的搜索/定位瓶颈；这也不证明降低阈值就是正确修复。
+
+后续最小修复方向（**本轮尚未实施，不自动开下一轮**）：
+
+1. 在目标未见时也提供当前RGB-D预检通过的、覆盖度/可观测性驱动的有限搜索候选，使Jev可以参与搜索选择；不让确定性单向yaw分支永久绕过被测模型。
+2. 解决头相机朝玻璃/低纹理时的里程计可观测性：优先审计其他本体相机能否提供静态世界支持，或用经过测量验证的换视角恢复。恢复后需要改变不良视角，而非只HOLD重设局部原点后继续同向旋转。保持未知位移不计覆盖，不把命令/自报当测量，不简单将25门调低。
+3. 先用已有失败片段验跟踪与恢复，再做一个同起点局部闭环，确认真实Jev请求→选择→动作→新观察链发生，才扩任务/实例成功率。不得把旧离线6/6合法选择补算进本轮物理成功率。
 
 ## 假设与预算
 
@@ -20,7 +43,7 @@ robo队友RL进程4022589（GPU0）、4022893/4022896（GPU2/3）保持不动。
 
 `scripts/semantic_robot/launch_jev_closedloop.py --stage {gate0,gate3,episode1,episode2,episode3} --launch`；仅在新冻结干净Git worktree中运行，启动器不自动重试/追加。每阶段目录：
 
-- `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_20260929_<stage>_v1`：launch/supervisor、`gate/{manifest,result,trace,native_io,...}`、视频及actor回执；工程门沿用gate目录名，actor身份按manifest判断。
+- `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_20260929_<stage>_v1`：launch/supervisor、`gate/{manifest,result,steps,native_io,...}`、视频及actor回执；工程门沿用gate目录名，actor身份按manifest判断。
 - `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/jev_20260929_<stage>_v1`：独占cache/Kit portable，提前建立可读截图目录；旧缓存不删除/改权限。
 - 用户凭据将只部署到robo拥有者0600仓库外`/mnt/sdc1/robodojo/.config/behavior/credentials/typesafe.key`；未部署前不启动actor。禁止打印内容/写Git/发往非TypeSafe地址。
 
