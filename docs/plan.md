@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-29 15:57（北京时间）：无8h/12h墙钟的E3已唯一重新启动（Codex / RL-G05-50K-E3）
+
+- `e3_no_wall_v1`在UTC07:56:38启动，源码25d868e，监管4022582/learner4022589为running；实际manifest两时间上限均null，已继承8458控制/2批/102 actor/24 critic的准入状态，当前加载权重/准备sim，严格恢复回执与自主采样待确认。旧ef99d92四进程已退出，不存在双份训练。
+- 保留累计TRAIN80k/总100k控制、64批/从94起最多2000新actor（上限2094），final仍同六对/最多19344控制与3h单独超时，IPC/数值/无信号停止不变。此次只取消用户指定墙钟，不改奖励/学习率/实例，也不清零预算或从头训。
+- 两已完成batch合214chunks/3410自主控制/8有效actor，TRAIN末段1/4成功；第二批0官方success也做4有效更新，说明dense路径在工作，不证明完整SR改善。102 delta完整SHA b27e670d…93335已核，固定final未跑；下一真实恢复/采样状态，随后按同一步数预算无人值守继续。
+
+### 2026-09-29 15:56（北京时间）：无时限续接身份与累计预算准入完成（Codex / RL-G05-50K-E3）
+
+- 新独立源码25d868ebad96f85608aa069d4355801afae35ac3在robo `git_worktrees/g05_50k_rl_no_wall_25d868e`冻结/clean，52 RL回归本地全过、服务器51过/1 CUDA项跳过。完整父与102 delta SHA、两连续物理日志/close回执、旧进程退出、TRAIN split/demo和固定eval实例均通过；四A100实测0MiB。
+- `e3_no_wall_v1/manifest.json`实际`max_training_seconds=null`、`max_active_wall_seconds=null`，不是只改文档。继承8458控制/2批/actor102/critic24/成功1、recent为1:[true,false]与138:[false,false]，prefix1076/1096；已用预算不会重置。`prior_control_audit.json`保留原close非clean及精确补计16步的依据。
+- 唯一新GPU launch提交中，准备成功不冒充训练已恢复；下一核监管PID、严格delta/Adam恢复和运行状态。旧run未覆盖，完整新SR仍未评测。
+
 ### 2026-09-29 15:53（北京时间）：旧E3退出，通信中断的16步已实物对账（Codex / RL-G05-50K-E3）
 
 - 第一次SIGTERM落在大图IPC `recv_bytes`中，旧close重复收包阻塞；UTC07:52:02核同PID/starttime及原SystemExit后，仅追加一次SIGTERM中断cleanup收包，不碰其他进程。两sim最终均exit0、各自close回执3866/4592控制；原监管/learner/两sim全退出。
