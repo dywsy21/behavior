@@ -12,11 +12,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 22:53（北京时间）：高层已真实恢复并在线记录，低层未中断（Codex / RECOVER-MEM100-HIGH-ECC）
+
+- 本次恢复处理完成、高层继续正式训练：22:52:28新attempt2已15步（22:52:41为16步），同W&B `8ecc6bb3908e`服务端running/新update10；八rank950状态恢复及326 planner梯度/global256/冻结梯度0的新回执全部通过。GPU1恢复状态None、remap pending No，8卡所有ECC计数自reset后基线无增长，14:43后的内核无新NVRM/Xid/ECC记录；不等于长期硬件永久无故障保证。
+- 原源d0528b4、batch/LR/一次遍历目标不改，attempt2 supervisor453346/torchrun453359、累计2193.29s含第一次失败1787.20s；新`step_00000000_save_0002.pt`完整保存，丢失的215步重放，不伪称从215恢复。低层仍attempt1/PID1054575，22:52:41已1175步，未中断/改env/改权重。没有额外队列或自动反复reset/retry。
+- [精确恢复回执](infra/results/2026-09-30-memlite-high-ecc-recovery.json)和[操作手册](infra/MEMLITE_STAGE1_RUNBOOK.md)记录定点reset、6个CPU测试、8卡68GiB四模式/通信/BF16验证、原始故障与新模型回执路径/SHA；大权重/数据/凭据不进Git。下一继续原正式阶段1；若ECC再现，应协调硬件维护/健康卡，而非降batch掩盖或无限重启。
+
 ### 2026-09-30 22:45（北京时间）：GPU1重映射后健康门通过，高层同run恢复已提交（Codex / RECOVER-MEM100-HIGH-ECC）
 
 - lc1 GPU1定点reset后recovery=None/pending=No，8卡各68GiB四模式读写全部PASS/40.40s，既有8rank NCCL 1/16/64/256MiB各10测量＋3warmup及BF16前后向全部通过；后验所有卡ECC correctable/uncorrectable计数均未增长、无外部GPU进程。证据`runs/stage1_high_ecc_recovery_20260930/{memory-health-v1,nccl-v1}.json`，本地同名`artifacts/stage1-high-ecc-20260930`。短测不等于长期硬件无故障承诺。
 - 健康门通过后沿原`src/stage1-d0528b4`/原config/output正式`--resume`，tmux `memlite-stage1-high-20260930`恢复已提交；原W&B `8ecc6bb3908e`，high micro4/accum8/global256/LR日程均不改。step0重新开始，attempt1已耗1787.20s保留，既有一次数据遍历/168h事故上限不扩；还待模型恢复/首更新，不把提交当恢复通过。
 - lc2低层持续运行，未重启或改env/权重/源。旧错误日志与215步数值已先归档，原所有权重保留；目前最新高层完整点仍step0，不能用日志215代替已保存权重。新探针代码07ec13e只在独立工具worktree，不热改两个正式run的d0528b4。
+- 22:48:53实核attempt2 supervisor453346/torchrun453359、累计1977.97s（已包含失败1787.20s），八rank950状态新恢复回执通过、同W&B running；还在初始化eval/保存、0新更新。W&B暂时显示的update210是失败attempt旧曲线，不能误读成已恢复210步；GPU1 recovery/pending正常且全部卡ECC仍无增长。低层22:49已1129步，继续未改。
+- 22:50已完成恢复后首个global256实际更新（CE0.310849/grad_norm3.12285/累计2071.73s），step0第二次原子保存`step_00000000_save_0002.pt`完成；GPU1 volatile corrected/uncorrected均0。当前训练已真正恢复，接着核新首步八rank梯度和W&B重放的新点，不作模型效果结论。
 
 ### 2026-09-30 22:36（北京时间）：高层215步后硬件ECC退出，获批修复再恢复（Codex / RECOVER-MEM100-HIGH-ECC）
 

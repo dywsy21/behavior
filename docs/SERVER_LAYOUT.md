@@ -2,6 +2,8 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
+**2026-09-30 22:53终核覆盖：** lc1高层同run attempt2已真实恢复（新15–16步/八rank通过/W&B新update10/ECC无增长），仍tmux `memlite-stage1-high-20260930`、source d0528b4、supervisor453346/torchrun453359；新日志`runs/memlite_stage1_high_100task_v1.supervisor/attempt_002.log`，完整点`checkpoints/step_00000000_save_0002.pt`。lc2低层attempt1不动已1175步。准确时间快照与SHA见[恢复回执](infra/results/2026-09-30-memlite-high-ecc-recovery.json)，旧失败日志/权重不删。
+
 **2026-09-30 22:45恢复覆盖：** lc1 GPU1已定点reset，待重映射清除/恢复状态None；8卡68GiB四模式显存和NCCL/BF16检查通过、ECC无增长，原正式高层同source/config/run已提交resume，仍待真实更新。健康探针源`src/high-ecc-health-20260930`固定07ec13e，证据`runs/stage1_high_ecc_recovery_20260930`；它不是新的训练源码。lc2保持运行。
 
 **2026-09-30 22:36状态覆盖：** lc1高层在215步后因GPU1（PCI52:00.0、UUID `GPU-58992b92-5fea-12a6-12aa-b7b322652cbf`）HBM不可纠正ECC退出，只有step0 checkpoint；该GPU当前Drain and Reset/row-remap pending，勿直接拿空卡状态当健康。Codex获批定点排查修复后恢复，真实进度见plan；lc2低层正常继续，禁止改共享env或热改d0528b4。

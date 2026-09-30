@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "task_id": "RECOVER-MEM100-HIGH-ECC",
+  "owner": "Codex",
+  "status": "HIGH_RESUMED_AND_RUNNING",
+  "training_completed": false,
+  "incident": {
+    "utc": "2026-09-30T13:54:21Z",
+    "node": "lc1",
+    "gpu_index": 1,
+    "gpu_uuid": "GPU-58992b92-5fea-12a6-12aa-b7b322652cbf",
+    "pci_bus": "00000000:52:00.0",
+    "rank": 1,
+    "pid": 449295,
+    "xids": [
+      48,
+      171,
+      63,
+      94,
+      154
+    ],
+    "diagnosis": "Uncorrectable HBM double-bit ECC error with pending row remapping, not capacity OOM.",
+    "completed_unsaved_updates": 215,
+    "last_saved_step": 0,
+    "failed_job_seconds": 1787.2012954000384,
+    "rank0_last_peak_allocated_gib": 60.276461601257324,
+    "rank0_last_peak_reserved_gib": 63.15234375,
+    "gpu1_volatile_uncorrectable": 32,
+    "gpu1_aggregate_uncorrectable": 71
+  },
+  "repair": {
+    "action": "Targeted administrator GPU reset of the exact affected UUID only, after empty GPU/process checks.",
+    "utc_minute": "2026-09-30T14:38Z",
+    "result": "nvidia-smi reported successful reset",
+    "gpu1_recovery_after": "None",
+    "gpu1_remap_pending_after": "No",
+    "gpu1_volatile_uncorrectable_after": 0,
+    "gpu1_aggregate_uncorrectable_after": 71,
+    "whole_node_reboot": false,
+    "low_job_changed": false,
+    "shared_environment_changed": false
+  },
+  "validation": {
+    "probe_commit": "07ec13ecbc5083e03822e5988a2db9b9fc8c0499",
+    "probe_source": "/data/workspace/wsy/behavior2026/src/high-ecc-health-20260930",
+    "unit_tests_passed": 6,
+    "memory_test_gpus": 8,
+    "memory_test_gib_per_gpu": 68,
+    "memory_patterns": 4,
+    "memory_seconds": 40.400450529996306,
+    "nccl_world": 8,
+    "nccl_mib": [
+      1,
+      16,
+      64,
+      256
+    ],
+    "nccl_measured_repeats_per_size": 10,
+    "nccl_warmup_per_size": 3,
+    "bf16_forward_backward": "all ranks passed",
+    "ecc_counter_changes": 0
+  },
+  "restart": {
+    "utc": "2026-09-30T14:45:40Z",
+    "training_source": "/data/workspace/wsy/behavior2026/src/stage1-d0528b4",
+    "training_commit": "d0528b4b0d553c252b6173355c1d4d567a9f9d76",
+    "same_output": true,
+    "explicit_resume": true,
+    "from_saved_step": 0,
+    "changed_hyperparameters": false,
+    "global_batch": 256,
+    "micro_batch": 4,
+    "accumulation": 8,
+    "base_learning_rate": 0.00001,
+    "failed_time_still_charged": true,
+    "wall_limit_hours": 168,
+    "high_passes": 1,
+    "tmux": "memlite-stage1-high-20260930",
+    "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/8ecc6bb3908e"
+  },
+  "verified_snapshot": {
+    "checked_at": "2026-09-30T14:52:28.547107+00:00",
+    "wandb_id": "8ecc6bb3908e",
+    "wandb_state": "running",
+    "preflight": false,
+    "wandb": {
+      "train/update": 10,
+      "train/loss": 0.3152719750009306,
+      "eval/loss": 0.3431548375173693
+    },
+    "eight_gpu_ecc_unchanged": true,
+    "gpu1_recovery": "None",
+    "gpu1_pending": "No",
+    "new_restore_ranks": 8,
+    "new_gradient_ranks": 8,
+    "new_attempt_updates": 15,
+    "latest_new_update": {
+      "step": 15,
+      "epoch": 0,
+      "next_update": 15,
+      "loss": 0.31761253727287764,
+      "denominator": 26883.75,
+      "observations": 256,
+      "seconds": 6.8594334500376135,
+      "observations_per_second": 37.32086649205646,
+      "grad_norm": 3.4128026962280273,
+      "lr": 1.5000000000000002e-7,
+      "consumed_seconds": 2194.0720886359923,
+      "peak_allocated_gib": 59.21849203109741,
+      "peak_reserved_gib": 63.150390625
+    },
+    "ledger": {
+      "component": "high",
+      "commit": "d0528b4b0d553c252b6173355c1d4d567a9f9d76",
+      "attempt": 2,
+      "limit_seconds": 604800,
+      "supervisor_pid": 453346,
+      "torchrun_pid": 453359,
+      "output": "/data/workspace/wsy/behavior2026/runs/memlite_stage1_high_100task_v1",
+      "status": "RUNNING",
+      "consumed_seconds": 2193.294672744116,
+      "heartbeat_utc_seconds": 1790779946.5792515
+    },
+    "checkpoint": {
+      "path": "step_00000000_save_0002.pt",
+      "sha256": "93440e527b23235aab77d419b243e8e287f336a254506f9d5270f1a959b11ecf",
+      "state": {
+        "step": 0,
+        "epoch": 0,
+        "next_update": 0,
+        "save_sequence": 2,
+        "consumed_seconds": 1988.5001473841257,
+        "fingerprint": "d214a2410cd7b4ad6b9fb2db07f1d1c6d5b6827a417d3362d74702a16bd7592b",
+        "wandb_run_id": "8ecc6bb3908e"
+      },
+      "consumed_seconds": 2030.2216769701336
+    }
+  },
+  "low_readonly_snapshot": {
+    "utc": "2026-09-30T14:52:41Z",
+    "step": 1175,
+    "attempt": 1,
+    "supervisor_pid": 1054575,
+    "status": "RUNNING",
+    "restarted": false
+  },
+  "evidence": {
+    "server_root": "/data/workspace/wsy/behavior2026/runs/stage1_high_ecc_recovery_20260930",
+    "local_root": "artifacts/stage1-high-ecc-20260930",
+    "sha256": {
+      "memory-health-v1.json": "fdcf9585845cf7a20147b2dfbff74ef26d3aa39588221ab1044af0350c081560",
+      "nccl-v1.json": "ef16dd2432fd7baeb4a8eb0b1ebd7c86b88e5d4525d1b59dee53c61f667a76a8",
+      "attempt_001.log": "e3afb44a97bafad352741f6743d148700cb6862289ef3dc7021d0e27dc1150f8",
+      "kernel-ecc-incident.txt": "99177b0ecbc07f7a1af463f86ff94ce796b7e34cdfa03c4f53f6845645da6f52"
+    }
+  },
+  "limitations": [
+    "Short memory and communication checks plus restarted updates are not an exhaustive vendor field diagnostic or a guarantee against later faults.",
+    "Only step0 weights survived attempt1. The 215 completed but unsaved updates are replayed; earlier W&B history is retained.",
+    "No automatic GPU reset/retry loop or new long-running monitoring service was added.",
+    "The new large step0 checkpoint is atomically published with its writer SHA receipt; its bytes were not independently rehashed for this handoff."
+  ]
+}

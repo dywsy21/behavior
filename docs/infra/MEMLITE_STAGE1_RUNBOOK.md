@@ -4,6 +4,15 @@
 2026-09-30 21:30北京时间，用户明确授权后lc1高层一遍/lc2低层120小时正式进程各已完成≥5次真实更新、初始3200窗评测与step0保存，正在后台训练。数据准入、lc1高层16步/lc2低层32步及同run保存恢复此前已通过。下文命令是现有run的操作说明，**不要再次不带resume重复启动**。正式W&B高`8ecc6bb3908e`、低`e902c036e522`；链接与后续进度见plan。
 原[9/30审查S1–S9](../experiments/2026-09-30-memlite-stage1-plan-and-readiness.md)是实施前快照；节点分配现改为lc1高层、lc2低层。
 
+### 2026-09-30 GPU1 ECC恢复记录
+
+21:54高层完成215更新后因lc1 GPU1 HBM双比特不可纠正ECC退出（Xid48/171/63/94/154），不是OOM；只有step0完整checkpoint，不能从日志215“续算”。22:38仅该UUID定点reset，pending row-remap已生效。22:45八卡各68GiB四模式读写、既有NCCL/BF16和ECC前后计数检查全通过后，按同源/同配置/同run `--resume`提交attempt2；最终真实恢复状态见plan。
+
+- 健康工具：独立`src/high-ecc-health-20260930`（07ec13e）中的`scripts/infra/check_a800_gpu_health.py`，6个CPU合同测试。它不reset、不清ECC计数、不改训练权重，遇外部GPU进程/错误恢复标记/新ECC即失败。
+- 证据：`runs/stage1_high_ecc_recovery_20260930/{memory-health-v1,nccl-v1}.json`；原故障日志`<high run>.supervisor/attempt_001.log`保留。aggregate历史错误不因reset抹除，不把计数非零一概视作本次新故障；pending/failure/recovery与增量必须核对。
+- 不用减小batch或关闭ECC掩盖硬件错误，不整节点重启或批量reset。维护必须排空并精确核对UUID/PCI/进程，必要时协调管理员。重映射需reset生效，见[NVIDIA说明](https://docs.nvidia.com/deploy/a100-gpu-mem-error-mgmt/row-remapping.html)。短检通过不保证此卡以后不再故障，若重现应进入硬件维护而非无限重试。
+- 本次训练仍使用d0528b4；健康工具不热改活跃源码或共享env。失败1787.20s继续由原supervisor预算累计；原W&B run中会保留失败attempt的曲线和从step0重放的新点，不删除旧证据。
+
 ## 路径与固定身份
 
 共享根均为`/data/workspace/wsy/behavior2026`，四节点同一环境/数据，但两层分别单节点DDP，**没有跨节点梯度同步**。

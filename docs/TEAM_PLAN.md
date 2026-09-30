@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-30 22:53（北京时间）RECOVER-MEM100-HIGH-ECC本次恢复完成：lc1 GPU1定点reset/健康门通过，原run attempt2已16次真实更新、W&B新update10/八rank梯度回执通过/ECC无增长；lc2同attempt1持续到1175步。两节点恢复原阶段1并行状态、预算未扩大，其他成员职责不变；健康短测不等于永久硬件保证，复发须维护而非无限重试。证据见plan和`infra/results/2026-09-30-memlite-high-ecc-recovery.json`。
+
 2026-09-30 22:45（北京时间）RECOVER-MEM100-HIGH-ECC：GPU1定点reset后8卡各68GiB四模式/NCCL/BF16及ECC前后比较全部通过，高层已按原d0528b4/config/run提交resume step0，待首更新；不降batch/LR、不延长原168h预算、保留已耗1787.20s。lc2低层/队友任务/共享env全不动。健康工具独立07ec13e，不改活跃训练源；后续长期稳定性仍需训练实测。
 
 2026-09-30 22:36（北京时间）Codex / RECOVER-MEM100-HIGH-ECC：lc1高层在215步后因GPU1不可纠正HBM ECC退出，非容量OOM；lc2低层继续，不更改其他成员职责。用户已授权修复并恢复，Codex先针对GPU1排空/重映射reset及≤15分钟只读/临时GPU健康检查，过门后同源同run step0恢复、保留已耗1787.20s预算。当前高层暂停而非完成；若硬件错误持续须维护协调，不无限重启或修改共享env。启动准入此前缺少ECC/remap状态门，应补可重放健康回执。
