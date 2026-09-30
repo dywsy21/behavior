@@ -4,6 +4,8 @@
 
 ## 高层补测预登记（16:52北京时间，尚无GPU速度结果）
 
+**17:11正确性更正：** A800安装的Liger0.6.5（ops文件SHA `d60c76aa58eb7bd3d573ceb58a49c59cd0860be3f7e43db0d5c73fc8c0cef68c`）逐token `reduction=none`的backward仅读取上游首梯度。`weighted-ce-cuda-v1`实测非均匀目标loss误差0、参数梯度相对L2误差0.72048，不能用它测未来正确的0.25 memory训练。源码`4e59b5b`改为非均匀显式CE、均匀仍fused；CUDA参照中修后非均匀loss与输入/参数梯度全部误差0，37 CPU回归过。共享env未改；不从当前环境推断robo历史B训练是否同样受影响。原m16容量门首backward OOM、m8-v1虽2更新退出但不纳入有效吞吐；新m8-v2恢复原B权重重新测，所有临时权重均不发布。下方“fused CE”为原预登记，正式时间必须绑定修后正确后端。
+
 用户已定global256、每个逻辑episode固定随机相位0–15、之后每16帧一个候选，两遍沿用同一网格；高低层各一节点独立遍历100任务两遍。此前低层约60h不能视为高层已经测成。本轮Codex / BENCH-MEMHIGH-256只做高层时间测量，不启动长训、发布新模型或改共享环境。
 
 - 高层使用真实B-final：原完整checkpoint SHA `d4580d80cdc91a707c233a6c1e625f8fbdeca8896dd38a3d570c6fad340184ef`；CPU无损导出950个model-state张量，逐字节验证后省略旧Adam等状态，11,440,576,631B导出SHA `e7cd7bf738eb46901565088f829aa82c5c6ea95f610d4df1499e634959d29b13`。传输到共享盘后仍须完整SHA验证，不以文件出现或已开始上传当完成。

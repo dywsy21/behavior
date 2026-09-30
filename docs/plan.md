@@ -28,6 +28,8 @@
 - 17:02容量m16-v1失败/exit1：八rank均950模型状态逐字节恢复、full planner326合同通过，但首更新反向checkpoint重计算MLP分配214MiB时OOM（PyTorch allocated77.52GiB）；0优化更新，无权重输出。09:01:11 UTC根错误保留于log，八卡已全释放。不是容量256已通过；按原有界备选降micro8/accum4、global256及文本/精度/目标不变，新run `capacity-long-m8-v1`仅2更新/900s＋30s，总90min预算不重置。
 - 17:05读取A800已安装Liger源码发现`reduction=none`返回逐token loss，但backward `element_mul_kernel`只读grad_output首元素，疑似不支持memory0.25这种非均匀上游梯度。准备终止本任务m8-v1时其已自然完成2更新/exit0，未实际发出有效停止；全部GPU已释放，原2次临时更新不保存、不作为有效吞吐结论。下一先做小CUDA张量与显式CE梯度对照，通过正确后端才继续；不将旧B已训权重称因此全失效、不修改共享环境。
 - 17:08新增加权CE保护：非均匀token目标选择现有显式CE后端；保留原均匀fused分支，非零weighted z-loss拒绝而不静默忽略。新增CPU门及无模型小CUDA梯度对照，待新源冻结和实测；容量m16 OOM历史保留，后续有效测速须绑定修复源码，原全局样本/图像/梯度预算不扩展。
+- 17:09源4e59b5b已commit/Git bundle冻结（GitHub push当时仍等待网络响应）；A800 37/37 CPU通过，小CUDA对照`weighted-ce-cuda-v1`真实确认：原FLCE非均匀权重loss误差0，但输入/参数梯度相对L2误差0.5770/0.7205；均匀原路径过。修后helper非均匀显式CE loss/两类梯度误差均0，均匀fused仍过。仅本环境核实，不推断robo历史训练库一致。下一同新源`capacity-long-m8-v2`，global256/micro8/accum4、2更新/900s＋30s；旧m8-v1虽完整恢复/梯度覆盖且2步退出，因目标梯度问题不用于有效时间报告。所有旧文件/共享env不动。
+- 17:12修后m8-v2完成第1次更新（326梯度/冻结0），第2次forward的显式CE申请2.50GiB失败（allocated72.91GiB，GPU总占78.62GiB），exit1/八卡已释放；因此首步能跑不能当可持续容量，1次临时更新不保存。4e59b5b重试GitHub push已成功。最后一档容量门改为`capacity-long-m4-v1`、8×micro4×accum8仍global256、2更新/900s＋30s；不改变样本目标或减掉长上下文，原44更新/90min总限保持。
 
 ### 2026-09-30 14:30（北京时间）：完整阶段/超参及样本顺序提案核验完成，未开新训练（Codex / PLAN-MEM100-RECIPE）
 
