@@ -10,6 +10,26 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 14:11（北京时间）：stride16读取/计数完成，batch256时间估计归档（Codex / BENCH-MEM1F-256）
+
+- `cpu-io-stride16-v1` complete/exit0，32worker、100任务800窗口，首轮69.4887/s、热轮160.1385/s；全20k metadata重算stride16候选13,191,664、完整32步候选13,152,880。本地独立核两pass各100任务/400窗、起点整除16、来源匹配、三RGB/23动作/61状态/0CUDA通过。
+- GPU与CPU共四件结果已取回本地并双端SHA核同：GPU`229052df…31de2f`，I/O主`cd1308bf…0d883e`，两pass`ed1c9569…332a7`/`946bc677…25ccb`。小汇总`docs/infra/results/2026-09-30-memlite-batch256-stride16.json`；[报告最新节](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)明确120.292观察/s、51.58GiB/卡及stride16全候选30.46h、约95% train28.94h的计算外推，非端到端训练。排期36–48h只是工程余量建议，不是保证。
+- 两作业均退出，末次GPU查询无计算进程；本轮30临时更新/0新checkpoint，未改变正式sampler/共享env/数据和模型原件，无追加384或长训。任务完成：已给256实际性能及stride16时间估计；完整35技能/标签/正式loader及合main前独立审查仍待。
+
+### 2026-09-30 14:09（北京时间）：batch256完成，开始stride16百任务CPU读取（Codex / BENCH-MEM1F-256）
+
+- `batch256-v1`在06:07:58.738873 UTC complete、进程exit0：6预热＋24计时，6144观察/51.075727s=**120.291972样本/s**，平均2.128155s/更新，峰值allocated51.582725GiB/卡、reserved52.050781GiB；八rank均322AE＋182LoRA grad，0OOM/0新checkpoint。比128吞吐+42.89%；不是收敛提升。
+- 原结果取回`artifacts/a800-memlite-oneframe-bench-20260930/results/batch256-v1.json`，双端完整SHA`229052dfdb37135eabae5ec609bed2570cad26bdda9c661d37129ca87831de2f`同。初步stride16原始13,191,664起点计算30.46h，约95% train 28.94h；正式loader/高层/保存eval未含。空卡门确认GPU均退出后提交同源`cpu-io-stride16-v1`（同根logs，32worker/800窗口/600s+30s），真实计数及I/O终态待。
+
+### 2026-09-30 14:07（北京时间）：batch256八rank旧权重恢复完成，处于预热（Codex / BENCH-MEM1F-256）
+
+- `batch256-v1/restored_rank0..7.json`八件回执已确认每rank1138模型状态/192LoRA完整恢复、同A4 SHA；首轮初始化/预热进行中，当前nvidia显存约51,496MiB/卡只是瞬时占用，不当最终峰值或吞吐。没有OOM，最终30步/退出与性能仍待。
+
+### 2026-09-30 14:05（北京时间）：九＋四CPU回归通过，提交batch256单次短测（Codex / BENCH-MEM1F-256）
+
+- 本地干净分支pull/push成功，源码`03e35f8464ac26683cdb4e6dc7d5f63001b9a973`固定；lc3直fetch20s超时后，同一已push commit经Git bundle verify/fetch导入新`src/mem1f-b256-03e35f8`，未覆盖旧源/修改env。共享env九项单帧/LoRA/预算CPU回归（3.038s）＋四项stride/I/O边界回归全部通过。
+- 06:04:48 UTC提交唯一`batch256-v1`，同根`logs/batch256-v1.log`；空卡门、独立run和30更新/1200s+30s外限启用，不保存权重。真实恢复/首前后向/最终吞吐待核，不能以提交当成功；CPU stride16探针等待GPU退出后才提交。
+
 ### 2026-09-30 13:58（北京时间）：用户授权batch256＋stride16有界测速，开始准备（Codex / BENCH-MEM1F-256）
 
 - 复用现有VPN/SSH，lc3八卡0MiB且无计算进程，共享env不改。新增单次global256=8×micro32/accum1准入；同A4/输入/超参，6预热＋24计时、1200s＋30s硬限，不OOM自动重试，不开长训/保存权重。详细[预登记](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。

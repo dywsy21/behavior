@@ -1,0 +1,149 @@
+{
+  "experiment": "BENCH-MEM1F-256",
+  "source_commit": "03e35f8464ac26683cdb4e6dc7d5f63001b9a973",
+  "checkpoint_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+  "input_sha256": "237acf01b29bd0d6806ed1a11d9033a747640b3ea9e0bf7246b7a62b4e92be81",
+  "compute": {
+    "status": "complete",
+    "completed_utc": "2026-09-30T06:07:58.738873+00:00",
+    "global_batch": 256,
+    "microbatch": 32,
+    "accumulation": 1,
+    "warmup_updates": 6,
+    "measured_updates": 24,
+    "measured_samples": 6144,
+    "measured_seconds": 51.07572743808851,
+    "samples_per_second": 120.29197249216774,
+    "mean_step_seconds": 2.1281553099203543,
+    "min_step_seconds": 2.0858257771469653,
+    "max_step_seconds": 2.3897596867755055,
+    "peak_allocated_gib": 51.58272457122803,
+    "peak_reserved_gib": 52.05078125,
+    "gradient_groups_all_ranks": [
+      {
+        "rank": 0,
+        "gradients": {
+          "vlm_lora": 182,
+          "action_expert": 322
+        }
+      },
+      {
+        "rank": 1,
+        "gradients": {
+          "vlm_lora": 182,
+          "action_expert": 322
+        }
+      },
+      {
+        "rank": 2,
+        "gradients": {
+          "vlm_lora": 182,
+          "action_expert": 322
+        }
+      },
+      {
+        "rank": 3,
+        "gradients": {
+          "vlm_lora": 182,
+          "action_expert": 322
+        }
+      },
+      {
+        "rank": 4,
+        "gradients": {
+          "vlm_lora": 182,
+          "action_expert": 322
+        }
+      },
+      {
+        "rank": 5,
+        "gradients": {
+          "vlm_lora": 182,
+          "action_expert": 322
+        }
+      },
+      {
+        "rank": 6,
+        "gradients": {
+          "vlm_lora": 182,
+          "action_expert": 322
+        }
+      },
+      {
+        "rank": 7,
+        "gradients": {
+          "vlm_lora": 182,
+          "action_expert": 322
+        }
+      }
+    ],
+    "scope": "cached approved 5-task TRAIN inputs; no raw video decoding",
+    "high_level_included": false,
+    "full_100task_end_to_end_training": false,
+    "deployed_checkpoint_saved": false,
+    "exit_code": 0,
+    "result_path": "/data/workspace/wsy/behavior2026/runs/memlite_oneframe_benchmark_20260930/batch256-v1/result.json",
+    "result_sha256": "229052dfdb37135eabae5ec609bed2570cad26bdda9c661d37129ca87831de2f"
+  },
+  "io": {
+    "status": "complete",
+    "scope": "real per-sample TorchCodec backend; grouped-episode raw Parquet/action/state read plus resize proxy",
+    "production_memlite_loader": false,
+    "labels_used": false,
+    "model_updates": 0,
+    "first_pass_includes_worker_startup": true,
+    "second_pass_is_disk_warm_not_guaranteed_decoder_warm": true,
+    "workers": 32,
+    "windows": 800,
+    "corpus": {
+      "tasks": 100,
+      "episodes": 20000,
+      "raw_frames": 210916774,
+      "seed": 73,
+      "observation_start_stride": 16,
+      "raw_candidate_starts": 13191664,
+      "full_horizon_candidate_starts": 13152880,
+      "counts_before_holdout_and_skill_filter": true
+    },
+    "passes": [
+      {
+        "pass_index": 0,
+        "wall_seconds": 5.7563332468271255,
+        "windows": 400,
+        "windows_per_second": 69.48868018030035
+      },
+      {
+        "pass_index": 1,
+        "wall_seconds": 2.497837108094245,
+        "windows": 400,
+        "windows_per_second": 160.1385449450644
+      }
+    ],
+    "exit_code": 0,
+    "source_commit": "03e35f8464ac26683cdb4e6dc7d5f63001b9a973",
+    "result_path": "/data/workspace/wsy/behavior2026/runs/memlite_oneframe_benchmark_20260930/cpu-io-stride16-v1/result.json",
+    "result_sha256": "cd1308bf27862eda1034b81ac15cb0318110e8bd57723fea55fcd4e4cb0d883e",
+    "pass0_sha256": "ed1c956920ff3df313fa783e2a8ef1cd5182df38adf1486188adce8c2aa332a7",
+    "pass1_sha256": "946bc677776e2031b332bd520008e5f7f46a1500c91e8302bcff1c266fc25ccb",
+    "local_source_frame_and_rgb_validation_passed": true
+  },
+  "extrapolation": {
+    "scope": "Compute-only, one observation start per 16 raw frames; before formal train eligibility, actual holdout, event oversampling, production loader, checkpoint saving and evaluation",
+    "all_candidate_windows": 13191664,
+    "all_batch256_updates": 51530,
+    "all_batch256_hours": 30.462141697358057,
+    "approx_95pct_train_hours": 28.93903461249015,
+    "full_32step_horizon_candidate_windows": 13152880,
+    "full_32step_horizon_hours": 30.372581828065574,
+    "all_batch128_hours": 43.52631805740451,
+    "throughput_ratio_to128": 1.4288659835489999,
+    "compute_time_reduction_fraction_to128": 0.300144302185561
+  },
+  "validation": {
+    "cpu_model_contract_tests": 9,
+    "cpu_io_boundary_tests": 4,
+    "gpu_oom": false,
+    "all_jobs_exited": true,
+    "formal_training_started": false
+  }
+}

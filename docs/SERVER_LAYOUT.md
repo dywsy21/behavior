@@ -2,6 +2,8 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
+**2026-09-30 14:11北京时间追加测速完成：** 同运行根新增`batch256-v1/`和`cpu-io-stride16-v1/`，均complete/exit0；同名日志在`logs/`。两者均绑定独立冻结`/data/workspace/wsy/behavior2026/src/mem1f-b256-03e35f8`（03e35f8464ac26683cdb4e6dc7d5f63001b9a973），源码经已push Git bundle导入，旧源/env不动。新四件小结果本地`artifacts/a800-memlite-oneframe-bench-20260930/results/`全SHA一致；无新checkpoint或残留GPU任务，[汇总](infra/results/2026-09-30-memlite-batch256-stride16.json)。
+
 **2026-09-30 13:31北京时间测速归档：** 运行根`/data/workspace/wsy/behavior2026/runs/memlite_oneframe_benchmark_20260930`，计算`batch64-v2/`和`batch128-v1/`均complete，CPU读取`cpu-io-v1/`complete，`logs/`保留输出、`inputs/`为原TRAIN微批/来源回执；无新训练checkpoint。实际计算源`src/mem1f-7af393b`、I/O源`src/mem1f-io-61661f3`，旧失败`src/mem1f-2193368`/`batch64-v1`也保留。源均固定不热改，所有自有作业已退出；本地小结果在`/home/wsy/behavior/artifacts/a800-memlite-oneframe-bench-20260930/results/`，轻量汇总进Git。[完整口径](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。
 
 **2026-09-30 13:02北京时间完成覆盖：** 主A4已正式发布为`/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`（16,581,363,550B），源/本地/目的完整SHA均`6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`。下条“上传中”为历史记录；14配套资产也全校验通过。模型前向与batch测速仍未完成，运行源码/配置不可直接沿用归档robo路径。
