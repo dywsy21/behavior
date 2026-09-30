@@ -69,6 +69,8 @@ def main():
     deadline = started + limit - previous
     env["STAGE1_SUPERVISOR_DEADLINE"] = str(deadline)
     env["STAGE1_SUPERVISOR_LIMIT"] = str(limit)
+    stop_file = control / f"stop_request_{attempt:03d}.json"
+    env["STAGE1_STOP_FILE"] = str(stop_file)
     command = [sys.executable, "-m", "torch.distributed.run", "--standalone", "--nproc_per_node=8",
                "--max_restarts=0", "scripts/train_memlite_stage1.py", "--config", str(args.config.resolve()),
                "--component", args.component, "--output", str(args.output)]
@@ -84,17 +86,24 @@ def main():
         ledger = dict(component=args.component, commit=commit, attempt=attempt, limit_seconds=limit,
                       supervisor_pid=os.getpid(), torchrun_pid=child.pid, output=str(args.output))
         stop_started = None
+        termination_started = None
         try:
             while child.poll() is None:
                 now = time.monotonic()
                 ledger.update(status="RUNNING", consumed_seconds=previous+now-started,
                               heartbeat_utc_seconds=time.time())
                 atomic_json(ledger_path, ledger)
-                if stopping[0] or now >= deadline:
-                    if stop_started is None:
-                        stop_started = now
+                if stopping[0] and stop_started is None:
+                    stop_started = now
+                    # Do not TERM torchrun before ranks have saved: elastic's
+                    # own shutdown grace can be shorter than a 27GB checkpoint.
+                    atomic_json(stop_file, dict(reason="supervisor_signal", attempt=attempt))
+                hard_stop = now >= deadline or (stop_started is not None and now-stop_started >= cfg["save_reserve_seconds"])
+                if hard_stop:
+                    if termination_started is None:
+                        termination_started = now
                         os.killpg(child.pid, signal.SIGTERM)
-                    elif now - stop_started > 30:
+                    elif now - termination_started > 30:
                         os.killpg(child.pid, signal.SIGKILL)
                 time.sleep(2)
             code = child.wait()

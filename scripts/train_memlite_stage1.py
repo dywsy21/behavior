@@ -112,6 +112,7 @@ def main():
         raise RuntimeError("Launch through scripts/infra/launch_memlite_stage1.py for cumulative failed-job accounting")
     external_deadline = float(os.environ["STAGE1_SUPERVISOR_DEADLINE"])
     external_limit = float(os.environ["STAGE1_SUPERVISOR_LIMIT"])
+    stop_file = Path(os.environ["STAGE1_STOP_FILE"])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=Path("configs/memlite_stage1/stage1.yaml"))
     parser.add_argument("--component", choices=("high", "low"), required=True)
@@ -271,7 +272,7 @@ def main():
         iterator = iter(loader)
         epoch_finished = True
         for update in range(state["next_update"], schedule.updates):
-            should_stop = (stopping[0] or wall.exhausted(config["save_reserve_seconds"])
+            should_stop = (stopping[0] or stop_file.exists() or wall.exhausted(config["save_reserve_seconds"])
                            or time.monotonic() + config["save_reserve_seconds"] >= external_deadline)
             if rank == 0 and state["step"] % 10 == 0:
                 active = subprocess.check_output(["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader,nounits"], text=True)
@@ -331,7 +332,9 @@ def main():
                 record = dict(step=state["step"], epoch=state["epoch"], next_update=state["next_update"],
                     loss=(totals[0]/totals[1]).item(), denominator=totals[1].item(), observations=int(totals[2].item()),
                     seconds=elapsed, observations_per_second=totals[2].item()/elapsed,
-                    grad_norm=float(grad_norm), lr=optimizer.param_groups[0]["lr"], consumed_seconds=accounted_seconds())
+                    grad_norm=float(grad_norm), lr=optimizer.param_groups[0]["lr"], consumed_seconds=accounted_seconds(),
+                    peak_allocated_gib=torch.cuda.max_memory_allocated(device)/1024**3,
+                    peak_reserved_gib=torch.cuda.max_memory_reserved(device)/1024**3)
                 with (args.output / "train.jsonl").open("a") as stream:
                     stream.write(json.dumps(record, allow_nan=False) + "\n")
                 print(json.dumps(record), flush=True)
@@ -346,7 +349,10 @@ def main():
             break
         state["epoch"] += 1
         state["next_update"] = 0
-    eval_and_log()
+    # A requested/near-budget stop prioritizes recoverable weights, not a new
+    # validation pass. Normal short gates and completed passes still evaluate.
+    if not stop_file.exists() and time.monotonic()+config["save_reserve_seconds"] < external_deadline:
+        eval_and_log()
     checkpoint(reason if state["step"] < config["max_updates"] else "COMPLETED_UPDATE_LIMIT")
     if rank == 0:
         run.finish()
