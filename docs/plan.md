@@ -18,6 +18,7 @@
 - [操作手册](infra/MEMLITE_STAGE1_RUNBOOK.md)、[轻量结果/精确SHA](infra/results/2026-09-30-memlite-stage1-acceptance.json)、SERVER_LAYOUT与TEAM_PLAN已更新；旧S1–S9审查保留并标注被本次实施状态覆盖。实际吞吐/工期修订和数据裁剪/标签修复都已记入，不沿用缓存测速承诺。
 - 154份小证据/306,594B包已取回并逐件SHA复核，本地`artifacts/stage1-preparation-20260930/final-evidence`；bundle SHA3955ad92…4374f8d9b。不含模型/原数据/凭据；原所有权重、失败候选、run保持。小JSON与真实回执逐项一致，新增手册/审查链接及diff检查通过。
 - 最新fetch确认origin/main仍33677bd；变更仅本feature安全提交，不合main/不覆盖他人；最终文档通过Git bundle交接到独立`src/stage1-handoff-20260930`，训练源d0528b4保持。下一由团队成员独审并明确启动正式一遍/120h；性能分解优化可另立有界任务，阶段2/3和恢复数据/RL职责不变。
+- 21:06交接终态：1b7a46f已push（首次TLS失败后重试成功），共享handoff worktree精确1b7a46f且clean；本地154小文件逐SHA验证完成。仅关闭本任务lc1/lc2 SSH master，未重登/关闭EC或VPN，不影响队友会话；没有遗留本轮GPU/CPU验收进程。
 
 ### 2026-09-30 20:53（北京时间）：双节点训练/恢复/最终保存完成，正式长训仍未启动（Codex / IMPL-MEM100-STAGE1）
 
