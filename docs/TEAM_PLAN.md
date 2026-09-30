@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-30 11:39（北京时间）Codex / PLAN-MEM100-TIME完成[八卡一遍SFT条件估算](experiments/2026-09-30-single-node-sft-time-estimate.md)：旧六帧A4低层仅1.418样本/s（四A100），不能直接把诊断配方当百任务高效配方；8卡端到端吞吐/最终有效样本索引仍是既有正式训练准入的一部分，需明确预算后实测。逐帧与stride16口径相差约16倍，高低层分开计算；本轮仅CPU元数据及只读日志，未分配节点/启动基准或正式训练，不变更数据/RL owner。
+
 2026-09-30 11:18（北京时间）Codex / INFRA-A800-STATUS确认ModelScope下载完成：终端26,350/26,350并返回bash，旧下载PID退出；官方清单0缺失，26,347件训练文件大小全匹配，仅仓库`.gitattributes`大小不同。见[新证据](infra/results/2026-09-30-dataset-status.json)。数据下载等待项解除，但官方全内容hash、正确snapshot根reader检查及MEM-Lite准入仍待；不变更数据/RL owner，本轮无重启下载、新训练或环境修改。
 
 2026-09-29 21:53（北京时间）Codex / INFRA-A800-STATUS按用户最新授权恢复ec并只读检查lc2：后续ModelScope下载PID1032615/tmux`behavior-data`仍运行，约94.0%字节、余64.1GB头部RGB；旧alpha回执不是当前任务。动作/标注/meta/双腕RGB按大小已齐，内容hash未全验；实际snapshot根见SERVER_LAYOUT及[证据](infra/results/2026-09-29-dataset-status.json)。不更改数据/RL owner、不接管下载、不启动训练；待下载完成后核官方SHA及数据根，不将终端99%件数当完整数据准入。
