@@ -15,6 +15,8 @@
 - 4f73bda/lc1 `high-v1`首attempt已exit0/437.75s、八卡释放；8个rank的950状态恢复及326梯度/冻结0合同通过，两个global256真实更新完成，第二步6.94s（首步含worker冷启动119.56s，不能据单步报稳态吞吐）。初始200窗/100task CE0.61261，非方法效果结论。
 - 20:24同source/output/数据显式`--resume --preflight-stop-step 4`已提交，仍累计原60min，不重置预算/W&B。恢复回执、更新3/4及最终权重待验证。
 - v4 `sampler-v4.json`完整12,299,471候选/48,045更新，0重复/遗漏；高微批≥2task、低≥18task，末批207，schedule SHA8d6983dd…570e6a2，manifest SHA90ff0fa9…85d6f23。工具源0f6856a仅加审计/手册未改运行训练源；TRAIN动作界901/953文件仍CPU运行，低层尚未启动。
+- 20:25 bounds完成/592.89s：100task/18,895 TRAIN来源、12,299,471窗口全覆盖，stats SHA10dc04dc…6cbd929，仅action min/max变化/0eval贡献；最大相对手臂界约±3.11rad、底盘±0.7/±0.3，非无限逆变换。`data-qa-v3`＋随后`normalizer-v2`已在lc2以0f6856a纯CPU提交（16worker/60min＋往返20min），最终数值和图审待。
+- 20:27恢复后八rank精确载入step2、更新3/4完成，LR从3e-8→4e-8、消费游标3/4连续、同W&B id，最终eval/save仍进行中。4f73bda共享env51项CPU回归全过/16.15s（runtime/labels/sampling/norm及邻接模型/存取），不是独审。
 
 ### 2026-09-30 20:18（北京时间）：高层step0评测/保存完成，正式操作手册接线（Codex / IMPL-MEM100-STAGE1）
 
