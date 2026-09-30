@@ -49,3 +49,23 @@ GPU1上运行模拟器与观察服务，分别CPU88–91、48–51；模型≤59
 - 实际API/新工程门/六例仿真尚未运行，不把上述CPU证据等同于任务成功率。
 
 12:27最终全套813项/48.213s通过，5环境skip；implementation `403c74df8227e51b67203428e3033c3725f2bc56fe15e82fc4bbb54cbfd1ca69`，registry `40454b2a560960198fe2b9e745078ccf6d1f11ec5dfa3f2ede1c294268d760e2`。
+
+## 实际执行进度
+
+12:31：Git冻结4698b0aa37edf5b2758286fa3a2d5dec3777533e已robo部署，sim Python下71目标检查和六window实际SHA/身份全部通过。真实API九次规划均完成，54/54有效请求，result SHA `71cef4f9e7f2258b251b82dc5cd2132709ebe09db874c9be46b2ba15007729be`；19件回执在本地`artifacts/jev-control-20260929/multitask/api_v1`逐件双端SHA核同。后台协调器87628已运行，首门88005/88021正常实控；六例SR仍待。
+
+## 旁路：旧搜索停滞输入的敏感性，不修改本轮actor
+
+只使用JEV-04 decision3保存请求，源SHA `eefd27fccc3cb868aa351404eb164e3701853116e9a1085521a1e2be90b33aa5`。当时Jev已选择search、目标不可见、15动作均通过预检；底盘yaw候选实际存在，通用rotation字段却为false，且1/3/8°转动均尚未跨24-bin覆盖的下一中心。
+
+独立探针d40334879da1e407c44516820966d9336dc5490c保留原16选项（含abstain），交错A/B/C共9调用、240s、零控制/仿真/训练。A完整原输入；B仅附加“世界搜索以获取信息为目的、量化覆盖未跨bin不等于图像不变”的解释，保留所有安全条件、不指定方向；C仅根据现有yaw候选将泛化rotation标签改true。当前在跑的4698b0a actor未采用这些改动。
+
+| 条件 | 原始计数 | 平均HOLD概率 | 平均yaw_plus micro概率 |
+| --- | --- | --- | --- |
+| A 原样 | 3/3 HOLD | 0.2967 | 0.0667 |
+| B 世界搜索解释 | 3/3 yaw_plus micro（1°） | 0.1700 | 0.2800 |
+| C 仅rotation标签 | 3/3 HOLD | 0.2467 | 0.0933 |
+
+这是**同一真实停滞输入对问题表述的敏感性证据**，不是完整任务效果或泛化检验。B仍只选择1°微转；是否能在有限时间找到目标、改善成功率没有验证。C单独不足，不能将此标签认作唯一根因，也不能从概率直接断言内部推理机制。本轮不围绕这一实例无限调提示、不改变已登记六例版本。
+
+本地v1在第2请求网络失败后停止（2 attempts/1有效，唯一A选择HOLD），原失败保留且不混作v2连续成功；同脚本改由robo网络路径的新v2全部9/9有效，60,471输入/1,755输出tokens。v2的12件完整证据在`/home/wsy/behavior/artifacts/jev-control-20260929/multitask/search_sensitivity_v2`，逐件双端SHA核同、durable ledger核过；result SHA `1829e9e85c80a7062b63b1ef02d4cc0efe433d2c394e8ca81ec0e47747147bc5`。原v1 SHA `812fe92eea196d671dd03b756096a2c72d900822fb57dc785a01fc8f93ef97fb`。

@@ -10,6 +10,23 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 12:46（北京时间）：旧搜索输入解释确实改变该状态的Jev选择，尚非SR改善（Codex）
+
+- 同d403348独立robo源`jev_search_d403348`的`jev_search_context_20260930_v2`已完成9/9有效请求，监管126955退出，0控制/重置/训练。三条件各3次完整保留：A原样3/3 HOLD；B只追加世界搜索/量化bin解释3/3选择base yaw_plus micro（1°）；C只修通用rotation派生标签仍3/3 HOLD。v1先前2 attempts/1有效＋1网络失败另保留，未纳入v2的9分母。
+- 结论仅为**同一真实停滞输入对搜索语义解释敏感**，并非所有失败根因已证明，也不是成功率提升；标签改名/布尔修正本身不足。B仍只选1°微转，是否足以完成长搜索完全未测。此旁路未执行、未改变4698b0a的固定多任务评测，不基于这1状态无限调提示。v2全量正在取回本地，下一保存SHA/小报告。
+- 主gate0已control192/decision10、监管正常，无新错误；六例后台仍按原协议等待两门完成。
+- v2共60471输入/1755输出tokens、完整ledger核过，12件回执已取回本地`artifacts/jev-control-20260929/multitask/search_sensitivity_v2/`并逐件双端SHA一致；result `1829e9e8…147bc5`。三条件原始计数/概率及v1网络失败均写入JEV-05实验文档，不再扩这个单状态提示搜索。
+
+### 2026-09-30 12:45（北京时间）：旁路v1第二请求网络失败，原失败保留；主评测正常（Codex）
+
+- 本地`search_sensitivity_v1`在第2请求发生TypeSafe network/timeout failure并按约定停止，2 attempts/1有效；唯一原样对照仍选HOLD（0.24、abstain0.21），不足以比较条件。result SHA `812fe92eea196d671dd03b756096a2c72d900822fb57dc785a01fc8f93ef97fb`，原目录/失败账本保留、不覆盖/不挑成功子段。0控制/重置，不把网络失败当模型弃权。
+- 用户API验证全局不限；另登记同d403348/同输入/同9-call、240s完整v2批，改由robo网络路径运行，以分离本地连通性风险，不改问题/超时/模型。仍完整保留v1+v2及失败，不能自动合并为连续9成功；将新建独立probe checkout，不热改gate源。主gate0已到control106/decision5、所有已读执行freshness通过/正常实控，原六例流程不变。
+
+### 2026-09-30 12:43（北京时间）：JEV-05首门开始实控；9-call旁路输入诊断启动（Codex，运行中）
+
+- gate0原监管88005/actor88021已native_profile_validated，official reset/load TRAIN138/reset全部完成，physical GPU1，已到control51/decision1（12:42读取）；没有重复重置/actor改源，完整门仍待。协调器87628将自行接后续gate3和六例。
+- 本地独立冻结probe工作树`/home/wsy/behavior_worktrees/jev-search-probe-20260930`、commit d403348已启动原9请求/240s旧输入对照，输出`/home/wsy/behavior/artifacts/jev-control-20260929/multitask/search_sensitivity_v1`；仅API假设选择不执行、也不热改4698b0a在跑actor。结果待，不自动以文字更动替换既定评测。
+
 ### 2026-09-30 12:38（北京时间）：JEV-05旁路旧搜索输入诊断登记，不改在跑actor（Codex）
 
 - 两门加载期间检查JEV-04 decision3真实保存请求（SHA `eefd27fccc3cb868aa351404eb164e3701853116e9a1085521a1e2be90b33aa5`）：Jev已选search，目标不可见、无immediate hazard，15合法候选含6个底盘yaw，但通用rotation字段为false（源实现把body分类优先）；所有1/3/8度预测都未跨24-bin的下一个中心。它们是潜在解释歧义，不能据此断言模型内部原因。
