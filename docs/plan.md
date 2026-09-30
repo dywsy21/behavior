@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 19:35（北京时间）：v2构建完成、真实高低样本通过，百任务CPU验收中（Codex / IMPL-MEM100-STAGE1）
+
+- da42b06已push并独立冻结；32项CPU回归通过/69.82s。真实同状态高/低样本读取成功，三路1×3×256×256 RGB、32×27 action及四补齐位保持，0CUDA。v2完整构建220.39s/exit0，隔离从282减至110，172条有效leaf来源恢复；v1及异常证据保留，仍不是ACCEPTED。
+- `runs/stage1_acceptance_20260930/data-qa-v1`已启动：全百任务train/eval分层、35技能及长上下文CPU/图审样本，da42b06源/16worker/60min/0GPU。全量源hash此时已验870GB/0失败、仍运行，不重复启动。
+- 新增独立supervisor累计失败/初始化/评测/保存墙钟、显式resume同run/同预算、拒绝未闭合ledger自动重置；正式入口必须经supervisor。新增checkpoint实存取优化器＋三类RNG精确回归，本地5 runtime＋4 sampler通过（本地无pytest，使用unittest）；新增八rank Gloo分母/累积等价验证脚本和真实首步梯度/逐task统计核验，待新冻结运行。尚无GPU更新。
+
 ### 2026-09-30 19:27（北京时间）：真实数据接口修复与v2候选准备（Codex / IMPL-MEM100-STAGE1）
 
 - 1df23ab冻结源31项相关CPU回归通过/44.18s；真实窗口另外发现LeRobot解码返回float RGB而原G0.5 ToTensor要求uint8，已按整数像素无损还原接口，待新冻结源真实读取复验。没有随机换样本或跳过读取错误。

@@ -108,6 +108,10 @@ def evaluate(model, dataset, rank, world, device, config, step, *, limit=None):
 
 def main():
     launch_started = time.monotonic()
+    if "STAGE1_SUPERVISOR_DEADLINE" not in os.environ:
+        raise RuntimeError("Launch through scripts/infra/launch_memlite_stage1.py for cumulative failed-job accounting")
+    external_deadline = float(os.environ["STAGE1_SUPERVISOR_DEADLINE"])
+    external_limit = float(os.environ["STAGE1_SUPERVISOR_LIMIT"])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=Path("configs/memlite_stage1/stage1.yaml"))
     parser.add_argument("--component", choices=("high", "low"), required=True)
@@ -218,24 +222,23 @@ def main():
     signal.signal(signal.SIGINT, signal_stop)
     eval_dataset = Stage1Dataset(config["release"], model_config, args.component, "eval")
     parameters = [p for p in model.parameters() if p.requires_grad]
-    last_checkpoint_step = -1
+    def accounted_seconds():
+        return max(wall.consumed(), external_limit - (external_deadline - time.monotonic()))
 
     def checkpoint(reason):
-        nonlocal last_checkpoint_step
         # No live forward/cache references belong in an optimizer checkpoint.
         clear_loss_cache(model)
         local_rng = capture_rng()
         rng_by_rank = [None] * world if rank == 0 else None
         dist.gather_object(local_rng, rng_by_rank, dst=0)
         state["save_sequence"] += 1
-        state["consumed_seconds"] = wall.consumed()
+        state["consumed_seconds"] = accounted_seconds()
         if rank == 0:
             receipt = save_checkpoint(args.output / "checkpoints", model=model, optimizer=optimizer,
                                       state=dict(state), rng_by_rank=rng_by_rank)
             atomic_json(args.output / "status.json", dict(status=reason, step=state["step"], epoch=state["epoch"],
                 next_update=state["next_update"], consumed_seconds=receipt["consumed_seconds"], checkpoint=receipt["path"]))
         dist.barrier()
-        last_checkpoint_step = state["step"]
 
     def eval_and_log():
         result = evaluate(model, eval_dataset, rank, world, device, config, state["step"], limit=200 if preflight else None)
@@ -268,7 +271,8 @@ def main():
         iterator = iter(loader)
         epoch_finished = True
         for update in range(state["next_update"], schedule.updates):
-            should_stop = stopping[0] or wall.exhausted(config["save_reserve_seconds"])
+            should_stop = (stopping[0] or wall.exhausted(config["save_reserve_seconds"])
+                           or time.monotonic() + config["save_reserve_seconds"] >= external_deadline)
             if rank == 0 and state["step"] % 10 == 0:
                 active = subprocess.check_output(["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader,nounits"], text=True)
                 should_stop |= bool({int(x) for x in active.splitlines() if x.strip().isdigit()} - set(own_pids))
@@ -298,6 +302,9 @@ def main():
                     denominator = metrics["loss_denominator"].detach()
                     if not torch.isfinite(loss) or denominator <= 0:
                         raise ValueError("Invalid objective; no optimizer update permitted")
+                    if not torch.isclose(loss.detach().float(), metrics["row_loss_numerator"].sum() / denominator,
+                                         rtol=1e-4, atol=1e-5):
+                        raise ValueError("Per-task statistics do not match the differentiated objective")
                     (loss * denominator).backward()
                 totals += torch.stack((loss.detach().double() * denominator,
                                        denominator.double(), torch.tensor(len(actual), device=device)))
@@ -305,6 +312,15 @@ def main():
                 del loss, metrics, batch
             dist.all_reduce(totals)
             normalize_ddp_gradients(parameters, totals[1].item(), world)
+            if state["step"] == (0 if not args.resume else receipt["state"]["step"]):
+                groups = model.coordination_trainable_parameter_groups()
+                coverage = {k: sum(p.grad is not None for _, p in v) for k, v in groups.items()}
+                expected = {"planner_vlm": 326} if args.component == "high" else {"action_expert": 322, "vlm_lora": 182}
+                if coverage != expected or any(p.grad is not None for p in model.parameters() if not p.requires_grad):
+                    raise RuntimeError("Real first-step trainable/frozen gradient coverage failed: " + str(coverage))
+                atomic_json(args.output / f"gradients_rank{rank}_step{state['step']}.json",
+                            dict(coverage=coverage, frozen_gradients=0, global_denominator=float(totals[1]),
+                                 observed_global_batch=int(totals[2]), statistics_match_objective=True))
             grad_norm = torch.nn.utils.clip_grad_norm_(parameters, config["grad_clip"], error_if_nonfinite=True)
             optimizer.step()
             state["step"] += 1
@@ -315,7 +331,7 @@ def main():
                 record = dict(step=state["step"], epoch=state["epoch"], next_update=state["next_update"],
                     loss=(totals[0]/totals[1]).item(), denominator=totals[1].item(), observations=int(totals[2].item()),
                     seconds=elapsed, observations_per_second=totals[2].item()/elapsed,
-                    grad_norm=float(grad_norm), lr=optimizer.param_groups[0]["lr"], consumed_seconds=wall.consumed())
+                    grad_norm=float(grad_norm), lr=optimizer.param_groups[0]["lr"], consumed_seconds=accounted_seconds())
                 with (args.output / "train.jsonl").open("a") as stream:
                     stream.write(json.dumps(record, allow_nan=False) + "\n")
                 print(json.dumps(record), flush=True)

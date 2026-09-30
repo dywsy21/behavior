@@ -42,6 +42,46 @@ class RuntimeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             m.normalize_ddp_gradients([p], 0, 2)
 
+    def test_atomic_checkpoint_restores_optimizer_rng_and_committed_cursor(self):
+        import random
+        import numpy as np
+        import torch
+        torch.manual_seed(17)
+        random.seed(17)
+        np.random.seed(17)
+        model = torch.nn.Linear(3, 2)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+
+        def step(net, opt):
+            opt.zero_grad(set_to_none=True)
+            x = torch.randn(4, 3) * (random.random() + np.random.rand())
+            loss = net(x).square().mean()
+            loss.backward()
+            opt.step()
+            return loss.detach()
+
+        step(model, optimizer)
+        with tempfile.TemporaryDirectory() as tmp:
+            state = dict(step=1, save_sequence=1, next_update=1, epoch=0,
+                         consumed_seconds=7., fingerprint="exact-recipe", wandb_run_id="same-run")
+            receipt = m.save_checkpoint(tmp, model=model, optimizer=optimizer, state=state,
+                                        rng_by_rank=[m.capture_rng()])
+            expected_loss = step(model, optimizer)
+            saved, restored_receipt = m.load_checkpoint(tmp, "exact-recipe")
+            resumed = torch.nn.Linear(3, 2)
+            resumed.load_state_dict(saved["model_state_dict"], strict=True)
+            resumed_opt = torch.optim.AdamW(resumed.parameters(), lr=1e-3)
+            resumed_opt.load_state_dict(saved["optimizer_state_dict"])
+            m.restore_rng(saved["rng_by_rank"][0])
+            self.assertTrue(torch.equal(step(resumed, resumed_opt), expected_loss))
+            for original, recovered in zip(model.parameters(), resumed.parameters()):
+                self.assertTrue(torch.equal(original, recovered))
+            self.assertEqual(saved["state"]["next_update"], 1)
+            self.assertGreaterEqual(restored_receipt["consumed_seconds"], 7.)
+            self.assertEqual(receipt, restored_receipt)
+            with self.assertRaises(ValueError):
+                m.load_checkpoint(tmp, "different-data-or-code")
+
 
 if __name__ == "__main__":
     unittest.main()
