@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 11:46（北京时间）：173续训已进入新自主采样，重启验收完成（Codex / RL-G05-50K-E3）
+
+- 新run `e3_render_resume_v1/status.json`已collecting：34个新rollout chunks/544自主控制、累计58264控制/0 pending；先前1980控制用于884/1096课程前缀。actor173/critic72/14完整批暂不变，尚未本次新PPO更新，不能把采样当参数改善或新SR。
+- 监管37389/learner37396/两sim37649、37658为同一组，自动课程/真实概率门后正在持续采样。只读I/O快照两sim已有75/88次capture、0失败、0重试；未遇到原故障，不等于长期SDK根因已根治。173/Adam/RNG/历史/预算恢复及实际原生控制验收通过。
+- 本次用户“重启训练”已完成。保留970896e冻结源、无训练/总墙钟、原80k TRAIN/100k总控制及同六对final；不追加作业/预算、不动GPU1其他作业。状态、checkpoint、视频继续写新run，后续看新`status.json/supervisor.json`与最终`result.json`。代码和进度通过独立feature分支Git同步，未合main。
+
 ### 2026-09-30 11:41（北京时间）：新E3两路仿真已实际执行，进入课程回放（Codex / RL-G05-50K-E3）
 
 - 原监管37389/learner37396/两sim37649、37658持续运行；`e3_render_resume_v1/status.json`已从initializing进入training_curriculum，各回放240控制，累计56220＝继承55740＋新480、0 pending，actor173/critic72/14批保持。两worker `steps.jsonl/io.jsonl`已真实增长，非仅进程存在；尚未到本次自主采样/PPO新更新。
