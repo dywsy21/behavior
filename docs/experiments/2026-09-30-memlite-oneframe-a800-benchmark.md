@@ -2,6 +2,14 @@
 
 2026-09-30，Codex / BENCH-MEM1F，分支 `bench/memlite-oneframe-a800-20260930`。用户授权短测速，不是全量训练。
 
+## batch256＋stride16追加短测预登记（13:58北京时间）
+
+- 授权/负责人：用户明确要求“试一下bs256，stride16，给时间估计”；Codex / BENCH-MEM1F-256。主假设为每卡micro32可运行且增加单帧低层计算吞吐；不假设收敛更好。
+- 资源/预算：lc3的8×A800，已只读确认八卡0MiB/0计算进程。单次global256=8×32、accum1；6预热＋24计时，共30临时更新，GPU墙钟硬限1200s＋30s退出清理。OOM/非有限值/梯度合同失败/外部占卡即停止，不自动重试/累积fallback/加测384，无部署checkpoint。
+- 身份/对照：同16.58GB A4 step2500、SHA`6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`；同十条已审查TRAIN输入SHA`237acf01b29bd0d6806ed1a11d9033a747640b3ea9e0bf7246b7a62b4e92be81`、5任务、rank seed73+rank。保持三RGB单帧256²、连续32动作、23控制/27表示、4FM噪声、AE＋r8 LoRA、BF16/fresh AdamW1e-5。对照先前64/128实测，不借改监督或梯度换吞吐。
+- stride16口径：GPU计算仍复用固定缓存，**不能称百任务stride16端到端训练**。另在GPU退出后运行只读CPU探针，实际观察起点取16的倍数、32连续动作不降采样，100任务各一episode/四窗/两pass共800窗口、32worker、600s＋30s硬限；重算20k metadata的stride16候选数/完整32步窗口数，区分尾padding、holdout/技能过滤。CPU探针不造标签、不参与GPU梯度，依旧非正式MEM loader。
+- 代码：本轮仅开放256预算和I/O stride16选项/回归。启动前commit/push并导入新冻结worktree，原64/128源及共享env不动；run拟`runs/memlite_oneframe_benchmark_20260930/batch256-v1`、`cpu-io-stride16-v1`。本地首次fetch遇GnuTLS握手失败，保留改动重试；未假称同步成功，准确源SHA/CPU验证/启动记录补入plan。
+
 ## 9/30后续决策：稀疏取窗与batch选择（分析，未新增训练）
 
 用户明确“不需要每帧一个样本”。下文逐帧51.19/29.00天仅保留作历史统计参照，**不再作为计划训练预算的默认口径**；本轮未修改正式采样器或自行指定训练总步数。

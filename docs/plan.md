@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:58（北京时间）：用户授权batch256＋stride16有界测速，开始准备（Codex / BENCH-MEM1F-256）
+
+- 复用现有VPN/SSH，lc3八卡0MiB且无计算进程，共享env不改。新增单次global256=8×micro32/accum1准入；同A4/输入/超参，6预热＋24计时、1200s＋30s硬限，不OOM自动重试，不开长训/保存权重。详细[预登记](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。
+- GPU仍测原真实TRAIN缓存的计算性能；追加CPU stride16真实RGB/连续动作读取及20k metadata计数，100任务800窗口/600s上限，在GPU退出后运行，非完整MEM loader。只变观察起点间隔，不稀释32步动作监督；固定stride16候选与正式train窗数分开。
+- 本地首次fetch因GnuTLS握手失败，重试fetch已成功且origin/main/本分支无新增远端提交；有本轮改动期间不强pull，提交后在干净分支ff-only同步。新增代码py_compile/diff和四项本地I/O边界回归通过；共享env九项模型合同回归尚待，未提交服务器作业。启动必须固定新Git源、CPU回归及空卡门；任务/数据/RL职责不变。
+
 ### 2026-09-30 13:52（北京时间）：按用户澄清更新采样预算与batch分析，不追加实验（Codex / BENCH-MEM1F）
 
 - 用户明确不需逐帧一个样本；逐帧51.19/29.00天降为历史参照，不作默认训练预算。建议约stride16密度、每轮随机合法起点并核关键事件覆盖；固定stride16候选约1319万、64/128计算参考3.20/1.81天，正式过滤/holdout/事件加密后的train数待。未改sampler或启动正式数据重建。

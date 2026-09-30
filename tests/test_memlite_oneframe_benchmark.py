@@ -45,6 +45,14 @@ def fixtures():
 
 
 class OneFrameContract(unittest.TestCase):
+    def test_batch256_is_micro32_and_keeps_the_update_budget(self):
+        for batch in (64, 128, 256):
+            self.assertEqual(bench.batch_plan(batch), (batch // 8, 6, 24))
+        self.assertEqual(bench.batch_plan(128, 2), (8, 5, 20))
+        for args in ((256, 2), (64, 2), (512, 1), (256, 1, 4), (256, 0)):
+            with self.assertRaises(ValueError):
+                bench.batch_plan(*args)
+
     def test_partial_git_port_refuses_unaudited_history_before_model_allocation(self):
         from g05.models.g05.g05_policy_memlite_skill_fm import G05PolicyMEMLiteSkillFM
         for steps in (6, 0, None, True):

@@ -155,10 +155,20 @@ def restored_policy(arch):
     return model, contract
 
 
+def batch_plan(global_batch, accumulation=1, world=8):
+    """Keep each authorized probe bounded; batch256 has no implicit retry."""
+    if world != 8 or global_batch not in (64, 128, 256):
+        raise ValueError('Only registered eight-GPU batch sizes are allowed')
+    if accumulation not in (1, 2) or (accumulation == 2 and global_batch != 128):
+        raise ValueError('Only the preregistered batch128 fallback may accumulate')
+    warmup, measured = (5, 20) if accumulation == 2 else (6, 24)
+    return global_batch // world // accumulation, warmup, measured
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--output', type=Path, required=True)
-    ap.add_argument('--global-batch', type=int, choices=(64, 128), default=64)
+    ap.add_argument('--global-batch', type=int, choices=(64, 128, 256), default=64)
     ap.add_argument('--accumulation', type=int, choices=(1, 2), default=1)
     ap.add_argument('--cpu-preflight', action='store_true')
     args = ap.parse_args()
@@ -192,10 +202,7 @@ def main():
     rank, world, local = (int(os.environ[key]) for key in ('RANK', 'WORLD_SIZE', 'LOCAL_RANK'))
     if world != 8 or rank != local:
         raise ValueError('Exactly one eight-GPU node is required')
-    if args.accumulation == 2 and args.global_batch != 128:
-        raise ValueError('Only the preregistered batch128 fallback may accumulate')
-    micro = args.global_batch // world // args.accumulation
-    warmup, measured = (5, 20) if args.accumulation == 2 else (6, 24)
+    micro, warmup, measured = batch_plan(args.global_batch, args.accumulation, world)
     torch.manual_seed(73 + rank)
     torch.cuda.set_device(local)
     dist.init_process_group('nccl', timeout=timedelta(seconds=180))

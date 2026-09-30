@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-30 13:58（北京时间）BENCH-MEM1F-256获用户追加授权：Codex负责同A4的单节点global256/stride16有限速度估计，GPU仅30临时更新/20分钟、CPU100任务800窗口/10分钟，OOM不重试，不开全量训练。当前准备未启动；[预登记](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)保留计算缓存/真实I/O/正式loader的边界，既有数据与RL职责不变。
+
 2026-09-30 13:52（北京时间）BENCH-MEM1F后续选型：按用户“不需逐帧”改用稀疏取窗预算方向，候选约stride16＋关键事件覆盖、正式索引尚待；global128暂作起点，256仅容量/样本效率待验证候选，不以最大显存batch作默认训练配置。分析见[原报告新节](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)；无新服务器任务/采样器修改，不改变数据/RL分工及正式训练准入依赖。
 
 2026-09-30 13:42（北京时间）BENCH-MEM1F权重迁移与两档八卡单帧短测完成：[结果](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。64/128为47.69/84.19观察/s，峰值allocated28.37/36.11GiB，100任务CPU I/O热轮150.91窗/s但非完整loader。最终单帧安全门源3f974fc在共享env八CPU合同＋三I/O回归全过；60临时更新/0新checkpoint，GPU及I/O作业均退出。不启动正式训练、不改变数据/RL分工。下一准入仍需完整P0-02/35技能与标签、真实全量loader，不能将本次单帧最小迁移视为完整旧六帧路线已移植；正式合main前独立审查仍待。

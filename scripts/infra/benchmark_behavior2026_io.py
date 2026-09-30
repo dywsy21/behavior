@@ -20,33 +20,48 @@ KEYS = ('observation.rgb.zed_link_camera_0', 'observation.rgb.left_realsense_lin
         'observation.rgb.right_realsense_link_camera_0')
 
 
-def anchors(length):
+def anchors(length, stride=1):
     if not isinstance(length, int) or length < 64:
         raise ValueError('Need at least 64 real episode frames')
-    return [int((length - 32) * fraction) for fraction in (.15, .35, .60, .85)]
+    if isinstance(stride, bool) or stride not in (1, 16):
+        raise ValueError('Only registered observation strides 1 and 16 are allowed')
+    slots = (length - 32) // stride + 1
+    if slots < 4:
+        raise ValueError('Need four distinct full-horizon observation starts')
+    selected = []
+    for i, fraction in enumerate((.15, .35, .60, .85)):
+        previous = selected[-1] if selected else -1
+        selected.append(max(previous + 1, min(int((slots - 1) * fraction), slots - (4 - i))))
+    return [index * stride for index in selected]
 
 
-def schedule(root):
+def schedule(root, stride=1):
     import pyarrow.parquet as pq
     info = json.loads((root / 'meta/info.json').read_text())
     if (info['fps'] != 30 or info['data_path'] != 'data/chunk-{chunk_index:03d}/file-{file_index:03d}.parquet'
             or info['video_path'] != 'videos/{video_key}/chunk-{chunk_index:03d}/file-{file_index:03d}.mp4'):
         raise ValueError('Unexpected metadata clock/path contract')
     groups = {}
-    total_frames = total_episodes = 0
+    total_frames = total_episodes = candidate_starts = full_horizon_starts = 0
     for path in sorted((root / 'meta/episodes').glob('chunk-*/file-*.parquet')):
         for row in pq.read_table(path).to_pylist():
             groups.setdefault(int(row['task_index']), []).append(row)
             total_episodes += 1
-            total_frames += int(row['length'])
+            length = int(row['length'])
+            total_frames += length
+            candidate_starts += (length + stride - 1) // stride
+            full_horizon_starts += max(0, (length - 32) // stride + 1)
     if set(groups) != set(range(100)) or total_episodes != 20000 or total_frames != 210916774:
         raise ValueError('Expected the fixed 100-task/20k metadata corpus')
     rng = random.Random(73)
     selected = []
     for task, group in sorted(groups.items()):
         row = rng.choice(sorted(group, key=lambda row: int(row['episode_index'])))
-        selected.append(dict(root=str(root), row=row, frames=anchors(int(row['length']))))
-    return selected, dict(tasks=100, episodes=total_episodes, raw_frames=total_frames, seed=73)
+        selected.append(dict(root=str(root), row=row, frames=anchors(int(row['length']), stride)))
+    return selected, dict(tasks=100, episodes=total_episodes, raw_frames=total_frames, seed=73,
+                          observation_start_stride=stride, raw_candidate_starts=candidate_starts,
+                          full_horizon_candidate_starts=full_horizon_starts,
+                          counts_before_holdout_and_skill_filter=True)
 
 
 def worker_initialize():
@@ -104,6 +119,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--workers', type=int, default=32, choices=(8, 16, 32))
+    parser.add_argument('--stride', type=int, default=1, choices=(1, 16))
     args = parser.parse_args()
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
     os.environ['OMP_NUM_THREADS'] = '1'
@@ -111,7 +127,7 @@ def main():
     if subprocess.check_output(['nvidia-smi', '--query-compute-apps=pid', '--format=csv,noheader,nounits'], text=True).strip():
         raise RuntimeError('Do not overlap I/O probe with the GPU compute measurements')
     args.output.mkdir(parents=True, exist_ok=False)
-    jobs, corpus = schedule(ROOT)
+    jobs, corpus = schedule(ROOT, args.stride)
     results = []
     with ProcessPoolExecutor(max_workers=args.workers, mp_context=multiprocessing.get_context('spawn'),
                              initializer=worker_initialize) as pool:
