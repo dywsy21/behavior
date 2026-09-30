@@ -4,13 +4,21 @@
 
 当前仍是为50任务大训练筛选通用方法的小规模准备阶段。三人分工、任务ID和实验预算见[团队任务板](TEAM_PLAN.md)，通用RL路线见[RL方法计划](RL_METHOD_PLAN.md)，文件位置见[服务器目录表](SERVER_LAYOUT.md)。这些文档与本计划应同步维护，历史记录不得覆盖用户最新要求及当前预算。
 
-**2026-09-30当前口径覆盖：** 阶段1现按新版官方100task/20k演示准备，高层一遍、低层累计120h，节点lc1/lc2；本次只完成正式链和有限工程验收，尚未启动长训。最新可复现操作入口见[阶段1手册](infra/MEMLITE_STAGE1_RUNBOOK.md)，下方早期50task/五task属于历史验证范围。
+**2026-09-30当前口径覆盖：** 用户已明确授权启动新版官方100task阶段1正式训练：lc1高层一遍、lc2低层累计120h，两层独立8卡DDP并接入W&B。最新真实启动状态见下方实时进度，操作入口见[阶段1手册](infra/MEMLITE_STAGE1_RUNBOOK.md)；下方早期50task/五task属于历史验证范围。阶段2/3不因此自动开跑。
 
 **2026-09-13最新职责：** 用户将更多训练数据、特别是错误恢复数据交给一位队友，将通用RL交给另一位队友；本线程/Codex集中研究高低层怎样训练更有效、条件服从与协同接口、相应方法评测和集成。原E0–E7目标/质量要求不缩减，但不重复承担队友的数据扩充或RL实现；需要新数据时提出明确接口与证据需求，不擅自平行重建。
 
 **续接约定（用户最新明确要求）：** 超参/训练方法答疑已经完成，不再重复回答，候选依据见[方法文档](experiments/2026-09-13-fm-training-method-candidates.md)。compact后从下方最新真实执行记录续做FM/AR训练与闭环，核验既有进程后再行动；不能把历史问句当成当前问题。此约定已加入AGENTS.md。
 
 ## 实时进度（最新记录在前）
+
+### 2026-09-30 21:24（北京时间）：正式阶段1获批，启动前登记（Codex / TRAIN-MEM100-STAGE1）
+
+- 用户最新明确要求高低层各自正式开训并接入W&B，覆盖此前“未获正式开训授权”。唯一运行负责人Codex；lc1高层一遍12,299,471个TRAIN窗口/48,045更新，另168h事故上限；lc2低层累计作业墙钟120h或200k更新先到，无自动重试/预算追加。保留另一成员独审作为合main条件，本轮只运行已验冻结feature，不合main、不接管队友数据/RL。
+- 主要假设：在100task共享示范上分别扩展高层规划CE和低层技能条件FM，形成后续意图适配/恢复的共同基座。以各自初始化时固定3200窗（每task32）的loss作学习对照；暂不声称成功率提升，不新增超参搜索或仿真预算。
+- 固定源`d0528b4b0d553c252b6173355c1d4d567a9f9d76`，v4 manifest SHA90ff0fa9…85d6f23、低层stats SHA10dc04dc…6cbd929；高初始化原B-final SHAe7cd7bf7…29b13，低原A4 SHA61867047…32f269，fresh optimizer，不使用工程短验新权重。seed17，global256/单episode固定offset0–15＋stride16/跨task混批，保留全部受保护eval来源。
+- 21:23只读核验：lc1/lc2各8×A800全部0MiB、无GPU计算进程，共享余3.8T；源clean且commit正确，数据/stats SHA与验收一致，W&B凭据0600，两个正式run及supervisor路径均不存在。沿用现有VPN/SOCKS，仅建立自有SSH连接，未重登EC；未修改env或旧run。
+- 预定run：`runs/memlite_stage1_high_100task_v1`、`runs/memlite_stage1_low_100task_v1`，独立tmux；W&B团队`hanhanyy-fudan-university-school-of-management/behavior2026-g05`。此条仍为启动前，下一核8rank恢复→完整初始eval→step0保存→真实梯度更新与online曲线；异常数值/来源不符/外部GPU竞争按现有门失败退出，共享余<256GiB通知本作业保存停止，不删除文件。
 
 ### 2026-09-30 21:02（北京时间）：正式链准备交付，证据归档完成（Codex / IMPL-MEM100-STAGE1）
 
