@@ -18,6 +18,8 @@
 - W&B凭据不写入源码、文档、命令行或日志；本轮无上传/登录，正式训练安全配置另处理。高层全量有效标签和时间对齐尚未发布：分别报告原始stride候选数量、合法标签覆盖、真实序列长度对应速度，不把代理读取/模板成本称全量端到端训练。当前0GPU更新/0权重迁移完成，下一先同步真实高层资产并补CPU合同测试。
 - 16:15准备进展：robo已恢复；核B-final原高层类/skill协议/加权AR helper与本地历史归档三件SHA完全一致。独立worktree迁入原高层及依赖，增加单帧门，保留原memory0.25/UNKNOWN mask语义；新增CPU模型全张量导出和五任务TRAIN长度分层输入准备脚本。尚未模型构造/运行，待CPU检查和冻结源；旧高层缓存含heldout的版本不作训练计时输入。
 - 16:24源a22ee99已push，两机独立冻结源落地；本地/robo三项CPU导出合同通过，A800高层import通过。robo CPU权重导出`memhigh_a800_benchmark_20260930/weights-v1`运行中（20分钟上限）；inputs-v1在Hydra相对parts-meta路径按SSH登录目录解析处失败、0模型/0GPU，保留日志。修复为只在原冻结source中解析，后续用new inputs-v2，原权重作业不重启；GPU短测仍0更新。
+- 16:28权重CPU导出已完成：950个模型状态逐字节等同B-final原件，原完整SHA通过；导出11,440,576,631B，SHA`e7cd7bf7…9d29b13`，无Adam/0CUDA、66.67s。新冻结3b6c407启动本地8并发分块中转（`artifacts/a800-memlite-high-bench-20260930/weights/status.json`），此刻未到A800最终名；同源inputs-v2仅重做CPU输入，旧失败保留。新增真实高层训练测速入口、按全局有效token权重做梯度累积、固定episode stride相位计数；均待CPU门/冻结和资产终态，不将开始传输当迁移完成。
+- 16:41输入v2成功：107.19s/0CUDA，30条原TRAIN记录覆盖5任务各6个文本长度分位，当前帧三相机/原监督标签不改；样本SHA`68e5e56d…30d312`，原train eligible digest一致。本地取回并向A800同步小配置/输入；大权重仍传输中。新增测速/固定stride计数的5项CPU算术测试与py_compile通过，GPU实测仍待真实token门与权重终态；lc3此刻8卡仍空闲。输入证据为robo `memhigh_a800_benchmark_20260930/inputs-v2/receipt.json`，本地同任务artifacts/inputs。
 
 ### 2026-09-30 14:30（北京时间）：完整阶段/超参及样本顺序提案核验完成，未开新训练（Codex / PLAN-MEM100-RECIPE）
 
