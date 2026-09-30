@@ -1,0 +1,452 @@
+{
+  "schema": "rl_speed_readonly_audit_v1",
+  "audit_time_bjt": "2026-09-30 18:44",
+  "owner": "Codex / RL-SPEED-AUDIT",
+  "run": "robo:/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1",
+  "source_commit": "970896ede236851809573b02b48401f67f5e9dd2",
+  "status_rows": 1609,
+  "stage_method": "Adjacent RL_STATUS phase boundary differences; train window clipped at first training_curriculum status + training_result.seconds. These are wall-clock buckets, not kernel profiling. Updating includes checkpoint/reset overhead; final bucket includes inter-seed reset and shutdown.",
+  "training": {
+    "seconds": 10891.108076805249,
+    "physical_controls": 22596,
+    "expert_prefix_controls": 11496,
+    "autonomous_controls": 11100,
+    "batches": 6,
+    "actor_updates_from": 173,
+    "actor_updates_to": 208,
+    "candidate_trials": 158,
+    "accepted": 35,
+    "rejected": 123,
+    "phase_seconds": {
+      "training_curriculum": 1480.9263843456283,
+      "automatic_curriculum_passed": 0.0020292596891522408,
+      "model_probability_gates": 4.471904153935611,
+      "collecting": 1614.0528609585017,
+      "updating": 7791.654898087494
+    },
+    "updating_fraction": 0.7154143401332461,
+    "autonomous_controls_per_second": 1.0191800431803286,
+    "full_rollout_candidate_score_calls": 17723,
+    "implied_ae_velocity_forward_calls": 177230,
+    "same_gradient_retry_intervals": {
+      "count": 117,
+      "seconds": 5245.346382762305,
+      "median_seconds": 48.53873803652823,
+      "definition": "Adjacent updating status rows both containing last_trial, previous rejected, with unchanged actor_updates and batch. Includes rollback/candidate evaluation/status overhead, not a CUDA-only timer."
+    },
+    "rejection_reasons_nonexclusive": {
+      "max_path_kl": 123,
+      "mean_path_kl": 9,
+      "surrogate_not_improved": 0,
+      "logratio_overflow": 0
+    }
+  },
+  "final": {
+    "controls": 19344,
+    "episodes": 6,
+    "phase_seconds": 2601.708313183859,
+    "aggregate_controls_per_second": 7.435114805905218,
+    "mean_per_environment_controls_per_second": 3.717557402952609,
+    "initialization_seconds": 473.33725467231125
+  },
+  "replay_reference": {
+    "run": "robo:/mnt/nvme_tmp/robodojo_g05_rl_20260928/e1_v3/throughput.json",
+    "controls": 256,
+    "serial_seconds": 53.31285466719419,
+    "parallel_seconds": 28.040516529232264,
+    "speedup": 1.9012793366918006,
+    "includes_per_chunk_observation": true,
+    "excludes_model_and_initialization": true
+  },
+  "limitations": [
+    "No component-level physics/render/readback/inference timing or historical GPU occupancy samples reconstructed.",
+    "Candidate score count inferred from immutable event counts and audited source loops, not profiler call counters.",
+    "No new GPU jobs, training, environment changes, RTX benchmark or speed gain measured in this audit."
+  ],
+  "stages": [
+    {
+      "phase": "bc_preflight",
+      "start": 50.8269584197551,
+      "controls_start": 55740,
+      "actor_start": 173,
+      "batch": 14,
+      "last": 50.8269584197551,
+      "controls_end": 55740,
+      "actor_end": 173,
+      "end": 68.04321159329265,
+      "duration": 17.216253173537552
+    },
+    {
+      "phase": "training_initializing",
+      "start": 68.04321159329265,
+      "controls_start": 55740,
+      "actor_start": 173,
+      "batch": 14,
+      "last": 68.04321159329265,
+      "controls_end": 55740,
+      "actor_end": 173,
+      "end": 563.5072759473696,
+      "duration": 495.464064354077
+    },
+    {
+      "phase": "training_curriculum",
+      "start": 563.5072759473696,
+      "controls_start": 55740,
+      "actor_start": 173,
+      "batch": 14,
+      "last": 805.1012716619298,
+      "controls_end": 57720,
+      "actor_end": 173,
+      "end": 811.4793326035142,
+      "duration": 247.97205665614456
+    },
+    {
+      "phase": "automatic_curriculum_passed",
+      "start": 811.4793326035142,
+      "controls_start": 57720,
+      "actor_start": 173,
+      "batch": 14,
+      "last": 811.4793326035142,
+      "controls_end": 57720,
+      "actor_end": 173,
+      "end": 811.4798985738307,
+      "duration": 0.000565970316529274
+    },
+    {
+      "phase": "model_probability_gates",
+      "start": 811.4798985738307,
+      "controls_start": 57720,
+      "actor_start": 173,
+      "batch": 14,
+      "last": 811.4798985738307,
+      "controls_end": 57720,
+      "actor_end": 173,
+      "end": 815.9518027277663,
+      "duration": 4.471904153935611
+    },
+    {
+      "phase": "collecting",
+      "start": 815.9518027277663,
+      "controls_start": 57720,
+      "actor_start": 173,
+      "batch": 14,
+      "last": 1097.0219878451899,
+      "controls_end": 59430,
+      "actor_end": 173,
+      "end": 1101.9897918188944,
+      "duration": 286.0379890911281
+    },
+    {
+      "phase": "updating",
+      "start": 1101.9897918188944,
+      "controls_start": 59430,
+      "actor_start": 173,
+      "batch": 14,
+      "last": 2282.4980080472305,
+      "controls_end": 59430,
+      "actor_end": 178,
+      "end": 2304.163407649845,
+      "duration": 1202.1736158309504
+    },
+    {
+      "phase": "training_curriculum",
+      "start": 2304.163407649845,
+      "controls_start": 59430,
+      "actor_start": 178,
+      "batch": 15,
+      "last": 2545.400316182524,
+      "controls_end": 61410,
+      "actor_end": 178,
+      "end": 2551.7354558482766,
+      "duration": 247.57204819843173
+    },
+    {
+      "phase": "automatic_curriculum_passed",
+      "start": 2551.7354558482766,
+      "controls_start": 61410,
+      "actor_start": 178,
+      "batch": 15,
+      "last": 2551.7354558482766,
+      "controls_end": 61410,
+      "actor_end": 178,
+      "end": 2551.7358145797625,
+      "duration": 0.0003587314859032631
+    },
+    {
+      "phase": "collecting",
+      "start": 2551.7358145797625,
+      "controls_start": 61410,
+      "actor_start": 178,
+      "batch": 15,
+      "last": 2745.4754706257954,
+      "controls_end": 62608,
+      "actor_end": 178,
+      "end": 2746.836007972248,
+      "duration": 195.10019339248538
+    },
+    {
+      "phase": "updating",
+      "start": 2746.836007972248,
+      "controls_start": 62608,
+      "actor_start": 178,
+      "batch": 15,
+      "last": 4075.1979403970763,
+      "controls_end": 62608,
+      "actor_end": 185,
+      "end": 4097.97331005428,
+      "duration": 1351.137302082032
+    },
+    {
+      "phase": "training_curriculum",
+      "start": 4097.97331005428,
+      "controls_start": 62608,
+      "actor_start": 185,
+      "batch": 16,
+      "last": 4339.03917382285,
+      "controls_end": 64492,
+      "actor_end": 185,
+      "end": 4345.413381015882,
+      "duration": 247.44007096160203
+    },
+    {
+      "phase": "automatic_curriculum_passed",
+      "start": 4345.413381015882,
+      "controls_start": 64492,
+      "actor_start": 185,
+      "batch": 16,
+      "last": 4345.413381015882,
+      "controls_end": 64492,
+      "actor_end": 185,
+      "end": 4345.413684533909,
+      "duration": 0.00030351802706718445
+    },
+    {
+      "phase": "collecting",
+      "start": 4345.413684533909,
+      "controls_start": 64492,
+      "actor_start": 185,
+      "batch": 16,
+      "last": 4629.341810321435,
+      "controls_end": 66540,
+      "actor_end": 185,
+      "end": 4631.283997247927,
+      "duration": 285.8703127140179
+    },
+    {
+      "phase": "updating",
+      "start": 4631.283997247927,
+      "controls_start": 66540,
+      "actor_start": 185,
+      "batch": 16,
+      "last": 6298.465259727091,
+      "controls_end": 66540,
+      "actor_end": 193,
+      "end": 6321.802258993499,
+      "duration": 1690.518261745572
+    },
+    {
+      "phase": "training_curriculum",
+      "start": 6321.802258993499,
+      "controls_start": 66540,
+      "actor_start": 193,
+      "batch": 17,
+      "last": 6561.843157609925,
+      "controls_end": 68424,
+      "actor_end": 193,
+      "end": 6568.298881308176,
+      "duration": 246.49662231467664
+    },
+    {
+      "phase": "automatic_curriculum_passed",
+      "start": 6568.298881308176,
+      "controls_start": 68424,
+      "actor_start": 193,
+      "batch": 17,
+      "last": 6568.298881308176,
+      "controls_end": 68424,
+      "actor_end": 193,
+      "end": 6568.299176339991,
+      "duration": 0.0002950318157672882
+    },
+    {
+      "phase": "collecting",
+      "start": 6568.299176339991,
+      "controls_start": 68424,
+      "actor_start": 193,
+      "batch": 17,
+      "last": 6852.271037187427,
+      "controls_end": 70472,
+      "actor_end": 193,
+      "end": 6854.433954803273,
+      "duration": 286.1347784632817
+    },
+    {
+      "phase": "updating",
+      "start": 6854.433954803273,
+      "controls_start": 70472,
+      "actor_start": 193,
+      "batch": 17,
+      "last": 7927.260729738511,
+      "controls_end": 70472,
+      "actor_end": 198,
+      "end": 7949.911754777655,
+      "duration": 1095.477799974382
+    },
+    {
+      "phase": "training_curriculum",
+      "start": 7949.911754777655,
+      "controls_start": 70472,
+      "actor_start": 198,
+      "batch": 18,
+      "last": 8190.481107256375,
+      "controls_end": 72356,
+      "actor_end": 198,
+      "end": 8196.841224002652,
+      "duration": 246.92946922499686
+    },
+    {
+      "phase": "automatic_curriculum_passed",
+      "start": 8196.841224002652,
+      "controls_start": 72356,
+      "actor_start": 198,
+      "batch": 18,
+      "last": 8196.841224002652,
+      "controls_end": 72356,
+      "actor_end": 198,
+      "end": 8196.841485593468,
+      "duration": 0.0002615908160805702
+    },
+    {
+      "phase": "collecting",
+      "start": 8196.841485593468,
+      "controls_start": 72356,
+      "actor_start": 198,
+      "batch": 18,
+      "last": 8474.072828155011,
+      "controls_end": 74404,
+      "actor_end": 198,
+      "end": 8476.177801105194,
+      "duration": 279.33631551172584
+    },
+    {
+      "phase": "updating",
+      "start": 8476.177801105194,
+      "controls_start": 74404,
+      "actor_start": 198,
+      "batch": 18,
+      "last": 9490.561437824741,
+      "controls_end": 74404,
+      "actor_end": 202,
+      "end": 9511.789158149622,
+      "duration": 1035.6113570444286
+    },
+    {
+      "phase": "training_curriculum",
+      "start": 9511.789158149622,
+      "controls_start": 74404,
+      "actor_start": 202,
+      "batch": 19,
+      "last": 9749.985872105695,
+      "controls_end": 76288,
+      "actor_end": 202,
+      "end": 9756.305275139399,
+      "duration": 244.5161169897765
+    },
+    {
+      "phase": "automatic_curriculum_passed",
+      "start": 9756.305275139399,
+      "controls_start": 76288,
+      "actor_start": 202,
+      "batch": 19,
+      "last": 9756.305275139399,
+      "controls_end": 76288,
+      "actor_end": 202,
+      "end": 9756.305519556627,
+      "duration": 0.0002444172278046608
+    },
+    {
+      "phase": "collecting",
+      "start": 9756.305519556627,
+      "controls_start": 76288,
+      "actor_start": 202,
+      "batch": 19,
+      "last": 10035.759087045677,
+      "controls_end": 78336,
+      "actor_end": 202,
+      "end": 10037.87879134249,
+      "duration": 281.57327178586274
+    },
+    {
+      "phase": "updating",
+      "start": 10037.87879134249,
+      "controls_start": 78336,
+      "actor_start": 202,
+      "batch": 19,
+      "last": 11444.318495661952,
+      "controls_end": 78336,
+      "actor_end": 208,
+      "end": 11468.98006144166,
+      "duration": 1431.1012700991705
+    },
+    {
+      "phase": "final_initializing",
+      "start": 11468.98006144166,
+      "controls_start": 78336,
+      "actor_start": 208,
+      "batch": 20,
+      "last": 11468.98006144166,
+      "controls_end": 78336,
+      "actor_end": 208,
+      "end": 11942.317316113971,
+      "duration": 473.33725467231125
+    },
+    {
+      "phase": "evaluating_rl_fp32",
+      "start": 11942.317316113971,
+      "controls_start": 78336,
+      "actor_start": 208,
+      "batch": 20,
+      "last": 14539.110551015474,
+      "controls_end": 97680,
+      "actor_end": 208,
+      "end": 14544.02562929783,
+      "duration": 2601.708313183859
+    },
+    {
+      "phase": "completed",
+      "start": 14544.02562929783,
+      "controls_start": 97680,
+      "actor_start": 208,
+      "batch": 20,
+      "last": 14544.02562929783,
+      "controls_end": 97680,
+      "actor_end": 208
+    }
+  ],
+  "sources_sha256": {
+    "learner.stdout.log": {
+      "sha256": "17e30e04744b94875032321993a669ab17cf19a1399a94e2a1668125d0c600f1",
+      "bytes": 471653
+    },
+    "learner.jsonl": {
+      "sha256": "01b3d2de52b15c51ff075a361e278e06ed98deff5e6785e43a6cdf6fc3533281",
+      "bytes": 73664
+    },
+    "training_result.json": {
+      "sha256": "689f48dc7266924de39ddcf9b9ad8eb8393dbe770c7694427d935fae5dedd514",
+      "bytes": 281
+    },
+    "result.json": {
+      "sha256": "da5c0a9d6f72939755f66a2e98f9fbeeb4f9067e350e008651156f48aea30764",
+      "bytes": 2485
+    },
+    "manifest.json": {
+      "sha256": "6b5342d65697d537cbcd16ed3d4804764ec8687121a367edd7012edcb6c52a5a",
+      "bytes": 90149
+    },
+    "throughput.json": {
+      "sha256": "18dac81f9911786992fade6fbca93dd16c0bf133c6e841b99d4699fbcd20d337",
+      "bytes": 447
+    }
+  }
+}

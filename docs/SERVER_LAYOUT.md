@@ -2,6 +2,8 @@
 
 ## RTX测速节点（2026-09-28，独立于robo/A800）
 
+- **2026-09-30 18:44北京时间状态更正：** 同原路径只读复核，bootstrap_v1已因准备时间上限失败、assets_v2已因HTTP分段下载错误失败；只实例/robot两归档完整，`runs/sim_speed_v1`不存在。4090空闲；目录/partial保留，未启动新准备或测速。不要根据以下09-29历史PID推断仍在运行/准备完成；详见[吞吐审计](experiments/2026-09-30-simulator-throughput-audit.md)。
+
 - 用户指定`user@10.162.152.173`，实测hostname `teai-g1`，单RTX4090/24GiB、Ubuntu22.04、Ultra9 285K/24核、125GiB RAM，根盘约677GiB空。原CPU服务保留，不停止；无BEHAVIOR/Isaac环境，当前无GPU计算进程。
 - WSL直连/经robo不通，Windows网络可达；使用仅SSH子进程的Windows TCP stdio通道，无VPN/路由/全局代理改变。用户授权追加本机现有ED25519公钥，免密已实测通过；密码不写文件/Git。
 - 本任务隔离根`/home/user/behavior_rl_speed_20260928`已于09-29建立；`src/behavior`固定3410ef9（运行中不可pull），`src/BEHAVIOR-1K`固定SDK，`envs/sim`独立环境。12:32唯一CPU bootstrap2623015，`runs/bootstrap_v1/{launch,status}.json`及阶段log、根`bootstrap-launch.stdout.log`；原2h/0GPU预算，安装/仿真/测速未验收。准备与结果见[RTX测速记录](experiments/2026-09-28-rl-rtx-speed.md)。

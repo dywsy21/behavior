@@ -1,5 +1,7 @@
 # PERF-RTX-RL：RTX与robo的同工作量测速
 
+**2026-09-30 18:44北京时间只读复核：准备已失败，不再是运行中。** 免密连接正常；`bootstrap_v1/status.json`为failed/7201.09s，`TimeoutError('Registered preparation time limit')`；`assets_v2/status.json`为failed/5799.38s，物件归档某HTTP206分段返回302/exit52，只有实例与robot两归档完成。`sim_speed_v1`不存在，4090为15MiB/0%，**没有有效RTX测速或与A100倍率**。本次未重启安装/下载/仿真、未改环境，部分数据保留。后续速度工作见[09-30吞吐审计](2026-09-30-simulator-throughput-audit.md)。
+
 **最新状态（09-29 13:33北京时间）：访问已通、CPU准备中，尚无RTX GPU/速度数字。** 唯一安装2623015进入torch依赖下载，独立资产2647737的实例/robot归档已SHA及解压完成、物件分段约8.3GiB。两原2h CPU预算/盘余量守卫不变，不能重复启动、热改env或当作准备完成。实际待测Git源为`src/perf_9b06353`/9b0635362e20ec57c2f4ad1ddf32f9f2f54613cb，双端10项CPU检查过；修正了控制器过早绑核导致两sim继承错误CPU范围的问题。`sim_speed_v1`尚未创建/启动。
 
 官方包源cuDNN726.9MB耗17m41s，补试公共Aliyun同torch wheel的16MiB range，返回206但20秒仅14,662,830B（0.73MB/s）即超时，未完成全range；这只是下载链路诊断，不是仿真/模型速度，未因此换镜像或改活跃安装。资产访问配置仅两授权机间复制并字节核同、user/600，临时本地副本已删，内容不进入本报告/Git。下一先等CPU作业终态，失败则按原已耗处理、不当作可用环境；完成后用固定源执行`prepare_rtx_speed.py`，再由本人在场运行544控制/3600秒及300秒图审门。

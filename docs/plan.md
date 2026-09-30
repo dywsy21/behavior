@@ -10,6 +10,21 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 18:49（北京时间）：仿真速度研究完成；明确71.5%更新瓶颈与原生批量化路线（Codex / RL-SPEED-AUDIT）
+
+- 报告`docs/experiments/2026-09-30-simulator-throughput-audit.md`及13KB原日志SHA/阶段摘要JSON已归档。真实A100 Vulkan/PT渲染、官方入口GPU dynamics关闭、已chunk末取图；不能再归因为“没用GPU”。模型GPU0，sim GPU2/3；本轮0新GPU作业/0环境修改，E4失败接续仍未修复、未恢复RL。
+- 最新恢复段6批/11100自主控制/35新accepted：TRAIN10891.11s，其中更新桶约7791.65s/71.54%；158candidate、123拒绝均越max KL，117个同梯度重试间隔合5245.35s/87.42min。源码逐条全batch×10步评分，推算仅候选评价177230次AE forward；这是代码/日志推算非profiler。总自主吞吐1.019控制/s，final双环境7.435控制/s；未取得物理/渲染/推理单项耗时，不虚报实测提速。
+- 仿真待测点已定位：16个中间step仍读未使用obs、chunk末重复RGB-D读回；GPU2 worker绑NUMA3而非本地NUMA2；继承4线程/1%纹理预算/每请求16MB。原生SDK自带VectorEnvironment（多env pre-step后一次sim.step），可先做2场景原型，但异质实例、独立reset与图像批次合同未接好，非现成千环境吞吐。
+- 下一优先同语义计时→batch化固定轨迹评分/显存内回滚/已违规KL候选安全提前拒绝→仿真重复读与亲和小对照→VectorEnvironment/RTX同画质对照。保留真实23维/120Hz物理/30Hz控制/官方成功条件；不删安全门或减物理精度凑速度。2×端到端吞吐仅建议验收目标，非承诺或已测结果。
+- 4090节点18:44实查安装已超时failed、资产分段HTTP错误failed，仅实例/robot完整；`sim_speed_v1`不存在，无RTX倍率。已更正测速文档和目录表，不重启准备、不重新扩预算。其他成员/A800不动；本轮仅提交/push已检查的文档和轻量摘要，运行源码保持冻结。
+
+### 2026-09-30 18:42（北京时间）：转入仿真吞吐只读研究，确认A100已渲染、主要训练时间在更新段（Codex / RL-SPEED-AUDIT）
+
+- 按用户最新要求先研究速度，不恢复E4、不启动新训练/仿真、不改驱动或共享env。独立RL worktree已fetch/ff-only同步，其他阶段1线程dirty根目录保持原样；E4接续bug仍待修。
+- E3真实`final/sim_0.stdout.log`显示Vulkan选择A100 GPU2，`native_rl_profile.json`为PathTracing/OptiX、三相机720²/480²/480²、4 spp/16 totalSpp，viewer关闭；GPU3另一worker同配置。不是纯CPU渲染，当前闲卡是作业结束，不据此推断运行期未用GPU。
+- 对E3恢复段1609条`RL_STATUS`按相邻阶段时间做只读聚合：TRAIN课程1480.93s、自主采样1614.05s、updating桶7806.02s（含checkpoint/reset及最后收池/重载尾部，不能当纯CUDA kernel计时）；`training_result`实际训练10891.11s。约71%墙钟在更新桶，6批35次accepted/158次candidate，源码每candidate逐条重算整批10步FM概率。仅加速渲染不能解决大部分端到端耗时。
+- final六回合19344控制在评测阶段2601.71s，双环境合计7.435 controls/s（含推理/reset/关闭尾部，不是视频FPS）；旧同256动作串行/并行实测4.802→9.130 controls/s、1.901×，排除初始化/模型/PPO。物理/渲染细分尚无独立计时，继续核源码及官方支持资料，完成后归档速度审计与小规模验证顺序。
+
 ### 2026-09-30 18:35（北京时间）：E3完整评测0/6；E4接续因回合编号校验bug失败，当前无训练（Codex / RL-G05-50K-E4）
 
 - 用户本轮只问状态；本轮只读诊断＋文档归档，0代码修复/0训练或评测重启/0环境修改。共享根有其他阶段1线程dirty文档，保持原样；本线程独立RL worktree经fetch/ff-only同步，无新main（33677bd）。首次直连Git阻塞后仅终止自有fetch，用本任务SSH SOCKS同步；未改其他线程网络/运行源。
