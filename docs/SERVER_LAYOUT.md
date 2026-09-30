@@ -2,6 +2,8 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
+**2026-09-30 12:43北京时间权重状态：** 用户要求真实旧权重优先，A4低层FM＋LoRA完整checkpoint正传入`/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt.partial`（16,581,363,550B；源/本地完整SHA `61867047…32f269`已同）；目的全SHA通过后才发布为`step_2500.pt`，此刻未完成。该目录五件A4配置/统计/回执、`models/qwen3_5_2b_base_processor/`八件、`models/action_tokenizer.pt`（506,886,775B，SHA `5088f64a…dddace`）均已源/目的SHA一致。原配置保留robo路径作身份档案，后续入口需显式绑定新路径；高层B-final未在本轮迁移，单帧batch测速尚未启动。详见[本轮记录](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。
+
 **2026-09-30 11:18北京时间最新状态：下载已完成。** lc2 tmux`behavior-data`显示26,350/26,350及完成消息，原PID1032615已退出。固定官方清单0缺失，26,347件训练文件大小全部匹配；只有`.gitattributes`为2560而非2504B。真实数据根仍为下方ModelScope嵌套snapshot路径；未全量重算内容hash，不把下载齐全当完整训练准入。见[9/30证据](infra/results/2026-09-30-dataset-status.json)，下方9/29的94%为历史快照。
 
 **2026-09-29 21:53北京时间状态覆盖：** 用户已授权本次恢复ec/服务器只读检查。lc2当前下载为ModelScope脚本（PID1032615、tmux`behavior-data`），不是下方保留的9/27 alpha任务。真实数据根为`/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master`，外层`2026-challenge-demos`是cache_dir。约94.0%字节完成、剩64.1GB头部RGB，尚未完成官方全内容hash；不要让reader指到外层缓存根。新状态见[JSON](infra/results/2026-09-29-dataset-status.json)，本轮未移动/删除数据或改运行环境。
@@ -12,7 +14,7 @@
 - 下载环境`envs/download`为Python3.10.19；环境/数据准备状态和网络实测见[集群说明](infra/A800_CLUSTER.md)。该根新建，不含其他用户旧文件；数据和env不提交Git。
 - 最终训练环境`envs/g05-py310-cu128`（Py3.10.19/Torch2.7.1+cu128＋NPP）；editable源码已固定`src/infra-a5c9821`，四节点默认导入路径一致。`src/behavior`在移走env引用/无运行者后才ff-only同步协作分支；原b42c739安装历史由Git保留。激活`source /data/workspace/wsy/behavior2026/src/infra-a5c9821/scripts/infra/activate_a800_training.sh`；运行中不可改shared env/源码，切新代码用独立worktree＋进程级PYTHONPATH。
 - 历史RGB下载（9/27记录，9/29已确认退出）：lc2 tmux`behavior-rgb-alpha-20260927-v5`/python991067（pane991065），冻结`src/infra-075c5d3`；alpha镜像直连、禁代理/Xet、官方manifest固定SHA、8并发/1TiB reserve。`runs/dataset_rgb_alpha_20260927_v5`与`logs/dataset-rgb-alpha-v5.log`保留，无complete回执；当前ModelScope进度和嵌套根以上方9/29记录为准。当前训练配置本地缺文件会拒绝启动，不自行补深度。
-- 通信证据`runs/network_20260927`；四节点CPU组件与真实无depth视图证据`runs/environment_20260927`。新env三机24GPU本机验收全部过，lc4仅CPU；建议每机独立8卡，不默认三机大梯度同步。`models/`尚未下载新权重。
+- 通信证据`runs/network_20260927`；四节点CPU组件与真实无depth视图证据`runs/environment_20260927`。新env三机24GPU本机验收全部过，lc4仅CPU；建议每机独立8卡，不默认三机大梯度同步。9/27时`models/`为空；9/30迁移状态以上方更新为准，没有重新下载G0.5。
 
 ## 原robo记录（保留）
 

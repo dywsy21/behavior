@@ -10,6 +10,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 12:41（北京时间）：A4本地完整SHA通过，上传共享盘中（Codex / BENCH-MEM1F）
+
+- 全部16,581,363,550B完成拼接，SHA `6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`与robo原件一致；本地`weights/A4-step2500.verified.pt`保留。PID193613已自动进入`uploading`，子rsync213441写共享`step_2500.pt.partial`；完整共享盘SHA未通过前不发布最终名、不测速。
+- ActionCodec上传已exit0；进入目的端506,886,775B完整SHA和最终名发布验证。复用原lc3连接，不重连VPN/改网络；共享env及GPU仍未动。下一只核最终完整副本和只读元数据，测速仍是单独未完成项。
+
+### 2026-09-30 12:39（北京时间）：robo→本地A4全部分块收齐，进入拼接完整校验（Codex / BENCH-MEM1F）
+
+- PID193613状态`assembling_and_hashing`：989/989块、16,581,363,550B已收齐，逐块回执完整；完整SHA通过后自动上传lc3，现仍不是共享盘已发布。
+- ActionCodec已到本地，506,886,775B，完整SHA `5088f64a…dddace`与本轮robo原件重算一致；开始上传共享`models/action_tokenizer.pt.partial`，远端hash通过才改最终名。0GPU更新；下一验共享盘完整内容、只读checkpoint元数据并登记可用路径。
+
 ### 2026-09-30 12:31（北京时间）：A4配套资产13文件校验通过，权重仍同步中（Codex / BENCH-MEM1F）
 
 - 原训练Hydra、归一化统计、run/trainability/gradient回执5件已复制至共享`models/memlite-a4-20260912`；原Qwen3.5 processor/tokenizer8件至`models/qwen3_5_2b_base_processor`，13件源robo/目的lc3逐文件SHA全同。本地证据在`artifacts/a800-memlite-oneframe-bench-20260930/assets`，不提交二进制或秘密。

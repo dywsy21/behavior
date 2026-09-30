@@ -4,6 +4,8 @@
 
 ## 当前可用入口
 
+**2026-09-30 12:43北京时间旧权重同步：** A4低层FM＋r8 LoRA已从robo完整中转到本地并核SHA，当前上传共享`models/memlite-a4-20260912/step_2500.pt.partial`；目的完整SHA通过才发布`step_2500.pt`，未到最终名之前不可用于测速。源/本地SHA `6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`、16,581,363,550B。`models/action_tokenizer.pt`已源/本地/目的完整SHA同（`5088f64a5452a60bbc8cac90ee7d79c156f1d14540bc3139aa7060f862dddace`，506,886,775B）；A4目录的五份配置/统计/回执及`models/qwen3_5_2b_base_processor/`八件也源/目的SHA同。原A4配置中的robo绝对路径仅归档，不可原样启动；后续须新源码和显式资产路径覆盖。此为资产同步，不是模型前向、吞吐或正式训练通过。
+
 **2026-09-30 11:18北京时间更新：下载完成，0缺失。** lc2终端已显示26,350/26,350、`下载完成！`并返回bash，旧PID1032615退出。全部26,347件RGB/动作/标注/meta训练文件按官方清单路径和大小核对通过；仅仓库`.gitattributes`大小不同（2560/2504B）。约1.077TB已落盘，真实snapshot根不变。见[9/30状态](results/2026-09-30-dataset-status.json)；**全内容hash与正式训练入口准入尚未完成**，本轮未自动开训、重启下载或改环境。以下9/29下载中记录保留作历史对照。
 
 **2026-09-29 21:53北京时间只读复查：数据尚未下完。** 后续任务已改ModelScope `fduTristin/2026-challenge-demos@master`，lc2 tmux`behavior-data`/PID1032615运行中；21:52逐路径/大小核约1.013/1.077TB（94.044%），尚缺337段头部RGB约64.147GB，21:53终端26,017/26,350且仍推进。动作/标注/meta/双腕RGB已按大小齐全，但未重做全内容hash；`.gitattributes`有一处大小不同。状态证据见[JSON](results/2026-09-29-dataset-status.json)。
@@ -22,7 +24,7 @@ source scripts/infra/activate_a800_training.sh
 
 日常Git协作和最新文档入口是`/data/workspace/wsy/behavior2026/src/behavior`，跟踪`infra/a800-cluster-20260927`；在env已移走且确认没有运行者后才做干净ff-only同步。它不承担当前下载/训练运行，运行者继续使用冻结worktree，禁止对这些运行源pull。
 
-数据配置：`configs/data/behavior2026_r1pro_rgb.yaml`，100任务、三RGB、本地只读禁止隐式Hub补齐、沿用23D原动作/61D原状态映射。正式训练前还要完整下载hash回执、顶层Mixture首样本、选定checkpoint/配方/预算；不把下方单episode reader门当完整训练step。没有新下载模型权重，`models/`是预留目录。
+数据配置：`configs/data/behavior2026_r1pro_rgb.yaml`，100任务、三RGB、本地只读禁止隐式Hub补齐、沿用23D原动作/61D原状态映射。正式训练前还要完整下载hash回执、顶层Mixture首样本、选定checkpoint/配方/预算；不把下方单episode reader门当完整训练step。9/27的`models/`原为空，9/30已按上方记录同步旧A4及配套资产，没有新G0.5下载。
 
 历史alpha镜像v5日志`logs/dataset-rgb-alpha-v5.log`、回执`runs/dataset_rgb_alpha_20260927_v5/`保留。该旧run未完成，不能用它判断新ModelScope作业；新数据需独立对照固定官方RGB清单核路径/大小/内容，不按进程存在或文件数百分比当字节进度。
 
