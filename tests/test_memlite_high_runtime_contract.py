@@ -60,6 +60,21 @@ class HighContract(unittest.TestCase):
         self.assertTrue(torch.equal(original, weighted))
         self.assertEqual(objective._last_ce_cache['token_weights'].tolist(), [1.])
 
+    def test_nonuniform_objective_never_uses_scalar_backward_fused_kernel(self):
+        objective = helper()
+        objective.use_fused_ce = True
+        hidden = torch.randn(1, 4, 5, requires_grad=True)
+        labels = torch.tensor([[-100, 1, 2, 3]])
+        weights = torch.tensor([[0., 1., .25, 1.]])
+        model = SimpleNamespace(vlm=SimpleNamespace(decode=lambda x: x))
+        measured, _ = objective.cal_ce_loss(hidden, labels, model, loss_token_weights=weights)
+        self.assertEqual(objective._last_ce_cache['ce_backend'], 'eager')
+        measured.backward()
+        self.assertIsNotNone(hidden.grad)
+        objective.ce_z_loss_scale = 1e-4
+        with self.assertRaisesRegex(ValueError, 'weighted z-loss'):
+            objective.cal_ce_loss(hidden, labels, model, loss_token_weights=weights)
+
 
 if __name__ == '__main__':
     unittest.main()

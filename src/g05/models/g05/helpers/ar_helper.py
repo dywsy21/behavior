@@ -234,7 +234,20 @@ class ARHelper:
         # MetricsCollector.on_forward_start sets _need_full_logits=True before log
         # steps. Non-log steps (~99%) use FLCE; log steps (~1%) use eager. The
         # worst-case peak matches the previous path, while ~99% of steps drop to ~2GB.
-        use_flce = self.use_fused_ce and not self._need_full_logits
+        # Some installed FLCE versions return a per-token loss while their
+        # backward reads only grad_output[0]. A nonuniform external token
+        # weight would then have the right reported loss but wrong gradients.
+        # Keep fused CE for uniform objectives; use the exact eager path for
+        # explicit unequal token weights (and externally weighted group loss).
+        nonuniform_weights = getattr(self, "action_group_loss", None) is not None
+        if loss_token_weights is not None:
+            if loss_token_weights.shape != labels.shape:
+                raise ValueError("loss_token_weights must match unshifted labels shape")
+            requested = loss_token_weights[..., 1:].contiguous().view(-1).to(mask.device)[mask]
+            nonuniform_weights = nonuniform_weights or not bool((requested == requested[0]).all())
+        use_flce = self.use_fused_ce and not self._need_full_logits and not nonuniform_weights
+        if nonuniform_weights and self.ce_z_loss_scale != 0.0:
+            raise ValueError("Weighted eager CE requires ce_z_loss_scale=0; weighted z-loss is not implemented")
 
         if use_flce:
             # FAST PATH: Liger Fused Linear CE, without materializing [N_valid, V]
@@ -329,6 +342,7 @@ class ARHelper:
         # _per_token_correct directly so _compute_per_sample_ce_acc can skip recomputing
         # pred == label.
         self._last_ce_cache = {
+            "ce_backend": "fused_uniform" if use_flce else "eager",
             "token_loss": token_loss.detach(),
             "token_weights": token_weights.detach(),
             "unweighted_token_ce": token_loss.detach().mean(),

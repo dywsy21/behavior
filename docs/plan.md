@@ -25,6 +25,9 @@
 - 16:53已提交唯一`capacity-long-m16-v1`等待链：先等B模型最终校验发布（最多900s），再复查八卡无人占用才启动同af631a2的long/micro16/accum2/global256两更新容量门（GPU另900s＋30s）。log在同run根logs/，此刻仍是等待权重、不是正在训练；不重复启动。完整测量范围/44更新及90min总GPU上限已补进[原测速报告高层节](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)，下一看模型终态/首真实forward后决定timed档位。
 - 16:54同冻结源CPU邻接回归36/36通过、4.49s（高/低层、CE梯度、原路由/模板/条件化）；log `logs/cpu-regression-v1.log`。权重上传67%，容量链仍等待、0GPU更新；未新增另一个队列或修改环境。
 - 17:00 B-final共享盘迁移完成：本地/robo/A800模型导出全SHA相同`e7cd7bf7…9d29b13`，950张量原件一致；`models/memlite-b-final-20260910/B-final-model.pt`正式发布，transfer receipt complete/1802.26s。排队的唯一`capacity-long-m16-v1`已过空卡门、08:59 UTC进入8-rank真实初始化（source af631a2、2更新/900s），当前无稳态速度结论。CPU/文件传输时间不算入训练步吞吐，下一验证完整恢复/梯度/容量。
+- 17:02容量m16-v1失败/exit1：八rank均950模型状态逐字节恢复、full planner326合同通过，但首更新反向checkpoint重计算MLP分配214MiB时OOM（PyTorch allocated77.52GiB）；0优化更新，无权重输出。09:01:11 UTC根错误保留于log，八卡已全释放。不是容量256已通过；按原有界备选降micro8/accum4、global256及文本/精度/目标不变，新run `capacity-long-m8-v1`仅2更新/900s＋30s，总90min预算不重置。
+- 17:05读取A800已安装Liger源码发现`reduction=none`返回逐token loss，但backward `element_mul_kernel`只读grad_output首元素，疑似不支持memory0.25这种非均匀上游梯度。准备终止本任务m8-v1时其已自然完成2更新/exit0，未实际发出有效停止；全部GPU已释放，原2次临时更新不保存、不作为有效吞吐结论。下一先做小CUDA张量与显式CE梯度对照，通过正确后端才继续；不将旧B已训权重称因此全失效、不修改共享环境。
+- 17:08新增加权CE保护：非均匀token目标选择现有显式CE后端；保留原均匀fused分支，非零weighted z-loss拒绝而不静默忽略。新增CPU门及无模型小CUDA梯度对照，待新源冻结和实测；容量m16 OOM历史保留，后续有效测速须绑定修复源码，原全局样本/图像/梯度预算不扩展。
 
 ### 2026-09-30 14:30（北京时间）：完整阶段/超参及样本顺序提案核验完成，未开新训练（Codex / PLAN-MEM100-RECIPE）
 
