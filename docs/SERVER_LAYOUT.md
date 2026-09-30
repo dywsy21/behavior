@@ -2,6 +2,8 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
+**2026-09-30 22:45恢复覆盖：** lc1 GPU1已定点reset，待重映射清除/恢复状态None；8卡68GiB四模式显存和NCCL/BF16检查通过、ECC无增长，原正式高层同source/config/run已提交resume，仍待真实更新。健康探针源`src/high-ecc-health-20260930`固定07ec13e，证据`runs/stage1_high_ecc_recovery_20260930`；它不是新的训练源码。lc2保持运行。
+
 **2026-09-30 22:36状态覆盖：** lc1高层在215步后因GPU1（PCI52:00.0、UUID `GPU-58992b92-5fea-12a6-12aa-b7b322652cbf`）HBM不可纠正ECC退出，只有step0 checkpoint；该GPU当前Drain and Reset/row-remap pending，勿直接拿空卡状态当健康。Codex获批定点排查修复后恢复，真实进度见plan；lc2低层正常继续，禁止改共享env或热改d0528b4。
 
 **2026-09-30 21:30阶段1正式运行中：** 共享根仍`/data/workspace/wsy/behavior2026`，用户获批的**lc1高层一遍、lc2低层120h**各8A800独立DDP已通过初始评测/step0保存及各≥5次真实更新，继续后台训练。冻结训练源`src/stage1-d0528b4`；主feature `feat/memlite-stage1-lc12-20260930`，后续工具/文档提交不热改这个运行源。入口/配置/启动恢复见[操作手册](infra/MEMLITE_STAGE1_RUNBOOK.md)。没有自动重试或额外队列。

@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 22:45（北京时间）：GPU1重映射后健康门通过，高层同run恢复已提交（Codex / RECOVER-MEM100-HIGH-ECC）
+
+- lc1 GPU1定点reset后recovery=None/pending=No，8卡各68GiB四模式读写全部PASS/40.40s，既有8rank NCCL 1/16/64/256MiB各10测量＋3warmup及BF16前后向全部通过；后验所有卡ECC correctable/uncorrectable计数均未增长、无外部GPU进程。证据`runs/stage1_high_ecc_recovery_20260930/{memory-health-v1,nccl-v1}.json`，本地同名`artifacts/stage1-high-ecc-20260930`。短测不等于长期硬件无故障承诺。
+- 健康门通过后沿原`src/stage1-d0528b4`/原config/output正式`--resume`，tmux `memlite-stage1-high-20260930`恢复已提交；原W&B `8ecc6bb3908e`，high micro4/accum8/global256/LR日程均不改。step0重新开始，attempt1已耗1787.20s保留，既有一次数据遍历/168h事故上限不扩；还待模型恢复/首更新，不把提交当恢复通过。
+- lc2低层持续运行，未重启或改env/权重/源。旧错误日志与215步数值已先归档，原所有权重保留；目前最新高层完整点仍step0，不能用日志215代替已保存权重。新探针代码07ec13e只在独立工具worktree，不热改两个正式run的d0528b4。
+
 ### 2026-09-30 22:36（北京时间）：高层215步后硬件ECC退出，获批修复再恢复（Codex / RECOVER-MEM100-HIGH-ECC）
 
 - 更正21:33仍运行的历史状态：高层于21:54:21在rank1/PID449295报CUDA contained memory error，21:54:58 supervisor以exit1退出，累计1787.2013s；已完成215次更新但定期保存间隔2000，最新完整checkpoint只有step0，不能宣称恢复215步权重。低层未受影响，22:30已862步且继续运行，配置/共享env保持。
@@ -19,6 +25,7 @@
 - 最新用户明确要求解决后重新开始高层；本轮唯一负责人Codex，先只读排空检查，针对该确切GPU重置使待重映射生效，再做有界显存/八卡通信健康验证（总≤15分钟、无训练参数更新）。若ECC重现/仍需reset则不盲目续训，报告硬件维护需求；不碰lc2训练、共享env或队友作业，不整节点重启。
 - 健康门通过后计划沿d0528b4相同source/config/output显式resume step0，沿原W&B `8ecc6bb3908e`和168h累计ledger，不重置失败预算、不改batch/LR来掩盖硬件问题。修复与真实恢复更新仍待验证，未重新提交训练。
 - 22:38定点恢复：核8卡无计算进程、GPU1 Processes None/设备无用户句柄、旧训练PID退出后，仅对上述UUID执行管理员gpu-reset并返回成功。后验GPU1 recovery None、pending No、volatile不可纠正0，aggregate71保留；这是重映射生效，不是抹掉历史或证明永久修好。新增独立健康探针/5个CPU测试，先校验ECC/回收标记/外部进程再逐卡68GiB四模式读写，源码待冻结；运行训练源d0528b4和lc2共享env未改。
+- 22:43健康验证开始：探针源07ec13e已push并经Git bundle冻结`src/high-ecc-health-20260930`，6个CPU单测通过（含缺失ECC不当0处理）。仅lc1 `runs/stage1_high_ecc_recovery_20260930/memory-health-v1.json`，逐8卡68GiB/四模式，上限660s；成功后接既有8rank NCCL/BF16探针≤180s，合计≤15分钟，不加载模型/不更新训练参数。恢复run尚未提交。
 
 ### 2026-09-30 21:30（北京时间）：两层正式训练首批更新通过，后台继续（Codex / TRAIN-MEM100-STAGE1）
 
