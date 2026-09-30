@@ -1,0 +1,45 @@
+# Not a launch authorization. Formal jobs require the data acceptance receipt.
+root: /data/workspace/wsy/behavior2026
+release: /data/workspace/wsy/behavior2026/datasets/memlite-stage1-20260930-v1
+seed: 17
+world_size: 8
+global_batch: 256
+workers_per_rank: 4
+prefetch_factor: 2
+learning_rate: 1.0e-5
+lora_learning_rate: 1.0e-5
+weight_decay: 0.03
+betas: [0.9, 0.95]
+grad_clip: 1.0
+precision: bf16_autocast_fp32_parameters_adam
+final_lr_ratio: 0.1
+save_reserve_seconds: 600
+log_every: 10
+high:
+  node_ip: 10.19.7.1
+  micro_batch: 4
+  accumulation: 8
+  max_passes: 1
+  max_updates: 100000
+  max_wall_hours: 168
+  warmup_updates: 1000
+  schedule_updates: one_pass
+  checkpoint_every: 2000
+  eval_every: 1000
+low:
+  node_ip: 10.19.7.2
+  micro_batch: 32
+  accumulation: 1
+  max_passes: null
+  max_updates: 200000
+  max_wall_hours: 120
+  warmup_updates: 2000
+  schedule_updates: 200000
+  checkpoint_every: 5000
+  eval_every: 2000
+wandb:
+  mode: online
+  project: behavior2026-memlite
+  entity: null
+  group: memlite-100task-stage1-20260930
+  credential_file: /data/workspace/wsy/behavior2026/secrets/stage1-wandb.key

@@ -67,9 +67,13 @@ def make_processor(config, training):
     # The original checkpoints' action coordinate systems are retained exactly.
     # Missing stats may not silently fall back to identity in this entry.
     for domain in ("action", "state"):
-        for meta in processor.shape_meta[domain]:
-            if meta["key"] not in stats[domain]:
-                raise ValueError(f"Missing inherited normalizer key: {domain}/{meta['key']}")
+        # BehaviorPerKeyTransform consumes raw base_qvel/trunk_qpos and creates
+        # lower_body before normalization. Validate that *post-transform* set.
+        for key in ("left_arm", "left_gripper", "right_arm", "right_gripper", "lower_body"):
+            if key not in stats[domain] or key not in processor.normalizer.normalizers[domain]:
+                raise ValueError(f"Missing inherited normalizer key: {domain}/{key}")
+            if processor.normalizer.normalizers[domain][key].mode == "dummy":
+                raise ValueError(f"Unexpected identity normalization: {domain}/{key}")
     return processor
 
 

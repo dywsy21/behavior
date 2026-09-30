@@ -10,12 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 19:04（北京时间）：首版源冻结，CPU构建运行中（Codex / IMPL-MEM100-STAGE1）
+
+- 5114fa9已push，本地/共享独立`src/stage1-5114fa9`经Git bundle verify/fetch同步（bundle ref为HEAD，首次按分支名fetch失败后改HEAD，未改旧源）。A800真实env新增12/12单测通过/1.198s，包括新标签/causal memory/并行边界/全部尾数；本地runtime另4/4通过。
+- CPU compact构建`datasets/memlite-stage1-20260930-v1`运行中；60min外限、0GPU，日志`runs/stage1_acceptance_20260930/logs/prepare-v1.log`。原20k数据只读，输出默认CANDIDATE不准正式训练，待数据时钟/人工分层审阅/百任务loader证据；97个valid_duration越界来源预期隔离，不猜偏移。用户W&B key通过无回显交互放入共享根外源码`secrets/stage1-wandb.key`0600，未写Git/配置/日志；在线连通性尚待，不把存凭据称接通。
+- 正式`train_memlite_stage1.py`与lc1高/lc2低配置已在本地接线（下一冻结版本），累積分子反向后按全局分母缩放，再clip/AdamW，正式长训须acceptance gate，当前GPU更新仍0。下一CPU构建终态/统计与直连W&B短run，然后真实loader＋存取/恢复GPU有界验收。
+- 19:10 CPU构建v1完成/exit0/57.39s，20k来源隔离282条、manifest仍CANDIDATE，原因与百task覆盖正在核查，尚未人审或准入；原始文件不改。W&B connectivity-v1在upsertBucket返回403（key无此资源访问权），0模型更新/未成功建立run；先查viewer/entity/project归属，不假装在线已通，也不暴露key。loader首真实窗口检查运行中。
+
 ### 2026-09-30 18:42（北京时间）：精确混任务采样器实施及首测通过（Codex / IMPL-MEM100-STAGE1）
 
 - 新`stage1_sampling.py`实现8×4×8/8×32独立DDP、每个真实观察每遍一次、逐rank微批≥2task、末两更新变长重排（不复制、不丢弃、不向模型喂padding样本），resume只使用trainer已提交游标。`tests/test_stage1_sampling.py`四项通过，穷举256种尾数×两配方，含任务修复/不可实现拒绝/epoch与resume一致性。尚未真实千万索引测试，不据单元检查称正式sampler已验收。
 - 数据只读检查发现annotation valid_duration与实际length并非总相等，正在追溯官方转换和可视边界；旧B TRAIN/eval清单已可读取，保留旧留出来源不回灌。当前GPU更新仍0，W&B未登录；下一实现严格恢复/全局归一/存取并完成真实时钟证明，不猜统一偏移。
 - 18:47代码进展：从原审过A4/B源迁入独立`memlite_stage1.py` processor/builders；官方20k注释全表读取确认35个exact技能对、406,341个单技能记录，补齐20枚举与受控空间词表，未透传annotation memory。新interval builder保持固定phase、因果历史且低层在任何bundle/parent变化截断；CE/FM暴露detach逐行分子分母，目标未改，接线/新测试待。查明新A800 task0 metadata与robo原件首两行完全相同（并非迁移新加180帧），已导出原950TRAIN/50eval身份，尚不据此推断全部边界均正确。
-- 18:58新增独立正式构造/恢复模块、compact候选构建、fail-closed RGB/action reader、原子checkpoint/RNG/累计墙钟、rank0 W&B安全接口；尚未启动GPU/未登录W&B，代码待A800真实env回归。新标签单测本地因g05.data导入OmegaConf缺失未收集，转已配共享env验证，不修改env；本地采样四项/语法检查已过。保留原checkpoint正常化坐标系（不直接套全数据含eval stats或无声明重拟合），需继续核来源与范围。原ep27/821已知歧义拟整源隔离，并对全量相反方向HANDOVER自动拒绝；候选manifest不会自动成为可训练release。
+- 18:57新增独立正式构造/恢复模块、compact候选构建、fail-closed RGB/action reader、原子checkpoint/RNG/累计墙钟、rank0 W&B安全接口；尚未启动GPU/未登录W&B，代码待A800真实env回归。新标签单测本地因g05.data导入OmegaConf缺失未收集，转已配共享env验证，不修改env；本地采样四项/语法检查已过。保留原checkpoint正常化坐标系（不直接套全数据含eval stats或无声明重拟合），需继续核来源与范围。原ep27/821已知歧义拟整源隔离，并对全量相反方向HANDOVER自动拒绝；候选manifest不会自动成为可训练release。
 
 ### 2026-09-30 18:32（北京时间）：正式阶段1训练链与W&B实施开始（Codex / IMPL-MEM100-STAGE1）
 
