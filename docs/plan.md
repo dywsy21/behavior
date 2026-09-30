@@ -18,6 +18,7 @@
 - 正式W&B：[高层8ecc6bb3908e](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/8ecc6bb3908e)、[低层e902c036e522](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/e902c036e522)，服务端running/preflight=false。初始eval各3200窗/100task，高CE0.34315484、低FM0.16445919；只作同run固定验证基线，非成功率。接着核每10步线上训练指标和8rank首步梯度回执。
 - 小证据取回本地`artifacts/stage1-formal-20260930/{high,low}`（模型/原图/凭据不下载）；权重/日志仍在共享正式run，冻结源与env未改。阶段2/3尚未启动，无额外训练队列；长训尚未完成，下一按正式曲线和完整checkpoint判断收敛与后续适配。
 - 21:30:49终核快照：高已11步、低22步；W&B服务端训练曲线分别读回step10/20及各100task eval字段，均formal/running。两层各8件首步梯度回执通过（高planner326；低AE322＋LoRA182；冻结参数梯度0/global256），40件小证据双端SHA全一致；[正式启动回执](infra/results/2026-09-30-memlite-stage1-formal-launch.json)含精确身份/路径/时间。启动任务完成、正式训练继续，不将step0状态文件误作卡住，也不将当前进度误作完成；没有新增自动监控/自动重试。
+- 21:33交接前只读最新进度高31步/低57步，仍RUNNING、共享余3.8T、源d0528b4 clean；启动及回执已push ae25e47。独立tmux保持，本线程仅关闭自有SSH master，不关闭EC/VPN/训练进程，不修改任何队友会话。
 
 ### 2026-09-30 21:25（北京时间）：高低层正式进程已启动，初始化核验中（Codex / TRAIN-MEM100-STAGE1）
 
