@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 14:23（北京时间）：无总预算接续器已在线等待，效果—步数图已交付（Codex / RL-G05-50K-E4）
+
+- UTC06:22:15唯一CPU接续器PID199272已真实启动，`e4_handoff_v1/status.json`为`waiting_for_e3`，14:22:44复核PID存活；冻结源`883aec894e0dec7ccf065ab798cc11c2e65494a4`。它等原E3完成训练＋六对固定final并退出，再核最后delta/Adam/RNG/课程/物理账和GPU0/2/3，自动启动`e4_continuous_v1`。当前E4目录尚不存在、0新GPU，不虚报已持续训练。只arm一次，不重复提交。
+- E3原监管37389/learner37396继续，最新updating/actor204/critic96、累计78336控制/0 pending、19完整批＋第20批PPO；最新已保存仍202，最终selection/result尚无。旧源970896e及GPU1其他作业不动。CPU新69 RL中68过/1 CUDA项跳过、5 flow通过；真实导入/manifest门过，本次无环境改动。
+- 用户要求的图在本地`/home/wsy/behavior/artifacts/g05-50k-rl-20260928/rl-learning-curve-20260930.png`，14:12封存19批快照，原回执/SHA及复算脚本入Git。图按生成策略actor步而非更新后步对齐、课程换前缀断开、完整reset评测单列。只有部分课程推进，E3完整SR仍待；不报告方法成功率提升。
+- 本请求的无预算自动接续设置及出图完成。下一检查接续状态由waiting→preparing→launched、新run的严格恢复与实际更新；运行故障/空间不足会留证停下而非盲目重启，用户停止指令优先。源码/摘要已在独立feature push，结束前继续推送本运行回执；未独审/未合main，其他成员任务不变。
+
+### 2026-09-30 14:21（北京时间）：E4独立冻结源已Git部署，CPU准入中（Codex / RL-G05-50K-E4）
+
+- 新源码`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_continuous_883aec8`固定`883aec894e0dec7ccf065ab798cc11c2e65494a4`，服务器fetch/new-worktree/ff-only及clean核验过；旧970896e活跃源不变。服务器MODEL_PY正在CUDA禁用下跑74回归＋真实模块导入/旧新manifest验证，当前还未arm，0新GPU。
+- 本地PNG已人工核对字体/坐标/统计，SHA `07f9efb418caf7e155502a4763c28e7d5377eff2c9c62d648d6182f55f365fd1`；14:12快照的19完整批202-save曲线保持封存，不把更晚尚未保存的更新/进行中回合混入。下一通过服务器CPU门后唯一arm，记录等待PID和本轮E3真实状态。
+- 14:22 CPU准入通过：服务器69 RL项中68过/1 CUDA原生decode项按CPU模式跳过，5 flow全部过；真实`method_dense/prepare_continuous`导入、旧E3及新continuous manifest验证通过，依赖检查明确waiting_for_e3。只提交一次`--arm`，新等待PID回执核验中，没有立即拉起第二份GPU训练。
+
 ### 2026-09-30 14:17（北京时间）：无总预算续训和效果曲线已实现，服务器接续待部署（Codex / RL-G05-50K-E4）
 
 - `continuous.py`显式授权＋全部训练预算null、无限batch iterator、累计TRAIN/旧final物理账分列；实际actor更新可越过2094，三批无信号/无更新只警告。每批/保存前保留100GiB空闲＋8GiB单件预留，保留所有checkpoint；非学习进展预算不再停止，但真实数值/取图/控制/空间故障仍严格停。旧970896e活跃源码没有改动。

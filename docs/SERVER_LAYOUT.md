@@ -22,6 +22,10 @@
 
 ## 原robo记录（保留）
 
+**2026-09-30 14:23北京时间E4自动接续已arm：** 冻结源883aec8不再修改；唯一CPU PID199272，`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e4_handoff_v1/{launcher,status,claim}.json`记录`waiting_for_e3`，`watch.stdout.log`只写状态变化。`e4_continuous_v1`及新runtime尚未创建，等原E3训练＋六对完成和四旧PID退出后自动CPU审计/唯一launch；勿再次arm。原E3同监管37389/learner37396继续至actor204/78336控制，第20批更新中、已保存202；最新图在本地`artifacts/g05-50k-rl-20260928/rl-learning-curve-20260930.png`。无新GPU/环境改动，不动GPU1作业。
+
+**2026-09-30 14:21北京时间E4待接续：** 新冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_continuous_883aec8`（883aec894e0dec7ccf065ab798cc11c2e65494a4）已Git/ff-only/clean，CPU准入中，尚无新GPU。拟CPU接续器`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e4_handoff_v1`等当前E3训练＋固定六对评测完成才准备`e4_continuous_v1`，私有runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e4_continuous_v1`；实际arm/PID随后记档。新训练无总预算，仍有磁盘/仿真/数值保护，旧源、权重、原run不动。
+
 **2026-09-30 13:55北京时间E3仍正常训练：** 新`e3_render_resume_v1`原四PID存活，`status.json`updating/actor200/critic92/18完整批、累计74404/0 pending。最新完整权重`rl_batch_018_updates_0198.pt`（7623035853B，回执SHA c6697f227d1274da99d7f3a568ec9b06c88228d0621225db1ac22b8551da20f7，非本轮新重算）；第19批PPO进行中，不能把内存200当已保存。`train_batch_014..017.json`、`learner.jsonl`及两worker steps/I/O为本轮核验依据；1194 capture无失败/重试，最终selection/result尚无。原源/环境不改，GPU1他人作业不动。
 
 **2026-09-30 11:46北京时间E3已自主采样：** `e3_render_resume_v1`同一组四PID继续，`status.json`collecting/34新chunks/累计58264/0 pending，actor173/critic72；新544自主控制、1980前缀控制，0新完整batch。两sim I/O快照75/88 capture无失败，恢复验收完成；继续等待同一作业后续PPO/保存/final，不重复启动。后续从下列新run读取，旧失败目录只作历史证据。
