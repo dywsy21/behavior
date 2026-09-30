@@ -2,7 +2,7 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
-**2026-09-30 21:25阶段1正式启动：** 共享根仍`/data/workspace/wsy/behavior2026`，用户获批的**lc1高层一遍、lc2低层120h**各8A800独立DDP已提交，初始化/首更新核验中。冻结训练源`src/stage1-d0528b4`；主feature `feat/memlite-stage1-lc12-20260930`，后续工具/文档提交不热改这个运行源。入口/配置/启动恢复见[操作手册](infra/MEMLITE_STAGE1_RUNBOOK.md)。没有自动重试或额外队列。
+**2026-09-30 21:30阶段1正式运行中：** 共享根仍`/data/workspace/wsy/behavior2026`，用户获批的**lc1高层一遍、lc2低层120h**各8A800独立DDP已通过初始评测/step0保存及各≥5次真实更新，继续后台训练。冻结训练源`src/stage1-d0528b4`；主feature `feat/memlite-stage1-lc12-20260930`，后续工具/文档提交不热改这个运行源。入口/配置/启动恢复见[操作手册](infra/MEMLITE_STAGE1_RUNBOOK.md)。没有自动重试或额外队列。
 
 - 正式run：`runs/memlite_stage1_high_100task_v1`（lc1）/`runs/memlite_stage1_low_100task_v1`（lc2），各自同级`.supervisor/ledger.json`和`attempt_001.log`；tmux `memlite-stage1-high-20260930` / `memlite-stage1-low-20260930`。权重在各run `checkpoints/`，初始化使用原B/A4而非短验权重；当前step与W&B链接见plan，不据目录存在判训练完成。
 - 本次独立登记handoff：`src/stage1-formal-handoff-20260930`固定f798441，由已push Git bundle导入（服务器直接fetch超时）；运行代码/配置与d0528b4完全一致，只在d0528b4启动，两个handoff均不作为活跃源码热更新。

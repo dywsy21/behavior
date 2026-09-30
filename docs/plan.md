@@ -12,12 +12,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 21:30（北京时间）：两层正式训练首批更新通过，后台继续（Codex / TRAIN-MEM100-STAGE1）
+
+- lc1高层和lc2低层各已完成至少5次真实global256更新，step0初始化checkpoint已原子发布；loss/梯度范数有限，未OOM。首批吞吐尚含冷启动且样本很短，不据此重报工期或宣称效果；仍按高一遍/低120h批准预算继续。
+- 正式W&B：[高层8ecc6bb3908e](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/8ecc6bb3908e)、[低层e902c036e522](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/e902c036e522)，服务端running/preflight=false。初始eval各3200窗/100task，高CE0.34315484、低FM0.16445919；只作同run固定验证基线，非成功率。接着核每10步线上训练指标和8rank首步梯度回执。
+- 小证据取回本地`artifacts/stage1-formal-20260930/{high,low}`（模型/原图/凭据不下载）；权重/日志仍在共享正式run，冻结源与env未改。阶段2/3尚未启动，无额外训练队列；长训尚未完成，下一按正式曲线和完整checkpoint判断收敛与后续适配。
+- 21:30:49终核快照：高已11步、低22步；W&B服务端训练曲线分别读回step10/20及各100task eval字段，均formal/running。两层各8件首步梯度回执通过（高planner326；低AE322＋LoRA182；冻结参数梯度0/global256），40件小证据双端SHA全一致；[正式启动回执](infra/results/2026-09-30-memlite-stage1-formal-launch.json)含精确身份/路径/时间。启动任务完成、正式训练继续，不将step0状态文件误作卡住，也不将当前进度误作完成；没有新增自动监控/自动重试。
+
 ### 2026-09-30 21:25（北京时间）：高低层正式进程已启动，初始化核验中（Codex / TRAIN-MEM100-STAGE1）
 
 - lc1/lc2于13:25:10 UTC各自提交独立tmux：`memlite-stage1-high-20260930` / `memlite-stage1-low-20260930`，对应正式run `memlite_stage1_high_100task_v1` / `memlite_stage1_low_100task_v1`。原配置无preflight/无resume，从原B/A4开始fresh optimizer；正在核验8rank恢复/初始3200窗eval/step0保存及真实更新，**不把后台提交当训练通过**。
 - 两supervisor/torchrun分别449276/449289、1054575/1054588，ledger均RUNNING/attempt1/上限604800或432000秒。AGENTS仅同步本次明确获批的正式阶段1范围，保留新搜索和后续阶段另批规则。
 - 本地clean分支fetch/pull完成、origin/main仍33677bd；登记f798441已push。服务器GitHub fetch 25秒未完成，改用已push提交的Git bundle校验导入独立`src/stage1-formal-handoff-20260930`（f798441），与d0528b4的运行源码/配置diff为空；未声称直接pull成功、未改任何冻结运行源或共享env。
 - 当前日志入口为共享根下`runs/<正式run>.supervisor/{ledger.json,attempt_001.log}`；一遍/120h预算与全部安全门按21:24登记执行。下一记录真实W&B formal id、首更新/梯度回执；既有短验run仅历史证据。
+- 21:28服务端核验：高W&B `8ecc6bb3908e`、低`e902c036e522`均running/preflight=false/commit=d0528b4；各8rank分别950/1138状态严格恢复通过，初始3200窗/100task评测已产出（高CE0.343155），正在step0原子保存，真实优化更新尚待。初始评测口径较此前200窗短验不同，不把数值差当训练收益。
 
 ### 2026-09-30 21:24（北京时间）：正式阶段1获批，启动前登记（Codex / TRAIN-MEM100-STAGE1）
 

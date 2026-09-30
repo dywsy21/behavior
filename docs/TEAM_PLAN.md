@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-30 21:30（北京时间）TRAIN-MEM100-STAGE1两层各≥5次global256真实更新、初始3200窗评测和step0原子保存完成，W&B正式run高`8ecc6bb3908e`/低`e902c036e522`已online/running；lc1/lc2各8卡继续预算内后台训练。Codex负责启动核验/训练接口，其他两位恢复数据/RL工作可独立继续；勿动冻结d0528b4或共享env。还不是训练完成或方法成功率验收。
+
 2026-09-30 21:25（北京时间）TRAIN-MEM100-STAGE1两节点正式tmux已提交，源d0528b4、run `memlite_stage1_high_100task_v1` / `memlite_stage1_low_100task_v1`；Codex核验启动与W&B中，首更新尚待。登记已push f798441并经Git bundle同步独立handoff，不热改运行源；本次节点占用lc1/lc2各8卡，勿在共享env更新依赖。
 
 2026-09-30 21:24（北京时间）Codex / TRAIN-MEM100-STAGE1按用户最新明确授权启动正式阶段1：lc1高层一遍（48,045更新、168h事故上限）、lc2低层累计120h或200k先到，各8A800/global256/stride16，沿用已验d0528b4和v4数据，W&B online。当前资源和冻结身份已核、尚待真实首更新；详情实时写入plan。Codex是本次运行负责人，队友恢复数据/通用RL职责不变；本次不合main、不自动启动阶段2/3，另一成员独审仍为合main条件。
