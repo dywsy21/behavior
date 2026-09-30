@@ -55,6 +55,29 @@ class Stage1LabelsTests(unittest.TestCase):
         self.assertFalse(segments[0]["parent_supervised"])
         self.assertEqual(len(issues), 1)
 
+    def test_parent_roles_come_from_core_skill_not_navigation(self):
+        place = raw_skill(1, 30, 100, 4, "place in", ["jar", "cabinet"])
+        place["manipulating_object_id"] = ["jar"]
+        annotation = dict(meta_data=dict(valid_duration=[0,100]),
+            skill_annotation=[raw_skill(0,0,30, objects=["cabinet"]), place],
+            primitive_annotation=[dict(primitive_idx=0, primitive_description=["place in"],
+                                      skill_idxes=[0,1], frame_duration=[0,100])])
+        segments = compile_episode(annotation, dict(length=100), "store jar")
+        self.assertIn('targets=["jar"]', segments[0]["parent"])
+        self.assertIn('destinations=["cabinet"]', segments[0]["parent"])
+        place["spatial_prefix"] = ["low_level"]
+        segments = compile_episode(annotation, dict(length=100), "store jar")
+        self.assertEqual(segments[0]["parent"], "Task goal: store jar")
+        self.assertFalse(segments[0]["parent_supervised"])
+
+    def test_duplicate_semantic_commands_not_duplicated_in_model_target(self):
+        import json
+        annotation = dict(meta_data=dict(valid_duration=[0,100]), skill_annotation=[
+            raw_skill(0,0,100), raw_skill(1,20,100)])
+        segments = compile_episode(annotation, dict(length=100), "test")
+        self.assertEqual(len(segments[1]["skills"]), 2)  # preserve source evidence
+        self.assertEqual(len(json.loads(segments[1]["semantic"])), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

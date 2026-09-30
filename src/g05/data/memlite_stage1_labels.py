@@ -108,16 +108,22 @@ def compile_episode(annotation, row, task_name, *, issues=None):
             continue
         members = [s for s in skills if s["skill_idx"] in raw.get("skill_idxes", [])]
         try:
-            command = semantic_parent_goal_text(desc[0], members)
+            # Navigation/holding supports a primitive but does not determine
+            # its argument roles. In particular, moving to a cabinet cannot
+            # make that cabinet the object being placed into itself.
+            primary = [s for s in members if s["raw_description"] == desc[0]]
+            if not primary or any(s["binding_confidence"] != "BOUND" for s in primary):
+                raise ValueError("Parent's core skill has no unambiguous argument binding")
+            command = semantic_parent_goal_text(desc[0], primary)
             parent_intervals = intervals(raw["frame_duration"])
             if any(end > length for _, end in parent_intervals):
                 raise ValueError("Parent interval outside episode")
-        except ValueError:
+        except ValueError as error:
             # A malformed OPTIONAL parent may not destroy valid leaf skills.
             # Do not infer its interval from nested scalars/member IDs. The
             # affected segment falls back to the public task, with semantic
             # parent supervision masked. The warning remains in the release.
-            issues.append(dict(kind="parent_fallback", primitive_idx=raw.get("primitive_idx")))
+            issues.append(dict(kind="parent_fallback", primitive_idx=raw.get("primitive_idx"), reason=str(error)))
             continue
         for start, end in parent_intervals:
             parents.append(dict(start=max(start, lo), end=min(end, hi), text=command))
@@ -130,7 +136,10 @@ def compile_episode(annotation, row, task_name, *, issues=None):
             continue  # Gaps are not fake idle, recovery, terminal, or successful rows.
         commands = sorted({p["text"] for p in parents if p["start"] <= start < p["end"]})
         parent = commands[0] if len(commands) == 1 else "Task goal: " + task_name
-        semantic = semantic_active_skills(active)
+        # Overlapping source intervals can describe the exact same semantic
+        # command twice. Preserve both audit leaves, but never train repeated
+        # identical commands as if they were distinct deployed instructions.
+        semantic = list({canonical_json(s): s for s in semantic_active_skills(active)}.values())
         segments.append(dict(start=start, end=end, parent=parent, parent_supervised=len(commands) == 1,
                              skills=active, semantic=canonical_json(semantic),
                              text=semantic_active_skills_text(semantic)))

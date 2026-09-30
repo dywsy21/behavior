@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 19:48（北京时间）：本人164窗口图审发现parent角色混淆/重复意图，修复后重验（Codex / IMPL-MEM100-STAGE1）
+
+- 本人逐页查看`human-review-v1/page-00..20.jpg`共164窗口/492相机图，覆盖100task/35技能、长上下文/短horizon；467窗口CPU合同/真实token已PASS（最长1623），图审不是全量标签正确保证或物理成功认证。相机/局部动作语义总体相符，遮挡/NAV画面不臆称对象抓稳/任务完成。
+- 图审发现真实构造问题：如task4 ep992 frame9413的PLACE_IN parent把导航柜子当唯一target；task34/35也混入辅助导航/hold对象。parent现只取与primitive同description的核心技能且要求全部可靠绑定，否则公开Task goal/不监督语义parent。task60 ep12185多个重叠区间产生完全相同WIPE/NAV副本，模型语义bundle去重，audit叶保留；不同对象/手/方向不合并。新增两项针对性单测，原v2不发布，新建v3复验，原RGB/动作/holdout不改。
+- 4663e1e真实共享env48项CPU回归全过/24.95s；八rank梯度误差≤浮点精度，原checkpoint/优化器/RNG实存取精确通过。GPU仍0更新，下一冻结标签修复、v3 CPU/相同源图回看、双节点短训恢复。
+
+### 2026-09-30 19:39（北京时间）：全量原数据内容哈希与实际千万窗口采样器通过（Codex / IMPL-MEM100-STAGE1）
+
+- `source-hash-v1/result.json`PASS：26,347/26,347件、1,077,039,758,439B、0失败/1206.61s，源revision固定4f50b447；逐文件checks SHA `c184ffe6…b7f2931`，原数据/镜像不改。非训练`.gitattributes`不在本校验范围。
+- v2精确TRAIN12,299,987/EVAL645,793窗口，百任务均有留出，task36恢复186TRAIN/10eval来源；1915条可选parent fallback警告显式保留。真实全量sampler两配方均48,047更新/遍，0遗漏/重复，末两批256/211；高每rank微批最少2task，低最少17task，固定顺序SHA `58762b3f…f817b4`，证据`sampler-v2.json`。
+- 4663e1e已push/冻结，新八rank Gloo CPU分子/分母/8累积与合并参考梯度验证exit0，具体rank回执待汇总；data-qa-v1已完成全量文本选样进入真实RGB读取，仍待token及本人图审。高低两节点GPU更新仍0；正式准入仍未签署。
+
 ### 2026-09-30 19:35（北京时间）：v2构建完成、真实高低样本通过，百任务CPU验收中（Codex / IMPL-MEM100-STAGE1）
 
 - da42b06已push并独立冻结；32项CPU回归通过/69.82s。真实同状态高/低样本读取成功，三路1×3×256×256 RGB、32×27 action及四补齐位保持，0CUDA。v2完整构建220.39s/exit0，隔离从282减至110，172条有效leaf来源恢复；v1及异常证据保留，仍不是ACCEPTED。
