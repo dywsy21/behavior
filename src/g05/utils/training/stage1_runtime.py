@@ -7,6 +7,7 @@ import math
 import os
 from pathlib import Path
 import random
+import shutil
 import tempfile
 import time
 
@@ -97,6 +98,17 @@ def lr_multiplier(completed_steps, warmup, horizon, final_ratio=.1):
         return (completed_steps + 1) / warmup
     progress = min(1., (completed_steps - warmup) / (horizon - warmup))
     return final_ratio + (1. - final_ratio) * .5 * (1. + math.cos(math.pi * progress))
+
+
+def disk_has_reserve(path, minimum_gib=256., *, free_bytes=None):
+    """Stop before the shared disk is full, leaving room for a final save.
+
+    This never deletes checkpoints or assumes ownership of another user's data.
+    """
+    if minimum_gib < 64:
+        raise ValueError("Keep at least 64GiB for safe saving/shared-disk headroom")
+    free = shutil.disk_usage(path).free if free_bytes is None else free_bytes
+    return free >= minimum_gib * 1024**3
 
 
 def save_checkpoint(directory, *, model, optimizer, state, rng_by_rank):

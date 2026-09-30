@@ -16,7 +16,7 @@ import sys
 import time
 import yaml
 
-from g05.utils.training.stage1_runtime import atomic_json
+from g05.utils.training.stage1_runtime import atomic_json, disk_has_reserve
 
 
 def main():
@@ -33,6 +33,8 @@ def main():
         raise RuntimeError("Use a clean frozen Git worktree")
     cfg = yaml.safe_load(args.config.read_text())
     component = cfg[args.component]
+    if not disk_has_reserve(cfg["root"]):
+        raise RuntimeError("Shared disk has less than 256GiB free; refuse launch, never delete data")
     if component["node_ip"] not in subprocess.check_output(["hostname", "-I"], text=True).split():
         raise RuntimeError("Wrong node: high=lc1, low=lc2")
     if args.preflight_stop_step is not None and not 1 <= args.preflight_stop_step <= 64:
@@ -93,11 +95,14 @@ def main():
                 ledger.update(status="RUNNING", consumed_seconds=previous+now-started,
                               heartbeat_utc_seconds=time.time())
                 atomic_json(ledger_path, ledger)
+                if not disk_has_reserve(cfg["root"]):
+                    stopping[0] = True
+                    ledger["stop_reason"] = "shared_disk_below_256GiB"
                 if stopping[0] and stop_started is None:
                     stop_started = now
                     # Do not TERM torchrun before ranks have saved: elastic's
                     # own shutdown grace can be shorter than a 27GB checkpoint.
-                    atomic_json(stop_file, dict(reason="supervisor_signal", attempt=attempt))
+                    atomic_json(stop_file, dict(reason=ledger.get("stop_reason", "supervisor_signal"), attempt=attempt))
                 hard_stop = now >= deadline or (stop_started is not None and now-stop_started >= cfg["save_reserve_seconds"])
                 if hard_stop:
                     if termination_started is None:

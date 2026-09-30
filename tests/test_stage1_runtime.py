@@ -10,6 +10,12 @@ spec.loader.exec_module(m)
 
 
 class RuntimeTests(unittest.TestCase):
+    def test_shared_disk_guard_keeps_save_room_without_deleting(self):
+        self.assertTrue(m.disk_has_reserve("unused", free_bytes=256 * 1024**3))
+        self.assertFalse(m.disk_has_reserve("unused", free_bytes=255 * 1024**3))
+        with self.assertRaises(ValueError):
+            m.disk_has_reserve("unused", minimum_gib=1, free_bytes=1024**4)
+
     def test_budget_does_not_reset_on_resume(self):
         clock = [10.]
         budget = m.WallBudget(100, 80, clock=lambda: clock[0])
