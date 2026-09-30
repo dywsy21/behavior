@@ -2,6 +2,9 @@
 
 ## Jev多任务开发评测（JEV-05，2026-09-30本地准备）
 
+- 12:29部署：新clean detached源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_multi_4698b0a`，完整commit `4698b0aa37edf5b2758286fa3a2d5dec3777533e`、implementation `403c74df8227e51b67203428e3033c3725f2bc56fe15e82fc4bbb54cbfd1ca69`；禁止热pull/编辑。六window真实核过、71 CPU目标通过。唯一API批`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_multi_20260930_api_v1`已提交，日志同级`.stdout.log`；新gate/campaign/episode尚未提交。
+- 12:31：API已完成54/54有效、9/9完整计划、result SHA `71cef4f9…7729be`；后台协调器87628已唯一启动，根`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_multi_20260930_campaign_v1`，状态`campaign.json`、日志`coordinator.log`/各stage launch log。其顺序为gate0/gate3/task0a/task0b/task1a/task1b/task3a/task3b，各stage独立目录/监管，不因SSH断线重提。
+- 12:33：首gate0监管88005/actor88021正在native初始化、GPU1，运行源4698b0a不改；API19件全量已双端SHA取回`/home/wsy/behavior/artifacts/jev-control-20260929/multitask/api_v1/`，不含凭据/权重。
 - 本地开发`/home/wsy/behavior_worktrees/jev-20260929`，六例登记`configs/semantic_robot/jev_multitask_v1.json`，task0/1/3各2个TRAIN原始实例，0演示前缀/0训练。拟用新run `jev_multi_20260930_<stage>_v1`与同名私有runtime；目前尚未部署/创建，不复用JEV-04目录。
 - JEV-04正式episode已归档14件到`/home/wsy/behavior/artifacts/jev-control-20260929/planning_contract/episode1/`，result/完整ledger/ownership/video均已双端SHA核同；contact sheet仅人工检查，不作actor输入。新任务槽/手臂选择代码不会回写旧211a6f8冻结源。
 

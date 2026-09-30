@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 12:30（北京时间）：JEV-05真实API 54/54有效，9/9计划完整（Codex）
+
+- 新冻结4698b0a上的`jev_multi_20260930_api_v1`已完成，原9 trials全保留：task0/1/3各3/3完整计划、54有效请求/无error、interface_validated=true、0控制/重置/训练。它证明同一实际入口的类型化规划契约可用，不是任务SR；0与失败probe也会准入的规则未改变。
+- 已提交新后台协调器启动命令，待PID/首门实际状态；将同源两门后自动接六实例，固定全部结果、无重试/无成功筛选。新源码/配置和权重保持冻结，不热改。
+- 12:31启动回执确认协调器87628，run `jev_multi_20260930_campaign_v1`，唯一后台两门→六例，8小时协调器上界＋各stage独立超时/资源监管；首门状态正在核查，不重复启动。API result SHA `71cef4f9e7f2258b251b82dc5cd2132709ebe09db874c9be46b2ba15007729be`。
+- 12:33实查gate0监管88005/actor88021 live、actor_running/physical GPU1，已进入native初始化，其他新stage尚未提交；API全19件已取回`/home/wsy/behavior/artifacts/jev-control-20260929/multitask/api_v1/`，每件双端SHA完全一致，原54请求完整保留。
+
+### 2026-09-30 12:29（北京时间）：JEV-05新源部署/六实例实核，API批已提交（Codex，运行中）
+
+- 实现已commit/push `4698b0aa37edf5b2758286fa3a2d5dec3777533e`，新robo clean detached `/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_multi_4698b0a`；真实sim Python下71目标测试/0.881s通过，完整digest `403c74df…ca69`一致，六window原始bytes SHA/task/instance/TRAIN/seed0/robot全部resolve通过。旧211a6f8及队友源未改。
+- 新唯一`jev_multi_20260930_api_v1`已提交独立timeout监管，最多9完整规划试验/54请求/1200s内层＋1230s外层，0GPU/仿真/训练/控制；stdout同级`.stdout.log`，结果待。仅私有key-file，无凭据进Git或观察服务。API批通过后新两门→六例协调器，尚未启动仿真。
+
 ### 2026-09-30 12:27（北京时间）：JEV-05第二包独审通过，准备Git冻结部署（Codex）
 
 - 第二包独立只读审查无实质阻断，10项campaign/evidence/coordinator独立回归通过；当前完整implementation `403c74df8227e51b67203428e3033c3725f2bc56fe15e82fc4bbb54cbfd1ca69`，registry `40454b2a560960198fe2b9e745078ccf6d1f11ec5dfa3f2ede1c294268d760e2`。最终813复验/48.213s通过、5环境skip，准备显式暂存小文件commit/push；不在旧运行目录热更新。
