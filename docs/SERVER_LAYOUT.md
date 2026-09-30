@@ -2,6 +2,8 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
+**2026-09-30 17:00北京时间高层B-final：** 共享根`/data/workspace/wsy/behavior2026`下`models/memlite-b-final-20260910/B-final-model.pt`已完成全SHA迁移，11,440,576,631B，SHA`e7cd7bf738eb46901565088f829aa82c5c6ea95f610d4df1499e634959d29b13`；原950模型状态逐字节一致，只省去旧optimizer/scheduler等，`export-receipt.json`及原B配置/统计/回执同目录。它仍是原B-final，不是新训checkpoint。lc3有限高层测速源`src/memhigh-af631a2`，运行根`runs/memlite_high_benchmark_20260930`，`inputs/`为30条原TRAIN单帧缓存，`token-preflight-v2`与`stride-phase-v1`是CPU证据，容量/计时日志在`logs/`；本地证据`artifacts/a800-memlite-high-bench-20260930`。原robo完整26.59GBcheckpoint及旧优化器不动。此时仅容量初始化，吞吐尚待；不得据文件齐全启动正式100任务长训。
+
 **2026-09-30 14:11北京时间追加测速完成：** 同运行根新增`batch256-v1/`和`cpu-io-stride16-v1/`，均complete/exit0；同名日志在`logs/`。两者均绑定独立冻结`/data/workspace/wsy/behavior2026/src/mem1f-b256-03e35f8`（03e35f8464ac26683cdb4e6dc7d5f63001b9a973），源码经已push Git bundle导入，旧源/env不动。新四件小结果本地`artifacts/a800-memlite-oneframe-bench-20260930/results/`全SHA一致；无新checkpoint或残留GPU任务，[汇总](infra/results/2026-09-30-memlite-batch256-stride16.json)。
 
 **2026-09-30 13:31北京时间测速归档：** 运行根`/data/workspace/wsy/behavior2026/runs/memlite_oneframe_benchmark_20260930`，计算`batch64-v2/`和`batch128-v1/`均complete，CPU读取`cpu-io-v1/`complete，`logs/`保留输出、`inputs/`为原TRAIN微批/来源回执；无新训练checkpoint。实际计算源`src/mem1f-7af393b`、I/O源`src/mem1f-io-61661f3`，旧失败`src/mem1f-2193368`/`batch64-v1`也保留。源均固定不热改，所有自有作业已退出；本地小结果在`/home/wsy/behavior/artifacts/a800-memlite-oneframe-bench-20260930/results/`，轻量汇总进Git。[完整口径](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。
