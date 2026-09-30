@@ -2,6 +2,9 @@
 
 ## Jev多任务开发评测（JEV-05，2026-09-30）
 
+- **14:11最新：** task0b原183698/183786/184185已由监管正常收尾，`jev_multi_20260930_task0b_v1` completed/官方false/JEV_ABSTAINED/133controls。该run及原4698b0a源保留，不重提。task1a/1b/3a/3b仍待主线程首次提交，旧campaign保持stopped。
+- 14:13：task0b完整归属复核通过，正在取回本地`multitask/task0b_v1`；新`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_multi_20260930_task1a_v1`首次监管194597/原4698b0a/3600s。其余task1b/3a/3b未提交，旧campaign不重启。
+- 14:19：task0b本地全413件双端SHA核同、4.4s视频已本人抽帧；task1a实际observer194749/actor194814正在初始化。旧task0b不重跑/改源。
 - **13:30最新终态：** 原campaign协调器87628及task0a监管140071/model140499/actor140567均退出；task0a `gate/failure.json`为第17次Jev响应选项/概率校验失败，6策略动作/102控制＋1安全停止。其余五例目录未提交，不把较早“运行中”当当前状态；全部源码/run保留，不重启原目录。
 - 13:41全包：task0a全部326件在本地`artifacts/jev-control-20260929/multitask/task0a_infra_v1`逐文件双端SHA一致，视频已本人抽帧；首次SCP截断残片另留`task0a_interrupted_transfer_v1`。冻结4698b0a源及原失败run保留不改，未来诊断使用另一个Git checkout。
 - 13:47诊断：独立Git源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_contract_ac74d9b`固定ac74d9b；已唯一提交纯API30次`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_choice_contract_20260930_v1`，0GPU/动作/重置。源码冻结/原失败包不改；具体result待核。本地备用`/home/wsy/behavior_worktrees/jev-contract-probe-20260930`未运行API。

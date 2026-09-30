@@ -1,6 +1,6 @@
 # JEV-05：Jev全策略控制的三任务原始起点评测
 
-负责人：Codex；分支 `feat/jev-control-20260929`。当前首例因API协议校验失败暂停，五例未提交；运行源commit和实际结果见下文与计划，不把本文件当作评测完成。
+负责人：Codex；分支 `feat/jev-control-20260929`。截至14:11，首例协议错误保留，第二例正常弃权结束；另四例待首次提交。运行源commit和实际结果见下文与计划，不把本文件当作评测完成。
 
 ## 问题与边界
 
@@ -79,6 +79,14 @@ task0a在decision6的第17次Jev调用（command）触发`Choice disagrees with 
 完成诊断后继续原未提交五槽：主线程逐例首次提交，不重启原协调器、不重跑/替换task0a、无新sim预算；仍4698b0a原源/同一准入证据，诊断补丁不进入本轮actor。每例官方终态、协议错误和未提交状态分开报告，task0完整率与六例总率在分母不齐时仍null，不用仅有效例的子集掩盖可靠性损失。
 
 13:52接续task0b TRAIN97/seed0/0前缀已actor_running：监管183698、observer183786、actor184185，原GPU1/4698b0a/统一预算。task1/3四例尚未提交。旧task0a的16有效Jev请求总2.010s，7观察服务总133.633s/0输出截断，七次均报target不可见/无hazard；与图审一致，不能把此次原地等待主要归因于API太慢。
+
+## 第二例task0b：正常弃权，官方未成功
+
+14:11–14:19核验TRAIN97的唯一原始起点运行。监管completed、actor exit0，总906.578s/动作328.364s/清理0.796s；官方success=false、terminal=false、goal0未满足，stop_reason=JEV_ABSTAINED。21次Jev请求全部有效、9次视觉观察；8个策略动作（2底盘前进micro＋6 HOLD）全部经durable选择/完整计划/逐control归属复核，132策略controls＋1安全停止，integration=true。第9条decision是命令弃权，不算执行动作。
+
+全部413件已本地`artifacts/jev-control-20260929/multitask/task0b_v1`逐文件双端SHA核同。result `443c46e6013545e7f4268e636ee34edb241638ecd961509655dcfe639e0fc6ec`，ownership `c6e86a95f0f893037bfc0b9f91a9fda55e1f095165709fd2bd77a5f974f89385`。本人查看4.4s视频7帧：头部面对电视/墙，腕部主要被本体遮挡，两次微前移后未搜索到收音机、未抓取。9次观察均不可见、无token上限截断，感知合计146.723s；与图审相符，不将失败归因为模型“看见了却不抓”。
+
+当前task0为**1次完整失败＋1次协议中断**，原两例完整SR不报数值，不混入旧JEV-04。14:13仅首次提交原下一槽task1a TRAIN141/seed0，同4698b0a、统一预算；监管194597/observer194749/actor194814，结果待。余task1b/3a/3b尚未提交。
 
 ## 旁路：旧搜索停滞输入的敏感性，不修改本轮actor
 

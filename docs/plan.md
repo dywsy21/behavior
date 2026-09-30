@@ -10,6 +10,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 14:11（北京时间）：task0b正常弃权结束，接续其余原槽（Codex / JEV-05）
+
+- 恢复通道后实读原task0b监管已completed/actor exit0，906.578s总、133controls、official_success=false、JEV_ABSTAINED；最后progress为8策略动作/132controls，另1安全停止。21 Jev请求/9观察，未重启或重试；完整ledger/计划归属正在同源统计器重新核验，不以进程退出替代通过。
+- task0仍为一例协议错误＋一例完整失败，不能报原登记两例的完整SR；task1a/1b/3a/3b仍未提交，待本例审计和GPU回收核过后依原4698b0a/同预算逐例首次提交。无新训练、无额外reset预算。
+- 本次保留上一轮自有plan未提交记录，只fetch未pull；feature与origin为0/0，origin/main仍33677bd。冻结actor源不改；本地证据归档待完成。
+- 14:13同4698b0a统计器已重核task0b来源/统一预算/完整计划/API账本/133control归属：integration=true、8 Jev策略动作（2移动＋6 HOLD），另1命令弃权行；21 API均有效。GPU1实余80735MiB，原run已释放。首次提交task1a TRAIN141回执监管194597/原3600s，task1b/3a/3b仍未提交；本地task0b全包传输中。
+- 14:19 task0b全413件已取回`artifacts/jev-control-20260929/multitask/task0b_v1`且逐文件双端SHA一致；result `443c46e6013545e7f4268e636ee34edb241638ecd961509655dcfe639e0fc6ec`、ownership `c6e86a95…4f89385`。本人看过4.4s视频的7帧contact：面对电视/墙，腕相机主要本体遮挡，两次微前移、无目标抓取，最后黑格只是空白占位。task1a实际model194749/actor194814/监管194597仍actor_running/初始化，不重复提交。
+
 ### 2026-09-30 13:50（北京时间）：30次API未复现协议错，接续原未使用槽、不重跑失败例（Codex）
 
 - `jev_choice_contract_20260930_v1`在ac74d9b上完整30/30有效，同一重建request SHA全部一致，27 HOLD/3底盘micro前进；214500输入/5850输出tokens、0控制/重置/训练。result SHA `390e1db0d29aa35540323cfaaef65815ab453b85daf2a431fbe4bd175c2f6096`，全部34件已取回`multitask/choice_contract_v1`逐件双端SHA一致。未复现不等于旧错不存在/已修复；原16有效＋1拒绝失败记录不改，搜索停滞仍明显。
@@ -18,6 +26,7 @@
 - 13:51实际启动回执：`jev_multi_20260930_task0b_v1`监管183698，4698b0a/原3600s/GPU1；首次运行TRAIN97（非138重试），真实模型/仿真状态待。剩余task1a/1b/3a/3b仍未提交，旧协调器不重启。
 - 13:52:26实核task0b observer183786/actor184185已actor_running/physical GPU1/loading_scene，原始实例尚在初始化，无重复提交。13:53只读旧失败耗时：16有效Jev请求合计2.010s，7视觉观察133.633s（0截断、均visible=false/hazard=none）；接口延迟不是搜索停滞的主要解释。此项未测新成功率，不据此更换感知模型或策略。
 - 13:55旧失败包部分执行归属实核：6动作各自command_call与durable回答/action proof/freshness一致，103条trace连续，前102均有对应Jev决策、最后1条为异常安全停止；不构造完整result，不补官方成功真值。完整方法SR仍待后续原实例。
+- 14:06连接恢复核查：14:02–14:03主/备通道短暂失败，用户已回复恢复；后台只读监控重新取得14:04:55回执，task0b原183698/183786/184185未重启、control102/decision6，仍SEARCH/RECOVER的HOLD段，真实终态待。原始97/reset-load-reset与GPU1验证已过；其余四槽未提交。
 
 ### 2026-09-30 13:47（北京时间）：原失败状态30次纯API诊断唯一提交（Codex）
 
