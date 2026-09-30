@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 20:18（北京时间）：高层step0评测/保存完成，正式操作手册接线（Codex / IMPL-MEM100-STAGE1）
+
+- lc1 `high-v1`真实950状态恢复后完成初始百task评测、`step_00000000_save_0001.pt`原子保存，status INITIALIZED/累计185.04s；W&B实际run `b972006776f2`已在线（团队behavior2026-g05项目）。尚不以step0当优化成功，训练/恢复仍待。
+- 新增`docs/infra/MEMLITE_STAGE1_RUNBOOK.md`，写明lc1/lc2各自配置、共享路径、准入、W&B指标、同run恢复/保存停止、正式命令仅获批后执行；新全量采样审计脚本待冻结。bounds已301/953文件、4,923 TRAIN来源，仍CPU运行，低层GPU未启动。当前源4f73bda不热改，工具新增只在新worktree执行。
+
 ### 2026-09-30 20:14（北京时间）：lc1高层真实八卡短验已启动（Codex / IMPL-MEM100-STAGE1）
 
 - 4f73bda已push/独立冻结，8个新标签/normalizer单测过；v4构建62.93s，111源隔离。lc1 `high-v1` supervisor431063/torchrun431071已RUNNING（八rank初始化），全局256=8×4×8、先2更新后同run恢复到4，累计≤64更新/60min；日志`runs/stage1_acceptance_20260930/high-v1.supervisor/attempt_001.log`。当前不宣称首更新/存取通过，不是正式一遍开训。
