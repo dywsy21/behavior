@@ -64,6 +64,8 @@ GPU1上运行模拟器与观察服务，分别CPU88–91、48–51；模型≤59
 
 task0a在decision6的第17次Jev调用（command）触发`Choice disagrees with distribution`。截至失败，16次响应通过、1次拒绝、7次观察；实际策略为1次底盘micro前进和5次HOLD，共102控制；异常处理再发1次安全HOLD并完成，所有自有进程退出。监管总947.842s、清理0.847s；`gate/failure.json` SHA `1b23475b7ae678ca9a8f657d93bb64a62bc4bc32cefceea98d470dd776d5f274`。
 
+13:55额外核对原失败包的逐动作归属：6个已执行动作的command_call均匹配durable validated回答、action/proof一致、freshness过；trace实际103条control连续无遗漏，前102全部落在对应决策范围，最后1条明确after_exception safety_stop。仅证明失败前的部分执行由Jev选择，不将失败包拼成完整result或赋予官方成功值。
+
 协调器按约定停止，其余五例未提交。**当前是1例接口/协议错误、0例完整任务终态，不是0/6成功率。** 同源统计器返回overall completed=0、infrastructure_failures=1、pending=5、success_rate=null。失败例不会被删除/替换为成功结果。
 
 [TypeSafe Choice官方契约](https://docs.typesafe.ai/primitives/choice)和[HTTP API定义](https://docs.typesafe.ai/api)都要求choice对应最大概率，当前argmax校验有依据；文档提到的“跨不同问题概率不满足逻辑恒等式”不等于同一Choice可违背此契约。旧client只记录拒绝事件，未保存原概率，不能断言原差值、舍入或供应商内部原因。
@@ -75,6 +77,8 @@ task0a在decision6的第17次Jev调用（command）触发`Choice disagrees with 
 13:50诊断结果：独立ac74d9b源上的`jev_choice_contract_20260930_v1`完整30/30有效，27次HOLD、3次base forward micro，214500输入/5850输出tokens；全34件本地`multitask/choice_contract_v1`双端SHA核同，result `390e1db0d29aa35540323cfaaef65815ab453b85daf2a431fbe4bd175c2f6096`。全部请求SHA一致，未重现argmax不符，但不据此否定原错误或宣称供应商已修复。没有任何新动作/SR。
 
 完成诊断后继续原未提交五槽：主线程逐例首次提交，不重启原协调器、不重跑/替换task0a、无新sim预算；仍4698b0a原源/同一准入证据，诊断补丁不进入本轮actor。每例官方终态、协议错误和未提交状态分开报告，task0完整率与六例总率在分母不齐时仍null，不用仅有效例的子集掩盖可靠性损失。
+
+13:52接续task0b TRAIN97/seed0/0前缀已actor_running：监管183698、observer183786、actor184185，原GPU1/4698b0a/统一预算。task1/3四例尚未提交。旧task0a的16有效Jev请求总2.010s，7观察服务总133.633s/0输出截断，七次均报target不可见/无hazard；与图审一致，不能把此次原地等待主要归因于API太慢。
 
 ## 旁路：旧搜索停滞输入的敏感性，不修改本轮actor
 
