@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 12:15（北京时间）：A4权重改为校验式并行中转，实际运行中（Codex / BENCH-MEM1F）
+
+- 旧单连接rsync仅约0.3–1MB/s，已只终止本轮PID191095，约315MB旧partial保留；robo原权重不动。直接外网SSH路径不可达，未改路由/防火墙/认证。
+- 新固定代码`7960bb0`的`scripts/infra/sync_memlite_a4_checkpoint.py`、PID193613已运行：8连接/16MiB分块，共989块，逐块SHA＋最终完整SHA，随后自动rsync至lc3并远端完整SHA通过才原子发布。源CPU mmap只读核1138模型条目/192 LoRA/全FP32，与完整16.58GB checkpoint身份相符；不转半精度、不删optimizer来冒充原件。
+- 12:14:33已收30块503,316,480B/约33.7s，初始约15MB/s，仅瞬时样本不承诺持续速度。状态`artifacts/a800-memlite-oneframe-bench-20260930/weights/sync-status.json`；3项CPU单元（含7组边界案例）/py_compile/diff通过。仍下载中，未上传完成/未GPU测速；源/本地/目的最终一致仍待。
+
 ### 2026-09-30 12:04（北京时间）：按最新指令先同步真实A4权重，取消随机初始化测速（Codex / BENCH-MEM1F）
 
 - 用户要求旧权重优先、缺失才下载G0.5；原随机初始化计划取消，至今0GPU更新。robo旧A4 `overnight_a4_20260912/formal/checkpoints/step_2500.pt`仍在，16,581,363,550B，刚重算SHA`61867047…32f269`与历史完全一致。

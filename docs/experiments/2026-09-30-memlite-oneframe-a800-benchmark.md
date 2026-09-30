@@ -16,6 +16,8 @@
 
 ## 当前状态
 
+12:15（北京时间）单连接慢，转为固定`7960bb0`的校验式8连接/16MiB分块中转，PID193613、989块；旧rsync315MB partial保留。本地状态`weights/sync-status.json`，12:14:33累计503,316,480B/33.7s。脚本在完整SHA通过后才上传，远端再次完整SHA通过才发布最终文件；测试3项/7组边界、py_compile/diff通过，0GPU启动。源CPU mmap证1138模型条目/192 LoRA、全FP32；完整checkpoint保留optimizer/RNG，不改变数值精度。
+
 12:04（北京时间）旧A4完整权重同步准备/传输中：源`robo:/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912/formal/checkpoints/step_2500.pt`，本地可续传暂存`artifacts/a800-memlite-oneframe-bench-20260930/weights/A4-step2500.pt.partial`，计划目的`lc3:/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`。robo不能直连lc3，使用本地受控中转；完整大小/SHA验收前不放行。共享盘余约4TiB、本地600GiB，原文件不移动/删除；无需G0.5替代。
 
 11:55（北京时间）只读确认 lc3 八卡均0MiB/0计算进程，复用现有VPN连接，无重认证。小processor资产已同步，tokenizer.json与tokenizer_config.json双端SHA一致；完整资产清单验收待。尚未启动GPU训练。
