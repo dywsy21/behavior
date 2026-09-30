@@ -21,6 +21,8 @@
 - 16:28权重CPU导出已完成：950个模型状态逐字节等同B-final原件，原完整SHA通过；导出11,440,576,631B，SHA`e7cd7bf7…9d29b13`，无Adam/0CUDA、66.67s。新冻结3b6c407启动本地8并发分块中转（`artifacts/a800-memlite-high-bench-20260930/weights/status.json`），此刻未到A800最终名；同源inputs-v2仅重做CPU输入，旧失败保留。新增真实高层训练测速入口、按全局有效token权重做梯度累积、固定episode stride相位计数；均待CPU门/冻结和资产终态，不将开始传输当迁移完成。
 - 16:41输入v2成功：107.19s/0CUDA，30条原TRAIN记录覆盖5任务各6个文本长度分位，当前帧三相机/原监督标签不改；样本SHA`68e5e56d…30d312`，原train eligible digest一致。本地取回并向A800同步小配置/输入；大权重仍传输中。新增测速/固定stride计数的5项CPU算术测试与py_compile通过，GPU实测仍待真实token门与权重终态；lc3此刻8卡仍空闲。输入证据为robo `memhigh_a800_benchmark_20260930/inputs-v2/receipt.json`，本地同任务artifacts/inputs。
 - 16:43源060b81d已push/冻结，A800五CPU测试及真实token预检通过：30样本467–1137 tokens，UNKNOWN outcome/无真值终止字段全部mask，memory更新0.25，0CUDA；`token-preflight-v1/result.json`已取回。固定seed17相位全量计数完成：100任务/20,000演示一遍13,182,390候选、两遍26,364,780，完整32动作候选13,143,606；均是split/标签合法性过滤前。`stride-phase-v1`耗4.66s、无缺标注文件；metadata长度与annotation duration并非统一180差，不能当全量时间偏移，正式对齐仍待。11.44GB权重本地全SHA通过、正上传A800，尚无GPU作业。
+- 16:50新源af631a2的4项实际Torch CPU回归通过（加权CE值/梯度、padding边界、masked字段不复活、历史帧安全门），`token-preflight-v2`另通过micro4/8/16/32 × train/eval共8个真实混长batch的prefix/权重一致性。lc3直Git fetch因GnuTLS失败自然退出；已push的同commit经Git bundle verify/fetch导入新冻结源，未改旧运行目录。大权重上传约44%，GPU尚未启动；只等待本任务传输终态，不重启VPN。
+- 16:53已提交唯一`capacity-long-m16-v1`等待链：先等B模型最终校验发布（最多900s），再复查八卡无人占用才启动同af631a2的long/micro16/accum2/global256两更新容量门（GPU另900s＋30s）。log在同run根logs/，此刻仍是等待权重、不是正在训练；不重复启动。完整测量范围/44更新及90min总GPU上限已补进[原测速报告高层节](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)，下一看模型终态/首真实forward后决定timed档位。
 
 ### 2026-09-30 14:30（北京时间）：完整阶段/超参及样本顺序提案核验完成，未开新训练（Codex / PLAN-MEM100-RECIPE）
 

@@ -2,6 +2,18 @@
 
 2026-09-30，Codex / BENCH-MEM1F，分支 `bench/memlite-oneframe-a800-20260930`。用户授权短测速，不是全量训练。
 
+## 高层补测预登记（16:52北京时间，尚无GPU速度结果）
+
+用户已定global256、每个逻辑episode固定随机相位0–15、之后每16帧一个候选，两遍沿用同一网格；高低层各一节点独立遍历100任务两遍。此前低层约60h不能视为高层已经测成。本轮Codex / BENCH-MEMHIGH-256只做高层时间测量，不启动长训、发布新模型或改共享环境。
+
+- 高层使用真实B-final：原完整checkpoint SHA `d4580d80cdc91a707c233a6c1e625f8fbdeca8896dd38a3d570c6fad340184ef`；CPU无损导出950个model-state张量，逐字节验证后省略旧Adam等状态，11,440,576,631B导出SHA `e7cd7bf738eb46901565088f829aa82c5c6ea95f610d4df1499e634959d29b13`。传输到共享盘后仍须完整SHA验证，不以文件出现或已开始上传当完成。
+- 模型为单帧三RGB、完整planner VLM＋proprio组326个unique参数张量更新；冻结vision/action expert/outcome，不误称低层LoRA配方。旧6帧高层代码最小移植只准1帧入口，保留原位置编码参数形状以完整恢复。memory token权重0.25，其他有效目标1，UNKNOWN outcome和无真值task_complete遮罩；没有新结果头训练。FP32参数/AdamW、BF16 autocast、原梯度checkpoint、fused CE；LR1e-5、betas(.9,.95)、WD.03、clip1、fresh optimizer。
+- 输入为旧已发布TRAIN的30条（五任务各六长度分位），取各相机历史中当前帧/当前proprio，不改任何监督标签；输入SHA `68e5e56d809af8e6f58c7eaac336b3f6581b66900e0a4a3a61868a581030d312`。真实tokenizer测467–1137 tokens，batch4/8/16/32在train/eval路径的padding、前缀、遮罩及权重一致性已过。并非新的100任务MEM-Lite标签发布，也不是策略质量/成功率实验。
+- 假设：真实高层前后向＋同步＋Adam吞吐可用于固定观察量的条件时间外推。lc3单节点8×A800、seed17+rank；global256始终不变，micro4/8/16/32对应累积8/4/2/1。累积前几微批使用DDP no_sync，按全局有效token权重归一，不取微批均值的均值。先long容量门，最多四次两更新门（非吞吐结论）；随后mixed30条/long最长龙8条各6预热＋12计时，最多44次临时更新、不保存权重，总GPU墙钟≤90分钟。每次新run，遇外部GPU进程、非有限值、梯度/权重合同错误即停；OOM只在原预算内降低micro重新登记，不无界重试。
+- 计时包含动态batch/H2D、真实tokenization、forward/backward、梯度累积和DDP/clip/Adam；不含初次构造/JIT、文件传输、原视频解码、正式百任务MEM loader、保存、eval、失败轨迹收集或阶段2/3。预热后取每次8-rank最大墙钟，报告两种长度profile而非只测短文本。正式训练不能静默截短memory/回答以符合这个测量。
+- 全100任务20,000条metadata已实计：固定seed17一遍13,182,390候选、两遍26,364,780；完整未来32步候选13,143,606。该值未扣split/合法标签，约95% train只作近似数量外推，不能冒称精确TRAIN索引。全100任务语义长度分布、原新split和时间对齐未验，未来两节点并发NFS读取也不在本轮证据内。
+- GPU候选源固定`af631a2437f4f51764c7272cbe94cee7d973d77d`，共享`src/memhigh-af631a2`；独立特征分支`bench/memlite-high-time-a800-20260930`，未合main。run根`runs/memlite_high_benchmark_20260930`，原始输入/计数/token回执已取回本地`artifacts/a800-memlite-high-bench-20260930`。源060b81d的CPU统计与输入导出3b6c407分别保留对应commit；原GPU/共享env不热改。
+
 ## 最新结果：batch256＋stride16（14:11北京时间完成归档）
 
 **global256=8×micro32、accum1已实际跑通，0 OOM。** 同一A4低层/单帧三RGB/32连续动作/四FM噪声/AE＋r8 LoRA，6步预热＋24步计时，6144观察/51.075727s=**120.291972观察/s**，平均2.128155s/更新；每卡最大allocated51.582725GiB、reserved52.050781GiB。八rank完整1138状态/192LoRA恢复、322AE＋182LoRA梯度检查均通过。原权重不改，30临时更新后退出0，不保存部署checkpoint。
