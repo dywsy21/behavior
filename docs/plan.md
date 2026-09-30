@@ -10,10 +10,21 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 11:31（北京时间）：E3从173的续训作业已唯一启动（Codex / RL-G05-50K-E3）
+
+- UTC03:30:57，`e3_render_resume_v1`唯一监管37389/learner37396状态running，冻结970896ede236851809573b02b48401f67f5e9dd2；新manifest两墙钟null、render_completion_retries=2、累计55740控制/14批/173/72，原两段证据保留。
+- 当前入口加载/审核中，尚无`resume_load.json`或本次新自主采样；不把进程启动当作恢复验收或成功率提高。随后同一作业自动课程、余TRAIN24260控制内PPO和固定六对final，无人工课程等待、不新扩预算。下一确认严格优化器恢复和真实sim取图/采样。
+
+### 2026-09-30 11:31（北京时间）：robo真实故障对账和173恢复准入通过，提交唯一启动（Codex / RL-G05-50K-E3）
+
+- 独立冻结源`git_worktrees/g05_50k_rl_render_resume_970896e`固定970896ede236851809573b02b48401f67f5e9dd2，Git ff-only/clean；原MODEL_PY 95回归94过/1 CUDA项CPU模式跳过，SIM_PY另39 I/O/render测试过，安装SDK六文件SHA验证通过，未改env。
+- `e3_render_resume_v1/manifest.json`与`prior_control_audit.json`已生成：两段14批/173 actor/72 critic/成功11、55740累计物理控制/0新未决；课程884/1096及近期[false,true]/另一完整14项历史恢复。两旧worker完整20778/26504物理与I/O及exit0核同，末32补账；1728未完成自主控制丢弃不入PPO，原failure/pending保留。
+- 父50k和173 delta整SHA、TRAIN原动作/Parquet/标注及留出隔离、固定final实例全部通过；两墙钟仍null、余TRAIN24260。正在提交唯一GPU launch，不将prepare通过冒充真实优化器/采样已恢复；下一核监管、严格恢复回执和原生采样。
+
 ### 2026-09-30 11:28（北京时间）：有界重取图与173故障恢复入口完成本地回归（Codex / RL-G05-50K-E3）
 
 - `synchronous_io.py`新增显式opt-in最多2次completion重采集；只有逐相机全部合法、单独global completion不符才重试。坏capture完整留档，成功新batch须超过所有丢弃帧且bindings不变，physics始终零推进，读后围栏保持；默认0次不影响其他路线。该策略只处理瞬时错位，尚未声称解决SDK长期根因。
-- `prepare_render_resume.py`/`render_resume.py`对两段完整14批恢复课程及173/72，逐控制动作/四tick I/O、失败取图/同clock detach、双sim退出与32 pending严格对账，原故障文件不覆写，1728不完整自主控制不进PPO。当地56 RL＋32同步I/O＋7原生batch测试全过（共95），包括错相机/物理推进/错绑定/不够新/重试耗尽反例。
+- `prepare_render_resume.py`/`render_resume.py`对两段完整14批恢复课程及173/72，逐控制动作/四tick I/O、失败取图/同clock detach、双sim退出与32 pending严格对账，原故障文件不覆写，1728不完整自主控制不进PPO。本地56 RL＋32同步I/O＋7原生batch测试全过（共95），包括错相机/物理推进/错绑定/不够新/重试耗尽反例。
 - 当前仍0新GPU运行；下一Git冻结并在robo原解释器复验、完整父/delta SHA和真实旧日志准入，成功后启动唯一续训。奖励/优化器超参/训练及评测矩阵均不改，TRAIN余24260、两墙钟null。
 
 ### 2026-09-30 11:22（北京时间）：用户授权从173恢复同一E3，保留累计预算（Codex / RL-G05-50K-E3）
