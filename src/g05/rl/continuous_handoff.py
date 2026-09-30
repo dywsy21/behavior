@@ -65,7 +65,7 @@ def live_pids(pids, proc=Path('/proc')):
 
 def check_closed_pool(closed, counts):
     if (closed['clean'] is not True or closed['pending_controls']!=0
-            or closed['exits']!=[0,0] or closed['reported_controls']!=counts
+            or closed['exits']!=[0,0] or sorted(closed['reported_controls'])!=sorted(counts)
             or closed['ledger_controls']!=sum(counts)):
         raise ValueError('Dependency pool did not close with exact physical accounting')
     return sum(counts)

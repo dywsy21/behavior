@@ -16,6 +16,7 @@
 - 新`prepare_continuous.py/continuous_handoff.py`实现E3正常完成＋固定六对完整＋旧PID全部退出才单次接续，重新核SHA/物理日志/TRAIN隔离，从最后完整delta恢复Adam/RNG/课程；新E4不再自动运行预算终止final。CPU单元目前67 RL＋5 flow通过（含真实toy actor超过旧上限/训练循环越过旧64批、80k控制和三批停门；附加handoff唯一启动测试正在补跑），没有新GPU启动。
 - 14:12真实快照19完整批/已落盘202，当前E3继续第20批。已绘`artifacts/g05-50k-rl-20260928/rl-learning-curve-20260930.png`并本人检查：实例1前缀1076/980/884/788分别5/7、4/5、3/4、0/3；实例1381096为2/19。曲线按采样前actor步对齐、分课程最近≤5回合均值，非固定checkpoint SR；parent/E2完整reset均0/6，E3final尚无、不填零。复算脚本`plot_learning_curve.py`和29KB原回执/SHA摘要`docs/experiments/2026-09-30-rl-learning-curve-data.json`入Git，PNG忽略；字体及布局已检查。
 - 下一：补完接续器回归→提交/push独立feature→robo新冻结源CPU验收并arm等待，不热pull运行源。不把“代码实现”写成服务器已持续训练；队友独审/合main未完成。
+- 14:20补核：全部69 RL＋5 flow过，eaae688已push；本人复审补上两worker IPC到达顺序不固定的关闭账校验：按具名worker回执对应物理日志，关闭汇总用多重集比较，防止正常完成却错误拒绝接续。14:19 E3仍同四PID/第20批updating，累计78336控制/actor202，0 pending；原固定final尚未开始，磁盘余1.3TiB。
 
 ### 2026-09-30 14:03（北京时间）：用户授权本轮结束后持续RL及效果—步数图（Codex / RL-G05-50K-E4）
 

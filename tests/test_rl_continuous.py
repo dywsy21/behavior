@@ -105,6 +105,8 @@ class ContinuousTests(unittest.TestCase):
     def test_closed_pool_requires_exact_physical_count_and_all_exits(self):
         closed=dict(clean=True,pending_controls=0,exits=[0,0],reported_controls=[100,200],ledger_controls=300)
         self.assertEqual(check_closed_pool(closed,[100,200]),300)
+        self.assertEqual(check_closed_pool(dict(closed,reported_controls=[200,100]),[100,200]),300)
+        with self.assertRaises(ValueError): check_closed_pool(dict(closed,reported_controls=[150,150]),[100,200])
         for field,value in [('clean',False),('pending_controls',16),('exits',[0,-15]),('ledger_controls',299)]:
             with self.assertRaises(ValueError):check_closed_pool(dict(closed,**{field:value}),[100,200])
 

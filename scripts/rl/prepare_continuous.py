@@ -46,6 +46,10 @@ def main():
             inputs[str(path)]=sha(path)
             with path.open() as stream:
                 counts.append(count_physical_steps((json.loads(line) for line in stream),allowed_phases=phases))
+            # Connections enter the IPC dictionary in nondeterministic arrival
+            # order. Validate each named worker receipt, not its list position.
+            if read(PRIOR/f'{pool}/worker_{worker}_closed.json')['total_controls']!=counts[-1]:
+                raise ValueError('Named worker close receipt differs from physical log')
         pool_counts[pool]=check_closed_pool(read(PRIOR/f'{pool}/closed.json'),counts)
     if (old['training_resume']['controls']+pool_counts['training']!=ready['training_controls']
             or pool_counts['final']!=ready['evaluation_controls']):
