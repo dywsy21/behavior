@@ -18,6 +18,7 @@
 - 同秒内核明确指向GPU1 `GPU-58992b92-5fea-12a6-12aa-b7b322652cbf` / PCI52:00.0：Xid48双比特不可纠正HBM、171 DRAM、63待row-remap、94 contained ECC、154 Drain and Reset。GPU1 volatile不可纠正32/aggregate71，row-remap pending Yes；无OOM记录，rank0此前峰值allocated60.28/reserved63.15GiB（不是GPU1逐卡峰值）。NCCL P2P原已禁用、NVLink不活跃，不能按错误字符串误判显存容量或NVLink传输根因。
 - 最新用户明确要求解决后重新开始高层；本轮唯一负责人Codex，先只读排空检查，针对该确切GPU重置使待重映射生效，再做有界显存/八卡通信健康验证（总≤15分钟、无训练参数更新）。若ECC重现/仍需reset则不盲目续训，报告硬件维护需求；不碰lc2训练、共享env或队友作业，不整节点重启。
 - 健康门通过后计划沿d0528b4相同source/config/output显式resume step0，沿原W&B `8ecc6bb3908e`和168h累计ledger，不重置失败预算、不改batch/LR来掩盖硬件问题。修复与真实恢复更新仍待验证，未重新提交训练。
+- 22:38定点恢复：核8卡无计算进程、GPU1 Processes None/设备无用户句柄、旧训练PID退出后，仅对上述UUID执行管理员gpu-reset并返回成功。后验GPU1 recovery None、pending No、volatile不可纠正0，aggregate71保留；这是重映射生效，不是抹掉历史或证明永久修好。新增独立健康探针/5个CPU测试，先校验ECC/回收标记/外部进程再逐卡68GiB四模式读写，源码待冻结；运行训练源d0528b4和lc2共享env未改。
 
 ### 2026-09-30 21:30（北京时间）：两层正式训练首批更新通过，后台继续（Codex / TRAIN-MEM100-STAGE1）
 
