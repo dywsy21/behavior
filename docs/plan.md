@@ -10,6 +10,15 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 14:28（北京时间）：task1a第二次同类协议错，暂停其余三槽（Codex / JEV-05）
+
+- 原TRAIN141在decision3的第15次Jev请求被`Choice disagrees with distribution`拒绝：14有效/1拒绝、4观察；已执行3次HOLD/54controls，随后安全收尾。监管796.379s/清理0.692s、actor exit0但status=failed，自有194597/194749/194814已退出，GPU1恢复417MiB，未动队友。failure SHA `c91e721f7ad8958920997205dc6002dc58bd970edffdca11ab2c00b161e1ff7d`；不是合法弃权或正常0/1。
+- 第二个任务再现相同校验错误，先暂停task1b/3a/3b，不盲目继续烧reset。保留原4698b0a/所有失败/分母；正全量归档本例，并为这个新输入注册一次30-call/1200s无执行诊断，0新动作/重置/训练。诊断需独立新冻结源，绝不放宽在线校验或替换已用样本。
+- 14:30本地仅扩展原probe的注册输入白名单：task1a原回执SHA `b7109963…99b7a5d`、SEARCH/search/不可见保持，重建20157B与原失败ledger一致、请求SHA `9d8a26069cad5cf8f6ffd0edbb0948302498d1b9e5637c1c0142d3e455902553`。79 Jev目标回归通过，独立只读复核进行中；尚未运行新API/模拟器，原task0a默认注册不变。
+- 14:31 task1a全194件已双端SHA核同归档`multitask/task1a_infra_v1`，本人看1.8s视频6帧：面对楼梯/走廊、始终保持，无可见汽水罐/抓取，腕视野本体遮挡。4次视觉92.231s/0截断，与图像一致；14有效Jev请求合计1.583s。故搜索停滞和协议拒绝为两个不同问题，不将API延迟说成主要原因。
+- 14:32独立复核通过，实际task1a原输入未改、重建20157B/16选项/SHA一致；只扩诊断注册，不改client/actor行为。trace核最后第55条为after_exception safety_stop，前54为策略HOLD。准备冻结新诊断源，运行结果仍待。
+- 14:33全821项/30.367s通过（5环境skip），显式检查暂存范围/无秘密，准备commit/push并独立Git部署；无新仿真启动。
+
 ### 2026-09-30 14:11（北京时间）：task0b正常弃权结束，接续其余原槽（Codex / JEV-05）
 
 - 恢复通道后实读原task0b监管已completed/actor exit0，906.578s总、133controls、official_success=false、JEV_ABSTAINED；最后progress为8策略动作/132controls，另1安全停止。21 Jev请求/9观察，未重启或重试；完整ledger/计划归属正在同源统计器重新核验，不以进程退出替代通过。
@@ -17,6 +26,7 @@
 - 本次保留上一轮自有plan未提交记录，只fetch未pull；feature与origin为0/0，origin/main仍33677bd。冻结actor源不改；本地证据归档待完成。
 - 14:13同4698b0a统计器已重核task0b来源/统一预算/完整计划/API账本/133control归属：integration=true、8 Jev策略动作（2移动＋6 HOLD），另1命令弃权行；21 API均有效。GPU1实余80735MiB，原run已释放。首次提交task1a TRAIN141回执监管194597/原3600s，task1b/3a/3b仍未提交；本地task0b全包传输中。
 - 14:19 task0b全413件已取回`artifacts/jev-control-20260929/multitask/task0b_v1`且逐文件双端SHA一致；result `443c46e6013545e7f4268e636ee34edb241638ecd961509655dcfe639e0fc6ec`、ownership `c6e86a95…4f89385`。本人看过4.4s视频的7帧contact：面对电视/墙，腕相机主要本体遮挡，两次微前移、无目标抓取，最后黑格只是空白占位。task1a实际model194749/actor194814/监管194597仍actor_running/初始化，不重复提交。
+- 14:25 task1a原生profile/GPU1及原始实例reset-load-reset均过，进入实控36controls/2决策、暂均HOLD（world_search），非启动卡死。真实终态待；尚未动其他三槽或追加训练。
 
 ### 2026-09-30 13:50（北京时间）：30次API未复现协议错，接续原未使用槽、不重跑失败例（Codex）
 

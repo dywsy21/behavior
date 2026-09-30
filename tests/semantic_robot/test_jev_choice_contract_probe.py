@@ -1,4 +1,6 @@
 import copy
+import hashlib
+import json
 from pathlib import Path
 import sys
 import unittest
@@ -10,6 +12,32 @@ from semantic_robot.v2.jev_client import JevChoiceMismatch, MODEL
 
 
 class ChoiceContractProbeTests(unittest.TestCase):
+    def test_registered_task1_search_is_not_rewritten_to_recover(self):
+        state = {"harness": {"stage": "SEARCH"}, "facts": {"target_visible": False},
+                 "commands": {"command_000": {"command": {"move": "hold"}, "role": "hold", "current_preflight": {}}}}
+        receipt = {"request_without_pixel_duplicates": {"model": MODEL, "images": [],
+            "questions": {"intent": {}}, "state": state},
+            "result": {"model": MODEL, "answers": {"intent": {"choice": "search"}}}}
+        before = copy.deepcopy(receipt)
+        with self.assertRaises(ValueError):
+            probe.rebuild_command(receipt)
+        request = probe.rebuild_command(receipt, "SEARCH")
+        self.assertEqual(receipt, before)
+        self.assertEqual(request["state"], {**state, "chosen_tactic_not_new_evidence": "search"})
+        raw = json.dumps(receipt).encode()
+        size = len(json.dumps(request, ensure_ascii=False, allow_nan=False).encode())
+        case = {"source_sha256": hashlib.sha256(raw).hexdigest(), "request_bytes": size, "stage": "SEARCH"}
+        with patch.dict(probe.CASES, {"task1a": case}):
+            rebuilt, encoded = probe.registered_request(raw, "task1a")
+            self.assertEqual(rebuilt, request)
+            self.assertEqual(len(encoded), size)
+            with self.assertRaises(ValueError):
+                probe.registered_request(raw, "task0a")
+            with self.assertRaises(ValueError):
+                probe.registered_request(raw + b" ", "task1a")
+            with patch.dict(case, request_bytes=size + 1), self.assertRaises(ValueError):
+                probe.registered_request(raw, "task1a")
+
     def test_reconstruction_only_adds_existing_intent_and_same_rubric(self):
         state = {"harness": {"stage": "RECOVER"}, "facts": {"target_visible": False},
                  "commands": {"command_000": {"command": {"move": "hold"}, "role": "hold", "current_preflight": {}}}}

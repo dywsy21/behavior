@@ -2,6 +2,7 @@
 
 ## Jev多任务开发评测（JEV-05，2026-09-30）
 
+- **14:28最新：** task1a `jev_multi_20260930_task1a_v1`因第15次API选项/概率校验错误failed，自有194597/194749/194814已清理/GPU1恢复417MiB。原run保留，正在取回本地`multitask/task1a_infra_v1`；task1b/3a/3b暂停未提交，不重启旧campaign或旧task。
 - **14:11最新：** task0b原183698/183786/184185已由监管正常收尾，`jev_multi_20260930_task0b_v1` completed/官方false/JEV_ABSTAINED/133controls。该run及原4698b0a源保留，不重提。task1a/1b/3a/3b仍待主线程首次提交，旧campaign保持stopped。
 - 14:13：task0b完整归属复核通过，正在取回本地`multitask/task0b_v1`；新`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_multi_20260930_task1a_v1`首次监管194597/原4698b0a/3600s。其余task1b/3a/3b未提交，旧campaign不重启。
 - 14:19：task0b本地全413件双端SHA核同、4.4s视频已本人抽帧；task1a实际observer194749/actor194814正在初始化。旧task0b不重跑/改源。

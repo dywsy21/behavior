@@ -1,6 +1,6 @@
 # JEV-05：Jev全策略控制的三任务原始起点评测
 
-负责人：Codex；分支 `feat/jev-control-20260929`。截至14:11，首例协议错误保留，第二例正常弃权结束；另四例待首次提交。运行源commit和实际结果见下文与计划，不把本文件当作评测完成。
+负责人：Codex；分支 `feat/jev-control-20260929`。截至14:31，task0a/task1a协议错误保留，task0b正常弃权结束；另三例暂停未提交。运行源commit和实际结果见下文与计划，不把本文件当作评测完成。
 
 ## 问题与边界
 
@@ -87,6 +87,12 @@ task0a在decision6的第17次Jev调用（command）触发`Choice disagrees with 
 全部413件已本地`artifacts/jev-control-20260929/multitask/task0b_v1`逐文件双端SHA核同。result `443c46e6013545e7f4268e636ee34edb241638ecd961509655dcfe639e0fc6ec`，ownership `c6e86a95f0f893037bfc0b9f91a9fda55e1f095165709fd2bd77a5f974f89385`。本人查看4.4s视频7帧：头部面对电视/墙，腕部主要被本体遮挡，两次微前移后未搜索到收音机、未抓取。9次观察均不可见、无token上限截断，感知合计146.723s；与图审相符，不将失败归因为模型“看见了却不抓”。
 
 当前task0为**1次完整失败＋1次协议中断**，原两例完整SR不报数值，不混入旧JEV-04。14:13仅首次提交原下一槽task1a TRAIN141/seed0，同4698b0a、统一预算；监管194597/observer194749/actor194814，结果待。余task1b/3a/3b尚未提交。
+
+## 第三例task1a：同类协议失败再次出现
+
+TRAIN141、原始起点/0前缀，796.379s总后安全收尾。第15次API（decision3的command）再次`Choice disagrees with distribution`；14有效/1拒绝、4观察，3次HOLD/54策略controls＋第55条异常安全停止，没有完整result/官方SR。failure SHA `c91e721f7ad8958920997205dc6002dc58bd970edffdca11ab2c00b161e1ff7d`。194件在本地`multitask/task1a_infra_v1`逐件双端SHA一致，本人看1.8s视频6帧，面对楼梯/走廊、未看见罐子/抓取；感知4次92.231s、无截断，14有效Jev调用共1.583s。
+
+task1b/3a/3b暂停未提交，先诊断，不重跑已用实例。扩展原只读probe的第二个固定注册源（不改在线actor）：input SHA `b7109963dffa8bde6d3fa5bd1c08bb1ae1433a18c03c6378efb9dbbcc99b7a5d`，实际SEARCH/search/不可见保持，重建20157B/16选项、SHA `9d8a26069cad5cf8f6ffd0edbb0948302498d1b9e5637c1c0142d3e455902553`。新30次/1200s、0动作/重置/训练，79目标检查及独立真实输入复核通过；14:32尚未提交API。原错误概率未保存，不伪称已恢复。
 
 ## 旁路：旧搜索停滞输入的敏感性，不修改本轮actor
 
