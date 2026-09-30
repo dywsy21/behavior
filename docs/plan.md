@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 12:31（北京时间）：A4配套资产13文件校验通过，权重仍同步中（Codex / BENCH-MEM1F）
+
+- 原训练Hydra、归一化统计、run/trainability/gradient回执5件已复制至共享`models/memlite-a4-20260912`；原Qwen3.5 processor/tokenizer8件至`models/qwen3_5_2b_base_processor`，13件源robo/目的lc3逐文件SHA全同。本地证据在`artifacts/a800-memlite-oneframe-bench-20260930/assets`，不提交二进制或秘密。
+- 只在CPU内存将真实A4配置改为单帧/三相机，OmegaConf解析通过；保留原六帧时序位置参数的架构以便完整加载，但尚未验证神经前向或训练吞吐，不将解析通过当模型恢复通过。八卡仍0计算进程，共享env不改。
+- A4 PID193613仍下载中；另同步加载入口依赖的ActionCodec（506,886,775B），源SHA重算为`5088f64a5452a60bbc8cac90ee7d79c156f1d14540bc3139aa7060f862dddace`。后续须本地/共享盘完整SHA均同；0新G0.5下载、0GPU更新。已fetch origin，运行中的本地传输源码不热pull。
+
 ### 2026-09-30 12:15（北京时间）：A4权重改为校验式并行中转，实际运行中（Codex / BENCH-MEM1F）
 
 - 旧单连接rsync仅约0.3–1MB/s，已只终止本轮PID191095，约315MB旧partial保留；robo原权重不动。直接外网SSH路径不可达，未改路由/防火墙/认证。

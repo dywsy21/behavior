@@ -16,6 +16,8 @@
 
 ## 当前状态
 
+12:31（北京时间）配套资产13件已完成源/目的逐文件SHA验收：A4五份配置/统计/回执＋Qwen3.5 processor八件；本地`assets/`、共享`models/memlite-a4-20260912/`及`models/qwen3_5_2b_base_processor/`。CPU内存解析单帧配置通过，但未做模型恢复/前向。加载器还需独立ActionCodec（506,886,775B，SHA `5088f64a5452a60bbc8cac90ee7d79c156f1d14540bc3139aa7060f862dddace`），已开始同步；该分支在纯FM执行中不生成动作token，不因此改训练目标。主A4同步仍进行，0GPU更新。
+
 12:15（北京时间）单连接慢，转为固定`7960bb0`的校验式8连接/16MiB分块中转，PID193613、989块；旧rsync315MB partial保留。本地状态`weights/sync-status.json`，12:14:33累计503,316,480B/33.7s。脚本在完整SHA通过后才上传，远端再次完整SHA通过才发布最终文件；测试3项/7组边界、py_compile/diff通过，0GPU启动。源CPU mmap证1138模型条目/192 LoRA、全FP32；完整checkpoint保留optimizer/RNG，不改变数值精度。
 
 12:04（北京时间）旧A4完整权重同步准备/传输中：源`robo:/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912/formal/checkpoints/step_2500.pt`，本地可续传暂存`artifacts/a800-memlite-oneframe-bench-20260930/weights/A4-step2500.pt.partial`，计划目的`lc3:/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`。robo不能直连lc3，使用本地受控中转；完整大小/SHA验收前不放行。共享盘余约4TiB、本地600GiB，原文件不移动/删除；无需G0.5替代。
