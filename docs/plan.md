@@ -31,6 +31,7 @@
 - 17:09源4e59b5b已commit/Git bundle冻结（GitHub push当时仍等待网络响应）；A800 37/37 CPU通过，小CUDA对照`weighted-ce-cuda-v1`真实确认：原FLCE非均匀权重loss误差0，但输入/参数梯度相对L2误差0.5770/0.7205；均匀原路径过。修后helper非均匀显式CE loss/两类梯度误差均0，均匀fused仍过。仅本环境核实，不推断robo历史训练库一致。下一同新源`capacity-long-m8-v2`，global256/micro8/accum4、2更新/900s＋30s；旧m8-v1虽完整恢复/梯度覆盖且2步退出，因目标梯度问题不用于有效时间报告。所有旧文件/共享env不动。
 - 17:12修后m8-v2完成第1次更新（326梯度/冻结0），第2次forward的显式CE申请2.50GiB失败（allocated72.91GiB，GPU总占78.62GiB），exit1/八卡已释放；因此首步能跑不能当可持续容量，1次临时更新不保存。4e59b5b重试GitHub push已成功。最后一档容量门改为`capacity-long-m4-v1`、8×micro4×accum8仍global256、2更新/900s＋30s；不改变样本目标或减掉长上下文，原44更新/90min总限保持。
 - 17:16 `capacity-long-m4-v1`两更新完成/exit0，峰值allocated59.22845GiB/卡；8rank950状态完全恢复、326梯度/冻结0通过，原B/单帧/真实长输入/正确加权CE保持。开始同4e59b5b串行`timed-mixed-m4-v1`与`timed-long-m4-v1`：global256=8×4×8，每臂6预热＋12计时/900s＋30s，每臂前重新恢复B并复查空卡，log同根；此刻mixed已提交、long排在其成功退出后，不重复启动。原四次容量门累计5临时更新，预计计时后总41≤44；总90minGPU预算不重置。容量的一步8.76s不是正式吞吐结论。
+- 17:22混合长度计时完成：`timed-mixed-m4-v1`09:21:15 UTC complete/exit0，6＋12更新、计时3072观察/97.81483s=31.40628/s，均8.15124s/更新，allocated58.89056GiB/reserved65.12305GiB最大。源4e59b5b、每rank950恢复/326梯度、正确加权CE保持；本地result SHA`8a2afb55…dc6f29`。两遍全候选纯计算233.19h、约95%量221.53h（9.23天），不含全量正式loader/eval/保存，60h不是该高层配方实测。串行long臂已启动初始化，不重启mixed、不发布新模型；long最终结果及双端证据归档仍待。
 
 ### 2026-09-30 14:30（北京时间）：完整阶段/超参及样本顺序提案核验完成，未开新训练（Codex / PLAN-MEM100-RECIPE）
 
