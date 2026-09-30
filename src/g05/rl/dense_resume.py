@@ -1,5 +1,6 @@
 """Recover cumulative E3 curriculum/accounting from completed batch receipts."""
 from g05.rl.protocol import next_prefix
+from g05.rl.continuous import AUTHORIZATION
 
 
 def reconcile_operator_stop(closed, physical_counts, unresolved, *, operator_nudge):
@@ -25,8 +26,11 @@ def reconcile_operator_stop(closed, physical_counts, unresolved, *, operator_nud
                 evidence='both simulators exited0; both close counts equal complete sequential physical logs')
 
 
-def resume_state(manifest, batches, checkpoint, physical_controls):
-    if not batches or len(batches)>=manifest['max_batches']:
+def resume_state(manifest, batches, checkpoint, physical_controls, *, continuation_authorization=None):
+    if continuation_authorization not in (None,AUTHORIZATION):
+        raise ValueError('Unknown continuation authorization')
+    continuous=continuation_authorization==AUTHORIZATION
+    if not batches or (not continuous and len(batches)>=manifest['max_batches']):
         raise ValueError('Need completed, non-exhausted training batches')
     prefixes={w['worker']:w['prefix_controls'] for w in manifest['workers']}
     recent={0:[],1:[]}; wins=zero_signal=zero_updates=0; actor=94
@@ -50,8 +54,9 @@ def resume_state(manifest, batches, checkpoint, physical_controls):
     if (checkpoint['path']!=batches[-1]['checkpoint'] or checkpoint['actor_updates']!=actor
             or checkpoint['critic_updates']!=16+4*len(batches)
             or checkpoint['controls']!=batches[-1]['controls']
-            or not checkpoint['controls']<=physical_controls<manifest['max_training_controls']
-            or zero_signal>=3 or zero_updates>=3):
+            or checkpoint['controls']>physical_controls
+            or (not continuous and (physical_controls>=manifest['max_training_controls']
+                                    or zero_signal>=3 or zero_updates>=3))):
         raise ValueError('Checkpoint/physical accounting mismatch or an existing stop condition')
     return dict(controls=physical_controls,batches=len(batches),actor_updates=actor,
                 critic_updates=checkpoint['critic_updates'],successes=wins,

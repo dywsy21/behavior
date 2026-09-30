@@ -24,6 +24,7 @@ from g05.rl.g05_adapter import G05FlowAdapter,move
 from g05.rl.trust_region import bounded_adam_step
 from g05.rl.rewards import has_learning_signal
 from g05.rl.time_limits import active_wall_limit
+from g05.rl.continuous import continuous_mode, check_storage
 
 
 def cpu_tree(x):
@@ -38,7 +39,7 @@ class Experiment:
     def __init__(self):
         self.started=time.monotonic(); self.manifest=json.loads((OUT/'manifest.json').read_text())
         if self.manifest['source_commit']!=commit(): raise ValueError('Preparation/source mismatch')
-        self.budget=ControlBudget(self.manifest['max_controls'])
+        self.budget=ControlBudget(self.manifest['max_controls'],unlimited=continuous_mode(self.manifest))
         self.processes=[]; self.connections={}; self.latest={}; self.actor_updates=0; self.critic_updates=0
         self.successes=0; self.batches=0; self.phase='starting'; self.active=[0,1]
         self.log=(OUT/'learner.jsonl').open('x',buffering=1)
@@ -51,6 +52,10 @@ class Experiment:
         row=dict(phase=self.phase,seconds=time.monotonic()-self.started,controls=self.budget.used,
             pending_controls=self.budget.pending,actor_updates=self.actor_updates,critic_updates=self.critic_updates,
             successes=self.successes,batches=self.batches,pid=os.getpid(),**extra)
+        if continuous_mode(self.manifest):
+            prior=self.manifest['prior_evaluation_controls']
+            row.update(cumulative_training_controls=self.budget.used,prior_evaluation_controls=prior,
+                       cumulative_physical_controls=self.budget.used+prior,training_budget_unlimited=True)
         save(OUT/'status.json',row,replace=True)
         print('RL_STATUS',json.dumps(row),flush=True)
 
@@ -390,7 +395,8 @@ class Experiment:
                         ae_max_abs_change=max(float(x.max()) for x in changes),**result['trials'][-1]),allow_nan=False)+'\n')
                     self.status(last_path_kl=result['trials'][-1]['max_kl'])
                     del original_ae,changes
-                    if self.actor_updates>=self.manifest.get('max_actor_updates',1000000): return
+                    maximum=self.manifest.get('max_actor_updates',1000000)
+                    if maximum is not None and self.actor_updates>=maximum: return
                     continue
                 self.actor_optimizer.step()
                 with torch.no_grad():
@@ -410,6 +416,7 @@ class Experiment:
                 del backup
 
     def checkpoint(self):
+        check_storage(self.manifest,OUT)
         path=OUT/f'rl_batch_{self.batches:03d}_updates_{self.actor_updates:04d}.pt'
         if path.exists(): raise ValueError('Refuse to overwrite RL checkpoint')
         tmp=path.with_suffix('.tmp')

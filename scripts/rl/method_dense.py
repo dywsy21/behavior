@@ -12,6 +12,7 @@ from method import MethodExperiment, TrainingCutoff
 from g05.rl.dense_recipe import validate_recipe, reward_batch_audit
 from g05.rl.protocol import EVAL_SEEDS, paired_summary
 from g05.rl.recovery import validate_baseline
+from g05.rl.continuous import continuous_mode
 
 
 class DenseExperiment(MethodExperiment):
@@ -68,6 +69,8 @@ class DenseExperiment(MethodExperiment):
             self.spawn_pool('training')
             try:
                 self.train()
+                if continuous_mode(self.manifest):
+                    raise RuntimeError('Continuous training unexpectedly returned; refusing an unregistered final cycle')
             except TrainingCutoff:
                 for w, n in list(self.outstanding.items()): self.collect_reply(w, n)
                 self.actor_optimizer.zero_grad(set_to_none=True)

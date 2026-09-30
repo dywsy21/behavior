@@ -21,6 +21,7 @@ from g05.rl.g05_adapter import G05FlowAdapter,move
 from g05.rl.protocol import EVAL_SEEDS,EVAL_LIMIT,paired_summary,next_prefix,check_reset
 from g05.rl.rewards import has_learning_signal
 from g05.rl.time_limits import training_deadline
+from g05.rl.continuous import continuous_mode, batch_indices, check_storage
 
 
 class TrainingCutoff(RuntimeError):
@@ -245,6 +246,7 @@ class MethodExperiment(Experiment):
 
     def train(self):
         if self.pool!='training': raise ValueError('Only TRAIN pool may train')
+        continuous=continuous_mode(self.manifest)
         resume=self.manifest.get('training_resume',{})
         self.training_started=time.monotonic(); start_controls=self.budget.used-resume.get('controls',0)
         self.training_start_controls=start_controls
@@ -252,12 +254,13 @@ class MethodExperiment(Experiment):
         recent={w:list(resume.get('recent',{}).get(str(w),[])) for w in (0,1)}; reviewed=set()
         zero_rewards=resume.get('zero_rewards',0); zero_updates=resume.get('zero_updates',0); self.parallel=True
         first_batch=self.batches
-        for batch in range(first_batch,self.manifest['max_batches']):
-            if (time.monotonic()>self.training_deadline-600 or
+        for batch in batch_indices(self.manifest,first_batch):
+            check_storage(self.manifest,OUT)
+            if not continuous and (time.monotonic()>self.training_deadline-600 or
                     self.actor_updates-self.start_updates>=self.manifest['max_new_actor_updates']):
                 self.stop_reason='registered_training_time_or_update_limit'; break
             needed=sum(self.prefix.values())+2*self.manifest['episode_controls']
-            if (self.budget.used-start_controls+needed>self.manifest['max_training_controls'] or
+            if not continuous and (self.budget.used-start_controls+needed>self.manifest['max_training_controls'] or
                     self.budget.remaining-needed<self.manifest['final_eval_reserved_controls']):
                 self.stop_reason='reserve_final_evaluation_controls'; break
             if batch>first_batch: self.reset([0,1])
@@ -271,7 +274,9 @@ class MethodExperiment(Experiment):
             if batch==first_batch: self.gates()
             self.phase='collecting'; self.status(batch=batch,prefixes=self.prefix)
             rows,advantages,returns,completed=self.rollout()
-            if not rows: self.stop_reason='empty_training_rollout'; break
+            if not rows:
+                if continuous: raise ValueError('Empty rollout in continuous TRAIN')
+                self.stop_reason='empty_training_rollout'; break
             if any(r['split']!='train' for r in rows): raise ValueError('Evaluation leakage')
             torch.save(dict(rows=rows,advantages=advantages,returns=returns,prefixes=dict(self.prefix)),
                        OUT/f'rollout_{batch:03d}.pt')
@@ -304,6 +309,10 @@ class MethodExperiment(Experiment):
             zero_updates=zero_updates+1 if self.actor_updates==before else 0
             del rows
             if zero_rewards>=3 or zero_updates>=3:
+                if continuous:
+                    self.log.write(json.dumps(dict(event='learning_stalled_warning',batch=batch,
+                        zero_rewards=zero_rewards,zero_updates=zero_updates,training_continues=True))+'\n')
+                    continue
                 self.stop_reason='three_zero_reward_or_zero_update_batches'; break
         if self.stop_reason is None: self.stop_reason='registered_batch_limit'
         save(OUT/'training_result.json',dict(reason=self.stop_reason,batches=self.batches,

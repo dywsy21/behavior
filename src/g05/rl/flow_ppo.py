@@ -98,12 +98,14 @@ def gae(transitions, gamma=.9998, lam=.95):
 
 class ControlBudget:
     """Reserve BEFORE dispatch, including expert and benchmark actions."""
-    def __init__(self, limit=10000):
-        self.limit, self.used, self.pending = int(limit), 0, 0
+    def __init__(self, limit=10000, *, unlimited=False):
+        if (limit is None) != unlimited:
+            raise ValueError('Unlimited controls require an explicit opt-in and None limit')
+        self.limit, self.used, self.pending = (None if unlimited else int(limit)), 0, 0
 
     @property
     def remaining(self):
-        return self.limit-self.used-self.pending
+        return float('inf') if self.limit is None else self.limit-self.used-self.pending
 
     def reserve(self, count):
         if type(count) is not int or count < 1 or count > self.remaining:

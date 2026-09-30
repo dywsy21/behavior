@@ -1,0 +1,954 @@
+{
+  "snapshot_utc": "2026-09-30T06:12:58.672441+00:00",
+  "batches": [
+    {
+      "batch": 0,
+      "chunks": 86,
+      "reward": 0.9317106219555479,
+      "new_actor_updates": 4,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_dense_v1/rl_batch_001_updates_0098.pt",
+      "controls": 3534,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 1076,
+          "policy_controls": 338,
+          "success": true,
+          "next_prefix": 1076,
+          "episode": 0
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 0
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.06828937804445209,
+      "nonzero_shaping_controls": 1362,
+      "policy_controls": 1362,
+      "reward_is_complete_task_success": false,
+      "run": "e3_dense_v1"
+    },
+    {
+      "batch": 1,
+      "chunks": 128,
+      "reward": -0.040981256648823766,
+      "new_actor_updates": 4,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_dense_v1/rl_batch_002_updates_0102.pt",
+      "controls": 7754,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 1076,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1076,
+          "episode": 1
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 1
+        }
+      ],
+      "official_reward": 0,
+      "shaping_reward": -0.040981256648823766,
+      "nonzero_shaping_controls": 2048,
+      "policy_controls": 2048,
+      "reward_is_complete_task_success": false,
+      "run": "e3_dense_v1"
+    },
+    {
+      "batch": 2,
+      "chunks": 98,
+      "reward": 0.9249435348876087,
+      "new_actor_updates": 5,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_003_updates_0107.pt",
+      "controls": 12186,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 1076,
+          "policy_controls": 532,
+          "success": true,
+          "next_prefix": 1076,
+          "episode": 0
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 0
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.07505646511239146,
+      "nonzero_shaping_controls": 1556,
+      "policy_controls": 1556,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 3,
+      "chunks": 128,
+      "reward": -0.04024709756239803,
+      "new_actor_updates": 6,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_004_updates_0113.pt",
+      "controls": 16406,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 1076,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1076,
+          "episode": 1
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 1
+        }
+      ],
+      "official_reward": 0,
+      "shaping_reward": -0.04024709756239803,
+      "nonzero_shaping_controls": 2048,
+      "policy_controls": 2048,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 4,
+      "chunks": 91,
+      "reward": 0.9272250636335166,
+      "new_actor_updates": 8,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_005_updates_0121.pt",
+      "controls": 20029,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 1076,
+          "policy_controls": 427,
+          "success": true,
+          "next_prefix": 1076,
+          "episode": 2
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 2
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.07277493636648358,
+      "nonzero_shaping_controls": 1451,
+      "policy_controls": 1451,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 5,
+      "chunks": 82,
+      "reward": 0.920528922480595,
+      "new_actor_updates": 5,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_006_updates_0126.pt",
+      "controls": 23512,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 1076,
+          "policy_controls": 287,
+          "success": true,
+          "next_prefix": 1076,
+          "episode": 3
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 3
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.07947107751940456,
+      "nonzero_shaping_controls": 1311,
+      "policy_controls": 1311,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 6,
+      "chunks": 34,
+      "reward": 1.9141878090525575,
+      "new_actor_updates": 5,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_007_updates_0131.pt",
+      "controls": 26218,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 1076,
+          "policy_controls": 406,
+          "success": true,
+          "next_prefix": 980,
+          "episode": 4
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 128,
+          "success": true,
+          "next_prefix": 1096,
+          "episode": 4
+        }
+      ],
+      "official_reward": 2,
+      "shaping_reward": -0.08581219094744227,
+      "nonzero_shaping_controls": 534,
+      "policy_controls": 534,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 7,
+      "chunks": 82,
+      "reward": 0.9301706619399002,
+      "new_actor_updates": 8,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_008_updates_0139.pt",
+      "controls": 29600,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 980,
+          "policy_controls": 282,
+          "success": true,
+          "next_prefix": 980,
+          "episode": 5
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 5
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.06982933806009954,
+      "nonzero_shaping_controls": 1306,
+      "policy_controls": 1306,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 8,
+      "chunks": 128,
+      "reward": -0.0469655327064055,
+      "new_actor_updates": 3,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_009_updates_0142.pt",
+      "controls": 33724,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 980,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 980,
+          "episode": 6
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 6
+        }
+      ],
+      "official_reward": 0,
+      "shaping_reward": -0.0469655327064055,
+      "nonzero_shaping_controls": 2048,
+      "policy_controls": 2048,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 9,
+      "chunks": 86,
+      "reward": 0.9328200853738067,
+      "new_actor_updates": 5,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_010_updates_0147.pt",
+      "controls": 37168,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 980,
+          "policy_controls": 344,
+          "success": true,
+          "next_prefix": 980,
+          "episode": 7
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 7
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.06717991462619319,
+      "nonzero_shaping_controls": 1368,
+      "policy_controls": 1368,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 10,
+      "chunks": 90,
+      "reward": 0.9295974498999819,
+      "new_actor_updates": 8,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_011_updates_0155.pt",
+      "controls": 40683,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 980,
+          "policy_controls": 415,
+          "success": true,
+          "next_prefix": 980,
+          "episode": 8
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 8
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.07040255010001795,
+      "nonzero_shaping_controls": 1439,
+      "policy_controls": 1439,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 11,
+      "chunks": 84,
+      "reward": 0.9285022635574951,
+      "new_actor_updates": 6,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_012_updates_0161.pt",
+      "controls": 44092,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 980,
+          "policy_controls": 309,
+          "success": true,
+          "next_prefix": 884,
+          "episode": 9
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 9
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.07149773644250498,
+      "nonzero_shaping_controls": 1333,
+      "policy_controls": 1333,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 12,
+      "chunks": 128,
+      "reward": -0.028267907612627135,
+      "new_actor_updates": 6,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_013_updates_0167.pt",
+      "controls": 48120,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 884,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 884,
+          "episode": 10
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 10
+        }
+      ],
+      "official_reward": 0,
+      "shaping_reward": -0.028267907612627135,
+      "nonzero_shaping_controls": 2048,
+      "policy_controls": 2048,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 13,
+      "chunks": 121,
+      "reward": 0.9327700855867467,
+      "new_actor_updates": 6,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/rl_batch_014_updates_0173.pt",
+      "controls": 52032,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 884,
+          "policy_controls": 908,
+          "success": true,
+          "next_prefix": 884,
+          "episode": 11
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 11
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.06722991441325367,
+      "nonzero_shaping_controls": 1932,
+      "policy_controls": 1932,
+      "reward_is_complete_task_success": false,
+      "run": "e3_no_wall_v1"
+    },
+    {
+      "batch": 14,
+      "chunks": 107,
+      "reward": 0.9331664001418253,
+      "new_actor_updates": 5,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/rl_batch_015_updates_0178.pt",
+      "controls": 59430,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 884,
+          "policy_controls": 686,
+          "success": true,
+          "next_prefix": 884,
+          "episode": 0
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 0
+        }
+      ],
+      "official_reward": 1,
+      "shaping_reward": -0.06683359985817443,
+      "nonzero_shaping_controls": 1710,
+      "policy_controls": 1710,
+      "reward_is_complete_task_success": false,
+      "run": "e3_render_resume_v1"
+    },
+    {
+      "batch": 15,
+      "chunks": 76,
+      "reward": 1.899781760636318,
+      "new_actor_updates": 7,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/rl_batch_016_updates_0185.pt",
+      "controls": 62608,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 884,
+          "policy_controls": 695,
+          "success": true,
+          "next_prefix": 788,
+          "episode": 1
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 503,
+          "success": true,
+          "next_prefix": 1096,
+          "episode": 1
+        }
+      ],
+      "official_reward": 2,
+      "shaping_reward": -0.1002182393636819,
+      "nonzero_shaping_controls": 1198,
+      "policy_controls": 1198,
+      "reward_is_complete_task_success": false,
+      "run": "e3_render_resume_v1"
+    },
+    {
+      "batch": 16,
+      "chunks": 128,
+      "reward": -0.01360284391087056,
+      "new_actor_updates": 8,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/rl_batch_017_updates_0193.pt",
+      "controls": 66540,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 788,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 788,
+          "episode": 2
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 2
+        }
+      ],
+      "official_reward": 0,
+      "shaping_reward": -0.01360284391087056,
+      "nonzero_shaping_controls": 2048,
+      "policy_controls": 2048,
+      "reward_is_complete_task_success": false,
+      "run": "e3_render_resume_v1"
+    },
+    {
+      "batch": 17,
+      "chunks": 128,
+      "reward": -0.003713982742007786,
+      "new_actor_updates": 5,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/rl_batch_018_updates_0198.pt",
+      "controls": 70472,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 788,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 788,
+          "episode": 3
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 3
+        }
+      ],
+      "official_reward": 0,
+      "shaping_reward": -0.003713982742007786,
+      "nonzero_shaping_controls": 2047,
+      "policy_controls": 2048,
+      "reward_is_complete_task_success": false,
+      "run": "e3_render_resume_v1"
+    },
+    {
+      "batch": 18,
+      "chunks": 128,
+      "reward": -0.012327181591087474,
+      "new_actor_updates": 4,
+      "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/rl_batch_019_updates_0202.pt",
+      "controls": 74404,
+      "episodes": [
+        {
+          "worker": 0,
+          "instance": 1,
+          "prefix": 788,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 788,
+          "episode": 4
+        },
+        {
+          "worker": 1,
+          "instance": 138,
+          "prefix": 1096,
+          "policy_controls": 1024,
+          "success": false,
+          "next_prefix": 1096,
+          "episode": 4
+        }
+      ],
+      "official_reward": 0,
+      "shaping_reward": -0.012327181591087474,
+      "nonzero_shaping_controls": 2048,
+      "policy_controls": 2048,
+      "reward_is_complete_task_success": false,
+      "run": "e3_render_resume_v1"
+    }
+  ],
+  "evals": [
+    {
+      "stage": "parent50k",
+      "actor_updates": 0,
+      "rows": [
+        {
+          "variant": "parent_bf16",
+          "instance": 301,
+          "policy_seed": 17,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 0,
+          "actor_updates": 0,
+          "ae_precision": "bfloat16",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/baseline/worker_0/episode_000.mp4"
+        },
+        {
+          "variant": "parent_bf16",
+          "instance": 302,
+          "policy_seed": 17,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 0,
+          "actor_updates": 0,
+          "ae_precision": "bfloat16",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/baseline/worker_1/episode_000.mp4"
+        },
+        {
+          "variant": "parent_fp32",
+          "instance": 301,
+          "policy_seed": 17,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 1,
+          "actor_updates": 0,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/baseline/worker_0/episode_001.mp4"
+        },
+        {
+          "variant": "parent_fp32",
+          "instance": 302,
+          "policy_seed": 17,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 1,
+          "actor_updates": 0,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/baseline/worker_1/episode_001.mp4"
+        },
+        {
+          "variant": "parent_fp32",
+          "instance": 301,
+          "policy_seed": 23,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 2,
+          "actor_updates": 0,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/baseline/worker_0/episode_002.mp4"
+        },
+        {
+          "variant": "parent_fp32",
+          "instance": 302,
+          "policy_seed": 23,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 2,
+          "actor_updates": 0,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/baseline/worker_1/episode_002.mp4"
+        },
+        {
+          "variant": "parent_fp32",
+          "instance": 301,
+          "policy_seed": 41,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 3,
+          "actor_updates": 0,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/baseline/worker_0/episode_003.mp4"
+        },
+        {
+          "variant": "parent_fp32",
+          "instance": 302,
+          "policy_seed": 41,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 3,
+          "actor_updates": 0,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_v1/baseline/worker_1/episode_003.mp4"
+        }
+      ]
+    },
+    {
+      "stage": "E2",
+      "actor_updates": 94,
+      "rows": [
+        {
+          "variant": "rl_fp32",
+          "instance": 301,
+          "policy_seed": 17,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 1,
+          "actor_updates": 94,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_0/episode_001.mp4"
+        },
+        {
+          "variant": "rl_fp32",
+          "instance": 302,
+          "policy_seed": 17,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 1,
+          "actor_updates": 94,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_1/episode_001.mp4"
+        },
+        {
+          "variant": "rl_fp32",
+          "instance": 301,
+          "policy_seed": 23,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 2,
+          "actor_updates": 94,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_0/episode_002.mp4"
+        },
+        {
+          "variant": "rl_fp32",
+          "instance": 302,
+          "policy_seed": 23,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 2,
+          "actor_updates": 94,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_1/episode_002.mp4"
+        },
+        {
+          "variant": "rl_fp32",
+          "instance": 301,
+          "policy_seed": 41,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 3,
+          "actor_updates": 94,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_0/episode_003.mp4"
+        },
+        {
+          "variant": "rl_fp32",
+          "instance": 302,
+          "policy_seed": 41,
+          "environment_seed": 0,
+          "split": "public_test",
+          "expert_prefix_controls": 0,
+          "controls": 3224,
+          "control_limit": 3224,
+          "success": false,
+          "terminated": false,
+          "truncated": false,
+          "model_calls": 202,
+          "episode": 3,
+          "actor_updates": 94,
+          "ae_precision": "float32",
+          "video": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e2_final_recovery_v1/final/worker_1/episode_003.mp4"
+        }
+      ]
+    }
+  ],
+  "current_status": {
+    "phase": "training_curriculum",
+    "seconds": 9716.632172681391,
+    "controls": 76136,
+    "pending_controls": 0,
+    "actor_updates": 202,
+    "critic_updates": 92,
+    "successes": 14,
+    "batches": 19,
+    "pid": 37396,
+    "replay_progress": {
+      "0": 788,
+      "1": 944
+    }
+  },
+  "input_sha256": {
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_dense_v1/train_batch_000.json": "aae19d9236f64e4fcb45122b8ade03813396ac777ae65f32bd53274ae48ffea8",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_dense_v1/train_batch_001.json": "2046599f9893b87ed619359b3c3bbdefa45620739d208d9da1510a663e086465",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_002.json": "4ec568c546148fec35991610f65a69c0b04177f72a7d3b4a062995958f52af7b",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_003.json": "303cdb9d7925a7b85988099fda8169851c038c1dbb298c793487fba6ac2e5520",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_004.json": "c7bd953125f6277e844405ea0cc743f67dfcfa6a2adb16246e137368b7ddad03",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_005.json": "4d49188c0735adeecbeab19b5fade31de38aaa0f2cc94590a00427334bc3f2a4",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_006.json": "2a5c40e13aa36b8d653f8a8608ea213ebfb3a01daebfc769c0494a55f1eda271",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_007.json": "6f1e6651fe43a71a96c8aaf8d59346d908ce751b7799786ce72cfe2f52110dc1",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_008.json": "00d7d067a81449bed493c904568ff8513f35d847b9c536dc76dd79e332ec8b6e",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_009.json": "559010aba161eeaffe07bf375cf125ff5eef2f0c957b72caa641b7c8ea94edce",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_010.json": "42a485722b255c9f5c55e513c632b04368359c631a29c0ddfdea32bcfa151701",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_011.json": "e3af276f8223e1e2b615b36f5b5d7de301f76a68894135868ec3d7460bbf4a6b",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_012.json": "94a9ac39d715210f5f5ed584154b1c3343998c180353ae34fe44226c020a8c36",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1/train_batch_013.json": "5f61f876e50f0a5a7137e53da287443679b81c9da5e902bfb140dfb222a93423",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/train_batch_014.json": "9a70e85aca40cdc86157e5421a70d5c60269a3862d8bc661671567789b1f400c",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/train_batch_015.json": "3c8433f00547645cc02fdf317a2e8675f69c3eb1bcd9124a26c86117b6925c10",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/train_batch_016.json": "39c30406ab8e4c8494407dd827416ba50070ccbcbe7848138334d0d74238da36",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/train_batch_017.json": "35ba0a3224a7e1c2e87369c4f67cb2fdb6186efbd118f2ad741e2f3e407daff0",
+    "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/train_batch_018.json": "5fe563b5fd124c8b4dd92d60e45c57354980ddb6373195a817bf1499c4c3325d"
+  },
+  "first_actor_updates": 94
+}

@@ -38,8 +38,11 @@ class DenseUpdateTests(unittest.TestCase):
                    rewards=[.01,-.01]) for s in [-1,1]*4]
         return e,rows
 
-    def execute(self, dense):
+    def execute(self, dense, unlimited=False):
         e,rows=self.experiment(dense);clips=[];candidates=[];limits=[]
+        if unlimited:
+            e.manifest['max_actor_updates']=None
+            e.actor_updates=2094
         original_to=torch.Tensor.to
         def cpu_to(tensor,*args,**kwargs):
             if args and args[0]=='cuda:0':args=('cpu',*args[1:])
@@ -69,6 +72,11 @@ class DenseUpdateTests(unittest.TestCase):
         self.assertEqual(e.actor_updates,94)
         self.assertEqual(e.critic_updates,20)
         self.assertFalse(clips or candidates or limits)
+
+    def test_actual_actor_keeps_updating_past_former_update_limit(self):
+        e,clips,candidates,limits=self.execute(True,unlimited=True)
+        self.assertEqual(e.actor_updates,2098)
+        self.assertEqual(len(candidates),4)
 
 
 if __name__=='__main__':unittest.main()

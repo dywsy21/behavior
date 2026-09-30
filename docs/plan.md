@@ -10,6 +10,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 14:17（北京时间）：无总预算续训和效果曲线已实现，服务器接续待部署（Codex / RL-G05-50K-E4）
+
+- `continuous.py`显式授权＋全部训练预算null、无限batch iterator、累计TRAIN/旧final物理账分列；实际actor更新可越过2094，三批无信号/无更新只警告。每批/保存前保留100GiB空闲＋8GiB单件预留，保留所有checkpoint；非学习进展预算不再停止，但真实数值/取图/控制/空间故障仍严格停。旧970896e活跃源码没有改动。
+- 新`prepare_continuous.py/continuous_handoff.py`实现E3正常完成＋固定六对完整＋旧PID全部退出才单次接续，重新核SHA/物理日志/TRAIN隔离，从最后完整delta恢复Adam/RNG/课程；新E4不再自动运行预算终止final。CPU单元目前67 RL＋5 flow通过（含真实toy actor超过旧上限/训练循环越过旧64批、80k控制和三批停门；附加handoff唯一启动测试正在补跑），没有新GPU启动。
+- 14:12真实快照19完整批/已落盘202，当前E3继续第20批。已绘`artifacts/g05-50k-rl-20260928/rl-learning-curve-20260930.png`并本人检查：实例1前缀1076/980/884/788分别5/7、4/5、3/4、0/3；实例1381096为2/19。曲线按采样前actor步对齐、分课程最近≤5回合均值，非固定checkpoint SR；parent/E2完整reset均0/6，E3final尚无、不填零。复算脚本`plot_learning_curve.py`和29KB原回执/SHA摘要`docs/experiments/2026-09-30-rl-learning-curve-data.json`入Git，PNG忽略；字体及布局已检查。
+- 下一：补完接续器回归→提交/push独立feature→robo新冻结源CPU验收并arm等待，不热pull运行源。不把“代码实现”写成服务器已持续训练；队友独审/合main未完成。
+
+### 2026-09-30 14:03（北京时间）：用户授权本轮结束后持续RL及效果—步数图（Codex / RL-G05-50K-E4）
+
+- 先让现有970896e/E3完成原训练和固定六对final，不热改/抢占/跳过评测；从最后完整delta及Adam/RNG、课程历史继续。新E4沿相同TRAIN task0实例1/138、env seed0、原数据SHA、同奖励/LR/BC/PPO设置，只撤销训练总控制/批次/actor更新/墙钟上限，显式null；单回合1024、数值/仿真与空间保护保留，三批无学习进展改警告。
+- 新run拟为`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e4_continuous_v1`，新私有runtime同名；CPU接续器`e4_handoff_v1`只等待原监管正常完成、六对/物理账/权重完整及GPU0/2/3释放，不影响GPU1他人作业。故障不盲目重启，低磁盘停止并保留所有已有权重；当前仅实现中、无新GPU启动。源码commit/接续PID在准入后记录。
+- 本轮同时绘制真实TRAIN成功记录与actor更新关系，按生成轨迹前的权重对齐，标出专家前缀变化；固定完整reset评测单列，不拿PPO/FM loss冒充成功。图及可复算小体积摘要、脚本留档，当前尚未出图。无可用原生automation工具，本次依赖接续作为训练启动流程的独立CPU监管实现。
+
 ### 2026-09-30 13:55（北京时间）：E3正常更新至200，课程前移后仍未稳定，final尚未开始（Codex / RL-G05-50K-E3）
 
 - 本轮只读状态核验及记档，0新训练启动/0参数或源修改。`e3_render_resume_v1`原监管37389/learner37396/两sim37649、37658均存活；最新采集快照updating、actor200/critic92、累计74404控制/0 pending、18完整批，重启后新27个accepted actor。第19批rollout已完整，PPO进行中，不将当前200视为已落盘。
