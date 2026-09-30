@@ -22,6 +22,8 @@
 
 ## 原robo记录（保留）
 
+**2026-09-30 11:41北京时间E3执行确认：** 下述新run173/72/Adam严格恢复、五TRAIN BC前反向通过；TRAIN sims37649/37658真实各回放240控制，`status.json`training_curriculum/累计56220/0 pending，非仅初始化。`training/worker_{0,1}/steps.jsonl/io.jsonl`为新物理/渲染证据，当前还无本次新自主采样/PPO或SR。WSL直连relay握手间歇失败时沿既有Windows stdio脚本读取，训练在独立session中未中断，禁止重启第二份或热pull冻结源。
+
 **2026-09-30 11:31北京时间E3已重启：** 新run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1`，私有runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e3_render_resume_v1`，冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_render_resume_970896e`（970896ede236851809573b02b48401f67f5e9dd2）。UTC03:30:57监管37389/learner37396唯一running/加载中，恢复旧173 delta而非重训；`prior_control_audit.json`核55740累计控制及失败32 pending，`manifest.json`两墙钟null、同状态render最多2次严格重取。看新run的`status.json/supervisor.json/resume_load.json/pids.json`，旧e3_no_wall_v1失败证据保持原状；当前还没有本次新自主采样或SR。
 
 **2026-09-30 11:09北京时间E3已停：** `e3_no_wall_v1`监管4022582/learner4022589/两sim4022893、4022896均退出，09-29 21:21:11监管failed/exit1，四A100 0MiB；不是仍初始化。最后`rl_batch_014_updates_0173.pt`（7,623,031,565B）整SHA daa37a25399a7f40b30bdbc445354eec1acbeb89d24370f825ae680b5f34c3fc验同，父50k仍需一并加载。`training/worker_{0,1}/primary_failure.json`、同目录`io.jsonl/steps.jsonl`保留渲染同步故障与最后32 pending实物账；原source/run/runtime不删不改，尚无`final/`或`result.json`。状态摘要见[E3登记](experiments/2026-09-29-g05-50k-rl-e3.md)，本次未启动恢复。

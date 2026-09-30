@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 11:41（北京时间）：新E3两路仿真已实际执行，进入课程回放（Codex / RL-G05-50K-E3）
+
+- 原监管37389/learner37396/两sim37649、37658持续运行；`e3_render_resume_v1/status.json`已从initializing进入training_curriculum，各回放240控制，累计56220＝继承55740＋新480、0 pending，actor173/critic72/14批保持。两worker `steps.jsonl/io.jsonl`已真实增长，非仅进程存在；尚未到本次自主采样/PPO新更新。
+- 173/Adam/课程历史严格恢复、原生场景与取图/控制链通过启动；新源码970896e保持冻结。剩余同一作业自动完成884/1096前缀→课程自动检查→自主采样/PPO→预算/停止条件后固定六对final。两墙钟null、累计80k/100k及64批/2000新actor不变，不扩大实验、不宣布新完整SR。
+- 本次重启已实际执行，无第二份作业；后续只读新run状态，旧e3_no_wall_v1仍保留为失败历史，不能误读成当前作业失败。SDK长期错位根因仍未复现证明修复，持续错位超2次重试将继续严格停下，证据保留。
+
+### 2026-09-30 11:33（北京时间）：173/72及Adam严格恢复通过，两仿真已启动（Codex / RL-G05-50K-E3）
+
+- 新run `resume_load.json`严格SHA/AE/noise/critic/优化器恢复成功，actor173/critic72、FP32 AE；五TRAIN `bc_preflight.json`前反向通过/0优化器步/无冻结层梯度泄漏。`status.json`继承55740控制/0 pending/14批，并非重新从50k或94开始。
+- 监管37389/learner37396仍running，TRAIN sims37649/37658已起、场景初始化中。训练/总墙钟null、新render重试实际接入；当前尚未本次新自主采样或更新，下一确认原生取图与执行，然后同一作业无人值守继续至原预算及固定final。
+- 11:39补核：WSL直连127.0.0.1:23117握手关闭，使用既有`robo_windows_stdio_ssh.py`一次性Windows转接恢复，严格host key不改；原四PID始终存活、两场景已导入，无新failure。没有因SSH断线重复启动/改中继或环境。GPU1新增其他作业保留，本次仅既定GPU0/2/3。
+
 ### 2026-09-30 11:31（北京时间）：E3从173的续训作业已唯一启动（Codex / RL-G05-50K-E3）
 
 - UTC03:30:57，`e3_render_resume_v1`唯一监管37389/learner37396状态running，冻结970896ede236851809573b02b48401f67f5e9dd2；新manifest两墙钟null、render_completion_retries=2、累计55740控制/14批/173/72，原两段证据保留。
