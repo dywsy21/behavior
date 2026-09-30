@@ -10,6 +10,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 18:08（北京时间）：阶段1最终审查未放行，方案与9项阻塞已登记（Codex / REVIEW-MEM100-STAGE1）
+
+- [新方案/完整审查](experiments/2026-09-30-memlite-stage1-plan-and-readiness.md)覆盖旧预算：高层一遍、global256=8×4×8，约111–119h纯计算；低层global256=8×32，建议累计作业墙钟120h或200k更新先到为止。按80%–90%计算占比的3.32–3.73遍仅敏感性示例，不是正式loader实测。建议lc3低层/lc1高层独立DDP，未分配或排队；后续阶段方向不变。
+- 本轮检查完成，结论**NOT READY**，不是“适配完成”：S1真实snapshot配置；S2固定phase/无重复/逐微批混任务sampler；S3完整LoRA恢复及冻结入口；S4跨rank/累积CE与FM分母；S5 v6/35技能接口；S6标签/时钟/旧holdout/norm及人审；S7禁止随机换样本；S8尾批不漏/不重复；S9原子保存、RNG/清单/累计120h恢复。对应S1–S9均待实施/验收，修复不被旧105单测通过替代。
+- [轻量证据/源码SHA](infra/results/2026-09-30-memlite-stage1-readiness.json)：lc3原4e59b5b源clean，105/105 CPU通过/5.75s；factory、单task微批、263→264尾批和5.5≠1.9归一反例实证。ce77988相对该CPU源只有文档差异。未改训练代码、未重建数据、0GPU更新/0新权重；已关闭自有SSH master，原VPN和共享env不动，末核无计算进程。
+- 下一先整合正式入口并完成100任务数据发布，再各≤64更新/节点≤60分钟做真实loader＋8rank梯度＋存取/恢复＋双节点I/O有界验收（建议，未启动）；全部过门后再提交明确开训配置。数据/RL队友职责保持，合main前仍需独审。本次只提交审查和方案，不将检查失败伪报为goal完成。
+
+### 2026-09-30 17:59（北京时间）：阶段1预算改为高层一遍/低层120h，正式入口审查中（Codex / REVIEW-MEM100-STAGE1）
+
+- 按最新用户要求制定方案并检查逐batch混任务/8×A800正式训练链；本轮不直接启动长训或重建百任务标注。首次Git fetch因TLS失败，重试fetch/pull成功，main仍33677bd；从最新main建`review/memlite-stage1-a800-20260930`并快进纳入已push的ce77988，旧分支/worktree保留。
+- 已查明测速与正式训练入口不同：`scripts/infra/benchmark_memlite_{high,oneframe}.py`循环旧TRAIN缓存，不能证明百任务sampler；`scripts/finetune.py`默认DistributedSampler不承诺逐batch任务组成，factory尚不识别旧A4的`coordination_v6`。正式入口未调用新高/低层trainability gate，高层累积仍是微批均值，不能直接等同已验全局token加权归一。继续复核数据/恢复/预算接口，尚不能签署开训通过。
+- 本地5项高层测速算术回归通过；真实模型合同测试因本地缺OmegaConf未收集成功（不是模型测试失败，也不装改共享环境），上一轮A80037项及真实八卡证据保留。计划下一形成明确通过/阻塞清单、预算和采样验收标准；0新GPU作业/0新模型。
+- 18:02核查进展：复用原VPN、仅新建本任务SSH连接到lc3；8卡全0MiB、原4e59b5b运行源clean。共享env下11个相关测试文件105/105通过（5.75s，CPU，无新GPU更新），不把旧sampler单测通过当新采样合同已实现。服务器实证基础profile指向的外层根没有`meta/info.json`，实际嵌套snapshot有；官方技能表35项而当前v6仅15项。两项CPU反例确认：默认八rank sampler的单卡micro4可纯单任务；263候选被DDP补为264，旧accum8的一遍步数只覆盖一次256更新。正式百任务准入仍未通过，完整报告整理中。
+
 ### 2026-09-30 17:29（北京时间）：高层八A800测速完成，约两遍9–10天纯计算（Codex / BENCH-MEMHIGH-256）
 
 - 原B-final模型950状态已逐字节导出/三端SHA一致迁至共享`models/memlite-b-final-20260910/B-final-model.pt`，11.44GB；不降权重精度，只省旧optimizer，原26.59GB完整ckpt仍在robo。源码与资产位置见SERVER_LAYOUT；主线未合入，实验分支`bench/memlite-high-time-a800-20260930`。

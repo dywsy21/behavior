@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "task_id": "REVIEW-MEM100-STAGE1",
+  "owner": "Codex",
+  "reviewed_utc": "2026-09-30T10:07:32Z",
+  "status": "not_ready_for_formal_100task_training",
+  "reviewed_local_commit": "ce77988",
+  "cpu_test_runtime_commit": "4e59b5b0e34030907c7e6b87b7134f832f01ac14",
+  "code_changes_between_review_and_cpu_runtime": false,
+  "cpu_test_host": "lc3 / a800-3",
+  "cpu_test_environment": "/data/workspace/wsy/behavior2026/envs/g05-py310-cu128",
+  "pytest_passed": 105,
+  "pytest_failed": 0,
+  "pytest_warnings": 1,
+  "pytest_seconds": 5.75,
+  "pytest_files": [
+    "tests/test_memlite_high_benchmark.py",
+    "tests/test_memlite_high_runtime_contract.py",
+    "tests/test_memlite_oneframe_benchmark.py",
+    "tests/test_memlite_training_route.py",
+    "tests/test_memlite_hl_end_template.py",
+    "tests/test_memlite_conditioning.py",
+    "tests/test_memlite_branch_sampler.py",
+    "tests/test_memlite_task_event_sampler.py",
+    "tests/test_training_checkpoint_finalization.py",
+    "tests/test_train_only_stats_sampling.py",
+    "tests/test_infra_dataset.py"
+  ],
+  "tests_do_not_verify_new_100task_formal_entry": true,
+  "local_test_limitation": "5 arithmetic tests passed; model contract collection failed for missing OmegaConf, then tested in the existing A800 environment without installing packages",
+  "new_gpu_updates": 0,
+  "long_training_started": false,
+  "training_code_modified": false,
+  "data_rebuilt": false,
+  "shared_environment_modified": false,
+  "vpn_relogin": false,
+  "observed_lc3_gpu_memory_mib": [0, 0, 0, 0, 0, 0, 0, 0],
+  "original_runtime_worktree_clean": true,
+  "data_root_checks": {
+    "configured_root": "/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos",
+    "configured_root_has_meta_info": false,
+    "actual_root": "/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master",
+    "actual_root_has_meta_info": true,
+    "published_memlite_100task_training_manifest_verified": false,
+    "official_skill_summary_count": 35,
+    "current_v6_skill_mapping_count": 15
+  },
+  "cpu_reproductions": {
+    "old_coordination_strategy": "ValueError: Unknown MEM-Lite training sampling strategy: 'coordination_v6'",
+    "single_task_microbatch": {
+      "fixture_is_synthetic_not_100task_data": true,
+      "dataset_length": 64,
+      "task_rule": "index // 32",
+      "seed": 17,
+      "world_size": 8,
+      "microbatch": 4,
+      "rank": 1,
+      "zero_based_batch": 1,
+      "indices": [62, 48, 50, 44],
+      "task_ids": [1, 1, 1, 1]
+    },
+    "tail": {
+      "fixture_is_synthetic": true,
+      "unique_candidates": 263,
+      "padded_sampler_draws": 264,
+      "per_rank_draws": 33,
+      "microbatch": 4,
+      "gradient_accumulation": 8,
+      "per_rank_microbatches": 9,
+      "legacy_one_epoch_optimizer_updates": 1,
+      "unique_candidates_omitted_from_that_update": 7
+    },
+    "global_denominator": {
+      "fixture_is_synthetic": true,
+      "local_batches": 64,
+      "alternating_weights": [1, 9],
+      "alternating_local_mean_gradients": [10, 1],
+      "legacy_mean_of_means_gradient": 5.5,
+      "global_weighted_gradient": 1.9000000953674316
+    }
+  },
+  "blockers": [
+    "S1 formal config snapshot path",
+    "S2 task-aware exact-coverage stride sampler and loader wiring",
+    "S3 strict checkpoint and LoRA restoration plus trainability gates",
+    "S4 global CE and masked FM denominators across ranks and accumulation",
+    "S5 v6 loader and 35-skill/task protocol integration",
+    "S6 label/timebase/split/norm release and human QA",
+    "S7 disable random fallback replacement for published candidates",
+    "S8 valid tail update without omission or effective duplicates",
+    "S9 exact resume, atomic save and cumulative wall-clock deadline"
+  ],
+  "reviewed_file_sha256": {
+    "scripts/finetune.py": "5a2f2bcdad4913254b72a841a0b4fdac1bb6304d8d9f93cdd0319f999d5c9178",
+    "src/g05/utils/common/task_event_sampler.py": "d78a3ee8b73937de947b81d273e2a92b077634b3023d2ea003a12f269725647f",
+    "src/g05/utils/common/dist.py": "cf47d13e9eb4a80453dcfe2d71e0c00b922685270620ca1c569a2b7ca245856a",
+    "src/g05/utils/checkpoint/checkpoint_utils.py": "efc0b0395332d988bfe870049a07e07039460d0d2c8baabbeec50c4ed9855bdd",
+    "src/g05/data/base_lerobot_dataset.py": "ffd2af45247c313a9b07a72e9b663a2f8e3d343cd03e9f49f02aaceecb46752d",
+    "src/g05/utils/memlite_skill_protocol.py": "c4e8e8f0f94e0f656016777fb475238b1d000fb7a0901acf9498d6b097a48f76",
+    "configs/data/behavior2026_r1pro_rgb.yaml": "1806dcfc4455445f6f6cfb85a9f951d9856afe98dba8408a3f4dd82c5c1f13e8"
+  }
+}
