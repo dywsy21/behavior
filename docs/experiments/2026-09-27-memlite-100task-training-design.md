@@ -1,6 +1,79 @@
 # MEM-Lite百任务训练设计：初始化、数据、训练配方与三节点分组
 
-2026-09-27，Codex / PLAN-MEM100。**讨论提案，不是开训授权或已实现的百任务训练入口。** 用户明确暂不连接四个A800节点，也不重连lc-connect/ec cli/VPN；本轮遵守此限制，仅本地Git、官方公开小元数据和robo只读核查。没有启动训练、搬运权重、运行新仿真、修改共享环境或接管队友工作。
+2026-09-27初稿；2026-09-30更新，Codex / PLAN-MEM100-RECIPE。**讨论提案，不是开训授权或已实现的百任务训练入口。** 下方9/30节是当前建议，优先于9/27的六帧、小batch和旧时间预算；历史证据保留，不把新建议写成已完成训练。9/27初稿遵守当时不连接A800/VPN的要求；后续经用户授权完成的A4迁移和短测速另见实测报告。9/30本次讨论只读本地源码/归档及研究资料、更新文档，没有连接服务器或启动训练。
+
+## 2026-09-30更新：完整阶段、单帧配方与抽样顺序
+
+### A. 已测事实与这次建议的边界
+
+- [八卡单帧测速](2026-09-30-memlite-oneframe-a800-benchmark.md)：低层SkillFM，3相机×当前1帧、256²、未来32动作，global256=`8卡×micro32×accum1`，120.292观察/s、2.128155s/优化器更新、allocated51.58GiB/卡；128为84.187观察/s。计算测试只重复10条已审核的旧五任务TRAIN样本，不是100任务正式loader或收敛验证。
+- A4已经完整迁到共享盘`/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`，主权重三端SHA与本报告§2一致，192项LoRA完整恢复；B-final尚未迁移。Git现在有**仅允许单帧的低层最小移植**，没有因此完成旧六帧、高层、完整训练loader和协调采样器迁移。
+- 当前建议首轮候选为**单帧低层、batch256、约stride16的起点密度**；128保留为样本效率对照，不再引用旧六帧batch32–64作为这条单帧路线的默认值。高层的长文本/图像历史容量单独验，不能套低层256测速。
+- 单帧低层减少了短时运动信息，高层语言记忆不能保证补回速度/滑脱等视觉线索；须做同输入协议的局部闭环回归，必要时另验短历史，不将吞吐变快说成策略等效。训练与部署都明确`num_obs_steps=1`，不能拿旧六帧serving路径直接声称同配置。
+- 固定stride16原始候选13,191,664；约95% train为12,532,081候选数量级，实际同技能/标注/尾段/split过滤及事件补点后重算。256下全候选纯计算30.46h，约95% train28.94h；36–48h只是包含工程余量的单遍排期建议，非实测端到端保证，不含高层或数据制作。
+
+### B. 建议阶段与预算（均待团队批准和数据准入）
+
+| 阶段 | 更新什么、喂什么 | 首轮预算与进入下一阶段条件 |
+| --- | --- | --- |
+| P0 数据/工程准入 | 扩35技能、修时间对齐、保护原holdout、冻结共用norm；实际100任务loader/8-rank采样/真实梯度/存取恢复 | CPU门后≤100优化器更新的工程烟测；不是新部署模型。源码、数据人审及同状态意图—动作全部过门才进入P1 |
+| P1 有界配方检查 | 同一A4初始化、同一合格观察序列，单独比较低层128/256；其余设置一致 | 各256,000观察抽样：128为2000更新、256为1000更新；warmup/衰减按相同已消费样本数对齐。看同样样本量和同样墙钟两种曲线，不用相同更新数冒充等量比较。不是足以证明收敛的规模 |
+| P2 共享基础C0/H0 | 低层覆盖100任务、真实技能条件下FM；高层覆盖100任务的规划/记忆CE；参数和optimizer分开，可并行 | 低层先以20k更新为上限，10k检查；高层以10k更新为上限，按实际合格决策数/唯一来源重复率缩减，不能靠反复喂小集跑满。原始G0.5仅保留回退，不额外默认启动初始化大对照 |
+| P3 三组低层强化 | 三份低层均从同一个C0开始；34/33/33主组＋跨组共享正常数据；全局共用H0 | 每组首次上限30k更新，10k/20k检查；不自动延50k。任务路由预先固定；三节点独立DDP，不是全局batch768，也不平均合并三份权重 |
+| P4 结果反馈与纠正 | 固定一版H先训outcome头；高层学有证据的RETRY/REPLAN，低层学同失败状态的正确纠正动作 | 数据到位即可与上述准备并行，但共享GPU有明确时隙。outcome最多3个合格数据遍历，按验证校准早停；高/低纠正各先≤2k更新且受唯一来源重复率限制，不承诺必须跑满 |
+| P5 有限闭环协同 | 固定(H,O,L)版本在TRAIN实例rollout→同状态专家纠正→分别更新责任模块→再验证 | 每轮单独批准采集/训练/仿真预算，先9–12个异质任务，不自动无限迭代；完整SR、恢复率和失败类别都报告 |
+| P6 可选通用RL | 固定高层/反馈版本，先更新低层动作专家，统一任务/技能条件与物理结果接口 | 依赖合格SFT、实际执行动作的策略概率和reward验收；由RL负责人按既定通用路线另定PPO/flow超参，当前不伪造一套已可运行参数 |
+
+高低层无需相互等待才可开始正确监督SFT；反馈头依赖固定高层特征版本。建议资源顺序：共同阶段一节点C0、一节点H0、第三节点做有界配方检验或有标签后的反馈头；分组阶段三个节点分别A/B/C。没有合格数据时不以“填满GPU”为理由启动作业。数据/恢复数据和通用RL仍归既有队友；Codex负责训练方法、接口与集成。
+
+按低层256短测速度，10k/20k/30k更新对应256万/512万/768万观察抽样、纯计算5.91/11.82/17.73h。正式解码/标签/验证/保存和三节点NFS竞争另计；高层更不能套此速度。P2的20k只是约原始train候选数量的40.9%抽样量，**不是40.9%唯一覆盖，更不是完整一遍**。P3混合采样也不能用任务数除以3直接推完成时间。
+
+### C. 本轮具体超参起点
+
+| 项目 | 低层主候选 | 高层/反馈 |
+| --- | --- | --- |
+| 初始化/状态 | A4模型＋LoRA；新数据/新阶段新建optimizer与scheduler；中断续训才完整恢复同run状态 | H从B-final规划权重；O未曾获得物理outcome训练，不当成熟模型 |
+| 有效batch | 256=8×32×1；128对照=8×16×1。若完整loader/更长prefix超显存，只在新冻结配置验证更小micro＋累积 | H目标64，先验8×micro4×accum2；不能声称已测可装。O可从有效64开始，按冻结H特征和序列显存实测 |
+| 可训练参数 | action expert＋低层VLM LoRA；其余按A4冻结 | H的planner VLM组更新、vision/action expert冻结；O-only时H全部冻结 |
+| 峰值学习率 | AE=`1e-5`、LoRA=`1e-5`，分组记录但首轮不同时改两个值；不随16→256线性放大 | H=`1e-5`；O-only=`1e-4`；纠正微调建议H/低层`5e-6`起点，非已验更好 |
+| LoRA | r8 / alpha16 / dropout0.05；继承原覆盖模块，不同时扩rank/改覆盖 | B-final高层是planner组更新，不误称同一r8 LoRA配方 |
+| 优化器/精度 | AdamW，betas=(0.9,0.95)、wd0.03、clip1.0；BF16 autocast/FP32权重和optimizer状态；首轮沿用no EMA、fused=false | 同基础数值约定；O-only无有效标签的全局累积批跳过optimizer.step，不能靠零loss让decay/momentum暗中更新 |
+| LR日程 | P1两臂以观察数对齐：前25,600观察warmup、256,000观察处衰减结束；P2 20k用500更新warmup，P3 30k用600，cosine至峰值0.1倍 | H若10k用300 warmup，短预算相应缩短；O头warmup约前5%更新，再衰减。阶段内不每5000步重启日程 |
+| 观察/动作 | 3×当前1帧、256²；预测32个连续30Hz动作、执行前16、起点0；27表示维度只屏蔽4补齐维/无效时刻 | H保留有界因果上下文；真实输入/答案长度分位数验过后定序列上限，不为速度静默截memory/答案；低层吞吐不代表高层吞吐 |
+| FM | 原`pi_convention`、Beta(1.5,1.0)经原`flow_sig_min=.001`变换；每观察4组时间/噪声；fm_weight1；推理10步 | 高层不以FM教离散规划；首轮不叠加KI、分层Beta或执行段重加权 |
+| CE/outcome | 低层无离散动作CE，`discrete_action=false/continuous_action=true/predict_cot=false`，`joint_training=true`仅指低层KV梯度 | H planner-only memory token权重0.25、其他有效目标token1，统一按权重归一；O先单独CE。完整H+O旧合同要求memory1.0，0.25＋联合outcome不是现成开关 |
+| DDP/加载/验证 | 沿用已测`find_unused_parameters=true`、128MiB bucket、gradient-as-bucket-view；每rank2–4 workers、prefetch2/persistent/pinned；每500更新固定100task×32窗快速诊断；每5000及阶段末覆盖各留出episode的固定窗口并存完整状态 | 高层另报字段/事实/技能/反馈指标；其DDP/最长序列合同另验，最终闭环评估不以CE/FM代替SR |
+
+梯度归属保持[9/29详细审计](2026-09-29-memlite-gradient-training-design.md)：`L_FM→AE→低层KV→低层LoRA`，不到高层；`L_AR→高层planner组`，不到低层；`L_outcome→结果头`在O-only时不进H。冻结原VLM权重不等于把带LoRA的整个VLM包进`no_grad()`。生成的技能/记忆字符串重新tokenize，不存在默认跨高低层或跨决策BPTT。
+
+batch256比128吞吐快42.89%，只是wall-clock潜力；若达到同样验证/闭环质量要比128多消费超过约1.429倍观察，纯计算优势会被吃掉（其余开销相近的近似）。大batch不必然变差，但不能用更低单步噪声或显存利用率证明单样本更有效；参考[原始大batch研究](https://arxiv.org/abs/1812.06162)。P1固定观察序列和归一化，不把FM的4组噪声称为4倍独立数据。
+
+### D. 训练样本按什么顺序送进去
+
+**一句话：先按任务/来源分层混合，再随机取合法窗口；一个窗口内部严格按时间，窗口之间不要求按剧情顺序。** 100任务从共同训练开始就混，不先训完task0再训task1；先给模型建立共享技能，而不是逐任务覆盖旧知识。
+
+1. **先锁split和候选身份。** 来源instance的所有窗口、历史和纠正分支在同一split；原五任务留出/public_test不回灌。每样本记录task、episode/instance、技能bundle、起点、有效动作mask、source kind、数据版本，不让审计ID进入部署文本。
+2. **先选数据池，再选task。** P2共同C0用100任务近似等权的打乱轮转表，避免12倍长任务拥有12倍影响。P3暂无合格低层恢复池时，70%本组＋30%全100任务共享；真实纠正池足够后60%本组＋30%全100共享＋10%真实纠正，沿用§8而非新增另一套比率。共享30%含本组；因此一个34任务组的正常样本实际主组占比约80.2%（70＋30×.34），不误写只有70%。256下比例用跨batch配额累计器实现，不假定每个batch整数都精确符合百分数。
+3. **task内先轮换episode，再取技能段/时刻。** 打乱来源演示列表，优先让每条来源都见过，再取同一来源的其他段。段内随机合法anchor、不总从episode开头开始、不把同一长导航的连续256帧组成一个batch。首轮延续task/episode/技能段覆盖，不再额外堆一层未经计数的运动事件高倍率加权；技能段边界、夹爪开闭、保持/释放等有覆盖审计，极短事件须保留合法候选。
+4. **stride16只稀疏观察起点。** 可按episode的采样轮次用可重现随机相位`r∈[0,15]`生成`r,r+16,r+32,…`并与合格区间求交；下轮换相位。每个起点t仍监督连续`t..t+31`，绝不是动作也隔16帧取。若技能边界在`t+12`，只监督属于当前技能/真实并行bundle的合法前缀，剩余mask；不足16帧的短技能段另保留一个合法点，并记录补点对候选数的改变。尾部mask并未自动解决部署一次执行16步的边界行为：短技能的安全保持/合法反馈触发切换须另做闭环时钟验收，不能让actor读取离线标注end作为在线停止信号。随机相位、边界补点是**待实现建议**，现测速计数仅固定相位0。
+5. **同batch尽量是不同状态。** 正常池可优先不同episode，同一episode的相邻窗口错开批次；共享池和主组池去重同一个样本ID。全局计划后再分给8rank，使同一优化器更新内不因各rank独立随机选择而重复同一观察；多卡噪声仍独立。不要求每个小技能段都能切出8个样本，不因world_size=8删稀有技能。若合法独立样本不足，显式记录降配额/重复，而非静默伪装256个独立状态。
+6. **高层另有时间尺度。** 采样真实技能/父目标切换、正常进度保持、合法复查和恢复决策点，不机械每16帧造一个几乎相同的“继续”。task/episode仍混合；同一条输入中的历史时间递增、只用当时已知事实。既要有继续当前计划，也要有有证据的切换；失败类的比例取决于真实标签，暂不虚构固定10% FAILED。高层不靠不同batch顺序“自动记住上一条”；记忆必须显式带在本条输入中，跨episode重置。训练不偷偷携带上个batch的hidden state。
+7. **吞吐不能靠破坏分布换来。** 可按video shard预取/复用解码，再在8–16个global batch大小的有界缓冲区内混合；缓冲只改变合法样本的输送/缓存，不取消任务配额或变成先一个视频训练半天。NFS三节点竞争和memory峰值必须实测。
+8. **恢复可复现。** checkpoint记录数据/采样索引SHA、seed、任务/来源轮转游标、各池配额余数、stride相位、rank分配、已消费优化器/微批次及RNG；若使用shuffle缓冲/预取，保存其状态或能从已提交游标确定性重建，不能把已prefetch但未训练的数据算成已消费。断点恢复应复现后续样本，而不是重新从每条演示前半段开始。
+
+**这里不能把“一个epoch”含糊称为全数据一遍。** 任务等权、演示覆盖、稀有技能/恢复重采样会改变窗口概率：长任务可能未遍历完，小池可能已重复。正式主账本用optimizer updates、总抽样数、唯一(task,instance,t,bundle)数、各task/episode/skill覆盖、重复率和有效动作scalar数；另有固定无重复候选遍历时才称“一遍”。最终eval采用固定split/固定窗口/固定FM噪声，并同时报任务宏平均与有效scalar聚合，不沿用训练过采样比例制造变好的loss。
+
+已核旧A4实际配置为`coordination_v6/mode=low/leaf_ordering=episode_round_robin_v1`；归档实现先打乱task，各task按episode交错取技能leaf，leaf内以rank共享确定性排列分片。它比全帧顺序读取更合理，但**不是当前Git已整合的100任务stride16 sampler**：旧leaf小于world_size会拒绝，epoch长度由leaf容量/任务最大leaf数算而非全量窗口；当前版本还只允许`original_demo`低层正向BC，不能靠写recovery10%自动吃纠正轨迹。需另行实现/验收全局稀疏索引、合法恢复source准入、短段多卡调度、唯一覆盖和存取一致性。证据为本地`artifacts/a800-memlite-oneframe-bench-20260930/assets/A4-training-config.yaml`及归档`a2_lora_history_candidate_v7_samplercoverage/src/g05/utils/common/coordination_sampler.py`，本轮未修改这些源码。
+
+### E. 怎样学到失败后的恢复，及停止条件
+
+更多正常抓取任务只扩大成功示范的分布，不保证覆盖“已经空抓一次”的状态。纠正池必须提供同一失败状态的合法观察、物理/人工核实反馈、恢复意图和实际纠正动作；否则“空抓→松开→调整→再抓”没有完整监督。先TRAIN轨迹/训练实例接管，混入正常回放防遗忘；不拿另一条演示正常抓取动作给失败图像做BC。这与[DAgger原始工作](https://arxiv.org/abs/1011.0686)针对策略诱导状态分布的动机一致，但不声称本项目已复现其理论算法。
+
+当前只有极少高层恢复标签、低层动作被mask的交付不满足上述10%池；保持70/30正常配方并明确能力缺口，不能靠重复标签训练五小时。结果头输入为答案前可用上下文；outcome是有证据的label，不从“技能段结束/夹爪闭合/超时”造真值。冻结H训好O后，任何H版本改变都须复查特征兼容/重新校准O。
+
+P1/每个后续检查点先看固定验证与同分布train诊断、技能服从、短闭环；出现持续不有限loss、冻结组误更新、split/时钟/来源错误立即停止。只有训练loss下降不能申请无限续训；预算到点无可重复局部改进先诊断，局部改善也不报完整任务SR提升。P4/P5尤其报告反馈准确但动作没恢复、动作可恢复但高层没触发等分解，不用总loss抹平责任。
+
+本次只把当前建议、依赖和采样合同写清；没有发布新数据、改变训练sampler、启动任何短对照/长训练，尚需团队审批正式预算及代码/数据准入。
 
 ## 1. 建议结论
 
@@ -10,7 +83,7 @@
 
 ## 2. 旧checkpoint：能用什么、不能证明什么
 
-本轮只核文件存在/大小、真实配置和运行回执，未重新哈希数十GB大权重或加载到新机器做前向。下列SHA来自此前完整保存/恢复验收记录；不能称本轮迁移验收通过。
+本节的“本轮”指9/27初稿核查：当时只核文件存在/大小、真实配置和运行回执，未重新哈希数十GB大权重或加载到新机器做前向。下列SHA来自此前完整保存/恢复验收记录；9/30的A4迁移和八rank恢复进展见顶部更新，B-final仍未迁移。
 
 | 部件 | robo路径 | 本轮文件大小 | 用途与限制 |
 | --- | --- | ---: | --- |
@@ -26,13 +99,13 @@ B-final真实架构`G05PolicyMEMLitePlannerOutcome`，运行模式`planner_only`
 
 已有收益边界：A4固定80 FM较A3低约0.92%；同原train起点＋448专家前缀＋正确GRASP时，464模型步形成指定radio的稳定抓取。没有前缀、由高层自主执行的radio 301/302/303均失败，0/3。故它有工程连续性与局部学习证据，**没有证据证明它是100任务最佳底座**。详细证据见[局部报告](2026-09-13-a4-training-effectiveness.md)与[完整评测](2026-09-13-a4-radio-full-eval.md)。
 
-建议：A4/B-final作为迁移默认候选，同时只保留一次小规模、同数据/同预算的“原生G0.5初始化 vs A4初始化”检验，防止五任务偏置。原生参考为`/mnt/sdc1/robodojo/checkpoints/G05/g05-base/checkpoints/model_state_dict.pt`，既有SHA `072211e5b2f5ef036729bae673f3f44da40adbea5c0044af55fe2fb8af654327`。若跳过对照，应明确是节省算力的工程选择，不是已经证实A4泛化更强。
+9/27曾建议保留一次小规模、同数据/同预算的“原生G0.5初始化 vs A4初始化”检验；9/30当前配方不默认追加此对照，先沿用户要求复用A4，G0.5保留回退。原生参考为`/mnt/sdc1/robodojo/checkpoints/G05/g05-base/checkpoints/model_state_dict.pt`，既有SHA `072211e5b2f5ef036729bae673f3f44da40adbea5c0044af55fe2fb8af654327`。这是节省算力的工程选择，不是已经证实A4泛化更强。
 
 迁移必须成套：权重、模型/processor/tokenizer配置、LoRA配置与所有参数、归一化stats、schema/词表、相机历史和动作约定、源commit/快照清单、训练split。A4/B-final是两个独立模块，不是一个pt覆盖另一个。新数据/8卡/新batch下默认只继承模型参数、新建optimizer/scheduler；真正中断续训才完整恢复对应新run的Adam/RNG/采样时钟。
 
 ## 3. 开训前不能跳过的工程缺口
 
-1. 当前Git仓库没有后期`g05_policy_memlite_skill_fm.py`、`g05_policy_memlite_planner_outcome.py`及完整依赖。后期低层训练快照在`direct_execution_L6rqZ6_20260910/a2_lora_history_candidate_v7_samplercoverage`，B-final训练/推理在同根`b_parent_format_train_source_v2`/`b_parent_format_serving_source_v2`。须逐模块diff、以Git整合并回归；不覆盖这些只读原件。当前`configs/task/r1pro_memlite_fm_v11.yaml`不能替代A4。
+1. 9/27时Git没有后期低/高层类和完整依赖；**9/30低层`g05_policy_memlite_skill_fm.py`单帧最小入口已迁入并做短测速**，高层`g05_policy_memlite_planner_outcome.py`、完整loader/协调采样/旧六帧依赖仍未迁完。后期低层训练快照在`direct_execution_L6rqZ6_20260910/a2_lora_history_candidate_v7_samplercoverage`，B-final训练/推理在同根`b_parent_format_train_source_v2`/`b_parent_format_serving_source_v2`。须逐模块diff、以Git整合并回归；不覆盖这些只读原件。当前`configs/task/r1pro_memlite_fm_v11.yaml`不能替代A4。
 2. 现有A800 `configs/data/behavior2026_r1pro_rgb.yaml`只是RGB-only数据基础配置，当前`obs_size=1`，没有百任务MEM-Lite sidecar/高层/采样协议。基础reader通过不等于MEM-Lite整条训练链通过。
 3. 老实验入口/回执有4-rank假设；适配8卡须核优化器步数、DDP梯度累积、rank分片、采样回执和保存恢复，不能只改`nproc_per_node`。
 4. 旧v6 `SKILL_MAPPING`仅15种。固定新版`annotations/skill_summary.csv`实读35种；其中缺失20种，包括chop/pour/turn on switch/turn off switch/wipe hard/insert/spray/hold/release/attach/pull tray/push tray/lift等。官网概览仍写31，以固定实际标注版本逐项校核。未知语义不能静默变SKILL_UNKNOWN后照常做正向BC。
@@ -106,7 +179,7 @@ B-final真实架构`G05PolicyMEMLitePlannerOutcome`，运行模式`planner_only`
 
 推荐资源排程：共享准备期一个节点训练共同低层、一个训练共同高层，第三节点只在数据放行后做有界初始化对照/反馈训练；不凭空造任务占满卡。共享C0/H0形成后，三节点大部分算力用于A/B/C低层独立8卡任务。高层/反馈更新安排明确时间段，不能与三份满卡作业抢同一GPU。此为提议，未分配或启动实际资源。
 
-## 7. 建议初始超参与预算
+## 7. 9/27初始超参与预算（单帧路线以上方9/30更新为准）
 
 下表是候选起点，不是已验证的最优值；继承原A4配方的部分与新建议分开。先做100步工程烟测和约1000–2000步有界配方检查，不能把它们当收敛结果，也不做大网格搜索。
 
@@ -179,6 +252,6 @@ checkpoint成本要单独预算：旧A4完整状态约16.6GB，三组每5000存�
 
 - 本地原始小metadata：`artifacts/memlite-100task-design-20260927/`，100个`episode-meta-NNN.parquet`及`tasks.jsonl/skill_summary.csv/info.json`；不含视频或权重。固定版本与SHA见分组JSON。
 - robo只读证据：两高低层Hydra、`coordination_trainability_receipt.json`、`coordination_outcome_readiness.json`、冻结skill protocol；完整历史结果沿用原报告，不伪造新效果。
-- 尚未做：Git整合真实MEM-Lite、35技能全量标注适配、人审发布、旧新split对齐与norm覆盖、8卡真实训练恢复、权重迁移、初始化对照、百任务训练、恢复效果实验。需要用户确认设计/预算并允许连接A800后再逐项开展。
+- 9/30更新：A4权重/14配套资产迁移与八rank恢复、单帧最小低层Git入口及64/128/256短测速已完成；**尚未做**完整高层/历史/loader/协调sampler整合、35技能全量标注适配及人审发布、旧新split对齐与norm覆盖、正式8卡训练中断恢复、B-final权重迁移、初始化对照、百任务训练、恢复效果实验。需要确认正式设计/预算后逐项开展，不把单帧测速视为全链训练放行。
 
 参考：官方[数据说明](https://behavior.stanford.edu/challenge/dataset.html)、[固定数据版本](https://huggingface.co/datasets/behavior-1k/2026-challenge-demos/tree/4f50b44796641a4d526a19d9aeadc8aa51e2f2c2)、[评测规则](https://behavior.stanford.edu/challenge/evaluation.html)、[提交约束](https://behavior.stanford.edu/challenge/submission.html)。PI [MEM](https://www.pi.website/research/memory)支持短时视觉历史与长期语言记忆的设计动机；[RECAP](https://www.pi.website/blog/pistar06)展示经验/纠正与RL的价值，均不构成我们尚未测得的效果保证，也不是本提案完整复现声明。
