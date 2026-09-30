@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 22:36（北京时间）：高层215步后硬件ECC退出，获批修复再恢复（Codex / RECOVER-MEM100-HIGH-ECC）
+
+- 更正21:33仍运行的历史状态：高层于21:54:21在rank1/PID449295报CUDA contained memory error，21:54:58 supervisor以exit1退出，累计1787.2013s；已完成215次更新但定期保存间隔2000，最新完整checkpoint只有step0，不能宣称恢复215步权重。低层未受影响，22:30已862步且继续运行，配置/共享env保持。
+- 同秒内核明确指向GPU1 `GPU-58992b92-5fea-12a6-12aa-b7b322652cbf` / PCI52:00.0：Xid48双比特不可纠正HBM、171 DRAM、63待row-remap、94 contained ECC、154 Drain and Reset。GPU1 volatile不可纠正32/aggregate71，row-remap pending Yes；无OOM记录，rank0此前峰值allocated60.28/reserved63.15GiB（不是GPU1逐卡峰值）。NCCL P2P原已禁用、NVLink不活跃，不能按错误字符串误判显存容量或NVLink传输根因。
+- 最新用户明确要求解决后重新开始高层；本轮唯一负责人Codex，先只读排空检查，针对该确切GPU重置使待重映射生效，再做有界显存/八卡通信健康验证（总≤15分钟、无训练参数更新）。若ECC重现/仍需reset则不盲目续训，报告硬件维护需求；不碰lc2训练、共享env或队友作业，不整节点重启。
+- 健康门通过后计划沿d0528b4相同source/config/output显式resume step0，沿原W&B `8ecc6bb3908e`和168h累计ledger，不重置失败预算、不改batch/LR来掩盖硬件问题。修复与真实恢复更新仍待验证，未重新提交训练。
+
 ### 2026-09-30 21:30（北京时间）：两层正式训练首批更新通过，后台继续（Codex / TRAIN-MEM100-STAGE1）
 
 - lc1高层和lc2低层各已完成至少5次真实global256更新，step0初始化checkpoint已原子发布；loss/梯度范数有限，未OOM。首批吞吐尚含冷启动且样本很短，不据此重报工期或宣称效果；仍按高一遍/低120h批准预算继续。

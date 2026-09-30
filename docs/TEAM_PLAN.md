@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-30 22:36（北京时间）Codex / RECOVER-MEM100-HIGH-ECC：lc1高层在215步后因GPU1不可纠正HBM ECC退出，非容量OOM；lc2低层继续，不更改其他成员职责。用户已授权修复并恢复，Codex先针对GPU1排空/重映射reset及≤15分钟只读/临时GPU健康检查，过门后同源同run step0恢复、保留已耗1787.20s预算。当前高层暂停而非完成；若硬件错误持续须维护协调，不无限重启或修改共享env。启动准入此前缺少ECC/remap状态门，应补可重放健康回执。
+
 2026-09-30 21:30（北京时间）TRAIN-MEM100-STAGE1两层各≥5次global256真实更新、初始3200窗评测和step0原子保存完成，W&B正式run高`8ecc6bb3908e`/低`e902c036e522`已online/running；lc1/lc2各8卡继续预算内后台训练。Codex负责启动核验/训练接口，其他两位恢复数据/RL工作可独立继续；勿动冻结d0528b4或共享env。还不是训练完成或方法成功率验收。
 
 2026-09-30 21:25（北京时间）TRAIN-MEM100-STAGE1两节点正式tmux已提交，源d0528b4、run `memlite_stage1_high_100task_v1` / `memlite_stage1_low_100task_v1`；Codex核验启动与W&B中，首更新尚待。登记已push f798441并经Git bundle同步独立handoff，不热改运行源；本次节点占用lc1/lc2各8卡，勿在共享env更新依赖。
