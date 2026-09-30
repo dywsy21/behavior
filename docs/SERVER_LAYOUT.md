@@ -22,6 +22,8 @@
 
 ## 原robo记录（保留）
 
+**2026-09-30 13:55北京时间E3仍正常训练：** 新`e3_render_resume_v1`原四PID存活，`status.json`updating/actor200/critic92/18完整批、累计74404/0 pending。最新完整权重`rl_batch_018_updates_0198.pt`（7623035853B，回执SHA c6697f227d1274da99d7f3a568ec9b06c88228d0621225db1ac22b8551da20f7，非本轮新重算）；第19批PPO进行中，不能把内存200当已保存。`train_batch_014..017.json`、`learner.jsonl`及两worker steps/I/O为本轮核验依据；1194 capture无失败/重试，最终selection/result尚无。原源/环境不改，GPU1他人作业不动。
+
 **2026-09-30 11:46北京时间E3已自主采样：** `e3_render_resume_v1`同一组四PID继续，`status.json`collecting/34新chunks/累计58264/0 pending，actor173/critic72；新544自主控制、1980前缀控制，0新完整batch。两sim I/O快照75/88 capture无失败，恢复验收完成；继续等待同一作业后续PPO/保存/final，不重复启动。后续从下列新run读取，旧失败目录只作历史证据。
 
 **2026-09-30 11:41北京时间E3执行确认：** 下述新run173/72/Adam严格恢复、五TRAIN BC前反向通过；TRAIN sims37649/37658真实各回放240控制，`status.json`training_curriculum/累计56220/0 pending，非仅初始化。`training/worker_{0,1}/steps.jsonl/io.jsonl`为新物理/渲染证据，当前还无本次新自主采样/PPO或SR。WSL直连relay握手间歇失败时沿既有Windows stdio脚本读取，训练在独立session中未中断，禁止重启第二份或热pull冻结源。
