@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 12:04（北京时间）：按最新指令先同步真实A4权重，取消随机初始化测速（Codex / BENCH-MEM1F）
+
+- 用户要求旧权重优先、缺失才下载G0.5；原随机初始化计划取消，至今0GPU更新。robo旧A4 `overnight_a4_20260912/formal/checkpoints/step_2500.pt`仍在，16,581,363,550B，刚重算SHA`61867047…32f269`与历史完全一致。
+- 启动本地可续传中转至共享盘`models/memlite-a4-20260912/step_2500.pt`，完整checkpoint及配置保留LoRA/AE；原文件不删除/改写，0新G0.5下载。源/本地/目的完整大小和SHA通过前不运行测速；[细节](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。processor两关键文件已双端hash一致，八卡仍未占用。Git本地有本轮待提交文档，已fetch但不对dirty分支pull。
+
+### 2026-09-30 11:57（北京时间）：开始单帧MEM-Lite八卡batch64/128短测速准备（Codex / BENCH-MEM1F）
+
+- 用户最新授权小测，按八卡全局batch64/128理解，不启动全量训练。本分支先pull/fetch，再从最新origin/main建立`bench/memlite-oneframe-a800-20260930`并ff纳入既有infra/计划；未覆盖队友改动。
+- 复用现有VPN，只读确认lc3八A800空闲、models目录为空；准备单帧三相机、AE＋r8 LoRA、FM四噪声的独立计算图测速和百任务有限数据读取。无正式权重迁移/环境修改；随机初始化性能测不代表已训练MEM-Lite效果。
+- [预登记](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)：两臂各≤40更新，128OOM时仅一次≤25更新累积替代，总GPU≤50分钟；CPU准备≤30分钟、≤10k样本、seed73。启动前固定Git源、核空卡/梯度/动作维度，0部署权重保存。当前仍准备中，实际吞吐待测。
+
 ### 2026-09-30 11:39（北京时间）：单节点八卡全数据 SFT 时间核算（Codex / PLAN-MEM100-TIME）
 
 - 重新 CPU 读取 100 份 metadata：20,000 episode / 210,916,774 帧；显式 stride16/32 原始候选起点 13,191,664 / 6,600,830。95% train 帧数只作近似，最终技能合格区间与来源 split 尚未发布；不把预测32/执行16当作训练 stride，也不把旧 task/episode 均衡 sampler 的 epoch 当唯一全覆盖。

@@ -1,0 +1,21 @@
+# 单帧 MEM-Lite / 八卡 batch64、128 短测
+
+2026-09-30，Codex / BENCH-MEM1F，分支 `bench/memlite-oneframe-a800-20260930`。用户授权短测速，不是全量训练。
+
+## 预登记
+
+- 假设：单帧与更大的每卡 microbatch 能提高旧 A4 低层的观察样本吞吐；不据测速判断任务效果。
+- 范围：单节点 lc3、8×A80080GB PCIe，先 global64=8×8×1，再 global128=8×16×1。保留三相机256、32未来动作、23真实控制/27表示、FM四噪声、FM→VLM LoRA r8＋动作专家；高层不参与低层更新。
+- 数据：固定官方 2026 revision `4f50b44796641a4d526a19d9aeadc8aa51e2f2c2`，ModelScope snapshot 的 RGB/动作/meta/annotation，不下 depth/raw。只读取有限代表样本，不构造/发布百任务正式监督集，不保存部署权重。
+- **12:04北京时间用户覆盖：不使用随机初始化，优先同步旧模型，缺失才下载G0.5。** robo原A4完整checkpoint已找到，16,581,363,550B；本轮重新计算SHA256为`6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`，与历史一致。完整权重/LoRA迁至共享盘并验SHA后才允许测速；原随机初始化方案取消，0GPU更新。
+- 实施：独立测速入口复用实际 G0.5 神经计算图和 A4 LoRA/冻结/技能前缀配置，区别缓存输入计算吞吐与真实视频/动作读取吞吐。若不能完整贯通原 SkillFM 的数据合同，明确标注性能代理与未验证项，不用伪造合格标签/削掉梯度换速度。
+- 短测预算：每个 batch 至多40更新（包含预热与计时），两臂80；若128 OOM可一次 micro8×accum2 的128替代，额外≤25更新。单臂GPU墙钟≤20分钟、总GPU运行≤50分钟；CPU准备≤30分钟，有限读取≤10,000观察窗口。内存不足/非有限loss/梯度缺失/数据不匹配/外部占卡即停止当前臂，保留失败证据，不启动长训。
+- 对照：两臂同 seed73、同模型/输入协议/训练参数集合；报告每卡batch、累积、真实样本/s、时间、峰值显存、数据等待和包含/排除的开销。不能只按更新/s比较batch，也不能把四次FM噪声算四个观察样本。
+- 代码：启动前 commit/push，服务器独立固定 worktree；共享env与原infra源不改。单节点没有队友GPU进程才启动，绝不停止队友任务。结果和源SHA补入本文及plan。
+- 全量外推：原始210,916,774帧与约95% train两种口径分开；原逐task留出、技能有效区间未完成正式发布，外推不冒充实际唯一全覆盖。
+
+## 当前状态
+
+12:04（北京时间）旧A4完整权重同步准备/传输中：源`robo:/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912/formal/checkpoints/step_2500.pt`，本地可续传暂存`artifacts/a800-memlite-oneframe-bench-20260930/weights/A4-step2500.pt.partial`，计划目的`lc3:/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`。robo不能直连lc3，使用本地受控中转；完整大小/SHA验收前不放行。共享盘余约4TiB、本地600GiB，原文件不移动/删除；无需G0.5替代。
+
+11:55（北京时间）只读确认 lc3 八卡均0MiB/0计算进程，复用现有VPN连接，无重认证。小processor资产已同步，tokenizer.json与tokenizer_config.json双端SHA一致；完整资产清单验收待。尚未启动GPU训练。

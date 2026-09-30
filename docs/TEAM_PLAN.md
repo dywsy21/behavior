@@ -1,5 +1,9 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-30 12:04（北京时间）BENCH-MEM1F按用户最新要求取消随机初始化方案，先迁移robo已确认存在且SHA一致的16.58GB完整A4低层checkpoint至A800共享盘；校验完成前0GPU测速。仅Codex本轮权重/配置同步，不改其他成员数据/RL职责、不占用或停止队友GPU任务；无须G0.5替代下载。
+
+2026-09-30 11:57（北京时间）Codex / BENCH-MEM1F按用户授权独占本轮单节点单帧低层短测速：lc3空闲八A800、global64/128，数据/RL owner保持。[有限预算](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)为两臂各≤40更新、仅128OOM时一次累积替代、总GPU≤50分钟；无正式百任务训练或模型发布，共享env/旧运行源不改。当前准备中，启动与结果在plan实时记录。
+
 2026-09-30 11:39（北京时间）Codex / PLAN-MEM100-TIME完成[八卡一遍SFT条件估算](experiments/2026-09-30-single-node-sft-time-estimate.md)：旧六帧A4低层仅1.418样本/s（四A100），不能直接把诊断配方当百任务高效配方；8卡端到端吞吐/最终有效样本索引仍是既有正式训练准入的一部分，需明确预算后实测。逐帧与stride16口径相差约16倍，高低层分开计算；本轮仅CPU元数据及只读日志，未分配节点/启动基准或正式训练，不变更数据/RL owner。
 
 2026-09-30 11:18（北京时间）Codex / INFRA-A800-STATUS确认ModelScope下载完成：终端26,350/26,350并返回bash，旧下载PID退出；官方清单0缺失，26,347件训练文件大小全匹配，仅仓库`.gitattributes`大小不同。见[新证据](infra/results/2026-09-30-dataset-status.json)。数据下载等待项解除，但官方全内容hash、正确snapshot根reader检查及MEM-Lite准入仍待；不变更数据/RL owner，本轮无重启下载、新训练或环境修改。
