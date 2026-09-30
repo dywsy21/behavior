@@ -83,6 +83,11 @@ def main():
     # prevents their issued-command histories from leaking back downstream.
     quarantined_identities = {tuple(old_rows[i][k] for k in ("task_index", "raw_episode_id", "task_instance_id"))
                               for i in (27, 821)}
+    visual_quarantines = {
+        (91, 911960, 196): "Visual audit 2026-09-30: stale POUR wicker_basket [2430,7256] "
+                         "overlaps later fruit grasp/navigation/place; frames5261..7181; "
+                         "data-qa-v2 human-review-v2 pages18/19 (whole source quarantined)",
+    }
     offsets, candidates, task_ids = [], {"train": [], "eval": []}, {"train": [], "eval": []}
     exclusions, parent_warnings, summary = [], [], defaultdict(Counter)
     annotation_hash = hashlib.sha256()
@@ -99,6 +104,8 @@ def main():
             try:
                 if identity in quarantined_identities:
                     raise ValueError("Preserved prior visual-audit quarantine (whole source episode)")
+                if identity in visual_quarantines:
+                    raise ValueError(visual_quarantines[identity])
                 issues = []
                 segments = compile_episode(annotation, row, tasks[str(task)], issues=issues)
                 if issues:

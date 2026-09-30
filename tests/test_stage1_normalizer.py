@@ -11,7 +11,8 @@ def test_action_unclipping_preserves_coordinates_and_inverse_safety_bounds():
     outside = torch.tensor([[.08]])
     assert torch.equal(legacy.forward(inside),extended.forward(inside))
     assert legacy.forward(outside).item() == 5.
-    assert extended.forward(outside).item() == 8.
+    # The original normalizer keeps its std + epsilon convention.
+    assert torch.isclose(extended.forward(outside).squeeze(), torch.tensor(8.), atol=2e-5, rtol=0)
     assert torch.allclose(extended.backward(extended.forward(outside)),outside)
     assert extended.backward(torch.tensor([[1000.]])).item() <= .200001
     assert torch.equal(legacy.scale,extended.scale)

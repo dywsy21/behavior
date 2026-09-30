@@ -51,7 +51,7 @@ def configuration(root, branch, task_names):
     merged.image_history_mode = "preserve_cameras"
     merged.num_obs_steps = 1
     stats_path = (assets / stats_name if branch == "high" else
-                  root / "manifests/memlite-stage1-v3-action-bounds/stats.json")
+                  root / "manifests/memlite-stage1-v4-action-bounds/stats.json")
     return dict(arch=OmegaConf.to_container(arch, resolve=True),
                 processor=OmegaConf.to_container(merged, resolve=True), raw_shape=raw_shape,
                 stats_path=str(stats_path), original_stats_path=str(assets / stats_name),
