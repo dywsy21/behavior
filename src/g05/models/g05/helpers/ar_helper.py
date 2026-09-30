@@ -195,6 +195,7 @@ class ARHelper:
         vlm_hidden: torch.Tensor,
         labels: torch.LongTensor,
         model,
+        loss_token_weights: Optional[torch.Tensor] = None,
     ):
         """Shift + mask + vlm.decode -> CrossEntropy.
 
@@ -202,6 +203,9 @@ class ARHelper:
             vlm_hidden: [B, S, d_vlm]
             labels: [B, S] (-100 masked)
             model: G05Model (for model.vlm.decode)
+            loss_token_weights: optional [B, S] post-mask CE weights.  This
+                is deliberately consumed only after the normal shifted
+                IGNORE_INDEX gather, so it cannot restore supervision.
         Returns:
             (ce_loss, accuracy)
         """
@@ -265,7 +269,33 @@ class ARHelper:
         group_loss = getattr(self, "action_group_loss", None)
         token_weights = torch.ones_like(token_loss)
         self._last_group_metrics = {}
-        if group_loss is None:
+        if loss_token_weights is not None:
+            if group_loss is not None:
+                raise ValueError(
+                    "loss_token_weights cannot be combined with ActionGroupLoss; "
+                    "the caller must select one explicit token objective"
+                )
+            if loss_token_weights.shape != labels.shape:
+                raise ValueError(
+                    "loss_token_weights must match unshifted labels shape "
+                    f"{tuple(labels.shape)}, got {tuple(loss_token_weights.shape)}"
+                )
+            shifted_weights = loss_token_weights[..., 1:].contiguous().view(-1)
+            token_weights = shifted_weights.to(
+                device=token_loss.device, dtype=token_loss.dtype
+            )[mask]
+            if not torch.isfinite(token_weights).all() or (token_weights <= 0).any():
+                raise ValueError(
+                    "loss_token_weights must be finite and strictly positive for every valid CE token"
+                )
+            # Exact all-one compatibility is important for the default path:
+            # retain torch.mean rather than changing reduction order.
+            objective = (
+                token_loss.mean()
+                if bool(torch.equal(token_weights, torch.ones_like(token_weights)))
+                else (token_loss * token_weights).sum() / token_weights.sum()
+            )
+        elif group_loss is None:
             objective = token_loss.mean()
         else:
             objective, token_weights, lower_mask = group_loss.reduce(
@@ -301,6 +331,8 @@ class ARHelper:
         self._last_ce_cache = {
             "token_loss": token_loss.detach(),
             "token_weights": token_weights.detach(),
+            "unweighted_token_ce": token_loss.detach().mean(),
+            "weighted_token_ce": objective.detach(),
             "pred": pred,  # fast path=None, slow path=[N_valid]
             "_per_token_correct": per_token_correct.detach(),  # available in both paths
             "shift_logits": shift_logits_for_cache,  # fast path=None
@@ -324,6 +356,7 @@ class ARHelper:
         model,
         vlm_hidden: torch.Tensor,
         labels: torch.LongTensor,
+        loss_token_weights: Optional[torch.Tensor] = None,
     ):
         """Single AR training step.
 
@@ -334,7 +367,9 @@ class ARHelper:
         Returns:
             (ce_loss, action_accuracy)
         """
-        return self.cal_ce_loss(vlm_hidden, labels, model)
+        return self.cal_ce_loss(
+            vlm_hidden, labels, model, loss_token_weights=loss_token_weights
+        )
 
     # ------------------------------------------------------------------
     # Inference — entry point

@@ -18,6 +18,7 @@ import math
 
 
 MEMLITE_SKILL_SCHEMA_VERSION = 6
+MEMLITE_B_MEMORY_HISTORY_LIMIT = 3
 
 # This is deliberately the exact observed (skill_id, description) allow-list,
 # rather than an NLP normalizer.  A new annotation spelling must be reviewed
@@ -535,7 +536,71 @@ def serialize_semantic_active_skills(values: Sequence[Mapping[str, Any]], *, all
 def active_skills_text(values: Sequence[Mapping[str, Any]], *, allow_empty: bool = False) -> str:
     """Stable deployment-equivalent VLM conditioning for a parallel bundle."""
     result = semantic_active_skills(values, allow_empty=allow_empty)
+    return semantic_active_skills_text(result, allow_empty=allow_empty)
+
+
+_SEMANTIC_ACTIVE_SKILL_FIELDS = (
+    "verb", "target", "source", "destination", "target_part", "arm", "unbound_relation",
+)
+
+
+def _validate_semantic_active_skill(value: Mapping[str, Any]) -> dict[str, str]:
+    """Validate a deployment semantic leaf with no annotation/audit metadata."""
+    if not isinstance(value, Mapping) or set(value) != set(_SEMANTIC_ACTIVE_SKILL_FIELDS):
+        raise MemLiteSkillProtocolError("semantic active skill must have exactly seven deployment fields")
+    result: dict[str, str] = {}
+    for field in _SEMANTIC_ACTIVE_SKILL_FIELDS:
+        item = value[field]
+        if not isinstance(item, str) or "\x00" in item:
+            raise MemLiteSkillProtocolError(f"semantic active skill {field} must be safe scalar text")
+        result[field] = item
+    result["verb"] = _enum(result["verb"], VALID_SKILLS, field="semantic verb", default="")
+    result["arm"] = _enum(result["arm"], VALID_ARMS, field="semantic arm", default="")
+    for field in ("target", "source", "destination", "target_part"):
+        result[field] = _clean_text(result[field], field=f"semantic {field}")
+    relation = result["unbound_relation"]
+    if relation:
+        try:
+            parsed = json.loads(relation)
+        except json.JSONDecodeError as exc:
+            raise MemLiteSkillProtocolError("semantic unbound_relation is invalid JSON") from exc
+        if (
+            not isinstance(parsed, Mapping)
+            or set(parsed) != {"entities", "spatial_relations"}
+            or not all(
+                isinstance(parsed[key], list) and all(isinstance(item, str) for item in parsed[key])
+                for key in parsed
+            )
+            or canonical_json(parsed) != relation
+        ):
+            raise MemLiteSkillProtocolError("semantic unbound_relation violates the deployment grammar")
+    return result
+
+
+def parse_active_skills_semantic_json(value: Any, *, allow_empty: bool = False) -> list[dict[str, str]]:
+    """Parse canonical deployment semantic JSON, never a raw audit bundle."""
+    if not isinstance(value, str):
+        raise MemLiteSkillProtocolError("active_skills_semantic_json must be text")
+    try:
+        decoded = json.loads(value)
+    except json.JSONDecodeError as exc:
+        raise MemLiteSkillProtocolError("active_skills_semantic_json is invalid JSON") from exc
+    if not isinstance(decoded, list) or (not decoded and not allow_empty):
+        raise MemLiteSkillProtocolError("semantic active-skills bundle must be a nonempty list")
+    result = [_validate_semantic_active_skill(item) for item in decoded]
+    if canonical_json(result) != value:
+        raise MemLiteSkillProtocolError("active_skills_semantic_json is not canonical")
+    return result
+
+
+def semantic_active_skills_text(values: Sequence[Mapping[str, Any]], *, allow_empty: bool = False) -> str:
+    """Render an already-safe semantic bundle without consulting raw labels."""
+    if isinstance(values, (str, bytes)) or not isinstance(values, Sequence):
+        raise MemLiteSkillProtocolError("semantic active-skills bundle must be a sequence")
+    result = [_validate_semantic_active_skill(value) for value in values]
     if not result:
+        if not allow_empty:
+            raise MemLiteSkillProtocolError("semantic active-skills bundle may not be empty")
         return "Active skills: none."
     items = []
     for skill in result:
@@ -549,6 +614,165 @@ def active_skills_text(values: Sequence[Mapping[str, Any]], *, allow_empty: bool
             content += f"; unbound_relation={skill['unbound_relation']}"
         items.append(f"[{content}]")
     return "Active skills: " + "; ".join(items) + "."
+
+
+def parse_active_skills_text(value: Any, *, allow_empty: bool = False) -> list[dict[str, str]]:
+    """Strictly parse a rendered deployment bundle and require exact roundtrip.
+
+    ``previous_intent`` and B-memory history contain the compact
+    ``Active skills: ...`` grammar, not raw JSON.  Prefix checks alone let a
+    free-form string or a subtle field injection masquerade as an issued
+    command.  This parser is intentionally narrow: it accepts only the exact
+    renderer grammar and then proves byte-for-byte re-render equality.
+    """
+    if not isinstance(value, str):
+        raise MemLiteSkillProtocolError("active_skills_text must be text")
+    if value == "Active skills: none.":
+        if not allow_empty:
+            raise MemLiteSkillProtocolError("active_skills_text cannot be none for this route")
+        return []
+    prefix = "Active skills: "
+    if not value.startswith(prefix) or not value.endswith("."):
+        raise MemLiteSkillProtocolError("active_skills_text has invalid compact grammar")
+    body = value[len(prefix):-1]
+    if not body:
+        raise MemLiteSkillProtocolError("active_skills_text has no bundle")
+    decoder = json.JSONDecoder()
+    position = 0
+    parsed: list[dict[str, str]] = []
+    while position < len(body):
+        if body[position] != "[":
+            raise MemLiteSkillProtocolError("active_skills_text bundle must begin with '['")
+        position += 1
+        item: dict[str, str] = {}
+        for offset, field in enumerate(_SEMANTIC_ACTIVE_SKILL_FIELDS[:-1]):
+            marker = field + "="
+            if not body.startswith(marker, position):
+                raise MemLiteSkillProtocolError(f"active_skills_text is missing {field}")
+            position += len(marker)
+            try:
+                decoded, position = decoder.raw_decode(body, position)
+            except json.JSONDecodeError as exc:
+                raise MemLiteSkillProtocolError(f"active_skills_text {field} is not JSON scalar") from exc
+            if not isinstance(decoded, str):
+                raise MemLiteSkillProtocolError(f"active_skills_text {field} must be JSON string")
+            if field in {"target", "source", "destination", "target_part"} and decoded == "NONE":
+                decoded = ""
+            item[field] = decoded
+            if offset + 1 < len(_SEMANTIC_ACTIVE_SKILL_FIELDS[:-1]):
+                if not body.startswith("; ", position):
+                    raise MemLiteSkillProtocolError("active_skills_text field separator is invalid")
+                position += 2
+        item["unbound_relation"] = ""
+        if body.startswith("; unbound_relation=", position):
+            position += len("; unbound_relation=")
+            try:
+                relation, position = decoder.raw_decode(body, position)
+            except json.JSONDecodeError as exc:
+                raise MemLiteSkillProtocolError("active_skills_text unbound_relation is invalid JSON") from exc
+            item["unbound_relation"] = canonical_json(relation)
+        if position >= len(body) or body[position] != "]":
+            raise MemLiteSkillProtocolError("active_skills_text bundle is missing closing ']'")
+        position += 1
+        parsed.append(_validate_semantic_active_skill(item))
+        if position == len(body):
+            break
+        if not body.startswith("; ", position):
+            raise MemLiteSkillProtocolError("active_skills_text bundle separator is invalid")
+        position += 2
+    rendered = semantic_active_skills_text(parsed, allow_empty=allow_empty)
+    if rendered != value:
+        raise MemLiteSkillProtocolError("active_skills_text is not an exact semantic renderer output")
+    return parsed
+
+
+def validate_issued_bundle_text(value: Any, *, allow_none: bool = True) -> str:
+    """Validate a deployed issued-bundle text for B history/previous intent.
+
+    The initial planner sentinel is the exact string ``"None"``.  Every
+    non-initial value must be an exact semantic bundle render; raw sidecar
+    bundles, IDs, audit relations, and free-form model prose are rejected.
+    """
+    if value == "None":
+        if not allow_none:
+            raise MemLiteSkillProtocolError("issued bundle may not use initial None sentinel")
+        return "None"
+    parse_active_skills_text(value, allow_empty=False)
+    return value
+
+
+def parse_b_memory_text(value: Any, *, task_name: str | None = None) -> dict[str, Any]:
+    """Parse the v1 B-memory ledger without widening the model schema.
+
+    The ledger is a transport value in the existing ``memory`` field.  It may
+    record only issued semantic bundle text; it is *not* a place for outcome
+    assertions or source annotation history.  The returned mapping is a new
+    object so callers cannot mutate an accepted value in place.
+    """
+    if not isinstance(value, str):
+        raise MemLiteSkillProtocolError("B memory must be canonical JSON text")
+    try:
+        parsed = json.loads(value)
+    except json.JSONDecodeError as exc:
+        raise MemLiteSkillProtocolError("B memory is invalid JSON") from exc
+    if not isinstance(parsed, Mapping) or set(parsed) != {
+        "issued_command_history", "task_name", "verified_world_facts",
+    }:
+        raise MemLiteSkillProtocolError("B memory has an unexpected field")
+    recorded_task = _clean_text(parsed["task_name"], field="B memory task_name")
+    if not recorded_task:
+        raise MemLiteSkillProtocolError("B memory task_name is empty")
+    if task_name is not None and recorded_task != _clean_text(task_name, field="task_name"):
+        raise MemLiteSkillProtocolError("B memory task_name disagrees with planner task")
+    history = parsed["issued_command_history"]
+    if not isinstance(history, list) or len(history) > MEMLITE_B_MEMORY_HISTORY_LIMIT:
+        raise MemLiteSkillProtocolError("B memory issued history exceeds the fixed K limit")
+    canonical_history: list[str] = []
+    for entry in history:
+        canonical_history.append(validate_issued_bundle_text(entry, allow_none=False))
+    # Original demonstrations do not establish verified physical facts.  A
+    # future evidence-bearing ledger needs a separately reviewed grammar; do
+    # not silently accept prose or a renamed annotation endpoint here.
+    if parsed["verified_world_facts"] != []:
+        raise MemLiteSkillProtocolError("B memory v1 may not assert verified world facts")
+    result = {
+        "issued_command_history": canonical_history,
+        "task_name": recorded_task,
+        "verified_world_facts": [],
+    }
+    if canonical_json(result) != value:
+        raise MemLiteSkillProtocolError("B memory is not canonical JSON")
+    return result
+
+
+def validate_b_memory_text(value: Any, *, task_name: str | None = None) -> str:
+    """Return the exact canonical B-memory text after strict validation."""
+    return canonical_json(parse_b_memory_text(value, task_name=task_name))
+
+
+def append_b_memory_idempotent(
+    memory_text: Any,
+    previous_intent: Any,
+    *,
+    task_name: str,
+) -> str:
+    """Canonical K=3 issued-command update for B planner state.
+
+    The event being appended is strictly the *already issued* previous
+    bundle.  A same-bundle refresh keeps the tail unchanged; a current target
+    never appears here.  This pure helper is shared by B fixture/data/runtime
+    validation, not by the base v6/A reader.
+    """
+    memory = parse_b_memory_text(memory_text, task_name=task_name)
+    issued = validate_issued_bundle_text(previous_intent, allow_none=True)
+    history = list(memory["issued_command_history"])
+    if issued != "None" and (not history or history[-1] != issued):
+        history.append(issued)
+    return canonical_json({
+        "issued_command_history": history[-MEMLITE_B_MEMORY_HISTORY_LIMIT:],
+        "task_name": memory["task_name"],
+        "verified_world_facts": [],
+    })
 
 
 def planner_input_projection(row: Mapping[str, Any]) -> dict[str, str]:
