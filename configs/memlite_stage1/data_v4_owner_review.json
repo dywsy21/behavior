@@ -1,0 +1,40 @@
+{
+  "status": "OWNER_STRATIFIED_REVIEW_PASS",
+  "owner": "Codex/root (direct visual inspection, no subagent)",
+  "reviewed_at": "2026-09-30T20:37:00+08:00",
+  "manifest_sha256": "90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23",
+  "qa_rows_sha256": "3594351f1d8d6cdd1c11762e0d409b7f975361e9cf8715fdaf743571a50b17bf",
+  "qa_image_sha256sum_aggregate": "2b9d620ddff5daac424942b1e3af0cf6de7d68244a012baa573660219a3cf0f0",
+  "unique_windows_reviewed_across_revisions": 183,
+  "current_selected_windows": 162,
+  "current_selected_windows_seen": 162,
+  "current_unseen_windows": 0,
+  "coverage": "100 tasks, all 35 observed skills, long contexts and short action horizons",
+  "local_evidence_root": "/home/wsy/behavior/artifacts/stage1-preparation-20260930",
+  "review_indices": {
+    "human-review-v1/index.json": "bf41fd32be653befcdd3fb0abf46bd08f7471dc6523333a6e7aec43017797b18",
+    "human-review-v2/index.json": "c7231cd8f795cf167787e310aee5ae6d7aeb2d3eb25a5a9ade491f9ef51794b2",
+    "human-review-v3/index.json": "aeda9b9e42c08ad0cd5bb8c00f350c1e10098d7b83f398e157a081ad85450c2c"
+  },
+  "pages_seen": {
+    "human-review-v1": "all 00 through 20",
+    "human-review-v2": [0, 4, 16, 18, 19],
+    "human-review-v3": [4, 17, 18, 19]
+  },
+  "corrections": [
+    "Derive parent roles from core primitive skills only; fallback to public task goal if unbound.",
+    "Deduplicate exact semantic commands while retaining all raw interval audit records.",
+    "Quarantine whole source task91/raw_episode911960/instance196: stale basket POUR overlaps subsequent separate fruit manipulation."
+  ],
+  "latest_new_windows": [
+    [43, 8640, 13119], [43, 8740, 12063], [43, 8740, 12079],
+    [43, 8795, 9599], [43, 8795, 9743], [43, 8795, 9759], [49, 9942, 2605]
+  ],
+  "limitations": [
+    "Stratified sample review, not exhaustive frame-by-frame label certification.",
+    "Still images/occlusion do not establish physical skill or task success.",
+    "Ambiguous tool/entity roles remain explicitly unbound; no invented arm or recovery/outcome labels.",
+    "No new confirmed visual mismatches in the accepted sampled set after the recorded corrections."
+  ],
+  "formal_training_started": false
+}
