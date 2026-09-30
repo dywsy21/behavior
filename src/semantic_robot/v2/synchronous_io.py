@@ -4,13 +4,15 @@ The native adapter only attaches time annotators to existing render products.
 Physics advancement and rendering are deliberately separate transactions.
 """
 from contextlib import contextmanager
+from copy import deepcopy
 import hashlib
 import inspect
 import math
 from pathlib import Path
 import sys
 from .render_batch import (FRAME_ANNOTATOR, validate_batch, validate_advance,
-                           make_receipts, native_batch, register_frame_annotator)
+                           make_receipts, native_batch, register_frame_annotator,
+                           RenderCompletionMismatch)
 
 ISAAC = Path('/mnt/sdc1/xhz/miniconda3/envs/behavior/lib/python3.11/site-packages/isaacsim')
 INSTALLED = {
@@ -82,8 +84,11 @@ def reference_seconds(value):
 
 class SynchronousIO:
     def __init__(self, sim, references, capture, settings, record, release=lambda:None,
-                 render_time=None, batch_state=None):
+                 render_time=None, batch_state=None, *, completion_retries=0):
         if set(references) != VIEWS: raise ValueError('All three camera timestamps required')
+        if type(completion_retries) is not int or not 0 <= completion_retries <= 2:
+            raise ValueError('At most two explicitly enabled completion recaptures')
+        self.completion_retries = completion_retries
         self.sim, self.references, self.capture_native = sim, references, capture
         self.settings, self.record = settings, record
         self.controls = self.captures = self.attempts = 0
@@ -165,12 +170,28 @@ class SynchronousIO:
         if self.clock() != before: raise RuntimeError('Render-only call advanced physics')
 
     def _capture_batch(self, row):
-        self.capture_native(delta_time=0.0, pause_timeline=False, wait_for_render=True, rt_subframes=4)
-        row['after'] = self.clock()
-        if row['after'] != row['before']: raise RuntimeError('Annotation capture advanced physics')
-        row['batch'] = self.batch_state()
-        validate_batch(row['batch'])
-        return row['batch']
+        discarded = []
+        for attempt in range(self.completion_retries+1):
+            self.capture_native(delta_time=0.0, pause_timeline=False, wait_for_render=True, rt_subframes=4)
+            row['after'] = self.clock()
+            if row['after'] != row['before']: raise RuntimeError('Annotation capture advanced physics')
+            row['batch'] = self.batch_state()
+            try:
+                validate_batch(row['batch'])
+            except RenderCompletionMismatch as error:
+                # No images have been read or controls issued. Discard this
+                # entire capture; never accept an offset/tolerance or mixed RGB.
+                row.setdefault('discarded_captures', []).append(dict(
+                    attempt=attempt+1, before=row['before'], after=row['after'],
+                    batch=deepcopy(row['batch']), error=repr(error)))
+                if attempt == self.completion_retries: raise
+                discarded.append(deepcopy(row['batch']))
+                continue
+            for rejected in discarded:
+                # Require freshness beyond EVERY rejected native batch and the
+                # same graph bindings. The caller also checks its original fence.
+                validate_advance(row['batch'], rejected)
+            return row['batch']
 
     def _prime(self):
         row = {'kind':'prime', 'before':self.clock(), 'completed':False, 'discarded':True}
@@ -298,7 +319,8 @@ def attach_references(sensors, factory, *, edit, annotator_name=FRAME_ANNOTATOR)
     return references,release
 
 
-def configured_adapter(sim, sensors, factory, capture, settings, record, render_time=None, batch_reader=None):
+def configured_adapter(sim, sensors, factory, capture, settings, record, render_time=None, batch_reader=None,
+                       *, completion_retries=0):
     """Clock-audited lifecycle, also executable without the native SDK in tests."""
     if set(sensors) != VIEWS: raise ValueError('Exact existing onboard cameras required')
     row={'kind':'initialize','before':native_clock(sim),'completed':False}
@@ -310,7 +332,8 @@ def configured_adapter(sim, sensors, factory, capture, settings, record, render_
             # disable OG's guard or wrap an entire action/episode in this scope.
             with graph_edit(sim.editing_usd):capture(**kwargs)
         io=SynchronousIO(sim,references,capture_graph,settings,record,release,render_time,
-                         (lambda:batch_reader(references)) if batch_reader is not None else None)
+                         (lambda:batch_reader(references)) if batch_reader is not None else None,
+                         completion_retries=completion_retries)
         row['after']=io.clock()
         if row['after']!=row['before']:raise RuntimeError('I/O initialization advanced physics')
         row['completed']=True
@@ -330,7 +353,7 @@ def configured_adapter(sim, sensors, factory, capture, settings, record, render_
         raise
 
 
-def native_adapter(sim, sensors, record, *, registration=None):
+def native_adapter(sim, sensors, record, *, registration=None, completion_retries=0):
     validate_installed()
     import carb.settings
     import omni.replicator.core as rep
@@ -350,4 +373,5 @@ def native_adapter(sim, sensors, record, *, registration=None):
     return configured_adapter(sim,sensors,rep.AnnotatorRegistry.get_annotator,
                               rep.orchestrator.step,carb.settings.get_settings(),record,
                               omni.timeline.get_timeline_interface().get_current_time,
-                              lambda references:native_batch(sensors,references,rep.orchestrator,graph))
+                              lambda references:native_batch(sensors,references,rep.orchestrator,graph),
+                              completion_retries=completion_retries)

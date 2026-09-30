@@ -13,6 +13,10 @@ FRAME_FIELDS = ('type', 'frameNumber', 'rationalTimeOfSimNumerator',
                 'rationalTimeOfSimDenominator')
 
 
+class RenderCompletionMismatch(ValueError):
+    """All per-camera checks passed, but the global completion fence disagreed."""
+
+
 def integer(value, *, minimum=0):
     if isinstance(value, bool) or not isinstance(value, numbers.Integral) or value < minimum:
         raise ValueError('Invalid native render integer: '+repr(value))
@@ -63,7 +67,7 @@ def validate_batch(batch, *, matched=True):
         if matched and stamp != scheduled:
             raise ValueError('Stale or mixed render-product batch')
     if matched and completed != scheduled:
-        raise ValueError('Scheduled and completed render batches differ')
+        raise RenderCompletionMismatch('Scheduled and completed render batches differ')
 
 
 def validate_advance(batch, baseline):

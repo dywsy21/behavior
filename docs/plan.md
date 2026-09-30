@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 11:28（北京时间）：有界重取图与173故障恢复入口完成本地回归（Codex / RL-G05-50K-E3）
+
+- `synchronous_io.py`新增显式opt-in最多2次completion重采集；只有逐相机全部合法、单独global completion不符才重试。坏capture完整留档，成功新batch须超过所有丢弃帧且bindings不变，physics始终零推进，读后围栏保持；默认0次不影响其他路线。该策略只处理瞬时错位，尚未声称解决SDK长期根因。
+- `prepare_render_resume.py`/`render_resume.py`对两段完整14批恢复课程及173/72，逐控制动作/四tick I/O、失败取图/同clock detach、双sim退出与32 pending严格对账，原故障文件不覆写，1728不完整自主控制不进PPO。当地56 RL＋32同步I/O＋7原生batch测试全过（共95），包括错相机/物理推进/错绑定/不够新/重试耗尽反例。
+- 当前仍0新GPU运行；下一Git冻结并在robo原解释器复验、完整父/delta SHA和真实旧日志准入，成功后启动唯一续训。奖励/优化器超参/训练及评测矩阵均不改，TRAIN余24260、两墙钟null。
+
+### 2026-09-30 11:22（北京时间）：用户授权从173恢复同一E3，保留累计预算（Codex / RL-G05-50K-E3）
+
+- 已pull/fetch且工作分支clean；robo四旧PID均退出、四A100均0MiB、NVMe余1.4TiB。重启范围仅同一E3：恢复173 actor/72 critic及Adam/RNG、两课程884/1096，已执行55740控制全部扣账，TRAIN余24260；不重置64批/2000新actor上限，不增加训练/总墙钟，固定六对final不变。
+- 新独立run登记为`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1`，runtime同名`rl_g05_50k_e3_render_resume_v1`；先实现/回归仅针对global completed不一致的最多2次同物理状态重取图，原三camera/binding/时钟/读后校验均保留，不接受坏帧、不改策略/奖励/相机质量。
+- 准备从两段完整batch及逐物理日志恢复课程，并单独审核故障末32个已执行未回传控制；未完成1728自主控制不复用于PPO。当前仍0新GPU运行，下一冻结源码、服务器准入后唯一启动；独立review仍待，不合main、不碰其他成员/RTX/env。
+
 ### 2026-09-30 11:09（北京时间）：E3已于昨晚渲染校验异常退出，173 delta完整、最终SR缺失（Codex / RL-G05-50K-E3）
 
 - 只读核验：`e3_no_wall_v1`监管在09-29 21:21:11北京时间结束/exit1，续接实际19473.646秒（5h24m），加原段累计23102.786秒；原四PID均退出、四A100实测0MiB。不是8h/12h到期，也不是仍后台训练；本次仅状态检查/记档，0新训练/评测，未修改运行源或环境。

@@ -118,6 +118,64 @@ class SynchronousIOTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'advanced physics'):self.io.synchronize()
         self.assertTrue(self.settings[PLAY_SIMULATIONS]);self.assertFalse(self.rows[-1]['completed'])
 
+    def completion_mismatch(self, **kwargs):
+        self.advance_capture()
+        self.batch['completed']['numerator'] += 1
+
+    def test_completion_retry_is_opt_in_bounded_and_preserves_failed_batches(self):
+        self.io.primes=1
+        self.capture.side_effect=self.completion_mismatch
+        with self.assertRaisesRegex(ValueError,'completed render'):self.io.synchronize()
+        self.assertEqual(self.capture.call_count,1)
+        self.io.completion_retries=2;self.capture.reset_mock()
+        with self.assertRaisesRegex(ValueError,'completed render'):self.io.synchronize()
+        self.assertEqual(self.capture.call_count,3)
+        row=self.rows[-1]
+        self.assertEqual(len(row['discarded_captures']),3)
+        self.assertFalse(row['completed']);self.assertIsNone(self.io.pending)
+        self.assertTrue(self.settings[PLAY_SIMULATIONS])
+        self.assertEqual(self.sim.current_time_step_index,120)
+
+    def test_completion_retry_discards_bad_frame_then_strictly_verifies_new_read(self):
+        self.io.primes=1;self.io.completion_retries=2
+        def capture(**kwargs):
+            if self.capture.call_count==1:self.completion_mismatch()
+            else:self.batch=batch_fixture(self.batch['scheduled']['numerator']+3)
+        self.capture.side_effect=capture
+        self.finish()
+        self.assertEqual(self.capture.call_count,2)
+        row=self.rows[-2]
+        self.assertTrue(row['completed']);self.assertEqual(len(row['discarded_captures']),1)
+        self.assertEqual(row['before'],row['after'])
+        self.assertEqual((self.io.captures,self.io.reads,self.io.controls),(1,1,0))
+        receipts=self.io.synchronize()
+        self.advance_capture()
+        with self.assertRaisesRegex(RuntimeError,'changed while copying'):
+            self.io.verify_read(camera_receipts(receipts))
+
+    def test_retry_never_forgives_camera_physics_binding_or_baseline_failure(self):
+        for failure in ('mixed','physics','binding','not_newer','native'):
+            with self.subTest(failure=failure):
+                self.setUp();self.io.primes=1;self.io.completion_retries=2
+                def capture(**kwargs):
+                    if self.capture.call_count==1:
+                        self.completion_mismatch();return
+                    if failure=='native':raise OSError('native capture failed')
+                    self.batch=batch_fixture(self.batch['scheduled']['numerator']+(1 if failure=='not_newer' else 3))
+                    if failure=='mixed':self.batch['cameras']['head']['frame']['rationalTimeOfSimNumerator']-=1
+                    if failure=='physics':self.sim.advance()
+                    if failure=='binding':self.batch['cameras']['head']['frame_node']='/different'
+                self.capture.side_effect=capture
+                with self.assertRaises((ValueError,RuntimeError,OSError)):self.io.synchronize()
+                self.assertEqual(self.capture.call_count,2)
+                self.assertIsNone(self.io.pending);self.assertEqual(self.io.captures,0)
+                self.assertTrue(self.settings[PLAY_SIMULATIONS])
+
+    def test_retry_rejects_invalid_limit(self):
+        for value in (-1,3,True,1.5,None):
+            with self.subTest(value=value),self.assertRaises(ValueError):
+                SynchronousIO(self.sim,self.refs,self.capture,self.api,self.rows.append,completion_retries=value)
+
     def test_original_render_only_call_cannot_advance_physics(self):
         self.sim.render=self.sim.advance
         with self.assertRaisesRegex(RuntimeError,'Render-only'):self.io.synchronize()
@@ -224,7 +282,7 @@ class SynchronousIOTests(unittest.TestCase):
         self.assertEqual(set(refs),VIEWS);release()
         for view,anno in zip(sensors,annos):anno.detach.assert_called_once_with([sensors[view].render_product])
 
-    def configured(self):
+    def configured(self, **kwargs):
         sensors={v:SimpleNamespace(render_product=SimpleNamespace(path='/Render/'+v)) for v in sorted(VIEWS)}
         annos=[]
         for view in sensors:
@@ -235,8 +293,19 @@ class SynchronousIOTests(unittest.TestCase):
                       get_data=lambda:{'referenceTimeNumerator':120,'referenceTimeDenominator':120})
             annos.append(anno)
         io=configured_adapter(self.sim,sensors,Mock(side_effect=annos),self.capture,self.api,self.rows.append,
-                              batch_reader=lambda refs:copy.deepcopy(self.batch))
+                              batch_reader=lambda refs:copy.deepcopy(self.batch), **kwargs)
         return io,sensors,annos
+
+    def test_configured_adapter_forwards_retry_and_primes_without_physics(self):
+        io,_,_=self.configured(completion_retries=2)
+        def capture(**kwargs):
+            if self.capture.call_count==1:self.completion_mismatch()
+            else:self.batch=batch_fixture(self.batch['scheduled']['numerator']+3)
+        self.capture.side_effect=capture
+        self.finish(io)
+        self.assertEqual(self.capture.call_count,3)  # two prime attempts, one capture
+        self.assertEqual(self.sim.current_time_step_index,120)
+        self.assertEqual(len(self.rows[1]['discarded_captures']),1)
 
     def test_real_product_paths_and_all_graph_lifecycles_have_non_nested_context(self):
         io,sensors,annos=self.configured()

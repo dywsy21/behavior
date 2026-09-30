@@ -136,7 +136,8 @@ def main(worker, port, pool=None):
                     from g05.rl.rewards import GoalGeometryPotential
                     reward_provider=GoalGeometryPotential(env,dense_config)
                     save(out/f'reward_binding_{episode:03d}.json',reward_provider.identity)
-                io=native_adapter(og.sim,reader.sensors,io_write,registration=frame_registration)
+                io=native_adapter(og.sim,reader.sensors,io_write,registration=frame_registration,
+                                  completion_retries=manifest.get('render_completion_retries',0))
                 video=imageio.get_writer(out/f'episode_{episode:03d}.mp4',fps=30/16,codec='libx264',quality=7,macro_block_size=None)
                 result=observe('reset')
                 if pool is not None or SIM_PROFILE == 'rtx4090_speed_v1':

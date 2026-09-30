@@ -7,6 +7,10 @@ REWARD = dict(kind='goal_geometry_potential_v1', weight=.2, gamma=.9998,
 
 
 def validate_recipe(manifest):
+    retries=manifest.get('render_completion_retries',0)
+    if (type(retries) is not int or retries not in (0,2)
+            or (retries and manifest.get('continuation_reason')!='user_20260930_restart_after_render_failure')):
+        raise ValueError('Unregistered native completion recapture setting')
     expected = dict(entry='method_dense', ae_precision='float32', curriculum_admission='automatic',
         bounded_backtracking=True, reset_candidate_lr_each_minibatch=True,
         clip=.1, target_path_kl=.1, target_mean_path_kl=.02, ppo_epochs=4,
