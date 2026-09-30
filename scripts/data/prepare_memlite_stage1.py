@@ -84,7 +84,7 @@ def main():
     quarantined_identities = {tuple(old_rows[i][k] for k in ("task_index", "raw_episode_id", "task_instance_id"))
                               for i in (27, 821)}
     offsets, candidates, task_ids = [], {"train": [], "eval": []}, {"train": [], "eval": []}
-    exclusions, summary = [], defaultdict(Counter)
+    exclusions, parent_warnings, summary = [], [], defaultdict(Counter)
     annotation_hash = hashlib.sha256()
     with (args.output / "episodes.jsonl").open("wb") as stream:
         for serial, row in enumerate(rows):
@@ -99,7 +99,10 @@ def main():
             try:
                 if identity in quarantined_identities:
                     raise ValueError("Preserved prior visual-audit quarantine (whole source episode)")
-                segments = compile_episode(annotation, row, tasks[str(task)])
+                issues = []
+                segments = compile_episode(annotation, row, tasks[str(task)], issues=issues)
+                if issues:
+                    parent_warnings.append(dict(episode_index=row["episode_index"], issues=issues))
                 for seg in segments:
                     handovers = defaultdict(set)
                     for skill in seg["skills"]:
@@ -142,6 +145,7 @@ def main():
                 fixed_eval.extend(ids[np.linspace(0, len(ids)-1, 32, dtype=np.int64)].tolist())
     np.save(args.output / "fixed_eval_indices.npy", np.asarray(fixed_eval, dtype=np.int64))
     atomic_json(args.output / "exclusions.json", exclusions)
+    atomic_json(args.output / "parent_warnings.json", parent_warnings)
     atomic_json(args.output / "split_provenance.json", dict(old=old,
         assignments=[dict(task=k[0], instance=k[1], split=v) for k, v in sorted(assignments.items())],
         protected_episodes=protected))

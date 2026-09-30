@@ -69,13 +69,14 @@ def binding(verb, relation):
     return result
 
 
-def compile_episode(annotation, row, task_name):
+def compile_episode(annotation, row, task_name, *, issues=None):
     """Keep the published local frame clock; reject, do not guess, overflow.
 
     task_duration is NOT the LeRobot episode length. valid_duration selects a
     labeled subset on the same local clock. Ambiguous/out-of-range intervals
     are quarantined by the caller, with their reason retained in the manifest.
     """
+    issues = issues if issues is not None else []
     length = int(row["length"])
     valid = intervals(annotation["meta_data"]["valid_duration"])
     if len(valid) != 1 or valid[0][1] > length:
@@ -108,11 +109,17 @@ def compile_episode(annotation, row, task_name):
         members = [s for s in skills if s["skill_idx"] in raw.get("skill_idxes", [])]
         try:
             command = semantic_parent_goal_text(desc[0], members)
-        except ValueError:
-            continue
-        for start, end in intervals(raw["frame_duration"]):
-            if end > length:
+            parent_intervals = intervals(raw["frame_duration"])
+            if any(end > length for _, end in parent_intervals):
                 raise ValueError("Parent interval outside episode")
+        except ValueError:
+            # A malformed OPTIONAL parent may not destroy valid leaf skills.
+            # Do not infer its interval from nested scalars/member IDs. The
+            # affected segment falls back to the public task, with semantic
+            # parent supervision masked. The warning remains in the release.
+            issues.append(dict(kind="parent_fallback", primitive_idx=raw.get("primitive_idx")))
+            continue
+        for start, end in parent_intervals:
             parents.append(dict(start=max(start, lo), end=min(end, hi), text=command))
     boundaries = sorted({lo, hi, *(s[k] for s in skills for k in ("skill_start", "skill_end")),
                          *(p[k] for p in parents for k in ("start", "end"))})

@@ -102,8 +102,11 @@ class Stage1Dataset(Dataset):
                 key = "videos/" + meta["lerobot_key"]
                 path = self.root / f"{key}/chunk-{row[key+'/chunk_index']:03d}/file-{row[key+'/file_index']:03d}.mp4"
                 timestamp = row[key + "/from_timestamp"] + frame / 30.
-                result["images"][meta["key"]] = decode_video_frames_torchcodec(
-                    path, [timestamp], tolerance_s=.4/30, device="cpu")
+                decoded = decode_video_frames_torchcodec(path, [timestamp], tolerance_s=.4/30, device="cpu")
+                # LeRobot's decoder returns float RGB [0,1]; the inherited
+                # G0.5 ToTensor transform explicitly consumes uint8, then
+                # divides by 255. Restore the original integer pixels once.
+                result["images"][meta["key"]] = decoded.mul(255).round().to(torch.uint8)
         return result, dict(candidate=int(index), episode=int(row["episode_index"]), task=int(row["task_index"]),
                             frame=frame, segment_end=segment["end"], valid_action_steps=valid,
                             raw_episode=int(row["raw_episode_id"]), instance=int(row["task_instance_id"]))

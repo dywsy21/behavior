@@ -1,6 +1,6 @@
 # Not a launch authorization. Formal jobs require the data acceptance receipt.
 root: /data/workspace/wsy/behavior2026
-release: /data/workspace/wsy/behavior2026/datasets/memlite-stage1-20260930-v1
+release: /data/workspace/wsy/behavior2026/datasets/memlite-stage1-20260930-v2
 seed: 17
 world_size: 8
 global_batch: 256
@@ -39,7 +39,7 @@ low:
   eval_every: 2000
 wandb:
   mode: online
-  project: behavior2026-memlite
-  entity: null
+  project: behavior2026-g05
+  entity: hanhanyy-fudan-university-school-of-management
   group: memlite-100task-stage1-20260930
   credential_file: /data/workspace/wsy/behavior2026/secrets/stage1-wandb.key

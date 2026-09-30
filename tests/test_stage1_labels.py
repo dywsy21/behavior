@@ -45,6 +45,16 @@ class Stage1LabelsTests(unittest.TestCase):
         a = dict(task_index=4, raw_episode_id=40010, task_instance_id=1, episode_index=100)
         self.assertEqual(fixed_phase(a), fixed_phase(dict(a, episode_index=9000)))
 
+    def test_malformed_optional_parent_preserves_valid_skill_without_invention(self):
+        annotation = dict(meta_data=dict(valid_duration=[0, 100]), skill_annotation=[raw_skill(0, 0, 100)],
+            primitive_annotation=[dict(primitive_idx=0, primitive_description=["move to"],
+                                      skill_idxes=[0], frame_duration=[[0, 30], 100])])
+        issues = []
+        segments = compile_episode(annotation, dict(length=100), "test", issues=issues)
+        self.assertEqual(segments[0]["parent"], "Task goal: test")
+        self.assertFalse(segments[0]["parent_supervised"])
+        self.assertEqual(len(issues), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

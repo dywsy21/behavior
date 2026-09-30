@@ -10,12 +10,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 19:27（北京时间）：真实数据接口修复与v2候选准备（Codex / IMPL-MEM100-STAGE1）
+
+- 1df23ab冻结源31项相关CPU回归通过/44.18s；真实窗口另外发现LeRobot解码返回float RGB而原G0.5 ToTensor要求uint8，已按整数像素无损还原接口，待新冻结源真实读取复验。没有随机换样本或跳过读取错误。
+- v1的172条“缺区间”追溯为可选parent primitive的嵌套区间格式错误，leaf技能本身可用；改为记录warning、该区间采用公开Task goal并mask语义parent监督，不猜修区间、不伪造意图。旧v1保留，拟新建v2；97条时钟越界、11条非法leaf区间和旧2条歧义源仍隔离。
+- 全部26,347训练文件的内容校验正在1df23ab源执行，19:25已验23,251件/498GB、0失败，未完成前不宣布全量通过。W&B在线＋同run恢复已通过，GPU仍0更新。当前自己的未提交修复故只fetch不pull（main无新变更）；下一冻结v3、真实百任务loader/token＋本人图审，再在lc1/lc2有限验证。
+
 ### 2026-09-30 19:04（北京时间）：首版源冻结，CPU构建运行中（Codex / IMPL-MEM100-STAGE1）
 
 - 5114fa9已push，本地/共享独立`src/stage1-5114fa9`经Git bundle verify/fetch同步（bundle ref为HEAD，首次按分支名fetch失败后改HEAD，未改旧源）。A800真实env新增12/12单测通过/1.198s，包括新标签/causal memory/并行边界/全部尾数；本地runtime另4/4通过。
 - CPU compact构建`datasets/memlite-stage1-20260930-v1`运行中；60min外限、0GPU，日志`runs/stage1_acceptance_20260930/logs/prepare-v1.log`。原20k数据只读，输出默认CANDIDATE不准正式训练，待数据时钟/人工分层审阅/百任务loader证据；97个valid_duration越界来源预期隔离，不猜偏移。用户W&B key通过无回显交互放入共享根外源码`secrets/stage1-wandb.key`0600，未写Git/配置/日志；在线连通性尚待，不把存凭据称接通。
 - 正式`train_memlite_stage1.py`与lc1高/lc2低配置已在本地接线（下一冻结版本），累積分子反向后按全局分母缩放，再clip/AdamW，正式长训须acceptance gate，当前GPU更新仍0。下一CPU构建终态/统计与直连W&B短run，然后真实loader＋存取/恢复GPU有界验收。
 - 19:10 CPU构建v1完成/exit0/57.39s，20k来源隔离282条、manifest仍CANDIDATE，原因与百task覆盖正在核查，尚未人审或准入；原始文件不改。W&B connectivity-v1在upsertBucket返回403（key无此资源访问权），0模型更新/未成功建立run；先查viewer/entity/project归属，不假装在线已通，也不暴露key。loader首真实窗口检查运行中。
+- 19:16 W&B已实证在线及`resume=must`：viewer确认dywsy21，默认dywsy21-fudan项目写入403，但已存在团队项目`hanhanyy-fudan-university-school-of-management/behavior2026-g05`可写；connectivity-v2 run `46ef620f7c2c`两次init/finish通过，receipt同验收根wandb-connectivity-v2。0模型更新，只写连接指标，改配置显式指定该已有项目/独立MEM-Lite group，不动旧runs。
+- v1候选503MiB，TRAIN12,178,612/EVAL638,108窗口；隔离172缺区间、97时钟越界、11非法区间和2条旧歧义源。首loader检查因新strict检查错误地要求已被transform合并的base/trunk原始统计而主动失败，未GPU/未换样本；修正为校验post-transform的lower_body及双臂/夹爪统计。1df23ab已冻结并push中，准备在新worktree复核真实窗口及全量文件内容hash；正式READY仍未通过。
 
 ### 2026-09-30 18:42（北京时间）：精确混任务采样器实施及首测通过（Codex / IMPL-MEM100-STAGE1）
 
