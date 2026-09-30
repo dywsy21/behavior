@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:31（北京时间）：百任务I/O完成，全部作业结束，整理最终结果（Codex / BENCH-MEM1F）
+
+- `cpu-io-v1` complete/exit0，100任务/100 episode/两轮800窗口全过；首轮400窗/8.134669s（含spawn）=49.1723/s，第二轮400/2.650537s=150.9128/s，0标签/模型更新/CUDA。结果SHA `3f9bb504…d47674`双端同；逐task/episode/frame定位在`pass0/1.json`，两件也已SHA同。本地独立重核两轮各100任务/400窗口、同来源、2400RGB读数有限/0CUDA通过。这是相同单帧TorchCodec backend＋grouped Parquet/resize的代理，不是正式MEM loader；热缓存、仅100 episode、短时测量等限制保留。
+- 13:30:42确认八卡无计算进程。模型两臂完整结果已双端SHA验收，轻量计算汇总`docs/infra/results/2026-09-30-memlite-oneframe-compute.json`；按全部210,916,774逐帧起点，仅计算外推64/128为51.19/29.00天，约95% train为48.63/27.55天。不是实际全量一遍，也不将32步动作预测视作stride32；stride改变样本数，须独立决策。
+- 新Git低层class只是此次单帧入口；补显式拒绝未迁完的六帧路由及CPU回归，避免被误当完整A4历史vision/builder/通用训练loader已整合。此安全门不改变已测单帧计算图，实测仍绑定7af393b；最终八CPU回归待。完整35技能、正式分组/holdout、归一化与标签时钟、generic恢复钩子/P0-02仍未放行，不开启百任务长训。
+
+### 2026-09-30 13:27（北京时间）：CPU百任务I/O探针已提交，GPU均已结束（Codex / BENCH-MEM1F）
+
+- CPU源码`61661f3`已push并经Git bundle导入独立`src/mem1f-io-61661f3`，服务器三项边界回归通过；新`cpu-io-v1`在无GPU进程门后启动，32worker、两pass800窗口/600s+30s清理，log同根`logs/cpu-io-v1.log`。真实结果待，不把已启动当吞吐测成。
+- 两GPU结果已取回本地`artifacts/a800-memlite-oneframe-bench-20260930/results/`，64/128结果SHA分别`fcc986b0…08f3f`/`e7b6410e…09ac7`；原run/source/权重保留。原TRAIN缓存来源回执也补入共享`inputs/original_input_receipt.json`，不包含新训练数据或监督标签。
+
 ### 2026-09-30 13:25（北京时间）：batch128完成，较64计算吞吐提高76.5%；GPU测试结束（Codex / BENCH-MEM1F）
 
 - `batch128-v1`在05:23:10 UTC complete/exit0：global128=8×micro16/accum1，6预热＋24计时，3072观察/36.490185s = **84.187022样本/s**，平均1.520424s/更新；峰值allocated36.1100GiB/卡、reserved36.5605GiB，八rank恢复/322AE＋182LoRA grad全过、0 OOM。

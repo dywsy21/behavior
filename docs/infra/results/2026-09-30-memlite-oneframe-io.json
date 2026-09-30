@@ -1,0 +1,34 @@
+{
+  "status": "complete",
+  "scope": "real per-sample TorchCodec backend; grouped-episode raw Parquet/action/state read plus resize proxy",
+  "production_memlite_loader": false,
+  "labels_used": false,
+  "model_updates": 0,
+  "first_pass_includes_worker_startup": true,
+  "second_pass_is_disk_warm_not_guaranteed_decoder_warm": true,
+  "workers": 32,
+  "windows": 800,
+  "corpus": {
+    "tasks": 100,
+    "episodes": 20000,
+    "raw_frames": 210916774,
+    "seed": 73
+  },
+  "passes": [
+    {
+      "pass_index": 0,
+      "wall_seconds": 8.134669176768512,
+      "windows": 400,
+      "windows_per_second": 49.172251668493736
+    },
+    {
+      "pass_index": 1,
+      "wall_seconds": 2.6505374959670007,
+      "windows": 400,
+      "windows_per_second": 150.9127867870691
+    }
+  ],
+  "commit": "61661f35cdd5614d5e21266917461c4f03a5b84b",
+  "result_sha256": "3f9bb50497ab3dcc31997a2a23132ed5af41be6808d37cf0479627d066d47674",
+  "remote_result": "/data/workspace/wsy/behavior2026/runs/memlite_oneframe_benchmark_20260930/cpu-io-v1/result.json"
+}

@@ -1,0 +1,69 @@
+{
+  "results": {
+    "64": {
+      "status": "complete",
+      "commit": "7af393b705bde65a485223d7e7cae0fa3eb86092",
+      "completed_utc": "2026-09-30T05:18:07.372414+00:00",
+      "global_batch": 64,
+      "microbatch": 8,
+      "accumulation": 1,
+      "warmup_updates": 6,
+      "measured_updates": 24,
+      "measured_samples": 1536,
+      "measured_seconds": 32.2108329818584,
+      "samples_per_second": 47.685820508432585,
+      "checkpoint_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+      "input_sha256": "237acf01b29bd0d6806ed1a11d9033a747640b3ea9e0bf7246b7a62b4e92be81",
+      "scope": "cached approved 5-task TRAIN inputs; no raw video decoding",
+      "mean_step_seconds": 1.3421180409107667,
+      "median_step_seconds": 1.3090880739036947,
+      "min_step_seconds": 1.2791186477988958,
+      "max_step_seconds": 1.6078562401235104,
+      "peak_allocated_gib": 28.369625568389893,
+      "peak_reserved_gib": 28.705078125,
+      "gradient_groups_all_ranks_passed": true,
+      "result_sha256": "fcc986b0baf7245c0abd22cd7155765f189d6c7af5df04645e1c6c957af08f3f",
+      "remote_result": "/data/workspace/wsy/behavior2026/runs/memlite_oneframe_benchmark_20260930/batch64-v2/result.json",
+      "compute_only_days": {
+        "all_raw_frame_starts": 51.192709692581545,
+        "approx_95pct_train_frames": 48.63307420795247,
+        "all_stride16_starts": 3.2018175354515854,
+        "all_stride32_starts": 1.6021218583595587
+      }
+    },
+    "128": {
+      "status": "complete",
+      "commit": "7af393b705bde65a485223d7e7cae0fa3eb86092",
+      "completed_utc": "2026-09-30T05:23:10.691587+00:00",
+      "global_batch": 128,
+      "microbatch": 16,
+      "accumulation": 1,
+      "warmup_updates": 6,
+      "measured_updates": 24,
+      "measured_samples": 3072,
+      "measured_seconds": 36.49018476065248,
+      "samples_per_second": 84.18702234998136,
+      "checkpoint_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+      "input_sha256": "237acf01b29bd0d6806ed1a11d9033a747640b3ea9e0bf7246b7a62b4e92be81",
+      "scope": "cached approved 5-task TRAIN inputs; no raw video decoding",
+      "mean_step_seconds": 1.5204243650271867,
+      "median_step_seconds": 1.492547678295523,
+      "min_step_seconds": 1.4898962709121406,
+      "max_step_seconds": 1.782006782013923,
+      "peak_allocated_gib": 36.11002254486084,
+      "peak_reserved_gib": 36.560546875,
+      "gradient_groups_all_ranks_passed": true,
+      "result_sha256": "e7b6410ee59e826103941b8a46ed48208b0ddbb2c4e55111816551897dc09ac7",
+      "remote_result": "/data/workspace/wsy/behavior2026/runs/memlite_oneframe_benchmark_20260930/batch128-v1/result.json",
+      "compute_only_days": {
+        "all_raw_frame_starts": 28.996943918414775,
+        "approx_95pct_train_frames": 27.547096722494036,
+        "all_stride16_starts": 1.8135965857251881,
+        "all_stride32_starts": 0.9074854204103738
+      }
+    }
+  },
+  "throughput_ratio": 1.7654518985385612,
+  "speedup_percent": 76.54518985385612,
+  "time_reduction_percent": 43.3572786192703
+}

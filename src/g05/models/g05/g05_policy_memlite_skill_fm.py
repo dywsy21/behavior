@@ -33,6 +33,12 @@ class G05PolicyMEMLiteSkillFM(G05PolicyQwen35):
     """
 
     def __init__(self, **model_cfg):
+        # This minimal Git port is admitted for the single-frame benchmark.
+        # The frozen original has additional history-aware builder/vision/
+        # training-loader changes; importing this class alone does not port
+        # that complete pipeline. Refuse six-frame use until P0-02 is done.
+        if model_cfg.get("num_obs_steps") != 1 or isinstance(model_cfg.get("num_obs_steps"), bool):
+            raise ValueError("The current SkillFM Git port supports only the audited single-frame route")
         super().__init__(**model_cfg)
         if self.discrete_action or not self.continuous_action or self.predict_cot:
             raise ValueError(

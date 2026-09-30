@@ -45,6 +45,12 @@ def fixtures():
 
 
 class OneFrameContract(unittest.TestCase):
+    def test_partial_git_port_refuses_unaudited_history_before_model_allocation(self):
+        from g05.models.g05.g05_policy_memlite_skill_fm import G05PolicyMEMLiteSkillFM
+        for steps in (6, 0, None, True):
+            with self.assertRaisesRegex(ValueError, 'single-frame'):
+                G05PolicyMEMLiteSkillFM(num_obs_steps=steps)
+
     def test_weight_comparison_is_exact_not_float_tolerance(self):
         self.assertTrue(bench.same_tensor_bytes(torch.tensor([1.]), torch.tensor([1.])))
         self.assertFalse(bench.same_tensor_bytes(torch.tensor([0.]), torch.tensor([-0.])))

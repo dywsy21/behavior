@@ -2,6 +2,8 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
+**2026-09-30 13:31北京时间测速归档：** 运行根`/data/workspace/wsy/behavior2026/runs/memlite_oneframe_benchmark_20260930`，计算`batch64-v2/`和`batch128-v1/`均complete，CPU读取`cpu-io-v1/`complete，`logs/`保留输出、`inputs/`为原TRAIN微批/来源回执；无新训练checkpoint。实际计算源`src/mem1f-7af393b`、I/O源`src/mem1f-io-61661f3`，旧失败`src/mem1f-2193368`/`batch64-v1`也保留。源均固定不热改，所有自有作业已退出；本地小结果在`/home/wsy/behavior/artifacts/a800-memlite-oneframe-bench-20260930/results/`，轻量汇总进Git。[完整口径](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。
+
 **2026-09-30 13:02北京时间完成覆盖：** 主A4已正式发布为`/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`（16,581,363,550B），源/本地/目的完整SHA均`6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`。下条“上传中”为历史记录；14配套资产也全校验通过。模型前向与batch测速仍未完成，运行源码/配置不可直接沿用归档robo路径。
 
 **2026-09-30 12:43北京时间权重状态：** 用户要求真实旧权重优先，A4低层FM＋LoRA完整checkpoint正传入`/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt.partial`（16,581,363,550B；源/本地完整SHA `61867047…32f269`已同）；目的全SHA通过后才发布为`step_2500.pt`，此刻未完成。该目录五件A4配置/统计/回执、`models/qwen3_5_2b_base_processor/`八件、`models/action_tokenizer.pt`（506,886,775B，SHA `5088f64a…dddace`）均已源/目的SHA一致。原配置保留robo路径作身份档案，后续入口需显式绑定新路径；高层B-final未在本轮迁移，单帧batch测速尚未启动。详见[本轮记录](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。
