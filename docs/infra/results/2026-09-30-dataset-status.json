@@ -1,0 +1,141 @@
+{
+  "checked_utc": "2026-09-30T03:18:43.229165+00:00",
+  "root": "/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master",
+  "scope": {
+    "repo": "behavior-1k/2026-challenge-demos",
+    "revision": "4f50b44796641a4d526a19d9aeadc8aa51e2f2c2",
+    "video_mode": "rgb"
+  },
+  "totals": {
+    "expected_files": 26350,
+    "expected_bytes": 1077039763530,
+    "size_matched_files": 26349,
+    "size_matched_bytes": 1077039761026,
+    "missing_files": 0,
+    "wrong_size_files": 1,
+    "present_bytes": 1077039763586,
+    "unmatched_expected_bytes": 2504,
+    "missing_download_bytes": 0
+  },
+  "by_category": {
+    "data": {
+      "expected_files": 955,
+      "expected_bytes": 74558696633,
+      "size_matched_files": 955,
+      "size_matched_bytes": 74558696633,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 74558696633
+    },
+    "meta": {
+      "expected_files": 104,
+      "expected_bytes": 5977742,
+      "size_matched_files": 104,
+      "size_matched_bytes": 5977742,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 5977742
+    },
+    "videos/observation.rgb.left_realsense_link_camera_0": {
+      "expected_files": 1117,
+      "expected_bytes": 215852639464,
+      "size_matched_files": 1117,
+      "size_matched_bytes": 215852639464,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 215852639464
+    },
+    "videos/observation.rgb.right_realsense_link_camera_0": {
+      "expected_files": 1119,
+      "expected_bytes": 216418530281,
+      "size_matched_files": 1119,
+      "size_matched_bytes": 216418530281,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 216418530281
+    },
+    "videos/observation.rgb.zed_link_camera_0": {
+      "expected_files": 3050,
+      "expected_bytes": 569990749398,
+      "size_matched_files": 3050,
+      "size_matched_bytes": 569990749398,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 569990749398
+    },
+    ".gitattributes": {
+      "expected_files": 1,
+      "expected_bytes": 2504,
+      "size_matched_files": 0,
+      "size_matched_bytes": 0,
+      "missing_files": 0,
+      "wrong_size_files": 1,
+      "present_bytes": 2560
+    },
+    "LICENSE": {
+      "expected_files": 1,
+      "expected_bytes": 1081,
+      "size_matched_files": 1,
+      "size_matched_bytes": 1081,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 1081
+    },
+    "README.md": {
+      "expected_files": 1,
+      "expected_bytes": 1506,
+      "size_matched_files": 1,
+      "size_matched_bytes": 1506,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 1506
+    },
+    "annotations": {
+      "expected_files": 20002,
+      "expected_bytes": 213164921,
+      "size_matched_files": 20002,
+      "size_matched_bytes": 213164921,
+      "missing_files": 0,
+      "wrong_size_files": 0,
+      "present_bytes": 213164921
+    }
+  },
+  "missing_examples": [],
+  "wrong_size_examples": [
+    {
+      "path": ".gitattributes",
+      "actual": 2560,
+      "expected": 2504
+    }
+  ],
+  "free_bytes": 4375257808896,
+  "verification": "Manifest paths and exact file sizes; not a new full content-hash verification.",
+  "owner": "Codex / INFRA-A800-STATUS",
+  "mode": "read_only_status_audit",
+  "runtime": {
+    "host": "lc2/a800-2",
+    "source": "ModelScope fduTristin/2026-challenge-demos@master",
+    "previous_pid": 1032615,
+    "previous_pid_present": false,
+    "tmux": "behavior-data",
+    "pane_current_command": "bash",
+    "downloader_completed_files": 26350,
+    "downloader_total_files": 26350,
+    "terminal_completion_message": true,
+    "terminal_elapsed": "31:12:33",
+    "job_modified_by_this_audit": false
+  },
+  "conclusion": {
+    "download_complete": true,
+    "all_expected_paths_present": true,
+    "all_training_data_files_size_matched": true,
+    "training_data_files": 26347,
+    "full_official_hash_validation_completed": false
+  },
+  "notes": [
+    "The one unmatched file is repository metadata .gitattributes (2560 vs 2504 bytes). There are zero missing files; unmatched_expected_bytes is not remaining download volume.",
+    "RGB videos, action Parquet, annotations and metadata all match official manifest file sizes. This does not establish content-hash equality.",
+    "Known ModelScope cache snapshot root is unchanged. No dataset or active environment was modified, no download was restarted, and no training was launched.",
+    "Only lc2 was inspected; no new four-node environment or training-readiness validation is claimed."
+  ]
+}

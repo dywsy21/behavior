@@ -4,6 +4,8 @@
 
 ## 当前可用入口
 
+**2026-09-30 11:18北京时间更新：下载完成，0缺失。** lc2终端已显示26,350/26,350、`下载完成！`并返回bash，旧PID1032615退出。全部26,347件RGB/动作/标注/meta训练文件按官方清单路径和大小核对通过；仅仓库`.gitattributes`大小不同（2560/2504B）。约1.077TB已落盘，真实snapshot根不变。见[9/30状态](results/2026-09-30-dataset-status.json)；**全内容hash与正式训练入口准入尚未完成**，本轮未自动开训、重启下载或改环境。以下9/29下载中记录保留作历史对照。
+
 **2026-09-29 21:53北京时间只读复查：数据尚未下完。** 后续任务已改ModelScope `fduTristin/2026-challenge-demos@master`，lc2 tmux`behavior-data`/PID1032615运行中；21:52逐路径/大小核约1.013/1.077TB（94.044%），尚缺337段头部RGB约64.147GB，21:53终端26,017/26,350且仍推进。动作/标注/meta/双腕RGB已按大小齐全，但未重做全内容hash；`.gitattributes`有一处大小不同。状态证据见[JSON](results/2026-09-29-dataset-status.json)。
 
 真实数据根现在是`/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master`。不要把ModelScope的外层cache_dir当旧HF平铺数据根。下载完成后须按固定官方manifest核内容身份，再核reader根；本轮未改配置、未重启下载或训练。原alpha/后续hf-mirror任务无complete且已退出，下文9/27下载进展只作历史证据，不是实时状态。

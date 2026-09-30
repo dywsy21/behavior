@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-09-30 11:18（北京时间）Codex / INFRA-A800-STATUS确认ModelScope下载完成：终端26,350/26,350并返回bash，旧下载PID退出；官方清单0缺失，26,347件训练文件大小全匹配，仅仓库`.gitattributes`大小不同。见[新证据](infra/results/2026-09-30-dataset-status.json)。数据下载等待项解除，但官方全内容hash、正确snapshot根reader检查及MEM-Lite准入仍待；不变更数据/RL owner，本轮无重启下载、新训练或环境修改。
+
 2026-09-29 21:53（北京时间）Codex / INFRA-A800-STATUS按用户最新授权恢复ec并只读检查lc2：后续ModelScope下载PID1032615/tmux`behavior-data`仍运行，约94.0%字节、余64.1GB头部RGB；旧alpha回执不是当前任务。动作/标注/meta/双腕RGB按大小已齐，内容hash未全验；实际snapshot根见SERVER_LAYOUT及[证据](infra/results/2026-09-29-dataset-status.json)。不更改数据/RL owner、不接管下载、不启动训练；待下载完成后核官方SHA及数据根，不将终端99%件数当完整数据准入。
 
 2026-09-29 15:10（北京时间）Codex / PLAN-MEM100-GRAD完成本地高低层梯度路径核查，形成[训练与梯度补充设计](experiments/2026-09-29-memlite-gradient-training-design.md)：高低层独立SFT可并行、低层AE＋LoRA联合、反馈头固定高层热身后才考虑高层内部联合，闭环按同状态纠正数据协同。更正旧提案“字段独立归一”及0.25可直接用于完整outcome模式的口径。新增准入依赖为逐loss梯度/optimizer覆盖、稀疏反馈8rank归一和高层版本绑定校准；均待实施，不更改队友数据/RL职责，不分配节点或启动作业。本轮未连接任何服务器或VPN。

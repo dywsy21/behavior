@@ -2,6 +2,8 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
+**2026-09-30 11:18北京时间最新状态：下载已完成。** lc2 tmux`behavior-data`显示26,350/26,350及完成消息，原PID1032615已退出。固定官方清单0缺失，26,347件训练文件大小全部匹配；只有`.gitattributes`为2560而非2504B。真实数据根仍为下方ModelScope嵌套snapshot路径；未全量重算内容hash，不把下载齐全当完整训练准入。见[9/30证据](infra/results/2026-09-30-dataset-status.json)，下方9/29的94%为历史快照。
+
 **2026-09-29 21:53北京时间状态覆盖：** 用户已授权本次恢复ec/服务器只读检查。lc2当前下载为ModelScope脚本（PID1032615、tmux`behavior-data`），不是下方保留的9/27 alpha任务。真实数据根为`/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master`，外层`2026-challenge-demos`是cache_dir。约94.0%字节完成、剩64.1GB头部RGB，尚未完成官方全内容hash；不要让reader指到外层缓存根。新状态见[JSON](infra/results/2026-09-29-dataset-status.json)，本轮未移动/删除数据或改运行环境。
 
 - 接入：WSL `ssh lc1/lc2/lc3/lc4`，本地`~/.ssh/lc-a800.conf`，lc-connect SOCKS127.0.0.1:1080；凭据不在仓库。lc4只CPU验证、不启动GPU负载。
