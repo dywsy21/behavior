@@ -2,6 +2,18 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
+**2026-09-30 20:53阶段1准备完成：** 共享根仍`/data/workspace/wsy/behavior2026`，**lc1高层、lc2低层**各8A800独立DDP。正式可复现训练源`src/stage1-d0528b4`；主feature `feat/memlite-stage1-lc12-20260930`，后续工具/文档提交不热改这个运行源。入口/配置/启动恢复见[操作手册](infra/MEMLITE_STAGE1_RUNBOOK.md)。没有正式长训/后台自动启动队列。
+
+最终交接文档另置共享`src/stage1-handoff-20260930/docs/infra/MEMLITE_STAGE1_RUNBOOK.md`；它是独立Git快照，训练仍按手册使用经过GPU验收的d0528b4，不在交接目录或旧活跃目录随意热改/启动。
+
+- 正式数据view：`datasets/memlite-stage1-20260930-v4`，12,299,471 TRAIN/645,793 eval窗口；`manifest.json` SHA90ff0fa9…85d6f23，`acceptance.json`六门已发布。原始1.077TB RGB＋动作/meta/annotations全26,347件内容SHA通过，仍在原snapshot，不包含depth/raw。v1–v3为保留的旧候选，不要拿来开训。
+- 低层扩界stats：`manifests/memlite-stage1-v4-action-bounds/stats.json`，SHA10dc04dc…6cbd929，只用TRAIN扩inverse min/max，旧mean/std/state保持；配套`receipt.json`有全部来源集合，禁止换回旧动作界或含eval全局stats。原B/A4权重位置和SHA仍见下方，未覆盖。
+- 证据根：`runs/stage1_acceptance_20260930`；`source-hash-v1`全量内容校验，`sampler-v4.json`全候选无重复/混任务检查，`data-qa-v3`467窗口/100task/35技能真实RGB＋token，`normalizer-v2.json`往返PASS。人审183不同窗口，本地`artifacts/stage1-preparation-20260930`，Git记录`configs/memlite_stage1/data_v4_owner_review.json`；不是原图训练集搬到Git。
+- 工程模型：`high-v1`旧4步、最终`high-v2`16步/`low-v1`32步；各`checkpoints/latest.json`指向完整模型/Adam/RNG，**只作工程验收，不是正式一遍/120h产物**。`.supervisor/ledger.json`记录累计墙钟/退出，`attempt_*.log`保留每次输出。两最终run均保存恢复exit0，尚不宣称方法效果。
+- W&B为已有团队`hanhanyy-fudan-university-school-of-management/behavior2026-g05`，group `memlite-100task-stage1-20260930`；共享`secrets/stage1-wandb.key`0600，凭据本体不在Git或本地归档。`wandb.json`只记录run id/URL，不要复制整个W&B内部目录。
+- 旧权重、原env和全部既有run保留；验收后共享余约3.8TB，新supervisor低于256GiB会通知本作业安全保存停止，不自动删任何权重。
+- 21:02小证据归档：同根`small-evidence-v1.tar.gz`为154件白名单JSON/训练数值日志、306,594B，SHA3955ad92…4374f8d9b；本地`artifacts/stage1-preparation-20260930/final-evidence`已逐文件校验。未复制大权重/W&B内部目录/凭据，全部源文件保留。最后checkpoint读回报告`final-checkpoint-audit.json`，最终指标/路径/SHA见[轻量验收](infra/results/2026-09-30-memlite-stage1-acceptance.json)。
+
 **2026-09-30 17:29高层状态覆盖：** 下面B-final资产路径不变。最终有效GPU源是共享`src/memhigh-4e59b5b`，修正非均匀CE梯度；`src/memhigh-af631a2`保留为旧容量/CPU证据，不用其fused加权结果推训练时间。`runs/memlite_high_benchmark_20260930/timed-mixed-m4-v1`和`timed-long-m4-v1`均完成，所有rank/日志取回本地同名artifacts，09:26 UTC八卡已全释放。37 CPU/CUDA梯度检查及两真实训练臂通过，不是百任务正式训练或新模型。轻量证据见`docs/infra/results/2026-09-30-memlite-high-batch256.json`。
 
 **2026-09-30 17:00北京时间高层B-final：** 共享根`/data/workspace/wsy/behavior2026`下`models/memlite-b-final-20260910/B-final-model.pt`已完成全SHA迁移，11,440,576,631B，SHA`e7cd7bf738eb46901565088f829aa82c5c6ea95f610d4df1499e634959d29b13`；原950模型状态逐字节一致，只省去旧optimizer/scheduler等，`export-receipt.json`及原B配置/统计/回执同目录。它仍是原B-final，不是新训checkpoint。lc3有限高层测速源`src/memhigh-af631a2`，运行根`runs/memlite_high_benchmark_20260930`，`inputs/`为30条原TRAIN单帧缓存，`token-preflight-v2`与`stride-phase-v1`是CPU证据，容量/计时日志在`logs/`；本地证据`artifacts/a800-memlite-high-bench-20260930`。原robo完整26.59GBcheckpoint及旧优化器不动。此时仅容量初始化，吞吐尚待；不得据文件齐全启动正式100任务长训。

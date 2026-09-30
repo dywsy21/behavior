@@ -1,7 +1,7 @@
 # MEM-Lite百任务阶段1操作手册
 
 负责人：Codex / IMPL-MEM100-STAGE1。最新状态以[plan](../plan.md)为准。
-本手册补齐正式入口，不是自动开训授权。当前有界验收进行中，未启动高层一遍/低层120小时。
+本手册补齐正式入口，不是自动开训授权。2026-09-30 20:53北京时间，数据准入、lc1高层16步/lc2低层32步及同run保存恢复均已通过；未启动高层一遍/低层120小时。
 原[9/30审查S1–S9](../experiments/2026-09-30-memlite-stage1-plan-and-readiness.md)是实施前快照；节点分配现改为lc1高层、lc2低层。
 
 ## 路径与固定身份
@@ -10,22 +10,27 @@
 
 | 内容 | 共享根下路径 |
 | --- | --- |
-| 已冻结训练源 | `src/stage1-4f73bda`（仅验收过的准确commit可用于正式运行） |
+| 已冻结训练源 | `src/stage1-d0528b4`，完整commit `d0528b4b0d553c252b6173355c1d4d567a9f9d76` |
 | 实施分支 | `feat/memlite-stage1-lc12-20260930`，GitHub同步；不要pull活跃worktree |
 | 共享环境 | `envs/g05-py310-cu128`；有作业期间不得安装/更新包 |
 | 配置 | 源内`configs/memlite_stage1/stage1.yaml` |
 | 原始RGB/动作/标注 | `datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master` |
-| 紧凑标签/候选v4 | `datasets/memlite-stage1-20260930-v4`；验收前仍是candidate |
+| 紧凑标签/候选v4 | `datasets/memlite-stage1-20260930-v4`；`acceptance.json`已发布，原manifest保持不改 |
 | 低层动作界 | `manifests/memlite-stage1-v4-action-bounds/{stats,receipt}.json` |
 | 高层初始化 | `models/memlite-b-final-20260910/B-final-model.pt`，950状态 |
 | 低层初始化 | `models/memlite-a4-20260912/step_2500.pt`，1138状态/192 LoRA |
-| 工程验收 | `runs/stage1_acceptance_20260930`；其中`high-v1`、未来low短验不是正式模型 |
+| 工程验收 | `runs/stage1_acceptance_20260930`；`high-v1`旧验收、`high-v2`/`low-v1`最终短验，均非正式模型 |
 | W&B凭据 | `secrets/stage1-wandb.key`，0600，不能复制进Git/日志/命令行 |
 
 原数据revision `4f50b44796641a4d526a19d9aeadc8aa51e2f2c2`。
 训练文件26,347件/1,077,039,758,439字节全内容hash已通过，`source-hash-v1/result.json`保留。
 旧B SHA `e7cd7bf738eb46901565088f829aa82c5c6ea95f610d4df1499e634959d29b13`；
 旧A4 SHA `6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`。
+
+数据manifest SHA `90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23`；
+低层新stats SHA `10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929`。
+TRAIN12,299,471窗/18,895条演示，完整一遍48,045更新（最后207个真实观察）；EVAL645,793窗/994条演示。
+两层候选身份相同但目标不同，不把低层4噪声当4倍独立样本。
 
 ## 训练合同
 
@@ -67,7 +72,7 @@ CPU契约通过不等于所有标签都正确；图审是覆盖百task/35技能/
 
 ```bash
 source /data/workspace/wsy/behavior2026/src/infra-a5c9821/scripts/infra/activate_a800_training.sh
-cd /data/workspace/wsy/behavior2026/src/stage1-4f73bda
+cd /data/workspace/wsy/behavior2026/src/stage1-d0528b4
 export PYTHONPATH="$PWD/src"
 git status --short
 nvidia-smi
@@ -96,8 +101,8 @@ DataLoader预取不算已消费；新试验从旧B/A4初始化用fresh optimizer
 它发送保存请求，八rank在更新边界一致保存；不要kill队友进程、批量pkill或直接先杀torchrun。
 没有最终回执/exit0不能称保存成功。`RUNNING`但原进程失踪的ledger需要人工核对，禁止删ledger重置120h。
 
-本轮工程短验使用独立output和`--preflight-stop-step 2`，退出后加`--resume --preflight-stop-step 4`。
-该flag是总更新终点不是再加4步；外部监管上限60min，绝不自动接正式长训。
+工程短验使用独立output和`--preflight-stop-step 2`，退出后加`--resume --preflight-stop-step N`。
+本轮最终高N=16、低N=32；旧high-v1的N=4证据单独保留。该flag是总更新终点不是再加N步；原每节点总60min/64更新预算不因换run重置，绝不自动接正式长训。
 
 ## W&B与证据读取
 
@@ -108,6 +113,29 @@ DataLoader预取不算已消费；新试验从旧B/A4初始化用fresh optimizer
 - `eval/loss`是全局有效监督加权均值，`eval/macro_task_loss`是task等权宏平均；`eval/task_0..99`逐task曲线。固定每task32窗/共3200，短验每task2窗/共200；不是全eval，更不是成功率。
 - FM eval固定种子9183＋rank，并恢复训练RNG，避免eval改后续训练噪声。CE均值按有效token权重而非平均微批均值。
 - 每run `recipe.json`、`wandb.json`、`restore_rank*.json`、`gradients_rank*.json`、`train.jsonl`、`eval_*.json`及`status.json`保留本地证据。
-- 每checkpoint伴随SHA回执，`latest.json`最后原子切换；保存过程失败不会覆盖上一完整点。默认不删旧点，启动时须为约1.4TB最坏累计checkpoint量留余地；本次共享余约4.0TB，不能视作未来始终足够。
+- 每checkpoint伴随SHA回执，`latest.json`最后原子切换；保存过程失败不会覆盖上一完整点。默认不删旧点，启动时须为约1.4TB最坏累计checkpoint量留余地；验收后共享余约3.8TB，不能视作未来始终足够。supervisor每2秒检查共享余量，低于256GiB拒绝新启动/通知自有trainer保存停止；不动任何队友文件。
 
 新权重的效果须后续固定实例/预算仿真评测。短验loss/模型成功恢复只证明训练链运行，不证明MEM-Lite成功率改善。
+
+## 本次实测与排期修订
+
+最终源52项CPU回归通过；8rank Gloo不等分母/累积与单批参考梯度一致，真实两模型每rank恢复/梯度覆盖及global256也通过。
+两节点最终run都先2更新退出，再同源同run恢复到高16/低32更新，final eval/save/exit0；高950状态、低1138状态/192 LoRA完整恢复。
+W&B API读回均`finished`、最新update16/32、各100个task eval字段：
+[高层短验](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/71f2c19d3165)、
+[低层短验](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/00803c29ec18)。
+
+| 真实数据短样本 | 高层（step4–16） | 低层（step4–32） |
+| --- | --- | --- |
+| 端到端更新吞吐 | 25.406观察/s | 70.409观察/s |
+| 步时间中位数 / 最大 | 6.911 / 18.414秒 | 2.391 / 11.754秒 |
+| rank0峰值allocated | 59.228GiB | 53.509GiB |
+| 按本次速度外推一遍更新段 | 134.48小时 | 48.52小时 |
+
+实际三RGB读取、随机长短标签和两节点共享盘并发都在内；不包含每次初始化/冷启动步、eval/保存。
+这只有13/29个计时更新，不是长期稳定性保证；数据页缓存及首次kernel开销影响仍在，尚未分段profiler定位慢步来源。
+150s监控中8卡observed used峰值≤66,730MiB/64,178MiB，0OOM；nvidia利用率包含collective等待，不能当纯计算利用率。
+因此高层先按约6天排期、168h仅事故上限；低层120h按当前更新吞吐最多约2.47遍，扣eval/保存后更少，**不再沿缓存120.3观察/s承诺3–4遍**。
+两节点可以正确并行训练；后续吞吐分解/等价优化另立有界任务，不在正式源码上热改或在本次混入新训练方法。
+
+合main前仍须团队另一成员独立审查。本次是作者实施与验收，不冒称独审；独立分支/冻结源已可复现，没有后台正式长训或自动续跑队列。
