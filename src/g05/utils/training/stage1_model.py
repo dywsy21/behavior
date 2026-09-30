@@ -50,9 +50,12 @@ def configuration(root, branch, task_names):
     merged.embodiment_type = "galaxea_r1pro"
     merged.image_history_mode = "preserve_cameras"
     merged.num_obs_steps = 1
+    stats_path = (assets / stats_name if branch == "high" else
+                  root / "manifests/memlite-stage1-v3-action-bounds/stats.json")
     return dict(arch=OmegaConf.to_container(arch, resolve=True),
                 processor=OmegaConf.to_container(merged, resolve=True), raw_shape=raw_shape,
-                stats_path=str(assets / stats_name), initial_weights=str(assets / weight_name),
+                stats_path=str(stats_path), original_stats_path=str(assets / stats_name),
+                unclipped_action_targets=branch == "low", initial_weights=str(assets / weight_name),
                 initial_weights_sha256=weight_sha, source_config=str(assets / config_name))
 
 
@@ -62,6 +65,11 @@ def make_processor(config, training):
     processor = instantiate(config["processor"])
     stats = load_dataset_stats_from_json(config["stats_path"])["galaxea_r1pro"]
     processor.set_normalizer_from_stats(stats)
+    if config.get("unclipped_action_targets", False):
+        # This does not alter means/stds/tail quantiles or the VLM's normalized
+        # state inputs. Only stop discarding rare valid continuous targets.
+        for normalizer in processor.normalizer.normalizers["action"].values():
+            normalizer.forward_clip = None
     processor.set_action_execution_start_index(0)
     processor.train() if training else processor.eval()
     # The original checkpoints' action coordinate systems are retained exactly.

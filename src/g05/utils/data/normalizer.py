@@ -485,7 +485,12 @@ class SingleFieldLinearNormalizer(BaseActionStateTransform):
         if self.mode == "tanh":
             x_main = torch.tanh(x_main)
         else:
-            x_main = x_main.clamp(-5.0, 5.0)
+            # Legacy default stays unchanged. Stage-1 can explicitly retain
+            # rare action targets outside +/-5 in the same normalized space;
+            # deployment inverse bounds remain separately enforced.
+            clip = getattr(self, "forward_clip", 5.0)
+            if clip is not None:
+                x_main = x_main.clamp(-clip, clip)
         # Safety net: replace any residual NaN/Inf with 0 to prevent training crashes.
         # Upstream rotation ops are clamped, but raw data corruption can still produce NaN.
         x_main = x_main.nan_to_num(nan=0.0, posinf=0.0, neginf=0.0)

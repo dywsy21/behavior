@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 20:02（北京时间）：数值审计发现旧动作裁剪损失，保留坐标扩展TRAIN安全界（Codex / IMPL-MEM100-STAGE1）
+
+- `normalizer-v1.json`467窗口实测：64个往返误差>1e-4，最大0.459735rad（task4 ep897），53个动作值触发旧forward±5；另有旧五task稀疏min/max导致inverse裁剪。该结果不是归一化通过，含旧task0/4，不能只归咎新任务。旧权重和stats均不覆盖。
+- 最小兼容修复在本地实现：保留原所有mean/std/tail分位数/夹爪坐标及state输入，仅低层停止把合法FM动作target裁到±5，并从v3全部TRAIN合法固定stride窗口扩展inverse min/max（和旧界并集），不使用eval拟合、不关闭部署逆变换的有限安全界。CPU构造单作业≤60min/新增<20GiB/0GPU，真实100任务时钟/原23D转换和往返仍须复验；未签normalizer gate。
+- v3 `data-qa-v2`全467窗口/100task/35技能CPU token通过，最长1523；新标签图回看进行中。还没有GPU更新/正式长训；下一冻结bounds构造与兼容性单测，lc1高层可做不涉及低层动作界的工程短验，lc2须新界及数值验收后再短验。
+
 ### 2026-09-30 19:54（北京时间）：v3标签重建完成，八卡验收入口最后冻结（Codex / IMPL-MEM100-STAGE1）
 
 - 8640d2b已push/独立源，7标签单测过/0.32s，v3构建64.70s/110隔离源不变，`data-qa-v2`正在完整CPU复验（16worker/60min，非新原图/新轨迹）。本人已看完164窗口，最终parent修复文本/去重结果待对应来源比对；不提前签human gate。
