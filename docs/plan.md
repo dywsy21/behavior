@@ -10,6 +10,23 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:24（北京时间）：JEV-05首正式例进入实控，第二门归档验全（Codex）
+
+- task0a仍为原监管140071/observer140499/actor140567，13:23实读已control59/decision3，非初始化停滞；协调器87628正常，原始TRAIN138/seed0/0前缀、4698b0a与统一预算不变。尚无完整任务终态，不报SR，其余五例不重复提交。
+- gate3的9件回执/视频已取回`artifacts/jev-control-20260929/multitask/gate3/`，逐件双端SHA完全一致；本人看过7帧contact，厨房头部画面随微动作变化、腕部视野主要为机器人本体，未见黑传感器帧（末两格为空白占位）。这是工程证据，不作任务成功。
+- 本地保留上轮4份自有未提交状态文档，故本次只fetch不pull；feature与origin无分叉（0/0），origin/main最新33677bd。冻结运行源未pull/改写。下一按既定队列核各例官方终态、所有权和视频。
+
+### 2026-09-30 13:10（北京时间）：JEV-05两工程门均通过，首正式task0a自动启动（Codex）
+
+- gate3同4698b0a/403c74df已completed/actor exit0，24检查/440controls/112采集读取，gate_ok=true/无失败/全部执行freshness通过；总1129.585s/动作573.501s/清理0.380s。result SHA `ef60c1ec22ff1febd86fa88d3bfdc28d0625fc693e8b7cb1b5dcd86f35cec8e2`，native journal `5e71ac32…66eb79f`，旧129152/129211已监管收尾。
+- 协调器87628已自动唯一提交`jev_multi_20260930_task0a_v1`监管140071，首正式task0 TRAIN138/seed0/0前缀，统一96决策/3072controls/2400s动作/3600s总/60s清理、Jev288/observer215，GPU1。正在观察模型初始化，实际任务结果待；五条后续仍由固定队列自动提交，不手动重启/追加。两门不计SR。
+- 13:15实核：观察模型140499加载8.466s，health确认Qwen3.8-27B固定revision/4698b0a源码/physical GPU1/bfloat16/215调用上限/0训练；actor140567已启动、监管actor_running，进入原生场景初始化，非端到端结果。首例监管140071仍live，无重复提交。
+
+### 2026-09-30 13:05（北京时间）：六实例实际factory的CPU兼容预检通过（Codex）
+
+- 在同4698b0a冻结源及真实sim Python中调用`load_official_oracle_window`与`frozen_window()`读取六例，机器人/原前缀文件SHA与有限[N,23]形状均通过，实例138/97/141/190/242/102正确；配置官方文本与真实100条tasks.jsonl逐字一致。源前缀资产行数448/467/4536/910/4221/5131只是现有文件完整性核验，**执行前缀仍为0**，无模型/GPU/环境重置或新控制，也未将资产动作/semantic_subgoal送入actor。
+- 这是对registry元数据预检的补充，防止完整episode在真实加载器入口失败；不改源码/数据。gate3监管129152/actor129211继续正常，到control225/decision11（13:04:50读取），六例仍等此门结束后自动提交。
+
 ### 2026-09-30 12:52（北京时间）：JEV-05首工程门通过，后台已自动接第二门（Codex）
 
 - `jev_multi_20260930_gate0_v1`同4698b0a/403c74df源已completed/actor exit0，24检查/440controls/112采集与读取、gate_ok=true/无失败；总1217.852s/动作575.628s/清理0.372s。result SHA `46d31e8864626dd096e5b324bd3d64cf7f0109618d3025a8470ce4724a991a91`，native journal `dc148cb6…e94f3e`；全部执行freshness过。工程门不计SR。

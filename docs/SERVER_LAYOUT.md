@@ -7,7 +7,9 @@
 - 12:33：首gate0监管88005/actor88021正在native初始化、GPU1，运行源4698b0a不改；API19件全量已双端SHA取回`/home/wsy/behavior/artifacts/jev-control-20260929/multitask/api_v1/`，不含凭据/权重。
 - 12:46旁路API诊断完成：独立robo源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_search_d403348`（d40334879da1e407c44516820966d9336dc5490c），run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_search_context_20260930_v2`/同级stdout，9实际API/0动作/无GPU。12件全量已双端SHA取回本地`artifacts/jev-control-20260929/multitask/search_sensitivity_v2/`；本地失败v1和冻结probe工作树`/home/wsy/behavior_worktrees/jev-search-probe-20260930`另保留，不影响在跑4698b0a。
 - 12:52：gate0已completed/440controls/24检查过、自有88005/88021已监管收尾；协调器自动启动gate3监管129152/actor129211。首门result SHA `46d31e88…991a91`，同一4698b0a运行源不改，六例尚待第二门。
-- 本地开发`/home/wsy/behavior_worktrees/jev-20260929`，六例登记`configs/semantic_robot/jev_multitask_v1.json`，task0/1/3各2个TRAIN原始实例，0演示前缀/0训练。拟用新run `jev_multi_20260930_<stage>_v1`与同名私有runtime；目前尚未部署/创建，不复用JEV-04目录。
+- 13:10：gate3已completed/440controls/24检查过，result SHA `ef60c1ec…5cec8e2`；协调器自动启动`jev_multi_20260930_task0a_v1`监管140071、模型初始化中。其余五例未提交，不复用目录或手动重启；仍同4698b0a冻源。
+- 13:24：gate0/3各9件回执/视频已双端SHA验全并本人抽帧，位于本地`artifacts/jev-control-20260929/multitask/gate0/`、`gate3/`；原远端全run不动。task0a observer140499/actor140567已实控至59，官方终态待。
+- 本地开发`/home/wsy/behavior_worktrees/jev-20260929`，六例登记`configs/semantic_robot/jev_multitask_v1.json`，task0/1/3各2个TRAIN原始实例，0演示前缀/0训练。运行目录`jev_multi_20260930_<stage>_v1`与同名私有runtime的实际创建进度见上述时间记录，不复用JEV-04目录。
 - JEV-04正式episode已归档14件到`/home/wsy/behavior/artifacts/jev-control-20260929/planning_contract/episode1/`，result/完整ledger/ownership/video均已双端SHA核同；contact sheet仅人工检查，不作actor输入。新任务槽/手臂选择代码不会回写旧211a6f8冻结源。
 
 ## Jev规划契约修复（2026-09-29，JEV-04）

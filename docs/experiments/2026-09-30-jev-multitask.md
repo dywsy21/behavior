@@ -1,6 +1,6 @@
 # JEV-05：Jev全策略控制的三任务原始起点评测
 
-负责人：Codex；分支 `feat/jev-control-20260929`。当前实现准备/验证中，运行源commit和实际结果另记计划，不把本文件当作评测完成。
+负责人：Codex；分支 `feat/jev-control-20260929`。当前六例正式评测运行中，运行源commit和实际结果见下文与计划，不把本文件当作评测完成。
 
 ## 问题与边界
 
@@ -46,7 +46,7 @@ GPU1上运行模拟器与观察服务，分别CPU88–91、48–51；模型≤59
 
 - v4槽与完整计划第一包61项检查通过；独立穷举task1/3分别157/2875合法前缀、48/960完整计划，无死锁。
 - 统一launcher/parser/registry/window校验、完整/弃权计划归属、命令弃权goal篡改检查已补。更新后的全套811项/40.813s通过（5环境skip）；其后又补后台协调器不重试/基础设施失败停止/重复claim拒绝2检查，与API准入和统计共10项目标通过。第二包独审通过，无剩余实质阻断；独审也独立执行10项目标测试。
-- 实际API/新工程门/六例仿真尚未运行，不把上述CPU证据等同于任务成功率。
+- 此处为启动前CPU验证记录；后续实际API/工程门/仿真状态见下文，不把CPU证据等同于任务成功率。
 
 12:27最终全套813项/48.213s通过，5环境skip；implementation `403c74df8227e51b67203428e3033c3725f2bc56fe15e82fc4bbb54cbfd1ca69`，registry `40454b2a560960198fe2b9e745078ccf6d1f11ec5dfa3f2ede1c294268d760e2`。
 
@@ -55,6 +55,10 @@ GPU1上运行模拟器与观察服务，分别CPU88–91、48–51；模型≤59
 12:31：Git冻结4698b0aa37edf5b2758286fa3a2d5dec3777533e已robo部署，sim Python下71目标检查和六window实际SHA/身份全部通过。真实API九次规划均完成，54/54有效请求，result SHA `71cef4f9e7f2258b251b82dc5cd2132709ebe09db874c9be46b2ba15007729be`；19件回执在本地`artifacts/jev-control-20260929/multitask/api_v1`逐件双端SHA核同。后台协调器87628已运行，首门88005/88021正常实控；六例SR仍待。
 
 12:52：首gate0已completed/24检查/440controls/112同步采集，全部freshness通过、gate_ok=true；总1217.852s/动作575.628s/清理0.372s。result SHA `46d31e8864626dd096e5b324bd3d64cf7f0109618d3025a8470ce4724a991a91`。协调器自动接gate3监管129152/actor129211，六例尚未提交；工程门不进入任务成功率分母。
+
+13:10：gate3也completed/24检查/440controls/112同步采集，全部freshness通过；总1129.585s/动作573.501s/清理0.380s，result SHA `ef60c1ec22ff1febd86fa88d3bfdc28d0625fc693e8b7cb1b5dcd86f35cec8e2`。后台已自动启动首正式task0a监管140071，原始TRAIN138/96决策统一预算，实际结果待。
+
+13:24：gate0/3各9件回执与视频均已取回本地`artifacts/jev-control-20260929/multitask/{gate0,gate3}`、双端SHA验全，本人各看7帧contact，无黑传感器帧；工程门不算SR。task0a已实控至control59/decision3，观察模型140499/actor140567正常，六例完整结果仍待。
 
 ## 旁路：旧搜索停滞输入的敏感性，不修改本轮actor
 
