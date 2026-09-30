@@ -4,6 +4,9 @@
 
 - **13:30最新终态：** 原campaign协调器87628及task0a监管140071/model140499/actor140567均退出；task0a `gate/failure.json`为第17次Jev响应选项/概率校验失败，6策略动作/102控制＋1安全停止。其余五例目录未提交，不把较早“运行中”当当前状态；全部源码/run保留，不重启原目录。
 - 13:41全包：task0a全部326件在本地`artifacts/jev-control-20260929/multitask/task0a_infra_v1`逐文件双端SHA一致，视频已本人抽帧；首次SCP截断残片另留`task0a_interrupted_transfer_v1`。冻结4698b0a源及原失败run保留不改，未来诊断使用另一个Git checkout。
+- 13:47诊断：独立Git源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_contract_ac74d9b`固定ac74d9b；已唯一提交纯API30次`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_choice_contract_20260930_v1`，0GPU/动作/重置。源码冻结/原失败包不改；具体result待核。本地备用`/home/wsy/behavior_worktrees/jev-contract-probe-20260930`未运行API。
+- 13:50：上述诊断30/30有效、34件已双端SHA取回`multitask/choice_contract_v1`。原协调器不重启，完成诊断后由主线程逐一接续原未用五槽，原actor源4698b0a/同名stage目录/预算保持，不混用ac74d9b诊断源。task0a旧失败目录不可复用。
+- 13:51首次接续task0b：`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_multi_20260930_task0b_v1`监管183698，4698b0a/原3600s，状态待；task1a/1b/3a/3b仍不存在，不是后台自动启动。
 - 12:29部署：新clean detached源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_multi_4698b0a`，完整commit `4698b0aa37edf5b2758286fa3a2d5dec3777533e`、implementation `403c74df8227e51b67203428e3033c3725f2bc56fe15e82fc4bbb54cbfd1ca69`；禁止热pull/编辑。六window真实核过、71 CPU目标通过。唯一API批`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_multi_20260930_api_v1`已提交，日志同级`.stdout.log`；新gate/campaign/episode尚未提交。
 - 12:31：API已完成54/54有效、9/9完整计划、result SHA `71cef4f9…7729be`；后台协调器87628已唯一启动，根`/mnt/nvme_tmp/robodojo_agentic_20260925/jev_multi_20260930_campaign_v1`，状态`campaign.json`、日志`coordinator.log`/各stage launch log。其顺序为gate0/gate3/task0a/task0b/task1a/task1b/task3a/task3b，各stage独立目录/监管，不因SSH断线重提。
 - 12:33：首gate0监管88005/actor88021正在native初始化、GPU1，运行源4698b0a不改；API19件全量已双端SHA取回`/home/wsy/behavior/artifacts/jev-control-20260929/multitask/api_v1/`，不含凭据/权重。

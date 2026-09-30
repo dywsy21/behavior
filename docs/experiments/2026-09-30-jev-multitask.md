@@ -72,6 +72,10 @@ task0a在decision6的第17次Jev调用（command）触发`Choice disagrees with 
 
 13:41失败全包326件已双端SHA核同，位于本地`artifacts/jev-control-20260929/multitask/task0a_infra_v1`，含全部RGB-D/逐决策/3.4s视频；本人看7帧，仅首次微前进＋保持，没有目标抓取。原state实际已RECOVER、选中的intent仍search（probe预检已纠正常量，不改变输入）；实际重建20184B/16选项、SHA `e1f9e1b252230df08ed9493cae794b86321d0c198cc5313d953799435de9d613`。30次API新结果待。
 
+13:50诊断结果：独立ac74d9b源上的`jev_choice_contract_20260930_v1`完整30/30有效，27次HOLD、3次base forward micro，214500输入/5850输出tokens；全34件本地`multitask/choice_contract_v1`双端SHA核同，result `390e1db0d29aa35540323cfaaef65815ab453b85daf2a431fbe4bd175c2f6096`。全部请求SHA一致，未重现argmax不符，但不据此否定原错误或宣称供应商已修复。没有任何新动作/SR。
+
+完成诊断后继续原未提交五槽：主线程逐例首次提交，不重启原协调器、不重跑/替换task0a、无新sim预算；仍4698b0a原源/同一准入证据，诊断补丁不进入本轮actor。每例官方终态、协议错误和未提交状态分开报告，task0完整率与六例总率在分母不齐时仍null，不用仅有效例的子集掩盖可靠性损失。
+
 ## 旁路：旧搜索停滞输入的敏感性，不修改本轮actor
 
 只使用JEV-04 decision3保存请求，源SHA `eefd27fccc3cb868aa351404eb164e3701853116e9a1085521a1e2be90b33aa5`。当时Jev已选择search、目标不可见、15动作均通过预检；底盘yaw候选实际存在，通用rotation字段却为false，且1/3/8°转动均尚未跨24-bin覆盖的下一中心。

@@ -10,10 +10,23 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:50（北京时间）：30次API未复现协议错，接续原未使用槽、不重跑失败例（Codex）
+
+- `jev_choice_contract_20260930_v1`在ac74d9b上完整30/30有效，同一重建request SHA全部一致，27 HOLD/3底盘micro前进；214500输入/5850输出tokens、0控制/重置/训练。result SHA `390e1db0d29aa35540323cfaaef65815ab453b85daf2a431fbe4bd175c2f6096`，全部34件已取回`multitask/choice_contract_v1`逐件双端SHA一致。未复现不等于旧错不存在/已修复；原16有效＋1拒绝失败记录不改，搜索停滞仍明显。
+- 完成协议诊断后，接续**原登记但未启动**的task0b/task1a/task1b/task3a/task3b，不新增/替换实例，不重跑task0a。仍使用原4698b0a、同两门/同原预算、argmax拒绝规则和0自动重试；诊断补丁不上线，因此不混源码。原协调器保持stopped，不重启；主线程逐例唯一提交/核验，再遇协议/基础设施失败即停该例检查，不能把它改作合法弃权或官方失败。无完整六例时总SR仍为null。
+- 13:48:56只读确认GPU1仅417MiB/余80735MiB，原源clean、五目录均不存在、队友GPU0/2/3保留；下一仅首次提交task0b TRAIN97/seed0。五例各≤3600s＋60s仍在原8h总登记上界内，不加sim预算。
+- 13:51实际启动回执：`jev_multi_20260930_task0b_v1`监管183698，4698b0a/原3600s/GPU1；首次运行TRAIN97（非138重试），真实模型/仿真状态待。剩余task1a/1b/3a/3b仍未提交，旧协调器不重启。
+
+### 2026-09-30 13:47（北京时间）：原失败状态30次纯API诊断唯一提交（Codex）
+
+- 备用通道Git部署成功，独立clean detached源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_contract_ac74d9b`固定ac74d9b，真实sim Python下78项CPU回归通过。仅提交`jev_choice_contract_20260930_v1`，30请求/1200s、CPU48–49、0GPU/仿真/动作/训练；具体回执与结果待，不重复提交。本地同commit备用checkout未运行API。
+- 原JEV-05 actor4698b0a与首例失败/两门均保持，剩余五例未动。协议异常复现与任务SR分开，异常不改写成合法弃权；先核新回执，再决定原未使用槽的接续条件。
+
 ### 2026-09-30 13:41（北京时间）：JEV-05失败全包验全及本人图审，API诊断待冻结（Codex）
 
 - `multitask/task0a_infra_v1`全326件已逐文件与远端SHA完全一致；3.4s/426160B视频已本人看7帧contact，场景仅首次微前进，后续原地保持，未见目标抓取/任务完成。首次SCP残片另留、不冒充全包。
 - 新诊断client/probe独审通过；820项全套/32.342s通过（5环境skip）。真实失败包预检发现原state已RECOVER而intent仍search，修正了probe准入常量（不改输入状态/actor），并重新核原SHA、20184B/16选项；重建请求SHA `e1f9e1b252230df08ed9493cae794b86321d0c198cc5313d953799435de9d613`。新30-call仍未提交，没有新的仿真重置或策略版本上线。
+- 13:45补记：RECOVER真实回执独立复核/78回归过，诊断提交`ac74d9bb077973388e9081995a998a8df1915d8b`已push。本地独立冻结`jev-contract-probe-20260930`已创建（未运行API）；直接SSH再次超时，但既有Windows stdio备用通道13:44:44（北京时间）实返服务器05:44:44 UTC，远端新诊断source/run尚未存在。正通过既有备用通道Git部署，不改VPN/转发/旧actor。
 
 ### 2026-09-30 13:37（北京时间）：协议拒绝诊断补齐、30次无执行复现登记（Codex）
 
