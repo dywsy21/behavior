@@ -2,7 +2,7 @@
 
 本文件是goal的执行总计划与实时进度入口，保留原有E0–E7路线、验收条件和执行证据。原路径为`docs/archive/MEMLITE_COORDINATION_EXECUTION.md`，2026-09-12按用户要求迁至此处；后续直接维护本文件，不再另建平行版本。
 
-当前仍是为50任务大训练筛选通用方法的小规模准备阶段。三人分工、任务ID和实验预算见[团队任务板](TEAM_PLAN.md)，通用RL路线见[RL方法计划](RL_METHOD_PLAN.md)，文件位置见[服务器目录表](SERVER_LAYOUT.md)。这些文档与本计划应同步维护，历史记录不得覆盖用户最新要求及当前预算。
+前期是为50任务大训练筛选通用方法的小规模准备阶段；2026-09-30起按用户明确授权启动新版100task阶段1，范围与预算以下方最新记录为准。三人分工、任务ID和实验预算见[团队任务板](TEAM_PLAN.md)，通用RL路线见[RL方法计划](RL_METHOD_PLAN.md)，文件位置见[服务器目录表](SERVER_LAYOUT.md)。这些文档与本计划应同步维护，历史记录不得覆盖用户最新要求及当前预算。
 
 **2026-09-30当前口径覆盖：** 用户已明确授权启动新版官方100task阶段1正式训练：lc1高层一遍、lc2低层累计120h，两层独立8卡DDP并接入W&B。最新真实启动状态见下方实时进度，操作入口见[阶段1手册](infra/MEMLITE_STAGE1_RUNBOOK.md)；下方早期50task/五task属于历史验证范围。阶段2/3不因此自动开跑。
 
@@ -11,6 +11,13 @@
 **续接约定（用户最新明确要求）：** 超参/训练方法答疑已经完成，不再重复回答，候选依据见[方法文档](experiments/2026-09-13-fm-training-method-candidates.md)。compact后从下方最新真实执行记录续做FM/AR训练与闭环，核验既有进程后再行动；不能把历史问句当成当前问题。此约定已加入AGENTS.md。
 
 ## 实时进度（最新记录在前）
+
+### 2026-09-30 21:25（北京时间）：高低层正式进程已启动，初始化核验中（Codex / TRAIN-MEM100-STAGE1）
+
+- lc1/lc2于13:25:10 UTC各自提交独立tmux：`memlite-stage1-high-20260930` / `memlite-stage1-low-20260930`，对应正式run `memlite_stage1_high_100task_v1` / `memlite_stage1_low_100task_v1`。原配置无preflight/无resume，从原B/A4开始fresh optimizer；正在核验8rank恢复/初始3200窗eval/step0保存及真实更新，**不把后台提交当训练通过**。
+- 两supervisor/torchrun分别449276/449289、1054575/1054588，ledger均RUNNING/attempt1/上限604800或432000秒。AGENTS仅同步本次明确获批的正式阶段1范围，保留新搜索和后续阶段另批规则。
+- 本地clean分支fetch/pull完成、origin/main仍33677bd；登记f798441已push。服务器GitHub fetch 25秒未完成，改用已push提交的Git bundle校验导入独立`src/stage1-formal-handoff-20260930`（f798441），与d0528b4的运行源码/配置diff为空；未声称直接pull成功、未改任何冻结运行源或共享env。
+- 当前日志入口为共享根下`runs/<正式run>.supervisor/{ledger.json,attempt_001.log}`；一遍/120h预算与全部安全门按21:24登记执行。下一记录真实W&B formal id、首更新/梯度回执；既有短验run仅历史证据。
 
 ### 2026-09-30 21:24（北京时间）：正式阶段1获批，启动前登记（Codex / TRAIN-MEM100-STAGE1）
 
