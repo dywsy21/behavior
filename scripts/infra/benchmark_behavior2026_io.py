@@ -59,7 +59,7 @@ def read_episode(job):
     import numpy as np
     import pyarrow.dataset as ds
     import torch
-    from torchcodec.decoders import VideoDecoder
+    from g05.data.lerobot.datasets.video_utils import decode_video_frames_torchcodec
     started = time.perf_counter()
     root, row, frames = Path(job['root']), job['row'], job['frames']
     episode, task = int(row['episode_index']), int(row['task_index'])
@@ -81,19 +81,18 @@ def read_episode(job):
     for key in KEYS:
         stem = 'videos/' + key
         path = root / f"{stem}/chunk-{int(row[stem+'/chunk_index']):03d}/file-{int(row[stem+'/file_index']):03d}.mp4"
-        decoder = VideoDecoder(str(path), device='cpu', num_ffmpeg_threads=1, seek_mode='exact')
         for frame in frames:
             timestamp = float(row[stem+'/from_timestamp']) + frame / 30.
-            decoded = decoder.get_frame_at(round(timestamp * 30))
-            if abs(float(decoded.pts_seconds) - timestamp) > 1/30 + 1e-4:
-                raise ValueError('Metadata/video frame clock mismatch')
-            pixels = decoded.data
-            if pixels.ndim != 3 or pixels.shape[0] != 3 or pixels.dtype != torch.uint8:
-                raise ValueError('Expected uint8 RGB CHW')
-            resized = torch.nn.functional.interpolate(pixels[None].float() / 255.,
+            # Match the actual LeRobot backend: a new approximate-seek
+            # decoder per camera/sample, actual stream FPS and its timestamp
+            # assertion. Do not amortize one exact decoder over four samples
+            # and mistake that for the existing training reader.
+            pixels = decode_video_frames_torchcodec(path, [timestamp], tolerance_s=.4/30, device='cpu')
+            if pixels.ndim != 4 or pixels.shape[:2] != (1, 3) or pixels.dtype != torch.float32:
+                raise ValueError('Expected float32 RGB BCHW from the real reader')
+            resized = torch.nn.functional.interpolate(pixels,
                          size=(256, 256), mode='bilinear', align_corners=False, antialias=True)
             resized_checks.append(float(resized.mean()))
-        del decoder
     if torch.cuda.is_initialized():
         raise RuntimeError('The I/O probe must not initialize CUDA')
     return dict(task=task, episode=episode, frames=frames, windows=len(frames),
@@ -128,7 +127,7 @@ def main():
             with (args.output / f'pass{pass_index}.json').open('x') as stream:
                 json.dump(result, stream, indent=2, allow_nan=False)
             print(json.dumps({key:value for key,value in result.items() if key!='rows'}), flush=True)
-    report = dict(status='complete', scope='grouped-episode raw RGB/action/state read plus resize proxy',
+    report = dict(status='complete', scope='real per-sample TorchCodec backend; grouped-episode raw Parquet/action/state read plus resize proxy',
                   production_memlite_loader=False, labels_used=False, model_updates=0,
                   first_pass_includes_worker_startup=True, second_pass_is_disk_warm_not_guaranteed_decoder_warm=True,
                   workers=args.workers, windows=800, corpus=corpus,

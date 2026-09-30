@@ -10,6 +10,18 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:25（北京时间）：batch128完成，较64计算吞吐提高76.5%；GPU测试结束（Codex / BENCH-MEM1F）
+
+- `batch128-v1`在05:23:10 UTC complete/exit0：global128=8×micro16/accum1，6预热＋24计时，3072观察/36.490185s = **84.187022样本/s**，平均1.520424s/更新；峰值allocated36.1100GiB/卡、reserved36.5605GiB，八rank恢复/322AE＋182LoRA grad全过、0 OOM。
+- 对64的47.685821样本/s，吞吐+76.54%、相同样本量计算时间约-43.36%；不是收敛/泛化提升。两臂共60临时更新、0部署checkpoint、无需128累积fallback；两个实际run及失败v1均保留。
+- CPU I/O入口对照现有`video_utils.py`后改用真实每样本TorchCodec近似seek/时间容差路径，不采用“一个exact decoder复用四帧”的更乐观代用品；动作/状态仍是grouped Parquet代理，非正式百任务MEM loader。原≤800窗口/600s预算不变，当前尚未启动，待新commit/三CPU回归与空卡门。
+
+### 2026-09-30 13:20（北京时间）：batch64真实短测完成，串行提交batch128（Codex / BENCH-MEM1F）
+
+- `batch64-v2`在05:18:07 UTC写complete并exit0：6预热＋24计时，1536观察/32.210833s = **47.685821样本/s**（平均1.342118s/更新）；八rank均322AE＋182LoRA实际grad、冻结组无grad，峰值allocated28.3696GiB/卡、reserved28.7051GiB。全模型1138/LoRA192逐字节恢复通过；不保存权重，不据十行重复微批的loss下降声称方法有效。
+- 该值含神经前后向/AdamW/DDP及缓存输入组batch/H2D，不含原视频解码/正式loader；不能直接称全100任务端到端实测。旧v1初始化失败0更新单独保留。
+- 空卡门通过后提交同冻结`7af393b`的`batch128-v1`（global128=8×micro16、accum1，6＋24更新/1200s上限），对应log同根`logs/`；不改模型/超参/源码，不热改env。CPU I/O探针三本地回归过、源3e7caa0已push，等待GPU臂全部结束再运行。
+
 ### 2026-09-30 13:18（北京时间）：八rank全权重恢复通过，准备独立百任务CPU I/O探针（Codex / BENCH-MEM1F）
 
 - `batch64-v2/restored_rank{0..7}.json`八件均已生成，1138模型状态/192LoRA逐字节恢复和322AE＋192LoRA可训练组检查通过；真实前后向预热仍在进行，无稳态吞吐结果。共享env无独立flash-attn，vision使用现有SDPA fallback，未为测速热装依赖。
