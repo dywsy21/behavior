@@ -137,9 +137,31 @@ def preflight(arch, rows):
                            context_tokens=int((context_mask != 0).sum()),
                            supervised_tokens=int(valid.sum()), ce_weight_sum=count,
                            outcome_and_terminal_masked=True))
+    mixed_checks = []
+    # Actual variable-length batches exercise left-padding and field offsets,
+    # not just the historically easier batch=1 prefix contract.
+    for training in (False, True):
+        probe.train(training)
+        for micro in (4, 8, 16, 32):
+            indices = [(i * 11) % len(rows) for i in range(micro)]
+            samples = [deepcopy(rows[i]['samples']) for i in indices]
+            ids, labels, attn, _ = processor.encode_train(samples, device=torch.device('cpu'),
+                training=training, max_chunk_token_length=4096, max_pad_token_length=None)
+            context, context_mask = processor.encode_inference(samples, device=torch.device('cpu'),
+                                                               mode='ar', training=training)
+            positions = Policy._context_positions(ids, attn, context, context_mask)
+            Policy._assert_tokenized_prefix_contract(probe, context, context_mask, samples)
+            spans = Policy._mask_unsupervised_ar_fields(probe, ids, labels, positions, samples)
+            weights, _ = Policy._planner_only_loss_token_weights(probe, labels, spans, samples=samples)
+            valid = labels[:, 1:] != -100
+            expected = sum(result[i]['ce_weight_sum'] for i in indices)
+            if float(weights[:, 1:][valid].sum()) != expected:
+                raise ValueError('Variable-length batch changed the single-row objective mask/weights')
+            mixed_checks.append(dict(training=training, micro=micro,
+                                     ce_weight_sum=expected, prefix_and_weight_identity=True))
     if torch.cuda.is_initialized():
         raise RuntimeError('CPU token preflight unexpectedly initialized CUDA')
-    return result
+    return result, mixed_checks
 
 
 def collate(rows, indices, device):
@@ -199,15 +221,19 @@ def main():
     arch = configuration()
     if args.cpu_preflight:
         args.output.mkdir(parents=True, exist_ok=False)
-        records = preflight(arch, rows)
+        records, mixed_checks = preflight(arch, rows)
         publish(args.output / 'result.json', dict(status='complete', commit=commit, rows=records,
-                input_sha256=receipt['sha256'], arch=arch, cuda_initialized=False))
+                mixed_batch_checks=mixed_checks, input_sha256=receipt['sha256'],
+                arch=arch, cuda_initialized=False))
         return
     if not args.token_receipt:
         raise ValueError('GPU measurement requires the successful CPU token receipt')
     token = json.loads(args.token_receipt.read_text())
     if token.get('status') != 'complete' or token['input_sha256'] != receipt['sha256'] or token['arch'] != arch:
         raise ValueError('CPU/GPU token/config identities disagree')
+    if len(token.get('mixed_batch_checks', [])) != 8 or not all(
+            check['prefix_and_weight_identity'] for check in token['mixed_batch_checks']):
+        raise ValueError('Missing variable-length CPU batch contract checks')
     plan = batch_plan(args.micro, args.capacity_only)
     selected = profile_indices(rows, token['rows'], args.profile)
     import torch.distributed as dist
