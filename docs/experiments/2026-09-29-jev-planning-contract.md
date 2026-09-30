@@ -42,3 +42,5 @@
 22:32：新implementation `459f7f38425f86204a3eba5c82d2edf89c34f76b86a39c8ee495e478e1fe0076`，gate0已唯一启动监管4087367（24检查/1800s原门预算），正在加载场景；gate3及唯一episode待。
 
 22:51：gate0已completed/actor exit0，24检查过（19到达、4夹爪完成、1安全预检拒绝），440controls/112同步采集，总1104.496s/动作565.021s/清理0.384s、全部执行freshness通过。新gate3已唯一提交监管4092867，保持同源及原预算；工程门不能代替任务成功率，episode尚未提交。
+
+9月30日10:45状态复核：gate3已在29日23:09:52结束，completed/actor exit0、gate_ok=true、24检查同上分布/440controls/112同步采集、全部执行freshness过；总1111.158s/动作566.431s/清理0.383s。result SHA `39f47befce1872ecd6b6f2f27836f3ff3e6780094feb92c30af8e31872fd6227`。两工程门已过，但episode1目录不存在，未提交、无新成功率；上次只将gate3放到独立后台，没有gate→episode自动串联。当前四GPU空闲，本轮状态查询不启动新负载，下一仍为已批准的单条原始起点闭环。

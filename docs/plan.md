@@ -10,10 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 10:45（北京时间）：JEV-04状态复核，两工程门已过、正式闭环未提交（Codex）
+
+- robo实际只读复核：`jev_plan_20260929_gate3_v1`已于9月29日23:09:52完成（supervisor文件mtime，UTC+8），监管completed/actor exit0；24检查为19 TARGET_REACHED、4夹爪完成、1安全预检拒绝，gate_ok=true/无失败、全部执行freshness通过。440controls/112同步采集，总1111.158s/动作566.431s/清理0.383s；同211a6f8/459f7f38源。result SHA `39f47befce1872ecd6b6f2f27836f3ff3e6780094feb92c30af8e31872fd6227`，native SHA `e914dcfc…bc7852`。
+- 两工程门均完成，但`jev_plan_20260929_episode1_v1`目录实际不存在，**正式Jev任务闭环未提交，没有新增任务SR**。上次会话停止时只启动了独立gate3，没有自动串行到episode的后台编排；不是API额度用尽或GPU等待。4092867/4092878均退出，10:44核四GPU均0MiB/0%使用。
+- 本轮仅核查、取回gate3的result/supervisor/launch三件小回执（本地`artifacts/jev-control-20260929/planning_contract/gate3/`）并更新计划，未新增API、模拟器或训练。下一仍是已批准同源单次task0 TRAIN138/seed0、64决策/2048controls/3600s总的全Jev闭环，启动前重新资源预检；不重跑已过门、不扩重置预算。fetch确认main/本分支无远端遗漏，保留上次自有plan未提交记录，未强pull。
+
 ### 2026-09-29 22:51（北京时间）：JEV-04新gate3唯一启动（Codex，运行中）
 
 - 同211a6f8冻结源，`jev_plan_20260929_gate3_v1`监管4092867已唯一提交，task3 TRAIN242/seed0、GPU1/CPU88–91，24检查/1536controls/1800s总/60s清理；启动器已核新API资格和源身份。实际门结果待，episode1未提交；0模型/训练、不热改运行源。
 - 22:53 gate0七件回执/14.6s视频已完整取回`/home/wsy/behavior/artifacts/jev-control-20260929/planning_contract/gate0/`，双端SHA全同，result `3bcb6ed1…363da9`；本人抽帧查看夹爪与三路画面，无黑帧，工程视频不计任务完成。gate3 actor4092878实际loading_scene；未重复启动。
+- 23:00 gate3 native_profile_validated，reset/load242/reset均completed、physical GPU1确认，进入动作检查；仍待最终门结果，episode1未提交。
 
 ### 2026-09-29 22:51（北京时间）：JEV-04新gate0通过，接续同源gate3（Codex）
 

@@ -3,7 +3,7 @@
 ## Jev规划契约修复（2026-09-29，JEV-04）
 
 - 冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_plan_211a6f8`，commit `211a6f8d7dac6b038c6b44ccf04c9eb2c6175ee5`，implementation `459f7f38425f86204a3eba5c82d2edf89c34f76b86a39c8ee495e478e1fe0076`；禁止热pull/编辑。当前本地开发仍`feat/jev-control-20260929`工作树。
-- run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_plan_20260929_{api,gate0,gate3,episode1}_v1`；sim runtime同名在`/mnt/nvme_tmp/robodojo_sim_runtime_20260925/`。22:31 api_v1已25实际请求/qualified；22:51 gate0 completed/440controls，gate3唯一监管4092867已启动，episode1未提交。旧JEV-03的`jev_all_`目录保留不复用。
+- run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_plan_20260929_{api,gate0,gate3,episode1}_v1`；sim runtime同名在`/mnt/nvme_tmp/robodojo_sim_runtime_20260925/`。api_v1已25实际请求/qualified；9月30日10:45复核gate0/3均completed/各440controls，gate3于29日23:09:52结束，旧4092867/4092878均退出；episode1目录不存在、未提交，无后台串联。旧JEV-03的`jev_all_`目录保留不复用。
 - 本地回执/视频归档`/home/wsy/behavior/artifacts/jev-control-20260929/planning_contract/`。新任务配置v3固定官方原文与用户策略来源；真实API/工程门/动作所有权/成功率各自独立。说明见[JEV-04](experiments/2026-09-29-jev-planning-contract.md)。
 
 ## Jev全策略决策（2026-09-29，JEV-03）
