@@ -1483,6 +1483,21 @@ class G05PolicyMEMLitePlannerOutcome(G05PolicyQwen35):
                         * self.model.ar_helper.ce_weight * self.language_loss_weight
                     )
         metrics.update(outcome_metrics)
+        if self.planner_only:
+            # These statistics describe the exact shifted, evidence-masked,
+            # memory-weighted CE used above, not an average of microbatch means.
+            mask = cache["mask"]
+            token_loss = cache["token_loss"]
+            weights = cache["token_weights"]
+            owners = torch.arange(len(samples), device=device).unsqueeze(1).expand(
+                -1, labels.shape[1] - 1).reshape(-1)[mask]
+            denominator = torch.zeros(len(samples), device=device, dtype=torch.float32)
+            numerator = torch.zeros_like(denominator)
+            denominator.scatter_add_(0, owners, weights.float())
+            numerator.scatter_add_(0, owners, (token_loss * weights).float())
+            numerator *= self.model.ar_helper.ce_weight * self.language_loss_weight
+            metrics.update(loss_denominator=denominator.sum(), row_loss_numerator=numerator,
+                           row_loss_denominator=denominator)
         return total, metrics
 
     def get_optim_param_groups(

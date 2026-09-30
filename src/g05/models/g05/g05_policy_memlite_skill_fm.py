@@ -222,7 +222,7 @@ class G05PolicyMEMLiteSkillFM(G05PolicyQwen35):
         # G05Policy.forward_train is the audited encode_train -> G05Model ->
         # FMHelper graph.  With memlite_train_mode=off it cannot fall into the
         # CE-only MEM-Lite branch.
-        return super().forward_train(
+        loss, metrics = super().forward_train(
             samples=samples,
             pixel_values=pixel_values,
             actions=actions,
@@ -230,6 +230,13 @@ class G05PolicyMEMLiteSkillFM(G05PolicyQwen35):
             action_dim_is_pad=action_dim_is_pad,
             **kwargs,
         )
+        helper = self.model.fm_helper
+        n, b = helper.num_flow_samples, len(samples)
+        numerator = helper._last_row_numerator.reshape(n, b).sum(0) * helper.fm_weight
+        denominator = helper._last_row_denominator.reshape(n, b).sum(0)
+        metrics.update(loss_denominator=denominator.sum(), row_loss_numerator=numerator,
+                       row_loss_denominator=denominator)
+        return loss, metrics
 
     def coordination_trainable_parameter_groups(self):
         groups = defaultdict(list)

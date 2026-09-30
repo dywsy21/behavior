@@ -235,6 +235,10 @@ class FMHelper:
             )
 
         weighted_l2 = action_weights * l2
+        # Detached sufficient statistics for exact distributed normalization
+        # and task-wise eval. No change to the FM objective or its gradient.
+        self._last_row_numerator = weighted_l2.detach().float().sum(dim=(1, 2))
+        self._last_row_denominator = action_weights.detach().float().sum(dim=(1, 2))
         weight_sum = torch.clamp(action_weights.sum(), min=1.0)
         return weighted_l2.sum() / weight_sum
 

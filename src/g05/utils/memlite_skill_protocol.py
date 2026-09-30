@@ -29,16 +29,36 @@ SKILL_MAPPING: dict[tuple[int, str], str] = {
     (3, "place on"): "PLACE_ON",
     (4, "place in"): "PLACE_IN",
     (5, "hand over"): "HANDOVER",
+    (6, "insert"): "INSERT",
+    (8, "release"): "RELEASE",
     (9, "open drawer"): "OPEN_DRAWER",
     (10, "open door"): "OPEN_DOOR",
     (11, "close drawer"): "CLOSE_DRAWER",
     (12, "close door"): "CLOSE_DOOR",
     (13, "open lid"): "OPEN_LID",
     (14, "close lid"): "CLOSE_LID",
+    (19, "attach"): "ATTACH",
+    (28, "pour"): "POUR",
+    (34, "chop"): "CHOP",
+    (46, "wipe hard"): "WIPE_HARD",
+    (50, "sweep surface"): "SWEEP_SURFACE",
+    (61, "hang"): "HANG",
     (67, "press"): "PRESS",
+    (69, "turn on switch"): "TURN_ON_SWITCH",
+    (70, "turn off switch"): "TURN_OFF_SWITCH",
+    (88, "ignite"): "IGNITE",
     (90, "push to"): "PUSH",
     (91, "place on next to"): "PLACE_NEXT_TO",
+    (92, "place in next to"): "PLACE_IN_NEXT_TO",
     (93, "turn to"): "TURN_TO",
+    (94, "hold"): "HOLD",
+    (95, "spray"): "SPRAY",
+    (98, "place under"): "PLACE_UNDER",
+    (99, "tip over"): "TIP_OVER",
+    (100, "push tray"): "PUSH_TRAY",
+    (101, "pull tray"): "PULL_TRAY",
+    (102, "sweep off"): "SWEEP_OFF",
+    (103, "lift"): "LIFT",
 }
 VALID_SKILLS = frozenset({*SKILL_MAPPING.values(), "SKILL_UNKNOWN", "RECOVERY_BRAKE", "RECOVERY_ALIGN", "RECOVERY_APPROACH", "RECOVERY_SETTLE"})
 VALID_OUTCOMES = frozenset({"IN_PROGRESS", "SUCCEEDED", "FAILED", "UNKNOWN"})
@@ -456,7 +476,15 @@ _UNBOUND_RELATION_SOURCE_KEYS = frozenset({
 # This is the entire vocabulary observed in the frozen five-task raw v6
 # sidecar (see ``memlite_v6_unbound_relation_full_inventory_20260909.json``).
 # Adding a new relation is a schema review, never an implicit text passthrough.
-_UNBOUND_SPATIAL_RELATIONS = frozenset({"in_front_of", "face"})
+_UNBOUND_SPATIAL_RELATIONS = frozenset({
+    "in_front_of", "face", "to_the_edge_of", "right", "left", "center",
+    "high_level", "middle_level", "low_level", "under", "away", "near",
+    "reorient", "face_away", "right_door", "left_door",
+    "first_right_door", "first_left_door", "second_right_door", "second_left_door",
+    "right_upper_door", "right_lower_door", "layer_2", "layer_3", "layer_4",
+    "layer_5", "layer_6", "1x1", "1x3", "2x1", "2x2", "2x3", "3x1",
+    "3x2", "3x3", "4x1", "4x2", "4x3",
+})
 
 
 def _relation_text_leaves(value: Any, *, field: str) -> list[str]:

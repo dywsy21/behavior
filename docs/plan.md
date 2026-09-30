@@ -10,6 +10,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 18:42（北京时间）：精确混任务采样器实施及首测通过（Codex / IMPL-MEM100-STAGE1）
+
+- 新`stage1_sampling.py`实现8×4×8/8×32独立DDP、每个真实观察每遍一次、逐rank微批≥2task、末两更新变长重排（不复制、不丢弃、不向模型喂padding样本），resume只使用trainer已提交游标。`tests/test_stage1_sampling.py`四项通过，穷举256种尾数×两配方，含任务修复/不可实现拒绝/epoch与resume一致性。尚未真实千万索引测试，不据单元检查称正式sampler已验收。
+- 数据只读检查发现annotation valid_duration与实际length并非总相等，正在追溯官方转换和可视边界；旧B TRAIN/eval清单已可读取，保留旧留出来源不回灌。当前GPU更新仍0，W&B未登录；下一实现严格恢复/全局归一/存取并完成真实时钟证明，不猜统一偏移。
+- 18:47代码进展：从原审过A4/B源迁入独立`memlite_stage1.py` processor/builders；官方20k注释全表读取确认35个exact技能对、406,341个单技能记录，补齐20枚举与受控空间词表，未透传annotation memory。新interval builder保持固定phase、因果历史且低层在任何bundle/parent变化截断；CE/FM暴露detach逐行分子分母，目标未改，接线/新测试待。查明新A800 task0 metadata与robo原件首两行完全相同（并非迁移新加180帧），已导出原950TRAIN/50eval身份，尚不据此推断全部边界均正确。
+- 18:58新增独立正式构造/恢复模块、compact候选构建、fail-closed RGB/action reader、原子checkpoint/RNG/累计墙钟、rank0 W&B安全接口；尚未启动GPU/未登录W&B，代码待A800真实env回归。新标签单测本地因g05.data导入OmegaConf缺失未收集，转已配共享env验证，不修改env；本地采样四项/语法检查已过。保留原checkpoint正常化坐标系（不直接套全数据含eval stats或无声明重拟合），需继续核来源与范围。原ep27/821已知歧义拟整源隔离，并对全量相反方向HANDOVER自动拒绝；候选manifest不会自动成为可训练release。
+
+### 2026-09-30 18:32（北京时间）：正式阶段1训练链与W&B实施开始（Codex / IMPL-MEM100-STAGE1）
+
+- 最新用户授权补齐正式训练链/W&B并为**lc1高层、lc2低层**做好准备，覆盖旧lc3低层建议；不开一遍/120h正式长训。已fetch/pull、main仍33677bd，新`feat/memlite-stage1-lc12-20260930`纳入0588d0e；无active goal，不重开历史任务。
+- 复用现有VPN，仅建立本任务lc1/lc2 SSH连接；两节点16卡此刻均0MiB，共享盘余4.0T。不改共享env/旧运行目录，不用lc3/4 GPU。单一工程假设：正式100任务固定phase stride16、混任务无重复loader与严格恢复/全局loss/恢复预算可以保持已验单帧计算合同。
+- 本轮范围：S1–S9实施与测试、原始数据到紧凑标签/索引的CPU准备（100task/20k episode，原数据只读，禁止捏造outcome）、本人分层图审、W&B安全登录/短run验证。CPU单个全量作业上限60分钟/32worker/新增20GiB；图审缓存≤1GiB。GPU验收每节点累计≤64次临时更新/60分钟，须先过数据/恢复门，失败到限即复核，不自动长训；每次运行前固定commit、资产/manifest SHA和日志。
+- 当前只完成基础连接和原实现检查，未发布标签/新loader、0GPU更新、W&B未登录。下一先核逐episode时间轴及旧holdout身份，实施独立正式入口，避免改坏旧实验路径；状态持续记入本节。
+
 ### 2026-09-30 18:08（北京时间）：阶段1最终审查未放行，方案与9项阻塞已登记（Codex / REVIEW-MEM100-STAGE1）
 
 - [新方案/完整审查](experiments/2026-09-30-memlite-stage1-plan-and-readiness.md)覆盖旧预算：高层一遍、global256=8×4×8，约111–119h纯计算；低层global256=8×32，建议累计作业墙钟120h或200k更新先到为止。按80%–90%计算占比的3.32–3.73遍仅敏感性示例，不是正式loader实测。建议lc3低层/lc1高层独立DDP，未分配或排队；后续阶段方向不变。
