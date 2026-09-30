@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:18（北京时间）：八rank全权重恢复通过，准备独立百任务CPU I/O探针（Codex / BENCH-MEM1F）
+
+- `batch64-v2/restored_rank{0..7}.json`八件均已生成，1138模型状态/192LoRA逐字节恢复和322AE＋192LoRA可训练组检查通过；真实前后向预热仍在进行，无稳态吞吐结果。共享env无独立flash-attn，vision使用现有SDPA fallback，未为测速热装依赖。
+- 新增CPU I/O入口：固定seed73，从100任务各一episode取4个合法32动作窗口，读三RGB/23D原动作/61D原状态并resize；最多两pass共800窗口、32worker、600s硬上限，在两GPU计算臂退出后串行执行，避免互相争CPU。只作grouped-episode I/O代理、0模型/标签/训练，不冒充正式MEM-Lite shuffled loader或训练数据发布。
+- 本地三项边界回归/py_compile待执行，入口尚未服务器启动；总有限读取仍小于原10k、CPU作业预算不扩容。旧GPU冻结源7af393b不改。
+
+### 2026-09-30 13:14（北京时间）：修后七项CPU通过，batch64-v2已提交（Codex / BENCH-MEM1F）
+
+- `7af393b`已push，同commit经Git bundle verify/fetch在新`src/mem1f-7af393b`冻结；实际七项CPU回归3.038s全过，旧源和失败证据未改。
+- 空卡门再次通过，提交`batch64-v2`（对应同名log），原30更新上限、扣除v1后的1100s硬超时；仍须看真实恢复回执、首前后向和终态，不默认成功。0部署权重输出，batch128待串行。
+
 ### 2026-09-30 13:09（北京时间）：batch64-v1在设备比较校验失败，0更新，修复后有限续跑（Codex / BENCH-MEM1F）
 
 - v1在05:08:38 UTC权重逐张量检查报CPU/GPU device mismatch：真实G05构造器已将部分模块置CUDA，检查器错误假设全在CPU；不是模型张量缺失或OOM。torchrun自动终止自有八rank，13:08:42核八卡0MiB，0优化更新；失败run/冻结源2193368保留。
