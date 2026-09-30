@@ -56,6 +56,9 @@ def load_task_plan(path, task_id):
     if len(raw) > 20_000:
         raise ValueError("Bounded task plan required")
     value = json.loads(raw)
+    if isinstance(value, dict) and value.get("schema") == "jev-task-slots-v4":
+        from .jev_task_slots import load_slots
+        return load_slots(value, raw, task_id)
     if (set(value) != {"schema", "task_id", "goals", "dependencies", "target_references", "official_instruction", "strategy_provenance"} or value["schema"] != "jev-task-plan-v3"
             or type(value["task_id"]) is not int or value["task_id"] != task_id):
         raise ValueError("Explicit plan must match this task")
@@ -101,16 +104,29 @@ def planning_request(goals, identity, instruction, ordered_indices):
     Dependencies constrain order here; the existing runtime checks remain the
     authority on whether any held-object action may actually execute.
     """
+    if identity.get("schema") == "jev-task-slots-v4":
+        from .jev_task_slots import slot_request
+        return slot_request(identity, instruction, ordered_indices)
     if instruction != identity["official_instruction"]:
         raise JevError("Official task instruction differs from the qualified task contract")
-    selected = set()
+    selected, occupied = set(), set()
+    def arms(goal):
+        return {"left", "right"} if goal.hand == "both" else {goal.hand}
+    def resources_allow(goal):
+        if goal.kind == "pick":
+            return not occupied
+        if goal.kind == "place":
+            return arms(goal) <= occupied
+        return True
     for index in ordered_indices:
         if (type(index) is not int or not 0 <= index < len(goals) or index in selected
-                or not set(identity["dependencies"][index]) <= selected):
+                or not set(identity["dependencies"][index]) <= selected or not resources_allow(goals[index])):
             raise ValueError("Invalid hypothetical plan prefix")
         selected.add(index)
+        if goals[index].kind == "pick": occupied.update(arms(goals[index]))
+        elif goals[index].kind == "place": occupied.difference_update(arms(goals[index]))
     eligible = [i for i in range(len(goals)) if i not in selected
-                and set(identity["dependencies"][i]) <= selected]
+                and set(identity["dependencies"][i]) <= selected and resources_allow(goals[i])]
     if not eligible:
         raise ValueError("No remaining eligible planning slot")
     state = {
@@ -298,6 +314,9 @@ class JevGroundedPolicy:
         self.task_id, self._deadline = task_id, None
         self.last_call, self.reference_calls = None, 0
         self.planned_goals = None
+        self.planned_indices = None
+        self.plan_ownership = None
+        self.reference_limit = len(self.goals)
         self.planning_started = False
 
     @property
@@ -306,7 +325,8 @@ class JevGroundedPolicy:
                 "observer_only": self.observer.identity, "task_plan": self.plan_identity,
                 "decision_scope": "jev_all_strategy_choices_v2",
                 "finite_choice_kinds": ["reference"], "vlm_action_calls": 0,
-                "vlm_plan_calls": 0, "vlm_recovery_calls": 0}
+                "vlm_plan_calls": 0, "vlm_recovery_calls": 0,
+                "semantic_reference_limit": self.reference_limit}
 
     @property
     def deadline(self):
@@ -340,7 +360,7 @@ class JevGroundedPolicy:
         # Check the instruction before spending a request, even on the first slot.
         planning_request(self.goals, self.plan_identity, instruction, [])
         self.planning_started = True
-        ordered, receipts, chosen_indices = [], [], []
+        ordered, receipts, chosen_indices, planning_calls = [], [], [], []
         self.last_call = {"request": {"images": [], "task": instruction}, "result": {
             "source": "jev_selected_goal_order", "planning_status": "in_progress",
             "task_requirements": self.plan_identity, "planning_calls": receipts,
@@ -348,19 +368,50 @@ class JevGroundedPolicy:
         while len(ordered) < len(self.goals):
             state, questions = planning_request(self.goals, self.plan_identity, instruction, chosen_indices)
             result, receipt = self.client.evaluate(state, questions)
+            planning_calls.append(self.client.calls)
             receipts.append(receipt)
             self.last_call["result"]["model_calls"] = len(receipts)
             selected = result["answers"]["next_goal"]["choice"]
             if selected == "abstain":
                 self.last_call["result"]["planning_status"] = "abstained_no_action"
                 raise JevAbstained("Jev declined the task plan; no action authorized")
-            index = int(selected.removeprefix("goal_"))
-            chosen_indices.append(index)
-            ordered.append(self.goals[index])
+            if self.plan_identity.get("schema") == "jev-task-slots-v4":
+                from .jev_task_slots import slot_options
+                index, goal = slot_options(self.plan_identity, chosen_indices)[selected]
+                chosen_indices.append(selected)
+            else:
+                index = int(selected.removeprefix("goal_"))
+                goal = self.goals[index]
+                chosen_indices.append(index)
+            ordered.append(goal)
             self.last_call["result"]["selected_goal_ids"].append(selected)
+        parse_plan(json.dumps([asdict(g) for g in ordered]))
+        if self.plan_identity.get("schema") == "jev-task-slots-v4":
+            from .jev_task_slots import materialize_slots
+            verified, indices = materialize_slots(self.plan_identity, chosen_indices)
+            if verified != ordered:
+                raise JevError("Materialized task plan differs from selected slots")
+        else:
+            indices = chosen_indices
         self.planned_goals = tuple(ordered)
+        self.planned_indices = tuple(indices)
+        proof = {"schema": "jev-complete-plan-ownership-v1", "task_id": self.task_id,
+                 "task_plan_sha256": self.plan_identity["sha256"],
+                 "selected_goal_ids": list(self.last_call["result"]["selected_goal_ids"]),
+                 "slot_indices": list(indices), "goals": [asdict(g) for g in ordered],
+                 "target_references": [self.plan_identity["target_references"][i] for i in indices],
+                 "planning_calls": planning_calls}
+        proof["plan_sha256"] = hashlib.sha256(json.dumps(proof, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        self.plan_ownership = proof
         self.last_call["result"].update(text=json.dumps([asdict(g) for g in ordered]), planning_status="complete")
         return list(ordered), self.last_call
+
+    def goal_authority(self, index, goal):
+        if (self.plan_ownership is None or type(index) is not int or not 0 <= index < len(self.planned_goals)
+                or goal != self.planned_goals[index]):
+            raise JevError("Execution goal is not from the Jev-selected task plan")
+        return {"plan_sha256": self.plan_ownership["plan_sha256"], "goal_index": index,
+                "selected_option": self.plan_ownership["selected_goal_ids"][index], "goal": asdict(goal)}
 
     def _observe(self, method, *args):
         self.last_call = None
@@ -463,9 +514,14 @@ class JevGroundedPolicy:
         require_time(self.deadline)
         if not harness.held_inspection_enabled or not harness.reference_from_planner:
             raise ValueError("Explicit semantic reference mode required")
-        if harness.goal not in self.goals:
-            raise JevError("Unknown goal cannot obtain a task reference")
-        required = self.plan_identity["target_references"][self.goals.index(harness.goal)]
+        if self.planned_goals is not None:
+            self.goal_authority(harness.index, harness.goal)
+            index = self.planned_indices[harness.index]
+        else:
+            if self.plan_identity.get("schema") == "jev-task-slots-v4" or harness.goal not in self.goals:
+                raise JevError("Unknown or unplanned goal cannot obtain a task reference")
+            index = self.goals.index(harness.goal)
+        required = self.plan_identity["target_references"][index]
         if required.startswith("held_") and not harness.hold_verified[required[5:]]:
             harness.stop_reason = "TASK_DEPENDENCY_REQUIRES_VERIFIED_HOLD"
             return None
@@ -476,7 +532,7 @@ class JevGroundedPolicy:
             if reference.startswith("held_") and not harness.hold_verified[reference[5:]]:
                 harness.stop_reason = "TARGET_REFERENCE_REQUIRES_VERIFIED_HOLD"
             return None
-        if self.reference_calls >= 4:
+        if self.reference_calls >= self.reference_limit:
             harness.stop_reason = "SEMANTIC_REFERENCE_CALL_BUDGET_REACHED"
             return None
         options = {"unknown": "Relationship cannot be established from the supplied claims."}

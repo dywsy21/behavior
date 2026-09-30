@@ -10,6 +10,42 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 12:27（北京时间）：JEV-05第二包独审通过，准备Git冻结部署（Codex）
+
+- 第二包独立只读审查无实质阻断，10项campaign/evidence/coordinator独立回归通过；当前完整implementation `403c74df8227e51b67203428e3033c3725f2bc56fe15e82fc4bbb54cbfd1ca69`，registry `40454b2a560960198fe2b9e745078ccf6d1f11ec5dfa3f2ede1c294268d760e2`。最终813复验/48.213s通过、5环境skip，准备显式暂存小文件commit/push；不在旧运行目录热更新。
+- 真实准入顺序：新冻结checkout重核六window实际字节/身份与CPU测试→一次9-trial/54请求上界API批→新两工程门→六例后台串行；策略失败或合法弃权照常保留/继续，接口/资源错误停下不重试。任务范围/预算未扩；JEV-04结果已追加其原实验文档，避免旧“未提交”记录被误读为当前状态。
+
+### 2026-09-30 12:24（北京时间）：JEV-05统一入口/后台串联/统计实现，等待第二包独审（Codex）
+
+- `launch_jev_closedloop.py --campaign multitask`绑定六例registry/统一96决策协议，强制完整或合法弃权计划与实际配置审计；新增`probe_jev_multitask.py`（固定三任务各3试/54请求上界，合法弃权仍准入）、`run_jev_campaign.py`（独立后台两门→六例，8小时/不重提）及`summarize_jev_campaign.py`（全六槽/原始分母/不同源拒混）。首次安全停止允许零策略动作但integration=false，实际control仍须逐项归属；命令弃权行也核goal/hand。
+- 全套809测试/35.606s通过、5环境skip；新增API合法弃权/缺trial/账本篡改/统计混预算等8目标通过，最终全套与第二包独审进行中。协议见`docs/experiments/2026-09-30-jev-multitask.md`。新API/仿真尚未提交，待冻结Git源后真实准入。
+- 12:16只读robo确认旧39314/39496/39568均已退出；GPU1 417MiB/余80736MiB，仅队友既有小上下文，GPU0/2/3有队友负载、NVMe余1.4TiB。不动队友任务/共享env；新实验仅GPU1并持续资源监管。
+
+### 2026-09-30 12:08（北京时间）：JEV-05多任务槽与计划归属第一包已实现并独审（Codex）
+
+- 新v4任务槽、task1/3完整目标、slot+hand同次Jev选择、同物抓放同手、单持物约束及完整计划/逐动作goal证明已实现；61项目标测试通过。独审穷举task1/3分别157/2875合法前缀、48/960完整计划，无死锁；发现task3关冰箱不应依赖洗碗分支，已改为只依赖两pizza放入，并加close-before-bowls回归（8项通过）。尚未部署，不以本地测试当成功率。
+- 六实例统一registry及run_v2入口已写，window/robot/plan SHA绑定；task3配置SHA `451b267c7e75df913ab63eb00c4bfa630f290bedff1aad70bb7e433ffe340581`。下一补launcher强制完整计划契约审计、有限后台串联、统一统计及CPU/独审，然后Git冻结和两门→六条原始起点评测。预算仍11:46所登记，0训练/0新模拟器启动。
+- JEV-04 episode1的14件回执/5.6s视频已本地归档`artifacts/jev-control-20260929/planning_contract/episode1/`并双端SHA核同；本人看contact sheet确认非黑帧、机器人两次小前移/其余停滞，未到抓取。旧源/run不改。续接fetch确认main无遗漏，自有未提交工作保留，故未强pull。
+
+### 2026-09-30 11:52（北京时间）：JEV-04端到端真实控制通过，收音机0/1；JEV-05多任务仍待（Codex）
+
+- `jev_plan_20260929_episode1_v1`监管completed/actor exit0、1057.997s总/415.401s动作/0.700s清理，24 Jev有效请求＋11仅感知请求；10实际策略动作全部经durable choices和169个control逐项审计归Jev，`control_integration_validated=true`、0非Jev策略动作，另1最终安全HOLD。result SHA `bfdfb629…d6225ce`、ownership SHA `21c6f1c5…fd780a3`；真实原始TRAIN138、0前缀。
+- 官方success=false、终态未自然结束、goal0未满足；停止`MODEL_REQUESTED_SAFE_STOP`。动作分布2次base forward micro、8次HOLD，168策略controls＋1安全control，未抓取/按键。当前这一源和64决策协议仅task0 **0/1**，不混入新多任务分母；端到端通过不是策略有效。
+- 中段实际输入显示搜索intent已被Jev选择，但15候选中command HOLD屡次胜出（例如decision3 HOLD0.28、abstain0.20）；候选均有preflight证明、无即刻hazard，却有大量通用限制和unknown进度，搜索各方向概率分散是待API对照的假设，不能直接当根因定论。新v4多任务槽模块及task1/3完整配置已在本地起草，尚未测试/冻结/部署；下一持久证据/视频归档＋真实失败输入非执行API对照＋多任务实现与独审，仍0训练。
+
+### 2026-09-30 11:46（北京时间）：JEV-05通道恢复及多任务有界协议登记（Codex）
+
+- 用户恢复连接后只读确认原39314/39496/39568全部live、监管actor_running，native_profile_validated/GPU1，未重启。通道问题已解除；正式episode结果仍待。源码211a6f8保持不改。
+- 多任务候选固定task0 turning_on_radio TRAIN138/97，task1 picking_up_trash TRAIN141/190，task3 cleaning_up_plates_and_food TRAIN242/102；均seed0/原始起点/0演示或保存动作前缀，每任务2不同既有TRAIN实例（开发评测，非盲测）。官方tasks.jsonl原文和六window SHA已实际读取；新任务源码完成独审/API及工程准入后，再一次性登记6条新run，统一96决策/3072controls/2400s动作/3600s总/60s清理，0训练。每轮全保留，不因失败替换实例；当前JEV-04的64决策诊断单列、不混入新分母。六条为初筛上限，不自动扩大。
+- task1/3的新v4任务槽只规定官方对象/目的地/必要依赖；可用hand由Jev在next_goal中选，pick/place绑定同手，非依赖子任务顺序由Jev选；执行器只约束自身不支持的同时多物持有。独审已确认原重排缺少占手复验、固定4次reference会限制长计划，这些是要修的结构性缺口。完整目标分别为3 cans入同一kitchen trash、2 pizza-on-plate入同一fridge＋2 bowls同一sink＋fridge关闭，不缩为单抓取成功。
+
+### 2026-09-30 11:33（北京时间）：JEV-05目标扩为端到端接入及多任务成功率，首条实际闭环启动（Codex，运行中）
+
+- 用户最新goal为“验证完端到端的jev接入，汇报给我多个任务的成功率”，不再以两工程门或单任务离线选择作为完成。上轮真实核定第二门终态并保存证据属progress；本轮先继续已通过准入的JEV-04原始task0，再补多任务入口/协议及有界评测，0训练、Jev所有策略选择、27B只感知、官方成功判据保持。
+- `jev_plan_20260929_episode1_v1`已唯一提交监管39314，同冻结211a6f8/459f7f38，task0 TRAIN138/seed0、0演示前缀，64决策/2048controls/2400s动作/3600s总/60s清理、Jev192/observer151上界。启动器重核API/两门/资源成功，正在观察模型身份/启动；不能以提交代替端到端通过，旧源不热改。
+- owner本线程，假设是修复入口契约后Jev可在真实感知—选择—执行—反馈循环内控制；同时检查现有多任务覆盖缺口，选官方元数据可证实的异质任务，固定实例/seed和相同预算后分别报告原始成功/失败及接口故障，不以只报成功实例筛选样本。具体多任务预算、配置与冻结源在实施前追加；已clean fetch/pull，本分支/main无遗漏，不动队友或其他机器。
+- 11:35最后成功实查：观察模型39496 health通过，actor39568已启动/监管actor_running，native loading_scene；之后直接ssh多次关闭/握手超时，既有Windows stdio备用也关闭。11:38已非阻塞请求恢复原robo通道；观测中断不等于作业停止，不重提39314这次run、不改VPN/转发配置，继续本地实现。官方0/1/3任务原文及首TRAIN实例138/141/242已读出；4次reference硬上限和任务入口白名单是多任务必须补齐的确定缺口。
+
 ### 2026-09-30 10:45（北京时间）：JEV-04状态复核，两工程门已过、正式闭环未提交（Codex）
 
 - robo实际只读复核：`jev_plan_20260929_gate3_v1`已于9月29日23:09:52完成（supervisor文件mtime，UTC+8），监管completed/actor exit0；24检查为19 TARGET_REACHED、4夹爪完成、1安全预检拒绝，gate_ok=true/无失败、全部执行freshness通过。440controls/112同步采集，总1111.158s/动作566.431s/清理0.383s；同211a6f8/459f7f38源。result SHA `39f47befce1872ecd6b6f2f27836f3ff3e6780094feb92c30af8e31872fd6227`，native SHA `e914dcfc…bc7852`。

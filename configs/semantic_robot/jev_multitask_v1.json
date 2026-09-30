@@ -1,0 +1,88 @@
+{
+  "schema": "jev-multitask-campaign-v1",
+  "campaign_id": "jev_multi_20260930",
+  "owner": "Codex JEV-05",
+  "hypothesis": "Jev owns all strategy choices through the same sensor-grounded executor; report official development-task outcomes, including valid abstentions and failures, on six predeclared original starts.",
+  "window_root": "/mnt/sdc1/robodojo/behavior_dev/direct_execution_L6rqZ6_20260910/c1_windows_v2_matched",
+  "robot_config_sha256": "a98fa8a81472adfecfb642778d4d7a01e20131be7f70824e0ae095d665cdbb93",
+  "split": "train",
+  "seed": 0,
+  "training_updates": 0,
+  "expert_prefix_controls": 0,
+  "diagnostic_replay_controls": 0,
+  "budget": {
+    "max_decisions": 96,
+    "max_controls": 3072,
+    "action_seconds": 2400,
+    "total_seconds": 3600,
+    "cleanup_seconds": 60,
+    "jev_requests": 288,
+    "observer_requests": 215
+  },
+  "plans": {
+    "0": {
+      "path": "configs/semantic_robot/jev_task0_plan.json",
+      "sha256": "dd985a9028568cf5205d87505b323deb47361f27684123b051d585e12dbca0d8"
+    },
+    "1": {
+      "path": "configs/semantic_robot/jev_task1_slots.json",
+      "sha256": "4aeb8a1507febf80ff75f916966b2b54f54c8aaffc0598556e6684b0a2672c83"
+    },
+    "3": {
+      "path": "configs/semantic_robot/jev_task3_slots.json",
+      "sha256": "451b267c7e75df913ab63eb00c4bfa630f290bedff1aad70bb7e433ffe340581"
+    }
+  },
+  "cases": [
+    {
+      "id": "task0a",
+      "task_id": 0,
+      "task_name": "turning_on_radio",
+      "instance": 138,
+      "window_name": "c1v2-matched-t0-train-e121-f448-grasp",
+      "window_sha256": "93731a793ed550bae225e148d872b97d42e331a709e2fd0cd33bd1ccf76ccbd8"
+    },
+    {
+      "id": "task0b",
+      "task_id": 0,
+      "task_name": "turning_on_radio",
+      "instance": 97,
+      "window_name": "c1v2-matched-t0-train-e91-f467-grasp",
+      "window_sha256": "717739c44a7201d122a04ee8282a983b607b36d2fcee9664daae0d2e8c6a0023"
+    },
+    {
+      "id": "task1a",
+      "task_id": 1,
+      "task_name": "picking_up_trash",
+      "instance": 141,
+      "window_name": "c1v2-matched-t1-train-e286-f4536-grasp",
+      "window_sha256": "78d63fe9178f7af23e5a378cd214639189919f86bffaee9452651031b7abafa8"
+    },
+    {
+      "id": "task1b",
+      "task_id": 1,
+      "task_name": "picking_up_trash",
+      "instance": 190,
+      "window_name": "c1v2-matched-t1-train-e308-f910-grasp",
+      "window_sha256": "072f395a469c9063c844958b96f8f092c6b9af8707bf33cf7c5dc7bb6830dbf1"
+    },
+    {
+      "id": "task3a",
+      "task_id": 3,
+      "task_name": "cleaning_up_plates_and_food",
+      "instance": 242,
+      "window_name": "c1v2-matched-t3-train-e762-f4221-grasp",
+      "window_sha256": "f29ca3342e8c161e9999e4de5ed4886a3f6e398c1aadd6b92735b5b9c026eb52"
+    },
+    {
+      "id": "task3b",
+      "task_id": 3,
+      "task_name": "cleaning_up_plates_and_food",
+      "instance": 102,
+      "window_name": "c1v2-matched-t3-train-e683-f5131-grasp",
+      "window_sha256": "c8a7c575e4aa10fc1d581902fbdf283df9355139a90228abc960cdc1a51581ef"
+    }
+  ],
+  "stopping_rule": "No replacement, repeated seed, silent retry, or success-conditioned admission. Complete all six finite policy attempts unless infrastructure/safety protocol fails; retain that failed slot and diagnose before any further execution. API-only probes validate the contract, not a requirement that the policy choose a full plan.",
+  "interpretation": "TRAIN development original-start success x/2 per task and x/6 overall, not blind-test generalization. Engineering gates and the prior JEV-04 64-decision episode are excluded."
+}

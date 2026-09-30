@@ -1,0 +1,20 @@
+{
+  "schema": "jev-task-slots-v4",
+  "task_id": 3,
+  "official_instruction": "From the breakfast table in the kitchen, move both pizzas - keeping each on its plate - into the same refrigerator, put both bowls into one sink, and make sure the refrigerator is closed.",
+  "strategy_provenance": "Evaluation vocabulary derived only from the official instruction: two distinct pizza-on-plate transports into one shared refrigerator, two distinct bowl transports into one shared sink, and refrigerator closed at the end. Opening the refrigerator is an access precondition, not an official success predicate. A/B label distinct required items, not simulator IDs or measured locations. Jev chooses eligible branch order and offered hand. Plates use the existing level-preserving bimanual carry capability; only one object can be carried at a time. No completion or current physical state is implied.",
+  "dependencies": [[], [0], [1], [0], [3], [], [5], [], [7], [2, 4]],
+  "target_references": ["world", "world", "world", "world", "world", "world", "world", "world", "world", "world"],
+  "slots": [
+    {"kind": "open", "target": "the door handle of the kitchen refrigerator selected as the shared destination for both pizzas", "done_when": "the refrigerator door is visibly open enough for a plate to enter", "level": false, "hand_options": ["left", "right"], "binding": null},
+    {"kind": "pick", "target": "pizza-on-plate A: one of the two pizzas on its plate on the kitchen breakfast table", "done_when": "the plate follows both hands during a measured lift while its pizza remains on the level plate", "level": true, "hand_options": ["both"], "binding": "pizza_plate_a"},
+    {"kind": "place", "target": "a supporting shelf inside the selected open refrigerator, shared destination for both pizza plates", "done_when": "pizza plate A is released and rests on the shelf with the pizza still on it", "level": true, "hand_options": ["both"], "binding": "pizza_plate_a"},
+    {"kind": "pick", "target": "pizza-on-plate B: the other distinct pizza and its plate on the kitchen breakfast table, not plate A", "done_when": "the other plate follows both hands during a measured lift while its pizza remains on the level plate", "level": true, "hand_options": ["both"], "binding": "pizza_plate_b"},
+    {"kind": "place", "target": "a supporting shelf inside the same open refrigerator selected for pizza plate A", "done_when": "pizza plate B is released and rests inside that refrigerator with its pizza still on the plate", "level": true, "hand_options": ["both"], "binding": "pizza_plate_b"},
+    {"kind": "pick", "target": "bowl A: one of the two bowls from the kitchen breakfast table not yet moved into the sink", "done_when": "the selected bowl follows the chosen hand during a measured verification lift", "level": false, "hand_options": ["left", "right"], "binding": "bowl_a"},
+    {"kind": "place", "target": "the interior of the kitchen sink selected as the shared destination for both bowls", "done_when": "bowl A is released inside the sink and remains visibly supported there", "level": false, "hand_options": ["left", "right"], "binding": "bowl_a"},
+    {"kind": "pick", "target": "bowl B: the other distinct bowl from the kitchen breakfast table, not bowl A and not already in the sink", "done_when": "the other bowl follows the chosen hand during a measured verification lift", "level": false, "hand_options": ["left", "right"], "binding": "bowl_b"},
+    {"kind": "place", "target": "the interior of the same kitchen sink selected for bowl A", "done_when": "bowl B is released inside that sink and remains visibly supported there", "level": false, "hand_options": ["left", "right"], "binding": "bowl_b"},
+    {"kind": "close", "target": "the door of the same refrigerator now containing both pizza plates", "done_when": "the refrigerator door is visibly fully closed with both pizza plates still inside", "level": false, "hand_options": ["left", "right"], "binding": null}
+  ]
+}

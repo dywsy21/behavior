@@ -168,7 +168,9 @@ def main():
     p.add_argument("--spatial-grasp-features",action="store_true",help="Fixed spatial feature quotas avoid global contrast domination; original evidence thresholds")
     p.add_argument("--inspection-budget-aware",action="store_true",help="Existing bounded coarse/fine framing plus non-revisited relative views")
     p.add_argument("--multicamera-inspection",action="store_true",help="Opt-in independent free-wrist observation with visible-depth sweep veto")
-    p.add_argument("--task", type=int, choices=(0,3), default=0)
+    p.add_argument("--task", type=int, choices=(0,1,3), default=0)
+    p.add_argument("--jev-eval-case", choices=("task0a","task0b","task1a","task1b","task3a","task3b"),
+                   help="Frozen JEV-05 original-start instance; no expert or replay prefix")
     p.add_argument("--prefix", type=int, default=0)
     p.add_argument("--replay-prefix-spec",help="Hash-pinned saved-action diagnostic warm start, counted separately from policy")
     p.add_argument("--gpu", type=int, default=3)
@@ -192,6 +194,18 @@ def main():
                    help="Explicitly registered original-start extension; gates and prefixes keep pilot limits")
     args = p.parse_args()
     validate_run_budget(args)
+    evaluation_case = None
+    if args.jev_eval_case:
+        if args.controller != "jev" or args.mode != "agent" or args.prefix or args.replay_prefix_spec:
+            raise ValueError("Registered Jev case requires original-start Jev agent mode")
+        from semantic_robot.v2.jev_campaign import resolve_case
+        evaluation_case = resolve_case(REPO, args.jev_eval_case, args.task)
+        if (args.jev_task_plan != str(REPO/evaluation_case["task_plan"]["path"])
+                or (args.max_decisions, args.max_controls, args.max_seconds, args.jev_max_calls) !=
+                    (96, 3072, 2400, 288)):
+            raise ValueError("Registered episode plan or finite comparison budget changed")
+    elif args.task not in WINDOW_NAMES:
+        raise ValueError("This task requires an explicit registered Jev evaluation case")
     if args.controller == "jev":
         if (args.harness != "grounded" or not args.jev_task_plan or args.structured_planning
                 or args.replay_prefix_spec or not args.synchronous_io_v1):
@@ -330,8 +344,8 @@ def main():
                 output=out, runtime=args.native_runtime)
     from PIL import Image, ImageDraw
     import imageio.v2 as imageio
-    path = WINDOWS/WINDOW_NAMES[args.task]/"window.json"
-    if args.task in WINDOW_SHAS and sha(path) != WINDOW_SHAS[args.task]:
+    path = Path(evaluation_case["window_path"]) if evaluation_case else WINDOWS/WINDOW_NAMES[args.task]/"window.json"
+    if not evaluation_case and args.task in WINDOW_SHAS and sha(path) != WINDOW_SHAS[args.task]:
         raise ValueError("Original development window drift")
     window = load_official_oracle_window(path)
     if window.official_mode != "train" or window.seed != 0 or window.robot_config_sha256 != ROBOT_SHA:
@@ -362,6 +376,7 @@ def main():
                 "implementation_digest":digest, "args":vars(args), "instance":window.instance_id,
                 "native_profile":args.native_profile,"synchronous_io_v1":args.synchronous_io_v1,
                 "task":args.task,"task_name":window.task_name,"split":"train","seed":0,
+                "evaluation_case":evaluation_case,
                 "window_sha":sha(path),"robot_sha":ROBOT_SHA,"model_identity":policy.identity if policy else None,
                 "training_updates":0,"evaluator":"v3.9.1-development-not-official-v3.9.2",
                 "actor_scene_truth":False,"prefix_is_expert_not_agent":bool(args.prefix),
@@ -772,6 +787,7 @@ def main():
                         row["stop_reason"] = manager.stop_reason; decisions.append(row); break
                     if args.controller == "jev":
                         from semantic_robot.v2.jev_control import candidates as jev_candidates, authority as jev_authority
+                        row["jev_goal_authority"] = policy.goal_authority(manager.index, manager.goal)
                         allowed, mode = jev_candidates(controller, state, deadline)
                         write(directory/"candidates.json", manager.candidate_receipt)
                         if manager.stop_reason:
@@ -1141,6 +1157,7 @@ def main():
                 stop_reason=("OFFICIAL_EPISODE_TERMINATED" if terminal else "CONTROL_BUDGET_REACHED" if controls>=args.max_controls
                              else "WALL_TIME_BUDGET_REACHED" if time.perf_counter()-started>=args.max_seconds else "DECISION_BUDGET_REACHED")
             result = {"status":"complete","task":args.task,"controls":controls,"prefix_controls":prefix_count,
+                      "evaluation_case":evaluation_case,
                       "physical_gpu":args.gpu,"controller":args.controller,
                       "native_profile":args.native_profile,
                       "diagnostic_replay_controls":replay_count,
@@ -1152,6 +1169,7 @@ def main():
                       "official_success":bool(done.get("success",False)),"final_goal_status":done.get("goal_status",{}),
                       "stop_reason":stop_reason,"harness":args.harness,"sensor_check_count":len(sensor_checks),
                       "planning_abstention":planning_abstention,
+                      "jev_plan_ownership":getattr(policy,"plan_ownership",None),
                       "refine_grounding":args.refine_grounding,"surface_choices":getattr(policy,"refinements",0),
                       "near_contact_review":args.near_contact_review,
                       "appearance_memory":args.appearance_memory,

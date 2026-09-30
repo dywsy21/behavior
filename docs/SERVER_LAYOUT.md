@@ -1,10 +1,17 @@
 # robo服务器文件位置与保留规则
 
+## Jev多任务开发评测（JEV-05，2026-09-30本地准备）
+
+- 本地开发`/home/wsy/behavior_worktrees/jev-20260929`，六例登记`configs/semantic_robot/jev_multitask_v1.json`，task0/1/3各2个TRAIN原始实例，0演示前缀/0训练。拟用新run `jev_multi_20260930_<stage>_v1`与同名私有runtime；目前尚未部署/创建，不复用JEV-04目录。
+- JEV-04正式episode已归档14件到`/home/wsy/behavior/artifacts/jev-control-20260929/planning_contract/episode1/`，result/完整ledger/ownership/video均已双端SHA核同；contact sheet仅人工检查，不作actor输入。新任务槽/手臂选择代码不会回写旧211a6f8冻结源。
+
 ## Jev规划契约修复（2026-09-29，JEV-04）
 
 - 冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/jev_plan_211a6f8`，commit `211a6f8d7dac6b038c6b44ccf04c9eb2c6175ee5`，implementation `459f7f38425f86204a3eba5c82d2edf89c34f76b86a39c8ee495e478e1fe0076`；禁止热pull/编辑。当前本地开发仍`feat/jev-control-20260929`工作树。
 - run `/mnt/nvme_tmp/robodojo_agentic_20260925/jev_plan_20260929_{api,gate0,gate3,episode1}_v1`；sim runtime同名在`/mnt/nvme_tmp/robodojo_sim_runtime_20260925/`。api_v1已25实际请求/qualified；9月30日10:45复核gate0/3均completed/各440controls，gate3于29日23:09:52结束，旧4092867/4092878均退出；episode1目录不存在、未提交，无后台串联。旧JEV-03的`jev_all_`目录保留不复用。
 - 本地回执/视频归档`/home/wsy/behavior/artifacts/jev-control-20260929/planning_contract/`。新任务配置v3固定官方原文与用户策略来源；真实API/工程门/动作所有权/成功率各自独立。说明见[JEV-04](experiments/2026-09-29-jev-planning-contract.md)。
+- 9月30日11:33：同冻结源`jev_plan_20260929_episode1_v1`已唯一提交监管39314，3600s总预算/GPU1，0前缀；不再以10:45的“未提交”当当前状态。JEV-05多任务扩展在本地独立开发，禁止热改此运行源。
+- 9月30日11:52：episode1已completed/控制归属审计通过、169controls/官方未成功，原39314/model39496/actor39568已由监管收尾；原源/run保留。新本地task-slot扩展未部署。端到端结果/视频在episode的`gate/`，动作归属回执在run根`decision_ownership.json`。
 
 ## Jev全策略决策（2026-09-29，JEV-03）
 

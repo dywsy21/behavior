@@ -1,0 +1,16 @@
+{
+  "schema": "jev-task-slots-v4",
+  "task_id": 1,
+  "official_instruction": "Put the three cans of soda from the living room inside the trash can in the kitchen.",
+  "strategy_provenance": "Evaluation vocabulary derived only from the official instruction: three distinct soda cans, each picked and placed inside the same kitchen trash can. A/B/C label different required items, not simulator IDs or known locations. Jev chooses the order of these item transports and left/right hand; the executor supports one carried object at a time. Neither task text nor planning asserts current visibility or success.",
+  "dependencies": [[], [0], [], [2], [], [4]],
+  "target_references": ["world", "world", "world", "world", "world", "world"],
+  "slots": [
+    {"kind": "pick", "target": "soda can A: one of the three living-room cans not yet put in the kitchen trash", "done_when": "the selected can follows the chosen hand during a measured verification lift", "level": false, "hand_options": ["left", "right"], "binding": "can_a"},
+    {"kind": "place", "target": "the interior of the kitchen trash can, shared destination for all three cans", "done_when": "can A is released inside the trash can and remains visibly supported there", "level": false, "hand_options": ["left", "right"], "binding": "can_a"},
+    {"kind": "pick", "target": "soda can B: a different one of the three living-room cans, not A and not already in the trash", "done_when": "the distinct selected can follows the chosen hand during a measured verification lift", "level": false, "hand_options": ["left", "right"], "binding": "can_b"},
+    {"kind": "place", "target": "the interior of the same kitchen trash can used for the other soda cans", "done_when": "can B is released inside the shared trash can and remains visibly supported there", "level": false, "hand_options": ["left", "right"], "binding": "can_b"},
+    {"kind": "pick", "target": "soda can C: the third distinct living-room can, not A or B and not already in the trash", "done_when": "the third distinct selected can follows the chosen hand during a measured verification lift", "level": false, "hand_options": ["left", "right"], "binding": "can_c"},
+    {"kind": "place", "target": "the interior of the same kitchen trash can used for the other soda cans", "done_when": "can C is released inside the shared trash can and remains visibly supported there", "level": false, "hand_options": ["left", "right"], "binding": "can_c"}
+  ]
+}

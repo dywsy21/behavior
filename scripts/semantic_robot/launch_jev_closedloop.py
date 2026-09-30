@@ -28,7 +28,9 @@ from native_full_profile import configure_gpu
 
 gate, sync = common.gate, common.synchronous
 REPO = Path(__file__).resolve().parents[2]
-STAGES = ('gate0','gate3','episode1')
+STAGES = ('gate0','gate3','episode1')  # Historical campaign remains reproducible.
+MULTI_STAGES = ('gate0','gate3','task0a','task0b','task1a','task1b','task3a','task3b')
+CAMPAIGN = 'planning'
 RUN_PARENT = Path('/mnt/nvme_tmp/robodojo_agentic_20260925')
 RUNTIME_PARENT = Path('/mnt/nvme_tmp/robodojo_sim_runtime_20260925')
 KEY_FILE = Path('/mnt/sdc1/robodojo/.config/behavior/credentials/typesafe.key')
@@ -44,12 +46,16 @@ ROOT = RUNTIME = None
 def read(path): return json.loads(path.read_text())
 
 
-def stage_root(stage): return RUN_PARENT / ('jev_plan_20260929_' + stage + '_v1')
+def stage_root(stage):
+    prefix = 'jev_multi_20260930_' if CAMPAIGN == 'multitask' else 'jev_plan_20260929_'
+    return RUN_PARENT / (prefix + stage + '_v1')
 
 
-def configure(stage):
-    global STAGE, ROOT, RUNTIME
-    if stage not in STAGES: raise ValueError('Unregistered stage')
+def configure(stage, campaign='planning'):
+    global STAGE, ROOT, RUNTIME, CAMPAIGN
+    if campaign not in ('planning', 'multitask'): raise ValueError('Unregistered campaign')
+    if stage not in (MULTI_STAGES if campaign == 'multitask' else STAGES): raise ValueError('Unregistered stage')
+    CAMPAIGN = campaign
     STAGE, ROOT = stage, stage_root(stage)
     RUNTIME = RUNTIME_PARENT / ROOT.name
     base = sync.configure()
@@ -61,29 +67,59 @@ def configure(stage):
     return base
 
 
-def is_actor(): return STAGE.startswith('episode')
+def is_actor(): return STAGE not in ('gate0', 'gate3')
+
+
+def budget():
+    if CAMPAIGN == 'multitask':
+        from semantic_robot.v2.jev_campaign import BUDGET
+        return BUDGET
+    return dict(max_decisions=DECISIONS, max_controls=CONTROLS, action_seconds=2400,
+                total_seconds=3600, cleanup_seconds=60, jev_requests=JEV_CALLS,
+                observer_requests=OBSERVER_CALLS)
+
+
+def case():
+    if CAMPAIGN == 'multitask' and is_actor():
+        from semantic_robot.v2.jev_campaign import case_identity
+        return case_identity(REPO, STAGE)
+    return None
+
+
+def task():
+    selected = case()
+    return selected['task_id'] if selected else 3 if STAGE == 'gate3' else 0
+
+
+def plan_path():
+    selected = case()
+    return REPO/selected['task_plan']['path'] if selected else REPO/'configs/semantic_robot/jev_task0_plan.json'
 
 
 def commands(base):
     actor = gate.command(base)
-    changes = {'--gpu':'1', '--task':'3' if STAGE == 'gate3' else '0'}
-    if is_actor(): changes.update({'--mode':'agent','--max-decisions':str(DECISIONS),'--max-controls':str(CONTROLS),'--max-seconds':'2400'})
+    limits = budget()
+    changes = {'--gpu':'1', '--task':str(task())}
+    if is_actor(): changes.update({'--mode':'agent','--max-decisions':str(limits['max_decisions']),
+        '--max-controls':str(limits['max_controls']),'--max-seconds':str(limits['action_seconds'])})
     for flag, value in changes.items(): actor[actor.index(flag)+1] = value
     if is_actor():
         actor += ['--uri',f'http://127.0.0.1:{PORT}','--expected-revision',common.REVISION,
-            '--controller','jev','--jev-task-plan',str(REPO/'configs/semantic_robot/jev_task0_plan.json'),
-            '--typesafe-key-file',str(KEY_FILE),'--jev-max-calls',str(JEV_CALLS),'--jev-timeout','20']
+            '--controller','jev','--jev-task-plan',str(plan_path()),
+            '--typesafe-key-file',str(KEY_FILE),'--jev-max-calls',str(limits['jev_requests']),'--jev-timeout','20']
+        if CAMPAIGN == 'multitask': actor += ['--jev-eval-case', STAGE]
         for stage in ('gate0','gate3'): actor += ['--gate-result',str(stage_root(stage)/'gate/result.json')]
     model = [str(common.VLM_PYTHON),str(REPO/'scripts/semantic_robot/serve_v2.py'),
         '--model',str(common.MODEL),'--revision',common.REVISION,'--output',str(ROOT/'server'),
-        '--port',str(PORT),'--max-calls',str(OBSERVER_CALLS)]
+        '--port',str(PORT),'--max-calls',str(limits['observer_requests'])]
     return {'actor':actor, **({'model':model} if is_actor() else {})}
 
 
 def expected_args(base):
     result = dict(uri='http://127.0.0.1:8907', expected_revision=None, gate_result=[],
         replay_prefix_spec=None, contact_geometry=False, budget_profile='pilot', structured_planning=False,
-        controller='vlm', jev_task_plan=None, typesafe_key_file=None, jev_max_calls=104, jev_timeout=20.)
+        controller='vlm', jev_task_plan=None, typesafe_key_file=None, jev_max_calls=104, jev_timeout=20.,
+        jev_eval_case=None)
     integer = {'task','gpu','prefix','max_decisions','max_controls','max_seconds','odometry_substep_controls','jev_max_calls'}
     parts = iter(commands(base)['actor'][2:])
     for flag in parts:
@@ -121,13 +157,13 @@ def check_resources(current, baseline=None, sessions=None, *, released=False):
 
 def check_health(health, code, *, initial=False):
     expected = dict(protocol='semantic-v2', model=str(common.MODEL), revision=common.REVISION,
-        code_commit=code, max_calls=OBSERVER_CALLS, visible_devices=gate.scene.supervisor.GPU_UUIDS[1],
+        code_commit=code, max_calls=budget()['observer_requests'], visible_devices=gate.scene.supervisor.GPU_UUIDS[1],
         dtype='bfloat16', training_updates=0, thinking=False, transformers='5.7.0',torch='2.7.1+cu128',
         image_max_side=640, wrist_no_upsampling=True,max_images=9,backend='transformers-sdpa',
         finite_choice_kinds=['act','ground','reference'])
     if any(type(health.get(k)) is not type(v) or health[k] != v for k,v in expected.items()):
         raise ValueError('Observer model/source/decoder mismatch')
-    if type(health.get('calls')) is not int or not 0 <= health['calls'] <= OBSERVER_CALLS or (initial and health['calls'] != 0):
+    if type(health.get('calls')) is not int or not 0 <= health['calls'] <= budget()['observer_requests'] or (initial and health['calls'] != 0):
         raise ValueError('Observer call budget/initial state mismatch')
 
 
@@ -152,6 +188,9 @@ def prerequisites(digest):
 
 
 def planning_qualification():
+    if CAMPAIGN == 'multitask':
+        from probe_jev_multitask import validate_evidence
+        return validate_evidence(REPO, RUN_PARENT/'jev_multi_20260930_api_v1')
     from probe_jev_planning import digest, qualification
     from semantic_robot.v2.jev_policy import load_task_plan, planning_request
     value = read(PLANNING_VALIDATION)
@@ -194,6 +233,12 @@ def preflight(base):
     digest = implementation_digest()
     prior = prerequisites(digest)
     prior['planning_validation'] = planning_qualification()
+    if CAMPAIGN == 'multitask':
+        from semantic_robot.v2.jev_campaign import CASE_IDS, resolve_case, case_identity
+        # Check all preregistered resets before spending even the first gate.
+        for key in CASE_IDS:
+            identity = case_identity(REPO, key)
+            resolve_case(REPO, key, identity['task_id'])
     before = base.snapshot(); check_resources(before)
     if is_actor():
         from semantic_robot.v2.jev_client import load_key
@@ -221,7 +266,8 @@ def validate_jev_ledger(rows,result):
 
 
 def validate_basic(result,digest):
-    exact = dict(status='complete',task=3 if STAGE == 'gate3' else 0,physical_gpu=1,
+    limits = budget()
+    exact = dict(status='complete',task=task(),physical_gpu=1,
         prefix_controls=0,diagnostic_replay_controls=0,implementation_digest=digest,
         native_profile='a100_full_v1',harness='grounded',contact_geometry=False,
         controller='jev' if is_actor() else 'vlm',press_finger_asset_sha256=gate.ASSET_SHA,
@@ -231,9 +277,9 @@ def validate_basic(result,digest):
         raise ValueError('Incomplete result or wrong source/profile/controller')
     validate_wall(result.get('wall_s'),is_actor())
     decisions = result.get('decisions',[])
-    minimum_decisions = 0 if is_actor() and result.get('stop_reason') == 'JEV_PLAN_ABSTAINED' else 1
-    if (not isinstance(decisions,list) or not minimum_decisions <= len(decisions) <= (DECISIONS if is_actor() else 24) or
-            type(result.get('controls')) is not int or not 1 <= result['controls'] <= (CONTROLS if is_actor() else 1536)):
+    minimum_decisions = 0 if is_actor() else 1
+    if (not isinstance(decisions,list) or not minimum_decisions <= len(decisions) <= (limits['max_decisions'] if is_actor() else 24) or
+            type(result.get('controls')) is not int or not 1 <= result['controls'] <= (limits['max_controls'] if is_actor() else 1536)):
         raise ValueError('Control/decision budget mismatch')
     executed = [r for r in decisions if r.get('accepted_before_motion')]
     if any(r.get('jev_freshness_passed') is not True for r in executed):
@@ -242,8 +288,8 @@ def validate_basic(result,digest):
         if len(decisions)!=24 or result.get('model_calls') != 0: raise ValueError('Incomplete gate')
     elif (type(result.get('official_success')) is not bool or type(result.get('terminal')) is not bool or
             not isinstance(result.get('final_goal_status'),dict) or not isinstance(result.get('stop_reason'),str) or
-            not 0 <= result.get('jev_requests',-1) <= JEV_CALLS or
-            not 0 <= result.get('observer_calls',-1) <= OBSERVER_CALLS or
+            not 0 <= result.get('jev_requests',-1) <= limits['jev_requests'] or
+            not 0 <= result.get('observer_calls',-1) <= limits['observer_requests'] or
             result.get('jev_requests_without_validated_response') != 0):
         raise ValueError('Incomplete official outcome/API accounting')
     if is_actor() and result['stop_reason'] == 'JEV_DECISION_STATE_CHANGED':
@@ -251,16 +297,23 @@ def validate_basic(result,digest):
     if is_actor():
         from semantic_robot.v2.jev_control import validate_actor_ownership
         validate_actor_ownership(result)
+        if CAMPAIGN == 'multitask':
+            if result.get('evaluation_case') != case(): raise ValueError('Result case identity changed')
+            from semantic_robot.v2.jev_plan_audit import validate_actor_plan
+            validate_actor_plan(result, plan_path(), task())
 
 
 def validate_completion(base,code,digest):
     gate.raise_worker_failure({})
     manifest = read(ROOT/'gate/manifest.json')
-    task = 3 if STAGE == 'gate3' else 0
-    exact = dict(code_commit=code,implementation_digest=digest,task=task,instance=242 if task else 138,
-        task_name='cleaning_up_plates_and_food' if task else 'turning_on_radio',split='train',seed=0,
+    selected = case()
+    task_id = task()
+    instance = selected['instance'] if selected else 242 if task_id == 3 else 138
+    task_name = selected['task_name'] if selected else 'cleaning_up_plates_and_food' if task_id == 3 else 'turning_on_radio'
+    exact = dict(code_commit=code,implementation_digest=digest,task=task_id,instance=instance,
+        task_name=task_name,split='train',seed=0,
         training_updates=0,actor_scene_truth=False,prefix_is_expert_not_agent=False,
-        diagnostic_replay_requested=False,native_profile='a100_full_v1',args=expected_args(base))
+        diagnostic_replay_requested=False,native_profile='a100_full_v1',args=expected_args(base),evaluation_case=selected)
     if any(json.dumps(manifest.get(k),sort_keys=True) != json.dumps(v,sort_keys=True) for k,v in exact.items()):
         raise ValueError('Exact stage manifest mismatch')
     if is_actor():
@@ -285,11 +338,14 @@ def validate_completion(base,code,digest):
         from semantic_robot.v2.jev_control import validate_actor_ownership
         ownership = validate_actor_ownership(result, jev_ledger,
             [json.loads(x) for x in (ROOT/'gate/steps.jsonl').read_text().splitlines()])
+        if CAMPAIGN == 'multitask':
+            from semantic_robot.v2.jev_plan_audit import validate_actor_plan
+            ownership['registered_plan'] = validate_actor_plan(result, plan_path(), task_id, jev_ledger)
         common.write('decision_ownership.json', ownership)
     native = read(ROOT/'gate/native_profile.json')
     if (native.get('physical_gpu') != 1 or
         [(r['name'],r['instance'],r['status']) for r in native['official_api_events']] !=
-        [('reset',None,'completed'),('load_task_instance',242 if task else 138,'completed'),('reset',None,'completed')]):
+        [('reset',None,'completed'),('load_task_instance',instance,'completed'),('reset',None,'completed')]):
         raise ValueError('Wrong GPU or original-start reset sequence')
     return result
 
@@ -302,14 +358,15 @@ def launch(base):
     env,folders = base.environment()
     prepared = common.prepare_runtime(folders)
     env['H52_LAUNCH_TOKEN'] = secrets.token_hex(24)
-    receipt = dict(status='reserved',source_commit=code,implementation_digest=digest,stage=STAGE,
+    receipt = dict(status='reserved',source_commit=code,implementation_digest=digest,stage=STAGE,campaign=CAMPAIGN,
         utc=datetime.now(timezone.utc).isoformat(),output=str(ROOT),runtime=str(RUNTIME),
         token_sha256=hashlib.sha256(env['H52_LAUNCH_TOKEN'].encode()).hexdigest(),
         runtime_preparation=prepared,commands=commands(base),prerequisites=prior,gpu_before=before,
         wall_seconds=3600 if is_actor() else 1800,cleanup_seconds=60,training_updates=0)
     common.write('launch.json',receipt)
     with (ROOT/'supervisor.log').open('x') as log:
-        child = subprocess.Popen([str(base.PYTHON),str(Path(__file__).resolve()),'--stage',STAGE,'--supervise'],
+        child = subprocess.Popen([str(base.PYTHON),str(Path(__file__).resolve()),'--stage',STAGE,
+            '--campaign',CAMPAIGN,'--supervise'],
             cwd=REPO,env=env,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
     receipt.update(status='supervisor_started',supervisor_pid=child.pid)
     common.write('launch.json',receipt)
@@ -320,13 +377,14 @@ def supervise(base):
     code,digest,prior,before = preflight(base)
     base.claim_stage('supervisor',code)
     reserved = read(ROOT/'launch.json')
-    if reserved['stage'] != STAGE or reserved['commands'] != commands(base) or reserved['prerequisites'] != prior:
+    if (reserved['stage'] != STAGE or reserved['campaign'] != CAMPAIGN
+            or reserved['commands'] != commands(base) or reserved['prerequisites'] != prior):
         raise ValueError('Stage/command/prerequisite changed since reservation')
     common.check_runtime_preparation(reserved['runtime_preparation'])
     start = time.monotonic(); children = {}; failure = None
-    receipt = dict(status='starting',source_commit=code,implementation_digest=digest,stage=STAGE,
+    receipt = dict(status='starting',source_commit=code,implementation_digest=digest,stage=STAGE,campaign=CAMPAIGN,
         supervisor_pid=os.getpid(),baseline=before,wall_seconds=reserved['wall_seconds'],samples=[])
-    def interrupted(sig,_): raise InterruptedError('JEV-04 signal '+str(sig))
+    def interrupted(sig,_): raise InterruptedError('Jev supervisor signal '+str(sig))
     previous = {sig:signal.signal(sig,interrupted) for sig in (signal.SIGTERM,signal.SIGINT)}
     def monitor():
         if time.monotonic()-start >= receipt['wall_seconds']: raise TimeoutError('Total stage wall budget')
@@ -396,8 +454,9 @@ def supervise(base):
 
 if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--stage',choices=STAGES,required=True)
+    parser.add_argument('--stage',choices=tuple(dict.fromkeys(STAGES+MULTI_STAGES)),required=True)
+    parser.add_argument('--campaign',choices=('planning','multitask'),default='planning')
     mode=parser.add_mutually_exclusive_group(required=True)
     mode.add_argument('--launch',action='store_true');mode.add_argument('--supervise',action='store_true')
-    args=parser.parse_args();base=configure(args.stage)
+    args=parser.parse_args();base=configure(args.stage,args.campaign)
     (launch if args.launch else supervise)(base)

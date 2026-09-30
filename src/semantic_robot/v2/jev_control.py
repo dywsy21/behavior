@@ -128,8 +128,22 @@ def validate_actor_ownership(result, ledger=None, controls=None):
             and r.get("control_end", 0) > r.get("control_start", 0)]
     planning_stop = result.get("stop_reason") == "JEV_PLAN_ABSTAINED"
     action_stop = result.get("stop_reason") == "JEV_ABSTAINED"
-    if not rows and not planning_stop and not action_stop:
+    plan = result.get("jev_plan_ownership")
+    safety_only = (not rows and plan is not None and not planning_stop and not action_stop
+        and isinstance(result.get('stop_reason'), str) and bool(result['stop_reason'])
+        and result.get('prefix_controls') == 0 and result.get('diagnostic_replay_controls') == 0
+        and type(result.get('controls')) is int and 0 <= result['controls'] <= 1
+        and all('action' not in r and not r.get('accepted_before_motion')
+                for r in result.get('decisions', [])))
+    if not rows and not planning_stop and not action_stop and not safety_only:
         raise JevError("No Jev-selected action executed; control integration not validated")
+    if plan is not None:
+        from .jev_plan_audit import validate_plan_proof, validate_goal_proof
+        validate_plan_proof(plan, ledger)
+        for row in result.get('decisions', []):
+            if not row.get('selection_source', '').startswith('Jev_all_'):
+                continue
+            validate_goal_proof(row, plan)
     calls, probe_controls = [], 0
     validated = {} if ledger is None else {r["call"]: r for r in ledger if r.get("event") == "validated"}
     def check_ledger(call, question, option):
@@ -219,6 +233,7 @@ def validate_actor_ownership(result, ledger=None, controls=None):
     return {"normal_actions_executed": len(rows), "jev_owned_actions": len(rows),
             "control_integration_validated": bool(rows), "planning_abstained_no_action": planning_stop,
             "command_abstained": action_stop,
+            "safety_stopped_without_policy_action": safety_only,
             "jev_requested_probe_controls": probe_controls,
             "non_jev_strategy_actions": 0, "safety_stop_is_not_policy_action": True,
             "durable_choices_checked": ledger is not None, "all_control_ticks_checked": controls is not None}
