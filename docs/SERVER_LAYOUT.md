@@ -22,6 +22,8 @@
 
 ## 原robo记录（保留）
 
+**2026-09-30 18:35北京时间E3完成/E4未续上：** `e3_render_resume_v1/result.json`及监管completed/exit0，208最终六回合0/6；`rl_batch_020_updates_0208.pt`7623035853B，本轮重算SHA `5f6ba9ff44ff5abdd6b3349601b488cfe26326973e8fd267a7d053f5bd92dc36`通过，仍加载原父50k＋delta。`e4_handoff_v1/status.json`已failed（15:33:48），`prepare.stdout.log`定位final首物理episode1被0起点检查器误拒，旧证据不改；`e4_continuous_v1`尚不存在，原七PID全退出、四A1000MiB。六正式视频在`final/worker_{0,1}/episode_{001,002,003}.mp4`；episode000为初始化空回合，不是漏掉的第七条评测。本次未修复/重启，待修reset边界后208保账恢复。
+
 **2026-09-30 14:23北京时间E4自动接续已arm：** 冻结源883aec8不再修改；唯一CPU PID199272，`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e4_handoff_v1/{launcher,status,claim}.json`记录`waiting_for_e3`，`watch.stdout.log`只写状态变化。`e4_continuous_v1`及新runtime尚未创建，等原E3训练＋六对完成和四旧PID退出后自动CPU审计/唯一launch；勿再次arm。原E3同监管37389/learner37396继续至actor204/78336控制，第20批更新中、已保存202；最新图在本地`artifacts/g05-50k-rl-20260928/rl-learning-curve-20260930.png`。无新GPU/环境改动，不动GPU1作业。
 
 **2026-09-30 14:21北京时间E4待接续：** 新冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_continuous_883aec8`（883aec894e0dec7ccf065ab798cc11c2e65494a4）已Git/ff-only/clean，CPU准入中，尚无新GPU。拟CPU接续器`/mnt/nvme_tmp/robodojo_g05_rl_20260928/e4_handoff_v1`等当前E3训练＋固定六对评测完成才准备`e4_continuous_v1`，私有runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e4_continuous_v1`；实际arm/PID随后记档。新训练无总预算，仍有磁盘/仿真/数值保护，旧源、权重、原run不动。

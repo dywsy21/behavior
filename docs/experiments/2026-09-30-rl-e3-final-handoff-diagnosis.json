@@ -1,0 +1,273 @@
+{
+  "snapshot_utc": "2026-09-30T10:33:53.707785+00:00",
+  "run": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1",
+  "physical_pools": {
+    "training": {
+      "worker_controls": [
+        10397,
+        12199
+      ],
+      "total": 22596,
+      "first_episode": 0,
+      "sequential_controls_verified": true
+    },
+    "final": {
+      "worker_controls": [
+        9672,
+        9672
+      ],
+      "total": 19344,
+      "first_episode": 1,
+      "sequential_controls_verified": true
+    }
+  },
+  "final_episodes": [
+    {
+      "worker": 0,
+      "episode": 1,
+      "controls": 3224,
+      "success": false,
+      "terminated": false,
+      "final_held": {
+        "left": null,
+        "right": null
+      },
+      "any_held": false
+    },
+    {
+      "worker": 0,
+      "episode": 2,
+      "controls": 3224,
+      "success": false,
+      "terminated": false,
+      "final_held": {
+        "left": null,
+        "right": "radio_89"
+      },
+      "any_held": true
+    },
+    {
+      "worker": 0,
+      "episode": 3,
+      "controls": 3224,
+      "success": false,
+      "terminated": false,
+      "final_held": {
+        "left": null,
+        "right": "radio_89"
+      },
+      "any_held": true
+    },
+    {
+      "worker": 1,
+      "episode": 1,
+      "controls": 3224,
+      "success": false,
+      "terminated": false,
+      "final_held": {
+        "left": null,
+        "right": null
+      },
+      "any_held": false
+    },
+    {
+      "worker": 1,
+      "episode": 2,
+      "controls": 3224,
+      "success": false,
+      "terminated": false,
+      "final_held": {
+        "left": null,
+        "right": null
+      },
+      "any_held": false
+    },
+    {
+      "worker": 1,
+      "episode": 3,
+      "controls": 3224,
+      "success": false,
+      "terminated": false,
+      "final_held": {
+        "left": null,
+        "right": null
+      },
+      "any_held": false
+    }
+  ],
+  "train_by_prefix": [
+    {
+      "instance": 1,
+      "prefix": 788,
+      "successes": 0,
+      "n": 4
+    },
+    {
+      "instance": 1,
+      "prefix": 884,
+      "successes": 3,
+      "n": 4
+    },
+    {
+      "instance": 1,
+      "prefix": 980,
+      "successes": 4,
+      "n": 5
+    },
+    {
+      "instance": 1,
+      "prefix": 1076,
+      "successes": 5,
+      "n": 7
+    },
+    {
+      "instance": 138,
+      "prefix": 1096,
+      "successes": 2,
+      "n": 20
+    }
+  ],
+  "training_result": {
+    "reason": "reserve_final_evaluation_controls",
+    "batches": 20,
+    "new_actor_updates": 114,
+    "actor_updates": 208,
+    "controls": 78336,
+    "seconds": 10891.108076805249,
+    "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/rl_batch_020_updates_0208.pt"
+  },
+  "result": {
+    "n": 6,
+    "before_successes": 0,
+    "after_successes": 0,
+    "before_rate": 0,
+    "after_rate": 0,
+    "difference": 0,
+    "improved_pairs": 0,
+    "regressed_pairs": 0,
+    "pairs": [
+      {
+        "instance": 301,
+        "policy_seed": 17,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 301,
+        "policy_seed": 23,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 301,
+        "policy_seed": 41,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 302,
+        "policy_seed": 17,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 302,
+        "policy_seed": 23,
+        "before": false,
+        "after": false
+      },
+      {
+        "instance": 302,
+        "policy_seed": 41,
+        "before": false,
+        "after": false
+      }
+    ],
+    "scope": "radio development matrix; not blind or all-task success rate",
+    "statistically_significant_claim": false,
+    "vs_e2": {
+      "n": 6,
+      "before_successes": 0,
+      "after_successes": 0,
+      "before_rate": 0,
+      "after_rate": 0,
+      "difference": 0,
+      "improved_pairs": 0,
+      "regressed_pairs": 0,
+      "pairs": [
+        {
+          "instance": 301,
+          "policy_seed": 17,
+          "before": false,
+          "after": false
+        },
+        {
+          "instance": 301,
+          "policy_seed": 23,
+          "before": false,
+          "after": false
+        },
+        {
+          "instance": 301,
+          "policy_seed": 41,
+          "before": false,
+          "after": false
+        },
+        {
+          "instance": 302,
+          "policy_seed": 17,
+          "before": false,
+          "after": false
+        },
+        {
+          "instance": 302,
+          "policy_seed": 23,
+          "before": false,
+          "after": false
+        },
+        {
+          "instance": 302,
+          "policy_seed": 41,
+          "before": false,
+          "after": false
+        }
+      ],
+      "scope": "radio development matrix; not blind or all-task success rate",
+      "statistically_significant_claim": false
+    },
+    "checkpoint": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/rl_batch_020_updates_0208.pt",
+    "checkpoint_sha256": "5f6ba9ff44ff5abdd6b3349601b488cfe26326973e8fd267a7d053f5bd92dc36",
+    "actor_updates": 208,
+    "new_actor_updates": 114,
+    "controls": 97680,
+    "seconds": 14544.024869253859,
+    "training_stop_reason": "reserve_final_evaluation_controls",
+    "prior_active_seconds": 23102.786450124346,
+    "reward_shaping_used_for_success_metric": false,
+    "prior_baselines_reused": true
+  },
+  "handoff": {
+    "phase": "failed",
+    "pid": 199272,
+    "source_commit": "883aec894e0dec7ccf065ab798cc11c2e65494a4",
+    "error": "CalledProcessError(1, ['/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python', '/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_continuous_883aec8/scripts/rl/prepare_continuous.py'])",
+    "traceback": "Traceback (most recent call last):\n  File \"/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_continuous_883aec8/scripts/rl/continuous_handoff.py\", line 55, in watch\n    subprocess.run([MODEL_PY,str(REPO/'scripts/rl/prepare_continuous.py')],cwd=REPO,\n  File \"/mnt/sdc1/robodojo/.local/share/uv/python/cpython-3.10.18-linux-x86_64-gnu/lib/python3.10/subprocess.py\", line 526, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['/mnt/sdc1/robodojo/GalaxeaVLA/.venv/bin/python', '/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_continuous_883aec8/scripts/rl/prepare_continuous.py']' returned non-zero exit status 1.\n",
+    "utc": "2026-09-30T07:33:48Z"
+  },
+  "handoff_error": "Traceback (most recent call last):\n  File \"/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_continuous_883aec8/scripts/rl/prepare_continuous.py\", line 100, in <module>\n    if __name__=='__main__': main()\n  File \"/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_continuous_883aec8/scripts/rl/prepare_continuous.py\", line 48, in main\n    counts.append(count_physical_steps((json.loads(line) for line in stream),allowed_phases=phases))\n  File \"/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_continuous_883aec8/src/g05/rl/recovery.py\", line 55, in count_physical_steps\n    raise ValueError('Missing or reordered physical episode')\nValueError: Missing or reordered physical episode\n",
+  "checkpoint": {
+    "path": "/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_render_resume_v1/rl_batch_020_updates_0208.pt",
+    "sha256": "5f6ba9ff44ff5abdd6b3349601b488cfe26326973e8fd267a7d053f5bd92dc36",
+    "parent_sha256": "c465044b025a487c42fddce17d45059b314a547e1b672f27cbdbbb7cfe2f6d48",
+    "actor_updates": 208,
+    "critic_updates": 96,
+    "controls": 78336,
+    "ae_precision": "float32",
+    "deployment": "load parent then strict AE delta; VLM bfloat16; AE float32 with matching prefix cache dtype; 10-step ODE, no additional transition noise",
+    "actual_bytes": 7623035853,
+    "sha256_recomputed": true
+  },
+  "scope": "Read-only status and diagnosis; no code fix, training/evaluation restart, or environment change",
+  "diagnosis": "Final evaluate resets again because reused baselines are already in self.evaluations; physical final episodes start at 1. count_physical_steps hardcodes previous_episode=-1 and expects first episode 0, so prepare_continuous rejects otherwise sequential final logs.",
+  "local_workspace_note": "Shared /home/wsy/behavior has unrelated stage1 dirty docs; preserved. Own RL worktree clean ff-only synchronized after direct network fetch was terminated and a task-owned SSH SOCKS transport used. origin/main remains 33677bd."
+}

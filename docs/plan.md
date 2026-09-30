@@ -10,6 +10,15 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 18:35（北京时间）：E3完整评测0/6；E4接续因回合编号校验bug失败，当前无训练（Codex / RL-G05-50K-E4）
+
+- 用户本轮只问状态；本轮只读诊断＋文档归档，0代码修复/0训练或评测重启/0环境修改。共享根有其他阶段1线程dirty文档，保持原样；本线程独立RL worktree经fetch/ff-only同步，无新main（33677bd）。首次直连Git阻塞后仅终止自有fetch，用本任务SSH SOCKS同步；未改其他线程网络/运行源。
+- E3在15:33:24产生完整`result.json`，15:33:27监管completed/exit0；20完整批、actor208/critic96（较E2新增114 actor）、累计TRAIN78336控制＋final19344＝97680。固定public_test301/302 × seeds17/23/41、每回合3224/无前缀，**0/6→0/6**，全部跑满未成功；不把TRAIN课程成功当完整SR。本轮物理日志显示仅301的seed23/41两次最终右手持radio_89，其余四次未有持物；尚未视频人审，不据此编造更细失败因果。
+- 最后完整delta `e3_render_resume_v1/rl_batch_020_updates_0208.pt`（7623035853B）本次重算SHA `5f6ba9ff44ff5abdd6b3349601b488cfe26326973e8fd267a7d053f5bd92dc36`与回执/最终选择一致，原父50k仍需一并加载。全E3课程实例1前缀1076/980/884/788分别5/7、4/5、3/4、0/4；实例138前缀1096为2/20，仍局部不稳。
+- E4接续器在15:33:47过E3终态门进入preparing，15:33:48因`prepare_continuous.py:48`调用`recovery.py:55`报`Missing or reordered physical episode`而退出，未创建`e4_continuous_v1`，没有任何E4更新。根因：`evaluate()`复用非空baseline列表会在正式seed前再reset一次，final物理动作自然从episode1起；共用检查器却固定要求首回合0。这是本线程接续代码遗漏，不是实际丢动作、OOM或重新触发训练预算。
+- 只读重新逐条核TRAIN两worker10397/12199（本段22596）、final9672/9672（19344），global/per-episode控制连续、具名关闭回执/两池clean全匹配；TRAIN从0、final从1，仅初始化空回合不同。原七PID全部不存在、四A100均0MiB/0%、盘余1.3TiB；因此当前确实没有训练在跑，不能沿用14:23“等待中”状态。证据及完整SHA已归档`docs/experiments/2026-09-30-rl-e3-final-handoff-diagnosis.json`。
+- 剩余：修复接续器的初始reset/空回合合同并加真实回执回归，不简单关闭丢步检查；保留旧失败证据，再从208/96及原Adam/RNG/课程恢复无总预算训练，不必重训或重跑已完成六回合。本次尚未实施修复/恢复；独立分支记录后push，不合main。
+
 ### 2026-09-30 14:23（北京时间）：无总预算接续器已在线等待，效果—步数图已交付（Codex / RL-G05-50K-E4）
 
 - UTC06:22:15唯一CPU接续器PID199272已真实启动，`e4_handoff_v1/status.json`为`waiting_for_e3`，14:22:44复核PID存活；冻结源`883aec894e0dec7ccf065ab798cc11c2e65494a4`。它等原E3完成训练＋六对固定final并退出，再核最后delta/Adam/RNG/课程/物理账和GPU0/2/3，自动启动`e4_continuous_v1`。当前E4目录尚不存在、0新GPU，不虚报已持续训练。只arm一次，不重复提交。
