@@ -45,6 +45,11 @@ def fixtures():
 
 
 class OneFrameContract(unittest.TestCase):
+    def test_weight_comparison_is_exact_not_float_tolerance(self):
+        self.assertTrue(bench.same_tensor_bytes(torch.tensor([1.]), torch.tensor([1.])))
+        self.assertFalse(bench.same_tensor_bytes(torch.tensor([0.]), torch.tensor([-0.])))
+        self.assertFalse(bench.same_tensor_bytes(torch.tensor([1.]), torch.tensor([1.], dtype=torch.float64)))
+
     def test_current_frame_and_future_action_zero_are_preserved(self):
         batches = fixtures()
         original = batches[0]['samples'][0]['template']

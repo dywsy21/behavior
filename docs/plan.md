@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:09（北京时间）：batch64-v1在设备比较校验失败，0更新，修复后有限续跑（Codex / BENCH-MEM1F）
+
+- v1在05:08:38 UTC权重逐张量检查报CPU/GPU device mismatch：真实G05构造器已将部分模块置CUDA，检查器错误假设全在CPU；不是模型张量缺失或OOM。torchrun自动终止自有八rank，13:08:42核八卡0MiB，0优化更新；失败run/冻结源2193368保留。
+- 校验改为两端detach→CPU→uint8逐字节相等，仍要求全部1138状态/192LoRA恢复，不删校验；新增signed-zero/类型差异回归。v1消耗约68s墙钟，v2仅余1100s上限、仍最多30更新，包含初始化；不刷新原单臂20分钟预算。服务器七项CPU回归/新冻结源待。
+
+### 2026-09-30 13:08（北京时间）：六项CPU合同与真实十行单帧门通过，提交八卡batch64短测（Codex / BENCH-MEM1F）
+
+- 代码`2193368`已push GitHub；lc3直拉遇GnuTLS -110自然失败，未触及运行源。将已push的同一commit做107,340B Git bundle，经目标`git bundle verify`/`git fetch bundle HEAD`导入对象后建立独立`src/mem1f-2193368`，不是覆盖源码目录，也未重连VPN或修改环境。
+- 实际共享env六项CPU单元3.051s全部通过；`cpu-preflight-v1/result.json`真实十行TRAIN图像/状态取最后帧、32步动作起点仍0、27维/四padding、schema-v6/LoRA调用合同通过，CUDA未初始化。源A4在lc3 CPU mmap也确认2500/1138张量/192LoRA/全FP32/optimizer与scheduler仍在。
+- 新`batch64-v1`已在空闲八卡门通过后提交：global64=8×micro8、6预热＋24计时、最多30更新/1200s+30s清理、无checkpoint保存。固定源码上运行；日志共享`runs/memlite_oneframe_benchmark_20260930/logs/batch64-v1.log`。权重恢复/首前后向和真实终态仍待，不把提交当测速完成；batch128尚未启动。
+
 ### 2026-09-30 13:02（北京时间）：真实A4权重同步完成，三端完整SHA一致（Codex / BENCH-MEM1F）
 
 - PID193613最终`state=complete`（05:01:12 UTC），16,581,363,550B从robo经本地中转至共享`/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`；三端完整SHA均`6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`。原件、旧partial和中转均保留，不改精度/删除optimizer，无G0.5新下载。

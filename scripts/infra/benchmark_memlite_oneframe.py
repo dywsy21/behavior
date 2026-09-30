@@ -116,6 +116,16 @@ def configuration():
     return OmegaConf.to_container(arch, resolve=True)
 
 
+def same_tensor_bytes(value, reference):
+    """Compare across constructor-selected devices, including signed zeros."""
+    import torch
+    if value.dtype != reference.dtype or value.shape != reference.shape:
+        return False
+    left = value.detach().cpu().contiguous().reshape(-1).view(torch.uint8)
+    right = reference.detach().cpu().contiguous().reshape(-1).view(torch.uint8)
+    return torch.equal(left, right)
+
+
 def restored_policy(arch):
     import torch
     from hydra.utils import instantiate
@@ -134,7 +144,7 @@ def restored_policy(arch):
     if set(actual) != set(state):
         raise ValueError('Full model-state coverage changed')
     for name, value in actual.items():
-        if value.dtype != state[name].dtype or not torch.equal(value, state[name]):
+        if not same_tensor_bytes(value, state[name]):
             raise ValueError('Checkpoint tensor is not bitwise restored: ' + name)
     contract = model.configure_coordination_trainability()
     groups = model.coordination_trainable_parameter_groups()
