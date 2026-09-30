@@ -10,6 +10,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:42（北京时间）：单帧安全门回归通过，权重迁移与有限测速收尾（Codex / BENCH-MEM1F）
+
+- 最终代码`3f974fc6530d5730210af8aed58e73916aa250aa`已push；同commit Git bundle经verify/fetch导入新冻结`src/mem1f-final-3f974fc`，共享env中`CUDA_VISIBLE_DEVICES=""`运行八项单帧/权重/LoRA合同回归（3.076s）＋三项I/O边界回归全部通过，exit0。新增门在模型分配前拒绝六帧/无效配置，不改变已测单帧图；GPU实测仍准确绑定`7af393b`，没有重跑或追加训练。
+- 13:42再次确认lc3无GPU计算进程；原A4完整权重/14资产、两GPU臂与百任务I/O结果均已核验归档，[最终报告](experiments/2026-09-30-memlite-oneframe-a800-benchmark.md)。本轮用户要求的迁移和有限速度测量完成，0新checkpoint/0正式百任务训练；完整P0-02数据/源码准入与合main前独立审查仍待，不将这些未完成项记作已交付。
+
 ### 2026-09-30 13:31（北京时间）：百任务I/O完成，全部作业结束，整理最终结果（Codex / BENCH-MEM1F）
 
 - `cpu-io-v1` complete/exit0，100任务/100 episode/两轮800窗口全过；首轮400窗/8.134669s（含spawn）=49.1723/s，第二轮400/2.650537s=150.9128/s，0标签/模型更新/CUDA。结果SHA `3f9bb504…d47674`双端同；逐task/episode/frame定位在`pass0/1.json`，两件也已SHA同。本地独立重核两轮各100任务/400窗口、同来源、2400RGB读数有限/0CUDA通过。这是相同单帧TorchCodec backend＋grouped Parquet/resize的代理，不是正式MEM loader；热缓存、仅100 episode、短时测量等限制保留。
