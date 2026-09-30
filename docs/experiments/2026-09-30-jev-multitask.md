@@ -54,6 +54,8 @@ GPU1上运行模拟器与观察服务，分别CPU88–91、48–51；模型≤59
 
 12:31：Git冻结4698b0aa37edf5b2758286fa3a2d5dec3777533e已robo部署，sim Python下71目标检查和六window实际SHA/身份全部通过。真实API九次规划均完成，54/54有效请求，result SHA `71cef4f9e7f2258b251b82dc5cd2132709ebe09db874c9be46b2ba15007729be`；19件回执在本地`artifacts/jev-control-20260929/multitask/api_v1`逐件双端SHA核同。后台协调器87628已运行，首门88005/88021正常实控；六例SR仍待。
 
+12:52：首gate0已completed/24检查/440controls/112同步采集，全部freshness通过、gate_ok=true；总1217.852s/动作575.628s/清理0.372s。result SHA `46d31e8864626dd096e5b324bd3d64cf7f0109618d3025a8470ce4724a991a91`。协调器自动接gate3监管129152/actor129211，六例尚未提交；工程门不进入任务成功率分母。
+
 ## 旁路：旧搜索停滞输入的敏感性，不修改本轮actor
 
 只使用JEV-04 decision3保存请求，源SHA `eefd27fccc3cb868aa351404eb164e3701853116e9a1085521a1e2be90b33aa5`。当时Jev已选择search、目标不可见、15动作均通过预检；底盘yaw候选实际存在，通用rotation字段却为false，且1/3/8°转动均尚未跨24-bin覆盖的下一中心。

@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 12:52（北京时间）：JEV-05首工程门通过，后台已自动接第二门（Codex）
+
+- `jev_multi_20260930_gate0_v1`同4698b0a/403c74df源已completed/actor exit0，24检查/440controls/112采集与读取、gate_ok=true/无失败；总1217.852s/动作575.628s/清理0.372s。result SHA `46d31e8864626dd096e5b324bd3d64cf7f0109618d3025a8470ce4724a991a91`，native journal `dc148cb6…e94f3e`；全部执行freshness过。工程门不计SR。
+- 协调器87628已自动唯一启动`jev_multi_20260930_gate3_v1`监管129152/actor129211、actor_running，仍同源GPU1/原24检查1800s门预算；不需手动重提。六例episode均尚未提交；第二门完成后自动进入既定顺序。正在归档首门小回执/视频，原源/run保留。
+- 12:54首门9件回执/14.6s视频已取回`artifacts/jev-control-20260929/multitask/gate0/`并逐件双端SHA一致；本人已看7帧contact sheet，头部画面/身体相对运动正常、腕视野初始被机器人本体部分遮挡，不是黑传感器帧（拼图末两格为空白占位）。工程视频不作策略成功证据。
+
 ### 2026-09-30 12:46（北京时间）：旧搜索输入解释确实改变该状态的Jev选择，尚非SR改善（Codex）
 
 - 同d403348独立robo源`jev_search_d403348`的`jev_search_context_20260930_v2`已完成9/9有效请求，监管126955退出，0控制/重置/训练。三条件各3次完整保留：A原样3/3 HOLD；B只追加世界搜索/量化bin解释3/3选择base yaw_plus micro（1°）；C只修通用rotation派生标签仍3/3 HOLD。v1先前2 attempts/1有效＋1网络失败另保留，未纳入v2的9分母。
