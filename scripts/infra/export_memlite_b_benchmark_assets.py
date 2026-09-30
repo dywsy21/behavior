@@ -100,6 +100,9 @@ def export_weights(output, torch):
 
 
 def export_inputs(output, torch):
+    # The original Hydra config has reviewed relative oc.load parts-meta paths.
+    # Resolve them against its immutable source, never the SSH login directory.
+    os.chdir(SOURCE)
     sys.path[:0] = [str(SOURCE / 'src'), str(SOURCE / 'scripts'), str(SOURCE)]
     from omegaconf import OmegaConf
     import pyarrow.parquet as pq
