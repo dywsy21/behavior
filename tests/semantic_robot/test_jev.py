@@ -13,7 +13,7 @@ from unittest.mock import patch
 from urllib.error import HTTPError, URLError
 
 from semantic_robot.v2.jev_client import (
-    ENDPOINT, MODEL, JevClient, JevError, NoRedirect, choice, load_key, strict_response,
+    ENDPOINT, MODEL, JevClient, JevError, JevChoiceMismatch, NoRedirect, choice, load_key, strict_response,
     validate_response,
 )
 from semantic_robot.v2.jev_policy import (
@@ -76,6 +76,49 @@ def context():
 
 
 class ClientTests(unittest.TestCase):
+    def test_choice_mismatch_has_numeric_diagnostics_without_authorizing_or_retrying(self):
+        records = []
+        def mutate(value):
+            value["answers"]["q"].update(probabilities={"a": .2, "b": .8}, confidence=.6)
+            value["untrusted_extra"] = "do not save this response string"
+        opener = Opener(mutate=mutate)
+        api = client(opener, max_calls=2, journal=records.append)
+        with self.assertRaises(JevChoiceMismatch):
+            api.evaluate({}, {"q": choice("Pick", {"a": "A", "b": "B"})})
+        self.assertEqual(len(opener.requests), 1)
+        self.assertEqual(api.calls, 1)
+        self.assertEqual(api.validated_responses, 0)
+        self.assertEqual(api.input_tokens, 0)
+        self.assertIsNone(api.last_call)
+        self.assertEqual([r["event"] for r in records], ["attempt", "rejected_response"])
+        failure = records[-1]
+        self.assertEqual(failure["validation_error"], "choice_not_maximum")
+        self.assertEqual(failure["request_sha256"], records[0]["request_sha256"])
+        self.assertEqual(len(failure["response_sha256"]), 64)
+        self.assertGreater(failure["response_bytes"], 0)
+        diagnostic = failure["diagnostic"]
+        self.assertEqual(diagnostic["selected_option_index"], 0)
+        self.assertEqual(diagnostic["maximum_option_indices"], [1])
+        self.assertEqual(diagnostic["probabilities_in_request_order"], [.2, .8])
+        self.assertAlmostEqual(diagnostic["probability_gap"], .6)
+        self.assertNotIn("untrusted_extra", json.dumps(records))
+        self.assertNotIn("do not save", json.dumps(records))
+        self.assertNotIn(KEY, json.dumps(records))
+
+    def test_choice_tie_is_valid_and_credential_echo_has_no_numeric_receipt(self):
+        q = {"q": choice("Pick", {"a": "A", "b": "B"})}
+        value = answer(q, {"q": "b"})
+        value["answers"]["q"].update(probabilities={"a": .5, "b": .5})
+        self.assertEqual(validate_response(value, q, MODEL)["answers"]["q"]["choice"], "b")
+        records = []
+        def mutate(value):
+            value["answers"]["q"].update(probabilities={"a": .1, "b": .9})
+            value["untrusted_extra"] = KEY
+        with self.assertRaises(JevError):
+            client(Opener(mutate=mutate), journal=records.append).evaluate({}, q)
+        self.assertNotIn("diagnostic", records[-1])
+        self.assertNotIn(KEY, json.dumps(records))
+
     def test_durable_attempt_and_result_accounting_has_no_credentials(self):
         records=[]
         c=client(journal=records.append)

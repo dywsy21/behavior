@@ -10,6 +10,23 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:41（北京时间）：JEV-05失败全包验全及本人图审，API诊断待冻结（Codex）
+
+- `multitask/task0a_infra_v1`全326件已逐文件与远端SHA完全一致；3.4s/426160B视频已本人看7帧contact，场景仅首次微前进，后续原地保持，未见目标抓取/任务完成。首次SCP残片另留、不冒充全包。
+- 新诊断client/probe独审通过；820项全套/32.342s通过（5环境skip）。真实失败包预检发现原state已RECOVER而intent仍search，修正了probe准入常量（不改输入状态/actor），并重新核原SHA、20184B/16选项；重建请求SHA `e1f9e1b252230df08ed9493cae794b86321d0c198cc5313d953799435de9d613`。新30-call仍未提交，没有新的仿真重置或策略版本上线。
+
+### 2026-09-30 13:37（北京时间）：协议拒绝诊断补齐、30次无执行复现登记（Codex）
+
+- 只在本地开发client增加request/response SHA与请求顺序索引、有限概率向量/差值的脱敏拒绝回执；原argmax/概率质量/身份/秘密/预算校验保持，非法响应仍抛错、不授权、不自动重试。新增`probe_jev_choice_contract.py`从旧task0a第16次有效intent回执重建第17问（20184B），固定30次同一输入/1200s，全部合法/拒绝/传输错误均保留，0GPU/动作/重置/训练。原拒绝响应未落盘，不声称新响应能还原旧概率。
+- 两个client回归与probe回归已添加，78项Jev目标测试通过；初次测试漏加scripts搜索路径的2项import错误已更正后全过，非代码通过的假记录。独立审查中，尚未提交真实API/新sim；原actor4698b0a保持冻结，剩余五例未提交。
+- task0a全包326件逐文件SCP触240s上界，未宣称完整；首次残片保留为本地`multitask/task0a_interrupted_transfer_v1`，同一已结束源改tar流取回新的`task0a_infra_v1`，完整SHA验收待。947.842s原失败轮已结束/自有资源清理完成。
+
+### 2026-09-30 13:30（北京时间）：JEV-05首例协议错误，协调器按约定停止（Codex）
+
+- task0a `jev_multi_20260930_task0a_v1`在第17次Jev请求（decision6的command）被`Choice disagrees with distribution`拒绝：16有效响应/1拒绝、7观察，已执行6策略动作（1次底盘前进micro＋5 HOLD）/102控制，随后另1安全HOLD成功。failure SHA `1b23475b7ae678ca9a8f657d93bb64a62bc4bc32cefceea98d470dd776d5f274`；不是合法弃权或任务终态，禁止记为0/1任务SR。
+- 原87628/140071/140499/140567全部退出，协调器status=stopped，其余五例未创建/提交，未重置重试；模型监管清理0.847s。同源统计器实跑返回0 completed、1 infrastructure_failure、5未提交，SR=null，旧JEV-04单例仍另列。
+- 官方TypeSafe Choice文档明确choice应为最大概率选项，当前argmax校验并非凭空约束；但旧拒绝日志只存事件未存具体概率，尚不能量化这次偏差或归因为舍入。正只读归档、查契约并补安全诊断/非执行API复现，暂不弱化校验或启动新sim。
+
 ### 2026-09-30 13:24（北京时间）：JEV-05首正式例进入实控，第二门归档验全（Codex）
 
 - task0a仍为原监管140071/observer140499/actor140567，13:23实读已control59/decision3，非初始化停滞；协调器87628正常，原始TRAIN138/seed0/0前缀、4698b0a与统一预算不变。尚无完整任务终态，不报SR，其余五例不重复提交。

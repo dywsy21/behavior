@@ -3,6 +3,7 @@
 Credentials are deliberately absent from receipts, reprs and exceptions. The
 client selects symbols; it never creates robot commands or certifies safety.
 """
+import hashlib
 import json
 from http.client import HTTPException
 import math
@@ -27,6 +28,14 @@ class JevError(RuntimeError):
 
 class JevAbstained(JevError):
     """A valid no-action decision, not a transport or schema failure."""
+
+
+class JevChoiceMismatch(JevError):
+    """Rejected Choice with numeric-only diagnostics, never an action receipt."""
+
+    def __init__(self, diagnostic):
+        super().__init__("Choice disagrees with distribution")
+        self.diagnostic = diagnostic
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -103,7 +112,7 @@ def validate_response(value, questions, model):
     answers = value.get("answers")
     if not isinstance(answers, dict) or set(answers) != set(questions):
         raise JevError("Missing or unexpected TypeSafe answers")
-    for name, question in questions.items():
+    for question_index, (name, question) in enumerate(questions.items()):
         answer = answers[name]
         if not isinstance(answer, dict) or answer.get("type") != "choice":
             raise JevError("Expected Choice answer")
@@ -125,7 +134,22 @@ def validate_response(value, questions, model):
                 "invalid_probability_count": sum(not probability(p) for p in probs.values()),
                 "confidence": safe_conf}, allow_nan=False))
         if probs[selected] + 1e-7 < max(probs.values()):
-            raise JevError("Choice disagrees with distribution")
+            # All names and probabilities have already passed the strict shape
+            # and numeric checks above. Persist only their request-order indices
+            # and finite numbers, never arbitrary response strings or headers.
+            ordered = list(question["criteria"])
+            peak = max(probs.values())
+            raise JevChoiceMismatch({
+                "question_index": question_index,
+                "option_count": len(ordered),
+                "selected_option_index": ordered.index(selected),
+                "probabilities_in_request_order": [probs[key] for key in ordered],
+                "maximum_option_indices": [i for i, key in enumerate(ordered) if probs[key] == peak],
+                "selected_probability": probs[selected],
+                "maximum_probability": peak,
+                "probability_gap": peak - probs[selected],
+                "confidence": answer["confidence"],
+            })
     usage = value.get("usage")
     if not isinstance(usage, dict) or any(type(usage.get(k)) is not int or usage[k] < 0
                                           for k in ("input_tokens", "output_tokens")):
@@ -190,7 +214,9 @@ class JevClient:
                           "Content-Type": "application/json", "Accept": "application/json"}, method="POST")
         self.calls += 1  # failed/timeout requests consume budget too
         started = time.perf_counter()
-        self.record("attempt", request_bytes=len(raw), question_names=list(questions))
+        request_sha = hashlib.sha256(raw).hexdigest()
+        self.record("attempt", request_bytes=len(raw), request_sha256=request_sha,
+                    question_names=list(questions))
         try:
             with self._opener.open(request, timeout=min(self.timeout, left) if left is not None else self.timeout) as response:
                 if response.geturl() != ENDPOINT:
@@ -207,8 +233,16 @@ class JevClient:
         except (URLError, TimeoutError, OSError, HTTPException):
             self.record("network_error")
             raise JevError("TypeSafe network/timeout failure; no retry or actuation") from None
-        except (JevError, ValueError):
-            self.record("rejected_response")
+        except (JevError, ValueError) as error:
+            fields = {}
+            if isinstance(error, JevChoiceMismatch):
+                # data has passed the byte cap and credential-echo rejection.
+                fields = {"validation_error": "choice_not_maximum",
+                          "diagnostic": error.diagnostic,
+                          "request_sha256": request_sha,
+                          "response_sha256": hashlib.sha256(data).hexdigest(),
+                          "response_bytes": len(data)}
+            self.record("rejected_response", **fields)
             raise
         self.input_tokens += result["usage"]["input_tokens"]
         self.output_tokens += result["usage"]["output_tokens"]

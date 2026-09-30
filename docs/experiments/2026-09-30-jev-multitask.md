@@ -1,6 +1,6 @@
 # JEV-05：Jev全策略控制的三任务原始起点评测
 
-负责人：Codex；分支 `feat/jev-control-20260929`。当前六例正式评测运行中，运行源commit和实际结果见下文与计划，不把本文件当作评测完成。
+负责人：Codex；分支 `feat/jev-control-20260929`。当前首例因API协议校验失败暂停，五例未提交；运行源commit和实际结果见下文与计划，不把本文件当作评测完成。
 
 ## 问题与边界
 
@@ -59,6 +59,18 @@ GPU1上运行模拟器与观察服务，分别CPU88–91、48–51；模型≤59
 13:10：gate3也completed/24检查/440controls/112同步采集，全部freshness通过；总1129.585s/动作573.501s/清理0.380s，result SHA `ef60c1ec22ff1febd86fa88d3bfdc28d0625fc693e8b7cb1b5dcd86f35cec8e2`。后台已自动启动首正式task0a监管140071，原始TRAIN138/96决策统一预算，实际结果待。
 
 13:24：gate0/3各9件回执与视频均已取回本地`artifacts/jev-control-20260929/multitask/{gate0,gate3}`、双端SHA验全，本人各看7帧contact，无黑传感器帧；工程门不算SR。task0a已实控至control59/decision3，观察模型140499/actor140567正常，六例完整结果仍待。
+
+## 首例协议失败（13:26结束，13:30核验）
+
+task0a在decision6的第17次Jev调用（command）触发`Choice disagrees with distribution`。截至失败，16次响应通过、1次拒绝、7次观察；实际策略为1次底盘micro前进和5次HOLD，共102控制；异常处理再发1次安全HOLD并完成，所有自有进程退出。监管总947.842s、清理0.847s；`gate/failure.json` SHA `1b23475b7ae678ca9a8f657d93bb64a62bc4bc32cefceea98d470dd776d5f274`。
+
+协调器按约定停止，其余五例未提交。**当前是1例接口/协议错误、0例完整任务终态，不是0/6成功率。** 同源统计器返回overall completed=0、infrastructure_failures=1、pending=5、success_rate=null。失败例不会被删除/替换为成功结果。
+
+[TypeSafe Choice官方契约](https://docs.typesafe.ai/primitives/choice)和[HTTP API定义](https://docs.typesafe.ai/api)都要求choice对应最大概率，当前argmax校验有依据；文档提到的“跨不同问题概率不满足逻辑恒等式”不等于同一Choice可违背此契约。旧client只记录拒绝事件，未保存原概率，不能断言原差值、舍入或供应商内部原因。
+
+补丁只增加脱敏数值诊断和请求/响应SHA，不改变选项、不降低校验、不重试执行。固定30次/1200s无执行probe从最后有效intent回执（SHA `1f1b0a47e22ed5c7e361c9d77af1ac0bb2977dfdfb24e29587b0e75343c220ec`）按原question builder重建command，核对原ledger的20184B请求长度。它复测的是重建输入产生的**新响应**，不是找回原拒绝响应；0仿真/动作/重置/训练，不记SR。
+
+13:41失败全包326件已双端SHA核同，位于本地`artifacts/jev-control-20260929/multitask/task0a_infra_v1`，含全部RGB-D/逐决策/3.4s视频；本人看7帧，仅首次微前进＋保持，没有目标抓取。原state实际已RECOVER、选中的intent仍search（probe预检已纠正常量，不改变输入）；实际重建20184B/16选项、SHA `e1f9e1b252230df08ed9493cae794b86321d0c198cc5313d953799435de9d613`。30次API新结果待。
 
 ## 旁路：旧搜索停滞输入的敏感性，不修改本轮actor
 
