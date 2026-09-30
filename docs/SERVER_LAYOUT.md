@@ -22,6 +22,8 @@
 
 ## 原robo记录（保留）
 
+**2026-09-30 11:09北京时间E3已停：** `e3_no_wall_v1`监管4022582/learner4022589/两sim4022893、4022896均退出，09-29 21:21:11监管failed/exit1，四A100 0MiB；不是仍初始化。最后`rl_batch_014_updates_0173.pt`（7,623,031,565B）整SHA daa37a25399a7f40b30bdbc445354eec1acbeb89d24370f825ae680b5f34c3fc验同，父50k仍需一并加载。`training/worker_{0,1}/primary_failure.json`、同目录`io.jsonl/steps.jsonl`保留渲染同步故障与最后32 pending实物账；原source/run/runtime不删不改，尚无`final/`或`result.json`。状态摘要见[E3登记](experiments/2026-09-29-g05-50k-rl-e3.md)，本次未启动恢复。
+
 **2026-09-29 15:59北京时间E3恢复确认：** 新`e3_no_wall_v1/resume_load.json`102/24/Adam严格恢复通过，`bc_preflight.json`五TRAIN任务过；`status.json`8458控制/0 pending/2批，TRAIN sims4022893/4022896初始化。新source25d868e保持冻结，后续当前状态只读新run，不再把原e3_dense_v1的人工停机failed当在训失败。
 
 **2026-09-29 15:57北京时间E3无时限续接：** 当前新run `/mnt/nvme_tmp/robodojo_g05_rl_20260928/e3_no_wall_v1`，runtime `/mnt/nvme_tmp/robodojo_sim_runtime_20260925/rl_g05_50k_e3_no_wall_v1`，Git冻结源`/mnt/sdc1/robodojo/behavior_dev/git_worktrees/g05_50k_rl_no_wall_25d868e`（25d868ebad96f85608aa069d4355801afae35ac3）。UTC07:56:38，监管4022582/learner4022589，加载中；manifest两墙钟为null，累计控制/批次/更新上限不重置。`prior_control_audit.json`保存旧8458控制和16 pending精确补账依据；新状态仍查`status.json/supervisor.json/resume_load.json`，不热pull新源。

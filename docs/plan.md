@@ -10,6 +10,15 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 11:09（北京时间）：E3已于昨晚渲染校验异常退出，173 delta完整、最终SR缺失（Codex / RL-G05-50K-E3）
+
+- 只读核验：`e3_no_wall_v1`监管在09-29 21:21:11北京时间结束/exit1，续接实际19473.646秒（5h24m），加原段累计23102.786秒；原四PID均退出、四A100实测0MiB。不是8h/12h到期，也不是仍后台训练；本次仅状态检查/记档，0新训练/评测，未修改运行源或环境。
+- 合两段完成14批/1366 chunks/21784个入PPO自主控制，actor94→173（E3新79；自上次102新71）、critic16→72。完整已保存`e3_no_wall_v1/rl_batch_014_updates_0173.pt`，7,623,031,565B、整文件SHA daa37a25399a7f40b30bdbc445354eec1acbeb89d24370f825ae680b5f34c3fc已重算验同；checkpoint物理账52032。最终`final/`和`result.json`均不存在，不能填报新完整SR。
+- 已完成28个TRAIN中途课程回合，实例1成功10/14、prefix1076→980→884；实例138成功1/14、prefix仍1096（batch006、生成策略actor126、后缀128控制官方terminated）。合11/28只是不同中间权重/不同课程难度的训练记录，非173 checkpoint固定成功率/完整reset评测，视频本轮未逐帧人审。
+- 双worker第13个本进程episode采样时都在`observe→synchronize→validate_batch`触发`Scheduled and completed render batches differ`。原`training/worker_{0,1}/io.jsonl`末行：三路camera分别全为12320/30和15488/30、等于各自scheduled；global completed却为12322/30和15489/30，领先2/1渲染tick，physics before==after。直接异常已定位为render同步校验，不据此断言图像已坏或放松检查；需核全局完成标记与逐相机帧的语义/有界重采集。
+- 连续逐控制物理账新段20778＋26504=47282；加旧段已核8458＝55740，比失败status55708多32，正好对应最后两已执行但未回传的16控制块。共23512自主控制，其中1728属于未完成第15批、未用于PPO；不把这批计为2个失败回合，不篡改原pending/close非clean。原TRAIN80k余24260，恢复仍须扣账、不能重新领预算。
+- 所有79个accepted更新的max path KL≤.09995634、mean≤.01687016；335候选中256被回滚，没有由此证明动作效果变好。下一建议先在新冻结源修/验渲染同步与故障恢复，再从173按原余预算续接并补固定六对；用户本轮仅问进展，尚未执行该修复/重启。Git原本地代理已失效/直连超时，已用robo专用loopback SSH通道完成pull/fetch，团队main仍33677bd，无覆盖他人改动。
+
 ### 2026-09-29 15:59（北京时间）：102 delta/优化器真实恢复，无时限作业进入仿真初始化（Codex / RL-G05-50K-E3）
 
 - `e3_no_wall_v1/resume_load.json`完整SHA/严格恢复通过，actor102/critic24/optimizer_restored=true、FP32 AE；`status.json`实际继承8458控制/0 pending/2批/成功1。五task原TRAIN BC前反向通过、0优化器步、冻结层无梯度，未从父50k或94重新开始。
