@@ -1,0 +1,22 @@
+{
+  "source": "robo:/mnt/sdc1/robodojo/behavior_dev/overnight_a4_20260912/formal/checkpoints/step_2500.pt",
+  "destination": "lc3:/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt",
+  "source_bytes": 16581363550,
+  "source_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+  "pid": 193613,
+  "started_utc": "2026-09-30T04:13:59.295844+00:00",
+  "state": "complete",
+  "workers": 8,
+  "chunk_mib": 16,
+  "completed_chunks": 989,
+  "local_bytes": 16581363550,
+  "total_chunks": 989,
+  "updated_utc": "2026-09-30T05:01:12.583413+00:00",
+  "elapsed_seconds": 2737.1844211360003,
+  "local_verified_sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269",
+  "remote_verification": {
+    "path": "/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt",
+    "bytes": 16581363550,
+    "sha256": "6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269"
+  }
+}

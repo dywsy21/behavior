@@ -10,6 +10,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 13:02（北京时间）：真实A4权重同步完成，三端完整SHA一致（Codex / BENCH-MEM1F）
+
+- PID193613最终`state=complete`（05:01:12 UTC），16,581,363,550B从robo经本地中转至共享`/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`；三端完整SHA均`6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`。原件、旧partial和中转均保留，不改精度/删除optimizer，无G0.5新下载。
+- ActionCodec、processor/tokenizer、A4五份配置/统计/回执14件也已逐文件目的SHA通过。权重复制完成不等于模型恢复或测速完成；正在只读CPU mmap验checkpoint条目，并冻结新增单帧入口/六项CPU合同测试。0GPU更新。
+
+### 2026-09-30 12:56（北京时间）：等待上传期间补齐单帧测速的真实A4低层入口（Codex / BENCH-MEM1F）
+
+- 本地新增原冻结A4的SkillFM policy、LoRA生命周期、schema-v6协议和独立projection校验模块四件；前两者的计算/冻结语义保留，policy仅将校验import指向独立模块，不覆盖当前samples builder。`py_compile`/diff通过，实际CPU模块/模型恢复及GPU仍未验，不能作为P0-02完整迁移或35技能协议发布。
+- 取原已验五任务TRAIN微批缓存141,706,605B，SHA `237acf01…e92be81`本地与历史同；共享`runs/memlite_oneframe_benchmark_20260930/inputs/actual_cpu_batches.pt`已目的完整SHA通过，CPU读取结构检查中。只复用原数据供计算吞吐探针，不造百任务技能标签、不保存训练产物；实际百任务I/O须另报，缓存吞吐不能称端到端全量SFT速度。
+- 主A4仍上传中；共享Torch/PEFT/pytest CPU导入通过、CUDA未初始化，0GPU更新。下一完成小单元、单帧输入合同和完整权重恢复，再依原≤50分钟GPU预算测速；缺口/失败即如实记录，不热改共享env。
+
 ### 2026-09-30 12:41（北京时间）：A4本地完整SHA通过，上传共享盘中（Codex / BENCH-MEM1F）
 
 - 全部16,581,363,550B完成拼接，SHA `6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`与robo原件一致；本地`weights/A4-step2500.verified.pt`保留。PID193613已自动进入`uploading`，子rsync213441写共享`step_2500.pt.partial`；完整共享盘SHA未通过前不发布最终名、不测速。

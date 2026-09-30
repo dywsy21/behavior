@@ -16,6 +16,8 @@
 
 ## 当前状态
 
+13:02（北京时间）**A4权重与14配套资产迁移完成**：主权重`models/memlite-a4-20260912/step_2500.pt`，16,581,363,550B，源/本地/目的完整SHA一致（`61867047…32f269`）。真实checkpoint已就位，旧原件和中转保留。新增单帧入口/六项CPU合同测试待服务器执行，0GPU更新；旧五任务十行TRAIN缓存仅用于计算吞吐，不当百任务端到端I/O证据。
+
 12:43（北京时间）主A4在本地完整SHA通过后自动上传共享盘中，最终名尚未发布；`models/action_tokenizer.pt`源/本地/目的三个完整SHA已一致。完整14件配套资产已就位（原13件＋ActionCodec），原配置仅作档案，含robo绝对路径；后续须显式覆盖模型、processor、codec路径，不能原样开训。高层B-final不是本轮低层测速依赖，未迁移。还没有神经前向、梯度或batch吞吐结果。
 
 12:31（北京时间）配套资产13件已完成源/目的逐文件SHA验收：A4五份配置/统计/回执＋Qwen3.5 processor八件；本地`assets/`、共享`models/memlite-a4-20260912/`及`models/qwen3_5_2b_base_processor/`。CPU内存解析单帧配置通过，但未做模型恢复/前向。加载器还需独立ActionCodec（506,886,775B，SHA `5088f64a5452a60bbc8cac90ee7d79c156f1d14540bc3139aa7060f862dddace`），已开始同步；该分支在纯FM执行中不生成动作token，不因此改训练目标。主A4同步仍进行，0GPU更新。
