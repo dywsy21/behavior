@@ -2,6 +2,8 @@
 
 ## 新A800集群（2026-09-27，独立于robo）
 
+**2026-09-30 17:29高层状态覆盖：** 下面B-final资产路径不变。最终有效GPU源是共享`src/memhigh-4e59b5b`，修正非均匀CE梯度；`src/memhigh-af631a2`保留为旧容量/CPU证据，不用其fused加权结果推训练时间。`runs/memlite_high_benchmark_20260930/timed-mixed-m4-v1`和`timed-long-m4-v1`均完成，所有rank/日志取回本地同名artifacts，09:26 UTC八卡已全释放。37 CPU/CUDA梯度检查及两真实训练臂通过，不是百任务正式训练或新模型。轻量证据见`docs/infra/results/2026-09-30-memlite-high-batch256.json`。
+
 **2026-09-30 17:00北京时间高层B-final：** 共享根`/data/workspace/wsy/behavior2026`下`models/memlite-b-final-20260910/B-final-model.pt`已完成全SHA迁移，11,440,576,631B，SHA`e7cd7bf738eb46901565088f829aa82c5c6ea95f610d4df1499e634959d29b13`；原950模型状态逐字节一致，只省去旧optimizer/scheduler等，`export-receipt.json`及原B配置/统计/回执同目录。它仍是原B-final，不是新训checkpoint。lc3有限高层测速源`src/memhigh-af631a2`，运行根`runs/memlite_high_benchmark_20260930`，`inputs/`为30条原TRAIN单帧缓存，`token-preflight-v2`与`stride-phase-v1`是CPU证据，容量/计时日志在`logs/`；本地证据`artifacts/a800-memlite-high-bench-20260930`。原robo完整26.59GBcheckpoint及旧优化器不动。此时仅容量初始化，吞吐尚待；不得据文件齐全启动正式100任务长训。
 
 **2026-09-30 14:11北京时间追加测速完成：** 同运行根新增`batch256-v1/`和`cpu-io-stride16-v1/`，均complete/exit0；同名日志在`logs/`。两者均绑定独立冻结`/data/workspace/wsy/behavior2026/src/mem1f-b256-03e35f8`（03e35f8464ac26683cdb4e6dc7d5f63001b9a973），源码经已push Git bundle导入，旧源/env不动。新四件小结果本地`artifacts/a800-memlite-oneframe-bench-20260930/results/`全SHA一致；无新checkpoint或残留GPU任务，[汇总](infra/results/2026-09-30-memlite-batch256-stride16.json)。
