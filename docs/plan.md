@@ -10,6 +10,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-09-30 20:14（北京时间）：lc1高层真实八卡短验已启动（Codex / IMPL-MEM100-STAGE1）
+
+- 4f73bda已push/独立冻结，8个新标签/normalizer单测过；v4构建62.93s，111源隔离。lc1 `high-v1` supervisor431063/torchrun431071已RUNNING（八rank初始化），全局256=8×4×8、先2更新后同run恢复到4，累计≤64更新/60min；日志`runs/stage1_acceptance_20260930/high-v1.supervisor/attempt_001.log`。当前不宣称首更新/存取通过，不是正式一遍开训。
+- lc2仅CPU全TRAIN bounds作业7982工具会话已提交，固定同源/8核/60min，输出`manifests/memlite-stage1-v4-action-bounds`，无GPU低层开训。新增可重放100任务归一化往返脚本草稿，验证真实部署raw-state anchor与统计公式，待冻结运行。
+- 续接首次fetch TLS失败，重试已成功、origin/main仍33677bd；当时有自己的待提交改动故未pull，无覆盖/热改活跃源，所有实验独立worktree。
+
 ### 2026-09-30 20:11（北京时间）：图审隔离一条原标注过长POUR，新候选v4（Codex / IMPL-MEM100-STAGE1）
 
 - 回看v3长上下文新窗口发现task91/ep18326（源身份91/911960/196）POUR wicker_basket区间[2430,7256]延续到后续水果GRASP/NAV/PLACE_IN，frames5261..7181双手拿水果而非倒篮子。保守整源隔离，原图/动作/标注不改，不猜切点；证据data-qa-v2、人审v2页18/19。v3不发布，v4仅增加这一隔离（111条），后续统计与准入绑定v4。
