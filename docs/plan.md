@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：role-safe coverage renderer 与 causal-only review builder 已独审合根；lc3 decode 仅完成只读预检（Codex / P107-COORD）
+
+- 根在保留最新ledger、未采用source branch旧`docs/plan.md`的前提下，集成独审renderer handoff `1d608805e288fc12f5c885b0a2a852c747fec33f`及完整causal builder fix链`761c5ddf43b02cb60e4f280901376e4b79f320da→9487bf661cfb3f8fdf08529d72f3a482fe5b62c7→e0704e106f0d107d48dc8697c636c7775031f9b1→b142bb279e55f53dc2d49da291b651d790eba377`，冻结代码commit`d582c0e91208b865e88aa42fd4b507f5fc437bef`。TRAIN handoff只将sealed diagnostic TRAIN selector转成canonical subset/queue并resume核验；EVAL一律走独立receipt/renderer，保持`evaluation_only`+`eval`+`training_eligible=false`，不生成/携带TRAIN queue seal、更不会把EVAL重标为TRAIN。causal builder仍TRAIN-only，默认review pages排除future、另有audit，而不是retroactively认证旧mixed UI。
+- 既有`/home/wsy/GRM/.venv/bin/python`（Python3.12.9）实跑新8+旧renderer/selector21+causal16，共`45 passed in 3.35s`；py_compile、CLI help、diff check通过。targeted Ruff亦通过（动态test `sys.path` bootstrap的`E402`及旧renderer规则`S102,TRY004,UP035`仅作显式scope ignore，未改运行语义）。尚未针对真实52 cohort运行renderer、decode、page build或label；新coverage query adapter由独立owner另行review，不能热改未来decode snapshot。
+- 只读lc3 preflight于UTC`2026-10-01T21:56:59Z`完成：既有`p107-lc-connect`/SOCKS不重连，128CPU、MemAvailable`1,044,973,540KiB`、`/data` available`3,861,821,771,776B`，8×A800均`0MiB/0%`且无compute process；existing g05 Python`3.10.19`、frozen RGB root及可读MP4、b3c961b/legacy7f均可读。仅验证未来fresh Git-only source`/data/workspace/wsy/behavior2026/src/p107-coverage-causal-d582c0e`及run/receipt`/data/workspace/wsy/behavior2026/p107/runs/coverage-cohort-next-v1-rgb-v1{,.receipts}`均不存在；没有remote Git fetch、目录创建、RGB/decode/GPU/Isaac/assets/EULA或shared-env改动。
+- 若获后续单独GO，唯一候选是lc3上fresh Git/bundle snapshot、1 CPU affinity+`nice19`/idle-I/O、4GiB address-space、0GPU、≤15分钟的52-row RGB decode，先复核source/input/seal/paths再启动；本条不是授权或已启动。E2 root review仍77，DART/live/recovery/action/BC/release/training仍0。
+
 ### 2026-10-02（北京时间）：52-window coverage cohort metadata-only 已原子发布并校验（Codex / P107-COORD）
 
 - 经root明确授权，使用frozen root code `a85821cc567f4cc1a2297d12489881e9ba6a327f`在本地以单个CPU Python process、4GiB virtual-memory limit、0GPU、600秒timeout运行已独审selector `--write`；实际exit0/25.6秒。新同胞输出为`/home/wsy/behavior-annotations/p107/coverage-cohort-next-v1/{train,eval}`，固定full-v3 release`90ff0fa9…6f23`、inventory seal`7ed1b2c…1479`、canonical v3 coverage SHA`39ccfb79…b3c7`（文件bytes SHA`441bbb46…8650`）、legacy protocol SHA`7f4f9fbf…ab0c`、prior77 SHA`714ae08f…91bcc`和seed`p107-diagnostic-coverage-20261002`；不覆盖旧artifact。
