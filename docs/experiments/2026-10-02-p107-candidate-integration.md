@@ -50,25 +50,30 @@ index's canonical-ID semantics.
 
 ## Local full-v3 metadata-only preflight
 
-On 2026-10-02 CST, the integrated renderer created and resumed a fresh
-temporary packet directory from the immutable full-v3 candidate index and the
-real sealed 40-item calibration queue. This was local only (one CPU, virtual
-memory cap 4 GiB, 60-second command cap), used no remote runtime and no
-`--decode`, and left the source index/queue unchanged. It used the queue's
-required ten-position schedule `-60,-45,-30,-15,0,1,16,31,46,60`, the legacy
-reader pin above, render-request SHA
+On 2026-10-02 CST, frozen integration commit
+`4b4e700efa97e9b7f2673ef32306d2f3674faad5` created and resumed a fresh,
+preserved external receipt directory:
+`/home/wsy/behavior-annotations/p107/integration-receipts/renderer-4b4e700-20261002`.
+Its renderer source SHA is
+`5bcb34518b3ff77d108bb23d53e64d072e80aeb88322f25a02756c9f9d881c9c`.
+This was local only (one CPU, virtual memory cap 4 GiB, 60-second command cap),
+used no remote runtime and no `--decode`, and left the source index/queue
+unchanged. It used the queue's required ten-position schedule
+`-60,-45,-30,-15,0,1,16,31,46,60`, the legacy reader pin above, render-request SHA
 `b5a76f786ad38adbc17b25649899505d25951c7d4efa437f957856c08b757edb`,
 and queue-seal SHA
 `78eda9c87b18e806e00e4820c172b02002d806e7c77fe9911368d42711de227c`.
 
-Creation completed in 6.27 seconds (27,984 KiB max RSS) with 40 candidate
+Creation completed in 7.72 seconds (28,252 KiB max RSS) with 40 candidate
 packets, 400 requested temporal slots, 392 distinct source frames, and 8
 boundary-clamped duplicate requests; it wrote zero rendered RGB receipts and
-remained `LOCATORS_READY_RENDER_PENDING`. Its external resume pin was
-`0855c3356513262d120419320fcf2e4473c322feaac0711754d025cbe7ba93e5`;
-resume completed in 5.99 seconds (28,752 KiB max RSS) as
+remained `LOCATORS_READY_RENDER_PENDING`. The new external resume pin is
+`fa4d23d798564babbbf2fd87d6aae6150cf53b6d50f3066f57f830e158cbbd47`;
+resume completed in 6.28 seconds (28,752 KiB max RSS) as
 `RESUME_VALIDATED`. These are renderer/provenance receipts, not an image
-review, action label, data release, or training result.
+review, action label, data release, or training result. The receipt directory
+preserves the exact command, script/input SHA list, stdout, runtime files, and
+sealed packet manifest/payloads for independent revalidation.
 
 ## Deliberate exclusions and limits
 
