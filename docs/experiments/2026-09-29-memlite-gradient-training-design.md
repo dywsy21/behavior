@@ -305,3 +305,9 @@ Codex / PLAN-MEM100-PREPDATA。以下为用户本轮询问对应的**待办与�
 先完成的目标是**一套能复核、能喂给正确训练分支的小数据包及可复放起点**，不是预先堆固定小时数的负例。建议顺序：来源/事件索引与schema→约200候选人工筛选及反事实小样→独立预算的restore与物理教师小验证→稳定模型上的针对性扩展。例子数量只是首轮建议，未实测产量/人工耗时，不构成开工授权。
 
 资源约束：优先轻量metadata/动作读取及事件附近CPU解码；旁路输出、低并发、限制I/O和缓存，避免抢lc1/lc2共享盘吞吐。没有因本轮查询确认lc3或robo有可用GPU；若需要仿真或标注模型，先核资源与已有作业，不改共享env/当前数据release，不给阶段1热加新标签。
+
+#### 2026-10-02 P107 calibration40：已封存候选的受控时序视觉审阅
+
+`calibration40-v1` 是 `annotation_calibration` 侧的 sealed metadata queue，不是 student/train 视图。renderer `a068404` 已在不读 RGB 的 metadata preflight 中确认40条请求的10个时序 slot：400个请求、392个去重后的 episode-local frame、8个边界 clamp 重复；这只证明 locator/clock/queue 配合，**不**证明可见 outcome、attempt failure、recovery 或动作监督。真实 CPU decode 仍要 final independent review 与 lc3 operator receipt，且本记录时尚未开始。
+
+对首40条的操作规程固定在 [P107 时序视觉校准标注指南](../data/P107_VISUAL_ANNOTATION_GUIDE.md)：三路原生 RGB 无 ground-truth footer，actor 因果帧与 future offline audit 分开；以实际 frame/PTS/相机 locator、明确问题和 target binding 标 `YES`/`NO`/`UNKNOWN`。source skill 是尝试目标而非结果，metadata end/close/timeout不能生造失败或成功；image-only 也不产生 BC/control/正向 FM。父代理仍须看完整时间线、全部声称 failure/recovery 与歧义项，且通过前不发布训练数据或计入规模。

@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 40条时序视觉校准的 renderer 已完成 metadata preflight；真实 RGB/标签仍为零（Codex / P107-COORD）
+
+- DATA 的 sealed source-membership/authority 候选代码 `f158845`、`e8f5dc6` 已独立复审为 candidate-code approved；它不发布 live/publisher 数据。SIM `56f7452` 亦为 candidate-code approved、live proof=0。DART `d2d7994` 仅余轻量 import 修复/复审，仍无 live DART record、release 或训练准入。
+- MINING `33e1a5b` 的 real-40 calibration queue 保持不变；附加 TOCTOU hardening 正在独审，未改变 sealed queue。DATA renderer `a068404`（protocol snapshot `0693b93c` / SHA `7f4f…aab0`）以 exact queue/request seals 做了本地 metadata-only locator preflight：40 条、400 requested slots、392 distinct temporal frames、8 个 episode-edge clamp duplicates，因而后续 decode 计划为 1,176 张三路 camera-native PNG 加40张 review-only contact sheets。preflight manifest `/home/wsy/behavior-annotations/p107/index-validation/calibration40-v1-locator-preflight-a068404/manifest.json` SHA `f399f081b3efb0db62470d342488fa9c11b02a8a179f040ac8c9840567d6f499`；它不是 RGB extraction、annotation 或 release。
+- renderer 的最终独立 review 正在进行；只有 reviewer 放行且 lc3 operator 提供实际 CPU run receipt 后，才可按已封存的 10-offset request 解出首40条。此条件性 CPU run 已授权但**尚未启动**；无实际 native RGB、标签、outcome/recovery action、FM-positive 或训练数据。规程见 [P107 时序视觉校准标注指南](data/P107_VISUAL_ANNOTATION_GUIDE.md)。
+
 ### 2026-10-01 23:48（北京时间）：P107 calibration40 metadata queue 已完成；仍无图像、标签、release 或训练准入（Codex / P107-COORD）
 
 - 独立复审后，MINING `33e1a5b` 在 1 CPU / 30 分钟 / 4 GiB address-space 上限下完成并 resume-核验 `/home/wsy/behavior-annotations/p107/index-validation/calibration40-v1`：create 为 18.14 秒、peak RSS 125,352 KiB、exit 0；queue seal 为 `78eda9c87b18e806e00e4820c172b02002d806e7c77fe9911368d42711de227c`。产物是 40 条 `annotation_calibration`、0 条 student，且 40 个 task / source group / episode 均不同；只覆盖 32/35 official skills。skill 103 在 calibration pool 中缺失；8、100 在 pool 中但受固定 policy cap 未选中，二者都**不**证明全源不可能。
