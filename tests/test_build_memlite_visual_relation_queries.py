@@ -285,6 +285,12 @@ class PrelabelProducerTest(unittest.TestCase):
         self.assertEqual(exact_category["status"], "RESOLVED")
         self.assertEqual(exact_category["prompt_noun"], "box")
         self.assertIsNone(exact_category["opaque_instance_suffix"])
+        empty_prefix_suffix = producer.resolve_category("box_", mapping)
+        self.assertEqual(empty_prefix_suffix["status"], "UNKNOWN_CATEGORY")
+        self.assertTrue(empty_prefix_suffix["quarantine"])
+        nonempty_prefix_suffix = producer.resolve_category("box_x", mapping)
+        self.assertEqual(nonempty_prefix_suffix["status"], "RESOLVED")
+        self.assertEqual(nonempty_prefix_suffix["opaque_instance_suffix"], "x")
         query = producer.relation_phrase(
             "CHOP", ["mystery_asset_123"], [], {"target_part": ""}, mapping
         )
