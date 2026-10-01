@@ -65,7 +65,7 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 截至本台账创建时，metadata inventory、候选提取、标注、GPU标注、仿真 reset 和训练都**未启动**，没有数据质量结论。infra 报告 `ssh lc1/lc2/lc3` 均为 `exit 255: Connection closed UNKNOWN 65535`，且未见 `127.0.0.1:1080` SOCKS listener / SSH ControlMaster；此报告等待获准恢复连接后的只读复核。不得自行改 VPN、凭据或连接配置，亦不得称9/30训练为当前。robo/sim映射待核。
 
-文档稳定后，实施者使用下列隔离目录，并从本协调分支的精确已审 commit 创建：
+台账、总计划和团队板已通过 `git diff --check`，作为仅文档提交 `b291196` 在30秒上限内推送到 `origin/feat/memlite-recovery-prep-20261001`。实施者现使用下列干净隔离目录，均从精确 `b29119688279751f5c59f28e2da5aa4df699ce5b` 创建：
 
 - `/home/wsy/behavior-worktrees/p107-data` → `feat/p107-data-20261001`
 - `/home/wsy/behavior-worktrees/p107-sim` → `feat/p107-sim-20261001`
