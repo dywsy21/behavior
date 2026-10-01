@@ -4,9 +4,10 @@ This is deliberately upstream of rendering and labeling.  It consumes the
 immutable event/source-group identifiers produced by the P107 index, emits
 camera-native temporal render requests, and never opens RGB, video, actions,
 or simulator state.  Its heuristics find review candidates only: an annotation
-boundary, a repeated source skill/object, a long annotated interval, or an
-actual-execution gripper summary is not an outcome, failure, recovery, or
-trainable action label.
+boundary, a repeated source skill/object, or a long annotated interval is not
+an outcome, failure, recovery, or trainable action label.  Action-sequence
+heuristics are disabled here until an owner-sealed actual-execution contract
+exists.
 
 The output queues are external, content-addressed sidecars.  They keep the
 frozen source split and usage role intact, explicitly exclude eval/public-test
@@ -20,11 +21,13 @@ import argparse
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 import hashlib
+import importlib.util
 import json
 import math
 import os
 from pathlib import Path
 import shutil
+import sys
 import tempfile
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -35,10 +38,17 @@ QUEUE_SCHEMA = "p107-metadata-annotation-queue-v1"
 RENDER_REQUEST_SCHEMA = "p107-camera-native-temporal-request-v1"
 COUNTS_SCHEMA = "p107-metadata-annotation-counts-v1"
 MANIFEST_SCHEMA = "p107-metadata-annotation-queue-manifest-v1"
+QUEUE_SEAL_SCHEMA = "p107-metadata-annotation-queue-seal-v1"
 STATUS = "CANDIDATE_MISSING_EVIDENCE"
 DEFAULT_SOURCE_MANIFEST_SHA256 = "90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23"
 DEFAULT_SEED = "p107-metadata-candidate-selection-20261001"
 FRAME_RATE_HZ = 30
+QUEUE_PAYLOAD_FILES = frozenset((
+    "annotation_calibration_queue.jsonl",
+    "camera_native_render_requests.jsonl",
+    "counts.json",
+    "student_candidate_queue.jsonl",
+))
 
 
 def canonical_json(value: Any) -> str:
@@ -136,13 +146,81 @@ def file_receipt(path: Path, *, expected: Mapping[str, Any]) -> None:
         raise ValueError(f"Sealed index payload byte count mismatch: {path.name}")
 
 
+def load_canonical_protocol(path: Path, *, expected_sha256: str) -> Any:
+    """Load the data owner's stdlib-only P107 authority module by exact hash."""
+    path = Path(path)
+    if not is_sha256(expected_sha256):
+        raise ValueError("--expected-protocol-sha256 must be a lowercase SHA-256")
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("--protocol-path must name the data owner's regular canonical protocol module")
+    actual = sha256_file(path)
+    if actual != expected_sha256:
+        raise ValueError("canonical protocol module does not match the externally pinned SHA-256")
+    spec = importlib.util.spec_from_file_location("p107_canonical_event_protocol", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot import canonical protocol module: {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    for name in ("canonical_json", "canonical_sha256", "event_id", "source_group_id", "validate_event"):
+        if not callable(getattr(module, name, None)):
+            raise ValueError(f"canonical protocol is missing required validator: {name}")
+    return module
+
+
+def validate_coverage_expectations(value: Any) -> dict[str, Any]:
+    """Consume the owner-sealed official vocabulary without inventing a grid."""
+    value = require_mapping(value, "coverage expectations")
+    required = {
+        "schema_version", "official_task_metadata_sha256", "official_skill_vocabulary_sha256",
+        "expected_task_ids", "expected_skill_verbs", "required_task_skill_pairs",
+    }
+    if set(value) != required or value.get("schema_version") != "p107-official-coverage-expectations-v2":
+        raise ValueError("coverage expectations must use the exact P107 official-metadata schema")
+    for name in ("official_task_metadata_sha256", "official_skill_vocabulary_sha256"):
+        if not is_sha256(value.get(name)):
+            raise ValueError(f"coverage expectations {name} must be a SHA-256")
+    tasks, skills = value["expected_task_ids"], value["expected_skill_verbs"]
+    if (not isinstance(tasks, list) or not tasks or any(type(task) is not int or task < 0 for task in tasks) or
+            tasks != sorted(set(tasks))):
+        raise ValueError("coverage expected_task_ids must be sorted unique nonnegative integers")
+    if (not isinstance(skills, list) or not skills or any(not isinstance(skill, str) or not skill for skill in skills) or
+            skills != sorted(set(skills))):
+        raise ValueError("coverage expected_skill_verbs must be sorted unique nonempty strings")
+    pairs = value["required_task_skill_pairs"]
+    if pairs is not None:
+        if not isinstance(pairs, list):
+            raise ValueError("coverage required_task_skill_pairs must be null or a list")
+        previous: tuple[int, str] | None = None
+        for pair in pairs:
+            pair = require_mapping(pair, "coverage required task/skill pair")
+            if set(pair) != {"task_index", "skill_verb"} or pair["task_index"] not in tasks or pair["skill_verb"] not in skills:
+                raise ValueError("coverage required task/skill pair is outside the official vocabulary")
+            key = pair["task_index"], pair["skill_verb"]
+            if previous is not None and key <= previous:
+                raise ValueError("coverage required task/skill pairs must be sorted unique")
+            previous = key
+    return dict(value)
+
+
+def read_coverage_expectations(path: Path, *, expected_sha256: str) -> dict[str, Any]:
+    if not is_sha256(expected_sha256):
+        raise ValueError("coverage expectations seal must be a SHA-256")
+    expectations = validate_coverage_expectations(read_json(path))
+    if canonical_sha256(expectations) != expected_sha256:
+        raise ValueError("official coverage expectations differ from the inventory-sealed contract")
+    return expectations
+
+
 @dataclass(frozen=True)
 class SourceGroup:
     source_group_id: str
+    source_release_manifest_sha256: str
     task_id: int
     task_instance_id: int
     original_split: str
     usage_role: str
+    source_episode_ids: tuple[int, ...]
 
 
 @dataclass(frozen=True)
@@ -163,8 +241,6 @@ class Candidate:
     repeat_attempt_count: int
     boundary_before: bool
     boundary_after: bool
-    actual_action_metadata_available: bool
-    actual_gripper_open_close: bool
     long_interval: bool
     candidate_signals: tuple[str, ...]
     selection_stratum: str
@@ -195,48 +271,8 @@ def skill_key(skill: Mapping[str, Any]) -> str:
     return canonical_sha256({"kind": "metadata_skill_target_key", "fields": values})
 
 
-def has_actual_action_metadata(event: Mapping[str, Any]) -> bool:
-    """Recognize the narrow explicit extension without loading action arrays."""
-    action = event.get("action")
-    summary = action.get("executed_action_metadata") if isinstance(action, Mapping) else None
-    return (isinstance(action, Mapping) and type(action.get("actual_executed_length")) is int and
-            isinstance(summary, Mapping) and summary.get("execution_status") == "ACTUALLY_EXECUTED")
-
-
-def actual_gripper_open_close(event: Mapping[str, Any]) -> bool:
-    """Recognize only a future, explicit actual-execution summary extension.
-
-    The frozen v4 event index deliberately has ``actual_executed_length=null``
-    and no action array, so it returns false there.  This narrow parser avoids
-    treating predicted actions, segment endings, or arbitrary metadata as an
-    actual gripper sequence.
-    """
-    action = event.get("action")
-    if not has_actual_action_metadata(event) or not isinstance(action, Mapping):
-        return False
-    summary = action["executed_action_metadata"]
-    transitions = summary.get("gripper_transitions")
-    if not isinstance(transitions, list):
-        return False
-    by_side: dict[str, list[tuple[int, str]]] = defaultdict(list)
-    for transition in transitions:
-        if not isinstance(transition, Mapping):
-            return False
-        frame, side, state = transition.get("frame"), transition.get("side"), transition.get("state")
-        if type(frame) is not int or not isinstance(side, str) or state not in {"OPEN", "CLOSED"}:
-            return False
-        by_side[side].append((frame, state))
-    for states in by_side.values():
-        states.sort()
-        previous = None
-        for _, state in states:
-            if previous == "OPEN" and state == "CLOSED":
-                return True
-            previous = state
-    return False
-
-
-def validate_index(index: Path, *, expected_source_manifest_sha256: str) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, SourceGroup]]:
+def validate_index(index: Path, *, expected_source_manifest_sha256: str,
+                   canonical_protocol: Any, expected_protocol_sha256: str) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, SourceGroup]]:
     """Verify the exact sealed input before sampling any metadata candidate."""
     index = Path(index)
     if index.is_symlink() or not index.is_dir():
@@ -251,6 +287,8 @@ def validate_index(index: Path, *, expected_source_manifest_sha256: str) -> tupl
         raise ValueError("input is not a sealed P107 metadata-only event index")
     if manifest.get("source_release_manifest_sha256") != expected_source_manifest_sha256:
         raise ValueError("frozen v4 source manifest hash does not match the predeclared queue policy")
+    if manifest.get("protocol_sha256") != expected_protocol_sha256:
+        raise ValueError("index was not built with the externally pinned canonical protocol")
     if manifest.get("training_eligible") is not False:
         raise ValueError("candidate input must explicitly be non-trainable")
     files = require_mapping(manifest.get("files"), "index.files")
@@ -268,7 +306,7 @@ def validate_index(index: Path, *, expected_source_manifest_sha256: str) -> tupl
         if not is_sha256(group_id) or group_id in source_groups:
             raise ValueError("source_groups.jsonl has an absent or duplicate immutable source_group_id")
         source_release = row.get("source_release_manifest_sha256")
-        if source_release is not None and source_release != expected_source_manifest_sha256:
+        if source_release != expected_source_manifest_sha256:
             raise ValueError("source group release identity drifted from the sealed index")
         task_id = require_int(row.get("task_index"), "source_group.task_index")
         task_instance_id = require_int(row.get("task_instance_id"), "source_group.task_instance_id", minimum=1)
@@ -281,8 +319,20 @@ def validate_index(index: Path, *, expected_source_manifest_sha256: str) -> tupl
             raise ValueError("source-group eval role cannot be relabeled for annotation")
         if task_instance_id >= 301:
             raise ValueError("public-test source instance entered the candidate index")
-        source_groups[str(group_id)] = SourceGroup(str(group_id), task_id, task_instance_id,
-                                                    str(original_split), str(usage_role))
+        episodes = row.get("source_episode_ids")
+        if (not isinstance(episodes, list) or not episodes or
+                any(type(episode) is not int or episode < 0 for episode in episodes) or
+                episodes != sorted(set(episodes)) or row.get("source_episode_count") != len(episodes)):
+            raise ValueError("source group has an invalid immutable source-episode inventory")
+        expected_group_id = canonical_protocol.source_group_id({
+            "source_release_manifest_sha256": source_release,
+            "task_index": task_id,
+            "task_instance_id": task_instance_id,
+        })
+        if group_id != expected_group_id:
+            raise ValueError("source group ID is not canonical for its immutable release/task/instance")
+        source_groups[str(group_id)] = SourceGroup(str(group_id), str(source_release), task_id, task_instance_id,
+                                                    str(original_split), str(usage_role), tuple(episodes))
     return manifest, event_rows, source_groups
 
 
@@ -336,6 +386,7 @@ def validate_inventory_seal(index: Path, *, expected_inventory_seal_sha256: str)
 
 def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Mapping[str, SourceGroup], *,
                      expected_source_manifest_sha256: str,
+                     canonical_protocol: Any,
                      boundary_gap_frames: int, long_interval_frames: int) -> tuple[list[Candidate], Counter[str]]:
     """Parse only metadata candidate fields and derive review heuristics."""
     if boundary_gap_frames < 0 or long_interval_frames < 1:
@@ -348,6 +399,9 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Map
     # eval groups when ranking student candidates.
     repeats: dict[tuple[str, int, str], set[tuple[str, int, int]]] = defaultdict(set)
     for event in event_rows:
+        # Do this before role exclusion: eval is excluded from queues, not
+        # exempted from canonical source/event identity validation.
+        canonical_protocol.validate_event(event)
         event_id = event.get("event_id")
         if not is_sha256(event_id) or event_id in seen_event_ids:
             raise ValueError("event index has an absent or duplicate immutable event_id")
@@ -360,11 +414,14 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Map
         if (source.get("original_split") != group.original_split or
                 event.get("usage_role") != group.usage_role or
                 source.get("source_release_manifest_sha256") != expected_source_manifest_sha256 or
+                source.get("source_release_manifest_sha256") != group.source_release_manifest_sha256 or
                 source.get("task_index") != group.task_id or
                 source.get("task_instance_id") != group.task_instance_id):
             raise ValueError("event/source role or immutable split identity drifted from source_groups.jsonl")
         if not is_sha256(source.get("source_annotation_sha256")):
             raise ValueError("event source has no immutable source annotation hash")
+        if episode_index not in group.source_episode_ids:
+            raise ValueError("event episode is absent from its immutable source-group inventory")
         if group.original_split == "eval" or group.usage_role == "evaluation_only":
             excluded_roles["evaluation_only"] += 1
             continue
@@ -424,14 +481,10 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Map
         repeated = max((len(repeats[row["event"]["usage_role"], row["task_id"], key])
                         for key in row["skill_keys"]), default=0)
         before, after = boundaries[row["event_id"]]
-        action_metadata = has_actual_action_metadata(row["event"])
-        gripper = actual_gripper_open_close(row["event"])
         long_interval = row["interval_end"] - row["interval_start"] >= long_interval_frames
         signals: list[str] = []
         if repeated >= 2:
             signals.append("REPEATED_SKILL_TARGET_CANDIDATE")
-        if gripper:
-            signals.append("ACTUAL_GRIPPER_OPEN_CLOSE_SEQUENCE_CANDIDATE")
         if before or after:
             signals.append("ANNOTATION_BOUNDARY_CANDIDATE")
         if long_interval:
@@ -440,16 +493,13 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Map
         if not signals:
             signals.append("NORMAL_CONTROL_CANDIDATE")
         candidates.append(Candidate(**row, repeat_attempt_count=repeated, boundary_before=before,
-                                    boundary_after=after, actual_gripper_open_close=gripper,
-                                    actual_action_metadata_available=action_metadata,
-                                    long_interval=long_interval, candidate_signals=tuple(signals),
+                                    boundary_after=after, long_interval=long_interval, candidate_signals=tuple(signals),
                                     selection_stratum=signals[0]))
     return candidates, excluded_roles
 
 
 def candidate_rank(candidate: Candidate, seed: str) -> tuple[int, int, int, int, str]:
     score = {
-        "ACTUAL_GRIPPER_OPEN_CLOSE_SEQUENCE_CANDIDATE": 4,
         "REPEATED_SKILL_TARGET_CANDIDATE": 3,
         "ANNOTATION_BOUNDARY_CANDIDATE": 2,
         "LONG_ANNOTATED_INTERVAL_CANDIDATE": 1,
@@ -518,6 +568,15 @@ class DiverseSelector:
         }
 
 
+def seeded_order(values: Iterable[Any], *, seed: str, namespace: str) -> list[Any]:
+    """A deterministic permutation that does not privilege low task IDs."""
+    unique = sorted(set(values))
+    return sorted(unique, key=lambda value: (
+        hashlib.sha256(f"{seed}:{namespace}:{canonical_json(value)}".encode("utf-8")).digest(),
+        canonical_json(value),
+    ))
+
+
 def select_diverse(candidates: Sequence[Candidate], *, budget: int, seed: str, max_per_episode: int,
                    min_separation_frames: int, max_per_source_group: int,
                    normal_control_fraction: float) -> tuple[list[tuple[Candidate, str]], dict[str, int]]:
@@ -537,10 +596,10 @@ def select_diverse(candidates: Sequence[Candidate], *, budget: int, seed: str, m
     # The first two passes make the declared 100-task/35-skill objective real
     # when the index/budget permit it.  Missing coverage is reported below,
     # never silently filled with a sibling, eval, or duplicate window.
-    for task_id in sorted(by_task):
+    for task_id in seeded_order(by_task, seed=seed, namespace="task-coverage"):
         selector.first_selectable(by_task[task_id], "TASK_COVERAGE")
     covered_skills = {skill for candidate, _ in selector.selected for skill in candidate.skill_ids}
-    for skill in sorted(by_skill):
+    for skill in seeded_order(by_skill, seed=seed, namespace="skill-coverage"):
         if skill not in covered_skills:
             selector.first_selectable(by_skill[skill], "SKILL_COVERAGE")
             covered_skills = {item for candidate, _ in selector.selected for item in candidate.skill_ids}
@@ -551,7 +610,7 @@ def select_diverse(candidates: Sequence[Candidate], *, budget: int, seed: str, m
                                   "NORMAL_CONTROL_QUOTA")
         if len(selector.selected) == before:
             break
-    for stratum in sorted(by_stratum):
+    for stratum in seeded_order(by_stratum, seed=seed, namespace="stratum-seed"):
         if stratum == "NORMAL_CONTROL_CANDIDATE":
             continue
         if not any(candidate.selection_stratum == stratum for candidate, _ in selector.selected):
@@ -689,6 +748,7 @@ def queue_job(candidate: Candidate, *, queue_kind: str, selection_phase: str, po
         "queue_kind": queue_kind,
         "status": STATUS,
         "training_eligible": False,
+        "source_kind": "LOGGED_EXPERT_DEMONSTRATION_METADATA_CANDIDATE",
         "candidate_heuristics_are_not_truth": True,
         "event_id": candidate.event_id,
         "source_group_id": candidate.source_group_id,
@@ -708,8 +768,7 @@ def queue_job(candidate: Candidate, *, queue_kind: str, selection_phase: str, po
         "selection_phase": selection_phase,
         "repeat_same_skill_target_distinct_episode_count": candidate.repeat_attempt_count,
         "annotation_boundary": {"before": candidate.boundary_before, "after": candidate.boundary_after},
-        "actual_action_metadata_available": candidate.actual_action_metadata_available,
-        "actual_gripper_open_close_sequence_candidate": candidate.actual_gripper_open_close,
+        "action_heuristic_status": "DISABLED_NO_TRUSTED_EXECUTED_ACTION_PROOF_IN_METADATA_QUEUE",
         "long_annotated_interval_candidate": candidate.long_interval,
         "skill_ids": list(candidate.skill_ids),
         "temporal_windows": windows,
@@ -726,9 +785,106 @@ def queue_job(candidate: Candidate, *, queue_kind: str, selection_phase: str, po
     return job, request
 
 
+def validate_queue_job(job: Mapping[str, Any], request: Mapping[str, Any], *, event: Candidate,
+                       source_group: SourceGroup, policy: Mapping[str, Any], queue_kind: str) -> None:
+    """Recheck the semantic safety boundary; receipts alone are insufficient."""
+    job = require_mapping(job, "queue job")
+    request = require_mapping(request, "camera-native render request")
+    if (job.get("schema_version") != QUEUE_SCHEMA or job.get("queue_kind") != queue_kind or
+            job.get("status") != STATUS or job.get("training_eligible") is not False or
+            job.get("source_kind") != "LOGGED_EXPERT_DEMONSTRATION_METADATA_CANDIDATE" or
+            job.get("candidate_heuristics_are_not_truth") is not True):
+        raise ValueError("queue job crossed the candidate-only safety boundary")
+    if job.get("event_id") != event.event_id or job.get("source_group_id") != source_group.source_group_id:
+        raise ValueError("queue job event/source-group identity does not bind canonical input")
+    if job.get("usage_role") != event.event.get("usage_role") or job.get("immutable_split") != "train":
+        raise ValueError("queue job immutable split/usage role drifted")
+    expected_id = job_id(queue_kind=queue_kind, event_id=event.event_id, policy_sha256=policy["policy_sha256"])
+    if job.get("job_id") != expected_id or job.get("camera_native_render_request_id") != expected_id:
+        raise ValueError("queue job ID does not bind canonical event and sealed policy")
+    source = require_mapping(event.event["source"], "canonical event source")
+    expected_source = {
+        "source_release_manifest_sha256": source["source_release_manifest_sha256"],
+        "source_annotation_sha256": source["source_annotation_sha256"],
+        "task_index": event.task_id, "task_instance_id": event.task_instance_id,
+        "raw_episode_id": source["raw_episode_id"], "episode_index": event.episode_index,
+    }
+    if job.get("source_identity") != expected_source:
+        raise ValueError("queue job source identity drifted from canonical event")
+    if job.get("event_interval") != {"start_frame": event.interval_start, "end_frame": event.interval_end}:
+        raise ValueError("queue job interval drifted from canonical event")
+    if job.get("skill_ids") != list(event.skill_ids):
+        raise ValueError("queue job skills drifted from canonical event")
+    if job.get("current_actor_evidence") != {"kind": "MISSING", "evidence_end_frame": None, "available_frame": None}:
+        raise ValueError("queue job carries non-missing actor evidence")
+    windows = require_mapping(job.get("temporal_windows"), "queue temporal windows")
+    expected_windows = window_spec(
+        event, actor_history_frames=policy["actor_history_frames"],
+        review_before_frames=policy["review_before_frames"], review_after_frames=policy["review_after_frames"],
+        sample_stride_frames=policy["review_sample_stride_frames"])
+    if windows != expected_windows:
+        raise ValueError("queue job temporal windows drifted from the sealed policy")
+    actor = require_mapping(windows.get("actor_available_window"), "actor available window")
+    after = require_mapping(windows.get("offline_review_after_window"), "offline after window")
+    review = require_mapping(windows.get("temporal_review_window"), "temporal review window")
+    if (windows.get("anchor_frame") != event.anchor_frame or actor.get("end_frame_exclusive") != event.anchor_frame + 1 or
+            after.get("start_frame") != event.anchor_frame + 1 or review.get("end_frame_exclusive") != after.get("end_frame_exclusive") or
+            any(type(frame) is not int or frame > event.anchor_frame for frame in actor.get("sampled_frames", [])) or
+            any(type(frame) is not int or frame <= event.anchor_frame for frame in after.get("sampled_frames", []))):
+        raise ValueError("queue job actor/reviewer temporal availability is not causal")
+    constraints = require_mapping(job.get("review_constraints"), "queue review constraints")
+    required_constraints = {
+        "current_outcome_is_not_labeled": True,
+        "actor_may_only_use_actor_available_window": True,
+        "offline_after_frames_are_only_for_temporal_BC_quality_review": True,
+        "segment_end_gripper_close_timeout_or_model_report_are_not_truth": True,
+        "no_corrective_action_or_recovery_supervision_is_emitted": True,
+    }
+    if constraints != required_constraints:
+        raise ValueError("queue job review constraints changed")
+    if job.get("action_heuristic_status") != "DISABLED_NO_TRUSTED_EXECUTED_ACTION_PROOF_IN_METADATA_QUEUE":
+        raise ValueError("queue job enables an untrusted action heuristic")
+    expected_request = render_request(event, request_id=expected_id, windows=expected_windows)
+    if canonical_json(request) != canonical_json(expected_request):
+        raise ValueError("render request no longer binds the safe queue job timing")
+    delivery = require_mapping(request.get("camera_delivery"), "camera delivery")
+    if delivery.get("decoded_by_selector") is not False or delivery.get("include_footer") is not False:
+        raise ValueError("queue render request enables decoded RGB or a truth footer")
+
+
+def validate_queue_payloads(student_jobs: Sequence[Mapping[str, Any]], calibration_jobs: Sequence[Mapping[str, Any]],
+                            requests: Sequence[Mapping[str, Any]], *, candidates: Sequence[Candidate],
+                            source_groups: Mapping[str, SourceGroup], policy: Mapping[str, Any]) -> None:
+    candidates_by_id = {candidate.event_id: candidate for candidate in candidates}
+    requests_by_id = {request.get("request_id"): request for request in requests}
+    if len(requests_by_id) != len(requests):
+        raise ValueError("queue render requests have duplicate IDs")
+    seen_jobs: set[str] = set()
+    for queue_kind, jobs, required_role in (
+        ("STUDENT_CANDIDATE_REVIEW", student_jobs, "student_candidate"),
+        ("ANNOTATION_CALIBRATION", calibration_jobs, "annotation_calibration"),
+    ):
+        for job in jobs:
+            identifier = job.get("job_id")
+            if not isinstance(identifier, str) or identifier in seen_jobs:
+                raise ValueError("queue jobs have an absent or duplicate job ID")
+            seen_jobs.add(identifier)
+            candidate = candidates_by_id.get(job.get("event_id"))
+            if candidate is None or candidate.event.get("usage_role") != required_role:
+                raise ValueError("queue job role/event is absent from canonical candidate input")
+            group = source_groups.get(candidate.source_group_id)
+            if group is None:
+                raise ValueError("queue job references an absent canonical source group")
+            request = requests_by_id.get(identifier)
+            if request is None:
+                raise ValueError("queue job lacks its camera-native render request")
+            validate_queue_job(job, request, event=candidate, source_group=group, policy=policy, queue_kind=queue_kind)
+    if set(requests_by_id) != seen_jobs:
+        raise ValueError("camera-native render request has no canonical queue job")
+
+
 def count_queue(pool: Sequence[Candidate], selected: Sequence[tuple[Candidate, str]], *, budget: int,
-                near_duplicates: Mapping[str, int], expected_tasks: int = 100,
-                expected_skills: int = 35) -> dict[str, Any]:
+                near_duplicates: Mapping[str, int], coverage_expectations: Mapping[str, Any]) -> dict[str, Any]:
     selected_candidates = [candidate for candidate, _ in selected]
     def per_task(items: Sequence[Candidate]) -> dict[str, int]:
         return dict(sorted(Counter(candidate.task_id for candidate in items).items()))
@@ -739,6 +895,16 @@ def count_queue(pool: Sequence[Candidate], selected: Sequence[tuple[Candidate, s
             f"{candidate.source_group_id}:{candidate.episode_index}" for candidate in items).items()))
     pool_tasks, queued_tasks = set(per_task(pool)), set(per_task(selected_candidates))
     pool_skills, queued_skills = set(per_skill(pool)), set(per_skill(selected_candidates))
+    expected_tasks = set(coverage_expectations["expected_task_ids"])
+    expected_skills = set(coverage_expectations["expected_skill_verbs"])
+    required_pairs = coverage_expectations["required_task_skill_pairs"]
+    selected_pairs = {(candidate.task_id, skill) for candidate in selected_candidates for skill in candidate.skill_ids}
+    required_pair_coverage = (None if required_pairs is None else {
+        "declared_pairs": len(required_pairs),
+        "queued_pairs": sum((pair["task_index"], pair["skill_verb"]) in selected_pairs for pair in required_pairs),
+        "missing_pairs": [pair for pair in required_pairs
+                          if (pair["task_index"], pair["skill_verb"]) not in selected_pairs],
+    })
     return {
         "budget": budget,
         "pool_events": len(pool),
@@ -751,23 +917,35 @@ def count_queue(pool: Sequence[Candidate], selected: Sequence[tuple[Candidate, s
         "per_selection_phase": dict(sorted(Counter(phase for _, phase in selected).items())),
         "near_duplicate": dict(near_duplicates),
         "coverage": {
-            "expected_task_count": expected_tasks,
+            "expected_task_ids": sorted(expected_tasks),
+            "expected_task_count": len(expected_tasks),
             "tasks_present_in_eligible_pool": sorted(pool_tasks),
             "tasks_queued": sorted(queued_tasks),
             "tasks_present_but_not_queued": sorted(pool_tasks - queued_tasks),
-            "missing_task_ids_if_expected_100": sorted(set(range(expected_tasks)) - pool_tasks),
-            "expected_skill_count": expected_skills,
+            "missing_expected_task_ids_from_pool": sorted(expected_tasks - pool_tasks),
+            "unexpected_task_ids_in_pool": sorted(pool_tasks - expected_tasks),
+            "expected_skill_verbs": sorted(expected_skills),
+            "expected_skill_count": len(expected_skills),
             "skills_present_in_eligible_pool": sorted(pool_skills),
             "skills_queued": sorted(queued_skills),
             "skills_present_but_not_queued": sorted(pool_skills - queued_skills),
             "skill_count_seen": len(pool_skills),
-            "expected_skill_count_met": len(pool_skills) == expected_skills,
+            "missing_expected_skill_verbs_from_pool": sorted(expected_skills - pool_skills),
+            "unexpected_skill_verbs_in_pool": sorted(pool_skills - expected_skills),
+            "global_vocabulary_complete": not (expected_tasks - pool_tasks) and not (expected_skills - pool_skills),
+            "required_task_skill_pairs": required_pairs,
+            "required_task_skill_pair_queue_coverage": required_pair_coverage,
+            "required_task_skill_pair_queue_status": (
+                "NOT_DECLARED_DESCRIPTIVE_ONLY" if required_pairs is None
+                else ("COMPLETE" if not required_pair_coverage["missing_pairs"] else "INCOMPLETE")
+            ),
         },
     }
 
 
 def policy_from_args(args: argparse.Namespace, *, index_manifest_sha256: str,
-                     inventory_seal_sha256: str) -> dict[str, Any]:
+                     inventory_seal_sha256: str, protocol_sha256: str,
+                     coverage_expectations_sha256: str) -> dict[str, Any]:
     core = {
         "schema_version": QUEUE_SCHEMA,
         "algorithm": "p107-deterministic-metadata-candidate-selection-v1",
@@ -775,6 +953,8 @@ def policy_from_args(args: argparse.Namespace, *, index_manifest_sha256: str,
         "frozen_source_release_manifest_sha256": args.expected_source_release_manifest_sha256,
         "sealed_index_manifest_sha256": index_manifest_sha256,
         "inventory_seal_sha256": inventory_seal_sha256,
+        "canonical_protocol_sha256": protocol_sha256,
+        "coverage_expectations_sha256": coverage_expectations_sha256,
         "candidate_budget": args.candidate_budget,
         "calibration_budget": args.calibration_budget,
         "max_per_episode": args.max_per_episode,
@@ -788,6 +968,8 @@ def policy_from_args(args: argparse.Namespace, *, index_manifest_sha256: str,
         "review_after_frames": args.review_after_frames,
         "review_sample_stride_frames": args.review_sample_stride_frames,
         "no_rgb_decode_by_selector": True,
+        "action_sequence_heuristic": "DISABLED_NO_TRUSTED_EXECUTED_ACTION_PROOF",
+        "supported_source_kinds": ["LOGGED_EXPERT_DEMONSTRATION_METADATA_CANDIDATE"],
         "all_jobs_status": STATUS,
     }
     return {**core, "policy_sha256": canonical_sha256(core)}
@@ -800,15 +982,26 @@ def build_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict[
         raise FileExistsError("queue output already exists; use --resume only to verify it")
     if args.candidate_budget < 0 or args.calibration_budget < 0:
         raise ValueError("candidate and calibration budgets must be nonnegative")
-    manifest, event_rows, groups = validate_index(index, expected_source_manifest_sha256=args.expected_source_release_manifest_sha256)
-    _, inventory_seal_sha256 = validate_inventory_seal(
+    canonical_protocol = load_canonical_protocol(args.protocol_path, expected_sha256=args.expected_protocol_sha256)
+    manifest, event_rows, groups = validate_index(
+        index, expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
+        canonical_protocol=canonical_protocol, expected_protocol_sha256=args.expected_protocol_sha256)
+    inventory_seal, inventory_seal_sha256 = validate_inventory_seal(
         index, expected_inventory_seal_sha256=args.expected_inventory_seal_sha256)
+    coverage_expectations = read_coverage_expectations(
+        args.coverage_expectations,
+        expected_sha256=inventory_seal["coverage_expectations_sha256"])
+    if manifest.get("coverage_expectations_sha256") != canonical_sha256(coverage_expectations):
+        raise ValueError("index manifest coverage expectations differ from the inventory-sealed contract")
     forbid_output_inside(output, index)
     index_manifest_sha256 = sha256_file(index / "manifest.json")
     policy = policy_from_args(args, index_manifest_sha256=index_manifest_sha256,
-                              inventory_seal_sha256=inventory_seal_sha256)
+                              inventory_seal_sha256=inventory_seal_sha256,
+                              protocol_sha256=args.expected_protocol_sha256,
+                              coverage_expectations_sha256=canonical_sha256(coverage_expectations))
     candidates, excluded_roles = parse_candidates(
         event_rows, groups, expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
+        canonical_protocol=canonical_protocol,
         boundary_gap_frames=args.boundary_gap_frames,
                                                   long_interval_frames=args.long_interval_frames)
     student_pool = [candidate for candidate in candidates if candidate.event["usage_role"] == "student_candidate"]
@@ -836,6 +1029,8 @@ def build_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict[
         calibration_jobs.append(job); render_requests.append(request)
     if len({request["request_id"] for request in render_requests}) != len(render_requests):
         raise ValueError("queue construction produced duplicate render request IDs")
+    validate_queue_payloads(student_jobs, calibration_jobs, render_requests, candidates=candidates,
+                            source_groups=groups, policy=policy)
     counts = {
         "schema_version": COUNTS_SCHEMA,
         "status": STATUS,
@@ -843,10 +1038,12 @@ def build_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict[
         "source_role_inventory": dict(sorted(Counter(group.usage_role for group in groups.values()).items())),
         "events_excluded_by_role": dict(sorted(excluded_roles.items())),
         "student_candidate_queue": count_queue(student_pool, selected_student, budget=args.candidate_budget,
-                                                near_duplicates=student_duplicates),
+                                                near_duplicates=student_duplicates,
+                                                coverage_expectations=coverage_expectations),
         "annotation_calibration_queue": count_queue(calibration_pool, selected_calibration,
                                                       budget=args.calibration_budget,
-                                                      near_duplicates=calibration_duplicates),
+                                                      near_duplicates=calibration_duplicates,
+                                                      coverage_expectations=coverage_expectations),
         "existing_local_single_frame_pilot": {
             "count": 24,
             "scope": "historical first-five-task auxiliary visual-relation calibration only",
@@ -881,6 +1078,10 @@ def build_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict[
                 "Genuine recovery claims require separately verified initial deviation, same-state actual execution, 23D action "
                 "receipt, postcondition/stability or future-feasibility evidence, and restore/branch identity. None is available here."
             ),
+            "future_source_kinds": (
+                "This queue contains only logged expert-demonstration metadata candidates. A future DART/online perturbation "
+                "producer must introduce its own sealed source-kind policy and evidence contract; this selector emits no DART labels."
+            ),
         }
         result = {
             "schema_version": MANIFEST_SCHEMA,
@@ -890,6 +1091,8 @@ def build_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict[
             "source_release_manifest_sha256": args.expected_source_release_manifest_sha256,
             "index_manifest_sha256": index_manifest_sha256,
             "inventory_seal_sha256": inventory_seal_sha256,
+            "canonical_protocol_sha256": args.expected_protocol_sha256,
+            "coverage_expectations_sha256": canonical_sha256(coverage_expectations),
             "index_event_file_sha256": manifest["files"]["event_candidates.jsonl"]["sha256"],
             "index_source_group_file_sha256": manifest["files"]["source_groups.jsonl"]["sha256"],
             "policy": policy,
@@ -904,33 +1107,135 @@ def build_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict[
             "design_handoff": handoff,
         }
         (staging / "manifest.json").write_bytes(canonical_json(result).encode("utf-8") + b"\n")
+        queue_seal = {
+            "schema_version": QUEUE_SEAL_SCHEMA,
+            "queue_manifest_sha256": sha256_file(staging / "manifest.json"),
+            "inventory_seal_sha256": inventory_seal_sha256,
+            "source_release_manifest_sha256": args.expected_source_release_manifest_sha256,
+            "canonical_protocol_sha256": args.expected_protocol_sha256,
+            "coverage_expectations_sha256": canonical_sha256(coverage_expectations),
+            "policy_sha256": policy["policy_sha256"],
+            "expected_payload_files": sorted(QUEUE_PAYLOAD_FILES),
+            "payload_files": files,
+        }
+        (staging / "queue_seal.json").write_bytes(canonical_json(queue_seal).encode("utf-8") + b"\n")
+        queue_seal_sha256 = sha256_file(staging / "queue_seal.json")
         os.rename(staging, output)
-        return result
+        return {**result, "queue_seal_sha256": queue_seal_sha256}
     except BaseException:
         shutil.rmtree(staging, ignore_errors=True)
         raise
 
 
-def resume_queue(index: Path, output: Path, *, expected_source_manifest_sha256: str,
-                 expected_inventory_seal_sha256: str) -> dict[str, Any]:
+def validate_queue_seal(output: Path, manifest: Mapping[str, Any], *, expected_queue_seal_sha256: str,
+                        expected_inventory_seal_sha256: str, expected_source_manifest_sha256: str,
+                        expected_protocol_sha256: str, expected_coverage_expectations_sha256: str) -> str:
+    """Require a separately recorded queue seal before trusting any queue receipt."""
+    if not is_sha256(expected_queue_seal_sha256):
+        raise ValueError("--expected-queue-seal-sha256 must be a lowercase SHA-256")
+    seal_path = Path(output) / "queue_seal.json"
+    seal = read_json(seal_path)
+    if not isinstance(seal, Mapping) or sha256_file(seal_path) != expected_queue_seal_sha256:
+        raise ValueError("queue seal does not match the externally recorded handoff")
+    required = {
+        "schema_version", "queue_manifest_sha256", "inventory_seal_sha256", "source_release_manifest_sha256",
+        "canonical_protocol_sha256", "coverage_expectations_sha256", "policy_sha256",
+        "expected_payload_files", "payload_files",
+    }
+    if set(seal) != required or seal.get("schema_version") != QUEUE_SEAL_SCHEMA:
+        raise ValueError("queue seal schema/field set is not the fixed P107 contract")
+    manifest_policy = require_mapping(manifest.get("policy"), "queue manifest policy")
+    if (seal.get("queue_manifest_sha256") != sha256_file(Path(output) / "manifest.json") or
+            seal.get("inventory_seal_sha256") != expected_inventory_seal_sha256 or
+            seal.get("source_release_manifest_sha256") != expected_source_manifest_sha256 or
+            seal.get("canonical_protocol_sha256") != expected_protocol_sha256 or
+            seal.get("coverage_expectations_sha256") != expected_coverage_expectations_sha256 or
+            seal.get("policy_sha256") != manifest_policy.get("policy_sha256")):
+        raise ValueError("queue seal does not bind the expected external authority roots")
+    expected_files = sorted(QUEUE_PAYLOAD_FILES)
+    if seal.get("expected_payload_files") != expected_files:
+        raise ValueError("queue seal payload file set/order changed")
+    payloads = require_mapping(seal.get("payload_files"), "queue seal payload files")
+    manifest_files = require_mapping(manifest.get("files"), "queue manifest files")
+    if set(payloads) != QUEUE_PAYLOAD_FILES or payloads != manifest_files:
+        raise ValueError("queue seal receipts do not bind the exact queue manifest payloads")
+    for name, receipt in payloads.items():
+        receipt = require_mapping(receipt, f"queue seal receipt {name}")
+        if set(receipt) != {"sha256", "rows", "bytes"} or not is_sha256(receipt.get("sha256")):
+            raise ValueError("queue seal payload receipt malformed")
+        path = Path(output) / str(name)
+        file_receipt(path, expected=receipt)
+        if name.endswith(".jsonl") and receipt.get("rows") != len(read_jsonl(path)):
+            raise ValueError(f"sealed queue row count changed: {name}")
+    return expected_queue_seal_sha256
+
+
+def validate_queue_policy(policy: Any, *, source_release_manifest_sha256: str, index_manifest_sha256: str,
+                          inventory_seal_sha256: str, protocol_sha256: str,
+                          coverage_expectations_sha256: str) -> dict[str, Any]:
+    policy = dict(require_mapping(policy, "queue policy"))
+    actual = policy.pop("policy_sha256", None)
+    if not is_sha256(actual) or canonical_sha256(policy) != actual:
+        raise ValueError("queue policy hash is not canonical")
+    roots = {
+        "frozen_source_release_manifest_sha256": source_release_manifest_sha256,
+        "sealed_index_manifest_sha256": index_manifest_sha256,
+        "inventory_seal_sha256": inventory_seal_sha256,
+        "canonical_protocol_sha256": protocol_sha256,
+        "coverage_expectations_sha256": coverage_expectations_sha256,
+    }
+    if any(policy.get(key) != value for key, value in roots.items()):
+        raise ValueError("queue policy external authority roots drifted")
+    if policy.get("all_jobs_status") != STATUS or policy.get("no_rgb_decode_by_selector") is not True:
+        raise ValueError("queue policy candidate-only rendering boundary changed")
+    if policy.get("action_sequence_heuristic") != "DISABLED_NO_TRUSTED_EXECUTED_ACTION_PROOF":
+        raise ValueError("queue policy enables untrusted action-sequence heuristics")
+    if policy.get("supported_source_kinds") != ["LOGGED_EXPERT_DEMONSTRATION_METADATA_CANDIDATE"]:
+        raise ValueError("queue policy has unsupported source kinds")
+    return {**policy, "policy_sha256": actual}
+
+
+def resume_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict[str, Any]:
     index, output = Path(index), Path(output)
+    canonical_protocol = load_canonical_protocol(args.protocol_path, expected_sha256=args.expected_protocol_sha256)
+    index_manifest, event_rows, groups = validate_index(
+        index, expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
+        canonical_protocol=canonical_protocol, expected_protocol_sha256=args.expected_protocol_sha256)
+    inventory_seal, inventory_seal_sha256 = validate_inventory_seal(
+        index, expected_inventory_seal_sha256=args.expected_inventory_seal_sha256)
+    coverage_expectations = read_coverage_expectations(
+        args.coverage_expectations, expected_sha256=inventory_seal["coverage_expectations_sha256"])
+    coverage_sha256 = canonical_sha256(coverage_expectations)
+    if index_manifest.get("coverage_expectations_sha256") != coverage_sha256:
+        raise ValueError("index manifest coverage expectations changed")
     manifest = read_json(output / "manifest.json")
     if not isinstance(manifest, Mapping) or manifest.get("schema_version") != MANIFEST_SCHEMA:
         raise ValueError("--resume requires a sealed P107 annotation queue")
-    if manifest.get("source_release_manifest_sha256") != expected_source_manifest_sha256:
-        raise ValueError("queue source manifest does not match expected frozen v4")
-    if manifest.get("index_manifest_sha256") != sha256_file(index / "manifest.json"):
-        raise ValueError("sealed queue index manifest changed")
-    _, actual_inventory_seal_sha256 = validate_inventory_seal(
-        index, expected_inventory_seal_sha256=expected_inventory_seal_sha256)
-    if manifest.get("inventory_seal_sha256") != actual_inventory_seal_sha256:
-        raise ValueError("sealed queue inventory seal changed")
-    for name, receipt in require_mapping(manifest.get("files"), "queue.files").items():
-        path = output / str(name)
-        file_receipt(path, expected=require_mapping(receipt, f"queue receipt {name}"))
-        if name.endswith(".jsonl") and receipt.get("rows") != len(read_jsonl(path)):
-            raise ValueError(f"sealed queue row count changed: {name}")
-    return {"status": "RESUME_VALIDATED", "manifest": manifest}
+    if (manifest.get("source_release_manifest_sha256") != args.expected_source_release_manifest_sha256 or
+            manifest.get("index_manifest_sha256") != sha256_file(index / "manifest.json") or
+            manifest.get("inventory_seal_sha256") != inventory_seal_sha256 or
+            manifest.get("canonical_protocol_sha256") != args.expected_protocol_sha256 or
+            manifest.get("coverage_expectations_sha256") != coverage_sha256):
+        raise ValueError("queue manifest external authority roots changed")
+    policy = validate_queue_policy(
+        manifest.get("policy"), source_release_manifest_sha256=args.expected_source_release_manifest_sha256,
+        index_manifest_sha256=sha256_file(index / "manifest.json"), inventory_seal_sha256=inventory_seal_sha256,
+        protocol_sha256=args.expected_protocol_sha256, coverage_expectations_sha256=coverage_sha256)
+    queue_seal_sha256 = validate_queue_seal(
+        output, manifest, expected_queue_seal_sha256=args.expected_queue_seal_sha256,
+        expected_inventory_seal_sha256=inventory_seal_sha256,
+        expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
+        expected_protocol_sha256=args.expected_protocol_sha256,
+        expected_coverage_expectations_sha256=coverage_sha256)
+    candidates, _ = parse_candidates(
+        event_rows, groups, expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
+        canonical_protocol=canonical_protocol, boundary_gap_frames=policy["boundary_gap_frames"],
+        long_interval_frames=policy["long_interval_frames"])
+    validate_queue_payloads(read_jsonl(output / "student_candidate_queue.jsonl"),
+                            read_jsonl(output / "annotation_calibration_queue.jsonl"),
+                            read_jsonl(output / "camera_native_render_requests.jsonl"),
+                            candidates=candidates, source_groups=groups, policy=policy)
+    return {"status": "RESUME_VALIDATED", "manifest": manifest, "queue_seal_sha256": queue_seal_sha256}
 
 
 def parser() -> argparse.ArgumentParser:
@@ -940,6 +1245,14 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--expected-source-release-manifest-sha256", default=DEFAULT_SOURCE_MANIFEST_SHA256)
     result.add_argument("--expected-inventory-seal-sha256", required=True,
                         help="exact externally reviewed inventory_seal.json SHA-256")
+    result.add_argument("--coverage-expectations", type=Path, required=True,
+                        help="exact official task/skill coverage contract sealed by inventory_seal.json")
+    result.add_argument("--protocol-path", type=Path, required=True,
+                        help="data-owner stdlib-only memlite_event_protocol.py")
+    result.add_argument("--expected-protocol-sha256", required=True,
+                        help="exact externally reviewed canonical protocol SHA-256")
+    result.add_argument("--expected-queue-seal-sha256",
+                        help="required with --resume; externally recorded queue_seal.json SHA-256")
     result.add_argument("--seed", default=DEFAULT_SEED)
     result.add_argument("--candidate-budget", type=int, default=200)
     result.add_argument("--calibration-budget", type=int, default=40)
@@ -959,9 +1272,9 @@ def parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = parser().parse_args()
-    result = (resume_queue(args.index, args.output,
-                           expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
-                           expected_inventory_seal_sha256=args.expected_inventory_seal_sha256)
+    if args.resume and args.expected_queue_seal_sha256 is None:
+        raise ValueError("--resume requires --expected-queue-seal-sha256 from an external handoff")
+    result = (resume_queue(args.index, args.output, args=args)
               if args.resume else build_queue(args.index, args.output, args=args))
     print(canonical_json(result), flush=True)
 
