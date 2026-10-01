@@ -39,12 +39,15 @@ PARENT_APPROVAL_SCHEMA = "p107-parent-low-fm-approval-v1"
 PUBLISHER_MANIFEST_SCHEMA = "p107-corrective-publisher-manifest-v1"
 RAW_ACTION_PAYLOAD_SCHEMA = "p107-raw23-action-payload-v1"
 ARTIFACT_SCHEMA = "p107-sealed-artifact-v1"
+INDEX_INVENTORY_SEAL_SCHEMA = "memlite-event-inventory-seal-v1"
+INDEX_SCHEMA = "memlite-event-index-v1"
 QUALITY_TIERS = frozenset(("GOLD_PHYSICAL", "SILVER_REVIEWED_LOGGED_DEMONSTRATION"))
 EVIDENCE_ORIGINS = frozenset(("logged_demonstration", "live_sim_branch"))
 ARTIFACT_KINDS = frozenset((
     "raw_action_23_artifact", "physical_verification_evidence", "temporal_review_evidence",
     "verification_receipt_artifact", "temporal_review_artifact", "parent_review_artifact",
 ))
+INDEX_PAYLOAD_FILES = frozenset(("source_groups.jsonl", "event_candidates.jsonl"))
 
 
 class ContractError(ValueError):
@@ -579,7 +582,10 @@ def _strict_json(data: bytes, *, name: str) -> Any:
     def nonfinite(value: str) -> None:
         raise ContractError(f"non-finite JSON number in {name}: {value}")
 
-    return json.loads(data, object_pairs_hook=unique, parse_constant=nonfinite)
+    try:
+        return json.loads(data, object_pairs_hook=unique, parse_constant=nonfinite)
+    except json.JSONDecodeError as error:
+        raise ContractError(f"invalid JSON in {name}: {error.msg}") from error
 
 
 def _file_sha256(path: Path) -> str:
@@ -626,6 +632,173 @@ def _read_sealed_jsonl(root: Path, receipt: Any, name: str) -> tuple[list[dict[s
     if len(rows) != _integer(receipt["rows"], f"{name}.rows"):
         raise ContractError(f"{name} row count does not match sealed publisher manifest")
     return rows, receipt["sha256"]
+
+
+def _read_index_members(root: Path, receipt: Any, name: str, wanted: set[str], key: str) -> dict[str, Mapping[str, Any]]:
+    """Hash a sealed index payload while retaining only publisher-referenced rows."""
+    receipt = _mapping(receipt, f"index {name}")
+    if set(receipt) != {"sha256", "bytes", "rows"}:
+        raise ContractError(f"sealed index {name} receipt must have exact SHA-256/bytes/rows fields")
+    _sha256(receipt["sha256"], f"index {name}.sha256")
+    path = _safe_publisher_path(root, name, f"index {name}")
+    if path.stat().st_size != _integer(receipt["bytes"], f"index {name}.bytes") or _file_sha256(path) != receipt["sha256"]:
+        raise ContractError(f"sealed index {name} bytes or SHA-256 changed")
+    found: dict[str, Mapping[str, Any]] = {}
+    row_count = 0
+    with path.open("rb") as stream:
+        for line_no, line in enumerate(stream, start=1):
+            if not line.strip():
+                continue
+            row = _strict_json(line, name=f"{path}:{line_no}")
+            if not isinstance(row, Mapping):
+                raise ContractError(f"sealed index {name} row is not an object")
+            row_count += 1
+            value = row.get(key)
+            if value in wanted:
+                if value in found:
+                    raise ContractError(f"sealed index {name} has a duplicate publisher-referenced {key}")
+                found[value] = row
+    if row_count != _integer(receipt["rows"], f"index {name}.rows"):
+        raise ContractError(f"sealed index {name} row count changed")
+    if set(found) != wanted:
+        raise ContractError(f"publisher references event/source-group identity absent from the sealed index")
+    return found
+
+
+def _load_sealed_index_header(index_root: Path, expected_inventory_seal_sha256: str) -> tuple[Path, Mapping[str, Any], Mapping[str, Any], Mapping[str, Any]]:
+    """Load the fixed inventory/manifest boundary shared by all index readers."""
+    _sha256(expected_inventory_seal_sha256, "expected_index_inventory_seal_sha256")
+    raw_root = Path(index_root)
+    if raw_root.is_symlink() or not raw_root.is_dir():
+        raise ContractError("index root must be a regular directory")
+    root = raw_root.resolve(strict=True)
+    seal_path = root / "inventory_seal.json"
+    if seal_path.is_symlink() or not seal_path.is_file() or _file_sha256(seal_path) != expected_inventory_seal_sha256:
+        raise ContractError("sealed index inventory_seal.json does not match the external authority SHA-256")
+    seal = _strict_json(seal_path.read_bytes(), name=str(seal_path))
+    required_seal = {"schema_version", "index_manifest_sha256", "source_release_manifest_sha256",
+                     "coverage_expectations_sha256", "expected_payload_files", "payload_files"}
+    if not isinstance(seal, Mapping) or set(seal) != required_seal or seal["schema_version"] != INDEX_INVENTORY_SEAL_SCHEMA:
+        raise ContractError("index inventory seal must use the exact P107 schema")
+    for key in ("index_manifest_sha256", "source_release_manifest_sha256", "coverage_expectations_sha256"):
+        _sha256(seal[key], f"index inventory seal.{key}")
+    if seal["expected_payload_files"] != sorted(INDEX_PAYLOAD_FILES):
+        raise ContractError("index inventory seal does not declare the exact source-group/event payload set")
+    manifest_path = root / "manifest.json"
+    if manifest_path.is_symlink() or not manifest_path.is_file() or _file_sha256(manifest_path) != seal["index_manifest_sha256"]:
+        raise ContractError("index manifest does not match its externally sealed inventory")
+    manifest = _strict_json(manifest_path.read_bytes(), name=str(manifest_path))
+    if not isinstance(manifest, Mapping) or manifest.get("schema_version") != INDEX_SCHEMA:
+        raise ContractError("index manifest is not a P107 event index")
+    if manifest.get("source_release_manifest_sha256") != seal["source_release_manifest_sha256"]:
+        raise ContractError("index manifest/source release identity disagrees with its inventory seal")
+    files = _mapping(manifest.get("files"), "index manifest.files")
+    if set(files) != INDEX_PAYLOAD_FILES or seal["payload_files"] != files:
+        raise ContractError("index inventory seal does not bind the exact manifest payload receipts")
+    return root, seal, manifest, files
+
+
+_INDEX_MEMBERSHIP_TOKEN = object()
+
+
+class SealedSourceGroupMembership:
+    """Opaque, read-only source-group role map loaded from a SHA-pinned index."""
+    __slots__ = ("_token", "inventory_seal_sha256", "index_manifest_sha256", "source_release_manifest_sha256",
+                 "_group_json", "_frozen")
+
+    def __init__(self, token: object, **values: Any) -> None:
+        if token is not _INDEX_MEMBERSHIP_TOKEN:
+            raise ContractError("SealedSourceGroupMembership may only be loaded from a sealed index")
+        object.__setattr__(self, "_token", token)
+        for key, value in values.items():
+            object.__setattr__(self, key, value)
+        object.__setattr__(self, "_frozen", True)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if getattr(self, "_frozen", False):
+            raise AttributeError("SealedSourceGroupMembership is immutable after sealed loading")
+        object.__setattr__(self, name, value)
+
+
+def load_source_index_membership(index_root: Path, *,
+                                 expected_inventory_seal_sha256: str) -> SealedSourceGroupMembership:
+    """Verify the source-group portion once and expose fresh immutable-role copies.
+
+    Candidate collectors (including DART) can bind a source group to this
+    snapshot without loading the large event-candidate JSONL or minting any
+    corrective-action authority.  The returned map includes the original
+    split and inherited usage role; it never makes a row trainable.
+    """
+    root, seal, _manifest, files = _load_sealed_index_header(index_root, expected_inventory_seal_sha256)
+    receipt = _mapping(files["source_groups.jsonl"], "index source_groups.jsonl")
+    if set(receipt) != {"sha256", "bytes", "rows"}:
+        raise ContractError("sealed index source_groups receipt must have exact SHA-256/bytes/rows fields")
+    path = _safe_publisher_path(root, "source_groups.jsonl", "index source_groups.jsonl")
+    if path.stat().st_size != _integer(receipt["bytes"], "index source_groups.bytes") or _file_sha256(path) != receipt["sha256"]:
+        raise ContractError("sealed index source_groups bytes or SHA-256 changed")
+    groups: dict[str, Mapping[str, Any]] = {}
+    rows = 0
+    with path.open("rb") as stream:
+        for line_no, line in enumerate(stream, start=1):
+            if not line.strip():
+                continue
+            group = _strict_json(line, name=f"{path}:{line_no}")
+            if not isinstance(group, Mapping):
+                raise ContractError("sealed index source group row is not an object")
+            _validate_indexed_group(group)
+            if group["source_release_manifest_sha256"] != seal["source_release_manifest_sha256"]:
+                raise ContractError("source group does not bind the sealed source release")
+            group_id = group["source_group_id"]
+            if group_id in groups:
+                raise ContractError("sealed index contains duplicate source_group_id")
+            groups[group_id] = group
+            rows += 1
+    if rows != _integer(receipt["rows"], "index source_groups.rows"):
+        raise ContractError("sealed index source_groups row count changed")
+    return SealedSourceGroupMembership(
+        _INDEX_MEMBERSHIP_TOKEN, inventory_seal_sha256=expected_inventory_seal_sha256,
+        index_manifest_sha256=seal["index_manifest_sha256"],
+        source_release_manifest_sha256=seal["source_release_manifest_sha256"],
+        _group_json=MappingProxyType({key: canonical_json(value) for key, value in groups.items()}))
+
+
+def sealed_source_group(membership: SealedSourceGroupMembership, source_group_id_value: str) -> dict[str, Any]:
+    """Return a fresh exact indexed group copy; no mutable registry leaks to consumers."""
+    _sha256(source_group_id_value, "source_group_id")
+    if (not isinstance(membership, SealedSourceGroupMembership) or
+            membership._token is not _INDEX_MEMBERSHIP_TOKEN or membership._frozen is not True):
+        raise ContractError("source-group lookup requires a sealed index membership capability")
+    encoded = membership._group_json.get(source_group_id_value)
+    if encoded is None:
+        raise ContractError("source_group_id is absent from the sealed index snapshot")
+    group = _strict_json(encoded.encode("utf-8"), name="sealed indexed source group")
+    if not isinstance(group, Mapping):
+        raise ContractError("sealed indexed source group is malformed")
+    _validate_indexed_group(group)
+    return json.loads(canonical_json(group))
+
+
+def _verify_index_membership(index_root: Path, expected_inventory_seal_sha256: str,
+                             publisher_events: Mapping[str, Mapping[str, Any]],
+                             publisher_groups: Mapping[str, Mapping[str, Any]]) -> None:
+    """Bind positive publisher rows to an actual externally SHA-pinned event index."""
+    root, _seal, _manifest, files = _load_sealed_index_header(index_root, expected_inventory_seal_sha256)
+    index_groups = _read_index_members(root, files["source_groups.jsonl"], "source_groups.jsonl",
+                                       set(publisher_groups), "source_group_id")
+    index_events = _read_index_members(root, files["event_candidates.jsonl"], "event_candidates.jsonl",
+                                       set(publisher_events), "event_id")
+    for group_id, publisher_group in publisher_groups.items():
+        index_group = index_groups[group_id]
+        _validate_indexed_group(index_group)
+        fields = ("source_group_id", "source_release_manifest_sha256", "task_index", "task_instance_id",
+                  "original_split", "usage_role")
+        if any(publisher_group[field] != index_group[field] for field in fields):
+            raise ContractError("publisher source group does not exactly match the sealed source index identity/role")
+    for event_id_value, publisher_event in publisher_events.items():
+        index_event = index_events[event_id_value]
+        validate_event(index_event)
+        if canonical_json(index_event) != canonical_json(publisher_event):
+            raise ContractError("publisher event is not byte-canonical to the externally sealed event index")
 
 
 _AUTHORITY_TOKEN = object()
@@ -718,6 +891,53 @@ def _validate_sealed_artifact(artifact: Mapping[str, Any], publisher_root: Path,
     return path
 
 
+def _load_typed_artifact_payload(artifact: Mapping[str, Any], publisher_root: Path, *,
+                                 event: Mapping[str, Any], group: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Parse every sealed artifact at authority load, before any candidate view.
+
+    The outer receipt proves content-addressed bytes; this parser proves those
+    bytes actually have the declared P107 role.  Dynamic receipt/view binding
+    is checked again when a corrective view consumes the opaque authority.
+    """
+    path = _validate_sealed_artifact(artifact, publisher_root, event=event, group=group)
+    payload = _strict_json(path.read_bytes(), name=str(path))
+    if not isinstance(payload, Mapping):
+        raise ContractError("sealed artifact payload must be a JSON object with a typed P107 schema")
+    kind = artifact["artifact_kind"]
+    if kind == "raw_action_23_artifact":
+        if set(payload) != {"schema_version", "raw_actions_23"} or payload["schema_version"] != "p107-raw23-action-artifact-v1":
+            raise ContractError("raw action artifact does not use the exact typed 23D payload schema")
+        _normalized_raw_actions_23(payload["raw_actions_23"])
+        return payload
+    if kind == "parent_review_artifact":
+        required, schema = {"schema_version", "view_id", "event_id", "source_group_id", "raw_action_sha256"}, "p107-parent-review-artifact-v1"
+    elif kind == "verification_receipt_artifact":
+        required, schema = {"schema_version", "event_id", "source_group_id", "raw_action_sha256", "verification_frame"}, "p107-verification-receipt-artifact-v1"
+    elif kind in {"physical_verification_evidence", "temporal_review_evidence"}:
+        required = {"schema_version", "event_id", "source_group_id", "raw_action_sha256", "evidence_end_frame",
+                    "available_frame", "verification_frame"}
+        schema = ("p107-physical-verification-evidence-v1" if kind == "physical_verification_evidence"
+                  else "p107-temporal-review-evidence-v1")
+    elif kind == "temporal_review_artifact":
+        required, schema = {"schema_version", "event_id", "source_group_id", "raw_action_sha256", "verification_frame"}, "p107-temporal-review-artifact-v1"
+    else:  # ARTIFACT_KINDS above and _validate_sealed_artifact make this unreachable.
+        raise ContractError("sealed artifact has no typed P107 payload parser")
+    if set(payload) != required or payload["schema_version"] != schema:
+        raise ContractError("sealed artifact payload does not use the exact typed authority schema")
+    if payload["event_id"] != event["event_id"] or payload["source_group_id"] != group["source_group_id"]:
+        raise ContractError("sealed artifact typed payload does not bind its indexed event/source group")
+    if "view_id" in payload:
+        _sha256(payload["view_id"], "sealed parent review artifact.view_id")
+    _sha256(payload["raw_action_sha256"], "sealed artifact payload.raw_action_sha256")
+    for key in ("evidence_end_frame", "available_frame", "verification_frame"):
+        if key in payload:
+            _integer(payload[key], f"sealed artifact payload.{key}")
+    if ("evidence_end_frame" in payload and not
+            payload["evidence_end_frame"] <= payload["available_frame"] <= payload["verification_frame"]):
+        raise ContractError("sealed verification-evidence artifact clocks are inconsistent")
+    return payload
+
+
 def _authority_artifact(authority: CorrectiveActionAuthority, digest: Any, *, allowed_kinds: frozenset[str],
                         event: Mapping[str, Any] | None = None,
                         group: Mapping[str, Any] | None = None) -> Mapping[str, Any]:
@@ -729,23 +949,50 @@ def _authority_artifact(authority: CorrectiveActionAuthority, digest: Any, *, al
     return artifact
 
 
+def _authority_artifact_payload(authority: CorrectiveActionAuthority, digest: Any, *,
+                                allowed_kinds: frozenset[str], schema_version: str,
+                                expected: Mapping[str, Any], event: Mapping[str, Any] | None = None,
+                                group: Mapping[str, Any] | None = None) -> Mapping[str, Any]:
+    """Require a role-specific, clock-bound content payload inside each sealed artifact."""
+    artifact = _authority_artifact(authority, digest, allowed_kinds=allowed_kinds, event=event, group=group)
+    path = _safe_publisher_path(authority._publisher_root, artifact["relative_path"], "sealed_artifact")
+    payload = _strict_json(path.read_bytes(), name=str(path))
+    if not isinstance(payload, Mapping) or set(payload) != {"schema_version", *expected}:
+        raise ContractError("sealed artifact payload does not use its exact typed authority schema")
+    if payload["schema_version"] != schema_version or any(payload[key] != value for key, value in expected.items()):
+        raise ContractError("sealed artifact payload does not bind its declared event/action/clock role")
+    return payload
+
+
+def _require_raw_action_artifact(authority: CorrectiveActionAuthority, raw_action_artifact_sha256: str,
+                                 raw_actions_23: Sequence[Sequence[float]], *,
+                                 event: Mapping[str, Any] | None = None,
+                                 group: Mapping[str, Any] | None = None) -> None:
+    payload = _authority_artifact_payload(
+        authority, raw_action_artifact_sha256, allowed_kinds=frozenset(("raw_action_23_artifact",)),
+        schema_version="p107-raw23-action-artifact-v1", expected={"raw_actions_23": _normalized_raw_actions_23(raw_actions_23)},
+        event=event, group=group)
+    _normalized_raw_actions_23(payload["raw_actions_23"])
+
+
 def authority_raw_action_payload(authority: CorrectiveActionAuthority, action_payload_sha256_value: str) -> dict[str, Any]:
     """Return a fresh verified 23D target payload for a publisher-authorized package only."""
     _sha256(action_payload_sha256_value, "action_payload_sha256")
     payload = _authority_value(authority, "_payload_json", action_payload_sha256_value, "raw action payload")
     _validate_raw_action_payload(payload)
-    _authority_artifact(authority, payload["raw_action_artifact_sha256"],
-                        allowed_kinds=frozenset(("raw_action_23_artifact",)))
+    _require_raw_action_artifact(authority, payload["raw_action_artifact_sha256"], payload["raw_actions_23"])
     return json.loads(canonical_json(payload))
 
 
-def load_corrective_action_authority(publisher_root: Path, *, expected_publisher_manifest_sha256: str,
+def load_corrective_action_authority(publisher_root: Path, *, index_root: Path,
+                                     expected_publisher_manifest_sha256: str,
                                      expected_index_inventory_seal_sha256: str,
                                      expected_live_runtime_acceptance_root_sha256: str | None = None) -> CorrectiveActionAuthority:
     """Load final FM authority only from an externally SHA-pinned publisher root.
 
-    The expected roots are release-policy capabilities supplied outside candidate
-    views.  This function never accepts caller-created event/receipt dictionaries.
+    The expected roots and index root are release-policy capabilities supplied
+    outside candidate views.  This function never accepts caller-created
+    event/receipt dictionaries as evidence of source-index membership.
     """
     _sha256(expected_publisher_manifest_sha256, "expected_publisher_manifest_sha256")
     _sha256(expected_index_inventory_seal_sha256, "expected_index_inventory_seal_sha256")
@@ -794,6 +1041,7 @@ def load_corrective_action_authority(publisher_root: Path, *, expected_publisher
                 group["original_split"] != event["source"]["original_split"]):
             raise ContractError("sealed event/source split identity mismatch")
         events[key] = event
+    _verify_index_membership(index_root, expected_index_inventory_seal_sha256, events, groups)
     payloads = {}
     for payload in loaded["raw_action_payloads"][0]:
         _validate_raw_action_payload(payload)
@@ -808,6 +1056,7 @@ def load_corrective_action_authority(publisher_root: Path, *, expected_publisher
     for receipt in verification.values():
         _validate_verification_receipt(receipt)
     artifacts: dict[str, Mapping[str, Any]] = {}
+    artifact_payloads: dict[str, Mapping[str, Any]] = {}
     for artifact in loaded["artifacts"][0]:
         digest = _sha256(artifact.get("artifact_sha256"), "artifact.artifact_sha256")
         if digest in artifacts:
@@ -816,8 +1065,63 @@ def load_corrective_action_authority(publisher_root: Path, *, expected_publisher
         group = groups.get(artifact.get("source_group_id"))
         if event is None or group is None:
             raise ContractError("sealed artifact must bind an existing canonical event and source group")
-        _validate_sealed_artifact(artifact, root, event=event, group=group)
+        artifact_payloads[digest] = _load_typed_artifact_payload(artifact, root, event=event, group=group)
         artifacts[digest] = artifact
+
+    def typed_artifact(digest: str, kinds: frozenset[str]) -> Mapping[str, Any]:
+        artifact = artifacts.get(digest)
+        payload = artifact_payloads.get(digest)
+        if artifact is None or payload is None or artifact["artifact_kind"] not in kinds:
+            raise ContractError("sealed artifact role/payload is absent from the loaded authority registry")
+        return payload
+
+    for payload in payloads.values():
+        raw_artifact = typed_artifact(payload["raw_action_artifact_sha256"], frozenset(("raw_action_23_artifact",)))
+        if _normalized_raw_actions_23(raw_artifact["raw_actions_23"]) != payload["raw_actions_23"]:
+            raise ContractError("sealed raw action artifact bytes do not match their declared 23D payload")
+    for execution_receipt in execution.values():
+        payload = payloads.get(execution_receipt["action_payload_sha256"])
+        if (payload is None or payload["raw_action_sha256"] != execution_receipt["raw_action_sha256"] or
+                payload["raw_action_artifact_sha256"] != execution_receipt["raw_action_artifact_sha256"] or
+                len(payload["raw_actions_23"]) != execution_receipt["actual_executed_length"]):
+            raise ContractError("execution receipt does not bind a loaded actual 23D action payload")
+    for verification_receipt in verification.values():
+        linked_execution = [receipt for receipt in execution.values() if
+                            receipt["event_id"] == verification_receipt["event_id"] and
+                            receipt["source_group_id"] == verification_receipt["source_group_id"] and
+                            receipt["raw_action_sha256"] == verification_receipt["raw_action_sha256"]]
+        if not linked_execution:
+            raise ContractError("verification receipt has no loaded actual execution with the same event/action")
+        verification_payload = typed_artifact(
+            verification_receipt["verification_artifact_sha256"], frozenset(("verification_receipt_artifact",)))
+        expected_verification = {"event_id": verification_receipt["event_id"],
+                                 "source_group_id": verification_receipt["source_group_id"],
+                                 "raw_action_sha256": verification_receipt["raw_action_sha256"],
+                                 "verification_frame": verification_receipt["verification_frame"]}
+        if any(verification_payload[key] != value for key, value in expected_verification.items()):
+            raise ContractError("verification-receipt artifact does not bind its receipt event/action/clock")
+        evidence_kind = ("physical_verification_evidence" if verification_receipt["evidence_origin"] == "live_sim_branch"
+                         else "temporal_review_evidence")
+        evidence_payload = typed_artifact(verification_receipt["evidence"]["artifact_sha256"], frozenset((evidence_kind,)))
+        expected_evidence = {**expected_verification,
+                             "evidence_end_frame": verification_receipt["evidence"]["evidence_end_frame"],
+                             "available_frame": verification_receipt["evidence"]["available_frame"]}
+        if any(evidence_payload[key] != value for key, value in expected_evidence.items()):
+            raise ContractError("verification-evidence artifact does not bind its receipt event/action/clock")
+        if verification_receipt["evidence_origin"] == "live_sim_branch":
+            if live_root is None or verification_receipt["live_runtime_acceptance_root_sha256"] != live_root:
+                raise ContractError("loaded GOLD verification lacks the externally accepted live-runtime root")
+        else:
+            temporal_payload = typed_artifact(verification_receipt["temporal_review_artifact_sha256"],
+                                              frozenset(("temporal_review_artifact",)))
+            if any(temporal_payload[key] != value for key, value in expected_verification.items()):
+                raise ContractError("temporal-review artifact does not bind its logged recovery receipt")
+            raw_payload = typed_artifact(verification_receipt["frozen_action_window_artifact_sha256"],
+                                         frozenset(("raw_action_23_artifact",)))
+            if not any(_normalized_raw_actions_23(raw_payload["raw_actions_23"]) == payload["raw_actions_23"]
+                           for payload in payloads.values()
+                           if payload["raw_action_sha256"] == verification_receipt["raw_action_sha256"]):
+                raise ContractError("logged verification frozen action window is not the actual executed 23D payload")
     approvals = {}
     roots = {"index_inventory_seal_sha256": expected_index_inventory_seal_sha256,
              "action_payload_root_sha256": loaded["raw_action_payloads"][1],
@@ -828,6 +1132,13 @@ def load_corrective_action_authority(publisher_root: Path, *, expected_publisher
         _validate_parent_approval(approval)
         if approval["view_id"] in approvals or any(approval[key] != value for key, value in roots.items()):
             raise ContractError("parent approval has duplicate view or does not bind sealed authority roots")
+        review_payload = typed_artifact(approval["parent_review_artifact_sha256"],
+                                        frozenset(("parent_review_artifact",)))
+        expected_review = {"view_id": approval["view_id"], "event_id": approval["event_id"],
+                           "source_group_id": approval["source_group_id"],
+                           "raw_action_sha256": approval["raw_action_sha256"]}
+        if any(review_payload[key] != value for key, value in expected_review.items()):
+            raise ContractError("parent-review artifact does not bind its approved event/action")
         approvals[approval["view_id"]] = approval
     return CorrectiveActionAuthority(
         _AUTHORITY_TOKEN, publisher_manifest_sha256=expected_publisher_manifest_sha256,
@@ -892,8 +1203,12 @@ def _validate_authorized_corrective_action(view: Mapping[str, Any], event: Mappi
     }
     if any(approval[key] != value for key, value in expected.items()):
         raise ContractError("parent approval does not bind this exact indexed action/evidence payload")
-    _authority_artifact(authority, approval["parent_review_artifact_sha256"],
-                        allowed_kinds=frozenset(("parent_review_artifact",)), event=indexed, group=group)
+    _authority_artifact_payload(
+        authority, approval["parent_review_artifact_sha256"],
+        allowed_kinds=frozenset(("parent_review_artifact",)), schema_version="p107-parent-review-artifact-v1",
+        expected={"view_id": view["view_id"], "event_id": indexed["event_id"],
+                  "source_group_id": group["source_group_id"], "raw_action_sha256": expected["raw_action_sha256"]},
+        event=indexed, group=group)
     if (execution["event_id"] != indexed["event_id"] or execution["source_group_id"] != group["source_group_id"] or
             execution["source_release_manifest_sha256"] != indexed["source"]["source_release_manifest_sha256"] or
             execution["raw_episode_id"] != indexed["source"]["raw_episode_id"] or
@@ -909,8 +1224,8 @@ def _validate_authorized_corrective_action(view: Mapping[str, Any], event: Mappi
     if (payload["raw_action_sha256"] != expected["raw_action_sha256"] or
             len(payload["raw_actions_23"]) != execution["actual_executed_length"]):
         raise ContractError("sealed actual 23D payload does not match the execution receipt")
-    _authority_artifact(authority, payload["raw_action_artifact_sha256"],
-                        allowed_kinds=frozenset(("raw_action_23_artifact",)), event=indexed, group=group)
+    _require_raw_action_artifact(authority, payload["raw_action_artifact_sha256"], payload["raw_actions_23"],
+                                 event=indexed, group=group)
     if (verification["event_id"] != indexed["event_id"] or verification["source_group_id"] != group["source_group_id"] or
             verification["recovery_attempt_id"] != view["recovery_attempt_id"] or
             verification["recovery_from_attempt_id"] != view["recovery_from_attempt_id"] or
@@ -919,12 +1234,24 @@ def _validate_authorized_corrective_action(view: Mapping[str, Any], event: Mappi
             verification["verification_frame"] < execution["actual_end_frame"] or
             verification["evidence"]["evidence_end_frame"] < execution["actual_end_frame"]):
         raise ContractError("recovery verification does not match the executed corrective action")
-    _authority_artifact(authority, verification["verification_artifact_sha256"],
-                        allowed_kinds=frozenset(("verification_receipt_artifact",)), event=indexed, group=group)
+    _authority_artifact_payload(
+        authority, verification["verification_artifact_sha256"],
+        allowed_kinds=frozenset(("verification_receipt_artifact",)),
+        schema_version="p107-verification-receipt-artifact-v1",
+        expected={"event_id": indexed["event_id"], "source_group_id": group["source_group_id"],
+                  "raw_action_sha256": expected["raw_action_sha256"],
+                  "verification_frame": verification["verification_frame"]}, event=indexed, group=group)
     evidence_kind = ("physical_verification_evidence" if verification["evidence_origin"] == "live_sim_branch"
                      else "temporal_review_evidence")
-    _authority_artifact(authority, verification["evidence"]["artifact_sha256"],
-                        allowed_kinds=frozenset((evidence_kind,)), event=indexed, group=group)
+    _authority_artifact_payload(
+        authority, verification["evidence"]["artifact_sha256"], allowed_kinds=frozenset((evidence_kind,)),
+        schema_version=("p107-physical-verification-evidence-v1" if verification["evidence_origin"] == "live_sim_branch"
+                        else "p107-temporal-review-evidence-v1"),
+        expected={"event_id": indexed["event_id"], "source_group_id": group["source_group_id"],
+                  "raw_action_sha256": expected["raw_action_sha256"],
+                  "evidence_end_frame": verification["evidence"]["evidence_end_frame"],
+                  "available_frame": verification["evidence"]["available_frame"],
+                  "verification_frame": verification["verification_frame"]}, event=indexed, group=group)
     if verification["evidence_origin"] == "live_sim_branch":
         if authority._live_runtime_root_sha256 is None or (
                 verification["live_runtime_acceptance_root_sha256"] != authority._live_runtime_root_sha256):
@@ -932,10 +1259,14 @@ def _validate_authorized_corrective_action(view: Mapping[str, Any], event: Mappi
     elif verification["frozen_action_window_artifact_sha256"] != payload["raw_action_artifact_sha256"]:
         raise ContractError("SILVER logged recovery requires sealed frozen action-window and temporal-review artifacts")
     else:
-        _authority_artifact(authority, verification["frozen_action_window_artifact_sha256"],
-                            allowed_kinds=frozenset(("raw_action_23_artifact",)), event=indexed, group=group)
-        _authority_artifact(authority, verification["temporal_review_artifact_sha256"],
-                            allowed_kinds=frozenset(("temporal_review_artifact",)), event=indexed, group=group)
+        _require_raw_action_artifact(authority, verification["frozen_action_window_artifact_sha256"],
+                                     payload["raw_actions_23"], event=indexed, group=group)
+        _authority_artifact_payload(
+            authority, verification["temporal_review_artifact_sha256"],
+            allowed_kinds=frozenset(("temporal_review_artifact",)), schema_version="p107-temporal-review-artifact-v1",
+            expected={"event_id": indexed["event_id"], "source_group_id": group["source_group_id"],
+                      "raw_action_sha256": expected["raw_action_sha256"],
+                      "verification_frame": verification["verification_frame"]}, event=indexed, group=group)
 
 
 def validate_corrective_action_view(view: Mapping[str, Any], event: Mapping[str, Any] | None = None,
