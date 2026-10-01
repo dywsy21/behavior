@@ -89,5 +89,11 @@
       ]
     }
   ],
-  "split_provenance": {"fixture": true}
+  "split_provenance": {
+    "assignments": [
+      {"task": 0, "instance": 1, "split": "train"},
+      {"task": 0, "instance": 2, "split": "train"},
+      {"task": 0, "instance": 3, "split": "eval"}
+    ]
+  }
 }
