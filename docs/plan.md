@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 shard3 获部分 root-model 视觉校准确认；全40绑定审计通过但标注未完成（Codex / P107-ANNOTATION-LEDGER）
+
+- partial root-model QA receipt 为`/home/wsy/behavior-annotations/p107/parent-review/calibration40-v1/shard3-partial.json`，SHA `f50ae3851899a5b07fa074398bdca2e0d3faa1f9849f548bdc3ff5ab2d40de3b`。central validation 对 shard3 全10条的 event/source/packet/frame/native-evidence/post-label ID mismatch=0；root-model 仅以 **VISUAL-CALIBRATION ONLY** 确认 q31 toolbox-lid NO、q34 chair-held NO、q35 drawer-closed NO，并同意 q37 pour、q39 navigation 维持 masked UNKNOWN。仅审5个 view，整40条未完成，`human_reviewed=false`。
+- 父代理现在已审原分辨率 page02 24/40（原20条外新增q1/q18/q34/q35）及 future-only page04 6条（新增q18）；future不作 anchor target 证据。central metadata 复核全40：37/40顺序不同但`event_id`有效双射，41个 sidecar按10/10/11/10分片，路径`/home/wsy/behavior-annotations/p107/annotation-binding/calibration40-v1`。
+- shards0/1 的 q0 press、q1 place-on、q17 attach、q18…等 provisional positive 均留待 root scrutiny，绝不纳入最终/accepted计数；shard2状态仍 pending。所有 outcome/recovery/action/BC/release/formal-training继续为0，不能称全量标签已就绪。
+
 ### 2026-10-02（北京时间）：P107 问题—事件绑定已纠正；shard3 仅提案标签完成、其余分片继续（Codex / P107-ANNOTATION-LEDGER）
 
 - 中央绑定已核：`questions.jsonl` row0 对应 `cookbrisket` event，而 helper 的 q024 才是该条、q000 是 `radio` event。分片 ownership 以 helper shard 的 `event_id` 为唯一来源，question 只能按 `event_id` join，**禁止**按位置/ordinal join；全部标注 worker 已获此更正。generation protocol `7f` 与 consumer protocol `efdd` 是已批准的 lineage，不是新 bug。
