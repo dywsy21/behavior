@@ -87,7 +87,24 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 sim owner 正修复：无外部 candidate 的 trusted receipt registry、所有 provider 的 runtime-capabilities binding、restore-before-fault-observation 以及封闭的 physical-evidence taxonomy。实际 OmniGibson proof 仍为零，release 继续 **BLOCKED**，上述 blocker 不得标 resolved。
 
+### 2026-10-01 22:49：data `8a683fe` 复审—20测试通过仍有6个发布阻断
+
+`8a683fe` 的20个复审测试通过，但不构成 release 证明。以下6项仍使真实 data release **BLOCKED**：
+
+1. 可自行 mint 为 `unboundexternal` 的 authority；
+2. 可变 map；
+3. action 与 artifact bytes 尚未解析绑定；
+4. pre-action evidence 可验证后续 action；
+5. future typed actor reference；
+6. decoded PNG 与 input index 没有 sealed digest。
+
+`af0e43d` 已解决 coverage Cartesian 问题；早先的 eval-calibration、nested-key、duplicate-episode 和 resume-file-inventory 问题亦已修复，但均不解除上述 release gate。架构职责现固定为：raw collector 只能产生 `CANDIDATE_ONLY`，无权设置任何 positive mask；经独立审查的 publisher 是唯一 dataset-quality authority。dataset quality 与正式 stage3 training authorization 严格分离，后者仍为 `false`。
+
 ## 当前状态、阻塞与交接
+
+2026-10-01 22:49（北京时间）为避免不相关的协议代码门阻碍有界的实际候选准备，infra owner 将在独立、干净且冻结于`af0e43d`的`/home/wsy/behavior-worktrees/p107-index-run`运行**本地 candidate-only** ≤200 pilot：1 CPU、≤30分钟、≤4GiB RAM、≤2GiB输出；必须以官方全局100-task/35-skill词表为合同，对无对应 task-skill pair 显式写 `null`，不得伪造覆盖。它不发布数据、不能设置正例或越过`8a683fe` gate；data owner 独立继续 protocol 与 PNG seal 修复。`p107-mining`的`b5ca17`自有3测试通过且已推送，独立`prep_queue_review`正在审查；尚未生成实际队列。
+
+本地物理盘点确认 WSL2 RTX 4080 16GB、driver 610.47 存在，但已记录的 OmniGibson/Isaac 环境与 assets 均不存在；robo `127.0.0.1:23117` 的 SSH banner 超时。父代理已异步向用户请求恢复路由或给出新 endpoint；在答复前不得任意网络重启、安装、创建隧道。离线数据准备继续，P107不是全局 blocked；仍为0 GPU训练/仿真、0数据 release。
 
 2026-10-01 22:41（北京时间）data P1 fix/API仍在进行。candidate pack/audit 用3个实际 pilot header 作为 AUX receipt 演练，仅得到 `PASS_WITH_STAGE3_TRAINING_BLOCKED` / `CANDIDATE_ONLY`；它不是 source-resolved 的真实 release。infra owner 下一步仅可做 targeted read-only local GPU/OmniGibson availability 与 robo route probe，以穷尽 live-physics 替代路径；禁止 install、restart 或另建 tunnel。metadata index 本地范围不变，queue picker 实现必须 task-skill-first、不得按排序 N。无实际数据release、GPU sim或新训练启动。
 

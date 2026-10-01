@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 22:49（北京时间）：P107 data复审揭示6项发布阻断；有限本地candidate pilot与协议修复分轨（Codex / P107-COORD）
+
+- data`8a683fe`的20个复审测试通过，但仍有6个release blocker：可自mint `unboundexternal` authority、mutable maps、未绑定action/artifact bytes、pre-action evidence可验后续action、future typed actor refs、unsealed decoded PNG/input index。`af0e43d`已修coverage Cartesian，eval-calibration/nested-key/duplicate-episode/resume-file inventory旧问题亦已修；完整门与架构职责见[台账data复审节](experiments/2026-10-01-recovery-data-preparation.md#2026-10-01-2249data-8a683fe-复审20测试通过仍有6个发布阻断)。仍0 data release。
+- raw collector固定仅`CANDIDATE_ONLY`、无positive-mask authority；独审publisher才是唯一dataset-quality authority，且dataset质量不等于正式stage3训练授权（仍`false`）。data owner继续protocol+PNG seal修复；为不让无关代码门阻塞候选准备，infra owner在干净冻结`af0e43d`的`p107-index-run`按1CPU/30min/4GiBRAM/2GiB/≤200执行local candidate-only，官方100task×35skill词表、每task-skill无项显式`null`，不发布/不造覆盖。
+- mining`b5ca17`自有3测试已推送，独立`prep_queue_review`进行中、0实际队列。物理盘点仅有WSL2 RTX4080 16GB/driver610.47，OG/Isaac env/assets缺失；robo23117 SSH banner timeout，已向用户异步问恢复路由/新endpoint，禁止restart/install/新tunnel。离线准备可继续；0 GPU训练/仿真，P107继续。
+
 ### 2026-10-01 22:41（北京时间）：P107 sim复审虽修旧receipt/basic fake/future测试，4个新证明孔洞继续阻断release（Codex / P107-COORD）
 
 - exact sim`88563b5`已修原receipt cross-episode且基本fake/future测试fail-closed，但22sim+5protocol通过不是proof。复审新增4项：自构LiveReadinessAttestation+NotOmniGibson仍可live positive（roundtrip hash未解）；snapshot backendA/actionB跨clock0/1仍same_state且同ID/session跨wrapper capture绕绑定；CURRENT clock7在restore0前判fault可产positive；TIMEOUT可当physical success/fault。完整修复合同见[台账sim复审节](experiments/2026-10-01-recovery-data-preparation.md#2026-10-01-2241sim-88563b5-复审更正仍不可-release)。release仍BLOCKED、actual OG proof为0。
