@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 phase40媒体与本地深度验证完成；query text display audit继续阻断派发（Codex / P107-COORD）
+
+- phase40的受限RGB工作现已全部完成：lc3 `attempt2` exit0（`2026-10-01T18:13:25Z`），40 packets、400 slots、396 unique frames、4 clamps、1,188 native PNG和40 contact sheets，覆盖40 source groups/31 tasks/31 skills。sealed本地副本`/home/wsy/behavior-annotations/p107/phase-balanced-calibration40-v2-rgb`与远端逐文件完全一致：1,231 files、488,432,035 file bytes；`du`的488,599,971 B含目录表观开销，不能与file bytes混淆。local full deep validation=PASS；manifest SHA `a01ea70d2caa314ecc4ba8ac060fcf83cecac563963f7fa6e1288709800b0a1d`、packets SHA `2ebc0383830663a27c4e621ee9574e0f2d752233245f5644babc63d73bf63d6a`、assets SHA `c2f5d93537c1d9c88c1f2b056e7975f0b505e6aaadceb8953657806830320c32`，receipt见`/home/wsy/behavior-annotations/p107/phase-balanced-calibration40-v2-rgb-receipts`及`lc3-phase40-preflight/local-copy-integrity.json`。这只完成calibration RGB，不产生labels/training/release，且无新增job/local training/GPU/SIM。
+- no-question helper页位于`/home/wsy/behavior-annotations/p107/phase-balanced-calibration40-v2-rgb-reviewpages`：198页、1680×1440 source-native pixels、无resize；`q000..q039`仅按phase-queue `selection_order`排列，future query必须以`event_id`+`query_id` join，页面不嵌query text。
+- query producer P1修复`05d9e7b`虽独审APPROVED，root新增actual text-display audit仍暂缓派发：raw asset/instance codes（如`carssxsje`）泄入文本，producer正核对exact metadata mapping，禁止盲目heuristic；当前尚无使用v3的annotations。coverage adapter `85d9defc9f52c1b56bdad3ded0de3daccc0cd143`已独审APPROVED并仅移植为根`3f473fc`：17项packer contract+1项integration、stdlib CLI help和diff checks通过。真实full-v3仍保留`coverage_complete=false`、missing pairs=`null`与`NOT_DECLARED`，只允许`annotation_calibration`、student/eval阻断、source pins不变；`partial_source_coverage=true`的phase40 mini-index仍按当前packer拒绝。下一步仅是按此root SHA授权的binder real-pack retry，尚未启动；actor-query修复也继续隔离、绝不cherry-pick。严格计数仍为10 known/31 masked、0 student/outcome/recovery/action-BC/training/live DART。
+
 ### 2026-10-02（北京时间）：P107 phase40 RGB decoder远端完成并深度验证通过；v3 query artifact待独审（Codex / P107-COORD）
 
 - lc3 authorized decoder已`exit 0`：从02:11 CST运行约143.5s，按wall time推算约02:13:23 CST结束（该结束时刻不是独立UTC timestamp）。同一`attempt2`输出含40 packets、400 requested slots、396 distinct frames、4 boundary clamps、1,188 native PNG及40张contact sheet；远端DEEP VALIDATION PASS，sealed manifest SHA `a01ea70d2caa314ecc4ba8ac060fcf83cecac563963f7fa6e1288709800b0a1d`。本地copy仍为RUNNING，localhost validation/helper尚未完成，故不称labels或任何release完成；全程0 GPU training/0 SIM。
