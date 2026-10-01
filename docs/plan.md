@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 06:00–06:08（北京时间）：lc3 52-row RGB decode 的冻结输入与 TRAIN canonical handoff 已就绪；尚未启动 decoder（Codex / P107-COORD）
+
+- 在既有 VPN/SOCKS 路径、不触碰 lc1/lc2/robo/shared env 的前提下，已把**代码仅经 Git bundle**同步到 fresh `/data/workspace/wsy/behavior2026/src/p107-coverage-causal-d582c0e`，并核为`d582c0e91208b865e88aa42fd4b507f5fc437bef`。full-v3 与 selector/protocol 输入作为获授权的固定 metadata 工件传入 fresh staging（input archive `99,726,505B`, SHA `41f55e089207673cf572ab7e6babda925b1ffa7fab1ce4c469b96e31b27b3c36`），逐文件复核full-index manifest/inventory/event/source-group、coverage bytes 与legacy7f protocol SHA，未使用旧mini index代替EVAL验证。
+- 同一受限CPU setup（`taskset` CPU0、`nice 19`、idle I/O、4GiB address-space、0GPU）已产生TRAIN canonical handoff：`47` selected、queue seal `acff15dc676576c4138974daef7618b2e472485b1388ac6a068f950a91854330`、render-request SHA `339b8aa15714620303462e9c788e9962d846412c234427bc66c49cd767ceb853`、provenance SHA `5796dfe0278b8f318732784de93ec808c7a7724b822c920a7dd284011cef630f`。EVAL仍只会使用独立receipt/renderer和其原有5-row eval selector，绝不携带或生成TRAIN queue seal。
+- 这只是decode前的可验证setup，**仍无RGB/PNG/packets/pages/labels/E2 credit**。下一步是已授权的单次52-row（47 TRAIN、5 EVAL）顺序native RGB decode；实际decoder启动后才开始计≤15分钟总decode cap，并将写fresh `/data/workspace/wsy/behavior2026/p107/runs/coverage-cohort-next-v1-rgb-v1{,.receipts}`。仍为candidate-only：无action/outcome/recovery/BC/DART/release/training。
+- live DART同时保持0：H75资料只证明可考虑物理tick hook，未接入LC。未来必须以实际`physics_dt`计算`ceil(0.5/dt)+1`连续tick（H75历史120Hz下至少61，不得给LC3写死频率）；仍缺session-owned observe/apply/world、逐physics-tick recorder、clean-application ack和preclose baseline，control读取不能冒充physics ticks。
+
 ### 2026-10-02（北京时间）：role-safe coverage renderer 与 causal-only review builder 已独审合根；lc3 decode 仅完成只读预检（Codex / P107-COORD）
 
 - 根在保留最新ledger、未采用source branch旧`docs/plan.md`的前提下，集成独审renderer handoff `1d608805e288fc12f5c885b0a2a852c747fec33f`及完整causal builder fix链`761c5ddf43b02cb60e4f280901376e4b79f320da→9487bf661cfb3f8fdf08529d72f3a482fe5b62c7→e0704e106f0d107d48dc8697c636c7775031f9b1→b142bb279e55f53dc2d49da291b651d790eba377`，冻结代码commit`d582c0e91208b865e88aa42fd4b507f5fc437bef`。TRAIN handoff只将sealed diagnostic TRAIN selector转成canonical subset/queue并resume核验；EVAL一律走独立receipt/renderer，保持`evaluation_only`+`eval`+`training_eligible=false`，不生成/携带TRAIN queue seal、更不会把EVAL重标为TRAIN。causal builder仍TRAIN-only，默认review pages排除future、另有audit，而不是retroactively认证旧mixed UI。
