@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 23:21（北京时间）：P107 v3 candidate index已完成；release、真实提取与仿真仍未放行（Codex / P107-COORD）
+
+- `full-v3-candidate-index` 已在`/home/wsy/behavior-annotations/p107/index-validation/full-v3-candidate-index`完成：seal `7ed1b2c5cbb50c8af042a2b9dca8529a6d133de5fc0fbe224601854235c31479`，20,000 source episodes、403,257 events、19,889 candidate-bearing sources、全100 tasks及35个**官方 skill ID+description**均出现、0 missing。运行仅metadata CPU（30.16秒、1.018**GiB**），roles为18,884 `student_candidate`、1,000 `evaluation_only`、116 `annotation_calibration`（16个既有pilot group加每task一组100）；accepted=0、全部`training_eligible=false`、metadata-only。35项官方映射已按ID/description合同核验，**不**声称100×35 task-skill Cartesian均为需要或均已观测的pair。
+- mining 已知问题正在修复；`0..39`仅完成 locator preflight 工程检查，首40条 temporal camera-native images **尚未提取**，不是多样化标注batch或实际annotation。隔离DART实现worktree已启动，但实际DART数据仍为0；不改变`a_intended`/`a_sampled_noise`/`a_executed_raw23`分存和“仅clean teacher可作expert”的门。
+- SIM `df9c1fa`复审还剩 false-genuine 判别、actor blacklist、stale validator 三项问题，sim owner正在修复；冻结DATA protocol `89f0462`/renderer `4e2631f`复审仍有实际index membership、typed artifact contents、semantic resume 三项发布门，data owner正在修复。它们均不构成release、positive FM或任何阶段3训练授权。
+- 23:21新鲜infra observer只见本地SOCKS未监听、lc3当前不可达。获既有用户许可的唯一reconnect（`prep_contract_review` sole operator）仍为RUNNING；没有新连接回执前不得记为connected，未做远端作业/GPU/环境修改。local4080 sim+lc3 expert/data与lc-only defer的用户选择仍pending；继续**不使用robo**、不启动formal新训练、不改共享或活跃环境。
+
 ### 2026-10-01 23:06（北京时间）：P107 将DART列为必需流；full diagnostic index完成但所有真实数据/仿真/release仍为0（Codex / P107-COORD）
 
 - 用户最新范围为使用空闲`lc*`、**不再进行任何robo工作**；DART是必需交付，保持全规模/质量、source-model-agent provenance和父代理视觉QA，非可选或candidate-only替代。`prep_dart_design`研究原始语义：`REACHED`同状态执行`a_sampled_noise`，BC仅取干净教师`a_intended`；另记`a_executed_raw23`，不把注入/离线噪声作为expert。DART实际数据0，formal stage3 training仍未授权。

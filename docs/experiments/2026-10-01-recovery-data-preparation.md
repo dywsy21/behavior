@@ -116,6 +116,16 @@ sim owner 正修复：无外部 candidate 的 trusted receipt registry、所有 
 
 最新 data authority review `544b010` 仍报告 mutable capability、artifact bytes、roles、self-sealed packet/resume、index-artifact proof 的未决门；较早 checkpoint 所列某些关闭项不得外推为全部修复。owner 正修复；packager 已适配新的 external root，所在分支提交仍 pending。
 
+### 2026-10-01 23:21：v3 candidate index取代旧诊断作当前metadata证据；三项data和三项sim复审门仍阻断release
+
+`/home/wsy/behavior-annotations/p107/index-validation/full-v3-candidate-index` 已完成metadata-only v3 candidate index，inventory seal为`7ed1b2c5cbb50c8af042a2b9dca8529a6d133de5fc0fbe224601854235c31479`：20,000个source episodes、403,257 events、19,889个candidate-bearing source episodes；100个tasks及35个官方`skill_id`+`skill_description`均出现，missing=0。输出为**1.018GiB**（不是MB）、30.16秒；usage roles为18,884 `student_candidate`、1,000 `evaluation_only`、116 `annotation_calibration`，后者精确为16个既有pilot group与每task一组100的预留并集。accepted labels=0、所有`training_eligible=false`、仅metadata；这确认官方35项映射合同，不宣称每个task都要求或观测35个skill pair，更不构成release或训练准入。
+
+mining的已知问题在修复中。`0..39`只完成locator preflight；首40条temporal camera-native images**尚未提取**，所以不存在可称为diverse annotation batch的实际标注。DART隔离实现worktree已开始，但实际DART record仍为0；DART的clean teacher与noise/actual-action分离、source/model/agent provenance和父审要求不变。
+
+SIM `df9c1fa`独审的剩余三项为false-genuine判别、actor input blacklist与stale validator，sim owner正在修复。独立DATA seam review在冻结protocol `89f0462`与renderer `4e2631f`上确认的剩余三项是实际sealed-index membership、typed artifact的role-specific contents以及packet semantic resume；data owner正在修复。上述复审结论覆盖任何较早“测试通过”表述：不得发布real recovery data、不得导出positive FM mask、不得启动stage3。
+
+23:21新鲜infra observer结论为本地SOCKS未监听且lc3不可达。此前用户许可下唯一进行的reconnect由`prep_contract_review` sole operator执行，状态为RUNNING；未取得新鲜receipt前，禁止写成已连接或据此启动任何远端任务。local4080 sim+lc3 expert/data与lc-only defer的用户选择保持pending；当前仍不使用robo，不改远端/共享环境，不启动GPU sim或formal training。
+
 ## 当前状态、阻塞与交接
 
 2026-10-01 22:49（北京时间）为避免不相关的协议代码门阻碍有界的实际候选准备，infra owner 将在独立、干净且冻结于`af0e43d`的`/home/wsy/behavior-worktrees/p107-index-run`运行**本地 candidate-only** ≤200 pilot：1 CPU、≤30分钟、≤4GiB RAM、≤2GiB输出；必须以官方全局100-task/35-skill词表为合同，对无对应 task-skill pair 显式写 `null`，不得伪造覆盖。它不发布数据、不能设置正例或越过`8a683fe` gate；data owner 独立继续 protocol 与 PNG seal 修复。该运行已由上方23:06全量诊断索引取代为已完成状态；`p107-mining`状态同上，尚未生成实际队列。
