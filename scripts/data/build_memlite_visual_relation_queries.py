@@ -203,6 +203,17 @@ def resolve_category(raw_id: str, category_mapping: dict[str, str]) -> dict[str,
         }
     category = longest[0]
     suffix = raw_id[len(category) + 1 :] if raw_id != category else None
+    if raw_id != category and suffix == "":
+        return {
+            "status": "UNKNOWN_CATEGORY",
+            "raw_object_id": raw_id,
+            "category": None,
+            "prompt_noun": None,
+            "synset": None,
+            "opaque_instance_suffix": None,
+            "quarantine": True,
+            "candidate_categories": [category],
+        }
     return {
         "status": "RESOLVED",
         "raw_object_id": raw_id,
