@@ -108,8 +108,35 @@ def _write_artifact(root, *, name, kind, event_row, source_group, contents):
     }
 
 
+def _write_external_index(root, event_row, source_group):
+    index_root = root / "external-index"
+    index_root.mkdir()
+    def write_payload(name, rows):
+        path = index_root / name
+        path.write_bytes(b"".join(canonical_json(row).encode("utf-8") + b"\n" for row in rows))
+        return {"sha256": _PROTOCOL._file_sha256(path), "bytes": path.stat().st_size, "rows": len(rows)}
+    files = {
+        "source_groups.jsonl": write_payload("source_groups.jsonl", [source_group]),
+        "event_candidates.jsonl": write_payload("event_candidates.jsonl", [event_row]),
+    }
+    manifest = {"schema_version": "memlite-event-index-v1",
+                "source_release_manifest_sha256": event_row["source"]["source_release_manifest_sha256"],
+                "files": files}
+    manifest_path = index_root / "manifest.json"
+    manifest_path.write_bytes(canonical_json(manifest).encode("utf-8"))
+    seal = {"schema_version": "memlite-event-inventory-seal-v1",
+            "index_manifest_sha256": _PROTOCOL._file_sha256(manifest_path),
+            "source_release_manifest_sha256": event_row["source"]["source_release_manifest_sha256"],
+            "coverage_expectations_sha256": "7" * 64,
+            "expected_payload_files": ["event_candidates.jsonl", "source_groups.jsonl"],
+            "payload_files": files}
+    seal_path = index_root / "inventory_seal.json"
+    seal_path.write_bytes(canonical_json(seal).encode("utf-8"))
+    return index_root, _PROTOCOL._file_sha256(seal_path)
+
+
 def authorized_corrective_row(root, *, split="train", role="student_candidate", origin="logged_demonstration",
-                              evidence_end=13):
+                              evidence_end=13, raw_artifact_contents=None):
     e = event()
     e["source"]["original_split"] = split
     e["source"]["source_group_id"] = source_group_id(e["source"])
@@ -133,7 +160,9 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
     raw_actions = [[float(offset + dim) for dim in range(23)] for offset in (0, 100)]
     raw_artifact_row = _write_artifact(
         root, name="raw23.bin", kind="raw_action_23_artifact", event_row=e, source_group=group,
-        contents=canonical_json({"raw_actions_23": raw_actions}).encode("utf-8"))
+        contents=(canonical_json({"schema_version": "p107-raw23-action-artifact-v1",
+                                  "raw_actions_23": raw_actions}).encode("utf-8")
+                  if raw_artifact_contents is None else raw_artifact_contents))
     raw_artifact = raw_artifact_row["artifact_sha256"]
     payload_digest = action_payload_sha256(raw_actions)
     raw_digest = raw_action_payload_sha256(raw_actions, raw_action_artifact_sha256=raw_artifact)
@@ -158,16 +187,26 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
     evidence_artifact_row = _write_artifact(
         root, name="verification-evidence.bin",
         kind="physical_verification_evidence" if origin == "live_sim_branch" else "temporal_review_evidence",
-        event_row=e, source_group=group, contents=b"verified post-action evidence")
+        event_row=e, source_group=group, contents=canonical_json({
+            "schema_version": "p107-physical-verification-evidence-v1" if origin == "live_sim_branch"
+            else "p107-temporal-review-evidence-v1", "event_id": e["event_id"],
+            "source_group_id": group["source_group_id"], "raw_action_sha256": raw_digest,
+            "evidence_end_frame": evidence_end, "available_frame": 14, "verification_frame": 14,
+        }).encode("utf-8"))
     verification_artifact_row = _write_artifact(
         root, name="verification-receipt.bin", kind="verification_receipt_artifact",
-        event_row=e, source_group=group, contents=b"independent verification receipt")
+        event_row=e, source_group=group, contents=canonical_json({
+            "schema_version": "p107-verification-receipt-artifact-v1", "event_id": e["event_id"],
+            "source_group_id": group["source_group_id"], "raw_action_sha256": raw_digest,
+            "verification_frame": 14,
+        }).encode("utf-8"))
     temporal_artifact_row = _write_artifact(
         root, name="temporal-review.bin", kind="temporal_review_artifact",
-        event_row=e, source_group=group, contents=b"temporal review")
-    parent_artifact_row = _write_artifact(
-        root, name="parent-review.bin", kind="parent_review_artifact",
-        event_row=e, source_group=group, contents=b"parent approval review")
+        event_row=e, source_group=group, contents=canonical_json({
+            "schema_version": "p107-temporal-review-artifact-v1", "event_id": e["event_id"],
+            "source_group_id": group["source_group_id"], "raw_action_sha256": raw_digest,
+            "verification_frame": 14,
+        }).encode("utf-8"))
     temporal_review = None if origin == "live_sim_branch" else temporal_artifact_row["artifact_sha256"]
     verification = self_digest({
         "schema_version": "p107-recovery-verification-receipt-v1", "receipt_sha256": "", "event_id": e["event_id"],
@@ -186,6 +225,12 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
     row["execution_receipt_sha256"] = execution["receipt_sha256"]
     row["recovery_verification_receipt_sha256"] = verification["receipt_sha256"]
     with_id(row)
+    parent_artifact_row = _write_artifact(
+        root, name="parent-review.bin", kind="parent_review_artifact", event_row=e, source_group=group,
+        contents=canonical_json({"schema_version": "p107-parent-review-artifact-v1", "view_id": row["view_id"],
+                                 "event_id": e["event_id"], "source_group_id": group["source_group_id"],
+                                 "raw_action_sha256": raw_digest}).encode("utf-8"))
+    index_root, index_seal_sha256 = _write_external_index(root, e, group)
     files = {
         "events": _write_jsonl(root / "events.jsonl", [e]),
         "source_groups": _write_jsonl(root / "source_groups.jsonl", [group]),
@@ -209,20 +254,20 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
         "execution_receipt_sha256": execution["receipt_sha256"],
         "recovery_verification_receipt_sha256": verification["receipt_sha256"],
         "parent_review_artifact_sha256": parent_artifact_row["artifact_sha256"], "evidence_origin": origin, "quality_tier": tier,
-        "index_inventory_seal_sha256": "8" * 64,
+        "index_inventory_seal_sha256": index_seal_sha256,
         "action_payload_root_sha256": files["raw_action_payloads"]["sha256"],
         "execution_receipt_root_sha256": files["execution_receipts"]["sha256"],
         "recovery_verification_receipt_root_sha256": files["verification_receipts"]["sha256"],
         "artifact_manifest_root_sha256": files["artifacts"]["sha256"],
     })
     files["parent_approval_receipts"] = _write_jsonl(root / "parent_approval_receipts.jsonl", [approval])
-    manifest = {"schema_version": "p107-corrective-publisher-manifest-v1", "index_inventory_seal_sha256": "8" * 64,
+    manifest = {"schema_version": "p107-corrective-publisher-manifest-v1", "index_inventory_seal_sha256": index_seal_sha256,
                 "accepted_live_runtime_root_sha256": live_root, "files": files}
     manifest_path = root / "publisher_manifest.json"
     manifest_path.write_bytes(canonical_json(manifest).encode("utf-8"))
     authority = load_corrective_action_authority(
-        root, expected_publisher_manifest_sha256=_PROTOCOL._file_sha256(manifest_path),
-        expected_index_inventory_seal_sha256="8" * 64,
+        root, index_root=index_root, expected_publisher_manifest_sha256=_PROTOCOL._file_sha256(manifest_path),
+        expected_index_inventory_seal_sha256=index_seal_sha256,
         expected_live_runtime_acceptance_root_sha256=live_root)
     return row, e, authority, verification
 
@@ -340,15 +385,19 @@ class EventProtocolTests(unittest.TestCase):
                 authority._live_runtime_root_sha256 = "6" * 64
             with self.assertRaises(ContractError):
                 load_corrective_action_authority(
-                    root, expected_publisher_manifest_sha256="0" * 64,
-                    expected_index_inventory_seal_sha256="8" * 64)
+                    root, index_root=root / "external-index", expected_publisher_manifest_sha256="0" * 64,
+                    expected_index_inventory_seal_sha256=authority.index_inventory_seal_sha256)
+            with self.assertRaisesRegex(ContractError, "index root"):
+                load_corrective_action_authority(
+                    root, index_root=root / "absent-index", expected_publisher_manifest_sha256=manifest_sha,
+                    expected_index_inventory_seal_sha256=authority.index_inventory_seal_sha256)
             with self.assertRaises(TypeError):
                 authority._approval_json[row["view_id"]] = "forged"
             (root / "raw_action_payloads.jsonl").write_text("{}\n")
             with self.assertRaisesRegex(ContractError, "bytes or SHA-256"):
                 load_corrective_action_authority(
-                    root, expected_publisher_manifest_sha256=manifest_sha,
-                    expected_index_inventory_seal_sha256="8" * 64)
+                    root, index_root=root / "external-index", expected_publisher_manifest_sha256=manifest_sha,
+                    expected_index_inventory_seal_sha256=authority.index_inventory_seal_sha256)
         with tempfile.TemporaryDirectory() as folder:
             row, event_row, authority, _ = authorized_corrective_row(Path(folder), evidence_end=11)
             with self.assertRaisesRegex(ContractError, "recovery verification"):
@@ -378,6 +427,9 @@ class EventProtocolTests(unittest.TestCase):
                 stream.write(b"tamper")
             with self.assertRaisesRegex(ContractError, "artifact bytes"):
                 validate_corrective_action_view(row, event_row, authority=authority)
+        with tempfile.TemporaryDirectory() as folder:
+            with self.assertRaisesRegex(ContractError, "invalid JSON|exact typed authority schema"):
+                authorized_corrective_row(Path(folder), raw_artifact_contents=b"not a raw 23D action payload")
 
     def test_gold_requires_externally_accepted_live_root(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -385,8 +437,9 @@ class EventProtocolTests(unittest.TestCase):
             _, _, authority, _ = authorized_corrective_row(root, origin="live_sim_branch")
             with self.assertRaisesRegex(ContractError, "live-runtime root"):
                 load_corrective_action_authority(
-                    root, expected_publisher_manifest_sha256=authority.publisher_manifest_sha256,
-                    expected_index_inventory_seal_sha256="8" * 64,
+                    root, index_root=root / "external-index",
+                    expected_publisher_manifest_sha256=authority.publisher_manifest_sha256,
+                    expected_index_inventory_seal_sha256=authority.index_inventory_seal_sha256,
                     expected_live_runtime_acceptance_root_sha256=None)
 
     def test_live_gold_and_logged_silver_are_distinct_positive_paths(self):
