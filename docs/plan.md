@@ -12,10 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 CAL40 41-query merged calibration 已验证；E2是root亲自≥120抽样而非外部human门（Codex / P107-ANNOTATION-LEDGER）
+
+- 中央合并件位于`/home/wsy/behavior-annotations/p107/calibration40-merged-v1`：`canonical_reviewed_calibration.json` SHA `8e95c0e0365a7f0821255e98441cee2189d2286f81f8f085d08bbd9e2ab8a71f`、manifest SHA `419e0c8f5bfc8dbce9a1441edd550238b664e64666c4aa8b22af2a99debb4586`、root parent receipt SHA `31955044c0b4b37918bc76cb913a0984ebd917e43738308833d8adbfa7f4160a`。全部41 query composite join及55个causal native-PNG hash通过：10条known visible-calibration auxiliary、31条masked，0 student/outcome/recovery/action-BC。
+- `docs/plan.md` E2的操作定义是**主代理/root亲自**查看至少120个分层图像/短片及标签，并非要求另找一名外部human；当前root已审40 anchors，故数量和分层范围仍未达E2。记录provenance仍是`root_model`/`human=false`，不得改写为`human_reviewed=true`。这不改变CAL40为calibration-only，也不把E2、global goal或训练门标为完成。
+- standard calibration-only pack仍只差实际s1 agent的小型reviewer-provenance attestation；它不是新的视觉复审。phase-balanced sampler与actor query read-only recon均仍进行中；strict counts不变，live DART=0并继续等用户RTX4080+lc许可、冻结teacher/runtime及official TRAIN fresh-reset证据。
+
 ### 2026-10-02（北京时间）：P107 CAL40 root-model 完成40 anchor视觉QA并更正41条可见校准标签；非human/E2/训练放行（Codex / P107-ANNOTATION-LEDGER）
 
 - root 以原分辨率亲看了**全部40个 anchor camera-triplet**：38个正常项为page02，q36/q38边界项为page00；另6个page04 future样本仍只作audit。可见校准的41 queries经更正为2 YES（q18 hold/support、q24 OPEN_DOOR）、8 NO（q10/q11/q15/q16/q26/q31/q34/q35）、31 masked UNKNOWN。q0由“body contact”降为UNKNOWN（未能证实目标press point），q13由head camera降为UNKNOWN（不能代表robot-base orientation）；早前q1/q17过度声称也已降为UNKNOWN。root 只批准这10个**可见校准**判断，不从其推断attempt、outcome、recovery或动作监督。
-- 此为`root_model`而非human QA，未审全部1,176张native PNG或完整timeline，也不满足E2至少120个分层图像/短片及标签的人工验收。所有 formal student、attempt/outcome、recovery、action-BC、FM-positive、release和训练准入继续为0；future audit不进入actor anchor证据。
+- 此为`root_model` provenance（`human=false`），未审全部1,176张native PNG或完整timeline。E2要求主代理/root亲自审至少120个分层图像/短片及标签，不要求外部human；当前40 anchors在数量与分层范围上仍未达标。所有 formal student、attempt/outcome、recovery、action-BC、FM-positive、release和训练准入继续为0；future audit不进入actor anchor证据。
 - binder正以`event_id`及 exact `goal_relation` composite key 收口41条：q24的multi-query问题只在临时摘要中发现，未污染source canonical。最新输入可定位为s0 canonical SHA `dd8f79565574c01e9b5f34a646a6f1112abe2ed0354945fb2a627a649631d747`、s1 candidate SHA `60ed0aae387a094a693a0c541d79085a23b0cfadac62ca31785b585f07426973`，s2/s3保持既有文件；validation未完成前不得声称real calibration pack已发布。
 - phase-balanced40 sampler正在隔离worktree实现（未完成）：复用既有calibration groups，每类entry/mid/terminal/repeated-query各10；repeated-query只是candidate，**不是retry**，renderer可接mini-index且不需adapter。actor query gap仍仅read-only recon；live DART=0，仍须用户RTX4080+lc许可、冻结教师/运行时和official TRAIN fresh-reset证据，继续不用robo、不开仿真/训练/远端作业。
 
