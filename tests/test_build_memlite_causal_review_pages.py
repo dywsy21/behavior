@@ -29,7 +29,8 @@ def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.write_text("\n".join(json.dumps(row, sort_keys=True) for row in rows) + "\n", encoding="utf-8")
 
 
-def _fixture(root: Path, *, reordered_queue: bool = False, request_backed: bool = False) -> dict[str, Path]:
+def _fixture(root: Path, *, reordered_queue: bool = False, request_backed: bool = False,
+             canonical_source_group_shape: str = "top_level") -> dict[str, Path]:
     sealed = root / "sealed"
     index = root / "phase_candidate_index"
     assets = sealed / "assets"
@@ -181,16 +182,33 @@ def _fixture(root: Path, *, reordered_queue: bool = False, request_backed: bool 
     }
     (index / "inventory_seal.json").write_text(json.dumps(inventory, sort_keys=True) + "\n", encoding="utf-8")
     if request_backed:
+        queue_sources = []
+        for event in events:
+            queue_source = dict(event["source"])
+            queue_source.pop("source_group_id")
+            queue_sources.append(queue_source)
         queue_rows = [
             {"event_id": "a" * 64, "job_id": "7" * 64, "queue_kind": "ANNOTATION_CALIBRATION",
              "status": "CANDIDATE_MISSING_EVIDENCE", "training_eligible": False,
              "schema_version": "p107-metadata-annotation-queue-v1", "immutable_split": "train",
-             "usage_role": "annotation_calibration", "source_identity": events[0]["source"]},
+             "usage_role": "annotation_calibration", "source_identity": queue_sources[0],
+             "source_group_id": events[0]["source"]["source_group_id"]},
             {"event_id": "b" * 64, "job_id": "8" * 64, "queue_kind": "ANNOTATION_CALIBRATION",
              "status": "CANDIDATE_MISSING_EVIDENCE", "training_eligible": False,
              "schema_version": "p107-metadata-annotation-queue-v1", "immutable_split": "train",
-             "usage_role": "annotation_calibration", "source_identity": events[1]["source"]},
+             "usage_role": "annotation_calibration", "source_identity": queue_sources[1],
+             "source_group_id": events[1]["source"]["source_group_id"]},
         ]
+        if canonical_source_group_shape == "nested_equal":
+            for row, event in zip(queue_rows, events):
+                row["source_identity"]["source_group_id"] = event["source"]["source_group_id"]
+        elif canonical_source_group_shape == "nested_conflict":
+            queue_rows[0]["source_identity"]["source_group_id"] = "f" * 64
+        elif canonical_source_group_shape == "missing":
+            for row in queue_rows:
+                del row["source_group_id"]
+        elif canonical_source_group_shape != "top_level":
+            raise ValueError(f"unknown canonical_source_group_shape: {canonical_source_group_shape}")
     else:
         queue_rows = [
             {"event_id": "a" * 64, "observation_frame": 10, "selection_order": 0,
@@ -460,6 +478,32 @@ class CausalReviewPageBuilderTests(unittest.TestCase):
             manifest = json.loads((output / "manifest.json").read_text())
             self.assertEqual(manifest["source_selection_manifest_sha256"], _sha(root / "manifest.json"))
             self.assertEqual(manifest["source_protocol_sha256"], "a" * 64)
+
+    def test_canonical_nested_source_group_copy_must_match_top_level(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            paths = _fixture(root, request_backed=True, canonical_source_group_shape="nested_equal")
+            _build(paths, root / "actor-pages", render_requests_path=paths["render_requests"],
+                   expected_render_requests_sha256=_sha(paths["render_requests"]))
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            paths = _fixture(root, request_backed=True, canonical_source_group_shape="nested_conflict")
+            output = root / "actor-pages"
+            with self.assertRaisesRegex(ValueError, "nested source_group_id"):
+                _build(paths, output, render_requests_path=paths["render_requests"],
+                       expected_render_requests_sha256=_sha(paths["render_requests"]))
+            self.assertFalse(output.exists())
+
+    def test_canonical_top_level_source_group_is_required(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            paths = _fixture(root, request_backed=True, canonical_source_group_shape="missing")
+            output = root / "actor-pages"
+            with self.assertRaisesRegex(ValueError, "canonical queue source_group_id"):
+                _build(paths, output, render_requests_path=paths["render_requests"],
+                       expected_render_requests_sha256=_sha(paths["render_requests"]))
+            self.assertFalse(output.exists())
 
     def test_request_provenance_requires_explicit_path_and_rejects_unclaimed_legacy_path(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -996,7 +996,26 @@ def _load_inputs(sealed_root: Path, index_root: Path, queue_path: Path, queue_se
         queue_source = row.get("source_identity")
         if not isinstance(source, Mapping) or not isinstance(queue_source, Mapping):
             raise ValueError(f"selection queue source identity is missing: {event_id}")
-        for key in ("source_release_manifest_sha256", "source_annotation_sha256", "source_group_id",
+        if queue_meta["mode"] == "canonical_train":
+            # The canonical selector keeps source_group_id at the queue-row
+            # top level.  It is the authoritative identity binding; older
+            # sealed40 rows keep it nested in source_identity and use the
+            # legacy branch below.  A nested canonical copy is optional for
+            # compatibility, but if present it must agree exactly.
+            queue_group = row.get("source_group_id")
+            if not isinstance(queue_group, str) or not queue_group:
+                raise ValueError(f"canonical queue source_group_id is missing or invalid for {event_id}")
+            _sha_text(queue_group, name=f"canonical queue source_group_id for {event_id}")
+            if ("source_group_id" in queue_source and
+                    queue_source.get("source_group_id") != queue_group):
+                raise ValueError(f"canonical queue nested source_group_id does not match top-level field for {event_id}")
+            if queue_group != source.get("source_group_id"):
+                raise ValueError(f"selection queue source_group_id does not bind event for {event_id}")
+        else:
+            queue_group = queue_source.get("source_group_id")
+            if queue_group != source.get("source_group_id"):
+                raise ValueError(f"selection queue/source identity mismatch for {event_id}")
+        for key in ("source_release_manifest_sha256", "source_annotation_sha256",
                     "task_index", "task_instance_id", "raw_episode_id", "episode_index"):
             if queue_source.get(key) != source.get(key):
                 raise ValueError(f"selection queue/source identity mismatch for {event_id}")
