@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 07:28（北京时间）：coverage49 raw diagnostic proposals 与root blind17均已封存；先校准问题质量，不扩同类欠定义问题（Codex / P107-COORD）
+
+- 本轮事实分层固定为：metadata候选`52`；grounding quarantine`3`；可审问题`49`=`TRAIN44`+`EVAL5`；四个TRAIN raw shards（各11）及EVAL raw（5）均已写完但只是diagnostic proposals；root-model（`human_reviewed=false`）亲看`17`（TRAIN12+EVAL5）且只用≤anchor actor-causal/eval-native证据。`cal40_finalize_binding`只读结构审查确认49条identity/split、124张TRAIN pages、15张EVAL native图片hash与3条隔离事件均匹配；raw schema异构，不能冒充canonical protocol。
+- root blind parts01–05现全封存为外部parent-review receipts（新增part03 SHA`14018209…9806`、part04`55b82085…ff1e`、part05`916e786d…c469`）。root17为`1 SATISFIED / 3 NOT_SATISFIED / 13 UNKNOWN`；raw49为`12 / 14 / 23`。逐query ID全可解析，但仅`9`一致、`8`分歧，**一致不是准确率**。分歧及另15条未root审的raw非UNKNOWN均被保留在`/home/wsy/behavior-annotations/p107/parent-review/coverage-cohort-next-v1/root17-vs-raw49-second-review.md` SHA`fd0e9654edbb9a4881ad6dfe6095d0985b849a4488d9953d21db69a6bb2f142e`供逐图二审；任何triage/correction必须另存旁侧receipt，绝不静默覆盖raw。
+- 质量结论是当前问题表达和可见关系仍需先校准：UNKNOWN含target/reference instance ambiguity、body/contact occlusion、RGB不能建立navigation metric/pose、effect/recipient/空间关系欠定义等不同原因；后者不应包装成可训练UNKNOWN。现暂停扩同类欠定义问题或把候选量当恢复数据；没有attempt outcome、corrective BC、student、canonical label、release或training新增。
+- P10.7仍未完成：目标规模的audited goal/outcome windows、source episodes和genuine corrective windows均未达到，live DART=`0`。下一实质依赖是先完成当前49的逐图二审/旁侧结果与问题质量判定；DART还须用户未答复的NVIDIA Isaac/BEHAVIOR条款、隔离LC runtime/assets compatibility及fresh-reset qualified teacher/session-owned observe/apply/physics-tick/postcondition证据，不能由此诊断批或CPU合同替代。
+
 ### 2026-10-02 07:16（北京时间）：partial-coverage helper 互斥修复已独审合根；49条诊断标注仅在 raw/root-blind 校准阶段（Codex / P107-COORD）
 
 - `cal40_finalize_binding`独审APPROVE helper链`c49d28119b8736ce8feb6fdebe84fd64a53ff700→f3e5ed960b3d65ef60eae710d85efdee310561bb`。根只合实现/测试/因果页设计说明为`e3e14c4→68c105a`，现会对eligible和quarantined query ID集合做显式互斥拒绝；恶意overlap须在写出前失败，legacy/EVAL路径仍fail-closed。root以既有GRM Python实跑`tests/test_build_memlite_causal_review_pages.py` **24 passed/3.94s**，另py_compile、ruff、diff check PASS。复用既有47-event/133页causal媒体，未重渲染、未改sealed RGB/source，也未把helper接入actor训练链。
