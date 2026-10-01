@@ -23,10 +23,12 @@ action_payload_sha256 = _PROTOCOL.action_payload_sha256
 event_id = _PROTOCOL.event_id
 indexed_event_eligibility = _PROTOCOL.indexed_event_eligibility
 load_corrective_action_authority = _PROTOCOL.load_corrective_action_authority
+load_source_index_membership = _PROTOCOL.load_source_index_membership
 project_action_23_to_27 = _PROTOCOL.project_action_23_to_27
 raw_action_payload_sha256 = _PROTOCOL.raw_action_payload_sha256
 receipt_sha256 = _PROTOCOL.receipt_sha256
 source_group_id = _PROTOCOL.source_group_id
+sealed_source_group = _PROTOCOL.sealed_source_group
 validate_attempt_outcome_view = _PROTOCOL.validate_attempt_outcome_view
 validate_corrective_action_view = _PROTOCOL.validate_corrective_action_view
 validate_event = _PROTOCOL.validate_event
@@ -350,6 +352,25 @@ class EventProtocolTests(unittest.TestCase):
                       "original_split": "eval", "usage_role": "evaluation_only"}
         self.assertEqual(indexed_event_eligibility(eval_event, eval_group),
                          {"evaluation_loss_eligible": True, "student_train_eligible": False})
+
+    def test_candidate_collectors_can_lookup_an_immutable_source_role_without_action_authority(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            _row, event_row, authority, _ = authorized_corrective_row(root)
+            membership = load_source_index_membership(
+                root / "external-index", expected_inventory_seal_sha256=authority.index_inventory_seal_sha256)
+            self.assertEqual(membership.index_manifest_sha256,
+                             _PROTOCOL._file_sha256(root / "external-index" / "manifest.json"))
+            group = sealed_source_group(membership, event_row["source"]["source_group_id"])
+            self.assertEqual(group["original_split"], "train")
+            self.assertEqual(group["usage_role"], "student_candidate")
+            group["usage_role"] = "evaluation_only"
+            self.assertEqual(sealed_source_group(membership, event_row["source"]["source_group_id"])["usage_role"],
+                             "student_candidate")
+            with self.assertRaises(AttributeError):
+                membership._group_json = {}
+            with self.assertRaisesRegex(ContractError, "absent"):
+                sealed_source_group(membership, "0" * 64)
 
     def test_eval_agent_proposed_boolean_cannot_bypass_external_authority(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -665,10 +665,9 @@ def _read_index_members(root: Path, receipt: Any, name: str, wanted: set[str], k
     return found
 
 
-def _verify_index_membership(index_root: Path, expected_inventory_seal_sha256: str,
-                             publisher_events: Mapping[str, Mapping[str, Any]],
-                             publisher_groups: Mapping[str, Mapping[str, Any]]) -> None:
-    """Bind positive publisher rows to an actual externally SHA-pinned event index."""
+def _load_sealed_index_header(index_root: Path, expected_inventory_seal_sha256: str) -> tuple[Path, Mapping[str, Any], Mapping[str, Any], Mapping[str, Any]]:
+    """Load the fixed inventory/manifest boundary shared by all index readers."""
+    _sha256(expected_inventory_seal_sha256, "expected_index_inventory_seal_sha256")
     raw_root = Path(index_root)
     if raw_root.is_symlink() or not raw_root.is_dir():
         raise ContractError("index root must be a regular directory")
@@ -696,6 +695,94 @@ def _verify_index_membership(index_root: Path, expected_inventory_seal_sha256: s
     files = _mapping(manifest.get("files"), "index manifest.files")
     if set(files) != INDEX_PAYLOAD_FILES or seal["payload_files"] != files:
         raise ContractError("index inventory seal does not bind the exact manifest payload receipts")
+    return root, seal, manifest, files
+
+
+_INDEX_MEMBERSHIP_TOKEN = object()
+
+
+class SealedSourceGroupMembership:
+    """Opaque, read-only source-group role map loaded from a SHA-pinned index."""
+    __slots__ = ("_token", "inventory_seal_sha256", "index_manifest_sha256", "source_release_manifest_sha256",
+                 "_group_json", "_frozen")
+
+    def __init__(self, token: object, **values: Any) -> None:
+        if token is not _INDEX_MEMBERSHIP_TOKEN:
+            raise ContractError("SealedSourceGroupMembership may only be loaded from a sealed index")
+        object.__setattr__(self, "_token", token)
+        for key, value in values.items():
+            object.__setattr__(self, key, value)
+        object.__setattr__(self, "_frozen", True)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if getattr(self, "_frozen", False):
+            raise AttributeError("SealedSourceGroupMembership is immutable after sealed loading")
+        object.__setattr__(self, name, value)
+
+
+def load_source_index_membership(index_root: Path, *,
+                                 expected_inventory_seal_sha256: str) -> SealedSourceGroupMembership:
+    """Verify the source-group portion once and expose fresh immutable-role copies.
+
+    Candidate collectors (including DART) can bind a source group to this
+    snapshot without loading the large event-candidate JSONL or minting any
+    corrective-action authority.  The returned map includes the original
+    split and inherited usage role; it never makes a row trainable.
+    """
+    root, seal, _manifest, files = _load_sealed_index_header(index_root, expected_inventory_seal_sha256)
+    receipt = _mapping(files["source_groups.jsonl"], "index source_groups.jsonl")
+    if set(receipt) != {"sha256", "bytes", "rows"}:
+        raise ContractError("sealed index source_groups receipt must have exact SHA-256/bytes/rows fields")
+    path = _safe_publisher_path(root, "source_groups.jsonl", "index source_groups.jsonl")
+    if path.stat().st_size != _integer(receipt["bytes"], "index source_groups.bytes") or _file_sha256(path) != receipt["sha256"]:
+        raise ContractError("sealed index source_groups bytes or SHA-256 changed")
+    groups: dict[str, Mapping[str, Any]] = {}
+    rows = 0
+    with path.open("rb") as stream:
+        for line_no, line in enumerate(stream, start=1):
+            if not line.strip():
+                continue
+            group = _strict_json(line, name=f"{path}:{line_no}")
+            if not isinstance(group, Mapping):
+                raise ContractError("sealed index source group row is not an object")
+            _validate_indexed_group(group)
+            if group["source_release_manifest_sha256"] != seal["source_release_manifest_sha256"]:
+                raise ContractError("source group does not bind the sealed source release")
+            group_id = group["source_group_id"]
+            if group_id in groups:
+                raise ContractError("sealed index contains duplicate source_group_id")
+            groups[group_id] = group
+            rows += 1
+    if rows != _integer(receipt["rows"], "index source_groups.rows"):
+        raise ContractError("sealed index source_groups row count changed")
+    return SealedSourceGroupMembership(
+        _INDEX_MEMBERSHIP_TOKEN, inventory_seal_sha256=expected_inventory_seal_sha256,
+        index_manifest_sha256=seal["index_manifest_sha256"],
+        source_release_manifest_sha256=seal["source_release_manifest_sha256"],
+        _group_json=MappingProxyType({key: canonical_json(value) for key, value in groups.items()}))
+
+
+def sealed_source_group(membership: SealedSourceGroupMembership, source_group_id_value: str) -> dict[str, Any]:
+    """Return a fresh exact indexed group copy; no mutable registry leaks to consumers."""
+    _sha256(source_group_id_value, "source_group_id")
+    if (not isinstance(membership, SealedSourceGroupMembership) or
+            membership._token is not _INDEX_MEMBERSHIP_TOKEN or membership._frozen is not True):
+        raise ContractError("source-group lookup requires a sealed index membership capability")
+    encoded = membership._group_json.get(source_group_id_value)
+    if encoded is None:
+        raise ContractError("source_group_id is absent from the sealed index snapshot")
+    group = _strict_json(encoded.encode("utf-8"), name="sealed indexed source group")
+    if not isinstance(group, Mapping):
+        raise ContractError("sealed indexed source group is malformed")
+    _validate_indexed_group(group)
+    return json.loads(canonical_json(group))
+
+
+def _verify_index_membership(index_root: Path, expected_inventory_seal_sha256: str,
+                             publisher_events: Mapping[str, Mapping[str, Any]],
+                             publisher_groups: Mapping[str, Mapping[str, Any]]) -> None:
+    """Bind positive publisher rows to an actual externally SHA-pinned event index."""
+    root, _seal, _manifest, files = _load_sealed_index_header(index_root, expected_inventory_seal_sha256)
     index_groups = _read_index_members(root, files["source_groups.jsonl"], "source_groups.jsonl",
                                        set(publisher_groups), "source_group_id")
     index_events = _read_index_members(root, files["event_candidates.jsonl"], "event_candidates.jsonl",
