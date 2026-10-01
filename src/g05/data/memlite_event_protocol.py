@@ -589,8 +589,14 @@ def _safe_publisher_path(root: Path, relative_path: Any, name: str) -> Path:
     relative = Path(relative_path)
     if relative.is_absolute() or ".." in relative.parts:
         raise ContractError(f"{name}.relative_path escapes the sealed publisher root")
-    path = (root / relative).resolve(strict=True)
-    if root not in path.parents or path.is_symlink() or not path.is_file():
+    candidate = root / relative
+    current = root
+    for part in relative.parts:
+        current = current / part
+        if current.is_symlink():
+            raise ContractError(f"{name}.relative_path cannot traverse a publisher-root symlink")
+    path = candidate.resolve(strict=True)
+    if root not in path.parents or not path.is_file():
         raise ContractError(f"{name}.relative_path is not a regular file inside publisher root")
     return path
 
@@ -686,9 +692,10 @@ def load_corrective_action_authority(publisher_root: Path, *, expected_publisher
     _sha256(expected_index_inventory_seal_sha256, "expected_index_inventory_seal_sha256")
     if expected_live_runtime_acceptance_root_sha256 is not None:
         _sha256(expected_live_runtime_acceptance_root_sha256, "expected_live_runtime_acceptance_root_sha256")
-    root = Path(publisher_root).resolve(strict=True)
-    if root.is_symlink() or not root.is_dir():
+    raw_root = Path(publisher_root)
+    if raw_root.is_symlink() or not raw_root.is_dir():
         raise ContractError("publisher root must be a regular directory")
+    root = raw_root.resolve(strict=True)
     manifest_path = root / "publisher_manifest.json"
     if manifest_path.is_symlink() or not manifest_path.is_file() or _file_sha256(manifest_path) != expected_publisher_manifest_sha256:
         raise ContractError("publisher manifest does not match the externally pinned authority root SHA-256")
