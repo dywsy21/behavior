@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 问题—事件绑定已纠正；shard3 仅提案标签完成、其余分片继续（Codex / P107-ANNOTATION-LEDGER）
+
+- 中央绑定已核：`questions.jsonl` row0 对应 `cookbrisket` event，而 helper 的 q024 才是该条、q000 是 `radio` event。分片 ownership 以 helper shard 的 `event_id` 为唯一来源，question 只能按 `event_id` join，**禁止**按位置/ordinal join；全部标注 worker 已获此更正。generation protocol `7f` 与 consumer protocol `efdd` 是已批准的 lineage，不是新 bug。
+- shard3 已完成 10 条**proposed-only**答复：YES=0、NO=3（q31/q34/q35）、UNKNOWN=7，FAILED=0、recovery=0；`parent_reviewed=false`、`human_reviewed=false`，故 accepted label/action/corrective/FM-positive/release 均仍为0。外部输出为`/home/wsy/behavior-annotations/p107/temporal-annotations/calibration40-v1/shard3`，canonical SHA `94b2a54c39f8ecd3544ac4b0504cdd832a71b5a862637f27b1832428d8fd45f0`、manifest SHA `4b45a0f332e61d8a965ea5cdfa2356c28d344d312898fc1b05fd0e90860bcf61`；receipt/manifest 计数为276 native PNG与46 review pages，仍须和父代理的个人图像审阅区分。
+- shards0–2 继续 ACTIVE；所有40条的 accepted outcome/recovery/action、corrective-positive与 formal training 仍为0。父代理已有20/40 page02和5条 future-only page04覆盖，但尚未 label signoff；不从此推断失败、恢复或数据类别比例。
+
 ### 2026-10-02（北京时间）：P107 候选管线已集成并独立复审；CAL40 四分片标注全部进行中（Codex / P107-INTEGRATION）
 
 - 根分支已按顺序移植经审查的 integration delta：`943ab07`（DATA/SIM/DART/MINING/PACKAGE candidate-only 管线）、`9c99147`（renderer）和`a731045`（renderer receipt）；其上本地 P107 focused suite **104 项**通过（DATA 13、SIM 36、DART 两合同、MINING 9、index 9、renderer 11、package 10+3、integration 1），八个数据 CLI 在`python -S --help`下也通过。代码/测试候选集成不等于数据发布、训练或学习效果。
