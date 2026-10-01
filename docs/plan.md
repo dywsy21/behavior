@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 07:16（北京时间）：partial-coverage helper 互斥修复已独审合根；49条诊断标注仅在 raw/root-blind 校准阶段（Codex / P107-COORD）
+
+- `cal40_finalize_binding`独审APPROVE helper链`c49d28119b8736ce8feb6fdebe84fd64a53ff700→f3e5ed960b3d65ef60eae710d85efdee310561bb`。根只合实现/测试/因果页设计说明为`e3e14c4→68c105a`，现会对eligible和quarantined query ID集合做显式互斥拒绝；恶意overlap须在写出前失败，legacy/EVAL路径仍fail-closed。root以既有GRM Python实跑`tests/test_build_memlite_causal_review_pages.py` **24 passed/3.94s**，另py_compile、ruff、diff check PASS。复用既有47-event/133页causal媒体，未重渲染、未改sealed RGB/source，也未把helper接入actor训练链。
+- 49条诊断视觉校准仍非已验收数据：`coverage49_label_s0`报告TRAIN shard00的11条raw proposal已写但未被根读取/验收，现转为TRAIN shard03；`coverage49_label_s2`的TRAIN shard02同为11条raw proposal且未读取/验收，现转为5条EVAL native-only；`coverage49_label_s1`正在TRAIN shard01。根未读取任何逐条subagent label，尚无canonical label、student/outcome/recovery/action-BC/DART或training数据；3条grounding quarantine继续不派发。
+- root-model（`human_reviewed=false`）盲审part02只按认证registry与actor-causal页写入`/home/wsy/behavior-annotations/p107/parent-review/coverage-cohort-next-v1/root-blind-part02.json`，SHA`1bb5e035db3dab9426a3aa573dc0dab709f164a679fbf849a8681ca25dbf2c3f`。三条TRAIN（pen GRASP、paper-bag NAVIGATE、dirt SWEEP_SURFACE）均为`UNKNOWN`，页面bytes SHA逐项复验；与part01合计仅6条诊断性root-blind判断（1 SATISFIED、1 NOT_SATISFIED、4 UNKNOWN），全部`annotation_calibration/train`、`training_eligible=false`、`attempt_status=NOT_APPLICABLE`。UNKNOWN需分别保留target-instance ambiguity、occlusion、metric navigation不可由RGB建立、effect/role不充分等原因，绝不可包装成负例、失败、恢复、BC或DART监督；仍有11条root blind待审。
+- live DART仍为0：CPU合同并不替代fresh reset、qualified teacher、session world/observe/apply、physics-tick recorder、clean-application acknowledgement与postcondition证据；Isaac/BEHAVIOR条款仍待答复，本轮无远端、GPU、仿真、训练或共享环境动作。
+
 ### 2026-10-02 06:49（北京时间）：coverage diagnostic query sidecars 与49条无答案审阅任务单已发布；root blind part01已独立留证（Codex / P107-COORD）
 
 - `review_actor_query`独审APPROVE producer完整链`afbf8741302b8a6fe0417d69afd536f470f425f9→089f28b90152ebcb9914d128ab0f95d1a43762ce→5ce24c20e95e676cf433538610053b0642e0c088`。根按顺序合入为`6ff1af88e55617338fbd2a217b8d934316dd431a→e3d8eab88461c070f10a3cfba39fe3906f1ef760→13ed636a80e33ec87b798d851229393cd4b06b45`，保留根实时`docs/plan.md`而不采用source branch旧流水；新内容仅为coverage producer、focused tests与设计说明。根实跑producer+causal helper `28 passed in 2.97s`、py_compile、existing ruff、diff check PASS。
