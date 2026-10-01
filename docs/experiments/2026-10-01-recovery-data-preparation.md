@@ -2,11 +2,13 @@
 
 2026-10-01 21:53（北京时间）。协调任务 `P107-COORD`；active-goal owner 是 Codex。**父代理是唯一的最终验收者和分层视觉抽样审查者。** 本文把[训练设计 §10.7](2026-09-29-memlite-gradient-training-design.md#107-阶段1未结束时可以并行准备什么2026-10-01)转为可执行台账；不表示数据已构造、质量已通过或阶段3已运行。
 
-### 2026-10-02 00:27:48–00:30:23：CAL40 受限 CPU decode 完成，候选本地QA尚未开始
+### 2026-10-02 00:27:48–00:39:35：CAL40 受限 CPU decode、本地逐文件QA与review helper完成
 
-`prep_contract_review` 在 lc3 以 clean `0ccbe4e46f69d75f1ee2dc05be87b4889c518eb6` 写入`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`：40 packets、400 requested slots、392 distinct frames、8 clamp duplicates、1,176 native PNG和40张仅review contact sheets（493,532,423B），exit0/2:35.02/peak RSS170,740KiB。约束确实为1CPU/`nice 19`/`ionice idle`/RLIMIT4GiB、30分钟/2GiB cap、0GPU、未改shared/active env或其他job。manifest `ca9a3cd9735b4b9c4e145ae282cbc62d85362709c332e77432c4fae2fdac63f3` 的 sealed resume exit0/12.49秒。
+`prep_contract_review` 在 lc3 以 clean `0ccbe4e46f69d75f1ee2dc05be87b4889c518eb6` 写入`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`：40 packets、400 requested slots、392 distinct frames、8 clamp duplicates、1,176 native PNG和40张仅review contact sheets，exit0/2:35.02/peak RSS170,740KiB。远端`du -sb`为493,532,423B（含目录项）；约束确实为1CPU/`nice 19`/`ionice idle`/RLIMIT4GiB、30分钟/2GiB cap、0GPU，未改shared/active env、其他job或lc1/lc2阶段1训练。manifest `ca9a3cd9735b4b9c4e145ae282cbc62d85362709c332e77432c4fae2fdac63f3` 的 remote sealed resume exit0/12.49秒。
 
-本地`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1`复制与逐文件 hash/manifest/PNG/PTS核验尚未完成；当前没有 annotation answer、outcome、recovery/action BC、FM-positive、training eligible或release。下一门是本地QA、校准侧标注及父代理分层视频审查，不能因远端decode exit0跳过。
+本地`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1`以同manifest及exact-code resume核验通过：1,219文件/493,372,679B精确文件字节，1,216张图像全部可解码且尺寸正确，max PTS error与max actor decoded-minus-anchor均为`2.7284841053187847e-12 s`<`1e-9 s`。持久回执`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1-validation.json`，SHA `54913ea0ab8a54dcd752497d5c5e752e8d1d45e66329fd153aa94a65cf299d4f`。
+
+密封bundle外`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1-review-pages`含196张两时点review-only page（38×5+2边界窗×3，无clamp帧重复冒充），manifest SHA `f4f3a4c4726585dc8497efcfd31173609ff911c5470ce486a9e4d05284cc68d8`；`ordered_questions.jsonl`及4×10 shard已就绪，shard0–2已交接标注、shard3待第四工位。当前标签未完成，全部仍是`VALIDATED_CANDIDATE_ONLY`/training false；无 annotation answer、outcome、recovery/action BC、FM-positive、training eligibility或release，后续仍须父代理分层审看。
 
 ### 2026-10-02 00:09:33：P107-LC3-CAL40 仅进入受限 setup/run，未完成 decode
 

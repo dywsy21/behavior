@@ -12,11 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
-### 2026-10-02 00:27:48–00:30:23（北京时间）：P107-LC3-CAL40 CPU decode 完成并 sealed-resume 通过；本地复制/QA待完成（prep_contract_review）
+### 2026-10-02 00:27:48–00:39:35（北京时间）：P107-LC3-CAL40 CPU decode、本地逐文件QA与review helpers完成；四分片标注已交接（prep_contract_review）
 
-- 独立 review-clear 的 clean `0ccbe4e46f69d75f1ee2dc05be87b4889c518eb6` 在 lc3 的`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`完成一次受限 decode：exit 0、2:35.02、peak RSS 170,740 KiB、1 CPU/`nice 19`/`ionice idle`/RLIMIT 4 GiB；40 packets、400 requested slots、392 distinct frames、8 clamp duplicates、1,176 native PNG及40 review-only contact sheets，共493,532,423B。它在30分钟/2GiB上限内且未触碰GPU、shared/active env或其他job。
-- remote packet manifest SHA为`ca9a3cd9735b4b9c4e145ae282cbc62d85362709c332e77432c4fae2fdac63f3`；sealed resume exit 0/12.49秒。到本地`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1`的复制及逐文件验证仍在进行，故尚不能称本地工件可用或完成最终QA。
-- 这只完成候选 camera-native decode，不产生 annotation answers、attempt outcome、recovery/action BC、FM-positive、training eligibility或release；下一步是本地 hash/manifest/PNG/PTS QA和按指南的校准侧人工审查。
+- 独立 review-clear 的 clean `0ccbe4e46f69d75f1ee2dc05be87b4889c518eb6` 在 lc3 的`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`完成受限 decode：exit 0、2:35.02、peak RSS 170,740 KiB、1 CPU/`nice 19`/`ionice idle`/RLIMIT 4 GiB；40 packets、400 requested slots、392 distinct frames、8 clamp duplicates、1,176 native PNG及40 review-only contact sheets。远端`du -sb`为493,532,423B（含目录项）；30分钟/2GiB上限未触碰GPU、shared/active env、其他job或lc1/lc2阶段1训练。
+- remote/local packet manifest SHA均为`ca9a3cd9735b4b9c4e145ae282cbc62d85362709c332e77432c4fae2fdac63f3`；remote sealed resume exit 0/12.49秒，local exact-code resume亦通过。`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1`现为1,219个文件/493,372,679B精确文件字节；1,216张图像均逐件解码并核对尺寸，max PTS error与max actor decoded-minus-anchor均为`2.7284841053187847e-12 s`<`1e-9 s`。验证回执`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1-validation.json`，SHA `54913ea0ab8a54dcd752497d5c5e752e8d1d45e66329fd153aa94a65cf299d4f`。
+- 密封bundle外的`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1-review-pages`已生成196张两时点review-only pages（38窗×5页+2个边界窗×3页，不复制clamp帧），manifest SHA `f4f3a4c4726585dc8497efcfd31173609ff911c5470ce486a9e4d05284cc68d8`；`ordered_questions.jsonl`及四个10条shard已就绪，shard 0–2已交给三名标注者，shard 3待第四工位，**标签尚未完成**。全部仍为`VALIDATED_CANDIDATE_ONLY`/training false，无 annotation answer、attempt outcome、recovery/action BC、FM-positive、training eligibility或release。
+- 父代理已以原分辨率抽看q0/2/5/8/10/12/17/19/21/24/28/37的page02（anchor+1、三相机），但尚未返回或批准任何标签；这40条是skill-coverage calibration，不代表positive/failure比例，class balance待标注后实测。集成复审另确认`Dataset._project_row` 当前只投影evidence和target-side `goal_relation/result`，没有独立且不可变的actor task/intent/query conditioning（`for_training=True`已fail-closed，renderer `question_context={}`属有意安全默认）。任何student training前必须增加causal allowlisted query/intent projection，并通过同图不同query、outcome/特权字段排除的回归；当前候选pipeline不得称train-ready。
 
 ### 2026-10-02（北京时间）：P107-LC3-CAL40 首个 packet 因同帧 PTS 浮点舍入中止；全40未发布，修复待复审（prep_contract_review / Codex）
 
