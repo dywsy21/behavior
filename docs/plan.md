@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 22:25（北京时间）：P107 独审发现8个协议/仿真阻断，集成与数据release暂停（Codex / P107-COORD）
+
+- exact data `a8e14f`（protocol `b697097bd57bf94ab6f6c7e1e3e7bdb2b78f2480`）/sim `8968327`的独审发现8 blocker，虽23 unique/28 executions shipped tests均通过。此前“fake不得训练/正例fail-closed”仅未验证意图，现已被证伪；完整八项、修复归属和真实proof定义见[台账独审纠正节](experiments/2026-10-01-recovery-data-preparation.md#2026-10-01-独立审查纠正协议仿真交付暂停)。代码集成与数据release均PAUSED，待修复+独立复审；0实际recovery positive、0已知live影响。
+- data owner修1/6/7/8+coverage，sim owner修2/3/4/5；真实recovery先要verified initial deviation，baseline fail不能代替，baseline可恢复且偏离证明/有效性分开。packager已通知。P107进行中、非blocked；不改阶段1/不启阶段2/3。
+- 22:17–22:19只读核：lc1 high RUNNING step12045/atomic12000、lc2 low RUNNING step20380/atomic20000，各8GPU忙；lc3 idle，load0.61、memory996GiB、ext4 free3.91TB。v4 `90ff0fa...85d6f23`核为18895TRAIN/994eval/100tasks/35skills，source `4f50b44796641a4d526a19d9aeadc8aa51e2f2c2`。下一仅read-only I/O gate；满足util<50%且无heavy write时，≤10min/≤8MiB/s/≤512MiB复制metadata到外部`frozen-v4-metadata`，无RGB/Parquet decode/远端写；尚未启动。
+
 ### 2026-10-01 22:18（北京时间）：P107 三分片仅获辅助视觉关系候选资格；协议/仿真待独审与真实门（Codex / P107-COORD）
 
 - 父代理已逐张查看24/24原始 pilot 图；三分片修订后均为`AUX visual_relation_calibration_only`、`human_reviewed=false`、`APPROVED_AFTER_REVISION`、`CANDIDATE_ONLY`，不是human/阶段3数据。s0 pilot/reviews SHA `3b98705eae688cc93ff8e6735a515fa8aab38c61ceca470495b499f5bf683ad3`/`25d259d3d8651893bc106eaacd1c907071de86d392dba2ed093fbd42d379ceed`；s1 `1d2b53f528bf6de3b9e7dcc07baeea140c21dcd4b2816f17910e3e48a87b05b0`/`5638834a114294e5e47dd067aa1762884ddc23dfd00c0c1cf9ce2f4b3e9ceb6c`；s2 `869bd60f2c9a4115f1a9f511e1753a2a5c3ff6885614518ba867bbeb49f030bf`/`64b5e62323c2d030aadaba30b43d6f86a513e88a3f7d90ce05773ace4de80ad9`。零outcome/action正标签、零最终规模发布/训练。

@@ -61,7 +61,26 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 所有实质状态和轻量 manifest/summary 写入 `docs/plan.md`；大 sidecar、RGB、视频、权重与模型输出在受管 artifact/data 路径，用路径+SHA关联，绝不进Git。
 
+## 2026-10-01 独立审查纠正：协议/仿真交付暂停
+
+独立审查在 exact data `a8e14f`（protocol `b697097bd57bf94ab6f6c7e1e3e7bdb2b78f2480`）和 sim `8968327` 上发现8项阻断，尽管已交付测试声称23个唯一测试/28次执行均通过。此前22:18记录中的“fake/模拟回执不得训练”或“正例 fail-closed”只是未验证的设计意图，现已在这些 SHA 上被**证伪**；旧记录保留为历史，不能再当工程事实。
+
+- **HIGH 1：** `eval`、未审 `PROPOSED` 与 `recovery_verified` bool 可接受 `mask=true`。
+- **HIGH 2：** 嵌套 privilege 引用可泄漏 `object_pose`。
+- **HIGH 3：** 同 group 的不同 episode/event receipt 可被接受。
+- **HIGH 4：** 将 fake backend 改名为 live 即可通过并产生正例。
+- **HIGH 5：** future evidence `999` 可在 final clock `2` 得到认证。
+- **HIGH 6：** 正常的两条分支均 SUCCESS 仍可称 recovery，未要求初始偏离的肯定证据。
+- **MED 7：** 接受重复 `episode_index`。
+- **MED 8：** 接受 `resume files={}`。
+
+因此所有代码集成和数据 release **PAUSED**，等待修复和独立复审；尚未采集任何实际 recovery-data positive，亦无已知 live bug impact。data owner 负责1/6/7/8及coverage，sim owner负责2/3/4/5，packager已获知。真实 recovery proof 必须先验证**初始偏离**，不能只以 baseline fail 代替；baseline也可能恢复，且“发生偏离”的证明与“恢复有效性”是两项独立判据。
+
 ## 当前状态、阻塞与交接
+
+2026-10-01 22:25（北京时间）新鲜服务器只读状态：lc1 high RUNNING step12045（atomic12000），lc2 low RUNNING step20380（atomic20000），两节点各8卡均忙；lc3 GPU idle。系统 load 0.61、可用内存996GiB、ext4 free3.91TB。v4 manifest `90ff0fa...85d6f23` 已核为18895 TRAIN/994 eval/100 tasks/35 skills，数据源 `4f50b44796641a4d526a19d9aeadc8aa51e2f2c2`。未改阶段1。
+
+下一 infra 门仅是只读 I/O gate；只有在利用率<50%且无重写入时，才允许一次≤10分钟、≤8MiB/s、≤512MiB的 metadata 复制到本地外部 `frozen-v4-metadata`，禁止 RGB/Parquet 解码与任何远端 source 写入。该门尚未启动。P107仍进行中、非 blocked，且不因当前可执行的只读检查解除上述集成/release暂停。
 
 2026-10-01 22:18（北京时间）状态覆盖：父代理已亲自查看全部24/24原始 pilot 图；三个 shard 修订后均接受为 **AUX visual_relation_calibration_only**，并保持 `human_reviewed=false`、`APPROVED_AFTER_REVISION`、`CANDIDATE_ONLY`，绝不称 human review 或阶段3数据。最终工件为：shard0 pilot/reviews SHA `3b98705eae688cc93ff8e6735a515fa8aab38c61ceca470495b499f5bf683ad3` / `25d259d3d8651893bc106eaacd1c907071de86d392dba2ed093fbd42d379ceed`；shard1 `1d2b53f528bf6de3b9e7dcc07baeea140c21dcd4b2816f17910e3e48a87b05b0` / `5638834a114294e5e47dd067aa1762884ddc23dfd00c0c1cf9ce2f4b3e9ceb6c`；shard2 `869bd60f2c9a4115f1a9f511e1753a2a5c3ff6885614518ba867bbeb49f030bf` / `64b5e62323c2d030aadaba30b43d6f86a513e88a3f7d90ce05773ace4de80ad9`。这些记录仍无 outcome/action 正标签、无 final-scale release，不能训练或计入规模目标。
 
