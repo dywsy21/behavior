@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 候选管线已集成并独立复审；CAL40 四分片标注全部进行中（Codex / P107-INTEGRATION）
+
+- 根分支已按顺序移植经审查的 integration delta：`943ab07`（DATA/SIM/DART/MINING/PACKAGE candidate-only 管线）、`9c99147`（renderer）和`a731045`（renderer receipt）；其上本地 P107 focused suite **104 项**通过（DATA 13、SIM 36、DART 两合同、MINING 9、index 9、renderer 11、package 10+3、integration 1），八个数据 CLI 在`python -S --help`下也通过。代码/测试候选集成不等于数据发布、训练或学习效果。
+- renderer 的独立复审已通过；本地冻结 `4b4e700`/source SHA `5bcb345…81c9` 对 full-v3+sealed40 做了无 RGB create/resume，receipt `/home/wsy/behavior-annotations/p107/integration-receipts/renderer-4b4e700-20261002`，manifest pin `fa4d23d…cbbd47`。实际 CAL40 decode/QA 仍以已验证的 `0ccbe4e` bundle、manifest `ca9a3cd…ac63f3`为准：40 packet、400 requested、392 distinct、8 clamp、1,176 native PNG+40 review contacts；所有项仍 `VALIDATED_CANDIDATE_ONLY`。
+- 四个各10项 annotation shard（0–3）现均为 **ACTIVE**，答案/accepted outcome/recovery/action/BC-positive/release 仍为0、标签未完成。父代理已原分辨率审 page02（anchor+1、三相机）20/40：q0/2/3/5/6/8/9/10/11/12/15/17/19/21/22/24/28/31/37/39；另看 q0/5/17/21/37 的 future-only page04，后者不是 anchor 证据。此为图像审阅覆盖，不推断 FAILED、recovery 或类别比例。
+- 训练前的独立门保持：actor 只能接入因果、allowlisted 的 task/intent/query conditioning；同图不同 query 和 outcome/特权字段排除回归尚待。live DART 记录仍为0，等待用户 RTX 路线许可、冻结教师与运行时/official TRAIN fresh-reset evidence；stage2/3或任何新训练**未获授权**。
+
 ### 2026-10-02 00:27:48–00:39:35（北京时间）：P107-LC3-CAL40 CPU decode、本地逐文件QA与review helpers完成；四分片标注已交接（prep_contract_review）
 
 - 独立 review-clear 的 clean `0ccbe4e46f69d75f1ee2dc05be87b4889c518eb6` 在 lc3 的`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`完成受限 decode：exit 0、2:35.02、peak RSS 170,740 KiB、1 CPU/`nice 19`/`ionice idle`/RLIMIT 4 GiB；40 packets、400 requested slots、392 distinct frames、8 clamp duplicates、1,176 native PNG及40 review-only contact sheets。远端`du -sb`为493,532,423B（含目录项）；30分钟/2GiB上限未触碰GPU、shared/active env、其他job或lc1/lc2阶段1训练。
