@@ -42,7 +42,19 @@ def _load_protocol() -> Any:
     return module
 
 
+def _load_actor_query_contract() -> Any:
+    path = REPO / "src/g05/data/memlite_event_actor_query.py"
+    spec = importlib.util.spec_from_file_location("p107_memlite_event_actor_query_pack", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Cannot load P107 actor-query contract: {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 _protocol = _load_protocol()
+_actor_query = _load_actor_query_contract()
 SCHEMA_VERSION = _protocol.SCHEMA_VERSION
 ACTION_HORIZON = _protocol.ACTION_HORIZON
 LABEL_KINDS = _protocol.LABEL_KINDS
@@ -59,6 +71,10 @@ action_payload_sha256 = _protocol.action_payload_sha256
 raw_action_payload_sha256 = _protocol.raw_action_payload_sha256
 load_corrective_action_authority = _protocol.load_corrective_action_authority
 authority_raw_action_payload = _protocol.authority_raw_action_payload
+
+ACTOR_QUERY_SIDECAR_PATH = "actor_queries.jsonl"
+PRELABEL_QUERY_REGISTRY_PATH = "prelabel_queries.jsonl"
+_ACTOR_QUERY_BINDING_KEYS = frozenset(("view_id", "prelabel_query_id"))
 
 
 def strict_json_bytes(data: bytes, *, name: str) -> Any:
@@ -169,6 +185,76 @@ def _write_jsonl(path: Path, rows: Iterable[Mapping[str, Any]]) -> dict[str, Any
             stream.write(canonical_json(row).encode("utf-8") + b"\n")
             count += 1
     return {"sha256": sha256_file(path), "rows": count, "bytes": path.stat().st_size}
+
+
+def _read_actor_query_inputs(*, prelabel_query_registry: Path | None,
+                             expected_prelabel_query_registry_sha256: str | None,
+                             postlabel_view_prelabel_query_bindings: Path | None) -> dict[str, Any] | None:
+    """Load the optional frozen producer registry and explicit post-label bindings.
+
+    Registry query IDs and text are opaque producer receipts. The binding input
+    names only an existing post-label view and one existing producer ID; it
+    cannot provide a replacement question or derive a new identity.
+    """
+    supplied = (prelabel_query_registry, expected_prelabel_query_registry_sha256,
+                postlabel_view_prelabel_query_bindings)
+    if not any(value is not None for value in supplied):
+        return None
+    if any(value is None for value in supplied):
+        raise ValueError("actor-query sidecar requires registry, expected registry SHA-256, and view/query bindings together")
+    assert prelabel_query_registry is not None
+    assert expected_prelabel_query_registry_sha256 is not None
+    assert postlabel_view_prelabel_query_bindings is not None
+    if not _is_sha(expected_prelabel_query_registry_sha256):
+        raise ValueError("actor-query sidecar requires an externally pinned prelabel registry SHA-256")
+    registry_path = Path(prelabel_query_registry)
+    registry_rows = read_jsonl(registry_path)
+    registry_sha256 = sha256_file(registry_path)
+    if registry_sha256 != expected_prelabel_query_registry_sha256:
+        raise ValueError("prelabel query registry does not match its externally pinned SHA-256")
+    try:
+        registry_by_id = _actor_query.adapt_prelabel_registry(registry_rows)
+    except _actor_query.ActorQueryError as error:
+        raise ValueError(f"prelabel query registry is invalid: {error}") from error
+
+    binding_rows = read_jsonl(Path(postlabel_view_prelabel_query_bindings))
+    bindings: dict[str, str] = {}
+    seen_query_ids: set[str] = set()
+    for row in binding_rows:
+        if set(row) != _ACTOR_QUERY_BINDING_KEYS:
+            raise ValueError("actor-query binding rows must contain exactly view_id and prelabel_query_id")
+        view_id, query_id = row["view_id"], row["prelabel_query_id"]
+        if not _is_sha(view_id):
+            raise ValueError("actor-query binding view_id must be a canonical SHA-256")
+        if not isinstance(query_id, str) or not query_id:
+            raise ValueError("actor-query binding prelabel_query_id must be a non-empty producer ID")
+        if view_id in bindings:
+            raise ValueError("duplicate actor-query binding for one postlabel view")
+        if query_id in seen_query_ids:
+            raise ValueError("one prelabel query ID may bind only one postlabel view")
+        if query_id not in registry_by_id:
+            raise ValueError("actor-query binding references an absent prelabel registry row")
+        bindings[view_id] = query_id
+        seen_query_ids.add(query_id)
+    return {"registry_path": registry_path, "registry_sha256": registry_sha256,
+            "registry_rows": len(registry_rows), "registry_by_id": registry_by_id,
+            "bindings": bindings}
+
+
+def _copy_verified_jsonl(source: Path, output: Path, *, expected_sha256: str,
+                         expected_rows: int, name: str) -> dict[str, Any]:
+    """Copy a small validated producer artifact without rewriting its bytes."""
+    source = Path(source)
+    if source.is_symlink() or not source.is_file():
+        raise ValueError(f"{name} must be a regular input file")
+    if sha256_file(source) != expected_sha256:
+        raise ValueError(f"{name} changed after validation")
+    shutil.copyfile(source, output)
+    receipt = {"sha256": sha256_file(output), "rows": len(read_jsonl(output)),
+               "bytes": output.stat().st_size}
+    if receipt["sha256"] != expected_sha256 or receipt["rows"] != expected_rows:
+        raise ValueError(f"{name} copy receipt does not match its validated source")
+    return receipt
 
 
 def _assert_no_sidecar(value: Any, path: str = "annotations") -> None:
@@ -672,7 +758,8 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
                   index_inventory_seal_sha256: str | None = None,
                   corrective_action_authority: Any | None = None,
                   corrective_authority_capability: Mapping[str, Any] | None = None,
-                  source_indexed_count: int | None = None) -> tuple[dict[str, Any], dict[str, list[dict[str, Any]]]]:
+                  actor_query_input: Mapping[str, Any] | None = None,
+                  source_indexed_count: int | None = None) -> tuple[dict[str, Any], dict[str, Any]]:
     """Validate a sealed package in memory; callers write it atomically afterwards."""
     if release_role not in USAGE_ROLES:
         raise ValueError("release role must be explicit")
@@ -787,6 +874,34 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
         raise ValueError("review refers to no packaged view")
     if payload_by_id:
         raise ValueError("action payload refers to no packaged corrective view")
+    actor_query_rows: list[dict[str, Any]] = []
+    if actor_query_input is not None:
+        registry_by_id = actor_query_input.get("registry_by_id")
+        bindings = actor_query_input.get("bindings")
+        if not isinstance(registry_by_id, Mapping) or not isinstance(bindings, Mapping):
+            raise ValueError("actor-query input is missing its validated registry or bindings")
+        views_by_id = {row["view"]["view_id"]: row["view"] for row in sealed_views}
+        for view_id, query_id in sorted(bindings.items()):
+            view = views_by_id.get(view_id)
+            query_registry_row = registry_by_id.get(query_id)
+            if view is None:
+                raise ValueError("actor-query binding references an unpackaged postlabel view")
+            if not isinstance(query_registry_row, Mapping):
+                raise ValueError("actor-query binding references an absent prelabel registry row")
+            event = event_by_id.get(view.get("event_id"))
+            if event is None:
+                raise ValueError("actor-query binding view references an unpackaged event")
+            query = {"kind": "goal_satisfaction_counterfactual", "prelabel_query_id": query_id,
+                     "query_content_sha256": query_registry_row.get("query_content_sha256"),
+                     "text": query_registry_row.get("text")}
+            try:
+                _actor_query.validate_actor_query(
+                    query, observation_frame=view.get("observation_frame"), view_kind=view.get("label_kind"),
+                    view=view, event=event, prelabel_registry=registry_by_id)
+            except _actor_query.ActorQueryError as error:
+                raise ValueError(f"actor-query binding is invalid: {error}") from error
+            actor_query_rows.append({"schema_version": _actor_query.ACTOR_QUERY_SCHEMA,
+                                     "view_id": view_id, "actor_query": query})
     root_gate = _root_review_gate(annotations.get("root_visual_review"))
     minimum_scale = dict(minimum_scale or {})
     if request_dataset_quality_eligibility:
@@ -862,7 +977,8 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
                        "official_coverage_missing_grid": missing_grid},
     }
     return manifest, {"source_groups": [dict(row) for row in groups], "events": [dict(row) for row in events],
-                      "views": sealed_views, "actions": sealed_actions}
+                      "views": sealed_views, "actions": sealed_actions,
+                      "actor_query_rows": actor_query_rows, "actor_query_input": actor_query_input}
 
 
 def publish(index_dir: Path, annotations_path: Path, output: Path, *, release_role: str,
@@ -871,7 +987,10 @@ def publish(index_dir: Path, annotations_path: Path, output: Path, *, release_ro
             corrective_publisher_root: Path | None = None,
             expected_corrective_publisher_manifest_sha256: str | None = None,
             expected_live_runtime_acceptance_root_sha256: str | None = None,
-            auxiliary_pilots: Iterable[Path] = (), require_complete_source_index: bool = False) -> dict[str, Any]:
+            auxiliary_pilots: Iterable[Path] = (), require_complete_source_index: bool = False,
+            prelabel_query_registry: Path | None = None,
+            expected_prelabel_query_registry_sha256: str | None = None,
+            postlabel_view_prelabel_query_bindings: Path | None = None) -> dict[str, Any]:
     output = Path(output)
     if output.exists():
         raise FileExistsError("output exists; immutable packages are never appended or overwritten")
@@ -881,6 +1000,10 @@ def publish(index_dir: Path, annotations_path: Path, output: Path, *, release_ro
     annotation_views = annotations.get("views") if isinstance(annotations, Mapping) else None
     if not isinstance(annotation_views, list):
         raise ValueError("annotations must have views, view_reviews, and action_payloads lists")
+    actor_query_input = _read_actor_query_inputs(
+        prelabel_query_registry=prelabel_query_registry,
+        expected_prelabel_query_registry_sha256=expected_prelabel_query_registry_sha256,
+        postlabel_view_prelabel_query_bindings=postlabel_view_prelabel_query_bindings)
     selected_event_ids: set[str] = set()
     for view in annotation_views:
         if not isinstance(view, Mapping) or not _is_sha(view.get("event_id")):
@@ -917,6 +1040,7 @@ def publish(index_dir: Path, annotations_path: Path, output: Path, *, release_ro
                                       index_inventory_seal_sha256=index_inventory_seal_sha256,
                                       corrective_action_authority=corrective_action_authority,
                                       corrective_authority_capability=corrective_authority_capability,
+                                      actor_query_input=actor_query_input,
                                       source_indexed_count=event_count)
     staging = Path(tempfile.mkdtemp(prefix=f".{output.name}.staging-", dir=str(output.parent)))
     try:
@@ -926,6 +1050,27 @@ def publish(index_dir: Path, annotations_path: Path, output: Path, *, release_ro
                      name="event_candidates.jsonl"),
                  "views.jsonl": _write_jsonl(staging / "views.jsonl", records["views"]),
                  "actions.jsonl": _write_jsonl(staging / "actions.jsonl", records["actions"])}
+        if actor_query_input is not None:
+            files[ACTOR_QUERY_SIDECAR_PATH] = _write_jsonl(
+                staging / ACTOR_QUERY_SIDECAR_PATH, records["actor_query_rows"])
+            files[PRELABEL_QUERY_REGISTRY_PATH] = _copy_verified_jsonl(
+                actor_query_input["registry_path"], staging / PRELABEL_QUERY_REGISTRY_PATH,
+                expected_sha256=actor_query_input["registry_sha256"],
+                expected_rows=actor_query_input["registry_rows"], name="prelabel query registry")
+            manifest["actor_query_sidecar"] = {
+                "schema_version": _actor_query.ACTOR_QUERY_SCHEMA,
+                "path": ACTOR_QUERY_SIDECAR_PATH, "sha256": files[ACTOR_QUERY_SIDECAR_PATH]["sha256"],
+                "row_count": files[ACTOR_QUERY_SIDECAR_PATH]["rows"],
+                # This is a byte-for-byte copy of the externally pinned
+                # producer artifact, so this SHA is the original source SHA.
+                "prelabel_query_registry": {
+                    "schema_version": _actor_query.UPSTREAM_PRELABEL_QUERY_SCHEMA,
+                    "adapter_schema_version": _actor_query.PRELABEL_ADAPTER_SCHEMA,
+                    "path": PRELABEL_QUERY_REGISTRY_PATH,
+                    "sha256": files[PRELABEL_QUERY_REGISTRY_PATH]["sha256"],
+                    "row_count": files[PRELABEL_QUERY_REGISTRY_PATH]["rows"],
+                },
+            }
         manifest["files"] = files
         manifest["publisher_sha256"] = sha256_file(Path(__file__))
         manifest_path = staging / "release_manifest.json"
@@ -935,6 +1080,18 @@ def publish(index_dir: Path, annotations_path: Path, output: Path, *, release_ro
                 "publisher_sha256": manifest["publisher_sha256"]}
         seal_path = staging / "release_seal.json"
         seal_path.write_bytes(canonical_json(seal).encode("utf-8") + b"\n")
+        if actor_query_input is not None:
+            for name in (ACTOR_QUERY_SIDECAR_PATH, PRELABEL_QUERY_REGISTRY_PATH):
+                (staging / name).chmod(0o444)
+            views_by_id = {row["view"]["view_id"]: row["view"] for row in records["views"]}
+            events_by_id = {row["event_id"]: row for row in records["events"]}
+            try:
+                _actor_query.read_actor_query_sidecar(
+                    staging, manifest["actor_query_sidecar"], files=files,
+                    expected_view_ids=set(views_by_id), views_by_id=views_by_id,
+                    events_by_id=events_by_id)
+            except _actor_query.ActorQueryError as error:
+                raise ValueError(f"actor-query sidecar failed pre-publication validation: {error}") from error
         for path in staging.iterdir():
             path.chmod(0o444)
         staging.chmod(0o555)
@@ -968,6 +1125,12 @@ def main() -> None:
     parser.add_argument("--minimum-corrective-action-windows", type=int)
     parser.add_argument("--auxiliary-pilot", type=Path, action="append", default=[],
                         help="agent visual pilot, retained only as auxiliary calibration provenance")
+    parser.add_argument("--prelabel-query-registry", type=Path,
+                        help="frozen upstream p107 visual-relation prelabel registry JSONL")
+    parser.add_argument("--expected-prelabel-query-registry-sha256",
+                        help="external SHA-256 pin for --prelabel-query-registry")
+    parser.add_argument("--postlabel-view-prelabel-query-bindings", type=Path,
+                        help="strict JSONL rows mapping postlabel view_id to opaque prelabel_query_id")
     args = parser.parse_args()
     supplied = (args.minimum_source_episodes, args.minimum_goal_outcome_windows, args.minimum_corrective_action_windows)
     if any(value is not None for value in supplied) and any(value is None for value in supplied):
@@ -981,7 +1144,10 @@ def main() -> None:
                      expected_corrective_publisher_manifest_sha256=args.expected_corrective_publisher_manifest_sha256,
                      expected_live_runtime_acceptance_root_sha256=args.expected_live_runtime_acceptance_root_sha256,
                      auxiliary_pilots=args.auxiliary_pilot,
-                     require_complete_source_index=args.require_complete_source_index)
+                     require_complete_source_index=args.require_complete_source_index,
+                     prelabel_query_registry=args.prelabel_query_registry,
+                     expected_prelabel_query_registry_sha256=args.expected_prelabel_query_registry_sha256,
+                     postlabel_view_prelabel_query_bindings=args.postlabel_view_prelabel_query_bindings)
     print(canonical_json({"release_eligibility": result["release_eligibility"], "ready_for_training": False,
                           "release_seal_sha256": result["release_seal_sha256"],
                           "status_report": result["status_report"]}), flush=True)

@@ -14,6 +14,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts" / "data"))
 import build_memlite_event_index as indexer  # noqa: E402
 import pack_memlite_event_labels as pack  # noqa: E402
+import audit_memlite_event_release as release_audit  # noqa: E402
 
 
 FIXTURE = REPO / "tests" / "fixtures" / "p107_v4_compact_fixture.json"
@@ -221,6 +222,43 @@ def annotations(event: dict, *, include_nontrainable_action: bool = True) -> dic
     return {"schema_version": pack.ANNOTATION_SCHEMA, "views": views, "view_reviews": [review(row) for row in views],
             "action_payloads": actions,
             "root_visual_review": {"completed": True, "reviewer_kind": "root_model", "artifact": "synthetic-only-root-review", "model": "gpt-5.6-luna"}}
+
+
+def prelabel_registry_row(event: dict, goal: dict, *, query_id: str = "producer-query-1",
+                          text: str | None = None) -> dict:
+    skill = event["skill_bundle"][0]
+    return {
+        "schema_version": "p107.visual_relation_query_prelabel_registry.v1",
+        "prelabel_query_id": query_id,
+        "event_id": event["event_id"],
+        "source_group_id": event["source"]["source_group_id"],
+        "observation_frame": event["observation"]["frame"],
+        "query_ordinal_within_event": 0,
+        "query_text": goal["goal_relation"] if text is None else text,
+        "relation_family": "synthetic_goal_relation",
+        "canonical_verb": skill["verb"],
+        "skill_id": skill.get("skill_id", skill["skill_idx"]),
+        "source_pin": {
+            "event_id": event["event_id"],
+            "phase_index_path": "synthetic/phase-index.jsonl",
+            "phase_index_record_sha256": "1" * 64,
+            "phase_index_sha256": "2" * 64,
+            "queue_path": "synthetic/queue.jsonl",
+            "queue_record_sha256": "3" * 64,
+            "queue_sha256": "4" * 64,
+            "selection_manifest_path": "synthetic/selection-manifest.json",
+            "selection_manifest_sha256": "5" * 64,
+        },
+    }
+
+
+def write_actor_query_inputs(root: Path, event: dict, goal: dict, *, registry_rows: list[dict] | None = None,
+                             binding_query_id: str = "producer-query-1") -> tuple[Path, str, Path]:
+    registry_path, bindings_path = root / "prelabel-registry.jsonl", root / "view-bindings.jsonl"
+    rows = registry_rows if registry_rows is not None else [prelabel_registry_row(event, goal)]
+    pack._write_jsonl(registry_path, rows)
+    pack._write_jsonl(bindings_path, [{"view_id": goal["view_id"], "prelabel_query_id": binding_query_id}])
+    return registry_path, pack.sha256_file(registry_path), bindings_path
 
 
 def _write_parent_jsonl(path: Path, rows: list[dict]) -> dict:
@@ -881,6 +919,103 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
                     release_role="student_candidate", minimum_scale=None,
                     request_dataset_quality_eligibility=False,
                     index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"))
+
+    def test_optional_actor_query_sidecar_preserves_frozen_registry_and_calibration_gates(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, _, events, _ = indexed(root)
+            calibration = next(event for event in events if event["usage_role"] == "annotation_calibration")
+            labels = annotations(calibration)
+            goal = next(row for row in labels["views"] if row["label_kind"] == "goal_satisfaction_counterfactual")
+            registry_path, registry_sha, bindings_path = write_actor_query_inputs(root, calibration, goal)
+            labels_path, output = root / "labels.json", root / "sidecar-package"
+            labels_path.write_bytes(pack.canonical_json(labels).encode("utf-8") + b"\n")
+            with self.assertRaisesRegex(ValueError, "requires registry, expected registry SHA-256, and view/query bindings together"):
+                pack.publish(
+                    index_path, labels_path, root / "incomplete-sidecar-package", release_role="annotation_calibration",
+                    minimum_scale=None, request_dataset_quality_eligibility=False,
+                    expected_index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"),
+                    prelabel_query_registry=registry_path,
+                    expected_prelabel_query_registry_sha256=registry_sha)
+            self.assertFalse((root / "incomplete-sidecar-package").exists())
+            result = pack.publish(
+                index_path, labels_path, output, release_role="annotation_calibration", minimum_scale=None,
+                request_dataset_quality_eligibility=False,
+                expected_index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"),
+                prelabel_query_registry=registry_path,
+                expected_prelabel_query_registry_sha256=registry_sha,
+                postlabel_view_prelabel_query_bindings=bindings_path)
+            manifest = pack.read_json(output / "release_manifest.json")
+            sidecar = manifest["actor_query_sidecar"]
+            self.assertEqual(sidecar["prelabel_query_registry"]["sha256"], registry_sha)
+            self.assertEqual((output / pack.PRELABEL_QUERY_REGISTRY_PATH).read_bytes(), registry_path.read_bytes())
+            self.assertEqual(pack.read_jsonl(output / pack.ACTOR_QUERY_SIDECAR_PATH)[0]["actor_query"]["text"],
+                             goal["goal_relation"])
+            self.assertEqual(result["release_eligibility"], "CANDIDATE_ONLY")
+            self.assertFalse(result["ready_for_training"])
+            self.assertFalse(result["dataset_quality_eligibility"])
+            self.assertEqual(result["actual_scale"], {
+                "source_episodes": 0, "goal_outcome_windows": 0, "corrective_action_windows": 0,
+                "decision_source_episodes": 0, "corrective_action_source_episodes": 0,
+            })
+            self.assertTrue(all(not value for value in pack.read_jsonl(output / "views.jsonl")[0]["dataset_quality_gates"].values()))
+            audited = release_audit.audit(
+                output, expected_release_seal_sha256=result["release_seal_sha256"])
+            self.assertEqual(audited["actor_query_sidecar_rows"], 1)
+            self.assertEqual(audited["prelabel_query_registry_rows"], 1)
+            self.assertFalse(audited["stage3_training_authorized"])
+
+    def test_actor_query_sidecar_rejects_same_event_different_query_and_registry_tampering(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, _, events, _ = indexed(root)
+            calibration = next(event for event in events if event["usage_role"] == "annotation_calibration")
+            labels = annotations(calibration)
+            goal = next(row for row in labels["views"] if row["label_kind"] == "goal_satisfaction_counterfactual")
+            labels_path = root / "labels.json"
+            labels_path.write_bytes(pack.canonical_json(labels).encode("utf-8") + b"\n")
+            index_seal = pack.sha256_file(index_path / "inventory_seal.json")
+            wrong = prelabel_registry_row(calibration, goal, query_id="same-event-wrong-query",
+                                          text="A distinct frozen question for the same event.")
+            registry_path, registry_sha, bindings_path = write_actor_query_inputs(
+                root, calibration, goal, registry_rows=[wrong], binding_query_id="same-event-wrong-query")
+            with self.assertRaisesRegex(ValueError, "text/semantic family does not bind"):
+                pack.publish(
+                    index_path, labels_path, root / "wrong-query-package", release_role="annotation_calibration",
+                    minimum_scale=None, request_dataset_quality_eligibility=False,
+                    expected_index_inventory_seal_sha256=index_seal,
+                    prelabel_query_registry=registry_path,
+                    expected_prelabel_query_registry_sha256=registry_sha,
+                    postlabel_view_prelabel_query_bindings=bindings_path)
+            self.assertFalse((root / "wrong-query-package").exists())
+
+            valid = prelabel_registry_row(calibration, goal)
+            registry_path.unlink()
+            bindings_path.unlink()
+            registry_path, _, bindings_path = write_actor_query_inputs(root, calibration, goal, registry_rows=[valid])
+            original_sha = pack.sha256_file(registry_path)
+            valid["source_pin"]["queue_sha256"] = "not-a-sha"
+            pack._write_jsonl(root / "tampered-registry.jsonl", [valid])
+            with self.assertRaisesRegex(ValueError, "does not match its externally pinned SHA-256"):
+                pack.publish(
+                    index_path, labels_path, root / "hash-tampered-package", release_role="annotation_calibration",
+                    minimum_scale=None, request_dataset_quality_eligibility=False,
+                    expected_index_inventory_seal_sha256=index_seal,
+                    prelabel_query_registry=root / "tampered-registry.jsonl",
+                    expected_prelabel_query_registry_sha256=original_sha,
+                    postlabel_view_prelabel_query_bindings=bindings_path)
+            self.assertFalse((root / "hash-tampered-package").exists())
+
+            tampered_sha = pack.sha256_file(root / "tampered-registry.jsonl")
+            with self.assertRaisesRegex(ValueError, "prelabel query registry is invalid"):
+                pack.publish(
+                    index_path, labels_path, root / "source-tampered-package", release_role="annotation_calibration",
+                    minimum_scale=None, request_dataset_quality_eligibility=False,
+                    expected_index_inventory_seal_sha256=index_seal,
+                    prelabel_query_registry=root / "tampered-registry.jsonl",
+                    expected_prelabel_query_registry_sha256=tampered_sha,
+                    postlabel_view_prelabel_query_bindings=bindings_path)
+            self.assertFalse((root / "source-tampered-package").exists())
 
 
 if __name__ == "__main__":
