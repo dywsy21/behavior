@@ -233,8 +233,14 @@ def _make_fixture(root: Path) -> dict:
         "selection": {"exact_budget": 40, "unique_source_groups": 40, "unique_source_episodes": 40,
                       "all_usage_role_annotation_calibration": True, "all_immutable_split_train": True,
                       "rows": [{"event_id": event["event_id"],
+                                "parent_event_id": event["phase_lineage"]["parent_event_id"],
+                                "observation_phase": event["phase_lineage"]["observation_phase"],
+                                "selection_stratum": event["phase_lineage"]["selection_stratum"],
+                                "observation_frame": event["observation"]["frame"],
                                 "source_group_id": event["source"]["source_group_id"],
-                                "task_index": event["source"]["task_index"]} for event in events]},
+                                "task_index": event["source"]["task_index"],
+                                "queried_skill_id": event["phase_lineage"]["goal_query"]["queried_skill"]["skill_id"]}
+                               for event in events]},
     }
     selection_path = root / "phase-selection.json"
     _write_json(selection_path, selection)
@@ -403,6 +409,28 @@ class DiagnosticSubsetPublisherTests(unittest.TestCase):
                 inputs["queue"], inputs["queue_sha"] = changed, base.sha256_file(changed)
                 with self.assertRaisesRegex(ValueError, message):
                     _publish(inputs, root / f"must-not-exist-{index}")
+
+    def test_rejects_actual_phase_selection_semantic_tampering_and_absence(self):
+        mutations = (
+            ("observation_frame", lambda row: row.update(observation_frame=999999)),
+            ("parent_event_id", lambda row: row.update(parent_event_id="0" * 64)),
+            ("queried_skill_id", lambda row: row.update(queried_skill_id=999)),
+            ("observation_phase", lambda row: row.update(observation_phase="MID")),
+            ("selection_stratum", lambda row: row.update(selection_stratum="MID")),
+            ("missing_required_field", lambda row: row.pop("parent_event_id")),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for index, (_, mutate) in enumerate(mutations):
+                inputs = _make_fixture(root / str(index))
+                selection = base.read_json(inputs["selection"])
+                mutate(selection["selection"]["rows"][0])
+                _write_json(inputs["selection"], selection)
+                inputs["selection_sha"] = base.sha256_file(inputs["selection"])
+                output = root / f"must-not-exist-selection-{index}"
+                with self.assertRaisesRegex(ValueError, "phase selection row"):
+                    _publish(inputs, output)
+                self.assertFalse(output.exists())
 
     def test_rejects_noncalibration_group_and_duplicate_event(self):
         with tempfile.TemporaryDirectory() as directory:

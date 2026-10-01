@@ -208,7 +208,7 @@ def _coverage_for_subset(events: Sequence[Mapping[str, Any]], groups: Mapping[st
 def _validate_phase_binding(*, mini_manifest: Mapping[str, Any], mini_inventory_sha256: str,
                             full_manifest_sha256: str, full_inventory_sha256: str,
                             selection_manifest: Mapping[str, Any], queue_rows: Sequence[Mapping[str, Any]],
-                            events: Sequence[Mapping[str, Any]], groups: Mapping[str, Any]) -> tuple[list[str], list[str], dict[str, Mapping[str, Any]]]:
+                            events: Sequence[Mapping[str, Any]], groups: Mapping[str, Any]) -> tuple[list[str], list[str], dict[str, Mapping[str, Any]], dict[str, Mapping[str, Any]]]:
     if selection_manifest.get("schema_version") != "p107-phase-balanced-calibration-manifest-v1":
         raise ValueError("phase selection manifest has an unsupported schema")
     mini = selection_manifest.get("mini_index")
@@ -283,18 +283,34 @@ def _validate_phase_binding(*, mini_manifest: Mapping[str, Any], mini_inventory_
     if not isinstance(rows, list) or len(rows) != EXPECTED_EVENT_COUNT:
         raise ValueError("phase selection manifest does not enumerate the 40 selected rows")
     selection_ids = set()
+    selection_by_event: dict[str, Mapping[str, Any]] = {}
+    selection_fields = {
+        "event_id", "parent_event_id", "observation_phase", "selection_stratum",
+        "observation_frame", "task_index", "source_group_id", "queried_skill_id",
+    }
     for row in rows:
-        if not isinstance(row, Mapping):
+        if not isinstance(row, Mapping) or set(row) != selection_fields:
             raise ValueError("phase selection row is malformed")
         event_id, group_id, task = row.get("event_id"), row.get("source_group_id"), row.get("task_index")
         event = event_by_id.get(event_id)
-        if (event is None or event_id in selection_ids or group_id != event["source"]["source_group_id"] or
-                task != event["source"]["task_index"]):
+        lineage = event.get("phase_lineage") if isinstance(event, Mapping) else None
+        observation = event.get("observation") if isinstance(event, Mapping) else None
+        goal_query = lineage.get("goal_query") if isinstance(lineage, Mapping) else None
+        queried = goal_query.get("queried_skill") if isinstance(goal_query, Mapping) else None
+        if (event is None or event_id in selection_ids or not isinstance(lineage, Mapping) or
+                not isinstance(observation, Mapping) or not isinstance(queried, Mapping) or
+                group_id != event["source"]["source_group_id"] or task != event["source"]["task_index"] or
+                row.get("parent_event_id") != lineage.get("parent_event_id") or
+                row.get("observation_phase") != lineage.get("observation_phase") or
+                row.get("selection_stratum") != lineage.get("selection_stratum") or
+                row.get("observation_frame") != observation.get("frame") or
+                row.get("queried_skill_id") != queried.get("skill_id")):
             raise ValueError("phase selection row disagrees with the mini-index event identity")
         selection_ids.add(event_id)
+        selection_by_event[event_id] = row
     if selection_ids != set(event_by_id):
         raise ValueError("phase selection manifest does not cover all mini-index events")
-    return sorted(event_by_id), sorted(groups), queue_by_event
+    return sorted(event_by_id), sorted(groups), queue_by_event, selection_by_event
 
 
 def _integer(value: Any, name: str) -> int:
@@ -330,7 +346,7 @@ def _read_selected_parent_events(full_index: Path, receipt: Mapping[str, Any], *
     return parents
 
 
-def _validate_phase_semantics(event: Mapping[str, Any], queue: Mapping[str, Any], parent: Mapping[str, Any],
+def _validate_phase_semantics(event: Mapping[str, Any], queue: Mapping[str, Any], selection: Mapping[str, Any], parent: Mapping[str, Any],
                               *, full_groups: Mapping[str, Any]) -> None:
     """Bind phase fields to the mini event and immutable full-v3 parent, not just IDs."""
     lineage = event.get("phase_lineage")
@@ -347,14 +363,18 @@ def _validate_phase_semantics(event: Mapping[str, Any], queue: Mapping[str, Any]
         raise ValueError("phase parent source/group inventory identity differs from sealed full-v3 source")
     if (lineage.get("parent_event_id") != parent.get("event_id") or
             lineage.get("parent_event_interval") != parent.get("event_interval") or
-            event.get("event_interval") != parent.get("event_interval")):
+            event.get("event_interval") != parent.get("event_interval") or
+            selection.get("parent_event_id") != parent.get("event_id")):
         raise ValueError("phase parent identity or interval differs from sealed full-v3 parent")
     observation = event.get("observation")
-    if not isinstance(observation, Mapping) or queue.get("observation_frame") != observation.get("frame"):
+    if (not isinstance(observation, Mapping) or queue.get("observation_frame") != observation.get("frame") or
+            selection.get("observation_frame") != observation.get("frame")):
         raise ValueError("phase queue observation frame differs from the mini event")
     phase = lineage.get("observation_phase")
     if (phase not in {"ENTRY", "MID", "TERMINAL", "TERMINAL_TRANSITION", "REPEATED_METADATA_QUERY"} or
             queue.get("observation_phase") != phase or queue.get("selection_stratum") != lineage.get("selection_stratum") or
+            selection.get("observation_phase") != phase or
+            selection.get("selection_stratum") != lineage.get("selection_stratum") or
             not isinstance(event.get("event_kind"), str) or not event["event_kind"].endswith(phase)):
         raise ValueError("phase queue observation phase or event kind differs from mini-event lineage")
     parent_identity = lineage.get("parent_skill_identity")
@@ -386,6 +406,7 @@ def _validate_phase_semantics(event: Mapping[str, Any], queue: Mapping[str, Any]
     start, end = skill.get("skill_start"), skill.get("skill_end")
     if (lineage.get("queried_skill_start_frame") != start or lineage.get("queried_skill_end_frame") != end or
             queue.get("queried_skill_start_frame") != start or queue.get("queried_skill_end_frame") != end or
+            selection.get("queried_skill_id") != skill.get("skill_id") or
             queue.get("parent_event_id") != parent["event_id"] or queue.get("parent_skill_identity") != parent_identity or
             queue.get("original_annotated_segment") != parent.get("event_interval")):
         raise ValueError("phase queue skill/parent/segment fields differ from sealed mini/full lineage")
@@ -494,7 +515,7 @@ def publish(*, phase_index: Path, expected_phase_index_inventory_seal_sha256: st
         }
         for group_id, group in source_groups.items()
     }
-    event_ids, group_ids, queue_by_event = _validate_phase_binding(
+    event_ids, group_ids, queue_by_event, selection_by_event = _validate_phase_binding(
         mini_manifest={**mini_manifest, "_path": str(phase_index / "manifest.json")},
         mini_inventory_sha256=mini_inventory_sha256, full_manifest_sha256=expected_full_index_manifest_sha256,
         full_inventory_sha256=full_inventory_sha256, selection_manifest=selection, queue_rows=queue_rows,
@@ -505,7 +526,7 @@ def publish(*, phase_index: Path, expected_phase_index_inventory_seal_sha256: st
     parents = _read_selected_parent_events(full_index, full_event_receipt,
                                            parent_ids=_phase_parent_ids(events), protocol=protocol)
     for event in events:
-        _validate_phase_semantics(event, queue_by_event[event["event_id"]],
+        _validate_phase_semantics(event, queue_by_event[event["event_id"]], selection_by_event[event["event_id"]],
                                   parents[event["phase_lineage"]["parent_event_id"]], full_groups=full_groups)
     coverage = _coverage_for_subset(events, groups, expectations)
     if coverage["expectations_sha256"] != mini_manifest["coverage_expectations_sha256"]:
