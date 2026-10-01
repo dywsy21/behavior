@@ -115,7 +115,8 @@ class MemLiteEventDataset(Sequence[dict[str, Any]]):
     """
 
     def __init__(self, release_dir: str | Path, view_kind: str, *, expected_release_seal_sha256: str,
-                 corrective_publisher_root: str | Path | None = None, for_training: bool = False):
+                 corrective_publisher_root: str | Path | None = None,
+                 index_root: str | Path | None = None, for_training: bool = False):
         if view_kind not in LABEL_KINDS:
             raise ValueError("view_kind must be one of the four explicit P107 label views")
         self.release_dir = Path(release_dir)
@@ -164,8 +165,8 @@ class MemLiteEventDataset(Sequence[dict[str, Any]]):
             raise ValueError("sealed package source-group policy digest mismatch")
         capability = self.manifest.get("corrective_authority_capability")
         if capability is None:
-            if corrective_publisher_root is not None:
-                raise ValueError("release has no corrective authority capability but a publisher root was supplied")
+            if corrective_publisher_root is not None or index_root is not None:
+                raise ValueError("release has no corrective authority capability but publisher/index roots were supplied")
             authority = None
         else:
             if (not isinstance(capability, Mapping) or set(capability) != {
@@ -173,10 +174,11 @@ class MemLiteEventDataset(Sequence[dict[str, Any]]):
                     "accepted_live_runtime_acceptance_root_sha256"} or
                     capability.get("index_inventory_seal_sha256") != self.manifest.get("immutable_index_inventory_seal_sha256")):
                 raise ValueError("sealed package corrective authority capability is malformed")
-            if corrective_publisher_root is None:
-                raise ValueError("release with positive-capable corrective evidence requires the separate publisher root")
+            if corrective_publisher_root is None or index_root is None:
+                raise ValueError("release with positive-capable corrective evidence requires separate publisher and sealed index roots")
             authority = load_corrective_action_authority(
                 Path(corrective_publisher_root),
+                index_root=Path(index_root),
                 expected_publisher_manifest_sha256=capability["publisher_manifest_sha256"],
                 expected_index_inventory_seal_sha256=capability["index_inventory_seal_sha256"],
                 expected_live_runtime_acceptance_root_sha256=capability["accepted_live_runtime_acceptance_root_sha256"])

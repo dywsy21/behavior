@@ -271,6 +271,9 @@ def _validate_review(review: Mapping[str, Any], view: Mapping[str, Any]) -> dict
 def _validate_action_payload(payload: Mapping[str, Any], view: Mapping[str, Any], *, authority: Any | None,
                              accept_packaged_positive_payload: bool = False) -> dict[str, Any]:
     """Copy controls from a pinned parent root for positives, never annotation input."""
+    supplied_fields = {"view_id", "raw_actions_23", "raw_action_sha256", "raw_action_artifact_sha256"}
+    stored_fields = supplied_fields | {"action_payload_sha256", "actions_27", "action_is_pad",
+                                       "action_dim_is_pad"}
     if view["low_action_supervision_mask"]:
         if payload and not accept_packaged_positive_payload:
             raise ValueError("positive corrective controls must come only from the sealed parent publisher root")
@@ -283,10 +286,13 @@ def _validate_action_payload(payload: Mapping[str, Any], view: Mapping[str, Any]
         if payload and ({"view_id": view["view_id"], "raw_actions_23": raw, "raw_action_sha256": raw_sha,
                          "raw_action_artifact_sha256": raw_artifact_sha,
                          "action_payload_sha256": sealed_payload["action_payload_sha256"]} !=
-                        {key: payload.get(key) for key in ("view_id", "raw_actions_23", "raw_action_sha256",
+                         {key: payload.get(key) for key in ("view_id", "raw_actions_23", "raw_action_sha256",
                                                            "raw_action_artifact_sha256", "action_payload_sha256")}):
             raise ValueError("packaged positive action differs from the sealed parent publisher payload")
     else:
+        expected_fields = stored_fields if accept_packaged_positive_payload else supplied_fields
+        if set(payload) != expected_fields:
+            raise ValueError("non-qualifying corrective payload must be an exact actual-23D schema; DART intended/noise controls are unsupported")
         if payload.get("view_id") != view["view_id"] or not isinstance(payload.get("raw_actions_23"), list):
             raise ValueError("non-qualifying corrective action payload must bind a view_id and actual raw 23D actions")
         raw = payload["raw_actions_23"]
@@ -311,6 +317,8 @@ def _validate_action_payload(payload: Mapping[str, Any], view: Mapping[str, Any]
               "actions_27": projection["actions_27"],
               "action_is_pad": projection["action_is_pad"],
               "action_dim_is_pad": projection["action_dim_is_pad"]}
+    if accept_packaged_positive_payload and payload and payload != result:
+        raise ValueError("stored corrective action projection/padding receipt changed")
     if len(result["actions_27"]) != ACTION_HORIZON or any(result["action_is_pad"][:len(raw)]):
         raise ValueError("projected corrective action lost its actual-vs-pad proof")
     return result
@@ -380,6 +388,8 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
         raise ValueError("release role must be explicit")
     if not isinstance(annotations, Mapping) or annotations.get("schema_version") != ANNOTATION_SCHEMA:
         raise ValueError(f"annotations must declare {ANNOTATION_SCHEMA}")
+    if set(annotations) != {"schema_version", "views", "view_reviews", "action_payloads", "root_visual_review"}:
+        raise ValueError("candidate annotations must use the exact P107 annotation schema; queue/approval authority is external")
     _assert_no_sidecar(annotations)
     if "corrective_action_authority" in annotations:
         raise ValueError("parent corrective-action authority must be supplied separately from agent annotations")
@@ -407,6 +417,9 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
             raise ValueError("duplicate or malformed corrective action payload")
         payload_by_id[payload["view_id"]] = payload
     sealed_views, sealed_actions, status = [], [], Counter()
+    accepted_goal_outcome_windows: set[str] = set()
+    accepted_corrective_windows: set[tuple[str, str]] = set()
+    accepted_source_episodes: set[tuple[str, int]] = set()
     seen_views: set[str] = set()
     coverage: dict[str, dict[str, Any]] = {}
     for view in sorted(views, key=lambda row: str(row.get("view_id", ""))):
@@ -423,19 +436,23 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
         review = _validate_review(review_by_id.pop(view["view_id"], {}), view)
         kind = view["label_kind"]
         quality_gates = {"goal_calibration": False, "outcome": False, "decision": False, "corrective_fm": False}
+        student_train_group = group["usage_role"] == "student_candidate" and group["original_split"] == "train"
         if kind == "goal_satisfaction_counterfactual":
-            quality_gates["goal_calibration"] = bool(view["valid_goal_mask"] and review["accepted_auxiliary"])
+            quality_gates["goal_calibration"] = bool(
+                student_train_group and view["valid_goal_mask"] and review["accepted_auxiliary"])
         elif kind == "attempt_outcome":
-            quality_gates["outcome"] = bool(view["valid_result_mask"] and review["outcome_validated"])
+            quality_gates["outcome"] = bool(
+                student_train_group and view["valid_result_mask"] and review["outcome_validated"])
         elif kind == "recovery_decision":
-            quality_gates["decision"] = bool(view["decision_supervision_mask"] and review["accepted_auxiliary"])
+            quality_gates["decision"] = bool(
+                student_train_group and view["decision_supervision_mask"] and review["accepted_auxiliary"])
         else:
             payload = _validate_action_payload(payload_by_id.pop(view["view_id"], {}), view,
                                                authority=corrective_action_authority)
             sealed_actions.append(payload)
             # A failed correction is retained in the package, but protocol
             # validation and this gate make it impossible to become FM BC.
-            quality_gates["corrective_fm"] = bool(view["low_action_supervision_mask"] and group["usage_role"] == "student_candidate")
+            quality_gates["corrective_fm"] = bool(view["low_action_supervision_mask"] and student_train_group)
             status["non_qualifying_corrective_actions"] += int(not quality_gates["corrective_fm"])
         status["candidate_annotated"] += int(review["candidate_annotated"])
         status["parent_reviewed"] += int(review["parent_reviewed"])
@@ -443,7 +460,15 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
         status["outcome_validated"] += int(review["outcome_validated"])
         # Recovery-action verification is a protocol/authority conclusion,
         # never an annotation review checkbox.
-        status["verified_recovery_actions"] += int(quality_gates["corrective_fm"])
+        if quality_gates["goal_calibration"] or quality_gates["outcome"]:
+            # A repeated counterfactual label at the same immutable event is
+            # one observation window, never additional scale.
+            accepted_goal_outcome_windows.add(event["event_id"])
+        if quality_gates["corrective_fm"]:
+            # Distinguish an actual executed window from copied/reworded views.
+            accepted_corrective_windows.add((event["event_id"], view["executed_action_receipt"]["raw_action_sha256"]))
+        if any(quality_gates.values()):
+            accepted_source_episodes.add((event["source"]["source_group_id"], event["source"]["episode_index"]))
         task = str(event["source"]["task_index"])
         local = coverage.setdefault(task, {"skills": set(), "instances": set(), "episodes": set(),
                                            "source_groups": set(), "candidate_views": 0,
@@ -461,19 +486,16 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
         raise ValueError("review refers to no packaged view")
     if payload_by_id:
         raise ValueError("action payload refers to no packaged corrective view")
-    labeled_event_ids = {row["view"]["event_id"] for row in sealed_views}
-    source_episodes = {(event_by_id[event_id]["source"]["source_group_id"],
-                        event_by_id[event_id]["source"]["episode_index"]) for event_id in labeled_event_ids}
     root_gate = _root_review_gate(annotations.get("root_visual_review"))
     minimum_scale = dict(minimum_scale or {})
     if request_dataset_quality_eligibility:
         required_minima = {"source_episodes", "goal_outcome_windows", "corrective_action_windows"}
         if set(minimum_scale) != required_minima or any(type(v) is not int or v < 1 for v in minimum_scale.values()):
             raise ValueError("dataset-quality eligibility requires explicit positive --minimum-source-episodes, --minimum-goal-outcome-windows, and --minimum-corrective-action-windows")
-    actual = {"source_episodes": len(source_episodes),
-              "goal_outcome_windows": sum(row["dataset_quality_gates"]["goal_calibration"] or
-                                          row["dataset_quality_gates"]["outcome"] for row in sealed_views),
-              "corrective_action_windows": int(status["verified_recovery_actions"])}
+    status["verified_recovery_actions"] = len(accepted_corrective_windows)
+    actual = {"source_episodes": len(accepted_source_episodes),
+              "goal_outcome_windows": len(accepted_goal_outcome_windows),
+              "corrective_action_windows": len(accepted_corrective_windows)}
     scale_ok = bool(minimum_scale) and all(actual[name] >= value for name, value in minimum_scale.items())
     index_coverage = index_manifest.get("coverage")
     if not isinstance(index_coverage, Mapping):
@@ -559,6 +581,7 @@ def publish(index_dir: Path, annotations_path: Path, output: Path, *, release_ro
     if corrective_publisher_root is not None:
         corrective_action_authority = load_corrective_action_authority(
             corrective_publisher_root,
+            index_root=Path(index_dir),
             expected_publisher_manifest_sha256=expected_corrective_publisher_manifest_sha256,
             expected_index_inventory_seal_sha256=index_inventory_seal_sha256,
             expected_live_runtime_acceptance_root_sha256=expected_live_runtime_acceptance_root_sha256)

@@ -42,14 +42,14 @@ class AuditMemLiteEventReleaseTests(unittest.TestCase):
                      expected_index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"))
         return package, pack.sha256_file(package / "release_seal.json")
 
-    def _quality_action_package(self, root: Path) -> tuple[Path, str, Path]:
+    def _quality_action_package(self, root: Path) -> tuple[Path, str, Path, Path]:
         index_path, groups, events, _ = fixture.indexed(root)
         student = next(event for event in events if event["usage_role"] == "student_candidate")
         index_seal = pack.sha256_file(index_path / "inventory_seal.json")
         publisher_root = root / "parent-publisher"
         labels, authority_manifest_sha = fixture.approve_logged_corrective(
             fixture.annotations(student), student, groups, publisher_root,
-            index_inventory_seal_sha256=index_seal)
+            index_root=index_path, index_inventory_seal_sha256=index_seal)
         labels_path, package = root / "labels.json", root / "quality-package"
         labels_path.write_text(pack.canonical_json(labels))
         pack.publish(index_path, labels_path, package, release_role="student_candidate", minimum_scale=None,
@@ -57,7 +57,7 @@ class AuditMemLiteEventReleaseTests(unittest.TestCase):
                      expected_index_inventory_seal_sha256=index_seal,
                      corrective_publisher_root=publisher_root,
                      expected_corrective_publisher_manifest_sha256=authority_manifest_sha)
-        return package, pack.sha256_file(package / "release_seal.json"), publisher_root
+        return package, pack.sha256_file(package / "release_seal.json"), publisher_root, index_path
 
     def test_audit_reports_all_statuses_but_blocks_stage3_training(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -94,19 +94,25 @@ class AuditMemLiteEventReleaseTests(unittest.TestCase):
 
     def test_audit_and_dataset_accept_only_externally_sealed_parent_approved_action_evidence(self):
         with tempfile.TemporaryDirectory() as folder:
-            package, seal, publisher_root = self._quality_action_package(Path(folder))
+            package, seal, publisher_root, index_path = self._quality_action_package(Path(folder))
             result = audit.audit(package, expected_release_seal_sha256=seal,
-                                 corrective_publisher_root=publisher_root)
+                                 corrective_publisher_root=publisher_root, index_root=index_path)
             self.assertEqual(result["status_report"]["verified_recovery_actions"], 1)
             action = DATASET.MemLiteEventDataset(package, "corrective_action", expected_release_seal_sha256=seal,
-                                                  corrective_publisher_root=publisher_root)
+                                                  corrective_publisher_root=publisher_root, index_root=index_path)
             self.assertTrue(action[0]["dataset_quality_gates"]["corrective_fm"])
+            with self.assertRaisesRegex(ValueError, "publisher and sealed index roots"):
+                audit.audit(package, expected_release_seal_sha256=seal,
+                            corrective_publisher_root=publisher_root)
+            with self.assertRaisesRegex(ValueError, "publisher and sealed index roots"):
+                DATASET.MemLiteEventDataset(package, "corrective_action", expected_release_seal_sha256=seal,
+                                             corrective_publisher_root=publisher_root)
             with self.assertRaisesRegex(ValueError, "externally recorded release seal"):
                 audit.audit(package, expected_release_seal_sha256="0" * 64,
-                            corrective_publisher_root=publisher_root)
+                            corrective_publisher_root=publisher_root, index_root=index_path)
             with self.assertRaisesRegex(ValueError, "externally recorded release seal"):
                 DATASET.MemLiteEventDataset(package, "corrective_action", expected_release_seal_sha256="0" * 64,
-                                             corrective_publisher_root=publisher_root)
+                                             corrective_publisher_root=publisher_root, index_root=index_path)
 
 
 if __name__ == "__main__":

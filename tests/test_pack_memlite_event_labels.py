@@ -91,7 +91,7 @@ def annotations(event: dict, *, include_nontrainable_action: bool = True) -> dic
                                                     "actual_end_frame": event["observation"]["frame"] + 2},
                           action_payload_sha256=payload_sha, execution_receipt_sha256="d" * 64,
                           recovery_verification_receipt_sha256="e" * 64,
-                          recovery_verified=False, low_action_supervision_mask=False,
+                          low_action_supervision_mask=False,
                           rejection_reason="failed correction is retained as outcome evidence, never FM BC")
         # Updating a canonical field requires a new identity.
         with_id(corrective)
@@ -108,16 +108,35 @@ def _write_parent_jsonl(path: Path, rows: list[dict]) -> dict:
     return {"relative_path": path.name, "sha256": pack.sha256_file(path), "bytes": path.stat().st_size, "rows": len(rows)}
 
 
+def _write_parent_artifact(root: Path, *, name: str, kind: str, event: dict, group: dict,
+                           payload: dict) -> dict:
+    path = root / "artifact_blobs" / name
+    path.parent.mkdir(exist_ok=True)
+    path.write_bytes(pack.canonical_json(payload).encode("utf-8"))
+    return {"schema_version": "p107-sealed-artifact-v1", "artifact_sha256": pack.sha256_file(path),
+            "artifact_kind": kind, "relative_path": str(path.relative_to(root)), "bytes": path.stat().st_size,
+            "event_id": event["event_id"], "source_group_id": group["source_group_id"]}
+
+
 def approve_logged_corrective(labels: dict, event: dict, groups: list[dict], publisher_root: Path,
-                              *, index_inventory_seal_sha256: str) -> tuple[dict, str]:
-    """Construct a separate, SHA-pinned parent publisher root for one synthetic positive."""
+                              *, index_root: Path, index_inventory_seal_sha256: str) -> tuple[dict, str]:
+    """Construct one typed, external parent authority over a compact fixture row.
+
+    This is intentionally test-only and mirrors the published protocol fixture:
+    every receipt refers to bytes in ``publisher_root`` while index membership is
+    checked against the separately sealed ``index_root``.
+    """
     publisher_root.mkdir()
     corrective = next(row for row in labels["views"] if row["label_kind"] == "corrective_action")
     raw = labels["action_payloads"][0]["raw_actions_23"]
-    raw_artifact_sha = labels["action_payloads"][0]["raw_action_artifact_sha256"]
+    group = next(row for row in groups if row["source_group_id"] == event["source"]["source_group_id"])
+    raw_artifact = _write_parent_artifact(
+        publisher_root, name="raw23.json", kind="raw_action_23_artifact", event=event, group=group,
+        payload={"schema_version": "p107-raw23-action-artifact-v1", "raw_actions_23": raw})
+    raw_artifact_sha = raw_artifact["artifact_sha256"]
     raw_sha = pack.raw_action_payload_sha256(raw, raw_action_artifact_sha256=raw_artifact_sha)
     payload_sha = pack.action_payload_sha256(raw)
-    corrective.update(review_status="PARENT_APPROVED", recovery_verified=True, low_action_supervision_mask=True,
+    corrective.update(review_status="PARENT_APPROVED", low_action_supervision_mask=True,
                       action_payload_sha256=payload_sha,
                       executed_action_receipt={**corrective["executed_action_receipt"], "raw_action_sha256": raw_sha})
     def seal(receipt: dict) -> dict:
@@ -136,26 +155,47 @@ def approve_logged_corrective(labels: dict, event: dict, groups: list[dict], pub
                       "actual_end_frame": corrective["executed_action_receipt"]["actual_end_frame"],
                       "actual_executed_length": corrective["actual_executed_length"], "raw_action_dim": 23,
                       "intent_bundle_id": corrective["executed_intent_bundle_id"], "executed": True})
+    action_end = corrective["executed_action_receipt"]["actual_end_frame"]
+    evidence_artifact = _write_parent_artifact(
+        publisher_root, name="temporal-evidence.json", kind="temporal_review_evidence", event=event, group=group,
+        payload={"schema_version": "p107-temporal-review-evidence-v1", "event_id": event["event_id"],
+                 "source_group_id": group["source_group_id"], "raw_action_sha256": raw_sha,
+                 "evidence_end_frame": action_end + 1, "available_frame": action_end + 1,
+                 "verification_frame": action_end + 1})
+    verification_artifact = _write_parent_artifact(
+        publisher_root, name="verification-receipt.json", kind="verification_receipt_artifact", event=event, group=group,
+        payload={"schema_version": "p107-verification-receipt-artifact-v1", "event_id": event["event_id"],
+                 "source_group_id": group["source_group_id"], "raw_action_sha256": raw_sha,
+                 "verification_frame": action_end + 1})
+    temporal_artifact = _write_parent_artifact(
+        publisher_root, name="temporal-review.json", kind="temporal_review_artifact", event=event, group=group,
+        payload={"schema_version": "p107-temporal-review-artifact-v1", "event_id": event["event_id"],
+                 "source_group_id": group["source_group_id"], "raw_action_sha256": raw_sha,
+                 "verification_frame": action_end + 1})
     verification = seal({"schema_version": "p107-recovery-verification-receipt-v1", "receipt_sha256": "",
                          "event_id": event["event_id"], "source_group_id": event["source"]["source_group_id"],
                          "recovery_attempt_id": corrective["recovery_attempt_id"],
                          "recovery_from_attempt_id": corrective["recovery_from_attempt_id"],
                          "action_intent_bundle_id": corrective["action_intent_bundle_id"], "raw_action_sha256": raw_sha,
                          "evidence_origin": "logged_demonstration", "quality_tier": "SILVER_REVIEWED_LOGGED_DEMONSTRATION",
-                         "verification_frame": corrective["executed_action_receipt"]["actual_end_frame"] + 1,
-                         "label_available_frame": corrective["executed_action_receipt"]["actual_end_frame"] + 2,
-                         "branch_or_episode_final_frame": corrective["executed_action_receipt"]["actual_end_frame"] + 3,
-                         "evidence": {"kind": "TEMPORAL_VISUAL_REVIEW",
-                                      "evidence_end_frame": corrective["executed_action_receipt"]["actual_end_frame"],
-                                      "available_frame": corrective["executed_action_receipt"]["actual_end_frame"] + 1,
-                                      "artifact_sha256": "a" * 64}, "verification_artifact_sha256": "b" * 64,
+                         "verification_frame": action_end + 1,
+                         "label_available_frame": action_end + 2,
+                         "branch_or_episode_final_frame": action_end + 3,
+                         "evidence": {"kind": "TEMPORAL_REVIEW_FROZEN_PARQUET",
+                                      "evidence_end_frame": action_end + 1, "available_frame": action_end + 1,
+                                      "artifact_sha256": evidence_artifact["artifact_sha256"]},
+                         "verification_artifact_sha256": verification_artifact["artifact_sha256"],
                          "frozen_action_window_artifact_sha256": raw_artifact_sha,
-                         "temporal_review_artifact_sha256": "e" * 64,
+                         "temporal_review_artifact_sha256": temporal_artifact["artifact_sha256"],
                          "live_runtime_acceptance_root_sha256": None})
     corrective["execution_receipt_sha256"] = execution["receipt_sha256"]
     corrective["recovery_verification_receipt_sha256"] = verification["receipt_sha256"]
     with_id(corrective)
-    group = next(row for row in groups if row["source_group_id"] == event["source"]["source_group_id"])
+    parent_artifact = _write_parent_artifact(
+        publisher_root, name="parent-review.json", kind="parent_review_artifact", event=event, group=group,
+        payload={"schema_version": "p107-parent-review-artifact-v1", "view_id": corrective["view_id"],
+                 "event_id": event["event_id"], "source_group_id": group["source_group_id"],
+                 "raw_action_sha256": raw_sha})
     files = {
         "events": _write_parent_jsonl(publisher_root / "events.jsonl", [event]),
         "source_groups": _write_parent_jsonl(publisher_root / "source_groups.jsonl", [group]),
@@ -163,20 +203,20 @@ def approve_logged_corrective(labels: dict, event: dict, groups: list[dict], pub
         "execution_receipts": _write_parent_jsonl(publisher_root / "execution_receipts.jsonl", [execution]),
         "verification_receipts": _write_parent_jsonl(publisher_root / "verification_receipts.jsonl", [verification]),
         "artifacts": _write_parent_jsonl(publisher_root / "artifacts.jsonl", [
-            {"artifact_sha256": digest, "artifact_kind": "synthetic_parent_test_artifact"}
-            for digest in sorted({raw_artifact_sha, "a" * 64, "b" * 64, "e" * 64, "c" * 64})]),
+            raw_artifact, evidence_artifact, verification_artifact, temporal_artifact, parent_artifact]),
     }
     approval = seal({"schema_version": "p107-parent-low-fm-approval-v1", "receipt_sha256": "",
                      "approval_status": "APPROVED_FOR_LOW_FM", "view_id": corrective["view_id"], "event_id": event["event_id"],
                      "source_group_id": group["source_group_id"],
                      "source_release_manifest_sha256": group["source_release_manifest_sha256"],
                      "raw_episode_id": event["source"]["raw_episode_id"], "episode_index": event["source"]["episode_index"],
-                     "original_split": "train", "usage_role": "student_candidate",
+                     "original_split": group["original_split"], "usage_role": group["usage_role"],
                      "action_intent_bundle_id": corrective["action_intent_bundle_id"],
                      "executed_intent_bundle_id": corrective["executed_intent_bundle_id"], "raw_action_sha256": raw_sha,
                      "action_payload_sha256": payload_sha, "execution_receipt_sha256": execution["receipt_sha256"],
                      "recovery_verification_receipt_sha256": verification["receipt_sha256"],
-                     "parent_review_artifact_sha256": "c" * 64, "evidence_origin": "logged_demonstration",
+                     "parent_review_artifact_sha256": parent_artifact["artifact_sha256"],
+                     "evidence_origin": "logged_demonstration",
                      "quality_tier": "SILVER_REVIEWED_LOGGED_DEMONSTRATION",
                      "index_inventory_seal_sha256": index_inventory_seal_sha256,
                      "action_payload_root_sha256": files["raw_action_payloads"]["sha256"],
@@ -192,7 +232,12 @@ def approve_logged_corrective(labels: dict, event: dict, groups: list[dict], pub
     manifest_path.write_bytes(pack.canonical_json(publisher_manifest).encode("utf-8"))
     # Agent annotations intentionally carry no positive raw action payload.
     labels["action_payloads"] = []
-    labels["view_reviews"] = [review(row, parent_reviewed=(row is corrective)) for row in labels["views"]]
+    labels["view_reviews"] = [review(row, parent_reviewed=(row["view_id"] == corrective["view_id"]))
+                              for row in labels["views"]]
+    # Loading now proves the parent rows match this exact *external* index.
+    pack.load_corrective_action_authority(
+        publisher_root, index_root=index_root, expected_publisher_manifest_sha256=pack.sha256_file(manifest_path),
+        expected_index_inventory_seal_sha256=index_inventory_seal_sha256)
     return labels, pack.sha256_file(manifest_path)
 
 
@@ -241,7 +286,7 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
             labels = annotations(student)
             labels["corrective_action_authority"] = {"execution_receipts": [], "verification_receipts": [],
                                                       "parent_approval_receipts": [], "parent_review_artifact_sha256s": []}
-            with self.assertRaisesRegex(ValueError, "supplied separately"):
+            with self.assertRaisesRegex(ValueError, "queue/approval authority is external"):
                 pack.build_release(groups, events, labels, index_manifest=index_manifest,
                                    release_role="student_candidate", minimum_scale=None,
                                    request_dataset_quality_eligibility=False,
@@ -262,7 +307,6 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
             student = next(event for event in events if event["usage_role"] == "student_candidate")
             bad = annotations(student)
             corrective = next(row for row in bad["views"] if row["label_kind"] == "corrective_action")
-            corrective["recovery_verified"] = True
             corrective["low_action_supervision_mask"] = True
             corrective["executed_intent_bundle_id"] = "old-expert-bundle"
             corrective["executed_action_receipt"]["intent_bundle_id"] = "old-expert-bundle"
@@ -292,7 +336,6 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
             calibration = next(event for event in events if event["usage_role"] == "annotation_calibration")
             labels = annotations(calibration)
             corrective = next(row for row in labels["views"] if row["label_kind"] == "corrective_action")
-            corrective["recovery_verified"] = True
             corrective["low_action_supervision_mask"] = True
             with_id(corrective)
             labels["action_payloads"][0]["view_id"] = corrective["view_id"]
@@ -313,6 +356,94 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
             pilot_path.write_text(json.dumps(pilot))
             with self.assertRaisesRegex(ValueError, "zero outcome/action masks"):
                 pack._pilot_receipt(pilot_path)
+
+    def test_calibration40_candidate_receipt_cannot_supply_labels_authority_or_scale(self):
+        """A queue receipt is provenance, not a SILVER/GOLD or FM authority."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, groups, events, index_manifest = indexed(root)
+            calibration = next(event for event in events if event["usage_role"] == "annotation_calibration")
+            labels = annotations(calibration)
+            labels["candidate_queue_receipt"] = {
+                "schema_version": "p107-annotation-queue-v1", "queue_status": "CANDIDATE_MISSING_EVIDENCE",
+                "training_eligible": False, "quality_tier": "SILVER_REVIEWED_LOGGED_DEMONSTRATION",
+            }
+            with self.assertRaisesRegex(ValueError, "queue/approval authority is external"):
+                pack.build_release(groups, events, labels, index_manifest=index_manifest,
+                                   release_role="annotation_calibration",
+                                   minimum_scale={"source_episodes": 1, "goal_outcome_windows": 1,
+                                                  "corrective_action_windows": 1},
+                                   request_dataset_quality_eligibility=True,
+                                   require_complete_source_index=True,
+                                   index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"))
+            labels.pop("candidate_queue_receipt")
+            label_path, output = root / "labels.json", root / "calibration-candidate-package"
+            label_path.write_text(pack.canonical_json(labels))
+            result = pack.publish(index_path, label_path, output, release_role="annotation_calibration",
+                                  minimum_scale={"source_episodes": 1, "goal_outcome_windows": 1,
+                                                 "corrective_action_windows": 1},
+                                  request_dataset_quality_eligibility=True, require_complete_source_index=True,
+                                  expected_index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"))
+            self.assertEqual(result["release_eligibility"], "CANDIDATE_ONLY")
+            self.assertEqual(result["actual_scale"]["source_episodes"], 0)
+            self.assertEqual(result["actual_scale"]["goal_outcome_windows"], 0)
+            self.assertEqual(result["actual_scale"]["corrective_action_windows"], 0)
+            self.assertEqual(result["status_report"]["verified_recovery_actions"], 0)
+            self.assertFalse(result["dataset_quality_eligibility"])
+            # Even a typed parent root cannot turn a calibration group into a
+            # student FM positive: its approval role is rejected at authority load.
+            with self.assertRaisesRegex(ValueError, "heldout/calibration"):
+                approve_logged_corrective(annotations(calibration), calibration, groups, root / "calibration-parent",
+                                         index_root=index_path,
+                                         index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"))
+
+    def test_dart_intended_or_noise_controls_are_not_accepted_as_actual_raw23_payloads(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, groups, events, index_manifest = indexed(root)
+            student = next(event for event in events if event["usage_role"] == "student_candidate")
+            labels = annotations(student)
+            labels["action_payloads"][0]["a_intended"] = [0.0] * 23
+            with self.assertRaisesRegex(ValueError, "DART intended/noise controls are unsupported"):
+                pack.build_release(groups, events, labels, index_manifest=index_manifest,
+                                   release_role="student_candidate", minimum_scale=None,
+                                   request_dataset_quality_eligibility=False,
+                                   index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"))
+
+    def test_scale_counts_unique_event_windows_not_counterfactual_copies(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, groups, events, _ = indexed(root)
+            student = next(event for event in events if event["usage_role"] == "student_candidate")
+            labels = annotations(student)
+            outcome = next(row for row in labels["views"] if row["label_kind"] == "attempt_outcome")
+            outcome.update(evaluated_bundle_id="bundle-before", attempt_outcome="FAILED", valid_result_mask=True,
+                           evidence={"kind": "VISUAL", "evidence_end_frame": student["observation"]["frame"],
+                                     "available_frame": student["observation"]["frame"]})
+            with_id(outcome)
+            copied = deepcopy(outcome)
+            copied["attempt_id"] = "attempt-copy-same-window"
+            with_id(copied)
+            labels["views"].append(copied)
+            index_seal = pack.sha256_file(index_path / "inventory_seal.json")
+            labels, authority_manifest_sha = approve_logged_corrective(
+                labels, student, groups, root / "parent-publisher", index_root=index_path,
+                index_inventory_seal_sha256=index_seal)
+            labels["view_reviews"] = [review(row, parent_reviewed=(row["label_kind"] == "corrective_action"),
+                                                outcome_validated=(row["label_kind"] == "attempt_outcome"))
+                                      for row in labels["views"]]
+            label_path, output = root / "labels.json", root / "deduplicated-scale-package"
+            label_path.write_text(pack.canonical_json(labels))
+            result = pack.publish(index_path, label_path, output, release_role="student_candidate",
+                                  minimum_scale={"source_episodes": 1, "goal_outcome_windows": 2,
+                                                 "corrective_action_windows": 1},
+                                  request_dataset_quality_eligibility=True, require_complete_source_index=True,
+                                  expected_index_inventory_seal_sha256=index_seal,
+                                  corrective_publisher_root=root / "parent-publisher",
+                                  expected_corrective_publisher_manifest_sha256=authority_manifest_sha)
+            self.assertEqual(result["actual_scale"], {"source_episodes": 1, "goal_outcome_windows": 1,
+                                                       "corrective_action_windows": 1})
+            self.assertEqual(result["release_eligibility"], "CANDIDATE_ONLY")
 
     def test_conflicting_published_episode_index_is_rejected_even_if_event_hash_is_recomputed(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -344,7 +475,7 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
             index_seal = pack.sha256_file(index_path / "inventory_seal.json")
             labels, authority_manifest_sha = approve_logged_corrective(
                 candidate, student, groups, root / "parent-publisher",
-                index_inventory_seal_sha256=index_seal)
+                index_root=index_path, index_inventory_seal_sha256=index_seal)
             corrective = next(row for row in labels["views"] if row["label_kind"] == "corrective_action")
             labels["view_reviews"] = [review(row, parent_reviewed=(row is corrective),
                                                 outcome_validated=(row is outcome)) for row in labels["views"]]

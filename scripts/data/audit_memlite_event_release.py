@@ -51,7 +51,8 @@ def _regular(path: Path) -> None:
 
 
 def audit(package: Path, *, expected_release_seal_sha256: str,
-          corrective_publisher_root: Path | None = None) -> dict[str, Any]:
+          corrective_publisher_root: Path | None = None,
+          index_root: Path | None = None) -> dict[str, Any]:
     package = Path(package)
     if package.is_symlink() or not package.is_dir():
         raise ValueError("package must be a regular immutable directory")
@@ -96,14 +97,15 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
         manifest.get("corrective_authority_capability"),
         index_inventory_seal_sha256=manifest.get("immutable_index_inventory_seal_sha256"))
     if capability is None:
-        if corrective_publisher_root is not None:
-            raise ValueError("package has no corrective authority capability but a publisher root was supplied")
+        if corrective_publisher_root is not None or index_root is not None:
+            raise ValueError("package has no corrective authority capability but external publisher/index roots were supplied")
         authority = None
     else:
-        if corrective_publisher_root is None:
-            raise ValueError("package with corrective authority capability requires its separate publisher root for audit")
+        if corrective_publisher_root is None or index_root is None:
+            raise ValueError("package with corrective authority capability requires separate publisher and sealed index roots for audit")
         authority = load_corrective_action_authority(
             corrective_publisher_root,
+            index_root=Path(index_root),
             expected_publisher_manifest_sha256=capability["publisher_manifest_sha256"],
             expected_index_inventory_seal_sha256=capability["index_inventory_seal_sha256"],
             expected_live_runtime_acceptance_root_sha256=capability["accepted_live_runtime_acceptance_root_sha256"])
@@ -116,6 +118,9 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
     status = {"source_indexed": len(events), "candidate_annotated": 0, "parent_reviewed": 0,
               "accepted_auxiliary": 0, "outcome_validated": 0, "verified_recovery_actions": 0,
               "non_qualifying_corrective_actions": 0}
+    accepted_goal_outcome_windows: set[str] = set()
+    accepted_corrective_windows: set[tuple[str, str]] = set()
+    accepted_source_episodes: set[tuple[str, int]] = set()
     coverage: dict[str, dict[str, Any]] = {}
     for wrapper in views:
         if not isinstance(wrapper, Mapping) or not isinstance(wrapper.get("view"), Mapping) or not isinstance(wrapper.get("review"), Mapping):
@@ -133,19 +138,23 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
         if wrapper.get("usage_role") != group["usage_role"] or wrapper.get("original_split") != group["original_split"]:
             raise ValueError("view wrapper changed immutable source-group role or split")
         expected = {"goal_calibration": False, "outcome": False, "decision": False, "corrective_fm": False}
+        student_train_group = group["usage_role"] == "student_candidate" and group["original_split"] == "train"
         kind = view["label_kind"]
         if kind == "goal_satisfaction_counterfactual":
-            expected["goal_calibration"] = bool(view["valid_goal_mask"] and review["accepted_auxiliary"])
+            expected["goal_calibration"] = bool(
+                student_train_group and view["valid_goal_mask"] and review["accepted_auxiliary"])
         elif kind == "attempt_outcome":
-            expected["outcome"] = bool(view["valid_result_mask"] and review["outcome_validated"])
+            expected["outcome"] = bool(
+                student_train_group and view["valid_result_mask"] and review["outcome_validated"])
         elif kind == "recovery_decision":
-            expected["decision"] = bool(view["decision_supervision_mask"] and review["accepted_auxiliary"])
+            expected["decision"] = bool(
+                student_train_group and view["decision_supervision_mask"] and review["accepted_auxiliary"])
         else:
             payload = action_by_id.pop(view["view_id"], None)
             if payload is None:
                 raise ValueError("corrective view lacks preserved actual 23D action payload")
             _validate_action_payload(payload, view, authority=authority, accept_packaged_positive_payload=True)
-            expected["corrective_fm"] = bool(view["low_action_supervision_mask"] and group["usage_role"] == "student_candidate")
+            expected["corrective_fm"] = bool(view["low_action_supervision_mask"] and student_train_group)
             status["non_qualifying_corrective_actions"] += int(not expected["corrective_fm"])
         if wrapper.get("dataset_quality_gates") != expected:
             raise ValueError("stored view dataset-quality gate is inconsistent")
@@ -156,7 +165,12 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
         status["parent_reviewed"] += int(review["parent_reviewed"])
         status["accepted_auxiliary"] += int(review["accepted_auxiliary"])
         status["outcome_validated"] += int(review["outcome_validated"])
-        status["verified_recovery_actions"] += int(expected["corrective_fm"])
+        if expected["goal_calibration"] or expected["outcome"]:
+            accepted_goal_outcome_windows.add(event["event_id"])
+        if expected["corrective_fm"]:
+            accepted_corrective_windows.add((event["event_id"], view["executed_action_receipt"]["raw_action_sha256"]))
+        if any(expected.values()):
+            accepted_source_episodes.add((event["source"]["source_group_id"], event["source"]["episode_index"]))
         if kind in {"goal_satisfaction_counterfactual", "attempt_outcome"}:
             task = str(event["source"]["task_index"])
         task = str(event["source"]["task_index"])
@@ -172,13 +186,10 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
             local["quality_accepted"][gate_name] += int(enabled)
     if action_by_id:
         raise ValueError("orphan action payload in package")
-    labeled_event_ids = {row["view"]["event_id"] for row in views}
-    actual_scale = {"source_episodes": len({(event_by_id[event_id]["source"]["source_group_id"],
-                                               event_by_id[event_id]["source"]["episode_index"])
-                                          for event_id in labeled_event_ids}),
-                    "goal_outcome_windows": sum(row["dataset_quality_gates"]["goal_calibration"] or
-                                                row["dataset_quality_gates"]["outcome"] for row in views),
-                    "corrective_action_windows": status["verified_recovery_actions"]}
+    status["verified_recovery_actions"] = len(accepted_corrective_windows)
+    actual_scale = {"source_episodes": len(accepted_source_episodes),
+                    "goal_outcome_windows": len(accepted_goal_outcome_windows),
+                    "corrective_action_windows": len(accepted_corrective_windows)}
     if manifest.get("actual_scale") != actual_scale:
         raise ValueError("stored scale report is not reproducible from package rows")
     reported = manifest.get("status_report")
@@ -211,6 +222,8 @@ def main() -> None:
                         help="externally recorded package seal SHA-256; self-consistent package files are insufficient")
     parser.add_argument("--corrective-publisher-root", type=Path,
                         help="separate sealed parent publisher root required when package contains positive corrective evidence")
+    parser.add_argument("--index-root", type=Path,
+                        help="separate immutable event index required to verify positive corrective membership")
     parser.add_argument("--report", type=Path, required=True, help="new audit report outside the immutable package")
     args = parser.parse_args()
     if args.report.exists():
@@ -218,7 +231,7 @@ def main() -> None:
     if args.package.resolve() in args.report.resolve(strict=False).parents:
         raise ValueError("audit report must be outside the immutable package")
     result = audit(args.package, expected_release_seal_sha256=args.expected_release_seal_sha256,
-                   corrective_publisher_root=args.corrective_publisher_root)
+                   corrective_publisher_root=args.corrective_publisher_root, index_root=args.index_root)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_bytes(canonical_json(result).encode("utf-8") + b"\n")
     args.report.chmod(0o444)
