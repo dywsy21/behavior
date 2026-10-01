@@ -21,6 +21,11 @@ python3 scripts/data/build_memlite_causal_review_pages.py \
   --output /path/to/new-causal-review-pages \
   [--query-registry /path/to/query_candidates.jsonl \
    --expected-query-registry-sha256 QUERY_REGISTRY_SHA256] \
+  [--coverage-event-bindings /path/to/selected_event_bindings.jsonl \
+   --expected-coverage-event-bindings-sha256 EVENT_BINDINGS_SHA256 \
+   --coverage-provenance /path/to/train_coverage_provenance.json \
+   --expected-coverage-provenance-sha256 PROVENANCE_SHA256 \
+   --coverage-selector-root /path/to/original/train-selector] \
   [--render-requests /path/to/camera_native_render_requests.jsonl \
    --expected-render-requests-sha256 RENDER_REQUESTS_SHA256] \
   [--audit-output /path/to/new-future-audit-pages]
@@ -56,8 +61,16 @@ black-background composites are written.
 Question text is never embedded or rephrased.  With `--query-registry`, exact
 event/query IDs and a SHA-256 of the original query text are retained for a
 downstream ID join; display names such as `q000` are filenames only and are
-not join keys.  The optional registry is validated against the explicit
-queue's event IDs but is not a label source.
+not join keys.  The legacy phase40 registry remains on its strict legacy
+adapter path.  The versioned
+`p107.coverage.visual_relation_query_registry.v1` path is TRAIN-only and
+requires the producer's exact `selected_event_bindings.jsonl` receipt.  That
+receipt must cover every selected event; an event with no eligible query is
+written explicitly as `query_ids: []` with its quarantine/unbound status, and
+is never silently treated as a labelable query.  Coverage source pins are
+checked against the explicit selector root and byte-pinned provenance bridge
+when their original selector/index lineage differs from the canonical RGB
+handoff.  EVAL registries and EVAL receipts are rejected before any output.
 
 The builder refuses to overwrite outputs or stale temporary directories and
 rejects contradictory role/frame metadata, missing/asymmetric cameras,

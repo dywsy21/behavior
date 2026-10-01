@@ -25,6 +25,11 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _canonical_digest(value: Any) -> str:
+    encoded = json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
 def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.write_text("\n".join(json.dumps(row, sort_keys=True) for row in rows) + "\n", encoding="utf-8")
 
@@ -66,6 +71,9 @@ def _fixture(root: Path, *, reordered_queue: bool = False, request_backed: bool 
             "task_name": "fixture task",
             "video_locators": [{"view": camera} for camera in CAMERAS],
         }
+        if request_backed:
+            event["skill_bundle"] = [{"skill_id": 4 if event_id == "a" * 64 else 5,
+                                       "skill_idx": 0, "verb": "PRESS"}]
         events.append(event)
         causal: list[dict[str, Any]] = []
         future: list[dict[str, Any]] = []
@@ -192,12 +200,12 @@ def _fixture(root: Path, *, reordered_queue: bool = False, request_backed: bool 
              "status": "CANDIDATE_MISSING_EVIDENCE", "training_eligible": False,
              "schema_version": "p107-metadata-annotation-queue-v1", "immutable_split": "train",
              "usage_role": "annotation_calibration", "source_identity": queue_sources[0],
-             "source_group_id": events[0]["source"]["source_group_id"]},
+             "source_group_id": events[0]["source"]["source_group_id"], "skill_ids": [4]},
             {"event_id": "b" * 64, "job_id": "8" * 64, "queue_kind": "ANNOTATION_CALIBRATION",
              "status": "CANDIDATE_MISSING_EVIDENCE", "training_eligible": False,
              "schema_version": "p107-metadata-annotation-queue-v1", "immutable_split": "train",
              "usage_role": "annotation_calibration", "source_identity": queue_sources[1],
-             "source_group_id": events[1]["source"]["source_group_id"]},
+             "source_group_id": events[1]["source"]["source_group_id"], "skill_ids": [5]},
         ]
         if canonical_source_group_shape == "nested_equal":
             for row, event in zip(queue_rows, events):
@@ -391,11 +399,142 @@ def _fixture(root: Path, *, reordered_queue: bool = False, request_backed: bool 
 def _build(paths: dict[str, Path], output: Path, **kwargs):
     if kwargs.get("query_registry") is not None:
         kwargs.setdefault("expected_query_registry_sha256", _sha(paths["query"]))
+    if kwargs.get("coverage_event_bindings_path") is not None:
+        kwargs.setdefault("expected_coverage_event_bindings_sha256", _sha(paths["coverage_bindings"]))
     return builder.build(
         sealed_root=paths["sealed"], index_root=paths["index"], queue_path=paths["queue"],
         queue_seal_path=paths["queue_seal"], expected_queue_seal_sha256=_sha(paths["queue_seal"]),
         expected_packet_manifest_sha256=_sha(paths["packet_manifest"]), output=output, **kwargs,
     )
+
+
+def _coverage_registry(paths: dict[str, Path], *, schema: str = builder.COVERAGE_REGISTRY_SCHEMA) -> Path:
+    """Project the fixture's canonical TRAIN handoff into afbf874's registry contract."""
+    queue_rows = [json.loads(line) for line in paths["queue"].read_text().splitlines() if line.strip()]
+    request_rows = [json.loads(line) for line in paths["render_requests"].read_text().splitlines() if line.strip()]
+    events = [json.loads(line) for line in (paths["index"] / "event_candidates.jsonl").read_text().splitlines() if line.strip()]
+    events_by_id = {row["event_id"]: row for row in events}
+    requests_by_id = {row["event_id"]: row for row in request_rows}
+    queue_seal_sha = _sha(paths["queue_seal"])
+    queue_manifest = paths["queue_seal"].parent / "manifest.json"
+    index_manifest = paths["index"] / "manifest.json"
+    inventory = paths["index"] / "inventory_seal.json"
+    index_manifest_row = json.loads(index_manifest.read_text())
+    registry: list[dict[str, Any]] = []
+    for queue_row in queue_rows:
+        event_id = queue_row["event_id"]
+        event = events_by_id[event_id]
+        source = event["source"]
+        request = requests_by_id[event_id]
+        skill_id = queue_row["skill_ids"][0]
+        skill = next(skill for skill in event["skill_bundle"] if skill["skill_id"] == skill_id)
+        pin = {
+            "schema_version": builder.COVERAGE_SOURCE_PIN_SCHEMA,
+            "binding_kind": "coverage_selector_event_query",
+            "selection_role": "train",
+            "usage_role": "annotation_calibration",
+            "immutable_split": "train",
+            "event_id": event_id,
+            "selector_manifest_sha256": _sha(queue_manifest),
+            "selector_selection_seal_sha256": queue_seal_sha,
+            "selector_job_filename": paths["queue"].name,
+            "selector_job_sha256": _sha(paths["queue"]),
+            "selector_record_sha256": _canonical_digest(queue_row),
+            "render_request_filename": paths["render_requests"].name,
+            "render_request_sha256": _sha(paths["render_requests"]),
+            "render_request_record_sha256": _canonical_digest(request),
+            "index_manifest_sha256": _sha(index_manifest),
+            "index_event_file_sha256": index_manifest_row["files"]["event_candidates.jsonl"]["sha256"],
+            "index_event_record_sha256": _canonical_digest(event),
+            "inventory_seal_sha256": _sha(inventory),
+            "source_release_manifest_sha256": source["source_release_manifest_sha256"],
+            "source_annotation_sha256": source["source_annotation_sha256"],
+            "source_group_id": source["source_group_id"],
+            "raw_episode_id": source["raw_episode_id"],
+            "episode_index": source["episode_index"],
+            "observation_frame": event["observation"]["frame"],
+        }
+        text = f"Is the fixture {skill['verb'].lower()} relation visibly established?"
+        row = {
+            "schema_version": schema,
+            "status": "PRELABEL_QUERY_CANDIDATE_ONLY",
+            "prelabel_query_id": "0" * 64,
+            "event_id": event_id,
+            "source_group_id": source["source_group_id"],
+            "query_ordinal_within_event": 0,
+            "observation_frame": event["observation"]["frame"],
+            "skill_id": skill_id,
+            "canonical_verb": skill["verb"],
+            "query_text": text,
+            "query_content_sha256": _canonical_digest({
+                "schema_version": builder.COVERAGE_QUERY_CONTENT_SCHEMA,
+                "kind": "goal_satisfaction_counterfactual", "text": text,
+            }),
+            "relation_family": builder._coverage_relation_family(skill["verb"]),
+            "source_pin": pin,
+            "usage_role": "annotation_calibration",
+            "immutable_split": "train",
+            "training_eligible": False,
+            "no_outcome_or_action_labels": True,
+        }
+        row["prelabel_query_id"] = _canonical_digest({
+            "schema_version": builder.COVERAGE_QUERY_SCHEMA,
+            "selection_role": "train", "usage_role": row["usage_role"],
+            "immutable_split": row["immutable_split"], "event_id": event_id,
+            "source_group_id": row["source_group_id"],
+            "observation_frame": row["observation_frame"],
+            "query_ordinal_within_event": row["query_ordinal_within_event"],
+            "skill_id": row["skill_id"], "canonical_verb": row["canonical_verb"],
+            "query_text": row["query_text"], "relation_family": row["relation_family"],
+            "goal_scope": "CURRENT_VISIBLE_RELATION_AT_ANCHOR", "source_pin": pin,
+        })
+        registry.append(row)
+    _write_jsonl(paths["query"], registry)
+    return paths["query"]
+
+
+def _coverage_event_bindings(paths: dict[str, Path], *, unbound_event_ids: set[str] | None = None) -> Path:
+    """Write the producer's explicit selected_event_binding receipt."""
+    unbound_event_ids = unbound_event_ids or set()
+    queue_rows = [json.loads(line) for line in paths["queue"].read_text().splitlines() if line.strip()]
+    registry_rows = [json.loads(line) for line in paths["query"].read_text().splitlines() if line.strip()]
+    by_event: dict[str, list[dict[str, Any]]] = {}
+    for row in registry_rows:
+        by_event.setdefault(row["event_id"], []).append(row)
+    rows: list[dict[str, Any]] = []
+    for queue_row in queue_rows:
+        event_id = queue_row["event_id"]
+        eligible = [] if event_id in unbound_event_ids else by_event.get(event_id, [])
+        eligible_ids = [row["prelabel_query_id"] for row in eligible]
+        quarantined_ids = ["e" * 64] if event_id in unbound_event_ids else []
+        status = ("CATEGORY_GROUNDING_QUARANTINED_NO_ELIGIBLE_QUERY"
+                  if quarantined_ids else "ELIGIBLE_QUERIES")
+        rows.append({
+            "schema_version": builder.COVERAGE_EVENT_BINDING_SCHEMA,
+            "status": status,
+            "event_id": event_id,
+            "source_group_id": queue_row["source_group_id"],
+            "observation_frame": next(json.loads(line)["observation"]["frame"] for line in
+                                       (paths["index"] / "event_candidates.jsonl").read_text().splitlines()
+                                       if json.loads(line)["event_id"] == event_id),
+            "selected_skill_ids": list(queue_row["skill_ids"]),
+            "candidate_query_count": 1,
+            "eligible_query_count": len(eligible_ids),
+            "quarantined_query_count": len(quarantined_ids),
+            "unsupported_skill_count": 0,
+            "eligible_prelabel_query_ids": eligible_ids,
+            "quarantined_prelabel_query_ids": quarantined_ids,
+            "unsupported_skill_ids": [],
+            "selector_record_sha256": _canonical_digest(queue_row),
+            "usage_role": "annotation_calibration",
+            "immutable_split": "train",
+            "training_eligible": False,
+            "no_outcome_or_action_labels": True,
+        })
+    binding_path = paths["queue"].parent / "selected_event_bindings.jsonl"
+    _write_jsonl(binding_path, rows)
+    paths["coverage_bindings"] = binding_path
+    return binding_path
 
 
 class CausalReviewPageBuilderTests(unittest.TestCase):
@@ -478,6 +617,99 @@ class CausalReviewPageBuilderTests(unittest.TestCase):
             manifest = json.loads((output / "manifest.json").read_text())
             self.assertEqual(manifest["source_selection_manifest_sha256"], _sha(root / "manifest.json"))
             self.assertEqual(manifest["source_protocol_sha256"], "a" * 64)
+
+    def test_authenticated_coverage_train_registry_handshake(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            paths = _fixture(root, request_backed=True)
+            registry = _coverage_registry(paths)
+            bindings = _coverage_event_bindings(paths)
+            output = root / "actor-pages"
+            _build(paths, output, render_requests_path=paths["render_requests"],
+                   expected_render_requests_sha256=_sha(paths["render_requests"]),
+                   query_registry=registry, coverage_event_bindings_path=bindings)
+            rows = [json.loads(line) for line in (output / "ordered_events.jsonl").read_text().splitlines()]
+            self.assertEqual(len(rows), 2)
+            self.assertTrue(all(len(row["prelabel_query_id"]) == 64 for row in rows))
+            self.assertTrue(all(row["query_ids"] == [row["prelabel_query_id"]] for row in rows))
+
+    def test_coverage_eval_registry_is_rejected_before_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            paths = _fixture(root, request_backed=True)
+            registry = _coverage_registry(paths, schema=builder.COVERAGE_EVAL_REGISTRY_SCHEMA)
+            output = root / "actor-pages"
+            with self.assertRaisesRegex(ValueError, "coverage EVAL"):
+                _build(paths, output, render_requests_path=paths["render_requests"],
+                       expected_render_requests_sha256=_sha(paths["render_requests"]),
+                       query_registry=registry)
+            self.assertFalse(output.exists())
+
+    def test_coverage_registry_content_pin_query_tamper_is_rejected_before_output(self):
+        for field in ("query_content_sha256", "prelabel_query_id", "source_pin"):
+            with tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                paths = _fixture(root, request_backed=True)
+                registry = _coverage_registry(paths)
+                bindings = _coverage_event_bindings(paths)
+                rows = [json.loads(line) for line in registry.read_text().splitlines()]
+                if field == "query_content_sha256":
+                    rows[0][field] = "0" * 64
+                elif field == "prelabel_query_id":
+                    rows[0][field] = "0" * 64
+                else:
+                    rows[0][field]["index_manifest_sha256"] = "0" * 64
+                _write_jsonl(registry, rows)
+                output = root / "actor-pages"
+                with self.assertRaises(ValueError):
+                    _build(paths, output, render_requests_path=paths["render_requests"],
+                           expected_render_requests_sha256=_sha(paths["render_requests"]),
+                           query_registry=registry, coverage_event_bindings_path=bindings)
+                self.assertFalse(output.exists())
+
+    def test_coverage_partial_registry_requires_explicit_unbound_event(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            paths = _fixture(root, request_backed=True)
+            registry = _coverage_registry(paths)
+            registry_rows = [json.loads(line) for line in registry.read_text().splitlines()]
+            registry_rows = [row for row in registry_rows if row["event_id"] != "b" * 64]
+            _write_jsonl(registry, registry_rows)
+            output = root / "implicit-unbound"
+            with self.assertRaisesRegex(ValueError, "explicit event-binding receipt"):
+                _build(paths, output, render_requests_path=paths["render_requests"],
+                       expected_render_requests_sha256=_sha(paths["render_requests"]),
+                       query_registry=registry)
+            self.assertFalse(output.exists())
+
+            bindings = _coverage_event_bindings(paths, unbound_event_ids={"b" * 64})
+            output = root / "explicit-unbound"
+            result = _build(paths, output, render_requests_path=paths["render_requests"],
+                            expected_render_requests_sha256=_sha(paths["render_requests"]),
+                            query_registry=registry, coverage_event_bindings_path=bindings)
+            self.assertEqual(result["query_registry_rows"], 1)
+            rows = [json.loads(line) for line in (output / "ordered_events.jsonl").read_text().splitlines()]
+            unbound = next(row for row in rows if row["event_id"] == "b" * 64)
+            self.assertEqual(unbound["query_ids"], [])
+            self.assertEqual(unbound["query_binding_status"],
+                             "CATEGORY_GROUNDING_QUARANTINED_NO_ELIGIBLE_QUERY")
+            self.assertNotIn("prelabel_query_id", unbound)
+
+    def test_coverage_event_binding_tamper_is_rejected_before_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            paths = _fixture(root, request_backed=True)
+            registry = _coverage_registry(paths)
+            bindings = _coverage_event_bindings(paths)
+            rows = [json.loads(line) for line in bindings.read_text().splitlines()]
+            rows[0]["eligible_prelabel_query_ids"] = []
+            _write_jsonl(bindings, rows)
+            output = root / "actor-pages"
+            with self.assertRaises(ValueError):
+                _build(paths, output, render_requests_path=paths["render_requests"],
+                       expected_render_requests_sha256=_sha(paths["render_requests"]),
+                       query_registry=registry, coverage_event_bindings_path=bindings)
+            self.assertFalse(output.exists())
 
     def test_canonical_nested_source_group_copy_must_match_top_level(self):
         with tempfile.TemporaryDirectory() as folder:

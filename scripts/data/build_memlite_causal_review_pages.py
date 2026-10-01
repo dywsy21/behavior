@@ -13,6 +13,12 @@ Question text is intentionally not copied into the helper output.  When an
 optional query registry is supplied, exact event/query IDs and a hash of the
 original text are retained so a downstream annotator can join by IDs without
 using display helper names (``qNNN``).
+
+The query reader is explicitly versioned: the legacy phase40 prelabel
+registry remains on its old validation path, while
+``p107.coverage.visual_relation_query_registry.v1`` is accepted only for the
+authenticated canonical TRAIN handoff.  Coverage EVAL registries are
+diagnostic-only and are rejected here.
 """
 
 from __future__ import annotations
@@ -34,6 +40,80 @@ SCHEMA_VERSION = "p107.memlite.causal-review-pages.v1"
 ACTOR_ROLE = "ACTOR_CAUSAL"
 FUTURE_ROLE = "OFFLINE_FUTURE_AUDIT"
 CAMERAS = ("head", "left_wrist", "right_wrist")
+COVERAGE_REGISTRY_SCHEMA = "p107.coverage.visual_relation_query_registry.v1"
+COVERAGE_EVAL_REGISTRY_SCHEMA = "p107.coverage.evaluation_native_review.v1"
+COVERAGE_QUERY_SCHEMA = "p107.coverage.visual_relation_query.v1"
+COVERAGE_QUERY_CONTENT_SCHEMA = "p107.coverage.visual_relation_query_content.v1"
+COVERAGE_SOURCE_PIN_SCHEMA = "p107.coverage.source-pin.v1"
+COVERAGE_RELATION_FAMILIES = frozenset({
+    "navigation_reach_metric", "press_control_contact", "handover_recipient_relation",
+    "grasp_current_hold", "placement_current_relation", "geometry_current_relation",
+    "effect_current_state_or_contact", "orientation_current_relation", "contact_current_relation",
+})
+
+
+def _coverage_relation_family(canonical_verb: str) -> str:
+    if canonical_verb == "NAVIGATE":
+        return "navigation_reach_metric"
+    if canonical_verb == "PRESS":
+        return "press_control_contact"
+    if canonical_verb == "HANDOVER":
+        return "handover_recipient_relation"
+    if canonical_verb == "GRASP":
+        return "grasp_current_hold"
+    if canonical_verb in {"PLACE_ON", "PLACE_IN", "PLACE_NEXT_TO", "PLACE_UNDER", "PLACE_IN_NEXT_TO"}:
+        return "placement_current_relation"
+    if canonical_verb in {"OPEN_DRAWER", "OPEN_DOOR", "CLOSE_DRAWER", "CLOSE_DOOR", "OPEN_LID", "CLOSE_LID"}:
+        return "geometry_current_relation"
+    if canonical_verb in {"CHOP", "IGNITE", "POUR", "SPRAY", "SWEEP_OFF", "SWEEP_SURFACE", "WIPE_HARD"}:
+        return "effect_current_state_or_contact"
+    if canonical_verb == "TURN_TO":
+        return "orientation_current_relation"
+    return "contact_current_relation"
+COVERAGE_REGISTRY_FIELDS = frozenset({
+    "schema_version", "status", "prelabel_query_id", "event_id", "source_group_id",
+    "query_ordinal_within_event", "observation_frame", "skill_id", "canonical_verb",
+    "query_text", "query_content_sha256", "relation_family", "source_pin", "usage_role",
+    "immutable_split", "training_eligible", "no_outcome_or_action_labels",
+})
+COVERAGE_SOURCE_PIN_FIELDS = frozenset({
+    "schema_version", "binding_kind", "selection_role", "usage_role", "immutable_split", "event_id",
+    "selector_manifest_sha256", "selector_selection_seal_sha256", "selector_job_filename",
+    "selector_job_sha256", "selector_record_sha256", "render_request_filename", "render_request_sha256",
+    "render_request_record_sha256", "index_manifest_sha256", "index_event_file_sha256",
+    "index_event_record_sha256", "inventory_seal_sha256", "source_release_manifest_sha256",
+    "source_annotation_sha256", "source_group_id", "raw_episode_id", "episode_index", "observation_frame",
+})
+COVERAGE_SOURCE_PIN_CATEGORY_FIELDS = frozenset({
+    "category_mapping_sha256", "category_mapping_rows", "category_mapping_official_commit",
+})
+COVERAGE_CATEGORY_MAPPING_SHA256 = "ef4636716bc1f243f89735ffe89e8e931a2d5739e87164e7146d54d11c681eab"
+COVERAGE_CATEGORY_MAPPING_ROWS = 2424
+COVERAGE_CATEGORY_MAPPING_COMMIT = "bd049de3119acdcdf2334fe9e1ebe060fa20c108"
+COVERAGE_PROVENANCE_SCHEMA = "p107-coverage-train-render-provenance-v1"
+COVERAGE_PROVENANCE_FIELDS = frozenset({
+    "canonical_protocol_sha256", "canonical_queue_manifest_sha256", "canonical_queue_seal_sha256",
+    "canonical_request_sha256", "coverage_expectations_sha256", "immutable_split",
+    "no_outcome_or_action_labels", "parent_event_file_sha256", "parent_index_manifest_sha256",
+    "parent_inventory_seal_sha256", "resume_validation_status", "schema_version",
+    "selected_event_count", "selector_manifest_sha256", "selector_prior_source_windows_sha256",
+    "selector_queue_seal_sha256", "selector_rows_sha256", "selector_selection_seal_sha256",
+    "source_release_manifest_sha256", "status", "subset_index_manifest_sha256",
+    "subset_inventory_seal_sha256", "training_eligible", "usage_role",
+})
+COVERAGE_EVENT_BINDING_SCHEMA = "p107.coverage.selected_event_binding.v1"
+COVERAGE_EVENT_BINDING_FIELDS = frozenset({
+    "schema_version", "status", "event_id", "source_group_id", "observation_frame",
+    "selected_skill_ids", "candidate_query_count", "eligible_query_count",
+    "quarantined_query_count", "unsupported_skill_count", "eligible_prelabel_query_ids",
+    "quarantined_prelabel_query_ids", "unsupported_skill_ids", "selector_record_sha256",
+    "usage_role", "immutable_split", "training_eligible", "no_outcome_or_action_labels",
+})
+COVERAGE_EVENT_BINDING_STATUSES = frozenset({
+    "ELIGIBLE_QUERIES", "PARTIAL_ELIGIBLE_QUERIES",
+    "CATEGORY_GROUNDING_QUARANTINED_NO_ELIGIBLE_QUERY",
+    "UNSUPPORTED_NO_ELIGIBLE_QUERY", "UNBOUND_NO_QUERY",
+})
 CAMERA_SIZES = {"head": (720, 720), "left_wrist": (480, 480), "right_wrist": (480, 480)}
 CAMERA_POSITIONS = {"head": (0, 0), "left_wrist": (720, 0), "right_wrist": (1200, 0)}
 CANVAS_SIZE = (1680, 1440)
@@ -160,6 +240,14 @@ def _sha_text(value: Any, *, name: str) -> str:
     if not isinstance(value, str) or len(value) != 64 or any(char not in "0123456789abcdef" for char in value):
         raise ValueError(f"{name} must be a lowercase SHA-256")
     return value
+
+
+def _canonical_digest(value: Any, *, name: str) -> str:
+    try:
+        encoded = json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{name} is not canonical JSON") from exc
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
 def _safe_asset_path(value: Any) -> bool:
@@ -397,6 +485,523 @@ def _validate_query_registry(path: Path, events: Mapping[str, Mapping[str, Any]]
     if set(by_event) != event_ids:
         raise ValueError("query registry event IDs are not exactly the selected queue IDs")
     return by_event
+
+
+def _validate_coverage_source_provenance(
+    provenance_path: Path, expected_provenance_sha256: str, *, selector_root: Path,
+    render_requests_path: Path | None, selection_manifest_path: Path, queue_seal_path: Path,
+    index_root: Path, queue_meta: Mapping[str, Any], events: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Authenticate the producer's selector-to-canonical handoff bridge.
+
+    Coverage query source pins retain the original selector/index lineage,
+    while the renderer consumes the canonical RGB handoff.  The provenance
+    receipt and its explicit selector root authenticate that bridge; no
+    adjacent selector directory is discovered implicitly.
+    """
+
+    provenance_path = Path(provenance_path)
+    selector_root = Path(selector_root)
+    if (provenance_path.is_symlink() or not provenance_path.is_file() or
+            selector_root.is_symlink() or not selector_root.is_dir()):
+        raise ValueError("coverage provenance and selector root must be regular authenticated inputs")
+    if sha256(provenance_path) != _authenticated_sha(
+            expected_provenance_sha256, name="expected coverage provenance SHA-256"):
+        raise ValueError("coverage provenance bytes do not match the externally pinned SHA-256")
+    provenance = _read_json(provenance_path, label="coverage provenance")
+    if set(provenance) != set(COVERAGE_PROVENANCE_FIELDS) or \
+            provenance.get("schema_version") != COVERAGE_PROVENANCE_SCHEMA:
+        raise ValueError("coverage provenance schema is not authenticated")
+    for key in (
+        "canonical_protocol_sha256", "canonical_queue_manifest_sha256", "canonical_queue_seal_sha256",
+        "canonical_request_sha256", "coverage_expectations_sha256", "parent_event_file_sha256",
+        "parent_index_manifest_sha256", "parent_inventory_seal_sha256", "selector_manifest_sha256",
+        "selector_prior_source_windows_sha256", "selector_queue_seal_sha256", "selector_rows_sha256",
+        "selector_selection_seal_sha256", "source_release_manifest_sha256",
+        "subset_index_manifest_sha256", "subset_inventory_seal_sha256",
+    ):
+        _sha_text(provenance.get(key), name=f"coverage provenance {key}")
+    if (provenance.get("status") != "CANONICAL_TRAIN_RENDER_HANDOFF_READY" or
+            provenance.get("usage_role") != "annotation_calibration" or
+            provenance.get("immutable_split") != "train" or
+            provenance.get("training_eligible") is not False or
+            provenance.get("no_outcome_or_action_labels") is not True or
+            provenance.get("resume_validation_status") != "RESUME_VALIDATED"):
+        raise ValueError("coverage provenance is outside the authenticated TRAIN calibration gate")
+    event_count = _strict_int(provenance.get("selected_event_count"),
+                               name="coverage provenance selected_event_count", minimum=1)
+    if event_count != len(events):
+        raise ValueError("coverage provenance event count does not bind the authenticated event index")
+
+    queue_manifest_sha = sha256(selection_manifest_path)
+    queue_seal_sha = sha256(queue_seal_path)
+    request_sha = sha256(render_requests_path) if render_requests_path is not None else None
+    index_manifest_sha = sha256(index_root / "manifest.json")
+    inventory_sha = sha256(index_root / "inventory_seal.json")
+    if (provenance["canonical_queue_manifest_sha256"] != queue_manifest_sha or
+            provenance["canonical_queue_seal_sha256"] != queue_seal_sha or
+            provenance["canonical_request_sha256"] != request_sha or
+            provenance["subset_index_manifest_sha256"] != index_manifest_sha or
+            provenance["subset_inventory_seal_sha256"] != inventory_sha or
+            provenance["canonical_protocol_sha256"] != queue_meta.get("protocol_sha256") or
+            provenance["source_release_manifest_sha256"] != queue_meta.get("source_release_manifest_sha256")):
+        raise ValueError("coverage provenance does not bind the canonical queue/request/index handoff")
+
+    selector_manifest_path = selector_root / "manifest.json"
+    selector_selection_seal_path = selector_root / "selection_seal.json"
+    selector_queue_seal_path = selector_root / "queue_seal.json"
+    selector_rows_path = selector_root / "selected_rows.jsonl"
+    selector_jobs_path = selector_root / "annotation_calibration_queue.jsonl"
+    selector_requests_path = selector_root / "camera_native_render_requests.jsonl"
+    selector_files = {
+        "manifest": selector_manifest_path, "selection seal": selector_selection_seal_path,
+        "queue seal": selector_queue_seal_path, "selected rows": selector_rows_path,
+        "selector jobs": selector_jobs_path, "selector requests": selector_requests_path,
+    }
+    for label, path in selector_files.items():
+        if path.is_symlink() or not path.is_file():
+            raise ValueError(f"coverage selector {label} is not a regular file")
+    if (sha256(selector_manifest_path) != provenance["selector_manifest_sha256"] or
+            sha256(selector_selection_seal_path) != provenance["selector_selection_seal_sha256"] or
+            sha256(selector_queue_seal_path) != provenance["selector_queue_seal_sha256"] or
+            sha256(selector_rows_path) != provenance["selector_rows_sha256"]):
+        raise ValueError("coverage selector files do not match the authenticated provenance pins")
+    selector_jobs = _read_jsonl(selector_jobs_path, label="coverage selector jobs")
+    selector_requests = _read_jsonl(selector_requests_path, label="coverage selector requests")
+    selector_jobs_by_event = {row.get("event_id"): row for row in selector_jobs}
+    selector_requests_by_event = {row.get("event_id"): row for row in selector_requests}
+    if (len(selector_jobs_by_event) != len(selector_jobs) or
+            len(selector_requests_by_event) != len(selector_requests) or
+            set(selector_jobs_by_event) != set(events) or set(selector_requests_by_event) != set(events)):
+        raise ValueError("coverage selector files are not bijective with the canonical event set")
+    return {
+        "provenance": provenance,
+        "selector_jobs_path": selector_jobs_path,
+        "selector_requests_path": selector_requests_path,
+        "selector_jobs_by_event": selector_jobs_by_event,
+        "selector_requests_by_event": selector_requests_by_event,
+    }
+
+
+def _validate_coverage_event_bindings(
+    rows: list[dict[str, Any]], *, events: Mapping[str, Mapping[str, Any]],
+    expected_event_ids: Iterable[str], ordered_queue: list[Mapping[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Validate the producer's explicit per-event query-binding receipt.
+
+    The coverage producer emits a compact registry only for eligible queries.
+    ``selected_event_bindings.jsonl`` is its authenticated complement: it
+    covers every selected TRAIN event and explicitly records an empty query
+    list for quarantined, unsupported, or otherwise unbound events.
+    """
+
+    if not rows:
+        raise ValueError("coverage event-binding receipt is empty")
+    event_ids = set(expected_event_ids)
+    queue_by_event = {row.get("event_id"): row for row in ordered_queue}
+    if set(queue_by_event) != event_ids:
+        raise ValueError("coverage event-binding receipt is not aligned with the canonical TRAIN queue")
+    by_event: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if set(row) != set(COVERAGE_EVENT_BINDING_FIELDS):
+            raise ValueError("coverage event-binding row fields are not the authenticated schema")
+        if row.get("schema_version") != COVERAGE_EVENT_BINDING_SCHEMA:
+            raise ValueError("coverage event-binding row has the wrong schema")
+        status = row.get("status")
+        if status not in COVERAGE_EVENT_BINDING_STATUSES:
+            raise ValueError("coverage event-binding row has an unsupported status")
+        if row.get("usage_role") != "annotation_calibration" or row.get("immutable_split") != "train":
+            raise ValueError("coverage event-binding row is not TRAIN annotation calibration")
+        if row.get("training_eligible") is not False or row.get("no_outcome_or_action_labels") is not True:
+            raise ValueError("coverage event-binding row weakens the no-training/no-label gate")
+        event_id = _sha_text(row.get("event_id"), name="coverage event-binding event_id")
+        if event_id not in event_ids or event_id in by_event:
+            raise ValueError("coverage event-binding event IDs are missing, duplicated, or unselected")
+        event = events[event_id]
+        source = event.get("source")
+        observation = event.get("observation")
+        if not isinstance(source, Mapping) or not isinstance(observation, Mapping):
+            raise ValueError(f"coverage event-binding event identity is malformed for {event_id}")
+        queue_row = queue_by_event[event_id]
+        if (row.get("source_group_id") != source.get("source_group_id") or
+                row.get("source_group_id") != queue_row.get("source_group_id")):
+            raise ValueError(f"coverage event-binding source_group_id does not bind the queue/event for {event_id}")
+        frame = _strict_int(observation.get("frame"), name=f"coverage event-binding frame for {event_id}", minimum=0)
+        if row.get("observation_frame") != frame or queue_row.get("observation_frame", frame) != frame:
+            raise ValueError(f"coverage event-binding frame does not bind the queue/event for {event_id}")
+        selected_skill_ids = row.get("selected_skill_ids")
+        queue_skill_ids = queue_row.get("skill_ids")
+        if (not isinstance(selected_skill_ids, list) or
+                any(type(value) is not int or value < 0 for value in selected_skill_ids) or
+                not isinstance(queue_skill_ids, list) or selected_skill_ids != queue_skill_ids):
+            raise ValueError(f"coverage event-binding skills do not bind the canonical queue for {event_id}")
+        eligible_ids = row.get("eligible_prelabel_query_ids")
+        quarantined_ids = row.get("quarantined_prelabel_query_ids")
+        unsupported_ids = row.get("unsupported_skill_ids")
+        if (not isinstance(eligible_ids, list) or not isinstance(quarantined_ids, list) or
+                not isinstance(unsupported_ids, list)):
+            raise ValueError(f"coverage event-binding query/skill ID lists are malformed for {event_id}")
+        for value in eligible_ids:
+            _sha_text(value, name=f"eligible query ID for {event_id}")
+        for value in quarantined_ids:
+            _sha_text(value, name=f"quarantined query ID for {event_id}")
+        for value in unsupported_ids:
+            _strict_int(value, name=f"unsupported skill ID for {event_id}", minimum=0)
+        if len(set(eligible_ids)) != len(eligible_ids) or len(set(quarantined_ids)) != len(quarantined_ids):
+            raise ValueError(f"coverage event-binding query IDs are duplicated for {event_id}")
+        candidate_count = _strict_int(row.get("candidate_query_count"),
+                                      name=f"candidate query count for {event_id}", minimum=0)
+        eligible_count = _strict_int(row.get("eligible_query_count"),
+                                     name=f"eligible query count for {event_id}", minimum=0)
+        quarantine_count = _strict_int(row.get("quarantined_query_count"),
+                                       name=f"quarantined query count for {event_id}", minimum=0)
+        unsupported_count = _strict_int(row.get("unsupported_skill_count"),
+                                        name=f"unsupported skill count for {event_id}", minimum=0)
+        if (eligible_count != len(eligible_ids) or quarantine_count != len(quarantined_ids) or
+                unsupported_count != len(unsupported_ids) or
+                candidate_count != eligible_count + quarantine_count):
+            raise ValueError(f"coverage event-binding counts do not bind the query ID lists for {event_id}")
+        expected_status = (
+            "PARTIAL_ELIGIBLE_QUERIES" if eligible_ids and (quarantined_ids or unsupported_ids) else
+            "ELIGIBLE_QUERIES" if eligible_ids else
+            "CATEGORY_GROUNDING_QUARANTINED_NO_ELIGIBLE_QUERY" if quarantined_ids else
+            "UNSUPPORTED_NO_ELIGIBLE_QUERY" if unsupported_ids else
+            "UNBOUND_NO_QUERY"
+        )
+        if status != expected_status:
+            raise ValueError(f"coverage event-binding status does not bind its explicit query IDs for {event_id}")
+        selector_record_sha = _sha_text(row.get("selector_record_sha256"),
+                                        name=f"selector record SHA for {event_id}")
+        by_event[event_id] = {
+            "status": status,
+            "query_ids": list(eligible_ids),
+            "selector_record_sha256": selector_record_sha,
+        }
+    if set(by_event) != event_ids:
+        raise ValueError("coverage event-binding receipt must explicitly cover every selected TRAIN event")
+    return by_event
+
+
+def _validate_coverage_query_registry(
+    rows: list[dict[str, Any]], *, events: Mapping[str, Mapping[str, Any]],
+    expected_event_ids: Iterable[str], queue_meta: Mapping[str, Any], queue_path: Path,
+    queue_seal_path: Path, expected_queue_seal_sha256: str, selection_manifest_path: Path,
+    index_root: Path, index_manifest: Mapping[str, Any], packet_manifest: Mapping[str, Any],
+    packets: Mapping[str, Mapping[str, Any]], ordered_queue: list[Mapping[str, Any]],
+    render_requests: Mapping[str, Mapping[str, Any]] | None,
+    event_bindings: Mapping[str, Mapping[str, Any]],
+    coverage_source: Mapping[str, Any] | None,
+) -> dict[str, dict[str, Any]]:
+    """Validate the coverage producer registry against this exact TRAIN handoff.
+
+    Coverage registries have a different producer identity contract from the
+    legacy phase40 registry.  In particular, their source pin binds the
+    canonical queue/request/index bytes, while the query ID is recomputed from
+    the complete immutable query identity.  EVAL registries never enter this
+    actor-facing helper.
+    """
+
+    if queue_meta.get("mode") != "canonical_train":
+        raise ValueError("coverage query registry requires the authenticated canonical TRAIN queue")
+    event_ids = set(expected_event_ids)
+    if render_requests is None:
+        raise ValueError("coverage query registry requires authenticated render requests")
+    if not rows:
+        raise ValueError("coverage query registry is empty")
+    if set(index_manifest.get("files", {})) != set(INDEX_MANIFEST_FILES):
+        raise ValueError("coverage query registry cannot bind an unauthenticated event index")
+
+    queue_seal_sha = _authenticated_sha(expected_queue_seal_sha256, name="coverage queue seal SHA-256")
+    if sha256(queue_seal_path) != queue_seal_sha:
+        raise ValueError("coverage queue seal bytes do not match the authenticated handoff")
+    queue_manifest_sha = sha256(selection_manifest_path)
+    queue_file_sha = sha256(queue_path)
+    index_manifest_sha = sha256(index_root / "manifest.json")
+    index_event_sha = index_manifest["files"]["event_candidates.jsonl"]["sha256"]
+    inventory_sha = sha256(index_root / "inventory_seal.json")
+    request_receipt = queue_meta.get("request_receipt")
+    request_path = queue_meta.get("render_requests_path")
+    if not isinstance(request_path, Path):
+        raise ValueError("coverage query registry lacks an authenticated render-request path")
+    if not isinstance(request_receipt, Mapping):
+        raise ValueError("coverage query registry lacks an authenticated render-request receipt")
+    request_file_sha = _sha_text(request_receipt.get("sha256"), name="coverage render-request SHA-256")
+    protocol_sha = queue_meta.get("protocol_sha256")
+    if (protocol_sha != index_manifest.get("protocol_sha256") or
+            packet_manifest.get("protocol_sha256") != protocol_sha):
+        raise ValueError("coverage query registry queue/index/packet protocol pins disagree")
+
+    queue_by_event = {row["event_id"]: row for row in ordered_queue}
+    if (set(queue_by_event) != event_ids or set(render_requests) != event_ids or
+            set(event_bindings) != event_ids):
+        raise ValueError("coverage query registry bindings are not bijective with the canonical TRAIN handoff")
+    by_event: dict[str, dict[str, Any]] = {}
+    seen_query_ids: set[str] = set()
+    for row in rows:
+        if set(row) != set(COVERAGE_REGISTRY_FIELDS):
+            raise ValueError("coverage query registry row fields are not the authenticated registry schema")
+        if row.get("schema_version") != COVERAGE_REGISTRY_SCHEMA:
+            raise ValueError("coverage query registry row has the wrong schema")
+        if row.get("status") != "PRELABEL_QUERY_CANDIDATE_ONLY":
+            raise ValueError("coverage query registry row is not a candidate-only record")
+        if row.get("usage_role") != "annotation_calibration" or row.get("immutable_split") != "train":
+            raise ValueError("coverage query registry row is not TRAIN annotation calibration")
+        if row.get("training_eligible") is not False or row.get("no_outcome_or_action_labels") is not True:
+            raise ValueError("coverage query registry row weakens the no-training/no-label gate")
+        event_id = _sha_text(row.get("event_id"), name="coverage query registry event_id")
+        if event_id not in event_ids or event_id in by_event:
+            raise ValueError("coverage query registry event IDs are duplicated or unselected")
+        query_id = _sha_text(row.get("prelabel_query_id"), name=f"coverage query ID for {event_id}")
+        if query_id in seen_query_ids:
+            raise ValueError("coverage query registry query IDs are duplicated")
+        source = events[event_id].get("source")
+        observation = events[event_id].get("observation")
+        if not isinstance(source, Mapping) or not isinstance(observation, Mapping):
+            raise ValueError(f"coverage query event binding is malformed for {event_id}")
+        queue_row = queue_by_event[event_id]
+        queue_group = queue_row.get("source_group_id")
+        if (row.get("source_group_id") != source.get("source_group_id") or
+                row.get("source_group_id") != queue_group):
+            raise ValueError(f"coverage query source_group_id does not bind the canonical queue/event for {event_id}")
+        frame = _strict_int(observation.get("frame"), name=f"coverage event frame for {event_id}", minimum=0)
+        if row.get("observation_frame") != frame or queue_row.get("observation_frame", frame) != frame:
+            raise ValueError(f"coverage query observation frame does not bind the canonical queue/event for {event_id}")
+        ordinal = _strict_int(row.get("query_ordinal_within_event"),
+                              name=f"coverage query ordinal for {event_id}", minimum=0)
+        skill_id = _strict_int(row.get("skill_id"), name=f"coverage query skill_id for {event_id}", minimum=0)
+        canonical_verb = row.get("canonical_verb")
+        if not isinstance(canonical_verb, str) or not canonical_verb or any(ord(char) < 0x20 for char in canonical_verb):
+            raise ValueError(f"coverage query canonical_verb is malformed for {event_id}")
+        relation_family = row.get("relation_family")
+        if (relation_family not in COVERAGE_RELATION_FAMILIES or
+                relation_family != _coverage_relation_family(canonical_verb)):
+            raise ValueError(f"coverage query relation family is not the authenticated coverage family for {event_id}")
+        query_text = row.get("query_text")
+        if (not isinstance(query_text, str) or not query_text.strip() or len(query_text) > 2048 or
+                any(ord(char) < 0x20 for char in query_text)):
+            raise ValueError(f"coverage query text is malformed for {event_id}")
+        selected_skill_ids = queue_row.get("skill_ids")
+        if (not isinstance(selected_skill_ids, list) or
+                any(type(value) is not int for value in selected_skill_ids) or skill_id not in selected_skill_ids):
+            raise ValueError(f"coverage query skill binding is absent from the canonical queue for {event_id}")
+        skills = events[event_id].get("skill_bundle")
+        matches = [skill for skill in skills if isinstance(skill, Mapping) and skill.get("skill_id") == skill_id] \
+            if isinstance(skills, list) else []
+        if len(matches) != 1 or matches[0].get("verb") != canonical_verb:
+            raise ValueError(f"coverage query skill binding does not match the indexed event skill for {event_id}")
+        content_sha = _sha_text(row.get("query_content_sha256"), name=f"coverage query content SHA for {event_id}")
+        expected_content_sha = _canonical_digest({
+            "schema_version": COVERAGE_QUERY_CONTENT_SCHEMA,
+            "kind": "goal_satisfaction_counterfactual",
+            "text": query_text,
+        }, name=f"coverage query content for {event_id}")
+        if content_sha != expected_content_sha:
+            raise ValueError(f"coverage query content SHA does not bind text for {event_id}")
+
+        packet = packets[event_id]
+        audit = packet.get("audit")
+        actor = packet.get("actor_packet")
+        if (not isinstance(audit, Mapping) or not isinstance(actor, Mapping) or
+                audit.get("event_id") != event_id or audit.get("source") != source or
+                actor.get("observation_frame") != frame):
+            raise ValueError(f"coverage query event identity does not bind the authenticated packet for {event_id}")
+        request = render_requests[event_id]
+        provenance = coverage_source.get("provenance") if coverage_source is not None else None
+        if coverage_source is not None and not isinstance(provenance, Mapping):
+            raise ValueError("coverage source provenance is malformed")
+        if coverage_source is not None:
+            selector_job = coverage_source["selector_jobs_by_event"].get(event_id)
+            selector_request = coverage_source["selector_requests_by_event"].get(event_id)
+            if not isinstance(selector_job, Mapping) or not isinstance(selector_request, Mapping):
+                raise ValueError(f"coverage selector lineage is missing for {event_id}")
+            selector_source = selector_job.get("source_identity")
+            selector_anchor = selector_job.get("temporal_windows")
+            request_source = selector_request.get("source_identity")
+            if (selector_job.get("event_id") != event_id or
+                    selector_job.get("source_group_id") != source.get("source_group_id") or
+                    not isinstance(selector_anchor, Mapping) or
+                    selector_anchor.get("anchor_frame") != frame or
+                    not isinstance(selector_source, Mapping) or
+                    any(selector_source.get(key) != source.get(key)
+                        for key in ("source_release_manifest_sha256", "source_annotation_sha256",
+                                    "task_index", "task_instance_id", "raw_episode_id", "episode_index")) or
+                    not isinstance(request_source, Mapping) or
+                    request_source.get("source_group_id") != source.get("source_group_id")):
+                raise ValueError(f"coverage selector lineage does not bind the canonical event for {event_id}")
+        else:
+            selector_job = queue_row
+            selector_request = request
+        selector_record = ({key: value for key, value in selector_job.items() if key != "selection_order"}
+                           if coverage_source is None else selector_job)
+        expected_pin: dict[str, Any] = {
+            "schema_version": COVERAGE_SOURCE_PIN_SCHEMA,
+            "binding_kind": "coverage_selector_event_query",
+            "selection_role": "train",
+            "usage_role": "annotation_calibration",
+            "immutable_split": "train",
+            "event_id": event_id,
+            "selector_manifest_sha256": (
+                provenance["selector_manifest_sha256"] if provenance is not None else queue_manifest_sha
+            ),
+            "selector_selection_seal_sha256": (
+                provenance["selector_selection_seal_sha256"] if provenance is not None else queue_seal_sha
+            ),
+            "selector_job_filename": (
+                coverage_source["selector_jobs_path"].name if coverage_source is not None else queue_path.name
+            ),
+            "selector_job_sha256": (
+                sha256(coverage_source["selector_jobs_path"]) if coverage_source is not None else queue_file_sha
+            ),
+            "selector_record_sha256": _canonical_digest(
+                selector_record, name=f"coverage selector row for {event_id}"
+            ),
+            "render_request_filename": (
+                coverage_source["selector_requests_path"].name if coverage_source is not None else request_path.name
+            ),
+            "render_request_sha256": (
+                sha256(coverage_source["selector_requests_path"])
+                if coverage_source is not None else request_file_sha
+            ),
+            "render_request_record_sha256": _canonical_digest(
+                selector_request, name=f"coverage selector render request for {event_id}"
+            ),
+            "index_manifest_sha256": (
+                provenance["parent_index_manifest_sha256"] if provenance is not None else index_manifest_sha
+            ),
+            "index_event_file_sha256": (
+                provenance["parent_event_file_sha256"] if provenance is not None else index_event_sha
+            ),
+            "index_event_record_sha256": _canonical_digest(events[event_id], name=f"coverage event row for {event_id}"),
+            "inventory_seal_sha256": (
+                provenance["parent_inventory_seal_sha256"] if provenance is not None else inventory_sha
+            ),
+            "source_release_manifest_sha256": source.get("source_release_manifest_sha256"),
+            "source_annotation_sha256": source.get("source_annotation_sha256"),
+            "source_group_id": source.get("source_group_id"),
+            "raw_episode_id": source.get("raw_episode_id"),
+            "episode_index": source.get("episode_index"),
+            "observation_frame": frame,
+        }
+        # The producer's request row has no request_filename field; keep the
+        # authenticated payload basename explicit without accepting a caller
+        # supplied alternate path.
+        pin = row.get("source_pin")
+        pin_fields = set(COVERAGE_SOURCE_PIN_FIELDS)
+        if not isinstance(pin, Mapping) or set(pin) not in (pin_fields, pin_fields | set(COVERAGE_SOURCE_PIN_CATEGORY_FIELDS)):
+            raise ValueError(f"coverage query source pin fields are not authenticated for {event_id}")
+        has_category_pin = set(pin) == pin_fields | set(COVERAGE_SOURCE_PIN_CATEGORY_FIELDS)
+        if has_category_pin:
+            if (pin.get("category_mapping_sha256") != COVERAGE_CATEGORY_MAPPING_SHA256 or
+                    pin.get("category_mapping_rows") != COVERAGE_CATEGORY_MAPPING_ROWS or
+                    pin.get("category_mapping_official_commit") != COVERAGE_CATEGORY_MAPPING_COMMIT):
+                raise ValueError(f"coverage query category-map source pin is not authenticated for {event_id}")
+            expected_pin.update({
+                "category_mapping_sha256": COVERAGE_CATEGORY_MAPPING_SHA256,
+                "category_mapping_rows": COVERAGE_CATEGORY_MAPPING_ROWS,
+                "category_mapping_official_commit": COVERAGE_CATEGORY_MAPPING_COMMIT,
+            })
+        for key in ("selector_manifest_sha256", "selector_selection_seal_sha256", "selector_job_sha256",
+                    "render_request_sha256", "index_manifest_sha256", "index_event_file_sha256",
+                    "index_event_record_sha256", "inventory_seal_sha256", "source_release_manifest_sha256",
+                    "source_annotation_sha256", "source_group_id"):
+            _sha_text(pin.get(key), name=f"coverage source pin {key} for {event_id}")
+        for key in ("raw_episode_id", "episode_index", "observation_frame"):
+            _strict_int(pin.get(key), name=f"coverage source pin {key} for {event_id}", minimum=0)
+        if dict(pin) != expected_pin:
+            raise ValueError(f"coverage query source pin does not bind the authenticated handoff for {event_id}")
+        if event_bindings[event_id].get("selector_record_sha256") != expected_pin["selector_record_sha256"]:
+            raise ValueError(f"coverage event-binding selector record does not bind the producer lineage for {event_id}")
+        expected_query_id = _canonical_digest({
+            "schema_version": COVERAGE_QUERY_SCHEMA,
+            "selection_role": "train",
+            "usage_role": row["usage_role"],
+            "immutable_split": row["immutable_split"],
+            "event_id": event_id,
+            "source_group_id": row["source_group_id"],
+            "observation_frame": frame,
+            "query_ordinal_within_event": ordinal,
+            "skill_id": skill_id,
+            "canonical_verb": canonical_verb,
+            "query_text": query_text,
+            "relation_family": relation_family,
+            "goal_scope": "CURRENT_VISIBLE_RELATION_AT_ANCHOR",
+            "source_pin": dict(pin),
+        }, name=f"coverage query identity for {event_id}")
+        if query_id != expected_query_id:
+            raise ValueError(f"coverage query ID does not bind deterministic identity for {event_id}")
+        text_sha = hashlib.sha256(query_text.encode("utf-8")).hexdigest()
+        declared_ids = event_bindings[event_id].get("query_ids")
+        if not isinstance(declared_ids, list) or query_id not in declared_ids:
+            raise ValueError(f"coverage query registry row is absent from the event-binding receipt for {event_id}")
+        by_event[event_id] = {
+            "query_id": query_id,
+            "query_text_sha256": text_sha,
+            "query_ids": [query_id],
+            "status": event_bindings[event_id]["status"],
+        }
+        seen_query_ids.add(query_id)
+    for event_id, binding in event_bindings.items():
+        declared_ids = binding.get("query_ids")
+        if not isinstance(declared_ids, list):
+            raise ValueError(f"coverage event-binding query IDs are missing for {event_id}")
+        if coverage_source is not None:
+            selector_record = coverage_source["selector_jobs_by_event"].get(event_id)
+        else:
+            selector_record = {
+                key: value for key, value in queue_by_event[event_id].items() if key != "selection_order"
+            }
+        expected_selector_record_sha = _canonical_digest(
+            selector_record, name=f"coverage selector row for {event_id}"
+        )
+        if binding.get("selector_record_sha256") != expected_selector_record_sha:
+            raise ValueError(f"coverage event-binding selector record does not bind the producer lineage for {event_id}")
+        actual_ids = [entry["query_id"] for key, entry in by_event.items() if key == event_id]
+        if actual_ids != declared_ids:
+            raise ValueError(f"coverage query registry rows do not exactly match event-binding query IDs for {event_id}")
+        if not actual_ids:
+            by_event[event_id] = {"query_ids": [], "status": binding["status"]}
+    return by_event
+
+
+def _load_query_bindings(
+    path: Path, *, events: Mapping[str, Mapping[str, Any]], expected_event_ids: Iterable[str],
+    queue_meta: Mapping[str, Any], queue_path: Path, queue_seal_path: Path,
+    expected_queue_seal_sha256: str, selection_manifest_path: Path, index_root: Path,
+    index_manifest: Mapping[str, Any], packet_manifest: Mapping[str, Any],
+    packets: Mapping[str, Mapping[str, Any]], ordered_queue: list[Mapping[str, Any]],
+    render_requests: Mapping[str, Mapping[str, Any]] | None,
+    event_bindings: Mapping[str, Mapping[str, Any]] | None,
+    coverage_source: Mapping[str, Any] | None,
+) -> dict[str, dict[str, Any]]:
+    """Dispatch only explicitly recognized registry contracts.
+
+    The legacy phase40 validator remains unchanged.  Coverage EVAL and any
+    other coverage schema are rejected rather than being adapted into TRAIN.
+    """
+
+    rows = _read_jsonl(path, label="query registry")
+    schemas = {row.get("schema_version") for row in rows}
+    if COVERAGE_REGISTRY_SCHEMA in schemas:
+        if schemas != {COVERAGE_REGISTRY_SCHEMA}:
+            raise ValueError("query registry mixes coverage and legacy schemas")
+        if event_bindings is None:
+            raise ValueError("coverage query registry requires the explicit event-binding receipt")
+        return _validate_coverage_query_registry(
+            rows, events=events, expected_event_ids=expected_event_ids, queue_meta=queue_meta,
+            queue_path=queue_path, queue_seal_path=queue_seal_path,
+            expected_queue_seal_sha256=expected_queue_seal_sha256,
+            selection_manifest_path=selection_manifest_path, index_root=index_root,
+            index_manifest=index_manifest, packet_manifest=packet_manifest, packets=packets,
+            ordered_queue=ordered_queue, render_requests=render_requests, event_bindings=event_bindings,
+            coverage_source=coverage_source,
+        )
+    if any(schema == COVERAGE_EVAL_REGISTRY_SCHEMA or
+           (isinstance(schema, str) and schema.startswith("p107.coverage."))
+           for schema in schemas):
+        raise ValueError("coverage EVAL/unsupported registry schemas are not accepted by the TRAIN helper")
+    if event_bindings is not None:
+        raise ValueError("coverage event-binding receipt cannot be used with the legacy phase40 registry")
+    return _validate_query_registry(path, events, expected_event_ids=expected_event_ids)
 
 
 def _safe_payload_path(value: Any) -> bool:
@@ -921,7 +1526,12 @@ def _authenticate_packet_manifest(sealed_root: Path, index_root: Path, index_man
 def _load_inputs(sealed_root: Path, index_root: Path, queue_path: Path, queue_seal_path: Path,
                  expected_queue_seal_sha256: str, expected_packet_manifest_sha256: str,
                  render_requests_path: Path | None, expected_render_requests_sha256: str | None,
-                 query_registry: Path | None, expected_query_registry_sha256: str | None) -> tuple[
+                 query_registry: Path | None, expected_query_registry_sha256: str | None,
+                 coverage_event_bindings_path: Path | None,
+                 expected_coverage_event_bindings_sha256: str | None,
+                 coverage_provenance_path: Path | None,
+                 expected_coverage_provenance_sha256: str | None,
+                 coverage_selector_root: Path | None) -> tuple[
     dict[str, Any], dict[str, Any], Path, dict[str, Any], dict[str, dict[str, Any]], dict[str, Any],
     list[dict[str, Any]], dict[str, dict[str, Any]], dict[str, dict[str, Any]],
     dict[tuple[str, int, str], dict[str, Any]], dict[str, dict[str, str]] | None
@@ -1040,7 +1650,7 @@ def _load_inputs(sealed_root: Path, index_root: Path, queue_path: Path, queue_se
         packet_ids.add(packet_id)
     if set(packets) != set(queue_by_event):
         raise ValueError("sealed packets and explicit selection queue event IDs are not bijective")
-    _validate_render_requests(
+    render_requests = _validate_render_requests(
         render_requests_path, expected_render_requests_sha256, manifest, queue_meta,
         expected_queue_seal_sha256, events, ordered_queue, packets)
     receipts = _read_jsonl(receipts_path, label="native asset receipts")
@@ -1064,6 +1674,30 @@ def _load_inputs(sealed_root: Path, index_root: Path, queue_path: Path, queue_se
         native[key] = receipt
     if not native:
         raise ValueError("sealed packet output contains no native RGB receipts")
+    coverage_event_bindings = None
+    if coverage_event_bindings_path is not None:
+        if expected_coverage_event_bindings_sha256 is None:
+            raise ValueError("--coverage-event-bindings requires --expected-coverage-event-bindings-sha256")
+        coverage_event_bindings_path = Path(coverage_event_bindings_path)
+        if coverage_event_bindings_path.is_symlink() or not coverage_event_bindings_path.is_file():
+            raise ValueError("coverage event-binding receipt must be a regular file")
+        if sha256(coverage_event_bindings_path) != _authenticated_sha(
+                expected_coverage_event_bindings_sha256, name="expected coverage event-binding SHA-256"):
+            raise ValueError("coverage event-binding receipt bytes do not match the externally pinned SHA-256")
+        coverage_event_bindings = _validate_coverage_event_bindings(
+            _read_jsonl(coverage_event_bindings_path, label="coverage event-binding receipt"),
+            events=events, expected_event_ids=queue_by_event, ordered_queue=ordered_queue,
+        )
+    coverage_source = None
+    if coverage_provenance_path is not None or coverage_selector_root is not None:
+        if coverage_provenance_path is None or expected_coverage_provenance_sha256 is None or coverage_selector_root is None:
+            raise ValueError("coverage provenance requires an explicit provenance SHA and selector root")
+        coverage_source = _validate_coverage_source_provenance(
+            coverage_provenance_path, expected_coverage_provenance_sha256,
+            selector_root=coverage_selector_root, render_requests_path=render_requests_path,
+            selection_manifest_path=selection_manifest_path, queue_seal_path=queue_seal_path,
+            index_root=index_root, queue_meta=queue_meta, events=events,
+        )
     query_bindings = None
     if query_registry is not None:
         if expected_query_registry_sha256 is None:
@@ -1073,7 +1707,18 @@ def _load_inputs(sealed_root: Path, index_root: Path, queue_path: Path, queue_se
             raise ValueError("query registry must be a regular file")
         if sha256(query_registry) != _authenticated_sha(expected_query_registry_sha256, name="expected query registry SHA-256"):
             raise ValueError("query registry bytes do not match the externally pinned SHA-256")
-        query_bindings = _validate_query_registry(query_registry, events, expected_event_ids=queue_by_event)
+        query_bindings = _load_query_bindings(
+            query_registry, events=events, expected_event_ids=queue_by_event, queue_meta=queue_meta,
+            queue_path=queue_path, queue_seal_path=queue_seal_path,
+            expected_queue_seal_sha256=expected_queue_seal_sha256,
+            selection_manifest_path=selection_manifest_path, index_root=index_root,
+            index_manifest=index_manifest, packet_manifest=manifest, packets=packets,
+            ordered_queue=ordered_queue, render_requests=render_requests,
+            event_bindings=coverage_event_bindings,
+            coverage_source=coverage_source,
+        )
+    elif coverage_event_bindings is not None:
+        raise ValueError("coverage event-binding receipt requires --query-registry")
     return (manifest, queue_seal, selection_manifest_path, selection_manifest, index_manifest, source_groups,
             queue_meta, ordered_queue, events, packets, native, query_bindings)
 
@@ -1165,7 +1810,7 @@ def _write_pages(staging: Path, helper_id: str, event_id: str, packet_id: str, s
 
 
 def _event_output_row(queue_row: Mapping[str, Any], event: Mapping[str, Any], packet: Mapping[str, Any],
-                      query: Mapping[str, str] | None) -> dict[str, Any]:
+                      query: Mapping[str, Any] | None) -> dict[str, Any]:
     source = event.get("source")
     source_identity = {}
     if isinstance(source, Mapping):
@@ -1198,8 +1843,15 @@ def _event_output_row(queue_row: Mapping[str, Any], event: Mapping[str, Any], pa
     if "task_name" in event:
         row["task_name"] = event["task_name"]
     if query is not None:
-        row["prelabel_query_id"] = query["query_id"]
-        row["query_text_sha256"] = query["query_text_sha256"]
+        query_ids = query.get("query_ids")
+        if not isinstance(query_ids, list):
+            query_ids = [query["query_id"]]
+        row["query_ids"] = list(query_ids)
+        if query.get("status") is not None:
+            row["query_binding_status"] = query["status"]
+        if len(query_ids) == 1:
+            row["prelabel_query_id"] = query_ids[0]
+            row["query_text_sha256"] = query["query_text_sha256"]
     return row
 
 
@@ -1208,6 +1860,7 @@ def _build_one_output(staging: Path, *, event_rows: list[dict[str, Any]], page_r
                       queue_path: Path, queue_seal_path: Path, selection_manifest_path: Path,
                       source_protocol_sha256: str, source_release_manifest_sha256: str,
                       index_root: Path, query_registry: Path | None,
+                      coverage_event_bindings: Path | None,
                       temporal_view: str, covered: set[tuple[str, int, str]]) -> None:
     _write_jsonl(staging / "ordered_events.jsonl", event_rows)
     _write_jsonl(staging / "pages.jsonl", page_rows)
@@ -1236,6 +1889,8 @@ def _build_one_output(staging: Path, *, event_rows: list[dict[str, Any]], page_r
         "source_release_manifest_sha256": source_release_manifest_sha256,
         "query_registry_sha256": sha256(query_registry) if query_registry else None,
         "query_registry_external_only": query_registry is not None,
+        "coverage_event_bindings_sha256": sha256(coverage_event_bindings) if coverage_event_bindings else None,
+        "coverage_event_bindings_external_only": coverage_event_bindings is not None,
         "packet_manifest_status": manifest.get("status"),
     }
     (staging / "manifest.json").write_text(json.dumps(output_manifest, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
@@ -1247,11 +1902,18 @@ def _paths_overlap(first: Path, second: Path) -> bool:
 
 def _reject_output_overlap(targets: Iterable[Path], *, sealed_root: Path, index_root: Path,
                            queue_path: Path, queue_seal_path: Path,
-                           render_requests_path: Path | None = None) -> None:
+                           render_requests_path: Path | None = None,
+                           query_registry_path: Path | None = None,
+                           coverage_event_bindings_path: Path | None = None,
+                           coverage_provenance_path: Path | None = None,
+                           coverage_selector_root: Path | None = None) -> None:
     targets = tuple(targets)
     if len(targets) == 2 and _paths_overlap(targets[0], targets[1]):
         raise ValueError("--output and --audit-output must be disjoint sibling trees")
-    input_roots = tuple(path for path in (sealed_root, index_root, queue_path, queue_seal_path, render_requests_path)
+    input_roots = tuple(path for path in (sealed_root, index_root, queue_path, queue_seal_path,
+                                          render_requests_path, query_registry_path,
+                                          coverage_event_bindings_path, coverage_provenance_path,
+                                          coverage_selector_root)
                         if path is not None)
     for target in targets:
         for source in input_roots:
@@ -1284,7 +1946,12 @@ def build(*, sealed_root: Path, index_root: Path, queue_path: Path, output: Path
           queue_seal_path: Path | None = None, expected_queue_seal_sha256: str | None = None,
           expected_packet_manifest_sha256: str | None = None, render_requests_path: Path | None = None,
           expected_render_requests_sha256: str | None = None, audit_output: Path | None = None,
-          query_registry: Path | None = None, expected_query_registry_sha256: str | None = None) -> dict[str, Any]:
+          query_registry: Path | None = None, expected_query_registry_sha256: str | None = None,
+          coverage_event_bindings_path: Path | None = None,
+          expected_coverage_event_bindings_sha256: str | None = None,
+          coverage_provenance_path: Path | None = None,
+          expected_coverage_provenance_sha256: str | None = None,
+          coverage_selector_root: Path | None = None) -> dict[str, Any]:
     """Build actor-causal pages, optionally followed by a separate future audit set."""
 
     if queue_seal_path is None or expected_queue_seal_sha256 is None or expected_packet_manifest_sha256 is None:
@@ -1294,9 +1961,20 @@ def build(*, sealed_root: Path, index_root: Path, queue_path: Path, output: Path
     queue_path_raw = Path(queue_path)
     queue_seal_path_raw = Path(queue_seal_path)
     render_requests_path_raw = Path(render_requests_path) if render_requests_path is not None else None
+    query_registry_path_raw = Path(query_registry) if query_registry is not None else None
+    coverage_event_bindings_path_raw = (Path(coverage_event_bindings_path)
+                                        if coverage_event_bindings_path is not None else None)
+    coverage_provenance_path_raw = (Path(coverage_provenance_path)
+                                    if coverage_provenance_path is not None else None)
+    coverage_selector_root_raw = (Path(coverage_selector_root)
+                                  if coverage_selector_root is not None else None)
     if (sealed_root_raw.is_symlink() or index_root_raw.is_symlink() or queue_path_raw.is_symlink() or
             queue_seal_path_raw.is_symlink() or
-            (render_requests_path_raw is not None and render_requests_path_raw.is_symlink())):
+            (render_requests_path_raw is not None and render_requests_path_raw.is_symlink()) or
+            (query_registry_path_raw is not None and query_registry_path_raw.is_symlink()) or
+            (coverage_event_bindings_path_raw is not None and coverage_event_bindings_path_raw.is_symlink()) or
+            (coverage_provenance_path_raw is not None and coverage_provenance_path_raw.is_symlink()) or
+            (coverage_selector_root_raw is not None and coverage_selector_root_raw.is_symlink())):
         raise ValueError("authenticated input roots/files must not be symlinks")
     sealed_root = sealed_root_raw.resolve(strict=False)
     index_root = index_root_raw.resolve(strict=False)
@@ -1304,6 +1982,14 @@ def build(*, sealed_root: Path, index_root: Path, queue_path: Path, output: Path
     queue_seal_path = queue_seal_path_raw.resolve(strict=False)
     render_requests_path = (render_requests_path_raw.resolve(strict=False)
                             if render_requests_path_raw is not None else None)
+    query_registry = (query_registry_path_raw.resolve(strict=False)
+                      if query_registry_path_raw is not None else None)
+    coverage_event_bindings_path = (coverage_event_bindings_path_raw.resolve(strict=False)
+                                    if coverage_event_bindings_path_raw is not None else None)
+    coverage_provenance_path = (coverage_provenance_path_raw.resolve(strict=False)
+                                if coverage_provenance_path_raw is not None else None)
+    coverage_selector_root = (coverage_selector_root_raw.resolve(strict=False)
+                              if coverage_selector_root_raw is not None else None)
     output_raw = Path(output)
     if output_raw.is_symlink():
         raise FileExistsError(f"refusing symlink output target: {output_raw}")
@@ -1315,7 +2001,11 @@ def build(*, sealed_root: Path, index_root: Path, queue_path: Path, output: Path
         audit_output = audit_output_raw.resolve()
     _reject_output_overlap(tuple(target for target in (output, audit_output) if target is not None),
                            sealed_root=sealed_root, index_root=index_root, queue_path=queue_path,
-                           queue_seal_path=queue_seal_path, render_requests_path=render_requests_path)
+                           queue_seal_path=queue_seal_path, render_requests_path=render_requests_path,
+                           query_registry_path=query_registry,
+                           coverage_event_bindings_path=coverage_event_bindings_path,
+                           coverage_provenance_path=coverage_provenance_path,
+                           coverage_selector_root=coverage_selector_root)
     for target in (output, audit_output):
         if target is not None and target.exists():
             raise FileExistsError(f"refusing to overwrite existing output directory: {target}")
@@ -1323,7 +2013,9 @@ def build(*, sealed_root: Path, index_root: Path, queue_path: Path, output: Path
      queue_meta, ordered_queue, events, packets, native, query_bindings) = _load_inputs(
         sealed_root, index_root, queue_path, queue_seal_path, expected_queue_seal_sha256,
         expected_packet_manifest_sha256, render_requests_path, expected_render_requests_sha256,
-        query_registry, expected_query_registry_sha256)
+        query_registry, expected_query_registry_sha256, coverage_event_bindings_path,
+        expected_coverage_event_bindings_sha256, coverage_provenance_path,
+        expected_coverage_provenance_sha256, coverage_selector_root)
     # Authenticate every source image before creating any output directory.
     validated_temporal: dict[str, tuple[list[dict[str, Any]], list[dict[str, Any]]]] = {}
     for queue_row in ordered_queue:
@@ -1378,6 +2070,7 @@ def build(*, sealed_root: Path, index_root: Path, queue_path: Path, output: Path
                           source_protocol_sha256=queue_meta["protocol_sha256"],
                           source_release_manifest_sha256=queue_meta["source_release_manifest_sha256"],
                           index_root=index_root, query_registry=query_registry,
+                          coverage_event_bindings=coverage_event_bindings_path,
                           temporal_view="ACTOR_CAUSAL_ONLY", covered=actor_covered)
         if audit_tmp is not None:
             _build_one_output(audit_tmp, event_rows=audit_events, page_rows=audit_pages, manifest=manifest,
@@ -1387,6 +2080,7 @@ def build(*, sealed_root: Path, index_root: Path, queue_path: Path, output: Path
                               source_protocol_sha256=queue_meta["protocol_sha256"],
                               source_release_manifest_sha256=queue_meta["source_release_manifest_sha256"],
                               index_root=index_root, query_registry=query_registry,
+                              coverage_event_bindings=coverage_event_bindings_path,
                               temporal_view="OFFLINE_FUTURE_AUDIT_ONLY", covered=audit_covered)
         if output.exists() or (audit_output is not None and audit_output.exists()):
             raise FileExistsError("an output target appeared during authenticated build")
@@ -1414,7 +2108,10 @@ def build(*, sealed_root: Path, index_root: Path, queue_path: Path, output: Path
         "audit_native_source_images": len(audit_covered) if audit_output is not None else 0,
         "output": str(output),
         "audit_output": str(audit_output) if audit_output is not None else None,
-        "query_registry_rows": len(query_bindings) if query_bindings is not None else 0,
+        "query_registry_rows": (
+            sum(len(binding.get("query_ids", [])) for binding in query_bindings.values())
+            if query_bindings is not None else 0
+        ),
     }
 
 
@@ -1444,6 +2141,16 @@ def make_parser() -> argparse.ArgumentParser:
                         help="optional exact event/query registry; query text is validated but not copied to output")
     parser.add_argument("--expected-query-registry-sha256", default=None,
                         help="external SHA-256 for --query-registry")
+    parser.add_argument("--coverage-event-bindings", type=Path, default=None,
+                        help="explicit TRAIN selected_event_bindings.jsonl for a partial coverage registry")
+    parser.add_argument("--expected-coverage-event-bindings-sha256", default=None,
+                        help="external SHA-256 for --coverage-event-bindings")
+    parser.add_argument("--coverage-provenance", type=Path, default=None,
+                        help="explicit authenticated coverage selector-to-canonical provenance JSON")
+    parser.add_argument("--expected-coverage-provenance-sha256", default=None,
+                        help="external SHA-256 for --coverage-provenance")
+    parser.add_argument("--coverage-selector-root", type=Path, default=None,
+                        help="explicit original TRAIN selector root authenticated by --coverage-provenance")
     return parser
 
 
@@ -1457,7 +2164,12 @@ def main(argv: list[str] | None = None) -> int:
                         render_requests_path=args.render_requests,
                         expected_render_requests_sha256=args.expected_render_requests_sha256,
                         output=args.output, audit_output=args.audit_output, query_registry=args.query_registry,
-                        expected_query_registry_sha256=args.expected_query_registry_sha256)
+                        expected_query_registry_sha256=args.expected_query_registry_sha256,
+                        coverage_event_bindings_path=args.coverage_event_bindings,
+                        expected_coverage_event_bindings_sha256=args.expected_coverage_event_bindings_sha256,
+                        coverage_provenance_path=args.coverage_provenance,
+                        expected_coverage_provenance_sha256=args.expected_coverage_provenance_sha256,
+                        coverage_selector_root=args.coverage_selector_root)
     except (FileExistsError, ValueError, OSError) as exc:
         raise SystemExit(str(exc)) from exc
     print(json.dumps(summary, sort_keys=True))
