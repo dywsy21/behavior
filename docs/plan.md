@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01（北京时间）：P107-DART 候选采集合同与闭环接口完成，未启动任何 live 作业（Codex / P107-DART）
+
+- 在隔离 worktree `/home/wsy/behavior-worktrees/p107-dart`、稳定 sim 基线 `df9c1fa` 上新增候选专用 `dart_noise.py`、`dart_collection.py`、`collect_dart_demonstrations.py` 及聚焦回归；未修改 `PairedRecoveryCollector`、运行中的阶段1源码/环境、数据 authority 或 release。原始 Gaussian clean-supervisor 反馈与有界 `dart_inspired` 实际 clean recovery 分开记录；所有记录 `candidate_only=true`、训练/正例/authority 均为 false。
+- 已实现并以 CPU 合同测试验证：论文 Eq.4 的 per-trajectory covariance/trace-time scaling、可退化零 PSD Gaussian、确定性 seed；metadata 命名 native23 parts；requested/applied/noisy/clean 字段分离；fresh RGB/proprio+intent teacher query、TRAIN calibration source group 排除候选、fresh reset→task-instance runtime receipt；future teacher receipt、abort、非有限输入、超过 16 控制 chunk 和预算到期 unknown 的拒绝/停机。命令 `PYTHONPATH=src python tests/test_dart_noise.py && PYTHONPATH=src python tests/test_dart_collection.py` 通过；`pytest` 未安装，未安装依赖，两个测试保留 pytest 兼容及标准库 fallback。
+- 设计、原始论文/作者代码链接、116 个 full-v3 TRAIN calibration group 的 adapter receipt 要求、两臂匹配工程 pilot/停止条件见 [DART collection design](experiments/2026-10-01-dart-collection-design.md)。此处没有数据量、学习效果或恢复成功率结论；尚待独立代码审、sim owner 对新增 callback adapter 的协调、官方 RTX 路线/用户 4080 许可及 VPN 修复。0 GPU / SSH / 安装 / 仿真 reset / 实机动作。
+
 ### 2026-10-01 21:53（北京时间）：P107 10.7 负例/恢复数据准备获限域执行授权，尚未启动数据或仿真作业（Codex / P107-COORD）
 
 - 用户当前目标是完整实现 §10.7 的负例/恢复数据准备及其他准备；本次授权覆盖该数据准备与质量工程，**仅此范围覆盖**此前“尚未获采集授权”的旧口径。阶段2/3正式训练、长时搜索或新的大训练仍须单独批准；现有阶段1冻结源/env/v4 release 和队友活跃工作不改。

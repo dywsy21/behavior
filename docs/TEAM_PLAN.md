@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-10-01（北京时间）Codex / P107-DART：在独立 `feat/p107-dart-20261001` / `df9c1fa` 新增 DART 候选采集合同（不改 sim owner 的 collector）：原始 Gaussian clean-intended feedback 与有界 `dart_inspired` actual-clean recovery 分开，native23 metadata layout、TRAIN-only calibration exclusion、单状态单 clean target、32-predict/16-execute-start0 和 no-authority flags 已有 CPU 回归。DART adapter 仍由 sim owner 在其审查完成后对接；data owner 仍唯一决定外部 release/actual-action authority；父代理仍负责分层视觉抽样和最终验收。当前 0 数据/0 GPU/0 仿真/0 实机，待独立代码审、官方 RTX/用户4080许可和 VPN；不将候选合同或阶段1 checkpoint 当 teacher oracle 或训练放行。
+
 2026-10-01 21:53（北京时间）Codex / P107-COORD：用户已授权 §10.7 的负例/恢复**数据准备和质量工程**，覆盖旧“尚未获数据采集授权”的表述，但不授权阶段2/3正式训练、长搜索或新大训练。协调台账见[2026-10-01-recovery-data-preparation.md](experiments/2026-10-01-recovery-data-preparation.md)：Codex 是 active-goal owner，父代理唯一做最终验收和分层视觉抽样；infra 仅只读 lc1–lc3，schema/index 在本地，robo/local 做 restore readiness，随后独立 worktree 分别承担 data/event、sim 与 annotation shards，最后独立 code review。数据/RL队友原有活跃工作不覆盖、不热改阶段1源/env/v4。首批预算为metadata CPU≤30min/1worker/无RGB、候选CPU≤60min/4workers/2GiB/约200候选、GPU标注需readiness+父票、物理≤4 resets/20min；这些是工程单批上限而非最终规模封顶。当前无作业/数据质量结论；infra已报 ssh lc1/lc2/lc3 exit255及无1080 SOCKS/ControlMaster，等待允许恢复连接后只读核验，robo映射待核。
 
 2026-10-01 21:30（北京时间）Codex / PLAN-MEM100-PREPDATA完成[阶段1期间准备清单10.7](experiments/2026-09-29-memlite-gradient-training-design.md#107-阶段1未结束时可以并行准备什么2026-10-01)，仅待办建议：数据负责人做事件索引/自然纠正候选/人工参考集及小规模判别负例，本线程对齐schema/监督分流/单帧观察接口，RL负责人准备事件真值/restore/恢复教师验证。先复用v4、轻CPU侧准备，再经资源/预算确认做物理小验证；最终模型真实rollout及大规模高层intent重标后置。职责不重分配，0实际采集/新训练/节点占用，勿热改阶段1源/env/release。
