@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01（北京时间）：P107 DART 候选合同已推送；live 数据、release 与训练仍均为零（Codex / P107-COORD）
+
+- 隔离分支 `feat/p107-dart-20261001` 已推送候选专用 DART 合同 `569200e74e52932952ea99d535abaf6d398a9fcb`：`dart_noise.py`、`dart_collection.py`、无默认 runtime 的 CLI、设计和 CPU 合同测试。`PYTHONPATH=src python tests/test_dart_noise.py` 与 `tests/test_dart_collection.py` 均通过（当前环境无 pytest，因此测试也有标准库 fallback）；未安装依赖、未开 GPU/SSH/sim/robo、未生成 DART record。
+- 它严格区分两种**候选**语义：原始 unbounded Gaussian 的 `dart_clean_supervisor_feedback` 在每个已到达的 fresh state re-query clean teacher、执行 sampled noisy 23D 控制，clean intended label 不被称为 actual execution；bounded/correlated/capped 的 `dart_inspired` 流将 noisy applied control 与后续逐状态 re-query 且实际 applied 的 clean recovery 分开，noisy injection 明确排除 FM 正例。所有 view 均 `candidate_only=true`、training/positive/authority 为 false；frozen one-pass covariance 也不声称完整 iterative DART 实证。DART 是必需数据流，但这份候选实现不是实际数据、release 或 formal stage3 training authorization。
+- SIM 修复 `c556…` 已由 owner 报31个 sim＋5个 protocol 测试通过，仍待独立复审，不能写为 release-ready。冻结 v4 fixture 与两条样本已本地存在，但其 metadata 没有 serialised sim state/restore/controller state；live DART 必须以 official TRAIN task-instance 的 fresh reset 绑定当前 state/observation/action receipt，不能把 demo 视频或动作回放称为 restore。
+- 既有 persistent tmux `p107-lc-connect` 已恢复 loopback SOCKS `1080/1081`；只读状态为 lc3 reachable/idle、约996GiB memory/3.6TiB free。native RGB 三相机已实际以 PyAV 解码 HEVC 30fps（head 720²，双 wrist 480²）；container 跨 `EPISODE` interval 复用，temporal renderer 必须 clamp 到 episode 内。没有已知 OmniGibson 路径/import，未安装。lc1 high step12629、lc2 low step21337 仅只读健康核验、全部 GPU 仍忙，绝不干扰。
+- remote Git 状态仍在核：本 root 的 `git fetch origin --prune` 本次以 `gnutls_handshake(): TLS connection was non-properly terminated` 失败，故没有执行 pull 或覆盖；只保留当前 clean checkout。首40条 temporal batch 仍为0，diverse queue 修复正在复审，当前 unknown skill-ID gap 未证实为 v3 source error；mining `ebf3c70` candidate review 未批准，DATA temporal renderer/artifact-member semantics 修复中。local4080 路线仍等待用户选择，持续不用 robo。
+
 ### 2026-10-01 23:21（北京时间）：P107 v3 candidate index已完成；release、真实提取与仿真仍未放行（Codex / P107-COORD）
 
 - `full-v3-candidate-index` 已在`/home/wsy/behavior-annotations/p107/index-validation/full-v3-candidate-index`完成：seal `7ed1b2c5cbb50c8af042a2b9dca8529a6d133de5fc0fbe224601854235c31479`，20,000 source episodes、403,257 events、19,889 candidate-bearing sources、全100 tasks及35个**官方 skill ID+description**均出现、0 missing。运行仅metadata CPU（30.16秒、1.018**GiB**），roles为18,884 `student_candidate`、1,000 `evaluation_only`、116 `annotation_calibration`（16个既有pilot group加每task一组100）；accepted=0、全部`training_eligible=false`、metadata-only。35项官方映射已按ID/description合同核验，**不**声称100×35 task-skill Cartesian均为需要或均已观测的pair。

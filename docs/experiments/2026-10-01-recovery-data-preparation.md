@@ -43,6 +43,21 @@ DART 实际数据目前为 **0**；`prep_dart_design` 正在进行原始代码�
 
 DART 仍须满足 source-group split、可回放时间、23D→27D mapping/mask、immutable source hash、独立 publisher quality gate 和父代理分层图像/视频 QA。它与 recovery/outcome/corrective-action 视图分开计数和发布，不能以 DART candidate、合成噪声或重复窗口填充本台账的 `>=10k` / `>=1k` 真值目标；DART quality 通过也不将 formal stage3 training authorization 由 `false` 改为已授权。
 
+### 2026-10-01：DART 合同实现已推送；严格区分原始 clean-feedback 与有界实际恢复候选
+
+隔离 `feat/p107-dart-20261001` 已推送 `569200e74e52932952ea99d535abaf6d398a9fcb`，但实际 DART record、live sim、数据 release、positive FM mask 和 formal stage3 training 均仍为 **0 / false**。该实现只提供日后经独立审查的 adapter 所需合同；本地 CPU 的 `test_dart_noise.py` 与 `test_dart_collection.py` 已通过，当前环境未安装 pytest，因此测试保留 pytest 兼容和标准库 fallback。它没有安装环境、建立 SSH、启动 GPU/sim 或进行 robo 工作。
+
+| 候选 view | fresh-state teacher / 实际控制语义 | 绝不能写成 |
+| --- | --- | --- |
+| `dart_clean_supervisor_feedback`（原始 Gaussian） | 每个已到达的当前 RGB/proprio+intent state 都重新询问 teacher；保存单步 `clean_intended23`，采样并实际执行 `requested_noisy23`/`applied23`。exact original mode 要求 applied 等于 sampled request；clean label 并非 actual execution。 | 离线 jitter、旧 demo action replay、或已执行 clean corrective action。frozen one-pass covariance 也不能冒称已完成 full iterative DART 实证。 |
+| `dart_inspired_noisy_injection` 与 `dart_inspired_actual_clean_recovery` | named native23 physical parts 的 bounded/correlated/capped noise 是显式 DART-inspired；noisy requested/applied 与随后每个 reached state 重新查询、实际 applied 的 clean recovery 分开。每个 clean target 仅一动作，32-predict/从0最多执行16 的 contract 不制造跨未来 state 的32步 expert tail。 | original unbounded DART、把 injected noise 当 FM positive、或把 unexecuted clean recommendation 当 actual action。 |
+
+每条候选需保留 fresh teacher query、当前 observation/state/clock 和 applied-action pre-state digest、teacher/source/model/runtime/noise provenance、actual action bytes 和 delayed outcome evidence；任何 future/stale receipt、abort、非有限值、超过16控制 chunk 或 budget-end 均 fail-closed/UNKNOWN。它们一律 `candidate_only=true`、`training_eligible=false`、`low_action_supervision_positive=false`、`authority_minted=false`；外部 data authority 和父代理分层视频/标签审查仍是独立门。
+
+冻结 v4 fixture 与两条本地样本说明 source metadata 能绑定 immutable TRAIN task/task-instance，但没有 serialized simulator state、restore、controller/grasp/particle/RNG state。因此 online DART 只能从 official TRAIN task-instance 的 fresh reset 开始，并记录当前 session/runtime/asset/config/reset receipt；同状态 branch 若日后需要 restore，必须是该 live session 新捕获且可验证的 snapshot，**绝不能**以 demo video 或 actions replay 代替。
+
+SIM `c556…` 现报31个 sim＋5个 protocol 测试通过，仍待独立复审，故 real recovery/DART release 继续 blocked。DATA temporal renderer、artifact/member semantics 修复尚在进行；mining `ebf3c70` candidate review 未批准，首40条 temporal images/annotation batch 仍为0，unknown skill-ID gap 也尚未证实为 v3 source defect。local4080 compatibility 路线仍待用户选择，禁止 robo。
+
 ## 阶段、责任、预算与停止条件
 
 | 阶段 | 唯一责任与交付 | 初始预算/停止条件 | 放行条件 |
