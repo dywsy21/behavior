@@ -399,17 +399,28 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
             "protocol_sha256": _sha256(REPO / "src/g05/data/memlite_event_protocol.py"),
             "wall_seconds": time.monotonic() - started,
         }
-        (staging / "manifest.json").write_bytes(canonical_json(result).encode() + b"\n")
+        manifest_path = staging / "manifest.json"
+        manifest_path.write_bytes(canonical_json(result).encode() + b"\n")
+        packet_manifest_sha256 = _sha256(manifest_path)
         os.rename(staging, output)
-        return result
+        # The manifest deliberately does not self-hash.  Resume callers must
+        # retain this externally supplied value; recomputing a replacement is
+        # not a valid authority action.
+        return {**result, "packet_manifest_sha256": packet_manifest_sha256}
     except BaseException:
         shutil.rmtree(staging, ignore_errors=True)
         raise
 
 
-def resume_packets(index: Path, output: Path) -> dict[str, Any]:
+def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256: str | None) -> dict[str, Any]:
     index, output = Path(index), Path(output)
-    result = _read_json(output / "manifest.json")
+    if (not isinstance(expected_packet_manifest_sha256, str) or len(expected_packet_manifest_sha256) != 64 or
+            any(char not in "0123456789abcdef" for char in expected_packet_manifest_sha256)):
+        raise ValueError("--resume requires an externally pinned --expected-packet-manifest-sha256")
+    manifest_path = output / "manifest.json"
+    if _sha256(manifest_path) != expected_packet_manifest_sha256:
+        raise ValueError("packet manifest does not match the externally pinned authority SHA-256")
+    result = _read_json(manifest_path)
     if result.get("schema_version") != PACKET_INDEX_SCHEMA:
         raise ValueError("--resume requires a sealed P107 packet directory")
     if result.get("index_manifest_sha256") != _sha256(index / "manifest.json"):
@@ -453,8 +464,13 @@ def main() -> None:
     parser.add_argument("--contact-sheets", action="store_true", help="review-only composites; excluded from actor input")
     parser.add_argument("--max-seconds", type=float, default=1800.0)
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--expected-packet-manifest-sha256",
+                        help="external SHA-256 returned at packet creation; mandatory with --resume")
     args = parser.parse_args()
-    result = (resume_packets(args.index, args.output) if args.resume else create_packets(
+    if args.resume and args.expected_packet_manifest_sha256 is None:
+        parser.error("--resume requires --expected-packet-manifest-sha256 from an external authority record")
+    result = (resume_packets(args.index, args.output,
+                             expected_packet_manifest_sha256=args.expected_packet_manifest_sha256) if args.resume else create_packets(
         args.index, args.output, event_ids=_read_event_ids(args.event_ids, args.event_id), limit=args.limit,
         questions=_questions(args.questions), include_source_annotation_context=args.include_source_annotation_context,
         decode=args.decode, raw_root=args.raw_root, contact_sheets=args.contact_sheets,

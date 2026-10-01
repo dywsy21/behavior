@@ -37,11 +37,14 @@ class RenderEventPacketsTests(unittest.TestCase):
             self.assertFalse(result["review_only_contact_sheets"])
             self.assertEqual(set(result["files"]), {"packets.jsonl", "rendered_asset_receipts.jsonl"})
             self.assertEqual(result["rendered_asset_receipts"], 0)
-            self.assertEqual(renderer.resume_packets(index, packets)["status"], "RESUME_VALIDATED")
+            self.assertEqual(renderer.resume_packets(
+                index, packets, expected_packet_manifest_sha256=result["packet_manifest_sha256"])["status"],
+                "RESUME_VALIDATED")
             with (packets / "rendered_asset_receipts.jsonl").open("a") as stream:
                 stream.write(json.dumps({"forged": True}) + "\n")
             with self.assertRaisesRegex(ValueError, "rendered-asset receipt"):
-                renderer.resume_packets(index, packets)
+                renderer.resume_packets(index, packets,
+                                        expected_packet_manifest_sha256=result["packet_manifest_sha256"])
 
     def test_render_requires_bounded_selection_and_question_rows_cannot_carry_labels(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -101,7 +104,29 @@ class RenderEventPacketsTests(unittest.TestCase):
             with (packets / assets[0]["relative_path"]).open("ab") as stream:
                 stream.write(b"tamper")
             with self.assertRaisesRegex(ValueError, "rendered PNG bytes changed"):
-                renderer.resume_packets(index, packets)
+                renderer.resume_packets(index, packets,
+                                        expected_packet_manifest_sha256=result["packet_manifest_sha256"])
+
+    def test_resume_rejects_self_resigned_manifest_without_external_pin(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            release = root / "release"
+            fixture = write_release(release)
+            index = root / "index"
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
+            packets = root / "packets"
+            result = renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
+                                             include_source_annotation_context=False, decode=False, raw_root=None,
+                                             contact_sheets=False, max_seconds=10)
+            forged = json.loads((packets / "manifest.json").read_text())
+            forged["training_eligible"] = True
+            forged["status"] = "AUDITED"
+            (packets / "manifest.json").write_text(renderer.canonical_json(forged) + "\n")
+            with self.assertRaisesRegex(ValueError, "externally pinned"):
+                renderer.resume_packets(index, packets,
+                                        expected_packet_manifest_sha256=result["packet_manifest_sha256"])
+            with self.assertRaisesRegex(ValueError, "requires an externally pinned"):
+                renderer.resume_packets(index, packets, expected_packet_manifest_sha256=None)
 
 
 if __name__ == "__main__":
