@@ -311,6 +311,30 @@ class ActorQueryContractTests(unittest.TestCase):
             with self.assertRaisesRegex(ACTOR.ActorQueryError, "writable"):
                 ACTOR.read_actor_query_sidecar(root, metadata, files=files)
 
+    def test_file_receipts_require_exact_integer_bytes_rows(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            sidecar_path = root / "actor_queries.jsonl"
+            sidecar_path.write_bytes(b"{}\n")
+            sidecar_path.chmod(0o444)
+            root.chmod(0o555)
+            digest = _file_sha(sidecar_path)
+            metadata = {"schema_version": ACTOR.ACTOR_QUERY_SCHEMA,
+                        "path": sidecar_path.name, "sha256": digest, "row_count": 1,
+                        "prelabel_query_registry": None}
+            valid = {"sha256": digest, "bytes": sidecar_path.stat().st_size, "rows": 1}
+            self.assertEqual(ACTOR.validate_sidecar_manifest(
+                metadata, files={sidecar_path.name: valid}), metadata)
+            for invalid in (
+                    {**valid, "rows": 1.0},
+                    {**valid, "bytes": True},
+                    {**valid, "extra": "reject"},
+                    {**valid, "rows": -1},
+            ):
+                with self.assertRaisesRegex(ACTOR.ActorQueryError, "file receipt"):
+                    ACTOR.validate_sidecar_manifest(
+                        metadata, files={sidecar_path.name: invalid})
+
     def test_sidecar_duplicate_binding_and_missing_registry_are_rejected(self):
         query, registry = _goal_query("Check the desired goal.")
         row = {"schema_version": ACTOR.ACTOR_QUERY_SCHEMA,
