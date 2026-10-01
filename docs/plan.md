@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 23:48（北京时间）：P107 calibration40 metadata queue 已完成；仍无图像、标签、release 或训练准入（Codex / P107-COORD）
+
+- 独立复审后，MINING `33e1a5b` 在 1 CPU / 30 分钟 / 4 GiB address-space 上限下完成并 resume-核验 `/home/wsy/behavior-annotations/p107/index-validation/calibration40-v1`：create 为 18.14 秒、peak RSS 125,352 KiB、exit 0；queue seal 为 `78eda9c87b18e806e00e4820c172b02002d806e7c77fe9911368d42711de227c`。产物是 40 条 `annotation_calibration`、0 条 student，且 40 个 task / source group / episode 均不同；只覆盖 32/35 official skills。skill 103 在 calibration pool 中缺失；8、100 在 pool 中但受固定 policy cap 未选中，二者都**不**证明全源不可能。
+- 该队列全部是 `CANDIDATE_MISSING_EVIDENCE`、`training_eligible=false`，accepted labels=0；40 个新的 temporal camera-native images 尚未提取，故没有 annotation、outcome、recovery action 或 FM-positive。它只将 immutable source/split/role 和 temporal locator 请求交给仍待审的 renderer，不能以文件存在称为 ready-for-training。
+- v3 protocol provenance hold 已解决：full-v3 manifest 与其 owner-supplied immutable snapshot `/home/wsy/behavior-annotations/p107/protocol-snapshots/0693b93/src/g05/data/memlite_event_protocol.py` 均锁定 SHA `7f4f9fbf18fb4ba6ec97a304f0d787ebadb4f84c7184dd041c99027ad84aab0c`（commit `0693b93c29cf92e831b3cbc2edec40b69f4877e9`）。此前 reviewer 的“artifact absent”判断已撤回；无需改 expected hash、重封 seal 或重建 index。
+- SIM `56f7452` 已独立复审为 **candidate code approved**（36 recovery + 5 protocol tests；actor nested-reference / stale-evidence regressions）；实际 OmniGibson/live proof=0，仍不 release/不训练。DATA renderer `e112` 的 creation nested-context、resume identity+PTS+manifest、distinct timestamp 复审仍在进行；DART `569200e` 的 fail-closed 修复亦在进行。无代码集成、无共享/active env 改动、无 stage2/3 formal training。
+
 ### 2026-10-01（北京时间）：P107 DART 候选合同已推送；live 数据、release 与训练仍均为零（Codex / P107-COORD）
 
 - 隔离分支 `feat/p107-dart-20261001` 已推送候选专用 DART 合同 `569200e74e52932952ea99d535abaf6d398a9fcb`：`dart_noise.py`、`dart_collection.py`、无默认 runtime 的 CLI、设计和 CPU 合同测试。`PYTHONPATH=src python tests/test_dart_noise.py` 与 `tests/test_dart_collection.py` 均通过（当前环境无 pytest，因此测试也有标准库 fallback）；未安装依赖、未开 GPU/SSH/sim/robo、未生成 DART record。

@@ -143,6 +143,14 @@ SIM `df9c1fa`独审的剩余三项为false-genuine判别、actor input blacklist
 
 23:21新鲜infra observer结论为本地SOCKS未监听且lc3不可达。此前用户许可下唯一进行的reconnect由`prep_contract_review` sole operator执行，状态为RUNNING；未取得新鲜receipt前，禁止写成已连接或据此启动任何远端任务。local4080 sim+lc3 expert/data与lc-only defer的用户选择保持pending；当前仍不使用robo，不改远端/共享环境，不启动GPU sim或formal training。
 
+### 2026-10-01 23:48：首个有界 calibration40 queue 完成；仅 metadata 候选，不能替代 temporal 标注或恢复数据
+
+MINING `33e1a5b` 经独立复审后在`/home/wsy/behavior-annotations/p107/index-validation/calibration40-v1`完成：固定 full-v3 inventory seal `7ed1b2c5cbb50c8af042a2b9dca8529a6d133de5fc0fbe224601854235c31479`，create 18.14 秒 / 1 CPU / peak RSS 125,352 KiB / exit 0，queue seal `78eda9c87b18e806e00e4820c172b02002d806e7c77fe9911368d42711de227c`。它有40条 calibration、0条 student；40个 distinct task / source group / episode，32/35 official skills。103不在 calibration pool；8、100在pool但没被固定 policy cap 选中，不能误报为全源缺失或不可能覆盖。create 后的 sealed resume 也 exit 0（17.61 秒、123,956 KiB）。
+
+队列 policy 为 candidate budget 0、calibration budget 40、每 source group 1、每 episode 2；每项仍是`CANDIDATE_MISSING_EVIDENCE`，整个 queue `training_eligible=false`、accepted labels=0。40 条 temporal requests 尚未提取 camera-native images，尚无人工/agent temporal annotation、outcome truth、verified recovery 或 corrective action；因此不计入本文件的10k/1k目标，也不触发任何训练数据发布。
+
+此前 protocol artifact 缺失的 review claim 已更正：commit `0693b93c29cf92e831b3cbc2edec40b69f4877e9` 的 immutable snapshot 在`/home/wsy/behavior-annotations/p107/protocol-snapshots/0693b93/src/g05/data/memlite_event_protocol.py`，SHA `7f4f9fbf18fb4ba6ec97a304f0d787ebadb4f84c7184dd041c99027ad84aab0c`，与 full-v3 manifest 完全一致；无 index corruption、无重封或重建。SIM `56f7452`已独立复审为 candidate code approved（36 recovery + 5 protocol tests），但 live OmniGibson/physical proof仍为0；DATA renderer `e112` 的 creation nested-context、resume identity/PTS/manifest、distinct timestamp 问题和 DART `569200e` fail-closed fixes 均仍在处理，未合入/未 release。
+
 ## 当前状态、阻塞与交接
 
 2026-10-01 22:49（北京时间）为避免不相关的协议代码门阻碍有界的实际候选准备，infra owner 将在独立、干净且冻结于`af0e43d`的`/home/wsy/behavior-worktrees/p107-index-run`运行**本地 candidate-only** ≤200 pilot：1 CPU、≤30分钟、≤4GiB RAM、≤2GiB输出；必须以官方全局100-task/35-skill词表为合同，对无对应 task-skill pair 显式写 `null`，不得伪造覆盖。它不发布数据、不能设置正例或越过`8a683fe` gate；data owner 独立继续 protocol 与 PNG seal 修复。该运行已由上方23:06全量诊断索引取代为已完成状态；`p107-mining`状态同上，尚未生成实际队列。
