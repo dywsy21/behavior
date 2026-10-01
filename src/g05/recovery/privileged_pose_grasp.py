@@ -51,6 +51,13 @@ _PRIVATE_KEYS = frozenset(
 # manufacturing an "acknowledged" action by filling a public dataclass.
 _TRUSTED_TRACE_MINT_CAPABILITY = object()
 
+# Native R1Pro raw23 order is [base3, trunk4, left_arm7, left_gripper,
+# right_arm7, right_gripper].  These are control-channel identities, not the
+# 27-D model padding indices.  A noisy action may advance a native CLOSE
+# lifecycle only when both physical gripper channel *wire bytes* are unchanged.
+_R1PRO_GRIPPER_RAW23_CHANNELS = (14, 22)
+_GRASP_CLOSE_TOKENS = frozenset({"LEFT_CLOSE", "RIGHT_CLOSE"})
+
 
 def _text(value: object, field: str) -> str:
     if not isinstance(value, str) or not value or value != value.strip():
@@ -90,6 +97,23 @@ def raw23_wire_bytes(action: Sequence[float]) -> bytes:
 
 def raw23_wire_sha256(action: Sequence[float]) -> str:
     return sha256(raw23_wire_bytes(action)).hexdigest()
+
+
+def _preserves_r1pro_gripper_wire_bytes(intended: Sequence[float], actual: Sequence[float]) -> bool:
+    """Return true only for exact unchanged left/right gripper wire channels.
+
+    Float equality is deliberately insufficient here: native execution consumes
+    float32 raw23 bytes.  The caller has already validated the full receipt;
+    this narrow comparison determines whether a *different* base/arm action
+    could nevertheless have executed the same physical CLOSE channels.
+    """
+
+    intended_bytes = raw23_wire_bytes(intended)
+    actual_bytes = raw23_wire_bytes(actual)
+    return all(
+        intended_bytes[index * 4:(index + 1) * 4] == actual_bytes[index * 4:(index + 1) * 4]
+        for index in _R1PRO_GRIPPER_RAW23_CHANNELS
+    )
 
 
 def encode_r1pro_raw23(*, base_qvel: Sequence[float], joint_q18: Sequence[float], gripper: Sequence[float]) -> tuple[float, ...]:
@@ -487,6 +511,8 @@ class PoseServoEngine(Protocol):
 
     def acknowledge_actual_clean_application(self, applied: AppliedActionReceipt) -> None: ...
 
+    def acknowledge_noisy_application_with_preserved_grippers(self, applied: AppliedActionReceipt) -> None: ...
+
     def discard_unapplied_proposal(self, applied: AppliedActionReceipt) -> None: ...
 
 
@@ -645,6 +671,7 @@ class ExistingPoseServoEngine:
         self._binding_identity: str | None = None
         self._teacher: Any | None = None
         self._pending: _PendingCleanProposal | None = None
+        self._acknowledged_close_tokens: set[str] = set()
 
     @staticmethod
     def _binding_identity_for(binding: SealedGraspBinding) -> str:
@@ -697,6 +724,8 @@ class ExistingPoseServoEngine:
         result = tuple(_text(token, "PoseTeacher token") for token in ranked)
         if len(set(result)) != len(result):
             raise RecoveryContractError("PoseTeacher emitted duplicate candidate tokens")
+        if self._acknowledged_close_tokens and any(token in _GRASP_CLOSE_TOKENS for token in result):
+            raise RecoveryContractError("native lifecycle proposed a CLOSE after an acknowledged CLOSE")
         return result
 
     def raw23_for_token(self, snapshot: PrivateGraspSnapshot, token: str) -> Sequence[float] | None:
@@ -730,7 +759,41 @@ class ExistingPoseServoEngine:
             self._teacher.executed(pending.token, pending.snapshot.teacher_frame)
         except RuntimeError as exc:
             raise RecoveryContractError("PoseTeacher rejected acknowledged native lifecycle transition") from exc
+        if pending.token in _GRASP_CLOSE_TOKENS:
+            self._acknowledged_close_tokens.add(pending.token)
         self._pending = None
+
+    def acknowledge_noisy_application_with_preserved_grippers(self, applied: AppliedActionReceipt) -> None:
+        """Advance only a proven native CLOSE lifecycle after a noisy raw23 step.
+
+        This is intentionally narrower than clean acknowledgement.  The full
+        control is still a noisy actual execution: it never becomes a clean
+        command, a BC target, or a trusted physical-evidence trace.  The
+        native lifecycle gets one acknowledgement solely because both physical
+        gripper float32 channels are byte-identical to the previewed CLOSE and
+        the runtime receipt is tied to that exact fresh query.
+        """
+
+        pending = self._pending
+        if pending is None:
+            raise RecoveryContractError("no PoseTeacher proposal awaits noisy lifecycle acknowledgement")
+        _assert_pending_receipt(pending, applied, require_different=True)
+        actual = tuple(validate_raw23_action(applied.applied23))
+        if pending.token not in _GRASP_CLOSE_TOKENS:
+            raise RecoveryContractError("only native CLOSE may receive a noisy lifecycle acknowledgement")
+        if not _preserves_r1pro_gripper_wire_bytes(pending.intended23, actual):
+            raise RecoveryContractError("noisy action changed an R1Pro gripper channel")
+        if self._teacher is None:
+            raise RecoveryContractError("missing PoseTeacher lifecycle for noisy CLOSE acknowledgement")
+        try:
+            self._teacher.executed(pending.token, pending.snapshot.teacher_frame)
+        except RuntimeError as exc:
+            raise RecoveryContractError("PoseTeacher rejected noisy acknowledged native lifecycle transition") from exc
+        finally:
+            # The runtime control was already consumed.  It can never be
+            # re-acknowledged or re-proposed from this pending preview.
+            self._pending = None
+        self._acknowledged_close_tokens.add(pending.token)
 
     def discard_unapplied_proposal(self, applied: AppliedActionReceipt) -> None:
         """Clear a noisy/rejected proposal without advancing PoseTeacher state."""
@@ -755,6 +818,7 @@ class PrivilegedPoseGraspTeacher:
         self._world = world
         self._engine = engine
         self._pending: tuple[_PendingCleanProposal, TeacherCommand] | None = None
+        self._retired_reason: str | None = None
         # This capability is deliberately per teacher session.  It is never
         # serialized or projected and makes an unacknowledged proposal unable
         # to seed a local-success trace.
@@ -765,6 +829,8 @@ class PrivilegedPoseGraspTeacher:
         return ExistingPoseServoEngine._binding_identity_for(self.binding)
 
     def clean_action(self, observation: DartObservation, *, intent_bundle_id: str) -> TeacherCommand:
+        if self._retired_reason is not None:
+            raise RecoveryContractError(f"GRASP teacher episode is retired: {self._retired_reason}")
         if self._pending is not None:
             raise RecoveryContractError("previous clean teacher proposal needs runtime acknowledgement or noisy discard")
         if not isinstance(observation, DartObservation) or observation.observation_fresh is not True:
@@ -847,7 +913,15 @@ class PrivilegedPoseGraspTeacher:
     def acknowledge_runtime_noisy_application(
         self, runtime: "FreshRolloutRaw23Runtime", applied: AppliedActionReceipt
     ) -> None:
-        """Discard an actually applied noisy action without advancing clean lifecycle."""
+        """Record a noisy actual action without turning it into a clean label.
+
+        Harmless base/arm perturbations may be discarded and re-queried.  A
+        noisy CLOSE may acknowledge native lifecycle only when both gripper
+        float32 channels are byte-identical to the clean preview.  Any altered
+        gripper channel or failed lifecycle acknowledgement terminally retires
+        the teacher episode; the next fresh state cannot silently propose CLOSE
+        again from an unknowable physical lifecycle.
+        """
 
         pending_pair = self._pending
         if pending_pair is None:
@@ -857,6 +931,25 @@ class PrivilegedPoseGraspTeacher:
         if not isinstance(runtime, FreshRolloutRaw23Runtime):
             raise RecoveryContractError("noisy teacher discard requires FreshRolloutRaw23Runtime")
         runtime._consume_verified_receipt(applied)
+        actual = tuple(validate_raw23_action(applied.applied23))
+        if not _preserves_r1pro_gripper_wire_bytes(pending.intended23, actual):
+            try:
+                self._engine.discard_unapplied_proposal(applied)
+            finally:
+                self._pending = None
+                self._retired_reason = "noisy gripper/lifecycle effect is unknown"
+            raise RecoveryContractError("noisy gripper/lifecycle effect is unknown; GRASP teacher episode retired")
+        if pending.token in _GRASP_CLOSE_TOKENS:
+            try:
+                self._engine.acknowledge_noisy_application_with_preserved_grippers(applied)
+            except Exception as exc:
+                self._retired_reason = "noisy CLOSE lifecycle acknowledgement did not complete"
+                raise RecoveryContractError("noisy CLOSE lifecycle is unproven; GRASP teacher episode retired") from exc
+            finally:
+                self._pending = None
+            # Deliberately returns no TrustedGraspAction: the command remains
+            # an actual noisy control, never a clean BC/evidence authority.
+            return
         try:
             self._engine.discard_unapplied_proposal(applied)
         finally:
