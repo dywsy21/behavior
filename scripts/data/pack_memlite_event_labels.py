@@ -329,6 +329,209 @@ def _validate_group_inventory(groups: list[Mapping[str, Any]], events: list[Mapp
     return by_id
 
 
+def _sorted_unique_ints(value: Any, *, name: str, allow_empty: bool = True) -> list[int]:
+    if (not isinstance(value, list) or (not allow_empty and not value) or
+            any(type(item) is not int or item < 0 for item in value) or value != sorted(set(value))):
+        raise ValueError(f"{name} must be a sorted unique nonnegative integer list")
+    return list(value)
+
+
+def _sorted_unique_strings(value: Any, *, name: str, allow_empty: bool = True) -> list[str]:
+    if (not isinstance(value, list) or (not allow_empty and not value) or
+            any(not isinstance(item, str) or not item for item in value) or value != sorted(set(value))):
+        raise ValueError(f"{name} must be a sorted unique nonempty string list")
+    return list(value)
+
+
+def _nonnegative_int(value: Any, *, name: str) -> int:
+    if type(value) is not int or value < 0:
+        raise ValueError(f"{name} must be a nonnegative integer")
+    return value
+
+
+def _coverage_expectation_pin(coverage: Mapping[str, Any], expectations: Mapping[str, Any],
+                              index_manifest: Mapping[str, Any]) -> str:
+    expected_sha = index_manifest.get("coverage_expectations_sha256")
+    if not _is_sha(expected_sha) or coverage.get("expectations_sha256") != expected_sha:
+        raise ValueError("sealed event index coverage expectations pin is invalid")
+    if canonical_sha256(expectations) != expected_sha:
+        raise ValueError("sealed event index coverage expectations differ from their pin")
+    return expected_sha
+
+
+def _coverage_counts(coverage: Mapping[str, Any], index_manifest: Mapping[str, Any]) -> None:
+    for report_field, manifest_field in (("unique_input_source_episodes", "source_episodes"),
+                                         ("unique_event_candidates", "event_candidates")):
+        report_count = _nonnegative_int(coverage.get(report_field), name=f"coverage.{report_field}")
+        manifest_count = _nonnegative_int(index_manifest.get(manifest_field), name=f"index.{manifest_field}")
+        if report_count != manifest_count:
+            raise ValueError(f"sealed event index coverage {report_field} conflicts with immutable {manifest_field}")
+    candidate_episodes = _nonnegative_int(
+        coverage.get("unique_candidate_source_episodes"), name="coverage.unique_candidate_source_episodes")
+    if candidate_episodes > coverage["unique_input_source_episodes"]:
+        raise ValueError("coverage candidate source episodes exceed immutable input source episodes")
+
+
+def _v3_pairs(value: Any, *, tasks: set[int], skill_ids: set[int], name: str,
+              allow_none: bool) -> list[dict[str, int]] | None:
+    if value is None:
+        if allow_none:
+            return None
+        raise ValueError(f"{name} must be a declared task/skill pair list")
+    if not isinstance(value, list):
+        raise ValueError(f"{name} must be null or a task/skill pair list")
+    result: list[dict[str, int]] = []
+    previous: tuple[int, int] | None = None
+    for row in value:
+        if not isinstance(row, Mapping) or set(row) != {"task_index", "skill_id"}:
+            raise ValueError(f"{name} has a malformed task/skill pair")
+        task, skill = row["task_index"], row["skill_id"]
+        if type(task) is not int or type(skill) is not int or task not in tasks or skill not in skill_ids:
+            raise ValueError(f"{name} pair is outside the official task/skill contract")
+        key = task, skill
+        if previous is not None and key <= previous:
+            raise ValueError(f"{name} pairs must be sorted unique")
+        previous = key
+        result.append({"task_index": task, "skill_id": skill})
+    return result
+
+
+def _normalize_legacy_coverage(coverage: Mapping[str, Any], expectations: Mapping[str, Any],
+                               index_manifest: Mapping[str, Any]) -> dict[str, Any]:
+    required = {"schema_version", "official_metadata_sha256", "expected_task_ids", "expected_skill_verbs"}
+    if set(expectations) != required or expectations.get("schema_version") != "p107-official-coverage-expectations-v1":
+        raise ValueError("sealed event index coverage does not use a supported legacy official contract")
+    if not _is_sha(expectations.get("official_metadata_sha256")):
+        raise ValueError("legacy coverage official metadata pin is invalid")
+    tasks = _sorted_unique_ints(expectations["expected_task_ids"], name="legacy expected_task_ids", allow_empty=False)
+    skills = _sorted_unique_strings(expectations["expected_skill_verbs"], name="legacy expected_skill_verbs",
+                                    allow_empty=False)
+    _coverage_expectation_pin(coverage, expectations, index_manifest)
+    _coverage_counts(coverage, index_manifest)
+    grid = coverage.get("found_grid")
+    if not isinstance(grid, Mapping) or set(grid) != {str(task) for task in tasks}:
+        raise ValueError("legacy coverage grid does not bind the official task contract")
+    derived_missing: list[dict[str, Any]] = []
+    for task in tasks:
+        task_grid = grid.get(str(task))
+        if not isinstance(task_grid, Mapping) or set(task_grid) != set(skills):
+            raise ValueError("legacy coverage grid does not bind the official skill contract")
+        for skill in skills:
+            cell = task_grid[skill]
+            if not isinstance(cell, Mapping) or set(cell) != {"event_candidates", "unique_source_episodes"}:
+                raise ValueError("legacy coverage grid has an invalid count cell")
+            _nonnegative_int(cell["event_candidates"], name="legacy coverage event_candidates")
+            _nonnegative_int(cell["unique_source_episodes"], name="legacy coverage unique_source_episodes")
+            if cell["event_candidates"] == 0:
+                derived_missing.append({"task_index": task, "skill_verb": skill})
+    missing_grid = coverage.get("missing_grid")
+    if missing_grid != derived_missing:
+        raise ValueError("legacy coverage missing grid conflicts with its sealed count grid")
+    found_tasks = _sorted_unique_ints(coverage.get("found_task_ids"), name="legacy found_task_ids")
+    unexpected_tasks = _sorted_unique_ints(coverage.get("unexpected_task_ids"), name="legacy unexpected_task_ids")
+    found_skills = _sorted_unique_strings(coverage.get("found_skill_verbs"), name="legacy found_skill_verbs")
+    unexpected_skills = _sorted_unique_strings(coverage.get("unexpected_skill_verbs"), name="legacy unexpected_skill_verbs")
+    if (not set(found_tasks) <= set(tasks) or not set(found_skills) <= set(skills) or
+            set(unexpected_tasks) & set(tasks) or set(unexpected_skills) & set(skills)):
+        raise ValueError("legacy coverage marks official task or skill vocabulary as unexpected")
+    complete = not derived_missing and not unexpected_tasks and not unexpected_skills
+    if type(coverage.get("coverage_complete")) is not bool or coverage["coverage_complete"] != complete:
+        raise ValueError("legacy coverage completeness conflicts with its sealed report")
+    return {"schema": "p107-official-coverage-expectations-v1", "coverage_complete": complete,
+            "diagnostic_only": False, "missing_pairs": derived_missing}
+
+
+def _normalize_v3_coverage(coverage: Mapping[str, Any], expectations: Mapping[str, Any],
+                           index_manifest: Mapping[str, Any]) -> dict[str, Any]:
+    required = {"schema_version", "official_task_metadata_sha256", "official_skill_vocabulary_sha256",
+                "expected_task_ids", "expected_skill_vocabulary", "required_task_skill_pairs"}
+    if set(expectations) != required or expectations.get("schema_version") != "p107-official-coverage-expectations-v3":
+        raise ValueError("sealed event index coverage does not use a supported v3 official contract")
+    if (not _is_sha(expectations.get("official_task_metadata_sha256")) or
+            not _is_sha(expectations.get("official_skill_vocabulary_sha256"))):
+        raise ValueError("v3 coverage official source pins are invalid")
+    if expectations["official_task_metadata_sha256"] != index_manifest.get("source_release_manifest_sha256"):
+        raise ValueError("v3 coverage task metadata pin conflicts with immutable source release")
+    tasks = _sorted_unique_ints(expectations["expected_task_ids"], name="v3 expected_task_ids", allow_empty=False)
+    vocabulary = expectations["expected_skill_vocabulary"]
+    if not isinstance(vocabulary, list) or not vocabulary:
+        raise ValueError("v3 coverage expected_skill_vocabulary must be nonempty")
+    skill_ids: list[int] = []
+    descriptions: set[str] = set()
+    for skill in vocabulary:
+        if not isinstance(skill, Mapping) or set(skill) != {"skill_id", "skill_description"}:
+            raise ValueError("v3 coverage official skill vocabulary is malformed")
+        skill_id, description = skill["skill_id"], skill["skill_description"]
+        if (type(skill_id) is not int or skill_id < 0 or (skill_ids and skill_id <= skill_ids[-1]) or
+                not isinstance(description, str) or not description or description in descriptions):
+            raise ValueError("v3 coverage official skill vocabulary is not sorted unique")
+        skill_ids.append(skill_id)
+        descriptions.add(description)
+    _coverage_expectation_pin(coverage, expectations, index_manifest)
+    _coverage_counts(coverage, index_manifest)
+    expected_tasks, expected_skills = set(tasks), set(skill_ids)
+    found_tasks = _sorted_unique_ints(coverage.get("found_task_ids"), name="v3 found_task_ids")
+    missing_tasks = _sorted_unique_ints(coverage.get("missing_task_ids"), name="v3 missing_task_ids")
+    unexpected_tasks = _sorted_unique_ints(coverage.get("unexpected_task_ids"), name="v3 unexpected_task_ids")
+    found_skills = _sorted_unique_ints(coverage.get("found_global_skill_ids"), name="v3 found_global_skill_ids")
+    missing_skills = _sorted_unique_ints(coverage.get("missing_global_skill_ids"), name="v3 missing_global_skill_ids")
+    unmapped_skills = _sorted_unique_ints(coverage.get("unmapped_source_skill_ids"), name="v3 unmapped_source_skill_ids")
+    if (not set(missing_tasks) <= expected_tasks or not set(missing_skills) <= expected_skills or
+            set(unexpected_tasks) & expected_tasks or set(unmapped_skills) & expected_skills or
+            set(found_tasks) != expected_tasks - set(missing_tasks) or
+            set(found_skills) != expected_skills - set(missing_skills)):
+        raise ValueError("v3 coverage task/skill vocabulary report is inconsistent")
+    source_members_missing = _nonnegative_int(
+        coverage.get("source_skill_members_missing_skill_id"), name="v3 source_skill_members_missing_skill_id")
+    derived_global_complete = not (missing_tasks or missing_skills or unexpected_tasks or unmapped_skills or
+                                   source_members_missing)
+    if type(coverage.get("global_vocabulary_complete")) is not bool or coverage["global_vocabulary_complete"] != derived_global_complete:
+        raise ValueError("v3 coverage global vocabulary status is inconsistent")
+    declared_pairs = _v3_pairs(coverage.get("required_task_skill_pairs"), tasks=expected_tasks,
+                               skill_ids=expected_skills, name="v3 required_task_skill_pairs", allow_none=True)
+    if declared_pairs != _v3_pairs(expectations["required_task_skill_pairs"], tasks=expected_tasks,
+                                   skill_ids=expected_skills, name="v3 expectations.required_task_skill_pairs",
+                                   allow_none=True):
+        raise ValueError("v3 coverage required task/skill pairs differ from the official contract")
+    missing_pairs = coverage.get("missing_required_task_skill_pairs")
+    status = coverage.get("required_pair_coverage_status")
+    if declared_pairs is None:
+        if missing_pairs is not None or status != "NOT_DECLARED":
+            raise ValueError("v3 coverage must retain null missing pairs and NOT_DECLARED status when pairs are absent")
+        return {"schema": "p107-official-coverage-expectations-v3", "coverage_complete": False,
+                "diagnostic_only": True, "missing_pairs": None}
+    normalized_missing = _v3_pairs(missing_pairs, tasks=expected_tasks, skill_ids=expected_skills,
+                                   name="v3 missing_required_task_skill_pairs", allow_none=False)
+    if not set((row["task_index"], row["skill_id"]) for row in normalized_missing) <= set(
+            (row["task_index"], row["skill_id"]) for row in declared_pairs):
+        raise ValueError("v3 coverage missing task/skill pairs are not declared official pairs")
+    expected_status = "COMPLETE" if not normalized_missing else "INCOMPLETE"
+    if status != expected_status:
+        raise ValueError("v3 coverage required pair status conflicts with its missing pair report")
+    return {"schema": "p107-official-coverage-expectations-v3",
+            "coverage_complete": bool(derived_global_complete and not normalized_missing),
+            "diagnostic_only": False, "missing_pairs": normalized_missing}
+
+
+def _normalize_index_coverage(index_manifest: Mapping[str, Any]) -> dict[str, Any]:
+    if not _is_sha(index_manifest.get("source_release_manifest_sha256")):
+        raise ValueError("sealed event index source release pin is invalid")
+    if type(index_manifest.get("partial_source_coverage")) is not bool:
+        raise ValueError("sealed event index partial source coverage status is invalid")
+    coverage = index_manifest.get("coverage")
+    if not isinstance(coverage, Mapping):
+        raise ValueError("sealed event index lacks an explicit coverage/exclusion report")
+    expectations = coverage.get("expectations")
+    if not isinstance(expectations, Mapping):
+        raise ValueError("sealed event index coverage lacks official expectations")
+    schema = expectations.get("schema_version")
+    if schema == "p107-official-coverage-expectations-v1":
+        return _normalize_legacy_coverage(coverage, expectations, index_manifest)
+    if schema == "p107-official-coverage-expectations-v3":
+        return _normalize_v3_coverage(coverage, expectations, index_manifest)
+    raise ValueError("sealed event index coverage uses an unsupported official report schema")
+
+
 def _validate_review(review: Mapping[str, Any], view: Mapping[str, Any]) -> dict[str, Any]:
     required = ("view_id", "candidate_annotated", "parent_reviewed", "accepted_auxiliary",
                 "outcome_validated", "reviewer")
@@ -601,12 +804,11 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
               "corrective_action_source_episodes": len(accepted_corrective_source_episodes)}
     scale_ok = bool(minimum_scale) and all(actual[name] >= value for name, value in minimum_scale.items())
     index_coverage = index_manifest.get("coverage")
-    if not isinstance(index_coverage, Mapping):
-        raise ValueError("sealed event index lacks an explicit coverage/exclusion report")
-    missing_grid = index_coverage.get("missing_grid")
-    if not isinstance(missing_grid, list) or type(index_coverage.get("coverage_complete")) is not bool:
-        raise ValueError("sealed event index has no valid official task/skill coverage report")
-    source_index_complete = bool(require_complete_source_index and index_coverage["coverage_complete"] and
+    normalized_coverage = _normalize_index_coverage(index_manifest)
+    if normalized_coverage["diagnostic_only"] and release_role != "annotation_calibration":
+        raise ValueError("official coverage without declared task/skill pairs supports annotation_calibration only")
+    missing_grid = normalized_coverage["missing_pairs"]
+    source_index_complete = bool(require_complete_source_index and normalized_coverage["coverage_complete"] and
                                  not index_manifest.get("partial_source_coverage", True))
     # A source group cannot try to smuggle an otherwise valid action positive
     # through a later quality gate.  The attempt remains retained as

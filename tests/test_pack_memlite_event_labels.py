@@ -79,6 +79,84 @@ def write_streaming_fixture(index_path: Path, event: dict, *, row_count: int) ->
     return selected
 
 
+REAL_V3_SKILLS = (
+    (1, "move to"), (2, "pick up from"), (3, "place on"), (4, "place in"), (5, "hand over"),
+    (6, "insert"), (8, "release"), (9, "open drawer"), (10, "open door"), (11, "close drawer"),
+    (12, "close door"), (13, "open lid"), (14, "close lid"), (19, "attach"), (28, "pour"),
+    (34, "chop"), (46, "wipe hard"), (50, "sweep surface"), (61, "hang"), (67, "press"),
+    (69, "turn on switch"), (70, "turn off switch"), (88, "ignite"), (90, "push to"),
+    (91, "place on next to"), (92, "place in next to"), (93, "turn to"), (94, "hold"),
+    (95, "spray"), (98, "place under"), (99, "tip over"), (100, "push tray"),
+    (101, "pull tray"), (102, "sweep off"), (103, "lift"),
+)
+
+
+def real_full_v3_coverage_metadata() -> dict:
+    """Small pinned copy of the sealed full-v3 coverage metadata, not its event JSONL."""
+    expectations = {
+        "schema_version": "p107-official-coverage-expectations-v3",
+        "official_task_metadata_sha256": "90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23",
+        "official_skill_vocabulary_sha256": "811375498518c84ca671b18109e7ff959cd7d2d0e4037cdded305bc1334f0e11",
+        "expected_task_ids": list(range(100)),
+        "expected_skill_vocabulary": [
+            {"skill_id": skill_id, "skill_description": description} for skill_id, description in REAL_V3_SKILLS],
+        "required_task_skill_pairs": None,
+    }
+    expected_sha = "39ccfb79420010bfc32e2f00d66cae255340a997b20026dc970fdffee412b3c7"
+    assert pack.canonical_sha256(expectations) == expected_sha
+    return {
+        "source_release_manifest_sha256": expectations["official_task_metadata_sha256"],
+        "coverage_expectations_sha256": expected_sha,
+        "source_episodes": 20000,
+        "event_candidates": 403257,
+        "partial_source_coverage": False,
+        "coverage": {
+            "expectations": expectations,
+            "expectations_sha256": expected_sha,
+            "found_task_ids": list(range(100)),
+            "missing_task_ids": [],
+            "unexpected_task_ids": [],
+            "found_global_skill_ids": [skill_id for skill_id, _ in REAL_V3_SKILLS],
+            "missing_global_skill_ids": [],
+            "unmapped_source_skill_ids": [],
+            "source_skill_members_missing_skill_id": 0,
+            "global_vocabulary_complete": True,
+            "required_task_skill_pairs": None,
+            "missing_required_task_skill_pairs": None,
+            "required_pair_coverage_status": "NOT_DECLARED",
+            "unique_input_source_episodes": 20000,
+            "unique_candidate_source_episodes": 19889,
+            "unique_event_candidates": 403257,
+        },
+    }
+
+
+def v3_diagnostic_coverage(index_manifest: dict) -> dict:
+    expectations = {
+        "schema_version": "p107-official-coverage-expectations-v3",
+        "official_task_metadata_sha256": index_manifest["source_release_manifest_sha256"],
+        "official_skill_vocabulary_sha256": "b" * 64,
+        "expected_task_ids": [0],
+        "expected_skill_vocabulary": [{"skill_id": 1, "skill_description": "move to"}],
+        "required_task_skill_pairs": None,
+    }
+    index_manifest = deepcopy(index_manifest)
+    index_manifest["coverage_expectations_sha256"] = pack.canonical_sha256(expectations)
+    index_manifest["coverage"] = {
+        "expectations": expectations,
+        "expectations_sha256": index_manifest["coverage_expectations_sha256"],
+        "found_task_ids": [0], "missing_task_ids": [], "unexpected_task_ids": [],
+        "found_global_skill_ids": [1], "missing_global_skill_ids": [], "unmapped_source_skill_ids": [],
+        "source_skill_members_missing_skill_id": 0, "global_vocabulary_complete": True,
+        "required_task_skill_pairs": None, "missing_required_task_skill_pairs": None,
+        "required_pair_coverage_status": "NOT_DECLARED",
+        "unique_input_source_episodes": index_manifest["source_episodes"],
+        "unique_candidate_source_episodes": index_manifest["source_episodes"],
+        "unique_event_candidates": index_manifest["event_candidates"],
+    }
+    return index_manifest
+
+
 def view(event: dict, kind: str) -> dict:
     return {"schema_version": pack.SCHEMA_VERSION, "label_kind": kind, "view_id": "",
             "event_id": event["event_id"], "source_group_id": event["source"]["source_group_id"],
@@ -751,6 +829,58 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
             self.assertEqual([row["event_id"] for row in selected], [selected_id])
             self.assertLess(peak, payload_bytes // 2)
             self.assertLess(peak, 8 * 1024 * 1024)
+
+    def test_real_full_v3_coverage_metadata_is_diagnostic_not_cartesian_complete(self):
+        manifest = real_full_v3_coverage_metadata()
+        normalized = pack._normalize_index_coverage(manifest)
+        self.assertEqual(normalized, {
+            "schema": "p107-official-coverage-expectations-v3",
+            "coverage_complete": False,
+            "diagnostic_only": True,
+            "missing_pairs": None,
+        })
+
+        for path, value, error in (
+                (("coverage", "required_pair_coverage_status"), "COMPLETE", "null missing pairs"),
+                (("coverage", "missing_required_task_skill_pairs"), [], "null missing pairs"),
+                (("coverage", "global_vocabulary_complete"), False, "global vocabulary status"),
+                (("source_release_manifest_sha256",), "0" * 64, "task metadata pin")):
+            with self.subTest(path=path):
+                malformed = deepcopy(manifest)
+                target = malformed
+                for key in path[:-1]:
+                    target = target[key]
+                target[path[-1]] = value
+                with self.assertRaisesRegex(ValueError, error):
+                    pack._normalize_index_coverage(malformed)
+        malformed = deepcopy(manifest)
+        malformed["coverage"].pop("found_global_skill_ids")
+        with self.assertRaisesRegex(ValueError, "found_global_skill_ids"):
+            pack._normalize_index_coverage(malformed)
+
+    def test_v3_diagnostic_coverage_is_calibration_only_and_never_formally_complete(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, groups, events, index_manifest = indexed(root)
+            v3_manifest = v3_diagnostic_coverage(index_manifest)
+            calibration = next(event for event in events if event["usage_role"] == "annotation_calibration")
+            result, _ = pack.build_release(
+                groups, events, annotations(calibration), index_manifest=v3_manifest,
+                release_role="annotation_calibration", minimum_scale=None,
+                request_dataset_quality_eligibility=False,
+                index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"))
+            self.assertFalse(result["source_index_complete"])
+            self.assertFalse(result["dataset_quality_eligibility"])
+            self.assertEqual(result["release_eligibility"], "CANDIDATE_ONLY")
+            self.assertEqual(result["source_index_coverage"]["required_pair_coverage_status"], "NOT_DECLARED")
+            self.assertIsNone(result["exclusions"]["official_coverage_missing_grid"])
+            student = next(event for event in events if event["usage_role"] == "student_candidate")
+            with self.assertRaisesRegex(ValueError, "annotation_calibration only"):
+                pack.build_release(
+                    groups, events, annotations(student), index_manifest=v3_manifest,
+                    release_role="student_candidate", minimum_scale=None,
+                    request_dataset_quality_eligibility=False,
+                    index_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"))
 
 
 if __name__ == "__main__":
