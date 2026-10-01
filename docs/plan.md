@@ -12,11 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
-### 2026-10-02 06:00–06:08（北京时间）：lc3 52-row RGB decode 的冻结输入与 TRAIN canonical handoff 已就绪；尚未启动 decoder（Codex / P107-COORD）
+### 2026-10-02 06:00–06:10（北京时间）：lc3 52-row RGB decode 的冻结输入与 TRAIN canonical handoff 已就绪；decoder 运行中（Codex / P107-COORD）
 
 - 在既有 VPN/SOCKS 路径、不触碰 lc1/lc2/robo/shared env 的前提下，已把**代码仅经 Git bundle**同步到 fresh `/data/workspace/wsy/behavior2026/src/p107-coverage-causal-d582c0e`，并核为`d582c0e91208b865e88aa42fd4b507f5fc437bef`。full-v3 与 selector/protocol 输入作为获授权的固定 metadata 工件传入 fresh staging（input archive `99,726,505B`, SHA `41f55e089207673cf572ab7e6babda925b1ffa7fab1ce4c469b96e31b27b3c36`），逐文件复核full-index manifest/inventory/event/source-group、coverage bytes 与legacy7f protocol SHA，未使用旧mini index代替EVAL验证。
 - 同一受限CPU setup（`taskset` CPU0、`nice 19`、idle I/O、4GiB address-space、0GPU）已产生TRAIN canonical handoff：`47` selected、queue seal `acff15dc676576c4138974daef7618b2e472485b1388ac6a068f950a91854330`、render-request SHA `339b8aa15714620303462e9c788e9962d846412c234427bc66c49cd767ceb853`、provenance SHA `5796dfe0278b8f318732784de93ec808c7a7724b822c920a7dd284011cef630f`。EVAL仍只会使用独立receipt/renderer和其原有5-row eval selector，绝不携带或生成TRAIN queue seal。
-- 这只是decode前的可验证setup，**仍无RGB/PNG/packets/pages/labels/E2 credit**。下一步是已授权的单次52-row（47 TRAIN、5 EVAL）顺序native RGB decode；实际decoder启动后才开始计≤15分钟总decode cap，并将写fresh `/data/workspace/wsy/behavior2026/p107/runs/coverage-cohort-next-v1-rgb-v1{,.receipts}`。仍为candidate-only：无action/outcome/recovery/BC/DART/release/training。
+- setup完成后实际启动唯一decoder：UTC`2026-10-01T22:10:16Z`（CST`06:10:16`），supervisor PID`1726127`，hard deadline UTC`22:25:16Z`；fresh run为`/data/workspace/wsy/behavior2026/p107/runs/coverage-cohort-next-v1-rgb-v1`、launch receipt为同级`.receipts/decode-launch.json`。它按47 TRAIN再5 EVAL顺序运行，固定CPU0/`nice 19`/idle-I/O/4GiB/0GPU/outer 15-minute timeout。**运行中不等于RGB/PNG/packets/pages/labels/E2 credit完成**；结束后须逐split恢复验证、核52 distinct identity/role/split与native causal/future-audit assets，失败或超时不自动扩大。
 - live DART同时保持0：H75资料只证明可考虑物理tick hook，未接入LC。未来必须以实际`physics_dt`计算`ceil(0.5/dt)+1`连续tick（H75历史120Hz下至少61，不得给LC3写死频率）；仍缺session-owned observe/apply/world、逐physics-tick recorder、clean-application ack和preclose baseline，control读取不能冒充physics ticks。
 
 ### 2026-10-02（北京时间）：role-safe coverage renderer 与 causal-only review builder 已独审合根；lc3 decode 仅完成只读预检（Codex / P107-COORD）
