@@ -57,6 +57,7 @@ PACKET_MANIFEST_FIELDS = frozenset((
 ))
 TEMPORAL_SAMPLE_OFFSETS = (-90, -60, -30, -15, 0, 15, 30)
 MAX_TEMPORAL_OFFSET_FRAMES = 240  # Eight seconds at the source 30 Hz clock.
+ACTOR_INSTRUCTION = "Use only the camera-native RGB images and question context. Source annotation context is not ground truth."
 
 
 def _strict_json(data: bytes, *, name: str) -> Any:
@@ -218,6 +219,8 @@ def _packet_id(index_sha256: str, event: Mapping[str, Any], context: Mapping[str
         "schema_version": PACKET_SCHEMA_VERSION,
         "index_manifest_sha256": index_sha256,
         "event_id": event["event_id"],
+        "source_release_manifest_sha256": event["source"]["source_release_manifest_sha256"],
+        "source_group_id": event["source"]["source_group_id"],
         "observation_frame": event["observation"]["frame"],
         "question_context": context,
         "decoded_camera_native_rgb": decode,
@@ -514,7 +517,7 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                 "images": actor_images,
                 "causal_temporal_rgb": actor_temporal_rgb,
                 "question_context": context,
-                "actor_instruction": "Use only the camera-native RGB images and question context. Source annotation context is not ground truth.",
+                "actor_instruction": ACTOR_INSTRUCTION,
             }
             # Actor input has no source outcome, evidence, review, label, or
             # contact-sheet path.  Those remain in the audit section below.
@@ -601,7 +604,7 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
                       "question_context", "actor_instruction"}
     if not isinstance(actor, Mapping) or set(actor) != actor_required or actor["packet_id"] != packet["packet_id"]:
         raise ValueError("packet actor input has an invalid schema")
-    if not isinstance(actor["question_context"], Mapping) or not isinstance(actor["actor_instruction"], str):
+    if not isinstance(actor["question_context"], Mapping) or actor["actor_instruction"] != ACTOR_INSTRUCTION:
         raise ValueError("packet actor question/instruction schema is invalid")
     if _actor_has_forbidden_key(actor):
         raise ValueError("actor input contains forbidden outcome/label/review/evidence material")
