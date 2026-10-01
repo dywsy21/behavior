@@ -49,8 +49,15 @@ future frames do not enter this path.
 session.  It ranks current pose actions and asks `SafeServo` only to preview
 the first finite native command; a preview never advances its native lifecycle.
 Only an exact actual raw23 receipt from `FreshRolloutRaw23Runtime` may
-acknowledge that proposal and call native `PoseTeacher.executed`; an applied
-different/noisy action explicitly discards it without lifecycle advancement.
+acknowledge that proposal and call native `PoseTeacher.executed`.  A different
+noisy action normally discards the preview.  The one narrow exception is a
+native `LEFT_CLOSE`/`RIGHT_CLOSE` whose actual action preserves **both** R1Pro
+gripper raw23 float32 wire channels (14 and 22) byte-for-byte: it may advance
+the private native lifecycle after the same fresh receipt checks, but remains a
+noisy actual execution—not a clean BC target, trusted action, or evidence
+trace.  Any changed gripper channel or failed/unknown noisy CLOSE lifecycle
+terminally retires the episode; a subsequent fresh `held=FALSE` cannot request
+another CLOSE.
 The engine cannot switch bindings mid-session or infer a previous CLOSE from a
 fresh `held` flag.  `FreshRolloutRaw23Runtime` is the sole execution seam; it
 accepts no snapshot mode other than `no_restore_fresh_rollout`, requires a

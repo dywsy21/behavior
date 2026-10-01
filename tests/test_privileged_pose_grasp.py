@@ -164,15 +164,17 @@ def test_r1pro_mapping_rejects_padding_and_nonfinite():
         encode_r1pro_raw23(base_qvel=(0, 0, 0), joint_q18=(0,) * 17 + (float("nan"),), gripper=(0, 0))
 
 
-def test_teacher_requeries_current_noise_reached_state_without_side_effects():
+def test_teacher_requeries_current_harmless_motion_noise_without_side_effects():
     engine, world = Engine(), World()
     teacher = PrivilegedPoseGraspTeacher(binding=binding(), world=world, engine=engine)
     runtime = FreshRolloutRaw23Runtime(RuntimeHooks())
     first_observation = runtime.observe()
     first = teacher.clean_action(first_observation, intent_bundle_id="grasp-intent-1")
-    # This is a noisy DART execution, not a clean label or a native lifecycle
-    # transition.  The actual runtime receipt permits exactly one discard.
-    teacher.acknowledge_runtime_noisy_application(runtime, runtime.apply_raw23([0.0] * 23))
+    # This base-only perturbation preserves both gripper raw23 channels.  It
+    # remains a noisy execution, not a clean label or native lifecycle event.
+    noisy = list(first.clean_intended23)
+    noisy[0] += 0.01
+    teacher.acknowledge_runtime_noisy_application(runtime, runtime.apply_raw23(noisy))
     second_observation = runtime.observe()
     second = teacher.clean_action(second_observation, intent_bundle_id="grasp-intent-1")
     assert first.clean_intended23 == (1.0,) * 23
@@ -444,8 +446,8 @@ def close_teacher_and_runtime():
             type(self).instances.append(self)
 
         def ranked(self, state, frame, goal, base, grips, model):
-            if self.close_issued and frame["held"]["right"] is False:
-                raise RuntimeError("Close did not establish target identity contact; no retry")
+            # The wrapper, rather than this convenient fake, must prevent a
+            # second CLOSE after an executed lifecycle acknowledgement.
             return ("RIGHT_CLOSE",)
 
         def executed(self, token, frame):
@@ -498,9 +500,8 @@ def test_native_close_lifecycle_advances_only_after_exact_runtime_acknowledgemen
     assert native.instances[0].executed_tokens == ["RIGHT_CLOSE"]
 
     # A fresh scene reporting NOT_HELD cannot cause a blind second CLOSE after
-    # the one actual close acknowledgement.  The persistent native state owns
-    # this decision, rather than reconstructing it from current ``held``.
-    with pytest.raises(RecoveryContractError, match="lifecycle"):
+    # the one actual close acknowledgement, even if native ranked() offers it.
+    with pytest.raises(RecoveryContractError, match="CLOSE after an acknowledged"):
         teacher.clean_action(runtime.observe(), intent_bundle_id="grasp-intent-1")
 
 
@@ -510,6 +511,34 @@ def test_unapplied_close_proposal_does_not_advance_native_lifecycle():
     with pytest.raises(RecoveryContractError, match="previous clean"):
         teacher.clean_action(observation(99), intent_bundle_id="grasp-intent-1")
     assert native.instances[0].executed_tokens == []
+
+
+def test_base_noisy_close_acknowledges_only_native_lifecycle_not_clean_authority():
+    teacher, runtime, native = close_teacher_and_runtime()
+    command = teacher.clean_action(runtime.observe(), intent_bundle_id="grasp-intent-1")
+    noisy = list(command.clean_intended23)
+    noisy[0] += 0.01
+
+    # The runtime applied a different raw23 vector, but both gripper float32
+    # channels remained byte-identical to the CLOSE preview.  This may advance
+    # only the private native lifecycle; no TrustedGraspAction is minted.
+    assert teacher.acknowledge_runtime_noisy_application(runtime, runtime.apply_raw23(noisy)) is None
+    assert native.instances[0].executed_tokens == ["RIGHT_CLOSE"]
+    with pytest.raises(RecoveryContractError, match="CLOSE after an acknowledged"):
+        teacher.clean_action(runtime.observe(), intent_bundle_id="grasp-intent-1")
+
+
+def test_noisy_gripper_change_retires_episode_without_lifecycle_acknowledgement():
+    teacher, runtime, native = close_teacher_and_runtime()
+    command = teacher.clean_action(runtime.observe(), intent_bundle_id="grasp-intent-1")
+    noisy = list(command.clean_intended23)
+    noisy[22] += 0.01
+
+    with pytest.raises(RecoveryContractError, match="retired"):
+        teacher.acknowledge_runtime_noisy_application(runtime, runtime.apply_raw23(noisy))
+    assert native.instances[0].executed_tokens == []
+    with pytest.raises(RecoveryContractError, match="retired"):
+        teacher.clean_action(runtime.observe(), intent_bundle_id="grasp-intent-1")
 
 
 def local_outcome():
