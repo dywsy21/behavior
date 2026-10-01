@@ -12,6 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107-LC3-CAL40 首个 packet 因同帧 PTS 浮点舍入中止；全40未发布，修复待复审（prep_contract_review / Codex）
+
+- `a068404` 的 full-40 decode 在第一个 canonical packet 安全停止、staging/output均已清理：left_wrist zero-offset 的 requested/actor anchor=`5885.166666666664`，stream rational PTS=`5885.166666666667`，相差约`3e-12 s`但属于同一30Hz frame；现有严格浮点 `actual <= actor_anchor` 错拒。该物理因果门本身正确，当前仅修复表示误差（绝对≤`1e-9 s`、不放宽至分数帧），并须回归拒绝真实`+1e-6 s`和`+1/30 s` future PTS；在独立复审新 SHA 前，operator 不重试。
+- 因此 full40 的 decoded packet/RGB/annotation/outcome/action/release仍均为0。一个先前、隔离于release的单event smoke bundle（`f51…`）保留34 files / 12,212,645B、manifest SHA `d61c9dc7b8f56ab0eb73f24004070c3890f26fb49790407200385a00cfdd3d5f`；父代理仅作模型视觉审看6张 native frame（t04 head/L/R、t07 head、t09 head/R）：fridge open、meat-like object仍在shelf、右开夹爪稍后从shelf下方接近，未观察到完成grasp、failure或recovery。它绑定的`OPEN_DOOR`与`GRASP`仍必须分开，绝不外推全局成功/失败；`parent_root_model_review_completed=true`不等于human，`human_reviewed=false`。
+
 ### 2026-10-02 00:09:33（北京时间）：P107-LC3-CAL40 SETUP/RUNNING；仅部署/解码准备，实际 decoded packet 仍为0（prep_contract_review）
 
 - 独立 reviewer 已对 renderer `a068404` 完成 final review（10/10 focused tests、actual-40 local create/resume；已知 adversarial cases 均拒绝）。operator `prep_contract_review` 已确认 lc3 可达、idle、目标输出尚不存在，正从冻结 Git checkout 部署/准备 decode；这不是完成回执，也不表示已有 PNG、annotation、outcome/action 或 release。
