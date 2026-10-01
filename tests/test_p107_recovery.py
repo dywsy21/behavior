@@ -28,6 +28,7 @@ from g05.recovery.protocol_bridge import (
     actor_evidence_projection,
     load_protocol,
     project_action_23_to_27,
+    validate_corrective_action_view,
     validate_transport_receipt,
 )
 from g05.recovery.snapshot import (
@@ -79,6 +80,26 @@ class FakeSnapshotBackend:
 
     def state_fingerprint(self, state) -> str:
         return canonical_sha256(state)
+
+
+class BranchRestoreInventoryDriftBackend(FakeSnapshotBackend):
+    """A fake whose branch restores leave a non-robot inventory residue.
+
+    The 61-D fake observation remains the same, reproducing why a robot-state
+    equality check cannot stand in for a full restored-snapshot equality check.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.restore_calls = 0
+
+    def load_state(self, state, *, serialized: bool) -> None:
+        super().load_state(state, serialized=serialized)
+        self.restore_calls += 1
+        # The first restore is the fault evaluation.  Both branch restores
+        # retain a hidden world residue while the public 61-D clock stays 0.
+        if self.restore_calls > 1:
+            self.state["objects"]["world"] += 1
 
 
 class FakeActionBackend:
@@ -342,7 +363,7 @@ class BranchCollectorTest(unittest.TestCase):
             intent_bundle_id="intent-p107-grasp-0001",
             prior_intent_bundle_id="intent-before",
             branch_seed=17,
-            actor_evidence={"rgb_ref": "rgb://step/0", "feedback": "retry"},
+            actor_evidence={"rgb_ref": "rgb://step/0"},
         )
         self.assertTrue(receipt.no_intervention_same_state)
         self.assertTrue(receipt.corrective_same_state)
@@ -377,7 +398,9 @@ class BranchCollectorTest(unittest.TestCase):
             event_ref={"event": "p107"},
             post_fault_snapshot=self.snapshots.capture("post_fault"),
             no_intervention_actions23=[ZERO23],
-            corrective_actions23=[ONE23],
+            # Identical branch actions are not a reason to erase a physics-
+            # proven recovery candidate.  Comparative benefit remains unset.
+            corrective_actions23=[ZERO23],
             skill_binding=grasp_binding(),
             intent_bundle_id="intent-p107-grasp-0001",
             prior_intent_bundle_id="intent-before",
@@ -386,9 +409,105 @@ class BranchCollectorTest(unittest.TestCase):
         )
         self.assertEqual(receipt.no_intervention.evidence.outcome, "SUCCEEDED")
         self.assertEqual(receipt.corrective.evidence.outcome, "SUCCEEDED")
+        self.assertEqual(receipt.no_intervention.action_sha256, receipt.corrective.action_sha256)
         self.assertTrue(receipt.recovery_eligible)
         self.assertEqual(receipt.public()["recovery_kind"], "genuine_recovery")
+        self.assertEqual(receipt.public()["comparative_benefit"], "NOT_ESTABLISHED")
         self.assertFalse(receipt.corrective_positive_action_mask)
+
+    def test_failed_or_unknown_correction_is_never_genuine_after_valid_deviation(self) -> None:
+        for name, sample, expected in (
+            ("failed", physical_sample(predicate=False, failure_evidence=True), "FAILED"),
+            ("unknown", physical_sample(sensor_supported=False), "UNKNOWN"),
+        ):
+            with self.subTest(name=name):
+                raw = FakeSnapshotBackend()
+                snapshots = SnapshotAdapter(raw)
+                collector = PairedRecoveryCollector(
+                    snapshots,
+                    FakeActionBackend(raw),
+                    physical_provider(FakePredicateBackend(sample)),
+                    fault_provider(FakeFaultBackend()),
+                )
+                receipt = collector.collect(
+                    source_ref=self.source,
+                    source_group_id="train-task0-instance7",
+                    event_ref={"event": f"p107-{name}"},
+                    post_fault_snapshot=snapshots.capture("post_fault"),
+                    no_intervention_actions23=[ZERO23],
+                    corrective_actions23=[ONE23],
+                    skill_binding=grasp_binding(),
+                    intent_bundle_id="intent-p107-grasp-0001",
+                    prior_intent_bundle_id="intent-before",
+                    branch_seed=180,
+                    actor_evidence={"rgb_ref": "rgb://step/0"},
+                )
+                self.assertTrue(receipt.initial_deviation_proven)
+                self.assertEqual(receipt.corrective.evidence.outcome, expected)
+                self.assertFalse(receipt.corrective_postcondition_proven)
+                self.assertFalse(receipt.recovery_eligible)
+                self.assertEqual(receipt.public()["recovery_kind"], "normal_or_unproven")
+
+    def test_snapshot_inventory_mismatch_blocks_recovery_even_when_61d_matches(self) -> None:
+        raw = BranchRestoreInventoryDriftBackend()
+        snapshots = SnapshotAdapter(raw)
+        collector = PairedRecoveryCollector(
+            snapshots,
+            FakeActionBackend(raw),
+            physical_provider(FakePredicateBackend(physical_sample())),
+            fault_provider(FakeFaultBackend()),
+        )
+        receipt = collector.collect(
+            source_ref=self.source,
+            source_group_id="train-task0-instance7",
+            event_ref={"event": "p107-inventory-drift"},
+            post_fault_snapshot=snapshots.capture("post_fault"),
+            no_intervention_actions23=[ZERO23],
+            corrective_actions23=[ONE23],
+            skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001",
+            prior_intent_bundle_id="intent-before",
+            branch_seed=181,
+            actor_evidence={"rgb_ref": "rgb://step/0"},
+        )
+        self.assertTrue(receipt.no_intervention_observation_matches)
+        self.assertTrue(receipt.corrective_observation_matches)
+        self.assertFalse(receipt.no_intervention_same_state)
+        self.assertFalse(receipt.corrective_same_state)
+        self.assertFalse(receipt.recovery_eligible)
+
+    def test_stale_corrective_final_observation_blocks_genuine_recovery(self) -> None:
+        class StaleFinalObservationAction(FakeActionBackend):
+            def observe(self):
+                clock = self.snapshots.state["counter"]
+                # Each branch starts freshly at 0, but its post-action
+                # observation is stale.  The physical provider alone is not
+                # enough to certify a usable corrective postcondition.
+                return Observation(clock, [float(clock)] * 61, clock == 0, f"rgb://step/{clock}")
+
+        collector = PairedRecoveryCollector(
+            self.snapshots,
+            StaleFinalObservationAction(self.raw_backend),
+            physical_provider(FakePredicateBackend(physical_sample())),
+            fault_provider(FakeFaultBackend()),
+        )
+        receipt = collector.collect(
+            source_ref=self.source,
+            source_group_id="train-task0-instance7",
+            event_ref={"event": "p107-stale-final"},
+            post_fault_snapshot=self.snapshots.capture("post_fault"),
+            no_intervention_actions23=[ZERO23],
+            corrective_actions23=[ONE23],
+            skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001",
+            prior_intent_bundle_id="intent-before",
+            branch_seed=182,
+            actor_evidence={"rgb_ref": "rgb://step/0"},
+        )
+        self.assertEqual(receipt.corrective.evidence.outcome, "SUCCEEDED")
+        self.assertFalse(receipt.corrective.observations_fresh)
+        self.assertFalse(receipt.corrective_postcondition_proven)
+        self.assertFalse(receipt.recovery_eligible)
 
     def test_fault_must_bind_the_current_corrective_intent(self) -> None:
         self.collector.fault_evidence = fault_provider(
@@ -490,7 +609,7 @@ class BranchCollectorTest(unittest.TestCase):
                 actor_evidence={"rgb_ref": "rgb://step/0"},
             )
 
-    def test_bad_split_and_privileged_actor_inputs_are_rejected(self) -> None:
+    def test_bad_split_and_non_allowlisted_actor_inputs_are_rejected(self) -> None:
         post_fault = self.snapshots.capture("post_fault")
         args = dict(
             source_group_id="train-task0-instance7", event_ref={"event": "p107"}, post_fault_snapshot=post_fault,
@@ -500,8 +619,40 @@ class BranchCollectorTest(unittest.TestCase):
         )
         with self.assertRaisesRegex(RecoveryContractError, "TRAIN"):
             self.collector.collect(source_ref={"original_split": "public_test"}, **args)
-        with self.assertRaisesRegex(RecoveryContractError, "Privileged"):
-            self.collector.collect(source_ref=self.source, **{**args, "actor_evidence": {"object_pose": [0, 0, 0]}})
+        for leaking_actor_input in (
+            {"world_state": {"objects": ["cup"]}},
+            {"physics_state": {"contact": True}},
+            {"objectPose": [0, 0, 0]},
+            {"ground_truth": "SUCCEEDED"},
+            {"rgb_ref": {"nested": "not-a-reference"}},
+            {"rgb_ref": "rgb://step/0", "unknown_nested": {"anything": True}},
+        ):
+            with self.subTest(leaking_actor_input=leaking_actor_input):
+                with self.assertRaisesRegex(RecoveryContractError, "closed raw RGB|nonempty text"):
+                    self.collector.collect(
+                        source_ref=self.source,
+                        **{**args, "actor_evidence": leaking_actor_input},
+                    )
+
+    def test_receipt_revalidates_actor_evidence_before_public_projection(self) -> None:
+        receipt = self.collector.collect(
+            source_ref=self.source,
+            source_group_id="train-task0-instance7",
+            event_ref={"event": "p107-actor-revalidation"},
+            post_fault_snapshot=self.snapshots.capture("post_fault"),
+            no_intervention_actions23=[ZERO23],
+            corrective_actions23=[ONE23],
+            skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001",
+            prior_intent_bundle_id="intent-before",
+            branch_seed=183,
+            actor_evidence={"rgb_ref": "rgb://step/0"},
+        )
+        # BranchPairReceipt remains mutable for diagnostic construction, so
+        # public projection must not trust a field after construction either.
+        receipt.actor_evidence = {"ground_truth": "SUCCEEDED"}
+        with self.assertRaisesRegex(RecoveryContractError, "closed raw RGB"):
+            receipt.public()
 
     def test_execution_tail_is_never_admitted(self) -> None:
         prediction = [[float(step)] * 23 for step in range(32)]
@@ -611,6 +762,14 @@ class ProtocolBridgeTest(unittest.TestCase):
             "privileged_evidence": {"object_pose": "must not escape"},
         }
         self.assertEqual(actor_evidence_projection(view)["references"], [])
+
+    def test_obsolete_bridge_never_accepts_caller_proposed_positive_mask(self) -> None:
+        with self.assertRaisesRegex(RecoveryContractError, "no corrective-action publication authority"):
+            validate_corrective_action_view({
+                "label_kind": "corrective_action",
+                "low_action_supervision_mask": True,
+                "recovery_verified": "PROPOSED",
+            })
 
     def test_identity_validation_delegates_to_data_protocol(self) -> None:
         class Protocol:

@@ -94,12 +94,20 @@ def validate_transport_receipt(
 
 
 def validate_corrective_action_view(view: Mapping[str, Any], *, protocol: Any | None = None) -> Any:
-    """Delegate final action projection/masking to the shared data contract."""
-    protocol = load_protocol() if protocol is None else protocol
-    validator = getattr(protocol, "validate_corrective_action_view", None)
-    if not callable(validator):
-        raise RecoveryContractError("Canonical protocol lacks corrective-action validation")
-    return validator(view)
+    """Reject obsolete caller-side corrective-action validation.
+
+    Raw paired collection is only a candidate transport and has no authority
+    to accept a caller-supplied ``PROPOSED`` mask or any positive action label.
+    The reviewed data publisher must call its own externally sealed authority
+    API after this transport has been frozen.  The retained name gives old
+    callers a deterministic fail-closed error rather than silently delegating
+    to a stale local protocol implementation.
+    """
+    del view, protocol
+    raise RecoveryContractError(
+        "Raw recovery bridge has no corrective-action publication authority; "
+        "use the reviewed external publisher authority"
+    )
 
 
 def project_action_23_to_27(

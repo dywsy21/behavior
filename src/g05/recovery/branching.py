@@ -16,15 +16,24 @@ from .common import (
     validate_raw23_actions,
     validate_state61,
 )
-from .evidence import EvidenceResult, FaultEvidenceProvider, FaultEvidenceResult, PhysicalEvidenceProvider
+from .evidence import (
+    PHYSICAL_EVIDENCE_KINDS,
+    EvidenceResult,
+    FaultEvidenceProvider,
+    FaultEvidenceResult,
+    PhysicalEvidenceProvider,
+)
 from .runtime import RuntimeCapability, same_runtime
 from .snapshot import SnapshotAdapter, SnapshotCapture
 
 
-_PRIVILEGED_ACTOR_KEYS = {
-    "privileged_evidence", "object_pose", "object_poses", "contact", "contacts",
-    "grasp", "grasp_state", "particle", "particles", "rng", "snapshot",
-    "restore_identity", "controller_state", "official_task_success", "target_uid",
+# This is intentionally much narrower than the final data protocol's
+# actor-evidence view.  A raw simulator candidate can carry only a reference
+# to the RGB observation that an actor could see.  It cannot carry arbitrary
+# structured data and rely on a blacklist to keep privileged state out.  The
+# independently maintained canonical protocol later projects its own view.
+_RAW_CANDIDATE_ACTOR_EVIDENCE_FIELDS: Mapping[str, type[str]] = {
+    "rgb_ref": str,
 }
 
 
@@ -230,15 +239,94 @@ class BranchPairReceipt:
     actor_evidence: Mapping[str, Any]
     backend_kind: str
 
+    def __post_init__(self) -> None:
+        # Keep direct construction from becoming a side door around the
+        # collector's actor boundary.  This does not confer trust on a
+        # hand-built receipt; it only preserves the no-privileged-input shape.
+        self.actor_evidence = _validate_actor_evidence(self.actor_evidence)
+
+    @property
+    def initial_deviation_proven(self) -> bool:
+        """Whether the common initial state has affirmative, bound deviation evidence."""
+        fault = self.post_fault_evidence
+        return bool(
+            fault is not None
+            and fault.fault_observed
+            and fault.valid_fault_mask
+        )
+
+    @property
+    def corrective_postcondition_proven(self) -> bool:
+        """Require a fresh, bound physical success after the corrective actions.
+
+        ``EvidenceResult`` normally comes from :class:`PhysicalEvidenceProvider`,
+        but this receipt repeats the relevant checks so a hand-built result
+        cannot turn a failed, unknown, stale, or mismatched branch into a
+        genuine-recovery candidate.  This proves only a local physical
+        postcondition; it remains distinct from official task success and from
+        downstream publication authority.
+        """
+        fault = self.post_fault_evidence
+        evidence = self.corrective.evidence
+        if fault is None or evidence is None:
+            return False
+        start = self.corrective.pre_action_observations[0].policy_clock
+        end = self.corrective.final_observation.policy_clock
+        clocks_are_bound = all(
+            type(value) is int
+            for value in (
+                evidence.evidence_start_frame,
+                evidence.evidence_end_frame,
+                evidence.evidence_available_time,
+            )
+        ) and bool(
+            start <= evidence.evidence_start_frame
+            <= evidence.evidence_end_frame
+            <= evidence.evidence_available_time
+            <= end
+        )
+        return bool(
+            evidence.outcome == "SUCCEEDED"
+            and evidence.valid_result_mask
+            and evidence.evidence_kind in PHYSICAL_EVIDENCE_KINDS
+            and evidence.sensor_supported
+            and evidence.source_binding_verified
+            and evidence.causal_transition
+            and evidence.stable_frames >= evidence.required_stable_frames
+            and clocks_are_bound
+            and self.corrective.observations_fresh
+            and evidence.family == fault.family
+            and evidence.object_id == fault.object_id
+            and evidence.arm == fault.arm
+            and evidence.prior_intent_bundle_id == fault.prior_intent_bundle_id
+            and evidence.current_intent_bundle_id == self.corrective.intent_bundle_id
+            and fault.current_intent_bundle_id == self.corrective.intent_bundle_id
+        )
+
     @property
     def recovery_eligible(self) -> bool:
+        """Candidate-only recovery semantics, independent of relative benefit.
+
+        A baseline can recover too and actions may happen to be identical; that
+        does not negate an independently observed fault plus a verified
+        corrective postcondition.  Conversely a failed or unknown correction,
+        or either branch not beginning from the same restored state, is never a
+        genuine recovery candidate.
+        """
         return bool(
-            self.post_fault_evidence is not None
-            and self.post_fault_evidence.fault_observed
-            and self.post_fault_evidence.valid_fault_mask
+            self.runtime_capability_bound
+            and self.initial_deviation_proven
+            and self.no_intervention_same_state
+            and self.corrective_same_state
             and self.no_intervention_observation_matches
             and self.corrective_observation_matches
+            and self.corrective_postcondition_proven
         )
+
+    @property
+    def comparative_benefit(self) -> str:
+        """Raw paired collection has no authority to establish comparative benefit."""
+        return "NOT_ESTABLISHED"
 
     @property
     def corrective_positive_action_mask(self) -> bool:
@@ -271,8 +359,18 @@ class BranchPairReceipt:
                 "policy_clock": self.post_fault_observation.policy_clock,
             },
             "recovery_kind": "genuine_recovery" if self.recovery_eligible else "normal_or_unproven",
-            "actor_evidence": dict(self.actor_evidence),
+            # Do not derive this from baseline failure or action inequality.
+            # Raw collection keeps comparison deliberately unresolved.
+            "comparative_benefit": self.comparative_benefit,
+            # Revalidate at projection time as well: this dataclass is mutable
+            # for diagnostics, so a post-construction field mutation cannot
+            # create an actor-side privileged-state escape hatch.
+            "actor_evidence": _validate_actor_evidence(self.actor_evidence),
             "privileged_evidence": {
+                "candidate_checks": {
+                    "initial_deviation_proven": self.initial_deviation_proven,
+                    "corrective_postcondition_proven": self.corrective_postcondition_proven,
+                },
                 "post_fault_deviation": (
                     None if self.post_fault_evidence is None else self.post_fault_evidence.public()
                 ),
@@ -320,27 +418,29 @@ def _validate_train_source(source_ref: Mapping[str, Any], source_group_id: str) 
         raise RecoveryContractError("Source reference and branch source-group identity disagree")
 
 
-def _validate_actor_evidence(actor_evidence: Mapping[str, Any]) -> None:
+def _validate_actor_evidence(actor_evidence: Mapping[str, Any]) -> dict[str, str]:
+    """Return the sole allowed raw candidate actor payload.
+
+    Blacklisting simulator-key spellings is unsound: a new nested spelling can
+    leak world or evaluator state.  Raw candidate receipts therefore accept a
+    closed, typed schema consisting only of an actor-visible RGB locator.  Any
+    unknown key or non-text / nested value fails closed.
+    """
     if not isinstance(actor_evidence, Mapping):
         raise RecoveryContractError("Actor evidence must be an explicit public mapping")
-    seen = set()
-
-    def visit(value: Any) -> None:
-        if isinstance(value, Mapping):
-            for key, child in value.items():
-                if not isinstance(key, str):
-                    raise RecoveryContractError("Actor evidence keys must be strings")
-                if key.casefold() in _PRIVILEGED_ACTOR_KEYS:
-                    raise RecoveryContractError("Privileged simulator evidence cannot enter actor evidence")
-                seen.add(key.casefold())
-                visit(child)
-        elif isinstance(value, (list, tuple)):
-            for child in value:
-                visit(child)
-
-    visit(actor_evidence)
-    if "privileged_evidence" in seen:
-        raise RecoveryContractError("Actor evidence must not contain privileged evidence")
+    keys = set(actor_evidence)
+    allowed = set(_RAW_CANDIDATE_ACTOR_EVIDENCE_FIELDS)
+    if keys != allowed:
+        unknown = sorted(str(key) for key in keys - allowed)
+        missing = sorted(allowed - keys)
+        raise RecoveryContractError(
+            "Actor evidence must use the closed raw RGB-reference schema "
+            f"(unknown={unknown}, missing={missing})"
+        )
+    value = actor_evidence["rgb_ref"]
+    if not isinstance(value, str) or not value:
+        raise RecoveryContractError("Actor evidence rgb_ref must be nonempty text, never a nested value")
+    return {"rgb_ref": value}
 
 
 class PairedRecoveryCollector:
@@ -477,7 +577,7 @@ class PairedRecoveryCollector:
         context: Mapping[str, Any] | None = None,
     ) -> BranchPairReceipt:
         _validate_train_source(source_ref, source_group_id)
-        _validate_actor_evidence(actor_evidence)
+        actor_evidence = _validate_actor_evidence(actor_evidence)
         if not isinstance(event_ref, Mapping) or not event_ref:
             raise RecoveryContractError("Canonical event reference is required")
         if not isinstance(branch_seed, int) or branch_seed < 0:
