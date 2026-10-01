@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 21:53（北京时间）：P107 10.7 负例/恢复数据准备获限域执行授权，尚未启动数据或仿真作业（Codex / P107-COORD）
+
+- 用户当前目标是完整实现 §10.7 的负例/恢复数据准备及其他准备；本次授权覆盖该数据准备与质量工程，**仅此范围覆盖**此前“尚未获采集授权”的旧口径。阶段2/3正式训练、长时搜索或新的大训练仍须单独批准；现有阶段1冻结源/env/v4 release 和队友活跃工作不改。
+- 新[实施与验收台账](experiments/2026-10-01-recovery-data-preparation.md)规定：先索引 eligible v4 的100任务×35技能，再由约200候选人工门逐步扩展，向 `>=10k` 审核 goal/outcome temporal windows（`>=1k` source episodes）及另计 `>=1k` genuine corrective-action windows 推进；若真实来源不足，报告按 episode/task/skill 的缺口，不用重复窗口或伪纠正动作凑数。所有标签视图、不可变 source-group split、23D→27D补齐/mask、causal available time、provenance 和父代理图审已明确。
+- active-goal owner 为 Codex；父代理为唯一最终验收者及分层视觉抽样审查者。计划工流是：infra 对 lc1–lc3 只读核验、local schema/index 映射、robo/local restore readiness，之后在隔离 worktree 做 data/event 与 sim 工具、标注分片、父审和独立代码审。首批仅允许 metadata CPU≤30min/1 worker/无RGB，候选CPU≤60min/4 workers/2GiB/约200候选；未过 readiness 和父代理 ticket 前不启动GPU标注。首次物理 readiness 最多4 resets/20min。
+- 当前无新数据、GPU标注、仿真 reset 或训练，也无数据质量结论。infra 报告 ssh lc1/lc2/lc3 为 `exit 255 Connection closed UNKNOWN 65535`，且无 SOCKS 1080/ControlMaster；等待获准恢复连接后只读复核，不改VPN/凭据/共享env，也不把9/30作业快照当当前状态。robo/sim 映射待核。协调分支从`origin/main` 33677bd建并快进纳入3db716d；文档提交与worker worktree仍待本轮收口。
+
 ### 2026-10-01 21:30（北京时间）：明确阶段1期间的数据准备清单，尚未启动采集（Codex / PLAN-MEM100-PREPDATA）
 
 - 用户本轮询问“现在能做什么”，按讨论范围只读核b6f14ae的v4 reader/schema与既有发布记录；安全fetch/pull无新改动，active goal为空。已补[训练设计10.7](experiments/2026-09-29-memlite-gradient-training-design.md#107-阶段1未结束时可以并行准备什么2026-10-01)：复用原split/哈希/普通技能标签，优先事件与视频定位sidecar、约200候选短片段的自然纠正筛选/人审参考集、少量目标判别负例；restore/事件日志/教师小验证不依赖最终模型，但真实运行需另核资源和预算。
