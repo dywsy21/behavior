@@ -497,6 +497,24 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_grou
         if group.task_id not in official_task_ids:
             excluded_unrecognized_vocabulary[f"TASK_ID:{group.task_id}"] += 1
             continue
+        # Official source-skill identity is checked for every non-eval row,
+        # including an output-zero role.  Retention may be skipped below, but
+        # it must not hide an unexpected ID or turn raw text into a fallback.
+        source_skills = event.get("skill_bundle")
+        if not isinstance(source_skills, list) or not source_skills:
+            raise ValueError("event candidate has no source skill bundle")
+        source_skill_ids = []
+        for skill in source_skills:
+            mapping = require_mapping(skill, "event.skill_bundle member")
+            skill_id = mapping.get("skill_id")
+            if type(skill_id) is not int or skill_id < 0:
+                raise ValueError("source skill requires a nonnegative official skill_id")
+            source_skill_ids.append(skill_id)
+        unknown_skill_ids = sorted(set(source_skill_ids) - official_skill_ids)
+        if unknown_skill_ids:
+            for skill_id in unknown_skill_ids:
+                excluded_unrecognized_vocabulary[f"SKILL_ID:{skill_id}"] += 1
+            continue
         if group.usage_role not in retained_usage_roles:
             # The stream still validates every source/event identity, but a
             # zero-budget role cannot consume a full-index candidate heap.
@@ -514,11 +532,8 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_grou
             raise ValueError("event observation timestamp is invalid")
         if abs(float(timestamp) - anchor / FRAME_RATE_HZ) > 1e-9:
             raise ValueError("event observation timestamp drifted from frozen source clock")
-        skills = event.get("skill_bundle")
-        if not isinstance(skills, list) or not skills:
-            raise ValueError("event candidate has no source skill bundle")
         skill_ids, raw_source_verbs, keys = [], [], []
-        for skill in skills:
+        for skill in source_skills:
             mapping = require_mapping(skill, "event.skill_bundle member")
             skill_id = mapping.get("skill_id")
             if type(skill_id) is not int or skill_id < 0:
@@ -529,11 +544,6 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_grou
                 raw_source_verbs.append(verb)
             token = skill_key(mapping)
             keys.append(token)
-        unknown_skill_ids = sorted(set(skill_ids) - official_skill_ids)
-        if unknown_skill_ids:
-            for skill_id in unknown_skill_ids:
-                excluded_unrecognized_vocabulary[f"SKILL_ID:{skill_id}"] += 1
-            continue
         for token in keys:
             repeats[group.usage_role, group.task_id, token].add((group_id, raw_episode_id, episode_index))
         if len(parsed) >= max_retained_candidates:

@@ -468,6 +468,26 @@ class SelectMemliteEventAnnotationQueueTests(unittest.TestCase):
                              "NOT_EVALUATED_ZERO_OUTPUT_BUDGET")
             self.assertIsNone(counts["student_candidate_queue"]["coverage"]["missing_expected_skill_ids_from_pool"])
 
+            events_path = index / "event_candidates.jsonl"
+            events = read_lines(events_path)
+            skipped_student = next(row for row in events if row["usage_role"] == "student_candidate")
+            skipped_student["skill_bundle"][0]["skill_id"] = 999
+            skipped_student["skill_bundle"][0]["skill_description"] = "must not become a lexical fallback"
+            skipped_student["event_id"] = protocol().event_id(skipped_student)
+            events_path.write_text("".join(queue.canonical_json(row) + "\n" for row in events))
+            manifest = json.loads((index / "manifest.json").read_text())
+            manifest["files"]["event_candidates.jsonl"] = receipt(events_path)
+            (index / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
+            reseal_index(index, manifest)
+            zero_role_unknown = root / "calibration-only-unknown-student"
+            parsed = args(index, zero_role_unknown, coverage)
+            parsed.candidate_budget = 0
+            parsed.calibration_budget = 4
+            parsed.max_retained_candidates = 4
+            queue.build_queue(index, zero_role_unknown, args=parsed)
+            counts = json.loads((zero_role_unknown / "counts.json").read_text())
+            self.assertEqual(counts["events_excluded_by_unrecognized_official_vocabulary"]["SKILL_ID:999"], 1)
+
             capped = root / "calibration-cap"
             parsed = args(index, capped, coverage)
             parsed.candidate_budget = 0
