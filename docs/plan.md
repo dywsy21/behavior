@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 00:27:48–00:30:23（北京时间）：P107-LC3-CAL40 CPU decode 完成并 sealed-resume 通过；本地复制/QA待完成（prep_contract_review）
+
+- 独立 review-clear 的 clean `0ccbe4e46f69d75f1ee2dc05be87b4889c518eb6` 在 lc3 的`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`完成一次受限 decode：exit 0、2:35.02、peak RSS 170,740 KiB、1 CPU/`nice 19`/`ionice idle`/RLIMIT 4 GiB；40 packets、400 requested slots、392 distinct frames、8 clamp duplicates、1,176 native PNG及40 review-only contact sheets，共493,532,423B。它在30分钟/2GiB上限内且未触碰GPU、shared/active env或其他job。
+- remote packet manifest SHA为`ca9a3cd9735b4b9c4e145ae282cbc62d85362709c332e77432c4fae2fdac63f3`；sealed resume exit 0/12.49秒。到本地`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1`的复制及逐文件验证仍在进行，故尚不能称本地工件可用或完成最终QA。
+- 这只完成候选 camera-native decode，不产生 annotation answers、attempt outcome、recovery/action BC、FM-positive、training eligibility或release；下一步是本地 hash/manifest/PNG/PTS QA和按指南的校准侧人工审查。
+
 ### 2026-10-02（北京时间）：P107-LC3-CAL40 首个 packet 因同帧 PTS 浮点舍入中止；全40未发布，修复待复审（prep_contract_review / Codex）
 
 - `a068404` 的 full-40 decode 在第一个 canonical packet 安全停止、staging/output均已清理：left_wrist zero-offset 的 requested/actor anchor=`5885.166666666664`，stream rational PTS=`5885.166666666667`，相差约`3e-12 s`但属于同一30Hz frame；现有严格浮点 `actual <= actor_anchor` 错拒。该物理因果门本身正确，当前仅修复表示误差（绝对≤`1e-9 s`、不放宽至分数帧），并须回归拒绝真实`+1e-6 s`和`+1/30 s` future PTS；在独立复审新 SHA 前，operator 不重试。

@@ -2,6 +2,12 @@
 
 2026-10-01 21:53（北京时间）。协调任务 `P107-COORD`；active-goal owner 是 Codex。**父代理是唯一的最终验收者和分层视觉抽样审查者。** 本文把[训练设计 §10.7](2026-09-29-memlite-gradient-training-design.md#107-阶段1未结束时可以并行准备什么2026-10-01)转为可执行台账；不表示数据已构造、质量已通过或阶段3已运行。
 
+### 2026-10-02 00:27:48–00:30:23：CAL40 受限 CPU decode 完成，候选本地QA尚未开始
+
+`prep_contract_review` 在 lc3 以 clean `0ccbe4e46f69d75f1ee2dc05be87b4889c518eb6` 写入`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`：40 packets、400 requested slots、392 distinct frames、8 clamp duplicates、1,176 native PNG和40张仅review contact sheets（493,532,423B），exit0/2:35.02/peak RSS170,740KiB。约束确实为1CPU/`nice 19`/`ionice idle`/RLIMIT4GiB、30分钟/2GiB cap、0GPU、未改shared/active env或其他job。manifest `ca9a3cd9735b4b9c4e145ae282cbc62d85362709c332e77432c4fae2fdac63f3` 的 sealed resume exit0/12.49秒。
+
+本地`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1`复制与逐文件 hash/manifest/PNG/PTS核验尚未完成；当前没有 annotation answer、outcome、recovery/action BC、FM-positive、training eligible或release。下一门是本地QA、校准侧标注及父代理分层视频审查，不能因远端decode exit0跳过。
+
 ### 2026-10-02 00:09:33：P107-LC3-CAL40 仅进入受限 setup/run，未完成 decode
 
 `prep_contract_review` 是唯一 operator。renderer `a068404` 已 final-review clear（10/10 focused tests及actual-40 local create/resume），并在 lc3 reachable/idle、目标输出缺失的状态开始冻结 Git deployment/decode setup。输入固定为 full-v3、protocol snapshot `0693b93c` / `7f4f…aab0`和 queue seal `78eda9c87b18e806e00e4820c172b02002d806e7c77fe9911368d42711de227c`：40条 `annotation_calibration`、每条10个请求 slot、392个 distinct episode-local frame，最多计划1,176张 camera-native PNG及40张仅review contact sheet。
