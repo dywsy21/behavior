@@ -27,8 +27,10 @@ import math
 import os
 from pathlib import Path
 import shutil
+import stat
 import sys
 import tempfile
+import types
 from typing import Any, Iterable, Mapping, Sequence
 
 
@@ -103,6 +105,42 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _open_regular_binary(path: Path, *, name: str):
+    """Open one regular-file inode without a pathname re-open race.
+
+    Consumers that bind a digest to bytes must read those same bytes from this
+    descriptor. ``lstat``/``fstat`` covers platforms without ``O_NOFOLLOW``;
+    on Linux the latter also prevents a symlink swap at open time.
+    """
+    path = Path(path)
+    try:
+        entry = path.lstat()
+    except OSError as error:
+        raise ValueError(f"Required regular input is missing: {name}") from error
+    if not stat.S_ISREG(entry.st_mode):
+        raise ValueError(f"Required regular input is missing: {name}")
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as error:
+        raise ValueError(f"Required regular input is missing: {name}") from error
+    try:
+        opened = os.fstat(descriptor)
+        if (not stat.S_ISREG(opened.st_mode) or entry.st_dev != opened.st_dev or
+                entry.st_ino != opened.st_ino):
+            raise ValueError(f"Required regular input changed while opening: {name}")
+        return os.fdopen(descriptor, "rb")
+    except BaseException:
+        os.close(descriptor)
+        raise
+
+
+def read_regular_file_bytes(path: Path, *, name: str) -> bytes:
+    """Read the exact regular-file bytes that a hash/consumer will use."""
+    with _open_regular_binary(path, name=name) as stream:
+        return stream.read()
+
+
 def _strict_json(data: bytes, *, name: str) -> Any:
     def reject_duplicate(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
         result: dict[str, Any] = {}
@@ -125,9 +163,7 @@ def read_json(path: Path) -> Any:
 
 
 def iter_jsonl(path: Path) -> Iterable[dict[str, Any]]:
-    if path.is_symlink() or not path.is_file():
-        raise ValueError(f"Required regular JSONL input is missing: {path}")
-    with path.open("rb") as stream:
+    with _open_regular_binary(path, name=str(path)) as stream:
         for line_number, line in enumerate(stream, start=1):
             if not line.strip():
                 continue
@@ -175,12 +211,44 @@ def write_jsonl(path: Path, rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]
     return {"sha256": sha256_file(path), "rows": count, "bytes": path.stat().st_size}
 
 
+def _expected_receipt(expected: Mapping[str, Any], *, name: str) -> tuple[str, int, int]:
+    expected = require_mapping(expected, f"sealed receipt for {name}")
+    if set(expected) != {"sha256", "rows", "bytes"}:
+        raise ValueError(f"Sealed receipt is malformed: {name}")
+    digest, rows, byte_count = expected.get("sha256"), expected.get("rows"), expected.get("bytes")
+    if not is_sha256(digest) or type(rows) is not int or rows < 0 or type(byte_count) is not int or byte_count < 0:
+        raise ValueError(f"Sealed receipt is malformed: {name}")
+    return digest, rows, byte_count
+
+
+def iter_jsonl_verified(path: Path, *, expected: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
+    """Parse and digest one JSONL descriptor, rejecting non-sealed bytes at EOF."""
+    expected_digest, _, expected_bytes = _expected_receipt(expected, name=Path(path).name)
+    digest = hashlib.sha256()
+    byte_count = 0
+    with _open_regular_binary(path, name=str(path)) as stream:
+        for line_number, line in enumerate(stream, start=1):
+            digest.update(line)
+            byte_count += len(line)
+            if not line.strip():
+                continue
+            row = _strict_json(line, name=f"{path}:{line_number}")
+            if not isinstance(row, dict):
+                raise ValueError(f"Expected object at {path}:{line_number}")
+            yield row
+    if digest.hexdigest() != expected_digest or byte_count != expected_bytes:
+        raise ValueError(f"Sealed index payload hash mismatch: {Path(path).name}")
+
+
+def read_jsonl_verified(path: Path, *, expected: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return list(iter_jsonl_verified(path, expected=expected))
+
+
 def file_receipt(path: Path, *, expected: Mapping[str, Any]) -> None:
-    if not isinstance(expected, Mapping):
-        raise ValueError(f"Sealed index has no receipt for {path.name}")
-    if sha256_file(path) != expected.get("sha256"):
+    expected_digest, _, expected_bytes = _expected_receipt(expected, name=path.name)
+    if sha256_file(path) != expected_digest:
         raise ValueError(f"Sealed index payload hash mismatch: {path.name}")
-    if path.stat().st_size != expected.get("bytes"):
+    if path.stat().st_size != expected_bytes:
         raise ValueError(f"Sealed index payload byte count mismatch: {path.name}")
 
 
@@ -189,17 +257,25 @@ def load_canonical_protocol(path: Path, *, expected_sha256: str) -> Any:
     path = Path(path)
     if not is_sha256(expected_sha256):
         raise ValueError("--expected-protocol-sha256 must be a lowercase SHA-256")
-    if path.is_symlink() or not path.is_file():
-        raise ValueError("--protocol-path must name the data owner's regular canonical protocol module")
-    actual = sha256_file(path)
+    source = read_regular_file_bytes(path, name="--protocol-path")
+    actual = hashlib.sha256(source).hexdigest()
     if actual != expected_sha256:
         raise ValueError("canonical protocol module does not match the externally pinned SHA-256")
-    spec = importlib.util.spec_from_file_location("p107_canonical_event_protocol", path)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"cannot import canonical protocol module: {path}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
+    module_name = "p107_canonical_event_protocol"
+    module = types.ModuleType(module_name)
+    module.__file__ = str(path)
+    module.__package__ = module_name.rpartition(".")[0]
+    module.__spec__ = importlib.util.spec_from_loader(module_name, loader=None, origin=str(path))
+    previous_module = sys.modules.get(module_name)
+    sys.modules[module_name] = module
+    try:
+        exec(compile(source, str(path), "exec"), module.__dict__)
+    except BaseException:
+        if previous_module is None:
+            sys.modules.pop(module_name, None)
+        else:
+            sys.modules[module_name] = previous_module
+        raise
     for name in ("canonical_json", "canonical_sha256", "event_id", "source_group_id", "validate_event"):
         if not callable(getattr(module, name, None)):
             raise ValueError(f"canonical protocol is missing required validator: {name}")
@@ -347,9 +423,7 @@ def validate_index(index: Path, *, expected_source_manifest_sha256: str,
         raise ValueError("candidate input must explicitly be non-trainable")
     files = require_mapping(manifest.get("files"), "index.files")
     source_groups_path, events_path = index / "source_groups.jsonl", index / "event_candidates.jsonl"
-    file_receipt(source_groups_path, expected=files.get("source_groups.jsonl", {}))
-    file_receipt(events_path, expected=files.get("event_candidates.jsonl", {}))
-    source_rows = read_jsonl(source_groups_path)
+    source_rows = read_jsonl_verified(source_groups_path, expected=files.get("source_groups.jsonl", {}))
     if files["source_groups.jsonl"].get("rows") != len(source_rows):
         raise ValueError("sealed source-group row count mismatch")
     source_groups: dict[str, SourceGroup] = {}
@@ -442,7 +516,7 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_grou
                      expected_source_manifest_sha256: str, canonical_protocol: Any,
                      expected_task_ids: Iterable[int], expected_skill_ids: Iterable[int],
                      retained_usage_roles: set[str], max_retained_candidates: int,
-                     expected_event_rows: int,
+                     expected_event_receipt: Mapping[str, Any],
                      boundary_gap_frames: int, long_interval_frames: int) -> tuple[list[Candidate], Counter[str], Counter[str]]:
     """Stream-validate events and retain only bounded, official-vocabulary candidates."""
     if (boundary_gap_frames < 0 or long_interval_frames < 1 or max_retained_candidates < 1 or
@@ -457,7 +531,8 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_grou
     # sampling features must not borrow occurrence counts from calibration or
     # eval groups when ranking student candidates.
     repeats: dict[tuple[str, int, str], set[tuple[str, int, int]]] = defaultdict(set)
-    rows = iter_jsonl(event_rows) if isinstance(event_rows, Path) else event_rows
+    rows = (iter_jsonl_verified(event_rows, expected=expected_event_receipt)
+            if isinstance(event_rows, Path) else event_rows)
     row_count = 0
     for event in rows:
         row_count += 1
@@ -556,6 +631,7 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_grou
             "interval_end": end, "skill_ids": tuple(sorted(set(skill_ids))),
             "raw_source_verbs": tuple(sorted(set(raw_source_verbs))), "skill_keys": tuple(sorted(set(keys))),
         })
+    _, expected_event_rows, _ = _expected_receipt(expected_event_receipt, name="event_candidates.jsonl")
     if row_count != expected_event_rows:
         raise ValueError("sealed event row count mismatch")
     by_episode: dict[tuple[str, int, int], list[dict[str, Any]]] = defaultdict(list)
@@ -1253,7 +1329,7 @@ def build_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict[
         canonical_protocol=canonical_protocol, expected_task_ids=coverage_expectations["expected_task_ids"],
         expected_skill_ids=[skill["skill_id"] for skill in coverage_expectations["expected_skill_vocabulary"]],
         retained_usage_roles=retained_usage_roles, max_retained_candidates=policy["max_retained_candidates"],
-        expected_event_rows=manifest["files"]["event_candidates.jsonl"]["rows"],
+        expected_event_receipt=manifest["files"]["event_candidates.jsonl"],
         boundary_gap_frames=args.boundary_gap_frames,
         long_interval_frames=args.long_interval_frames)
     payloads = build_queue_payloads(candidates, groups, policy=policy, coverage_expectations=coverage_expectations,
@@ -1396,7 +1472,7 @@ def resume_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict
         canonical_protocol=canonical_protocol, expected_task_ids=coverage_expectations["expected_task_ids"],
         expected_skill_ids=[skill["skill_id"] for skill in coverage_expectations["expected_skill_vocabulary"]],
         retained_usage_roles=retained_usage_roles, max_retained_candidates=policy["max_retained_candidates"],
-        expected_event_rows=index_manifest["files"]["event_candidates.jsonl"]["rows"],
+        expected_event_receipt=index_manifest["files"]["event_candidates.jsonl"],
         boundary_gap_frames=policy["boundary_gap_frames"],
         long_interval_frames=policy["long_interval_frames"])
     payloads = build_queue_payloads(candidates, groups, policy=policy, coverage_expectations=coverage_expectations,

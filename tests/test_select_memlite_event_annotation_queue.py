@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -522,6 +523,47 @@ class SelectMemliteEventAnnotationQueueTests(unittest.TestCase):
         self.assertEqual(OWNER_PROTOCOL, REPO / "tests" / "fixtures" / "p107_memlite_event_protocol_fixture.py")
         self.assertEqual(queue.sha256_file(OWNER_PROTOCOL), OWNER_PROTOCOL_FIXTURE_SHA256)
         self.assertEqual(queue.DEFAULT_PROTOCOL_PATH, REPO / "src" / "g05" / "data" / "memlite_event_protocol.py")
+
+    def test_protocol_executes_only_the_pinned_bytes_after_path_replacement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "protocol.py"
+            pinned = OWNER_PROTOCOL.read_bytes() + b"\nRACE_SENTINEL = 'PINNED_BYTES'\n"
+            path.write_bytes(pinned)
+            expected = hashlib.sha256(pinned).hexdigest()
+            original_read = queue.read_regular_file_bytes
+
+            def read_then_replace(read_path, *, name):
+                result = original_read(read_path, name=name)
+                path.write_text("raise RuntimeError('untrusted replacement executed')\n")
+                return result
+
+            with mock.patch.object(queue, "read_regular_file_bytes", side_effect=read_then_replace):
+                loaded = queue.load_canonical_protocol(path, expected_sha256=expected)
+            self.assertEqual(loaded.RACE_SENTINEL, "PINNED_BYTES")
+            self.assertEqual(loaded.__file__, str(path))
+            self.assertIs(sys.modules["p107_canonical_event_protocol"], loaded)
+
+    def test_index_replacement_after_seal_validation_hash_rejects_before_publish(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            index = root / "sealed-index"
+            coverage = write_index(index)
+            output = root / "must-not-publish"
+            events_path = index / "event_candidates.jsonl"
+            original_validate_inventory = queue.validate_inventory_seal
+
+            def validate_then_replace(*call_args, **call_kwargs):
+                result = original_validate_inventory(*call_args, **call_kwargs)
+                events = read_lines(events_path)
+                events[0]["bundle_id"] = digest("replacement-after-seal")
+                events[0]["event_id"] = protocol().event_id(events[0])
+                events_path.write_text("".join(queue.canonical_json(row) + "\n" for row in events))
+                return result
+
+            with mock.patch.object(queue, "validate_inventory_seal", side_effect=validate_then_replace):
+                with self.assertRaisesRegex(ValueError, "payload hash mismatch"):
+                    queue.build_queue(index, output, args=args(index, output, coverage))
+            self.assertFalse(output.exists())
 
 
 if __name__ == "__main__":
