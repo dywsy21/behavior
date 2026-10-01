@@ -12,10 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 phase-balanced selector独审通过并已集成；lc3仅只读preflight、不得decode（Codex / P107-INTEGRATION）
+
+- 独立审查`/root/review_phase_sampler`已批准`deb000e`且无blocker；根分支只移植其三个scope文件，root code commit `b3c961b`（`select_memlite_phase_balanced_calibration_queue.py`、focused test、设计说明）。review核实7个seal/350,878B、legacy `7f` resume、40个unique且non-parent IDs、每phase10、source-group role/[start,end)/query-skill/clock合同，且真实mini-index只做locator、不需adapter。根本地再跑selector 2 tests、renderer 11 tests及两CLI `python -S --help`均通过。
+- 此集成仍仅是metadata candidate：40条phase queue未赋结果/恢复/动作标签、`for_training`不变、没有RGB decode或发布。lc3 node-only read-only preflight已PASS（01:51 CST；8×A800 80GB均0MiB/0%、RAM free约996GiB、data free约3.6TiB、既有VPN/SSH健康且未reconnect），receipt `/home/wsy/behavior-annotations/p107/lc3-phase40-preflight/2026-10-02T015133+0800.json` SHA `545809fe828b0b1fcf35b7dde3933382feeebb55ba3ae43f8de733c9bcbfa0ba`。没有后续root ticket不得冻结checkout或执行decode；preflight不能称作calibration pack、E2、DART或goal完成。
+- `p107-pack-stream`的4GiB stream修复、`p107-actor-query`的隔离实现及annotation输入均未移植或pull入根；standard pack仍blocked。live DART=0，GPU/SIM/server/env及训练仍未启动。
+
 ### 2026-10-02（北京时间）：P107 standard pack受4GiB流式读取缺陷阻断；phase-balanced40候选已建成待独审（Codex / P107-COORD）
 
 - standard calibration-only pack的真实CPU run在`_read_sealed_index`物化全403,257行/1.018GiB index时触发`MemoryError`，而非输入或标注身份问题：Python3.13 RSS 4,140,300KiB、35.74s，Python3.12复现RSS 4,139,252KiB、15.26s，均超过4GiB限制；无output或staging残留。输入`/home/wsy/behavior-annotations/p107/calibration40-package-input-v2/annotations.json` SHA `55fd0276cda9f87d4e10f551a9494f78b81739c221005beccd062cc397fa5475`有效，s1 attestation `a0474b…a76ae`已解决identity。stream fix已独立分派`p107-pack-stream`，仅owner改packer/tests、保持protocol；独审后才可按1CPU/4GiB/10min重跑。
-- `deb000e`隔离`p107-phase-sampling`已完成phase-balanced mini-index，输出`/home/wsy/behavior-annotations/p107/phase-balanced-calibration40-v2`，mini-index SHA `a43bbec04a86d0b13f9ad06f4825fcd7c16ab469cf13c3a65a555a5ab0eca09b`、queue seal `400613905529c710fcba62ebe4b7167c6df974ada94256d05a0c7bdc94b46c8f`。40条来自distinct TRAIN calibration groups、覆盖31 tasks/31 skills（94/100/101/103未覆盖）；ENTRY/MID/TERMINAL_OR_TRANSITION/REPEATED_METADATA_QUERY各10。terminal-adjacent只表示transition、并非成功；跨episode repeat只为metadata query、并非failure/retry。build17.3s、sealed resume17s/351KiB，selector11+renderer11 tests通过；现正由`/root/review_phase_sampler`独审，未整合或decode。
+- `deb000e`隔离`p107-phase-sampling`已完成phase-balanced mini-index，输出`/home/wsy/behavior-annotations/p107/phase-balanced-calibration40-v2`，mini-index SHA `a43bbec04a86d0b13f9ad06f4825fcd7c16ab469cf13c3a65a555a5ab0eca09b`、queue seal `400613905529c710fcba62ebe4b7167c6df974ada94256d05a0c7bdc94b46c8f`。40条来自distinct TRAIN calibration groups、覆盖31 tasks/31 skills（94/100/101/103未覆盖）；ENTRY/MID/TERMINAL_OR_TRANSITION/REPEATED_METADATA_QUERY各10。terminal-adjacent只表示transition、并非成功；跨episode repeat只为metadata query、并非failure/retry。build17.3s、sealed resume17s/351KiB，selector11+renderer11 tests通过；独审现已PASS并以`b3c961b`移入根，仍未decode。
 - additive actor-query module/dataset只在隔离`p107-actor-query`开始：冻结pre-label query与target分离、支持same RGB/different-query projection，并保留`for_training`拒绝；不改packer/protocol、不声称已有model/collator。counterfactual query source可条件化goal head但不是latent-state GT；actual attempt仍只可用issued intent。上述均为candidate工程，strict release/training/DART计数不变，未启动GPU/SIM/server/env/job。
 
 ### 2026-10-02（北京时间）：P107 CAL40 41-query merged calibration 已验证；E2是root亲自≥120抽样而非外部human门（Codex / P107-ANNOTATION-LEDGER）
