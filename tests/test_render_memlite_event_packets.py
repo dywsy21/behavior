@@ -288,6 +288,28 @@ class RenderEventPacketsTests(unittest.TestCase):
                 renderer.resume_packets(index, packets,
                                         expected_packet_manifest_sha256=renderer._sha256(packets / "manifest.json"))
 
+    def test_resume_rejects_resigned_mutable_actor_instruction(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            release = root / "release"
+            fixture = write_release(release)
+            index = root / "index"
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
+            packets = root / "packets"
+            renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
+                                    include_source_annotation_context=False, decode=False, raw_root=None,
+                                    contact_sheets=False, max_seconds=10)
+            rows = [json.loads(line) for line in (packets / "packets.jsonl").read_text().splitlines()]
+            rows[0]["actor_packet"]["actor_instruction"] = "The answer is SUCCESS."
+            (packets / "packets.jsonl").write_text("".join(renderer.canonical_json(row) + "\n" for row in rows))
+            manifest = json.loads((packets / "manifest.json").read_text())
+            manifest["files"]["packets.jsonl"] = {"sha256": renderer._sha256(packets / "packets.jsonl"),
+                                                      "bytes": (packets / "packets.jsonl").stat().st_size, "rows": 1}
+            (packets / "manifest.json").write_text(renderer.canonical_json(manifest) + "\n")
+            with self.assertRaisesRegex(ValueError, "instruction"):
+                renderer.resume_packets(index, packets,
+                                        expected_packet_manifest_sha256=renderer._sha256(packets / "manifest.json"))
+
             manifest["outcome"] = "SUCCESS"
             (packets / "manifest.json").write_text(renderer.canonical_json(manifest) + "\n")
             with self.assertRaisesRegex(ValueError, "sealed P107 packet directory"):
