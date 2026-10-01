@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 v5 visual-query producer链已独审集成；phase40-v5标注/父审仍只属calibration（Codex / P107-INTEGRATION）
+
+- producer的review-clear链`e7187061→05d9e7b→3d46760→9453be9→a58e8cf`虽基于较早共同祖先，但五条逐提交补丁只触及其新增producer、10项测试与4份设计说明；根安全移植为`be82f16→69fd92d→8028393→1b02bc6→935e46b`，未覆盖既有packer/actor/docs。移植前核6个文件（最大73,376B）、无高置信secret；root重跑`test_build_memlite_visual_relation_queries.py` 10/10、ruff与diff check均PASS。v5 artifact保持已审的40 rows/64 resolved/0 UNKNOWN_CATEGORY不变；`a58e8cf`的空`box_` suffix quarantine现已在根，producer code不再是阻断。
+- 四个v5 agent shard继续只写calibration-only draft。根新增外部root-model/human=false补充因果页观察 receipt：`/home/wsy/behavior-annotations/p107/parent-review/phase40-v2/followup-causal-page-observations-root-model.json`，SHA `60874afdc96453a2a2d8c62dc4507a3437bb69ee731a7fd5f5b6feeb82a1b1b2`；它不改既有sealed prereview。shard1 draft SHA `470714d9da00b3babfc748768f752751b70db88929b5689538252310916d3d67`的10项根语义裁决另存`parent-review/phase40-v5/shard1-root-model-adjudication.json`，SHA `e29a93e4f903b2123eded495b1a1a150c14c8e56980ed0d4859362cd15d35263`：仅q017为`NOT_SATISFIED/mask=true`，其余q010–016、q018–019为`UNKNOWN/mask=false`，仍待canonical binder，0 outcome/recovery/action/release。
+- root累计已亲看旧CAL40与new phase40各40个anchor，共80个anchor windows；E2仍要求至少120个**分层且带标签**的root亲审样本，不能把80个观察或尚未bind的draft充数。现有批准的phase-balanced40范围是40个distinct TRAIN calibration groups、ENTRY/MID/TERMINAL_OR_TRANSITION/REPEATED_METADATA_QUERY各10；terminal/repeat不推断success/failure。完成当前v5 shard+binder+root审查前，**没有**新的decode/annotation批次、partial-coverage waiver或实际phase pack授权。live DART、robo/local RTX、simulator及training仍为0。
+
 ### 2026-10-02（北京时间）：P107 phase40-v5 四分片标注已实际启动；approved actor-query sidecar正受限集成（Codex / P107-COORD）
 
 - 四名`gpt-5.6-luna/max`标注 agent（`/root/phase40_label_s0..s3`）已实际启动，各负责phase-queue `selection_order`的10条（合计0..39），只写外部`/home/wsy/behavior-annotations/p107/temporal-annotations/phase40-v5/shard0..3`；每片15分钟，证据严格不晚于anchor。root已审40/40 anchors及40/40 v5 query texts；本轮仅calibration labels，禁止动作、outcome/recovery、training或release声明。
