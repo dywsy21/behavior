@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 22:13（北京时间）：P107 shard0修订后仅获辅助校准候选资格，ec CLI重连尚未确认（Codex / P107-COORD）
+
+- 用户已明确授权“现在可以重连 ec cli”；infra owner正仅用既有已认证profile重连，尚无连接成功回执，0新job/env/data改动，文档不记录凭据。连接确认前真实提取/restore继续阻塞；PUBLIC metadata/source-version/cache≤100MiB只读fallback仍是唯一安全infra工作。
+- 父代理已看完24/24原图。修订后的shard0八项仅接受为`AUX visual_relation_calibration_only`：`human_reviewed=false`、`parent_root_model_review_completed=true`、`APPROVED_AFTER_REVISION`；pilot SHA `3b98705eae688cc93ff8e6735a515fa8aab38c61ceca470495b499f5bf683ad3`，reviews SHA `25d259d3d8651893bc106eaacd1c907071de86d392dba2ed093fbd42d379ceed`。仍为`CANDIDATE_ONLY`，待外部provenance/split release，且无recovery/outcome/action masks，不能训练或计入规模。
+- shard1须修：ordinal19 by-gripper误on-counter、ordinal7地面橙物与bin内另一橙物混同、ordinal4支撑uncertain；shard2须修：ordinal20 on-counter无支持、ordinal23机器人夹爪/ jar自身clasp混淆并删query；final QA未完。单时刻pilot不扩展；下一批强制task/skill分层，不再取排序首行（当前24仅旧前5任务）。P107仍进行中，未完成；0恢复动作、0真实提取/reset/restore/GPU标注/训练。
+
 ### 2026-10-01 22:08（北京时间）：P107 父代理拒绝当前24条视觉关系pilot，修订/再审前零发布（Codex / P107-COORD）
 
 - 三个 shard 已返回24项，但父代理直接审看shard0+2的全部16个原图后拒绝当前pilot：shard0 ordinal3把 held-above-table 标为 ON；ordinal12混同橙色瓣状地面物与浅色圆形夹爪邻物；shard2 ordinal8把同一bin三视角数作多个物理bin；ordinal23把悬空jar标为supported on board。两名标注者正修订原值和review audit，`is_unambiguous/proven` meta改为UNKNOWN semantic issue；shard1父审仍PENDING。

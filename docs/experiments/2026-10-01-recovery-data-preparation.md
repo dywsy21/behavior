@@ -63,6 +63,12 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 ## 当前状态、阻塞与交接
 
+2026-10-01 22:13（北京时间）状态覆盖：用户现已明确授权“现在可以重连 ec cli”。infra owner 正仅以既有已认证 profile 重连；连接尚未确认，未启动作业、未改环境/数据，也不在文档记录任何凭据。原 PUBLIC metadata/source-version 只读 fallback 保留至连通性实核。
+
+父代理已亲自看完24/24原始 pilot 图。修订后的 shard0 八项已接受为 **AUX visual_relation_calibration_only**，其元数据固定为 `human_reviewed=false`、`parent_root_model_review_completed=true`、`APPROVED_AFTER_REVISION`；pilot SHA `3b98705eae688cc93ff8e6735a515fa8aab38c61ceca470495b499f5bf683ad3`，reviews SHA `25d259d3d8651893bc106eaacd1c907071de86d392dba2ed093fbd42d379ceed`。它仍是 `CANDIDATE_ONLY`，等待外部 provenance/split release，且没有 recovery/outcome/action masks，不能作为恢复或训练数据。
+
+其余最终 QA 未完成：shard1 ordinal19 将由夹爪持有误作 on-counter，ordinal7须分清地面橙色物和 bin 内不同橙色物，ordinal4的支撑关系为 uncertain；shard2 ordinal20的 on-counter 无支持证据，ordinal23混淆机器人夹爪与 jar 自身 clasp，必须删除该 query。不得扩展此单时刻 pilot；后续候选必须 task/skill 分层，不能再按排序前几行取样（当前24条只覆盖旧前5个任务）。P107仍在进行，未完成。
+
 2026-10-01 22:08（北京时间）状态覆盖：data 与 sim 实现已分派到上述隔离 worktree，且已请求 canonical data protocol 的早期交接；本地代码/QA 可继续，但未将任何输出发布为恢复数据。三个标注 shard（0/1/2）均已返回：输入严格是266个 **LOCAL TRAIN QA** 单时刻、三相机JPEG，经 `train_ordinal % 3` 后每片前8项、总共24项。父代理已直接查看 shard0和shard2的全部16个原图，**拒绝当前pilot，待修正**；shard1的父代理视觉审仍为 PENDING。24条均未发布、不得扩大、不得用于任何 recovery/outcome/action训练或计入10k/1k目标。
 
 已核实且必须保留 review audit 的错误为：shard0 ordinal3 将被支撑于桌面的关系误标成 `ON`，实际为桌面上方 held；ordinal12 将橙色、瓣状的地面物体与浅色、圆形、靠近夹爪的物体混同；shard2 ordinal8 将同一 bin 的三相机重复视角数成多个物理 bin；ordinal23 将悬在板上方的 jar 标成 supported on board。两名标注者正在修订原值及审查记录；`is_unambiguous/proven` 的 meta 问题也改为 UNKNOWN semantic issue。该拒绝说明本pilot至少需要 camera-native 图像、无 ground-truth footer、跨视角物体去重，以及“物理支撑关系不等于图像重叠”的明确规则；不从非随机、极小24条推导模型准确率。
@@ -71,7 +77,7 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 用户请求的 `gpt-6-luna/max` 不在可用工具列表；已明确使用且只可记为 `gpt-5.6-luna/max` 的 agent 标注回退，绝不改称人工或 gpt-6。各条仍须写入 `annotation_provenance=agent` 及精确模型版本，经过父审后才可能进入后续候选门。
 
-真实数据/提取与 restore roundtrip 当前都阻塞：lc1–lc3 本地缺 `127.0.0.1:1080` SOCKS；robo 连接 `127.0.0.1:23117` closed。父代理已异步请求用户授权恢复 ec CLI；该共享账户操作可能影响队友，当前等待答复，未重启 VPN、未改凭据或连接配置。infra fallback owner 仅可做 PUBLIC dataset metadata availability/cache 的只读检查，缓存上限100MiB并核精确 source version；这不是数据提取或连接恢复。阶段1当前进度也未重新核验，禁止把9/30步数当作当前状态。无 GPU 标注、仿真 reset、真实 extraction、restore 或训练启动，亦无数据质量结论。
+真实数据/提取与 restore roundtrip 在连接确认前仍阻塞：此前 lc1–lc3 本地缺 `127.0.0.1:1080` SOCKS，robo `127.0.0.1:23117` closed；上方 ec CLI 重连尚无成功回执。infra fallback owner 仅可做 PUBLIC dataset metadata availability/cache 的只读检查，缓存上限100MiB并核精确 source version；这不是数据提取或连接恢复。阶段1当前进度也未重新核验，禁止把9/30步数当作当前状态。无 GPU 标注、仿真 reset、真实 extraction、restore 或训练启动，亦无数据质量结论。
 
 台账、总计划和团队板已通过 `git diff --check`，作为仅文档提交 `b291196` 在30秒上限内推送到 `origin/feat/memlite-recovery-prep-20261001`。实施者现使用下列干净隔离目录，均从精确 `b29119688279751f5c59f28e2da5aa4df699ce5b` 创建：
 
