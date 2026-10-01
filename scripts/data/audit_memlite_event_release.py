@@ -120,7 +120,9 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
               "non_qualifying_corrective_actions": 0}
     accepted_goal_outcome_windows: set[str] = set()
     accepted_corrective_windows: set[tuple[str, str]] = set()
-    accepted_source_episodes: set[tuple[str, int]] = set()
+    accepted_goal_outcome_source_episodes: set[tuple[str, int]] = set()
+    accepted_decision_source_episodes: set[tuple[str, int]] = set()
+    accepted_corrective_source_episodes: set[tuple[str, int]] = set()
     coverage: dict[str, dict[str, Any]] = {}
     for wrapper in views:
         if not isinstance(wrapper, Mapping) or not isinstance(wrapper.get("view"), Mapping) or not isinstance(wrapper.get("review"), Mapping):
@@ -167,10 +169,15 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
         status["outcome_validated"] += int(review["outcome_validated"])
         if expected["goal_calibration"] or expected["outcome"]:
             accepted_goal_outcome_windows.add(event["event_id"])
+            accepted_goal_outcome_source_episodes.add(
+                (event["source"]["source_group_id"], event["source"]["episode_index"]))
+        if expected["decision"]:
+            accepted_decision_source_episodes.add(
+                (event["source"]["source_group_id"], event["source"]["episode_index"]))
         if expected["corrective_fm"]:
             accepted_corrective_windows.add((event["event_id"], view["executed_action_receipt"]["raw_action_sha256"]))
-        if any(expected.values()):
-            accepted_source_episodes.add((event["source"]["source_group_id"], event["source"]["episode_index"]))
+            accepted_corrective_source_episodes.add(
+                (event["source"]["source_group_id"], event["source"]["episode_index"]))
         if kind in {"goal_satisfaction_counterfactual", "attempt_outcome"}:
             task = str(event["source"]["task_index"])
         task = str(event["source"]["task_index"])
@@ -187,9 +194,11 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
     if action_by_id:
         raise ValueError("orphan action payload in package")
     status["verified_recovery_actions"] = len(accepted_corrective_windows)
-    actual_scale = {"source_episodes": len(accepted_source_episodes),
+    actual_scale = {"source_episodes": len(accepted_goal_outcome_source_episodes),
                     "goal_outcome_windows": len(accepted_goal_outcome_windows),
-                    "corrective_action_windows": len(accepted_corrective_windows)}
+                    "corrective_action_windows": len(accepted_corrective_windows),
+                    "decision_source_episodes": len(accepted_decision_source_episodes),
+                    "corrective_action_source_episodes": len(accepted_corrective_source_episodes)}
     if manifest.get("actual_scale") != actual_scale:
         raise ValueError("stored scale report is not reproducible from package rows")
     reported = manifest.get("status_report")

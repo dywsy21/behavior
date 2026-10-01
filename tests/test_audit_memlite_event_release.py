@@ -98,6 +98,9 @@ class AuditMemLiteEventReleaseTests(unittest.TestCase):
             result = audit.audit(package, expected_release_seal_sha256=seal,
                                  corrective_publisher_root=publisher_root, index_root=index_path)
             self.assertEqual(result["status_report"]["verified_recovery_actions"], 1)
+            self.assertEqual(result["actual_scale"], {
+                "source_episodes": 0, "goal_outcome_windows": 0, "corrective_action_windows": 1,
+                "decision_source_episodes": 0, "corrective_action_source_episodes": 1})
             action = DATASET.MemLiteEventDataset(package, "corrective_action", expected_release_seal_sha256=seal,
                                                   corrective_publisher_root=publisher_root, index_root=index_path)
             self.assertTrue(action[0]["dataset_quality_gates"]["corrective_fm"])

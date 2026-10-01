@@ -419,7 +419,9 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
     sealed_views, sealed_actions, status = [], [], Counter()
     accepted_goal_outcome_windows: set[str] = set()
     accepted_corrective_windows: set[tuple[str, str]] = set()
-    accepted_source_episodes: set[tuple[str, int]] = set()
+    accepted_goal_outcome_source_episodes: set[tuple[str, int]] = set()
+    accepted_decision_source_episodes: set[tuple[str, int]] = set()
+    accepted_corrective_source_episodes: set[tuple[str, int]] = set()
     seen_views: set[str] = set()
     coverage: dict[str, dict[str, Any]] = {}
     for view in sorted(views, key=lambda row: str(row.get("view_id", ""))):
@@ -464,11 +466,16 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
             # A repeated counterfactual label at the same immutable event is
             # one observation window, never additional scale.
             accepted_goal_outcome_windows.add(event["event_id"])
+            accepted_goal_outcome_source_episodes.add(
+                (event["source"]["source_group_id"], event["source"]["episode_index"]))
+        if quality_gates["decision"]:
+            accepted_decision_source_episodes.add(
+                (event["source"]["source_group_id"], event["source"]["episode_index"]))
         if quality_gates["corrective_fm"]:
             # Distinguish an actual executed window from copied/reworded views.
             accepted_corrective_windows.add((event["event_id"], view["executed_action_receipt"]["raw_action_sha256"]))
-        if any(quality_gates.values()):
-            accepted_source_episodes.add((event["source"]["source_group_id"], event["source"]["episode_index"]))
+            accepted_corrective_source_episodes.add(
+                (event["source"]["source_group_id"], event["source"]["episode_index"]))
         task = str(event["source"]["task_index"])
         local = coverage.setdefault(task, {"skills": set(), "instances": set(), "episodes": set(),
                                            "source_groups": set(), "candidate_views": 0,
@@ -493,9 +500,14 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
         if set(minimum_scale) != required_minima or any(type(v) is not int or v < 1 for v in minimum_scale.values()):
             raise ValueError("dataset-quality eligibility requires explicit positive --minimum-source-episodes, --minimum-goal-outcome-windows, and --minimum-corrective-action-windows")
     status["verified_recovery_actions"] = len(accepted_corrective_windows)
-    actual = {"source_episodes": len(accepted_source_episodes),
+    actual = {"source_episodes": len(accepted_goal_outcome_source_episodes),
               "goal_outcome_windows": len(accepted_goal_outcome_windows),
-              "corrective_action_windows": len(accepted_corrective_windows)}
+              "corrective_action_windows": len(accepted_corrective_windows),
+              # These diagnostic counts intentionally do not satisfy the
+              # goal/outcome source-episode minimum: decision-only and action-
+              # only rows cannot make a sparse outcome set look broad.
+              "decision_source_episodes": len(accepted_decision_source_episodes),
+              "corrective_action_source_episodes": len(accepted_corrective_source_episodes)}
     scale_ok = bool(minimum_scale) and all(actual[name] >= value for name, value in minimum_scale.items())
     index_coverage = index_manifest.get("coverage")
     if not isinstance(index_coverage, Mapping):

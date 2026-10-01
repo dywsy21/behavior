@@ -442,7 +442,92 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
                                   corrective_publisher_root=root / "parent-publisher",
                                   expected_corrective_publisher_manifest_sha256=authority_manifest_sha)
             self.assertEqual(result["actual_scale"], {"source_episodes": 1, "goal_outcome_windows": 1,
-                                                       "corrective_action_windows": 1})
+                                                       "corrective_action_windows": 1,
+                                                       "decision_source_episodes": 0,
+                                                       "corrective_action_source_episodes": 1})
+            self.assertEqual(result["release_eligibility"], "CANDIDATE_ONLY")
+
+    def test_ten_thousand_goal_outcome_windows_need_goal_outcome_source_episodes(self):
+        """Decision/action-only episodes must not pad the goal/outcome source minimum."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, groups, events, index_manifest = indexed(root)
+            student = next(event for event in events if event["usage_role"] == "student_candidate")
+            base_group = next(group for group in groups if group["source_group_id"] == student["source"]["source_group_id"])
+            labels = annotations(student)
+            base_action = next(row for row in labels["views"] if row["label_kind"] == "corrective_action")
+            labels["views"] = [base_action]
+            index_seal = pack.sha256_file(index_path / "inventory_seal.json")
+            labels, authority_manifest_sha = approve_logged_corrective(
+                labels, student, groups, root / "parent-publisher", index_root=index_path,
+                index_inventory_seal_sha256=index_seal)
+
+            # These are distinct immutable event windows on one source episode,
+            # not duplicated counterfactual views.  Their accepted window count
+            # reaches 10k, while their goal/outcome source count remains one.
+            outcome_events: list[dict] = []
+            for number in range(10_000):
+                event = deepcopy(student)
+                event["event_kind"] = f"ANNOTATED_SKILL_SEGMENT_{number}"
+                event["bundle_id"] = f"bundle-{number}"
+                event["event_id"] = pack._protocol.event_id(event)
+                outcome_events.append(event)
+                outcome = with_id(view(event, "attempt_outcome"))
+                outcome.update(attempt_id=f"attempt-{number}", parent_attempt_id=None,
+                               evaluated_bundle_id="bundle-before", attempt_outcome="FAILED",
+                               valid_result_mask=True,
+                               evidence={"kind": "VISUAL", "evidence_end_frame": event["observation"]["frame"],
+                                         "available_frame": event["observation"]["frame"]},
+                               low_action_supervision_mask=False)
+                labels["views"].append(with_id(outcome))
+
+            def extra_source(seed: int) -> tuple[dict, dict]:
+                event, group = deepcopy(student), deepcopy(base_group)
+                event["source"].update(task_instance_id=100 + seed, raw_episode_id=5000 + seed,
+                                       episode_index=8000 + seed)
+                event["source"]["source_group_id"] = pack._protocol.source_group_id(event["source"])
+                event["event_id"] = pack._protocol.event_id(event)
+                group.update(source_group_id=event["source"]["source_group_id"],
+                             task_instance_id=event["source"]["task_instance_id"],
+                             source_episode_ids=[event["source"]["episode_index"]], source_episode_count=1)
+                return event, group
+
+            decision_event, decision_group = extra_source(1)
+            decision = with_id(view(decision_event, "recovery_decision"))
+            decision.update(decision="RETRY", target_bundle_id="bundle-recovery", decision_supervision_mask=True,
+                            evidence={"kind": "VISUAL", "evidence_end_frame": decision_event["observation"]["frame"],
+                                      "available_frame": decision_event["observation"]["frame"]})
+            labels["views"].append(with_id(decision))
+            action_event, action_group = extra_source(2)
+            action_labels = annotations(action_event)
+            action_only = next(row for row in action_labels["views"] if row["label_kind"] == "corrective_action")
+            labels["views"].append(action_only)
+            labels["action_payloads"].append(action_labels["action_payloads"][0])
+            labels["view_reviews"] = [review(
+                row, parent_reviewed=(row["label_kind"] == "corrective_action" and
+                                       row["event_id"] == student["event_id"]),
+                outcome_validated=(row["label_kind"] == "attempt_outcome"),
+                accepted_auxiliary=(row["label_kind"] == "recovery_decision"))
+                for row in labels["views"]]
+
+            result, _ = pack.build_release(
+                groups + [decision_group, action_group], events + outcome_events + [decision_event, action_event], labels,
+                index_manifest=index_manifest, release_role="student_candidate",
+                minimum_scale={"source_episodes": 2, "goal_outcome_windows": 10_000,
+                               "corrective_action_windows": 1}, request_dataset_quality_eligibility=True,
+                require_complete_source_index=True, index_inventory_seal_sha256=index_seal,
+                corrective_action_authority=pack.load_corrective_action_authority(
+                    root / "parent-publisher", index_root=index_path,
+                    expected_publisher_manifest_sha256=authority_manifest_sha,
+                    expected_index_inventory_seal_sha256=index_seal),
+                corrective_authority_capability={
+                    "publisher_manifest_sha256": authority_manifest_sha,
+                    "index_inventory_seal_sha256": index_seal,
+                    "accepted_live_runtime_acceptance_root_sha256": None})
+            self.assertEqual(result["actual_scale"], {
+                "source_episodes": 1, "goal_outcome_windows": 10_000, "corrective_action_windows": 1,
+                "decision_source_episodes": 1, "corrective_action_source_episodes": 1})
+            self.assertFalse(result["dataset_quality_eligibility"])
             self.assertEqual(result["release_eligibility"], "CANDIDATE_ONLY")
 
     def test_conflicting_published_episode_index_is_rejected_even_if_event_hash_is_recomputed(self):
