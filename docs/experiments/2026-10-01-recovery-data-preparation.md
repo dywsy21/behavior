@@ -58,6 +58,8 @@ DART 仍须满足 source-group split、可回放时间、23D→27D mapping/mask�
 
 SIM `c556…` 现报31个 sim＋5个 protocol 测试通过，仍待独立复审，故 real recovery/DART release 继续 blocked。DATA temporal renderer、artifact/member semantics 修复尚在进行；mining `ebf3c70` candidate review 未批准，首40条 temporal images/annotation batch 仍为0，unknown skill-ID gap 也尚未证实为 v3 source defect。local4080 compatibility 路线仍待用户选择，禁止 robo。
 
+独立 reviewer 对 `569200e` 的结论是 **NEEDS FIX，不是候选合同批准**：CLI 仅拒绝两个 per-record training flags，错误接受 `candidate_only=false`、`ready_for_training=true` 或 `authority_minted=true` 的已哈希 record；original profile 的 caller string 可虚写 `empirical_faithfulness=true`，实际并没有 full iterative covariance evidence；`CandidateSourceReceipt` / `CalibrationReceipt` 的 caller-supplied group strings 和 digest shape 未证明 canonical split/protected membership，也未将 covariance 绑定 teacher/learner/calibration trajectories/alpha/horizon artifacts。P2 是 raw23 named layout 还缺 immutable embodiment/layout/projection manifest SHA。下一修复一律 fail-closed：所有 record flags 精确匹配 candidate-only；经验 DART claim 固定 false；使用 DATA owner 提供的一次验证 canonical SHA-pinned membership boundary 与 explicit calibration-noise binding；加入 eval/protected spoof、covariance-mismatch 和 flag adversarial tests。新 DART 文件之后才移植到 SIM consumer `56e33bd`（在`c556`上、仍待独立复审），禁止带回旧 bridge；其 future postcondition 必须有结束于/晚于 actual raw23 end 的 physical-evidence observation，不能以 evidence availability、clean action receipt 或 pre-action proof 单独生成 corrective-positive；仍0 live data/release/training。
+
 ## 阶段、责任、预算与停止条件
 
 | 阶段 | 唯一责任与交付 | 初始预算/停止条件 | 放行条件 |
