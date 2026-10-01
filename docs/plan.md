@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 07:48（北京时间）：coverage49 的32条 root-model 复核完成有限诊断验收；语义质量不放行、训练与DART仍为零（Codex / P107-COORD）
+
+- `cal40_finalize_binding`独立只读核验当前**32个不同**root-reviewed query 的registry identity、source/group/frame、causal-page bytes/frame与全部候选门禁均PASS。有效当前可见关系计数为`1 SATISFIED / 8 NOT_SATISFIED / 23 UNKNOWN`，轻量汇总为`/home/wsy/behavior-annotations/p107/parent-review/coverage-cohort-next-v1/root-effective32-diagnostic-summary.json` SHA`f340ceebadef687a2beb1a24e225127b39e88bc21933ee69fe507adf51b8e726`。它由blind17加上15条未盲审raw非UNKNOWN的postselection复核构成；q023不是第33条，而是blind中一条的后续独立身份/几何仲裁，effective判断为UNKNOWN。
+- 新postselection receipts为part06 SHA`d213cad4…b697`（严格q008/q038/q022/q032/q004）、part07`efa919d6…8abe`、part08`827917e6…5d41`；q023旁侧仲裁`b7da1107…5142`明确同时保留raw SATISFIED、blind NOT_SATISFIED和后续UNKNOWN，绝不覆盖前两者。part06此前未审草稿错误将q023置入首组，原字节在发现前已原位覆盖且找不到副本；其原SHA`69d67426…f266`、错误、正确替换和“不可声称字节恢复”的审计例外已如实记录在`root-postselection-part06-supersession.json` SHA`5cfc9057…6132`，不把该草稿纳入任何汇总。
+- 这是有限的**问题质量校准**，不是49条语义正确率或canonical/学生数据验收：另`17`条raw UNKNOWN尚未由root复核，不能隐式接受。UNKNOWN必须继续分开记录实体/参照歧义、手/接触/支撑遮挡、RGB不能建立导航距离/姿态、以及query关系/效果/recipient欠定义；后者不得包装成可训练UNKNOWN或负例。所有条目仍`root_model`/`human_reviewed=false`、`training_eligible=false`、attempt=`NOT_APPLICABLE`；outcome、recovery、corrective action/BC、student、release、formal training和live DART均为`0`。
+- 因此暂停扩同类欠定义问题，不以更多页面/框架替代真实数据门。P10.7仍须达到大规模经审计goal/outcome windows、`>=1k`实际corrective windows及真实DART；live DART还缺用户对**NVIDIA Isaac EULA与BEHAVIOR data/decryption terms**的答复（见`docs/SERVER_LAYOUT.md:3`）、隔离LC runtime/assets compatibility、fresh-reset qualified teacher以及session-owned world/observe/apply、逐physics-tick recorder、clean-application ack和preclose/postcondition证据。未获得条款答复前不安装Isaac/资产、不启仿真；lc1/lc2/robo和shared env继续不触碰。
+
 ### 2026-10-02 07:28（北京时间）：coverage49 raw diagnostic proposals 与root blind17均已封存；先校准问题质量，不扩同类欠定义问题（Codex / P107-COORD）
 
 - 本轮事实分层固定为：metadata候选`52`；grounding quarantine`3`；可审问题`49`=`TRAIN44`+`EVAL5`；四个TRAIN raw shards（各11）及EVAL raw（5）均已写完但只是diagnostic proposals；root-model（`human_reviewed=false`）亲看`17`（TRAIN12+EVAL5）且只用≤anchor actor-causal/eval-native证据。`cal40_finalize_binding`只读结构审查确认49条identity/split、124张TRAIN pages、15张EVAL native图片hash与3条隔离事件均匹配；raw schema异构，不能冒充canonical protocol。
