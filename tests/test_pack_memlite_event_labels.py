@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import tracemalloc
 import unittest
 
 
@@ -35,6 +36,47 @@ def indexed(root: Path) -> tuple[Path, list[dict], list[dict], dict]:
     groups = pack.read_jsonl(output / "source_groups.jsonl")
     events = pack.read_jsonl(output / "event_candidates.jsonl")
     return output, groups, events, pack.read_json(output / "manifest.json")
+
+
+def reseal_index(index_path: Path) -> str:
+    """Bind the current test manifest with the exact external inventory seal."""
+    manifest = pack.read_json(index_path / "manifest.json")
+    seal = {"schema_version": "memlite-event-inventory-seal-v1",
+            "index_manifest_sha256": pack.sha256_file(index_path / "manifest.json"),
+            "source_release_manifest_sha256": manifest["source_release_manifest_sha256"],
+            "coverage_expectations_sha256": manifest["coverage_expectations_sha256"],
+            "expected_payload_files": ["event_candidates.jsonl", "source_groups.jsonl"],
+            "payload_files": manifest["files"]}
+    (index_path / "inventory_seal.json").write_bytes(pack.canonical_json(seal).encode("utf-8") + b"\n")
+    return pack.sha256_file(index_path / "inventory_seal.json")
+
+
+def update_payload_receipt(index_path: Path, name: str) -> str:
+    manifest_path = index_path / "manifest.json"
+    manifest = pack.read_json(manifest_path)
+    payload = index_path / name
+    receipt = dict(manifest["files"][name])
+    receipt.update(sha256=pack.sha256_file(payload), bytes=payload.stat().st_size,
+                   rows=len(payload.read_bytes().splitlines()))
+    manifest["files"][name] = receipt
+    manifest_path.write_bytes(pack.canonical_json(manifest).encode("utf-8") + b"\n")
+    return reseal_index(index_path)
+
+
+def write_streaming_fixture(index_path: Path, event: dict, *, row_count: int) -> str:
+    """Make a modest valid JSONL whose retained subset is one event."""
+    payload = index_path / "event_candidates.jsonl"
+    selected = ""
+    with payload.open("wb") as stream:
+        for number in range(row_count):
+            row = deepcopy(event)
+            row["event_kind"] = f"streamed-event-{number}"
+            row["bundle_id"] = f"streamed-bundle-{number}"
+            row["event_id"] = pack._protocol.event_id(row)
+            stream.write(pack.canonical_json(row).encode("utf-8") + b"\n")
+            selected = row["event_id"]
+    update_payload_receipt(index_path, "event_candidates.jsonl")
+    return selected
 
 
 def view(event: dict, kind: str) -> dict:
@@ -582,6 +624,133 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
             self.assertFalse(result["ready_for_training"])
             self.assertFalse(result["training_run_authorized"])
             self.assertFalse(result["stage3_training_authorized"])
+
+    def test_streamed_selected_loader_preserves_full_index_duplicate_and_lineage_checks(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, groups, events, _ = indexed(root)
+            seal = pack.sha256_file(index_path / "inventory_seal.json")
+            selected_id = events[0]["event_id"]
+            loaded_groups, loaded_events, _, _ = pack._read_sealed_index(
+                index_path, expected_inventory_seal_sha256=seal, selected_event_ids={selected_id})
+            self.assertEqual(len(loaded_groups), len(groups))
+            self.assertEqual([row["event_id"] for row in loaded_events], [selected_id])
+
+            # The duplicate is deliberately not selected.  The old complete
+            # index invariant must still reject it.
+            with (index_path / "event_candidates.jsonl").open("ab") as stream:
+                stream.write(pack.canonical_json(events[1]).encode("utf-8") + b"\n")
+            with self.assertRaisesRegex(ValueError, "duplicate event_id"):
+                pack._read_sealed_index(index_path, expected_inventory_seal_sha256=seal,
+                                        selected_event_ids={selected_id})
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, _, events, _ = indexed(root)
+            seal = pack.sha256_file(index_path / "inventory_seal.json")
+            unselected = deepcopy(events[1])
+            unselected["source"]["task_instance_id"] += 1000
+            unselected["source"]["episode_index"] += 100000
+            unselected["source"]["source_group_id"] = pack._protocol.source_group_id(unselected["source"])
+            unselected["event_id"] = pack._protocol.event_id(unselected)
+            with (index_path / "event_candidates.jsonl").open("ab") as stream:
+                stream.write(pack.canonical_json(unselected).encode("utf-8") + b"\n")
+            with self.assertRaisesRegex(ValueError, "no immutable source-group"):
+                pack._read_sealed_index(index_path, expected_inventory_seal_sha256=seal,
+                                        selected_event_ids={events[0]["event_id"]})
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, _, _, _ = indexed(root)
+            seal = pack.sha256_file(index_path / "inventory_seal.json")
+            with self.assertRaisesRegex(ValueError, "selected event IDs are missing"):
+                pack._read_sealed_index(index_path, expected_inventory_seal_sha256=seal,
+                                        selected_event_ids={"f" * 64})
+
+    def test_streamed_loader_rejects_tampered_hash_or_byte_receipt(self):
+        for receipt_field, value in (("sha256", "0" * 64), ("bytes", None)):
+            with self.subTest(receipt_field=receipt_field), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                index_path, _, events, _ = indexed(root)
+                manifest_path = index_path / "manifest.json"
+                manifest = pack.read_json(manifest_path)
+                if receipt_field == "bytes":
+                    value = manifest["files"]["event_candidates.jsonl"]["bytes"] + 1
+                manifest["files"]["event_candidates.jsonl"][receipt_field] = value
+                manifest_path.write_bytes(pack.canonical_json(manifest).encode("utf-8") + b"\n")
+                seal = reseal_index(index_path)
+                with self.assertRaisesRegex(ValueError, "event index receipt mismatch: event_candidates.jsonl"):
+                    pack._read_sealed_index(index_path, expected_inventory_seal_sha256=seal,
+                                            selected_event_ids={events[0]["event_id"]})
+
+    def test_streamed_loader_keeps_strict_json_for_every_row(self):
+        for malformed, error in ((b'{"event_id":"x","event_id":"y"}\n', "duplicate JSON key"),
+                                 (b'{"event_id":\n', "Expecting value")):
+            with self.subTest(error=error), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                index_path, _, events, _ = indexed(root)
+                with (index_path / "event_candidates.jsonl").open("ab") as stream:
+                    stream.write(malformed)
+                with self.assertRaisesRegex(ValueError, error):
+                    pack._read_sealed_index(
+                        index_path, expected_inventory_seal_sha256=pack.sha256_file(index_path / "inventory_seal.json"),
+                        selected_event_ids={events[0]["event_id"]})
+
+    def test_streamed_publish_matches_legacy_small_fixture_bytes(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, groups, events, index_manifest = indexed(root)
+            student = next(event for event in events if event["usage_role"] == "student_candidate")
+            labels = annotations(student)
+            label_path = root / "labels.json"
+            label_path.write_bytes(pack.canonical_json(labels).encode("utf-8") + b"\n")
+            expected, output = root / "expected", root / "streamed-package"
+            expected.mkdir()
+            seal = pack.sha256_file(index_path / "inventory_seal.json")
+            expected_manifest, expected_records = pack.build_release(
+                groups, events, labels, index_manifest=index_manifest, release_role="student_candidate",
+                minimum_scale=None, request_dataset_quality_eligibility=False,
+                index_inventory_seal_sha256=seal)
+            expected_files = {
+                "source_groups.jsonl": pack._write_jsonl(expected / "source_groups.jsonl", expected_records["source_groups"]),
+                "events.jsonl": pack._write_jsonl(expected / "events.jsonl", expected_records["events"]),
+                "views.jsonl": pack._write_jsonl(expected / "views.jsonl", expected_records["views"]),
+                "actions.jsonl": pack._write_jsonl(expected / "actions.jsonl", expected_records["actions"]),
+            }
+            expected_manifest["files"] = expected_files
+            expected_manifest["publisher_sha256"] = pack.sha256_file(REPO / "scripts/data/pack_memlite_event_labels.py")
+            (expected / "release_manifest.json").write_bytes(
+                pack.canonical_json(expected_manifest).encode("utf-8") + b"\n")
+            expected_seal = {"schema_version": "memlite-event-label-release-seal-v1",
+                             "release_manifest_sha256": pack.sha256_file(expected / "release_manifest.json"),
+                             "files": expected_files, "publisher_sha256": expected_manifest["publisher_sha256"]}
+            (expected / "release_seal.json").write_bytes(pack.canonical_json(expected_seal).encode("utf-8") + b"\n")
+
+            result = pack.publish(index_path, label_path, output, release_role="student_candidate",
+                                  minimum_scale=None, request_dataset_quality_eligibility=False,
+                                  expected_index_inventory_seal_sha256=seal)
+            self.assertEqual(result["status_report"]["source_indexed"], len(events))
+            for name in ("source_groups.jsonl", "events.jsonl", "views.jsonl", "actions.jsonl",
+                         "release_manifest.json", "release_seal.json"):
+                self.assertEqual((output / name).read_bytes(), (expected / name).read_bytes(), name)
+
+    def test_selected_stream_peak_is_bounded_by_selected_state_not_jsonl_size(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, _, events, _ = indexed(root)
+            selected_id = write_streaming_fixture(index_path, events[0], row_count=4096)
+            payload_bytes = (index_path / "event_candidates.jsonl").stat().st_size
+            seal = pack.sha256_file(index_path / "inventory_seal.json")
+            tracemalloc.start()
+            try:
+                _, selected, _, _ = pack._read_sealed_index(
+                    index_path, expected_inventory_seal_sha256=seal, selected_event_ids={selected_id})
+                _, peak = tracemalloc.get_traced_memory()
+            finally:
+                tracemalloc.stop()
+            self.assertEqual([row["event_id"] for row in selected], [selected_id])
+            self.assertLess(peak, payload_bytes // 2)
+            self.assertLess(peak, 8 * 1024 * 1024)
 
 
 if __name__ == "__main__":
