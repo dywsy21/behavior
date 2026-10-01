@@ -46,6 +46,7 @@ _SIDECAR_META_KEYS = frozenset({
 _REGISTRY_META_KEYS = frozenset({
     "schema_version", "adapter_schema_version", "path", "sha256", "row_count",
 })
+_FILE_RECEIPT_KEYS = frozenset({"sha256", "bytes", "rows"})
 _SIDECAR_ROW_KEYS = frozenset({"schema_version", "view_id", "actor_query"})
 _UPSTREAM_REGISTRY_ROW_KEYS = frozenset({
     "canonical_verb", "event_id", "observation_frame", "prelabel_query_id",
@@ -402,6 +403,15 @@ def _read_jsonl(path: Path, name: str) -> tuple[bytes, list[dict[str, Any]]]:
     return raw, rows
 
 
+def _validate_file_receipt(receipt: Mapping[str, Any], name: str) -> tuple[str, int, int]:
+    """Validate a canonical immutable-file receipt with strict JSON types."""
+    _exact_keys(receipt, _FILE_RECEIPT_KEYS, f"{name} file receipt")
+    digest = _sha256(receipt["sha256"], f"{name} file receipt.sha256")
+    byte_count = _integer(receipt["bytes"], f"{name} file receipt.bytes")
+    row_count = _integer(receipt["rows"], f"{name} file receipt.rows")
+    return digest, byte_count, row_count
+
+
 def validate_sidecar_manifest(metadata: Mapping[str, Any], *, files: Mapping[str, Any]) -> dict[str, Any]:
     """Validate exact optional registration metadata without reading files."""
     _exact_keys(metadata, _SIDECAR_META_KEYS, ACTOR_QUERY_MANIFEST_KEY)
@@ -414,9 +424,12 @@ def validate_sidecar_manifest(metadata: Mapping[str, Any], *, files: Mapping[str
     digest = _sha256(metadata["sha256"], f"{ACTOR_QUERY_MANIFEST_KEY}.sha256")
     row_count = _integer(metadata["row_count"], f"{ACTOR_QUERY_MANIFEST_KEY}.row_count")
     receipt = files.get(path_value)
-    if not isinstance(receipt, Mapping) or receipt.get("sha256") != digest:
+    if not isinstance(receipt, Mapping):
         raise ActorQueryError(f"{ACTOR_QUERY_MANIFEST_KEY} is not registered in sealed file receipts")
-    if receipt.get("rows") != row_count:
+    receipt_digest, _, receipt_rows = _validate_file_receipt(receipt, ACTOR_QUERY_MANIFEST_KEY)
+    if receipt_digest != digest:
+        raise ActorQueryError(f"{ACTOR_QUERY_MANIFEST_KEY} file receipt SHA-256 mismatch")
+    if receipt_rows != row_count:
         raise ActorQueryError(f"{ACTOR_QUERY_MANIFEST_KEY} manifest/file row count mismatch")
     registry = metadata["prelabel_query_registry"]
     if registry is not None:
@@ -432,9 +445,11 @@ def validate_sidecar_manifest(metadata: Mapping[str, Any], *, files: Mapping[str
         registry_digest = _sha256(registry["sha256"], "prelabel_query_registry.sha256")
         registry_rows = _integer(registry["row_count"], "prelabel_query_registry.row_count")
         registry_receipt = files.get(registry_path)
-        if (not isinstance(registry_receipt, Mapping) or
-                registry_receipt.get("sha256") != registry_digest or
-                registry_receipt.get("rows") != registry_rows):
+        if not isinstance(registry_receipt, Mapping):
+            raise ActorQueryError("prelabel registry is not fully registered in sealed file receipts")
+        receipt_digest, _, receipt_rows = _validate_file_receipt(
+            registry_receipt, "prelabel_query_registry")
+        if receipt_digest != registry_digest or receipt_rows != registry_rows:
             raise ActorQueryError("prelabel registry is not fully registered in sealed file receipts")
     return json.loads(canonical_json(dict(metadata)))
 
@@ -476,7 +491,10 @@ def read_actor_query_sidecar(package_root: str | Path, metadata: Mapping[str, An
     if len(sidecar_rows) != metadata["row_count"]:
         raise ActorQueryError("actor-query sidecar row count mismatch")
     sidecar_receipt = files.get(metadata["path"])
-    if not isinstance(sidecar_receipt, Mapping) or sidecar_receipt.get("bytes") != len(raw_sidecar):
+    if not isinstance(sidecar_receipt, Mapping):
+        raise ActorQueryError("actor-query sidecar byte receipt mismatch")
+    _, sidecar_bytes, _ = _validate_file_receipt(sidecar_receipt, ACTOR_QUERY_MANIFEST_KEY)
+    if sidecar_bytes != len(raw_sidecar):
         raise ActorQueryError("actor-query sidecar byte receipt mismatch")
 
     registry_by_id: dict[str, dict[str, Any]] = {}
@@ -489,7 +507,10 @@ def read_actor_query_sidecar(package_root: str | Path, metadata: Mapping[str, An
         if len(registry_rows) != registry_meta["row_count"]:
             raise ActorQueryError("prelabel registry row count mismatch")
         registry_receipt = files.get(registry_meta["path"])
-        if not isinstance(registry_receipt, Mapping) or registry_receipt.get("bytes") != len(raw_registry):
+        if not isinstance(registry_receipt, Mapping):
+            raise ActorQueryError("prelabel registry byte receipt mismatch")
+        _, registry_bytes, _ = _validate_file_receipt(registry_receipt, "prelabel_query_registry")
+        if registry_bytes != len(raw_registry):
             raise ActorQueryError("prelabel registry byte receipt mismatch")
         registry_by_id = adapt_prelabel_registry(registry_rows)
 
