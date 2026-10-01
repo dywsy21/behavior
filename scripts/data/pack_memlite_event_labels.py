@@ -98,6 +98,58 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def _stream_sealed_jsonl(path: Path, receipt: Mapping[str, Any], *, name: str,
+                         consume: Any) -> int:
+    """Strictly parse a sealed JSONL file in bounded memory.
+
+    The digest and byte count cover every byte read, including blank rows.  A
+    caller may retain only a selected subset in ``consume``; this helper still
+    parses every row so duplicate keys, malformed JSON, and malformed
+    unselected index rows cannot evade the immutable-index validation.
+    """
+    path = Path(path)
+    if path.is_symlink() or not path.is_file():
+        raise ValueError(f"required regular input file is missing: {path}")
+    expected_sha, expected_bytes, expected_rows = receipt.get("sha256"), receipt.get("bytes"), receipt.get("rows")
+    if not _is_sha(expected_sha) or type(expected_bytes) is not int or expected_bytes < 0:
+        raise ValueError(f"event index receipt is malformed: {name}")
+    if expected_rows is not None and (type(expected_rows) is not int or expected_rows < 0):
+        raise ValueError(f"event index receipt is malformed: {name}")
+    digest, byte_count, row_count = hashlib.sha256(), 0, 0
+    with path.open("rb") as stream:
+        for number, line in enumerate(stream, start=1):
+            digest.update(line)
+            byte_count += len(line)
+            if not line.strip():
+                continue
+            value = strict_json_bytes(line, name=f"{path}:{number}")
+            if not isinstance(value, dict):
+                raise ValueError(f"JSONL row {path}:{number} is not an object")
+            consume(value)
+            row_count += 1
+    if (digest.hexdigest() != expected_sha or byte_count != expected_bytes or
+            (expected_rows is not None and row_count != expected_rows)):
+        raise ValueError(f"event index receipt mismatch: {name}")
+    return row_count
+
+
+def _write_sealed_jsonl_copy(output: Path, source: Path, receipt: Mapping[str, Any], *, name: str) -> dict[str, Any]:
+    """Re-encode a fully sealed source JSONL without retaining its rows.
+
+    This second pass closes the interval between index validation and package
+    publication: a changed source is rejected before staging can be renamed.
+    """
+    count = 0
+    with output.open("xb") as destination:
+        def write_row(row: Mapping[str, Any]) -> None:
+            nonlocal count
+            destination.write(canonical_json(row).encode("utf-8") + b"\n")
+            count += 1
+
+        _stream_sealed_jsonl(source, receipt, name=name, consume=write_row)
+    return {"sha256": sha256_file(output), "rows": count, "bytes": output.stat().st_size}
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with Path(path).open("rb") as stream:
@@ -170,7 +222,46 @@ def _validate_view(view: Mapping[str, Any], event: Mapping[str, Any], *, authori
     _assert_actor_projection_safe(view)
 
 
-def _read_sealed_index(index_dir: Path, *, expected_inventory_seal_sha256: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any], str]:
+def _validate_source_groups(groups: Iterable[Mapping[str, Any]]) -> dict[str, dict[str, Any]]:
+    by_id: dict[str, dict[str, Any]] = {}
+    for group in groups:
+        group_id, role, split = group.get("source_group_id"), group.get("usage_role"), group.get("original_split")
+        if not _is_sha(group_id) or role not in USAGE_ROLES or split not in {"train", "eval"}:
+            raise ValueError("malformed immutable source-group inventory")
+        if group_id in by_id:
+            raise ValueError("duplicate source-group inventory row")
+        if (split == "eval") != (role == "evaluation_only"):
+            raise ValueError("source group attempts to change its inherited original split")
+        if int(group.get("task_instance_id", 0)) >= 301 and role != "evaluation_only":
+            raise ValueError("public_test source group cannot enter train or calibration")
+        by_id[group_id] = dict(group)
+    return by_id
+
+
+def _validate_index_event(event: Mapping[str, Any], *, group_by_id: Mapping[str, Mapping[str, Any]],
+                          seen_events: set[str], published_episode_identity: dict[int, tuple[Any, ...]]) -> None:
+    validate_event(event)
+    event_id, source = event["event_id"], event["source"]
+    if event_id in seen_events:
+        raise ValueError("duplicate event_id in package source")
+    seen_events.add(event_id)
+    episode_identity = (source["source_release_manifest_sha256"], source["task_index"],
+                        source["task_instance_id"], source["raw_episode_id"])
+    prior = published_episode_identity.setdefault(source["episode_index"], episode_identity)
+    if prior != episode_identity:
+        raise ValueError("published episode_index maps to conflicting immutable source episodes")
+    group = group_by_id.get(source["source_group_id"])
+    if group is None:
+        raise ValueError("event has no immutable source-group inventory row")
+    if event.get("usage_role") != group["usage_role"]:
+        raise ValueError("event usage role differs from immutable source-group policy")
+    for key in ("source_release_manifest_sha256", "task_index", "task_instance_id", "original_split"):
+        if source[key] != group[key]:
+            raise ValueError(f"event source {key} conflicts with inherited source-group provenance")
+
+
+def _read_sealed_index(index_dir: Path, *, expected_inventory_seal_sha256: str,
+                       selected_event_ids: set[str] | None = None) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any], str]:
     index_dir = Path(index_dir)
     if index_dir.is_symlink() or not index_dir.is_dir():
         raise ValueError("event index must be a regular sealed directory")
@@ -182,9 +273,9 @@ def _read_sealed_index(index_dir: Path, *, expected_inventory_seal_sha256: str) 
         raise ValueError("event index lacks sealed file receipts")
     paths = {"source_groups.jsonl": index_dir / "source_groups.jsonl",
              "event_candidates.jsonl": index_dir / "event_candidates.jsonl"}
-    for name, path in paths.items():
+    for name in paths:
         receipt = files.get(name)
-        if not isinstance(receipt, Mapping) or receipt.get("sha256") != sha256_file(path):
+        if not isinstance(receipt, Mapping):
             raise ValueError(f"event index receipt mismatch: {name}")
     seal_path = index_dir / "inventory_seal.json"
     if not _is_sha(expected_inventory_seal_sha256):
@@ -200,46 +291,41 @@ def _read_sealed_index(index_dir: Path, *, expected_inventory_seal_sha256: str) 
                      "expected_payload_files": sorted(paths), "payload_files": files}
     if seal != expected_seal:
         raise ValueError("event index inventory seal does not bind exact manifest/payload files")
-    groups, events = read_jsonl(paths["source_groups.jsonl"]), read_jsonl(paths["event_candidates.jsonl"])
-    if not groups or not events:
+    groups: list[dict[str, Any]] = []
+    _stream_sealed_jsonl(paths["source_groups.jsonl"], files["source_groups.jsonl"], name="source_groups.jsonl",
+                         consume=groups.append)
+    group_by_id = _validate_source_groups(groups)
+    selected = None if selected_event_ids is None else set(selected_event_ids)
+    if selected is not None and any(not _is_sha(event_id) for event_id in selected):
+        raise ValueError("selected event IDs must be canonical SHA-256 values")
+    events: list[dict[str, Any]] = []
+    found_selected: set[str] = set()
+    seen_events: set[str] = set()
+    published_episode_identity: dict[int, tuple[Any, ...]] = {}
+
+    def consume_event(event: dict[str, Any]) -> None:
+        _validate_index_event(event, group_by_id=group_by_id, seen_events=seen_events,
+                              published_episode_identity=published_episode_identity)
+        if selected is None or event["event_id"] in selected:
+            events.append(event)
+            found_selected.add(event["event_id"])
+
+    event_count = _stream_sealed_jsonl(paths["event_candidates.jsonl"], files["event_candidates.jsonl"],
+                                        name="event_candidates.jsonl", consume=consume_event)
+    if selected is not None and selected - found_selected:
+        raise ValueError("selected event IDs are missing from immutable source index")
+    if not groups or not event_count:
         raise ValueError("event index must contain source groups and event candidates")
     return groups, events, manifest, actual_inventory_seal_sha256
 
 
 def _validate_group_inventory(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any]]) -> dict[str, dict[str, Any]]:
-    by_id: dict[str, dict[str, Any]] = {}
-    for group in groups:
-        group_id, role, split = group.get("source_group_id"), group.get("usage_role"), group.get("original_split")
-        if not _is_sha(group_id) or role not in USAGE_ROLES or split not in {"train", "eval"}:
-            raise ValueError("malformed immutable source-group inventory")
-        if group_id in by_id:
-            raise ValueError("duplicate source-group inventory row")
-        if (split == "eval") != (role == "evaluation_only"):
-            raise ValueError("source group attempts to change its inherited original split")
-        if int(group.get("task_instance_id", 0)) >= 301 and role != "evaluation_only":
-            raise ValueError("public_test source group cannot enter train or calibration")
-        by_id[group_id] = dict(group)
+    by_id = _validate_source_groups(groups)
     seen_events: set[str] = set()
     published_episode_identity: dict[int, tuple[Any, ...]] = {}
     for event in events:
-        validate_event(event)
-        event_id, source = event["event_id"], event["source"]
-        if event_id in seen_events:
-            raise ValueError("duplicate event_id in package source")
-        seen_events.add(event_id)
-        episode_identity = (source["source_release_manifest_sha256"], source["task_index"],
-                            source["task_instance_id"], source["raw_episode_id"])
-        prior = published_episode_identity.setdefault(source["episode_index"], episode_identity)
-        if prior != episode_identity:
-            raise ValueError("published episode_index maps to conflicting immutable source episodes")
-        group = by_id.get(source["source_group_id"])
-        if group is None:
-            raise ValueError("event has no immutable source-group inventory row")
-        if event.get("usage_role") != group["usage_role"]:
-            raise ValueError("event usage role differs from immutable source-group policy")
-        for key in ("source_release_manifest_sha256", "task_index", "task_instance_id", "original_split"):
-            if source[key] != group[key]:
-                raise ValueError(f"event source {key} conflicts with inherited source-group provenance")
+        _validate_index_event(event, group_by_id=by_id, seen_events=seen_events,
+                              published_episode_identity=published_episode_identity)
     return by_id
 
 
@@ -382,7 +468,8 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
                   require_complete_source_index: bool = False,
                   index_inventory_seal_sha256: str | None = None,
                   corrective_action_authority: Any | None = None,
-                  corrective_authority_capability: Mapping[str, Any] | None = None) -> tuple[dict[str, Any], dict[str, list[dict[str, Any]]]]:
+                  corrective_authority_capability: Mapping[str, Any] | None = None,
+                  source_indexed_count: int | None = None) -> tuple[dict[str, Any], dict[str, list[dict[str, Any]]]]:
     """Validate a sealed package in memory; callers write it atomically afterwards."""
     if release_role not in USAGE_ROLES:
         raise ValueError("release role must be explicit")
@@ -394,6 +481,10 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
     if "corrective_action_authority" in annotations:
         raise ValueError("parent corrective-action authority must be supplied separately from agent annotations")
     group_by_id = _validate_group_inventory(list(groups), list(events))
+    if source_indexed_count is None:
+        source_indexed_count = len(events)
+    elif type(source_indexed_count) is not int or source_indexed_count < len(events):
+        raise ValueError("source indexed count must cover every supplied immutable event")
     if not _is_sha(index_inventory_seal_sha256):
         raise ValueError("publisher must receive the sealed immutable index inventory digest")
     authority_capability = _authority_capability(corrective_authority_capability,
@@ -551,7 +642,7 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
                                 if dataset_quality_eligibility else "CANDIDATE_ONLY"),
         # No caller can turn preparation into stage3 authorization by copying files.
         "ready_for_training": False, "training_run_authorized": False, "stage3_training_authorized": False,
-        "status_report": {"source_indexed": len(events), "candidate_annotated": int(status["candidate_annotated"]),
+        "status_report": {"source_indexed": source_indexed_count, "candidate_annotated": int(status["candidate_annotated"]),
                           "parent_reviewed": int(status["parent_reviewed"]), "accepted_auxiliary": int(status["accepted_auxiliary"]),
                           "outcome_validated": int(status["outcome_validated"]),
                           "verified_recovery_actions": int(status["verified_recovery_actions"]),
@@ -584,8 +675,18 @@ def publish(index_dir: Path, annotations_path: Path, output: Path, *, release_ro
         raise FileExistsError("output exists; immutable packages are never appended or overwritten")
     if Path(index_dir).resolve() in output.resolve(strict=False).parents:
         raise ValueError("package output may not be inside its immutable source index")
+    annotations = read_json(annotations_path)
+    annotation_views = annotations.get("views") if isinstance(annotations, Mapping) else None
+    if not isinstance(annotation_views, list):
+        raise ValueError("annotations must have views, view_reviews, and action_payloads lists")
+    selected_event_ids: set[str] = set()
+    for view in annotation_views:
+        if not isinstance(view, Mapping) or not _is_sha(view.get("event_id")):
+            raise ValueError("annotations must contain event-bound canonical label views")
+        selected_event_ids.add(view["event_id"])
     groups, events, index_manifest, index_inventory_seal_sha256 = _read_sealed_index(
-        index_dir, expected_inventory_seal_sha256=expected_index_inventory_seal_sha256)
+        index_dir, expected_inventory_seal_sha256=expected_index_inventory_seal_sha256,
+        selected_event_ids=selected_event_ids)
     if (corrective_publisher_root is None) != (expected_corrective_publisher_manifest_sha256 is None):
         raise ValueError("corrective publisher root and its externally pinned manifest SHA must be supplied together")
     corrective_action_authority = None
@@ -602,18 +703,25 @@ def publish(index_dir: Path, annotations_path: Path, output: Path, *, release_ro
             "index_inventory_seal_sha256": index_inventory_seal_sha256,
             "accepted_live_runtime_acceptance_root_sha256": expected_live_runtime_acceptance_root_sha256,
         }
-    manifest, records = build_release(groups, events, read_json(annotations_path), index_manifest=index_manifest,
+    event_receipt = index_manifest["files"]["event_candidates.jsonl"]
+    event_count = event_receipt.get("rows") if isinstance(event_receipt, Mapping) else None
+    if type(event_count) is not int or event_count < 1:
+        raise ValueError("event index receipt must state a positive event row count")
+    manifest, records = build_release(groups, events, annotations, index_manifest=index_manifest,
                                       release_role=release_role, minimum_scale=minimum_scale,
                                       request_dataset_quality_eligibility=request_dataset_quality_eligibility,
                                       auxiliary_pilots=auxiliary_pilots,
                                       require_complete_source_index=require_complete_source_index,
                                       index_inventory_seal_sha256=index_inventory_seal_sha256,
                                       corrective_action_authority=corrective_action_authority,
-                                      corrective_authority_capability=corrective_authority_capability)
+                                      corrective_authority_capability=corrective_authority_capability,
+                                      source_indexed_count=event_count)
     staging = Path(tempfile.mkdtemp(prefix=f".{output.name}.staging-", dir=str(output.parent)))
     try:
         files = {"source_groups.jsonl": _write_jsonl(staging / "source_groups.jsonl", records["source_groups"]),
-                 "events.jsonl": _write_jsonl(staging / "events.jsonl", records["events"]),
+                 "events.jsonl": _write_sealed_jsonl_copy(
+                     staging / "events.jsonl", Path(index_dir) / "event_candidates.jsonl", event_receipt,
+                     name="event_candidates.jsonl"),
                  "views.jsonl": _write_jsonl(staging / "views.jsonl", records["views"]),
                  "actions.jsonl": _write_jsonl(staging / "actions.jsonl", records["actions"])}
         manifest["files"] = files
