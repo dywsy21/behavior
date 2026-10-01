@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 00:09:33（北京时间）：P107-LC3-CAL40 SETUP/RUNNING；仅部署/解码准备，实际 decoded packet 仍为0（prep_contract_review）
+
+- 独立 reviewer 已对 renderer `a068404` 完成 final review（10/10 focused tests、actual-40 local create/resume；已知 adversarial cases 均拒绝）。operator `prep_contract_review` 已确认 lc3 可达、idle、目标输出尚不存在，正从冻结 Git checkout 部署/准备 decode；这不是完成回执，也不表示已有 PNG、annotation、outcome/action 或 release。
+- 固定输入为 full-v3 / protocol snapshot `0693b93c`（SHA `7f4f…aab0`）和 queue seal `78eda9c87b18e806e00e4820c172b02002d806e7c77fe9911368d42711de227c`：40个 `annotation_calibration` windows、每条10个 requested slots、392个 distinct episode-local frames，计划至多1,176张 native PNG及40张 review-only contact sheets。远端 run 目录为`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`，本地目标为`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1`；operator 后续才提供日志/终态 receipt。
+- 唯一执行预算：lc3、1 CPU、`nice 19`、RLIMIT 4 GiB、decode≤30分钟、output≤2 GiB、setup≤30分钟；0 GPU、0 shared/active env改动、0其他job触碰。receipt/seal mismatch、episode/PTS/camera binding、actor/future leakage、时间/内存/输出预算或I/O影响任一出现即停止并如实记录。MINING 的 TOCTOU hardening 已独审通过9 tests，sealed source queue 未改变。
+
 ### 2026-10-02（北京时间）：P107 40条时序视觉校准的 renderer 已完成 metadata preflight；真实 RGB/标签仍为零（Codex / P107-COORD）
 
 - DATA 的 sealed source-membership/authority 候选代码 `f158845`、`e8f5dc6` 已独立复审为 candidate-code approved；它不发布 live/publisher 数据。SIM `56f7452` 亦为 candidate-code approved、live proof=0。DART `d2d7994` 仅余轻量 import 修复/复审，仍无 live DART record、release 或训练准入。

@@ -2,6 +2,12 @@
 
 2026-10-01 21:53（北京时间）。协调任务 `P107-COORD`；active-goal owner 是 Codex。**父代理是唯一的最终验收者和分层视觉抽样审查者。** 本文把[训练设计 §10.7](2026-09-29-memlite-gradient-training-design.md#107-阶段1未结束时可以并行准备什么2026-10-01)转为可执行台账；不表示数据已构造、质量已通过或阶段3已运行。
 
+### 2026-10-02 00:09:33：P107-LC3-CAL40 仅进入受限 setup/run，未完成 decode
+
+`prep_contract_review` 是唯一 operator。renderer `a068404` 已 final-review clear（10/10 focused tests及actual-40 local create/resume），并在 lc3 reachable/idle、目标输出缺失的状态开始冻结 Git deployment/decode setup。输入固定为 full-v3、protocol snapshot `0693b93c` / `7f4f…aab0`和 queue seal `78eda9c87b18e806e00e4820c172b02002d806e7c77fe9911368d42711de227c`：40条 `annotation_calibration`、每条10个请求 slot、392个 distinct episode-local frame，最多计划1,176张 camera-native PNG及40张仅review contact sheet。
+
+远端仅写`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`，本地目标仅为`/home/wsy/behavior-annotations/p107/calibration40-temporal-v1`；setup≤30分钟、decode≤30分钟、1 CPU/`nice 19`/RLIMIT 4 GiB、output≤2 GiB、无GPU、不改shared/active env或其他job。seal/receipt不匹配、episode/PTS/camera绑定失败、actor/future leakage、预算/I/O影响任一即停止。此刻实际 decoded packet、native RGB、annotation、outcome/action、FM positive与release均为**0**，须等operator日志和终态receipt。MINING TOCTOU hardening已独审9 tests clear，sealed source queue未改。
+
 ## 授权边界与当前基线
 
 用户授权完整推进 §10.7 的负例/恢复数据准备和质量工程，并明确 **DART 数据为必需交付**，不是可选讨论或只做 candidate-only 的替代品；仍须按下述全规模、来源/模型/agent provenance 和父代理视觉 QA 门推进。用户最新硬件范围为使用空闲 `lc*`，**不再进行任何 robo 工作**。授权仍只覆盖此范围，覆盖旧的“尚未获数据采集授权”表述；它**不**授权阶段2/3正式训练、长时搜索或任何新的大训练，也不允许改运行中的阶段1冻结源码、共享环境或 v4 release，或把新标签热接入阶段1。depth/raw 仍不下载；仿真特权状态不可进入部署 actor/高层。
