@@ -12,6 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：LC A4 availability已readback验证；PoseTeacher seam 独审中（P107-DART）
+
+- `lc_idle_preflight`在lc3只读readback验证`/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`：`16,581,363,550B`、SHA `6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`，相邻A4 dataset-stats/grad/run/trainability/config receipts亦存在。未tensor-load、inference、copy、GPU或stage1访问；它现在只能称为**available/identity-verified但未qualified**的LC teacher candidate，绝非oracle、fresh-query teacher或DART记录。
+- 隔离`/home/wsy/behavior-worktrees/p107-dart-pose-adapter`的`fcde32de019876c51915d16b0830d8003243546a`新增`privileged_pose_grasp.py`、tests与design note；author报告existing collection/noise tests、ruff/compile/diff通过，但`review_actor_query`仍在独立review，**不得**cherry-pick。它只定义CPU privileged PoseTeacher GRASP adapter seam，LC live hook、teacher physical qualification、manual-only schema/human provenance、fresh reset与DART/recovery data仍未完成或仍0。
+
 ### 2026-10-02 04:41:56（北京时间）：lc3 non-EULA prerequisite bootstrap PASS；仅环境准备（lc_idle_preflight / P107-OG51-PREP）
 
 - 唯一bootstrap按原预算exit0：UTC `20:39:32–20:41:56`、144秒、isolated root仅`1,175,999,215B`（<5GiB），receipt`/home/wsy/behavior-annotations/p107/lc3-og51-prep-20261002/receipt.json` SHA `f0ef46ca8232b1a2bf62d89db2978eca7ea7c417e976f110151f89919442d205`。仅在`/data/workspace/wsy/behavior2026/isolated/og51-lc3-p107-20261002`创建clean detached public `v3.9.3-post1`/`bd049de3119acdcdf2334fe9e1ebe060fa20c108`（index tree SHA`4cae8677…298e97`）、private uv`0.12.21`、managed CPython`3.11.16`及venv/pip`26.2.1`；这是development prep、非official benchmark。结束时`/data` free `3,861,825,454,080B`、8×A800均0MiB/0%。
