@@ -34,7 +34,13 @@ class RenderEventPacketsTests(unittest.TestCase):
             self.assertEqual([item["view"] for item in row["audit"]["video_locators"]],
                              ["head", "left_wrist", "right_wrist"])
             self.assertFalse(result["review_only_contact_sheets"])
+            self.assertEqual(set(result["files"]), {"packets.jsonl", "rendered_asset_receipts.jsonl"})
+            self.assertEqual(result["rendered_asset_receipts"], 0)
             self.assertEqual(renderer.resume_packets(index, packets)["status"], "RESUME_VALIDATED")
+            with (packets / "rendered_asset_receipts.jsonl").open("a") as stream:
+                stream.write(json.dumps({"forged": True}) + "\n")
+            with self.assertRaisesRegex(ValueError, "rendered-asset receipt"):
+                renderer.resume_packets(index, packets)
 
     def test_render_requires_bounded_selection_and_question_rows_cannot_carry_labels(self):
         with tempfile.TemporaryDirectory() as folder:

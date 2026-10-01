@@ -46,6 +46,7 @@ validate_event = _protocol.validate_event
 
 VIEWS = ("head", "left_wrist", "right_wrist")
 PACKET_INDEX_SCHEMA = "memlite-event-packet-index-v1"
+PACKET_PAYLOAD_FILES = frozenset(("packets.jsonl", "rendered_asset_receipts.jsonl"))
 
 
 def _strict_json(data: bytes, *, name: str) -> Any:
@@ -304,6 +305,7 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
     started = time.monotonic()
     staging = Path(tempfile.mkdtemp(prefix=f".{output.name}.staging-", dir=str(output.parent)))
     packets = []
+    asset_receipts = []
     seen_packet_ids = set()
     try:
         if decode:
@@ -337,14 +339,27 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                         video = _resolve_video(raw_root, locator["relative_path"])
                         image, decoded = _decode_rgb(av, video, float(locator["requested_timestamp_s"]))
                         native_name = f"{packet_id}_{view}.png"
-                        image.save(staging / "assets" / native_name)
+                        asset_path = staging / "assets" / native_name
+                        image.save(asset_path)
                         actor_images[view] = f"assets/{native_name}"
-                        decoded_receipts[view] = decoded
+                        decoded_receipts[view] = {**decoded, "camera_native_png_sha256": _sha256(asset_path),
+                                                  "camera_native_png_bytes": asset_path.stat().st_size}
+                        asset_receipts.append({
+                            "schema_version": PACKET_SCHEMA_VERSION, "packet_id": packet_id, "view": view,
+                            "asset_kind": "camera_native_rgb_png", "relative_path": f"assets/{native_name}",
+                            "sha256": _sha256(asset_path), "bytes": asset_path.stat().st_size,
+                        })
                         images[view] = image
                     if contact_sheets:
                         review_name = f"{packet_id}_contact_sheet.png"
                         _review_contact_sheet(images, staging / "review_assets" / review_name, Image, ImageDraw)
                         review_asset = f"review_assets/{review_name}"
+                        review_path = staging / review_asset
+                        asset_receipts.append({
+                            "schema_version": PACKET_SCHEMA_VERSION, "packet_id": packet_id, "view": None,
+                            "asset_kind": "review_only_contact_sheet_png", "relative_path": review_asset,
+                            "sha256": _sha256(review_path), "bytes": review_path.stat().st_size,
+                        })
                 finally:
                     for image in images.values():
                         image.close()
@@ -369,14 +384,16 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                     "decoded_pts_receipts": decoded_receipts, "review_only_contact_sheet": review_asset,
                 },
             })
-        files = {"packets.jsonl": _write_jsonl(staging / "packets.jsonl", packets)}
+        files = {"packets.jsonl": _write_jsonl(staging / "packets.jsonl", packets),
+                 "rendered_asset_receipts.jsonl": _write_jsonl(staging / "rendered_asset_receipts.jsonl", asset_receipts)}
         result = {
             "schema_version": PACKET_INDEX_SCHEMA,
             "status": "CPU_READY_LABELS_PENDING" if decode else "LOCATORS_READY_RENDER_PENDING",
             "training_eligible": False,
             "index_manifest_sha256": index_sha,
             "index_event_file_sha256": receipt["sha256"],
-            "files": files, "packets": len(packets), "decoded_camera_native_rgb": decode,
+            "files": files, "packets": len(packets), "rendered_asset_receipts": len(asset_receipts),
+            "decoded_camera_native_rgb": decode,
             "review_only_contact_sheets": contact_sheets, "full_video_hashing": False,
             "renderer_sha256": _sha256(Path(__file__)),
             "protocol_sha256": _sha256(REPO / "src/g05/data/memlite_event_protocol.py"),
@@ -398,9 +415,27 @@ def resume_packets(index: Path, output: Path) -> dict[str, Any]:
     if result.get("index_manifest_sha256") != _sha256(index / "manifest.json"):
         raise ValueError("source index manifest changed; refusing resume")
     receipt = result.get("files", {}).get("packets.jsonl", {})
+    if set(result.get("files", {})) != PACKET_PAYLOAD_FILES:
+        raise ValueError("packet manifest must seal the exact packet and rendered-asset receipt inventory")
     packets = _read_jsonl(output / "packets.jsonl")
     if _sha256(output / "packets.jsonl") != receipt.get("sha256") or len(packets) != receipt.get("rows"):
         raise ValueError("sealed packet payload changed")
+    asset_receipt = result["files"]["rendered_asset_receipts.jsonl"]
+    assets = _read_jsonl(output / "rendered_asset_receipts.jsonl")
+    if (_sha256(output / "rendered_asset_receipts.jsonl") != asset_receipt.get("sha256") or
+            len(assets) != asset_receipt.get("rows")):
+        raise ValueError("sealed rendered-asset receipt payload changed")
+    for row in assets:
+        if set(row) != {"schema_version", "packet_id", "view", "asset_kind", "relative_path", "sha256", "bytes"}:
+            raise ValueError("rendered asset receipt has an unsealed field")
+        relative = Path(row["relative_path"])
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError("rendered asset receipt escapes packet root")
+        path = (output / relative).resolve(strict=True)
+        if output.resolve() not in path.parents:
+            raise ValueError("rendered asset receipt escapes packet root")
+        if path.stat().st_size != row["bytes"] or _sha256(path) != row["sha256"]:
+            raise ValueError("sealed rendered PNG bytes changed")
     return {"status": "RESUME_VALIDATED", "manifest": result}
 
 
