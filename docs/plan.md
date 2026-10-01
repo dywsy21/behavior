@@ -12,6 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 04:39:32（北京时间）：lc3 非EULA prerequisite bootstrap 已启动；DART live 继续为零（lc_idle_preflight / P107-OG51-PREP）
+
+- `lc_idle_preflight`已于UTC `2026-10-01T20:39:32Z`在lc3启动唯一有界、**non-EULA** prerequisite bootstrap，外部receipt为`/home/wsy/behavior-annotations/p107/lc3-og51-prep-20261002/receipt.json`。拟使用隔离根`/data/workspace/wsy/behavior2026/isolated/og51-lc3-p107-20261002`、public engineering-only ref `v3.9.3-post1`/`bd049de3119acdcdf2334fe9e1ebe060fa20c108`、official `uv` installer与uv-managed CPython3.11 private venv；此ref只是development feasibility prep，**不是**official competition benchmark。预算固定1CPU/4GiB RAM/0GPU/磁盘≤5GiB/1200s，既有VPN不重连；lc1/lc2、robo、shared g05 env及训练均不触碰。
+- 此条仅为已启动记录，尚无完成或runtime-compatibility结论。用户尚未接受NVIDIA Isaac EULA或BEHAVIOR data/decryption terms；因此严格禁止其接受、Isaac import/install、assets/key/decrypt/download、Kit/render/simulator启动。isolated coverage-selector、causal-only review-page builder与teacher-adapter recon仍各自在隔离owner下工作；根只在独审后集成，DART实际数据/release/训练仍0。
+
 ### 2026-10-02 04:09（北京时间）：P107 跨批 E2 去重核验与 idle-lc3 只读 readiness（Codex / P107-COORD）
 
 - 对已 sealed 的`calibration40-merged-v1/canonical_reviewed_calibration.json`与`phase40-v5-diagnostic-package-v1/events.jsonl`先做`event_id`集合核验（40+40、交集0），但这**不能**证明source-window独立。随后一次流式扫`calibration40-package-v1/events.jsonl`的403,257行（只提取旧40个requested ID，5.07秒），用`(source_release_manifest_sha256, source_group_id, raw_episode_id, observation_frame)`复核：旧41 view=40 source window（一个multi-query view）、新40=40；18个source episode/group重复、其中3个frame完全相同，故union仅77，且旧view与indexed frame 40/40一致。两批均为`train`/`annotation_calibration`；可定位label记录仍为旧10 known/31 masked、新14 known/26 masked。当前E2数值只能记`77/<120`，差43个新的source window。现行E2原文是“最少审阅 **120 个分层样本**，并覆盖全部五个任务；每个任务的 train/eval 类别；原子技能、复合技能、双臂技能与技能边界；以及 `SUCCEEDED`、`FAILED`、`UNKNOWN` 三种结果。”当前原五任务ID `0..4`仅TRAIN（4/3/4/4/4 source window）而EVAL全0；全体仅51/100 TRAIN task cells、0 EVAL task cells，且0 actual `attempt_outcome`的S/F/U。不得把原“五任务”E2改写为all-100门，也不能再派一个TRAIN-only 40批后冒称E2通过；缺失类别必须如实报告并由sampler按source-window/split/outcome/stratum/root-review重建队列。无新decode、标注、release或训练。
