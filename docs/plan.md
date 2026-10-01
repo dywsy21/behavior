@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 CAL40 calibration-only package已构建并seal；独立audit仍未通过（Codex / P107-COORD）
+
+- `cal40_finalize_binding`使用根`3f473fc5f795efa58925e06f77b167ececcca648`的实际pack build成功：37.28s、peak RSS 123,352KiB，输出`/home/wsy/behavior-annotations/p107/calibration40-package-v1`，seal SHA `697e5e49ef13558c788baadcfd6468679a358ecf81fbe95da2af1a2974f67473`。它绑定403,257 source events、41 candidate views/41 parent-reviewed、10 accepted auxiliary；actions/outcomes/recovery均0，所有training/stage3字段为false，diagnostic coverage仍false。dataset的`for_training`入口在读取events前拒绝全部4种label kinds；这不是student、动作监督、recovery或训练release。
+- standard audit与build须分开：其eager read仍超过4GiB，19.30s在RSS 4,138,192KiB以MemoryError失败，audit report不存在，故audit**未通过**。仅在available RAM≥12GiB后，binder获一次8GiB/600s audit-only retry授权；未报告启动或结果，且不含代码/GPU/训练改动。
+- query dispatch、actor-query和live DART状态不变：10 known/31 masked以外没有新标签，0 student/outcome/recovery/action-BC/training/live DART；继续不用robo/local RTX和simulator。
+
 ### 2026-10-02（北京时间）：P107 raw-object category grounding 已完成只读审计；query dispatch仍等待角色与显示复核（Codex / P107-COORD）
 
 - 外部只读receipt`/home/wsy/behavior-annotations/p107/object-category-grounding-audit/README.md`及相邻`validation.json`为PASS：固定官方BEHAVIOR-1K `bd049de`的`category_mapping.csv`（2,424 unique categories、SHA `ef463671…81eab`），9个问题raw IDs均由generic longest official category prefix唯一解析。规则是保留全部compound noun/复数（包括`boxing_gloves`、`bottom_cabinet`和`half_*`），opaque suffix只留audit sidecar；无匹配/并列/空suffix必须`UNKNOWN_CATEGORY` quarantine，禁止固定tail长度或其他盲目heuristic。它是metadata-design finding，未改source/label/server/training，也不是可消费标注artifact。
