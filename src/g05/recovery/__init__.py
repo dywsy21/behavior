@@ -15,13 +15,8 @@ from .evidence import (
     PhysicalEvidenceProvider,
     PredicateSample,
 )
-from .snapshot import (
-    LiveReadinessAttestation,
-    OmniGibsonPublicSnapshotBackend,
-    SnapshotAdapter,
-    SnapshotCapture,
-    SnapshotRoundTrip,
-)
+from .runtime import RuntimeCapability
+from .snapshot import OmniGibsonPublicSnapshotBackend, SnapshotAdapter, SnapshotCapture, SnapshotRoundTrip
 from .branching import OmniGibsonEvaluatorActionBackend, PairedRecoveryCollector, BranchPairReceipt
 
 __all__ = [
@@ -30,13 +25,13 @@ __all__ = [
     "FaultEvidenceProvider",
     "FaultEvidenceResult",
     "FaultEvidenceSample",
-    "LiveReadinessAttestation",
     "OmniGibsonEvaluatorActionBackend",
     "OmniGibsonPublicSnapshotBackend",
     "PairedRecoveryCollector",
     "PhysicalEvidenceProvider",
     "PredicateSample",
     "RecoveryContractError",
+    "RuntimeCapability",
     "SnapshotAdapter",
     "SnapshotCapture",
     "SnapshotRoundTrip",

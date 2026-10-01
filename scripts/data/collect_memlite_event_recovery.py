@@ -71,10 +71,8 @@ def main() -> None:
         raise RecoveryContractError("Factory must expose post_fault_snapshot and action_backend observe/step/status")
     if post_fault.backend_kind == "fake" and not args.allow_fake:
         raise RecoveryContractError("Refusing fake collection backend without --allow-fake")
-    if post_fault.backend_kind not in {"live", "fake"}:
-        raise RecoveryContractError("Refusing an unverified snapshot integration; complete the live readiness gate first")
-    if post_fault.backend_kind == "live" and not isinstance(fault_evidence, FaultEvidenceProvider):
-        raise RecoveryContractError("Live recovery collection requires an affirmative pre-branch fault evidence provider")
+    if not snapshots.is_runtime_bound_capture(post_fault):
+        raise RecoveryContractError("Factory must bind its snapshot to one explicit runtime capability")
     source_ref = _read_json(args.source_ref)
     event = _read_json(args.event)
     transport = PairedRecoveryCollector(snapshots, actions, evidence, fault_evidence).collect(
@@ -98,6 +96,7 @@ def main() -> None:
     envelope = validate_transport_receipt(transport, source_ref=source_ref, event=event)
     envelope["factory"] = args.factory
     envelope["test_fake_allowed"] = post_fault.backend_kind == "fake" and bool(args.allow_fake)
+    envelope["candidate_only"] = True
     args.output.write_text(canonical_json(envelope) + "\n")
     print(json.dumps({"canonical_event_validated": envelope["canonical_event_validated"],
                       "ready_for_training": envelope["receipt"]["ready_for_training"],

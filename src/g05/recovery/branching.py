@@ -17,6 +17,7 @@ from .common import (
     validate_state61,
 )
 from .evidence import EvidenceResult, FaultEvidenceProvider, FaultEvidenceResult, PhysicalEvidenceProvider
+from .runtime import RuntimeCapability, same_runtime
 from .snapshot import SnapshotAdapter, SnapshotCapture
 
 
@@ -49,9 +50,16 @@ class Observation:
         return {
             "policy_clock": self.policy_clock,
             "state61": self.state61,
+            # This is a digest of the observed 61-D robot state, not a claim
+            # that it fingerprints the whole simulator world.
+            "state61_sha256": self.state61_sha256,
             "observation_fresh": self.observation_fresh,
             "public_observation_ref": self.public_observation_ref,
         }
+
+    @property
+    def state61_sha256(self) -> str:
+        return canonical_sha256(self.state61)
 
 
 class ActionBackend(Protocol):
@@ -91,6 +99,7 @@ class OmniGibsonEvaluatorActionBackend:
         encode_action: Callable[[list[float]], Any],
         refresh_after_step: Callable[[Any], None] | None = None,
         n_render_iterations: int = 1,
+        runtime_capability: RuntimeCapability | None = None,
     ) -> None:
         if not callable(getattr(env, "step", None)):
             raise RecoveryContractError("Evaluator env must expose public step(action, ...)" )
@@ -100,12 +109,16 @@ class OmniGibsonEvaluatorActionBackend:
             raise RecoveryContractError("refresh_after_step must be callable or None")
         if not isinstance(n_render_iterations, int) or n_render_iterations < 1:
             raise RecoveryContractError("n_render_iterations must be a positive integer")
+        if runtime_capability is not None and not isinstance(runtime_capability, RuntimeCapability):
+            raise RecoveryContractError("Action runtime capability must be RuntimeCapability or None")
         self._env = env
         self._observe_current = observe_current
         self._official_status_current = official_status_current
         self._encode_action = encode_action
         self._refresh_after_step = refresh_after_step
         self._n_render_iterations = n_render_iterations
+        self.runtime_capability = runtime_capability
+        self.observation_runtime_capability = runtime_capability
 
     def observe(self) -> Observation:
         return self._observe_current()
@@ -209,10 +222,11 @@ class BranchPairReceipt:
     corrective: BranchExecution
     no_intervention_same_state: bool
     corrective_same_state: bool
+    post_fault_observation: Observation
+    no_intervention_observation_matches: bool
+    corrective_observation_matches: bool
     post_fault_evidence: FaultEvidenceResult | None
-    post_fault_live_ready: bool
-    physical_provider_trusted: bool
-    fault_provider_trusted: bool
+    runtime_capability_bound: bool
     actor_evidence: Mapping[str, Any]
     backend_kind: str
 
@@ -222,25 +236,19 @@ class BranchPairReceipt:
             self.post_fault_evidence is not None
             and self.post_fault_evidence.fault_observed
             and self.post_fault_evidence.valid_fault_mask
+            and self.no_intervention_observation_matches
+            and self.corrective_observation_matches
         )
 
     @property
     def corrective_positive_action_mask(self) -> bool:
-        evidence = self.corrective.evidence
-        return bool(
-            self.post_fault_live_ready
-            and self.physical_provider_trusted
-            and self.fault_provider_trusted
-            and self.recovery_eligible
-            and self.no_intervention_same_state
-            and self.corrective_same_state
-            and self.corrective.observations_fresh
-            and self.corrective.actual_executed_length > 0
-            and evidence is not None
-            and evidence.outcome == "SUCCEEDED"
-            and evidence.valid_result_mask
-            and evidence.current_intent_bundle_id == self.corrective.intent_bundle_id
-        )
+        """Always false in raw collection.
+
+        Candidate collection has no authority to create a training loss mask.
+        The independently reviewed data publisher applies its external
+        ``CorrectiveActionAuthority`` to immutable candidate receipts.
+        """
+        return False
 
     def public(self) -> dict[str, Any]:
         """An auditable transport receipt, deliberately not a training view."""
@@ -256,23 +264,27 @@ class BranchPairReceipt:
                 "no_intervention": self.no_intervention_same_state,
                 "corrective": self.corrective_same_state,
             },
+            "same_post_fault_observation": {
+                "no_intervention": self.no_intervention_observation_matches,
+                "corrective": self.corrective_observation_matches,
+                "state61_sha256": self.post_fault_observation.state61_sha256,
+                "policy_clock": self.post_fault_observation.policy_clock,
+            },
             "recovery_kind": "genuine_recovery" if self.recovery_eligible else "normal_or_unproven",
             "actor_evidence": dict(self.actor_evidence),
             "privileged_evidence": {
                 "post_fault_deviation": (
                     None if self.post_fault_evidence is None else self.post_fault_evidence.public()
                 ),
+                "post_fault_observation": self.post_fault_observation.public(),
                 "no_intervention": self.no_intervention.public(),
                 "corrective": self.corrective.public(),
             },
-            "live_readiness": {
-                "post_fault_capture_attested": self.post_fault_live_ready,
-                "physical_provider_trusted": self.physical_provider_trusted,
-                "fault_provider_trusted": self.fault_provider_trusted,
-            },
+            "runtime_capability_bound": self.runtime_capability_bound,
             "corrective_positive_action_mask": self.corrective_positive_action_mask,
-            # The data owner's canonical protocol must separately validate and
-            # project this receipt.  A fake/unknown snapshot can never train.
+            "candidate_only": True,
+            # The data owner's external publication authority must separately
+            # validate/prove eligibility and project the 23-D actions.
             "ready_for_training": False,
         }
 
@@ -345,6 +357,39 @@ class PairedRecoveryCollector:
         self.actions = actions
         self.evidence = evidence
         self.fault_evidence = fault_evidence
+
+    def _require_same_runtime(self, post_fault_snapshot: SnapshotCapture) -> RuntimeCapability:
+        """Reject mixed simulator/action/observation/evidence sessions.
+
+        This is a local object-identity consistency check only.  It is useful
+        scientific hygiene for a candidate receipt, not an approval that the
+        capability is real or ready for training.
+        """
+        runtime = self.snapshots.runtime_capability
+        participants = [
+            post_fault_snapshot.runtime_capability,
+            getattr(self.actions, "runtime_capability", None),
+            getattr(self.actions, "observation_runtime_capability", None),
+            self.evidence.runtime_capability,
+        ]
+        if self.fault_evidence is not None:
+            participants.append(self.fault_evidence.runtime_capability)
+        if not isinstance(runtime, RuntimeCapability) or not all(same_runtime(runtime, item) for item in participants):
+            raise RecoveryContractError(
+                "Snapshot, action, observation, physical and fault providers must share one runtime capability"
+            )
+        if not self.snapshots.is_runtime_bound_capture(post_fault_snapshot):
+            raise RecoveryContractError("Post-fault snapshot is not bound to this runtime adapter")
+        return runtime
+
+    @staticmethod
+    def _same_restored_observation(left: Observation, right: Observation) -> bool:
+        return bool(
+            left.observation_fresh
+            and right.observation_fresh
+            and left.policy_clock == right.policy_clock
+            and left.state61_sha256 == right.state61_sha256
+        )
 
     def _official_status(self) -> tuple[bool | None, bool | None]:
         status = self.actions.official_status()
@@ -444,24 +489,28 @@ class PairedRecoveryCollector:
         if not isinstance(prior_intent_bundle_id, str) or not prior_intent_bundle_id:
             raise RecoveryContractError("Recovery branches require an immutable prior intent identity")
         context = {} if context is None else dict(context)
+        self._require_same_runtime(post_fault_snapshot)
 
-        # Capture an observation before either branch executes.  A fault provider
-        # must bind its affirmative deviation evidence to this snapshot digest
-        # and this clock; an ordinary successful state is therefore not silently
-        # reclassified as a recovery event.
+        # Restore *before* observing/evaluating the fault: calling observe on a
+        # drifted current runtime and only then restoring the candidate snapshot
+        # would attach fault evidence to the wrong world and wrong clock.
+        fault_start = self.snapshots.restore_and_capture(post_fault_snapshot, label="fault:restored")
+        if not self.snapshots.same_state(post_fault_snapshot, fault_start):
+            raise RecoveryContractError("Post-fault snapshot did not restore before fault evaluation")
         post_fault_observation = self.actions.observe()
         if not isinstance(post_fault_observation, Observation):
             raise RecoveryContractError("Action backend observe() must return Observation")
         post_fault_evidence = None
         if self.fault_evidence is not None:
-            if post_fault_snapshot.state_fingerprint is None:
+            if fault_start.state_fingerprint is None:
                 raise RecoveryContractError("Fault evidence cannot bind an opaque snapshot without a fingerprint")
             post_fault_evidence = self.fault_evidence.evaluate(
                 skill_binding=skill_binding,
                 context={
                     **context,
                     "post_fault_clock": post_fault_observation.policy_clock,
-                    "post_fault_snapshot_fingerprint": post_fault_snapshot.state_fingerprint,
+                    "post_fault_snapshot_fingerprint": fault_start.state_fingerprint,
+                    "post_fault_observation_state61_sha256": post_fault_observation.state61_sha256,
                     "prior_intent_bundle_id": prior_intent_bundle_id,
                     "current_intent_bundle_id": intent_bundle_id,
                 },
@@ -482,6 +531,16 @@ class PairedRecoveryCollector:
             skill_binding=skill_binding, context=context, intent_bundle_id=intent_bundle_id,
             prior_intent_bundle_id=prior_intent_bundle_id,
         )
+        no_observation_match = self._same_restored_observation(
+            post_fault_observation, no_branch.pre_action_observations[0]
+        )
+        correction_observation_match = self._same_restored_observation(
+            post_fault_observation, correction_branch.pre_action_observations[0]
+        )
+        if not no_observation_match or not correction_observation_match:
+            raise RecoveryContractError(
+                "Branch initial observation clock/state digest does not match the common restored post-fault state"
+            )
         return BranchPairReceipt(
             source_ref=source_ref,
             source_group_id=source_group_id,
@@ -492,15 +551,13 @@ class PairedRecoveryCollector:
             corrective=correction_branch,
             no_intervention_same_state=no_same,
             corrective_same_state=correction_same,
+            post_fault_observation=post_fault_observation,
+            no_intervention_observation_matches=no_observation_match,
+            corrective_observation_matches=correction_observation_match,
             post_fault_evidence=post_fault_evidence,
-            post_fault_live_ready=self.snapshots.is_live_ready_capture(post_fault_snapshot),
-            physical_provider_trusted=self.snapshots.accepts_evidence_provider(
-                self.evidence.provider_id, kind="physical"
-            ),
-            fault_provider_trusted=(
-                self.fault_evidence is not None
-                and self.snapshots.accepts_evidence_provider(self.fault_evidence.provider_id, kind="fault")
-            ),
+            runtime_capability_bound=True,
             actor_evidence=actor_evidence,
             backend_kind=post_fault_snapshot.backend_kind,
         )
+    runtime_capability: RuntimeCapability | None
+    observation_runtime_capability: RuntimeCapability | None

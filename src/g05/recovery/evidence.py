@@ -12,10 +12,36 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping, Protocol
 
-from .common import RecoveryContractError
+from .common import RecoveryContractError, require_sha256
+from .runtime import RuntimeCapability
 
 
 OUTCOMES = {"IN_PROGRESS", "SUCCEEDED", "FAILED", "UNKNOWN"}
+
+# Evidence names are a closed physical taxonomy.  In particular, timing,
+# annotation, policy and gripper-command names can never masquerade as a
+# physical transition simply because a boolean field says so.
+PHYSICAL_EVIDENCE_KINDS = frozenset({
+    "documented_contact_transition",
+    "documented_grasp_transition",
+    "documented_kinematic_transition",
+    "documented_object_pose_transition",
+    "documented_particle_transition",
+    "documented_toggle_transition",
+})
+FAULT_EVIDENCE_KINDS = frozenset({
+    "documented_contact_deviation",
+    "documented_grasp_deviation",
+    "documented_kinematic_deviation",
+    "documented_object_pose_deviation",
+    "documented_particle_deviation",
+    "documented_toggle_deviation",
+})
+
+
+def _require_evidence_kind(kind: str, allowed: frozenset[str], *, role: str) -> None:
+    if not isinstance(kind, str) or kind not in allowed:
+        raise RecoveryContractError(f"{role} evidence kind is not in the closed physical taxonomy")
 
 
 def _required_binding(binding: Mapping[str, Any], key: str) -> Any:
@@ -80,8 +106,7 @@ class PredicateSample:
         if (not isinstance(self.stable_frames, int) or not isinstance(self.required_stable_frames, int)
                 or self.stable_frames < 0 or self.required_stable_frames < 1):
             raise RecoveryContractError("Stable-frame counts must be nonnegative and required>=1")
-        if not isinstance(self.evidence_kind, str) or not self.evidence_kind:
-            raise RecoveryContractError("Physical evidence requires an evidence kind")
+        _require_evidence_kind(self.evidence_kind, PHYSICAL_EVIDENCE_KINDS, role="Physical")
         for field in ("evidence_start_frame", "evidence_end_frame", "evidence_available_time"):
             value = getattr(self, field)
             if value is not None and (type(value) is not int or value < 0):
@@ -167,11 +192,16 @@ class PhysicalEvidenceProvider:
     actor input.
     """
 
-    def __init__(self, backend: PredicateBackend, *, provider_id: str = "unverified-physical-provider"):
-        if not isinstance(provider_id, str) or not provider_id:
-            raise RecoveryContractError("Physical evidence provider requires a stable provider identity")
+    def __init__(
+        self,
+        backend: PredicateBackend,
+        *,
+        runtime_capability: RuntimeCapability | None = None,
+    ):
+        if runtime_capability is not None and not isinstance(runtime_capability, RuntimeCapability):
+            raise RecoveryContractError("Physical evidence runtime capability must be RuntimeCapability or None")
         self.backend = backend
-        self.provider_id = provider_id
+        self.runtime_capability = runtime_capability
 
     def evaluate(
         self,
@@ -262,6 +292,7 @@ class FaultEvidenceSample:
     evidence_end_frame: int | None
     evidence_available_time: int | None
     snapshot_state_fingerprint: str | None
+    observation_state61_sha256: str | None
     detail: str = ""
 
     def __post_init__(self) -> None:
@@ -279,15 +310,15 @@ class FaultEvidenceSample:
             raise RecoveryContractError("Fault evidence current intent must be nonempty text or None")
         if type(self.fault_observed) is not bool or type(self.source_binding_verified) is not bool:
             raise RecoveryContractError("Fault observed and source binding fields must be booleans")
-        if not isinstance(self.evidence_kind, str) or not self.evidence_kind:
-            raise RecoveryContractError("Fault evidence kind is required")
+        _require_evidence_kind(self.evidence_kind, FAULT_EVIDENCE_KINDS, role="Fault")
         for field in ("evidence_start_frame", "evidence_end_frame", "evidence_available_time"):
             value = getattr(self, field)
             if value is not None and (type(value) is not int or value < 0):
                 raise RecoveryContractError(f"Fault {field} must be a nonnegative clock or None")
         if self.snapshot_state_fingerprint is not None:
-            from .common import require_sha256
             require_sha256(self.snapshot_state_fingerprint, field="fault snapshot_state_fingerprint")
+        if self.observation_state61_sha256 is not None:
+            require_sha256(self.observation_state61_sha256, field="fault observation_state61_sha256")
 
 
 @dataclass(frozen=True)
@@ -304,6 +335,7 @@ class FaultEvidenceResult:
     evidence_end_frame: int | None
     evidence_available_time: int | None
     snapshot_state_fingerprint: str | None
+    observation_state61_sha256: str | None
     detail: str
 
     def __post_init__(self) -> None:
@@ -334,6 +366,7 @@ class FaultEvidenceResult:
             "evidence_end_frame": self.evidence_end_frame,
             "evidence_available_time": self.evidence_available_time,
             "snapshot_state_fingerprint": self.snapshot_state_fingerprint,
+            "observation_state61_sha256": self.observation_state61_sha256,
             "detail": self.detail,
         }
 
@@ -345,11 +378,11 @@ class FaultEvidenceBackend(Protocol):
 class FaultEvidenceProvider:
     """Fail-closed provider for evidence that the pre-branch state is faulty."""
 
-    def __init__(self, backend: FaultEvidenceBackend, *, provider_id: str = "unverified-fault-provider"):
-        if not isinstance(provider_id, str) or not provider_id:
-            raise RecoveryContractError("Fault evidence provider requires a stable provider identity")
+    def __init__(self, backend: FaultEvidenceBackend, *, runtime_capability: RuntimeCapability | None = None):
+        if runtime_capability is not None and not isinstance(runtime_capability, RuntimeCapability):
+            raise RecoveryContractError("Fault evidence runtime capability must be RuntimeCapability or None")
         self.backend = backend
-        self.provider_id = provider_id
+        self.runtime_capability = runtime_capability
 
     def evaluate(
         self,
@@ -366,6 +399,7 @@ class FaultEvidenceProvider:
         prior_intent = context.get("prior_intent_bundle_id")
         current_intent = context.get("current_intent_bundle_id")
         snapshot_fingerprint = context.get("post_fault_snapshot_fingerprint")
+        observation_sha256 = context.get("post_fault_observation_state61_sha256")
         if type(post_clock) is not int or post_clock < 0:
             raise RecoveryContractError("Fault evidence requires an explicit post-fault observation clock")
         if not isinstance(prior_intent, str) or not prior_intent:
@@ -374,6 +408,7 @@ class FaultEvidenceProvider:
             raise RecoveryContractError("Fault evidence requires an immutable current intent identity")
         if not isinstance(snapshot_fingerprint, str):
             raise RecoveryContractError("Fault evidence requires a captured post-fault snapshot fingerprint")
+        require_sha256(observation_sha256, field="post-fault observation state61 digest")
         sample = self.backend.sample(skill_binding=skill_binding, context=context)
         if not isinstance(sample, FaultEvidenceSample):
             raise RecoveryContractError("Fault backend must return FaultEvidenceSample")
@@ -386,6 +421,7 @@ class FaultEvidenceProvider:
             and sample.prior_intent_bundle_id == prior_intent
             and sample.current_intent_bundle_id == current_intent
             and sample.snapshot_state_fingerprint == snapshot_fingerprint
+            and sample.observation_state61_sha256 == observation_sha256
             and sample.evidence_start_frame is not None
             and sample.evidence_end_frame is not None
             and sample.evidence_available_time is not None
@@ -404,5 +440,6 @@ class FaultEvidenceProvider:
             evidence_end_frame=sample.evidence_end_frame,
             evidence_available_time=sample.evidence_available_time,
             snapshot_state_fingerprint=sample.snapshot_state_fingerprint,
+            observation_state61_sha256=sample.observation_state61_sha256,
             detail=sample.detail,
         )

@@ -31,15 +31,16 @@ from g05.recovery.protocol_bridge import (
     validate_transport_receipt,
 )
 from g05.recovery.snapshot import (
-    LiveReadinessAttestation,
     REQUIRED_INVENTORY,
     OmniGibsonPublicSnapshotBackend,
     SnapshotAdapter,
 )
+from g05.recovery.runtime import RuntimeCapability
 
 
 ZERO23 = [0.0] * 23
 ONE23 = [1.0] * 23
+TEST_RUNTIME = RuntimeCapability("cpu-fake-runtime")
 
 
 class FakeSnapshotBackend:
@@ -47,9 +48,21 @@ class FakeSnapshotBackend:
 
     backend_kind = "fake"
 
-    def __init__(self, *, missing_component: str | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        missing_component: str | None = None,
+        runtime_capability: RuntimeCapability | None = TEST_RUNTIME,
+        adapter_id: str | None = None,
+        session_id: str | None = None,
+    ) -> None:
         self.state = {"counter": 0, "objects": {name: 0 for name in REQUIRED_INVENTORY}}
         self.missing_component = missing_component
+        self.runtime_capability = runtime_capability
+        if adapter_id is not None:
+            self.adapter_id = adapter_id
+        if session_id is not None:
+            self.session_id = session_id
 
     def dump_state(self, *, serialized: bool):
         self.last_dump_serialized = serialized
@@ -69,10 +82,13 @@ class FakeSnapshotBackend:
 
 
 class FakeActionBackend:
-    def __init__(self, snapshots: FakeSnapshotBackend, *, fresh: bool = True) -> None:
+    def __init__(self, snapshots: FakeSnapshotBackend, *, fresh: bool = True,
+                 runtime_capability: RuntimeCapability | None = None) -> None:
         self.snapshots = snapshots
         self.fresh = fresh
         self.executed: list[list[float]] = []
+        self.runtime_capability = snapshots.runtime_capability if runtime_capability is None else runtime_capability
+        self.observation_runtime_capability = self.runtime_capability
 
     def observe(self) -> Observation:
         clock = self.snapshots.state["counter"]
@@ -114,11 +130,12 @@ class FakeFaultBackend:
             current_intent_bundle_id=self.current_intent_bundle_id,
             fault_observed=True,
             source_binding_verified=True,
-            evidence_kind="documented_post_fault_deviation",
+            evidence_kind="documented_object_pose_deviation",
             evidence_start_frame=context["post_fault_clock"],
             evidence_end_frame=context["post_fault_clock"],
             evidence_available_time=context["post_fault_clock"],
             snapshot_state_fingerprint=context["post_fault_snapshot_fingerprint"],
+            observation_state61_sha256=context["post_fault_observation_state61_sha256"],
             detail="fake test-only deviation sample",
         )
 
@@ -162,6 +179,14 @@ def evidence_context(**overrides):
     return values
 
 
+def physical_provider(backend, runtime: RuntimeCapability | None = TEST_RUNTIME) -> PhysicalEvidenceProvider:
+    return PhysicalEvidenceProvider(backend, runtime_capability=runtime)
+
+
+def fault_provider(backend, runtime: RuntimeCapability | None = TEST_RUNTIME) -> FaultEvidenceProvider:
+    return FaultEvidenceProvider(backend, runtime_capability=runtime)
+
+
 class SnapshotReceiptTest(unittest.TestCase):
     def test_fake_roundtrip_is_auditable_but_never_live_ready(self) -> None:
         backend = FakeSnapshotBackend()
@@ -188,7 +213,7 @@ class SnapshotReceiptTest(unittest.TestCase):
         capture = adapter.capture("missing_particles")
         self.assertFalse(capture.complete_inventory)
         self.assertEqual(capture.inventory["particles"].status, "unavailable")
-        self.assertFalse(capture.live_candidate)
+        self.assertTrue(capture.runtime_bound)
 
     def test_public_og_adapter_does_not_invent_a_restore_api(self) -> None:
         class PublicSim:
@@ -205,42 +230,25 @@ class SnapshotReceiptTest(unittest.TestCase):
         with self.assertRaisesRegex(RecoveryContractError, "restore API"):
             adapter.restore(capture)
 
-    def test_attested_known_adapter_still_requires_registered_restore(self) -> None:
+    def test_no_attestation_constructor_or_live_shortcut_exists(self) -> None:
         class PublicSim:
             def dump_state(self, *, serialized):
                 return {"documented": "dump_state_only"}
 
-        attestation = LiveReadinessAttestation(
-            adapter_id="og-public-session-1",
-            session_id="evaluator-session-1",
-            source_revision="known-checked-source",
-            omnigibson_version="verified-on-live-host",
-            isaac_version="5.1.0",
-            validated_inventory=frozenset(REQUIRED_INVENTORY),
-            roundtrip_receipt_sha256="c" * 64,
-            physical_evidence_provider_ids=frozenset({"physical-provider-1"}),
-            fault_evidence_provider_ids=frozenset({"fault-provider-1"}),
-        )
-        backend = OmniGibsonPublicSnapshotBackend(
-            PublicSim(),
-            adapter_id=attestation.adapter_id,
-            session_id=attestation.session_id,
-            readiness_attestation=attestation,
-        )
-        with self.assertRaisesRegex(RecoveryContractError, "registered public restore"):
-            SnapshotAdapter(backend)
+        with self.assertRaises(TypeError):
+            OmniGibsonPublicSnapshotBackend(PublicSim(), readiness_attestation=object())
 
     def test_relabelled_same_body_fake_cannot_present_as_live(self) -> None:
         backend = FakeSnapshotBackend()
-        # A caller-controlled string must not turn this very same fake object
-        # into an attested simulator integration.
+        # A caller-controlled string is rejected; raw collection has no live
+        # shortcut at all.
         backend.backend_kind = "live"
-        with self.assertRaisesRegex(RecoveryContractError, "known OmniGibson public adapter"):
+        with self.assertRaisesRegex(RecoveryContractError, "fake or unverified"):
             SnapshotAdapter(backend)
 
     def test_cross_adapter_snapshot_restore_is_rejected(self) -> None:
-        first = SnapshotAdapter(FakeSnapshotBackend())
-        second = SnapshotAdapter(FakeSnapshotBackend())
+        first = SnapshotAdapter(FakeSnapshotBackend(adapter_id="same", session_id="same"))
+        second = SnapshotAdapter(FakeSnapshotBackend(adapter_id="same", session_id="same"))
         capture = first.capture("first")
         with self.assertRaisesRegex(RecoveryContractError, "Cross-adapter"):
             second.restore(capture)
@@ -289,6 +297,26 @@ class EvidenceTest(unittest.TestCase):
         self.assertEqual(result.outcome, "UNKNOWN")
         self.assertFalse(result.valid_result_mask)
 
+    def test_timeout_and_annotation_evidence_kinds_are_rejected(self) -> None:
+        with self.assertRaisesRegex(RecoveryContractError, "closed physical taxonomy"):
+            physical_sample(evidence_kind="TIMEOUT")
+        with self.assertRaisesRegex(RecoveryContractError, "closed physical taxonomy"):
+            FaultEvidenceSample(
+                family="grasp",
+                object_id="cup",
+                arm="right",
+                prior_intent_bundle_id="intent-before",
+                current_intent_bundle_id="intent-p107-grasp-0001",
+                fault_observed=True,
+                source_binding_verified=True,
+                evidence_kind="annotation_boundary",
+                evidence_start_frame=0,
+                evidence_end_frame=0,
+                evidence_available_time=0,
+                snapshot_state_fingerprint="a" * 64,
+                observation_state61_sha256="b" * 64,
+            )
+
 
 class BranchCollectorTest(unittest.TestCase):
     def setUp(self) -> None:
@@ -297,7 +325,7 @@ class BranchCollectorTest(unittest.TestCase):
         self.actions = FakeActionBackend(self.raw_backend)
         self.evidence_backend = FakePredicateBackend(physical_sample())
         self.collector = PairedRecoveryCollector(
-            self.snapshots, self.actions, PhysicalEvidenceProvider(self.evidence_backend)
+            self.snapshots, self.actions, physical_provider(self.evidence_backend)
         )
         self.source = {"original_split": "train", "source_group_id": "train-task0-instance7"}
 
@@ -318,6 +346,8 @@ class BranchCollectorTest(unittest.TestCase):
         )
         self.assertTrue(receipt.no_intervention_same_state)
         self.assertTrue(receipt.corrective_same_state)
+        self.assertTrue(receipt.no_intervention_observation_matches)
+        self.assertTrue(receipt.corrective_observation_matches)
         self.assertEqual(self.actions.executed, [ZERO23, ONE23])
         self.assertEqual(receipt.corrective.actual_executed_length, 1)
         self.assertEqual(len(receipt.corrective.final_observation.state61), 61)
@@ -333,13 +363,14 @@ class BranchCollectorTest(unittest.TestCase):
         self.assertEqual(execution["raw_action_dim"], 23)
         self.assertEqual(execution["actual_end_frame"], execution["action_start_frame"] + 1)
         self.assertEqual(execution["executed_intent_bundle_id"], "intent-p107-grasp-0001")
+        self.assertTrue(public["candidate_only"])
 
     def test_affirmative_prebranch_fault_allows_recovery_even_if_baseline_recovers(self) -> None:
         # Both branches have successful physical evidence.  The independent,
         # state-bound fault receipt—not a baseline failure—is what makes this a
         # genuine recovery candidate.  The fake backend still cannot emit a
         # trainable positive action label.
-        self.collector.fault_evidence = FaultEvidenceProvider(FakeFaultBackend())
+        self.collector.fault_evidence = fault_provider(FakeFaultBackend())
         receipt = self.collector.collect(
             source_ref=self.source,
             source_group_id="train-task0-instance7",
@@ -360,7 +391,7 @@ class BranchCollectorTest(unittest.TestCase):
         self.assertFalse(receipt.corrective_positive_action_mask)
 
     def test_fault_must_bind_the_current_corrective_intent(self) -> None:
-        self.collector.fault_evidence = FaultEvidenceProvider(
+        self.collector.fault_evidence = fault_provider(
             FakeFaultBackend(current_intent_bundle_id="wrong-recovery-intent")
         )
         receipt = self.collector.collect(
@@ -378,6 +409,86 @@ class BranchCollectorTest(unittest.TestCase):
         )
         self.assertFalse(receipt.recovery_eligible)
         self.assertFalse(receipt.post_fault_evidence.valid_fault_mask)
+
+    def test_fault_is_observed_only_after_restoring_post_fault_snapshot(self) -> None:
+        fault_backend = FakeFaultBackend()
+        self.collector.fault_evidence = fault_provider(fault_backend)
+        post_fault = self.snapshots.capture("post_fault")
+        # Simulate an unrelated current evaluator state before collection.
+        self.raw_backend.state["counter"] = 7
+        receipt = self.collector.collect(
+            source_ref=self.source,
+            source_group_id="train-task0-instance7",
+            event_ref={"event": "p107"},
+            post_fault_snapshot=post_fault,
+            no_intervention_actions23=[ZERO23],
+            corrective_actions23=[ONE23],
+            skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001",
+            prior_intent_bundle_id="intent-before",
+            branch_seed=20,
+            actor_evidence={"rgb_ref": "rgb://step/0"},
+        )
+        self.assertEqual(fault_backend.calls[0][1]["post_fault_clock"], 0)
+        self.assertEqual(receipt.post_fault_observation.policy_clock, 0)
+        self.assertTrue(receipt.no_intervention_observation_matches)
+        self.assertTrue(receipt.corrective_observation_matches)
+
+    def test_mixed_runtime_action_and_snapshot_are_rejected(self) -> None:
+        unrelated_runtime = RuntimeCapability("other-evaluator")
+        collector = PairedRecoveryCollector(
+            self.snapshots,
+            FakeActionBackend(self.raw_backend, runtime_capability=unrelated_runtime),
+            physical_provider(FakePredicateBackend(physical_sample()), unrelated_runtime),
+        )
+        with self.assertRaisesRegex(RecoveryContractError, "share one runtime capability"):
+            collector.collect(
+                source_ref=self.source,
+                source_group_id="train-task0-instance7",
+                event_ref={"event": "p107"},
+                post_fault_snapshot=self.snapshots.capture("post_fault"),
+                no_intervention_actions23=[ZERO23],
+                corrective_actions23=[ONE23],
+                skill_binding=grasp_binding(),
+                intent_bundle_id="intent-p107-grasp-0001",
+                prior_intent_bundle_id="intent-before",
+                branch_seed=21,
+                actor_evidence={"rgb_ref": "rgb://step/0"},
+            )
+
+    def test_restored_branch_observation_mismatch_is_rejected(self) -> None:
+        class DriftedObservationAction(FakeActionBackend):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.observe_count = 0
+
+            def observe(self):
+                self.observe_count += 1
+                observation = super().observe()
+                if self.observe_count == 1:
+                    return observation
+                shifted = observation.policy_clock + 1
+                return Observation(shifted, [float(shifted)] * 61, True, observation.public_observation_ref)
+
+        collector = PairedRecoveryCollector(
+            self.snapshots,
+            DriftedObservationAction(self.raw_backend),
+            physical_provider(FakePredicateBackend(physical_sample())),
+        )
+        with self.assertRaisesRegex(RecoveryContractError, "initial observation clock/state digest"):
+            collector.collect(
+                source_ref=self.source,
+                source_group_id="train-task0-instance7",
+                event_ref={"event": "p107"},
+                post_fault_snapshot=self.snapshots.capture("post_fault"),
+                no_intervention_actions23=[ZERO23],
+                corrective_actions23=[ONE23],
+                skill_binding=grasp_binding(),
+                intent_bundle_id="intent-p107-grasp-0001",
+                prior_intent_bundle_id="intent-before",
+                branch_seed=22,
+                actor_evidence={"rgb_ref": "rgb://step/0"},
+            )
 
     def test_bad_split_and_privileged_actor_inputs_are_rejected(self) -> None:
         post_fault = self.snapshots.capture("post_fault")
@@ -409,7 +520,7 @@ class BranchCollectorTest(unittest.TestCase):
             )
 
     def test_failed_correction_has_no_positive_action_mask(self) -> None:
-        self.collector.evidence = PhysicalEvidenceProvider(
+        self.collector.evidence = physical_provider(
             FakePredicateBackend(physical_sample(predicate=False, failure_evidence=True))
         )
         receipt = self.collector.collect(
@@ -526,7 +637,7 @@ class ProtocolBridgeTest(unittest.TestCase):
         source = {"original_split": "train", "source_group_id": "train-task0-instance7"}
         event = {"event": "p107", "event_id": "event-id-1", "source": source}
         receipt = PairedRecoveryCollector(
-            snapshots, FakeActionBackend(raw), PhysicalEvidenceProvider(FakePredicateBackend(physical_sample()))
+            snapshots, FakeActionBackend(raw), physical_provider(FakePredicateBackend(physical_sample()))
         ).collect(
             source_ref=source, source_group_id="train-task0-instance7", event_ref=event,
             post_fault_snapshot=snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
@@ -545,7 +656,7 @@ class ProtocolBridgeTest(unittest.TestCase):
         raw = FakeSnapshotBackend()
         snapshots = SnapshotAdapter(raw)
         receipt = PairedRecoveryCollector(
-            snapshots, FakeActionBackend(raw), PhysicalEvidenceProvider(FakePredicateBackend(physical_sample()))
+            snapshots, FakeActionBackend(raw), physical_provider(FakePredicateBackend(physical_sample()))
         ).collect(
             source_ref=source, source_group_id=source["source_group_id"], event_ref=event,
             post_fault_snapshot=snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
@@ -566,7 +677,7 @@ class ProtocolBridgeTest(unittest.TestCase):
         raw = FakeSnapshotBackend()
         snapshots = SnapshotAdapter(raw)
         receipt = PairedRecoveryCollector(
-            snapshots, FakeActionBackend(raw), PhysicalEvidenceProvider(FakePredicateBackend(physical_sample()))
+            snapshots, FakeActionBackend(raw), physical_provider(FakePredicateBackend(physical_sample()))
         ).collect(
             source_ref=source, source_group_id=source["source_group_id"], event_ref=event,
             post_fault_snapshot=snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
