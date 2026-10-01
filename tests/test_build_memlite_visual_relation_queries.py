@@ -238,6 +238,54 @@ class PrelabelProducerTest(unittest.TestCase):
         self.assertIn("driveway umalys", sweep_off)
         self.assertIn("roles visually grounded", sweep_off)
 
+    def test_official_longest_category_prefix_preserves_compound_nouns(self) -> None:
+        mapping = {
+            "boxing_gloves": "boxing_glove.n.01",
+            "electric_switch": "switch.n.01",
+            "box": "box.n.01",
+            "box_of_oatmeal": "box__of__oatmeal.n.01",
+            "bottom_cabinet": "cabinet.n.01",
+            "half_bell_pepper": "half__bell_pepper.n.01",
+            "half_log": "half__log.n.01",
+            "car": "car.n.01",
+        }
+        expected = {
+            "boxing_gloves_188": ("boxing_gloves", "boxing gloves", "188"),
+            "electric_switch_model_0": ("electric_switch", "electric switch", "model_0"),
+            "box_of_oatmeal_213": ("box_of_oatmeal", "box of oatmeal", "213"),
+            "bottom_cabinet_rhdbzv_0": ("bottom_cabinet", "bottom cabinet", "rhdbzv_0"),
+            "half_bell_pepper_214_1": ("half_bell_pepper", "half bell pepper", "214_1"),
+            "half_log_176_0": ("half_log", "half log", "176_0"),
+            "car_ssxsje_0": ("car", "car", "ssxsje_0"),
+        }
+        for raw, (category, noun, suffix) in expected.items():
+            resolved = producer.resolve_category(raw, mapping)
+            self.assertEqual(resolved["status"], "RESOLVED")
+            self.assertEqual(resolved["category"], category)
+            self.assertEqual(resolved["prompt_noun"], noun)
+            self.assertEqual(resolved["opaque_instance_suffix"], suffix)
+        self.assertEqual(
+            producer.relation_phrase(
+                "CHOP", ["half_bell_pepper_214_1"], [], {"target_part": ""}, mapping
+            ),
+            "At the anchor, is the requested chop effect visibly present for the named entity half bell pepper, with target/material/reference roles visually grounded?",
+        )
+
+    def test_category_unknown_is_quarantined_without_guessing(self) -> None:
+        mapping = {"box": "box.n.01", "box_of_oatmeal": "box__of__oatmeal.n.01"}
+        no_match = producer.resolve_category("mystery_asset_123", mapping)
+        self.assertEqual(no_match["status"], "UNKNOWN_CATEGORY")
+        self.assertTrue(no_match["quarantine"])
+        self.assertIsNone(no_match["prompt_noun"])
+        empty_suffix = producer.resolve_category("box", mapping)
+        self.assertEqual(empty_suffix["status"], "UNKNOWN_CATEGORY")
+        self.assertTrue(empty_suffix["quarantine"])
+        query = producer.relation_phrase(
+            "CHOP", ["mystery_asset_123"], [], {"target_part": ""}, mapping
+        )
+        self.assertNotIn("mystery", query)
+        self.assertIn("named metadata entity", query)
+
 
 if __name__ == "__main__":
     unittest.main()
