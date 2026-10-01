@@ -22,6 +22,9 @@ from typing import Any, Mapping, Sequence
 
 ACTOR_QUERY_SCHEMA = "p107-actor-query-sidecar-v1"
 UPSTREAM_PRELABEL_QUERY_SCHEMA = "p107.visual_relation_query_prelabel_registry.v1"
+# Name reserved for the normalized consumer spelling from the initial design;
+# it is kept separate from the upstream file schema and the adapter receipt.
+CANONICAL_PRELABEL_QUERY_SCHEMA = "p107-prelabel-query-v1"
 # Kept as the public name used by the first additive implementation; it now
 # names the actual producer schema rather than an invented local registry.
 PRELABEL_QUERY_SCHEMA = UPSTREAM_PRELABEL_QUERY_SCHEMA
@@ -517,7 +520,8 @@ def read_actor_query_sidecar(package_root: str | Path, metadata: Mapping[str, An
 __all__ = [
     "ACTOR_QUERY_CONTENT_SCHEMA", "ACTOR_QUERY_KINDS", "ACTOR_QUERY_MANIFEST_KEY",
     "ACTOR_QUERY_SCHEMA", "ActorQueryError", "MAX_QUERY_TEXT_CHARS", "PRELABEL_ADAPTER_SCHEMA",
-    "PRELABEL_QUERY_SCHEMA", "UPSTREAM_PRELABEL_QUERY_SCHEMA", "actor_query_projection",
+    "CANONICAL_PRELABEL_QUERY_SCHEMA", "PRELABEL_QUERY_SCHEMA", "UPSTREAM_PRELABEL_QUERY_SCHEMA",
+    "actor_query_projection",
     "adapt_prelabel_registry", "adapt_prelabel_registry_row", "canonical_json", "canonical_sha256",
     "query_content_sha256", "read_actor_query_sidecar", "validate_actor_query",
     "validate_goal_query_binding", "validate_prelabel_registry", "validate_prelabel_registry_row",
