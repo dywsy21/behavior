@@ -9,7 +9,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts" / "data"))
 import build_memlite_event_index as builder  # noqa: E402
 import render_memlite_event_packets as renderer  # noqa: E402
-from test_build_memlite_event_index import write_release  # noqa: E402
+from test_build_memlite_event_index import coverage, write_release  # noqa: E402
 
 
 class RenderEventPacketsTests(unittest.TestCase):
@@ -17,9 +17,9 @@ class RenderEventPacketsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             release = root / "release"
-            write_release(release)
+            fixture = write_release(release)
             index = root / "index"
-            builder.build_index(release, index, max_seconds=10)
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
             packets = root / "packets"
             result = renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
                                              include_source_annotation_context=True, decode=False, raw_root=None,
@@ -40,9 +40,9 @@ class RenderEventPacketsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             release = root / "release"
-            write_release(release)
+            fixture = write_release(release)
             index = root / "index"
-            builder.build_index(release, index, max_seconds=10)
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
             with self.assertRaisesRegex(ValueError, "select explicit"):
                 renderer.create_packets(index, root / "bad", event_ids=set(), limit=None, questions={},
                                         include_source_annotation_context=False, decode=False, raw_root=None,
