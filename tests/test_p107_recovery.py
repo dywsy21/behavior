@@ -876,6 +876,45 @@ class ProtocolBridgeTest(unittest.TestCase):
         }
         self.assertEqual(actor_evidence_projection(view)["references"], [])
 
+    @staticmethod
+    def _actor_projection_view(reference):
+        return {
+            "observation_frame": 4,
+            "actor_evidence": {
+                "kind": "RGB_VISIBLE",
+                "evidence_end_frame": 4,
+                "available_frame": 4,
+                "references": [reference],
+            },
+        }
+
+    def test_actor_projection_allows_only_causal_typed_rgb_locator(self) -> None:
+        reference = {
+            "kind": "rgb_frame",
+            "view": "head",
+            "frame": 4,
+            "artifact_sha256": "c" * 64,
+        }
+        projected = actor_evidence_projection(self._actor_projection_view(reference))
+        self.assertEqual(projected["references"], [reference])
+
+    def test_actor_projection_rejects_privileged_nested_reference_fields(self) -> None:
+        base = {
+            "kind": "rgb_frame",
+            "view": "head",
+            "frame": 4,
+            "artifact_sha256": "c" * 64,
+        }
+        for key, value in (
+            ("world_state", {"objects": ["cup"]}),
+            ("objectPose", [0.0, 0.0, 0.0]),
+            ("ground_truth", "SUCCEEDED"),
+        ):
+            with self.subTest(key=key):
+                reference = {**base, key: value}
+                with self.assertRaisesRegex(RecoveryContractError, "exact typed actor locator"):
+                    actor_evidence_projection(self._actor_projection_view(reference))
+
     def test_obsolete_bridge_never_accepts_caller_proposed_positive_mask(self) -> None:
         with self.assertRaisesRegex(RecoveryContractError, "no corrective-action publication authority"):
             validate_corrective_action_view({

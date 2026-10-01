@@ -130,7 +130,16 @@ def project_action_23_to_27(
 
 
 def actor_evidence_projection(view: Mapping[str, Any], *, protocol: Any | None = None) -> dict[str, Any]:
-    """Use the canonical actor-only projection; never derive one locally."""
+    """Return only a recursively typed, causal actor-visible projection.
+
+    The owner protocol is the source of the actor-evidence schema.  This
+    bridge additionally verifies its returned object before crossing the SIM
+    boundary.  That redundant fail-closed guard is deliberate: older local
+    protocol snapshots only checked top-level actor-evidence keys and could
+    return privileged fields hidden inside ``references``.  The guard matches
+    the current canonical typed-reference subset and fails closed for future
+    schema additions until this bridge is reviewed against them.
+    """
     protocol = load_protocol() if protocol is None else protocol
     projector = getattr(protocol, "actor_evidence_projection", None)
     if not callable(projector):
@@ -138,4 +147,107 @@ def actor_evidence_projection(view: Mapping[str, Any], *, protocol: Any | None =
     projected = projector(view)
     if not isinstance(projected, dict):
         raise RecoveryContractError("Canonical actor-evidence projection must return an object")
+    if not isinstance(view, Mapping) or type(view.get("observation_frame")) is not int:
+        raise RecoveryContractError("Actor-evidence projection requires an integer observation frame")
+    _validate_actor_projection(projected, observation_frame=view["observation_frame"])
     return projected
+
+
+_NON_PHYSICAL_EVIDENCE_KINDS = frozenset(
+    {"SEGMENT_END", "ANNOTATION_END", "TIMEOUT", "GRIPPER_CLOSE", "MODEL_SELF_REPORT"}
+)
+_RGB_VIEWS = frozenset({"head", "left_wrist", "right_wrist"})
+
+
+def _is_sha256(value: Any) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _validate_actor_projection(projected: Mapping[str, Any], *, observation_frame: int) -> None:
+    """Verify the canonical recursive typed-reference actor boundary.
+
+    This deliberately inspects every reachable actor value rather than using
+    a spelling blacklist.  References are closed typed locators: RGB camera
+    artifacts, named public proprioception artifacts, or command identifiers.
+    No arbitrary nested mapping can cross this bridge.
+    """
+    required = {"kind", "evidence_end_frame", "available_frame", "references"}
+    if set(projected) != required:
+        raise RecoveryContractError("Actor evidence must use the closed typed-reference schema")
+    kind = projected["kind"]
+    references = projected["references"]
+    if not isinstance(kind, str) or not isinstance(references, list):
+        raise RecoveryContractError("Actor evidence kind and references must be typed")
+    if kind == "MISSING":
+        if (projected["evidence_end_frame"] is not None
+                or projected["available_frame"] is not None or references):
+            raise RecoveryContractError("MISSING actor evidence cannot carry references or clocks")
+        return
+    if not kind or kind in _NON_PHYSICAL_EVIDENCE_KINDS:
+        raise RecoveryContractError("Actor evidence must name causal visual/physical/review evidence")
+    evidence_end = projected["evidence_end_frame"]
+    available = projected["available_frame"]
+    if (type(evidence_end) is not int or type(available) is not int
+            or evidence_end < 0 or available < evidence_end
+            or available > observation_frame):
+        raise RecoveryContractError("Actor evidence clocks must be causal at the observation frame")
+    for index, reference in enumerate(references):
+        _validate_actor_reference(
+            reference,
+            name=f"actor_evidence.references[{index}]",
+            available_frame=available,
+            observation_frame=observation_frame,
+        )
+
+
+def _validate_actor_reference(
+    reference: Any, *, name: str, available_frame: int, observation_frame: int
+) -> None:
+    if not isinstance(reference, Mapping):
+        raise RecoveryContractError(f"{name} must be an exact typed actor reference")
+    kind = reference.get("kind")
+    if kind == "rgb_frame":
+        required = {"kind", "view", "frame", "artifact_sha256"}
+        valid = (
+            set(reference) == required
+            and reference["view"] in _RGB_VIEWS
+            and _is_sha256(reference["artifact_sha256"])
+        )
+        frame = reference.get("frame")
+    elif kind == "proprio_observation":
+        required = {"kind", "frame", "artifact_sha256", "field_names"}
+        fields = reference.get("field_names")
+        valid = (
+            set(reference) == required
+            and _is_sha256(reference["artifact_sha256"])
+            and isinstance(fields, list)
+            and bool(fields)
+            and all(
+                isinstance(field, str)
+                and field
+                and "state" not in field.lower()
+                and "pose" not in field.lower()
+                for field in fields
+            )
+        )
+        frame = reference.get("frame")
+    elif kind == "command_identifier":
+        required = {"kind", "issued_frame", "command_id"}
+        valid = (
+            set(reference) == required
+            and isinstance(reference["command_id"], str)
+            and bool(reference["command_id"])
+        )
+        frame = reference.get("issued_frame")
+    else:
+        raise RecoveryContractError(
+            f"{name} must be rgb_frame, proprio_observation, or command_identifier"
+        )
+    if not valid or type(frame) is not int or frame < 0:
+        raise RecoveryContractError(f"{name} is not an exact typed actor locator")
+    if frame > available_frame or frame > observation_frame:
+        raise RecoveryContractError(f"{name} is not available at the observation frame")
