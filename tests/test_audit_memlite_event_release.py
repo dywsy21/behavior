@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+import hashlib
+import importlib.util
+import json
 import sys
 import tempfile
 import unittest
@@ -28,6 +31,81 @@ def load_dataset_module():
 
 
 DATASET = load_dataset_module()
+
+
+def load_actor_module():
+    path = REPO / "src/g05/data/memlite_event_actor_query.py"
+    spec = importlib.util.spec_from_file_location("p107_actor_query_audit_test", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+ACTOR = load_actor_module()
+
+
+def _sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _install_valid_actor_sidecar(package: Path) -> str:
+    """Install one producer-shaped, source-bound goal query in a fixture."""
+    package.chmod(0o755)
+    for path in package.iterdir():
+        path.chmod(0o644)
+    views = [json.loads(line) for line in (package / "views.jsonl").read_text().splitlines() if line.strip()]
+    events = [json.loads(line) for line in (package / "events.jsonl").read_text().splitlines() if line.strip()]
+    view = next(row["view"] for row in views if row["view"]["label_kind"] == "goal_satisfaction_counterfactual")
+    event = next(row for row in events if row["event_id"] == view["event_id"])
+    skill = event["skill_bundle"][0]
+    skill_id = skill.get("skill_id", skill.get("skill_idx"))
+    text = view["goal_relation"]
+    query_digest = ACTOR.query_content_sha256("goal_satisfaction_counterfactual", text)
+    query_id = "producer-query-opaque"
+    query = {"kind": "goal_satisfaction_counterfactual", "prelabel_query_id": query_id,
+             "query_content_sha256": query_digest, "text": text}
+    source_group_id = event["source"]["source_group_id"]
+    registry = {
+        "schema_version": ACTOR.PRELABEL_QUERY_SCHEMA, "canonical_verb": skill["verb"],
+        "event_id": event["event_id"], "observation_frame": event["observation"]["frame"],
+        "prelabel_query_id": query_id, "query_ordinal_within_event": 0,
+        "query_text": text, "relation_family": "goal_relation", "skill_id": skill_id,
+        "source_group_id": source_group_id,
+        "source_pin": {"event_id": event["event_id"], "phase_index_path": "phase.jsonl",
+                        "phase_index_record_sha256": "a" * 64, "phase_index_sha256": "b" * 64,
+                        "queue_path": "queue.jsonl", "queue_record_sha256": "c" * 64,
+                        "queue_sha256": "d" * 64, "selection_manifest_path": "selection.json",
+                        "selection_manifest_sha256": "e" * 64},
+    }
+    sidecar = package / "actor_queries.jsonl"
+    registry_path = package / "prelabel_queries.jsonl"
+    sidecar.write_bytes(pack.canonical_json({"schema_version": ACTOR.ACTOR_QUERY_SCHEMA,
+                                             "view_id": view["view_id"], "actor_query": query}).encode() + b"\n")
+    registry_path.write_bytes(pack.canonical_json(registry).encode() + b"\n")
+    manifest_path, seal_path = package / "release_manifest.json", package / "release_seal.json"
+    manifest, seal = json.loads(manifest_path.read_text()), json.loads(seal_path.read_text())
+    files = dict(manifest["files"])
+    files[sidecar.name] = {"bytes": sidecar.stat().st_size, "rows": 1, "sha256": _sha(sidecar)}
+    files[registry_path.name] = {"bytes": registry_path.stat().st_size, "rows": 1, "sha256": _sha(registry_path)}
+    manifest["files"] = files
+    manifest[ACTOR.ACTOR_QUERY_MANIFEST_KEY] = {
+        "schema_version": ACTOR.ACTOR_QUERY_SCHEMA, "path": sidecar.name,
+        "sha256": _sha(sidecar), "row_count": 1,
+        "prelabel_query_registry": {"schema_version": ACTOR.PRELABEL_QUERY_SCHEMA,
+                                     "adapter_schema_version": ACTOR.PRELABEL_ADAPTER_SCHEMA,
+                                     "path": registry_path.name, "sha256": _sha(registry_path),
+                                     "row_count": 1},
+    }
+    manifest_path.write_bytes(pack.canonical_json(manifest).encode() + b"\n")
+    seal["files"] = files
+    seal["release_manifest_sha256"] = _sha(manifest_path)
+    seal_path.write_bytes(pack.canonical_json(seal).encode() + b"\n")
+    for path in package.iterdir():
+        path.chmod(0o444)
+    package.chmod(0o555)
+    return _sha(seal_path)
 
 
 class AuditMemLiteEventReleaseTests(unittest.TestCase):
@@ -91,6 +169,42 @@ class AuditMemLiteEventReleaseTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "not a stage3 training authorization"):
                 DATASET.MemLiteEventDataset(package, "corrective_action", expected_release_seal_sha256=seal,
                                              for_training=True)
+
+    def test_audit_checks_declared_actor_sidecar_and_detects_tamper(self):
+        with tempfile.TemporaryDirectory() as folder:
+            package, _ = self._package(Path(folder))
+            seal = _install_valid_actor_sidecar(package)
+            result = audit.audit(package, expected_release_seal_sha256=seal)
+            self.assertEqual(result["status"], "PASS_WITH_STAGE3_TRAINING_BLOCKED")
+
+            sidecar = package / "actor_queries.jsonl"
+            package.chmod(0o755)
+            sidecar.chmod(0o644)
+            sidecar.write_bytes(sidecar.read_bytes() + b" ")
+            sidecar.chmod(0o444)
+            package.chmod(0o555)
+            with self.assertRaisesRegex(ValueError, "actor-query sidecar audit failed|receipt mismatch"):
+                audit.audit(package, expected_release_seal_sha256=seal)
+
+    def test_audit_rejects_sidecar_files_without_manifest_registration(self):
+        with tempfile.TemporaryDirectory() as folder:
+            package, _ = self._package(Path(folder))
+            _install_valid_actor_sidecar(package)
+            package.chmod(0o755)
+            manifest_path, seal_path = package / "release_manifest.json", package / "release_seal.json"
+            for path in package.iterdir():
+                path.chmod(0o644)
+            manifest = json.loads(manifest_path.read_text())
+            manifest.pop(ACTOR.ACTOR_QUERY_MANIFEST_KEY)
+            manifest_path.write_bytes(pack.canonical_json(manifest).encode() + b"\n")
+            seal_doc = json.loads(seal_path.read_text())
+            seal_doc["release_manifest_sha256"] = _sha(manifest_path)
+            seal_path.write_bytes(pack.canonical_json(seal_doc).encode() + b"\n")
+            for path in package.iterdir():
+                path.chmod(0o444)
+            package.chmod(0o555)
+            with self.assertRaisesRegex(ValueError, "without an actor_query_sidecar registration"):
+                audit.audit(package, expected_release_seal_sha256=_sha(seal_path))
 
     def test_audit_and_dataset_accept_only_externally_sealed_parent_approved_action_evidence(self):
         with tempfile.TemporaryDirectory() as folder:
