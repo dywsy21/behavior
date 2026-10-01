@@ -711,6 +711,26 @@ class CausalReviewPageBuilderTests(unittest.TestCase):
                        query_registry=registry, coverage_event_bindings_path=bindings)
             self.assertFalse(output.exists())
 
+    def test_coverage_event_binding_query_sets_must_be_disjoint(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            paths = _fixture(root, request_backed=True)
+            registry = _coverage_registry(paths)
+            bindings = _coverage_event_bindings(paths)
+            rows = [json.loads(line) for line in bindings.read_text().splitlines()]
+            overlap = list(rows[0]["eligible_prelabel_query_ids"])
+            rows[0]["quarantined_prelabel_query_ids"] = overlap
+            rows[0]["candidate_query_count"] = 2
+            rows[0]["quarantined_query_count"] = len(overlap)
+            rows[0]["status"] = "PARTIAL_ELIGIBLE_QUERIES"
+            _write_jsonl(bindings, rows)
+            output = root / "actor-pages"
+            with self.assertRaisesRegex(ValueError, "query IDs are duplicated or overlap"):
+                _build(paths, output, render_requests_path=paths["render_requests"],
+                       expected_render_requests_sha256=_sha(paths["render_requests"]),
+                       query_registry=registry, coverage_event_bindings_path=bindings)
+            self.assertFalse(output.exists())
+
     def test_canonical_nested_source_group_copy_must_match_top_level(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

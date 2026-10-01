@@ -647,8 +647,12 @@ def _validate_coverage_event_bindings(
             _sha_text(value, name=f"quarantined query ID for {event_id}")
         for value in unsupported_ids:
             _strict_int(value, name=f"unsupported skill ID for {event_id}", minimum=0)
-        if len(set(eligible_ids)) != len(eligible_ids) or len(set(quarantined_ids)) != len(quarantined_ids):
-            raise ValueError(f"coverage event-binding query IDs are duplicated for {event_id}")
+        eligible_id_set = set(eligible_ids)
+        quarantined_id_set = set(quarantined_ids)
+        if (len(eligible_id_set) != len(eligible_ids) or
+                len(quarantined_id_set) != len(quarantined_ids) or
+                eligible_id_set.intersection(quarantined_id_set)):
+            raise ValueError(f"coverage event-binding query IDs are duplicated or overlap for {event_id}")
         candidate_count = _strict_int(row.get("candidate_query_count"),
                                       name=f"candidate query count for {event_id}", minimum=0)
         eligible_count = _strict_int(row.get("eligible_query_count"),
