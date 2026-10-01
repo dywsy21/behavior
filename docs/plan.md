@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 22:41（北京时间）：P107 sim复审虽修旧receipt/basic fake/future测试，4个新证明孔洞继续阻断release（Codex / P107-COORD）
+
+- exact sim`88563b5`已修原receipt cross-episode且基本fake/future测试fail-closed，但22sim+5protocol通过不是proof。复审新增4项：自构LiveReadinessAttestation+NotOmniGibson仍可live positive（roundtrip hash未解）；snapshot backendA/actionB跨clock0/1仍same_state且同ID/session跨wrapper capture绕绑定；CURRENT clock7在restore0前判fault可产positive；TIMEOUT可当physical success/fault。完整修复合同见[台账sim复审节](experiments/2026-10-01-recovery-data-preparation.md#2026-10-01-2241sim-88563b5-复审更正仍不可-release)。release仍BLOCKED、actual OG proof为0。
+- sim owner修trusted receipt registry（无外部candidate）、all-provider runtime capability binding、restore-before-fault-observation和closed physical-evidence taxonomy；未独审前blocker不标resolved。data P1 fix/API进行中；candidate pack/audit只以3个真实pilot header作AUX receipt演练，结果`PASS_WITH_STAGE3_TRAINING_BLOCKED`/`CANDIDATE_ONLY`，非source-resolved真实release。
+- infra下一步仅targeted read-only local GPU/OG availability+robo route probe，无install/restart/新tunnel。metadata本地范围不变，queue picker task-skill-first而非sorted-N。0数据release/GPU sim/新训练；P107仍进行中。
+
 ### 2026-10-01 22:37（北京时间）：P107 受限v4 metadata副本已核；本地索引/挖掘仍受P1与独审门约束（Codex / P107-COORD）
 
 - exact v4 metadata 已到`/home/wsy/behavior-annotations/p107/frozen-v4-metadata`并核验：总403,777,381B；episodes399,905,443B/SHA `c62fe885143bcdc07a9dcb302a5af294afb355db98d078a838c587f9efcc16ca`，manifest `90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23`，fixture-schema `b7d22723ed1b2a9a22862adb7fef5333ae7c0f07f343bf38ae3c61c70c254ae7`。唯一49s/7.9MiB/s/≤512MiB传输，disk busy31%→29.8%；最新tail high12102/low20504、median6.864s/2.200s仅作状态记录；无raw/RGB/depth/Parquet读取、远端写、env/job改动，认证无凭据入仓库。

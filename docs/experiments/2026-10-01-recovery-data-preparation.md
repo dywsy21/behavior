@@ -76,7 +76,20 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 因此所有代码集成和数据 release **PAUSED**，等待修复和独立复审；尚未采集任何实际 recovery-data positive，亦无已知 live bug impact。data owner 负责1/6/7/8及coverage，sim owner负责2/3/4/5，packager已获知。真实 recovery proof 必须先验证**初始偏离**，不能只以 baseline fail 代替；baseline也可能恢复，且“发生偏离”的证明与“恢复有效性”是两项独立判据。
 
+### 2026-10-01 22:41：sim `88563b5` 复审更正—仍不可 release
+
+本次复审确认原 receipt cross-episode 问题已修，基本 fake/future 测试也在该 SHA fail-closed；但这不能外推为 release 已安全。22个 sim 和5个 protocol 测试通过也不是证明。仍有4个新证实孔洞：
+
+1. **Critical：** 自构 `LiveReadinessAttestation` 加普通 `NotOmniGibson` object 可成为 live positive，roundtrip hash 尚未解决。
+2. **Critical：** snapshot backend A 与 action backend B 在 branch-start clocks `0/1` 时仍可接受 `same_state=true`；同 ID/session 的跨-wrapper capture 也可绕过绑定。
+3. **High：** 在 restore snapshot `0` 前、CURRENT clock `7` 评估 fault 仍可生成 positive。
+4. **High：** `evidence_kind=TIMEOUT` 可被接受为 physical success/fault。
+
+sim owner 正修复：无外部 candidate 的 trusted receipt registry、所有 provider 的 runtime-capabilities binding、restore-before-fault-observation 以及封闭的 physical-evidence taxonomy。实际 OmniGibson proof 仍为零，release 继续 **BLOCKED**，上述 blocker 不得标 resolved。
+
 ## 当前状态、阻塞与交接
+
+2026-10-01 22:41（北京时间）data P1 fix/API仍在进行。candidate pack/audit 用3个实际 pilot header 作为 AUX receipt 演练，仅得到 `PASS_WITH_STAGE3_TRAINING_BLOCKED` / `CANDIDATE_ONLY`；它不是 source-resolved 的真实 release。infra owner 下一步仅可做 targeted read-only local GPU/OmniGibson availability 与 robo route probe，以穷尽 live-physics 替代路径；禁止 install、restart 或另建 tunnel。metadata index 本地范围不变，queue picker 实现必须 task-skill-first、不得按排序 N。无实际数据release、GPU sim或新训练启动。
 
 2026-10-01 22:37（北京时间）状态覆盖：exact v4 metadata 已复制并哈希核验至`/home/wsy/behavior-annotations/p107/frozen-v4-metadata`，总403,777,381B；`episodes`为399,905,443B、SHA `c62fe885143bcdc07a9dcb302a5af294afb355db98d078a838c587f9efcc16ca`，manifest SHA `90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23`，fixture-schema SHA `b7d22723ed1b2a9a22862adb7fef5333ae7c0f07f343bf38ae3c61c70c254ae7`。这是一次49秒、7.9MiB/s、≤512MiB预算的传输；disk busy pre31%/post29.8%，没有 raw/RGB/depth/Parquet读取、远端source写入、环境或job变动。infra 最新有界tail为high12102/low20504、median6.864s/2.200s，只作运行状态记录而非新训练结论。远端认证为infra operator一次性操作，凭据不入仓库。
 
