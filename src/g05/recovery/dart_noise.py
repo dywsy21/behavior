@@ -12,7 +12,7 @@ from math import cos, isfinite, log, pi, sin, sqrt
 from random import Random
 from typing import Mapping, Sequence
 
-from .common import RecoveryContractError, validate_raw23_action, validate_raw23_actions
+from .common import RecoveryContractError, require_sha256, validate_raw23_action, validate_raw23_actions
 
 
 RAW_ACTION_DIM = 23
@@ -201,6 +201,8 @@ class Raw23ActionLayout:
     """Native layout derived from embodiment metadata, never raw-axis constants."""
 
     parts: tuple[ActionPart, ...]
+    embodiment_metadata_sha256: str
+    model_projection_manifest_sha256: str
 
     def __post_init__(self) -> None:
         if not self.parts or sum(part.dimension for part in self.parts) != RAW_ACTION_DIM:
@@ -208,6 +210,8 @@ class Raw23ActionLayout:
         names = [part.name for part in self.parts]
         if len(names) != len(set(names)):
             raise RecoveryContractError("metadata action part names must be unique")
+        require_sha256(self.embodiment_metadata_sha256, field="embodiment_metadata_sha256")
+        require_sha256(self.model_projection_manifest_sha256, field="model_projection_manifest_sha256")
 
     @property
     def slices(self) -> Mapping[str, slice]:

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, is_dataclass
 from math import isfinite
+from pathlib import Path
 from time import monotonic
 from typing import Any, Callable, Mapping, Protocol, Sequence
 
@@ -28,19 +29,19 @@ from .dart_noise import (
     BoundedNoiseProfile,
     DartInspiredBoundedNoise,
     OriginalGaussianNoise,
+    scale_dart_covariance,
 )
 
 
-_CANDIDATE_FLAGS = {
+CANDIDATE_ONLY_FLAGS = {
     "candidate_only": True,
     "training_eligible": False,
     "ready_for_training": False,
     "low_action_supervision_positive": False,
     "authority_minted": False,
+    "authority_status": "NO_AUTHORITY",
 }
-_SHA_FIELDS = (
-    "source_release_sha256",
-    "source_episode_sha256",
+_TEACHER_SHA_FIELDS = (
     "teacher_code_sha256",
     "teacher_weights_sha256",
     "teacher_config_sha256",
@@ -67,26 +68,32 @@ def _require_nonempty_text(value: str, field: str) -> str:
 
 @dataclass(frozen=True)
 class CandidateSourceReceipt:
-    """Immutable source-group provenance; candidates may only derive from train."""
+    """TRAIN parent provenance for a *new* DART rollout, never a demo-state ID."""
 
     source_group_id: str
     original_split: str
     source_release_sha256: str
-    source_episode_sha256: str
-    task_id: str
-    task_instance_id: str
-    task_seed: int
+    parent_task_id: str
+    parent_task_index: int
+    parent_task_instance_id: str
+    parent_task_seed: int
+    trajectory_source_kind: str
+    collection_run_id: str
 
     def __post_init__(self) -> None:
-        _require_nonempty_text(self.source_group_id, "source_group_id")
+        require_sha256(self.source_group_id, field="source_group_id")
         if self.original_split != "train":
             raise RecoveryContractError("DART candidates may only use original train source groups")
-        _require_nonempty_text(self.task_id, "task_id")
-        _require_nonempty_text(self.task_instance_id, "task_instance_id")
-        if not isinstance(self.task_seed, int):
-            raise RecoveryContractError("task_seed must be an integer")
-        for field in ("source_release_sha256", "source_episode_sha256"):
-            require_sha256(getattr(self, field), field=field)
+        _require_nonempty_text(self.parent_task_id, "parent_task_id")
+        if not isinstance(self.parent_task_index, int) or self.parent_task_index < 0:
+            raise RecoveryContractError("parent_task_index must be a nonnegative integer")
+        _require_nonempty_text(self.parent_task_instance_id, "parent_task_instance_id")
+        if not isinstance(self.parent_task_seed, int):
+            raise RecoveryContractError("parent_task_seed must be an integer")
+        if self.trajectory_source_kind != "fresh_dart_trajectory":
+            raise RecoveryContractError("DART candidates must declare trajectory_source_kind=fresh_dart_trajectory")
+        _require_nonempty_text(self.collection_run_id, "collection_run_id")
+        require_sha256(self.source_release_sha256, field="source_release_sha256")
 
     def public(self) -> dict[str, Any]:
         return asdict(self)
@@ -122,6 +129,185 @@ class CalibrationReceipt:
 
 
 @dataclass(frozen=True)
+class CanonicalSourceGroupMembership:
+    """One immutable source-group fact supplied by the DATA-owned index reader."""
+
+    source_group_id: str
+    source_release_sha256: str
+    task_index: int
+    task_instance_id: str
+    original_split: str
+    usage_role: str
+    source_group_member_sha256: str
+
+    def __post_init__(self) -> None:
+        require_sha256(self.source_group_id, field="source_group_id")
+        _require_nonempty_text(self.task_instance_id, "task_instance_id")
+        if not isinstance(self.task_index, int) or self.task_index < 0:
+            raise RecoveryContractError("canonical source membership task_index must be nonnegative")
+        if self.original_split not in {"train", "eval", "dev", "test", "protected"}:
+            raise RecoveryContractError("canonical source membership has an unknown original split")
+        if self.usage_role not in {
+            "student_candidate", "annotation_calibration", "evaluation_only", "protected_holdout", "quarantined",
+        }:
+            raise RecoveryContractError("canonical source membership has an unknown usage role")
+        for field in ("source_release_sha256", "source_group_member_sha256"):
+            require_sha256(getattr(self, field), field=field)
+
+    def public(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class VerifiedDartSourceMembership:
+    """A once-read, sealed membership result returned by the DATA index adapter."""
+
+    source_group_index_manifest_sha256: str
+    candidate: CanonicalSourceGroupMembership
+    calibration_groups: tuple[CanonicalSourceGroupMembership, ...]
+
+    def __post_init__(self) -> None:
+        require_sha256(self.source_group_index_manifest_sha256, field="source_group_index_manifest_sha256")
+        if not isinstance(self.candidate, CanonicalSourceGroupMembership):
+            raise RecoveryContractError("verified DART source membership needs a canonical candidate group")
+        if not self.calibration_groups or not all(
+            isinstance(group, CanonicalSourceGroupMembership) for group in self.calibration_groups
+        ):
+            raise RecoveryContractError("verified DART source membership needs canonical calibration groups")
+
+    def public(self) -> dict[str, Any]:
+        return {
+            "source_group_index_manifest_sha256": self.source_group_index_manifest_sha256,
+            "candidate": self.candidate.public(),
+            "calibration_groups": [group.public() for group in self.calibration_groups],
+        }
+
+
+class CanonicalSourceGroupIndexReader(Protocol):
+    """DATA-owned sealed-index loader; DART intentionally defines no duplicate format."""
+
+    def verify_dart_membership(
+        self, source: CandidateSourceReceipt, calibration: CalibrationReceipt
+    ) -> VerifiedDartSourceMembership: ...
+
+
+class DataSealedSourceGroupIndexReader:
+    """Thin adapter over DATA's externally SHA-pinned, read-only membership API.
+
+    The DATA module owns the index format and performs the seal/manifest/file
+    verification exactly once here.  This adapter neither loads corrective
+    publisher authority nor invents a parallel source-index format.
+    """
+
+    def __init__(self, index_root: Path, *, expected_inventory_seal_sha256: str) -> None:
+        require_sha256(expected_inventory_seal_sha256, field="expected_inventory_seal_sha256")
+        try:
+            from g05.data.memlite_event_protocol import load_source_index_membership, sealed_source_group
+        except ImportError as exc:
+            raise RecoveryContractError(
+                "DATA sealed source-group membership API is not available in this checkout"
+            ) from exc
+        try:
+            membership = load_source_index_membership(
+                Path(index_root), expected_inventory_seal_sha256=expected_inventory_seal_sha256
+            )
+        except Exception as exc:  # DATA ContractError is intentionally not redefined here.
+            raise RecoveryContractError("could not load DATA's externally sealed source-group membership") from exc
+        self._source_group_lookup = sealed_source_group
+        self._membership = membership
+        self._inventory_seal_sha256 = expected_inventory_seal_sha256
+
+    def _group(self, source_group_id: str) -> CanonicalSourceGroupMembership:
+        try:
+            group = self._source_group_lookup(self._membership, source_group_id)
+        except Exception as exc:  # Preserve the DART candidate fail-closed boundary.
+            raise RecoveryContractError("source group is absent from DATA's sealed membership index") from exc
+        return CanonicalSourceGroupMembership(
+            source_group_id=group["source_group_id"],
+            source_release_sha256=group["source_release_manifest_sha256"],
+            task_index=group["task_index"],
+            task_instance_id=str(group["task_instance_id"]),
+            original_split=group["original_split"],
+            usage_role=group["usage_role"],
+            source_group_member_sha256=canonical_sha256(group),
+        )
+
+    def verify_dart_membership(
+        self, source: CandidateSourceReceipt, calibration: CalibrationReceipt
+    ) -> VerifiedDartSourceMembership:
+        return VerifiedDartSourceMembership(
+            source_group_index_manifest_sha256=self._membership.index_manifest_sha256,
+            candidate=self._group(source.source_group_id),
+            calibration_groups=tuple(self._group(group_id) for group_id in calibration.source_group_ids),
+        )
+
+
+@dataclass(frozen=True)
+class OriginalGaussianCalibrationBinding:
+    """Evidence that this exact sampled covariance came from held-out train calibration."""
+
+    calibration_trajectory_sha256: str
+    learner_checkpoint_sha256: str
+    teacher_checkpoint_sha256: str
+    covariance_estimator_code_sha256: str
+    estimated_covariance23: Sequence[Sequence[float]]
+    alpha: float
+    horizon: int
+    source_group_index_manifest_sha256: str
+
+    def __post_init__(self) -> None:
+        for field in (
+            "calibration_trajectory_sha256",
+            "learner_checkpoint_sha256",
+            "teacher_checkpoint_sha256",
+            "covariance_estimator_code_sha256",
+            "source_group_index_manifest_sha256",
+        ):
+            require_sha256(getattr(self, field), field=field)
+        # Reuse the exact Eq.4 validation instead of accepting an opaque
+        # covariance digest from a caller.  This also rejects nonfinite/PSD
+        # failures before any collection is attempted.
+        scaled = scale_dart_covariance(self.estimated_covariance23, alpha=self.alpha, horizon=self.horizon)
+        object.__setattr__(self, "estimated_covariance23", tuple(tuple(row) for row in self.estimated_covariance23))
+        object.__setattr__(self, "_scaled_covariance23", scaled)
+
+    @property
+    def scaled_covariance23(self) -> tuple[tuple[float, ...], ...]:
+        return self._scaled_covariance23
+
+    def validate(
+        self,
+        *,
+        noise: OriginalGaussianNoise,
+        calibration: CalibrationReceipt,
+        membership: VerifiedDartSourceMembership,
+    ) -> None:
+        if (
+            self.calibration_trajectory_sha256 != calibration.calibration_trajectory_sha256
+            or self.learner_checkpoint_sha256 != calibration.learner_checkpoint_sha256
+            or self.teacher_checkpoint_sha256 != calibration.teacher_checkpoint_sha256
+        ):
+            raise RecoveryContractError("original DART covariance binding does not match calibration artifacts")
+        if self.source_group_index_manifest_sha256 != membership.source_group_index_manifest_sha256:
+            raise RecoveryContractError("original DART covariance binding does not match verified source-group index")
+        if noise.covariance != self.scaled_covariance23:
+            raise RecoveryContractError("original DART sampled covariance does not match calibration alpha/horizon binding")
+
+    def public(self) -> dict[str, Any]:
+        return {
+            "calibration_trajectory_sha256": self.calibration_trajectory_sha256,
+            "learner_checkpoint_sha256": self.learner_checkpoint_sha256,
+            "teacher_checkpoint_sha256": self.teacher_checkpoint_sha256,
+            "covariance_estimator_code_sha256": self.covariance_estimator_code_sha256,
+            "estimated_covariance_sha256": canonical_sha256(self.estimated_covariance23),
+            "scaled_covariance_sha256": canonical_sha256(self.scaled_covariance23),
+            "alpha": self.alpha,
+            "horizon": self.horizon,
+            "source_group_index_manifest_sha256": self.source_group_index_manifest_sha256,
+        }
+
+
+@dataclass(frozen=True)
 class TeacherReceipt:
     teacher_id: str
     teacher_kind: str
@@ -141,7 +327,7 @@ class TeacherReceipt:
         if self.feedback_mode != "closed_loop_fresh_observation":
             raise RecoveryContractError("DART feedback must be freshly queried, not a replayed source action")
         require_sha256(self.postcondition_spec_sha256, field="postcondition_spec_sha256")
-        for field in _SHA_FIELDS[2:]:
+        for field in _TEACHER_SHA_FIELDS:
             require_sha256(getattr(self, field), field=field)
 
     def public(self) -> dict[str, Any]:
@@ -320,16 +506,49 @@ class DartCollectionResult:
 
     def public(self) -> dict[str, Any]:
         return {
-            "schema": "p107_dart_candidate_collection_result_v1",
+            "schema": "p107_dart_candidate_collection_result_v2",
             "records": list(self.records),
             "outcome_label": self.outcome_label,
             "stop_reason": self.stop_reason,
-            **_CANDIDATE_FLAGS,
+            **CANDIDATE_ONLY_FLAGS,
         }
 
 
-def _assert_candidate_source(source: CandidateSourceReceipt, calibration: CalibrationReceipt) -> None:
-    calibration.reject_candidate_source(source)
+def _assert_candidate_source(
+    source: CandidateSourceReceipt,
+    calibration: CalibrationReceipt,
+    membership_reader: CanonicalSourceGroupIndexReader,
+) -> VerifiedDartSourceMembership:
+    """Bind caller receipts once to the DATA-owned sealed source-group index."""
+
+    if not callable(getattr(membership_reader, "verify_dart_membership", None)):
+        raise RecoveryContractError("DART collection requires a DATA-owned canonical source-group index reader")
+    membership = membership_reader.verify_dart_membership(source, calibration)
+    if not isinstance(membership, VerifiedDartSourceMembership):
+        raise RecoveryContractError("canonical source-group reader must return VerifiedDartSourceMembership")
+    candidate = membership.candidate
+    expected_candidate = {
+        "source_group_id": source.source_group_id,
+        "source_release_sha256": source.source_release_sha256,
+        "task_index": source.parent_task_index,
+        "task_instance_id": source.parent_task_instance_id,
+        "original_split": source.original_split,
+    }
+    if any(getattr(candidate, field) != value for field, value in expected_candidate.items()):
+        raise RecoveryContractError("candidate source receipt does not match canonical sealed source-group membership")
+    if candidate.original_split != "train" or candidate.usage_role != "student_candidate":
+        raise RecoveryContractError("candidate source is not a canonical train student-candidate group")
+    calibration_ids = tuple(group.source_group_id for group in membership.calibration_groups)
+    if set(calibration_ids) != set(calibration.source_group_ids) or len(calibration_ids) != len(calibration.source_group_ids):
+        raise RecoveryContractError("calibration receipt groups do not match canonical sealed source-group membership")
+    if source.source_group_id in calibration_ids:
+        raise RecoveryContractError("held-out calibration groups cannot also produce DART candidates")
+    for group in membership.calibration_groups:
+        if group.original_split != "train" or group.usage_role != "annotation_calibration":
+            raise RecoveryContractError("DART calibration must use canonical held-out train calibration groups")
+        if group.source_release_sha256 != source.source_release_sha256:
+            raise RecoveryContractError("candidate and calibration groups must bind the same sealed source release")
+    return membership
 
 
 def _assert_teacher_matches(observation: DartObservation, command: TeacherCommand, intent_bundle_id: str) -> None:
@@ -343,19 +562,20 @@ def _assert_teacher_matches(observation: DartObservation, command: TeacherComman
         raise RecoveryContractError("teacher target intent does not match collection intent")
 
 
-def _profile_receipt_for_original(noise: OriginalGaussianNoise, *, covariance_update_mode: str) -> dict[str, Any]:
-    if covariance_update_mode not in {"frozen_one_pass_partial_dart", "full_iterative_covariance_update"}:
-        raise RecoveryContractError("original DART covariance update mode must be explicit")
+def _profile_receipt_for_original(
+    noise: OriginalGaussianNoise, *, calibration_binding: OriginalGaussianCalibrationBinding
+) -> dict[str, Any]:
     covariance = [list(row) for row in noise.covariance]
     return {
         "algorithm_id": noise.algorithm_id,
         "paper_equations": ["Eq.2", "Eq.3", "Eq.4"],
         "covariance_sha256": canonical_sha256(covariance),
         "sampling_seed": noise.seed,
-        "covariance_update_mode": covariance_update_mode,
-        # A frozen one-pass collection exercises exact sampling but cannot by
-        # itself substantiate the paper's iterative empirical claim.
-        "empirical_faithfulness": covariance_update_mode == "full_iterative_covariance_update",
+        "covariance_update_mode": "frozen_one_pass_partial_dart",
+        "covariance_calibration_binding": calibration_binding.public(),
+        # This implementation has no iterative collection/covariance loop.
+        # No caller-provided string may turn that fact into an empirical claim.
+        "empirical_faithfulness": False,
     }
 
 
@@ -365,6 +585,8 @@ def _profile_receipt_for_bounded(noise: DartInspiredBoundedNoise) -> dict[str, A
         "profile_id": profile.profile_id,
         "temporal_rho": profile.temporal_rho,
         "parts": [asdict(part) for part in profile.layout.parts],
+        "embodiment_metadata_sha256": profile.layout.embodiment_metadata_sha256,
+        "model_projection_manifest_sha256": profile.layout.model_projection_manifest_sha256,
         "rules_by_part": {
             key: asdict(value) if is_dataclass(value) else value
             for key, value in sorted(profile.rules_by_part.items())
@@ -374,6 +596,12 @@ def _profile_receipt_for_bounded(noise: DartInspiredBoundedNoise) -> dict[str, A
         "algorithm_id": profile.algorithm_id,
         "profile_id": profile.profile_id,
         "profile_sha256": canonical_sha256(serialized_profile),
+        # Expose these immutable receipts in addition to hashing the full
+        # serialized profile.  A downstream reviewer must not have to trust
+        # a caller-supplied profile identifier to locate the native layout
+        # and the later 23->27 padding projection.
+        "embodiment_metadata_sha256": profile.layout.embodiment_metadata_sha256,
+        "model_projection_manifest_sha256": profile.layout.model_projection_manifest_sha256,
         "sampling_seed": noise.seed,
         "safety_bounded": True,
         "original_dart_equivalence": False,
@@ -405,6 +633,7 @@ def _candidate_record(
     label_kind: str,
     collection_mode: str,
     source: CandidateSourceReceipt,
+    verified_membership: VerifiedDartSourceMembership,
     runtime_session: RuntimeSessionReceipt,
     calibration: CalibrationReceipt,
     teacher: TeacherReceipt,
@@ -420,10 +649,11 @@ def _candidate_record(
     outcome_evidence: OutcomeEvidenceReceipt | None = None,
 ) -> dict[str, Any]:
     record: dict[str, Any] = {
-        "schema": "p107_dart_candidate_v1",
+        "schema": "p107_dart_candidate_v2",
         "label_kind": label_kind,
         "collection_mode": collection_mode,
         "source": source.public(),
+        "verified_source_membership": verified_membership.public(),
         "runtime_session": runtime_session.public(),
         "calibration_receipt": calibration.public(),
         "teacher": teacher.public(),
@@ -452,7 +682,7 @@ def _candidate_record(
             "max_executed_per_replan_chunk": 16,
             "stored_clean_future_tail": False,
         },
-        **_CANDIDATE_FLAGS,
+        **CANDIDATE_ONLY_FLAGS,
     }
     if chunk_index is not None:
         record["recovery_chunk_index"] = chunk_index
@@ -469,12 +699,14 @@ def collect_original_gaussian_clean_feedback(
     teacher_callback: DartTeacher,
     teacher_receipt: TeacherReceipt,
     source: CandidateSourceReceipt,
+    source_membership_reader: CanonicalSourceGroupIndexReader,
     runtime_session: RuntimeSessionReceipt,
     calibration: CalibrationReceipt,
     noise: OriginalGaussianNoise,
     intent_bundle_id: str,
     steps: int,
     covariance_update_mode: str,
+    original_calibration_binding: OriginalGaussianCalibrationBinding,
 ) -> DartCollectionResult:
     """Collect original-DART clean intended labels at states reached by Gaussian control.
 
@@ -482,13 +714,20 @@ def collect_original_gaussian_clean_feedback(
     one noisy execution.  The clean label is not marked as actual execution.
     """
 
-    _assert_candidate_source(source, calibration)
-    if runtime_session.task_instance_id != source.task_instance_id:
+    membership = _assert_candidate_source(source, calibration, source_membership_reader)
+    if runtime_session.task_instance_id != source.parent_task_instance_id:
         raise RecoveryContractError("runtime fresh-reset task instance must match candidate source instance")
+    if runtime_session.runtime_session_id != source.collection_run_id:
+        raise RecoveryContractError("DART fresh rollout collection_run_id must match its runtime session")
     _require_nonempty_text(intent_bundle_id, "intent_bundle_id")
     if not isinstance(steps, int) or steps <= 0:
         raise RecoveryContractError("original DART steps must be positive")
-    profile = _profile_receipt_for_original(noise, covariance_update_mode=covariance_update_mode)
+    if covariance_update_mode != "frozen_one_pass_partial_dart":
+        raise RecoveryContractError("this candidate collector only records frozen_one_pass_partial_dart")
+    if not isinstance(original_calibration_binding, OriginalGaussianCalibrationBinding):
+        raise RecoveryContractError("original DART requires an explicit covariance calibration binding")
+    original_calibration_binding.validate(noise=noise, calibration=calibration, membership=membership)
+    profile = _profile_receipt_for_original(noise, calibration_binding=original_calibration_binding)
     records: list[Mapping[str, Any]] = []
     for _ in range(steps):
         observation = runtime.observe()
@@ -505,6 +744,7 @@ def collect_original_gaussian_clean_feedback(
                 label_kind="dart_clean_supervisor_feedback",
                 collection_mode="original_gaussian_clean_intended_feedback",
                 source=source,
+                verified_membership=membership,
                 runtime_session=runtime_session,
                 calibration=calibration,
                 teacher=teacher_receipt,
@@ -526,6 +766,7 @@ def collect_dart_inspired_actual_clean_recovery(
     teacher_callback: DartTeacher,
     teacher_receipt: TeacherReceipt,
     source: CandidateSourceReceipt,
+    source_membership_reader: CanonicalSourceGroupIndexReader,
     runtime_session: RuntimeSessionReceipt,
     calibration: CalibrationReceipt,
     noise: DartInspiredBoundedNoise,
@@ -543,9 +784,11 @@ def collect_dart_inspired_actual_clean_recovery(
     an uncompleted budget as unknown rather than a success/failure label.
     """
 
-    _assert_candidate_source(source, calibration)
-    if runtime_session.task_instance_id != source.task_instance_id:
+    membership = _assert_candidate_source(source, calibration, source_membership_reader)
+    if runtime_session.task_instance_id != source.parent_task_instance_id:
         raise RecoveryContractError("runtime fresh-reset task instance must match candidate source instance")
+    if runtime_session.runtime_session_id != source.collection_run_id:
+        raise RecoveryContractError("DART fresh rollout collection_run_id must match its runtime session")
     _require_nonempty_text(intent_bundle_id, "intent_bundle_id")
     if not isinstance(noisy_injection_steps, int) or noisy_injection_steps <= 0:
         raise RecoveryContractError("noisy_injection_steps must be positive")
@@ -595,6 +838,7 @@ def collect_dart_inspired_actual_clean_recovery(
                 label_kind="dart_inspired_noisy_injection",
                 collection_mode="dart_inspired_bounded_actual_clean_recovery",
                 source=source,
+                verified_membership=membership,
                 runtime_session=runtime_session,
                 calibration=calibration,
                 teacher=teacher_receipt,
@@ -625,6 +869,7 @@ def collect_dart_inspired_actual_clean_recovery(
                     label_kind="dart_inspired_actual_clean_recovery",
                     collection_mode="dart_inspired_bounded_actual_clean_recovery",
                     source=source,
+                    verified_membership=membership,
                     runtime_session=runtime_session,
                     calibration=calibration,
                     teacher=teacher_receipt,

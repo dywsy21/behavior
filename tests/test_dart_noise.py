@@ -110,7 +110,9 @@ def test_bounded_noise_uses_metadata_named_parts_and_explicit_unperturbed_parts(
             ActionPart("trunk_qpos", 4, "position"),
             ActionPart("right_arm", 7, "position"),
             ActionPart("left_gripper", 1, "position"),
-        )
+        ),
+        embodiment_metadata_sha256="a" * 64,
+        model_projection_manifest_sha256="b" * 64,
     )
     profile = BoundedNoiseProfile(
         layout=layout,

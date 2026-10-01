@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from hashlib import sha256
 import json
 import os
@@ -38,15 +39,20 @@ except ImportError:  # Keep these focused contract tests runnable without instal
 from g05.recovery.common import RecoveryContractError, canonical_sha256
 from g05.recovery.dart_collection import (
     AppliedActionReceipt,
+    CANDIDATE_ONLY_FLAGS,
     CalibrationReceipt,
+    CanonicalSourceGroupMembership,
     CandidateSourceReceipt,
     CollectionLimits,
+    DataSealedSourceGroupIndexReader,
     DartObservation,
     OutcomeEvidenceReceipt,
     DartCollectionResult,
     RuntimeSessionReceipt,
+    OriginalGaussianCalibrationBinding,
     TeacherCommand,
     TeacherReceipt,
+    VerifiedDartSourceMembership,
     collect_dart_inspired_actual_clean_recovery,
     collect_original_gaussian_clean_feedback,
 )
@@ -70,6 +76,10 @@ def _action(value: float) -> tuple[float, ...]:
 
 def _diagonal(value: float) -> tuple[tuple[float, ...], ...]:
     return tuple(tuple(value if row == column else 0.0 for column in range(23)) for row in range(23))
+
+
+_CANDIDATE_GROUP = _digest("candidate-group")
+_CALIBRATION_GROUP = _digest("calibration-group")
 
 
 class FakeRuntime:
@@ -122,24 +132,83 @@ class FakeTeacher:
         )
 
 
-def _source(group: str = "candidate-group") -> CandidateSourceReceipt:
+def _source(group: str = _CANDIDATE_GROUP) -> CandidateSourceReceipt:
     return CandidateSourceReceipt(
         source_group_id=group,
         original_split="train",
         source_release_sha256=_digest("source-release"),
-        source_episode_sha256=_digest("source-episode"),
-        task_id="task-42",
-        task_instance_id="task-42-instance-9",
-        task_seed=9,
+        parent_task_id="task-42",
+        parent_task_index=42,
+        parent_task_instance_id="task-42-instance-9",
+        parent_task_seed=9,
+        trajectory_source_kind="fresh_dart_trajectory",
+        collection_run_id="fresh-session-17",
     )
 
 
 def _calibration() -> CalibrationReceipt:
     return CalibrationReceipt(
-        source_group_ids=("calibration-group",),
+        source_group_ids=(_CALIBRATION_GROUP,),
         calibration_trajectory_sha256=_digest("calibration-trajs"),
         learner_checkpoint_sha256=_digest("learner"),
         teacher_checkpoint_sha256=_digest("teacher-calibration"),
+    )
+
+
+class FakeSourceGroupIndexReader:
+    """Test-only stand-in for the DATA-owned sealed membership reader."""
+
+    manifest_sha256 = _digest("sealed-data-source-group-index")
+
+    def __init__(self, *, spoof_role: str | None = None) -> None:
+        self.spoof_role = spoof_role
+        self.calls = 0
+
+    def verify_dart_membership(
+        self, source: CandidateSourceReceipt, calibration: CalibrationReceipt
+    ) -> VerifiedDartSourceMembership:
+        self.calls += 1
+        candidate = CanonicalSourceGroupMembership(
+            source_group_id=source.source_group_id,
+            source_release_sha256=source.source_release_sha256,
+            task_index=source.parent_task_index,
+            task_instance_id=source.parent_task_instance_id,
+            original_split=("eval" if self.spoof_role == "evaluation_only" else "protected")
+            if self.spoof_role else source.original_split,
+            usage_role=self.spoof_role or "student_candidate",
+            source_group_member_sha256=_digest(f"member:{source.source_group_id}"),
+        )
+        calibration_groups = tuple(
+            CanonicalSourceGroupMembership(
+                source_group_id=group_id,
+                source_release_sha256=source.source_release_sha256,
+                task_index=source.parent_task_index,
+                task_instance_id=source.parent_task_instance_id,
+                original_split="train",
+                usage_role="annotation_calibration",
+                source_group_member_sha256=_digest(f"member:{group_id}"),
+            )
+            for group_id in calibration.source_group_ids
+        )
+        return VerifiedDartSourceMembership(self.manifest_sha256, candidate, calibration_groups)
+
+
+def _source_membership_reader() -> FakeSourceGroupIndexReader:
+    return FakeSourceGroupIndexReader()
+
+
+def _original_calibration_binding() -> OriginalGaussianCalibrationBinding:
+    # Eq.4: trace(diag(1)) is 23, so alpha=5.75 and T=1 yields diag(0.25),
+    # exactly matching the Gaussian test sampler below.
+    return OriginalGaussianCalibrationBinding(
+        calibration_trajectory_sha256=_calibration().calibration_trajectory_sha256,
+        learner_checkpoint_sha256=_calibration().learner_checkpoint_sha256,
+        teacher_checkpoint_sha256=_calibration().teacher_checkpoint_sha256,
+        covariance_estimator_code_sha256=_digest("dart-author-code-estimator"),
+        estimated_covariance23=_diagonal(1.0),
+        alpha=5.75,
+        horizon=1,
+        source_group_index_manifest_sha256=FakeSourceGroupIndexReader.manifest_sha256,
     )
 
 
@@ -176,7 +245,9 @@ def _bounded_noise() -> DartInspiredBoundedNoise:
             ActionPart("left_gripper", 1, "position"),
             ActionPart("right_arm", 7, "position"),
             ActionPart("right_gripper", 1, "position"),
-        )
+        ),
+        embodiment_metadata_sha256=_digest("r1pro-embodiment-metadata"),
+        model_projection_manifest_sha256=_digest("r1pro-23to27-projection"),
     )
     return DartInspiredBoundedNoise(
         BoundedNoiseProfile(
@@ -200,7 +271,7 @@ def build_cli_candidate(request: dict[str, object]) -> DartCollectionResult:
     """Importable integration-factory fixture for the inert CLI contract."""
 
     record = {
-        "schema": "p107_dart_candidate_v1",
+        "schema": "p107_dart_candidate_v2",
         "label_kind": "dart_clean_supervisor_feedback",
         "request_id": request["request_id"],
         "candidate_only": True,
@@ -208,25 +279,43 @@ def build_cli_candidate(request: dict[str, object]) -> DartCollectionResult:
         "ready_for_training": False,
         "low_action_supervision_positive": False,
         "authority_minted": False,
+        "authority_status": "NO_AUTHORITY",
     }
     record["candidate_sha256"] = canonical_sha256(record)
+    return DartCollectionResult((record,), outcome_label="OUTCOME_UNKNOWN", stop_reason=None)
+
+
+def build_cli_one_bad_candidate_flag(request: dict[str, object]) -> DartCollectionResult:
+    result = build_cli_candidate(request)
+    record = dict(result.records[0])
+    field = request["bad_field"]
+    if field not in CANDIDATE_ONLY_FLAGS:
+        raise AssertionError("test requested a field outside the exact candidate flag contract")
+    expected = CANDIDATE_ONLY_FLAGS[field]
+    record[field] = not expected if isinstance(expected, bool) else "UNKNOWN"
+    record["candidate_sha256"] = canonical_sha256(
+        {key: value for key, value in record.items() if key != "candidate_sha256"}
+    )
     return DartCollectionResult((record,), outcome_label="OUTCOME_UNKNOWN", stop_reason=None)
 
 
 def test_original_mode_records_clean_feedback_separately_from_noisy_applied_execution() -> None:
     runtime = FakeRuntime()
     teacher = FakeTeacher()
+    source_membership_reader = _source_membership_reader()
     result = collect_original_gaussian_clean_feedback(
         runtime=runtime,
         teacher_callback=teacher,
         teacher_receipt=_teacher_receipt(),
         source=_source(),
+        source_membership_reader=source_membership_reader,
         runtime_session=_runtime_session(),
         calibration=_calibration(),
         noise=OriginalGaussianNoise(_diagonal(0.25), seed=31),
         intent_bundle_id="intent-v1",
         steps=2,
         covariance_update_mode="frozen_one_pass_partial_dart",
+        original_calibration_binding=_original_calibration_binding(),
     )
 
     assert teacher.observed_clocks == [0, 1]
@@ -237,6 +326,10 @@ def test_original_mode_records_clean_feedback_separately_from_noisy_applied_exec
     assert first["clean_intended23"] != first["applied23"]
     assert first["requested_noisy23"] == first["applied23"]
     assert first["noise_profile"]["empirical_faithfulness"] is False
+    assert first["verified_source_membership"]["source_group_index_manifest_sha256"] == (
+        FakeSourceGroupIndexReader.manifest_sha256
+    )
+    assert source_membership_reader.calls == 1
     assert second["observation"]["policy_clock"] == 1
     assert all(not record["training_eligible"] for record in result.records)
     assert all(record["candidate_sha256"] == canonical_sha256({key: value for key, value in record.items() if key != "candidate_sha256"}) for record in result.records)
@@ -256,6 +349,7 @@ def test_bounded_mode_audits_noisy_control_and_only_actual_clean_recovery_as_can
         teacher_callback=teacher,
         teacher_receipt=_teacher_receipt(),
         source=_source(),
+        source_membership_reader=_source_membership_reader(),
         runtime_session=_runtime_session(),
         calibration=_calibration(),
         noise=_bounded_noise(),
@@ -284,10 +378,16 @@ def test_bounded_mode_audits_noisy_control_and_only_actual_clean_recovery_as_can
     }
     assert all("clean_intended32" not in record and "actions27" not in record for record in result.records)
     assert all(record["training_eligible"] is False for record in result.records)
+    assert injection["noise_profile"]["embodiment_metadata_sha256"] == _digest("r1pro-embodiment-metadata")
+    assert injection["noise_profile"]["model_projection_manifest_sha256"] == _digest("r1pro-23to27-projection")
     assert result.outcome_label == "SURVIVAL_NONFAILURE"
 
 
 def test_collection_rejects_future_teacher_label_calibration_reuse_abort_and_overlength_chunk() -> None:
+    with pytest.raises(RecoveryContractError, match="fresh_dart_trajectory"):
+        CandidateSourceReceipt(
+            **{**_source().public(), "trajectory_source_kind": "original_demo_replay"}
+        )
     with pytest.raises(RecoveryContractError, match="freshly queried"):
         TeacherReceipt(
             teacher_id="replayed-demo",
@@ -305,13 +405,15 @@ def test_collection_rejects_future_teacher_label_calibration_reuse_abort_and_ove
             runtime=FakeRuntime(),
             teacher_callback=FakeTeacher(),
             teacher_receipt=_teacher_receipt(),
-            source=_source("calibration-group"),
+            source=_source(_CALIBRATION_GROUP),
+            source_membership_reader=_source_membership_reader(),
             runtime_session=_runtime_session(),
             calibration=_calibration(),
             noise=OriginalGaussianNoise(_diagonal(0.25), seed=1),
             intent_bundle_id="intent-v1",
             steps=1,
             covariance_update_mode="frozen_one_pass_partial_dart",
+            original_calibration_binding=_original_calibration_binding(),
         )
     with pytest.raises(RecoveryContractError, match="current reached policy clock"):
         collect_original_gaussian_clean_feedback(
@@ -319,12 +421,14 @@ def test_collection_rejects_future_teacher_label_calibration_reuse_abort_and_ove
             teacher_callback=FakeTeacher(future_leak=True),
             teacher_receipt=_teacher_receipt(),
             source=_source(),
+            source_membership_reader=_source_membership_reader(),
             runtime_session=_runtime_session(),
             calibration=_calibration(),
             noise=OriginalGaussianNoise(_diagonal(0.25), seed=1),
             intent_bundle_id="intent-v1",
             steps=1,
             covariance_update_mode="frozen_one_pass_partial_dart",
+            original_calibration_binding=_original_calibration_binding(),
         )
     with pytest.raises(RecoveryContractError, match="aborted"):
         collect_original_gaussian_clean_feedback(
@@ -332,12 +436,14 @@ def test_collection_rejects_future_teacher_label_calibration_reuse_abort_and_ove
             teacher_callback=FakeTeacher(),
             teacher_receipt=_teacher_receipt(),
             source=_source(),
+            source_membership_reader=_source_membership_reader(),
             runtime_session=_runtime_session(),
             calibration=_calibration(),
             noise=OriginalGaussianNoise(_diagonal(0.25), seed=1),
             intent_bundle_id="intent-v1",
             steps=1,
             covariance_update_mode="frozen_one_pass_partial_dart",
+            original_calibration_binding=_original_calibration_binding(),
         )
     with pytest.raises(RecoveryContractError, match="current observed clock/state/observation"):
         collect_original_gaussian_clean_feedback(
@@ -345,12 +451,14 @@ def test_collection_rejects_future_teacher_label_calibration_reuse_abort_and_ove
             teacher_callback=FakeTeacher(),
             teacher_receipt=_teacher_receipt(),
             source=_source(),
+            source_membership_reader=_source_membership_reader(),
             runtime_session=_runtime_session(),
             calibration=_calibration(),
             noise=OriginalGaussianNoise(_diagonal(0.25), seed=1),
             intent_bundle_id="intent-v1",
             steps=1,
             covariance_update_mode="frozen_one_pass_partial_dart",
+            original_calibration_binding=_original_calibration_binding(),
         )
     with pytest.raises(RecoveryContractError, match="1..16"):
         collect_dart_inspired_actual_clean_recovery(
@@ -358,6 +466,7 @@ def test_collection_rejects_future_teacher_label_calibration_reuse_abort_and_ove
             teacher_callback=FakeTeacher(),
             teacher_receipt=_teacher_receipt(),
             source=_source(),
+            source_membership_reader=_source_membership_reader(),
             runtime_session=_runtime_session(),
             calibration=_calibration(),
             noise=_bounded_noise(),
@@ -365,6 +474,21 @@ def test_collection_rejects_future_teacher_label_calibration_reuse_abort_and_ove
             noisy_injection_steps=1,
             recovery_chunk_lengths=(17,),
             limits=CollectionLimits(max_total_steps=20, max_wall_seconds=60),
+        )
+    with pytest.raises(RecoveryContractError, match="collection_run_id"):
+        collect_dart_inspired_actual_clean_recovery(
+            runtime=FakeRuntime(),
+            teacher_callback=FakeTeacher(),
+            teacher_receipt=_teacher_receipt(),
+            source=replace(_source(), collection_run_id="different-live-run"),
+            source_membership_reader=_source_membership_reader(),
+            runtime_session=_runtime_session(),
+            calibration=_calibration(),
+            noise=_bounded_noise(),
+            intent_bundle_id="intent-v1",
+            noisy_injection_steps=1,
+            recovery_chunk_lengths=(1,),
+            limits=CollectionLimits(max_total_steps=2, max_wall_seconds=60),
         )
 
 
@@ -375,6 +499,7 @@ def test_budget_end_stays_unknown_instead_of_synthesizing_outcome() -> None:
         teacher_callback=FakeTeacher(),
         teacher_receipt=_teacher_receipt(),
         source=_source(),
+        source_membership_reader=_source_membership_reader(),
         runtime_session=_runtime_session(),
         calibration=_calibration(),
         noise=_bounded_noise(),
@@ -387,6 +512,116 @@ def test_budget_end_stays_unknown_instead_of_synthesizing_outcome() -> None:
     assert len(result.records) == 1
     assert result.outcome_label == "OUTCOME_UNKNOWN"
     assert result.stop_reason == "collection_budget_exhausted"
+
+
+def test_collection_rejects_spoofed_eval_protected_membership_and_covariance_binding() -> None:
+    for role in ("evaluation_only", "protected_holdout"):
+        with pytest.raises(RecoveryContractError, match="canonical sealed source-group membership"):
+            collect_dart_inspired_actual_clean_recovery(
+                runtime=FakeRuntime(),
+                teacher_callback=FakeTeacher(),
+                teacher_receipt=_teacher_receipt(),
+                source=_source(),  # Caller still says train: sealed membership must win.
+                source_membership_reader=FakeSourceGroupIndexReader(spoof_role=role),
+                runtime_session=_runtime_session(),
+                calibration=_calibration(),
+                noise=_bounded_noise(),
+                intent_bundle_id="intent-v1",
+                noisy_injection_steps=1,
+                recovery_chunk_lengths=(1,),
+                limits=CollectionLimits(max_total_steps=2, max_wall_seconds=60),
+            )
+    mismatched = OriginalGaussianCalibrationBinding(
+        calibration_trajectory_sha256=_calibration().calibration_trajectory_sha256,
+        learner_checkpoint_sha256=_calibration().learner_checkpoint_sha256,
+        teacher_checkpoint_sha256=_calibration().teacher_checkpoint_sha256,
+        covariance_estimator_code_sha256=_digest("dart-author-code-estimator"),
+        estimated_covariance23=_diagonal(1.0),
+        alpha=1.0,
+        horizon=1,
+        source_group_index_manifest_sha256=FakeSourceGroupIndexReader.manifest_sha256,
+    )
+    with pytest.raises(RecoveryContractError, match="sampled covariance"):
+        collect_original_gaussian_clean_feedback(
+            runtime=FakeRuntime(),
+            teacher_callback=FakeTeacher(),
+            teacher_receipt=_teacher_receipt(),
+            source=_source(),
+            source_membership_reader=_source_membership_reader(),
+            runtime_session=_runtime_session(),
+            calibration=_calibration(),
+            noise=OriginalGaussianNoise(_diagonal(0.25), seed=1),
+            intent_bundle_id="intent-v1",
+            steps=1,
+            covariance_update_mode="frozen_one_pass_partial_dart",
+            original_calibration_binding=mismatched,
+        )
+    with pytest.raises(RecoveryContractError, match="only records frozen"):
+        collect_original_gaussian_clean_feedback(
+            runtime=FakeRuntime(),
+            teacher_callback=FakeTeacher(),
+            teacher_receipt=_teacher_receipt(),
+            source=_source(),
+            source_membership_reader=_source_membership_reader(),
+            runtime_session=_runtime_session(),
+            calibration=_calibration(),
+            noise=OriginalGaussianNoise(_diagonal(0.25), seed=1),
+            intent_bundle_id="intent-v1",
+            steps=1,
+            covariance_update_mode="full_iterative_covariance_update",
+            original_calibration_binding=_original_calibration_binding(),
+        )
+
+
+def test_data_source_adapter_loads_the_sealed_index_once_and_maps_exact_stable_api() -> None:
+    """Consumer test for DATA's public API, without reimplementing its index parser."""
+
+    import types
+
+    module_name = "g05.data.memlite_event_protocol"
+    previous = sys.modules.get(module_name)
+    loaded: list[tuple[Path, str]] = []
+    membership = types.SimpleNamespace(
+        index_manifest_sha256=FakeSourceGroupIndexReader.manifest_sha256,
+        source_release_manifest_sha256=_source().source_release_sha256,
+    )
+
+    def load_source_index_membership(index_root: Path, *, expected_inventory_seal_sha256: str) -> object:
+        loaded.append((index_root, expected_inventory_seal_sha256))
+        return membership
+
+    def sealed_source_group(_membership: object, source_group_id: str) -> dict[str, object]:
+        assert _membership is membership
+        role = "student_candidate" if source_group_id == _CANDIDATE_GROUP else "annotation_calibration"
+        return {
+            "source_group_id": source_group_id,
+            "source_release_manifest_sha256": _source().source_release_sha256,
+            "task_index": 42,
+            "task_instance_id": "task-42-instance-9",
+            "original_split": "train",
+            "usage_role": role,
+        }
+
+    api = types.ModuleType(module_name)
+    api.load_source_index_membership = load_source_index_membership
+    api.sealed_source_group = sealed_source_group
+    sys.modules[module_name] = api
+    try:
+        reader = DataSealedSourceGroupIndexReader(
+            Path("/sealed/index"), expected_inventory_seal_sha256=_digest("inventory-seal")
+        )
+        verified = reader.verify_dart_membership(_source(), _calibration())
+        # Multiple candidate checks consume the capability; no event JSONL or
+        # repeated index scan is needed for a source-group lookup.
+        second = reader.verify_dart_membership(_source(), _calibration())
+    finally:
+        if previous is None:
+            del sys.modules[module_name]
+        else:
+            sys.modules[module_name] = previous
+    assert loaded == [(Path("/sealed/index"), _digest("inventory-seal"))]
+    assert verified.candidate.usage_role == "student_candidate"
+    assert second.calibration_groups[0].usage_role == "annotation_calibration"
 
 
 def test_cli_writes_only_new_hashed_candidate_output() -> None:
@@ -409,10 +644,41 @@ def test_cli_writes_only_new_hashed_candidate_output() -> None:
         assert json.loads(completed.stdout)["status"] == "candidate_written"
         result = json.loads(output.read_text(encoding="utf-8"))
         assert result["authority_minted"] is False
+        assert result["authority_status"] == "NO_AUTHORITY"
         assert result["records"][0]["training_eligible"] is False
         assert result["collection_result_sha256"] == canonical_sha256(
             {key: value for key, value in result.items() if key != "collection_result_sha256"}
         )
+
+
+def test_cli_rejects_hash_valid_records_with_any_non_candidate_authority_flag() -> None:
+    project_root = Path(__file__).resolve().parent.parent
+    with TemporaryDirectory() as temporary:
+        root = Path(temporary)
+        environment = dict(os.environ)
+        environment["PYTHONPATH"] = f"{project_root / 'src'}:{project_root / 'tests'}"
+        for field, expected in CANDIDATE_ONLY_FLAGS.items():
+            request = root / f"request-{field}.json"
+            output = root / f"candidate-{field}.json"
+            request.write_text(
+                json.dumps({"request_id": f"cli-bad-{field}", "bad_field": field}), encoding="utf-8"
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(project_root / "scripts/data/collect_dart_demonstrations.py"),
+                    "--request", str(request),
+                    "--factory", "test_dart_collection:build_cli_one_bad_candidate_flag",
+                    "--output", str(output),
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+                env=environment,
+            )
+            assert completed.returncode == 2
+            assert f"{field}={expected!r}" in completed.stderr
+            assert not output.exists()
 
 
 if __name__ == "__main__":
