@@ -29,7 +29,19 @@ def _load_protocol() -> Any:
     return module
 
 
+def _load_actor_query_contract() -> Any:
+    path = REPO / "src/g05/data/memlite_event_actor_query.py"
+    spec = importlib.util.spec_from_file_location("p107_memlite_event_actor_query_dataset", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Cannot load P107 actor-query contract: {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 _protocol = _load_protocol()
+_actor_query_contract = _load_actor_query_contract()
 SCHEMA_VERSION = _protocol.SCHEMA_VERSION
 LABEL_KINDS = frozenset(_protocol.LABEL_KINDS)
 canonical_json = _protocol.canonical_json
@@ -45,6 +57,8 @@ validate_recovery_decision_view = _protocol.validate_recovery_decision_view
 validate_corrective_action_view = _protocol.validate_corrective_action_view
 load_corrective_action_authority = _protocol.load_corrective_action_authority
 authority_raw_action_payload = _protocol.authority_raw_action_payload
+actor_query_projection = _actor_query_contract.actor_query_projection
+read_actor_query_sidecar = _actor_query_contract.read_actor_query_sidecar
 
 
 def _read_json(path: Path) -> Any:
@@ -186,8 +200,20 @@ class MemLiteEventDataset(Sequence[dict[str, Any]]):
         actions = {row.get("view_id"): row for row in action_rows}
         if len(actions) != len(action_rows):
             raise ValueError("duplicate action payload IDs in sealed package")
+        view_wrappers = _read_jsonl(paths["views.jsonl"])
+        actor_query_by_view_id: dict[str, Mapping[str, Any]] = {}
+        prelabel_registry: dict[str, Mapping[str, Any]] = {}
+        if "actor_query_sidecar" in self.manifest:
+            sidecar_metadata = self.manifest["actor_query_sidecar"]
+            if not isinstance(sidecar_metadata, Mapping):
+                raise ValueError("actor_query_sidecar manifest registration must be an object")
+            actor_query_by_view_id, prelabel_registry = read_actor_query_sidecar(
+                self.release_dir, sidecar_metadata, files=files,
+                expected_view_ids={wrapper.get("view", {}).get("view_id")
+                                   for wrapper in view_wrappers
+                                   if isinstance(wrapper, Mapping) and isinstance(wrapper.get("view"), Mapping)})
         rows: list[dict[str, Any]] = []
-        for wrapper in _read_jsonl(paths["views.jsonl"]):
+        for wrapper in view_wrappers:
             view, gate = wrapper.get("view"), wrapper.get("dataset_quality_gates")
             if not isinstance(view, Mapping) or not isinstance(gate, Mapping):
                 raise ValueError("sealed view wrapper lacks view/dataset-quality gates")
@@ -206,7 +232,10 @@ class MemLiteEventDataset(Sequence[dict[str, Any]]):
             _validate_view(view, event, authority=authority)
             if view["label_kind"] != view_kind:
                 continue
-            row = self._project_row(view, event, gate, actions.get(view["view_id"]), authority=authority)
+            row = self._project_row(
+                view, event, gate, actions.get(view["view_id"]), authority=authority,
+                actor_query=actor_query_by_view_id.get(view["view_id"]),
+                prelabel_registry=prelabel_registry)
             rows.append(row)
         self.view_kind = view_kind
         self._rows = tuple(rows)
@@ -214,7 +243,9 @@ class MemLiteEventDataset(Sequence[dict[str, Any]]):
 
     @staticmethod
     def _project_row(view: Mapping[str, Any], event: Mapping[str, Any], gate: Mapping[str, Any],
-                     action: Mapping[str, Any] | None, *, authority: Any | None) -> dict[str, Any]:
+                     action: Mapping[str, Any] | None, *, authority: Any | None,
+                     actor_query: Mapping[str, Any] | None = None,
+                     prelabel_registry: Mapping[str, Mapping[str, Any]] | None = None) -> dict[str, Any]:
         # Deliberately reconstruct instead of passing the view through: this
         # prevents privileged_evidence, provider snapshots, teacher state, or
         # future truth from reaching a consumer by accidental dict expansion.
@@ -225,6 +256,10 @@ class MemLiteEventDataset(Sequence[dict[str, Any]]):
             "action_start_frame": event["action"]["start_frame"],
         }
         _assert_safe_actor_evidence(result["actor_evidence"])
+        if actor_query is not None:
+            result["actor_query"] = actor_query_projection(
+                actor_query, observation_frame=view["observation_frame"],
+                view_kind=view["label_kind"], view=view, prelabel_registry=prelabel_registry)
         kind = view["label_kind"]
         if kind == "goal_satisfaction_counterfactual":
             result.update(goal_relation=view["goal_relation"], goal_satisfaction=view["goal_satisfaction"],
