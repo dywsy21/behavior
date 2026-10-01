@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 08:04（北京时间）：阶段3失败/恢复数据研究完成，不改阶段1作业（Codex / PLAN-MEM100-STAGE3-DATA）
+
+- 按用户本轮讨论请求，已安全fetch/pull当前feature（8c6adb1、干净、origin/main无新增未合提交）并核本地schema-v6、outcome head和单帧阶段1入口。结果类仍为IN_PROGRESS/SUCCEEDED/FAILED/UNKNOWN，决策类为EXECUTE/RETRY/REPLAN/STOP；当前阶段1结果头loss=0，旧在线observer仍是六帧合同，不能声称单帧恢复反馈已经就绪。旧recovery collector主要验证原地旋转后的几何纠正，并非通用百任务失败标签器。
+- 已查DART、RoboReward、AHA/FailGen、MimicGen、SAFE及2026-09的FailureSpot/MAGMA-GEN/Kintsugi-VLA等原始资料，完成[训练设计第10节](experiments/2026-09-29-memlite-gradient-training-design.md#10-2026-10-01补充阶段3的负例恢复区间与纠正动作)。方案区分尝试级结果、恢复行为、同状态纠正动作三种监督，明确事件/可观察/纠正/验证四时刻、按技能族物理验证及主动人审、成功视频反事实重标/截断的适用边界、restore后分支验证及跨任务恢复留出；未完成≠已失败，注入扰动≠真实失败，失败动作不作正向FM。
+- 本轮只有本地代码核查、文献研究及三份协作文档更新；0服务器/VPN连接、0新数据/模型运行，未核今天训练实时步数，不把9/30快照当今天状态。TEAM保留队友数据/RL职责并记新依赖；diff格式/新增本地链接与秘密模式检查通过，未改运行代码，无新增GPU测试结论。下一是团队确认有界数据方案并补restore、可观察性/单帧observer、事件真值及动作QA准入，不把讨论当阶段3采集/训练授权。
+
 ### 2026-09-30 22:53（北京时间）：高层已真实恢复并在线记录，低层未中断（Codex / RECOVER-MEM100-HIGH-ECC）
 
 - 本次恢复处理完成、高层继续正式训练：22:52:28新attempt2已15步（22:52:41为16步），同W&B `8ecc6bb3908e`服务端running/新update10；八rank950状态恢复及326 planner梯度/global256/冻结梯度0的新回执全部通过。GPU1恢复状态None、remap pending No，8卡所有ECC计数自reset后基线无增长，14:43后的内核无新NVRM/Xid/ECC记录；不等于长期硬件永久无故障保证。

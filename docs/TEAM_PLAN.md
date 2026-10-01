@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-10-01 08:02（北京时间）Codex / PLAN-MEM100-STAGE3-DATA：按用户要求完成阶段3数据研究/接口提案，见[训练设计第10节](experiments/2026-09-29-memlite-gradient-training-design.md#10-2026-10-01补充阶段3的负例恢复区间与纠正动作)。保持数据队友负责来源/事件标签/同状态恢复轨迹及人审，RL队友负责共享奖励/critic，本线程负责O/H/低层FM监督分流和单帧服务时序适配。新明确依赖：物理真值与在线可观察时刻、完整状态restore验收、恢复动作实际执行验证、原始来源split、旧六帧observer到当前单帧服务的独立适配；均尚未实施/采集。不占训练节点、不修改阶段1源/env，不因讨论批准阶段3预算。
+
 2026-09-30 22:53（北京时间）RECOVER-MEM100-HIGH-ECC本次恢复完成：lc1 GPU1定点reset/健康门通过，原run attempt2已16次真实更新、W&B新update10/八rank梯度回执通过/ECC无增长；lc2同attempt1持续到1175步。两节点恢复原阶段1并行状态、预算未扩大，其他成员职责不变；健康短测不等于永久硬件保证，复发须维护而非无限重试。证据见plan和`infra/results/2026-09-30-memlite-high-ecc-recovery.json`。
 
 2026-09-30 22:45（北京时间）RECOVER-MEM100-HIGH-ECC：GPU1定点reset后8卡各68GiB四模式/NCCL/BF16及ECC前后比较全部通过，高层已按原d0528b4/config/run提交resume step0，待首更新；不降batch/LR、不延长原168h预算、保留已耗1787.20s。lc2低层/队友任务/共享env全不动。健康工具独立07ec13e，不改活跃训练源；后续长期稳定性仍需训练实测。
