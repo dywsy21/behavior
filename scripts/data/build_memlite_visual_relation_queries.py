@@ -10,6 +10,7 @@ payloads, training rows, or postlabel canonical view IDs.
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import re
@@ -92,6 +93,17 @@ EFFECTS = {
 TOOL_TARGET = {"CHOP", "IGNITE", "SPRAY", "WIPE_HARD"}
 STATE_CHANGE = GEOMETRY | PLACEMENT | {"GRASP", "HANDOVER", "TURN_ON_SWITCH", "TURN_OFF_SWITCH", "TURN_TO"}
 
+# The category vocabulary is an explicit, pinned input for v4.  It is kept
+# outside the repository because it is an external data asset; the build
+# records these pins in its metadata and refuses a changed file.
+OFFICIAL_CATEGORY_COMMIT = "bd049de3119acdcdf2334fe9e1ebe060fa20c108"
+OFFICIAL_CATEGORY_MAPPING_SHA256 = "ef4636716bc1f243f89735ffe89e8e931a2d5739e87164e7146d54d11c681eab"
+OFFICIAL_CATEGORY_MAPPING_URL = (
+    "https://raw.githubusercontent.com/StanfordVL/BEHAVIOR-1K/"
+    f"{OFFICIAL_CATEGORY_COMMIT}/bddl3/bddl/generated_data/category_mapping.csv"
+)
+OFFICIAL_CATEGORY_ROWS = 2424
+
 
 def canonical_json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -103,6 +115,116 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def load_category_mapping(
+    path: Path,
+    *,
+    expected_sha256: str = OFFICIAL_CATEGORY_MAPPING_SHA256,
+    expected_rows: int = OFFICIAL_CATEGORY_ROWS,
+) -> tuple[dict[str, str], dict[str, Any]]:
+    """Load the official category-to-synset vocabulary and pin its identity.
+
+    This intentionally accepts the CSV only as an explicit build input.  A
+    changed or incomplete vocabulary is a hard error rather than a reason to
+    fall back to a guessed suffix parser.
+    """
+
+    actual_sha256 = sha256_file(path)
+    if expected_sha256 and actual_sha256 != expected_sha256:
+        raise ValueError(
+            f"category mapping SHA mismatch: {actual_sha256} != {expected_sha256}"
+        )
+    categories: dict[str, str] = {}
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        if not reader.fieldnames or "category" not in reader.fieldnames or "synset" not in reader.fieldnames:
+            raise ValueError("category mapping must contain category and synset columns")
+        for row in reader:
+            category = (row.get("category") or "").strip()
+            synset = (row.get("synset") or "").strip()
+            if not category or not synset:
+                raise ValueError("category mapping contains an empty category or synset")
+            if category in categories:
+                raise ValueError(f"duplicate official category {category!r}")
+            categories[category] = synset
+    if expected_rows and len(categories) != expected_rows:
+        raise ValueError(
+            f"category mapping row count mismatch: {len(categories)} != {expected_rows}"
+        )
+    metadata = {
+        "path": str(path),
+        "sha256": actual_sha256,
+        "rows": len(categories),
+        "official_commit": OFFICIAL_CATEGORY_COMMIT,
+        "official_url": OFFICIAL_CATEGORY_MAPPING_URL,
+    }
+    return categories, metadata
+
+
+def resolve_category(raw_id: str, category_mapping: dict[str, str]) -> dict[str, Any]:
+    """Resolve one raw metadata ID by the unique longest official prefix.
+
+    The suffix is opaque: it is retained only in this audit result and never
+    used to manufacture a prompt noun.  Unknown and tied matches are
+    quarantined instead of falling back to a lossy string heuristic.
+    """
+
+    matches = [category for category in category_mapping if raw_id.startswith(f"{category}_")]
+    if not matches:
+        return {
+            "status": "UNKNOWN_CATEGORY",
+            "raw_object_id": raw_id,
+            "category": None,
+            "prompt_noun": None,
+            "synset": None,
+            "opaque_instance_suffix": None,
+            "quarantine": True,
+        }
+    longest_length = max(len(category) for category in matches)
+    longest = [category for category in matches if len(category) == longest_length]
+    if len(longest) != 1:
+        return {
+            "status": "UNKNOWN_CATEGORY",
+            "raw_object_id": raw_id,
+            "category": None,
+            "prompt_noun": None,
+            "synset": None,
+            "opaque_instance_suffix": None,
+            "quarantine": True,
+            "candidate_categories": sorted(longest),
+        }
+    category = longest[0]
+    suffix = raw_id[len(category) + 1 :]
+    if not suffix:
+        return {
+            "status": "UNKNOWN_CATEGORY",
+            "raw_object_id": raw_id,
+            "category": None,
+            "prompt_noun": None,
+            "synset": None,
+            "opaque_instance_suffix": None,
+            "quarantine": True,
+            "candidate_categories": [category],
+        }
+    return {
+        "status": "RESOLVED",
+        "raw_object_id": raw_id,
+        "category": category,
+        "prompt_noun": category.replace("_", " "),
+        "synset": category_mapping[category],
+        "opaque_instance_suffix": suffix,
+        "quarantine": False,
+    }
+
+
+def category_prompt_noun(raw_id: str, category_mapping: dict[str, str] | None) -> str | None:
+    if category_mapping is None:
+        return None
+    result = resolve_category(raw_id, category_mapping)
+    if result["status"] != "RESOLVED":
+        return None
+    return str(result["prompt_noun"])
 
 
 def flatten_strings(value: Any) -> list[str]:
@@ -135,13 +257,24 @@ def pretty_entity(entity: str) -> str:
     return " ".join(tokens) or entity
 
 
-def q_label(ids: list[str], fallback: str = "the named entity") -> str:
+def q_label(
+    ids: list[str],
+    fallback: str = "the named entity",
+    category_mapping: dict[str, str] | None = None,
+) -> str:
     if not ids:
         return fallback
-    labels = [pretty_entity(item) for item in ids]
-    # Numeric instance suffixes are intentionally removed from display labels.
-    # If that makes two metadata entities share a label, retain the multiplicity
-    # instead of pretending that they are one object or guessing an identity.
+    labels = []
+    for item in ids:
+        if category_mapping is None:
+            labels.append(pretty_entity(item))
+        else:
+            noun = category_prompt_noun(item, category_mapping)
+            # Unknown categories stay quarantined.  This generic wording is
+            # deliberately not a guessed noun and contains no opaque ID tail.
+            labels.append(noun if noun is not None else "the named metadata entity")
+    # If multiple metadata entities resolve to one category noun, retain the
+    # multiplicity instead of pretending they are one visually identified item.
     counts: dict[str, int] = {}
     order: list[str] = []
     for label in labels:
@@ -149,10 +282,16 @@ def q_label(ids: list[str], fallback: str = "the named entity") -> str:
             order.append(label)
             counts[label] = 0
         counts[label] += 1
-    labels = [
-        f"{count} {label} entities" if (count := counts[label]) > 1 else label
-        for label in order
-    ]
+    formatted_labels: list[str] = []
+    for label in order:
+        count = counts[label]
+        if count <= 1:
+            formatted_labels.append(label)
+        elif label == "the named metadata entity":
+            formatted_labels.append(f"{count} named metadata entities")
+        else:
+            formatted_labels.append(f"{count} {label} entities")
+    labels = formatted_labels
     if len(labels) == 1:
         return labels[0]
     if len(labels) == 2:
@@ -168,10 +307,19 @@ def _entity_ids(value: str | list[str] | None) -> list[str]:
     return [item for item in value if isinstance(item, str) and item]
 
 
-def controlled_part_subject(verb: str, target: str, skill: dict[str, Any]) -> str:
+def controlled_part_subject(
+    verb: str,
+    target: str,
+    skill: dict[str, Any],
+    category_mapping: dict[str, str] | None = None,
+) -> str:
     """Name the controlled door/drawer/lid rather than only its parent body."""
 
-    target_label = pretty_entity(target) if target else "the named target"
+    target_label = (
+        category_prompt_noun(target, category_mapping)
+        if target and category_mapping is not None
+        else (pretty_entity(target) if target else None)
+    ) or "named target"
     target_lower = target_label.lower()
     part = pretty_entity(str(skill.get("target_part") or ""))
     if verb in {"OPEN_DOOR", "CLOSE_DOOR"}:
@@ -201,26 +349,55 @@ def controlled_part_subject(verb: str, target: str, skill: dict[str, Any]) -> st
     return f"the {target_label}"
 
 
-def effect_subject_phrase(target_ids: list[str], reference_ids: list[str]) -> str:
+def effect_subject_phrase(
+    target_ids: list[str],
+    reference_ids: list[str],
+    category_mapping: dict[str, str] | None = None,
+) -> str:
     """Name effect entities without assigning unresolved source/destination roles."""
 
     ids = [*target_ids, *reference_ids]
     if not ids:
         return "the grounded target or material entities"
     if len(ids) == 1:
-        return f"the named entity {q_label(ids)}"
-    return f"the named entities {q_label(ids)}"
+        label = q_label(ids, category_mapping=category_mapping)
+        return label if label == "the named metadata entity" else f"the named entity {label}"
+    return f"the named entities {q_label(ids, category_mapping=category_mapping)}"
 
 
-def entity_record(entity_id: str, role: str, role_status: str, role_candidates: list[str] | None = None) -> dict[str, Any]:
+def entity_record(
+    entity_id: str,
+    role: str,
+    role_status: str,
+    role_candidates: list[str] | None = None,
+    category_mapping: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    grounding = resolve_category(entity_id, category_mapping) if category_mapping is not None else None
+    display_label = (
+        grounding["prompt_noun"]
+        if grounding is not None and grounding["status"] == "RESOLVED"
+        else ("the named metadata entity" if category_mapping is not None else pretty_entity(entity_id))
+    )
     record: dict[str, Any] = {
         "metadata_id": entity_id,
-        "display_label": pretty_entity(entity_id),
+        "display_label": display_label,
         "role": role,
         "role_status": role_status,
         "visual_grounding": "REQUIRED_FROM_RGB",
         "suffix_rule": "ID suffix is metadata only and is not visually guessable",
     }
+    if grounding is not None:
+        # Keep only non-sensitive display/audit status in the actor-facing
+        # entity record.  The raw ID and opaque suffix stay in the separate
+        # category_grounding_audit sidecar emitted by generate_row.
+        record["category_grounding"] = {
+            "status": grounding["status"],
+            "category": grounding["category"],
+            "prompt_noun": grounding["prompt_noun"],
+            "synset": grounding["synset"],
+            "quarantine": grounding["quarantine"],
+            "taxonomy_rule": "official_longest_category_prefix_with_boundary",
+        }
     if role_candidates:
         record["role_candidates"] = role_candidates
     return record
@@ -421,7 +598,12 @@ def metadata_entities(row: dict[str, Any], q: dict[str, Any], skill: dict[str, A
     }
 
 
-def role_records(entities: dict[str, Any], skill: dict[str, Any], verb: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def role_records(
+    entities: dict[str, Any],
+    skill: dict[str, Any],
+    verb: str,
+    category_mapping: dict[str, str] | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     target_status = "METADATA_CANDIDATE_REQUIRES_VISUAL_GROUNDING"
     if entities["reference_role_status"] == "EFFECT_ENTITIES_NEED_ROLE_GROUNDING":
         targets = [
@@ -430,18 +612,19 @@ def role_records(entities: dict[str, Any], skill: dict[str, Any], verb: str) -> 
                 "effect_entity_unresolved",
                 "METADATA_ROLE_AMBIGUOUS_REQUIRES_VISUAL_GROUNDING",
                 ["material_or_target", "destination_or_surface", "object_reference"],
+                category_mapping,
             )
             for item in entities["targets"]
         ]
     else:
-        targets = [entity_record(item, "target", target_status) for item in entities["targets"]]
+        targets = [entity_record(item, "target", target_status, category_mapping=category_mapping) for item in entities["targets"]]
     refs: list[dict[str, Any]] = []
     explicit_destination = bool(skill.get("destination"))
     for item in entities["references"]:
         if explicit_destination and item == skill.get("destination"):
-            refs.append(entity_record(item, "destination", "METADATA_EXPLICIT_REQUIRES_VISUAL_GROUNDING"))
+            refs.append(entity_record(item, "destination", "METADATA_EXPLICIT_REQUIRES_VISUAL_GROUNDING", category_mapping=category_mapping))
         elif verb == "GRASP" and item == skill.get("source"):
-            refs.append(entity_record(item, "source_support", "METADATA_EXPLICIT_REQUIRES_VISUAL_GROUNDING"))
+            refs.append(entity_record(item, "source_support", "METADATA_EXPLICIT_REQUIRES_VISUAL_GROUNDING", category_mapping=category_mapping))
         else:
             refs.append(
                 entity_record(
@@ -449,12 +632,17 @@ def role_records(entities: dict[str, Any], skill: dict[str, Any], verb: str) -> 
                     "reference_unresolved",
                     "METADATA_ROLE_AMBIGUOUS_REQUIRES_VISUAL_GROUNDING",
                     ["destination_or_container", "object_reference", "location_or_surface"],
+                    category_mapping,
                 )
             )
     return targets, refs
 
 
-def acting_records(entities: dict[str, Any], verb: str) -> list[dict[str, Any]]:
+def acting_records(
+    entities: dict[str, Any],
+    verb: str,
+    category_mapping: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
     """Expose manipulated metadata without overclaiming that it is a tool."""
 
     records: list[dict[str, Any]] = []
@@ -474,9 +662,43 @@ def acting_records(entities: dict[str, Any], verb: str) -> list[dict[str, Any]]:
                 role,
                 "METADATA_ROLE_REQUIRES_VISUAL_GROUNDING",
                 candidates,
+                category_mapping,
             )
         )
     return records
+
+
+def category_grounding_audit(
+    entities: dict[str, Any],
+    category_mapping: dict[str, str] | None,
+    category_mapping_metadata: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Return raw-ID/category resolution details for the audit sidecar only."""
+
+    if category_mapping is None:
+        return []
+    roles: dict[str, list[str]] = {
+        "target": list(entities.get("targets", [])),
+        "reference": list(entities.get("references", [])),
+        "acting": list(entities.get("tools", [])),
+    }
+    recipient = entities.get("recipient")
+    if isinstance(recipient, str) and recipient:
+        roles["recipient"] = [recipient]
+    role_by_id: dict[str, list[str]] = {}
+    for role, ids in roles.items():
+        for raw_id in ids:
+            role_by_id.setdefault(raw_id, []).append(role)
+    audit: list[dict[str, Any]] = []
+    for raw_id in sorted(role_by_id):
+        resolved = resolve_category(raw_id, category_mapping)
+        resolved["roles"] = sorted(set(role_by_id[raw_id]))
+        resolved["taxonomy_rule"] = "official_longest_category_prefix_with_boundary"
+        if category_mapping_metadata:
+            resolved["taxonomy_commit"] = category_mapping_metadata.get("official_commit")
+            resolved["taxonomy_sha256"] = category_mapping_metadata.get("sha256")
+        audit.append(resolved)
+    return audit
 
 
 def relation_family(verb: str) -> str:
@@ -504,10 +726,11 @@ def relation_phrase(
     target: str | list[str],
     refs: list[str],
     skill: dict[str, Any],
+    category_mapping: dict[str, str] | None = None,
 ) -> str:
     target_ids = _entity_ids(target)
-    target_label = q_label(target_ids, "the named target")
-    ref_label = q_label(refs, "the named reference")
+    target_label = q_label(target_ids, "the named target", category_mapping)
+    ref_label = q_label(refs, "the named reference", category_mapping)
     if verb == "GRASP":
         return f"At the anchor, is {target_label} visibly held by the robot gripper or hand?"
     if verb == "PRESS":
@@ -517,17 +740,17 @@ def relation_phrase(
     if verb == "NAVIGATE":
         return f"Can the RGB sequence establish that the robot is at {target_label} within the required distance and pose?"
     if verb == "OPEN_DOOR":
-        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly open relative to its door frame?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill, category_mapping)} visibly open relative to its door frame?"
     if verb == "CLOSE_DOOR":
-        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly closed against its door frame?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill, category_mapping)} visibly closed against its door frame?"
     if verb == "OPEN_DRAWER":
-        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly open relative to its frame?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill, category_mapping)} visibly open relative to its frame?"
     if verb == "CLOSE_DRAWER":
-        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly closed or seated flush with its cabinet frame?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill, category_mapping)} visibly closed or seated flush with its cabinet frame?"
     if verb == "OPEN_LID":
-        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly open or raised relative to its body?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill, category_mapping)} visibly open or raised relative to its body?"
     if verb == "CLOSE_LID":
-        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly closed and seated on its body?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill, category_mapping)} visibly closed and seated on its body?"
     if verb == "PULL_TRAY":
         return f"Is the designated part of {target_label} visibly pulled out from its appliance or frame?"
     if verb == "PUSH_TRAY":
@@ -573,7 +796,7 @@ def relation_phrase(
     if verb == "TURN_TO":
         return f"At the anchor, is the robot visibly oriented in the recorded relation to {ref_label}?"
     if verb in EFFECTS:
-        subjects = effect_subject_phrase(target_ids, refs)
+        subjects = effect_subject_phrase(target_ids, refs, category_mapping)
         return (
             f"At the anchor, is the requested {verb.lower().replace('_', ' ')} effect visibly present "
             f"for {subjects}, with target/material/reference roles visually grounded?"
@@ -635,7 +858,14 @@ def supporting_observation(verb: str, entities: dict[str, Any]) -> dict[str, Any
     return None
 
 
-def history_query(verb: str, entities: dict[str, Any], skill: dict[str, Any], anchor: int, causal_frames: list[int]) -> dict[str, Any] | None:
+def history_query(
+    verb: str,
+    entities: dict[str, Any],
+    skill: dict[str, Any],
+    anchor: int,
+    causal_frames: list[int],
+    category_mapping: dict[str, str] | None = None,
+) -> dict[str, Any] | None:
     if verb == "NAVIGATE":
         return {
             "status": "EXCLUDED_UNSUPPORTED_BY_RGB_STATE",
@@ -679,7 +909,7 @@ def history_query(verb: str, entities: dict[str, Any], skill: dict[str, Any], an
         from_state, to_state = "pre_effect_state", "requested_effect_state"
     else:
         from_state, to_state = "prior_relation", "requested_relation"
-    target = q_label(entities["targets"], "the named target")
+    target = q_label(entities["targets"], "the named target", category_mapping)
     return {
         "status": "REQUIRES_OBSERVABLE_PRESTATE",
         "question": f"Does actor-causal RGB show {target} changing from {from_state} to {to_state}?",
@@ -802,7 +1032,12 @@ def normalize_phase_row(queue_row: dict[str, Any], indexed_event: dict[str, Any]
     return normalized
 
 
-def generate_row(row: dict[str, Any], question_ordinal: int) -> list[dict[str, Any]]:
+def generate_row(
+    row: dict[str, Any],
+    question_ordinal: int,
+    category_mapping: dict[str, str] | None = None,
+    category_mapping_metadata: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     validate_row(row)
     anchor = row.get("temporal_packet", {}).get("anchor_frame")
     causal_frames = row.get("temporal_packet", {}).get("causal_frame_indices", [])
@@ -818,19 +1053,21 @@ def generate_row(row: dict[str, Any], question_ordinal: int) -> list[dict[str, A
         in_anchor = skill_id in source_id_set and skill.get("skill_start", 0) <= anchor <= skill.get("skill_end", anchor)
         binding_status = "BOUND_AT_ANCHOR" if in_anchor else "MISSING_OR_AMBIGUOUS"
         entities = metadata_entities(row, q, skill, verb)
-        targets, references = role_records(entities, skill, verb)
+        targets, references = role_records(entities, skill, verb, category_mapping)
         target_ids = [item["metadata_id"] for item in targets]
         reference_ids = [item["metadata_id"] for item in references]
         gates, unknown_reasons = current_gates(verb, entities, q, skill)
         if verb in {"PLACE_NEXT_TO", "PLACE_IN_NEXT_TO"} and not skill.get("destination"):
             unknown_reasons.append("NO_EXPLICIT_DESTINATION_FIELD")
-        historical = history_query(verb, entities, skill, anchor, causal_frames)
+        historical = history_query(verb, entities, skill, anchor, causal_frames, category_mapping)
+        audit = category_grounding_audit(entities, category_mapping, category_mapping_metadata)
+        unknown_grounding = [item for item in audit if item["status"] != "RESOLVED"]
         current = {
-            "question": relation_phrase(verb, target_ids, reference_ids, skill),
+            "question": relation_phrase(verb, target_ids, reference_ids, skill, category_mapping),
             "relation_family": relation_family(verb),
             "target_entities": targets,
             "reference_entities": references,
-            "acting_entities": acting_records(entities, verb),
+            "acting_entities": acting_records(entities, verb, category_mapping),
             "required_visual_predicates": gates,
             "grounding_gates": gates,
             "unknown_reasons": unique(unknown_reasons),
@@ -850,6 +1087,12 @@ def generate_row(row: dict[str, Any], question_ordinal: int) -> list[dict[str, A
             current["supervision_eligibility"] = "CONDITIONAL_ON_DIRECT_STATE_VISIBILITY"
         else:
             current["supervision_eligibility"] = "CONDITIONAL_ON_RGB_GROUNDING"
+        current["category_grounding_status"] = (
+            "QUARANTINED_UNKNOWN_CATEGORY" if unknown_grounding else "RESOLVED_OFFICIAL_CATEGORY"
+        )
+        current["category_grounding_unknown_count"] = len(unknown_grounding)
+        if unknown_grounding:
+            current["supervision_eligibility"] = "QUARANTINED_UNKNOWN_CATEGORY"
         out = {
             "schema_version": "p107.visual_query_candidate.v3",
             "status": "QUERY_DESIGN_ONLY_NO_ANSWER",
@@ -892,6 +1135,10 @@ def generate_row(row: dict[str, Any], question_ordinal: int) -> list[dict[str, A
                 "target": skill.get("target", ""),
                 "target_part": skill.get("target_part", ""),
             },
+            # This is an audit sidecar.  It is intentionally not projected
+            # into the compact actor registry and includes opaque suffixes
+            # only to make taxonomy resolution reproducible.
+            "category_grounding_audit": audit,
             "provenance": {
                 "annotator_model": "gpt-5.6-luna/max",
                 "human_reviewed": False,
@@ -1058,6 +1305,8 @@ def registry_projection(
         "grounding_gates": current["grounding_gates"],
         "review_unknown_reasons": current["unknown_reasons"],
         "supervision_eligibility": current["supervision_eligibility"],
+        "category_grounding_status": current.get("category_grounding_status"),
+        "category_grounding_unknown_count": current.get("category_grounding_unknown_count", 0),
         "metadata_attempt_is_not_outcome": True,
     }
     if verb == "PRESS":
@@ -1113,6 +1362,7 @@ def registry_projection(
             "source_segment_end_is_not_outcome": True,
         },
         "metadata_entities_raw": base["metadata_entities_raw"],
+        "category_grounding_audit": base.get("category_grounding_audit", []),
         "source_pin": pin,
         "provenance": {
             "producer": "build_memlite_visual_relation_queries.py",
@@ -1153,6 +1403,8 @@ def build_phase_registry(
     queue_path: Path,
     index_path: Path,
     selection_manifest_path: Path,
+    category_mapping: dict[str, str] | None = None,
+    category_mapping_metadata: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     queue_rows, index_rows, selection_manifest, input_hashes = validate_phase_inputs(
         queue_path, index_path, selection_manifest_path
@@ -1174,7 +1426,12 @@ def build_phase_registry(
         indexed = index_by_event[event_id]
         validate_phase_binding(queue_row, indexed)
         normalized = normalize_phase_row(queue_row, indexed)
-        base_records = generate_row(normalized, ordinal)
+        base_records = generate_row(
+            normalized,
+            ordinal,
+            category_mapping,
+            category_mapping_metadata,
+        )
         if not base_records:
             raise ValueError(f"no query candidate for phase event {event_id}")
         pin = source_pin(queue_row, indexed, queue_path, index_path, selection_manifest_path, input_hashes)
@@ -1207,9 +1464,34 @@ def build_phase_registry(
             "relation_family": record["current_visible_goal_relation"]["relation_family"],
             "source_pin": record["source_pin"],
         })
+    category_grounding_metadata: dict[str, Any] | None = None
+    if category_mapping is not None:
+        status_counts: dict[str, int] = {"RESOLVED": 0, "UNKNOWN_CATEGORY": 0}
+        unique_raw: set[str] = set()
+        quarantined_queries = 0
+        for record in records:
+            audit = record.get("category_grounding_audit", [])
+            if any(item.get("status") != "RESOLVED" for item in audit):
+                quarantined_queries += 1
+            for item in audit:
+                raw_id = item.get("raw_object_id")
+                if isinstance(raw_id, str):
+                    unique_raw.add(raw_id)
+                status = item.get("status")
+                status_counts[status] = status_counts.get(status, 0) + 1
+        category_grounding_metadata = {
+            **(category_mapping_metadata or {}),
+            "rule": "official_longest_category_prefix_with_boundary",
+            "status_counts_by_entity_occurrence": status_counts,
+            "unique_raw_object_ids": len(unique_raw),
+            "quarantined_queries": quarantined_queries,
+        }
     metadata = {
         "schema_version": "p107.visual_relation_query_prelabel_build.v1",
-        "query_template_revision": "v3_entity_grounded_parts_and_effects",
+        "query_template_revision": (
+            "v4_official_category_grounding_parts_effects" if category_mapping is not None
+            else "v3_entity_grounded_parts_and_effects"
+        ),
         "quality_revision": "CORRECTED_AFTER_INDEPENDENT_METADATA_REVIEW",
         "prior_revision_status": "V2_WITHDRAWN_METADATA_QUALITY_NOT_LABEL_ERRORS",
         "status": "PRELABEL_QUERY_CANDIDATES_ONLY_NO_ANSWERS_NO_ANNOTATIONS_NO_RELEASE",
@@ -1233,6 +1515,8 @@ def build_phase_registry(
             "root_review": "PENDING",
         },
     }
+    if category_grounding_metadata is not None:
+        metadata["category_grounding"] = category_grounding_metadata
     return records, {"metadata": metadata, "registry": registry}
 
 
@@ -1240,8 +1524,24 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.write_text("".join(canonical_json(row) + "\n" for row in rows), encoding="utf-8")
 
 
-def build_output(queue_path: Path, index_path: Path, selection_manifest_path: Path, output_dir: Path) -> dict[str, Any]:
-    records, auxiliary = build_phase_registry(queue_path, index_path, selection_manifest_path)
+def build_output(
+    queue_path: Path,
+    index_path: Path,
+    selection_manifest_path: Path,
+    output_dir: Path,
+    category_mapping_path: Path | None = None,
+) -> dict[str, Any]:
+    category_mapping = None
+    category_mapping_metadata = None
+    if category_mapping_path is not None:
+        category_mapping, category_mapping_metadata = load_category_mapping(category_mapping_path)
+    records, auxiliary = build_phase_registry(
+        queue_path,
+        index_path,
+        selection_manifest_path,
+        category_mapping,
+        category_mapping_metadata,
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
     query_path = output_dir / "query_candidates.jsonl"
     registry_path = output_dir / "prelabel_registry.jsonl"
@@ -1275,9 +1575,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--phase-index", type=Path, required=True, help="phase_candidate_index/event_candidates.jsonl")
     parser.add_argument("--selection-manifest", type=Path, required=True, help="sealed phase_selection_manifest.json")
     parser.add_argument("--output-dir", type=Path, required=True, help="new external prelabel-query output directory")
+    parser.add_argument(
+        "--category-mapping",
+        type=Path,
+        help="pinned official category_mapping.csv (required for v4 grounding; external input)",
+    )
     args = parser.parse_args(argv)
     try:
-        result = build_output(args.queue, args.phase_index, args.selection_manifest, args.output_dir)
+        result = build_output(
+            args.queue,
+            args.phase_index,
+            args.selection_manifest,
+            args.output_dir,
+            args.category_mapping,
+        )
         print(json.dumps(result, sort_keys=True))
         return 0
     except (OSError, ValueError, KeyError, TypeError) as exc:
