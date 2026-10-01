@@ -375,10 +375,11 @@ class RenderEventPacketsTests(unittest.TestCase):
                 def open(_path):
                     return MicrosecondContainer(5_885_166_667)
 
+            microsecond_earlier_anchor = 5885.166666
             with self.assertRaisesRegex(ValueError, "cannot decode"):
                 renderer._decode_rgb(
-                    MicrosecondAv(), video, actor_anchor, episode_start_timestamp_s=5880.0,
-                    episode_end_timestamp_s=5890.0, actor_anchor_timestamp_s=actor_anchor)
+                    MicrosecondAv(), video, microsecond_earlier_anchor, episode_start_timestamp_s=5880.0,
+                    episode_end_timestamp_s=5890.0, actor_anchor_timestamp_s=microsecond_earlier_anchor)
             with self.assertRaisesRegex(ValueError, "outside the source episode"):
                 renderer._decode_rgb(Av(), video, 2.1, episode_start_timestamp_s=1.0,
                                      episode_end_timestamp_s=2.0, actor_anchor_timestamp_s=None)
