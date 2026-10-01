@@ -68,12 +68,26 @@ def validate_transport_receipt(
     if not isinstance(event_source, Mapping) or dict(event_source) != dict(source_ref):
         raise RecoveryContractError("Execution receipt source must exactly match the canonical event source")
     source_group = protocol.source_group_id(source_ref)
+    canonical_event_id = protocol.event_id(event)
+    # A source group intentionally spans siblings from the same task instance;
+    # it is not a per-episode/event binding.  Compare the entire canonical
+    # objects and their content IDs so one sibling cannot envelope another.
+    if dict(receipt.source_ref) != dict(source_ref):
+        raise RecoveryContractError("Receipt source is not the canonical source bound to this envelope")
+    if dict(receipt.event_ref) != dict(event):
+        raise RecoveryContractError("Receipt event is not the canonical event bound to this envelope")
+    receipt_event_id = receipt.event_ref.get("event_id") if isinstance(receipt.event_ref, Mapping) else None
+    if receipt_event_id != canonical_event_id:
+        raise RecoveryContractError("Receipt event ID does not match the canonical event identity")
+    receipt_source_group = receipt.source_ref.get("source_group_id") if isinstance(receipt.source_ref, Mapping) else None
+    if receipt_source_group != source_group:
+        raise RecoveryContractError("Receipt source group does not match its full canonical source")
     if source_group != receipt.source_group_id:
         raise RecoveryContractError("Canonical source-group identity disagrees with execution receipt")
     return {
         "schema_id": PROTOCOL_SCHEMA_ID,
         "source_group_id": source_group,
-        "event_id": protocol.event_id(event),
+        "event_id": canonical_event_id,
         "canonical_event_validated": True,
         "receipt": receipt.public(),
     }

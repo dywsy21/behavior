@@ -16,7 +16,7 @@ from .common import (
     validate_raw23_actions,
     validate_state61,
 )
-from .evidence import EvidenceResult, PhysicalEvidenceProvider
+from .evidence import EvidenceResult, FaultEvidenceProvider, FaultEvidenceResult, PhysicalEvidenceProvider
 from .snapshot import SnapshotAdapter, SnapshotCapture
 
 
@@ -209,14 +209,29 @@ class BranchPairReceipt:
     corrective: BranchExecution
     no_intervention_same_state: bool
     corrective_same_state: bool
+    post_fault_evidence: FaultEvidenceResult | None
+    post_fault_live_ready: bool
+    physical_provider_trusted: bool
+    fault_provider_trusted: bool
     actor_evidence: Mapping[str, Any]
     backend_kind: str
+
+    @property
+    def recovery_eligible(self) -> bool:
+        return bool(
+            self.post_fault_evidence is not None
+            and self.post_fault_evidence.fault_observed
+            and self.post_fault_evidence.valid_fault_mask
+        )
 
     @property
     def corrective_positive_action_mask(self) -> bool:
         evidence = self.corrective.evidence
         return bool(
-            self.backend_kind == "live"
+            self.post_fault_live_ready
+            and self.physical_provider_trusted
+            and self.fault_provider_trusted
+            and self.recovery_eligible
             and self.no_intervention_same_state
             and self.corrective_same_state
             and self.corrective.observations_fresh
@@ -224,6 +239,7 @@ class BranchPairReceipt:
             and evidence is not None
             and evidence.outcome == "SUCCEEDED"
             and evidence.valid_result_mask
+            and evidence.current_intent_bundle_id == self.corrective.intent_bundle_id
         )
 
     def public(self) -> dict[str, Any]:
@@ -240,10 +256,19 @@ class BranchPairReceipt:
                 "no_intervention": self.no_intervention_same_state,
                 "corrective": self.corrective_same_state,
             },
+            "recovery_kind": "genuine_recovery" if self.recovery_eligible else "normal_or_unproven",
             "actor_evidence": dict(self.actor_evidence),
             "privileged_evidence": {
+                "post_fault_deviation": (
+                    None if self.post_fault_evidence is None else self.post_fault_evidence.public()
+                ),
                 "no_intervention": self.no_intervention.public(),
                 "corrective": self.corrective.public(),
+            },
+            "live_readiness": {
+                "post_fault_capture_attested": self.post_fault_live_ready,
+                "physical_provider_trusted": self.physical_provider_trusted,
+                "fault_provider_trusted": self.fault_provider_trusted,
             },
             "corrective_positive_action_mask": self.corrective_positive_action_mask,
             # The data owner's canonical protocol must separately validate and
@@ -309,10 +334,17 @@ def _validate_actor_evidence(actor_evidence: Mapping[str, Any]) -> None:
 class PairedRecoveryCollector:
     """Run no-intervention and corrective actions from one post-fault snapshot."""
 
-    def __init__(self, snapshots: SnapshotAdapter, actions: ActionBackend, evidence: PhysicalEvidenceProvider):
+    def __init__(
+        self,
+        snapshots: SnapshotAdapter,
+        actions: ActionBackend,
+        evidence: PhysicalEvidenceProvider,
+        fault_evidence: FaultEvidenceProvider | None = None,
+    ):
         self.snapshots = snapshots
         self.actions = actions
         self.evidence = evidence
+        self.fault_evidence = fault_evidence
 
     def _official_status(self) -> tuple[bool | None, bool | None]:
         status = self.actions.official_status()
@@ -335,6 +367,7 @@ class PairedRecoveryCollector:
         skill_binding: Mapping[str, Any],
         context: Mapping[str, Any],
         intent_bundle_id: str,
+        prior_intent_bundle_id: str,
     ) -> BranchExecution:
         actions23 = validate_raw23_actions(actions23)
         if len(actions23) > 16:
@@ -365,9 +398,18 @@ class PairedRecoveryCollector:
             official_task_success=success,
             official_terminal=terminal,
         )
+        branch_context = {
+            **dict(context),
+            "branch": branch,
+            "actual_executed_length": len(actions23),
+            "action_start_frame": branch_result.pre_action_observations[0].policy_clock,
+            "actual_end_frame": branch_result.final_observation.policy_clock,
+            "prior_intent_bundle_id": prior_intent_bundle_id,
+            "current_intent_bundle_id": intent_bundle_id,
+        }
         branch_result.evidence = self.evidence.evaluate(
             skill_binding=skill_binding,
-            context={**dict(context), "branch": branch, "actual_executed_length": len(actions23)},
+            context=branch_context,
             official_task_success=success,
             official_terminal=terminal,
         )
@@ -384,6 +426,7 @@ class PairedRecoveryCollector:
         corrective_actions23: Sequence[Any],
         skill_binding: Mapping[str, Any],
         intent_bundle_id: str,
+        prior_intent_bundle_id: str,
         branch_seed: int,
         actor_evidence: Mapping[str, Any],
         context: Mapping[str, Any] | None = None,
@@ -398,13 +441,38 @@ class PairedRecoveryCollector:
             raise RecoveryContractError("Recovery branches require a bound physical skill")
         if not isinstance(intent_bundle_id, str) or not intent_bundle_id:
             raise RecoveryContractError("Executed recovery actions require a deterministic intent bundle identity")
+        if not isinstance(prior_intent_bundle_id, str) or not prior_intent_bundle_id:
+            raise RecoveryContractError("Recovery branches require an immutable prior intent identity")
         context = {} if context is None else dict(context)
+
+        # Capture an observation before either branch executes.  A fault provider
+        # must bind its affirmative deviation evidence to this snapshot digest
+        # and this clock; an ordinary successful state is therefore not silently
+        # reclassified as a recovery event.
+        post_fault_observation = self.actions.observe()
+        if not isinstance(post_fault_observation, Observation):
+            raise RecoveryContractError("Action backend observe() must return Observation")
+        post_fault_evidence = None
+        if self.fault_evidence is not None:
+            if post_fault_snapshot.state_fingerprint is None:
+                raise RecoveryContractError("Fault evidence cannot bind an opaque snapshot without a fingerprint")
+            post_fault_evidence = self.fault_evidence.evaluate(
+                skill_binding=skill_binding,
+                context={
+                    **context,
+                    "post_fault_clock": post_fault_observation.policy_clock,
+                    "post_fault_snapshot_fingerprint": post_fault_snapshot.state_fingerprint,
+                    "prior_intent_bundle_id": prior_intent_bundle_id,
+                    "current_intent_bundle_id": intent_bundle_id,
+                },
+            )
 
         no_start = self.snapshots.restore_and_capture(post_fault_snapshot, label="no_intervention:restored")
         no_same = self.snapshots.same_state(post_fault_snapshot, no_start)
         no_branch = self._execute(
             branch="no_intervention", actions23=no_intervention_actions23,
             skill_binding=skill_binding, context=context, intent_bundle_id=intent_bundle_id,
+            prior_intent_bundle_id=prior_intent_bundle_id,
         )
 
         correction_start = self.snapshots.restore_and_capture(post_fault_snapshot, label="corrective:restored")
@@ -412,6 +480,7 @@ class PairedRecoveryCollector:
         correction_branch = self._execute(
             branch="corrective", actions23=corrective_actions23,
             skill_binding=skill_binding, context=context, intent_bundle_id=intent_bundle_id,
+            prior_intent_bundle_id=prior_intent_bundle_id,
         )
         return BranchPairReceipt(
             source_ref=source_ref,
@@ -423,6 +492,15 @@ class PairedRecoveryCollector:
             corrective=correction_branch,
             no_intervention_same_state=no_same,
             corrective_same_state=correction_same,
+            post_fault_evidence=post_fault_evidence,
+            post_fault_live_ready=self.snapshots.is_live_ready_capture(post_fault_snapshot),
+            physical_provider_trusted=self.snapshots.accepts_evidence_provider(
+                self.evidence.provider_id, kind="physical"
+            ),
+            fault_provider_trusted=(
+                self.fault_evidence is not None
+                and self.snapshots.accepts_evidence_provider(self.fault_evidence.provider_id, kind="fault")
+            ),
             actor_evidence=actor_evidence,
             backend_kind=post_fault_snapshot.backend_kind,
         )

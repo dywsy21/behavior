@@ -18,7 +18,12 @@ from g05.recovery.branching import (
     executed_prefix_from_prediction,
 )
 from g05.recovery.common import RecoveryContractError, canonical_sha256
-from g05.recovery.evidence import PhysicalEvidenceProvider, PredicateSample
+from g05.recovery.evidence import (
+    FaultEvidenceProvider,
+    FaultEvidenceSample,
+    PhysicalEvidenceProvider,
+    PredicateSample,
+)
 from g05.recovery.protocol_bridge import (
     actor_evidence_projection,
     load_protocol,
@@ -26,6 +31,7 @@ from g05.recovery.protocol_bridge import (
     validate_transport_receipt,
 )
 from g05.recovery.snapshot import (
+    LiveReadinessAttestation,
     REQUIRED_INVENTORY,
     OmniGibsonPublicSnapshotBackend,
     SnapshotAdapter,
@@ -91,6 +97,32 @@ class FakePredicateBackend:
         return self.sample_value
 
 
+class FakeFaultBackend:
+    """Return a sample bound to the exact post-fault state passed by the collector."""
+
+    def __init__(self, *, current_intent_bundle_id: str = "intent-p107-grasp-0001") -> None:
+        self.current_intent_bundle_id = current_intent_bundle_id
+        self.calls = []
+
+    def sample(self, *, skill_binding, context):
+        self.calls.append((dict(skill_binding), dict(context)))
+        return FaultEvidenceSample(
+            family=skill_binding["family"],
+            object_id=skill_binding["object_id"],
+            arm=skill_binding["arm"],
+            prior_intent_bundle_id=context["prior_intent_bundle_id"],
+            current_intent_bundle_id=self.current_intent_bundle_id,
+            fault_observed=True,
+            source_binding_verified=True,
+            evidence_kind="documented_post_fault_deviation",
+            evidence_start_frame=context["post_fault_clock"],
+            evidence_end_frame=context["post_fault_clock"],
+            evidence_available_time=context["post_fault_clock"],
+            snapshot_state_fingerprint=context["post_fault_snapshot_fingerprint"],
+            detail="fake test-only deviation sample",
+        )
+
+
 def physical_sample(**overrides) -> PredicateSample:
     values = {
         "family": "grasp",
@@ -102,11 +134,32 @@ def physical_sample(**overrides) -> PredicateSample:
         "stable_frames": 3,
         "required_stable_frames": 3,
         "evidence_kind": "documented_grasp_transition",
-        "evidence_available_time": 9,
+        "evidence_start_frame": 0,
+        "evidence_end_frame": 1,
+        "evidence_available_time": 1,
+        "object_id": "cup",
+        "arm": "right",
+        "prior_intent_bundle_id": "intent-before",
+        "current_intent_bundle_id": "intent-p107-grasp-0001",
         "detail": "fake evaluator-only sample",
     }
     values.update(overrides)
     return PredicateSample(**values)
+
+
+def grasp_binding():
+    return {"family": "grasp", "object_id": "cup", "arm": "right"}
+
+
+def evidence_context(**overrides):
+    values = {
+        "action_start_frame": 0,
+        "actual_end_frame": 1,
+        "prior_intent_bundle_id": "intent-before",
+        "current_intent_bundle_id": "intent-p107-grasp-0001",
+    }
+    values.update(overrides)
+    return values
 
 
 class SnapshotReceiptTest(unittest.TestCase):
@@ -152,12 +205,52 @@ class SnapshotReceiptTest(unittest.TestCase):
         with self.assertRaisesRegex(RecoveryContractError, "restore API"):
             adapter.restore(capture)
 
+    def test_attested_known_adapter_still_requires_registered_restore(self) -> None:
+        class PublicSim:
+            def dump_state(self, *, serialized):
+                return {"documented": "dump_state_only"}
+
+        attestation = LiveReadinessAttestation(
+            adapter_id="og-public-session-1",
+            session_id="evaluator-session-1",
+            source_revision="known-checked-source",
+            omnigibson_version="verified-on-live-host",
+            isaac_version="5.1.0",
+            validated_inventory=frozenset(REQUIRED_INVENTORY),
+            roundtrip_receipt_sha256="c" * 64,
+            physical_evidence_provider_ids=frozenset({"physical-provider-1"}),
+            fault_evidence_provider_ids=frozenset({"fault-provider-1"}),
+        )
+        backend = OmniGibsonPublicSnapshotBackend(
+            PublicSim(),
+            adapter_id=attestation.adapter_id,
+            session_id=attestation.session_id,
+            readiness_attestation=attestation,
+        )
+        with self.assertRaisesRegex(RecoveryContractError, "registered public restore"):
+            SnapshotAdapter(backend)
+
+    def test_relabelled_same_body_fake_cannot_present_as_live(self) -> None:
+        backend = FakeSnapshotBackend()
+        # A caller-controlled string must not turn this very same fake object
+        # into an attested simulator integration.
+        backend.backend_kind = "live"
+        with self.assertRaisesRegex(RecoveryContractError, "known OmniGibson public adapter"):
+            SnapshotAdapter(backend)
+
+    def test_cross_adapter_snapshot_restore_is_rejected(self) -> None:
+        first = SnapshotAdapter(FakeSnapshotBackend())
+        second = SnapshotAdapter(FakeSnapshotBackend())
+        capture = first.capture("first")
+        with self.assertRaisesRegex(RecoveryContractError, "Cross-adapter"):
+            second.restore(capture)
+
 
 class EvidenceTest(unittest.TestCase):
     def test_success_needs_transition_and_stable_frames(self) -> None:
         provider = PhysicalEvidenceProvider(FakePredicateBackend(physical_sample(stable_frames=2)))
         result = provider.evaluate(
-            skill_binding={"family": "grasp", "object": "cup"}, context={}, official_task_success=True, official_terminal=True
+            skill_binding=grasp_binding(), context=evidence_context(), official_task_success=True, official_terminal=True
         )
         self.assertEqual(result.outcome, "IN_PROGRESS")
         self.assertTrue(result.valid_result_mask)
@@ -167,16 +260,34 @@ class EvidenceTest(unittest.TestCase):
     def test_unknown_never_becomes_timeout_failure(self) -> None:
         provider = PhysicalEvidenceProvider(FakePredicateBackend(physical_sample(sensor_supported=False)))
         result = provider.evaluate(
-            skill_binding={"family": "grasp", "object": "cup"}, context={}, official_task_success=False, official_terminal=True
+            skill_binding=grasp_binding(), context=evidence_context(), official_task_success=False, official_terminal=True
         )
         self.assertEqual(result.outcome, "UNKNOWN")
         self.assertFalse(result.valid_result_mask)
 
     def test_affirmative_physical_failure_is_retained(self) -> None:
         provider = PhysicalEvidenceProvider(FakePredicateBackend(physical_sample(predicate=False, failure_evidence=True)))
-        result = provider.evaluate(skill_binding={"family": "grasp"}, context={})
+        result = provider.evaluate(skill_binding=grasp_binding(), context=evidence_context())
         self.assertEqual(result.outcome, "FAILED")
         self.assertTrue(result.valid_result_mask)
+
+    def test_future_physical_evidence_cannot_certify_current_branch(self) -> None:
+        provider = PhysicalEvidenceProvider(FakePredicateBackend(physical_sample(
+            evidence_start_frame=1,
+            evidence_end_frame=999,
+            evidence_available_time=999,
+        )))
+        result = provider.evaluate(skill_binding=grasp_binding(), context=evidence_context())
+        self.assertEqual(result.outcome, "UNKNOWN")
+        self.assertFalse(result.valid_result_mask)
+
+    def test_mismatched_object_arm_or_intent_cannot_certify_branch(self) -> None:
+        provider = PhysicalEvidenceProvider(FakePredicateBackend(physical_sample(
+            object_id="different-cup", current_intent_bundle_id="another-intent"
+        )))
+        result = provider.evaluate(skill_binding=grasp_binding(), context=evidence_context())
+        self.assertEqual(result.outcome, "UNKNOWN")
+        self.assertFalse(result.valid_result_mask)
 
 
 class BranchCollectorTest(unittest.TestCase):
@@ -199,8 +310,9 @@ class BranchCollectorTest(unittest.TestCase):
             post_fault_snapshot=post_fault,
             no_intervention_actions23=[ZERO23],
             corrective_actions23=[ONE23],
-            skill_binding={"family": "grasp", "object": "cup", "arm": "right"},
+            skill_binding=grasp_binding(),
             intent_bundle_id="intent-p107-grasp-0001",
+            prior_intent_bundle_id="intent-before",
             branch_seed=17,
             actor_evidence={"rgb_ref": "rgb://step/0", "feedback": "retry"},
         )
@@ -210,6 +322,8 @@ class BranchCollectorTest(unittest.TestCase):
         self.assertEqual(receipt.corrective.actual_executed_length, 1)
         self.assertEqual(len(receipt.corrective.final_observation.state61), 61)
         self.assertEqual(receipt.corrective.evidence.outcome, "SUCCEEDED")
+        self.assertFalse(receipt.recovery_eligible)
+        self.assertEqual(receipt.public()["recovery_kind"], "normal_or_unproven")
         self.assertFalse(receipt.corrective_positive_action_mask)  # CPU fake cannot produce positives.
         public = receipt.public()
         self.assertNotIn("step_receipts", public["privileged_evidence"]["corrective"])
@@ -220,12 +334,58 @@ class BranchCollectorTest(unittest.TestCase):
         self.assertEqual(execution["actual_end_frame"], execution["action_start_frame"] + 1)
         self.assertEqual(execution["executed_intent_bundle_id"], "intent-p107-grasp-0001")
 
+    def test_affirmative_prebranch_fault_allows_recovery_even_if_baseline_recovers(self) -> None:
+        # Both branches have successful physical evidence.  The independent,
+        # state-bound fault receipt—not a baseline failure—is what makes this a
+        # genuine recovery candidate.  The fake backend still cannot emit a
+        # trainable positive action label.
+        self.collector.fault_evidence = FaultEvidenceProvider(FakeFaultBackend())
+        receipt = self.collector.collect(
+            source_ref=self.source,
+            source_group_id="train-task0-instance7",
+            event_ref={"event": "p107"},
+            post_fault_snapshot=self.snapshots.capture("post_fault"),
+            no_intervention_actions23=[ZERO23],
+            corrective_actions23=[ONE23],
+            skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001",
+            prior_intent_bundle_id="intent-before",
+            branch_seed=18,
+            actor_evidence={"rgb_ref": "rgb://step/0"},
+        )
+        self.assertEqual(receipt.no_intervention.evidence.outcome, "SUCCEEDED")
+        self.assertEqual(receipt.corrective.evidence.outcome, "SUCCEEDED")
+        self.assertTrue(receipt.recovery_eligible)
+        self.assertEqual(receipt.public()["recovery_kind"], "genuine_recovery")
+        self.assertFalse(receipt.corrective_positive_action_mask)
+
+    def test_fault_must_bind_the_current_corrective_intent(self) -> None:
+        self.collector.fault_evidence = FaultEvidenceProvider(
+            FakeFaultBackend(current_intent_bundle_id="wrong-recovery-intent")
+        )
+        receipt = self.collector.collect(
+            source_ref=self.source,
+            source_group_id="train-task0-instance7",
+            event_ref={"event": "p107"},
+            post_fault_snapshot=self.snapshots.capture("post_fault"),
+            no_intervention_actions23=[ZERO23],
+            corrective_actions23=[ONE23],
+            skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001",
+            prior_intent_bundle_id="intent-before",
+            branch_seed=19,
+            actor_evidence={"rgb_ref": "rgb://step/0"},
+        )
+        self.assertFalse(receipt.recovery_eligible)
+        self.assertFalse(receipt.post_fault_evidence.valid_fault_mask)
+
     def test_bad_split_and_privileged_actor_inputs_are_rejected(self) -> None:
         post_fault = self.snapshots.capture("post_fault")
         args = dict(
             source_group_id="train-task0-instance7", event_ref={"event": "p107"}, post_fault_snapshot=post_fault,
-            no_intervention_actions23=[ZERO23], corrective_actions23=[ONE23], skill_binding={"family": "grasp"},
-            intent_bundle_id="intent-p107-grasp-0001", branch_seed=1, actor_evidence={"rgb_ref": "ok"},
+            no_intervention_actions23=[ZERO23], corrective_actions23=[ONE23], skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001", prior_intent_bundle_id="intent-before",
+            branch_seed=1, actor_evidence={"rgb_ref": "ok"},
         )
         with self.assertRaisesRegex(RecoveryContractError, "TRAIN"):
             self.collector.collect(source_ref={"original_split": "public_test"}, **args)
@@ -243,8 +403,9 @@ class BranchCollectorTest(unittest.TestCase):
             self.collector.collect(
                 source_ref=self.source, source_group_id="train-task0-instance7", event_ref={"event": "p107"},
                 post_fault_snapshot=self.snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
-                corrective_actions23=prediction[:17], skill_binding={"family": "grasp"},
+                corrective_actions23=prediction[:17], skill_binding=grasp_binding(),
                 intent_bundle_id="intent-p107-grasp-0001", branch_seed=1, actor_evidence={"rgb_ref": "ok"},
+                prior_intent_bundle_id="intent-before",
             )
 
     def test_failed_correction_has_no_positive_action_mask(self) -> None:
@@ -254,8 +415,9 @@ class BranchCollectorTest(unittest.TestCase):
         receipt = self.collector.collect(
             source_ref=self.source, source_group_id="train-task0-instance7", event_ref={"event": "p107"},
             post_fault_snapshot=self.snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
-            corrective_actions23=[ONE23], skill_binding={"family": "grasp"}, branch_seed=2,
+            corrective_actions23=[ONE23], skill_binding=grasp_binding(), branch_seed=2,
             intent_bundle_id="intent-p107-grasp-0001", actor_evidence={"rgb_ref": "rgb://step/0"},
+            prior_intent_bundle_id="intent-before",
         )
         self.assertEqual(receipt.corrective.evidence.outcome, "FAILED")
         self.assertFalse(receipt.corrective_positive_action_mask)
@@ -362,14 +524,15 @@ class ProtocolBridgeTest(unittest.TestCase):
         raw = FakeSnapshotBackend()
         snapshots = SnapshotAdapter(raw)
         source = {"original_split": "train", "source_group_id": "train-task0-instance7"}
-        event = {"event": "p107", "source": source}
+        event = {"event": "p107", "event_id": "event-id-1", "source": source}
         receipt = PairedRecoveryCollector(
             snapshots, FakeActionBackend(raw), PhysicalEvidenceProvider(FakePredicateBackend(physical_sample()))
         ).collect(
             source_ref=source, source_group_id="train-task0-instance7", event_ref=event,
             post_fault_snapshot=snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
-            corrective_actions23=[ONE23], skill_binding={"family": "grasp"}, branch_seed=3,
+            corrective_actions23=[ONE23], skill_binding=grasp_binding(), branch_seed=3,
             intent_bundle_id="intent-p107-grasp-0001", actor_evidence={"rgb_ref": "rgb://step/0"},
+            prior_intent_bundle_id="intent-before",
         )
         bridge = validate_transport_receipt(
             receipt, source_ref=source, event=event, protocol=Protocol
@@ -386,15 +549,42 @@ class ProtocolBridgeTest(unittest.TestCase):
         ).collect(
             source_ref=source, source_group_id=source["source_group_id"], event_ref=event,
             post_fault_snapshot=snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
-            corrective_actions23=[ONE23], skill_binding={"family": "grasp"},
+            corrective_actions23=[ONE23], skill_binding=grasp_binding(),
             intent_bundle_id="intent-p107-grasp-0001", branch_seed=4,
             actor_evidence={"rgb_ref": "rgb://step/0"},
+            prior_intent_bundle_id="intent-before",
         )
         envelope = validate_transport_receipt(receipt, source_ref=source, event=event)
         self.assertTrue(envelope["canonical_event_validated"])
         self.assertEqual(envelope["event_id"], event["event_id"])
         self.assertFalse(envelope["receipt"]["ready_for_training"])
         self.assertFalse(envelope["receipt"]["corrective_positive_action_mask"])
+
+    def test_same_group_sibling_source_or_event_cannot_envelope_receipt(self) -> None:
+        protocol = load_protocol()
+        source, event = self._canonical_source_and_event()
+        raw = FakeSnapshotBackend()
+        snapshots = SnapshotAdapter(raw)
+        receipt = PairedRecoveryCollector(
+            snapshots, FakeActionBackend(raw), PhysicalEvidenceProvider(FakePredicateBackend(physical_sample()))
+        ).collect(
+            source_ref=source, source_group_id=source["source_group_id"], event_ref=event,
+            post_fault_snapshot=snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
+            corrective_actions23=[ONE23], skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001", branch_seed=5,
+            actor_evidence={"rgb_ref": "rgb://step/0"}, prior_intent_bundle_id="intent-before",
+        )
+        sibling_source = deepcopy(source)
+        sibling_source["raw_episode_id"] = 2101
+        sibling_source["episode_index"] = 202
+        sibling_source["source_group_id"] = protocol.source_group_id(sibling_source)
+        self.assertEqual(sibling_source["source_group_id"], source["source_group_id"])
+        sibling_event = deepcopy(event)
+        sibling_event["source"] = sibling_source
+        sibling_event["event_id"] = ""
+        sibling_event["event_id"] = protocol.event_id(sibling_event)
+        with self.assertRaisesRegex(RecoveryContractError, "Receipt source"):
+            validate_transport_receipt(receipt, source_ref=sibling_source, event=sibling_event)
 
 
 if __name__ == "__main__":

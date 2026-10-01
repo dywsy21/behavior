@@ -7,13 +7,30 @@ receipts; passing those tests is not simulator readiness.
 """
 
 from .common import RecoveryContractError, validate_raw23_actions
-from .evidence import EvidenceResult, PhysicalEvidenceProvider, PredicateSample
-from .snapshot import OmniGibsonPublicSnapshotBackend, SnapshotAdapter, SnapshotCapture, SnapshotRoundTrip
+from .evidence import (
+    EvidenceResult,
+    FaultEvidenceProvider,
+    FaultEvidenceResult,
+    FaultEvidenceSample,
+    PhysicalEvidenceProvider,
+    PredicateSample,
+)
+from .snapshot import (
+    LiveReadinessAttestation,
+    OmniGibsonPublicSnapshotBackend,
+    SnapshotAdapter,
+    SnapshotCapture,
+    SnapshotRoundTrip,
+)
 from .branching import OmniGibsonEvaluatorActionBackend, PairedRecoveryCollector, BranchPairReceipt
 
 __all__ = [
     "BranchPairReceipt",
     "EvidenceResult",
+    "FaultEvidenceProvider",
+    "FaultEvidenceResult",
+    "FaultEvidenceSample",
+    "LiveReadinessAttestation",
     "OmniGibsonEvaluatorActionBackend",
     "OmniGibsonPublicSnapshotBackend",
     "PairedRecoveryCollector",

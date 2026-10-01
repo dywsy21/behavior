@@ -28,6 +28,66 @@ REQUIRED_INVENTORY = (
 
 
 @dataclass(frozen=True)
+class LiveReadinessAttestation:
+    """A reviewed live-session boundary, not a caller-selected ``live`` flag.
+
+    This receipt is deliberately more specific than ``backend_kind``: it binds
+    a known public OG adapter, one evaluator session, the inspected source and
+    Isaac/OG version, a prior full-capability roundtrip receipt, and the only
+    evidence providers that may contribute to a positive corrective label.
+    It does not attempt to defend against arbitrary hostile Python in-process;
+    it makes the supported integration boundary explicit and fail-closed.
+    """
+
+    adapter_id: str
+    session_id: str
+    source_revision: str
+    omnigibson_version: str
+    isaac_version: str
+    validated_inventory: frozenset[str]
+    roundtrip_receipt_sha256: str
+    physical_evidence_provider_ids: frozenset[str]
+    fault_evidence_provider_ids: frozenset[str]
+
+    def __post_init__(self) -> None:
+        for field in ("adapter_id", "session_id", "source_revision", "omnigibson_version", "isaac_version"):
+            value = getattr(self, field)
+            if not isinstance(value, str) or not value:
+                raise RecoveryContractError(f"Live readiness {field} must be explicit")
+        if not self.isaac_version.startswith("5.1"):
+            raise RecoveryContractError("P107 live readiness is restricted to a source-verified Isaac Sim 5.1 session")
+        if not isinstance(self.validated_inventory, frozenset):
+            raise RecoveryContractError("Live readiness inventory must be immutable")
+        if self.validated_inventory != frozenset(REQUIRED_INVENTORY):
+            raise RecoveryContractError("Live readiness must attest every required snapshot inventory component")
+        require_sha256(self.roundtrip_receipt_sha256, field="live roundtrip receipt")
+        for provider_ids, field in (
+            (self.physical_evidence_provider_ids, "physical evidence provider IDs"),
+            (self.fault_evidence_provider_ids, "fault evidence provider IDs"),
+        ):
+            if (
+                not isinstance(provider_ids, frozenset)
+                or not provider_ids
+                or not all(isinstance(item, str) and item for item in provider_ids)
+            ):
+                raise RecoveryContractError(f"Live readiness {field} must be a nonempty immutable set")
+
+    @property
+    def attestation_id(self) -> str:
+        return canonical_sha256({
+            "adapter_id": self.adapter_id,
+            "session_id": self.session_id,
+            "source_revision": self.source_revision,
+            "omnigibson_version": self.omnigibson_version,
+            "isaac_version": self.isaac_version,
+            "validated_inventory": sorted(self.validated_inventory),
+            "roundtrip_receipt_sha256": self.roundtrip_receipt_sha256,
+            "physical_evidence_provider_ids": sorted(self.physical_evidence_provider_ids),
+            "fault_evidence_provider_ids": sorted(self.fault_evidence_provider_ids),
+        })
+
+
+@dataclass(frozen=True)
 class InventoryEntry:
     """Fingerprint of one restorable component, never the privileged value."""
 
@@ -53,6 +113,8 @@ class SnapshotBackend(Protocol):
     """The only simulator-facing surface expected by :class:`SnapshotAdapter`."""
 
     backend_kind: str  # ``live`` only after an owner has wired a real evaluator.
+    adapter_id: str
+    session_id: str
 
     def dump_state(self, *, serialized: bool) -> Any: ...
 
@@ -71,8 +133,9 @@ class OmniGibsonPublicSnapshotBackend:
     call is present in this checkout, so this adapter is deliberately
     ``unverified`` by default and refuses to invent one.  A live readiness
     ticket may pass an independently source-verified ``restore_public_state``
-    callable and explicit component providers; doing so still requires a real
-    round-trip receipt before the owner can mark the backend ``live``.
+    callable and explicit component providers.  It can become ``live`` only by
+    receiving a reviewed :class:`LiveReadinessAttestation`; an arbitrary
+    ``backend_kind='live'`` argument is intentionally not accepted.
 
     It does not inspect private simulator, PhysX, controller, or robot fields.
     Component providers are explicit so unsupported grasp / particle / RNG
@@ -86,10 +149,10 @@ class OmniGibsonPublicSnapshotBackend:
         restore_public_state: Callable[[Any], None] | None = None,
         inventory_providers: Mapping[str, Callable[[], Any | None]] | None = None,
         state_fingerprint: Callable[[Any], str | None] | None = None,
-        backend_kind: str = "unverified",
+        adapter_id: str = "omnigibson-public-unverified",
+        session_id: str = "unverified-session",
+        readiness_attestation: LiveReadinessAttestation | None = None,
     ) -> None:
-        if backend_kind not in {"unverified", "live", "fake"}:
-            raise RecoveryContractError("Unknown OmniGibson backend kind")
         if not callable(getattr(sim, "dump_state", None)):
             raise RecoveryContractError("OmniGibson sim lacks the verified public dump_state hook")
         if restore_public_state is not None and not callable(restore_public_state):
@@ -102,11 +165,26 @@ class OmniGibsonPublicSnapshotBackend:
             raise RecoveryContractError("Snapshot inventory providers must be callables")
         if state_fingerprint is not None and not callable(state_fingerprint):
             raise RecoveryContractError("state_fingerprint must be callable or None")
+        if not isinstance(adapter_id, str) or not adapter_id or not isinstance(session_id, str) or not session_id:
+            raise RecoveryContractError("OmniGibson adapter and session identities must be explicit")
+        if readiness_attestation is not None:
+            if not isinstance(readiness_attestation, LiveReadinessAttestation):
+                raise RecoveryContractError("readiness_attestation must be a LiveReadinessAttestation or None")
+            if (readiness_attestation.adapter_id != adapter_id or readiness_attestation.session_id != session_id):
+                raise RecoveryContractError("Live readiness attestation does not bind this adapter/session")
         self._sim = sim
         self._restore_public_state = restore_public_state
         self._providers = providers
         self._fingerprint = state_fingerprint
-        self.backend_kind = backend_kind
+        self.adapter_id = adapter_id
+        self.session_id = session_id
+        self.readiness_attestation = readiness_attestation
+        self.backend_kind = "live" if readiness_attestation is not None else "unverified"
+
+    @property
+    def has_registered_restore(self) -> bool:
+        """Whether this known adapter has an explicitly registered public restore hook."""
+        return self._restore_public_state is not None
 
     def dump_state(self, *, serialized: bool) -> Any:
         # The call form is source-verifiable in the historical collector.
@@ -134,6 +212,9 @@ class SnapshotCapture:
     state_fingerprint: str | None
     inventory: dict[str, InventoryEntry]
     backend_kind: str
+    adapter_id: str
+    session_id: str
+    readiness_attestation_id: str | None
     label: str
 
     @property
@@ -142,13 +223,21 @@ class SnapshotCapture:
 
     @property
     def live_candidate(self) -> bool:
-        return self.backend_kind == "live" and self.complete_inventory and self.state_fingerprint is not None
+        return bool(
+            self.backend_kind == "live"
+            and self.readiness_attestation_id is not None
+            and self.complete_inventory
+            and self.state_fingerprint is not None
+        )
 
     def public(self) -> dict[str, Any]:
         return {
             "restore_identity": self.restore_identity,
             "state_fingerprint": self.state_fingerprint,
             "backend_kind": self.backend_kind,
+            "adapter_id": self.adapter_id,
+            "session_id": self.session_id,
+            "readiness_attestation_id": self.readiness_attestation_id,
             "label": self.label,
             "inventory": {name: self.inventory[name].public() for name in REQUIRED_INVENTORY},
             "complete_inventory": self.complete_inventory,
@@ -250,6 +339,49 @@ class SnapshotAdapter:
         self._sequence = 0
         if getattr(backend, "backend_kind", None) not in {"live", "fake", "unverified"}:
             raise RecoveryContractError("Snapshot backend_kind must be live, fake, or unverified")
+        self.adapter_id = getattr(backend, "adapter_id", None)
+        if not isinstance(self.adapter_id, str) or not self.adapter_id:
+            self.adapter_id = f"untrusted:{type(backend).__module__}.{type(backend).__qualname__}:{id(backend)}"
+        self.session_id = getattr(backend, "session_id", None)
+        if not isinstance(self.session_id, str) or not self.session_id:
+            self.session_id = f"untrusted-session:{id(backend)}"
+        self.readiness_attestation: LiveReadinessAttestation | None = None
+        if backend.backend_kind == "live":
+            # Only the narrow, source-audited OG adapter may cross this boundary.
+            if not isinstance(backend, OmniGibsonPublicSnapshotBackend):
+                raise RecoveryContractError("Only the known OmniGibson public adapter may present live readiness")
+            attestation = backend.readiness_attestation
+            if not isinstance(attestation, LiveReadinessAttestation):
+                raise RecoveryContractError("Live snapshot backend requires a full readiness attestation")
+            if not backend.has_registered_restore:
+                raise RecoveryContractError("Live snapshot backend requires a registered public restore hook")
+            if attestation.adapter_id != self.adapter_id or attestation.session_id != self.session_id:
+                raise RecoveryContractError("Live readiness attestation is not bound to this adapter/session")
+            self.readiness_attestation = attestation
+
+    @property
+    def backend_kind(self) -> str:
+        return self.backend.backend_kind
+
+    def is_live_ready_capture(self, capture: SnapshotCapture) -> bool:
+        attestation = self.readiness_attestation
+        return bool(
+            attestation is not None
+            and capture.live_candidate
+            and capture.adapter_id == self.adapter_id
+            and capture.session_id == self.session_id
+            and capture.readiness_attestation_id == attestation.attestation_id
+        )
+
+    def accepts_evidence_provider(self, provider_id: str, *, kind: str) -> bool:
+        attestation = self.readiness_attestation
+        if attestation is None or not isinstance(provider_id, str):
+            return False
+        if kind == "physical":
+            return provider_id in attestation.physical_evidence_provider_ids
+        if kind == "fault":
+            return provider_id in attestation.fault_evidence_provider_ids
+        raise RecoveryContractError("Unknown evidence provider kind")
 
     def _entry(self, component: str) -> InventoryEntry:
         try:
@@ -279,12 +411,20 @@ class SnapshotAdapter:
             state_fingerprint=fingerprint,
             inventory={name: self._entry(name) for name in REQUIRED_INVENTORY},
             backend_kind=self.backend.backend_kind,
+            adapter_id=self.adapter_id,
+            session_id=self.session_id,
+            readiness_attestation_id=(None if self.readiness_attestation is None else self.readiness_attestation.attestation_id),
             label=label,
         )
 
     def restore(self, capture: SnapshotCapture) -> None:
         if not isinstance(capture, SnapshotCapture):
             raise RecoveryContractError("Only a capture from this adapter may be restored")
+        if capture.adapter_id != self.adapter_id or capture.session_id != self.session_id:
+            raise RecoveryContractError("Cross-adapter or cross-session snapshot restoration is forbidden")
+        attestation_id = None if self.readiness_attestation is None else self.readiness_attestation.attestation_id
+        if capture.readiness_attestation_id != attestation_id:
+            raise RecoveryContractError("Snapshot readiness attestation does not match this adapter/session")
         self.backend.load_state(capture.state, serialized=False)
 
     def restore_and_capture(self, capture: SnapshotCapture, *, label: str) -> SnapshotCapture:
@@ -309,7 +449,10 @@ class SnapshotAdapter:
     def same_state(cls, left: SnapshotCapture, right: SnapshotCapture) -> bool:
         """Require both an opaque-state receipt and all required inventories."""
         return bool(
-            left.state_fingerprint is not None
+            left.adapter_id == right.adapter_id
+            and left.session_id == right.session_id
+            and left.readiness_attestation_id == right.readiness_attestation_id
+            and left.state_fingerprint is not None
             and left.state_fingerprint == right.state_fingerprint
             and all(item.status == "match" for item in cls.compare(left, right))
         )

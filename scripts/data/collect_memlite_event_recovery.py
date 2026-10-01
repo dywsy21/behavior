@@ -18,7 +18,7 @@ from typing import Any
 
 from g05.recovery.branching import PairedRecoveryCollector
 from g05.recovery.common import RecoveryContractError, canonical_json, validate_raw23_actions
-from g05.recovery.evidence import PhysicalEvidenceProvider
+from g05.recovery.evidence import FaultEvidenceProvider, PhysicalEvidenceProvider
 from g05.recovery.protocol_bridge import validate_transport_receipt
 from g05.recovery.snapshot import SnapshotAdapter, SnapshotCapture
 
@@ -46,6 +46,8 @@ def main() -> None:
     parser.add_argument("--skill-binding", type=Path, required=True)
     parser.add_argument("--intent-bundle-id", required=True,
                         help="immutable intent identity; both collected branches must execute this bound intent")
+    parser.add_argument("--prior-intent-bundle-id", required=True,
+                        help="immutable intent whose pre-branch deviation made this a recovery candidate")
     parser.add_argument("--actor-evidence", type=Path, required=True)
     parser.add_argument("--no-intervention-actions", type=Path, required=True)
     parser.add_argument("--corrective-actions", type=Path, required=True)
@@ -59,6 +61,7 @@ def main() -> None:
     snapshots = parts.get("snapshot_adapter")
     actions = parts.get("action_backend")
     evidence = parts.get("evidence_provider")
+    fault_evidence = parts.get("fault_evidence_provider")
     post_fault = parts.get("post_fault_snapshot")
     if not isinstance(snapshots, SnapshotAdapter) or not isinstance(evidence, PhysicalEvidenceProvider):
         raise RecoveryContractError("Factory has invalid snapshot/evidence adapters")
@@ -70,9 +73,11 @@ def main() -> None:
         raise RecoveryContractError("Refusing fake collection backend without --allow-fake")
     if post_fault.backend_kind not in {"live", "fake"}:
         raise RecoveryContractError("Refusing an unverified snapshot integration; complete the live readiness gate first")
+    if post_fault.backend_kind == "live" and not isinstance(fault_evidence, FaultEvidenceProvider):
+        raise RecoveryContractError("Live recovery collection requires an affirmative pre-branch fault evidence provider")
     source_ref = _read_json(args.source_ref)
     event = _read_json(args.event)
-    transport = PairedRecoveryCollector(snapshots, actions, evidence).collect(
+    transport = PairedRecoveryCollector(snapshots, actions, evidence, fault_evidence).collect(
         source_ref=source_ref,
         source_group_id=args.source_group_id,
         event_ref=event,
@@ -81,6 +86,7 @@ def main() -> None:
         corrective_actions23=validate_raw23_actions(_read_json(args.corrective_actions)),
         skill_binding=_read_json(args.skill_binding),
         intent_bundle_id=args.intent_bundle_id,
+        prior_intent_bundle_id=args.prior_intent_bundle_id,
         branch_seed=args.branch_seed,
         actor_evidence=_read_json(args.actor_evidence),
         context=parts.get("context", {}),
