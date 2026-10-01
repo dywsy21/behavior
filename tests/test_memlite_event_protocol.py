@@ -14,8 +14,11 @@ ACTION_HORIZON = _PROTOCOL.ACTION_HORIZON
 MODEL_PADDING_INDICES = _PROTOCOL.MODEL_PADDING_INDICES
 ContractError = _PROTOCOL.ContractError
 actor_evidence_projection = _PROTOCOL.actor_evidence_projection
+build_corrective_action_authority = _PROTOCOL.build_corrective_action_authority
 event_id = _PROTOCOL.event_id
+indexed_event_eligibility = _PROTOCOL.indexed_event_eligibility
 project_action_23_to_27 = _PROTOCOL.project_action_23_to_27
+receipt_sha256 = _PROTOCOL.receipt_sha256
 source_group_id = _PROTOCOL.source_group_id
 validate_attempt_outcome_view = _PROTOCOL.validate_attempt_outcome_view
 validate_corrective_action_view = _PROTOCOL.validate_corrective_action_view
@@ -55,12 +58,12 @@ def event():
     return result
 
 
-def common(kind):
+def common(kind, *, review_status="PROPOSED"):
     e = event()
     result = {
         "schema_version": "memlite-event-recovery-v1", "label_kind": kind, "view_id": "",
         "event_id": e["event_id"], "source_group_id": e["source"]["source_group_id"],
-        "observation_frame": 10, "annotation_provenance": "human", "review_status": "PROPOSED",
+        "observation_frame": 10, "annotation_provenance": "human", "review_status": review_status,
         "actor_evidence": {"kind": "MISSING", "evidence_end_frame": None, "available_frame": None,
                            "references": []},
     }
@@ -70,6 +73,75 @@ def common(kind):
 def with_id(row):
     row["view_id"] = view_id(row)
     return row
+
+
+def self_digest(receipt):
+    receipt["receipt_sha256"] = receipt_sha256(receipt)
+    return receipt
+
+
+def authorized_corrective_row(*, split="train", role="student_candidate", origin="logged_demonstration"):
+    e = event()
+    e["source"]["original_split"] = split
+    e["source"]["source_group_id"] = source_group_id(e["source"])
+    e["usage_role"] = role
+    e["event_id"] = event_id(e)
+    row, _ = common("corrective_action", review_status="PARENT_APPROVED")
+    row.update(event_id=e["event_id"], source_group_id=e["source"]["source_group_id"],
+               recovery_attempt_id="recovery-2", recovery_from_attempt_id="attempt-1",
+               action_intent_bundle_id="bundle-recovery", executed_intent_bundle_id="bundle-recovery",
+               action_start_frame=10, actual_executed_length=2, raw_action_dim=23, model_action_dim=27,
+               model_padding_indices=list(MODEL_PADDING_INDICES),
+               action_is_pad=[False, False] + [True] * (ACTION_HORIZON - 2),
+               executed_action_receipt={"executed": True, "raw_action_sha256": "c" * 64,
+                                        "intent_bundle_id": "bundle-recovery", "actual_end_frame": 12},
+               action_payload_sha256="d" * 64, execution_receipt_sha256="", recovery_verification_receipt_sha256="",
+               recovery_verified=False, low_action_supervision_mask=True)
+    execution = self_digest({
+        "schema_version": "p107-execution-receipt-v1", "receipt_sha256": "", "event_id": e["event_id"],
+        "source_group_id": e["source"]["source_group_id"],
+        "source_release_manifest_sha256": e["source"]["source_release_manifest_sha256"],
+        "raw_episode_id": e["source"]["raw_episode_id"], "episode_index": e["source"]["episode_index"],
+        "raw_action_sha256": "c" * 64, "action_payload_sha256": "d" * 64,
+        "action_start_frame": 10, "actual_end_frame": 12, "actual_executed_length": 2,
+        "raw_action_dim": 23, "intent_bundle_id": "bundle-recovery", "executed": True,
+    })
+    tier = "GOLD_PHYSICAL" if origin == "live_sim_branch" else "SILVER_REVIEWED_LOGGED_DEMONSTRATION"
+    verification = self_digest({
+        "schema_version": "p107-recovery-verification-receipt-v1", "receipt_sha256": "", "event_id": e["event_id"],
+        "source_group_id": e["source"]["source_group_id"], "recovery_attempt_id": "recovery-2",
+        "recovery_from_attempt_id": "attempt-1", "action_intent_bundle_id": "bundle-recovery",
+        "raw_action_sha256": "c" * 64, "evidence_origin": origin, "quality_tier": tier,
+        "verification_frame": 14, "label_available_frame": 15, "branch_or_episode_final_frame": 20,
+        "evidence": {"kind": "PHYSICAL_FACT" if origin == "live_sim_branch" else "TEMPORAL_VISUAL_REVIEW",
+                     "evidence_end_frame": 13, "available_frame": 14, "artifact_sha256": "e" * 64},
+        "verification_artifact_sha256": "f" * 64,
+    })
+    row["execution_receipt_sha256"] = execution["receipt_sha256"]
+    row["recovery_verification_receipt_sha256"] = verification["receipt_sha256"]
+    with_id(row)
+    group = {"source_group_id": e["source"]["source_group_id"],
+             "source_release_manifest_sha256": e["source"]["source_release_manifest_sha256"],
+             "task_index": e["source"]["task_index"], "task_instance_id": e["source"]["task_instance_id"],
+             "original_split": split, "usage_role": role}
+    approval = self_digest({
+        "schema_version": "p107-parent-low-fm-approval-v1", "receipt_sha256": "",
+        "approval_status": "APPROVED_FOR_LOW_FM", "view_id": row["view_id"], "event_id": e["event_id"],
+        "source_group_id": group["source_group_id"],
+        "source_release_manifest_sha256": group["source_release_manifest_sha256"],
+        "raw_episode_id": e["source"]["raw_episode_id"], "episode_index": e["source"]["episode_index"],
+        "original_split": split, "usage_role": role,
+        "action_intent_bundle_id": "bundle-recovery", "executed_intent_bundle_id": "bundle-recovery",
+        "raw_action_sha256": "c" * 64, "action_payload_sha256": "d" * 64,
+        "execution_receipt_sha256": execution["receipt_sha256"],
+        "recovery_verification_receipt_sha256": verification["receipt_sha256"],
+        "parent_review_artifact_sha256": "9" * 64, "evidence_origin": origin, "quality_tier": tier,
+    })
+    authority = build_corrective_action_authority(
+        index_inventory_seal_sha256="8" * 64, events=[e], source_groups=[group],
+        execution_receipts=[execution], verification_receipts=[verification], parent_approval_receipts=[approval],
+        parent_review_artifact_sha256s=["9" * 64])
+    return row, e, authority, verification
 
 
 class EventProtocolTests(unittest.TestCase):
@@ -110,24 +182,75 @@ class EventProtocolTests(unittest.TestCase):
             validate_attempt_outcome_view(with_id(bad), e)
 
     def test_corrective_fm_requires_same_intent_actual_receipt_and_pre_action_observation(self):
-        row, e = common("corrective_action")
-        row.update(recovery_attempt_id="recovery-2", recovery_from_attempt_id="attempt-1",
-                   action_intent_bundle_id="bundle-recovery", executed_intent_bundle_id="bundle-recovery",
-                   action_start_frame=10, actual_executed_length=2, raw_action_dim=23, model_action_dim=27,
-                   model_padding_indices=list(MODEL_PADDING_INDICES),
-                   action_is_pad=[False, False] + [True] * (ACTION_HORIZON - 2),
-                   executed_action_receipt={"executed": True, "raw_action_sha256": "c" * 64,
-                                            "intent_bundle_id": "bundle-recovery", "actual_end_frame": 12},
-                   recovery_verified=True, low_action_supervision_mask=True)
-        validate_corrective_action_view(with_id(row), e)
-        for mutation in ("wrong_bundle", "future_observation"):
+        row, e, authority, _ = authorized_corrective_row()
+        validate_corrective_action_view(row, e, authority=authority)
+        for mutation in ("wrong_bundle", "future_observation", "no_authority", "proposed"):
             bad = deepcopy(row)
             if mutation == "wrong_bundle":
                 bad["executed_intent_bundle_id"] = "wrong"
-            else:
+                with_id(bad)
+                with self.subTest(mutation=mutation), self.assertRaises(ContractError):
+                    validate_corrective_action_view(bad, e, authority=authority)
+            elif mutation == "future_observation":
                 bad["action_start_frame"] = 11
-            with self.subTest(mutation=mutation), self.assertRaises(ContractError):
-                validate_corrective_action_view(with_id(bad), e)
+                with_id(bad)
+                with self.subTest(mutation=mutation), self.assertRaises(ContractError):
+                    validate_corrective_action_view(bad, e, authority=authority)
+            elif mutation == "no_authority":
+                with self.subTest(mutation=mutation), self.assertRaises(ContractError):
+                    validate_corrective_action_view(bad, e)
+            else:
+                bad["review_status"] = "PROPOSED"
+                with_id(bad)
+                with self.subTest(mutation=mutation), self.assertRaises(ContractError):
+                    validate_corrective_action_view(bad, e, authority=authority)
+
+    def test_only_indexed_student_group_can_be_trainable_but_eval_remains_evaluation_eligible(self):
+        row, e, authority, _ = authorized_corrective_row()
+        validate_corrective_action_view(row, e, authority=authority)
+        eval_event = event()
+        eval_event["source"]["original_split"] = "eval"
+        eval_event["source"]["source_group_id"] = source_group_id(eval_event["source"])
+        eval_event["event_id"] = event_id(eval_event)
+        eval_group = {"source_group_id": eval_event["source"]["source_group_id"],
+                      "original_split": "eval", "usage_role": "evaluation_only"}
+        self.assertEqual(indexed_event_eligibility(eval_event, eval_group),
+                         {"evaluation_loss_eligible": True, "student_train_eligible": False})
+
+    def test_eval_agent_proposed_boolean_cannot_bypass_external_authority(self):
+        row, e, _, _ = authorized_corrective_row()
+        e["source"]["original_split"] = "eval"
+        e["source"]["source_group_id"] = source_group_id(e["source"])
+        e["event_id"] = event_id(e)
+        row.update(event_id=e["event_id"], source_group_id=e["source"]["source_group_id"],
+                   annotation_provenance="agent-unreviewed", review_status="PROPOSED", recovery_verified=True)
+        with_id(row)
+        with self.assertRaises(ContractError):
+            validate_corrective_action_view(row, e)
+
+    def test_verification_after_action_is_allowed_but_not_after_final_clock(self):
+        row, e, authority, verification = authorized_corrective_row(origin="logged_demonstration")
+        self.assertGreater(verification["verification_frame"], row["action_start_frame"])
+        validate_corrective_action_view(row, e, authority=authority)
+        bad_verification = deepcopy(verification)
+        bad_verification["verification_frame"] = 999
+        bad_verification["label_available_frame"] = 999
+        bad_verification["branch_or_episode_final_frame"] = 20
+        self_digest(bad_verification)
+        with self.assertRaises(ContractError):
+            build_corrective_action_authority(
+                index_inventory_seal_sha256="8" * 64, events=[e], source_groups=list(authority.groups_by_id.values()),
+                execution_receipts=list(authority.execution_by_sha256.values()), verification_receipts=[bad_verification],
+                parent_approval_receipts=list(authority.approvals_by_view_id.values()),
+                parent_review_artifact_sha256s=["9" * 64])
+
+    def test_live_gold_and_logged_silver_are_distinct_positive_paths(self):
+        for origin in ("live_sim_branch", "logged_demonstration"):
+            row, e, authority, verification = authorized_corrective_row(origin=origin)
+            with self.subTest(origin=origin):
+                validate_corrective_action_view(row, e, authority=authority)
+                self.assertEqual(verification["quality_tier"],
+                                 "GOLD_PHYSICAL" if origin == "live_sim_branch" else "SILVER_REVIEWED_LOGGED_DEMONSTRATION")
 
     def test_actor_projection_excludes_privileged_audit_and_action_projection_preserves_pad_contract(self):
         row, _ = common("attempt_outcome")
@@ -135,6 +258,15 @@ class EventProtocolTests(unittest.TestCase):
         safe = actor_evidence_projection(row)
         self.assertEqual(safe["kind"], "MISSING")
         self.assertNotIn("privileged_evidence", safe)
+        row["actor_evidence"] = {"kind": "VISUAL", "evidence_end_frame": 0, "available_frame": 0,
+                                 "references": [{"kind": "rgb_frame", "view": "head", "frame": 0,
+                                                 "artifact_sha256": "a" * 64, "nested": {"object_pose": [1, 2, 3]}}]}
+        with self.assertRaises(ContractError):
+            actor_evidence_projection(row)
+        row["actor_evidence"] = {"kind": "VISUAL", "evidence_end_frame": 0, "available_frame": 0,
+                                 "references": [], "object_pose": [1, 2, 3]}
+        with self.assertRaises(ContractError):
+            actor_evidence_projection(row)
         converted = project_action_23_to_27([[float(i) for i in range(23)]], 1)
         self.assertEqual(len(converted["actions_27"]), 32)
         self.assertEqual(converted["action_dim_is_pad"], [i in MODEL_PADDING_INDICES for i in range(27)])

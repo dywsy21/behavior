@@ -95,5 +95,11 @@
       {"task": 0, "instance": 2, "split": "train"},
       {"task": 0, "instance": 3, "split": "eval"}
     ]
+  },
+  "coverage_expectations": {
+    "schema_version": "p107-official-coverage-expectations-v1",
+    "official_metadata_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "expected_task_ids": [0],
+    "expected_skill_verbs": ["GRASP", "HOLD", "NAVIGATE", "PRESS"]
   }
 }
