@@ -13,6 +13,7 @@ import select_memlite_event_annotation_queue as queue  # noqa: E402
 
 SOURCE_SHA = "e" * 64
 OWNER_PROTOCOL = REPO / "tests" / "fixtures" / "p107_memlite_event_protocol_fixture.py"
+OWNER_PROTOCOL_FIXTURE_SHA256 = "5259b3621b4c0d25cd150ef19a3c37d34d16beb6923684ce12ffdb22ef70df7b"
 OFFICIAL_SKILLS = (
     (10, "grasp an object"), (20, "open a receptacle"), (30, "place an object"),
     (40, "press a control"), (50, "wash an object"),
@@ -27,7 +28,7 @@ def digest(text):
 def protocol():
     if not OWNER_PROTOCOL.is_file():
         raise RuntimeError(f"missing pinned in-repository protocol fixture: {OWNER_PROTOCOL}")
-    return queue.load_canonical_protocol(OWNER_PROTOCOL, expected_sha256=queue.sha256_file(OWNER_PROTOCOL))
+    return queue.load_canonical_protocol(OWNER_PROTOCOL, expected_sha256=OWNER_PROTOCOL_FIXTURE_SHA256)
 
 
 def read_lines(path):
@@ -215,7 +216,7 @@ def args(index, output, coverage_path, *, seed="p107-metadata-candidate-selectio
         "--expected-source-release-manifest-sha256", SOURCE_SHA,
         "--expected-inventory-seal-sha256", queue.sha256_file(index / "inventory_seal.json"),
         "--coverage-expectations", str(coverage_path),
-        "--protocol-path", str(OWNER_PROTOCOL), "--expected-protocol-sha256", queue.sha256_file(OWNER_PROTOCOL),
+        "--protocol-path", str(OWNER_PROTOCOL), "--expected-protocol-sha256", OWNER_PROTOCOL_FIXTURE_SHA256,
         "--seed", seed, "--candidate-budget", "5", "--calibration-budget", "4",
         "--max-per-episode", "2", "--max-per-source-group", "4",
         "--min-separation-frames", "120", "--normal-control-fraction", "0.4",
@@ -398,6 +399,83 @@ class SelectMemliteEventAnnotationQueueTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "source identity"):
                 queue.build_queue(fake, root / "fake-output", args=args(fake, root / "fake-output", coverage))
 
+    def test_unrecognized_official_skill_and_task_are_excluded_before_selection(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            index = root / "unknown-skill-index"
+            coverage = write_index(index)
+            events_path = index / "event_candidates.jsonl"
+            events = read_lines(events_path)
+            target = next(row for row in events if row["usage_role"] == "student_candidate")
+            target["skill_bundle"][0]["skill_id"] = 999
+            target["skill_bundle"][0]["skill_description"] = "invented fallback description"
+            target["event_id"] = protocol().event_id(target)
+            target_id = target["event_id"]
+            events_path.write_text("".join(queue.canonical_json(row) + "\n" for row in events))
+            manifest = json.loads((index / "manifest.json").read_text())
+            manifest["files"]["event_candidates.jsonl"] = receipt(events_path)
+            (index / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
+            reseal_index(index, manifest)
+            output = root / "unknown-skill-queue"
+            queue.build_queue(index, output, args=args(index, output, coverage))
+            student = read_lines(output / "student_candidate_queue.jsonl")
+            self.assertNotIn(target_id, {job["event_id"] for job in student})
+            counts = json.loads((output / "counts.json").read_text())
+            self.assertEqual(counts["events_excluded_by_unrecognized_official_vocabulary"]["SKILL_ID:999"], 1)
+            self.assertNotIn("999", counts["student_candidate_queue"]["per_skill_id"])
+
+            task_index = root / "unknown-task-index"
+            coverage = write_index(task_index)
+            owner_protocol = protocol()
+            groups_path, events_path = task_index / "source_groups.jsonl", task_index / "event_candidates.jsonl"
+            groups, events = read_lines(groups_path), read_lines(events_path)
+            group = next(row for row in groups if row["usage_role"] == "student_candidate" and row["task_index"] == 1)
+            old_group_id = group["source_group_id"]
+            group["task_index"] = 999
+            group["source_group_id"] = source_group_id(owner_protocol, 999, group["task_instance_id"])
+            for event_row in events:
+                if event_row["source"]["source_group_id"] == old_group_id:
+                    event_row["source"]["task_index"] = 999
+                    event_row["source"]["source_group_id"] = group["source_group_id"]
+                    event_row["event_id"] = owner_protocol.event_id(event_row)
+            groups_path.write_text("".join(queue.canonical_json(row) + "\n" for row in groups))
+            events_path.write_text("".join(queue.canonical_json(row) + "\n" for row in events))
+            manifest = json.loads((task_index / "manifest.json").read_text())
+            manifest["files"]["source_groups.jsonl"] = receipt(groups_path)
+            manifest["files"]["event_candidates.jsonl"] = receipt(events_path)
+            (task_index / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
+            reseal_index(task_index, manifest)
+            output = root / "unknown-task-queue"
+            queue.build_queue(task_index, output, args=args(task_index, output, coverage))
+            counts = json.loads((output / "counts.json").read_text())
+            self.assertEqual(counts["events_excluded_by_unrecognized_official_vocabulary"]["TASK_ID:999"], 2)
+            self.assertNotIn("999", counts["student_candidate_queue"]["per_task"])
+
+    def test_streamed_zero_budget_role_is_not_retained_and_cap_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            index = root / "sealed-index"
+            coverage = write_index(index)
+            output = root / "calibration-only"
+            parsed = args(index, output, coverage)
+            parsed.candidate_budget = 0
+            parsed.calibration_budget = 4
+            parsed.max_retained_candidates = 4
+            queue.build_queue(index, output, args=parsed)
+            self.assertEqual(read_lines(output / "student_candidate_queue.jsonl"), [])
+            counts = json.loads((output / "counts.json").read_text())
+            self.assertEqual(counts["student_candidate_queue"]["coverage"]["eligible_pool_coverage_status"],
+                             "NOT_EVALUATED_ZERO_OUTPUT_BUDGET")
+            self.assertIsNone(counts["student_candidate_queue"]["coverage"]["missing_expected_skill_ids_from_pool"])
+
+            capped = root / "calibration-cap"
+            parsed = args(index, capped, coverage)
+            parsed.candidate_budget = 0
+            parsed.calibration_budget = 4
+            parsed.max_retained_candidates = 1
+            with self.assertRaisesRegex(ValueError, "retained candidate cap"):
+                queue.build_queue(index, capped, args=parsed)
+
     def test_budget_40_joint_reserve_covers_rare_official_skills(self):
         def candidate(task, sequence, skills):
             return queue.Candidate(
@@ -422,6 +500,7 @@ class SelectMemliteEventAnnotationQueueTests(unittest.TestCase):
     def test_v3_fixture_and_runtime_protocol_default_are_hermetic(self):
         self.assertTrue(OWNER_PROTOCOL.is_file())
         self.assertEqual(OWNER_PROTOCOL, REPO / "tests" / "fixtures" / "p107_memlite_event_protocol_fixture.py")
+        self.assertEqual(queue.sha256_file(OWNER_PROTOCOL), OWNER_PROTOCOL_FIXTURE_SHA256)
         self.assertEqual(queue.DEFAULT_PROTOCOL_PATH, REPO / "src" / "g05" / "data" / "memlite_event_protocol.py")
 
 

@@ -43,6 +43,7 @@ STATUS = "CANDIDATE_MISSING_EVIDENCE"
 DEFAULT_SOURCE_MANIFEST_SHA256 = "90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23"
 DEFAULT_SEED = "p107-metadata-candidate-selection-20261001"
 FRAME_RATE_HZ = 30
+ABSOLUTE_MAX_RETAINED_CANDIDATES = 50000
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PROTOCOL_PATH = REPOSITORY_ROOT / "src" / "g05" / "data" / "memlite_event_protocol.py"
 QUEUE_PAYLOAD_FILES = frozenset((
@@ -66,7 +67,8 @@ RENDER_REQUEST_FIELDS = frozenset((
 ))
 COUNTS_FIELDS = frozenset((
     "schema_version", "status", "training_eligible", "source_role_inventory", "events_excluded_by_role",
-    "student_candidate_queue", "annotation_calibration_queue", "existing_local_single_frame_pilot",
+    "events_excluded_by_unrecognized_official_vocabulary", "student_candidate_queue",
+    "annotation_calibration_queue", "existing_local_single_frame_pilot",
 ))
 MANIFEST_FIELDS = frozenset((
     "schema_version", "status", "training_eligible", "all_jobs_status", "source_release_manifest_sha256",
@@ -80,7 +82,7 @@ POLICY_CORE_FIELDS = frozenset((
     "calibration_budget", "max_per_episode", "max_per_source_group", "min_separation_frames",
     "boundary_gap_frames", "long_interval_frames", "normal_control_fraction", "actor_history_frames",
     "review_before_frames", "review_after_frames", "review_sample_stride_frames", "no_rgb_decode_by_selector",
-    "action_sequence_heuristic", "supported_source_kinds", "all_jobs_status",
+    "action_sequence_heuristic", "supported_source_kinds", "all_jobs_status", "max_retained_candidates",
 ))
 
 
@@ -122,10 +124,9 @@ def read_json(path: Path) -> Any:
     return _strict_json(path.read_bytes(), name=str(path))
 
 
-def read_jsonl(path: Path) -> list[dict[str, Any]]:
+def iter_jsonl(path: Path) -> Iterable[dict[str, Any]]:
     if path.is_symlink() or not path.is_file():
         raise ValueError(f"Required regular JSONL input is missing: {path}")
-    rows: list[dict[str, Any]] = []
     with path.open("rb") as stream:
         for line_number, line in enumerate(stream, start=1):
             if not line.strip():
@@ -133,8 +134,11 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
             row = _strict_json(line, name=f"{path}:{line_number}")
             if not isinstance(row, dict):
                 raise ValueError(f"Expected object at {path}:{line_number}")
-            rows.append(row)
-    return rows
+            yield row
+
+
+def read_jsonl(path: Path) -> list[dict[str, Any]]:
+    return list(iter_jsonl(path))
 
 
 def is_sha256(value: Any) -> bool:
@@ -322,7 +326,7 @@ def skill_key(skill: Mapping[str, Any]) -> str:
 
 
 def validate_index(index: Path, *, expected_source_manifest_sha256: str,
-                   canonical_protocol: Any, expected_protocol_sha256: str) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, SourceGroup]]:
+                   canonical_protocol: Any, expected_protocol_sha256: str) -> tuple[dict[str, Any], Path, dict[str, SourceGroup]]:
     """Verify the exact sealed input before sampling any metadata candidate."""
     index = Path(index)
     if index.is_symlink() or not index.is_dir():
@@ -345,11 +349,9 @@ def validate_index(index: Path, *, expected_source_manifest_sha256: str,
     source_groups_path, events_path = index / "source_groups.jsonl", index / "event_candidates.jsonl"
     file_receipt(source_groups_path, expected=files.get("source_groups.jsonl", {}))
     file_receipt(events_path, expected=files.get("event_candidates.jsonl", {}))
-    source_rows, event_rows = read_jsonl(source_groups_path), read_jsonl(events_path)
+    source_rows = read_jsonl(source_groups_path)
     if files["source_groups.jsonl"].get("rows") != len(source_rows):
         raise ValueError("sealed source-group row count mismatch")
-    if files["event_candidates.jsonl"].get("rows") != len(event_rows):
-        raise ValueError("sealed event row count mismatch")
     source_groups: dict[str, SourceGroup] = {}
     for row in source_rows:
         group_id = row.get("source_group_id")
@@ -383,7 +385,9 @@ def validate_index(index: Path, *, expected_source_manifest_sha256: str,
             raise ValueError("source group ID is not canonical for its immutable release/task/instance")
         source_groups[str(group_id)] = SourceGroup(str(group_id), str(source_release), task_id, task_instance_id,
                                                     str(original_split), str(usage_role), tuple(episodes))
-    return manifest, event_rows, source_groups
+    # Event rows are parsed in a single streaming pass by parse_candidates;
+    # retaining a 1GiB full index here would make a 40-window queue unbounded.
+    return manifest, events_path, source_groups
 
 
 def validate_inventory_seal(index: Path, *, expected_inventory_seal_sha256: str) -> tuple[Mapping[str, Any], str]:
@@ -434,21 +438,29 @@ def validate_inventory_seal(index: Path, *, expected_inventory_seal_sha256: str)
     return seal, actual
 
 
-def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Mapping[str, SourceGroup], *,
-                     expected_source_manifest_sha256: str,
-                     canonical_protocol: Any,
-                     boundary_gap_frames: int, long_interval_frames: int) -> tuple[list[Candidate], Counter[str]]:
-    """Parse only metadata candidate fields and derive review heuristics."""
-    if boundary_gap_frames < 0 or long_interval_frames < 1:
+def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_groups: Mapping[str, SourceGroup], *,
+                     expected_source_manifest_sha256: str, canonical_protocol: Any,
+                     expected_task_ids: Iterable[int], expected_skill_ids: Iterable[int],
+                     retained_usage_roles: set[str], max_retained_candidates: int,
+                     expected_event_rows: int,
+                     boundary_gap_frames: int, long_interval_frames: int) -> tuple[list[Candidate], Counter[str], Counter[str]]:
+    """Stream-validate events and retain only bounded, official-vocabulary candidates."""
+    if (boundary_gap_frames < 0 or long_interval_frames < 1 or max_retained_candidates < 1 or
+            not retained_usage_roles <= {"student_candidate", "annotation_calibration"}):
         raise ValueError("boundary gap and long interval policy values are invalid")
+    official_task_ids, official_skill_ids = set(expected_task_ids), set(expected_skill_ids)
     parsed: list[dict[str, Any]] = []
     excluded_roles: Counter[str] = Counter()
+    excluded_unrecognized_vocabulary: Counter[str] = Counter()
     seen_event_ids: set[str] = set()
     # Usage roles are immutable split reservations.  Even metadata-only
     # sampling features must not borrow occurrence counts from calibration or
     # eval groups when ranking student candidates.
     repeats: dict[tuple[str, int, str], set[tuple[str, int, int]]] = defaultdict(set)
-    for event in event_rows:
+    rows = iter_jsonl(event_rows) if isinstance(event_rows, Path) else event_rows
+    row_count = 0
+    for event in rows:
+        row_count += 1
         # Do this before role exclusion: eval is excluded from queues, not
         # exempted from canonical source/event identity validation.
         canonical_protocol.validate_event(event)
@@ -477,11 +489,18 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Map
             continue
         if group.original_split != "train" or group.usage_role not in {"student_candidate", "annotation_calibration"}:
             raise ValueError("a non-eval event has an invalid train usage role")
-        # Candidate selection requires the index to keep missing evidence
-        # explicit.  It rejects a pre-labeled input rather than forwarding it.
+        # Even an output-zero role must not let a pre-labeled source event
+        # cross this candidate-only queue boundary.
         evidence = require_mapping(event.get("evidence"), f"{event_id}.evidence")
         if evidence != {"kind": "MISSING", "evidence_end_frame": None, "available_frame": None}:
             raise ValueError("metadata candidate index carries non-missing evidence")
+        if group.task_id not in official_task_ids:
+            excluded_unrecognized_vocabulary[f"TASK_ID:{group.task_id}"] += 1
+            continue
+        if group.usage_role not in retained_usage_roles:
+            # The stream still validates every source/event identity, but a
+            # zero-budget role cannot consume a full-index candidate heap.
+            continue
         observation = require_mapping(event.get("observation"), f"{event_id}.observation")
         interval = require_mapping(event.get("event_interval"), f"{event_id}.event_interval")
         anchor = require_int(observation.get("frame"), f"{event_id}.observation.frame")
@@ -510,7 +529,15 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Map
                 raw_source_verbs.append(verb)
             token = skill_key(mapping)
             keys.append(token)
+        unknown_skill_ids = sorted(set(skill_ids) - official_skill_ids)
+        if unknown_skill_ids:
+            for skill_id in unknown_skill_ids:
+                excluded_unrecognized_vocabulary[f"SKILL_ID:{skill_id}"] += 1
+            continue
+        for token in keys:
             repeats[group.usage_role, group.task_id, token].add((group_id, raw_episode_id, episode_index))
+        if len(parsed) >= max_retained_candidates:
+            raise ValueError("retained candidate cap reached; provide a narrower approved source-role/group subset")
         parsed.append({
             "event": event, "event_id": str(event_id), "source_group_id": group_id,
             "task_id": group.task_id, "task_instance_id": group.task_instance_id,
@@ -519,6 +546,8 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Map
             "interval_end": end, "skill_ids": tuple(sorted(set(skill_ids))),
             "raw_source_verbs": tuple(sorted(set(raw_source_verbs))), "skill_keys": tuple(sorted(set(keys))),
         })
+    if row_count != expected_event_rows:
+        raise ValueError("sealed event row count mismatch")
     by_episode: dict[tuple[str, int, int], list[dict[str, Any]]] = defaultdict(list)
     for row in parsed:
         by_episode[row["episode_key"]].append(row)
@@ -549,7 +578,7 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]], source_groups: Map
         candidates.append(Candidate(**row, repeat_attempt_count=repeated, boundary_before=before,
                                     boundary_after=after, long_interval=long_interval, candidate_signals=tuple(signals),
                                     selection_stratum=signals[0]))
-    return candidates, excluded_roles
+    return candidates, excluded_roles, excluded_unrecognized_vocabulary
 
 
 def candidate_rank(candidate: Candidate, seed: str) -> tuple[int, int, int, int, str]:
@@ -926,7 +955,8 @@ def validate_queue_payloads(student_jobs: Sequence[Any], calibration_jobs: Seque
 
 
 def count_queue(pool: Sequence[Candidate], selected: Sequence[tuple[Candidate, str]], *, budget: int,
-                near_duplicates: Mapping[str, Any], coverage_expectations: Mapping[str, Any]) -> dict[str, Any]:
+                near_duplicates: Mapping[str, Any], coverage_expectations: Mapping[str, Any],
+                eligible_pool_retained: bool) -> dict[str, Any]:
     selected_candidates = [candidate for candidate, _ in selected]
     def per_task(items: Sequence[Candidate]) -> dict[str, int]:
         return {str(task): count for task, count in sorted(Counter(candidate.task_id for candidate in items).items())}
@@ -968,22 +998,29 @@ def count_queue(pool: Sequence[Candidate], selected: Sequence[tuple[Candidate, s
         "coverage": {
             "expected_task_ids": sorted(expected_tasks),
             "expected_task_count": len(expected_tasks),
-            "tasks_present_in_eligible_pool": sorted(pool_tasks),
+            "eligible_pool_coverage_status": (
+                "EVALUATED_RETAINED_ROLE" if eligible_pool_retained else "NOT_EVALUATED_ZERO_OUTPUT_BUDGET"
+            ),
+            "tasks_present_in_eligible_pool": sorted(pool_tasks) if eligible_pool_retained else None,
             "tasks_queued": sorted(queued_tasks),
-            "tasks_present_but_not_queued": sorted(pool_tasks - queued_tasks),
-            "missing_expected_task_ids_from_pool": sorted(expected_tasks - pool_tasks),
-            "unexpected_task_ids_in_pool": sorted(pool_tasks - expected_tasks),
+            "tasks_present_but_not_queued": sorted(pool_tasks - queued_tasks) if eligible_pool_retained else None,
+            "missing_expected_task_ids_from_pool": sorted(expected_tasks - pool_tasks) if eligible_pool_retained else None,
+            "unexpected_task_ids_in_pool": sorted(pool_tasks - expected_tasks) if eligible_pool_retained else None,
             "expected_skill_vocabulary": expected_vocabulary,
             "expected_skill_ids": sorted(expected_skills),
             "expected_skill_count": len(expected_skills),
-            "skill_ids_present_in_eligible_pool": sorted(pool_skills),
+            "skill_ids_present_in_eligible_pool": sorted(pool_skills) if eligible_pool_retained else None,
             "skill_ids_queued": sorted(queued_skills),
-            "skill_ids_present_but_not_queued": sorted(pool_skills - queued_skills),
-            "skill_count_seen": len(pool_skills),
-            "missing_expected_skill_ids_from_pool": sorted(expected_skills - pool_skills),
-            "unexpected_source_skill_ids_in_pool": sorted(pool_skills - expected_skills),
-            "global_vocabulary_complete": not (expected_tasks - pool_tasks) and not (expected_skills - pool_skills),
-            "raw_source_verbs_diagnostic": sorted({verb for candidate in pool for verb in candidate.raw_source_verbs}),
+            "skill_ids_present_but_not_queued": sorted(pool_skills - queued_skills) if eligible_pool_retained else None,
+            "skill_count_seen": len(pool_skills) if eligible_pool_retained else None,
+            "missing_expected_skill_ids_from_pool": sorted(expected_skills - pool_skills) if eligible_pool_retained else None,
+            "unexpected_source_skill_ids_in_pool": sorted(pool_skills - expected_skills) if eligible_pool_retained else None,
+            "global_vocabulary_complete": (
+                not (expected_tasks - pool_tasks) and not (expected_skills - pool_skills) if eligible_pool_retained else None
+            ),
+            "raw_source_verbs_diagnostic": (
+                sorted({verb for candidate in pool for verb in candidate.raw_source_verbs}) if eligible_pool_retained else None
+            ),
             "required_task_skill_pairs": required_pairs,
             "required_task_skill_pair_queue_coverage": required_pair_coverage,
             "required_task_skill_pair_queue_status": (
@@ -1001,10 +1038,12 @@ def policy_from_args(args: argparse.Namespace, *, index_manifest_sha256: str,
         "candidate_budget": 0, "calibration_budget": 0, "max_per_episode": 1,
         "max_per_source_group": 1, "min_separation_frames": 0, "boundary_gap_frames": 0,
         "long_interval_frames": 1, "actor_history_frames": 0, "review_before_frames": 0,
-        "review_after_frames": 0, "review_sample_stride_frames": 1,
+        "review_after_frames": 0, "review_sample_stride_frames": 1, "max_retained_candidates": 1,
     }
     for name, minimum in integer_bounds.items():
         require_int(getattr(args, name), f"--{name.replace('_', '-')}", minimum=minimum)
+    if args.max_retained_candidates > ABSOLUTE_MAX_RETAINED_CANDIDATES:
+        raise ValueError("--max-retained-candidates exceeds the hard bounded-memory queue limit")
     if (not isinstance(args.seed, str) or not args.seed or type(args.normal_control_fraction) not in (int, float) or
             isinstance(args.normal_control_fraction, bool) or not math.isfinite(args.normal_control_fraction) or
             not 0.0 <= args.normal_control_fraction <= 1.0):
@@ -1030,6 +1069,7 @@ def policy_from_args(args: argparse.Namespace, *, index_manifest_sha256: str,
         "review_before_frames": args.review_before_frames,
         "review_after_frames": args.review_after_frames,
         "review_sample_stride_frames": args.review_sample_stride_frames,
+        "max_retained_candidates": args.max_retained_candidates,
         "no_rgb_decode_by_selector": True,
         "action_sequence_heuristic": "DISABLED_NO_TRUSTED_EXECUTED_ACTION_PROOF",
         "supported_source_kinds": ["LOGGED_EXPERT_DEMONSTRATION_METADATA_CANDIDATE"],
@@ -1040,7 +1080,9 @@ def policy_from_args(args: argparse.Namespace, *, index_manifest_sha256: str,
 
 def build_queue_payloads(candidates: Sequence[Candidate], groups: Mapping[str, SourceGroup], *,
                          policy: Mapping[str, Any], coverage_expectations: Mapping[str, Any],
-                         excluded_roles: Mapping[str, int]) -> dict[str, Any]:
+                         excluded_roles: Mapping[str, int],
+                         excluded_unrecognized_vocabulary: Mapping[str, int],
+                         retained_usage_roles: set[str]) -> dict[str, Any]:
     """Reconstruct every derived payload solely from validated input and policy."""
     expected_skill_ids = [skill["skill_id"] for skill in coverage_expectations["expected_skill_vocabulary"]]
     student_pool = [candidate for candidate in candidates if candidate.event["usage_role"] == "student_candidate"]
@@ -1086,12 +1128,16 @@ def build_queue_payloads(candidates: Sequence[Candidate], groups: Mapping[str, S
         "training_eligible": False,
         "source_role_inventory": dict(sorted(Counter(group.usage_role for group in groups.values()).items())),
         "events_excluded_by_role": dict(sorted(excluded_roles.items())),
+        "events_excluded_by_unrecognized_official_vocabulary": dict(
+            sorted(excluded_unrecognized_vocabulary.items())),
         "student_candidate_queue": count_queue(
             student_pool, selected_student, budget=policy["candidate_budget"], near_duplicates=student_diagnostics,
-            coverage_expectations=coverage_expectations),
+            coverage_expectations=coverage_expectations,
+            eligible_pool_retained="student_candidate" in retained_usage_roles),
         "annotation_calibration_queue": count_queue(
             calibration_pool, selected_calibration, budget=policy["calibration_budget"],
-            near_duplicates=calibration_diagnostics, coverage_expectations=coverage_expectations),
+            near_duplicates=calibration_diagnostics, coverage_expectations=coverage_expectations,
+            eligible_pool_retained="annotation_calibration" in retained_usage_roles),
         "existing_local_single_frame_pilot": {
             "count": 24,
             "scope": "historical first-five-task auxiliary visual-relation calibration only",
@@ -1188,13 +1234,22 @@ def build_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict[
                               inventory_seal_sha256=inventory_seal_sha256,
                               protocol_sha256=args.expected_protocol_sha256,
                               coverage_expectations_sha256=canonical_sha256(coverage_expectations))
-    candidates, excluded_roles = parse_candidates(
+    retained_usage_roles = {
+        role for role, budget in (("student_candidate", policy["candidate_budget"]),
+                                  ("annotation_calibration", policy["calibration_budget"])) if budget > 0
+    }
+    candidates, excluded_roles, excluded_unrecognized_vocabulary = parse_candidates(
         event_rows, groups, expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
-        canonical_protocol=canonical_protocol,
+        canonical_protocol=canonical_protocol, expected_task_ids=coverage_expectations["expected_task_ids"],
+        expected_skill_ids=[skill["skill_id"] for skill in coverage_expectations["expected_skill_vocabulary"]],
+        retained_usage_roles=retained_usage_roles, max_retained_candidates=policy["max_retained_candidates"],
+        expected_event_rows=manifest["files"]["event_candidates.jsonl"]["rows"],
         boundary_gap_frames=args.boundary_gap_frames,
-                                                  long_interval_frames=args.long_interval_frames)
+        long_interval_frames=args.long_interval_frames)
     payloads = build_queue_payloads(candidates, groups, policy=policy, coverage_expectations=coverage_expectations,
-                                    excluded_roles=excluded_roles)
+                                    excluded_roles=excluded_roles,
+                                    excluded_unrecognized_vocabulary=excluded_unrecognized_vocabulary,
+                                    retained_usage_roles=retained_usage_roles)
     student_jobs = payloads["student_jobs"]
     calibration_jobs = payloads["calibration_jobs"]
     render_requests = payloads["render_requests"]
@@ -1322,12 +1377,22 @@ def resume_queue(index: Path, output: Path, *, args: argparse.Namespace) -> dict
         expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
         expected_protocol_sha256=args.expected_protocol_sha256,
         expected_coverage_expectations_sha256=coverage_sha256)
-    candidates, excluded_roles = parse_candidates(
+    retained_usage_roles = {
+        role for role, budget in (("student_candidate", policy["candidate_budget"]),
+                                  ("annotation_calibration", policy["calibration_budget"])) if budget > 0
+    }
+    candidates, excluded_roles, excluded_unrecognized_vocabulary = parse_candidates(
         event_rows, groups, expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
-        canonical_protocol=canonical_protocol, boundary_gap_frames=policy["boundary_gap_frames"],
+        canonical_protocol=canonical_protocol, expected_task_ids=coverage_expectations["expected_task_ids"],
+        expected_skill_ids=[skill["skill_id"] for skill in coverage_expectations["expected_skill_vocabulary"]],
+        retained_usage_roles=retained_usage_roles, max_retained_candidates=policy["max_retained_candidates"],
+        expected_event_rows=index_manifest["files"]["event_candidates.jsonl"]["rows"],
+        boundary_gap_frames=policy["boundary_gap_frames"],
         long_interval_frames=policy["long_interval_frames"])
     payloads = build_queue_payloads(candidates, groups, policy=policy, coverage_expectations=coverage_expectations,
-                                    excluded_roles=excluded_roles)
+                                    excluded_roles=excluded_roles,
+                                    excluded_unrecognized_vocabulary=excluded_unrecognized_vocabulary,
+                                    retained_usage_roles=retained_usage_roles)
     expected_manifest = queue_manifest(
         source_release_manifest_sha256=args.expected_source_release_manifest_sha256,
         index_manifest_sha256=index_manifest_sha256, inventory_seal_sha256=inventory_seal_sha256,
@@ -1375,6 +1440,8 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--review-before-frames", type=int, default=60)
     result.add_argument("--review-after-frames", type=int, default=60)
     result.add_argument("--review-sample-stride-frames", type=int, default=15)
+    result.add_argument("--max-retained-candidates", type=int, default=ABSOLUTE_MAX_RETAINED_CANDIDATES,
+                        help="hard memory bound after streaming validation; narrow the approved role/group scope if exceeded")
     result.add_argument("--resume", action="store_true")
     return result
 
