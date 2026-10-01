@@ -103,6 +103,7 @@ OFFICIAL_CATEGORY_MAPPING_URL = (
     f"{OFFICIAL_CATEGORY_COMMIT}/bddl3/bddl/generated_data/category_mapping.csv"
 )
 OFFICIAL_CATEGORY_ROWS = 2424
+QUERY_TEMPLATE_REVISION_V5 = "v5_official_category_grounding_exact_membership"
 
 
 def canonical_json(value: Any) -> str:
@@ -170,7 +171,13 @@ def resolve_category(raw_id: str, category_mapping: dict[str, str]) -> dict[str,
     quarantined instead of falling back to a lossy string heuristic.
     """
 
+    # A raw metadata token can already be the canonical category (for example
+    # ``electric_switch``) rather than a category plus an opaque instance
+    # suffix.  Treat that exact vocabulary membership as resolved, while
+    # retaining the boundary-aware longest-prefix rule for suffixed IDs.
     matches = [category for category in category_mapping if raw_id.startswith(f"{category}_")]
+    if raw_id in category_mapping:
+        matches.append(raw_id)
     if not matches:
         return {
             "status": "UNKNOWN_CATEGORY",
@@ -195,18 +202,7 @@ def resolve_category(raw_id: str, category_mapping: dict[str, str]) -> dict[str,
             "candidate_categories": sorted(longest),
         }
     category = longest[0]
-    suffix = raw_id[len(category) + 1 :]
-    if not suffix:
-        return {
-            "status": "UNKNOWN_CATEGORY",
-            "raw_object_id": raw_id,
-            "category": None,
-            "prompt_noun": None,
-            "synset": None,
-            "opaque_instance_suffix": None,
-            "quarantine": True,
-            "candidate_categories": [category],
-        }
+    suffix = raw_id[len(category) + 1 :] if raw_id != category else None
     return {
         "status": "RESOLVED",
         "raw_object_id": raw_id,
@@ -1489,7 +1485,7 @@ def build_phase_registry(
     metadata = {
         "schema_version": "p107.visual_relation_query_prelabel_build.v1",
         "query_template_revision": (
-            "v4_official_category_grounding_parts_effects" if category_mapping is not None
+            QUERY_TEMPLATE_REVISION_V5 if category_mapping is not None
             else "v3_entity_grounded_parts_and_effects"
         ),
         "quality_revision": "CORRECTED_AFTER_INDEPENDENT_METADATA_REVIEW",

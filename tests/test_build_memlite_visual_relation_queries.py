@@ -264,6 +264,10 @@ class PrelabelProducerTest(unittest.TestCase):
             self.assertEqual(resolved["category"], category)
             self.assertEqual(resolved["prompt_noun"], noun)
             self.assertEqual(resolved["opaque_instance_suffix"], suffix)
+        exact = producer.resolve_category("box_of_oatmeal", mapping)
+        self.assertEqual(exact["status"], "RESOLVED")
+        self.assertEqual(exact["prompt_noun"], "box of oatmeal")
+        self.assertIsNone(exact["opaque_instance_suffix"])
         self.assertEqual(
             producer.relation_phrase(
                 "CHOP", ["half_bell_pepper_214_1"], [], {"target_part": ""}, mapping
@@ -277,9 +281,10 @@ class PrelabelProducerTest(unittest.TestCase):
         self.assertEqual(no_match["status"], "UNKNOWN_CATEGORY")
         self.assertTrue(no_match["quarantine"])
         self.assertIsNone(no_match["prompt_noun"])
-        empty_suffix = producer.resolve_category("box", mapping)
-        self.assertEqual(empty_suffix["status"], "UNKNOWN_CATEGORY")
-        self.assertTrue(empty_suffix["quarantine"])
+        exact_category = producer.resolve_category("box", mapping)
+        self.assertEqual(exact_category["status"], "RESOLVED")
+        self.assertEqual(exact_category["prompt_noun"], "box")
+        self.assertIsNone(exact_category["opaque_instance_suffix"])
         query = producer.relation_phrase(
             "CHOP", ["mystery_asset_123"], [], {"target_part": ""}, mapping
         )

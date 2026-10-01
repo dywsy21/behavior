@@ -25,7 +25,11 @@ future actor evidence, or postlabel view IDs.  Navigation distance/pose,
 press success, handover recipient identity, and historical state changes keep
 their existing state/prestate gates.
 
-Reproduce the external v4 output with:
+The following command documents the original v4 build input.  The v4 output is
+frozen; the current producer contains the v5 exact-category-membership
+correction, so a fresh build should use the v5 output directory and v5 commit.
+
+Reproduce the original v4 output by checking out commit `3d46760` first, then:
 
 ```sh
 python scripts/data/build_memlite_visual_relation_queries.py \
