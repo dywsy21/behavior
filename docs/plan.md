@@ -16,7 +16,7 @@
 
 - 四名`gpt-5.6-luna/max`标注 agent（`/root/phase40_label_s0..s3`）已实际启动，各负责phase-queue `selection_order`的10条（合计0..39），只写外部`/home/wsy/behavior-annotations/p107/temporal-annotations/phase40-v5/shard0..3`；每片15分钟，证据严格不晚于anchor。root已审40/40 anchors及40/40 v5 query texts；本轮仅calibration labels，禁止动作、outcome/recovery、training或release声明。
 - v5 artifact已独立批准：40 rows、64 resolved、0 UNKNOWN_CATEGORY，query/registry/manifest SHA分别为`75c30de9…`/`a9f35d1d…`/`03a63c7…`。q11 relation semantics仍未解，必须`UNKNOWN`且`mask=false`；category grounding不等于语义真值。source-guard follow-up `a58e8cf`修复空`box_` suffix、artifact不变，但其最终代码复审未完成，故query-producer仍不集成。
-- packer optional actor-query sidecar的`2fc99e6`与`a8dbf1a`均已独审APPROVED（20 packer+14 actor+5 audit通过）；根仅开始移植这两条批准提交，要求expected registry SHA、全goal/UNKNOWN binding覆盖、legacy omission与所有training gates=false。phase40 mini-index的partial coverage仍被current packer正确拒绝，未授权waiver或实际phase pack。
+- packer optional actor-query sidecar的`2fc99e6`与`a8dbf1a`均已独审APPROVED并已按顺序移植为根`e7ac017`→`fcdcef7`；root复跑packer20、actor14、audit5、protocol13，另有CLI help、ruff与diff checks均通过。expected registry SHA、全goal/UNKNOWN binding覆盖、legacy omission与所有training gates=false均保持；phase40 mini-index的partial coverage仍被current packer正确拒绝，未授权waiver或实际phase pack。
 
 ### 2026-10-02（北京时间）：P107 CAL40 标准结构审计通过但仍严格阻断 stage3；v4 query text resolver 复审阻断派发（Codex / P107-COORD）
 
