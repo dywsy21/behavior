@@ -15,6 +15,103 @@ from test_build_memlite_event_index import coverage, write_release  # noqa: E402
 
 
 class RenderEventPacketsTests(unittest.TestCase):
+    def test_sealed_ten_slot_calibration_request_keeps_actor_and_future_panels_separate(self):
+        from PIL import Image
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            release = root / "release"
+            fixture = write_release(release)
+            index = root / "index"
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
+            event = json.loads((index / "event_candidates.jsonl").read_text().splitlines()[0])
+            self.assertEqual(event["usage_role"], "annotation_calibration")
+            offsets = (-60, -45, -30, -15, 0, 1, 16, 31, 46, 60)
+            samples = renderer._temporal_samples(event, offsets)
+            self.assertEqual([sample["sample_frame"] for sample in samples], [0, 1, 16, 31, 46, 60])
+            request = {
+                "schema_version": "p107-camera-native-temporal-request-v1", "request_id": "1" * 64,
+                "event_id": event["event_id"],
+                "source_identity": {key: event["source"][key] for key in (
+                    "source_release_manifest_sha256", "source_annotation_sha256", "task_index", "task_instance_id",
+                    "raw_episode_id", "episode_index", "source_group_id")},
+                "anchor_camera_locators": event["video_locators"],
+                "actor_available_frame_indices": [0], "offline_review_before_frame_indices": [],
+                "offline_review_after_frame_indices": [1, 16, 31, 46, 60],
+                "requested_frame_indices": [0, 1, 16, 31, 46, 60],
+                "camera_delivery": {"camera_native_only": True, "include_footer": False,
+                                    "allow_contact_sheet_in_actor_input": False, "decoded_by_selector": False,
+                                    "forbidden_footer_fields": ["outcome", "success", "failure", "recovery", "label", "evidence", "review"]},
+                "frame_locator_resolution": "RENDERER_MUST_LOOK_UP_EACH_REQUESTED_FRAME_FROM_FROZEN_SOURCE_METADATA",
+                "status": "PENDING_RENDERER_HANDSHAKE_NO_RGB_DECODED",
+            }
+            queue_root = root / "queue"
+            queue_root.mkdir()
+            request_path = queue_root / "camera_native_render_requests.jsonl"
+            request_path.write_text(renderer.canonical_json(request) + "\n")
+            request_sha = renderer._sha256(request_path)
+            for filename, contents in {
+                "annotation_calibration_queue.jsonl": b"{}\n",
+                "counts.json": b"{}\n",
+                "student_candidate_queue.jsonl": b"",
+            }.items():
+                (queue_root / filename).write_bytes(contents)
+            expected_files = ["annotation_calibration_queue.jsonl", "camera_native_render_requests.jsonl",
+                              "counts.json", "student_candidate_queue.jsonl"]
+            payload_files = {}
+            for filename in expected_files:
+                source = queue_root / filename
+                payload_files[filename] = {"sha256": renderer._sha256(source), "bytes": source.stat().st_size,
+                                           "rows": len([line for line in source.read_bytes().splitlines() if line.strip()])}
+            seal = {
+                "schema_version": "p107-metadata-annotation-queue-seal-v1", "canonical_protocol_sha256": "2" * 64,
+                "coverage_expectations_sha256": "3" * 64, "expected_payload_files": expected_files,
+                "inventory_seal_sha256": "4" * 64, "payload_files": payload_files, "policy_sha256": "5" * 64,
+                "queue_manifest_sha256": "6" * 64,
+                "source_release_manifest_sha256": event["source"]["source_release_manifest_sha256"],
+            }
+            seal_path = queue_root / "queue_seal.json"
+            seal_path.write_text(renderer.canonical_json(seal) + "\n")
+            seal_sha = renderer._sha256(seal_path)
+            requests, loaded_sha = renderer._read_render_requests(request_path, request_sha)
+            queue_seal_sha, queue_source_sha = renderer._read_queue_seal(
+                seal_path, seal_sha, render_requests_path=request_path, render_requests_sha256=loaded_sha)
+            self.assertEqual(queue_seal_sha, seal_sha)
+            self.assertEqual(queue_source_sha, event["source"]["source_release_manifest_sha256"])
+            raw_root = root / "raw"
+            raw_root.mkdir()
+
+            def fake_decode(_av, _video, requested, **bounds):
+                return Image.new("RGB", (8, 6), "red"), {
+                    "resolved_path": "/fixture/shared.mp4", "bytes": 1, "mtime_ns": 1,
+                    "requested_timestamp_s": requested, "decoded_timestamp_s": requested, "pts_error_s": 0.0,
+                    "fps": 30, "resolution": [8, 6],
+                    "episode_global_pts_bounds_s": [bounds["episode_start_timestamp_s"], bounds["episode_end_timestamp_s"]],
+                    "actor_anchor_timestamp_s": bounds["actor_anchor_timestamp_s"], "full_video_sha256": None,
+                }
+
+            with patch.object(renderer, "_require_decode_dependencies", return_value=(object(), Image, None)), \
+                 patch.object(renderer, "_resolve_video", return_value=raw_root / "placeholder.mp4"), \
+                 patch.object(renderer, "_decode_rgb", side_effect=fake_decode):
+                packets = root / "packets"
+                result = renderer.create_packets(
+                    index, packets, event_ids={event["event_id"]}, limit=None, questions={},
+                    include_source_annotation_context=False, decode=True, raw_root=raw_root, contact_sheets=False,
+                    temporal_offsets_frames=offsets, render_requests=requests,
+                    render_requests_sha256=loaded_sha, queue_seal_sha256=seal_sha,
+                    queue_seal_source_release_manifest_sha256=queue_source_sha, max_seconds=10)
+            row = json.loads((packets / "packets.jsonl").read_text())
+            self.assertEqual(result["render_requests_sha256"], request_sha)
+            self.assertEqual(result["queue_seal_sha256"], seal_sha)
+            self.assertEqual(row["audit"]["requested_temporal_slot_count"], 10)
+            self.assertEqual(row["audit"]["temporal_slot_count"], 6)
+            self.assertEqual(row["audit"]["clamped_duplicate_sample_frame_count"], 4)
+            self.assertEqual([sample["sample_frame"] for sample in row["actor_packet"]["causal_temporal_rgb"]], [0])
+            self.assertEqual([sample["sample_frame"] for sample in row["audit"]["offline_future_rgb"]], [1, 16, 31, 46, 60])
+            self.assertEqual(renderer.resume_packets(
+                index, packets, expected_packet_manifest_sha256=result["packet_manifest_sha256"])["status"],
+                "RESUME_VALIDATED")
+
     def test_locator_packet_is_camera_separated_and_has_no_footer_or_label_in_actor_input(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -104,10 +201,11 @@ class RenderEventPacketsTests(unittest.TestCase):
                 result = renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
                                                  include_source_annotation_context=False, decode=True, raw_root=raw_root,
                                                  contact_sheets=False, max_seconds=10)
-            self.assertEqual(result["rendered_asset_receipts"], 21)
+            schedule = json.loads((packets / "packets.jsonl").read_text())["audit"]["temporal_schedule"]
+            self.assertEqual(result["rendered_asset_receipts"], len(schedule) * 3)
             assets = [json.loads(line) for line in (packets / "rendered_asset_receipts.jsonl").read_text().splitlines()]
             self.assertEqual([row["view"] for row in assets[:3]], ["head", "left_wrist", "right_wrist"])
-            self.assertEqual({row["sample_index"] for row in assets}, set(range(7)))
+            self.assertEqual({row["sample_index"] for row in assets}, set(range(len(schedule))))
             self.assertEqual({row["temporal_role"] for row in assets},
                              {"ACTOR_CAUSAL", "OFFLINE_FUTURE_AUDIT"})
             for row in assets:
@@ -148,8 +246,8 @@ class RenderEventPacketsTests(unittest.TestCase):
                 result = renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
                                                  include_source_annotation_context=False, decode=True, raw_root=raw_root,
                                                  contact_sheets=True, max_seconds=10)
-            self.assertEqual(result["rendered_asset_receipts"], 22)
             row = json.loads((packets / "packets.jsonl").read_text())
+            self.assertEqual(result["rendered_asset_receipts"], len(row["audit"]["temporal_schedule"]) * 3 + 1)
             self.assertTrue(all(path.startswith("assets/") for path in row["actor_packet"]["images"].values()))
             self.assertTrue(row["audit"]["review_only_contact_sheet"].startswith("review_assets/"))
             self.assertNotIn(row["audit"]["review_only_contact_sheet"], row["actor_packet"]["images"].values())
@@ -166,13 +264,13 @@ class RenderEventPacketsTests(unittest.TestCase):
             builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
             event = json.loads((index / "event_candidates.jsonl").read_text().splitlines()[0])
             start_samples = renderer._temporal_samples(event, renderer.TEMPORAL_SAMPLE_OFFSETS)
-            self.assertEqual(len(start_samples), 7)  # clipped repeats remain one packet, not extra candidates
-            self.assertEqual([sample["sample_frame"] for sample in start_samples[:5]], [0, 0, 0, 0, 0])
+            self.assertEqual([sample["sample_frame"] for sample in start_samples], [0, 15, 30])
+            self.assertEqual([sample["offset_frames"] for sample in start_samples], [0, 15, 30])
             late_event = json.loads(json.dumps(event))
             late_event["observation"]["frame"] = late_event["source"]["episode_length"] - 1
             end_samples = renderer._temporal_samples(late_event, renderer.TEMPORAL_SAMPLE_OFFSETS)
-            self.assertEqual([sample["sample_frame"] for sample in end_samples[-2:]],
-                             [late_event["source"]["episode_length"] - 1] * 2)
+            self.assertEqual(end_samples[-1]["sample_frame"], late_event["source"]["episode_length"] - 1)
+            self.assertEqual(end_samples[-1]["offset_frames"], 0)
 
             from PIL import Image
 
