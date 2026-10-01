@@ -132,9 +132,6 @@ def pretty_entity(entity: str) -> str:
     tokens = entity.split("_")
     if tokens and re.fullmatch(r"\d+", tokens[-1] or ""):
         tokens.pop()
-    # Release-like instance token (e.g. dszchb) is metadata, not a category.
-    if len(tokens) >= 2 and re.fullmatch(r"[a-z0-9]{5,8}", tokens[-1] or ""):
-        tokens.pop()
     return " ".join(tokens) or entity
 
 
@@ -142,11 +139,77 @@ def q_label(ids: list[str], fallback: str = "the named entity") -> str:
     if not ids:
         return fallback
     labels = [pretty_entity(item) for item in ids]
+    # Numeric instance suffixes are intentionally removed from display labels.
+    # If that makes two metadata entities share a label, retain the multiplicity
+    # instead of pretending that they are one object or guessing an identity.
+    counts: dict[str, int] = {}
+    order: list[str] = []
+    for label in labels:
+        if label not in counts:
+            order.append(label)
+            counts[label] = 0
+        counts[label] += 1
+    labels = [
+        f"{count} {label} entities" if (count := counts[label]) > 1 else label
+        for label in order
+    ]
     if len(labels) == 1:
         return labels[0]
     if len(labels) == 2:
         return f"{labels[0]} and {labels[1]}"
     return ", ".join(labels[:-1]) + f", and {labels[-1]}"
+
+
+def _entity_ids(value: str | list[str] | None) -> list[str]:
+    if isinstance(value, str):
+        return [value] if value else []
+    if value is None:
+        return []
+    return [item for item in value if isinstance(item, str) and item]
+
+
+def controlled_part_subject(verb: str, target: str, skill: dict[str, Any]) -> str:
+    """Name the controlled door/drawer/lid rather than only its parent body."""
+
+    target_label = pretty_entity(target) if target else "the named target"
+    target_lower = target_label.lower()
+    part = pretty_entity(str(skill.get("target_part") or ""))
+    if verb in {"OPEN_DOOR", "CLOSE_DOOR"}:
+        if "door" in part.lower():
+            return f"the {part} of {target_label}"
+        if part:
+            return f"the {part} door of {target_label}"
+        if "door" in target_lower:
+            return f"the {target_label}"
+        return f"the {target_label} door"
+    if verb in {"OPEN_DRAWER", "CLOSE_DRAWER"}:
+        if "drawer" in part.lower():
+            return f"the {part} of {target_label}"
+        if part:
+            return f"the {part} drawer of {target_label}"
+        if "drawer" in target_lower:
+            return f"the {target_label}"
+        return f"the {target_label} drawer"
+    if verb in {"OPEN_LID", "CLOSE_LID"}:
+        if part:
+            return f"the {part} of {target_label}"
+        if any(word in target_lower.split() for word in ("lid", "trunk", "hood")):
+            return f"the {target_label}"
+        if target_lower.split()[0] in {"car", "vehicle", "automobile"} or target_lower.endswith(" car"):
+            return f"the lid or trunk of the {target_label}"
+        return f"the {target_label} lid"
+    return f"the {target_label}"
+
+
+def effect_subject_phrase(target_ids: list[str], reference_ids: list[str]) -> str:
+    """Name effect entities without assigning unresolved source/destination roles."""
+
+    ids = [*target_ids, *reference_ids]
+    if not ids:
+        return "the grounded target or material entities"
+    if len(ids) == 1:
+        return f"the named entity {q_label(ids)}"
+    return f"the named entities {q_label(ids)}"
 
 
 def entity_record(entity_id: str, role: str, role_status: str, role_candidates: list[str] | None = None) -> dict[str, Any]:
@@ -436,8 +499,14 @@ def relation_family(verb: str) -> str:
     return "contact_current_relation"
 
 
-def relation_phrase(verb: str, target: str, refs: list[str], skill: dict[str, Any]) -> str:
-    target_label = pretty_entity(target) if target else "the named target"
+def relation_phrase(
+    verb: str,
+    target: str | list[str],
+    refs: list[str],
+    skill: dict[str, Any],
+) -> str:
+    target_ids = _entity_ids(target)
+    target_label = q_label(target_ids, "the named target")
     ref_label = q_label(refs, "the named reference")
     if verb == "GRASP":
         return f"At the anchor, is {target_label} visibly held by the robot gripper or hand?"
@@ -448,17 +517,17 @@ def relation_phrase(verb: str, target: str, refs: list[str], skill: dict[str, An
     if verb == "NAVIGATE":
         return f"Can the RGB sequence establish that the robot is at {target_label} within the required distance and pose?"
     if verb == "OPEN_DOOR":
-        return f"Is {target_label} visibly open relative to its door frame?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly open relative to its door frame?"
     if verb == "CLOSE_DOOR":
-        return f"Is {target_label} visibly closed against its door frame?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly closed against its door frame?"
     if verb == "OPEN_DRAWER":
-        return f"Is {target_label} visibly open relative to its frame?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly open relative to its frame?"
     if verb == "CLOSE_DRAWER":
-        return f"Is {target_label} visibly closed or seated flush with its frame?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly closed or seated flush with its cabinet frame?"
     if verb == "OPEN_LID":
-        return f"Is {target_label} visibly open or raised relative to its body?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly open or raised relative to its body?"
     if verb == "CLOSE_LID":
-        return f"Is {target_label} visibly closed and seated on its body?"
+        return f"Is {controlled_part_subject(verb, target_ids[0] if target_ids else '', skill)} visibly closed and seated on its body?"
     if verb == "PULL_TRAY":
         return f"Is the designated part of {target_label} visibly pulled out from its appliance or frame?"
     if verb == "PUSH_TRAY":
@@ -467,21 +536,21 @@ def relation_phrase(verb: str, target: str, refs: list[str], skill: dict[str, An
         return f"Is {target_label} visibly tipped over from its upright orientation?"
     if verb == "PLACE_ON":
         if not skill.get("destination"):
-            return f"At the anchor, is {target_label} visibly in the recorded on/support relation to the grounded reference entities, with their roles identified?"
+            return f"At the anchor, is {target_label} visibly in the recorded on/support relation to {ref_label}, with target/reference roles visually grounded?"
         return f"At the anchor, is {target_label} visibly resting on or supported by {ref_label}?"
     if verb == "PLACE_IN":
         if not skill.get("destination"):
-            return f"At the anchor, is {target_label} visibly in the recorded containment relation to the grounded reference entities, with their roles identified?"
+            return f"At the anchor, is {target_label} visibly in the recorded containment relation to {ref_label}, with target/reference roles visually grounded?"
         return f"At the anchor, is {target_label} visibly contained inside {ref_label}?"
     if verb == "PLACE_UNDER":
         if not skill.get("destination"):
-            return f"At the anchor, is {target_label} visibly in the recorded under relation to the grounded reference entities, with their roles identified?"
+            return f"At the anchor, is {target_label} visibly in the recorded under relation to {ref_label}, with target/reference roles visually grounded?"
         return f"At the anchor, is {target_label} visibly positioned under {ref_label}?"
     if verb == "PLACE_NEXT_TO":
-        return f"At the anchor, is {target_label} visibly next to the grounded reference entity or entities?"
+        return f"At the anchor, is {target_label} visibly next to {ref_label}, with target/reference roles visually grounded?"
     if verb == "PLACE_IN_NEXT_TO":
         if not skill.get("destination"):
-            return f"At the anchor, is {target_label} visibly in the recorded placement relation to the grounded reference entities, with their roles identified?"
+            return f"At the anchor, is {target_label} visibly in the recorded placement relation to {ref_label}, with target/reference roles visually grounded?"
         return f"At the anchor, is {target_label} visibly inside the grounded destination and next to the grounded reference entity?"
     if verb == "ATTACH":
         return f"At the anchor, is {target_label} visibly seated on or connected to {ref_label}?"
@@ -504,7 +573,11 @@ def relation_phrase(verb: str, target: str, refs: list[str], skill: dict[str, An
     if verb == "TURN_TO":
         return f"At the anchor, is the robot visibly oriented in the recorded relation to {ref_label}?"
     if verb in EFFECTS:
-        return f"At the anchor, is the requested {verb.lower().replace('_', ' ')} effect visibly present for the grounded target or material entities?"
+        subjects = effect_subject_phrase(target_ids, refs)
+        return (
+            f"At the anchor, is the requested {verb.lower().replace('_', ' ')} effect visibly present "
+            f"for {subjects}, with target/material/reference roles visually grounded?"
+        )
     return f"At the anchor, is the canonical {verb} relation visibly true for {target_label}?"
 
 
@@ -687,7 +760,7 @@ def normalize_phase_row(queue_row: dict[str, Any], indexed_event: dict[str, Any]
         "skill_description": qbinding.get("raw_description"),
         "canonical_verb": qbinding.get("verb"),
         "relation_family": "phase_queue_metadata_goal_relation",
-        "intended_goal_relation_question": "PENDING_V2_TEMPLATE_EXPANSION",
+        "intended_goal_relation_question": "PENDING_V3_TEMPLATE_EXPANSION",
         "observability": "METADATA_ONLY_NEEDS_RGB_REVIEW",
         "metadata_target_ids": unique(flatten_strings([member.get("target", "")])),
         "metadata_reference_ids": unique(flatten_strings([member.get("source", ""), member.get("destination", "")])),
@@ -753,7 +826,7 @@ def generate_row(row: dict[str, Any], question_ordinal: int) -> list[dict[str, A
             unknown_reasons.append("NO_EXPLICIT_DESTINATION_FIELD")
         historical = history_query(verb, entities, skill, anchor, causal_frames)
         current = {
-            "question": relation_phrase(verb, target_ids[0] if target_ids else "", reference_ids, skill),
+            "question": relation_phrase(verb, target_ids, reference_ids, skill),
             "relation_family": relation_family(verb),
             "target_entities": targets,
             "reference_entities": references,
@@ -778,7 +851,7 @@ def generate_row(row: dict[str, Any], question_ordinal: int) -> list[dict[str, A
         else:
             current["supervision_eligibility"] = "CONDITIONAL_ON_RGB_GROUNDING"
         out = {
-            "schema_version": "p107.visual_query_candidate.v2",
+            "schema_version": "p107.visual_query_candidate.v3",
             "status": "QUERY_DESIGN_ONLY_NO_ANSWER",
             "event_id": row["event_id"],
             "source_group_id": row.get("source_group_id"),
@@ -1136,6 +1209,9 @@ def build_phase_registry(
         })
     metadata = {
         "schema_version": "p107.visual_relation_query_prelabel_build.v1",
+        "query_template_revision": "v3_entity_grounded_parts_and_effects",
+        "quality_revision": "CORRECTED_AFTER_INDEPENDENT_METADATA_REVIEW",
+        "prior_revision_status": "V2_WITHDRAWN_METADATA_QUALITY_NOT_LABEL_ERRORS",
         "status": "PRELABEL_QUERY_CANDIDATES_ONLY_NO_ANSWERS_NO_ANNOTATIONS_NO_RELEASE",
         "training_eligible": False,
         "input_hashes": input_hashes,

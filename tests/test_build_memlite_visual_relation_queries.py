@@ -182,6 +182,62 @@ class PrelabelProducerTest(unittest.TestCase):
         self.assertIn("required distance and pose", current["query_text"])
         self.assertEqual(current["supervision_eligibility"], "EXCLUDED_UNLESS_APPROVED_STATE_EVIDENCE")
 
+    def test_pretty_entity_strips_only_numeric_instance_suffix(self) -> None:
+        self.assertEqual(producer.pretty_entity("bottom_cabinet"), "bottom cabinet")
+        self.assertEqual(producer.pretty_entity("electric_switch"), "electric switch")
+        self.assertEqual(producer.pretty_entity("boxing_gloves_188"), "boxing gloves")
+        self.assertEqual(producer.pretty_entity("box_of_oatmeal_213"), "box of oatmeal")
+        # A nonnumeric token is part of the metadata noun and must not be
+        # silently discarded as if it were an instance suffix.
+        self.assertEqual(producer.pretty_entity("washer_ynwamu_0"), "washer ynwamu")
+
+    def test_geometry_questions_name_controlled_part_and_parent(self) -> None:
+        self.assertIn(
+            "toolbox lid",
+            producer.relation_phrase("OPEN_LID", ["toolbox"], [], {"target_part": ""}),
+        )
+        self.assertIn(
+            "lid or trunk of the car",
+            producer.relation_phrase("CLOSE_LID", ["car"], [], {"target_part": ""}),
+        )
+        self.assertIn(
+            "bottom cabinet drawer",
+            producer.relation_phrase("CLOSE_DRAWER", ["bottom_cabinet"], [], {"target_part": ""}),
+        )
+        self.assertIn(
+            "right drawer of bottom cabinet",
+            producer.relation_phrase(
+                "OPEN_DRAWER", ["bottom_cabinet_rhdbzv_0"], [], {"target_part": "right"}
+            ),
+        )
+        self.assertIn(
+            "right door of fridge",
+            producer.relation_phrase(
+                "OPEN_DOOR", ["fridge_petcxr_0"], [], {"target_part": "right_door"}
+            ),
+        )
+
+    def test_effect_questions_name_actual_entities_without_role_invention(self) -> None:
+        chop = producer.relation_phrase(
+            "CHOP", ["half_bell_pepper_214"], [], {"target_part": ""}
+        )
+        self.assertIn("half bell pepper", chop)
+        self.assertNotIn("grounded target or material entities", chop)
+        pour = producer.relation_phrase(
+            "POUR", ["taco", "tupperware"], [], {"target_part": ""}
+        )
+        self.assertIn("taco", pour)
+        self.assertIn("tupperware", pour)
+        sweep_off = producer.relation_phrase(
+            "SWEEP_OFF",
+            ["half_log_176_0", "half_log_176_1"],
+            ["driveway_umalys_0"],
+            {"target_part": ""},
+        )
+        self.assertIn("half log 176", sweep_off)
+        self.assertIn("driveway umalys", sweep_off)
+        self.assertIn("roles visually grounded", sweep_off)
+
 
 if __name__ == "__main__":
     unittest.main()
