@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 actor-query可选接口已复审集成；phase40全anchor root-model预检已留回执（Codex / P107-COORD）
+
+- independent review已批准actor-query chain，根按祖先顺序仅移植`5ea8912`→`74d3b2c`→`c28c0d0`→`3e51be9`，稳定代码SHA `19e19ed10426bdbaca4aa202b36094d34f5e5712`。root重跑actor14、audit5、protocol13、packer17与integration1（全过），ruff/diff checks亦过。它只增加sealed optional metadata/dataset projection接口，严格receipt、view/event/skill/producer registry绑定；无trainer/collator hookup、无训练release，既有包和`for_training`拒绝保持不变。remote audit仍固定在先前`3f`产物，不重写。
+- root已亲看new phase40的40/40 anchor camera triplets：top row `q000..q039`（`p02`，仅q024 boundary为`p00`），外部root-model/human=false receipt为`/home/wsy/behavior-annotations/p107/parent-review/phase40-v2/anchor-prereview-root-model.json` SHA `32695ab306f3b57f775cc41787f757ada1a8e798552d8971386c65152c50daef`，记录ordered events、媒体/页hash及可定位观察。bottom-row future虽可见但**不是**causal label evidence；v4 text仍待，故这不是canonical query/label approval、annotation dispatch或acceptance。
+- local 8GiB audit retry仍未启动：MemAvailable=5.3GiB低于12GiB门；但同一审计的idle-lc3 preflight已PASS并已启动一次，固定`3f473fc5`、sealed package hashes/modes已核、corrective/index roots不存在（capability=null），1CPU/`nice 19`/idle-I/O/8GiB/600s/0GPU/不改env。唯一远端输出根为`/data/workspace/wsy/behavior2026/p107/validation/calibration40-standard-audit-8g-20261001T184204Z`；实际结果/evidence尚待。student/outcome/recovery/action-BC/training/live DART继续均为0。
+
 ### 2026-10-02（北京时间）：P107 CAL40 calibration-only package已构建并seal；独立audit仍未通过（Codex / P107-COORD）
 
 - `cal40_finalize_binding`使用根`3f473fc5f795efa58925e06f77b167ececcca648`的实际pack build成功：37.28s、peak RSS 123,352KiB，输出`/home/wsy/behavior-annotations/p107/calibration40-package-v1`，seal SHA `697e5e49ef13558c788baadcfd6468679a358ecf81fbe95da2af1a2974f67473`。它绑定403,257 source events、41 candidate views/41 parent-reviewed、10 accepted auxiliary；actions/outcomes/recovery均0，所有training/stage3字段为false，diagnostic coverage仍false。dataset的`for_training`入口在读取events前拒绝全部4种label kinds；这不是student、动作监督、recovery或训练release。
