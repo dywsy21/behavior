@@ -13,10 +13,13 @@ authority, or alter the paired-recovery collector owned by the simulator work.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, is_dataclass
+from hashlib import sha256
 from math import isfinite
 from pathlib import Path
+import sys
 from time import monotonic
 from typing import Any, Callable, Mapping, Protocol, Sequence
+from types import ModuleType
 
 from .common import (
     RecoveryContractError,
@@ -75,7 +78,7 @@ class CandidateSourceReceipt:
     source_release_sha256: str
     parent_task_id: str
     parent_task_index: int
-    parent_task_instance_id: str
+    parent_task_instance_id: int
     parent_task_seed: int
     trajectory_source_kind: str
     collection_run_id: str
@@ -87,7 +90,8 @@ class CandidateSourceReceipt:
         _require_nonempty_text(self.parent_task_id, "parent_task_id")
         if not isinstance(self.parent_task_index, int) or self.parent_task_index < 0:
             raise RecoveryContractError("parent_task_index must be a nonnegative integer")
-        _require_nonempty_text(self.parent_task_instance_id, "parent_task_instance_id")
+        if type(self.parent_task_instance_id) is not int or self.parent_task_instance_id < 1:
+            raise RecoveryContractError("parent_task_instance_id must be an integer >= 1")
         if not isinstance(self.parent_task_seed, int):
             raise RecoveryContractError("parent_task_seed must be an integer")
         if self.trajectory_source_kind != "fresh_dart_trajectory":
@@ -135,14 +139,15 @@ class CanonicalSourceGroupMembership:
     source_group_id: str
     source_release_sha256: str
     task_index: int
-    task_instance_id: str
+    task_instance_id: int
     original_split: str
     usage_role: str
     source_group_member_sha256: str
 
     def __post_init__(self) -> None:
         require_sha256(self.source_group_id, field="source_group_id")
-        _require_nonempty_text(self.task_instance_id, "task_instance_id")
+        if type(self.task_instance_id) is not int or self.task_instance_id < 1:
+            raise RecoveryContractError("canonical source membership task_instance_id must be an integer >= 1")
         if not isinstance(self.task_index, int) or self.task_index < 0:
             raise RecoveryContractError("canonical source membership task_index must be nonnegative")
         if self.original_split not in {"train", "eval", "dev", "test", "protected"}:
@@ -162,12 +167,19 @@ class CanonicalSourceGroupMembership:
 class VerifiedDartSourceMembership:
     """A once-read, sealed membership result returned by the DATA index adapter."""
 
+    index_inventory_seal_sha256: str
     source_group_index_manifest_sha256: str
+    source_membership_protocol_sha256: str
     candidate: CanonicalSourceGroupMembership
     calibration_groups: tuple[CanonicalSourceGroupMembership, ...]
 
     def __post_init__(self) -> None:
-        require_sha256(self.source_group_index_manifest_sha256, field="source_group_index_manifest_sha256")
+        for field in (
+            "index_inventory_seal_sha256",
+            "source_group_index_manifest_sha256",
+            "source_membership_protocol_sha256",
+        ):
+            require_sha256(getattr(self, field), field=field)
         if not isinstance(self.candidate, CanonicalSourceGroupMembership):
             raise RecoveryContractError("verified DART source membership needs a canonical candidate group")
         if not self.calibration_groups or not all(
@@ -177,7 +189,9 @@ class VerifiedDartSourceMembership:
 
     def public(self) -> dict[str, Any]:
         return {
+            "index_inventory_seal_sha256": self.index_inventory_seal_sha256,
             "source_group_index_manifest_sha256": self.source_group_index_manifest_sha256,
+            "source_membership_protocol_sha256": self.source_membership_protocol_sha256,
             "candidate": self.candidate.public(),
             "calibration_groups": [group.public() for group in self.calibration_groups],
         }
@@ -191,6 +205,54 @@ class CanonicalSourceGroupIndexReader(Protocol):
     ) -> VerifiedDartSourceMembership: ...
 
 
+def _load_dependency_free_data_protocol(
+    protocol_path: Path, *, expected_protocol_source_sha256: str | None
+) -> tuple[ModuleType, str]:
+    """Execute one SHA-stable DATA protocol source file without importing ``g05.data``.
+
+    ``g05.data.__init__`` is allowed to depend on training datasets and optional
+    packages. Candidate provenance must remain usable in a minimal CPU
+    environment, so this loader compiles precisely the bytes it hashed rather
+    than normal-importing that package. The module is retained in
+    ``sys.modules`` under a content-addressed private name so classes created
+    during execution have a stable ``__module__``/``__file__`` identity.
+    """
+
+    if expected_protocol_source_sha256 is not None:
+        require_sha256(expected_protocol_source_sha256, field="expected_protocol_source_sha256")
+    raw_path = Path(protocol_path)
+    if raw_path.is_symlink() or not raw_path.is_file():
+        raise RecoveryContractError("DATA source-membership protocol path must be a regular file")
+    resolved_path = raw_path.resolve(strict=True)
+    try:
+        source_bytes = resolved_path.read_bytes()
+    except OSError as exc:
+        raise RecoveryContractError("could not read DATA source-membership protocol source") from exc
+    source_sha256 = sha256(source_bytes).hexdigest()
+    if expected_protocol_source_sha256 is not None and source_sha256 != expected_protocol_source_sha256:
+        raise RecoveryContractError("DATA source-membership protocol bytes do not match the supplied SHA-256")
+    path_identity = sha256(str(resolved_path).encode("utf-8")).hexdigest()[:16]
+    module_name = f"_p107_dart_data_protocol_{source_sha256}_{path_identity}"
+    cached = sys.modules.get(module_name)
+    if isinstance(cached, ModuleType) and getattr(cached, "__file__", None) == str(resolved_path):
+        return cached, source_sha256
+    try:
+        compiled = compile(source_bytes, str(resolved_path), "exec", dont_inherit=True)
+    except (SyntaxError, ValueError) as exc:
+        raise RecoveryContractError("DATA source-membership protocol source cannot be compiled") from exc
+    module = ModuleType(module_name, "Dependency-free DART DATA source-membership protocol")
+    module.__file__ = str(resolved_path)
+    module.__package__ = ""
+    sys.modules[module_name] = module
+    try:
+        exec(compiled, module.__dict__)
+    except Exception as exc:
+        if sys.modules.get(module_name) is module:
+            del sys.modules[module_name]
+        raise RecoveryContractError("DATA source-membership protocol could not be initialized") from exc
+    return module, source_sha256
+
+
 class DataSealedSourceGroupIndexReader:
     """Thin adapter over DATA's externally SHA-pinned, read-only membership API.
 
@@ -199,14 +261,26 @@ class DataSealedSourceGroupIndexReader:
     publisher authority nor invents a parallel source-index format.
     """
 
-    def __init__(self, index_root: Path, *, expected_inventory_seal_sha256: str) -> None:
+    def __init__(
+        self,
+        index_root: Path,
+        *,
+        expected_inventory_seal_sha256: str,
+        protocol_path: Path | None = None,
+        expected_protocol_source_sha256: str | None = None,
+    ) -> None:
         require_sha256(expected_inventory_seal_sha256, field="expected_inventory_seal_sha256")
-        try:
-            from g05.data.memlite_event_protocol import load_source_index_membership, sealed_source_group
-        except ImportError as exc:
-            raise RecoveryContractError(
-                "DATA sealed source-group membership API is not available in this checkout"
-            ) from exc
+        if protocol_path is not None and expected_protocol_source_sha256 is None:
+            raise RecoveryContractError("an external DATA protocol path requires expected_protocol_source_sha256")
+        default_protocol_path = Path(__file__).resolve().parent.parent / "data" / "memlite_event_protocol.py"
+        protocol, protocol_source_sha256 = _load_dependency_free_data_protocol(
+            default_protocol_path if protocol_path is None else Path(protocol_path),
+            expected_protocol_source_sha256=expected_protocol_source_sha256,
+        )
+        load_source_index_membership = getattr(protocol, "load_source_index_membership", None)
+        sealed_source_group = getattr(protocol, "sealed_source_group", None)
+        if not callable(load_source_index_membership) or not callable(sealed_source_group):
+            raise RecoveryContractError("DATA protocol source does not expose the sealed source-membership API")
         try:
             membership = load_source_index_membership(
                 Path(index_root), expected_inventory_seal_sha256=expected_inventory_seal_sha256
@@ -216,6 +290,7 @@ class DataSealedSourceGroupIndexReader:
         self._source_group_lookup = sealed_source_group
         self._membership = membership
         self._inventory_seal_sha256 = expected_inventory_seal_sha256
+        self._protocol_source_sha256 = protocol_source_sha256
 
     def _group(self, source_group_id: str) -> CanonicalSourceGroupMembership:
         try:
@@ -226,7 +301,7 @@ class DataSealedSourceGroupIndexReader:
             source_group_id=group["source_group_id"],
             source_release_sha256=group["source_release_manifest_sha256"],
             task_index=group["task_index"],
-            task_instance_id=str(group["task_instance_id"]),
+            task_instance_id=group["task_instance_id"],
             original_split=group["original_split"],
             usage_role=group["usage_role"],
             source_group_member_sha256=canonical_sha256(group),
@@ -236,7 +311,9 @@ class DataSealedSourceGroupIndexReader:
         self, source: CandidateSourceReceipt, calibration: CalibrationReceipt
     ) -> VerifiedDartSourceMembership:
         return VerifiedDartSourceMembership(
+            index_inventory_seal_sha256=self._inventory_seal_sha256,
             source_group_index_manifest_sha256=self._membership.index_manifest_sha256,
+            source_membership_protocol_sha256=self._protocol_source_sha256,
             candidate=self._group(source.source_group_id),
             calibration_groups=tuple(self._group(group_id) for group_id in calibration.source_group_ids),
         )
@@ -344,7 +421,7 @@ class RuntimeSessionReceipt:
     """
 
     runtime_session_id: str
-    task_instance_id: str
+    task_instance_id: int
     runtime_build_sha256: str
     asset_config_sha256: str
     reset_load_task_instance_receipt_sha256: str
@@ -353,7 +430,8 @@ class RuntimeSessionReceipt:
 
     def __post_init__(self) -> None:
         _require_nonempty_text(self.runtime_session_id, "runtime_session_id")
-        _require_nonempty_text(self.task_instance_id, "task_instance_id")
+        if type(self.task_instance_id) is not int or self.task_instance_id < 1:
+            raise RecoveryContractError("task_instance_id must be an integer >= 1")
         for field in (
             "runtime_build_sha256",
             "asset_config_sha256",

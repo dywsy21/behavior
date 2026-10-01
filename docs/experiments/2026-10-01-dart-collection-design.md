@@ -73,6 +73,14 @@ Each candidate record has all of the following, with immutable SHA receipts:
   `CalibrationReceipt`; public/dev/eval and protected holdouts are rejected
   rather than re-used.  This membership reader provides no training, positive
   label, or release authority.
+- 2026-10-02 follow-up: the DART reader loads that narrow protocol source
+  directly, rather than importing `g05.data` and accidentally initializing a
+  dataset/ML dependency.  It reads, hashes and compiles the *same* protocol
+  bytes into a private `sys.modules` entry; an external protocol path must be
+  SHA-pinned and is rejected if it lacks the membership API.  The current DATA
+  source receipt is `efdd20642fed24241f38bbdeb4abff6cf4faf1c72a86fe7c2acb32ba7496193b`.
+  The reader loads/seals source groups once per collection pipeline and never
+  opens the event-candidates payload for group membership.
 - Original-Gaussian collection additionally binds the exact sampled covariance
   to a calibration trajectory SHA, learner/teacher checkpoint SHAs, covariance
   estimator-code SHA, `alpha`, horizon, and sealed source-index manifest SHA.

@@ -80,6 +80,7 @@ def _diagonal(value: float) -> tuple[tuple[float, ...], ...]:
 
 _CANDIDATE_GROUP = _digest("candidate-group")
 _CALIBRATION_GROUP = _digest("calibration-group")
+_DATA_PROTOCOL_DD060F3_SOURCE_SHA256 = "efdd20642fed24241f38bbdeb4abff6cf4faf1c72a86fe7c2acb32ba7496193b"
 
 
 class FakeRuntime:
@@ -139,7 +140,7 @@ def _source(group: str = _CANDIDATE_GROUP) -> CandidateSourceReceipt:
         source_release_sha256=_digest("source-release"),
         parent_task_id="task-42",
         parent_task_index=42,
-        parent_task_instance_id="task-42-instance-9",
+        parent_task_instance_id=9,
         parent_task_seed=9,
         trajectory_source_kind="fresh_dart_trajectory",
         collection_run_id="fresh-session-17",
@@ -190,7 +191,13 @@ class FakeSourceGroupIndexReader:
             )
             for group_id in calibration.source_group_ids
         )
-        return VerifiedDartSourceMembership(self.manifest_sha256, candidate, calibration_groups)
+        return VerifiedDartSourceMembership(
+            index_inventory_seal_sha256=_digest("sealed-data-inventory"),
+            source_group_index_manifest_sha256=self.manifest_sha256,
+            source_membership_protocol_sha256=_digest("sealed-data-protocol"),
+            candidate=candidate,
+            calibration_groups=calibration_groups,
+        )
 
 
 def _source_membership_reader() -> FakeSourceGroupIndexReader:
@@ -215,7 +222,7 @@ def _original_calibration_binding() -> OriginalGaussianCalibrationBinding:
 def _runtime_session() -> RuntimeSessionReceipt:
     return RuntimeSessionReceipt(
         runtime_session_id="fresh-session-17",
-        task_instance_id="task-42-instance-9",
+        task_instance_id=9,
         runtime_build_sha256=_digest("runtime-build"),
         asset_config_sha256=_digest("asset-config"),
         reset_load_task_instance_receipt_sha256=_digest("reset-load-task-instance"),
@@ -573,55 +580,151 @@ def test_collection_rejects_spoofed_eval_protected_membership_and_covariance_bin
         )
 
 
-def test_data_source_adapter_loads_the_sealed_index_once_and_maps_exact_stable_api() -> None:
-    """Consumer test for DATA's public API, without reimplementing its index parser."""
+def _canonical_json_bytes(value: object) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("utf-8")
 
-    import types
 
-    module_name = "g05.data.memlite_event_protocol"
-    previous = sys.modules.get(module_name)
-    loaded: list[tuple[Path, str]] = []
-    membership = types.SimpleNamespace(
-        index_manifest_sha256=FakeSourceGroupIndexReader.manifest_sha256,
-        source_release_manifest_sha256=_source().source_release_sha256,
-    )
+def _write_real_sealed_source_group_index(root: Path) -> tuple[str, str]:
+    """Create the DATA protocol's real minimal source-group-only boundary.
 
-    def load_source_index_membership(index_root: Path, *, expected_inventory_seal_sha256: str) -> object:
-        loaded.append((index_root, expected_inventory_seal_sha256))
-        return membership
+    The intentionally absent event-candidates payload proves the DART reader
+    uses only DATA's source-membership API, not a hidden event scan.
+    """
 
-    def sealed_source_group(_membership: object, source_group_id: str) -> dict[str, object]:
-        assert _membership is membership
-        role = "student_candidate" if source_group_id == _CANDIDATE_GROUP else "annotation_calibration"
-        return {
-            "source_group_id": source_group_id,
-            "source_release_manifest_sha256": _source().source_release_sha256,
+    source_release = _source().source_release_sha256
+    rows = [
+        {
+            "source_group_id": _CANDIDATE_GROUP,
+            "source_release_manifest_sha256": source_release,
             "task_index": 42,
-            "task_instance_id": "task-42-instance-9",
+            "task_instance_id": 9,
             "original_split": "train",
-            "usage_role": role,
-        }
+            "usage_role": "student_candidate",
+        },
+        {
+            "source_group_id": _CALIBRATION_GROUP,
+            "source_release_manifest_sha256": source_release,
+            "task_index": 42,
+            "task_instance_id": 9,
+            "original_split": "train",
+            "usage_role": "annotation_calibration",
+        },
+    ]
+    source_groups_bytes = b"".join(_canonical_json_bytes(row) + b"\n" for row in rows)
+    source_groups_path = root / "source_groups.jsonl"
+    source_groups_path.write_bytes(source_groups_bytes)
+    empty_event_payload = b""
+    files = {
+        "source_groups.jsonl": {
+            "sha256": sha256(source_groups_bytes).hexdigest(),
+            "bytes": len(source_groups_bytes),
+            "rows": len(rows),
+        },
+        # Do not create this file: source-group membership must not touch it.
+        "event_candidates.jsonl": {
+            "sha256": sha256(empty_event_payload).hexdigest(),
+            "bytes": 0,
+            "rows": 0,
+        },
+    }
+    manifest = {
+        "schema_version": "memlite-event-index-v1",
+        "source_release_manifest_sha256": source_release,
+        "files": files,
+    }
+    manifest_bytes = _canonical_json_bytes(manifest)
+    (root / "manifest.json").write_bytes(manifest_bytes)
+    seal = {
+        "schema_version": "memlite-event-inventory-seal-v1",
+        "index_manifest_sha256": sha256(manifest_bytes).hexdigest(),
+        "source_release_manifest_sha256": source_release,
+        "coverage_expectations_sha256": _digest("fixture-coverage"),
+        "expected_payload_files": ["event_candidates.jsonl", "source_groups.jsonl"],
+        "payload_files": files,
+    }
+    seal_bytes = _canonical_json_bytes(seal)
+    (root / "inventory_seal.json").write_bytes(seal_bytes)
+    return sha256(seal_bytes).hexdigest(), sha256(manifest_bytes).hexdigest()
 
-    api = types.ModuleType(module_name)
-    api.load_source_index_membership = load_source_index_membership
-    api.sealed_source_group = sealed_source_group
-    sys.modules[module_name] = api
-    try:
-        reader = DataSealedSourceGroupIndexReader(
-            Path("/sealed/index"), expected_inventory_seal_sha256=_digest("inventory-seal")
+
+def _dd060f3_protocol_bytes(project_root: Path) -> bytes:
+    completed = subprocess.run(
+        ["git", "show", "dd060f3:src/g05/data/memlite_event_protocol.py"],
+        cwd=project_root,
+        capture_output=True,
+        check=True,
+    )
+    assert sha256(completed.stdout).hexdigest() == _DATA_PROTOCOL_DD060F3_SOURCE_SHA256
+    return completed.stdout
+
+
+def test_data_source_adapter_uses_real_sealed_index_without_importing_g05_data() -> None:
+    """Run DATA's committed API under ``-S``: no fake module or ML dependency."""
+
+    project_root = Path(__file__).resolve().parent.parent
+    with TemporaryDirectory() as temporary:
+        root = Path(temporary)
+        index_root = root / "index"
+        index_root.mkdir()
+        inventory_seal_sha256, manifest_sha256 = _write_real_sealed_source_group_index(index_root)
+        protocol_path = root / "memlite_event_protocol.py"
+        protocol_bytes = _dd060f3_protocol_bytes(project_root)
+        protocol_path.write_bytes(protocol_bytes)
+        protocol_sha256 = sha256(protocol_bytes).hexdigest()
+        child = f"""
+import json
+import sys
+from pathlib import Path
+from g05.recovery.dart_collection import CalibrationReceipt, CandidateSourceReceipt, DataSealedSourceGroupIndexReader
+source = CandidateSourceReceipt(
+    source_group_id={_CANDIDATE_GROUP!r}, original_split='train', source_release_sha256={_source().source_release_sha256!r},
+    parent_task_id='task-42', parent_task_index=42, parent_task_instance_id=9, parent_task_seed=9,
+    trajectory_source_kind='fresh_dart_trajectory', collection_run_id='run-fixture')
+calibration = CalibrationReceipt(source_group_ids=({_CALIBRATION_GROUP!r},), calibration_trajectory_sha256={_calibration().calibration_trajectory_sha256!r}, learner_checkpoint_sha256={_calibration().learner_checkpoint_sha256!r}, teacher_checkpoint_sha256={_calibration().teacher_checkpoint_sha256!r})
+reader = DataSealedSourceGroupIndexReader(Path({str(index_root)!r}), expected_inventory_seal_sha256={inventory_seal_sha256!r}, protocol_path=Path({str(protocol_path)!r}), expected_protocol_source_sha256={protocol_sha256!r})
+# Loading happened at construction. Deleting the only group payload makes a
+# second filesystem scan fail, so two successful lookups prove cached use.
+Path({str(index_root / 'source_groups.jsonl')!r}).unlink()
+first = reader.verify_dart_membership(source, calibration)
+second = reader.verify_dart_membership(source, calibration)
+assert 'g05.data' not in sys.modules
+print(json.dumps({{'candidate_role': first.candidate.usage_role, 'calibration_role': second.calibration_groups[0].usage_role, 'inventory': first.index_inventory_seal_sha256, 'manifest': first.source_group_index_manifest_sha256, 'protocol': first.source_membership_protocol_sha256}}))
+"""
+        environment = {"PATH": os.environ["PATH"], "PYTHONPATH": str(project_root / "src")}
+        completed = subprocess.run(
+            [sys.executable, "-S", "-c", child], capture_output=True, text=True, check=True, env=environment
         )
-        verified = reader.verify_dart_membership(_source(), _calibration())
-        # Multiple candidate checks consume the capability; no event JSONL or
-        # repeated index scan is needed for a source-group lookup.
-        second = reader.verify_dart_membership(_source(), _calibration())
-    finally:
-        if previous is None:
-            del sys.modules[module_name]
-        else:
-            sys.modules[module_name] = previous
-    assert loaded == [(Path("/sealed/index"), _digest("inventory-seal"))]
-    assert verified.candidate.usage_role == "student_candidate"
-    assert second.calibration_groups[0].usage_role == "annotation_calibration"
+        result = json.loads(completed.stdout)
+        assert result == {
+            "candidate_role": "student_candidate",
+            "calibration_role": "annotation_calibration",
+            "inventory": inventory_seal_sha256,
+            "manifest": manifest_sha256,
+            "protocol": protocol_sha256,
+        }
+        with pytest.raises(RecoveryContractError, match="requires expected_protocol_source_sha256"):
+            DataSealedSourceGroupIndexReader(
+                index_root,
+                expected_inventory_seal_sha256=inventory_seal_sha256,
+                protocol_path=protocol_path,
+            )
+        with pytest.raises(RecoveryContractError, match="do not match"):
+            DataSealedSourceGroupIndexReader(
+                index_root,
+                expected_inventory_seal_sha256=inventory_seal_sha256,
+                protocol_path=protocol_path,
+                expected_protocol_source_sha256=_digest("wrong-protocol-bytes"),
+            )
+        missing_api_path = root / "old_protocol_without_membership_api.py"
+        missing_api_bytes = b"SOURCE_PROTOCOL_VERSION = 'old'\n"
+        missing_api_path.write_bytes(missing_api_bytes)
+        with pytest.raises(RecoveryContractError, match="does not expose"):
+            DataSealedSourceGroupIndexReader(
+                index_root,
+                expected_inventory_seal_sha256=inventory_seal_sha256,
+                protocol_path=missing_api_path,
+                expected_protocol_source_sha256=sha256(missing_api_bytes).hexdigest(),
+            )
 
 
 def test_cli_writes_only_new_hashed_candidate_output() -> None:
