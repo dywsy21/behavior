@@ -20,7 +20,11 @@ import test_memlite_coverage_render_handoffs as handoff_fixture  # noqa: E402
 import test_select_memlite_event_annotation_queue as selector_fixture  # noqa: E402
 
 
-def _selected(tmp_path: Path) -> dict[str, object]:
+CATEGORY_MAPPING = Path("/home/wsy/behavior-annotations/p107/object-category-grounding-audit/category_mapping.csv")
+CATEGORY_MAPPING_SHA256 = "ef4636716bc1f243f89735ffe89e8e931a2d5739e87164e7146d54d11c681eab"
+
+
+def _selected(tmp_path: Path, *, target_override: str | None = None) -> dict[str, object]:
     data = handoff_fixture._fixture(tmp_path)
     # The handoff fixture intentionally uses arbitrary verbs/IDs for renderer
     # tests.  Replace only the immutable event skill metadata with canonical-35
@@ -48,7 +52,7 @@ def _selected(tmp_path: Path) -> dict[str, object]:
             "skill_idx": 0,
         })
         if verb == "PRESS":
-            skill.update({"target": "radio_89", "source": "", "destination": ""})
+            skill.update({"target": target_override or "radio_89", "source": "", "destination": ""})
         elif verb == "OPEN_DOOR":
             skill.update({"target": "fridge", "source": "", "destination": ""})
         else:
@@ -63,7 +67,9 @@ def _selected(tmp_path: Path) -> dict[str, object]:
     return handoff_fixture._selectors(tmp_path, data)
 
 
-def _build(tmp_path: Path, selected: dict[str, object], role: str) -> dict[str, object]:
+def _build(tmp_path: Path, selected: dict[str, object], role: str, *,
+           category_mapping_path: Path | None = CATEGORY_MAPPING,
+           expected_category_mapping_sha256: str = CATEGORY_MAPPING_SHA256) -> dict[str, object]:
     role_result = selected["selectors"][role]
     selector_root = tmp_path / f"{role}-selector"
     return producer.build_output(
@@ -79,6 +85,8 @@ def _build(tmp_path: Path, selected: dict[str, object], role: str) -> dict[str, 
         expected_protocol_sha256=selected["protocol_sha"],
         expected_coverage_sha256=selected["coverage_sha"],
         protocol_path=selected["protocol_path"],
+        category_mapping_path=category_mapping_path,
+        expected_category_mapping_sha256=expected_category_mapping_sha256,
     )
 
 
@@ -127,7 +135,8 @@ def test_selector_manifest_pin_tamper_fails_before_index_join(tmp_path: Path) ->
             expected_index_manifest_sha256=queue.sha256_file(selected["index"] / "manifest.json"),
             expected_inventory_sha256=selected["inventory_sha"], expected_source_release_sha256=selected["source_release_sha"],
             expected_protocol_sha256=selected["protocol_sha"], expected_coverage_sha256=selected["coverage_sha"],
-            protocol_path=selected["protocol_path"],
+            protocol_path=selected["protocol_path"], category_mapping_path=CATEGORY_MAPPING,
+            expected_category_mapping_sha256=CATEGORY_MAPPING_SHA256,
         )
 
 
@@ -142,7 +151,8 @@ def test_eval_role_rejects_train_selector_and_queue_seal_leak(tmp_path: Path) ->
             expected_index_manifest_sha256=queue.sha256_file(selected["index"] / "manifest.json"),
             expected_inventory_sha256=selected["inventory_sha"], expected_source_release_sha256=selected["source_release_sha"],
             expected_protocol_sha256=selected["protocol_sha"], expected_coverage_sha256=selected["coverage_sha"],
-            protocol_path=selected["protocol_path"],
+            protocol_path=selected["protocol_path"], category_mapping_path=CATEGORY_MAPPING,
+            expected_category_mapping_sha256=CATEGORY_MAPPING_SHA256,
         )
 
     eval_root = tmp_path / "eval-selector"
@@ -156,7 +166,8 @@ def test_eval_role_rejects_train_selector_and_queue_seal_leak(tmp_path: Path) ->
             expected_index_manifest_sha256=queue.sha256_file(selected["index"] / "manifest.json"),
             expected_inventory_sha256=selected["inventory_sha"], expected_source_release_sha256=selected["source_release_sha"],
             expected_protocol_sha256=selected["protocol_sha"], expected_coverage_sha256=selected["coverage_sha"],
-            protocol_path=selected["protocol_path"],
+            protocol_path=selected["protocol_path"], category_mapping_path=CATEGORY_MAPPING,
+            expected_category_mapping_sha256=CATEGORY_MAPPING_SHA256,
         )
 
 
@@ -209,9 +220,40 @@ def test_unsupported_goal_template_is_quarantined_not_rewritten_as_action(tmp_pa
                 expected_protocol_sha256=selected["protocol_sha"], expected_coverage_sha256=selected["coverage_sha"],
             ), selected["protocol_path"]
         )
-        records, registry, unsupported = producer._build_records(selector, index_spec, None, None)
+        mapping, mapping_metadata = producer.templates.load_category_mapping(CATEGORY_MAPPING)
+        records, registry, unsupported = producer._build_records(
+            selector, index_spec, mapping, mapping_metadata
+        )
         assert records == [] and registry == [] and unsupported
         assert all(row["status"] == "UNSUPPORTED_GOAL_TEMPLATE" for row in unsupported)
         assert all(row["query_text"] is None for row in unsupported)
     finally:
         producer.SUPPORTED_RELATION_VERBS = original
+
+
+def test_category_mapping_is_required_and_wrong_pin_fails_closed(tmp_path: Path) -> None:
+    selected = _selected(tmp_path)
+    with pytest.raises(ValueError, match="category-mapping.*required"):
+        _build(tmp_path, selected, "train", category_mapping_path=None)
+
+    with pytest.raises(ValueError, match="category mapping SHA mismatch"):
+        _build(
+            tmp_path, selected, "train",
+            expected_category_mapping_sha256="0" * 64,
+        )
+
+
+def test_unmapped_asset_is_not_leaked_into_actor_query_text(tmp_path: Path) -> None:
+    raw_asset = "private_asset_dyymaq"
+    selected = _selected(tmp_path, target_override=raw_asset)
+    result = _build(tmp_path, selected, "train")
+    output = Path(result["output_dir"])
+    queries = _rows(output / "query_candidates.jsonl")
+    registry = _rows(output / "prelabel_registry.jsonl")
+    affected = [row for row in queries if row["queried_skill_binding"]["canonical_verb"] == "PRESS"]
+    assert affected
+    for row in affected:
+        assert raw_asset not in row["current_visible_goal_relation"]["query_text"]
+        assert row["current_visible_goal_relation"]["category_grounding_status"] == "QUARANTINED_UNKNOWN_CATEGORY"
+        assert any(item["status"] == "UNKNOWN_CATEGORY" for item in row["category_grounding_audit"])
+    assert all(raw_asset not in json.dumps(row, sort_keys=True) for row in registry)

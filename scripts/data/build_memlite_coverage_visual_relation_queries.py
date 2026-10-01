@@ -42,6 +42,8 @@ PROTOCOL_SHA256_DEFAULT = "7f4f9fbf18fb4ba6ec97a304f0d787ebadb4f84c7184dd041c990
 SOURCE_RELEASE_SHA256_DEFAULT = "90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23"
 INVENTORY_SHA256_DEFAULT = "7ed1b2c5cbb50c8af042a2b9dca8529a6d133de5fc0fbe224601854235c31479"
 COVERAGE_EXPECTATIONS_SHA256_DEFAULT = "39ccfb79420010bfc32e2f00d66cae255340a997b20026dc970fdffee412b3c7"
+CATEGORY_MAPPING_SHA256_DEFAULT = templates.OFFICIAL_CATEGORY_MAPPING_SHA256
+CATEGORY_MAPPING_ROWS_DEFAULT = templates.OFFICIAL_CATEGORY_ROWS
 
 ROLE_CONFIG: dict[str, dict[str, str]] = {
     "train": {
@@ -535,7 +537,8 @@ def _template_records(normalized: dict[str, Any], ordinal: int, category_mapping
 
 
 def _source_pin(selector: Mapping[str, Any], index_spec: Mapping[str, Any], event: Mapping[str, Any],
-                job: Mapping[str, Any], request: Mapping[str, Any]) -> dict[str, Any]:
+                job: Mapping[str, Any], request: Mapping[str, Any],
+                category_mapping_metadata: Mapping[str, Any]) -> dict[str, Any]:
     source = event["source"]
     return {
         "schema_version": COVERAGE_SOURCE_PIN_SCHEMA,
@@ -556,6 +559,9 @@ def _source_pin(selector: Mapping[str, Any], index_spec: Mapping[str, Any], even
         "index_event_file_sha256": index_spec["event_file_sha256"],
         "index_event_record_sha256": canonical_digest(event),
         "inventory_seal_sha256": index_spec["inventory_sha256"],
+        "category_mapping_sha256": category_mapping_metadata["sha256"],
+        "category_mapping_rows": category_mapping_metadata["rows"],
+        "category_mapping_official_commit": category_mapping_metadata["official_commit"],
         "source_release_manifest_sha256": source["source_release_manifest_sha256"],
         "source_annotation_sha256": source["source_annotation_sha256"],
         "source_group_id": source["source_group_id"],
@@ -718,7 +724,9 @@ def _unsupported_record(*, selector: Mapping[str, Any], event: Mapping[str, Any]
 
 def _build_records(selector: Mapping[str, Any], index_spec: Mapping[str, Any],
                    category_mapping: dict[str, str] | None,
-                   category_mapping_metadata: dict[str, Any] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+                   category_mapping_metadata: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    if category_mapping is None:
+        raise ValueError("authenticated category mapping is required before building actor-facing queries")
     event_ids = set(selector["jobs_by_event"])
     events = _selected_events(index_spec, event_ids)
     records: list[dict[str, Any]] = []
@@ -731,7 +739,7 @@ def _build_records(selector: Mapping[str, Any], index_spec: Mapping[str, Any],
         request = selector["requests_by_event"][event_id]
         event = events[event_id]
         _validate_event_binding(event, job, role=selector["role"])
-        pin = _source_pin(selector, index_spec, event, job, request)
+        pin = _source_pin(selector, index_spec, event, job, request, category_mapping_metadata)
         supported_skill_ids: list[int] = []
         for skill_id in job["skill_ids"]:
             skill = _source_skill(event, skill_id)
@@ -788,10 +796,22 @@ def build_output(
     expected_source_release_sha256: str, expected_protocol_sha256: str,
     expected_coverage_sha256: str | None, protocol_path: Path,
     category_mapping_path: Path | None = None,
+    expected_category_mapping_sha256: str = CATEGORY_MAPPING_SHA256_DEFAULT,
 ) -> dict[str, Any]:
     output_dir = Path(output_dir)
     if output_dir.exists():
         raise FileExistsError("coverage query output exists; immutable output is never overwritten")
+    if category_mapping_path is None:
+        raise ValueError("--category-mapping is required; refusing opaque-ID actor queries")
+    category_mapping_path = _regular(Path(category_mapping_path), "category mapping")
+    expected_category_mapping_sha256 = _sha(
+        expected_category_mapping_sha256, "expected category mapping SHA"
+    )
+    category_mapping, category_mapping_metadata = templates.load_category_mapping(
+        category_mapping_path,
+        expected_sha256=expected_category_mapping_sha256,
+        expected_rows=CATEGORY_MAPPING_ROWS_DEFAULT,
+    )
     selector = _validate_selector(
         selector_root, role,
         expected_manifest_sha256=expected_selector_manifest_sha256,
@@ -806,10 +826,6 @@ def build_output(
         expected_coverage_sha256=expected_coverage_sha256,
     )
     index_spec = _authenticate_index(index_spec, protocol_path)
-    category_mapping = None
-    category_mapping_metadata = None
-    if category_mapping_path is not None:
-        category_mapping, category_mapping_metadata = templates.load_category_mapping(category_mapping_path)
     records, registry, unsupported = _build_records(selector, index_spec, category_mapping, category_mapping_metadata)
     if not records and not unsupported:
         raise ValueError("coverage selector produced no query records")
@@ -861,6 +877,13 @@ def build_output(
             "immutable_split": selector["immutable_split"],
             "training_eligible": False,
             "no_outcome_or_action_labels": True,
+            "query_template_revision": templates.QUERY_TEMPLATE_REVISION_V5,
+            "category_mapping": {
+                "path": str(category_mapping_path),
+                "sha256": category_mapping_metadata["sha256"],
+                "rows": category_mapping_metadata["rows"],
+                "official_commit": category_mapping_metadata["official_commit"],
+            },
             "no_future_actor_evidence": True,
             "query_id_rule": "sha256(canonical JSON of role/event/skill/query ordinal/text/source pins; excludes answers, evidence, actions, recovery, and postlabel view IDs)",
             "source_pins": {
@@ -870,6 +893,9 @@ def build_output(
                 "index_manifest_sha256": index_spec["manifest_sha256"],
                 "index_event_file_sha256": index_spec["event_file_sha256"],
                 "inventory_seal_sha256": index_spec["inventory_sha256"],
+                "category_mapping_sha256": category_mapping_metadata["sha256"],
+                "category_mapping_rows": category_mapping_metadata["rows"],
+                "category_mapping_official_commit": category_mapping_metadata["official_commit"],
                 "source_release_manifest_sha256": expected_source_release_sha256,
                 "canonical_protocol_sha256": expected_protocol_sha256,
             },
@@ -935,7 +961,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-source-release-manifest-sha256", default=SOURCE_RELEASE_SHA256_DEFAULT)
     parser.add_argument("--expected-protocol-sha256", default=PROTOCOL_SHA256_DEFAULT)
     parser.add_argument("--expected-coverage-expectations-sha256", default=COVERAGE_EXPECTATIONS_SHA256_DEFAULT)
-    parser.add_argument("--category-mapping", type=Path)
+    parser.add_argument("--category-mapping", type=Path, required=True)
+    parser.add_argument("--expected-category-mapping-sha256", default=CATEGORY_MAPPING_SHA256_DEFAULT)
     args = parser.parse_args(argv)
     try:
         result = build_output(
@@ -948,6 +975,7 @@ def main(argv: list[str] | None = None) -> int:
             expected_protocol_sha256=args.expected_protocol_sha256,
             expected_coverage_sha256=args.expected_coverage_expectations_sha256,
             protocol_path=args.protocol_path, category_mapping_path=args.category_mapping,
+            expected_category_mapping_sha256=args.expected_category_mapping_sha256,
         )
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print(f"build_memlite_coverage_visual_relation_queries: {exc}", file=sys.stderr)
