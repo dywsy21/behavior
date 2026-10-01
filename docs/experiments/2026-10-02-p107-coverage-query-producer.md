@@ -26,7 +26,12 @@ action-recognition questions.  A `prelabel_query_id` is the SHA-256 of the
 role, event/skill binding, query ordinal/text, and authenticated source pins;
 it deliberately excludes answers, evidence, actions, recovery, and any later
 canonical view ID.  The compact registry and full `query_candidates.jsonl`
-carry the same source-pin object.
+carry the same source-pin object.  A candidate whose pinned taxonomy grounding
+is not fully resolved remains in `query_candidates.jsonl` and
+`category_grounding_quarantine.jsonl`, but is excluded from every
+review-facing TRAIN registry and EVAL review sidecar.  `selected_event_bindings.jsonl`
+records eligible, partial, quarantined, unsupported, and explicitly unbound
+selected events, so consumers must not assume one query per selected event.
 
 ## Planned commands
 
@@ -128,3 +133,9 @@ native packet field `actor_packet.causal_temporal_rgb`; future audit RGB is
 explicitly forbidden as actor evidence.  This producer does not change the
 strict phase-v1 actor adapter; a separately reviewed diagnostic reader must
 join by `prelabel_query_id` and then verify the source pin before viewing.
+
+The manifest counts distinguish `selected_events`, `candidate_queries`,
+`eligible_queries`, `category_grounding_quarantined_queries`, and
+`unsupported_goal_queries`; `events_without_eligible_queries` and their IDs
+are listed explicitly.  Thus a 47-event selector may legitimately produce
+44 eligible TRAIN queries plus three quarantined candidates.

@@ -56,7 +56,7 @@ def _selected(tmp_path: Path, *, target_override: str | None = None) -> dict[str
         elif verb == "OPEN_DOOR":
             skill.update({"target": "fridge", "source": "", "destination": ""})
         else:
-            skill.update({"target": "cup", "source": "table", "destination": ""})
+            skill.update({"target": target_override or "sandal", "source": "", "destination": ""})
     events_path.write_text("".join(queue.canonical_json(row) + "\n" for row in events))
     manifest_path = data["index"] / "manifest.json"
     manifest = json.loads(manifest_path.read_text())
@@ -221,10 +221,10 @@ def test_unsupported_goal_template_is_quarantined_not_rewritten_as_action(tmp_pa
             ), selected["protocol_path"]
         )
         mapping, mapping_metadata = producer.templates.load_category_mapping(CATEGORY_MAPPING)
-        records, registry, unsupported = producer._build_records(
+        records, registry, unsupported, quarantined = producer._build_records(
             selector, index_spec, mapping, mapping_metadata
         )
-        assert records == [] and registry == [] and unsupported
+        assert records == [] and registry == [] and quarantined == [] and unsupported
         assert all(row["status"] == "UNSUPPORTED_GOAL_TEMPLATE" for row in unsupported)
         assert all(row["query_text"] is None for row in unsupported)
     finally:
@@ -250,10 +250,38 @@ def test_unmapped_asset_is_not_leaked_into_actor_query_text(tmp_path: Path) -> N
     output = Path(result["output_dir"])
     queries = _rows(output / "query_candidates.jsonl")
     registry = _rows(output / "prelabel_registry.jsonl")
+    quarantine = _rows(output / "category_grounding_quarantine.jsonl")
     affected = [row for row in queries if row["queried_skill_binding"]["canonical_verb"] == "PRESS"]
     assert affected
     for row in affected:
         assert raw_asset not in row["current_visible_goal_relation"]["query_text"]
         assert row["current_visible_goal_relation"]["category_grounding_status"] == "QUARANTINED_UNKNOWN_CATEGORY"
         assert any(item["status"] == "UNKNOWN_CATEGORY" for item in row["category_grounding_audit"])
+    assert len(registry) == 1
+    assert len(quarantine) == 1
+    assert quarantine[0]["prelabel_query_id"] == affected[0]["prelabel_query_id"]
+    assert quarantine[0]["status"] == "CATEGORY_GROUNDING_QUARANTINED"
+    metadata = json.loads((output / "build_metadata.json").read_text())
+    assert metadata["counts"]["selected_events"] == 2
+    assert metadata["counts"]["candidate_queries"] == 2
+    assert metadata["counts"]["eligible_queries"] == 1
+    assert metadata["counts"]["category_grounding_quarantined_queries"] == 1
+    event_bindings = _rows(output / "selected_event_bindings.jsonl")
+    assert len(event_bindings) == 2
+    assert any(row["status"] == "CATEGORY_GROUNDING_QUARANTINED_NO_ELIGIBLE_QUERY" for row in event_bindings)
     assert all(raw_asset not in json.dumps(row, sort_keys=True) for row in registry)
+
+
+def test_eval_grounding_quarantine_is_absent_from_review_sidecar(tmp_path: Path) -> None:
+    selected = _selected(tmp_path, target_override="private_asset_dyymaq")
+    result = _build(tmp_path, selected, "eval")
+    output = Path(result["output_dir"])
+    assert len(_rows(output / "query_candidates.jsonl")) == 1
+    assert _rows(output / "evaluation_query_registry.jsonl") == []
+    assert _rows(output / "evaluation_review.jsonl") == []
+    quarantine = _rows(output / "category_grounding_quarantine.jsonl")
+    assert len(quarantine) == 1
+    metadata = json.loads((output / "build_metadata.json").read_text())
+    assert metadata["counts"]["selected_events"] == 1
+    assert metadata["counts"]["eligible_queries"] == 0
+    assert metadata["counts"]["category_grounding_quarantined_queries"] == 1

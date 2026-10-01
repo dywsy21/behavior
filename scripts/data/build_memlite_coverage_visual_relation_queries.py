@@ -35,6 +35,8 @@ COVERAGE_REGISTRY_SCHEMA = "p107.coverage.visual_relation_query_registry.v1"
 COVERAGE_EVAL_REVIEW_SCHEMA = "p107.coverage.evaluation_native_review.v1"
 COVERAGE_SOURCE_PIN_SCHEMA = "p107.coverage.source-pin.v1"
 COVERAGE_MANIFEST_SCHEMA = "p107.coverage.visual_relation_query_manifest.v1"
+GROUNDING_QUARANTINE_SCHEMA = "p107.coverage.category_grounding_quarantine.v1"
+EVENT_BINDING_SCHEMA = "p107.coverage.selected_event_binding.v1"
 UNSUPPORTED_SCHEMA = "p107.coverage.unsupported_goal_query.v1"
 SELECTOR_SCHEMA = "p107-diagnostic-coverage-selection-v1"
 QUEUE_SCHEMA = "p107-metadata-annotation-queue-v1"
@@ -722,15 +724,109 @@ def _unsupported_record(*, selector: Mapping[str, Any], event: Mapping[str, Any]
     }
 
 
+def _grounding_quarantine_record(candidate: Mapping[str, Any]) -> dict[str, Any]:
+    current = candidate["current_visible_goal_relation"]
+    binding = candidate["queried_skill_binding"]
+    return {
+        "schema_version": GROUNDING_QUARANTINE_SCHEMA,
+        "status": "CATEGORY_GROUNDING_QUARANTINED",
+        "reason": "actor-facing review is withheld until every referenced entity resolves in the pinned official taxonomy",
+        "prelabel_query_id": candidate["prelabel_query_id"],
+        "candidate_record_sha256": canonical_digest(candidate),
+        "event_id": candidate["event_id"],
+        "source_group_id": candidate["source_group_id"],
+        "observation_frame": candidate["observation_frame"],
+        "query_ordinal_within_event": candidate["query_ordinal_within_event"],
+        "skill_id": binding["skill_id"],
+        "canonical_verb": binding["canonical_verb"],
+        "query_text": current["query_text"],
+        "query_content_sha256": candidate["query_content_sha256"],
+        "category_grounding_status": current.get("category_grounding_status"),
+        "category_grounding_unknown_count": current.get("category_grounding_unknown_count", 0),
+        "category_grounding_audit": candidate.get("category_grounding_audit", []),
+        "metadata_entities_raw": candidate.get("metadata_entities_raw", {}),
+        "source_pin": candidate["source_pin"],
+        "temporal_binding": candidate["temporal_binding"],
+        "usage_role": candidate["usage_role"],
+        "immutable_split": candidate["immutable_split"],
+        "training_eligible": False,
+        "no_outcome_or_action_labels": True,
+        "provenance": candidate["provenance"],
+    }
+
+
+def _selected_event_bindings(
+    selector: Mapping[str, Any],
+    records: list[Mapping[str, Any]],
+    registry: list[Mapping[str, Any]],
+    quarantined: list[Mapping[str, Any]],
+    unsupported: list[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    records_by_event: dict[str, list[Mapping[str, Any]]] = {}
+    eligible_by_event: dict[str, list[Mapping[str, Any]]] = {}
+    quarantined_by_event: dict[str, list[Mapping[str, Any]]] = {}
+    unsupported_by_event: dict[str, list[Mapping[str, Any]]] = {}
+    for row in records:
+        records_by_event.setdefault(row["event_id"], []).append(row)
+    for row in registry:
+        eligible_by_event.setdefault(row["event_id"], []).append(row)
+    for row in quarantined:
+        quarantined_by_event.setdefault(row["event_id"], []).append(row)
+    for row in unsupported:
+        unsupported_by_event.setdefault(row["event_id"], []).append(row)
+
+    bindings: list[dict[str, Any]] = []
+    for event_id in sorted(selector["jobs_by_event"]):
+        job = selector["jobs_by_event"][event_id]
+        all_rows = records_by_event.get(event_id, [])
+        eligible_rows = eligible_by_event.get(event_id, [])
+        quarantine_rows = quarantined_by_event.get(event_id, [])
+        unsupported_rows = unsupported_by_event.get(event_id, [])
+        if eligible_rows and (quarantine_rows or unsupported_rows):
+            status = "PARTIAL_ELIGIBLE_QUERIES"
+        elif eligible_rows:
+            status = "ELIGIBLE_QUERIES"
+        elif quarantine_rows:
+            status = "CATEGORY_GROUNDING_QUARANTINED_NO_ELIGIBLE_QUERY"
+        elif unsupported_rows:
+            status = "UNSUPPORTED_NO_ELIGIBLE_QUERY"
+        else:
+            status = "UNBOUND_NO_QUERY"
+        bindings.append({
+            "schema_version": EVENT_BINDING_SCHEMA,
+            "status": status,
+            "event_id": event_id,
+            "source_group_id": job["source_group_id"],
+            "observation_frame": job["temporal_windows"]["anchor_frame"],
+            "selected_skill_ids": list(job["skill_ids"]),
+            "candidate_query_count": len(all_rows),
+            "eligible_query_count": len(eligible_rows),
+            "quarantined_query_count": len(quarantine_rows),
+            "unsupported_skill_count": len(unsupported_rows),
+            "eligible_prelabel_query_ids": [row["prelabel_query_id"] for row in eligible_rows],
+            "quarantined_prelabel_query_ids": [row["prelabel_query_id"] for row in quarantine_rows],
+            "unsupported_skill_ids": [row.get("skill_id") for row in unsupported_rows],
+            "selector_record_sha256": canonical_digest(job),
+            "usage_role": selector["usage_role"],
+            "immutable_split": selector["immutable_split"],
+            "training_eligible": False,
+            "no_outcome_or_action_labels": True,
+        })
+    return bindings
+
+
 def _build_records(selector: Mapping[str, Any], index_spec: Mapping[str, Any],
                    category_mapping: dict[str, str] | None,
-                   category_mapping_metadata: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+                   category_mapping_metadata: dict[str, Any]) -> tuple[
+                       list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]
+                   ]:
     if category_mapping is None:
         raise ValueError("authenticated category mapping is required before building actor-facing queries")
     event_ids = set(selector["jobs_by_event"])
     events = _selected_events(index_spec, event_ids)
     records: list[dict[str, Any]] = []
     registry: list[dict[str, Any]] = []
+    quarantined: list[dict[str, Any]] = []
     unsupported: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
     seen_pairs: set[tuple[str, int]] = set()
@@ -773,11 +869,15 @@ def _build_records(selector: Mapping[str, Any], index_spec: Mapping[str, Any],
                 raise ValueError("duplicate coverage prelabel_query_id")
             seen_ids.add(candidate["prelabel_query_id"])
             records.append(candidate)
-            registry.append(_registry_projection(candidate))
+            if candidate["current_visible_goal_relation"].get("category_grounding_status") == "RESOLVED_OFFICIAL_CATEGORY":
+                registry.append(_registry_projection(candidate))
+            else:
+                quarantined.append(_grounding_quarantine_record(candidate))
     records.sort(key=lambda row: (row["event_id"], row["query_ordinal_within_event"]))
     registry.sort(key=lambda row: (row["event_id"], row["query_ordinal_within_event"]))
+    quarantined.sort(key=lambda row: (row["event_id"], row["query_ordinal_within_event"]))
     unsupported.sort(key=lambda row: (row["event_id"], row["skill_id"] if isinstance(row["skill_id"], int) else -1))
-    return records, registry, unsupported
+    return records, registry, unsupported, quarantined
 
 
 def _write_jsonl(path: Path, rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
@@ -826,9 +926,12 @@ def build_output(
         expected_coverage_sha256=expected_coverage_sha256,
     )
     index_spec = _authenticate_index(index_spec, protocol_path)
-    records, registry, unsupported = _build_records(selector, index_spec, category_mapping, category_mapping_metadata)
+    records, registry, unsupported, quarantined = _build_records(
+        selector, index_spec, category_mapping, category_mapping_metadata
+    )
     if not records and not unsupported:
         raise ValueError("coverage selector produced no query records")
+    event_bindings = _selected_event_bindings(selector, records, registry, quarantined, unsupported)
 
     stage_parent = output_dir.parent
     stage_parent.mkdir(parents=True, exist_ok=True)
@@ -837,10 +940,15 @@ def build_output(
         query_receipt = _write_jsonl(stage / "query_candidates.jsonl", records)
         registry_name = "prelabel_registry.jsonl" if role == "train" else "evaluation_query_registry.jsonl"
         registry_receipt = _write_jsonl(stage / registry_name, registry)
+        quarantine_receipt = _write_jsonl(stage / "category_grounding_quarantine.jsonl", quarantined)
         unsupported_receipt = _write_jsonl(stage / "unsupported_goal_queries.jsonl", unsupported)
+        event_binding_receipt = _write_jsonl(stage / "selected_event_bindings.jsonl", event_bindings)
         if role == "eval":
             eval_rows = []
+            eligible_ids = {row["prelabel_query_id"] for row in registry}
             for record in records:
+                if record["prelabel_query_id"] not in eligible_ids:
+                    continue
                 eval_rows.append({
                     "schema_version": COVERAGE_EVAL_REVIEW_SCHEMA,
                     "status": "DIAGNOSTIC_ONLY_PACKET_PENDING",
@@ -871,7 +979,7 @@ def build_output(
             eval_receipt = None
         metadata = {
             "schema_version": COVERAGE_MANIFEST_SCHEMA,
-            "status": "PRELABEL_QUERY_CANDIDATES_ONLY_NO_ANSWERS_NO_ANNOTATIONS_NO_RELEASE",
+            "status": "PRELABEL_QUERY_CANDIDATES_WITH_GROUNDING_QUARANTINE_NO_ANSWERS_NO_ANNOTATIONS_NO_RELEASE",
             "selection_role": role,
             "usage_role": selector["usage_role"],
             "immutable_split": selector["immutable_split"],
@@ -900,11 +1008,27 @@ def build_output(
                 "canonical_protocol_sha256": expected_protocol_sha256,
             },
             "counts": {
-                "selector_events": len(selector["jobs_by_event"]),
-                "prelabel_queries": len(records),
+                "selected_events": len(selector["jobs_by_event"]),
+                "candidate_queries": len(records),
+                "eligible_queries": len(registry),
+                "category_grounding_quarantined_queries": len(quarantined),
                 "unsupported_goal_queries": len(unsupported),
-                "distinct_source_groups": len({record["source_group_id"] for record in records}),
-                "multiple_query_events": len({event_id for event_id, ordinal in {(row["event_id"], row["query_ordinal_within_event"]) for row in records} if sum(item["event_id"] == event_id for item in records) > 1}),
+                "events_with_eligible_queries": sum(row["eligible_query_count"] > 0 for row in event_bindings),
+                "events_without_eligible_queries": sum(row["eligible_query_count"] == 0 for row in event_bindings),
+                "selected_distinct_source_groups": len({job["source_group_id"] for job in selector["jobs_by_event"].values()}),
+                "candidate_distinct_source_groups": len({record["source_group_id"] for record in records}),
+                "eligible_distinct_source_groups": len({record["source_group_id"] for record in registry}),
+                "multiple_candidate_query_events": len({
+                    event_id for event_id in {row["event_id"] for row in records}
+                    if sum(item["event_id"] == event_id for item in records) > 1
+                }),
+                "multiple_eligible_query_events": len({
+                    event_id for event_id in {row["event_id"] for row in registry}
+                    if sum(item["event_id"] == event_id for item in registry) > 1
+                }),
+                "unbound_selected_event_ids": [
+                    row["event_id"] for row in event_bindings if row["eligible_query_count"] == 0
+                ],
             },
             "provenance": {
                 "producer": "build_memlite_coverage_visual_relation_queries.py",
@@ -917,7 +1041,9 @@ def build_output(
             "outputs": {
                 "query_candidates.jsonl": query_receipt,
                 registry_name: registry_receipt,
+                "category_grounding_quarantine.jsonl": quarantine_receipt,
                 "unsupported_goal_queries.jsonl": unsupported_receipt,
+                "selected_event_bindings.jsonl": event_binding_receipt,
             },
         }
         if eval_receipt is not None:
@@ -937,7 +1063,10 @@ def build_output(
         return {
             "output_dir": str(output_dir),
             "role": role,
-            "query_count": len(records),
+            "query_count": len(registry),
+            "candidate_query_count": len(records),
+            "eligible_query_count": len(registry),
+            "quarantined_query_count": len(quarantined),
             "unsupported_count": len(unsupported),
             "manifest": str(output_dir / "manifest.json"),
             "manifest_sha256": sha256_file(output_dir / "manifest.json"),
