@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
-import json
 from pathlib import Path
 import sys
 from typing import Any, Mapping
@@ -28,7 +27,19 @@ def _load_packer() -> Any:
     return module
 
 
+def _load_actor_query_contract() -> Any:
+    path = REPO / "src/g05/data/memlite_event_actor_query.py"
+    spec = importlib.util.spec_from_file_location("p107_memlite_event_actor_query_audit", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Cannot load P107 actor-query contract: {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 _pack = _load_packer()
+_actor_query = _load_actor_query_contract()
 RELEASE_SCHEMA = _pack.RELEASE_SCHEMA
 SCHEMA_VERSION = _pack.SCHEMA_VERSION
 canonical_json = _pack.canonical_json
@@ -75,6 +86,15 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
     files = manifest.get("files")
     if not isinstance(files, Mapping) or seal.get("files") != files:
         raise ValueError("release manifest/seal disagree on packaged file receipts")
+    if "actor_query_sidecar" not in manifest:
+        undeclared_actor_files = {
+            str(name) for name in files
+            if Path(str(name)).name in {"actor_queries.jsonl", "prelabel_queries.jsonl"}
+        }
+        if undeclared_actor_files:
+            raise ValueError(
+                "actor-query sidecar files are present in sealed receipts without an "
+                "actor_query_sidecar registration: " + ", ".join(sorted(undeclared_actor_files)))
     for name in ("source_groups.jsonl", "events.jsonl", "views.jsonl", "actions.jsonl"):
         receipt = files.get(name)
         if not isinstance(receipt, Mapping) or receipt.get("sha256") != sha256_file(package / name):
@@ -114,6 +134,27 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
     action_by_id = {row.get("view_id"): row for row in actions}
     if len(action_by_id) != len(actions):
         raise ValueError("duplicate corrective action payload in package")
+    actor_query_by_view_id: dict[str, Mapping[str, Any]] = {}
+    prelabel_registry: dict[str, Mapping[str, Any]] = {}
+    if "actor_query_sidecar" in manifest:
+        sidecar_metadata = manifest["actor_query_sidecar"]
+        if not isinstance(sidecar_metadata, Mapping):
+            raise ValueError("actor_query_sidecar manifest registration must be an object")
+        views_by_id: dict[str, Mapping[str, Any]] = {}
+        for wrapper in views:
+            if not isinstance(wrapper, Mapping) or not isinstance(wrapper.get("view"), Mapping):
+                raise ValueError("cannot audit actor-query sidecar against malformed view wrapper")
+            view = wrapper["view"]
+            view_id = view.get("view_id")
+            if not isinstance(view_id, str) or view_id in views_by_id:
+                raise ValueError("duplicate or malformed view_id while auditing actor-query sidecar")
+            views_by_id[view_id] = view
+        try:
+            actor_query_by_view_id, prelabel_registry = _actor_query.read_actor_query_sidecar(
+                package, sidecar_metadata, files=files, expected_view_ids=set(views_by_id),
+                views_by_id=views_by_id, events_by_id=event_by_id)
+        except _actor_query.ActorQueryError as error:
+            raise ValueError(f"actor-query sidecar audit failed: {error}") from error
     view_ids: set[str] = set()
     status = {"source_indexed": len(events), "candidate_annotated": 0, "parent_reviewed": 0,
               "accepted_auxiliary": 0, "outcome_validated": 0, "verified_recovery_actions": 0,
@@ -219,6 +260,8 @@ def audit(package: Path, *, expected_release_seal_sha256: str,
     return {"schema_version": "memlite-event-release-audit-v1", "status": "PASS_WITH_STAGE3_TRAINING_BLOCKED",
             "ready_for_training": False, "training_run_authorized": False, "stage3_training_authorized": False, "actual_scale": actual_scale,
             "status_report": status, "coverage": expected_coverage,
+            "actor_query_sidecar_rows": len(actor_query_by_view_id),
+            "prelabel_query_registry_rows": len(prelabel_registry),
             "release_eligibility": manifest.get("release_eligibility"),
             "warnings": ["accepted_scope/review_decision do not override CANDIDATE_ONLY release eligibility",
                          "auxiliary visual calibration pilots are not outcome/recovery/action labels"]}

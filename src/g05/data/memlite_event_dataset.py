@@ -207,11 +207,23 @@ class MemLiteEventDataset(Sequence[dict[str, Any]]):
             sidecar_metadata = self.manifest["actor_query_sidecar"]
             if not isinstance(sidecar_metadata, Mapping):
                 raise ValueError("actor_query_sidecar manifest registration must be an object")
+            # Validate every sidecar binding before selecting ``view_kind``.
+            # A malformed OTHER-kind row must not become invisible merely
+            # because this dataset instance projects a different kind.
+            views_by_id: dict[str, Mapping[str, Any]] = {}
+            for wrapper in view_wrappers:
+                if not isinstance(wrapper, Mapping) or not isinstance(wrapper.get("view"), Mapping):
+                    continue
+                wrapper_view = wrapper["view"]
+                wrapper_view_id = wrapper_view.get("view_id")
+                if isinstance(wrapper_view_id, str):
+                    if wrapper_view_id in views_by_id:
+                        raise ValueError("duplicate view_id while loading actor-query sidecar")
+                    views_by_id[wrapper_view_id] = wrapper_view
             actor_query_by_view_id, prelabel_registry = read_actor_query_sidecar(
                 self.release_dir, sidecar_metadata, files=files,
-                expected_view_ids={wrapper.get("view", {}).get("view_id")
-                                   for wrapper in view_wrappers
-                                   if isinstance(wrapper, Mapping) and isinstance(wrapper.get("view"), Mapping)})
+                expected_view_ids=set(views_by_id), views_by_id=views_by_id,
+                events_by_id=event_by_id)
         rows: list[dict[str, Any]] = []
         for wrapper in view_wrappers:
             view, gate = wrapper.get("view"), wrapper.get("dataset_quality_gates")
@@ -259,7 +271,8 @@ class MemLiteEventDataset(Sequence[dict[str, Any]]):
         if actor_query is not None:
             result["actor_query"] = actor_query_projection(
                 actor_query, observation_frame=view["observation_frame"],
-                view_kind=view["label_kind"], view=view, prelabel_registry=prelabel_registry)
+                view_kind=view["label_kind"], view=view, event=event,
+                prelabel_registry=prelabel_registry)
         kind = view["label_kind"]
         if kind == "goal_satisfaction_counterfactual":
             result.update(goal_relation=view["goal_relation"], goal_satisfaction=view["goal_satisfaction"],
