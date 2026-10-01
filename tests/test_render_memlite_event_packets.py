@@ -4,6 +4,7 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from fractions import Fraction
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -83,7 +84,7 @@ class RenderEventPacketsTests(unittest.TestCase):
             raw_root = root / "raw"
             raw_root.mkdir()
 
-            def fake_decode(_av, _video, requested):
+            def fake_decode(_av, _video, requested, **_bounds):
                 return Image.new("RGB", (8, 6), "red"), {"requested_timestamp_s": requested,
                                                            "decoded_timestamp_s": requested, "pts_error_s": 0.0}
 
@@ -94,9 +95,12 @@ class RenderEventPacketsTests(unittest.TestCase):
                 result = renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
                                                  include_source_annotation_context=False, decode=True, raw_root=raw_root,
                                                  contact_sheets=False, max_seconds=10)
-            self.assertEqual(result["rendered_asset_receipts"], 3)
+            self.assertEqual(result["rendered_asset_receipts"], 21)
             assets = [json.loads(line) for line in (packets / "rendered_asset_receipts.jsonl").read_text().splitlines()]
-            self.assertEqual([row["view"] for row in assets], ["head", "left_wrist", "right_wrist"])
+            self.assertEqual([row["view"] for row in assets[:3]], ["head", "left_wrist", "right_wrist"])
+            self.assertEqual({row["sample_index"] for row in assets}, set(range(7)))
+            self.assertEqual({row["temporal_role"] for row in assets},
+                             {"ACTOR_CAUSAL", "OFFLINE_FUTURE_AUDIT"})
             for row in assets:
                 path = packets / row["relative_path"]
                 self.assertEqual(renderer._sha256(path), row["sha256"])
@@ -106,6 +110,101 @@ class RenderEventPacketsTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "rendered PNG bytes changed"):
                 renderer.resume_packets(index, packets,
                                         expected_packet_manifest_sha256=result["packet_manifest_sha256"])
+
+    def test_contact_sheet_is_audited_only_and_native_temporal_assets_are_complete(self):
+        from PIL import Image, ImageDraw
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            release = root / "release"
+            fixture = write_release(release)
+            index = root / "index"
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
+            raw_root = root / "raw"
+            raw_root.mkdir()
+
+            def fake_decode(_av, _video, requested, **_bounds):
+                return Image.new("RGB", (8, 6), "blue"), {"requested_timestamp_s": requested,
+                                                            "decoded_timestamp_s": requested, "pts_error_s": 0.0}
+
+            with patch.object(renderer, "_require_decode_dependencies", return_value=(object(), Image, ImageDraw)), \
+                 patch.object(renderer, "_resolve_video", return_value=raw_root / "placeholder.mp4"), \
+                 patch.object(renderer, "_decode_rgb", side_effect=fake_decode):
+                packets = root / "packets"
+                result = renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
+                                                 include_source_annotation_context=False, decode=True, raw_root=raw_root,
+                                                 contact_sheets=True, max_seconds=10)
+            self.assertEqual(result["rendered_asset_receipts"], 22)
+            row = json.loads((packets / "packets.jsonl").read_text())
+            self.assertTrue(all(path.startswith("assets/") for path in row["actor_packet"]["images"].values()))
+            self.assertTrue(row["audit"]["review_only_contact_sheet"].startswith("review_assets/"))
+            self.assertNotIn(row["audit"]["review_only_contact_sheet"], row["actor_packet"]["images"].values())
+            self.assertEqual(renderer.resume_packets(
+                index, packets, expected_packet_manifest_sha256=result["packet_manifest_sha256"])["status"],
+                "RESUME_VALIDATED")
+
+    def test_temporal_clamping_and_pts_selection_never_cross_episode_or_actor_clock(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            release = root / "release"
+            fixture = write_release(release)
+            index = root / "index"
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
+            event = json.loads((index / "event_candidates.jsonl").read_text().splitlines()[0])
+            start_samples = renderer._temporal_samples(event, renderer.TEMPORAL_SAMPLE_OFFSETS)
+            self.assertEqual(len(start_samples), 7)  # clipped repeats remain one packet, not extra candidates
+            self.assertEqual([sample["sample_frame"] for sample in start_samples[:5]], [0, 0, 0, 0, 0])
+            late_event = json.loads(json.dumps(event))
+            late_event["observation"]["frame"] = late_event["source"]["episode_length"] - 1
+            end_samples = renderer._temporal_samples(late_event, renderer.TEMPORAL_SAMPLE_OFFSETS)
+            self.assertEqual([sample["sample_frame"] for sample in end_samples[-2:]],
+                             [late_event["source"]["episode_length"] - 1] * 2)
+
+            from PIL import Image
+
+            class Frame:
+                def __init__(self, pts):
+                    self.pts = pts
+
+                def to_image(self):
+                    return Image.new("RGB", (2, 2), "green")
+
+            class Stream:
+                average_rate = 30
+                time_base = Fraction(1, 30)
+
+            class Container:
+                streams = type("Streams", (), {"video": [Stream()]})()
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *_args):
+                    return False
+
+                def seek(self, *_args, **_kwargs):
+                    return None
+
+                def decode(self, _stream):
+                    return iter((Frame(30), Frame(31)))
+
+            class Av:
+                @staticmethod
+                def open(_path):
+                    return Container()
+
+            video = root / "shared-container.mp4"
+            video.write_bytes(b"fixture")
+            # At half-way rounding, frame 31 would be future of the actor
+            # anchor.  The decoder chooses frame 30 instead.
+            image, receipt = renderer._decode_rgb(
+                Av(), video, 30.5 / 30.0, episode_start_timestamp_s=1.0,
+                episode_end_timestamp_s=2.0, actor_anchor_timestamp_s=30.5 / 30.0)
+            self.assertEqual(receipt["decoded_timestamp_s"], 1.0)
+            image.close()
+            with self.assertRaisesRegex(ValueError, "outside the source episode"):
+                renderer._decode_rgb(Av(), video, 2.1, episode_start_timestamp_s=1.0,
+                                     episode_end_timestamp_s=2.0, actor_anchor_timestamp_s=None)
 
     def test_resume_rejects_self_resigned_manifest_without_external_pin(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -127,6 +226,30 @@ class RenderEventPacketsTests(unittest.TestCase):
                                         expected_packet_manifest_sha256=result["packet_manifest_sha256"])
             with self.assertRaisesRegex(ValueError, "requires an externally pinned"):
                 renderer.resume_packets(index, packets, expected_packet_manifest_sha256=None)
+
+    def test_resume_rejects_semantically_forged_actor_payload_even_if_new_hash_is_supplied(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            release = root / "release"
+            fixture = write_release(release)
+            index = root / "index"
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
+            packets = root / "packets"
+            renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
+                                    include_source_annotation_context=False, decode=False, raw_root=None,
+                                    contact_sheets=False, max_seconds=10)
+            rows = [json.loads(line) for line in (packets / "packets.jsonl").read_text().splitlines()]
+            rows[0]["actor_packet"]["question_context"] = {"outcome": "SUCCESS"}
+            payload = "".join(renderer.canonical_json(row) + "\n" for row in rows)
+            (packets / "packets.jsonl").write_text(payload)
+            manifest = json.loads((packets / "manifest.json").read_text())
+            manifest["files"]["packets.jsonl"] = {"sha256": renderer._sha256(packets / "packets.jsonl"),
+                                                      "bytes": (packets / "packets.jsonl").stat().st_size,
+                                                      "rows": 1}
+            (packets / "manifest.json").write_text(renderer.canonical_json(manifest) + "\n")
+            with self.assertRaisesRegex(ValueError, "forbidden"):
+                renderer.resume_packets(index, packets,
+                                        expected_packet_manifest_sha256=renderer._sha256(packets / "manifest.json"))
 
 
 if __name__ == "__main__":

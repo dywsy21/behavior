@@ -42,11 +42,14 @@ canonical_json = _protocol.canonical_json
 canonical_sha256 = _protocol.canonical_sha256
 event_id = _protocol.event_id
 validate_event = _protocol.validate_event
+validate_source_ref = _protocol.validate_source_ref
 
 
 VIEWS = ("head", "left_wrist", "right_wrist")
 PACKET_INDEX_SCHEMA = "memlite-event-packet-index-v1"
 PACKET_PAYLOAD_FILES = frozenset(("packets.jsonl", "rendered_asset_receipts.jsonl"))
+TEMPORAL_SAMPLE_OFFSETS = (-90, -60, -30, -15, 0, 15, 30)
+MAX_TEMPORAL_OFFSET_FRAMES = 240  # Eight seconds at the source 30 Hz clock.
 
 
 def _strict_json(data: bytes, *, name: str) -> Any:
@@ -81,6 +84,45 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
                 raise ValueError(f"Expected object at {path}:{number}")
             rows.append(value)
     return rows
+
+
+def _select_index_events(path: Path, receipt: Mapping[str, Any], event_ids: set[str],
+                         limit: int | None) -> list[dict[str, Any]]:
+    """Stream a large sealed event JSONL; never materialize the full index for a bounded packet batch."""
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("event index payload must be a regular file")
+    if not isinstance(receipt, Mapping) or set(receipt) != {"sha256", "rows", "bytes"}:
+        raise ValueError("event index manifest has an invalid event-candidate receipt")
+    if path.stat().st_size != receipt["bytes"]:
+        raise ValueError("event index payload does not match its sealed manifest")
+    digest, rows, selected, found_ids = hashlib.sha256(), 0, [], set()
+    with path.open("rb") as stream:
+        for number, line in enumerate(stream, start=1):
+            digest.update(line)
+            if not line.strip():
+                continue
+            rows += 1
+            # Once a finite prefix has been retained, only integrity accounting
+            # remains; this keeps peak memory independent of full index size.
+            if not event_ids and limit is not None and len(selected) >= limit:
+                continue
+            value = _strict_json(line, name=f"{path}:{number}")
+            if not isinstance(value, dict):
+                raise ValueError(f"Expected object at {path}:{number}")
+            if event_ids:
+                event_id_value = value.get("event_id")
+                if event_id_value in event_ids:
+                    if event_id_value in found_ids:
+                        raise ValueError("sealed event index contains duplicate selected event IDs")
+                    found_ids.add(event_id_value)
+                    selected.append(value)
+            else:
+                selected.append(value)
+    if digest.hexdigest() != receipt["sha256"] or rows != receipt["rows"]:
+        raise ValueError("event index payload does not match its sealed manifest")
+    if event_ids and found_ids != event_ids:
+        raise ValueError("requested event_id absent from sealed event index")
+    return selected
 
 
 def _sha256(path: Path) -> str:
@@ -118,6 +160,23 @@ def _read_event_ids(path: Path | None, direct: Iterable[str]) -> set[str]:
     return selected
 
 
+def _parse_temporal_offsets(value: str) -> tuple[int, ...]:
+    try:
+        offsets = tuple(int(part) for part in value.split(","))
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("--temporal-offset-frames must be seven comma-separated integers") from error
+    if not _valid_temporal_offsets(offsets):
+        raise argparse.ArgumentTypeError("--temporal-offset-frames requires seven unique values including 0 within +/-240")
+    return offsets
+
+
+def _valid_temporal_offsets(offsets: Any) -> bool:
+    """The packet schedule is deliberately fixed-size and bounded before decode."""
+    return (isinstance(offsets, (tuple, list)) and len(offsets) == 7 and len(set(offsets)) == 7 and
+            0 in offsets and all(type(offset) is int and abs(offset) <= MAX_TEMPORAL_OFFSET_FRAMES
+                                 for offset in offsets))
+
+
 def _questions(path: Path | None) -> dict[str, dict[str, Any]]:
     """Load actor prompt context, not labels; fail on answer-like payload keys."""
     if path is None:
@@ -147,7 +206,8 @@ def _source_annotation_context(event: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def _packet_id(index_sha256: str, event: Mapping[str, Any], context: Mapping[str, Any], decode: bool) -> str:
+def _packet_id(index_sha256: str, event: Mapping[str, Any], context: Mapping[str, Any], decode: bool,
+               temporal_offsets_frames: tuple[int, ...]) -> str:
     return canonical_sha256({
         "schema_version": PACKET_SCHEMA_VERSION,
         "index_manifest_sha256": index_sha256,
@@ -155,6 +215,7 @@ def _packet_id(index_sha256: str, event: Mapping[str, Any], context: Mapping[str
         "observation_frame": event["observation"]["frame"],
         "question_context": context,
         "decoded_camera_native_rgb": decode,
+        "temporal_offsets_frames": list(temporal_offsets_frames),
     })
 
 
@@ -173,6 +234,26 @@ def _locators_by_view(event: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
         if abs(float(requested) - expected) > 1e-9 or locator.get("expected_fps") != 30:
             raise ValueError("source video locator clock mismatch")
     return by_view
+
+
+def _temporal_samples(event: Mapping[str, Any], offsets_frames: tuple[int, ...]) -> list[dict[str, Any]]:
+    if not _valid_temporal_offsets(offsets_frames):
+        raise ValueError("temporal packet rendering requires exactly seven unique offsets including zero within +/-240 frames")
+    anchor = event["observation"]["frame"]
+    length = event["source"]["episode_length"]
+    samples = []
+    for sample_index, offset in enumerate(offsets_frames):
+        frame = min(length - 1, max(0, anchor + offset))
+        samples.append({"sample_index": sample_index, "offset_frames": offset, "sample_frame": frame,
+                        "timestamp_s": frame / 30.0,
+                        "temporal_role": "ACTOR_CAUSAL" if frame <= anchor else "OFFLINE_FUTURE_AUDIT"})
+    return samples
+
+
+def _temporal_locator(locator: Mapping[str, Any], sample: Mapping[str, Any]) -> dict[str, Any]:
+    return {**locator, "requested_timestamp_s": locator["episode_start_timestamp_s"] + sample["timestamp_s"],
+            "sample_index": sample["sample_index"], "offset_frames": sample["offset_frames"],
+            "sample_frame": sample["sample_frame"], "temporal_role": sample["temporal_role"]}
 
 
 def _resolve_video(raw_root: Path, relative_path: str) -> Path:
@@ -199,8 +280,19 @@ def _require_decode_dependencies(*, contact_sheets: bool) -> tuple[Any, Any | No
     return av, Image, ImageDraw
 
 
-def _decode_rgb(av: Any, video: Path, requested: float) -> tuple[Any, dict[str, Any]]:
-    """Decode nearest source PTS under half-frame tolerance; never trust frame ordinal alone."""
+def _decode_rgb(av: Any, video: Path, requested: float, *, episode_start_timestamp_s: float,
+                episode_end_timestamp_s: float,
+                actor_anchor_timestamp_s: float | None) -> tuple[Any, dict[str, Any]]:
+    """Decode a bounded source PTS without crossing an episode in a shared container.
+
+    ``episode_*`` are source-row global PTS bounds, not MP4 duration.  A
+    causal actor frame may round up by less than half a frame, but never past
+    the actor anchor; ties choose the non-future PTS.
+    """
+    if not (episode_start_timestamp_s <= requested <= episode_end_timestamp_s):
+        raise ValueError("requested frame lies outside the source episode global PTS bounds")
+    if actor_anchor_timestamp_s is not None and requested > actor_anchor_timestamp_s:
+        raise ValueError("actor camera request cannot be later than the pre-action observation clock")
     with av.open(str(video)) as container:
         if not container.streams.video:
             raise ValueError(f"source has no video stream: {video}")
@@ -210,43 +302,61 @@ def _decode_rgb(av: Any, video: Path, requested: float) -> tuple[Any, dict[str, 
             raise ValueError(f"source FPS changed: {video} ({rate})")
         if stream.time_base is None:
             raise ValueError(f"source stream has no time base: {video}")
-        container.seek(max(0, int(requested / float(stream.time_base))), stream=stream, backward=True, any_frame=False)
+        tolerance = 1.0 / 60.0 + 1e-6
+        container.seek(max(0, int(max(episode_start_timestamp_s, requested - tolerance) /
+                                  float(stream.time_base))), stream=stream, backward=True, any_frame=False)
         best = None
         for frame in container.decode(stream):
             if frame.pts is None:
                 continue
             actual = float(frame.pts * stream.time_base)
-            distance = abs(actual - requested)
-            if best is None or distance < best[0]:
-                best = (distance, actual, frame.to_image().convert("RGB"))
-            if actual >= requested:
+            # A file can contain contiguous demonstrations.  Never use an
+            # adjacent episode merely because it is close to the requested
+            # PTS, and never expose a rounded future frame at the actor clock.
+            if actual < episode_start_timestamp_s - tolerance:
+                continue
+            if actual > episode_end_timestamp_s + tolerance:
                 break
-        if best is None or best[0] > 1.0 / 60.0 + 1e-6:
-            if best is not None:
-                best[2].close()
+            distance = abs(actual - requested)
+            allowed = (actual <= episode_end_timestamp_s and actual >= episode_start_timestamp_s and
+                       (actor_anchor_timestamp_s is None or actual <= actor_anchor_timestamp_s))
+            candidate_rank = (distance, actual > requested, actual)
+            if allowed and distance <= tolerance and (best is None or candidate_rank < best[0]):
+                image = frame.to_image().convert("RGB")
+                if best is not None:
+                    best[3].close()
+                best = (candidate_rank, actual, image, image)
+            if actual > requested + tolerance:
+                break
+        if best is None:
             raise ValueError(f"cannot decode requested source PTS within half-frame: {video}")
         stat = video.stat()
-        return best[2], {
+        return best[3], {
             "resolved_path": str(video), "bytes": stat.st_size, "mtime_ns": stat.st_mtime_ns,
             "requested_timestamp_s": requested, "decoded_timestamp_s": best[1],
-            "pts_error_s": best[0], "fps": rate, "resolution": list(best[2].size),
+            "pts_error_s": best[0][0], "fps": rate, "resolution": list(best[3].size),
+            "episode_global_pts_bounds_s": [episode_start_timestamp_s, episode_end_timestamp_s],
+            "actor_anchor_timestamp_s": actor_anchor_timestamp_s,
             "full_video_sha256": None,
         }
 
 
-def _review_contact_sheet(images: Mapping[str, Any], path: Path, Image: Any, ImageDraw: Any) -> None:
-    """A review-only composite; it is intentionally excluded from actor_packet.images."""
-    sizes = [images[view].size for view in VIEWS]
+def _review_contact_sheet(samples: list[tuple[Mapping[str, Any], Mapping[str, Any]]], path: Path,
+                          Image: Any, ImageDraw: Any) -> None:
+    """Timestamped review-only composite; no text is present in actor-native PNGs."""
+    sizes = [samples[0][1][view].size for view in VIEWS]
     width = sum(size[0] for size in sizes)
-    height = max(size[1] for size in sizes) + 30
+    row_height = max(size[1] for size in sizes) + 30
+    height = row_height * len(samples)
     sheet = Image.new("RGB", (width, height), "white")
     draw = ImageDraw.Draw(sheet)
-    x = 0
-    for view in VIEWS:
-        image = images[view]
-        sheet.paste(image, (x, 30))
-        draw.text((x + 4, 6), view, fill="black")
-        x += image.size[0]
+    for row_index, (sample, images) in enumerate(samples):
+        x, y = 0, row_index * row_height
+        for view in VIEWS:
+            image = images[view]
+            sheet.paste(image, (x, y + 30))
+            draw.text((x + 4, y + 6), f"{view} f={sample['sample_frame']} t={sample['timestamp_s']:.3f}s", fill="black")
+            x += image.size[0]
     sheet.save(path)
 
 
@@ -262,6 +372,7 @@ def _write_jsonl(path: Path, rows: Iterable[Mapping[str, Any]]) -> dict[str, Any
 def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int | None,
                    questions: Mapping[str, Mapping[str, Any]], include_source_annotation_context: bool,
                    decode: bool, raw_root: Path | None, contact_sheets: bool,
+                   temporal_offsets_frames: tuple[int, ...] = TEMPORAL_SAMPLE_OFFSETS,
                    max_seconds: float = 1800.0) -> dict[str, Any]:
     index, output = Path(index), Path(output)
     if output.exists():
@@ -286,15 +397,8 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
     if manifest.get("schema_version") != "memlite-event-index-v1":
         raise ValueError("input is not a sealed P107 event index")
     index_sha = _sha256(index_manifest_path)
-    event_rows = _read_jsonl(index / "event_candidates.jsonl")
     receipt = manifest.get("files", {}).get("event_candidates.jsonl", {})
-    if _sha256(index / "event_candidates.jsonl") != receipt.get("sha256") or len(event_rows) != receipt.get("rows"):
-        raise ValueError("event index payload does not match its sealed manifest")
-    selected = [event for event in event_rows if not event_ids or event["event_id"] in event_ids]
-    if event_ids and {event["event_id"] for event in selected} != event_ids:
-        raise ValueError("requested event_id absent from sealed event index")
-    if limit is not None:
-        selected = selected[:limit]
+    selected = _select_index_events(index / "event_candidates.jsonl", receipt, event_ids, limit)
     if not selected:
         raise ValueError("selection produced no event packets")
     selected_ids = {event["event_id"] for event in selected}
@@ -323,36 +427,66 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                 if context:
                     raise ValueError("use either explicit question context or source annotation context, not both")
                 context = _source_annotation_context(event)
-            packet_id = _packet_id(index_sha, event, context, decode)
+            samples = _temporal_samples(event, temporal_offsets_frames)
+            packet_id = _packet_id(index_sha, event, context, decode, temporal_offsets_frames)
             if packet_id in seen_packet_ids:
                 raise ValueError("duplicate packet_id in selected immutable events")
             seen_packet_ids.add(packet_id)
             by_view = _locators_by_view(event)
             actor_images: dict[str, str] = {}
-            decoded_receipts: dict[str, Any] = {}
+            actor_temporal_rgb: list[dict[str, Any]] = []
+            offline_future_rgb: list[dict[str, Any]] = []
+            decoded_receipts: list[dict[str, Any]] = []
             review_asset = None
             if decode:
-                images = {}
+                review_images: list[tuple[Mapping[str, Any], Mapping[str, Any]]] = []
                 try:
-                    for view in VIEWS:
-                        locator = by_view[view]
-                        video = _resolve_video(raw_root, locator["relative_path"])
-                        image, decoded = _decode_rgb(av, video, float(locator["requested_timestamp_s"]))
-                        native_name = f"{packet_id}_{view}.png"
-                        asset_path = staging / "assets" / native_name
-                        image.save(asset_path)
-                        actor_images[view] = f"assets/{native_name}"
-                        decoded_receipts[view] = {**decoded, "camera_native_png_sha256": _sha256(asset_path),
-                                                  "camera_native_png_bytes": asset_path.stat().st_size}
-                        asset_receipts.append({
-                            "schema_version": PACKET_SCHEMA_VERSION, "packet_id": packet_id, "view": view,
-                            "asset_kind": "camera_native_rgb_png", "relative_path": f"assets/{native_name}",
-                            "sha256": _sha256(asset_path), "bytes": asset_path.stat().st_size,
-                        })
-                        images[view] = image
+                    for sample in samples:
+                        images, paths = {}, {}
+                        for view in VIEWS:
+                            locator = _temporal_locator(by_view[view], sample)
+                            video = _resolve_video(raw_root, locator["relative_path"])
+                            episode_start = float(locator["episode_start_timestamp_s"])
+                            episode_end = episode_start + (event["source"]["episode_length"] - 1) / 30.0
+                            actor_anchor = (episode_start + event["observation"]["frame"] / 30.0
+                                            if sample["temporal_role"] == "ACTOR_CAUSAL" else None)
+                            image, decoded = _decode_rgb(
+                                av, video, float(locator["requested_timestamp_s"]),
+                                episode_start_timestamp_s=episode_start, episode_end_timestamp_s=episode_end,
+                                actor_anchor_timestamp_s=actor_anchor)
+                            native_name = f"{packet_id}_t{sample['sample_index']:02d}_{view}.png"
+                            asset_path = staging / "assets" / native_name
+                            image.save(asset_path)
+                            relative_path = f"assets/{native_name}"
+                            paths[view] = relative_path
+                            decoded_receipts.append({**decoded, "view": view, **sample,
+                                                     "camera_native_png_sha256": _sha256(asset_path),
+                                                     "camera_native_png_bytes": asset_path.stat().st_size})
+                            asset_receipts.append({
+                                "schema_version": PACKET_SCHEMA_VERSION, "packet_id": packet_id, "view": view,
+                                "asset_kind": "camera_native_rgb_png", "temporal_role": sample["temporal_role"],
+                                "sample_index": sample["sample_index"], "sample_frame": sample["sample_frame"],
+                                "requested_timestamp_s": locator["requested_timestamp_s"],
+                                "decoded_timestamp_s": decoded["decoded_timestamp_s"], "pts_error_s": decoded["pts_error_s"],
+                                "relative_path": relative_path, "sha256": _sha256(asset_path),
+                                "bytes": asset_path.stat().st_size,
+                            })
+                            images[view] = image
+                        temporal_record = {**sample, "images": paths}
+                        if sample["temporal_role"] == "ACTOR_CAUSAL":
+                            actor_temporal_rgb.append(temporal_record)
+                            if sample["offset_frames"] == 0:
+                                actor_images = dict(paths)
+                        else:
+                            offline_future_rgb.append(temporal_record)
+                        if contact_sheets:
+                            review_images.append((sample, images))
+                        else:
+                            for image in images.values():
+                                image.close()
                     if contact_sheets:
                         review_name = f"{packet_id}_contact_sheet.png"
-                        _review_contact_sheet(images, staging / "review_assets" / review_name, Image, ImageDraw)
+                        _review_contact_sheet(review_images, staging / "review_assets" / review_name, Image, ImageDraw)
                         review_asset = f"review_assets/{review_name}"
                         review_path = staging / review_asset
                         asset_receipts.append({
@@ -361,12 +495,14 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                             "sha256": _sha256(review_path), "bytes": review_path.stat().st_size,
                         })
                 finally:
-                    for image in images.values():
-                        image.close()
+                    for _, images in review_images:
+                        for image in images.values():
+                            image.close()
             actor_packet = {
                 "packet_id": packet_id, "event_id": event["event_id"],
                 "observation_frame": event["observation"]["frame"],
                 "images": actor_images,
+                "causal_temporal_rgb": actor_temporal_rgb,
                 "question_context": context,
                 "actor_instruction": "Use only the camera-native RGB images and question context. Source annotation context is not ground truth.",
             }
@@ -381,7 +517,10 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                 "audit": {
                     "event_id": event["event_id"], "source": event["source"],
                     "usage_role": event.get("usage_role"), "video_locators": [by_view[view] for view in VIEWS],
-                    "decoded_pts_receipts": decoded_receipts, "review_only_contact_sheet": review_asset,
+                    "temporal_schedule": [{**sample, "video_locators": [
+                        _temporal_locator(by_view[view], sample) for view in VIEWS]} for sample in samples],
+                    "decoded_pts_receipts": decoded_receipts, "offline_future_rgb": offline_future_rgb,
+                    "review_only_contact_sheet": review_asset,
                 },
             })
         files = {"packets.jsonl": _write_jsonl(staging / "packets.jsonl", packets),
@@ -394,6 +533,7 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
             "index_event_file_sha256": receipt["sha256"],
             "files": files, "packets": len(packets), "rendered_asset_receipts": len(asset_receipts),
             "decoded_camera_native_rgb": decode,
+            "temporal_sample_offsets_frames": list(temporal_offsets_frames),
             "review_only_contact_sheets": contact_sheets, "full_video_hashing": False,
             "renderer_sha256": _sha256(Path(__file__)),
             "protocol_sha256": _sha256(REPO / "src/g05/data/memlite_event_protocol.py"),
@@ -412,6 +552,180 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
         raise
 
 
+def _actor_has_forbidden_key(value: Any) -> bool:
+    forbidden = ("answer", "label", "outcome", "ground_truth", "success", "failure", "review", "evidence",
+                 "audit", "privileged")
+    if isinstance(value, Mapping):
+        return any(any(token in str(key).lower() for token in forbidden) or _actor_has_forbidden_key(item)
+                   for key, item in value.items())
+    if isinstance(value, list):
+        return any(_actor_has_forbidden_key(item) for item in value)
+    return False
+
+
+def _safe_asset_path(value: Any, *, directory: str) -> bool:
+    if not isinstance(value, str) or not value:
+        return False
+    relative = Path(value)
+    return not relative.is_absolute() and ".." not in relative.parts and relative.parts[:1] == (directory,)
+
+
+def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
+                               expected_offsets: tuple[int, ...]) -> None:
+    required = {"schema_version", "packet_id", "status", "training_eligible", "actor_packet", "audit"}
+    if set(packet) != required or packet["schema_version"] != PACKET_SCHEMA_VERSION:
+        raise ValueError("packet row does not use the exact P107 packet schema")
+    if packet["training_eligible"] is not False or packet["status"] != (
+            "DECODED_PENDING_LABELS" if decoded else "LOCATOR_READY_NO_RGB"):
+        raise ValueError("packet rows are candidate-only and cannot self-promote training eligibility")
+    actor = packet["actor_packet"]
+    actor_required = {"packet_id", "event_id", "observation_frame", "images", "causal_temporal_rgb",
+                      "question_context", "actor_instruction"}
+    if not isinstance(actor, Mapping) or set(actor) != actor_required or actor["packet_id"] != packet["packet_id"]:
+        raise ValueError("packet actor input has an invalid schema")
+    if _actor_has_forbidden_key(actor):
+        raise ValueError("actor input contains forbidden outcome/label/review/evidence material")
+    if type(actor["observation_frame"]) is not int or actor["observation_frame"] < 0:
+        raise ValueError("actor packet observation clock is invalid")
+    if not isinstance(actor["images"], Mapping) or set(actor["images"]) - set(VIEWS):
+        raise ValueError("actor packet image paths are invalid")
+    if not isinstance(actor["causal_temporal_rgb"], list):
+        raise ValueError("actor temporal RGB must be a list")
+    causal_paths = set()
+    causal_samples: dict[int, Mapping[str, Any]] = {}
+    for sample in actor["causal_temporal_rgb"]:
+        fields = {"sample_index", "offset_frames", "sample_frame", "timestamp_s", "temporal_role", "images"}
+        if not isinstance(sample, Mapping) or set(sample) != fields or sample["temporal_role"] != "ACTOR_CAUSAL":
+            raise ValueError("actor temporal RGB sample has an invalid causal schema")
+        if (type(sample["sample_index"]) is not int or sample["sample_index"] in causal_samples or
+                type(sample["sample_frame"]) is not int or sample["sample_frame"] > actor["observation_frame"]):
+            raise ValueError("actor temporal RGB contains a future frame")
+        if not isinstance(sample["images"], Mapping) or set(sample["images"]) != set(VIEWS):
+            raise ValueError("actor temporal RGB must provide all three camera-native views")
+        if any(not _safe_asset_path(path, directory="assets") for path in sample["images"].values()):
+            raise ValueError("actor temporal RGB must name only camera-native asset paths")
+        causal_samples[sample["sample_index"]] = sample
+        causal_paths.update(sample["images"].values())
+    if decoded and (set(actor["images"]) != set(VIEWS) or not set(actor["images"].values()) <= causal_paths):
+        raise ValueError("decoded actor anchor images must be causal temporal camera-native assets")
+    if decoded and any(not _safe_asset_path(path, directory="assets") for path in actor["images"].values()):
+        raise ValueError("actor anchor images must name only camera-native asset paths")
+    if not decoded and (actor["images"] or actor["causal_temporal_rgb"]):
+        raise ValueError("locator-only packet cannot claim decoded actor RGB")
+    audit = packet["audit"]
+    audit_required = {"event_id", "source", "usage_role", "video_locators", "temporal_schedule",
+                      "decoded_pts_receipts", "offline_future_rgb", "review_only_contact_sheet"}
+    if not isinstance(audit, Mapping) or set(audit) != audit_required or audit["event_id"] != actor["event_id"]:
+        raise ValueError("packet audit has an invalid schema")
+    validate_source_ref(audit["source"])
+    if not isinstance(audit["video_locators"], list) or len(audit["video_locators"]) != 3:
+        raise ValueError("packet audit must retain exactly three source camera locators")
+    by_view = {locator.get("view"): locator for locator in audit["video_locators"] if isinstance(locator, Mapping)}
+    if len(by_view) != 3 or set(by_view) != set(VIEWS):
+        raise ValueError("packet audit camera locators are malformed")
+    for locator in by_view.values():
+        expected_time = locator.get("episode_start_timestamp_s") + actor["observation_frame"] / 30.0
+        if (locator.get("locator_status") != "METADATA_ONLY_UNRESOLVED" or locator.get("expected_fps") != 30 or
+                type(locator.get("requested_timestamp_s")) not in (int, float) or
+                abs(locator["requested_timestamp_s"] - expected_time) > 1e-9):
+            raise ValueError("packet audit base locator is not a source-clock camera locator")
+    schedule = audit["temporal_schedule"]
+    if not isinstance(schedule, list) or len(schedule) != 7:
+        raise ValueError("packet audit must retain exactly seven bounded temporal samples")
+    expected_sample_by_index: dict[int, Mapping[str, Any]] = {}
+    episode_length = audit["source"]["episode_length"]
+    for position, sample in enumerate(schedule):
+        fields = {"sample_index", "offset_frames", "sample_frame", "timestamp_s", "temporal_role", "video_locators"}
+        if not isinstance(sample, Mapping) or set(sample) != fields or sample["sample_index"] != position:
+            raise ValueError("packet temporal schedule is malformed")
+        expected_frame = min(episode_length - 1, max(0, actor["observation_frame"] + expected_offsets[position]))
+        expected_role = "ACTOR_CAUSAL" if sample["sample_frame"] <= actor["observation_frame"] else "OFFLINE_FUTURE_AUDIT"
+        if (sample["offset_frames"] != expected_offsets[position] or sample["sample_frame"] != expected_frame or
+                sample["timestamp_s"] != expected_frame / 30.0 or sample["temporal_role"] != expected_role or
+                not isinstance(sample["video_locators"], list) or len(sample["video_locators"]) != 3):
+            raise ValueError("packet temporal schedule crosses its causal boundary")
+        locators = {locator.get("view"): locator for locator in sample["video_locators"] if isinstance(locator, Mapping)}
+        if len(locators) != 3 or set(locators) != set(VIEWS):
+            raise ValueError("packet temporal schedule must preserve all three camera views")
+        bare_sample = {key: sample[key] for key in ("sample_index", "offset_frames", "sample_frame", "timestamp_s", "temporal_role")}
+        if any(dict(locators[view]) != _temporal_locator(by_view[view], bare_sample) for view in VIEWS):
+            raise ValueError("packet temporal camera locator does not bind the source clock")
+        expected_sample_by_index[position] = sample
+    expected_causal_indices = {index for index, sample in expected_sample_by_index.items()
+                                if sample["temporal_role"] == "ACTOR_CAUSAL"}
+    if decoded and set(causal_samples) != expected_causal_indices:
+        raise ValueError("actor temporal RGB does not exactly match causal packet samples")
+    anchor_index = expected_offsets.index(0)
+    if decoded and dict(actor["images"]) != dict(causal_samples[anchor_index]["images"]):
+        raise ValueError("actor anchor images must bind the zero-offset camera sample")
+    offline_samples: dict[int, Mapping[str, Any]] = {}
+    if not isinstance(audit["offline_future_rgb"], list):
+        raise ValueError("offline audit RGB must be a list")
+    for sample in audit["offline_future_rgb"]:
+        if (not isinstance(sample, Mapping) or sample.get("temporal_role") != "OFFLINE_FUTURE_AUDIT" or
+                sample.get("sample_frame", -1) <= actor["observation_frame"] or
+                sample.get("sample_index") in offline_samples):
+            raise ValueError("offline audit RGB must be strictly future of the actor observation")
+        if set(sample) != {"sample_index", "offset_frames", "sample_frame", "timestamp_s", "temporal_role", "images"}:
+            raise ValueError("offline audit RGB has an invalid temporal schema")
+        if not isinstance(sample["images"], Mapping) or set(sample["images"]) != set(VIEWS):
+            raise ValueError("offline audit RGB must preserve all camera-native views")
+        if any(not _safe_asset_path(path, directory="assets") for path in sample["images"].values()):
+            raise ValueError("offline audit RGB must name only camera-native asset paths")
+        offline_samples[sample["sample_index"]] = sample
+        if causal_paths & set(sample.get("images", {}).values()):
+            raise ValueError("future offline audit RGB leaked into actor assets")
+    expected_offline_indices = {index for index, sample in expected_sample_by_index.items()
+                                if sample["temporal_role"] == "OFFLINE_FUTURE_AUDIT"}
+    if decoded and set(offline_samples) != expected_offline_indices:
+        raise ValueError("offline audit RGB does not exactly match future packet samples")
+    if not decoded and (causal_samples or offline_samples or audit["review_only_contact_sheet"] is not None):
+        raise ValueError("locator-only packet cannot contain decoded temporal or review image paths")
+    if audit["review_only_contact_sheet"] is not None and not _safe_asset_path(
+            audit["review_only_contact_sheet"], directory="review_assets"):
+        raise ValueError("review-only contact sheet must remain outside actor camera assets")
+
+
+def _validate_packet_assets(packet: Mapping[str, Any], assets: list[Mapping[str, Any]], *, decoded: bool,
+                            review_sheets: bool) -> None:
+    """Bind every native PNG receipt to its packet clock; review composites stay audit-only."""
+    actor, audit = packet["actor_packet"], packet["audit"]
+    camera = [asset for asset in assets if asset["asset_kind"] == "camera_native_rgb_png"]
+    contacts = [asset for asset in assets if asset["asset_kind"] == "review_only_contact_sheet_png"]
+    if not decoded:
+        if assets:
+            raise ValueError("locator-only packet cannot contain rendered RGB asset receipts")
+        return
+    if len(camera) != 21:
+        raise ValueError("decoded packet must seal exactly seven timestamps by three native cameras")
+    if len(contacts) != (1 if review_sheets else 0):
+        raise ValueError("decoded packet has an invalid review-only contact-sheet receipt count")
+    schedule = {sample["sample_index"]: sample for sample in audit["temporal_schedule"]}
+    paths: dict[int, dict[str, str]] = {}
+    for asset in camera:
+        sample = schedule.get(asset["sample_index"])
+        scheduled_locators = ({locator.get("view"): locator for locator in sample["video_locators"]}
+                              if sample is not None else {})
+        if (sample is None or asset["view"] not in VIEWS or asset["sample_frame"] != sample["sample_frame"] or
+                asset["temporal_role"] != sample["temporal_role"] or
+                asset["requested_timestamp_s"] != scheduled_locators[asset["view"]]["requested_timestamp_s"]):
+            raise ValueError("camera-native receipt does not bind its scheduled source timestamp")
+        paths.setdefault(asset["sample_index"], {})[asset["view"]] = asset["relative_path"]
+    if set(paths) != set(range(7)) or any(set(views) != set(VIEWS) for views in paths.values()):
+        raise ValueError("decoded packet does not seal a complete native three-camera temporal panel")
+    causal = {sample["sample_index"]: sample for sample in actor["causal_temporal_rgb"]}
+    if any(dict(sample["images"]) != paths[index] for index, sample in causal.items()):
+        raise ValueError("actor causal image paths do not match sealed native camera receipts")
+    offline = {sample["sample_index"]: sample for sample in audit["offline_future_rgb"]}
+    if any(dict(sample["images"]) != paths[index] for index, sample in offline.items()):
+        raise ValueError("offline audit image paths do not match sealed native camera receipts")
+    if contacts:
+        if contacts[0]["relative_path"] != audit["review_only_contact_sheet"]:
+            raise ValueError("review contact-sheet receipt must remain audit-only")
+    elif audit["review_only_contact_sheet"] is not None:
+        raise ValueError("packet references a review contact sheet without its sealed receipt")
+
+
 def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256: str | None) -> dict[str, Any]:
     index, output = Path(index), Path(output)
     if (not isinstance(expected_packet_manifest_sha256, str) or len(expected_packet_manifest_sha256) != 64 or
@@ -423,6 +737,15 @@ def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256
     result = _read_json(manifest_path)
     if result.get("schema_version") != PACKET_INDEX_SCHEMA:
         raise ValueError("--resume requires a sealed P107 packet directory")
+    if result.get("training_eligible") is not False or result.get("status") not in {
+            "CPU_READY_LABELS_PENDING", "LOCATORS_READY_RENDER_PENDING"}:
+        raise ValueError("packet manifest cannot self-promote candidate packets to training/audited status")
+    offsets = result.get("temporal_sample_offsets_frames")
+    if not _valid_temporal_offsets(offsets):
+        raise ValueError("packet manifest has an invalid bounded temporal sample schedule")
+    temporal_offsets = tuple(offsets)
+    if type(result.get("review_only_contact_sheets")) is not bool or result.get("full_video_hashing") is not False:
+        raise ValueError("packet manifest has invalid review/video-hashing policy fields")
     if result.get("index_manifest_sha256") != _sha256(index / "manifest.json"):
         raise ValueError("source index manifest changed; refusing resume")
     receipt = result.get("files", {}).get("packets.jsonl", {})
@@ -431,14 +754,40 @@ def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256
     packets = _read_jsonl(output / "packets.jsonl")
     if _sha256(output / "packets.jsonl") != receipt.get("sha256") or len(packets) != receipt.get("rows"):
         raise ValueError("sealed packet payload changed")
+    if result.get("packets") != len(packets) or not isinstance(result.get("decoded_camera_native_rgb"), bool):
+        raise ValueError("packet manifest counters or decode mode are invalid")
+    decoded = result["decoded_camera_native_rgb"]
+    for packet in packets:
+        _validate_packet_semantics(packet, decoded=decoded, expected_offsets=temporal_offsets)
     asset_receipt = result["files"]["rendered_asset_receipts.jsonl"]
     assets = _read_jsonl(output / "rendered_asset_receipts.jsonl")
     if (_sha256(output / "rendered_asset_receipts.jsonl") != asset_receipt.get("sha256") or
             len(assets) != asset_receipt.get("rows")):
         raise ValueError("sealed rendered-asset receipt payload changed")
+    if result.get("rendered_asset_receipts") != len(assets):
+        raise ValueError("packet manifest rendered-asset count is invalid")
+    packet_ids = {packet["packet_id"] for packet in packets}
+    assets_by_packet: dict[str, list[Mapping[str, Any]]] = {packet_id_value: [] for packet_id_value in packet_ids}
+    seen_asset_keys = set()
     for row in assets:
-        if set(row) != {"schema_version", "packet_id", "view", "asset_kind", "relative_path", "sha256", "bytes"}:
+        camera_fields = {"schema_version", "packet_id", "view", "asset_kind", "temporal_role", "sample_index",
+                         "sample_frame", "requested_timestamp_s", "decoded_timestamp_s", "pts_error_s",
+                         "relative_path", "sha256", "bytes"}
+        contact_fields = {"schema_version", "packet_id", "view", "asset_kind", "relative_path", "sha256", "bytes"}
+        if set(row) not in (camera_fields, contact_fields):
             raise ValueError("rendered asset receipt has an unsealed field")
+        if row.get("asset_kind") == "camera_native_rgb_png":
+            if set(row) != camera_fields or row["view"] not in VIEWS or row["temporal_role"] not in {
+                    "ACTOR_CAUSAL", "OFFLINE_FUTURE_AUDIT"} or type(row["sample_index"]) is not int or \
+                    type(row["sample_frame"]) is not int or type(row["pts_error_s"]) not in (int, float) or \
+                    row["pts_error_s"] < 0 or row["pts_error_s"] > 1.0 / 60.0 + 1e-6:
+                raise ValueError("camera-native asset receipt has invalid temporal/PTS semantics")
+            key = (row["packet_id"], row["sample_index"], row["view"])
+            if key in seen_asset_keys:
+                raise ValueError("duplicate packet temporal camera asset receipt")
+            seen_asset_keys.add(key)
+        elif row.get("asset_kind") != "review_only_contact_sheet_png" or set(row) != contact_fields:
+            raise ValueError("rendered asset receipt has an unsupported artifact kind")
         relative = Path(row["relative_path"])
         if relative.is_absolute() or ".." in relative.parts:
             raise ValueError("rendered asset receipt escapes packet root")
@@ -447,6 +796,12 @@ def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256
             raise ValueError("rendered asset receipt escapes packet root")
         if path.stat().st_size != row["bytes"] or _sha256(path) != row["sha256"]:
             raise ValueError("sealed rendered PNG bytes changed")
+        if row["packet_id"] not in assets_by_packet:
+            raise ValueError("rendered asset receipt refers to an absent packet")
+        assets_by_packet[row["packet_id"]].append(row)
+    for packet in packets:
+        _validate_packet_assets(packet, assets_by_packet[packet["packet_id"]], decoded=decoded,
+                                review_sheets=result["review_only_contact_sheets"])
     return {"status": "RESUME_VALIDATED", "manifest": result}
 
 
@@ -461,6 +816,9 @@ def main() -> None:
     parser.add_argument("--include-source-annotation-context", action="store_true")
     parser.add_argument("--decode", action="store_true", help="decode bounded native RGB and PTS receipts")
     parser.add_argument("--raw-root", type=Path)
+    parser.add_argument("--temporal-offset-frames", type=_parse_temporal_offsets,
+                        default=TEMPORAL_SAMPLE_OFFSETS,
+                        help="exact seven source-frame offsets incl. 0, max +/-240; future samples are audit-only")
     parser.add_argument("--contact-sheets", action="store_true", help="review-only composites; excluded from actor input")
     parser.add_argument("--max-seconds", type=float, default=1800.0)
     parser.add_argument("--resume", action="store_true")
@@ -474,6 +832,7 @@ def main() -> None:
         args.index, args.output, event_ids=_read_event_ids(args.event_ids, args.event_id), limit=args.limit,
         questions=_questions(args.questions), include_source_annotation_context=args.include_source_annotation_context,
         decode=args.decode, raw_root=args.raw_root, contact_sheets=args.contact_sheets,
+        temporal_offsets_frames=args.temporal_offset_frames,
         max_seconds=args.max_seconds))
     print(canonical_json(result), flush=True)
 
