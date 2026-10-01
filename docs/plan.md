@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 CAL40 四片候选标注已落盘；全量 anchor 均为 segment-start，当前产出不具代表性（Codex / P107-ANNOTATION-LEDGER）
+
+- 四个 model-annotation shard 现均已写入外部候选目录`/home/wsy/behavior-annotations/p107/temporal-annotations/calibration40-v1/shard{0,1,2,3}`，覆盖40 events/41 queries；**只能按`event_id` join**，不可按位置：全40中37项 ordinal 不同但`event_id`双射有效。当前提案汇总为：s0=1 YES/9 UNKNOWN（q1已更正UNKNOWN；q0 PRESS只有接触、留待root）；s1=1 YES/5 NO/4 UNKNOWN（q17已更正UNKNOWN；q13 heading留待root）；s2=`final-candidate`仅1 YES/1 NO/9 UNKNOWN；s3=0 YES/3 NO/7 UNKNOWN。这里的`final-candidate`不表示人审、release或训练准入。
+- root 已亲看 anchor page02 原分辨率27/40（本轮增加q13/q16/q26）及 future-only page04 6条；既有 shard3 partial QA 仍只覆盖5 views。两者都不是全40/human signoff，future页不作 anchor target 证据；所有 formal student、attempt/outcome、recovery、action-BC、FM-positive、release 与训练准入均仍为0。
+- 新 metadata-only sampling audit 位于`/home/wsy/behavior-annotations/p107/sampling-audit/cal40-phase-v1`，stats SHA `939b7148d91480dd0a7b000ca3d7f2ab248502694350fe7e42e868bac0e0a772`：CAL40 40/40及 full-v3 全403,257个事件的`observation_frame`均为`segment.start`。这暴露了系统性选样偏差；现有标签不代表技能内时序、尝试结果或恢复分布，不能据此报告标签收益/失败率。下一张独立票应先完成 annotation binding/parent QA，再以既有 calibration groups 在可行处构造有界 phase-balanced candidates，并另做 actor 因果 task/intent/query conditioning 实现勘察。
+- live DART 仍为0，等待用户对 RTX4080 与 lc 使用的明确许可、冻结教师/运行时及 official TRAIN fresh-reset 证据；继续**不用 robo**，不启动仿真、训练、共享环境修改或远端作业。
+
 ### 2026-10-02（北京时间）：P107 shard3 获部分 root-model 视觉校准确认；全40绑定审计通过但标注未完成（Codex / P107-ANNOTATION-LEDGER）
 
 - partial root-model QA receipt 为`/home/wsy/behavior-annotations/p107/parent-review/calibration40-v1/shard3-partial.json`，SHA `f50ae3851899a5b07fa074398bdca2e0d3faa1f9849f548bdc3ff5ab2d40de3b`。central validation 对 shard3 全10条的 event/source/packet/frame/native-evidence/post-label ID mismatch=0；root-model 仅以 **VISUAL-CALIBRATION ONLY** 确认 q31 toolbox-lid NO、q34 chair-held NO、q35 drawer-closed NO，并同意 q37 pour、q39 navigation 维持 masked UNKNOWN。仅审5个 view，整40条未完成，`human_reviewed=false`。
