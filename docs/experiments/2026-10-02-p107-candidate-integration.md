@@ -13,6 +13,7 @@ GPU job, or training authorization.
 | DART candidate collection | `99c80751ed5103e20168efdc240c6c36ce9b9603` | Original Gaussian clean-feedback and bounded actual-clean candidate paths, never a positive/release path. |
 | MINING selector | `9b934f2f8dbe7ea74df184da58425921b2480fa1` | Sealed queue selector and its 9 tests. |
 | PACKAGE candidate packaging | `75bf377022b1ad1308c2382e8bae9ec839a5c038` | Candidate pack/audit/dataset gate and tests; external parent authority remains separate. |
+| Temporal renderer | `af1ac4d76716ed7a92c4c322ed605c98738cffa2` + `0ccbe4e46f69d75f1ee2dc05be87b4889c518eb6` | Camera-native packet renderer, including the same-frame PTS rounding fix and microsecond-future-clock rejection. |
 
 The data compact fixture is taken from the PACKAGE revision because it carries
 the current coverage expectations required by its builder. The DATA protocol
@@ -35,10 +36,42 @@ source-groups file is removed, and leaves the event-candidates payload absent
 to demonstrate that membership does not scan events. This is provenance-only,
 not a label or action pipeline.
 
+The renderer default is the current DATA protocol source, pinned to
+`efdd20642fed24241f38bbdeb4abff6cf4faf1c72a86fe7c2acb32ba7496193b`.
+For a historical immutable index, `--protocol-path` requires a separate,
+externally supplied SHA-256; both the input index manifest and produced packet
+manifest must equal that exact reader SHA. The legacy full-v3 reader remains
+the immutable snapshot
+`/home/wsy/behavior-annotations/p107/protocol-snapshots/0693b93/src/g05/data/memlite_event_protocol.py`,
+SHA `7f4f9fbf18fb4ba6ec97a304f0d787ebadb4f84c7184dd041c99027ad84aab0c`.
+It is loaded by compiling verified source bytes, never by importing
+`g05.data`; current DATA source pins were not substituted for the legacy
+index's canonical-ID semantics.
+
+## Local full-v3 metadata-only preflight
+
+On 2026-10-02 CST, the integrated renderer created and resumed a fresh
+temporary packet directory from the immutable full-v3 candidate index and the
+real sealed 40-item calibration queue. This was local only (one CPU, virtual
+memory cap 4 GiB, 60-second command cap), used no remote runtime and no
+`--decode`, and left the source index/queue unchanged. It used the queue's
+required ten-position schedule `-60,-45,-30,-15,0,1,16,31,46,60`, the legacy
+reader pin above, render-request SHA
+`b5a76f786ad38adbc17b25649899505d25951c7d4efa437f957856c08b757edb`,
+and queue-seal SHA
+`78eda9c87b18e806e00e4820c172b02002d806e7c77fe9911368d42711de227c`.
+
+Creation completed in 6.27 seconds (27,984 KiB max RSS) with 40 candidate
+packets, 400 requested temporal slots, 392 distinct source frames, and 8
+boundary-clamped duplicate requests; it wrote zero rendered RGB receipts and
+remained `LOCATORS_READY_RENDER_PENDING`. Its external resume pin was
+`0855c3356513262d120419320fcf2e4473c322feaac0711754d025cbe7ba93e5`;
+resume completed in 5.99 seconds (28,752 KiB max RSS) as
+`RESUME_VALIDATED`. These are renderer/provenance receipts, not an image
+review, action label, data release, or training result.
+
 ## Deliberate exclusions and limits
 
-- Renderer `a068404` is excluded pending its real float-clock fix and a new
-  reviewed SHA.
 - No PACKAGE synthetic test establishes frame/window uniqueness. The 10k
   scale regression reuses fixture frame/interval metadata while varying event
   identity; it tests source-episode partition accounting only.
