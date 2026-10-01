@@ -59,6 +59,10 @@ PACKET_MANIFEST_FIELDS = frozenset((
 TEMPORAL_SAMPLE_OFFSETS = (-90, -60, -30, -15, 0, 15, 30)
 MAX_TEMPORAL_OFFSET_FRAMES = 240  # Eight seconds at the source 30 Hz clock.
 ACTOR_INSTRUCTION = "Use only the camera-native RGB images and question context. Source annotation context is not ground truth."
+# PTS comes from an integer stream tick while source metadata uses floating
+# seconds.  Permit representation error only; this is many orders below one
+# 30-Hz frame and never admits a genuine future sample.
+CLOCK_ABSOLUTE_EPSILON_S = 1e-9
 
 
 def _strict_json(data: bytes, *, name: str) -> Any:
@@ -74,6 +78,15 @@ def _strict_json(data: bytes, *, name: str) -> Any:
         raise ValueError(f"Non-finite JSON number in {name}: {value}")
 
     return json.loads(data, object_pairs_hook=unique, parse_constant=nonfinite)
+
+
+def _clock_at_or_before(value: float, upper: float) -> bool:
+    """Absolute-only source-clock comparison; no epoch-size relative tolerance."""
+    return value <= upper + CLOCK_ABSOLUTE_EPSILON_S
+
+
+def _clock_in_episode(value: float, start: float, end: float) -> bool:
+    return _clock_at_or_before(start, value) and _clock_at_or_before(value, end)
 
 
 def _read_json(path: Path) -> Any:
@@ -441,9 +454,9 @@ def _decode_rgb(av: Any, video: Path, requested: float, *, episode_start_timesta
     causal actor frame may round up by less than half a frame, but never past
     the actor anchor; ties choose the non-future PTS.
     """
-    if not (episode_start_timestamp_s <= requested <= episode_end_timestamp_s):
+    if not _clock_in_episode(requested, episode_start_timestamp_s, episode_end_timestamp_s):
         raise ValueError("requested frame lies outside the source episode global PTS bounds")
-    if actor_anchor_timestamp_s is not None and requested > actor_anchor_timestamp_s:
+    if actor_anchor_timestamp_s is not None and not _clock_at_or_before(requested, actor_anchor_timestamp_s):
         raise ValueError("actor camera request cannot be later than the pre-action observation clock")
     with av.open(str(video)) as container:
         if not container.streams.video:
@@ -470,9 +483,9 @@ def _decode_rgb(av: Any, video: Path, requested: float, *, episode_start_timesta
             if actual > episode_end_timestamp_s + tolerance:
                 break
             distance = abs(actual - requested)
-            allowed = (actual <= episode_end_timestamp_s and actual >= episode_start_timestamp_s and
-                       (actor_anchor_timestamp_s is None or actual <= actor_anchor_timestamp_s))
-            candidate_rank = (distance, actual > requested, actual)
+            allowed = (_clock_in_episode(actual, episode_start_timestamp_s, episode_end_timestamp_s) and
+                       (actor_anchor_timestamp_s is None or _clock_at_or_before(actual, actor_anchor_timestamp_s)))
+            candidate_rank = (distance, not _clock_at_or_before(actual, requested), actual)
             if allowed and distance <= tolerance and (best is None or candidate_rank < best[0]):
                 image = frame.to_image().convert("RGB")
                 if best is not None:
@@ -914,7 +927,7 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
         if (type(requested) not in (int, float) or type(decoded_time) not in (int, float) or
                 type(error) not in (int, float) or abs(requested - expected_requested) > 1e-9 or
                 abs(error - abs(decoded_time - requested)) > 1e-9 or error > 1.0 / 60.0 + 1e-6 or
-                not start <= decoded_time <= end or receipt["episode_global_pts_bounds_s"] != [start, end] or
+                not _clock_in_episode(decoded_time, start, end) or receipt["episode_global_pts_bounds_s"] != [start, end] or
                 receipt["fps"] != 30 or receipt["full_video_sha256"] is not None or
                 not isinstance(receipt["resolved_path"], str) or type(receipt["bytes"]) is not int or
                 type(receipt["mtime_ns"]) is not int or not isinstance(receipt["resolution"], list) or
@@ -922,7 +935,8 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
                 not isinstance(receipt["camera_native_png_sha256"], str) or type(receipt["camera_native_png_bytes"]) is not int):
             raise ValueError("decoded PTS receipt has invalid source-bound timing or image metadata")
         expected_anchor = start + actor["observation_frame"] / 30.0 if sample["temporal_role"] == "ACTOR_CAUSAL" else None
-        if receipt["actor_anchor_timestamp_s"] != expected_anchor or (expected_anchor is not None and decoded_time > expected_anchor):
+        if (receipt["actor_anchor_timestamp_s"] != expected_anchor or
+                (expected_anchor is not None and not _clock_at_or_before(decoded_time, expected_anchor))):
             raise ValueError("decoded PTS receipt crosses the actor causal observation clock")
     if decoded and seen_receipts != {(sample_index, view) for sample_index in expected_sample_by_index for view in VIEWS}:
         raise ValueError("decoded PTS receipts do not cover the complete temporal camera panel")

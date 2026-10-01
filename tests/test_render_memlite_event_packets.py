@@ -82,9 +82,11 @@ class RenderEventPacketsTests(unittest.TestCase):
             raw_root.mkdir()
 
             def fake_decode(_av, _video, requested, **bounds):
+                decoded = requested + 3e-12
                 return Image.new("RGB", (8, 6), "red"), {
                     "resolved_path": "/fixture/shared.mp4", "bytes": 1, "mtime_ns": 1,
-                    "requested_timestamp_s": requested, "decoded_timestamp_s": requested, "pts_error_s": 0.0,
+                    "requested_timestamp_s": requested, "decoded_timestamp_s": decoded,
+                    "pts_error_s": abs(decoded - requested),
                     "fps": 30, "resolution": [8, 6],
                     "episode_global_pts_bounds_s": [bounds["episode_start_timestamp_s"], bounds["episode_end_timestamp_s"]],
                     "actor_anchor_timestamp_s": bounds["actor_anchor_timestamp_s"], "full_video_sha256": None,
@@ -212,6 +214,9 @@ class RenderEventPacketsTests(unittest.TestCase):
                 path = packets / row["relative_path"]
                 self.assertEqual(renderer._sha256(path), row["sha256"])
                 self.assertEqual(path.stat().st_size, row["bytes"])
+            self.assertEqual(renderer.resume_packets(
+                index, packets, expected_packet_manifest_sha256=result["packet_manifest_sha256"])["status"],
+                "RESUME_VALIDATED")
             with (packets / assets[0]["relative_path"]).open("ab") as stream:
                 stream.write(b"tamper")
             with self.assertRaisesRegex(ValueError, "rendered PNG bytes changed"):
@@ -314,6 +319,66 @@ class RenderEventPacketsTests(unittest.TestCase):
                 episode_end_timestamp_s=2.0, actor_anchor_timestamp_s=30.5 / 30.0)
             self.assertEqual(receipt["decoded_timestamp_s"], 1.0)
             image.close()
+
+            # The exact lc3 failure: metadata's float seconds and the stream's
+            # integral 30-Hz PTS identify the same frame but differ by 3e-12s.
+            actor_anchor = 5885.166666666664
+            same_frame_pts = 5885.166666666667
+            self.assertTrue(renderer._clock_at_or_before(same_frame_pts, actor_anchor))
+            self.assertFalse(renderer._clock_at_or_before(actor_anchor + 1e-6, actor_anchor))
+            self.assertFalse(renderer._clock_at_or_before(actor_anchor + 1.0 / 30.0, actor_anchor))
+
+            class LargeContainer:
+                streams = type("Streams", (), {"video": [Stream()]})()
+
+                def __init__(self, pts):
+                    self._pts = pts
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *_args):
+                    return False
+
+                def seek(self, *_args, **_kwargs):
+                    return None
+
+                def decode(self, _stream):
+                    return iter((Frame(self._pts),))
+
+            class LargeAv:
+                def __init__(self, pts):
+                    self._pts = pts
+
+                def open(self, _path):
+                    return LargeContainer(self._pts)
+
+            image, receipt = renderer._decode_rgb(
+                LargeAv(176555), video, actor_anchor, episode_start_timestamp_s=5880.0,
+                episode_end_timestamp_s=5890.0, actor_anchor_timestamp_s=actor_anchor)
+            self.assertEqual(receipt["decoded_timestamp_s"], same_frame_pts)
+            image.close()
+            with self.assertRaisesRegex(ValueError, "cannot decode"):
+                renderer._decode_rgb(
+                    LargeAv(176556), video, actor_anchor, episode_start_timestamp_s=5880.0,
+                    episode_end_timestamp_s=5890.0, actor_anchor_timestamp_s=actor_anchor)
+
+            class MicrosecondStream:
+                average_rate = 30
+                time_base = Fraction(1, 1_000_000)
+
+            class MicrosecondContainer(LargeContainer):
+                streams = type("Streams", (), {"video": [MicrosecondStream()]})()
+
+            class MicrosecondAv:
+                @staticmethod
+                def open(_path):
+                    return MicrosecondContainer(5_885_166_667)
+
+            with self.assertRaisesRegex(ValueError, "cannot decode"):
+                renderer._decode_rgb(
+                    MicrosecondAv(), video, actor_anchor, episode_start_timestamp_s=5880.0,
+                    episode_end_timestamp_s=5890.0, actor_anchor_timestamp_s=actor_anchor)
             with self.assertRaisesRegex(ValueError, "outside the source episode"):
                 renderer._decode_rgb(Av(), video, 2.1, episode_start_timestamp_s=1.0,
                                      episode_end_timestamp_s=2.0, actor_anchor_timestamp_s=None)
