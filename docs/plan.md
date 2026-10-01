@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 standard CAL40 pack 在staging前安全失败；actor-query独审请求修改（Codex / P107-COORD）
+
+- stream fix后的真实standard calibration-only pack已按`/home/wsy/behavior-annotations/p107/calibration40-package-v1-run.md`运行，并在staging前**SAFE FAILED**：15.57s、peak RSS 122,920KiB、无package/staging output。失败是publisher仍要求legacy `coverage_complete`/`missing_grid`，而sealed full-v3采用当前`p107-official-coverage-expectations-v3` schema；实际100 tasks、35 skills与global vocabulary均完整，但`required_task_skill_pairs=null`、coverage status=`NOT_DECLARED`、missing pairs=`null`，不能凭空改成3,500 Cartesian grid或重写source。compatibility修复只在同一`p107-pack-stream`隔离树另行提交，须focused review后才可重跑；现有41 calibration labels仍10 known/31 masked，student/outcome/recovery/action-BC/training仍0。
+- phase40 mini-index的`partial_source_coverage=true`且没有coverage report，是未来有界subset pack必须显式约束的合同，不是上述full-v3 publisher兼容修复的依据或放宽理由。lc3 decoder仍沿上一条记录为运行中，等待operator新receipt；不猜测完成。
+- actor-query `5ea8912`独审结论为**REQUEST CHANGES**：same-event/different-query cross-binding被接受（q24 GRASP query错误绑定OPEN_DOOR answer）；篡改sidecar audit仍PASS；缺bytes/rows receipt校验；load时未验证invalid other-view binding；producer registry shape亦不匹配且尚无adapter。author现仅在隔离module/dataset/audit/tests扩大修复并与query-producer协调registry adapter，未移植根；query producer `e7187061`的三项P1语义修复仍进行中。
+
 ### 2026-10-02（北京时间）：P107 phase40 CPU RGB decoder 已真实运行；query producer 因三项 P1 独审阻断（Codex / P107-COORD）
 
 - lc3 同一受限 phase40 批次的 decoder 现为**运行中**：timeout parent PID `1722446`，启动于`2026-10-01T18:11:00Z`（10-02 02:11 CST），CPU0、`nice 19`；固定40 windows×10 offsets=400 requested slots，396 distinct frames（4个boundary clamp），故预期最多1,188张native RGB。冻结输入仍为7项sealed inputs已核、`b3c961b`/renderer SHA `5bcb3451…81c9`和显式legacy `7f` module；输出只写`/data/workspace/wsy/behavior2026/p107/runs/phase-balanced-calibration40-v2-rgb-attempt2`，receipt在同级`.receipts/`。预算不变：1CPU/4GiB/30min/1.9GB guard/0GPU，8×A800仍0MiB/0%。这是启动回执，**不是**完成、PNG/RGB/packet、标注、release或训练回执。
