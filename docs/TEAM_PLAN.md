@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+2026-10-01 22:08（北京时间）Codex / P107-COORD：父代理审完shard0+2全部16原图并拒绝当前24项pilot，修订/再审前0发布/不扩展。已核错误：s0 ordinal3 held-above-table误ON、s0 ordinal12橙色瓣状地面物/浅色圆形夹爪邻物混同、s2 ordinal8同bin三视角误数多bin、s2 ordinal23悬空jar误supported on board；两标注者修原值+review audit，`is_unambiguous/proven`改UNKNOWN semantic issue，shard1父审PENDING。该集仅auxiliary goal/visual-relation QA、0 verified corrective action，不能作训练/规模/模型准确率结论；需camera-native/无GT footer/跨视角去重/物理支撑≠图像重叠规则。`memlite-event-recovery-v1`四视图schema代码未提交，sim owner协调；真实提取/restore仍受lc 1080与robo23117阻塞，fallback只读PUBLIC metadata/cache≤100MiB/source-version，不重启VPN。
+
 2026-10-01 22:03（北京时间）Codex / P107-COORD：data/sim实现已分派至隔离`p107-data`/`p107-sim`并请求 canonical protocol 早交接，根目录不改实现。三个 annotation pilot 限266个 LOCAL TRAIN QA 单时刻三相机JPEG、`train_ordinal%3`每片前8项（最多24）；shard0已完成8 JSON/hash校验（`/home/wsy/behavior-annotations/p107/pilot/shard_0/pilot.json`），父代理图审PENDING，不能作恢复/训练数据或计入规模。`gpt-6-luna/max`不可用，已披露且仅以`gpt-5.6-luna/max` agent provenance运行，绝不称human/gpt-6。真实提取/restore被lc1–3无本地1080 SOCKS和robo 23117 closed阻塞；父代理正等待用户许可恢复可能影响队友的共享ec CLI，未重启VPN/改凭据。未核当前阶段1进度，0 GPU标注/真实提取/reset/restore/训练；原阶段1热改与正式阶段2/3仍不在范围。
 
 2026-10-01 21:58（北京时间）Codex / P107-COORD：协调文档已通过`git diff --check`、提交`b291196`并在30秒上限内推送`origin/feat/memlite-recovery-prep-20261001`；无数据/视频/权重/env/实现代码提交。已由精确`b29119688279751f5c59f28e2da5aa4df699ce5b`创建干净隔离实施树`/home/wsy/behavior-worktrees/p107-data`（`feat/p107-data-20261001`）和`/home/wsy/behavior-worktrees/p107-sim`（`feat/p107-sim-20261001`）。根目录只保留实时计划/集成；metadata、候选、标注、GPU标注、restore/reset和训练仍为0，原单批预算、父审和独立审查门不变。

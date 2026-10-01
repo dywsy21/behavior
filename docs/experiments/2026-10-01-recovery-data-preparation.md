@@ -63,11 +63,15 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 ## 当前状态、阻塞与交接
 
-2026-10-01 22:03（北京时间）状态覆盖：data 与 sim 实现已分派到上述隔离 worktree，且已请求 canonical data protocol 的早期交接；本地代码/QA 可继续，但未将任何输出发布为恢复数据。标注 pilot 已启动三个 shard（0/1/2），输入限定为 266 个 **LOCAL TRAIN QA** 单时刻、三相机 JPEG；每个 shard 仅取 `train_ordinal % 3` 过滤后的前8项，合计最多24项。shard 0 的8项 JSON/hash 校验已完成，位置为`/home/wsy/behavior-annotations/p107/pilot/shard_0/pilot.json`；父代理视觉审查仍为 **PENDING**，故该输出不可用于 recovery/outcome/action 训练，也不计入任何规模或质量目标。其余 shard 的真实终态待各自回执，不按“已分派”推定完成。
+2026-10-01 22:08（北京时间）状态覆盖：data 与 sim 实现已分派到上述隔离 worktree，且已请求 canonical data protocol 的早期交接；本地代码/QA 可继续，但未将任何输出发布为恢复数据。三个标注 shard（0/1/2）均已返回：输入严格是266个 **LOCAL TRAIN QA** 单时刻、三相机JPEG，经 `train_ordinal % 3` 后每片前8项、总共24项。父代理已直接查看 shard0和shard2的全部16个原图，**拒绝当前pilot，待修正**；shard1的父代理视觉审仍为 PENDING。24条均未发布、不得扩大、不得用于任何 recovery/outcome/action训练或计入10k/1k目标。
+
+已核实且必须保留 review audit 的错误为：shard0 ordinal3 将被支撑于桌面的关系误标成 `ON`，实际为桌面上方 held；ordinal12 将橙色、瓣状的地面物体与浅色、圆形、靠近夹爪的物体混同；shard2 ordinal8 将同一 bin 的三相机重复视角数成多个物理 bin；ordinal23 将悬在板上方的 jar 标成 supported on board。两名标注者正在修订原值及审查记录；`is_unambiguous/proven` 的 meta 问题也改为 UNKNOWN semantic issue。该拒绝说明本pilot至少需要 camera-native 图像、无 ground-truth footer、跨视角物体去重，以及“物理支撑关系不等于图像重叠”的明确规则；不从非随机、极小24条推导模型准确率。
+
+这24条仅为辅助 goal/visual-relation QA，**零条 verified corrective action**。`memlite-event-recovery-v1` 的 early-handoff schema 代码尚未提交，约定隔离 `goal_satisfaction_counterfactual`、`attempt_outcome`、`recovery_decision`、`corrective_action` 四视图，sim owner 正协调；代码存在或标注返回都不构成该四视图的已发布数据。
 
 用户请求的 `gpt-6-luna/max` 不在可用工具列表；已明确使用且只可记为 `gpt-5.6-luna/max` 的 agent 标注回退，绝不改称人工或 gpt-6。各条仍须写入 `annotation_provenance=agent` 及精确模型版本，经过父审后才可能进入后续候选门。
 
-真实数据/提取与 restore roundtrip 当前都阻塞：lc1–lc3 本地缺 `127.0.0.1:1080` SOCKS；robo 连接 `127.0.0.1:23117` closed。父代理已异步请求用户授权恢复 ec CLI；该共享账户操作可能影响队友，当前等待答复，未重启 VPN、未改凭据或连接配置。阶段1当前进度也未重新核验，禁止把9/30步数当作当前状态。无 GPU 标注、仿真 reset、真实 extraction、restore 或训练启动，亦无数据质量结论。
+真实数据/提取与 restore roundtrip 当前都阻塞：lc1–lc3 本地缺 `127.0.0.1:1080` SOCKS；robo 连接 `127.0.0.1:23117` closed。父代理已异步请求用户授权恢复 ec CLI；该共享账户操作可能影响队友，当前等待答复，未重启 VPN、未改凭据或连接配置。infra fallback owner 仅可做 PUBLIC dataset metadata availability/cache 的只读检查，缓存上限100MiB并核精确 source version；这不是数据提取或连接恢复。阶段1当前进度也未重新核验，禁止把9/30步数当作当前状态。无 GPU 标注、仿真 reset、真实 extraction、restore 或训练启动，亦无数据质量结论。
 
 台账、总计划和团队板已通过 `git diff --check`，作为仅文档提交 `b291196` 在30秒上限内推送到 `origin/feat/memlite-recovery-prep-20261001`。实施者现使用下列干净隔离目录，均从精确 `b29119688279751f5c59f28e2da5aa4df699ce5b` 创建：
 

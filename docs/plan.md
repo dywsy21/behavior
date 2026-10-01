@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 22:08（北京时间）：P107 父代理拒绝当前24条视觉关系pilot，修订/再审前零发布（Codex / P107-COORD）
+
+- 三个 shard 已返回24项，但父代理直接审看shard0+2的全部16个原图后拒绝当前pilot：shard0 ordinal3把 held-above-table 标为 ON；ordinal12混同橙色瓣状地面物与浅色圆形夹爪邻物；shard2 ordinal8把同一bin三视角数作多个物理bin；ordinal23把悬空jar标为supported on board。两名标注者正修订原值和review audit，`is_unambiguous/proven` meta改为UNKNOWN semantic issue；shard1父审仍PENDING。
+- 因此24项均未发布、不得扩大，且只属 auxiliary goal/visual-relation QA：零条 verified corrective action、不可用于recovery/outcome/action训练或计入10k/1k目标。此非随机极小集不报告模型准确率。复核明确需要camera-native图像、无ground-truth footer、跨视角物体去重和“物理支撑不等于图像重叠”规则。
+- `memlite-event-recovery-v1` early-handoff schema代码仍未提交，已约定隔离`goal_satisfaction_counterfactual`/`attempt_outcome`/`recovery_decision`/`corrective_action`；sim owner协调中。真实提取/restore仍被lc1–3缺1080 SOCKS和robo 23117 closed阻塞。infra fallback仅做PUBLIC metadata availability/cache≤100MiB及精确source-version只读核验；不重启VPN。阶段1进度仍未重核，0 GPU标注/真实提取/reset/restore/训练。
+
 ### 2026-10-01 22:03（北京时间）：P107 本地实现/标注pilot活跃，真实数据与restore仍被连接阻塞（Codex / P107-COORD）
 
 - data 与 sim 实现已分派到隔离`p107-data`/`p107-sim` worktree，并请求 canonical data protocol 的早期交接；根目录未改实现。本地代码/QA继续，但不把任何中间输出发布为恢复数据。
