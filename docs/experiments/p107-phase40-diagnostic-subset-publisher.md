@@ -18,6 +18,28 @@ It requires the queue, selection manifest, mini payloads, group inventory, and
 full-v3 lineage to agree on exactly 40 unique event IDs and source groups. All
 groups must remain immutable `train` / `annotation_calibration` groups.
 
+The existing phase mini-index uses the legacy
+`p107-phase-balanced-mini-index-v1` derivation shape: it seals the parent
+event-file SHA but does not contain `parent_source_groups_sha256`. The
+publisher accepts that absence only, independently checks the source-group
+receipt from the separately inventory-sealed full-v3 manifest, and records the
+legacy value as `null` plus the derived full-v3 receipt in its new output. A
+present conflicting legacy field is rejected.
+
+The mini and full indexes must pin the same protocol SHA. By default the
+publisher reads the repository protocol, but `--protocol-path` can select an
+immutable historical producer snapshot only when its bytes equal that shared
+pin. The derivative records that reader receipt separately from the new
+publisher-script hash, so a historical producer protocol is never presented
+as the runtime publisher implementation.
+
+Before staging, the publisher verifies the complete sealed full event file
+while retaining only the 40 selected parent events. It cross-checks each
+mini-event lineage and queue row against its full-v3 parent: source identity,
+parent interval, anchor and phase, queried skill member and bounds, and the
+nonfuture actor-causal window. This is strict validation, not a source-index
+rewrite.
+
 ## Published semantics
 
 The derivative keeps `memlite-event-index-v1` for existing packer input

@@ -93,15 +93,11 @@ def _make_fixture(root: Path) -> dict:
             "unique_event_candidates": full_manifest["event_candidates"],
         },
     })
-    _write_json(full / "manifest.json", full_manifest)
-    full_inventory = _reseal(full)
-    full_manifest_sha = base.sha256_file(full / "manifest.json")
-
     original_event = base.read_jsonl(original / "event_candidates.jsonl")[0]
     protocol_sha = hashlib.sha256((REPO / "src" / "g05" / "data" / "memlite_event_protocol.py").read_bytes()).hexdigest()
     mini = root / "mini"
     mini.mkdir()
-    events, groups, queue_rows = [], [], []
+    events, parent_events, groups, queue_rows = [], [], [], []
     for order in range(publisher.EXPECTED_EVENT_COUNT):
         event = deepcopy(original_event)
         task_instance, episode = order + 1, order + 1000
@@ -117,11 +113,38 @@ def _make_fixture(root: Path) -> dict:
             "raw_episode_id": episode, "episode_index": episode,
         })
         event["source"] = source
-        event["event_kind"] = f"SYNTHETIC_PHASE_{order}"
-        event["bundle_id"] = hashlib.sha256(f"bundle-{order}".encode()).hexdigest()
+        event["event_kind"] = "ANNOTATED_SKILL_SEGMENT"
+        event["bundle_id"] = hashlib.sha256(f"parent-bundle-{order}".encode()).hexdigest()
         event["usage_role"] = "annotation_calibration"
         event["evidence"] = {"kind": "MISSING", "evidence_end_frame": None, "available_frame": None}
-        event["skill_bundle"][0]["skill_id"] = 1
+        event["skill_bundle"][0].update({
+            "skill_id": 1, "skill_start": event["event_interval"]["start_frame"],
+            "skill_end": event["event_interval"]["end_frame"], "raw_description": "synthetic skill",
+        })
+        event["event_id"] = pack._protocol.event_id(event)
+        pack.validate_event(event)
+        parent_events.append(deepcopy(event))
+        skill = event["skill_bundle"][0]
+        event["event_kind"] = "ANNOTATED_SKILL_SEGMENT_PHASE_ENTRY"
+        event["bundle_id"] = hashlib.sha256(f"phase-bundle-{order}".encode()).hexdigest()
+        event["phase_lineage"] = {
+            "schema_version": "p107-phase-balanced-mini-index-v1", "parent_event_id": parent_events[-1]["event_id"],
+            "parent_event_interval": deepcopy(parent_events[-1]["event_interval"]), "observation_phase": "ENTRY",
+            "selection_stratum": "ENTRY", "parent_skill_identity": {
+                "parent_event_id": parent_events[-1]["event_id"], "parent_skill_index": 0,
+                "parent_skill_member_sha256": base.canonical_sha256(skill), "skill_id": skill["skill_id"],
+                "skill_start_frame": skill["skill_start"], "skill_end_frame": skill["skill_end"],
+            },
+            "queried_skill_start_frame": skill["skill_start"], "queried_skill_end_frame": skill["skill_end"],
+            "goal_query": {"query_kind": "METADATA_DESCRIBED_SKILL_GOAL_RELATION",
+                           "query_scope": "SAME_ORIGINAL_ANNOTATED_SEGMENT_SKILL",
+                           "source_skill_is_attempted_instruction_not_observed_outcome": True,
+                           "binding_status": "BOUND_METADATA_NEEDS_VISUAL_CONFIRMATION",
+                           "unknown_is_required_when_relation_or_entity_is_not_visually_grounded": True,
+                           "queried_skill": {field: skill.get(field) for field in (
+                               "skill_id", "verb", "target", "source", "destination", "target_part", "arm",
+                               "raw_description", "skill_start", "skill_end")}},
+        }
         event["event_id"] = pack._protocol.event_id(event)
         pack.validate_event(event)
         events.append(event)
@@ -146,7 +169,33 @@ def _make_fixture(root: Path) -> dict:
             "source_identity": {key: source[key] for key in (
                 "source_release_manifest_sha256", "source_annotation_sha256", "source_group_id", "task_index",
                 "task_instance_id", "raw_episode_id", "episode_index")},
+            "observation_frame": event["observation"]["frame"], "observation_phase": "ENTRY",
+            "selection_stratum": "ENTRY", "parent_event_id": parent_events[-1]["event_id"],
+            "parent_skill_identity": deepcopy(event["phase_lineage"]["parent_skill_identity"]),
+            "queried_skill": deepcopy(event["phase_lineage"]["goal_query"]),
+            "queried_skill_start_frame": skill["skill_start"], "queried_skill_end_frame": skill["skill_end"],
+            "original_annotated_segment": deepcopy(parent_events[-1]["event_interval"]),
+            "temporal_windows": {"anchor_frame": event["observation"]["frame"],
+                                 "actor_available_window": {"causal_use": "CURRENT_DECISION_ONLY",
+                                                            "sampled_frames": [event["observation"]["frame"]],
+                                                            "end_frame_exclusive": event["observation"]["frame"] + 1}},
         })
+    (full / "event_candidates.jsonl").write_bytes(
+        b"".join(base.canonical_json(row).encode("utf-8") + b"\n" for row in parent_events))
+    (full / "source_groups.jsonl").write_bytes(
+        b"".join(base.canonical_json(row).encode("utf-8") + b"\n" for row in groups))
+    full_manifest.update({
+        "source_episodes": 40, "source_groups": 40, "event_candidates": 40,
+        "usage_roles": {"annotation_calibration": 40},
+        "files": {"event_candidates.jsonl": _receipt(full / "event_candidates.jsonl", 40),
+                  "source_groups.jsonl": _receipt(full / "source_groups.jsonl", 40)},
+    })
+    full_manifest["coverage"].update({"unique_input_source_episodes": 40,
+                                      "unique_candidate_source_episodes": 40,
+                                      "unique_event_candidates": 40})
+    _write_json(full / "manifest.json", full_manifest)
+    full_inventory = _reseal(full)
+    full_manifest_sha = base.sha256_file(full / "manifest.json")
     base.write_jsonl(mini / "event_candidates.jsonl", events)
     base.write_jsonl(mini / "source_groups.jsonl", groups)
     files = {"event_candidates.jsonl": _receipt(mini / "event_candidates.jsonl", 40),
@@ -162,7 +211,6 @@ def _make_fixture(root: Path) -> dict:
                        "parent_index_manifest_sha256": full_manifest_sha,
                        "parent_inventory_seal_sha256": full_inventory,
                        "parent_event_candidates_sha256": full_manifest["files"]["event_candidates.jsonl"]["sha256"],
-                       "parent_source_groups_sha256": full_manifest["files"]["source_groups.jsonl"]["sha256"],
                        "phase_observation_is_not_outcome": True},
     }
     _write_json(mini / "manifest.json", mini_manifest)
@@ -243,6 +291,8 @@ class DiagnosticSubsetPublisherTests(unittest.TestCase):
             self.assertFalse(result["coverage_complete"])
             self.assertFalse(result["ready_for_training"])
             self.assertEqual(manifest["release_roles"], ["annotation_calibration"])
+            self.assertIsNone(manifest["derivation"]["legacy_mini_derivation_parent_source_groups_sha256"])
+            self.assertEqual(manifest["derivation"]["full_v3_parent_source_groups_receipt"]["rows"], 40)
             self.assertFalse(manifest["coverage"]["global_vocabulary_complete"])
             self.assertEqual(manifest["coverage"]["required_pair_coverage_status"], "NOT_DECLARED")
             self.assertIsNone(manifest["coverage"]["missing_required_task_skill_pairs"])
@@ -284,6 +334,30 @@ class DiagnosticSubsetPublisherTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "payload hash mismatch"):
                 _publish(inputs, output)
             self.assertFalse(output.exists())
+            inputs = _make_fixture(Path(directory) / "fourth")
+            incompatible_protocol = Path(directory) / "incompatible_protocol.py"
+            incompatible_protocol.write_text("# not the sealed protocol\n")
+            output = Path(directory) / "must-not-exist-protocol"
+            with self.assertRaisesRegex(ValueError, "canonical protocol module does not match"):
+                publisher.publish(
+                    phase_index=inputs["mini"], expected_phase_index_inventory_seal_sha256=inputs["mini_inventory"],
+                    full_index=inputs["full"], expected_full_index_inventory_seal_sha256=inputs["full_inventory"],
+                    expected_full_index_manifest_sha256=inputs["full_manifest_sha"],
+                    phase_selection_manifest=inputs["selection"],
+                    expected_phase_selection_manifest_sha256=inputs["selection_sha"],
+                    phase_queue=inputs["queue"], expected_phase_queue_sha256=inputs["queue_sha"],
+                    output=output, protocol_path=incompatible_protocol)
+            self.assertFalse(output.exists())
+            inputs = _make_fixture(Path(directory) / "fifth")
+            full_manifest = base.read_json(inputs["full"] / "manifest.json")
+            full_manifest["protocol_sha256"] = "0" * 64
+            _write_json(inputs["full"] / "manifest.json", full_manifest)
+            inputs["full_inventory"] = _reseal(inputs["full"])
+            inputs["full_manifest_sha"] = base.sha256_file(inputs["full"] / "manifest.json")
+            output = Path(directory) / "must-not-exist-conflicting-protocol"
+            with self.assertRaisesRegex(ValueError, "do not pin the same canonical protocol"):
+                _publish(inputs, output)
+            self.assertFalse(output.exists())
 
     def test_rejects_queue_source_disagreement_and_wrong_count(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -307,6 +381,28 @@ class DiagnosticSubsetPublisherTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "fixed 40-row"):
                 _publish(inputs, output)
             self.assertFalse(output.exists())
+
+    def test_rejects_actual_phase_queue_semantic_tampering(self):
+        mutations = (
+            ("observation_frame", lambda row: row.update(observation_frame=999999), "observation frame"),
+            ("parent_event", lambda row: row.update(parent_event_id="0" * 64), "skill/parent/segment"),
+            ("queried_skill", lambda row: row["queried_skill"]["queried_skill"].update(skill_id=999),
+             "queried-skill object"),
+            ("phase", lambda row: row.update(observation_phase="MID"), "observation phase"),
+            ("actor_domain", lambda row: row["temporal_windows"]["actor_available_window"].update(
+                sampled_frames=[999999]), "actor-causal temporal window"),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for index, (_, mutate, message) in enumerate(mutations):
+                inputs = _make_fixture(root / str(index))
+                rows = base.read_jsonl(inputs["queue"])
+                mutate(rows[0])
+                changed = root / f"changed-{index}.jsonl"
+                base.write_jsonl(changed, rows)
+                inputs["queue"], inputs["queue_sha"] = changed, base.sha256_file(changed)
+                with self.assertRaisesRegex(ValueError, message):
+                    _publish(inputs, root / f"must-not-exist-{index}")
 
     def test_rejects_noncalibration_group_and_duplicate_event(self):
         with tempfile.TemporaryDirectory() as directory:

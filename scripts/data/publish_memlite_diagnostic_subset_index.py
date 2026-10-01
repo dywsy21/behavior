@@ -208,7 +208,7 @@ def _coverage_for_subset(events: Sequence[Mapping[str, Any]], groups: Mapping[st
 def _validate_phase_binding(*, mini_manifest: Mapping[str, Any], mini_inventory_sha256: str,
                             full_manifest_sha256: str, full_inventory_sha256: str,
                             selection_manifest: Mapping[str, Any], queue_rows: Sequence[Mapping[str, Any]],
-                            events: Sequence[Mapping[str, Any]], groups: Mapping[str, Any]) -> tuple[list[str], list[str]]:
+                            events: Sequence[Mapping[str, Any]], groups: Mapping[str, Any]) -> tuple[list[str], list[str], dict[str, Mapping[str, Any]]]:
     if selection_manifest.get("schema_version") != "p107-phase-balanced-calibration-manifest-v1":
         raise ValueError("phase selection manifest has an unsupported schema")
     mini = selection_manifest.get("mini_index")
@@ -294,7 +294,112 @@ def _validate_phase_binding(*, mini_manifest: Mapping[str, Any], mini_inventory_
         selection_ids.add(event_id)
     if selection_ids != set(event_by_id):
         raise ValueError("phase selection manifest does not cover all mini-index events")
-    return sorted(event_by_id), sorted(groups)
+    return sorted(event_by_id), sorted(groups), queue_by_event
+
+
+def _integer(value: Any, name: str) -> int:
+    if type(value) is not int or value < 0:
+        raise ValueError(f"{name} must be a nonnegative integer")
+    return value
+
+
+def _phase_parent_ids(events: Sequence[Mapping[str, Any]]) -> set[str]:
+    result: set[str] = set()
+    for event in events:
+        lineage = event.get("phase_lineage")
+        if not isinstance(lineage, Mapping) or not base.is_sha256(lineage.get("parent_event_id")):
+            raise ValueError("phase event has no canonical parent-event lineage")
+        result.add(lineage["parent_event_id"])
+    return result
+
+
+def _read_selected_parent_events(full_index: Path, receipt: Mapping[str, Any], *, parent_ids: set[str],
+                                 protocol: Any) -> dict[str, dict[str, Any]]:
+    """Strictly parse/hash all parent bytes while retaining only selected parents."""
+    parents: dict[str, dict[str, Any]] = {}
+    for event in base.iter_jsonl_verified(full_index / "event_candidates.jsonl", expected=receipt):
+        event_id = event.get("event_id")
+        if event_id not in parent_ids:
+            continue
+        if event_id in parents:
+            raise ValueError("full-v3 index has a duplicate selected parent event ID")
+        protocol.validate_event(event)
+        parents[event_id] = event
+    if set(parents) != parent_ids:
+        raise ValueError("phase mini index parent event is absent from the sealed full-v3 source index")
+    return parents
+
+
+def _validate_phase_semantics(event: Mapping[str, Any], queue: Mapping[str, Any], parent: Mapping[str, Any],
+                              *, full_groups: Mapping[str, Any]) -> None:
+    """Bind phase fields to the mini event and immutable full-v3 parent, not just IDs."""
+    lineage = event.get("phase_lineage")
+    if not isinstance(lineage, Mapping) or lineage.get("schema_version") != "p107-phase-balanced-mini-index-v1":
+        raise ValueError("phase event lacks the supported phase-lineage schema")
+    source, parent_source = event.get("source"), parent.get("source")
+    if not isinstance(source, Mapping) or source != parent_source:
+        raise ValueError("phase event source identity differs from its sealed full-v3 parent")
+    group = full_groups.get(source.get("source_group_id"))
+    if (group is None or group.source_release_manifest_sha256 != source.get("source_release_manifest_sha256") or
+            group.task_id != source.get("task_index") or group.task_instance_id != source.get("task_instance_id") or
+            group.original_split != source.get("original_split") or group.usage_role != event.get("usage_role") or
+            source.get("episode_index") not in group.source_episode_ids):
+        raise ValueError("phase parent source/group inventory identity differs from sealed full-v3 source")
+    if (lineage.get("parent_event_id") != parent.get("event_id") or
+            lineage.get("parent_event_interval") != parent.get("event_interval") or
+            event.get("event_interval") != parent.get("event_interval")):
+        raise ValueError("phase parent identity or interval differs from sealed full-v3 parent")
+    observation = event.get("observation")
+    if not isinstance(observation, Mapping) or queue.get("observation_frame") != observation.get("frame"):
+        raise ValueError("phase queue observation frame differs from the mini event")
+    phase = lineage.get("observation_phase")
+    if (phase not in {"ENTRY", "MID", "TERMINAL", "TERMINAL_TRANSITION", "REPEATED_METADATA_QUERY"} or
+            queue.get("observation_phase") != phase or queue.get("selection_stratum") != lineage.get("selection_stratum") or
+            not isinstance(event.get("event_kind"), str) or not event["event_kind"].endswith(phase)):
+        raise ValueError("phase queue observation phase or event kind differs from mini-event lineage")
+    parent_identity = lineage.get("parent_skill_identity")
+    if not isinstance(parent_identity, Mapping):
+        raise ValueError("phase lineage lacks parent skill identity")
+    index = _integer(parent_identity.get("parent_skill_index"), "phase parent_skill_index")
+    skills = parent.get("skill_bundle")
+    if not isinstance(skills, list) or index >= len(skills) or not isinstance(skills[index], Mapping):
+        raise ValueError("phase parent skill index is outside the sealed full-v3 parent bundle")
+    skill = skills[index]
+    expected_identity = {
+        "parent_event_id": parent["event_id"], "parent_skill_index": index,
+        "parent_skill_member_sha256": base.canonical_sha256(skill), "skill_id": skill.get("skill_id"),
+        "skill_start_frame": skill.get("skill_start"), "skill_end_frame": skill.get("skill_end"),
+    }
+    if dict(parent_identity) != expected_identity:
+        raise ValueError("phase parent skill identity differs from the sealed full-v3 parent member")
+    goal_query = lineage.get("goal_query")
+    queued_query = queue.get("queried_skill")
+    if not isinstance(goal_query, Mapping) or queued_query != goal_query:
+        raise ValueError("phase queue queried-skill object differs from mini-event lineage")
+    queried = goal_query.get("queried_skill")
+    if not isinstance(queried, Mapping):
+        raise ValueError("phase lineage goal query lacks its queried skill")
+    for field in ("skill_id", "verb", "target", "source", "destination", "target_part", "arm",
+                  "raw_description", "skill_start", "skill_end"):
+        if queried.get(field) != skill.get(field):
+            raise ValueError("phase queried skill differs from the sealed full-v3 parent skill member")
+    start, end = skill.get("skill_start"), skill.get("skill_end")
+    if (lineage.get("queried_skill_start_frame") != start or lineage.get("queried_skill_end_frame") != end or
+            queue.get("queried_skill_start_frame") != start or queue.get("queried_skill_end_frame") != end or
+            queue.get("parent_event_id") != parent["event_id"] or queue.get("parent_skill_identity") != parent_identity or
+            queue.get("original_annotated_segment") != parent.get("event_interval")):
+        raise ValueError("phase queue skill/parent/segment fields differ from sealed mini/full lineage")
+    windows = queue.get("temporal_windows")
+    if not isinstance(windows, Mapping) or windows.get("anchor_frame") != observation["frame"]:
+        raise ValueError("phase temporal windows do not bind the mini-event anchor")
+    actor_window = windows.get("actor_available_window")
+    if not isinstance(actor_window, Mapping) or actor_window.get("causal_use") != "CURRENT_DECISION_ONLY":
+        raise ValueError("phase queue lacks the actor-causal temporal window")
+    samples = actor_window.get("sampled_frames")
+    if (not isinstance(samples, list) or not samples or samples != sorted(set(samples)) or
+            any(type(frame) is not int or frame < 0 or frame > observation["frame"] for frame in samples) or
+            actor_window.get("end_frame_exclusive") != observation["frame"] + 1):
+        raise ValueError("phase actor-causal temporal window exceeds or omits its anchor domain")
 
 
 def _copy_verified(source: Path, destination: Path, receipt: Mapping[str, Any]) -> dict[str, Any]:
@@ -311,7 +416,8 @@ def publish(*, phase_index: Path, expected_phase_index_inventory_seal_sha256: st
             full_index: Path, expected_full_index_inventory_seal_sha256: str,
             expected_full_index_manifest_sha256: str, phase_selection_manifest: Path,
             expected_phase_selection_manifest_sha256: str, phase_queue: Path,
-            expected_phase_queue_sha256: str, output: Path) -> dict[str, Any]:
+            expected_phase_queue_sha256: str, output: Path,
+            protocol_path: Path | None = None) -> dict[str, Any]:
     """Validate all pinned metadata first, then atomically publish one derivative."""
     phase_index, full_index, output = Path(phase_index), Path(full_index), Path(output)
     if output.exists():
@@ -324,6 +430,8 @@ def publish(*, phase_index: Path, expected_phase_index_inventory_seal_sha256: st
     if _sha256(full_index / "manifest.json") != _require_sha(expected_full_index_manifest_sha256, "expected full-v3 manifest SHA-256"):
         raise ValueError("full-v3 manifest does not match its external pin")
     _, expectations = _coverage_contract(full_manifest)
+    if mini_manifest.get("protocol_sha256") != full_manifest.get("protocol_sha256"):
+        raise ValueError("phase and full-v3 indexes do not pin the same canonical protocol")
     if (mini_manifest.get("schema_version") != base.INDEX_SCHEMA or mini_manifest.get("status") != base.INDEX_STATUS or
             mini_manifest.get("training_eligible") is not False or mini_manifest.get("partial_source_coverage") is not True or
             mini_manifest.get("source_release_manifest_sha256") != full_manifest.get("source_release_manifest_sha256") or
@@ -337,19 +445,32 @@ def publish(*, phase_index: Path, expected_phase_index_inventory_seal_sha256: st
                                                name="full-v3 event_candidates.jsonl")
     full_group_receipt = _expect_exact_receipt(full_files.get("source_groups.jsonl"),
                                                name="full-v3 source_groups.jsonl")
+    legacy_parent_group_sha = derivation.get("parent_source_groups_sha256") if isinstance(derivation, Mapping) else None
     if (not isinstance(derivation, Mapping) or derivation.get("schema_version") != "p107-phase-balanced-mini-index-v1" or
             derivation.get("parent_index_manifest_sha256") != expected_full_index_manifest_sha256 or
             derivation.get("parent_inventory_seal_sha256") != full_inventory_sha256 or
             derivation.get("parent_event_candidates_sha256") != full_event_receipt["sha256"] or
-            derivation.get("parent_source_groups_sha256") != full_group_receipt["sha256"] or
             derivation.get("phase_observation_is_not_outcome") is not True):
         raise ValueError("phase mini index does not preserve the full-v3 lineage")
+    if legacy_parent_group_sha is not None and legacy_parent_group_sha != full_group_receipt["sha256"]:
+        raise ValueError("legacy phase mini-index parent source-group pin conflicts with sealed full-v3 receipt")
     selection = _read_pinned_json(
         phase_selection_manifest, expected_phase_selection_manifest_sha256, name="phase selection manifest")
     queue_rows = _read_pinned_jsonl(phase_queue, expected_phase_queue_sha256, name="phase queue")
+    # Producers may legitimately pin an immutable protocol snapshot rather than
+    # this checkout.  The selected module is still content-addressed against
+    # both sealed indexes before any index row is trusted.
+    canonical_protocol_path = (
+        Path(protocol_path) if protocol_path is not None
+        else REPO / "src" / "g05" / "data" / "memlite_event_protocol.py")
     protocol = base.load_canonical_protocol(
-        REPO / "src" / "g05" / "data" / "memlite_event_protocol.py",
+        canonical_protocol_path,
         expected_sha256=_require_sha(mini_manifest.get("protocol_sha256"), "phase protocol SHA-256"))
+    protocol_reader_receipt = {
+        "role": "sealed_historical_index_reader",
+        "path": str(canonical_protocol_path.resolve()),
+        "sha256": _sha256(canonical_protocol_path),
+    }
     verified_mini, events_path, source_groups = base.validate_index(
         phase_index, expected_source_manifest_sha256=mini_manifest["source_release_manifest_sha256"],
         canonical_protocol=protocol, expected_protocol_sha256=mini_manifest["protocol_sha256"])
@@ -373,11 +494,19 @@ def publish(*, phase_index: Path, expected_phase_index_inventory_seal_sha256: st
         }
         for group_id, group in source_groups.items()
     }
-    event_ids, group_ids = _validate_phase_binding(
+    event_ids, group_ids, queue_by_event = _validate_phase_binding(
         mini_manifest={**mini_manifest, "_path": str(phase_index / "manifest.json")},
         mini_inventory_sha256=mini_inventory_sha256, full_manifest_sha256=expected_full_index_manifest_sha256,
         full_inventory_sha256=full_inventory_sha256, selection_manifest=selection, queue_rows=queue_rows,
         events=events, groups=groups)
+    _, _, full_groups = base.validate_index(
+        full_index, expected_source_manifest_sha256=full_manifest["source_release_manifest_sha256"],
+        canonical_protocol=protocol, expected_protocol_sha256=full_manifest["protocol_sha256"])
+    parents = _read_selected_parent_events(full_index, full_event_receipt,
+                                           parent_ids=_phase_parent_ids(events), protocol=protocol)
+    for event in events:
+        _validate_phase_semantics(event, queue_by_event[event["event_id"]],
+                                  parents[event["phase_lineage"]["parent_event_id"]], full_groups=full_groups)
     coverage = _coverage_for_subset(events, groups, expectations)
     if coverage["expectations_sha256"] != mini_manifest["coverage_expectations_sha256"]:
         raise ValueError("subset coverage does not retain the sealed full-v3 official expectation pin")
@@ -403,6 +532,8 @@ def publish(*, phase_index: Path, expected_phase_index_inventory_seal_sha256: st
         "phase_queue_sha256": expected_phase_queue_sha256,
         "full_v3_index_manifest_sha256": expected_full_index_manifest_sha256,
         "full_v3_inventory_seal_sha256": full_inventory_sha256,
+        "full_v3_parent_source_groups_receipt": full_group_receipt,
+        "legacy_mini_derivation_parent_source_groups_sha256": legacy_parent_group_sha,
         "source_release_manifest_sha256": mini_manifest["source_release_manifest_sha256"],
         "coverage_expectations_sha256": mini_manifest["coverage_expectations_sha256"],
         "protocol_sha256": mini_manifest["protocol_sha256"],
@@ -455,6 +586,10 @@ def publish(*, phase_index: Path, expected_phase_index_inventory_seal_sha256: st
                 "phase_queue_sha256": expected_phase_queue_sha256,
                 "full_v3_index_manifest_sha256": expected_full_index_manifest_sha256,
                 "full_v3_inventory_seal_sha256": full_inventory_sha256,
+                "full_v3_parent_source_groups_receipt": full_group_receipt,
+                "legacy_mini_derivation_parent_source_groups_sha256": legacy_parent_group_sha,
+                "historical_index_protocol_sha256": mini_manifest["protocol_sha256"],
+                "verified_protocol_reader": protocol_reader_receipt,
                 "original_phase_payload_bytes_preserved": True,
                 "diagnostic_subset_is_not_complete_source_coverage": True,
                 "phase_observation_is_not_outcome": True,
@@ -501,6 +636,9 @@ def main() -> None:
     parser.add_argument("--expected-phase-selection-manifest-sha256", required=True)
     parser.add_argument("--phase-queue", type=Path, required=True)
     parser.add_argument("--expected-phase-queue-sha256", required=True)
+    parser.add_argument(
+        "--protocol-path", type=Path,
+        help="optional immutable protocol snapshot; its SHA-256 must match both sealed source indexes")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     result = publish(
@@ -513,7 +651,8 @@ def main() -> None:
         expected_phase_selection_manifest_sha256=args.expected_phase_selection_manifest_sha256,
         phase_queue=args.phase_queue,
         expected_phase_queue_sha256=args.expected_phase_queue_sha256,
-        output=args.output)
+        output=args.output,
+        protocol_path=args.protocol_path)
     print(base.canonical_json(result), flush=True)
 
 
