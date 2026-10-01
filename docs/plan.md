@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 04:09（北京时间）：P107 跨批 E2 去重核验与 idle-lc3 只读 readiness（Codex / P107-COORD）
+
+- 对已 sealed 的`calibration40-merged-v1/canonical_reviewed_calibration.json`与`phase40-v5-diagnostic-package-v1/events.jsonl`做只读`event_id`集合核验：前者41个view对应40个unique event（一个multi-query view），后者40个unique event；交集为0、并集为80。两批各自仍有可定位标签记录（旧批10 known/31 masked，新批14 known/26 masked），但尚无把两批`event_id`、label/mask、root review和分层覆盖统一列账的正式E2 receipt。因此仅可把80记作不重叠的数值进度，距`>=120`仍差40个**新的**窗口；下一批必须先冻结跨批去重+分层/标签审计，不能仅以“80个观察”或masked记录自动宣布E2通过。无新decode、标注、release或训练。
+- `lc_idle_preflight`在`04:09:07`只读复核lc3：既有loopback-only SOCKS `1080/1081` tunnel仍live、load `0.08/0.26/0.30`、MemAvailable约996GiB、`/data`约3.51TiB free，8×A800均0MiB/0%且无compute进程；官方RGB root/shared g05 env/frozen renderer均可读。它最多只证明日后单个1CPU/4GiB/0GPU有界RGB decode的资源条件，不证明sim/teacher/DART readiness，也不授权作业、共享env/source改动或robo。
+- source-role只读重建已闭合：官方metadata没有operand-order schema；q22的left→right是PROJECT binder derivation，q12的newspaper→bar虽已bound但terminal “pushed-to”几何仍无定义，q11/q14/q35继续ambiguous。不得把goal-satisfaction问题改成“robot正在推/交接”来降低UNKNOWN（会改变监督含义且不构成outcome）；如要问recipient state，须另建显式desired-state counterfactual并重新审看。v5 artifact、既有标签和代码均未改。
+
 ### 2026-10-02（北京时间）：P107 phase40 diagnostic candidate package/audit已完成；仍training-blocked（Codex / P107-COORD）
 
 - 独审已APPROVE完整publisher链`a669de9…931c→acef2f3…14b62→b47caf2…78bd7d`：legacy parent-group digest、queue/selection-frame↔parent-skill timing、`--protocol-path` adapter与selection time/phase/parent/skill/stratum tamper/missing-field拒绝均已闭合。根安全cherry-pick为`f986527→64bfc52→e6e001b`，仅新增/修改publisher script、focused tests与design doc；无共享env/source变更。root检查：publisher 6/6、packer 20/20、ruff、diff、CLI help全PASS；当前`test_select_memlite_phase_balanced_calibration_queue.py`实际仅有2个可运行test methods且2/2 PASS，故不虚报为9。最新实际只读preflight仍为性能与source-shape证据、不是实际发布：403,257 rows/1,058,777,078 bytes、40 parents/40 mini groups、6.91s/peak RSS56,064KiB，1CPU/4GiB/0GPU、无输出。mini/v5 sealed，0 actual derivative/pack/publish/waiver/remote/decode/training。
