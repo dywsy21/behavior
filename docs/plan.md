@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：prior77 exact source-window exclusion sidecar 已原子构造；新 cohort 仍严禁选择/render（Codex / P107-COORD）
+
+- 基于已 sealed 的旧`calibration40-merged-v1`与`phase40-v5-diagnostic-package-v1`，一次流式认证full-v3 `403,257` event rows、`20,000` source groups后，新建不可变`/home/wsy/behavior-annotations/p107/coverage-prior77-v1`。它按**唯一排除键**`(source_release_manifest_sha256, source_group_id, raw_episode_id, observation_frame)`而非event ID写`prior_source_windows.jsonl`：77行、SHA`714ae08f906980ea2292dbbef80ddda5c7e7878c32907306500e143c53491bcc`，固定release`90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23`，每行有frozen selector所需`schema_version=p107-source-window-exclusion-v1`。77 keys均解析回认证full-index event/source-group；source-group inventory以dense `episode_index`验证成员，而exclusion key仍保留正确的`raw_episode_id`，不发生二者替换或student/private role重标。
+- 单独audit `event_query_to_source_window_audit.jsonl`（81 old/new event-query→key映射，SHA`6a5bb87df59092748055904430dc6cc336e293521ad278690c6580d9dec492c7`）保留40旧+40 phase derived event ID及41+40 query关系；`cross_batch_repeated_source_windows.jsonl`（SHA`bf941e00de1c25dbba6d67df486e180b73d2b8851349aa526938c42c90f725cf`）精确列3个跨批完全重复window。总计62 source groups、51 TRAIN task IDs；81 mapping rows相对77 key多出的4条为已审计的1个old multi-query excess与3个跨批重复，不能再把“80 event IDs”写成80 source windows。输入SHA清单`input_sha256_inventory.json` SHA`9e10095a636ed22fe0fd418aa7fd83d99cd26021494b31a7c7046826ef13af1f`，provenance`provenance.json` SHA`9bbc904dcb27b3be82fc286604fe997b2ce105f24d0445086bbc8fa43648a0d4`；frozen selector `2cc318080250f2b40daa085a08bff9e81ba93887`的`load_prior_windows`仅作byte-pinned contract read验证（77 rows/keys），**未**运行selector production、render、标注、review或新采样。
+- 新 code handoff均仍不可集成：PoseTeacher `fcde32de…546a`独审为**BLOCKED**（3×P1+1×P2，author修复中）；causal review-page builder `761c5d…`为**BLOCKED**（input provenance/path atomicity，author修复中）；coverage selector `2cc3180…3887`为**BLOCKED**（dense episode-index membership、prior-row schema与pair-publication atomicity，author修复/复审待）。prior77只给这些修复后的路径作为candidate-only exclusion input；没有E2新审阅/样本、outcome、corrective、DART、release或training计数变化。
+
 ### 2026-10-02（北京时间）：LC A4 availability已readback验证；PoseTeacher seam 独审中（P107-DART）
 
 - `lc_idle_preflight`在lc3只读readback验证`/data/workspace/wsy/behavior2026/models/memlite-a4-20260912/step_2500.pt`：`16,581,363,550B`、SHA `6186704788c27c9fae3502c884df0e259de5242ee8690fe578dcbc1f2632f269`，相邻A4 dataset-stats/grad/run/trainability/config receipts亦存在。未tensor-load、inference、copy、GPU或stage1访问；它现在只能称为**available/identity-verified但未qualified**的LC teacher candidate，绝非oracle、fresh-query teacher或DART记录。
@@ -20,7 +26,7 @@
 ### 2026-10-02 04:41:56（北京时间）：lc3 non-EULA prerequisite bootstrap PASS；仅环境准备（lc_idle_preflight / P107-OG51-PREP）
 
 - 唯一bootstrap按原预算exit0：UTC `20:39:32–20:41:56`、144秒、isolated root仅`1,175,999,215B`（<5GiB），receipt`/home/wsy/behavior-annotations/p107/lc3-og51-prep-20261002/receipt.json` SHA `f0ef46ca8232b1a2bf62d89db2978eca7ea7c417e976f110151f89919442d205`。仅在`/data/workspace/wsy/behavior2026/isolated/og51-lc3-p107-20261002`创建clean detached public `v3.9.3-post1`/`bd049de3119acdcdf2334fe9e1ebe060fa20c108`（index tree SHA`4cae8677…298e97`）、private uv`0.12.21`、managed CPython`3.11.16`及venv/pip`26.2.1`；这是development prep、非official benchmark。结束时`/data` free `3,861,825,454,080B`、8×A800均0MiB/0%。
-- **仅Python/source环境已就绪，runtime compatibility未测试。** 全程无`setup.sh`、Isaac/asset/key/EULA/Kit/physics/GPU/shared-env动作；用户条款接受仍待，因而live reset、teacher、DART/recovery/action/outcome/release/training仍0。已知LC A4 checkpoint仅是未readback-verified、未qualified的teacher candidate；隔离PoseTeacher GRASP adapter+unit tests只是CPU-only implementation ticket，manual-only schema与human provenance不得绕过。
+- **仅Python/source环境已就绪，runtime compatibility未测试。** 全程无`setup.sh`、Isaac/asset/key/EULA/Kit/physics/GPU/shared-env动作；用户条款接受仍待，因而live reset、teacher、DART/recovery/action/outcome/release/training仍0。已知LC A4 checkpoint已readback-verified但仍**未qualified**，只是teacher candidate；隔离PoseTeacher GRASP adapter+unit tests只是CPU-only implementation ticket，manual-only schema与human provenance不得绕过。
 
 ### 2026-10-02 04:39:32（北京时间）：lc3 非EULA prerequisite bootstrap 已启动；DART live 继续为零（lc_idle_preflight / P107-OG51-PREP）
 
