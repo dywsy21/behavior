@@ -213,8 +213,26 @@ def event_from_segment(record: Mapping[str, Any], segment: Mapping[str, Any],
     return event
 
 
-def _role_for_groups(sources: list[dict[str, Any]], calibration_per_task: int) -> dict[str, str]:
+def _calibration_policy(release_manifest_sha256: str, calibration_per_task: int,
+                        explicit_group_ids: set[str]) -> dict[str, Any]:
+    core = {
+        "algorithm": "p107-calibration-v1",
+        "source_release_manifest_sha256": release_manifest_sha256,
+        "deterministic_per_task": calibration_per_task,
+        "explicit_group_ids": sorted(explicit_group_ids),
+    }
+    return {**core, "policy_sha256": canonical_sha256(core)}
+
+
+def _role_for_groups(sources: list[dict[str, Any]], calibration_per_task: int,
+                     explicit_group_ids: set[str]) -> dict[str, str]:
     by_task: dict[int, list[str]] = defaultdict(list)
+    by_id = {source["source_group_id"]: source for source in sources}
+    unknown = explicit_group_ids - set(by_id)
+    if unknown:
+        raise ValueError("explicit calibration source_group_id is absent from this frozen release")
+    if any(by_id[group]["original_split"] != "train" for group in explicit_group_ids):
+        raise ValueError("explicit calibration source_group_id must be an immutable TRAIN group")
     for source in sources:
         if source["original_split"] == "train":
             by_task[source["task_index"]].append(source["source_group_id"])
@@ -228,6 +246,8 @@ def _role_for_groups(sources: list[dict[str, Any]], calibration_per_task: int) -
             f"p107-calibration-v1:{task}:{group}".encode()).digest())[:max(0, min(calibration_per_task, len(set(groups)) - 1))]
         for group in selected:
             roles[group] = "annotation_calibration"
+    for group in explicit_group_ids:
+        roles[group] = "annotation_calibration"
     return roles
 
 
@@ -319,8 +339,41 @@ def _check_timeout(started: float, max_seconds: float) -> None:
         raise TimeoutError("metadata index CPU budget reached; no release was written")
 
 
+def read_calibration_group_ids(path: Path | None, release_manifest_sha256: str) -> set[str]:
+    """Read predeclared group IDs or task/instance reservations without labels.
+
+    A line is either a 64-char ``source_group_id`` or an exact JSON object
+    ``{"task_index": N, "task_instance_id": N}``.  The latter is converted
+    under the frozen release hash before the policy itself is sealed.
+    """
+    if path is None:
+        return set()
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("calibration group reservation file must be a regular file")
+    selected: set[str] = set()
+    for number, line in enumerate(path.read_bytes().splitlines(), start=1):
+        if not line.strip():
+            continue
+        text = line.decode("utf-8")
+        if len(text) == 64 and all(char in "0123456789abcdef" for char in text):
+            group_id = text
+        else:
+            row = strict_json_bytes(line, name=f"{path}:{number}")
+            if not isinstance(row, dict) or set(row) != {"task_index", "task_instance_id"}:
+                raise ValueError("calibration reservation must be a source_group_id or exact task/instance object")
+            if type(row["task_index"]) is not int or type(row["task_instance_id"]) is not int:
+                raise ValueError("calibration task/instance reservation must use integers")
+            group_id = source_group_id({"source_release_manifest_sha256": release_manifest_sha256,
+                                        "task_index": row["task_index"],
+                                        "task_instance_id": row["task_instance_id"]})
+        if group_id in selected:
+            raise ValueError("duplicate explicit calibration source group")
+        selected.add(group_id)
+    return selected
+
+
 def build_index(release: Path, output: Path, *, calibration_per_task: int = 1,
-                max_seconds: float = 1800.0) -> dict[str, Any]:
+                calibration_group_ids: set[str] | None = None, max_seconds: float = 1800.0) -> dict[str, Any]:
     """Create a sealed index.  Inputs must be a v4 compact release layout."""
     release, output = Path(release), Path(output)
     if calibration_per_task < 0 or type(calibration_per_task) is not int:
@@ -338,6 +391,8 @@ def build_index(release: Path, output: Path, *, calibration_per_task: int = 1,
     if not isinstance(manifest, dict):
         raise ValueError("release manifest must be an object")
     release_manifest_sha256 = sha256_file(manifest_path)
+    calibration_group_ids = set() if calibration_group_ids is None else set(calibration_group_ids)
+    calibration_selection = _calibration_policy(release_manifest_sha256, calibration_per_task, calibration_group_ids)
     records = read_jsonl(release / "episodes.jsonl")
     if not records:
         raise ValueError("release has no episode metadata records")
@@ -361,7 +416,7 @@ def build_index(release: Path, output: Path, *, calibration_per_task: int = 1,
             seen_event.add(event["event_id"])
             events.append(event)
     _validate_release_split_provenance(release, sources)
-    roles = _role_for_groups(sources, calibration_per_task)
+    roles = _role_for_groups(sources, calibration_per_task, calibration_group_ids)
     group_rows = _source_group_rows(sources, roles)
     for event in events:
         event["usage_role"] = roles[event["source"]["source_group_id"]]
@@ -386,7 +441,7 @@ def build_index(release: Path, output: Path, *, calibration_per_task: int = 1,
             "source_release_manifest_sha256": release_manifest_sha256,
             "source_release_files": inputs,
             "source_release_path": str(release.resolve()),
-            "calibration_selection": {"algorithm": "p107-calibration-v1", "per_task": calibration_per_task},
+            "calibration_selection": calibration_selection,
             "files": files,
             "source_episodes": len(sources), "source_groups": len(group_rows), "event_candidates": len(events),
             "usage_roles": dict(sorted(Counter(row["usage_role"] for row in group_rows).items())),
@@ -403,7 +458,8 @@ def build_index(release: Path, output: Path, *, calibration_per_task: int = 1,
         raise
 
 
-def resume_index(release: Path, output: Path, *, calibration_per_task: int) -> dict[str, Any]:
+def resume_index(release: Path, output: Path, *, calibration_per_task: int,
+                 calibration_group_ids: set[str] | None = None) -> dict[str, Any]:
     release, output = Path(release), Path(output)
     if not output.is_dir() or output.is_symlink():
         raise ValueError("--resume requires a sealed regular output directory")
@@ -414,7 +470,9 @@ def resume_index(release: Path, output: Path, *, calibration_per_task: int) -> d
         raise ValueError("release manifest changed; refusing to resume mismatched index")
     if result.get("source_release_files") != _input_files(release):
         raise ValueError("release metadata changed; refusing to resume mismatched index")
-    if result.get("calibration_selection") != {"algorithm": "p107-calibration-v1", "per_task": calibration_per_task}:
+    expected_policy = _calibration_policy(sha256_file(release / "manifest.json"), calibration_per_task,
+                                          set() if calibration_group_ids is None else set(calibration_group_ids))
+    if result.get("calibration_selection") != expected_policy:
         raise ValueError("calibration policy changed; refusing to resume mismatched index")
     for name, receipt in result.get("files", {}).items():
         path = output / name
@@ -430,12 +488,17 @@ def main() -> None:
     parser.add_argument("--release", type=Path, required=True, help="frozen v4 compact release root")
     parser.add_argument("--output", type=Path, required=True, help="new external index directory")
     parser.add_argument("--calibration-per-task", type=int, default=1)
+    parser.add_argument("--calibration-group-ids", type=Path,
+                        help="predeclared one-per-line source group hashes or task/instance JSON objects")
     parser.add_argument("--max-seconds", type=float, default=1800.0)
     parser.add_argument("--resume", action="store_true", help="verify a complete sealed index; never append")
     args = parser.parse_args()
-    result = (resume_index(args.release, args.output, calibration_per_task=args.calibration_per_task)
+    release_manifest_sha256 = sha256_file(args.release / "manifest.json")
+    calibration_group_ids = read_calibration_group_ids(args.calibration_group_ids, release_manifest_sha256)
+    result = (resume_index(args.release, args.output, calibration_per_task=args.calibration_per_task,
+                           calibration_group_ids=calibration_group_ids)
               if args.resume else build_index(args.release, args.output, calibration_per_task=args.calibration_per_task,
-                                               max_seconds=args.max_seconds))
+                                               calibration_group_ids=calibration_group_ids, max_seconds=args.max_seconds))
     print(canonical_json(result), flush=True)
 
 

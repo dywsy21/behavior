@@ -90,6 +90,30 @@ class BuildEventIndexTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "public-test"):
                 builder.build_index(root / "second-release", root / "bad-public", max_seconds=10)
 
+    def test_explicit_calibration_group_is_union_sealed_and_group_complete(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            release = root / "release"
+            write_release(release)
+            reservations = root / "reserved-groups.jsonl"
+            reservations.write_text(json.dumps({"task_index": 0, "task_instance_id": 1}) + "\n")
+            reserved = builder.read_calibration_group_ids(reservations, builder.sha256_file(release / "manifest.json"))
+            output = root / "index"
+            result = builder.build_index(release, output, calibration_per_task=0,
+                                         calibration_group_ids=reserved, max_seconds=10)
+            self.assertEqual(result["calibration_selection"]["explicit_group_ids"], sorted(reserved))
+            self.assertEqual(len(result["calibration_selection"]["policy_sha256"]), 64)
+            groups = strict_lines(output / "source_groups.jsonl")
+            group = next(row for row in groups if row["task_instance_id"] == 1)
+            self.assertEqual(group["usage_role"], "annotation_calibration")
+            events = strict_lines(output / "event_candidates.jsonl")
+            self.assertTrue(all(row["usage_role"] == "annotation_calibration"
+                                for row in events if row["source"]["source_group_id"] == group["source_group_id"]))
+            self.assertEqual(builder.resume_index(release, output, calibration_per_task=0,
+                                                  calibration_group_ids=reserved)["status"], "RESUME_VALIDATED")
+            with self.assertRaisesRegex(ValueError, "calibration policy changed"):
+                builder.resume_index(release, output, calibration_per_task=0)
+
     def test_source_output_and_tiny_cpu_budget_are_rejected(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
