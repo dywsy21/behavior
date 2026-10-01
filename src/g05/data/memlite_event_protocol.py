@@ -674,6 +674,14 @@ def _validate_raw_action_payload(payload: Mapping[str, Any]) -> None:
         raise ContractError("raw action payload hashes are not recomputed from actual 23D payload bytes")
 
 
+def authority_raw_action_payload(authority: CorrectiveActionAuthority, action_payload_sha256_value: str) -> dict[str, Any]:
+    """Return a fresh verified 23D target payload for a publisher-authorized package only."""
+    _sha256(action_payload_sha256_value, "action_payload_sha256")
+    payload = _authority_value(authority, "_payload_json", action_payload_sha256_value, "raw action payload")
+    _validate_raw_action_payload(payload)
+    return json.loads(canonical_json(payload))
+
+
 def load_corrective_action_authority(publisher_root: Path, *, expected_publisher_manifest_sha256: str,
                                      expected_index_inventory_seal_sha256: str,
                                      expected_live_runtime_acceptance_root_sha256: str | None = None) -> CorrectiveActionAuthority:
