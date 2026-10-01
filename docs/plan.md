@@ -12,11 +12,17 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 standard pack受4GiB流式读取缺陷阻断；phase-balanced40候选已建成待独审（Codex / P107-COORD）
+
+- standard calibration-only pack的真实CPU run在`_read_sealed_index`物化全403,257行/1.018GiB index时触发`MemoryError`，而非输入或标注身份问题：Python3.13 RSS 4,140,300KiB、35.74s，Python3.12复现RSS 4,139,252KiB、15.26s，均超过4GiB限制；无output或staging残留。输入`/home/wsy/behavior-annotations/p107/calibration40-package-input-v2/annotations.json` SHA `55fd0276cda9f87d4e10f551a9494f78b81739c221005beccd062cc397fa5475`有效，s1 attestation `a0474b…a76ae`已解决identity。stream fix已独立分派`p107-pack-stream`，仅owner改packer/tests、保持protocol；独审后才可按1CPU/4GiB/10min重跑。
+- `deb000e`隔离`p107-phase-sampling`已完成phase-balanced mini-index，输出`/home/wsy/behavior-annotations/p107/phase-balanced-calibration40-v2`，mini-index SHA `a43bbec04a86d0b13f9ad06f4825fcd7c16ab469cf13c3a65a555a5ab0eca09b`、queue seal `400613905529c710fcba62ebe4b7167c6df974ada94256d05a0c7bdc94b46c8f`。40条来自distinct TRAIN calibration groups、覆盖31 tasks/31 skills（94/100/101/103未覆盖）；ENTRY/MID/TERMINAL_OR_TRANSITION/REPEATED_METADATA_QUERY各10。terminal-adjacent只表示transition、并非成功；跨episode repeat只为metadata query、并非failure/retry。build17.3s、sealed resume17s/351KiB，selector11+renderer11 tests通过；现正由`/root/review_phase_sampler`独审，未整合或decode。
+- additive actor-query module/dataset只在隔离`p107-actor-query`开始：冻结pre-label query与target分离、支持same RGB/different-query projection，并保留`for_training`拒绝；不改packer/protocol、不声称已有model/collator。counterfactual query source可条件化goal head但不是latent-state GT；actual attempt仍只可用issued intent。上述均为candidate工程，strict release/training/DART计数不变，未启动GPU/SIM/server/env/job。
+
 ### 2026-10-02（北京时间）：P107 CAL40 41-query merged calibration 已验证；E2是root亲自≥120抽样而非外部human门（Codex / P107-ANNOTATION-LEDGER）
 
 - 中央合并件位于`/home/wsy/behavior-annotations/p107/calibration40-merged-v1`：`canonical_reviewed_calibration.json` SHA `8e95c0e0365a7f0821255e98441cee2189d2286f81f8f085d08bbd9e2ab8a71f`、manifest SHA `419e0c8f5bfc8dbce9a1441edd550238b664e64666c4aa8b22af2a99debb4586`、root parent receipt SHA `31955044c0b4b37918bc76cb913a0984ebd917e43738308833d8adbfa7f4160a`。全部41 query composite join及55个causal native-PNG hash通过：10条known visible-calibration auxiliary、31条masked，0 student/outcome/recovery/action-BC。
 - `docs/plan.md` E2的操作定义是**主代理/root亲自**查看至少120个分层图像/短片及标签，并非要求另找一名外部human；当前root已审40 anchors，故数量和分层范围仍未达E2。记录provenance仍是`root_model`/`human=false`，不得改写为`human_reviewed=true`。这不改变CAL40为calibration-only，也不把E2、global goal或训练门标为完成。
-- standard calibration-only pack仍只差实际s1 agent的小型reviewer-provenance attestation；它不是新的视觉复审。phase-balanced sampler与actor query read-only recon均仍进行中；strict counts不变，live DART=0并继续等用户RTX4080+lc许可、冻结teacher/runtime及official TRAIN fresh-reset证据。
+- s1 agent attestation已解决identity，但standard pack真实run因全index物化超过4GiB而MemoryError（无输出残留）；`p107-pack-stream`正隔离修复并须独审后受限重跑。phase-balanced mini-index已建成、独审待定；actor-query module/dataset也只在隔离实现启动，保留`for_training`拒绝。strict counts不变，live DART=0并继续等用户RTX4080+lc许可、冻结teacher/runtime及official TRAIN fresh-reset证据。
 
 ### 2026-10-02（北京时间）：P107 CAL40 root-model 完成40 anchor视觉QA并更正41条可见校准标签；非human/E2/训练放行（Codex / P107-ANNOTATION-LEDGER）
 
