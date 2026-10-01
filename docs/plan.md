@@ -12,6 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 04:41:56（北京时间）：lc3 non-EULA prerequisite bootstrap PASS；仅环境准备（lc_idle_preflight / P107-OG51-PREP）
+
+- 唯一bootstrap按原预算exit0：UTC `20:39:32–20:41:56`、144秒、isolated root仅`1,175,999,215B`（<5GiB），receipt`/home/wsy/behavior-annotations/p107/lc3-og51-prep-20261002/receipt.json` SHA `f0ef46ca8232b1a2bf62d89db2978eca7ea7c417e976f110151f89919442d205`。仅在`/data/workspace/wsy/behavior2026/isolated/og51-lc3-p107-20261002`创建clean detached public `v3.9.3-post1`/`bd049de3119acdcdf2334fe9e1ebe060fa20c108`（index tree SHA`4cae8677…298e97`）、private uv`0.12.21`、managed CPython`3.11.16`及venv/pip`26.2.1`；这是development prep、非official benchmark。结束时`/data` free `3,861,825,454,080B`、8×A800均0MiB/0%。
+- **仅Python/source环境已就绪，runtime compatibility未测试。** 全程无`setup.sh`、Isaac/asset/key/EULA/Kit/physics/GPU/shared-env动作；用户条款接受仍待，因而live reset、teacher、DART/recovery/action/outcome/release/training仍0。已知LC A4 checkpoint仅是未readback-verified、未qualified的teacher candidate；隔离PoseTeacher GRASP adapter+unit tests只是CPU-only implementation ticket，manual-only schema与human provenance不得绕过。
+
 ### 2026-10-02 04:39:32（北京时间）：lc3 非EULA prerequisite bootstrap 已启动；DART live 继续为零（lc_idle_preflight / P107-OG51-PREP）
 
 - `lc_idle_preflight`已于UTC `2026-10-01T20:39:32Z`在lc3启动唯一有界、**non-EULA** prerequisite bootstrap，外部receipt为`/home/wsy/behavior-annotations/p107/lc3-og51-prep-20261002/receipt.json`。拟使用隔离根`/data/workspace/wsy/behavior2026/isolated/og51-lc3-p107-20261002`、public engineering-only ref `v3.9.3-post1`/`bd049de3119acdcdf2334fe9e1ebe060fa20c108`、official `uv` installer与uv-managed CPython3.11 private venv；此ref只是development feasibility prep，**不是**official competition benchmark。预算固定1CPU/4GiB RAM/0GPU/磁盘≤5GiB/1200s，既有VPN不重连；lc1/lc2、robo、shared g05 env及训练均不触碰。

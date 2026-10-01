@@ -1,5 +1,7 @@
 # robo服务器文件位置与保留规则
 
+**2026-10-02 04:41:56北京时间 P107 lc3隔离Python/source准备通过：** 唯一non-EULA bootstrap在UTC`20:39:32–20:41:56` exit0（144秒），receipt`/home/wsy/behavior-annotations/p107/lc3-og51-prep-20261002/receipt.json` SHA`f0ef46ca8232b1a2bf62d89db2978eca7ea7c417e976f110151f89919442d205`。只新增`/data/workspace/wsy/behavior2026/isolated/og51-lc3-p107-20261002`（1,175,999,215B）下public detached source `v3.9.3-post1`/`bd049de3119acdcdf2334fe9e1ebe060fa20c108`（tree SHA`4cae8677…298e97`）、private uv0.12.21、managed CPython3.11.16和venv/pip26.2.1；非official benchmark。结束`/data` free3,861,825,454,080B、8×A800均0MiB/0%。这**只**表示Python/source ready，未验证Isaac/OmniGibson/asset/driver/runtime compatibility；无setup.sh、Isaac/EULA/assets/key/Kit/physics/GPU/shared-env修改。该隔离根不得被当成shared env或live DART source，后续需条款接受和独立兼容性审查。
+
 ## 新A800集群（2026-09-27，独立于robo）
 
 **2026-09-30 22:53终核覆盖：** lc1高层同run attempt2已真实恢复（新15–16步/八rank通过/W&B新update10/ECC无增长），仍tmux `memlite-stage1-high-20260930`、source d0528b4、supervisor453346/torchrun453359；新日志`runs/memlite_stage1_high_100task_v1.supervisor/attempt_002.log`，完整点`checkpoints/step_00000000_save_0002.pt`。lc2低层attempt1不动已1175步。准确时间快照与SHA见[恢复回执](infra/results/2026-09-30-memlite-high-ecc-recovery.json)，旧失败日志/权重不删。
