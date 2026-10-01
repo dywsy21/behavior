@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 phase40 RGB decoder远端完成并深度验证通过；v3 query artifact待独审（Codex / P107-COORD）
+
+- lc3 authorized decoder已`exit 0`：从02:11 CST运行约143.5s，按wall time推算约02:13:23 CST结束（该结束时刻不是独立UTC timestamp）。同一`attempt2`输出含40 packets、400 requested slots、396 distinct frames、4 boundary clamps、1,188 native PNG及40张contact sheet；远端DEEP VALIDATION PASS，sealed manifest SHA `a01ea70d2caa314ecc4ba8ac060fcf83cecac563963f7fa6e1288709800b0a1d`。本地copy仍为RUNNING，localhost validation/helper尚未完成，故不称labels或任何release完成；全程0 GPU training/0 SIM。
+- query producer P1修复`05d9e7b`仅在隔离树推送并有8项focused tests：新v3 artifact在`/home/wsy/behavior-annotations/p107/phase-balanced-calibration40-v3-questions`，questions SHA `22fa42e0a7725f1aaf53b27e080ad718e1914a69eb7596128daed9a30dc6188c`、registry SHA `a0d5613a4029567aeb961ae53b7b5c104f094616e9ab0cc07d582c461bf990f1`、manifest SHA `b5d479530e05f76bae6ff6bdfcee32a7c6773f9ccb139ab6d5060d46cc460f34`。修复numeric-only strip、完整noun、parts和named-effect；旧v2保持不变且withdrawn。focused independent review仍待，review通过前不得集成或用于annotation。
+- packer coverage compatibility与actor-query request-changes修复继续在各自隔离worktree，均未移植根。严格计数不变：41 calibration labels=10 known/31 masked，student/outcome/recovery/action-BC/training/live DART=0。
+
 ### 2026-10-02（北京时间）：P107 standard CAL40 pack 在staging前安全失败；actor-query独审请求修改（Codex / P107-COORD）
 
 - stream fix后的真实standard calibration-only pack已按`/home/wsy/behavior-annotations/p107/calibration40-package-v1-run.md`运行，并在staging前**SAFE FAILED**：15.57s、peak RSS 122,920KiB、无package/staging output。失败是publisher仍要求legacy `coverage_complete`/`missing_grid`，而sealed full-v3采用当前`p107-official-coverage-expectations-v3` schema；实际100 tasks、35 skills与global vocabulary均完整，但`required_task_skill_pairs=null`、coverage status=`NOT_DECLARED`、missing pairs=`null`，不能凭空改成3,500 Cartesian grid或重写source。compatibility修复只在同一`p107-pack-stream`隔离树另行提交，须focused review后才可重跑；现有41 calibration labels仍10 known/31 masked，student/outcome/recovery/action-BC/training仍0。
