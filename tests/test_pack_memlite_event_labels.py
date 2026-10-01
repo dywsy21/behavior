@@ -253,11 +253,14 @@ def prelabel_registry_row(event: dict, goal: dict, *, query_id: str = "producer-
 
 
 def write_actor_query_inputs(root: Path, event: dict, goal: dict, *, registry_rows: list[dict] | None = None,
-                             binding_query_id: str = "producer-query-1") -> tuple[Path, str, Path]:
+                             binding_query_id: str = "producer-query-1",
+                             binding_rows: list[dict] | None = None) -> tuple[Path, str, Path]:
     registry_path, bindings_path = root / "prelabel-registry.jsonl", root / "view-bindings.jsonl"
     rows = registry_rows if registry_rows is not None else [prelabel_registry_row(event, goal)]
     pack._write_jsonl(registry_path, rows)
-    pack._write_jsonl(bindings_path, [{"view_id": goal["view_id"], "prelabel_query_id": binding_query_id}])
+    rows = binding_rows if binding_rows is not None else [
+        {"view_id": goal["view_id"], "prelabel_query_id": binding_query_id}]
+    pack._write_jsonl(bindings_path, rows)
     return registry_path, pack.sha256_file(registry_path), bindings_path
 
 
@@ -964,6 +967,73 @@ class PackMemLiteEventLabelsTests(unittest.TestCase):
             self.assertEqual(audited["actor_query_sidecar_rows"], 1)
             self.assertEqual(audited["prelabel_query_registry_rows"], 1)
             self.assertFalse(audited["stage3_training_authorized"])
+
+    def test_actor_query_sidecar_requires_complete_goal_bindings_and_allows_two_queries_for_one_event(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index_path, _, events, _ = indexed(root)
+            calibration = next(event for event in events if event["usage_role"] == "annotation_calibration")
+            labels = annotations(calibration)
+            first = next(row for row in labels["views"] if row["label_kind"] == "goal_satisfaction_counterfactual")
+            labels_path = root / "labels.json"
+            labels_path.write_bytes(pack.canonical_json(labels).encode("utf-8") + b"\n")
+            index_seal = pack.sha256_file(index_path / "inventory_seal.json")
+            registry_path, registry_sha, empty_bindings = write_actor_query_inputs(
+                root, calibration, first, binding_rows=[])
+            with self.assertRaisesRegex(ValueError, "cover exactly every packaged goal view"):
+                pack.publish(
+                    index_path, labels_path, root / "empty-sidecar-package", release_role="annotation_calibration",
+                    minimum_scale=None, request_dataset_quality_eligibility=False,
+                    expected_index_inventory_seal_sha256=index_seal,
+                    prelabel_query_registry=registry_path,
+                    expected_prelabel_query_registry_sha256=registry_sha,
+                    postlabel_view_prelabel_query_bindings=empty_bindings)
+            self.assertFalse((root / "empty-sidecar-package").exists())
+            self.assertFalse(any(root.glob(".empty-sidecar-package.staging-*")))
+
+            second = deepcopy(first)
+            second["goal_relation"] = "radio is in a distinct frozen relation"
+            with_id(second)
+            labels["views"].append(second)
+            labels["view_reviews"].append(review(second))
+            labels_path.write_bytes(pack.canonical_json(labels).encode("utf-8") + b"\n")
+            first_registry = prelabel_registry_row(calibration, first, query_id="producer-query-first")
+            second_registry = prelabel_registry_row(calibration, second, query_id="producer-query-second")
+            registry_path.unlink()
+            empty_bindings.unlink()
+            registry_path, registry_sha, partial_bindings = write_actor_query_inputs(
+                root, calibration, first, registry_rows=[first_registry, second_registry],
+                binding_query_id="producer-query-first")
+            with self.assertRaisesRegex(ValueError, "cover exactly every packaged goal view"):
+                pack.publish(
+                    index_path, labels_path, root / "partial-sidecar-package", release_role="annotation_calibration",
+                    minimum_scale=None, request_dataset_quality_eligibility=False,
+                    expected_index_inventory_seal_sha256=index_seal,
+                    prelabel_query_registry=registry_path,
+                    expected_prelabel_query_registry_sha256=registry_sha,
+                    postlabel_view_prelabel_query_bindings=partial_bindings)
+            self.assertFalse((root / "partial-sidecar-package").exists())
+            self.assertFalse(any(root.glob(".partial-sidecar-package.staging-*")))
+
+            partial_bindings.unlink()
+            bindings_path = root / "complete-view-bindings.jsonl"
+            pack._write_jsonl(bindings_path, [
+                {"view_id": first["view_id"], "prelabel_query_id": "producer-query-first"},
+                {"view_id": second["view_id"], "prelabel_query_id": "producer-query-second"},
+            ])
+            result = pack.publish(
+                index_path, labels_path, root / "complete-sidecar-package", release_role="annotation_calibration",
+                minimum_scale=None, request_dataset_quality_eligibility=False,
+                expected_index_inventory_seal_sha256=index_seal,
+                prelabel_query_registry=registry_path,
+                expected_prelabel_query_registry_sha256=registry_sha,
+                postlabel_view_prelabel_query_bindings=bindings_path)
+            self.assertEqual(result["status_report"]["candidate_annotated"], 5)
+            output = root / "complete-sidecar-package"
+            self.assertEqual(pack.read_json(output / "release_manifest.json")["actor_query_sidecar"]["row_count"], 2)
+            self.assertTrue(all(not value for wrapper in pack.read_jsonl(output / "views.jsonl")
+                                for value in wrapper["dataset_quality_gates"].values()))
+            self.assertFalse(result["training_run_authorized"])
 
     def test_actor_query_sidecar_rejects_same_event_different_query_and_registry_tampering(self):
         with tempfile.TemporaryDirectory() as folder:

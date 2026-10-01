@@ -881,6 +881,14 @@ def build_release(groups: list[Mapping[str, Any]], events: list[Mapping[str, Any
         if not isinstance(registry_by_id, Mapping) or not isinstance(bindings, Mapping):
             raise ValueError("actor-query input is missing its validated registry or bindings")
         views_by_id = {row["view"]["view_id"]: row["view"] for row in sealed_views}
+        goal_view_ids = {view_id for view_id, view in views_by_id.items()
+                         if view["label_kind"] == "goal_satisfaction_counterfactual"}
+        bound_view_ids = set(bindings)
+        if bound_view_ids != goal_view_ids:
+            missing, extra = sorted(goal_view_ids - bound_view_ids), sorted(bound_view_ids - goal_view_ids)
+            raise ValueError(
+                "actor-query bindings must cover exactly every packaged goal view; "
+                f"missing={missing}, extra={extra}")
         for view_id, query_id in sorted(bindings.items()):
             view = views_by_id.get(view_id)
             query_registry_row = registry_by_id.get(query_id)
