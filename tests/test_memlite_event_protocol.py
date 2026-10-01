@@ -16,6 +16,7 @@ ACTION_HORIZON = _PROTOCOL.ACTION_HORIZON
 MODEL_PADDING_INDICES = _PROTOCOL.MODEL_PADDING_INDICES
 ContractError = _PROTOCOL.ContractError
 actor_evidence_projection = _PROTOCOL.actor_evidence_projection
+authority_raw_action_payload = _PROTOCOL.authority_raw_action_payload
 canonical_json = _PROTOCOL.canonical_json
 canonical_sha256 = _PROTOCOL.canonical_sha256
 action_payload_sha256 = _PROTOCOL.action_payload_sha256
@@ -235,6 +236,10 @@ class EventProtocolTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             row, e, authority, _ = authorized_corrective_row(Path(folder))
             validate_corrective_action_view(row, e, authority=authority)
+            payload = authority_raw_action_payload(authority, row["action_payload_sha256"])
+            self.assertEqual(len(payload["raw_actions_23"]), row["actual_executed_length"])
+            payload["raw_actions_23"][0][0] = -1.0
+            self.assertNotEqual(authority_raw_action_payload(authority, row["action_payload_sha256"])["raw_actions_23"][0][0], -1.0)
             for mutation in ("wrong_bundle", "future_observation", "no_authority", "proposed"):
                 bad = deepcopy(row)
                 if mutation == "wrong_bundle":

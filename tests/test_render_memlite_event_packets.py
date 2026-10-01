@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -66,6 +67,41 @@ class RenderEventPacketsTests(unittest.TestCase):
                 renderer.create_packets(index, root / "bad-decode", event_ids=set(), limit=1, questions={},
                                         include_source_annotation_context=False, decode=True, raw_root=root / "missing",
                                         contact_sheets=False, max_seconds=10)
+
+    def test_decoded_camera_native_pngs_have_sealed_hash_receipts(self):
+        from PIL import Image
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            release = root / "release"
+            fixture = write_release(release)
+            index = root / "index"
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
+            raw_root = root / "raw"
+            raw_root.mkdir()
+
+            def fake_decode(_av, _video, requested):
+                return Image.new("RGB", (8, 6), "red"), {"requested_timestamp_s": requested,
+                                                           "decoded_timestamp_s": requested, "pts_error_s": 0.0}
+
+            with patch.object(renderer, "_require_decode_dependencies", return_value=(object(), Image, None)), \
+                 patch.object(renderer, "_resolve_video", return_value=raw_root / "placeholder.mp4"), \
+                 patch.object(renderer, "_decode_rgb", side_effect=fake_decode):
+                packets = root / "packets"
+                result = renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
+                                                 include_source_annotation_context=False, decode=True, raw_root=raw_root,
+                                                 contact_sheets=False, max_seconds=10)
+            self.assertEqual(result["rendered_asset_receipts"], 3)
+            assets = [json.loads(line) for line in (packets / "rendered_asset_receipts.jsonl").read_text().splitlines()]
+            self.assertEqual([row["view"] for row in assets], ["head", "left_wrist", "right_wrist"])
+            for row in assets:
+                path = packets / row["relative_path"]
+                self.assertEqual(renderer._sha256(path), row["sha256"])
+                self.assertEqual(path.stat().st_size, row["bytes"])
+            with (packets / assets[0]["relative_path"]).open("ab") as stream:
+                stream.write(b"tamper")
+            with self.assertRaisesRegex(ValueError, "rendered PNG bytes changed"):
+                renderer.resume_packets(index, packets)
 
 
 if __name__ == "__main__":
