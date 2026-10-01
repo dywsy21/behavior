@@ -425,6 +425,7 @@ def build_index(release: Path, output: Path, *, calibration_per_task: int = 1,
                                  row["source"]["task_instance_id"], row["source"]["episode_index"],
                                  row["event_interval"]["start_frame"], row["event_id"]))
     coverage = _coverage(events, sources)
+    eligible_episode_ids = {event["source"]["episode_index"] for event in events}
     staging = Path(tempfile.mkdtemp(prefix=f".{output.name}.staging-", dir=str(output.parent)))
     try:
         files = {
@@ -444,6 +445,16 @@ def build_index(release: Path, output: Path, *, calibration_per_task: int = 1,
             "calibration_selection": calibration_selection,
             "files": files,
             "source_episodes": len(sources), "source_groups": len(group_rows), "event_candidates": len(events),
+            # Candidate inventory is intentionally separate from accepted
+            # labels/windows.  Metadata cannot manufacture review or physics
+            # evidence, so every accepted view starts at zero here.
+            "candidate_counts": {"input_source_episodes": len(sources),
+                                 "eligible_source_episodes": len(eligible_episode_ids),
+                                 "event_candidates": len(events)},
+            "accepted_label_counts": {"goal_satisfaction_counterfactual": 0, "attempt_outcome": 0,
+                                      "recovery_decision": 0, "corrective_action": 0,
+                                      "accepted_temporal_windows": 0,
+                                      "accepted_corrective_action_windows": 0},
             "usage_roles": dict(sorted(Counter(row["usage_role"] for row in group_rows).items())),
             "coverage": coverage,
             "builder_sha256": sha256_file(Path(__file__)),
