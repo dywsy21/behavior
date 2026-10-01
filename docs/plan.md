@@ -12,10 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 stream pack独审通过已集成；phase40第二次仍在旧renderer参数解析前停止（Codex / P107-INTEGRATION）
+
+- 独立审查已批准`c776a7a797b3049b11af93dbbc65e5ab7fe72701`；根以`67b8b52`仅移植stream packer、focused tests和说明。review重跑full 403,257 events/20,000 groups scan为15.15s/119,116KiB，全严格验证/40 retained通过；注入sealed-source修改的second pass拒绝且无output，旧small fixtures字节不变。根本地`test_pack_memlite_event_labels.py`15/15、实际`tests/vlm_sft/test_trajectory_dataset_audit.py`4/4、packer CLI help与py_compile通过；它仍只是已集成修复，standard pack实际rerun待后续ticket，绝不称package/release通过。
+- phase40首launch的缺`jq`修正后，第二次到达旧`0cc` renderer但其argparse以exit2拒绝新protocol-pin flags；这不是event-ID/seal错误，失败receipt 13,459B已保留，实际RGB/PNG仍0。operator现只获同一40条的attempt2授权：`b3c961b` checkout、renderer SHA `5bcb3451…81c9`与legacy `7f` module，输出`/data/workspace/wsy/behavior2026/p107/runs/phase-balanced-calibration40-v2-rgb-attempt2`，预算仍1CPU/4GiB/30min/1.9GB guard/0GPU；等待真实PID/in-progress receipt，不把授权当运行。
+- 无formal student、action-BC、DART或训练状态变化；actor/query等其他隔离分支未合入根。
+
 ### 2026-10-02（北京时间）：P107 phase40已获有界CPU授权但首launch在renderer前因缺jq停止；stream pack修复待独审（Codex / P107-COORD）
 
 - phase40的7个metadata SHA与Git bundle已核，冻结源码为`/data/workspace/wsy/behavior2026/src/p107-phase-b3c961b`（`b3c961b`），输入已原子提升至`/data/workspace/wsy/behavior2026/p107/inputs/phase-balanced-calibration40-v2`。root已授权同一批40 windows×10 offsets×3 cameras、1CPU/4GiB/30min/1.9GB stopping guard/0GPU；首launcher在renderer/decode前以exit127停止，原因是远端缺`jq`，故0 PNG/RGB/output-run/labels/training/release。operator只以现有Python JSON替换外部runner的`jq`抽取、无env安装，验证后才重试**同一**有界批次，非新增采集。
-- isolated `p107-pack-stream`已推送`c776a7a797b3049b11af93dbbc65e5ab7fe72701`，现由独立reviewer复审，尚未集成/重跑。其full-v3 read-only scan为15.65s/119,012KiB（约116MiB，非119MiB），核403,257 events/20,000 groups/40 retained；15 pack+3 auditdataset+1 integration+36 recovery tests通过。recovery-dataset pytest在当前节点不可用，未安装依赖，故不写成全suite成功或pack发布。
+- isolated `p107-pack-stream`的`c776a7a797b3049b11af93dbbc65e5ab7fe72701`已独审APPROVED并以`67b8b52`集成根；review full-v3 scan为15.15s/119,116KiB（约116MiB）、403,257 events/20,000 groups/40 retained，注入sealed-source修改的second pass拒绝且无output，旧small fixtures字节不变。根本地packer15/15与实际audit test4/4通过；standard pack仍待真实rerun，不能称package/release通过。
 - source/local data-query/actor的隔离工作继续，但不移植根；DART/live=0、global goal未完成，且没有GPU/SIM/server-env或训练改动。
 
 ### 2026-10-02（北京时间）：P107 phase-balanced selector独审通过并已集成；lc3仅只读preflight、不得decode（Codex / P107-INTEGRATION）
