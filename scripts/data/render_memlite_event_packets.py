@@ -9,18 +9,17 @@ never referenced from actor input.
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import sys
 import tempfile
 import time
 import types
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Iterable, Mapping
-
 
 REPO = Path(__file__).resolve().parents[2]
 DEFAULT_PROTOCOL_SHA256 = "efdd20642fed24241f38bbdeb4abff6cf4faf1c72a86fe7c2acb32ba7496193b"
@@ -443,16 +442,22 @@ def _temporal_samples(event: Mapping[str, Any], offsets_frames: tuple[int, ...])
 
 
 def _request_temporal_samples(event: Mapping[str, Any], request: Mapping[str, Any], *,
-                              protocol_binding: ProtocolBinding) -> list[dict[str, Any]]:
+                              protocol_binding: ProtocolBinding,
+                              expected_usage_role: str = "annotation_calibration") -> list[dict[str, Any]]:
     """Validate each sealed queue job against its canonical indexed source before decode."""
+    if expected_usage_role not in {"annotation_calibration", "evaluation_only"}:
+        raise ValueError("render request role is not an approved P107 role")
     source = event["source"]
     fields = ("source_release_manifest_sha256", "source_annotation_sha256", "task_index", "task_instance_id",
               "raw_episode_id", "episode_index", "source_group_id")
     if (request["event_id"] != event["event_id"] or any(request["source_identity"][key] != source[key] for key in fields) or
-            event.get("usage_role") != "annotation_calibration" or
+            event.get("usage_role") != expected_usage_role or
             protocol_binding.module.canonical_json(request["anchor_camera_locators"]) !=
             protocol_binding.module.canonical_json(event["video_locators"])):
-        raise ValueError("sealed render request does not bind the canonical calibration event/source/camera locators")
+        raise ValueError("sealed render request does not bind the canonical event role/source/camera locators")
+    expected_split = "eval" if expected_usage_role == "evaluation_only" else "train"
+    if source.get("original_split") != expected_split:
+        raise ValueError("sealed render request role does not bind the canonical immutable split")
     frames, anchor = request["requested_frame_indices"], event["observation"]["frame"]
     if request["actor_available_frame_indices"][-1] != anchor or any(frame >= source["episode_length"] for frame in frames):
         raise ValueError("sealed render request crosses its canonical source episode or observation anchor")
@@ -589,11 +594,14 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                    render_requests: Mapping[str, Mapping[str, Any]] | None = None,
                    render_requests_sha256: str | None = None, queue_seal_sha256: str | None = None,
                    queue_seal_source_release_manifest_sha256: str | None = None,
+                   expected_usage_role: str = "annotation_calibration",
                    protocol_binding: ProtocolBinding | None = None,
                    max_seconds: float = 1800.0) -> dict[str, Any]:
     index, output = Path(index), Path(output)
     protocol_binding = _protocol_binding if protocol_binding is None else protocol_binding
     protocol = protocol_binding.module
+    if expected_usage_role not in {"annotation_calibration", "evaluation_only"}:
+        raise ValueError("render request role is not an approved P107 role")
     if output.exists():
         raise FileExistsError("packet output already exists; use --resume only to verify its sealed receipt")
     if index.is_symlink() or not index.is_dir():
@@ -647,6 +655,7 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
     packets = []
     asset_receipts = []
     seen_packet_ids = set()
+    expected_split = "eval" if expected_usage_role == "evaluation_only" else "train"
     try:
         if decode:
             (staging / "assets").mkdir()
@@ -655,6 +664,9 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
         for event in selected:
             if time.monotonic() - started > max_seconds:
                 raise TimeoutError("packet rendering CPU budget reached; no packet directory was published")
+            if (event.get("usage_role") != expected_usage_role or
+                    event.get("source", {}).get("original_split") != expected_split):
+                raise ValueError("selected event does not match the requested immutable render role")
             protocol.validate_event(event)
             if event["event_id"] != protocol.event_id(event):
                 raise ValueError("event ID drift in sealed index")
@@ -671,7 +683,8 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
             render_request_id = None
             if render_requests:
                 requested_samples = _request_temporal_samples(
-                    event, render_requests[event["event_id"]], protocol_binding=protocol_binding)
+                    event, render_requests[event["event_id"]], protocol_binding=protocol_binding,
+                    expected_usage_role=expected_usage_role)
                 if _temporal_identity(samples) != _temporal_identity(requested_samples):
                     raise ValueError("static temporal schedule does not exactly match the sealed render request")
                 render_request_id = render_requests[event["event_id"]]["request_id"]
