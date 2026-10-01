@@ -19,7 +19,12 @@ from g05.recovery.branching import (
 )
 from g05.recovery.common import RecoveryContractError, canonical_sha256
 from g05.recovery.evidence import PhysicalEvidenceProvider, PredicateSample
-from g05.recovery.protocol_bridge import validate_transport_receipt
+from g05.recovery.protocol_bridge import (
+    actor_evidence_projection,
+    load_protocol,
+    project_action_23_to_27,
+    validate_transport_receipt,
+)
 from g05.recovery.snapshot import (
     REQUIRED_INVENTORY,
     OmniGibsonPublicSnapshotBackend,
@@ -281,6 +286,59 @@ class PublicActionAdapterTest(unittest.TestCase):
 
 
 class ProtocolBridgeTest(unittest.TestCase):
+    @staticmethod
+    def _canonical_source_and_event():
+        protocol = load_protocol()
+        source = {
+            "source_release_manifest_sha256": "a" * 64,
+            "source_annotation_sha256": "b" * 64,
+            "task_index": 2,
+            "task_instance_id": 11,
+            "raw_episode_id": 2100,
+            "episode_index": 201,
+            "original_split": "train",
+            "episode_length": 100,
+        }
+        source["source_group_id"] = protocol.source_group_id(source)
+        event = {
+            "schema_version": protocol.SCHEMA_VERSION,
+            "record_kind": "event_candidate",
+            "event_id": "",
+            "source": source,
+            "event_kind": "ANNOTATED_SKILL_SEGMENT",
+            "event_interval": {"start_frame": 0, "end_frame": 10},
+            "observation": {"frame": 0, "timestamp_s": 0.0},
+            "action": {
+                "start_frame": 0,
+                "actual_executed_length": None,
+                "raw_action_dim": 23,
+                "model_action_dim": 27,
+                "model_padding_indices": [7, 8, 17, 18],
+            },
+            "bundle_id": "intent-p107-grasp-0001",
+            "skill_bundle": [{"verb": "GRASP"}],
+            "parallel_bundle": False,
+            "evidence": {"kind": "MISSING", "evidence_end_frame": None, "available_frame": None},
+            "video_locators": [],
+        }
+        event["event_id"] = protocol.event_id(event)
+        return source, event
+
+    def test_direct_load_uses_the_stdlib_contract_without_g05_data_import(self) -> None:
+        protocol = load_protocol()
+        self.assertEqual(protocol.SCHEMA_VERSION, "memlite-event-recovery-v1")
+        projection = project_action_23_to_27([ZERO23], 1)
+        self.assertEqual(len(projection["actions_27"]), 32)
+        self.assertEqual(projection["action_is_pad"], [False] + [True] * 31)
+        view = {
+            "observation_frame": 0,
+            "actor_evidence": {
+                "kind": "MISSING", "evidence_end_frame": None, "available_frame": None, "references": []
+            },
+            "privileged_evidence": {"object_pose": "must not escape"},
+        }
+        self.assertEqual(actor_evidence_projection(view)["references"], [])
+
     def test_identity_validation_delegates_to_data_protocol(self) -> None:
         class Protocol:
             @staticmethod
@@ -303,20 +361,40 @@ class ProtocolBridgeTest(unittest.TestCase):
 
         raw = FakeSnapshotBackend()
         snapshots = SnapshotAdapter(raw)
+        source = {"original_split": "train", "source_group_id": "train-task0-instance7"}
+        event = {"event": "p107", "source": source}
         receipt = PairedRecoveryCollector(
             snapshots, FakeActionBackend(raw), PhysicalEvidenceProvider(FakePredicateBackend(physical_sample()))
         ).collect(
-            source_ref={"original_split": "train", "source_group_id": "train-task0-instance7"},
-            source_group_id="train-task0-instance7", event_ref={"event": "p107"},
+            source_ref=source, source_group_id="train-task0-instance7", event_ref=event,
             post_fault_snapshot=snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
             corrective_actions23=[ONE23], skill_binding={"family": "grasp"}, branch_seed=3,
             intent_bundle_id="intent-p107-grasp-0001", actor_evidence={"rgb_ref": "rgb://step/0"},
         )
         bridge = validate_transport_receipt(
-            receipt, source_ref={"source_group_id": "train-task0-instance7"}, event={"event": "p107"}, protocol=Protocol
+            receipt, source_ref=source, event=event, protocol=Protocol
         )
         self.assertEqual(bridge["schema_id"], "memlite-event-recovery-v1")
         self.assertEqual(bridge["event_id"], "event-id-1")
+
+    def test_fake_branch_binds_to_a_real_canonical_event_but_remains_nontrainable(self) -> None:
+        source, event = self._canonical_source_and_event()
+        raw = FakeSnapshotBackend()
+        snapshots = SnapshotAdapter(raw)
+        receipt = PairedRecoveryCollector(
+            snapshots, FakeActionBackend(raw), PhysicalEvidenceProvider(FakePredicateBackend(physical_sample()))
+        ).collect(
+            source_ref=source, source_group_id=source["source_group_id"], event_ref=event,
+            post_fault_snapshot=snapshots.capture("post_fault"), no_intervention_actions23=[ZERO23],
+            corrective_actions23=[ONE23], skill_binding={"family": "grasp"},
+            intent_bundle_id="intent-p107-grasp-0001", branch_seed=4,
+            actor_evidence={"rgb_ref": "rgb://step/0"},
+        )
+        envelope = validate_transport_receipt(receipt, source_ref=source, event=event)
+        self.assertTrue(envelope["canonical_event_validated"])
+        self.assertEqual(envelope["event_id"], event["event_id"])
+        self.assertFalse(envelope["receipt"]["ready_for_training"])
+        self.assertFalse(envelope["receipt"]["corrective_positive_action_mask"])
 
 
 if __name__ == "__main__":

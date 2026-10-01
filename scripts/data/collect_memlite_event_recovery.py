@@ -19,6 +19,7 @@ from typing import Any
 from g05.recovery.branching import PairedRecoveryCollector
 from g05.recovery.common import RecoveryContractError, canonical_json, validate_raw23_actions
 from g05.recovery.evidence import PhysicalEvidenceProvider
+from g05.recovery.protocol_bridge import validate_transport_receipt
 from g05.recovery.snapshot import SnapshotAdapter, SnapshotCapture
 
 
@@ -69,10 +70,12 @@ def main() -> None:
         raise RecoveryContractError("Refusing fake collection backend without --allow-fake")
     if post_fault.backend_kind not in {"live", "fake"}:
         raise RecoveryContractError("Refusing an unverified snapshot integration; complete the live readiness gate first")
-    receipt = PairedRecoveryCollector(snapshots, actions, evidence).collect(
-        source_ref=_read_json(args.source_ref),
+    source_ref = _read_json(args.source_ref)
+    event = _read_json(args.event)
+    transport = PairedRecoveryCollector(snapshots, actions, evidence).collect(
+        source_ref=source_ref,
         source_group_id=args.source_group_id,
-        event_ref=_read_json(args.event),
+        event_ref=event,
         post_fault_snapshot=post_fault,
         no_intervention_actions23=validate_raw23_actions(_read_json(args.no_intervention_actions)),
         corrective_actions23=validate_raw23_actions(_read_json(args.corrective_actions)),
@@ -81,12 +84,18 @@ def main() -> None:
         branch_seed=args.branch_seed,
         actor_evidence=_read_json(args.actor_evidence),
         context=parts.get("context", {}),
-    ).public()
-    receipt["factory"] = args.factory
-    receipt["test_fake_allowed"] = post_fault.backend_kind == "fake" and bool(args.allow_fake)
-    args.output.write_text(canonical_json(receipt) + "\n")
-    print(json.dumps({"ready_for_training": receipt["ready_for_training"],
-                      "positive_action": receipt["corrective_positive_action_mask"]}))
+    )
+    # The canonical protocol validates immutable event/source identities before
+    # emitting this envelope.  It does *not* turn the transport receipt into a
+    # final action view: only the data-owner projector may add 27-D padding and
+    # low-action supervision fields.
+    envelope = validate_transport_receipt(transport, source_ref=source_ref, event=event)
+    envelope["factory"] = args.factory
+    envelope["test_fake_allowed"] = post_fault.backend_kind == "fake" and bool(args.allow_fake)
+    args.output.write_text(canonical_json(envelope) + "\n")
+    print(json.dumps({"canonical_event_validated": envelope["canonical_event_validated"],
+                      "ready_for_training": envelope["receipt"]["ready_for_training"],
+                      "positive_action": envelope["receipt"]["corrective_positive_action_mask"]}))
 
 
 if __name__ == "__main__":
