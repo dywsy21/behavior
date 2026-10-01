@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：52-window coverage cohort metadata-only 已原子发布并校验（Codex / P107-COORD）
+
+- 经root明确授权，使用frozen root code `a85821cc567f4cc1a2297d12489881e9ba6a327f`在本地以单个CPU Python process、4GiB virtual-memory limit、0GPU、600秒timeout运行已独审selector `--write`；实际exit0/25.6秒。新同胞输出为`/home/wsy/behavior-annotations/p107/coverage-cohort-next-v1/{train,eval}`，固定full-v3 release`90ff0fa9…6f23`、inventory seal`7ed1b2c…1479`、canonical v3 coverage SHA`39ccfb79…b3c7`（文件bytes SHA`441bbb46…8650`）、legacy protocol SHA`7f4f9fbf…ab0c`、prior77 SHA`714ae08f…91bcc`和seed`p107-diagnostic-coverage-20261002`；不覆盖旧artifact。
+- 结果为TRAIN `47`（49个requested task cells中`10,28`确无合法候选）与EVAL `5`（task `0..4`），52条均为不同source window/group。独立复验77 prior keys/62 prior groups后，新52与prior的window/group交集均0，TRAIN/EVAL pair均在同一fresh root原子出现、无staging残留；TRAIN manifest`f6c2b6f14fa1f3bf0431f9d45c89a68b14bd9a28e96756e542d716c5bde0be4e`/selection seal`d64202e4acd295d77ac0b362127e13b8a757d33f5861b4fc6485767bdcb3b623`/queue seal`6058f4f2c1529bde8eac74033c4d9503513ff7042a650cc0d617f4f7e5ad9109`；EVAL manifest`35af755eec72d96adb2f1b3022eb0ce902a6479d016b78ed7a13d94b4076f0d0`/selection seal`1dc761c5cbc6f5eece52f9140d88698bc477d8c415863911e046ad4aeb3d277d`。每条为`CANDIDATE_MISSING_EVIDENCE`、`training_eligible=false`、`outcome_supervision=false`、`corrective_action_supervision=false`，无label mask/action/outcome/recovery。
+- 首次CLI预检曾按文件bytes误传`441bbb46…8650`，selector在candidate读取/输出前fail-closed、cohort/staging均未创建；随后以sealed canonical pin重试才得到上述结果。已将实际paths与pins交给`annotate_temporal_questions`及`phase40_label_s0`作**只读schema handshake**。
+- 这不是RGB render/decode、标注、E2审阅信用、outcome/action/recovery/BC/DART数据、release或training。已有root-reviewed source-window数仍是`77`，不能把prior77+metadata52称为129 reviewed windows；renderer/EVAL consumer、causal page builder与任何后续媒体/标签任务仍须各自review/授权。
+
 ### 2026-10-02（北京时间）：privileged PoseTeacher CPU adapter 已独审集成；live hook仍未实现（Codex / P107-DART）
 
 - 独审APPROVE完整链`fcde32de019876c51915d16b0830d8003243546a→6cafa2eab59f3c13aea56164852b0713447ab322→ca3ebff5c347b6541d22aad451730bf973f9c29c`后，根按顺序cherry-pick为`58865f4→e284847→1b7577e`。先前`6cafa2ea72075c871cafd2532f881d030c9832d4`不是Git object的错误全SHA已明确撤回；无data/runtime artifact来自它。adapter只提供**CPU candidate interface**：fresh private query、raw23 exact receipt、noisy CLOSE仅在两物理gripper wire channels 14/22 byte-identical时推进private native lifecycle（不mint clean BC target/`TrustedGraspAction`/evidence trace）；gripper变化或native executed异常即terminal retire，fresh state拒绝第二CLOSE。
