@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 22:03（北京时间）：P107 本地实现/标注pilot活跃，真实数据与restore仍被连接阻塞（Codex / P107-COORD）
+
+- data 与 sim 实现已分派到隔离`p107-data`/`p107-sim` worktree，并请求 canonical data protocol 的早期交接；根目录未改实现。本地代码/QA继续，但不把任何中间输出发布为恢复数据。
+- 三个 annotation pilot shard（0/1/2）已启动，范围严格为266个 LOCAL TRAIN QA 单时刻三相机JPEG中，按 `train_ordinal % 3` 分片后每片前8项、总计最多24项。shard0的8项 JSON/hash 校验已完成：`/home/wsy/behavior-annotations/p107/pilot/shard_0/pilot.json`；父代理视觉审为**PENDING**，不可用于任何 recovery/outcome/action训练或计入10k/1k目标。其余shard终态待回执。
+- 用户请求的`gpt-6-luna/max`未暴露；已披露并仅使用`gpt-5.6-luna/max`作为 agent 标注回退，严格保存 agent/model provenance，绝不称 human 或 gpt-6。当前真实 extraction/restore roundtrip 仍阻塞：lc1–3本地无SOCKS `127.0.0.1:1080`，robo `127.0.0.1:23117` closed。父代理已向用户异步请求恢复可能影响队友的共享 ec CLI 权限；等待期间未重启VPN、未改凭据/连接配置。
+- 未重新核验阶段1当前进度，故不沿用9/30步数；无GPU标注、真实提取、仿真reset、restore或训练启动，仍无数据质量结论。阶段1热改和正式阶段2/3训练均不在本目标范围。
+
 ### 2026-10-01 21:58（北京时间）：P107 协调台账已推送，隔离实施 worktree 已冻结（Codex / P107-COORD）
 
 - 仅文档台账、总计划和团队板经 `git diff --check` 后提交为 `b291196`（`Document recovery data preparation ledger`），并在30秒上限内成功推送 `origin/feat/memlite-recovery-prep-20261001`。没有提交数据、视频、权重、环境或实现代码。

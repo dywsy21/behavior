@@ -63,7 +63,11 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 ## 当前状态、阻塞与交接
 
-截至本台账创建时，metadata inventory、候选提取、标注、GPU标注、仿真 reset 和训练都**未启动**，没有数据质量结论。infra 报告 `ssh lc1/lc2/lc3` 均为 `exit 255: Connection closed UNKNOWN 65535`，且未见 `127.0.0.1:1080` SOCKS listener / SSH ControlMaster；此报告等待获准恢复连接后的只读复核。不得自行改 VPN、凭据或连接配置，亦不得称9/30训练为当前。robo/sim映射待核。
+2026-10-01 22:03（北京时间）状态覆盖：data 与 sim 实现已分派到上述隔离 worktree，且已请求 canonical data protocol 的早期交接；本地代码/QA 可继续，但未将任何输出发布为恢复数据。标注 pilot 已启动三个 shard（0/1/2），输入限定为 266 个 **LOCAL TRAIN QA** 单时刻、三相机 JPEG；每个 shard 仅取 `train_ordinal % 3` 过滤后的前8项，合计最多24项。shard 0 的8项 JSON/hash 校验已完成，位置为`/home/wsy/behavior-annotations/p107/pilot/shard_0/pilot.json`；父代理视觉审查仍为 **PENDING**，故该输出不可用于 recovery/outcome/action 训练，也不计入任何规模或质量目标。其余 shard 的真实终态待各自回执，不按“已分派”推定完成。
+
+用户请求的 `gpt-6-luna/max` 不在可用工具列表；已明确使用且只可记为 `gpt-5.6-luna/max` 的 agent 标注回退，绝不改称人工或 gpt-6。各条仍须写入 `annotation_provenance=agent` 及精确模型版本，经过父审后才可能进入后续候选门。
+
+真实数据/提取与 restore roundtrip 当前都阻塞：lc1–lc3 本地缺 `127.0.0.1:1080` SOCKS；robo 连接 `127.0.0.1:23117` closed。父代理已异步请求用户授权恢复 ec CLI；该共享账户操作可能影响队友，当前等待答复，未重启 VPN、未改凭据或连接配置。阶段1当前进度也未重新核验，禁止把9/30步数当作当前状态。无 GPU 标注、仿真 reset、真实 extraction、restore 或训练启动，亦无数据质量结论。
 
 台账、总计划和团队板已通过 `git diff --check`，作为仅文档提交 `b291196` 在30秒上限内推送到 `origin/feat/memlite-recovery-prep-20261001`。实施者现使用下列干净隔离目录，均从精确 `b29119688279751f5c59f28e2da5aa4df699ce5b` 创建：
 
