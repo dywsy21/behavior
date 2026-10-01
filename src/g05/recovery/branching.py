@@ -264,14 +264,21 @@ class BranchPairReceipt:
         cannot turn a failed, unknown, stale, or mismatched branch into a
         genuine-recovery candidate.  This proves only a local physical
         postcondition; it remains distinct from official task success and from
-        downstream publication authority.
+        downstream publication authority.  In particular, an affirmative
+        predicate sampled before (or partway through) the exported action
+        chunk is not a postcondition for the whole chunk: its observation
+        interval must reach the final actually-executed action clock.  A
+        later settle / verification observation is allowed when the branch
+        carries one, but cached pre-action evidence cannot be made fresh by
+        merely delaying its availability timestamp.
         """
         fault = self.post_fault_evidence
         evidence = self.corrective.evidence
         if fault is None or evidence is None:
             return False
         start = self.corrective.pre_action_observations[0].policy_clock
-        end = self.corrective.final_observation.policy_clock
+        actual_end = start + self.corrective.actual_executed_length
+        branch_final = self.corrective.final_observation.policy_clock
         clocks_are_bound = all(
             type(value) is int
             for value in (
@@ -283,7 +290,11 @@ class BranchPairReceipt:
             start <= evidence.evidence_start_frame
             <= evidence.evidence_end_frame
             <= evidence.evidence_available_time
-            <= end
+            <= branch_final
+            # Availability of an old sample does not re-observe the physical
+            # condition.  The evidence interval itself must reach completion
+            # of every raw-23 action exported by this candidate window.
+            and evidence.evidence_end_frame >= actual_end
         )
         return bool(
             evidence.outcome == "SUCCEEDED"

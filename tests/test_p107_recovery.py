@@ -415,6 +415,119 @@ class BranchCollectorTest(unittest.TestCase):
         self.assertEqual(receipt.public()["comparative_benefit"], "NOT_ESTABLISHED")
         self.assertFalse(receipt.corrective_positive_action_mask)
 
+    def test_pre_action_cached_physical_proof_cannot_certify_completed_action(self) -> None:
+        """Evidence at clock 0 cannot label an action actually executed 0 -> 1."""
+        raw = FakeSnapshotBackend()
+        snapshots = SnapshotAdapter(raw)
+        collector = PairedRecoveryCollector(
+            snapshots,
+            FakeActionBackend(raw),
+            physical_provider(FakePredicateBackend(physical_sample(
+                evidence_start_frame=0,
+                evidence_end_frame=0,
+                evidence_available_time=0,
+            ))),
+            fault_provider(FakeFaultBackend()),
+        )
+        receipt = collector.collect(
+            source_ref=self.source,
+            source_group_id="train-task0-instance7",
+            event_ref={"event": "p107-pre-action-proof"},
+            post_fault_snapshot=snapshots.capture("post_fault"),
+            no_intervention_actions23=[ZERO23],
+            corrective_actions23=[ONE23],
+            skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001",
+            prior_intent_bundle_id="intent-before",
+            branch_seed=184,
+            actor_evidence={"rgb_ref": "rgb://step/0"},
+        )
+        # The provider reports a physically valid sample within the branch;
+        # the pair receipt must still reject it as stale for the exported
+        # 0 -> 1 action window.
+        self.assertEqual(receipt.corrective.evidence.outcome, "SUCCEEDED")
+        self.assertEqual(receipt.corrective.final_observation.policy_clock, 1)
+        self.assertFalse(receipt.corrective_postcondition_proven)
+        self.assertFalse(receipt.recovery_eligible)
+
+    def test_post_execution_physical_proof_at_action_end_is_genuine_recovery(self) -> None:
+        """A distinct observation at the completed 0 -> 1 clock is fresh evidence."""
+        raw = FakeSnapshotBackend()
+        snapshots = SnapshotAdapter(raw)
+        collector = PairedRecoveryCollector(
+            snapshots,
+            FakeActionBackend(raw),
+            physical_provider(FakePredicateBackend(physical_sample(
+                evidence_start_frame=0,
+                evidence_end_frame=1,
+                evidence_available_time=1,
+            ))),
+            fault_provider(FakeFaultBackend()),
+        )
+        receipt = collector.collect(
+            source_ref=self.source,
+            source_group_id="train-task0-instance7",
+            event_ref={"event": "p107-post-action-proof"},
+            post_fault_snapshot=snapshots.capture("post_fault"),
+            no_intervention_actions23=[ZERO23],
+            # Identical branches remain a genuine recovery when the common
+            # fault and corrective postcondition are independently physical.
+            corrective_actions23=[ZERO23],
+            skill_binding=grasp_binding(),
+            intent_bundle_id="intent-p107-grasp-0001",
+            prior_intent_bundle_id="intent-before",
+            branch_seed=185,
+            actor_evidence={"rgb_ref": "rgb://step/0"},
+        )
+        self.assertTrue(receipt.corrective_postcondition_proven)
+        self.assertTrue(receipt.recovery_eligible)
+        self.assertEqual(receipt.public()["recovery_kind"], "genuine_recovery")
+        self.assertEqual(receipt.public()["comparative_benefit"], "NOT_ESTABLISHED")
+
+    def test_postcondition_must_reach_final_clock_of_full_exported_window(self) -> None:
+        """A positive sample at step 1 is stale when the exported window ends at 2."""
+        def collect_with_sample(sample: PredicateSample, seed: int):
+            raw = FakeSnapshotBackend()
+            snapshots = SnapshotAdapter(raw)
+            collector = PairedRecoveryCollector(
+                snapshots,
+                FakeActionBackend(raw),
+                physical_provider(FakePredicateBackend(sample)),
+                fault_provider(FakeFaultBackend()),
+            )
+            return collector.collect(
+                source_ref=self.source,
+                source_group_id="train-task0-instance7",
+                event_ref={"event": f"p107-final-clock-{seed}"},
+                post_fault_snapshot=snapshots.capture("post_fault"),
+                no_intervention_actions23=[ZERO23, ZERO23],
+                corrective_actions23=[ONE23, ONE23],
+                skill_binding=grasp_binding(),
+                intent_bundle_id="intent-p107-grasp-0001",
+                prior_intent_bundle_id="intent-before",
+                branch_seed=seed,
+                actor_evidence={"rgb_ref": "rgb://step/0"},
+            )
+
+        stale = collect_with_sample(physical_sample(
+            evidence_start_frame=0,
+            evidence_end_frame=1,
+            evidence_available_time=1,
+        ), 186)
+        self.assertEqual(stale.corrective.evidence.outcome, "SUCCEEDED")
+        self.assertEqual(stale.corrective.final_observation.policy_clock, 2)
+        self.assertFalse(stale.corrective_postcondition_proven)
+        self.assertFalse(stale.recovery_eligible)
+
+        final = collect_with_sample(physical_sample(
+            evidence_start_frame=0,
+            evidence_end_frame=2,
+            evidence_available_time=2,
+        ), 187)
+        self.assertEqual(final.corrective.final_observation.policy_clock, 2)
+        self.assertTrue(final.corrective_postcondition_proven)
+        self.assertTrue(final.recovery_eligible)
+
     def test_failed_or_unknown_correction_is_never_genuine_after_valid_deviation(self) -> None:
         for name, sample, expected in (
             ("failed", physical_sample(predicate=False, failure_evidence=True), "FAILED"),
