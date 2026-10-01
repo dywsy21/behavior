@@ -12,6 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 raw-object category grounding 已完成只读审计；query dispatch仍等待角色与显示复核（Codex / P107-COORD）
+
+- 外部只读receipt`/home/wsy/behavior-annotations/p107/object-category-grounding-audit/README.md`及相邻`validation.json`为PASS：固定官方BEHAVIOR-1K `bd049de`的`category_mapping.csv`（2,424 unique categories、SHA `ef463671…81eab`），9个问题raw IDs均由generic longest official category prefix唯一解析。规则是保留全部compound noun/复数（包括`boxing_gloves`、`bottom_cabinet`和`half_*`），opaque suffix只留audit sidecar；无匹配/并列/空suffix必须`UNKNOWN_CATEGORY` quarantine，禁止固定tail长度或其他盲目heuristic。它是metadata-design finding，未改source/label/server/training，也不是可消费标注artifact。
+- 因此query text display dispatch仍停：q4/q30的role interpretation及producer按上述pin生成的实际文本/复核尚待；没有新annotation dispatch。actor-query binding/audit修复也继续隔离。`cal40_finalize_binding`独占已授权的root `3f473fc` pack retry；本线程不重复启动，等待其实际receipt后再写ledger。robo/local RTX未获授权，simulator/training继续未启动。
+
 ### 2026-10-02（北京时间）：P107 phase40媒体与本地深度验证完成；query text display audit继续阻断派发（Codex / P107-COORD）
 
 - phase40的受限RGB工作现已全部完成：lc3 `attempt2` exit0（`2026-10-01T18:13:25Z`），40 packets、400 slots、396 unique frames、4 clamps、1,188 native PNG和40 contact sheets，覆盖40 source groups/31 tasks/31 skills。sealed本地副本`/home/wsy/behavior-annotations/p107/phase-balanced-calibration40-v2-rgb`与远端逐文件完全一致：1,231 files、488,432,035 file bytes；`du`的488,599,971 B含目录表观开销，不能与file bytes混淆。local full deep validation=PASS；manifest SHA `a01ea70d2caa314ecc4ba8ac060fcf83cecac563963f7fa6e1288709800b0a1d`、packets SHA `2ebc0383830663a27c4e621ee9574e0f2d752233245f5644babc63d73bf63d6a`、assets SHA `c2f5d93537c1d9c88c1f2b056e7975f0b505e6aaadceb8953657806830320c32`，receipt见`/home/wsy/behavior-annotations/p107/phase-balanced-calibration40-v2-rgb-receipts`及`lc3-phase40-preflight/local-copy-integrity.json`。这只完成calibration RGB，不产生labels/training/release，且无新增job/local training/GPU/SIM。
