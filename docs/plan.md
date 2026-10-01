@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 22:37（北京时间）：P107 受限v4 metadata副本已核；本地索引/挖掘仍受P1与独审门约束（Codex / P107-COORD）
+
+- exact v4 metadata 已到`/home/wsy/behavior-annotations/p107/frozen-v4-metadata`并核验：总403,777,381B；episodes399,905,443B/SHA `c62fe885143bcdc07a9dcb302a5af294afb355db98d078a838c587f9efcc16ca`，manifest `90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23`，fixture-schema `b7d22723ed1b2a9a22862adb7fef5333ae7c0f07f343bf38ae3c61c70c254ae7`。唯一49s/7.9MiB/s/≤512MiB传输，disk busy31%→29.8%；最新tail high12102/low20504、median6.864s/2.200s仅作状态记录；无raw/RGB/depth/Parquet读取、远端写、env/job改动，认证无凭据入仓库。
+- P1 fixes后仅授权data owner本地metadata index shape+≤200 episode validation（1CPU/≤30min/≤4GiBRAM/≤2GiB输出），扩展前要full-index size projection。`p107-mining`/`feat/p107-mining-20261001`负责metadata候选queue picker/tests，强制normal/retry query control分层、无FAILED标签；不代表真实失败或恢复数据。
+- sim fix`88563b5`的22自测+5protocol通过，但独立复审正在运行，8 blocker未解除；data fix/packager待。24条aux calibration仍非训练，0实际recovery data/大规模event labels。P107进行中未完成，0阶段1变动/不启阶段2/3。
+
 ### 2026-10-01 22:25（北京时间）：P107 独审发现8个协议/仿真阻断，集成与数据release暂停（Codex / P107-COORD）
 
 - exact data `a8e14f`（protocol `b697097bd57bf94ab6f6c7e1e3e7bdb2b78f2480`）/sim `8968327`的独审发现8 blocker，虽23 unique/28 executions shipped tests均通过。此前“fake不得训练/正例fail-closed”仅未验证意图，现已被证伪；完整八项、修复归属和真实proof定义见[台账独审纠正节](experiments/2026-10-01-recovery-data-preparation.md#2026-10-01-独立审查纠正协议仿真交付暂停)。代码集成与数据release均PAUSED，待修复+独立复审；0实际recovery positive、0已知live影响。

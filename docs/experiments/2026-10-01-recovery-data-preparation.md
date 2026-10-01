@@ -78,6 +78,12 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 ## 当前状态、阻塞与交接
 
+2026-10-01 22:37（北京时间）状态覆盖：exact v4 metadata 已复制并哈希核验至`/home/wsy/behavior-annotations/p107/frozen-v4-metadata`，总403,777,381B；`episodes`为399,905,443B、SHA `c62fe885143bcdc07a9dcb302a5af294afb355db98d078a838c587f9efcc16ca`，manifest SHA `90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23`，fixture-schema SHA `b7d22723ed1b2a9a22862adb7fef5333ae7c0f07f343bf38ae3c61c70c254ae7`。这是一次49秒、7.9MiB/s、≤512MiB预算的传输；disk busy pre31%/post29.8%，没有 raw/RGB/depth/Parquet读取、远端source写入、环境或job变动。infra 最新有界tail为high12102/low20504、median6.864s/2.200s，只作运行状态记录而非新训练结论。远端认证为infra operator一次性操作，凭据不入仓库。
+
+P1 fixes后，data owner获准执行本地 metadata index shape 与≤200 episode validation：1 CPU、≤30分钟、≤4GiB RAM、≤2GiB输出；扩展前必须先交 full-index size projection。`prep_annotation_mining`拥有隔离`/home/wsy/behavior-worktrees/p107-mining`（`feat/p107-mining-20261001`），只做queue picker/tests/metadata candidates，且要求stratified normal/retry query control、不得造 FAILED 标签。
+
+sim blocker fix `88563b5` 自有22测试及5个protocol测试通过，独立复审**正在运行**，故八项 blocker 不得标为已解决；data fix与packager仍待。所有24条 auxiliary calibration仍非训练数据，尚无实际 recovery data 或大规模 event labels。P107继续进行，未完成。
+
 2026-10-01 22:25（北京时间）新鲜服务器只读状态：lc1 high RUNNING step12045（atomic12000），lc2 low RUNNING step20380（atomic20000），两节点各8卡均忙；lc3 GPU idle。系统 load 0.61、可用内存996GiB、ext4 free3.91TB。v4 manifest `90ff0fa...85d6f23` 已核为18895 TRAIN/994 eval/100 tasks/35 skills，数据源 `4f50b44796641a4d526a19d9aeadc8aa51e2f2c2`。未改阶段1。
 
 下一 infra 门仅是只读 I/O gate；只有在利用率<50%且无重写入时，才允许一次≤10分钟、≤8MiB/s、≤512MiB的 metadata 复制到本地外部 `frozen-v4-metadata`，禁止 RGB/Parquet 解码与任何远端 source 写入。该门尚未启动。P107仍进行中、非 blocked，且不因当前可执行的只读检查解除上述集成/release暂停。
