@@ -107,11 +107,17 @@ class BuildEventIndexTests(unittest.TestCase):
             release = root / "release"
             fixture = write_release(release)
             expected = json.loads(json.dumps(coverage(fixture)))
-            expected["expected_skill_verbs"] = ["GRASP", "HOLD", "NAVIGATE", "PLACE", "PRESS"]
-            expected["required_task_skill_pairs"] = [{"task_index": 0, "skill_verb": "PLACE"}]
+            expected["expected_skill_vocabulary"] = [
+                {"skill_id": 1, "skill_description": "move to"},
+                {"skill_id": 2, "skill_description": "pick up from"},
+                {"skill_id": 3, "skill_description": "place on"},
+                {"skill_id": 67, "skill_description": "press"},
+                {"skill_id": 94, "skill_description": "hold"},
+            ]
+            expected["required_task_skill_pairs"] = [{"task_index": 0, "skill_id": 3}]
             result = builder.build_index(release, root / "output", coverage_expectations=expected, max_seconds=10)
             self.assertEqual(result["coverage"]["required_pair_coverage_status"], "INCOMPLETE")
-            self.assertIn({"task_index": 0, "skill_verb": "PLACE"},
+            self.assertIn({"task_index": 0, "skill_id": 3},
                           result["coverage"]["missing_required_task_skill_pairs"])
 
     def test_explicit_prefix_pilot_is_sealed_partial_and_cannot_resume_as_full(self):

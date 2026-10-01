@@ -304,34 +304,45 @@ def _write_jsonl(path: Path, rows: Iterable[Mapping[str, Any]]) -> dict[str, Any
 
 
 def validate_coverage_expectations(value: Mapping[str, Any]) -> dict[str, Any]:
-    """Validate global official task/verb vocabulary without inventing task×verb requirements."""
+    """Validate official skill IDs/descriptions without inventing task×skill requirements."""
     if not isinstance(value, Mapping):
         raise ValueError("coverage_expectations must be an object")
     required = {"schema_version", "official_task_metadata_sha256", "official_skill_vocabulary_sha256",
-                "expected_task_ids", "expected_skill_verbs", "required_task_skill_pairs"}
-    if set(value) != required or value["schema_version"] != "p107-official-coverage-expectations-v2":
+                "expected_task_ids", "expected_skill_vocabulary", "required_task_skill_pairs"}
+    if set(value) != required or value["schema_version"] != "p107-official-coverage-expectations-v3":
         raise ValueError("coverage expectations must use the exact P107 official-metadata schema")
     _sha(value["official_task_metadata_sha256"], "coverage_expectations.official_task_metadata_sha256")
     _sha(value["official_skill_vocabulary_sha256"], "coverage_expectations.official_skill_vocabulary_sha256")
-    tasks, skills = value["expected_task_ids"], value["expected_skill_verbs"]
+    tasks, skills = value["expected_task_ids"], value["expected_skill_vocabulary"]
     if (not isinstance(tasks, list) or not tasks or any(type(task) is not int or task < 0 for task in tasks) or
             len(set(tasks)) != len(tasks) or tasks != sorted(tasks)):
         raise ValueError("expected_task_ids must be a nonempty sorted unique integer list")
-    if (not isinstance(skills, list) or not skills or any(not isinstance(skill, str) or not skill for skill in skills) or
-            len(set(skills)) != len(skills) or skills != sorted(skills)):
-        raise ValueError("expected_skill_verbs must be a nonempty sorted unique string list")
+    if not isinstance(skills, list) or not skills:
+        raise ValueError("expected_skill_vocabulary must be a nonempty official skill ID/description list")
+    previous_id = -1
+    descriptions = set()
+    for skill in skills:
+        if not isinstance(skill, Mapping) or set(skill) != {"skill_id", "skill_description"}:
+            raise ValueError("official skills must be exact skill_id/skill_description objects")
+        skill_id, description = skill["skill_id"], skill["skill_description"]
+        if type(skill_id) is not int or skill_id < 0 or skill_id <= previous_id:
+            raise ValueError("official skill IDs must be strictly increasing nonnegative integers")
+        if not isinstance(description, str) or not description or description in descriptions:
+            raise ValueError("official skill descriptions must be nonempty and unique")
+        previous_id, descriptions = skill_id, descriptions | {description}
     required_pairs = value["required_task_skill_pairs"]
     if required_pairs is not None:
         if not isinstance(required_pairs, list):
             raise ValueError("required_task_skill_pairs must be null or a sorted unique official pair list")
-        previous: tuple[int, str] | None = None
+        known_ids = {skill["skill_id"] for skill in skills}
+        previous: tuple[int, int] | None = None
         for pair in required_pairs:
-            if not isinstance(pair, Mapping) or set(pair) != {"task_index", "skill_verb"}:
+            if not isinstance(pair, Mapping) or set(pair) != {"task_index", "skill_id"}:
                 raise ValueError("required task/skill pairs must be exact objects")
-            task, skill = pair["task_index"], pair["skill_verb"]
-            if task not in tasks or skill not in skills:
+            task, skill_id = pair["task_index"], pair["skill_id"]
+            if task not in tasks or skill_id not in known_ids:
                 raise ValueError("required task/skill pair is outside the official global vocabulary")
-            key = (task, skill)
+            key = (task, skill_id)
             if previous is not None and key <= previous:
                 raise ValueError("required task/skill pairs must be sorted and unique")
             previous = key
@@ -347,35 +358,47 @@ def read_coverage_expectations(path: Path) -> dict[str, Any]:
 def _coverage(events: list[Mapping[str, Any]], sources: list[Mapping[str, Any]],
               expectations: Mapping[str, Any]) -> dict[str, Any]:
     expectations = validate_coverage_expectations(expectations)
-    tasks, skills = expectations["expected_task_ids"], expectations["expected_skill_verbs"]
-    grid: dict[str, dict[str, dict[str, int]]] = {
-        str(task): {skill: {"event_candidates": 0, "unique_source_episodes": 0} for skill in skills}
+    tasks, skills = expectations["expected_task_ids"], expectations["expected_skill_vocabulary"]
+    official_by_id = {skill["skill_id"]: skill["skill_description"] for skill in skills}
+    grid: dict[str, dict[str, dict[str, Any]]] = {
+        str(task): {str(skill_id): {"skill_id": skill_id, "skill_description": description,
+                                    "event_candidates": 0, "unique_source_episodes": 0}
+                    for skill_id, description in official_by_id.items()}
         for task in tasks
     }
-    episode_sets: dict[tuple[int, str], set[int]] = defaultdict(set)
-    observed_tasks, observed_skills = set(), set()
+    episode_sets: dict[tuple[int, int], set[int]] = defaultdict(set)
+    observed_tasks, observed_skill_ids, raw_verbs, unmapped_skill_ids = set(), set(), set(), set()
+    missing_source_skill_id_members = 0
     for event in events:
         task = event["source"]["task_index"]
         observed_tasks.add(task)
         for skill in event["skill_bundle"]:
-            verb = str(skill.get("verb", "MISSING_VERB"))
-            observed_skills.add(verb)
-            if task in tasks and verb in skills:
-                grid[str(task)][verb]["event_candidates"] += 1
-                episode_sets[(task, verb)].add(event["source"]["episode_index"])
-    for (task, verb), episodes in episode_sets.items():
-        grid[str(task)][verb]["unique_source_episodes"] = len(episodes)
+            verb = skill.get("verb")
+            if isinstance(verb, str) and verb:
+                raw_verbs.add(verb)
+            skill_id = skill.get("skill_id")
+            if type(skill_id) is not int:
+                missing_source_skill_id_members += 1
+            elif skill_id not in official_by_id:
+                unmapped_skill_ids.add(skill_id)
+            else:
+                observed_skill_ids.add(skill_id)
+                if task in tasks:
+                    grid[str(task)][str(skill_id)]["event_candidates"] += 1
+                    episode_sets[(task, skill_id)].add(event["source"]["episode_index"])
+    for (task, skill_id), episodes in episode_sets.items():
+        grid[str(task)][str(skill_id)]["unique_source_episodes"] = len(episodes)
     required_pairs = expectations["required_task_skill_pairs"]
     missing_required_pairs = (None if required_pairs is None else [
         pair for pair in required_pairs
-        if grid[str(pair["task_index"])][pair["skill_verb"]]["event_candidates"] == 0
+        if grid[str(pair["task_index"])][str(pair["skill_id"])]["event_candidates"] == 0
     ])
-    expected_task_set, expected_skill_set = set(tasks), set(skills)
+    expected_task_set, expected_skill_id_set = set(tasks), set(official_by_id)
     return {
         "expectations": expectations,
         "expectations_sha256": canonical_sha256(expectations),
         # This matrix is observed source coverage, not an assertion that every
-        # verb must occur in every task.  An absent pair only becomes a failed
+        # skill must occur in every task.  An absent pair only becomes a failed
         # requirement when it was explicitly supplied by official metadata.
         "observed_task_skill_grid": grid,
         "required_task_skill_pairs": required_pairs,
@@ -387,11 +410,13 @@ def _coverage(events: list[Mapping[str, Any]], sources: list[Mapping[str, Any]],
         "found_task_ids": sorted(observed_tasks & expected_task_set),
         "missing_task_ids": sorted(expected_task_set - observed_tasks),
         "unexpected_task_ids": sorted(observed_tasks - expected_task_set),
-        "found_skill_verbs": sorted(observed_skills & expected_skill_set),
-        "missing_global_skill_verbs": sorted(expected_skill_set - observed_skills),
-        "unexpected_skill_verbs": sorted(observed_skills - expected_skill_set),
+        "found_global_skill_ids": sorted(observed_skill_ids & expected_skill_id_set),
+        "missing_global_skill_ids": sorted(expected_skill_id_set - observed_skill_ids),
+        "raw_source_verbs": sorted(raw_verbs),
+        "unmapped_source_skill_ids": sorted(unmapped_skill_ids),
+        "source_skill_members_missing_skill_id": missing_source_skill_id_members,
         # Never call global presence a completed task×skill coverage matrix.
-        "global_vocabulary_complete": not (expected_task_set - observed_tasks) and not (expected_skill_set - observed_skills),
+        "global_vocabulary_complete": not (expected_task_set - observed_tasks) and not (expected_skill_id_set - observed_skill_ids),
         "unique_input_source_episodes": len({source["episode_index"] for source in sources}),
         "unique_candidate_source_episodes": len({event["source"]["episode_index"] for event in events}),
         "unique_event_candidates": len({event["event_id"] for event in events}),

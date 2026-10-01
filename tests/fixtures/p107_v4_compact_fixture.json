@@ -31,7 +31,7 @@
           "semantic": "[{\"verb\":\"NAVIGATE\"}]",
           "text": "NAVIGATE radio",
           "skills": [
-            {"skill_idx": 0, "interval_id": 0, "verb": "NAVIGATE", "target": "radio_0", "source": "", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "BOUND"}
+            {"skill_idx": 0, "skill_id": 1, "interval_id": 0, "verb": "NAVIGATE", "target": "radio_0", "source": "", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "BOUND"}
           ]
         }
       ]
@@ -48,7 +48,7 @@
           "semantic": "[{\"verb\":\"GRASP\"}]",
           "text": "GRASP radio",
           "skills": [
-            {"skill_idx": 1, "interval_id": 0, "verb": "GRASP", "target": "radio_0", "source": "table_0", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "BOUND"}
+            {"skill_idx": 1, "skill_id": 2, "interval_id": 0, "verb": "GRASP", "target": "radio_0", "source": "table_0", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "BOUND"}
           ]
         }
       ]
@@ -65,7 +65,7 @@
           "semantic": "[{\"verb\":\"PRESS\"}]",
           "text": "PRESS radio",
           "skills": [
-            {"skill_idx": 2, "interval_id": 0, "verb": "PRESS", "target": "radio_button", "source": "", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "BOUND"}
+            {"skill_idx": 2, "skill_id": 67, "interval_id": 0, "verb": "PRESS", "target": "radio_button", "source": "", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "BOUND"}
           ]
         }
       ]
@@ -82,8 +82,8 @@
           "semantic": "[{\"verb\":\"NAVIGATE\"},{\"verb\":\"HOLD\"}]",
           "text": "NAVIGATE radio AND HOLD",
           "skills": [
-            {"skill_idx": 3, "interval_id": 0, "verb": "NAVIGATE", "target": "radio_0", "source": "", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "BOUND"},
-            {"skill_idx": 4, "interval_id": 0, "verb": "HOLD", "target": "", "source": "", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "UNKNOWN"}
+            {"skill_idx": 3, "skill_id": 1, "interval_id": 0, "verb": "NAVIGATE", "target": "radio_0", "source": "", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "BOUND"},
+            {"skill_idx": 4, "skill_id": 94, "interval_id": 0, "verb": "HOLD", "target": "", "source": "", "destination": "", "target_part": "", "arm": "UNSPECIFIED", "binding_confidence": "UNKNOWN"}
           ]
         }
       ]
@@ -97,11 +97,16 @@
     ]
   },
   "coverage_expectations": {
-    "schema_version": "p107-official-coverage-expectations-v2",
+    "schema_version": "p107-official-coverage-expectations-v3",
     "official_task_metadata_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "official_skill_vocabulary_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     "expected_task_ids": [0],
-    "expected_skill_verbs": ["GRASP", "HOLD", "NAVIGATE", "PRESS"],
+    "expected_skill_vocabulary": [
+      {"skill_id": 1, "skill_description": "move to"},
+      {"skill_id": 2, "skill_description": "pick up from"},
+      {"skill_id": 67, "skill_description": "press"},
+      {"skill_id": 94, "skill_description": "hold"}
+    ],
     "required_task_skill_pairs": null
   }
 }
