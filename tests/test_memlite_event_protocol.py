@@ -93,6 +93,21 @@ def _write_jsonl(path, rows):
             "bytes": path.stat().st_size, "rows": len(rows)}
 
 
+def _write_artifact(root, *, name, kind, event_row, source_group, contents):
+    path = root / "artifact_blobs" / name
+    path.parent.mkdir(exist_ok=True)
+    path.write_bytes(contents)
+    return {
+        "schema_version": "p107-sealed-artifact-v1",
+        "artifact_sha256": _PROTOCOL._file_sha256(path),
+        "artifact_kind": kind,
+        "relative_path": str(path.relative_to(root)),
+        "bytes": path.stat().st_size,
+        "event_id": event_row["event_id"],
+        "source_group_id": source_group["source_group_id"],
+    }
+
+
 def authorized_corrective_row(root, *, split="train", role="student_candidate", origin="logged_demonstration",
                               evidence_end=13):
     e = event()
@@ -100,6 +115,10 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
     e["source"]["source_group_id"] = source_group_id(e["source"])
     e["usage_role"] = role
     e["event_id"] = event_id(e)
+    group = {"source_group_id": e["source"]["source_group_id"],
+             "source_release_manifest_sha256": e["source"]["source_release_manifest_sha256"],
+             "task_index": e["source"]["task_index"], "task_instance_id": e["source"]["task_instance_id"],
+             "original_split": split, "usage_role": role}
     row, _ = common("corrective_action", review_status="PARENT_APPROVED")
     row.update(event_id=e["event_id"], source_group_id=e["source"]["source_group_id"],
                recovery_attempt_id="recovery-2", recovery_from_attempt_id="attempt-1",
@@ -110,9 +129,12 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
                executed_action_receipt={"executed": True, "raw_action_sha256": "",
                                         "intent_bundle_id": "bundle-recovery", "actual_end_frame": 12},
                action_payload_sha256="", execution_receipt_sha256="", recovery_verification_receipt_sha256="",
-               recovery_verified=False, low_action_supervision_mask=True)
-    raw_artifact = "a" * 64
+               low_action_supervision_mask=True)
     raw_actions = [[float(offset + dim) for dim in range(23)] for offset in (0, 100)]
+    raw_artifact_row = _write_artifact(
+        root, name="raw23.bin", kind="raw_action_23_artifact", event_row=e, source_group=group,
+        contents=canonical_json({"raw_actions_23": raw_actions}).encode("utf-8"))
+    raw_artifact = raw_artifact_row["artifact_sha256"]
     payload_digest = action_payload_sha256(raw_actions)
     raw_digest = raw_action_payload_sha256(raw_actions, raw_action_artifact_sha256=raw_artifact)
     payload = {"schema_version": "p107-raw23-action-payload-v1", "action_payload_sha256": payload_digest,
@@ -133,16 +155,30 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
     tier = "GOLD_PHYSICAL" if origin == "live_sim_branch" else "SILVER_REVIEWED_LOGGED_DEMONSTRATION"
     live_root = "6" * 64 if origin == "live_sim_branch" else None
     frozen_window = None if origin == "live_sim_branch" else raw_artifact
-    temporal_review = None if origin == "live_sim_branch" else "e" * 64
+    evidence_artifact_row = _write_artifact(
+        root, name="verification-evidence.bin",
+        kind="physical_verification_evidence" if origin == "live_sim_branch" else "temporal_review_evidence",
+        event_row=e, source_group=group, contents=b"verified post-action evidence")
+    verification_artifact_row = _write_artifact(
+        root, name="verification-receipt.bin", kind="verification_receipt_artifact",
+        event_row=e, source_group=group, contents=b"independent verification receipt")
+    temporal_artifact_row = _write_artifact(
+        root, name="temporal-review.bin", kind="temporal_review_artifact",
+        event_row=e, source_group=group, contents=b"temporal review")
+    parent_artifact_row = _write_artifact(
+        root, name="parent-review.bin", kind="parent_review_artifact",
+        event_row=e, source_group=group, contents=b"parent approval review")
+    temporal_review = None if origin == "live_sim_branch" else temporal_artifact_row["artifact_sha256"]
     verification = self_digest({
         "schema_version": "p107-recovery-verification-receipt-v1", "receipt_sha256": "", "event_id": e["event_id"],
         "source_group_id": e["source"]["source_group_id"], "recovery_attempt_id": "recovery-2",
         "recovery_from_attempt_id": "attempt-1", "action_intent_bundle_id": "bundle-recovery",
         "raw_action_sha256": raw_digest, "evidence_origin": origin, "quality_tier": tier,
         "verification_frame": 14, "label_available_frame": 15, "branch_or_episode_final_frame": 20,
-        "evidence": {"kind": "PHYSICAL_FACT" if origin == "live_sim_branch" else "TEMPORAL_VISUAL_REVIEW",
-                     "evidence_end_frame": evidence_end, "available_frame": 14, "artifact_sha256": "b" * 64},
-        "verification_artifact_sha256": "c" * 64,
+        "evidence": {"kind": "PHYSICAL_VERIFICATION" if origin == "live_sim_branch" else "TEMPORAL_REVIEW_FROZEN_PARQUET",
+                     "evidence_end_frame": evidence_end, "available_frame": 14,
+                     "artifact_sha256": evidence_artifact_row["artifact_sha256"]},
+        "verification_artifact_sha256": verification_artifact_row["artifact_sha256"],
         "frozen_action_window_artifact_sha256": frozen_window,
         "temporal_review_artifact_sha256": temporal_review,
         "live_runtime_acceptance_root_sha256": live_root,
@@ -150,10 +186,6 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
     row["execution_receipt_sha256"] = execution["receipt_sha256"]
     row["recovery_verification_receipt_sha256"] = verification["receipt_sha256"]
     with_id(row)
-    group = {"source_group_id": e["source"]["source_group_id"],
-             "source_release_manifest_sha256": e["source"]["source_release_manifest_sha256"],
-             "task_index": e["source"]["task_index"], "task_instance_id": e["source"]["task_instance_id"],
-             "original_split": split, "usage_role": role}
     files = {
         "events": _write_jsonl(root / "events.jsonl", [e]),
         "source_groups": _write_jsonl(root / "source_groups.jsonl", [group]),
@@ -161,8 +193,8 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
         "execution_receipts": _write_jsonl(root / "execution_receipts.jsonl", [execution]),
         "verification_receipts": _write_jsonl(root / "verification_receipts.jsonl", [verification]),
         "artifacts": _write_jsonl(root / "artifacts.jsonl", [
-            {"artifact_sha256": digest, "artifact_kind": "sealed_test_artifact"}
-            for digest in sorted({raw_artifact, "b" * 64, "c" * 64, "e" * 64, "9" * 64})
+            raw_artifact_row, evidence_artifact_row, verification_artifact_row,
+            temporal_artifact_row, parent_artifact_row,
         ]),
     }
     approval = self_digest({
@@ -176,7 +208,7 @@ def authorized_corrective_row(root, *, split="train", role="student_candidate", 
         "raw_action_sha256": raw_digest, "action_payload_sha256": payload_digest,
         "execution_receipt_sha256": execution["receipt_sha256"],
         "recovery_verification_receipt_sha256": verification["receipt_sha256"],
-        "parent_review_artifact_sha256": "9" * 64, "evidence_origin": origin, "quality_tier": tier,
+        "parent_review_artifact_sha256": parent_artifact_row["artifact_sha256"], "evidence_origin": origin, "quality_tier": tier,
         "index_inventory_seal_sha256": "8" * 64,
         "action_payload_root_sha256": files["raw_action_payloads"]["sha256"],
         "execution_receipt_root_sha256": files["execution_receipts"]["sha256"],
@@ -304,6 +336,8 @@ class EventProtocolTests(unittest.TestCase):
             root = Path(folder)
             row, event_row, authority, _ = authorized_corrective_row(root)
             manifest_sha = authority.publisher_manifest_sha256
+            with self.assertRaises(AttributeError):
+                authority._live_runtime_root_sha256 = "6" * 64
             with self.assertRaises(ContractError):
                 load_corrective_action_authority(
                     root, expected_publisher_manifest_sha256="0" * 64,
@@ -318,6 +352,31 @@ class EventProtocolTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             row, event_row, authority, _ = authorized_corrective_row(Path(folder), evidence_end=11)
             with self.assertRaisesRegex(ContractError, "recovery verification"):
+                validate_corrective_action_view(row, event_row, authority=authority)
+
+    def test_authority_revalidates_actual_typed_artifact_bytes_and_rejects_legacy_boolean(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            row, event_row, authority, verification = authorized_corrective_row(root)
+            legacy = deepcopy(row)
+            legacy["recovery_verified"] = False
+            with_id(legacy)
+            with self.assertRaisesRegex(ContractError, "deprecated"):
+                validate_corrective_action_view(legacy, event_row, authority=authority)
+            bad_verification = deepcopy(verification)
+            bad_verification["evidence"]["kind"] = "UNSUPPORTED_AGENT_ASSERTION"
+            self_digest(bad_verification)
+            with self.assertRaisesRegex(ContractError, "kind is not approved"):
+                _PROTOCOL._validate_verification_receipt(bad_verification)
+            artifact = json.loads((root / "artifacts.jsonl").read_text().splitlines()[0])
+            generic = deepcopy(artifact)
+            generic["artifact_kind"] = "sealed_test_artifact"
+            with self.assertRaisesRegex(ContractError, "approved P107 authority role"):
+                _PROTOCOL._validate_sealed_artifact(generic, root, event=event_row,
+                                                    group=json.loads((root / "source_groups.jsonl").read_text()))
+            with (root / "artifact_blobs" / "raw23.bin").open("ab") as stream:
+                stream.write(b"tamper")
+            with self.assertRaisesRegex(ContractError, "artifact bytes"):
                 validate_corrective_action_view(row, event_row, authority=authority)
 
     def test_gold_requires_externally_accepted_live_root(self):
