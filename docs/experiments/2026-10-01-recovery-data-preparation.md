@@ -4,7 +4,7 @@
 
 ## 授权边界与当前基线
 
-用户授权完整推进 §10.7 的负例/恢复数据准备和质量工程，包括小预算 metadata、schema、候选和仿真 readiness 工作；该授权仅覆盖此范围，覆盖旧的“尚未获数据采集授权”表述。它**不**授权阶段2/3正式训练、长时搜索或任何新的大训练，也不允许改运行中的阶段1冻结源码、共享环境或 v4 release，或把新标签热接入阶段1。depth/raw 仍不下载；仿真特权状态不可进入部署 actor/高层。
+用户授权完整推进 §10.7 的负例/恢复数据准备和质量工程，并明确 **DART 数据为必需交付**，不是可选讨论或只做 candidate-only 的替代品；仍须按下述全规模、来源/模型/agent provenance 和父代理视觉 QA 门推进。用户最新硬件范围为使用空闲 `lc*`，**不再进行任何 robo 工作**。授权仍只覆盖此范围，覆盖旧的“尚未获数据采集授权”表述；它**不**授权阶段2/3正式训练、长时搜索或任何新的大训练，也不允许改运行中的阶段1冻结源码、共享环境或 v4 release，或把新标签热接入阶段1。depth/raw 仍不下载；仿真特权状态不可进入部署 actor/高层。
 
 现有阶段1和队友的活跃工作保留。本协调分支由 `origin/main` `33677bd` 建立，并 fast-forward 纳入阶段1前置 `3db716d`；这只是 Git 基线，不是任何数据、节点或模拟器访问结论。
 
@@ -37,13 +37,19 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 禁止把 segment end、夹爪闭合、超时、模型自报或“尚未完成”单独标成 FAILED/SUCCEEDED。记录 `evidence_kind`、`evidence_available_time`；遮挡/边界不清保留区间和 mask。仿真真值可用于标签与诊断，不能进入部署输入；未来帧/结果不倒灌给早时刻监督。
 
+## DART：必需数据流的动作语义与验收边界
+
+DART 实际数据目前为 **0**；`prep_dart_design` 正在进行原始代码研究，尚无可发布 DART 样本。原始实现的语义是：在 `REACHED` 状态执行 `a_sampled_noise`，但 BC target 是同一观察状态下的干净教师 `a_intended`。每条 DART 记录因此必须分开、不可覆盖地保存 `a_intended`、`a_sampled_noise`、`a_executed_raw23`、对应 observation/policy clock、noise spec、`label_kind` 及 source/model/agent provenance；只允许把已验证的干净教师建议作为 expert target，不能把注入噪声、被扰动的实际动作或普通 offline-data noise 改称 DART expert。
+
+DART 仍须满足 source-group split、可回放时间、23D→27D mapping/mask、immutable source hash、独立 publisher quality gate 和父代理分层图像/视频 QA。它与 recovery/outcome/corrective-action 视图分开计数和发布，不能以 DART candidate、合成噪声或重复窗口填充本台账的 `>=10k` / `>=1k` 真值目标；DART quality 通过也不将 formal stage3 training authorization 由 `false` 改为已授权。
+
 ## 阶段、责任、预算与停止条件
 
 | 阶段 | 唯一责任与交付 | 初始预算/停止条件 | 放行条件 |
 | --- | --- | --- | --- |
 | A：infra只读 | infra 负责人核 lc1–lc3 连通性、挂载、阶段1占用 | 无作业；连接故障即记录并停止 | 仅在获准恢复连接后只读复核；不将9/30快照当当前 |
 | B：本地schema/index | schema owner 核 v4 metadata、映射、split/hash、23D→27D、clock/mask | 不读 RGB；只产生小型代码/测试证据 | 映射、空值、sibling-split 反例通过 |
-| C：robo/local readiness | sim owner 核 restore、状态日志、物理事实接口 | 首次物理 readiness 至多4 resets、20分钟；不采集GPU模型数据 | restore前后观察/物体/控制器/抓持/必要粒子、时钟和后续动作一致 |
+| C：lc*/local sim compatibility（禁止 robo） | sim owner 仅核官方可兼容路线、状态日志/物理事实接口合同 | 未获用户在 local4080+lc3 与 lc-only defer 间的明确选择前，0安装、0GPU启动、0物理reset | 已证实官方路径、环境/assets、RTX兼容性与时钟合同；否则记录缺口并停止 |
 | D：metadata inventory | data pipeline worker 建 eligible episode/skill/event 定位索引 | CPU≤30min、1 worker、无RGB | 100×35覆盖/缺口表、source hash、immutable split验证通过 |
 | E：候选与标注分片 | annotation workers 提取候选并保存 agent provenance/unknown | CPU≤60min、4 workers、2GiB小 sidecar、约200候选；不是最终封顶 | 父代理分层看片，裁定真实纠正/正常/未知；GPU标注需readiness与父代理ticket |
 | F：扩展/发布候选 | data workers 依覆盖缺口扩至上述规模；独立 reviewer 做最终代码审 | 每批先登记source/version/时间/I/O/人工预算；到预算即评估 | 所有质量门、父审、独立代码审与source split审计通过；不等于批准阶段3训练 |
@@ -100,11 +106,21 @@ sim owner 正修复：无外部 candidate 的 trusted receipt registry、所有 
 
 `af0e43d` 已解决 coverage Cartesian 问题；早先的 eval-calibration、nested-key、duplicate-episode 和 resume-file-inventory 问题亦已修复，但均不解除上述 release gate。架构职责现固定为：raw collector 只能产生 `CANDIDATE_ONLY`，无权设置任何 positive mask；经独立审查的 publisher 是唯一 dataset-quality authority。dataset quality 与正式 stage3 training authorization 严格分离，后者仍为 `false`。
 
+### 2026-10-01 23:06：全量诊断索引、DART/仿真范围与最新 authority 复审
+
+冻结`af0e43d`的本地 full diagnostic index 已在`/home/wsy/behavior-worktrees/p107-index-run/index-validation/full-diagnostic-v1`完成：1 CPU、32.03秒、1.018GiB。raw/published/groups 各有20,000个唯一 source ID；19,889个 source candidate-bearing、403,257个唯一 event、覆盖全部100 tasks。19,000 student groups/1,000 eval groups 是**原始分组**，不是 eligible 结论；eligible 仍为18,895 TRAIN、994 eval、111 quarantined。它 accepted-all=0 且 `training=false`，并由 seal `3e2371a57d4e5b6685630104779ea7e6cdb280ba216a677f4bf01f2ce3948bf5`、manifest `469eef7b11ca2f7747d09565908707cd8d5d6c91045e43305db4fc58a97ce4cc` 绑定，不能据此发布数据。
+
+该诊断发现官方35个 lowercase description 与现有 uppercase verb 词表有语义错配；已提出35/35映射至既有 Stage1 `SKILL_MAPPING` 的`skill-vocabulary-map.v1.json`，`prep_queue_review`正独立审计。mining 修复`8293c90`自有4测试通过，复审仍在运行，尚未产生实际队列。
+
+仿真兼容性以 NVIDIA Isaac 5.1 的无 RTX GPU 不受支持、BEHAVIOR 要求 RTX 为基线：空闲 lc3 A800 没有已验证的官方仿真路线。用户已异步被询问是否允许 **local 4080 sim + lc3 expert/data（无 robo）**，或只使用 lc 节点并暂缓实际仿真；答复前不得安装或启动 GPU。raw SIM `df9c1fa` 仍严格 candidate-only、无 positive authority；其 same-runtime/ref-clock/physical-enum 的26个 sim +5个 protocol 测试只是自测，独立最终审查仍 pending。实际 DART、live data 与 DART/recovery release 全为0/NOT DONE。
+
+最新 data authority review `544b010` 仍报告 mutable capability、artifact bytes、roles、self-sealed packet/resume、index-artifact proof 的未决门；较早 checkpoint 所列某些关闭项不得外推为全部修复。owner 正修复；packager 已适配新的 external root，所在分支提交仍 pending。
+
 ## 当前状态、阻塞与交接
 
-2026-10-01 22:49（北京时间）为避免不相关的协议代码门阻碍有界的实际候选准备，infra owner 将在独立、干净且冻结于`af0e43d`的`/home/wsy/behavior-worktrees/p107-index-run`运行**本地 candidate-only** ≤200 pilot：1 CPU、≤30分钟、≤4GiB RAM、≤2GiB输出；必须以官方全局100-task/35-skill词表为合同，对无对应 task-skill pair 显式写 `null`，不得伪造覆盖。它不发布数据、不能设置正例或越过`8a683fe` gate；data owner 独立继续 protocol 与 PNG seal 修复。`p107-mining`的`b5ca17`自有3测试通过且已推送，独立`prep_queue_review`正在审查；尚未生成实际队列。
+2026-10-01 22:49（北京时间）为避免不相关的协议代码门阻碍有界的实际候选准备，infra owner 将在独立、干净且冻结于`af0e43d`的`/home/wsy/behavior-worktrees/p107-index-run`运行**本地 candidate-only** ≤200 pilot：1 CPU、≤30分钟、≤4GiB RAM、≤2GiB输出；必须以官方全局100-task/35-skill词表为合同，对无对应 task-skill pair 显式写 `null`，不得伪造覆盖。它不发布数据、不能设置正例或越过`8a683fe` gate；data owner 独立继续 protocol 与 PNG seal 修复。该运行已由上方23:06全量诊断索引取代为已完成状态；`p107-mining`状态同上，尚未生成实际队列。
 
-本地物理盘点确认 WSL2 RTX 4080 16GB、driver 610.47 存在，但已记录的 OmniGibson/Isaac 环境与 assets 均不存在；robo `127.0.0.1:23117` 的 SSH banner 超时。父代理已异步向用户请求恢复路由或给出新 endpoint；在答复前不得任意网络重启、安装、创建隧道。离线数据准备继续，P107不是全局 blocked；仍为0 GPU训练/仿真、0数据 release。
+本地物理盘点确认 WSL2 RTX 4080 16GB、driver 610.47 存在，但已记录的 OmniGibson/Isaac 环境与 assets 均不存在。该历史 robo probe 已被用户最新的“不要再用 robo”范围撤销；不再请求其路由/endpoint，也不得任意网络重启、安装、创建隧道。离线数据准备继续，P107不是全局 blocked；仍为0 GPU训练/仿真、0数据 release。
 
 2026-10-01 22:41（北京时间）data P1 fix/API仍在进行。candidate pack/audit 用3个实际 pilot header 作为 AUX receipt 演练，仅得到 `PASS_WITH_STAGE3_TRAINING_BLOCKED` / `CANDIDATE_ONLY`；它不是 source-resolved 的真实 release。infra owner 下一步仅可做 targeted read-only local GPU/OmniGibson availability 与 robo route probe，以穷尽 live-physics 替代路径；禁止 install、restart 或另建 tunnel。metadata index 本地范围不变，queue picker 实现必须 task-skill-first、不得按排序 N。无实际数据release、GPU sim或新训练启动。
 

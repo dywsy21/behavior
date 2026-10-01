@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 23:06（北京时间）：P107 将DART列为必需流；full diagnostic index完成但所有真实数据/仿真/release仍为0（Codex / P107-COORD）
+
+- 用户最新范围为使用空闲`lc*`、**不再进行任何robo工作**；DART是必需交付，保持全规模/质量、source-model-agent provenance和父代理视觉QA，非可选或candidate-only替代。`prep_dart_design`研究原始语义：`REACHED`同状态执行`a_sampled_noise`，BC仅取干净教师`a_intended`；另记`a_executed_raw23`，不把注入/离线噪声作为expert。DART实际数据0，formal stage3 training仍未授权。
+- `af0e43d` full diagnostic index已在`/home/wsy/behavior-worktrees/p107-index-run/index-validation/full-diagnostic-v1`完成（1CPU/32.03s/1.018GiB）：raw/published/groups各20,000 unique source IDs、19,889 candidate-bearing、403,257 unique events/100tasks；19k student+1k eval为原始groups而非eligible，eligible仍18895TRAIN/994eval/111quarantined，accepted-all=0/training=false。seal`3e2371a57d4e5b6685630104779ea7e6cdb280ba216a677f4bf01f2ce3948bf5`、manifest`469eef7b11ca2f7747d09565908707cd8d5d6c91045e43305db4fc58a97ce4cc`。35 lowercase description/uppercase verb语义错配正以Stage1 `SKILL_MAPPING`的35/35 map独审；mining`8293c90` 4测试过、复审中、0队列。
+- NVIDIA Isaac5.1无RTX GPU不支持、BEHAVIOR需RTX；lc3 A800无已证实官方sim route。用户已被异步询问local4080 sim+lc3 expert/data（无robo）或lc-only defer，答复前0安装/GPU启动。rawSIM`df9c1fa`仍candidate-only/no-positive-authority，26sim+5proto仅自测、独立终审pending；data authority`544b010`仍有mutable-cap/artifact-bytes/roles/self-sealed-packet-resume/index-artifact-proof门。packager external-root适配提交待。0 DART/live数据/release/GPU训练或仿真，P107继续。
+
 ### 2026-10-01 22:49（北京时间）：P107 data复审揭示6项发布阻断；有限本地candidate pilot与协议修复分轨（Codex / P107-COORD）
 
 - data`8a683fe`的20个复审测试通过，但仍有6个release blocker：可自mint `unboundexternal` authority、mutable maps、未绑定action/artifact bytes、pre-action evidence可验后续action、future typed actor refs、unsealed decoded PNG/input index。`af0e43d`已修coverage Cartesian，eval-calibration/nested-key/duplicate-episode/resume-file inventory旧问题亦已修；完整门与架构职责见[台账data复审节](experiments/2026-10-01-recovery-data-preparation.md#2026-10-01-2249data-8a683fe-复审20测试通过仍有6个发布阻断)。仍0 data release。
