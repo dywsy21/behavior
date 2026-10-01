@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 21:30（北京时间）：明确阶段1期间的数据准备清单，尚未启动采集（Codex / PLAN-MEM100-PREPDATA）
+
+- 用户本轮询问“现在能做什么”，按讨论范围只读核b6f14ae的v4 reader/schema与既有发布记录；安全fetch/pull无新改动，active goal为空。已补[训练设计10.7](experiments/2026-09-29-memlite-gradient-training-design.md#107-阶段1未结束时可以并行准备什么2026-10-01)：复用原split/哈希/普通技能标签，优先事件与视频定位sidecar、约200候选短片段的自然纠正筛选/人审参考集、少量目标判别负例；restore/事件日志/教师小验证不依赖最终模型，但真实运行需另核资源和预算。
+- 明确等待项为有代表性固定模型上的规模化自主rollout、真实失败频率、批量高层预测intent及版本绑定的结果头特征缓存/校准。旧点可作有界工程探针，不冒充最终分布；机器人61维状态不等于完整世界快照。
+- 更新TEAM的准备分工建议，未分配节点或改变现有owner。0服务器/VPN连接、0新数据/模型/仿真作业、未查当前训练步数；不修改活跃v4/source/env，不自动下载raw/depth。下一待确认准备工作范围/预算后由对应owner实施，当前交付是可执行待办而非已生成数据。
+
 ### 2026-10-01 08:04（北京时间）：阶段3失败/恢复数据研究完成，不改阶段1作业（Codex / PLAN-MEM100-STAGE3-DATA）
 
 - 按用户本轮讨论请求，已安全fetch/pull当前feature（8c6adb1、干净、origin/main无新增未合提交）并核本地schema-v6、outcome head和单帧阶段1入口。结果类仍为IN_PROGRESS/SUCCEEDED/FAILED/UNKNOWN，决策类为EXECUTE/RETRY/REPLAN/STOP；当前阶段1结果头loss=0，旧在线observer仍是六帧合同，不能声称单帧恢复反馈已经就绪。旧recovery collector主要验证原地旋转后的几何纠正，并非通用百任务失败标签器。
