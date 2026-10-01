@@ -163,6 +163,8 @@ def load_prior_windows(path: Path | None, *, expected_sha256: str | None,
     for row in rows:
         if not isinstance(row, Mapping):
             raise ValueError("prior source-window sidecar rows must be objects")
+        if row.get("schema_version") != EXCLUSION_SCHEMA:
+            raise ValueError("prior source-window sidecar row has an invalid schema_version")
         key = _sidecar_key(row, expected_release=expected_release)
         if key in keys:
             raise ValueError("prior source-window sidecar contains a duplicate exact key")
@@ -290,8 +292,9 @@ def _candidate_from_event(event: Mapping[str, Any], *, expected_release: str,
         raise ValueError("event/source immutable role or group identity drifted")
     source_annotation = source.get("source_annotation_sha256")
     _sha256(source_annotation, f"{event_id}.source.source_annotation_sha256")
-    if key[2] not in group.source_episode_ids:
-        raise ValueError("event raw episode is absent from source-group inventory")
+    episode_index = _require_int(source.get("episode_index"), f"{event_id}.source.episode_index")
+    if episode_index not in group.source_episode_ids:
+        raise ValueError("event episode index is absent from source-group inventory")
     if group.task_id not in official_tasks:
         return None, "unknown_task"
     evidence = event.get("evidence")
@@ -323,7 +326,7 @@ def _candidate_from_event(event: Mapping[str, Any], *, expected_release: str,
     return CandidateRecord(
         event=event, event_id=str(event_id), usage_role=str(event["usage_role"]),
         immutable_split=str(source["original_split"]), task_id=group.task_id, source_group_id=group_id,
-        raw_episode_id=key[2], episode_index=_require_int(source.get("episode_index"), "episode_index"),
+        raw_episode_id=key[2], episode_index=episode_index,
         episode_length=length, observation_frame=frame, interval_start=start, interval_end=end,
         skill_ids=tuple(sorted(set(skill_ids))),
         structural_strata=_structural_strata(event, start=start, end=end, episode_length=length),
@@ -869,6 +872,57 @@ def write_role_output(output: Path, selection: RoleSelection, *, source_report: 
         raise
 
 
+def write_cohort_outputs(train_output: Path, eval_output: Path, *, train_selection: RoleSelection,
+                         eval_selection: RoleSelection, source_report: Mapping[str, Any],
+                         index_manifest: Mapping[str, Any], inventory_sha256: str,
+                         coverage_sha256: str, coverage_expectations: Mapping[str, Any],
+                         protocol_sha256: str, prior: PriorWindows) -> dict[str, Any]:
+    """Publish TRAIN and EVAL handoffs as one fresh, atomic cohort root.
+
+    The two role directories must be siblings below a non-existing parent.
+    Both are built under a hidden sibling staging root first, so a failure
+    while building EVAL cannot leave a visible TRAIN directory behind.
+    """
+    train_output = Path(train_output).absolute()
+    eval_output = Path(eval_output).absolute()
+    if train_output == eval_output:
+        raise ValueError("TRAIN and EVAL outputs must be distinct sibling directories")
+    if train_output.parent != eval_output.parent:
+        raise ValueError("TRAIN and EVAL outputs must be sibling directories under one fresh cohort root")
+    cohort_root = train_output.parent
+    if not cohort_root.parent.is_dir() or cohort_root.parent.is_symlink():
+        raise ValueError("fresh cohort root parent must be an existing regular directory")
+    if cohort_root.exists() or cohort_root.is_symlink() or train_output.exists() or eval_output.exists():
+        raise FileExistsError(f"fresh cohort root or role output already exists: {cohort_root}")
+    index_path = source_report.get("index_manifest_path")
+    if isinstance(index_path, str) and Path(index_path).parent.exists():
+        base.forbid_output_inside(cohort_root, Path(index_path).parent)
+    staging_root = Path(tempfile.mkdtemp(prefix=f".{cohort_root.name}.staging-", dir=str(cohort_root.parent)))
+    try:
+        staged_train = staging_root / train_output.name
+        staged_eval = staging_root / eval_output.name
+        train_result = write_role_output(
+            staged_train, train_selection, source_report=source_report, index_manifest=index_manifest,
+            inventory_sha256=inventory_sha256, coverage_sha256=coverage_sha256,
+            coverage_expectations=coverage_expectations, protocol_sha256=protocol_sha256, prior=prior,
+        )
+        eval_result = write_role_output(
+            staged_eval, eval_selection, source_report=source_report, index_manifest=index_manifest,
+            inventory_sha256=inventory_sha256, coverage_sha256=coverage_sha256,
+            coverage_expectations=coverage_expectations, protocol_sha256=protocol_sha256, prior=prior,
+        )
+        os.rename(staging_root, cohort_root)
+        return {
+            "status": "CREATED_DIAGNOSTIC_COHORT_HANDOFF",
+            "cohort_root": str(cohort_root),
+            "train_output": {**train_result, "output": str(train_output)},
+            "eval_output": {**eval_result, "output": str(eval_output)},
+        }
+    except BaseException:
+        shutil.rmtree(staging_root, ignore_errors=True)
+        raise
+
+
 def _parse_task_ids(value: str) -> frozenset[int]:
     if not isinstance(value, str) or not value.strip():
         raise argparse.ArgumentTypeError("task IDs must be a nonempty comma-separated list")
@@ -967,21 +1021,15 @@ def main() -> None:
                                "eval": selections["eval"].report}), flush=True)
     if args.write:
         index_manifest = base.read_json(args.index / "manifest.json")
-        train_result = write_role_output(
-            args.train_output, selections["train"], source_report=source_report,
+        cohort_result = write_cohort_outputs(
+            args.train_output, args.eval_output, train_selection=selections["train"],
+            eval_selection=selections["eval"], source_report=source_report,
             index_manifest=index_manifest, inventory_sha256=args.expected_inventory_seal_sha256,
             coverage_sha256=args.expected_coverage_expectations_sha256,
             coverage_expectations=base.read_json(args.coverage_expectations),
             protocol_sha256=args.expected_protocol_sha256, prior=prior,
         )
-        eval_result = write_role_output(
-            args.eval_output, selections["eval"], source_report=source_report,
-            index_manifest=index_manifest, inventory_sha256=args.expected_inventory_seal_sha256,
-            coverage_sha256=args.expected_coverage_expectations_sha256,
-            coverage_expectations=base.read_json(args.coverage_expectations),
-            protocol_sha256=args.expected_protocol_sha256, prior=prior,
-        )
-        print(base.canonical_json({"train_output": train_result, "eval_output": eval_result}), flush=True)
+        print(base.canonical_json(cohort_result), flush=True)
     # Without --write this is a bounded metadata dry-run.  Neither path is
     # created and no RGB/rendering work is performed by this command.
 

@@ -147,6 +147,17 @@ def test_prior_sidecar_hash_and_release_are_fail_closed(tmp_path):
     assert loaded.rows == 1
     assert loaded.keys == frozenset({(RELEASE, row["source_group_id"], 4, 12)})
 
+    missing_schema = dict(row)
+    del missing_schema["schema_version"]
+    sidecar.write_text(json.dumps(missing_schema) + "\n")
+    with pytest.raises(ValueError, match="invalid schema_version"):
+        cohort.load_prior_windows(sidecar, expected_sha256=cohort.base.sha256_file(sidecar), expected_release=RELEASE)
+
+    bad_schema = dict(row, schema_version="wrong-schema")
+    sidecar.write_text(json.dumps(bad_schema) + "\n")
+    with pytest.raises(ValueError, match="invalid schema_version"):
+        cohort.load_prior_windows(sidecar, expected_sha256=cohort.base.sha256_file(sidecar), expected_release=RELEASE)
+
     bad = dict(row)
     bad["source_release_manifest_sha256"] = "c" * 64
     sidecar.write_text(json.dumps(bad) + "\n")
@@ -160,6 +171,33 @@ def test_candidate_source_window_hash_is_fail_closed():
     malformed["source"]["source_group_id"] = "not-a-sha"
     with pytest.raises(ValueError, match="source_group_id"):
         cohort._source_window_key(malformed, expected_release=RELEASE)
+
+
+def test_candidate_membership_uses_dense_episode_index_not_raw_episode_id():
+    candidate = record(task=0, raw_episode=10, group=digest("dense-index-group"))
+    event = json.loads(json.dumps(candidate.event))
+    event["source"]["episode_index"] = 0
+    group = cohort.base.SourceGroup(
+        source_group_id=candidate.source_group_id,
+        source_release_manifest_sha256=RELEASE,
+        task_id=0,
+        task_instance_id=1,
+        original_split="train",
+        usage_role="annotation_calibration",
+        source_episode_ids=(0,),
+    )
+    rebuilt, reason = cohort._candidate_from_event(
+        event,
+        expected_release=RELEASE,
+        groups={candidate.source_group_id: group},
+        official_tasks={0},
+        official_skills={10},
+    )
+    assert reason is None
+    assert rebuilt is not None
+    assert rebuilt.episode_index == 0
+    assert rebuilt.raw_episode_id == 10
+    assert rebuilt.source_window == (RELEASE, candidate.source_group_id, 10, 10)
 
 
 def test_writer_keeps_train_queue_seal_and_eval_outside_train_payload(tmp_path):
@@ -202,3 +240,75 @@ def test_writer_keeps_train_queue_seal_and_eval_outside_train_payload(tmp_path):
     assert eval_result["queue_seal_sha256"] is None
     assert not (tmp_path / "eval-output" / "queue_seal.json").exists()
     assert (tmp_path / "eval-output" / "evaluation_only_render_requests.jsonl").is_file()
+
+
+def test_pair_writer_preflights_paths_and_rolls_back_staged_second_role(tmp_path, monkeypatch):
+    index = tmp_path / "sealed-index"
+    index.mkdir()
+    (index / "manifest.json").write_text("{}\n")
+    source_report = {
+        "index_manifest_path": str(index / "manifest.json"),
+        "index_manifest_sha256": digest("index-manifest"),
+        "source_release_manifest_sha256": RELEASE,
+        "coverage_expectations_sha256": digest("coverage"),
+    }
+    index_manifest = {"source_release_manifest_sha256": RELEASE}
+    coverage = {
+        "expected_task_ids": [0],
+        "expected_skill_vocabulary": [{"skill_id": 10, "skill_description": "grasp"}],
+        "required_task_skill_pairs": None,
+    }
+    train_selection = cohort.select_records([record(task=0)], specs=[spec("train", {0})], prior=no_prior())["train"]
+    eval_record = record(task=0, role="evaluation_only", group=digest("eval-pair"))
+    eval_selection = cohort.select_records([eval_record], specs=[spec("eval", {0})], prior=no_prior())["eval"]
+
+    def write_pair(root):
+        return cohort.write_cohort_outputs(
+            root / "train", root / "eval", train_selection=train_selection, eval_selection=eval_selection,
+            source_report=source_report, index_manifest=index_manifest, inventory_sha256=digest("inventory"),
+            coverage_sha256=source_report["coverage_expectations_sha256"], coverage_expectations=coverage,
+            protocol_sha256=digest("protocol"), prior=no_prior(),
+        )
+
+    preexisting = tmp_path / "preexisting"
+    (preexisting / "eval").mkdir(parents=True)
+    with pytest.raises(FileExistsError, match="fresh cohort root"):
+        write_pair(preexisting)
+    assert not (preexisting / "train").exists()
+
+    nested = tmp_path / "nested"
+    with pytest.raises(ValueError, match="sibling"):
+        cohort.write_cohort_outputs(
+            nested / "train", nested / "train" / "eval", train_selection=train_selection,
+            eval_selection=eval_selection, source_report=source_report, index_manifest=index_manifest,
+            inventory_sha256=digest("inventory"), coverage_sha256=source_report["coverage_expectations_sha256"],
+            coverage_expectations=coverage, protocol_sha256=digest("protocol"), prior=no_prior(),
+        )
+    assert not nested.exists()
+
+    original_writer = cohort.write_role_output
+    calls = 0
+
+    def fail_second(output, *args, **kwargs):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise RuntimeError("injected EVAL staging failure")
+        return original_writer(output, *args, **kwargs)
+
+    monkeypatch.setattr(cohort, "write_role_output", fail_second)
+    failed = tmp_path / "failed"
+    with pytest.raises(RuntimeError, match="EVAL staging failure"):
+        write_pair(failed)
+    assert calls == 2
+    assert not failed.exists()
+    assert not list(tmp_path.glob(".failed.staging-*"))
+
+    monkeypatch.setattr(cohort, "write_role_output", original_writer)
+    published = tmp_path / "published"
+    result = write_pair(published)
+    assert result["status"] == "CREATED_DIAGNOSTIC_COHORT_HANDOFF"
+    assert result["train_output"]["output"] == str(published / "train")
+    assert result["eval_output"]["output"] == str(published / "eval")
+    assert (published / "train" / "queue_seal.json").is_file()
+    assert (published / "eval" / "selection_seal.json").is_file()
