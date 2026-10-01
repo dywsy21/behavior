@@ -1,6 +1,5 @@
 import hashlib
 import json
-import os
 from pathlib import Path
 import sys
 import tempfile
@@ -13,8 +12,12 @@ import select_memlite_event_annotation_queue as queue  # noqa: E402
 
 
 SOURCE_SHA = "e" * 64
-OWNER_PROTOCOL = Path(os.environ.get(
-    "P107_PROTOCOL_PATH", "/home/wsy/behavior-worktrees/p107-data/src/g05/data/memlite_event_protocol.py"))
+OWNER_PROTOCOL = REPO / "tests" / "fixtures" / "p107_memlite_event_protocol_fixture.py"
+OFFICIAL_SKILLS = (
+    (10, "grasp an object"), (20, "open a receptacle"), (30, "place an object"),
+    (40, "press a control"), (50, "wash an object"),
+)
+SKILL_ID_BY_VERB = {"GRASP": 10, "OPEN": 20, "PLACE": 30, "PRESS": 40, "WASH": 50}
 
 
 def digest(text):
@@ -23,7 +26,7 @@ def digest(text):
 
 def protocol():
     if not OWNER_PROTOCOL.is_file():
-        raise RuntimeError(f"set P107_PROTOCOL_PATH to the data-owner protocol: {OWNER_PROTOCOL}")
+        raise RuntimeError(f"missing pinned in-repository protocol fixture: {OWNER_PROTOCOL}")
     return queue.load_canonical_protocol(OWNER_PROTOCOL, expected_sha256=queue.sha256_file(OWNER_PROTOCOL))
 
 
@@ -45,7 +48,8 @@ def source_group_id(owner_protocol, task, instance):
 
 
 def event(owner_protocol, *, group, role, task, instance, raw_episode, episode, start, end, verb, target,
-          length=900):
+          length=900, skill_id=None):
+    skill_id = SKILL_ID_BY_VERB[verb] if skill_id is None else skill_id
     row = {
         "schema_version": owner_protocol.SCHEMA_VERSION,
         "record_kind": "event_candidate",
@@ -67,7 +71,7 @@ def event(owner_protocol, *, group, role, task, instance, raw_episode, episode, 
         "action": {"start_frame": start, "actual_executed_length": None, "raw_action_dim": 23,
                    "model_action_dim": 27, "model_padding_indices": [7, 8, 17, 18]},
         "bundle_id": digest(f"bundle:{verb}:{target}"),
-        "skill_bundle": [{"verb": verb, "target": target, "source": "", "destination": "",
+        "skill_bundle": [{"skill_id": skill_id, "verb": verb, "target": target, "source": "", "destination": "",
                           "target_part": "", "arm": "UNSPECIFIED"}],
         "parallel_bundle": False,
         "binding": [],
@@ -84,13 +88,15 @@ def event(owner_protocol, *, group, role, task, instance, raw_episode, episode, 
     return row
 
 
-def coverage_expectations(root, *, tasks=(0, 1, 2), skills=("GRASP", "OPEN", "PLACE", "PRESS", "WASH")):
+def coverage_expectations(root, *, tasks=(0, 1, 2), skills=OFFICIAL_SKILLS):
     value = {
-        "schema_version": "p107-official-coverage-expectations-v2",
+        "schema_version": "p107-official-coverage-expectations-v3",
         "official_task_metadata_sha256": digest("fixture-official-tasks"),
         "official_skill_vocabulary_sha256": digest("fixture-official-skills"),
         "expected_task_ids": list(tasks),
-        "expected_skill_verbs": list(skills),
+        "expected_skill_vocabulary": [
+            {"skill_id": skill_id, "skill_description": description} for skill_id, description in skills
+        ],
         "required_task_skill_pairs": None,
     }
     path = root / "coverage-expectations.json"
@@ -250,6 +256,10 @@ class SelectMemliteEventAnnotationQueueTests(unittest.TestCase):
             counts = json.loads((first / "counts.json").read_text())
             self.assertEqual(counts["events_excluded_by_role"]["evaluation_only"], 1)
             self.assertEqual(counts["student_candidate_queue"]["coverage"]["expected_task_count"], 3)
+            self.assertEqual(counts["student_candidate_queue"]["coverage"]["expected_skill_ids"], [10, 20, 30, 40, 50])
+            self.assertEqual(counts["student_candidate_queue"]["coverage"]["missing_expected_task_ids_from_pool"], [2])
+            self.assertIn("GRASP", counts["student_candidate_queue"]["coverage"]["raw_source_verbs_diagnostic"])
+            self.assertEqual(student[0]["skill_ids"], sorted(student[0]["skill_ids"]))
             self.assertEqual(counts["student_candidate_queue"]["coverage"]["required_task_skill_pair_queue_status"],
                              "NOT_DECLARED_DESCRIPTIVE_ONLY")
             resume_args = args(index, first, coverage)
@@ -262,7 +272,7 @@ class SelectMemliteEventAnnotationQueueTests(unittest.TestCase):
                          "camera_native_render_requests.jsonl", "counts.json", "manifest.json", "queue_seal.json"):
                 self.assertEqual((first / name).read_bytes(), (second / name).read_bytes())
 
-    def test_resume_requires_external_queue_seal_and_semantic_safety(self):
+    def test_resume_rejects_resealed_manifest_job_and_counts_escalation(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             index = root / "sealed-index"
@@ -270,12 +280,9 @@ class SelectMemliteEventAnnotationQueueTests(unittest.TestCase):
             output = root / "queue"
             result = queue.build_queue(index, output, args=args(index, output, coverage))
             original_seal = result["queue_seal_sha256"]
-            jobs_path = output / "student_candidate_queue.jsonl"
-            jobs = read_lines(jobs_path)
-            jobs[0]["training_eligible"] = True
-            jobs_path.write_text("".join(queue.canonical_json(row) + "\n" for row in jobs))
             manifest = json.loads((output / "manifest.json").read_text())
-            manifest["files"]["student_candidate_queue.jsonl"] = receipt(jobs_path)
+            manifest["training_eligible"] = True
+            manifest["all_jobs_status"] = "SUCCEEDED"
             (output / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
             attacker_seal = reseal_queue(output)
             external_args = args(index, output, coverage)
@@ -283,24 +290,87 @@ class SelectMemliteEventAnnotationQueueTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "queue seal"):
                 queue.resume_queue(index, output, args=external_args)
             external_args.expected_queue_seal_sha256 = attacker_seal
-            with self.assertRaisesRegex(ValueError, "candidate-only safety"):
+            with self.assertRaisesRegex(ValueError, "manifest differs"):
                 queue.resume_queue(index, output, args=external_args)
 
-            fresh = root / "fresh-queue"
-            fresh_result = queue.build_queue(index, fresh, args=args(index, fresh, coverage))
-            requests_path = fresh / "camera_native_render_requests.jsonl"
+            caps_output = root / "caps-queue"
+            queue.build_queue(index, caps_output, args=args(index, caps_output, coverage))
+            manifest = json.loads((caps_output / "manifest.json").read_text())
+            manifest["policy"]["max_per_source_group"] = 999
+            policy_core = dict(manifest["policy"])
+            policy_core.pop("policy_sha256")
+            manifest["policy"]["policy_sha256"] = queue.canonical_sha256(policy_core)
+            (caps_output / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
+            attacker_seal = reseal_queue(caps_output)
+            resume_args = args(index, caps_output, coverage)
+            resume_args.expected_queue_seal_sha256 = attacker_seal
+            with self.assertRaisesRegex(ValueError, "queue policy differs"):
+                queue.resume_queue(index, caps_output, args=resume_args)
+
+            jobs_output = root / "jobs-queue"
+            queue.build_queue(index, jobs_output, args=args(index, jobs_output, coverage))
+            jobs_path = jobs_output / "student_candidate_queue.jsonl"
+            jobs = read_lines(jobs_path)
+            jobs[0]["low_action_supervision_mask"] = True
+            jobs[0]["forced_answer"] = "RECOVERY"
+            jobs[0]["candidate_signals"] = ["FAILED_AND_RECOVERY"]
+            jobs[0]["selection_stratum"] = "PHYSICAL_FAILURE"
+            jobs_path.write_text("".join(queue.canonical_json(row) + "\n" for row in jobs))
+            manifest = json.loads((jobs_output / "manifest.json").read_text())
+            manifest["files"]["student_candidate_queue.jsonl"] = receipt(jobs_path)
+            (jobs_output / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
+            attacker_seal = reseal_queue(jobs_output)
+            resume_args = args(index, jobs_output, coverage)
+            resume_args.expected_queue_seal_sha256 = attacker_seal
+            with self.assertRaisesRegex(ValueError, "queue job schema"):
+                queue.resume_queue(index, jobs_output, args=resume_args)
+
+            semantic_jobs_output = root / "semantic-jobs-queue"
+            queue.build_queue(index, semantic_jobs_output, args=args(index, semantic_jobs_output, coverage))
+            jobs_path = semantic_jobs_output / "student_candidate_queue.jsonl"
+            jobs = read_lines(jobs_path)
+            jobs[0]["candidate_signals"] = ["FAILED_AND_RECOVERY"]
+            jobs[0]["selection_stratum"] = "PHYSICAL_FAILURE"
+            jobs_path.write_text("".join(queue.canonical_json(row) + "\n" for row in jobs))
+            manifest = json.loads((semantic_jobs_output / "manifest.json").read_text())
+            manifest["files"]["student_candidate_queue.jsonl"] = receipt(jobs_path)
+            (semantic_jobs_output / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
+            attacker_seal = reseal_queue(semantic_jobs_output)
+            resume_args = args(index, semantic_jobs_output, coverage)
+            resume_args.expected_queue_seal_sha256 = attacker_seal
+            with self.assertRaisesRegex(ValueError, "queue job differs"):
+                queue.resume_queue(index, semantic_jobs_output, args=resume_args)
+
+            counts_output = root / "counts-queue"
+            queue.build_queue(index, counts_output, args=args(index, counts_output, coverage))
+            counts_path = counts_output / "counts.json"
+            counts = json.loads(counts_path.read_text())
+            counts["training_eligible"] = True
+            counts["student_candidate_queue"]["budget"] = 999999
+            counts_path.write_text(queue.canonical_json(counts) + "\n")
+            manifest = json.loads((counts_output / "manifest.json").read_text())
+            manifest["files"]["counts.json"] = receipt(counts_path)
+            (counts_output / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
+            attacker_seal = reseal_queue(counts_output)
+            resume_args = args(index, counts_output, coverage)
+            resume_args.expected_queue_seal_sha256 = attacker_seal
+            with self.assertRaisesRegex(ValueError, "counts differ"):
+                queue.resume_queue(index, counts_output, args=resume_args)
+
+            timing_output = root / "timing-queue"
+            queue.build_queue(index, timing_output, args=args(index, timing_output, coverage))
+            requests_path = timing_output / "camera_native_render_requests.jsonl"
             requests = read_lines(requests_path)
             requests[0]["actor_available_frame_indices"].append(999)
             requests_path.write_text("".join(queue.canonical_json(row) + "\n" for row in requests))
-            manifest = json.loads((fresh / "manifest.json").read_text())
+            manifest = json.loads((timing_output / "manifest.json").read_text())
             manifest["files"]["camera_native_render_requests.jsonl"] = receipt(requests_path)
-            (fresh / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
-            attacker_seal = reseal_queue(fresh)
-            resume_args = args(index, fresh, coverage)
+            (timing_output / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
+            attacker_seal = reseal_queue(timing_output)
+            resume_args = args(index, timing_output, coverage)
             resume_args.expected_queue_seal_sha256 = attacker_seal
-            with self.assertRaisesRegex(ValueError, "safe queue job timing"):
-                queue.resume_queue(index, fresh, args=resume_args)
-            self.assertNotEqual(fresh_result["queue_seal_sha256"], attacker_seal)
+            with self.assertRaisesRegex(ValueError, "render request differs"):
+                queue.resume_queue(index, timing_output, args=resume_args)
 
     def test_canonical_source_group_blocks_cap_bypass_and_caps_real_group(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -325,24 +395,34 @@ class SelectMemliteEventAnnotationQueueTests(unittest.TestCase):
             manifest["files"]["event_candidates.jsonl"] = receipt(events_path)
             (fake / "manifest.json").write_text(queue.canonical_json(manifest) + "\n")
             reseal_index(fake, manifest)
-            with self.assertRaisesRegex(ValueError, "source_group_id"):
+            with self.assertRaisesRegex(ValueError, "source identity"):
                 queue.build_queue(fake, root / "fake-output", args=args(fake, root / "fake-output", coverage))
 
-    def test_seeded_coverage_first_order_does_not_default_to_low_task_ids(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            index = root / "many-tasks-index"
-            coverage = write_index(index, extra_student_tasks=(3, 4, 5))
-            output = root / "one-job"
-            seed = "review-seed-0"
-            parsed = args(index, output, coverage, seed=seed)
-            parsed.candidate_budget = 1
-            parsed.calibration_budget = 0
-            queue.build_queue(index, output, args=parsed)
-            chosen = read_lines(output / "student_candidate_queue.jsonl")[0]["source_identity"]["task_index"]
-            expected = queue.seeded_order([0, 1, 3, 4, 5], seed=seed, namespace="task-coverage")[0]
-            self.assertEqual(chosen, expected)
-            self.assertNotEqual(chosen, 0)
+    def test_budget_40_joint_reserve_covers_rare_official_skills(self):
+        def candidate(task, sequence, skills):
+            return queue.Candidate(
+                event={}, event_id=f"{sequence:064x}", source_group_id=f"group-{sequence}", task_id=task,
+                task_instance_id=sequence + 1, episode_key=(f"group-{sequence}", sequence, sequence),
+                episode_index=sequence, episode_length=1000, anchor_frame=0, interval_start=0, interval_end=5,
+                skill_ids=tuple(skills), raw_source_verbs=("RAW_SOURCE_VERB",), skill_keys=(str(sequence),),
+                repeat_attempt_count=0, boundary_before=False, boundary_after=False, long_interval=False,
+                candidate_signals=("NORMAL_CONTROL_CANDIDATE",), selection_stratum="NORMAL_CONTROL_CANDIDATE")
+
+        pool = [candidate(task, task, (1,)) for task in range(100)]
+        pool.extend(candidate(99, 100 + skill, (skill,)) for skill in range(100, 136))
+        selected, diagnostics = queue.select_diverse(
+            pool, budget=40, seed="coverage-adversary", max_per_episode=2, min_separation_frames=0,
+            max_per_source_group=2, normal_control_fraction=0.0, priority_skill_ids=[1, *range(100, 136)])
+        selected_skills = {skill for item, _ in selected for skill in item.skill_ids}
+        self.assertEqual(len(selected), 40)
+        self.assertTrue(set(range(100, 136)) <= selected_skills)
+        self.assertEqual(diagnostics["priority_skill_ids_present_but_not_queued"], [])
+        self.assertGreaterEqual(sum(phase == "JOINT_RARE_SKILL_RESERVE" for _, phase in selected), 36)
+
+    def test_v3_fixture_and_runtime_protocol_default_are_hermetic(self):
+        self.assertTrue(OWNER_PROTOCOL.is_file())
+        self.assertEqual(OWNER_PROTOCOL, REPO / "tests" / "fixtures" / "p107_memlite_event_protocol_fixture.py")
+        self.assertEqual(queue.DEFAULT_PROTOCOL_PATH, REPO / "src" / "g05" / "data" / "memlite_event_protocol.py")
 
 
 if __name__ == "__main__":
