@@ -39,12 +39,14 @@ from g05.recovery.dart_collection import (
     VerifiedDartSourceMembership,
 )
 from g05.recovery.privileged_pose_grasp import (
+    ApprovedPublicText,
     ActorContext,
     ExistingPrivilegedReaderWorld,
     ExistingPoseServoEngine,
     FreshRolloutRaw23Runtime,
     GenericGraspPilot,
     GraspPostconditionConfig,
+    OpaqueMediaReference,
     PrivateGraspSnapshot,
     PrivilegedPoseGraspTeacher,
     RootModelPoseReview,
@@ -83,10 +85,22 @@ def binding(**overrides):
         target_category="toy",
         hand="right",
         goal_pose_local_sha256=digest("pose"),
+        public_task_description_sha256=digest("grasp object"),
+        public_causal_intent_sha256=digest("causal grasp"),
+        public_description_registry_sha256=digest("public-description-registry"),
         pose_review=RootModelPoseReview("root-model-review-1", digest("review")),
     )
     data.update(overrides)
     return SealedGraspBinding(**data)
+
+
+def actor_context(obs: DartObservation, *, task: str = "grasp object", causal_intent: str = "causal grasp") -> ActorContext:
+    registry = digest("public-description-registry")
+    return ActorContext(
+        task=ApprovedPublicText(task, digest(task), registry, "task"),
+        causal_intent=ApprovedPublicText(causal_intent, digest(causal_intent), registry, "causal_intent"),
+        media=OpaqueMediaReference(obs.observation_sha256),
+    )
 
 
 def private_snapshot(obs: DartObservation, *, marker: float = 0.0, target: str = "toy_train_target_1") -> PrivateGraspSnapshot:
@@ -133,6 +147,12 @@ class Engine:
         # A current-state-dependent one-step command, not a demo action.
         return [snap.robot_state["marker"]] * 23
 
+    def acknowledge_actual_clean_application(self, applied):
+        self.applied += 1
+
+    def discard_unapplied_proposal(self, applied):
+        self.discarded = getattr(self, "discarded", 0) + 1
+
 
 def test_r1pro_mapping_rejects_padding_and_nonfinite():
     raw = encode_r1pro_raw23(base_qvel=(1, 2, 3), joint_q18=tuple(range(10, 28)), gripper=(90, 91))
@@ -147,13 +167,19 @@ def test_r1pro_mapping_rejects_padding_and_nonfinite():
 def test_teacher_requeries_current_noise_reached_state_without_side_effects():
     engine, world = Engine(), World()
     teacher = PrivilegedPoseGraspTeacher(binding=binding(), world=world, engine=engine)
-    first = teacher.clean_action(observation(1), intent_bundle_id="grasp-intent-1")
-    second = teacher.clean_action(observation(2), intent_bundle_id="grasp-intent-1")
+    runtime = FreshRolloutRaw23Runtime(RuntimeHooks())
+    first_observation = runtime.observe()
+    first = teacher.clean_action(first_observation, intent_bundle_id="grasp-intent-1")
+    # This is a noisy DART execution, not a clean label or a native lifecycle
+    # transition.  The actual runtime receipt permits exactly one discard.
+    teacher.acknowledge_runtime_noisy_application(runtime, runtime.apply_raw23([0.0] * 23))
+    second_observation = runtime.observe()
+    second = teacher.clean_action(second_observation, intent_bundle_id="grasp-intent-1")
     assert first.clean_intended23 == (1.0,) * 23
     assert second.clean_intended23 == (2.0,) * 23
     assert engine.seen == [1.0, 2.0]
     # clean_action never has a runtime/apply handle: it only queried a fresh state.
-    assert engine.applied == 0 and world.calls == 2
+    assert engine.applied == 0 and engine.discarded == 1 and world.calls == 2
 
 
 def test_existing_pose_teacher_and_safe_servo_are_preview_only_until_runtime_apply():
@@ -252,13 +278,31 @@ def test_train_role_root_model_provenance_and_private_projection_are_strict():
         binding(source_role="evaluation_only", original_split="eval")
     with pytest.raises(RecoveryContractError, match="human"):
         RootModelPoseReview("wrong", digest("x"), human_reviewed=True)
-    with pytest.raises(RecoveryContractError, match="private"):
-        ActorContext(task="grasp", causal_intent="target_pose is visible")
+    with pytest.raises(RecoveryContractError, match="sealed public"):
+        ActorContext(task="grasp", causal_intent="target_pose is visible", media=OpaqueMediaReference(digest("media")))
 
-    projected = project_actor_observation(observation(5), ActorContext(task="grasp object", causal_intent="causal grasp"))
+    obs = observation(5)
+    projected = project_actor_observation(obs, actor_context(obs), binding())
     text = repr(projected)
     assert "target_uid" not in text and "hand_poses" not in text and "toy_train_target_1" not in text
+    assert "observation_ref" not in text
     assert projected["observation"]["actor_visible"] is True
+    # A sealed hash alone is insufficient: the public text itself may never
+    # include teacher-only target identity or a free-form media reference.
+    leaked_intent = "grasp toy_train_target_1"
+    leaked_binding = binding(public_causal_intent_sha256=digest(leaked_intent))
+    with pytest.raises(RecoveryContractError, match="leaks"):
+        project_actor_observation(obs, actor_context(obs, causal_intent=leaked_intent), leaked_binding)
+    with pytest.raises(RecoveryContractError, match="opaque media"):
+        project_actor_observation(
+            obs,
+            ActorContext(
+                task=actor_context(obs).task,
+                causal_intent=actor_context(obs).causal_intent,
+                media=OpaqueMediaReference(digest("another-observation")),
+            ),
+            binding(),
+        )
 
     source_binding = binding()
     membership = CanonicalSourceGroupMembership(
@@ -388,6 +432,86 @@ def evidence_frame(tick: int, *, held: bool, contact: bool, z: float, hand_z: fl
     }
 
 
+def close_teacher_and_runtime():
+    """CPU fake with the native CLOSE lifecycle shape, no simulator execution."""
+
+    class LifecyclePoseTeacher:
+        instances = []
+
+        def __init__(self, spec):
+            self.close_issued = False
+            self.executed_tokens = []
+            type(self).instances.append(self)
+
+        def ranked(self, state, frame, goal, base, grips, model):
+            if self.close_issued and frame["held"]["right"] is False:
+                raise RuntimeError("Close did not establish target identity contact; no retry")
+            return ("RIGHT_CLOSE",)
+
+        def executed(self, token, frame):
+            self.executed_tokens.append(token)
+            if token == "RIGHT_CLOSE":
+                self.close_issued = True
+
+    class CloseServo:
+        def __init__(self, model, state, *, gripper_command, limits):
+            self.done = False
+
+        def begin(self, action, state, *, carry):
+            return action == "decoded:RIGHT_CLOSE" and carry is True
+
+        def next_action(self, state):
+            return [0.125] * 23
+
+    engine = ExistingPoseServoEngine(
+        pose_teacher_class=LifecyclePoseTeacher,
+        safe_servo_class=CloseServo,
+        token_to_action=lambda token: "decoded:" + token,
+    )
+    teacher = PrivilegedPoseGraspTeacher(binding=binding(), world=World(), engine=engine)
+    runtime = FreshRolloutRaw23Runtime(RuntimeHooks())
+    return teacher, runtime, LifecyclePoseTeacher
+
+
+def test_native_close_lifecycle_advances_only_after_exact_runtime_acknowledgement():
+    teacher, runtime, native = close_teacher_and_runtime()
+    first_obs = runtime.observe()
+    command = teacher.clean_action(first_obs, intent_bundle_id="grasp-intent-1")
+    assert native.instances[0].executed_tokens == []
+
+    forged = AppliedActionReceipt(
+        status="APPLIED",
+        applied23=[0.0] * 23,
+        applied_action_bytes_sha256=raw23_wire_sha256([0.0] * 23),
+        runtime_step_receipt_sha256=digest("forged-step"),
+        pre_action_policy_clock=first_obs.policy_clock,
+        pre_action_state61_sha256=first_obs.state61_sha256,
+        pre_action_observation_sha256=first_obs.observation_sha256,
+    )
+    with pytest.raises(RecoveryContractError, match="exact clean"):
+        teacher.acknowledge_runtime_clean_application(runtime, forged)
+    assert native.instances[0].executed_tokens == []
+
+    applied = runtime.apply_raw23(command.clean_intended23)
+    trusted_close = teacher.acknowledge_runtime_clean_application(runtime, applied)
+    assert trusted_close.token == "RIGHT_CLOSE"
+    assert native.instances[0].executed_tokens == ["RIGHT_CLOSE"]
+
+    # A fresh scene reporting NOT_HELD cannot cause a blind second CLOSE after
+    # the one actual close acknowledgement.  The persistent native state owns
+    # this decision, rather than reconstructing it from current ``held``.
+    with pytest.raises(RecoveryContractError, match="lifecycle"):
+        teacher.clean_action(runtime.observe(), intent_bundle_id="grasp-intent-1")
+
+
+def test_unapplied_close_proposal_does_not_advance_native_lifecycle():
+    teacher, runtime, native = close_teacher_and_runtime()
+    teacher.clean_action(runtime.observe(), intent_bundle_id="grasp-intent-1")
+    with pytest.raises(RecoveryContractError, match="previous clean"):
+        teacher.clean_action(observation(99), intent_bundle_id="grasp-intent-1")
+    assert native.instances[0].executed_tokens == []
+
+
 def local_outcome():
     root = Path(__file__).resolve().parents[1]
     scripts = str(root / "scripts" / "vlm_sft")
@@ -397,31 +521,49 @@ def local_outcome():
     return LocalOutcome
 
 
-def test_local_grasp_certification_requires_timestamps_stability_and_known_contact():
-    config = GraspPostconditionConfig(physics_dt_seconds=0.05)
+def test_local_grasp_certification_requires_bound_runtime_close_and_complete_contact_evidence():
+    config = GraspPostconditionConfig(
+        physics_dt_seconds=0.05, physics_clock_receipt_sha256=digest("runtime-physics-clock-0.05")
+    )
+    teacher, runtime, _native = close_teacher_and_runtime()
+    command = teacher.clean_action(runtime.observe(), intent_bundle_id="grasp-intent-1")
+    close = teacher.acknowledge_runtime_clean_application(runtime, runtime.apply_raw23(command.clean_intended23))
+    trace = teacher.begin_local_grasp_evidence(close)
     frames = [evidence_frame(0, held=False, contact=False, z=0.0, hand_z=0.0)]
-    tokens = [None]
     # The CLOSE occurs while still at the original pose; qualified lift begins
     # only on the following real physics tick.
     frames.append(evidence_frame(1, held=False, contact=True, z=0.0, hand_z=0.0))
-    tokens.append("RIGHT_CLOSE")
+    frames[-1]["runtime_step_receipt_sha256"] = close.runtime_step_receipt_sha256
     for tick in range(2, 14):
         frames.append(evidence_frame(tick, held=True, contact=True, z=0.04, hand_z=0.03))
-        tokens.append(None)
-    verdict = certify_local_grasp(binding=binding(), config=config, frames=frames, issued_tokens=tokens,
-                                  local_outcome_class=local_outcome())
+    for frame in frames:
+        frame["physics_clock_receipt_sha256"] = config.physics_clock_receipt_sha256
+    for index, frame in enumerate(frames):
+        trace.record_private_physics_frame(frame, action=close if index == 1 else None)
+    verdict = certify_local_grasp(binding=binding(), config=config, trace=trace, local_outcome_class=local_outcome())
     assert verdict.status == "SUCCEEDED" and verdict.official_task_success is False
 
+    broken_trace = teacher.begin_local_grasp_evidence(close)
     broken = [dict(row) for row in frames]
     broken[6]["physics_time_seconds"] = broken[5]["physics_time_seconds"]
-    with pytest.raises(RecoveryContractError, match="timestamps"):
-        certify_local_grasp(binding=binding(), config=config, frames=broken, issued_tokens=tokens,
-                             local_outcome_class=local_outcome())
+    for index, frame in enumerate(broken):
+        broken_trace.record_private_physics_frame(frame, action=close if index == 1 else None)
+    assert certify_local_grasp(
+        binding=binding(), config=config, trace=broken_trace, local_outcome_class=local_outcome()
+    ).status == "UNKNOWN"
+
+    incomplete_trace = teacher.begin_local_grasp_evidence(close)
     unknown = [dict(row) for row in frames]
-    unknown[-1]["held"] = {"left": False, "right": None}
-    verdict = certify_local_grasp(binding=binding(), config=config, frames=unknown, issued_tokens=tokens,
-                                  local_outcome_class=local_outcome())
+    unknown[-1]["finger_contact"] = None
+    for index, frame in enumerate(unknown):
+        incomplete_trace.record_private_physics_frame(frame, action=close if index == 1 else None)
+    verdict = certify_local_grasp(binding=binding(), config=config, trace=incomplete_trace, local_outcome_class=local_outcome())
     assert verdict.status == "UNKNOWN"
+
+    # Caller strings alone cannot manufacture a local success predicate.
+    forged = certify_local_grasp(binding=binding(), config=config, trace={"frames": frames, "issued_tokens": ["RIGHT_CLOSE"]},
+                                  local_outcome_class=local_outcome())
+    assert forged.status == "UNKNOWN" and forged.reason == "UNTRUSTED_OR_UNBOUND_EXECUTION_TRACE"
 
 
 if __name__ == "__main__":

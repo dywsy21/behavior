@@ -46,6 +46,11 @@ _PRIVATE_KEYS = frozenset(
     }
 )
 
+# Deliberately module-private construction gate.  It is not a cryptographic
+# boundary against a hostile Python process; it prevents ordinary callers from
+# manufacturing an "acknowledged" action by filling a public dataclass.
+_TRUSTED_TRACE_MINT_CAPABILITY = object()
+
 
 def _text(value: object, field: str) -> str:
     if not isinstance(value, str) or not value or value != value.strip():
@@ -148,6 +153,9 @@ class SealedGraspBinding:
     target_category: str
     hand: str
     goal_pose_local_sha256: str
+    public_task_description_sha256: str
+    public_causal_intent_sha256: str
+    public_description_registry_sha256: str
     pose_review: RootModelPoseReview
 
     def __post_init__(self) -> None:
@@ -160,6 +168,9 @@ class SealedGraspBinding:
             "source_group_index_manifest_sha256",
             "intent_sha256",
             "goal_pose_local_sha256",
+            "public_task_description_sha256",
+            "public_causal_intent_sha256",
+            "public_description_registry_sha256",
         ):
             require_sha256(getattr(self, field), field=field)
         if self.source_role not in {"student_candidate", "annotation_calibration"} or self.original_split != "train":
@@ -182,6 +193,9 @@ class SealedGraspBinding:
             "target_category": self.target_category,
             "hand": self.hand,
             "goal_pose_local_sha256": self.goal_pose_local_sha256,
+            "public_task_description_sha256": self.public_task_description_sha256,
+            "public_causal_intent_sha256": self.public_causal_intent_sha256,
+            "public_description_registry_sha256": self.public_description_registry_sha256,
             "pose_review": self.pose_review.public(),
             "actor_visible": False,
         }
@@ -249,27 +263,91 @@ class GenericGraspPilot:
 
 
 @dataclass(frozen=True)
-class ActorContext:
-    """Actor-allowed task and causal intent; private teacher values cannot enter."""
+class ApprovedPublicText:
+    """One already-rendered actor description, pinned by bytes and registry."""
 
-    task: str
-    causal_intent: str
+    text: str
+    text_sha256: str
+    description_registry_sha256: str
+    kind: str
 
     def __post_init__(self) -> None:
-        _text(self.task, "task")
-        _text(self.causal_intent, "causal_intent")
-        for value in (self.task, self.causal_intent):
-            if any(key in value.lower() for key in _PRIVATE_KEYS):
-                raise RecoveryContractError("actor text may not name a private teacher field")
+        _text(self.text, "public actor text")
+        require_sha256(self.text_sha256, field="public actor text_sha256")
+        require_sha256(self.description_registry_sha256, field="public description registry")
+        if self.kind not in {"task", "causal_intent"}:
+            raise RecoveryContractError("public actor text kind must be task or causal_intent")
+        if sha256(self.text.encode("utf-8")).hexdigest() != self.text_sha256:
+            raise RecoveryContractError("public actor text bytes do not match its sealed description hash")
 
 
-def project_actor_observation(observation: DartObservation, context: ActorContext) -> dict[str, object]:
-    """The only actor projection emitted by this bridge."""
+@dataclass(frozen=True)
+class OpaqueMediaReference:
+    """A hash-only reference to current RGB/proprio; no path or free-form ref."""
 
+    observation_sha256: str
+    kind: str = "fresh_rgb_proprio_sha256_only"
+
+    def __post_init__(self) -> None:
+        require_sha256(self.observation_sha256, field="opaque media observation_sha256")
+        if self.kind != "fresh_rgb_proprio_sha256_only":
+            raise RecoveryContractError("actor media reference must be the fixed hash-only form")
+
+
+@dataclass(frozen=True)
+class ActorContext:
+    """Structured actor input; raw private identifiers are rejected at projection."""
+
+    task: ApprovedPublicText
+    causal_intent: ApprovedPublicText
+    media: OpaqueMediaReference
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.task, ApprovedPublicText) or self.task.kind != "task":
+            raise RecoveryContractError("actor task must be a sealed public task description")
+        if not isinstance(self.causal_intent, ApprovedPublicText) or self.causal_intent.kind != "causal_intent":
+            raise RecoveryContractError("actor intent must be a sealed public causal description")
+        if not isinstance(self.media, OpaqueMediaReference):
+            raise RecoveryContractError("actor media must use the strict opaque media reference")
+
+
+def project_actor_observation(
+    observation: DartObservation, context: ActorContext, binding: SealedGraspBinding
+) -> dict[str, object]:
+    """Emit only binding-approved public text and hash-only current media receipt."""
+
+    if not isinstance(observation, DartObservation) or not isinstance(context, ActorContext):
+        raise RecoveryContractError("actor projection requires typed fresh observation and context")
+    if context.media.observation_sha256 != observation.observation_sha256:
+        raise RecoveryContractError("opaque media reference must bind the current fresh observation bytes")
+    expected = {
+        "task": binding.public_task_description_sha256,
+        "causal_intent": binding.public_causal_intent_sha256,
+    }
+    for value in (context.task, context.causal_intent):
+        if value.description_registry_sha256 != binding.public_description_registry_sha256:
+            raise RecoveryContractError("actor text is not from the binding's approved public description registry")
+        if value.text_sha256 != expected[value.kind]:
+            raise RecoveryContractError("actor text does not match the binding's approved public description")
+        lowered = value.text.casefold()
+        if binding.target_name.casefold() in lowered or binding.source_group_id in lowered:
+            raise RecoveryContractError("actor text leaks a private target or source identifier")
+        if any(key in lowered for key in _PRIVATE_KEYS):
+            raise RecoveryContractError("actor text may not name a private teacher field")
+    # Do not call DartObservation.public(): it would forward arbitrary
+    # observation_ref text that this adapter cannot prove to be non-private.
     return {
-        "task": context.task,
-        "causal_intent": context.causal_intent,
-        "observation": observation.public(),
+        "task": context.task.text,
+        "causal_intent": context.causal_intent.text,
+        "description_registry_sha256": binding.public_description_registry_sha256,
+        "observation": {
+            "policy_clock": observation.policy_clock,
+            "state61_sha256": observation.state61_sha256,
+            "observation_sha256": observation.observation_sha256,
+            "media_kind": context.media.kind,
+            "observation_fresh": True,
+            "actor_visible": True,
+        },
         "actor_visible": True,
     }
 
@@ -407,6 +485,141 @@ class PoseServoEngine(Protocol):
 
     def raw23_for_token(self, snapshot: PrivateGraspSnapshot, token: str) -> Sequence[float] | None: ...
 
+    def acknowledge_actual_clean_application(self, applied: AppliedActionReceipt) -> None: ...
+
+    def discard_unapplied_proposal(self, applied: AppliedActionReceipt) -> None: ...
+
+
+@dataclass(frozen=True)
+class _PendingCleanProposal:
+    snapshot: PrivateGraspSnapshot
+    token: str
+    intended23: tuple[float, ...]
+
+
+def _applied_receipt_identity(applied: AppliedActionReceipt) -> str:
+    """Stable identity for a one-time runtime receipt, never an actor value."""
+
+    if not isinstance(applied, AppliedActionReceipt):
+        raise RecoveryContractError("expected an applied raw23 receipt")
+    return canonical_sha256(
+        {
+            "status": applied.status,
+            "applied23": list(applied.applied23),
+            "applied_action_bytes_sha256": applied.applied_action_bytes_sha256,
+            "runtime_step_receipt_sha256": applied.runtime_step_receipt_sha256,
+            "pre_action_policy_clock": applied.pre_action_policy_clock,
+            "pre_action_state61_sha256": applied.pre_action_state61_sha256,
+            "pre_action_observation_sha256": applied.pre_action_observation_sha256,
+        }
+    )
+
+
+def _assert_pending_receipt(
+    pending: _PendingCleanProposal, applied: AppliedActionReceipt, *, require_different: bool
+) -> None:
+    """Bind an actual runtime step to a preview without advancing on a proposal."""
+
+    if not isinstance(applied, AppliedActionReceipt) or applied.status != "APPLIED":
+        raise RecoveryContractError("a pending teacher proposal needs an APPLIED runtime receipt")
+    snapshot = pending.snapshot
+    if (
+        applied.pre_action_policy_clock != snapshot.policy_clock
+        or applied.pre_action_state61_sha256 != snapshot.state61_sha256
+        or applied.pre_action_observation_sha256 != snapshot.observation_sha256
+    ):
+        raise RecoveryContractError("runtime receipt is stale or belongs to another clean query")
+    actual = tuple(validate_raw23_action(applied.applied23))
+    if applied.applied_action_bytes_sha256 != raw23_wire_sha256(actual):
+        raise RecoveryContractError("runtime receipt bytes do not match its applied raw23 action")
+    exact = actual == pending.intended23 and applied.applied_action_bytes_sha256 == raw23_wire_sha256(pending.intended23)
+    if require_different and exact:
+        raise RecoveryContractError("a clean executed action must be acknowledged, not discarded")
+    if not require_different and not exact:
+        raise RecoveryContractError("runtime receipt did not execute the exact clean raw23 proposal")
+
+
+class TrustedGraspAction:
+    """Teacher-private proof of one exact clean command actually run by its runtime.
+
+    It has no public constructor: it is minted only after a fresh runtime's
+    one-time receipt has been consumed and the corresponding native
+    ``PoseTeacher.executed`` callback accepted the action.
+    """
+
+    def __init__(
+        self,
+        *,
+        mint_capability: object,
+        authority: object,
+        binding_identity: str,
+        token: str,
+        command: TeacherCommand,
+        applied: AppliedActionReceipt,
+    ) -> None:
+        if mint_capability is not _TRUSTED_TRACE_MINT_CAPABILITY:
+            raise RecoveryContractError("trusted GRASP actions may only be minted after runtime acknowledgement")
+        self._authority = authority
+        self._binding_identity = binding_identity
+        self._token = _text(token, "executed PoseTeacher token")
+        self._command = command
+        self._applied = applied
+
+    @property
+    def token(self) -> str:
+        """Teacher-only selected native token; never place this in actor input."""
+
+        return self._token
+
+    @property
+    def runtime_step_receipt_sha256(self) -> str:
+        return self._applied.runtime_step_receipt_sha256
+
+
+class TrustedGraspEvidenceTrace:
+    """Private local-physics trace rooted in a runtime-acknowledged command.
+
+    A caller cannot upgrade arbitrary ``frames``/``RIGHT_CLOSE`` strings to a
+    certified outcome: the trace is opened by the teacher with an opaque,
+    instance-specific action proof.  A future live recorder still must supply
+    the private physics frames; this CPU seam deliberately does not claim such
+    a recorder is already bound.
+    """
+
+    def __init__(
+        self, *, mint_capability: object, authority: object, binding_identity: str, first_action: TrustedGraspAction
+    ) -> None:
+        if mint_capability is not _TRUSTED_TRACE_MINT_CAPABILITY:
+            raise RecoveryContractError("local evidence traces may only be opened by the teacher")
+        if first_action._authority is not authority or first_action._binding_identity != binding_identity:
+            raise RecoveryContractError("local evidence trace needs this teacher's trusted executed action")
+        self._authority = authority
+        self._binding_identity = binding_identity
+        self._actions = [first_action]
+        self._entries: list[tuple[dict[str, object], TrustedGraspAction | None]] = []
+
+    def record_private_physics_frame(
+        self, frame: Mapping[str, object], *, action: TrustedGraspAction | None = None
+    ) -> None:
+        if not isinstance(frame, Mapping):
+            raise RecoveryContractError("private physics frame must be a mapping")
+        if action is not None:
+            if action._authority is not self._authority or action._binding_identity != self._binding_identity:
+                raise RecoveryContractError("physics frame action belongs to another teacher/binding")
+            received = frame.get("runtime_step_receipt_sha256")
+            if received != action.runtime_step_receipt_sha256:
+                raise RecoveryContractError("physics frame lacks the matching actual runtime-step receipt")
+            if action not in self._actions:
+                self._actions.append(action)
+        self._entries.append((dict(frame), action))
+
+    def _trusted_entries(
+        self, *, authority: object, binding_identity: str
+    ) -> tuple[tuple[dict[str, object], TrustedGraspAction | None], ...]:
+        if authority is not self._authority or binding_identity != self._binding_identity:
+            raise RecoveryContractError("local evidence trace belongs to another teacher/binding")
+        return tuple(self._entries)
+
 
 class ExistingPoseServoEngine:
     """Thin injection wrapper around the existing PoseTeacher + SafeServo APIs.
@@ -429,25 +642,56 @@ class ExistingPoseServoEngine:
         self._safe_servo_class = safe_servo_class
         self._token_to_action = token_to_action
         self._servo_limits = servo_limits
+        self._binding_identity: str | None = None
+        self._teacher: Any | None = None
+        self._pending: _PendingCleanProposal | None = None
 
-    def ranked_tokens(self, snapshot: PrivateGraspSnapshot, binding: SealedGraspBinding) -> Sequence[str]:
-        # A fresh object is rebuilt from current verified grasp state.  The
-        # persistent CLOSE flag is reconstructed only from actual current target
-        # holding, never from a prior demo, teacher proposal, or action request.
-        teacher = self._pose_teacher_class({"verb": "GRASP", "hand": binding.hand})
+    @staticmethod
+    def _binding_identity_for(binding: SealedGraspBinding) -> str:
+        # Private identity stays in-process; no actor/public receipt receives it.
+        return canonical_sha256(
+            {
+                "source_group_id": binding.source_group_id,
+                "target_name": binding.target_name,
+                "hand": binding.hand,
+                "intent_sha256": binding.intent_sha256,
+            }
+        )
+
+    def _teacher_for(self, snapshot: PrivateGraspSnapshot, binding: SealedGraspBinding) -> Any:
+        identity = self._binding_identity_for(binding)
         held = _mapping_bool(snapshot.teacher_frame["held"], "held", allow_unknown=True)
         if held[binding.hand] is None:
             raise RecoveryContractError("UNKNOWN current target hold blocks GRASP teacher")
-        if held[binding.hand] is True:
-            teacher.close_issued = True
-        ranked = teacher.ranked(
-            snapshot.robot_state,
-            snapshot.teacher_frame,
-            snapshot.goal_world,
-            snapshot.base_world,
-            snapshot.grips,
-            snapshot.servo_model,
-        )
+        if self._binding_identity is None:
+            # A new session cannot infer a previous CLOSE lifecycle from scene
+            # truth.  Fresh GRASP collection starts empty; joining an existing
+            # hold would make teacher state unverifiable.
+            if held[binding.hand] is True:
+                raise RecoveryContractError("new GRASP teacher session cannot infer an already-held target lifecycle")
+            self._binding_identity = identity
+            self._teacher = self._pose_teacher_class({"verb": "GRASP", "hand": binding.hand})
+        elif self._binding_identity != identity:
+            raise RecoveryContractError("PoseTeacher engine may not switch sealed binding mid-session")
+        if self._teacher is None:
+            raise RecoveryContractError("PoseTeacher session was not initialized")
+        return self._teacher
+
+    def ranked_tokens(self, snapshot: PrivateGraspSnapshot, binding: SealedGraspBinding) -> Sequence[str]:
+        if self._pending is not None:
+            raise RecoveryContractError("previous PoseTeacher proposal needs explicit apply acknowledgement or discard")
+        teacher = self._teacher_for(snapshot, binding)
+        try:
+            ranked = teacher.ranked(
+                snapshot.robot_state,
+                snapshot.teacher_frame,
+                snapshot.goal_world,
+                snapshot.base_world,
+                snapshot.grips,
+                snapshot.servo_model,
+            )
+        except RuntimeError as exc:
+            raise RecoveryContractError("PoseTeacher rejected the current GRASP lifecycle") from exc
         if not isinstance(ranked, Sequence) or isinstance(ranked, (str, bytes)):
             raise RecoveryContractError("PoseTeacher must return an ordered token sequence")
         result = tuple(_text(token, "PoseTeacher token") for token in ranked)
@@ -456,6 +700,8 @@ class ExistingPoseServoEngine:
         return result
 
     def raw23_for_token(self, snapshot: PrivateGraspSnapshot, token: str) -> Sequence[float] | None:
+        if self._pending is not None:
+            raise RecoveryContractError("cannot preview another action while a PoseTeacher proposal is pending")
         action = self._token_to_action(token)
         servo = self._safe_servo_class(
             snapshot.servo_model,
@@ -467,7 +713,33 @@ class ExistingPoseServoEngine:
             return None
         if getattr(servo, "done", False):
             return None
-        return validate_raw23_action(servo.next_action(snapshot.robot_state))
+        result = tuple(validate_raw23_action(servo.next_action(snapshot.robot_state)))
+        self._pending = _PendingCleanProposal(snapshot=snapshot, token=token, intended23=result)
+        return result
+
+    def acknowledge_actual_clean_application(self, applied: AppliedActionReceipt) -> None:
+        """Advance native teacher lifecycle only after exact clean raw23 apply."""
+
+        pending = self._pending
+        if pending is None:
+            raise RecoveryContractError("no PoseTeacher proposal awaits an actual clean acknowledgement")
+        _assert_pending_receipt(pending, applied, require_different=False)
+        if self._teacher is None:
+            raise RecoveryContractError("missing PoseTeacher lifecycle for acknowledged action")
+        try:
+            self._teacher.executed(pending.token, pending.snapshot.teacher_frame)
+        except RuntimeError as exc:
+            raise RecoveryContractError("PoseTeacher rejected acknowledged native lifecycle transition") from exc
+        self._pending = None
+
+    def discard_unapplied_proposal(self, applied: AppliedActionReceipt) -> None:
+        """Clear a noisy/rejected proposal without advancing PoseTeacher state."""
+
+        pending = self._pending
+        if pending is None:
+            raise RecoveryContractError("no PoseTeacher proposal is available to discard")
+        _assert_pending_receipt(pending, applied, require_different=True)
+        self._pending = None
 
 
 class PrivilegedPoseGraspTeacher:
@@ -482,8 +754,19 @@ class PrivilegedPoseGraspTeacher:
         self.binding = binding
         self._world = world
         self._engine = engine
+        self._pending: tuple[_PendingCleanProposal, TeacherCommand] | None = None
+        # This capability is deliberately per teacher session.  It is never
+        # serialized or projected and makes an unacknowledged proposal unable
+        # to seed a local-success trace.
+        self._trace_authority = object()
+
+    @property
+    def _binding_identity(self) -> str:
+        return ExistingPoseServoEngine._binding_identity_for(self.binding)
 
     def clean_action(self, observation: DartObservation, *, intent_bundle_id: str) -> TeacherCommand:
+        if self._pending is not None:
+            raise RecoveryContractError("previous clean teacher proposal needs runtime acknowledgement or noisy discard")
         if not isinstance(observation, DartObservation) or observation.observation_fresh is not True:
             raise RecoveryContractError("teacher requires a fresh DartObservation")
         if intent_bundle_id != self.binding.intent_bundle_id:
@@ -515,7 +798,7 @@ class PrivilegedPoseGraspTeacher:
                         "raw23_wire_sha256": raw23_wire_sha256(action),
                     }
                 )
-                return TeacherCommand(
+                command = TeacherCommand(
                     clean_intended23=action,
                     observed_policy_clock=observation.policy_clock,
                     observed_state61_sha256=observation.state61_sha256,
@@ -523,7 +806,71 @@ class PrivilegedPoseGraspTeacher:
                     intent_bundle_id=intent_bundle_id,
                     fresh_query_receipt_sha256=receipt,
                 )
+                self._pending = (_PendingCleanProposal(snapshot=snapshot, token=token, intended23=action), command)
+                return command
         raise RecoveryContractError("no eligible current-state PoseTeacher/SafeServo candidate")
+
+    def acknowledge_runtime_clean_application(
+        self, runtime: "FreshRolloutRaw23Runtime", applied: AppliedActionReceipt
+    ) -> TrustedGraspAction:
+        """Consume an exact runtime step, then (and only then) advance lifecycle.
+
+        ``clean_action`` merely previews.  The separate runtime receipt prevents
+        a caller from claiming a token was run, and advancing the existing
+        native PoseTeacher is delayed until that receipt passes all raw23 and
+        pre-state checks.
+        """
+
+        pending_pair = self._pending
+        if pending_pair is None:
+            raise RecoveryContractError("no clean teacher proposal awaits runtime acknowledgement")
+        pending, command = pending_pair
+        _assert_pending_receipt(pending, applied, require_different=False)
+        if not isinstance(runtime, FreshRolloutRaw23Runtime):
+            raise RecoveryContractError("clean teacher acknowledgement requires FreshRolloutRaw23Runtime")
+        runtime._consume_verified_receipt(applied)
+        try:
+            self._engine.acknowledge_actual_clean_application(applied)
+        finally:
+            # The real control already occurred.  Never allow a retry to make
+            # a stale raw23 receipt look like a second authorized control.
+            self._pending = None
+        return TrustedGraspAction(
+            mint_capability=_TRUSTED_TRACE_MINT_CAPABILITY,
+            authority=self._trace_authority,
+            binding_identity=self._binding_identity,
+            token=pending.token,
+            command=command,
+            applied=applied,
+        )
+
+    def acknowledge_runtime_noisy_application(
+        self, runtime: "FreshRolloutRaw23Runtime", applied: AppliedActionReceipt
+    ) -> None:
+        """Discard an actually applied noisy action without advancing clean lifecycle."""
+
+        pending_pair = self._pending
+        if pending_pair is None:
+            raise RecoveryContractError("no clean teacher proposal is available for noisy discard")
+        pending, _command = pending_pair
+        _assert_pending_receipt(pending, applied, require_different=True)
+        if not isinstance(runtime, FreshRolloutRaw23Runtime):
+            raise RecoveryContractError("noisy teacher discard requires FreshRolloutRaw23Runtime")
+        runtime._consume_verified_receipt(applied)
+        try:
+            self._engine.discard_unapplied_proposal(applied)
+        finally:
+            self._pending = None
+
+    def begin_local_grasp_evidence(self, action: TrustedGraspAction) -> TrustedGraspEvidenceTrace:
+        """Open a private evidence trace only from one trusted runtime action."""
+
+        return TrustedGraspEvidenceTrace(
+            mint_capability=_TRUSTED_TRACE_MINT_CAPABILITY,
+            authority=self._trace_authority,
+            binding_identity=self._binding_identity,
+            first_action=action,
+        )
 
 
 class FreshRuntimeHooks(Protocol):
@@ -543,6 +890,7 @@ class FreshRolloutRaw23Runtime:
         self._hooks = hooks
         self._last: DartObservation | None = None
         self._last_clock: int | None = None
+        self._unconsumed_receipt_ids: set[str] = set()
 
     def observe(self) -> DartObservation:
         observation = self._hooks.observe_current()
@@ -579,7 +927,16 @@ class FreshRolloutRaw23Runtime:
             or applied.applied_action_bytes_sha256 != raw23_wire_sha256(applied.applied23)
         ):
             raise RecoveryContractError("runtime raw23 byte receipt does not match requested action")
+        self._unconsumed_receipt_ids.add(_applied_receipt_identity(applied))
         return applied
+
+    def _consume_verified_receipt(self, applied: AppliedActionReceipt) -> None:
+        """One-time internal handoff to the teacher acknowledgement boundary."""
+
+        identity = _applied_receipt_identity(applied)
+        if identity not in self._unconsumed_receipt_ids:
+            raise RecoveryContractError("teacher acknowledgement needs an unconsumed receipt from this exact runtime")
+        self._unconsumed_receipt_ids.remove(identity)
 
 
 @dataclass(frozen=True)
@@ -587,6 +944,7 @@ class GraspPostconditionConfig:
     """Pinned local-GRASP physics requirement; never an official task predicate."""
 
     physics_dt_seconds: float
+    physics_clock_receipt_sha256: str
     stable_ticks: int = 12
     stable_seconds: float = 0.5
     target_in_hand_translation_m: float = 0.004
@@ -595,6 +953,7 @@ class GraspPostconditionConfig:
     hand_lift_m: float = 0.025
 
     def __post_init__(self) -> None:
+        require_sha256(self.physics_clock_receipt_sha256, field="physics_clock_receipt_sha256")
         for field in (
             "physics_dt_seconds",
             "stable_seconds",
@@ -616,6 +975,7 @@ class GraspPostconditionConfig:
             {
                 "schema": "p107_local_grasp_postcondition_v2",
                 "physics_dt_seconds": self.physics_dt_seconds,
+                "physics_clock_receipt_sha256": self.physics_clock_receipt_sha256,
                 "stable_ticks": self.stable_ticks,
                 "stable_seconds": self.stable_seconds,
                 "target_in_hand_translation_m": self.target_in_hand_translation_m,
@@ -652,42 +1012,118 @@ def certify_local_grasp(
     *,
     binding: SealedGraspBinding,
     config: GraspPostconditionConfig,
-    frames: Sequence[Mapping[str, object]],
-    issued_tokens: Sequence[str | None],
+    trace: object,
     local_outcome_class: Callable[..., Any],
 ) -> LocalGraspEvidence:
-    """Run the reviewed LocalOutcome predicate with extra cadence validation.
+    """Run LocalOutcome only over a teacher/runtime-bound private trace.
 
-    The supplied frames remain private.  A missing timestamp, duplicate tick,
-    UNKNOWN hold/contact, or any unavailable native API yields UNKNOWN rather
-    than invented solid contact or recovery success.
+    Bare caller-supplied ``frames`` and ``issued_tokens`` used to permit a
+    forged ``RIGHT_CLOSE`` to obtain local success.  This entry point now
+    accepts only a trace opened from an exact runtime-acknowledged clean action.
+    An absent/unbound trace is candidate-only UNKNOWN, never a local certified
+    success.  Its frames remain private.
     """
 
-    if len(frames) != len(issued_tokens) or not frames:
-        raise RecoveryContractError("physical evidence needs one token per nonempty frame sequence")
+    if not isinstance(trace, TrustedGraspEvidenceTrace):
+        return _unknown_local_evidence(
+            binding=binding,
+            config=config,
+            reason="UNTRUSTED_OR_UNBOUND_EXECUTION_TRACE",
+            trace_kind=type(trace).__name__,
+        )
+    try:
+        entries = trace._trusted_entries(
+            authority=trace._authority,
+            binding_identity=ExistingPoseServoEngine._binding_identity_for(binding),
+        )
+    except RecoveryContractError:
+        return _unknown_local_evidence(
+            binding=binding,
+            config=config,
+            reason="UNTRUSTED_OR_WRONG_BINDING_EXECUTION_TRACE",
+            trace_kind=type(trace).__name__,
+        )
+    if not entries:
+        return _unknown_local_evidence(
+            binding=binding,
+            config=config,
+            reason="NO_TRUSTED_PRIVATE_PHYSICS_EVIDENCE",
+            trace_kind=type(trace).__name__,
+        )
+    if not any(action is not None and action.token == binding.hand.upper() + "_CLOSE" for _, action in entries):
+        return _unknown_local_evidence(
+            binding=binding,
+            config=config,
+            reason="NO_RUNTIME_ACKNOWLEDGED_GRASP_CLOSE",
+            trace_kind=type(trace).__name__,
+        )
     ticks: list[int] = []
     times: list[float] = []
     copied: list[dict[str, object]] = []
-    for index, raw in enumerate(frames):
-        if not isinstance(raw, Mapping):
-            raise RecoveryContractError("physical evidence frame must be a mapping")
+    issued_tokens: list[str | None] = []
+    for raw, action in entries:
         frame = dict(raw)
         if frame.get("target_uid") != binding.target_name:
-            raise RecoveryContractError("physical evidence target does not match sealed GRASP target")
+            return _unknown_local_evidence(
+                binding=binding,
+                config=config,
+                reason="PHYSICS_EVIDENCE_TARGET_MISMATCH",
+                trace_kind=type(trace).__name__,
+            )
         tick = frame.get("tick")
         timestamp = frame.get("physics_time_seconds")
+        if frame.get("physics_clock_receipt_sha256") != config.physics_clock_receipt_sha256:
+            return _unknown_local_evidence(
+                binding=binding,
+                config=config,
+                reason="PHYSICS_CLOCK_RECEIPT_MISMATCH_OR_MISSING",
+                trace_kind=type(trace).__name__,
+            )
         if type(tick) is not int or tick < 0 or (ticks and tick != ticks[-1] + 1):
-            raise RecoveryContractError("physical evidence needs distinct contiguous simulator ticks")
-        now = _finite(timestamp, "physics_time_seconds")
+            return _unknown_local_evidence(
+                binding=binding,
+                config=config,
+                reason="MISSING_OR_NONCONTIGUOUS_PHYSICS_TICKS",
+                trace_kind=type(trace).__name__,
+            )
+        try:
+            now = _finite(timestamp, "physics_time_seconds")
+        except RecoveryContractError:
+            return _unknown_local_evidence(
+                binding=binding,
+                config=config,
+                reason="MISSING_OR_INVALID_PHYSICS_TIMESTAMP",
+                trace_kind=type(trace).__name__,
+            )
         if times and now <= times[-1]:
-            raise RecoveryContractError("physical evidence timestamps must be strictly increasing")
+            return _unknown_local_evidence(
+                binding=binding,
+                config=config,
+                reason="STALE_OR_DUPLICATE_PHYSICS_TIMESTAMP",
+                trace_kind=type(trace).__name__,
+            )
         if times and not math.isclose(now - times[-1], config.physics_dt_seconds, rel_tol=0.0, abs_tol=1e-9):
-            raise RecoveryContractError("physics timestamps do not match the pinned physics_dt_seconds")
+            return _unknown_local_evidence(
+                binding=binding,
+                config=config,
+                reason="PHYSICS_CADENCE_DIFFERS_FROM_PINNED_CONFIG",
+                trace_kind=type(trace).__name__,
+            )
+        if not _local_grasp_frame_complete(frame):
+            return _unknown_local_evidence(
+                binding=binding,
+                config=config,
+                reason="INCOMPLETE_LOCAL_GRASP_SENSOR_EVIDENCE",
+                trace_kind=type(trace).__name__,
+            )
         ticks.append(tick)
         times.append(now)
         # LocalOutcome does not know this additional receipt field.
         frame.pop("physics_time_seconds", None)
+        frame.pop("physics_clock_receipt_sha256", None)
+        frame.pop("runtime_step_receipt_sha256", None)
         copied.append(frame)
+        issued_tokens.append(None if action is None else action.token)
     if len(copied) < config.stable_ticks or times[-1] - times[-config.stable_ticks] + 1e-12 < config.stable_seconds:
         status, reason = "UNKNOWN", "INSUFFICIENT_DISTINCT_TICKS_OR_STABLE_SECONDS"
     else:
@@ -701,7 +1137,7 @@ def certify_local_grasp(
                 verdict = verifier.update(frame, token)
             status = str(verdict.get("outcome", "UNKNOWN"))
             reason = str(verdict.get("reason", "LOCAL_OUTCOME_UNAVAILABLE"))
-        except (KeyError, TypeError, ValueError, RuntimeError):
+        except (AttributeError, KeyError, TypeError, ValueError, RuntimeError):
             status, reason = "UNKNOWN", "LOCAL_OUTCOME_UNAVAILABLE"
         if status == "SUCCEEDED":
             # Existing LocalOutcome pins 3cm/2.5cm lift and 4mm/3deg
@@ -731,3 +1167,46 @@ def certify_local_grasp(
         }
     )
     return LocalGraspEvidence(status=status, reason=reason, evidence_sha256=evidence, postcondition_sha256=config.sha256)
+
+
+def _local_grasp_frame_complete(frame: Mapping[str, object]) -> bool:
+    """Preflight native LocalOutcome's required private fields to yield UNKNOWN."""
+
+    try:
+        if not isinstance(frame.get("target_pose"), Sequence) or not isinstance(frame.get("hand_poses"), Mapping):
+            return False
+        if set(frame["hand_poses"]) != {"left", "right"}:
+            return False
+        _mapping_bool(frame.get("held", {}), "held", allow_unknown=True)
+        fingers = _mapping_bool(frame.get("finger_contact", {}), "finger_contact", allow_unknown=True)
+        if any(value is None for value in fingers.values()):
+            return False
+        if frame.get("contacts_known") is not True or type(frame.get("payload_ok")) is not bool:
+            return False
+        if not isinstance(frame.get("forbidden_contacts"), Sequence) or isinstance(frame.get("forbidden_contacts"), (str, bytes)):
+            return False
+    except (KeyError, TypeError, RecoveryContractError):
+        return False
+    return True
+
+
+def _unknown_local_evidence(
+    *, binding: SealedGraspBinding, config: GraspPostconditionConfig, reason: str, trace_kind: str
+) -> LocalGraspEvidence:
+    """Return an explicit candidate-only UNKNOWN without invoking LocalOutcome."""
+
+    evidence = canonical_sha256(
+        {
+            "schema": "p107_local_grasp_evidence_v3",
+            "target_name_sha256": sha256(binding.target_name.encode()).hexdigest(),
+            "hand": binding.hand,
+            "status": "UNKNOWN",
+            "reason": reason,
+            "trace_kind": trace_kind,
+            "postcondition_sha256": config.sha256,
+            "official_task_success": False,
+        }
+    )
+    return LocalGraspEvidence(
+        status="UNKNOWN", reason=reason, evidence_sha256=evidence, postcondition_sha256=config.sha256
+    )
