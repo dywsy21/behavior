@@ -63,6 +63,14 @@ R1Pro 动作始终保存真实 23D。模型导出才补齐 27D 的 `[7,8,17,18]`
 
 ## 当前状态、阻塞与交接
 
+2026-10-01 22:18（北京时间）状态覆盖：父代理已亲自查看全部24/24原始 pilot 图；三个 shard 修订后均接受为 **AUX visual_relation_calibration_only**，并保持 `human_reviewed=false`、`APPROVED_AFTER_REVISION`、`CANDIDATE_ONLY`，绝不称 human review 或阶段3数据。最终工件为：shard0 pilot/reviews SHA `3b98705eae688cc93ff8e6735a515fa8aab38c61ceca470495b499f5bf683ad3` / `25d259d3d8651893bc106eaacd1c907071de86d392dba2ed093fbd42d379ceed`；shard1 `1d2b53f528bf6de3b9e7dcc07baeea140c21dcd4b2816f17910e3e48a87b05b0` / `5638834a114294e5e47dd067aa1762884ddc23dfd00c0c1cf9ce2f4b3e9ceb6c`；shard2 `869bd60f2c9a4115f1a9f511e1753a2a5c3ff6885614518ba867bbeb49f030bf` / `64b5e62323c2d030aadaba30b43d6f86a513e88a3f7d90ce05773ace4de80ad9`。这些记录仍无 outcome/action 正标签、无 final-scale release，不能训练或计入规模目标。
+
+canonical data protocol 已提交为 `b697097bd57bf94ab6f6c7e1e3e7bdb2b78f2480`，五个标准库测试通过；sim 实现为 `e368f98`，12个标准库测试、`py_compile`、CLI help 和 diff 检查通过，正接入 canonical protocol。上述只证明本地工程合同，所有真实 OmniGibson restore/物理真值仍**未验证**；fake/模拟回执不得训练。代码在独立审查结论前不合入协调分支。
+
+新的 packager worker 拥有`/home/wsy/behavior-worktrees/p107-package`（`feat/p107-package-20261001`），负责 publisher/audit/explicit-view dataset；独立 `prep_contract_review` 正审 protocol+sim。下一批仍不得排队，直到 protocol/infra gates 通过；它必须 task/skill 分层，不能重用当前按前序行偏置的24项。P107仍进行中，未完成。
+
+网络状态更新：VPN loopback 已恢复、lc1–lc3路由可达，但先前 SSH authentication 失败；获授权的 SSH auth handoff 正在进行，尚无新服务器状态。robo `127.0.0.1:23117` 仍 closed。无凭据写入本文，无新服务器job/env变动。
+
 2026-10-01 22:13（北京时间）状态覆盖：用户现已明确授权“现在可以重连 ec cli”。infra owner 正仅以既有已认证 profile 重连；连接尚未确认，未启动作业、未改环境/数据，也不在文档记录任何凭据。原 PUBLIC metadata/source-version 只读 fallback 保留至连通性实核。
 
 父代理已亲自看完24/24原始 pilot 图。修订后的 shard0 八项已接受为 **AUX visual_relation_calibration_only**，其元数据固定为 `human_reviewed=false`、`parent_root_model_review_completed=true`、`APPROVED_AFTER_REVISION`；pilot SHA `3b98705eae688cc93ff8e6735a515fa8aab38c61ceca470495b499f5bf683ad3`，reviews SHA `25d259d3d8651893bc106eaacd1c907071de86d392dba2ed093fbd42d379ceed`。它仍是 `CANDIDATE_ONLY`，等待外部 provenance/split release，且没有 recovery/outcome/action masks，不能作为恢复或训练数据。

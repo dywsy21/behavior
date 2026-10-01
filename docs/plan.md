@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-01 22:18（北京时间）：P107 三分片仅获辅助视觉关系候选资格；协议/仿真待独审与真实门（Codex / P107-COORD）
+
+- 父代理已逐张查看24/24原始 pilot 图；三分片修订后均为`AUX visual_relation_calibration_only`、`human_reviewed=false`、`APPROVED_AFTER_REVISION`、`CANDIDATE_ONLY`，不是human/阶段3数据。s0 pilot/reviews SHA `3b98705eae688cc93ff8e6735a515fa8aab38c61ceca470495b499f5bf683ad3`/`25d259d3d8651893bc106eaacd1c907071de86d392dba2ed093fbd42d379ceed`；s1 `1d2b53f528bf6de3b9e7dcc07baeea140c21dcd4b2816f17910e3e48a87b05b0`/`5638834a114294e5e47dd067aa1762884ddc23dfd00c0c1cf9ce2f4b3e9ceb6c`；s2 `869bd60f2c9a4115f1a9f511e1753a2a5c3ff6885614518ba867bbeb49f030bf`/`64b5e62323c2d030aadaba30b43d6f86a513e88a3f7d90ce05773ace4de80ad9`。零outcome/action正标签、零最终规模发布/训练。
+- protocol提交`b697097bd57bf94ab6f6c7e1e3e7bdb2b78f2480`（5标准库测试通过）；sim提交`e368f98`（12标准库测试、py_compile、CLI help、diff通过），正在接入canonical protocol。真实OG restore/物理真值均未验证，fake回执不可训练；在`prep_contract_review`独审解决前不得合并。新`p107-package`/`feat/p107-package-20261001`负责publisher/audit/explicit-view dataset。不得开启下一队列；后续候选需task/skill分层而非当前24条的前5任务偏置。
+- VPN loopback已恢复、lc1–3路由可达，但SSH曾认证失败；获授权SSH auth handoff进行中，尚无新服务器状态/作业/env变化。robo 23117仍closed，文档无凭据。P107仍进行中，未完成。
+
 ### 2026-10-01 22:13（北京时间）：P107 shard0修订后仅获辅助校准候选资格，ec CLI重连尚未确认（Codex / P107-COORD）
 
 - 用户已明确授权“现在可以重连 ec cli”；infra owner正仅用既有已认证profile重连，尚无连接成功回执，0新job/env/data改动，文档不记录凭据。连接确认前真实提取/restore继续阻塞；PUBLIC metadata/source-version/cache≤100MiB只读fallback仍是唯一安全infra工作。
