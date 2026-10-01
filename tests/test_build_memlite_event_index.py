@@ -61,8 +61,9 @@ class BuildEventIndexTests(unittest.TestCase):
                 self.assertIsNone(event["action"]["actual_executed_length"])
                 self.assertEqual(event["action"]["start_frame"], event["observation"]["frame"])
                 self.assertEqual(event["usage_role"], roles[event["source"]["source_group_id"]])
-            self.assertFalse(result["coverage"]["missing_grid"])
-            self.assertTrue(result["coverage"]["coverage_complete"])
+            self.assertEqual(result["coverage"]["missing_required_task_skill_pairs"], None)
+            self.assertEqual(result["coverage"]["required_pair_coverage_status"], "NOT_DECLARED")
+            self.assertTrue(result["coverage"]["global_vocabulary_complete"])
             resume = builder.resume_index(release, output, calibration_per_task=1,
                                           coverage_expectations=coverage(fixture),
                                           expected_inventory_seal_sha256=result["inventory_seal_sha256"])
@@ -107,9 +108,11 @@ class BuildEventIndexTests(unittest.TestCase):
             fixture = write_release(release)
             expected = json.loads(json.dumps(coverage(fixture)))
             expected["expected_skill_verbs"] = ["GRASP", "HOLD", "NAVIGATE", "PLACE", "PRESS"]
+            expected["required_task_skill_pairs"] = [{"task_index": 0, "skill_verb": "PLACE"}]
             result = builder.build_index(release, root / "output", coverage_expectations=expected, max_seconds=10)
-            self.assertFalse(result["coverage"]["coverage_complete"])
-            self.assertIn({"task_index": 0, "skill_verb": "PLACE"}, result["coverage"]["missing_grid"])
+            self.assertEqual(result["coverage"]["required_pair_coverage_status"], "INCOMPLETE")
+            self.assertIn({"task_index": 0, "skill_verb": "PLACE"},
+                          result["coverage"]["missing_required_task_skill_pairs"])
 
     def test_explicit_prefix_pilot_is_sealed_partial_and_cannot_resume_as_full(self):
         with tempfile.TemporaryDirectory() as folder:

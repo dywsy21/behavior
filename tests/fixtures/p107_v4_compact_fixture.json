@@ -97,9 +97,11 @@
     ]
   },
   "coverage_expectations": {
-    "schema_version": "p107-official-coverage-expectations-v1",
-    "official_metadata_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "schema_version": "p107-official-coverage-expectations-v2",
+    "official_task_metadata_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "official_skill_vocabulary_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     "expected_task_ids": [0],
-    "expected_skill_verbs": ["GRASP", "HOLD", "NAVIGATE", "PRESS"]
+    "expected_skill_verbs": ["GRASP", "HOLD", "NAVIGATE", "PRESS"],
+    "required_task_skill_pairs": null
   }
 }

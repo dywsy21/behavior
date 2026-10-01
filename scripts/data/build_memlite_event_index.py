@@ -304,13 +304,15 @@ def _write_jsonl(path: Path, rows: Iterable[Mapping[str, Any]]) -> dict[str, Any
 
 
 def validate_coverage_expectations(value: Mapping[str, Any]) -> dict[str, Any]:
-    """Validate an explicit official-metadata coverage contract, never a hardcoded 100×35."""
+    """Validate global official task/verb vocabulary without inventing task×verb requirements."""
     if not isinstance(value, Mapping):
         raise ValueError("coverage_expectations must be an object")
-    required = {"schema_version", "official_metadata_sha256", "expected_task_ids", "expected_skill_verbs"}
-    if set(value) != required or value["schema_version"] != "p107-official-coverage-expectations-v1":
+    required = {"schema_version", "official_task_metadata_sha256", "official_skill_vocabulary_sha256",
+                "expected_task_ids", "expected_skill_verbs", "required_task_skill_pairs"}
+    if set(value) != required or value["schema_version"] != "p107-official-coverage-expectations-v2":
         raise ValueError("coverage expectations must use the exact P107 official-metadata schema")
-    _sha(value["official_metadata_sha256"], "coverage_expectations.official_metadata_sha256")
+    _sha(value["official_task_metadata_sha256"], "coverage_expectations.official_task_metadata_sha256")
+    _sha(value["official_skill_vocabulary_sha256"], "coverage_expectations.official_skill_vocabulary_sha256")
     tasks, skills = value["expected_task_ids"], value["expected_skill_verbs"]
     if (not isinstance(tasks, list) or not tasks or any(type(task) is not int or task < 0 for task in tasks) or
             len(set(tasks)) != len(tasks) or tasks != sorted(tasks)):
@@ -318,6 +320,21 @@ def validate_coverage_expectations(value: Mapping[str, Any]) -> dict[str, Any]:
     if (not isinstance(skills, list) or not skills or any(not isinstance(skill, str) or not skill for skill in skills) or
             len(set(skills)) != len(skills) or skills != sorted(skills)):
         raise ValueError("expected_skill_verbs must be a nonempty sorted unique string list")
+    required_pairs = value["required_task_skill_pairs"]
+    if required_pairs is not None:
+        if not isinstance(required_pairs, list):
+            raise ValueError("required_task_skill_pairs must be null or a sorted unique official pair list")
+        previous: tuple[int, str] | None = None
+        for pair in required_pairs:
+            if not isinstance(pair, Mapping) or set(pair) != {"task_index", "skill_verb"}:
+                raise ValueError("required task/skill pairs must be exact objects")
+            task, skill = pair["task_index"], pair["skill_verb"]
+            if task not in tasks or skill not in skills:
+                raise ValueError("required task/skill pair is outside the official global vocabulary")
+            key = (task, skill)
+            if previous is not None and key <= previous:
+                raise ValueError("required task/skill pairs must be sorted and unique")
+            previous = key
     return dict(value)
 
 
@@ -348,18 +365,33 @@ def _coverage(events: list[Mapping[str, Any]], sources: list[Mapping[str, Any]],
                 episode_sets[(task, verb)].add(event["source"]["episode_index"])
     for (task, verb), episodes in episode_sets.items():
         grid[str(task)][verb]["unique_source_episodes"] = len(episodes)
-    missing = [{"task_index": task, "skill_verb": verb}
-               for task in tasks for verb in skills if grid[str(task)][verb]["event_candidates"] == 0]
+    required_pairs = expectations["required_task_skill_pairs"]
+    missing_required_pairs = (None if required_pairs is None else [
+        pair for pair in required_pairs
+        if grid[str(pair["task_index"])][pair["skill_verb"]]["event_candidates"] == 0
+    ])
+    expected_task_set, expected_skill_set = set(tasks), set(skills)
     return {
         "expectations": expectations,
         "expectations_sha256": canonical_sha256(expectations),
-        "found_grid": grid,
-        "missing_grid": missing,
-        "found_task_ids": sorted(observed_tasks & set(tasks)),
-        "unexpected_task_ids": sorted(observed_tasks - set(tasks)),
-        "found_skill_verbs": sorted(observed_skills & set(skills)),
-        "unexpected_skill_verbs": sorted(observed_skills - set(skills)),
-        "coverage_complete": not missing and not (observed_tasks - set(tasks)) and not (observed_skills - set(skills)),
+        # This matrix is observed source coverage, not an assertion that every
+        # verb must occur in every task.  An absent pair only becomes a failed
+        # requirement when it was explicitly supplied by official metadata.
+        "observed_task_skill_grid": grid,
+        "required_task_skill_pairs": required_pairs,
+        "missing_required_task_skill_pairs": missing_required_pairs,
+        "required_pair_coverage_status": (
+            "NOT_DECLARED" if required_pairs is None
+            else ("COMPLETE" if not missing_required_pairs else "INCOMPLETE")
+        ),
+        "found_task_ids": sorted(observed_tasks & expected_task_set),
+        "missing_task_ids": sorted(expected_task_set - observed_tasks),
+        "unexpected_task_ids": sorted(observed_tasks - expected_task_set),
+        "found_skill_verbs": sorted(observed_skills & expected_skill_set),
+        "missing_global_skill_verbs": sorted(expected_skill_set - observed_skills),
+        "unexpected_skill_verbs": sorted(observed_skills - expected_skill_set),
+        # Never call global presence a completed task×skill coverage matrix.
+        "global_vocabulary_complete": not (expected_task_set - observed_tasks) and not (expected_skill_set - observed_skills),
         "unique_input_source_episodes": len({source["episode_index"] for source in sources}),
         "unique_candidate_source_episodes": len({event["source"]["episode_index"] for event in events}),
         "unique_event_candidates": len({event["event_id"] for event in events}),
@@ -635,7 +667,7 @@ def main() -> None:
     parser.add_argument("--calibration-group-ids", type=Path,
                         help="predeclared one-per-line source group hashes or task/instance JSON objects")
     parser.add_argument("--coverage-expectations", type=Path, required=True,
-                        help="official task×skill expectation contract (100×35 for the full release)")
+                        help="official global task/verb contract; required task×verb pairs may be undeclared")
     parser.add_argument("--max-source-episodes", type=int,
                         help="explicit partial pilot prefix; seals partial coverage and never changes source SHA")
     parser.add_argument("--max-seconds", type=float, default=1800.0)
