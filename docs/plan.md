@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 CAL40 标准结构审计通过但仍严格阻断 stage3；v4 query text resolver 复审阻断派发（Codex / P107-COORD）
+
+- idle lc3 上唯一获准的 standard audit 已实际退出 `0`：UTC `18:49:30–18:50:12`（北京时间 `02:49:30–02:50:12`）、42s、1 CPU/8GiB/0 GPU；固定代码 `3f473fc5`，before/after hash 与 mode 均通过。完整本地回执为`/home/wsy/behavior-annotations/p107/validation/calibration40-standard-audit-8g-20261001T184204Z/receipts-local`（远端回执同名根）。结果是`PASS_WITH_STAGE3_TRAINING_BLOCKED`：结构上仍为`CANDIDATE_ONLY`，ready/training/stage3均false，403,257 source events、41 candidate/parent-reviewed views、10 accepted auxiliary、31 masked，outcome/recovery/corrective action仍均0；这是审计通过，**不是**数据或训练release。
+- root 对40条v4 query text的实际复核发现 category resolver 误将20次出现、12条quarantine的 raw entity 当作UNKNOWN，虽然它们与官方 category name 精确相等；reviewer据此BLOCK。producer只获窄v5修复：接受`raw == official_category`，不得把v4说成不可避免UNKNOWN、不得恢复suffix heuristic；修复和独审前0 annotation dispatch。q32 source entity为`camera_tripod_86`，正确显示为“camera tripod”；此前root的“camera supported on tripod”只是相机可见观察，**不是**target-release标签。
+- optional actor-query packer sidecar `2fc99e6`正在`/root/review_actor_query`独立审查，未批准前不集成。formal student/outcome/recovery/action-BC/training/live DART继续为0；不启robo、local RTX、simulator或新作业。
+
 ### 2026-10-02（北京时间）：P107 actor-query可选接口已复审集成；phase40全anchor root-model预检已留回执（Codex / P107-COORD）
 
 - independent review已批准actor-query chain，根按祖先顺序仅移植`5ea8912`→`74d3b2c`→`c28c0d0`→`3e51be9`，稳定代码SHA `19e19ed10426bdbaca4aa202b36094d34f5e5712`。root重跑actor14、audit5、protocol13、packer17与integration1（全过），ruff/diff checks亦过。它只增加sealed optional metadata/dataset projection接口，严格receipt、view/event/skill/producer registry绑定；无trainer/collator hookup、无训练release，既有包和`for_training`拒绝保持不变。remote audit仍固定在先前`3f`产物，不重写。

@@ -2,6 +2,12 @@
 
 2026-10-01 21:53（北京时间）。协调任务 `P107-COORD`；active-goal owner 是 Codex。**父代理是唯一的最终验收者和分层视觉抽样审查者。** 本文把[训练设计 §10.7](2026-09-29-memlite-gradient-training-design.md#107-阶段1未结束时可以并行准备什么2026-10-01)转为可执行台账；不表示数据已构造、质量已通过或阶段3已运行。
 
+### 2026-10-02：CAL40 standard audit结构通过，query text category resolver复审阻断
+
+idle lc3上的唯一8GiB standard-audit实际以exit0完成：UTC `18:49:30–18:50:12`（CST `02:49:30–02:50:12`）、42秒、1CPU/8GiB/0GPU，精确代码`3f473fc5`；before/after hash和模式均核验，local receipt在`/home/wsy/behavior-annotations/p107/validation/calibration40-standard-audit-8g-20261001T184204Z/receipts-local`。报告为`PASS_WITH_STAGE3_TRAINING_BLOCKED`：结构仍严格`CANDIDATE_ONLY`、ready/training/stage3皆false；403,257 source events、41 candidate/parent-reviewed views、10 accepted auxiliary、31 masked，outcome/recovery/corrective action=0。它只解除“审计未运行/未通过”的描述，**不**构成student、action-BC、recovery、DART或stage3数据release。
+
+root复核40条v4 query texts发现20次raw entity出现、12条quarantine其实是与official category name精确相等的名称；reviewer因此BLOCK，不能把v4 UNKNOWN写成不可避免。producer仅获窄v5修复`raw == official_category`，不能恢复suffix heuristic；修复、独审及actual text复核前不得annotation dispatch。q32 source `camera_tripod_86`正确渲染为camera tripod；root的“camera supported on tripod”仅为预检可见观察，非target-release标签。optional actor-query sidecar `2fc99e6`仍在独立review，未合入。live DART、outcome/recovery/action-BC、formal training继续为0；不启robo、local RTX或simulator。
+
 ### 2026-10-02 00:27:48–00:39:35：CAL40 受限 CPU decode、本地逐文件QA与review helper完成
 
 `prep_contract_review` 在 lc3 以 clean `0ccbe4e46f69d75f1ee2dc05be87b4889c518eb6` 写入`/data/workspace/wsy/behavior2026/p107/runs/calibration40-temporal-v1`：40 packets、400 requested slots、392 distinct frames、8 clamp duplicates、1,176 native PNG和40张仅review contact sheets，exit0/2:35.02/peak RSS170,740KiB。远端`du -sb`为493,532,423B（含目录项）；约束确实为1CPU/`nice 19`/`ionice idle`/RLIMIT4GiB、30分钟/2GiB cap、0GPU，未改shared/active env、其他job或lc1/lc2阶段1训练。manifest `ca9a3cd9735b4b9c4e145ae282cbc62d85362709c332e77432c4fae2fdac63f3` 的 remote sealed resume exit0/12.49秒。
