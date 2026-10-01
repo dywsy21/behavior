@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 phase40 CPU RGB decoder 已真实运行；query producer 因三项 P1 独审阻断（Codex / P107-COORD）
+
+- lc3 同一受限 phase40 批次的 decoder 现为**运行中**：timeout parent PID `1722446`，启动于`2026-10-01T18:11:00Z`（10-02 02:11 CST），CPU0、`nice 19`；固定40 windows×10 offsets=400 requested slots，396 distinct frames（4个boundary clamp），故预期最多1,188张native RGB。冻结输入仍为7项sealed inputs已核、`b3c961b`/renderer SHA `5bcb3451…81c9`和显式legacy `7f` module；输出只写`/data/workspace/wsy/behavior2026/p107/runs/phase-balanced-calibration40-v2-rgb-attempt2`，receipt在同级`.receipts/`。预算不变：1CPU/4GiB/30min/1.9GB guard/0GPU，8×A800仍0MiB/0%。这是启动回执，**不是**完成、PNG/RGB/packet、标注、release或训练回执。
+- 隔离 query producer `e7187061`虽已promote，但独立 review 与root表格QA共同以三项P1阻断：`pretty_entity`会丢5–8位alphanumeric noun tail（`box_of_oatmeal→boxof`、`boxing_gloves→boxing`、`electric_switch→electric`、`bottomcabinet→bottom`）；geometry遗漏lid/drawer/left/right parts；effect query泛化且没有实际entities。v2尚未用于任何annotation；author须保存新修订artifact，不覆盖当前artifact，修复并复审前不可消费。
+- additive actor-query contract `5ea8912`仅在隔离树就绪，独审`/root/review_actor_query`进行中；standard calibration pack仅因根已集成`67b8b52`而获真实rerun权限，binder的实际run/receipt仍待，不能假定已运行。formal student、recovery/action-BC、live DART和训练仍均为0。
+
 ### 2026-10-02（北京时间）：P107 stream pack独审通过已集成；phase40第二次仍在旧renderer参数解析前停止（Codex / P107-INTEGRATION）
 
 - 独立审查已批准`c776a7a797b3049b11af93dbbc65e5ab7fe72701`；根以`67b8b52`仅移植stream packer、focused tests和说明。review重跑full 403,257 events/20,000 groups scan为15.15s/119,116KiB，全严格验证/40 retained通过；注入sealed-source修改的second pass拒绝且无output，旧small fixtures字节不变。根本地`test_pack_memlite_event_labels.py`15/15、实际`tests/vlm_sft/test_trajectory_dataset_audit.py`4/4、packer CLI help与py_compile通过；它仍只是已集成修复，standard pack实际rerun待后续ticket，绝不称package/release通过。
