@@ -12,10 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 phase40已获有界CPU授权但首launch在renderer前因缺jq停止；stream pack修复待独审（Codex / P107-COORD）
+
+- phase40的7个metadata SHA与Git bundle已核，冻结源码为`/data/workspace/wsy/behavior2026/src/p107-phase-b3c961b`（`b3c961b`），输入已原子提升至`/data/workspace/wsy/behavior2026/p107/inputs/phase-balanced-calibration40-v2`。root已授权同一批40 windows×10 offsets×3 cameras、1CPU/4GiB/30min/1.9GB stopping guard/0GPU；首launcher在renderer/decode前以exit127停止，原因是远端缺`jq`，故0 PNG/RGB/output-run/labels/training/release。operator只以现有Python JSON替换外部runner的`jq`抽取、无env安装，验证后才重试**同一**有界批次，非新增采集。
+- isolated `p107-pack-stream`已推送`c776a7a797b3049b11af93dbbc65e5ab7fe72701`，现由独立reviewer复审，尚未集成/重跑。其full-v3 read-only scan为15.65s/119,012KiB（约116MiB，非119MiB），核403,257 events/20,000 groups/40 retained；15 pack+3 auditdataset+1 integration+36 recovery tests通过。recovery-dataset pytest在当前节点不可用，未安装依赖，故不写成全suite成功或pack发布。
+- source/local data-query/actor的隔离工作继续，但不移植根；DART/live=0、global goal未完成，且没有GPU/SIM/server-env或训练改动。
+
 ### 2026-10-02（北京时间）：P107 phase-balanced selector独审通过并已集成；lc3仅只读preflight、不得decode（Codex / P107-INTEGRATION）
 
 - 独立审查`/root/review_phase_sampler`已批准`deb000e`且无blocker；根分支只移植其三个scope文件，root code commit `b3c961b`（`select_memlite_phase_balanced_calibration_queue.py`、focused test、设计说明）。review核实7个seal/350,878B、legacy `7f` resume、40个unique且non-parent IDs、每phase10、source-group role/[start,end)/query-skill/clock合同，且真实mini-index只做locator、不需adapter。根本地再跑selector 2 tests、renderer 11 tests及两CLI `python -S --help`均通过。
-- 此集成仍仅是metadata candidate：40条phase queue未赋结果/恢复/动作标签、`for_training`不变、没有RGB decode或发布。lc3 node-only read-only preflight已PASS（01:51 CST；8×A800 80GB均0MiB/0%、RAM free约996GiB、data free约3.6TiB、既有VPN/SSH健康且未reconnect），receipt `/home/wsy/behavior-annotations/p107/lc3-phase40-preflight/2026-10-02T015133+0800.json` SHA `545809fe828b0b1fcf35b7dde3933382feeebb55ba3ae43f8de733c9bcbfa0ba`。没有后续root ticket不得冻结checkout或执行decode；preflight不能称作calibration pack、E2、DART或goal完成。
+- 此集成仍仅是metadata candidate：40条phase queue未赋结果/恢复/动作标签、`for_training`不变、没有RGB decode或发布。lc3 node-only read-only preflight已PASS（01:51 CST；8×A800 80GB均0MiB/0%、RAM free约996GiB、data free约3.6TiB、既有VPN/SSH健康且未reconnect），receipt `/home/wsy/behavior-annotations/p107/lc3-phase40-preflight/2026-10-02T015133+0800.json` SHA `545809fe828b0b1fcf35b7dde3933382feeebb55ba3ae43f8de733c9bcbfa0ba`。随后授权批次首launcher因远端缺`jq`在renderer前exit127，0 PNG/RGB/output/labels；同一批仅待外部runner以已有Python JSON修复后重试。preflight/授权/失败launcher均不能称作calibration pack、E2、DART或goal完成。
 - `p107-pack-stream`的4GiB stream修复、`p107-actor-query`的隔离实现及annotation输入均未移植或pull入根；standard pack仍blocked。live DART=0，GPU/SIM/server/env及训练仍未启动。
 
 ### 2026-10-02（北京时间）：P107 standard pack受4GiB流式读取缺陷阻断；phase-balanced40候选已建成待独审（Codex / P107-COORD）
