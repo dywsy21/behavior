@@ -63,6 +63,10 @@ class RenderEventPacketsTests(unittest.TestCase):
                                                   "question_context": {"ground_truth": "bad"}}) + "\n")
             with self.assertRaisesRegex(ValueError, "must not carry"):
                 renderer._questions(question_file)
+            question_file.write_text(json.dumps({"event_id": "a" * 64,
+                                                  "question_context": {"prompt": {"outcome": "SUCCESS"}}}) + "\n")
+            with self.assertRaisesRegex(ValueError, "must not carry"):
+                renderer._questions(question_file)
             with self.assertRaisesRegex(ValueError, "requires --decode"):
                 renderer.create_packets(index, root / "bad-contact", event_ids=set(), limit=1, questions={},
                                         include_source_annotation_context=False, decode=False, raw_root=None,
@@ -84,9 +88,14 @@ class RenderEventPacketsTests(unittest.TestCase):
             raw_root = root / "raw"
             raw_root.mkdir()
 
-            def fake_decode(_av, _video, requested, **_bounds):
-                return Image.new("RGB", (8, 6), "red"), {"requested_timestamp_s": requested,
-                                                           "decoded_timestamp_s": requested, "pts_error_s": 0.0}
+            def fake_decode(_av, _video, requested, **bounds):
+                return Image.new("RGB", (8, 6), "red"), {
+                    "resolved_path": "/fixture/shared.mp4", "bytes": 1, "mtime_ns": 1,
+                    "requested_timestamp_s": requested, "decoded_timestamp_s": requested, "pts_error_s": 0.0,
+                    "fps": 30, "resolution": [8, 6],
+                    "episode_global_pts_bounds_s": [bounds["episode_start_timestamp_s"], bounds["episode_end_timestamp_s"]],
+                    "actor_anchor_timestamp_s": bounds["actor_anchor_timestamp_s"], "full_video_sha256": None,
+                }
 
             with patch.object(renderer, "_require_decode_dependencies", return_value=(object(), Image, None)), \
                  patch.object(renderer, "_resolve_video", return_value=raw_root / "placeholder.mp4"), \
@@ -123,9 +132,14 @@ class RenderEventPacketsTests(unittest.TestCase):
             raw_root = root / "raw"
             raw_root.mkdir()
 
-            def fake_decode(_av, _video, requested, **_bounds):
-                return Image.new("RGB", (8, 6), "blue"), {"requested_timestamp_s": requested,
-                                                            "decoded_timestamp_s": requested, "pts_error_s": 0.0}
+            def fake_decode(_av, _video, requested, **bounds):
+                return Image.new("RGB", (8, 6), "blue"), {
+                    "resolved_path": "/fixture/shared.mp4", "bytes": 1, "mtime_ns": 1,
+                    "requested_timestamp_s": requested, "decoded_timestamp_s": requested, "pts_error_s": 0.0,
+                    "fps": 30, "resolution": [8, 6],
+                    "episode_global_pts_bounds_s": [bounds["episode_start_timestamp_s"], bounds["episode_end_timestamp_s"]],
+                    "actor_anchor_timestamp_s": bounds["actor_anchor_timestamp_s"], "full_video_sha256": None,
+                }
 
             with patch.object(renderer, "_require_decode_dependencies", return_value=(object(), Image, ImageDraw)), \
                  patch.object(renderer, "_resolve_video", return_value=raw_root / "placeholder.mp4"), \
@@ -248,6 +262,35 @@ class RenderEventPacketsTests(unittest.TestCase):
                                                       "rows": 1}
             (packets / "manifest.json").write_text(renderer.canonical_json(manifest) + "\n")
             with self.assertRaisesRegex(ValueError, "forbidden"):
+                renderer.resume_packets(index, packets,
+                                        expected_packet_manifest_sha256=renderer._sha256(packets / "manifest.json"))
+
+    def test_resume_rechecks_canonical_event_packet_id_and_exact_manifest_schema(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            release = root / "release"
+            fixture = write_release(release)
+            index = root / "index"
+            builder.build_index(release, index, coverage_expectations=coverage(fixture), max_seconds=10)
+            packets = root / "packets"
+            renderer.create_packets(index, packets, event_ids=set(), limit=1, questions={},
+                                    include_source_annotation_context=False, decode=False, raw_root=None,
+                                    contact_sheets=False, max_seconds=10)
+            rows = [json.loads(line) for line in (packets / "packets.jsonl").read_text().splitlines()]
+            rows[0]["packet_id"] = "f" * 64
+            rows[0]["actor_packet"]["packet_id"] = "f" * 64
+            (packets / "packets.jsonl").write_text("".join(renderer.canonical_json(row) + "\n" for row in rows))
+            manifest = json.loads((packets / "manifest.json").read_text())
+            manifest["files"]["packets.jsonl"] = {"sha256": renderer._sha256(packets / "packets.jsonl"),
+                                                      "bytes": (packets / "packets.jsonl").stat().st_size, "rows": 1}
+            (packets / "manifest.json").write_text(renderer.canonical_json(manifest) + "\n")
+            with self.assertRaisesRegex(ValueError, "packet_id"):
+                renderer.resume_packets(index, packets,
+                                        expected_packet_manifest_sha256=renderer._sha256(packets / "manifest.json"))
+
+            manifest["outcome"] = "SUCCESS"
+            (packets / "manifest.json").write_text(renderer.canonical_json(manifest) + "\n")
+            with self.assertRaisesRegex(ValueError, "sealed P107 packet directory"):
                 renderer.resume_packets(index, packets,
                                         expected_packet_manifest_sha256=renderer._sha256(packets / "manifest.json"))
 

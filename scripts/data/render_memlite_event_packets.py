@@ -48,6 +48,13 @@ validate_source_ref = _protocol.validate_source_ref
 VIEWS = ("head", "left_wrist", "right_wrist")
 PACKET_INDEX_SCHEMA = "memlite-event-packet-index-v1"
 PACKET_PAYLOAD_FILES = frozenset(("packets.jsonl", "rendered_asset_receipts.jsonl"))
+PACKET_MANIFEST_FIELDS = frozenset((
+    "schema_version", "status", "training_eligible", "index_manifest_sha256", "index_event_file_sha256",
+    "files", "packets", "rendered_asset_receipts", "decoded_camera_native_rgb",
+    "temporal_sample_offsets_frames", "temporal_slots", "distinct_temporal_sample_frames",
+    "clamped_duplicate_temporal_samples", "review_only_contact_sheets", "full_video_hashing",
+    "renderer_sha256", "protocol_sha256", "wall_seconds",
+))
 TEMPORAL_SAMPLE_OFFSETS = (-90, -60, -30, -15, 0, 15, 30)
 MAX_TEMPORAL_OFFSET_FRAMES = 240  # Eight seconds at the source 30 Hz clock.
 
@@ -188,8 +195,7 @@ def _questions(path: Path | None) -> dict[str, dict[str, Any]]:
         context = row["question_context"]
         if not isinstance(context, dict):
             raise ValueError("question_context must be an object")
-        forbidden = ("answer", "label", "outcome", "ground_truth", "success", "failure", "review", "evidence")
-        if any(any(token in key.lower() for token in forbidden) for key in context):
+        if _actor_has_forbidden_key(context):
             raise ValueError("actor question_context must not carry a label/review/evidence field")
         if row["event_id"] in prompts:
             raise ValueError("duplicate actor question context")
@@ -423,10 +429,14 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
             if event["event_id"] != event_id(event):
                 raise ValueError("event ID drift in sealed index")
             context = dict(questions.get(event["event_id"], {}))
+            if _actor_has_forbidden_key(context):
+                raise ValueError("actor question_context must not carry nested outcome/label/review/evidence material")
             if include_source_annotation_context:
                 if context:
                     raise ValueError("use either explicit question context or source annotation context, not both")
                 context = _source_annotation_context(event)
+            if _actor_has_forbidden_key(context):
+                raise ValueError("actor question_context must not carry nested outcome/label/review/evidence material")
             samples = _temporal_samples(event, temporal_offsets_frames)
             packet_id = _packet_id(index_sha, event, context, decode, temporal_offsets_frames)
             if packet_id in seen_packet_ids:
@@ -519,6 +529,9 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                     "usage_role": event.get("usage_role"), "video_locators": [by_view[view] for view in VIEWS],
                     "temporal_schedule": [{**sample, "video_locators": [
                         _temporal_locator(by_view[view], sample) for view in VIEWS]} for sample in samples],
+                    "temporal_slot_count": len(samples),
+                    "distinct_sample_frame_count": len({sample["sample_frame"] for sample in samples}),
+                    "clamped_duplicate_sample_frame_count": len(samples) - len({sample["sample_frame"] for sample in samples}),
                     "decoded_pts_receipts": decoded_receipts, "offline_future_rgb": offline_future_rgb,
                     "review_only_contact_sheet": review_asset,
                 },
@@ -534,6 +547,11 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
             "files": files, "packets": len(packets), "rendered_asset_receipts": len(asset_receipts),
             "decoded_camera_native_rgb": decode,
             "temporal_sample_offsets_frames": list(temporal_offsets_frames),
+            "temporal_slots": len(packets) * len(temporal_offsets_frames),
+            "distinct_temporal_sample_frames": sum(
+                packet["audit"]["distinct_sample_frame_count"] for packet in packets),
+            "clamped_duplicate_temporal_samples": sum(
+                packet["audit"]["clamped_duplicate_sample_frame_count"] for packet in packets),
             "review_only_contact_sheets": contact_sheets, "full_video_hashing": False,
             "renderer_sha256": _sha256(Path(__file__)),
             "protocol_sha256": _sha256(REPO / "src/g05/data/memlite_event_protocol.py"),
@@ -583,6 +601,8 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
                       "question_context", "actor_instruction"}
     if not isinstance(actor, Mapping) or set(actor) != actor_required or actor["packet_id"] != packet["packet_id"]:
         raise ValueError("packet actor input has an invalid schema")
+    if not isinstance(actor["question_context"], Mapping) or not isinstance(actor["actor_instruction"], str):
+        raise ValueError("packet actor question/instruction schema is invalid")
     if _actor_has_forbidden_key(actor):
         raise ValueError("actor input contains forbidden outcome/label/review/evidence material")
     if type(actor["observation_frame"]) is not int or actor["observation_frame"] < 0:
@@ -614,6 +634,7 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
         raise ValueError("locator-only packet cannot claim decoded actor RGB")
     audit = packet["audit"]
     audit_required = {"event_id", "source", "usage_role", "video_locators", "temporal_schedule",
+                      "temporal_slot_count", "distinct_sample_frame_count", "clamped_duplicate_sample_frame_count",
                       "decoded_pts_receipts", "offline_future_rgb", "review_only_contact_sheet"}
     if not isinstance(audit, Mapping) or set(audit) != audit_required or audit["event_id"] != actor["event_id"]:
         raise ValueError("packet audit has an invalid schema")
@@ -632,6 +653,10 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
     schedule = audit["temporal_schedule"]
     if not isinstance(schedule, list) or len(schedule) != 7:
         raise ValueError("packet audit must retain exactly seven bounded temporal samples")
+    if (audit["temporal_slot_count"] != 7 or type(audit["distinct_sample_frame_count"]) is not int or
+            not 1 <= audit["distinct_sample_frame_count"] <= 7 or
+            audit["clamped_duplicate_sample_frame_count"] != 7 - audit["distinct_sample_frame_count"]):
+        raise ValueError("packet temporal slot/duplicate accounting is invalid")
     expected_sample_by_index: dict[int, Mapping[str, Any]] = {}
     episode_length = audit["source"]["episode_length"]
     for position, sample in enumerate(schedule):
@@ -651,6 +676,8 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
         if any(dict(locators[view]) != _temporal_locator(by_view[view], bare_sample) for view in VIEWS):
             raise ValueError("packet temporal camera locator does not bind the source clock")
         expected_sample_by_index[position] = sample
+    if audit["distinct_sample_frame_count"] != len({sample["sample_frame"] for sample in schedule}):
+        raise ValueError("packet temporal duplicate accounting does not match the clipped schedule")
     expected_causal_indices = {index for index, sample in expected_sample_by_index.items()
                                 if sample["temporal_role"] == "ACTOR_CAUSAL"}
     if decoded and set(causal_samples) != expected_causal_indices:
@@ -681,9 +708,63 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
         raise ValueError("offline audit RGB does not exactly match future packet samples")
     if not decoded and (causal_samples or offline_samples or audit["review_only_contact_sheet"] is not None):
         raise ValueError("locator-only packet cannot contain decoded temporal or review image paths")
+    decoded_fields = {"resolved_path", "bytes", "mtime_ns", "requested_timestamp_s", "decoded_timestamp_s",
+                      "pts_error_s", "fps", "resolution", "episode_global_pts_bounds_s",
+                      "actor_anchor_timestamp_s", "full_video_sha256", "view", "sample_index", "offset_frames",
+                      "sample_frame", "timestamp_s", "temporal_role", "camera_native_png_sha256",
+                      "camera_native_png_bytes"}
+    receipts = audit["decoded_pts_receipts"]
+    if not isinstance(receipts, list) or (decoded and len(receipts) != 21) or (not decoded and receipts):
+        raise ValueError("packet decoded PTS receipt count is inconsistent with its camera render mode")
+    seen_receipts = set()
+    for receipt in receipts:
+        if not isinstance(receipt, Mapping) or set(receipt) != decoded_fields:
+            raise ValueError("decoded PTS receipt does not use the exact bounded camera schema")
+        key = (receipt["sample_index"], receipt["view"])
+        sample = expected_sample_by_index.get(receipt["sample_index"])
+        locator = (by_view.get(receipt["view"]) if receipt["view"] in VIEWS else None)
+        if key in seen_receipts or sample is None or locator is None or any(
+                receipt[field] != sample[field] for field in ("sample_index", "offset_frames", "sample_frame", "timestamp_s", "temporal_role")):
+            raise ValueError("decoded PTS receipt does not bind a unique scheduled camera sample")
+        seen_receipts.add(key)
+        expected_requested = locator["episode_start_timestamp_s"] + sample["timestamp_s"]
+        start = locator["episode_start_timestamp_s"]
+        end = start + (audit["source"]["episode_length"] - 1) / 30.0
+        decoded_time, requested, error = receipt["decoded_timestamp_s"], receipt["requested_timestamp_s"], receipt["pts_error_s"]
+        if (type(requested) not in (int, float) or type(decoded_time) not in (int, float) or
+                type(error) not in (int, float) or abs(requested - expected_requested) > 1e-9 or
+                abs(error - abs(decoded_time - requested)) > 1e-9 or error > 1.0 / 60.0 + 1e-6 or
+                not start <= decoded_time <= end or receipt["episode_global_pts_bounds_s"] != [start, end] or
+                receipt["fps"] != 30 or receipt["full_video_sha256"] is not None or
+                not isinstance(receipt["resolved_path"], str) or type(receipt["bytes"]) is not int or
+                type(receipt["mtime_ns"]) is not int or not isinstance(receipt["resolution"], list) or
+                len(receipt["resolution"]) != 2 or any(type(value) is not int or value < 1 for value in receipt["resolution"]) or
+                not isinstance(receipt["camera_native_png_sha256"], str) or type(receipt["camera_native_png_bytes"]) is not int):
+            raise ValueError("decoded PTS receipt has invalid source-bound timing or image metadata")
+        expected_anchor = start + actor["observation_frame"] / 30.0 if sample["temporal_role"] == "ACTOR_CAUSAL" else None
+        if receipt["actor_anchor_timestamp_s"] != expected_anchor or (expected_anchor is not None and decoded_time > expected_anchor):
+            raise ValueError("decoded PTS receipt crosses the actor causal observation clock")
+    if decoded and seen_receipts != {(sample_index, view) for sample_index in range(7) for view in VIEWS}:
+        raise ValueError("decoded PTS receipts do not cover the complete temporal camera panel")
     if audit["review_only_contact_sheet"] is not None and not _safe_asset_path(
             audit["review_only_contact_sheet"], directory="review_assets"):
         raise ValueError("review-only contact sheet must remain outside actor camera assets")
+
+
+def _validate_packet_index_binding(packet: Mapping[str, Any], event: Mapping[str, Any], *,
+                                   index_manifest_sha256: str, decoded: bool,
+                                   temporal_offsets: tuple[int, ...]) -> None:
+    """A resigned packet cannot swap its source event, camera locators, or ID."""
+    validate_event(event)
+    actor, audit = packet["actor_packet"], packet["audit"]
+    if (actor["event_id"] != event["event_id"] or actor["observation_frame"] != event["observation"]["frame"] or
+            canonical_json(audit["source"]) != canonical_json(event["source"]) or
+            audit["usage_role"] != event.get("usage_role") or
+            canonical_json(audit["video_locators"]) != canonical_json(event["video_locators"])):
+        raise ValueError("packet does not bind the exact canonical event/source/camera record from the sealed index")
+    expected_packet_id = _packet_id(index_manifest_sha256, event, actor["question_context"], decoded, temporal_offsets)
+    if packet["packet_id"] != expected_packet_id:
+        raise ValueError("packet_id does not match its canonical sealed event/context/temporal identity")
 
 
 def _validate_packet_assets(packet: Mapping[str, Any], assets: list[Mapping[str, Any]], *, decoded: bool,
@@ -701,14 +782,22 @@ def _validate_packet_assets(packet: Mapping[str, Any], assets: list[Mapping[str,
     if len(contacts) != (1 if review_sheets else 0):
         raise ValueError("decoded packet has an invalid review-only contact-sheet receipt count")
     schedule = {sample["sample_index"]: sample for sample in audit["temporal_schedule"]}
+    decoded_receipts = {(receipt["sample_index"], receipt["view"]): receipt
+                        for receipt in audit["decoded_pts_receipts"]}
     paths: dict[int, dict[str, str]] = {}
     for asset in camera:
         sample = schedule.get(asset["sample_index"])
         scheduled_locators = ({locator.get("view"): locator for locator in sample["video_locators"]}
                               if sample is not None else {})
+        decoded_receipt = decoded_receipts.get((asset["sample_index"], asset["view"]))
         if (sample is None or asset["view"] not in VIEWS or asset["sample_frame"] != sample["sample_frame"] or
                 asset["temporal_role"] != sample["temporal_role"] or
-                asset["requested_timestamp_s"] != scheduled_locators[asset["view"]]["requested_timestamp_s"]):
+                asset["requested_timestamp_s"] != scheduled_locators[asset["view"]]["requested_timestamp_s"] or
+                decoded_receipt is None or asset["requested_timestamp_s"] != decoded_receipt["requested_timestamp_s"] or
+                asset["decoded_timestamp_s"] != decoded_receipt["decoded_timestamp_s"] or
+                asset["pts_error_s"] != decoded_receipt["pts_error_s"] or
+                asset["sha256"] != decoded_receipt["camera_native_png_sha256"] or
+                asset["bytes"] != decoded_receipt["camera_native_png_bytes"]):
             raise ValueError("camera-native receipt does not bind its scheduled source timestamp")
         paths.setdefault(asset["sample_index"], {})[asset["view"]] = asset["relative_path"]
     if set(paths) != set(range(7)) or any(set(views) != set(VIEWS) for views in paths.values()):
@@ -735,7 +824,7 @@ def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256
     if _sha256(manifest_path) != expected_packet_manifest_sha256:
         raise ValueError("packet manifest does not match the externally pinned authority SHA-256")
     result = _read_json(manifest_path)
-    if result.get("schema_version") != PACKET_INDEX_SCHEMA:
+    if not isinstance(result, Mapping) or set(result) != PACKET_MANIFEST_FIELDS or result.get("schema_version") != PACKET_INDEX_SCHEMA:
         raise ValueError("--resume requires a sealed P107 packet directory")
     if result.get("training_eligible") is not False or result.get("status") not in {
             "CPU_READY_LABELS_PENDING", "LOCATORS_READY_RENDER_PENDING"}:
@@ -748,17 +837,42 @@ def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256
         raise ValueError("packet manifest has invalid review/video-hashing policy fields")
     if result.get("index_manifest_sha256") != _sha256(index / "manifest.json"):
         raise ValueError("source index manifest changed; refusing resume")
+    index_manifest = _read_json(index / "manifest.json")
+    index_receipt = index_manifest.get("files", {}).get("event_candidates.jsonl", {}) if isinstance(index_manifest, Mapping) else {}
+    if result.get("index_event_file_sha256") != index_receipt.get("sha256"):
+        raise ValueError("packet manifest does not bind the sealed event-candidate payload")
     receipt = result.get("files", {}).get("packets.jsonl", {})
     if set(result.get("files", {})) != PACKET_PAYLOAD_FILES:
         raise ValueError("packet manifest must seal the exact packet and rendered-asset receipt inventory")
     packets = _read_jsonl(output / "packets.jsonl")
     if _sha256(output / "packets.jsonl") != receipt.get("sha256") or len(packets) != receipt.get("rows"):
         raise ValueError("sealed packet payload changed")
-    if result.get("packets") != len(packets) or not isinstance(result.get("decoded_camera_native_rgb"), bool):
+    if (result.get("packets") != len(packets) or not isinstance(result.get("decoded_camera_native_rgb"), bool) or
+            type(result.get("temporal_slots")) is not int or type(result.get("distinct_temporal_sample_frames")) is not int or
+            type(result.get("clamped_duplicate_temporal_samples")) is not int or
+            result["temporal_slots"] != 7 * len(packets) or
+            result["clamped_duplicate_temporal_samples"] != result["temporal_slots"] - result["distinct_temporal_sample_frames"]):
         raise ValueError("packet manifest counters or decode mode are invalid")
     decoded = result["decoded_camera_native_rgb"]
+    packet_ids, event_ids = set(), set()
     for packet in packets:
         _validate_packet_semantics(packet, decoded=decoded, expected_offsets=temporal_offsets)
+        if packet["packet_id"] in packet_ids or packet["actor_packet"]["event_id"] in event_ids:
+            raise ValueError("packet receipt contains duplicate packet/event identities")
+        packet_ids.add(packet["packet_id"])
+        event_ids.add(packet["actor_packet"]["event_id"])
+    selected_events = _select_index_events(index / "event_candidates.jsonl", index_receipt, event_ids, limit=None)
+    events_by_id = {event["event_id"]: event for event in selected_events}
+    if len(events_by_id) != len(packets):
+        raise ValueError("sealed event index has duplicate/missing packet source identities")
+    for packet in packets:
+        _validate_packet_index_binding(packet, events_by_id[packet["actor_packet"]["event_id"]],
+                                       index_manifest_sha256=result["index_manifest_sha256"], decoded=decoded,
+                                       temporal_offsets=temporal_offsets)
+    if (result["distinct_temporal_sample_frames"] != sum(packet["audit"]["distinct_sample_frame_count"] for packet in packets) or
+            result["clamped_duplicate_temporal_samples"] != sum(
+                packet["audit"]["clamped_duplicate_sample_frame_count"] for packet in packets)):
+        raise ValueError("packet manifest temporal-slot accounting does not match its packet rows")
     asset_receipt = result["files"]["rendered_asset_receipts.jsonl"]
     assets = _read_jsonl(output / "rendered_asset_receipts.jsonl")
     if (_sha256(output / "rendered_asset_receipts.jsonl") != asset_receipt.get("sha256") or
