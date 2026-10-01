@@ -15,7 +15,7 @@
 ### 2026-10-02（北京时间）：P107 raw-object category grounding 已完成只读审计；query dispatch仍等待角色与显示复核（Codex / P107-COORD）
 
 - 外部只读receipt`/home/wsy/behavior-annotations/p107/object-category-grounding-audit/README.md`及相邻`validation.json`为PASS：固定官方BEHAVIOR-1K `bd049de`的`category_mapping.csv`（2,424 unique categories、SHA `ef463671…81eab`），9个问题raw IDs均由generic longest official category prefix唯一解析。规则是保留全部compound noun/复数（包括`boxing_gloves`、`bottom_cabinet`和`half_*`），opaque suffix只留audit sidecar；无匹配/并列/空suffix必须`UNKNOWN_CATEGORY` quarantine，禁止固定tail长度或其他盲目heuristic。它是metadata-design finding，未改source/label/server/training，也不是可消费标注artifact。
-- 因此query text display dispatch仍停：q4/q30的role interpretation及producer按上述pin生成的实际文本/复核尚待；没有新annotation dispatch。actor-query binding/audit修复也继续隔离。`cal40_finalize_binding`独占已授权的root `3f473fc` pack retry；本线程不重复启动，等待其实际receipt后再写ledger。robo/local RTX未获授权，simulator/training继续未启动。
+- 因此query text display dispatch仍停：q4/q30的role interpretation及producer按上述pin实现中的generic longest-known-prefix、unknown quarantine v4 artifact/实际文本复核尚待；禁止suffix chopping，尚无新annotation。root目前亲看new40 anchor camera triplets 12/40，但这是query final review之前的视觉预检，必须同canonical-label QA区分，不能计为label acceptance。actor-query binding/audit修复也继续隔离。`cal40_finalize_binding`独占已授权的root `3f473fc` pack retry；本线程不重复启动，等待其实际receipt后再写ledger。robo/local RTX未获授权，simulator/training继续未启动。
 
 ### 2026-10-02（北京时间）：P107 phase40媒体与本地深度验证完成；query text display audit继续阻断派发（Codex / P107-COORD）
 
