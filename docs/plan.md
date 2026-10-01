@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107 CAL40 root-model 完成40 anchor视觉QA并更正41条可见校准标签；非human/E2/训练放行（Codex / P107-ANNOTATION-LEDGER）
+
+- root 以原分辨率亲看了**全部40个 anchor camera-triplet**：38个正常项为page02，q36/q38边界项为page00；另6个page04 future样本仍只作audit。可见校准的41 queries经更正为2 YES（q18 hold/support、q24 OPEN_DOOR）、8 NO（q10/q11/q15/q16/q26/q31/q34/q35）、31 masked UNKNOWN。q0由“body contact”降为UNKNOWN（未能证实目标press point），q13由head camera降为UNKNOWN（不能代表robot-base orientation）；早前q1/q17过度声称也已降为UNKNOWN。root 只批准这10个**可见校准**判断，不从其推断attempt、outcome、recovery或动作监督。
+- 此为`root_model`而非human QA，未审全部1,176张native PNG或完整timeline，也不满足E2至少120个分层图像/短片及标签的人工验收。所有 formal student、attempt/outcome、recovery、action-BC、FM-positive、release和训练准入继续为0；future audit不进入actor anchor证据。
+- binder正以`event_id`及 exact `goal_relation` composite key 收口41条：q24的multi-query问题只在临时摘要中发现，未污染source canonical。最新输入可定位为s0 canonical SHA `dd8f79565574c01e9b5f34a646a6f1112abe2ed0354945fb2a627a649631d747`、s1 candidate SHA `60ed0aae387a094a693a0c541d79085a23b0cfadac62ca31785b585f07426973`，s2/s3保持既有文件；validation未完成前不得声称real calibration pack已发布。
+- phase-balanced40 sampler正在隔离worktree实现（未完成）：复用既有calibration groups，每类entry/mid/terminal/repeated-query各10；repeated-query只是candidate，**不是retry**，renderer可接mini-index且不需adapter。actor query gap仍仅read-only recon；live DART=0，仍须用户RTX4080+lc许可、冻结教师/运行时和official TRAIN fresh-reset证据，继续不用robo、不开仿真/训练/远端作业。
+
 ### 2026-10-02（北京时间）：P107 CAL40 四片候选标注已落盘；全量 anchor 均为 segment-start，当前产出不具代表性（Codex / P107-ANNOTATION-LEDGER）
 
 - 四个 model-annotation shard 现均已写入外部候选目录`/home/wsy/behavior-annotations/p107/temporal-annotations/calibration40-v1/shard{0,1,2,3}`，覆盖40 events/41 queries；**只能按`event_id` join**，不可按位置：全40中37项 ordinal 不同但`event_id`双射有效。当前提案汇总为：s0=1 YES/9 UNKNOWN（q1已更正UNKNOWN；q0 PRESS只有接触、留待root）；s1=1 YES/5 NO/4 UNKNOWN（q17已更正UNKNOWN；q13 heading留待root）；s2=`final-candidate`仅1 YES/1 NO/9 UNKNOWN；s3=0 YES/3 NO/7 UNKNOWN。这里的`final-candidate`不表示人审、release或训练准入。
