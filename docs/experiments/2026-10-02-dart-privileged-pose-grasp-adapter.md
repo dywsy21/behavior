@@ -33,31 +33,50 @@ single target category, while pinning one controller code/config hash across
 the whole cohort; this prevents a collection of per-object task scripts from
 being described as a generic controller.
 
-Actor projection is built solely from fresh RGB/proprio receipts, task and
-causal intent.  Exact object identity, world/object/hand poses, contacts,
-grasp state, goal pose and all postconditions remain teacher-only.  Each clean
+Actor projection accepts only pre-rendered task/causal text whose bytes and
+description-registry hash match the sealed binding, plus a hash-only current
+RGB/proprio media reference.  It does not forward `DartObservation.public()`:
+free-form observation paths and raw target/source identifiers are rejected or
+omitted.  Exact object identity, world/object/hand poses, contacts, grasp
+state, goal pose and all postconditions remain teacher-only.  Each clean
 command contains the current policy clock/state/observation hash, an opaque
 fresh query hash, and a one-step raw23 target.  Demonstration actions and
 future frames do not enter this path.
 
 ## Control and physical evidence
 
-`ExistingPoseServoEngine` rebuilds `PoseTeacher` from the *current* verified
-target holding state, ranks current pose actions, and asks `SafeServo` only to
-preview the first finite native command.  It cannot call a runtime or step
-physics.  `FreshRolloutRaw23Runtime` is the sole execution seam; it accepts no
-snapshot mode other than `no_restore_fresh_rollout`, requires a fresh preceding
-observation, exact applied raw23 equality and the canonical little-endian
-float32 action-byte SHA.
+`ExistingPoseServoEngine` holds one native `PoseTeacher` per sealed binding
+session.  It ranks current pose actions and asks `SafeServo` only to preview
+the first finite native command; a preview never advances its native lifecycle.
+Only an exact actual raw23 receipt from `FreshRolloutRaw23Runtime` may
+acknowledge that proposal and call native `PoseTeacher.executed`; an applied
+different/noisy action explicitly discards it without lifecycle advancement.
+The engine cannot switch bindings mid-session or infer a previous CLOSE from a
+fresh `held` flag.  `FreshRolloutRaw23Runtime` is the sole execution seam; it
+accepts no snapshot mode other than `no_restore_fresh_rollout`, requires a
+fresh preceding observation, exact applied raw23 equality and the canonical
+little-endian float32 action-byte SHA.
 
 The local GRASP condition is pinned in `GraspPostconditionConfig` and passed to
-the existing `LocalOutcome` verifier.  It requires current target identity,
+the existing `LocalOutcome` verifier only through a private trace opened from
+a runtime-acknowledged clean action.  Bare caller-provided frames and
+`RIGHT_CLOSE` strings are candidate-only `UNKNOWN`, not local certification.
+The trace binds the selected native token, exact raw23 bytes and the clean
+command's pre-action clock/state/observation hashes to the consumed runtime
+receipt.  It requires current target identity,
 initial empty hands, correct-hand TRUE grasp plus target contact, target lift
 at least 3 cm, hand lift at least 2.5 cm, no forbidden contact/payload loss,
 and stable target-in-hand relative pose (4 mm / 3 degrees).  Stability requires
 at least 12 distinct contiguous physics ticks **and** at least 0.5 seconds,
-with a pinned physics timestep and strictly increasing timestamps.  Missing
-contact/grasp/timestamp evidence is `UNKNOWN`, never inferred solid contact.
+with a pinned timestep and a required runtime physics-clock receipt on every
+frame; timestamps must be strictly increasing at exactly that timestep.
+`physics_dt_seconds` and its receipt must be taken from the bound runtime, not
+a unit-fixture default.  H75 historically advanced roughly four physics ticks
+per control call, so a future hook that reads only once per control is not a
+contiguous-tick recorder: it must collect per-physics-tick evidence (or remain
+`UNKNOWN`) rather than silently treating control samples as physics samples.
+Missing contact/grasp/timestamp/clock evidence is `UNKNOWN`, never inferred
+solid contact.
 The resulting receipt explicitly has `official_task_success=false` and is not
 an action-BC or outcome release.
 
@@ -69,10 +88,13 @@ instance to `FreshRuntimeHooks.observe_current` and
 session's `PrivilegedReader` / kinematics / calibrated servo model.  It must
 then demonstrate two or more target object categories across TRAIN groups,
 fresh query-after-noise, raw action-byte receipts, and the local physical
-postcondition.  No snapshot restore is required or enabled for this first
+postcondition.  It also needs a private per-physics-tick recorder that stamps
+the runtime clock receipt; `FreshRuntimeHooks` currently has no such live
+method, so this remains an unfinished LC hook rather than a claim of live
+certification.  No snapshot restore is required or enabled for this first
 pilot.  Any missing official API, action substitution, stale hash, no eligible
-candidate, unknown required grasp/contact sensor or unsafe physical contact
-must abort/mask the candidate rather than fabricate an expert label.  Ordinary
+candidate, unknown required grasp/contact/clock sensor or unsafe physical
+contact must abort/mask the candidate rather than fabricate an expert label. Ordinary
 `held=FALSE` during approach is expected and remains re-plannable; bounded
 attempts retain `IN_PROGRESS`, `FAILED` or `UNKNOWN` local diagnostics without
 calling any of them a clean teacher label or inferring failure from a timeout or
@@ -82,7 +104,9 @@ annotation boundary.
 
 `PYTHONPATH=src python tests/test_privileged_pose_grasp.py` covers R1Pro mapping
 and padding rejection, current-state re-query, preview-only teacher behavior,
-stale receipts, no-human provenance, TRAIN-only role rejection, actor/private
-projection, exactly-one runtime application, byte hashes, local physical
-success/unknown evidence, and timestamp duplication rejection.  It does not
+native CLOSE acknowledgement versus unapplied proposal, stale/exact runtime
+receipts, no-human provenance, TRAIN-only role rejection, binding-aware
+actor/private projection, exactly-one runtime application, byte hashes,
+runtime-bound local physical success, forged unbound traces, incomplete
+finger-contact evidence, and timestamp duplication rejection.  It does not
 exercise a simulator.
