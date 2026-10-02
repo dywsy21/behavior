@@ -16,6 +16,7 @@
 
 - 已向隔离实现者交付未来scanner所需的只读、可复现四源输入边界；未读任何action Parquet、未连接LC3、未启动扫描。冻结metadata=`frozen-v4-metadata/episodes.jsonl` SHA`c62fe885…16ca`、triage-v2=`242086ce…6c25c`、official info=`24c77f7a…57874`固定`fps=30`及`data/chunk-{chunk_index:03d}/file-{file_index:03d}.parquet`。首个未来运行只限已审ep10133/10925/4471/4431，精确data locators为`chunk-050/file-007`、`chunk-054/file-006`、`chunk-022/file-002`、`chunk-022/file-001`；global clock只能用frozen `dataset_from_index + local_frame`，不得猜路径或重用跨GRASP同target逻辑。
 - 仅获准隔离新脚本/测试设计：最多32 selected metadata、首个真实action pass至多4源；每个GRASP interval内对raw23 ch14/ch22独立RLE、匿名极性，不得读成物理夹爪状态，不得写outcome/recovery/FAILED/BC/DART或训练数据。须独审和root单独运行票后才可读实际Parquet。当前训练、环境和running jobs均不动。
+- **运行前 fail-closed preflight（尚未审过/未运行）：** author 当前未提交的`inspect_memlite_grasp_span_candidates.py` SHA`fa8e82b1…9e84`与四源 artifact manifest SHA`e8f47218…d055`只用于合同核对；`scan`会直接核验 manifest 内的`official_info.path`及绝对`official_snapshot_root`，而该 artifact 仍指向本地路径且缺当前`validate_manifest`要求的`parquet_relative_path`等 episode 字段。因此它不能安全地替换为 LC3 路径或执行；最终独审代码须先生成同一4个candidate/8个span、原source pin不变的完整 remote-path manifest。未来才可使用 fresh Git source/run、foreground`585s+kill15s`、1CPU/4GiB/0GPU；预计读取4个 Parquet container/37,482 episode rows，纳入8个半开GRASP span共2,650行。当前0 Parquet/action读取、0扫描、0标签。
 
 ### 2026-10-02（北京时间）：metadata-pair 四例root有限视觉核验与指代语义缺失证据（Codex / P107-COORD）
 
