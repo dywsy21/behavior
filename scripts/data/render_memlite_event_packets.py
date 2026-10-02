@@ -104,12 +104,45 @@ MAX_TEMPORAL_OFFSET_FRAMES = 240  # Eight seconds at the source 30 Hz clock.
 ACTOR_INSTRUCTION = "Use only the camera-native RGB images and question context. Source annotation context is not ground truth."
 GOAL_STATE_REVIEW_QUERY = "At the anchor, is the brown animal toy visibly held by the robot’s right gripper?"
 GOAL_STATE_REVIEW_QUERY_SHA256 = hashlib.sha256(GOAL_STATE_REVIEW_QUERY.encode("utf-8")).hexdigest()
+PRIVATE_GOAL_STATE_MODES = {"legacy_fixed", "goal_unbound", "sealed_query"}
+PRIVATE_QUERY_FORBIDDEN_TOKENS = (
+    "success", "failure", "failed", "succeeded", "recovery", "retry", "future", "phase",
+    "outcome", "terminal", "entry", "label", "ground truth", "any object",
+)
 ROLE_ANNOTATION_CALIBRATION = "annotation_calibration"
 ROLE_STUDENT_CANDIDATE = "student_candidate"
 # PTS comes from an integer stream tick while source metadata uses floating
 # seconds.  Permit representation error only; this is many orders below one
 # 30-Hz frame and never admits a genuine future sample.
 CLOCK_ABSOLUTE_EPSILON_S = 1e-9
+
+
+def _private_goal_state_mode(event: Mapping[str, Any]) -> str:
+    """Authenticate the private goal mode without changing legacy packets."""
+    lineage = event.get("phase_lineage")
+    if not isinstance(lineage, Mapping) or lineage.get("private_goal_state_review") is not True:
+        raise ValueError("student private packet requires a private goal-state phase lineage")
+    mode = lineage.get("goal_state_mode", "legacy_fixed")
+    if mode not in PRIVATE_GOAL_STATE_MODES:
+        raise ValueError("private packet has an unknown goal-state mode")
+    if mode == "legacy_fixed":
+        if (lineage.get("goal_state_question") != GOAL_STATE_REVIEW_QUERY or
+                lineage.get("goal_state_question_sha256") != GOAL_STATE_REVIEW_QUERY_SHA256):
+            raise ValueError("legacy private packet question is not the fixed sealed query")
+    elif mode == "goal_unbound":
+        if any(key in lineage for key in ("goal_state_question", "goal_state_question_sha256",
+                                           "goal_state_query_registry_sha256")):
+            raise ValueError("goal_unbound private packet must not carry a question")
+    else:
+        question = lineage.get("goal_state_question")
+        question_sha = lineage.get("goal_state_question_sha256")
+        registry_sha = lineage.get("goal_state_query_registry_sha256")
+        if (not isinstance(question, str) or not question or not _is_sha256(question_sha) or
+                hashlib.sha256(question.encode("utf-8")).hexdigest() != question_sha or
+                not _is_sha256(registry_sha) or not question.casefold().startswith("at the anchor,") or
+                any(token in question.casefold() for token in PRIVATE_QUERY_FORBIDDEN_TOKENS)):
+            raise ValueError("sealed_query private packet lacks a valid question registry binding")
+    return mode
 
 
 def _strict_json(data: bytes, *, name: str) -> Any:
@@ -468,10 +501,7 @@ def _student_goal_state_temporal_samples(event: Mapping[str, Any]) -> list[dict[
     frame (for the pilot that would be 540/689).
     """
     lineage = event.get("phase_lineage")
-    if (not isinstance(lineage, Mapping) or lineage.get("private_goal_state_review") is not True or
-            lineage.get("goal_state_question") != GOAL_STATE_REVIEW_QUERY or
-            lineage.get("goal_state_question_sha256") != GOAL_STATE_REVIEW_QUERY_SHA256):
-        raise ValueError("student private packet requires a sealed goal-state phase lineage")
+    _private_goal_state_mode(event)
     interval = lineage.get("parent_event_interval")
     if (not isinstance(interval, Mapping) or type(interval.get("start_frame")) is not int or
             type(interval.get("end_frame")) is not int or interval["end_frame"] <= interval["start_frame"]):
@@ -758,11 +788,16 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
             if _actor_has_forbidden_key(context):
                 raise ValueError("actor question_context must not carry nested outcome/label/review/evidence material")
             if private_goal_state_review:
-                lineage = event.get("phase_lineage")
-                if (not isinstance(lineage, Mapping) or lineage.get("private_goal_state_review") is not True or
-                        lineage.get("goal_state_question") != GOAL_STATE_REVIEW_QUERY or
-                        lineage.get("goal_state_question_sha256") != GOAL_STATE_REVIEW_QUERY_SHA256 or
-                        context != {"question": GOAL_STATE_REVIEW_QUERY}):
+                mode = _private_goal_state_mode(event)
+                lineage = event["phase_lineage"]
+                if mode == "goal_unbound":
+                    # Grounding packets are deliberately not actor packets:
+                    # without a reviewed query they cannot be emitted through
+                    # the actor renderer, even when a caller asks for RGB.
+                    raise ValueError("goal_unbound requires private grounding output before actor rendering")
+                expected_question = (GOAL_STATE_REVIEW_QUERY if mode == "legacy_fixed"
+                                     else lineage["goal_state_question"])
+                if context != {"question": expected_question}:
                     raise ValueError("private student packet requires the exact sealed goal-state question")
             if include_source_annotation_context:
                 if context:
@@ -994,8 +1029,15 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
         raise ValueError("packet role is not an approved P107 role")
     if private_goal_state_review != (expected_usage_role == ROLE_STUDENT_CANDIDATE):
         raise ValueError("student_candidate packets require the explicit private review opt-in")
-    if private_goal_state_review and actor["question_context"] != {"question": GOAL_STATE_REVIEW_QUERY}:
-        raise ValueError("private student actor input must retain the exact pre-frozen question")
+    private_mode = None
+    if private_goal_state_review:
+        lineage_for_mode = packet.get("audit", {}).get("phase_lineage") if isinstance(packet.get("audit"), Mapping) else None
+        if isinstance(lineage_for_mode, Mapping):
+            private_mode = lineage_for_mode.get("goal_state_mode", "legacy_fixed")
+        expected_question = (GOAL_STATE_REVIEW_QUERY if private_mode in (None, "legacy_fixed")
+                             else lineage_for_mode.get("goal_state_question"))
+        if private_mode == "goal_unbound" or actor["question_context"] != {"question": expected_question}:
+            raise ValueError("private student actor input must retain the exact sealed question")
     if _actor_has_forbidden_key(actor):
         raise ValueError("actor input contains forbidden outcome/label/review/evidence material")
     if type(actor["observation_frame"]) is not int or actor["observation_frame"] < 0:
@@ -1180,10 +1222,12 @@ def _validate_packet_index_binding(packet: Mapping[str, Any], event: Mapping[str
         raise ValueError("packet event role does not match the sealed packet role")
     if private_goal_state_review:
         lineage = event.get("phase_lineage")
-        if (not isinstance(lineage, Mapping) or lineage.get("private_goal_state_review") is not True or
-                lineage.get("goal_state_question") != GOAL_STATE_REVIEW_QUERY or
-                lineage.get("goal_state_question_sha256") != GOAL_STATE_REVIEW_QUERY_SHA256 or
-                protocol.canonical_json(audit.get("phase_lineage")) != protocol.canonical_json(lineage)):
+        mode = _private_goal_state_mode(event)
+        if (not isinstance(lineage, Mapping) or
+                protocol.canonical_json(audit.get("phase_lineage")) != protocol.canonical_json(lineage) or
+                (mode == "legacy_fixed" and actor["question_context"] != {"question": GOAL_STATE_REVIEW_QUERY}) or
+                (mode == "sealed_query" and actor["question_context"] !=
+                 {"question": lineage["goal_state_question"]})):
             raise ValueError("private packet does not bind the sealed goal-state phase lineage")
     expected_packet_id = _packet_id(index_manifest_sha256, event, actor["question_context"], decoded,
                                     packet["audit"]["temporal_schedule"], packet["audit"]["render_request_id"],

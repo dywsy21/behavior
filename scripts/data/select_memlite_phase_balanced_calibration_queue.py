@@ -212,12 +212,20 @@ def _query_intent(skill: Mapping[str, Any]) -> dict[str, Any]:
 
 def derived_event(candidate: PhaseCandidate, *, protocol: Any,
                   usage_role: str = ROLE_ANNOTATION_CALIBRATION,
-                  private_diagnostic_student_candidate: bool = False) -> dict[str, Any]:
+                  private_diagnostic_student_candidate: bool = False,
+                  private_goal_state_mode: str = "legacy_fixed",
+                  sealed_goal_state_question: str | None = None,
+                  sealed_goal_state_question_sha256: str | None = None,
+                  sealed_goal_state_registry_sha256: str | None = None) -> dict[str, Any]:
     """Create a new canonical event at the phase anchor, retaining parent lineage."""
     if usage_role not in {ROLE_ANNOTATION_CALIBRATION, ROLE_STUDENT_CANDIDATE}:
         raise ValueError("phase event role is not an approved P107 role")
     if (usage_role == ROLE_STUDENT_CANDIDATE) != private_diagnostic_student_candidate:
         raise ValueError("student_candidate phase events require the explicit private diagnostic opt-in")
+    if private_goal_state_mode not in {"legacy_fixed", "goal_unbound", "sealed_query"}:
+        raise ValueError("private goal-state mode is not supported")
+    if usage_role != ROLE_STUDENT_CANDIDATE and private_goal_state_mode != "legacy_fixed":
+        raise ValueError("goal-state mode is only valid for private student candidates")
     parent = candidate.parent.event
     source = copy.deepcopy(parent["source"])
     # Older sealed event fixtures carry the authenticated role on the event
@@ -289,8 +297,30 @@ def derived_event(candidate: PhaseCandidate, *, protocol: Any,
     }
     if usage_role == ROLE_STUDENT_CANDIDATE:
         event["phase_lineage"]["private_goal_state_review"] = True
-        event["phase_lineage"]["goal_state_question"] = GOAL_STATE_REVIEW_QUERY
-        event["phase_lineage"]["goal_state_question_sha256"] = GOAL_STATE_REVIEW_QUERY_SHA256
+        if private_goal_state_mode == "legacy_fixed":
+            # Preserve the byte-level shape and event identities of the
+            # original two-event pilot.  New modes are opt-in and add only
+            # their explicit mode/provenance fields below.
+            event["phase_lineage"]["goal_state_question"] = GOAL_STATE_REVIEW_QUERY
+            event["phase_lineage"]["goal_state_question_sha256"] = GOAL_STATE_REVIEW_QUERY_SHA256
+        else:
+            event["phase_lineage"]["goal_state_mode"] = private_goal_state_mode
+            if private_goal_state_mode == "sealed_query":
+                if (not isinstance(sealed_goal_state_question, str) or not sealed_goal_state_question or
+                        not isinstance(sealed_goal_state_question_sha256, str) or
+                        not base.is_sha256(sealed_goal_state_question_sha256) or
+                        not isinstance(sealed_goal_state_registry_sha256, str) or
+                        not base.is_sha256(sealed_goal_state_registry_sha256) or
+                        hashlib.sha256(sealed_goal_state_question.encode("utf-8")).hexdigest() !=
+                        sealed_goal_state_question_sha256):
+                    raise ValueError("sealed_query requires a pinned question and registry SHA")
+                event["phase_lineage"]["goal_state_question"] = sealed_goal_state_question
+                event["phase_lineage"]["goal_state_question_sha256"] = sealed_goal_state_question_sha256
+                event["phase_lineage"]["goal_state_query_registry_sha256"] = sealed_goal_state_registry_sha256
+            elif any(value is not None for value in (sealed_goal_state_question,
+                                                      sealed_goal_state_question_sha256,
+                                                      sealed_goal_state_registry_sha256)):
+                raise ValueError("goal_unbound must not carry query fields")
         event["phase_lineage"]["training_eligible"] = False
         event["phase_lineage"]["outcome_supervision"] = False
         event["phase_lineage"]["recovery_supervision"] = False

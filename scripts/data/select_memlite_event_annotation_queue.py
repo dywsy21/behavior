@@ -934,10 +934,26 @@ def _private_phase_lineage(candidate: Candidate) -> Mapping[str, Any] | None:
     source = require_mapping(candidate.event.get("source"), f"{candidate.event_id}.source")
     if source.get("original_split") != "train":
         raise ValueError("private goal-state phase must retain the TRAIN split")
-    if (not is_sha256(lineage.get("parent_event_id")) or
-            lineage.get("goal_state_question") != PRIVATE_GOAL_STATE_REVIEW_QUERY or
-            lineage.get("goal_state_question_sha256") != PRIVATE_GOAL_STATE_REVIEW_QUERY_SHA256):
-        raise ValueError("private goal-state phase question/parent binding is not authenticated")
+    if not is_sha256(lineage.get("parent_event_id")):
+        raise ValueError("private goal-state phase parent binding is not authenticated")
+    goal_mode = lineage.get("goal_state_mode", "legacy_fixed")
+    if goal_mode == "legacy_fixed":
+        if (lineage.get("goal_state_question") != PRIVATE_GOAL_STATE_REVIEW_QUERY or
+                lineage.get("goal_state_question_sha256") != PRIVATE_GOAL_STATE_REVIEW_QUERY_SHA256):
+            raise ValueError("private goal-state phase question/parent binding is not authenticated")
+    elif goal_mode == "goal_unbound":
+        if any(key in lineage for key in ("goal_state_question", "goal_state_question_sha256",
+                                           "goal_state_query_registry_sha256")):
+            raise ValueError("goal_unbound phase must not carry a question")
+    elif goal_mode == "sealed_query":
+        question = lineage.get("goal_state_question")
+        question_sha = lineage.get("goal_state_question_sha256")
+        if (not isinstance(question, str) or not question or not is_sha256(question_sha) or
+                hashlib.sha256(question.encode("utf-8")).hexdigest() != question_sha or
+                not is_sha256(lineage.get("goal_state_query_registry_sha256"))):
+            raise ValueError("sealed_query phase question/registry binding is not authenticated")
+    else:
+        raise ValueError("private goal-state phase has an unknown goal_state_mode")
     for field in ("training_eligible", "outcome_supervision", "recovery_supervision",
                   "action_bc_supervision", "dart_supervision"):
         if lineage.get(field) is not False:
