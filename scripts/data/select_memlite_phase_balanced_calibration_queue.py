@@ -249,7 +249,7 @@ def derived_event(candidate: PhaseCandidate, *, protocol: Any,
     if candidate.observation_phase == "MID" and not skill_start < candidate.anchor_frame < skill_end - 1:
         raise ValueError("mid candidate must be strictly inside the queried source skill")
     if candidate.observation_phase in {"TERMINAL", "TERMINAL_TRANSITION"}:
-        if candidate.anchor_frame != end - 1 or skill_end != end:
+        if candidate.anchor_frame != end - 1 or candidate.anchor_frame <= start or skill_end != end:
             raise ValueError("terminal candidate must query the just-completed source skill at end-1")
     if candidate.observation_phase == "REPEATED_METADATA_QUERY" and candidate.anchor_frame != start:
         raise ValueError("repeated metadata query must use its own new entry event anchor")
