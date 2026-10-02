@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 15:35 CST：single-GRASP single-span manifest 实现（Codex / coverage49_label_s1）
+
+- 在独立 worktree/分支 `feat/p107-single-grasp-span`（基线 `07a0b3e6c0cb7021c1967c5907f86768e6741b63`）新增 `scripts/data/inspect_memlite_grasp_span_candidates.py` 的显式 `build-single-manifest` 模式和 `tests/test_inspect_memlite_grasp_span_candidates.py` 的 single-span 回归；旧 pair builder/validator 保持不变。新路径只允许已封存的最多8个 TRAIN/student_candidate episode，每个恰好一个精确 half-open GRASP interval，绑定 frozen segment、source-group seal、event exact interval/ID、annotation/global range、camera clock，所有 action/outcome/recovery/DART/training/release gates 为 false。selection 清单为 `scripts/data/p107_single_grasp_selection_v1.json`，SHA `e3edcf21e5748d7e3df0bc2c577449a0fec63dcca0535cfbb1e987d4ca3ea2e2`。
+- 真实 metadata-only builder 已以 frozen `c62fe885…16ca`、full event index `c12bfa8…86329`、source groups `cdd1c37…3673e3`、official info `24c77f7…57874` 运行通过，生成临时 `/tmp/p107-single-manifest-v1-run-20261002.json`（SHA `24c1db04e407434ee48b57ef578b24ff4dea6173c0e0a6f8c0edc41141dd3123`）：8/8 entries、8/8 spans、事件/区间和全部 gates 通过；未读取 Parquet/RGB、未连接 LC3、未启动扫描。LC3 footer-only preflight receipt `/home/wsy/behavior-annotations/p107/single-grasp-footer-preflight-v1/footer-preflight.json` SHA `192f2aa7194bcc3b4afcca4eb7c1a7c5e52a0550b0f5ce139ea8a0865ab0bf01` 报 all8 physical rows `1,765,809 < 2,000,000`，但仍待 coverage49_label_s2 独审后才可部署/扫描。
+- 当前测试环境无 `pytest`（`/home/wsy/miniconda3/bin/python: No module named pytest`），已完成 `py_compile`、selection JSON 解析、CLI builder 实际 metadata-only roundtrip 和 `git diff --check`；不得将此称为完整测试 PASS。下一步：固定 diff 后提交并交 `coverage49_label_s2` 独审，等待 review clear。
+
 ### 2026-10-02（北京时间）：single-GRASP span action scanner 输入准备进行中（Codex / P107-COORD）
 
 - 已向隔离实现者交付未来scanner所需的只读、可复现四源输入边界；未读任何action Parquet、未连接LC3、未启动扫描。冻结metadata=`frozen-v4-metadata/episodes.jsonl` SHA`c62fe885…16ca`、triage-v2=`242086ce…6c25c`、official info=`24c77f7a…57874`固定`fps=30`及`data/chunk-{chunk_index:03d}/file-{file_index:03d}.parquet`。首个未来运行只限已审ep10133/10925/4471/4431，精确data locators为`chunk-050/file-007`、`chunk-054/file-006`、`chunk-022/file-002`、`chunk-022/file-001`；global clock只能用frozen `dataset_from_index + local_frame`，不得猜路径或重用跨GRASP同target逻辑。
