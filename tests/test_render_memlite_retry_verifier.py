@@ -108,7 +108,9 @@ class PrivateRetryVerifierTests(unittest.TestCase):
                 path.write_bytes(b"synthetic tinyvideo placeholder")
                 locators.append({
                     "camera_key": f"synthetic.{view}",
-                    "episode_start_timestamp_s": 1000.0 + event_number * 100.0,
+                    "episode_start_timestamp_s": 1000.0 + event_number * 100.0 + {
+                        "head": 0.0, "left_wrist": 1000.0, "right_wrist": 2000.0,
+                    }[view],
                     "expected_fps": 30,
                     "locator_status": "METADATA_ONLY_UNRESOLVED",
                     "relative_path": relative,
@@ -205,6 +207,11 @@ class PrivateRetryVerifierTests(unittest.TestCase):
             self.assertEqual(len(rows), 483)
             self.assertTrue(all(row["role"] == "private_verifier_only" for row in rows))
             self.assertTrue(all(row["actor_packet_included"] is False for row in rows))
+            for row in rows:
+                expected_request = row["camera_video_locator"]["episode_start_timestamp_s"] + row["local_frame"] / 30.0
+                self.assertAlmostEqual(row["requested_timestamp_s"], expected_request, places=12)
+                self.assertAlmostEqual(row["decoded_timestamp_s"], row["requested_timestamp_s"], places=12)
+                self.assertAlmostEqual(row["pts_error_s"], 0.0, places=12)
             s08 = [row for row in rows if row["selection_id"] == "s08"]
             self.assertEqual({row["window_index"] for row in s08}, {0, 1})
             self.assertEqual(len({row["camera_view"] for row in s08}), 3)
@@ -222,6 +229,31 @@ class PrivateRetryVerifierTests(unittest.TestCase):
                     expected_event_index_manifest_sha256=event_manifest_sha,
                     av_backend=_FakeAV(),
                 )
+
+    def test_event_annotation_sha_is_bound_to_source_result(self) -> None:
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            event_index, _manifest_sha = self._make_event_index(root / "index", root / "raw")
+            event = json.loads((event_index / "event_candidates.jsonl").read_text().splitlines()[0])
+            source_result = json.loads(SOURCE_RESULT_PATH.read_text())
+            episode = next(
+                row for row in source_result["episodes"]
+                if row["source_identity"]["event_id"] == event["event_id"]
+            )
+            for annotation_value in ("0" * 64, None):
+                bad_event = json.loads(json.dumps(event))
+                if annotation_value is None:
+                    bad_event["source"].pop("source_annotation_sha256")
+                else:
+                    bad_event["source"]["source_annotation_sha256"] = annotation_value
+                with self.assertRaises(verifier.InputValidationError):
+                    verifier._validate_video_locators(
+                        bad_event,
+                        episode["source_identity"],
+                        episode["length"],
+                        source_result["inputs"]["release_manifest_sha256"],
+                        episode["annotation_sha256"],
+                    )
 
 
 if __name__ == "__main__":

@@ -346,7 +346,8 @@ def _identity_fields() -> tuple[str, ...]:
 
 
 def _validate_video_locators(
-    event: Mapping[str, Any], source: Mapping[str, Any], length: int, expected_release_sha256: str
+    event: Mapping[str, Any], source: Mapping[str, Any], length: int,
+    expected_release_sha256: str, expected_annotation_sha256: str,
 ) -> dict[str, dict[str, Any]]:
     if event.get("schema_version") != EVENT_SCHEMA or event.get("record_kind") != "event_candidate":
         raise InputValidationError("selected event has an unexpected schema")
@@ -362,6 +363,8 @@ def _validate_video_locators(
         raise InputValidationError("selected event split/episode length mismatch")
     if event_source.get("source_release_manifest_sha256") != expected_release_sha256:
         raise InputValidationError("selected event release source mismatch")
+    if event_source.get("source_annotation_sha256") != expected_annotation_sha256:
+        raise InputValidationError("selected event annotation source mismatch")
     locators = event.get("video_locators")
     if not isinstance(locators, list) or len(locators) != len(VIEWS):
         raise InputValidationError("selected event must have exactly three camera locators")
@@ -636,7 +639,7 @@ def run_verifier(
     for event_id, row in wanted.items():
         event_locators[event_id] = _validate_video_locators(
             events[event_id], row["source_record"]["source"], row["source_record"]["length"],
-            source_meta["release_manifest_sha256"],
+            source_meta["release_manifest_sha256"], row["source_record"]["annotation_sha256"],
         )
     renderer = _renderer()
     if av_backend is None:
@@ -657,7 +660,7 @@ def run_verifier(
             length = source_record["length"]
             for item in row["plan"]:
                 local_frame = item["local_frame"]
-                requested_by_view: dict[str, tuple[Any, dict[str, Any]]] = {}
+                requested_by_view: dict[str, tuple[Any, dict[str, Any], float]] = {}
                 for view in VIEWS:
                     locator = locators[view]
                     video = _resolve_video(raw_root, locator["relative_path"])
@@ -679,12 +682,17 @@ def run_verifier(
                             raise InputValidationError(f"native decoder identity/FPS mismatch for {selection_id}/{view}")
                         if abs(float(decoded["decoded_timestamp_s"]) - requested) > (1.0 / 60.0 + 1e-6):
                             raise InputValidationError(f"native decoder PTS error exceeds half-frame for {selection_id}/{view}")
-                        requested_by_view[view] = (image, decoded)
+                        decoder_requested = _finite_number(
+                            decoded.get("requested_timestamp_s"), f"{selection_id}/{view} decoder request"
+                        )
+                        if abs(decoder_requested - requested) > 1e-12:
+                            raise InputValidationError(f"native decoder request drifted for {selection_id}/{view}")
+                        requested_by_view[view] = (image, decoded, decoder_requested)
                     except BaseException:
                         image.close()
                         raise
                 for view in VIEWS:
-                    image, decoded = requested_by_view[view]
+                    image, decoded, decoder_requested = requested_by_view[view]
                     relative = Path("native_rgb") / selection_id / f"window-{item['window_index']:02d}_local-{local_frame:06d}_{view}.png"
                     asset_path = staging / relative
                     asset_path.parent.mkdir(parents=True, exist_ok=True)
@@ -722,7 +730,7 @@ def run_verifier(
                             "episode_start_timestamp_s": locators[view]["episode_start_timestamp_s"],
                             "expected_fps": 30,
                         },
-                        "requested_timestamp_s": requested,
+                        "requested_timestamp_s": decoder_requested,
                         "decoded_timestamp_s": decoded["decoded_timestamp_s"],
                         "pts_error_s": decoded["pts_error_s"],
                         "png_relative_path": str(relative),
