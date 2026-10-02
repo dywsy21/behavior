@@ -12,6 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 04:01（北京时间）：LC3 verifier-v2 精确目标只读核验；v3 已获限额运行授权、尚未启动（Codex / P107-COORD）
+
+- 在已成功的标准OpenSSH PTY认证会话中，只读核对预定v2 source=`/data/workspace/wsy/behavior2026/src/p107-natural-retry-verifier-a2048f8`、script与run=`/data/workspace/wsy/behavior2026/p107/runs/natural-retry-verifier-v2-20261002`：三者当前均不存在；没有marker/log/manifest，也没有匹配verifier进程（仅本次probe shell/filter自身命中，已排除）。结构化terminal exit=`0`、host=`a800-3`；有限、无凭据receipt=`/home/wsy/behavior-annotations/p107/natural-retry-pilot-selection-v1/verifier-v2-expected-target-status-20261002T040129+0800.json`。这把**当前**状态记为`EXPECTED_V2_TARGETS_ABSENT_AT_CHECK`，但不倒推历史部署从未发生或未曾删除；v2的历史launch仍`UNRESOLVED`。
+- 同次只读资源核验：`/data`可用`3,789,827,035,136B`、MemAvailable=`1,070,073,823,232B`、load=`0.15/0.19/0.19`，8×A800均`0MiB/0%`且无compute进程。root现仅批准一次全新v3 private verifier：Git-only source=`/data/workspace/wsy/behavior2026/src/p107-natural-retry-verifier-a2048f8`（创建前必须仍不存在）、new run=`/data/workspace/wsy/behavior2026/p107/runs/natural-retry-verifier-v3-20261002`；固定reader root commit=`a2048f8a9074ec14113c912cc8ff5b69ce512c40`，selection/result/event-index pins=`84c2aa62…971c2`/`4eb0227c…e97d6`/`286327c2…e02fd`（event JSONL=`c0435b44…290ef0`）。本记录时**未启动**：须先逐项SHA/metadata preflight，再按`1CPU/4GiB/0GPU/10min/≤1GiB`、`8 selections/6 events/9 windows/161 frames/483 PNG/9 private pages`唯一运行；任一门失败即停、不自动重跑。仍private-only、无label/outcome/recovery/BC/DART/training，未接受sim条款或安装任何runtime。
+
 ### 2026-10-02（北京时间）：coverage49 root postselection 累计38条，仍是有限诊断质量复核（Codex / P107-COORD）
 
 - root本人新增完整查看TRAIN/`annotation_calibration`的q015/q010/q012/q020/q046各三张`ACTOR_CAUSAL_ONLY`页（15页、original detail，未看future），新旁侧receipt=`/home/wsy/behavior-annotations/p107/parent-review/coverage-cohort-next-v1/root-postselection-part10.json` SHA`6695d2d7…e644f`。五条均是root_model/human=false的current-visual-goal-state `UNKNOWN`：GRASP条目受目标实例/执行手或接触绑定限制，PLACE_NEXT_TO条目受目标、释放与reference/relation限制，NAVIGATE条目受target、metric distance/pose和反射歧义限制；均为attempt=`NOT_APPLICABLE`，非FAILED/outcome/recovery/action-BC/DART监督，所有训练门继续false。
