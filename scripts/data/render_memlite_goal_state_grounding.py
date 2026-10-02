@@ -254,6 +254,13 @@ def _check_observation(event: Mapping[str, Any], *, interval: Mapping[str, Any],
     return frame, timestamp
 
 
+def _check_action_clock(action: Any, frame: int, label: str) -> None:
+    if not isinstance(action, Mapping) or action.get("start_frame") != frame:
+        raise InputValidationError(f"{label} action start does not bind observation clock")
+    if action.get("actual_executed_length") is not None or action.get("raw_action_dim") != 23 or action.get("model_action_dim") != 27 or action.get("model_padding_indices") != [7, 8, 17, 18]:
+        raise InputValidationError(f"{label} action contract is not the canonical metadata contract")
+
+
 def _validate_batch_manifest(
     batch_dir: Path,
     expected_sha256: str,
@@ -417,9 +424,7 @@ def _validate_parent_binding(
     parent_observation = parent.get("observation")
     if not isinstance(parent_observation, Mapping) or parent_observation.get("frame") != interval.get("start_frame"):
         raise InputValidationError(f"{label} observation does not bind parent start")
-    parent_action = parent.get("action")
-    if not isinstance(parent_action, Mapping) or parent_action.get("start_frame") != interval.get("start_frame"):
-        raise InputValidationError(f"{label} action start does not bind parent clock")
+    _check_action_clock(parent.get("action"), _exact_int(interval.get("start_frame"), f"{label}.interval.start_frame"), f"{label}.action")
     _locators_by_view(parent.get("video_locators"), f"{label}.video_locators")
     parent_locators = _locators_by_view(parent.get("video_locators"), f"{label}.video_locators")
     for view in VIEWS:
@@ -543,9 +548,7 @@ def _validate_selected_batch(
         if parent_identity.get("parent_skill_index") != 0 or parent_identity.get("skill_id") != parent_skill.get("skill_id") or parent_identity.get("skill_start_frame") != parent_skill.get("skill_start") or parent_identity.get("skill_end_frame") != parent_skill.get("skill_end") or parent_identity.get("parent_skill_member_sha256") != _canonical_sha256(parent_skill):
             raise InputValidationError("derived anchor parent skill identity does not bind full-index parent")
         frame, timestamp = _check_observation(event, interval=interval, label=f"derived anchor {event_id}")
-        action = event.get("action")
-        if not isinstance(action, Mapping) or action.get("start_frame") != frame:
-            raise InputValidationError(f"derived anchor {event_id} action start does not bind observation clock")
+        _check_action_clock(event.get("action"), frame, f"derived anchor {event_id}.action")
         phase = "ENTRY" if event.get("event_kind").endswith("ENTRY") else "TERMINAL"
         if phase in phases[episode] or (phase == "ENTRY" and frame != interval.get("start_frame")) or (phase == "TERMINAL" and frame != interval.get("end_frame") - 1):
             raise InputValidationError("selected episode has invalid or duplicate phase anchors")
@@ -579,11 +582,16 @@ def _validate_selected_batch(
             raise InputValidationError("selected queue row schema/status is invalid")
         if queue.get("immutable_split") != "train" or queue.get("usage_role") != "student_candidate" or queue.get("training_eligible") is not False:
             raise InputValidationError("selected queue row role/split is invalid")
-        if queue.get("event_id") != event_id or queue.get("source_group_id") != source.get("source_group_id") or not _same_json(queue.get("event_interval"), interval):
+        queue_source_identity = _source_identity(source)
+        queue_source_identity.pop("source_group_id")
+        if queue.get("event_id") != event_id or queue.get("source_group_id") != source.get("source_group_id") or queue.get("source_identity") != queue_source_identity or not _same_json(queue.get("event_interval"), interval):
             raise InputValidationError("selected queue row source binding differs")
         expected_phase = "GOAL_UNBOUND_ENTRY" if phase == "ENTRY" else "GOAL_UNBOUND_TERMINAL"
         if queue.get("selection_phase") != expected_phase:
             raise InputValidationError("selected queue phase does not bind derived anchor")
+        constraints = queue.get("review_constraints")
+        if not isinstance(constraints, Mapping) or constraints.get("actor_may_only_use_actor_available_window") is not True or constraints.get("current_outcome_is_not_labeled") is not True or constraints.get("no_corrective_action_or_recovery_supervision_is_emitted") is not True or constraints.get("segment_end_gripper_close_timeout_or_model_report_are_not_truth") is not True:
+            raise InputValidationError("selected queue review constraints are not fail-closed")
         windows = queue.get("temporal_windows")
         if not isinstance(windows, Mapping) or windows.get("anchor_frame") != frame or abs(_finite_number(windows.get("anchor_timestamp_s"), "queue anchor timestamp") - timestamp) > 1e-9:
             raise InputValidationError("selected queue anchor clock differs")
