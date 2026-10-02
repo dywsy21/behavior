@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from fractions import Fraction
 from pathlib import Path
+from unittest.mock import patch
 
 from PIL import Image
 
@@ -77,6 +78,62 @@ class _FakeContainer:
 class _FakeAV:
     def open(self, path: str) -> _FakeContainer:
         return _FakeContainer(Path(path))
+
+
+class _DistinctViewRenderer:
+    """Return deliberately distinct per-view decode metadata and image sizes."""
+
+    SPECS = {
+        "zed_link_camera_0": {"size": (18, 12), "delta": 0.0, "colour": (17, 71, 131)},
+        "left_realsense_link_camera_0": {"size": (24, 14), "delta": 1.0 / 120.0, "colour": (41, 101, 53)},
+        "right_realsense_link_camera_0": {"size": (30, 16), "delta": -1.0 / 60.0, "colour": (113, 37, 89)},
+    }
+    VIEW_BY_CAMERA_SUFFIX = {
+        "zed_link_camera_0": "head",
+        "left_realsense_link_camera_0": "left_wrist",
+        "right_realsense_link_camera_0": "right_wrist",
+    }
+
+    def _spec(self, video: Path) -> dict[str, object]:
+        for camera_suffix, spec in self.SPECS.items():
+            if camera_suffix in str(video):
+                return spec
+        raise AssertionError(f"unexpected fake decoder video: {video}")
+
+    def _decode_rgb(
+        self,
+        _av: object,
+        video: Path,
+        requested: float,
+        *,
+        episode_start_timestamp_s: float,
+        episode_end_timestamp_s: float,
+        actor_anchor_timestamp_s: float | None,
+    ) -> tuple[Image.Image, dict[str, object]]:
+        del episode_start_timestamp_s, episode_end_timestamp_s, actor_anchor_timestamp_s
+        spec = self._spec(video)
+        delta = float(spec["delta"])
+        size = spec["size"]
+        assert isinstance(size, tuple)
+        return Image.new("RGB", size, spec["colour"]), {
+            "resolved_path": str(video),
+            "bytes": video.stat().st_size,
+            "mtime_ns": video.stat().st_mtime_ns,
+            "requested_timestamp_s": requested,
+            "decoded_timestamp_s": requested + delta,
+            "pts_error_s": abs(delta),
+            "fps": 30.0,
+            "resolution": list(size),
+            "full_video_sha256": None,
+        }
+
+
+class _MismatchedViewRenderer(_DistinctViewRenderer):
+    def _decode_rgb(self, _av: object, video: Path, requested: float, **kwargs: object) -> tuple[Image.Image, dict[str, object]]:
+        image, decoded = super()._decode_rgb(_av, video, requested, **kwargs)
+        if "left_realsense_link_camera_0" in str(video):
+            decoded["resolved_path"] = str(video) + ".wrong"
+        return image, decoded
 
 
 class SingleGraspVerifierTests(unittest.TestCase):
@@ -409,6 +466,43 @@ class SingleGraspVerifierTests(unittest.TestCase):
         self.assertTrue(all(row["actor_packet_included"] is False for row in rows))
         self.assertEqual(len(list((output / "native_rgb").rglob("*.png"))), 36)
         self.assertEqual(len(list((output / "private_verifier_overviews").glob("*.png"))), 3)
+
+    def test_each_view_receipt_binds_its_locator_pts_error_and_png(self) -> None:
+        fixture = self._fixture()
+        with patch.object(verifier._NEUTRAL, "_renderer", return_value=_DistinctViewRenderer()):
+            result = self._run(fixture)
+        output = Path(result["output_path"])
+        rows = [json.loads(line) for line in (output / "frames.jsonl").read_text().splitlines()]
+        locator_by_view = {locator["view"]: locator for locator in fixture["event"]["video_locators"]}
+        self.assertEqual(len(rows), 36)
+        for view, spec in _DistinctViewRenderer.SPECS.items():
+            camera_view = _DistinctViewRenderer.VIEW_BY_CAMERA_SUFFIX[view]
+            view_rows = [row for row in rows if row["camera_view"] == camera_view]
+            self.assertEqual(len(view_rows), 12)
+            locator = locator_by_view[view_rows[0]["camera_view"]]
+            expected_path = str((fixture["raw_root"] / locator["relative_path"]).resolve())
+            for row in view_rows:
+                self.assertEqual(row["camera_video_locator"]["camera_key"], locator["camera_key"])
+                self.assertEqual(row["camera_video_locator"]["relative_path"], locator["relative_path"])
+                self.assertEqual(row["decoded_source_container"]["resolved_path"], expected_path)
+                self.assertEqual(row["decoded_source_container"]["resolution"], list(spec["size"]))
+                self.assertAlmostEqual(row["decoded_timestamp_s"], row["requested_timestamp_s"] + spec["delta"], places=12)
+                self.assertAlmostEqual(row["pts_error_s"], abs(spec["delta"]), places=12)
+                with Image.open(output / row["png_relative_path"]) as image:
+                    self.assertEqual(image.size, spec["size"])
+
+    def test_unknown_view_and_decoder_locator_mismatch_fail_closed(self) -> None:
+        fixture = self._fixture()
+        bad_event = copy.deepcopy(fixture["event"])
+        bad_event["video_locators"][0]["view"] = "unknown_view"
+        with self.assertRaises(verifier.InputValidationError):
+            verifier._validate_camera_locators(bad_event, fixture["manifest"]["episodes"][0], 1000)
+
+        output = fixture["root"].parent / f"{fixture['root'].name}-mismatch-output"
+        with patch.object(verifier._NEUTRAL, "_renderer", return_value=_MismatchedViewRenderer()):
+            with self.assertRaises(verifier.InputValidationError):
+                self._run(fixture, output)
+        self.assertFalse(output.exists())
 
     def test_wrong_pins_are_rejected_before_decode(self) -> None:
         fixture = self._fixture()
