@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -156,6 +157,32 @@ class GoalStateGroundingTests(unittest.TestCase):
         preflight = {"summary": fake_summary, "selected_events": [event]}
         return batch_dir, index_dir, raw_root, preflight
 
+    def _mutated_real_batch(self, file_name: str, mutate) -> tuple[Path, str]:
+        source_batch = Path("/home/wsy/behavior-annotations/p107/natural-retry-grasp-goal-state-v1/formal-batch-v1")
+        if not source_batch.exists():
+            self.skipTest("local sealed metadata is unavailable")
+        root = Path(tempfile.mkdtemp(prefix="goal-state-grounding-payload-negative-"))
+        batch = root / "formal-batch-v1"
+        shutil.copytree(source_batch, batch)
+        payload = batch / file_name
+        rows = [json.loads(line) for line in payload.read_text().splitlines() if line.strip()]
+        for row in rows:
+            source = row.get("source") or row.get("source_identity") or {}
+            if row.get("episode_index", source.get("episode_index")) == 3607:
+                mutate(row)
+                break
+        else:
+            raise AssertionError(f"no selected episode row in {file_name}")
+        payload.write_bytes(b"".join(json.dumps(row, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode() + b"\n" for row in rows))
+        manifest_path = batch / "manifest.json"
+        manifest = json.loads(manifest_path.read_text())
+        receipt = manifest["files"][file_name]
+        receipt["bytes"] = payload.stat().st_size
+        receipt["rows"] = len(rows)
+        receipt["sha256"] = _sha(payload)
+        manifest_path.write_bytes(json.dumps(manifest, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode() + b"\n")
+        return batch, _sha(manifest_path)
+
     def test_metadata_preflight_contract_is_bounded_and_has_no_query_or_future(self) -> None:
         _batch, _index, _raw, preflight = self._fixture()
         summary = preflight["summary"]
@@ -232,6 +259,47 @@ class GoalStateGroundingTests(unittest.TestCase):
         }
         with self.assertRaises(grounding.InputValidationError):
             grounding._locators_by_view([locator], "fixture")
+
+    def test_canonical_metadata_goal_query_is_allowed_but_query_fields_outside_it_are_not(self) -> None:
+        grounding._reject_explicit_unbound_annotations(
+            {
+                "phase_lineage": {
+                    "goal_query": {
+                        "query_kind": "METADATA_DESCRIBED_SKILL_GOAL_RELATION",
+                        "query_scope": "SAME_ORIGINAL_ANNOTATED_SEGMENT_SKILL",
+                    }
+                }
+            },
+            "fixture",
+        )
+        with self.assertRaises(grounding.InputValidationError):
+            grounding._reject_explicit_unbound_annotations({"phase_lineage": {"goal_state_question": "pick it up"}}, "fixture")
+
+    def test_recomputed_payload_and_manifest_pins_still_reject_explicit_annotation_fields(self) -> None:
+        batch_dir = Path("/home/wsy/behavior-annotations/p107/natural-retry-grasp-goal-state-v1/formal-batch-v1")
+        index_dir = Path("/home/wsy/behavior-annotations/p107/index-validation/full-v3-candidate-index")
+        if not batch_dir.exists() or not index_dir.exists():
+            self.skipTest("local sealed metadata is unavailable")
+        mutations = (
+            ("candidate_rows.jsonl", lambda row: row.update({"query_id": "injected-query"})),
+            ("goal_unbound_events.jsonl", lambda row: row.update({"question": "injected-question"})),
+            ("goal_unbound_events.jsonl", lambda row: row.setdefault("phase_lineage", {}).update({"goal_state_question": "injected-question"})),
+            ("student_candidate_queue.jsonl", lambda row: row.update({"question": "injected-question"})),
+            ("camera_native_render_requests.jsonl", lambda row: row.update({"placeholder": "injected-placeholder"})),
+        )
+        for file_name, mutate in mutations:
+            with self.subTest(file_name=file_name, mutation=mutate):
+                batch, batch_sha = self._mutated_real_batch(file_name, mutate)
+                with self.assertRaises(grounding.InputValidationError):
+                    grounding.validate_preflight(
+                        batch,
+                        index_dir,
+                        expected_batch_manifest_sha256=batch_sha,
+                        expected_event_index_manifest_sha256="351fa44b03fe881b328bbafd5626b986c93879d7f14da346ac8b62a079d200bf",
+                        expected_event_candidates_sha256="c12bfa8ba9375b208525a25eb2c1b3944ef5c980a021599c174e18b186886329",
+                        expected_source_groups_sha256="cdd1c37db3f7af3a743ad25b1a6fc8c4b0da41299ecf3bd8d10b9645193673e3",
+                        episode_indices=[3607, 4512],
+                    )
 
     def test_real_manifest_wrong_pin_rejects_before_full_index_read(self) -> None:
         batch = Path("/home/wsy/behavior-annotations/p107/natural-retry-grasp-goal-state-v1/formal-batch-v1")
