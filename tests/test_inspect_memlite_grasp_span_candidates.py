@@ -7,10 +7,14 @@ from pathlib import Path
 import pytest
 
 from scripts.data.inspect_memlite_grasp_span_candidates import (
+    EVENT_SCHEMA,
     INPUT_SCHEMA,
+    MODEL_ACTION_DIM,
+    MODEL_PADDING_INDICES,
     SINGLE_INPUT_SCHEMA,
     InputValidationError,
     RELEASE_SHA,
+    _EVENT_PROTOCOL,
     build_manifest,
     build_single_manifest,
     load_single_selection,
@@ -140,7 +144,7 @@ def _single_entry() -> dict:
                     "chunk_index": 1,
                     "file_index": 0,
                     "from_timestamp_s": 0.0,
-                    "to_timestamp_s": 1.0,
+                    "to_timestamp_s": 10.0 / 30.0,
                 }
                 for camera in (
                     "observation.rgb.zed_link_camera_0",
@@ -155,6 +159,62 @@ def _single_entry() -> dict:
                     "event_interval": {"start_frame": 2, "end_frame": 5},
                 }
             },
+        }
+    )
+    entry["parent_supervised"] = False
+    binding = entry["event_bindings"]["single-selection-1"]
+    binding.update(
+        {
+            "event_kind": "ANNOTATED_SKILL_SEGMENT",
+            "schema_version": EVENT_SCHEMA,
+            "usage_role": "student_candidate",
+            "observation": {"frame": 2, "timestamp_s": 2.0 / 30.0},
+            "action_contract": {
+                "start_frame": 2,
+                "actual_executed_length": None,
+                "raw_action_dim": 23,
+                "model_action_dim": MODEL_ACTION_DIM,
+                "model_padding_indices": list(MODEL_PADDING_INDICES),
+            },
+            "skill_bundle": [copy.deepcopy(span["skill"])],
+            "parallel_bundle": False,
+        }
+    )
+    binding["bundle_id"] = _EVENT_PROTOCOL.canonical_sha256(
+        {"semantic": span["semantic"], "text": span["text"], "skills": binding["skill_bundle"]}
+    )
+    binding["video_locators"] = []
+    views = {
+        "observation.rgb.zed_link_camera_0": "head",
+        "observation.rgb.left_realsense_link_camera_0": "left_wrist",
+        "observation.rgb.right_realsense_link_camera_0": "right_wrist",
+    }
+    for camera, view in views.items():
+        clock = entry["camera_clock"][camera]
+        binding["video_locators"].append(
+            {
+                "view": view,
+                "camera_key": camera,
+                "relative_path": f"videos/{camera}/chunk-{clock['chunk_index']:03d}/file-{clock['file_index']:03d}.mp4",
+                "episode_start_timestamp_s": clock["from_timestamp_s"],
+                "requested_timestamp_s": clock["from_timestamp_s"] + 2.0 / 30.0,
+                "expected_fps": 30,
+                "locator_status": "METADATA_ONLY_UNRESOLVED",
+            }
+        )
+    binding["event_id"] = _EVENT_PROTOCOL.event_id(
+        {
+            "schema_version": EVENT_SCHEMA,
+            "source": {
+                "source_release_manifest_sha256": RELEASE_SHA,
+                "source_group_id": entry["source_group_id"],
+                "raw_episode_id": entry["raw_episode_id"],
+                "episode_index": entry["episode_index"],
+            },
+            "event_kind": binding["event_kind"],
+            "event_interval": binding["event_interval"],
+            "observation": binding["observation"],
+            "bundle_id": binding["bundle_id"],
         }
     )
     return entry
@@ -319,11 +379,32 @@ def test_single_scan_reuses_raw_rle_without_cross_span_join():
     result = scan_grasp_span_rows(rows, entry)
     assert len(result["grasp_spans"]) == 1
     assert result["candidate_count"] == 1
-    assert result["candidates"][0]["source_identity"]["event_id"] == "event-single"
+    assert result["candidates"][0]["source_identity"]["event_id"] == entry["event_bindings"][entry["selection_id"]]["event_id"]
     assert result["private_only"] is True
     assert result["training_eligible"] is False
     assert result["outcome_supervision"] is False
     assert result["recovery_supervision"] is False
+
+
+@pytest.mark.parametrize(
+    ("mutation", "match"),
+    (
+        (lambda binding: binding.update({"usage_role": "annotation_calibration"}), "role"),
+        (lambda binding: binding.update({"schema_version": "wrong-schema"}), "schema"),
+        (lambda binding: binding.update({"event_kind": "WRONG_KIND"}), "kind"),
+        (lambda binding: binding["observation"].update({"frame": 3}), "observation"),
+        (lambda binding: binding["observation"].update({"timestamp_s": 99.0}), "observation"),
+        (lambda binding: binding["action_contract"].update({"start_frame": 3}), "action"),
+        (lambda binding: binding.update({"bundle_id": "0" * 64}), "bundle"),
+        (lambda binding: binding["video_locators"][0].update({"requested_timestamp_s": 99.0}), "clock"),
+    ),
+)
+def test_single_manifest_rejects_event_binding_contract_drift(mutation, match):
+    manifest = _single_manifest(_single_entry())
+    binding = manifest["episodes"][0]["event_bindings"][manifest["episodes"][0]["selection_id"]]
+    mutation(binding)
+    with pytest.raises(InputValidationError, match=match):
+        validate_single_manifest(manifest)
 
 
 def test_sealed_single_selection_list_is_exactly_eight_bound_spans():
