@@ -430,7 +430,7 @@ def _windows(event: Mapping[str, Any], phase_name: str) -> dict[str, Any]:
     frames = [anchor] if phase_name == "ENTRY" else [start, anchor]
     if phase_name == "ENTRY" and anchor != start:
         raise ValueError("ENTRY anchor must be the GRASP start")
-    if phase_name == "TERMINAL" and anchor != event["event_interval"]["end_frame"] - 1:
+    if phase_name == "TERMINAL" and (anchor != event["event_interval"]["end_frame"] - 1 or anchor <= start):
         raise ValueError("TERMINAL anchor must be GRASP end-1")
     return {
         "source_clock": "published_local_frame_index_offset_0", "frame_rate_hz": FRAME_RATE_HZ,
