@@ -130,6 +130,10 @@ class GraspGoalStateBatchTests(unittest.TestCase):
         self.assertEqual({e["phase_lineage"]["observation_phase"] for e in events}, {"ENTRY", "TERMINAL"})
         self.assertEqual({tuple(r["requested_frame_indices"]) for r in requests}, {(10,), (10, 19)})
         self.assertTrue(all(j["training_eligible"] is False for j in jobs))
+        tampered = copy.deepcopy(requests)
+        tampered[0]["requested_frame_indices"] = [11]
+        with self.assertRaises(ValueError):
+            batch.validate_goal_unbound_queue(events, jobs, tampered, protocol=owner)
 
     def test_blind_context_rejects_two_anchors_from_one_episode(self):
         owner, parent, _event = self._unbound_pair()
