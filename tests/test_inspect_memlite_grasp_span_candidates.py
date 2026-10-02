@@ -8,10 +8,14 @@ import pytest
 
 from scripts.data.inspect_memlite_grasp_span_candidates import (
     INPUT_SCHEMA,
+    SINGLE_INPUT_SCHEMA,
     InputValidationError,
     RELEASE_SHA,
     build_manifest,
+    build_single_manifest,
+    load_single_selection,
     scan_grasp_span_rows,
+    validate_single_manifest,
     validate_manifest,
 )
 
@@ -91,6 +95,104 @@ def _manifest(entry: dict) -> dict:
             "outcome_supervision": False,
             "recovery_supervision": False,
             "dart_supervision": False,
+        },
+        "episodes": [entry],
+    }
+
+
+def _single_entry() -> dict:
+    entry = _entry([[2, 5], [6, 9]])
+    span = entry["grasp_spans"][0]
+    span.update(
+        {
+            "span_id": "single-selection-1",
+            "segment_index": 0,
+            "parent": "Task goal: test",
+            "parent_supervised": False,
+            "semantic": "[]",
+            "text": "test",
+        }
+    )
+    span["skill"].update(
+        {
+            "skill_id": 2,
+            "skill_idx": 0,
+            "target": "toy_1",
+            "source": "table_1",
+            "raw_relation": {"object_id": [["toy_1", "table_1"]]},
+            "binding_confidence": "BOUND",
+            "arm": "UNSPECIFIED",
+        }
+    )
+    entry.update(
+        {
+            "selection_id": "single-selection-1",
+            "candidate_id": "single-selection-1",
+            "candidate_kind": "single_grasp_span",
+            "source_group_id": "g" * 64,
+            "annotation_relative_path": "annotations/task-0001/episode_00010001.json",
+            "parent_goal": "Task goal: test",
+            "outcome_status": "NOT_APPLICABLE",
+            "recovery_status": "NOT_APPLICABLE",
+            "release_status": "NOT_RELEASED",
+            "camera_clock": {
+                camera: {
+                    "chunk_index": 1,
+                    "file_index": 0,
+                    "from_timestamp_s": 0.0,
+                    "to_timestamp_s": 1.0,
+                }
+                for camera in (
+                    "observation.rgb.zed_link_camera_0",
+                    "observation.rgb.left_realsense_link_camera_0",
+                    "observation.rgb.right_realsense_link_camera_0",
+                )
+            },
+            "grasp_spans": [span],
+            "event_bindings": {
+                "single-selection-1": {
+                    "event_id": "event-single",
+                    "event_interval": {"start_frame": 2, "end_frame": 5},
+                }
+            },
+        }
+    )
+    return entry
+
+
+def _single_manifest(entry: dict) -> dict:
+    return {
+        "schema_version": SINGLE_INPUT_SCHEMA,
+        "status": "AUTHENTICATED_PRIVATE_SINGLE_GRASP_ACTION_SCAN_INPUT",
+        "release_manifest_sha256": RELEASE_SHA,
+        "official_snapshot_root": "/sealed/root",
+        "official_info": {"path": "/sealed/info.json", "sha256": "b" * 64},
+        "frozen_source": {"path": "/sealed/episodes.jsonl", "sha256": "c" * 64},
+        "source_groups_source": {"path": "/sealed/source_groups.jsonl", "sha256": "d" * 64, "schema": "memlite-event-index-v1"},
+        "single_selection_source": {"path": "/sealed/selection.json", "sha256": "e" * 64, "schema": "p107-single-grasp-span-selection-v1"},
+        "event_index_source": {"path": "/sealed/events.jsonl", "sha256": "f" * 64, "schema": "memlite-event-index-v1"},
+        "constraints": {
+            "read_only": True,
+            "split": "train",
+            "usage_role": "student_candidate",
+            "max_episode_count": 8,
+            "selected_episode_count": 1,
+            "selected_span_count": 1,
+            "single_grasp_span_per_episode": True,
+            "grasp_spans_only": True,
+            "raw_gripper_values_unnamed": True,
+            "private_only": True,
+            "cross_span_join_forbidden": True,
+            "training_eligible": False,
+            "action_supervision": False,
+            "action_bc_supervision": False,
+            "outcome_supervision": False,
+            "recovery_supervision": False,
+            "dart_supervision": False,
+            "attempt_status": "NOT_APPLICABLE",
+            "outcome_status": "NOT_APPLICABLE",
+            "recovery_status": "NOT_APPLICABLE",
+            "release_status": "NOT_RELEASED",
         },
         "episodes": [entry],
     }
@@ -196,6 +298,47 @@ def test_row_clock_mismatch_fails_before_private_result():
         scan_grasp_span_rows(rows, _entry())
 
 
+def test_single_manifest_accepts_one_span_and_rejects_a_second_span():
+    manifest = _single_manifest(_single_entry())
+    assert len(validate_single_manifest(manifest)) == 1
+
+    bad = copy.deepcopy(manifest)
+    extra = copy.deepcopy(bad["episodes"][0]["grasp_spans"][0])
+    extra["span_id"] = "single-selection-2"
+    bad["episodes"][0]["grasp_spans"].append(extra)
+    bad["episodes"][0]["event_bindings"]["single-selection-2"] = copy.deepcopy(
+        bad["episodes"][0]["event_bindings"]["single-selection-1"]
+    )
+    with pytest.raises(InputValidationError, match="exactly one GRASP span"):
+        validate_single_manifest(bad)
+
+
+def test_single_scan_reuses_raw_rle_without_cross_span_join():
+    entry = _single_entry()
+    rows = _rows([0.0, 0.0, 1.0, -1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0] * 10)
+    result = scan_grasp_span_rows(rows, entry)
+    assert len(result["grasp_spans"]) == 1
+    assert result["candidate_count"] == 1
+    assert result["candidates"][0]["source_identity"]["event_id"] == "event-single"
+    assert result["private_only"] is True
+    assert result["training_eligible"] is False
+    assert result["outcome_supervision"] is False
+    assert result["recovery_supervision"] is False
+
+
+def test_sealed_single_selection_list_is_exactly_eight_bound_spans():
+    path = Path(__file__).parents[1] / "scripts/data/p107_single_grasp_selection_v1.json"
+    if not path.is_file():
+        pytest.skip("single-GRASP selection list is unavailable")
+    _, selections = load_single_selection(
+        path,
+        "e3edcf21e5748d7e3df0bc2c577449a0fec63dcca0535cfbb1e987d4ca3ea2e2",
+    )
+    assert len(selections) == 8
+    assert len({item["episode_index"] for item in selections}) == 8
+    assert all(item["verb"] == "GRASP" and item["arm"] == "UNSPECIFIED" and item["binding_confidence"] == "BOUND" for item in selections)
+
+
 def _real_build_kwargs(tmp_path):
     root = Path("/home/wsy/behavior-annotations/p107")
     return {
@@ -205,6 +348,23 @@ def _real_build_kwargs(tmp_path):
         "info_path": root / "natural-action-probe-v1/official-metadata/info.json",
         "expected_triage_sha256": "242086ce43147a711b73ac8da2762fbb7030db10c6ad0bb75df44e651956c25c",
         "expected_frozen_sha256": "c62fe885143bcdc07a9dcb302a5af294afb355db98d078a838c587f9efcc16ca",
+        "expected_event_index_sha256": "c12bfa8ba9375b208525a25eb2c1b3944ef5c980a021599c174e18b186886329",
+        "expected_info_sha256": "24c77f7a984bcee775e666203881a946b11a899f524fbc2405922b2109757874",
+        "source_root": "/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master",
+    }
+
+
+def _real_single_build_kwargs():
+    root = Path("/home/wsy/behavior-annotations/p107")
+    return {
+        "selection_path": Path(__file__).parents[1] / "scripts/data/p107_single_grasp_selection_v1.json",
+        "frozen_path": root / "frozen-v4-metadata/episodes.jsonl",
+        "source_groups_path": root / "index-validation/full-v3-candidate-index/source_groups.jsonl",
+        "event_index_path": root / "index-validation/full-v3-candidate-index/event_candidates.jsonl",
+        "info_path": root / "natural-action-probe-v1/official-metadata/info.json",
+        "expected_selection_sha256": "e3edcf21e5748d7e3df0bc2c577449a0fec63dcca0535cfbb1e987d4ca3ea2e2",
+        "expected_frozen_sha256": "c62fe885143bcdc07a9dcb302a5af294afb355db98d078a838c587f9efcc16ca",
+        "expected_source_groups_sha256": "cdd1c37db3f7af3a743ad25b1a6fc8c4b0da41299ecf3bd8d10b9645193673e3",
         "expected_event_index_sha256": "c12bfa8ba9375b208525a25eb2c1b3944ef5c980a021599c174e18b186886329",
         "expected_info_sha256": "24c77f7a984bcee775e666203881a946b11a899f524fbc2405922b2109757874",
         "source_root": "/data/workspace/wsy/behavior2026/datasets/2026-challenge-demos/datasets/fduTristin--2026-challenge-demos/snapshots/master",
@@ -229,6 +389,17 @@ def test_real_four_manifest_builder_roundtrip_is_validated_before_publish(tmp_pa
     assert output.is_file()
     assert len(validate_manifest(manifest)) == 4
     assert len(validate_manifest(json.loads(output.read_text()))) == 4
+
+
+def test_real_single_manifest_builder_roundtrip_is_validated_before_publish(tmp_path):
+    kwargs = _real_single_build_kwargs()
+    if not all(path.is_file() for path in (kwargs["selection_path"], kwargs["frozen_path"], kwargs["source_groups_path"], kwargs["event_index_path"], kwargs["info_path"])):
+        pytest.skip("sealed single-GRASP metadata bundle is unavailable")
+    output = tmp_path / "single.json"
+    manifest = build_single_manifest(**kwargs, output_path=output)
+    assert output.is_file()
+    assert len(validate_single_manifest(manifest)) == 8
+    assert len(validate_single_manifest(json.loads(output.read_text()))) == 8
 
 
 def test_builder_duplicate_selected_id_fails_without_publishing(tmp_path):

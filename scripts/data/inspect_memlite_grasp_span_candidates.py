@@ -11,6 +11,10 @@ or recovery, and it never joins two GRASP intervals into one action candidate.
 
 The command is diagnostic/private-only.  A valid result is not a training
 artifact and all supervision gates remain false.
+
+``build-single-manifest`` is an explicit opt-in input mode for a sealed list
+of at most eight episodes.  It carries one exact GRASP interval per episode;
+it does not invent a paired retry or join spans across skills.
 """
 
 from __future__ import annotations
@@ -53,11 +57,14 @@ validate_info = _LEGACY.validate_info
 
 
 INPUT_SCHEMA = "p107-grasp-span-action-input-v1"
+SINGLE_SELECTION_SCHEMA = "p107-single-grasp-span-selection-v1"
+SINGLE_INPUT_SCHEMA = "p107-single-grasp-span-action-input-v1"
 OUTPUT_SCHEMA = "p107-grasp-span-private-output-v1"
 TRIAGE_SCHEMA = "p107-natural-retry-metadata-triage-v2"
 EVENT_SCHEMA = "memlite-event-recovery-v1"
 RELEASE_SHA = "90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23"
 EXPECTED_TRIAGE_COUNT = 32
+MAX_SINGLE_EPISODES = 8
 EXPECTED_FROZEN_COUNT = 20000
 EXPECTED_EVENT_INDEX_SCHEMA = "memlite-event-index-v1"
 CAMERAS = (
@@ -149,6 +156,152 @@ def _required_sha(path: Path, expected: str, label: str) -> str:
     if actual != expected:
         raise InputValidationError(f"{label} SHA mismatch: expected {expected}, got {actual}")
     return actual
+
+
+def _validate_single_selection_item(item: Mapping[str, Any], order: int) -> dict[str, Any]:
+    """Validate one frozen, single-span selection before any source join."""
+
+    if not isinstance(item, Mapping):
+        raise InputValidationError(f"single selection item {order} is not an object")
+    selection_id = item.get("selection_id")
+    if not isinstance(selection_id, str) or not selection_id:
+        raise InputValidationError(f"single selection item {order} has no selection_id")
+    if item.get("selection_order") != order:
+        raise InputValidationError(f"single selection {selection_id} has noncanonical selection_order")
+    for field in (
+        "episode_index", "raw_episode_id", "task_index", "task_instance_id", "length",
+        "dataset_from_index", "dataset_to_index", "segment_index", "skill_id", "skill_idx",
+        "skill_start", "skill_end",
+    ):
+        _int(item.get(field), f"single selection {selection_id}.{field}")
+    for field in (
+        "task_name", "source_group_id", "source_annotation_sha256", "annotation_relative_path",
+        "parquet_relative_path", "parent", "semantic", "text", "span_id", "verb", "target",
+        "source", "raw_description", "event_id",
+    ):
+        if not isinstance(item.get(field), str) or not item[field]:
+            raise InputValidationError(f"single selection {selection_id}.{field} is missing")
+    if item["span_id"] != selection_id:
+        raise InputValidationError(f"single selection {selection_id} span_id mismatch")
+    if item.get("parent_supervised") is not False:
+        raise InputValidationError(f"single selection {selection_id}.parent_supervised must be false")
+    if item.get("verb") != "GRASP" or item.get("binding_confidence") != "BOUND":
+        raise InputValidationError(f"single selection {selection_id} is not a bound GRASP")
+    if not isinstance(item.get("parent"), str) or not item["parent"]:
+        raise InputValidationError(f"single selection {selection_id}.parent is missing")
+    for field in ("destination", "target_part", "arm", "binding_confidence"):
+        if not isinstance(item.get(field), str):
+            raise InputValidationError(f"single selection {selection_id}.{field} must be text")
+    if item["arm"] != "UNSPECIFIED":
+        raise InputValidationError(f"single selection {selection_id}.arm must preserve UNSPECIFIED")
+    if len(item["source_annotation_sha256"]) != 64 or len(item["source_group_id"]) != 64:
+        raise InputValidationError(f"single selection {selection_id} has malformed source pin")
+    start, end = int(item["skill_start"]), int(item["skill_end"])
+    if not (0 <= start < end <= int(item["length"])):
+        raise InputValidationError(f"single selection {selection_id} has invalid half-open interval")
+    if int(item["dataset_from_index"]) < 0 or int(item["dataset_to_index"]) - int(item["dataset_from_index"]) != int(item["length"]):
+        raise InputValidationError(f"single selection {selection_id} has invalid global episode range")
+    if not isinstance(item.get("raw_relation"), Mapping):
+        raise InputValidationError(f"single selection {selection_id}.raw_relation is missing")
+    if not isinstance(item.get("raw_description"), str):
+        raise InputValidationError(f"single selection {selection_id}.raw_description is invalid")
+    for path_field in ("annotation_relative_path", "parquet_relative_path"):
+        _safe_relative(item[path_field], f"single selection {selection_id}.{path_field}")
+    return dict(item)
+
+
+def load_single_selection(
+    path: Path,
+    expected_sha256: str,
+    *,
+    expected_release_sha256: str = RELEASE_SHA,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Load and authenticate a bounded single-GRASP selection list."""
+
+    actual_sha = _required_sha(path, expected_sha256, "single selection")
+    payload = _load_object(path, "single selection")
+    if payload.get("schema_version") != SINGLE_SELECTION_SCHEMA:
+        raise InputValidationError("single selection schema is not v1")
+    if payload.get("status") != "METADATA_ONLY_SINGLE_GRASP_SELECTION":
+        raise InputValidationError("single selection status is not metadata-only")
+    if payload.get("release_manifest_sha256") != expected_release_sha256:
+        raise InputValidationError("single selection release SHA is not authenticated")
+    constraints = payload.get("constraints")
+    episodes = payload.get("episodes")
+    if not isinstance(constraints, Mapping) or constraints.get("read_only") is not True:
+        raise InputValidationError("single selection is not explicitly read-only")
+    if constraints.get("split") != "train" or constraints.get("usage_role") != "student_candidate":
+        raise InputValidationError("single selection split/role is outside the contract")
+    if constraints.get("single_grasp_span_per_episode") is not True:
+        raise InputValidationError("single selection does not enforce one GRASP span per episode")
+    if any(
+        constraints.get(field) is not expected
+        for field, expected in (
+            ("private_only", True), ("training_eligible", False), ("action_supervision", False),
+            ("action_bc_supervision", False), ("outcome_supervision", False),
+            ("recovery_supervision", False), ("dart_supervision", False),
+        )
+    ):
+        raise InputValidationError("single selection supervision/private gates are invalid")
+    if constraints.get("attempt_status") != "NOT_APPLICABLE" or constraints.get("outcome_status") != "NOT_APPLICABLE" or constraints.get("recovery_status") != "NOT_APPLICABLE":
+        raise InputValidationError("single selection status fields are not NOT_APPLICABLE")
+    if constraints.get("release_status") != "NOT_RELEASED":
+        raise InputValidationError("single selection release status is not NOT_RELEASED")
+    if not isinstance(episodes, list) or not episodes or len(episodes) > MAX_SINGLE_EPISODES:
+        raise InputValidationError(f"single selection count is outside 1..{MAX_SINGLE_EPISODES}")
+    if constraints.get("max_episode_count") != MAX_SINGLE_EPISODES or constraints.get("selected_episode_count", len(episodes)) not in (len(episodes), None):
+        raise InputValidationError("single selection count constraint is inconsistent")
+    seen_ids: set[str] = set()
+    seen_episodes: set[int] = set()
+    seen_groups: set[str] = set()
+    selected: list[dict[str, Any]] = []
+    for order, item in enumerate(episodes):
+        value = _validate_single_selection_item(item, order)
+        if value["selection_id"] in seen_ids or int(value["episode_index"]) in seen_episodes or value["source_group_id"] in seen_groups:
+            raise InputValidationError("single selection repeats selection, episode, or source-group identity")
+        seen_ids.add(value["selection_id"])
+        seen_episodes.add(int(value["episode_index"]))
+        seen_groups.add(value["source_group_id"])
+        selected.append(value)
+    return {"sha256": actual_sha, "schema_version": SINGLE_SELECTION_SCHEMA, "episode_count": len(selected)}, selected
+
+
+def load_source_groups(
+    path: Path,
+    expected_sha256: str,
+    *,
+    expected_release_sha256: str = RELEASE_SHA,
+) -> tuple[dict[str, Any], dict[int, dict[str, Any]]]:
+    """Authenticate source-group split/role membership for single spans."""
+
+    actual_sha = _required_sha(path, expected_sha256, "source groups")
+    by_episode: dict[int, dict[str, Any]] = {}
+    row_count = 0
+    with path.open(encoding="utf-8") as stream:
+        for line_number, line in enumerate(stream, start=1):
+            if not line.strip():
+                continue
+            row_count += 1
+            try:
+                value = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise InputValidationError(f"invalid source groups JSON at line {line_number}") from exc
+            if not isinstance(value, Mapping) or value.get("schema_version") != EVENT_SCHEMA:
+                raise InputValidationError(f"source groups line {line_number} has an unexpected schema")
+            group = value.get("source_group_id")
+            episodes = value.get("source_episode_ids")
+            if not isinstance(group, str) or len(group) != 64 or not isinstance(episodes, list) or not episodes:
+                raise InputValidationError(f"source groups line {line_number} has malformed identity")
+            if value.get("source_release_manifest_sha256") != expected_release_sha256:
+                raise InputValidationError(f"source groups line {line_number} has an unexpected release SHA")
+            for episode_value in episodes:
+                episode = _int(episode_value, f"source groups line {line_number}.episode_index")
+                if episode in by_episode:
+                    raise InputValidationError(f"source groups duplicate episode {episode}")
+                by_episode[episode] = dict(value)
+    if row_count != EXPECTED_FROZEN_COUNT or len(by_episode) != EXPECTED_FROZEN_COUNT:
+        raise InputValidationError("source groups are not the authenticated 20,000-row seal")
+    return {"sha256": actual_sha, "row_count": row_count}, by_episode
 
 
 def _validate_candidate(candidate: Mapping[str, Any]) -> None:
@@ -364,6 +517,335 @@ def load_event_bindings(
         if set(found[cid]) != {"first_grasp", "second_grasp"}:
             raise InputValidationError(f"missing exact GRASP event binding for {cid}")
     return dict(found)
+
+
+def _single_skill_matches(selection: Mapping[str, Any], skill: Mapping[str, Any]) -> bool:
+    return (
+        skill.get("verb") == "GRASP"
+        and _int(skill.get("skill_id"), "event skill_id") == int(selection["skill_id"])
+        and _int(skill.get("skill_idx"), "event skill_idx") == int(selection["skill_idx"])
+        and _int(skill.get("skill_start"), "event skill_start") == int(selection["skill_start"])
+        and _int(skill.get("skill_end"), "event skill_end") == int(selection["skill_end"])
+        and skill.get("target") == selection.get("target")
+        and skill.get("source") == selection.get("source")
+        and skill.get("raw_relation") == selection.get("raw_relation")
+    )
+
+
+def load_single_event_bindings(
+    path: Path,
+    expected_sha256: str,
+    selections: Sequence[Mapping[str, Any]],
+    frozen_rows: Mapping[int, Mapping[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Find one exact event record for every selected single GRASP span."""
+
+    _required_sha(path, expected_sha256, "event index")
+    wanted = {
+        (int(selection["episode_index"]), int(selection["skill_start"]), int(selection["skill_end"])): selection
+        for selection in selections
+    }
+    found: dict[str, dict[str, Any]] = {}
+    for _, event in _read_jsonl(path, "event index"):
+        if event.get("schema_version") != EVENT_SCHEMA or event.get("record_kind") != "event_candidate":
+            continue
+        source = event.get("source")
+        interval = event.get("event_interval")
+        if not isinstance(source, Mapping) or not isinstance(interval, Mapping):
+            continue
+        try:
+            key = (int(source.get("episode_index")), int(interval.get("start_frame")), int(interval.get("end_frame")))
+        except (TypeError, ValueError):
+            continue
+        selection = wanted.get(key)
+        if selection is None:
+            continue
+        selection_id = str(selection["selection_id"])
+        if selection_id in found:
+            raise InputValidationError(f"duplicate event binding for {selection_id}")
+        row = frozen_rows[int(selection["episode_index"])]
+        expected = {
+            "episode_index": row.get("episode_index"),
+            "raw_episode_id": row.get("raw_episode_id"),
+            "task_index": row.get("task_index"),
+            "task_instance_id": row.get("task_instance_id"),
+            "source_group_id": selection.get("source_group_id"),
+            "source_annotation_sha256": selection.get("source_annotation_sha256"),
+        }
+        if any(source.get(field) != value for field, value in expected.items()):
+            raise InputValidationError(f"event source identity mismatch for {selection_id}")
+        bundle = event.get("skill_bundle")
+        if not isinstance(bundle, list) or not any(
+            _single_skill_matches(selection, skill) for skill in bundle if isinstance(skill, Mapping)
+        ):
+            raise InputValidationError(f"event skill identity mismatch for {selection_id}")
+        if event.get("usage_role") != "student_candidate":
+            raise InputValidationError(f"event role mismatch for {selection_id}")
+        if event.get("event_id") != selection.get("event_id"):
+            raise InputValidationError(f"event ID mismatch for {selection_id}")
+        found[selection_id] = _private_event(event)
+    if set(found) != {str(selection["selection_id"]) for selection in selections}:
+        missing = sorted({str(selection["selection_id"]) for selection in selections} - set(found))
+        raise InputValidationError(f"missing exact GRASP event bindings: {missing}")
+    return found
+
+
+def _source_group_matches_single(
+    selection: Mapping[str, Any],
+    group: Mapping[str, Any],
+    *,
+    expected_release_sha256: str,
+) -> bool:
+    """Return whether a source-group seal binds exactly one selected episode."""
+
+    episode = int(selection["episode_index"])
+    return (
+        group.get("source_group_id") == selection.get("source_group_id")
+        and group.get("original_split") == "train"
+        and group.get("usage_role") == "student_candidate"
+        and group.get("source_release_manifest_sha256") == expected_release_sha256
+        and group.get("source_episode_count") == 1
+        and group.get("source_episode_ids") == [episode]
+        and group.get("task_index") == selection.get("task_index")
+        and group.get("task_instance_id") == selection.get("task_instance_id")
+    )
+
+
+def _single_entry_skill(selection: Mapping[str, Any], segment: Mapping[str, Any]) -> dict[str, Any]:
+    """Copy the one selected skill after checking its segment identity."""
+
+    skills = segment.get("skills")
+    if not isinstance(skills, list):
+        raise InputValidationError(f"single selection {selection['selection_id']} segment has no skills")
+    matches = [skill for skill in skills if isinstance(skill, Mapping) and _single_skill_matches(selection, skill)]
+    if len(matches) != 1:
+        raise InputValidationError(
+            f"single selection {selection['selection_id']} has {len(matches)} exact skill matches in its segment"
+        )
+    return _copy_json(matches[0])
+
+
+def build_single_manifest(
+    *,
+    selection_path: Path,
+    frozen_path: Path,
+    source_groups_path: Path,
+    event_index_path: Path,
+    info_path: Path,
+    output_path: Path,
+    expected_selection_sha256: str,
+    expected_frozen_sha256: str,
+    expected_source_groups_sha256: str,
+    expected_event_index_sha256: str,
+    expected_info_sha256: str,
+    source_root: str,
+    expected_release_sha256: str = RELEASE_SHA,
+) -> dict[str, Any]:
+    """Build a bounded manifest containing one authenticated GRASP span/episode.
+
+    This path deliberately does not read Parquet.  The resulting input is a
+    private diagnostic manifest; it is not action, outcome, recovery, or
+    training supervision.
+    """
+
+    source_root_path = Path(source_root)
+    if not source_root_path.is_absolute() or not str(source_root_path):
+        raise InputValidationError("source_root must be an explicit absolute path")
+    selection_audit, selections = load_single_selection(
+        selection_path,
+        expected_selection_sha256,
+        expected_release_sha256=expected_release_sha256,
+    )
+    groups_audit, source_groups = load_source_groups(
+        source_groups_path,
+        expected_source_groups_sha256,
+        expected_release_sha256=expected_release_sha256,
+    )
+    frozen_sha = _required_sha(frozen_path, expected_frozen_sha256, "frozen episodes")
+    info_sha = _required_sha(info_path, expected_info_sha256, "official info")
+    info = _load_object(info_path, "official info")
+    shapes = validate_info(info)
+    if info.get("fps") != 30:
+        raise InputValidationError("official info fps is not 30")
+
+    wanted_episodes = {int(selection["episode_index"]) for selection in selections}
+    frozen: dict[int, dict[str, Any]] = {}
+    total_frozen = 0
+    for _, raw in _read_jsonl(frozen_path, "frozen episodes"):
+        total_frozen += 1
+        row = raw.get("row")
+        if not isinstance(row, Mapping):
+            raise InputValidationError("frozen episode row is missing row object")
+        episode = _int(row.get("episode_index"), "frozen episode_index")
+        if episode not in wanted_episodes:
+            continue
+        if episode in frozen:
+            raise InputValidationError(f"duplicate frozen episode {episode}")
+        frozen[episode] = raw
+    if total_frozen != EXPECTED_FROZEN_COUNT:
+        raise InputValidationError(f"frozen episode count is not {EXPECTED_FROZEN_COUNT}: {total_frozen}")
+    if set(frozen) != wanted_episodes:
+        raise InputValidationError(f"frozen episodes missing: {sorted(wanted_episodes - set(frozen))}")
+
+    entries: list[dict[str, Any]] = []
+    event_rows = {episode: raw["row"] for episode, raw in frozen.items()}
+    event_bindings = load_single_event_bindings(
+        event_index_path,
+        expected_event_index_sha256,
+        selections,
+        event_rows,
+    )
+    for selection in selections:
+        selection_id = str(selection["selection_id"])
+        episode = int(selection["episode_index"])
+        raw_frozen = frozen[episode]
+        row = raw_frozen["row"]
+        group = source_groups.get(episode)
+        if group is None or not _source_group_matches_single(
+            selection, group, expected_release_sha256=expected_release_sha256
+        ):
+            raise InputValidationError(f"source-group seal mismatch for {selection_id}")
+        if raw_frozen.get("annotation_sha256") != selection["source_annotation_sha256"]:
+            raise InputValidationError(f"annotation SHA mismatch for {selection_id}")
+        if raw_frozen.get("split") != "train":
+            raise InputValidationError(f"frozen split mismatch for {selection_id}")
+        for field in ("episode_index", "raw_episode_id", "task_index", "task_instance_id", "length"):
+            if row.get(field) != selection.get(field):
+                raise InputValidationError(f"frozen identity mismatch for {selection_id}: {field}")
+        if raw_frozen.get("task_name") != selection.get("task_name"):
+            raise InputValidationError(f"frozen task name mismatch for {selection_id}")
+        if row.get("annotation_path") != selection.get("annotation_relative_path"):
+            raise InputValidationError(f"annotation path mismatch for {selection_id}")
+        if row.get("dataset_from_index") != selection.get("dataset_from_index") or row.get("dataset_to_index") != selection.get("dataset_to_index"):
+            raise InputValidationError(f"frozen global range mismatch for {selection_id}")
+        if int(row.get("dataset_to_index", 0)) - int(row.get("dataset_from_index", 0)) != int(row["length"]):
+            raise InputValidationError(f"frozen global range is inconsistent for {selection_id}")
+        parquet_relative_path = _parquet_path(info, row)
+        if parquet_relative_path != selection.get("parquet_relative_path"):
+            raise InputValidationError(f"parquet path mismatch for {selection_id}")
+
+        segments = raw_frozen.get("segments")
+        if not isinstance(segments, list):
+            raise InputValidationError(f"frozen segments missing for {selection_id}")
+        segment_index = int(selection["segment_index"])
+        if not (0 <= segment_index < len(segments)) or not isinstance(segments[segment_index], Mapping):
+            raise InputValidationError(f"segment index is invalid for {selection_id}")
+        segment = segments[segment_index]
+        if segment.get("parent") != selection.get("parent"):
+            raise InputValidationError(f"parent mismatch for {selection_id}")
+        if segment.get("parent_supervised") is not False or selection.get("parent_supervised") is not False:
+            raise InputValidationError(f"parent supervision gate is invalid for {selection_id}")
+        if segment.get("semantic") != selection.get("semantic") or segment.get("text") != selection.get("text"):
+            raise InputValidationError(f"segment text/semantic mismatch for {selection_id}")
+        skill = _single_entry_skill(selection, segment)
+        entry = {
+            "selection_order": int(selection["selection_order"]),
+            "selection_id": selection_id,
+            "candidate_id": selection_id,
+            "candidate_kind": "single_grasp_span",
+            "episode_index": episode,
+            "raw_episode_id": int(row["raw_episode_id"]),
+            "task_index": int(row["task_index"]),
+            "task_instance_id": int(row["task_instance_id"]),
+            "task_name": str(raw_frozen["task_name"]),
+            "source_group_id": str(selection["source_group_id"]),
+            "source_annotation_sha256": str(selection["source_annotation_sha256"]),
+            "immutable_split": "train",
+            "usage_role": "student_candidate",
+            "private_only": True,
+            "training_eligible": False,
+            "action_supervision": False,
+            "action_bc_supervision": False,
+            "outcome_supervision": False,
+            "recovery_supervision": False,
+            "dart_supervision": False,
+            "attempt_status": "NOT_APPLICABLE",
+            "outcome_status": "NOT_APPLICABLE",
+            "recovery_status": "NOT_APPLICABLE",
+            "release_status": "NOT_RELEASED",
+            "parent_goal": str(selection["parent"]),
+            "parent_supervised": False,
+            "parquet_relative_path": parquet_relative_path,
+            "annotation_relative_path": _safe_relative(row["annotation_path"], f"{selection_id}.annotation_path"),
+            "length": int(row["length"]),
+            "dataset_from_index": int(row["dataset_from_index"]),
+            "dataset_to_index": int(row["dataset_to_index"]),
+            "camera_clock": _camera_clock(row),
+            "grasp_spans": [
+                {
+                    "span_id": selection_id,
+                    "frame_interval": [int(selection["skill_start"]), int(selection["skill_end"])],
+                    "segment_index": segment_index,
+                    "parent": str(selection["parent"]),
+                    "parent_supervised": False,
+                    "semantic": str(selection["semantic"]),
+                    "text": str(selection["text"]),
+                    "skill": skill,
+                }
+            ],
+            "event_bindings": {selection_id: event_bindings[selection_id]},
+        }
+        entries.append(entry)
+
+    manifest: dict[str, Any] = {
+        "schema_version": SINGLE_INPUT_SCHEMA,
+        "status": "AUTHENTICATED_PRIVATE_SINGLE_GRASP_ACTION_SCAN_INPUT",
+        "release_manifest_sha256": expected_release_sha256,
+        "constraints": {
+            "read_only": True,
+            "split": "train",
+            "usage_role": "student_candidate",
+            "max_episode_count": MAX_SINGLE_EPISODES,
+            "selected_episode_count": len(entries),
+            "selected_span_count": len(entries),
+            "single_grasp_span_per_episode": True,
+            "grasp_spans_only": True,
+            "raw_gripper_values_unnamed": True,
+            "cross_span_join_forbidden": True,
+            "private_only": True,
+            "training_eligible": False,
+            "action_supervision": False,
+            "action_bc_supervision": False,
+            "outcome_supervision": False,
+            "recovery_supervision": False,
+            "dart_supervision": False,
+            "attempt_status": "NOT_APPLICABLE",
+            "outcome_status": "NOT_APPLICABLE",
+            "recovery_status": "NOT_APPLICABLE",
+            "release_status": "NOT_RELEASED",
+        },
+        "official_info": {
+            "path": str(info_path),
+            "sha256": info_sha,
+            "shapes": shapes,
+            "fps": info["fps"],
+            "data_path": info["data_path"],
+        },
+        "frozen_source": {"path": str(frozen_path), "sha256": frozen_sha, "row_count": total_frozen},
+        "source_groups_source": {
+            "path": str(source_groups_path),
+            "sha256": groups_audit["sha256"],
+            "row_count": groups_audit["row_count"],
+            "schema": EVENT_SCHEMA,
+        },
+        "single_selection_source": {
+            "path": str(selection_path),
+            "sha256": selection_audit["sha256"],
+            "schema": SINGLE_SELECTION_SCHEMA,
+            "selected_episode_count": selection_audit["episode_count"],
+        },
+        "event_index_source": {
+            "path": str(event_index_path),
+            "sha256": expected_event_index_sha256,
+            "schema": EXPECTED_EVENT_INDEX_SCHEMA,
+        },
+        "official_snapshot_root": str(source_root_path),
+        "gripper_index_contract": {"indices": dict(GRIPPER_INDICES), "source": GRIPPER_INDEX_SOURCE, "polarity": "UNPROVEN"},
+        "episodes": entries,
+    }
+    validate_single_manifest(manifest)
+    _atomic_json(output_path, manifest)
+    return manifest
 
 
 def build_manifest(
@@ -631,6 +1113,160 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[dict[str, Any]]:
     return [dict(entry) for entry in entries]
 
 
+def validate_single_manifest(manifest: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Fail-closed validation for the one-span-per-episode input mode."""
+
+    if manifest.get("schema_version") != SINGLE_INPUT_SCHEMA:
+        raise InputValidationError("unexpected single-GRASP manifest schema")
+    if manifest.get("status") != "AUTHENTICATED_PRIVATE_SINGLE_GRASP_ACTION_SCAN_INPUT":
+        raise InputValidationError("single-GRASP manifest status is not authenticated/private")
+    if manifest.get("release_manifest_sha256") != RELEASE_SHA:
+        raise InputValidationError("single-GRASP manifest release SHA is not authenticated")
+    constraints = manifest.get("constraints")
+    entries = manifest.get("episodes")
+    if not isinstance(constraints, Mapping) or constraints.get("read_only") is not True:
+        raise InputValidationError("single-GRASP manifest is not explicitly read-only")
+    for field, expected in (
+        ("split", "train"),
+        ("usage_role", "student_candidate"),
+        ("max_episode_count", MAX_SINGLE_EPISODES),
+        ("single_grasp_span_per_episode", True),
+        ("grasp_spans_only", True),
+        ("raw_gripper_values_unnamed", True),
+        ("cross_span_join_forbidden", True),
+        ("private_only", True),
+        ("training_eligible", False),
+        ("action_supervision", False),
+        ("action_bc_supervision", False),
+        ("outcome_supervision", False),
+        ("recovery_supervision", False),
+        ("dart_supervision", False),
+        ("attempt_status", "NOT_APPLICABLE"),
+        ("outcome_status", "NOT_APPLICABLE"),
+        ("recovery_status", "NOT_APPLICABLE"),
+        ("release_status", "NOT_RELEASED"),
+    ):
+        if constraints.get(field) != expected:
+            raise InputValidationError(f"single-GRASP manifest {field} guard is not {expected!r}")
+    snapshot_root = manifest.get("official_snapshot_root")
+    if not isinstance(snapshot_root, str) or not Path(snapshot_root).is_absolute():
+        raise InputValidationError("single-GRASP manifest official_snapshot_root must be absolute")
+    for source_name in (
+        "official_info",
+        "frozen_source",
+        "source_groups_source",
+        "single_selection_source",
+        "event_index_source",
+    ):
+        source = manifest.get(source_name)
+        if not isinstance(source, Mapping) or not isinstance(source.get("path"), str) or not isinstance(source.get("sha256"), str):
+            raise InputValidationError(f"single-GRASP manifest {source_name} pin is missing")
+    if not isinstance(entries, list) or not entries or len(entries) > MAX_SINGLE_EPISODES:
+        raise InputValidationError(f"single-GRASP manifest episode count is outside 1..{MAX_SINGLE_EPISODES}")
+    if constraints.get("selected_episode_count") != len(entries) or constraints.get("selected_span_count") != len(entries):
+        raise InputValidationError("single-GRASP manifest selected counts are inconsistent")
+    if manifest["single_selection_source"].get("schema") != SINGLE_SELECTION_SCHEMA:
+        raise InputValidationError("single selection source schema pin is missing")
+    if manifest["event_index_source"].get("schema") != EXPECTED_EVENT_INDEX_SCHEMA:
+        raise InputValidationError("event index source schema pin is missing")
+
+    seen_selection: set[str] = set()
+    seen_episode: set[int] = set()
+    seen_group: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, Mapping):
+            raise InputValidationError("single-GRASP manifest episode is not an object")
+        selection_id = entry.get("selection_id")
+        if not isinstance(selection_id, str) or not selection_id:
+            raise InputValidationError("single-GRASP entry selection_id is missing")
+        if selection_id in seen_selection:
+            raise InputValidationError(f"duplicate single selection_id: {selection_id}")
+        seen_selection.add(selection_id)
+        if entry.get("candidate_id") != selection_id or entry.get("candidate_kind") != "single_grasp_span":
+            raise InputValidationError(f"single-GRASP entry {selection_id} candidate identity is invalid")
+        episode = _int(entry.get("episode_index"), f"single-GRASP {selection_id}.episode_index")
+        if episode in seen_episode:
+            raise InputValidationError(f"duplicate single-GRASP episode {episode}")
+        seen_episode.add(episode)
+        group = entry.get("source_group_id")
+        if not isinstance(group, str) or len(group) != 64 or group in seen_group:
+            raise InputValidationError(f"duplicate or malformed single-GRASP source group for {selection_id}")
+        seen_group.add(group)
+        for field, expected in (
+            ("immutable_split", "train"),
+            ("usage_role", "student_candidate"),
+            ("private_only", True),
+            ("training_eligible", False),
+            ("action_supervision", False),
+            ("action_bc_supervision", False),
+            ("outcome_supervision", False),
+            ("recovery_supervision", False),
+            ("dart_supervision", False),
+            ("attempt_status", "NOT_APPLICABLE"),
+            ("outcome_status", "NOT_APPLICABLE"),
+            ("recovery_status", "NOT_APPLICABLE"),
+            ("release_status", "NOT_RELEASED"),
+            ("parent_supervised", False),
+        ):
+            if entry.get(field) != expected:
+                raise InputValidationError(f"single-GRASP {selection_id}.{field} is not {expected!r}")
+        length = _int(entry.get("length"), f"single-GRASP {selection_id}.length")
+        from_index = _int(entry.get("dataset_from_index"), f"single-GRASP {selection_id}.dataset_from_index")
+        to_index = _int(entry.get("dataset_to_index"), f"single-GRASP {selection_id}.dataset_to_index")
+        if not (0 <= from_index < to_index and to_index - from_index == length):
+            raise InputValidationError(f"single-GRASP {selection_id} global range is invalid")
+        _safe_relative(entry.get("parquet_relative_path"), f"single-GRASP {selection_id}.parquet_relative_path")
+        _safe_relative(entry.get("annotation_relative_path"), f"single-GRASP {selection_id}.annotation_relative_path")
+        spans = entry.get("grasp_spans")
+        if not isinstance(spans, list) or len(spans) != 1:
+            raise InputValidationError(f"single-GRASP {selection_id} must have exactly one GRASP span")
+        span = spans[0]
+        if not isinstance(span, Mapping) or span.get("span_id") != selection_id:
+            raise InputValidationError(f"single-GRASP {selection_id} span identity is invalid")
+        interval = span.get("frame_interval")
+        if not isinstance(interval, list) or len(interval) != 2:
+            raise InputValidationError(f"single-GRASP {selection_id} interval is malformed")
+        start, end = _int(interval[0], f"single-GRASP {selection_id}.start"), _int(interval[1], f"single-GRASP {selection_id}.end")
+        if not (0 <= start < end <= length):
+            raise InputValidationError(f"single-GRASP {selection_id} interval is outside episode")
+        if span.get("segment_index") is None:
+            raise InputValidationError(f"single-GRASP {selection_id} segment index is missing")
+        _int(span.get("segment_index"), f"single-GRASP {selection_id}.segment_index")
+        if span.get("parent") != entry.get("parent_goal") or span.get("parent_supervised") is not False:
+            raise InputValidationError(f"single-GRASP {selection_id} parent metadata is invalid")
+        skill = span.get("skill")
+        if not isinstance(skill, Mapping) or skill.get("verb") != "GRASP":
+            raise InputValidationError(f"single-GRASP {selection_id} skill is not GRASP")
+        if skill.get("skill_start") != start or skill.get("skill_end") != end:
+            raise InputValidationError(f"single-GRASP {selection_id} skill interval mismatch")
+        if skill.get("binding_confidence") != "BOUND" or skill.get("arm") != "UNSPECIFIED":
+            raise InputValidationError(f"single-GRASP {selection_id} skill binding/arm is not preserved")
+        for field in ("skill_id", "skill_idx", "target", "source", "raw_relation"):
+            if field not in skill:
+                raise InputValidationError(f"single-GRASP {selection_id} skill {field} is missing")
+        event_bindings = entry.get("event_bindings")
+        if not isinstance(event_bindings, Mapping) or set(event_bindings) != {selection_id}:
+            raise InputValidationError(f"single-GRASP {selection_id} event bindings are incomplete")
+        binding = event_bindings[selection_id]
+        if not isinstance(binding, Mapping) or not isinstance(binding.get("event_id"), str) or not binding["event_id"]:
+            raise InputValidationError(f"single-GRASP {selection_id} event binding is malformed")
+        event_interval = binding.get("event_interval")
+        if not isinstance(event_interval, Mapping) or [event_interval.get("start_frame"), event_interval.get("end_frame")] != interval:
+            raise InputValidationError(f"single-GRASP {selection_id} event interval mismatch")
+        clock = entry.get("camera_clock")
+        if not isinstance(clock, Mapping) or set(clock) != set(CAMERAS):
+            raise InputValidationError(f"single-GRASP {selection_id} camera clock is incomplete")
+        for camera in CAMERAS:
+            values = clock[camera]
+            if not isinstance(values, Mapping):
+                raise InputValidationError(f"single-GRASP {selection_id} camera clock is malformed")
+            _int(values.get("chunk_index"), f"{selection_id}.{camera}.chunk_index")
+            _int(values.get("file_index"), f"{selection_id}.{camera}.file_index")
+            if _finite(values.get("from_timestamp_s"), f"{selection_id}.{camera}.from_timestamp_s") >= _finite(values.get("to_timestamp_s"), f"{selection_id}.{camera}.to_timestamp_s"):
+                raise InputValidationError(f"single-GRASP {selection_id} camera timestamp interval is invalid")
+    return [dict(entry) for entry in entries]
+
+
 def scan_grasp_span_rows(rows: Sequence[Mapping[str, Any]], entry: Mapping[str, Any]) -> dict[str, Any]:
     """Scan each manifest span independently while retaining episode frame IDs."""
 
@@ -702,7 +1338,12 @@ def scan_grasp_span_rows(rows: Sequence[Mapping[str, Any]], entry: Mapping[str, 
 def run_scan(manifest_path: Path, output_path: Path, *, source_root: Path, expected_manifest_sha256: str) -> dict[str, Any]:
     manifest_sha = _required_sha(manifest_path, expected_manifest_sha256, "input manifest")
     manifest = _load_object(manifest_path, "input manifest")
-    entries = validate_manifest(manifest)
+    if manifest.get("schema_version") == SINGLE_INPUT_SCHEMA:
+        entries = validate_single_manifest(manifest)
+        input_mode = "single_grasp_span"
+    else:
+        entries = validate_manifest(manifest)
+        input_mode = "paired_grasp_spans"
     info_path = Path(str(manifest["official_info"]["path"]))
     if _sha(info_path) != manifest["official_info"]["sha256"]:
         raise InputValidationError("official info SHA changed after manifest creation")
@@ -730,7 +1371,7 @@ def run_scan(manifest_path: Path, output_path: Path, *, source_root: Path, expec
         "dart_supervision": False,
         "attempt_status": "NOT_APPLICABLE",
         "release_status": "NOT_RELEASED",
-        "inputs": {"manifest_path": str(manifest_path), "manifest_sha256": manifest_sha, "official_info_sha256": manifest["official_info"]["sha256"], "episode_count": len(entries)},
+        "inputs": {"manifest_path": str(manifest_path), "manifest_sha256": manifest_sha, "official_info_sha256": manifest["official_info"]["sha256"], "episode_count": len(entries), "input_mode": input_mode},
         "scan": {"episodes_scanned": len(episode_results), "rows_scanned": sum(item["rows_scanned"] for item in episode_results), "candidate_count": sum(item["candidate_count"] for item in episode_results), **parquet_audit},
         "episodes": sorted(episode_results, key=lambda item: item["candidate_id"]),
     }
@@ -753,6 +1394,19 @@ def make_parser() -> argparse.ArgumentParser:
     builder.add_argument("--expected-frozen-sha256", required=True)
     builder.add_argument("--expected-event-index-sha256", required=True)
     builder.add_argument("--expected-info-sha256", required=True)
+    single_builder = sub.add_parser("build-single-manifest")
+    single_builder.add_argument("--selection", type=Path, required=True)
+    single_builder.add_argument("--frozen", type=Path, required=True)
+    single_builder.add_argument("--source-groups", type=Path, required=True)
+    single_builder.add_argument("--event-index", type=Path, required=True)
+    single_builder.add_argument("--info", type=Path, required=True)
+    single_builder.add_argument("--output", type=Path, required=True)
+    single_builder.add_argument("--source-root", required=True)
+    single_builder.add_argument("--expected-selection-sha256", required=True)
+    single_builder.add_argument("--expected-frozen-sha256", required=True)
+    single_builder.add_argument("--expected-source-groups-sha256", required=True)
+    single_builder.add_argument("--expected-event-index-sha256", required=True)
+    single_builder.add_argument("--expected-info-sha256", required=True)
     scan = sub.add_parser("scan")
     scan.add_argument("--manifest", type=Path, required=True)
     scan.add_argument("--output", type=Path, required=True)
@@ -776,6 +1430,21 @@ def main(argv: Sequence[str] | None = None) -> int:
                 expected_event_index_sha256=args.expected_event_index_sha256,
                 expected_info_sha256=args.expected_info_sha256,
                 candidate_ids=args.candidate_id,
+                source_root=args.source_root,
+            )
+        elif args.command == "build-single-manifest":
+            build_single_manifest(
+                selection_path=args.selection,
+                frozen_path=args.frozen,
+                source_groups_path=args.source_groups,
+                event_index_path=args.event_index,
+                info_path=args.info,
+                output_path=args.output,
+                expected_selection_sha256=args.expected_selection_sha256,
+                expected_frozen_sha256=args.expected_frozen_sha256,
+                expected_source_groups_sha256=args.expected_source_groups_sha256,
+                expected_event_index_sha256=args.expected_event_index_sha256,
+                expected_info_sha256=args.expected_info_sha256,
                 source_root=args.source_root,
             )
         else:
