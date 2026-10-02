@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 15:47 CST：raw23 gripper polarity/state mapping bounded read-only check（Codex / coverage49_label_s1）
+
+- 本地固定shape-meta仅能确证BEHAVIOR raw action布局：`configs/data/behavior5_r1pro_memlite.yaml:3-8,42-58`将left/right gripper映射到ch14/ch22；同一文件`:73-89`把state gripper保留为raw 2D spans 24–25/49–50并压为1D。`BehaviorPerKeyTransform`（`src/g05/data_processor/transforms/relative_action.py:616-657,773-777`, commit `69645b4`）只做两指和、按`gripper_max_width=0.1`重标定/逆向等分，不证明控制器正负极性或接触反馈语义。
+- 官方冻结`/home/wsy/behavior-annotations/p107/natural-action-probe-v1/official-metadata/info.json` SHA`24c77f7a984bcee775e666203881a946b11a899f524fbc2405922b2109757874`只给`R1Pro`、action float32[23]和state float32[61]，没有分量名称、单位、开闭极性或反馈通道。当前scanner安全合同也明确`GRIPPER_INDEX_SOURCE`仅是shape-meta convention、`polarity/units/contact semantics are not proven`（`scripts/data/inspect_memlite_gripper_retry_candidates.py:42-48`, commit `6aa58c41`）。
+- 本地checkout/public源码未找到实际`MultiFingerGripperController`/`BaseController`实现或R1Pro执行器遥测映射；`scripts/serve_policy_memlite_fm.py:28-35`只有项目注释中的`[-1,1]`输入限幅。另`docs/experiments/2026-09-26-h85-composite-action-protocol.md:25`的`+1000 OPEN/-1000 CLOSE`是项目自写离线codec约定（commit `8cc536f`），不是官方控制器证据，未用于scanner。未读Parquet/RGB、未连robo/远端、未改scanner或训练环境；缺失的权威证据是实际R1Pro控制器/SDK的符号—夹爪运动标定及state反馈字段定义。
+
 ### 2026-10-02 15:35 CST：single-GRASP single-span manifest 实现（Codex / coverage49_label_s1）
 
 - 在独立 worktree/分支 `feat/p107-single-grasp-span`（基线 `07a0b3e6c0cb7021c1967c5907f86768e6741b63`）新增 `scripts/data/inspect_memlite_grasp_span_candidates.py` 的显式 `build-single-manifest` 模式和 `tests/test_inspect_memlite_grasp_span_candidates.py` 的 single-span 回归；旧 pair builder/validator 保持不变。新路径只允许已封存的最多8个 TRAIN/student_candidate episode，每个恰好一个精确 half-open GRASP interval，绑定 frozen segment、source-group seal、event exact interval/ID、annotation/global range、camera clock，所有 action/outcome/recovery/DART/training/release gates 为 false。selection 清单为 `scripts/data/p107_single_grasp_selection_v1.json`，SHA `e3edcf21e5748d7e3df0bc2c577449a0fec63dcca0535cfbb1e987d4ca3ea2e2`。
