@@ -1,3 +1,5 @@
+import argparse
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -9,8 +11,10 @@ import unittest
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts" / "data"))
 import render_memlite_event_packets as renderer  # noqa: E402
+import build_memlite_event_index as builder  # noqa: E402
 import select_memlite_event_annotation_queue as base  # noqa: E402
 import select_memlite_phase_balanced_calibration_queue as phase  # noqa: E402
+from test_build_memlite_event_index import coverage, write_release  # noqa: E402
 
 
 SOURCE_SHA = "a" * 64
@@ -23,7 +27,8 @@ def protocol():
 
 
 def parent_candidate(owner_protocol, *, ordinal, task=0, start=100, end=300,
-                     group_id=None, raw_episode=None, episode_index=None, instance=None):
+                     group_id=None, raw_episode=None, episode_index=None, instance=None,
+                     usage_role="annotation_calibration"):
     """A canonical source event whose raw skill retains original bounds."""
     instance = ordinal + 1 if instance is None else instance
     group_id = owner_protocol.source_group_id({
@@ -86,7 +91,7 @@ def parent_candidate(owner_protocol, *, ordinal, task=0, start=100, end=300,
             "locator_status": "METADATA_ONLY_UNRESOLVED",
         } for view in ("head", "left_wrist", "right_wrist")],
         "task_name": f"task-{task}",
-        "usage_role": "annotation_calibration",
+        "usage_role": usage_role,
     }
     event["event_id"] = owner_protocol.event_id(event)
     owner_protocol.validate_event(event)
@@ -109,6 +114,152 @@ def source_group(candidate):
 
 
 class PhaseBalancedCalibrationQueueTests(unittest.TestCase):
+    def test_student_selector_seals_two_events_that_renderer_consumes_without_role_adapter(self):
+        owner_protocol = protocol()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixture = write_release(root / "release")
+            index = root / "index"
+            builder.build_index(root / "release", index, calibration_per_task=1,
+                                coverage_expectations=coverage(fixture), max_seconds=10)
+            event_rows = [json.loads(line) for line in
+                          (index / "event_candidates.jsonl").read_text().splitlines()]
+            student = next(row for row in event_rows if row["usage_role"] == "student_candidate")
+            locator_source = next(row for row in event_rows if len(row.get("video_locators", [])) == 3)
+            student["source"]["episode_length"] = 600
+            student["event_interval"] = {"start_frame": 420, "end_frame": 540}
+            student["observation"] = {"frame": 420, "timestamp_s": 14.0}
+            student["action"]["start_frame"] = 420
+            student["skill_bundle"][0].update({"skill_id": 2, "skill_start": 420, "skill_end": 540})
+            student["video_locators"] = copy.deepcopy(locator_source["video_locators"])
+            for locator in student["video_locators"]:
+                locator["requested_timestamp_s"] = locator["episode_start_timestamp_s"] + 14.0
+            synthetic_skill_ids = {"NAVIGATE": 0, "GRASP": 1, "PRESS": 2, "HOLD": 3}
+            for row in event_rows:
+                for skill in row["skill_bundle"]:
+                    skill.setdefault("skill_id", synthetic_skill_ids[skill["verb"]])
+                row["event_id"] = owner_protocol.event_id(row)
+            student["event_id"] = owner_protocol.event_id(student)
+            owner_protocol.validate_event(student)
+            event_rows = [student if row["usage_role"] == "student_candidate" else row for row in event_rows]
+            event_path = index / "event_candidates.jsonl"
+            event_path.write_text("".join(base.canonical_json(row) + "\n" for row in event_rows))
+            manifest_path = index / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            event_receipt = {"sha256": base.sha256_file(event_path), "rows": len(event_rows),
+                             "bytes": event_path.stat().st_size}
+            manifest["files"]["event_candidates.jsonl"] = event_receipt
+            v3_coverage = {
+                "schema_version": "p107-official-coverage-expectations-v3",
+                "official_task_metadata_sha256": "c" * 64,
+                "official_skill_vocabulary_sha256": "d" * 64,
+                "expected_task_ids": [student["source"]["task_index"]],
+                "expected_skill_vocabulary": [
+                    {"skill_id": 0, "skill_description": "navigate"},
+                    {"skill_id": 1, "skill_description": "grasp"},
+                    {"skill_id": 2, "skill_description": "press"},
+                    {"skill_id": 3, "skill_description": "hold"},
+                ],
+                "required_task_skill_pairs": None,
+            }
+            manifest["coverage_expectations_sha256"] = base.canonical_sha256(v3_coverage)
+            manifest_path.write_text(base.canonical_json(manifest) + "\n")
+            seal_path = index / "inventory_seal.json"
+            seal = json.loads(seal_path.read_text())
+            seal["index_manifest_sha256"] = base.sha256_file(manifest_path)
+            seal["payload_files"]["event_candidates.jsonl"] = event_receipt
+            seal["coverage_expectations_sha256"] = base.canonical_sha256(v3_coverage)
+            seal_path.write_text(base.canonical_json(seal) + "\n")
+            coverage_path = root / "coverage.json"
+            coverage_path.write_text(base.canonical_json(v3_coverage) + "\n")
+            args = argparse.Namespace(
+                usage_role="student_candidate", private_diagnostic_student_candidate=True,
+                goal_state_parent_event_id=student["event_id"], protocol_path=PROTOCOL_PATH,
+                expected_protocol_sha256=PROTOCOL_SHA,
+                expected_source_release_manifest_sha256=student["source"]["source_release_manifest_sha256"],
+                expected_inventory_seal_sha256=base.sha256_file(seal_path),
+                coverage_expectations=coverage_path, max_retained_candidates=1,
+                transition_gap_frames=1, phase_quota=10, max_per_source_group=1,
+                max_per_episode=1, seed="student-fixture", max_seconds=10)
+            payloads = phase._payloads(index, args=args)
+            self.assertEqual([item.observation_phase for item in payloads["selected"]], ["ENTRY", "TERMINAL"])
+            output = root / "phase-output"
+            phase._write_payloads(output, payloads)
+            mini = output / "phase_candidate_index"
+            events = payloads["events"]
+            questions = {event["event_id"]: {"question": phase.GOAL_STATE_REVIEW_QUERY}
+                         for event in events}
+            binding = renderer._load_protocol(PROTOCOL_PATH, expected_sha256=PROTOCOL_SHA)
+            packets = renderer.create_packets(
+                mini, root / "packets", event_ids={event["event_id"] for event in events}, limit=None,
+                questions=questions, include_source_annotation_context=False, decode=False,
+                raw_root=None, contact_sheets=False, expected_usage_role="student_candidate",
+                private_goal_state_review=True, protocol_binding=binding, max_seconds=10)
+            self.assertEqual(packets["status"], "LOCATORS_READY_RENDER_PENDING")
+            rows = [json.loads(line) for line in
+                    (root / "packets" / "packets.jsonl").read_text().splitlines()]
+            schedules = sorted([[sample["sample_frame"] for sample in row["audit"]["temporal_schedule"]]
+                                for row in rows], key=len)
+            self.assertEqual(schedules, [[420], [420, 539]])
+
+    def test_student_goal_state_opt_in_preserves_parent_lineage_and_two_causal_anchors(self):
+        owner_protocol = protocol()
+        parent = parent_candidate(owner_protocol, ordinal=99, start=420, end=540,
+                                  usage_role="student_candidate")
+        derived = phase.derive_candidates([parent], max_transition_gap_frames=1)
+        entry = next(item for item in derived if item.observation_phase == "ENTRY")
+        terminal = next(item for item in derived if item.observation_phase == "TERMINAL")
+
+        with self.assertRaisesRegex(ValueError, "explicit private diagnostic opt-in"):
+            phase.derived_event(entry, protocol=owner_protocol,
+                                usage_role="student_candidate")
+        entry_event = phase.derived_event(
+            entry, protocol=owner_protocol, usage_role="student_candidate",
+            private_diagnostic_student_candidate=True)
+        terminal_event = phase.derived_event(
+            terminal, protocol=owner_protocol, usage_role="student_candidate",
+            private_diagnostic_student_candidate=True)
+        self.assertEqual(entry_event["usage_role"], "student_candidate")
+        self.assertEqual(terminal_event["usage_role"], "student_candidate")
+        self.assertEqual(entry_event["observation"]["frame"], 420)
+        self.assertEqual(terminal_event["observation"]["frame"], 539)
+        for event, phase_name in ((entry_event, "ENTRY"), (terminal_event, "TERMINAL")):
+            lineage = event["phase_lineage"]
+            self.assertEqual(lineage["parent_event_id"], parent.event_id)
+            self.assertEqual(lineage["observation_phase"], phase_name)
+            self.assertTrue(lineage["private_goal_state_review"])
+            self.assertEqual(lineage["goal_state_question"], phase.GOAL_STATE_REVIEW_QUERY)
+            self.assertEqual(lineage["goal_state_question_sha256"], phase.GOAL_STATE_REVIEW_QUERY_SHA256)
+            for gate in ("training_eligible", "outcome_supervision", "recovery_supervision",
+                         "action_bc_supervision", "dart_supervision"):
+                self.assertFalse(lineage[gate])
+        row = phase.queue_row(terminal, terminal_event, selection_order=1,
+                              usage_role="student_candidate")
+        self.assertTrue(row["private_goal_state_review"])
+        self.assertEqual(row["goal_state_question"], phase.GOAL_STATE_REVIEW_QUERY)
+        self.assertEqual(row["goal_state_question_sha256"], phase.GOAL_STATE_REVIEW_QUERY_SHA256)
+        self.assertEqual(row["usage_role"], "student_candidate")
+
+    def test_student_goal_state_rejects_parent_role_or_split_drift(self):
+        owner_protocol = protocol()
+        wrong_role = parent_candidate(owner_protocol, ordinal=120, start=420, end=540,
+                                      usage_role="annotation_calibration")
+        role_entry = next(item for item in phase.derive_candidates(
+            [wrong_role], max_transition_gap_frames=1) if item.observation_phase == "ENTRY")
+        with self.assertRaisesRegex(ValueError, "role/split"):
+            phase.derived_event(role_entry, protocol=owner_protocol,
+                                usage_role="student_candidate",
+                                private_diagnostic_student_candidate=True)
+        wrong_split = parent_candidate(owner_protocol, ordinal=121, start=420, end=540,
+                                      usage_role="student_candidate")
+        wrong_split.event["source"]["original_split"] = "eval"
+        split_entry = next(item for item in phase.derive_candidates(
+            [wrong_split], max_transition_gap_frames=1) if item.observation_phase == "ENTRY")
+        with self.assertRaisesRegex(ValueError, "role/split"):
+            phase.derived_event(split_entry, protocol=owner_protocol,
+                                usage_role="student_candidate",
+                                private_diagnostic_student_candidate=True)
+
     def test_original_skill_bounds_keep_terminal_query_on_completed_skill_and_repeat_is_cross_episode(self):
         owner_protocol = protocol()
         first = parent_candidate(owner_protocol, ordinal=0, start=100, end=300)

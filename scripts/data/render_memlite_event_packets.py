@@ -95,12 +95,17 @@ PACKET_MANIFEST_FIELDS = frozenset((
     "files", "packets", "rendered_asset_receipts", "decoded_camera_native_rgb",
     "temporal_sample_offsets_frames", "temporal_slots", "distinct_temporal_sample_frames",
     "clamped_duplicate_temporal_samples", "render_requests_sha256", "queue_seal_sha256",
-    "review_only_contact_sheets", "full_video_hashing",
+    "review_only_contact_sheets", "full_video_hashing", "expected_usage_role",
+    "private_goal_state_review",
     "renderer_sha256", "protocol_sha256", "wall_seconds",
 ))
 TEMPORAL_SAMPLE_OFFSETS = (-90, -60, -30, -15, 0, 15, 30)
 MAX_TEMPORAL_OFFSET_FRAMES = 240  # Eight seconds at the source 30 Hz clock.
 ACTOR_INSTRUCTION = "Use only the camera-native RGB images and question context. Source annotation context is not ground truth."
+GOAL_STATE_REVIEW_QUERY = "At the anchor, is the brown animal toy visibly held by the robot’s right gripper?"
+GOAL_STATE_REVIEW_QUERY_SHA256 = hashlib.sha256(GOAL_STATE_REVIEW_QUERY.encode("utf-8")).hexdigest()
+ROLE_ANNOTATION_CALIBRATION = "annotation_calibration"
+ROLE_STUDENT_CANDIDATE = "student_candidate"
 # PTS comes from an integer stream tick while source metadata uses floating
 # seconds.  Permit representation error only; this is many orders below one
 # 30-Hz frame and never admits a genuine future sample.
@@ -224,8 +229,14 @@ def _read_event_ids(path: Path | None, direct: Iterable[str]) -> set[str]:
     return selected
 
 
-def _read_render_requests(path: Path | None, expected_sha256: str | None) -> tuple[dict[str, dict[str, Any]], str | None]:
+def _read_render_requests(path: Path | None, expected_sha256: str | None, *,
+                          expected_usage_role: str = ROLE_ANNOTATION_CALIBRATION,
+                          private_goal_state_review: bool = False) -> tuple[dict[str, dict[str, Any]], str | None]:
     """Load the sealed per-event temporal request interface; it is not a label source."""
+    if expected_usage_role not in {ROLE_ANNOTATION_CALIBRATION, "evaluation_only", ROLE_STUDENT_CANDIDATE}:
+        raise ValueError("render request role is not an approved P107 role")
+    if private_goal_state_review != (expected_usage_role == ROLE_STUDENT_CANDIDATE):
+        raise ValueError("student_candidate render requests require the explicit private review opt-in")
     if path is None and expected_sha256 is None:
         return {}, None
     if path is None or not isinstance(expected_sha256, str) or len(expected_sha256) != 64 or \
@@ -260,10 +271,17 @@ def _read_render_requests(path: Path | None, expected_sha256: str | None) -> tup
             raise ValueError("render request source identity is malformed")
         actor, before, after, frames = (request["actor_available_frame_indices"], request["offline_review_before_frame_indices"],
                                         request["offline_review_after_frame_indices"], request["requested_frame_indices"])
-        if (not all(isinstance(value, list) and all(type(frame) is int and frame >= 0 for frame in value)
-                    for value in (actor, before, after, frames)) or len(actor) not in {1, 5} or len(after) != 5 or
-                before != actor[:-1] or frames != actor + after or len(frames) not in {6, 10} or
-                frames != sorted(frames) or len(set(frames)) != len(frames)):
+        if not all(isinstance(value, list) and all(type(frame) is int and frame >= 0 for frame in value)
+                   for value in (actor, before, after, frames)):
+            raise ValueError("render request temporal frames are malformed")
+        if private_goal_state_review:
+            if (expected_usage_role != ROLE_STUDENT_CANDIDATE or len(actor) not in {1, 2} or
+                    before != [] or after != [] or frames != actor or frames != sorted(frames) or
+                    len(set(frames)) != len(frames)):
+                raise ValueError("private student render requests must contain one or two causal frames only")
+        elif (len(actor) not in {1, 5} or len(after) != 5 or before != actor[:-1] or
+              frames != actor + after or len(frames) not in {6, 10} or frames != sorted(frames) or
+              len(set(frames)) != len(frames)):
             raise ValueError("render request temporal frames must be exact unique actor-plus-offline slots")
         delivery = request["camera_delivery"]
         if (not isinstance(delivery, dict) or set(delivery) != delivery_keys or
@@ -441,12 +459,55 @@ def _temporal_samples(event: Mapping[str, Any], offsets_frames: tuple[int, ...])
     return samples
 
 
+def _student_goal_state_temporal_samples(event: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Return the two-anchor causal schedule for the explicit private pilot.
+
+    The phase producer seals the parent interval and phase name.  ENTRY keeps
+    its one anchor; TERMINAL includes only the parent's first frame and the
+    terminal anchor.  This intentionally does not synthesize a post-terminal
+    frame (for the pilot that would be 540/689).
+    """
+    lineage = event.get("phase_lineage")
+    if (not isinstance(lineage, Mapping) or lineage.get("private_goal_state_review") is not True or
+            lineage.get("goal_state_question") != GOAL_STATE_REVIEW_QUERY or
+            lineage.get("goal_state_question_sha256") != GOAL_STATE_REVIEW_QUERY_SHA256):
+        raise ValueError("student private packet requires a sealed goal-state phase lineage")
+    interval = lineage.get("parent_event_interval")
+    if (not isinstance(interval, Mapping) or type(interval.get("start_frame")) is not int or
+            type(interval.get("end_frame")) is not int or interval["end_frame"] <= interval["start_frame"]):
+        raise ValueError("student private packet has no valid parent event interval")
+    anchor = event.get("observation", {}).get("frame")
+    length = event.get("source", {}).get("episode_length")
+    if type(anchor) is not int or type(length) is not int or not 0 <= anchor < length:
+        raise ValueError("student private packet has an invalid episode anchor")
+    start, end = interval["start_frame"], interval["end_frame"]
+    if not start <= anchor < end or start < 0 or end > length:
+        raise ValueError("student private packet parent interval escapes its source episode")
+    phase = lineage.get("observation_phase")
+    if phase == "ENTRY":
+        if anchor != start:
+            raise ValueError("student ENTRY anchor is not the sealed parent start")
+        frames = [anchor]
+    elif phase == "TERMINAL":
+        if anchor != end - 1 or start == anchor:
+            raise ValueError("student TERMINAL anchor is not the sealed parent end-1")
+        frames = [start, anchor]
+    else:
+        raise ValueError("student private packet supports only ENTRY and TERMINAL phases")
+    return [{"sample_index": index, "offset_frames": frame - anchor, "sample_frame": frame,
+             "timestamp_s": frame / 30.0, "temporal_role": "ACTOR_CAUSAL"}
+            for index, frame in enumerate(frames)]
+
+
 def _request_temporal_samples(event: Mapping[str, Any], request: Mapping[str, Any], *,
                               protocol_binding: ProtocolBinding,
-                              expected_usage_role: str = "annotation_calibration") -> list[dict[str, Any]]:
+                              expected_usage_role: str = ROLE_ANNOTATION_CALIBRATION,
+                              private_goal_state_review: bool = False) -> list[dict[str, Any]]:
     """Validate each sealed queue job against its canonical indexed source before decode."""
-    if expected_usage_role not in {"annotation_calibration", "evaluation_only"}:
+    if expected_usage_role not in {ROLE_ANNOTATION_CALIBRATION, "evaluation_only", ROLE_STUDENT_CANDIDATE}:
         raise ValueError("render request role is not an approved P107 role")
+    if private_goal_state_review != (expected_usage_role == ROLE_STUDENT_CANDIDATE):
+        raise ValueError("student_candidate render requests require the explicit private review opt-in")
     source = event["source"]
     fields = ("source_release_manifest_sha256", "source_annotation_sha256", "task_index", "task_instance_id",
               "raw_episode_id", "episode_index", "source_group_id")
@@ -459,8 +520,23 @@ def _request_temporal_samples(event: Mapping[str, Any], request: Mapping[str, An
     if source.get("original_split") != expected_split:
         raise ValueError("sealed render request role does not bind the canonical immutable split")
     frames, anchor = request["requested_frame_indices"], event["observation"]["frame"]
-    if request["actor_available_frame_indices"][-1] != anchor or any(frame >= source["episode_length"] for frame in frames):
+    actor_frames = request.get("actor_available_frame_indices")
+    if (not frames or not isinstance(actor_frames, list) or not actor_frames or
+            actor_frames[-1] != anchor or
+            any(frame >= source["episode_length"] for frame in frames)):
         raise ValueError("sealed render request crosses its canonical source episode or observation anchor")
+    if private_goal_state_review:
+        if (request["actor_available_frame_indices"] != frames or
+                request["offline_review_before_frame_indices"] or
+                request["offline_review_after_frame_indices"] or
+                any(frame > anchor for frame in frames)):
+            raise ValueError("private student render request contains non-causal or offline frames")
+        expected = _student_goal_state_temporal_samples(event)
+        if [sample["sample_frame"] for sample in expected] != frames:
+            raise ValueError("private student render request does not match the sealed two-anchor schedule")
+        return [{"sample_index": index, "offset_frames": frame - anchor, "sample_frame": frame,
+                 "timestamp_s": frame / 30.0, "temporal_role": "ACTOR_CAUSAL"}
+                for index, frame in enumerate(frames)]
     return [{"sample_index": index, "offset_frames": frame - anchor, "sample_frame": frame,
              "timestamp_s": frame / 30.0,
              "temporal_role": "ACTOR_CAUSAL" if frame <= anchor else "OFFLINE_FUTURE_AUDIT"}
@@ -594,14 +670,17 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                    render_requests: Mapping[str, Mapping[str, Any]] | None = None,
                    render_requests_sha256: str | None = None, queue_seal_sha256: str | None = None,
                    queue_seal_source_release_manifest_sha256: str | None = None,
-                   expected_usage_role: str = "annotation_calibration",
+                   expected_usage_role: str = ROLE_ANNOTATION_CALIBRATION,
+                   private_goal_state_review: bool = False,
                    protocol_binding: ProtocolBinding | None = None,
                    max_seconds: float = 1800.0) -> dict[str, Any]:
     index, output = Path(index), Path(output)
     protocol_binding = _protocol_binding if protocol_binding is None else protocol_binding
     protocol = protocol_binding.module
-    if expected_usage_role not in {"annotation_calibration", "evaluation_only"}:
+    if expected_usage_role not in {ROLE_ANNOTATION_CALIBRATION, "evaluation_only", ROLE_STUDENT_CANDIDATE}:
         raise ValueError("render request role is not an approved P107 role")
+    if private_goal_state_review != (expected_usage_role == ROLE_STUDENT_CANDIDATE):
+        raise ValueError("student_candidate rendering requires the explicit private review opt-in")
     if output.exists():
         raise FileExistsError("packet output already exists; use --resume only to verify its sealed receipt")
     if index.is_symlink() or not index.is_dir():
@@ -610,7 +689,7 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
         raise ValueError("select explicit --event-id/--event-ids or provide a finite --limit")
     if limit is not None and (type(limit) is not int or limit < 1):
         raise ValueError("limit must be a positive integer")
-    if not _valid_temporal_offsets(temporal_offsets_frames):
+    if not private_goal_state_review and not _valid_temporal_offsets(temporal_offsets_frames):
         raise ValueError("temporal packet rendering requires seven or ten unique offsets including zero within +/-240 frames")
     if render_requests is None:
         render_requests = {}
@@ -624,6 +703,8 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
         raise ValueError("queue/request receipts require sealed per-event render requests")
     if contact_sheets and not decode:
         raise ValueError("--contact-sheets requires --decode camera-native images")
+    if private_goal_state_review and (contact_sheets or include_source_annotation_context):
+        raise ValueError("private student packets cannot include contact sheets or source annotation context")
     if decode:
         if raw_root is None or raw_root.is_symlink() or not raw_root.is_dir():
             raise ValueError("--decode requires an existing non-symlink --raw-root")
@@ -650,11 +731,14 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
         raise ValueError("sealed event index contains duplicate selected event IDs")
     if set(questions) - selected_ids:
         raise ValueError("question context references an event outside the bounded packet selection")
+    if private_goal_state_review and set(questions) != selected_ids:
+        raise ValueError("private student packets require one pre-frozen question context per selected event")
     started = time.monotonic()
     staging = Path(tempfile.mkdtemp(prefix=f".{output.name}.staging-", dir=str(output.parent)))
     packets = []
     asset_receipts = []
     seen_packet_ids = set()
+    native_asset_cache: dict[tuple[Any, ...], dict[str, Any]] = {}
     expected_split = "eval" if expected_usage_role == "evaluation_only" else "train"
     try:
         if decode:
@@ -673,18 +757,27 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
             context = dict(questions.get(event["event_id"], {}))
             if _actor_has_forbidden_key(context):
                 raise ValueError("actor question_context must not carry nested outcome/label/review/evidence material")
+            if private_goal_state_review:
+                lineage = event.get("phase_lineage")
+                if (not isinstance(lineage, Mapping) or lineage.get("private_goal_state_review") is not True or
+                        lineage.get("goal_state_question") != GOAL_STATE_REVIEW_QUERY or
+                        lineage.get("goal_state_question_sha256") != GOAL_STATE_REVIEW_QUERY_SHA256 or
+                        context != {"question": GOAL_STATE_REVIEW_QUERY}):
+                    raise ValueError("private student packet requires the exact sealed goal-state question")
             if include_source_annotation_context:
                 if context:
                     raise ValueError("use either explicit question context or source annotation context, not both")
                 context = _source_annotation_context(event)
             if _actor_has_forbidden_key(context):
                 raise ValueError("actor question_context must not carry nested outcome/label/review/evidence material")
-            samples = _temporal_samples(event, temporal_offsets_frames)
+            samples = (_student_goal_state_temporal_samples(event) if private_goal_state_review
+                       else _temporal_samples(event, temporal_offsets_frames))
             render_request_id = None
             if render_requests:
                 requested_samples = _request_temporal_samples(
                     event, render_requests[event["event_id"]], protocol_binding=protocol_binding,
-                    expected_usage_role=expected_usage_role)
+                    expected_usage_role=expected_usage_role,
+                    private_goal_state_review=private_goal_state_review)
                 if _temporal_identity(samples) != _temporal_identity(requested_samples):
                     raise ValueError("static temporal schedule does not exactly match the sealed render request")
                 render_request_id = render_requests[event["event_id"]]["request_id"]
@@ -706,33 +799,62 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                         images, paths = {}, {}
                         for view in VIEWS:
                             locator = _temporal_locator(by_view[view], sample)
-                            video = _resolve_video(raw_root, locator["relative_path"])
-                            episode_start = float(locator["episode_start_timestamp_s"])
-                            episode_end = episode_start + (event["source"]["episode_length"] - 1) / 30.0
-                            actor_anchor = (episode_start + event["observation"]["frame"] / 30.0
-                                            if sample["temporal_role"] == "ACTOR_CAUSAL" else None)
-                            image, decoded = _decode_rgb(
-                                av, video, float(locator["requested_timestamp_s"]),
-                                episode_start_timestamp_s=episode_start, episode_end_timestamp_s=episode_end,
-                                actor_anchor_timestamp_s=actor_anchor)
-                            native_name = f"{packet_id}_t{sample['sample_index']:02d}_{view}.png"
-                            asset_path = staging / "assets" / native_name
-                            image.save(asset_path)
-                            relative_path = f"assets/{native_name}"
+                            cache_key = (event["source"]["source_group_id"],
+                                         event["source"]["episode_index"], locator["relative_path"],
+                                         view, sample["sample_frame"])
+                            cached = native_asset_cache.get(cache_key) if private_goal_state_review else None
+                            image = None
+                            if cached is not None:
+                                decoded = dict(cached["decoded"])
+                                # The PNG bytes are frame-identical, but the
+                                # receipt's causal anchor belongs to this
+                                # packet's observation (420 is reused by the
+                                # terminal packet whose anchor is 539).
+                                decoded["actor_anchor_timestamp_s"] = (
+                                    float(locator["episode_start_timestamp_s"]) +
+                                    event["observation"]["frame"] / 30.0)
+                                relative_path = cached["relative_path"]
+                                png_sha256 = cached["sha256"]
+                                png_bytes = cached["bytes"]
+                            else:
+                                video = _resolve_video(raw_root, locator["relative_path"])
+                                episode_start = float(locator["episode_start_timestamp_s"])
+                                episode_end = episode_start + (event["source"]["episode_length"] - 1) / 30.0
+                                actor_anchor = (episode_start + event["observation"]["frame"] / 30.0
+                                                if sample["temporal_role"] == "ACTOR_CAUSAL" else None)
+                                image, decoded = _decode_rgb(
+                                    av, video, float(locator["requested_timestamp_s"]),
+                                    episode_start_timestamp_s=episode_start, episode_end_timestamp_s=episode_end,
+                                    actor_anchor_timestamp_s=actor_anchor)
+                                native_name = f"{packet_id}_t{sample['sample_index']:02d}_{view}.png"
+                                asset_path = staging / "assets" / native_name
+                                image.save(asset_path)
+                                relative_path = f"assets/{native_name}"
+                                png_sha256 = _sha256(asset_path)
+                                png_bytes = asset_path.stat().st_size
+                                if private_goal_state_review:
+                                    native_asset_cache[cache_key] = {
+                                        "relative_path": relative_path, "sha256": png_sha256,
+                                        "bytes": png_bytes, "decoded": dict(decoded),
+                                    }
                             paths[view] = relative_path
                             decoded_receipts.append({**decoded, "view": view, **sample,
-                                                     "camera_native_png_sha256": _sha256(asset_path),
-                                                     "camera_native_png_bytes": asset_path.stat().st_size})
+                                                     "camera_native_png_sha256": png_sha256,
+                                                     "camera_native_png_bytes": png_bytes})
                             asset_receipts.append({
                                 "schema_version": protocol.PACKET_SCHEMA_VERSION, "packet_id": packet_id, "view": view,
                                 "asset_kind": "camera_native_rgb_png", "temporal_role": sample["temporal_role"],
                                 "sample_index": sample["sample_index"], "sample_frame": sample["sample_frame"],
                                 "requested_timestamp_s": locator["requested_timestamp_s"],
                                 "decoded_timestamp_s": decoded["decoded_timestamp_s"], "pts_error_s": decoded["pts_error_s"],
-                                "relative_path": relative_path, "sha256": _sha256(asset_path),
-                                "bytes": asset_path.stat().st_size,
+                                "relative_path": relative_path, "sha256": png_sha256,
+                                "bytes": png_bytes,
                             })
-                            images[view] = image
+                            if image is not None:
+                                if private_goal_state_review and not contact_sheets:
+                                    image.close()
+                                else:
+                                    images[view] = image
                         temporal_record = {**sample, "images": paths}
                         if sample["temporal_role"] == "ACTOR_CAUSAL":
                             actor_temporal_rgb.append(temporal_record)
@@ -781,12 +903,15 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
                     "temporal_schedule": [{**sample, "video_locators": [
                         _temporal_locator(by_view[view], sample) for view in VIEWS]} for sample in samples],
                     "render_request_id": render_request_id,
-                    "requested_temporal_slot_count": len(temporal_offsets_frames),
+                    "requested_temporal_slot_count": (len(samples) if private_goal_state_review
+                                                       else len(temporal_offsets_frames)),
                     "temporal_slot_count": len(samples),
                     "distinct_sample_frame_count": len({sample["sample_frame"] for sample in samples}),
-                    "clamped_duplicate_sample_frame_count": len(temporal_offsets_frames) - len(samples),
+                    "clamped_duplicate_sample_frame_count": (0 if private_goal_state_review
+                                                              else len(temporal_offsets_frames) - len(samples)),
                     "decoded_pts_receipts": decoded_receipts, "offline_future_rgb": offline_future_rgb,
                     "review_only_contact_sheet": review_asset,
+                    **({"phase_lineage": event["phase_lineage"]} if private_goal_state_review else {}),
                 },
             })
         files = {"packets.jsonl": _write_jsonl(staging / "packets.jsonl", packets, protocol_binding=protocol_binding),
@@ -800,7 +925,7 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
             "index_event_file_sha256": receipt["sha256"],
             "files": files, "packets": len(packets), "rendered_asset_receipts": len(asset_receipts),
             "decoded_camera_native_rgb": decode,
-            "temporal_sample_offsets_frames": list(temporal_offsets_frames),
+            "temporal_sample_offsets_frames": (None if private_goal_state_review else list(temporal_offsets_frames)),
             "temporal_slots": sum(packet["audit"]["requested_temporal_slot_count"] for packet in packets),
             "distinct_temporal_sample_frames": sum(
                 packet["audit"]["distinct_sample_frame_count"] for packet in packets),
@@ -809,6 +934,8 @@ def create_packets(index: Path, output: Path, *, event_ids: set[str], limit: int
             "render_requests_sha256": render_requests_sha256,
             "queue_seal_sha256": queue_seal_sha256,
             "review_only_contact_sheets": contact_sheets, "full_video_hashing": False,
+            "expected_usage_role": expected_usage_role,
+            "private_goal_state_review": private_goal_state_review,
             "renderer_sha256": _sha256(Path(__file__)),
             "protocol_sha256": protocol_binding.sha256,
             "wall_seconds": time.monotonic() - started,
@@ -845,7 +972,9 @@ def _safe_asset_path(value: Any, *, directory: str) -> bool:
 
 
 def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
-                               expected_offsets: tuple[int, ...],
+                               expected_offsets: tuple[int, ...] | None,
+                               expected_usage_role: str = ROLE_ANNOTATION_CALIBRATION,
+                               private_goal_state_review: bool = False,
                                protocol_binding: ProtocolBinding) -> None:
     protocol = protocol_binding.module
     required = {"schema_version", "packet_id", "status", "training_eligible", "actor_packet", "audit"}
@@ -861,6 +990,12 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
         raise ValueError("packet actor input has an invalid schema")
     if not isinstance(actor["question_context"], Mapping) or actor["actor_instruction"] != ACTOR_INSTRUCTION:
         raise ValueError("packet actor question/instruction schema is invalid")
+    if expected_usage_role not in {ROLE_ANNOTATION_CALIBRATION, "evaluation_only", ROLE_STUDENT_CANDIDATE}:
+        raise ValueError("packet role is not an approved P107 role")
+    if private_goal_state_review != (expected_usage_role == ROLE_STUDENT_CANDIDATE):
+        raise ValueError("student_candidate packets require the explicit private review opt-in")
+    if private_goal_state_review and actor["question_context"] != {"question": GOAL_STATE_REVIEW_QUERY}:
+        raise ValueError("private student actor input must retain the exact pre-frozen question")
     if _actor_has_forbidden_key(actor):
         raise ValueError("actor input contains forbidden outcome/label/review/evidence material")
     if type(actor["observation_frame"]) is not int or actor["observation_frame"] < 0:
@@ -895,6 +1030,8 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
                       "render_request_id", "requested_temporal_slot_count", "temporal_slot_count",
                       "distinct_sample_frame_count", "clamped_duplicate_sample_frame_count", "decoded_pts_receipts",
                       "offline_future_rgb", "review_only_contact_sheet"}
+    if private_goal_state_review:
+        audit_required.add("phase_lineage")
     if not isinstance(audit, Mapping) or set(audit) != audit_required or audit["event_id"] != actor["event_id"]:
         raise ValueError("packet audit has an invalid schema")
     protocol.validate_source_ref(audit["source"])
@@ -910,19 +1047,27 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
                 abs(locator["requested_timestamp_s"] - expected_time) > 1e-9):
             raise ValueError("packet audit base locator is not a source-clock camera locator")
     schedule = audit["temporal_schedule"]
-    expected_schedule = _temporal_samples({"observation": {"frame": actor["observation_frame"]},
-                                           "source": audit["source"]}, expected_offsets)
+    expected_schedule = (_student_goal_state_temporal_samples({
+        "observation": {"frame": actor["observation_frame"]},
+        "source": audit["source"],
+        "phase_lineage": audit["phase_lineage"],
+    }) if private_goal_state_review else _temporal_samples(
+        {"observation": {"frame": actor["observation_frame"]}, "source": audit["source"]},
+        expected_offsets))
     if not isinstance(schedule, list) or len(schedule) != len(expected_schedule):
         raise ValueError("packet audit must retain the exact bounded temporal samples")
     request_id = audit["render_request_id"]
     if request_id is not None and (not isinstance(request_id, str) or len(request_id) != 64 or
                                    any(char not in "0123456789abcdef" for char in request_id)):
         raise ValueError("packet temporal request identity is invalid")
-    if (audit["requested_temporal_slot_count"] != len(expected_offsets) or
+    expected_requested_count = len(expected_schedule) if private_goal_state_review else len(expected_offsets)
+    if (audit.get("usage_role") != expected_usage_role or
+            audit["requested_temporal_slot_count"] != expected_requested_count or
             audit["temporal_slot_count"] != len(expected_schedule) or
             type(audit["distinct_sample_frame_count"]) is not int or
             audit["distinct_sample_frame_count"] != len(expected_schedule) or
-            audit["clamped_duplicate_sample_frame_count"] != len(expected_offsets) - len(expected_schedule)):
+            audit["clamped_duplicate_sample_frame_count"] != (0 if private_goal_state_review else
+                                                               len(expected_offsets) - len(expected_schedule))):
         raise ValueError("packet temporal slot/duplicate accounting is invalid")
     expected_sample_by_index: dict[int, Mapping[str, Any]] = {}
     for position, sample in enumerate(schedule):
@@ -1018,7 +1163,9 @@ def _validate_packet_semantics(packet: Mapping[str, Any], *, decoded: bool,
 
 def _validate_packet_index_binding(packet: Mapping[str, Any], event: Mapping[str, Any], *,
                                    index_manifest_sha256: str, decoded: bool,
-                                   temporal_offsets: tuple[int, ...],
+                                   temporal_offsets: tuple[int, ...] | None,
+                                   expected_usage_role: str = ROLE_ANNOTATION_CALIBRATION,
+                                   private_goal_state_review: bool = False,
                                    protocol_binding: ProtocolBinding) -> None:
     """A resigned packet cannot swap its source event, camera locators, or ID."""
     protocol = protocol_binding.module
@@ -1029,6 +1176,15 @@ def _validate_packet_index_binding(packet: Mapping[str, Any], event: Mapping[str
             audit["usage_role"] != event.get("usage_role") or
             protocol.canonical_json(audit["video_locators"]) != protocol.canonical_json(event["video_locators"])):
         raise ValueError("packet does not bind the exact canonical event/source/camera record from the sealed index")
+    if event.get("usage_role") != expected_usage_role:
+        raise ValueError("packet event role does not match the sealed packet role")
+    if private_goal_state_review:
+        lineage = event.get("phase_lineage")
+        if (not isinstance(lineage, Mapping) or lineage.get("private_goal_state_review") is not True or
+                lineage.get("goal_state_question") != GOAL_STATE_REVIEW_QUERY or
+                lineage.get("goal_state_question_sha256") != GOAL_STATE_REVIEW_QUERY_SHA256 or
+                protocol.canonical_json(audit.get("phase_lineage")) != protocol.canonical_json(lineage)):
+            raise ValueError("private packet does not bind the sealed goal-state phase lineage")
     expected_packet_id = _packet_id(index_manifest_sha256, event, actor["question_context"], decoded,
                                     packet["audit"]["temporal_schedule"], packet["audit"]["render_request_id"],
                                     protocol_binding=protocol_binding)
@@ -1102,10 +1258,21 @@ def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256
         raise ValueError("packet manifest cannot self-promote candidate packets to training/audited status")
     if result.get("protocol_sha256") != protocol_binding.sha256:
         raise ValueError("packet manifest protocol does not match the pinned compatibility reader")
+    expected_usage_role = result.get("expected_usage_role")
+    private_goal_state_review = result.get("private_goal_state_review")
+    if (expected_usage_role not in {ROLE_ANNOTATION_CALIBRATION, "evaluation_only", ROLE_STUDENT_CANDIDATE} or
+            type(private_goal_state_review) is not bool or
+            private_goal_state_review != (expected_usage_role == ROLE_STUDENT_CANDIDATE)):
+        raise ValueError("packet manifest has an invalid immutable usage-role/private-review binding")
     offsets = result.get("temporal_sample_offsets_frames")
-    if not _valid_temporal_offsets(offsets):
+    if private_goal_state_review:
+        if offsets is not None:
+            raise ValueError("private student packet manifest must not claim a static calibration offset schedule")
+        temporal_offsets = None
+    elif not _valid_temporal_offsets(offsets):
         raise ValueError("packet manifest has an invalid bounded temporal sample schedule")
-    temporal_offsets = tuple(offsets)
+    else:
+        temporal_offsets = tuple(offsets)
     if type(result.get("review_only_contact_sheets")) is not bool or result.get("full_video_hashing") is not False:
         raise ValueError("packet manifest has invalid review/video-hashing policy fields")
     request_sha, queue_seal_sha = result.get("render_requests_sha256"), result.get("queue_seal_sha256")
@@ -1131,13 +1298,16 @@ def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256
     if (result.get("packets") != len(packets) or not isinstance(result.get("decoded_camera_native_rgb"), bool) or
             type(result.get("temporal_slots")) is not int or type(result.get("distinct_temporal_sample_frames")) is not int or
             type(result.get("clamped_duplicate_temporal_samples")) is not int or
-            result["temporal_slots"] != len(temporal_offsets) * len(packets) or
+            result["temporal_slots"] != sum(packet.get("audit", {}).get("requested_temporal_slot_count", -1)
+                                              for packet in packets) or
             result["clamped_duplicate_temporal_samples"] != result["temporal_slots"] - result["distinct_temporal_sample_frames"]):
         raise ValueError("packet manifest counters or decode mode are invalid")
     decoded = result["decoded_camera_native_rgb"]
     packet_ids, event_ids = set(), set()
     for packet in packets:
         _validate_packet_semantics(packet, decoded=decoded, expected_offsets=temporal_offsets,
+                                   expected_usage_role=expected_usage_role,
+                                   private_goal_state_review=private_goal_state_review,
                                    protocol_binding=protocol_binding)
         if (request_sha is None) != (packet["audit"]["render_request_id"] is None):
             raise ValueError("packet temporal request identity does not match its sealed manifest provenance")
@@ -1152,7 +1322,10 @@ def resume_packets(index: Path, output: Path, *, expected_packet_manifest_sha256
     for packet in packets:
         _validate_packet_index_binding(packet, events_by_id[packet["actor_packet"]["event_id"]],
                                        index_manifest_sha256=result["index_manifest_sha256"], decoded=decoded,
-                                       temporal_offsets=temporal_offsets, protocol_binding=protocol_binding)
+                                       temporal_offsets=temporal_offsets,
+                                       expected_usage_role=expected_usage_role,
+                                       private_goal_state_review=private_goal_state_review,
+                                       protocol_binding=protocol_binding)
     if (result["temporal_slots"] != sum(packet["audit"]["requested_temporal_slot_count"] for packet in packets) or
             result["distinct_temporal_sample_frames"] != sum(packet["audit"]["distinct_sample_frame_count"] for packet in packets) or
             result["clamped_duplicate_temporal_samples"] != sum(
@@ -1217,6 +1390,11 @@ def main() -> None:
     parser.add_argument("--limit", type=int)
     parser.add_argument("--questions", type=Path, help="JSONL actor question contexts, never labels")
     parser.add_argument("--include-source-annotation-context", action="store_true")
+    parser.add_argument("--expected-usage-role", choices=(ROLE_ANNOTATION_CALIBRATION, "evaluation_only",
+                                                            ROLE_STUDENT_CANDIDATE),
+                        default=ROLE_ANNOTATION_CALIBRATION)
+    parser.add_argument("--private-goal-state-review", action="store_true",
+                        help="explicit private student_candidate causal goal-state packet mode")
     parser.add_argument("--decode", action="store_true", help="decode bounded native RGB and PTS receipts")
     parser.add_argument("--raw-root", type=Path)
     parser.add_argument("--temporal-offset-frames", type=_parse_temporal_offsets,
@@ -1246,6 +1424,8 @@ def main() -> None:
         parser.error("--resume requires --expected-packet-manifest-sha256 from an external authority record")
     request_flags = (args.render_requests, args.expected_render_requests_sha256,
                      args.queue_seal, args.expected_queue_seal_sha256)
+    if args.private_goal_state_review != (args.expected_usage_role == ROLE_STUDENT_CANDIDATE):
+        parser.error("student_candidate requires --private-goal-state-review and no other role may use it")
     if args.resume and any(value is not None for value in request_flags):
         parser.error("--resume validates the sealed packet manifest; do not provide creation-time render-request flags")
     if not args.resume and any(value is not None for value in request_flags) and any(value is None for value in request_flags):
@@ -1255,7 +1435,10 @@ def main() -> None:
                                 expected_packet_manifest_sha256=args.expected_packet_manifest_sha256,
                                 protocol_binding=protocol_binding)
     else:
-        requests, request_sha = _read_render_requests(args.render_requests, args.expected_render_requests_sha256)
+        requests, request_sha = _read_render_requests(
+            args.render_requests, args.expected_render_requests_sha256,
+            expected_usage_role=args.expected_usage_role,
+            private_goal_state_review=args.private_goal_state_review)
         queue_seal_sha, queue_source_manifest_sha = _read_queue_seal(
             args.queue_seal, args.expected_queue_seal_sha256, render_requests_path=args.render_requests,
             render_requests_sha256=request_sha)
@@ -1266,6 +1449,8 @@ def main() -> None:
             temporal_offsets_frames=args.temporal_offset_frames, render_requests=requests,
             render_requests_sha256=request_sha, queue_seal_sha256=queue_seal_sha,
             queue_seal_source_release_manifest_sha256=queue_source_manifest_sha,
+            expected_usage_role=args.expected_usage_role,
+            private_goal_state_review=args.private_goal_state_review,
             protocol_binding=protocol_binding,
             max_seconds=args.max_seconds)
     print(protocol_binding.module.canonical_json(result), flush=True)

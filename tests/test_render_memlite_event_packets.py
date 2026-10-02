@@ -1,4 +1,5 @@
 import json
+import copy
 from pathlib import Path
 import sys
 import tempfile
@@ -15,6 +16,158 @@ from test_build_memlite_event_index import coverage, write_release  # noqa: E402
 
 
 class RenderEventPacketsTests(unittest.TestCase):
+    def _write_private_student_phase_index(self, root):
+        """Two sealed phase events matching the approved 420/539 pilot shape."""
+        release = root / "release"
+        fixture = write_release(release)
+        source_index = root / "source-index"
+        builder.build_index(release, source_index, calibration_per_task=1,
+                            coverage_expectations=coverage(fixture), max_seconds=10)
+        parent = next(json.loads(line) for line in
+                      (source_index / "event_candidates.jsonl").read_text().splitlines()
+                      if json.loads(line)["usage_role"] == "student_candidate")
+        locator_source = next(json.loads(line) for line in
+                              (source_index / "event_candidates.jsonl").read_text().splitlines()
+                              if len(json.loads(line).get("video_locators", [])) == 3)
+        events = []
+        for phase_name, anchor in (("ENTRY", 420), ("TERMINAL", 539)):
+            event = copy.deepcopy(parent)
+            event["source"]["episode_length"] = 600
+            event["event_interval"] = {"start_frame": 420, "end_frame": 540}
+            event["observation"] = {"frame": anchor, "timestamp_s": anchor / 30.0}
+            event["action"]["start_frame"] = anchor
+            event["video_locators"] = copy.deepcopy(locator_source["video_locators"])
+            for locator in event["video_locators"]:
+                locator["requested_timestamp_s"] = locator["episode_start_timestamp_s"] + anchor / 30.0
+            event["phase_lineage"] = {
+                "schema_version": "p107-phase-balanced-mini-index-v1",
+                "parent_event_id": parent["event_id"],
+                "parent_event_interval": {"start_frame": 420, "end_frame": 540},
+                "observation_phase": phase_name,
+                "private_goal_state_review": True,
+                "goal_state_question": renderer.GOAL_STATE_REVIEW_QUERY,
+                "goal_state_question_sha256": renderer.GOAL_STATE_REVIEW_QUERY_SHA256,
+            }
+            event["event_id"] = renderer.event_id(event)
+            renderer.validate_event(event)
+            events.append(event)
+        index = root / "index"
+        index.mkdir()
+        event_path = index / "event_candidates.jsonl"
+        event_path.write_text("".join(renderer.canonical_json(event) + "\n" for event in events))
+        manifest = {
+            "schema_version": "memlite-event-index-v1",
+            "protocol_sha256": renderer._protocol_binding.sha256,
+            "source_release_manifest_sha256": events[0]["source"]["source_release_manifest_sha256"],
+            "files": {"event_candidates.jsonl": {
+                "sha256": renderer._sha256(event_path), "rows": len(events),
+                "bytes": event_path.stat().st_size,
+            }},
+        }
+        (index / "manifest.json").write_text(renderer.canonical_json(manifest) + "\n")
+        return index, events
+
+    def test_private_student_goal_state_packets_are_causal_and_deduplicate_frame_420(self):
+        from PIL import Image
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index, events = self._write_private_student_phase_index(root)
+            questions = {event["event_id"]: {"question": renderer.GOAL_STATE_REVIEW_QUERY}
+                         for event in events}
+            raw_root = root / "raw"
+            raw_root.mkdir()
+
+            def fake_decode(_av, _video, requested, **bounds):
+                return Image.new("RGB", (8, 6), "purple"), {
+                    "resolved_path": "/fixture/shared.mp4", "bytes": 1, "mtime_ns": 1,
+                    "requested_timestamp_s": requested, "decoded_timestamp_s": requested,
+                    "pts_error_s": 0.0, "fps": 30, "resolution": [8, 6],
+                    "episode_global_pts_bounds_s": [bounds["episode_start_timestamp_s"],
+                                                     bounds["episode_end_timestamp_s"]],
+                    "actor_anchor_timestamp_s": bounds["actor_anchor_timestamp_s"],
+                    "full_video_sha256": None,
+                }
+
+            with patch.object(renderer, "_require_decode_dependencies", return_value=(object(), Image, None)), \
+                 patch.object(renderer, "_resolve_video", return_value=raw_root / "placeholder.mp4"), \
+                 patch.object(renderer, "_decode_rgb", side_effect=fake_decode):
+                packets = root / "packets"
+                result = renderer.create_packets(
+                    index, packets, event_ids={event["event_id"] for event in events}, limit=None,
+                    questions=questions, include_source_annotation_context=False, decode=True,
+                    raw_root=raw_root, contact_sheets=False,
+                    expected_usage_role=renderer.ROLE_STUDENT_CANDIDATE,
+                    private_goal_state_review=True, max_seconds=10)
+            self.assertEqual(result["expected_usage_role"], "student_candidate")
+            self.assertTrue(result["private_goal_state_review"])
+            self.assertIsNone(result["temporal_sample_offsets_frames"])
+            self.assertEqual(result["temporal_slots"], 3)
+            self.assertEqual(result["rendered_asset_receipts"], 9)
+            assets = [json.loads(line) for line in
+                      (packets / "rendered_asset_receipts.jsonl").read_text().splitlines()]
+            self.assertEqual(len({row["relative_path"] for row in assets}), 6)
+            rows = [json.loads(line) for line in (packets / "packets.jsonl").read_text().splitlines()]
+            self.assertEqual([[sample["sample_frame"] for sample in row["audit"]["temporal_schedule"]]
+                              for row in rows], [[420], [420, 539]])
+            self.assertTrue(all(sample["temporal_role"] == "ACTOR_CAUSAL"
+                                for row in rows for sample in row["audit"]["temporal_schedule"]))
+            self.assertTrue(all(not row["audit"]["offline_future_rgb"] for row in rows))
+            self.assertTrue(all(row["actor_packet"]["question_context"] ==
+                                {"question": renderer.GOAL_STATE_REVIEW_QUERY} for row in rows))
+            self.assertEqual(renderer.resume_packets(
+                index, packets, expected_packet_manifest_sha256=result["packet_manifest_sha256"])["status"],
+                "RESUME_VALIDATED")
+
+    def test_private_student_renderer_rejects_missing_frozen_question_and_non_private_role(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index, events = self._write_private_student_phase_index(root)
+            with self.assertRaisesRegex(ValueError, "one pre-frozen question"):
+                renderer.create_packets(
+                    index, root / "missing-question", event_ids={event["event_id"] for event in events},
+                    limit=None, questions={}, include_source_annotation_context=False, decode=False,
+                    raw_root=None, contact_sheets=False,
+                    expected_usage_role=renderer.ROLE_STUDENT_CANDIDATE,
+                    private_goal_state_review=True, max_seconds=10)
+            with self.assertRaisesRegex(ValueError, "explicit private review opt-in"):
+                renderer.create_packets(
+                    index, root / "missing-opt-in", event_ids={events[0]["event_id"]}, limit=None,
+                    questions={events[0]["event_id"]: {"question": renderer.GOAL_STATE_REVIEW_QUERY}},
+                    include_source_annotation_context=False, decode=False, raw_root=None,
+                    contact_sheets=False, expected_usage_role=renderer.ROLE_STUDENT_CANDIDATE,
+                    private_goal_state_review=False, max_seconds=10)
+
+    def test_private_student_renderer_rejects_terminal_540_future_request_without_publishing(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            index, events = self._write_private_student_phase_index(root)
+            terminal = next(event for event in events
+                            if event["phase_lineage"]["observation_phase"] == "TERMINAL")
+            fields = ("source_release_manifest_sha256", "source_annotation_sha256", "task_index",
+                      "task_instance_id", "raw_episode_id", "episode_index", "source_group_id")
+            request = {
+                "event_id": terminal["event_id"],
+                "source_identity": {key: terminal["source"][key] for key in fields},
+                "anchor_camera_locators": terminal["video_locators"],
+                "actor_available_frame_indices": [420, 540],
+                "offline_review_before_frame_indices": [],
+                "offline_review_after_frame_indices": [],
+                "requested_frame_indices": [420, 540],
+            }
+            output = root / "rejected"
+            with self.assertRaisesRegex(ValueError, "canonical source episode or observation anchor"):
+                renderer.create_packets(
+                    index, output, event_ids={terminal["event_id"]}, limit=None,
+                    questions={terminal["event_id"]: {"question": renderer.GOAL_STATE_REVIEW_QUERY}},
+                    include_source_annotation_context=False, decode=False, raw_root=None,
+                    contact_sheets=False, render_requests={terminal["event_id"]: request},
+                    render_requests_sha256="a" * 64, queue_seal_sha256="b" * 64,
+                    queue_seal_source_release_manifest_sha256=terminal["source"]["source_release_manifest_sha256"],
+                    expected_usage_role=renderer.ROLE_STUDENT_CANDIDATE,
+                    private_goal_state_review=True, max_seconds=10)
+            self.assertFalse(output.exists())
+
     def test_sealed_ten_slot_calibration_request_keeps_actor_and_future_panels_separate(self):
         from PIL import Image
 

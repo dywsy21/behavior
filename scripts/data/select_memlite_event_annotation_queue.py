@@ -517,12 +517,15 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_grou
                      expected_task_ids: Iterable[int], expected_skill_ids: Iterable[int],
                      retained_usage_roles: set[str], max_retained_candidates: int,
                      expected_event_receipt: Mapping[str, Any],
-                     boundary_gap_frames: int, long_interval_frames: int) -> tuple[list[Candidate], Counter[str], Counter[str]]:
+                     boundary_gap_frames: int, long_interval_frames: int,
+                     retained_event_ids: set[str] | None = None) -> tuple[list[Candidate], Counter[str], Counter[str]]:
     """Stream-validate events and retain only bounded, official-vocabulary candidates."""
     if (boundary_gap_frames < 0 or long_interval_frames < 1 or max_retained_candidates < 1 or
             not retained_usage_roles <= {"student_candidate", "annotation_calibration"}):
         raise ValueError("boundary gap and long interval policy values are invalid")
     official_task_ids, official_skill_ids = set(expected_task_ids), set(expected_skill_ids)
+    if retained_event_ids is not None and any(not is_sha256(value) for value in retained_event_ids):
+        raise ValueError("retained_event_ids must contain only canonical event IDs")
     parsed: list[dict[str, Any]] = []
     excluded_roles: Counter[str] = Counter()
     excluded_unrecognized_vocabulary: Counter[str] = Counter()
@@ -590,6 +593,13 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_grou
             for skill_id in unknown_skill_ids:
                 excluded_unrecognized_vocabulary[f"SKILL_ID:{skill_id}"] += 1
             continue
+        # A private phase pilot may name one exact parent from a large sealed
+        # student pool.  Still validate every row's immutable identity and
+        # vocabulary above, but retain only the explicitly pinned parent so a
+        # bounded candidate cap cannot turn the stream position into a
+        # selection authority.  The final presence check below is fail-closed.
+        if retained_event_ids is not None and event_id not in retained_event_ids:
+            continue
         if group.usage_role not in retained_usage_roles:
             # The stream still validates every source/event identity, but a
             # zero-budget role cannot consume a full-index candidate heap.
@@ -634,6 +644,10 @@ def parse_candidates(event_rows: Sequence[Mapping[str, Any]] | Path, source_grou
     _, expected_event_rows, _ = _expected_receipt(expected_event_receipt, name="event_candidates.jsonl")
     if row_count != expected_event_rows:
         raise ValueError("sealed event row count mismatch")
+    if retained_event_ids is not None:
+        retained_ids = {row["event_id"] for row in parsed}
+        if retained_ids != retained_event_ids:
+            raise ValueError("requested retained event ID is absent from the sealed event index")
     by_episode: dict[tuple[str, int, int], list[dict[str, Any]]] = defaultdict(list)
     for row in parsed:
         by_episode[row["episode_key"]].append(row)
