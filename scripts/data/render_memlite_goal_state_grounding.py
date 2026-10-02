@@ -74,6 +74,32 @@ MAX_UNIQUE_FRAMES = 64
 MAX_PNG_COUNT = MAX_UNIQUE_FRAMES * len(VIEWS)
 MAX_OUTPUT_BYTES = 32 * 1024 * 1024
 SHA256_CHARS = frozenset("0123456789abcdef")
+_EXPLICIT_UNBOUND_FORBIDDEN_KEYS = frozenset({
+    "answer",
+    "answers",
+    "annotation_answer",
+    "annotation_label",
+    "annotation_question",
+    "goal_state_answer",
+    "goal_state_label",
+    "goal_state_question",
+    "label",
+    "labels",
+    "placeholder",
+    "placeholders",
+    "prelabel",
+    "prelabels",
+    "query",
+    "query_id",
+    "query_ids",
+    "question",
+    "questions",
+    "response",
+    "responses",
+    "visual_answer",
+    "visual_label",
+    "visual_question",
+})
 
 
 def _strict_json(data: bytes, *, name: str) -> Any:
@@ -135,6 +161,42 @@ def _json_line(value: Mapping[str, Any]) -> bytes:
         json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode()
         + b"\n"
     )
+
+
+def _reject_explicit_unbound_annotations(value: Any, label: str) -> None:
+    """Reject explicit query/answer fields without banning metadata ``goal_query``.
+
+    ``phase_lineage.goal_query`` is the canonical metadata description of the
+    attempted skill and is intentionally retained.  It is not a visual query
+    or answer.  Every other path is fail-closed for explicit annotation keys;
+    descriptions and ordinary audit fields are never searched by substring.
+    """
+
+    def walk(node: Any, path: tuple[str, ...], *, in_goal_query: bool = False) -> None:
+        if isinstance(node, Mapping):
+            for key, child in node.items():
+                if not isinstance(key, str):
+                    raise InputValidationError(f"{label} contains a non-string field name")
+                lower_key = key.lower()
+                child_path = path + (key,)
+                if lower_key == "goal_query":
+                    if child_path != ("phase_lineage", "goal_query"):
+                        raise InputValidationError(f"{label} has goal_query outside phase_lineage")
+                    walk(child, child_path, in_goal_query=True)
+                    continue
+                if lower_key in _EXPLICIT_UNBOUND_FORBIDDEN_KEYS:
+                    raise InputValidationError(f"{label} contains explicit annotation field at {'.'.join(child_path)}")
+                # query_kind/query_scope are only meaningful inside the
+                # canonical metadata goal_query.  They are harmless there;
+                # a query-like field elsewhere is not accepted as provenance.
+                if lower_key in {"query_kind", "query_scope"} and not in_goal_query:
+                    raise InputValidationError(f"{label} contains query metadata outside goal_query")
+                walk(child, child_path, in_goal_query=in_goal_query)
+        elif isinstance(node, list):
+            for index, child in enumerate(node):
+                walk(child, path + (str(index),), in_goal_query=in_goal_query)
+
+    walk(value, ())
 
 
 def _read_jsonl_receipt(path: Path, receipt: Mapping[str, Any], label: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -302,6 +364,8 @@ def _validate_batch_manifest(
         rows, audit = _read_jsonl_receipt(batch_dir / name, receipt, name)
         loaded[name] = rows
         receipts[name] = audit
+        for row_number, row in enumerate(rows, start=1):
+            _reject_explicit_unbound_annotations(row, f"{name}:{row_number}")
     if len(loaded["candidate_rows.jsonl"]) != 32 or len(loaded["goal_unbound_events.jsonl"]) != 64:
         raise InputValidationError("formal batch selection cardinalities drifted")
     if len(loaded["camera_native_render_requests.jsonl"]) != 64 or len(loaded["student_candidate_queue.jsonl"]) != 64:
@@ -529,6 +593,9 @@ def _validate_selected_batch(
             raise InputValidationError("derived anchor parent interval is not exact")
         if lineage.get("goal_state_mode") != "goal_unbound" or lineage.get("observation_phase_is_not_outcome") is not True:
             raise InputValidationError("derived anchor goal-unbound lineage is invalid")
+        goal_query = lineage.get("goal_query")
+        if not isinstance(goal_query, Mapping) or goal_query.get("query_kind") != "METADATA_DESCRIBED_SKILL_GOAL_RELATION" or goal_query.get("source_skill_is_attempted_instruction_not_observed_outcome") is not True or goal_query.get("unknown_is_required_when_relation_or_entity_is_not_visually_grounded") is not True:
+            raise InputValidationError("derived anchor canonical metadata goal_query is invalid")
         if lineage.get("action_bc_supervision") is not False or lineage.get("outcome_supervision") is not False or lineage.get("recovery_supervision") is not False or lineage.get("dart_supervision") is not False:
             raise InputValidationError("derived anchor contains forbidden supervision")
         if lineage.get("successor_parent_event_id") is not None or lineage.get("transition_gap_frames") is not None:
