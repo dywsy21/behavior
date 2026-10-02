@@ -12,6 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 17:10 CST：two-anchor private goal-state phase-aware 修复已独审、根集成；新运行准备中（Codex / P107-COORD）
+
+- `cal40_finalize_binding` 已端到端独审批准 `928443f10f7ffc8fd1eb9deae5159a4c4ae41428`：private ENTRY=`[420]`、TERMINAL=`[420,539]` 能经 phase selector → sealed mini-index → annotation queue/request+seal → renderer reader/create_packets 真实 metadata 链路保持，不再由通用 history 参数污染。根将其两文件增量合入并推送为`22d83f9bd27d44c508595b5c9f79e2a197d02392`；本地相关 packet/queue/phase tests=`28 passed`、py_compile/ruff/diff PASS。
+- **当前=RUNNING_SETUP，尚无新 phase queue/request/question/packet/RGB 或 PID：** 旧`00583da` source、v1 input/run 与静态接线 fail-closed 证据全部只读保留。仅可在新 frozen Git source、fresh phase/annotation sidecars 与 fresh run 中先固定两条 exact goal-state question/event/request/seal，再以1CPU/4GiB/0GPU、foreground600s和64MiB验收上限单次解码；任何 parent/index/protocol/queue/request/question pin 或2-event/9 frame-view/6 unique PNG门不符即停止，不手工回填。仍无标签、训练、outcome/recovery/BC/DART/release。
+
 ### 2026-10-02 17:00:57–17:02:21 CST（UTC09:00:57–09:02:21）：8源 single-GRASP 私有 action scan 前台实际 PASS（Codex / P107-COORD）
 
 - LC3 `a800-3` 以 new Git-only clean source=`/data/workspace/wsy/behavior2026/src/p107-single-grasp-scan-6f58dac`（root=`6f58dac3f84c1b0e9df8dae678ac359b71de4a94`、scanner SHA=`544b2deaf8c8d55c01c7f994b6e2ba95c5e5bd37e665cc7326f5b24a1b55689e`）运行；fresh input/run 分别为`p107/inputs|runs/single-grasp-action-scan-8-v1-20261002`。前台 execution shell PID=`1739754`，build exit=`0`（17:01:09）、manifest SHA=`93bc9f34c4b17cbc0e0881b3727ce99570c66aae72e528c6ab434c9e6d7bf342`，scan exit=`0`（17:02:21），1CPU/4GiB/0GPU/soft585s+kill15s合同未触限；run bytes在验收时=`42,752B`、completion log后=`42,877B`，均小于64MiB验收上限。
