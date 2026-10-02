@@ -12,12 +12,19 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107-NATURAL-RETRY-PILOT-v1 待实现/独审；先前8源动作探针的候选“零”不具可复现性（Codex / P107-COORD）
+
+- 独立审查更正先前`P107-NATURAL-ACTION-PROBE-v1`的结论边界：`/home/wsy/behavior-annotations/p107/natural-action-probe-v1/receipt.json`（SHA`e1c6b41f…b61a`）保存了8个官方`TRAIN`/`annotation_calibration`源、动作/时钟合同和汇总，但**没有**可执行探针文本、原始stdout或按primitive/左右gripper的run明细；故“同一primitive的`A→B→A`候选=0”只是作者观察，不能复现、不能据此声称该8源没有天然重抓，也不能扩大扫描。8源身份、action23/state61与frame/timestamp/annotation半开区间的已认证合同仍保留；不重跑动作读取。
+- 现启动的`P107-NATURAL-RETRY-PILOT-v1`仅为可复现的全episode结构候选检测准备输入，不生成outcome、FAILED/recovery、正BC或DART数据。唯一实现者为隔离`coverage49_label_s0`，`cal40_finalize_binding`须独立审查；根仅提供冻结8-source manifest、官方小annotation/info schema样本和本次执行限制。脚本未实现/未审/未运行前，禁止任何扩大扫描或候选结论。
+- 已按小文件只读范围从lc3 official snapshot复制并逐文件hash核对8个annotation JSON和`meta/info.json`，无action/video/Parquet读取或远端写。输入manifest=`/home/wsy/behavior-annotations/p107/natural-action-probe-v1/retry-pilot-input-manifest.json` SHA`a1dae97b…cf930`（冻结episodes SHA`c62fe885…16ca`、selected rows SHA`688dee7b…a8dd`、release`90ff0fa9…6f23`）；真实primitive/skill schema例=`annotation-schema-examples.json` SHA`be3b9858…c9402`。原探针不可追溯的文本/stdout缺失由`execution-provenance-limitation.md` SHA`3ea59338…73b92`明示，不伪造重建；这些输入已交给实现者和独审者。
+- 预定的后续运行须另领授权：同8个source episodes、最多1CPU/4GiB/15min/0GPU，仅在审查通过的脚本上执行；候选只能按A/B/A或其他**未命名**命令结构输出，并必须保留primitive/skill/clock连续性。命令绝不等同夹爪物理状态；任何人为确认仍须后续因果RGB与目标连续性，且不改变P10.7的actual corrective/DART=0。
+
 ### 2026-10-02（北京时间）：P107-NATURAL-ACTION-PROBE-v1 完成；8个官方TRAIN episodes证实动作/时钟合同，但未发现天然重抓结构（Codex / P107-COORD）
 
 - 经root批准，Codex以`fdd1cfeb1064fea98cc3934832fbc4dcbab40473`在LC3既有只读g05 Python完成至多8个已认证`TRAIN`/`annotation_calibration` source episodes的前台探针。无视频读取、无标签/训练/发布/DART记录、无GPU/robo/lc1/lc2/shared-env动作；正式分析为CPU0、nice19、BLAS/OMP=1、0GPU、4GiB virtual-memory cap，5.77秒。receipt=`/home/wsy/behavior-annotations/p107/natural-action-probe-v1/receipt.json` SHA`e1c6b41fd253051a65172c088bff8d54b0b221c9d94719d27d1d662f435b61a6`。
 - 官方`meta/info.json` SHA`24c77f7a…57874`证实当前snapshot `action=float32[23]`、`observation.state=float32[61]`。8/8 Parquet rows、task ID、global `[dataset_from,dataset_to)` index均与冻结metadata相符；frame为`0..length-1`、严格+1，timestamp严格递增且步长约1/30秒。真实annotation使用`primitive_annotation.frame_duration=[start,end)`；terminal `end=length`是合法边界，不可误作inclusive frame mismatch。
 - embodiment命名来源是`configs/data/behavior5_r1pro_memlite.yaml:3-8,22-88`：`base_qvel(3)|trunk_qpos(4)|left_arm(7)|left_gripper(1)|right_arm(7)|right_gripper(1)`，shape-meta认证command components 14/22与state gripper raw spans24–25/49–50。探针只观察到command为±1（episode1941左侧恒+1）和state raw block约0..0.05；**未**推断open/close polarity、单位、接触或物理夹持。
-- 严格候选规则只统计同一`primitive_annotation`内同一已认证gripper command component的连续常值run `A→B→A`（不为A/B命名）。8episodes候选为**0**。`next.terminated`均为episode尾部连续tail、`next.truncated=false`且reward稀疏，均不作为local outcome；零候选同样不代表没有重抓/失败/恢复。当前停止，不自动扩大；未来候选miner必须另经审查，以target/primitive连续性和后续因果RGB人工验证，仍不得把命令、重复演示、reward或terminal改写为recovery/正BC。
+- 当时的严格规则意图统计同一`primitive_annotation`内同一已认证gripper command component的连续常值run `A→B→A`（不为A/B命名）；记录的汇总为8episodes候选`0`。该项因未保留可执行文本/原始输出/逐primitive与左右手run明细，已由上方`P107-NATURAL-RETRY-PILOT-v1`条目**撤回为不可复现的作者观察**，不可据其排除天然重抓或扩扫。`next.terminated`尾部、`next.truncated=false`和稀疏reward仍不作为local outcome；命令、重复演示、reward或terminal仍不得改写为recovery/正BC。
 - `cal40_finalize_binding`并行只读结论同样不支持修订现有问题：effective UNKNOWN中22条`skill.arm=UNSPECIFIED`、actor question context为空、仅5时刻×3RGB且`actual_executed_length=null`。因此无条目可仅凭现有证据安全改S/N；GRASP/open-close需更早的目标referent与接触/门框证据，NAVIGATE/next-to/PUSH/HANDOVER/SWEEP继续停止派发欠定义问题。P10.7的10k/1k、actual corrective与live DART仍为0。
 
 ### 2026-10-02 07:48（北京时间）：coverage49 的32条 root-model 复核完成有限诊断验收；语义质量不放行、训练与DART仍为零（Codex / P107-COORD）
