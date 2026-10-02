@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（CST）：用户将 active goal 改为仅“用上 DART 构造数据集”；DART 前置核验中（Codex / P107-DART-ONLY）
+
+- 这是用户明确的范围变更，不是以缩小验收规避旧数据目标。根唯一 writer/remote operator 已暂停所有非 DART 的`32`-case goal-state、`3607/4512` two-parent 12-PNG pilot及其 Git/source/input fallback；已有 sealed media、formal-batch、source-sync v1/v2 失败证据保留并标为 **DEFERRED**，不删除、不重跑、不计入 DART 数据。
+- 当前唯一主假设是：取得已许可、实际兼容的 simulation runtime 后，能以同一观测状态的`a_intended`、`a_sampled_noise`与`a_executed_raw23`的明确分离及`label_kind`/模型或人类 provenance，构造可审计 DART 数据；当前 DART/actual corrective BC/official outcome 都为`0`。噪声或离线增强不得冒充 DART expert。
+- NVIDIA Isaac EULA、BEHAVIOR data/decryption terms和可用 RTX 机器仍未获用户答复，且互为独立 gate；不得安装、下载资产、启动 Kit/sim/物理或使用 robo、本机4080、lc1/lc2/共享环境。官网结论仅为 LC3 A800 的 Isaac5.1/OG RGB 路径无官方支持保证、未实测，并非不可能的数学证明。Codex 正通过既有 LC3 tunnel 只读核实 SKU/driver/idle、现有 isolated OG51 prefix/Isaac-assets-license-evidence 路径及若存在的 Vulkan/RT 工具；现场证据须与官网审计分列。
+- **LC3现场只读核验（UTC`14:17:20Z`）**：`a800-3` 为 Linux`5.15.0-190-generic`，8×`NVIDIA A800 80GB PCIe`、driver`595.91.07`，全部`0MiB/0%`且无 compute process；此前目标 source cwd 也无自有进程，两个本地前台 clone sessions均已实际exit`128`，无存活 SSH/decoder handle。isolated prefix=`/data/workspace/wsy/behavior2026/isolated/og51-lc3-p107-20261002`仍存在且`1,175,999,215B`；其确切`env/bin/python`为Python`3.11.16`，但pip/`site-packages`中未见 `omnigibson`/`isaacsim`/`isaac-sim`/`omni*`，`data`、`runtime`、`receipts`均仅`4096B`，prefix两层内未见 assets/Isaac/license 文件名。`vulkaninfo`不存在，故没有实际 Vulkan/RT extensions 证据。此只证明**尚无已安装 runtime/assets/接受条款证据**，不等于对A800可运行性的实测否定；下一步真正 blocker 仍是用户许可决定加可用 RTX 机器（或明确延后），其后才可做兼容性 checker/driver+Vulkan 实测，失败则停在资产下载之前。
+
 ### 2026-10-02（CST）：v9 最终验证回执冻结；two-anchor 诊断视觉复核已封存（Codex / P107-COORD）
 
 - `cal40_finalize_binding` 已对 `/home/wsy/behavior-annotations/p107/student-goal-state-pilot-v9-20261002/` 的最终本地验证回执独立重验 PASS：`19` files、`1,478,225B`，final receipt SHA=`e64eaf958a337a8f89f998a029d07022393a19d16a0c07778da26587e217c41d`。该回执现已冻结，禁止原位补写。早先`53389c9a27e3f02220a2f7b7a5d31df6659471682878bc9d44f5fd163e7c8575`只因当时缺搬回的 sealed question sidecars 而 superseded；不是媒体、PTS、像素或标签变化，且原字节无副本时不得伪造重建。

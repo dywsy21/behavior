@@ -1,5 +1,12 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+## 2026-10-02（CST）当前用户范围：DART dataset only
+
+- Codex：根文档/Git 唯一 writer 与 LC3 remote operator；仅做 DART 的许可、硬件/runtime 前置核验及后续获批的隔离执行。非 DART goal-state/natural-retry pilot 全部 DEFERRED，已有证据保留。
+- LC3现场核验（UTC14:17Z）：8×A800 80GB/driver595.91.07均空闲；isolated OG51只有Python3.11.16/bootstrap source，未见Isaac/OG pip包、assets、license-evidence或`vulkaninfo`。这不是A800不可能运行的实测结论，而是 runtime/RT 兼容尚未验证；不作安装、Kit/GPU或资产动作。
+- Root：唯一范围/预算与视觉验收决策；仍待用户回答 NVIDIA/BEHAVIOR terms 与可用 RTX 资源，不能把 DART-only 目标当作条款同意。
+- 其他 agent：DART collector/state-restore/teacher 接口可只读查证；不得改共享环境、接受条款、下载资产或将旧诊断媒体转为训练/BC/DART 标签。DART、actual corrective、official outcome、actor release与training 当前均为`0`/false。
+
 2026-10-02（CST）P107 v9 **final receipt frozen / two diagnostic visual labels only**：`cal40_finalize_binding`独立重验`behavior-annotations/p107/student-goal-state-pilot-v9-20261002` final receipt=`e64eaf958a337a8f89f998a029d07022393a19d16a0c07778da26587e217c41d` PASS（19 files/1,478,225B）。旧`53389c9…c8575`仅因 sealed question sidecars 后补而 superseded，不是媒体/PTS/像素/标签变化；不得重建或继续原位改 final receipt。fresh/root v1旁侧回执保留；cal40发现其只漏 requested-model fallback provenance，故不改视觉证据地发出v2并待复核：fresh=`d999a8a0…260e`/root=`61da9bec…36ac`，明确requested gpt-6-luna unavailable→gpt-5.6-luna/max fallback。frame420=NO、frame539=YES，root_assistant/root_reviewed=true/human=false，fresh confidence未校准；两项只表示visible goal state，NO≠FAILED、YES≠official success，不能计入E2独立case或训练。ep3605最小RGB run曾由s1转交Codex：交接时无decoder PID/exit/media，native PTY password auth成功但ControlMaster socket未实际建立，不能假称跨会话复用；后续实际PASS见下方独立记录。全程禁止凭据记录/EC-VPN重连/范围扩张。P10.7大规模/纠正数据与live DART仍0，sim条款仍待用户答复。
 
 2026-10-02（CST）P107 ep3605 **root execution lane RUNNING_SETUP**：Codex以审过adapter`3acd99f…9966`合根`e52b59f…30ff`（target pytest9/compile/Ruff PASS），LC3 fresh Git source=`src/p107-single-grasp-verifier-e52b59f-v1`和input/run=`p107/inputs|runs/single-grasp-verifier-ep3605-v1-20261002`已建。仅selection`545737fb…89c7e`、single8 result`4693a2c8…7d1d`和manifest`93bc9f34…bf342`已传入；full sealed index/official RGB只读复用。资源实测128CPU/约1.02TiB可用RAM/3.718TB free/8GPU0。decoder尚未启动，下一步只可逐SHA后一次foreground 1CPU/4GiB/0GPU/600s、25frames/75PNG、<=64MiB。
