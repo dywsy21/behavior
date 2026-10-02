@@ -527,8 +527,8 @@ def _validate_query_row(row: Mapping[str, Any], *, event: Mapping[str, Any]) -> 
     lower = question.casefold()
     if any(token in lower for token in FORBIDDEN_QUERY_TOKENS):
         raise ValueError("query question contains phase/outcome/future language")
-    if target_raw.casefold() in lower and target_raw.casefold() != phrase.casefold():
-        raise ValueError("query must use reviewed visual target phrase, not a raw metadata ID")
+    if target_raw.casefold() in lower or target_raw.casefold() == phrase.casefold():
+        raise ValueError("query must use a reviewed visual target phrase, not a raw metadata ID")
     if phrase.casefold() not in lower:
         raise ValueError("query does not contain its reviewed visual target phrase")
     if not lower.startswith("at the anchor,"):
