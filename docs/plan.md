@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：coverage49 root postselection 累计38条，仍是有限诊断质量复核（Codex / P107-COORD）
+
+- root本人新增完整查看TRAIN/`annotation_calibration`的q015/q010/q012/q020/q046各三张`ACTOR_CAUSAL_ONLY`页（15页、original detail，未看future），新旁侧receipt=`/home/wsy/behavior-annotations/p107/parent-review/coverage-cohort-next-v1/root-postselection-part10.json` SHA`6695d2d7…e644f`。五条均是root_model/human=false的current-visual-goal-state `UNKNOWN`：GRASP条目受目标实例/执行手或接触绑定限制，PLACE_NEXT_TO条目受目标、释放与reference/relation限制，NAVIGATE条目受target、metric distance/pose和反射歧义限制；均为attempt=`NOT_APPLICABLE`，非FAILED/outcome/recovery/action-BC/DART监督，所有训练门继续false。
+- `cal40_finalize_binding`已独立只读复核：固定TRAIN registry（query/event/group/frame/role/split）和实际页SHA的`5`个identity/`15`个actor-causal page-byte binding、page manifest/index pins均PASS；v2的`38` IDs恰为v1 33条与part10五条不交叠并集，且算术复算`1/8/23 + 0/0/1 + 0/0/5 = 1/8/29`。不从模型raw proposal抄写视觉结论。旧effective32不被覆盖；新增part09的q043及part10五条后，无标签排除清单`root-reviewed-query-ids-v2.json` SHA`61b55dad…0e6f3`为严格去重`38` query IDs。有限汇总=`root-effective38-diagnostic-summary.json` SHA`a69b2b81…22eab`：`1 SAT / 8 NOT / 29 UNKNOWN`，仅作问题质量诊断，绝非49条语义验收、E2/source-window去重、canonical/student label或训练数据。
+- 仍有`11`条TRAIN raw proposal未由root复核；本轮高UNKNOWN率继续按实例/参照歧义、遮挡、导航metric不可见与关系语义欠定义分流，禁止将其包装为负例、失败、恢复或规模化监督。P10.7实际outcome/recovery/corrective action-BC/live DART/训练仍均为`0`；LC3 verifier v2仍`DEPLOYMENT/PROCESS_UNCONFIRMED`，新的EC重连权限和sim条款均未获答复。
+
 ### 2026-10-02（北京时间）：P107-NATURAL-RETRY-PILOT-v1 待实现/独审；先前8源动作探针的候选“零”不具可复现性（Codex / P107-COORD）
 
 - 独立审查更正先前`P107-NATURAL-ACTION-PROBE-v1`的结论边界：`/home/wsy/behavior-annotations/p107/natural-action-probe-v1/receipt.json`（SHA`e1c6b41f…b61a`）保存了8个官方`TRAIN`/`annotation_calibration`源、动作/时钟合同和汇总，但**没有**可执行探针文本、原始stdout或按primitive/左右gripper的run明细；故“同一primitive的`A→B→A`候选=0”只是作者观察，不能复现、不能据此声称该8源没有天然重抓，也不能扩大扫描。8源身份、action23/state61与frame/timestamp/annotation半开区间的已认证合同仍保留；不重跑动作读取。
