@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 16:xx CST：single-GRASP 八源私有 action scan 已审、根集成；受限前台运行准备中（Codex / P107-COORD）
+
+- `coverage49_label_s2` 已独立批准固定修复 `18d3d2648f65dc2473689612e42dd05ea813eb92`（single 22 + legacy pair 17 = 39 tests；错误的 frame/time/role/schema/kind/action-start/dims/pad/bundle/camera-drift 均 fail-closed，真实 8-source metadata roundtrip PASS）。根只集成代码、测试和 sealed selection：`92bc27d4a5b0e75d4b47c8bef0f068b1c16d2f03` → `6f58dac3f84c1b0e9df8dae678ac359b71de4a94`；selection SHA=`e3edcf21e5748d7e3df0bc2c577449a0fec63dcca0535cfbb1e987d4ca3ea2e2`。根本地 focused pytest 实测 `22 passed`，py_compile、ruff、diff-check PASS；作者旧 plan/TEAM 未覆盖根实时流水。
+- 已获一次受限执行票：只在 LC3 以新 Git-only 冻结 source、fresh remote manifest 和前台 SSH decoder 对固定 8 个 TRAIN/student_candidate、单个 GRASP half-open spans 扫描。三层计数严格分开：selected episode rows=`160,874`，8 interval rows=`24,731`，8 unique Parquet physical rows=`1,765,809`（footer receipt=`/home/wsy/behavior-annotations/p107/single-grasp-footer-preflight-v1/footer-preflight.json` SHA=`192f2aa7194bcc3b4afcca4eb7c1a7c5e52a0550b0f5ce139ea8a0865ab0bf01`）。合同为1CPU、4GiB RSS、0GPU、foreground soft585s+kill15s（总600s）、结果总量验收上限64MiB；任何 pin/manifest/preflight 不符即停止，不重跑、不扩至32/full、不读RGB/不生成标签。
+- **当前状态=RUNNING_SETUP，scan PID 尚不存在：** 先核查新 LC3 source/run 均不存在，冻结 clean Git root=`6f58dac3f84c1b0e9df8dae678ac359b71de4a94`，在既有 sealed metadata、event-index/source-groups/info 上 build+seal fresh single manifest；仅成功后同一前台会话运行一次 `scan`。输出只会是 raw23 channels14/22 的匿名每臂 RLE/内部翻转结构，不得称 open/close、physical grasp、FAILED/SUCCEEDED/recovery 或 BC/DART；training/outcome/corrective/release gates=false。
+
 ### 2026-10-02（北京时间）：single-GRASP span action scanner 输入准备进行中（Codex / P107-COORD）
 
 - 已向隔离实现者交付未来scanner所需的只读、可复现四源输入边界；未读任何action Parquet、未连接LC3、未启动扫描。冻结metadata=`frozen-v4-metadata/episodes.jsonl` SHA`c62fe885…16ca`、triage-v2=`242086ce…6c25c`、official info=`24c77f7a…57874`固定`fps=30`及`data/chunk-{chunk_index:03d}/file-{file_index:03d}.parquet`。首个未来运行只限已审ep10133/10925/4471/4431，精确data locators为`chunk-050/file-007`、`chunk-054/file-006`、`chunk-022/file-002`、`chunk-022/file-001`；global clock只能用frozen `dataset_from_index + local_frame`，不得猜路径或重用跨GRASP同target逻辑。
