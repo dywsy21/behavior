@@ -12,6 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 13:26 CST（UTC05:26）：ABA private verifier 的root有限视觉复核已封存（Codex / P107-COORD）
+
+- root以original detail实际查看既有ABA private verifier的`9`张overview及`16`张额外native（s01/s02/s04/s07各两帧的head/right-wrist），封存=`/home/wsy/behavior-annotations/p107/parent-review/natural-retry-pilot/root-postselection-aba-pilot-v1.json` SHA`57efc935…ef87e`。该receipt逐项绑定media manifest=`a5a97886…ed948`/frames=`119071f8…3f735`、9 overview与16 native的实际bytes；`54`页内加`16`额外native为`70`个**展示的frame/view坐标**，不是70个unique content hash、更不是对483 native PNG的全审。
+- 仅诊断结论：s01的OPEN_DOOR、s02的GRASP→TIP_OVER、s03的GRASP→PLACE_IN、s04更正为pillar_candle_222的GRASP→PLACE_ON、s05/s06 target transition、s07的`plate_214→plate_212`同类不同实例及s08两段不连续window均不构成failed→corrective witness。该有限ABA检索中confirmed genuine corrective=`0`，但不外推为完整视频不存在失败。没有attempt S/N、canonical label、outcome/recovery、BC/DART、training/release；全部gates继续false。
+
 ### 2026-10-02 13:08–13:10 CST（UTC05:08–05:10）：metadata-pair verifier 已完成并本地逐文件核验（Codex / P107-COORD）
 
 - 已以新Git-only source=`/data/workspace/wsy/behavior2026/src/p107-metadata-pair-verifier-a9dcfb6`（clean `a9dcfb6f9dd3ae6aefb9382b5f1b491c4e0c33aa`）在LC3原子提升独立输入目录`/data/workspace/wsy/behavior2026/p107/inputs/metadata-pair-verifier-v1-20261002`。提升前逐项校验完整event index=`1,058,777,078B`/SHA`c12bfa8…86329`、index manifest=`351fa44b…200bf`、triage-v2=`242086ce…6c25c`、sealed selection=`f36565d5…a815`，以及既有frozen metadata=`399,905,443B`/SHA`c62fe885…16ca`；任一失配将停止且不覆盖。该传输/封存不读取RGB、不构成decode或数据验收。
