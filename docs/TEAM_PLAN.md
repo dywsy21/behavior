@@ -4,7 +4,7 @@
 
 2026-10-02（北京时间）P107 verifier-v2连通性证据更正：旧“认证后`Connection closed by 10.19.7.3 port 22`”没有保留的原始SSH stderr/exit/authenticated-success receipt，不能再当作可复核transport失败；phase40的旧`ssh_authenticated=true`只证明不同较早会话。此次hostname-only probe的`timeout 12s ssh -T ... /bin/hostname`从交互口令等待前计时，只返回空PTY后的local exit`124`、无hostname/stderr，不能归因网络或远端，也不证明v2 source/run不存在。无新写/launch/重连，状态保持`DEPLOYMENT/PROCESS_UNCONFIRMED`；不将同一goal turn多次SSH计作多个blocked turn，root另按不同goal turn与未答EC/Isaac-BEHAVIOR条款决定blocked门。
 
-2026-10-02（北京时间）后续本地auth-helper只读核对：`sshpass`未安装，`lc-a800.conf`只定义SOCKS ProxyCommand/ControlMaster、无非交互凭据helper；不读/新建secret helper、不安装、未再SSH。因此正确的hostname-only观测为`NOT_RUN`，待安全明确的非交互auth路径才可另票；这不是网络或LC3不存在的结论。
+2026-10-02（北京时间）auth-helper记录更正：`sshpass`未安装、`lc-a800.conf`只有SOCKS ProxyCommand/ControlMaster，但用户明确授权标准OpenSSH既有PTY password prompt。无outer timeout包住交互、无密码写入argv/file/log的hostname-only check在同一session exit`0`并返回`a800-3`，故当前LC3路由/认证可用；它不读取v2 source/run/marker/PID/output，verifier-v2继续`DEPLOYMENT/PROCESS_UNCONFIRMED`，等待另票精确只读核验。
 
 2026-10-02（北京时间）`cal40_finalize_binding`独立只读确定当前无安全本地P10.7 corrective数据动作：剩余11个TRAIN raw query全为`NAVIGATE/navigation_reach_metric`，要求RGB未保证的target identity/metric distance/robot pose，故不再扩UNKNOWN或假装可修GRASP。v2的32 private GRASP结构候选/64 spans虽精确metadata join，却仍`METADATA_ONLY_UNRESOLVED`、本地无视频bytes，且32 source episodes与coverage RGB47 episode交集0；不得借已有RGB替代或产recovery/BC/DART。未来仅可在连接恢复后做fail-closed metadata-pair source/clock/locator preflight，当前不实现、不计P10.7；10k audited/outcome、1k episodes、1k genuine corrective目标仍0增量。
 
