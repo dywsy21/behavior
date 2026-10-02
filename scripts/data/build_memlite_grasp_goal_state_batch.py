@@ -576,12 +576,15 @@ def seal_query_registry(events: Sequence[Mapping[str, Any]], registry_rows: Sequ
     sealed: list[dict[str, Any]] = []
     questions: dict[str, dict[str, str]] = {}
     seen = set()
+    seen_query_ids: set[str] = set()
     for row in registry_rows:
         event = by_id.get(row.get("event_id"))
         if event is None or row["event_id"] in seen:
             raise ValueError("query registry has duplicate or unknown event_id")
         validate_goal_unbound_event(event, protocol=protocol)
         question, question_sha, _phrase = _validate_query_row(row, event=event)
+        if row["query_id"] in seen_query_ids:
+            raise ValueError("query registry has duplicate query_id")
         copy_event = copy.deepcopy(event)
         lineage = copy_event["phase_lineage"]
         lineage["goal_state_mode"] = SEALED_QUERY_MODE
@@ -592,6 +595,7 @@ def seal_query_registry(events: Sequence[Mapping[str, Any]], registry_rows: Sequ
         sealed.append(copy_event)
         questions[event["event_id"]] = {"question": question}
         seen.add(row["event_id"])
+        seen_query_ids.add(row["query_id"])
     if seen != set(by_id):
         raise ValueError("query registry does not cover the complete event set")
     return sealed, questions
