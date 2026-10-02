@@ -11,6 +11,7 @@ import argparse
 import copy
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+import hashlib
 import os
 from pathlib import Path
 import shutil
@@ -29,6 +30,10 @@ PHASE_MANIFEST_SCHEMA = "p107-phase-balanced-calibration-manifest-v1"
 PHASE_SEAL_SCHEMA = "p107-phase-balanced-calibration-seal-v1"
 PHASE_INDEX_DERIVATION_SCHEMA = "p107-phase-balanced-mini-index-v1"
 STATUS = "CANDIDATE_MISSING_EVIDENCE"
+GOAL_STATE_REVIEW_QUERY = "At the anchor, is the brown animal toy visibly held by the robot’s right gripper?"
+GOAL_STATE_REVIEW_QUERY_SHA256 = hashlib.sha256(GOAL_STATE_REVIEW_QUERY.encode("utf-8")).hexdigest()
+ROLE_ANNOTATION_CALIBRATION = "annotation_calibration"
+ROLE_STUDENT_CANDIDATE = "student_candidate"
 DEFAULT_SEED = "p107-phase-balanced-calibration-20261002"
 DEFAULT_PHASE_QUOTA = 10
 DEFAULT_TRANSITION_GAP = 1
@@ -205,10 +210,24 @@ def _query_intent(skill: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def derived_event(candidate: PhaseCandidate, *, protocol: Any) -> dict[str, Any]:
+def derived_event(candidate: PhaseCandidate, *, protocol: Any,
+                  usage_role: str = ROLE_ANNOTATION_CALIBRATION,
+                  private_diagnostic_student_candidate: bool = False) -> dict[str, Any]:
     """Create a new canonical event at the phase anchor, retaining parent lineage."""
+    if usage_role not in {ROLE_ANNOTATION_CALIBRATION, ROLE_STUDENT_CANDIDATE}:
+        raise ValueError("phase event role is not an approved P107 role")
+    if (usage_role == ROLE_STUDENT_CANDIDATE) != private_diagnostic_student_candidate:
+        raise ValueError("student_candidate phase events require the explicit private diagnostic opt-in")
     parent = candidate.parent.event
     source = copy.deepcopy(parent["source"])
+    # Older sealed event fixtures carry the authenticated role on the event
+    # (the source-group row is the authoritative group-level role), while
+    # newer projections may also repeat it inside ``source``.  Preserve the
+    # strict role/split binding without making the legacy event shape
+    # impossible to derive from.
+    parent_role = source.get("usage_role", parent.get("usage_role"))
+    if parent_role != usage_role or source.get("original_split") != "train":
+        raise ValueError("derived event role/split does not preserve the authenticated parent source")
     interval = copy.deepcopy(parent["event_interval"])
     start, end = interval["start_frame"], interval["end_frame"]
     if not start <= candidate.anchor_frame < end:
@@ -251,7 +270,7 @@ def derived_event(candidate: PhaseCandidate, *, protocol: Any) -> dict[str, Any]
         "evidence": {"kind": "MISSING", "evidence_end_frame": None, "available_frame": None},
         "video_locators": _shifted_locators(parent, anchor_frame=candidate.anchor_frame),
         "task_name": parent.get("task_name"),
-        "usage_role": "annotation_calibration",
+        "usage_role": usage_role,
         "phase_lineage": {
             "schema_version": PHASE_INDEX_DERIVATION_SCHEMA,
             "parent_event_id": candidate.parent.event_id,
@@ -268,6 +287,15 @@ def derived_event(candidate: PhaseCandidate, *, protocol: Any) -> dict[str, Any]
             "goal_query": _query_intent(candidate.queried_skill),
         },
     }
+    if usage_role == ROLE_STUDENT_CANDIDATE:
+        event["phase_lineage"]["private_goal_state_review"] = True
+        event["phase_lineage"]["goal_state_question"] = GOAL_STATE_REVIEW_QUERY
+        event["phase_lineage"]["goal_state_question_sha256"] = GOAL_STATE_REVIEW_QUERY_SHA256
+        event["phase_lineage"]["training_eligible"] = False
+        event["phase_lineage"]["outcome_supervision"] = False
+        event["phase_lineage"]["recovery_supervision"] = False
+        event["phase_lineage"]["action_bc_supervision"] = False
+        event["phase_lineage"]["dart_supervision"] = False
     event["event_id"] = protocol.event_id(event)
     protocol.validate_event(event)
     if event["event_id"] == candidate.parent.event_id:
@@ -396,17 +424,22 @@ def _temporal_windows(anchor: int, *, episode_length: int) -> dict[str, Any]:
         actor_history_frames=60, review_before_frames=60, review_after_frames=60, sample_stride_frames=15)
 
 
-def queue_row(candidate: PhaseCandidate, event: Mapping[str, Any], *, selection_order: int) -> dict[str, Any]:
+def queue_row(candidate: PhaseCandidate, event: Mapping[str, Any], *, selection_order: int,
+              usage_role: str = ROLE_ANNOTATION_CALIBRATION) -> dict[str, Any]:
+    if usage_role not in {ROLE_ANNOTATION_CALIBRATION, ROLE_STUDENT_CANDIDATE}:
+        raise ValueError("phase queue role is not an approved P107 role")
+    if event.get("usage_role") != usage_role:
+        raise ValueError("phase queue role does not match derived event role")
     source = event["source"]
     windows = _temporal_windows(event["observation"]["frame"], episode_length=source["episode_length"])
-    return {
+    row = {
         "schema_version": PHASE_QUEUE_SCHEMA,
         "selection_order": selection_order,
         "event_id": event["event_id"],
         "parent_event_id": candidate.parent.event_id,
         "status": STATUS,
         "training_eligible": False,
-        "usage_role": "annotation_calibration",
+        "usage_role": usage_role,
         "immutable_split": "train",
         "source_identity": {
             "source_release_manifest_sha256": source["source_release_manifest_sha256"],
@@ -450,6 +483,15 @@ def queue_row(candidate: PhaseCandidate, event: Mapping[str, Any], *, selection_
             "no_action_supervision_emitted": True,
         },
     }
+    if usage_role == ROLE_STUDENT_CANDIDATE:
+        row["private_goal_state_review"] = True
+        row["goal_state_question"] = GOAL_STATE_REVIEW_QUERY
+        row["goal_state_question_sha256"] = GOAL_STATE_REVIEW_QUERY_SHA256
+        row["action_bc_supervision"] = False
+        row["outcome_supervision"] = False
+        row["recovery_supervision"] = False
+        row["dart_supervision"] = False
+    return row
 
 
 def _coverage(selected: Sequence[PhaseCandidate], all_candidates: Sequence[PhaseCandidate],
@@ -479,6 +521,17 @@ def _phase_counts(items: Iterable[PhaseCandidate]) -> dict[str, int]:
 
 
 def _payloads(index: Path, *, args: argparse.Namespace) -> dict[str, Any]:
+    usage_role = getattr(args, "usage_role", ROLE_ANNOTATION_CALIBRATION)
+    private_student = bool(getattr(args, "private_diagnostic_student_candidate", False))
+    parent_event_id = getattr(args, "goal_state_parent_event_id", None)
+    if usage_role not in {ROLE_ANNOTATION_CALIBRATION, ROLE_STUDENT_CANDIDATE}:
+        raise ValueError("--usage-role must be annotation_calibration or student_candidate")
+    if (usage_role == ROLE_STUDENT_CANDIDATE) != private_student:
+        raise ValueError("student_candidate requires --private-diagnostic-student-candidate")
+    if usage_role == ROLE_STUDENT_CANDIDATE and not isinstance(parent_event_id, str):
+        raise ValueError("student_candidate goal-state review requires --goal-state-parent-event-id")
+    if usage_role == ROLE_ANNOTATION_CALIBRATION and parent_event_id is not None:
+        raise ValueError("--goal-state-parent-event-id is only valid for private student_candidate review")
     protocol = base.load_canonical_protocol(args.protocol_path, expected_sha256=args.expected_protocol_sha256)
     manifest, event_rows, groups = base.validate_index(
         index, expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
@@ -493,26 +546,41 @@ def _payloads(index: Path, *, args: argparse.Namespace) -> dict[str, Any]:
         event_rows, groups, expected_source_manifest_sha256=args.expected_source_release_manifest_sha256,
         canonical_protocol=protocol, expected_task_ids=coverage_expectations["expected_task_ids"],
         expected_skill_ids=[row["skill_id"] for row in coverage_expectations["expected_skill_vocabulary"]],
-        retained_usage_roles={"annotation_calibration"}, max_retained_candidates=args.max_retained_candidates,
+        retained_usage_roles={usage_role}, max_retained_candidates=args.max_retained_candidates,
         expected_event_receipt=manifest["files"]["event_candidates.jsonl"], boundary_gap_frames=args.transition_gap_frames,
-        long_interval_frames=1)
+        long_interval_frames=1,
+        retained_event_ids=({parent_event_id} if usage_role == ROLE_STUDENT_CANDIDATE else None))
     if any(groups[item.source_group_id].original_split != "train" or
-           groups[item.source_group_id].usage_role != "annotation_calibration" for item in retained):
-        raise ValueError("phase sampler may retain only immutable TRAIN annotation-calibration source groups")
+           groups[item.source_group_id].usage_role != usage_role for item in retained):
+        raise ValueError("phase sampler may retain only immutable TRAIN sources of the selected role")
     all_phase_candidates = derive_candidates(retained, max_transition_gap_frames=args.transition_gap_frames)
-    selected = select_balanced(all_phase_candidates, seed=args.seed, phase_quota=args.phase_quota,
-                               max_per_source_group=args.max_per_source_group,
-                               max_per_episode=args.max_per_episode)
-    if _phase_counts(selected) != {phase: args.phase_quota for phase in PHASE_STRATA}:
-        raise AssertionError("phase selection does not meet exact four-way quota")
+    if usage_role == ROLE_STUDENT_CANDIDATE:
+        parent_matches = [item for item in all_phase_candidates if item.parent.event_id == parent_event_id]
+        selected = [item for item in parent_matches if item.observation_phase in {"ENTRY", "TERMINAL"}]
+        if len(selected) != 2 or {item.observation_phase for item in selected} != {"ENTRY", "TERMINAL"}:
+            raise ValueError("goal-state student review parent must produce exactly ENTRY and TERMINAL candidates")
+        if any(item.parent.event.get("usage_role") != usage_role for item in selected):
+            raise ValueError("goal-state parent role drifted from student_candidate")
+    else:
+        selected = select_balanced(all_phase_candidates, seed=args.seed, phase_quota=args.phase_quota,
+                                   max_per_source_group=args.max_per_source_group,
+                                   max_per_episode=args.max_per_episode)
+        if _phase_counts(selected) != {phase: args.phase_quota for phase in PHASE_STRATA}:
+            raise AssertionError("phase selection does not meet exact four-way quota")
     events_and_rows = []
     for order, candidate in enumerate(selected):
-        event = derived_event(candidate, protocol=protocol)
-        events_and_rows.append((candidate, event, queue_row(candidate, event, selection_order=order)))
+        event = derived_event(candidate, protocol=protocol, usage_role=usage_role,
+                              private_diagnostic_student_candidate=private_student)
+        events_and_rows.append((candidate, event, queue_row(candidate, event, selection_order=order,
+                                                            usage_role=usage_role)))
     event_ids = [event["event_id"] for _, event, _ in events_and_rows]
     if len(event_ids) != len(set(event_ids)):
         raise ValueError("derived phase candidates collided in canonical event identity")
-    if len({row["source_identity"]["source_group_id"] for _, _, row in events_and_rows}) != len(events_and_rows):
+    selected_group_ids = {row["source_identity"]["source_group_id"] for _, _, row in events_and_rows}
+    if usage_role == ROLE_STUDENT_CANDIDATE:
+        if len(selected_group_ids) != 1:
+            raise ValueError("private student goal-state phases must share exactly one authenticated source group")
+    elif len(selected_group_ids) != len(events_and_rows):
         raise ValueError("phase selection crossed the whole-source-group holdout cap")
     selected_groups = {candidate.source_group_id for candidate, _, _ in events_and_rows}
     source_group_rows = [_source_group_row(groups[group_id], protocol=protocol) for group_id in sorted(selected_groups)]
@@ -537,7 +605,13 @@ def _payloads(index: Path, *, args: argparse.Namespace) -> dict[str, Any]:
         "source_release_manifest_sha256": args.expected_source_release_manifest_sha256,
         "protocol_sha256": args.expected_protocol_sha256,
         "coverage_expectations_sha256": inventory_seal["coverage_expectations_sha256"],
+        "usage_role": usage_role,
+        "private_diagnostic_student_candidate": private_student,
+        "goal_state_parent_event_id": parent_event_id,
     }
+    if private_student:
+        phase_policy_core["goal_state_question"] = GOAL_STATE_REVIEW_QUERY
+        phase_policy_core["goal_state_question_sha256"] = GOAL_STATE_REVIEW_QUERY_SHA256
     policy = {**phase_policy_core, "policy_sha256": _canonical_sha256(phase_policy_core)}
     return {
         "protocol": protocol,
@@ -554,11 +628,15 @@ def _payloads(index: Path, *, args: argparse.Namespace) -> dict[str, Any]:
         "source_group_rows": source_group_rows,
         "policy": policy,
         "coverage": _coverage(selected, all_phase_candidates, coverage_expectations),
+        "usage_role": usage_role,
+        "private_diagnostic_student_candidate": private_student,
+        "goal_state_parent_event_id": parent_event_id,
     }
 
 
 def _mini_index_manifest(payloads: Mapping[str, Any], *, files: Mapping[str, Any]) -> dict[str, Any]:
     parent = payloads["parent_manifest"]
+    usage_role = payloads.get("usage_role", ROLE_ANNOTATION_CALIBRATION)
     return {
         "schema_version": base.INDEX_SCHEMA,
         "status": base.INDEX_STATUS,
@@ -570,7 +648,7 @@ def _mini_index_manifest(payloads: Mapping[str, Any], *, files: Mapping[str, Any
         "event_candidates": len(payloads["events"]),
         "source_groups": len(payloads["source_group_rows"]),
         "source_episodes": len(payloads["source_group_rows"]),
-        "usage_roles": {"annotation_calibration": len(payloads["source_group_rows"])},
+        "usage_roles": {usage_role: len(payloads["source_group_rows"])},
         "outcome_supervision": False,
         "corrective_action_supervision": False,
         "partial_source_coverage": True,
@@ -583,6 +661,8 @@ def _mini_index_manifest(payloads: Mapping[str, Any], *, files: Mapping[str, Any
             "new_events_are_canonical_phase_candidates": True,
             "phase_observation_is_not_outcome": True,
             "renderer_compatible_with_pinned_protocol": True,
+            "usage_role_preserved": usage_role,
+            "private_goal_state_review": payloads.get("private_diagnostic_student_candidate", False),
         },
     }
 
@@ -591,6 +671,8 @@ def _selection_manifest(payloads: Mapping[str, Any], *, files: Mapping[str, Any]
                         mini_index_manifest_sha256: str, mini_index_inventory_seal_sha256: str) -> dict[str, Any]:
     selected = payloads["selected"]
     event_rows = payloads["queue_rows"]
+    usage_role = payloads.get("usage_role", ROLE_ANNOTATION_CALIBRATION)
+    private_student = bool(payloads.get("private_diagnostic_student_candidate", False))
     return {
         "schema_version": PHASE_MANIFEST_SCHEMA,
         "status": "METADATA_CANDIDATES_READY_FOR_INDEPENDENT_RENDER_REVIEW",
@@ -617,7 +699,10 @@ def _selection_manifest(payloads: Mapping[str, Any], *, files: Mapping[str, Any]
             "observation_phase_counts": dict(sorted(Counter(item.observation_phase for item in selected).items())),
             "unique_source_groups": len({item.source_group_id for item in selected}),
             "unique_source_episodes": len({item.episode_key for item in selected}),
-            "all_usage_role_annotation_calibration": True,
+            "all_usage_role_annotation_calibration": usage_role == ROLE_ANNOTATION_CALIBRATION,
+            "all_usage_role_student_candidate_private": usage_role == ROLE_STUDENT_CANDIDATE and
+            private_student,
+            "usage_role": usage_role,
             "all_immutable_split_train": True,
             "all_evidence_missing": True,
             "coverage": payloads["coverage"],
@@ -638,6 +723,7 @@ def _selection_manifest(payloads: Mapping[str, Any], *, files: Mapping[str, Any]
             "TERMINAL and TERMINAL_TRANSITION query the source skill whose original end equals the parent segment end; a successor is lineage only.",
             "REPEATED_METADATA_QUERY means repeated metadata binding across distinct source episodes, not retry or recovery.",
             "A later anchor is a new canonical event and its later source frames are not future context for the parent event.",
+            "student_candidate is private diagnostic review only and carries no training or outcome authorization.",
         ],
     }
 
@@ -841,6 +927,13 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--max-per-episode", type=int, default=1)
     result.add_argument("--transition-gap-frames", type=int, default=DEFAULT_TRANSITION_GAP)
     result.add_argument("--max-retained-candidates", type=int, default=base.ABSOLUTE_MAX_RETAINED_CANDIDATES)
+    result.add_argument("--usage-role", choices=(ROLE_ANNOTATION_CALIBRATION, ROLE_STUDENT_CANDIDATE),
+                        default=ROLE_ANNOTATION_CALIBRATION,
+                        help="preserve the authenticated source role; student_candidate is private opt-in only")
+    result.add_argument("--private-diagnostic-student-candidate", action="store_true",
+                        help="required explicit opt-in for the private student_candidate goal-state pilot")
+    result.add_argument("--goal-state-parent-event-id",
+                        help="exact sealed parent event ID for the two-anchor student goal-state pilot")
     result.add_argument("--max-seconds", type=float, default=300.0)
     result.add_argument("--resume", action="store_true")
     result.add_argument("--expected-phase-queue-seal-sha256")
