@@ -187,20 +187,66 @@ class PhaseBalancedCalibrationQueueTests(unittest.TestCase):
             phase._write_payloads(output, payloads)
             mini = output / "phase_candidate_index"
             events = payloads["events"]
-            questions = {event["event_id"]: {"question": phase.GOAL_STATE_REVIEW_QUERY}
-                         for event in events}
+            question_path = root / "sealed-questions.jsonl"
+            question_path.write_text("".join(base.canonical_json({
+                "event_id": event["event_id"],
+                "question_context": {"question": phase.GOAL_STATE_REVIEW_QUERY},
+            }) + "\n" for event in events))
+            question_sha = base.sha256_file(question_path)
+            self.assertEqual(question_sha, hashlib.sha256(question_path.read_bytes()).hexdigest())
+            questions = renderer._questions(question_path)
             binding = renderer._load_protocol(PROTOCOL_PATH, expected_sha256=PROTOCOL_SHA)
-            packets = renderer.create_packets(
-                mini, root / "packets", event_ids={event["event_id"] for event in events}, limit=None,
-                questions=questions, include_source_annotation_context=False, decode=False,
-                raw_root=None, contact_sheets=False, expected_usage_role="student_candidate",
-                private_goal_state_review=True, protocol_binding=binding, max_seconds=10)
-            self.assertEqual(packets["status"], "LOCATORS_READY_RENDER_PENDING")
-            rows = [json.loads(line) for line in
-                    (root / "packets" / "packets.jsonl").read_text().splitlines()]
-            schedules = sorted([[sample["sample_frame"] for sample in row["audit"]["temporal_schedule"]]
-                                for row in rows], key=len)
-            self.assertEqual(schedules, [[420], [420, 539]])
+            for history_frames in (0, 119):
+                queue_output = root / f"annotation-queue-{history_frames}"
+                queue_args = base.parser().parse_args([
+                    "--index", str(mini), "--output", str(queue_output),
+                    "--expected-source-release-manifest-sha256",
+                    student["source"]["source_release_manifest_sha256"],
+                    "--expected-inventory-seal-sha256",
+                    base.sha256_file(mini / "inventory_seal.json"),
+                    "--coverage-expectations", str(coverage_path),
+                    "--protocol-path", str(PROTOCOL_PATH), "--expected-protocol-sha256", PROTOCOL_SHA,
+                    "--candidate-budget", "2", "--calibration-budget", "0",
+                    "--max-per-episode", "1", "--max-per-source-group", "1",
+                    "--min-separation-frames", "120", "--normal-control-fraction", "0",
+                    "--actor-history-frames", str(history_frames), "--review-before-frames", "60",
+                    "--review-after-frames", "60", "--review-sample-stride-frames", "15",
+                    "--max-retained-candidates", "2",
+                ])
+                queue_result = base.build_queue(mini, queue_output, args=queue_args)
+                request_path = queue_output / "camera_native_render_requests.jsonl"
+                request_sha = base.sha256_file(request_path)
+                requests, loaded_request_sha = renderer._read_render_requests(
+                    request_path, request_sha, expected_usage_role="student_candidate",
+                    private_goal_state_review=True)
+                self.assertEqual(loaded_request_sha, request_sha)
+                loaded_queue_sha, release_sha = renderer._read_queue_seal(
+                    queue_output / "queue_seal.json", queue_result["queue_seal_sha256"],
+                    render_requests_path=request_path, render_requests_sha256=request_sha)
+                self.assertEqual(loaded_queue_sha, queue_result["queue_seal_sha256"])
+                self.assertEqual(release_sha, student["source"]["source_release_manifest_sha256"])
+                request_frames = sorted(tuple(request["requested_frame_indices"])
+                                        for request in requests.values())
+                self.assertEqual(request_frames, [(420,), (420, 539)])
+                self.assertTrue(all(request["actor_available_frame_indices"] == request["requested_frame_indices"]
+                                    and request["offline_review_before_frame_indices"] == []
+                                    and request["offline_review_after_frame_indices"] == []
+                                    for request in requests.values()))
+                packets = renderer.create_packets(
+                    mini, root / f"packets-{history_frames}",
+                    event_ids={event["event_id"] for event in events}, limit=None,
+                    questions=questions, include_source_annotation_context=False, decode=False,
+                    raw_root=None, contact_sheets=False, expected_usage_role="student_candidate",
+                    private_goal_state_review=True, render_requests=requests,
+                    render_requests_sha256=request_sha, queue_seal_sha256=loaded_queue_sha,
+                    queue_seal_source_release_manifest_sha256=release_sha,
+                    protocol_binding=binding, max_seconds=10)
+                self.assertEqual(packets["status"], "LOCATORS_READY_RENDER_PENDING")
+                rows = [json.loads(line) for line in
+                        (root / f"packets-{history_frames}" / "packets.jsonl").read_text().splitlines()]
+                schedules = sorted([[sample["sample_frame"] for sample in row["audit"]["temporal_schedule"]]
+                                    for row in rows], key=len)
+                self.assertEqual(schedules, [[420], [420, 539]])
 
     def test_student_goal_state_opt_in_preserves_parent_lineage_and_two_causal_anchors(self):
         owner_protocol = protocol()

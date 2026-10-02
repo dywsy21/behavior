@@ -86,6 +86,10 @@ POLICY_CORE_FIELDS = frozenset((
     "review_before_frames", "review_after_frames", "review_sample_stride_frames", "no_rgb_decode_by_selector",
     "action_sequence_heuristic", "supported_source_kinds", "all_jobs_status", "max_retained_candidates",
 ))
+PRIVATE_PHASE_DERIVATION_SCHEMA = "p107-phase-balanced-mini-index-v1"
+PRIVATE_GOAL_STATE_REVIEW_QUERY = "At the anchor, is the brown animal toy visibly held by the robot’s right gripper?"
+PRIVATE_GOAL_STATE_REVIEW_QUERY_SHA256 = hashlib.sha256(
+    PRIVATE_GOAL_STATE_REVIEW_QUERY.encode("utf-8")).hexdigest()
 
 
 def canonical_json(value: Any) -> str:
@@ -913,6 +917,99 @@ def window_spec(candidate: Candidate, *, actor_history_frames: int, review_befor
     }
 
 
+def _private_phase_lineage(candidate: Candidate) -> Mapping[str, Any] | None:
+    """Authenticate the narrow student phase path before deriving its clock."""
+    raw_lineage = candidate.event.get("phase_lineage")
+    if raw_lineage is None:
+        return None
+    lineage = require_mapping(raw_lineage, f"{candidate.event_id}.phase_lineage")
+    is_phase_schema = lineage.get("schema_version") == PRIVATE_PHASE_DERIVATION_SCHEMA
+    if candidate.event.get("usage_role") == "student_candidate" and is_phase_schema and \
+            lineage.get("private_goal_state_review") is not True:
+        raise ValueError("student phase event lacks the explicit private goal-state opt-in")
+    if lineage.get("private_goal_state_review") is not True:
+        return None
+    if candidate.event.get("usage_role") != "student_candidate":
+        raise ValueError("private goal-state phase must retain the student_candidate role")
+    source = require_mapping(candidate.event.get("source"), f"{candidate.event_id}.source")
+    if source.get("original_split") != "train":
+        raise ValueError("private goal-state phase must retain the TRAIN split")
+    if (not is_sha256(lineage.get("parent_event_id")) or
+            lineage.get("goal_state_question") != PRIVATE_GOAL_STATE_REVIEW_QUERY or
+            lineage.get("goal_state_question_sha256") != PRIVATE_GOAL_STATE_REVIEW_QUERY_SHA256):
+        raise ValueError("private goal-state phase question/parent binding is not authenticated")
+    for field in ("training_eligible", "outcome_supervision", "recovery_supervision",
+                  "action_bc_supervision", "dart_supervision"):
+        if lineage.get(field) is not False:
+            raise ValueError(f"private goal-state phase {field} gate is not false")
+    parent_interval = require_mapping(lineage.get("parent_event_interval"),
+                                      f"{candidate.event_id}.phase_lineage.parent_event_interval")
+    if set(parent_interval) != {"start_frame", "end_frame"}:
+        raise ValueError("private goal-state phase parent interval schema is invalid")
+    parent_start = require_int(parent_interval.get("start_frame"), "private phase parent start")
+    parent_end = require_int(parent_interval.get("end_frame"), "private phase parent end", minimum=1)
+    if (parent_start != candidate.interval_start or parent_end != candidate.interval_end or
+            not parent_start < parent_end):
+        raise ValueError("private goal-state phase parent interval drifted from the canonical event")
+    anchor = candidate.anchor_frame
+    phase = lineage.get("observation_phase")
+    if phase == "ENTRY":
+        if anchor != parent_start:
+            raise ValueError("private ENTRY phase anchor is not the parent start")
+    elif phase == "TERMINAL":
+        if anchor != parent_end - 1 or anchor <= parent_start:
+            raise ValueError("private TERMINAL phase anchor is not the parent end-1")
+    else:
+        raise ValueError("private goal-state phase supports only ENTRY and TERMINAL")
+    return lineage
+
+
+def _private_phase_window_spec(candidate: Candidate) -> dict[str, Any] | None:
+    lineage = _private_phase_lineage(candidate)
+    if lineage is None:
+        return None
+    anchor = candidate.anchor_frame
+    parent_start = candidate.interval_start
+    phase = lineage["observation_phase"]
+    actor_frames = [anchor] if phase == "ENTRY" else [parent_start, anchor]
+    actor_start = actor_frames[0]
+    actor_end = anchor + 1
+    return {
+        "source_clock": "published_local_frame_index_offset_0",
+        "frame_rate_hz": FRAME_RATE_HZ,
+        "anchor_frame": anchor,
+        "anchor_timestamp_s": anchor / FRAME_RATE_HZ,
+        "actor_available_window": {
+            "start_frame": actor_start, "end_frame_exclusive": actor_end,
+            "start_timestamp_s": actor_start / FRAME_RATE_HZ,
+            "end_timestamp_s_exclusive": actor_end / FRAME_RATE_HZ,
+            "sampled_frames": actor_frames,
+            "causal_use": "CURRENT_DECISION_ONLY",
+        },
+        "offline_review_before_window": {
+            "start_frame": anchor, "end_frame_exclusive": anchor,
+            "start_timestamp_s": anchor / FRAME_RATE_HZ,
+            "end_timestamp_s_exclusive": anchor / FRAME_RATE_HZ,
+            "sampled_frames": [],
+            "review_use": "TEMPORAL_CONTEXT_ONLY",
+        },
+        "offline_review_after_window": {
+            "start_frame": actor_end, "end_frame_exclusive": actor_end,
+            "start_timestamp_s": actor_end / FRAME_RATE_HZ,
+            "end_timestamp_s_exclusive": actor_end / FRAME_RATE_HZ,
+            "sampled_frames": [],
+            "review_use": "OFFLINE_BC_QUALITY_ONLY_NOT_ACTOR_EVIDENCE",
+        },
+        "temporal_review_window": {
+            "start_frame": actor_start, "end_frame_exclusive": actor_end,
+            "start_timestamp_s": actor_start / FRAME_RATE_HZ,
+            "end_timestamp_s_exclusive": actor_end / FRAME_RATE_HZ,
+            "sampled_frames": actor_frames,
+            "review_use": "HUMAN_OR_MODEL_OFFLINE_REVIEW_ONLY",
+        },
+    }
+
+
 def job_id(*, queue_kind: str, event_id: str, policy_sha256: str) -> str:
     return canonical_sha256({"schema_version": QUEUE_SCHEMA, "queue_kind": queue_kind,
                              "event_id": event_id, "policy_sha256": policy_sha256})
@@ -1187,11 +1284,31 @@ def build_queue_payloads(candidates: Sequence[Candidate], groups: Mapping[str, S
     expected_skill_ids = [skill["skill_id"] for skill in coverage_expectations["expected_skill_vocabulary"]]
     student_pool = [candidate for candidate in candidates if candidate.event["usage_role"] == "student_candidate"]
     calibration_pool = [candidate for candidate in candidates if candidate.event["usage_role"] == "annotation_calibration"]
-    selected_student, student_diagnostics = select_diverse(
-        student_pool, budget=policy["candidate_budget"], seed=policy["seed"],
-        max_per_episode=policy["max_per_episode"], min_separation_frames=policy["min_separation_frames"],
-        max_per_source_group=policy["max_per_source_group"], normal_control_fraction=policy["normal_control_fraction"],
-        priority_skill_ids=expected_skill_ids)
+    private_phase_student = [candidate for candidate in student_pool
+                             if _private_phase_lineage(candidate) is not None]
+    if private_phase_student:
+        if len(private_phase_student) != len(student_pool):
+            raise ValueError("private student phase events cannot mix with generic student candidates")
+        if policy["candidate_budget"] < 2:
+            raise ValueError("private student phase queue requires budget for ENTRY and TERMINAL")
+        phase_names = {candidate.event["phase_lineage"]["observation_phase"] for candidate in private_phase_student}
+        parent_ids = {candidate.event["phase_lineage"]["parent_event_id"] for candidate in private_phase_student}
+        if (len(private_phase_student) != 2 or phase_names != {"ENTRY", "TERMINAL"} or len(parent_ids) != 1):
+            raise ValueError("private student phase queue must contain exactly one ENTRY and one TERMINAL parent pair")
+        private_phase_student.sort(key=lambda candidate: (candidate.event["phase_lineage"]["observation_phase"],
+                                                           candidate.event_id))
+        selected_student = [(candidate, "PRIVATE_GOAL_STATE_PHASE") for candidate in private_phase_student]
+        student_diagnostics = {
+            "selected": len(selected_student), "candidate_count": len(student_pool),
+            "same_episode_cap_rejected": 0, "adjacent_window_cap_rejected": 0,
+            "private_goal_state_phase_selection": True,
+        }
+    else:
+        selected_student, student_diagnostics = select_diverse(
+            student_pool, budget=policy["candidate_budget"], seed=policy["seed"],
+            max_per_episode=policy["max_per_episode"], min_separation_frames=policy["min_separation_frames"],
+            max_per_source_group=policy["max_per_source_group"], normal_control_fraction=policy["normal_control_fraction"],
+            priority_skill_ids=expected_skill_ids)
     selected_calibration, calibration_diagnostics = select_diverse(
         calibration_pool, budget=policy["calibration_budget"], seed=policy["seed"] + ":calibration",
         max_per_episode=policy["max_per_episode"], min_separation_frames=policy["min_separation_frames"],
@@ -1208,8 +1325,10 @@ def build_queue_payloads(candidates: Sequence[Candidate], groups: Mapping[str, S
     calibration_jobs: list[dict[str, Any]] = []
     render_requests: list[dict[str, Any]] = []
     for candidate, phase in selected_student:
+        phase_windows = _private_phase_window_spec(candidate)
         job, request = queue_job(candidate, queue_kind="STUDENT_CANDIDATE_REVIEW", selection_phase=phase,
-                                 policy_sha256=policy["policy_sha256"], windows=windows(candidate))
+                                 policy_sha256=policy["policy_sha256"],
+                                 windows=phase_windows if phase_windows is not None else windows(candidate))
         student_jobs.append(job)
         render_requests.append(request)
     for candidate, phase in selected_calibration:
