@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：metadata-pair 四例root有限视觉核验与指代语义缺失证据（Codex / P107-COORD）
+
+- root以original detail完成新4-pair的`4` overview+`22`指定native=26文件/46展示frame-view坐标（非375全看）；独立旁侧receipt=`/home/wsy/behavior-annotations/p107/parent-review/natural-retry-pilot/root-postselection-metadata-pair-v1.json` SHA`eef4697b…a0132`逐项绑定manifest=`1b9f6d7f…b8d36`、frames=`4e595bad…85dcf`和所有实际PNG bytes。tupperware的左右不同果盒、toy_figure的棕色/粉衣不同玩具及不同手、两例gym_shoe的双鞋序列均不能由bare class推成同一物理对象；4431的raw second relation `memory_prefix='the other'`也与不同实体顺序一致。四例都不是所定义same-object failed→corrective正例，confirmed genuine corrective=`0`；这不声称每个完整GRASP内部绝无失误。
+- `s1`只读追溯确认重要接口限制：frozen-v4的4431原始relation保留`the other`，而当前`semantic_active_skills`/render七字段投影省略该指代；默认代码与冻结产物均已核实，**但未检查任何正在运行job的实际config**，故不能声称当前训练整体错误。不得热改训练数据、源码或环境。若后续批准，才可版本化保留必要target referent/arm语义，并按单一GRASP内部的动作重复筛查；`s0`目前仅只读评估scanner最小复用，未获新扫描授权。
+- 本批与旧8-ABA及coverage root38完全分账，不计E2、canonical label、outcome/recovery/BC/DART/train/release；所有gates=false。
+
 ### 2026-10-02 13:26 CST（UTC05:26）：ABA private verifier 的root有限视觉复核已封存（Codex / P107-COORD）
 
 - root以original detail实际查看既有ABA private verifier的`9`张overview及`16`张额外native（s01/s02/s04/s07各两帧的head/right-wrist），封存=`/home/wsy/behavior-annotations/p107/parent-review/natural-retry-pilot/root-postselection-aba-pilot-v1.json` SHA`57efc935…ef87e`。该receipt逐项绑定media manifest=`a5a97886…ed948`/frames=`119071f8…3f735`、9 overview与16 native的实际bytes；`54`页内加`16`额外native为`70`个**展示的frame/view坐标**，不是70个unique content hash、更不是对483 native PNG的全审。
