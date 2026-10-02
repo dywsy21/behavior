@@ -719,7 +719,10 @@ def run_verifier(
         length = _exact_int(entry["length"], "single-GRASP manifest length")
         for local_frame in frames:
             window_index = window_index_by_frame[local_frame]
-            requested_by_view: dict[str, tuple[Any, dict[str, Any], float]] = {}
+            # Keep every decoder result paired with the locator that produced
+            # it.  Do not read these values back from the last iteration of
+            # the view loop when writing the frame receipts below.
+            requested_by_view: dict[str, dict[str, Any]] = {}
             for view in VIEWS:
                 locator = locators[view]
                 video = _resolve_video(raw_root, locator["relative_path"])
@@ -746,12 +749,25 @@ def run_verifier(
                     decoder_requested = _finite_number(decoded.get("requested_timestamp_s"), f"{view} decoder request")
                     if abs(decoder_requested - requested) > 1e-12:
                         raise InputValidationError(f"single-GRASP decoder request drifted for {view}")
-                    requested_by_view[view] = (image, decoded, decoder_requested)
+                    requested_by_view[view] = {
+                        "image": image,
+                        "decoded": dict(decoded),
+                        "locator": dict(locator),
+                        "requested_timestamp_s": decoder_requested,
+                        "decoded_timestamp_s": decoded_timestamp,
+                        "pts_error_s": pts_error,
+                    }
                 except BaseException:
                     image.close()
                     raise
             for view in VIEWS:
-                image, decoded, decoder_requested = requested_by_view[view]
+                binding = requested_by_view[view]
+                image = binding["image"]
+                decoded = binding["decoded"]
+                locator = binding["locator"]
+                decoder_requested = binding["requested_timestamp_s"]
+                decoded_timestamp = binding["decoded_timestamp_s"]
+                pts_error = binding["pts_error_s"]
                 relative = Path("native_rgb") / selection_info["selected"]["selection_id"] / f"window-{window_index:02d}_local-{local_frame:06d}_{view}.png"
                 asset_path = staging / relative
                 try:
@@ -800,6 +816,13 @@ def run_verifier(
                         "requested_timestamp_s": decoder_requested,
                         "decoded_timestamp_s": decoded_timestamp,
                         "pts_error_s": pts_error,
+                        "decoded_source_container": {
+                            "resolved_path": decoded["resolved_path"],
+                            "bytes": decoded.get("bytes"),
+                            "mtime_ns": decoded.get("mtime_ns"),
+                            "resolution": decoded.get("resolution"),
+                            "full_video_sha256": decoded.get("full_video_sha256"),
+                        },
                         "png_relative_path": str(relative),
                         "png_sha256": _sha256(asset_path),
                         "png_bytes": asset_path.stat().st_size,
