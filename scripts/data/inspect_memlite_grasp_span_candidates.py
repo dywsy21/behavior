@@ -42,7 +42,20 @@ def _load_legacy_helpers() -> Any:
     return module
 
 
+def _load_event_protocol() -> Any:
+    """Load the existing metadata event protocol without importing ML deps."""
+    path = Path(__file__).resolve().parents[2] / "src/g05/data/memlite_event_protocol.py"
+    spec = importlib.util.spec_from_file_location("_p107_single_grasp_event_protocol", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot import event protocol: {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 _LEGACY = _load_legacy_helpers()
+_EVENT_PROTOCOL = _load_event_protocol()
 ACTION_DIM = _LEGACY.ACTION_DIM
 GRIPPER_INDEX_SOURCE = _LEGACY.GRIPPER_INDEX_SOURCE
 GRIPPER_INDICES = _LEGACY.GRIPPER_INDICES
@@ -67,6 +80,8 @@ EXPECTED_TRIAGE_COUNT = 32
 MAX_SINGLE_EPISODES = 8
 EXPECTED_FROZEN_COUNT = 20000
 EXPECTED_EVENT_INDEX_SCHEMA = "memlite-event-index-v1"
+MODEL_ACTION_DIM = 27
+MODEL_PADDING_INDICES = (7, 8, 17, 18)
 CAMERAS = (
     "observation.rgb.zed_link_camera_0",
     "observation.rgb.left_realsense_link_camera_0",
@@ -457,8 +472,8 @@ def _event_matches_source(
     return all(source.get(field) == value for field, value in expected.items())
 
 
-def _private_event(event: Mapping[str, Any]) -> dict[str, Any]:
-    return {
+def _private_event(event: Mapping[str, Any], *, retain_source_contract: bool = False) -> dict[str, Any]:
+    result = {
         "event_id": event.get("event_id"),
         "event_interval": _copy_json(event.get("event_interval")),
         "event_kind": event.get("event_kind"),
@@ -468,6 +483,15 @@ def _private_event(event: Mapping[str, Any]) -> dict[str, Any]:
         "action_contract": _copy_json(event.get("action")),
         "usage_role": event.get("usage_role"),
     }
+    if retain_source_contract:
+        result.update(
+            {
+                "skill_bundle": _copy_json(event.get("skill_bundle")),
+                "parallel_bundle": event.get("parallel_bundle"),
+                "video_locators": _copy_json(event.get("video_locators")),
+            }
+        )
+    return result
 
 
 def load_event_bindings(
@@ -583,7 +607,7 @@ def load_single_event_bindings(
             raise InputValidationError(f"event role mismatch for {selection_id}")
         if event.get("event_id") != selection.get("event_id"):
             raise InputValidationError(f"event ID mismatch for {selection_id}")
-        found[selection_id] = _private_event(event)
+        found[selection_id] = _private_event(event, retain_source_contract=True)
     if set(found) != {str(selection["selection_id"]) for selection in selections}:
         missing = sorted({str(selection["selection_id"]) for selection in selections} - set(found))
         raise InputValidationError(f"missing exact GRASP event bindings: {missing}")
@@ -1113,6 +1137,138 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[dict[str, Any]]:
     return [dict(entry) for entry in entries]
 
 
+def _validate_single_video_locators(
+    binding: Mapping[str, Any], entry: Mapping[str, Any], observation_frame: int, selection_id: str
+) -> None:
+    locators = binding.get("video_locators")
+    if not isinstance(locators, list) or len(locators) != len(CAMERAS):
+        raise InputValidationError(f"single-GRASP {selection_id} event video locators are incomplete")
+    by_camera: dict[str, Mapping[str, Any]] = {}
+    for locator in locators:
+        if not isinstance(locator, Mapping) or not isinstance(locator.get("camera_key"), str):
+            raise InputValidationError(f"single-GRASP {selection_id} event video locator is malformed")
+        camera = str(locator["camera_key"])
+        if camera in by_camera:
+            raise InputValidationError(f"single-GRASP {selection_id} event video locators are duplicated")
+        by_camera[camera] = locator
+    if set(by_camera) != set(CAMERAS):
+        raise InputValidationError(f"single-GRASP {selection_id} event video cameras do not match the source clock")
+    clock = entry.get("camera_clock")
+    if not isinstance(clock, Mapping):
+        raise InputValidationError(f"single-GRASP {selection_id} camera clock is missing")
+    view_by_camera = {
+        "observation.rgb.zed_link_camera_0": "head",
+        "observation.rgb.left_realsense_link_camera_0": "left_wrist",
+        "observation.rgb.right_realsense_link_camera_0": "right_wrist",
+    }
+    for camera in CAMERAS:
+        values = clock.get(camera)
+        locator = by_camera[camera]
+        if not isinstance(values, Mapping):
+            raise InputValidationError(f"single-GRASP {selection_id} camera clock is malformed")
+        chunk = _int(values.get("chunk_index"), f"{selection_id}.{camera}.chunk_index")
+        file_index = _int(values.get("file_index"), f"{selection_id}.{camera}.file_index")
+        start = _finite(values.get("from_timestamp_s"), f"{selection_id}.{camera}.from_timestamp_s")
+        expected_path = f"videos/{camera}/chunk-{chunk:03d}/file-{file_index:03d}.mp4"
+        expected_timestamp = start + observation_frame / 30.0
+        if (
+            locator.get("view") != view_by_camera[camera]
+            or locator.get("relative_path") != expected_path
+            or locator.get("expected_fps") != 30
+            or locator.get("locator_status") != "METADATA_ONLY_UNRESOLVED"
+            or not math.isclose(_finite(locator.get("episode_start_timestamp_s"), f"{selection_id}.{camera}.episode_start_timestamp_s"), start, abs_tol=1e-9)
+            or not math.isclose(_finite(locator.get("requested_timestamp_s"), f"{selection_id}.{camera}.requested_timestamp_s"), expected_timestamp, abs_tol=1e-9)
+        ):
+            raise InputValidationError(f"single-GRASP {selection_id} event video clock does not bind source camera clock")
+
+
+def _validate_single_event_binding(
+    manifest: Mapping[str, Any],
+    constraints: Mapping[str, Any],
+    entry: Mapping[str, Any],
+    span: Mapping[str, Any],
+    binding: Mapping[str, Any],
+) -> None:
+    selection_id = str(entry["selection_id"])
+    interval = span["frame_interval"]
+    start = int(interval[0])
+    if not isinstance(binding.get("event_id"), str) or not binding["event_id"]:
+        raise InputValidationError(f"single-GRASP {selection_id} event binding ID is missing")
+    event_interval = binding.get("event_interval")
+    if not isinstance(event_interval, Mapping):
+        raise InputValidationError(f"single-GRASP {selection_id} event interval is missing")
+    if [event_interval.get("start_frame"), event_interval.get("end_frame")] != interval:
+        raise InputValidationError(f"single-GRASP {selection_id} event interval mismatch")
+    if binding.get("schema_version") != EVENT_SCHEMA:
+        raise InputValidationError(f"single-GRASP {selection_id} event schema is invalid")
+    if binding.get("event_kind") != "ANNOTATED_SKILL_SEGMENT":
+        raise InputValidationError(f"single-GRASP {selection_id} event kind is invalid")
+    if binding.get("usage_role") != entry.get("usage_role") or binding.get("usage_role") != constraints.get("usage_role"):
+        raise InputValidationError(f"single-GRASP {selection_id} event role does not bind entry role")
+
+    observation = binding.get("observation")
+    if not isinstance(observation, Mapping):
+        raise InputValidationError(f"single-GRASP {selection_id} event observation is missing")
+    observation_frame = _int(observation.get("frame"), f"single-GRASP {selection_id}.observation.frame")
+    observation_timestamp = _finite(observation.get("timestamp_s"), f"single-GRASP {selection_id}.observation.timestamp_s")
+    if observation_frame != start or not math.isclose(observation_timestamp, start / 30.0, abs_tol=1e-9):
+        raise InputValidationError(f"single-GRASP {selection_id} event observation does not bind GRASP start clock")
+
+    action = binding.get("action_contract")
+    if not isinstance(action, Mapping):
+        raise InputValidationError(f"single-GRASP {selection_id} event action contract is missing")
+    if (
+        action.get("start_frame") != observation_frame
+        or action.get("actual_executed_length") is not None
+        or action.get("raw_action_dim") != ACTION_DIM
+        or action.get("model_action_dim") != MODEL_ACTION_DIM
+        or action.get("model_padding_indices") != list(MODEL_PADDING_INDICES)
+    ):
+        raise InputValidationError(f"single-GRASP {selection_id} event action contract does not bind source clock/schema")
+
+    skill = span.get("skill")
+    skill_bundle = binding.get("skill_bundle")
+    if not isinstance(skill, Mapping) or not isinstance(skill_bundle, list) or not skill_bundle or not all(
+        isinstance(member, Mapping) for member in skill_bundle
+    ):
+        raise InputValidationError(f"single-GRASP {selection_id} event skill bundle is missing")
+    if not any(_canonical(member) == _canonical(skill) for member in skill_bundle):
+        raise InputValidationError(f"single-GRASP {selection_id} event skill bundle does not contain selected GRASP")
+    if binding.get("parallel_bundle") is not (len(skill_bundle) > 1):
+        raise InputValidationError(f"single-GRASP {selection_id} event bundle parallel flag is invalid")
+    bundle_id = binding.get("bundle_id")
+    expected_bundle_id = _EVENT_PROTOCOL.canonical_sha256(
+        {"semantic": span.get("semantic"), "text": span.get("text"), "skills": skill_bundle}
+    )
+    if bundle_id != expected_bundle_id:
+        raise InputValidationError(
+            f"single-GRASP {selection_id} event bundle ID does not match source skill bundle"
+        )
+
+    # event_id is content-addressed by the pinned event protocol.  This binds
+    # the retained bundle/clock fields together; full bundle provenance still
+    # relies on the externally pinned event-index SHA used by the builder.
+    source = {
+        "source_release_manifest_sha256": manifest["release_manifest_sha256"],
+        "source_group_id": entry["source_group_id"],
+        "raw_episode_id": entry["raw_episode_id"],
+        "episode_index": entry["episode_index"],
+    }
+    expected_event_id = _EVENT_PROTOCOL.event_id(
+        {
+            "schema_version": EVENT_SCHEMA,
+            "source": source,
+            "event_kind": binding["event_kind"],
+            "event_interval": event_interval,
+            "observation": observation,
+            "bundle_id": bundle_id,
+        }
+    )
+    if binding["event_id"] != expected_event_id:
+        raise InputValidationError(f"single-GRASP {selection_id} event ID does not match protocol identity")
+    _validate_single_video_locators(binding, entry, observation_frame, selection_id)
+
+
 def validate_single_manifest(manifest: Mapping[str, Any]) -> list[dict[str, Any]]:
     """Fail-closed validation for the one-span-per-episode input mode."""
 
@@ -1248,11 +1404,8 @@ def validate_single_manifest(manifest: Mapping[str, Any]) -> list[dict[str, Any]
         if not isinstance(event_bindings, Mapping) or set(event_bindings) != {selection_id}:
             raise InputValidationError(f"single-GRASP {selection_id} event bindings are incomplete")
         binding = event_bindings[selection_id]
-        if not isinstance(binding, Mapping) or not isinstance(binding.get("event_id"), str) or not binding["event_id"]:
+        if not isinstance(binding, Mapping):
             raise InputValidationError(f"single-GRASP {selection_id} event binding is malformed")
-        event_interval = binding.get("event_interval")
-        if not isinstance(event_interval, Mapping) or [event_interval.get("start_frame"), event_interval.get("end_frame")] != interval:
-            raise InputValidationError(f"single-GRASP {selection_id} event interval mismatch")
         clock = entry.get("camera_clock")
         if not isinstance(clock, Mapping) or set(clock) != set(CAMERAS):
             raise InputValidationError(f"single-GRASP {selection_id} camera clock is incomplete")
@@ -1262,8 +1415,13 @@ def validate_single_manifest(manifest: Mapping[str, Any]) -> list[dict[str, Any]
                 raise InputValidationError(f"single-GRASP {selection_id} camera clock is malformed")
             _int(values.get("chunk_index"), f"{selection_id}.{camera}.chunk_index")
             _int(values.get("file_index"), f"{selection_id}.{camera}.file_index")
-            if _finite(values.get("from_timestamp_s"), f"{selection_id}.{camera}.from_timestamp_s") >= _finite(values.get("to_timestamp_s"), f"{selection_id}.{camera}.to_timestamp_s"):
+            from_timestamp = _finite(values.get("from_timestamp_s"), f"{selection_id}.{camera}.from_timestamp_s")
+            to_timestamp = _finite(values.get("to_timestamp_s"), f"{selection_id}.{camera}.to_timestamp_s")
+            if to_timestamp <= from_timestamp:
                 raise InputValidationError(f"single-GRASP {selection_id} camera timestamp interval is invalid")
+            if not math.isclose(to_timestamp - from_timestamp, length / 30.0, abs_tol=1e-9):
+                raise InputValidationError(f"single-GRASP {selection_id} camera clock duration does not bind episode length")
+        _validate_single_event_binding(manifest, constraints, entry, span, binding)
     return [dict(entry) for entry in entries]
 
 
