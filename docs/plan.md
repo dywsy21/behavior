@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 17:00:57–17:02:21 CST（UTC09:00:57–09:02:21）：8源 single-GRASP 私有 action scan 前台实际 PASS（Codex / P107-COORD）
+
+- LC3 `a800-3` 以 new Git-only clean source=`/data/workspace/wsy/behavior2026/src/p107-single-grasp-scan-6f58dac`（root=`6f58dac3f84c1b0e9df8dae678ac359b71de4a94`、scanner SHA=`544b2deaf8c8d55c01c7f994b6e2ba95c5e5bd37e665cc7326f5b24a1b55689e`）运行；fresh input/run 分别为`p107/inputs|runs/single-grasp-action-scan-8-v1-20261002`。前台 execution shell PID=`1739754`，build exit=`0`（17:01:09）、manifest SHA=`93bc9f34c4b17cbc0e0881b3727ce99570c66aae72e528c6ab434c9e6d7bf342`，scan exit=`0`（17:02:21），1CPU/4GiB/0GPU/soft585s+kill15s合同未触限；run bytes在验收时=`42,752B`、completion log后=`42,877B`，均小于64MiB验收上限。
+- 结果=`PASS_STRUCTURAL_GRASP_SPAN_SCAN_NONTRAINABLE`：8 selected episodes完整扫描行=`160,874`、8个精确单GRASP half-open intervals=`24,731`行、8个physical Parquet containers=`1,765,809`行（计数严格分层）；每臂匿名RLE共`26`，内部结构翻转=`1`。唯一候选在ep3605/task18、event=`62a5a142…a30c8`的**right raw ch22**：frame `[16960,20446)`/`[20446,20853)`/`[20853,21827)`，dwell=`3486/407/974` frames（`116.1667/13.5333/32.4333s`），raw value sequence=`[1,-1,1]`。这仅是`A_B_A_UNNAMED`结构，**不**赋 open/close、接触/抓取、FAILED/SUCCEEDED、recovery 或 corrective BC 含义；候选出现后停止，未自动RGB解码或扩至32/full。
+- 小型结果、manifest和stdout/stderr已逐SHA从remote只读搬回`/home/wsy/behavior-annotations/p107/grasp-span-action-scan-8-v1-20261002/`：result=`4693a2c8c094e95721be33b3213385a55a772d51c320151feb13736d559e7d1d`（37,984B）、local validation receipt=`1a8eeb669f707dfde631ad61dd65eb45b8a485e95177466ac8f03259adcdd1e3`；其逐文件remote equality、source/manifest pins和 all-false gates 已记录。未读RGB，未产生actor/label/outcome/recovery/DART/train/release artifact；下一步如需视觉核验由root另行选择，不自动执行。
+
 ### 2026-10-02 16:xx CST：single-GRASP 八源私有 action scan 已审、根集成；受限前台运行准备中（Codex / P107-COORD）
 
 - `coverage49_label_s2` 已独立批准固定修复 `18d3d2648f65dc2473689612e42dd05ea813eb92`（single 22 + legacy pair 17 = 39 tests；错误的 frame/time/role/schema/kind/action-start/dims/pad/bundle/camera-drift 均 fail-closed，真实 8-source metadata roundtrip PASS）。根只集成代码、测试和 sealed selection：`92bc27d4a5b0e75d4b47c8bef0f068b1c16d2f03` → `6f58dac3f84c1b0e9df8dae678ac359b71de4a94`；selection SHA=`e3edcf21e5748d7e3df0bc2c577449a0fec63dcca0535cfbb1e987d4ca3ea2e2`。根本地 focused pytest 实测 `22 passed`，py_compile、ruff、diff-check PASS；作者旧 plan/TEAM 未覆盖根实时流水。
