@@ -508,6 +508,37 @@ def validate_goal_unbound_event(event: Mapping[str, Any], *, protocol: Any) -> N
             raise ValueError(f"goal_unbound event gate is not false: {field}")
 
 
+def validate_goal_unbound_queue(events: Sequence[Mapping[str, Any]], jobs: Sequence[Mapping[str, Any]],
+                                requests: Sequence[Mapping[str, Any]], *, protocol: Any) -> None:
+    """Validate the batch-specific event→queue→camera request binding."""
+    by_event = {event["event_id"]: event for event in events}
+    if len(by_event) != len(events) or len(jobs) != len(events) or len(requests) != len(events):
+        raise ValueError("goal-state queue must have one job and request per derived event")
+    seen_jobs: set[str] = set()
+    seen_requests: set[str] = set()
+    for job, request in zip(jobs, requests):
+        event_id = job.get("event_id")
+        event = by_event.get(event_id)
+        if event is None or job.get("job_id") != request.get("request_id") or request.get("event_id") != event_id:
+            raise ValueError("goal-state queue event/job/request identity drifted")
+        if job["job_id"] in seen_jobs or request["request_id"] in seen_requests:
+            raise ValueError("goal-state queue contains duplicate job/request IDs")
+        seen_jobs.add(job["job_id"])
+        seen_requests.add(request["request_id"])
+        validate_goal_unbound_event(event, protocol=protocol)
+        phase_name = event["phase_lineage"]["observation_phase"]
+        expected = [event["observation"]["frame"]] if phase_name == "ENTRY" else [
+            event["event_interval"]["start_frame"], event["observation"]["frame"]]
+        if (job.get("usage_role") != ROLE or job.get("immutable_split") != SPLIT or
+                job.get("training_eligible") is not False or request.get("requested_frame_indices") != expected or
+                request.get("actor_available_frame_indices") != expected or
+                request.get("offline_review_before_frame_indices") != [] or
+                request.get("offline_review_after_frame_indices") != []):
+            raise ValueError("goal-state queue carries non-causal/future or non-private fields")
+    if seen_jobs != {job["job_id"] for job in jobs} or seen_requests != {request["request_id"] for request in requests}:
+        raise ValueError("goal-state queue identity accounting is inconsistent")
+
+
 def _validate_query_row(row: Mapping[str, Any], *, event: Mapping[str, Any]) -> tuple[str, str, str]:
     required = {"event_id", "query_id", "question", "question_sha256", "target_raw", "target_display_phrase",
                 "relation_family"}
@@ -632,6 +663,7 @@ def build_batch(*, index: Path, candidate_pool: Path, exclusions_path: Path, out
     events, jobs, requests = build_goal_unbound_events(selected, joined, protocol=protocol)
     for event in events:
         validate_goal_unbound_event(event, protocol=protocol)
+    validate_goal_unbound_queue(events, jobs, requests, protocol=protocol)
     candidate_rows = []
     for row in selected:
         first = joined[(row["candidate_id"], int(row["episode_index"]), "first_grasp")]
