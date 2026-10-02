@@ -356,7 +356,9 @@ def _validate_video_locators(
     event_source = event.get("source")
     if not isinstance(event_source, Mapping):
         raise InputValidationError("selected event has no source identity")
-    for field in _identity_fields():
+    if event.get("event_id") != source.get("event_id"):
+        raise InputValidationError("selected event top-level event_id mismatch")
+    for field in _identity_fields()[1:]:
         if event_source.get(field) != source.get(field):
             raise InputValidationError(f"selected event source identity mismatch: {field}")
     if event_source.get("original_split") != "train" or event_source.get("episode_length") != length:
