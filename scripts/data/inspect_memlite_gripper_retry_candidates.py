@@ -15,6 +15,7 @@ cannot silently turn into an empty or passing result.
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 import math
@@ -636,10 +637,13 @@ def _union_and_gaps(intervals: Iterable[tuple[int, int]], start: int, end: int) 
     return gaps, covered
 
 
-def annotate_candidate(candidate: Mapping[str, Any], annotation_audit: Mapping[str, Any]) -> dict[str, Any]:
-    """Attach primitive intersections while keeping raw annotation provenance."""
+def _primitive_relation_audit(
+    span_start: int, span_end: int, annotation_audit: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Compute one span's raw annotation relation without assigning task meaning."""
 
-    span_start, span_end = [int(value) for value in candidate["frame_span"]]
+    if span_start < 0 or span_end <= span_start:
+        raise InputValidationError(f"invalid relation span [{span_start}, {span_end})")
     intervals = annotation_audit.get("intervals", [])
     intersections: list[dict[str, Any]] = []
     covered_parts: list[tuple[int, int]] = []
@@ -679,8 +683,7 @@ def annotate_candidate(candidate: Mapping[str, Any], annotation_audit: Mapping[s
         classification = "cross_primitive_boundary"
     else:
         classification = "partial_annotation_with_gaps"
-    result = _copy_json(candidate)
-    result["private_annotation_audit"] = {
+    return {
         "classification": classification,
         "join_semantics": annotation_audit.get("join_semantics"),
         "join_semantics_warning": (
@@ -696,6 +699,45 @@ def annotate_candidate(candidate: Mapping[str, Any], annotation_audit: Mapping[s
         "raw_primitive_intersections": intersections,
         "all_raw_annotation_intervals": _copy_json(intervals),
     }
+
+
+def _flip_core_span(candidate: Mapping[str, Any]) -> list[int]:
+    """Return the three-run flip core, clipped to the legacy outer context."""
+
+    runs = candidate.get("run_intervals")
+    if not isinstance(runs, list) or len(runs) != 3:
+        raise InputValidationError("A-B-A candidate must contain exactly three run intervals")
+    first, middle, last = runs
+    outer_start = int(first["start_frame"])
+    outer_end = int(last["end_frame"])
+    start = max(outer_start, int(first["end_frame"]) - 1)
+    end = min(outer_end, int(middle["end_frame"]) + 1)
+    if end <= start:
+        raise InputValidationError(f"invalid flip core [{start}, {end})")
+    return [start, end]
+
+
+def annotate_candidate(candidate: Mapping[str, Any], annotation_audit: Mapping[str, Any]) -> dict[str, Any]:
+    """Attach legacy outer and new flip-core primitive intersections."""
+
+    outer_span = [int(value) for value in candidate["frame_span"]]
+    outer_audit = _primitive_relation_audit(outer_span[0], outer_span[1], annotation_audit)
+    core_span = _flip_core_span(candidate)
+    core_audit = _primitive_relation_audit(core_span[0], core_span[1], annotation_audit)
+    result = _copy_json(candidate)
+    # ``frame_span`` and the old private audit remain the v1 outer-context
+    # definition.  The explicit aliases make that definition auditable while
+    # preserving every legacy field and count.
+    result["outer_context_span"] = outer_span
+    result["outer_context_relation"] = outer_audit["classification"]
+    result["flip_core_span"] = core_span
+    result["flip_core_relation"] = core_audit["classification"]
+    result["private_annotation_audit"] = outer_audit
+    result["private_annotation_audit"]["outer_context_span"] = outer_span
+    result["private_annotation_audit"]["outer_context_relation"] = outer_audit["classification"]
+    result["private_annotation_audit"]["flip_core_span"] = core_span
+    result["private_annotation_audit"]["flip_core_relation"] = core_audit["classification"]
+    result["private_annotation_audit"]["flip_core_annotation_audit"] = core_audit
     return result
 
 
@@ -727,6 +769,12 @@ def scan_episode_rows(
             item["channel"] = channel
             all_exclusions.append(item)
         channel_results[channel] = {"runs": runs, "counts": counts}
+    outer_context_relation_counts = Counter(
+        str(candidate["outer_context_relation"]) for candidate in all_candidates
+    )
+    flip_core_relation_counts = Counter(
+        str(candidate["flip_core_relation"]) for candidate in all_candidates
+    )
     return {
         "source_identity": {
             "event_id": entry["event_id"],
@@ -746,6 +794,8 @@ def scan_episode_rows(
         "candidate_exclusions": all_exclusions,
         "candidate_count": len(all_candidates),
         "excluded_candidate_count": len(all_exclusions),
+        "outer_context_relation_counts": dict(sorted(outer_context_relation_counts.items())),
+        "flip_core_relation_counts": dict(sorted(flip_core_relation_counts.items())),
         "role": "diagnostic_candidate",
         "training_eligible": False,
         "action_bc_supervision": False,
@@ -893,6 +943,11 @@ def run_scan(
     )
     total_candidates = sum(int(episode["candidate_count"]) for episode in episode_results)
     total_exclusions = sum(int(episode["excluded_candidate_count"]) for episode in episode_results)
+    outer_context_relation_counts = Counter()
+    flip_core_relation_counts = Counter()
+    for episode in episode_results:
+        outer_context_relation_counts.update(episode["outer_context_relation_counts"])
+        flip_core_relation_counts.update(episode["flip_core_relation_counts"])
     script_root = Path(__file__).resolve().parents[2]
     return {
         "schema_version": SCHEMA_VERSION,
@@ -938,6 +993,8 @@ def run_scan(
             "total_rle_runs": total_runs,
             "candidate_count": total_candidates,
             "excluded_candidate_count": total_exclusions,
+            "outer_context_relation_counts": dict(sorted(outer_context_relation_counts.items())),
+            "flip_core_relation_counts": dict(sorted(flip_core_relation_counts.items())),
             **parquet_audit,
         },
         "episodes": episode_results,

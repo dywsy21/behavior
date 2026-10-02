@@ -139,6 +139,51 @@ def test_cross_primitive_boundary_is_retained_with_union_and_gaps():
     ]
 
 
+def test_outer_context_can_cross_while_flip_core_is_same_primitive():
+    rows = _rows([1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0])
+    annotation = {
+        "primitive_annotation": [
+            {"primitive_idx": 0, "frame_duration": [0, 3], "primitive_id": [1]},
+            {"primitive_idx": 1, "frame_duration": [3, 10], "primitive_id": [2]},
+        ]
+    }
+    result = scan_episode_rows(
+        rows,
+        _entry(length=10),
+        parse_primitive_annotation(annotation, 10),
+    )
+    candidate = result["candidates"][0]
+    private = candidate["private_annotation_audit"]
+
+    # Legacy v1 outer context is unchanged: [first A start, last A end).
+    assert candidate["frame_span"] == [0, 10]
+    assert private["candidate_span_frame_interval"] == [0, 10]
+    assert private["classification"] == "cross_primitive_boundary"
+    # The core includes the frame before the first flip, all B, and the frame
+    # after the second flip, excluding long A-side context.
+    assert candidate["flip_core_span"] == [3, 7]
+    assert candidate["flip_core_relation"] == "same_primitive"
+    assert private["outer_context_relation"] == "cross_primitive_boundary"
+    assert private["flip_core_relation"] == "same_primitive"
+    assert result["candidate_count"] == 1
+    assert result["outer_context_relation_counts"] == {"cross_primitive_boundary": 1}
+    assert result["flip_core_relation_counts"] == {"same_primitive": 1}
+    assert candidate["semantic_interpretation"] == "NOT_ASSIGNED"
+
+
+def test_flip_core_clips_cleanly_at_episode_start_and_end():
+    annotation = {"primitive_annotation": [{"primitive_idx": 0, "frame_duration": [0, 4]}]}
+    for values, expected in (([1.0, -1.0, 1.0, 1.0], [0, 3]), ([1.0, 1.0, -1.0, 1.0], [1, 4])):
+        result = scan_episode_rows(
+            _rows(values),
+            _entry(length=4),
+            parse_primitive_annotation(annotation, 4),
+        )
+        candidate = result["candidates"][0]
+        assert candidate["flip_core_span"] == expected
+        assert candidate["flip_core_relation"] == "same_primitive"
+
+
 def test_partial_annotation_is_not_silently_treated_as_same_primitive():
     annotation = {"primitive_annotation": [{"frame_duration": [1, 2], "primitive_id": [4]}]}
     audit = parse_primitive_annotation(annotation, 3)
