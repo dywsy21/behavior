@@ -22,7 +22,7 @@
 
 2026-10-02 P107本地质量校准**进行中、非新标签**：`coverage49_label_s2`仅盘点既有49 raw proposals中root32之外约17个，先向root给6个不重复的TRAIN多样case与既有causal page路径，供root postselection亲自复核；不得读取/推断agent答案、覆盖root32/raw或把库存检查称新label。`cal40_finalize_binding`的≤5min private-reader reuse/4候选侦察同为只读、无decode/label/release。root未给逐条裁决前不写任何结果；所有training/outcome/recovery/action-BC/DART继续0。
 
-2026-10-02 P107 root postselection第1条已保存：TRAIN query`4b306464…4ad6c`/event`0cbebc88…e4617` task6/frame4502的三张q043 actor-causal页由root完整查看，旁侧`root-postselection-part09.json` SHA`0e5ca2fe…9e392`绑定query/source/page bytes。root_model/human=false为UNKNOWN：tree实例、metric distance/pose和actor-visible referent不足，树可见/相机稳定均不构成SAT或NOT；attempt N/A、非FAILED/outcome/recovery/BC/DART，旧root32/raw均不覆盖。其余5条仍等root逐条裁决。
+2026-10-02 P107 root postselection第1条已保存：TRAIN query`4b306464…4ad6c`/event`0cbebc88…e4617` task6/frame4502的三张q043 actor-causal页由root完整查看，旁侧`root-postselection-part09.json` SHA`0e5ca2fe…9e392`绑定query/source/page bytes。root_model/human=false为UNKNOWN：tree实例、metric distance/pose和actor-visible referent不足，树可见/相机稳定均不构成SAT或NOT；attempt N/A、非FAILED/outcome/recovery/BC/DART，旧root32/raw均不覆盖。根对effective32直接引用的blind01–05/postselection06–08逐SHA机械核验，加入本条得到无标签的`root-reviewed-query-ids-v1.json` SHA`02bc8911…fedc2`=`33` unique query IDs，已给s2作差集；它不是E2/source-window去重或全局验收。其余5条仍等root逐条裁决。
 
 2026-10-02 P107 v2结构候选与ABA verifier**严格不兼容**：cal40确认现有`83a5…` reader仅认证8 selections/73 ABA source-result/annotation_calibration，禁止把v2的32个student_candidate GRASP pair借adapter直接塞入、伪造ABA或改role。若未来继续，只能另建versioned metadata-pair private path并从sealed source-index绑定真实event/video/global offset，复用PTS/atomic而不削弱identity；本轮不开发/不解码。v2 same-target有bare class（tile/pillow/briefcase）限制，5,945仅结构候选非同物理instance/重抓；cal40的4例是root视觉方向，不是审批/label/recovery。全门禁仍false。
 
