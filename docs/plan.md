@@ -12,6 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 17:20:38 CST（UTC09:20:38）：two-anchor private goal-state v3 **PRE_PHASE_FAILED / no decode**（Codex / P107-COORD）
+
+- v3 保留 v2 的 evidence 并改用14个 positional arguments；`bash -n`通过、foreground run 开始后已**成功**clone并 clean detached checkout=`22d83f9bd27d44c508595b5c9f79e2a197d02392`。但 launcher 的本地 raw-template 序列化又把 shell `${10}`–`${14}`误展开为文字`10`–`14`，令 protocol/release/script-SHA变量错误，第一组 checkout 后 SHA `test`静默退出`1`。completion=`.../student-goal-state-pilot-v3-20261002/completion.json`；实查三份 remote script SHA 均与审过值匹配，故这是第二个 launcher construction defect，**不是** source、protocol、phase/queue、renderer 或数据 pin 失败。
+- v3 source 保留且 clean；phase selection、annotation queue/request、questions、packets/RGB/PNG均不存在。v2/v3 fresh run/input、logs、pipeline与completion原样保留，不覆盖/删除；没有实际RGB decode、label或训练数据。本票到此停止，等待root对再次仅修launcher参数位置（可用`shift 9`避免`${10}`）的新fresh-run授权；所有 gates=false。
+
+### 2026-10-02 17:17:26 CST（UTC09:17:26）：two-anchor private goal-state v2 前台运行 **PRE_EXECUTION_FAILED**（Codex / P107-COORD）
+
+- 已以根`22d83f9bd27d44c508595b5c9f79e2a197d02392`提交的 phase-aware queue 修复，建立全新且互不覆盖的 LC3 run=`/data/workspace/wsy/behavior2026/p107/runs/student-goal-state-pilot-v2-20261002` 与 input=`/data/workspace/wsy/behavior2026/p107/inputs/student-goal-state-pilot-v2-20261002`，准备先生成两条 phase question/request seal、再前台渲染；旧`00583da`/v1 的 static fail-closed 证据没有改动。
+- 外层 launcher 变量没有 export/pass 给 `bash "$RUN/pipeline.sh"`，所以 pipeline 在第一条实际 stage 前因`line 4: SRC: unbound variable`退出`1`；completion=`.../student-goal-state-pilot-v2-20261002/completion.json`（UTC`09:17:26Z`）。实查新 frozen source=`src/p107-student-goal-state-22d83f9` **不存在**，input 没有 produced files、packet directory 不存在；无 Git clone、phase mini-index、annotation queue/request、question sidecar、RGB decode、PNG、packet、label 或训练数据。新空 run/input 与 stdout/stderr/launch evidence 原样保留；不得将此包装缺陷写作 protocol/renderer failure，也不自动在同一目录重跑。须由root另行授权 new run 的最小环境传递修正后才可继续。
+
 ### 2026-10-02 17:10 CST：two-anchor private goal-state phase-aware 修复已独审、根集成；新运行准备中（Codex / P107-COORD）
 
 - `cal40_finalize_binding` 已端到端独审批准 `928443f10f7ffc8fd1eb9deae5159a4c4ae41428`：private ENTRY=`[420]`、TERMINAL=`[420,539]` 能经 phase selector → sealed mini-index → annotation queue/request+seal → renderer reader/create_packets 真实 metadata 链路保持，不再由通用 history 参数污染。根将其两文件增量合入并推送为`22d83f9bd27d44c508595b5c9f79e2a197d02392`；本地相关 packet/queue/phase tests=`28 passed`、py_compile/ruff/diff PASS。
@@ -20,7 +30,7 @@
 ### 2026-10-02 17:00:57–17:02:21 CST（UTC09:00:57–09:02:21）：8源 single-GRASP 私有 action scan 前台实际 PASS（Codex / P107-COORD）
 
 - LC3 `a800-3` 以 new Git-only clean source=`/data/workspace/wsy/behavior2026/src/p107-single-grasp-scan-6f58dac`（root=`6f58dac3f84c1b0e9df8dae678ac359b71de4a94`、scanner SHA=`544b2deaf8c8d55c01c7f994b6e2ba95c5e5bd37e665cc7326f5b24a1b55689e`）运行；fresh input/run 分别为`p107/inputs|runs/single-grasp-action-scan-8-v1-20261002`。前台 execution shell PID=`1739754`，build exit=`0`（17:01:09）、manifest SHA=`93bc9f34c4b17cbc0e0881b3727ce99570c66aae72e528c6ab434c9e6d7bf342`，scan exit=`0`（17:02:21），1CPU/4GiB/0GPU/soft585s+kill15s合同未触限；run bytes在验收时=`42,752B`、completion log后=`42,877B`，均小于64MiB验收上限。
-- 结果=`PASS_STRUCTURAL_GRASP_SPAN_SCAN_NONTRAINABLE`：8 selected episodes完整扫描行=`160,874`、8个精确单GRASP half-open intervals=`24,731`行、8个physical Parquet containers=`1,765,809`行（计数严格分层）；每臂匿名RLE共`26`，内部结构翻转=`1`。唯一候选在ep3605/task18、event=`62a5a142…a30c8`的**right raw ch22**：frame `[16960,20446)`/`[20446,20853)`/`[20853,21827)`，dwell=`3486/407/974` frames（`116.1667/13.5333/32.4333s`），raw value sequence=`[1,-1,1]`。这仅是`A_B_A_UNNAMED`结构，**不**赋 open/close、接触/抓取、FAILED/SUCCEEDED、recovery 或 corrective BC 含义；候选出现后停止，未自动RGB解码或扩至32/full。
+- 结果=`PASS_STRUCTURAL_GRASP_SPAN_SCAN_NONTRAINABLE`：8 selected episodes完整扫描行=`160,874`、8个精确单GRASP half-open intervals=`24,731`行、8个physical Parquet containers=`1,765,809`行（计数严格分层）；每臂匿名RLE共`26`，内部结构翻转=`1`。唯一候选在ep3605/task18、event=`62a5a142…a30c8`的**right raw ch22**：frame `[16960,20446)`/`[20446,20853)`/`[20853,21827)`，raw value sequence=`[1,-1,1]`。中间半开 span 为`407/30=13.5667s`；result的`dwell_seconds_observed=13.533325s`是首帧`20446`至末观测`20852`的`406`个 timestamp interval，非矛盾或bug。该结构仅为`A_B_A_UNNAMED`，**不**赋 open/close、接触/抓取、FAILED/SUCCEEDED、recovery 或 corrective BC 含义；候选出现后停止，未自动RGB解码或扩至32/full。
 - 小型结果、manifest和stdout/stderr已逐SHA从remote只读搬回`/home/wsy/behavior-annotations/p107/grasp-span-action-scan-8-v1-20261002/`：result=`4693a2c8c094e95721be33b3213385a55a772d51c320151feb13736d559e7d1d`（37,984B）、local validation receipt=`1a8eeb669f707dfde631ad61dd65eb45b8a485e95177466ac8f03259adcdd1e3`；其逐文件remote equality、source/manifest pins和 all-false gates 已记录。未读RGB，未产生actor/label/outcome/recovery/DART/train/release artifact；下一步如需视觉核验由root另行选择，不自动执行。
 
 ### 2026-10-02 16:xx CST：single-GRASP 八源私有 action scan 已审、根集成；受限前台运行准备中（Codex / P107-COORD）
