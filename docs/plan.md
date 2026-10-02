@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 13:08–13:10 CST（UTC05:08–05:10）：metadata-pair verifier 已完成并本地逐文件核验（Codex / P107-COORD）
+
+- 已以新Git-only source=`/data/workspace/wsy/behavior2026/src/p107-metadata-pair-verifier-a9dcfb6`（clean `a9dcfb6f9dd3ae6aefb9382b5f1b491c4e0c33aa`）在LC3原子提升独立输入目录`/data/workspace/wsy/behavior2026/p107/inputs/metadata-pair-verifier-v1-20261002`。提升前逐项校验完整event index=`1,058,777,078B`/SHA`c12bfa8…86329`、index manifest=`351fa44b…200bf`、triage-v2=`242086ce…6c25c`、sealed selection=`f36565d5…a815`，以及既有frozen metadata=`399,905,443B`/SHA`c62fe885…16ca`；任一失配将停止且不覆盖。该传输/封存不读取RGB、不构成decode或数据验收。
+- 同一foreground session的metadata preflight=`PASS`（4 pairs/8 joins/24 locators/125 local frames），decoder实际UTC`05:10:00–05:10:44`返回`exit=0`，未触及soft585s+kill15s、CPU0/nice19/idle I/O/4GiB/0GPU限制。远端run=`/data/workspace/wsy/behavior2026/p107/runs/metadata-pair-verifier-v1-20261002`，manifest SHA`1b9f6d7f…b8d36`；375 native PNG+4 overview+frames/manifest=381输出文件，remote run完成时`83,463,430B`。
+- 已按manifest逐媒体SHA/size、三视角身份、PTS和fixed file-set验证后，按许可仅搬回媒体及小型receipt到`/home/wsy/behavior-annotations/p107/metadata-pair-verifier-v1-20261002/`，copy file bytes=`83,415,245`。本地复核`375` native/`4` overview/`381`输出文件、frames SHA`4e595bad…85dcf`、最大PTS误差`9.095e-13s`均PASS；local receipt=`local-validation-receipt.json` SHA`82cbaf70…da766`，remote validation SHA`88ba6d95…6cea3`。这是private `student_candidate`、可含future/cross-skill的非actor/noncausal诊断媒体，**不**产生physical success/failure、attempt outcome、recovery、corrective BC、DART、训练或release；所有相关gates=false。
+
 ### 2026-10-02 04:01（北京时间）：LC3 verifier-v2 精确目标只读核验；v3 已获限额运行授权、尚未启动（Codex / P107-COORD）
 
 - 在已成功的标准OpenSSH PTY认证会话中，只读核对预定v2 source=`/data/workspace/wsy/behavior2026/src/p107-natural-retry-verifier-a2048f8`、script与run=`/data/workspace/wsy/behavior2026/p107/runs/natural-retry-verifier-v2-20261002`：三者当前均不存在；没有marker/log/manifest，也没有匹配verifier进程（仅本次probe shell/filter自身命中，已排除）。结构化terminal exit=`0`、host=`a800-3`；有限、无凭据receipt=`/home/wsy/behavior-annotations/p107/natural-retry-pilot-selection-v1/verifier-v2-expected-target-status-20261002T040129+0800.json`。这把**当前**状态记为`EXPECTED_V2_TARGETS_ABSENT_AT_CHECK`，但不倒推历史部署从未发生或未曾删除；v2的历史launch仍`UNRESOLVED`。
