@@ -123,7 +123,7 @@ class PrivateRetryVerifierTests(unittest.TestCase):
                 "event_id": event_id,
                 "usage_role": "annotation_calibration",
                 "source": {
-                    **source_identity,
+                    **{key: value for key, value in source_identity.items() if key != "event_id"},
                     "episode_length": length,
                     "original_split": "train",
                     "source_annotation_sha256": episode["annotation_sha256"],
@@ -254,6 +254,17 @@ class PrivateRetryVerifierTests(unittest.TestCase):
                         source_result["inputs"]["release_manifest_sha256"],
                         episode["annotation_sha256"],
                     )
+
+            bad_event = json.loads(json.dumps(event))
+            bad_event["event_id"] = "0" * 64
+            with self.assertRaises(verifier.InputValidationError):
+                verifier._validate_video_locators(
+                    bad_event,
+                    episode["source_identity"],
+                    episode["length"],
+                    source_result["inputs"]["release_manifest_sha256"],
+                    episode["annotation_sha256"],
+                )
 
 
 if __name__ == "__main__":
