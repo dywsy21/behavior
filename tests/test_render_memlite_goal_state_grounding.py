@@ -265,8 +265,23 @@ class GoalStateGroundingTests(unittest.TestCase):
             {
                 "phase_lineage": {
                     "goal_query": {
+                        "binding_status": "BOUND_METADATA_NEEDS_VISUAL_CONFIRMATION",
+                        "queried_skill": {
+                            "arm": "UNSPECIFIED",
+                            "destination": "",
+                            "raw_description": "pick up from",
+                            "skill_end": 100,
+                            "skill_id": 2,
+                            "skill_start": 10,
+                            "source": "table_0",
+                            "target": "object_1",
+                            "target_part": "",
+                            "verb": "GRASP",
+                        },
                         "query_kind": "METADATA_DESCRIBED_SKILL_GOAL_RELATION",
                         "query_scope": "SAME_ORIGINAL_ANNOTATED_SEGMENT_SKILL",
+                        "source_skill_is_attempted_instruction_not_observed_outcome": True,
+                        "unknown_is_required_when_relation_or_entity_is_not_visually_grounded": True,
                     }
                 }
             },
@@ -284,8 +299,13 @@ class GoalStateGroundingTests(unittest.TestCase):
             ("candidate_rows.jsonl", lambda row: row.update({"query_id": "injected-query"})),
             ("goal_unbound_events.jsonl", lambda row: row.update({"question": "injected-question"})),
             ("goal_unbound_events.jsonl", lambda row: row.setdefault("phase_lineage", {}).update({"goal_state_question": "injected-question"})),
+            ("goal_unbound_events.jsonl", lambda row: row.setdefault("phase_lineage", {}).update({"goal_state_question_sha256": "0" * 64})),
+            ("goal_unbound_events.jsonl", lambda row: row.setdefault("phase_lineage", {}).update({"goal_state_query_registry_sha256": "0" * 64})),
             ("student_candidate_queue.jsonl", lambda row: row.update({"question": "injected-question"})),
+            ("student_candidate_queue.jsonl", lambda row: row.update({"query_registry_sha256": "0" * 64})),
             ("camera_native_render_requests.jsonl", lambda row: row.update({"placeholder": "injected-placeholder"})),
+            ("camera_native_render_requests.jsonl", lambda row: row.update({"question_sha256": "0" * 64})),
+            ("candidate_rows.jsonl", lambda row: row.update({"visual_query_ref": "injected-ref"})),
         )
         for file_name, mutate in mutations:
             with self.subTest(file_name=file_name, mutation=mutate):

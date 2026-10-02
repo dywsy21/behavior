@@ -74,6 +74,26 @@ MAX_UNIQUE_FRAMES = 64
 MAX_PNG_COUNT = MAX_UNIQUE_FRAMES * len(VIEWS)
 MAX_OUTPUT_BYTES = 32 * 1024 * 1024
 SHA256_CHARS = frozenset("0123456789abcdef")
+_CANONICAL_GOAL_QUERY_KEYS = frozenset({
+    "binding_status",
+    "queried_skill",
+    "query_kind",
+    "query_scope",
+    "source_skill_is_attempted_instruction_not_observed_outcome",
+    "unknown_is_required_when_relation_or_entity_is_not_visually_grounded",
+})
+_CANONICAL_QUERIED_SKILL_KEYS = frozenset({
+    "arm",
+    "destination",
+    "raw_description",
+    "skill_end",
+    "skill_id",
+    "skill_start",
+    "source",
+    "target",
+    "target_part",
+    "verb",
+})
 _EXPLICIT_UNBOUND_FORBIDDEN_KEYS = frozenset({
     "answer",
     "answers",
@@ -100,6 +120,16 @@ _EXPLICIT_UNBOUND_FORBIDDEN_KEYS = frozenset({
     "visual_label",
     "visual_question",
 })
+
+
+def _is_query_namespace_key(lower_key: str) -> bool:
+    tokens = set(lower_key.split("_"))
+    return (
+        "question" in tokens
+        or "placeholder" in tokens
+        or {"query", "registry"}.issubset(tokens)
+        or {"visual", "query"}.issubset(tokens)
+    )
 
 
 def _strict_json(data: bytes, *, name: str) -> Any:
@@ -182,15 +212,16 @@ def _reject_explicit_unbound_annotations(value: Any, label: str) -> None:
                 if lower_key == "goal_query":
                     if child_path != ("phase_lineage", "goal_query"):
                         raise InputValidationError(f"{label} has goal_query outside phase_lineage")
+                    if not isinstance(child, Mapping) or set(child) != _CANONICAL_GOAL_QUERY_KEYS or not isinstance(child.get("queried_skill"), Mapping) or set(child["queried_skill"]) != _CANONICAL_QUERIED_SKILL_KEYS:
+                        raise InputValidationError(f"{label} canonical goal_query structure drifted")
                     walk(child, child_path, in_goal_query=True)
                     continue
                 if lower_key in _EXPLICIT_UNBOUND_FORBIDDEN_KEYS:
                     raise InputValidationError(f"{label} contains explicit annotation field at {'.'.join(child_path)}")
-                # query_kind/query_scope are only meaningful inside the
-                # canonical metadata goal_query.  They are harmless there;
-                # a query-like field elsewhere is not accepted as provenance.
                 if lower_key in {"query_kind", "query_scope"} and not in_goal_query:
                     raise InputValidationError(f"{label} contains query metadata outside goal_query")
+                if _is_query_namespace_key(lower_key) and not (in_goal_query and lower_key in _CANONICAL_GOAL_QUERY_KEYS):
+                    raise InputValidationError(f"{label} contains query provenance namespace at {'.'.join(child_path)}")
                 walk(child, child_path, in_goal_query=in_goal_query)
         elif isinstance(node, list):
             for index, child in enumerate(node):
