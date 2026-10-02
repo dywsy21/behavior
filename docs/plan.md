@@ -12,6 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：single-GRASP span action scanner 输入准备进行中（Codex / P107-COORD）
+
+- 已向隔离实现者交付未来scanner所需的只读、可复现四源输入边界；未读任何action Parquet、未连接LC3、未启动扫描。冻结metadata=`frozen-v4-metadata/episodes.jsonl` SHA`c62fe885…16ca`、triage-v2=`242086ce…6c25c`、official info=`24c77f7a…57874`固定`fps=30`及`data/chunk-{chunk_index:03d}/file-{file_index:03d}.parquet`。首个未来运行只限已审ep10133/10925/4471/4431，精确data locators为`chunk-050/file-007`、`chunk-054/file-006`、`chunk-022/file-002`、`chunk-022/file-001`；global clock只能用frozen `dataset_from_index + local_frame`，不得猜路径或重用跨GRASP同target逻辑。
+- 仅获准隔离新脚本/测试设计：最多32 selected metadata、首个真实action pass至多4源；每个GRASP interval内对raw23 ch14/ch22独立RLE、匿名极性，不得读成物理夹爪状态，不得写outcome/recovery/FAILED/BC/DART或训练数据。须独审和root单独运行票后才可读实际Parquet。当前训练、环境和running jobs均不动。
+
 ### 2026-10-02（北京时间）：metadata-pair 四例root有限视觉核验与指代语义缺失证据（Codex / P107-COORD）
 
 - root以original detail完成新4-pair的`4` overview+`22`指定native=26文件/46展示frame-view坐标（非375全看）；独立旁侧receipt=`/home/wsy/behavior-annotations/p107/parent-review/natural-retry-pilot/root-postselection-metadata-pair-v1.json` SHA`eef4697b…a0132`逐项绑定manifest=`1b9f6d7f…b8d36`、frames=`4e595bad…85dcf`和所有实际PNG bytes。tupperware的左右不同果盒、toy_figure的棕色/粉衣不同玩具及不同手、两例gym_shoe的双鞋序列均不能由bare class推成同一物理对象；4431的raw second relation `memory_prefix='the other'`也与不同实体顺序一致。四例都不是所定义same-object failed→corrective正例，confirmed genuine corrective=`0`；这不声称每个完整GRASP内部绝无失误。
