@@ -12,6 +12,36 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02 17:48:47–17:48:48 CST（UTC09:48:47–09:48:48）：two-anchor private goal-state v9 **PRIVATE_MEDIA_PASS / no labels**（Codex / P107-COORD）
+
+- v9是原批准的首次2-event/6-unique-PNG处理；只读复用v5 phase/queue/request和v6 sealed questions/preflight，fresh run=`/data/workspace/wsy/behavior2026/p107/runs/student-goal-state-pilot-v9-20261002`。启动前确认clean Git source=`22d83f9…2392`、v8 static glue SHA=`af4b1a5e…737cd7`、v6 preflight manifest=`e42fee89…780d27`及**v5 parameter-roundtrip所记录**parent=`p107/inputs/student-goal-state-pilot-v1-20261002/parent-index`的 protocol file SHA=`7f4f…aab0c`；此前把v5 input目录误作parent导致的v8 CLI path fail已保留。
+- 前台`taskset -c 0 nice19 ionice idle timeout --foreground 585s+kill15s`实际exit=`0`，remote run=`1,484,435B`。renderer resume与独立本地gate均通过：2 packet、schedules=`[420]`/`[420,539]`、9 ACTOR_CAUSAL asset receipts、6 unique native PNG、9 decoded PTS receipt、identity/queue/request pins及no-future全通过，`training_eligible=false`。小产物及v6 sealed question/event sidecar已逐SHA搬回`/home/wsy/behavior-annotations/p107/student-goal-state-pilot-v9-20261002/`；local validation receipt SHA=`53389c9a27e3f02220a2f7b7a5d31df6659471682878bc9d44f5fd163e7c8575`。
+- 以Pillow RGBA逐像素比较frames420/539 × head/left/right的6张new PNG与已认证metadata-pair private reader，6/6 exact pixel-equal（PNG byte equality不作为假设），排除double-offset locator shift。此是private diagnostic actor-causal media/queries，**尚无**人工或模型label、attempt outcome、recovery、corrective BC、DART、release或训练准入；all gates=false。v2/v3/v4/v7/v8均是pre-decode wrapper/pin/path失败，不能算decoder失败，v5/v6的sealed partial outputs继续保留。
+
+### 2026-10-02 17:45:51 CST（UTC09:45:51）：two-anchor private goal-state v8 **RENDERER_PATH_FAILED / no RGB decode**（Codex / P107-COORD）
+
+- v8 schema-correct reuse guard及v6 preflight resume到renderer CLI；其 protocol path却错误指向 v5 sidecar directory，CLI正确拒绝`P107 protocol must be a regular file`并exit=`2`，未进入decode。v5 preserved `parameter-roundtrip.txt`确认受认证parent实际是`student-goal-state-pilot-v1-20261002/parent-index`，其`protocol/memlite_event_protocol.py`已逐SHA验证为完整`7f4f…aab0c`；故v9仅替换该已认证路径，不改source/renderer/data/旧seals。
+
+### 2026-10-02 17:42:21 CST（UTC09:42:21）：two-anchor private goal-state v7 **PRE_RENDER_WRAPPER_FAILED / no RGB decode**（Codex / P107-COORD）
+
+- v7 正确复用 v6 的实际`preflight-packets/manifest.json`，并通过 frozen source、script、mini-index/request/queue 及 v6 preflight manifest guards；但 wrapper 自己的 reuse checker 错把 sealed packet top-level 当作有`event_id`，真实 schema 的 ID 在`actor_packet.event_id`。因此该 checker 在 preflight resume 或`RGB_RENDER`前`KeyError: 'event_id'`退出`1`；v7只有72B stdout/135B stderr，没有`packets/`、PNG、label或decoder process。
+- v7证据原样保留。已从实际 sealed v6 `questions.jsonl`/`packets.jsonl`读取字段并将 v8 wrapper 改为 schema-correct `actor_packet.event_id`及 renderer `--resume` authority检查；本地`bash -n`、17参数roundtrip与固定 renderer unit tests=`14 passed`（须`PYTHONPATH=/home/wsy/behavior/src`）通过。此仍是静态 glue-only 修复，不修改已审 renderer/source或 v5/v6 seal，all gates=false。
+
+### 2026-10-02 17:36:15 CST（UTC09:36:15）：two-anchor private goal-state v6 **PRE_RENDER_WRAPPER_FAILED / no RGB decode**（Codex / P107-COORD）
+
+- v6 从 v5 已封存且只读复用的 phase mini-index/annotation queue/request 继续；SOURCE/sidecar guards 与两条问题 seal 均通过。实际 `METADATA_PACKET_PREFLIGHT` 写出2个 nontrain packets（frame schedules=`[420]`、`[420,539]`，`LOCATORS_READY_RENDER_PENDING`，无 decode/no assets），其上游 sealed mini manifest=`2a5c425c…407ea0`、request SHA=`7fcba3ed…d0c8bc`、queue seal=`c5b881f…c8a5f6`均保留。
+- foreground completion 确认 exit=`1`：static wrapper 错将 renderer 实际写出的`preflight-packets/manifest.json`称为`packet_manifest.json`，`sha256sum` fail-closed；stderr=`No such file or directory`，因此从未进入`RGB_RENDER`。run=`/data/workspace/wsy/behavior2026/p107/runs/student-goal-state-pilot-v6-20261002`保留 stdout/stderr/completion/questions/preflight 原字节；`packets/`、PNG、label、actor packet和训练数据均不存在，all gates=false。已定位为 wrapper filename glue，不是 sealed input、renderer metadata 或数据契约失败；下一步仅可 fresh run 更正该静态文件名后再作原批准的2-event/6-PNG前台 decode。
+
+### 2026-10-02 17:xx CST：two-anchor private goal-state v5 **PHASE/QUEUE SEALED; renderer continuation pending**（Codex / P107-COORD）
+
+- 已对所有 v5 参数做一次性本地 preflight：fixed Git root 是40位`22d83f9bd27d44c508595b5c9f79e2a197d02392`；3个 source blob SHA及 parent manifest/inventory/protocol/coverage/release/event/source-group SHA均为完整64位并与机器读取的 immutable content 对照（receipt=`/home/wsy/behavior-annotations/p107/two-goal-state-v5-pins.json` SHA`cf57d15b…c3f99`）。v4发现的protocol transcribe 缺尾`c`被保留为失败证据，v5只使用完整`7f4f9fbf18fb4ba6ec97a304f0d787ebadb4f84c7184dd041c99027ad84aab0c`。
+- v5 复用已验 clean frozen source，fresh input/run=`p107/inputs|runs/student-goal-state-pilot-v5-20261002`。它已实际写出并封存 phase mini-index、annotation queue/request；非成功媒体/训练结论。v6只读复用这些输出，未修改 v5 原字节。
+
+### 2026-10-02 17:27:21 CST（UTC09:27:21）：two-anchor private goal-state v4 **PHASE_PIN_FAILED / no decode**（Codex / P107-COORD）
+
+- v4 static launcher=`/home/wsy/behavior-annotations/p107/two-goal-state-v4-pipeline.sh`（SHA`a16b7e6a…3efed`）经过`bash -n`以及14个独立 sentinel 与实际非秘密参数的 exact roundtrip 后运行；复用 v3 的 clean frozen source root=`22d83f9bd27d44c508595b5c9f79e2a197d02392`，不再clone或改动 source。SOURCE_GUARDS通过并实际进入`PIPELINE_STAGE=PHASE_SELECTION`，所以 v2/v3 的变量传递问题已被定位修复。
+- phase loader fail-closed：此前转述的 legacy protocol SHA`7f4f9fbf18fb4ba6ec97a304f0d787ebadb4f84c7184dd041c99027ad84aab0`只有`63`字符，故拒绝`--expected-protocol-sha256 must be a lowercase SHA-256`。对已pin的 parent protocol 只读重算，实际完整SHA=`7f4f9fbf18fb4ba6ec97a304f0d787ebadb4f84c7184dd041c99027ad84aab0c`。v4 run/input、stdout/stderr/completion及launcher evidence保留；phase output、queue/request、questions、RGB/PNG/packet、label与训练数据仍均不存在。停止等待root授权以完整已实证 pin 的 fresh run 再试，不能手工绕过protocol gate。
+
 ### 2026-10-02 17:20:38 CST（UTC09:20:38）：two-anchor private goal-state v3 **PRE_PHASE_FAILED / no decode**（Codex / P107-COORD）
 
 - v3 保留 v2 的 evidence 并改用14个 positional arguments；`bash -n`通过、foreground run 开始后已**成功**clone并 clean detached checkout=`22d83f9bd27d44c508595b5c9f79e2a197d02392`。但 launcher 的本地 raw-template 序列化又把 shell `${10}`–`${14}`误展开为文字`10`–`14`，令 protocol/release/script-SHA变量错误，第一组 checkout 后 SHA `test`静默退出`1`。completion=`.../student-goal-state-pilot-v3-20261002/completion.json`；实查三份 remote script SHA 均与审过值匹配，故这是第二个 launcher construction defect，**不是** source、protocol、phase/queue、renderer 或数据 pin 失败。
