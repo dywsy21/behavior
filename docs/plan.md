@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-02（北京时间）：P107-NATURAL-ACTION-PROBE-v1 完成；8个官方TRAIN episodes证实动作/时钟合同，但未发现天然重抓结构（Codex / P107-COORD）
+
+- 经root批准，Codex以`fdd1cfeb1064fea98cc3934832fbc4dcbab40473`在LC3既有只读g05 Python完成至多8个已认证`TRAIN`/`annotation_calibration` source episodes的前台探针。无视频读取、无标签/训练/发布/DART记录、无GPU/robo/lc1/lc2/shared-env动作；正式分析为CPU0、nice19、BLAS/OMP=1、0GPU、4GiB virtual-memory cap，5.77秒。receipt=`/home/wsy/behavior-annotations/p107/natural-action-probe-v1/receipt.json` SHA`e1c6b41fd253051a65172c088bff8d54b0b221c9d94719d27d1d662f435b61a6`。
+- 官方`meta/info.json` SHA`24c77f7a…57874`证实当前snapshot `action=float32[23]`、`observation.state=float32[61]`。8/8 Parquet rows、task ID、global `[dataset_from,dataset_to)` index均与冻结metadata相符；frame为`0..length-1`、严格+1，timestamp严格递增且步长约1/30秒。真实annotation使用`primitive_annotation.frame_duration=[start,end)`；terminal `end=length`是合法边界，不可误作inclusive frame mismatch。
+- embodiment命名来源是`configs/data/behavior5_r1pro_memlite.yaml:3-8,22-88`：`base_qvel(3)|trunk_qpos(4)|left_arm(7)|left_gripper(1)|right_arm(7)|right_gripper(1)`，shape-meta认证command components 14/22与state gripper raw spans24–25/49–50。探针只观察到command为±1（episode1941左侧恒+1）和state raw block约0..0.05；**未**推断open/close polarity、单位、接触或物理夹持。
+- 严格候选规则只统计同一`primitive_annotation`内同一已认证gripper command component的连续常值run `A→B→A`（不为A/B命名）。8episodes候选为**0**。`next.terminated`均为episode尾部连续tail、`next.truncated=false`且reward稀疏，均不作为local outcome；零候选同样不代表没有重抓/失败/恢复。当前停止，不自动扩大；未来候选miner必须另经审查，以target/primitive连续性和后续因果RGB人工验证，仍不得把命令、重复演示、reward或terminal改写为recovery/正BC。
+- `cal40_finalize_binding`并行只读结论同样不支持修订现有问题：effective UNKNOWN中22条`skill.arm=UNSPECIFIED`、actor question context为空、仅5时刻×3RGB且`actual_executed_length=null`。因此无条目可仅凭现有证据安全改S/N；GRASP/open-close需更早的目标referent与接触/门框证据，NAVIGATE/next-to/PUSH/HANDOVER/SWEEP继续停止派发欠定义问题。P10.7的10k/1k、actual corrective与live DART仍为0。
+
 ### 2026-10-02 07:48（北京时间）：coverage49 的32条 root-model 复核完成有限诊断验收；语义质量不放行、训练与DART仍为零（Codex / P107-COORD）
 
 - `cal40_finalize_binding`独立只读核验当前**32个不同**root-reviewed query 的registry identity、source/group/frame、causal-page bytes/frame与全部候选门禁均PASS。有效当前可见关系计数为`1 SATISFIED / 8 NOT_SATISFIED / 23 UNKNOWN`，轻量汇总为`/home/wsy/behavior-annotations/p107/parent-review/coverage-cohort-next-v1/root-effective32-diagnostic-summary.json` SHA`f340ceebadef687a2beb1a24e225127b39e88bc21933ee69fe507adf51b8e726`。它由blind17加上15条未盲审raw非UNKNOWN的postselection复核构成；q023不是第33条，而是blind中一条的后续独立身份/几何仲裁，effective判断为UNKNOWN。
