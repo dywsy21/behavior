@@ -30,7 +30,9 @@ from .common import RecoveryContractError, canonical_json, canonical_sha256, req
 from .dart_collection import (
     AppliedActionReceipt,
     CandidateSourceReceipt,
+    canonical_native_raw23_float32,
     DartObservation,
+    native_raw23_float32_sha256,
     OutcomeEvidenceReceipt,
     RuntimeSessionReceipt,
     TeacherCommand,
@@ -41,7 +43,7 @@ from .dart_collection import (
 
 BUNDLE_SCHEMA = "p107_dart_episode_bundle_v1"
 TRANSITION_SCHEMA = "p107_dart_transition_v1"
-ACTOR_PROJECTION_SCHEMA = "p107_dart_actor_projection_v1"
+ACTOR_PROJECTION_SCHEMA = "p107_dart_actor_projection_v2"
 PRIVATE_STATUS = "PRIVATE_DART_DIAGNOSTIC_ONLY"
 REQUIRED_VIEWS = ("head", "left_wrist", "right_wrist")
 COLLECTION_MODE_ORIGINAL_GAUSSIAN = "original_gaussian_clean_intended_feedback"
@@ -66,6 +68,10 @@ _FORBIDDEN_ACTOR_KEYS = frozenset(
         "applied23",
         "requested_noisy23",
         "sampled_noise23",
+        "requested_native23",
+        "native_action_wire_dtype",
+        "requested_native_action_bytes_sha256",
+        "intent_bundle_id",
     }
 )
 
@@ -84,6 +90,62 @@ def _nonempty_text(value: Any, field: str) -> str:
     if not isinstance(value, str) or not value:
         raise RecoveryContractError(f"{field} must be nonempty text")
     return value
+
+
+def _expected_requested_noisy23(clean: Sequence[float], sampled: Sequence[float]) -> tuple[float, ...]:
+    """Mirror the collectors' native Python-float clean-plus-noise operation."""
+
+    clean_values = validate_raw23_action(clean)
+    sampled_values = validate_raw23_action(sampled)
+    return tuple(clean_values[index] + sampled_values[index] for index in range(23))
+
+
+def _validate_transition_action_semantics(
+    *,
+    label_kind: str,
+    clean: Sequence[float],
+    requested: Sequence[float],
+    sampled: Sequence[float],
+    requested_native: Sequence[float],
+    requested_native_action_bytes_sha256: str,
+    applied: Sequence[float],
+    applied_action_bytes_sha256: str,
+) -> None:
+    clean_values = tuple(validate_raw23_action(clean))
+    requested_values = tuple(validate_raw23_action(requested))
+    sampled_values = tuple(validate_raw23_action(sampled))
+    applied_values = tuple(validate_raw23_action(applied))
+    requested_native_values = canonical_native_raw23_float32(requested_native)
+    if requested_native_values != tuple(float(value) for value in requested_native):
+        raise RecoveryContractError("requested_native23 must be canonical float32 wire values")
+    expected_native = canonical_native_raw23_float32(requested_values)
+    if requested_native_values != expected_native:
+        raise RecoveryContractError("requested_native23 does not match float32(requested_noisy23)")
+    applied_native_values = canonical_native_raw23_float32(applied_values)
+    if applied_native_values != applied_values:
+        raise RecoveryContractError("applied23 must be canonical float32 wire values")
+    require_sha256(requested_native_action_bytes_sha256, field="requested_native_action_bytes_sha256")
+    require_sha256(applied_action_bytes_sha256, field="applied_action_bytes_sha256")
+    if requested_native_action_bytes_sha256 != native_raw23_float32_sha256(requested_native_values):
+        raise RecoveryContractError("requested_native_action_bytes_sha256 does not match canonical native request bytes")
+    if applied_action_bytes_sha256 != native_raw23_float32_sha256(applied_native_values):
+        raise RecoveryContractError("applied_action_bytes_sha256 does not match canonical applied bytes")
+    if applied_native_values != requested_native_values:
+        raise RecoveryContractError("applied23 must equal the canonical requested_native23 action")
+    clean_native_values = canonical_native_raw23_float32(clean_values)
+    if requested_values != _expected_requested_noisy23(clean_values, sampled_values):
+        raise RecoveryContractError(
+            "requested_noisy23 must equal clean_intended23 plus sampled_noise23 using collector float precision"
+        )
+    if label_kind == "dart_inspired_actual_clean_recovery":
+        if any(value != 0.0 for value in sampled_values):
+            raise RecoveryContractError("clean recovery step must carry zero sampled noise")
+        if applied_native_values != clean_native_values:
+            raise RecoveryContractError("clean recovery step applied action is not the fresh teacher action")
+        if requested_native_values != clean_native_values:
+            raise RecoveryContractError("clean recovery wire request does not equal the fresh teacher action")
+    elif label_kind == "dart_inspired_noisy_injection" and applied_native_values == clean_native_values:
+        raise RecoveryContractError("noisy injection step did not perturb the applied action")
 
 
 def _png_info(payload: bytes) -> tuple[int, int]:
@@ -225,12 +287,15 @@ class ActorObservation:
     policy_clock: int
     assets: Mapping[str, RGBAsset]
     proprioception: Sequence[float] | None = None
+    proprioception_schema_sha256: str | None = None
 
     def __post_init__(self) -> None:
         if type(self.policy_clock) is not int or self.policy_clock < 0:
             raise RecoveryContractError("actor observation policy_clock must be a nonnegative integer")
         if not isinstance(self.assets, Mapping) or set(self.assets) != set(REQUIRED_VIEWS):
             raise RecoveryContractError(f"actor observation must contain exactly {REQUIRED_VIEWS}")
+        if self.proprioception_schema_sha256 is not None:
+            require_sha256(self.proprioception_schema_sha256, field="proprioception_schema_sha256")
         seen_camera_keys: set[str] = set()
         normalized: dict[str, RGBAsset] = {}
         for view in REQUIRED_VIEWS:
@@ -252,7 +317,11 @@ class ActorObservation:
                 raise RecoveryContractError("actor proprioception must be a finite numeric sequence") from exc
             if not values:
                 raise RecoveryContractError("actor proprioception cannot be empty")
+            if self.proprioception_schema_sha256 is None:
+                raise RecoveryContractError("actor proprioception requires an explicit schema SHA-256 pin")
             object.__setattr__(self, "proprioception", values)
+        elif self.proprioception_schema_sha256 is not None:
+            raise RecoveryContractError("a proprioception schema pin requires a proprioception vector")
         object.__setattr__(self, "assets", normalized)
 
     def public(self, *, paths: Mapping[str, str]) -> dict[str, Any]:
@@ -260,6 +329,7 @@ class ActorObservation:
             "policy_clock": self.policy_clock,
             "rgb": {view: self.assets[view].descriptor(relative_path=paths[view]) for view in REQUIRED_VIEWS},
             "proprioception": None if self.proprioception is None else list(self.proprioception),
+            "proprioception_schema_sha256": self.proprioception_schema_sha256,
             "actor_visible": True,
             "privileged_state_included": False,
         }
@@ -328,11 +398,14 @@ class DartEpisodeStep:
     teacher_command: TeacherCommand
     requested_noisy23: Sequence[float]
     sampled_noise23: Sequence[float]
+    requested_native23: Sequence[float]
+    requested_native_action_bytes_sha256: str
     applied: AppliedActionReceipt
     post_observation: DartObservation
     post_actor_observation: ActorObservation
     clock: StepClock
     label_kind: str = "dart_inspired_actual_clean_recovery"
+    native_action_wire_dtype: str = "float32_le"
 
     def __post_init__(self) -> None:
         if type(self.step_index) is not int or self.step_index < 0:
@@ -363,8 +436,26 @@ class DartEpisodeStep:
             raise RecoveryContractError("step label_kind must preserve the existing DART candidate kind")
         requested = tuple(validate_raw23_action(self.requested_noisy23))
         sampled = tuple(validate_raw23_action(self.sampled_noise23))
+        requested_native = tuple(validate_raw23_action(self.requested_native23))
+        require_sha256(
+            self.requested_native_action_bytes_sha256,
+            field="requested_native_action_bytes_sha256",
+        )
+        if self.native_action_wire_dtype != "float32_le":
+            raise RecoveryContractError("native_action_wire_dtype must be float32_le")
         object.__setattr__(self, "requested_noisy23", requested)
         object.__setattr__(self, "sampled_noise23", sampled)
+        object.__setattr__(self, "requested_native23", requested_native)
+        _validate_transition_action_semantics(
+            label_kind=self.label_kind,
+            clean=self.teacher_command.clean_intended23,
+            requested=requested,
+            sampled=sampled,
+            requested_native=requested_native,
+            requested_native_action_bytes_sha256=self.requested_native_action_bytes_sha256,
+            applied=self.applied.applied23,
+            applied_action_bytes_sha256=self.applied.applied_action_bytes_sha256,
+        )
         if self.applied.status != "APPLIED":
             raise RecoveryContractError("episode bundle requires an actually APPLIED noisy action")
         if self.pre_actor_observation.policy_clock != self.pre_observation.policy_clock:
@@ -399,6 +490,7 @@ class DartEpisodeBundle:
     run_provenance: RunProvenance
     steps: tuple[DartEpisodeStep, ...]
     outcome_evidence: OutcomeEvidenceReceipt | None = None
+    public_causal_instruction: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.source, CandidateSourceReceipt):
@@ -412,6 +504,8 @@ class DartEpisodeBundle:
         if not isinstance(self.run_provenance, RunProvenance):
             raise RecoveryContractError("bundle run_provenance must be RunProvenance")
         _nonempty_text(self.intent_bundle_id, "intent_bundle_id")
+        if self.public_causal_instruction is not None:
+            _nonempty_text(self.public_causal_instruction, "public_causal_instruction")
         if self.collection_mode not in _ALLOWED_COLLECTION_MODES:
             raise RecoveryContractError("bundle collection_mode must preserve an existing DART mode")
         if self.label_kind not in {
@@ -449,18 +543,26 @@ class DartEpisodeBundle:
                 raise RecoveryContractError("bundle step indices must be contiguous from zero")
             if step.teacher_command.intent_bundle_id != self.intent_bundle_id:
                 raise RecoveryContractError("teacher intent bundle does not match episode intent")
-            if self.collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN and tuple(step.applied.applied23) != tuple(step.requested_noisy23):
+            if self.collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN and (
+                tuple(step.applied.applied23) != tuple(step.requested_native23)
+                or step.applied.applied_action_bytes_sha256 != step.requested_native_action_bytes_sha256
+            ):
                 raise RecoveryContractError(
                     "original Gaussian bundle cannot claim exact requested execution after runtime clipping"
                 )
             if self.collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN and step.label_kind != "dart_clean_supervisor_feedback":
                 raise RecoveryContractError("original Gaussian bundle cannot contain a bounded-DART step kind")
+            if self.collection_mode == COLLECTION_MODE_BOUNDED_ACTUAL and step.label_kind == "dart_clean_supervisor_feedback":
+                raise RecoveryContractError("bounded DART bundle cannot relabel a step as original clean feedback")
             if index and (
                 step.pre_observation.policy_clock != self.steps[index - 1].post_observation.policy_clock
                 or step.pre_observation.observation_sha256 != self.steps[index - 1].post_observation.observation_sha256
                 or step.clock.simulation_tick_start != self.steps[index - 1].clock.simulation_tick_end
             ):
                 raise RecoveryContractError("episode transitions are not causally linked at the observed boundary")
+            for actor_observation in (step.pre_actor_observation, step.post_actor_observation):
+                if actor_observation.proprioception is not None and actor_observation.proprioception_schema_sha256 != self.run_provenance.actor_observation_schema_sha256:
+                    raise RecoveryContractError("actor proprioception schema pin does not match run provenance")
         step_kinds = {step.label_kind for step in self.steps}
         if self.label_kind == "mixed":
             if self.collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN or len(step_kinds) < 2:
@@ -507,7 +609,7 @@ class ActorProjection:
     rgb_by_view: Mapping[str, bytes]
     proprioception: tuple[float, ...] | None
     clean_intended23: tuple[float, ...]
-    intent_bundle_id: str
+    public_causal_instruction: str | None
 
 
 class LoadedDartEpisodeBundle:
@@ -544,7 +646,7 @@ class LoadedDartEpisodeBundle:
                 else tuple(float(value) for value in projection["proprioception"])
             ),
             clean_intended23=tuple(float(value) for value in projection["bc_target_clean_intended23"]),
-            intent_bundle_id=projection["intent_bundle_id"],
+            public_causal_instruction=projection["public_causal_instruction"],
         )
 
     def inspect(self) -> dict[str, Any]:
@@ -616,6 +718,9 @@ def _action_binding_sha256(step: DartEpisodeStep) -> str:
         {
             "requested_noisy23": list(step.requested_noisy23),
             "sampled_noise23": list(step.sampled_noise23),
+            "requested_native23": list(step.requested_native23),
+            "native_action_wire_dtype": step.native_action_wire_dtype,
+            "requested_native_action_bytes_sha256": step.requested_native_action_bytes_sha256,
             "applied23": list(step.applied.applied23),
             "pre_policy_clock": step.pre_observation.policy_clock,
             "post_policy_clock": step.post_observation.policy_clock,
@@ -625,7 +730,24 @@ def _action_binding_sha256(step: DartEpisodeStep) -> str:
     )
 
 
-def _transition_row(step: DartEpisodeStep, *, intent_bundle_id: str) -> tuple[dict[str, Any], dict[str, bytes]]:
+def _transition_binding_sha256(step: DartEpisodeStep) -> str:
+    """Bind the post-observation digest to the actual action receipt and ticks."""
+
+    return canonical_sha256(
+        {
+            "pre_observation_sha256": step.pre_observation.observation_sha256,
+            "post_observation_sha256": step.post_observation.observation_sha256,
+            "pre_simulation_tick": step.clock.simulation_tick_start,
+            "post_simulation_tick": step.clock.simulation_tick_end,
+            "raw23_wire_sha256": step.applied.applied_action_bytes_sha256,
+            "runtime_step_receipt_sha256": step.applied.runtime_step_receipt_sha256,
+        }
+    )
+
+
+def _transition_row(
+    step: DartEpisodeStep, *, public_causal_instruction: str | None
+) -> tuple[dict[str, Any], dict[str, bytes]]:
     pre_paths = _asset_paths(step.step_index, "pre")
     post_paths = _asset_paths(step.step_index, "post")
     assets: dict[str, bytes] = {}
@@ -643,8 +765,12 @@ def _transition_row(step: DartEpisodeStep, *, intent_bundle_id: str) -> tuple[di
         "teacher": _teacher_public(step.teacher_command),
         "requested_noisy23": list(step.requested_noisy23),
         "sampled_noise23": list(step.sampled_noise23),
+        "requested_native23": list(step.requested_native23),
+        "native_action_wire_dtype": step.native_action_wire_dtype,
+        "requested_native_action_bytes_sha256": step.requested_native_action_bytes_sha256,
         "applied": _applied_public(step.applied),
         "action_binding_sha256": _action_binding_sha256(step),
+        "transition_binding_sha256": _transition_binding_sha256(step),
         "clock": step.clock.public(),
         "actor_projection": {
             "schema": ACTOR_PROJECTION_SCHEMA,
@@ -658,10 +784,10 @@ def _transition_row(step: DartEpisodeStep, *, intent_bundle_id: str) -> tuple[di
                 else list(step.pre_actor_observation.proprioception)
             ),
             "bc_target_clean_intended23": list(step.teacher_command.clean_intended23),
-            "intent_bundle_id": intent_bundle_id,
             "future_excluded": True,
             "privileged_state_excluded": True,
             "outcome_excluded": True,
+            "public_causal_instruction": public_causal_instruction,
         },
     }
     return row, assets
@@ -712,7 +838,9 @@ def write_episode_bundle(output: Path, bundle: DartEpisodeBundle) -> BundleRecei
     try:
         records: list[dict[str, Any]] = []
         for step in bundle.steps:
-            row, assets = _transition_row(step, intent_bundle_id=bundle.intent_bundle_id)
+            row, assets = _transition_row(
+                step, public_causal_instruction=bundle.public_causal_instruction
+            )
             records.append(row)
             for relative, payload in assets.items():
                 path = _safe_relative_path(staging, relative)
@@ -801,17 +929,37 @@ def _validate_serialized_row(row: Mapping[str, Any], *, manifest: Mapping[str, A
     post_clock = post.get("policy_clock")
     if type(pre_clock) is not int or type(post_clock) is not int or post_clock <= pre_clock:
         raise RecoveryContractError("bundle transition policy clocks are invalid")
-    for action_name in ("requested_noisy23", "sampled_noise23"):
+    for action_name in ("requested_noisy23", "sampled_noise23", "requested_native23"):
         validate_raw23_action(row.get(action_name))
+    if row.get("native_action_wire_dtype") != "float32_le":
+        raise RecoveryContractError("serialized native_action_wire_dtype must be float32_le")
+    require_sha256(
+        row.get("requested_native_action_bytes_sha256"),
+        field="serialized requested_native_action_bytes_sha256",
+    )
     applied = row.get("applied")
     if not isinstance(applied, Mapping) or applied.get("status") != "APPLIED":
         raise RecoveryContractError("bundle transition does not contain an APPLIED receipt")
     validate_raw23_action(applied.get("applied23"))
-    if collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN and applied["applied23"] != row["requested_noisy23"]:
-        raise RecoveryContractError("original Gaussian serialized transition records runtime clipping")
-    teacher = row.get("teacher")
-    if not isinstance(teacher, Mapping) or teacher.get("observed_policy_clock") != pre_clock:
+    if not isinstance(teacher := row.get("teacher"), Mapping) or teacher.get("observed_policy_clock") != pre_clock:
         raise RecoveryContractError("serialized teacher receipt is not bound to pre-action clock")
+    _validate_transition_action_semantics(
+        label_kind=label_kind,
+        clean=teacher.get("clean_intended23"),
+        requested=row.get("requested_noisy23"),
+        sampled=row.get("sampled_noise23"),
+        requested_native=row.get("requested_native23"),
+        requested_native_action_bytes_sha256=row.get("requested_native_action_bytes_sha256"),
+        applied=applied.get("applied23"),
+        applied_action_bytes_sha256=applied.get("applied_action_bytes_sha256"),
+    )
+    if collection_mode == COLLECTION_MODE_BOUNDED_ACTUAL and label_kind == "dart_clean_supervisor_feedback":
+        raise RecoveryContractError("bounded DART serialized transition is relabelled as original clean feedback")
+    if collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN and (
+        applied["applied23"] != row["requested_native23"]
+        or applied["applied_action_bytes_sha256"] != row["requested_native_action_bytes_sha256"]
+    ):
+        raise RecoveryContractError("original Gaussian serialized transition records runtime clipping")
     projection = row.get("actor_projection")
     if not isinstance(projection, Mapping) or projection.get("schema") != ACTOR_PROJECTION_SCHEMA:
         raise RecoveryContractError("serialized actor projection has an unknown schema")
@@ -819,6 +967,11 @@ def _validate_serialized_row(row: Mapping[str, Any], *, manifest: Mapping[str, A
         raise RecoveryContractError("serialized actor projection is not bound to current pre-action state")
     if projection.get("future_excluded") is not True or projection.get("privileged_state_excluded") is not True:
         raise RecoveryContractError("serialized actor projection must explicitly exclude future/privileged state")
+    if "public_causal_instruction" not in projection:
+        raise RecoveryContractError("serialized actor projection is missing public causal conditioning field")
+    public_instruction = projection.get("public_causal_instruction")
+    if public_instruction is not None:
+        _nonempty_text(public_instruction, "actor_projection.public_causal_instruction")
     _reject_forbidden_actor_content(projection)
     for phase in ("pre_actor_observation", "post_actor_observation"):
         actor = row.get(phase)
@@ -841,6 +994,18 @@ def _validate_serialized_row(row: Mapping[str, Any], *, manifest: Mapping[str, A
                 raise RecoveryContractError("serialized RGB descriptor disagrees with manifest file receipt")
         if len(set(camera_keys)) != len(camera_keys):
             raise RecoveryContractError("serialized RGB descriptors reuse a camera key")
+        proprioception = actor.get("proprioception")
+        proprioception_schema = actor.get("proprioception_schema_sha256")
+        if proprioception is None:
+            if proprioception_schema is not None:
+                raise RecoveryContractError("serialized actor schema pin has no proprioception vector")
+        else:
+            if not isinstance(proprioception, list) or not proprioception:
+                raise RecoveryContractError("serialized actor proprioception must be a nonempty list")
+            require_sha256(proprioception_schema, field="serialized proprioception_schema_sha256")
+            run_provenance = manifest.get("run_provenance")
+            if not isinstance(run_provenance, Mapping) or proprioception_schema != run_provenance.get("actor_observation_schema_sha256"):
+                raise RecoveryContractError("serialized proprioception schema pin disagrees with run provenance")
     clock = row.get("clock")
     if not isinstance(clock, Mapping) or type(clock.get("simulation_tick_start")) is not int:
         raise RecoveryContractError("serialized transition is missing simulation tick clock")
@@ -850,6 +1015,9 @@ def _validate_serialized_row(row: Mapping[str, Any], *, manifest: Mapping[str, A
         {
             "requested_noisy23": row["requested_noisy23"],
             "sampled_noise23": row["sampled_noise23"],
+            "requested_native23": row["requested_native23"],
+            "native_action_wire_dtype": row["native_action_wire_dtype"],
+            "requested_native_action_bytes_sha256": row["requested_native_action_bytes_sha256"],
             "applied23": applied["applied23"],
             "pre_policy_clock": pre_clock,
             "post_policy_clock": post_clock,
@@ -859,6 +1027,18 @@ def _validate_serialized_row(row: Mapping[str, Any], *, manifest: Mapping[str, A
     )
     if row.get("action_binding_sha256") != expected_action_binding:
         raise RecoveryContractError("serialized action binding SHA-256 does not match controls and clocks")
+    expected_transition_binding = canonical_sha256(
+        {
+            "pre_observation_sha256": pre["observation_sha256"],
+            "post_observation_sha256": post["observation_sha256"],
+            "pre_simulation_tick": clock["simulation_tick_start"],
+            "post_simulation_tick": clock["simulation_tick_end"],
+            "raw23_wire_sha256": applied["applied_action_bytes_sha256"],
+            "runtime_step_receipt_sha256": applied["runtime_step_receipt_sha256"],
+        }
+    )
+    if row.get("transition_binding_sha256") != expected_transition_binding:
+        raise RecoveryContractError("serialized transition binding does not cover post observation and action receipt")
 
 
 def load_bundle(path: Path, *, expected_manifest_sha256: str | None = None) -> LoadedDartEpisodeBundle:

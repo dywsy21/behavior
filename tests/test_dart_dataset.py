@@ -4,6 +4,7 @@ from dataclasses import replace
 from hashlib import sha256
 import json
 from pathlib import Path
+import struct
 
 import pytest
 from PIL import Image
@@ -14,6 +15,7 @@ from g05.recovery.dart_collection import (
     CanonicalSourceGroupMembership,
     CandidateSourceReceipt,
     DartObservation,
+    native_raw23_float32_sha256,
     RuntimeSessionReceipt,
     TeacherCommand,
     TeacherReceipt,
@@ -70,6 +72,7 @@ def _actor(clock: int, value: int) -> ActorObservation:
         policy_clock=clock,
         assets={view: _asset(view, clock, value + index) for index, view in enumerate(("head", "left_wrist", "right_wrist"))},
         proprioception=(float(clock), 0.25, -0.5),
+        proprioception_schema_sha256=_digest("actor-schema"),
     )
 
 
@@ -159,17 +162,21 @@ def _run() -> RunProvenance:
     )
 
 
-def _step(index: int, *, values: tuple[int, int] = (30, 50)) -> DartEpisodeStep:
+def _step(index: int, *, values: tuple[int, int] = (30, 50), noisy: bool = False) -> DartEpisodeStep:
     pre_clock = index
     post_clock = index + 1
     pre = _observation(pre_clock)
     post = _observation(post_clock)
     clean = _action(float(index + 1))
-    requested = _action(float(index + 2))
+    sampled = _action(0.03125) if noisy else _action(0.0)
+    requested_value = float(index + 1) + (0.03125 if noisy else 0.0)
+    requested = _action(requested_value)
+    native_request_sha = native_raw23_float32_sha256(requested)
+    applied_action = requested if noisy else clean
     applied = AppliedActionReceipt(
         status="APPLIED",
-        applied23=requested,
-        applied_action_bytes_sha256=_digest(f"applied-bytes-{index}"),
+        applied23=applied_action,
+        applied_action_bytes_sha256=native_request_sha,
         runtime_step_receipt_sha256=_digest(f"runtime-step-{index}"),
         pre_action_policy_clock=pre_clock,
         pre_action_state61_sha256=pre.state61_sha256,
@@ -189,11 +196,14 @@ def _step(index: int, *, values: tuple[int, int] = (30, 50)) -> DartEpisodeStep:
         pre_actor_observation=_actor(pre_clock, values[0] + index),
         teacher_command=command,
         requested_noisy23=requested,
-        sampled_noise23=_action(0.1 + index),
+        sampled_noise23=sampled,
+        requested_native23=requested,
+        requested_native_action_bytes_sha256=native_request_sha,
         applied=applied,
         post_observation=post,
         post_actor_observation=_actor(post_clock, values[1] + index),
         clock=StepClock(simulation_tick_start=10 + index, simulation_tick_end=11 + index, action_start_time_s=float(index), action_end_time_s=float(index) + 0.1),
+        label_kind=("dart_inspired_noisy_injection" if noisy else "dart_inspired_actual_clean_recovery"),
     )
 
 
@@ -238,6 +248,7 @@ def test_bundle_roundtrips_distinct_step_images_and_keeps_outcome_private(tmp_pa
     projection = loaded.actor_projection(0)
     assert projection.policy_clock == 0
     assert projection.clean_intended23 == _action(1.0)
+    assert projection.public_causal_instruction is None
     assert set(projection.rgb_by_view) == {"head", "left_wrist", "right_wrist"}
     assert loaded.manifest["outcome_evidence_separate"] is True
     assert '"state61":' not in (output / "records.jsonl").read_text()
@@ -255,6 +266,60 @@ def test_actual_bounded_collector_mode_is_preserved_verbatim_and_unknown_upgrade
         replace(_bundle(), collection_mode="dart_inspired_actual_clean_recovery")
     with pytest.raises(RecoveryContractError, match="existing DART mode"):
         replace(_bundle(), collection_mode="dart_inspired_bounded_actual_recovery")
+
+
+def test_original_gaussian_collection_shape_preserves_clean_plus_noise(tmp_path: Path) -> None:
+    sampled = replace(_step(0, noisy=True), label_kind="dart_clean_supervisor_feedback")
+    bundle = _bundle(collection_mode=COLLECTION_MODE_ORIGINAL_GAUSSIAN, steps=(sampled,))
+    receipt = write_episode_bundle(tmp_path / "gaussian", bundle)
+    loaded = load_bundle(tmp_path / "gaussian", expected_manifest_sha256=receipt.manifest_sha256)
+    row = loaded.rows[0]
+    assert row["requested_noisy23"] == [1.03125] * 23
+    assert row["sampled_noise23"] == [0.03125] * 23
+    assert row["native_action_wire_dtype"] == "float32_le"
+    assert row["requested_native23"] == row["requested_noisy23"]
+    assert row["applied"]["applied23"] == row["requested_noisy23"]
+
+
+def test_native_float32_request_is_distinct_from_math_request_but_valid() -> None:
+    step = _step(0)
+    clean = _action(0.1)
+    sampled = _action(0.2)
+    requested = _action(0.1 + 0.2)
+    native_value = struct.unpack(">f", struct.pack(">f", requested[0]))[0]
+    native = _action(native_value)
+    native_sha = native_raw23_float32_sha256(native)
+    command = replace(step.teacher_command, clean_intended23=clean)
+    applied = replace(
+        step.applied,
+        applied23=native,
+        applied_action_bytes_sha256=native_sha,
+    )
+    valid = replace(
+        step,
+        teacher_command=command,
+        requested_noisy23=requested,
+        sampled_noise23=sampled,
+        requested_native23=native,
+        requested_native_action_bytes_sha256=native_sha,
+        applied=applied,
+        label_kind="dart_clean_supervisor_feedback",
+    )
+    assert valid.requested_noisy23[0] != valid.requested_native23[0]
+    with pytest.raises(RecoveryContractError, match="canonical float32"):
+        replace(valid, requested_native23=requested)
+
+
+def test_private_intent_id_stays_metadata_only_and_explicit_public_instruction_roundtrips(tmp_path: Path) -> None:
+    output = tmp_path / "public-intent"
+    bundle = replace(_bundle(), public_causal_instruction="pick up the declared target")
+    receipt = write_episode_bundle(output, bundle)
+    loaded = load_bundle(output, expected_manifest_sha256=receipt.manifest_sha256)
+    projection = loaded.actor_projection(0)
+    assert projection.public_causal_instruction == "pick up the declared target"
+    row = loaded.rows[0]
+    assert "intent_bundle_id" not in row["actor_projection"]
+    assert loaded.manifest["intent_bundle_id"] == "intent-v1"
 
 
 def test_array_capture_is_encoded_and_rejected_if_dimensions_are_wrong() -> None:
@@ -287,6 +352,45 @@ def test_wrong_clock_action_dimensions_and_camera_mixup_fail_closed() -> None:
     assets["left_wrist"] = _asset("head", 0, 2)
     with pytest.raises(RecoveryContractError, match="view"):
         ActorObservation(policy_clock=0, assets=assets)
+
+
+def test_collector_action_semantics_reject_malformed_noise_and_phase_labels() -> None:
+    noisy = _step(0, noisy=True)
+    with pytest.raises(RecoveryContractError, match="clean_intended23 plus sampled_noise23"):
+        replace(noisy, sampled_noise23=_action(0.03126))
+    with pytest.raises(RecoveryContractError, match="applied23 must equal"):
+        replace(
+            noisy,
+            applied=replace(
+                noisy.applied,
+                applied23=_action(1.0),
+                applied_action_bytes_sha256=native_raw23_float32_sha256(_action(1.0)),
+            ),
+        )
+    with pytest.raises(RecoveryContractError, match="requested_native_action_bytes_sha256"):
+        replace(noisy, requested_native_action_bytes_sha256=_digest("wrong-request-wire"))
+    with pytest.raises(RecoveryContractError, match="applied_action_bytes_sha256"):
+        replace(noisy, applied=replace(noisy.applied, applied_action_bytes_sha256=_digest("wrong-applied-wire")))
+    changed_applied = _action(1.0)
+    with pytest.raises(RecoveryContractError, match="applied23 must equal"):
+        replace(
+            noisy,
+            applied=replace(
+                noisy.applied,
+                applied23=changed_applied,
+                applied_action_bytes_sha256=native_raw23_float32_sha256(changed_applied),
+            ),
+        )
+    clean = _step(0)
+    with pytest.raises(RecoveryContractError, match="applied23 must equal"):
+        replace(
+            clean,
+            applied=replace(
+                clean.applied,
+                applied23=_action(1.03125),
+                applied_action_bytes_sha256=native_raw23_float32_sha256(_action(1.03125)),
+            ),
+        )
     assets = {view: _asset(view, 0, 1) for view in ("head", "left_wrist", "right_wrist")}
     assets["right_wrist"] = replace(assets["right_wrist"], camera_key=assets["head"].camera_key)
     with pytest.raises(RecoveryContractError, match="camera_key"):
@@ -318,6 +422,9 @@ def test_privileged_projection_and_source_identity_are_rejected() -> None:
             run_provenance=_run(),
             steps=(_step(0),),
         )
+    mismatched_actor = replace(_step(0).pre_actor_observation, proprioception_schema_sha256=_digest("other-actor-schema"))
+    with pytest.raises(RecoveryContractError, match="schema pin"):
+        replace(_bundle(), steps=(replace(_step(0), pre_actor_observation=mismatched_actor),))
 
 
 def test_cpu_fixture_cannot_claim_private_outcome() -> None:
@@ -347,17 +454,14 @@ def test_original_gaussian_mode_rejects_runtime_clipping() -> None:
     clipped = replace(
         step.applied,
         applied23=_action(99.0),
+        applied_action_bytes_sha256=native_raw23_float32_sha256(_action(99.0)),
     )
-    clipped_step = replace(step, applied=clipped, label_kind="dart_clean_supervisor_feedback")
-    with pytest.raises(RecoveryContractError, match="runtime clipping"):
-        _bundle(
-            collection_mode=COLLECTION_MODE_ORIGINAL_GAUSSIAN,
-            steps=(clipped_step,),
-        )
+    with pytest.raises(RecoveryContractError, match="applied23 must equal"):
+        replace(step, applied=clipped, label_kind="dart_clean_supervisor_feedback")
 
 
 def test_bounded_episode_preserves_mixed_injection_and_recovery_kinds(tmp_path: Path) -> None:
-    mixed = replace(_bundle().steps[1], label_kind="dart_inspired_noisy_injection")
+    mixed = _step(1, noisy=True)
     bundle = replace(_bundle(), steps=(_step(0), mixed), label_kind="mixed")
     receipt = write_episode_bundle(tmp_path / "mixed", bundle)
     loaded = load_bundle(tmp_path / "mixed", expected_manifest_sha256=receipt.manifest_sha256)
