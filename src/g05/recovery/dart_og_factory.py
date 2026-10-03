@@ -768,6 +768,28 @@ def load_private_episode_publication(
         raise RecoveryContractError("private DART execution provenance hash is invalid")
     if collection.get("collection_execution_provenance_sha256") != sidecar["collection_execution_provenance_sha256"]:
         raise RecoveryContractError("private DART execution provenance hash disagrees with outer manifest")
+    captured_receipts = sidecar.get("captured_transition_receipts")
+    if not isinstance(captured_receipts, list) or len(captured_receipts) != len(loaded.rows):
+        raise RecoveryContractError("private DART collection provenance lacks one receipt per captured transition")
+    for row, captured in zip(loaded.rows, captured_receipts):
+        if not isinstance(captured, Mapping):
+            raise RecoveryContractError("private DART captured transition receipt must be an object")
+        pre = _mapping(row.get("pre_observation"), field="private DART episode pre observation")
+        post = _mapping(row.get("post_observation"), field="private DART episode post observation")
+        applied = _mapping(row.get("applied"), field="private DART episode applied action")
+        clock = _mapping(row.get("clock"), field="private DART episode clock")
+        expected_captured = {
+            "runtime_step_receipt_sha256": applied.get("runtime_step_receipt_sha256"),
+            "applied_action_bytes_sha256": applied.get("applied_action_bytes_sha256"),
+            "pre_observation_sha256": pre.get("observation_sha256"),
+            "post_observation_sha256": post.get("observation_sha256"),
+            "pre_policy_clock": pre.get("policy_clock"),
+            "post_policy_clock": post.get("policy_clock"),
+            "pre_simulation_tick": clock.get("simulation_tick_start"),
+            "post_simulation_tick": clock.get("simulation_tick_end"),
+        }
+        if dict(captured) != expected_captured:
+            raise RecoveryContractError("private DART captured transition receipt differs from sealed episode row")
     episode_receipts = [row.get("applied", {}).get("runtime_step_receipt_sha256") for row in loaded.rows]
     sidecar_receipts = []
     for record in records:
@@ -1616,6 +1638,16 @@ def _parse_factory_pins(payload: object) -> DartOgFactoryPins:
     return _construct(DartOgFactoryPins, raw, field="pins")
 
 
+def _parse_calibration(payload: object) -> CalibrationReceipt:
+    """Read the DATA receipt's public purpose marker without relaxing it."""
+
+    raw = dict(_mapping(payload, field="calibration"))
+    purpose = raw.pop("purpose", None)
+    if purpose not in {None, "train_only_covariance_calibration"}:
+        raise RecoveryContractError("calibration purpose must remain train_only_covariance_calibration")
+    return _construct(CalibrationReceipt, raw, field="calibration")
+
+
 def _parse_original_collection(payload: object) -> tuple[OriginalGaussianNoise, int, OriginalGaussianCalibrationBinding]:
     raw = _mapping(payload, field="original_gaussian")
     noise = _construct(OriginalGaussianNoise, raw.get("noise"), field="original_gaussian.noise")
@@ -1712,7 +1744,7 @@ def collect_dart_live_candidate(request: Mapping[str, object]) -> DartCollection
     teacher_reference = dict(_mapping(raw["teacher_reference"], field="teacher_reference"))
     teacher = _construct(TeacherReceipt, raw["teacher_receipt"], field="teacher_receipt")
     runtime_session = _construct(RuntimeSessionReceipt, raw["runtime_session"], field="runtime_session")
-    calibration = _construct(CalibrationReceipt, raw["calibration"], field="calibration")
+    calibration = _parse_calibration(raw["calibration"])
     membership_raw = _mapping(raw["source_membership"], field="source_membership")
     index_root = membership_raw.get("index_root")
     inventory_seal = membership_raw.get("expected_inventory_seal_sha256")

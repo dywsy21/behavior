@@ -7,7 +7,7 @@ authorized pinned-runtime preflight is still required before collection.
 
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 from hashlib import sha256
 import json
 from types import SimpleNamespace
@@ -16,6 +16,7 @@ from types import ModuleType
 import numpy as np
 import pytest
 
+import g05.recovery.dart_og_factory as dart_og_factory
 from g05.recovery.common import RecoveryContractError, canonical_sha256
 from g05.recovery.dart_collection import (
     CalibrationReceipt,
@@ -107,6 +108,21 @@ def _fixture_execution_provenance(record_mode: str) -> dict[str, object]:
             "limits": {"max_total_steps": 2, "max_wall_seconds": 30.0},
         },
     }
+
+
+def _reseal_outer_sidecar_for_tamper_test(root, sidecar: dict[str, object]) -> None:
+    """Model a re-sealed outer file receipt to test inner cross-bindings."""
+
+    sidecar_path = root / "private_collection.json"
+    sidecar_path.write_text(json.dumps(sidecar, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
+    sidecar_bytes = sidecar_path.read_bytes()
+    file_receipt = {"sha256": sha256(sidecar_bytes).hexdigest(), "bytes": len(sidecar_bytes)}
+    manifest_path = root / "publication_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["files"]["private_collection.json"] = file_receipt
+    manifest["private_collection"]["sha256"] = file_receipt["sha256"]
+    manifest["private_collection"]["bytes"] = file_receipt["bytes"]
+    manifest_path.write_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
 
 
 def _controller(name: str, **fields: object) -> object:
@@ -420,6 +436,130 @@ def test_cli_factory_request_rejects_missing_sealed_fields_without_importing_run
         collect_dart_live_candidate({"schema": "p107-dart-live-grasp-request-v1"})
 
 
+def test_full_live_request_dispatches_to_factory_and_publishes_candidate_container(tmp_path, monkeypatch) -> None:
+    """Fixture-only request boundary: exact config -> factory symbol -> outer bundle."""
+
+    source, teacher, membership = _source(), _unqualified_teacher(), _verified_membership(_source())
+    runtime_session = _runtime_session(source)
+    calibration = CalibrationReceipt(
+        source_group_ids=(membership.calibration_groups[0].source_group_id,),
+        calibration_trajectory_sha256=_sha("calibration-trajectory"),
+        learner_checkpoint_sha256=_sha("learner"),
+        teacher_checkpoint_sha256=_sha("teacher"),
+    )
+
+    class Reader:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        def verify_dart_membership(self, requested_source, requested_calibration):
+            assert requested_source == source and requested_calibration == calibration
+            return membership
+
+    class CurrentTeacher:
+        def clean_action(self, observation, *, intent_bundle_id):
+            return TeacherCommand(
+                clean_intended23=[1.0 / 3.0] * 23,
+                observed_policy_clock=observation.policy_clock,
+                observed_state61_sha256=observation.state61_sha256,
+                observed_observation_sha256=observation.observation_sha256,
+                intent_bundle_id=intent_bundle_id,
+                fresh_query_receipt_sha256=_sha(f"request-teacher:{observation.policy_clock}"),
+            )
+
+    _FakeOg.sim.current_time_step_index, _FakeOg.sim.current_time = 17, 0.5
+    hooks = DartOgRuntimeHooks(
+        evaluator=_FakeEvaluator(static_rgb=True),
+        torch_module=_FakeTorch,
+        og_module=_FakeOg,
+        run_id=source.collection_run_id,
+        max_control_steps=1,
+    )
+    fake_factory = SimpleNamespace(
+        dart_runtime=FreshRolloutRaw23Runtime(hooks),
+        teacher_bridge=CurrentTeacher(),
+        hooks=hooks,
+        train_selection=_selection(source),
+        pins=SimpleNamespace(
+            runtime_build_sha256=runtime_session.runtime_build_sha256,
+            asset_config_sha256=runtime_session.asset_config_sha256,
+        ),
+        close=hooks.close,
+    )
+    created: dict[str, object] = {}
+
+    def create(_cls, **kwargs):
+        created.update(kwargs)
+        return fake_factory
+
+    monkeypatch.setattr(dart_og_factory, "DataSealedSourceGroupIndexReader", Reader)
+    monkeypatch.setattr(dart_og_factory.DartOgGraspFactory, "create", classmethod(create))
+    evaluator_cfg, r1_cfg = tmp_path / "evaluator.yaml", tmp_path / "r1pro.yaml"
+    evaluator_cfg.write_text("fixture: evaluator\n", encoding="utf-8")
+    r1_cfg.write_text("fixture: r1pro\n", encoding="utf-8")
+    binding = _binding(source)
+    raw_binding = asdict(binding)
+    raw_binding["pose_review"] = asdict(binding.pose_review)
+    zero_covariance = [[0.0] * 23 for _ in range(23)]
+    raw_request = {
+        "schema": "p107-dart-live-grasp-request-v1",
+        "pins": {
+            "og_source_commit": "a" * 40,
+            "evaluator_config_path": str(evaluator_cfg),
+            "evaluator_config_sha256": sha256(evaluator_cfg.read_bytes()).hexdigest(),
+            "r1pro_config_path": str(r1_cfg),
+            "r1pro_config_sha256": sha256(r1_cfg.read_bytes()).hexdigest(),
+            "runtime_build_sha256": runtime_session.runtime_build_sha256,
+            "asset_config_sha256": runtime_session.asset_config_sha256,
+        },
+        "source": source.public(),
+        "train_selection": asdict(_selection(source)),
+        "binding": raw_binding,
+        "teacher_spec": _full_teacher_spec(binding),
+        "teacher_reference": {"schema": "fixture-private-reference-v1"},
+        "teacher_receipt": teacher.public(),
+        "runtime_session": runtime_session.public(),
+        "calibration": calibration.public(),
+        "source_membership": {
+            "index_root": str(tmp_path / "source-index"),
+            "expected_inventory_seal_sha256": membership.index_inventory_seal_sha256,
+            "protocol_path": None,
+            "expected_protocol_source_sha256": None,
+        },
+        "private_writer": {
+            "output": str(tmp_path / "published-private-container"),
+            "source_episode_id": "request-fixture-episode",
+            "collector_code_sha256": _sha("collector-code"),
+            "capture_adapter_sha256": _sha("capture-adapter"),
+            "actor_observation_schema_sha256": _sha("actor-schema"),
+            "outcome_evidence": None,
+        },
+        "run_id": source.collection_run_id,
+        "max_control_steps": 1,
+        "mode": "original_gaussian_one_pass_partial_dart",
+        "original_gaussian": {
+            "noise": {"covariance": zero_covariance, "seed": 31},
+            "steps": 1,
+            "calibration_binding": {
+                "calibration_trajectory_sha256": calibration.calibration_trajectory_sha256,
+                "learner_checkpoint_sha256": calibration.learner_checkpoint_sha256,
+                "teacher_checkpoint_sha256": calibration.teacher_checkpoint_sha256,
+                "covariance_estimator_code_sha256": _sha("covariance-estimator"),
+                "estimated_covariance23": zero_covariance,
+                "alpha": 0.0,
+                "horizon": 1,
+                "source_group_index_manifest_sha256": membership.source_group_index_manifest_sha256,
+            },
+        },
+        "bounded_dart": None,
+    }
+    result = collect_dart_live_candidate(raw_request)
+    assert len(result.records) == 1
+    assert created["source"] == source and created["train_selection"] == _selection(source)
+    publication = load_private_episode_publication(tmp_path / "published-private-container")
+    assert publication.transition_count == 1 and publication.training_eligible is False
+
+
 def test_r1pro_rejects_wrong_raw23_controller_layout_before_step() -> None:
     robot = _FakeRobot()
     robot.controller_action_idx = {**robot.controller_action_idx, "gripper_right": [21]}
@@ -573,6 +713,11 @@ def test_private_writer_encodes_captured_rgb_and_keeps_raw_state61_out_of_actor_
     assert sidecar["collection_result"]["records"][0]["noise_profile"] == record["noise_profile"]
     assert sidecar["collection_result"]["records"][0]["calibration_receipt"] == record["calibration_receipt"]
     assert sidecar["training_eligible"] is False
+    tampered_sidecar = json.loads(json.dumps(sidecar))
+    tampered_sidecar["captured_transition_receipts"][0]["post_observation_sha256"] = _sha("wrong-post-observation")
+    _reseal_outer_sidecar_for_tamper_test(receipt.path, tampered_sidecar)
+    with pytest.raises(RecoveryContractError, match="captured transition receipt differs"):
+        load_private_episode_publication(receipt.path)
     tampered_receipt = _sha("different-runtime-step-receipt")
     tampered_transition = replace(
         hooks.transitions[0],
@@ -613,7 +758,7 @@ def test_private_writer_encodes_captured_rgb_and_keeps_raw_state61_out_of_actor_
     assert not missing_execution_output.exists()
     (receipt.path / "private_collection.json").write_text("{}\n", encoding="utf-8")
     with pytest.raises(RecoveryContractError, match="file receipt"):
-        load_private_episode_publication(receipt.path, expected_manifest_sha256=receipt.manifest_sha256)
+        load_private_episode_publication(receipt.path)
 
 
 def test_private_writer_preserves_original_gaussian_math_and_native_wire_in_outer_publication(tmp_path) -> None:
