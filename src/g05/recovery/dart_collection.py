@@ -16,6 +16,7 @@ from dataclasses import asdict, dataclass, is_dataclass
 from hashlib import sha256
 from math import isfinite
 from pathlib import Path
+import struct
 import sys
 from time import monotonic
 from typing import Any, Callable, Mapping, Protocol, Sequence
@@ -29,7 +30,6 @@ from .common import (
     validate_state61,
 )
 from .dart_noise import (
-    BoundedNoiseProfile,
     DartInspiredBoundedNoise,
     OriginalGaussianNoise,
     scale_dart_covariance,
@@ -61,6 +61,36 @@ def _action_tuple(action: Sequence[float], name: str) -> tuple[float, ...]:
 
 def _json_action(action: Sequence[float]) -> list[float]:
     return list(_action_tuple(action, "action"))
+
+
+def native_raw23_float32_bytes(action: Sequence[float]) -> bytes:
+    """Return the only native R1Pro action representation this collector accepts.
+
+    The DART sampler is deliberately mathematical: its clean target, sampled
+    noise, and ``requested_noisy23`` remain Python float / float64 provenance.
+    OmniGibson receives a float32 action, however.  This helper makes that
+    one permitted representation conversion explicit and rejects finite
+    float64 values which cannot be encoded on the native wire.  It is *not*
+    a clipping, masking, or controller-substitution allowance.
+    """
+
+    values = _action_tuple(action, "raw23 native request")
+    try:
+        return struct.pack("<23f", *values)
+    except OverflowError as exc:
+        raise RecoveryContractError("raw23 native request must be representable as float32") from exc
+
+
+def canonical_native_raw23_float32(action: Sequence[float]) -> tuple[float, ...]:
+    """Decode the exact float32 values represented by the native raw23 wire."""
+
+    return tuple(float(value) for value in struct.unpack("<23f", native_raw23_float32_bytes(action)))
+
+
+def native_raw23_float32_sha256(action: Sequence[float]) -> str:
+    """Hash the canonical little-endian float32 native action bytes."""
+
+    return sha256(native_raw23_float32_bytes(action)).hexdigest()
 
 
 def _require_nonempty_text(value: str, field: str) -> str:
@@ -686,10 +716,20 @@ def _profile_receipt_for_bounded(noise: DartInspiredBoundedNoise) -> dict[str, A
     }
 
 
-def _applied_receipt(
-    runtime: DartRuntime, requested23: Sequence[float], observation: DartObservation, *, require_exact: bool
-) -> AppliedActionReceipt:
-    applied = runtime.apply_raw23(_action_tuple(requested23, "requested23"))
+def _applied_receipt(runtime: DartRuntime, requested23: Sequence[float], observation: DartObservation) -> AppliedActionReceipt:
+    """Apply one mathematical request after canonicalizing exactly once to native f32.
+
+    ``requested23`` remains unchanged in the caller's DART provenance.  The
+    runtime is intentionally given the decoded float32 wire values and must
+    echo those exact values plus the hash of the same bytes.  Thus the only
+    tolerated difference from the mathematical request is IEEE-754 f64->f32
+    representation; clipping, masking, stale replay, and substitution all
+    fail closed.
+    """
+
+    native_requested = canonical_native_raw23_float32(requested23)
+    native_wire_sha256 = native_raw23_float32_sha256(native_requested)
+    applied = runtime.apply_raw23(native_requested)
     if not isinstance(applied, AppliedActionReceipt):
         raise RecoveryContractError("DART runtime must return AppliedActionReceipt")
     if applied.status != "APPLIED":
@@ -700,9 +740,10 @@ def _applied_receipt(
         or applied.pre_action_observation_sha256 != observation.observation_sha256
     ):
         raise RecoveryContractError("applied action receipt is not bound to the current observed clock/state/observation")
-    requested = _action_tuple(requested23, "requested23")
-    if require_exact and applied.applied23 != requested:
-        raise RecoveryContractError("original DART Gaussian mode requires applied action equal requested sample")
+    if tuple(applied.applied23) != native_requested:
+        raise RecoveryContractError("native raw23 runtime substituted or misrepresented the canonical float32 request")
+    if applied.applied_action_bytes_sha256 != native_wire_sha256:
+        raise RecoveryContractError("native raw23 runtime receipt hash does not match the canonical float32 request")
     return applied
 
 
@@ -741,8 +782,14 @@ def _candidate_record(
         # is expressly not a fabricated 32-step expert future.
         "clean_intended23": _json_action(command.clean_intended23),
         "clean_target_steps": 1,
+        # Keep the mathematical DART request separate from the float32 values
+        # actually submitted to the simulator.  The latter are derived only
+        # through canonical IEEE-754 conversion at the native wire boundary.
         "requested_noisy23": _json_action(requested_noisy23),
         "sampled_noise23": _json_action(sampled_noise23),
+        "requested_native23": _json_action(canonical_native_raw23_float32(requested_noisy23)),
+        "requested_native_action_bytes_sha256": native_raw23_float32_sha256(requested_noisy23),
+        "native_action_wire_dtype": "float32_le",
         "applied23": _json_action(applied.applied23),
         "applied_action_bytes_sha256": applied.applied_action_bytes_sha256,
         "runtime_step_receipt_sha256": applied.runtime_step_receipt_sha256,
@@ -816,7 +863,7 @@ def collect_original_gaussian_clean_feedback(
             raise RecoveryContractError("DART teacher must return TeacherCommand")
         _assert_teacher_matches(observation, command, intent_bundle_id)
         sampled = noise.sample(command.clean_intended23)
-        applied = _applied_receipt(runtime, sampled.requested_noisy23, observation, require_exact=True)
+        applied = _applied_receipt(runtime, sampled.requested_noisy23, observation)
         records.append(
             _candidate_record(
                 label_kind="dart_clean_supervisor_feedback",
@@ -907,9 +954,13 @@ def collect_dart_inspired_actual_clean_recovery(
             raise RecoveryContractError("DART runtime must return DartObservation")
         command = clean_command(observation)
         sampled = noise.sample(command.clean_intended23)
-        applied = _applied_receipt(runtime, sampled.requested_noisy23, observation, require_exact=False)
-        if applied.applied23 == command.clean_intended23:
-            raise RecoveryContractError("DART-inspired noisy injection did not actually perturb the applied action")
+        native_clean = canonical_native_raw23_float32(command.clean_intended23)
+        native_requested = canonical_native_raw23_float32(sampled.requested_noisy23)
+        if native_requested == native_clean:
+            raise RecoveryContractError("DART-inspired noisy injection has no effect after native float32 canonicalization")
+        applied = _applied_receipt(runtime, sampled.requested_noisy23, observation)
+        if tuple(applied.applied23) == native_clean:
+            raise RecoveryContractError("DART-inspired noisy injection did not actually perturb the native applied action")
         executed += 1
         records.append(
             _candidate_record(
@@ -940,7 +991,7 @@ def collect_dart_inspired_actual_clean_recovery(
             command = clean_command(observation)
             # This is a genuine actual-clean execution receipt: controller
             # substitution is rejected instead of being silently relabelled.
-            applied = _applied_receipt(runtime, command.clean_intended23, observation, require_exact=True)
+            applied = _applied_receipt(runtime, command.clean_intended23, observation)
             executed += 1
             records.append(
                 _candidate_record(

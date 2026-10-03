@@ -35,6 +35,7 @@ from g05.recovery.common import RecoveryContractError
 from g05.recovery.dart_collection import (
     AppliedActionReceipt,
     CanonicalSourceGroupMembership,
+    canonical_native_raw23_float32,
     DartObservation,
     VerifiedDartSourceMembership,
 )
@@ -413,6 +414,15 @@ def test_fresh_runtime_requires_one_authorized_apply_and_exact_bytes():
     substituted.observe()
     with pytest.raises(RecoveryContractError, match="substitution"):
         substituted.apply_raw23([0.25] * 23)
+
+
+def test_fresh_runtime_canonicalizes_nonbinary_native_wire_before_exact_receipt_check():
+    runtime = FreshRolloutRaw23Runtime(RuntimeHooks())
+    runtime.observe()
+    requested = [1.0 / 3.0] * 23
+    receipt = runtime.apply_raw23(requested)
+    assert tuple(receipt.applied23) == canonical_native_raw23_float32(requested)
+    assert tuple(receipt.applied23) != tuple(requested)
 
 
 def pose(z):

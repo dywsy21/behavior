@@ -46,6 +46,8 @@ from g05.recovery.dart_collection import (
     CollectionLimits,
     DataSealedSourceGroupIndexReader,
     DartObservation,
+    canonical_native_raw23_float32,
+    native_raw23_float32_sha256,
     OutcomeEvidenceReceipt,
     DartCollectionResult,
     RuntimeSessionReceipt,
@@ -104,7 +106,7 @@ class FakeRuntime:
         receipt = AppliedActionReceipt(
             status="ABORTED" if self.abort else "APPLIED",
             applied23=requested,
-            applied_action_bytes_sha256=_digest(f"raw-float-bytes:{requested!r}"),
+            applied_action_bytes_sha256=native_raw23_float32_sha256(requested),
             runtime_step_receipt_sha256=_digest(f"step:{self.clock}"),
             pre_action_policy_clock=self.clock + self.receipt_clock_offset,
             pre_action_state61_sha256=canonical_sha256((float(self.clock + self.receipt_clock_offset),) * 61),
@@ -331,7 +333,10 @@ def test_original_mode_records_clean_feedback_separately_from_noisy_applied_exec
     assert first["label_kind"] == "dart_clean_supervisor_feedback"
     assert first["clean_target_steps"] == 1
     assert first["clean_intended23"] != first["applied23"]
-    assert first["requested_noisy23"] == first["applied23"]
+    assert first["requested_noisy23"] != first["applied23"]
+    assert first["requested_native23"] == first["applied23"]
+    assert first["requested_native_action_bytes_sha256"] == first["applied_action_bytes_sha256"]
+    assert first["native_action_wire_dtype"] == "float32_le"
     assert first["noise_profile"]["empirical_faithfulness"] is False
     assert first["verified_source_membership"]["source_group_index_manifest_sha256"] == (
         FakeSourceGroupIndexReader.manifest_sha256
@@ -369,7 +374,7 @@ def test_bounded_mode_audits_noisy_control_and_only_actual_clean_recovery_as_can
 
     injection, clean_one, clean_two = result.records
     assert injection["label_kind"] == "dart_inspired_noisy_injection"
-    assert injection["requested_noisy23"] == injection["applied23"]
+    assert injection["requested_native23"] == injection["applied23"]
     assert injection["clean_intended23"] != injection["applied23"]
     assert injection["execution_role"] == "noisy_injection_excluded_from_fm_supervision"
     assert clean_one["label_kind"] == "dart_inspired_actual_clean_recovery"
@@ -388,6 +393,137 @@ def test_bounded_mode_audits_noisy_control_and_only_actual_clean_recovery_as_can
     assert injection["noise_profile"]["embodiment_metadata_sha256"] == _digest("r1pro-embodiment-metadata")
     assert injection["noise_profile"]["model_projection_manifest_sha256"] == _digest("r1pro-23to27-projection")
     assert result.outcome_label == "SURVIVAL_NONFAILURE"
+
+
+def test_original_gaussian_preserves_math_draw_but_applies_seeded_native_float32_wire() -> None:
+    """A real non-binary Gaussian draw must not be echoed as the executed f64."""
+
+    class OneThirdTeacher(FakeTeacher):
+        def clean_action(self, observation: DartObservation, *, intent_bundle_id: str) -> TeacherCommand:
+            self.observed_clocks.append(observation.policy_clock)
+            return TeacherCommand(
+                clean_intended23=_action(1.0 / 3.0),
+                observed_policy_clock=observation.policy_clock,
+                observed_state61_sha256=observation.state61_sha256,
+                observed_observation_sha256=observation.observation_sha256,
+                intent_bundle_id=intent_bundle_id,
+                fresh_query_receipt_sha256=_digest(f"one-third:{observation.policy_clock}"),
+            )
+
+    runtime = FakeRuntime()
+    result = collect_original_gaussian_clean_feedback(
+        runtime=runtime,
+        teacher_callback=OneThirdTeacher(),
+        teacher_receipt=_teacher_receipt(),
+        source=_source(),
+        source_membership_reader=_source_membership_reader(),
+        runtime_session=_runtime_session(),
+        calibration=_calibration(),
+        noise=OriginalGaussianNoise(_diagonal(0.25), seed=31),
+        intent_bundle_id="intent-v1",
+        steps=1,
+        covariance_update_mode="frozen_one_pass_partial_dart",
+        original_calibration_binding=_original_calibration_binding(),
+    )
+    record = result.records[0]
+    requested_math = tuple(record["requested_noisy23"])
+    requested_native = canonical_native_raw23_float32(requested_math)
+    assert tuple(record["requested_native23"]) == requested_native
+    assert tuple(record["applied23"]) == requested_native
+    assert requested_math != requested_native
+    assert runtime.requests == [requested_native]
+    assert record["requested_native_action_bytes_sha256"] == native_raw23_float32_sha256(requested_math)
+
+
+def test_collection_rejects_f64_echo_or_altered_native_wire() -> None:
+    class F64EchoRuntime(FakeRuntime):
+        def apply_raw23(self, requested23: tuple[float, ...]) -> AppliedActionReceipt:
+            receipt = super().apply_raw23(requested23)
+            # This differs as a Python float while packing to the same f32
+            # wire on ordinary commands: an illegal runtime f64 echo.
+            return replace(receipt, applied23=(receipt.applied23[0] - 1.0e-9,) + tuple(receipt.applied23[1:]))
+
+    class ClippingRuntime(FakeRuntime):
+        def apply_raw23(self, requested23: tuple[float, ...]) -> AppliedActionReceipt:
+            receipt = super().apply_raw23(requested23)
+            altered = (0.0,) * 23
+            return replace(
+                receipt,
+                applied23=altered,
+                applied_action_bytes_sha256=native_raw23_float32_sha256(altered),
+            )
+
+    common = dict(
+        teacher_callback=FakeTeacher(),
+        teacher_receipt=_teacher_receipt(),
+        source=_source(),
+        source_membership_reader=_source_membership_reader(),
+        runtime_session=_runtime_session(),
+        calibration=_calibration(),
+        noise=OriginalGaussianNoise(_diagonal(0.25), seed=31),
+        intent_bundle_id="intent-v1",
+        steps=1,
+        covariance_update_mode="frozen_one_pass_partial_dart",
+        original_calibration_binding=_original_calibration_binding(),
+    )
+    with pytest.raises(RecoveryContractError, match="substituted or misrepresented"):
+        collect_original_gaussian_clean_feedback(runtime=F64EchoRuntime(), **common)
+    with pytest.raises(RecoveryContractError, match="substituted or misrepresented"):
+        collect_original_gaussian_clean_feedback(runtime=ClippingRuntime(), **common)
+
+
+def test_bounded_noise_that_is_sub_ulp_at_native_wire_is_not_an_injection() -> None:
+    profile = _bounded_noise().profile
+    tiny_rules = dict(profile.rules_by_part)
+    tiny_rules["left_arm"] = replace(tiny_rules["left_arm"], standard_deviation=1.0e-12, cap=1.0e-12)
+    tiny_noise = DartInspiredBoundedNoise(replace(profile, rules_by_part=tiny_rules), seed=17)
+    with pytest.raises(RecoveryContractError, match="no effect after native float32 canonicalization"):
+        collect_dart_inspired_actual_clean_recovery(
+            runtime=FakeRuntime(),
+            teacher_callback=FakeTeacher(),
+            teacher_receipt=_teacher_receipt(),
+            source=_source(),
+            source_membership_reader=_source_membership_reader(),
+            runtime_session=_runtime_session(),
+            calibration=_calibration(),
+            noise=tiny_noise,
+            intent_bundle_id="intent-v1",
+            noisy_injection_steps=1,
+            recovery_chunk_lengths=(1,),
+            limits=CollectionLimits(max_total_steps=2, max_wall_seconds=60),
+        )
+
+
+def test_bounded_clean_recovery_uses_native_float32_equality_not_math_float_equality() -> None:
+    class OneThirdTeacher(FakeTeacher):
+        def clean_action(self, observation: DartObservation, *, intent_bundle_id: str) -> TeacherCommand:
+            self.observed_clocks.append(observation.policy_clock)
+            return TeacherCommand(
+                clean_intended23=_action(1.0 / 3.0),
+                observed_policy_clock=observation.policy_clock,
+                observed_state61_sha256=observation.state61_sha256,
+                observed_observation_sha256=observation.observation_sha256,
+                intent_bundle_id=intent_bundle_id,
+                fresh_query_receipt_sha256=_digest(f"one-third-bounded:{observation.policy_clock}"),
+            )
+
+    result = collect_dart_inspired_actual_clean_recovery(
+        runtime=FakeRuntime(),
+        teacher_callback=OneThirdTeacher(),
+        teacher_receipt=_teacher_receipt(),
+        source=_source(),
+        source_membership_reader=_source_membership_reader(),
+        runtime_session=_runtime_session(),
+        calibration=_calibration(),
+        noise=_bounded_noise(),
+        intent_bundle_id="intent-v1",
+        noisy_injection_steps=1,
+        recovery_chunk_lengths=(1,),
+        limits=CollectionLimits(max_total_steps=2, max_wall_seconds=60),
+    )
+    clean = result.records[-1]
+    assert tuple(clean["clean_intended23"]) != tuple(clean["applied23"])
+    assert tuple(clean["requested_native23"]) == tuple(clean["applied23"])
 
 
 def test_collection_rejects_future_teacher_label_calibration_reuse_abort_and_overlength_chunk() -> None:

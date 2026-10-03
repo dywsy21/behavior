@@ -16,14 +16,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hashlib import sha256
 import math
-import struct
 from typing import Any, Callable, Mapping, Protocol, Sequence
 
 from .common import RecoveryContractError, canonical_sha256, require_sha256, validate_raw23_action
 from .dart_collection import (
     AppliedActionReceipt,
     CanonicalSourceGroupMembership,
+    canonical_native_raw23_float32,
     DartObservation,
+    native_raw23_float32_bytes,
+    native_raw23_float32_sha256,
     TeacherCommand,
     VerifiedDartSourceMembership,
 )
@@ -88,15 +90,11 @@ def _mapping_bool(value: Mapping[str, object], name: str, *, allow_unknown: bool
 def raw23_wire_bytes(action: Sequence[float]) -> bytes:
     """Canonical little-endian float32 wire representation for native R1Pro action."""
 
-    values = validate_raw23_action(action)
-    try:
-        return struct.pack("<23f", *values)
-    except OverflowError as exc:  # float64 finite values can still overflow float32.
-        raise RecoveryContractError("raw23 values must be representable as float32") from exc
+    return native_raw23_float32_bytes(action)
 
 
 def raw23_wire_sha256(action: Sequence[float]) -> str:
-    return sha256(raw23_wire_bytes(action)).hexdigest()
+    return native_raw23_float32_sha256(action)
 
 
 def _preserves_r1pro_gripper_wire_bytes(intended: Sequence[float], actual: Sequence[float]) -> bool:
@@ -556,9 +554,12 @@ def _assert_pending_receipt(
     ):
         raise RecoveryContractError("runtime receipt is stale or belongs to another clean query")
     actual = tuple(validate_raw23_action(applied.applied23))
+    native_intended = canonical_native_raw23_float32(pending.intended23)
+    if actual != canonical_native_raw23_float32(actual):
+        raise RecoveryContractError("runtime receipt applied raw23 is not canonical native float32 values")
     if applied.applied_action_bytes_sha256 != raw23_wire_sha256(actual):
         raise RecoveryContractError("runtime receipt bytes do not match its applied raw23 action")
-    exact = actual == pending.intended23 and applied.applied_action_bytes_sha256 == raw23_wire_sha256(pending.intended23)
+    exact = actual == native_intended and applied.applied_action_bytes_sha256 == raw23_wire_sha256(native_intended)
     if require_different and exact:
         raise RecoveryContractError("a clean executed action must be acknowledged, not discarded")
     if not require_different and not exact:
@@ -996,7 +997,7 @@ class FreshRolloutRaw23Runtime:
         return observation
 
     def apply_raw23(self, requested23: Sequence[float]) -> AppliedActionReceipt:
-        requested = tuple(validate_raw23_action(requested23))
+        requested = canonical_native_raw23_float32(requested23)
         observation = self._last
         if observation is None:
             raise RecoveryContractError("apply_raw23 requires a fresh preceding observation")
