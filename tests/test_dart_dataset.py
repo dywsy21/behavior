@@ -21,6 +21,8 @@ from g05.recovery.dart_collection import (
 )
 from g05.recovery.dart_dataset import (
     ActorObservation,
+    COLLECTION_MODE_BOUNDED_ACTUAL,
+    COLLECTION_MODE_ORIGINAL_GAUSSIAN,
     DartEpisodeBundle,
     DartEpisodeStep,
     RGBAsset,
@@ -195,11 +197,11 @@ def _step(index: int, *, values: tuple[int, int] = (30, 50)) -> DartEpisodeStep:
     )
 
 
-def _bundle(*, collection_mode: str = "dart_inspired_actual_clean_recovery", steps: tuple[DartEpisodeStep, ...] | None = None) -> DartEpisodeBundle:
+def _bundle(*, collection_mode: str = COLLECTION_MODE_BOUNDED_ACTUAL, steps: tuple[DartEpisodeStep, ...] | None = None) -> DartEpisodeBundle:
     source = _source()
     if steps is None:
         steps = (_step(0), _step(1))
-        if collection_mode == "original_gaussian_clean_intended_feedback":
+        if collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN:
             steps = tuple(replace(step, label_kind="dart_clean_supervisor_feedback") for step in steps)
     return DartEpisodeBundle(
         source=source,
@@ -210,7 +212,7 @@ def _bundle(*, collection_mode: str = "dart_inspired_actual_clean_recovery", ste
         collection_mode=collection_mode,
         label_kind=(
             "dart_clean_supervisor_feedback"
-            if collection_mode == "original_gaussian_clean_intended_feedback"
+            if collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN
             else "dart_inspired_actual_clean_recovery"
         ),
         run_provenance=_run(),
@@ -242,6 +244,17 @@ def test_bundle_roundtrips_distinct_step_images_and_keeps_outcome_private(tmp_pa
     assert "post_observation" not in projection.__dict__
     assert loaded.inspect()["run_origin"] == "cpu_fixture"
     assert loaded.inspect()["training_eligible"] is False
+
+
+def test_actual_bounded_collector_mode_is_preserved_verbatim_and_unknown_upgrade_is_rejected(tmp_path: Path) -> None:
+    output = tmp_path / "bounded"
+    receipt = write_episode_bundle(output, _bundle(collection_mode=COLLECTION_MODE_BOUNDED_ACTUAL))
+    loaded = load_bundle(output, expected_manifest_sha256=receipt.manifest_sha256)
+    assert loaded.manifest["collection_mode"] == "dart_inspired_bounded_actual_clean_recovery"
+    with pytest.raises(RecoveryContractError, match="existing DART mode"):
+        replace(_bundle(), collection_mode="dart_inspired_actual_clean_recovery")
+    with pytest.raises(RecoveryContractError, match="existing DART mode"):
+        replace(_bundle(), collection_mode="dart_inspired_bounded_actual_recovery")
 
 
 def test_array_capture_is_encoded_and_rejected_if_dimensions_are_wrong() -> None:
@@ -300,7 +313,7 @@ def test_privileged_projection_and_source_identity_are_rejected() -> None:
             runtime_session=_runtime(),
             teacher=_teacher(),
             intent_bundle_id="intent-v1",
-            collection_mode="dart_inspired_actual_clean_recovery",
+            collection_mode=COLLECTION_MODE_BOUNDED_ACTUAL,
             label_kind="dart_inspired_actual_clean_recovery",
             run_provenance=_run(),
             steps=(_step(0),),
@@ -338,7 +351,7 @@ def test_original_gaussian_mode_rejects_runtime_clipping() -> None:
     clipped_step = replace(step, applied=clipped, label_kind="dart_clean_supervisor_feedback")
     with pytest.raises(RecoveryContractError, match="runtime clipping"):
         _bundle(
-            collection_mode="original_gaussian_clean_intended_feedback",
+            collection_mode=COLLECTION_MODE_ORIGINAL_GAUSSIAN,
             steps=(clipped_step,),
         )
 

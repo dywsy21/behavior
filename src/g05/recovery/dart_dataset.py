@@ -44,6 +44,9 @@ TRANSITION_SCHEMA = "p107_dart_transition_v1"
 ACTOR_PROJECTION_SCHEMA = "p107_dart_actor_projection_v1"
 PRIVATE_STATUS = "PRIVATE_DART_DIAGNOSTIC_ONLY"
 REQUIRED_VIEWS = ("head", "left_wrist", "right_wrist")
+COLLECTION_MODE_ORIGINAL_GAUSSIAN = "original_gaussian_clean_intended_feedback"
+COLLECTION_MODE_BOUNDED_ACTUAL = "dart_inspired_bounded_actual_clean_recovery"
+_ALLOWED_COLLECTION_MODES = frozenset({COLLECTION_MODE_ORIGINAL_GAUSSIAN, COLLECTION_MODE_BOUNDED_ACTUAL})
 _FORBIDDEN_ACTOR_KEYS = frozenset(
     {
         "state61",
@@ -409,10 +412,7 @@ class DartEpisodeBundle:
         if not isinstance(self.run_provenance, RunProvenance):
             raise RecoveryContractError("bundle run_provenance must be RunProvenance")
         _nonempty_text(self.intent_bundle_id, "intent_bundle_id")
-        if self.collection_mode not in {
-            "original_gaussian_clean_intended_feedback",
-            "dart_inspired_actual_clean_recovery",
-        }:
+        if self.collection_mode not in _ALLOWED_COLLECTION_MODES:
             raise RecoveryContractError("bundle collection_mode must preserve an existing DART mode")
         if self.label_kind not in {
             "dart_clean_supervisor_feedback",
@@ -449,11 +449,11 @@ class DartEpisodeBundle:
                 raise RecoveryContractError("bundle step indices must be contiguous from zero")
             if step.teacher_command.intent_bundle_id != self.intent_bundle_id:
                 raise RecoveryContractError("teacher intent bundle does not match episode intent")
-            if self.collection_mode == "original_gaussian_clean_intended_feedback" and tuple(step.applied.applied23) != tuple(step.requested_noisy23):
+            if self.collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN and tuple(step.applied.applied23) != tuple(step.requested_noisy23):
                 raise RecoveryContractError(
                     "original Gaussian bundle cannot claim exact requested execution after runtime clipping"
                 )
-            if self.collection_mode == "original_gaussian_clean_intended_feedback" and step.label_kind != "dart_clean_supervisor_feedback":
+            if self.collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN and step.label_kind != "dart_clean_supervisor_feedback":
                 raise RecoveryContractError("original Gaussian bundle cannot contain a bounded-DART step kind")
             if index and (
                 step.pre_observation.policy_clock != self.steps[index - 1].post_observation.policy_clock
@@ -463,7 +463,7 @@ class DartEpisodeBundle:
                 raise RecoveryContractError("episode transitions are not causally linked at the observed boundary")
         step_kinds = {step.label_kind for step in self.steps}
         if self.label_kind == "mixed":
-            if self.collection_mode == "original_gaussian_clean_intended_feedback" or len(step_kinds) < 2:
+            if self.collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN or len(step_kinds) < 2:
                 raise RecoveryContractError("mixed bundle label_kind must describe multiple bounded-DART step kinds")
         elif step_kinds != {self.label_kind}:
             raise RecoveryContractError("bundle label_kind does not match every transition")
@@ -790,7 +790,7 @@ def _validate_serialized_row(row: Mapping[str, Any], *, manifest: Mapping[str, A
     }:
         raise RecoveryContractError("bundle transition label_kind is unknown")
     collection_mode = manifest.get("collection_mode")
-    if collection_mode == "original_gaussian_clean_intended_feedback":
+    if collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN:
         if label_kind != "dart_clean_supervisor_feedback":
             raise RecoveryContractError("original Gaussian bundle contains a non-Gaussian transition")
     pre = row.get("pre_observation")
@@ -807,7 +807,7 @@ def _validate_serialized_row(row: Mapping[str, Any], *, manifest: Mapping[str, A
     if not isinstance(applied, Mapping) or applied.get("status") != "APPLIED":
         raise RecoveryContractError("bundle transition does not contain an APPLIED receipt")
     validate_raw23_action(applied.get("applied23"))
-    if collection_mode == "original_gaussian_clean_intended_feedback" and applied["applied23"] != row["requested_noisy23"]:
+    if collection_mode == COLLECTION_MODE_ORIGINAL_GAUSSIAN and applied["applied23"] != row["requested_noisy23"]:
         raise RecoveryContractError("original Gaussian serialized transition records runtime clipping")
     teacher = row.get("teacher")
     if not isinstance(teacher, Mapping) or teacher.get("observed_policy_clock") != pre_clock:
@@ -910,10 +910,7 @@ def load_bundle(path: Path, *, expected_manifest_sha256: str | None = None) -> L
         or candidate.get("task_instance_id") != source.get("parent_task_instance_id")
     ):
         raise RecoveryContractError("DART bundle source and sealed membership identity disagree")
-    if not isinstance(manifest.get("collection_mode"), str) or manifest["collection_mode"] not in {
-        "original_gaussian_clean_intended_feedback",
-        "dart_inspired_actual_clean_recovery",
-    }:
+    if not isinstance(manifest.get("collection_mode"), str) or manifest["collection_mode"] not in _ALLOWED_COLLECTION_MODES:
         raise RecoveryContractError("DART bundle collection_mode is not an existing DART mode")
     if not isinstance(manifest.get("label_kind"), str) or manifest["label_kind"] not in {
         "dart_clean_supervisor_feedback",
@@ -1011,6 +1008,8 @@ __all__ = [
     "BUNDLE_SCHEMA",
     "BundleReceipt",
     "ActorObservation",
+    "COLLECTION_MODE_BOUNDED_ACTUAL",
+    "COLLECTION_MODE_ORIGINAL_GAUSSIAN",
     "DartEpisodeBundle",
     "DartEpisodeStep",
     "LoadedDartEpisodeBundle",
