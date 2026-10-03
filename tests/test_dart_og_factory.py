@@ -486,6 +486,12 @@ def test_full_live_request_dispatches_to_factory_and_publishes_candidate_contain
         run_id=source.collection_run_id,
         max_control_steps=1,
     )
+    normal_close_calls: list[str] = []
+
+    def close_normal_factory() -> None:
+        normal_close_calls.append("close")
+        hooks.close()
+
     fake_factory = SimpleNamespace(
         dart_runtime=FreshRolloutRaw23Runtime(hooks),
         teacher_bridge=CurrentTeacher(),
@@ -497,7 +503,7 @@ def test_full_live_request_dispatches_to_factory_and_publishes_candidate_contain
         ),
         runtime_session=runtime_session,
         fresh_reset_payload=None,
-        close=hooks.close,
+        close=close_normal_factory,
     )
     created: dict[str, object] = {}
 
@@ -588,12 +594,98 @@ def test_full_live_request_dispatches_to_factory_and_publishes_candidate_contain
     with pytest.raises(RecoveryContractError, match="outcome_evidence must be null"):
         collect_dart_live_candidate(supplied_outcome_request)
     assert not (tmp_path / "published-private-container").exists()
+    occupied_request = json.loads(json.dumps(raw_request))
+    occupied = tmp_path / "already-occupied-publication"
+    occupied.mkdir()
+    occupied_request["private_writer"]["output"] = str(occupied)
+    with pytest.raises(RecoveryContractError, match="refusing to overwrite"):
+        collect_dart_live_candidate(occupied_request)
+    assert created == {}
+    assert not hooks.transitions
     result = collect_dart_live_candidate(raw_request)
     assert len(result.records) == 1
     assert created["source"] == source and created["train_selection"] == _selection(source)
     assert created["runtime_plan"] == _runtime_plan(source)
     publication = load_private_episode_publication(tmp_path / "published-private-container")
     assert publication.transition_count == 1 and publication.training_eligible is False
+    assert normal_close_calls == ["close"]
+
+    # The output preflight runs before the factory.  Once a factory is owned,
+    # failures while constructing the writer must still close it, and failures
+    # inside the callback are covered by run_live_grasp_collection's finally.
+    def _owned_factory() -> tuple[SimpleNamespace, list[str]]:
+        _FakeOg.sim.current_time_step_index, _FakeOg.sim.current_time = 17, 0.5
+        local_hooks = DartOgRuntimeHooks(
+            evaluator=_FakeEvaluator(static_rgb=True),
+            torch_module=_FakeTorch,
+            og_module=_FakeOg,
+            run_id=source.collection_run_id,
+            max_control_steps=1,
+        )
+        close_calls: list[str] = []
+
+        def close() -> None:
+            close_calls.append("close")
+            local_hooks.close()
+
+        return (
+            SimpleNamespace(
+                dart_runtime=FreshRolloutRaw23Runtime(local_hooks),
+                teacher_bridge=CurrentTeacher(),
+                hooks=local_hooks,
+                train_selection=_selection(source),
+                pins=SimpleNamespace(
+                    runtime_build_sha256=runtime_session.runtime_build_sha256,
+                    asset_config_sha256=runtime_session.asset_config_sha256,
+                ),
+                runtime_session=runtime_session,
+                fresh_reset_payload=None,
+                close=close,
+            ),
+            close_calls,
+        )
+
+    config_failure_factory, config_failure_closes = _owned_factory()
+    monkeypatch.setattr(
+        dart_og_factory.DartOgGraspFactory,
+        "create",
+        classmethod(lambda _cls, **_kwargs: config_failure_factory),
+    )
+    real_writer_config = dart_og_factory.PrivateEpisodeWriterConfig
+
+    def reject_writer_config(*_args, **_kwargs):
+        raise RecoveryContractError("synthetic writer-config failure")
+
+    monkeypatch.setattr(dart_og_factory, "PrivateEpisodeWriterConfig", reject_writer_config)
+    config_failure_request = json.loads(json.dumps(raw_request))
+    config_failure_request["private_writer"]["output"] = str(tmp_path / "config-failure-publication")
+    with pytest.raises(RecoveryContractError, match="synthetic writer-config failure"):
+        collect_dart_live_candidate(config_failure_request)
+    assert config_failure_closes == ["close"]
+    assert not (tmp_path / "config-failure-publication").exists()
+
+    monkeypatch.setattr(dart_og_factory, "PrivateEpisodeWriterConfig", real_writer_config)
+    callback_failure_factory, callback_failure_closes = _owned_factory()
+    monkeypatch.setattr(
+        dart_og_factory.DartOgGraspFactory,
+        "create",
+        classmethod(lambda _cls, **_kwargs: callback_failure_factory),
+    )
+
+    def reject_writer_callback(*_args, **_kwargs):
+        raise RecoveryContractError("synthetic writer callback failure")
+
+    monkeypatch.setattr(
+        dart_og_factory,
+        "build_private_episode_bundle_writer",
+        lambda _config: reject_writer_callback,
+    )
+    callback_failure_request = json.loads(json.dumps(raw_request))
+    callback_failure_request["private_writer"]["output"] = str(tmp_path / "callback-failure-publication")
+    with pytest.raises(RecoveryContractError, match="synthetic writer callback failure"):
+        collect_dart_live_candidate(callback_failure_request)
+    assert callback_failure_closes == ["close"]
+    assert not (tmp_path / "callback-failure-publication").exists()
 
 
 def test_r1pro_rejects_wrong_raw23_controller_layout_before_step() -> None:

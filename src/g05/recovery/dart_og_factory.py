@@ -367,6 +367,22 @@ class CapturedLiveTransition:
         }
 
 
+def _preflight_private_publication_output(value: Path | str) -> Path:
+    """Reject an unsafe or occupied destination before touching live runtime."""
+
+    if not isinstance(value, (str, Path)):
+        raise RecoveryContractError("private DART bundle output must be a path")
+    output = Path(value)
+    if output.is_symlink() or not output.name or output.parent.is_symlink() or not output.parent.is_dir():
+        raise RecoveryContractError("private DART bundle output must name a non-symlink path")
+    # Keep the equivalent publication-time guard as protection against a race,
+    # but an already-occupied path is a pure CPU/configuration error and must
+    # not cause evaluator construction, reset, or a live control step.
+    if os.path.lexists(output):
+        raise RecoveryContractError("refusing to overwrite an existing private DART publication path")
+    return output
+
+
 @dataclass(frozen=True)
 class PrivateEpisodeWriterConfig:
     """Pins for the DATA-owned private episode bundle writer.
@@ -393,9 +409,7 @@ class PrivateEpisodeWriterConfig:
     fresh_reset_payload: Mapping[str, object] | None = None
 
     def __post_init__(self) -> None:
-        output = Path(self.output)
-        if output.is_symlink() or not output.name or output.parent.is_symlink() or not output.parent.is_dir():
-            raise RecoveryContractError("private DART bundle output must name a non-symlink path")
+        output = _preflight_private_publication_output(self.output)
         object.__setattr__(self, "output", output)
         if not isinstance(self.source_episode_id, str) or not self.source_episode_id:
             raise RecoveryContractError("private DART source_episode_id must be nonempty text")
@@ -1978,6 +1992,7 @@ def collect_dart_live_candidate(request: Mapping[str, object]) -> DartCollection
             "live factory request private_writer.outcome_evidence must be null; "
             "this fresh rollout has no post-run outcome evidence provider"
         )
+    writer_output = _preflight_private_publication_output(writer_raw.pop("output"))
     run_id, max_control_steps = raw["run_id"], raw["max_control_steps"]
     if not isinstance(run_id, str) or not run_id or run_id != source.collection_run_id:
         raise RecoveryContractError("run_id must equal the sealed candidate source collection_run_id")
@@ -2005,18 +2020,25 @@ def collect_dart_live_candidate(request: Mapping[str, object]) -> DartCollection
         max_control_steps=max_control_steps,
         runtime_plan=runtime_plan,
     )
-    runtime_session = factory.runtime_session
-    writer_config = PrivateEpisodeWriterConfig(
-        output=Path(writer_raw.pop("output")),
-        source=source,
-        verified_membership=verified_membership,
-        runtime_session=runtime_session,
-        teacher=teacher,
-        outcome_evidence=None,
-        fresh_reset_payload=factory.fresh_reset_payload,
-        **writer_raw,
-    )
-    writer = build_private_episode_bundle_writer(writer_config)
+    # ``run_live_grasp_collection`` owns shutdown once it starts.  Keep the
+    # small gap between factory creation and that call covered too: config or
+    # callback construction cannot leak a fresh evaluator/reset when it fails.
+    try:
+        runtime_session = factory.runtime_session
+        writer_config = PrivateEpisodeWriterConfig(
+            output=writer_output,
+            source=source,
+            verified_membership=verified_membership,
+            runtime_session=runtime_session,
+            teacher=teacher,
+            outcome_evidence=None,
+            fresh_reset_payload=factory.fresh_reset_payload,
+            **writer_raw,
+        )
+        writer = build_private_episode_bundle_writer(writer_config)
+    except BaseException:
+        factory.close()
+        raise
     if mode == "original_gaussian_one_pass_partial_dart":
         noise, steps, original_binding = collection_args
         return run_live_grasp_collection(
