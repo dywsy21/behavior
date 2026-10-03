@@ -1,11 +1,11 @@
 # DART collection interface and preflight guide
 
-Status (2026-10-03): this is an operational interface guide for the pending
-factory candidate `ece9a08203c3b7e9627d261df68e26fd36f35a33` plus
-`40d79c7f008a5b3308285e297782d7f3b6307101`.  It is **not approved**, has
-only CPU fixtures, and has produced no simulator trajectory or DART data.
-It must not be used to accept an EULA, install Isaac/OmniGibson, download
-assets, select a GPU, or run a collection job.
+Status (2026-10-03): reviewed factory tip
+`d995054e6e17abe8631c97c74dd524ec5217d976` is integrated as exact approved
+source/test blobs and CPU-verified, including `100 passed, 11 subtests passed`
+in the root targeted-plus-adjacent suite.  It has produced no simulator
+trajectory or DART data.  It must not be used to accept an EULA, install
+Isaac/OmniGibson, download assets, select a GPU, or run a collection job.
 
 ## Scope and gates
 
@@ -18,7 +18,7 @@ Before a command is permitted, all of the following must be real, sealed
 inputs—not placeholders copied from this document:
 
 - an independently approved factory chain, using one copy only of
-  `a988 → 954 → 3c451 → 9e81 → ece9 → 40d79`;
+  `a988 → 954 → 3c451 → 9e81 → ece9 → 40d79 → 54e394 → d995`;
 - an authorized, compatible RTX runtime with the required NVIDIA and
   BEHAVIOR terms already accepted by the user;
 - a fresh output path, source-group membership/inventory pin, runtime-session
@@ -74,11 +74,11 @@ groups, teacher receipt or calibration values.
 
 ### Reset provenance is minted, not pre-filled
 
-The current `40d79` candidate is blocked because it accepted a
+Historical `40d79` review found it accepted a
 pre-filled `runtime_session.reset_load_task_instance_receipt_sha256` without
 deriving it from, or comparing it with, the factory's actual `load_batch`.
-Until the follow-up is independently approved, this guide is not executable.
-The corrected request semantics are: `runtime_session` carries only the
+The independently approved and integrated follow-up requires:
+`runtime_session` carries only the
 expected plan/pins, rejects reset or snapshot preclaims, and its reset SHA is
 `null` or absent; after its own `load_batch` and first actual RGB/state
 capture, the factory must mint the reset receipt, preserve its payload and
@@ -104,11 +104,11 @@ runtime mismatch, unsafe teacher/runtime condition, stale observation/action
 receipt, or budget stop is a stop-and-report condition—not a reason to repair
 pins or rerun automatically.
 
-The pending `d995054e6e17abe8631c97c74dd524ec5217d976` follow-up additionally
+The integrated `d995054e6e17abe8631c97c74dd524ec5217d976` code additionally
 requires a fresh-output preflight **before** any runtime/evaluator creation,
 and idempotent cleanup of every owned post-create resource on writer/callback,
-mid-run, or normal-completion paths.  This is a conditional contract pending
-independent review; it does not authorize a live run.
+mid-run, or normal-completion paths.  CPU verification of this contract does
+not authorize a live run.
 
 ## Private publication layout and validation
 
