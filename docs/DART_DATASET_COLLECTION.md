@@ -66,10 +66,11 @@ bounded_dart
 
 The unused mode block is `null`.  The request's `run_id` must equal the sealed
 source collection run ID.  `private_writer` names a **new** output plus its
-collector/capture/actor-observation provenance and explicit outcome evidence;
-it cannot overwrite an existing publication.  Do not create a sample request
-with invented paths, identifiers, hashes, source groups, teacher receipt or
-calibration values.
+collector/capture/actor-observation provenance; for this live candidate its
+`outcome_evidence` is explicitly `null`, so the request cannot pre-claim a
+future physical outcome.  It cannot overwrite an existing publication.  Do
+not create a sample request with invented paths, identifiers, hashes, source
+groups, teacher receipt or calibration values.
 
 ### Reset provenance is minted, not pre-filled
 
@@ -78,11 +79,12 @@ pre-filled `runtime_session.reset_load_task_instance_receipt_sha256` without
 deriving it from, or comparing it with, the factory's actual `load_batch`.
 Until the follow-up is independently approved, this guide is not executable.
 The corrected request semantics are: `runtime_session` carries only the
-expected plan/pins and the reset SHA is `null` or absent; after its own
-`load_batch` and first actual RGB/state capture, the factory must mint the
-reset receipt, preserve its payload and hash in private provenance, and pass
-that same first capture into collection.  Any failure must publish no output.
-Callers must not claim or supply a future physical-reset receipt.
+expected plan/pins, rejects reset or snapshot preclaims, and its reset SHA is
+`null` or absent; after its own `load_batch` and first actual RGB/state
+capture, the factory must mint the reset receipt, preserve its payload and
+hash in private provenance, and pass that same first capture into collection.
+Any failure must publish no output.  Callers must not claim or supply a future
+physical-reset receipt.
 
 ## Invocation after approval and live preflight
 
@@ -101,6 +103,12 @@ fresh private publication root.  A nonzero CLI exit, missing sealed input,
 runtime mismatch, unsafe teacher/runtime condition, stale observation/action
 receipt, or budget stop is a stop-and-report condition—not a reason to repair
 pins or rerun automatically.
+
+The pending `d995054e6e17abe8631c97c74dd524ec5217d976` follow-up additionally
+requires a fresh-output preflight **before** any runtime/evaluator creation,
+and idempotent cleanup of every owned post-create resource on writer/callback,
+mid-run, or normal-completion paths.  This is a conditional contract pending
+independent review; it does not authorize a live run.
 
 ## Private publication layout and validation
 
