@@ -21,9 +21,9 @@ inputs—not placeholders copied from this document:
   `a988 → 954 → 3c451 → 9e81 → ece9 → 40d79`;
 - an authorized, compatible RTX runtime with the required NVIDIA and
   BEHAVIOR terms already accepted by the user;
-- a fresh output path, source-group membership/inventory pin, runtime/session
-  receipt, teacher specification/reference/receipt, calibration receipt and
-  source provenance;
+- a fresh output path, source-group membership/inventory pin, runtime-session
+  **plan/pins**, teacher specification/reference/receipt, calibration receipt
+  and source provenance; and
 - a qualified expert/teacher and a fresh noisy-state replan path; and
 - an explicit run budget, stop condition, root visual-QA plan and no active
   shared-environment conflict.
@@ -71,6 +71,19 @@ it cannot overwrite an existing publication.  Do not create a sample request
 with invented paths, identifiers, hashes, source groups, teacher receipt or
 calibration values.
 
+### Reset provenance is minted, not pre-filled
+
+The current `40d79` candidate is blocked because it accepted a
+pre-filled `runtime_session.reset_load_task_instance_receipt_sha256` without
+deriving it from, or comparing it with, the factory's actual `load_batch`.
+Until the follow-up is independently approved, this guide is not executable.
+The corrected request semantics are: `runtime_session` carries only the
+expected plan/pins and the reset SHA is `null` or absent; after its own
+`load_batch` and first actual RGB/state capture, the factory must mint the
+reset receipt, preserve its payload and hash in private provenance, and pass
+that same first capture into collection.  Any failure must publish no output.
+Callers must not claim or supply a future physical-reset receipt.
+
 ## Invocation after approval and live preflight
 
 Use a future validated simulator interpreter and an isolated frozen checkout.
@@ -112,7 +125,8 @@ no injected noise or file existence becomes a BC-positive or physical outcome.
 
 Validate the factory-owned publication with the approved reader, checking the
 manifest/file receipts, candidate-only flags, source membership, teacher and
-runtime lineage, per-transition action/clock receipts, RGB asset hashes and
-freshness.  Only then may an explicitly authorized copy for root QA be made.
+runtime lineage, minted reset receipt, per-transition action/clock receipts,
+RGB asset hashes and freshness.  Only then may an explicitly authorized copy
+for root QA be made.
 No actor-facing release, training dataset, success/failed/recovery label or
 DART completion claim follows from this guide or from a CPU fixture.
