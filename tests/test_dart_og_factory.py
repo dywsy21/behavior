@@ -38,6 +38,7 @@ from g05.recovery.dart_og_factory import (
     DartOgFactoryPins,
     DartOgGraspFactory,
     DartOgRuntimeHooks,
+    FreshRuntimeSessionPlan,
     PinnedSingleEnvNativeReaderView,
     TrainSourceSelection,
     build_private_episode_bundle_writer,
@@ -256,7 +257,7 @@ def _binding(source: CandidateSourceReceipt) -> SealedGraspBinding:
         source_group_id=source.source_group_id,
         source_release_sha256=source.source_release_sha256,
         source_group_member_sha256=_sha("source-member"),
-        source_group_index_manifest_sha256=_sha("source-index"),
+        source_group_index_manifest_sha256=_sha("group-index"),
         source_role="student_candidate",
         original_split="train",
         intent_bundle_id="sealed-grasp-intent",
@@ -307,6 +308,15 @@ def _runtime_session(source: CandidateSourceReceipt) -> RuntimeSessionReceipt:
         runtime_build_sha256=_sha("runtime"),
         asset_config_sha256=_sha("assets"),
         reset_load_task_instance_receipt_sha256=_sha("fresh-reset"),
+    )
+
+
+def _runtime_plan(source: CandidateSourceReceipt) -> FreshRuntimeSessionPlan:
+    return FreshRuntimeSessionPlan(
+        runtime_session_id=source.collection_run_id,
+        task_instance_id=source.parent_task_instance_id,
+        runtime_build_sha256=_sha("runtime"),
+        asset_config_sha256=_sha("assets"),
     )
 
 
@@ -453,7 +463,8 @@ def test_full_live_request_dispatches_to_factory_and_publishes_candidate_contain
             pass
 
         def verify_dart_membership(self, requested_source, requested_calibration):
-            assert requested_source == source and requested_calibration == calibration
+            assert requested_source == source
+            assert tuple(requested_calibration.source_group_ids) == calibration.source_group_ids
             return membership
 
     class CurrentTeacher:
@@ -484,6 +495,8 @@ def test_full_live_request_dispatches_to_factory_and_publishes_candidate_contain
             runtime_build_sha256=runtime_session.runtime_build_sha256,
             asset_config_sha256=runtime_session.asset_config_sha256,
         ),
+        runtime_session=runtime_session,
+        fresh_reset_payload=None,
         close=hooks.close,
     )
     created: dict[str, object] = {}
@@ -518,7 +531,14 @@ def test_full_live_request_dispatches_to_factory_and_publishes_candidate_contain
         "teacher_spec": _full_teacher_spec(binding),
         "teacher_reference": {"schema": "fixture-private-reference-v1"},
         "teacher_receipt": teacher.public(),
-        "runtime_session": runtime_session.public(),
+        "runtime_session": {
+            "runtime_session_id": runtime_session.runtime_session_id,
+            "task_instance_id": runtime_session.task_instance_id,
+            "runtime_build_sha256": runtime_session.runtime_build_sha256,
+            "asset_config_sha256": runtime_session.asset_config_sha256,
+            "snapshot_mode": "no_restore_fresh_rollout",
+            "reset_load_task_instance_receipt_sha256": None,
+        },
         "calibration": calibration.public(),
         "source_membership": {
             "index_root": str(tmp_path / "source-index"),
@@ -553,9 +573,25 @@ def test_full_live_request_dispatches_to_factory_and_publishes_candidate_contain
         },
         "bounded_dart": None,
     }
+    stale_reset_request = json.loads(json.dumps(raw_request))
+    stale_reset_request["runtime_session"]["reset_load_task_instance_receipt_sha256"] = _sha("future-reset")
+    with pytest.raises(RecoveryContractError, match="must be null or absent"):
+        collect_dart_live_candidate(stale_reset_request)
+    assert not (tmp_path / "published-private-container").exists()
+    supplied_outcome_request = json.loads(json.dumps(raw_request))
+    supplied_outcome_request["private_writer"]["outcome_evidence"] = {
+        "label": "OUTCOME_UNKNOWN",
+        "observed_policy_clock": 0,
+        "available_policy_clock": 0,
+        "evidence_sha256": _sha("predeclared-outcome"),
+    }
+    with pytest.raises(RecoveryContractError, match="outcome_evidence must be null"):
+        collect_dart_live_candidate(supplied_outcome_request)
+    assert not (tmp_path / "published-private-container").exists()
     result = collect_dart_live_candidate(raw_request)
     assert len(result.records) == 1
     assert created["source"] == source and created["train_selection"] == _selection(source)
+    assert created["runtime_plan"] == _runtime_plan(source)
     publication = load_private_episode_publication(tmp_path / "published-private-container")
     assert publication.transition_count == 1 and publication.training_eligible is False
 
@@ -642,7 +678,23 @@ def test_private_writer_encodes_captured_rgb_and_keeps_raw_state61_out_of_actor_
     pre = hooks.observe_current()
     applied = hooks.apply_current_raw23([0.125] * 23, pre)
     source, teacher, membership = _source(), _unqualified_teacher(), _verified_membership(_source())
-    runtime = _runtime_session(source)
+    captured_pre = hooks.transitions[0].pre
+    fresh_reset_payload = {
+        "schema": "p107-dart-live-fresh-reset-v1",
+        "runtime_session_id": source.collection_run_id,
+        "initial_observation": {
+            "policy_clock": captured_pre.dart.policy_clock,
+            "state61_sha256": captured_pre.dart.state61_sha256,
+            "observation_sha256": captured_pre.dart.observation_sha256,
+            "simulation_tick": captured_pre.sim_step,
+            "simulation_time_seconds": captured_pre.sim_time_seconds,
+            "views": [view.public() for view in captured_pre.rgb],
+        },
+    }
+    runtime = replace(
+        _runtime_session(source),
+        reset_load_task_instance_receipt_sha256=canonical_sha256(fresh_reset_payload),
+    )
     intent = "sealed-grasp-intent"
     requested_native = canonical_native_raw23_float32([0.125] * 23)
     record = {
@@ -696,6 +748,7 @@ def test_private_writer_encodes_captured_rgb_and_keeps_raw_state61_out_of_actor_
         collector_code_sha256=_sha("collector-code"),
         capture_adapter_sha256=_sha("capture-adapter"),
         actor_observation_schema_sha256=_sha("actor-schema"),
+        fresh_reset_payload=fresh_reset_payload,
     )
     writer = build_private_episode_bundle_writer(writer_config)
     receipt = writer(
@@ -713,6 +766,7 @@ def test_private_writer_encodes_captured_rgb_and_keeps_raw_state61_out_of_actor_
     assert sidecar["collection_result"]["records"][0]["noise_profile"] == record["noise_profile"]
     assert sidecar["collection_result"]["records"][0]["calibration_receipt"] == record["calibration_receipt"]
     assert sidecar["training_eligible"] is False
+    assert sidecar["fresh_reset_payload"] == fresh_reset_payload
     tampered_sidecar = json.loads(json.dumps(sidecar))
     tampered_sidecar["captured_transition_receipts"][0]["post_observation_sha256"] = _sha("wrong-post-observation")
     _reseal_outer_sidecar_for_tamper_test(receipt.path, tampered_sidecar)
@@ -1103,19 +1157,65 @@ def test_factory_lazy_wiring_loads_only_the_sealed_train_instance_and_scalar_rea
         pins=pins,
         source=source,
         train_selection=_selection(source),
+        verified_membership=_verified_membership(source),
         binding=binding,
         teacher_spec=_full_teacher_spec(binding),
         teacher_reference={"private_original_semantic_json": "[]"},
-        run_id="live-test",
+        run_id=source.collection_run_id,
         max_control_steps=3,
+        runtime_plan=_runtime_plan(source),
     )
     assert evaluator.loaded_batches == [{0: source.parent_task_instance_id}]
     assert captured["cfg"].num_envs == 1
     assert isinstance(captured["reader_env"], PinnedSingleEnvNativeReaderView)
     assert captured["reader_env"].scene is evaluator.scene
     assert captured["validated_spec"] == _full_teacher_spec(binding)
+    assert factory.runtime_session.reset_load_task_instance_receipt_sha256 == canonical_sha256(factory.fresh_reset_payload)
+    first = factory.dart_runtime.observe()
+    assert first.observation_sha256 == factory.fresh_reset_payload["initial_observation"]["observation_sha256"]
+    assert first.policy_clock == 0
     factory.close()
     assert evaluator.closed is True
+
+
+def test_factory_rejects_binding_role_member_or_index_before_evaluator_creation(monkeypatch, tmp_path) -> None:
+    config, r1pro = tmp_path / "evaluator.yaml", tmp_path / "r1pro.yaml"
+    config.write_text("fixture evaluator config", encoding="utf-8")
+    r1pro.write_text("fixture r1pro config", encoding="utf-8")
+    pins = DartOgFactoryPins(
+        og_source_commit="b" * 40,
+        evaluator_config_path=config,
+        evaluator_config_sha256=sha256(config.read_bytes()).hexdigest(),
+        r1pro_config_path=r1pro,
+        r1pro_config_sha256=sha256(r1pro.read_bytes()).hexdigest(),
+        runtime_build_sha256=_sha("runtime"),
+        asset_config_sha256=_sha("assets"),
+    )
+    source, evaluator = _source(), _FakeEvaluator()
+    cfg = _Config(mode="train", task=SimpleNamespace(name="task_name_from_source_index"), seed=123)
+    captured = _install_fake_pinned_runtime(monkeypatch, cfg=cfg, evaluator=evaluator)
+    binding = _binding(source)
+    invalid_bindings = (
+        replace(binding, source_role="annotation_calibration"),
+        replace(binding, source_group_member_sha256=_sha("wrong-member")),
+        replace(binding, source_group_index_manifest_sha256=_sha("wrong-index")),
+    )
+    for invalid in invalid_bindings:
+        with pytest.raises(RecoveryContractError, match="GRASP binding differs"):
+            DartOgGraspFactory.create(
+                pins=pins,
+                source=source,
+                train_selection=_selection(source),
+                verified_membership=_verified_membership(source),
+                binding=invalid,
+                teacher_spec=_full_teacher_spec(invalid),
+                teacher_reference={"private_original_semantic_json": "[]"},
+                run_id=source.collection_run_id,
+                max_control_steps=3,
+                runtime_plan=_runtime_plan(source),
+            )
+    assert "cfg" not in captured
+    assert evaluator.closed is False
 
 
 def test_factory_rejects_implicit_public_test_before_evaluator_creation(monkeypatch, tmp_path) -> None:
@@ -1140,11 +1240,13 @@ def test_factory_rejects_implicit_public_test_before_evaluator_creation(monkeypa
             pins=pins,
             source=source,
             train_selection=_selection(source),
+            verified_membership=_verified_membership(source),
             binding=binding,
             teacher_spec=_full_teacher_spec(binding),
             teacher_reference={"private_original_semantic_json": "[]"},
-            run_id="live-test",
+            run_id=source.collection_run_id,
             max_control_steps=3,
+            runtime_plan=_runtime_plan(source),
         )
     assert "cfg" not in captured
     assert evaluator.closed is False
@@ -1173,10 +1275,12 @@ def test_factory_closes_evaluator_when_loaded_scene_differs_from_sealed_train_se
             pins=pins,
             source=source,
             train_selection=_selection(source),
+            verified_membership=_verified_membership(source),
             binding=binding,
             teacher_spec=_full_teacher_spec(binding),
             teacher_reference={"private_original_semantic_json": "[]"},
-            run_id="live-test",
+            run_id=source.collection_run_id,
             max_control_steps=3,
+            runtime_plan=_runtime_plan(source),
         )
     assert evaluator.closed is True

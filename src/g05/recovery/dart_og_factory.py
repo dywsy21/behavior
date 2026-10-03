@@ -140,6 +140,27 @@ class DartOgFactoryPins:
 
 
 @dataclass(frozen=True)
+class FreshRuntimeSessionPlan:
+    """Pre-reset runtime facts; the reset receipt can only be minted live."""
+
+    runtime_session_id: str
+    task_instance_id: int
+    runtime_build_sha256: str
+    asset_config_sha256: str
+    snapshot_mode: str = "no_restore_fresh_rollout"
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.runtime_session_id, str) or not self.runtime_session_id:
+            raise RecoveryContractError("fresh runtime session plan needs a nonempty session ID")
+        if type(self.task_instance_id) is not int or self.task_instance_id < 1:
+            raise RecoveryContractError("fresh runtime session plan needs a positive task instance ID")
+        for field in ("runtime_build_sha256", "asset_config_sha256"):
+            require_sha256(getattr(self, field), field=field)
+        if self.snapshot_mode != "no_restore_fresh_rollout":
+            raise RecoveryContractError("live DART factory supports only no_restore_fresh_rollout")
+
+
+@dataclass(frozen=True)
 class TrainSourceSelection:
     """The explicit TRAIN instance a fresh official evaluator must load.
 
@@ -369,6 +390,7 @@ class PrivateEpisodeWriterConfig:
     capture_adapter_sha256: str
     actor_observation_schema_sha256: str
     outcome_evidence: OutcomeEvidenceReceipt | None = None
+    fresh_reset_payload: Mapping[str, object] | None = None
 
     def __post_init__(self) -> None:
         output = Path(self.output)
@@ -408,6 +430,8 @@ class PrivateEpisodeWriterConfig:
                 raise RecoveryContractError("private DART writer outcome evidence must be explicit")
             if self.outcome_evidence.label != "OUTCOME_UNKNOWN":
                 raise RecoveryContractError("live factory has no official/local outcome verifier; only explicit UNKNOWN is allowed")
+        if self.fresh_reset_payload is not None and not isinstance(self.fresh_reset_payload, Mapping):
+            raise RecoveryContractError("private DART fresh reset payload must be an object when supplied")
 
 
 @dataclass(frozen=True)
@@ -639,11 +663,47 @@ def _validate_collection_execution_provenance(
     raise RecoveryContractError("private DART execution provenance has an unsupported factory mode")
 
 
+def _validated_fresh_reset_payload(
+    value: Mapping[str, object] | None,
+    *,
+    records: Sequence[Mapping[str, object]],
+    transitions: Sequence[CapturedLiveTransition],
+) -> Mapping[str, object] | None:
+    """Bind a minted post-reset capture to the first published transition."""
+
+    if value is None:
+        return None
+    payload = _mapping(value, field="private DART fresh reset payload")
+    if payload.get("schema") != "p107-dart-live-fresh-reset-v1":
+        raise RecoveryContractError("private DART fresh reset payload has an unknown schema")
+    if not records or not transitions:
+        raise RecoveryContractError("private DART fresh reset payload needs a first captured transition")
+    runtime = _mapping(records[0].get("runtime_session"), field="private DART fresh reset runtime session")
+    if payload.get("runtime_session_id") != runtime.get("runtime_session_id"):
+        raise RecoveryContractError("private DART fresh reset payload has the wrong runtime session")
+    if runtime.get("reset_load_task_instance_receipt_sha256") != canonical_sha256(payload):
+        raise RecoveryContractError("private DART fresh reset payload hash differs from runtime session receipt")
+    initial = _mapping(payload.get("initial_observation"), field="private DART fresh reset initial observation")
+    pre = transitions[0].pre
+    expected_initial = {
+        "policy_clock": pre.dart.policy_clock,
+        "state61_sha256": pre.dart.state61_sha256,
+        "observation_sha256": pre.dart.observation_sha256,
+        "simulation_tick": pre.sim_step,
+        "simulation_time_seconds": pre.sim_time_seconds,
+        "views": [view.public() for view in pre.rgb],
+    }
+    if dict(initial) != expected_initial:
+        raise RecoveryContractError("private DART fresh reset payload is not the first captured observation")
+    return payload
+
+
 def _private_collection_payload(
     result: DartCollectionResult,
     transitions: tuple[CapturedLiveTransition, ...],
     *,
     collection_execution_provenance: Mapping[str, object] | None,
+    fresh_reset_payload: Mapping[str, object] | None,
 ) -> dict[str, object]:
     """Preserve collection math/provenance without exporting it to actor rows."""
 
@@ -664,6 +724,9 @@ def _private_collection_payload(
         if not isinstance(record.get("noise_profile"), Mapping) or not isinstance(record.get("calibration_receipt"), Mapping):
             raise RecoveryContractError("private collection sidecar requires noise and calibration provenance on every record")
     execution = _validate_collection_execution_provenance(collection_execution_provenance, records=records)
+    fresh_reset = _validated_fresh_reset_payload(
+        fresh_reset_payload, records=records, transitions=transitions
+    )
     transition_receipts = []
     for transition in transitions:
         transition_receipts.append(
@@ -678,7 +741,7 @@ def _private_collection_payload(
                 "post_simulation_tick": transition.post.sim_step,
             }
         )
-    return {
+    payload: dict[str, object] = {
         "schema": _PRIVATE_COLLECTION_SCHEMA,
         "status": "PRIVATE_DART_CANDIDATE_ONLY",
         **CANDIDATE_ONLY_FLAGS,
@@ -688,6 +751,10 @@ def _private_collection_payload(
         "collection_execution_provenance_sha256": canonical_sha256(execution),
         "captured_transition_receipts": transition_receipts,
     }
+    if fresh_reset is not None:
+        payload["fresh_reset_payload"] = dict(fresh_reset)
+        payload["fresh_reset_payload_sha256"] = canonical_sha256(fresh_reset)
+    return payload
 
 
 def load_private_episode_publication(
@@ -790,6 +857,33 @@ def load_private_episode_publication(
         }
         if dict(captured) != expected_captured:
             raise RecoveryContractError("private DART captured transition receipt differs from sealed episode row")
+    fresh_reset = sidecar.get("fresh_reset_payload")
+    if fresh_reset is not None:
+        fresh_reset_mapping = _mapping(fresh_reset, field="private DART fresh reset payload")
+        if sidecar.get("fresh_reset_payload_sha256") != canonical_sha256(fresh_reset_mapping):
+            raise RecoveryContractError("private DART fresh reset payload hash is invalid")
+        first_row = loaded.rows[0]
+        first_pre = _mapping(first_row.get("pre_observation"), field="private DART first pre observation")
+        first_clock = _mapping(first_row.get("clock"), field="private DART first clock")
+        expected_initial = {
+            "policy_clock": first_pre.get("policy_clock"),
+            "state61_sha256": first_pre.get("state61_sha256"),
+            "observation_sha256": first_pre.get("observation_sha256"),
+            "simulation_tick": first_clock.get("simulation_tick_start"),
+            "simulation_time_seconds": first_clock.get("action_start_time_s"),
+        }
+        initial = _mapping(fresh_reset_mapping.get("initial_observation"), field="private DART sealed reset observation")
+        if any(initial.get(field) != expected for field, expected in expected_initial.items()):
+            raise RecoveryContractError("private DART fresh reset payload differs from first sealed episode observation")
+        views = initial.get("views")
+        if (
+            not isinstance(views, list)
+            or [view.get("camera_id") if isinstance(view, Mapping) else None for view in views] != list(_CAMERAS)
+        ):
+            raise RecoveryContractError("private DART fresh reset payload lacks all raw camera receipts")
+        runtime = _mapping(loaded.manifest.get("runtime_session"), field="private DART episode runtime session")
+        if runtime.get("reset_load_task_instance_receipt_sha256") != canonical_sha256(fresh_reset_mapping):
+            raise RecoveryContractError("private DART fresh reset payload differs from sealed runtime session")
     episode_receipts = [row.get("applied", {}).get("runtime_step_receipt_sha256") for row in loaded.rows]
     sidecar_receipts = []
     for record in records:
@@ -1081,6 +1175,7 @@ def build_private_episode_bundle_writer(config: PrivateEpisodeWriterConfig) -> C
                 result,
                 transitions,
                 collection_execution_provenance=collection_execution_provenance,
+                fresh_reset_payload=config.fresh_reset_payload,
             ),
         )
 
@@ -1146,6 +1241,7 @@ class DartOgRuntimeHooks:
         self._run_id, self._max = run_id, max_control_steps
         self._clock = 0
         self._last: CapturedLiveObservation | None = None
+        self._primed_fresh_reset = False
         self._transitions: list[CapturedLiveTransition] = []
         self._closed = False
 
@@ -1233,9 +1329,26 @@ class DartOgRuntimeHooks:
         if self._closed:
             raise RecoveryContractError("live DART runtime is closed")
         if self._last is not None:
+            if self._primed_fresh_reset:
+                self._primed_fresh_reset = False
+                return self._last.dart
             raise RecoveryContractError("live runtime needs its preceding observation consumed before another observe")
         self._last = self._capture_current(policy_clock=self._clock)
         return self._last.dart
+
+    def prime_fresh_reset_observation(self) -> CapturedLiveObservation:
+        """Capture the actual post-``load_batch`` state used by the first action.
+
+        The following ``observe`` returns this exact object rather than taking
+        a second, potentially different, pre-action capture.  This makes the
+        reset receipt evidence about the action sequence being published.
+        """
+
+        if self._closed or self._last is not None or self._transitions or self._clock != 0:
+            raise RecoveryContractError("fresh-reset observation can only be primed once before any live control")
+        self._last = self._capture_current(policy_clock=0)
+        self._primed_fresh_reset = True
+        return self._last
 
     def apply_current_raw23(self, requested23: Sequence[float], observation: DartObservation) -> AppliedActionReceipt:
         if self._closed:
@@ -1265,11 +1378,13 @@ class DartOgRuntimeHooks:
             terminated, truncated, _info = self._evaluator._apply_actions(action, [0])
         except RecoveryContractError:
             self._last = None
+            self._primed_fresh_reset = False
             raise
         except Exception as exc:
             # The action may have partially executed.  Drop the preceding
             # observation so callers cannot resend it after a runtime failure.
             self._last = None
+            self._primed_fresh_reset = False
             raise RecoveryContractError("pinned evaluator failed while applying raw23; no retry on stale state") from exc
         self._clock += 1
         post = self._capture_current(policy_clock=self._clock)
@@ -1293,6 +1408,7 @@ class DartOgRuntimeHooks:
         )
         transition = CapturedLiveTransition(pre=pre, post=post, applied=receipt)
         self._last = None
+        self._primed_fresh_reset = False
         self._transitions.append(transition)
         # A terminal step may have physically happened, but cannot become a
         # DART candidate because the generic collector has no terminal-row
@@ -1364,9 +1480,13 @@ class DartOgGraspFactory:
         evaluator: Any,
         pins: DartOgFactoryPins,
         train_selection: TrainSourceSelection,
+        runtime_session: RuntimeSessionReceipt,
+        fresh_reset_payload: Mapping[str, object],
     ) -> None:
         self.hooks, self.teacher, self.evaluator = hooks, teacher, evaluator
         self.pins, self.train_selection = pins, train_selection
+        self.runtime_session = runtime_session
+        self.fresh_reset_payload = dict(fresh_reset_payload)
         self.runtime = FreshRolloutRaw23Runtime(hooks)
         self.teacher_bridge = _PoseTeacherDartBridge(teacher=teacher, runtime=self.runtime)
         self.dart_runtime = _AcknowledgingRuntime(runtime=self.runtime, teacher=self.teacher_bridge)
@@ -1378,11 +1498,13 @@ class DartOgGraspFactory:
         pins: DartOgFactoryPins,
         source: CandidateSourceReceipt,
         train_selection: TrainSourceSelection,
+        verified_membership: VerifiedDartSourceMembership,
         binding: SealedGraspBinding,
         teacher_spec: Mapping[str, object],
         teacher_reference: Mapping[str, object],
         run_id: str,
         max_control_steps: int,
+        runtime_plan: FreshRuntimeSessionPlan,
     ) -> "DartOgGraspFactory":
         """Create the actual pinned evaluator / R1Pro / teacher wiring lazily."""
 
@@ -1393,6 +1515,27 @@ class DartOgGraspFactory:
         if not isinstance(train_selection, TrainSourceSelection):
             raise RecoveryContractError("live DART factory requires an explicit sealed TRAIN selection")
         train_selection.assert_source(source)
+        # Validate the full canonical member/index/role binding before an
+        # evaluator is constructed.  Matching just group/release would let a
+        # calibration-role binding borrow a student-candidate source receipt.
+        binding.assert_verified_dart_membership(verified_membership)
+        if (
+            verified_membership.candidate.source_group_id != source.source_group_id
+            or verified_membership.candidate.source_release_sha256 != source.source_release_sha256
+            or verified_membership.candidate.task_index != source.parent_task_index
+            or verified_membership.candidate.task_instance_id != source.parent_task_instance_id
+            or verified_membership.candidate.original_split != "train"
+            or verified_membership.candidate.usage_role != "student_candidate"
+        ):
+            raise RecoveryContractError("live DART factory source is not verified TRAIN student_candidate membership")
+        if (
+            runtime_plan.runtime_session_id != run_id
+            or run_id != source.collection_run_id
+            or runtime_plan.task_instance_id != source.parent_task_instance_id
+            or runtime_plan.runtime_build_sha256 != pins.runtime_build_sha256
+            or runtime_plan.asset_config_sha256 != pins.asset_config_sha256
+        ):
+            raise RecoveryContractError("fresh runtime session plan differs from the sealed source/pins")
         try:
             from omegaconf import OmegaConf  # lazy: unavailable in CPU contract-only environments
             import torch
@@ -1473,6 +1616,42 @@ class DartOgGraspFactory:
             hooks = DartOgRuntimeHooks(
                 evaluator=evaluator, torch_module=torch, og_module=og, run_id=run_id, max_control_steps=max_control_steps
             )
+            initial = hooks.prime_fresh_reset_observation()
+            fresh_reset_payload = {
+                "schema": "p107-dart-live-fresh-reset-v1",
+                "runtime_session_id": runtime_plan.runtime_session_id,
+                "source_group_id": source.source_group_id,
+                "source_release_sha256": source.source_release_sha256,
+                "parent_task_id": source.parent_task_id,
+                "parent_task_index": source.parent_task_index,
+                "task_instance_id": train_selection.task_instance_id,
+                "task_seed": train_selection.task_seed,
+                "source_selection_sha256": train_selection.source_selection_sha256,
+                "og_source_commit": pins.og_source_commit,
+                "evaluator_config_sha256": pins.evaluator_config_sha256,
+                "r1pro_config_sha256": pins.r1pro_config_sha256,
+                "runtime_build_sha256": pins.runtime_build_sha256,
+                "asset_config_sha256": pins.asset_config_sha256,
+                "evaluator_mode": "train",
+                "num_envs": 1,
+                "load_batch": {"0": train_selection.task_instance_id},
+                "initial_observation": {
+                    "policy_clock": initial.dart.policy_clock,
+                    "state61_sha256": initial.dart.state61_sha256,
+                    "observation_sha256": initial.dart.observation_sha256,
+                    "simulation_tick": initial.sim_step,
+                    "simulation_time_seconds": initial.sim_time_seconds,
+                    "views": [view.public() for view in initial.rgb],
+                },
+            }
+            runtime_session = RuntimeSessionReceipt(
+                runtime_session_id=runtime_plan.runtime_session_id,
+                task_instance_id=runtime_plan.task_instance_id,
+                runtime_build_sha256=runtime_plan.runtime_build_sha256,
+                asset_config_sha256=runtime_plan.asset_config_sha256,
+                reset_load_task_instance_receipt_sha256=canonical_sha256(fresh_reset_payload),
+                snapshot_mode="no_restore_fresh_rollout",
+            )
             world = ExistingPrivilegedReaderWorld(
                 privileged_reader=reader, kinematics=kin, servo_model=model, fresh_query_receipt=fresh_private_receipt
             )
@@ -1486,6 +1665,8 @@ class DartOgGraspFactory:
                 evaluator=evaluator,
                 pins=pins,
                 train_selection=train_selection,
+                runtime_session=runtime_session,
+                fresh_reset_payload=fresh_reset_payload,
             )
         except Exception:
             for owner in (evaluator, getattr(evaluator, "env", None)):
@@ -1537,6 +1718,9 @@ def run_live_grasp_collection(
         raise RecoveryContractError("live GRASP factory does not restore demo or external snapshots")
     if runtime_session.task_instance_id != source.parent_task_instance_id:
         raise RecoveryContractError("runtime session instance differs from live TRAIN source")
+    factory_session = getattr(factory, "runtime_session", None)
+    if factory_session is not None and factory_session != runtime_session:
+        raise RecoveryContractError("live DART runtime session was not minted by this fresh factory reset")
     factory.train_selection.assert_source(source)
     if runtime_session.task_instance_id != factory.train_selection.task_instance_id:
         raise RecoveryContractError("runtime session instance differs from loaded TRAIN selection")
@@ -1648,6 +1832,22 @@ def _parse_calibration(payload: object) -> CalibrationReceipt:
     return _construct(CalibrationReceipt, raw, field="calibration")
 
 
+def _parse_fresh_runtime_plan(payload: object) -> FreshRuntimeSessionPlan:
+    """Reject a purported reset receipt before this process performs reset."""
+
+    raw = dict(_mapping(payload, field="runtime_session"))
+    supplied_reset = raw.pop("reset_load_task_instance_receipt_sha256", None)
+    if supplied_reset is not None:
+        raise RecoveryContractError(
+            "runtime_session.reset_load_task_instance_receipt_sha256 must be null or absent; "
+            "this invocation mints it after load_batch and its first capture"
+        )
+    supplied_snapshot = raw.pop("same_session_snapshot_receipt_sha256", None)
+    if supplied_snapshot is not None:
+        raise RecoveryContractError("runtime_session may not supply a snapshot receipt for fresh no-restore collection")
+    return _construct(FreshRuntimeSessionPlan, raw, field="runtime_session")
+
+
 def _parse_original_collection(payload: object) -> tuple[OriginalGaussianNoise, int, OriginalGaussianCalibrationBinding]:
     raw = _mapping(payload, field="original_gaussian")
     noise = _construct(OriginalGaussianNoise, raw.get("noise"), field="original_gaussian.noise")
@@ -1743,7 +1943,7 @@ def collect_dart_live_candidate(request: Mapping[str, object]) -> DartCollection
     teacher_spec = dict(_mapping(raw["teacher_spec"], field="teacher_spec"))
     teacher_reference = dict(_mapping(raw["teacher_reference"], field="teacher_reference"))
     teacher = _construct(TeacherReceipt, raw["teacher_receipt"], field="teacher_receipt")
-    runtime_session = _construct(RuntimeSessionReceipt, raw["runtime_session"], field="runtime_session")
+    runtime_plan = _parse_fresh_runtime_plan(raw["runtime_session"])
     calibration = _parse_calibration(raw["calibration"])
     membership_raw = _mapping(raw["source_membership"], field="source_membership")
     index_root = membership_raw.get("index_root")
@@ -1773,15 +1973,11 @@ def collect_dart_live_candidate(request: Mapping[str, object]) -> DartCollection
     if set(writer_raw) != allowed_writer:
         raise RecoveryContractError("private_writer must name exact output/provenance and explicit outcome_evidence")
     outcome = writer_raw.pop("outcome_evidence")
-    writer_config = PrivateEpisodeWriterConfig(
-        output=Path(writer_raw.pop("output")),
-        source=source,
-        verified_membership=verified_membership,
-        runtime_session=runtime_session,
-        teacher=teacher,
-        outcome_evidence=None if outcome is None else _construct(OutcomeEvidenceReceipt, outcome, field="private_writer.outcome_evidence"),
-        **writer_raw,
-    )
+    if outcome is not None:
+        raise RecoveryContractError(
+            "live factory request private_writer.outcome_evidence must be null; "
+            "this fresh rollout has no post-run outcome evidence provider"
+        )
     run_id, max_control_steps = raw["run_id"], raw["max_control_steps"]
     if not isinstance(run_id, str) or not run_id or run_id != source.collection_run_id:
         raise RecoveryContractError("run_id must equal the sealed candidate source collection_run_id")
@@ -1801,11 +1997,24 @@ def collect_dart_live_candidate(request: Mapping[str, object]) -> DartCollection
         pins=pins,
         source=source,
         train_selection=train_selection,
+        verified_membership=verified_membership,
         binding=binding,
         teacher_spec=teacher_spec,
         teacher_reference=teacher_reference,
         run_id=run_id,
         max_control_steps=max_control_steps,
+        runtime_plan=runtime_plan,
+    )
+    runtime_session = factory.runtime_session
+    writer_config = PrivateEpisodeWriterConfig(
+        output=Path(writer_raw.pop("output")),
+        source=source,
+        verified_membership=verified_membership,
+        runtime_session=runtime_session,
+        teacher=teacher,
+        outcome_evidence=None,
+        fresh_reset_payload=factory.fresh_reset_payload,
+        **writer_raw,
     )
     writer = build_private_episode_bundle_writer(writer_config)
     if mode == "original_gaussian_one_pass_partial_dart":
