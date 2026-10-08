@@ -16,7 +16,6 @@ CONTROLLER = Path("/run/ti/BEHAVIOR2026/eval20x3/selected_eval_task.py")
 SIM_ROOT = Path("/run/ti/behavior_stage3_20260930")
 G05 = Path("/run/ti/rl_memlite_stage1_20261006/code/g05_sft_6af1ab9")
 MODEL_PYTHON = Path("/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python")
-SIM_PYTHON = SIM_ROOT / "envs/sim/bin/python"
 
 
 def atomic_json(path, value):
@@ -129,10 +128,9 @@ def main():
         wait_for(worker / "policy.ready", policy, 1200, "policy")
 
         state.update(status="running_simulator", policy_ready=time.time())
-        sim_env = env.copy()
-        sim_env["PYTHONPATH"] = f"{SOURCE}:{SIM_ROOT / 'tools'}"
+        sim_env = env | {"EVAL_GPU": str(args.gpu), "EVAL_SOURCE": str(SOURCE)}
         simulator = subprocess.Popen(
-            [str(SIM_PYTHON), str(CONTROLLER), "--task", args.task,
+            ["bash", str(SOURCE / "launch_sim.sh"), str(CONTROLLER), "--task", args.task,
              "--output", str(job / "tasks" / args.task), "--policy-run", str(worker),
              "--port", str(args.port)],
             env=sim_env, stdin=subprocess.DEVNULL, stdout=simulator_log, stderr=subprocess.STDOUT,
@@ -156,10 +154,13 @@ def main():
         atomic_json(worker / "pilot_status.json", state)
         raise
     finally:
+        stop_child(simulator)
         if policy is not None and policy.poll() is None:
             (worker / "STOP").touch()
-        stop_child(simulator)
-        stop_child(policy, timeout=900)
+            try:
+                policy.wait(timeout=900)
+            except subprocess.TimeoutExpired:
+                stop_child(policy)
         policy_log.close()
         simulator_log.close()
 

@@ -16,7 +16,8 @@
 
 - **用户授权范围：** 使用 `turning_on_radio` 与 `picking_up_trash`，各运行 public_test 前3个 instance（索引0/1/2，对应301/302/303），验证 observation、high-level 原始文本、规划前后 memory 与实际 low-level prompt 的逐 chunk 对齐，并生成带文本的诊断视频；不扩大到更多任务或训练。
 - **代码与协议：** 从已同步的 `feat/eval-batch-speed-20261008`（`b1519c3`）新建 `feat/eval-chunk-text-overlay-20261009`。保持原SFT权重、官方 horizon、每任务3env batch、16-action chunk、high-level每8 chunk规划和官方指标/原始视频不变；在线阶段仅追加隔离 trace/keyframe，文字视频离线生成。
-- **当前状态：** 对齐实现已提交并推送 `feat/eval-chunk-text-overlay-20261009@5fd88a2`；20项相关CPU测试与合成视频实际编码/解码烟测通过。每个instance独立记录三相机chunk边界观测拼图及原图SHA、high原始输出、memory before/after、low实际条件和16×23动作块；离线生成实时overlay与逐chunk复核视频。GPU 0–7预检均空闲、输出盘余约6.4T，正在加入有界两任务启动/收尾器，真实run尚未启动。
+- **02:17 CST真实启动：** 实现与有界runner已提交推送到 `feat/eval-chunk-text-overlay-20261009@8e32b7b`；20项相关CPU测试与合成视频实际编码/解码烟测通过。正式job=`BEHAVIOR-1K/outputs/trace_alignment_pilot_20261009`，tmux=`behavior-trace`：radio使用GPU0/19700，trash使用GPU1/19701，均已写入`loading_policy`回执。首次tmux命令因重定向目标日志目录未预建而在Python启动前退出，未创建server/仿真/评测数据；建目录后重新提交的当前两worker才是唯一真实run。每个instance将独立记录三相机chunk边界观测拼图及原图SHA、high原始输出、memory before/after、low实际条件和16×23动作块，离线生成实时overlay与逐chunk复核视频。
+- **02:19 CST预检拒绝／修复中：** 两路server均成功ready，但runner直接调用sim Python，遗漏正式链的`launch_sim.sh`，因此官方源码身份门在环境构造前拒绝，两路均0 episode、0请求、0 trace且server已退出；这是启动包装错误，不是模型/对齐失败。原日志将移入job的`restarts/preflight_import_path/`保留。runner改为与正式评测相同的`launch_sim.sh`（固定官方post2源码、数据路径和GPU），同时让异常收尾先等待server写权重回执再强停；通过CPU回归后重新提交。
 - **停止条件：** 任一batch身份串扰、chunk/frame映射不连续、trace改变动作/权重、GPU OOM或仿真基础设施异常即停止对应验证并保留证据，不将不完整产物称为通过。
 
 ### 2026-10-08 15:06 CST：取消续评，先讨论100任务共享RL；工程测速收尾（Codex / RL-SHARED100-DESIGN-10383）
