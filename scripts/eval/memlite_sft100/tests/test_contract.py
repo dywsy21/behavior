@@ -72,6 +72,31 @@ class EvaluationTests(unittest.TestCase):
         for forbidden in ['sample_stochastic_flow','sample_branch','A4DirectPPO','critic_remaining_fraction']:
             self.assertNotIn(forbidden,text)
 
+    def test_completion_receipt_precedes_official_shutdown(self):
+        # Reproduce the actual official context-manager contract: __exit__ may
+        # terminate Python, so statements after `with` are not reliable.
+        from types import SimpleNamespace
+        tree = ast.parse((Path(__file__).resolve().parents[1]/'run_task.py').read_text())
+        main = next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')
+        node = next(n for n in main.body if isinstance(n,ast.With))
+        class Evaluator:
+            env=SimpleNamespace(task=SimpleNamespace())
+            def __init__(self,cfg):pass
+            def __enter__(self):return self
+            def __exit__(self,*exc):raise SystemExit(0)
+            def run(self,ids,**kwargs):return dict.fromkeys(ids)
+        with tempfile.TemporaryDirectory() as d:
+            from common import atomic_json
+            root=Path(d);output=root/'task';output.mkdir();(output/'attempts').mkdir()
+            scope=dict(BatchedEvaluator=Evaluator,cfg=None,mode='train',
+                args=SimpleNamespace(output=output,policy_run=root,smoke=True,task='test'),
+                resolve_instance_ids=lambda *a,**kw:[1,2],atomic_json=atomic_json,
+                DEFAULT_EVAL_SEED=0,time=__import__('time'),os=__import__('os'))
+            module=ast.Module(body=[node],type_ignores=[])
+            with self.assertRaises(SystemExit):exec(compile(module,'shutdown-regression','exec'),scope)
+            self.assertEqual(json.loads((output/'status.json').read_text())['status'],'completed')
+            self.assertEqual(json.loads((output/'attempts/batch_01.json').read_text())['status'],'completed')
+
     def test_live_poll_waits_for_stock_writer_but_final_rejects_truncation(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);metrics=root/'tasks/task0/json';metrics.mkdir(parents=True)

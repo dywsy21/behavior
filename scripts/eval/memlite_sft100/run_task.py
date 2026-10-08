@@ -67,7 +67,10 @@ def main():
             except Exception as e:
                 atomic_json(attempt,dict(status='infrastructure_failed',error=repr(e),finished=time.time(),**receipt))
                 raise
-    atomic_json(args.output/'status.json',dict(status='completed',task=args.task,mode=mode,finished=time.time()))
+        # Isaac's app.close() in the official __exit__ can terminate Python.
+        # Publish only after every run returns, but BEFORE that shutdown. The
+        # parent still requires exit0, all JSON/videos and unchanged weights.
+        atomic_json(args.output/'status.json',dict(status='completed',task=args.task,mode=mode,finished=time.time()))
 
 
 if __name__=='__main__':main()
