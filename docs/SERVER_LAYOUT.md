@@ -1,5 +1,17 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-08 16:45 CST：10383共享100-task RL新位置
+
+仍是`ssh -p 10383 root@42.192.34.154`，以下相对根为`/run/ti/rl_memlite_stage1_20261006`。本机报告SM12.0/driver580.95.05，不是LC A800。
+
+- 活跃冻结源：`code/behavior_shared_rl_20261008_v6`=`5e4e62c`；G05依赖固定`code/g05_sft_6af1ab9`，支持依赖`baseline_manifest.json`逐SHA核验，不热改源码或env。
+- 作业：`runs/shared_rl100_20261008_v2`；supervisor1377209，24h至10/09 16:43:31 CST，当前加载中而非已验收。W&B `https://wandb.ai/yifan_wu/behavior-memlite-rl/runs/dp2qxmxc`（已有服务器认证）。
+- 监控：`status.json`/`training_summary.json`/`monitor_history.jsonl`/`effect_events.jsonl`；每rank `policies/gpu_N/{policy_status,latest_update,replica_identity}.json` 与`session_begin.jsonl`。TRAIN Q/SR不是独立评测。
+- 唯一共享训练状态：`policies/gpu_0/checkpoints/`；首两轮/每10轮检查点，第2及每100轮保留milestone，实际文件生成和验收待核。原8个专家/修复canary/64公共评测仍保留，不混用。
+- 采样和恢复候选：`collectors/gpu_N/cycle_*`、`recovery/gpu_N`；只TRAIN，候选未经人工验收不得BC。首2共享更新暂停等待job/`ACCEPTED`，有问题则job/`STOP_TRAINING`请求共同保存退出；严重异常job/`ABORT`。勿删除证据或绕过暂停门。
+- 通信回执：`runs/shared_nccl_20261008_v5/result.json`，原NCCL2.26.2/cuda12.2、进程cuMem host关闭/P2P关闭，八卡32/256MiB SUM通过。原180s超时v1/v3/v4保留；实际冷内核286.67s、原环境CUDA_CACHE_DISABLE=1。`isolated/nccl-2.26.2.post1`只有停止下载的partial wheel，**未安装/不可用**。
+- Git同步：已推GitHub的同commit经Git-over-SSH relay分支进入`code/behavior_sft_submission_20261008`共享Git对象，再建独立worktree；远端GitHub TLS失败时不以rsync覆盖代码。v1–v5旧源码和只prepared的`shared_rl100_20261008_v1`继续保留。
+
 ## 2026-10-08 12:40 CST：10383修复/全量SFT评测新位置（覆盖下方“仅只读/活跃RL”状态）
 
 仍为`root@42.192.34.154:10383`，以下相对路径基于`/run/ti/rl_memlite_stage1_20261006`，不涉及robo/LC。
