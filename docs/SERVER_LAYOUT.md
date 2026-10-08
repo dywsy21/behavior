@@ -4,6 +4,7 @@
 
 仍为`root@42.192.34.154:10383`，以下相对路径基于`/run/ti/rl_memlite_stage1_20261006`，不涉及robo/LC。
 
+- **13:56 CST覆盖下方运行状态：** 用户授权速度优化，`sft100_full_20261008_v3/STOP`已令8路退出，64完整结果及全部中断attempt原位保留；`pause_request_20261008_speed.json`登记原因，8个worker核权重未变、GPU释放。新优化任务`EVAL-BATCH-SPEED-10383`在独立分支，旧adcb903、原模拟器及共享env继续不可热改；新源/run落地后另登记。封包器不得将partial称正式全量包。
 - 旧`runs/large_scale73h_trainonly_20261007`已按用户要求保存退出；8份final `training/gpu_*/save_ack.json`及checkpoint均保留，勿删。GPU0后续验收新状态在`runs/large_scale73h_repaired_20261008_canary_v1/training/gpu_0_attempt_000/checkpoints/direct_latest.pt`（243次更新）；该job已保存暂停，`canary_resume_receipt.json`/`canary_acceptance.json`可核验。余7卡继续使用旧final状态，不能把243的单卡增量误当所有任务共享权重。
 - 修复冻结源码`code/behavior_rlfix_20261008`=`83cbe31`；recovery候选在canary job的`recovery/gpu_0/*.zip`及index/status。不是已验收BC正例；原始ZIP不修改，本地抽帧材料`artifacts/rl-recovery-10383-20261008`。
 - 当前SFT评测源码`code/behavior_sft_eval_20261008_v3`=`adcb903`，入口`scripts/eval/memlite_sft100/`。v1源码a96455a因canonical task身份校验失败，v2源码1bf1760因官方退出生命周期的回执错误被拒绝；旧源/结果不删、不称已验收。G0.5依赖为单独`code/g05_sft_6af1ab9`干净detached worktree；官方模拟器`code/official_behavior_a8247a8/OmniGibson`来自Git tag v3.9.3-post2，与`official_manifest.json`绑定，不改原sim包/环境。

@@ -14,19 +14,22 @@ from common import bootstrap, atomic_json, ROOT, DATA, load_official_task_names
 bootstrap()
 from wire import packb, unpackb
 from a4_observation import behavior_obs_to_native_low
-from native_engine import NativeSFT
+from batched_engine import BatchedSFT
 
 
 async def main():
     p = argparse.ArgumentParser()
     p.add_argument('--run', type=Path, required=True)
     p.add_argument('--port', type=int, required=True)
+    p.add_argument('--inference-mode', choices=['serial','batch'], default='serial')
+    p.add_argument('--capture-train-audit', action='store_true')
     args = p.parse_args()
     run = args.run
     run.mkdir(parents=True, exist_ok=True)
     state = dict(status='loading', pid=os.getpid(), optimizer_steps=0, started=time.time())
     atomic_json(run/'policy_status.json', state)
-    engine = await asyncio.to_thread(NativeSFT, run/'no_checkpoints')
+    engine = await asyncio.to_thread(BatchedSFT, run/'no_checkpoints',
+                                   mode=args.inference_mode, capture=args.capture_train_audit)
     tasks = load_official_task_names(DATA/'2026-challenge-task-instances/metadata/B100_task_misc.csv')
     gate = asyncio.Lock()
     stopped = asyncio.Event()
@@ -50,6 +53,8 @@ async def main():
                         active_meta = json.loads((run/'current_batch.json').read_text())
                         if active_meta['mode'] not in ('train_smoke','public_test'):
                             raise ValueError('Unregistered evaluation split')
+                        if args.capture_train_audit and active_meta['mode'] != 'train_smoke':
+                            raise ValueError('No public-test audit captures or tuning')
                         continue  # The official reset protocol has NO reply.
                     if active_meta is None:
                         raise ValueError('Official reset must precede inference')
@@ -80,6 +85,7 @@ async def main():
                     elapsed = time.monotonic()-started
                     with (run/'inference.jsonl').open('a') as f:
                         f.write(json.dumps(dict(batch=active_meta, native_fm=True, seconds=elapsed,
+                            timing=engine.last_timing, inference_mode=args.inference_mode,
                             requests=engine.requests, contexts=contexts,
                             chunks=[s['chunks'] for s in engine.slots],
                             actions_min=float(actions.min()), actions_max=float(actions.max()),

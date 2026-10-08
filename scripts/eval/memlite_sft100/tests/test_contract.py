@@ -89,7 +89,8 @@ class EvaluationTests(unittest.TestCase):
             from common import atomic_json
             root=Path(d);output=root/'task';output.mkdir();(output/'attempts').mkdir()
             scope=dict(BatchedEvaluator=Evaluator,cfg=None,mode='train',
-                args=SimpleNamespace(output=output,policy_run=root,smoke=True,task='test'),
+                args=SimpleNamespace(output=output,policy_run=root,smoke=True,task='test',
+                                     num_envs=2,indices=None),
                 resolve_instance_ids=lambda *a,**kw:[1,2],atomic_json=atomic_json,
                 DEFAULT_EVAL_SEED=0,time=__import__('time'),os=__import__('os'))
             module=ast.Module(body=[node],type_ignores=[])

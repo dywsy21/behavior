@@ -12,6 +12,15 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-08 13:54 CST：获批停止慢速评测并优化批量推理/仿真并行（Codex / EVAL-BATCH-SPEED-10383，进行中）
+
+- **14:15 CST实现/CPU验收：** 已实现独立`batched_engine.py`高/低层真正合批、单row形状FM初噪声抽取（保持相同2env RNG调用序列）、按index事务式ledger提交、结束行稀疏cache等价索引拷贝，以及`freeze_partial.py`/有界`benchmark.py`/固定噪声`audit_batch.py`。22项CPU测试+10 subtests、compile和diff检查通过；未称GPU数值/吞吐已通过。用户追加防串任务要求：真实Stage1 begin的A→B→A复位回归、high/low分支与task_name双校验、每次reset新ledger与空memory回执已加入；同一模型服务将额外进行radio→keyboard的TRAIN128步跨任务短验，仍限总2GPU/2h。正式旧源/环境未改，下一步Git冻结同步并启动TRAIN三组512步测速/跨任务验收，不自动开公共评测。
+- **13:56 CST旧评测已停稳：** 原job STOP机制退出，最终保留64条已完成结果；8worker均完成`weights_unchanged=true`核对，GPU compute进程清空。controller记录`needs_diagnosis/InterruptedError('User or safety stop')`、worker记录failed是本次用户授权停止的行政状态，不冒充自发故障或完整评测完成；请求证据`pause_request_20261008_speed.json`。原始结果及中断attempt全部原位保留，正在冻结清单/媒体核验；不直接混合新数值协议成绩。
+- 用户明确授权实施“真batch高低层＋每卡2/4env”测速，当前评测可以停；本轮只优化评测设施，不训练、不降低FM10/规划128控制步频率/官方超时、不恢复RL。Git先fetch/ff-pull并保留已含origin/main的实现，另开`feat/eval-batch-speed-20261008`；活跃adcb903源码/现有共享env不热改。
+- 13:54只读核验旧supervisor1337461及8worker/封包器1348050均属于唯一`runs/sft100_full_20261008_v3`，已完成62/1000，局部Q/SR均0，不能视为全量成绩。将用该job既有STOP机制停并保留所有结果、未完成尝试与权重指纹回执；停止后的完整JSON/MP4单独核验冻结，禁止选最好、覆盖或把中断当成功完成。
+- 主假设：模型串行服务占比可通过高/低层真正合批降低，再以4env增加单位时间真实控制步。第一阶段预算：最多2GPU、2小时，CPU合同检查＋相同TRAIN任务/seed的serial2、batch2、batch4短闭环（默认各512步/相同录像设定，必要的异常修复不直接扩全量）；保留23/27映射、独立slot记忆、非连续env索引、结束掩码及确定性噪声/数值差异审计。未通过身份/动作/媒体/吞吐门不放大；任何OOM/串slot/未解释数值偏差立即停候选。独立团队review仍待，不合main。
+- 优化会改变batch数值路径，不能假设动作逐位一致：先分离固定噪声的数值核对和完整生成差异，再明确续评来源/已完成与中断case清单及版本；不会静默将两种执行协议合成可比的新成绩。验证后恢复剩余评测及提交材料收集；新ETA以实际吞吐为准。
+
 ### 2026-10-08 12:40 CST：验收通过，原始SFT全量1000例评测已提交（Codex / EVAL-SFT100-10383，运行中）
 
 - **13:04 CST首批完整结果与跨batch验收：** 8路均持续推理、无worker错误；清洁键盘/擦浴室地板/安装调制解调器各public301/302共6例完成，局部Q=0/SR=0（6/1000，不是全量成绩）。逐件检查原metrics与h264 MP4，分别5815/4731/3620帧，帧数严格等于官方执行步数、全部672×448、duration=steps/30；batch_00完成且前两路已进入303/304，无覆盖重跑。controller/summary已记completed=6，评测继续后台至1000；一次性封包器仍等待。最终Q/SR未产生，不能把首批0误报整体0。

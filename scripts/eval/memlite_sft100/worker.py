@@ -35,9 +35,22 @@ def acquire_loader(job):
 def main():
     p=argparse.ArgumentParser();p.add_argument('--job',type=Path,required=True)
     p.add_argument('--gpu',type=int,required=True);p.add_argument('--smoke',action='store_true')
+    p.add_argument('--inference-mode',choices=['serial','batch'],default='serial')
+    p.add_argument('--num-envs',type=int,choices=[2,4],default=2)
+    p.add_argument('--train-steps',type=int,default=128)
+    p.add_argument('--capture-train-audit',action='store_true')
+    p.add_argument('--benchmark',action='store_true')
+    p.add_argument('--cross-task-check',action='store_true')
     args=p.parse_args();job=args.job;gpu=args.gpu
+    if args.benchmark and not args.smoke:
+        raise ValueError('Benchmark is TRAIN only')
+    if args.cross_task_check and (not args.smoke or args.benchmark or args.train_steps != 128):
+        raise ValueError('Cross-task check is two TRAIN tasks, 128 steps only')
+    if not args.smoke and (args.num_envs != 2 or args.train_steps != 128 or args.capture_train_audit):
+        raise ValueError('Use the explicit resume scheduler for changed public batching')
     manifest=json.loads((job/'manifest.json').read_text())
     tasks=['turning_on_radio'] if args.smoke else manifest['groups'][gpu]['tasks']
+    if args.cross_task_check:tasks=['turning_on_radio','clean_a_keyboard']
     run=job/('smoke' if args.smoke else 'workers')/f'gpu_{gpu}'
     run.mkdir(parents=True,exist_ok=False)
     lock=open(SIM_ROOT/f'gpu_{gpu}.lock','a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -55,7 +68,10 @@ def main():
     try:
         loader=acquire_loader(job)
         with (run/'policy.log').open('x') as f:
-            policy=subprocess.Popen([str(MODEL_PYTHON),str(SOURCE/'serve.py'),'--run',str(run),'--port',str(port)],
+            policy_command=[str(MODEL_PYTHON),str(SOURCE/'serve.py'),'--run',str(run),'--port',str(port),
+                            '--inference-mode',args.inference_mode]
+            if args.capture_train_audit:policy_command.append('--capture-train-audit')
+            policy=subprocess.Popen(policy_command,
                 env=env,stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
         state['policy_pid']=policy.pid;publish();load_deadline=time.time()+1200
         while not (run/'policy.ready').exists():
@@ -73,6 +89,8 @@ def main():
             sim_env=env|dict(EVAL_GPU=str(gpu),EVAL_SOURCE=str(SOURCE))
             command=['bash',str(SOURCE/'launch_sim.sh'),str(SOURCE/'run_task.py'),
                 '--task',task,'--output',str(output),'--policy-run',str(run),'--port',str(port)]
+            command.extend(['--num-envs',str(args.num_envs),'--train-steps',str(args.train_steps)])
+            if args.benchmark:command.extend(['--indices','1','2','3','4'])
             if args.smoke:command.append('--smoke')
             atomic_json(output/'command.json',dict(argv=command,source_commit=manifest['source_commit'],
                 official_commit=manifest['official_commit'],environment_overrides={
@@ -97,7 +115,7 @@ def main():
             if loader is not None:loader.close();loader=None
             result=json.loads((output/'status.json').read_text())
             records=list((output/'json').glob('*.json'));videos=list((output/'videos').glob('*.mp4'))
-            expected=2 if args.smoke else 10
+            expected=(4 if args.benchmark else args.num_envs) if args.smoke else 10
             if sim.returncode or result.get('status')!='completed' or len(records)!=expected or len(videos)!=expected:
                 raise RuntimeError('Official task evaluator did not complete with all metrics/videos: '+task)
             for video in videos:
