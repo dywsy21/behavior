@@ -17,6 +17,8 @@
 - 用户最新要求覆盖此前“不补baseline/全量评测”：先验收修复，再对大规模SFT终态高层`step_00048045_save_0027.pt`＋低层`step_00098414_save_0021.pt`进行全量评测，分别报告Q-score与完整任务SR；激进RL续训后置，不自动延长旧73h时钟。旧8路当前仍运行，尚未停/迁移；将通过原保存退出机制保留其最新优化器/权重，不混入SFT评测。
 - 重新核对官方2026 evaluation/submission网页：指定`v3.9.3`，100task×公开索引0–9×一次＝1000rollout，默认1.5×人类均长超时，原始JSON与head/wrist视频不可改；wrapper/robot config/复现命令和Docker或IP serving信息须收集。不沿用旧200条开发实例清单、训练实例或无视频RL collector冒充规范全量。提交材料先本地/服务器整理，不自动上传或正式提交。
 - RL修复20项CPU回归已通过，包括1/2/8/15/64尾批、零advantage、真实Adam回退/拒绝恢复、RGB/动作/状态对齐与实际apply确认。真实GPU/候选图审尚未验收，不称修复已上线；先检查官方模拟器版本及独立评测链，保持旧活跃源码和环境不变。
+- **11:57 CST安全退出完成：** 仅向已逐一核验PID/cmdline的旧job写`STOP_TRAINING`，未强杀或删文件。8个`save_ack.json`全部finite/load_verified，最终update为`241/224/201/230/186/222/228/172`，GPU进程已清空；旧中断collector不能算完整episode。修复`b0fc7c6`及单卡验收后暂停开关`83cbe31`已commit/push，准备独立Git冻结checkout、先GPU0有限验收，不会自动恢复另外7路。
+- **评测口径补充：** 旧ReadOnlyEngine仍经stochastic-flow探索链，不能当原生SFT FM部署成绩；新评测需纯SFT/native FM且0optimizer。官网写v3.9.3，实际上游tag为v3.9.3-post1/post2（当前post2=`a8247a8cc1633fe1ca0cc66aa07243d46c64f155`）；已拉只读上游post2核对现有标称3.9.3但无Git元数据的模拟器，差异未核完前不声称正式规范兼容。
 
 ### 2026-10-08 11:19 CST：获批修复RL、保存recovery候选并提高更新强度（Codex / RL-FIX-RECOVERY-10383，进行中）
 
