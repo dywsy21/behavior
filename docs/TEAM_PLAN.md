@@ -2,6 +2,7 @@
 
 ## 2026-10-08（CST）当前请求：SFT低Q与RL停滞诊断
 
+- 10:28 CST / `DIAG-SFT-RL-Q0129-REMOTE`：用户给定`42.192.34.154:10751`已只读核验，当前可见为队友fork的三个SFT inference服务，未定位RL trainer/run；已请求实际RL目录/入口。10100旧服务最后请求缺模块零动作，独立新worktree含修复但无上线验收；已检查评测输出均空、专用handler未接轨迹recorder。只确认迁入SFT高48045/低98414及固定evalloss，未确认0.0129或RL效果。下一交接依赖实际RL负责人提供运行身份，不改作业，证据见`docs/infra/results/2026-10-08-rl-endpoint-audit.json`。
 - Codex / `DIAG-SFT-RL-Q0129`：仅做现有代码/指标口径核对及改进建议；用户报告SFT结束、Q约0.0129、RL半天无改善，尚无对应运行证据，不能当已验证结论。Git已同步、诊断分支`diag/sft-rl-qscore-20261008`，详见plan最新条目。
 - 待用户/当前RL负责人提供评测JSON与实际checkpoint/serving入口、RL节点/run或W&B链接，再定位部署一致性、规划/执行责任与奖励/梯度信号；既有隧道不在线，不擅自重登VPN或动在训任务。代码已证实阶段1无outcome/recovery监督，旧六帧高层server不可直接套单帧新训练，但是否涉及当前run未知。
 - 后续协作建议而非启动票：模型/集成负责人核权重、LoRA、stats与动作协议；高层/反馈负责人核当前状态意图及阶段2/outcome；RL负责人核采样吞吐、奖励区分度、概率/advantage/critic，并在共同证据上决定短课程。旧DART goal保持blocked、真实数据0，不以此轮问答授权新训练/采集或恢复旧pilot。

@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-08新增只读核验：用户提供的10751入口
+
+- SSH：`root@42.192.34.154:10751`；当前进入容器`nb-1651618563402353408-cofhj25pepz4`。项目根`/run/ti/BEHAVIOR2026`。本轮未接robo/LC，不变更任何远端文件或进程。
+- `behavior/`：队友fork `git@github.com:fduTristin/behavior.git` 的`deploy/memlite-stage1`，HEAD`018cce308b272f86d9a39db1a38f704a86ab6b4b`；`behavior-node-stage1/`：独立修复分支`fix/node-stage1-e2e-20261008`，HEAD`6a8f684481f9b407620f7a561a2e92c5324db325`。不要用本地另一分支覆盖，也不要热pull在用源码。
+- `memlite-stage1/high/`：高层48045步权重、recipe/latest/status/eval；`memlite-stage1/low/`：低层98414步权重及sidecars（最近eval98000）；它们是SFT产物，不能叫RL权重。`models/`与`manifests/`保留部署依赖。
+- `logs/serve_e2e_10100.log`：当前PID3395333组合服务日志；该进程cwd显示`behavior-e2e (deleted)`，最后请求因缺planner format模块退出、零动作。10050/10051为独立高/低推理服务，不是trainer。新修复仓文件存在不等于旧进程已更新。
+- `BEHAVIOR-1K/eval_results/`、`BEHAVIOR-1K/outputs/`、`logs/b1k_eval_pilot/`在10:28 CST核验均0文件；历史仿真失败日志在`logs/b1k_eval_pilot.out`。未发现当前RL run和真实失败轨迹，需用户/负责人确认实际目录或另一个容器入口。[审计与限定](infra/results/2026-10-08-rl-endpoint-audit.json)。
+
 **2026-10-02 04:41:56北京时间 P107 lc3隔离Python/source准备通过：** 唯一non-EULA bootstrap在UTC`20:39:32–20:41:56` exit0（144秒），receipt`/home/wsy/behavior-annotations/p107/lc3-og51-prep-20261002/receipt.json` SHA`f0ef46ca8232b1a2bf62d89db2978eca7ea7c417e976f110151f89919442d205`。只新增`/data/workspace/wsy/behavior2026/isolated/og51-lc3-p107-20261002`（1,175,999,215B）下public detached source `v3.9.3-post1`/`bd049de3119acdcdf2334fe9e1ebe060fa20c108`（tree SHA`4cae8677…298e97`）、private uv0.12.21、managed CPython3.11.16和venv/pip26.2.1；非official benchmark。结束`/data` free3,861,825,454,080B、8×A800均0MiB/0%。这**只**表示Python/source ready，未验证Isaac/OmniGibson/asset/driver/runtime compatibility；无setup.sh、Isaac/EULA/assets/key/Kit/physics/GPU/shared-env修改。该隔离根不得被当成shared env或live DART source，后续需条款接受和独立兼容性审查。
 
 ## 新A800集群（2026-09-27，独立于robo）

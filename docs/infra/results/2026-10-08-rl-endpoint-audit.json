@@ -1,0 +1,97 @@
+{
+  "task_id": "DIAG-SFT-RL-Q0129-REMOTE",
+  "owner": "Codex",
+  "checked_utc": "2026-10-08T02:28:11Z",
+  "checked_cst": "2026-10-08 10:28:11 +08:00",
+  "endpoint": "ssh -p 10751 root@42.192.34.154",
+  "hostname": "nb-1651618563402353408-cofhj25pepz4",
+  "scope": "Read-only inspection of the SSH-visible container, BEHAVIOR project, process metadata and existing outputs. No training, simulator, inference request, install, restart, remote edit or remote git fetch/pull.",
+  "conclusion": "No active RL trainer or identifiable current RL implementation/run was found in the inspected scope. Three SFT inference services were found. This does not establish the state of another container, host or unlocated project.",
+  "rl_algorithm_review_completed": false,
+  "qscore_0_0129_verified": false,
+  "active_services": [
+    {"pid": 3361174, "script": "scripts/serve_memlite_stage1.py", "branch": "low", "port": 10051, "device": "cuda:0", "cwd": "/run/ti/BEHAVIOR2026/behavior"},
+    {"pid": 3361341, "script": "scripts/serve_memlite_stage1.py", "branch": "high", "port": 10050, "device": "cuda:1", "cwd": "/run/ti/BEHAVIOR2026/behavior"},
+    {"pid": 3395333, "script": "scripts/serve_memlite_stage1_behavior.py", "port": 10100, "device": "cuda:4", "cwd": "/run/ti/BEHAVIOR2026/behavior-e2e (deleted)"}
+  ],
+  "gpu_utilization_percent_snapshot": [0, 0, 0, 0, 0, 0, 0, 0],
+  "gpu_memory_used_mib_snapshot": [13205, 12397, 3, 3, 18837, 3, 3, 3],
+  "gpu_snapshot_caveat": "Instantaneous measurements, not a continuous utilization history or independent proof that no training ever ran.",
+  "repositories": [
+    {"path": "/run/ti/BEHAVIOR2026/behavior", "origin": "git@github.com:fduTristin/behavior.git", "branch": "deploy/memlite-stage1", "head": "018cce308b272f86d9a39db1a38f704a86ab6b4b", "worktree_clean": true},
+    {"path": "/run/ti/BEHAVIOR2026/behavior-node-stage1", "origin": "git@github.com:fduTristin/behavior.git", "branch": "fix/node-stage1-e2e-20261008", "head": "6a8f684481f9b407620f7a561a2e92c5324db325", "worktree_clean": true}
+  ],
+  "findings": [
+    {
+      "id": "DEPLOY-1",
+      "kind": "observed_request_failure",
+      "detail": "Last recorded 10100 request failed importing g05.utils.memlite_planner_format before any action was served. A separate new worktree contains a repair, but no process from that worktree or successful post-repair request was observed.",
+      "last_error_cst": "2026-10-07 23:52:21 +08:00",
+      "served_actions_at_connection_close": 0,
+      "planner_generations_at_connection_close": 0,
+      "log": "/run/ti/BEHAVIOR2026/logs/serve_e2e_10100.log",
+      "log_error_line": 165,
+      "log_reset_line": 167,
+      "log_size": 73516,
+      "log_sha256": "c8bcdf5933b92d303cf001cd860f1fce5d9a3a1139c80ffa1aeaab6babc89a93",
+      "repair_source": "/run/ti/BEHAVIOR2026/behavior-node-stage1/src/g05/utils/memlite_planner_format.py",
+      "repair_source_sha256": "ff3d2102b8182f85917803332b927f7aedc054791423188ce8b4e0cf836ddae8",
+      "repair_runtime_accepted": false
+    },
+    {
+      "id": "SIM-1",
+      "kind": "historical_simulator_initialization_failure",
+      "detail": "Saved pilot log contains ERROR_INCOMPATIBLE_DRIVER, vkCreateInstance failure, no GPU device creation, and a later vision annotator NoneType exception. Graphics failure is directly evidenced; this audit did not re-run the simulator or independently prove the report's precise platform/cgroup cause.",
+      "log": "/run/ti/BEHAVIOR2026/logs/b1k_eval_pilot.out",
+      "error_lines": [27, 28, 33, 612],
+      "log_sha256": "e695778d2beb9d45baee3d4a83a3fa111ce9bdb86e1addd3a1c21942e35229b6"
+    },
+    {
+      "id": "TRACE-1",
+      "kind": "missing_durable_trajectory_integration",
+      "detail": "Dedicated stage1 handler sends the 23D action and logs its norm/count/latency, but does not invoke the existing bridge MemLiteTraceRecorder. Main has no trace-root option. Text logs and a three-event bridge JSONL are not RGB/state/action/reward/terminal trajectories.",
+      "source": "/run/ti/BEHAVIOR2026/behavior-node-stage1/scripts/serve_memlite_stage1_behavior.py",
+      "source_lines": [315, 344, 347, 348, 369],
+      "source_sha256": "863386c88d2eb41e809efcbac5d1cef731b1deb3de0362ab603bdcd242fde78d",
+      "scope_limit": "A different evaluator or unlocated RL runner could maintain its own recorder; this finding applies to the inspected dedicated server."
+    }
+  ],
+  "checked_output_roots": [
+    {"path": "/run/ti/BEHAVIOR2026/BEHAVIOR-1K/eval_results", "file_count": 0},
+    {"path": "/run/ti/BEHAVIOR2026/BEHAVIOR-1K/outputs", "file_count": 0},
+    {"path": "/run/ti/BEHAVIOR2026/logs/b1k_eval_pilot", "file_count": 0}
+  ],
+  "failure_trajectory_conclusion": "No actual failed policy trajectories were found in these output roots. Setup/request errors must not be relabeled as physical task failures or recovery examples.",
+  "sft_results_not_rl": {
+    "root": "/run/ti/BEHAVIOR2026/memlite-stage1",
+    "evaluation_protocol": "Fixed 3200 windows, 100 tasks; teacher-forced high CE and low FM loss, not success rate.",
+    "high": {
+      "status": "COMPLETED_ONE_PASS",
+      "step": 48045,
+      "consumed_seconds": 339769.66708555724,
+      "checkpoint": "high/step_00048045_save_0027.pt",
+      "checkpoint_sha256_from_manifest": "3683f719ebb033cacf77afdc0330b25f43a3c3e5b704b0bda9623608f092c3d1",
+      "initial_eval_loss": 0.3431548375173693,
+      "latest_eval_step": 48045,
+      "latest_eval_loss": 0.0007999688267534375,
+      "latest_eval_sha256": "57763bb430a473f374a70f0b9f83d1606ef2107ef74a5b282e04129d914868c2"
+    },
+    "low": {
+      "status": "BUDGET_OR_SIGNAL_STOPPED",
+      "stop_reason_scope": "The status itself does not distinguish budget from external signal.",
+      "step": 98414,
+      "consumed_seconds": 431464.9711432869,
+      "checkpoint": "low/step_00098414_save_0021.pt",
+      "checkpoint_sha256_from_manifest": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470",
+      "initial_eval_loss": 0.164459191381152,
+      "best_eval_step": 90000,
+      "best_eval_loss": 0.10043180679894267,
+      "latest_eval_step": 98000,
+      "latest_eval_loss": 0.10070399619042524,
+      "relative_loss_drop_percent": 38.766574647060736,
+      "latest_eval_sha256": "f4e6cb4cddd0e46909bf24cdfcf4d0037fdbaee7fcba3b4d8d586c833c953531"
+    },
+    "checkpoint_files_loaded_or_rehashed_by_this_audit": false
+  },
+  "next_required_information": "Actual RL repository/run directory, container/SSH endpoint, launcher command or W&B run. Do not diagnose an unseen RL optimizer from inference-service logs."
+}

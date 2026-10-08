@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-08 10:28 CST（UTC02:28）：用户给定RL入口的现场核验（Codex / DIAG-SFT-RL-Q0129-REMOTE）
+
+- 按用户明确新授权，只读连接`root@42.192.34.154:10751`，进入`nb-1651618563402353408-cofhj25pepz4`容器；未接robo/LC/VPN，未做远端写/安装/拉代码/推理请求/重启/训练/仿真。当前只见三项SFT推理服务（低层PID3361174/10051、高层3361341/10050、组合3395333/10100），未定位RL trainer/rollout worker或该轮RL源码/run；结论仅限此入口可见范围，不能推断另一容器/目录的RL状态。已异步询问实际RL目录或其他入口。
+- **此前旧server风险的校正：** 此机使用队友fork`fduTristin/behavior`专用`serve_memlite_stage1*.py`，并非前轮本地旧六帧入口。部署仓`018cce3`、独立修复仓`behavior-node-stage1`=`6a8f684`均clean，未热pull。10100进程cwd为已删除的`behavior-e2e`；最后日志10/7 23:52 CST因缺`memlite_planner_format`而失败、`served_actions=0/planner_gens=0`，新修复仓已有该模块但尚无对应运行或通过请求证据。历史sim pilot有`ERROR_INCOMPATIBLE_DRIVER`/Vulkan创建设备失败，未重跑且不据他人报告独立认定平台底层原因。
+- **轨迹：** 已查`BEHAVIOR-1K/eval_results`、`BEHAVIOR-1K/outputs`、`logs/b1k_eval_pilot`均0文件；专用stage1 handler仅发动作及记范数/计数/时延，没有接入已有`MemLiteTraceRecorder`。现有setup/request错误与3条bridge事件JSONL不是可复用失败轨迹；其他未定位RL/evaluator是否另存未知，不能假称有recovery数据。
+- **真实查到的是SFT终态，不是RL指标：** 高层`COMPLETED_ONE_PASS`48045步/94.38h，固定3200窗CE`0.34315484→0.00079997`；低层`BUDGET_OR_SIGNAL_STOPPED`98414步/119.85h（字段不区分预算/信号），最近eval98000步FM`0.16445919→0.10070400`，降38.77%，最低90000步`0.10043181`。本轮只读sidecar/小eval并核其SHA，不加载/重hash大权重；低层最终414步没有对应已找到eval。0.0129与RL效果仍待原始run证据，不能以CE极低宣布高层闭环可靠。
+- 小证据与文件/commit/SHA记录：[现场审计JSON](infra/results/2026-10-08-rl-endpoint-audit.json)。下一步先确认实际RL入口/run；若用户指的正是此部署环境，则须另获实施指令后让修复版通过真实合法单请求、修复渲染并接轨迹持久化，当前仅报告、不代替队友改作业。旧DART目标不恢复。
+
 ### 2026-10-08 09:58 CST（UTC01:58）：SFT低Q / RL停滞只读诊断（Codex / DIAG-SFT-RL-Q0129）
 
 - 用户报告大规模SFT已结束、qscore约`0.0129`、RL运行约半天无明显改善；这些为**用户报告，尚未取得对应checkpoint、评测JSON/任务分母、RL配置和曲线**。本轮仅回答与诊断，不重启训练、不改actor/reward/超参，不恢复旧DART目标。主假设待检验：部署协议/高低层条件分布不一致，或长时程RL有效奖励与更新信号不足；不能预先断言模型容量或训练时长是根因。
