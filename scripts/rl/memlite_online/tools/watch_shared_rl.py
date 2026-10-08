@@ -10,6 +10,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import shlex
 import subprocess
 import sys
@@ -54,6 +55,13 @@ print(json.dumps(dict(summary=s,state={k:state.get(k) for k in
 def numeric_fields(row, names, prefix):
     return {prefix + key: row[key] for key in names
             if isinstance(row.get(key), (int, float)) and math.isfinite(row[key])}
+
+
+def safe_api_errors(body, key):
+    # Only bounded server error messages, never headers/request/settings/raw body.
+    messages = [str(e.get('message', 'unspecified')) for e in body.get('errors', [])]
+    return [re.sub(r'wandb_v1_[A-Za-z0-9_-]+', '[REDACTED]', message.replace(key, '[REDACTED]'))[:240]
+            for message in messages[:3]]
 
 
 def train_metrics(row):
@@ -142,8 +150,15 @@ def main():
     def gql(query, variables=None):
         response = session.post('https://api.wandb.ai/graphql',
             json={'query': query, 'variables': variables or {}}, timeout=25)
+        try:
+            body = response.json()
+        except ValueError:
+            body = {}
+        if response.status_code >= 400 or body.get('errors'):
+            print(json.dumps(dict(api_failure=True, http_status=response.status_code,
+                operation='mutation' if query.startswith('mutation') else 'query',
+                messages=safe_api_errors(body, key))), flush=True)
         response.raise_for_status()
-        body = response.json()
         if body.get('errors'):
             raise RuntimeError('W&B GraphQL request rejected; no error body logged')
         return body['data']

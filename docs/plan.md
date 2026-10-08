@@ -14,6 +14,7 @@
 
 ### 2026-10-08 19:16 CST：用户要求Codex持续亲自监控，并改用本人W&B账号（Codex / RL-SHARED100-MONITOR）
 
+- **19:32 CST训练监控/镜像首次未成功：** 12次共享更新、101023控制步，采样与重算KL全部0；第10轮8份actor/critic/两Adam SHA再次完全一致，共享ckpt有限值/重载回执通过（SHA85bd3823…377e5）。仍0完整episode/0官方Q增长。冻结096421f的镜像v1在W&B HTTP请求时退出，未建run或发布identity；原训练无影响、原错误日志保留，本地.netrc mtime逐位不变。只读复验新凭据与目标账号有效、目标项目仍不存在，新增限长脱敏API错误诊断及第6测试通过后再试，不能把启动PID称换账号成功。
 - **19:28 CST凭据/镜像工具CPU验收：** 密钥仅通过无回显stdin验证，W&B官方API确认用户dywsy21/实体dywsy21-fudan；未保存凭据或改共享.netrc。服务器曾出现API断连、既有W&B debug仍有重试，而本地验证成功；选择本地独立0GPU observer通过只读SSH回填监控历史/真实PPO指标，不重启训练。新增`tools/watch_shared_rl.py`与5项测试全部通过、Ruff/compile/diff通过，账号项目尚不存在，已只读核实GraphQL支持PRIVATE创建；尚未建run/未声称切换成功。下一步Git冻结并启动、确认在线落盘/不泄密与持续刷新。
 - 已fetch/ff-pull本分支并核origin/main；既有job不重启、不改活跃5e4e62c源码/环境/预算、不恢复公共评测。19:15只读状态为10次全局更新/8卡同版本、89736控制步/8task/16实际episode、0完整episode/0已观测官方Q增长，27候选仅首16已人工验收；第10更新unchanged KL0/post KL0.00052453、LR1e-7接受、无ABORT。每分钟记录及首2h effect event确实已产出，尚无方法有效结论。
 - W&B已有run仍属服务器既有账号；正在验证用户本轮提供凭据的归属，采用独立CPU日志镜像进程实现不中断采样的账号切换，密钥不得入Git/命令行/日志，不覆盖共享认证。原run/本地证据保留，镜像成功与否待验证。

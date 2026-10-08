@@ -10,6 +10,11 @@ spec.loader.exec_module(watch)
 
 
 class ObserverTests(unittest.TestCase):
+    def test_error_redaction(self):
+        body = {'errors': [{'message': 'bad fake-key and wandb_v1_fake_alternative_token'}]}
+        self.assertEqual(watch.safe_api_errors(body, 'fake-key'),
+                         ['bad [REDACTED] and [REDACTED]'])
+
     def test_no_completed_is_not_zero_sr(self):
         result = watch.train_metrics(dict(controls=10, completed_episodes=0,
             macro_q_covered=None, macro_sr_covered=None, versions=[2] * 8))
