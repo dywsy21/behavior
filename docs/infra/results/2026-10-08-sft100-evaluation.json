@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-08T12:41:00+08:00",
+  "owner": "Codex/EVAL-SFT100-10383",
+  "status": "full_evaluation_running_no_final_score",
+  "server": {
+    "ssh_host": "42.192.34.154",
+    "ssh_port": 10383,
+    "user": "root",
+    "gpu_count": 8,
+    "gpu_reported_name": "NVIDIA Graphics Device",
+    "gpu_memory_mib": 73415,
+    "driver": "580.95.05"
+  },
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/sft100_full_20261008_v3",
+  "supervisor_pid": 1337461,
+  "source": {
+    "source_commit": "adcb90366af440d79253129cbc40eb4608928b31",
+    "official_tag": "v3.9.3-post2",
+    "official_commit": "a8247a8cc1633fe1ca0cc66aa07243d46c64f155",
+    "g05_commit": "6af1ab983bb6c666f723c0367c3d6d4cc5ed4678",
+    "checkpoints": {
+      "high": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/models/stage1/high/step_00048045_save_0027.pt",
+        "sha256": "3683f719ebb033cacf77afdc0330b25f43a3c3e5b704b0bda9623608f092c3d1",
+        "bytes": 26593048920,
+        "config": "/run/ti/rl_memlite_stage1_20261006/configs/high_model.local.json",
+        "config_sha256": "478b9f640b4221fcf5031654cc6ef74d4be3f8e357a3484aa9b048bc0c0a7593",
+        "stats_path": "/run/ti/rl_memlite_stage1_20261006/models/support/high_stats.json",
+        "stats_sha256": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+        "model_class": "g05.models.g05.g05_policy_memlite_planner_outcome.G05PolicyMEMLitePlannerOutcome"
+      },
+      "low": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/models/stage1/low/step_00098414_save_0021.pt",
+        "sha256": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470",
+        "bytes": 16581377974,
+        "config": "/run/ti/rl_memlite_stage1_20261006/configs/low_model.local.json",
+        "config_sha256": "04c4d87cb6d34b57137c5b3eeede15341cd3465afd6937d1dfff0707bbd409ae",
+        "stats_path": "/run/ti/rl_memlite_stage1_20261006/models/support/low_stats.json",
+        "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+        "model_class": "g05.models.g05.g05_policy_memlite_skill_fm.G05PolicyMEMLiteSkillFM"
+      }
+    },
+    "task_csv_sha256": "f1533487a09b860150b2ec03ea36d1a0ad5962b0e1292ab28c1fd30ff276f837",
+    "episodes": 1000,
+    "num_envs": 2,
+    "safety": {
+      "max_gpu_count": 8,
+      "loader_concurrency": 2,
+      "ram_stop_anonymous_gib": 210,
+      "disk_reserve_gib": 150,
+      "initialization_timeout_seconds": 1800,
+      "no_progress_timeout_seconds": 1800
+    }
+  },
+  "protocol": {
+    "split": "public_test",
+    "task_count": 100,
+    "public_indices": [
+      0,
+      9
+    ],
+    "actual_instance_ids": [
+      301,
+      310
+    ],
+    "rollout_id": 0,
+    "episodes": 1000,
+    "high_planner": "greedy, one RGB frame x 3 cameras, every 128 control steps",
+    "low_policy": "original SFT, native FM10, predict32/execute16 from index0, raw23",
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "rl_checkpoint_used": false,
+    "optimizer_steps": 0,
+    "horizon": "unmodified official 1.5x mean human length",
+    "automatic_retries": false,
+    "blind_test": false,
+    "blind_test_limitation": "public_test301 has prior project diagnostic exposure",
+    "known_compatibility_risk": "Previous manual cabinet intervention found asynchronous CPU/GPU state mirror lag. Not established in normal policy rollouts. This evaluation uses unmodified official v3.9.3-post2, not the RL graph-barrier patch."
+  },
+  "acceptance": {
+    "cpu_tests_local": 9,
+    "cpu_tests_remote": 9,
+    "train_instance_ids": [
+      1,
+      2
+    ],
+    "configured_control_steps": 128,
+    "measured_control_steps_per_episode": 129,
+    "official_video_count": 2,
+    "official_metrics_count": 2,
+    "inference_requests": 9,
+    "weights_unchanged": true,
+    "optimizer_steps": 0,
+    "native_fm": true,
+    "high_model_state_sha256": "6b2af8e0aac0ebfbc4feff8c4f2d87fe94e888a99746e07e037a3af3b4d71ddd",
+    "low_model_state_sha256": "90b1c5e7596e5943e15c989b988ed0bb8790ba2766764c861f1d242732ec4739",
+    "max_allocated_gib": 22.33515501022339,
+    "max_reserved_gib": 22.66796875,
+    "does_not_validate_single_24gb_gpu": true,
+    "media_manual_review": {
+      "reviewer": "primary Codex",
+      "source": "v2: identical action/video path; v3 changes completion publication only",
+      "frames": [
+        0,
+        64,
+        128
+      ],
+      "videos": 2,
+      "composite_frames_viewed": 6,
+      "video_resolution": [
+        672,
+        448
+      ],
+      "findings": "Valid changing head and two wrist composite views; wrist views largely robot/wall; no claimed grasp or task success.",
+      "local_path": "artifacts/sft100-evaluation-20261008/smoke-v2"
+    }
+  },
+  "metrics": {
+    "final_q_score": null,
+    "final_success_rate": null,
+    "completed_episodes_at_launch": 0,
+    "scoring": "Mean official terminal q_score.final; success rate is mean official success Boolean. Explicit coverage and per-task results.",
+    "report_path": "summary.json",
+    "raw_outputs": "tasks/<task>/{json,videos,attempts}"
+  },
+  "submission": {
+    "authorized_to_submit": false,
+    "rules_verified_at": "2026-10-08",
+    "sources": [
+      "https://behavior.stanford.edu/challenge/submission.html",
+      "https://behavior.stanford.edu/challenge/evaluation.html"
+    ],
+    "portal": "https://behavior-1k-2026-challenge-leaderboard.hf.space",
+    "collected": {
+      "wrapper": "submission/rgb_wrapper.py",
+      "wrapper_sha256": "5faeed89108c705f426f03cbc18b36298490192a2a7a3cf1fc4a8dc3c151f4db",
+      "robot": "submission/r1pro.yaml",
+      "robot_sha256": "a98fa8a81472adfecfb642778d4d7a01e20131be7f70824e0ae095d665cdbb93",
+      "unchanged_official_robot": true,
+      "checklist": "submission/submission_checklist.json",
+      "checkpoint_config_stats_provenance": "manifest.json",
+      "exact_task_commands": "tasks/<task>/command.json"
+    },
+    "generated_on_completion": {
+      "zip": "submission/results.zip",
+      "video_sha_inventory": "submission/rollout_inventory.json",
+      "metrics_json_count": 1000,
+      "original_unedited_mp4_count": 1000
+    },
+    "pending": [
+      "Full evaluation outputs and final Q/SR",
+      "README final commands/serving details",
+      "Docker policy image and actual single24GB hardware acceptance, or self-hosted IP with at least50 ports",
+      "Portable serving adapter: current localhost server uses registered current_batch.json; this is not yet a deployable challenge image",
+      "Hosted link to unmodified rollout videos",
+      "Team/model/contact/disclosure choices; confirm actual portal form fields"
+    ],
+    "secrecy": "No passwords, API keys, asset key material or internal environment dumps collected"
+  },
+  "runtime_environments": [
+    {
+      "kind": "model_environment",
+      "python": "3.10.16 (main, Mar 17 2025, 21:01:46) [Clang 20.1.0 ]",
+      "packages": {
+        "torch": "2.7.1+cu128",
+        "torchvision": "0.22.1+cu128",
+        "transformers": "4.57.1",
+        "numpy": "1.26.4",
+        "msgpack": "1.1.2",
+        "websockets": "16.0",
+        "omegaconf": "2.3.0",
+        "pillow": "10.2.0"
+      }
+    },
+    {
+      "kind": "sim_environment",
+      "python": "3.11.15 (main, Aug  7 2026, 02:25:55) [Clang 22.1.3 ]",
+      "packages": {
+        "torch": "2.7.0+cu128",
+        "numpy": "1.26.0",
+        "warp-lang": "1.12.0",
+        "bddl": "3.7.0",
+        "isaacsim": "5.1.0.0",
+        "isaacsim-core": "5.1.0.0",
+        "imageio": "2.37.0",
+        "omegaconf": "2.3.1",
+        "gymnasium": "1.3.0"
+      }
+    }
+  ],
+  "rl_state": {
+    "paused": true,
+    "repair_validation": "docs/infra/results/2026-10-08-rl-repair-canary-review.json",
+    "eight_way_resumed": false,
+    "original_deadline": "2026-10-11T00:12:28+08:00",
+    "public_evaluation_data_eligible_for_training": false
+  }
+}

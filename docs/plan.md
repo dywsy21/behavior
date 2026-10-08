@@ -12,9 +12,18 @@
 
 ## 实时进度（最新记录在前）
 
-### 2026-10-08 12:15 CST（12:33更新）：RL修复实际验收通过并暂停；SFT全量链工程验收中（Codex / RL-FIX-RECOVERY-10383 + EVAL-SFT100-10383）
+### 2026-10-08 12:40 CST：验收通过，原始SFT全量1000例评测已提交（Codex / EVAL-SFT100-10383，运行中）
 
-- **12:33 CST v2真实短验/收尾修复：** 两TRAIN实例均完成129控制步（官方128配置的终止语义），各原始三相机MP4与metrics均齐；9次native FM请求，前后全模型指纹一致/0optimizer，最大allocated22.335GiB/reserved22.668GiB（不是24GB硬件验收）。外层仍拒绝：官方`BatchedEvaluator.__exit__→app.close()`会直接终止Python，旧完成回执写在with之后不可达。已把回执移到全部batch返回之后/关闭之前，父进程仍须核exit0+全结果+权重不变；新增真实SystemExit模拟回归，9项CPU测试过。旧v2失败记录/媒体保留，正在新冻结v3复验，尚0公共rollout。旧RL镜像同步证据来自手动柜门状态干预，不直接证明普通闭环Q错误；正式评测保留未改官方tag，不偷偷引入RL物理/评分补丁，此兼容风险另列。
+- 冻结`adcb90366af440d79253129cbc40eb4608928b31`，v3工程门通过：9项双端CPU测试、两条TRAIN实例各129实际控制步/原始JSON+MP4、9次native FM请求；最终高/低模型指纹与初始完全相同、0优化器、最大allocated22.335/reserved22.668GiB。v1/v2失败及v2亲审6张拼图保留；这些短验不进入正式1000分母。通过后确认GPU无进程，12:40:15提交supervisor1337461。
+- 唯一正式job=`/run/ti/rl_memlite_stage1_20261006/runs/sft100_full_20261008_v3`；8卡任务分摊、每卡2env，100task×public301–310×rollout0，每个task5个双实例batch；官方默认1.5×人类均长超时，名义最多15,819,280控制步。假设/目的为测量同一SFT终态真实参考Q/SR，不是新训练或挑选任务；不自动重跑、不自动追加轮数、低于150GiB空盘或异常则停并保留证据。当前只确认提交，实际8路推理与正式结果待核，不把partial/零完成汇总称模型成绩。
+- 两层原始SFT为高48045（SHA3683f719…c3d1）/低98414（SHAd4d76099…b470），无RL增量、无探索转移噪声；高层greedy每128控制步，低层native FM10/预测32执行前16，真实23维。模型/官方post2/G0.5/1000实例/config/stats版本均锁在manifest；公开301曾被诊断，明确不是独立盲测。
+- `tasks/<task>/{json,videos,attempts}`是不可改原始评测结果；`summary.json`分别记总/逐task终局Q、完整任务SR、覆盖数；`submission/`已收集wrapper/r1pro配置/清单，结束后生成results.zip及视频SHA索引。原始视频不加字幕、不裁剪；提交需另外补Docker或>=50端口服务、24GB实机验证、视频托管URL与portal身份信息，不自动上传/报名。当前服务有本地注册批次sidecar依赖，正式对外serving需独立适配并验证策略等价，不能把这套本地调度当可直接提交镜像。
+- RL修复canary已保存243后暂停，余7路旧final保留，原73h截止10/11 00:12:28 CST不延长；此次公共评测不会成为recovery训练数据。下一步确认8路运行/首批原始结果、持续归档进度及检查清单，不能提前填最终Q或SR。
+
+### 2026-10-08 12:15 CST（12:34更新）：RL修复实际验收通过并暂停；SFT全量链工程验收中（Codex / RL-FIX-RECOVERY-10383 + EVAL-SFT100-10383）
+
+- **12:34 CST v3在跑：** 冻结`adcb903`/`code/behavior_sft_eval_20261008_v3`，9项双端CPU回归通过；两SFT权重/全部实例/官方源码SHA重新核验通过。确认GPU空闲后启动`runs/sft100_full_20261008_v3`的GPU1 TRAIN烟测worker1335545；不重复启动仍在后台的prepare。根已亲审v2两视频0/64/128帧共6张官方三相机拼图，129帧672×448/4.3s，图像非黑帧、有时序运动，腕视图以本体/墙面为主，不伪称抓取成功。媒体本地`artifacts/sft100-evaluation-20261008/smoke-v2`。
+- **12:32 CST v2真实短验/收尾修复：** 两TRAIN实例均完成129控制步（官方128配置的终止语义），各原始三相机MP4与metrics均齐；9次native FM请求，前后全模型指纹一致/0optimizer，最大allocated22.335GiB/reserved22.668GiB（不是24GB硬件验收）。外层仍拒绝：官方`BatchedEvaluator.__exit__→app.close()`会直接终止Python，旧完成回执写在with之后不可达。已把回执移到全部batch返回之后/关闭之前，父进程仍须核exit0+全结果+权重不变；新增真实SystemExit模拟回归，9项CPU测试过。旧v2失败记录/媒体保留，正在新冻结v3复验，尚0公共rollout。旧RL镜像同步证据来自手动柜门状态干预，不直接证明普通闭环Q错误；正式评测保留未改官方tag，不偷偷引入RL物理/评分补丁，此兼容风险另列。
 - **12:22 CST工程门拒绝并修复：** v1的TRAIN烟测在第一帧被任务身份门拒绝，0真实动作/0正式public评测。根因是legacy`a4_tasks.jsonl.task`为长句指令，不是官方task name；服务现从官方CSV读ID→canonical name，保留严格一致性检查并新增负例回归。v1失败源/日志保留，不称通过；新冻结版本正在部署v2验收，不热改旧源。顺带修复live汇总恰好读到官方JSON/video写入中间态会误停全局的race，仅最终封包严格拒缺失/截断；8项CPU测试已过。
 - **12:24 CST v2预检/短验提交：** 冻结`1bf1760`/`code/behavior_sft_eval_20261008_v2`，8项CPU双端与20项RL回归通过；v2独立job重新核两SFT权重/全部1000public SHA和官方tag源码。确认GPU均空后提交同一TRAIN2env128配置烟测，输出`runs/sft100_full_20261008_v2`（不使用v1失败receipt），实际结果待；0公共rollout/0新训练，v1完整保留。
 
