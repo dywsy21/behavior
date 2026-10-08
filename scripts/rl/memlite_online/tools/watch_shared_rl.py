@@ -64,6 +64,22 @@ def safe_api_errors(body, key):
             for message in messages[:3]]
 
 
+def verify_destination(viewer, expected_user, entity_name, organization=None):
+    """A user's default entity is not necessarily their authorized target team."""
+    if viewer['username'] != expected_user:
+        raise ValueError('Verified account identity differs from expected user')
+    teams = [edge['node'] for edge in viewer.get('teams', {}).get('edges', [])
+             if edge['node']['name'] == entity_name and edge['node'].get('isTeam')]
+    if len(teams) != 1:
+        raise ValueError('Destination is not a team listed for this account')
+    team = teams[0]
+    org = team.get('organization') or {}
+    org_names = {org.get('name'), (org.get('orgEntity') or {}).get('name')}
+    if organization is not None and organization not in org_names:
+        raise ValueError('Destination team does not belong to the requested organization')
+    return team
+
+
 def train_metrics(row):
     result = numeric_fields(row, ('controls', 'completed_episodes', 'task_coverage',
         'successes', 'macro_q_covered', 'macro_sr_covered', 'episodes_with_q_increase',
@@ -136,6 +152,7 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--entity', required=True)
     parser.add_argument('--expected-user', required=True)
+    parser.add_argument('--organization', help='Require the team to belong to this organization')
     parser.add_argument('--project', default='behavior-memlite-rl')
     parser.add_argument('--inspect-account', action='store_true')
     args = parser.parse_args()
@@ -163,15 +180,15 @@ def main():
             raise RuntimeError('W&B GraphQL request rejected; no error body logged')
         return body['data']
 
-    viewer = gql('query { viewer { username entity } }')['viewer']
-    if viewer['username'] != args.expected_user or viewer['entity'] != args.entity:
-        raise ValueError('Verified account identity differs from requested destination')
+    viewer = gql('query { viewer { username entity teams { edges { node { name isTeam organization { name orgEntity { name } } } } } } }')['viewer']
+    destination = verify_destination(viewer, args.expected_user, args.entity, args.organization)
     variables = {'entity': args.entity, 'project': args.project}
     project_query = 'query($entity:String!,$project:String!){project(name:$project,entityName:$entity){name access}}'
     project = gql(project_query, variables)['project']
     if args.inspect_account:
         schema = gql('query { __type(name:"UpsertModelInput") {inputFields {name type {kind name ofType {name kind}}}}}')
-        print(json.dumps(dict(viewer=viewer, project=project, input_schema=schema)))
+        print(json.dumps(dict(viewer=viewer, destination=destination,
+                              project=project, input_schema=schema)))
         return
     args.output.mkdir(parents=True, exist_ok=True, mode=0o700)
     lock = (args.output/'observer.lock').open('a')
@@ -202,6 +219,7 @@ def main():
     run.define_metric('ppo/*', step_metric='ppo/update')
     identity = dict(pid=os.getpid(), url=run.url, run_id=run.id, entity=args.entity,
         project=args.project, started=time.time(), remote_job=args.job,
+        organization=destination.get('organization'),
         auth_persisted=False, training_process_restarted=False)
     atomic_json(args.output/'identity.json', identity)
     print(json.dumps(identity), flush=True)

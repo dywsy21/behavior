@@ -10,6 +10,27 @@ spec.loader.exec_module(watch)
 
 
 class ObserverTests(unittest.TestCase):
+    def test_explicit_team_can_differ_from_default_entity(self):
+        team = dict(name='requested-team', isTeam=True,
+                    organization=dict(name='requested-org', orgEntity=dict(name='org-entity')))
+        viewer = dict(username='owner', entity='other-default',
+                      teams=dict(edges=[dict(node=team)]))
+        self.assertEqual(watch.verify_destination(viewer, 'owner', 'requested-team',
+                                                 'requested-org'), team)
+        self.assertEqual(watch.verify_destination(viewer, 'owner', 'requested-team',
+                                                 'org-entity'), team)
+        for expected_user, entity, org in [('wrong-user', 'requested-team', 'requested-org'),
+                ('owner', 'requested-team', 'other-org'), ('owner', 'unlisted', None)]:
+            with self.subTest(expected_user=expected_user, entity=entity, org=org):
+                with self.assertRaises(ValueError):
+                    watch.verify_destination(viewer, expected_user, entity, org)
+
+    def test_org_entity_is_not_a_project_team(self):
+        viewer = dict(username='owner', teams=dict(edges=[
+            dict(node=dict(name='org-entity', isTeam=False))]))
+        with self.assertRaises(ValueError):
+            watch.verify_destination(viewer, 'owner', 'org-entity')
+
     def test_error_redaction(self):
         body = {'errors': [{'message': 'bad fake-key and wandb_v1_fake_alternative_token'}]}
         self.assertEqual(watch.safe_api_errors(body, 'fake-key'),
