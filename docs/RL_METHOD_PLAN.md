@@ -1,4 +1,40 @@
-# 面向50任务的通用RL后训练：候选与验证计划
+# 通用RL后训练：候选与验证计划
+
+## 2026-10-08：100任务、8份采样、一个共享模型（方案讨论，未实现/启动）
+
+用户已取消剩余公共评测，要求转向RL，但先讨论训练细节。本节覆盖下方历史50任务口径，**不是新训练启动票**。负责人Codex，任务`RL-SHARED100-DESIGN-10383`；现有8份RL checkpoint和64条已完公共评测全部保留。共享实现、初始化、奖励/课程及新预算均待确认，不能自动续训旧73h窗口。当前基础设施代码冻结`4a0d9b8`，现有RL正确性修复冻结`83cbe31`。
+
+### 当前事实
+
+- `scripts/rl/memlite_online/code/direct_a4_flow.py`的actor只开放`model.action_expert.*`，低层VLM和高层规划器冻结；critic是单独的ValueHead。每个`serve_stage1_rl.py`服务独立update/Adam/存checkpoint，没有跨卡梯度同步；原100任务8份现在确实会训成8个专家。
+- 共用初始权重不等于后续共用策略。已有8专家的采样版本、更新次数、Adam状态不同，不能在末尾平均checkpoint后声称等价于共享PPO；如果研究权重融合或蒸馏，须另外作为有验证的算法，而不是恢复训练捷径。
+- 10383实际低层SFT action expert为322个tensor、634,609,691参数；FP32梯度约2.36GiB。卡间拓扑无NVLink，卡0–3与4–7之间跨NUMA/SYS。只读拓扑不是NCCL速度实测；通信需按每轮成本预算，不承诺8倍提速。
+
+### 推荐第一版：同步rollout轮次＋梯度累积/归约
+
+1. 8卡actor与共享critic从同一状态初始化；高层冻结为同一版本。每轮固定策略版本`k`采样，示例每卡64个**实际执行action chunk**、全局约512个；这是讨论用起点，不是已选定预算。各rank每轮可只覆盖其队列中的一部分任务，按滚动窗口确保100任务覆盖，不要求每次更新把100任务全塞进来。长episode允许跨轮继续，不等完整episode结束才同步。
+2. 各环境独立计算reward/GAE/returns及截断bootstrap，记录原始old-logp、真实已用动作长度、task/intent/episode/policy版本；不能跨env或reset串接。bootstrap与下一步实际高层context一致。边界为采样截断时可bootstrap；真实终止与time-limit依既定协议分别处理。
+3. 全局归约有效样本数/权重/advantage二阶矩，保留现有不减均值的RMS缩放约定。任务以宏平均目标设计采样权重，不能把12-task组和13-task组简单等权后当成100task均衡，也不能让快/长任务无限主导。具体quota/权重须预先固定并记录；不是事后按回报挑样本。
+4. 本地逐条计算PPO loss并累积梯度；**原生RL microbatch=1先保留**，因为现代码明确用相同B1形状保持sample与recompute概率一致。评测batch4的1.78×不自动成立于RL。动作专家/critic梯度在整轮累积后按全局有效权重归约，再统一梯度裁剪及Adam.step；不在每条样本或每个FM去噪步同步。高层和低层VLM无梯度。
+5. post-update KL/clip指标在同一旧策略样本上计算并全局归约，保留逐任务/逐组诊断防止均值掩盖局部灾难；所有rank执行同一次接受或回退、同一LR减半及actor/Adam恢复。不能各卡自己决定KL拒绝与否，也不能只同步权重却留下不同优化器历史。零adv rank也参加全局更新判定/collective，空尾批须处理为零贡献而不是跳过通信。critic初始化/参数顺序必须先统一；任一rank故障全局有界停稳，不让剩余rank继续各自更新。
+6. 验证各rank模型/optimizer版本一致后进入`k+1`。rank0保存唯一actor＋critic＋优化器训练状态；为可恢复采样另保留每rank RNG/任务队列/episode或明确的丢弃未提交rollout与重置规则。部署是原SFT依赖＋一套共享RL增量，不能把增量文件误称完整VLA。
+
+共享的是权重，不是高层记忆：运行状态以`worker_id / env_id / episode_id`定位，动作与rollout再绑定`policy_version`。新task/reset必须清除该slot的memory/intent/cache，参数同步本身不把另一个slot的记忆拷进来。高层规划文本不可穿过FM梯度；共享低层只能改善既定意图下的执行，不能自动修好错误规划。
+
+### 实现边界与验收要求
+
+- PyTorch DDP可同步副本梯度，但不会自动切数据，也不会替我们同步业务层KL回退/采样版本。[安装版本对应的PyTorch 2.7 DDP文档](https://docs.pytorch.org/docs/2.7/generated/torch.nn.parallel.DistributedDataParallel.html)
+- 当前自定义FM loss直接调用action expert的embed/decode等方法且含多步采样，不能机械包一层DDP后默认全部正确。首版倾向明确在`update`的本地backward完成后、clip/step之前对固定参数顺序进行分桶all-reduce；或先把完整loss重构为标准forward再用DDP。无论哪种，需证明与单进程同一全局batch的梯度/更新一致，并测试12/13任务组、短尾/零adv、全局KL回退、故障超时及resume。
+- 先核old-logp重算在**任何更新前**与采样一致，再做多卡更新；B1与batch4的固定噪声误差并非RL似然等价证据。当前评测候选完整32步最大误差门仍失败（最大落在不执行的后16步真实维度），不能拿未执行动作差异小/成功起进程来替代PPO正确性检验。
+- 不允许每卡独立推进多次optimizer.step再偶尔平均模型，那会使收集策略和更新策略发生分叉。第一版不引入异步陈旧策略；若慢rank等待/重置成本明显，再单独衡量固定版本集中learner/collector调度，不先叠加多个算法改变。
+- 初始建议共享SFT低98414＋冻结高48045，重新建立一套RL optimizer/critic；旧8专家保存，不直接平均。也可在有证据的前提下选择某**一份**既有RL checkpoint作为全rank公共起点，但目前没有8专家中的最优可比结果。不用再跑一套公共baseline。
+- Actor LR先以修复canary已接受的`1e-7`、critic`1e-4`为讨论基准，不能因卡数8就乘8；轮大小、PPO epochs、探索噪声与奖励/课程另行决定。同步8卡不是稀疏成功信号的解法：没出现或未被可靠奖励的“没抓住→松开→重抓”，不能期待只靠合并梯度学会。
+
+### 本轮设施收尾（不是RL效果结论）
+
+同4条TRAIN/2052步：serial2=8.756、batch2=11.374、batch4=15.594控制步/s（含run内重置/仿真/推理/录像，不含冷加载）；所有权重未变。CPU29项、同服务radio→keyboard空记忆复位、混合0/8规划历史/行倒序隔离通过；但原全32步数值门未全过，完整回执在`/run/ti/rl_memlite_stage1_20261006/runs/eval_speedbench_20261008_v1`。14:55:45 CST全部诊断GPU进程已退出。用户取消剩余936公共评测，当前不新增评测或RL。
+
+## 历史方案（2026-09-12，50任务验证口径）
 
 2026-09-12，按用户补充修订。**端盘掉落只是例子；目标是50任务复用的RL方法，不是端盘专用controller。以下是选型与接口计划，尚未实现/训练，也未证明在本项目有效。**
 

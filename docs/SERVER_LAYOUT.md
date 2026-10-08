@@ -4,6 +4,7 @@
 
 仍为`root@42.192.34.154:10383`，以下相对路径基于`/run/ti/rl_memlite_stage1_20261006`，不涉及robo/LC。
 
+- **15:06 CST最新覆盖：** 用户取消公共续评；旧64条仍在原job，剩余936未运行，不恢复封包器。TRAIN速度job已结束、原数值门未全部通过，全部GPU诊断进程已退出（14:55:45核无compute进程）；RL维持保存暂停，当前只讨论共享模型方案。`report.json`含三组实测；`numerical_audit/audit.json`为5快照核验；`mixed_history_audit/audit.json`、`mixed_history_detail_v2/audit.json`为0/8/0/8历史原始/明细核验，均保留真实拒绝结果。新增冻结`code/behavior_eval_speed_20261008_v2`=`21c12c9`、v3=`4a0d9b8`，actor路径与v1逐字节相同，v3仅加数值诊断分解。四条TRAIN视频人工抽帧在本地`artifacts/eval-speed-20261008`；不进正式1000分母。8卡拓扑0–3/4–7两NUMA、跨组SYS，无NVLink；未测NCCL吞吐。
 - **14:20 CST速度验收新位置：** `code/behavior_eval_speed_20261008_v1`固定e441628；`runs/eval_speedbench_20261008_v1`为最多GPU0/1、2h的TRAIN benchmark（controller1358542）；`{serial2,batch2,batch4,isolation}/smoke/gpu_*`保存独立记忆reset/推理/权重指纹，`smoke_tasks`为原始TRAIN录像，`numerical_audit`/`report.json`待完成生成。旧64正式结果完整核验清单`runs/sft100_full_20261008_v3/stopped_inventory_20261008_speed.json`；旧中断与输出禁止删除/覆盖。此处TRAIN不计正式1000分母。
 - **13:56 CST覆盖下方运行状态：** 用户授权速度优化，`sft100_full_20261008_v3/STOP`已令8路退出，64完整结果及全部中断attempt原位保留；`pause_request_20261008_speed.json`登记原因，8个worker核权重未变、GPU释放。新优化任务`EVAL-BATCH-SPEED-10383`在独立分支，旧adcb903、原模拟器及共享env继续不可热改；新源/run落地后另登记。封包器不得将partial称正式全量包。
 - 旧`runs/large_scale73h_trainonly_20261007`已按用户要求保存退出；8份final `training/gpu_*/save_ack.json`及checkpoint均保留，勿删。GPU0后续验收新状态在`runs/large_scale73h_repaired_20261008_canary_v1/training/gpu_0_attempt_000/checkpoints/direct_latest.pt`（243次更新）；该job已保存暂停，`canary_resume_receipt.json`/`canary_acceptance.json`可核验。余7卡继续使用旧final状态，不能把243的单卡增量误当所有任务共享权重。

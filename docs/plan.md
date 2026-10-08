@@ -12,8 +12,17 @@
 
 ## 实时进度（最新记录在前）
 
-### 2026-10-08 13:54 CST：获批停止慢速评测并优化批量推理/仿真并行（Codex / EVAL-BATCH-SPEED-10383，进行中）
+### 2026-10-08 15:06 CST：取消续评，先讨论100任务共享RL；工程测速收尾（Codex / RL-SHARED100-DESIGN-10383）
 
+- **用户最新范围覆盖：** 不恢复剩余936条公共评测；旧64条及全部中断attempt/录像继续保留，不生成完整Q/SR或提交包。完成本轮设施检查后转RL，但须先讨论训练细节；此刻未启动RL、未自动续旧73h或延长预算。旧DART blocked目标不受影响，不用robo/LC、不派subagent。
+- **测速终态及限制：** `runs/eval_speedbench_20261008_v1/report.json`已生成，serial2/batch2/batch4同4条TRAIN、2052实际控制步分别234.366/180.404/131.591秒，即8.756/11.374/15.594步每秒（batch4约1.78×；含run内重置/仿真/推理/录像，不含冷加载，不外推全部任务或RL）。各worker最终高低权重指纹一致，0优化器。主5快照审计有1条全32步内部最大误差超线，原controller终态`numerical_gate_failed`，不得称候选已全面验收。所有GPU诊断进程已结束，14:55:45 CST只读核验compute进程为空。
+- **memory/意图/动作隔离证据：** 29项双端CPU检查、非连续slot/结束行/事务提交回归和同一服务radio→keyboard实际复位通过。`mixed_history_detail_v2/audit.json`中4行高层context与逐条推理相同，原输入重放raw23及batch倒序回填误差均0；但固定噪声全32×27最大误差0.0695739超原0.05线。已定位row3、零基step18、dim25：真实动作维度、属于本次不执行的后16步，不是补齐位。执行前16步真实normalized最大0.0164866、raw23最大0.0014354/RMS0.0001773，padding误差0。未放宽门槛，未证明TF32或BF16是唯一原因；保留`mixed_history_audit`原拒绝回执。原生评测合批不能未经old-logp/recompute检验直接移入PPO。
+- **共享RL代码/硬件只读审计：** `direct_a4_flow.py`只训练`model.action_expert.*`及独立critic，`serve_stage1_rl.py`每服务直接本地update，没有梯度汇合；现有8份是各自专家。低层SFT实际action expert为322个tensor/634,609,691参数，FP32梯度约2420.84MiB（2.36GiB）；10383的8卡拓扑为卡0–3/4–7各NUMA、跨组SYS，无NVLink，尚未做NCCL带宽实测。不能声称同步无开销。
+- **建议待讨论、尚未实现：** 8卡保留100任务采样分工，每轮同一策略版本收固定chunk预算，在本地累积后统一归约actor/critic梯度、全局裁剪、同步Adam及KL接受/回退；按任务覆盖/权重处理12/13任务组不等，GAE和memory仍按worker/env/episode隔离。建议共享SFT低98414＋冻结高48045重新建立一套RL优化器，旧8份增量不直接平均；初始化、奖励/课程、轮大小、资源与时长预算待讨论。详见`docs/RL_METHOD_PLAN.md`新共享100任务节。下一步先答复设计，不开新模拟/评测/训练。
+
+### 2026-10-08 13:54 CST：停止慢速评测并优化批量推理/仿真并行（Codex / EVAL-BATCH-SPEED-10383，测速结束，数值门未全过，续评已取消）
+
+- **14:52 CST实际跨任务复位通过，数值诊断继续：** 同一policy PID1367066先后完成radio/keyboard各2 TRAIN实例×129步；`session_begin.jsonl`记录generation1→2、requests0→9、每个slot新ledger、空memory/空intent context，最终18请求与完整高低权重指纹通过。整个服务未在任务间重启。原benchmark进入GPU0固定输入5快照审计；新冻结`4a0d9b8`/v3远端29CPU通过后，仅在已释放的GPU1启动450s误差明细复验（保留旧gate不改，输出`mixed_history_detail_v2`），actor逐字节未变。原mixed rejection继续有效，正式评测未恢复。
 - **14:47 CST mixed-history门拒绝，未恢复正式评测：** 4slot时钟0/8/0/8的真实快照混合QA已完成，权重不变、高层context四行全相同、原输入重放raw23逐位相同，倒序batch回填后raw23/normalized27误差均0；固定噪声真实执行raw23最大差0.0014354/RMS0.0001773。但32×27完整内部张量max=0.069574超过预设0.05（RMS0.002903<0.005），故原gate=false，回执原位保留，不改阈值掩盖。当前进一步输出误差位置、真实/补齐维度与执行前16/未来后16的分解，先定位；跨任务闭环仍为同预算TRAIN工程诊断，公共936未启动。根已亲审batch4四个TRAIN实例第256帧原始三视图，均非黑帧、实例视角不同；四视频513帧/30fps/672×448与官方步数一致，本地`artifacts/eval-speed-20261008`，不称任务成功。
 - **14:44 CST变长历史GPU核验已启动：** 新冻结`21c12c9`→`code/behavior_eval_speed_20261008_v2`，29项远端CPU回归通过；actor/模型/仿真相关组件仍逐字节等同已测速e441628，不热改v1。GPU0有界进程1367420（flock＋450s）运行`audit_mixed.py`，使用batch4实际TRAIN快照把各slot时钟交替保持在0/8chunk，保留其对应RGB/ledger/instance，不造新轨迹/标签；输出`eval_speedbench_20261008_v1/mixed_history_audit`，尚待结果。GPU1继续原controller的radio→keyboard跨任务闭环；总窗口仍截至约16:20 CST，不自动追加。
 - **14:40 CST batch4实际完成/续评代码CPU验收：** 同4 TRAIN实例共2052控制步，batch4 run=131.591s、15.594控制步/s，较serial2约1.78×（不含冷加载，不能线性外推全部场景）。单请求FM约0.30s同时处理4env，GPU1含sim短采约38GiB；完整权重收尾/跨task/固定输入数值门仍待。续评动态队列、936case精确分区、奇数尾批不重复补位、旧结果独立副本和原始SHA、混合引擎提交材料已实现；29项CPU+10 subtests通过。增加只用真实TRAIN快照构造不同历史长度/不同规划时钟的诊断batch（非轨迹/非训练数据），用于识别变长padding与slot串扰；准备新冻结源在空闲GPU0执行，GPU1继续既有跨任务验收，仍在总2h窗口内。
@@ -24,7 +33,7 @@
 - 用户明确授权实施“真batch高低层＋每卡2/4env”测速，当前评测可以停；本轮只优化评测设施，不训练、不降低FM10/规划128控制步频率/官方超时、不恢复RL。Git先fetch/ff-pull并保留已含origin/main的实现，另开`feat/eval-batch-speed-20261008`；活跃adcb903源码/现有共享env不热改。
 - 13:54只读核验旧supervisor1337461及8worker/封包器1348050均属于唯一`runs/sft100_full_20261008_v3`，已完成62/1000，局部Q/SR均0，不能视为全量成绩。将用该job既有STOP机制停并保留所有结果、未完成尝试与权重指纹回执；停止后的完整JSON/MP4单独核验冻结，禁止选最好、覆盖或把中断当成功完成。
 - 主假设：模型串行服务占比可通过高/低层真正合批降低，再以4env增加单位时间真实控制步。第一阶段预算：最多2GPU、2小时，CPU合同检查＋相同TRAIN任务/seed的serial2、batch2、batch4短闭环（默认各512步/相同录像设定，必要的异常修复不直接扩全量）；保留23/27映射、独立slot记忆、非连续env索引、结束掩码及确定性噪声/数值差异审计。未通过身份/动作/媒体/吞吐门不放大；任何OOM/串slot/未解释数值偏差立即停候选。独立团队review仍待，不合main。
-- 优化会改变batch数值路径，不能假设动作逐位一致：先分离固定噪声的数值核对和完整生成差异，再明确续评来源/已完成与中断case清单及版本；不会静默将两种执行协议合成可比的新成绩。验证后恢复剩余评测及提交材料收集；新ETA以实际吞吐为准。
+- 优化会改变batch数值路径，不能假设动作逐位一致：先分离固定噪声的数值核对和完整生成差异，再明确续评来源/已完成与中断case清单及版本；不会静默将两种执行协议合成可比的新成绩。原“验证后恢复剩余评测”已被15:06记录的用户取消指令覆盖；续评代码保留但不启动。
 
 ### 2026-10-08 12:40 CST：验收通过，原始SFT全量1000例评测已提交（Codex / EVAL-SFT100-10383，运行中）
 
