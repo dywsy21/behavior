@@ -38,6 +38,9 @@ def main():
     state=dict(status='running',pid=os.getpid(),started=started,deadline=deadline,children={})
     atomic_json(a.job/'status.json',state)
     env=os.environ.copy();env.update(PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1')
+    for key in list(env):
+        if key.startswith('RL_'):env.pop(key)
+    env['PYTHONPATH']=str(G05/'src')+':'+str(SOURCE)
     children=[]
 
     def launch(name,gpu,mode,num_envs,*,cross_task=False):
