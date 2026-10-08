@@ -2,6 +2,7 @@
 
 ## 2026-10-08（CST）当前请求：SFT低Q与RL停滞诊断
 
+- **13:04 CST / Codex全量运行交接：** 8卡实际推理均通过，前三task各301/302共6完整episode的原JSON/MP4/帧数已核；已跨batch自动继续303/304，尚6/1000（局部Q/SR均0，不是全量结论）。正式源仍adcb903；独立cc00690封包器已12项双端测试并等待完成后产出仅原rollout JSON的提交草案，不改活跃代码、不上传。最终Q/SR、Docker/IP/24GB实机、视频托管及portal字段仍待；RL维持保存暂停，下一步沿现有run监控，不另起一套评测。
 - **12:40 CST / EVAL-SFT100-10383正式启动覆盖下条待验状态：** v3/adcb903双TRAIN协议门、原始媒体及高低层完整指纹已通过，0optimizer。Codex启动同一SFT高48045/低98414的8worker×2env全量1000公共实例，job=`runs/sft100_full_20261008_v3`、supervisor1337461；并发加载限定2，后续须核8卡实际推理/首批输出，尚无最终Q/SR。RL不恢复、73h截止不延长。提交资料/验收证据见`docs/infra/results/2026-10-08-sft100-evaluation.json`；对外Docker/50端口服务、24GB验收与视频托管/portal信息仍待，禁止将现有本地sidecar注册服务称已可提交。
 - **12:36 CST / Codex验收进展：** RL20×双端CPU、GPU0两个真实1e-7更新与2段候选结构/根24图QA通过，保存243后暂停，不开余7路；原8路final states保留。SFT v2已真实完成2条TRAIN129步/原始视频/权重前后不变，但官方关闭进程先于完成回执导致外层拒绝。新冻结adcb903修复回执顺序，9×双端CPU、两权重/1000实例SHA通过；v3的GPU1 TRAIN协议复验运行，1000公共评测尚未开始。根抽看v2两视频共6张原始拼图，通过媒体有效性检查，不称任务成功。公共评测禁止回灌恢复训练；提交/24GB serving余项见plan与checklist。独立团队review仍待，不合main。
 - **11:55 CST最新覆盖 / EVAL-SFT100-10383：** 用户要求修复验收后优先SFT终态全量Q/SR评测及提交材料，RL续训后置。Codex负责独立锁定高48045/低98414、官方v3.9.3/public_test索引0–9共1000rollout/原始JSON+视频/robot与wrapper及serving清单；旧8路先按既有保存流程保全，禁止RL权重或TRAIN实例混入此分母，不擅自延长旧73h或正式提交。20项CPU修复测试通过，真实GPU/图审与评测尚待。

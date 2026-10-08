@@ -9,7 +9,9 @@
 - 当前SFT评测源码`code/behavior_sft_eval_20261008_v3`=`adcb903`，入口`scripts/eval/memlite_sft100/`。v1源码a96455a因canonical task身份校验失败，v2源码1bf1760因官方退出生命周期的回执错误被拒绝；旧源/结果不删、不称已验收。G0.5依赖为单独`code/g05_sft_6af1ab9`干净detached worktree；官方模拟器`code/official_behavior_a8247a8/OmniGibson`来自Git tag v3.9.3-post2，与`official_manifest.json`绑定，不改原sim包/环境。
 - 当前SFT job `runs/sft100_full_20261008_v3`：`manifest.json`锁定高48045/低98414/1000实例；`smoke/gpu_1`、`smoke_tasks/turning_on_radio`仅TRAIN128配置步验收，不计正式分母。正式启动后`workers/gpu_i`记录服务/权重不变回执，`tasks/<task>/{json,videos,attempts}`保存原始结果/MP4/唯一尝试账本；`summary.json`给总Q/SR、逐task与缺失数，未完成不可叫完整成绩。v2两视频已取本地`artifacts/sft100-evaluation-20261008/smoke-v2`作协议图审（实际129帧/各4.3s），不当完整评测。
 - v3在12:40通过smoke后已提交全量supervisor1337461，8worker PID1337465–1337472（使用时重核），先限2路加载，不据进程存在称全量成功；顶层`status.json`/`summary.json`/`supervisor.log`为监控入口。本地小清单与验收回执在`artifacts/sft100-evaluation-20261008/{v3-manifest,v3-smoke}`，轻量字段及所有提交待补项见`docs/infra/results/2026-10-08-sft100-evaluation.json`。
+- 13:04已确认全部8路真实推理，首6例完整JSON/MP4/帧数通过并跨batch续跑；最终1000例未完成。`manifest.json`是冻结登记，里面prepared字段不代表当前状态，以`status.json`/`summary.json`及逐batch回执为准。
 - `submission/`保留wrapper、原封r1pro.yaml、提交清单；完成后产出`results.zip`和带SHA的`rollout_inventory.json`。不自动公开或上传视频；checkpoint/视频仍不进Git。原73h RL截止未延长，评测是用户新授权独立流程。
+- **12:56 CST后处理：** `code/behavior_sft_submission_20261008`固定cc00690，只运行一次性`package_submission.py --wait`（PID1348050）等待当前full job。原`results.zip`为内部复现包；提交草案另产`submission/challenge_results_draft.zip`（仅1000原始rollout JSON+wrapper+robot+README），回执`challenge_bundle_receipt.json`，日志`package_after_eval.log`。若full未完成/原始SHA变化则拒绝，不重评、不上传；Docker/IP/24GB/视频URL待补。
 
 ## 2026-10-08：用户更正的真实RL服务器（10383）
 

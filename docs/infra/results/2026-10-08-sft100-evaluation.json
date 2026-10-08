@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-08T12:46:00+08:00",
+  "updated_at": "2026-10-08T13:04:00+08:00",
   "owner": "Codex/EVAL-SFT100-10383",
   "status": "full_evaluation_running_no_final_score",
   "server": {
@@ -18,10 +18,15 @@
     "supervisor_status": "running",
     "first_public_task": "clean_a_keyboard",
     "first_public_instance_ids": [301, 302],
-    "first_public_inference_requests": 19,
-    "completed_episodes": 0,
+    "first_verified_public_inference_requests": 19,
+    "snapshot_inference_requests_by_gpu": [327, 48, 262, 111, 243, 168, 4, 178],
+    "completed_episodes": 6,
+    "completed_only_q_score": 0.0,
+    "completed_only_success_rate": 0.0,
+    "partial_results_are_not_full_model_scores": true,
     "eight_worker_processes_started": true,
-    "all_eight_policies_already_inferencing": false
+    "all_eight_policies_already_inferencing": true,
+    "worker_errors": []
   },
   "source": {
     "source_commit": "adcb90366af440d79253129cbc40eb4608928b31",
@@ -152,7 +157,13 @@
       "exact_task_commands": "tasks/<task>/command.json"
     },
     "generated_on_completion": {
-      "zip": "submission/results.zip",
+      "internal_reproducibility_zip": "submission/results.zip",
+      "draft_challenge_zip": "submission/challenge_results_draft.zip",
+      "draft_contains_only_rollout_json_plus_wrapper_robot_readme": true,
+      "draft_assembler_commit": "cc00690",
+      "draft_assembler_source": "/run/ti/rl_memlite_stage1_20261006/code/behavior_sft_submission_20261008/scripts/eval/memlite_sft100/package_submission.py",
+      "draft_assembler_wait_pid": 1348050,
+      "draft_assembler_log": "submission/package_after_eval.log",
       "video_sha_inventory": "submission/rollout_inventory.json",
       "metrics_json_count": 1000,
       "original_unedited_mp4_count": 1000
@@ -166,6 +177,108 @@
       "Team/model/contact/disclosure choices; confirm actual portal form fields"
     ],
     "secrecy": "No passwords, API keys, asset key material or internal environment dumps collected"
+  },
+  "first_completed_media_validation": {
+    "now": 1791435847.78655,
+    "count": 6,
+    "cases": [
+      {
+        "task": "clean_a_keyboard",
+        "instance_id": 301,
+        "steps": 5815,
+        "q_score": 0,
+        "success": false,
+        "stream": {
+          "codec_name": "h264",
+          "width": 672,
+          "height": 448,
+          "duration": "193.833333",
+          "nb_frames": "5815"
+        },
+        "video_bytes": 10056177,
+        "metrics_sha256": "66080e0f18f80f178bc18ec5d1b591f73e8327c15cee60066b0ec6c13232cdbb"
+      },
+      {
+        "task": "clean_a_keyboard",
+        "instance_id": 302,
+        "steps": 5815,
+        "q_score": 0,
+        "success": false,
+        "stream": {
+          "codec_name": "h264",
+          "width": 672,
+          "height": 448,
+          "duration": "193.833333",
+          "nb_frames": "5815"
+        },
+        "video_bytes": 9558066,
+        "metrics_sha256": "d4b80150c29c68b37b23eec5fa99efdf4313c91ef831f9697d5e7e0f0283e19d"
+      },
+      {
+        "task": "installing_a_modem",
+        "instance_id": 301,
+        "steps": 3620,
+        "q_score": 0,
+        "success": false,
+        "stream": {
+          "codec_name": "h264",
+          "width": 672,
+          "height": 448,
+          "duration": "120.666667",
+          "nb_frames": "3620"
+        },
+        "video_bytes": 6425710,
+        "metrics_sha256": "e9054b63f280ad4b14aec94657e12bd3ade97a1a3c92895319cc41af7d0878c3"
+      },
+      {
+        "task": "installing_a_modem",
+        "instance_id": 302,
+        "steps": 3620,
+        "q_score": 0,
+        "success": false,
+        "stream": {
+          "codec_name": "h264",
+          "width": 672,
+          "height": 448,
+          "duration": "120.666667",
+          "nb_frames": "3620"
+        },
+        "video_bytes": 8264787,
+        "metrics_sha256": "bc337c7b201f1bcf599e80be37c4e7d432dff08d3e5212ac379fa49d6c76187a"
+      },
+      {
+        "task": "scrubbing_bathroom_floor",
+        "instance_id": 301,
+        "steps": 4731,
+        "q_score": 0,
+        "success": false,
+        "stream": {
+          "codec_name": "h264",
+          "width": 672,
+          "height": 448,
+          "duration": "157.700000",
+          "nb_frames": "4731"
+        },
+        "video_bytes": 7450724,
+        "metrics_sha256": "8313deb0ca8efbef009c250b6f41b5ea8e176e1d09ae5556d3adc9f406231cc3"
+      },
+      {
+        "task": "scrubbing_bathroom_floor",
+        "instance_id": 302,
+        "steps": 4731,
+        "q_score": 0,
+        "success": false,
+        "stream": {
+          "codec_name": "h264",
+          "width": 672,
+          "height": 448,
+          "duration": "157.700000",
+          "nb_frames": "4731"
+        },
+        "video_bytes": 6562157,
+        "metrics_sha256": "04fbed295c4178c28e1a1f57fe395860f991c7bc8c2def2724ca3f872663102a"
+      }
+    ]
   },
   "runtime_environments": [
     {
