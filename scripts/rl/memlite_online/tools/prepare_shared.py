@@ -32,6 +32,7 @@ def main():
     parser.add_argument('--world-size', type=int, default=8)
     parser.add_argument('--port-base', type=int, default=19800)
     parser.add_argument('--distributed-port', type=int, default=29880)
+    parser.add_argument('--communication-receipt', type=Path, required=True)
     args = parser.parse_args()
     if args.job.exists() or not 0 < args.hours <= 24 or args.world_size != 8:
         raise ValueError('Fresh 8-rank run required, within the declared 24h cap')
@@ -63,6 +64,14 @@ def main():
         raise ValueError('Source must be a clean frozen checkout')
     if args.resume and not args.resume.is_file():
         raise ValueError('Missing shared resume checkpoint')
+    communication = json.loads(args.communication_receipt.read_text())
+    if communication.get('passed') is not True or len(communication.get('ranks', [])) != 8:
+        raise ValueError('A verified eight-rank communication receipt is required')
+    communication_env = communication.get('communication_env', {})
+    allowed = {'NCCL_CUMEM_HOST_ENABLE', 'NCCL_P2P_DISABLE', 'NCCL_IB_DISABLE',
+               'NCCL_SHM_DISABLE', 'NCCL_SOCKET_IFNAME'}
+    if set(communication_env) - allowed:
+        raise ValueError('Unexpected communication environment setting')
     started = time.time()
     manifest = dict(kind='memlite_shared_rl100_v1', created=started, source_commit=commit,
         source=str(SOURCE), source_partition=str(old_path), source_partition_sha256=sha256(old_path),
@@ -80,7 +89,8 @@ def main():
         evaluation_enabled=False, recovery_bc_eligible=False,
         resume_environment_rule='reset_all_envs_discard_uncommitted_rollouts',
         startup='24h clock starts at supervisor start, not preparation',
-        disk_reserve_gib=150)
+        disk_reserve_gib=150, communication_receipt=str(args.communication_receipt),
+        communication_sha256=sha256(args.communication_receipt), communication_env=communication_env)
     if args.resume:
         import torch
         payload = torch.load(args.resume, map_location='cpu', mmap=True, weights_only=False)

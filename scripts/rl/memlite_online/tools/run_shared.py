@@ -44,6 +44,10 @@ def main():
     for key in list(env_base):
         if key.startswith('RL_') and key not in {'RL_REWARD_PROTOCOL', 'RL_TRAINING_CONFIG', 'RL_G05_SOURCE'}:
             del env_base[key]
+    for key in ('NCCL_CUMEM_HOST_ENABLE', 'NCCL_P2P_DISABLE', 'NCCL_IB_DISABLE',
+                'NCCL_SHM_DISABLE', 'NCCL_SOCKET_IFNAME'):
+        env_base.pop(key, None)
+    env_base.update(manifest['communication_env'])
 
     def stop_requested(signum, frame):
         (job/'STOP_TRAINING').touch()
