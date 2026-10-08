@@ -20,6 +20,9 @@ if READ_ONLY:
 if SHARED:
  from shared_physical_reward import SharedPhysicalReward
  from shared_pilot_policy import SharedPilotPolicy
+ if os.environ.get('RL_SYNCHRONOUS')=='1':
+  from distributed_pilot_policy import DistributedPilotPolicy
+  SharedPilotPolicy=DistributedPilotPolicy
 TASK=sys.argv[sys.argv.index('--task-name')+1]
 load=BatchedEvaluator.load_batch;step=BatchedEvaluator._step_fn;run=BatchedEvaluator.run
 apply_actions=BatchedEvaluator._apply_actions

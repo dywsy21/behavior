@@ -366,6 +366,7 @@ class A4DirectPPO:
         payload['python_rng'] = random.getstate()
         payload['numpy_rng'] = np.random.get_state()
         payload['source_snapshot'] = str(Path(__file__).resolve().parent)
+        payload.update(getattr(self, 'checkpoint_extra', {}))
         return publish_checkpoint(self.output_dir, payload)
 
     def update(self, inferencer: Any, experience_ids: Sequence[int],

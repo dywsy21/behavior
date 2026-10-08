@@ -89,7 +89,7 @@ class SharedPilotPolicy(PilotPolicy):
                           reward_protocol=PROTOCOL, control_gamma=CONTROL_GAMMA, **audit)
             with (self.run / 'reward_steps.jsonl').open('a') as output:
                 output.write(json.dumps(record) + '\n')
-        if sum(map(len, self.rows)) >= 64 and all(not self.actions[i] for i in active):
+        if sum(map(len, self.rows)) >= int(os.environ.get('RL_CHUNKS_PER_UPDATE', '64')) and all(not self.actions[i] for i in active):
             self.flush(evaluator)
 
     def flush(self, evaluator):
