@@ -1,5 +1,6 @@
 """Pinned paths and pure bookkeeping for the one-pass SFT100 evaluation."""
 import hashlib
+import csv
 import json
 import os
 from pathlib import Path
@@ -53,6 +54,15 @@ def expected_cases(tasks):
     if len(tasks) != 100 or len(set(tasks)) != 100:
         raise ValueError('Exactly 100 unique official tasks required')
     return {(t, instance, 0) for t in tasks for instance in range(301, 311)}
+
+
+def load_official_task_names(path):
+    """Protocol IDs map to canonical names, never the legacy prose instruction."""
+    rows=list(csv.DictReader(Path(path).open()))
+    mapping={int(row['Task ID']):row['Task'] for row in rows}
+    if len(rows)!=100 or set(mapping)!=set(range(100)) or len(set(mapping.values()))!=100:
+        raise ValueError('Official100 task ID/name mapping is incomplete or ambiguous')
+    return mapping
 
 
 def aggregate(tasks, records):

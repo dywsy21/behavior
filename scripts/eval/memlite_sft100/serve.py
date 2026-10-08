@@ -10,7 +10,7 @@ import traceback
 import numpy as np
 import torch
 import websockets
-from common import bootstrap, atomic_json, ROOT, DATA
+from common import bootstrap, atomic_json, ROOT, DATA, load_official_task_names
 bootstrap()
 from wire import packb, unpackb
 from a4_observation import behavior_obs_to_native_low
@@ -27,8 +27,7 @@ async def main():
     state = dict(status='loading', pid=os.getpid(), optimizer_steps=0, started=time.time())
     atomic_json(run/'policy_status.json', state)
     engine = await asyncio.to_thread(NativeSFT, run/'no_checkpoints')
-    task_rows = [json.loads(x) for x in (ROOT.parent/'behavior_stage3_20260930/tools/a4_tasks.jsonl').read_text().splitlines()]
-    tasks = {r['task_index']: r['task'] for r in task_rows}
+    tasks = load_official_task_names(DATA/'2026-challenge-task-instances/metadata/B100_task_misc.csv')
     gate = asyncio.Lock()
     stopped = asyncio.Event()
     owner = None

@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 import msgpack
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from common import aggregate, expected_cases
+from common import aggregate, expected_cases, load_official_task_names
 from wire import packb, unpackb
 from summarize import summarize
 
@@ -23,6 +23,15 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(len(expected_cases(self.tasks)), 1000)
         self.assertNotIn(('task0',1,0), expected_cases(self.tasks))
         self.assertNotIn(('task0',311,0), expected_cases(self.tasks))
+
+    def test_task_names_are_canonical_not_legacy_instruction_text(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'tasks.csv'
+            p.write_text('Task ID,Task,task\n'+''.join(
+                f'{i},task_{i},Instruction that is not the identifier\n' for i in range(100)))
+            self.assertEqual(load_official_task_names(p)[0],'task_0')
+            p.write_text('Task ID,Task\n0,turning_on_radio\n')
+            with self.assertRaises(ValueError):load_official_task_names(p)
 
     def test_partial_missing_zero_explicit(self):
         report = aggregate(self.tasks,[self.record()])
