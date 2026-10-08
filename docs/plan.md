@@ -12,6 +12,20 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-08 11:55 CST：验收后优先全量SFT评测及提交材料（Codex / EVAL-SFT100-10383，准备中）
+
+- 用户最新要求覆盖此前“不补baseline/全量评测”：先验收修复，再对大规模SFT终态高层`step_00048045_save_0027.pt`＋低层`step_00098414_save_0021.pt`进行全量评测，分别报告Q-score与完整任务SR；激进RL续训后置，不自动延长旧73h时钟。旧8路当前仍运行，尚未停/迁移；将通过原保存退出机制保留其最新优化器/权重，不混入SFT评测。
+- 重新核对官方2026 evaluation/submission网页：指定`v3.9.3`，100task×公开索引0–9×一次＝1000rollout，默认1.5×人类均长超时，原始JSON与head/wrist视频不可改；wrapper/robot config/复现命令和Docker或IP serving信息须收集。不沿用旧200条开发实例清单、训练实例或无视频RL collector冒充规范全量。提交材料先本地/服务器整理，不自动上传或正式提交。
+- RL修复20项CPU回归已通过，包括1/2/8/15/64尾批、零advantage、真实Adam回退/拒绝恢复、RGB/动作/状态对齐与实际apply确认。真实GPU/候选图审尚未验收，不称修复已上线；先检查官方模拟器版本及独立评测链，保持旧活跃源码和环境不变。
+
+### 2026-10-08 11:19 CST：获批修复RL、保存recovery候选并提高更新强度（Codex / RL-FIX-RECOVERY-10383，进行中）
+
+- 最新用户明确授权三项实现；本轮从只读诊断切换为10383当前作业的修复/安全续训，owner为Codex，不涉及robo/LC/VPN。主假设：先保证terminal目标与下一intent估值正确，再在保留KL保护的前提下增加有效策略更新，并把真实扰动/恢复候选持久化供后续人工验收；不预先宣称成功率会提升。
+- 11:18只读复查旧v42仍8路在训（各165–233次更新）、导入G0.5仓6af1ab9 clean；既有73h截止仍10/11 00:12:28 CST，不重置预算、不补baseline/全量评测。修改先在新Git分支/独立冻结源，CPU回归通过后保存旧8路状态并逐步验收续训；禁止热改v42、覆盖旧权重或接受不完整恢复。
+- Git首次fetch遇TLS断开，正在重试；保留原clean内容，不假称已同步。已只读取回9个运行模块内容及97个baseline文件SHA供受控导入/依赖绑定，未修改远端。recovery只保存有来源和时间对齐的候选；停滞/释放/超时不自动贴成功恢复或BC正例标签，人工验收前bc_eligible=false。
+- **11:42 CST实现/CPU进展：** Git重试成功、ff-pull无incoming；新分支`feat/rl-recovery-10383-20261008`保留已包含origin/main的当前历史。新增`scripts/rl/memlite_online/`受控运行模块，97个未改baseline依赖SHA绑定。尾批保留（含单条/零advantage critic-only）、共享next-context、事件触发recovery ZIP（稠密23维动作/前后61维proprio/真实三相机16control锚点/intent/physical evidence/instance与policy provenance）、25GiB/卡配额与100GiB磁盘保留已实现。17项CPU回归通过，正在补KL回退/权重及Adam回滚测试；未部署/未停止旧作业。
+- 新配方拟以actor1e-7起步、critic1e-4不变；实际每步post-KL≤0.02且clip_fraction≤0.25才接受，最多7次、每次LR×0.5回退，保留数值/梯度守卫并新增advantage/returns/value/EV日志。独立controller将沿旧73h时钟先验收GPU0两次真实更新和至少一个结构通过的recovery候选，再开其余7卡；该安排不是新的训练预算或自动baseline。是否真能通过仍待GPU证据。
+
 ### 2026-10-08（CST，指标快照11:01）：真实RL只读审计完成，发现尾批奖励丢失（Codex / DIAG-RL-10383）
 
 - 正确入口`42.192.34.154:10383`，run=`/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007`，源`snapshots/readiness_20261007_v42`/manifest pin`bd4cb12`，其导入G0.5仓HEAD`6af1ab9`clean。全程未改远端、未调用服务或新跑GPU；只用原dispatch的AST+假内存trainer做CPU复现：8条有效经验被删除，update未调用。

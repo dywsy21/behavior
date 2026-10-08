@@ -1,0 +1,13 @@
+{
+  "actor_lr": 1e-7,
+  "critic_lr": 0.0001,
+  "target_kl": 0.02,
+  "max_clip_fraction": 0.25,
+  "recorder_quota_gib": 25.0,
+  "disk_reserve_gib": 100.0,
+  "recovery_pre_controls": 128,
+  "recovery_post_controls": 384,
+  "recovery_max_controls": 1024,
+  "recovery_max_clips_per_episode": 8,
+  "recovery_stall_controls": 256
+}
