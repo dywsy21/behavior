@@ -14,6 +14,7 @@
 
 ### 2026-10-08 15:43 CST：获批完整实现共享RL并启动/持续监控（Codex / RL-SHARED100-10383，真实共享更新已开始）
 
+- **17:36 CST第2轮已共同暂停：** 八服务全部`awaiting_acceptance/update=2`、无ABORT，64chunk/rank×16控制步×8rank=8192控制步/轮已实跑两轮；当前用独立冻结audit1/664c546 CPU重载唯一共享checkpoint，检查完整actor/critic/Adam SHA及候选，未创建ACCEPTED前不会进入第3轮。根96图QA已完成，此时不新开公共评测或改活跃源。
 - **17:33 CST候选结构/根人工抽审：** 8task×2TRAIN实例共16段ZIP已下载至`artifacts/shared-rl100-20261008/recovery`，全部通过原validator的RGB SHA/解码、23维实际动作ack、61维前后状态连续、16步图像锚点时钟检查；生成`sheets-v2`8拼图共96面板，Codex逐张亲审。头图非黑帧、实例/任务场景对应、前后视角有变化；腕部导航期可被机器人本体遮挡，不误当缺图。make_pizza/sorting_vegetables两slot在640帧分别出现GRASP/NAVIGATE，实际意图并非强制复制。此是数据有效性/身份QA，不证明抓取或恢复成功，不提升BC资格，原ZIP的pending/false标签不改。工具`make_recovery_contact_sheets.py`可复现；仍待第2更新暂停和独立checkpoint重载。
 - **17:23 CST第1次真实8卡PPO通过：** 全局512chunk，8rank动作专家/critic/两份Adam状态SHA一致，actor最大改变量1.19209e-7，LR1e-7直接接受，无回退；更新后全局KL0.00189876/clip0.01345698，已发布可重载rank0 checkpoint。进入第2轮采样，仍待两轮暂停后的独立重载/媒体门；不能据1步优化器正确称SR提升。注意`communication_seconds`当前为CPU调用计时、未显式CUDA同步，不把约0.05s误报实际梯度传输墙钟；真实NCCL带宽证据仍用独立同步probe。
 - **17:14 CST16env真实采样：** 8个scene.ready均已出现、8模型已真实推理，6rank各64chunk进入共同轮次等待，另外2rank继续采样；counter仍全0，无单rank先更新/ABORT。已记录扫车库/整理学习用品/分蔬菜等非零skill shaping，但当时官方Q仍0、无完整task结果，不作为RL提升。场景冷加载约1–5min/组、2槽启动导致首轮等待，NCCL等待时GPU利用率可显示100%，不能据此当成有效训练吞吐。活动源及24h截止不改，下一步首2全局更新验收。
