@@ -12,6 +12,7 @@ from common import (ROOT, SOURCE, REPO, DATA, OFFICIAL, OFFICIAL_COMMIT, CHECKPO
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--job',type=Path,required=True)
+    p.add_argument('--reuse-smoke-job',type=Path)
     args=p.parse_args();job=args.job.resolve()
     if job.parent!=ROOT/'runs' or not job.name.startswith('sft100_full_') or job.exists():
         raise ValueError('A new explicit SFT evaluation run is required')
@@ -21,6 +22,25 @@ def main():
     if (subprocess.check_output(['git','-C',str(G05),'rev-parse','HEAD'],text=True).strip()!=G05_COMMIT
         or subprocess.check_output(['git','-C',str(G05),'status','--porcelain'],text=True).strip()):
         raise ValueError('G0.5 dependency is not the sealed clean checkpoint-compatible revision')
+    smoke_evidence=None
+    if args.reuse_smoke_job:
+        prior=args.reuse_smoke_job.resolve()
+        if prior.parent!=ROOT/'runs':raise ValueError('Unregistered prior smoke path')
+        old_manifest=json.loads((prior/'manifest.json').read_text())
+        receipt=prior/'smoke/gpu_1/status.json'
+        result=json.loads(receipt.read_text())
+        if result['status']!='completed' or not result['verification']['weights_unchanged']:
+            raise ValueError('Prior native SFT smoke did not pass')
+        # Reuse only if every policy/physics/worker byte is identical. Changes
+        # solely to publication bookkeeping need not repeat TRAIN rollouts.
+        components=['common.py','native_engine.py','serve.py','wire.py','rgb_wrapper.py',
+                    'run_task.py','launch_sim.sh','worker.py','official_manifest.json']
+        for name in components:
+            old=subprocess.check_output(['git','-C',str(REPO),'show',
+                old_manifest['source_commit']+':scripts/eval/memlite_sft100/'+name])
+            if old!=(SOURCE/name).read_bytes():raise ValueError('Smoke code changed: '+name)
+        smoke_evidence=dict(path=str(receipt),sha256=sha256(receipt),source_commit=old_manifest['source_commit'],
+                            identical_runtime_components=components)
     checks={}
     for side,(name,expected) in CHECKPOINTS.items():
         path=ROOT/'models/stage1'/side/name
@@ -32,6 +52,13 @@ def main():
             config=str(config),config_sha256=sha256(config),
             stats_path=c['stats_path'],stats_sha256=sha256(c['stats_path']),
             model_class=c['arch']['_target_'])
+    if smoke_evidence:
+        if old_manifest['g05_commit']!=G05_COMMIT or old_manifest['official_commit']!=OFFICIAL_COMMIT:
+            raise ValueError('Prior smoke dependencies changed')
+        for side in checks:
+            for key in ('sha256','config_sha256','stats_sha256'):
+                if checks[side][key]!=old_manifest['checkpoints'][side][key]:
+                    raise ValueError('Prior smoke model input changed: '+side+'/'+key)
     csv_path=DATA/'2026-challenge-task-instances/metadata/B100_task_misc.csv'
     tasks=[r['Task'] for r in csv.DictReader(csv_path.open())]
     cases=expected_cases(tasks)
@@ -58,6 +85,7 @@ def main():
     job.mkdir();(job/'workers').mkdir();(job/'tasks').mkdir();package=job/'submission';package.mkdir()
     manifest=dict(kind='native_sft_100task_public_once',status='prepared_not_started',created=time.time(),
         owner='Codex/EVAL-SFT100-10383',source_commit=commit,source_path=str(SOURCE),
+        smoke_evidence=smoke_evidence,
         official_tag='v3.9.3-post2',official_commit=OFFICIAL_COMMIT,official_source=str(OFFICIAL),
         g05_source=str(G05),g05_commit=G05_COMMIT,
         official_files=official_hashes,checkpoints=checks,task_csv_sha256=sha256(csv_path),

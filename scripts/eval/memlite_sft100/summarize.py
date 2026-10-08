@@ -11,10 +11,16 @@ def summarize(job,final=False):
     manifest=json.loads((job/'manifest.json').read_text())
     records=[];files=[]
     for path in sorted((job/'tasks').glob('*/json/*.json')):
-        record=json.loads(path.read_text())
+        # Stock evaluator writes JSON before closing its video writer. A live
+        # poll can observe an incomplete file; only finalization is fail-closed.
+        try:record=json.loads(path.read_text())
+        except json.JSONDecodeError:
+            if final:raise
+            continue
         video=path.parent.parent/'videos'/(path.stem+'.mp4')
         if not video.is_file() or video.stat().st_size<1000:
-            raise ValueError('Metrics without matching recorded video: '+str(path))
+            if final:raise ValueError('Metrics without matching recorded video: '+str(path))
+            continue
         records.append(record)
         files.append(dict(metrics=str(path),video=str(video),video_bytes=video.stat().st_size,
                           metrics_sha256=sha256(path),**({ 'video_sha256':sha256(video)} if final else {})))

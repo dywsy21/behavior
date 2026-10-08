@@ -17,7 +17,12 @@ def main():
     actual=subprocess.check_output(['git','-C',str(REPO),'rev-parse','HEAD'],text=True).strip()
     if actual!=manifest['source_commit']:raise ValueError('Source identity changed')
     if (job/'status.json').exists():raise ValueError('No automatic restart of an existing evaluation')
-    smoke=json.loads((job/'smoke/gpu_1/status.json').read_text())
+    from common import sha256
+    evidence=manifest.get('smoke_evidence')
+    smoke_path=Path(evidence['path']) if evidence else job/'smoke/gpu_1/status.json'
+    if evidence and sha256(smoke_path)!=evidence['sha256']:
+        raise ValueError('Smoke evidence changed')
+    smoke=json.loads(smoke_path.read_text())
     if smoke['status']!='completed' or not smoke['verification']['weights_unchanged']:
         raise ValueError('Real native-FM protocol smoke has not passed')
     repaired=ROOT/'runs/large_scale73h_repaired_20261008_canary_v1'

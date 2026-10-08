@@ -2,12 +2,14 @@ import ast
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 import numpy as np
 import msgpack
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from common import aggregate, expected_cases
 from wire import packb, unpackb
+from summarize import summarize
 
 
 class EvaluationTests(unittest.TestCase):
@@ -60,6 +62,20 @@ class EvaluationTests(unittest.TestCase):
         self.assertIn('policy.forward_inference', text)
         for forbidden in ['sample_stochastic_flow','sample_branch','A4DirectPPO','critic_remaining_fraction']:
             self.assertNotIn(forbidden,text)
+
+    def test_live_poll_waits_for_stock_writer_but_final_rejects_truncation(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);metrics=root/'tasks/task0/json';metrics.mkdir(parents=True)
+            package=root/'submission';package.mkdir()
+            (root/'manifest.json').write_text(json.dumps(dict(tasks=self.tasks,source_commit='test',
+                checkpoints={},development_notice='not blind')))
+            (package/'submission_checklist.json').write_text(json.dumps(dict(metrics_json={},videos={})))
+            (metrics/'task0_301_0.json').write_text('{"task":')
+            self.assertEqual(summarize(root)['completed'],0)
+            with self.assertRaises(json.JSONDecodeError):summarize(root,final=True)
+            (metrics/'task0_301_0.json').write_text(json.dumps(self.record()))
+            self.assertEqual(summarize(root)['completed'],0)
+            with self.assertRaises(ValueError):summarize(root,final=True)
 
 
 if __name__=='__main__': unittest.main()
