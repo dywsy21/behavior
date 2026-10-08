@@ -27,8 +27,9 @@ class Collective:
         device = "cuda:0" if backend == "nccl" else "cpu"
         if backend == "nccl":
             torch.cuda.set_device(0)
+        options = {"device_id": torch.device(device)} if backend == "nccl" else {}
         dist.init_process_group(backend, init_method=endpoint, rank=rank,
-                                world_size=world_size, timeout=timedelta(seconds=timeout))
+                                world_size=world_size, timeout=timedelta(seconds=timeout), **options)
         return cls(device)
 
     def objects(self, value):

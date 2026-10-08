@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import random
+import signal
 import subprocess
 import time
 
@@ -19,6 +20,9 @@ def main():
     parser.add_argument('--job', type=Path, required=True)
     parser.add_argument('--rank', type=int, required=True)
     args = parser.parse_args()
+    def terminate(signum, frame):
+        raise RuntimeError('Collector received supervised termination')
+    signal.signal(signal.SIGTERM, terminate)
     manifest = json.loads((args.job / 'manifest.json').read_text())
     run = args.job / 'collectors' / f'gpu_{args.rank}'
     run.mkdir(parents=True, exist_ok=False)

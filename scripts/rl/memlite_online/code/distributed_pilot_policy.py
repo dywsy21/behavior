@@ -2,6 +2,7 @@
 import json
 
 import numpy as np
+import torch
 
 from shared_pilot_policy import SharedPilotPolicy
 
@@ -9,7 +10,7 @@ from shared_pilot_policy import SharedPilotPolicy
 class DistributedPilotPolicy(SharedPilotPolicy):
     def observations(self, obs, indices):
         for index in indices:
-            task_id = int(np.asarray(obs["task_id"][index].detach().cpu()).reshape(-1)[0])
+            task_id = int(np.asarray(torch.as_tensor(obs["task_id"][index]).cpu()).reshape(-1)[0])
             if task_id != self.episode_metadata[index]["task_index"]:
                 raise ValueError("Simulator task ID differs from registered episode")
         result = super().observations(obs, indices)
