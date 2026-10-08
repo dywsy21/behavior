@@ -58,7 +58,8 @@ def expected_cases(tasks):
 
 def load_official_task_names(path):
     """Protocol IDs map to canonical names, never the legacy prose instruction."""
-    rows=list(csv.DictReader(Path(path).open()))
+    with Path(path).open() as stream:
+        rows=list(csv.DictReader(stream))
     mapping={int(row['Task ID']):row['Task'] for row in rows}
     if len(rows)!=100 or set(mapping)!=set(range(100)) or len(set(mapping.values()))!=100:
         raise ValueError('Official100 task ID/name mapping is incomplete or ambiguous')
