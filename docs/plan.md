@@ -12,6 +12,22 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-08（CST，指标快照11:01）：真实RL只读审计完成，发现尾批奖励丢失（Codex / DIAG-RL-10383）
+
+- 正确入口`42.192.34.154:10383`，run=`/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007`，源`snapshots/readiness_20261007_v42`/manifest pin`bd4cb12`，其导入G0.5仓HEAD`6af1ab9`clean。全程未改远端、未调用服务或新跑GPU；只用原dispatch的AST+假内存trainer做CPU复现：8条有效经验被删除，update未调用。
+- 8路仍在训，高层/VLM冻结，仅低层动作专家+critic更新；每卡12–13任务、2env、64chunks/micro1/epoch1，不是8卡共享模型。截至快照每卡更新`229/208/187/214/171/206/215/162`，共1592次、100630个已更新chunk；65任务/130已完TRAIN episode、1493440控制步，完整成功`0/130`，终局Q均值`0.01132479`。非零4条：解冻食物0.2222、切洋葱0.25、捡垃圾0.6667/0.3333，所查初始Q均0；不能据此归功RL，也不能与用户0.0129直接比较。remote授权明确73h纯训练、评测另由团队负责，本轮不擅自恢复baseline/末测；固定截止10/11 00:12:28 CST。
+- **确定需修：** ①`serve_stage1_rl.py:62`把<16 chunk尾批删除，已影响15/65cycle（30条episode的尾部），包含解冻Q0.2222的终局任务奖励；②`stage1_engine.py:145`bootstrap沿用旧intent，下一infer在8chunk边界重规划，日志已有33次32chunk采集边界技能变化，value误差大小未测；③RGB/完整动作/源实例关联未持久化，RAM经验更新即删，奖励日志不等于可复用recovery轨迹。具体源码行、SHA、每个终局回执与CPU复现见[10383审计JSON](infra/results/2026-10-08-rl-10383-audit.json)。
+- **配方/诊断限制：** actor LR固定1e-8、所有已查更新首试通过，平均post-KL0.000390、clip_fraction0.000126；只能说明更新很小，不能承诺提高LR有效。收音机52次高层计划全NAVIGATE、两条物理记录均无抓取；高层冻结且无实际outcome反馈，本轮不能直接训练其恢复能力。约99%相邻skill bundle重复不独立证明规划错误，可能低层未到位；缺RGB不可视觉归因。更新报告没有保留advantage/return/value_loss/EV，数值有限不等于学习有效。
+- 交接建议（未实施）：RL负责人先修尾批/下一意图bootstrap并补CPU回归、持久化失败轨迹与学习指标；模型负责人用小预算配对分离NAVIGATE执行/切换责任；正确性通过后再有限校准步幅/课程。不要热改运行源、不要停队友作业或另开长训。只读复查23/27映射、首16步起点0、192 LoRA恢复和same-policy KL守卫未发现旧错误复现；不声称已做新的图像/动作端到端验收。旧DART仍blocked。
+
+### 2026-10-08 10:54 CST（UTC02:54）：改正RL入口并定位真实在训作业（Codex / DIAG-RL-10383，检查中）
+
+- 用户更正为`root@42.192.34.154:10383`；只读已连容器`nb-1651484739972483840-cjp6hd17gf0g`，与前次10751不是同一容器。前次部署故障结论只属于10751，不作为本次RL归因。Git已fetch/ff-pull当前诊断分支，无新变更。
+- 找到真实作业`/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007`：8路`serve_stage1_rl.py`与8路`train_sim_pilot.py`，冻结工具源`snapshots/readiness_20261007_v42`（顶层非Git仓）。主服务已运行约11.5h；8卡各占约49–60GB，瞬时利用率0–37%。这只确认正在执行，不表示RL已经改善。
+- 正在沿实际入口核对优化器/奖励/动作/轨迹持久化与指标；不重启、不改配置/源码、不做推理或仿真请求、不占额外GPU。下一步给出代码与真实run交叉验证的报告，旧DART目标不恢复。
+- **10:59 CST关键定位（检查继续）：** 65个已完成cycle/130条TRAIN episode均未完整成功、Q均值0.01132479；4条有非零终局Q，不是固定eval/不是与用户0.0129的配对比较。8个独立expert分别只更新动作专家与critic，高层及VLM冻结，当前约160–227次更新/卡。确定bug：`serve_stage1_rl.py:62–65`丢弃<16 chunk尾批；65轮中15轮真实触发（30条episode尾部），包括`thawing_frozen_food`的Q0.2222终局奖励；相应`update_receipts.jsonl`记录skipped。奖励主项仅在terminal发放，故此过滤并非无害的drop_last。
+- **持久化与额外风险：** 当前run只有奖励/规划/动作统计/结果JSON、16个模型checkpoint，无RGB/视频/完整动作序列；`direct_a4_flow.py:286–293`经验只存在RAM、`:533–534`更新后删除，`run_pilot_sim.sh:9`显式禁视频。另发现批次边界bootstrap使用旧intent、下一次infer却先replan，已在日志找到33次边界技能切换；正在核对影响范围并整理修复建议，未实施。重要数值日志缺advantage/return/value-loss/EV，不能以KL通过代替学习有效。
+
 ### 2026-10-08 10:28 CST（UTC02:28）：用户给定RL入口的现场核验（Codex / DIAG-SFT-RL-Q0129-REMOTE）
 
 - 按用户明确新授权，只读连接`root@42.192.34.154:10751`，进入`nb-1651618563402353408-cofhj25pepz4`容器；未接robo/LC/VPN，未做远端写/安装/拉代码/推理请求/重启/训练/仿真。当前只见三项SFT推理服务（低层PID3361174/10051、高层3361341/10050、组合3395333/10100），未定位RL trainer/rollout worker或该轮RL源码/run；结论仅限此入口可见范围，不能推断另一容器/目录的RL状态。已异步询问实际RL目录或其他入口。

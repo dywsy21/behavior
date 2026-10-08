@@ -2,6 +2,9 @@
 
 ## 2026-10-08（CST）当前请求：SFT低Q与RL停滞诊断
 
+- **11:01 CST快照覆盖旧入口待确认项 / Codex `DIAG-RL-10383`：** 用户更正`10383`，已完成真实v42/73h RL只读审计；8个独立expert仍训，1592次更新、65任务130已完TRAIN episode、成功0/Q0.01132479。确认15/65轮<16chunk尾批被删（含一条正终局Q奖励）、批次边界bootstrap旧intent与下次replan不一致；完整RGB/动作失败轨迹未落盘。证据`docs/infra/results/2026-10-08-rl-10383-audit.json`。10751仅为另一部署容器，其结论不可外推到RL。
+- **待交接而非实施授权：** C/RL负责人修尾批保留、next-context一致性及相应CPU测试，补失败数据recorder与advantage/value诊断；A/B模型/规划负责人分离NAVIGATE不切换与低层未到位。改变源码/重启/新训练须与当前run负责人协调，不能热改v42。当前remote已明确取消baseline/末测、73h窗口到10/11 00:12:28 CST；本轮不复活评测、不调整窗口。没有可比固定eval，不判定RL相较0.0129升/降。
+- 以下10:28及更早条目为首次误入口/未取得运行身份时的历史记录，已由上面10383审计覆盖相应待确认状态。
 - 10:28 CST / `DIAG-SFT-RL-Q0129-REMOTE`：用户给定`42.192.34.154:10751`已只读核验，当前可见为队友fork的三个SFT inference服务，未定位RL trainer/run；已请求实际RL目录/入口。10100旧服务最后请求缺模块零动作，独立新worktree含修复但无上线验收；已检查评测输出均空、专用handler未接轨迹recorder。只确认迁入SFT高48045/低98414及固定evalloss，未确认0.0129或RL效果。下一交接依赖实际RL负责人提供运行身份，不改作业，证据见`docs/infra/results/2026-10-08-rl-endpoint-audit.json`。
 - Codex / `DIAG-SFT-RL-Q0129`：仅做现有代码/指标口径核对及改进建议；用户报告SFT结束、Q约0.0129、RL半天无改善，尚无对应运行证据，不能当已验证结论。Git已同步、诊断分支`diag/sft-rl-qscore-20261008`，详见plan最新条目。
 - 待用户/当前RL负责人提供评测JSON与实际checkpoint/serving入口、RL节点/run或W&B链接，再定位部署一致性、规划/执行责任与奖励/梯度信号；既有隧道不在线，不擅自重登VPN或动在训任务。代码已证实阶段1无outcome/recovery监督，旧六帧高层server不可直接套单帧新训练，但是否涉及当前run未知。

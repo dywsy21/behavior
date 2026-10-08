@@ -1,6 +1,15 @@
 # robo服务器文件位置与保留规则
 
-## 2026-10-08新增只读核验：用户提供的10751入口
+## 2026-10-08：用户更正的真实RL服务器（10383）
+
+- SSH：`ssh -p 10383 root@42.192.34.154`，容器`nb-1651484739972483840-cjp6hd17gf0g`；与10751不同。工作根`/run/ti/rl_memlite_stage1_20261006`。本轮只读，不改源码/环境/作业。
+- 活跃run：`runs/large_scale73h_trainonly_20261007`，supervisor PID1225699（使用前再次核验cmd，不依据旧PID操作）；8路独立expert，`training/gpu_0_attempt_000`至`gpu_7_attempt_000`。顶层`window.json/status.json/manifest.json`保存73h窗口/当前状态/分组；不要把manifest保留的prepared_not_started字段误作当前运行状态。截止10/11 00:12:28 CST。
+- RL工具源：`snapshots/readiness_20261007_v42/{tools,code}`，顶层不是Git仓；manifest源码兼容性pin`bd4cb120a74e5ef98d7946d54319fb63c77dc566`，实际小文件SHA在[审计](infra/results/2026-10-08-rl-10383-audit.json)。G0.5包通过`code/behavior/src`导入，独立仓HEAD`6af1ab983bb6c666f723c0367c3d6d4cc5ed4678`。配置在`configs/{high,low}_model.local.json`；不要只更新其中一个根或热pull。
+- SFT父权重：`models/stage1/high/step_00048045_save_0027.pt`、`models/stage1/low/step_00098414_save_0021.pt`。RL增量：每路`checkpoints/direct_latest.pt`及`direct_previous.pt`，每文件约7.62GB，包含动作专家/critic/optimizer等，不是完整独立VLA；必须配原SFT模型与对应代码加载。快照11:01最新已落盘更新`215/198/179/207/165/196/208/156`，小于内存实时更新，不混淆二者。
+- 证据：每路`policy_status.json`、`checkpoints/updates.jsonl`、`planner_events.jsonl`、`action_audit.jsonl`；每个`cycle_*`的`reward_steps.jsonl`、`update_receipts.jsonl`和`eval_*/json/*.json`。其中`eval_*`只是训练collector的输出目录名，不是独立固定测试。当前run禁视频，未保存RGB/完整raw23动作失败轨迹；这些路径不是已准备好的recovery训练集。
+- 仿真复用`/run/ti/behavior_stage3_20260930/envs/sim`和tools adapter；模型解释器`/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python`。本轮不重新安装/改动这些依赖；待修尾批/intent-bootstrap/recorder后由运行负责人在新冻结源处理。
+
+## 2026-10-08新增只读核验：此前误提供的10751部署入口（非上述RL容器）
 
 - SSH：`root@42.192.34.154:10751`；当前进入容器`nb-1651618563402353408-cofhj25pepz4`。项目根`/run/ti/BEHAVIOR2026`。本轮未接robo/LC，不变更任何远端文件或进程。
 - `behavior/`：队友fork `git@github.com:fduTristin/behavior.git` 的`deploy/memlite-stage1`，HEAD`018cce308b272f86d9a39db1a38f704a86ab6b4b`；`behavior-node-stage1/`：独立修复分支`fix/node-stage1-e2e-20261008`，HEAD`6a8f684481f9b407620f7a561a2e92c5324db325`。不要用本地另一分支覆盖，也不要热pull在用源码。

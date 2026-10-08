@@ -1,0 +1,1474 @@
+{
+  "audit_id": "DIAG-RL-10383-20261008",
+  "scope": "Read-only audit of corrected RL endpoint; no remote edits, installs, service requests, GPU work or restarts. Local documentation only.",
+  "endpoint": "root@42.192.34.154:10383",
+  "hostname": "nb-1651484739972483840-cjp6hd17gf0g",
+  "correction": "10751 enters a different deployment container. Its service/rendering findings must not be transferred to this RL run.",
+  "checked_at_utc": "2026-10-08T03:01:02.857655+00:00",
+  "source_identity": {
+    "snapshot": "/run/ti/rl_memlite_stage1_20261006/snapshots/readiness_20261007_v42",
+    "snapshot_git_repository": false,
+    "manifest_source_compatibility_commit": "bd4cb120a74e5ef98d7946d54319fb63c77dc566",
+    "imported_g05_repository": "/run/ti/rl_memlite_stage1_20261006/code/behavior",
+    "imported_g05_head": "6af1ab983bb6c666f723c0367c3d6d4cc5ed4678",
+    "imported_g05_branch": "feat/pro5000-rl-setup-20261006",
+    "imported_g05_dirty": false,
+    "note": "Source commit labels read from manifest/repository; exact inspected snapshot hashes below. Active source was not pulled."
+  },
+  "run": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007",
+  "training": {
+    "start_beijing": "2026-10-07T23:12:28+08:00",
+    "deadline_beijing": "2026-10-11T00:12:28+08:00",
+    "window_hours": 73,
+    "mode": "eight independent task-group experts, not DDP",
+    "tasks_per_gpu": [
+      13,
+      13,
+      13,
+      13,
+      12,
+      12,
+      12,
+      12
+    ],
+    "environments_per_expert": 2,
+    "batch_chunks": 64,
+    "microbatch": 1,
+    "update_epochs": 1,
+    "actor_lr": 1e-8,
+    "critic_lr": 0.0001,
+    "transition_std": 0.02,
+    "flow_steps": 10,
+    "predicted_action_steps": 32,
+    "executed_action_steps": 16,
+    "trainable": "low action_expert (322 tensors) + fresh value head (6 tensors)",
+    "frozen": "high planner and low VLM including restored LoRA",
+    "explicit_evaluation_disabled": true,
+    "evaluation_disabled_reason": "Remote authorization/plan states baseline/final evaluation canceled by user; external evaluation handled by team. Not an accidental missing stage.",
+    "parent_high_checkpoint": "models/stage1/high/step_00048045_save_0027.pt",
+    "parent_low_checkpoint": "models/stage1/low/step_00098414_save_0021.pt",
+    "parent_high_sha256_manifest": "3683f719ebb033cacf77afdc0330b25f43a3c3e5b704b0bda9623608f092c3d1",
+    "parent_low_sha256_manifest": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470",
+    "parent_hash_limit": "Read verified sidecars, not a fresh full-file hash or model load during this audit."
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "P1",
+      "classification": "confirmed code defect with live-run impact",
+      "title": "丢弃不足16 chunk的尾批，同时丢掉终局任务奖励",
+      "code": [
+        "tools/serve_stage1_rl.py:61-67",
+        "code/shared_reward_math.py:54-59",
+        "code/shared_pilot_policy.py:77-92"
+      ],
+      "evidence": "65 completed cycles: 15 last receipts are skipped=true (30 episode tails). thawing_frozen_food final Q=[0.2222222222222222,0.0], terminal tail=8 chunks, skipped. A stdlib-only AST extraction of the original dispatch reproduced deletion of all 8 experiences without calling update.",
+      "impact": "Terminal reward is 10*Q and paid only at task end. Dropping the final batch omits that actor/critic target and terminal potential correction; previous batches were already bootstrapped and updated, not recomputed with this final return. Intermediate shaping can still have provided some signal; do not claim all information about that episode was lost.",
+      "recommendation": "Train valid small terminal batches, or plan an on-policy batch boundary retaining terminal data before any optimizer update; never drop terminal samples solely to reach a batch-size threshold. Regression cases: tails of 1-15 chunks, both success/failure, actual controls duration and zero-advantage handling."
+    },
+    {
+      "id": "F2",
+      "severity": "P2",
+      "classification": "confirmed code inconsistency; numerical impact unmeasured",
+      "title": "批次边界bootstrap用旧子目标，下一次动作却可能用新子目标",
+      "code": [
+        "code/stage1_engine.py:108-112",
+        "code/stage1_engine.py:142-150",
+        "code/shared_pilot_policy.py:69-76"
+      ],
+      "evidence": "value() reuses slots[index].projection without scheduled replan; infer() replans at chunks%8==0. With 2 envs/64 chunks, normal flushes occur every32 chunks per env, also replanning boundaries. Logs contain 33 skill changes at such boundaries.",
+      "impact": "The final next_value in a collection batch can refer to a different skill-conditioned policy state than the next actually executed policy. The 33 count is observed mismatches in semantic skills, not a measurement of value error; parent-goal-only changes may add cases.",
+      "recommendation": "Prepare/cache the next admitted high-level context once per observation boundary, use it for bootstrap and subsequent inference, and ensure memory is committed only once. Test NAVIGATE-to-GRASP boundary with deliberately different critic values."
+    },
+    {
+      "id": "F3",
+      "severity": "P2",
+      "classification": "confirmed missing durable failure-trajectory data",
+      "title": "保存了失败诊断日志，但未保存可复用的完整失败轨迹",
+      "code": [
+        "code/direct_a4_flow.py:283-294",
+        "code/direct_a4_flow.py:533-536",
+        "code/shared_pilot_policy.py:59-65",
+        "code/stage1_engine.py:137",
+        "tools/run_pilot_sim.sh:9"
+      ],
+      "evidence": "Observation/local_subgoal/flow chain are RAM-only experiences deleted after update. Simulator launched with --no-write-video. Entire current run file-suffix inventory has no RGB/video/array trajectory files; .pt files are latest/previous model checkpoints. action_audit contains task/min/max/mean_abs/finite only.",
+      "available": "Per-control reward, official Q/success, skill potentials, literal/grasp diagnostics; planner events; terminal instance/steps/Q/success JSON; optimizer receipts.",
+      "absent": "Durable aligned RGB/proprio/raw23 executed actions, experience-to-episode/policy-update mapping, simulator replay states. Planner log lacks episode-instance/run/time identity; action audit even lacks env/step.",
+      "recommendation": "Add bounded, compressed durable episode recorder with task/instance/seed/policy version, chunk/step timestamps, images/proprio/raw23 actions, admitted intent and reward/termination fields. Preserve failures as well as successes and split by source instance. Old missing observations/actions cannot be recovered from summary statistics."
+    },
+    {
+      "id": "F4",
+      "severity": "observation",
+      "classification": "measured conservative update regime; not by itself proof of causal failure",
+      "title": "动作专家确有更新，但学习步幅很小",
+      "code": [
+        "code/direct_a4_flow.py:75-81",
+        "code/direct_a4_flow.py:385-390",
+        "code/direct_a4_flow.py:453-517"
+      ],
+      "evidence": "All captured updates accept actor_lr=1e-8 at first attempt; mean post-update KL approximately0.00039 vs target0.05, mean clip fraction approximately0.00013 (0.013%). Logged first actor tensor max change is typically1.49e-8 per update; this is one tensor, not full-model drift.",
+      "recommendation": "After correctness fixes, use a bounded fixed-data comparison to calibrate actor step size by realized KL and executed-action drift, with the existing rollback guard. Do not blindly multiply LR or interpret low KL as proof that larger LR will improve task success."
+    },
+    {
+      "id": "F5",
+      "severity": "observation",
+      "classification": "observed hierarchical bottleneck; attribution still incomplete",
+      "title": "冻结高层下大量技能条件重复，低层RL不能直接改高层",
+      "code": [
+        "code/stage1_engine.py:35-36",
+        "code/stage1_engine.py:82-112",
+        "code/direct_a4_flow.py:110-124",
+        "code/native_b_session.py:88-96"
+      ],
+      "evidence": "Radio:52 planner events across2 full training episodes, all NAVIGATE radio_89; no grasp TRUE in either physical log. Across sampled run, about99% successive per-task/per-env skill bundles are identical,30/73 visited tasks have only one unique bundle. Repetition alone is not necessarily an error when a skill legitimately persists.",
+      "limitation": "No video/replay to distinguish wrong perception/plan switching from low-level failure to reach the waypoint. No physical previous-outcome feedback is supplied; high and low VLM frozen.",
+      "recommendation": "Separate planning versus execution with small matched diagnostic rollouts and observable outcome feedback before expecting low-only RL to learn high-level recovery. Privileged reward state stays outside deployed actor/planner."
+    },
+    {
+      "id": "F6",
+      "severity": "P2",
+      "classification": "confirmed observability gap",
+      "title": "更新日志没有保留advantage/return/value拟合质量",
+      "code": [
+        "code/direct_a4_flow.py:323-332",
+        "code/direct_a4_flow.py:375-383",
+        "code/direct_a4_flow.py:437-443",
+        "code/direct_a4_flow.py:505-536"
+      ],
+      "evidence": "evaluate_prepared computes policy/value loss but report omits them; no raw advantage mean/std/sign, return distribution, value targets/predictions, or explained variance saved.",
+      "recommendation": "Log these with reward components, nonzero-Q fraction and task/instance/policy version. Finite gradients/ratio1 demonstrate numerical execution, not effective credit assignment."
+    }
+  ],
+  "checks_not_flagged_as_bugs": [
+    "Live counters increased across snapshots; actor gradient and nonzero parameter-change guards pass. This is genuine RL updating, not merely serving.",
+    "Stored/recomputed unchanged-policy KL is zero in captured updates; flow likelihood uses stored Gaussian transition chains and active dimensions, not an FM loss masquerading as log probability.",
+    "Stage1 uses single-frame RGB/proprio, pad indices [7,8,17,18], decodes real23 controls and executes first16 of32 starting at0. Low checkpoint restoration verifies all192 trained LoRA tensors.",
+    "Reward uses potential differences plus terminal officialQ; privileges stay in reward diagnostics and critic-only remaining-time feature, outside actor/planner templates.",
+    "Manifest separates train/dev/SFT-heldout instances; this audit did not repeat the original full data membership verification.",
+    "Normal per-control official horizon from catalog is int(1.5*human_mean_length); normalized_time near2/3 in output is not evidence of a2/3-budget bug.",
+    "No new GPU validation or full multimodal deployment equivalence test was run; code guards do not establish universal correctness."
+  ],
+  "terminal_reward_reproduction": {
+    "method": "AST-extracted original nested dispatch; fake in-memory trainer; no RPC/GPU or files written",
+    "input_experiences": 8,
+    "input_returns": [
+      2.2222,
+      2.2222,
+      2.2222,
+      2.2222,
+      2.2222,
+      2.2222,
+      2.2222,
+      2.2222
+    ],
+    "result": {
+      "skipped": true,
+      "reason": "tail_batch_below_16"
+    },
+    "update_called": false,
+    "remaining_experiences": 0
+  },
+  "live_snapshot": {
+    "completed_cycles": 65,
+    "task_count": 65,
+    "episodes_completed": 130,
+    "official_full_success_count": 0,
+    "mean_final_q": 0.011324786324786324,
+    "environment_steps_completed": 1493440,
+    "positive_q_episodes": [
+      {
+        "task": "thawing_frozen_food",
+        "instance_id": 5,
+        "steps": 12345,
+        "success": false,
+        "q_score": {
+          "final": 0.2222222222222222
+        }
+      },
+      {
+        "task": "chop_an_onion",
+        "instance_id": 2,
+        "steps": 9600,
+        "success": false,
+        "q_score": {
+          "final": 0.25
+        }
+      },
+      {
+        "task": "picking_up_trash",
+        "instance_id": 1,
+        "steps": 7902,
+        "success": false,
+        "q_score": {
+          "final": 0.6666666666666666
+        }
+      },
+      {
+        "task": "picking_up_trash",
+        "instance_id": 2,
+        "steps": 7902,
+        "success": false,
+        "q_score": {
+          "final": 0.3333333333333333
+        }
+      }
+    ],
+    "optimizer_updates_across_independent_experts": 1592,
+    "experiences_updated": 100630,
+    "per_expert": [
+      {
+        "gpu": 0,
+        "status": "training",
+        "updates": 229,
+        "experiences": 14480,
+        "checkpoint": {
+          "updates": 215,
+          "bytes": 7622833917,
+          "sha256": "607c300904b1a0c52317df68476bb54d672d1c1dddc5b24e0cdb20a476ee4bf6",
+          "tensors_checked": {
+            "action_expert": 322,
+            "critic": 6,
+            "actor_optimizer": 966,
+            "critic_optimizer": 18
+          },
+          "actor_optimizer_states": 322,
+          "finite": true,
+          "load_verified": true,
+          "latest": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/checkpoints/direct_latest.pt",
+          "latest_sha256": "607c300904b1a0c52317df68476bb54d672d1c1dddc5b24e0cdb20a476ee4bf6",
+          "milestone": null,
+          "saved_at": 1791425921.835437
+        },
+        "status_sha256": "d000ae03b7343cc60961a15726a1b65ba0e126abeb45460b68305e17bdce7690",
+        "kl_mean": 0.00035602942248454296,
+        "clip_fraction_mean": 0.0001501091725424778,
+        "update_seconds_mean": 64.40542419833908
+      },
+      {
+        "gpu": 1,
+        "status": "training",
+        "updates": 208,
+        "experiences": 13108,
+        "checkpoint": {
+          "updates": 198,
+          "bytes": 7622833917,
+          "sha256": "a775dbccff60c5d7c9a785999a57fb5621d0bf74f0c24beb37c02156cb70d8f5",
+          "tensors_checked": {
+            "action_expert": 322,
+            "critic": 6,
+            "actor_optimizer": 966,
+            "critic_optimizer": 18
+          },
+          "actor_optimizer_states": 322,
+          "finite": true,
+          "load_verified": true,
+          "latest": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/checkpoints/direct_latest.pt",
+          "latest_sha256": "a775dbccff60c5d7c9a785999a57fb5621d0bf74f0c24beb37c02156cb70d8f5",
+          "milestone": null,
+          "saved_at": 1791425967.761708
+        },
+        "status_sha256": "1f92042831b2379afc6acea33785e466a5d09337198c0a0f4430e741361f3d44",
+        "kl_mean": 0.0003752321807823954,
+        "clip_fraction_mean": 0.00012770432882601969,
+        "update_seconds_mean": 63.757515113021675
+      },
+      {
+        "gpu": 2,
+        "status": "training",
+        "updates": 187,
+        "experiences": 11784,
+        "checkpoint": {
+          "updates": 179,
+          "bytes": 7622833853,
+          "sha256": "71323c180c6b5d4409d21c31c29d66ddbbcbcc09975ff98f5109926205b5ff53",
+          "tensors_checked": {
+            "action_expert": 322,
+            "critic": 6,
+            "actor_optimizer": 966,
+            "critic_optimizer": 18
+          },
+          "actor_optimizer_states": 322,
+          "finite": true,
+          "load_verified": true,
+          "latest": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_2_attempt_000/checkpoints/direct_latest.pt",
+          "latest_sha256": "71323c180c6b5d4409d21c31c29d66ddbbcbcc09975ff98f5109926205b5ff53",
+          "milestone": null,
+          "saved_at": 1791426475.5214794
+        },
+        "status_sha256": "d7949f2aba3d022ed75489e299933fb16ea8cae0849ec9f2d7f2924985da4a40",
+        "kl_mean": 0.0004109232784611711,
+        "clip_fraction_mean": 0.00012533422646655596,
+        "update_seconds_mean": 64.14662316678101
+      },
+      {
+        "gpu": 3,
+        "status": "training",
+        "updates": 214,
+        "experiences": 13628,
+        "checkpoint": {
+          "updates": 207,
+          "bytes": 7622833917,
+          "sha256": "fe4d93163ef83c8ed68a53bcfa96a265de2413b231dc9faff34c65705b1c7087",
+          "tensors_checked": {
+            "action_expert": 322,
+            "critic": 6,
+            "actor_optimizer": 966,
+            "critic_optimizer": 18
+          },
+          "actor_optimizer_states": 322,
+          "finite": true,
+          "load_verified": true,
+          "latest": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/checkpoints/direct_latest.pt",
+          "latest_sha256": "fe4d93163ef83c8ed68a53bcfa96a265de2413b231dc9faff34c65705b1c7087",
+          "milestone": null,
+          "saved_at": 1791426880.4717727
+        },
+        "status_sha256": "04cc7cbfa256a033f82e98db8196963a8a4f84a3a48627f3d50536cdcf8fa12d",
+        "kl_mean": 0.000375115760568179,
+        "clip_fraction_mean": 0.00012412383362529015,
+        "update_seconds_mean": 64.04938436120261
+      },
+      {
+        "gpu": 4,
+        "status": "training",
+        "updates": 171,
+        "experiences": 10786,
+        "checkpoint": {
+          "updates": 165,
+          "bytes": 7622833917,
+          "sha256": "34858376feb2de6689acf1c31bf0bc725f750f085c3ecf36e923502e3885fe6e",
+          "tensors_checked": {
+            "action_expert": 322,
+            "critic": 6,
+            "actor_optimizer": 966,
+            "critic_optimizer": 18
+          },
+          "actor_optimizer_states": 322,
+          "finite": true,
+          "load_verified": true,
+          "latest": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_4_attempt_000/checkpoints/direct_latest.pt",
+          "latest_sha256": "34858376feb2de6689acf1c31bf0bc725f750f085c3ecf36e923502e3885fe6e",
+          "milestone": null,
+          "saved_at": 1791427050.8936076
+        },
+        "status_sha256": "1b37d9c34f3b8d7c0574100fdec3d4f1dcf94c687de5e6eaecbed67e8f2555e8",
+        "kl_mean": 0.000416412230518486,
+        "clip_fraction_mean": 0.00009137427036743067,
+        "update_seconds_mean": 63.31306132698726
+      },
+      {
+        "gpu": 5,
+        "status": "training",
+        "updates": 206,
+        "experiences": 13062,
+        "checkpoint": {
+          "updates": 196,
+          "bytes": 7622833853,
+          "sha256": "cd581fed2dea2b839ac8d10c17ca2101bad3f4a6d9b797998b12b698cf086d41",
+          "tensors_checked": {
+            "action_expert": 322,
+            "critic": 6,
+            "actor_optimizer": 966,
+            "critic_optimizer": 18
+          },
+          "actor_optimizer_states": 322,
+          "finite": true,
+          "load_verified": true,
+          "latest": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_5_attempt_000/checkpoints/direct_latest.pt",
+          "latest_sha256": "cd581fed2dea2b839ac8d10c17ca2101bad3f4a6d9b797998b12b698cf086d41",
+          "milestone": null,
+          "saved_at": 1791426219.5966945
+        },
+        "status_sha256": "4ca865318c410c45c91d03967744e360992d25da952d07d0bd73699b851b1562",
+        "kl_mean": 0.0003999390429346651,
+        "clip_fraction_mean": 0.00008343446726268791,
+        "update_seconds_mean": 62.220383184310954
+      },
+      {
+        "gpu": 6,
+        "status": "training",
+        "updates": 215,
+        "experiences": 13564,
+        "checkpoint": {
+          "updates": 208,
+          "bytes": 7622833853,
+          "sha256": "eddd00042a6abdb8e59caf29cf967e3595b893f9e252088bee053e28ca9cb18a",
+          "tensors_checked": {
+            "action_expert": 322,
+            "critic": 6,
+            "actor_optimizer": 966,
+            "critic_optimizer": 18
+          },
+          "actor_optimizer_states": 322,
+          "finite": true,
+          "load_verified": true,
+          "latest": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_6_attempt_000/checkpoints/direct_latest.pt",
+          "latest_sha256": "eddd00042a6abdb8e59caf29cf967e3595b893f9e252088bee053e28ca9cb18a",
+          "milestone": null,
+          "saved_at": 1791426630.2829716
+        },
+        "status_sha256": "343d8445dd1e0b2fc87c43f864b8228793ed5053ce93e5873fd13bff7d04e008",
+        "kl_mean": 0.00037425638109379227,
+        "clip_fraction_mean": 0.00013752236340881354,
+        "update_seconds_mean": 63.70153930723494
+      },
+      {
+        "gpu": 7,
+        "status": "training",
+        "updates": 162,
+        "experiences": 10218,
+        "checkpoint": {
+          "updates": 156,
+          "bytes": 7622833917,
+          "sha256": "2fab2ebd6377ce418ebe112708aa4e46d563d2a09976bb8b28ed61ee202a38ae",
+          "tensors_checked": {
+            "action_expert": 322,
+            "critic": 6,
+            "actor_optimizer": 966,
+            "critic_optimizer": 18
+          },
+          "actor_optimizer_states": 322,
+          "finite": true,
+          "load_verified": true,
+          "latest": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_7_attempt_000/checkpoints/direct_latest.pt",
+          "latest_sha256": "2fab2ebd6377ce418ebe112708aa4e46d563d2a09976bb8b28ed61ee202a38ae",
+          "milestone": null,
+          "saved_at": 1791426203.5043323
+        },
+        "status_sha256": "bcdd8ec27d6ff3df0702e536c07056f8dda3083996e173f9d17bf5fe4e11a98e",
+        "kl_mean": 0.0004344999689057473,
+        "clip_fraction_mean": 0.00016932441953273263,
+        "update_seconds_mean": 64.46693432670845
+      }
+    ],
+    "max_pre_update_kl": 0,
+    "mean_post_update_kl": 0.0003901661484589362,
+    "mean_post_clip_fraction": 0.00012609790592917056,
+    "max_optimizer_steps_per_update": 1,
+    "accepted_actor_lrs": [
+      1e-8
+    ],
+    "planner_counts": {
+      "events": 12698,
+      "decision_EXECUTE": 12698,
+      "verb_NAVIGATE": 8384,
+      "verb_GRASP": 2084,
+      "verb_OPEN_DOOR": 1540,
+      "verb_PUSH": 404,
+      "verb_PLACE_ON": 81,
+      "verb_PLACE_NEXT_TO": 3,
+      "verb_PLACE_IN": 27,
+      "verb_TURN_TO": 59,
+      "verb_OPEN_LID": 113,
+      "verb_CLOSE_DOOR": 3
+    },
+    "planner_exact_skill_repeats": 12428,
+    "planner_skill_transitions": 12552,
+    "planner_tasks_total": 73,
+    "planner_tasks_only_one_bundle": [
+      "hanging pictures",
+      "clean a keyboard",
+      "sweeping garage",
+      "cook a brisket",
+      "store batteries",
+      "cook a frozen pie",
+      "polishing shoes",
+      "tidying living room",
+      "vacuuming floors",
+      "composting waste",
+      "sorting books on shelf",
+      "packing meal for delivery",
+      "turning out all lights before sleep",
+      "freeze fruit",
+      "turning on radio",
+      "scrubbing bathroom floor",
+      "organizing art supplies",
+      "installing a modem",
+      "make cabinet doors",
+      "spraying for bugs",
+      "installing a scanner",
+      "hiding Easter eggs",
+      "installing smoke detectors",
+      "put together a basic pruning kit",
+      "installing a fax machine",
+      "cook broccolini",
+      "store honey",
+      "carrying out garden furniture",
+      "boxing food after dinner",
+      "make gift bags for baby showers"
+    ],
+    "bootstrap_changed_skill_boundary_count": 33,
+    "bootstrap_boundary_examples": [
+      {
+        "gpu": 0,
+        "task": "store produce",
+        "env": 1,
+        "chunk": 864,
+        "previous": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"wicker_basket\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"NAVIGATE\"}]",
+        "next": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"floors\",\"target\":\"wicker_basket\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]"
+      },
+      {
+        "gpu": 1,
+        "task": "make rose centerpieces",
+        "env": 1,
+        "chunk": 96,
+        "previous": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"rose\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"NAVIGATE\"}]",
+        "next": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"bottom_cabinet\",\"target\":\"rose\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]"
+      },
+      {
+        "gpu": 1,
+        "task": "tidying bedroom",
+        "env": 0,
+        "chunk": 352,
+        "previous": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"floors_htolat_0\",\"target\":\"sandal_190\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]",
+        "next": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"sandal_189\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"NAVIGATE\"}]"
+      }
+    ]
+  },
+  "q_interpretation": "These are completed TRAIN rollouts collected while independent policies were changing, with65/100 tasks and2 instances/task, not a fixed final checkpoint evaluation. Do not compare0.01132479 against the user-reported0.0129 as an improvement/regression. Initial Q was0 for the4 positive-final episodes inspected, so those are actual partial-progress events, not initial credits; no paired baseline proves RL caused them.",
+  "failure_recording": {
+    "file_suffix_counts": {
+      ".lock": 3,
+      ".json": 231,
+      ".log": 89,
+      ".ready": 81,
+      ".jsonl": 243,
+      ".pt": 16,
+      ".completed": 65
+    },
+    "completed_cycle_receipts": [
+      {
+        "gpu": 0,
+        "task": "hanging_pictures",
+        "horizon": 3581,
+        "episodes": 2,
+        "terminal_chunks": 64,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/cycle_00000_hanging_pictures/update_receipts.jsonl",
+        "receipt_sha256": "a5aeefe34e9468289105d5897ba6ba7bb1d77318da297fee9802f043ff5ea1af"
+      },
+      {
+        "gpu": 0,
+        "task": "clean_a_keyboard",
+        "horizon": 5814,
+        "episodes": 2,
+        "terminal_chunks": 24,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/cycle_00001_clean_a_keyboard/update_receipts.jsonl",
+        "receipt_sha256": "d3d79098b8e11fe693705ddef2f31189c2cac6d086c91a478743dbe47cb30b42"
+      },
+      {
+        "gpu": 0,
+        "task": "sweeping_garage",
+        "horizon": 6709,
+        "episodes": 2,
+        "terminal_chunks": 8,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/cycle_00002_sweeping_garage/update_receipts.jsonl",
+        "receipt_sha256": "fb660367f6dc7dfd3634adbe478ae8cb36ed6db11eed236cf7d6ffb00a00657f"
+      },
+      {
+        "gpu": 0,
+        "task": "cook_a_brisket",
+        "horizon": 11002,
+        "episodes": 2,
+        "terminal_chunks": 32,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/cycle_00003_cook_a_brisket/update_receipts.jsonl",
+        "receipt_sha256": "127174c7031eeb5bb6712ddc51598b23158db6fb51b4f5c795a7cbae8a4fa9d1"
+      },
+      {
+        "gpu": 0,
+        "task": "store_batteries",
+        "horizon": 11556,
+        "episodes": 2,
+        "terminal_chunks": 38,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/cycle_00004_store_batteries/update_receipts.jsonl",
+        "receipt_sha256": "77d8a2afc0e2416b3fb0c8f915f8527e0d7f8c4d34b3005ababe9bbb625fbfcc"
+      },
+      {
+        "gpu": 0,
+        "task": "cook_a_frozen_pie",
+        "horizon": 13001,
+        "episodes": 2,
+        "terminal_chunks": 26,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/cycle_00005_cook_a_frozen_pie/update_receipts.jsonl",
+        "receipt_sha256": "180d8fb5d7ab0b4b29d9cd4540d101129eb179ed440bbbcc287eeb842d6e271c"
+      },
+      {
+        "gpu": 0,
+        "task": "store_produce",
+        "horizon": 14283,
+        "episodes": 2,
+        "terminal_chunks": 58,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/cycle_00006_store_produce/update_receipts.jsonl",
+        "receipt_sha256": "385417d6ae817551cc4998a3a383628bdd3ed0e6d8f2f5cd6b6fd833caf7255f"
+      },
+      {
+        "gpu": 0,
+        "task": "polishing_shoes",
+        "horizon": 16106,
+        "episodes": 2,
+        "terminal_chunks": 30,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/cycle_00007_polishing_shoes/update_receipts.jsonl",
+        "receipt_sha256": "a720cf159e71ca9de3768f1da857b5dae2fb5c5ce7d86fa7d3f10e9dbc852b02"
+      },
+      {
+        "gpu": 0,
+        "task": "putting_away_toys",
+        "horizon": 16945,
+        "episodes": 2,
+        "terminal_chunks": 8,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_0_attempt_000/cycle_00008_putting_away_toys/update_receipts.jsonl",
+        "receipt_sha256": "809c9e09573a89820598424aa86805acb5002a388fec1e0b4412ab9cc76142b1"
+      },
+      {
+        "gpu": 1,
+        "task": "vacuuming_floors",
+        "horizon": 3617,
+        "episodes": 2,
+        "terminal_chunks": 6,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/cycle_00000_vacuuming_floors/update_receipts.jsonl",
+        "receipt_sha256": "c71346d38bf81dab5cf33465a82af87147aadabd66f857ff39466ffff06028d4"
+      },
+      {
+        "gpu": 1,
+        "task": "composting_waste",
+        "horizon": 5457,
+        "episodes": 2,
+        "terminal_chunks": 44,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/cycle_00001_composting_waste/update_receipts.jsonl",
+        "receipt_sha256": "25b764980b7cd5e1e1146fb211e5058ee5643f6f0aeb92739ac71cdfa21d0a07"
+      },
+      {
+        "gpu": 1,
+        "task": "make_rose_centerpieces",
+        "horizon": 6798,
+        "episodes": 2,
+        "terminal_chunks": 18,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/cycle_00002_make_rose_centerpieces/update_receipts.jsonl",
+        "receipt_sha256": "1e734ab3e868187755e7549d6463144446099e570bb0075f3df5694a4273f225"
+      },
+      {
+        "gpu": 1,
+        "task": "cook_bacon",
+        "horizon": 11519,
+        "episodes": 2,
+        "terminal_chunks": 32,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/cycle_00003_cook_bacon/update_receipts.jsonl",
+        "receipt_sha256": "3df05ca3a614f45b4aa3c9e62b8e37ad7d8d354511e9b7fff74863e3fc0611f2"
+      },
+      {
+        "gpu": 1,
+        "task": "sorting_books_on_shelf",
+        "horizon": 11609,
+        "episodes": 2,
+        "terminal_chunks": 44,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/cycle_00004_sorting_books_on_shelf/update_receipts.jsonl",
+        "receipt_sha256": "a70d37f56a2ff2f7f2c2a69b9d88f9bda03875a96e46c93574d387b31fa56d27"
+      },
+      {
+        "gpu": 1,
+        "task": "packing_meal_for_delivery",
+        "horizon": 13289,
+        "episodes": 2,
+        "terminal_chunks": 62,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/cycle_00005_packing_meal_for_delivery/update_receipts.jsonl",
+        "receipt_sha256": "2d187982f1a153a5426e1522ca0b4c87b65bd24d62577c52fceef1d6842b5f90"
+      },
+      {
+        "gpu": 1,
+        "task": "turning_out_all_lights_before_sleep",
+        "horizon": 15009,
+        "episodes": 2,
+        "terminal_chunks": 22,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/cycle_00006_turning_out_all_lights_before_sleep/update_receipts.jsonl",
+        "receipt_sha256": "2e298ba895d342704def2c886ef095a487b38fcf607278c684bd8dbcda05aa71"
+      },
+      {
+        "gpu": 1,
+        "task": "tidying_bedroom",
+        "horizon": 16556,
+        "episodes": 2,
+        "terminal_chunks": 22,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/cycle_00007_tidying_bedroom/update_receipts.jsonl",
+        "receipt_sha256": "132d2f76d000a38298b2feff3297d116a414d20fda9cdfbf6e0a926929694784"
+      },
+      {
+        "gpu": 1,
+        "task": "unloading_the_car",
+        "horizon": 16985,
+        "episodes": 2,
+        "terminal_chunks": 12,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_1_attempt_000/cycle_00008_unloading_the_car/update_receipts.jsonl",
+        "receipt_sha256": "855a6e9fd93b086b0f70f698352377727227abd37a5caa889dfef68ef155c996"
+      },
+      {
+        "gpu": 2,
+        "task": "turning_on_radio",
+        "horizon": 3224,
+        "episodes": 2,
+        "terminal_chunks": 20,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_2_attempt_000/cycle_00000_turning_on_radio/update_receipts.jsonl",
+        "receipt_sha256": "fbf8cca9c044070943b397380397d96d551c29a63fbc894585a9bd93d3d061a8"
+      },
+      {
+        "gpu": 2,
+        "task": "scrubbing_bathroom_floor",
+        "horizon": 4730,
+        "episodes": 2,
+        "terminal_chunks": 16,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_2_attempt_000/cycle_00001_scrubbing_bathroom_floor/update_receipts.jsonl",
+        "receipt_sha256": "0fe2c4a6fafe44cc05f6ec0daef40c0d5ab75a1e6ae889216034444f0c6ef020"
+      },
+      {
+        "gpu": 2,
+        "task": "organizing_art_supplies",
+        "horizon": 9291,
+        "episodes": 2,
+        "terminal_chunks": 10,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_2_attempt_000/cycle_00002_organizing_art_supplies/update_receipts.jsonl",
+        "receipt_sha256": "b6f0122beb1d606f12419c499372ebf5abc9a0ec99d997a0037bf2d1d304c1a5"
+      },
+      {
+        "gpu": 2,
+        "task": "halve_an_egg",
+        "horizon": 9565,
+        "episodes": 2,
+        "terminal_chunks": 44,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_2_attempt_000/cycle_00003_halve_an_egg/update_receipts.jsonl",
+        "receipt_sha256": "a0e117df328e5bc5dba18bf96f339b037d287981f5cd0dc3b955289c55b31c9f"
+      },
+      {
+        "gpu": 2,
+        "task": "spraying_fruit_trees",
+        "horizon": 12518,
+        "episodes": 2,
+        "terminal_chunks": 30,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_2_attempt_000/cycle_00004_spraying_fruit_trees/update_receipts.jsonl",
+        "receipt_sha256": "99dffdec51e754ff163973c99c20403359959bdca0ea789fdf50c7e95332f34e"
+      },
+      {
+        "gpu": 2,
+        "task": "dispose_of_glass",
+        "horizon": 13792,
+        "episodes": 2,
+        "terminal_chunks": 62,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_2_attempt_000/cycle_00005_dispose_of_glass/update_receipts.jsonl",
+        "receipt_sha256": "49c4770b8075f3d9424f70870dc2bbac57f70610b3d2438b1f128008d2b80be7"
+      },
+      {
+        "gpu": 2,
+        "task": "re_shelving_library_books",
+        "horizon": 14292,
+        "episodes": 2,
+        "terminal_chunks": 60,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_2_attempt_000/cycle_00006_re_shelving_library_books/update_receipts.jsonl",
+        "receipt_sha256": "23719b77f2f51fd378ccb4a1f5e63c0586252507483b61b0573ca675a29125fb"
+      },
+      {
+        "gpu": 2,
+        "task": "chopping_wood",
+        "horizon": 16127,
+        "episodes": 2,
+        "terminal_chunks": 32,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_2_attempt_000/cycle_00007_chopping_wood/update_receipts.jsonl",
+        "receipt_sha256": "c6d9d90957ac4bb1b057fd5b27279c1254e1bf5df8a47f02acd258927c34efb5"
+      },
+      {
+        "gpu": 3,
+        "task": "installing_a_modem",
+        "horizon": 3619,
+        "episodes": 2,
+        "terminal_chunks": 6,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/cycle_00000_installing_a_modem/update_receipts.jsonl",
+        "receipt_sha256": "2057a66be9a50b18d3100757e29ee31a0a21dbaae2acfbf02ca7d2a3a58e5984"
+      },
+      {
+        "gpu": 3,
+        "task": "make_cabinet_doors",
+        "horizon": 5163,
+        "episodes": 2,
+        "terminal_chunks": 6,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/cycle_00001_make_cabinet_doors/update_receipts.jsonl",
+        "receipt_sha256": "63e04a397ac260fbd126fd2e69f3738a5f4d74777c333db826d32805807db1d5"
+      },
+      {
+        "gpu": 3,
+        "task": "clean_a_trumpet",
+        "horizon": 7960,
+        "episodes": 2,
+        "terminal_chunks": 36,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/cycle_00002_clean_a_trumpet/update_receipts.jsonl",
+        "receipt_sha256": "1e04293717e79f4c76d23a0e118abe9ffa9c01fa07fd566f253948b2c1dd88b9"
+      },
+      {
+        "gpu": 3,
+        "task": "spraying_for_bugs",
+        "horizon": 9719,
+        "episodes": 2,
+        "terminal_chunks": 64,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/cycle_00003_spraying_for_bugs/update_receipts.jsonl",
+        "receipt_sha256": "8acfd58a7f1b770befff4a360cdba3e24ff9261edb290d7557a1c76dbc91d937"
+      },
+      {
+        "gpu": 3,
+        "task": "thawing_frozen_food",
+        "horizon": 12344,
+        "episodes": 2,
+        "terminal_chunks": 8,
+        "terminal_skipped": true,
+        "final_q": [
+          0.2222222222222222,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/cycle_00004_thawing_frozen_food/update_receipts.jsonl",
+        "receipt_sha256": "2dc421ea506dbf92dea31b71ec5b886f81536e74cdaf6f32b2d42a51066742c5"
+      },
+      {
+        "gpu": 3,
+        "task": "rearranging_kitchen_furniture",
+        "horizon": 13414,
+        "episodes": 2,
+        "terminal_chunks": 14,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/cycle_00005_rearranging_kitchen_furniture/update_receipts.jsonl",
+        "receipt_sha256": "32ee53c7b434db085d3c900f133d31e56a7851e3ba1a55124b64a3d43ae84169"
+      },
+      {
+        "gpu": 3,
+        "task": "collecting_aluminum_cans",
+        "horizon": 15304,
+        "episodes": 2,
+        "terminal_chunks": 58,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/cycle_00006_collecting_aluminum_cans/update_receipts.jsonl",
+        "receipt_sha256": "9d93f05ab5dbe871683ab0cf85c9291b6e2f093250eeef61ba33e03a16f6f6dc"
+      },
+      {
+        "gpu": 3,
+        "task": "bringing_paper_to_recycling",
+        "horizon": 16821,
+        "episodes": 2,
+        "terminal_chunks": 56,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/cycle_00007_bringing_paper_to_recycling/update_receipts.jsonl",
+        "receipt_sha256": "4409bc1059c66cb81b5579ce3c957d624f3d63fecc6a56a69330a8b8c20a02ac"
+      },
+      {
+        "gpu": 3,
+        "task": "putting_dirty_dishes_in_sink",
+        "horizon": 18222,
+        "episodes": 2,
+        "terminal_chunks": 38,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_3_attempt_000/cycle_00008_putting_dirty_dishes_in_sink/update_receipts.jsonl",
+        "receipt_sha256": "2598a34a64a445a58a371799203366ebbc05380a47079a9628e719548379fca2"
+      },
+      {
+        "gpu": 4,
+        "task": "attach_a_camera_to_a_tripod",
+        "horizon": 5867,
+        "episodes": 2,
+        "terminal_chunks": 30,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_4_attempt_000/cycle_00000_attach_a_camera_to_a_tripod/update_receipts.jsonl",
+        "receipt_sha256": "d0255f479a2d1e18d48fbe029ac44a19d792143a6756a8924b2a73d04fba2887"
+      },
+      {
+        "gpu": 4,
+        "task": "installing_a_scanner",
+        "horizon": 6387,
+        "episodes": 2,
+        "terminal_chunks": 32,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_4_attempt_000/cycle_00001_installing_a_scanner/update_receipts.jsonl",
+        "receipt_sha256": "df1c2b676be6dc850fa7c2fdf0ea56833e50c32353969d2e4af9d19aaede82ab"
+      },
+      {
+        "gpu": 4,
+        "task": "hiding_Easter_eggs",
+        "horizon": 11429,
+        "episodes": 2,
+        "terminal_chunks": 22,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_4_attempt_000/cycle_00002_hiding_Easter_eggs/update_receipts.jsonl",
+        "receipt_sha256": "5fbc7a2098a4f121cd2b5be99e0eb956aac1c6cf00fb0e32c5493057891bd674"
+      },
+      {
+        "gpu": 4,
+        "task": "putting_shoes_on_rack",
+        "horizon": 11589,
+        "episodes": 2,
+        "terminal_chunks": 42,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_4_attempt_000/cycle_00003_putting_shoes_on_rack/update_receipts.jsonl",
+        "receipt_sha256": "ccc6e02fc78b8e7bf653276b8bf6d461e50e92ac2c5a1520b9511f15e5fe7fbc"
+      },
+      {
+        "gpu": 4,
+        "task": "bringing_water",
+        "horizon": 14157,
+        "episodes": 2,
+        "terminal_chunks": 42,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_4_attempt_000/cycle_00004_bringing_water/update_receipts.jsonl",
+        "receipt_sha256": "59a96a9af634a8332d93c6e9181b35fb3bf3481b421d0f6ea8a5f3831a76cac0"
+      },
+      {
+        "gpu": 4,
+        "task": "sorting_bottles_cans_and_paper",
+        "horizon": 15395,
+        "episodes": 2,
+        "terminal_chunks": 6,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_4_attempt_000/cycle_00005_sorting_bottles_cans_and_paper/update_receipts.jsonl",
+        "receipt_sha256": "10f4092545457ad1d18383aad57eb682c492779339313e0fd4d2db246ee8427b"
+      },
+      {
+        "gpu": 4,
+        "task": "wash_dog_toys",
+        "horizon": 16834,
+        "episodes": 2,
+        "terminal_chunks": 58,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_4_attempt_000/cycle_00006_wash_dog_toys/update_receipts.jsonl",
+        "receipt_sha256": "f888838f0e58db3375556946ae3d2d54a379392427a63e9fa29c3d1f18516d39"
+      },
+      {
+        "gpu": 5,
+        "task": "installing_smoke_detectors",
+        "horizon": 3853,
+        "episodes": 2,
+        "terminal_chunks": 34,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_5_attempt_000/cycle_00000_installing_smoke_detectors/update_receipts.jsonl",
+        "receipt_sha256": "2f7fc89cf7521ab0d26eaea78500b6487cae163bbf9022866e91c051b57e61af"
+      },
+      {
+        "gpu": 5,
+        "task": "set_up_a_coffee_station_in_your_kitchen",
+        "horizon": 9399,
+        "episodes": 2,
+        "terminal_chunks": 24,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_5_attempt_000/cycle_00001_set_up_a_coffee_station_in_your_kitchen/update_receipts.jsonl",
+        "receipt_sha256": "596990fcb52fdb5f8f020784b8f93e29556486ba9eb1db530722497eb617352d"
+      },
+      {
+        "gpu": 5,
+        "task": "chop_an_onion",
+        "horizon": 9599,
+        "episodes": 2,
+        "terminal_chunks": 48,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0.25
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_5_attempt_000/cycle_00002_chop_an_onion/update_receipts.jsonl",
+        "receipt_sha256": "9af0867abf0174c69e7ed29f9b7f7e257cf4e398246c63e5e88593fcb8658882"
+      },
+      {
+        "gpu": 5,
+        "task": "preparing_lunch_box",
+        "horizon": 12367,
+        "episodes": 2,
+        "terminal_chunks": 10,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_5_attempt_000/cycle_00003_preparing_lunch_box/update_receipts.jsonl",
+        "receipt_sha256": "a0f4127737ee6a8d3c369662ccbd238d9bb8dff76a2c822f8c78ba451a0d5ab9"
+      },
+      {
+        "gpu": 5,
+        "task": "setting_the_fire",
+        "horizon": 13677,
+        "episodes": 2,
+        "terminal_chunks": 46,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_5_attempt_000/cycle_00004_setting_the_fire/update_receipts.jsonl",
+        "receipt_sha256": "06817b7480e84c36db669c010bf34a5a9eb412703b8a42e0fa0a21f0a9be6ef5"
+      },
+      {
+        "gpu": 5,
+        "task": "outfit_a_basic_toolbox",
+        "horizon": 15956,
+        "episodes": 2,
+        "terminal_chunks": 12,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_5_attempt_000/cycle_00005_outfit_a_basic_toolbox/update_receipts.jsonl",
+        "receipt_sha256": "d46726437d5d1f1ed04b84ed214701e6905ccce72157536e20fbbdb460d42055"
+      },
+      {
+        "gpu": 5,
+        "task": "put_together_a_basic_pruning_kit",
+        "horizon": 16896,
+        "episodes": 2,
+        "terminal_chunks": 2,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_5_attempt_000/cycle_00006_put_together_a_basic_pruning_kit/update_receipts.jsonl",
+        "receipt_sha256": "e21caef2ab3131c5769c05b9a10adae3ac8d9bb2c40f56d39e3c1329afdc575a"
+      },
+      {
+        "gpu": 5,
+        "task": "cleaning_up_branches_and_twigs",
+        "horizon": 18790,
+        "episodes": 2,
+        "terminal_chunks": 46,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_5_attempt_000/cycle_00007_cleaning_up_branches_and_twigs/update_receipts.jsonl",
+        "receipt_sha256": "acf979cb5360ed057cbf0c6933618676b495bef62cc4f16b6f699438334af9ec"
+      },
+      {
+        "gpu": 6,
+        "task": "installing_a_fax_machine",
+        "horizon": 6115,
+        "episodes": 2,
+        "terminal_chunks": 62,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_6_attempt_000/cycle_00000_installing_a_fax_machine/update_receipts.jsonl",
+        "receipt_sha256": "bce3f0734c81a89f1581d4b5f63f22f70fdd20fe150ea76e631d2edfccee1f2d"
+      },
+      {
+        "gpu": 6,
+        "task": "cook_broccolini",
+        "horizon": 6926,
+        "episodes": 2,
+        "terminal_chunks": 34,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_6_attempt_000/cycle_00001_cook_broccolini/update_receipts.jsonl",
+        "receipt_sha256": "e1dddf37452dd02ccd6dab4158b0f8ef2a68b83e08a7bdef9b35ca58b236a9f1"
+      },
+      {
+        "gpu": 6,
+        "task": "store_honey",
+        "horizon": 10150,
+        "episodes": 2,
+        "terminal_chunks": 54,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_6_attempt_000/cycle_00002_store_honey/update_receipts.jsonl",
+        "receipt_sha256": "26435ed4dab98041c75d47773443ac9df627fcc3ad1ae46a9aa19a9211bc833f"
+      },
+      {
+        "gpu": 6,
+        "task": "wash_a_baseball_cap",
+        "horizon": 12524,
+        "episodes": 2,
+        "terminal_chunks": 30,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_6_attempt_000/cycle_00003_wash_a_baseball_cap/update_receipts.jsonl",
+        "receipt_sha256": "a771333096d0488761355d2b644e30657047a5a05d3bf24eb0e81f625b051db7"
+      },
+      {
+        "gpu": 6,
+        "task": "clean_up_broken_glass",
+        "horizon": 13037,
+        "episodes": 2,
+        "terminal_chunks": 30,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_6_attempt_000/cycle_00004_clean_up_broken_glass/update_receipts.jsonl",
+        "receipt_sha256": "4899bdcdcbdfb68e2951493d62aeca879512132b024dd0e9318317f141982cca"
+      },
+      {
+        "gpu": 6,
+        "task": "setting_mousetraps",
+        "horizon": 15294,
+        "episodes": 2,
+        "terminal_chunks": 56,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_6_attempt_000/cycle_00005_setting_mousetraps/update_receipts.jsonl",
+        "receipt_sha256": "c7c7cf9851333d1b55cde856a6bf183bf29c2673f8159202551c1c3c3c9f1484"
+      },
+      {
+        "gpu": 6,
+        "task": "carrying_out_garden_furniture",
+        "horizon": 16588,
+        "episodes": 2,
+        "terminal_chunks": 26,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_6_attempt_000/cycle_00006_carrying_out_garden_furniture/update_receipts.jsonl",
+        "receipt_sha256": "1972c6d396c84e30115c3a881c773c8eaa8a42a027b51d4c7fcc7cd42c355488"
+      },
+      {
+        "gpu": 6,
+        "task": "clean_a_patio",
+        "horizon": 18106,
+        "episodes": 2,
+        "terminal_chunks": 24,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_6_attempt_000/cycle_00007_clean_a_patio/update_receipts.jsonl",
+        "receipt_sha256": "3846f95f37076b0e9cbf254f019dd71c2b262bd904e933d029586dccf72f5059"
+      },
+      {
+        "gpu": 7,
+        "task": "make_microwave_popcorn",
+        "horizon": 4856,
+        "episodes": 2,
+        "terminal_chunks": 32,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_7_attempt_000/cycle_00000_make_microwave_popcorn/update_receipts.jsonl",
+        "receipt_sha256": "00cd845da77cef694e4623ca9cc075e8d1cd26f2f29535464fab300ddb9d1b29"
+      },
+      {
+        "gpu": 7,
+        "task": "picking_up_trash",
+        "horizon": 7901,
+        "episodes": 2,
+        "terminal_chunks": 28,
+        "terminal_skipped": false,
+        "final_q": [
+          0.6666666666666666,
+          0.3333333333333333
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_7_attempt_000/cycle_00001_picking_up_trash/update_receipts.jsonl",
+        "receipt_sha256": "48cae935834a44e87e7a7747cbcd450e5cac436d5328e46ade8997aa8931b7fa"
+      },
+      {
+        "gpu": 7,
+        "task": "boxing_food_after_dinner",
+        "horizon": 10046,
+        "episodes": 2,
+        "terminal_chunks": 40,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_7_attempt_000/cycle_00002_boxing_food_after_dinner/update_receipts.jsonl",
+        "receipt_sha256": "ac9430a45ba5e246ee2e88e84bf07c99eb0b4a3f09938e76fdcc19e01c0cbbd8"
+      },
+      {
+        "gpu": 7,
+        "task": "clean_boxing_gloves",
+        "horizon": 12353,
+        "episodes": 2,
+        "terminal_chunks": 10,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_7_attempt_000/cycle_00003_clean_boxing_gloves/update_receipts.jsonl",
+        "receipt_sha256": "38d7a81e37e02963933a968649e1fb6510047a7e9b4b7303f9682b748ba283ea"
+      },
+      {
+        "gpu": 7,
+        "task": "cook_hot_dogs",
+        "horizon": 13717,
+        "episodes": 2,
+        "terminal_chunks": 52,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_7_attempt_000/cycle_00004_cook_hot_dogs/update_receipts.jsonl",
+        "receipt_sha256": "afc0f30eba75f5dbcdec04d6bafa1da76f4d14cc0db6e88e165c0b897a578c5a"
+      },
+      {
+        "gpu": 7,
+        "task": "make_gift_bags_for_baby_showers",
+        "horizon": 14476,
+        "episodes": 2,
+        "terminal_chunks": 18,
+        "terminal_skipped": false,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_7_attempt_000/cycle_00005_make_gift_bags_for_baby_showers/update_receipts.jsonl",
+        "receipt_sha256": "f8eb86d3ce23598feb089c305d3db537316b89b58f6aa91f5ee20468377d2548"
+      },
+      {
+        "gpu": 7,
+        "task": "putting_dishes_away_after_cleaning",
+        "horizon": 16430,
+        "episodes": 2,
+        "terminal_chunks": 6,
+        "terminal_skipped": true,
+        "final_q": [
+          0,
+          0
+        ],
+        "receipt": "/run/ti/rl_memlite_stage1_20261006/runs/large_scale73h_trainonly_20261007/training/gpu_7_attempt_000/cycle_00006_putting_dishes_away_after_cleaning/update_receipts.jsonl",
+        "receipt_sha256": "156bc2e63f24f6433392bdfe97c8bdb3cc1395d80f3c250e89430e0ce03d82e5"
+      }
+    ]
+  },
+  "source_sha256": {
+    "tools/serve_stage1_rl.py": "fe116c3ea7ebe3b920f446df672ca5e44c194ad7705507227faa0cfd7143d449",
+    "tools/run_expert_phase.py": "f778dc3b5272b96eb1be324d60a2b8221565a37099274ca33624601fa20583d5",
+    "tools/train_sim_pilot.py": "8f6f741a9c24190a73e821522ed5eb709f59ec4537095d53f49abd29be3b3fea",
+    "tools/run_pilot_sim.sh": "78fc69320e26cf848ce986a9310fe3d7cf77d18cf54a250e8a686f4b1c2a551f",
+    "code/stage1_engine.py": "4e813362f530db54167fcfae1d7e7e06fed212913314f4f77fd709d726e6501e",
+    "code/direct_a4_flow.py": "11bbac576cd07e36c14dbb1b5e1d5bad836cb887560556b6b41cd34fc29085f0",
+    "code/direct_ppo_core.py": "73f2a594558fef5a9bc1504193bab45aa8d72bec385d96d6bfa21cb4ca070c5d",
+    "code/shared_pilot_policy.py": "0515c5d12bd6d94fb8e734ed51736361ad609eade7dec6282e9e3331324b22af",
+    "code/shared_reward_math.py": "aa0d76c789412f20611d1ff3e4018fc3da1582a58307d101703f8eccb60410c3",
+    "code/pilot_policy.py": "78e627dfb6c7d5edd3817851b7a2099fc52d1f960969fb6542d2ec41f6958d26",
+    "code/shared_physical_reward.py": "e2c636d3fdc228eec2b71dd30fe13a1337ada5c86cef1cd96a048a38fddbff44",
+    "code/dense_reward.py": "8ef5851209b457fa9777016914ecfabdcd0250ad4019807b10d0ea55f5f4f2c3",
+    "code/native_b_session.py": "b811e1ac2c0fdafbc8e15b7dc4d6ffd06fb514545794540267d6ea556525fecb"
+  },
+  "next_steps_not_executed": [
+    "RL owner: fix terminal tail handling and bootstrap context; add CPU regression tests before starting a new frozen-source run/resuming.",
+    "RL/collection owner: enable bounded durable failure recorder and learning diagnostics; do not hot-edit current snapshot.",
+    "Model/planner owner: diagnose NAVIGATE stalls with matched local clips and appropriate outcome/skill-switch evidence; no assumption low-only PPO will fix frozen high-level planning.",
+    "Only then calibrate update size and sample efficiency; maintain task-group scope, fixed comparison and current user budget. No new baseline evaluation launched by this audit."
+  ]
+}
