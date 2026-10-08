@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-08 09:58 CST（UTC01:58）：SFT低Q / RL停滞只读诊断（Codex / DIAG-SFT-RL-Q0129）
+
+- 用户报告大规模SFT已结束、qscore约`0.0129`、RL运行约半天无明显改善；这些为**用户报告，尚未取得对应checkpoint、评测JSON/任务分母、RL配置和曲线**。本轮仅回答与诊断，不重启训练、不改actor/reward/超参，不恢复旧DART目标。主假设待检验：部署协议/高低层条件分布不一致，或长时程RL有效奖励与更新信号不足；不能预先断言模型容量或训练时长是根因。
+- Git已fetch并ff-pull原feature（clean/upstream0/0），`origin/main=33677bd`无incoming；诊断分支`diag/sft-rl-qscore-20261008`继承已包含main的`fd2c530`及阶段1源码。仓库没有本次分数或RL运行证据，本地SOCKS1080无listener；公开W&B run页面亦未读到指标。未连接robo/LC、未重登EC/VPN、未触碰在训进程。已向用户索取评测/W&B链接及RL节点/run路径。
+- **已核实代码事实、非本次run归因：** `memlite_stage1_labels.py:173`的阶段1投影只给`EXECUTE`、`task_complete=false`、无物理outcome监督/无执行反馈；低层吃真实示范技能，高层历史也来自示范，不能把阶段1完成等同已训练成功/失败判断和恢复。`stage1_model.py:24`两层单帧、`:53`低层用v4动作边界stats；旧`serve_policy_memlite_fm.py:124`仍要求两层stats同SHA及高层六帧，**不能直接作为此新训练链的部署入口**。此旧入口本身会拒绝不符配置，不是已证实的静默错误；实际评测入口/是否已被队友适配未知。上述stage1文件与正式冻结源`d0528b4`无diff。
+- 诊断顺序（仅建议，未启动）：先核对官方终局Q与逐task分母、初始Q/峰值Q/超时和实际权重；再验训练/部署同一输入的三相机、单帧、23/27映射、192个低层LoRA及stats/动作时钟一致性；少量TRAIN实例进行正确**当前状态**子目标+低层与自主高低层配对以拆分责任（oracle只供诊断、不计官方成绩）。RL需查有效环境步/更新数、正进展和组内reward方差、advantage、KL/clip fraction、critic explained variance，以及FM随机采样路径与log-prob一致性、32预测/16执行的奖励折扣与terminal处理。没有这些证据不以“再跑半天”代替判断。
+- 改进候选按定位选择：低层局部能力不足→同状态纠正/关键接触段SFT；自主高层退化→阶段2合法预测意图适配及有证据的outcome/recovery；长任务RL无信号→共享技能条件策略、TRAIN演示状态短课程/统一物理奖励、固定高层并保留示范约束，再逐渐延长。均须另定有限预算；不新造100套任务控制器，不把原DART（真实数据仍0）当已可用数据。官方[Q与评测规则](https://behavior.stanford.edu/challenge/evaluation.html)、[ReinFlow原作者的SFT/探索/critic注意事项](https://github.com/ReinFlow/ReinFlow#-tips-on-hyperparameter-tuning)已复查；0.0129若为官方Q是约1.29%的终局目标条件平均完成度，不是1.29%的完整任务成功率。
+
 ### 2026-10-02（CST）：用户将 active goal 改为仅“用上 DART 构造数据集”；DART 前置核验中（Codex / P107-DART-ONLY）
 
 - 这是用户明确的范围变更，不是以缩小验收规避旧数据目标。根唯一 writer/remote operator 已暂停所有非 DART 的`32`-case goal-state、`3607/4512` two-parent 12-PNG pilot及其 Git/source/input fallback；已有 sealed media、formal-batch、source-sync v1/v2 失败证据保留并标为 **DEFERRED**，不删除、不重跑、不计入 DART 数据。

@@ -1,5 +1,11 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+## 2026-10-08（CST）当前请求：SFT低Q与RL停滞诊断
+
+- Codex / `DIAG-SFT-RL-Q0129`：仅做现有代码/指标口径核对及改进建议；用户报告SFT结束、Q约0.0129、RL半天无改善，尚无对应运行证据，不能当已验证结论。Git已同步、诊断分支`diag/sft-rl-qscore-20261008`，详见plan最新条目。
+- 待用户/当前RL负责人提供评测JSON与实际checkpoint/serving入口、RL节点/run或W&B链接，再定位部署一致性、规划/执行责任与奖励/梯度信号；既有隧道不在线，不擅自重登VPN或动在训任务。代码已证实阶段1无outcome/recovery监督，旧六帧高层server不可直接套单帧新训练，但是否涉及当前run未知。
+- 后续协作建议而非启动票：模型/集成负责人核权重、LoRA、stats与动作协议；高层/反馈负责人核当前状态意图及阶段2/outcome；RL负责人核采样吞吐、奖励区分度、概率/advantage/critic，并在共同证据上决定短课程。旧DART goal保持blocked、真实数据0，不以此轮问答授权新训练/采集或恢复旧pilot。
+
 ## 2026-10-02（CST）当前用户范围：DART dataset only
 
 - Codex：根文档/Git 唯一 writer 与 LC3 remote operator；仅做 DART 的许可、硬件/runtime 前置核验及后续获批的隔离执行。非 DART goal-state/natural-retry pilot 全部 DEFERRED，已有证据保留。
