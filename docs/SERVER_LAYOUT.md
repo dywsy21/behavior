@@ -1,5 +1,15 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-08 12:15 CST：10383修复/全量SFT评测新位置（覆盖下方“仅只读/活跃RL”状态）
+
+仍为`root@42.192.34.154:10383`，以下相对路径基于`/run/ti/rl_memlite_stage1_20261006`，不涉及robo/LC。
+
+- 旧`runs/large_scale73h_trainonly_20261007`已按用户要求保存退出；8份final `training/gpu_*/save_ack.json`及checkpoint均保留，勿删。GPU0后续验收新状态在`runs/large_scale73h_repaired_20261008_canary_v1/training/gpu_0_attempt_000/checkpoints/direct_latest.pt`（243次更新）；该job已保存暂停，`canary_resume_receipt.json`/`canary_acceptance.json`可核验。余7卡继续使用旧final状态，不能把243的单卡增量误当所有任务共享权重。
+- 修复冻结源码`code/behavior_rlfix_20261008`=`83cbe31`；recovery候选在canary job的`recovery/gpu_0/*.zip`及index/status。不是已验收BC正例；原始ZIP不修改，本地抽帧材料`artifacts/rl-recovery-10383-20261008`。
+- SFT评测源码`code/behavior_sft_eval_20261008`=`a96455a`，入口`scripts/eval/memlite_sft100/`。G0.5依赖为单独`code/g05_sft_6af1ab9`干净detached worktree；官方模拟器`code/official_behavior_a8247a8/OmniGibson`来自Git tag v3.9.3-post2，与`official_manifest.json`绑定，不改原sim包/环境。
+- SFT job `runs/sft100_full_20261008_v1`：`manifest.json`锁定高48045/低98414/1000实例；`smoke/gpu_1`、`smoke_tasks/turning_on_radio`仅TRAIN128步验收，不计正式分母。正式启动后`workers/gpu_i`记录服务/权重不变回执，`tasks/<task>/{json,videos,attempts}`保存原始结果/MP4/唯一尝试账本；`summary.json`给总Q/SR、逐task与缺失数，未完成不可叫完整成绩。
+- `submission/`保留wrapper、原封r1pro.yaml、提交清单；完成后产出`results.zip`和带SHA的`rollout_inventory.json`。不自动公开或上传视频；checkpoint/视频仍不进Git。原73h RL截止未延长，评测是用户新授权独立流程。
+
 ## 2026-10-08：用户更正的真实RL服务器（10383）
 
 - SSH：`ssh -p 10383 root@42.192.34.154`，容器`nb-1651484739972483840-cjp6hd17gf0g`；与10751不同。工作根`/run/ti/rl_memlite_stage1_20261006`。本轮只读，不改源码/环境/作业。

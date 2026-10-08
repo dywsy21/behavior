@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-08 12:15 CST：RL修复实际验收通过并暂停；SFT全量链准备完毕（Codex / RL-FIX-RECOVERY-10383 + EVAL-SFT100-10383）
+
+- 修复冻结`83cbe31`，远端与本地各20项CPU测试通过；唯一GPU0 canary在原checkpoint241后真实完成242/243两次64chunk更新，actor LR都接受1e-7、post-KL0.00110059/0.00086089、clip0.0078125/0.0015625、每步约64s；不据此声称SR提升。8路旧checkpoint全部保留；新243 final checkpoint SHA`134ab0a8…1e5a2d`finite/load_verified，controller状态`canary_validated_paused_for_sft_evaluation`，未扩7路、未重置73h截止。
+- 实际保存两个TRAIN候选ZIP，共1026条稠密控制/198张JPEG锚点，全部结构/哈希/相邻proprio/实际apply确认校验过；根亲审2实例×4时刻×3相机＝24张原图，确认画面有效、导航移动但无测得目标进展。保持`stalled_uncertain`、bc_eligible=false，不偷换为“不运动”、确定失败或成功recovery；目标basket不能仅凭抽帧可靠ground。独立团队review仍待。记录：[GPU与图审回执](infra/results/2026-10-08-rl-repair-canary-review.json)，本地小媒体`artifacts/rl-recovery-10383-20261008`。
+- SFT全量源码`a96455a`已commit/push并Git同步独立`code/behavior_sft_eval_20261008`；新增6项聚合/禁止重复/公开实例/wire/原生FM合同测试本地与远端均过。`prepare.py`重新hash两份42.17GB SFT权重、1000个public实例，核官方post2全部源码文件与干净G0.5依赖6af1ab9。首次缺官方setup.py被pin检查拒绝，已补原tag文件并重核通过；没有绕过pin。完整清单`runs/sft100_full_20261008_v1/manifest.json`、`submission/submission_checklist.json`。
+- 当前仅GPU1 **TRAIN实例1/2、各128步**的native-FM官方wire/三相机视频流程烟测运行中（worker1331394），不计1000评测分母，不训练或采recovery。通过权重前后指纹/官方输出后才启动8卡全量：100task×301–310×rollout0，2env/卡、每task分5batch且复用scene，默认官方超时，原始JSON+MP4不改，无自动重跑挑优，公共结果不回灌训练。当前正式Q/SR尚无新证据。
+- 提交资料已记录官方wrapper/原封r1pro.yaml、版本/权重/数据SHA、执行命令规范；最终results.zip及视频索引随1000条完成生成。还需实测单24GB serving（或>=50端口自托管）、视频托管链接/团队名称与展示名等；portal目前工具不可访问，表单字段须复核。本轮不正式上传/提交，不自动恢复RL。
+
 ### 2026-10-08 11:55 CST：验收后优先全量SFT评测及提交材料（Codex / EVAL-SFT100-10383，准备中）
 
 - 用户最新要求覆盖此前“不补baseline/全量评测”：先验收修复，再对大规模SFT终态高层`step_00048045_save_0027.pt`＋低层`step_00098414_save_0021.pt`进行全量评测，分别报告Q-score与完整任务SR；激进RL续训后置，不自动延长旧73h时钟。旧8路当前仍运行，尚未停/迁移；将通过原保存退出机制保留其最新优化器/权重，不混入SFT评测。

@@ -2,6 +2,7 @@
 
 ## 2026-10-08（CST）当前请求：SFT低Q与RL停滞诊断
 
+- **12:15 CST / Codex验收进展：** RL20×双端CPU、GPU0两个真实1e-7更新与2段候选结构/根24图QA通过，保存243后暂停，不开余7路。原8路final states保留。SFT新独立a96455a原生FM+官方post2全量链6×双端测试、两权重/1000实例SHA通过；GPU1 TRAIN128步协议烟测在跑，1000公共评测尚未开始。公开评测输出禁止用于恢复训练，所有剩余提交/serving事项见plan与submission checklist。独立团队review仍待，不合main。
 - **11:55 CST最新覆盖 / EVAL-SFT100-10383：** 用户要求修复验收后优先SFT终态全量Q/SR评测及提交材料，RL续训后置。Codex负责独立锁定高48045/低98414、官方v3.9.3/public_test索引0–9共1000rollout/原始JSON+视频/robot与wrapper及serving清单；旧8路先按既有保存流程保全，禁止RL权重或TRAIN实例混入此分母，不擅自延长旧73h或正式提交。20项CPU修复测试通过，真实GPU/图审与评测尚待。
 - **11:19 CST新授权覆盖“仅诊断”：** 用户要求Codex实施尾批/intent估值正确性修复、recovery候选持久化和更积极更新。任务`RL-FIX-RECOVERY-10383`；新分支/冻结源修改，先CPU测试再安全保存/恢复旧8路训练，原73h截止不延长、无新增baseline。候选数据保留真实RGB/proprio/raw23/action-clock/intent/奖励/策略来源，自动标签只作筛选，未经人审不得自动回灌BC。独立团队review尚待，当前不合main。
 - **11:01 CST快照覆盖旧入口待确认项 / Codex `DIAG-RL-10383`：** 用户更正`10383`，已完成真实v42/73h RL只读审计；8个独立expert仍训，1592次更新、65任务130已完TRAIN episode、成功0/Q0.01132479。确认15/65轮<16chunk尾批被删（含一条正终局Q奖励）、批次边界bootstrap旧intent与下次replan不一致；完整RGB/动作失败轨迹未落盘。证据`docs/infra/results/2026-10-08-rl-10383-audit.json`。10751仅为另一部署容器，其结论不可外推到RL。

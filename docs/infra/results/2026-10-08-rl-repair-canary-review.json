@@ -1,0 +1,74 @@
+{
+  "task": "RL-FIX-RECOVERY-10383",
+  "reviewer": "Codex primary model (not an independent human/team review)",
+  "date": "2026-10-08",
+  "source_commit": "83cbe318aded7517c9161da2de27bf2c39638f97",
+  "cpu_tests": {
+    "local": 20,
+    "remote": 20,
+    "passed": true
+  },
+  "gpu_canary": {
+    "updates": [
+      242,
+      243
+    ],
+    "parent_update": 241,
+    "experiences_per_update": 64,
+    "accepted_actor_lr": [
+      1e-7,
+      1e-7
+    ],
+    "post_kl": [
+      0.0011005948440470092,
+      0.0008608864716279641
+    ],
+    "clip_fraction": [
+      0.007812500116415322,
+      0.0015625000232830644
+    ],
+    "effects_on_success_rate": "not measured"
+  },
+  "candidate_review": {
+    "archives": [
+      {
+        "file": "2ac589cc622a9457fa4cc2b6.zip",
+        "sha256": "0dd14e67d1a86a2ae873b04f30aad40840b583c68ddb74a18aed7d88074a72fb",
+        "instance": 1
+      },
+      {
+        "file": "4a524bf9537f094874dcc834.zip",
+        "sha256": "4981e1918cee5225961503174d01572df96d046302fe2899de477fe2a59219ab",
+        "instance": 2
+      }
+    ],
+    "structural_validation": "both passed; every 513 transitions/99 JPEG images per clip hash/shape/clock checked",
+    "manual_visual_sample": {
+      "anchors": [
+        128,
+        256,
+        384,
+        640
+      ],
+      "cameras": [
+        "head_rgb",
+        "left_wrist_rgb",
+        "right_wrist_rgb"
+      ],
+      "image_count": 24,
+      "local_root": "artifacts/rl-recovery-10383-20261008"
+    },
+    "findings": [
+      "Different valid living-room/corridor views across the two instances; no all-black or frozen stream observed in sampled anchors.",
+      "Both predicted NAVIGATE wicker_basket_218; robot turns/moves but has no measured official Q progress. Stall here means potential/progress stagnation, not motionlessness.",
+      "Visible grippers are empty in inspected views; no verified regrasp/recovery-positive label is justified.",
+      "The named wicker basket cannot be grounded confidently from these sampled views. Candidate retains original predicted intent rather than pretending it was a correct teacher target."
+    ],
+    "candidate_capture_acceptance": "passed for bounded uncertainty-candidate collection",
+    "semantic_success_labels_accepted": 0,
+    "corrective_bc_targets_accepted": 0,
+    "bc_eligible": false,
+    "archive_original_labels_unchanged": true
+  },
+  "independent_team_review": "pending; feature branch only"
+}
