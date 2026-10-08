@@ -82,6 +82,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--parent',required=True);parser.add_argument('--job',required=True)
     parser.add_argument('--source-commit',required=True);parser.add_argument('--start',action='store_true')
+    parser.add_argument('--canary-only',action='store_true',help='Validate GPU0, save, and pause for SFT evaluation; do not start the other experts')
     args=parser.parse_args();job=Path(args.job).resolve();parent=Path(args.parent).resolve()
     if len(args.source_commit)!=40 or any(c not in '0123456789abcdef' for c in args.source_commit):
         raise ValueError('Full committed source SHA required')
@@ -127,6 +128,17 @@ def main():
                         threshold='two_real_updates_and_one_verified_candidate',time=time.time()))
                     break
             time.sleep(3)
+        if args.canary_only:
+            (job/'STOP_TRAINING').touch()
+            state.update(phase='saving_validated_canary');publish()
+            children[0].wait(timeout=300)
+            receipt=json.loads((runs[0]/'save_ack.json').read_text())
+            if not receipt.get('finite') or not receipt.get('load_verified'):
+                raise RuntimeError('Validated canary did not publish a verified final save')
+            write(job/'canary_resume_receipt.json',receipt)
+            children.pop(0)
+            state.update(status='canary_validated_paused_for_sft_evaluation',phase='paused')
+            return
         for gpu in range(1,8):launch(gpu)
         state['phase']='training';publish()
         pointer=ROOT/'reports/current_pilot.json'
