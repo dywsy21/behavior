@@ -56,6 +56,20 @@ def audit(engine, snapshot):
         permuted_raw23=difference(raw_batch,raw_permuted[inverse]),
         permuted_normalized27=difference(normalized_batch,normalized_permuted[inverse]),
         raw_dimension_max_abs=np.max(np.abs(raw_serial-raw_batch),axis=(0,1)).tolist())
+    # Keep the original gate unchanged while diagnosing any rejection. Real
+    # controls and padding, as well as executed/future horizons, are distinct.
+    delta=np.abs(normalized_serial-normalized_batch)
+    valid=[i for i in range(27) if i not in (7,8,17,18)]
+    location=np.unravel_index(np.argmax(delta),delta.shape)
+    result['normalized_error_detail']=dict(
+        argmax=[int(x) for x in location],
+        serial_value=float(normalized_serial[location]),batch_value=float(normalized_batch[location]),
+        per_dimension_max=np.max(delta,axis=(0,1)).tolist(),
+        executed_real=difference(normalized_serial[:,:16,valid],normalized_batch[:,:16,valid]),
+        future_real=difference(normalized_serial[:,16:,valid],normalized_batch[:,16:,valid]),
+        padding=difference(normalized_serial[:,:,[7,8,17,18]],normalized_batch[:,:,[7,8,17,18]]),
+        allow_tf32_matmul=torch.backends.cuda.matmul.allow_tf32,
+        allow_tf32_cudnn=torch.backends.cudnn.allow_tf32)
     # Engineering gate, not a claim of policy/success-rate equivalence.
     result['engineering_gate_passed']=(all(result['high_context_equal']) and
         result['capture_replay']['max_abs']<=.005 and
