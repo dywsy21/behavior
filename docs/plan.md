@@ -14,6 +14,7 @@
 
 ### 2026-10-08 15:43 CST：获批完整实现共享RL并启动/持续监控（Codex / RL-SHARED100-10383，实现中）
 
+- **16:35 CST兼容性定位：** v5/3f38fb3的8卡单卡CUDA算术均通过，卡住位置明确为`init_process_group`。实际加载的旧NCCL2.26.2+cuda12.2由`cuobjdump`确认仅含sm50/60/61/70/80/90，无sm120；Python栈停collective初始化、内部线程100%CPU，PTX JIT是待验证假设，不先断言硬件通信坏。保持600s单次守卫，同时仅下载NVIDIA官方PyPI的2.26.2.post1 wheel至`isolated/nccl-2.26.2.post1`，SHA按PyPI核验，解包对照native架构；不pip改共享env/驱动、不动旧库。正式RL仍未启动。
 - **16:31 CST通信仍未验收：** v3（明确device＋cuMem host关闭）、v4（再禁P2P）均在180s守卫超时，子进程清理后八卡空闲；故不能判定为P2P故障或宣称已修好。10383实际设备报告compute capability 12.0、driver580.95.05，不是LC的A800；正增加CUDA单卡算术/collective阶段日志、独立NCCL日志与每60s堆栈，单次诊断有界600s，区分冷初始化和通信阻塞。远端GitHub拉取TLS失败，改用Git-over-SSH推送同一已上GitHub的commit到非活跃relay分支，再建冻结worktree；没有rsync覆盖活跃源码。正式RL仍0更新。另补checkpoint第2次及每100更新硬链接保留，避免只保留滚动latest。
 - **16:13 CST远端回归/NCCL预检：** 冻结06c7056/v1远端33项RL＋29项相邻评测CPU均通过。默认NCCL2.26.2八卡首次通信在180s父进程守卫超时，已清理全部该probe子进程；未启动模型/仿真。v2尝试被v1尚持有的GPU锁正确拒绝，0GPU工作，回执目录保留。另冻结b1bd2c4/v2补明确device绑定与collector信号清理；当前v3 probe只以进程级`NCCL_CUMEM_HOST_ENABLE=0`复验，不改驱动/BIOS/env。未知失败根因，不能先称NCCL可用。
 - **16:00 CST实现/首轮CPU通过：** 已新增`synchronous.py/shared_ppo.py`全局加权梯度→裁剪→Adam、全局/逐组KL共同回退、空rank/零adv参与、精确权重和优化器指纹；`shared_engine.py`每环境身份/记忆清空与高层合批、低层B1；TRAIN调度/24h监督器/首两更新人工验收暂停/恢复候选及增量监控已实现，尚未部署或启动。29项本地CPU全部通过，含真实双进程Gloo与单进程全局batch梯度对照、同Adam状态、单卡坏KL驱动全局回退/拒绝恢复。正在补NCCL测速、实际共享恢复/场景切换与监控口径测试，未称真实RL成功。

@@ -68,6 +68,10 @@ def main():
     if communication.get('passed') is not True or len(communication.get('ranks', [])) != 8:
         raise ValueError('A verified eight-rank communication receipt is required')
     communication_env = communication.get('communication_env', {})
+    library = communication.get('communication_library')
+    if library and (Path(library['path']).name != 'libnccl.so.2' or
+                    sha256(library['path']) != library['sha256']):
+        raise ValueError('Communication library differs from tested receipt')
     allowed = {'NCCL_CUMEM_HOST_ENABLE', 'NCCL_P2P_DISABLE', 'NCCL_IB_DISABLE',
                'NCCL_SHM_DISABLE', 'NCCL_SOCKET_IFNAME'}
     if set(communication_env) - allowed:
@@ -90,7 +94,8 @@ def main():
         resume_environment_rule='reset_all_envs_discard_uncommitted_rollouts',
         startup='24h clock starts at supervisor start, not preparation',
         disk_reserve_gib=150, communication_receipt=str(args.communication_receipt),
-        communication_sha256=sha256(args.communication_receipt), communication_env=communication_env)
+        communication_sha256=sha256(args.communication_receipt), communication_env=communication_env,
+        communication_library=library)
     if args.resume:
         import torch
         payload = torch.load(args.resume, map_location='cpu', mmap=True, weights_only=False)

@@ -2,6 +2,7 @@
 # ruff: noqa: E402 -- pin dependency paths before importing runtime modules.
 import argparse
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -29,6 +30,14 @@ def main():
     if (job/'manifest.json').exists():
         raise ValueError('Do not relaunch an existing run; prepare a fresh shared resume')
     manifest = json.loads((job/'manifest.prepared.json').read_text())
+    library = manifest.get('communication_library')
+    if library:
+        digest = hashlib.sha256()
+        with Path(library['path']).open('rb') as stream:
+            for block in iter(lambda: stream.read(8 << 20), b''):
+                digest.update(block)
+        if digest.hexdigest() != library['sha256']:
+            raise ValueError('Tested NCCL library changed before launch')
     manifest.update(started=time.time(), absolute_deadline=time.time() + manifest['hours'] * 3600)
     atomic_json(job/'manifest.json', manifest)
     state = dict(status='loading', pid=os.getpid(), started=time.time(), source=manifest['source_commit'],
@@ -88,7 +97,8 @@ def main():
                 run.mkdir(parents=True)
                 process = start(['bash', str(SOURCE/'tools/run_policy_python.sh'),
                     str(SOURCE/'tools/serve_shared_rl.py'), '--job', str(job), '--run', str(run),
-                    '--rank', str(rank)], env_base | {'CUDA_VISIBLE_DEVICES': str(rank)}, run/'policy.log')
+                    '--rank', str(rank)], env_base | {'CUDA_VISIBLE_DEVICES': str(rank)} |
+                    ({'LD_PRELOAD': library['path']} if library else {}), run/'policy.log')
                 policies.append(process)
                 state['policies'][str(rank)] = process.pid
             save_state()

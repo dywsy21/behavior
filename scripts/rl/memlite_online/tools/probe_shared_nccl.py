@@ -1,6 +1,7 @@
 """Bounded eight-GPU SUM correctness and bandwidth; no models or simulation."""
 import argparse
 import faulthandler
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -17,10 +18,19 @@ def main():
     parser.add_argument('--rank', type=int)
     parser.add_argument('--port', type=int, default=29881)
     parser.add_argument('--timeout', type=int, default=600)
+    parser.add_argument('--nccl-library', type=Path)
     args = parser.parse_args()
     if not 120 <= args.timeout <= 900:
         raise ValueError('Probe timeout must be between 120 and 900 seconds')
     if args.rank is None:
+        library = None
+        if args.nccl_library:
+            resolved = args.nccl_library.resolve(strict=True)
+            with resolved.open('rb') as stream:
+                digest = hashlib.sha256()
+                for block in iter(lambda: stream.read(8 << 20), b''):
+                    digest.update(block)
+            library = dict(path=str(resolved), sha256=digest.hexdigest())
         if args.out.exists():
             raise ValueError('Fresh probe directory required')
         args.out.mkdir(parents=True)
@@ -42,7 +52,8 @@ def main():
                         env=os.environ | dict(CUDA_VISIBLE_DEVICES=str(rank), OMP_NUM_THREADS='1',
                                               NCCL_DEBUG=os.environ.get('NCCL_DEBUG', 'WARN'),
                                               NCCL_DEBUG_FILE=str(args.out/f'nccl{rank}.log'),
-                                              TORCH_NCCL_ASYNC_ERROR_HANDLING='1'),
+                                              TORCH_NCCL_ASYNC_ERROR_HANDLING='1') |
+                            ({'LD_PRELOAD': library['path']} if library else {}),
                         stdout=log, stderr=subprocess.STDOUT))
             deadline = time.time() + args.timeout
             for process in processes:
@@ -50,6 +61,7 @@ def main():
                     raise RuntimeError('NCCL rank failed; inspect per-rank log')
             rows = [json.loads((args.out/f'rank{rank}.json').read_text()) for rank in range(8)]
             result = dict(passed=True, ranks=rows,
+                          communication_library=library,
                           communication_env={key: os.environ[key] for key in
                               ('NCCL_CUMEM_HOST_ENABLE', 'NCCL_P2P_DISABLE', 'NCCL_IB_DISABLE',
                                'NCCL_SHM_DISABLE', 'NCCL_SOCKET_IFNAME') if key in os.environ},
@@ -83,6 +95,8 @@ def main():
     if warmup != 1024:
         raise RuntimeError('CUDA arithmetic failed before communication')
     print('PHASE collective_initialize', time.time(), flush=True)
+    print('LOADED_NCCL', sorted({line.split()[-1] for line in Path('/proc/self/maps').read_text().splitlines()
+                               if '/libnccl.so' in line}), flush=True)
     Collective.initialize(args.rank, 8, f'tcp://127.0.0.1:{args.port}', timeout=args.timeout-30)
     print('PHASE collective_ready', time.time(), flush=True)
     result = {}
