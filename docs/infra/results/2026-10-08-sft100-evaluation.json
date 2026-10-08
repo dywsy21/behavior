@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-08T12:41:00+08:00",
+  "updated_at": "2026-10-08T12:46:00+08:00",
   "owner": "Codex/EVAL-SFT100-10383",
   "status": "full_evaluation_running_no_final_score",
   "server": {
@@ -14,6 +14,15 @@
   },
   "job": "/run/ti/rl_memlite_stage1_20261006/runs/sft100_full_20261008_v3",
   "supervisor_pid": 1337461,
+  "last_verified_progress": {
+    "supervisor_status": "running",
+    "first_public_task": "clean_a_keyboard",
+    "first_public_instance_ids": [301, 302],
+    "first_public_inference_requests": 19,
+    "completed_episodes": 0,
+    "eight_worker_processes_started": true,
+    "all_eight_policies_already_inferencing": false
+  },
   "source": {
     "source_commit": "adcb90366af440d79253129cbc40eb4608928b31",
     "official_tag": "v3.9.3-post2",

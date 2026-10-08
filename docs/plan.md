@@ -14,6 +14,8 @@
 
 ### 2026-10-08 12:40 CST：验收通过，原始SFT全量1000例评测已提交（Codex / EVAL-SFT100-10383，运行中）
 
+- **12:46 CST实际闭环覆盖提交状态：** supervisor状态running，8worker已创建；GPU0在`clean_a_keyboard`的public301/302真实连续完成19个双env16步推理请求，GPU2场景加载、GPU4模型加载、其余按2路加载阀等待。正式完成episode仍0，不能报总Q/SR；无error/无RL更新。轻量验收/提交清单已commit/push `f71d12a`，详见[运行与材料记录](infra/results/2026-10-08-sft100-evaluation.json)。
+- **12:53 CST提交材料整理/进度：** 4路已实际推理、另2路加载、余2路等待，尚0完整episode且无worker错误。新增独立`package_submission.py`后处理：仅在1000例全部结束且原始JSON/MP4 SHA与Q/SR重核一致后，构造ZIP根目录1000原始rollout JSON+wrapper+robot YAML+README；内部版本/视频索引JSON留ZIP外，避免未核实的portal扫描格式风险，不改正在运行的adcb903或其原results.zip。支持只等待当前supervisor完成一次，失败则退出、不重评/不提交；12项本地CPU测试（含1000例合成打包/逐字节原输出一致/改动拒绝/失败拒绝）通过。正式Docker/IP与视频托管仍待，不称可直接提交。
 - 冻结`adcb90366af440d79253129cbc40eb4608928b31`，v3工程门通过：9项双端CPU测试、两条TRAIN实例各129实际控制步/原始JSON+MP4、9次native FM请求；最终高/低模型指纹与初始完全相同、0优化器、最大allocated22.335/reserved22.668GiB。v1/v2失败及v2亲审6张拼图保留；这些短验不进入正式1000分母。通过后确认GPU无进程，12:40:15提交supervisor1337461。
 - 唯一正式job=`/run/ti/rl_memlite_stage1_20261006/runs/sft100_full_20261008_v3`；8卡任务分摊、每卡2env，100task×public301–310×rollout0，每个task5个双实例batch；官方默认1.5×人类均长超时，名义最多15,819,280控制步。假设/目的为测量同一SFT终态真实参考Q/SR，不是新训练或挑选任务；不自动重跑、不自动追加轮数、低于150GiB空盘或异常则停并保留证据。当前只确认提交，实际8路推理与正式结果待核，不把partial/零完成汇总称模型成绩。
 - 两层原始SFT为高48045（SHA3683f719…c3d1）/低98414（SHAd4d76099…b470），无RL增量、无探索转移噪声；高层greedy每128控制步，低层native FM10/预测32执行前16，真实23维。模型/官方post2/G0.5/1000实例/config/stats版本均锁在manifest；公开301曾被诊断，明确不是独立盲测。
