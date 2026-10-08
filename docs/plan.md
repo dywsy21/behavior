@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-09：两任务 observation／高低层文本逐 chunk 对齐验证（Codex / EVAL-TRACE-OVERLAY-10383，实施中）
+
+- **用户授权范围：** 使用 `turning_on_radio` 与 `picking_up_trash`，各运行 public_test 前3个 instance（索引0/1/2，对应301/302/303），验证 observation、high-level 原始文本、规划前后 memory 与实际 low-level prompt 的逐 chunk 对齐，并生成带文本的诊断视频；不扩大到更多任务或训练。
+- **代码与协议：** 从已同步的 `feat/eval-batch-speed-20261008`（`b1519c3`）新建 `feat/eval-chunk-text-overlay-20261009`。保持原SFT权重、官方 horizon、每任务3env batch、16-action chunk、high-level每8 chunk规划和官方指标/原始视频不变；在线阶段仅追加隔离 trace/keyframe，文字视频离线生成。
+- **当前状态：** 已确认现有 `planner_events.jsonl` 不含原始high-level生成文本、memory before/after、完整low-level条件及精确observation keyframe，不能可靠事后重建；正在实现按 task/instance/env/chunk 隔离的只读sidecar与离线overlay。输出run、日志、视频路径将在真实完成和一致性核验后补充。
+- **停止条件：** 任一batch身份串扰、chunk/frame映射不连续、trace改变动作/权重、GPU OOM或仿真基础设施异常即停止对应验证并保留证据，不将不完整产物称为通过。
+
 ### 2026-10-08 15:06 CST：取消续评，先讨论100任务共享RL；工程测速收尾（Codex / RL-SHARED100-DESIGN-10383）
 
 - **用户最新范围覆盖：** 不恢复剩余936条公共评测；旧64条及全部中断attempt/录像继续保留，不生成完整Q/SR或提交包。完成本轮设施检查后转RL，但须先讨论训练细节；此刻未启动RL、未自动续旧73h或延长预算。旧DART blocked目标不受影响，不用robo/LC、不派subagent。

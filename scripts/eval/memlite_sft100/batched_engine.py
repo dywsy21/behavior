@@ -15,6 +15,7 @@ from g05.models.g05.inferencer import PolicyInferencer
 from batch_core import validate_indices, needs_plan, stage_plans, commit_plans
 from sparse_cache import indexed_cache_freeze
 from g05.models.kv_cache import SparseKVCache
+from chunk_trace import AlignmentTrace, scalar_prompt_fields
 
 
 @contextmanager
@@ -56,7 +57,7 @@ def row_noise(helper, fixed=None, capture=None):
 
 
 class BatchedSFT(NativeSFT):
-    def __init__(self, output, *, mode='batch', capture=False):
+    def __init__(self, output, *, mode='batch', capture=False, trace_dir=None):
         if mode not in ('batch', 'serial'):
             raise ValueError('Unknown inference mode')
         super().__init__(output)
@@ -66,6 +67,8 @@ class BatchedSFT(NativeSFT):
         self.audit_inputs = []
         self.session_generation = 0
         self.captured_tasks = set()
+        self.alignment_trace = AlignmentTrace(trace_dir) if trace_dir is not None else None
+        self.last_low_samples = []
 
     def begin(self, task, num_envs, seed, episode_metadata=None):
         if episode_metadata is None or len(episode_metadata) != num_envs:
@@ -89,6 +92,9 @@ class BatchedSFT(NativeSFT):
             stream.write(json.dumps(dict(generation=self.session_generation, task=task,
                 identities=identities, all_memories_empty=True, independent_ledgers=True,
                 contexts_cleared=True, requests_before=self.requests))+'\n')
+        if getattr(self, 'alignment_trace', None) is not None:
+            self.alignment_trace.begin(task=task, episode_metadata=episode_metadata,
+                                       session_generation=self.session_generation)
 
     def prepare(self, side, observations, projections):
         if side not in ('high','low') or len(observations) != len(projections):
@@ -117,11 +123,24 @@ class BatchedSFT(NativeSFT):
                     control_step=observation.get('control_step'), policy_update=0,
                     inference_mode=self.mode, high_batch_size=len(indices)))+'\n')
         commit_plans(self.slots, staged)
+        if getattr(self, 'alignment_trace', None) is not None:
+            texts = result.get('high_level_text', [])
+            if len(texts) != len(indices):
+                raise RuntimeError('Alignment trace requires one raw planner text per row')
+            for row, observation, projection, sample, raw_text in zip(
+                    staged, observations, projections, batch['samples'], texts, strict=True):
+                self.alignment_trace.register_high(env=row['index'],
+                    chunk_id=self.slots[row['index']]['chunks'], observation=observation,
+                    projection=projection, sample=sample, raw_text=raw_text,
+                    event=row['event'], memory_after=row['ledger'].memory,
+                    context_id=row['context_id'])
         return result
 
     @torch.no_grad()
     def low_batch(self, observations, projections, *, fixed_noise=None, capture_noise=None):
         batch = self.prepare('low', observations, projections)
+        self.last_low_samples = ([scalar_prompt_fields(sample) for sample in batch['samples']]
+                                 if getattr(self, 'alignment_trace', None) is not None else [])
         policy = self.models['low']
         if not policy.continuous_action or policy.discrete_action or policy.predict_cot:
             raise ValueError('Not the original SkillFM inference route')
@@ -179,6 +198,18 @@ class BatchedSFT(NativeSFT):
             low_started = time.monotonic()
             actions, _ = self.low_batch(observations, projections)
             low_seconds = time.monotonic()-low_started
+            if getattr(self, 'alignment_trace', None) is not None:
+                if len(self.last_low_samples) != len(indices):
+                    raise RuntimeError('Low prompt trace cardinality mismatch')
+                timing = dict(mode='batch', high_seconds=high_seconds, low_seconds=low_seconds,
+                    total_seconds=time.monotonic()-started, high_batch_size=len(due),
+                    batch_size=len(indices))
+                for row, index in enumerate(indices):
+                    self.alignment_trace.record_chunk(env=index,
+                        chunk_id=self.slots[index]['chunks'], observation=observations[row],
+                        low_projection=projections[row], low_sample=self.last_low_samples[row],
+                        action_chunk=actions[row], inference_request=self.requests,
+                        timing=timing, context_id=self.slots[index]['context_id'])
             for index in indices:
                 self.slots[index]['chunks'] += 1
             contexts = [dict(context_id=self.slots[i]['context_id'], parent_goal=p['parent_goal'],
