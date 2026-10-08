@@ -2,6 +2,8 @@
 
 ## 2026-10-08（CST）当前请求：SFT低Q与RL停滞诊断
 
+- **17:54 CST / RL-SHARED100-10383运行交接：** 8卡已完成第3次共享更新并用版本3继续，unchanged KL0/post KL0.00116741，无ABORT；17:53:40累计28430控制步、覆盖8task、0完整episode，未证明效果提升。19候选仅首16完成根96图QA，后续仍待审。GPU UUID/PID确认各sim主context和policy同rank，无绑错卡；同步拖尾仍存在，低层PPO维持已验B1，不称全部性能优化已完成。服务器supervisor每分钟健康/每2h效果记录继续，截止10/09 16:43:31 CST；原8专家/公共结果保留，独立团队review待，不合main。下一步看完成episode、覆盖及可信Q/SR变化。
+
 - **17:43 CST / RL-SHARED100-10383两轮通过已继续采样：** 8卡真实同步更新2次、每次512chunk，采样/recompute KL=0、actor/critic/Adam各8份精确一致；共享7.62GB checkpoint独立CPU重载通过，根亲审8task×2实例×6图=96面板，候选仍非BC正例。审核/放行源01402b4与活跃训练5e4e62c分离，8卡已在版本2继续真实采样；新run继续至原10/09 16:43:31 CST预算。尚0完整episode/无效果提升结论，监控下一轮/每2h效果；独立团队代码审查依旧待，不合main、不派subagent。
 - **16:45 CST / RL-SHARED100-10383已提交：** Codex唯一操作者，冻结`5e4e62c`，新`runs/shared_rl100_20261008_v2`/1377209加载中，截止10/09 16:43:31 CST；W&B现有实体yifan_wu/run dp2qxmxc。33RL＋29评测CPU、5wire互通及8GPU归约通过，正式采样/两次更新/媒体验收仍待。NCCL冷内核286.67s导致旧180s门超时，未更换env/驱动。其他成员勿改该冻结源或占8卡；独立团队review仍待，不合main。
 - **15:43 CST / RL-SHARED100-10383新授权：** Codex独占共享PPO/采样调度/服务/监控及对应测试文档，完整实现后验收并在10383启动8卡；高48045/低98414共同SFT起点，不平均旧专家，不恢复公共评测。新run24h上限、先CPU/NCCL/实际更新小验；同一权重版本、全局KL/Adam、任务权重、每env记忆与GAE、恢复保存为必验。独立团队review仍待，不合main，不用subagent/LC/robo。

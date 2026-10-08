@@ -1,22 +1,24 @@
 # 通用RL后训练：候选与验证计划
 
-## 2026-10-08：100任务、8份采样、一个共享模型（已授权并实现，GPU验收中）
+## 2026-10-08：100任务、8份采样、一个共享模型（已通过真实更新验收，持续训练中）
 
 15:43 CST用户已明确授权完整实现、启动共享RL并持续监控，本节覆盖此前“仅讨论”及下方历史50任务口径。负责人Codex，任务`RL-SHARED100-10383`；现有8份RL checkpoint和64条已完公共评测全部保留，不恢复公共评测，不延长旧73h作业。新run最多24h/3000次共享更新，首2次真实更新暂停验收后再继续；具体真实状态以`plan.md`顶部为准。
 
-已实现`scripts/rl/memlite_online/{code,tools}`中的shared/synchronous链：统一初始化/全局加权梯度/全局裁剪/同步Adam/共同KL回退/唯一共享checkpoint，严格环境身份和独立ledger，高层合批、低层概率路径仍B1；W&B和每分钟TRAIN宏平均/覆盖/健康监控、2h效果检查、恢复候选保存。33项RL与29项相邻评测CPU远端通过，含真实双进程梯度/Adam一致性和A→B→A记忆复位；实际8卡通信与模型更新仍待验收，不能把实现完或CPU通过称RL有效。
+已实现`scripts/rl/memlite_online/{code,tools}`中的shared/synchronous链：统一初始化/全局加权梯度/全局裁剪/同步Adam/共同KL回退/唯一共享checkpoint，严格环境身份和独立ledger，高层合批、低层概率路径仍B1；W&B和每分钟TRAIN宏平均/覆盖/健康监控、2h效果检查、恢复候选保存。36项RL（含3项wire互通）与29项相邻评测CPU远端通过，含真实双进程梯度/Adam一致性和A→B→A记忆复位；8卡NCCL及首2次真实PPO、8份actor/critic/Adam完整指纹、独立checkpoint重载、16候选96原图面板根人工审核均通过。17:52:33 CST已提交第3全局更新并继续；这证明工程链可用，不证明RL效果提升。
+
+活跃源`5e4e62c`，job=`/run/ti/rl_memlite_stage1_20261006/runs/shared_rl100_20261008_v2`，W&B [dp2qxmxc](https://wandb.ai/yifan_wu/behavior-memlite-rl/runs/dp2qxmxc)，deadline为2026-10-09 16:43:31 CST。17:53:40仅覆盖8task/16实际episode、累计28430控制步、0完整episode，暂无SR；后续看`training_summary.json/monitor_history.jsonl/effect_events.jsonl`，不自动恢复公共评测。首2轮验收保留在`docs/infra/results/2026-10-08-shared-rl100-acceptance.json`；新增候选仍须独立人审，不沿用前16份的通过结论。
 
 固定起点高48045/低98414，两层VLM/高层冻结，只训低层634.6M action expert＋critic；64chunk/rank/round、2env/rank、microbatch1、PPO1epoch、actor1e-7/critic1e-4、探索std0.02、FM10、预测32执行16、CONTROL_GAMMA0.99999和原`shared_terminal_q_v1`奖励。任务队列固定shuffle轮转，按名义horizon和12/13组大小做权重；早成功会改变占比，所以另报实际覆盖，不能称严格每task等频。恢复候选未经人审不得自动BC；采样Q/SR不是独立评测效果。
 
-### 当前事实
+### 改造前的事实（旧独立expert路径，非当前shared服务）
 
 - `scripts/rl/memlite_online/code/direct_a4_flow.py`的actor只开放`model.action_expert.*`，低层VLM和高层规划器冻结；critic是单独的ValueHead。每个`serve_stage1_rl.py`服务独立update/Adam/存checkpoint，没有跨卡梯度同步；原100任务8份现在确实会训成8个专家。
 - 共用初始权重不等于后续共用策略。已有8专家的采样版本、更新次数、Adam状态不同，不能在末尾平均checkpoint后声称等价于共享PPO；如果研究权重融合或蒸馏，须另外作为有验证的算法，而不是恢复训练捷径。
 - 10383实际低层SFT action expert为322个tensor、634,609,691参数；FP32梯度约2.36GiB。卡间拓扑无NVLink，卡0–3与4–7之间跨NUMA/SYS。只读拓扑不是NCCL速度实测；通信需按每轮成本预算，不承诺8倍提速。
 
-### 推荐第一版：同步rollout轮次＋梯度累积/归约
+### 本轮采用：同步rollout轮次＋梯度累积/归约
 
-1. 8卡actor与共享critic从同一状态初始化；高层冻结为同一版本。每轮固定策略版本`k`采样，示例每卡64个**实际执行action chunk**、全局约512个；这是讨论用起点，不是已选定预算。各rank每轮可只覆盖其队列中的一部分任务，按滚动窗口确保100任务覆盖，不要求每次更新把100任务全塞进来。长episode允许跨轮继续，不等完整episode结束才同步。
+1. 8卡actor与共享critic从同一状态初始化；高层冻结为同一版本。每轮固定策略版本`k`采样，本轮已选每卡64个**实际执行action chunk**、全局512个。各rank每轮可只覆盖其队列中的一部分任务，固定shuffle后轮转100任务，不要求每次更新把100任务全塞进来；完整覆盖取决于实际采样预算，不把配置了100task称全部已训练。长episode允许跨轮继续，不等完整episode结束才同步。
 2. 各环境独立计算reward/GAE/returns及截断bootstrap，记录原始old-logp、真实已用动作长度、task/intent/episode/policy版本；不能跨env或reset串接。bootstrap与下一步实际高层context一致。边界为采样截断时可bootstrap；真实终止与time-limit依既定协议分别处理。
 3. 全局归约有效样本数/权重/advantage二阶矩，保留现有不减均值的RMS缩放约定。任务以宏平均目标设计采样权重，不能把12-task组和13-task组简单等权后当成100task均衡，也不能让快/长任务无限主导。具体quota/权重须预先固定并记录；不是事后按回报挑样本。
 4. 本地逐条计算PPO loss并累积梯度；**原生RL microbatch=1先保留**，因为现代码明确用相同B1形状保持sample与recompute概率一致。评测batch4的1.78×不自动成立于RL。动作专家/critic梯度在整轮累积后按全局有效权重归约，再统一梯度裁剪及Adam.step；不在每条样本或每个FM去噪步同步。高层和低层VLM无梯度。
@@ -32,11 +34,13 @@
 - 先核old-logp重算在**任何更新前**与采样一致，再做多卡更新；B1与batch4的固定噪声误差并非RL似然等价证据。当前评测候选完整32步最大误差门仍失败（最大落在不执行的后16步真实维度），不能拿未执行动作差异小/成功起进程来替代PPO正确性检验。
 - 不允许每卡独立推进多次optimizer.step再偶尔平均模型，那会使收集策略和更新策略发生分叉。第一版不引入异步陈旧策略；若慢rank等待/重置成本明显，再单独衡量固定版本集中learner/collector调度，不先叠加多个算法改变。
 - 初始建议共享SFT低98414＋冻结高48045，重新建立一套RL optimizer/critic；旧8专家保存，不直接平均。也可在有证据的前提下选择某**一份**既有RL checkpoint作为全rank公共起点，但目前没有8专家中的最优可比结果。不用再跑一套公共baseline。
-- Actor LR先以修复canary已接受的`1e-7`、critic`1e-4`为讨论基准，不能因卡数8就乘8；轮大小、PPO epochs、探索噪声与奖励/课程另行决定。同步8卡不是稀疏成功信号的解法：没出现或未被可靠奖励的“没抓住→松开→重抓”，不能期待只靠合并梯度学会。
+- 本轮Actor LR已选修复canary可接受的`1e-7`、critic`1e-4`，不因卡数8就乘8；全局/逐组KL门控制接受或共同回退，具体其余参数见本节顶部。同步8卡不是稀疏成功信号的解法：没出现或未被可靠奖励的“没抓住→松开→重抓”，不能期待只靠合并梯度学会。
 
-### 本轮设施收尾（不是RL效果结论）
+当前性能限制：真实第3轮不同rank进入更新后约64–576秒，大部分差异为等待慢采样组，不是快卡反传更慢；`compute_seconds`包含等待、`communication_seconds`未显式CUDA同步，均不可直接当纯计算/实际通信耗时。GPU UUID与PID绑定核验正确。低层保持B1可复算概率，高层合批；异步采样/变长quota/低层合批仍需另行数值与on-policy验收，不能把此前评测batch4的1.78×写作当前RL提速。
 
-同4条TRAIN/2052步：serial2=8.756、batch2=11.374、batch4=15.594控制步/s（含run内重置/仿真/推理/录像，不含冷加载）；所有权重未变。CPU29项、同服务radio→keyboard空记忆复位、混合0/8规划历史/行倒序隔离通过；但原全32步数值门未全过，完整回执在`/run/ti/rl_memlite_stage1_20261006/runs/eval_speedbench_20261008_v1`。14:55:45 CST全部诊断GPU进程已退出。用户取消剩余936公共评测，当前不新增评测或RL。
+### 前置设施测速（14:55 CST历史状态，不是RL效果结论）
+
+同4条TRAIN/2052步：serial2=8.756、batch2=11.374、batch4=15.594控制步/s（含run内重置/仿真/推理/录像，不含冷加载）；所有权重未变。CPU29项、同服务radio→keyboard空记忆复位、混合0/8规划历史/行倒序隔离通过；但原全32步数值门未全过，完整回执在`/run/ti/rl_memlite_stage1_20261006/runs/eval_speedbench_20261008_v1`。14:55:45 CST全部诊断GPU进程已退出。用户取消剩余936公共评测；当时未新增RL，随后15:43获得新授权并启动本节顶部的共享训练。
 
 ## 历史方案（2026-09-12，50任务验证口径）
 
