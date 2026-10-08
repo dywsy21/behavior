@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-08 19:16 CST：用户要求Codex持续亲自监控，并改用本人W&B账号（Codex / RL-SHARED100-MONITOR）
+
+- **19:28 CST凭据/镜像工具CPU验收：** 密钥仅通过无回显stdin验证，W&B官方API确认用户dywsy21/实体dywsy21-fudan；未保存凭据或改共享.netrc。服务器曾出现API断连、既有W&B debug仍有重试，而本地验证成功；选择本地独立0GPU observer通过只读SSH回填监控历史/真实PPO指标，不重启训练。新增`tools/watch_shared_rl.py`与5项测试全部通过、Ruff/compile/diff通过，账号项目尚不存在，已只读核实GraphQL支持PRIVATE创建；尚未建run/未声称切换成功。下一步Git冻结并启动、确认在线落盘/不泄密与持续刷新。
+- 已fetch/ff-pull本分支并核origin/main；既有job不重启、不改活跃5e4e62c源码/环境/预算、不恢复公共评测。19:15只读状态为10次全局更新/8卡同版本、89736控制步/8task/16实际episode、0完整episode/0已观测官方Q增长，27候选仅首16已人工验收；第10更新unchanged KL0/post KL0.00052453、LR1e-7接受、无ABORT。每分钟记录及首2h effect event确实已产出，尚无方法有效结论。
+- W&B已有run仍属服务器既有账号；正在验证用户本轮提供凭据的归属，采用独立CPU日志镜像进程实现不中断采样的账号切换，密钥不得入Git/命令行/日志，不覆盖共享认证。原run/本地证据保留，镜像成功与否待验证。
+- 已穷尽本会话工具搜索，无可调用的通用automation_update/heartbeat创建入口，只有无关Pages/Sites专属调度；不挪用其他产品或伪称已设自动唤醒。按OpenAI Docs核验产品能力后，当前先保持本轮主动检查、服务器持续记录与告警接线；聊天外自动唤醒尚未建立。下一步凭据验证、镜像指标验收和继续看真实完成episode/失败类型。
+
 ### 2026-10-08 15:43 CST：获批完整实现共享RL并启动/持续监控（Codex / RL-SHARED100-10383，两轮验收通过并继续训练）
 
 - **17:54 CST放行后第3更新/绑卡核验：** 17:52:33 CST八rank共同提交update3，每轮512chunk；unchanged KL=0/ratio=1，post KL=0.00116741/clip=0.00407798，actor LR1e-7直接接受，已用版本3继续第4轮，0 ABORT/STOP。17:53:40监控累计28430控制步、16实际episode/8task、0完整episode/0已观测官方Q增长，SR仍不可算；19恢复候选中只有首16已亲审，新增不能自动算已验收。只读NVML UUID/PID核实policy与各sim的主显存均对应本rank，其他卡约174MiB是辅助context，不是模型绑错卡；当前约50–61GiB/卡未OOM。第3轮最慢组cook_brussels_sprouts，快rank在collective等待约数分钟；不能把等待时100%利用率或`compute_seconds`当有效反传吞吐，也不宣称评测batch4加速已移入PPO。8卡共享更新正确，异质场景的同步拖尾仍是性能限制；当前不热改run，继续每分钟健康/2h TRAIN效果记录，截止不延长。证据job内`latest_update.json/policy_status.json/training_summary.json/monitor_history.jsonl`，轻量验收见`docs/infra/results/2026-10-08-shared-rl100-acceptance.json`；下一步观察真实完成episode及覆盖扩大，勿拿早期KL下降当SR改善。
