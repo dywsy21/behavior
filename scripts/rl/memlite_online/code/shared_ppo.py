@@ -2,6 +2,7 @@
 from copy import deepcopy
 import json
 import math
+import os
 import random
 import time
 
@@ -76,6 +77,11 @@ class SharedFlowPPO(A4DirectPPO):
         self.checkpoint_extra = {"distributed_state": self.shared_checkpoint_state}
         result = super()._save_checkpoint(metrics)
         result["shared_writer_rank"] = 0
+        if self.update_count == self.initial_update + 2 or self.update_count % 100 == 0:
+            milestone = self.output_dir / f"shared_update_{self.update_count:06d}.pt"
+            if not milestone.exists():
+                os.link(result['latest'], milestone)
+            result['shared_milestone'] = str(milestone)
         return result
 
     def update(self, inferencer, experience_ids, advantages, returns):

@@ -1,5 +1,6 @@
 """Bounded eight-GPU SUM correctness and bandwidth; no models or simulation."""
 import argparse
+import faulthandler
 import json
 import os
 from pathlib import Path
@@ -15,7 +16,10 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--rank', type=int)
     parser.add_argument('--port', type=int, default=29881)
+    parser.add_argument('--timeout', type=int, default=600)
     args = parser.parse_args()
+    if not 120 <= args.timeout <= 900:
+        raise ValueError('Probe timeout must be between 120 and 900 seconds')
     if args.rank is None:
         if args.out.exists():
             raise ValueError('Fresh probe directory required')
@@ -33,13 +37,14 @@ def main():
                 check_gpu_available(rank)
             for rank in range(8):
                 with (args.out/f'rank{rank}.log').open('w') as log:
-                    processes.append(subprocess.Popen([sys.executable, __file__, '--out', str(args.out),
-                        '--rank', str(rank), '--port', str(args.port)],
+                    processes.append(subprocess.Popen([sys.executable, '-u', __file__, '--out', str(args.out),
+                        '--rank', str(rank), '--port', str(args.port), '--timeout', str(args.timeout)],
                         env=os.environ | dict(CUDA_VISIBLE_DEVICES=str(rank), OMP_NUM_THREADS='1',
                                               NCCL_DEBUG=os.environ.get('NCCL_DEBUG', 'WARN'),
+                                              NCCL_DEBUG_FILE=str(args.out/f'nccl{rank}.log'),
                                               TORCH_NCCL_ASYNC_ERROR_HANDLING='1'),
                         stdout=log, stderr=subprocess.STDOUT))
-            deadline = time.time() + 180
+            deadline = time.time() + args.timeout
             for process in processes:
                 if process.wait(timeout=max(1., deadline-time.time())):
                     raise RuntimeError('NCCL rank failed; inspect per-rank log')
@@ -66,10 +71,20 @@ def main():
             for lock in locks:
                 lock.close()
         return
+    faulthandler.enable()
+    faulthandler.dump_traceback_later(60, repeat=True)
+    print('PHASE import_torch', time.time(), flush=True)
     import torch
     import torch.distributed as dist
     from synchronous import Collective
-    Collective.initialize(args.rank, 8, f'tcp://127.0.0.1:{args.port}', timeout=90)
+    print('PHASE cuda_warmup', time.time(), 'architectures', torch.cuda.get_arch_list(), flush=True)
+    torch.cuda.set_device(0)
+    warmup = torch.ones(1024, device='cuda').sum().item()
+    if warmup != 1024:
+        raise RuntimeError('CUDA arithmetic failed before communication')
+    print('PHASE collective_initialize', time.time(), flush=True)
+    Collective.initialize(args.rank, 8, f'tcp://127.0.0.1:{args.port}', timeout=args.timeout-30)
+    print('PHASE collective_ready', time.time(), flush=True)
     result = {}
     for size in (32, 256):
         samples = []
@@ -87,8 +102,10 @@ def main():
             if step:
                 samples.append(elapsed)
         result[str(size)] = [sum(samples)/len(samples), samples]
+        print('PHASE sum_passed', size, result[str(size)], flush=True)
     (args.out/f'rank{args.rank}.json').write_text(json.dumps(result))
     dist.destroy_process_group()
+    faulthandler.cancel_dump_traceback_later()
 
 
 if __name__ == '__main__':
