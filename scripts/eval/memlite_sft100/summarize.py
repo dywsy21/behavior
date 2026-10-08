@@ -5,6 +5,7 @@ from pathlib import Path
 import time
 import zipfile
 from common import aggregate, atomic_json, sha256
+from publication import evaluation_commands
 
 
 def summarize(job,final=False):
@@ -28,6 +29,25 @@ def summarize(job,final=False):
     report.update(updated=time.time(),source_commit=manifest['source_commit'],
                   checkpoints=manifest['checkpoints'],rollout_files=files,
                   blind_test=False,reason=manifest['development_notice'])
+    if manifest.get('kind')=='native_sft100_admin_resume':
+        inherited=json.loads((job/'inherited_inventory.json').read_text())
+        if sha256(job/'inherited_inventory.json')!=manifest['inherited_inventory_sha256']:
+            raise ValueError('Inherited inventory changed')
+        provenance={Path(row['metrics']).name:row for row in inherited}
+        part_by_case={(part['task'],i+301):part for part in manifest['parts'] for i in part['indices']}
+        for file,record in zip(files,records,strict=True):
+            old=provenance.get(Path(file['metrics']).name)
+            if old:
+                if file['metrics_sha256']!=old['metrics_sha256'] or (
+                    final and file['video_sha256']!=old['video_sha256']):
+                    raise ValueError('Inherited original was changed')
+                file.update(evaluation_source_commit=old['source_commit'],inference_mode='serial',num_envs=2)
+            else:
+                part=part_by_case[(record['task'],record['instance_id'])]
+                file.update(evaluation_source_commit=manifest['source_commit'],inference_mode='batch',
+                            num_envs=part['num_envs'],part_id=part['id'])
+        report.update(evaluation_protocols=manifest['evaluation_protocols'],
+                      numerical_notice=manifest['numerical_notice'],prior_job=manifest['prior_job'])
     atomic_json(job/'summary.json',report)
     checklist=json.loads((job/'submission/submission_checklist.json').read_text())
     checklist['metrics_json']['collected']=len(records);checklist['videos']['collected']=len(files)
@@ -43,15 +63,19 @@ def summarize(job,final=False):
             'RGBOnlyFullResWrapper, unchanged bundled r1pro.yaml; 23D raw commands.',
             'One frame / 3 RGB cameras; high planner greedy every128controls; native FM10 steps;',
             'predict32 / execute16 from index0, policy seed17, simulator seed0; no PPO exploration/update.',
-            'The provided run_task.py wraps stock BatchedEvaluator.run in five two-env batches.',
+            'run_task.py wraps stock BatchedEvaluator.run; exact per-run environment counts are in commands.',
             'Exact per-task shell command and safe environment overrides are in task_commands.json.',
-            'Original rollout JSON and MP4 files have not been edited. Missing outputs are not rerolled.',
+            'Original rollout JSON and MP4 files have not been edited. No completed case is rerolled.',
             'Weights and config/stats SHA values are in model_provenance.json.',
             'Docker image or external IP with >=50 ports: NOT YET PROVIDED.',
             'Single24GB policy serving: pending measured acceptance; video hosting URL: pending.',
             'Public301 has prior diagnostic exposure; do not call this a blind test.',
         ]
-        commands=[json.loads(p.read_text()) for p in sorted((job/'tasks').glob('*/command.json'))]
+        if 'evaluation_protocols' in manifest:
+            lines.extend(['','Administrative stop / optimized resume provenance (not bitwise-equivalent arithmetic):',
+                          json.dumps(manifest['evaluation_protocols']),manifest['numerical_notice'],
+                          'Only administratively interrupted or unstarted cases were run after resume; no best-of-N.'])
+        commands=evaluation_commands(job,manifest)
         package=job/'submission/results.zip'
         if package.exists():raise ValueError('Refusing to overwrite an existing final submission bundle')
         with zipfile.ZipFile(package,'x',compression=zipfile.ZIP_DEFLATED) as z:

@@ -35,10 +35,11 @@ def main():
     lock=open(job/'supervisor.lock','a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     state=dict(status='running',pid=os.getpid(),started=time.time(),source_commit=actual,completed_gpus=[])
     children={}
+    worker_name='resume_worker.py' if manifest.get('kind')=='native_sft100_admin_resume' else 'worker.py'
     try:
         for gpu in range(8):
             with (job/f'gpu_{gpu}.log').open('x') as f:
-                children[gpu]=subprocess.Popen(['python3',str(SOURCE/'worker.py'),'--job',str(job),'--gpu',str(gpu)],
+                children[gpu]=subprocess.Popen(['python3',str(SOURCE/worker_name),'--job',str(job),'--gpu',str(gpu)],
                     stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
         state['worker_pids']={str(k):v.pid for k,v in children.items()}
         atomic_json(job/'status.json',state)

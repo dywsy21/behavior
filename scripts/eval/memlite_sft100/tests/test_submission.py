@@ -72,5 +72,31 @@ class SubmissionTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'metrics changed'):package(root)
             self.assertFalse((root/'submission/challenge_results_draft.zip').exists())
 
+    def test_resumed_submission_exposes_both_engines_without_changing_metrics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);inventory=self.fixture(root)
+            manifest=json.loads((root/'manifest.json').read_text())
+            manifest.update(kind='native_sft100_admin_resume',evaluation_protocols=[
+                dict(source_commit='old-serial',inference_mode='serial',completed_cases=64),
+                dict(source_commit='new-batch',inference_mode='batch',remaining_cases=936)],
+                numerical_notice='No bitwise equivalence claim')
+            (root/'manifest.json').write_text(json.dumps(manifest))
+            old=[]
+            for index,task in enumerate(manifest['tasks']):
+                if index<2:
+                    old.append(dict(path=f'/prior/tasks/{task}/command.json',command=dict(argv=['old',task])))
+                else:
+                    part=root/'parts'/(task+'_n4');part.mkdir(parents=True)
+                    (part/'command.json').write_text(json.dumps(dict(part=dict(task=task),argv=['new',task])))
+            (root/'prior_commands.json').write_text(json.dumps(old))
+            receipt=package(root)
+            with zipfile.ZipFile(receipt['zip']) as archive:
+                readme=archive.read('README.md').decode()
+                for text in ['old-serial','new-batch','No bitwise equivalence claim']:
+                    self.assertIn(text,readme)
+                for row in inventory:
+                    original=Path(row['metrics'])
+                    self.assertEqual(archive.read(original.name),original.read_bytes())
+
 
 if __name__ == '__main__':unittest.main()

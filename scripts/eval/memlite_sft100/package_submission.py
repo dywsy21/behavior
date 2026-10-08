@@ -12,6 +12,7 @@ import time
 import zipfile
 
 from common import aggregate, atomic_json, sha256
+from publication import evaluation_commands, command_task_names
 
 
 def wait_for_completion(job):
@@ -70,8 +71,11 @@ def package(job):
         info = checklist[key]
         if sha256(job / 'submission' / info['path']) != info['sha256']:
             raise ValueError('Submitted configuration changed: ' + key)
-    commands = [json.loads(p.read_text()) for p in sorted((job / 'tasks').glob('*/command.json'))]
-    if len(commands) != 100:
+    commands = evaluation_commands(job,manifest)
+    if manifest.get('kind')=='native_sft100_admin_resume':
+        if command_task_names(commands,manifest)!=set(manifest['tasks']):
+            raise ValueError('Resume command provenance does not cover all tasks')
+    elif len(commands) != 100:
         raise ValueError('Expected one exact evaluator command per task')
     readme = '\n'.join([
         '# MEM-Lite Stage-1 SFT — draft submission materials', '',
@@ -96,6 +100,11 @@ def package(job):
         '```json', json.dumps(commands, indent=2), '```',
         '', '## Model, configuration and normalization provenance', '',
         '```json', json.dumps(manifest['checkpoints'], indent=2), '```', '',
+        '## Evaluation engine / administrative-resume provenance', '',
+        '```json', json.dumps(manifest.get('evaluation_protocols',[
+            dict(source_commit=manifest['source_commit'],inference_mode='serial',num_envs=2)]),indent=2), '```',
+        manifest.get('numerical_notice','Original serial native-FM evaluation.'),
+        'Completed cases are retained, never selected by outcome or rerolled. Administrative interruptions are logged.',
     ])
     partial = target.with_suffix('.zip.partial')
     with zipfile.ZipFile(partial, 'x', compression=zipfile.ZIP_DEFLATED) as archive:
