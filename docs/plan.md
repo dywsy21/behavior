@@ -14,6 +14,7 @@
 
 ### 2026-10-08 15:43 CST：获批完整实现共享RL并启动/持续监控（Codex / RL-SHARED100-10383，实现中）
 
+- **16:41 CST真实入口检查拦住缺依赖：** v1 manifest准备已核两层权重SHA/100task分组，但`serve_shared_rl.py --help`因新入口未继承旧服务的外部`a4_wire`路径退出，尚未创建supervisor或占GPU。补仓内standalone NumPy/msgpack codec，协议保持与G05/旧wire一致，避免依赖活跃tools目录；改用下一冻结源/fresh run，不覆盖已准备manifest。另查明进程环境`CUDA_CACHE_DISABLE=1`，解释冷编译反复出现；本轮保留已通过环境，不改全局设置。
 - **16:38 CST八卡通信首次实际通过，修正超时解释：** v5最终32/256MiB八rank SUM全部精确36，最慢32MiB=2.095ms/256MiB约16.19ms；名义2.36GiB归约估计0.1585s（非训练端到端）。NCCL自身日志明确初始化286.79s，其中kernels286.67s，此前180s门截断的是冷内核初始化，不是已证实P2P/链路故障。通过配置cuMem host=0/P2P disable=1，回执`runs/shared_nccl_20261008_v5/result.json`；不改旧失败回执。新版wheel下载尚未完成，停止自有curl、保留partial不使用，不替换原环境。下一步用已通过原库配置准备/启动，实际PPO两更新验收仍待。
 - **16:35 CST兼容性定位：** v5/3f38fb3的8卡单卡CUDA算术均通过，卡住位置明确为`init_process_group`。实际加载的旧NCCL2.26.2+cuda12.2由`cuobjdump`确认仅含sm50/60/61/70/80/90，无sm120；Python栈停collective初始化、内部线程100%CPU，PTX JIT是待验证假设，不先断言硬件通信坏。保持600s单次守卫，同时仅下载NVIDIA官方PyPI的2.26.2.post1 wheel至`isolated/nccl-2.26.2.post1`，SHA按PyPI核验，解包对照native架构；不pip改共享env/驱动、不动旧库。正式RL仍未启动。
 - **16:31 CST通信仍未验收：** v3（明确device＋cuMem host关闭）、v4（再禁P2P）均在180s守卫超时，子进程清理后八卡空闲；故不能判定为P2P故障或宣称已修好。10383实际设备报告compute capability 12.0、driver580.95.05，不是LC的A800；正增加CUDA单卡算术/collective阶段日志、独立NCCL日志与每60s堆栈，单次诊断有界600s，区分冷初始化和通信阻塞。远端GitHub拉取TLS失败，改用Git-over-SSH推送同一已上GitHub的commit到非活跃relay分支，再建冻结worktree；没有rsync覆盖活跃源码。正式RL仍0更新。另补checkpoint第2次及每100更新硬链接保留，避免只保留滚动latest。
