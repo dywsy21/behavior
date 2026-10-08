@@ -36,14 +36,19 @@ def main():
                     processes.append(subprocess.Popen([sys.executable, __file__, '--out', str(args.out),
                         '--rank', str(rank), '--port', str(args.port)],
                         env=os.environ | dict(CUDA_VISIBLE_DEVICES=str(rank), OMP_NUM_THREADS='1',
-                                              NCCL_DEBUG='WARN', TORCH_NCCL_ASYNC_ERROR_HANDLING='1'),
+                                              NCCL_DEBUG=os.environ.get('NCCL_DEBUG', 'WARN'),
+                                              TORCH_NCCL_ASYNC_ERROR_HANDLING='1'),
                         stdout=log, stderr=subprocess.STDOUT))
             deadline = time.time() + 180
             for process in processes:
                 if process.wait(timeout=max(1., deadline-time.time())):
                     raise RuntimeError('NCCL rank failed; inspect per-rank log')
             rows = [json.loads((args.out/f'rank{rank}.json').read_text()) for rank in range(8)]
-            result = dict(passed=True, ranks=rows, max_32MiB_seconds=max(r['32'][0] for r in rows),
+            result = dict(passed=True, ranks=rows,
+                          communication_env={key: os.environ[key] for key in
+                              ('NCCL_CUMEM_HOST_ENABLE', 'NCCL_P2P_DISABLE', 'NCCL_IB_DISABLE',
+                               'NCCL_SHM_DISABLE', 'NCCL_SOCKET_IFNAME') if key in os.environ},
+                          max_32MiB_seconds=max(r['32'][0] for r in rows),
                           estimated_actor_reduce_seconds=max(r['32'][0] for r in rows) * 2420.843853 / 32,
                           estimate_not_end_to_end=True)
             (args.out/'result.json').write_text(json.dumps(result, indent=2))
