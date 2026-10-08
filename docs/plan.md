@@ -14,6 +14,7 @@
 
 ### 2026-10-08 15:43 CST：获批完整实现共享RL并启动/持续监控（Codex / RL-SHARED100-10383，已提交/加载中）
 
+- **16:56:35 CST八rank ready：** 八份模型/critic完成共享初始化和`verify_replicas(initial)`，8个collector1378674–1378681已提交并开始2槽场景加载；当前0控制步/0PPO，不称真实更新通过。独立审计源`664c546`/`code/behavior_shared_rl_20261008_audit1`的3项wire回归远端全过，至此36RL测试均有远端通过证据（33旧＋3新），活动训练源仍5e4e62c不变。
 - **16:54 CST验收工具准备：** 八张卡高低模型均加载完、各约22GiB，目前共同初始化通信，0真实更新/无异常退出。新增独立只读`audit_shared_run.py`核首2轮8份参数/Adam完整SHA、唯一checkpoint可重载、旧新logp/KL、episode不重复、空记忆登记和每rank首段候选RGB/动作时钟；不会自动创建ACCEPTED。另将wire互通写为3项回归：本地33通过、3因本地msgpack缺失跳过，远端既有环境待跑。审计工具在新冻结worktree运行，不热改活跃5e4e62c。
 - **16:43:31 CST实际启动：** 新冻结`5e4e62c`/`code/behavior_shared_rl_20261008_v6`，通信协议5项旧新互通/字节一致性、真实服务CLI import通过；本地33RL再次通过。新job=`runs/shared_rl100_20261008_v2`，supervisor1377209，预算截止10/09 16:43:31 CST；16:45状态loading，GPU0/1两模型加载，尚0采样/0更新。两层SFT完整SHA已重新核验；W&B使用服务器现有认证实体yifan_wu/run=`dp2qxmxc`，URL见job/status.json，不替换用户/队友凭据。首2更新暂停验收、每分钟监控/2h效果记录均已接线。v1仅prepared且CLI失败，未训练，保留原manifest。下一步核8服务初始化/真实采样、旧新概率、梯度及同权重/Adam/候选媒体后放行，不恢复公共评测。
 - **16:41 CST真实入口检查拦住缺依赖：** v1 manifest准备已核两层权重SHA/100task分组，但`serve_shared_rl.py --help`因新入口未继承旧服务的外部`a4_wire`路径退出，尚未创建supervisor或占GPU。补仓内standalone NumPy/msgpack codec，协议保持与G05/旧wire一致，避免依赖活跃tools目录；改用下一冻结源/fresh run，不覆盖已准备manifest。另查明进程环境`CUDA_CACHE_DISABLE=1`，解释冷编译反复出现；本轮保留已通过环境，不改全局设置。
