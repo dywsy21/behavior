@@ -6,6 +6,7 @@ supported. Unknown task/metric layouts fail closed instead of losing state.
 World, RNG, sensors and any model/session memory remain caller responsibilities.
 """
 from copy import deepcopy
+from behavior_light_state import capture_lights,validate_light_restore,restore_lights
 
 ENV_FIELDS = ('_current_steps', '_current_episodes')
 TASK_FIELDS = ('_reward', '_done', '_success', '_info')
@@ -30,8 +31,8 @@ def _environment(evaluator):
             or set(task._reward_functions) != set(REWARDS)):
         raise ValueError('Unregistered task state topology')
     inst = evaluator.instance_eval_states[0]
-    if inst.light_synchronizer is not None or inst.env_idx != 0:
-        raise ValueError('Light synchronizer/additional environment state needs its own adapter')
+    if inst.env_idx != 0:
+        raise ValueError('Additional environment state needs its own adapter')
     return env, task, inst
 
 
@@ -41,6 +42,7 @@ def _fields(obj, names):
 
 def capture_branch_metadata(evaluator):
     env, task, inst = _environment(evaluator)
+    lighting = capture_lights(inst)
     components = {}
     for name, group, spec in (('termination', task._termination_conditions, TERMINATIONS),
                               ('reward', task._reward_functions, REWARDS)):
@@ -60,10 +62,12 @@ def capture_branch_metadata(evaluator):
                             state=deepcopy(metric.state[inst.env_accessor.scene])))
     if sorted(m['kind'] for m in metrics) != ['AgentMetric', 'TaskMetric']:
         raise ValueError('Both official metric adapters required')
-    return dict(schema='behavior_prefix_branch_metadata_v1', task=task.activity_name, instance=inst.instance_id,
+    result=dict(schema='behavior_prefix_branch_metadata_v1', task=task.activity_name, instance=inst.instance_id,
         env=_fields(env, ENV_FIELDS), task_state=_fields(task, TASK_FIELDS), **components, metrics=metrics,
         active=inst.active, evaluator=_fields(evaluator, ('n_trials', 'n_success_trials', 'total_time')),
         policy_state_included=False, scope='single-env engineering; no automatic legal-start approval')
+    if lighting is not None: result.update(schema='behavior_prefix_branch_metadata_v2', light_synchronizer=lighting)
+    return result
 
 
 def restore_branch_metadata(evaluator, saved):
@@ -72,12 +76,15 @@ def restore_branch_metadata(evaluator, saved):
     # no lazy step caches yet. Validate topology without trying to capture
     # those absent current values; the complete saved snapshot supplies them.
     kinds=[type(metric).__name__ for metric in inst.metrics]
-    if (saved['schema'] != 'behavior_prefix_branch_metadata_v1' or saved['task'] != task.activity_name
+    if (saved['schema'] not in ('behavior_prefix_branch_metadata_v1','behavior_prefix_branch_metadata_v2') or saved['task'] != task.activity_name
             or saved['instance'] != inst.instance_id or saved['policy_state_included'] is not False
             or [m['kind'] for m in saved['metrics']] != kinds
             or sorted(kinds)!=['AgentMetric','TaskMetric']
             or any(set(metric.state)!={inst.env_accessor.scene} for metric in inst.metrics)):
         raise ValueError('Cross-task/instance or unregistered branch restore')
+    if (saved['schema']=='behavior_prefix_branch_metadata_v2') != (saved.get('light_synchronizer') is not None):
+        raise ValueError('Versioned light metadata is missing or disguised as legacy state')
+    validate_light_restore(inst,saved.get('light_synchronizer'))
     updates = [(env, saved['env'], ENV_FIELDS), (task, saved['task_state'], TASK_FIELDS),
                (evaluator, saved['evaluator'], ('n_trials', 'n_success_trials', 'total_time'))]
     for group, name, spec in ((task._termination_conditions, 'termination', TERMINATIONS),
@@ -108,3 +115,4 @@ def restore_branch_metadata(evaluator, saved):
     for metric, state in zip(inst.metrics, saved['metrics']):
         metric.state[inst.env_accessor.scene] = deepcopy(state['state'])
     inst.active = saved['active']
+    restore_lights(inst,saved.get('light_synchronizer'))

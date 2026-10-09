@@ -24,7 +24,8 @@ from recovery_corpus import canonical,digest,group_key,split_group
 from recovery_recorder import proprio61
 from recovery_articulation_teacher import CausalArticulation,StationaryServo,servo,yaw_of,functional_goal,validate_corridor,progressing
 from recovery_reference_binding import ReferenceArticulationBinding
-from behavior_branch_state import capture_branch_metadata
+from behavior_branch_state import capture_branch_metadata,restore_branch_metadata
+from behavior_light_state import capture_lights
 
 
 def main():
@@ -228,6 +229,38 @@ def main():
             rng=dict(python=random.getstate(),numpy=np.random.get_state(),torch=torch.get_rng_state(),cuda=torch.cuda.get_rng_state_all()),
             seed=seed,waypoints=knots,source_manifest_sha256=status['proposal_sha256'],source_commit=commit,official_commit=OFFICIAL_COMMIT)
         torch.save(snapshot,a.output/'full_snapshot.pt');atomic_json(a.output/'seed.json',seed)
+        if snapshot['metadata'].get('light_synchronizer') is not None:
+            # An explicit render-only engineering probe, outside all training
+            # branches. Verify both cached edge history and actual USD lights;
+            # no physics control, policy observation or outcome label is made.
+            folder=a.output/'light-restore-probe';folder.mkdir()
+            def lighting_frame(label):
+                for _ in range(3):og.sim.render()
+                observed,_=evaluator.env.get_obs();inst.obs=evaluator._preprocess_obs(observed[0],inst)
+                files={}
+                for camera,key in evaluator.robot_camera_names.items():
+                    image=Image.fromarray(inst.obs[key+'::rgb'].detach().cpu().numpy()[...,:3]).resize((224,224),Image.Resampling.BILINEAR)
+                    path=folder/(label+'-'+camera+'.png');image.save(path);files[path.name]=sha256(path)
+                return files
+            original_light=capture_lights(inst);original_state=proprio61(inst.obs)
+            media=dict(before=lighting_frame('before'))
+            synchronizer=inst.light_synchronizer
+            for name in original_light['target_visibility']:
+                obj=robot.scene.object_registry('name',name,None)
+                if obj is None:raise ValueError('Lost exact light target during round-trip probe')
+                synchronizer._toggle_light(obj)
+            changed_light=capture_lights(inst);media['perturbed']=lighting_frame('perturbed')
+            if changed_light['target_visibility']==original_light['target_visibility']:
+                raise ValueError('Light probe made no actual registered change')
+            restore_branch_metadata(evaluator,snapshot['metadata'])
+            restored_light=capture_lights(inst);media['restored']=lighting_frame('restored')
+            if restored_light!=original_light or proprio61(inst.obs)!=original_state:
+                raise ValueError('Light/robot render-only round-trip did not restore')
+            atomic_json(folder/'receipt.json',dict(schema='light_visibility_metadata_roundtrip_v1',status='passed',
+                actual_physics_controls=0,world_restore_tested=False,cold_restore_tested=False,training_sample=False,
+                original=original_light,perturbed=changed_light,restored=restored_light,media=media,
+                source_snapshot_sha256=sha256(a.output/'full_snapshot.pt')))
+            status['light_visibility_roundtrip_sha256']=sha256(folder/'receipt.json')
         directory=a.output/'reverse_reference_fault';directory.mkdir();(directory/'rgb').mkdir()
         semantic=canonical(skills);task=source['task'].replace('_',' ')
         text=semantic_active_skills_text(parse_active_skills_semantic_json(semantic))
