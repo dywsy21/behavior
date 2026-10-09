@@ -2,6 +2,8 @@
 
 ## 2026-10-09 17:34 CST：100任务恢复数据扩展（正在采集，结果头未训练）
 
+**19:17 CST数据验收覆盖：** 活跃collector为`code/recovery100-2b44664`：GRASP v4六卡及开合v6两卡均实跑，旧v3/v8已排空；GPU1不再占旧长尾。新的CPU封装/读取源`code/recovery100-5bd044c`、lc1`src/recovery100-5bd044c`。RTX同run根`closed-grasp-corpus-v3-terminal`已303ZIP/21,939RGB全读通过；lc1同run根`rtx-candidate-snapshot-v3-terminal`（339MiB）含相同候选、两个失败终态审批/原图审核，`a800-full-read-audit.json`与`a800-terminal-approval-audit.json`均passed且optimizer0。旧v1/v2不可变快照不覆盖；数据均未全量训练准入。最新覆盖`coverage-20261009T111622Z.json`，继续收集不启动结果头。
+
 **19:01 CST路径/调度覆盖：** 新源`code/recovery100-2b44664`修复官方终止动作漏记；`grasp-collection-v4`（日志`grasp-collection-v4-active.log`）六卡0,2,3,4,5,6接未采来源，沿用v1/v2/v3首尝试。旧v3仅GPU1长尾仍在，旧v8-gap在GPU7；后台`articulation-v6-two-gpu.log`待两者result后在GPU1,7启动v6剩107来源。已撤销旧等待shell，不重启旧v4.log或旧v7-v8-v6/v8-v6-clock串联。packing38-review-v1与`closed-grasp-approvals-v3.json`是新增42面板/5审批证据；不与全候选准入混淆。灯光88九原PNG在`light-restore-probe`，只metadata工程通过，完整门恢复未成功。
 
 **18:49 CST路径/状态覆盖：** 七卡GRASP仍v3/e515109。GPU7旧v5已排空（新灯光89/153未适配快照失败、bringing78未制造真实目标丢失，均保留），当前新`articulation-collection-v7-light`用`code/recovery100-aefcadf`：54参考未复现，88加载中；同一冻源后台`articulation-v7-v8-v6.log`顺序接v8-gap（继承v5首次结果）及v6（继承v4首次结果）。禁止重启旧`articulation-v5-v6.log`串联shell。第二快照`closed-grasp-corpus-v2`及lc1同run根`rtx-candidate-snapshot-v2`已独立全读通过168ZIP/12,264RGB；lc1证据`a800-full-read-audit.json`。最新覆盖快照`coverage-1843.json`，结果头不自动开训。

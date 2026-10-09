@@ -1,0 +1,31 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-09 19:11 CST; personally inspected all 54 original RGB panels across both branches, their final observations, checksums and each preceding six-control physical window",
+  "scope": "Two failed corrective attempts from ONE original pruning-kit source. Outcome-only negative observations after actual clean RETRY commands, not injected-fault BC, not a successful recovery, and not two independent source events. These labels must not be attached to a fabricated next action.",
+  "branches": [
+    {
+      "case": "put_together_a_basic_pruning_kit_14",
+      "branch": "open_gripper",
+      "manifest_sha256": "9e73a13df6e271e8a0ad34e86d60e55d20cad38dbaa1cead73ced5a49a9dc989",
+      "review_directory": "pruning14-terminal-open-review",
+      "review_sha256": "e983120cae6c9ca815bd1ea36b0bc8bb1e5abd7b08ba7964eb6f93ea1fdb5f07",
+      "outcomes": [{"control_step": 38, "value": "FAILED"}],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Exact shears_60 / shears.n.01_1. At 32 a fresh RETRY starts with UNKNOWN; the right gripper then closes beside/below the shears. At the actual final observation 38 it is nearly empty-closed (0.0003m) at the settled reference pose; measured target contact is FALSE for both hands throughout controls 32..37. This is local failure of the new corrective attempt, not a timeout label or full-task failure."
+    },
+    {
+      "case": "put_together_a_basic_pruning_kit_14",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "2c3c0817d9e264c5242ef6682d5676b72fbba78039bd9c0aea79e58eff618ffa",
+      "review_directory": "pruning14-terminal-jitter-review",
+      "review_sha256": "eabbfbcc6f0c6c94fd510003f4b5439d010d9c677e586e9a1c97aa1fe43622f2",
+      "outcomes": [{"control_step": 71, "value": "FAILED"}],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Same shears and same source; preserve the unsuccessful sibling. Actual RETRY at 64 is UNKNOWN at issue, then fingers visibly close without a retained grasp; final observation 71 has 0.0003m aperture and both-hand FALSE over controls 65..70. Last applied action is 70, not 71. No action or positive recovery-planner target is approved."
+    }
+  ]
+}
