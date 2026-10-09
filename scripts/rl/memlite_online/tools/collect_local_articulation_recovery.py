@@ -22,7 +22,7 @@ sys.path[:0]=[str(REPO/'scripts/eval/memlite_sft100'),str(Path(__file__).resolve
 from common import atomic_json,OFFICIAL,OFFICIAL_COMMIT,sha256
 from recovery_corpus import canonical,digest,group_key,split_group
 from recovery_recorder import proprio61
-from recovery_articulation_teacher import CausalArticulation,StationaryServo,servo,yaw_of,functional_goal
+from recovery_articulation_teacher import CausalArticulation,StationaryServo,servo,yaw_of,functional_goal,validate_corridor
 from behavior_branch_state import capture_branch_metadata
 
 
@@ -88,7 +88,18 @@ def main():
         atomic_json(a.output/'initial_alignment.json',dict(absolute_error=initial.tolist(),fresh_render=True))
         if initial[pos_indices].max()>.05:raise ValueError('Wrong original initial joint configuration')
         scope={k:getattr(v,'wrapped_obj',v) for k,v in inst.env_accessor.object_scope.items()}
+        atomic_json(a.output/'target-binding-audit.json',dict(requested=skills[0]['target'],
+            source_proposal_sha256=status['proposal_sha256'],task=source['task'],instance_id=source['instance_id'],
+            task_objects=[dict(entity=k,name=getattr(o,'name',None),category=getattr(o,'category',None))
+                          for k,o in scope.items() if o is not None],
+            scene_objects=[dict(name=o.name,category=getattr(o,'category',None)) for o in robot.scene.objects],
+            guessed_alias_accepted=False,actor_input=False))
         matches=[(k,o) for k,o in scope.items() if o is not None and getattr(o,'name',None)==skills[0]['target']]
+        if not matches:
+            # A task's intermediate door need not be a BDDL goal object. Only
+            # an exact, unique native scene name is accepted; no category guess.
+            scene_matches=[o for o in robot.scene.objects if o.name==skills[0]['target']]
+            if len(scene_matches)==1:matches=[('scene_object:'+scene_matches[0].name,scene_matches[0])]
         if len(matches)!=1:raise ValueError('No exact native task-scope target; do not guess aliases')
         entity,target=matches[0]
         states=[v for k,v in target.states.items() if k.__name__=='Open']
@@ -163,8 +174,7 @@ def main():
         false_indices=[i for i,x in enumerate(path) if x['physical']['goal_predicate'] is False]
         if not false_indices:raise ValueError('No local physical false-goal path')
         recent=path[max(0,false_indices[-1]-16):];knots=recent[::4]
-        if any(np.linalg.norm(np.asarray(x['base'])[:2]-seed_base[:2])>.25 for x in knots):
-            raise ValueError('Reference suffix leaves local 25cm articulation domain')
+        validate_corridor(knots+[seed])
         snapshot=dict(world=deepcopy(og.sim.dump_state(serialized=False)),metadata=capture_branch_metadata(evaluator),
             rng=dict(python=random.getstate(),numpy=np.random.get_state(),torch=torch.get_rng_state(),cuda=torch.cuda.get_rng_state_all()),
             seed=seed,waypoints=knots,source_manifest_sha256=status['proposal_sha256'],source_commit=commit,official_commit=OFFICIAL_COMMIT)
@@ -184,7 +194,7 @@ def main():
             atomic_json(directory/'plans.json',plans)
         issue(0,'EXECUTE');anchors={};outcomes=deepcopy(history);outcomes.last=-1
         reverse=list(reversed(knots));forward=knots+[seed];cursor=0;phase='clean_hold';count=0;retry_tick=None
-        stable=0;stationary=StationaryServo();failure=None;label_counts={};prior_outcome='SUCCEEDED'
+        stable=0;stationary=StationaryServo();failure=None;label_counts={};prior_outcome='SUCCEEDED';last_imaged_outcome=None
         video(directory/'rollout.mp4')
         with (directory/'transitions.jsonl').open('x',buffering=1) as stream:
             try:
@@ -193,13 +203,21 @@ def main():
                     if count==16:phase='fault_reverse';cursor=0;stationary=StationaryServo()
                     if phase=='fault_reverse' and outcomes.false_streak>=12:
                         phase='corrective';cursor=max(0,len(knots)-1-cursor);retry_tick=count;issue(count,'RETRY');stationary=StationaryServo()
-                    if count%4==0:
-                        folder=directory/'rgb'/f'{count:08d}';folder.mkdir();meta=dict(control_step=count,sha256={},dimensions={})
+                    if count%4==0 or retry_tick==count or prior_outcome!=last_imaged_outcome:
+                        # A failure may be confirmed at an off-grid control,
+                        # immediately before RETRY. Preserve THAT observation,
+                        # not a nearby frame with unavailable future evidence.
+                        folder=directory/'rgb'/f'{count:08d}';folder.mkdir();meta=dict(control_step=count,sha256={},dimensions={},
+                            observation_context_id=current['event_sha256'],
+                            predecision_context_id=plans[-2]['event_sha256'] if retry_tick==count else None,
+                            causal_predecision_outcome_candidate=prior_outcome if retry_tick==count else None,
+                            evidence_available_control_step=count)
                         for camera,key in evaluator.robot_camera_names.items():
                             im=Image.fromarray(inst.obs[key+'::rgb'].detach().cpu().numpy()[...,:3]).resize((224,224),Image.Resampling.BILINEAR)
                             dest=folder/(camera+'_rgb.jpg');im.save(dest,quality=90,subsampling=0)
                             meta['sha256'][camera+'_rgb']=sha256(dest);meta['dimensions'][camera+'_rgb']=[3,224,224]
                         anchors[str(count)]=meta
+                        last_imaged_outcome=prior_outcome
                     trajectory=reverse if phase=='fault_reverse' else forward
                     waypoint=seed if phase in ('clean_hold','confirmed_hold') else trajectory[min(cursor,len(trajectory)-1)]
                     command,info=servo(q,base,waypoint)
@@ -219,7 +237,7 @@ def main():
                         outcome_after_control_candidate=outcome,outcome_evidence_available_control_step=count+1,
                         outcome_approved=False,
                         context=dict(context_id=current['event_sha256'],active_skills_semantic_json=semantic,parent_goal=selected['parent']),
-                        rgb_anchor_control_step=count//4*4,terminated=False,truncated=False)
+                        rgb_anchor_control_step=max(map(int,anchors)),terminated=False,truncated=False)
                     stream.write(json.dumps(row,allow_nan=False)+'\n');count+=1;prior_outcome=outcome
                     if retry_tick is not None and outcome=='SUCCEEDED':phase='confirmed_hold';stable+=1
                     else:stable=0

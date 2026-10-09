@@ -36,6 +36,19 @@ def functional_goal(open_value,fraction,want_open):
     return None
 
 
+def validate_corridor(waypoints):
+    """A continuous measured path, not an arbitrary radius about its seed."""
+    if len(waypoints)<2:raise ValueError('Missing measured reference corridor')
+    for first,second in zip(waypoints,waypoints[1:]):
+        q1,q2=np.asarray(first['q']),np.asarray(second['q'])
+        b1,b2=np.asarray(first['base']),np.asarray(second['base'])
+        if (q1.shape!=(23,) or q2.shape!=(23,) or b1.shape!=(3,) or b2.shape!=(3,)
+                or not np.isfinite(np.r_[q1,q2,b1,b2]).all()):raise ValueError('Invalid corridor geometry')
+        if (np.linalg.norm(b1[:2]-b2[:2])>.12 or abs(wrap(b1[2]-b2[2]))>.16
+                or np.max(np.abs(q1[POSITIONS]-q2[POSITIONS]))>.5):
+            raise ValueError('Discontinuous measured reference path; cannot use a teleport-like waypoint')
+
+
 def servo(current,base,waypoint):
     """R1Pro absolute joints + body-frame normalized base velocity (0.75 m/s)."""
     current=np.asarray(current,float);base=np.asarray(base,float)
@@ -49,6 +62,8 @@ def servo(current,base,waypoint):
     action[:2]=np.clip(2*local/.75,-.15,.15);action[2]=np.clip(2*heading,-.2,.2)
     action[[14,22]]=np.clip(goal[[14,22]],-1,1)
     error=float(np.max(np.abs(goal[POSITIONS]-current[POSITIONS])))
+    if np.linalg.norm(world)>.15 or abs(heading)>.25 or error>.6:
+        raise ValueError('Current measured state left its reference waypoint corridor')
     return action.astype(np.float32),dict(joint_error=error,base_distance=float(np.linalg.norm(world)),
         heading_error=abs(heading),reached=bool(error<.025 and np.linalg.norm(world)<.01 and abs(heading)<.02))
 

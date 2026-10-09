@@ -33,6 +33,7 @@ def main():
     p.add_argument('--peer-collection',type=Path,action='append',default=[])
     p.add_argument('--skip-case',action='append',default=[])
     p.add_argument('--skip-reason')
+    p.add_argument('--priority-task',nargs='*',default=[])
     p.add_argument('--concurrent-loads',type=int,default=2)
     p.add_argument('--warm-groups',action='store_true');a=p.parse_args()
     if a.warm_groups:
@@ -82,6 +83,8 @@ def main():
             rows.append(dict(case=case['directory'],reused_directory=str(previous),
                              result_sha256=sha256(previous/'result.json'),status='retained_original_attempt'))
         else:pending.append(case)
+    priority={task:i for i,task in enumerate(a.priority_task)}
+    pending.sort(key=lambda case:priority.get(json.loads((a.sources/case['directory']/'manifest.json').read_text())['task'],len(priority)))
     atomic_json(a.output/'reused_cases.json',rows)
     if a.warm_groups:
         groups=defaultdict(list)

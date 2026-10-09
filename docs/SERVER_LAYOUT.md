@@ -1,5 +1,15 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-09 17:34 CST：100任务恢复数据扩展（正在采集，结果头未训练）
+
+不连接robo；仿真在`ssh -p 10383 root@42.192.34.154`，原数据导出在lc1。代码通过Git feature/bundle同步到独立worktree；共享env未改。
+
+- 10383根`/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009`：`grasp-sources-v1`为279新预选，`grasp-collection-v1`及同名log为GPU0–6运行结果（冻源`code/recovery100-3e11e95`）。逐case保存`source/status/result.json`、prefix视频/物理记录、全快照、三分支RGB/真实控制与独立plans。未完成目录不封成已完成样本。
+- 同根`articulation-sources-v1`六来源、`articulation-sources-v2`117跨任务来源；`articulation-bringing14-v1`保留弱5%门质检拒绝的工程证据，`articulation-collection-v2/bringing_water_98`是强门首次参考未复现，`articulation-collection-v3`在GPU7顺序跑剩余首次来源（冻源`code/recovery100-c340b42`，沿用98失败、不重试14）。以后新增批次不得混掉这些分母。
+- 同根`catalog-v1`为100任务元数据索引，`coverage-*.json`为时点覆盖回执。`closed-grasp-corpus-v1`是前11闭合新来源33ZIP的不可变候选快照，其`full-read-audit.json`验证全部1,929RGB。`closed-grasp-approvals-v1.json`仅签3来源9结果/3planner/3action，不表示33ZIP全准入。`trash177-review`、`halloween206-review`、`mousetraps191-review`是根实际人审材料；原旧15来源release不改。
+- lc1共享根`/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009`：相同名称catalog/GRASP/开合来源CPU导出；导出源`src/recovery100-819cb17`/`0dea483`/`0faaa66`。新数据尚不是100任务训练release，不使用旧准备票自动H0。
+- 本地原图/抽审材料`/home/wsy/behavior/artifacts/recovery100-collection-20261009`，只作证据、保持gitignore；轻量精确人审/拒绝决策在Git `configs/recovery_sft/recovery100_*review*.json`和`recovery100_quality_rejections_v1.json`。不删除旧失败轨迹或模型。
+
 ## 2026-10-09：恢复数据与A800 SFT准备（非正式开训）
 
 - **16:31 CST当前交付覆盖：** lc1源`src/recovery-prep-4424b35`产出`runs/recovery_sft_preparation_20261009/preparation-ticket-v3.json`，初始GRASP小试技术门全过、正式execution仍false。已签数据是`datasets/recovery-local-corrections-20261009-v1/local-admission-v2`（15来源/9TRAIN6dev，45结果/15plan/15action），不是旧自然rollout19点的`admission-v3`。同根`local-corpus-v3`保存raw/audit/history；实际特征`runs/recovery_sft_preparation_20261009/h0-accepted-feature-cache-v2`，最终processor/cache/transfer/start receipts在run根与`accepted-preflight-v1`。完整候选另外存`datasets/recovery-extra-candidates-20261009-v1`，未审不得训练。完整课程证据/13通过2拒绝在`datasets/recovery-curriculum-starts-20261009-v1`；10383原采集在`runs/recovery_prepare_sim_20261009/local-coverage-v2`和`local-coverage-v4-cold`，冷验证`cold-start-coverage-v1`。暖验证/v3已隔离，不删除。起点只批准“冷seed＋32实际fault＋现场门”的路线，派生failure-start.pt不当成已经独立冷载认证。手册有精确使用边界/父权重/数据SHA。

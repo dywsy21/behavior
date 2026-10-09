@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_articulation_teacher import CausalArticulation,servo,functional_goal
+from recovery_articulation_teacher import CausalArticulation,servo,functional_goal,validate_corridor
 
 
 class ArticulationTests(unittest.TestCase):
@@ -21,7 +21,7 @@ class ArticulationTests(unittest.TestCase):
         self.assertEqual([state.update(i,True) for i in range(26,38)][-1],'SUCCEEDED')
 
     def test_raw23_body_frame_and_rate_limits(self):
-        q=np.zeros(23);target=q.copy();target[7]=1;target[14]=-1
+        q=np.zeros(23);target=q.copy();target[7]=.1;target[14]=-1
         action,info=servo(q,[0,0,np.pi/2],dict(q=target,base=[.1,0,np.pi/2]))
         self.assertAlmostEqual(action[0],0,places=6);self.assertLess(action[1],0)
         self.assertAlmostEqual(action[7],.015,places=6);self.assertEqual(action[14],-1)
@@ -34,6 +34,12 @@ class ArticulationTests(unittest.TestCase):
         self.assertIsNone(functional_goal(True,.04,False))
         self.assertTrue(functional_goal(False,.01,False))
         with self.assertRaises(ValueError):functional_goal(True,1.5,True)
+
+    def test_corridor_allows_real_retreat_not_teleport_or_off_path_state(self):
+        path=[dict(q=np.zeros(23).tolist(),base=[i*.04,0,0]) for i in range(20)]
+        validate_corridor(path)  # 76cm in small measured intervals is legitimate.
+        with self.assertRaises(ValueError):validate_corridor([path[0],path[-1]])
+        with self.assertRaises(ValueError):servo(np.zeros(23),[0,0,0],path[-1])
 
 
 if __name__=='__main__':unittest.main()
