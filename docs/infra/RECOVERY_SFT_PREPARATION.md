@@ -4,6 +4,8 @@
 
 12:50 CST检查点：八卡硬件通信、L0真实父权重/FM梯度（ff584c1）及H0成员prefix/observer梯度（c25d06c）均通过，A80070＋8测试通过，0optimizer，所有诊断GPU已释放。242ZIP数据转移完整hash通过；原100task/3200个不同来源实例专家锚点索引已生成。三种恢复训练池依旧未放行；[回执](results/2026-10-09-recovery-sft-preparation.json)明确列出尚未完成的训练整合/数据/校准门。
 
+13:04 CST补充：冻结874d39e八卡**微型合成网络**验证了通用运行时的非均匀尾批全局梯度、模型/Adam/RNG精确恢复与单rank错误共同拒绝更新；它不是实际G0.5八卡训练验收。独立[W&B工程探针](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/26d903a19327)已真实写入/读回并结束，仅`engineering/*`指标，无合成loss混入训练曲线。0新增G0.5更新，所有GPU已释放；完整derivative trainer接线、数据/校准门仍待。
+
 ## 现有事实
 
 - `raw-v1`封存242个已关闭候选ZIP，347,415,662B，86个episode/43任务。结构、原index SHA、三相机图像、动作时钟通过。去重399个重叠控制行，无矛盾。
@@ -49,6 +51,17 @@
 - **L0：** 从low98414精确恢复，包括全部192个已训LoRA张量。`configure_recovery_expert_only()`保留其值但冻结，只开放322个动作专家张量；FM loss不回传VLM或高层。初始LR `1e-5`，micro4/global64候选；32步预测/16步执行/起点0，4噪声样本、原stats不变。不能重构无LoRA的Stage-A替代“冻结LoRA”。
 - 每线最多1000更新、合格新事件5遍或4小时先到为止；不为凑预算重复一个小数据集。H0小头未必值得占8卡，正式world/microbatch须按实际loader和数据量验收；不要把原bs256强加给很小的恢复数据。
 - W&B计划沿已可写team `hanhanyy-fudan-university-school-of-management` / project `behavior2026-g05`，新group `memlite-recovery-p2-20261009`。仅用0600的共享秘密路径，准备小验0optimizer不新建训练run；正式run必须验证真实写入，不能把配置存在称已经接通。
+
+### 有限数据的八卡运行时
+
+`src/g05/utils/training/recovery_runtime.py`提供独立的通用更新原语，尚未取代完整derivative trainer：
+
+- 对已经准入的全局事件顺序分片，microbatch尾部不复制真实监督样本；空rank只做一个零权重前向，真实样本数/有效分母/事件遍数都不增加。仅适用于G0.5这类行间独立、无跨样本BatchNorm的模型。
+- 各rank先累计`loss × 有效分母`反向，DDP平均后乘`world/global_denominator`，再clip与Adam；不能平均各rank的mean loss。零全局监督拒绝weight decay/更新。
+- 每个更新前先协调读取/前向错误；任一rank异常均拒绝继续，已发生的optimizer异常必须从上一个完整checkpoint恢复，不把部分rank更新当作已提交步。
+- schedule指纹绑定代码、父权重、admission、配方、world/micro及精确样本顺序。调用方仅在更新成功返回后推进游标，沿用已验的原子checkpoint和全rank RNG保存。
+
+双CPU及八NCCL rank的小网络真实Adam/恢复测试已通过，3新单测＋原6运行时回归通过；父模型未参与这部分更新。**正式入口仍须先做数据准入，并将真实G0.5 loader/目标、预算监管、验证及在线W&B整条接合验收**，不能直接把这些函数或合成测试当作完成的训练程序。
 
 ## 环境/图验收命令
 

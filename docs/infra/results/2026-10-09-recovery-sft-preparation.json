@@ -1,9 +1,9 @@
 {
   "schema": "recovery_sft_preparation_checkpoint_v1",
-  "time": "2026-10-09T12:50:00+08:00",
+  "time": "2026-10-09T13:04:00+08:00",
   "owner": "Codex",
   "branch": "feat/recovery-sft-prep-20261009",
-  "source_commit": "c25d06cbdc27e9f4bf5898293a18b90392157fa4",
+  "source_commit": "874d39ee20e8fbb3bcaa9101f56bc49c1e0117f3",
   "status": "ENGINEERING_CHECKPOINT_PASSED_DATA_AND_TRAINING_INTEGRATION_PENDING",
   "independent_team_review": "pending_not_merged_to_main",
   "server": "lc1 / 10.19.7.1 / eight A800 80GB",
@@ -49,6 +49,30 @@
     "eight_rank_bf16_nccl_backward": "gpu-smoke-v2 / 8 passed",
     "a800_cpu_rl_data_wire_tests": 70,
     "a800_cpu_causal_feedback_tests": 8,
+    "local_runtime_unit_regressions": 9,
+    "synthetic_eight_rank_runtime": {
+      "path": "runtime-gpu-v1",
+      "source_commit": "874d39ee20e8fbb3bcaa9101f56bc49c1e0117f3",
+      "rank0_receipt_sha256": "f330083975fa9f774da71bc1f88cb3b882e9d09aa5a4da5d8f8ad7d2494084bd",
+      "passed_ranks": 8,
+      "uneven_and_empty_rank_tail": true,
+      "parameter_error_vs_global_reference": 0.0,
+      "exact_model_adam_rng_resume": true,
+      "single_rank_data_error_aborts_all": true,
+      "max_seconds": 3.0122695029713213,
+      "peak_allocated_bytes": 17162240,
+      "toy_optimizer_executions": 3,
+      "g05_optimizer_steps": 0,
+      "scope": "Common runtime proof only, not full G0.5 derivative trainer acceptance"
+    },
+    "wandb_engineering_probe": {
+      "path": "wandb-engineering-v1/receipt.json",
+      "sha256": "8ab602697ad676b7be9e5ed350c1d95bcd6cb596c84366fa3f83dd5ffdff68b6",
+      "url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/26d903a19327",
+      "online_history_readback": true,
+      "finished": true,
+      "engineering_only_not_training_run": true
+    },
     "l0_graph": {
       "path": "l0-parent-graph-v2/result.json",
       "sha256": "0521534d0bd53ececa78f353e9ea7879090585a6d6f5925e10df51e8bba8abf3",
@@ -63,6 +87,7 @@
     },
     "h0_graph": {
       "path": "h0-parent-graph-v3/result.json",
+      "source_commit": "c25d06cbdc27e9f4bf5898293a18b90392157fa4",
       "sha256": "4d09cdcc952120b5a0b3bd8a351e286369647457bde00cdd69760be97cc3da77",
       "parent": "high step_00048045_save_0027.pt",
       "member_context_shape": [2, 1, 2048],
