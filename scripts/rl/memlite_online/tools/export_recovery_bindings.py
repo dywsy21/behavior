@@ -13,6 +13,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "code"))
 from recovery_corpus import canonical, digest, file_sha  # noqa: E402
 
 
+def instance_scope(state, mapping):
+    # Official instance files also carry robot_poses, a reset-metadata table,
+    # not a BDDL entity. No other unknown key is silently discarded.
+    if "robot_poses" in state:
+        poses = state["robot_poses"]
+        if not isinstance(poses, dict) or not poses.get("R1Pro"):
+            raise ValueError("Invalid official robot_poses metadata")
+    keys = set(state) - {"robot_poses"}
+    if not keys or not keys <= set(mapping):
+        raise ValueError("Instance scope differs from selected template")
+    return keys
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--task-root", type=Path, required=True)
@@ -51,9 +64,7 @@ def main():
             continue
         stem = path.name.split("_task_" + task + "_0_0")[0] + "_task_" + task
         instance = path.parent / (stem + "_instances") / (stem + f"_0_{ep['instance_id']}_template-tro_state.json")
-        state_keys = set(json.loads(instance.read_text()))
-        if not state_keys or not state_keys <= set(mapping):
-            raise ValueError("Instance scope differs from selected template: " + str(instance))
+        state_keys = instance_scope(json.loads(instance.read_text()), mapping)
         episodes[key] = {name: entity for entity, name in mapping.items()}
         evidence[key] = dict(task=task, instance_id=ep["instance_id"],
                              template=str(path), template_sha256=file_sha(path),

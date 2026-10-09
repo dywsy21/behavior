@@ -5,6 +5,8 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "code"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from export_recovery_bindings import instance_scope
 from recovery_corpus import (anchor_candidate, group_key, outcome_candidate, split_group,
                              stable_arm, validate_source_episode)
 
@@ -18,6 +20,15 @@ def rows(held=False):
 
 
 class RecoveryCorpusTests(unittest.TestCase):
+    def test_official_reset_metadata_is_not_a_scene_entity(self):
+        mapping = {"cup.n.01_1": "cup_12"}
+        self.assertEqual(instance_scope({"cup.n.01_1": {}, "robot_poses": {"R1Pro": [{}]}}, mapping),
+                         {"cup.n.01_1"})
+        for value in ({"cup.n.01_2": {}}, {"cup.n.01_1": {}, "robot_poses": {}},
+                      {"robot_poses": {"R1Pro": [{}]}}):
+            with self.assertRaises(ValueError):
+                instance_scope(value, mapping)
+
     def test_groups_ignore_display_spelling_and_all_seeds(self):
         self.assertEqual(group_key("picking_up_trash", 3), group_key("picking up trash", 3))
         self.assertEqual(split_group("picking_up_trash", 3), split_group("picking up trash", 3))
