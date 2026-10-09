@@ -2,6 +2,7 @@ import types
 import unittest
 import torch
 from g05.utils.memlite_planner_format import planner_only_format_constants
+from g05.utils.memlite_planner_fields import split_planner_event_fields
 
 
 class Helper:
@@ -20,6 +21,22 @@ def processor():
 
 
 class FormatTests(unittest.TestCase):
+    def test_parser_keeps_parallel_json_pipe_and_rejects_partial(self):
+        text='a|b|c|[{"name":"cup | plate"}]|{"previous":["a|b"]}|'
+        self.assertEqual(len(split_planner_event_fields(text)),5)
+        with self.assertRaises(ValueError):split_planner_event_fields('a|[{"name":"cu')
+
+    def test_end_constants_only_after_five_complete_fields(self):
+        helper=Helper();logits=torch.zeros(1,256)
+        with planner_only_format_constants(helper,processor(),batch_size=1,hl_end_id=255,enabled=True):
+            for _ in 'Previous outcome: UNKNOWN|':helper._sample(logits)
+            partial=torch.tensor([list(map(ord,'a|b|c|[{"name":"cu'))])
+            self.assertEqual(helper._sample(logits,prev_tokens=partial).item(),ord('D'))
+            complete=torch.tensor([list(map(ord,'a|b|c|[]|{}|'))])
+            actual=[helper._sample(logits,prev_tokens=complete).item() for _ in 'Task complete: false|']
+            self.assertEqual(''.join(map(chr,actual)),'Task complete: false|')
+            self.assertEqual(helper._sample(logits,prev_tokens=complete).item(),255)
+
     def test_constants_only_then_free_decision_and_restore(self):
         helper=Helper();logits=torch.zeros(2,256)
         with planner_only_format_constants(helper,processor(),batch_size=2,hl_end_id=255,enabled=True) as receipt:

@@ -51,3 +51,33 @@ def planner_field_text(sample, field):
     if slot != field and text != _render(field, sample[field]):
         raise ValueError(f"planner rendered field {field!r} differs from raw schema value")
     return text
+
+
+def split_planner_event_fields(text: str) -> list[str]:
+    """Split field separators, preserving pipes inside JSON strings."""
+    fields, start, quoted, escaped, depth = [], 0, False, False, 0
+    for index, char in enumerate(text):
+        if quoted:
+            if escaped:
+                escaped = False
+            elif char == chr(92):
+                escaped = True
+            elif char == '"':
+                quoted = False
+        elif char == '"':
+            quoted = True
+        elif char in '[{':
+            depth += 1
+        elif char in ']}':
+            depth -= 1
+            if depth < 0:
+                raise ValueError('Unbalanced planner JSON')
+        elif char == '|' and depth == 0:
+            fields.append(text[start:index].strip())
+            start = index + 1
+    if quoted or depth:
+        raise ValueError('Incomplete planner JSON')
+    tail = text[start:].strip()
+    if tail:
+        fields.append(tail)
+    return fields
