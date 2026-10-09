@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 03:03 CST：结果观察历史独立对照
+
+- lc1 `src/observer-short-start-v1`=ba1fca94；`runs/recovery_heterogeneous_20261010/H1-feature-cache-short-start-v1`是同v4数据下的新短起点协议cache，236请求/466真实prefill、SHA4bfbad39…8a4427、0optimizer。不覆盖旧v4特征；必须显式`attempt_start_short_v1`配置才可读。
+- 原GPU0 observer-v2已13epoch/286步但未知类仍弱、未部署；原GPU1低RL global7继续。新独立重载工具和短历史小头拟合尚待实际运行，不混淆缓存完成与模型效果。
+
 ## 2026-10-10 02:46 CST：两路实际训练状态
 
 - 结果observer：lc1 `src/observer-adapter-v2`=db37b153，`runs/recovery_heterogeneous_20261010/H0-observer-adapter-v2`，GPU0/PID1654675、W&B5c7a7692c82e，已14真实更新。`zero-adapter-audit.json`/`gradient-audit.json`是模型/梯度工程证明；`checkpoints/*.pt`仅专属adapter＋head＋Adam/RNG，须配bee高骨干，不能当完整planner替换。v1因GRU eval反传工程失败且0更新，原目录保留。

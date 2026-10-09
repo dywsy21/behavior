@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 03:03 CST / Codex RECOVERY-USABLE：** ba1fca94已push/A800154恢复回归过；GPU2独立冻源`src/observer-short-start-v1`完成236请求/466真实prefill（46.65s，0优化），短起点cache SHA4bfbad39…8a4427。固定新头配方仅改历史协议，同176/40、seed17/LR1e-4/500步窗口＋100步平台，待新旧特征交叉核验后实训。新增独立observer adapter重载/实际前向验收入口（不读cal/test），本地编译通过、待完成run与真实执行。原LoRA13epoch/286步选择DEV92.5%、balanced79.17%，UNKNOWN仍1/4；低RL global7固定radio/PLACE各2成功、wash2未成，继续无可靠增益声明。
+
 - **2026-10-10 02:59 CST / Codex RECOVERY-USABLE：** 两路原冻源继续：observer-v2第9epoch/198步原选择DEV事件89.17%、balanced70.83%（UNKNOWN仍0/4），不可只报总分或部署；epoch2独立CPU重载192 adapter＋14头＋206 Adam/step44、finite通过，完整新进程前向仍待。短RL global7/33chunks通过actor KL.01276与critic回溯3.75e-5，小误差下降不是SR证据。只读查实216结果中很多首间隔1–14控的样本被16控抽样压为单帧，实际同attempt起点图存在。新增显式`attempt_start_short_v1`对照，只补不足16控时的真实起点、不动标签/数据split/长历史/运行source；cache/config/receipt须一致，154本地恢复回归过，尚未提取新特征/拟合。下一步与原v4 frozen-head做单变量比较；60校准/20test不进入该对照。
 
 - **2026-10-10 02:46 CST / Codex RECOVERY-USABLE：** db37b153新observer-v2已实际通过零LoRA与旧cache逐bit一致＋GPU真实反传隔离（192 adapter/96初始非零、其它policy梯度无），lc1 GPU0/PID1654675已14更新/epoch1，W&B5c7a7692c82e。只新observer adapter＋head，不更新/部署高planner或低actor；原v1工程失败日志保留。GPU1低RL已global6，固定probe radio2/2、PLACE1/2、wash首条仍UNKNOWN，放置下降需完整重复证据，未宣布效果提高或扩100任务。待observer原DEV曲线/冻结SHA、短RL余轮；新H1恢复意图/部署独立校准仍未完成。
