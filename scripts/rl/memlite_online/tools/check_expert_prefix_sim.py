@@ -1,8 +1,9 @@
-"""Bounded TRAIN expert-prefix/reset/restore engineering check, no learning.
+"""TRAIN expert-prefix/reset/restore engineering check, no learning.
 
 Run ONE proposal per fresh simulator process. Full scene/controller/RNG state
 is retained; RGB and joint state alone are never advertised as a reset state.
-No attempt is silently retried; a conservative reservation survives failures.
+Attempts have immutable output identities; the ledger records consumption, not
+an artificial reset / control / wall-clock quota (user override 2026-10-09).
 """
 import argparse
 from copy import deepcopy
@@ -20,30 +21,25 @@ sys.path[:0] = [str(REPO/'scripts/eval/memlite_sft100'), str(Path(__file__).reso
 from common import atomic_json, OFFICIAL, OFFICIAL_COMMIT, sha256
 
 
-def reserve(root, case, commit):
+def reserve(root, case, commit, output):
     root.mkdir(parents=True, exist_ok=True)
-    with (root/'budget.lock').open('a') as lock:
+    with (root/'attempts.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        path = root/'budget.json'
+        path = root/'attempts.json'
         value = json.loads(path.read_text()) if path.exists() else dict(
-            schema='recovery_sim_preparation_budget_v1', maximum_resets=8,
-            maximum_control_steps=4096, reservations=[])
-        if any(r['case'] == case for r in value['reservations']):
-            raise ValueError('No automatic retry of a reserved case')
-        # Includes construction/reset, explicit instance load, restore, plus
-        # one conservative spare reset. All 384 robot controls count.
-        row = dict(case=case, source_commit=commit, reserved_resets=4, reserved_controls=384,
-                   time=time.time(), status='reserved_even_if_process_fails')
-        if (sum(r['reserved_resets'] for r in value['reservations'])+4 > 8
-                or sum(r['reserved_controls'] for r in value['reservations'])+384 > 4096):
-            raise ValueError('Approved simulator preparation budget exhausted')
-        value['reservations'].append(row); atomic_json(path, value)
+            schema='recovery_sim_preparation_attempts_v2', quota=None, attempts=[])
+        identity = str(output.resolve())
+        if any(r['output'] == identity for r in value['attempts']):
+            raise ValueError('Attempt output already registered; preserve prior evidence')
+        row = dict(case=case, source_commit=commit, output=identity,
+                   time=time.time(), status='registered', actual_counts='see output/status.json')
+        value['attempts'].append(row); atomic_json(path, value)
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--proposal', type=Path, required=True)
-    p.add_argument('--budget', type=Path, required=True)
+    p.add_argument('--ledger', '--budget', dest='ledger', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     a = p.parse_args()
     if a.output.exists(): raise FileExistsError(a.output)
@@ -63,7 +59,7 @@ def main():
     for name, checksum in manifest['files'].items():
         if Path(name).name != name or sha256(a.proposal/name) != checksum:
             raise ValueError('Changed expert source')
-    reserve(a.budget, a.proposal.name, commit)
+    reserve(a.ledger, a.proposal.name, commit, a.output)
     a.output.mkdir(parents=True)
     started = time.monotonic()
     status = dict(status='loading', source_commit=commit, proposal_sha256=sha256(a.proposal/'manifest.json'),
@@ -92,7 +88,7 @@ def main():
         def load_policy(self): return NoPolicy()
     cfg = OmegaConf.create(dict(env_wrapper=dict(_target_='rgb_wrapper.RGBOnlyFullResWrapper'),
         policy_name='expert_prefix_diagnostic', headless=True, partial_scene_load=True,
-        max_steps=4096, write_video=True, mode='train', seed=DEFAULT_EVAL_SEED, num_envs=1,
+        max_steps=None, write_video=True, mode='train', seed=DEFAULT_EVAL_SEED, num_envs=1,
         task=dict(name=manifest['task']), robot=OmegaConf.load(OFFICIAL/'omnigibson/eval/r1pro.yaml')))
     atomic_json(a.output/'resolved_config.json', OmegaConf.to_container(cfg, resolve=True))
     with PrefixEvaluator(cfg) as evaluator:
@@ -125,8 +121,6 @@ def main():
             return data
         errors = []
         def advance(action, label):
-            if status['actual_control_steps'] >= 384 or time.monotonic()-started > 3600:
-                raise RuntimeError('Per-case engineering budget reached')
             before = sample(label)
             term,trunc,_ = evaluator._apply_actions(torch.as_tensor(action[None], dtype=torch.float32), [0])
             status['actual_control_steps'] += 1

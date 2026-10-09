@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-09 14:44 CST：取消人为准备额度，继续到实际验收（Codex / RECOVERY-PREP-COMPLETE，进行中）
+
+- 用户明确要求不设任何额度、完成全部准备；覆盖下方14:24的“等追加预算”阻塞。已同步Git（feature与upstream一致，origin/main33677bd），核对lc1与10383自有GPU均空闲、磁盘分别余2.8/4.8TiB。旧RL step180及既有工程验收产物保留，不重跑已完成训练检查。
+- 当前执行：以新冻结源重验完整world/controller/RNG＋env/task/metric恢复；继续原TRAIN来源的真实失败—纠正—保持续段，严格区分干净建议、扰动与执行，不把噪声/失败动作当BC。旧预算账本保留，新的无额度账本只记实际消耗。数据质量/独立实例切分/人工原图验收门不放宽，不启动正式SFT/RL或公共评测。
+- 未完成：现场完整恢复验证；多类结果与实际恢复/正确动作数据池；实际数据训练前票据。H0/H1/L0训练工程链已验，独立团队review仍待，不合main。后续实质结果写在本节。
+
 ### 2026-10-09 13:06 CST：继续完成全部恢复SFT准备（Codex / RECOVERY-PREP-COMPLETE，进行中）
 
 - **14:24 CST / 安全交接点，未宣称全部准备完成：** 新冻结`a75e70b`已push并Git bundle到lc1独立worktree，完整RL/数据/wire回归exit0，另8项新pipeline预算/防泄漏复验全过。共享`preparation-ticket-v2.json`（SHA8d7c1f2d…1956a8）已依据真实H1/L0独立重载和H0-cache/H1-processor回执标记工程通过，但三个数据池/正式启动仍false，不把H0未来拟合误列为必须先已有成品的前置门。已更新手册/团队/路径及`infra/results/2026-10-09-recovery-sft-preparation-v2.json`；原RL安全停止、旧产物保留，0新正式SFT/RL，0追加reset。当前未收到追加12起点/48reset/6144控制/90min补采授权，停在此边界；下一步获批后补真实恢复续段并现场验完整时钟/任务/metric恢复，随后才签发数据小训票。独立成员review仍待，不合main。
