@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-09 20:10 CST：A800新恢复小试（最新）
+
+以下相对lc1共享根`/data/workspace/wsy/behavior2026`。代码`src/recovery-pilot-7fc978c`独立Git冻源；不热pull原collector/训练目录。联合已签数据`datasets/recovery-reviewed-union-20261009-v1`含25ZIP/947原观察、68outcome/20planner/20action，原审批证据保留各旧snapshot并以`source-provenance.json`追溯，admission SHAe16459de…6049。这不是全部新候选的放行。
+
+准备回执/冻结特征位于`runs/recovery_pilot_a800_20261009/preparation`；拟定训练链输出`runs/recovery_pilot_a800_20261009/train-v1/{H0,L0,H1}`及各自`.supervisor`，实际是否运行以plan/chain.json为准。本时点尚0更新。父高48045/低98414与共享env不变，W&B新group `memlite-recovery-pilot-20261009`。100任务RTX采集仍用其原独立目录继续；未启动新RL/公共评测。
+
 ## 2026-10-09 17:34 CST：100任务恢复数据扩展（正在采集，结果头未训练）
 
 **19:17 CST数据验收覆盖：** 活跃collector为`code/recovery100-2b44664`：GRASP v4六卡及开合v6两卡均实跑，旧v3/v8已排空；GPU1不再占旧长尾。新的CPU封装/读取源`code/recovery100-5bd044c`、lc1`src/recovery100-5bd044c`。RTX同run根`closed-grasp-corpus-v3-terminal`已303ZIP/21,939RGB全读通过；lc1同run根`rtx-candidate-snapshot-v3-terminal`（339MiB）含相同候选、两个失败终态审批/原图审核，`a800-full-read-audit.json`与`a800-terminal-approval-audit.json`均passed且optimizer0。旧v1/v2不可变快照不覆盖；数据均未全量训练准入。最新覆盖`coverage-20261009T111622Z.json`，继续收集不启动结果头。

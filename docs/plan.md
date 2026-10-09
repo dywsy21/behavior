@@ -14,6 +14,7 @@
 
 ### 2026-10-09 19:53 CST：用户授权A800恢复小训（Codex / RECOVERY-PILOT-A800，准备启动）
 
+- **20:10 CST / 联合数据实读通过：** 7fc978c已push并通过Git到lc1独立`src/recovery-pilot-7fc978c`，双端74恢复回归通过。`datasets/recovery-reviewed-union-20261009-v1`实际逐一验原签名/复制SHA/947观察（三相机）/全部20动作窗：25原ZIP、68结果＋20恢复规划＋20动作，admission SHAe16459de…6049；结果TRAIN15事件50标签、dev6事件18标签，动作/规划TRAIN14＋dev6，三池门过，未新增语义批准。6条正常成功与2条真实恢复失败已包含，仍只GRASP/有限任务而非全100。高48045冻结因果特征/真实processor验证进行中，0optimizer；通过后才提交H0→L0→H1训练链。
 - **开训链检查 / 本地74回归通过（实际A800验收待）：** 新联合release工具只重新验证/搬迁原逐点签名，严格拒绝重复snapshot/改图/改因果history/留出泄漏，不生成新语义批准；准备将旧15＋新5成功来源及1失败来源联合。H1补原100task正常规划回放，避免全RETRY目标；H0每事件轮换已审类别、每遍仍只1锚点，补训练前后完整类别诊断；H1/L0补同样本同噪声parent→final loss对比，5更新保存一次且中断/完成必存。新recipe明确H0 batch4单卡、H1/L0 global8/micro1八卡（完整batch 6原专家＋2新），最多5事件遍/4h各线，不自动重复到1000步；H0→L0→H1独立run，仍无自动部署/新RL。已有数据采集不加额度。代码尚未GPU实跑，独立成员review待。
 - 最新请求覆盖“全100齐后才训”的时序：以已签核新数据启动结果头H0和低层恢复动作L0；H1依赖真实分组OOF预测，短技能RL依赖同技能奖励/合法起点与异质机制验收。不把候选、SFT loss或一个GRASP数据池称为全部三项达成。100任务RTX采集继续，不热改/停止collector。
 - 已fetch/pull原feature并从最新origin/main建立`feat/recovery-pilot-a800-20261009`，快进保留c001a41全部证据；lc1现核8张A800均0MiB、0计算进程，既有SSH可用，不重登VPN、不改共享env。父高48045/低98414、原100task专家及留出规则不变，W&B沿已验用户team。当前0新训练更新。
