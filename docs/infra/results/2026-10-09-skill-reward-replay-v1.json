@@ -1,0 +1,37 @@
+{
+  "schema": "skill_reward_replay_acceptance_v1",
+  "reviewer": "Codex main agent",
+  "reviewed_at": "2026-10-09T22:49:00+08:00",
+  "source_commit": "8aaac3b18cb6c324a4e6025f3e6e69d1073c177c",
+  "status": "two_physical_reward_replays_and_media_review_passed",
+  "learned_policy_evaluation": false,
+  "optimizer_steps": 0,
+  "protected_progress_contract_tested": false,
+  "new_label_admissions": 0,
+  "checks": ["all 18 original RGB hashes", "main agent viewed all 18 original RGB frames", "contiguous per-control ACK ledger", "one immutable skill identity per replay", "six consecutive physical completion observations", "exactly one sparse success bonus"],
+  "cases": [
+    {
+      "run": "10383:/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/reward-radio155-v1",
+      "skill": "GRASP",
+      "source_group": "turning on radio:155",
+      "first_reward_ack": 33,
+      "last_reward_ack": 51,
+      "corrective_controls": 19,
+      "result_sha256": "506354c55671fa8bc91366befa2364448f4a4816dc81e197e369c154ab3347f6",
+      "ledger_sha256": "78f302b2af057870dc0d11f869ce18d78a2e28e43843be9decf243a760966148",
+      "media_observation": "Right wrist shows gripper separated from the radio at start and closed around it at end; exact right-hand held-object evidence, not appearance alone, establishes local contact. No lifting or full task success claimed."
+    },
+    {
+      "run": "10383:/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/reward-wash169-v1",
+      "skill": "OPEN_DOOR",
+      "source_group": "wash dog toys:169",
+      "first_reward_ack": 271,
+      "last_reward_ack": 518,
+      "corrective_controls": 248,
+      "result_sha256": "8104f35c904ad79b802cc2f416a71e9f06fa4e837509bacf691b484c807cd5fb",
+      "ledger_sha256": "23dfc970dcf58bfdfb725dfd92464e346e96c7b148eb8890cad3a809cb470450",
+      "media_observation": "Washer door changes from a narrow opening at start to a visibly open door at end; measured directed opening reaches 0.3562797 with official Open true. The adjacent dryer is not confused with the target."
+    }
+  ],
+  "remaining": ["learned low-level policy paired execution", "independent cross-source calibration", "PLACE real-state validation", "live protected-progress contract", "short-skill PPO integration and measured learning"]
+}

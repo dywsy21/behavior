@@ -1,5 +1,21 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-09 22:35 CST：恢复训练完成与可用性验收（覆盖下面旧状态）
+
+lc1共享根仍为`/data/workspace/wsy/behavior2026`，共享env未改。首轮`runs/recovery_pilot_a800_20261009/train-v1/{H0,L0,H1}`均完成，无在训optimizer。低层L0和高层H1都取各自`checkpoints/step_00000035_save_0007.pt`，完整SHA见[离线验收](infra/results/2026-10-09-recovery-usable-offline-v1.json)和[首轮训练](infra/results/2026-10-09-recovery-pilot-a800-v1.json)。尚未证明机器人SR提高，不自动上线。
+
+- 新高H1专属结果头：`runs/recovery_usable_20261009/H0-new-high-convergence-v1/selected-observer.pt`（499c42cc…e5a4a），配高bee76338…8f8316；旧`H0-convergence-v1`只能配原48045，不可互换。两者均未获部署校准。
+- 因果特征：同run根`H1-feature-cache-v1`（原签核数据）与`H1-newdev-feature-cache-v1`（另3组）；新task冻结检验`H0-new-task-frozen-diagnostic-v1`，训练/选权重均不看新3组。
+- 高层真生成：同run根`generation-{parent,candidate}-v2`；去捷径诊断`generation-{parent,candidate}-probe-v1`。后者为人工反事实输入，不是物理成功率。
+- 已签训练仍`datasets/recovery-reviewed-union-20261009-v1`。`...-v2-newdev`只增加9个frozen_test结果行；`admission/evaluation_partition.json`已入SHA，默认训练loader排除新test且不得借test凑覆盖。v2不是增加训练样本的新一轮数据。
+- 当前A800 CPU冻源：`src/recovery-placement-5a2524fc`；9个新放置原参考在`runs/recovery100_collection_20261009/place-{in,on}-short-sources-v1`，不是恢复教师或已验证物理起点。
+
+RTX根仍`/run/ti/rl_memlite_stage1_20261006`，此节以下相对`runs/recovery100_collection_20261009`：`grasp-collection-v4`的279首次结束，`articulation-collection-v6`的117首次结束，原失败全部保留；六卡`grasp-independent-dev-collection-v1`仍采93新DEV，勿重复启动。候选v5为`closed-grasp-corpus-v5-linear`，全读回执`closed-grasp-corpus-v5-cached-full-read.json`（37150a6e…a824），结构通过不代表全体签核；旧慢全读仍保留原进程/证据。9个放置原参考已原名复制到此根并逐文件SHA验回。
+
+真实reward接口工程冻源`code/recovery-reward-8aaac3b1`；GPU1/7的`reward-wash169-v1`和`reward-radio155-v1`只冷回放原纠正，状态/原图/ledger见各目录。**不是候选VLA推理，不是RL或官方评测。** 新状态及时见plan；此处不以提交或PID存在称验收通过。旧collector继续2b44664，不热pull任何运行源。
+
+22:49 CST两回放已通过且主线程18张原RGB人审/SHA/逐控制ledger验过；本地证据`artifacts/recovery-usable-20261009/reward-{radio155,wash169}-v1`，轻量回执[两机制奖励验收](infra/results/2026-10-09-skill-reward-replay-v1.json)。仍未启动新的短技能actor评测或RL。
+
 ## 2026-10-09 20:10 CST：A800新恢复小试（最新）
 
 **20:23 CST覆盖：** `train-v1/L0`已35步完成，末权重`checkpoints/step_00000035_save_0007.pt` SHA139fea21…f2cd9；H1已接续加载，是否首更新需查看ledger/updates。低层冻结部分SHA未变，但原留出FM升2.08%，不自动部署。小头H0/低层L0和稍后高层H1是不同产物，H1变更高层后原H0特征/校准必须重验，不能直接混配。
