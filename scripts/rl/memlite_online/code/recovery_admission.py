@@ -38,7 +38,7 @@ def independent_candidates(anchors):
     for key, rows in sorted(groups.items()):
         current = []
         for row in sorted(rows, key=lambda r: r['control_step']):
-            if current and row['control_step'] != current[-1]['control_step'] + 16:
+            if current and not 0 < row['control_step'] - current[-1]['control_step'] <= 16:
                 spans.append(current)
                 current = []
             current.append(row)
@@ -176,6 +176,8 @@ def audit_admission(audit, protected_path, approvals_path, evidence_root):
         anchors_sha256=file_sha(audit / 'anchors.jsonl'), protected_groups_sha256=file_sha(protected_path),
         approvals_sha256=file_sha(approvals_path), source_manifest_sha256=summary['source_manifest_sha256'],
         bindings_sha256=summary['bindings_sha256'], pools=gates, training_ready=any(v['training_ready'] for v in gates.values()),
-        candidate_success_spans=len(spans), candidate_success_episodes=len({canonical(s['source_episode']) for s in spans}),
+        candidate_labeled_spans=len(spans),
+        candidate_success_spans=sum(s['proposed_outcome']=='SUCCEEDED' for s in spans),
+        candidate_success_episodes=len({canonical(s['source_episode']) for s in spans if s['proposed_outcome']=='SUCCEEDED'}),
         note='Candidate spans are NOT confirmed independent recovery events; individual pool gates are mandatory.')
     return admitted, spans, result

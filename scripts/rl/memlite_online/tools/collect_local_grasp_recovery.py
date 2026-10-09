@@ -25,7 +25,7 @@ sys.path[:0] = [str(REPO/'scripts/eval/memlite_sft100'),
                str(Path(__file__).resolve().parents[1]/'code'),str(REPO/'src')]
 from common import atomic_json,OFFICIAL,OFFICIAL_COMMIT,sha256
 from recovery_corpus import canonical,digest,group_key,split_group
-from recovery_local_teacher import LocalGraspTeacher,perturb
+from recovery_local_teacher import LocalGraspTeacher,perturb,NonGraspingFixedPoint
 from recovery_recorder import proprio61
 from behavior_branch_state import capture_branch_metadata,restore_branch_metadata
 
@@ -204,6 +204,7 @@ def main(argv=None, *, shared_session=None):
                 issue(0,'EXECUTE');stream=(directory/'transitions.jsonl').open('x',buffering=1)
                 video(directory/'rollout.mp4');anchors={};count=0;confirmed=0;lost=0;loss_observed=False
                 failure=None;retry_issued=False;last_vector=None;stagnant=0
+                fixed_point=NonGraspingFixedPoint()
                 initial=physics();start_error=float(np.max(np.abs(np.asarray(proprio61(inst.obs))-seed_state)))
                 try:
                     while True:
@@ -251,6 +252,9 @@ def main(argv=None, *, shared_session=None):
                                 and after['gripper_aperture'][grasp_arm]<.003
                                 and teacher_info['joint_error_max_rad']<.012):
                             raise ValueError('Closed empty grasp at settled reference pose; correction failed')
+                        if not injected and fixed_point.observe(command,q,measured['position'],
+                                measured['gripper_aperture'][grasp_arm],measured['grasp']):
+                            raise ValueError('Stationary commanded/measured non-grasping contact; local teacher cannot recover')
                         vector=np.r_[q,measured['position'],measured['gripper_aperture'][grasp_arm]]
                         stagnant=stagnant+1 if last_vector is not None and np.max(np.abs(vector-last_vector))<1e-5 else 0
                         last_vector=vector

@@ -6,6 +6,23 @@ old actions remain correct on arbitrary disturbed states. Physical execution
 and human review, never its self-report, decide dataset admission.
 """
 import numpy as np
+from collections import deque
+
+
+class NonGraspingFixedPoint:
+    """Stationary command AND measured robot/object, not an elapsed-time quota."""
+    def __init__(self,window=64):
+        self.window=window;self.commands=deque(maxlen=window);self.states=deque(maxlen=window)
+
+    def observe(self,command,q,position,aperture,grasp):
+        if any(value!='FALSE' for value in grasp.values()):
+            self.commands.clear();self.states.clear();return False
+        self.commands.append(np.asarray(command,dtype=np.float32))
+        self.states.append(np.r_[q,position,aperture].astype(np.float32))
+        if len(self.states)<self.window:return False
+        spread=np.ptp(np.stack(self.states),axis=0)
+        return bool(np.ptp(np.stack(self.commands),axis=0).max()<1e-6
+                    and spread[:23].max()<1e-3 and spread[23:26].max()<1e-3 and spread[26]<5e-4)
 
 
 class LocalGraspTeacher:

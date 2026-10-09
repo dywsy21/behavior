@@ -62,5 +62,9 @@ class AdmissionTests(unittest.TestCase):
         rows[-1]['source_episode']=['run','another-episode']
         self.assertEqual(len(independent_candidates(rows)),3)
 
+    def test_dense_four_control_images_are_not_independent_events(self):
+        rows=[dict(self.row,control_step=k,sample_id=str(k)) for k in (16,20,24,28,32,96)]
+        self.assertEqual([s['anchors'] for s in independent_candidates(rows)],[5,1])
+
 
 if __name__ == '__main__':unittest.main()
