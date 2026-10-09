@@ -24,6 +24,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--collection',type=Path,required=True);p.add_argument('--sources',type=Path,required=True)
     p.add_argument('--protected',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--previous-collection',type=Path)
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     protected=set(json.loads(a.protected.read_text())['groups']);source_rows=[]
@@ -32,6 +33,11 @@ def main():
     for folder in ('raw','audit','history','proposed-plans'):(a.output/folder).mkdir()
     for entry in json.loads((a.sources/'manifest.json').read_text())['cases']:
         proposal=a.sources/entry['directory'];directory=a.collection/entry['directory']
+        previous=a.previous_collection/entry['directory'] if a.previous_collection else None
+        if previous is not None and (previous/'result.json').exists():
+            # Keep the FIRST recorded attempt, including its failures. Do not
+            # select a luckier repetition or count warm-engineering duplicates.
+            directory=previous
         if not (directory/'result.json').exists():
             excluded.append(dict(case=entry['directory'],reason='No completed collection receipt'));continue
         source=json.loads((proposal/'manifest.json').read_text())
@@ -65,8 +71,8 @@ def main():
             if not rows:
                 excluded.append(dict(case=entry['directory'],branch=branch['kind'],reason=branch['failure']));continue
             validate_branch(rows,manifest,plans)
-            episode=dict(run=str(a.collection.name),episode_id=digest([entry['manifest_sha256'],result['source_commit'],
-                a.collection.name,branch['kind']])[:24],task=source['task'],instance_id=source['instance_id'],split='train',
+            episode=dict(run=str(directory.parent.name),episode_id=digest([entry['manifest_sha256'],result['source_commit'],
+                directory.parent.name,branch['kind']])[:24],task=source['task'],instance_id=source['instance_id'],split='train',
                 source_commit=result['source_commit'],teacher_kind='offline_local_measured_joint_servo_v1',
                 actor_model_used=False,original_source_group=source['source_group'],original_episode=source['episode_index'])
             clip_id=digest(episode)[:24];relative=clip_id+'.zip'

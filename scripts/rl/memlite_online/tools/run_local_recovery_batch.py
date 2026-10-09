@@ -25,6 +25,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--sources',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     p.add_argument('--gpus',nargs='+',type=int,required=True)
+    p.add_argument('--previous-collection',type=Path)
     p.add_argument('--warm-groups',action='store_true');a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     if len(set(a.gpus))!=len(a.gpus):raise ValueError('Duplicate GPU')
@@ -36,15 +37,24 @@ def main():
     for case in sources:
         if sha256(a.sources/case['directory']/'manifest.json')!=case['manifest_sha256']:raise ValueError('Changed inventory')
     a.output.mkdir(parents=True);jobs=queue.Queue();lock=threading.Lock();loading=threading.Semaphore(2)
-    rows=[]
+    rows=[];pending=[]
+    for case in sources:
+        previous=a.previous_collection/case['directory'] if a.previous_collection else None
+        if previous is not None and (previous/'result.json').exists():
+            result=json.loads((previous/'result.json').read_text())
+            if result['proposal_sha256']!=case['manifest_sha256']:raise ValueError('Reused case source changed')
+            rows.append(dict(case=case['directory'],reused_directory=str(previous),
+                             result_sha256=sha256(previous/'result.json'),status='retained_original_attempt'))
+        else:pending.append(case)
+    atomic_json(a.output/'reused_cases.json',rows)
     if a.warm_groups:
         groups=defaultdict(list)
-        for case in sources:
+        for case in pending:
             task=json.loads((a.sources/case['directory']/'manifest.json').read_text())['task']
             groups[task].append(case['directory'])
         for task,cases in groups.items():jobs.put(dict(directory=task,cases=cases))
     else:
-        for case in sources:jobs.put(case)
+        for case in pending:jobs.put(case)
     def worker(gpu):
         while True:
             try:case=jobs.get_nowait()
