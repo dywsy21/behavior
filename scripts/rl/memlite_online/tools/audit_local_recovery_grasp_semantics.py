@@ -14,8 +14,10 @@ from recovery_corpus import file_sha
 from recovery_teacher_corpus import validate_branch, validate_grasp_review_semantics
 
 
-def audit(root, decisions_paths):
+def audit(root, decisions_paths, *, review_root=None, corpus=None):
     root = Path(root).resolve()
+    review_root = Path(review_root).resolve() if review_root else root
+    queue = json.loads((Path(corpus) / 'review-queue.json').read_text()) if corpus else None
     records, conflicts, files = [], [], []
     cache = {}
     for path in decisions_paths:
@@ -27,9 +29,16 @@ def audit(root, decisions_paths):
             raise ValueError('This training-data audit does not read independent calibration/test cohorts')
         files.append(dict(path=str(path), sha256=file_sha(path)))
         for choice in choices['branches']:
-            material_path = local_file(root, Path(choice['review_directory']) / 'review.json')
+            material_path = local_file(review_root, Path(choice['review_directory']) / 'review.json')
             material = json.loads(material_path.read_text())
-            branch = local_file(root, Path(material['source']) / 'manifest.json').parent
+            if queue is None:
+                source = material['source']
+            else:
+                matches = [q for q in queue if (q['case'], q['branch']) == (choice['case'], choice['branch'])]
+                if len(matches) != 1:
+                    raise ValueError('Review does not resolve to one content-bound corpus branch')
+                source = matches[0]['source_path']
+            branch = local_file(root, Path(source) / 'manifest.json').parent
             if branch not in cache:
                 manifest = json.loads((branch / 'manifest.json').read_text())
                 rows = [json.loads(s) for s in (branch / 'transitions.jsonl').read_text().splitlines()]
@@ -83,11 +92,13 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root', type=Path, required=True)
     p.add_argument('--decisions', type=Path, nargs='+', required=True)
+    p.add_argument('--review-root', type=Path, help='Original media review root when different from raw evidence root')
+    p.add_argument('--corpus', type=Path, help='Resolve relocated branches by exact queue identity and manifest SHA')
     p.add_argument('--output', type=Path, required=True)
     args = p.parse_args()
     if args.output.exists():
         raise FileExistsError('Use a new audit receipt; preserve prior evidence')
-    result = audit(args.root, args.decisions)
+    result = audit(args.root, args.decisions, review_root=args.review_root, corpus=args.corpus)
     args.output.write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps({k: v for k, v in result.items() if k not in ('records', 'decisions')}, indent=2))
     if result['conflicts']:

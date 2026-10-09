@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 03:33 CST / Codex RECOVERY-USABLE：** `a51cfcaa`新签核语义门本地158恢复＋3签核测试通过并Git双端冻结；机器回查前后两批192结果仅发现搬箱136/IP36一处冲突，修订后95outcome＋23plan共118项语义通过并实际签发（83c7a460…525f44d、d2e18a2f…7e3c7e），0新BC。旧v6 spec已显式superseded且新builder拒绝，v7指向待构建的同一episode合并单元，不能把旧outcome包与新plan包重复并入。旧最初pilot媒体source记录为本地路径，首次跨机只读audit路径门拒绝（未改任何标签）；补queue＋manifest SHA定位方式后待重核，不绕过根路径。A800连接继续待用户确认、真实训练终态仍未知。
+
 - **2026-10-10 03:27 CST / Codex RECOVERY-USABLE：** 已亲审24来源48页/504原RGB、实际RETRY字段及其7时点物理记录，发现`moving_boxes_to_storage_136`右手已抓住而原意图arm=UNSPECIFIED，左手重抓的IN_PROGRESS36与RETRY32对整体意图有歧义；不签该plan，并撤回新96结果中的这一个IP（旧包未迁A800/未训练，原证据保留）。新增签核语义门与反例测试进行中，待回查旧已签来源与构建纠正联合单元；不事后将旧计划改成LEFT，不通过删右手物理证据掩盖矛盾。其余23plan待SHA/连续末端核验签发；A800仍未获重连确认，未新启optimizer。
 
 - **2026-10-10 03:18 CST / Codex RECOVERY-USABLE：** 续接确认1080/lc1 socket仍缺，RTX GPU全空，未重登VPN/重开RL；上轮属实际数据与代码进展而非训练完成。当前可继续的目标依赖是H1恢复意图：以刚签24 TRAIN来源为固定队列，新增原始RETRY时刻＋前后实际纠正＋稳定末端图审工具，只生成待审plan，不授予outcome/BC。原计划真实发出时刻为16/24/32/48/64控、不由模型选择；新工具编译及154恢复回归通过，实际媒体生成/根审/签核待，不把96 outcome许可扩成24 plan许可。
