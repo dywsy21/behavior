@@ -20,7 +20,9 @@ import time
 
 REPO=Path(__file__).resolve().parents[4]
 sys.path.insert(0,str(REPO/'scripts/eval/memlite_sft100'))
+sys.path.insert(0,str(REPO/'scripts/rl/memlite_online/code'))
 from common import atomic_json,sha256
+from recovery_gpu_ownership import owns_auxiliary
 
 
 def main():
@@ -28,6 +30,9 @@ def main():
     p.add_argument('--sources',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     p.add_argument('--gpus',nargs='+',type=int,required=True)
     p.add_argument('--previous-collection',type=Path)
+    p.add_argument('--peer-collection',type=Path,action='append',default=[])
+    p.add_argument('--skip-case',action='append',default=[])
+    p.add_argument('--skip-reason')
     p.add_argument('--concurrent-loads',type=int,default=2)
     p.add_argument('--warm-groups',action='store_true');a=p.parse_args()
     if a.warm_groups:
@@ -35,13 +40,27 @@ def main():
     if not 1<=a.concurrent_loads<=len(a.gpus):raise ValueError('Invalid scene loading concurrency')
     if a.output.exists():raise FileExistsError(a.output)
     if len(set(a.gpus))!=len(a.gpus):raise ValueError('Duplicate GPU')
+    if a.skip_case and not a.skip_reason:raise ValueError('Explicit skipped-source reason required')
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():raise ValueError('Dirty source')
     for gpu in a.gpus:
-        if subprocess.check_output(['nvidia-smi','-i',str(gpu),'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
-            raise RuntimeError(f'GPU {gpu} occupied; do not stop another workload')
+        running=subprocess.check_output(['nvidia-smi','-i',str(gpu),'--query-compute-apps=pid,used_gpu_memory',
+            '--format=csv,noheader,nounits'],text=True).strip()
+        for line in running.splitlines():
+            pid,memory=line.split(',');pid=int(pid);memory=float(memory);allowed=False
+            for peer in a.peer_collection:
+                for path in peer.glob('*/status.json'):
+                    receipt=json.loads(path.read_text())
+                    if receipt.get('pid')!=pid:continue
+                    try:
+                        argv=Path(f'/proc/{pid}/cmdline').read_bytes().decode().split('\0')
+                        environ=dict(v.split('=',1) for v in Path(f'/proc/{pid}/environ').read_bytes().decode().split('\0') if '=' in v)
+                    except FileNotFoundError:continue
+                    allowed=allowed or owns_auxiliary(pid,memory,gpu,receipt,path.parent,argv,environ)
+            if not allowed:raise RuntimeError(f'GPU {gpu} has unowned/non-auxiliary PID {pid}; do not stop it')
     inventory=json.loads((a.sources/'manifest.json').read_text())
     if inventory.get('status','complete')!='complete':raise ValueError('Source export is not complete')
     sources=inventory['cases']
+    if not set(a.skip_case)<={r['directory'] for r in sources}:raise ValueError('Unknown skipped source')
     for case in sources:
         if sha256(a.sources/case['directory']/'manifest.json')!=case['manifest_sha256']:raise ValueError('Changed inventory')
     a.output.mkdir(parents=True);jobs=queue.Queue();lock=threading.Lock();loading=threading.Semaphore(a.concurrent_loads)
@@ -54,6 +73,8 @@ def main():
         return stopping.is_set()
     rows=[];pending=[]
     for case in sources:
+        if case['directory'] in a.skip_case:
+            rows.append(dict(case=case['directory'],status='explicitly_skipped',reason=a.skip_reason));continue
         previous=a.previous_collection/case['directory'] if a.previous_collection else None
         if previous is not None and (previous/'result.json').exists():
             result=json.loads((previous/'result.json').read_text())
@@ -109,7 +130,8 @@ def main():
                 if not released:loading.release()
                 log.close();jobs.task_done()
     with ThreadPoolExecutor(max_workers=len(a.gpus)) as pool:list(pool.map(worker,a.gpus))
-    atomic_json(a.output/'result.json',dict(status='stopped_with_pending_sources' if not jobs.empty() else 'inventory_attempts_finished',results=rows,
+    done_status='inventory_finished_with_explicit_skips' if a.skip_case else 'inventory_attempts_finished'
+    atomic_json(a.output/'result.json',dict(status='stopped_with_pending_sources' if not jobs.empty() else done_status,results=rows,
         pending_sources=jobs.qsize(),
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
         source_inventory_sha256=sha256(a.sources/'manifest.json'),training_approved=False,quota=None))

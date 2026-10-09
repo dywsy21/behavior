@@ -1,0 +1,40 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-09 17:29 CST; personally inspected 117 original RGB panels and exact preceding physical evidence",
+  "scope": "Three new source groups. Local same-target right-hand grasp only; not lifting/transport/full-task success. Exact 32..63 clean corrective actions plus causal observation labels, not whole clips. New 100-task release and head training remain pending.",
+  "branches": [
+    {
+      "case": "picking_up_trash_177",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "92ef3adfafec5e6b401a91961ce101e214f223bb56bcdb355f9ad01fe154a3a5",
+      "review_directory": "trash177-review",
+      "outcomes": [{"control_step": 16, "value": "FAILED"}, {"control_step": 40, "value": "IN_PROGRESS"}, {"control_step": 64, "value": "SUCCEEDED"}],
+      "action_steps": [32],
+      "planner_steps": [32],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right gripper opens and recloses on exact trash_can_116 / ashcan.n.01_1. Wrist visibility is partially occluded by the can; same-target physical identity and six preceding controls corroborate hold. Not a claim that trash was collected or lifted."
+    },
+    {
+      "case": "putting_away_Halloween_decorations_206",
+      "branch": "open_gripper",
+      "manifest_sha256": "972865e04f62b2264a2774d8357c1cee147857b246e5e05ecfc49ab8ec11e3e9",
+      "review_directory": "halloween206-review",
+      "outcomes": [{"control_step": 16, "value": "FAILED"}, {"control_step": 40, "value": "IN_PROGRESS"}, {"control_step": 64, "value": "SUCCEEDED"}],
+      "action_steps": [32],
+      "planner_steps": [32],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hand opens then reacquires the cauldron_92 / caldron.n.01_1; exact physical hand binding resolves partly occluded rim contact. The object remains locally supported; no storage or transport claim."
+    },
+    {
+      "case": "setting_mousetraps_191",
+      "branch": "open_gripper",
+      "manifest_sha256": "dd813ca2bb5f9aa081ee271558057cdf7c0843bbc5860f99004ed94461e8af29",
+      "review_directory": "mousetraps191-review",
+      "outcomes": [{"control_step": 16, "value": "FAILED"}, {"control_step": 40, "value": "IN_PROGRESS"}, {"control_step": 64, "value": "SUCCEEDED"}],
+      "action_steps": [32],
+      "planner_steps": [32],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right wrist clearly shows reopening and closing around mousetrap_49 / mousetrap.n.01_2, distinct from the other trap on the cabinet. Physical same-target hold persists after correction. Does not certify setting the trap or the full task."
+    }
+  ]
+}

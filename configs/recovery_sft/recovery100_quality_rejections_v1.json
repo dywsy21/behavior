@@ -1,0 +1,19 @@
+{
+  "schema": "recovery100_manual_quality_rejections_v1",
+  "reviewer": "Codex main, 2026-10-09 17:21 CST",
+  "decisions": [
+    {
+      "source_group": "bringing water:14",
+      "source_commit": "0dea483ba3c6d1aea6e70493c419efd753d216aa",
+      "branch": "reverse_reference_fault",
+      "manifest_sha256": "4cb725b4f760604df8bfec6dec9335887a4430e881e67e258cb54448b4c77800",
+      "review_materials_sha256": "8e160275ce2940f5d5bbf676c81ddde6a66ab172697e6c83acdee36f55ea64fb",
+      "original_rgb_panels_personally_reviewed": 75,
+      "eligible_for_functional_open_result_training": false,
+      "action_bc_approved": false,
+      "reason": "Real closing/reopening only oscillates roughly 0.06-0.16 rad around official 5%-travel Open threshold; does not certify useful opening clearance. Keep as engineering evidence, not a successful OPEN_DOOR label. Wrist view is partly occluded; head view plus measured hinge supports the rejection.",
+      "retained_at": "10383:/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/articulation-bringing14-v1",
+      "replacement_protocol": "0faaa66: single exact directed joint with >=35% open / <=10% lost hysteresis; still requires human review, no downstream-fit guarantee"
+    }
+  ]
+}
