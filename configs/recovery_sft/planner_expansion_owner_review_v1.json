@@ -1,0 +1,341 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 03:28 CST; personally inspected all 48 contact sheets / 504 original RGB panels and exact RETRY/memory/physical records. All sheet SHA256 verified. TRAIN cohort only; no model predictions or independent calibration/test.",
+  "branches": [
+    {
+      "case": "storing_food_249",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "505e7bd02959bcc4beb57c971b629a10b5bf863b634210b3b580d283417d012c",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/storing_food_249--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left bottle_of_olive_oil_210: translucent bottle occludes wrist; head and approaching fingers agree with reclosure at RETRY32, then stable hold. No food-storage completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "cab79eeef15bc44f277d7808314fd3e6b0a1649942d659ef7afc533024fd0341"
+    },
+    {
+      "case": "getting_organized_for_work_166",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "adce102dd54cddfd2c367905ec153605fcce235bf5e55c87f524ed24c83d4ff1",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/getting_organized_for_work_166--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right mouse_92 at RETRY16: dark mouse/desk reduce contrast; wrist/head agree with reclosure and no target change. No workstation-organization completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "59259a1211623c10d918275ea9854c374c8f2b768f472d0b7a35e6e38569b2b7"
+    },
+    {
+      "case": "store_produce_8",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "063730cb1cdaa554dc585343ebd380f2fd6d32a1211faef5c7a78b85f81c86d7",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/store_produce_8--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left wicker_basket_74 at RETRY24: closing around rim while fruit remains inside; target is basket, not fruit. No carrying/put-away label. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "0c0274943bdfd04bd2fbd8c3cb229431efa85d71fa9f0f6152d2d36e474ccd95"
+    },
+    {
+      "case": "clean_up_broken_glass_231",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ff4f6303720f31bf020660352f018314b18cb191aa6dad67642cf469595e7e33",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/clean_up_broken_glass_231--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right broken_glass_98 at RETRY16: irregular ring-like object above tiled floor; fingers close on that object, not the nearby chair. No disposal completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "03c1cdfd68eb0dfdca422a2db21d1d9bdb9c0a471e37695800bb2b2bea8ef436"
+    },
+    {
+      "case": "make_cabinet_doors_135",
+      "branch": "open_gripper",
+      "manifest_sha256": "55ec4d9c2ef5ff81b683fe742ac87e259bff326bfa7b4b2ac12242f54388f140",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/make_cabinet_doors_135--open_gripper",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left cabinet_door_73 at RETRY24: long wooden panel edge; other hand's wood is not the target. Regrasp only, not furniture assembly. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "67fa76ab56c59b85b015a8d23dc30113bd5e51b297573b3cd6a7434f78921755"
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_233",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "8100be2dd03ac8c4c1e9e65647d9222bb6660eb4fb5dd4b8f74ef7961ee75820",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/attach_a_camera_to_a_tripod_233--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right camera_tripod_86 at RETRY48: fingers close around silver tripod leg. Not camera attachment and not the separate PLACE instance129. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "b47dcb93eb8f1faad9dba20009f902f297acb97ca8656c26691800bb7ac172c3"
+    },
+    {
+      "case": "clean_a_patio_127",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f4e4a901bf9bdd45a68b05e3b0611a39ff274640d505580640f8bde9369ce887",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/clean_a_patio_127--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left broom_172 at RETRY32: fingers reclose around brown shaft; target remains broom. No patio-cleaning result. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "316fc8d971714965fc1d79769fd2e3ea96b45e8fcd7d355cfb2ecdb3ec937414"
+    },
+    {
+      "case": "sorting_vegetables_94",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b0cc6d8b56bf2c71035c2121a181bdd7087b76553054f8de48a76e3de0458b4f",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/sorting_vegetables_94--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right wicker_basket_221 at RETRY32: basket rim beside corn; corn is contents, not target. No vegetable-sorting result. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "8c1411f84909b2cb8b2c3dbbed2fe3fda2d1cec0e8d52a35695f304c85a01ceb"
+    },
+    {
+      "case": "assembling_gift_baskets_54",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "bffaabc909306ef2b0ed364323bbcdfb9a704e44e00ef5afd6883ce5e79a8451",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/assembling_gift_baskets_54--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left wicker_basket_90 at RETRY24: specific foreground basket near fireplace, other baskets remain background. Reclosure on its rim, no gift assembly. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "f24452ac9e5fc18a6110680c6e9a47586c797a1dc00e9d6beda733fabe828a42"
+    },
+    {
+      "case": "sorting_books_on_shelf_220",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "91187191e581a1fa77ed0bbf6434a381b58edecc6a41b23c17d098f4365ab09d",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/sorting_books_on_shelf_220--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hardback_56 at RETRY24: thin cyan book edge near white shelf; same target at stable endpoint. No shelf-sorting completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "b75fcb9c1c1635fe9beb9885b822f1e8d08578181265ced703b93a0a3b8b559c"
+    },
+    {
+      "case": "setting_the_fire_280",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "769baf3cff19ff60f9cf45820c04e0ba5a0cb7f9771fe55157a233f2d4ac3b81",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/setting_the_fire_280--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left newspaper_74 at RETRY24: folded edge-on paper strongly occludes wrist; head/finger motion consistent with regrasp. No ignition/firewood claim. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "22a08d200d8cb4a674cab4ad77d89cbad195abd339c9f091f8312279417f380f"
+    },
+    {
+      "case": "scrubbing_bathroom_floor_79",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "59ad96dd0a457345aaab52c34930349ca3e6b0a67036f37fc63f981a14d26482",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/scrubbing_bathroom_floor_79--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right scrub_brush_222 at RETRY16: red bristles/brush edge identifiable before/after closure. No floor-scrubbing completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "4d2f3f299cf54f6593fe7b5298cb0fcaf9ec18cc9b82fad74fafab1d55dc15a7"
+    },
+    {
+      "case": "dispose_of_glass_192",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1ee4cd534e4b5f8c8c3c68d4a3811345b27ca0a216a2ff5bb25c62245f2298a8",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/dispose_of_glass_192--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left trash_can_64 at RETRY16: bin/liner partially occludes both wrist views; exact target/arm physically bound. No glass-disposal completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "c0b81f43c94b98416f72ea7bf85a7aed0a43f502f4fbc77ea7669f20c3188377"
+    },
+    {
+      "case": "tidying_living_room_28",
+      "branch": "open_gripper",
+      "manifest_sha256": "79df1b3f2369c567688542cade66ff25b20626a95bddf1c730b353c09c0d4d46",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/tidying_living_room_28--open_gripper",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right newspaper_53 at RETRY64: both hands visible around sheet but exact same-target right regrasp follows. No tidy-room completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "93401f1b68749bca1b81bc92bc831842dd35bf0b2eeceef03da53b142cfe475e"
+    },
+    {
+      "case": "spraying_fruit_trees_81",
+      "branch": "open_gripper",
+      "manifest_sha256": "d3740e40af1977980004d81dae783ebdc830207db4ab79a464a2a297e347bea1",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/spraying_fruit_trees_81--open_gripper",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left pesticide_atomizer_172 at RETRY32: red cap/black nozzle, fingers close around sprayer. No spraying-tree success. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "863a0866eec98f5a9048f200acd3e282f973d036fb2c34ffd6693aa32c1e9c6b"
+    },
+    {
+      "case": "cook_bacon_25",
+      "branch": "open_gripper",
+      "manifest_sha256": "332a77650d6fbef2a076be165d7e15cdbf44878617807602ba51ab9600dbbd5e",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/cook_bacon_25--open_gripper",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right tray_208 at RETRY32: fingers reclose on tray edge with bacon contents. Not food grasp, cooking, balanced carrying or placement. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "62c244041a43f0f11177e09c3affd9e7523f2a030d202e9faaf5db827cf24c22"
+    },
+    {
+      "case": "rearrange_your_room_65",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b47a647d6274f1f4b63e7da45ca0e66ce04b30dba31f8280382cd8307c67e62e",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/rearrange_your_room_65--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left pillow_66 at RETRY64: fabric covers wrist and visible grasp difference is small; physical identity/history required. Do not use fixed jaw-opening threshold. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "84118725999ee7b019ecb4fdf75c021c036536587ca6f75bd0f6aae8881bd79c"
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_139",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c1f7f8bd88690f345eab0d68617cce275db3d6dabba67ae5191585909d320f0a",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/putting_up_Christmas_decorations_inside_139--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right wicker_basket_218 at RETRY32: ornament basket near tree; same rim regrasp, no Christmas-decoration completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "45083fae0d7d3d6352fa9dc70dfcf632dfeaec8e2451b65358ed96fe34dbefb4"
+    },
+    {
+      "case": "organizing_school_stuff_178",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f26420fd3345394829537cfca0db626f0a939d264ee48ad67f98cfb3e70f1587",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/organizing_school_stuff_178--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left tote_208 at RETRY64: strap against furniture partially occludes wrist; head/finger reclosure and measured hold agree. No school-stuff organization completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "1b088581be1bedaa5c9282b82019e5b9cf9a523771a48d235e4f7ad6e848e64c"
+    },
+    {
+      "case": "make_gift_bags_for_baby_showers_13",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ae335fa7a7c17ffdadab2ec550eac22f6ecc80a39ffdd1261fc9cde4ef8dccd8",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/make_gift_bags_for_baby_showers_13--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right wafer_50 at RETRY24: packaged wafer by cabinet; same package between fingers after reclosure. No gift-bag completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "8e6eb32849a0ce3c0c90208f8d6ec2fbf027fa7c72c735b3bfaedd11f0f2a81b"
+    },
+    {
+      "case": "clean_up_your_desk_259",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7f92bb113a39de883e823fb0a7b098e035517298b9dfb38be89d7f101084e992",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/clean_up_your_desk_259--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left folder_231 at RETRY32: blue folder on chair; approaching fingers reclose on same folder. No desk-cleaning completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "0a3e6860241377b86e9d4f2e9287c194eb769def75d03b0b4937eb9ae79be4f4"
+    },
+    {
+      "case": "cook_hot_dogs_86",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "32456d0f731f3ffc743703d7ace185a932575752e7f54fd3f1a728f7ba36cc7f",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/cook_hot_dogs_86--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hotdog_208 at RETRY32: mustard-topped hotdog, fingers reclose around same food. No cooking completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "d10bad4bc79f054b61fcdf9e8ea0a3e9b8c1d5e6ad93787df17593157ca9714d"
+    },
+    {
+      "case": "moving_boxes_to_storage_136",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f0d0c0b532d91d2effb29c120c5236f4956178bb8b873f7b16596180091cac26",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/moving_boxes_to_storage_136--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "REJECT RETRY32: right hand already holds storage_box_79; actual GRASP arm is UNSPECIFIED, so a left-only regrasp need is absent from the actor-visible intent. Do not rewrite the historical command to LEFT.",
+      "review_sha256": "b7ade5469d7a444b079ba9e5886ed6d08ce7c528c481aaf46b0d80244a8723a1"
+    },
+    {
+      "case": "composting_waste_274",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "a0b22a8476e0ceff2cfd77576a12c7b549f4495afca31931a45a524e2446cb87",
+      "review_directory": "runs/recovery100_collection_20261009/planner-expansion-review-v1/composting_waste_274--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right trash_can_66 at RETRY48: bin close to counter/wall, strong wrist occlusion; head and physical target history support same-bin regrasp only. No composting completion. Only the actual issued RETRY time is approved; no synthetic plan or future physical facts enter its input.",
+      "review_sha256": "e1e8b3686cb3bdce060a84de13742f0ec2b08eeeb73e3da431a744b3757f7a18"
+    }
+  ],
+  "review_scope": "23 exact issued RETRY targets; one ambiguous bimanual target rejected. No new outcome or BC approvals. Sparse execution frames do not approve action windows."
+}

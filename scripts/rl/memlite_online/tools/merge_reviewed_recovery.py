@@ -25,6 +25,8 @@ def relocate_reference(reference, old_root, shared_root):
 
 
 def build_union(spec, output):
+    if spec.get('superseded_by'):
+        raise ValueError('Superseded data spec must not be built: ' + str(spec['superseded_by']))
     root = Path(spec['evidence_root']).resolve()
     protected = Path(spec['protected_groups'])
     output = Path(output)

@@ -1,6 +1,4 @@
 {
-  "superseded_by": "a800_reviewed_union_v7_outcomes_planner.json",
-  "do_not_use_reason": "moving_boxes_to_storage_136 IN_PROGRESS36 contradicts the UNSPECIFIED-arm intent; v7 withdraws it and separately binds reviewed RETRY supervision.",
   "evidence_root": "/data/workspace/wsy/behavior2026",
   "protected_groups": "/data/workspace/wsy/behavior2026/runs/recovery_sft_preparation_20261009/cpu-preflight-v1/protected-groups.json",
   "units": [
@@ -49,10 +47,10 @@
       ]
     },
     {
-      "corpus": "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-expansion-source-20261010-v2/runs/recovery100_collection_20261009/outcome-expansion-unit-v2",
-      "evidence_root": "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-expansion-source-20261010-v2",
+      "corpus": "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-planner-source-20261010-v1/runs/recovery100_collection_20261009/outcome-planner-expansion-unit-v1",
+      "evidence_root": "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-planner-source-20261010-v1",
       "approvals": [
-        "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-expansion-source-20261010-v2/runs/recovery100_collection_20261009/outcome-expansion-unit-v2/approvals.json"
+        "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-planner-source-20261010-v1/runs/recovery100_collection_20261009/outcome-planner-expansion-unit-v1/approvals.json"
       ]
     }
   ]

@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest,file_sha
 from recovery_admission import local_file
-from recovery_teacher_corpus import physical_proposal,validate_branch
+from recovery_teacher_corpus import physical_proposal,validate_branch,validate_grasp_review_semantics
 from recovery_terminal_corpus import load_terminal
 from recovery_articulation_corpus import CLEAN,validate_articulation_branch
 
@@ -97,6 +97,8 @@ def main():
                 measured=terminal['outcome_candidate']
             else:measured=physical_proposal(rows,t,manifest['arm'],attempt_start=latest['control_step'])
             if measured!=outcome['value']:raise ValueError('Owner outcome contradicts causal physical evidence')
+            if not articulation and (terminal is None or t != terminal['control_step']):
+                validate_grasp_review_semantics(rows,t,manifest['arm'],latest,outcome=measured)
             label=dict(value=measured,member_index=0,available_control_step=t,evidence_end_control_step=t)
             if role=='predecision':label['history_role']=role
             approve(t,'outcome',label)
@@ -111,6 +113,9 @@ def main():
         for t in decision['planner_steps']:
             target=a.corpus/'proposed-plans'/(indexed[t]['sample_id']+'.json')
             if not any(e['control_step']==t and e['decision']=='RETRY' for e in plans):raise ValueError('No actual RETRY issued')
+            if not articulation:
+                issued=next(e for e in plans if e['control_step']==t)
+                validate_grasp_review_semantics(rows,t,manifest['arm'],issued,planner_retry=True)
             approve(t,'planner',dict(verified_plan_path=str(target.resolve().relative_to(root)),
                 verified_plan_sha256=file_sha(target),kind='verified_recovery_continuation'))
     output=dict(schema='recovery_sample_approvals_v1',inventory_sha256=digest(inventory),

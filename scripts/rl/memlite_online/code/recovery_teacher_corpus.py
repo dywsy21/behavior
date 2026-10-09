@@ -4,6 +4,7 @@ Never misrepresent privileged collection as on-policy actor trajectories.
 No fields from teacher/physics/noise enter the model observation allowlist.
 """
 from copy import deepcopy
+import json
 import numpy as np
 
 from recovery_corpus import digest
@@ -124,3 +125,40 @@ def physical_proposal(rows,t,arm,*,attempt_start,index=None):
         if abs(current['gripper_aperture'][arm]-old)>.002 or current['grasp'][arm]=='TRUE':
             return 'IN_PROGRESS'
     return None
+
+
+def validate_grasp_review_semantics(rows, t, arm, plan, *, outcome=None, planner_retry=False):
+    """Reject arm-local labels that contradict the command the model sees.
+
+    The collector's selected servo arm is audit metadata, not an implicit
+    refinement of an UNSPECIFIED-arm GRASP. In particular, a stable hold by
+    the other hand cannot be called continuing failure recovery of that
+    unqualified command. This guard never relabels evidence or edits plans.
+    """
+    skills = json.loads(plan['active_skills_semantic_json'])
+    if len(skills) != 1 or skills[0]['verb'] != 'GRASP':
+        raise ValueError('Grasp review requires the actual single GRASP member')
+    current = rows[t]['physical_before']
+    skill = skills[0]
+    if skill['target'] != current['target_name'] or arm not in ('left', 'right'):
+        raise ValueError('Grasp review target/arm is not the measured object')
+    binding = skill.get('arm', 'UNSPECIFIED')
+    if binding in ('LEFT', 'RIGHT') and binding.lower() != arm:
+        raise ValueError('Measured servo arm differs from the issued GRASP arm')
+    if binding not in ('LEFT', 'RIGHT', 'BOTH', 'UNSPECIFIED'):
+        raise ValueError('Transfer-arm semantics need separate physical supervision')
+    prior = rows[max(0, t - 6):t]
+    stable_any = len(prior) == 6 and all(
+        any(v == 'TRUE' for v in r['physical_audit']['grasp'].values()) for r in prior)
+    stable_both = len(prior) == 6 and all(
+        all(r['physical_audit']['grasp'][a] == 'TRUE' for a in ('left', 'right')) for r in prior)
+    if outcome == 'SUCCEEDED' and binding == 'BOTH' and not stable_both:
+        raise ValueError('Single-hand hold cannot prove a BOTH-arm GRASP')
+    if outcome in ('IN_PROGRESS', 'FAILED') and (
+            (binding == 'UNSPECIFIED' and stable_any) or (binding == 'BOTH' and stable_both)):
+        raise ValueError('Arm-local non-success contradicts the already satisfied issued GRASP')
+    if planner_retry and binding == 'UNSPECIFIED':
+        other = 'right' if arm == 'left' else 'left'
+        if current['grasp'][other] == 'TRUE':
+            raise ValueError('Ambiguous RETRY: other hand holds target but issued arm is UNSPECIFIED')
+    return True

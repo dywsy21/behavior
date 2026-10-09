@@ -16,6 +16,13 @@ module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
 
 
 class UnionTests(unittest.TestCase):
+    def test_superseded_spec_fails_before_any_data_write(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output=Path(directory)/'not-created'
+            with self.assertRaisesRegex(ValueError,'Superseded data spec'):
+                module.build_union(dict(superseded_by='corrected-v7.json'),output)
+            self.assertFalse(output.exists())
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name);self.protected=self.root/'protected.json'

@@ -1,0 +1,977 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 03:09 CST; personally inspected all 24 original RGB contact sheets / 288 panels, verified all 24 sheet SHA256 and 72 success/failure six-control causal histories. No model predictions, no calibration/test sources. Re-audited 2026-10-10 03:28 CST against issued arm semantics; retract moving_boxes_to_storage_136 IN_PROGRESS36 only; prior media review unchanged.",
+  "branches": [
+    {
+      "case": "storing_food_249",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "505e7bd02959bcc4beb57c971b629a10b5bf863b634210b3b580d283417d012c",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/storing_food_249--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left olive-oil bottle, near wrist strongly occluded by translucent bottle body; head and finger spacing agree with release/reclosure. Do not infer storage-task completion. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "storing_food_249",
+      "branch": "clean",
+      "manifest_sha256": "0b83a1188c10819668864f93290ffc884d9a8eea8c118ee75a09e471d0389eef",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/storing_food_249--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left olive-oil bottle, near wrist strongly occluded by translucent bottle body; head and finger spacing agree with release/reclosure. Do not infer storage-task completion. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "getting_organized_for_work_166",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "adce102dd54cddfd2c367905ec153605fcce235bf5e55c87f524ed24c83d4ff1",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/getting_organized_for_work_166--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right mouse is dark against the desk; head/wrist geometry and actual same-target grasp history support the four exact observations. No unsupported claim of workstation organization. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "getting_organized_for_work_166",
+      "branch": "clean",
+      "manifest_sha256": "673dd7daf9a9f59f741d8d06583c85c2ebe410ca5256bcbd8a58a352a7befc28",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/getting_organized_for_work_166--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right mouse is dark against the desk; head/wrist geometry and actual same-target grasp history support the four exact observations. No unsupported claim of workstation organization. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "store_produce_8",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "063730cb1cdaa554dc585343ebd380f2fd6d32a1211faef5c7a78b85f81c86d7",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/store_produce_8--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left basket handle/rim, produce visible inside; assess wicker_basket_74, not an individual apple or the other arm. Basket remains locally in view. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "store_produce_8",
+      "branch": "clean",
+      "manifest_sha256": "c3ca6eb28ca880fe4dbfa867f9e2b1e879078ef819afdf3e9bdd8003fe668d7f",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/store_produce_8--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left basket handle/rim, produce visible inside; assess wicker_basket_74, not an individual apple or the other arm. Basket remains locally in view. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "clean_up_broken_glass_231",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ff4f6303720f31bf020660352f018314b18cb191aa6dad67642cf469595e7e33",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/clean_up_broken_glass_231--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right irregular black broken-glass object over patterned tile; verify broken_glass_98, not the nearby furniture or a guessed bucket. Fingers approach/reclose around the same target. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "clean_up_broken_glass_231",
+      "branch": "clean",
+      "manifest_sha256": "516a213eb6627b59604fb7be730f73ff57ceb810bc0263e12caf4b09c75efdc6",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/clean_up_broken_glass_231--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right irregular black broken-glass object over patterned tile; verify broken_glass_98, not the nearby furniture or a guessed bucket. Fingers approach/reclose around the same target. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "make_cabinet_doors_135",
+      "branch": "open_gripper",
+      "manifest_sha256": "55ec4d9c2ef5ff81b683fe742ac87e259bff326bfa7b4b2ac12242f54388f140",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/make_cabinet_doors_135--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left long thin cabinet_door_73 close to the wrist; the other hand carries another wooden item and is not the label target. Approve local grasp only. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "make_cabinet_doors_135",
+      "branch": "clean",
+      "manifest_sha256": "c39d0a8a663c74660be0955e03bfa0b83f7c96352426223b2d9a2b831ebcbc8b",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/make_cabinet_doors_135--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left long thin cabinet_door_73 close to the wrist; the other hand carries another wooden item and is not the label target. Approve local grasp only. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_233",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "8100be2dd03ac8c4c1e9e65647d9222bb6660eb4fb5dd4b8f74ef7961ee75820",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/attach_a_camera_to_a_tripod_233--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand recloses around camera_tripod_86 leg; head shows same tripod. This is GRASP, not camera attachment or the PLACE_ON experiment on instance129. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_233",
+      "branch": "clean",
+      "manifest_sha256": "ddcd4d55af02ee9ff397ae9e3e9e7a6c372668d2c1ae8a84e6c46a9bc3255c1e",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/attach_a_camera_to_a_tripod_233--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand recloses around camera_tripod_86 leg; head shows same tripod. This is GRASP, not camera attachment or the PLACE_ON experiment on instance129. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "clean_a_patio_127",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f4e4a901bf9bdd45a68b05e3b0611a39ff274640d505580640f8bde9369ce887",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/clean_a_patio_127--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left broom handle clearly between finger tips; wrist/head agree with local reopening and reclosure. Not a swept-patio success label. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "clean_a_patio_127",
+      "branch": "clean",
+      "manifest_sha256": "e5fd36f4097a6faba5d22073b01fcbf4420f6c62c8d5fa2eeb4a3e9af1d1b5a3",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/clean_a_patio_127--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left broom handle clearly between finger tips; wrist/head agree with local reopening and reclosure. Not a swept-patio success label. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "sorting_vegetables_94",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b0cc6d8b56bf2c71035c2121a181bdd7087b76553054f8de48a76e3de0458b4f",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/sorting_vegetables_94--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker basket rim fills wrist camera, corn is contents not the target. Same-time clean grasp is retained to avoid an elapsed-time shortcut. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "sorting_vegetables_94",
+      "branch": "clean",
+      "manifest_sha256": "4ce8be88aaf1e33e40c9650c40babac997814f1ebbdfe2580414624bd7993fbd",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/sorting_vegetables_94--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker basket rim fills wrist camera, corn is contents not the target. Same-time clean grasp is retained to avoid an elapsed-time shortcut. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "assembling_gift_baskets_54",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "bffaabc909306ef2b0ed364323bbcdfb9a704e44e00ef5afd6883ce5e79a8451",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/assembling_gift_baskets_54--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wicker basket rim/side, head shows other baskets nearby; bind only wicker_basket_90. Reclosure is local, no completed basket assembly. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "assembling_gift_baskets_54",
+      "branch": "clean",
+      "manifest_sha256": "268ce5b922f828a9bbd05d1ea7a49a101e1255bafac05b327049d16ce9a0349a",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/assembling_gift_baskets_54--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wicker basket rim/side, head shows other baskets nearby; bind only wicker_basket_90. Reclosure is local, no completed basket assembly. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "sorting_books_on_shelf_220",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "91187191e581a1fa77ed0bbf6434a381b58edecc6a41b23c17d098f4365ab09d",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/sorting_books_on_shelf_220--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right cyan hardback_56 next to other shelf books; cyan spine and closing fingers are visible. No shelf-arrangement success inferred. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "sorting_books_on_shelf_220",
+      "branch": "clean",
+      "manifest_sha256": "7060f5b7a86743b2ded7847c252aa4b45ecf585ebf3c81c69951a74088155a3b",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/sorting_books_on_shelf_220--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right cyan hardback_56 next to other shelf books; cyan spine and closing fingers are visible. No shelf-arrangement success inferred. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "setting_the_fire_280",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "769baf3cff19ff60f9cf45820c04e0ba5a0cb7f9771fe55157a233f2d4ac3b81",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/setting_the_fire_280--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left edge-on newspaper_74 gives a heavily occluded wrist view; use head plus actual target-bound causal states, not visual guessing of firewood or ignition. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "setting_the_fire_280",
+      "branch": "clean",
+      "manifest_sha256": "b3ef422f110c89b205a82374e18120b4da883168258d581e24b570228fc0deb9",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/setting_the_fire_280--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left edge-on newspaper_74 gives a heavily occluded wrist view; use head plus actual target-bound causal states, not visual guessing of firewood or ignition. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_79",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "59ad96dd0a457345aaab52c34930349ca3e6b0a67036f37fc63f981a14d26482",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/scrubbing_bathroom_floor_79--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right red-bristled scrub_brush_222, wrist shows finger closure on the same brush; no clean-floor claim. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_79",
+      "branch": "clean",
+      "manifest_sha256": "caf702c61f9407f0f81f399397a3445a3e3b1a085c580705ea6f94561d53f59d",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/scrubbing_bathroom_floor_79--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right red-bristled scrub_brush_222, wrist shows finger closure on the same brush; no clean-floor claim. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "dispose_of_glass_192",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1ee4cd534e4b5f8c8c3c68d4a3811345b27ca0a216a2ff5bb25c62245f2298a8",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/dispose_of_glass_192--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left trash_can_64 with dark liner; the opposite wrist sees the same bin but its hand is not the supervised member. No disposal completion inferred. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "dispose_of_glass_192",
+      "branch": "clean",
+      "manifest_sha256": "fbabfdf68091df027edac568f6372f21c05d7f6208e265a7b1117644e0ebc152",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/dispose_of_glass_192--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left trash_can_64 with dark liner; the opposite wrist sees the same bin but its hand is not the supervised member. No disposal completion inferred. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "tidying_living_room_28",
+      "branch": "open_gripper",
+      "manifest_sha256": "79df1b3f2369c567688542cade66ff25b20626a95bddf1c730b353c09c0d4d46",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/tidying_living_room_28--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 84,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right newspaper_53 shared across both hand views; failure aperture differs only slightly from clean, so closure alone is not truth. Only right same-target causal grasp is approved. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "tidying_living_room_28",
+      "branch": "clean",
+      "manifest_sha256": "5fb9c4ae6e0e433fa84de1e7f64b79647e6bdb5d92593a2e26ef1e55a1ab8b21",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/tidying_living_room_28--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right newspaper_53 shared across both hand views; failure aperture differs only slightly from clean, so closure alone is not truth. Only right same-target causal grasp is approved. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "spraying_fruit_trees_81",
+      "branch": "open_gripper",
+      "manifest_sha256": "d3740e40af1977980004d81dae783ebdc830207db4ab79a464a2a297e347bea1",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/spraying_fruit_trees_81--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left black/red pesticide_atomizer_172 with visible nozzle; fingers approach and reclose. No spraying or tree-state labels approved. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "spraying_fruit_trees_81",
+      "branch": "clean",
+      "manifest_sha256": "6271db4de62d0eafd806b5cb201c78875f7acd15987f44d20f04bb121af82885",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/spraying_fruit_trees_81--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left black/red pesticide_atomizer_172 with visible nozzle; fingers approach and reclose. No spraying or tree-state labels approved. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "cook_bacon_25",
+      "branch": "open_gripper",
+      "manifest_sha256": "332a77650d6fbef2a076be165d7e15cdbf44878617807602ba51ab9600dbbd5e",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/cook_bacon_25--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 56,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right tray_208 rim adjacent to bacon slices; target is tray, not food. This supplies grasp supervision, not stable transport or cooking success. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "cook_bacon_25",
+      "branch": "clean",
+      "manifest_sha256": "c02b23aaee4a8eee0d386acc9b299532bf353670385328def8f1aac8adfd05ce",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/cook_bacon_25--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right tray_208 rim adjacent to bacon slices; target is tray, not food. This supplies grasp supervision, not stable transport or cooking success. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "rearrange_your_room_65",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b47a647d6274f1f4b63e7da45ca0e66ce04b30dba31f8280382cd8307c67e62e",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/rearrange_your_room_65--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 84,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left pillow_66 nearly fills wrist view; clean held aperture is also about0.05m, demonstrating that open-looking fingers alone do not define failure. Use exact six-control grasp evidence, not an aperture threshold. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "rearrange_your_room_65",
+      "branch": "clean",
+      "manifest_sha256": "72484cd88a8ce6271a92f4f777f219ccb95c415dcecb677a71db9b17f1378686",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/rearrange_your_room_65--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left pillow_66 nearly fills wrist view; clean held aperture is also about0.05m, demonstrating that open-looking fingers alone do not define failure. Use exact six-control grasp evidence, not an aperture threshold. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_139",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c1f7f8bd88690f345eab0d68617cce275db3d6dabba67ae5191585909d320f0a",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/putting_up_Christmas_decorations_inside_139--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker_basket_218 rim, ornaments visible within and tree in head view; hold evidence pertains to basket only. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_139",
+      "branch": "clean",
+      "manifest_sha256": "25ef6e00318c47eb76095453ca02d6d1bdff5782217cfe3c71ea8aa811864bfa",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/putting_up_Christmas_decorations_inside_139--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker_basket_218 rim, ornaments visible within and tree in head view; hold evidence pertains to basket only. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "organizing_school_stuff_178",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f26420fd3345394829537cfca0db626f0a939d264ee48ad67f98cfb3e70f1587",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/organizing_school_stuff_178--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left tote_208 strap/edge against furniture; partial wrist occlusion preserved, no invented visibility. Exact target and previous actual grasp states distinguish the sampled phases. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "organizing_school_stuff_178",
+      "branch": "clean",
+      "manifest_sha256": "39d00e1d7a79b6e5a53000017a92b27ea073462e5d632fdf573b15ad2017f604",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/organizing_school_stuff_178--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left tote_208 strap/edge against furniture; partial wrist occlusion preserved, no invented visibility. Exact target and previous actual grasp states distinguish the sampled phases. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "make_gift_bags_for_baby_showers_13",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ae335fa7a7c17ffdadab2ec550eac22f6ecc80a39ffdd1261fc9cde4ef8dccd8",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/make_gift_bags_for_baby_showers_13--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right packaged wafer_50 on cabinet, wrapper and finger approach visible; local grasp only, not completed gift bag. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "make_gift_bags_for_baby_showers_13",
+      "branch": "clean",
+      "manifest_sha256": "eb4fa352f92ae9b184c783b16d24733ce351e2ce1199405dd77a112326ade46f",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/make_gift_bags_for_baby_showers_13--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right packaged wafer_50 on cabinet, wrapper and finger approach visible; local grasp only, not completed gift bag. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "clean_up_your_desk_259",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7f92bb113a39de883e823fb0a7b098e035517298b9dfb38be89d7f101084e992",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/clean_up_your_desk_259--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left blue folder_231 on chair beside shelves; wrist shows same binder edge and closing fingers. Not desk-cleaning completion. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "clean_up_your_desk_259",
+      "branch": "clean",
+      "manifest_sha256": "982258da0c556bfce19c626786037a312aa515347d3884ce08b2d0690c879138",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/clean_up_your_desk_259--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left blue folder_231 on chair beside shelves; wrist shows same binder edge and closing fingers. Not desk-cleaning completion. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "cook_hot_dogs_86",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "32456d0f731f3ffc743703d7ace185a932575752e7f54fd3f1a728f7ba36cc7f",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/cook_hot_dogs_86--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hotdog_208 in bun with mustard, finger placement visible; no cooking/eating success inferred. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "cook_hot_dogs_86",
+      "branch": "clean",
+      "manifest_sha256": "8d0194f02ae7b01830bbe959c3f01cf55c2b3b7f5ef1747c7ee5efc25fb343a6",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/cook_hot_dogs_86--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hotdog_208 in bun with mustard, finger placement visible; no cooking/eating success inferred. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "moving_boxes_to_storage_136",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f0d0c0b532d91d2effb29c120c5236f4956178bb8b873f7b16596180091cac26",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/moving_boxes_to_storage_136--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "CORRECTED: approve only FAILED8 (both hands actually lost) and SUCCEEDED52 (stable actual hold). Withdraw old IN_PROGRESS36: the right hand already holds the target and the issued arm is UNSPECIFIED. Original media and all old versions retained; no plan/action approval."
+    },
+    {
+      "case": "moving_boxes_to_storage_136",
+      "branch": "clean",
+      "manifest_sha256": "67bd914fbedfe873eb3400ce55d67fa130c0ee8be3243965eaf9ea5e81add46f",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/moving_boxes_to_storage_136--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left storage_box_79 rim of the red open box, other hand present but not used as proof for the target hand. Grasp only, not transport/storage. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "composting_waste_274",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "a0b22a8476e0ceff2cfd77576a12c7b549f4495afca31931a45a524e2446cb87",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/composting_waste_274--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right trash_can_66 close to counter/wall; wrist largely occluded, head and exact same-target history retained. No compost/disposal success inferred. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    },
+    {
+      "case": "composting_waste_274",
+      "branch": "clean",
+      "manifest_sha256": "c60162dc18d876f5e91d67dd19a11534ec0619aaa188ec06fb320ed611b1c2ea",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v2/composting_waste_274--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right trash_can_66 close to counter/wall; wrist largely occluded, head and exact same-target history retained. No compost/disposal success inferred. Only the displayed exact time points are approved; FAILED follows six actual no-hand grasps, IN_PROGRESS belongs to the already issued corrective attempt, and SUCCEEDED follows six consecutive actual same-hand holds. No whole-clip BC/planner approval."
+    }
+  ],
+  "revision": {
+    "supersedes": "outcome_expansion_owner_review_v2.json",
+    "previous_decisions_sha256": "48dd67e78427b712493e402ead0b6c4e20d0c781421cbc527ef740a98e53b5db",
+    "withdrawn": [
+      {
+        "case": "moving_boxes_to_storage_136",
+        "branch": "open_gripper_joint_jitter",
+        "control_step": 36,
+        "value": "IN_PROGRESS",
+        "reason": "Issued arm is UNSPECIFIED while other hand has held target for six controls; arm-local progress is inconsistent with that overall GRASP."
+      }
+    ],
+    "new_outcomes": 0,
+    "retained_outcomes": 95
+  }
+}

@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest
-from recovery_teacher_corpus import validate_branch,physical_proposal,episode_identity,PhysicalProposalIndex
+from recovery_teacher_corpus import validate_branch,physical_proposal,episode_identity,PhysicalProposalIndex,validate_grasp_review_semantics
 
 
 def fixture():
@@ -29,6 +29,46 @@ def fixture():
 
 
 class TeacherCorpusTests(unittest.TestCase):
+    def test_unspecified_arm_cannot_ignore_existing_other_hand_hold(self):
+        rows,_,plans=fixture();plan=plans[0]
+        for row in rows:
+            row['physical_before']['grasp']['right']='TRUE'
+            row['physical_audit']['grasp']['right']='TRUE'
+        for outcome in ('IN_PROGRESS','FAILED'):
+            with self.assertRaisesRegex(ValueError,'already satisfied'):
+                validate_grasp_review_semantics(rows,16,'left',plan,outcome=outcome)
+        with self.assertRaisesRegex(ValueError,'Ambiguous RETRY'):
+            validate_grasp_review_semantics(rows,16,'left',plan,planner_retry=True)
+        # Do not silently rewrite the historical plan to add the servo arm.
+        self.assertNotIn('arm',__import__('json').loads(plan['active_skills_semantic_json'])[0])
+
+    def test_explicit_arm_and_target_must_match_actual_command(self):
+        rows,_,plans=fixture();plan=deepcopy(plans[0])
+        plan['active_skills_semantic_json']='[{"verb":"GRASP","target":"cup","arm":"LEFT"}]'
+        for row in rows:
+            row['physical_before']['grasp']['right']='TRUE'
+            row['physical_audit']['grasp']['right']='TRUE'
+        self.assertTrue(validate_grasp_review_semantics(rows,16,'left',plan,outcome='IN_PROGRESS',planner_retry=True))
+        with self.assertRaisesRegex(ValueError,'servo arm'):
+            validate_grasp_review_semantics(rows,16,'right',plan,outcome='IN_PROGRESS')
+        plan['active_skills_semantic_json']='[{"verb":"GRASP","target":"other","arm":"LEFT"}]'
+        with self.assertRaisesRegex(ValueError,'target/arm'):
+            validate_grasp_review_semantics(rows,16,'left',plan,outcome='IN_PROGRESS')
+
+    def test_both_arm_success_needs_both_and_future_does_not_count(self):
+        rows,_,plans=fixture();plan=deepcopy(plans[0])
+        plan['active_skills_semantic_json']='[{"verb":"GRASP","target":"cup","arm":"BOTH"}]'
+        for row in rows:
+            row['physical_before']['grasp']['left']='TRUE'
+            row['physical_audit']['grasp']['left']='TRUE'
+        with self.assertRaisesRegex(ValueError,'BOTH-arm'):
+            validate_grasp_review_semantics(rows,16,'left',plan,outcome='SUCCEEDED')
+        for row in rows[16:]:row['physical_audit']['grasp']['right']='TRUE'
+        with self.assertRaisesRegex(ValueError,'BOTH-arm'):
+            validate_grasp_review_semantics(rows,16,'left',plan,outcome='SUCCEEDED')
+        for row in rows[10:16]:row['physical_audit']['grasp']['right']='TRUE'
+        self.assertTrue(validate_grasp_review_semantics(rows,16,'left',plan,outcome='SUCCEEDED'))
+
     def test_index_exactly_matches_causal_scan_including_future_changes(self):
         import random
         rng=random.Random(17)
