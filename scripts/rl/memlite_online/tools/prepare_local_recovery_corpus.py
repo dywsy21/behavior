@@ -25,7 +25,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--collection',type=Path,required=True);p.add_argument('--sources',type=Path,required=True)
     p.add_argument('--protected',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
-    p.add_argument('--previous-collection',type=Path)
+    p.add_argument('--previous-collection',type=Path,action='append',default=[])
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     protected=set(json.loads(a.protected.read_text())['groups']);source_rows=[]
@@ -34,13 +34,18 @@ def main():
     for folder in ('raw','audit','history','proposed-plans'):(a.output/folder).mkdir()
     for entry in json.loads((a.sources/'manifest.json').read_text())['cases']:
         proposal=a.sources/entry['directory'];directory=a.collection/entry['directory']
-        previous=a.previous_collection/entry['directory'] if a.previous_collection else None
-        if previous is not None and (previous/'result.json').exists():
+        priors=[root/entry['directory'] for root in a.previous_collection
+                if (root/entry['directory']/'result.json').exists() or (root/entry['directory']/'status.json').exists()]
+        if len(priors)>1:raise ValueError('Conflicting first attempts; cannot select a preferred result')
+        previous=priors[0] if priors else None
+        if previous is not None:
             # Keep the FIRST recorded attempt, including its failures. Do not
             # select a luckier repetition or count warm-engineering duplicates.
             directory=previous
         if not (directory/'result.json').exists():
-            excluded.append(dict(case=entry['directory'],reason='No completed collection receipt'));continue
+            state=json.loads((directory/'status.json').read_text()) if (directory/'status.json').exists() else {}
+            excluded.append(dict(case=entry['directory'],reason=state.get('status','No completed collection receipt'),
+                original_error=state.get('error'),receipt_sha256=file_sha(directory/'status.json') if state else None));continue
         source=json.loads((proposal/'manifest.json').read_text())
         if (file_sha(proposal/'manifest.json')!=entry['manifest_sha256'] or source['source_group'] in protected
                 or source['source_episode']['split']!='train' or source['protected_groups_sha256']!=file_sha(a.protected)

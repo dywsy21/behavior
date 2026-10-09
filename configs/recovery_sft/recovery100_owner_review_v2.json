@@ -1,0 +1,18 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-09 18:20 CST; personally inspected 42 original RGB panels and exact causal physical records; reference binding independently rederived from all original competitor observations",
+  "scope": "One additional TRAIN source, left-hand vacuum grasp with a 16-control fault. Local same-object reacquisition only, not vacuuming or whole-task success. Preserves the unsuccessful open_gripper sibling; no selection of a new rollout attempt or new independent event per branch.",
+  "branches": [
+    {
+      "case": "vacuuming_floors_15",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "6ba9c5919e755cbc0f7911c88c1cba32bb9c4a7aad57d7096170c23dc0d42ebf",
+      "review_directory": "vacuum15-review-v1",
+      "outcomes": [{"control_step": 12, "value": "FAILED"}, {"control_step": 20, "value": "IN_PROGRESS"}, {"control_step": 40, "value": "SUCCEEDED"}],
+      "action_steps": [16],
+      "planner_steps": [16],
+      "corrective_execution_visually_verified": true,
+      "notes": "Original class vacuum is causally resolved to vacuum_89 by unique actual left contact at original control 298; no numerical suffix guess. Left gripper opens, returns, and closes on the supported vacuum; wrist is partly occluded but head view and exact physical identity agree. Every saved anchor over the real 16..47 corrective action window and endpoint 48 was inspected; same-target hold persists at 152. No injected controls enter the approved action window."
+    }
+  ]
+}
