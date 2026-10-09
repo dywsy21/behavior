@@ -23,6 +23,7 @@ from recovery_corpus import file_sha,digest
 from recovery_sft_data import require_training_pool,CandidateArchiveReader,raw_observation
 from recovery_observer_training import OUTCOMES,request_key
 from recovery_convergence import event_weights,check_splits,selection_key
+from recovery_features import require_history_protocol
 
 
 def main():
@@ -73,6 +74,8 @@ def main():
         runtime_ready=False,planner_and_low_unchanged=True)
     atomic_json(a.output/'status.json',status)
     cache=torch.load(root/cfg['features'],map_location='cpu',weights_only=False)
+    history_protocol=require_history_protocol(cfg,cache_receipt,cache)
+    status['history_protocol']=history_protocol
     if digest(cache['requests'])!=cache_receipt['requests_sha256']:raise ValueError('Changed causal requests')
     requests={r['request_id']:r for r in cache['requests']}
     names=json.loads((root/cfg['expert_release']/'manifest.json').read_text())['task_names']

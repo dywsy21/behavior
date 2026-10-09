@@ -20,6 +20,7 @@ from recovery_corpus import file_sha, digest
 from recovery_sft_data import require_training_pool
 from recovery_observer_training import OUTCOMES, request_key, temporal_batch, outcome_metrics
 from recovery_convergence import event_weights, check_splits, selection_key, causal_suffix_training_items
+from recovery_features import require_history_protocol
 
 
 def main():
@@ -52,6 +53,7 @@ def main():
     train = [r for r in rows if r['candidate']['split'] == 'train']
     dev = [r for r in rows if r['candidate']['split'] == 'dev']; check_splits(train, dev)
     cache = torch.load(path, map_location='cpu', weights_only=False)
+    history_protocol = require_history_protocol(cfg, receipt, cache)
     if (cache['schema'] != 'recovery_member_feature_cache_v1'
             or digest(cache['requests']) != receipt['requests_sha256']):
         raise ValueError('Invalid feature request provenance')
@@ -148,6 +150,7 @@ def main():
         high_sha256=cfg['high_sha256'],selected_observer_sha256=file_sha(args.output/'selected-observer.pt'),
         runtime_ready=False,dev_used_for_model_selection=True,requires_new_independent_calibration=True,
         observer_kwargs=observer_kwargs,
+        history_protocol=history_protocol,
         history_augmentation=augmentation,training_views=len(train_items),reviewed_training_rows=len(train),
         outcome_weighting=weighting,
         wandb_url=wb.url,source_commit=commit,config_sha256=file_sha(args.config)))

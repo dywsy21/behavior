@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 02:59 CST / Codex RECOVERY-USABLE：** 两路原冻源继续：observer-v2第9epoch/198步原选择DEV事件89.17%、balanced70.83%（UNKNOWN仍0/4），不可只报总分或部署；epoch2独立CPU重载192 adapter＋14头＋206 Adam/step44、finite通过，完整新进程前向仍待。短RL global7/33chunks通过actor KL.01276与critic回溯3.75e-5，小误差下降不是SR证据。只读查实216结果中很多首间隔1–14控的样本被16控抽样压为单帧，实际同attempt起点图存在。新增显式`attempt_start_short_v1`对照，只补不足16控时的真实起点、不动标签/数据split/长历史/运行source；cache/config/receipt须一致，154本地恢复回归过，尚未提取新特征/拟合。下一步与原v4 frozen-head做单变量比较；60校准/20test不进入该对照。
+
 - **2026-10-10 02:46 CST / Codex RECOVERY-USABLE：** db37b153新observer-v2已实际通过零LoRA与旧cache逐bit一致＋GPU真实反传隔离（192 adapter/96初始非零、其它policy梯度无），lc1 GPU0/PID1654675已14更新/epoch1，W&B5c7a7692c82e。只新observer adapter＋head，不更新/部署高planner或低actor；原v1工程失败日志保留。GPU1低RL已global6，固定probe radio2/2、PLACE1/2、wash首条仍UNKNOWN，放置下降需完整重复证据，未宣布效果提高或扩100任务。待observer原DEV曲线/冻结SHA、短RL余轮；新H1恢复意图/部署独立校准仍未完成。
 
 - **2026-10-10 02:40 CST / Codex RECOVERY-USABLE：** 新observer实际零LoRA prefill已与原cache逐bit相同，但0optimizer工程反传失败：probe把GRU设eval，cuDNN不允许eval-mode反传（非数据/模型nan）。原af892292 run已退出/日志保留；修为probe明确head.train、提前模式门和失败终态回执，待新冻源再验。低RL第6真实更新27chunks通过：actor5e-7/KL.011617、critic半MSE.00135170→.00135049，权重221290c7…14f9421；固定probe在途，仍无SR改善声明。

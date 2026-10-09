@@ -11,7 +11,7 @@ import torch
 torch.set_num_threads(2)
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import canonical,group_key
-from recovery_features import feature_requests,balanced_event_schedule,group_folds,validate_prediction_provenance
+from recovery_features import feature_requests,balanced_event_schedule,group_folds,validate_prediction_provenance,require_history_protocol
 from recovery_history import join_causal_history
 from recovery_observer_training import temporal_batch,calibrate,predicted_feedback,feedback_text
 from recovery_planner_data import planner_projection
@@ -95,6 +95,48 @@ class PipelineTests(unittest.TestCase):
         req=feature_requests(anchors,history,[('32','observable',0)])[0]
         self.assertEqual([c['control_step'] for c in req['checks']],[0,16,32])
         self.assertTrue(all(c['control_step']<=32 for c in req['checks']))
+
+    def test_first_short_interval_retains_actual_issuance_observation(self):
+        anchors,history=joined()
+        current=deepcopy(anchors[1]);current.update(sample_id='8',control_step=8)
+        ctx=deepcopy(history[1]);ctx.update(sample_id='8',control_step=8)
+        ctx['observable'].update(observation_control_step=8,served_controls=8)
+        anchors.append(current);history.append(ctx)
+        old=feature_requests(anchors,history,[('8','observable',0)])[0]
+        self.assertEqual([c['control_step'] for c in old['checks']],[8])
+        self.assertNotIn('history_protocol',old)
+        new=feature_requests(anchors,history,[('8','observable',0)],history_protocol='attempt_start_short_v1')[0]
+        self.assertEqual([c['control_step'] for c in new['checks']],[0,8])
+        self.assertEqual(new['checks'][0]['served_controls'],0)
+        self.assertEqual(new['checks'][-1],old['checks'][-1])
+        # Missing or another attempt's issuance is never substituted or copied.
+        for bad in ('missing','intent','group','partial'):
+            aa,hh=deepcopy(anchors),deepcopy(history)
+            if bad=='missing':aa=aa[1:];hh=hh[1:]
+            if bad=='intent':hh[0]['observable']['intent_started_control_step']=1
+            if bad=='partial':hh[0]['observable']['history_is_partial']=True
+            if bad=='group':
+                aa[0]['source_group']='another-source'
+                with self.assertRaisesRegex(ValueError,'Cross-group'):
+                    feature_requests(aa,hh,[('8','observable',0)],history_protocol='attempt_start_short_v1')
+                continue
+            rr=feature_requests(aa,hh,[('8','observable',0)],history_protocol='attempt_start_short_v1')[0]
+            self.assertEqual([c['control_step'] for c in rr['checks']],[8])
+        for sid in ('0','32','256'):
+            role='predecision' if sid=='256' else 'observable'
+            before=feature_requests(anchors,history,[(sid,role,0)])[0]
+            after=feature_requests(anchors,history,[(sid,role,0)],history_protocol='attempt_start_short_v1')[0]
+            self.assertEqual(before['checks'],after['checks'])
+
+    def test_history_protocol_is_bound_to_config_cache_receipt_and_requests(self):
+        self.assertEqual(require_history_protocol({}, {}, {'requests':[{}]}),'cadence16_v1')
+        value=dict(history_protocol='attempt_start_short_v1')
+        cache=dict(value,requests=[dict(value)])
+        self.assertEqual(require_history_protocol(value,value,cache),'attempt_start_short_v1')
+        for config,receipt,data in (({},value,cache),(value,{},cache),(value,value,{'requests':[value]}),
+                                    (value,value,dict(value,requests=[{}]))):
+            with self.assertRaisesRegex(ValueError,'history protocol'):
+                require_history_protocol(config,receipt,data)
 
     def test_group_folds_and_calibration_group_leak_rejected(self):
         fold=group_folds([str(i) for i in range(7)])

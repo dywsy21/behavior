@@ -14,7 +14,7 @@ import time
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest,file_sha
-from recovery_features import feature_requests
+from recovery_features import feature_requests, HISTORY_PROTOCOLS
 from recovery_sft_data import CandidateArchiveReader,raw_observation,require_training_pool
 
 
@@ -24,6 +24,7 @@ def main():
     p.add_argument('--admission',type=Path)
     p.add_argument('--admission-sha256')
     p.add_argument('--diagnostic-limit',type=int,choices=range(1,5))
+    p.add_argument('--history-protocol',choices=HISTORY_PROTOCOLS,default='cadence16_v1')
     a=p.parse_args()
     if a.output.exists(): raise FileExistsError(a.output)
     if subprocess.check_output(['git','status','--porcelain'],text=True).strip(): raise ValueError('Clean frozen code required')
@@ -57,7 +58,7 @@ def main():
                 row=json.loads(line);sid=row['candidate']['sample_id'];prior=histories[sid]['predecision']
                 if prior is None: raise ValueError('Planner target has no predecision context')
                 for m in range(len(json.loads(prior['issued_skills_semantic_json']))): selections.append((sid,'predecision',m))
-    requests=feature_requests(anchors,history,selections)
+    requests=feature_requests(anchors,history,selections,history_protocol=a.history_protocol)
     if not requests: raise ValueError('Empty feature request set')
     parent=recipe['parents']['high']; path=root/parent['path']
     if file_sha(path)!=parent['sha256']: raise ValueError('Wrong high parent')
@@ -100,9 +101,11 @@ def main():
                 context,state=memo[key];contexts.append(context);states.append(state);steps.append(check['control_step'])
             features[req['request_id']]=dict(context=torch.stack(contexts),proprio=torch.stack(states),steps=torch.tensor(steps))
     data=dict(schema='recovery_member_feature_cache_v1',features=features,requests=requests,
+        history_protocol=a.history_protocol,
         initial_head={k:v.detach().cpu() for k,v in model.outcome_head.state_dict().items()})
     torch.save(data,a.output/'features.pt')
     result=dict(schema='recovery_member_feature_receipt_v1',high_sha256=parent['sha256'],
+        history_protocol=a.history_protocol,
         admission_sha256=a.admission_sha256,inventory_sha256=digest(inventory),
         history_sha256=receipt['contexts_sha256'],requests_sha256=digest(requests),
         features_sha256=file_sha(a.output/'features.pt'),stats_sha256=file_sha(config['stats_path']),

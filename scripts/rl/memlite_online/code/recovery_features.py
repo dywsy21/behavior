@@ -5,13 +5,32 @@ import json
 from recovery_corpus import canonical, digest
 
 
-def feature_requests(anchors, history, selections):
+HISTORY_PROTOCOLS = ('cadence16_v1', 'attempt_start_short_v1')
+
+
+def require_history_protocol(config, receipt, cache):
+    """Old caches keep their exact default; new windows require explicit binding."""
+    wanted = config.get('history_protocol', 'cadence16_v1')
+    if (wanted not in HISTORY_PROTOCOLS
+            or receipt.get('history_protocol', 'cadence16_v1') != wanted
+            or cache.get('history_protocol', 'cadence16_v1') != wanted
+            or any(r.get('history_protocol', 'cadence16_v1') != wanted for r in cache['requests'])):
+        raise ValueError('Mismatched causal history protocol')
+    return wanted
+
+
+def feature_requests(anchors, history, selections, *, history_protocol='cadence16_v1'):
     """selections: (sample_id, current|predecision, member index) tuples.
 
     Four real observations at least 16 controls apart, confined to the same
     actually issued intent attempt. Missing history is masked, never repeated.
     H1's current image is combined ONLY with the pre-decision command memory.
+    The optional short-attempt protocol also keeps the actual issuance image
+    when the current observation is less than 16 controls after it. This is
+    not an extra copy, future image, or another attempt's cached context.
     """
+    if history_protocol not in HISTORY_PROTOCOLS:
+        raise ValueError('Unregistered causal history protocol')
     by_id = {r['sample_id']:r for r in anchors}
     histories = {r['sample_id']:r for r in history}
     if len(by_id) != len(anchors) or len(histories) != len(history):
@@ -52,9 +71,15 @@ def feature_requests(anchors, history, selections):
             # Low-level execution yields a fresh image every 16 controls.
             # Waiting 128 (the old planner cadence) makes short recovery
             # decisions have only one check, forcing feedback UNKNOWN forever.
-            if t > checks[-1]['control_step']-16 or t < context['intent_started_control_step']: continue
+            short_start = (history_protocol == 'attempt_start_short_v1' and len(checks) == 1
+                and t == context['intent_started_control_step']
+                and 0 < row['control_step']-t < 16)
+            if (t > checks[-1]['control_step']-16 and not short_start) or t < context['intent_started_control_step']: continue
+            if earlier['source_group'] != row['source_group'] or earlier['split'] != row['split']:
+                raise ValueError('Cross-group feature history')
             previous = histories[earlier['sample_id']]['observable']
-            if (previous['issued_skills_semantic_json'] != context['issued_skills_semantic_json']
+            if (previous is None or previous['history_is_partial']
+                    or previous['issued_skills_semantic_json'] != context['issued_skills_semantic_json']
                     or previous['parent_goal'] != context['parent_goal']
                     or previous['intent_started_control_step'] != context['intent_started_control_step']):
                 continue
@@ -65,6 +90,8 @@ def feature_requests(anchors, history, selections):
         output[key] = dict(request_id=key,sample_id=sid,role=role,member_index=member,
             source_group=row['source_group'],split=row['split'],source_episode=row['source_episode'],
             checks=checks)
+        if history_protocol != 'cadence16_v1':
+            output[key]['history_protocol'] = history_protocol
     return list(output.values())
 
 
