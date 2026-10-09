@@ -1,0 +1,57 @@
+{
+  "evidence_root": "/data/workspace/wsy/behavior2026",
+  "protected_groups": "/data/workspace/wsy/behavior2026/runs/recovery_sft_preparation_20261009/cpu-preflight-v1/protected-groups.json",
+  "units": [
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/datasets/recovery-local-corrections-20261009-v1/local-corpus-v3",
+      "evidence_root": "/data/workspace/wsy/behavior2026/datasets/recovery-local-corrections-20261009-v1",
+      "approvals": [
+        "/data/workspace/wsy/behavior2026/datasets/recovery-local-corrections-20261009-v1/local-approvals-v2.json"
+      ]
+    },
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v1/closed-grasp-corpus-v1",
+      "evidence_root": "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v1",
+      "approvals": [
+        "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v1/closed-grasp-approvals-v1.json",
+        "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v1/closed-grasp-clean-approvals-v1.json"
+      ]
+    },
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v2/closed-grasp-corpus-v2",
+      "evidence_root": "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v2",
+      "approvals": [
+        "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v2/closed-grasp-approvals-v2.json",
+        "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v2/closed-grasp-approvals-v3.json"
+      ]
+    },
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v3-terminal/closed-grasp-corpus-v3-terminal",
+      "evidence_root": "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v3-terminal",
+      "approvals": [
+        "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-candidate-snapshot-v3-terminal/closed-grasp-terminal-approvals-v1.json"
+      ]
+    },
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/datasets/recovery-articulation-source-20261010-v1/runs/recovery100_collection_20261009/closed-articulation-corpus-v3",
+      "evidence_root": "/data/workspace/wsy/behavior2026/datasets/recovery-articulation-source-20261010-v1",
+      "approvals": [
+        "/data/workspace/wsy/behavior2026/datasets/recovery-articulation-source-20261010-v1/runs/recovery100_collection_20261009/articulation-approvals-v1.json"
+      ]
+    },
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-expansion-source-20261010-v1/runs/recovery100_collection_20261009/outcome-expansion-unit-v1",
+      "evidence_root": "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-expansion-source-20261010-v1",
+      "approvals": [
+        "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-expansion-source-20261010-v1/runs/recovery100_collection_20261009/outcome-expansion-unit-v1/approvals.json"
+      ]
+    },
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-expansion-source-20261010-v2/runs/recovery100_collection_20261009/outcome-expansion-unit-v2",
+      "evidence_root": "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-expansion-source-20261010-v2",
+      "approvals": [
+        "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-expansion-source-20261010-v2/runs/recovery100_collection_20261009/outcome-expansion-unit-v2/approvals.json"
+      ]
+    }
+  ]
+}

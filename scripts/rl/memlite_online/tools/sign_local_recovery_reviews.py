@@ -10,6 +10,7 @@ import sys
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest,file_sha
+from recovery_admission import local_file
 from recovery_teacher_corpus import physical_proposal,validate_branch
 from recovery_terminal_corpus import load_terminal
 from recovery_articulation_corpus import CLEAN,validate_articulation_branch
@@ -46,7 +47,11 @@ def main():
     for decision in decisions['branches']:
         choices=[q for q in queue if q['case']==decision['case'] and q['branch']==decision['branch']]
         if len(choices)!=1:raise ValueError('Review does not uniquely identify a real collected branch')
-        q=choices[0];branch=Path(q['source_path']);manifest=json.loads((branch/'manifest.json').read_text())
+        q=choices[0]
+        # Closed corpora can carry root-relative paths. Never interpret them
+        # relative to the launcher's current working directory.
+        manifest_path=local_file(root,Path(q['source_path'])/'manifest.json')
+        branch=manifest_path.parent;manifest=json.loads(manifest_path.read_text())
         if file_sha(branch/'manifest.json')!=decision['manifest_sha256']:raise ValueError('Review from another attempt')
         review=root/decision['review_directory'];materials=json.loads((review/'review.json').read_text())
         if (materials['manifest_sha256']!=decision['manifest_sha256']

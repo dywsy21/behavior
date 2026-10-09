@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 03:14 CST / Codex RECOVERY-USABLE：** 新96结果已机器签发SHAe6b39d94…8004d；RTX`outcome-expansion-unit-v2`48ZIP/1,474原观察全部解码/因果全读，admission8236217d…7053d。24 TRAIN组、0DEV/0plan/0action，独立单元三池门仍false、不绕过；134依赖/79,998,719B白名单包`outcome-expansion-unit-v2.tar.gz`69,006,096B/SHA cc63ea46…afb813待A800迁移。新v6联合配置只接旧v4＋此单元、不含独立cal/test，尚未实际联合/训练。首个签发调用因源路径相对ROOT而从代码目录启动失败（0签发），改从明确ROOT后通过；将工具解析固定到evidence-root并修旧合成反馈检查只比较estimated通道、known仍UNKNOWN，154恢复回归过。A800仍不可连；RTX已有凭据的W&B只读尝试无权限/不可见这两个run，不能据此说run不存在或已完成。wash中断部分272策略控制/视频已归档到本地artifacts，不作为完整技能失败或下一版本on-policy数据。
+
 - **2026-10-10 03:10 CST / Codex RECOVERY-USABLE：** A800仍不可连/未重登VPN；独立RTX CPU源d3e463e2从已有闭合v5候选按hash＋左右手交替选另外24原TRAIN来源（24任务，非24全新任务），无新sim。根亲审`outcome-expansion-review-v2`全部24页/288原RGB面板、全sheet SHA与72个六控F/S因果记录，逐case备注已写`outcome_expansion_owner_review_v2.json`，仅96明确outcome、0动作/0planner、未碰60cal/20test。包含held夹爪仍约0.05m的pillow，禁止把张开阈值当失败真值。待机器签发/独立紧凑单元全读，A800迁移与任何新优化尚未发生。旧模型/中断RL证据继续保留。
 
 - **2026-10-10 03:07 CST / Codex RECOVERY-USABLE：** 本地VPN/SOCKS1080及lc1/lc2 control master消失，A800不可连；已向用户询问是否可重登（可能挤队友），未擅自重连。RTX三cold worker在03:05因ConnectionClosed退出，26完整episode＋wash第3TRAIN部分真实控制保留，非reset/技能失败；最后已确认global7/9664547d，A800服务最终状态和observer后续步数未核，不称还在正常RL。原LoRA最后14epoch/308步、独立重载实际前向待连接。短起点H0已205/选105完成，DEV84.17%/balanced71.31%，低于原v4对照、不部署；128请求完全bit相同、108仅补同attempt起点且当前特征bit相同，W&B76eb387005ba、头5432a805…27c9f。接下来保留中断账本/补数据CPU准备，连通后先核现有进程和checkpoint再续，不重复已完训练。

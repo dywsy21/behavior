@@ -51,7 +51,8 @@ def main():
             action={m['key']:torch.zeros(32,m['raw_shape']) for m in config['raw_shape']['action']})
         processed=processor.preprocess(raw);samples=processed['samples']
         if (samples['memory']!=prior['memory'] or samples['previous_intent']!=prior['previous_intent']
-                or samples['known_previous_outcome']!=value or samples['outcome_supervision_mask']
+                or samples['known_previous_outcome']!='UNKNOWN'
+                or samples['execution_feedback']!=feedback['execution_feedback'] or samples['outcome_supervision_mask']
                 or samples['low_action_supervision_mask']):raise ValueError('Processor leaked targets or dropped feedback')
         checks.append(dict(synthetic_feedback=value,pixel_shapes={k:list(v.shape) for k,v in processed['pixel_values'].items()},
                            action_shape=list(processed['action'].shape),outcome_supervision=False,low_supervision=False))

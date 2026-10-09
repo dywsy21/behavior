@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 03:14 CST：新增结果数据待迁移
+
+- RTX同`runs/recovery100_collection_20261009`下：`outcome-expansion-review-v2`为24页/288原RGB亲审材料，`outcome-expansion-approvals-v2.json`签96 TRAIN结果（SHAe6b39d94…8004d），`outcome-expansion-unit-v2`为48ZIP/1474观察紧凑全读单元。数据源/签发冻源分别`code/outcome-more-review-v1`=d3e463e2、`code/outcome-more-signed-v1`=faa854e4；没有新sim或optimizer。
+- `outcome-expansion-unit-v2.tar.gz`69,006,096B，SHA cc63ea46c5f52b304745f5230b0e9a8d6fe338a1a33609009219173226afb813。预定A800目标`datasets/recovery-outcome-expansion-source-20261010-v2`尚未创建/传输，v6联合也未构建。单元0DEV/0plan/0action，不可单独训练。
+- 本地`artifacts/recovery-heterogeneous-20261010/outcome-expansion-review-v2`和单元receipt已取回；`short-rl-wash169-cold-v1-episode-000009`保存断线前272真实策略控制、恢复控制、原起点图和视频。最后counter542包含270恢复＋272策略控制；未接ACK尾段/未完成episode不伪标FAILED、不回灌新版本RL。
+
 ## 2026-10-10 03:07 CST：A800连接中断
 
 - 本地1080和lc1/lc2 recovery控制socket均消失，未重登VPN。RTX `short-rl-{radio155,wash169,tripod129}-cold-v1`均failed_no_retry，分别9/8/9个完整episode；末子进程radio/tripod为0控制等待任务，wash第9子进程train round3在ACK发送处断线，完整证据保留。RTX GPU已退出；A800最终状态待核，不把此条当A800进程已停止。
