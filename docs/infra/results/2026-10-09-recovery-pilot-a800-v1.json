@@ -1,6 +1,6 @@
 {
   "schema": "recovery_pilot_progress_v1",
-  "observed_at": "2026-10-09T20:17:00+08:00",
+  "observed_at": "2026-10-09T20:23:12+08:00",
   "owner": "Codex",
   "node": "lc1 / 8x A800 80GB",
   "source_commit": "7fc978c7d228000be79ca8cbc49962ea86055bee",
@@ -45,8 +45,8 @@
     "wandb_online_readback_updates": 18
   },
   "L0": {
-    "status": "running",
-    "observed_updates": 15,
+    "status": "completed_finite_schedule",
+    "observed_updates": 35,
     "scheduled_updates": 35,
     "world_size": 8,
     "global_batch": 8,
@@ -55,12 +55,19 @@
     "full_batch_verified_recovery_rows": 2,
     "parent_original_heldout_fm": 0.12964690994009553,
     "parent_recovery_dev_fm": 0.05536301801170128,
+    "final_original_heldout_fm": 0.13234078792985907,
+    "final_recovery_dev_fm": 0.022055235461912293,
+    "actual_expert_task_coverage": 96,
+    "verified_train_event_exposures": 5,
+    "frozen_before_and_after_sha256": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+    "final_checkpoint": "L0/checkpoints/step_00000035_save_0007.pt",
+    "final_checkpoint_sha256": "139fea211cffd2cde472235f9a3ff3b7ccf3855c781ec7654a26ec56113f2cd9",
     "first_checkpoint": "L0/checkpoints/step_00000005_save_0001.pt",
     "first_checkpoint_sha256": "f389a55bb82f95a7ac7b753126b69d88f13a8dbf986c4fe20c4be1126067e508",
     "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/c29b6cd43a02",
     "wandb_online_readback_updates": 10
   },
-  "H1": {"status": "queued_after_L0", "rehearsal": "original normal expert plans, not all RETRY targets", "feedback": "actual OOF with UNKNOWN fallback, no oracle"},
+  "H1": {"status": "launched_loading", "rehearsal": "original normal expert plans, not all RETRY targets", "feedback": "actual OOF with UNKNOWN fallback, no oracle", "all_20_actual_oof_rows_cpu_processed": true, "feedback_sha256": "6bf2f1dc5d6a8bc1d49b7315ede3823edf14976daf3bc5c09d9faac03d3fc2f5"},
   "validation": {"recovery_tests_local_and_A800": 74, "local_runtime_tests": 3, "actual_all_approved_processors": "passed", "actual_feature_reload_and_gradient_insulation": "passed"},
   "no_claims": ["new full-task SR/Q", "all100 recovery data complete", "reliable observer calibration", "new short-skill RL started", "independent team code review completed"],
   "next": "Finish finite SFT chain, compare same-seed heldout objectives, then validate diverse short-skill rewards/start states and matched closed-loop recovery. Do not auto-deploy or resume old broad RL."
