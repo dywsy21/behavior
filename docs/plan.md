@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 00:03 CST / Codex RECOVERY-USABLE：** 0773eec2机器签发69项通过（52结果/9plan/8action，批准SHA c1f63a37…ed378），但开合单元独立来源少，原三池门均如实未ready，不降低门；将与原已签GRASP合成新异质版本再整体验收。675MiB候选＋审核证据正数据迁移，tar SHA b84ee013…ef27，原数据不删。新增显式授权20事件遍/8卡小batch配方、逐50步固定留出检查和可选充分拟合采样器，117本地回归过；此轮从原98414重启对照，不继承GRASP-only L0。GitHub两次TLS失败已记录，源码临时仍通过Git bundle到独立冻源，不热改运行目录；待恢复push。尚无新optimizer。
+
 - **2026-10-10 00:00 CST / Codex RECOVERY-USABLE：** 干净分支已pull/fetch，lc1八卡无进程、共享余2.5TiB，RTX采集均结束。开合v3重推导完成，机器签核前发现owner审核目录相对ROOT少了runs前缀，已修正准确证据路径；没有改语义决定/原图SHA，没有把失败签发当准入成功。继续签发52结果/9意图/8动作窗口并迁移A800，旧三条frozen_test不进入训练/选择，新独立DEV亦不混入；新optimizer尚未启动。
 
 ### 2026-10-09 21:05 CST：持续goal推进到可用，而非完成小试（Codex / RECOVERY-USABLE，进行中）

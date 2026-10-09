@@ -44,6 +44,17 @@ class DataTests(unittest.TestCase):
         bad=deepcopy(rows);bad[0]['candidate']['split']='dev'
         with self.assertRaises(ValueError):list(finite_mixture_schedule(bad,{'t':[0],'u':[1]}))
 
+    def test_extended_fit_is_explicit_and_still_event_balanced(self):
+        rows=[dict(candidate=dict(split='train',source_group=f't:{i}'),
+                   approval=dict(pool='action',event_id=str(i))) for i in range(3)]
+        args=dict(new_rows=rows,expert_by_task={'t':[0],'u':[1]},batch_size=8,maximum_event_passes=20)
+        with self.assertRaises(ValueError):list(finite_mixture_schedule(**args))
+        batches=list(finite_mixture_schedule(**args,allow_extended_event_fit=True))
+        counts=Counter(tuple(event) for batch in batches for event in batch['new_events'])
+        self.assertEqual(set(counts.values()),{20})
+        self.assertEqual(len(batches),40)
+        self.assertEqual([len(b['rows']) for b in batches[:2]],[8,3])
+
     def test_planner_rehearsal_is_explicit_and_pool_separated(self):
         rows=[dict(candidate=dict(split='train',source_group=f't:{i}'),approval=dict(pool='planner',event_id=str(i))) for i in range(3)]
         with self.assertRaises(ValueError):list(finite_mixture_schedule(rows,{'t':[0],'u':[1]},batch_size=8))

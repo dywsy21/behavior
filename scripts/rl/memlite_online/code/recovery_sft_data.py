@@ -264,14 +264,17 @@ class VerifiedRecoveryActionDataset:
         return sample
 
 
-def finite_mixture_schedule(new_rows, expert_by_task, *, batch_size=64, maximum_event_passes=5, seed=17, pool='action'):
+def finite_mixture_schedule(new_rows, expert_by_task, *, batch_size=64, maximum_event_passes=5, seed=17, pool='action',
+                            allow_extended_event_fit=False):
     """At most ONE anchor/event/pass, ~70/30 expert/new, no repeat-filled tail.
 
     The schedule is global and committed before DDP splits it. Reuse is counted
     by physical event, not by highly correlated frame count; small corpora yield
     few updates rather than being duplicated up to a requested step budget.
     """
-    if batch_size < 8 or not 1 <= maximum_event_passes <= 5 or pool not in ('action','planner'):
+    if (batch_size < 8 or type(maximum_event_passes) is not int or maximum_event_passes < 1
+            or (maximum_event_passes > 5 and allow_extended_event_fit is not True)
+            or pool not in ('action','planner')):
         raise ValueError('Invalid finite pilot budget')
     new_by_event = defaultdict(list)
     for index,item in enumerate(new_rows):

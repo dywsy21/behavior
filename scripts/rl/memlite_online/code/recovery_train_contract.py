@@ -17,6 +17,9 @@ def validate_launch(ticket_path,component,*,engineering=False):
     for key,entry in ticket['files'].items():
         if file_sha(entry['path'])!=entry['sha256']: raise ValueError('Changed pinned launch input: '+key)
     recipe=json.loads(Path(ticket['files']['recipe']['path']).read_text())
+    if ticket['event_passes'] > 5 and (recipe.get('extended_event_fit') is not True
+            or recipe.get('training_authorized_by_this_file') is not True or not recipe.get('authorization')):
+        raise ValueError('Extended event fitting requires a separately pinned authorized recipe')
     if (ticket['maximum_updates']<1 or ticket['maximum_updates']>recipe['maximum_updates_per_line']
             or not 1<=ticket['event_passes']<=recipe['maximum_event_passes']
             or not 60<=ticket['wall_seconds']<=recipe['maximum_wall_seconds_per_line']

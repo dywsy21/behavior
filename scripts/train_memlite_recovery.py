@@ -92,7 +92,8 @@ def main():
         if a.component=='L0':
             new=VerifiedRecoveryActionDataset(**kwargs,split='train');dev=VerifiedRecoveryActionDataset(**kwargs,split='dev')
             schedule=list(finite_mixture_schedule(new.rows,by_task,batch_size=ticket['global_batch'],
-                                                  maximum_event_passes=ticket['event_passes'],seed=recipe['seed']))
+                maximum_event_passes=ticket['event_passes'],seed=recipe['seed'],
+                allow_extended_event_fit=recipe.get('extended_event_fit',False)))
         else:
             histories=[json.loads(x) for x in Path(ticket['files']['history']['path']).read_text().splitlines()]
             feedback=[json.loads(x) for x in Path(ticket['files']['feedback']['path']).read_text().splitlines()]
@@ -106,7 +107,8 @@ def main():
             # Rehearse normal original plans as well, exactly as L0 retains
             # original actions; never mislabel these as new recovery events.
             schedule=list(finite_mixture_schedule(new.rows,by_task,batch_size=ticket['global_batch'],
-                maximum_event_passes=ticket['event_passes'],seed=recipe['seed'],pool='planner'))
+                maximum_event_passes=ticket['event_passes'],seed=recipe['seed'],pool='planner',
+                allow_extended_event_fit=recipe.get('extended_event_fit',False)))
         data_sha=ticket['files']['admission']['sha256']
     schedule=schedule[:ticket['maximum_updates']]
     binding=dict(component=a.component,source_commit=commit,parent_sha256=parent['sha256'],admission_sha256=data_sha,
@@ -208,6 +210,8 @@ def main():
     # Pin the parent comparison BEFORE any derivative optimizer step, using
     # exactly the same heldout examples/noise seeds as the final evaluation.
     if state['step']==0 and not a.engineering: evaluate()
+    evaluation_every=recipe.get('evaluation_every_updates',0)
+    if type(evaluation_every) is not int or evaluation_every<0: raise ValueError('Invalid evaluation interval')
     checkpoint_every=ticket.get('checkpoint_every_updates',1)
     if not isinstance(checkpoint_every,int) or checkpoint_every<1: raise ValueError('Invalid save interval')
     target=min(len(schedule),a.stop_after or len(schedule))
@@ -229,6 +233,8 @@ def main():
             wb.log({'train/update':state['step'],**{'train/'+k:v for k,v in metrics.items()},'scope/engineering_only':int(a.engineering)})
         if state['step']%checkpoint_every==0 or state['step']==target:
             save();last_saved=state['step']
+        if evaluation_every and state['step']%evaluation_every==0 and state['step']<target:
+            evaluate()
     if state['step']!=last_saved: save()
     # Read-only heldout objectives, separated from the original rehearsal.
     # Use one representative per accepted event, not long-clip frame inflation.

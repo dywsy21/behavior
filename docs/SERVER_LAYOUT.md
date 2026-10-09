@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 00:03 CST 恢复数据与起点新状态
+
+- RTX `runs/recovery100_collection_20261009/grasp-independent-dev-collection-v1`93首次全部结束；`closed-independent-dev-corpus-v1`80独立来源/240ZIP/15,444观察，尚未逐样本人工准入和校准，不可拿数量当ready。旧大GRASP全读两实现已完整同SHA，均已结束。
+- 同根`closed-articulation-corpus-v3`56候选/16,612观察；`articulation-action-review-v2`9来源45页504面板、`articulation-approvals-v1.json`69具体批准，`articulation-admission-v1`单元门未过，待联合旧GRASP后整体判定。`articulation-release-v1.tar`是带相对ROOT路径的不可变数据迁移包（SHA b84ee013073b57b103ec7574eea4f65a9abe7be94422c6441894665666ffef27），不是代码热同步。
+- PLACE `place-cold-{tripod129,toolbox17}-v2`独立冷载/12原RGB人审/逐ACK/末6真实OnTop释放稳定已验，原v1起始关系假阳性保留；源`code/placement-barrier-189890f2`，每例首个原参考动作是真实restore barrier，不计奖励/BC。仍非actor SR。
+- 当前lc1/RTX均无自有GPU作业；新异质SFT将用独立源码/新run，不覆盖`train-v1`及原父模型。新数据目的地lc1 `datasets/recovery-articulation-source-20261010-v1`，仅数据审核证据迁移，旧共享env不改。
+
 ## 2026-10-09 22:35 CST：恢复训练完成与可用性验收（覆盖下面旧状态）
 
 **23:12 CST新增实际低层对照：** lc1 `runs/recovery_usable_20261009/fixed-skill-service-v1`已经结束，44请求且逐tensor验证两模型未变，源`src/fixed-skill-ffdab471`；专用loopback18971转发已撤，不影响原VPN。10383同run根`fixed-{radio155,wash169}-{parent,candidate}-v1`四路已结束，`result.json/reward-ledger.jsonl/policy.mp4`及所有原PNG已复制本地`artifacts/recovery-usable-20261009/`，均非公共全任务评测。新采集在10383 `place-in-curriculum-v1`/`place-on-curriculum-v1`，源`code/placement-curriculum-833e3f80`，仅原参考PLACE合法起点，仍待独立冷载/语义审核，不是已获准恢复教师。
