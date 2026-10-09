@@ -15,6 +15,19 @@ SUPPORTED = {'GRASP', 'NAVIGATE', 'PLACE_IN', 'PLACE_ON', 'OPEN_DOOR', 'OPEN_DRA
              'OPEN_LID', 'CLOSE_DOOR', 'CLOSE_DRAWER', 'CLOSE_LID'}
 
 
+def validate_placement_start(measurement, evidence, previous_held, *, cold=False):
+    """A legal PLACE curriculum starts held and unsolved, not after release.
+
+    Cold mode is permitted only after the caller verifies an already recorded
+    reference start and its entire snapshot. Unknown predicates fail closed.
+    """
+    if (type(cold) is not bool or measurement.get('achieved') is not False
+            or evidence.get('released_from_all_hands') is not False):
+        raise ValueError('Placement must start before completion with target actually held')
+    if not cold and (len(previous_held)<6 or any(x is not True for x in previous_held[-6:])):
+        raise ValueError('Require six preceding actual held-object observations')
+
+
 def finite(value, name, minimum=0., maximum=None):
     if (isinstance(value,bool) or not isinstance(value,(float,int)) or not math.isfinite(value)
             or value < minimum or (maximum is not None and value > maximum)):

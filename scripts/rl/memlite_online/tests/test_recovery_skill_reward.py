@@ -4,7 +4,7 @@ import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest
-from skill_aligned_reward import SkillIdentity, SkillReward, skill_measurement
+from skill_aligned_reward import SkillIdentity, SkillReward, skill_measurement, validate_placement_start
 
 
 def ident():return SkillIdentity('s','task',1,'ep','intent0','a'*64,0)
@@ -14,6 +14,16 @@ def step(reward,t,phi=0.,success=False,**kw):
 
 
 class RewardTests(unittest.TestCase):
+    def test_placement_start_cannot_be_solved_released_or_unknown(self):
+        m=dict(potential=.3,achieved=False);e=dict(released_from_all_hands=False)
+        validate_placement_start(m,e,[True]*6)
+        validate_placement_start(m,e,[],cold=True)
+        for value in (True,None):
+            with self.assertRaises(ValueError):validate_placement_start(dict(m,achieved=value),e,[True]*6)
+            with self.assertRaises(ValueError):validate_placement_start(m,dict(e,released_from_all_hands=value),[True]*6)
+        for history in ([True]*5,[True]*5+[False],[True]*5+[None]):
+            with self.assertRaises(ValueError):validate_placement_start(m,e,history)
+
     def test_wrong_task_intent_and_clock_rejected(self):
         for bad in (replace(ident(),task='other'),replace(ident(),context_id='retry'),replace(ident(),episode='new')):
             with self.assertRaises(ValueError):SkillReward(ident(),obs(),control_step=0).advance(bad,1,obs(),protected_values={})
