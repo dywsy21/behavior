@@ -35,7 +35,8 @@ def report(catalog,sources,collections,reviews):
                 proposal_sha256=sha,started=False,closed=False,physical_candidate=False,human_approved=False,status='pending')
             found=[]
             for collection in collections:
-                directory=collection/entry['directory'];source_path=directory/'source.json'
+                directory=collection if (collection/'source.json').exists() else collection/entry['directory']
+                source_path=directory/'source.json'
                 if not source_path.exists():continue
                 actual=json.loads(source_path.read_text())
                 if actual!=source:continue  # Different skill attempt at same instance is not this source.

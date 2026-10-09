@@ -22,7 +22,7 @@ sys.path[:0]=[str(REPO/'scripts/eval/memlite_sft100'),str(Path(__file__).resolve
 from common import atomic_json,OFFICIAL,OFFICIAL_COMMIT,sha256
 from recovery_corpus import canonical,digest,group_key,split_group
 from recovery_recorder import proprio61
-from recovery_articulation_teacher import CausalArticulation,StationaryServo,servo,yaw_of
+from recovery_articulation_teacher import CausalArticulation,StationaryServo,servo,yaw_of,functional_goal
 from behavior_branch_state import capture_branch_metadata
 
 
@@ -94,6 +94,14 @@ def main():
         states=[v for k,v in target.states.items() if k.__name__=='Open']
         if len(states)!=1:raise ValueError('Missing unambiguous installed Open state')
         open_state=states[0];want_open=skills[0]['verb'].startswith('OPEN_')
+        from omnigibson.object_states.open_state import _get_relevant_joints,_compute_joint_threshold
+        two_sided,relevant,directions=_get_relevant_joints(target)
+        if two_sided or len(relevant)!=1:
+            raise ValueError('Whole-object clearance ambiguous; requires an exact part-level adapter')
+        hinge=relevant[0];_,open_end,closed_end=_compute_joint_threshold(hinge,directions[0])
+        open_end,closed_end=float(open_end),float(closed_end)
+        if not np.isfinite([open_end,closed_end]).all() or abs(open_end-closed_end)<1e-5:
+            raise ValueError('Missing finite directed joint travel')
         idx=lambda v:v.detach().cpu().numpy().astype(int)
         arms={arm:idx(robot.arm_action_idx[arm]) for arm in robot.arm_names}
         grips={arm:int(idx(robot.gripper_action_idx[arm])[0]) for arm in robot.arm_names}
@@ -112,10 +120,12 @@ def main():
             raw=open_state.get_value();value=raw.item() if hasattr(raw,'item') else raw
             if type(value) is not bool:raise ValueError('Installed Open is not a Boolean measurement')
             pos,quat=target.get_position_orientation()
-            return dict(target_name=target.name,entity=entity,open=value,goal_predicate=value==want_open,
+            position=float(hinge.get_state()[0].item());fraction=(position-closed_end)/(open_end-closed_end)
+            return dict(target_name=target.name,entity=entity,open=value,goal_predicate=functional_goal(value,fraction,want_open),
+                directed_open_fraction=fraction,open_end=open_end,closed_end=closed_end,
                 object_joints=target.get_joint_positions().detach().cpu().tolist(),position=pos.tolist(),orientation=quat.tolist(),
                 grasp={arm:robot.is_grasping(arm=arm,candidate_obj=target).name for arm in robot.arm_names},
-                predicate_contract='official Open whole-object state, not annotation endpoint',label_only=True)
+                predicate_contract='single exact hinge: open>=35% / lost<=10%; close<=2.5% + official not Open; middle UNKNOWN',label_only=True)
         def step(command):
             if shutil.disk_usage(a.output).free<100*2**30:raise RuntimeError('Disk safety reserve reached')
             command=np.asarray(command,dtype=np.float32)
@@ -138,7 +148,8 @@ def main():
                 outcome=history.update(t,after['goal_predicate'] if t>=selected['start'] else None,moving=False)
                 stream.write(json.dumps(dict(control_step=t,action_executed_raw23=command.tolist(),proprio_before=proprio,
                     proprio_after=proprio61(inst.obs),physical_before=before,physical_audit=after,
-                    outcome_candidate=outcome,source_label_kind='original_reference_not_corrective_BC'))+'\n')
+                    outcome_after_control_candidate=outcome,outcome_evidence_available_control_step=t+1,
+                    source_label_kind='original_reference_not_corrective_BC'))+'\n')
                 if outcome=='SUCCEEDED':seeded=True;break
                 if t%16==0:atomic_json(a.output/'status.json',dict(status,status='replaying_prefix',source_frame=t))
         evaluator._set_video_writer(inst,None)
@@ -149,8 +160,9 @@ def main():
         seed=dict(q=seed_q.tolist(),base=seed_base.tolist(),source_frame=t+1,physical=physical())
         # Keep only a physically local measured suffix. Missing/too distant
         # reverse targets are a coverage gap, not permission to teleport.
-        recent=path[-192:];knots=recent[::4]
-        if not knots or all(x['physical']['goal_predicate'] for x in knots):raise ValueError('No local physical false-goal path')
+        false_indices=[i for i,x in enumerate(path) if x['physical']['goal_predicate'] is False]
+        if not false_indices:raise ValueError('No local physical false-goal path')
+        recent=path[max(0,false_indices[-1]-16):];knots=recent[::4]
         if any(np.linalg.norm(np.asarray(x['base'])[:2]-seed_base[:2])>.25 for x in knots):
             raise ValueError('Reference suffix leaves local 25cm articulation domain')
         snapshot=dict(world=deepcopy(og.sim.dump_state(serialized=False)),metadata=capture_branch_metadata(evaluator),
@@ -172,7 +184,8 @@ def main():
             atomic_json(directory/'plans.json',plans)
         issue(0,'EXECUTE');anchors={};outcomes=deepcopy(history);outcomes.last=-1
         reverse=list(reversed(knots));forward=knots+[seed];cursor=0;phase='clean_hold';count=0;retry_tick=None
-        stable=0;stationary=StationaryServo();failure=None;label_counts={};video(directory/'rollout.mp4')
+        stable=0;stationary=StationaryServo();failure=None;label_counts={};prior_outcome='SUCCEEDED'
+        video(directory/'rollout.mp4')
         with (directory/'transitions.jsonl').open('x',buffering=1) as stream:
             try:
                 while True:
@@ -200,10 +213,14 @@ def main():
                         action_executed_raw23=command.tolist(),simulator_apply_ack=True,physical_before=before,physical_audit=after,
                         label_kind='injected_fault_not_BC' if phase=='fault_reverse' else 'same_state_articulation_teacher_candidate',
                         teacher=dict(kind='local_measured_reference_path_servo_v1',phase=phase,waypoint=cursor,**info),
-                        outcome_candidate=outcome,outcome_approved=False,
+                        # RGB/proprio_before are at count, not count+1. Never
+                        # attach the newly observed post-action label to them.
+                        observation_outcome_candidate='UNKNOWN' if retry_tick==count else prior_outcome,
+                        outcome_after_control_candidate=outcome,outcome_evidence_available_control_step=count+1,
+                        outcome_approved=False,
                         context=dict(context_id=current['event_sha256'],active_skills_semantic_json=semantic,parent_goal=selected['parent']),
                         rgb_anchor_control_step=count//4*4,terminated=False,truncated=False)
-                    stream.write(json.dumps(row,allow_nan=False)+'\n');count+=1
+                    stream.write(json.dumps(row,allow_nan=False)+'\n');count+=1;prior_outcome=outcome
                     if retry_tick is not None and outcome=='SUCCEEDED':phase='confirmed_hold';stable+=1
                     else:stable=0
                     if count%16==0:atomic_json(a.output/'status.json',dict(status,status='collecting',phase=phase,branch_controls=count))

@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_articulation_teacher import CausalArticulation,servo
+from recovery_articulation_teacher import CausalArticulation,servo,functional_goal
 
 
 class ArticulationTests(unittest.TestCase):
@@ -26,6 +26,14 @@ class ArticulationTests(unittest.TestCase):
         self.assertAlmostEqual(action[0],0,places=6);self.assertLess(action[1],0)
         self.assertAlmostEqual(action[7],.015,places=6);self.assertEqual(action[14],-1)
         self.assertFalse(info['reached'])
+
+    def test_barely_open_does_not_become_a_success_and_hysteresis(self):
+        self.assertFalse(functional_goal(True,.06,True))
+        self.assertIsNone(functional_goal(True,.25,True))
+        self.assertTrue(functional_goal(True,.40,True))
+        self.assertIsNone(functional_goal(True,.04,False))
+        self.assertTrue(functional_goal(False,.01,False))
+        with self.assertRaises(ValueError):functional_goal(True,1.5,True)
 
 
 if __name__=='__main__':unittest.main()

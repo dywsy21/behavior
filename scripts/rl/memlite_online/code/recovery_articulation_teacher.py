@@ -19,6 +19,23 @@ def yaw_of(quat):
 def wrap(angle):return (angle+math.pi)%(2*math.pi)-math.pi
 
 
+def functional_goal(open_value,fraction,want_open):
+    """Hysteresis: a barely-open 5% simulator predicate is not skill completion.
+
+    This is an explicit local clearance proxy, NOT certification that every
+    downstream interaction fits. Human review remains mandatory.
+    """
+    if type(open_value) is not bool or not math.isfinite(fraction) or not -.02<=fraction<=1.02:
+        raise ValueError('Invalid measured directed opening fraction')
+    if want_open:
+        if fraction>=.35 and open_value:return True
+        if fraction<=.10:return False
+    else:
+        if fraction<=.025 and not open_value:return True
+        if fraction>=.10:return False
+    return None
+
+
 def servo(current,base,waypoint):
     """R1Pro absolute joints + body-frame normalized base velocity (0.75 m/s)."""
     current=np.asarray(current,float);base=np.asarray(base,float)
