@@ -1,5 +1,11 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+## 2026-10-09（CST）当前请求：反馈/恢复数据回流与短技能RL总体设计
+
+- **11:17 CST / RL-RECOVERY-LOOP-DESIGN / Codex：** 用户认可结果反馈与高层恢复、低层技能奖励/课程、后续更新强度三方向，并要求先设计rollout洗数总体方案。设计已在`RL_METHOD_PLAN.md`顶部，非新作业启动；当前24h RL未停未改，旧公共评测不恢复，0新增训练/采集/自动BC放行，未派subagent。
+- **建议接口分工、非已派发：** A拥有低层有效动作manifest adapter/FM-SFT/动作保真；B拥有标签语义、结果头/因果时序反馈、恢复planner CE；C拥有物理证据provider、通用skill reward、合法状态恢复/前缀和共享PPO/critic仪表。B/C先共签schema/部署白名单，A不得把失败候选直接当动作正例；本线程Codex集成与最终原媒体抽审，实际唯一执行owner在run票中确认。
+- **依赖/门：** 现有238候选快照先全量结构验真/分层抽审，按outcome/plan/action-good/candidate分流；真实恢复正例可能为0。P1小工程门后H0/H1与L0分开训练，48条固定TRAIN-dev短测逐层归因，通过再做30更新/4h封顶短技能RL，最后单变量试更大LR/样本复用。所有预算是待启动票，任务/实例/seed、权重/data/code身份未冻结前不开GPU；不覆盖旧证据/运行源码。
+
 ## 2026-10-08（CST）当前请求：SFT低Q与RL停滞诊断
 
 - **2026-10-09 11:04 CST / DIAG-SHARED-RL-STAGNATION交接：** 只读实证完成，162共享更新/66完成TRAIN仍0成功；统计82036chunk仅6终局正Q、23/66全程单skill、最长不变intent占比中位90.57%。主要缺口为planner_only无结果反馈/K3去重无重试时长且高层冻结，最终goal物体的稠密提示不保证教当前技能；不是memory串任务或未同步更新。238候选未全验，本轮3ZIP/18原图亲审只授诊断有效，仍禁止BC回灌。A/B补结果反馈与高层恢复、C先验通用skill课程/奖励/critic指标的建议未获新训练票；当前作业未停/未改、截止不变，细节与证据见plan。
