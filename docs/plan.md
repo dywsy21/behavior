@@ -14,6 +14,7 @@
 
 ### 2026-10-09 13:06 CST：继续完成全部恢复SFT准备（Codex / RECOVERY-PREP-COMPLETE，进行中）
 
+- **13:27 CST / 首次提交在仿真前被源检查拒绝：** `1a6b0b5`已push/Git bundle到两机独立worktree。A800 CPU导出两例RGB/23动作/61state及保护组来源通过；10383首命令因官方源码是封存archive而非Git checkout，在导入仿真/预算预留前退出，实际0reset/0控制/0GPU，日志`runs/recovery_lunch241_v1.log`保留。已改按既有official_manifest全文件SHA检验a8247a8，待新冻结后启动首例；不热改旧源。数据history和训练链本地接线继续。
 - **13:24 CST / 因果join复验与有界仿真票：** 新3项历史/自身target泄漏负控及3项数据调度回归通过；`causal-history-v2/contexts.jsonl`6194条全过，SHA f22675de…db04，未新增训练标签。新增原专家前缀导出与独立官方仿真验收入口；预定`preparing_lunch_box:241`/episode2556、`make_pizza:179`/episode9928（均原TRAIN且非保护组），不是按执行结果选例。每例最多352示范控制＋2×16重放控制，保守预留4次reset、1h；两例总≤8reset/768控制，属获批8/4096预算内，10383仅GPU0顺序执行，0优化。假设：官方实例＋示范动作可形成可复现近技能起点；未通过原RGB/物理人工核验不生成恢复/BC标签。当前仅代码准备，冻结部署后记录真实run/结果，不能把npz当世界快照。
 - **13:16 CST / 旧RL已安全结束、因果历史已补齐：** 原run实际13:12:17完成，第180次共享权重7.623GB完整hash/CPU独立重载通过（SHA fbb473cd…b4eb2），322 actor Adam、critic状态及8rank RNG齐全，8份save_ack相同、原全部PID退出，无GPU计算进程；证据`infra/results/2026-10-09-shared-rl-safe-stop.json`。原权重/视频/指标保留，不续训。8份完整planner log已只读封存到本地`planner-logs-v1`，6194锚点/86episode的真实低层context SHA和命令memory递推全过；进一步区分“当下已下发”和“本次规划前”视图，防H1把自己将预测的技能读进prefix，v2带该字段待复验。正式训练入口与逐样本数据QA继续。
 - **13:08 CST / 已获旧RL提前安全停止授权：** 用户明确批准安全保存停止10383原RL并做最多8次reset/4096控制步准备验收；已核活跃冻结serve_shared_rl的STOP_TRAINING→全局最后检查点→stopped路径，向唯一`shared_rl100_20261008_v2/STOP_TRAINING`提交控制标记（未kill/热改）。此刻仍需核最终共享权重/Adam/RNG及所有rank退出，不以marker存在当已保存。新GPU实验只在退出/资源确认、固定源/run票后开始，不启动正式SFT或新RL。

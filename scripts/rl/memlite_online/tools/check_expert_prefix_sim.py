@@ -50,7 +50,9 @@ def main():
     if subprocess.check_output(['git', 'status', '--porcelain'], cwd=REPO, text=True).strip():
         raise ValueError('Clean frozen Git source required')
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip()
-    if subprocess.check_output(['git','rev-parse','HEAD'], cwd=OFFICIAL, text=True).strip() != OFFICIAL_COMMIT:
+    official = json.loads((REPO/'scripts/eval/memlite_sft100/official_manifest.json').read_text())
+    if official['commit'] != OFFICIAL_COMMIT or any(sha256(OFFICIAL/name) != checksum
+                                                 for name,checksum in official['files'].items()):
         raise ValueError('Wrong simulator source')
     manifest = json.loads((a.proposal/'manifest.json').read_text())
     if (manifest['controls'] != 352 or manifest['prefix_is_verified'] is not False
