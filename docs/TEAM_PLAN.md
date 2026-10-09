@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-10 03:07 CST / Codex：** 本地VPN/SOCKS掉线，C三RTX worker因网络退出而非技能失败，26完整轨迹＋部分wash保留、A800最后确认global7，待用户协调重连后核服务再续；B LoRA最后14epoch/308，后台后续未知。短起点小头DEV84.17%/balanced71.31%未改善，不升级。继续能做的CPU数据准备，不部署、不中断队友、不推断goal完成。
+
 **2026-10-10 02:59 CST / Codex：** B结果LoRA在原40选择DEV到89.17%但UNKNOWN 0/4，未可用；查实短于16控的真实起点被旧历史抽样漏掉，新增单变量因果起点对照/154本地回归，待独立cache与拟合。C原低RL已global7，原起点/奖励/超参不热改。A无新训练；高H1跨机制/真实OOF仍待，不借选择集准确率宣称完成，不派subagent/不合main。
 
 **2026-10-10 02:46 CST / Codex：** B专属结果LoRA真实GPU隔离已验并14更新（observer-v2/5c7a7692c82e），原高planner不变、结果head未校准部署。C冷重置协议下低RL已global6（c8823fe92ecd），radio2/2、PLACE1/2、wash仍未成，暂不扩覆盖或宣称提升；A原SFT低参考保留。接下来是两路学习曲线/原留出与可靠闭环，H1新机制意图和独立成员代码review仍待。

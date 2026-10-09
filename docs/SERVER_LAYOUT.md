@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 03:07 CST：A800连接中断
+
+- 本地1080和lc1/lc2 recovery控制socket均消失，未重登VPN。RTX `short-rl-{radio155,wash169,tripod129}-cold-v1`均failed_no_retry，分别9/8/9个完整episode；末子进程radio/tripod为0控制等待任务，wash第9子进程train round3在ACK发送处断线，完整证据保留。RTX GPU已退出；A800最终状态待核，不把此条当A800进程已停止。
+- lc1最后已确认低RL global7/9664547d，高observer14epoch/308步。短历史小头`H0-short-start-v1`已完成205/选105、权重5432a805…27c9f（W&B76eb387005ba）；DEV84.17%且balanced71.31%，不部署。独立observer实际重载工具源e94b9168已部署但未运行。
+
 ## 2026-10-10 03:03 CST：结果观察历史独立对照
 
 - lc1 `src/observer-short-start-v1`=ba1fca94；`runs/recovery_heterogeneous_20261010/H1-feature-cache-short-start-v1`是同v4数据下的新短起点协议cache，236请求/466真实prefill、SHA4bfbad39…8a4427、0optimizer。不覆盖旧v4特征；必须显式`attempt_start_short_v1`配置才可读。
