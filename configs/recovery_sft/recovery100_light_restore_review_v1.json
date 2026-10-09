@@ -1,0 +1,22 @@
+{
+  "schema": "owner_light_restore_engineering_review_v1",
+  "reviewer": "Codex main, 2026-10-09 18:54 CST; personally inspected all nine original camera PNGs",
+  "case": "turning_out_all_lights_before_sleep_88",
+  "source_commit": "aefcadfc6c9cb906d64225f7a083dab55ad441ee",
+  "receipt_sha256": "bdbc6fd6b78411e72c0b0b27e115523a05c1b4d41e27df1b51c8e0247a8456dd",
+  "evidence_directory": "articulation-collection-v7-light/turning_out_all_lights_before_sleep_88/light-restore-probe",
+  "local_review_directory": "artifacts/recovery100-collection-20261009/light88-restore-probe",
+  "reviewed_phases": ["before", "perturbed", "restored"],
+  "reviewed_cameras": ["head", "left_wrist", "right_wrist"],
+  "all_nine_image_checksums_match_receipt": true,
+  "actual_light_targets_changed": 41,
+  "registered_light_state_exactly_restored": true,
+  "robot_proprio_unchanged": true,
+  "actual_physics_controls": 0,
+  "observations": "The head and left-wrist views visibly darken during perturbation and brighten after restoration; scene and robot geometry remain consistent. The right wrist faces the shadowed floor/door edge with a smaller brightness difference. Restored rendered pixels are not claimed bit-identical to before. All registered lamp/room visibility and edge caches are exactly restored by the receipt.",
+  "status": "render_only_metadata_roundtrip_reviewed",
+  "world_restore_tested": false,
+  "cold_restore_tested": false,
+  "task_success_claimed": false,
+  "recovery_training_approved": false
+}

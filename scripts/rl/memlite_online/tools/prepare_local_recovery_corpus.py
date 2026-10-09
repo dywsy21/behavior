@@ -15,6 +15,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import canonical,digest,file_sha,group_key,split_group,anchor_candidate
 from recovery_teacher_corpus import validate_branch,branch_histories,physical_proposal,episode_identity
 from recovery_reference_binding import verify_saved_binding
+from recovery_terminal_corpus import load_terminal,normalized_terminal,terminal_anchor
 
 
 def write_json(path,value):path.write_text(json.dumps(value,indent=2,allow_nan=False)+'\n')
@@ -83,6 +84,7 @@ def main():
             if not rows:
                 excluded.append(dict(case=entry['directory'],branch=branch['kind'],reason=branch['failure']));continue
             validate_branch(rows,manifest,plans)
+            terminal=load_terminal(branch_path,manifest,rows,plans)
             episode=episode_identity(source,result,manifest,branch['kind'])
             clip_id=digest(episode)[:24];relative=clip_id+'.zip'
             binding={seed['physics']['target_name']:seed['physics']['entity']}
@@ -93,6 +95,11 @@ def main():
                 audit['entity_bindings']=binding
             raw=''.join(json.dumps(r,sort_keys=True,allow_nan=False)+'\n' for r in normalized).encode()
             header_anchors={k:v for k,v in manifest['anchors'].items() if int(k)<len(rows)}
+            if terminal:
+                t=terminal['control_step']
+                header_anchors[str(t)]=dict(control_step=t,observation_only=True,
+                    sha256={k:v['sha256'] for k,v in terminal['images'].items()},
+                    dimensions={k:[3,224,224] for k in terminal['images']})
             header=dict(schema='recovery_teacher_candidate_v2',clip_id=clip_id,label_kind='offline_local_teacher_candidate',
                 bc_eligible=False,human_review='pending',episode=episode,provenance=source_rows[-1],
                 start_control_step=0,end_control_step=len(rows),transitions_sha256=hashlib.sha256(raw).hexdigest(),
@@ -101,6 +108,7 @@ def main():
                 events=[dict(kind='offline_intervention_and_correction_candidate',physical_recovery_candidate=branch['physical_recovery_candidate'])],
                 action_mapping='raw23 base/trunk/left/gripper/right/gripper; no masked controls',
                 policy_memory='fresh isolated curriculum start; not an inherited full-task history')
+            if terminal:header['terminal_observation']=normalized_terminal(terminal,binding)
             with zipfile.ZipFile(a.output/'raw'/relative,'x',compression=zipfile.ZIP_DEFLATED,compresslevel=3) as archive:
                 archive.writestr('manifest.json',json.dumps(header,indent=2,allow_nan=False))
                 archive.writestr('transitions.jsonl',raw)
@@ -110,6 +118,11 @@ def main():
                         name=f'rgb/{int(t):08d}/{camera}.jpg';path=branch_path/name
                         if file_sha(path)!=checksum:raise ValueError('Changed original observed RGB')
                         archive.write(path,name,compress_type=zipfile.ZIP_STORED)
+                if terminal:
+                    archive.write(branch_path/'terminal-observation.json','terminal-observation.original.json')
+                    for camera,ref in terminal['images'].items():
+                        archive.write(branch_path/ref['path'],f'rgb/{terminal["control_step"]:08d}/{camera}.jpg',
+                                      compress_type=zipfile.ZIP_STORED)
             # An attempted action may fail before its first complete control;
             # never expose a dangling pre-action frame as an applied sample.
             item=dict(path=relative,sha256=file_sha(a.output/'raw'/relative),bytes=(a.output/'raw'/relative).stat().st_size,
@@ -117,7 +130,11 @@ def main():
                 structural_validation='passed',split=split_group(source['task'],source['instance_id'],protected))
             inventory.append(item);mapping={r['control_step']:r for r in normalized};branch_anchors=[]
             for t,anchor in sorted(header_anchors.items(),key=lambda x:int(x[0])):
-                t=int(t);row=anchor_candidate(episode,mapping,t,dict(archive=relative,sha256=anchor['sha256'],control_step=t),binding,item['split'])
+                t=int(t);image_ref=dict(archive=relative,sha256=anchor['sha256'],control_step=t)
+                if terminal and t==terminal['control_step']:
+                    row=terminal_anchor(episode,terminal,image_ref,item['split'],branch)
+                    branch_anchors.append(row);anchors.append(row);continue
+                row=anchor_candidate(episode,mapping,t,image_ref,binding,item['split'])
                 latest=[p for p in plans if p['control_step']<=t][-1]
                 proposal_label=physical_proposal(rows,t,seed['arm'],attempt_start=latest['control_step'])
                 row['label_audit']['offline_teacher']=dict(kind=branch['kind'],action_label_kind=rows[t]['label_kind'],

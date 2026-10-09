@@ -1,0 +1,19 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-09 18:58 CST; personally inspected all 42 original RGB panels, verified review checksums and causal physical records, and independently rederived the exact reference binding",
+  "scope": "One additional original TRAIN source: local supported paper-bag reacquisition in packing meal for delivery. Not lifting stability, successful food packing, or whole-task success. Retain the failed joint-jitter sibling and count one independent source event only.",
+  "branches": [
+    {
+      "case": "packing_meal_for_delivery_38",
+      "branch": "open_gripper",
+      "manifest_sha256": "9c7cd76ba66f7cd0fef8bbd5c955cdf98a3ac8ef45047f7af2ce55266d7beae9",
+      "review_directory": "packing38-review-v1",
+      "review_sha256": "e33f6c5cc42d694ee0096ea9e425e765035ad56107f7ff1d77083e5af77a1b5d",
+      "outcomes": [{"control_step": 12, "value": "FAILED"}, {"control_step": 20, "value": "IN_PROGRESS"}, {"control_step": 40, "value": "SUCCEEDED"}],
+      "action_steps": [16],
+      "planner_steps": [16],
+      "corrective_execution_visually_verified": true,
+      "notes": "Original category paper_bag resolves among three real competitors to paper_bag_75 / sack.n.01_2, unique left contact at original control 424. The original head and left wrist images show the left fingers opening away from the supported bag, closing again after actual RETRY at 16, and holding at 36..152. Six-control physical debounce supports exact labels 12/20/40; t16 is a fresh attempt with UNKNOWN, not FAILED. All saved anchors over actual clean corrective controls 16..47 and endpoint 48 were viewed. No injected controls enter the action approval."
+    }
+  ]
+}

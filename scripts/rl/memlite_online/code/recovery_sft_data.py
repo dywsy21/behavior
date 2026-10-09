@@ -80,8 +80,18 @@ class CandidateArchiveReader:
         header = headers[reference['archive']]
         if reference['control_step'] != t or header['rgb_anchors'][str(t)]['sha256'] != reference['sha256']:
             raise ValueError('Observation/source image mismatch')
-        state = np.asarray(rows[t]['proprio_before'], dtype=np.float32)[None]
-        if rows[t]['proprio_before'] != candidate['actor_input']['proprio_before']:
+        observation_only = candidate['actor_input'].get('observation_only', False)
+        if observation_only:
+            final = header.get('terminal_observation')
+            if (t in rows or final is None or final['control_step'] != t
+                    or final['has_next_executed_action'] is not False
+                    or candidate['label_audit']['full_executed_32_step_target_available']):
+                raise ValueError('Final observation confused with an applied action')
+            proprio = final['proprio']
+        else:
+            proprio = rows[t]['proprio_before']
+        state = np.asarray(proprio, dtype=np.float32)[None]
+        if proprio != candidate['actor_input']['proprio_before']:
             raise ValueError('Pre-action proprio was modified')
         if state.shape != (1,61) or not np.isfinite(state).all():
             raise ValueError('Malformed real robot proprio tensors')
@@ -103,6 +113,8 @@ class CandidateArchiveReader:
         state, images = self.observation(candidate)
         rows, _ = self.episode(candidate['source_episode'])
         t = candidate['control_step']
+        if candidate['actor_input'].get('observation_only',False):
+            raise ValueError('Final observation has no next action; cannot be BC')
         if not candidate['label_audit']['full_executed_32_step_target_available']:
             raise ValueError('Incomplete contiguous same-intent action target')
         expected = candidate['actor_input']['issued_skills_semantic_json']

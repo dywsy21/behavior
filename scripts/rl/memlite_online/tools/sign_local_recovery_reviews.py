@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest,file_sha
 from recovery_teacher_corpus import physical_proposal,validate_branch
+from recovery_terminal_corpus import load_terminal
 
 
 def verify_action_window(t, rows, manifest, anchor, reviewed_frames):
@@ -45,6 +46,7 @@ def main():
             if file_sha(review/s['path'])!=s['sha256']:raise ValueError('Changed reviewed media')
         rows=[json.loads(x) for x in (branch/'transitions.jsonl').read_text().splitlines()]
         plans=json.loads((branch/'plans.json').read_text());validate_branch(rows,manifest,plans)
+        terminal=load_terminal(branch,manifest,rows,plans)
         refs=[dict(path=str((review/s['path']).resolve().relative_to(root)),sha256=s['sha256'],kind='original_media_review')
               for s in materials['sheets']]
         refs.append(dict(path=str((review/'review.json').resolve().relative_to(root)),
@@ -60,7 +62,12 @@ def main():
                 source_group=q['source_group'],label=label))
         for outcome in decision['outcomes']:
             t=outcome['control_step'];latest=[p for p in plans if p['control_step']<=t][-1]
-            measured=physical_proposal(rows,t,manifest['arm'],attempt_start=latest['control_step'])
+            if terminal is not None and t==terminal['control_step']:
+                if (materials.get('terminal_observation_sha256')!=manifest['terminal_observation_sha256']
+                        or not indexed[t]['actor_input'].get('observation_only')):
+                    raise ValueError('Missing actual final-observation review/corpus evidence')
+                measured=terminal['outcome_candidate']
+            else:measured=physical_proposal(rows,t,manifest['arm'],attempt_start=latest['control_step'])
             if measured!=outcome['value']:raise ValueError('Owner outcome contradicts causal physical evidence')
             approve(t,'outcome',dict(value=measured,member_index=0,available_control_step=t,evidence_end_control_step=t))
         if decision['action_steps'] or decision['planner_steps']:

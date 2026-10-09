@@ -31,6 +31,21 @@ def validate_archive(path):
         if offline_teacher:
             from recovery_teacher_corpus import validate_branch
             validate_branch(rows,m['branch_evidence'],m['plans'])
+            if 'terminal_observation' in m:
+                from recovery_local_teacher import validate_terminal_observation
+                from recovery_terminal_corpus import normalized_terminal
+                original_raw=archive.read('terminal-observation.original.json')
+                assert hashlib.sha256(original_raw).hexdigest()==m['branch_evidence']['terminal_observation_sha256']
+                original=json.loads(original_raw);terminal=m['terminal_observation']
+                binding=rows[-1]['physical_audit']['entity_bindings']
+                assert terminal==normalized_terminal(original,binding)
+                validate_terminal_observation(terminal,rows,m['branch_evidence']['arm'])
+                assert terminal['context']==m['plans'][-1]
+                assert terminal['last_applied_control_step']==rows[-1]['control_step']
+                assert terminal['control_step']==m['end_control_step']
+                assert m['rgb_anchors'][str(terminal['control_step'])]['observation_only'] is True
+                assert m['rgb_anchors'][str(terminal['control_step'])]['sha256']=={
+                    k:v['sha256'] for k,v in terminal['images'].items()}
         assert [r['control_step'] for r in rows]==list(range(m['start_control_step'],m['end_control_step']))
         assert m['events']
         images=0
