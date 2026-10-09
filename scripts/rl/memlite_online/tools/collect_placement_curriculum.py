@@ -117,6 +117,29 @@ def main():
             for key,obj in (('target',sensor.target),('destination',sensor.destination)):
                 if float(np.max(np.abs(vector(obj.get_position_orientation()[0])-saved['start_positions'][key])))>.001:
                     raise ValueError('Cold placement object pose mismatch')
+            # The pinned official Simulator.load_state explicitly warns that
+            # OnTop/Inside are stale until an actual simulator step; their
+            # TensorizedRelativeState tables are NOT serialized. Rendering or
+            # clearing per-object Python caches cannot repair PhysX contacts.
+            # Apply exactly the first original reference control, account for
+            # it, and only then query relations / initialize a skill reward.
+            # This is a curriculum restore barrier, never an actor action or
+            # a scored/BC-labelled transition. The RL start is now begin+1.
+            before=proprio61(inst.obs);command=actions[begin]
+            term,trunc,_=evaluator._apply_actions(torch.as_tensor(command)[None],[0])
+            receipt['actual_controls']+=1
+            after,physical=sensor.read(identity)
+            barrier=dict(control_step=begin,action_executed_raw23=command.tolist(),
+                simulator_apply_ack=True,proprio_before=before,proprio_after=proprio61(inst.obs),
+                terminated=bool(term[0]),truncated=bool(trunc[0]),physical_after=physical,
+                action_source='original_reference_restore_barrier_not_actor_not_BC',
+                reward_assigned=False,actor_input=False)
+            atomic_json(a.output/'restore-barrier.json',barrier)
+            if bool(term[0]) or bool(trunc[0]):raise ValueError('Native terminal during recorded restore barrier')
+            validate_placement_start(after,physical,[],cold=True)
+            receipt.update(restore_barrier_controls=1,restore_barrier_sha256=sha256(a.output/'restore-barrier.json'),
+                snapshot_control_step=begin,first_valid_relation_control_step=begin+1)
+            start_t=begin=begin+1
         reward=None;last=None;rgb={};held_history=[]
         receipt['status']='replaying_reference';atomic_json(a.output/'status.json',receipt)
         with (a.output/'controls.jsonl').open('x',buffering=1) as log:
