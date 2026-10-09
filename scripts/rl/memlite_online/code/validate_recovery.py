@@ -16,12 +16,21 @@ def validate_archive(path):
         if len(archive.namelist())!=len(set(archive.namelist())):
             raise ValueError('Duplicate archive members')
         m=json.loads(archive.read('manifest.json'));raw=archive.read('transitions.jsonl')
-        assert m['schema']=='recovery_candidate_v1' and m['label_kind']=='on_policy_candidate'
-        assert m['bc_eligible'] is False and m['human_review']=='pending' and m['synthetic_expert'] is False
+        offline_teacher=m['schema']=='recovery_teacher_candidate_v2'
+        if offline_teacher:
+            assert m['label_kind']=='offline_local_teacher_candidate'
+            assert m['episode']['actor_model_used'] is False
+        else:
+            assert m['schema']=='recovery_candidate_v1' and m['label_kind']=='on_policy_candidate'
+            assert m['synthetic_expert'] is False
+        assert m['bc_eligible'] is False and m['human_review']=='pending'
         assert m['episode']['split']=='train'
         assert m['transitions_sha256']==hashlib.sha256(raw).hexdigest()
         rows=[json.loads(line) for line in raw.splitlines()]
-        assert rows and len(rows)<=1024
+        assert rows and (offline_teacher or len(rows)<=1024)
+        if offline_teacher:
+            from recovery_teacher_corpus import validate_branch
+            validate_branch(rows,m['branch_evidence'],m['plans'])
         assert [r['control_step'] for r in rows]==list(range(m['start_control_step'],m['end_control_step']))
         assert m['events']
         images=0

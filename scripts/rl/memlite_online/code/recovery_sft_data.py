@@ -113,6 +113,8 @@ class CandidateArchiveReader:
             raise ValueError('Action chunk crossed a skill switch or terminal')
         if any(r.get('simulator_apply_ack') is not True for r in future):
             raise ValueError('Unacknowledged simulator action cannot become a BC target')
+        if any(r.get('label_kind')=='injected_fault_not_BC' for r in future):
+            raise ValueError('Injected perturbation is never a positive action target')
         action = np.asarray([r['action_executed_raw23'] for r in future], dtype=np.float32)
         if action.shape != (32,23) or not np.isfinite(action).all():
             raise ValueError('Malformed real robot action tensors')
