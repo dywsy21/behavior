@@ -1,0 +1,19 @@
+{
+  "schema": "recovery_start_owner_review_v1",
+  "reviewer": "Codex primary, 2026-10-09 16:27 CST",
+  "review_sha256": "003df76a73a4ead7abe9cbb275f7808b13beec85e4de0556a2c7b3757f568bff",
+  "approved_cases": [
+    "preparing_lunch_box_106", "turning_on_radio_270", "turning_on_radio_155", "make_pizza_56",
+    "preparing_lunch_box_241", "preparing_lunch_box_136", "preparing_lunch_box_143", "preparing_lunch_box_41",
+    "set_up_a_coffee_station_in_your_kitchen_1", "preparing_lunch_box_182", "preparing_lunch_box_198",
+    "make_pizza_89", "preparing_lunch_box_296"
+  ],
+  "original_camera_panels_reviewed": 39,
+  "notes": [
+    "All four audit sheets personally inspected; task, arm, target and surroundings match the signed source corrections. Radio, bowl, baking sheet, cup and lunch box visible from head/wrist cameras; some wrist views are partially occluded.",
+    "A still image alone does not prove release. Same-target BOTH-FALSE before retry and 128 consecutive same-arm TRUE after replay are separately established by the causal simulator record.",
+    "Approved route is cold-load the recorded full seed world/controller/metadata/RNG, replay the recorded 32-control fault, then verify the actual failure state. Direct cold loading of the derived failure-start.pt itself is not separately certified.",
+    "make_pizza_179 and preparing_lunch_box_95 remain rejected curriculum starts (6.070 mm and 5.772 mm drift); their originally executed and reviewed SFT segments remain genuine observations, not invalidated by later nondeterminism.",
+    "This is a local GRASP curriculum, not an official full-task reset, general all-skill readiness, actor success rate, or authorization for training."
+  ]
+}
