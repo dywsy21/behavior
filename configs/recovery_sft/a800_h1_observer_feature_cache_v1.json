@@ -1,0 +1,12 @@
+{
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "parents": {
+    "high": {
+      "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+      "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+      "step": 35
+    }
+  },
+  "scope": "Recompute approved causal features for the new H1 backbone. Zero optimization, old H0 calibration/observer cannot be reused under a changed high hash."
+}

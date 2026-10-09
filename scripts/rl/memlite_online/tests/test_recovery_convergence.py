@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_convergence import event_weights, check_splits, selection_key
-from recovery_generation_metrics import score_event, summarize
+from recovery_generation_metrics import score_event, summarize, feedback_probe
 
 
 def row(group, label, split='train'):
@@ -11,6 +11,21 @@ def row(group, label, split='train'):
 
 
 class ConvergenceTests(unittest.TestCase):
+    def test_probe_is_explicit_and_never_adds_a_success_failure_claim(self):
+        import json
+        from g05.utils.memlite_skill_protocol import semantic_active_skills_text
+        skill=dict(verb='GRASP',target='cup',arm='LEFT',source='',destination='',target_part='',unbound_relation='')
+        original=dict(previous_intent=semantic_active_skills_text([skill]),known_previous_outcome='UNKNOWN',execution_feedback='none')
+        changed,kind=feedback_probe(original,'original_heldout')
+        self.assertEqual(kind,'synthetic_unknown_feedback_on_normal_state')
+        j=json.loads(changed['execution_feedback'])
+        self.assertEqual(j['estimated_bundle_outcome'],'UNKNOWN')
+        self.assertEqual(len(j['estimated_member_outcomes']),1)
+        self.assertEqual(original['execution_feedback'],'none')
+        stripped,kind=feedback_probe(changed,'recovery_dev')
+        self.assertEqual(stripped,original)
+        with self.assertRaises(ValueError):feedback_probe(dict(original,known_previous_outcome='FAILED'),'recovery_dev')
+
     def test_repeated_frames_cannot_inflate_event_mass(self):
         rows=[row('a','FAILED')]*100+[row('b','SUCCEEDED')]
         w=event_weights(rows)

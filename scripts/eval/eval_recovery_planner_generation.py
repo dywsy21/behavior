@@ -15,7 +15,7 @@ sys.path.insert(0, str(REPO / 'scripts/eval/memlite_sft100'))
 from recovery_corpus import file_sha, digest
 from recovery_planner_data import VerifiedRecoveryPlannerDataset
 from recovery_sft_data import raw_observation
-from recovery_generation_metrics import score_event, summarize
+from recovery_generation_metrics import score_event, summarize, feedback_probe
 
 
 def main():
@@ -23,6 +23,7 @@ def main():
     ap.add_argument('--config', type=Path, required=True)
     ap.add_argument('--model', choices=('parent', 'candidate'), required=True)
     ap.add_argument('--output', type=Path, required=True)
+    ap.add_argument('--feedback-probe', action='store_true', help='Counterfactual shortcut diagnostic, not heldout accuracy')
     args = ap.parse_args()
     # Fail on an incomplete code closure before reading large model files.
     importlib.import_module('g05.utils.memlite_planner_format')
@@ -73,7 +74,9 @@ def main():
     receipt = dict(config_sha256=file_sha(args.config), checkpoint_sha256=cfg['models'][args.model]['sha256'],
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'], cwd=REPO, text=True).strip(),
         restoration=restore, schedule_sha256=digest(schedule), target_free=True,
-        recovery_dev_unseen_by_increment_only=True, no_physical_success_measurement=True)
+        recovery_dev_unseen_by_increment_only=True, no_physical_success_measurement=True,
+        counterfactual_feedback_probe=args.feedback_probe,
+        synthetic_probe_metrics_are_not_real_world_accuracy=bool(args.feedback_probe))
     (args.output/'manifest.json').write_text(json.dumps(receipt, indent=2)+'\n')
     started = time.monotonic(); rows = []
     for split, index in schedule:
@@ -88,7 +91,9 @@ def main():
         # Targets remain on CPU in a separate dictionary. The actual model
         # receives only a whitelist prefix and the three processed images.
         prepared = processor._process_tensors(raw)
-        prefix = single_frame_planner_prefix(processor.samples_builder, prepared, planner_input_projection(target))
+        causal=planner_input_projection(target);probe_kind='observed'
+        if args.feedback_probe:causal,probe_kind=feedback_probe(causal,split)
+        prefix = single_frame_planner_prefix(processor.samples_builder, prepared, causal)
         pixels = {k: v.unsqueeze(0).cuda() for k,v in prepared['pixel_values'].items()}
         event = None; error = None; text = None; tick = time.monotonic()
         try:
@@ -100,7 +105,7 @@ def main():
             if isinstance(exc, torch.cuda.OutOfMemoryError):
                 raise
             error = str(exc); text = getattr(exc, 'planner_texts', None)
-        row = dict(split=split, identity=identity, score=score_event(event,target), event=event, error=error,
+        row = dict(split=split, identity=identity, probe_kind=probe_kind, score=score_event(event,target), event=event, error=error,
             text=text, seconds=time.monotonic()-tick,
             expected={k:target[k] for k in ('next_decision','target_parent_goal','active_skills_semantic_json','memory_update')})
         rows.append(row)
