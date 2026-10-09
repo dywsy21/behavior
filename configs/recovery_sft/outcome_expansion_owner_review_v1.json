@@ -1,0 +1,970 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 01:03 CST; personally inspected all 24 original RGB sheets / 288 panels, checked every sheet SHA, all six-control success/failure causal sequences, and actual issued target/arm bindings. No model predictions were used.",
+  "branches": [
+    {
+      "case": "rearrange_your_room_176",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "901727357b083698104b9dde94782c08f56d5536734a0fcd030dfdf4656cd914",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/rearrange_your_room_176--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers reacquire pillow_65; cushion occludes much of wrist view, so use head/finger gap plus exact prior grasp states, not lifting. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "rearrange_your_room_176",
+      "branch": "clean",
+      "manifest_sha256": "c4e10075f0ae7c3929983b4ab7dceb7c053c5d94d87a31f0377926bf348cbcca",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/rearrange_your_room_176--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers reacquire pillow_65; cushion occludes much of wrist view, so use head/finger gap plus exact prior grasp states, not lifting. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "clean_a_keyboard_175",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "246e65de8ee4fd3b951eaf304294db535942b058c7e0948bda7d76fc5a897aed",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/clean_a_keyboard_175--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand pipe_cleaner_120 beside the keyboard/monitor; blue narrow object and finger approach agree with exact binding. Not keyboard cleaning success. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "clean_a_keyboard_175",
+      "branch": "clean",
+      "manifest_sha256": "19d4b3ca087c087d5cefebf40cf707b101d859619d12cdce323aa87f4ff8bee9",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/clean_a_keyboard_175--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand pipe_cleaner_120 beside the keyboard/monitor; blue narrow object and finger approach agree with exact binding. Not keyboard cleaning success. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "putting_shoes_on_rack_86",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "5cfbbad96a884504153199b00f5eef499304673f5af952319f1526cf0577a1f5",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/putting_shoes_on_rack_86--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand sandal_75 remains supported near the floor; opening and renewed closure are visible, not rack placement. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "putting_shoes_on_rack_86",
+      "branch": "clean",
+      "manifest_sha256": "0b3da2dc0a88ec2e8a9044b26c0178774f6b6047b8d8206e9d0e8094aa272c7b",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/putting_shoes_on_rack_86--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand sandal_75 remains supported near the floor; opening and renewed closure are visible, not rack placement. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "slicing_vegetables_44",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7d39864c07ff61377f88a39075ea8da968c38a5a517b2eab7dcedfadf7f6b1f9",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/slicing_vegetables_44--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand parer_207 wooden handle has visible finger clearance change; no slicing action is labeled. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "slicing_vegetables_44",
+      "branch": "clean",
+      "manifest_sha256": "c3903ea71bf649971d9ea111a2311ea771e17b1ec424f31dcb3611abe80c2116",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/slicing_vegetables_44--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand parer_207 wooden handle has visible finger clearance change; no slicing action is labeled. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "stacking_wood_6",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "91de1faf4df954c26e8d160814a89f9ece357545ee72c2975a63ef86e7dc7d73",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/stacking_wood_6--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 32,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand log_333; progress at28 already has contact but lacks full six-control debounce, therefore not prematurely SUCCEEDED. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "stacking_wood_6",
+      "branch": "clean",
+      "manifest_sha256": "dd0ec42bcaff8ec89664c92a190b6b4dae235e264acc40334c01507a2de26c39",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/stacking_wood_6--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand log_333; progress at28 already has contact but lacks full six-control debounce, therefore not prematurely SUCCEEDED. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "clean_up_broken_glass_26",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "08a97dcb00e2297f36eb304a54a3c74d6357e03b5bf4c90cd925e8a927096792",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/clean_up_broken_glass_26--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand broken_glass_98 is the dark broken vessel fragment at the tiled floor; clean and recovered poses differ but exact target states agree. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "clean_up_broken_glass_26",
+      "branch": "clean",
+      "manifest_sha256": "1614e851615b1ccc09c918f3c06bd8a17f542943c1c11226a824132bda936582",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/clean_up_broken_glass_26--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand broken_glass_98 is the dark broken vessel fragment at the tiled floor; clean and recovered poses differ but exact target states agree. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "installing_a_modem_83",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "fdccaa0b7496b146ffb0a751fc036b070a63c1424b5bc93872499c7bae39eb97",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/installing_a_modem_83--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand modem_72 near the coffee table; only local grip reacquisition, no connection/install completion. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "installing_a_modem_83",
+      "branch": "clean",
+      "manifest_sha256": "cb4a3e6cea5d438fc237faee66ec1641a7fd84e86d77378e6391888cf41c584a",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/installing_a_modem_83--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand modem_72 near the coffee table; only local grip reacquisition, no connection/install completion. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "tidying_bedroom_74",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "862af2393ece3f07d7e694afefab0d99e40b1b55ec82ce8e5a513f30ce397634",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/tidying_bedroom_74--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 56,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand blue sandal_189; fingers visibly close around the sandal edge after the released state. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "tidying_bedroom_74",
+      "branch": "clean",
+      "manifest_sha256": "1f5b89c7bbd9425ed32626c429297002d6d61e276532c21dd8d8e0c1cfc42f48",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/tidying_bedroom_74--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand blue sandal_189; fingers visibly close around the sandal edge after the released state. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "hiding_Easter_eggs_185",
+      "branch": "open_gripper",
+      "manifest_sha256": "23006951ee444a9089bbdd9ac2d6b054024f8478a8d6f670453057f73bd875a1",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/hiding_Easter_eggs_185--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand wicker_basket_178 handle is the target, not the colored eggs inside; supported handle contact only. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "hiding_Easter_eggs_185",
+      "branch": "clean",
+      "manifest_sha256": "1926bf40edd05fb84f813bdfc95972e72af1c7a2afd5703ae827ddbbad150baf",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/hiding_Easter_eggs_185--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand wicker_basket_178 handle is the target, not the colored eggs inside; supported handle contact only. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "halve_an_egg_189",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "90359f0148f8584fee6968cfe3133d744e6d0261d1ca054a1252c442ca3d5d40",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/halve_an_egg_189--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand hard_boiled_egg_231 on refrigerator shelf; current release/closure views agree with exact held predicate, no halving label. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "halve_an_egg_189",
+      "branch": "clean",
+      "manifest_sha256": "9071f346b9408464b86ff1d69fbe7f4e85ecdb870abb20c9d9cd1c644fe7e45b",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/halve_an_egg_189--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand hard_boiled_egg_231 on refrigerator shelf; current release/closure views agree with exact held predicate, no halving label. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "chopping_wood_232",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "65897ddc0708bcc787d74de220e971b863ebea03e4790fd2b39d4d53c8c7bff9",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/chopping_wood_232--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand log_177 on driveway; no chopping or transport success inferred. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "chopping_wood_232",
+      "branch": "clean",
+      "manifest_sha256": "25e50b2a7cdbf8b73b35aada9756e2263c9b32977e7ac91f39b81ab8d282a63d",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/chopping_wood_232--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand log_177 on driveway; no chopping or transport success inferred. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "getting_organized_for_work_171",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1d5b18bc401cb4e023a688e8659ea23f7e975ceee74d9b4ab73eb81ffbe8b4ca",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/getting_organized_for_work_171--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand mouse_92 beside keyboard; dark wrist view is supplemented by head view and causal grasp states. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "getting_organized_for_work_171",
+      "branch": "clean",
+      "manifest_sha256": "25344ab93bd32118a7650f623e61e14914c7bbfe7d7a4bf0ecdeee1fc8c05f82",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/getting_organized_for_work_171--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand mouse_92 beside keyboard; dark wrist view is supplemented by head view and causal grasp states. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "spraying_fruit_trees_56",
+      "branch": "open_gripper",
+      "manifest_sha256": "ab2a486e2cd55c3a4e7fe8d9aebf99ed2ce4e6a5a8c110a7750de916c6100b85",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/spraying_fruit_trees_56--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand pesticide_atomizer_172 with red cap; open gap then handle closure, not spraying effectiveness. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "spraying_fruit_trees_56",
+      "branch": "clean",
+      "manifest_sha256": "8d556df51605f707e23a47a1397e02db6a39f226a0804f9cf29d2d9577582100",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/spraying_fruit_trees_56--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand pesticide_atomizer_172 with red cap; open gap then handle closure, not spraying effectiveness. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "collecting_childrens_toys_175",
+      "branch": "open_gripper",
+      "manifest_sha256": "ce46a6c794eac7803603806b4e7cf992e9d2240c81e97c636414b31be956dc63",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/collecting_childrens_toys_175--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand teddy_bear_267 near another toy; target remains the bear at the right wrist, not the distant duplicate. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "collecting_childrens_toys_175",
+      "branch": "clean",
+      "manifest_sha256": "1c978cc1b908874e7974299608de6dab34ac41b179bb9966f0fb1eba45847756",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/collecting_childrens_toys_175--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand teddy_bear_267 near another toy; target remains the bear at the right wrist, not the distant duplicate. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "laying_tile_floors_294",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "dc357a461d8f6a73ba859acbffab6075efb93260044882d0e8526c32e3313016",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/laying_tile_floors_294--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand ceramic_tile_186; large tile occludes wrist view. Progress36 has contact but insufficient debounce, success44 has six prior held controls. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "laying_tile_floors_294",
+      "branch": "clean",
+      "manifest_sha256": "6fbe2bd13f6c6b8f8bfe8537eb433a49ee3428add7f819adf3d21aa76b2ed1bc",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/laying_tile_floors_294--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand ceramic_tile_186; large tile occludes wrist view. Progress36 has contact but insufficient debounce, success44 has six prior held controls. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "outfit_a_basic_toolbox_20",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "3bc73f180c5888c59f15bcaf9fe216685b71a29a2f8f3c93e061ff0cdceeb4a5",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/outfit_a_basic_toolbox_20--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand orange drill_193 near red toolbox; wrist views show changed contact, no toolbox placement label. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "outfit_a_basic_toolbox_20",
+      "branch": "clean",
+      "manifest_sha256": "cb8e1fa52a2ad5a1d4ca35b9c5c2ae37394b1dae8965a5e1fb53b949ac67d4ca",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/outfit_a_basic_toolbox_20--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand orange drill_193 near red toolbox; wrist views show changed contact, no toolbox placement label. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "chop_an_onion_129",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "e69bfa4ace9d37d13f35cd059ef765c5d63c53288aa703274639f6de40f630dd",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/chop_an_onion_129--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand bowl_73, not the visible onion on counter; local bowl grip only. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "chop_an_onion_129",
+      "branch": "clean",
+      "manifest_sha256": "e9b88a8bfeb3fb124243ba4f028644b1aba0ef22a107ee3ec38a0bbd13dc3325",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/chop_an_onion_129--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand bowl_73, not the visible onion on counter; local bowl grip only. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "installing_a_fax_machine_30",
+      "branch": "open_gripper",
+      "manifest_sha256": "6e8d98860ff8d0bbc2dc8c39088df989bb9954a8d89f7ae62b84cc888a28f21a",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/installing_a_fax_machine_30--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 32,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand facsimile_180; progress28 has current contact but not stable debounce, success32 has six prior held controls. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "installing_a_fax_machine_30",
+      "branch": "clean",
+      "manifest_sha256": "0849b2e943bc9b9fa6572ca44de6938f8959810fb85af037f5e008bf3c9b39bb",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/installing_a_fax_machine_30--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand facsimile_180; progress28 has current contact but not stable debounce, success32 has six prior held controls. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "setting_the_fire_122",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "3c1da52398c6861d90aec370fbbce6ce2bd9de387e2c23afa607c659d05d771a",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/setting_the_fire_122--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand newspaper_74 at coffee table; no fire or igniting success inferred. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "setting_the_fire_122",
+      "branch": "clean",
+      "manifest_sha256": "1791e4030c54beaea5c63a5101681144d5717eae7c030215dab07cdfd824f17a",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/setting_the_fire_122--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand newspaper_74 at coffee table; no fire or igniting success inferred. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "putting_dirty_dishes_in_sink_171",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "af3d002b82f84dfb9d4945f6d4423d6163c31bcc1e8735d15f5177a383bd4d82",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/putting_dirty_dishes_in_sink_171--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand purple bowl_136 among multiple dishes; exact held object and wrist views align, not sink placement. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "putting_dirty_dishes_in_sink_171",
+      "branch": "clean",
+      "manifest_sha256": "c45c7f8d2cd04e70ec4f822dd0ef26d25593742968ee1206e71abb447253dc36",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/putting_dirty_dishes_in_sink_171--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand purple bowl_136 among multiple dishes; exact held object and wrist views align, not sink placement. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "dispose_of_glass_267",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "6f64b63001190177257aa0b7c0ff458520b3594ebfdea0c9827c741833ec2312",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/dispose_of_glass_267--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 56,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand trash_can_64 with liner; progress56 is after the longer actual retry interval. No disposal completion. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "dispose_of_glass_267",
+      "branch": "clean",
+      "manifest_sha256": "dd4be0b6161bbb52368aadf884b898ac5775e9bc50b42a8ca023ff576da9fd68",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/dispose_of_glass_267--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand trash_can_64 with liner; progress56 is after the longer actual retry interval. No disposal completion. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "carrying_in_groceries_75",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "caf64420dc4f7844711647c8081d86b9204a3040b948349823fd218f55ac2eb0",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/carrying_in_groceries_75--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand paper_bag_81 at red car trunk; bag is supported, no carrying stability claim. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "carrying_in_groceries_75",
+      "branch": "clean",
+      "manifest_sha256": "4292267c707d2a46332d5df0ce0c86b83d422e2155f20849af4e87b288138c51",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/carrying_in_groceries_75--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand paper_bag_81 at red car trunk; bag is supported, no carrying stability claim. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "spraying_for_bugs_12",
+      "branch": "open_gripper",
+      "manifest_sha256": "dac6d5ebbedd6ddf956665ca4a213b6e2574c4ec437da6d10593f6f0188c87bf",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/spraying_for_bugs_12--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand insectifuge_atomizer_174 red cap; local grasp only, no insect treatment label. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "spraying_for_bugs_12",
+      "branch": "clean",
+      "manifest_sha256": "48cd2b1c83488d8632481f50130cbd78b41f30514d297a8714fff97cae81d2f6",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/spraying_for_bugs_12--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left-hand insectifuge_atomizer_174 red cap; local grasp only, no insect treatment label. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    },
+    {
+      "case": "moving_boxes_to_storage_51",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1ca9c7ef171e7e4b8f8fe3b885b38d91799babce8972aa6501c407941418efd0",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/moving_boxes_to_storage_51--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand storage_box_80 edge while left hand is nearby; physical evidence rules out a wrong-hand success. No storage transport claim. FAILED is six actual no-hand contacts after a previously held target; IN_PROGRESS belongs to the newly executing clean correction; SUCCEEDED requires six consecutive prior holds. Only these exact displayed observations are approved."
+    },
+    {
+      "case": "moving_boxes_to_storage_51",
+      "branch": "clean",
+      "manifest_sha256": "a5e85d67c28c58a79671a3e9c8a34f9e1090c144fe88cdf7586a90bf64a8a7b0",
+      "review_directory": "runs/recovery100_collection_20261009/outcome-expansion-review-v1/moving_boxes_to_storage_51--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right-hand storage_box_80 edge while left hand is nearby; physical evidence rules out a wrong-hand success. No storage transport claim. Same-clock clean t8 is continuously held, despite the fault sibling being FAILED at t8."
+    }
+  ],
+  "selection": "hash order, arm interleave, distinct new TRAIN tasks, no model predictions",
+  "scope": "96 precise outcome-only anchors from 24 new TRAIN sources. Local grasp/loss/reacquisition only, not lift/transport/full-task success, not BC/planner approval. Same-control clean positives retained to oppose clock shortcuts.",
+  "review_index_sha256": "602ebc0b893a0146b3c80e5da26a1e473ef8405f2e857ee9fc3c646eb4207175",
+  "proposed_decisions_sha256": "380d36c9bc2f2d248fb213179da81715b3fa314804cb265162f26b8c7374925a"
+}
