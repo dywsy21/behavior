@@ -1,0 +1,27 @@
+{
+  "schema": "recovery_observer_convergence_diagnostic_v1",
+  "user_goal_authorized": true,
+  "root": "/data/workspace/wsy/behavior2026",
+  "admission": "datasets/recovery-reviewed-union-20261010-v4-outcomes/admission",
+  "admission_sha256": "9a780cfe36a209719c3bae1bf36232f9602445fa7c99ba7fe9f23e0291fdec1c",
+  "features": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v4-outcomes/features.pt",
+  "feature_receipt": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v4-outcomes/receipt.json",
+  "features_sha256": "60f5476ca4e76a2b2aa1a5d85642ec452ef15eb3ecb5237f2aee91422200a0d7",
+  "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+  "observer_kwargs": {"include_absolute_proprio": true},
+  "seed": 17,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "maximum_updates": 500,
+  "minimum_updates": 100,
+  "patience_updates": 100,
+  "evaluate_every": 5,
+  "interpretation": "Single-variable data expansion against H0-absolute-proprio-v1: 176 TRAIN labels / 44 groups / 36 tasks, same 40 selection DEV labels / 10 groups. Same head, optimizer and stopping rule. Newly reviewed 96 TRAIN outcomes include same-clock clean-held controls. No new action/planner labels; no independent calibration/test reuse. No high or low backbone gradients. Not a runtime approval or robot success-rate result.",
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-recovery-usable-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key"
+  }
+}

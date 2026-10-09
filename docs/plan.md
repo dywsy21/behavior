@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 01:17 CST / Codex RECOVERY-USABLE：** v4联合82ZIP/5336原观察全读过，216结果=176 TRAIN（44组36task）＋40旧选择DEV（10组7task），另29plan/28action不增；三池门过/admission9a780cfe…dec1c。lc1空闲GPU1匹配bee76338缓存首调用缺PYTHONPATH在模型加载前退出（0更新、原log保留），补明确冻结src导入后attempt002运行中；并非数据或模型错误。RL首轮probe目前抓取/放置仍成功、开门seed17仍未完，不称改善。
+
+- **2026-10-10 01:16 CST / Codex RECOVERY-USABLE：** 短RL v2首次真实共享更新已验：26 on-policy chunks、322 AE/6 critic/完整Adam重载finite，round-0001 SHA8d3fad73…13307。原LR1e-6后KL0.3023被拒，5e-7后0.0646仍拒，回溯2.5e-7获KL0.01479/clip0.1077后接受，未降低阈值；固定六probe进行中，尚无RL改善结论。新结果迁移134文件/75,814,599解压字节逐SHA全过；0539c064独立源码正在全读构建v4联合，不改运行RL源/共享env。
+
 - **2026-10-10 01:14 CST / Codex RECOVERY-USABLE：** 新96结果单元65,293,393B已迁lc1，tar SHA3045af9c…62894与RTX一致，待逐134文件核验/合并v4；不热改现役RL源。短RL v2六基线已完成（radio两19控成功、tripod100/67控成功、wash两317控UNKNOWN），三机制第一TRAIN回合也已产真实轨迹，正在共享PPO计算，尚未见优化回执；tripod v5 PID2272982用0d5b6a27独立冻源接入成功。当前head/actor仍无新的可部署结论，原版本全部保留。Git fetch完成main仍33677bd0，自有新union配置未提交所以未pull。
 
 - **2026-10-10 01:08 CST / Codex RECOVERY-USABLE：** 新96结果签发197a47b0…3e47，紧凑单元48ZIP/1426原观察已全读，独立单元因0DEV/0动作/0plan三池不ready，保留门待联合旧release。tripod v4被资源门误拒绝：现场GPU2只有另两自有sim各174MiB辅助上下文，并非主任务占卡；扩展既有辅助上下文证明逻辑，严格同recipe/port/case/PID/output且主GPU不同、≤512MiB才排除，未知或大进程仍拒绝。原两collector/共享actor继续原冻源；新GPU2客户端待131回归后启动，尚无优化。
