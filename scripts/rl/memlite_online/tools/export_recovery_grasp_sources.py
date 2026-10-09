@@ -21,7 +21,8 @@ def main():
     p.add_argument('--tasks', nargs='+', default=['preparing lunch box', 'make pizza',
                                                 'turning on radio', 'set up a coffee station in your kitchen'])
     p.add_argument('--all-tasks', action='store_true')
-    p.add_argument('--verb', default='GRASP', choices=['GRASP','OPEN_DOOR','CLOSE_DOOR','OPEN_DRAWER','CLOSE_DRAWER','OPEN_LID','CLOSE_LID'])
+    p.add_argument('--verb', default='GRASP', choices=['GRASP','OPEN_DOOR','CLOSE_DOOR','OPEN_DRAWER','CLOSE_DRAWER',
+                                                     'OPEN_LID','CLOSE_LID','PLACE_IN','PLACE_ON'])
     p.add_argument('--existing-inventory', type=Path, action='append', default=[])
     p.add_argument('--train-groups-per-task', type=int, default=2)
     p.add_argument('--dev-groups-per-task', type=int, default=1)

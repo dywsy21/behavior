@@ -55,5 +55,13 @@ class CoverageTests(unittest.TestCase):
         selected,coverage=select_grasp_sources([ep],set(),['task'],dict(train=2,dev=1))
         self.assertEqual(selected,[]);self.assertEqual(sum(r['missing'] for r in coverage),3)
 
+    def test_placement_requires_a_distinct_bound_destination(self):
+        ep=episode(1)
+        for target,destination,accepted in [('cup_1','',False),('cup_1','cup_1',False),('cup_1','shelf_2',True)]:
+            ep['segments']=[dict(start=16,end=48,parent='place',semantic=json.dumps([
+                dict(verb='PLACE_ON',target=target,destination=destination,unbound_relation='')]))]
+            selected,_=select_grasp_sources([ep],set(),['task'],dict(train=1,dev=1),verb='PLACE_ON')
+            self.assertEqual(bool(selected),accepted)
+
 
 if __name__=='__main__':unittest.main()

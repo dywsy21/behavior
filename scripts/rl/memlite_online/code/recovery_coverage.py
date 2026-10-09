@@ -30,7 +30,9 @@ def select_grasp_sources(episodes, protected, tasks, counts, existing_groups=(),
         for segment in ep['segments']:
             skills=json.loads(segment['semantic'])
             if (len(skills)==1 and skills[0]['verb']==verb and skills[0].get('target')
-                    and not skills[0].get('unbound_relation')):
+                    and not skills[0].get('unbound_relation')
+                    and (verb not in ('PLACE_IN','PLACE_ON') or
+                         (skills[0].get('destination') and skills[0]['destination']!=skills[0]['target']))):
                 split=split_group(task,raw['task_instance_id'])
                 candidates[(task,split)].append((ep,segment,split));break
     for task in tasks:
