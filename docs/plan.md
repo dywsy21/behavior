@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 00:00 CST / Codex RECOVERY-USABLE：** 干净分支已pull/fetch，lc1八卡无进程、共享余2.5TiB，RTX采集均结束。开合v3重推导完成，机器签核前发现owner审核目录相对ROOT少了runs前缀，已修正准确证据路径；没有改语义决定/原图SHA，没有把失败签发当准入成功。继续签发52结果/9意图/8动作窗口并迁移A800，旧三条frozen_test不进入训练/选择，新独立DEV亦不混入；新optimizer尚未启动。
+
 ### 2026-10-09 21:05 CST：持续goal推进到可用，而非完成小试（Codex / RECOVERY-USABLE，进行中）
 
 - **23:53 CST / 根人工跨机制准入审核完成：** 亲审9来源45页/504原RGB面板并逐SHA核验；明确审批见`configs/recovery_sft/recovery_articulation_owner_review_v2.json`，拟签52个结果（含9个predecision旧失败）、9个真实RETRY、8个32控窗口。sorting67首32控门反而略关/停滞，**拒绝BC且不造IN_PROGRESS**；其结果/意图保留，4DEV仍不训练。完成度处于10%–35%滞回区不等于运动未知，已修为只有实际向目标纠正才IN_PROGRESS，静止/反向仍UNKNOWN，116回归过；v3重推导保留原采集日志，待签核/联合迁移A800/新optimizer。另PLACE v2两例12原图亲审＋全部SHA/逐ACK/末6稳定检查过，150/114实际控含各1不计奖励barrier，149/113奖励控，仍非actor SR且保护进展live未验。

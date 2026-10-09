@@ -6,7 +6,7 @@
     {
       "case": "sorting_household_items_84", "branch": "reverse_reference_fault",
       "manifest_sha256": "e5a86e3c7f6f8f2e2037c1585bf256389e1fda30f36480c73a5d76fe3ecc7478",
-      "review_directory": "articulation-action-review-v2/sorting_household_items_84",
+      "review_directory": "runs/recovery100_collection_20261009/articulation-action-review-v2/sorting_household_items_84",
       "review_sha256": "48b6a137877e7d13c8d83c134e05b5a10c5458d9d377585f994c06b36bd3bcc2",
       "outcomes": [{"control_step":16,"value":"SUCCEEDED"},{"control_step":298,"value":"FAILED","history_role":"predecision"},{"control_step":299,"value":"UNKNOWN"},{"control_step":316,"value":"IN_PROGRESS"},{"control_step":328,"value":"IN_PROGRESS"},{"control_step":574,"value":"SUCCEEDED"}],
       "action_steps": [298], "planner_steps": [298], "corrective_execution_visually_verified": true,
@@ -15,7 +15,7 @@
     {
       "case": "clean_boxing_gloves_196", "branch": "reverse_reference_fault",
       "manifest_sha256": "b80c4586dd6b1966fd9cc51790be14ad6959d98f73ffcadc1bdf4e3041af5ed1",
-      "review_directory": "articulation-action-review-v2/clean_boxing_gloves_196",
+      "review_directory": "runs/recovery100_collection_20261009/articulation-action-review-v2/clean_boxing_gloves_196",
       "review_sha256": "177c3726950a8ea0c5257342d79ade24b15643bf89c3a24df53089733e6bdab7",
       "outcomes": [{"control_step":16,"value":"SUCCEEDED"},{"control_step":894,"value":"FAILED","history_role":"predecision"},{"control_step":895,"value":"UNKNOWN"},{"control_step":900,"value":"IN_PROGRESS"},{"control_step":924,"value":"IN_PROGRESS"},{"control_step":1746,"value":"SUCCEEDED"}],
       "action_steps": [894], "planner_steps": [894], "corrective_execution_visually_verified": true,
@@ -24,7 +24,7 @@
     {
       "case": "wash_dog_toys_169", "branch": "reverse_reference_fault",
       "manifest_sha256": "af12e2334de2fadf158da536f1585e4c5cdf7a28ef0feb53ab0d7b4a1624f8ec",
-      "review_directory": "articulation-action-review-v2/wash_dog_toys_169",
+      "review_directory": "runs/recovery100_collection_20261009/articulation-action-review-v2/wash_dog_toys_169",
       "review_sha256": "93038d6df3e4dc82b4d814c86fae87ed81eaff74a90723b8a65582eed5c36570",
       "outcomes": [{"control_step":16,"value":"SUCCEEDED"},{"control_step":270,"value":"FAILED","history_role":"predecision"},{"control_step":271,"value":"UNKNOWN"},{"control_step":284,"value":"IN_PROGRESS"},{"control_step":300,"value":"IN_PROGRESS"},{"control_step":524,"value":"SUCCEEDED"}],
       "action_steps": [270], "planner_steps": [270], "corrective_execution_visually_verified": true,
@@ -33,7 +33,7 @@
     {
       "case": "sorting_household_items_29", "branch": "reverse_reference_fault",
       "manifest_sha256": "fc5d7b1019a47cc3173dd3a93239cb8748f0b9ca8d7c2347b2cc80349c690cfa",
-      "review_directory": "articulation-action-review-v2/sorting_household_items_29",
+      "review_directory": "runs/recovery100_collection_20261009/articulation-action-review-v2/sorting_household_items_29",
       "review_sha256": "fbb1bb7af389f392eec70fd8cef93359dce8616b8e0613254020fbe341409724",
       "outcomes": [{"control_step":16,"value":"SUCCEEDED"},{"control_step":312,"value":"FAILED","history_role":"predecision"},{"control_step":313,"value":"UNKNOWN"},{"control_step":332,"value":"IN_PROGRESS"},{"control_step":344,"value":"IN_PROGRESS"},{"control_step":588,"value":"SUCCEEDED"}],
       "action_steps": [312], "planner_steps": [312], "corrective_execution_visually_verified": true,
@@ -42,7 +42,7 @@
     {
       "case": "clean_boxing_gloves_280", "branch": "reverse_reference_fault",
       "manifest_sha256": "ca24fb64fc33d4c3a473673449876ba5e6e11ed15eb80a36b221e1a7c6cb39f9",
-      "review_directory": "articulation-action-review-v2/clean_boxing_gloves_280",
+      "review_directory": "runs/recovery100_collection_20261009/articulation-action-review-v2/clean_boxing_gloves_280",
       "review_sha256": "84cee98f11156b94fdb8e3ae18914a85426d238899416a08698b6d708a37d4c1",
       "outcomes": [{"control_step":16,"value":"SUCCEEDED"},{"control_step":930,"value":"FAILED","history_role":"predecision"},{"control_step":931,"value":"UNKNOWN"},{"control_step":940,"value":"IN_PROGRESS"},{"control_step":960,"value":"IN_PROGRESS"},{"control_step":1822,"value":"SUCCEEDED"}],
       "action_steps": [930], "planner_steps": [930], "corrective_execution_visually_verified": true,
@@ -51,7 +51,7 @@
     {
       "case": "sorting_household_items_67", "branch": "reverse_reference_fault",
       "manifest_sha256": "11129f9c8d0594ee903160e38b177345fb204bc319f2a0e30e812a0659e6adf3",
-      "review_directory": "articulation-action-review-v2/sorting_household_items_67",
+      "review_directory": "runs/recovery100_collection_20261009/articulation-action-review-v2/sorting_household_items_67",
       "review_sha256": "a1b98bfc34b81efe2ebcab044138e9af77067874fabcf7b01c617cf7407a34bb",
       "outcomes": [{"control_step":16,"value":"SUCCEEDED"},{"control_step":1655,"value":"FAILED","history_role":"predecision"},{"control_step":1668,"value":"UNKNOWN"},{"control_step":3105,"value":"SUCCEEDED"}],
       "action_steps": [], "planner_steps": [1655], "corrective_execution_visually_verified": true,
@@ -60,7 +60,7 @@
     {
       "case": "clean_boxing_gloves_176", "branch": "reverse_reference_fault",
       "manifest_sha256": "adbe4de6e2f6b992ba3aa51360671442ea5f527507e568bd34e8f4655b90f356",
-      "review_directory": "articulation-action-review-v2/clean_boxing_gloves_176",
+      "review_directory": "runs/recovery100_collection_20261009/articulation-action-review-v2/clean_boxing_gloves_176",
       "review_sha256": "3ee63c55ebd04ef2ddea3b433e3af3a0ff8f6624cdbcc5a7bfaabbee251c4953",
       "outcomes": [{"control_step":16,"value":"SUCCEEDED"},{"control_step":888,"value":"FAILED","history_role":"predecision"},{"control_step":889,"value":"UNKNOWN"},{"control_step":904,"value":"IN_PROGRESS"},{"control_step":920,"value":"IN_PROGRESS"},{"control_step":1766,"value":"SUCCEEDED"}],
       "action_steps": [888], "planner_steps": [888], "corrective_execution_visually_verified": true,
@@ -69,7 +69,7 @@
     {
       "case": "wash_a_baseball_cap_238", "branch": "reverse_reference_fault",
       "manifest_sha256": "69a653a064bdc1086520302e81915037a7fdcbbb54fa5c29921a7d3b1034c762",
-      "review_directory": "articulation-action-review-v2/wash_a_baseball_cap_238",
+      "review_directory": "runs/recovery100_collection_20261009/articulation-action-review-v2/wash_a_baseball_cap_238",
       "review_sha256": "a40624eb4f0447c7679adb2c47051b433d66e04f5355679740519c1da473c0df",
       "outcomes": [{"control_step":16,"value":"SUCCEEDED"},{"control_step":265,"value":"FAILED","history_role":"predecision"},{"control_step":266,"value":"UNKNOWN"},{"control_step":284,"value":"IN_PROGRESS"},{"control_step":296,"value":"IN_PROGRESS"},{"control_step":555,"value":"SUCCEEDED"}],
       "action_steps": [265], "planner_steps": [265], "corrective_execution_visually_verified": true,
@@ -78,7 +78,7 @@
     {
       "case": "make_microwave_popcorn_134", "branch": "reverse_reference_fault",
       "manifest_sha256": "e1462034842783a94d036656c410b37b673283ff715a69966db78126d8ccb9e5",
-      "review_directory": "articulation-action-review-v2/make_microwave_popcorn_134",
+      "review_directory": "runs/recovery100_collection_20261009/articulation-action-review-v2/make_microwave_popcorn_134",
       "review_sha256": "6dd96a65f1874b7e67b79289fa1ab953da1aea4495e1fbc23e939fe1684157bc",
       "outcomes": [{"control_step":16,"value":"SUCCEEDED"},{"control_step":208,"value":"FAILED","history_role":"predecision"},{"control_step":209,"value":"UNKNOWN"},{"control_step":224,"value":"IN_PROGRESS"},{"control_step":240,"value":"IN_PROGRESS"},{"control_step":382,"value":"SUCCEEDED"}],
       "action_steps": [208], "planner_steps": [208], "corrective_execution_visually_verified": true,
