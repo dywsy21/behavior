@@ -12,7 +12,7 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-10 01:25 CST / Codex RECOVERY-USABLE：** v4逐误判核到OPEN高置信假成功（cap238 FAILED→SUCCEEDED .999），禁止部署；实际TRAIN39GRASP/5OPEN，新增24GRASP使OPEN的事件CE权重25%→11.36%，稀释只是待验证假设。新增唯一加权对照`a800_h1_observer_mechanism_balance_v1.json`，真实因果prefix中的verb分组后各50%/组内事件等权，旧eval不变、原默认兼容、132回归待核；不以类名猜技能/不改标签或门。60cal/20test来源声明已固定、未看任何新预测，仍待人工签核。
+- **2026-10-10 01:24 CST / Codex RECOVERY-USABLE：** v4逐误判核到OPEN高置信假成功（cap238 FAILED→SUCCEEDED .999），禁止部署；实际TRAIN39GRASP/5OPEN，新增24GRASP使OPEN的事件CE权重25%→11.36%，稀释只是待验证假设。新增唯一加权对照`a800_h1_observer_mechanism_balance_v1.json`，真实因果prefix中的verb分组后各50%/组内事件等权，旧eval不变、原默认兼容、本地132回归通过；不以类名猜技能/不改标签或门。60cal/20test来源声明已固定、未看任何新预测，仍待人工签核。
 
 - **2026-10-10 01:22 CST / Codex RECOVERY-USABLE：** 新H0 295步平台停止/选195，TRAIN176全对；同40选择DEV事件准确率83.33%→86.67%、成功召回64.29%→78.57%，但balanced88.99%→81.73%（FAILED90%、UNKNOWN75%、IP83.33%），不能只报平均提高或上线。权重20ba9696…e7474/W&Bbcc56c99674e，待逐误判及新增GRASP稀释OPEN比例诊断。未看预测前固定80新DEV的60校准/20冻结test来源SHA排序到`independent_outcome_cohort_v1.json`，不进训练/选ckpt、原图标注未签/未测；GRASP校准不可外推OPEN。RL第2更新也通过KL0.00956/clip0.0909/回溯2.5e-7，正在第2配对，仍无RL增益声明。
 
