@@ -14,6 +14,7 @@
 
 ### 2026-10-09 11:28 CST：开始恢复数据与A800 SFT全链准备（Codex / RECOVERY-SFT-PREP-A800，进行中）
 
+- **11:58 CST / A800 CPU门与名称绑定：** `src/recovery-prep-e30f0f0`经Git bundle独立落盘；lc1的`runs/recovery_sft_preparation_20261009/cpu-preflight-v1`耗98.6s，43.17GB高48045/低98414完整SHA均吻合10383父权重、原stats/acceptance及实例留出交叉核通过，未建CUDA context/未改env。10383独立`code/recovery-prep-711c2ed`导出84/86episode精确映射；`bringing_in_wood`9/111的partial模板firewood与实例plywood scope不一致，2例保持隔离待查实际runtime，不擅用full模板替代。绑定sidecar SHA3aef680b…ccb379；audit-v3语义重验和至少60窗口原图分层审查进行中。SFT未启动，下一步lc1八卡不超过5min的BF16/NCCL无optimizer环境小验、因果反馈/数据准入接口；不占lc2现有进程。
 - **11:50 CST / P0来源门：** `audit-v2`已核原RL manifest/source commit/高低父权重与1200个原留出及开发保护组，242候选全部仍合法TRAIN；新增来源/指定手/禁止对象猜测等10测试通过。官方场景`metadata.task.inst_to_name`找到精确asset↔BDDL映射，新增只读CPU导出器绑定实际full/partial模板和实例状态SHA；待冻结代码到10383导出并重新验标，不启动仿真。新分支有自有未提交变更且尚无upstream，本次恢复仅fetch、不强pull。
 - **11:39 CST / P0结构盘点完成，语义未放行：** 已只读复制242个已关闭候选ZIP至`artifacts/recovery-sft-prep-20261009/raw-v1`，347415662B/86episode/43task；全242原index SHA/内容/图像/动作时钟通过，去重399控制行无冲突，6194真实视觉锚点（5734具连续同意图32步动作目标，非5734好动作）。新增CPU盘点器及8项因果/跨手/尾段/隔离测试通过；`audit-v1` inventory SHA4b8a023f…9a5ea。1001锚点存在某物稳定抓持，但6060可查锚点的高层target与物理BDDL ID不能直接绑定，134缺前观察审计；全部结果标签/BC仍未放行，正在追溯缓存场景的真实名称映射，不按类别/数字后缀猜同一物体。原5%留出实例索引待从A800导出，audit-v1分割仅候选分组。
 - **A800接入/资产核对：** 用户允许重连后lc-connect已恢复，仅loopback1080/1081、无路由/共享env变更。lc1八卡0MiB空闲、volatile不可纠正ECC0/无待重映射，但GPU0/1有历史累计错误，正式GPU前需小验；lc2 GPU0有PID1261713/18.6GiB，不触碰。原共享盘剩2.9TiB，高48045/低98414的latest回执SHA与10383父权重一致，暂未重算43GB权重全hash。新SSH控制通道用交互密码、无凭据落Git/配置；lc3接入仍核验中。
