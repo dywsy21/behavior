@@ -12,6 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-09 13:06 CST：继续完成全部恢复SFT准备（Codex / RECOVERY-PREP-COMPLETE，进行中）
+
+- **13:24 CST / 因果join复验与有界仿真票：** 新3项历史/自身target泄漏负控及3项数据调度回归通过；`causal-history-v2/contexts.jsonl`6194条全过，SHA f22675de…db04，未新增训练标签。新增原专家前缀导出与独立官方仿真验收入口；预定`preparing_lunch_box:241`/episode2556、`make_pizza:179`/episode9928（均原TRAIN且非保护组），不是按执行结果选例。每例最多352示范控制＋2×16重放控制，保守预留4次reset、1h；两例总≤8reset/768控制，属获批8/4096预算内，10383仅GPU0顺序执行，0优化。假设：官方实例＋示范动作可形成可复现近技能起点；未通过原RGB/物理人工核验不生成恢复/BC标签。当前仅代码准备，冻结部署后记录真实run/结果，不能把npz当世界快照。
+- **13:16 CST / 旧RL已安全结束、因果历史已补齐：** 原run实际13:12:17完成，第180次共享权重7.623GB完整hash/CPU独立重载通过（SHA fbb473cd…b4eb2），322 actor Adam、critic状态及8rank RNG齐全，8份save_ack相同、原全部PID退出，无GPU计算进程；证据`infra/results/2026-10-09-shared-rl-safe-stop.json`。原权重/视频/指标保留，不续训。8份完整planner log已只读封存到本地`planner-logs-v1`，6194锚点/86episode的真实低层context SHA和命令memory递推全过；进一步区分“当下已下发”和“本次规划前”视图，防H1把自己将预测的技能读进prefix，v2带该字段待复验。正式训练入口与逐样本数据QA继续。
+- **13:08 CST / 已获旧RL提前安全停止授权：** 用户明确批准安全保存停止10383原RL并做最多8次reset/4096控制步准备验收；已核活跃冻结serve_shared_rl的STOP_TRAINING→全局最后检查点→stopped路径，向唯一`shared_rl100_20261008_v2/STOP_TRAINING`提交控制标记（未kill/热改）。此刻仍需核最终共享权重/Adam/RNG及所有rank退出，不以marker存在当已保存。新GPU实验只在退出/资源确认、固定源/run票后开始，不启动正式SFT或新RL。
+- 用户要求完成全部准备，仍非启动正式SFT。本轮已在干净feature fetch/ff-pull，HEAD f25f107、origin/main无新增；不派subagent。13:06只读10383仍179共享更新/74完成TRAIN/0成功，八卡占用，原截止16:43 CST不变；lc1八A800空闲、共享盘余2.9TiB。已询问能否安全保存停止旧RL给有界仿真验收腾卡，未获答前不干预。继续独立完成逐样本语义审核、完整因果日志join、H0缓存/校准与H1预测反馈接口、真实训练入口/拒绝条件/预算/恢复/W&B接合；保留已过工程结果，不重复环境安装或大训练。新增证据仍版本化，实际恢复/BC缺口如实标记，不能靠降门或造标签宣称完成。
+
 ### 2026-10-09 11:28 CST：开始恢复数据与A800 SFT全链准备（Codex / RECOVERY-SFT-PREP-A800，进行中）
 
 - **13:04 CST / 八卡运行时与W&B工程门通过：** 新冻结`874d39e`已push/Git bundle同步，lc1 `runtime-gpu-v1` 8/8通过，合成网络两轮累积含空rank/不等长尾批，全局参考参数误差0、模型/Adam/RNG断点重放逐位一致、单rank读取错误全体拒绝step；主测试约3.01s/峰16.4MiB，不是G0.5八卡训练验收。原6运行时＋新增3单元检查通过。独立W&B engineering组run `26d903a19327`真实写入/读回并finish（只探针，0模型更新，非新训练run）；本地/共享回执SHA相同。八卡0MiB、ECC未增。H0/H1数据/OOF/校准、完整derivative trainer和合法短测起点仍未完成，三个池仍0签发，正式SFT未启动；当前10383源/截止及队友作业未动，详见准备手册/结果回执。独立成员review待，不合main。

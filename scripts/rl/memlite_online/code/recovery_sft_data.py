@@ -70,7 +70,8 @@ class CandidateArchiveReader:
         self.cache.move_to_end(key)
         return self.cache[key]
 
-    def observation_and_actions(self, candidate):
+    def observation(self, candidate):
+        """Read s[t] without requiring future action availability (H0/dev tails)."""
         import numpy as np
         from PIL import Image
         rows, headers = self.episode(candidate['source_episode'])
@@ -79,22 +80,11 @@ class CandidateArchiveReader:
         header = headers[reference['archive']]
         if reference['control_step'] != t or header['rgb_anchors'][str(t)]['sha256'] != reference['sha256']:
             raise ValueError('Observation/source image mismatch')
-        if not candidate['label_audit']['full_executed_32_step_target_available']:
-            raise ValueError('Incomplete contiguous same-intent action target')
-        expected = candidate['actor_input']['issued_skills_semantic_json']
-        future = [rows[step] for step in range(t,t+32)]
-        if (any(canonical(json.loads(r['context']['active_skills_semantic_json'])) != expected or
-                r['context']['parent_goal'] != candidate['actor_input']['parent_goal'] for r in future)
-                or any(r['terminated'] or r['truncated'] for r in future[:-1])):
-            raise ValueError('Action chunk crossed a skill switch or terminal')
         state = np.asarray(rows[t]['proprio_before'], dtype=np.float32)[None]
         if rows[t]['proprio_before'] != candidate['actor_input']['proprio_before']:
             raise ValueError('Pre-action proprio was modified')
-        if any(r.get('simulator_apply_ack') is not True for r in future):
-            raise ValueError('Unacknowledged simulator action cannot become a BC target')
-        action = np.asarray([r['action_executed_raw23'] for r in future], dtype=np.float32)
-        if state.shape != (1,61) or action.shape != (32,23) or not np.isfinite(state).all() or not np.isfinite(action).all():
-            raise ValueError('Malformed real robot control/proprio tensors')
+        if state.shape != (1,61) or not np.isfinite(state).all():
+            raise ValueError('Malformed real robot proprio tensors')
         images = {}
         with zipfile.ZipFile(local_file(self.root, reference['archive'])) as archive:
             for camera in ('head_rgb','left_wrist_rgb','right_wrist_rgb'):
@@ -106,7 +96,38 @@ class CandidateArchiveReader:
                 if im.shape != (224,224,3):
                     raise ValueError('Unexpected original RGB dimensions')
                 images[camera] = im
+        return state, images
+
+    def observation_and_actions(self, candidate):
+        import numpy as np
+        state, images = self.observation(candidate)
+        rows, _ = self.episode(candidate['source_episode'])
+        t = candidate['control_step']
+        if not candidate['label_audit']['full_executed_32_step_target_available']:
+            raise ValueError('Incomplete contiguous same-intent action target')
+        expected = candidate['actor_input']['issued_skills_semantic_json']
+        future = [rows[step] for step in range(t,t+32)]
+        if (any(canonical(json.loads(r['context']['active_skills_semantic_json'])) != expected or
+                r['context']['parent_goal'] != candidate['actor_input']['parent_goal'] for r in future)
+                or any(r['terminated'] or r['truncated'] for r in future[:-1])):
+            raise ValueError('Action chunk crossed a skill switch or terminal')
+        if any(r.get('simulator_apply_ack') is not True for r in future):
+            raise ValueError('Unacknowledged simulator action cannot become a BC target')
+        action = np.asarray([r['action_executed_raw23'] for r in future], dtype=np.float32)
+        if action.shape != (32,23) or not np.isfinite(action).all():
+            raise ValueError('Malformed real robot action tensors')
         return state, action, images
+
+
+def raw_observation(candidate, reader, config):
+    """Whitelisted single-frame RGB/proprio; never copy labels or physics."""
+    import torch
+    state, images = reader.observation(candidate)
+    return dict(task=candidate['task'].replace('_',' '),idx=0,embodiment='galaxea_r1pro',frequency=30,
+        state_is_pad=torch.zeros(1,dtype=torch.bool),image_is_pad=torch.zeros(1,dtype=torch.bool),
+        images={k:torch.from_numpy(v).permute(2,0,1)[None] for k,v in images.items()},
+        state={m['key']:torch.from_numpy(state[:,m['start_index']:m['start_index']+m['raw_shape']].copy())
+               for m in config['raw_shape']['state']})
 
 
 class VerifiedRecoveryActionDataset:
