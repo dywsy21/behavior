@@ -24,7 +24,7 @@ def main():
                    *(t for t in available if 32<=t<=64)} & set(available))
     evidence=[];sheets=[]
     for start in range(0,len(frames),4):
-        sheet=Image.new('RGB',(672,4*262),'#fafafa');draw=ImageDraw.Draw(sheet)
+        sheet=Image.new('RGB',(672,min(4,len(frames)-start)*262),'#fafafa');draw=ImageDraw.Draw(sheet)
         for line,t in enumerate(frames[start:start+4]):
             row=rows[t];ctx=[v for v in plans if v['control_step']<=t][-1]
             label=physical_proposal(rows,t,manifest['arm'],attempt_start=ctx['control_step'])

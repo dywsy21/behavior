@@ -1,0 +1,427 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, manual original-RGB and causal-physics review, 2026-10-09 15:46 CST",
+  "scope": "Exact single-target GRASP correction only. 13 real times / 39 panels per branch. Non-visible contacts require exact simulator target/arm evidence; no whole-task success or unrestricted clip BC.",
+  "branches": [
+    {
+      "case": "preparing_lunch_box_241",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "abb00453b91a410f8656e41989365aae4b5f7260e02838b180f4602d442f5dc4",
+      "review_directory": "review-v2-lunch241",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hand reopens and closes on the packing box; wrist visibility partly occluded. Exact target physical identity supports local hold, not transport."
+    },
+    {
+      "case": "preparing_lunch_box_136",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "bfe3dea04bc949e611c326f17dd096e23f3daf5277b5644724b14d97148240c7",
+      "review_directory": "review-v2-lunch136",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right gripper opens and recloses the packing box; no visible content spill over the reviewed correction."
+    },
+    {
+      "case": "preparing_lunch_box_106",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "3b74323d76e6bf745b3f8b7699429c0d455f6d9bab3863520c18698889b8400d",
+      "review_directory": "review-v2-lunch106",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Dev instance; box rotates slightly during fault, remains on worktop; actual same-target correction and stable grip reviewed."
+    },
+    {
+      "case": "make_pizza_179",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "3669ec1b2565da4bdcd9dd5ee611a6d42c1e81f1806cbd38d55e99e998ee8803",
+      "review_directory": "review-v2-pizza179",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left hand reacquires white bowl rim; other arm/onion unchanged. Approve local grip, not pizza task completion."
+    },
+    {
+      "case": "make_pizza_56",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1233e8e6a397783d5e4cb14d3f083e533abe62b87904e2c6a77c5853b7fbc26b",
+      "review_directory": "review-v2-pizza56",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right gripper opens and reacquires the bowl; head view supports stationary correction, wrist has strong occlusion."
+    },
+    {
+      "case": "turning_on_radio_155",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "68ea43144c953625d48ef3bae08ef7d660ece0200945d4908ef80e7aa28dec0b",
+      "review_directory": "review-v2-radio155",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Red radio and right gripper clearly visible; reopen then reclose with stable same target. Button press and full task not approved."
+    },
+    {
+      "case": "turning_on_radio_270",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "cb4fd21ea366212988c3dc75aab3082f792af95a05ceef985bc38c485b8869fc",
+      "review_directory": "review-v2-radio270",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Dev instance; red radio stays on table during fault, right gripper visibly recloses; physical stable hold matches."
+    },
+    {
+      "case": "set_up_a_coffee_station_in_your_kitchen_1",
+      "branch": "open_gripper",
+      "manifest_sha256": "3063a8334f2a87b2caa81af3cb1fac0f8b5b32716a47a34c94156a046aa4521f",
+      "review_directory": "review-v2-coffee1",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Dev instance; cup and finger separation/reclosure visible in right wrist. Local grasp recovery only; no drink preparation claim."
+    },
+    {
+      "case": "preparing_lunch_box_41",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "3a674fa47e072ae5b056264ae695695915acba0a6538f0f08bf616ff3439f8f1",
+      "review_directory": "review-v4-preparing_lunch_box_41",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hand packing-box correction reviewed at all 4-control RGB anchors 32..64 and stable endpoint172; wrist is partially occluded, head shows object remaining on worktop. No whole-task or transport approval."
+    },
+    {
+      "case": "preparing_lunch_box_143",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "fe269b2cf6121d6f31b82c285420b08ab31cd51a7648a5eebfe682f83c0be79a",
+      "review_directory": "review-v4-preparing_lunch_box_143",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Left hand packing-box correction reviewed at all 4-control RGB anchors 32..64 and stable endpoint172; wrist is partially occluded, head shows object remaining on worktop. No whole-task or transport approval."
+    },
+    {
+      "case": "preparing_lunch_box_95",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "3cb2ade9cc586d416d3c5087305b109568caa02de3f33956fc35c67090613dba",
+      "review_directory": "review-v4-preparing_lunch_box_95",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hand packing-box correction reviewed at all 4-control RGB anchors 32..64 and stable endpoint172; wrist is partially occluded, head shows object remaining on worktop. No whole-task or transport approval."
+    },
+    {
+      "case": "preparing_lunch_box_182",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "cf6a9c19f6105b81f35db629342ba9b8b1ecb9838867ae4c9d8e54ea32110669",
+      "review_directory": "review-v4-preparing_lunch_box_182",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hand packing-box correction reviewed at all 4-control RGB anchors 32..64 and stable endpoint172; wrist is partially occluded, head shows object remaining on worktop. No whole-task or transport approval."
+    },
+    {
+      "case": "preparing_lunch_box_198",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "4e7315e0b68fb26a5d5251b8d69bf1a00b43fcc82d3b4eb551b9a38647399b17",
+      "review_directory": "review-v4-preparing_lunch_box_198",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hand packing-box correction reviewed at all 4-control RGB anchors 32..64 and stable endpoint172; wrist is partially occluded, head shows object remaining on worktop. No whole-task or transport approval."
+    },
+    {
+      "case": "preparing_lunch_box_296",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f2647a79be650e84514f2d22468d8b37f79f972a2994c7beb23b0abcae732f56",
+      "review_directory": "review-v4-preparing_lunch_box_296",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hand packing-box correction reviewed at all 4-control RGB anchors 32..64 and stable endpoint172; wrist is partially occluded, head shows object remaining on worktop. No whole-task or transport approval."
+    },
+    {
+      "case": "make_pizza_89",
+      "branch": "open_gripper",
+      "manifest_sha256": "e0318352986ebf49db6659fb00d173b303a8edd46521acbeceb603ea930fa5af",
+      "review_directory": "review-v4-make_pizza_89",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [
+        32
+      ],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Right hand reopens then recloses baking_sheet_79, not the neighboring bowl; dough remains on the tray and stable local hold is physically confirmed. No carry/full-task claim."
+    }
+  ]
+}
