@@ -1,0 +1,33 @@
+{
+  "root": "/data/workspace/wsy/behavior2026",
+  "hypothesis": "Recovery-only low action-expert SFT improves fixed-skill physical execution without changing high-level decisions.",
+  "owner": "Codex",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "models": {
+    "parent": {"path": "runs/memlite_stage1_low_100task_v1/checkpoints/step_00098414_save_0021.pt", "sha256": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470"},
+    "candidate": {"path": "runs/recovery_pilot_a800_20261009/train-v1/L0/checkpoints/step_00000035_save_0007.pt", "sha256": "139fea211cffd2cde472235f9a3ff3b7ccf3855c781ec7654a26ec56113f2cd9"}
+  },
+  "cases": {
+    "turning_on_radio_155": {
+      "task": "turning_on_radio", "seeds": [17],
+      "role": "seen-source engineering diagnostic; not independent SR",
+      "manifest_sha256": "68ea43144c953625d48ef3bae08ef7d660ece0200945d4908ef80e7aa28dec0b",
+      "context_id": "0bfefd434402c47842fd6b1743c8ec5de1f4785821578a99cd2ffc6410aa9ad2",
+      "start_control": 32, "end_control": 173,
+      "parent_goal": "Parent command: description=\"pick up from\"; targets=[\"radio_89\"]; sources=[\"coffee_table_koagbh_0\"]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"coffee_table_koagbh_0\",\"target\":\"radio_89\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]"
+    },
+    "wash_dog_toys_169": {
+      "task": "wash_dog_toys", "seeds": [17],
+      "role": "untrained recovery mechanism engineering diagnostic; not independent SR",
+      "manifest_sha256": "af12e2334de2fadf158da536f1585e4c5cdf7a28ef0feb53ab0d7b4a1624f8ec",
+      "context_id": "7dae79b0776c4337741660b7a58ea4df4cbcb3472859a889bd2970227866e717",
+      "start_control": 270, "end_control": 587,
+      "parent_goal": "Parent command: description=\"open door\"; targets=[\"washer_ynwamu_0\"]; sources=[]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"washer_ynwamu_0\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"OPEN_DOOR\"}]"
+    }
+  },
+  "stopping": "Physical stable skill completion or the same finite recorded-continuation endpoint for both models; never relabel time limit as FAILED.",
+  "resource": "One idle lc1 A800 inference GPU; at most two already-owned idle RTX simulator GPUs; no optimizer and no full-task evaluation."
+}
