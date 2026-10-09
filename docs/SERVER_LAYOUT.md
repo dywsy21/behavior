@@ -2,6 +2,7 @@
 
 ## 2026-10-09：恢复数据与A800 SFT准备（非正式开训）
 
+- **12:50 CST最新覆盖：** `src/recovery-prep-c25d06c`已同步；`h0-parent-graph-v3`及`tests-c25d06c.log`/`tests-feedback-c25d06c.log`全部通过，诊断退出/八卡空闲。`data-transfer-v1.json`确认242ZIP/原index/候选SHA完整一致；`expert-anchor-index-v1.json`为100task/3200原TRAIN锚点（不含新恢复标签）。下方“同步中/H0失败”是保留的中途历史。准备票仍execution_ready=false，正式新SFT没有启动。
 - 共享根仍为`/data/workspace/wsy/behavior2026`；本轮lc1空闲，lc2 GPU0已有队友进程，不碰。lc-connect已按用户许可重连，仅本地SOCKS1080/HTTP1081，不改路由/共享env。SSH控制连接属于本地会话，不把密码写入仓库。
 - 独立冻结源：`src/recovery-prep-e30f0f0`（CPU全hash/原split）、`src/recovery-prep-12fb1ff`（八卡BF16/NCCL）、`src/recovery-prep-ff584c1`（L0父权重实图通过/H0-v1接入失败保留）。后续版本以plan最新记录为准；`src/behavior`仅Git对象同步、不热pull。
 - 新数据目的地：`datasets/recovery-candidates-20261009-v1`，`raw-v1`242个已关闭ZIP＋`audit-v4`＋`admission-v1`＋`source-metadata`。截至12:34 CST同步中，须完整hash回执后才称传输完成；即使完成也仍是未放行候选，不是BC训练集。
