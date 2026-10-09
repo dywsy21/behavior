@@ -77,6 +77,8 @@ def main():
             collection_result_sha256=file_sha(directory/'result.json'),source_commit=result['source_commit'],
             original_release_sha256=source['original_release_sha256'],source_group=source['source_group'],
             full_snapshot_sha256=result['full_snapshot_sha256'],prefix_sha256=file_sha(directory/'prefix.jsonl')))
+        if articulation and any('simulator_apply_ack' not in r for r in prefix):
+            source_rows[-1]['prefix_proof']='reviewed_legacy_nonterminal_after_apply_'+result['source_commit']
         if verified_binding:
             source_rows[-1]['reference_binding_sha256']=file_sha(directory/'reference-binding.json')
             source_rows[-1]['binding_reference_sha256']=file_sha(directory/'binding-reference.jsonl')

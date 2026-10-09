@@ -16,6 +16,11 @@ from recovery_reference_binding import ReferenceArticulationBinding
 
 VERBS = {'OPEN_DOOR', 'CLOSE_DOOR', 'OPEN_DRAWER', 'CLOSE_DRAWER', 'OPEN_LID', 'CLOSE_LID'}
 CLEAN = 'same_state_articulation_teacher_candidate'
+# This exact reviewed collector calls _apply_actions, rejects native terminal,
+# then records post-action proprio/physics. Its prefix predates the explicit
+# ACK field; correction branches already carry actual ACKs. Never infer this
+# legacy proof for arbitrary versions or manufacture ACK fields in old data.
+LEGACY_PREFIX_AFTER_APPLY = {'319b2eec8b5d1abfca1f7500f6229e970e72bb24'}
 
 
 def physical_goal(physical, want_open):
@@ -66,13 +71,20 @@ def verify_articulation_seed(directory, source, result, prefix, seed):
     elif result.get('reference_binding_sha256'):
         raise ValueError('Missing declared articulation binding')
     want_open = skills[0]['verb'].startswith('OPEN_')
+    for t,row in enumerate(prefix):
+        legacy = ('simulator_apply_ack' not in row and result['source_commit'] in LEGACY_PREFIX_AFTER_APPLY)
+        if (row['control_step'] != t or row['outcome_evidence_available_control_step'] != t+1
+                or (row.get('simulator_apply_ack') is not True and not legacy)
+                or (t and (prefix[t-1]['proprio_after'] != row['proprio_before']
+                           or prefix[t-1]['physical_audit'] != row['physical_before']))):
+            raise ValueError('No explicit ACK or verified legacy after-apply prefix chain')
     if (len(prefix) != seed['source_frame'] or len(prefix) < 12
             or prefix[-1]['physical_audit'] != seed['physical']
             or seed['physical']['target_name'] != skills[0]['target']):
         raise ValueError('Seed is not the exact verified reference endpoint')
     for row in prefix[-12:]:
         physical = row['physical_audit']
-        if (row['simulator_apply_ack'] is not True or physical_goal(physical, want_open) is not True
+        if (physical_goal(physical, want_open) is not True
                 or physical['target_name'] != seed['physical']['target_name']
                 or physical['entity'] != seed['physical']['entity']):
             raise ValueError('Seed lacks twelve actual stable completion controls')
