@@ -17,6 +17,23 @@ from g05.utils.memlite_skill_protocol import (canonical_json, parse_active_skill
 OUTCOMES = {"IN_PROGRESS", "SUCCEEDED", "FAILED", "UNKNOWN"}
 
 
+def last_context_hidden(hidden, modality_mask):
+    """Gather the last non-padding position, NOT the sum of modality IDs.
+
+    G0.5 masks encode IMAGE=1/PROPRIO=2/TEXT=4/etc., not binary attention.
+    Taking their numeric sum causes an out-of-bounds CUDA gather. Explicit
+    positions also support left/right padding and an internal masked history.
+    """
+    import torch
+    if hidden.ndim != 3 or modality_mask.shape != hidden.shape[:2] or hidden.shape[1] == 0:
+        raise ValueError('Unaligned/empty causal hidden states')
+    positions = torch.arange(hidden.shape[1],device=hidden.device).expand(hidden.shape[0],-1)
+    positions = positions.masked_fill(modality_mask == 0,-1).amax(dim=1)
+    if (positions < 0).any():
+        raise ValueError('Outcome prefix has no non-padding context token')
+    return hidden[torch.arange(hidden.shape[0],device=hidden.device),positions]
+
+
 def single_frame_member_prefix(builder, prepared, *, task_name, parent_goal, issued_bundle,
                                member_index, memory, served_controls):
     """Target-free 3-camera observer prefix; does NOT call a training builder.

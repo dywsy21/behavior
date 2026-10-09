@@ -251,7 +251,12 @@ class SharedFlowPPO(A4DirectPPO):
             return result
 
         critic_before = critic_diagnostics()
-        self.critic_optimizer.step()
+        error = None
+        try:
+            self.critic_optimizer.step()
+        except Exception as exception:
+            error = exception
+        c.check(error, "critic optimizer step")
         critic_after = critic_diagnostics()
         # Actor trust-region metrics above intentionally precede the critic
         # update. The public post_update/value_loss now really follows it.

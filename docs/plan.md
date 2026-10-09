@@ -14,6 +14,7 @@
 
 ### 2026-10-09 11:28 CST：开始恢复数据与A800 SFT全链准备（Codex / RECOVERY-SFT-PREP-A800，进行中）
 
+- **12:41 CST / H0实图暴露旧潜伏索引bug：** v2进入真实VLM后CUDA gather越界，已定位`outcome_context_from_prefix`将G0.5多模态mask(IMAGE1/PROPRIO2/TEXT4等)直接求和当token长度；这条此前未启用的observer路径错误，不归因成旧planner-only低Q原因。已改显式最后非零位置，覆盖左右padding/内部mask的CPU回归；新冻结v3待复验。候选367455381B连同索引/sidecar已传完，共242原ZIP；共享盘完整hash核验正在跑。L0通过证据不受影响；本地RL整套70项67通过/3wire依赖跳过，因果反馈8项待最终复跑，尚0正式SFT。
 - **12:34 CST / L0实图通过、H0接入修正：** `ff584c1`/l0-parent-graph-v2精确恢复低98414与192 LoRA；两任务原TRAIN样本真实FM前反向通过，322专家张量有梯度/冻结张量梯度0，峰13.08GiB，88.6s/0optimizer，FM0.13187仅两样本图验收不是新效果。H0-v1失败于本地stage1 builder没有旧外置saved_builders的build_for_inference API，未更新模型；复核旧outcome helper硬编码6帧，正在新增独立的单帧3相机member-prefix白名单，不放宽旧6帧契约。原数据347MB＋审计正同步共享datasets新目录，完整hash待；RL只读已到173共享更新/1409048controls/72完成TRAIN仍0成功，不改作业。
 - **12:25 CST / 父权重实图小验v1失败已定位：** 冻结`ff584c1`已push并通过Git bundle到lc1独立worktree；L0成功恢复终态模型和192 LoRA后，读原专家视频时缺进程级libnpp/FFmpeg搜索路径，0optimizer退出，未改共享环境。已核原`activate_a800_training.sh`提供所需LD_LIBRARY_PATH，按该既有激活脚本重启新目录l0-parent-graph-v2，预算仍P1内，结果待；不能将配置初始化/硬件通信通过称SFT训练通过。
 - **12:23 CST / 数据门与下一工程票：** `audit-v4`已带A800原留出签名重验242ZIP，2个绑定错配episode的179锚点显式隔离；360成功候选合并后仅19连续证据span/11episode（仍不是19次独立恢复）。`admission-v1`按outcome/planner/action分别验原媒体与物理证据、当下可知标签、完整32步动作、原实例split/独立事件；当前审批0，三池均BLOCKED，绝不以抽帧QA直接放行。准备配方`configs/recovery_sft/a800_p2_v1.json`固定SFT终态父权重与P2上限，禁止旧B1500/A42500初始化；新增L0保持192个已训LoRA原值但只训动作专家的显式profile。下一票：lc1空闲GPU2、H0/L0依次各最多15min/0optimizer、各2条已验原专家TRAIN样本，验精确父权重/真实前反向/冻结梯度，非恢复SFT或效果测试；只从新Git冻结源运行。

@@ -897,11 +897,8 @@ class G05PolicyMEMLitePlannerOutcome(G05PolicyQwen35):
             dtype=dtype,
             proprio=proprio_batch,
         )
-        positions = attention_mask.to(dtype=torch.long).sum(dim=-1) - 1
-        if (positions < 0).any():
-            raise ValueError("observable outcome prefix has an empty token context")
-        rows = torch.arange(len(samples), device=device)
-        return hidden[rows, positions]
+        from g05.utils.memlite_causal_feedback import last_context_hidden
+        return last_context_hidden(hidden, attention_mask)
 
     def _assert_observable_tokenized_prefix(
         self,

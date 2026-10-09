@@ -7,7 +7,7 @@ import unittest
 
 import torch
 
-from g05.utils.memlite_causal_feedback import CausalFeedbackLedger, CausalFeatureWindow, FeedbackIdentity, single_frame_member_prefix
+from g05.utils.memlite_causal_feedback import CausalFeedbackLedger, CausalFeatureWindow, FeedbackIdentity, single_frame_member_prefix, last_context_hidden
 
 # Test the torch-only head without importing the full VLM/Hydra deployment.
 # A private package name avoids shadowing g05 in other tests in this process.
@@ -31,6 +31,13 @@ def bundle(target="cup", parallel=False):
 
 
 class FeedbackTests(unittest.TestCase):
+    def test_last_context_uses_nonzero_positions_not_modality_sum(self):
+        hidden=torch.arange(3*5*2).reshape(3,5,2).float()
+        masks=torch.tensor([[1,2,4,4,0],[0,0,1,2,4],[1,0,4,0,0]])
+        torch.testing.assert_close(last_context_hidden(hidden,masks),hidden[torch.arange(3),torch.tensor([3,4,2])])
+        self.assertTrue((masks.sum(1)-1>=hidden.shape[1]).any())
+        with self.assertRaises(ValueError):last_context_hidden(hidden,torch.zeros_like(masks))
+
     def test_single_frame_prefix_never_copies_training_answers(self):
         builder=types.SimpleNamespace(num_input_images=3,_image_sizes={k:(256,256) for k in
             ('head_rgb','left_wrist_rgb','right_wrist_rgb')},embodiment_type='galaxea_r1pro',
