@@ -3,10 +3,27 @@ from pathlib import Path
 import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_local_teacher import LocalGraspTeacher,perturb,NonGraspingFixedPoint
+from recovery_local_teacher import LocalGraspTeacher,perturb,NonGraspingFixedPoint,fault_duration,validate_terminal_observation
 
 
 class LocalTeacherTests(unittest.TestCase):
+    def test_diverse_fault_timing_is_identity_seeded_not_selected_by_outcome(self):
+        durations=[fault_duration(f'task:{i}','open_gripper',42,True) for i in range(100)]
+        self.assertEqual(set(durations),{16,24,32,48,64})
+        self.assertEqual(durations,[fault_duration(f'task:{i}','open_gripper',42,True) for i in range(100)])
+        self.assertEqual(fault_duration('a','clean',42,True),0)
+        self.assertEqual(fault_duration('a','open_gripper',42),32)
+
+    def test_terminal_negative_requires_real_same_time_closed_empty_evidence(self):
+        physical=dict(grasp=dict(left='FALSE',right='FALSE'),gripper_aperture=dict(left=.001,right=.05))
+        rows=[dict(proprio_after=[0]*61,physical_audit=physical,teacher=dict(joint_error_max_rad=.001,stage='CLOSE')) for _ in range(6)]
+        terminal=dict(control_step=6,has_next_executed_action=False,training_approved=False,proprio=[0]*61,
+            physical_audit=physical,outcome_candidate='FAILED',reason='Closed empty grasp at settled reference pose; correction failed')
+        self.assertTrue(validate_terminal_observation(terminal,rows,'left'))
+        for key,value in [('has_next_executed_action',True),('control_step',5),('reason','timeout'),('proprio',[1]*61)]:
+            changed=dict(terminal,**{key:value})
+            with self.assertRaises(ValueError):validate_terminal_observation(changed,rows,'left')
+
     def test_blocked_opening_is_a_measured_fixed_point_not_a_time_limit(self):
         detector=NonGraspingFixedPoint();q=np.zeros(23)
         for i in range(100):

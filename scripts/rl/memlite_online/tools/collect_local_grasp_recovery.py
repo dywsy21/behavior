@@ -25,7 +25,7 @@ sys.path[:0] = [str(REPO/'scripts/eval/memlite_sft100'),
                str(Path(__file__).resolve().parents[1]/'code'),str(REPO/'src')]
 from common import atomic_json,OFFICIAL,OFFICIAL_COMMIT,sha256
 from recovery_corpus import canonical,digest,group_key,split_group
-from recovery_local_teacher import LocalGraspTeacher,perturb,NonGraspingFixedPoint
+from recovery_local_teacher import LocalGraspTeacher,perturb,NonGraspingFixedPoint,fault_duration,validate_terminal_observation
 from recovery_recorder import proprio61
 from behavior_branch_state import capture_branch_metadata,restore_branch_metadata
 
@@ -35,6 +35,7 @@ def main(argv=None, *, shared_session=None):
     p.add_argument('--proposal',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--seed',type=int,default=20261009)
+    p.add_argument('--diversify-fault-timing',action='store_true')
     a=p.parse_args(argv)
     if a.output.exists():raise FileExistsError(a.output)
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
@@ -194,6 +195,7 @@ def main(argv=None, *, shared_session=None):
                 teacher=LocalGraspTeacher(seed_q,seed_physics['position'],arm=grasp_arm,
                     arm_indices=arm_action[grasp_arm],gripper_index=grip_action[grasp_arm])
                 teacher.stage='HOLD';rng=np.random.default_rng(a.seed+ordinal)
+                fault_controls=fault_duration(source['source_group'],kind,a.seed,a.diversify_fault_timing)
                 task=source['task'].replace('_',' ')
                 semantic=canonical(skills);parent=selected['parent'];text=semantic_active_skills_text(parse_active_skills_semantic_json(semantic))
                 memory=canonical_json(dict(task_name=task,issued_command_history=[],verified_world_facts=[]))
@@ -218,7 +220,7 @@ def main(argv=None, *, shared_session=None):
                         # The intervention is a one-second actuation fault. The
                         # correction is issued only after its actual loss, not
                         # because a timed interval ended.
-                        if kind!='clean' and count==32:
+                        if kind!='clean' and count==fault_controls:
                             if not loss_observed:raise ValueError('Intervention did not produce verified grasp loss')
                             issue(count,'RETRY');retry_issued=True;teacher.stage='APPROACH_OPEN'
                         # 4-control images resolve opening/closing transitions;
@@ -234,7 +236,7 @@ def main(argv=None, *, shared_session=None):
                             anchors[str(count)]=meta
                         intended,teacher_info=teacher.action(q,measured['position'],
                             measured['gripper_aperture'][grasp_arm],measured['grasp'][grasp_arm])
-                        injected=kind!='clean' and count<32
+                        injected=kind!='clean' and count<fault_controls
                         noise,command=(perturb(intended,arm_indices=arm_action[grasp_arm],gripper_index=grip_action[grasp_arm],
                             rng=rng,kind=kind) if injected else (np.zeros(23,dtype=np.float32),intended.copy()))
                         evaluator._write_video(inst);after=step(command)
@@ -270,7 +272,25 @@ def main(argv=None, *, shared_session=None):
                     failure=str(error)
                 finally:
                     stream.close();evaluator._set_video_writer(inst,None)
+                # A failed correction may end between the regular image
+                # anchors. Preserve the actual final observation separately:
+                # it has NO fabricated next action and is never positive BC.
+                terminal_dir=directory/'terminal_rgb';terminal_dir.mkdir()
+                terminal=dict(schema='recovery_terminal_observation_v1',control_step=count,
+                    last_applied_control_step=count-1 if count else None,proprio=proprio61(inst.obs),
+                    physical_audit=physics(),context=deepcopy(current),reason=failure,
+                    images={},has_next_executed_action=False,training_approved=False,
+                    actor_input_excludes=['physical_audit','reason'],
+                    outcome_candidate=('FAILED' if failure=='Closed empty grasp at settled reference pose; correction failed' else None))
+                for camera,key in evaluator.robot_camera_names.items():
+                    im=Image.fromarray(inst.obs[key+'::rgb'].detach().cpu().numpy()[...,:3]).resize((224,224),Image.Resampling.BILINEAR)
+                    path=terminal_dir/(camera+'_rgb.jpg');im.save(path,quality=90,subsampling=0)
+                    terminal['images'][camera+'_rgb']=dict(path=str(path.relative_to(directory)),sha256=sha256(path))
+                atomic_json(directory/'terminal-observation.json',terminal)
+                validate_terminal_observation(terminal,[json.loads(line) for line in (directory/'transitions.jsonl').read_text().splitlines()],grasp_arm)
                 summary=dict(kind=kind,controls=count,seed_frame=seed_frame,arm=grasp_arm,
+                    fault_controls=fault_controls,diversified_fault_timing=a.diversify_fault_timing,
+                    terminal_observation_sha256=sha256(directory/'terminal-observation.json'),
                     snapshot_start_max_proprio_error=start_error,initial=initial,final=physics(),
                     loss_observed=loss_observed,retry_issued=retry_issued,final_stable_controls=confirmed,
                     physical_recovery_candidate=bool(retry_issued and loss_observed and confirmed>=128 and failure is None),

@@ -20,8 +20,9 @@ def main():
     available=sorted(int(t) for t in manifest['anchors'] if int(t)<len(rows))
     # Every available RGB anchor over the entire proposed 32-control action
     # target, plus loss and stable endpoint. Never replicate missing frames.
+    retry=next((e['control_step'] for e in plans if e['decision']=='RETRY'),32)
     frames=sorted({0,available[-1],*([16,28] if 28 in available else [16]),
-                   *(t for t in available if 32<=t<=64)} & set(available))
+                   *(t for t in available if max(0,retry-16)<=t<=retry+32)} & set(available))
     evidence=[];sheets=[]
     for start in range(0,len(frames),4):
         sheet=Image.new('RGB',(672,min(4,len(frames)-start)*262),'#fafafa');draw=ImageDraw.Draw(sheet)
@@ -44,7 +45,7 @@ def main():
     result=dict(schema='offline_local_recovery_review_materials_v1',source=str(a.branch),
         manifest_sha256=file_sha(a.branch/'manifest.json'),transitions_sha256=file_sha(a.branch/'transitions.jsonl'),
         frames=frames,panels=3*len(frames),sheets=sheets,evidence=evidence,human_approved=False,
-        action_review_start=32,action_review_end=64,physical_recovery_candidate=manifest['physical_recovery_candidate'])
+        action_review_start=retry,action_review_end=retry+32,physical_recovery_candidate=manifest['physical_recovery_candidate'])
     (a.output/'review.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(dict(output=str(a.output),frames=frames,panels=result['panels'],physical_recovery_candidate=manifest['physical_recovery_candidate'])))
 

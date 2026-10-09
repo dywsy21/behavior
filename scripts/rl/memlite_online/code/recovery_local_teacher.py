@@ -7,6 +7,29 @@ and human review, never its self-report, decide dataset admission.
 """
 import numpy as np
 from collections import deque
+import hashlib
+import json
+
+
+def fault_duration(group,kind,seed,diversify=False):
+    if kind=='clean':return 0
+    if not diversify:return 32
+    key=json.dumps([group,kind,seed],sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+    return (16,24,32,48,64)[int(hashlib.sha256(key).hexdigest()[:12],16)%5]
+
+
+def validate_terminal_observation(terminal,rows,arm):
+    if (terminal['control_step']!=len(rows) or terminal['has_next_executed_action'] is not False
+            or terminal['training_approved'] is not False):raise ValueError('Terminal observation fabricates an action or approval')
+    if rows and (terminal['proprio']!=rows[-1]['proprio_after'] or terminal['physical_audit']!=rows[-1]['physical_audit']):
+        raise ValueError('Terminal observation is from another physical time')
+    if terminal['outcome_candidate']=='FAILED':
+        if (len(rows)<6 or terminal['reason']!='Closed empty grasp at settled reference pose; correction failed'
+                or any(any(v!='FALSE' for v in r['physical_audit']['grasp'].values()) for r in rows[-6:])
+                or terminal['physical_audit']['gripper_aperture'][arm]>=.003
+                or rows[-1]['teacher']['joint_error_max_rad']>=.012 or rows[-1]['teacher']['stage']!='CLOSE'):
+            raise ValueError('No causal closed-empty physical failure evidence')
+    return True
 
 
 class NonGraspingFixedPoint:

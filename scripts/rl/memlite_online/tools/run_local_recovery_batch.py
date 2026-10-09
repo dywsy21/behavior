@@ -34,6 +34,7 @@ def main():
     p.add_argument('--skip-case',action='append',default=[])
     p.add_argument('--skip-reason')
     p.add_argument('--priority-task',nargs='*',default=[])
+    p.add_argument('--diversify-fault-timing',action='store_true')
     p.add_argument('--concurrent-loads',type=int,default=2)
     p.add_argument('--warm-groups',action='store_true');a=p.parse_args()
     if a.warm_groups:
@@ -77,11 +78,13 @@ def main():
         if case['directory'] in a.skip_case:
             rows.append(dict(case=case['directory'],status='explicitly_skipped',reason=a.skip_reason));continue
         previous=a.previous_collection/case['directory'] if a.previous_collection else None
-        if previous is not None and (previous/'result.json').exists():
-            result=json.loads((previous/'result.json').read_text())
+        prior_receipt=(previous/'result.json' if previous is not None and (previous/'result.json').exists()
+                       else previous/'status.json' if previous is not None and (previous/'status.json').exists() else None)
+        if prior_receipt is not None:
+            result=json.loads(prior_receipt.read_text())
             if result['proposal_sha256']!=case['manifest_sha256']:raise ValueError('Reused case source changed')
             rows.append(dict(case=case['directory'],reused_directory=str(previous),
-                             result_sha256=sha256(previous/'result.json'),status='retained_original_attempt'))
+                             receipt_sha256=sha256(prior_receipt),status='retained_original_attempt',original_status=result['status']))
         else:pending.append(case)
     priority={task:i for i,task in enumerate(a.priority_task)}
     pending.sort(key=lambda case:priority.get(json.loads((a.sources/case['directory']/'manifest.json').read_text())['task'],len(priority)))
@@ -113,6 +116,7 @@ def main():
                 proposal=json.loads((a.sources/name/'manifest.json').read_text())
                 if proposal['schema']=='recovery_expert_skill_proposal_v1':
                     command[0]=str(REPO/'scripts/rl/memlite_online/tools/collect_local_articulation_recovery.py')
+                elif a.diversify_fault_timing:command.append('--diversify-fault-timing')
                 proc=subprocess.Popen(['bash',str(REPO/'scripts/eval/memlite_sft100/launch_sim.sh'),*command],stdout=log,stderr=subprocess.STDOUT,
                     stdin=subprocess.DEVNULL,env=env,cwd=REPO)
                 while proc.poll() is None:
