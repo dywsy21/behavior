@@ -2,6 +2,8 @@
 
 ## 2026-10-09 22:35 CST：恢复训练完成与可用性验收（覆盖下面旧状态）
 
+**23:12 CST新增实际低层对照：** lc1 `runs/recovery_usable_20261009/fixed-skill-service-v1`已经结束，44请求且逐tensor验证两模型未变，源`src/fixed-skill-ffdab471`；专用loopback18971转发已撤，不影响原VPN。10383同run根`fixed-{radio155,wash169}-{parent,candidate}-v1`四路已结束，`result.json/reward-ledger.jsonl/policy.mp4`及所有原PNG已复制本地`artifacts/recovery-usable-20261009/`，均非公共全任务评测。新采集在10383 `place-in-curriculum-v1`/`place-on-curriculum-v1`，源`code/placement-curriculum-833e3f80`，仅原参考PLACE合法起点，仍待独立冷载/语义审核，不是已获准恢复教师。
+
 lc1共享根仍为`/data/workspace/wsy/behavior2026`，共享env未改。首轮`runs/recovery_pilot_a800_20261009/train-v1/{H0,L0,H1}`均完成，无在训optimizer。低层L0和高层H1都取各自`checkpoints/step_00000035_save_0007.pt`，完整SHA见[离线验收](infra/results/2026-10-09-recovery-usable-offline-v1.json)和[首轮训练](infra/results/2026-10-09-recovery-pilot-a800-v1.json)。尚未证明机器人SR提高，不自动上线。
 
 - 新高H1专属结果头：`runs/recovery_usable_20261009/H0-new-high-convergence-v1/selected-observer.pt`（499c42cc…e5a4a），配高bee76338…8f8316；旧`H0-convergence-v1`只能配原48045，不可互换。两者均未获部署校准。

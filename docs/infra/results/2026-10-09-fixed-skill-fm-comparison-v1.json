@@ -1,0 +1,35 @@
+{
+  "schema": "fixed_skill_fm_paired_diagnostic_v1",
+  "reviewed_at": "2026-10-09T23:12:00+08:00",
+  "owner": "Codex main agent",
+  "source_commit": "ffdab47171889b8a496fddcd486e7ab60e351bf2",
+  "config_sha256": "35fc68b5aebc658bb44da8ed60e16a3b1747b64885193de24c43dd56a58c1e23",
+  "a800_service": "/data/workspace/wsy/behavior2026/runs/recovery_usable_20261009/fixed-skill-service-v1",
+  "rtx_run_root": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009",
+  "local_media_root": "/home/wsy/behavior/artifacts/recovery-usable-20261009",
+  "parent_sha256": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470",
+  "candidate_sha256": "139fea211cffd2cde472235f9a3ff3b7ccf3855c781ec7654a26ec56113f2cd9",
+  "paired_noise_seed": 17,
+  "actual_model_requests": 44,
+  "optimizer_steps": 0,
+  "all_model_tensors_verified_unchanged_after_evaluation": true,
+  "high_layer": "Fixed to the actually issued semantic skill; no planner or outcome head invoked",
+  "actor_inputs": "Three current RGB views, observed proprio, task and issued skill/parent only",
+  "review_checks": ["all saved original RGB hashes", "per-control ACK and raw23 actions", "separate episode/context/model binding", "six-control physical completion debounce", "main agent visually checked start/end head plus active wrist: 16 original frames total"],
+  "pairs": [
+    {
+      "case": "turning_on_radio_155", "skill": "GRASP", "reference_horizon": 141,
+      "parent": {"run": "fixed-radio155-parent-v1", "success": true, "executed_policy_controls": 20, "result_sha256": "091a233d9482832f138e87f3e112a9dd25cb8e75fbd29cefaada04f34d660807", "ledger_sha256": "2652f37da74765a215309c99dc70d98531e471108fa47a1e673f9a50db12ab14"},
+      "candidate": {"run": "fixed-radio155-candidate-v1", "success": true, "executed_policy_controls": 19, "result_sha256": "fc13900d7cb4a92f3e58c35bbab2c50f3074a1d6f26fbb2bcf398854c1227eae", "ledger_sha256": "4cb0b13bc01f6c883a970d126c8f8f5a7eaf8297756df8666d429c8f8d1ca97c"},
+      "interpretation": "Both recover correct-object right-hand contact. One control difference in a seen-source diagnostic is not reliable improvement or full task success."
+    },
+    {
+      "case": "wash_dog_toys_169", "skill": "OPEN_DOOR", "reference_horizon": 317,
+      "parent": {"run": "fixed-wash169-parent-v1", "success": false, "executed_policy_controls": 317, "outcome": "UNKNOWN", "final_open_fraction": 0.29110044414035263, "peak_open_fraction": 0.3340213113722024, "stationary_door_since_control": 375, "result_sha256": "20de80041db8f55ba895b1211abc2c48c5f5588524a5ddfc164ef03ca6ba133a", "ledger_sha256": "4a24605b26f92eaa08ee859b6cc0948deee999bce389eff65b7b81d81da7a489"},
+      "candidate": {"run": "fixed-wash169-candidate-v1", "success": false, "executed_policy_controls": 317, "outcome": "UNKNOWN", "final_open_fraction": 0.247468138661117, "peak_open_fraction": 0.281352163268797, "stationary_door_since_control": 387, "result_sha256": "20d64fa7a9179083859c242343bceb7f5e4b958cbaa866d6ef9af17a0a9b756f", "ledger_sha256": "84e0fc7838b688fc5ee874972281c61ea80263ec6720f5887a9bdb639c62ded6"},
+      "interpretation": "Both withdraw from the handle before reaching functional opening 0.35. Partial official Open=true is not enough for this local clearance contract; finite window expiry remains UNKNOWN, not a fabricated FAILED label. Candidate partial opening is lower in this one seed."
+    }
+  ],
+  "limitations": ["Two engineered source starts and one noise seed, not independent success-rate estimation", "Cold restore proprio and target-position gates passed, but render images are not bitwise identical across processes", "No protected-progress live validation yet", "No evidence that recovery SFT improves whole-task success", "No new short-skill RL optimizer updates yet"],
+  "decision": "Keep original low model as baseline; do not expand to 100-task RL. Add cross-mechanism recovery data and legal starts, then test shared skill-reward learning."
+}
