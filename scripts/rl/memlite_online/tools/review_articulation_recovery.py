@@ -11,6 +11,7 @@ from recovery_corpus import file_sha
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--branch',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--correction-window',action='store_true',help='All recorded RGB in first 32 real corrective controls, plus causal result anchors')
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     manifest=json.loads((a.branch/'manifest.json').read_text())
@@ -19,7 +20,15 @@ def main():
     available=sorted(int(t) for t in manifest['anchors'] if int(t)<len(rows))
     retry=manifest.get('retry_control');wanted={0,available[-1],*range(0,len(rows),16)}
     if retry is not None:wanted.update(range(max(0,retry-16),retry+49,4))
-    frames=sorted({min(available,key=lambda v:abs(v-t)) for t in wanted if t<len(rows)})
+    if a.correction_window:
+        if retry is None:raise ValueError('No actual correction for action-window review')
+        frames=sorted({0,16,available[-1],*(t for t in available if retry-12<=t<=retry+32)} & set(available))
+        # Always inspect a physically completed correction endpoint, but do
+        # not automatically turn that endpoint into an extra BC target.
+        succeeded=[t for t in available if t>retry+32 and rows[t]['observation_outcome_candidate']=='SUCCEEDED']
+        if succeeded:frames=sorted(set(frames)|{succeeded[0]})
+    else:
+        frames=sorted({min(available,key=lambda v:abs(v-t)) for t in wanted if t<len(rows)})
     a.output.mkdir(parents=True);sheets=[];evidence=[]
     for start in range(0,len(frames),4):
         image=Image.new('RGB',(672,min(4,len(frames)-start)*272),'white');draw=ImageDraw.Draw(image)
@@ -36,6 +45,7 @@ def main():
         name=f'review-{start//4:02d}.jpg';image.save(a.output/name,quality=95,subsampling=0)
         sheets.append(dict(path=name,sha256=file_sha(a.output/name)))
     receipt=dict(schema='articulation_original_media_review_material_v1',manifest_sha256=file_sha(a.branch/'manifest.json'),
+        transitions_sha256=file_sha(a.branch/'transitions.jsonl'),
         frames=frames,panels=len(frames)*3,sheets=sheets,evidence=evidence,human_approved=False)
     (a.output/'review.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(dict(frames=frames,panels=len(frames)*3)))
 

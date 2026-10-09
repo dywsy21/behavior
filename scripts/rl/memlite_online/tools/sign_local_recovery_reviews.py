@@ -12,10 +12,11 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest,file_sha
 from recovery_teacher_corpus import physical_proposal,validate_branch
 from recovery_terminal_corpus import load_terminal
+from recovery_articulation_corpus import CLEAN,validate_articulation_branch
 
 
-def verify_action_window(t, rows, manifest, anchor, reviewed_frames):
-    if (len(rows[t:t+32])!=32 or any(r['label_kind']!='same_state_local_teacher_candidate' for r in rows[t:t+32])
+def verify_action_window(t, rows, manifest, anchor, reviewed_frames,*,clean_label='same_state_local_teacher_candidate'):
+    if (len(rows[t:t+32])!=32 or any(r['label_kind']!=clean_label for r in rows[t:t+32])
             or not anchor['label_audit']['full_executed_32_step_target_available']
             or not {s for s in map(int,manifest['anchors']) if t<=s<=t+32}<=set(reviewed_frames)
             or min(reviewed_frames)>t or max(reviewed_frames)<t+32):
@@ -45,15 +46,22 @@ def main():
         for s in materials['sheets']:
             if file_sha(review/s['path'])!=s['sha256']:raise ValueError('Changed reviewed media')
         rows=[json.loads(x) for x in (branch/'transitions.jsonl').read_text().splitlines()]
-        plans=json.loads((branch/'plans.json').read_text());validate_branch(rows,manifest,plans)
-        terminal=load_terminal(branch,manifest,rows,plans)
+        plans=json.loads((branch/'plans.json').read_text())
+        articulation=q.get('mechanism')=='articulation'
+        if articulation:
+            seed=json.loads((branch.parent/'seed.json').read_text())
+            proposals,predecision=validate_articulation_branch(rows,manifest,plans,seed)
+            terminal=None
+        else:
+            validate_branch(rows,manifest,plans)
+            terminal=load_terminal(branch,manifest,rows,plans)
         refs=[dict(path=str((review/s['path']).resolve().relative_to(root)),sha256=s['sha256'],kind='original_media_review')
               for s in materials['sheets']]
         refs.append(dict(path=str((review/'review.json').resolve().relative_to(root)),
                          sha256=file_sha(review/'review.json'),kind='physical_semantic_review'))
         refs.append(dict(path=str(a.decisions.resolve().relative_to(root)),sha256=file_sha(a.decisions),kind='owner_decision'))
         indexed={r['control_step']:r for r in anchors if r['actor_input']['rgb']['archive']==q['archive']}
-        event=digest([q['source_group'],'first_demonstrated_grasp'])
+        event=digest([q['source_group'],'first_demonstrated_'+('articulation' if articulation else 'grasp')])
         def approve(t,pool,label):
             row=indexed[t]
             if t not in materials['frames']:raise ValueError('Exact observation not visually inspected')
@@ -62,20 +70,28 @@ def main():
                 source_group=q['source_group'],label=label))
         for outcome in decision['outcomes']:
             t=outcome['control_step'];latest=[p for p in plans if p['control_step']<=t][-1]
-            if terminal is not None and t==terminal['control_step']:
+            role=outcome.get('history_role','observable')
+            if role not in ('observable','predecision'):raise ValueError('Unknown result attempt role')
+            if articulation:
+                measured=proposals[t] if role=='observable' else predecision.get(t,{}).get('value')
+            elif role!='observable':raise ValueError('Unverified GRASP predecision result')
+            elif terminal is not None and t==terminal['control_step']:
                 if (materials.get('terminal_observation_sha256')!=manifest['terminal_observation_sha256']
                         or not indexed[t]['actor_input'].get('observation_only')):
                     raise ValueError('Missing actual final-observation review/corpus evidence')
                 measured=terminal['outcome_candidate']
             else:measured=physical_proposal(rows,t,manifest['arm'],attempt_start=latest['control_step'])
             if measured!=outcome['value']:raise ValueError('Owner outcome contradicts causal physical evidence')
-            approve(t,'outcome',dict(value=measured,member_index=0,available_control_step=t,evidence_end_control_step=t))
+            label=dict(value=measured,member_index=0,available_control_step=t,evidence_end_control_step=t)
+            if role=='predecision':label['history_role']=role
+            approve(t,'outcome',label)
         if decision['action_steps'] or decision['planner_steps']:
             if (not manifest['physical_recovery_candidate'] or manifest['failure'] is not None
                     or not decision['corrective_execution_visually_verified']):
                 raise ValueError('No verified real successful correction for positive action/plan')
         for t in decision['action_steps']:
-            verify_action_window(t,rows,manifest,indexed[t],materials['frames'])
+            verify_action_window(t,rows,manifest,indexed[t],materials['frames'],
+                                 clean_label=CLEAN if articulation else 'same_state_local_teacher_candidate')
             approve(t,'action',dict(quality='verified_correct_execution',executed_controls=32))
         for t in decision['planner_steps']:
             target=a.corpus/'proposed-plans'/(indexed[t]['sample_id']+'.json')
