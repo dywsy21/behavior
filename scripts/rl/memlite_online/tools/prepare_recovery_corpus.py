@@ -31,7 +31,16 @@ def main():
         bindings=bindings["episodes"] if bindings else None)
     if bindings and bindings["inventory_sha256"] != summary["inventory_sha256"]:
         raise ValueError("Name bindings belong to a different immutable archive inventory")
+    rejected = bindings.get("rejected_episodes", {}) if bindings else {}
+    for anchor in anchors:
+        reason = rejected.get(canonical(anchor["source_episode"]))
+        if reason:
+            anchor["label_status"] = "quarantined_binding_mismatch"
+            anchor["label_audit"]["binding_quarantine"] = reason
+    summary["binding_quarantined_episodes"] = len(rejected)
+    summary["binding_quarantined_anchors"] = sum("binding_quarantine" in a["label_audit"] for a in anchors)
     summary["protected_groups_supplied"] = args.protected_groups is not None
+    summary["protected_groups_sha256"] = file_sha(args.protected_groups) if args.protected_groups else None
     summary["source_manifest_sha256"] = file_sha(args.source_manifest) if args.source_manifest else None
     summary["bindings_sha256"] = file_sha(args.bindings) if args.bindings else None
     args.output.mkdir(parents=True, exist_ok=False)

@@ -7,7 +7,6 @@ The remaining time is a critic-only feature, never an actor/planner input.
 from collections import deque
 import json
 import os
-from pathlib import Path
 
 from dense_reward import chunk_targets
 from pilot_policy import PilotPolicy
@@ -34,6 +33,12 @@ class SharedPilotPolicy(PilotPolicy):
             actual=int(evaluator.instance_eval_states[index].instance_id)
             if actual!=metadata['instance_id']:raise ValueError('Actual instance differs from recorder metadata')
         self.recorder.begin(self.episode_metadata)
+        for index, state in enumerate(evaluator.instance_eval_states):
+            named_scope = {}
+            for entity, wrapped in state.env_accessor.object_scope.items():
+                obj = getattr(wrapped, 'wrapped_obj', wrapped)
+                named_scope[entity] = getattr(obj, 'name', None) if obj is not None else None
+            self.recorder.bind_scope(index, named_scope)
 
     def close_recording(self,reason):
         if self.recorder is not None:self.recorder.close(reason)

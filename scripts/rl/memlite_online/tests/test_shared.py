@@ -160,6 +160,11 @@ class SharedContracts(unittest.TestCase):
         rows = self.run_two('normal')
         self.assertEqual(rows[0]['replica_identity'], rows[1]['replica_identity'])
         self.assertEqual(rows[0]['checkpoint']['sha256'], rows[1]['checkpoint']['sha256'])
+        for row in rows:
+            self.assertEqual(row['post_update']['value_loss'], row['critic_after']['half_mse'])
+            self.assertNotEqual(row['critic_before']['half_mse'], row['critic_after']['half_mse'])
+            self.assertIsNone(row['critic_after']['explained_variance'])  # constant returns
+            self.assertEqual(row['critic_after']['return_mean'], 2.)
 
     def test_empty_rank_still_participates(self):
         self.run_two('empty')

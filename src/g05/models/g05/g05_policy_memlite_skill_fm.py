@@ -90,13 +90,14 @@ class G05PolicyMEMLiteSkillFM(G05PolicyQwen35):
         # Keep the receipt locally so the optimizer gate can prove that LoRA
         # injection/restoration happened first.
         self._coordination_post_load_receipt = None
+        self._recovery_expert_only = False
 
     def train(self, mode: bool = True):
         super().train(mode)
         # Frozen modules have no useful train-mode behavior in Stage A.  Keeping
         # them in eval prevents accidental dropout/statistics drift while the
         # action expert remains trainable.
-        if mode and self.stage == "skill_fm_stage_a":
+        if mode and (self.stage == "skill_fm_stage_a" or self._recovery_expert_only):
             self.model.vision_tower.eval()
             self.model.vlm.eval()
             if self.model.proprio_embedder is not None:
@@ -160,7 +161,7 @@ class G05PolicyMEMLiteSkillFM(G05PolicyQwen35):
 
     def _assert_stage_freeze_contract(self) -> None:
         expected = {"action_expert"}
-        if self.stage == "skill_fm_stage_b":
+        if self.stage == "skill_fm_stage_b" and not self._recovery_expert_only:
             expected.add("vlm_lora")
         actual = set(self.coordination_trainable_parameter_groups())
         if actual != expected:
@@ -189,13 +190,13 @@ class G05PolicyMEMLiteSkillFM(G05PolicyQwen35):
         enabled_names = []
         for name, parameter in self.named_parameters():
             enabled = name.startswith("model.action_expert.")
-            if self.stage == "skill_fm_stage_b":
+            if self.stage == "skill_fm_stage_b" and not self._recovery_expert_only:
                 enabled = enabled or (name.startswith("model.vlm.") and "lora_" in name)
             parameter.requires_grad_(enabled)
             if enabled:
                 enabled_names.append(name)
         groups = self.coordination_trainable_parameter_groups()
-        expected = {"action_expert"} | ({"vlm_lora"} if self.stage == "skill_fm_stage_b" else set())
+        expected = {"action_expert"} | ({"vlm_lora"} if self.stage == "skill_fm_stage_b" and not self._recovery_expert_only else set())
         if set(groups) != expected:
             raise RuntimeError(f"SkillFM stage gate failed: expected={sorted(expected)} actual={sorted(groups)}")
         receipt = {
@@ -213,7 +214,22 @@ class G05PolicyMEMLiteSkillFM(G05PolicyQwen35):
         receipt["adapter_load_mode"] = str(
             self._coordination_post_load_receipt.get("adapter_load_mode", "missing")
         )
+        receipt["recovery_expert_only"] = self._recovery_expert_only
         return receipt
+
+    def configure_recovery_expert_only(self):
+        """Retain the trained Stage-B LoRA exactly, but freeze it for L0.
+
+        Do not reconstruct a Stage-A model: that would discard the learned
+        skill-conditioned VLM adapter. Invoke only AFTER an exact parent load.
+        This opt-in does not change any existing Stage-1/RL source snapshot.
+        """
+        receipt = self._coordination_post_load_receipt or {}
+        if (self.stage != "skill_fm_stage_b" or receipt.get("adapter_load_mode") != "resume"
+                or receipt.get("restored") != 192):
+            raise ValueError("Recovery requires all 192 trained parent LoRA tensors")
+        self._recovery_expert_only = True
+        return self.configure_coordination_trainability()
 
     def forward_train(self, samples, pixel_values, actions=None, action_pad_masks=None,
                       action_dim_is_pad=None, **kwargs):

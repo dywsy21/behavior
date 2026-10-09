@@ -47,13 +47,15 @@ def atomic_json(path, value):
 
 class RecoveryDetector:
     """Debounced physical events plus explicitly uncertain stall candidates."""
-    def __init__(self, stall_controls=256):
+    def __init__(self, stall_controls=256, *, capture_normal=False):
         self.stall_controls = stall_controls
         self.holds = {}; self.releases = {}; self.stable = set(); self.lost = {}
         self.last_step = 0; self.context = None; self.last_progress = 0
         self.q_peak = 0.0; self.skill_peak = 0.0
         self.q_regression_count = 0; self.regression_q = None
         self.stall_emitted = False; self.last_q = 0.0
+        self.entity_bindings = {}
+        self.capture_normal = bool(capture_normal)
 
     def step(self, step, context, audit):
         if step != self.last_step + 1: raise ValueError('Detector control clock is discontinuous')
@@ -74,28 +76,40 @@ class RecoveryDetector:
                                    evidence='official_Q_increased', q_before=self.last_q, q_after=q))
             self.last_progress = step; self.stall_emitted = False
         self.skill_peak = max(self.skill_peak, skill)
-        # Restrict grasp events to objects participating in task literals.
-        relevant = {entity for literal in audit.get('literals', []) for entity in literal['entities']}
-        planned_release = any(s['verb'].startswith('PLACE_') or s['verb'] in ('RELEASE','UNGRASP') for s in skills)
+        # Audit scope contains task objects AND tools; a broom must not disappear
+        # just because the final BDDL predicates mention only the floor.
+        scope = audit.get('grasp_states', {})
+        def entity(name):
+            return name if name in scope else self.entity_bindings.get(name)
+        planned_release = {entity(s.get('target')) for s in skills
+                           if s['verb'].startswith('PLACE_') or s['verb'] in ('RELEASE','UNGRASP')}
         for obj, arms in audit.get('grasp_states', {}).items():
-            if obj not in relevant: continue
             if any(v not in ('TRUE','FALSE','UNKNOWN') for v in arms.values()):
                 raise ValueError('Invalid tri-state grasp enum')
-            held = any(v == 'TRUE' for v in arms.values())
             definitely_released = bool(arms) and all(v == 'FALSE' for v in arms.values())
-            self.holds[obj] = self.holds.get(obj, 0) + 1 if held else 0
+            for arm in ('left', 'right'):
+                key = (obj, arm)
+                self.holds[key] = self.holds.get(key, 0) + 1 if arms.get(arm) == 'TRUE' else 0
             self.releases[obj] = self.releases.get(obj, 0) + 1 if definitely_released else 0
-            if self.holds[obj] >= 6:
+            stable_arms = [arm for arm in ('left', 'right') if self.holds[(obj, arm)] >= 6]
+            if stable_arms:
+                newly_stable = obj not in self.stable
                 self.stable.add(obj)
                 if obj in self.lost:
                     lost_step = self.lost.pop(obj)
                     if step - lost_step <= 1024:
                         events.append(dict(kind='regrasp_after_loss', object=obj, step=step,
-                                           loss_step=lost_step, evidence='same_object_any_arm_TRUE_6_controls'))
+                                           loss_step=lost_step, evidence='same_object_same_arm_TRUE_6_controls',
+                                           arms=stable_arms, recovery_success_label=False))
+                elif newly_stable and self.capture_normal:
+                    events.append(dict(kind='stable_grasp_observed', object=obj, step=step,
+                        arms=stable_arms, evidence='same_object_same_arm_TRUE_6_controls',
+                        active_target_matches=any(entity(s.get('target')) == obj for s in skills),
+                        action_quality_verified=False))
             if self.releases[obj] >= 6 and obj in self.stable:
                 self.stable.remove(obj)
                 # Intentional placement/release is not automatically a failure.
-                if not planned_release and q <= self.last_q + 1e-6:
+                if obj not in planned_release and q <= self.last_q + 1e-6:
                     self.lost[obj] = step
                     events.append(dict(kind='grasp_loss_candidate', object=obj, step=step,
                                        evidence='previous_stable_hold_then_both_arms_FALSE_6_controls',
@@ -148,9 +162,27 @@ class RecoveryRecorder:
                 raise ValueError('Unbound or non-TRAIN candidate episode')
             self.slots.append(dict(metadata=deepcopy(episode),
                 ring=deque(maxlen=self.settings['recovery_pre_controls']), active=None,
-                detector=RecoveryDetector(self.settings['recovery_stall_controls']),
+                detector=RecoveryDetector(self.settings['recovery_stall_controls'], capture_normal=True),
+                label_bindings=None, normal_clips=0,
                 anchor=None, context=None, chunk=None, pending=None, step=0, clips=0, stalled_clips=0))
         self.started = True
+
+    def bind_scope(self, env, named_scope):
+        """Exact live object names, recorder-only; never sent through actor RPC."""
+        slot = self.slots[env]
+        if slot['step'] != 0 or slot['label_bindings'] is not None:
+            raise ValueError('Bind live scope once, before executing any control')
+        if not isinstance(named_scope, dict) or not named_scope:
+            raise ValueError('Missing live task scope')
+        available = {key: name for key, name in named_scope.items() if name is not None}
+        if (any(not isinstance(k, str) or not isinstance(v, str) or not v for k, v in available.items())
+                or len(set(available.values())) != len(available)):
+            raise ValueError('Ambiguous live task object binding')
+        mapping = {name: key for key, name in available.items()}
+        slot['label_bindings'] = dict(schema='live_task_entity_bindings_v1', by_asset_name=mapping,
+            unavailable_entities=sorted(set(named_scope)-set(available)),
+            episode_id=slot['metadata']['episode_id'], observed_control_step=0, actor_input_permitted=False)
+        slot['detector'].entity_bindings = mapping
 
     def on_chunk(self, env, observation, context, experience_id, policy_update):
         if not self.started: return
@@ -208,7 +240,9 @@ class RecoveryRecorder:
                                recovery_success_label=False))
         active = slot['active']
         if active is not None: active['records'].append(record)
-        eligible = [e for e in events if e['kind'] != 'stalled_uncertain' or slot['stalled_clips'] < 2]
+        eligible = [e for e in events
+                    if (e['kind'] != 'stalled_uncertain' or slot['stalled_clips'] < 2)
+                    and (e['kind'] != 'stable_grasp_observed' or slot['normal_clips'] < 2)]
         if eligible and active is None:
             if slot['clips'] >= self.settings['recovery_max_clips_per_episode']:
                 self.counts['episode_cap_rejected'] += 1
@@ -218,6 +252,7 @@ class RecoveryRecorder:
                 slot['active'] = active
                 slot['clips'] += 1
                 if any(e['kind']=='stalled_uncertain' for e in eligible): slot['stalled_clips'] += 1
+                if any(e['kind']=='stable_grasp_observed' for e in eligible): slot['normal_clips'] += 1
         if active is not None:
             active['events'].extend(events)
             # Related follow-up evidence may extend a clip, but boundedly.
@@ -246,6 +281,7 @@ class RecoveryRecorder:
         manifest = dict(schema='recovery_candidate_v1', clip_id=clip_id, label_kind='on_policy_candidate',
             bc_eligible=False, human_review='pending', synthetic_expert=False,
             episode=slot['metadata'], provenance=self.provenance, events=active['events'],
+            label_only_entity_bindings=deepcopy(slot['label_bindings']),
             start_control_step=rows[0]['control_step'], end_control_step=rows[-1]['control_step']+1,
             stop_reason=reason, dense_controls=True, control_hz=30,
             rgb_sampling='real pre-action observations at 16-control chunk boundaries',

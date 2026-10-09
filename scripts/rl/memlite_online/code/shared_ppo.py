@@ -124,13 +124,25 @@ class SharedFlowPPO(A4DirectPPO):
         self.actor_optimizer.zero_grad(set_to_none=True)
         self.critic_optimizer.zero_grad(set_to_none=True)
 
+        critic_features = {}
+
         def compute(record, backward=False):
             _, saved, adv, target, row_weight = record
             batch = inferencer.prepare_training_batch([saved["observation"]], [saved["local_subgoal"]])
-            with inferencer._branch_context():
-                loss, metrics = self.evaluate_prepared(batch, saved["chain"].unsqueeze(0),
-                    saved["old_step_log_prob"].unsqueeze(0), torch.tensor([adv]), torch.tensor([target]))
+            captured = []
+            hook = (self.critic.register_forward_pre_hook(
+                lambda _module, inputs: captured.append(inputs[0].detach().clone())) if backward else None)
+            try:
+                with inferencer._branch_context():
+                    loss, metrics = self.evaluate_prepared(batch, saved["chain"].unsqueeze(0),
+                        saved["old_step_log_prob"].unsqueeze(0), torch.tensor([adv]), torch.tensor([target]))
+            finally:
+                if hook is not None:
+                    hook.remove()
             if backward:
+                if len(captured) != 1 or captured[0].shape[0] != 1:
+                    raise RuntimeError("Expected one detached critic feature per collected chunk")
+                critic_features[record[0]] = captured[0]
                 if not all(math.isfinite(value) for value in metrics.values()) or metrics["approx_kl"] > 0.005:
                     raise RuntimeError(f"Unchanged-policy likelihood mismatch: {metrics}")
                 (loss * row_weight).backward()
@@ -206,7 +218,47 @@ class SharedFlowPPO(A4DirectPPO):
             if actor_requested:
                 self.actor_optimizer.load_state_dict(optimizer_backup)
                 raise RuntimeError(f"All shared line-search attempts rejected: {backtracks}")
+        def critic_diagnostics():
+            # Cached features come from the frozen observable prefix. Measuring
+            # the small critic here does not repeat the VLM / ten FM steps.
+            sums = [0.] * 7
+            error = None
+            try:
+                with torch.no_grad():
+                    for identity, _, _, target, w in records:
+                        value = float(self.critic(critic_features[identity]).item())
+                        residual = value - target
+                        values = [w, w*target, w*target*target, w*value, w*value*value,
+                                  w*residual, w*residual*residual]
+                        sums = [a+b for a, b in zip(sums, values)]
+            except Exception as exception:
+                error = exception
+            c.check(error, "local critic diagnostics")
+            totals = c.sum(sums)
+            weight_sum = totals[0]
+            target_mean, target_square, value_mean, value_square, error_mean, error_square = [
+                v/weight_sum for v in totals[1:]]
+            variance = max(0., target_square - target_mean**2)
+            result = dict(return_mean=target_mean, return_std=math.sqrt(variance),
+                value_mean=value_mean, value_std=math.sqrt(max(0., value_square-value_mean**2)),
+                half_mse=.5*error_square,
+                explained_variance=(1.-max(0., error_square-error_mean**2)/variance
+                                    if variance > 1e-12 else None),
+                weighted=True, features="cached_frozen_observable_prefix")
+            c.check(None if all(v is None or not isinstance(v, float) or math.isfinite(v)
+                                for v in result.values()) else ValueError("Nonfinite critic diagnostics"),
+                    "critic diagnostics")
+            return result
+
+        critic_before = critic_diagnostics()
         self.critic_optimizer.step()
+        critic_after = critic_diagnostics()
+        # Actor trust-region metrics above intentionally precede the critic
+        # update. The public post_update/value_loss now really follows it.
+        post, group_metrics = dict(post), deepcopy(group_metrics)
+        post["value_loss"] = critic_after["half_mse"]
+        for item in group_metrics:
+            item["value_loss_before_critic_step"] = item.pop("value_loss")
         delta = max(float((p - saved).abs().max()) for p, saved in zip(self.actor_parameters, actor_backup))
         del actor_backup, optimizer_backup
         self.update_count += 1
@@ -224,6 +276,7 @@ class SharedFlowPPO(A4DirectPPO):
             actor_grad_norm=actor_norm, critic_grad_norm=critic_norm, actor_max_delta=delta,
             accepted_actor_lr=accepted_lr, nominal_actor_lr=self.nominal_actor_lr,
             before=before, post_update=post, groups=group_metrics, backtracking=backtracks,
+            critic_before=critic_before, critic_after=critic_after,
             communication_seconds=communication, compute_seconds=time.monotonic() - started,
             microbatch_size=1, collected_policy_version=self.update_count - 1,
             tasks=sorted({row[1]["task_identity"] for row in records}))

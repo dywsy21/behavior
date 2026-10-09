@@ -83,6 +83,32 @@ class CorrectnessTests(unittest.TestCase):
 
 
 class DetectorTests(unittest.TestCase):
+    def test_alternating_arms_cannot_manufacture_stable_grasp(self):
+        d=RecoveryDetector(capture_normal=True);events=[]
+        for step in range(1,20):
+            a=audit();a['grasp_states']['obj']={'left':'TRUE' if step%2 else 'FALSE',
+                                               'right':'FALSE' if step%2 else 'TRUE'}
+            events+=d.step(step,context(),a)
+        self.assertFalse(d.stable);self.assertEqual(events,[])
+
+    def test_tool_absent_from_final_goals_still_collected(self):
+        d=RecoveryDetector(capture_normal=True);events=[]
+        d.entity_bindings={'asset_broom':'obj'}
+        ctx=context();ctx['active_skills_semantic_json']='[{"verb":"GRASP","target":"asset_broom"}]'
+        for step in range(1,7):
+            a=audit(grasp='TRUE');a['literals']=[dict(entities=['floor'],done=False)]
+            events+=d.step(step,ctx,a)
+        self.assertEqual(events[0]['kind'],'stable_grasp_observed')
+        self.assertTrue(events[0]['active_target_matches'])
+        self.assertFalse(events[0]['action_quality_verified'])
+
+    def test_placing_one_object_does_not_hide_loss_of_another(self):
+        d=RecoveryDetector();events=[]
+        for step in range(1,7):d.step(step,context(),audit(grasp='TRUE'))
+        ctx=context();ctx['active_skills_semantic_json']='[{"verb":"PLACE_IN","target":"other"}]'
+        for step in range(7,13):events+=d.step(step,ctx,audit())
+        self.assertEqual([e['kind'] for e in events],['grasp_loss_candidate'])
+
     def test_stable_loss_and_same_object_regrasp(self):
         d=RecoveryDetector();events=[]
         for step in range(1,7):events+=d.step(step,context(),audit(grasp='TRUE'))
@@ -128,6 +154,17 @@ class DetectorTests(unittest.TestCase):
 
 
 class RecorderTests(unittest.TestCase):
+    def test_live_bindings_are_label_only_and_reset_local(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            rec=self.make(tmp);rec.bind_scope(0,{'obj':'asset_1','future':None})
+            self.roll(rec)
+            for path in Path(tmp).glob('*.zip'):
+                with zipfile.ZipFile(path) as archive:
+                    m=json.loads(archive.read('manifest.json'))
+                    self.assertEqual(m['label_only_entity_bindings']['by_asset_name'],{'asset_1':'obj'})
+                    self.assertNotIn('label_only_entity_bindings',m['episode'])
+                    self.assertNotIn('entity_bindings',m['rgb_anchors'])
+            with self.assertRaises(ValueError):rec.bind_scope(0,{'obj':'other'})
     def make(self,path,**overrides):
         settings=DEFAULTS|dict(recovery_pre_controls=8,recovery_post_controls=8,
             recovery_max_controls=32,recovery_stall_controls=8,disk_reserve_gib=.0001)|overrides

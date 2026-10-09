@@ -1,0 +1,6 @@
+{
+  "schema": "recovery_sample_approvals_v1",
+  "inventory_sha256": "4b8a023fb6acbaab53b5481939666270afe83631b7691b76a03337174ff9a5ea",
+  "anchors_sha256": "4ff11359d7d00d8cc9cca6286ed5fd7d041976ddfa4cb66e95bdb4fc195371fe",
+  "approvals": []
+}
