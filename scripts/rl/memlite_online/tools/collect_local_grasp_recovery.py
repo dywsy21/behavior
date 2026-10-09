@@ -84,6 +84,12 @@ def main(argv=None, *, shared_session=None):
         def reset(self):pass
     class Evaluator(BatchedEvaluator):
         def load_policy(self):return NoPolicy()
+        def __exit__(self,kind,error,traceback):
+            # Native shutdown can exit Python before the outer except executes.
+            if error is not None:
+                atomic_json(a.output/'status.json',dict(status,status='failed',error=repr(error),
+                    seconds=time.monotonic()-started))
+            return super().__exit__(kind,error,traceback)
     cfg=OmegaConf.create(dict(env_wrapper=dict(_target_='rgb_wrapper.RGBOnlyFullResWrapper'),
         policy_name='offline_local_grasp_teacher',headless=True,partial_scene_load=True,max_steps=None,
         write_video=True,mode='train',seed=DEFAULT_EVAL_SEED,num_envs=1,

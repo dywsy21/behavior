@@ -4,7 +4,8 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_coverage import build_catalog,skill_family
+from recovery_coverage import build_catalog,skill_family,select_grasp_sources
+from recovery_corpus import group_key,split_group
 
 
 def episode(instance,split='train'):
@@ -28,6 +29,31 @@ class CoverageTests(unittest.TestCase):
         with self.assertRaises(ValueError):build_catalog([episode(1),changed],set())
         self.assertEqual(skill_family('PLACE_IN'),'placement_release')
         self.assertEqual(skill_family('OPEN_DOOR'),'articulation')
+
+    def test_task_balancing_preserves_holdouts_and_first_attempts(self):
+        rows=[]
+        for task in ('task','other'):
+            for i in range(100):
+                ep=episode(i);ep['task_name']=task;rows.append(ep)
+        prior={group_key('task',i) for i in range(3)}
+        selected,coverage=select_grasp_sources(rows,{'task:4'},['task','other','missing'],dict(train=4,dev=3),prior)
+        identities=[group_key(ep['task_name'],ep['row']['task_instance_id']) for ep,_,_ in selected]
+        self.assertTrue(prior.isdisjoint(identities));self.assertNotIn('task:4',identities)
+        self.assertEqual([ep['task_name'] for ep,_,_ in selected[:2]],['task','other'])
+        self.assertEqual(len(identities),len(set(identities)))
+        for ep,seg,split in selected:
+            self.assertEqual(len(json.loads(seg['semantic'])),1)
+            self.assertEqual(split,split_group(ep['task_name'],ep['row']['task_instance_id']))
+        self.assertEqual(sum(r['missing'] for r in coverage if r['task']=='missing'),7)
+
+    def test_no_bound_grasp_is_a_gap_not_a_fabricated_source(self):
+        ep=episode(1)
+        for seg in ep['segments']:
+            skills=json.loads(seg['semantic'])
+            for skill in skills:skill['unbound_relation']='not bound'
+            seg['semantic']=json.dumps(skills)
+        selected,coverage=select_grasp_sources([ep],set(),['task'],dict(train=2,dev=1))
+        self.assertEqual(selected,[]);self.assertEqual(sum(r['missing'] for r in coverage),3)
 
 
 if __name__=='__main__':unittest.main()

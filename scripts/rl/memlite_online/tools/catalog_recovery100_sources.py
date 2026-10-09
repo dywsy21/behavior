@@ -29,7 +29,8 @@ def main():
         queue_sha256=file_sha(a.output/'queue.jsonl'),queue_rows=len(queue))
     (a.output/'catalog.json').write_text(json.dumps(catalog,indent=2)+'\n')
     print(json.dumps(dict(tasks=len(catalog['tasks']),source_groups=catalog['source_groups'],queue_rows=len(queue),
-        verbs=sorted({r['verb'] for r in queue}),grasp_tasks=sum('GRASP' in t['verbs'] for t in catalog['tasks']),
+        verbs=sorted({r['verb'] for r in queue}),grasp_annotated_tasks=sum('GRASP' in t['verbs'] for t in catalog['tasks']),
+        grasp_bound_tasks=sum(t['verbs'].get('GRASP',{}).get('train_groups',0)>0 for t in catalog['tasks']),
         catalog_sha256=file_sha(a.output/'catalog.json'),output=str(a.output))))
 
 

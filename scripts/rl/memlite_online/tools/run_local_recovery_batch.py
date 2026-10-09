@@ -11,6 +11,8 @@ import json
 import os
 from pathlib import Path
 import queue
+import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -37,10 +39,19 @@ def main():
     for gpu in a.gpus:
         if subprocess.check_output(['nvidia-smi','-i',str(gpu),'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
             raise RuntimeError(f'GPU {gpu} occupied; do not stop another workload')
-    sources=json.loads((a.sources/'manifest.json').read_text())['cases']
+    inventory=json.loads((a.sources/'manifest.json').read_text())
+    if inventory.get('status','complete')!='complete':raise ValueError('Source export is not complete')
+    sources=inventory['cases']
     for case in sources:
         if sha256(a.sources/case['directory']/'manifest.json')!=case['manifest_sha256']:raise ValueError('Changed inventory')
     a.output.mkdir(parents=True);jobs=queue.Queue();lock=threading.Lock();loading=threading.Semaphore(a.concurrent_loads)
+    stopping=threading.Event()
+    # Stop scheduling on a user/operator stop, but allow active evidence writers
+    # to finish their current source. No SIGINT-triggered launch of more jobs.
+    for sig in (signal.SIGINT,signal.SIGTERM):signal.signal(sig,lambda *_:stopping.set())
+    def should_stop():
+        if (a.output/'STOP').exists() or shutil.disk_usage(a.output).free<100*2**30:stopping.set()
+        return stopping.is_set()
     rows=[];pending=[]
     for case in sources:
         previous=a.previous_collection/case['directory'] if a.previous_collection else None
@@ -61,6 +72,7 @@ def main():
         for case in pending:jobs.put(case)
     def worker(gpu):
         while True:
+            if should_stop():return
             try:case=jobs.get_nowait()
             except queue.Empty:return
             name=case['directory'];out=a.output/(case['cases'][0] if a.warm_groups else name)
@@ -68,6 +80,8 @@ def main():
             env=dict(os.environ,EVAL_GPU=str(gpu),EVAL_SOURCE=str(REPO/'scripts/eval/memlite_sft100'))
             loading.acquire();released=False
             try:
+                if should_stop():
+                    jobs.put(case);return
                 command=([str(REPO/'scripts/rl/memlite_online/tools/collect_local_recovery_group.py'),
                     '--sources',str(a.sources),'--output',str(a.output),'--cases',*case['cases']] if a.warm_groups else
                     [str(REPO/'scripts/rl/memlite_online/tools/collect_local_grasp_recovery.py'),
@@ -80,8 +94,11 @@ def main():
                         if state['status']!='loading':loading.release();released=True
                     time.sleep(1)
                 receipt=a.output/(name+'-group.json') if a.warm_groups else out/'status.json'
-                row=dict(case=name,gpu=gpu,pid=proc.pid,returncode=proc.returncode,
-                         status=json.loads(receipt.read_text()) if receipt.exists() else None)
+                state=json.loads(receipt.read_text()) if receipt.exists() else None
+                result=out/'result.json'
+                row=dict(case=name,gpu=gpu,pid=proc.pid,returncode=proc.returncode,status=state,
+                    closed_result_sha256=sha256(result) if result.exists() else None,
+                    evidence_state='closed_attempt' if result.exists() else 'incomplete_or_failed_not_approved')
                 with lock:
                     rows.append(row);atomic_json(a.output/'status.json',dict(status='collecting',completed=len(rows),
                         inventory_cases=len(sources),quota=None,results=rows))
@@ -89,7 +106,8 @@ def main():
                 if not released:loading.release()
                 log.close();jobs.task_done()
     with ThreadPoolExecutor(max_workers=len(a.gpus)) as pool:list(pool.map(worker,a.gpus))
-    atomic_json(a.output/'result.json',dict(status='inventory_attempts_finished',results=rows,
+    atomic_json(a.output/'result.json',dict(status='stopped_with_pending_sources' if not jobs.empty() else 'inventory_attempts_finished',results=rows,
+        pending_sources=jobs.qsize(),
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
         source_inventory_sha256=sha256(a.sources/'manifest.json'),training_approved=False,quota=None))
 

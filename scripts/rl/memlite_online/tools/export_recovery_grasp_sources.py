@@ -9,7 +9,8 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_corpus import digest, file_sha, group_key, split_group
+from recovery_corpus import file_sha, group_key
+from recovery_coverage import select_grasp_sources
 
 
 def main():
@@ -19,6 +20,8 @@ def main():
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--tasks', nargs='+', default=['preparing lunch box', 'make pizza',
                                                 'turning on radio', 'set up a coffee station in your kitchen'])
+    p.add_argument('--all-tasks', action='store_true')
+    p.add_argument('--existing-inventory', type=Path, action='append', default=[])
     p.add_argument('--train-groups-per-task', type=int, default=2)
     p.add_argument('--dev-groups-per-task', type=int, default=1)
     a = p.parse_args()
@@ -38,25 +41,24 @@ def main():
     episodes = [json.loads(x) for x in (release/'episodes.jsonl').read_text().splitlines()]
     config = configuration(root, 'low', {x['row']['task_index']:x['task_name'] for x in episodes})
     dataset = Stage1Dataset(release, config, 'low', 'train')
-    selected = []
-    for task in a.tasks:
-        candidates = []
-        for ep in episodes:
-            r = ep['row']; group = group_key(task, r['task_instance_id'])
-            if ep['task_name'] != task or ep['split'] != 'train' or group in protected: continue
-            segment = next((s for s in ep['segments'] if len(json.loads(s['semantic'])) == 1
-                and json.loads(s['semantic'])[0]['verb'] == 'GRASP'
-                and json.loads(s['semantic'])[0]['target']
-                and not json.loads(s['semantic'])[0]['unbound_relation']), None)
-            if segment is None: continue
-            candidates.append((ep, segment, split_group(task, r['task_instance_id'])))
-        for split, count in (('train', a.train_groups_per_task), ('dev', a.dev_groups_per_task)):
-            # Short original annotated prefixes first; never use rollout results.
-            rows = sorted([x for x in candidates if x[2] == split],
-                          key=lambda x:(x[1]['end'], digest([task, x[0]['row']['task_instance_id']])))
-            if len(rows) < count: raise ValueError(f'Insufficient original groups: {task}/{split}')
-            selected.extend(rows[:count])
+    tasks=([t for _,t in sorted({(ep['row']['task_index'],ep['task_name']) for ep in episodes})]
+           if a.all_tasks else a.tasks)
+    existing=set()
+    for inventory in a.existing_inventory:
+        for case in json.loads((inventory/'manifest.json').read_text())['cases']:
+            path=inventory/case['directory']/'manifest.json'
+            if file_sha(path)!=case['manifest_sha256']:raise ValueError('Changed retained source inventory')
+            old=json.loads(path.read_text())
+            if (old['original_release_sha256']!=accepted['manifest_sha256'] or
+                    old['protected_groups_sha256']!=file_sha(a.protected)):
+                raise ValueError('Retained source release/split changed')
+            existing.add(old['source_group'])
+    selected,coverage=select_grasp_sources(episodes,protected,tasks,
+        dict(train=a.train_groups_per_task,dev=a.dev_groups_per_task),existing)
+    if not a.all_tasks and any(r['missing'] for r in coverage):raise ValueError('Insufficient original groups')
     a.output.mkdir(parents=True)
+    (a.output/'coverage.json').write_text(json.dumps(dict(tasks=tasks,coverage=coverage,
+        retained_inventories=[str(x) for x in a.existing_inventory],training_approved=False),indent=2)+'\n')
     result = []
     for ep, segment, split in selected:
         r = ep['row']; task = ep['task_name']; controls = min(segment['end']+64, r['length']-1)
@@ -85,8 +87,10 @@ def main():
         (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
         result.append(dict(directory=out.name,manifest_sha256=file_sha(out/'manifest.json'),split=split,
                            episode=r['episode_index'],controls=controls))
-    (a.output/'manifest.json').write_text(json.dumps(dict(schema='recovery_grasp_source_index_v2',cases=result),indent=2)+'\n')
-    print(json.dumps(result,indent=2))
+        (a.output/'export-status.json').write_text(json.dumps(dict(status='exporting',completed=len(result),total=len(selected)))+'\n')
+        print(json.dumps(dict(exported=out.name,completed=len(result),total=len(selected))),flush=True)
+    (a.output/'manifest.json').write_text(json.dumps(dict(schema='recovery_grasp_source_index_v2',status='complete',cases=result),indent=2)+'\n')
+    (a.output/'export-status.json').write_text(json.dumps(dict(status='complete',completed=len(result),total=len(selected)))+'\n')
 
 
 if __name__ == '__main__': main()

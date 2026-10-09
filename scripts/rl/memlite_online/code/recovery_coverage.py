@@ -16,6 +16,38 @@ def skill_family(verb):
     return 'tool_material_operation'
 
 
+def select_grasp_sources(episodes, protected, tasks, counts, existing_groups=()):
+    """Outcome-blind, task-balanced first sweep; existing failures also count.
+
+    Counts are inventory coverage targets, not a global experiment quota. The
+    caller can expand this inventory without retrying a failed source for luck.
+    """
+    existing=set(existing_groups); queues=defaultdict(list); coverage=[]
+    candidates=defaultdict(list)
+    for ep in episodes:
+        task=ep['task_name']; raw=ep['row']; group=group_key(task,raw['task_instance_id'])
+        if task not in tasks or ep['split']!='train' or group in protected:continue
+        for segment in ep['segments']:
+            skills=json.loads(segment['semantic'])
+            if (len(skills)==1 and skills[0]['verb']=='GRASP' and skills[0].get('target')
+                    and not skills[0].get('unbound_relation')):
+                split=split_group(task,raw['task_instance_id'])
+                candidates[(task,split)].append((ep,segment,split));break
+    for task in tasks:
+        for split,count in counts.items():
+            rows=sorted(candidates[(task,split)],key=lambda r:(r[1]['end'],digest([task,r[0]['row']['task_instance_id']])))
+            retained=sum(group_key(task,r[0]['row']['task_instance_id']) in existing for r in rows)
+            fresh=[r for r in rows if group_key(task,r[0]['row']['task_instance_id']) not in existing]
+            chosen=fresh[:max(0,count-retained)];queues[task].extend(chosen)
+            coverage.append(dict(task=task,split=split,eligible=len(rows),retained_sources=retained,
+                new_sources=len(chosen),requested_source_coverage=count,missing=max(0,count-retained-len(chosen))))
+    # Every task receives its first case before any receives its second.
+    selected=[]
+    for n in range(max((len(v) for v in queues.values()),default=0)):
+        selected.extend(queues[task][n] for task in tasks if len(queues[task])>n)
+    return selected,coverage
+
+
 def build_catalog(episodes,protected):
     tasks={};eligible=defaultdict(dict);seen_groups=set();excluded=defaultdict(int)
     for episode in episodes:
