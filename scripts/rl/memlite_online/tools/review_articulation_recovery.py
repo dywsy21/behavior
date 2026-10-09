@@ -23,6 +23,9 @@ def main():
     if a.correction_window:
         if retry is None:raise ValueError('No actual correction for action-window review')
         frames=sorted({0,16,available[-1],*(t for t in available if retry-12<=t<=retry+32)} & set(available))
+        endpoints=[t for t in available if t>=retry+32]
+        if not endpoints:raise ValueError('No actual observation at/after the 32-control endpoint')
+        frames=sorted(set(frames)|{endpoints[0]})
         # Always inspect a physically completed correction endpoint, but do
         # not automatically turn that endpoint into an extra BC target.
         succeeded=[t for t in available if t>retry+32 and rows[t]['observation_outcome_candidate']=='SUCCEEDED']

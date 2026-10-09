@@ -16,9 +16,11 @@ from recovery_articulation_corpus import CLEAN,validate_articulation_branch
 
 
 def verify_action_window(t, rows, manifest, anchor, reviewed_frames,*,clean_label='same_state_local_teacher_candidate'):
+    endpoints=[s for s in map(int,manifest['anchors']) if t+32<=s<len(rows)]
     if (len(rows[t:t+32])!=32 or any(r['label_kind']!=clean_label for r in rows[t:t+32])
             or not anchor['label_audit']['full_executed_32_step_target_available']
             or not {s for s in map(int,manifest['anchors']) if t<=s<=t+32}<=set(reviewed_frames)
+            or (endpoints and min(endpoints) not in reviewed_frames)
             or min(reviewed_frames)>t or max(reviewed_frames)<t+32):
         raise ValueError('Missing real clean actions or full 32-control media review')
 
