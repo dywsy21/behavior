@@ -24,7 +24,8 @@ def validate_launch(ticket_path,component,*,engineering=False):
         raise ValueError('Expanded/invalid preparation budget')
     if engineering:
         if (ticket['maximum_updates']>2 or ticket['wall_seconds']>1800 or component not in ('H1','L0')
-                or ticket['formal_training_authorized'] or ticket['world_size']!=8):
+                or ticket['formal_training_authorized'] or ticket['world_size']!=8
+                or ticket['micro_batch']!=1 or ticket.get('global_batch')!=16):
             raise ValueError('Engineering is two original-expert updates at most, not recovery SFT')
     else:
         pool=recipe[component]['pool']
@@ -33,3 +34,9 @@ def validate_launch(ticket_path,component,*,engineering=False):
         if component=='H1' and not {'history','feedback','feedback_receipt'}<=ticket['files'].keys():
             raise ValueError('H1 needs real causal history and OOF prediction artifacts')
     return ticket,recipe
+
+
+def validate_h0_event_budget(counts, ticket):
+    """The combined OOF + final fit must fit this ticket, not only the ceiling."""
+    if not counts or max(counts.values()) > min(5, ticket['event_passes']):
+        raise ValueError('Combined H0 event exposures exceed the explicit ticket budget')

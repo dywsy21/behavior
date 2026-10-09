@@ -23,7 +23,7 @@ sys.path.insert(0,str(REPO/'scripts/rl/memlite_online/code'))
 from recovery_corpus import digest,file_sha
 from recovery_features import balanced_event_schedule,group_folds,validate_prediction_provenance
 from recovery_sft_data import require_training_pool
-from recovery_train_contract import validate_launch
+from recovery_train_contract import validate_launch,validate_h0_event_budget
 
 
 def main():
@@ -79,7 +79,8 @@ def main():
             schedule.append(dict(job=j,**batch))
     counts=Counter((jobs[b['job']]['rows'][i]['candidate']['source_group'],jobs[b['job']]['rows'][i]['approval']['event_id'])
                    for b in schedule for _,i in b['rows'])
-    if not schedule or max(counts.values())>5 or len(schedule)>ticket['maximum_updates']:
+    validate_h0_event_budget(counts,ticket)
+    if not schedule or len(schedule)>ticket['maximum_updates']:
         raise ValueError('Finite H0 folds exceed the common approved budget; do not silently truncate OOF')
     fingerprint=digest(dict(ticket=file_sha(a.ticket),schedule=schedule,fold=fold,source_commit=commit))
     device=torch.device('cuda',0);hidden=next(iter(features.values()))['context'].shape[-1]

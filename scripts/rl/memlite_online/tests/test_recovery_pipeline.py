@@ -15,7 +15,7 @@ from recovery_features import feature_requests,balanced_event_schedule,group_fol
 from recovery_history import join_causal_history
 from recovery_observer_training import temporal_batch,calibrate,predicted_feedback,feedback_text
 from recovery_planner_data import planner_projection
-from recovery_train_contract import validate_launch
+from recovery_train_contract import validate_launch,validate_h0_event_budget
 from test_recovery_history import fixture
 
 helpers=Path(__file__).resolve().parents[4]/'src/g05/models/g05/helpers'
@@ -52,7 +52,7 @@ class PipelineTests(unittest.TestCase):
             recipe.write_text(json.dumps(dict(maximum_updates_per_line=1000,maximum_event_passes=5,
                                                maximum_wall_seconds_per_line=14400)))
             value=dict(schema='recovery_sft_launch_v1',component='L0',formal_training_authorized=False,
-                engineering_smoke=True,maximum_updates=2,event_passes=1,wall_seconds=1800,world_size=8,micro_batch=1,
+                engineering_smoke=True,maximum_updates=2,event_passes=1,wall_seconds=1800,world_size=8,micro_batch=1,global_batch=16,
                 files=dict(recipe=dict(path=str(recipe),sha256=file_sha(recipe))))
             path.write_text(json.dumps(value))
             with self.assertRaisesRegex(ValueError,'not authorized'): validate_launch(path,'L0')
@@ -61,6 +61,11 @@ class PipelineTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'two original-expert'): validate_launch(path,'L0',engineering=True)
             recipe.write_text('{}')
             with self.assertRaisesRegex(ValueError,'Changed pinned'): validate_launch(path,'L0',engineering=True)
+
+    def test_h0_all_folds_obey_explicit_smaller_event_budget(self):
+        validate_h0_event_budget({'event-a':5,'event-b':4},dict(event_passes=5))
+        for counts,passes in [({'event-a':5},3),({'event-a':6},5),({},5)]:
+            with self.assertRaises(ValueError):validate_h0_event_budget(counts,dict(event_passes=passes))
 
     def test_causal_feature_clocks_and_h1_self_target_exclusion(self):
         anchors,history=joined()

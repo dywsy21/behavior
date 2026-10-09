@@ -1,7 +1,8 @@
 """CPU-only P2 readiness ticket. This tool NEVER starts training.
 
-Model-graph and data gates are separate. Even a ready data pool still requires
-a reviewed trainer/OOF/calibration integration receipt before formal launch.
+Model-graph, data, actual training and deployment gates are separate. This
+summary never grants permission or requires an already-trained H0 before H0
+itself can be proposed. It may incorporate bounded engineering run receipts.
 """
 import argparse
 import json
@@ -18,6 +19,7 @@ def main():
     parser.add_argument('--recipe',type=Path,required=True)
     parser.add_argument('--admission',type=Path,required=True)
     parser.add_argument('--admission-sha256',required=True)
+    parser.add_argument('--engineering-evidence',type=Path)
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args()
     if args.output.exists():raise FileExistsError(args.output)
@@ -34,14 +36,35 @@ def main():
             gates[line]=dict(data_ready=True,rows=len(rows),coverage=receipt['pools'][pool]['coverage'])
         except ValueError as error:
             gates[line]=dict(data_ready=False,reason=str(error))
-    result=dict(schema='recovery_p2_preparation_ticket_v1',recipe_sha256=file_sha(args.recipe),
+    engineering={}
+    if args.engineering_evidence:
+        for line,parent in (('L0','low'),('H1','high')):
+            path=args.engineering_evidence/(line.lower()+'-trainer-v1-audit.json')
+            evidence=json.loads(path.read_text())
+            if (evidence['status']!='passed_cpu_reload' or evidence['component']!=line
+                    or evidence['parent_sha256']!=recipe['parents'][parent]['sha256']
+                    or evidence['adam_step']!=2 or evidence['rng_ranks']!=8 or evidence['formal_training']):
+                raise ValueError('Wrong bounded training-chain receipt')
+            engineering[line]=dict(training_chain_verified=True,evidence=str(path),sha256=file_sha(path))
+        for key,name,status in (('H0_cache','h0-feature-cache-v1/receipt.json',None),
+                                 ('H1_processor','feedback-processor-v1.json','passed_cpu_processor_contract')):
+            path=args.engineering_evidence/name;evidence=json.loads(path.read_text())
+            if evidence['optimizer_steps']!=0 or (status and evidence['status']!=status):
+                raise ValueError('Wrong non-learning interface receipt')
+            if key=='H0_cache' and (not evidence['diagnostic_only'] or evidence['high_sha256']!=recipe['parents']['high']['sha256']):
+                raise ValueError('Diagnostic feature parent mismatch')
+            engineering[key]=dict(interface_verified=True,diagnostic_only=True,evidence=str(path),sha256=file_sha(path))
+    remaining=['Accepted per-sample outcome/planner/action evidence; no whole-clip blanket approval',
+               'Fixed short TRAIN-dev legal start-state/replay acceptance; not RGB-only restoration',
+               'Independent team code review and explicit formal run ticket']
+    if not engineering:remaining.append('Full derivative trainer checkpoint/DDP/objective + per-run W&B acceptance')
+    result=dict(schema='recovery_p2_preparation_ticket_v2',recipe_sha256=file_sha(args.recipe),
         admission_sha256=args.admission_sha256,node=recipe['preferred_node'],parents=recipe['parents'],
-        data_gates=gates,execution_ready=False,optimizer_steps=0,
-        remaining=['Accepted per-sample outcome/planner/action evidence; no whole-clip blanket approval',
-                   'H0 member-conditioned feature cache and held-out calibration',
-                   'H1 out-of-fold feedback aligned with REAL verified continuation',
-                   'Full derivative trainer checkpoint/DDP/objective + per-run W&B acceptance',
-                   'Fixed short TRAIN-dev legal start-state/replay acceptance; not RGB-only restoration'])
+        data_gates=gates,engineering=engineering,execution_ready=False,optimizer_steps=0,
+        formal_training_authorized=False,remaining_preparation=remaining,
+        later_training_and_deployment=['Fit H0 on accepted member-conditioned features; held-group readiness calibration',
+          'Generate actual OOF feedback aligned with verified H1 continuation; train each admitted line',
+          'Revalidate observer if H1 backbone changes, integrate serving, measure overhead and closed-loop effects'])
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))

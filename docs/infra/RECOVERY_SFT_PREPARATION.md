@@ -6,13 +6,31 @@
 
 13:04 CST补充：冻结874d39e八卡**微型合成网络**验证了通用运行时的非均匀尾批全局梯度、模型/Adam/RNG精确恢复与单rank错误共同拒绝更新；它不是实际G0.5八卡训练验收。独立[W&B工程探针](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/26d903a19327)已真实写入/读回并结束，仅`engineering/*`指标，无合成loss混入训练曲线。0新增G0.5更新，所有GPU已释放；完整derivative trainer接线、数据/校准门仍待。
 
+## 14:15 CST当前验收结论（覆盖上方历史检查点）
+
+**训练工程链已验，恢复数据与仿真起点门未全过，因此没有启动正式恢复SFT/RL。** 全部自有GPU验收进程已结束，lc1八卡0MiB/volatile不可纠正ECC均0；10383旧RL已安全保存第180次共享更新后停止，未删除旧产物。[本轮补充回执](results/2026-10-09-recovery-sft-preparation-v2.json)记录真实证据，旧13:04回执保留作历史。
+
+| 检查 | 实际做了什么 | 结论边界 |
+| --- | --- | --- |
+| L0低层 | 8f47fd7，lc1八卡/global16/原专家32行，step1保存退出后恢复到step2，共449.19秒 | 322个动作专家张量更新；192个原LoRA保留并冻结，其余冻结参数SHA不变。不是效果训练 |
+| H1高层 | 同冻结/八卡/32行，保存后恢复共2更新/546.71秒 | 326个高层张量更新，其余冻结SHA不变；未使用未验真恢复目标 |
+| 检查点/W&B | 两条线均完整SHA及独立CPU重载，Adam步2/八rank RNG齐全；线上history各有1、2步且finished | 证明原子保存与显式续训链，不把两步loss当方法有效 |
+| H0特征缓存 | 31a46c7，精确高48045冻结，4个真实三相机观测/4次member prefill，cache SHA重载与实际头消费通过 | 本次每请求只有1个真实检查点；多时刻因果/填充由单测覆盖。0optimizer，diagnostic cache不得进正式训练 |
+| H1新反馈输入 | 1个真实观测＋4种明确合成反馈，经正式processor通过；前置memory/上一意图正确，结果/低层loss掩码为false | 只验证格式，不生成训练标签或冒充已校准预测 |
+| 原媒体精审 | 19个锚点/168幅原图＋每锚点前6控制的精确目标/手物理证据 | 只批准19个GRASP结果标签，保守13事件；0动作/0planner/0恢复成功批准 |
+| 仿真准备 | 两个原TRAIN实例各352示范控制，pizza另有两段16控制重放，总736实际控制 | 两例抓到指定目标；旧pizza世界/控制器/RNG重放并非完整生产起点恢复，时钟等补丁仅CPU验过 |
+
+86项A800 RL/数据/wire回归和8项因果反馈测试全部通过。后续新增H0显式事件预算负控已本地8项pipeline回归通过：OOF与final训练的**合计**事件曝光必须同时满足用户票和5遍总上限，不能用最大允许5遍覆盖一张更小预算的票。独立成员代码review仍待，不合main。
+
+本轮已获批8次reset按保守预留4/例用尽；追加“最多12个原TRAIN起点、48reset、6144控制、90分钟”已询问，**尚未收到批准，不运行下一轮仿真**。这不是新的正式训练申请。
+
 ## 现有事实
 
 - `raw-v1`封存242个已关闭候选ZIP，347,415,662B，86个episode/43任务。结构、原index SHA、三相机图像、动作时钟通过。去重399个重叠控制行，无矛盾。
 - 6194个视觉锚点；5734个有完整32步同意图真实动作。这是“目标可读取”，不是“这些动作正确”。
 - 精确asset↔BDDL映射后有360个局部抓持成功候选锚点，合为19段连续证据/11个episode；相邻窗口可能仍为同一次事件。不能称360次成功或19次恢复。
 - 主agent亲审75个窗口/19张sheet/675幅原RGB，覆盖所有提出成功候选的archive及任务/事件分层。每窗口只看三个时刻，**不是全视频验收**。逐条记录见 `configs/recovery_sft/owner_review_v1.json`。
-- 所有训练审批仍为空。`admission-v1`三个池分别拒绝训练；缺FAILED/IN_PROGRESS语义验真、正确交接/恢复续段、完整动作质量检查和独立留出覆盖。
+- 初始`admission-v1`审批为空；最新`admission-v3`只签发19个逐成员GRASP结果（TRAIN17点/11事件/9来源组，dev2点/2事件/2来源组）。三个池仍拒绝训练；缺FAILED/IN_PROGRESS语义验真、正确交接/恢复续段、完整动作质量检查和dev事件覆盖。逐条判断见`configs/recovery_sft/exact_outcome_review_v2.json`，不能将其推广为整个clip批准。
 - `bringing_in_wood`实例9/111的模板与状态scope不匹配，2个episode/179锚点隔离。不能猜对象数字后缀、用另一模板强行补齐。
 
 ## 服务器与文件
@@ -22,8 +40,11 @@
 | 内容 | 共享根下路径 |
 | --- | --- |
 | 原专家数据 | `datasets/memlite-stage1-20260930-v4` |
-| 候选封存/审计/准入 | `datasets/recovery-candidates-20261009-v1/{raw-v1,audit-v4,admission-v1,source-metadata}` |
+| 候选封存/审计/最新准入 | `datasets/recovery-candidates-20261009-v1/{raw-v1,audit-v4,admission-v3,source-metadata}` |
+| 完整因果上下文/人审图与物理证据 | 同候选根`causal-history-v3/`、`span-review-v1/`、`outcome-approvals-v3.json` |
 | 本轮CPU/GPU证据 | `runs/recovery_sft_preparation_20261009` |
+| 新工程run（非正式模型） | 同run根`l0-trainer-v1/`、`h1-trainer-v1/`，各有同级`.supervisor`、`*-ticket.json`、`*-audit.json` |
+| H0诊断cache / H1 processor回执 | 同run根`h0-feature-cache-v1/`、`feedback-processor-v1.json` |
 | 高层SFT父权重 | `runs/memlite_stage1_high_100task_v1/checkpoints/step_00048045_save_0027.pt` |
 | 低层SFT父权重 | `runs/memlite_stage1_low_100task_v1/checkpoints/step_00098414_save_0021.pt` |
 | 低层原TRAIN归一化 | `manifests/memlite-stage1-v4-action-bounds/stats.json` |
@@ -42,26 +63,37 @@
 
 未签发数据不能靠改`training_ready`绕过，也不能把这次75窗口抽帧QA当逐样本审批。现有候选保存的是片段，不是完整初始状态+全程动作：不能仅凭RGB/proprio恢复世界或保证回放到失败现场。
 
-离线记录的`history_is_partial=true`必须保留：窗口内可见的同意图时长只是下界，不能冒充完整在线ledger计数。H1后续需要从同episode的完整planner日志重建既发意图/记忆/持续时间，并与context ID、父权重、真实时钟交叉绑定；缺失时应掩码或拒绝，不能补写历史。
+原窗口内的`history_is_partial=true`保留不回写。新`causal-history-v3`从同episode完整planner日志重建6194锚点/86episode的既发意图/记忆/时长，与实际低层context SHA全部交叉绑定；提供当前`observable`及规划前`predecision`两种视图，H1不能把本次答案放回自己的输入。只有这份完整join可以解除部分历史限制，缺失时仍拒绝，不能补写历史。历史JSON不包含物理标签。
 
 ## 训练配置与梯度边界
 
 - **H0：** 冻结整个高层，member-conditioned答案前context与归一化本体输入最多4个过去/当前检查点；detach后进小GRU适配器和四类结果头。loss只更新适配器/头，低层完全不参与。并行成员需要不同条件prefix，不能复制同一个bundle向量假装分别判断。当前小验为每成员单独一次VLM prefill，**没有实现与正常规划共享prefill，不能宣称零额外推理成本**；部署前须实测或优化合批/共享表示。当前是独立模块+图验收，不是已部署或已校准功能。
-- **H1：** 高层正确交接/恢复CE，初始LR `1e-6`、micro1/global32候选；使用分来源实例OOF或独立冻结observer的预测反馈，不能拿oracle结果直接当部署输入。新高层hash会使旧特征/校准失效。真实数据、OOF生成器及完整训练/部署整合仍是后续门。
+- **H1：** 高层正确交接/恢复CE，初始LR `1e-6`、micro1/global32候选；使用分来源实例OOF或独立冻结observer的预测反馈，不能拿oracle结果直接当部署输入。新高层hash会使旧特征/校准失效。OOF生成器及真实trainer已实现；真实正确目标、实际OOF产物及校准后部署整合仍是后续门。
 - **L0：** 从low98414精确恢复，包括全部192个已训LoRA张量。`configure_recovery_expert_only()`保留其值但冻结，只开放322个动作专家张量；FM loss不回传VLM或高层。初始LR `1e-5`，micro4/global64候选；32步预测/16步执行/起点0，4噪声样本、原stats不变。不能重构无LoRA的Stage-A替代“冻结LoRA”。
 - 每线最多1000更新、合格新事件5遍或4小时先到为止；不为凑预算重复一个小数据集。H0小头未必值得占8卡，正式world/microbatch须按实际loader和数据量验收；不要把原bs256强加给很小的恢复数据。
-- W&B计划沿已可写team `hanhanyy-fudan-university-school-of-management` / project `behavior2026-g05`，新group `memlite-recovery-p2-20261009`。仅用0600的共享秘密路径，准备小验0optimizer不新建训练run；正式run必须验证真实写入，不能把配置存在称已经接通。
+- W&B沿已可写team `hanhanyy-fudan-university-school-of-management` / project `behavior2026-g05`；本次两条工程run在`memlite-recovery-p2-20261009-engineering`，均真实写入/读回/finish。将来正式run使用独立group `memlite-recovery-p2-20261009`，当前没有启动。仅用0600共享秘密路径，禁止把凭据、checkpoint或原视频上传日志服务。
 
 ### 有限数据的八卡运行时
 
-`src/g05/utils/training/recovery_runtime.py`提供独立的通用更新原语，尚未取代完整derivative trainer：
+`src/g05/utils/training/recovery_runtime.py`提供独立的通用更新原语，已由新`train_memlite_recovery.py`接入（旧Stage1源码不变）：
 
 - 对已经准入的全局事件顺序分片，microbatch尾部不复制真实监督样本；空rank只做一个零权重前向，真实样本数/有效分母/事件遍数都不增加。仅适用于G0.5这类行间独立、无跨样本BatchNorm的模型。
 - 各rank先累计`loss × 有效分母`反向，DDP平均后乘`world/global_denominator`，再clip与Adam；不能平均各rank的mean loss。零全局监督拒绝weight decay/更新。
 - 每个更新前先协调读取/前向错误；任一rank异常均拒绝继续，已发生的optimizer异常必须从上一个完整checkpoint恢复，不把部分rank更新当作已提交步。
 - schedule指纹绑定代码、父权重、admission、配方、world/micro及精确样本顺序。调用方仅在更新成功返回后推进游标，沿用已验的原子checkpoint和全rank RNG保存。
 
-双CPU及八NCCL rank的小网络真实Adam/恢复测试已通过，3新单测＋原6运行时回归通过；父模型未参与这部分更新。**正式入口仍须先做数据准入，并将真实G0.5 loader/目标、预算监管、验证及在线W&B整条接合验收**，不能直接把这些函数或合成测试当作完成的训练程序。
+双CPU及八NCCL rank小网络的梯度与Adam/RNG逐位恢复测试已通过；新增实际高低模型各2更新/保存续训也已通过。同步CPU读样本时显式保护CUDA RNG，避免原数据worker里的`manual_seed`重置主进程FM噪声。当前通过的是原专家工程分支，**正式恢复数据分支仍须逐池准入**，不能用工程票绕过。
+
+### 实际训练入口与先后顺序
+
+1. `cache_recovery_features.py`读取已签发outcome成员/规划前观测，以冻结高层提特征；正式模式要求SHA绑定且数据池ready。`--diagnostic-limit`仅接受1–4请求，产物带不可训练标志。
+2. `train_memlite_recovery_h0.py`实际训练三个分组OOF头＋最终结果头，训练/校准/目标来源组互斥，同一事件总曝光不超过票内预算及5遍。做温度校准并导出逐成员真实预测；支持完整Adam/游标/RNG保存恢复。**当前没有运行H0拟合或校准。**
+3. 校准不是“拟合loss降了”即通过：每个已知类别至少20个独立真实事件和20个高置信预测，precision≥0.9、Wilson95下界≥0.8，错误成功率上界≤0.1。未通过则反馈UNKNOWN，不能为启动训练降门。H1 dev用只在TRAIN拟合/校准的fold头，不能拿在该dev上调过温度的最终头输入H1 dev。
+4. `train_memlite_recovery.py --component H1|L0`分别消费验证目标/实际执行动作；H1只用预测反馈，L0约70/30原专家与验真新事件。三个池和三个产物独立，H0结果批准不自动批准其动作或规划。
+5. 两类trainer必须经`scripts/infra/launch_memlite_recovery.py`的CPU票据/源码/父权重/文件SHA/GPU空闲/空间/累计预算门。工程票只能8卡、micro1/global16、累计2更新/1800秒；正式票另需明确授权与ready数据，当前不存在可开训的正式票。
+6. H1完成后，在使用其新backbone的observer上重提特征并重新验证校准；旧高层SHA的校准不得直接套用。真实反馈服务接入、时延和短闭环效果都须验证，不因trainer产物存在就部署。
+
+本次工程产物只可复现实验，不替换正式高48045/低98414父权重。L0保存16.54GB、H1保存26.59GB各保留两步，续训会校验完整内容；这类小数据每步保存的开销已计入监督器预算。
 
 ## 环境/图验收命令
 
@@ -82,7 +114,7 @@ CUDA_VISIBLE_DEVICES=2 timeout --signal=TERM --kill-after=30s 900s \
 
 以上读取两条已验原专家TRAIN样本，只做真实前反向，**无optimizer**。H0采用明确的合成图测试目标，不把数值当物理标签/loss效果。八卡硬件通信小验已通过，但单卡模型图通过也不等于新SFT八卡全链验收。
 
-`prepare_recovery_sft_ticket.py`只产CPU准备票并列出阻塞，不启动训练。下一步须完成逐样本质量门、H0特征/校准、H1预测反馈/续段、完整derivative trainer的DDP/断点/W&B小验和固定短TRAIN-dev合法起点验收。不能以本页或空审批文件充作“所有准备完成”。
+`prepare_recovery_sft_ticket.py`只产CPU准备票并列出阻塞，不启动训练。当前剩余准备是补齐实际结果类别/恢复续段和固定短TRAIN-dev合法起点；H0拟合校准与H1/L0效果验证属于之后获批的数据小训，不要反过来以“还没有训练好的头”宣称trainer不可运行。不能以本页、代码存在或19条单类审批充作“所有准备完成”。
 
 ## 留给下一冻结RL的修复
 
@@ -90,4 +122,4 @@ CUDA_VISIBLE_DEVICES=2 timeout --signal=TERM --kill-after=30s 900s \
 - 缓存critic冻结前缀特征，分别计算optimizer.step前后value loss、return/value统计与EV；目标方差近零时EV为null。actor KL门不改，旧日志不回写。
 - 因果反馈ledger按session/task/instance/episode/高层及observer SHA隔离；同意图持续时间/刷新次数不因重复规划清零，明确RETRY才开始新尝试；最多保留64种近期意图的重试计数。预测结果要求校准、足够置信度及至少两个不同检查点一致，否则UNKNOWN。
 
-这些改动**尚未进入10383在训源**。原共享RL按原24h截止运行，不因本轮准备自动延长；本轮没有恢复1000条公共评测。
+这些改动**没有热改原10383训练源**。用户随后明确批准提前停止，旧共享RL已在13:12 CST安全退出并独立验证第180次完整checkpoint；下轮只用新冻结源、独立run和预算，不自动复活旧RL或1000条公共评测。
