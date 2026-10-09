@@ -17,10 +17,13 @@ class TemporalOutcomeObserver(nn.Module):
     shared full-bundle vector cannot produce identifiable per-member labels.
     The feature-extraction caller must preserve that binding and its SHA.
     """
-    def __init__(self, hidden_size, width=128):
+    def __init__(self, hidden_size, width=128, *, include_absolute_proprio=False):
         super().__init__()
+        if type(include_absolute_proprio) is not bool:
+            raise ValueError('Explicit observer proprio architecture flag required')
+        self.include_absolute_proprio=include_absolute_proprio
         self.context_projection = nn.Sequential(nn.LayerNorm(hidden_size), nn.Linear(hidden_size, width), nn.SiLU())
-        self.sequence = nn.GRU(width+28, width, batch_first=True)
+        self.sequence = nn.GRU(width+28+(27 if include_absolute_proprio else 0), width, batch_first=True)
         self.residual = nn.Linear(width, hidden_size)
         nn.init.zeros_(self.residual.weight)
         nn.init.zeros_(self.residual.bias)
@@ -48,7 +51,13 @@ class TemporalOutcomeObserver(nn.Module):
         delta[:, 1:] = state[:, 1:] - state[:, :-1]
         dt = torch.zeros_like(steps, dtype=torch.float32)
         dt[:, 1:] = (steps[:, 1:] - steps[:, :-1]).float().clamp_min(0) / 30.
-        inputs = torch.cat((self.context_projection(feature), delta.tanh(), dt.log1p()[..., None]), dim=-1)
+        pieces=[self.context_projection(feature),delta.tanh(),dt.log1p()[...,None]]
+        if self.include_absolute_proprio:
+            # These are existing normalized observable robot joints, not
+            # object/contact truth. In particular absolute gripper aperture
+            # must not exist only as rounded tokens inside a frozen VLM.
+            pieces.append(state.tanh())
+        inputs = torch.cat(pieces, dim=-1)
         packed = pack_padded_sequence(inputs, sizes.cpu(), batch_first=True, enforce_sorted=False)
         _, last = self.sequence(packed)
         current = feature[torch.arange(batch, device=feature.device), sizes-1]

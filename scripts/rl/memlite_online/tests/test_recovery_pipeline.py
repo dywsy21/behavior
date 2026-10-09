@@ -45,6 +45,18 @@ def provenance(group):
 
 
 class PipelineTests(unittest.TestCase):
+    def test_optional_absolute_proprio_is_observable_and_gradient_insulated(self):
+        from copy import deepcopy
+        a=dict(context=torch.randn(1,3,16),proprio=torch.zeros(1,3,27),
+            steps=torch.tensor([[0,16,32]]),valid=torch.ones(1,3,dtype=torch.bool))
+        b=deepcopy(a);b['proprio']+=.5
+        for absolute in (False,True):
+            head=module.TemporalOutcomeObserver(16,width=8,include_absolute_proprio=absolute)
+            torch.nn.init.normal_(head.residual.weight,std=.2);head.eval()
+            self.assertEqual(torch.allclose(head(**a),head(**b)),not absolute)
+            a['proprio'].requires_grad_(True)
+            head(**a).sum().backward();self.assertIsNone(a['proprio'].grad)
+
     def test_preparation_ticket_cannot_start_formal_or_expand_smoke(self):
         from recovery_corpus import file_sha
         with tempfile.TemporaryDirectory() as tmp:

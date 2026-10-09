@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 00:34 CST / Codex RECOVERY-USABLE：** 590d5abc原/新低服务lc1 GPU0 PID1577424已ready，新增loopback18972双SSH转发（原VPN不动）；RTX八卡启动radio155/wash169/cap238/micro134×父/新同seed17，run`recovery_heterogeneous_20261010/fixed-*-v1`，当前loading不能当成功。H0误判9行已逐定位：radio270已抓持却高置信IP、cap238/micro134种子已功能开门却预测FAILED，故不部署。代码确认时序头只显式输入proprio差分（绝对状态只间接在VLM token），新增可选连续绝对proprio小对照/架构SHA绑定，保留旧头默认兼容与actor真值隔离；待回归/同固定开发集实际拟合，不将猜测当根因结论。新独立80组仍没看模型预测。
+
 - **2026-10-10 00:25 CST / Codex RECOVERY-USABLE：** 新L0完成200/200，末权重20fd2301…8044、冻结VLM/LoRA SHA前后相等；恢复9DEV FM0.0586524→0.0199397（-66.00%），原100留出0.1296469→0.1318330（+1.69%），W&B686313581618已API验到200更新。lc2 GPU1 H0四类也自然平台停止290步/选190，TRAIN100%、10组40选择DEV事件加权80%、平衡83.04%，FAILED/UNKNOWN召回100%，IN_PROGRESS75%、SUCCEEDED57.14%，明确未可部署/未独立校准。回执`infra/results/2026-10-10-recovery-heterogeneous-offline-v1.json`；准备原/新低四起点真FM比较，含2已留出开门来源，不冒充盲测/全任务SR。短RL客户端与新优化仍待。
 
 - **2026-10-10 00:22 CST / Codex RECOVERY-USABLE：** L0已183/200，150步恢复FM0.0215359、原0.1321624（相对原+1.94%），继续监控非SR。lc2改用前台SSH master成功、VPN未重登；空闲GPU1完成高H1 bee76338的140因果请求/281实际prefill，新feature SHA f7c3b00f…e772，0优化，GPU0队友不动。新增四类H0充分拟合票80TRAIN/40DEV，待重载反传审计后启动；独立80来源不用于选权重/训练。短RL服务已接共享round barrier、实际ACK奖励/GAE及原FM PPO，当前仅代码/123协议回归，尚无sim客户端验收/新RL优化，不能用服务存在声称学会。

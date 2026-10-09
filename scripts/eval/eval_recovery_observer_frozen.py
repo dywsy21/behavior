@@ -63,7 +63,10 @@ def main():
     if cache['schema'] != 'recovery_member_feature_cache_v1' or digest(cache['requests']) != cache_receipt['requests_sha256']:
         raise ValueError('Feature request provenance mismatch')
     features = cache['features']; device = torch.device('cpu')
-    head = TemporalOutcomeObserver(next(iter(features.values()))['context'].shape[-1])
+    observer_kwargs=fit_cfg.get('observer_kwargs',{})
+    if observer_kwargs!=fit.get('observer_kwargs',{}) or set(observer_kwargs)-{'include_absolute_proprio'}:
+        raise ValueError('Observer architecture provenance mismatch')
+    head = TemporalOutcomeObserver(next(iter(features.values()))['context'].shape[-1],**observer_kwargs)
     head.load_state_dict(torch.load(head_path, map_location='cpu', weights_only=False), strict=True)
     head.requires_grad_(False).eval()
     metrics = outcome_metrics(head, rows, features, device)

@@ -59,7 +59,9 @@ def main():
     if any(request_key(r) not in features for r in rows):
         raise ValueError('Approved labels lack a causal feature')
     device = torch.device('cuda',0)
-    head = TemporalOutcomeObserver(next(iter(features.values()))['context'].shape[-1]).to(device)
+    observer_kwargs=cfg.get('observer_kwargs',{})
+    if set(observer_kwargs)-{'include_absolute_proprio'}:raise ValueError('Unregistered observer architecture')
+    head = TemporalOutcomeObserver(next(iter(features.values()))['context'].shape[-1],**observer_kwargs).to(device)
     head.head.load_state_dict(cache['initial_head'], strict=True)
     optimizer = torch.optim.AdamW(head.parameters(), lr=cfg['learning_rate'], weight_decay=cfg['weight_decay'])
     values = temporal_batch([features[request_key(r)] for r in train], device)
@@ -123,6 +125,7 @@ def main():
         steps=step,selected_step=best_step,initial=initial,last=last,selected=selected,seconds=time.monotonic()-started,
         high_sha256=cfg['high_sha256'],selected_observer_sha256=file_sha(args.output/'selected-observer.pt'),
         runtime_ready=False,dev_used_for_model_selection=True,requires_new_independent_calibration=True,
+        observer_kwargs=observer_kwargs,
         wandb_url=wb.url,source_commit=commit,config_sha256=file_sha(args.config)))
     wb.finish()
 
