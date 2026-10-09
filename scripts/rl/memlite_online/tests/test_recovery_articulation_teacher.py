@@ -27,6 +27,12 @@ class ArticulationTests(unittest.TestCase):
         self.assertEqual(state.update(25,False,retry=True,moving=True),'IN_PROGRESS')
         self.assertEqual([state.update(i,True) for i in range(26,38)][-1],'SUCCEEDED')
 
+    def test_hysteresis_completion_unknown_does_not_erase_measured_progress(self):
+        state=CausalArticulation()
+        self.assertEqual(state.update(0,None,moving=True),'IN_PROGRESS')
+        self.assertEqual(state.update(1,None,moving=False),'UNKNOWN')
+        self.assertFalse(state.achieved)
+
     def test_raw23_body_frame_and_rate_limits(self):
         q=np.zeros(23);target=q.copy();target[7]=.1;target[14]=-1
         action,info=servo(q,[0,0,np.pi/2],dict(q=target,base=[.1,0,np.pi/2]))

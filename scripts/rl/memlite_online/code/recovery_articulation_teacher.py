@@ -86,7 +86,10 @@ class CausalArticulation:
         if retry:self.retry=True;self.true_streak=0
         if predicate is None:
             self.true_streak=self.false_streak=0
-            return 'UNKNOWN'
+            # Hysteresis leaves COMPLETION uncertain between 10% and 35%
+            # opening. A measured correction moving toward that target is
+            # nevertheless known progress, not an unknown motion outcome.
+            return 'IN_PROGRESS' if moving else 'UNKNOWN'
         if type(predicate) is not bool:raise ValueError('Predicate must be measured bool or None')
         self.true_streak=self.true_streak+1 if predicate else 0
         self.false_streak=self.false_streak+1 if not predicate else 0
