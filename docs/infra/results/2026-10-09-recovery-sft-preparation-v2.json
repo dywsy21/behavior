@@ -1,6 +1,6 @@
 {
   "schema": "recovery_sft_preparation_checkpoint_v2",
-  "time": "2026-10-09T14:19:00+08:00",
+  "time": "2026-10-09T14:24:00+08:00",
   "owner": "Codex-primary",
   "branch": "feat/recovery-sft-prep-20261009",
   "previous_checkpoint": "2026-10-09-recovery-sft-preparation.json",
@@ -130,7 +130,8 @@
     "additional_collection": {"status": "awaiting_user_answer", "maximum_original_train_starts": 12, "maximum_resets": 48, "maximum_controls": 6144, "maximum_minutes": 90}
   },
   "old_rl": {"status": "safely_stopped_update180", "receipt": "2026-10-09-shared-rl-safe-stop.json", "old_weights_deleted": false},
-  "tests": {"a800_rl_data_wire_at_31a46c7": 86, "a800_causal_feedback": 8, "new_budget_contract_local_pipeline": 8, "new_full_final_regression": "pending_final_frozen_source"},
+  "tests": {"a800_rl_data_wire_at_31a46c7": 86, "a800_causal_feedback": 8, "new_budget_contract_local_pipeline": 8, "new_full_final_regression": {"source_commit": "a75e70b5de0026cfbaed229e9ef631c3b54f2119", "command": "python -m unittest discover -s scripts/rl/memlite_online/tests -p test_*.py", "status": "passed_exit0"}, "a800_final_budget_pipeline": 8},
+  "final_preparation_ticket": {"path": "preparation-ticket-v2.json", "sha256": "8d7c1f2d3e10ccf5be70f6cc3ef4338550fcd604ea63b50b9a625e19751956a8", "engineering_verified": ["L0", "H1", "H0_cache", "H1_processor"], "execution_ready": false, "formal_training_authorized": false},
   "resources_at_1413_CST": {"lc1_gpu_memory_mib": [0,0,0,0,0,0,0,0], "volatile_uncorrectable_ecc": [0,0,0,0,0,0,0,0], "shared_disk_available_tib_approx": 2.8},
   "remaining_preparation": ["Verified multi-class outcome evidence with independent dev coverage", "Genuine failure-correction-success continuations and actual 32-control quality approval", "Simulator revalidation of complete branch metadata and legal short-skill start", "Independent teammate code review"],
   "later_training_and_effect_work": ["Fit/calibrate actual H0 heads and generate causal OOF predictions", "Run admitted H1/L0 pilots, revalidate changed-backbone calibration", "Integrate calibrated feedback in serving, measure extra prefill latency and paired short closed-loop effects"],

@@ -2,6 +2,7 @@
 
 ## 2026-10-09：恢复数据与A800 SFT准备（非正式开训）
 
+- **14:24 CST最终准备代码：** `src/recovery-prep-a75e70b`新增严格按票合计H0事件预算、固定工程batch门及按真实证据生成的CPU准备票；完整回归exit0，原训练/诊断源均保留。共享run根`preparation-ticket-v2.json` SHA8d7c1f2d…1956a8将工程H1/L0/H0-cache/H1-processor标记通过，三个数据池和正式执行仍false；不是可自动启动的训练票。当前无新GPU任务/仿真补采队列。
 - **14:15 CST完成覆盖：** A800 `src/recovery-prep-31a46c7`为新增只读验证/单环境metadata适配源；实际工程训练源仍8f47fd7，不热改。`l0-trainer-v1`、`h1-trainer-v1`已finished，各`checkpoints/step_00000002_save_0002.pt`及同级`*-audit.json`验全SHA/Adam/RNG；`h0-feature-cache-v1`仅4请求诊断cache，不准训练；`feedback-processor-v1.json`仅合成反馈契约回执。候选根`admission-v3` SHA d21e0f82…94e415、19逐点结果标签，三个训练池全未ready。所有验收GPU已释放，共享盘余2.8TiB；原父权重/env/队友任务未变。
 - **13:58 CST最新位置与状态：** 原10383 `runs/shared_rl100_20261008_v2`已安全停止，最终180次共享权重/Adam/八rank RNG保存在原`policies/gpu_0/checkpoints/direct_latest.pt`（SHA fbb473cd…b4eb2），不重启、不删除。同机`runs/recovery_prepare_sim_20261009/{lunch241-v2,pizza179-v1}`保留视频、物理记录及pizza世界快照（含controller_groups/RNG，不含完整env/task时钟，非生产起点验收通过）。A800最新冻结`src/recovery-prep-8f47fd7`；准备run根下`l0-trainer-v1`两次工程更新完成，`h1-trainer-v1`接续同票小验，各同级`.supervisor`保存累计预算/日志。候选根新增`causal-history-v3`完整6194锚点上下文，非训练标签；本地`span-review-v1`保存19锚点原图/物理人工审阅证据。旧源/历史失败均保留，共享env未改，正式SFT未启。
 - **13:04 CST运行时补充：** 新独立`src/recovery-prep-874d39e`仅用于通用运行时与W&B工程验收，原父模型图源不变。`runs/recovery_sft_preparation_20261009/runtime-gpu-v1/{rank0..7.json,toy-checkpoints/}`均通过，tiny合成权重不是MEM-Lite模型；`wandb-engineering-v1/receipt.json`在线读回PASS/run `26d903a19327`已finish。只归档该非敏感回执，不复制W&B内部目录/凭据。GPU已空，正式SFT未开；本地同名artifacts保留小回执。
