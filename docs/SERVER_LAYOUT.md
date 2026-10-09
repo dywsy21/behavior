@@ -2,6 +2,8 @@
 
 ## 2026-10-09 17:34 CST：100任务恢复数据扩展（正在采集，结果头未训练）
 
+**18:49 CST路径/状态覆盖：** 七卡GRASP仍v3/e515109。GPU7旧v5已排空（新灯光89/153未适配快照失败、bringing78未制造真实目标丢失，均保留），当前新`articulation-collection-v7-light`用`code/recovery100-aefcadf`：54参考未复现，88加载中；同一冻源后台`articulation-v7-v8-v6.log`顺序接v8-gap（继承v5首次结果）及v6（继承v4首次结果）。禁止重启旧`articulation-v5-v6.log`串联shell。第二快照`closed-grasp-corpus-v2`及lc1同run根`rtx-candidate-snapshot-v2`已独立全读通过168ZIP/12,264RGB；lc1证据`a800-full-read-audit.json`。最新覆盖快照`coverage-1843.json`，结果头不自动开训。
+
 **18:23 CST路径/状态覆盖：** 当前GPU0–6是`grasp-collection-v3`/`code/recovery100-e515109`，继承排空的v1(45次)＋v2(17次绑定拒绝)后续217来源；`binding-reference.jsonl`/`reference-binding.json`保留类别到精确物体的实际原示范证据，终态观察另存在`terminal-observation.json`，不能虚构下一动作。GPU7当前`articulation-collection-v5-gap`先跑新的六来源`articulation-gap-sources-v1`，结束后自动续`articulation-collection-v6`（旧v4剩107来源），源`code/recovery100-d7d00be`，调度日志`articulation-v5-v6.log`。旧v3/v4均排空、不是活跃源。`closed-grasp-corpus-v2`正在9c125fa的独立CPU worktree构建；`closed-grasp-clean-approvals-v1.json`是同时间正常抓持6结果标签，非新增独立事件。`wash169-articulation-review-v1`156面板和`vacuum15-review-v1`42面板已根亲审；跨技能准入仍待，不当作已发布100任务数据集。
 
 不连接robo；仿真在`ssh -p 10383 root@42.192.34.154`，原数据导出在lc1。代码通过Git feature/bundle同步到独立worktree；共享env未改。

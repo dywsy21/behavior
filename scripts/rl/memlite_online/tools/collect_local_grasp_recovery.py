@@ -26,6 +26,7 @@ sys.path[:0] = [str(REPO/'scripts/eval/memlite_sft100'),
 from common import atomic_json,OFFICIAL,OFFICIAL_COMMIT,sha256
 from recovery_corpus import canonical,digest,group_key,split_group
 from recovery_local_teacher import LocalGraspTeacher,perturb,NonGraspingFixedPoint,fault_duration,validate_terminal_observation
+from recovery_control_clock import persist_applied_control,require_nonterminal
 from recovery_recorder import proprio61
 from recovery_reference_binding import ReferenceGraspBinding,resolve_prefix_rows
 from behavior_branch_state import capture_branch_metadata,restore_branch_metadata
@@ -171,17 +172,18 @@ def main(argv=None, *, shared_session=None):
                 if command.shape!=(23,) or not np.isfinite(command).all():raise ValueError('Invalid control')
                 term,trunc,_=evaluator._apply_actions(torch.as_tensor(command[None]),[0])
                 status['actual_controls']+=1
-                if bool(term[0]) or bool(trunc[0]):raise RuntimeError('Official terminal: stop collection')
-                return physics()
+                return physics(),bool(term[0]),bool(trunc[0])
             def video(path):
                 evaluator._set_video_writer(inst,create_video_writer(fpath=str(path),resolution=(448,672),rate=30))
             prefix=(a.output/'prefix.jsonl').open('x',buffering=1);video(a.output/'prefix.mp4')
             held_count={arm:0 for arm in allowed_arms};grasp_arm=None
             for t,command in enumerate(actions):
-                before=proprio61(inst.obs);evaluator._write_video(inst);after=step(command)
-                prefix.write(json.dumps(dict(control_step=t,action_executed_raw23=command.tolist(),
+                before=proprio61(inst.obs);evaluator._write_video(inst);after,terminated,truncated=step(command)
+                persist_applied_control(prefix,dict(control_step=t,action_executed_raw23=command.tolist(),
                     proprio_before=before,proprio_after=proprio61(inst.obs),physical_audit=after,
-                    source_label_kind='original_reference_replay_not_corrective_BC'))+'\n')
+                    simulator_apply_ack=True,source_label_kind='original_reference_replay_not_corrective_BC'),
+                    terminated=terminated,truncated=truncated)
+                require_nonterminal(terminated,truncated)
                 if binder is not None:
                     bound=binder.observe(t,after['binding_candidates'])
                     if bound is not None:
@@ -290,7 +292,7 @@ def main(argv=None, *, shared_session=None):
                         injected=kind!='clean' and count<fault_controls
                         noise,command=(perturb(intended,arm_indices=arm_action[grasp_arm],gripper_index=grip_action[grasp_arm],
                             rng=rng,kind=kind) if injected else (np.zeros(23,dtype=np.float32),intended.copy()))
-                        evaluator._write_video(inst);after=step(command)
+                        evaluator._write_video(inst);after,terminated,truncated=step(command)
                         confirmed=confirmed+1 if after['grasp'][grasp_arm]=='TRUE' else 0
                         lost=lost+1 if all(v=='FALSE' for v in after['grasp'].values()) else 0
                         loss_observed=loss_observed or lost>=6
@@ -302,7 +304,8 @@ def main(argv=None, *, shared_session=None):
                             context=dict(context_id=current['event_sha256'],active_skills_semantic_json=semantic,parent_goal=parent),
                             rgb_anchor_control_step=count//4*4,chunk_start_control_step=count//4*4,
                             experience_id=count//16,policy_update=0,terminated=False,truncated=False)
-                        stream.write(json.dumps(row,allow_nan=False)+'\n');count+=1
+                        count=persist_applied_control(stream,row,terminated=terminated,truncated=truncated)
+                        require_nonterminal(terminated,truncated)
                         if count%16==0:atomic_json(a.output/'status.json',dict(status,status='collecting',branch=kind,branch_controls=count))
                         # Physical confirmation duration (not an experiment
                         # resource cap) gives genuine post-recovery supervision.

@@ -26,6 +26,7 @@ from recovery_articulation_teacher import CausalArticulation,StationaryServo,ser
 from recovery_reference_binding import ReferenceArticulationBinding
 from behavior_branch_state import capture_branch_metadata,restore_branch_metadata
 from behavior_light_state import capture_lights
+from recovery_control_clock import persist_applied_control,require_nonterminal
 
 
 def main():
@@ -161,8 +162,7 @@ def main():
             command=np.asarray(command,dtype=np.float32)
             if command.shape!=(23,) or not np.isfinite(command).all():raise ValueError('Invalid raw23 control')
             term,trunc,_=evaluator._apply_actions(torch.as_tensor(command[None]),[0]);status['actual_controls']+=1
-            if bool(term[0]) or bool(trunc[0]):raise RuntimeError('Official terminal, not a local failure label')
-            return physical()
+            return physical(),bool(term[0]),bool(trunc[0])
         def video(path):evaluator._set_video_writer(inst,create_video_writer(fpath=str(path),resolution=(448,672),rate=30))
         path=[];history=CausalArticulation();seeded=False
         video(a.output/'prefix.mp4')
@@ -174,16 +174,18 @@ def main():
                 q[[14,22]]=command[[14,22]]
                 if t>=selected['start']:
                     path.append(dict(q=q.tolist(),base=base.tolist(),source_frame=t,physical=before))
-                evaluator._write_video(inst);after=step(command)
+                evaluator._write_video(inst);after,terminated,truncated=step(command)
                 if binder:
                     bound=binder.observe(t,before['binding_candidates'],after['binding_candidates'])
                     outcome='UNKNOWN'  # no single target/label before physical resolution
                 else:
                     bound=None;outcome=history.update(t,after['goal_predicate'] if t>=selected['start'] else None,moving=False)
-                stream.write(json.dumps(dict(control_step=t,action_executed_raw23=command.tolist(),proprio_before=proprio,
+                persist_applied_control(stream,dict(control_step=t,action_executed_raw23=command.tolist(),proprio_before=proprio,
                     proprio_after=proprio61(inst.obs),physical_before=before,physical_audit=after,
                     outcome_after_control_candidate=outcome,outcome_evidence_available_control_step=t+1,
-                    source_label_kind='original_reference_not_corrective_BC'))+'\n')
+                    simulator_apply_ack=True,source_label_kind='original_reference_not_corrective_BC'),
+                    terminated=terminated,truncated=truncated)
+                require_nonterminal(terminated,truncated)
                 if bound is not None:
                     entity,target=candidate_objects[bound];history=binder.states[bound]
                     seeded=True;break
@@ -305,7 +307,7 @@ def main():
                     command,info=servo(q,base,waypoint)
                     if info['reached'] and phase in ('fault_reverse','corrective') and cursor<len(trajectory)-1:
                         cursor+=1;stationary=StationaryServo()
-                    evaluator._write_video(inst);after=step(command)
+                    evaluator._write_video(inst);after,terminated,truncated=step(command)
                     moved=phase=='corrective' and progressing(before['directed_open_fraction'],after['directed_open_fraction'],want_open)
                     outcome=outcomes.update(count,after['goal_predicate'],retry=retry_tick==count,moving=bool(moved))
                     label_counts[outcome]=label_counts.get(outcome,0)+1
@@ -320,7 +322,9 @@ def main():
                         outcome_approved=False,
                         context=dict(context_id=current['event_sha256'],active_skills_semantic_json=semantic,parent_goal=selected['parent']),
                         rgb_anchor_control_step=max(map(int,anchors)),terminated=False,truncated=False)
-                    stream.write(json.dumps(row,allow_nan=False)+'\n');count+=1;prior_outcome=outcome
+                    count=persist_applied_control(stream,row,terminated=terminated,truncated=truncated)
+                    prior_outcome=outcome
+                    require_nonterminal(terminated,truncated)
                     if retry_tick is not None and outcome=='SUCCEEDED':phase='confirmed_hold';stable+=1
                     else:stable=0
                     if count%16==0:atomic_json(a.output/'status.json',dict(status,status='collecting',phase=phase,branch_controls=count))
