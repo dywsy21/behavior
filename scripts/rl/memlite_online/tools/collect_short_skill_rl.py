@@ -121,6 +121,17 @@ def main():
         def reset(self):pass
     class Evaluator(BatchedEvaluator):
         def load_policy(self):return NoPolicy()
+        def __exit__(self,exc_type,exc_value,exc_tb):
+            # Official simulator teardown may exit the interpreter. Persist
+            # truthful final/error receipts BEFORE delegating to it, rather
+            # than leaving an old "executing" status behind on failure.
+            receipt.update(seconds=time.monotonic()-started,completed_episodes=completed)
+            if exc_type is not None:
+                receipt.update(status='failed',error=repr(exc_value))
+            elif receipt['status'] not in ('server_finished','server_closed_between_episodes'):
+                receipt.update(status='failed',error='Simulator context ended without a server boundary')
+            atomic_json(a.output/'result.json',receipt);atomic_json(a.output/'status.json',receipt)
+            return super().__exit__(exc_type,exc_value,exc_tb)
     eval_cfg=OmegaConf.create(json.loads(resolved.read_text()));eval_cfg.write_video=False
     bundle=json.loads(case['semantic_bundle'])
     try:
@@ -211,6 +222,7 @@ def main():
                                     if last['terminated'] or last['truncated']:break
                                 socket.send(packb(dict(op='ack',controls=controls,observation=current,observation_control_step=t,**common)))
                                 response=unpackb(socket.recv(timeout=1800))
+                                if 'error' in response:raise RuntimeError('A800 rejected update: '+response['error'])
                                 if (response.get('status')!='acknowledged' or response['control_step']!=t
                                         or response['identity']!=asdict(identity) or response['final_reward']!=dict(last,identity=asdict(identity))
                                         or response['ended']!=(last['terminated'] or last['truncated'])):

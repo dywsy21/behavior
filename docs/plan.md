@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 01:00 CST / Codex RECOVERY-USABLE：** 0053d2a3全130本地回归过；混精度独立复现同状态值差0.00090436（远超1e-5），修后外层autocast与FP32值逐bit一致。旧RL服务final明确失败/actor0、冻结SHA前后相等且A800/三RTX已释放。额外核到官方sim退出会提前结束解释器，已将客户端终态回执前移至teardown前，避免日志失败而status仍executing；旧v2原状态不篡改，由服务final/日志解释。A800缺增量bundle先决commit仅是Git传输未部署，改完整所需祖先包；不修改活跃源码。
+
 - **2026-10-10 00:59 CST / Codex RECOVERY-USABLE：** 短RL六条基线自然结束后进入真实随机FM采样，首个radio TRAIN在优化前被GAE一致性门拒绝：同一状态采样critic处于BF16 autocast、bootstrap处于FP32，`features.float()`未禁Linear自动降精度。独立CPU复现实测差异并修为critic全程FP32，新增数值/梯度回归；旧6be服务已触发失败退出且0optimizer，旧轨迹/失败日志全部保留，不降低GAE容差冒充通过。需要新冻源/新run重新验；24新TRAIN来源96结果/288原面板候选材料已实际产出，未人工签核/未入训练。
 
 - **2026-10-10 00:57 CST / Codex RECOVERY-USABLE：** A800短RL服务已online/W&B799cbe7a6125，2ac8e088三RTX客户端已真实执行冷载与逐控奖励协议；基线radio两seed均19控抓稳，tripod两seed98/164控稳定放置，wash首seed317控未完、第二在途。仍round0/0优化，不能把已有SFT成功说成RL增益。另针对H0跨来源误判，新增确定性24个未审TRAIN来源审核准备器（左右手交替、每task至多一个），每源失败/真实进展/恢复成功＋同控制时刻正常成功；只产288原RGB审阅材料，不自动签标签/动作/意图，不动80独立DEV。新工具待远端实际运行和主线程人工检查。
