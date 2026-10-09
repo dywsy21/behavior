@@ -23,6 +23,7 @@ from recovery_corpus import digest,file_sha
 from skill_training_protocol import SkillTrainingSession
 from skill_policy_adapter import SingleFrameSkillAdapter
 from skill_rounds import SkillRounds
+from skill_cold_worker import validate_baseline_acceptance,finished_workers
 from wire import packb,unpackb
 
 
@@ -91,6 +92,10 @@ async def main():
     policy_sha=cfg['resume']['sha256'] if resumed else cfg['model']['sha256']
     sessions={};next_eval_id=10**9
     mutex=asyncio.Lock();finished=asyncio.Event();fatal=[None]
+    cold_workers=cfg.get('simulator_reset_protocol')=='fresh_process_each_episode_v1'
+    finish_acknowledged=set();baseline_approved=not cfg.get('require_baseline_acceptance',False)
+    if not baseline_approved and (not cold_workers or len(cfg['evaluation_seeds'])!=2 or len(cases)!=3):
+        raise ValueError('The six-start acceptance protocol requires three cold workers and two fixed seeds')
     wb=init_wandb(dict(cfg['wandb'],name=a.output.name),a.output,run_id=digest([str(a.output),commit])[:12],
         resume=False,metadata=dict(receipt,restoration=restoration,case_names=sorted(cases),
             trainable_tensors=322,evaluation_actor_dtype='FP32 deterministic Euler; same solver before/after'))
@@ -98,6 +103,7 @@ async def main():
         receipt.update(status='finished' if rounds.phase=='finished' else 'ready',phase=rounds.phase,
             round=rounds.round,policy_version=version,policy_identity_sha256=policy_sha,
             optimizer_updates=trainer.update_count,active_episodes=len(sessions),
+            baseline_approved=baseline_approved,finish_acknowledged=sorted(finish_acknowledged),
             jobs=rounds.jobs,wandb_url=wb.url,updated_unix=time.time())
         atomic_json(a.output/'status.json',receipt)
     def goal(case):return {k:case[k] for k in ('task','parent_goal','semantic_bundle')}
@@ -158,6 +164,7 @@ async def main():
         atomic_json(a.output/f'update-{version:04d}.json',dict(metrics,policy_identity_sha256=policy_sha))
 
     async def handler(socket):
+        nonlocal baseline_approved
         current_job=None
         await socket.send(packb(dict(protocol='short_skill_rl_v1',config_sha256=file_sha(a.config))))
         try:
@@ -168,7 +175,18 @@ async def main():
                     op=request.get('op')
                     if op=='job':
                         if set(request)!={'op','case'} or current_job is not None:raise ValueError('Overlapping worker job')
-                        if rounds.phase=='finished':response=dict(status='finished')
+                        if request['case'] not in cases:raise ValueError('Unregistered worker')
+                        if rounds.phase=='finished':
+                            response=dict(status='finished')
+                            finished_workers(cases,finish_acknowledged,request['case'])
+                        elif rounds.phase=='train' and rounds.round==1 and not baseline_approved:
+                            approval=a.output/'BASELINE_ACCEPTED.json'
+                            if approval.exists():
+                                validate_baseline_acceptance(json.loads(approval.read_text()),
+                                    config_sha256=file_sha(a.config),policy_sha256=policy_sha,
+                                    episodes_sha256=file_sha(a.output/'episodes.jsonl'))
+                                baseline_approved=True
+                            response=dict(status='wait')
                         else:
                             current_job=rounds.take(request['case'])
                             response=(dict(status='wait') if current_job is None else
@@ -212,7 +230,8 @@ async def main():
                     publish();await socket.send(packb(response))
                     # The last simulator must receive its final real-control
                     # ACK before the server closes the listening context.
-                    if rounds.phase=='finished':finished.set()
+                    if rounds.phase=='finished' and (not cold_workers or finish_acknowledged==set(cases)):
+                        finished.set()
         except websockets.ConnectionClosed:
             if current_job is not None:fatal[0]='Worker disconnected mid-episode';finished.set()
         except BaseException as error:

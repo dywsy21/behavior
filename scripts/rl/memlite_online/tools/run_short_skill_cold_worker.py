@@ -1,0 +1,69 @@
+"""One simulator process per ACKed short-skill episode; no failure retries.
+
+This changes reset isolation, not skill reward, horizons, actor inputs or
+on-policy accounting. Each episode remains individually identified and saved.
+"""
+import argparse
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+REPO=Path(__file__).resolve().parents[4]
+sys.path[:0]=[str(REPO/'scripts/eval/memlite_sft100'),str(Path(__file__).resolve().parents[1]/'code')]
+from common import atomic_json
+from recovery_corpus import file_sha
+from skill_cold_worker import next_worker_action
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--config',type=Path,required=True);p.add_argument('--case',required=True)
+    p.add_argument('--port',type=int,required=True);p.add_argument('--gpu',type=int,choices=range(8),required=True)
+    p.add_argument('--output',type=Path,required=True)
+    a=p.parse_args();cfg=json.loads(a.config.read_text())
+    if (a.case not in cfg['cases'] or cfg.get('user_goal_authorized') is not True
+            or cfg.get('simulator_reset_protocol') != 'fresh_process_each_episode_v1'):
+        raise ValueError('Explicit case and fresh-reset recipe required')
+    if a.output.exists() or subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
+        raise ValueError('New worker and frozen clean source required')
+    a.output.mkdir(parents=True)
+    receipt=dict(status='starting',pid=os.getpid(),gpu=a.gpu,case=a.case,config_sha256=file_sha(a.config),
+        source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
+        completed_episodes=0,failed_attempts_retried=0,optimizer_on_this_host=False,started_unix=time.time())
+    env=dict(os.environ,EVAL_GPU=str(a.gpu),EVAL_SOURCE=str(REPO/'scripts/eval/memlite_sft100'),
+        OMP_NUM_THREADS='2',OPENBLAS_NUM_THREADS='1')
+    env.pop('CUDA_VISIBLE_DEVICES',None)
+    try:
+        while True:
+            ordinal=receipt['completed_episodes']+1
+            child=a.output.parent/(a.output.name+f'-episode-{ordinal:06d}')
+            receipt.update(status='running_episode',child_output=str(child),updated_unix=time.time())
+            atomic_json(a.output/'status.json',receipt)
+            with (a.output/f'episode-{ordinal:06d}.log').open('x') as log:
+                process=subprocess.Popen(['bash','scripts/eval/memlite_sft100/launch_sim.sh',
+                    'scripts/rl/memlite_online/tools/collect_short_skill_rl.py',
+                    '--config',str(a.config.resolve()),'--case',a.case,'--port',str(a.port),
+                    '--output',str(child.resolve()),'--single-episode'],cwd=REPO,env=env,
+                    stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
+                receipt['child_pid']=process.pid;atomic_json(a.output/'status.json',receipt)
+                code=process.wait()
+            result_path=child/'result.json'
+            result=json.loads(result_path.read_text()) if result_path.exists() else None
+            action=next_worker_action(code,result)
+            with (a.output/'episodes.jsonl').open('a') as stream:
+                stream.write(json.dumps(dict(child=str(child),result_sha256=file_sha(result_path),
+                    returncode=code,next_action=action))+'\n')
+            if action=='finished':
+                receipt.update(status='finished_service_window',updated_unix=time.time());break
+            receipt['completed_episodes']+=1
+    except BaseException as exc:
+        receipt.update(status='failed_no_retry',error=repr(exc),updated_unix=time.time())
+        atomic_json(a.output/'status.json',receipt);atomic_json(a.output/'result.json',receipt)
+        raise
+    atomic_json(a.output/'status.json',receipt);atomic_json(a.output/'result.json',receipt)
+
+
+if __name__=='__main__':main()

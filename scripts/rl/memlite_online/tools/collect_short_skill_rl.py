@@ -30,6 +30,8 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--config',type=Path,required=True);ap.add_argument('--case',required=True)
     ap.add_argument('--output',type=Path,required=True);ap.add_argument('--port',type=int,required=True)
+    ap.add_argument('--single-episode',action='store_true',
+        help='Exit after one ACKed episode; an external worker starts a fresh simulator, never retries a failed start')
     a=ap.parse_args();cfg=json.loads(a.config.read_text());case=cfg['cases'][a.case];source_spec=case['sim']
     if cfg.get('schema')!='short_skill_rl_a800_v1' or cfg.get('user_goal_authorized') is not True:
         raise ValueError('Explicit short-skill goal recipe required')
@@ -134,6 +136,7 @@ def main():
     receipt=dict(status='loading',case=a.case,pid=__import__('os').getpid(),config_sha256=sha256(a.config),
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
         proof_sha256=source_spec['proof_sha256'],optimizer_on_this_host=False,actual_controls=0,
+        fresh_process_per_episode=a.single_episode,
         completed_episodes=0,protected_progress_contract_tested=False,whole_task_sr=False)
     atomic_json(a.output/'status.json',receipt)
     class NoPolicy:
@@ -147,7 +150,7 @@ def main():
             receipt.update(seconds=time.monotonic()-started,completed_episodes=completed)
             if exc_type is not None:
                 receipt.update(status='failed',error=repr(exc_value))
-            elif receipt['status'] not in ('server_finished','server_closed_between_episodes'):
+            elif receipt['status'] not in ('server_finished','server_closed_between_episodes','completed_single_episode'):
                 receipt.update(status='failed',error='Simulator context ended without a server boundary')
             atomic_json(a.output/'result.json',receipt);atomic_json(a.output/'status.json',receipt)
             return super().__exit__(exc_type,exc_value,exc_tb)
@@ -179,6 +182,8 @@ def main():
                     if assignment.get('status')!='job' or assignment['case']!=case:raise ValueError('Unbound job assignment')
                     job=assignment['job'];episode=a.output/(job['phase']+'-'+str(job['round']).zfill(4)+'-'+str(job['seed']))
                     episode.mkdir(exist_ok=False);episode_start=time.monotonic()
+                    receipt.update(status='restoring',job=job,completed_episodes=completed)
+                    atomic_json(a.output/'status.json',receipt)
                     identity=SkillIdentity(assignment['session'],case['task'],case['instance_id'],job['id'],case['context_id'],digest(bundle),0)
                     og.sim.load_state(deepcopy(saved['world']),serialized=False);restore_branch_metadata(evaluator,saved['metadata'])
                     random.setstate(saved['rng']['python']);np.random.set_state(saved['rng']['numpy'])
@@ -201,6 +206,18 @@ def main():
                                 reward_assigned=False,actor_input=False,action_source='pinned_restore_not_policy'))+'\n')
                             if bool(term[0]) or bool(trunc[0]):raise ValueError('Native end during legal reset prefix')
                     initial,physical=sensor.read(identity)
+                    # Keep exact failed-start evidence BEFORE any comparison
+                    # can abort. A failed reset must not be reported as the
+                    # preceding completed job or retried until it happens to pass.
+                    reset_evidence=dict(job=job,proprio_error=error,restore_controls=len(reset_indices),
+                        initial_physical_evidence=physical,fresh_process_per_episode=a.single_episode,
+                        target_position=vector(sensor.target.get_position_orientation()[0]).tolist(),
+                        original_rgb=snapshot_rgb(observable(),episode))
+                    if kind=='recovery':
+                        reset_evidence['expected_target_position']=rows[begin]['physical_before']['position']
+                        reset_evidence['target_position_max_error']=float(np.max(np.abs(
+                            vector(sensor.target.get_position_orientation()[0])-rows[begin]['physical_before']['position'])))
+                    atomic_json(episode/'restore-diagnostics.json',reset_evidence)
                     if kind=='placement':validate_placement_start(initial,physical,[],cold=True)
                     else:
                         if np.max(np.abs(vector(sensor.target.get_position_orientation()[0])-rows[begin]['physical_before']['position']))>.005:
@@ -226,7 +243,7 @@ def main():
                                         or not np.isfinite(result['action_chunk']).all()):raise ValueError('Wrong action/session/clock')
                                 controls=[]
                                 for command in result['action_chunk'][:result['max_controls']]:
-                                    term,trunc,_=evaluator._apply_actions(torch.as_tensor(command)[None],[0]);t+=1;receipt['actual_controls']+=1
+                                    term,trunc,_=evaluator._apply_actions(torch.as_tensor(command.copy())[None],[0]);t+=1;receipt['actual_controls']+=1
                                     measurement,physical=sensor.read(identity)
                                     last=reward.advance(identity,t,measurement,protected_values={},official_terminal=bool(term[0]),
                                                         time_limit=bool(trunc[0]) or t==case['end_control'])
@@ -256,6 +273,9 @@ def main():
                         controls_sha256=sha256(episode/'controls.jsonl'),optimizer_on_this_host=False,whole_task_sr=False)
                     atomic_json(episode/'result.json',final);receipt.update(status='between_episodes',completed_episodes=completed)
                     atomic_json(a.output/'status.json',receipt)
+                    if a.single_episode:
+                        receipt['status']='completed_single_episode'
+                        break
         receipt.update(seconds=time.monotonic()-started,completed_episodes=completed)
         atomic_json(a.output/'result.json',receipt);atomic_json(a.output/'status.json',receipt)
     except BaseException as error:

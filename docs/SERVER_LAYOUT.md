@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 02:16 CST：校准实际结果与RL中断（覆盖下方运行状态）
+
+- lc1异质run `short-rl-v3-critic-guard`已失败退出，实际全局5；`checkpoints/round-0002.pt`/SHA046f5cc9…a12a0e保留完整AE/critic/Adam，三RTX `short-rl-*-guard-v1`均结束。radio日志中重复恢复位置>5mm，不是网络或优化数值根因；18974专用隧道尚在，服务不在运行，勿把旧PID当活跃。
+- 新数据 `datasets/recovery-reviewed-union-20261010-v5-calibration`/admission a07a1726…c5c10：训练176＋选择DEV40、独立校准196，20预留test0行。`H1-feature-cache-v5-calibration`/4a51bc86…bbb5e6完成432因果请求、0优化；`H0-independent-calibration-v1`为固定94d8ac57头校准，47.08%事件准确率、runtime_ready=false，不可部署。源`src/recovery-calibration-run-v1`=fef6dd0f。
+
 ## 2026-10-10 01:38 CST：续接critic保护与独立校准材料
 
 - lc1 `runs/recovery_heterogeneous_20261010/short-rl-v2`已保存停止，全部4轮checkpoint保留；新`short-rl-v3-critic-guard`在GPU1/PID1615748，源`src/short-skill-guard-v1`=8481ff24，明确续接旧round0003/d6af6e33，非round4。专用loopback18974；RTX同源`code/short-skill-guard-v1`，三个`short-rl-{radio155,wash169,tripod129}-guard-v1`分别GPU0/1/2，尚在新基线，不是新guard优化已通过。
