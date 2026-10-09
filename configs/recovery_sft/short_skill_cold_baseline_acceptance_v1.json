@@ -1,0 +1,13 @@
+{
+  "schema": "short_skill_cold_baseline_acceptance_v1",
+  "approved": true,
+  "config_sha256": "7daa742619b5ee15eae8c5a6d2c1b0034a5b668078b9ed83391b286985342dc5",
+  "policy_sha256": "046f5cc99a61d87f361c8e55e6a77c536109594aa2d683796e55344a22a12a0e",
+  "episodes_sha256": "d0556b3bf1645ce3fa3b89dbdbf3044c7b444536fa359c13f1aba567fd22e4b3",
+  "reviewed_episodes": 6,
+  "machine_audit_sha256": "1fa9227dedbbce231375f91503ebc5da0f9d0c142eabef98e203fe7bc7ad8f13",
+  "manual_reviewer": "Codex root, 2026-10-10 02:34 CST: personally viewed six sheets, 90 original-start/video camera panels; all sheet SHA and six service episode identities checked.",
+  "notes": "Radio: right gripper closes around exact red radio, 19/19 controls and six stable physical hold measurements. Tripod: right hand releases exact tripod upright onto floor, 100/70 controls, official OnTop plus release and speed. Washer: left hand opens door partly, final fractions .3040/.3094 below .35; both 317-control timeouts remain UNKNOWN, not invented failures. All original proprio errors zero; radio reset errors both .002480m and washer errors zero. Permit continuation of exact global-5 state under fresh-process isolation only; no task expansion or promotion.",
+  "rollout_controls_recomputed": 842,
+  "whole_task_sr": false
+}

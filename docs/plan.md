@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 02:36 CST / Codex RECOVERY-USABLE：** 新结果表征实验固定方案：独立bee高骨干＋命名`outcome_observer` LoRA rank8/alpha16（仅VLM192 adapter tensor）＋时序头；base/vision/proprio/高规划/低actor不更新，结果CE只能到新adapter和头，不把标签放prefix。176 TRAIN/40原选择DEV不变，batch8×micro1、adapter2e-5/head1e-4、20epoch学习曲线/5epoch平台规则，60校准/20test均不参与。新入口须先验零adapter与原cache逐bit相等、实际反传白名单、训练后冻结SHA相等。152恢复＋9反馈回归过，尚未实际模型验收/更新；低RL原源已读取BASELINE_ACCEPTED并进入首轮TRAIN。
+
+- **2026-10-10 02:35 CST / Codex RECOVERY-USABLE：** 冷基线6/6完成，逐842实际控制/奖励/identity已重算，根亲看6页90原起点/视频相机面板并核SHA；radio各19控、PLACE100/70控成功，wash各317控UNKNOWN（开度.3040/.3094<.35）。两radio恢复误差均.002480m、washer0、全部proprio0；准许原5更新权重继续，不降低5mm门。`short_skill_cold_baseline_acceptance_v1.json`绑定服务六episode SHA和原权重，已复制run门，待首个新优化回执。观察器新增隔离LoRA+head训练入口/梯度白名单草稿完成，152＋9单元通过，未实际前反向/开训，不热改RL源。
+
 - **2026-10-10 02:26 CST / Codex RECOVERY-USABLE：** 因果后缀训练1282fc5f/双端150回归已实际完成315步/选215（176已审TRAIN→290加权视图，非新增事件），TRAIN100%、原DEV76.67%/balanced73.69%，未改善原DEV、不部署、不拿校准集挑该头；权重5a63fae4…0b60cf7、W&Bde809756d0c6。说明仅训练小头/删短历史仍不够，下一步应查表征与监督而非继续扫同头超参。冷RL基线radio/PLACE各两条实际成功，wash首条317控UNKNOWN；仍global5、等六条起点/ACK/媒体验完后放行，不作新RL提升结论。
 
 - **2026-10-10 02:23 CST / Codex RECOVERY-USABLE：** H0具体分布缺口已核：旧80TRAIN/40DEV中历史长度1的SUCCEEDED均0；独立校准有59条该类型（t8成功59中仅8判对，37判FAILED）。不是已证明唯一根因，但足以检验历史长度捷径。固定下一对照使用已签v4的176TRAIN/40原DEV，同架构/优化器，只把每条TRAIN构造所有真实因果后缀、每原行总权重不变且当前帧/时钟/标签不变；不回灌60校准/20test、不增加独立事件数，选择DEV保持原样。实现/回归中；高H1新机制反馈仍待，不直接部署头。

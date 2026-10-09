@@ -29,7 +29,9 @@ class TemporalOutcomeObserver(nn.Module):
         nn.init.zeros_(self.residual.bias)
         self.head = PlannerOutcomeHead(hidden_size)
 
-    def forward(self, context, proprio, steps, valid):
+    def forward(self, context, proprio, steps, valid, *, allow_context_grad=False):
+        if type(allow_context_grad) is not bool:
+            raise ValueError('Explicit context-gradient opt-in required')
         if context.ndim != 3 or not 1 <= context.shape[1] <= 4:
             raise ValueError("Observer admits 1..4 past/current checkpoints")
         batch, length, _ = context.shape
@@ -44,8 +46,10 @@ class TemporalOutcomeObserver(nn.Module):
                 or (steps[valid] < 0).any()
                 or ((steps[:, 1:] <= steps[:, :-1]) & valid[:, 1:]).any()):
             raise ValueError("Temporal observations must be finite, right-padded, and strictly causal")
-        # H0 is insulated: outcome loss cannot update high VLM or low controller.
-        feature = context.detach().float()
+        # Cached H0 remains insulated by default. A separate observer-only
+        # adapter experiment can opt in; that caller must freeze the planner,
+        # visual backbone and actor and verify its dedicated LoRA boundary.
+        feature = (context if allow_context_grad else context.detach()).float()
         state = proprio.detach().float()
         delta = torch.zeros_like(state)
         delta[:, 1:] = state[:, 1:] - state[:, :-1]

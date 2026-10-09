@@ -1,0 +1,36 @@
+{
+  "schema": "recovery_observer_adapter_training_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "user_goal_authorized": true,
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "corpus": "datasets/recovery-reviewed-union-20261010-v4-outcomes",
+  "admission": "datasets/recovery-reviewed-union-20261010-v4-outcomes/admission",
+  "admission_sha256": "9a780cfe36a209719c3bae1bf36232f9602445fa7c99ba7fe9f23e0291fdec1c",
+  "features": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v4-outcomes/features.pt",
+  "feature_receipt": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v4-outcomes/receipt.json",
+  "features_sha256": "60f5476ca4e76a2b2aa1a5d85642ec452ef15eb3ecb5237f2aee91422200a0d7",
+  "stats_sha256": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+  "high": {
+    "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+    "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316"
+  },
+  "adapter": {"enabled": true, "r": 8, "alpha": 16, "dropout": 0.0, "adapter_name": "outcome_observer"},
+  "adapter_learning_rate": 0.00002,
+  "head_learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "seed": 17,
+  "global_batch": 8,
+  "maximum_epochs": 20,
+  "minimum_epochs": 5,
+  "patience_epochs": 5,
+  "hypothesis": "A frozen action/planning prefix may not expose sufficient object-state evidence to a small result head. Train a separate result-only VLM LoRA and temporal head using the same 176 approved TRAIN labels and 40 selection DEV labels; no planner/action gradients. Keep physical labels out of all prefixes. Test true zero-adapter feature equality, actual gradient insulation and full frozen-base SHA before trusting optimization. No calibration/test rows in fitting or selection; no inference deployment until new independent validation.",
+  "resource": "One verified idle lc1 A800, independent frozen source and run. Low RL on GPU1 continues unchanged. The 20-epoch learning curve and 5-epoch DEV plateau rule are one diagnostic training window, not goal completion or an automatic extension into full-task training.",
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-recovery-observer-adapter-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key"
+  }
+}

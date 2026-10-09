@@ -862,6 +862,20 @@ class G05PolicyMEMLitePlannerOutcome(G05PolicyQwen35):
         Call :meth:`outcome_prediction_from_context_hidden` on this tensor for
         the sole learned outcome proposal.
         """
+        return self._encode_observable_outcome_prefix(samples, pixel_values)
+
+    def outcome_context_for_observer_adapter_training(self, samples, pixel_values):
+        """Explicit isolated observer-LoRA route, never the serving default.
+
+        The caller owns a separate restored high backbone with only its
+        dedicated observer adapter trainable. No planner/vision/AE/base update
+        is admitted. Labels still cannot enter the prefix or its tokenizer.
+        """
+        from .helpers.observer_adapter import require_observer_adapter_only
+        require_observer_adapter_only(self)
+        return self._encode_observable_outcome_prefix(samples, pixel_values)
+
+    def _encode_observable_outcome_prefix(self, samples, pixel_values):
         self._validate_observable_outcome_prefix(samples)
         if isinstance(pixel_values, dict):
             if not pixel_values:
