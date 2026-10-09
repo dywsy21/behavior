@@ -40,7 +40,12 @@ class ValueHead(nn.Module):
         )
 
     def forward(self, features: Tensor) -> Tensor:
-        return self.network(features.float()).squeeze(-1)
+        # Rollout sampling runs inside the VLM BF16 context, while the
+        # actual post-control bootstrap may be requested outside it. Merely
+        # casting features to float does not disable autocast for Linear.
+        # Identical states must give identical critic values for GAE.
+        with torch.autocast(features.device.type, enabled=False):
+            return self.network(features.float()).squeeze(-1)
 
 
 def _detach_cpu(value: Any) -> Any:

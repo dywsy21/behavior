@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 00:59 CST / Codex RECOVERY-USABLE：** 短RL六条基线自然结束后进入真实随机FM采样，首个radio TRAIN在优化前被GAE一致性门拒绝：同一状态采样critic处于BF16 autocast、bootstrap处于FP32，`features.float()`未禁Linear自动降精度。独立CPU复现实测差异并修为critic全程FP32，新增数值/梯度回归；旧6be服务已触发失败退出且0optimizer，旧轨迹/失败日志全部保留，不降低GAE容差冒充通过。需要新冻源/新run重新验；24新TRAIN来源96结果/288原面板候选材料已实际产出，未人工签核/未入训练。
+
 - **2026-10-10 00:57 CST / Codex RECOVERY-USABLE：** A800短RL服务已online/W&B799cbe7a6125，2ac8e088三RTX客户端已真实执行冷载与逐控奖励协议；基线radio两seed均19控抓稳，tripod两seed98/164控稳定放置，wash首seed317控未完、第二在途。仍round0/0优化，不能把已有SFT成功说成RL增益。另针对H0跨来源误判，新增确定性24个未审TRAIN来源审核准备器（左右手交替、每task至多一个），每源失败/真实进展/恢复成功＋同控制时刻正常成功；只产288原RGB审阅材料，不自动签标签/动作/意图，不动80独立DEV。新工具待远端实际运行和主线程人工检查。
 
 - **2026-10-10 00:52 CST / Codex RECOVERY-USABLE：** 新短RL服务6be6661b在lc1 GPU0 PID1589968加载、专用18973已通；首次三sim因启动命令遗漏既有activate_sim/OMNIGIBSON_DATA_PATH，在加载场景前失败（0控制/0优化），三份v1.log保留。已定位必须沿官方既有launch_sim.sh使用物理GPU号且不设CUDA掩码，客户端资源门同步该协议；仅新客户端冻源重启，不热改/重启A800在用服务，不隐瞒首次工程失败。129双端回归已过，实际PPO首更新仍待。
