@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 02:05 CST / Codex RECOVERY-USABLE：** v5冻结feature432请求/595真实prefill已完成（60.18s前向），SHA4a51bc86…bbb5e6，0optimizer；已按预选头/60锚点绑定独立校准执行配置，待CPU实际结果。短RL漂移定位到radio重复load后首32故障控制，与原位置相差>5mm；正在查官方robot的AG约束/释放窗口未完整序列化及状态更新顺序，不放宽物理门、不归咎模型学坏。
+
+- **2026-10-10 02:03 CST / Codex RECOVERY-USABLE：** 只读发现短RL v3已于01:57:58失败退出（非继续在训）：radio第9次重置实际32个恢复控制后目标位置偏差>5mm触发原门，随后服务报告worker disconnected，非critic/网络数值崩溃。全局5/actor5，round0002权重046f5cc9…a12a0e/Adam保存、冻结SHA前后同eb4b5d45，三RTX均已退出；未放宽门/未重试直到成功。定位同一sim中反复世界load的物理隐状态/接触复现问题，待根因检查和隔离复验再续，缓存v5在GPU0独立加载。
+
+- **2026-10-10 02:03 CST / Codex RECOVERY-USABLE：** A800迁移303文件/288,442,710解压字节逐SHA过；v5联合194ZIP/11207观察全读，admission a07a1726…c5c10。实际loader训练216=176TRAIN＋40旧DEV、校准196/60组、冻结test0行，原planner29/action28均未新增。f26dbdbd冻结源146双端回归过，lc1空闲GPU0已提交bee高层因果feature cache v5（0优化，待回执），GPU1短RL原源不变。独立校准程序与固定60唯一锚点已提交，尚未读新预测。
+
 - **2026-10-10 01:59 CST / Codex RECOVERY-USABLE：** 在读取任何60源预测前，固定旧选择DEV balanced最高的H0-absolute-proprio-v1（94d8ac57…94d50、bee高层）作本次独立校准对象，不拿校准集比较新旧头。按物理标签/身份确定性匹配每源唯一观察、三已知类各20（全部60源不丢），配置`independent_calibration_anchor_selection_v1.json`；保留原20事件/类＋precision/Wilson/置信.85门，不用196相关帧冒充196独立事件，且仅能检验GRASP平衡阶段而非部署先验/其它机制。新增执行入口待回归/真运行；248,653,288B传输包SHA43799cc3…fc01仍在迁移。
 
 - **2026-10-10 01:56 CST / Codex RECOVERY-USABLE：** 8675269b已push/三端144回归通过；196校准outcome已全部机器按真实物理/原图SHA签发，紧凑单元112ZIP/5871观察全读、60来源，52FAILED/45IP/99SUCCEEDED，0TRAIN/0action/planner，独立三池门正确为false。`independent-calibration-unit-v1` admission e9387d77…da91，正在打包迁A800联合；20reserved test无行准入。RL第5更新critic首次真实触发回溯：3e-4会升到.00931被拒，1.5e-4得到.0039637→.0039268后接受；actor5e-7/KL.01075。非SR证据。
