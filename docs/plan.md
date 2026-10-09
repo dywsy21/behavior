@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 02:23 CST / Codex RECOVERY-USABLE：** H0具体分布缺口已核：旧80TRAIN/40DEV中历史长度1的SUCCEEDED均0；独立校准有59条该类型（t8成功59中仅8判对，37判FAILED）。不是已证明唯一根因，但足以检验历史长度捷径。固定下一对照使用已签v4的176TRAIN/40原DEV，同架构/优化器，只把每条TRAIN构造所有真实因果后缀、每原行总权重不变且当前帧/时钟/标签不变；不回灌60校准/20test、不增加独立事件数，选择DEV保持原样。实现/回归中；高H1新机制反馈仍待，不直接部署头。
+
+- **2026-10-10 02:21 CST / Codex RECOVERY-USABLE：** bff37072三端149回归通过，lc1 GPU1新`short-rl-v4-cold`PID1640246/W&Bc8823fe92ecd已ready；真实重载global5时actor/critic逐tensor相等、Adam322/6步5，非从头训。RTX0/1/2冷worker2282428/29/30已启动，每轨迹新子进程；先六同seed基线，BASELINE_ACCEPTED SHA门仍false，0新增优化。18974沿用自有已核连接，不动VPN/共享env/队友。
+
 - **2026-10-10 02:18 CST / Codex RECOVERY-USABLE：** lc1只读逐tensor对比v3/v5重叠140因果请求：context/proprio/steps最大差均0，排除本次迁移/提取漂移解释H0独立低分。逐轨迹独立sim、精确失败起点证据、六基线SHA人工门及各worker明确finish握手149本地回归/编译过；新配方固定从global5/046f5cc9续15轮，改reset不改奖励/模型超参，待冻源部署/真实基线。新代码未独立成员review，不合main。
 
 - **2026-10-10 02:16 CST / Codex RECOVERY-USABLE：** 独立校准已实际完成，固定旧H0在60新来源196行事件加权仅47.08%、成功召回19/99，温度2.812后可用性门false（不是结果头可用）；0优化、20冻结test未读，证据lc1异质run下`H0-independent-calibration-v1/result.json`。低层v3仍失败停在全局5，权重/Adam保留；新增逐episode独立进程和失败起点诊断，147初始回归过，补齐六冷基线人工放行与三worker明确结束握手后再续。保持5mm门/原reward，不归因模型退化、不以自动重试筛掉失败；A800/RTX此刻均空闲。

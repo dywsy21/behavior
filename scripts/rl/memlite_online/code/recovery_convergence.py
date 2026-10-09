@@ -39,3 +39,24 @@ def check_splits(train, dev):
 def selection_key(metrics):
     # All classes matter. No tuning to aggregate accuracy dominated by success.
     return (metrics['balanced_accuracy'], -metrics['event_weighted_ce'])
+
+
+def causal_suffix_training_items(items, weights):
+    """All causal suffix lengths, equal total mass per original reviewed row.
+
+    Every suffix keeps the exact current observation and its actual clock.
+    No future/repeated frames, invented labels, new independent event counts,
+    or history from another issued intent. Evaluation stays unaugmented.
+    """
+    if len(items)!=len(weights) or not items:
+        raise ValueError('Align nonempty causal rows and weights')
+    expanded=[];mass=[];source_indices=[]
+    for i,(item,w) in enumerate(zip(items,weights)):
+        n=len(item['steps'])
+        if not 1<=n<=4 or set(item)!={'context','proprio','steps'} or not 0<float(w)<=1:
+            raise ValueError('Malformed causal training item or event mass')
+        if any(len(v)!=n for v in item.values()):raise ValueError('Unaligned causal tensors')
+        for length in range(1,n+1):
+            expanded.append({k:v[-length:] for k,v in item.items()})
+            mass.append(float(w)/n);source_indices.append(i)
+    return expanded,mass,source_indices

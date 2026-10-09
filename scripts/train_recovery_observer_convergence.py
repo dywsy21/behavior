@@ -19,7 +19,7 @@ sys.path.insert(0, str(REPO/'scripts/rl/memlite_online/code'))
 from recovery_corpus import file_sha, digest
 from recovery_sft_data import require_training_pool
 from recovery_observer_training import OUTCOMES, request_key, temporal_batch, outcome_metrics
-from recovery_convergence import event_weights, check_splits, selection_key
+from recovery_convergence import event_weights, check_splits, selection_key, causal_suffix_training_items
 
 
 def main():
@@ -64,8 +64,8 @@ def main():
     head = TemporalOutcomeObserver(next(iter(features.values()))['context'].shape[-1],**observer_kwargs).to(device)
     head.head.load_state_dict(cache['initial_head'], strict=True)
     optimizer = torch.optim.AdamW(head.parameters(), lr=cfg['learning_rate'], weight_decay=cfg['weight_decay'])
-    values = temporal_batch([features[request_key(r)] for r in train], device)
-    y = torch.tensor([OUTCOMES.index(r['approval']['label']['value']) for r in train], device=device)
+    train_items=[features[request_key(r)] for r in train]
+    train_labels=[OUTCOMES.index(r['approval']['label']['value']) for r in train]
     weighting = cfg.get('outcome_weighting', 'physical_event')
     if weighting not in ('physical_event', 'mechanism_then_physical_event'):
         raise ValueError('Unregistered outcome weighting')
@@ -79,7 +79,16 @@ def main():
             # rows. Never infer its mechanism from a later planner target.
             bundle = json.loads(request['checks'][-1]['issued_bundle'])
             mechanisms.append(bundle[request['member_index']]['verb'])
-    weights = torch.tensor(event_weights(train, mechanisms), device=device)
+    row_weights=event_weights(train, mechanisms)
+    augmentation=cfg.get('history_augmentation','none')
+    if augmentation not in ('none','all_causal_suffixes_equal_row_mass'):
+        raise ValueError('Unregistered causal training augmentation')
+    if augmentation=='all_causal_suffixes_equal_row_mass':
+        train_items,row_weights,source_indices=causal_suffix_training_items(train_items,row_weights)
+        train_labels=[train_labels[i] for i in source_indices]
+    values=temporal_batch(train_items,device)
+    y=torch.tensor(train_labels,device=device)
+    weights = torch.tensor(row_weights, device=device)
     if any(v.requires_grad for v in values.values()):
         raise ValueError('Frozen cache must not carry backbone gradients')
     args.output.mkdir(parents=True)
@@ -139,6 +148,7 @@ def main():
         high_sha256=cfg['high_sha256'],selected_observer_sha256=file_sha(args.output/'selected-observer.pt'),
         runtime_ready=False,dev_used_for_model_selection=True,requires_new_independent_calibration=True,
         observer_kwargs=observer_kwargs,
+        history_augmentation=augmentation,training_views=len(train_items),reviewed_training_rows=len(train),
         outcome_weighting=weighting,
         wandb_url=wb.url,source_commit=commit,config_sha256=file_sha(args.config)))
     wb.finish()

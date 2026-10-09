@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 02:21 CST：逐轨迹冷启动续接
+
+- lc1 `src/short-skill-cold-v1`=bff37072、run `runs/recovery_heterogeneous_20261010/short-rl-v4-cold`，GPU1/PID1640246，W&Bc8823fe92ecd、loopback18974。精确续global5，六基线人工门未放行，不称新增更新。
+- RTX `code/short-skill-cold-v1`同commit；异质run下`short-rl-{radio155,wash169,tripod129}-cold-v1`为监管目录/PID2282428/29/30、GPU0/1/2。实际独立sim子目录为相邻`*-cold-v1-episode-000001`递增，每条带restore-diagnostics、controls、video和result；失败不自动重试。旧guard-v1全部保留。
+
 ## 2026-10-10 02:16 CST：校准实际结果与RL中断（覆盖下方运行状态）
 
 - lc1异质run `short-rl-v3-critic-guard`已失败退出，实际全局5；`checkpoints/round-0002.pt`/SHA046f5cc9…a12a0e保留完整AE/critic/Adam，三RTX `short-rl-*-guard-v1`均结束。radio日志中重复恢复位置>5mm，不是网络或优化数值根因；18974专用隧道尚在，服务不在运行，勿把旧PID当活跃。

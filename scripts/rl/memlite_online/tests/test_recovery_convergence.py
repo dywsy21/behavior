@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_convergence import event_weights, check_splits, selection_key
+from recovery_convergence import event_weights, check_splits, selection_key, causal_suffix_training_items
 from recovery_generation_metrics import score_event, summarize, feedback_probe
 
 
@@ -11,6 +11,23 @@ def row(group, label, split='train'):
 
 
 class ConvergenceTests(unittest.TestCase):
+    def test_suffixes_keep_current_truth_clock_and_event_mass(self):
+        import torch
+        items=[dict(context=torch.arange(12).reshape(3,4),proprio=torch.arange(81).reshape(3,27),
+                    steps=torch.tensor([16,32,48])),
+               dict(context=torch.ones(1,4),proprio=torch.ones(1,27),steps=torch.tensor([8]))]
+        original=[{k:v.clone() for k,v in item.items()} for item in items]
+        result,mass,indices=causal_suffix_training_items(items,[.6,.4])
+        self.assertEqual(indices,[0,0,0,1]);self.assertEqual([len(x['steps']) for x in result],[1,2,3,1])
+        self.assertAlmostEqual(sum(mass[:3]),.6);self.assertAlmostEqual(sum(mass),1.)
+        for item,index in zip(result,indices):
+            for key in item:self.assertTrue(torch.equal(item[key][-1],items[index][key][-1]))
+            self.assertEqual(item['steps'][-1],items[index]['steps'][-1])
+        for old,new in zip(original,items):
+            for key in old:self.assertTrue(torch.equal(old[key],new[key]))
+        with self.assertRaises(ValueError):causal_suffix_training_items(items,[1.])
+        with self.assertRaises(ValueError):causal_suffix_training_items(items,[.6,0])
+
     def test_probe_is_explicit_and_never_adds_a_success_failure_claim(self):
         import json
         from g05.utils.memlite_skill_protocol import semantic_active_skills_text

@@ -1,0 +1,30 @@
+{
+  "schema": "recovery_observer_convergence_diagnostic_v1",
+  "user_goal_authorized": true,
+  "root": "/data/workspace/wsy/behavior2026",
+  "admission": "datasets/recovery-reviewed-union-20261010-v4-outcomes/admission",
+  "admission_sha256": "9a780cfe36a209719c3bae1bf36232f9602445fa7c99ba7fe9f23e0291fdec1c",
+  "features": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v4-outcomes/features.pt",
+  "feature_receipt": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v4-outcomes/receipt.json",
+  "features_sha256": "60f5476ca4e76a2b2aa1a5d85642ec452ef15eb3ecb5237f2aee91422200a0d7",
+  "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+  "observer_kwargs": {
+    "include_absolute_proprio": true
+  },
+  "seed": 17,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "maximum_updates": 500,
+  "minimum_updates": 100,
+  "patience_updates": 100,
+  "evaluate_every": 5,
+  "interpretation": "Predeclared training-only causal-history coverage intervention after finding zero single-check SUCCEEDED examples in the old 80-row fit/40-row selection DEV versus 59 in independent calibration. Same approved v4 176 TRAIN/40 selection DEV, initialization, architecture, event weighting, optimizer and selection rule as H0-outcome-expansion-v1. Train each reviewed current observation with every nonempty suffix of its real same-intent past/current sequence, equal total mass per original row; do not move clocks, repeat frames, append future labels, or count augmented views as independent events. Raw selection DEV unchanged. The 60 previously inspected calibration groups and 20 reserved test groups are not used for fitting or selection. Diagnostic only; new independent calibration is required before deployment.",
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-recovery-usable-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key"
+  },
+  "history_augmentation": "all_causal_suffixes_equal_row_mass"
+}
