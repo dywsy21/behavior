@@ -145,9 +145,18 @@ def main():
             evaluator._write_video(inst)
             if t < 352: advance(actions[t], f'expert-{t}')
         evaluator._set_video_writer(inst, None)
+        stream.flush(); os.fsync(stream.fileno())
+        atomic_json(a.output/'prefix_alignment.json',dict(prefix_error_by_dimension=errors,
+            actual_control_steps=status['actual_control_steps'],target_state=sample('prefix-end',True),
+            automatic_training_approval=False))
+        atomic_json(a.output/'status.json',dict(status,status='snapshotting'))
         # Save full world plus controller filters/goals and host RNG. Never
         # infer these from the saved RGB/proprio files.
-        controllers = {k:deepcopy(c.dump_state(serialized=False)) for k,c in robot.controllers.items()}
+        # v3.9.3-post2 exposes (group_key, controller_idx), not controller
+        # objects. Its Robot.dump_state explicitly serializes ControllerView
+        # groups along with assisted-grasp state. Use that exact API.
+        controllers = deepcopy(robot.dump_state(serialized=False)['controller_groups'])
+        if set(controllers)!=set(robot.controllers): raise ValueError('Incomplete controller snapshot')
         world = deepcopy(og.sim.dump_state(serialized=False))
         rng = dict(python=random.getstate(), numpy=np.random.get_state(), torch=torch.get_rng_state(),
                    cuda=torch.cuda.get_rng_state_all() if torch.cuda.is_initialized() else None)
@@ -161,7 +170,8 @@ def main():
         for branch in range(2):
             if branch:
                 og.sim.load_state(deepcopy(world), serialized=False)
-                for key,state in controllers.items(): robot.controllers[key].load_state(deepcopy(state), serialized=False)
+                # The world snapshot includes the robot's controller_groups;
+                # do not re-load the robot a second time and recreate grasps.
                 random.setstate(rng['python']); np.random.set_state(rng['numpy']); torch.set_rng_state(rng['torch'])
                 if rng['cuda'] is not None: torch.cuda.set_rng_state_all(rng['cuda'])
                 # Refresh sensor output WITHOUT advancing physics/control.
