@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 03:18 CST / Codex RECOVERY-USABLE：** 续接确认1080/lc1 socket仍缺，RTX GPU全空，未重登VPN/重开RL；上轮属实际数据与代码进展而非训练完成。当前可继续的目标依赖是H1恢复意图：以刚签24 TRAIN来源为固定队列，新增原始RETRY时刻＋前后实际纠正＋稳定末端图审工具，只生成待审plan，不授予outcome/BC。原计划真实发出时刻为16/24/32/48/64控、不由模型选择；新工具编译及154恢复回归通过，实际媒体生成/根审/签核待，不把96 outcome许可扩成24 plan许可。
+
 - **2026-10-10 03:14 CST / Codex RECOVERY-USABLE：** 新96结果已机器签发SHAe6b39d94…8004d；RTX`outcome-expansion-unit-v2`48ZIP/1,474原观察全部解码/因果全读，admission8236217d…7053d。24 TRAIN组、0DEV/0plan/0action，独立单元三池门仍false、不绕过；134依赖/79,998,719B白名单包`outcome-expansion-unit-v2.tar.gz`69,006,096B/SHA cc63ea46…afb813待A800迁移。新v6联合配置只接旧v4＋此单元、不含独立cal/test，尚未实际联合/训练。首个签发调用因源路径相对ROOT而从代码目录启动失败（0签发），改从明确ROOT后通过；将工具解析固定到evidence-root并修旧合成反馈检查只比较estimated通道、known仍UNKNOWN，154恢复回归过。A800仍不可连；RTX已有凭据的W&B只读尝试无权限/不可见这两个run，不能据此说run不存在或已完成。wash中断部分272策略控制/视频已归档到本地artifacts，不作为完整技能失败或下一版本on-policy数据。
 
 - **2026-10-10 03:10 CST / Codex RECOVERY-USABLE：** A800仍不可连/未重登VPN；独立RTX CPU源d3e463e2从已有闭合v5候选按hash＋左右手交替选另外24原TRAIN来源（24任务，非24全新任务），无新sim。根亲审`outcome-expansion-review-v2`全部24页/288原RGB面板、全sheet SHA与72个六控F/S因果记录，逐case备注已写`outcome_expansion_owner_review_v2.json`，仅96明确outcome、0动作/0planner、未碰60cal/20test。包含held夹爪仍约0.05m的pillow，禁止把张开阈值当失败真值。待机器签发/独立紧凑单元全读，A800迁移与任何新优化尚未发生。旧模型/中断RL证据继续保留。
