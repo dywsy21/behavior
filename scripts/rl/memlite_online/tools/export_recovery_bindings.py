@@ -18,7 +18,7 @@ def instance_scope(state, mapping):
     # not a BDDL entity. No other unknown key is silently discarded.
     if "robot_poses" in state:
         poses = state["robot_poses"]
-        if not isinstance(poses, dict) or not poses.get("R1Pro"):
+        if not isinstance(poses, dict) or not (poses.get("R1Pro") or poses.get("robot")):
             raise ValueError("Invalid official robot_poses metadata")
     keys = set(state) - {"robot_poses"}
     if not keys or not keys <= set(mapping):

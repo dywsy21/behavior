@@ -24,6 +24,8 @@ class RecoveryCorpusTests(unittest.TestCase):
         mapping = {"cup.n.01_1": "cup_12"}
         self.assertEqual(instance_scope({"cup.n.01_1": {}, "robot_poses": {"R1Pro": [{}]}}, mapping),
                          {"cup.n.01_1"})
+        self.assertEqual(instance_scope({"cup.n.01_1": {}, "robot_poses": {"robot": [{}]}}, mapping),
+                         {"cup.n.01_1"})
         for value in ({"cup.n.01_2": {}}, {"cup.n.01_1": {}, "robot_poses": {}},
                       {"robot_poses": {"R1Pro": [{}]}}):
             with self.assertRaises(ValueError):
