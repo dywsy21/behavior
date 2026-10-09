@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 03:10 CST / Codex RECOVERY-USABLE：** A800仍不可连/未重登VPN；独立RTX CPU源d3e463e2从已有闭合v5候选按hash＋左右手交替选另外24原TRAIN来源（24任务，非24全新任务），无新sim。根亲审`outcome-expansion-review-v2`全部24页/288原RGB面板、全sheet SHA与72个六控F/S因果记录，逐case备注已写`outcome_expansion_owner_review_v2.json`，仅96明确outcome、0动作/0planner、未碰60cal/20test。包含held夹爪仍约0.05m的pillow，禁止把张开阈值当失败真值。待机器签发/独立紧凑单元全读，A800迁移与任何新优化尚未发生。旧模型/中断RL证据继续保留。
+
 - **2026-10-10 03:07 CST / Codex RECOVERY-USABLE：** 本地VPN/SOCKS1080及lc1/lc2 control master消失，A800不可连；已向用户询问是否可重登（可能挤队友），未擅自重连。RTX三cold worker在03:05因ConnectionClosed退出，26完整episode＋wash第3TRAIN部分真实控制保留，非reset/技能失败；最后已确认global7/9664547d，A800服务最终状态和observer后续步数未核，不称还在正常RL。原LoRA最后14epoch/308步、独立重载实际前向待连接。短起点H0已205/选105完成，DEV84.17%/balanced71.31%，低于原v4对照、不部署；128请求完全bit相同、108仅补同attempt起点且当前特征bit相同，W&B76eb387005ba、头5432a805…27c9f。接下来保留中断账本/补数据CPU准备，连通后先核现有进程和checkpoint再续，不重复已完训练。
 
 - **2026-10-10 03:03 CST / Codex RECOVERY-USABLE：** ba1fca94已push/A800154恢复回归过；GPU2独立冻源`src/observer-short-start-v1`完成236请求/466真实prefill（46.65s，0优化），短起点cache SHA4bfbad39…8a4427。固定新头配方仅改历史协议，同176/40、seed17/LR1e-4/500步窗口＋100步平台，待新旧特征交叉核验后实训。新增独立observer adapter重载/实际前向验收入口（不读cal/test），本地编译通过、待完成run与真实执行。原LoRA13epoch/286步选择DEV92.5%、balanced79.17%，UNKNOWN仍1/4；低RL global7固定radio/PLACE各2成功、wash2未成，继续无可靠增益声明。
