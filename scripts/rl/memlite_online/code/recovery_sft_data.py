@@ -212,19 +212,19 @@ class VerifiedRecoveryActionDataset:
         return sample
 
 
-def finite_mixture_schedule(new_rows, expert_by_task, *, batch_size=64, maximum_event_passes=5, seed=17):
+def finite_mixture_schedule(new_rows, expert_by_task, *, batch_size=64, maximum_event_passes=5, seed=17, pool='action'):
     """At most ONE anchor/event/pass, ~70/30 expert/new, no repeat-filled tail.
 
     The schedule is global and committed before DDP splits it. Reuse is counted
     by physical event, not by highly correlated frame count; small corpora yield
     few updates rather than being duplicated up to a requested step budget.
     """
-    if batch_size < 8 or not 1 <= maximum_event_passes <= 5:
+    if batch_size < 8 or not 1 <= maximum_event_passes <= 5 or pool not in ('action','planner'):
         raise ValueError('Invalid finite pilot budget')
     new_by_event = defaultdict(list)
     for index,item in enumerate(new_rows):
-        if item['candidate']['split'] != 'train' or item['approval']['pool'] != 'action':
-            raise ValueError('Only accepted train ACTION rows may enter mixture')
+        if item['candidate']['split'] != 'train' or item['approval']['pool'] != pool:
+            raise ValueError('Only accepted train rows of the requested pool may enter mixture')
         new_by_event[(item['candidate']['source_group'],item['approval']['event_id'])].append(index)
     if not new_by_event or len(expert_by_task) < 2 or any(not v for v in expert_by_task.values()):
         raise ValueError('Need approved events and at least two expert tasks')

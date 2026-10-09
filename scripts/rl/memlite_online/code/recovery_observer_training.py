@@ -52,6 +52,34 @@ def evaluate_head(model,rows,features,device):
     return torch.cat(logits),torch.tensor([OUTCOMES.index(r['approval']['label']['value']) for r in selected]),selected
 
 
+def outcome_metrics(model, rows, features, device):
+    """All reviewed labels, equal total weight per physical source event.
+
+    These are diagnostics, not independent-event counts for calibration.
+    Evaluating a single random anchor/event could omit a whole result class.
+    """
+    import torch
+    import torch.nn.functional as F
+    events=defaultdict(int)
+    for row in rows: events[(row['candidate']['source_group'],row['approval']['event_id'])]+=1
+    if not rows: raise ValueError('Empty outcome diagnostic split')
+    was=model.training;model.eval();logits=[]
+    with torch.no_grad():
+        for start in range(0,len(rows),64):
+            logits.append(model(**temporal_batch([features[request_key(r)] for r in rows[start:start+64]],device)).cpu())
+    model.train(was);logits=torch.cat(logits)
+    y=torch.tensor([OUTCOMES.index(r['approval']['label']['value']) for r in rows])
+    w=torch.tensor([1/events[(r['candidate']['source_group'],r['approval']['event_id'])] for r in rows])
+    prediction=logits.argmax(-1);loss=F.cross_entropy(logits,y,reduction='none')
+    per_class={name:dict(rows=int((y==i).sum()),recall=float((prediction[y==i]==i).float().mean()))
+               for i,name in enumerate(OUTCOMES) if (y==i).any()}
+    return dict(event_weighted_ce=float((w*loss).sum()/w.sum()),
+        event_weighted_accuracy=float((w*(prediction==y)).sum()/w.sum()),
+        balanced_accuracy=sum(v['recall'] for v in per_class.values())/len(per_class),
+        per_class=per_class,reviewed_rows=len(rows),independent_events=len(events),
+        calibration_ready_not_inferred=True)
+
+
 def wilson(successes,n,z=1.96):
     if not n: return 0.,1.
     p=successes/n;den=1+z*z/n; center=(p+z*z/(2*n))/den

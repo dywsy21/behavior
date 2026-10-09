@@ -74,12 +74,23 @@ def balanced_event_schedule(rows, *, batch_size, passes, seed=17):
         if row['candidate']['split'] != 'train': raise ValueError('Only TRAIN event schedule')
         events[(row['candidate']['source_group'],row['approval']['event_id'])].append(i)
     rng = random.Random(seed)
+    # Visit the available labels/anchors without replacement before cycling.
+    # Random choice with replacement could miss FAILED entirely in a tiny
+    # three-pass head fit. This does not increase event exposure per pass.
+    choices = {}
+    for key, indices in events.items():
+        classes=defaultdict(list)
+        for i in indices: classes[rows[i]['approval'].get('label',{}).get('value','unclassified')].append(i)
+        order=list(classes);rng.shuffle(order)
+        for values in classes.values(): rng.shuffle(values)
+        choices[key]=(order,classes)
     for epoch in range(passes):
         # Round robin across shuffled task queues prevents task-major runs;
         # no fake guarantee for a corpus containing only a single task.
         tasks = defaultdict(list)
-        for _,indices in sorted(events.items()):
-            i = rng.choice(indices); tasks[rows[i]['candidate']['task']].append(i)
+        for key,(order,classes) in sorted(choices.items()):
+            indices=classes[order[epoch%len(order)]]
+            i=indices[(epoch//len(order))%len(indices)];tasks[rows[i]['candidate']['task']].append(i)
         for values in tasks.values(): rng.shuffle(values)
         task_order=list(tasks); rng.shuffle(task_order); order=[]
         while any(tasks.values()):

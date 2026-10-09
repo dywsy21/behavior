@@ -102,6 +102,15 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(sum(len(b['rows']) for b in batches),18)
         self.assertEqual([len(b['rows']) for b in batches],[4,2,4,2,4,2])
 
+    def test_event_schedule_visits_known_classes_without_replacement(self):
+        rows=[dict(candidate=dict(split='train',task='t',source_group='g'),
+            approval=dict(event_id='e',label=dict(value=value))) for value in
+            ['FAILED','IN_PROGRESS']+['SUCCEEDED']*40]
+        batches=list(balanced_event_schedule(rows,batch_size=4,passes=3))
+        self.assertEqual({rows[b['rows'][0][1]]['approval']['label']['value'] for b in batches},
+                         {'FAILED','IN_PROGRESS','SUCCEEDED'})
+        self.assertTrue(all(len(b['rows'])==1 for b in batches))
+
     def test_tiny_perfect_calibration_still_not_ready(self):
         labels=torch.tensor([0,1,2]);logits=torch.full((3,4),-8.);logits[range(3),labels]=8
         result=calibrate(logits,labels,['a','b','c'])

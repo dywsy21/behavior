@@ -102,8 +102,11 @@ def main():
                 raise ValueError('Invalid OOF feedback release')
             kwargs.update(history=histories,feedback=feedback,evidence_root=ticket['evidence_root'],high_sha256=parent['sha256'])
             new=VerifiedRecoveryPlannerDataset(**kwargs,split='train');dev=VerifiedRecoveryPlannerDataset(**kwargs,split='dev')
-            schedule=list(balanced_event_schedule(new.rows,batch_size=ticket['global_batch'],
-                                                  passes=ticket['event_passes'],seed=recipe['seed']))
+            # Recovery-only RETRY targets would teach a degenerate planner.
+            # Rehearse normal original plans as well, exactly as L0 retains
+            # original actions; never mislabel these as new recovery events.
+            schedule=list(finite_mixture_schedule(new.rows,by_task,batch_size=ticket['global_batch'],
+                maximum_event_passes=ticket['event_passes'],seed=recipe['seed'],pool='planner'))
         data_sha=ticket['files']['admission']['sha256']
     schedule=schedule[:ticket['maximum_updates']]
     binding=dict(component=a.component,source_commit=commit,parent_sha256=parent['sha256'],admission_sha256=data_sha,
@@ -171,9 +174,44 @@ def main():
                 save_checkpoint(a.output/'checkpoints',model=model,optimizer=optimizer,state=dict(state),rng_by_rank=rngs)
             except Exception as exc: error=exc
         collective_error(error,device=device,phase='atomic checkpoint');dist.barrier()
-    # Every diagnostic update is checkpointed; a future small admitted corpus
-    # also saves each update so event cursors cannot drift past committed data.
+    def evaluate():
+        evaluation={};rng=capture_rng();was_training=model.training;model.eval()
+        try:
+            fixed_eval=np.load(release/'fixed_eval_indices.npy').reshape(100,32)[:,0].tolist()
+            dev_indices={}
+            if dev is not None:
+                for i,item in enumerate(dev.rows):
+                    dev_indices.setdefault((item['candidate']['source_group'],item['approval']['event_id']),i)
+            for scope,ds,indices in [('original_heldout',original_eval,fixed_eval)]+(
+                    [('verified_dev',dev,list(dev_indices.values()))] if dev is not None else []):
+                stats=torch.zeros(2,dtype=torch.float64,device=device);error=None
+                torch.manual_seed(9183+rank)
+                try:
+                    with torch.no_grad(),torch.autocast('cuda',dtype=torch.bfloat16):
+                        for i in indices[rank::world]:
+                            with torch.random.fork_rng(devices=[local]): sample=ds[i]
+                            loss,m=model(to_device(collate_stage1([sample]),device))
+                            if not torch.isfinite(loss): raise ValueError('Nonfinite heldout objective')
+                            stats+=torch.stack([m['row_loss_numerator'].sum(),m['row_loss_denominator'].sum()]).double()
+                            model.model.ar_helper._last_ce_cache=None
+                except Exception as exc: error=exc
+                collective_error(error,device=device,phase='heldout '+scope)
+                dist.all_reduce(stats)
+                evaluation[scope]=dict(loss=float(stats[0]/stats[1]),denominator=float(stats[1]),rows=len(indices))
+        finally:
+            restore_rng(rng);model.train(was_training)
+        if rank==0:
+            with (a.output/'evaluations.jsonl').open('a') as f:
+                f.write(json.dumps(dict(step=state['step'],evaluation=evaluation))+'\n')
+            wb.log({'train/update':state['step'],**{'eval/'+k+'/loss':v['loss'] for k,v in evaluation.items()}})
+        return evaluation
+    # Pin the parent comparison BEFORE any derivative optimizer step, using
+    # exactly the same heldout examples/noise seeds as the final evaluation.
+    if state['step']==0 and not a.engineering: evaluate()
+    checkpoint_every=ticket.get('checkpoint_every_updates',1)
+    if not isinstance(checkpoint_every,int) or checkpoint_every<1: raise ValueError('Invalid save interval')
     target=min(len(schedule),a.stop_after or len(schedule))
+    last_saved=state['step'] if a.resume else -1
     if a.stop_after is not None and not 1<=a.stop_after<=ticket['maximum_updates']: raise ValueError('Invalid cumulative stop step')
     while state['step']<target:
         flag=torch.tensor(int(stopping[0] or stop.exists() or time.monotonic()+180>=deadline),device=device)
@@ -189,30 +227,12 @@ def main():
         if rank==0:
             with (a.output/'updates.jsonl').open('a') as f: f.write(json.dumps(metrics)+'\n')
             wb.log({'train/update':state['step'],**{'train/'+k:v for k,v in metrics.items()},'scope/engineering_only':int(a.engineering)})
-        save()
+        if state['step']%checkpoint_every==0 or state['step']==target:
+            save();last_saved=state['step']
+    if state['step']!=last_saved: save()
     # Read-only heldout objectives, separated from the original rehearsal.
     # Use one representative per accepted event, not long-clip frame inflation.
-    evaluation={};rng=capture_rng();model.eval()
-    try:
-        fixed_eval=np.load(release/'fixed_eval_indices.npy').reshape(100,32)[:,0].tolist()
-        dev_indices={}
-        if dev is not None:
-            for i,item in enumerate(dev.rows):
-                dev_indices.setdefault((item['candidate']['source_group'],item['approval']['event_id']),i)
-        for scope,ds,indices in [('original_heldout',original_eval,fixed_eval)]+(
-                [('verified_dev',dev,list(dev_indices.values()))] if dev is not None else []):
-            stats=torch.zeros(2,dtype=torch.float64,device=device)
-            torch.manual_seed(9183+rank)
-            with torch.no_grad(),torch.autocast('cuda',dtype=torch.bfloat16):
-                for i in indices[rank::world]:
-                    with torch.random.fork_rng(devices=[local]): sample=ds[i]
-                    loss,m=model(to_device(collate_stage1([sample]),device))
-                    if not torch.isfinite(loss): raise ValueError('Nonfinite heldout objective')
-                    stats+=torch.stack([m['row_loss_numerator'].sum(),m['row_loss_denominator'].sum()]).double()
-                    model.model.ar_helper._last_ce_cache=None
-            dist.all_reduce(stats)
-            evaluation[scope]=dict(loss=float(stats[0]/stats[1]),denominator=float(stats[1]),rows=len(indices))
-    finally: restore_rng(rng)
+    evaluation=evaluate()
     error=None
     if rank==0:
         try:

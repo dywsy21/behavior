@@ -44,5 +44,12 @@ class DataTests(unittest.TestCase):
         bad=deepcopy(rows);bad[0]['candidate']['split']='dev'
         with self.assertRaises(ValueError):list(finite_mixture_schedule(bad,{'t':[0],'u':[1]}))
 
+    def test_planner_rehearsal_is_explicit_and_pool_separated(self):
+        rows=[dict(candidate=dict(split='train',source_group=f't:{i}'),approval=dict(pool='planner',event_id=str(i))) for i in range(3)]
+        with self.assertRaises(ValueError):list(finite_mixture_schedule(rows,{'t':[0],'u':[1]},batch_size=8))
+        batches=list(finite_mixture_schedule(rows,{'t':[0],'u':[1]},batch_size=8,pool='planner',maximum_event_passes=1))
+        self.assertEqual([b['new_count'] for b in batches],[2,1])
+        self.assertTrue(all(b['expert_count']>b['new_count'] for b in batches))
+
 
 if __name__=='__main__':unittest.main()

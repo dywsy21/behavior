@@ -48,7 +48,7 @@ def main():
     from g05.models.g05.helpers.temporal_outcome import TemporalOutcomeObserver
     from g05.utils.training.stage1_runtime import (atomic_json,capture_rng,restore_rng,save_checkpoint,load_checkpoint,init_wandb)
     from recovery_observer_training import (OUTCOMES,request_key,temporal_batch,evaluate_head,calibrate,
-                                            predicted_feedback,feedback_text)
+                                            predicted_feedback,feedback_text,outcome_metrics)
     torch.set_num_threads(2);torch.manual_seed(recipe['seed']);random.seed(recipe['seed']);np.random.seed(recipe['seed'])
     cache=torch.load(ticket['files']['features']['path'],map_location='cpu',weights_only=False)
     if cache['schema']!='recovery_member_feature_cache_v1' or digest(cache['requests'])!=feature_receipt['requests_sha256']:
@@ -98,6 +98,14 @@ def main():
     wb=init_wandb(dict(recipe['wandb'],name=a.output.name),a.output,run_id=state['run_id'],resume=a.resume,
         metadata=dict(component='H0',feature_sha256=feature_receipt['features_sha256'],source_commit=commit,
             high_sha256=recipe['parents']['high']['sha256'],schedule_fingerprint=fingerprint,trained_backbone=False))
+    def diagnostics(stage):
+        result={split:outcome_metrics(model['final'],items,features,device) for split,items in [('train',train),('dev',dev)]}
+        with (a.output/'evaluations.jsonl').open('a') as f:
+            f.write(json.dumps(dict(stage=stage,step=state['step'],evaluation=result))+'\n')
+        wb.log({'train/update':state['step'],**{f'eval/{split}/{key}':value[key]
+            for split,value in result.items() for key in ('event_weighted_ce','event_weighted_accuracy','balanced_accuracy')}})
+        return result
+    if state['step']==0: diagnostics('before')
     stopping=[False]
     for sig in (signal.SIGTERM,signal.SIGINT): signal.signal(sig,lambda *_:stopping.__setitem__(0,True))
     while state['step']<len(schedule):
@@ -113,9 +121,12 @@ def main():
         state['consumed_seconds']=float(os.environ['RECOVERY_PREVIOUS_SECONDS'])+time.monotonic()-float(os.environ['RECOVERY_STARTED'])
         save_checkpoint(a.output/'checkpoints',model=model,optimizer=optimizer,state=dict(state),rng_by_rank=[capture_rng()])
         wb.log({'train/update':state['step'],'train/outcome_ce':float(loss.detach()),'train/head':job['name'],'train/independent_events':len(selected)})
+        with (a.output/'updates.jsonl').open('a') as f:
+            f.write(json.dumps(dict(step=state['step'],head=job['name'],ce=float(loss.detach()),events=len(selected)))+'\n')
     if state['step']!=len(schedule):
         atomic_json(a.output/'result.json',dict(status='saved_paused',step=state['step'],planned_updates=len(schedule),feedback_ready=False))
         wb.finish();return
+    evaluation=diagnostics('after')
     predictions={};calibrations={};model.eval()
     # Preserve any failed earlier calibration/export attempt on resume.
     post=a.output/('postprocess-'+os.environ['RECOVERY_ATTEMPT'])
@@ -171,6 +182,7 @@ def main():
         final_observer_ready=calibrations['final']['ready'],calibration_status={k:v['ready'] for k,v in calibrations.items()},
         new_high_hash_invalidates_all_features_and_calibration=True)
     result['artifacts_directory']=str(post)
+    result['evaluation']=evaluation;result['wandb_url']=wb.url
     atomic_json(post/'feedback_receipt.json',result);atomic_json(a.output/'result.json',result);wb.finish()
 
 
