@@ -86,6 +86,9 @@ def main():
                     '--sources',str(a.sources),'--output',str(a.output),'--cases',*case['cases']] if a.warm_groups else
                     [str(REPO/'scripts/rl/memlite_online/tools/collect_local_grasp_recovery.py'),
                      '--proposal',str(a.sources/name),'--output',str(out)])
+                proposal=json.loads((a.sources/name/'manifest.json').read_text())
+                if proposal['schema']=='recovery_expert_skill_proposal_v1':
+                    command[0]=str(REPO/'scripts/rl/memlite_online/tools/collect_local_articulation_recovery.py')
                 proc=subprocess.Popen(['bash',str(REPO/'scripts/eval/memlite_sft100/launch_sim.sh'),*command],stdout=log,stderr=subprocess.STDOUT,
                     stdin=subprocess.DEVNULL,env=env,cwd=REPO)
                 while proc.poll() is None:

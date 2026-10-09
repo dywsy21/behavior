@@ -21,6 +21,7 @@ def main():
     p.add_argument('--tasks', nargs='+', default=['preparing lunch box', 'make pizza',
                                                 'turning on radio', 'set up a coffee station in your kitchen'])
     p.add_argument('--all-tasks', action='store_true')
+    p.add_argument('--verb', default='GRASP', choices=['GRASP','OPEN_DOOR','CLOSE_DOOR','OPEN_DRAWER','CLOSE_DRAWER','OPEN_LID','CLOSE_LID'])
     p.add_argument('--existing-inventory', type=Path, action='append', default=[])
     p.add_argument('--train-groups-per-task', type=int, default=2)
     p.add_argument('--dev-groups-per-task', type=int, default=1)
@@ -54,7 +55,7 @@ def main():
                 raise ValueError('Retained source release/split changed')
             existing.add(old['source_group'])
     selected,coverage=select_grasp_sources(episodes,protected,tasks,
-        dict(train=a.train_groups_per_task,dev=a.dev_groups_per_task),existing)
+        dict(train=a.train_groups_per_task,dev=a.dev_groups_per_task),existing,verb=a.verb)
     if not a.all_tasks and any(r['missing'] for r in coverage):raise ValueError('Insufficient original groups')
     a.output.mkdir(parents=True)
     (a.output/'coverage.json').write_text(json.dumps(dict(tasks=tasks,coverage=coverage,
@@ -84,6 +85,7 @@ def main():
             original_release_sha256=file_sha(release/'manifest.json'),protected_groups_sha256=file_sha(a.protected),
             robot_action_dim=23,prefix_is_verified=False,training_approved=False,
             selection='original annotated prefix length then fixed identity hash; no rollout selection')
+        if a.verb!='GRASP':manifest.update(schema='recovery_expert_skill_proposal_v1',skill_verb=a.verb)
         (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
         result.append(dict(directory=out.name,manifest_sha256=file_sha(out/'manifest.json'),split=split,
                            episode=r['episode_index'],controls=controls))

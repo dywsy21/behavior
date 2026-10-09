@@ -16,7 +16,7 @@ def skill_family(verb):
     return 'tool_material_operation'
 
 
-def select_grasp_sources(episodes, protected, tasks, counts, existing_groups=()):
+def select_grasp_sources(episodes, protected, tasks, counts, existing_groups=(), verb='GRASP'):
     """Outcome-blind, task-balanced first sweep; existing failures also count.
 
     Counts are inventory coverage targets, not a global experiment quota. The
@@ -29,7 +29,7 @@ def select_grasp_sources(episodes, protected, tasks, counts, existing_groups=())
         if task not in tasks or ep['split']!='train' or group in protected:continue
         for segment in ep['segments']:
             skills=json.loads(segment['semantic'])
-            if (len(skills)==1 and skills[0]['verb']=='GRASP' and skills[0].get('target')
+            if (len(skills)==1 and skills[0]['verb']==verb and skills[0].get('target')
                     and not skills[0].get('unbound_relation')):
                 split=split_group(task,raw['task_instance_id'])
                 candidates[(task,split)].append((ep,segment,split));break
