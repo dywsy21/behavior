@@ -96,7 +96,8 @@ def main():
             trainable_gradients=gradients, frozen_gradients=frozen_grads, trainability=trainability)
     else:
         from g05.models.g05.helpers.temporal_outcome import TemporalOutcomeObserver
-        from g05.utils.memlite_skill_protocol import canonical_json, parse_active_skills_semantic_json, semantic_active_skills_text
+        from g05.utils.memlite_skill_protocol import canonical_json
+        from g05.utils.memlite_causal_feedback import single_frame_member_prefix
         model.requires_grad_(False).eval().cuda()
         processor = make_processor(config, False)
         contexts, states, identity = [], [], []
@@ -107,11 +108,12 @@ def main():
             label = dict(raw['model_projection'])
             # Probe a member-conditioned observable prefix. This is not a
             # claim that that expert skill was already executed successfully.
-            member = parse_active_skills_semantic_json(label['active_skills_semantic_json'])[0]
-            label['previous_intent'] = semantic_active_skills_text([member])
             label['memory'] = canonical_json(dict(task_name=label['task_name'], issued_command_history=[], verified_world_facts=[]))
             prepared = processor._process_tensors(raw)
-            sample = processor.samples_builder.build_for_inference(label, prepared)
+            sample = single_frame_member_prefix(processor.samples_builder, prepared,
+                task_name=label['task_name'], parent_goal=label['parent_goal'],
+                issued_bundle=label['active_skills_semantic_json'],member_index=0,
+                memory=label['memory'],served_controls=0)
             pixels = {k:v.unsqueeze(0).cuda() for k,v in prepared['pixel_values'].items()}
             with torch.no_grad(), torch.autocast('cuda', dtype=torch.bfloat16):
                 context = model.outcome_context_from_prefix([sample], pixels)

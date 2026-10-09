@@ -11,6 +11,12 @@ from .outcome_head import PlannerOutcomeHead
 
 
 class TemporalOutcomeObserver(nn.Module):
+    """Each batch row conditions on ONE named skill member in its prefix.
+
+    Parallel members require separate conditioned contexts; duplicating a
+    shared full-bundle vector cannot produce identifiable per-member labels.
+    The feature-extraction caller must preserve that binding and its SHA.
+    """
     def __init__(self, hidden_size, width=128):
         super().__init__()
         self.context_projection = nn.Sequential(nn.LayerNorm(hidden_size), nn.Linear(hidden_size, width), nn.SiLU())

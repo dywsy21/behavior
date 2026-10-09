@@ -7,7 +7,7 @@ import unittest
 
 import torch
 
-from g05.utils.memlite_causal_feedback import CausalFeedbackLedger, CausalFeatureWindow, FeedbackIdentity
+from g05.utils.memlite_causal_feedback import CausalFeedbackLedger, CausalFeatureWindow, FeedbackIdentity, single_frame_member_prefix
 
 # Test the torch-only head without importing the full VLM/Hydra deployment.
 # A private package name avoids shadowing g05 in other tests in this process.
@@ -31,6 +31,22 @@ def bundle(target="cup", parallel=False):
 
 
 class FeedbackTests(unittest.TestCase):
+    def test_single_frame_prefix_never_copies_training_answers(self):
+        builder=types.SimpleNamespace(num_input_images=3,_image_sizes={k:(256,256) for k in
+            ('head_rgb','left_wrist_rgb','right_wrist_rgb')},embodiment_type='galaxea_r1pro',
+            template='<memory_text_!><EOC><outcome_target_text>|<next_decision_text>')
+        prepared=dict(_instructions='t',proprio=torch.ones(1,27),proprio_dim_is_pad=torch.zeros(27,dtype=torch.bool),
+                      outcome_target='FAILED',physical_audit=dict(oracle='must not copy'))
+        memory=json.dumps(dict(task_name='t',issued_command_history=[],verified_world_facts=[]),sort_keys=True,separators=(',',':'))
+        result=single_frame_member_prefix(builder,prepared,task_name='t',parent_goal='Task goal: t',
+            issued_bundle=bundle(parallel=True),member_index=1,memory=memory,served_controls=128)
+        self.assertEqual(result['template'],'<memory_text_!><EOC>')
+        self.assertNotIn('outcome_target',result);self.assertNotIn('physical_audit',result)
+        self.assertIn('plate',result['previous_intent']);self.assertNotIn('cup',result['previous_intent'])
+        self.assertEqual([k for k in result if k.startswith('image')],['image0','image1','image2'])
+        with self.assertRaises(ValueError):single_frame_member_prefix(builder,prepared,task_name='other',parent_goal='Task goal: t',
+            issued_bundle=bundle(),member_index=0,memory=memory,served_controls=0)
+
     def test_refresh_is_not_retry_and_elapsed_does_not_disappear(self):
         i=identity(); ledger=CausalFeedbackLedger(i)
         ledger.issued(i,0,bundle(),"goal")

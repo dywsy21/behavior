@@ -11,9 +11,47 @@ from dataclasses import dataclass
 import math
 import re
 
-from g05.utils.memlite_skill_protocol import canonical_json, parse_active_skills_semantic_json
+from g05.utils.memlite_skill_protocol import (canonical_json, parse_active_skills_semantic_json,
+    semantic_active_skills_text, validate_b_memory_text, validate_semantic_parent_goal)
 
 OUTCOMES = {"IN_PROGRESS", "SUCCEEDED", "FAILED", "UNKNOWN"}
+
+
+def single_frame_member_prefix(builder, prepared, *, task_name, parent_goal, issued_bundle,
+                               member_index, memory, served_controls):
+    """Target-free 3-camera observer prefix; does NOT call a training builder.
+
+    The legacy outcome helper is strictly 18-image/six-frame. This separate
+    version keeps its contract unchanged and handles the real single-frame
+    Stage-1 parent. All caller inputs are deployment-observable, no answer
+    fields or physical audit dictionaries are copied from ``prepared``.
+    """
+    if (builder.num_input_images != 3 or tuple(builder._image_sizes) !=
+            ('head_rgb','left_wrist_rgb','right_wrist_rgb')
+            or prepared.get('_instructions') != task_name):
+        raise ValueError('Single-frame member prefix requires matching task and exactly three cameras')
+    members = parse_active_skills_semantic_json(issued_bundle)
+    if type(member_index) is not int or not 0 <= member_index < len(members):
+        raise ValueError('Invalid parallel member index')
+    if type(served_controls) is not int or served_controls < 0:
+        raise ValueError('Real served-control count required')
+    validate_semantic_parent_goal(parent_goal, field='previous_parent_goal')
+    validate_b_memory_text(memory, task_name=task_name)
+    template = builder.template
+    if template.count('<EOC>') != 1:
+        raise ValueError('Ambiguous causal template boundary')
+    result = dict(template=template.split('<EOC>',1)[0]+'<EOC>',
+        command=task_name,task_name=task_name,previous_parent_goal=parent_goal,
+        previous_intent=semantic_active_skills_text([members[member_index]]),memory=memory,
+        known_previous_outcome='Known previous outcome: UNKNOWN',
+        execution_feedback=f'served_action_count={served_controls}; observer_scope=one_previous_skill_member',
+        planner_prompt='Assess only this previous skill member from observable past and current evidence.',
+        schema_version=6,memlite_schema_version=6,memlite_causal_prompt=True,
+        embodiment=builder.embodiment_type,
+        proprio=dict(value=prepared['proprio'],proprio_dim_is_pad=prepared['proprio_dim_is_pad']))
+    for index,camera in enumerate(builder._image_sizes):
+        result[f'image{index}'] = builder._image_sizes[camera]
+    return result
 
 
 @dataclass(frozen=True)
@@ -37,8 +75,8 @@ class CausalFeedbackLedger:
     def __init__(self, identity: FeedbackIdentity, *, minimum_confidence=.85, confirmations=2):
         if not isinstance(identity, FeedbackIdentity) or not 0 < minimum_confidence <= 1:
             raise ValueError("Invalid feedback contract")
-        if type(confirmations) is not int or confirmations < 2:
-            raise ValueError("Require at least two distinct observer checks")
+        if type(confirmations) is not int or not 2 <= confirmations <= 8:
+            raise ValueError("Require two to eight distinct observer checks")
         self.identity = identity
         self.minimum_confidence, self.confirmations = minimum_confidence, confirmations
         self.control_step = 0
@@ -88,6 +126,8 @@ class CausalFeedbackLedger:
         this local gate cannot itself sign a readiness certificate.
         """
         self._check(identity, control_step)
+        if type(calibrated) is not bool:
+            raise ValueError("Calibration readiness must be a verified boolean")
         if self.bundle is None or control_step != self.control_step:
             raise ValueError("Observer must match the latest real observation clock")
         if self._proposals and control_step <= self._proposals[-1][0]:
@@ -125,6 +165,7 @@ class CausalFeedbackLedger:
         return canonical_json(dict(schema="causal_execution_feedback_v1",
             same_intent_controls=control_step-self.started, same_intent_planner_refreshes=self.refreshes,
             attempt_index=self.attempt, estimated_member_outcomes=outcomes,
+            attempt_count_scope="last_64_distinct_intents_this_episode",
             estimated_bundle_outcome=aggregate, source="observable_counter_and_learned_observer",
             stalled_is_not_failed=True))
 

@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-09：恢复数据与A800 SFT准备（非正式开训）
+
+- 共享根仍为`/data/workspace/wsy/behavior2026`；本轮lc1空闲，lc2 GPU0已有队友进程，不碰。lc-connect已按用户许可重连，仅本地SOCKS1080/HTTP1081，不改路由/共享env。SSH控制连接属于本地会话，不把密码写入仓库。
+- 独立冻结源：`src/recovery-prep-e30f0f0`（CPU全hash/原split）、`src/recovery-prep-12fb1ff`（八卡BF16/NCCL）、`src/recovery-prep-ff584c1`（L0父权重实图通过/H0-v1接入失败保留）。后续版本以plan最新记录为准；`src/behavior`仅Git对象同步、不热pull。
+- 新数据目的地：`datasets/recovery-candidates-20261009-v1`，`raw-v1`242个已关闭ZIP＋`audit-v4`＋`admission-v1`＋`source-metadata`。截至12:34 CST同步中，须完整hash回执后才称传输完成；即使完成也仍是未放行候选，不是BC训练集。
+- 证据根：`runs/recovery_sft_preparation_20261009`；`cpu-preflight-v1`、`gpu-smoke-v2`已通过；`l0-parent-graph-v2`真实前反向/0optimizer已通过，`h0-parent-graph-v1`失败日志保留。高48045/低98414父权重原地完整hash均通过，未复制43GB重复权重。
+- 配方/准入及具体路径见[恢复SFT准备手册](infra/RECOVERY_SFT_PREPARATION.md)。W&B仅准备新group，未正式启动run；10383活跃RL源/预算未变，本次只在A800做孤立工程小验。
+
 ## 2026-10-08 16:45 CST：10383共享100-task RL新位置
 
 仍是`ssh -p 10383 root@42.192.34.154`，以下相对根为`/run/ti/rl_memlite_stage1_20261006`。本机报告SM12.0/driver580.95.05，不是LC A800。
