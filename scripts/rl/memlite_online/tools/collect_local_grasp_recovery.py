@@ -8,6 +8,7 @@ a reset/time quota. New instances may be collected until data acceptance holds.
 """
 import argparse
 from copy import deepcopy
+from contextlib import nullcontext
 import hashlib
 import io
 import json
@@ -29,12 +30,12 @@ from recovery_recorder import proprio61
 from behavior_branch_state import capture_branch_metadata,restore_branch_metadata
 
 
-def main():
+def main(argv=None, *, shared_session=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--proposal',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--seed',type=int,default=20261009)
-    a=p.parse_args()
+    a=p.parse_args(argv)
     if a.output.exists():raise FileExistsError(a.output)
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
         raise ValueError('Clean frozen source required')
@@ -86,9 +87,26 @@ def main():
     atomic_json(a.output/'resolved_config.json',OmegaConf.to_container(cfg,resolve=True))
     started=time.monotonic()
     try:
-        with Evaluator(cfg) as evaluator:
+        if shared_session is not None:
+            if shared_session and shared_session[0].cfg.task.name!=source['task']:
+                raise ValueError('Warm session may not cross tasks')
+            if not shared_session:shared_session.append(Evaluator(cfg))
+            context=nullcontext(shared_session[0])
+        else:
+            context=Evaluator(cfg)
+        with context as evaluator:
             evaluator.load_batch({0:source['instance_id']});status['instance_loads']+=1
             inst=evaluator.instance_eval_states[0];robot=inst.env_accessor.robot
+            # Explicit render-only refresh also covers a reused simulator's
+            # first frame after loading a different original instance.
+            for _ in range(3):og.sim.render()
+            fresh,_=evaluator.env.get_obs();inst.obs=evaluator._preprocess_obs(fresh[0],inst)
+            initial_error=np.abs(np.asarray(proprio61(inst.obs))-arrays['state'][0])
+            atomic_json(a.output/'initial_alignment.json',dict(absolute_error_by_raw61_dimension=initial_error.tolist(),
+                refreshed_without_control=True,policy_memory='fresh_per_branch',task=source['task'],instance=source['instance_id']))
+            positions=list(range(3,10))+list(range(28,35))+list(range(53,57))
+            if float(initial_error[positions].max())>.05:
+                raise ValueError('Original initial joint configuration does not match reset instance')
             scope={k:getattr(v,'wrapped_obj',v) for k,v in inst.env_accessor.object_scope.items()}
             matches=[(k,o) for k,o in scope.items() if o is not None and getattr(o,'name',None)==target_name]
             if len(matches)!=1:raise ValueError('No exact task-scope target; do not guess aliases')
@@ -145,7 +163,7 @@ def main():
             snapshot=dict(world=deepcopy(og.sim.dump_state(serialized=False)),metadata=capture_branch_metadata(evaluator),
                 rng=dict(python=random.getstate(),numpy=np.random.get_state(),torch=torch.get_rng_state(),
                          cuda=torch.cuda.get_rng_state_all()),source_commit=commit,official_commit=OFFICIAL_COMMIT,
-                source_manifest_sha256=sha256(a.proposal/'manifest.json'),source_frame=seed_frame,
+            source_manifest_sha256=sha256(a.proposal/'manifest.json'),source_frame=seed_frame,
                 teacher_q=seed_q,seed_physics=seed_physics,seed_proprio=seed_state,policy_memory='fresh_per_branch')
             torch.save(snapshot,a.output/'full_snapshot.pt')
             atomic_json(a.output/'seed.json',dict(source_frame=seed_frame,arm=grasp_arm,physics=seed_physics,
