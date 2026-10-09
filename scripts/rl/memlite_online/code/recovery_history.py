@@ -4,7 +4,7 @@ Never infer command age from a clipped RGB window. Verify the historical
 planner-only memory recurrence AND the exact low-context hash before joining.
 No rewards/physics/future plans are returned as actor inputs.
 """
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from copy import deepcopy
 import hashlib
 import json
@@ -20,7 +20,7 @@ def replay_episode(events, episode):
     task = episode['task'].replace('_',' ')
     memory = canonical_json(dict(task_name=task,issued_command_history=[],verified_world_facts=[]))
     previous = 'None'
-    installed, started, refreshes, attempts = None, 0, 0, {}
+    installed, started, refreshes, attempts = None, 0, 0, OrderedDict()
     result = []
     for ordinal, row in enumerate(sorted(events,key=lambda x:x['control_step'])):
         meta = row['episode']
@@ -59,10 +59,13 @@ def replay_episode(events, episode):
             refreshes += 1
         else:
             attempts[key] = attempts.get(key,0)+1
+            attempts.move_to_end(key)
+            if len(attempts)>64: attempts.popitem(last=False)
             started, refreshes = t, 0
         installed = key
         memory, previous = expected, e['active_skills_text']
         result.append(dict(control_step=t,context_id=context_id,parent_goal=parent,
+            issued_decision=e['decision'],
             issued_skills_semantic_json=canonical(members),memory=memory,
             previous_intent=previous,intent_started_control_step=started,
             repeated_planning_count=refreshes,attempt_number=attempts[key],
