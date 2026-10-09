@@ -1,0 +1,47 @@
+{
+  "root": "/data/workspace/wsy/behavior2026",
+  "owner": "Codex",
+  "hypothesis": "The mixed GRASP/OPEN same-state correction SFT improves actual fixed-skill execution, including two held-out source instances, relative to original stage1 low98414. One seed is a development probe, not reliable SR.",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "models": {
+    "parent": {"path": "runs/memlite_stage1_low_100task_v1/checkpoints/step_00098414_save_0021.pt", "sha256": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470"},
+    "candidate": {"path": "runs/recovery_heterogeneous_20261010/L0/checkpoints/step_00000200_save_0004.pt", "sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044"}
+  },
+  "cases": {
+    "turning_on_radio_155": {
+      "task": "turning_on_radio", "seeds": [17], "role": "seen TRAIN development comparison",
+      "manifest_sha256": "68ea43144c953625d48ef3bae08ef7d660ece0200945d4908ef80e7aa28dec0b",
+      "context_id": "0bfefd434402c47842fd6b1743c8ec5de1f4785821578a99cd2ffc6410aa9ad2",
+      "start_control": 32, "end_control": 173,
+      "parent_goal": "Parent command: description=\"pick up from\"; targets=[\"radio_89\"]; sources=[\"coffee_table_koagbh_0\"]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"coffee_table_koagbh_0\",\"target\":\"radio_89\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]"
+    },
+    "wash_dog_toys_169": {
+      "task": "wash_dog_toys", "seeds": [17], "role": "seen TRAIN development comparison, newly trained OPEN mechanism",
+      "manifest_sha256": "af12e2334de2fadf158da536f1585e4c5cdf7a28ef0feb53ab0d7b4a1624f8ec",
+      "context_id": "7dae79b0776c4337741660b7a58ea4df4cbcb3472859a889bd2970227866e717",
+      "start_control": 270, "end_control": 587,
+      "parent_goal": "Parent command: description=\"open door\"; targets=[\"washer_ynwamu_0\"]; sources=[]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"washer_ynwamu_0\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"OPEN_DOOR\"}]"
+    },
+    "wash_a_baseball_cap_238": {
+      "task": "wash_a_baseball_cap", "seeds": [17], "role": "held-out source selection DEV, never trained; not blind test",
+      "manifest_sha256": "69a653a064bdc1086520302e81915037a7fdcbbb54fa5c29921a7d3b1034c762",
+      "context_id": "fbcbdcd168ad39156c2ee6de32825e41ca60870f73c1d828f38a56e3ee77c495",
+      "start_control": 265, "end_control": 618,
+      "parent_goal": "Parent command: description=\"open door\"; targets=[\"washer_ynwamu_0\"]; sources=[]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"washer_ynwamu_0\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"OPEN_DOOR\"}]"
+    },
+    "make_microwave_popcorn_134": {
+      "task": "make_microwave_popcorn", "seeds": [17], "role": "held-out source selection DEV and untrained microwave target, not blind test",
+      "manifest_sha256": "e1462034842783a94d036656c410b37b673283ff715a69966db78126d8ccb9e5",
+      "context_id": "05aa76d2a902014be8f1ccc6c2fca17c55fb1d78ca5a4e81886a341104ef4224",
+      "start_control": 208, "end_control": 445,
+      "parent_goal": "Parent command: description=\"open door\"; targets=[\"microwave_hjjxmi_0\"]; sources=[]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"microwave_hjjxmi_0\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"OPEN_DOOR\"}]"
+    }
+  },
+  "stopping": "Same recorded-continuation endpoint per paired case or six actual stable-success controls, unchanged gamma/reward and complete23 control. All failed cold restores remain visible, not retried until success.",
+  "resource": "One idle A800 for model service, existing free RTX cards for cold simulations. No optimizer, no high-layer memory sharing, no public full-task evaluation."
+}

@@ -1,0 +1,34 @@
+{
+  "scope": "Reviewed GRASP/OPEN recovery offline fit, not task SR or runtime deployment approval",
+  "owner": "Codex",
+  "root": "lc1:/data/workspace/wsy/behavior2026",
+  "data": {"path": "datasets/recovery-reviewed-union-20261010-v3-articulation", "admission_sha256": "20a81bd07982d34cbdb822e7c1f34957440515bd75ed4691d3da47284f2ba792", "archives": 34, "observations_read": 3910, "outcome_train_dev": [80,40], "planner_train_dev": [19,10], "action_train_dev": [19,9]},
+  "low": {
+    "run": "runs/recovery_heterogeneous_20261010/L0",
+    "source_commit": "3085d21b411943ee3266a52e6e01f417fb9c6e19",
+    "status": "completed_finite_schedule",
+    "updates": 200, "event_passes": 20, "world_size": 8, "global_full_batch": 8, "tail_batch": 3,
+    "trainable": "322 action-expert tensors only",
+    "frozen_sha256_before_and_after": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+    "checkpoint": "checkpoints/step_00000200_save_0004.pt",
+    "checkpoint_sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044",
+    "original_100_row_fm_before_after": [0.12964690994009553,0.13183296894951185],
+    "recovery_9_event_dev_fm_before_after": [0.05865243811538254,0.019939695219486808],
+    "wandb": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/686313581618"
+  },
+  "outcome_head": {
+    "node_gpu": "lc2 GPU1, existing teammate GPU0 unchanged",
+    "run": "runs/recovery_heterogeneous_20261010/H0-heterogeneous-fit-v1",
+    "source_commit": "cb9b51f798442713cf3fa2d49081c781822074a4",
+    "status": "fit_diagnostic_complete",
+    "steps": 290, "selected_step": 190,
+    "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "checkpoint": "selected-observer.pt", "checkpoint_sha256": "58418106d7cd33582bccaa3d70ea1a7b1a8bcf03fe0ccd8ce1097a42a5c99e99",
+    "train_accuracy": 1.0, "selection_dev_event_weighted_accuracy": 0.7999999523162842,
+    "selection_dev_balanced_accuracy": 0.8303571492433548,
+    "selection_dev_recall": {"IN_PROGRESS":0.75,"SUCCEEDED":0.5714285969734192,"FAILED":1.0,"UNKNOWN":1.0},
+    "dev_groups": 10, "runtime_ready": false, "independent_calibration_completed": false,
+    "wandb": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/ebd82a124073"
+  },
+  "remaining": ["Actual paired low-layer execution", "Independent result-head calibration and error audit; success recall is weak", "H1 updates for new OPEN intents with true out-of-fold feedback", "Actual heterogeneous short-skill PPO optimizer updates", "Reliable closed-loop improvement before expanding coverage"]
+}
