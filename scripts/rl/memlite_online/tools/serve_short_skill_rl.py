@@ -72,12 +72,24 @@ async def main():
     if len(trainer.actor_parameters)!=322:raise ValueError('Changed actor gradient boundary')
     trainer.checkpoint_extra=dict(parent_sha256=cfg['model']['sha256'],source_commit=commit,
         stats_sha256=cfg['stats_sha256'],case_contracts_sha256=digest(cases),high_layer_fixed=True)
+    resumed = None
+    if cfg.get('resume') is not None:
+        resume = cfg['resume'];resume_path = root/resume['path']
+        if file_sha(resume_path)!=resume['sha256']:
+            raise ValueError('Changed immutable resume checkpoint')
+        resumed = trainer.load_checkpoint(resume_path,expected_bindings=dict(
+            parent_sha256=cfg['model']['sha256'],stats_sha256=cfg['stats_sha256'],
+            case_contracts_sha256=digest(cases),high_layer_fixed=True,updates=resume['updates']))
+        receipt['resume'] = resumed
+        trainer.checkpoint_extra['resumed_from_sha256'] = resume['sha256']
     from importlib.util import spec_from_file_location,module_from_spec
     spec=spec_from_file_location('_short_skill_digests',REPO/'scripts/train_memlite_recovery.py')
     mod=module_from_spec(spec);spec.loader.exec_module(mod)
     frozen_before=mod.parameter_digest(policy,frozen=True)
     rounds=SkillRounds(cases,cfg['evaluation_seeds'],rounds=cfg['learning_rounds'],run=str(a.output))
-    version=0;policy_sha=cfg['model']['sha256'];sessions={};next_eval_id=10**9
+    version=trainer.update_count
+    policy_sha=cfg['resume']['sha256'] if resumed else cfg['model']['sha256']
+    sessions={};next_eval_id=10**9
     mutex=asyncio.Lock();finished=asyncio.Event();fatal=[None]
     wb=init_wandb(dict(cfg['wandb'],name=a.output.name),a.output,run_id=digest([str(a.output),commit])[:12],
         resume=False,metadata=dict(receipt,restoration=restoration,case_names=sorted(cases),

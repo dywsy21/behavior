@@ -86,6 +86,7 @@ class A4DirectPPO:
         update_epochs: int = 1,
         microbatch_size: int = 1,
         reward_protocol: str | None = None,
+        critic_descent_guard: bool = False,
     ) -> None:
         if not 0 < transition_std < 1:
             raise ValueError("transition_std must be in (0, 1)")
@@ -104,6 +105,9 @@ class A4DirectPPO:
         self.reward_protocol = reward_protocol or os.environ.get('RL_REWARD_PROTOCOL', 'legacy_two_task_v1')
         if self.reward_protocol not in ('legacy_two_task_v1', 'shared_terminal_q_v1', 'skill_aligned_v1'):
             raise ValueError('Unknown reward protocol')
+        if type(critic_descent_guard) is not bool or (critic_descent_guard and self.reward_protocol!='skill_aligned_v1'):
+            raise ValueError('Critic descent guard is an explicit short-skill protocol choice')
+        self.critic_descent_guard = critic_descent_guard
         self.update_count = 0
         self.actor_update_count = 0
         self.next_experience_id = 0
@@ -144,7 +148,7 @@ class A4DirectPPO:
         self.critic_optimizer: torch.optim.Optimizer | None = None
         self._actor_reference = self.actor_parameters[0].detach().float().cpu().clone()
 
-    def load_checkpoint(self, path: Path) -> dict[str, Any]:
+    def load_checkpoint(self, path: Path, *, expected_bindings=None) -> dict[str, Any]:
         """Restore the direct action expert, value head, optimizers and RNG."""
         payload = torch.load(path, map_location="cuda", weights_only=False)
         if payload.get("kind") != "a4_direct_flow_ppo_trainable_state_v1":
@@ -155,6 +159,8 @@ class A4DirectPPO:
             raise ValueError("resume transition_std differs from service configuration")
         if float(payload["clip_ratio"]) != self.clip_ratio:
             raise ValueError("resume clip_ratio differs from service configuration")
+        if expected_bindings is not None and any(payload.get(k)!=v for k,v in expected_bindings.items()):
+            raise ValueError('Resume base weights, normalizer, cases or update identity changed')
         self.policy.model.action_expert.load_state_dict(payload["action_expert"], strict=True)
         self.actor_optimizer.load_state_dict(payload["actor_optimizer"])
         feature_dim = int(payload["critic"]["network.0.weight"].shape[1])
@@ -307,6 +313,8 @@ class A4DirectPPO:
                 "old_step_log_prob": chain.step_log_prob[index].detach().cpu(),
                 "old_value": float(values[index].item()),
             }
+            if self.critic_descent_guard:
+                self.experiences[experience_id]['critic_features'] = features[index].detach().float().cpu().clone()
             ids.append(experience_id)
         return {
             "action": chain.states[:, -1],
@@ -358,7 +366,9 @@ class A4DirectPPO:
             "actor_updates": self.actor_update_count,
             "training_config": {"nominal_actor_lr": self.nominal_actor_lr,
                                 "target_kl": self.target_kl,
-                                "max_clip_fraction": self.max_clip_fraction},
+                                "max_clip_fraction": self.max_clip_fraction,
+                                "critic_descent_guard": self.critic_descent_guard,
+                                "nominal_critic_lr": self.critic_lr},
             "action_expert": self.policy.model.action_expert.state_dict(),
             "critic": self.critic.state_dict(),
             "actor_optimizer": self.actor_optimizer.state_dict(),
@@ -527,9 +537,23 @@ class A4DirectPPO:
             # the critic and is consumed. Do not manufacture an actor update.
             accepted_actor_lr = 0.0
             post_update_metrics = dict(ratio_mean=1.0, mean_approx_kl=0.0, clip_fraction=0.0)
-        self.critic_optimizer.step()
+        critic_guard_metrics = {}
+        cached_critic_features = None
+        if self.critic_descent_guard:
+            from critic_descent import guarded_critic_step
+            cached_critic_features = torch.stack([r[1]['critic_features'] for r in records]).cuda()
+            with torch.no_grad():
+                cached_values = self.critic(cached_critic_features).float().cpu()
+            if not torch.allclose(cached_values,old_values,atol=1e-5,rtol=1e-5):
+                raise RuntimeError('Cached critic observations no longer reproduce on-policy values')
+            critic_guard_metrics = guarded_critic_step(self.critic,self.critic_optimizer,cached_critic_features,
+                                                       return_tensor.cuda(),learning_rate=self.critic_lr)
+        else:
+            self.critic_optimizer.step()
         critic_after=[]
-        if self.reward_protocol=='skill_aligned_v1':
+        if cached_critic_features is not None:
+            with torch.no_grad():critic_after=self.critic(cached_critic_features).float().cpu().tolist()
+        elif self.reward_protocol=='skill_aligned_v1':
             with torch.no_grad():
                 for begin in range(0,len(records),self.microbatch_size):
                     subset=records[begin:begin+self.microbatch_size]
@@ -582,6 +606,7 @@ class A4DirectPPO:
             report['value_loss_after']=float(.5*(after_values-return_tensor).square().mean())
             report['explained_variance_after']=(1.-float((return_tensor-after_values).var(unbiased=False))/return_variance
                                                 if return_variance>1e-12 else None)
+        report.update(critic_guard_metrics)
         # Persist the configured starting rate in recovery checkpoints. The
         # accepted_actor_lr above records the actual line-search step.
         for group in self.actor_optimizer.param_groups:
