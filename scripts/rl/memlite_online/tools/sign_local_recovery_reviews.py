@@ -44,7 +44,9 @@ def main():
         if file_sha(branch/'manifest.json')!=decision['manifest_sha256']:raise ValueError('Review from another attempt')
         review=root/decision['review_directory'];materials=json.loads((review/'review.json').read_text())
         if (materials['manifest_sha256']!=decision['manifest_sha256']
-                or materials['transitions_sha256']!=manifest['transitions_sha256']):raise ValueError('Unbound original media review')
+                or materials['transitions_sha256']!=manifest['transitions_sha256']
+                or ('review_sha256' in decision and file_sha(review/'review.json')!=decision['review_sha256'])):
+            raise ValueError('Unbound original media review')
         for s in materials['sheets']:
             if file_sha(review/s['path'])!=s['sha256']:raise ValueError('Changed reviewed media')
         rows=[json.loads(x) for x in (branch/'transitions.jsonl').read_text().splitlines()]

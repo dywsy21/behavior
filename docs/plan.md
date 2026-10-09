@@ -14,6 +14,7 @@
 
 ### 2026-10-09 21:05 CST：持续goal推进到可用，而非完成小试（Codex / RECOVERY-USABLE，进行中）
 
+- **23:53 CST / 根人工跨机制准入审核完成：** 亲审9来源45页/504原RGB面板并逐SHA核验；明确审批见`configs/recovery_sft/recovery_articulation_owner_review_v2.json`，拟签52个结果（含9个predecision旧失败）、9个真实RETRY、8个32控窗口。sorting67首32控门反而略关/停滞，**拒绝BC且不造IN_PROGRESS**；其结果/意图保留，4DEV仍不训练。完成度处于10%–35%滞回区不等于运动未知，已修为只有实际向目标纠正才IN_PROGRESS，静止/反向仍UNKNOWN，116回归过；v3重推导保留原采集日志，待签核/联合迁移A800/新optimizer。另PLACE v2两例12原图亲审＋全部SHA/逐ACK/末6稳定检查过，150/114实际控含各1不计奖励barrier，149/113奖励控，仍非actor SR且保护进展live未验。
 - **23:30 CST / 新队列自然结束与PLACE冷验：** 新DEV93/93首次尝试及PLACE九原源均已闭合，RTX八卡无compute进程；不是93全部可用/已签。PLACE_ON六原参考物理完成，PLACE_IN三例原窗口未过稳定门，保留UNKNOWN。计划以833e3f80在GPU1/7分别冷载camera129/toolbox17真实持物未放置状态，检验独立重启后同参考仍完成，原TRAIN、无actor/optimizer；不选失败例放宽成功阈值，不把合法起点算恢复策略成功。最新b0bfec28已推送，短技能GAE仍未接优化器；下一步跨机制审核/训练、独立组校准与短技能实际RL。
 - **23:39 CST / 开合因果监督接线与冷载异常：** 新增开合原证据重推导/归一化，OUTCOME标签显式支持predecision角色，RETRY瞬间旧FAILED不标到新attempt；115恢复回归过，尚未冻结/实数归一化/准入。PLACE两冷回放150/114控均最终完成且本体误差0/7.45e-9，但同一seed的OnTop起始布尔由原false变cold true（potential差0.7），说明坐标相同不足以验完整物理传感状态，当前不放行PLACE奖励；检查官方状态缓存失效/冷载后刷新，并保留本次结果而非宣称一致验收。
 - **23:44 CST / PLACE根因及修正：** 官方固定a8247a8 `Simulator.load_state`明确提示OnTop/Inside须真实仿真一步才更新，TensorizedRelativeState关系表不序列化；不是渲染帧或Python缓存清理能修。新冷载路径记录首个原参考raw23动作作restore barrier，逐ACK计真实消耗但不计奖励/BC，begin+1重新核持物且未完成才初始化reward；原v1负面证据不改，待新冻源两例复验。开合a500cd20已Git部署/115回归，CPU归一化首调用因protected路径拼错而在读输入阶段拒绝（未输出数据），改用既有固定protected-groups.json继续。
