@@ -1,0 +1,41 @@
+{
+  "owner": "Codex",
+  "time_cst": "2026-10-09 21:41",
+  "status": "offline_progress_not_runtime_ready",
+  "a800_root": "/data/workspace/wsy/behavior2026/runs/recovery_usable_20261009",
+  "observer": {
+    "run": "H0-convergence-v1", "source_commit": "6213c482f6da1e080954e7c3ccb8fb536edf528a",
+    "trained_updates": 205, "selected_update": 105,
+    "parent_high_sha256": "3683f719ebb033cacf77afdc0330b25f43a3c3e5b704b0bda9623608f092c3d1",
+    "selected_observer_sha256": "ee02d5c754882ff159179413407991807362700c4cd7ce96ecde7c1961a83ee0",
+    "result_sha256": "5c08d87fdadc2ebf1ce65c282aeb5500b950fce2afd452d264aba63ea0cf4684",
+    "dev_source_events": 6, "dev_reviewed_labels": 18,
+    "initial_balanced_accuracy": 0.2777777711550395, "selected_balanced_accuracy": 1.0,
+    "selected_ce": 0.03823193535208702,
+    "selected_recall_counts": {"IN_PROGRESS": [6,6], "SUCCEEDED": [6,6], "FAILED": [6,6]},
+    "dev_used_for_model_selection": true, "independent_calibration_ready": false,
+    "wandb_run": "dba54bf14ca4", "wandb_independently_verified_finished": true,
+    "not_compatible_with_H1_updated_backbone_without_recaching": true
+  },
+  "planner_target_free_generation": {
+    "source_commit_prefix": "34dde8a1",
+    "parent_run": "generation-parent-v2", "candidate_run": "generation-candidate-v2",
+    "parent_result_sha256": "0c1327a65ccaede6484781368e45eca3f3a62ee8d85269c6a735ec04d205b29e",
+    "candidate_result_sha256": "bc6c34302ec634ca0db3a947ab40b4780ec8f0adc3ea86100e286cc681e12e0a",
+    "candidate_checkpoint": "../recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+    "candidate_checkpoint_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "original_heldout": {"samples": 100, "old_new_events_identical": true, "valid": 100, "decision_correct": 100,
+      "bundle_correct": 88, "parent_correct": 94, "memory_correct": 100, "all_fields_correct": 85, "false_retry": 0},
+    "recovery_dev": {"source_events": 6, "old_execute": 6, "old_retry_correct": 0, "new_retry_correct": 6,
+      "new_all_fields_correct": 6, "unseen_by_increment_only": true},
+    "physical_rollout_success_not_measured": true,
+    "caution": "Same-skill RETRY examples are limited; no proof of broad replan, calibrated feedback, or closed-loop success. Format forces only masked UNKNOWN/false constants, not decisions/skills."
+  },
+  "next_gates": [
+    "Independent outcome data across source groups, perturbation timings and skills; normal matched-time controls and real correction failures",
+    "Recache/refit observer after selecting and freezing new high backbone; do not mix hashes",
+    "Explicit calibrated-feedback serving/training profile; legacy high_planner_only input permits UNKNOWN only",
+    "Real simulator adapters and fixed-start paired evaluation for shared short-skill rewards; no new RL updates yet",
+    "At least three heterogeneous skill mechanisms with real improvement before wider task/update expansion"
+  ]
+}

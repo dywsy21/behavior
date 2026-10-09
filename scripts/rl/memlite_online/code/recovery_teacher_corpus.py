@@ -4,10 +4,9 @@ Never misrepresent privileged collection as on-policy actor trajectories.
 No fields from teacher/physics/noise enter the model observation allowlist.
 """
 from copy import deepcopy
-import json
 import numpy as np
 
-from recovery_corpus import canonical,digest
+from recovery_corpus import digest
 
 
 def episode_identity(source, result, manifest, branch_kind):

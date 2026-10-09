@@ -12,7 +12,7 @@ import sys
 import zipfile
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_corpus import canonical,digest,file_sha,group_key,split_group,anchor_candidate,same_intent_starts
+from recovery_corpus import canonical,digest,file_sha,split_group,anchor_candidate,same_intent_starts
 from recovery_teacher_corpus import validate_branch,branch_histories,physical_proposal,episode_identity,PhysicalProposalIndex
 from recovery_reference_binding import verify_saved_binding
 from recovery_terminal_corpus import load_terminal,normalized_terminal,terminal_anchor
