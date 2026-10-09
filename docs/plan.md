@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 02:46 CST / Codex RECOVERY-USABLE：** db37b153新observer-v2已实际通过零LoRA与旧cache逐bit一致＋GPU真实反传隔离（192 adapter/96初始非零、其它policy梯度无），lc1 GPU0/PID1654675已14更新/epoch1，W&B5c7a7692c82e。只新observer adapter＋head，不更新/部署高planner或低actor；原v1工程失败日志保留。GPU1低RL已global6，固定probe radio2/2、PLACE1/2、wash首条仍UNKNOWN，放置下降需完整重复证据，未宣布效果提高或扩100任务。待observer原DEV曲线/冻结SHA、短RL余轮；新H1恢复意图/部署独立校准仍未完成。
+
 - **2026-10-10 02:40 CST / Codex RECOVERY-USABLE：** 新observer实际零LoRA prefill已与原cache逐bit相同，但0optimizer工程反传失败：probe把GRU设eval，cuDNN不允许eval-mode反传（非数据/模型nan）。原af892292 run已退出/日志保留；修为probe明确head.train、提前模式门和失败终态回执，待新冻源再验。低RL第6真实更新27chunks通过：actor5e-7/KL.011617、critic半MSE.00135170→.00135049，权重221290c7…14f9421；固定probe在途，仍无SR改善声明。
 
 - **2026-10-10 02:39 CST / Codex RECOVERY-USABLE：** af892292已push/新冻源双端152恢复回归过，lc1闲GPU0已提交独立`H0-observer-adapter-v1`PID1651364（loading，0实测优化）；低RL GPU1原bff37072源不动，首个续接update0006文件已产出，待具体KL/critic/固定probe核验。单独读取旧wash曲线0→5更新末开度始终约.299–.315、当前冷基线.304/.309，未有可靠功能成功或连续进展增益，不拿可见开缝当RL有效。

@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 02:46 CST：两路实际训练状态
+
+- 结果observer：lc1 `src/observer-adapter-v2`=db37b153，`runs/recovery_heterogeneous_20261010/H0-observer-adapter-v2`，GPU0/PID1654675、W&B5c7a7692c82e，已14真实更新。`zero-adapter-audit.json`/`gradient-audit.json`是模型/梯度工程证明；`checkpoints/*.pt`仅专属adapter＋head＋Adam/RNG，须配bee高骨干，不能当完整planner替换。v1因GRU eval反传工程失败且0更新，原目录保留。
+- GPU1原`short-rl-v4-cold`继续bff37072、W&Bc8823fe92ecd，global6 checkpoint SHA221290c7…14f9421；RTX三个冷worker仍同bff源。不热改活跃目录，calibration60/test20仍隔离。
+
 ## 2026-10-10 02:39 CST：独立结果观察器适配训练
 
 - lc1 `src/observer-adapter-v1`=af892292，run `runs/recovery_heterogeneous_20261010/H0-observer-adapter-v1`、同名`.log`，GPU0/PID1651364，当前loading。专属LoRA/时序头checkpoint不是原high planner完整权重，不能替换bee高模型或现役H0；实际零adapter/反传审计与曲线以run回执为准。
