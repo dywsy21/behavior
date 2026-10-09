@@ -1,0 +1,434 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 01:49 CST; personally inspected source-36 through source-47 original RGB panels and exact target/arm evidence, all sheet SHA and six-control F/S records checked. Unsupported fault traces remain unlabelled.",
+  "cohort_sha256": "6c887ff292f8da2d854083f7daa20343c35ea19bc5c28df1ad37d8e0c45a96a4",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "68436dd691f1d1bf34275aafb5344a01cd64cf815d66fbed8d9ee8c24a134ffc",
+  "reviewed_source_ordinals": [
+    36,
+    47
+  ],
+  "original_rgb_panels": 123,
+  "branches": [
+    {
+      "case": "sorting_vegetables_160",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "a5b7eb96ac8e3b67a7ec1adde3ec2980c5e3b823a70767f2a9f3cf9f8acaf126",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/sorting_vegetables_160--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker_basket_220 carrying vegetables on floor near couch, not individual radishes; F8/IP52/S68 and clean8 show fingers progressing around basket rim. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "sorting_vegetables_160",
+      "branch": "clean",
+      "manifest_sha256": "ad577bc99332b68d5f33fb44e25cc07017b84ede9693be92fe019fbd25f3a32c",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/sorting_vegetables_160--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker_basket_220 carrying vegetables on floor near couch, not individual radishes; F8/IP52/S68 and clean8 show fingers progressing around basket rim. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "loading_the_car_4",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "585b9a9c15e2db5973619dfa6b297620bcc9b69247bf29f4fecab59d76b7c5ee",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/loading_the_car_4--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left tennis_racket_80 red racket on table, exact black handle next to hand, not other sports equipment; F8/IP36/S52 and clean8 physically bound. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "loading_the_car_4",
+      "branch": "clean",
+      "manifest_sha256": "267522cedc6e4b442dd5df24713c9b74aa1215692cdf32b37f59b265869efbd2",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/loading_the_car_4--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left tennis_racket_80 red racket on table, exact black handle next to hand, not other sports equipment; F8/IP36/S52 and clean8 physically bound. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "chopping_wood_230",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "33b2702f97cfdc0d951fb842ed407bdac9d979b8a662cf918f84ce8fb43727cc",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/chopping_wood_230--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 44,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left log_174 bark-covered cylinder at garage doorway; IP44 has first current contact but not required stable history, only S52 meets sustained hold; clean8 separate. Not chopping completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "chopping_wood_230",
+      "branch": "clean",
+      "manifest_sha256": "cd4fd44ed294bbf221c8992d4425707ce9ec8b2f33de0601f06bd7207c037eb8",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/chopping_wood_230--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left log_174 bark-covered cylinder at garage doorway; IP44 has first current contact but not required stable history, only S52 meets sustained hold; clean8 separate. Not chopping completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "cleaning_up_plates_and_food_171",
+      "branch": "open_gripper",
+      "manifest_sha256": "cdd039f14b11bbf541a73459fc3908598034eeb6391fb085fedd33e78b763c4c",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cleaning_up_plates_and_food_171--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right plate_93 supporting pizza, one of several plates on dining table; F8/IP68/S88 and clean8 approve the plate grip only, no food transport/cleanup completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "cleaning_up_plates_and_food_171",
+      "branch": "clean",
+      "manifest_sha256": "1bfe285ff7da2e4a90cff7c5599236f9325485fc790b2271a15163360379fdd2",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cleaning_up_plates_and_food_171--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right plate_93 supporting pizza, one of several plates on dining table; F8/IP68/S88 and clean8 approve the plate grip only, no food transport/cleanup completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "re_shelving_library_books_239",
+      "branch": "clean",
+      "manifest_sha256": "f2e22068e45cd474addbeb0a67bd15d6c0e42532761779ba382956ba1fb79cc7",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/re_shelving_library_books_239--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right notebook_52 blue book near another blue book/left hand; cross-camera right target verified. Fault4 remains UNLABELLED without sustained-loss history; only clean8 approved. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "spraying_for_bugs_96",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1632355589c23023dc3c7c5b56ef58a28207c41cb76a7571cd7bf375bb47d40e",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/spraying_for_bugs_96--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left insectifuge_atomizer_174 black sprayer with red cap by patio furniture; F8/IP28 are actual loss/approach, no recovered success manufactured; distinct clean8 held. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "spraying_for_bugs_96",
+      "branch": "clean",
+      "manifest_sha256": "faf534966ce934b7bdc6cc03222cd7874ae355a6f53cc9471e013a671da7519e",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/spraying_for_bugs_96--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left insectifuge_atomizer_174 black sprayer with red cap by patio furniture; F8/IP28 are actual loss/approach, no recovered success manufactured; distinct clean8 held. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "halve_an_egg_249",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "94c7702a10ce52e2c1d364ea6e4e747d961456c290c884308723387edb098119",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/halve_an_egg_249--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hard_boiled_egg_231 yellow egg on striped refrigerator shelf; F8/IP36/S52 and clean8 match requested egg/hand, not cutting/halving task success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "halve_an_egg_249",
+      "branch": "clean",
+      "manifest_sha256": "6570c1bfc592eacfca03da3ac2152223284f158001f7020e2133e948e5ac0afb",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/halve_an_egg_249--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hard_boiled_egg_231 yellow egg on striped refrigerator shelf; F8/IP36/S52 and clean8 match requested egg/hand, not cutting/halving task success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "make_cabinet_doors_37",
+      "branch": "clean",
+      "manifest_sha256": "dd43fe7b9df2464a612bbfb25be7a48a3a766614400213b9f30921c673355d9b",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/make_cabinet_doors_37--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left cabinet_door_73 detached wooden panel in living room; fault4 too short stays UNLABELLED, clean8 confirms holding panel, not OPEN/CLOSE articulation completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "assembling_gift_baskets_94",
+      "branch": "open_gripper",
+      "manifest_sha256": "bef653034a989e20d6b4748380435a2ced093e803e0daf257f79d40f5c7df046",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/assembling_gift_baskets_94--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker_basket_89 nearest fireplace, other basket lies farther left; F8/IP36/S52 and clean8 bind nearest basket and right fingers, no assembly success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "assembling_gift_baskets_94",
+      "branch": "clean",
+      "manifest_sha256": "3689cc22a0eeb716b7389abbeb8e4c33d0ac86dda572d8513fe7df1293fd0152",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/assembling_gift_baskets_94--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker_basket_89 nearest fireplace, other basket lies farther left; F8/IP36/S52 and clean8 bind nearest basket and right fingers, no assembly success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "clean_up_broken_glass_69",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "bfd5e1ebba3f5c83f6880ce2454ae036424e09e7190635496a352f15bb88529c",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_up_broken_glass_69--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right broken_glass_97 glass/bottle remnant on checkerboard floor; wrist shows neck among fingers, F8/IP68/S88 and clean8 same target, not complete floor cleanup. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "clean_up_broken_glass_69",
+      "branch": "clean",
+      "manifest_sha256": "fd6366acfc7a67cef44fbddf9b3f9a18c67513c79504327c7150d5aaa1c6f8f9",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_up_broken_glass_69--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right broken_glass_97 glass/bottle remnant on checkerboard floor; wrist shows neck among fingers, F8/IP68/S88 and clean8 same target, not complete floor cleanup. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "setup_a_bar_for_a_cocktail_party_121",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "03f0da8372271a82fb46307c55e59c9a0821032b7d0b2db6b08f5cad09b02318",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/setup_a_bar_for_a_cocktail_party_121--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wineglass_51 on dark sideboard among other drinkware; head and wrist cross-check exact glass, approve F8 and separate clean8 only; no recovered or cocktail-task success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "setup_a_bar_for_a_cocktail_party_121",
+      "branch": "clean",
+      "manifest_sha256": "a0a3570b2990e27eb63360e5e46bf796597a6f91d3e4df9970a76e1f179b902e",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/setup_a_bar_for_a_cocktail_party_121--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wineglass_51 on dark sideboard among other drinkware; head and wrist cross-check exact glass, approve F8 and separate clean8 only; no recovered or cocktail-task success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "laying_tile_floors_227",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "89977480971f0628bfe5cd7a8f48e9ddae68e9f0002979139b5c896d868db537",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/laying_tile_floors_227--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left ceramic_tile_188 white square held near a second tile/right arm; F8/IP28/S44 and clean8 explicitly requested left hold only, not laying-floor task completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "laying_tile_floors_227",
+      "branch": "clean",
+      "manifest_sha256": "d1390051fafcaad0fa756758d97a0649d179d108ff8314f43d164dc7d4cea8eb",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/laying_tile_floors_227--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left ceramic_tile_188 white square held near a second tile/right arm; F8/IP28/S44 and clean8 explicitly requested left hold only, not laying-floor task completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    }
+  ]
+}

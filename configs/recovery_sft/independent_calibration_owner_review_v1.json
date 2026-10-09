@@ -1,0 +1,447 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 01:39 CST; personally inspected source-00 through source-11 (123 original RGB panels), matched exact target/arm physical records, checked all 60 sheet SHA and all 151 six-control F/S sequences. This is partial source review, NOT approval of the remaining 48 sources.",
+  "cohort_sha256": "6c887ff292f8da2d854083f7daa20343c35ea19bc5c28df1ad37d8e0c45a96a4",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "68436dd691f1d1bf34275aafb5344a01cd64cf815d66fbed8d9ee8c24a134ffc",
+  "reviewed_sheet_count": 12,
+  "total_sheet_count": 60,
+  "branches": [
+    {
+      "case": "installing_a_fax_machine_247",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ccddbe970877f174261e2c6a9802bbc29b2137aefc150ba3b0f653100d65ee83",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/installing_a_fax_machine_247--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand and grey facsimile_180 agree across head/right wrist; fault t8 no hold, correction t36 still only progress. No recovered success fabricated; the clean t8 hold is separately verified. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "installing_a_fax_machine_247",
+      "branch": "clean",
+      "manifest_sha256": "4392b37f3181f5c40b3cc470f5e1fb9262c0f7c8b19079fd512d11dcc1d46270",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/installing_a_fax_machine_247--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand and grey facsimile_180 agree across head/right wrist; fault t8 no hold, correction t36 still only progress. No recovered success fabricated; the clean t8 hold is separately verified. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "storing_food_120",
+      "branch": "open_gripper",
+      "manifest_sha256": "d2f689270cfa79aaab3a134acc0015406820c9637e23ed250f13c9c3741124ac",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/storing_food_120--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand approaches bottle_of_olive_oil_210, green bottle fills the wrist view. Finger closure and bottle-relative view change match actual progress/regrasp; same-clock clean hold is a distinct control, not task completion. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "storing_food_120",
+      "branch": "clean",
+      "manifest_sha256": "1354f84ceb35e396d18e97f0d396293807858a3c68a82c394d463fbd91b6bf0c",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/storing_food_120--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand approaches bottle_of_olive_oil_210, green bottle fills the wrist view. Finger closure and bottle-relative view change match actual progress/regrasp; same-clock clean hold is a distinct control, not task completion. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "getting_organized_for_work_132",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "5f119ebb3e6821dd070330bdc25d79d9863a1630823f65c3a85f70fcf921e97d",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/getting_organized_for_work_132--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right mouse_92 is partly obscured against the blue chair/desk; the head/hand geometry and exact physical binding agree. Success is six past holds, not evidence that the desk/work task finished. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "getting_organized_for_work_132",
+      "branch": "clean",
+      "manifest_sha256": "d4f87a304a2dcf3249197c5ba315b9cdd3180238d1a84928b5a09f405f8506af",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/getting_organized_for_work_132--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right mouse_92 is partly obscured against the blue chair/desk; the head/hand geometry and exact physical binding agree. Success is six past holds, not evidence that the desk/work task finished. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "vacuuming_floors_241",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "4d21ccb7f985209215c6576c92150130cd312bca65b98e6d5013c29292d33a08",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/vacuuming_floors_241--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand closes around vacuum_89 handle while the vacuum remains floor-supported. This approves grasp only, not vacuum cleaning, transport or lift; clean t8 and fault t8 are kept distinct. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "vacuuming_floors_241",
+      "branch": "clean",
+      "manifest_sha256": "06ad9d3242ccb22258229435e2f828af73e3c19590124a4765cb59cb00911854",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/vacuuming_floors_241--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand closes around vacuum_89 handle while the vacuum remains floor-supported. This approves grasp only, not vacuum cleaning, transport or lift; clean t8 and fault t8 are kept distinct. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "cleaning_up_branches_and_twigs_283",
+      "branch": "clean",
+      "manifest_sha256": "b89d29859e41c51193db34770f967a2ddbbead0d9d8b983d139e5c72de899e05",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cleaning_up_branches_and_twigs_283--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right branch_175 visible in outdoor wrist view; fault branch t0 has insufficient history and is UNLABELLED, not failure. Approve only separate clean t8 six-hold result, not the failed corrective trajectory. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "dispose_of_batteries_198",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1fd885f20902de33e67b8e2339add2881aef83910ca7b1d0835d3bad1224f51e",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/dispose_of_batteries_198--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right trash_can_159, not a battery; dark wrist view is partially occluded, head and hand-boundary motion remain consistent. Exact physical hold records distinguish states; no claim of disposing batteries or lifting the bin. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "dispose_of_batteries_198",
+      "branch": "clean",
+      "manifest_sha256": "f1e89542379f1a4595ceb65c822fa744cedeabb15eb58634f5d9065d5a394e9d",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/dispose_of_batteries_198--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right trash_can_159, not a battery; dark wrist view is partially occluded, head and hand-boundary motion remain consistent. Exact physical hold records distinguish states; no claim of disposing batteries or lifting the bin. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "hanging_pictures_164",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "41f2a755923dac3a21eee2a72a056818ba65d8c5f3139908836687bb16ac6588",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/hanging_pictures_164--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right poster_73 is a vertical thin object at the counter; fault t8 versus clean t8 grip difference is visible. No progress/recovered success is fabricated for this failed corrective branch. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "hanging_pictures_164",
+      "branch": "clean",
+      "manifest_sha256": "f47522d7d0f623a21f505af53e4e628e27d5bdc24deda3cfef69d4c79daa9e79",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/hanging_pictures_164--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right poster_73 is a vertical thin object at the counter; fault t8 versus clean t8 grip difference is visible. No progress/recovered success is fabricated for this failed corrective branch. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "clean_a_trumpet_24",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "6b20d29644a965629347386aa378bbfadde94417a5a86e97dad21a489ea78fc1",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_a_trumpet_24--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left scrub_brush_86 has red bristles on the tabletop beside a trumpet. Fault and corrective finger approach match; only progress at t68, no recovered success. Clean t8 is separate. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "clean_a_trumpet_24",
+      "branch": "clean",
+      "manifest_sha256": "06b3ee4f961e915af030707fc6a614c100bdf2ca5bd4709e4a33d6cb65f0a7df",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_a_trumpet_24--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left scrub_brush_86 has red bristles on the tabletop beside a trumpet. Fault and corrective finger approach match; only progress at t68, no recovered success. Clean t8 is separate. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "store_produce_270",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "77592b35a4760f53277f12e665eaff3be049833b52f192fac4e3137d356be82d",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/store_produce_270--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wicker_basket_74 contains produce and fills wrist view; the right hand stays nearby but these labels bind only the requested left hold. No produce storage or placement success claimed. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "store_produce_270",
+      "branch": "clean",
+      "manifest_sha256": "acef8c7ed13bc93390e583ce766637c1f275573d84e39d081a03c55ff83acc11",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/store_produce_270--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wicker_basket_74 contains produce and fills wrist view; the right hand stays nearby but these labels bind only the requested left hold. No produce storage or placement success claimed. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "composting_waste_59",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "d072f66407580e1ce9bca8aa5c840902ec8fe81c493d0d9912813758796b3b3f",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/composting_waste_59--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right trash_can_66 is dark and dominates wrist view; head/finger aperture and exact old grasp states agree. The task is composting, but labels concern only holding this bin. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "composting_waste_59",
+      "branch": "clean",
+      "manifest_sha256": "9efac08e5bfe2ae3bbc4bbc5914ab0fd3709edbd5c2905442e07b94aeb0a32ba",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/composting_waste_59--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right trash_can_66 is dark and dominates wrist view; head/finger aperture and exact old grasp states agree. The task is composting, but labels concern only holding this bin. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "clean_your_rusty_garden_tools_202",
+      "branch": "open_gripper",
+      "manifest_sha256": "1c0ec694b23140a195baf4fc8c375d1d2b0083082b6e5e989c58c952dfea3bae",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_your_rusty_garden_tools_202--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right steel_wool_333 in a red tool container, not the whole toolbox. Corrective closure t36 remains progress; no eventual recovery success fabricated. Clean t8 is separately held. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "clean_your_rusty_garden_tools_202",
+      "branch": "clean",
+      "manifest_sha256": "ad1718a31d90c6d4cc3ae04f3a35b4d219944e2936876000cfb9d38cf4ed819a",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_your_rusty_garden_tools_202--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right steel_wool_333 in a red tool container, not the whole toolbox. Corrective closure t36 remains progress; no eventual recovery success fabricated. Clean t8 is separately held. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "cook_a_brisket_292",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "bae84d4bab3ce4076a1e10fbfdd4ea280d2b01d93e370a6ceeddbe6fd83123d2",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cook_a_brisket_292--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left frying_pan_78 handle beside the hob, pan remains surface-supported. Finger convergence and exact hold history support local grasp states, not cooking or carrying success. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    },
+    {
+      "case": "cook_a_brisket_292",
+      "branch": "clean",
+      "manifest_sha256": "fdad730b89b7fb80dc8001efc8478d4e0df1142a5f303ca51a755156b1192f33",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cook_a_brisket_292--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left frying_pan_78 handle beside the hob, pan remains surface-supported. Finger convergence and exact hold history support local grasp states, not cooking or carrying success. Calibration role only; never TRAIN or checkpoint selection. No action/planner targets approved."
+    }
+  ]
+}

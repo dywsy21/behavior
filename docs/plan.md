@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 01:55 CST / Codex RECOVERY-USABLE：** 校准数据角色保护实现并144本地恢复回归过：approval绑定calibration＋cohort SHA、仅dev/outcome，联合/loader默认排除校准和test，20预留test不能混入读取；无原训练/选择DEV支持时不能借校准行凑准入。5份根审、RTX紧凑单元/A800 v5联合配置已准备，待独立新源机器签发/实际全读；不热改8481ff24在训源。新guard固定probe4/6，开门两UNKNOWN，未有可靠SR提升。
+
+- **2026-10-10 01:49 CST / Codex RECOVERY-USABLE：** 根已亲看全部60独立校准来源612原RGB面板，并以5份owner review逐点批准196结果（0动作/0plan）；8个无因果支持故障保留UNLABELLED，正常同时间对照保留。材料`independent-calibration-review-v2`、配置`independent_calibration_owner_review{,_part2..5}_v1.json`；这是原图语义审批，机器签发/全读迁移/隔离角色/实际校准尚待，没有新预测、20冻结test未触碰。短RL guard第4更新后radio/PLACE各2成功、wash首条仍UNKNOWN，重启基线本身有波动，不宣布方法改善。
+
+- **2026-10-10 01:47 CST / Codex RECOVERY-USABLE：** 新guard首个真实更新（全局4、27chunks）通过：critic半MSE0.00510291→0.00183459、实际LR3e-4；actor回溯5e-7/KL0.01223/clip0.1148，正在固定probe，不能由同批loss改善声称SR提升。同round0003权重重启复测tripod seed29从旧成功变为165控UNKNOWN，明确仿真/重启有波动，后续须重复证据而非单条涨跌。根完成独立校准00–31原图亲审（前24已具体签76标签），整60尚未签发/未预测；不训练、不选权重，20test仍隔离。fetch成功/main无新进展，自有文档/签核dirty故未pull。
+
+- **2026-10-10 01:38 CST / Codex RECOVERY-USABLE：** 8481ff24 critic半MSE回溯/完整Adam回滚及严格resume基础身份139本地/A800回归过；旧v2已按STOP保存退出（竞态中第4更新自然保存、全部保留，冻结SHA前后同eb4b5d45），不是训练成功。新lc1闲GPU1 PID1615748 `short-rl-v3-critic-guard`ready，按事先固定round0003/d6af6e33续接：actor/critic逐tensor相等、Adam322/6、step=3；新17轮续窗，只改critic优化保护，18974专用转发。RTX0/1/2确认全空后启动`short-rl-{radio155,wash169,tripod129}-guard-v1`独立8481ff24源，当前loading/new baseline，未发生带guard的优化，不称误差或SR已改善。60校准原图已迁本地，全sheetSHA/151个六控F/S证据核过；根已亲审source00–07，尚未整批签发。
+
 - **2026-10-10 01:30 CST / Codex RECOVERY-USABLE：** 60校准材料拒绝原因已定位8源扰动3–7控即逃出/未抓空，锚点无6控支持；不能把采集器failure字符串标为FAILED。01343ecd新独立源保留这些源的原图为UNLABELLED、只保留可证clean成功，135回归过；v2全部60源612原面板/196候选结果生成，8无证负例不填数，待根亲审，20test仍未触碰。RL第3更新已接受KL0.02709/clip0.2485；critic同batch损失前三更新均上升（.0849→.1405/.00963→.03392/.00207→.00525），记录为优化过冲诊断，尚未热改/终止该run，不把解释方差上升当误差下降。
 
 - **2026-10-10 01:28 CST / Codex RECOVERY-USABLE：** 233fdd12机制加权对照实训220/选120：DEV83.33%、balanced79.94%、CE0.3454，未改善分类可靠性（权重c228196d…a965a/W&Bdce9b083033d）；否定“只改机制比例就能解决”的当前假设，不再盲扫超参。新增60校准原图准备器cb75a60a/134回归双端通过；实际首调用遇某源无因果阶段支持锚点而硬停，保留partial不自动丢分母，正在核具体源，不补造标签。20冻结test未读预测/未签。RL第3轮采样完，首2轮固定对照无成功率提升。

@@ -1,0 +1,422 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 01:41 CST; personally inspected source-12 through source-23 original RGB panels and exact target/arm evidence, all source sheet SHA and six-control F/S records checked. This approves only listed observations, not unlabelled short traces.",
+  "cohort_sha256": "6c887ff292f8da2d854083f7daa20343c35ea19bc5c28df1ad37d8e0c45a96a4",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "68436dd691f1d1bf34275aafb5344a01cd64cf815d66fbed8d9ee8c24a134ffc",
+  "reviewed_source_ordinals": [
+    12,
+    23
+  ],
+  "original_rgb_panels": 114,
+  "branches": [
+    {
+      "case": "installing_smoke_detectors_257",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "04249b4b35a9b492ff33523af9857a6e37be4f2a9254e7fb5eec66b6d0d0179a",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/installing_smoke_detectors_257--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fire_alarm_102, round white unit with red light on low table; approve distinct fault/clean t8 physical grasps only, no recovered or installed-device success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "installing_smoke_detectors_257",
+      "branch": "clean",
+      "manifest_sha256": "8d3ef8a0a99d21cca987dd2ee3e24cbd0eb71696ec9f304854c157349b9847e3",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/installing_smoke_detectors_257--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fire_alarm_102, round white unit with red light on low table; approve distinct fault/clean t8 physical grasps only, no recovered or installed-device success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "cook_broccolini_239",
+      "branch": "clean",
+      "manifest_sha256": "31807e11edf625a5b44e2b43130c9602ea0b141056c72deb0559ad08f9756436",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cook_broccolini_239--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left plate_74 carrying broccoli, not broccoli itself; unlabelled fault t0 has no preceding hold/loss window. Approve only clean t8 actual sustained plate hold. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "packing_meal_for_delivery_16",
+      "branch": "clean",
+      "manifest_sha256": "c10a8b587039d8de534065f5321333c640c591bf9b0ffc9a96a5e3220966dd58",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/packing_meal_for_delivery_16--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left paper_bag_74 stands among similar bags on metal table. Fault t4 currently unheld but has insufficient causal duration: unlabelled, not FAILED. Only clean t8 approved. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "clean_up_your_desk_63",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "febef3f1e608bc94f53f18f88d79fdcfb2b9d19d15c5ad19e1047e75eb8c4284",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_up_your_desk_63--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left folder_231 with blue cover and document edges at desk; right hand is nearby but supervision binds only left grasp. Recovery motion/hold sequence agrees, not desk cleanup success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "clean_up_your_desk_63",
+      "branch": "clean",
+      "manifest_sha256": "de48e9cf0ecfadc4f6ab89b1beb979f5fe9e0d9750e4d7c1e23bd9f1cdc1481a",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_up_your_desk_63--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left folder_231 with blue cover and document edges at desk; right hand is nearby but supervision binds only left grasp. Recovery motion/hold sequence agrees, not desk cleanup success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "clean_a_patio_174",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "decf58343dbd4c600529673eedcc37bb53a5b0165842eb8d70e84d37833acce9",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_a_patio_174--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right broom_172 brown pole over outdoor paved surface; fingers approach/close consistently with physical grasp chain, not sweeping or carrying success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "clean_a_patio_174",
+      "branch": "clean",
+      "manifest_sha256": "042d200730187599df5f42c902a52830e63ec15e2971860ae79f72a07dbfe787",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_a_patio_174--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right broom_172 brown pole over outdoor paved surface; fingers approach/close consistently with physical grasp chain, not sweeping or carrying success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "carrying_out_garden_furniture_129",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "bc605b72b2af4e097c455b0f9448b25b249ea500fed8c0d4c9406bf6b5dfd1ba",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/carrying_out_garden_furniture_129--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left white handle of red wheelbarrow_453, not the nearby furniture task title. Nearby right hand does not substitute for the exact left predicate; six-hold clean/recovery results only. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "carrying_out_garden_furniture_129",
+      "branch": "clean",
+      "manifest_sha256": "0d1586b907a35e0f155dbc9c600ba5cd80d8ecc0d305c42e6ad1c6765011be32",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/carrying_out_garden_furniture_129--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left white handle of red wheelbarrow_453, not the nearby furniture task title. Nearby right hand does not substitute for the exact left predicate; six-hold clean/recovery results only. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "spraying_fruit_trees_265",
+      "branch": "open_gripper",
+      "manifest_sha256": "52d20132c4c5abe340b6de84006cae953f09cc1230b41f806b87b3cc970a3465",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/spraying_fruit_trees_265--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left pesticide_atomizer_172, red round cap and green/black body outdoors; visible finger closure and exact contact history match. No spraying success label. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "spraying_fruit_trees_265",
+      "branch": "clean",
+      "manifest_sha256": "c1dc67c7e52e0ae4d5ff0d43c9e20f73ad48423453b08f579c6465562e93787e",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/spraying_fruit_trees_265--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left pesticide_atomizer_172, red round cap and green/black body outdoors; visible finger closure and exact contact history match. No spraying success label. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "picking_up_trash_182",
+      "branch": "open_gripper",
+      "manifest_sha256": "19291a1378037f91ccc94e34fee618b99e61c91c28025dc4a9bbf7111765217e",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/picking_up_trash_182--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right trash_can_116 wicker cylindrical bin on floor; fault and clean t8 show different grip states. No eventual corrective success is invented. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "picking_up_trash_182",
+      "branch": "clean",
+      "manifest_sha256": "c93da1b0b4700bdd46b6dc5a5c4ac012add891970081c7b98b87ada7ab23cab7",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/picking_up_trash_182--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right trash_can_116 wicker cylindrical bin on floor; fault and clean t8 show different grip states. No eventual corrective success is invented. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "dispose_of_glass_273",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "65602bbab312e669f44e25b53e54c9044863fb21ba6d5c9f645220590ead7fbd",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/dispose_of_glass_273--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left trash_can_64, black-lined bin by bed, not glass item. Both wrists see the rim; predicate binds only left. Surface support is not mistaken for task completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "dispose_of_glass_273",
+      "branch": "clean",
+      "manifest_sha256": "fec6532ee2d4a4caefe89037ed966ad6316a63ea6b29c196d98987167dd7b133",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/dispose_of_glass_273--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left trash_can_64, black-lined bin by bed, not glass item. Both wrists see the rim; predicate binds only left. Surface support is not mistaken for task completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "put_together_a_basic_pruning_kit_261",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "caf3283e8a3fde0d0f57790a4b0a8ce88e2c6eb0bf874babbb38fdb74ebbb91f",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/put_together_a_basic_pruning_kit_261--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right shears_60 black loops and silver blades on floor near tool; finger-gap changes and physical histories agree. Success is local regrasp, not pruning-kit completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "put_together_a_basic_pruning_kit_261",
+      "branch": "clean",
+      "manifest_sha256": "3ba37b541eb7847231ab0aac6cc0a96d637a44668045a03be3851bb9092bc2f3",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/put_together_a_basic_pruning_kit_261--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right shears_60 black loops and silver blades on floor near tool; finger-gap changes and physical histories agree. Success is local regrasp, not pruning-kit completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "sorting_bottles_cans_and_paper_233",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "8d2484ef4f9ab2d23c5830bda982fefbb90ddcbc700e9cb6e99c4296fedeffcf",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/sorting_bottles_cans_and_paper_233--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left can_of_soda_80 blue can near sink; same-clock fault/clean finger difference confirmed. No recovery success or sorting result fabricated. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "sorting_bottles_cans_and_paper_233",
+      "branch": "clean",
+      "manifest_sha256": "0658151b6a315122aaa5b5a0ec6a7246787b30f7e881335b23ae3b8e11537d04",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/sorting_bottles_cans_and_paper_233--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left can_of_soda_80 blue can near sink; same-clock fault/clean finger difference confirmed. No recovery success or sorting result fabricated. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "cook_hot_dogs_52",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "691764fcc29b4c5bb8b9aa2a4815c006054a1098d3cc744fad6ef31ab82458ab",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cook_hot_dogs_52--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hotdog_207 with mustard in bun on worktop; hand closes/holds while still near surface. Labels concern gripping the food, not cooking/eating, and clean t8 is independent of fault. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "cook_hot_dogs_52",
+      "branch": "clean",
+      "manifest_sha256": "0ac4e00b6eea3328ff4292c3913864ad1edc334f1c734519213e4b5383614ff8",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cook_hot_dogs_52--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hotdog_207 with mustard in bun on worktop; hand closes/holds while still near surface. Labels concern gripping the food, not cooking/eating, and clean t8 is independent of fault. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    }
+  ]
+}

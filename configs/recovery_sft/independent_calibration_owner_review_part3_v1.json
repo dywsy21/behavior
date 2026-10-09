@@ -1,0 +1,442 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 01:49 CST; personally inspected source-24 through source-35 original RGB panels and exact target/arm evidence, all sheet SHA and six-control F/S records checked. Unsupported fault traces remain unlabelled.",
+  "cohort_sha256": "6c887ff292f8da2d854083f7daa20343c35ea19bc5c28df1ad37d8e0c45a96a4",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "68436dd691f1d1bf34275aafb5344a01cd64cf815d66fbed8d9ee8c24a134ffc",
+  "reviewed_source_ordinals": [
+    24,
+    35
+  ],
+  "original_rgb_panels": 129,
+  "branches": [
+    {
+      "case": "collecting_childrens_toys_200",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "0a43db0d2f5ee977d5a90159ff4287846639c12fdebeb4a355659555249d2db6",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/collecting_childrens_toys_200--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right teddy_bear_267, pink bear on wood floor: finger gap and closure checked at F8/IP36/S52 and distinct clean8; not toy collection completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "collecting_childrens_toys_200",
+      "branch": "clean",
+      "manifest_sha256": "f4b2eafeb2ff495c6192b9b0b83c5820bd9b4274f50bf48ecb6a24227077e6b1",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/collecting_childrens_toys_200--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right teddy_bear_267, pink bear on wood floor: finger gap and closure checked at F8/IP36/S52 and distinct clean8; not toy collection completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "freeze_fruit_51",
+      "branch": "clean",
+      "manifest_sha256": "6454f5dad830fc59aad4cd963093633ca7839b361e1e96635c1ce19fbb69566c",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/freeze_fruit_51--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right tupperware_237 on cupboard shelf below counter: fault t0 lacks past evidence and stays UNLABELLED, approve only clean8 sustained grasp. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "hiding_Easter_eggs_108",
+      "branch": "open_gripper",
+      "manifest_sha256": "565a1a5cd0e83e2ae2f8995ab36185edbe6bd6e02c4be96c198081295c118a3e",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/hiding_Easter_eggs_108--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker_basket_178 with eggs beside outdoor hedge: partial wrist occlusion cross-checked against head/other camera and exact target; not grasping an egg. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "hiding_Easter_eggs_108",
+      "branch": "clean",
+      "manifest_sha256": "0351b8842f03cff685e818e30e58384c46f1bfff372a5128dfd26b261f442d4c",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/hiding_Easter_eggs_108--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wicker_basket_178 with eggs beside outdoor hedge: partial wrist occlusion cross-checked against head/other camera and exact target; not grasping an egg. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "putting_dirty_dishes_in_sink_195",
+      "branch": "open_gripper",
+      "manifest_sha256": "768bb788567399bc6157dbf10f8e24720af3c36330f3fd7d8365920d7dc5f4c8",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/putting_dirty_dishes_in_sink_195--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right purple bowl_136 on dining table beside red striped chairs; fingers converge over F8/IP28/S48 and clean8, not dishwashing/placement completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "putting_dirty_dishes_in_sink_195",
+      "branch": "clean",
+      "manifest_sha256": "f09963dad12245bc2eac7963634c3f091e586d43074aa45142eb9150c5740790",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/putting_dirty_dishes_in_sink_195--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right purple bowl_136 on dining table beside red striped chairs; fingers converge over F8/IP28/S48 and clean8, not dishwashing/placement completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "picking_up_toys_245",
+      "branch": "clean",
+      "manifest_sha256": "846be3b9027309e8742f19c78130e58b43713d75190c7fdff4da807cc140b5ff",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/picking_up_toys_245--clean",
+      "outcomes": [
+        {
+          "control_step": 20,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left toy_box_224 large gray toy container with both hands nearby; fault20 is explicitly UNLABELLED (unsupported loss history), only clean20 held by requested left arm approved. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "chop_an_onion_214",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "4300978a8e88e11b5a2d9ea15972309af7db578947e9e6f77634e19c1f985b30",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/chop_an_onion_214--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right cutting_board_76 wooden board with handle cutout at sink, not onion or knife; F8/IP20/S36 and clean8 match finger-gap/closure and past physical contact. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "chop_an_onion_214",
+      "branch": "clean",
+      "manifest_sha256": "9bee0d7c77d98d8d83c8a8da4da50f1d6dec65a9fa5b2e3de625d955459c83b9",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/chop_an_onion_214--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right cutting_board_76 wooden board with handle cutout at sink, not onion or knife; F8/IP20/S36 and clean8 match finger-gap/closure and past physical contact. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_101",
+      "branch": "open_gripper",
+      "manifest_sha256": "5ba5fc82df3709791390b6c037fa35480bdee6c11789da48217b0d46d4d5a270",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/scrubbing_bathroom_floor_101--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right scrub_brush_222 red bristle brush on bathroom floor: F8/IP28/S44 and clean8 checked, not completed scrubbing; head and wrist support exact tool. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_101",
+      "branch": "clean",
+      "manifest_sha256": "af52489aec7782ca845d3852ac64656a92d38127ec323743b6954ca82d111d7c",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/scrubbing_bathroom_floor_101--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right scrub_brush_222 red bristle brush on bathroom floor: F8/IP28/S44 and clean8 checked, not completed scrubbing; head and wrist support exact tool. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "setting_mousetraps_78",
+      "branch": "open_gripper",
+      "manifest_sha256": "3a602125adfc97edab6f2912d71ffc39742a1bb70a1de80024df256c50366599",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/setting_mousetraps_78--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right mousetrap_50 on wooden cabinet beneath picture; F8 and active IP28 with fingers closing, no recovered success label; only separate clean8 succeeded. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "setting_mousetraps_78",
+      "branch": "clean",
+      "manifest_sha256": "6570c7378190ef9077f38a19b1c91de0a158fb951f9ce07d5b8c5b1a9b5dc43e",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/setting_mousetraps_78--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right mousetrap_50 on wooden cabinet beneath picture; F8 and active IP28 with fingers closing, no recovered success label; only separate clean8 succeeded. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "tidying_bedroom_38",
+      "branch": "open_gripper",
+      "manifest_sha256": "a92ae5e63937b92b83470385e573272c2785d26a8cc1d3e810079c021c9887c6",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/tidying_bedroom_38--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 84,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left sandal_189 blue flip-flop on bedroom floor, not second sandal in background; F8/IP68/S84 and clean8 match exact target/arm. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "tidying_bedroom_38",
+      "branch": "clean",
+      "manifest_sha256": "a3c68a7f025f4c36feaf69a2c4e7fc0c53232e121c203c54eff31e9c3f5824fe",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/tidying_bedroom_38--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left sandal_189 blue flip-flop on bedroom floor, not second sandal in background; F8/IP68/S84 and clean8 match exact target/arm. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "sweeping_garage_182",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "cb628c0b34c9b230210c89effae08fa11e27df9107d8ccb620e816f52ef6f3f8",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/sweeping_garage_182--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 84,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right broom_60 brown handle and pale bristles on gray garage floor; dark but target and finger closure visible across F8/IP68/S84 and clean8; not sweeping completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "sweeping_garage_182",
+      "branch": "clean",
+      "manifest_sha256": "4c84e140d6317b47bba679a0836b387299df13d9cbb36e5bc2fe3292f0dcb647",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/sweeping_garage_182--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right broom_60 brown handle and pale bristles on gray garage floor; dark but target and finger closure visible across F8/IP68/S84 and clean8; not sweeping completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "bringing_in_wood_23",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1fe82886bef98616fda9c1c7ee2d8579767c83bba90ec0bf4b40e2b8421da0e4",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/bringing_in_wood_23--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left plywood_202 narrow brown board outdoors on paving by wood wall; F8/IP36/S52 and clean8 same board, not wall or delivery goal. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "bringing_in_wood_23",
+      "branch": "clean",
+      "manifest_sha256": "912d07674764a09c783ef66002ab720fee528229ec929e5eb7e114fa9358cd90",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/bringing_in_wood_23--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left plywood_202 narrow brown board outdoors on paving by wood wall; F8/IP36/S52 and clean8 same board, not wall or delivery goal. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "outfit_a_basic_toolbox_140",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "47af59cec053966f28156508464e42b6b7640bacb7ce4617f77b3537fdbd6344",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/outfit_a_basic_toolbox_140--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right screwdriver_188 black grip/blue shaft beside red toolbox on washer top, not hammer/toolbox; F8/IP68/S88 and clean8 physically bound; no toolbox completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "outfit_a_basic_toolbox_140",
+      "branch": "clean",
+      "manifest_sha256": "5c2fcb3cd789c8bc992081abf5bab8be0b7dc2786e4c5a727d745a9596335a24",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/outfit_a_basic_toolbox_140--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right screwdriver_188 black grip/blue shaft beside red toolbox on washer top, not hammer/toolbox; F8/IP68/S88 and clean8 physically bound; no toolbox completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    }
+  ]
+}

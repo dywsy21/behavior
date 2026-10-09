@@ -33,6 +33,12 @@ def main():
     root=a.evidence_root.resolve();decisions=json.loads(a.decisions.read_text())
     if decisions['schema']!='owner_local_recovery_review_v1' or not decisions['reviewer']:
         raise ValueError('Missing explicit owner review')
+    usage = {}
+    if 'role' in decisions:
+        if (decisions['role'] != 'calibration_only_never_training_or_selection'
+                or len(decisions.get('cohort_sha256','')) != 64):
+            raise ValueError('Unknown independent review role')
+        usage = dict(usage_role='calibration', cohort_sha256=decisions['cohort_sha256'])
     queue=json.loads((a.corpus/'review-queue.json').read_text())
     inventory=json.loads((a.corpus/'audit/inventory.json').read_text())
     anchors=[json.loads(x) for x in (a.corpus/'audit/anchors.jsonl').read_text().splitlines()]
@@ -71,7 +77,7 @@ def main():
             if t not in materials['frames']:raise ValueError('Exact observation not visually inspected')
             approvals.append(dict(sample_id=row['sample_id'],pool=pool,reviewer=decisions['reviewer'],
                 evidence=refs,event_id=event,reviewed_start=min(materials['frames']),reviewed_end=max(materials['frames']),
-                source_group=q['source_group'],label=label))
+                source_group=q['source_group'],label=label,**usage))
         for outcome in decision['outcomes']:
             t=outcome['control_step'];latest=[p for p in plans if p['control_step']<=t][-1]
             role=outcome.get('history_role','observable')

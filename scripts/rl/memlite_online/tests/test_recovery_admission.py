@@ -32,6 +32,16 @@ class AdmissionTests(unittest.TestCase):
             item=deepcopy(self.approval);item['label'][k]=v
             with self.assertRaises(ValueError):verify_approval(item,self.row,self.root)
 
+    def test_independent_cohort_metadata_is_strict_and_dev_outcome_only(self):
+        approved=dict(self.approval,usage_role='calibration',cohort_sha256='a'*64)
+        dev=dict(self.row,split='dev')
+        verify_approval(approved,dev,self.root)
+        for change in [dict(usage_role='training'),dict(cohort_sha256='invalid'),dict(pool='action')]:
+            with self.assertRaises(ValueError):verify_approval(dict(approved,**change),dev,self.root)
+        with self.assertRaises(ValueError):verify_approval(approved,dict(dev,split='train'),self.root)
+        del approved['cohort_sha256']
+        with self.assertRaises(ValueError):verify_approval(approved,dev,self.root)
+
     def test_outcome_approval_is_not_bc_approval(self):
         item=deepcopy(self.approval);item['pool']='action'
         with self.assertRaises(ValueError):verify_approval(item,self.row,self.root)

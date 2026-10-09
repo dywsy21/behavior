@@ -57,8 +57,16 @@ def verify_approval(approval, row, evidence_root):
     """Explicit per-objective approval; no whole-clip / whole-episode blanket."""
     required = {'sample_id', 'pool', 'reviewer', 'evidence', 'event_id', 'reviewed_start',
                 'reviewed_end', 'source_group', 'label'}
-    if set(approval) != required or approval['pool'] not in POOLS:
+    usage = {'usage_role', 'cohort_sha256'}
+    if set(approval) not in (required, required | usage) or approval['pool'] not in POOLS:
         raise ValueError('Invalid per-objective approval schema')
+    if 'usage_role' in approval:
+        sha = approval['cohort_sha256']
+        if (approval['usage_role'] not in ('calibration', 'frozen_test')
+                or row['split'] != 'dev' or approval['pool'] != 'outcome'
+                or not isinstance(sha, str) or len(sha) != 64
+                or any(c not in '0123456789abcdef' for c in sha)):
+            raise ValueError('Independent outcome approvals cannot become TRAIN or BC targets')
     if (row['split'] not in {'train', 'dev'} or row['label_status'].startswith('quarantined')
             or 'binding_quarantine' in row['label_audit']):
         raise ValueError('Protected or quarantined row cannot be approved')

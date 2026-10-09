@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 01:38 CST：续接critic保护与独立校准材料
+
+- lc1 `runs/recovery_heterogeneous_20261010/short-rl-v2`已保存停止，全部4轮checkpoint保留；新`short-rl-v3-critic-guard`在GPU1/PID1615748，源`src/short-skill-guard-v1`=8481ff24，明确续接旧round0003/d6af6e33，非round4。专用loopback18974；RTX同源`code/short-skill-guard-v1`，三个`short-rl-{radio155,wash169,tripod129}-guard-v1`分别GPU0/1/2，尚在新基线，不是新guard优化已通过。
+- A800 `datasets/recovery-reviewed-union-20261010-v4-outcomes`准入9a780cfe…dec1c；`H1-feature-cache-v4-outcomes`特征60f5476c…0a0d7已审。新结果拟合`H0-outcome-expansion-v1`（20ba9696…e7474）/`H0-mechanism-balance-v1`（c228196d…a965a）均完成、均未部署，详细局限见plan。
+- RTX `runs/recovery100_collection_20261009/independent-calibration-review-v2`有60来源612原RGB面板/196候选标签，源`code/independent-review-v2`=01343ecd；本地`artifacts/recovery-heterogeneous-20261010/independent-calibration-review-v2`保留全部原审阅材料。v1前4来源partial因缺证据硬停保留，v2对8短失败源不补标签；这些是校准DEV不是训练数据，20冻结test未运行预测。
+
 ## 2026-10-10 01:14 CST：短技能共享RL与结果训练扩充
 
 - lc1根`/data/workspace/wsy/behavior2026`，`runs/recovery_heterogeneous_20261010/short-rl-v2`在GPU0运行，冻源`src/short-skill-v4`=213f25d7，W&B b926be825dda，专用loopback18973双SSH转发；v1因优化前critic数值门失败，0更新，原日志/轨迹保留。RTX同run根三个客户端radio155/wash169-v3及tripod129-v5，物理GPU0/1/2，tripod新源`code/short-client-aux-v5`=0d5b6a27，其余源不热改。没有全任务RL/SR。

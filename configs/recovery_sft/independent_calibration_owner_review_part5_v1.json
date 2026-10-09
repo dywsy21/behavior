@@ -1,0 +1,450 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 01:49 CST; personally inspected source-48 through source-59 original RGB panels and exact target/arm evidence, all sheet SHA and six-control F/S records checked. Unsupported fault traces remain unlabelled.",
+  "cohort_sha256": "6c887ff292f8da2d854083f7daa20343c35ea19bc5c28df1ad37d8e0c45a96a4",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "68436dd691f1d1bf34275aafb5344a01cd64cf815d66fbed8d9ee8c24a134ffc",
+  "reviewed_source_ordinals": [
+    48,
+    59
+  ],
+  "original_rgb_panels": 123,
+  "branches": [
+    {
+      "case": "clean_a_keyboard_268",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "a1d7bce1f28f85b8c6edaeea022897cc759568f4efaa06f95d07f13e84020081",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_a_keyboard_268--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right pipe_cleaner_120 blue cleaning-tool handle with brush on office table, not keyboard itself; F8/IP52/S68 and clean8 same target and finger closure. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "clean_a_keyboard_268",
+      "branch": "clean",
+      "manifest_sha256": "79521e5789e4d4b87a7e3537ac04735e8d5485fe2fecebeb96a703370577ae34",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_a_keyboard_268--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right pipe_cleaner_120 blue cleaning-tool handle with brush on office table, not keyboard itself; F8/IP52/S68 and clean8 same target and finger closure. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "collecting_aluminum_cans_12",
+      "branch": "open_gripper",
+      "manifest_sha256": "f104c3f71a0ec0f4f34dfb979934ac18e04d751ee9b5eae780b3967733afbe71",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/collecting_aluminum_cans_12--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right can_of_soda_43 silver-top can on carpet in front of bed, not cans still on bed; F8/IP36/S52 and clean8 physically bound. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "collecting_aluminum_cans_12",
+      "branch": "clean",
+      "manifest_sha256": "b2180ebcee83d4a8d5f7f952c0ae39afffa536572d21dd707ada0583148c15e2",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/collecting_aluminum_cans_12--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right can_of_soda_43 silver-top can on carpet in front of bed, not cans still on bed; F8/IP36/S52 and clean8 physically bound. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "rearranging_kitchen_furniture_53",
+      "branch": "open_gripper",
+      "manifest_sha256": "cfa40b163d8c5234a87ff21f751cde6e05dba23e3f11c1b5b83560abba87b313",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/rearranging_kitchen_furniture_53--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right toaster_91 slotted appliance on kitchen counter; F8/IP52/S68 and clean8 approve hold near its end only, not rearranged furniture success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "rearranging_kitchen_furniture_53",
+      "branch": "clean",
+      "manifest_sha256": "6214a82531e4b2ef41dc59073e074f5926c93df7a48bed2d56353f0859dd8c66",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/rearranging_kitchen_furniture_53--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right toaster_91 slotted appliance on kitchen counter; F8/IP52/S68 and clean8 approve hold near its end only, not rearranged furniture success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "canning_food_248",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7f356197342b4f04bd43d3d5465011733303cca2f76dc7a30a4cff04f7a3d20d",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/canning_food_248--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right carving_knife_207 black riveted handle on wooden board near red backsplash; F8/IP68/S88 and clean8, not canning task completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "canning_food_248",
+      "branch": "clean",
+      "manifest_sha256": "8b193731b12c78031c78970f9b01b7ed67a4d8212bb1b1670814bef09c14a64d",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/canning_food_248--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right carving_knife_207 black riveted handle on wooden board near red backsplash; F8/IP68/S88 and clean8, not canning task completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "bringing_paper_to_recycling_50",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f1958b87f12ec72da8678c6c6a86bf443aefc69d99790d77e67c677b2525fe45",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/bringing_paper_to_recycling_50--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left newspaper_197 on kitchen counter by sink; F8 and separate clean8 only, no recovered success or recycling completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "bringing_paper_to_recycling_50",
+      "branch": "clean",
+      "manifest_sha256": "5a68b63034c80f140bf5a9c15e5efc046e9b8c5e34f2069369417ac45140e826",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/bringing_paper_to_recycling_50--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left newspaper_197 on kitchen counter by sink; F8 and separate clean8 only, no recovered success or recycling completion. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "make_rose_centerpieces_59",
+      "branch": "open_gripper",
+      "manifest_sha256": "56022f1001be1459abe74e440c2ae1d7503d7b6a60b8fcabbfd6b44c9f655d91",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/make_rose_centerpieces_59--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left rose_78 red flower/green stem on narrow shelf near brick wall, not the neighboring rose; F8/IP36/S52 and clean8 verified. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "make_rose_centerpieces_59",
+      "branch": "clean",
+      "manifest_sha256": "68a43e1fd61be0f781d350f26c18c526b5836c53ee33f6bdb617db3a5333f170",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/make_rose_centerpieces_59--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left rose_78 red flower/green stem on narrow shelf near brick wall, not the neighboring rose; F8/IP36/S52 and clean8 verified. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "cook_brussels_sprouts_188",
+      "branch": "clean",
+      "manifest_sha256": "fcb3e657d5aad9efd1d0756f2964bb85232cddf988e03ac4c9de94909ba2c3d1",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cook_brussels_sprouts_188--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right tupperware_91 in refrigerator, small pale container; fault0 held but insufficient history is UNLABELLED, only clean8 stable holding approved. Not cooking result. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_76",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f7390215c9ec91a29efeef27df7bca92ef74baa5e601dede39d1d69b27e53f17",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/attach_a_camera_to_a_tripod_76--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left digital_camera_87 black camera on floor near shelving, not tripod; F8/IP36/S52 and clean8 match finger closure/target, not attachment success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_76",
+      "branch": "clean",
+      "manifest_sha256": "2011f9eddb598c38650509851e27a5a43c369fc8581d8c87b57ec2ae29c66db6",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/attach_a_camera_to_a_tripod_76--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left digital_camera_87 black camera on floor near shelving, not tripod; F8/IP36/S52 and clean8 match finger closure/target, not attachment success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "can_meat_283",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ecc1b5ac380cb610352cd1d6c440b38e8f3c4620573dbcc0e4244ff5caaa1ea7",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/can_meat_283--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right bratwurst_232 curved orange sausage nearest hand on board among similar sausages; F8/IP52/S72 and clean8 exact bound target, not cooked/canned state. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "can_meat_283",
+      "branch": "clean",
+      "manifest_sha256": "177403a8b3f986f8eeab1e08cc3c29e4c395fe8874f78e5ac6a912a814810bc8",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/can_meat_283--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right bratwurst_232 curved orange sausage nearest hand on board among similar sausages; F8/IP52/S72 and clean8 exact bound target, not cooked/canned state. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "clean_boxing_gloves_165",
+      "branch": "open_gripper",
+      "manifest_sha256": "38452d33f425fd7310d83d051233b4005e973eddbaad125647e00744368b9efc",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_boxing_gloves_165--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 64,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right boxing_gloves_188 red and gray dirty glove on counter near another glove; F8/IP52/S64 and clean8 correspond to requested one, dirt remains and no cleaning success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "clean_boxing_gloves_165",
+      "branch": "clean",
+      "manifest_sha256": "b149c6ff3e9a2479482c35301f0cfe043c1515e1238987a0d595916a189aed10",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/clean_boxing_gloves_165--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right boxing_gloves_188 red and gray dirty glove on counter near another glove; F8/IP52/S64 and clean8 correspond to requested one, dirt remains and no cleaning success. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "cook_a_frozen_pie_131",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "451c49f3b1a31ce9eb7b357a4b8f5eedc0c9bafd21eacfce185116632f620e4d",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cook_a_frozen_pie_131--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right apple_pie_75 on refrigerator shelf; F8 and separate clean8 only, no recovered success, no cooked pie/transport outcome. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "cook_a_frozen_pie_131",
+      "branch": "clean",
+      "manifest_sha256": "db4ac00b4f6ab9ea4a5f7ceaa028cb161a2a251e7ece8b4e6b5ddf5c7e5dfd0a",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/cook_a_frozen_pie_131--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right apple_pie_75 on refrigerator shelf; F8 and separate clean8 only, no recovered success, no cooked pie/transport outcome. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "tidying_living_room_6",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "dfe085e030c5f7ae0224310120cb58a75bd405dae16d7c1d1e68457c6ed2f94c",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/tidying_living_room_6--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right newspaper_53 on living room floor with left hand nearby; F8/IP20 and clean8 checked, no recovered success inferred from closure or left hand contact. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    },
+    {
+      "case": "tidying_living_room_6",
+      "branch": "clean",
+      "manifest_sha256": "96deb8fdb831d048f525d95eb2541ba301dae5fad193507be4fb3b7d141c2e33",
+      "review_directory": "runs/recovery100_collection_20261009/independent-calibration-review-v2/tidying_living_room_6--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right newspaper_53 on living room floor with left hand nearby; F8/IP20 and clean8 checked, no recovered success inferred from closure or left hand contact. Calibration only; never TRAIN or checkpoint selection; no action/planner approval."
+    }
+  ]
+}
