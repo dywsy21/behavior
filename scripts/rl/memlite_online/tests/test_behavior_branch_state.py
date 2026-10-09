@@ -44,6 +44,23 @@ class BranchStateTests(unittest.TestCase):
             with self.assertRaises(ValueError):restore_branch_metadata(ev,bad)
             self.assertEqual(capture_branch_metadata(ev),saved)
 
+    def test_cold_agent_metric_lazy_fields_are_initialized_from_snapshot(self):
+        saved=capture_branch_metadata(fixture())
+        cold=fixture();agent=cold.instance_eval_states[0].metrics[1]
+        agent.initialized=False
+        for key in ('next_state_cache','state_cache','delta_agent_distance'):
+            delattr(agent,key)
+        restore_branch_metadata(cold,saved)
+        self.assertEqual(capture_branch_metadata(cold),saved)
+
+    def test_absent_nonlazy_or_initialized_metric_field_rejects_atomically(self):
+        saved=capture_branch_metadata(fixture())
+        for metric_index,field in ((0,'timesteps'),(1,'next_state_cache')):
+            cold=fixture();cold.env.env._current_steps=[999]
+            delattr(cold.instance_eval_states[0].metrics[metric_index],field)
+            with self.assertRaises(ValueError):restore_branch_metadata(cold,saved)
+            self.assertEqual(cold.env.env._current_steps,[999])
+
     def test_unhandled_state_never_silently_accepted(self):
         ev=fixture();ev.instance_eval_states[0].light_synchronizer=object()
         with self.assertRaises(ValueError):capture_branch_metadata(ev)

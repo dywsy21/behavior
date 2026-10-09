@@ -68,10 +68,15 @@ def capture_branch_metadata(evaluator):
 
 def restore_branch_metadata(evaluator, saved):
     env, task, inst = _environment(evaluator)
-    current = capture_branch_metadata(evaluator)
-    if (saved['schema'] != current['schema'] or saved['task'] != current['task']
-            or saved['instance'] != current['instance'] or saved['policy_state_included'] is not False
-            or [m['kind'] for m in saved['metrics']] != [m['kind'] for m in current['metrics']]):
+    # A freshly reset AgentMetric has initialized=False and intentionally has
+    # no lazy step caches yet. Validate topology without trying to capture
+    # those absent current values; the complete saved snapshot supplies them.
+    kinds=[type(metric).__name__ for metric in inst.metrics]
+    if (saved['schema'] != 'behavior_prefix_branch_metadata_v1' or saved['task'] != task.activity_name
+            or saved['instance'] != inst.instance_id or saved['policy_state_included'] is not False
+            or [m['kind'] for m in saved['metrics']] != kinds
+            or sorted(kinds)!=['AgentMetric','TaskMetric']
+            or any(set(metric.state)!={inst.env_accessor.scene} for metric in inst.metrics)):
         raise ValueError('Cross-task/instance or unregistered branch restore')
     updates = [(env, saved['env'], ENV_FIELDS), (task, saved['task_state'], TASK_FIELDS),
                (evaluator, saved['evaluator'], ('n_trials', 'n_success_trials', 'total_time'))]
@@ -79,16 +84,23 @@ def restore_branch_metadata(evaluator, saved):
                               (task._reward_functions, 'reward', REWARDS)):
         if set(saved[name]) != set(spec):
             raise ValueError('Missing task component state')
-        for key, (_, names) in spec.items():
+        for key, (cls, names) in spec.items():
+            if type(group[key]).__name__!=cls:raise ValueError('Unknown reward or termination state')
             updates.append((group[key], saved[name][key], names))
     for metric, state in zip(inst.metrics, saved['metrics']):
         updates.append((metric, state['fields'], METRICS[state['kind']]))
     # Validate all schemas BEFORE mutating any state.
     if any(set(values) != set(names) for _, values, names in updates):
         raise ValueError('Incomplete branch metadata')
+    for obj,values,_ in updates:
+        for key in values:
+            if not hasattr(obj,key) and not (type(obj).__name__=='AgentMetric'
+                    and getattr(obj,'initialized',None) is False
+                    and key in {'next_state_cache','state_cache','delta_agent_distance'}):
+                raise ValueError('Missing non-lazy current field: '+key)
     for obj, values, _ in updates:
         for key, value in values.items():
-            existing = getattr(obj, key)
+            existing = getattr(obj, key, None)
             if hasattr(existing, 'copy_') and hasattr(value, 'shape'):
                 existing.copy_(value)
             else:
