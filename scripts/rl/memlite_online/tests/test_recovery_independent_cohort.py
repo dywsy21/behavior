@@ -4,7 +4,7 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_independent_cohort import cohort_sources
+from recovery_independent_cohort import cohort_sources, proposed_phase_points
 
 
 class CohortTests(unittest.TestCase):
@@ -21,6 +21,14 @@ class CohortTests(unittest.TestCase):
         selected=cohort_sources(self.queue,self.spec,'calibration')
         self.assertEqual([e['source_group'] for e,_ in selected],['a:1'])
         self.assertEqual(cohort_sources(self.queue,self.spec,'frozen_test')[0][0]['source_group'],'b:2')
+
+    def test_insufficient_history_is_not_fabricated_as_failure_or_unknown(self):
+        points, missing = proposed_phase_points({0:None,4:None},7)
+        self.assertEqual(points,[(4,'UNLABELLED')])
+        self.assertEqual(set(missing),{'FAILED','IN_PROGRESS','SUCCEEDED'})
+        points, missing = proposed_phase_points({8:'FAILED',36:'IN_PROGRESS',40:'SUCCEEDED'},32)
+        self.assertEqual(points,[(8,'FAILED'),(36,'IN_PROGRESS'),(40,'SUCCEEDED')])
+        self.assertEqual(missing,[])
 
     def test_overlap_missing_identity_and_train_fail_closed(self):
         bad=deepcopy(self.spec);bad['frozen_test_groups']=bad['calibration_groups']

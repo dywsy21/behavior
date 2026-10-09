@@ -1,6 +1,23 @@
 """Fixed source-group roles, declared without reading model predictions."""
 
 
+def proposed_phase_points(labels, retry):
+    points, absent = [], []
+    for label in ('FAILED', 'IN_PROGRESS', 'SUCCEEDED'):
+        times = [t for t,v in labels.items() if v == label and (t < retry if label == 'FAILED' else t > retry)]
+        if times:
+            points.append((min(times), label))
+        else:
+            absent.append(label)
+    if not points:
+        if not labels:
+            raise ValueError('No original anchor available even for unlabelled review')
+        # An early teacher failure / intervention escape is not a supported
+        # FAILED or UNKNOWN target. Show available imagery, sign nothing.
+        points = [(max(labels), 'UNLABELLED')]
+    return points, absent
+
+
 def cohort_sources(queue, spec, role):
     if (spec.get('schema') != 'recovery_independent_cohort_v1'
             or role not in ('calibration', 'frozen_test')

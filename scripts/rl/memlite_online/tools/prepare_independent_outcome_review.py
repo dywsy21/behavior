@@ -10,7 +10,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import file_sha
-from recovery_independent_cohort import cohort_sources
+from recovery_independent_cohort import cohort_sources, proposed_phase_points
 from recovery_teacher_corpus import validate_branch, physical_proposal, PhysicalProposalIndex
 
 
@@ -56,18 +56,14 @@ def main():
                      for k in ('FAILED','IN_PROGRESS','SUCCEEDED')))
         branch, manifest, rows, plans, labels = load_branch(source, a.root)
         retry = plans[1]['control_step'] if len(plans)>1 else len(rows)
-        chosen = []
-        for label in ('FAILED','IN_PROGRESS','SUCCEEDED'):
-            times = [t for t,v in labels.items() if v==label and (t<retry if label=='FAILED' else t>retry)]
-            if times:
-                chosen.append((min(times),label))
-            else:
-                unavailable.append(dict(source_group=entry['source_group'],label=label,
-                                        reason='No physically supported anchor in this causal phase; not invented'))
+        chosen, absent = proposed_phase_points(labels, retry)
+        for label in absent:
+            unavailable.append(dict(source_group=entry['source_group'],label=label,
+                                    reason='No physically supported anchor in this causal phase; not invented'))
         clean, cm, cr, cp, cl = load_branch(branches['clean'], a.root)
         clean_times = [t for t,v in cl.items() if v=='SUCCEEDED']
-        if not clean_times or not chosen:
-            raise ValueError('Independent source needs manual investigation; do not silently drop it')
+        if not clean_times:
+            raise ValueError('Independent clean source needs manual investigation; do not silently drop it')
         reference = chosen[0][0]
         clean_t = min(clean_times, key=lambda t:(abs(t-reference),t))
         samples = [(source,branch,manifest,rows,chosen),
@@ -93,7 +89,8 @@ def main():
                                    for r in controls[max(0,t-6):t]],image_sha256=sha))
                 line += 1
             proposals.append(dict(case=entry['case'],branch=src['branch'],manifest_sha256=file_sha(folder/'manifest.json'),
-                review_directory=str(review.relative_to(a.root)),outcomes=[dict(control_step=t,value=v) for t,v in points],
+                review_directory=str(review.relative_to(a.root)),
+                outcomes=[dict(control_step=t,value=v) for t,v in points if v!='UNLABELLED'],
                 action_steps=[],planner_steps=[],corrective_execution_visually_verified=False,
                 notes='PENDING owner original-media review; independent '+a.role+' only, NEVER TRAIN or model selection'))
             reviews.append((review,dict(schema='offline_local_recovery_review_materials_v1',source=str(folder),
