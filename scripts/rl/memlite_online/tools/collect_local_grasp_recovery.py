@@ -192,7 +192,9 @@ def main():
                         if kind!='clean' and count==32:
                             if not loss_observed:raise ValueError('Intervention did not produce verified grasp loss')
                             issue(count,'RETRY');retry_issued=True;teacher.stage='APPROACH_OPEN'
-                        if count%16==0:
+                        # 4-control images resolve opening/closing transitions;
+                        # long outcome history still uses its own causal clock.
+                        if count%4==0:
                             meta=dict(control_step=count,sha256={},dimensions={})
                             folder=directory/'rgb'/f'{count:08d}';folder.mkdir()
                             for camera,key in evaluator.robot_camera_names.items():
@@ -216,7 +218,7 @@ def main():
                             label_kind='injected_fault_not_BC' if injected else 'same_state_local_teacher_candidate',
                             teacher=teacher_info,physical_before=measured,physical_audit=after,
                             context=dict(context_id=current['event_sha256'],active_skills_semantic_json=semantic,parent_goal=parent),
-                            rgb_anchor_control_step=count//16*16,chunk_start_control_step=count//16*16,
+                            rgb_anchor_control_step=count//4*4,chunk_start_control_step=count//4*4,
                             experience_id=count//16,policy_update=0,terminated=False,truncated=False)
                         stream.write(json.dumps(row,allow_nan=False)+'\n');count+=1
                         if count%16==0:atomic_json(a.output/'status.json',dict(status,status='collecting',branch=kind,branch_controls=count))
