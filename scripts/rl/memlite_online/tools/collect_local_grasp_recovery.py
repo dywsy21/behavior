@@ -69,7 +69,11 @@ def main(argv=None, *, shared_session=None):
     from omegaconf import OmegaConf
     from g05.utils.memlite_skill_protocol import (semantic_active_skills_text,parse_active_skills_semantic_json,
         append_b_memory_idempotent,canonical_json)
-    gm.HEADLESS=True;gm.RENDER_VIEWER_CAMERA=False;seed_everything(DEFAULT_EVAL_SEED)
+    # OmniGibson locks consumed macro fields after simulator construction.
+    # Reusing the same configured session must not unlock/mutate them.
+    if shared_session is None or not shared_session:
+        gm.HEADLESS=True;gm.RENDER_VIEWER_CAMERA=False
+    seed_everything(DEFAULT_EVAL_SEED)
     arrays=np.load(a.proposal/'prefix.npz',allow_pickle=False);actions=arrays['action']
     if actions.shape!=(source['controls'],23):raise ValueError('Wrong raw23 source')
     selected=source['selected_segment'];skills=json.loads(selected['semantic'])

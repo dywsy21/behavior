@@ -6,6 +6,7 @@ are recorded and do not silently turn into successful samples or retries.
 """
 import argparse
 from concurrent.futures import ThreadPoolExecutor
+from collections import defaultdict
 import json
 import os
 from pathlib import Path
@@ -23,7 +24,8 @@ from common import atomic_json,sha256
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--sources',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
-    p.add_argument('--gpus',nargs='+',type=int,required=True);a=p.parse_args()
+    p.add_argument('--gpus',nargs='+',type=int,required=True)
+    p.add_argument('--warm-groups',action='store_true');a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     if len(set(a.gpus))!=len(a.gpus):raise ValueError('Duplicate GPU')
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():raise ValueError('Dirty source')
@@ -35,27 +37,37 @@ def main():
         if sha256(a.sources/case['directory']/'manifest.json')!=case['manifest_sha256']:raise ValueError('Changed inventory')
     a.output.mkdir(parents=True);jobs=queue.Queue();lock=threading.Lock();loading=threading.Semaphore(2)
     rows=[]
-    for case in sources:jobs.put(case)
+    if a.warm_groups:
+        groups=defaultdict(list)
+        for case in sources:
+            task=json.loads((a.sources/case['directory']/'manifest.json').read_text())['task']
+            groups[task].append(case['directory'])
+        for task,cases in groups.items():jobs.put(dict(directory=task,cases=cases))
+    else:
+        for case in sources:jobs.put(case)
     def worker(gpu):
         while True:
             try:case=jobs.get_nowait()
             except queue.Empty:return
-            name=case['directory'];out=a.output/name
+            name=case['directory'];out=a.output/(case['cases'][0] if a.warm_groups else name)
             log=(a.output/(name+'.log')).open('x')
             env=dict(os.environ,EVAL_GPU=str(gpu),EVAL_SOURCE=str(REPO/'scripts/eval/memlite_sft100'))
             loading.acquire();released=False
             try:
-                proc=subprocess.Popen(['bash',str(REPO/'scripts/eval/memlite_sft100/launch_sim.sh'),
-                    str(REPO/'scripts/rl/memlite_online/tools/collect_local_grasp_recovery.py'),
-                    '--proposal',str(a.sources/name),'--output',str(out)],stdout=log,stderr=subprocess.STDOUT,
+                command=([str(REPO/'scripts/rl/memlite_online/tools/collect_local_recovery_group.py'),
+                    '--sources',str(a.sources),'--output',str(a.output),'--cases',*case['cases']] if a.warm_groups else
+                    [str(REPO/'scripts/rl/memlite_online/tools/collect_local_grasp_recovery.py'),
+                     '--proposal',str(a.sources/name),'--output',str(out)])
+                proc=subprocess.Popen(['bash',str(REPO/'scripts/eval/memlite_sft100/launch_sim.sh'),*command],stdout=log,stderr=subprocess.STDOUT,
                     stdin=subprocess.DEVNULL,env=env,cwd=REPO)
                 while proc.poll() is None:
                     if not released and (out/'status.json').exists():
                         state=json.loads((out/'status.json').read_text())
                         if state['status']!='loading':loading.release();released=True
                     time.sleep(1)
+                receipt=a.output/(name+'-group.json') if a.warm_groups else out/'status.json'
                 row=dict(case=name,gpu=gpu,pid=proc.pid,returncode=proc.returncode,
-                         status=json.loads((out/'status.json').read_text()) if (out/'status.json').exists() else None)
+                         status=json.loads(receipt.read_text()) if receipt.exists() else None)
                 with lock:
                     rows.append(row);atomic_json(a.output/'status.json',dict(status='collecting',completed=len(rows),
                         inventory_cases=len(sources),quota=None,results=rows))
