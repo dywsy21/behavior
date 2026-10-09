@@ -22,13 +22,15 @@ sys.path[:0]=[str(REPO/'scripts/eval/memlite_sft100'),str(Path(__file__).resolve
 from common import atomic_json,OFFICIAL,OFFICIAL_COMMIT,sha256
 from recovery_corpus import canonical,digest,group_key,split_group
 from recovery_recorder import proprio61
-from recovery_articulation_teacher import CausalArticulation,StationaryServo,servo,yaw_of,functional_goal,validate_corridor
+from recovery_articulation_teacher import CausalArticulation,StationaryServo,servo,yaw_of,functional_goal,validate_corridor,progressing
+from recovery_reference_binding import ReferenceArticulationBinding
 from behavior_branch_state import capture_branch_metadata
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--proposal',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--reference-category-binding',action='store_true')
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():raise ValueError('Dirty source')
@@ -100,19 +102,31 @@ def main():
             # an exact, unique native scene name is accepted; no category guess.
             scene_matches=[o for o in robot.scene.objects if o.name==skills[0]['target']]
             if len(scene_matches)==1:matches=[('scene_object:'+scene_matches[0].name,scene_matches[0])]
-        if len(matches)!=1:raise ValueError('No exact native task-scope target; do not guess aliases')
-        entity,target=matches[0]
-        states=[v for k,v in target.states.items() if k.__name__=='Open']
-        if len(states)!=1:raise ValueError('Missing unambiguous installed Open state')
-        open_state=states[0];want_open=skills[0]['verb'].startswith('OPEN_')
+        requested_name=skills[0]['target'];want_open=skills[0]['verb'].startswith('OPEN_')
+        binder=None;candidate_objects={};candidate_inventory={}
+        if len(matches)==1:
+            entity,target=matches[0]
+        elif not matches and a.reference_category_binding:
+            entities={o.name:k for k,o in scope.items() if o is not None}
+            candidate_objects={o.name:(entities.get(o.name,'scene_object:'+o.name),o)
+                               for o in robot.scene.objects if getattr(o,'category',None)==requested_name}
+            candidate_inventory={n:dict(entity=k,category=o.category) for n,(k,o) in candidate_objects.items()}
+            binder=ReferenceArticulationBinding(candidate_inventory,requested_name,selected['start'],selected['end'])
+            entity,target=None,None
+        else:raise ValueError('No exact native task-scope target; do not guess aliases')
         from omnigibson.object_states.open_state import _get_relevant_joints,_compute_joint_threshold
-        two_sided,relevant,directions=_get_relevant_joints(target)
-        if two_sided or len(relevant)!=1:
-            raise ValueError('Whole-object clearance ambiguous; requires an exact part-level adapter')
-        hinge=relevant[0];_,open_end,closed_end=_compute_joint_threshold(hinge,directions[0])
-        open_end,closed_end=float(open_end),float(closed_end)
-        if not np.isfinite([open_end,closed_end]).all() or abs(open_end-closed_end)<1e-5:
-            raise ValueError('Missing finite directed joint travel')
+        def contract(obj):
+            states=[v for k,v in obj.states.items() if k.__name__=='Open']
+            if len(states)!=1:raise ValueError('Missing unambiguous installed Open state')
+            two_sided,relevant,directions=_get_relevant_joints(obj)
+            if two_sided or len(relevant)!=1:
+                raise ValueError('Whole-object clearance ambiguous; requires an exact part-level adapter')
+            hinge=relevant[0];_,opened,closed=_compute_joint_threshold(hinge,directions[0])
+            opened,closed=float(opened),float(closed)
+            if not np.isfinite([opened,closed]).all() or abs(opened-closed)<1e-5:
+                raise ValueError('Missing finite directed joint travel')
+            return states[0],hinge,opened,closed
+        contracts={n:contract(o) for n,(_k,o) in candidate_objects.items()} if binder else {target.name:contract(target)}
         idx=lambda v:v.detach().cpu().numpy().astype(int)
         arms={arm:idx(robot.arm_action_idx[arm]) for arm in robot.arm_names}
         grips={arm:int(idx(robot.gripper_action_idx[arm])[0]) for arm in robot.arm_names}
@@ -128,15 +142,19 @@ def main():
             pos,quat=robot.get_position_orientation();base=np.array([float(pos[0]),float(pos[1]),yaw_of(quat)])
             return q,base
         def physical():
-            raw=open_state.get_value();value=raw.item() if hasattr(raw,'item') else raw
-            if type(value) is not bool:raise ValueError('Installed Open is not a Boolean measurement')
-            pos,quat=target.get_position_orientation()
-            position=float(hinge.get_state()[0].item());fraction=(position-closed_end)/(open_end-closed_end)
-            return dict(target_name=target.name,entity=entity,open=value,goal_predicate=functional_goal(value,fraction,want_open),
-                directed_open_fraction=fraction,open_end=open_end,closed_end=closed_end,
-                object_joints=target.get_joint_positions().detach().cpu().tolist(),position=pos.tolist(),orientation=quat.tolist(),
-                grasp={arm:robot.is_grasping(arm=arm,candidate_obj=target).name for arm in robot.arm_names},
-                predicate_contract='single exact hinge: open>=35% / lost<=10%; close<=2.5% + official not Open; middle UNKNOWN',label_only=True)
+            def one(k,obj):
+                state,hinge,open_end,closed_end=contracts[obj.name]
+                raw=state.get_value();value=raw.item() if hasattr(raw,'item') else raw
+                if type(value) is not bool:raise ValueError('Installed Open is not a Boolean measurement')
+                pos,quat=obj.get_position_orientation()
+                position=float(hinge.get_state()[0].item());fraction=(position-closed_end)/(open_end-closed_end)
+                return dict(target_name=obj.name,entity=k,open=value,goal_predicate=functional_goal(value,fraction,want_open),
+                    directed_open_fraction=fraction,open_end=open_end,closed_end=closed_end,
+                    object_joints=obj.get_joint_positions().detach().cpu().tolist(),position=pos.tolist(),orientation=quat.tolist(),
+                    grasp={arm:robot.is_grasping(arm=arm,candidate_obj=obj).name for arm in robot.arm_names},
+                    predicate_contract='single exact hinge: open>=35% / lost<=10%; close<=2.5% + official not Open; middle UNKNOWN',label_only=True)
+            if target is None:return dict(binding_candidates={n:one(k,o) for n,(k,o) in candidate_objects.items()})
+            return one(entity,target)
         def step(command):
             if shutil.disk_usage(a.output).free<100*2**30:raise RuntimeError('Disk safety reserve reached')
             command=np.asarray(command,dtype=np.float32)
@@ -156,17 +174,48 @@ def main():
                 if t>=selected['start']:
                     path.append(dict(q=q.tolist(),base=base.tolist(),source_frame=t,physical=before))
                 evaluator._write_video(inst);after=step(command)
-                outcome=history.update(t,after['goal_predicate'] if t>=selected['start'] else None,moving=False)
+                if binder:
+                    bound=binder.observe(t,before['binding_candidates'],after['binding_candidates'])
+                    outcome='UNKNOWN'  # no single target/label before physical resolution
+                else:
+                    bound=None;outcome=history.update(t,after['goal_predicate'] if t>=selected['start'] else None,moving=False)
                 stream.write(json.dumps(dict(control_step=t,action_executed_raw23=command.tolist(),proprio_before=proprio,
                     proprio_after=proprio61(inst.obs),physical_before=before,physical_audit=after,
                     outcome_after_control_candidate=outcome,outcome_evidence_available_control_step=t+1,
                     source_label_kind='original_reference_not_corrective_BC'))+'\n')
+                if bound is not None:
+                    entity,target=candidate_objects[bound];history=binder.states[bound]
+                    seeded=True;break
                 if outcome=='SUCCEEDED':seeded=True;break
                 if t%16==0:atomic_json(a.output/'status.json',dict(status,status='replaying_prefix',source_frame=t))
         evaluator._set_video_writer(inst,None)
         if not seeded:
             receipt=dict(status,status='reference_articulation_not_reproduced',training_approved=False)
             atomic_json(a.output/'result.json',receipt);atomic_json(a.output/'status.json',receipt);return
+        if binder:
+            raw_prefix=a.output/'binding-reference.jsonl';(a.output/'prefix.jsonl').rename(raw_prefix)
+            raw_rows=[json.loads(line) for line in raw_prefix.read_text().splitlines()]
+            replay=ReferenceArticulationBinding(candidate_inventory,requested_name,selected['start'],selected['end'])
+            normalized=[]
+            for i,row in enumerate(raw_rows):
+                found=replay.observe(i,row['physical_before']['binding_candidates'],row['physical_audit']['binding_candidates'])
+                if found is not None and (i!=len(raw_rows)-1 or found!=target.name):raise ValueError('Changed first reference articulation binding')
+                row=deepcopy(row);row['physical_before']=row['physical_before']['binding_candidates'][target.name]
+                row['physical_audit']=row['physical_audit']['binding_candidates'][target.name]
+                row['outcome_after_control_candidate']='SUCCEEDED' if found else 'UNKNOWN'
+                normalized.append(row)
+            if found!=target.name:raise ValueError('Unreproduced reference articulation binding')
+            with (a.output/'prefix.jsonl').open('x') as stream:
+                for row in normalized:stream.write(json.dumps(row,allow_nan=False)+'\n')
+            for knot in path:knot['physical']=knot['physical']['binding_candidates'][target.name]
+            skills[0]['target']=target.name
+            binding=dict(schema='original_reference_articulation_binding_v1',requested_category=requested_name,
+                candidates=candidate_inventory,selected_target=target.name,selected_entity=entity,
+                evidence_available_control_step=t+1,source_proposal_sha256=status['proposal_sha256'],
+                raw_reference_sha256=sha256(raw_prefix),normalized_prefix_sha256=sha256(a.output/'prefix.jsonl'),
+                resolved_skills=skills,training_approved=False,
+                method='unique measured exact-category articulation false-to-true goal, all other candidates move <3.5% joint travel')
+            atomic_json(a.output/'reference-binding.json',binding);status['reference_binding_sha256']=sha256(a.output/'reference-binding.json')
         seed_q,seed_base=measured();seed_q[[14,22]]=actions[t,[14,22]]
         seed=dict(q=seed_q.tolist(),base=seed_base.tolist(),source_frame=t+1,physical=physical())
         # Keep only a physically local measured suffix. Missing/too distant
@@ -224,7 +273,7 @@ def main():
                     if info['reached'] and phase in ('fault_reverse','corrective') and cursor<len(trajectory)-1:
                         cursor+=1;stationary=StationaryServo()
                     evaluator._write_video(inst);after=step(command)
-                    moved=np.max(np.abs(np.asarray(after['object_joints'])-before['object_joints']))>1e-5
+                    moved=phase=='corrective' and progressing(before['directed_open_fraction'],after['directed_open_fraction'],want_open)
                     outcome=outcomes.update(count,after['goal_predicate'],retry=retry_tick==count,moving=bool(moved))
                     label_counts[outcome]=label_counts.get(outcome,0)+1
                     row=dict(control_step=count,proprio_before=proprio,proprio_after=proprio61(inst.obs),

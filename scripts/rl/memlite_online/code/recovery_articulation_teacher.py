@@ -19,6 +19,12 @@ def yaw_of(quat):
 def wrap(angle):return (angle+math.pi)%(2*math.pi)-math.pi
 
 
+def progressing(before_fraction,after_fraction,want_open):
+    if not math.isfinite(before_fraction) or not math.isfinite(after_fraction):
+        raise ValueError('Nonfinite articulation progress')
+    return (after_fraction-before_fraction)*(1 if want_open else -1)>1e-5
+
+
 def functional_goal(open_value,fraction,want_open):
     """Hysteresis: a barely-open 5% simulator predicate is not skill completion.
 

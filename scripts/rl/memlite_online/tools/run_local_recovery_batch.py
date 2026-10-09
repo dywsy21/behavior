@@ -120,6 +120,7 @@ def main():
                 proposal=json.loads((a.sources/name/'manifest.json').read_text())
                 if proposal['schema']=='recovery_expert_skill_proposal_v1':
                     command[0]=str(REPO/'scripts/rl/memlite_online/tools/collect_local_articulation_recovery.py')
+                    if a.reference_category_binding:command.append('--reference-category-binding')
                 else:
                     if a.diversify_fault_timing:command.append('--diversify-fault-timing')
                     if a.reference_category_binding:command.append('--reference-category-binding')

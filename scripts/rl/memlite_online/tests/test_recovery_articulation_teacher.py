@@ -3,10 +3,17 @@ from pathlib import Path
 import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_articulation_teacher import CausalArticulation,servo,functional_goal,validate_corridor
+from recovery_articulation_teacher import CausalArticulation,servo,functional_goal,validate_corridor,progressing
 
 
 class ArticulationTests(unittest.TestCase):
+    def test_motion_away_from_goal_is_not_progress(self):
+        self.assertTrue(progressing(.1,.12,True))
+        self.assertFalse(progressing(.12,.1,True))
+        self.assertTrue(progressing(.12,.1,False))
+        self.assertFalse(progressing(.1,.12,False))
+        self.assertFalse(progressing(.1,.1,True))
+
     def test_no_segment_end_timeout_or_unknown_success(self):
         state=CausalArticulation()
         self.assertEqual([state.update(i,True) for i in range(30)],['UNKNOWN']*30)

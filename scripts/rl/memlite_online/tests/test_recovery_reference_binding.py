@@ -6,7 +6,7 @@ import json
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'code'))
-from recovery_reference_binding import ReferenceGraspBinding, resolve_prefix_rows, verify_saved_binding
+from recovery_reference_binding import ReferenceGraspBinding, ReferenceArticulationBinding, resolve_prefix_rows, verify_saved_binding
 from recovery_corpus import file_sha
 
 
@@ -22,6 +22,26 @@ def physical(held=None):
 
 
 class BindingTests(unittest.TestCase):
+    def test_articulation_requires_unique_physical_transition_not_unique_category_name(self):
+        candidates={n:dict(entity=n,category='door') for n in ('door_a','door_b')}
+        def state(a,b):
+            return {n:dict(target_name=n,entity=n,directed_open_fraction=f,goal_predicate=f>=.35)
+                    for n,f in [('door_a',a),('door_b',b)]}
+        binder=ReferenceArticulationBinding(candidates,'door',0,30)
+        self.assertIsNone(binder.observe(0,state(0,0),state(0,0)))
+        for i in range(1,12):self.assertIsNone(binder.observe(i,state(.4,0),state(.4,0)))
+        self.assertEqual(binder.observe(12,state(.4,0),state(.4,0)),'door_a')
+        binder=ReferenceArticulationBinding(candidates,'door',0,30)
+        binder.observe(0,state(0,0),state(0,0))
+        for i in range(1,12):binder.observe(i,state(.4,.1),state(.4,.1))
+        with self.assertRaises(ValueError):binder.observe(12,state(.4,.1),state(.4,.1))
+
+    def test_articulation_never_binds_already_open_or_out_of_interval(self):
+        candidates={'door_a':dict(entity='door_a',category='door')}
+        opened={'door_a':dict(target_name='door_a',entity='door_a',directed_open_fraction=.5,goal_predicate=True)}
+        binder=ReferenceArticulationBinding(candidates,'door',0,30)
+        for i in range(20):self.assertIsNone(binder.observe(i,opened,opened))
+
     def test_no_category_or_nearest_guess_six_real_controls(self):
         state = ReferenceGraspBinding(inventory(), 'cup', 'RIGHT', 0, 20)
         self.assertIsNone(state.observe(0, physical()))

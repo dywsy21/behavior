@@ -52,6 +52,45 @@ class ReferenceGraspBinding:
         return stable[0] if stable else None
 
 
+class ReferenceArticulationBinding:
+    """Unique, observed goal transition AND unique moving exact-category joint.
+
+    All same-category competitors must have unambiguous physical contracts.
+    This is reference annotation resolution, not an online actor oracle.
+    """
+    def __init__(self, candidates, category, start, end):
+        from recovery_articulation_teacher import CausalArticulation
+        if (not candidates or any(v['category'] != category for v in candidates.values())
+                or not 0 <= start < end):
+            raise ValueError('Invalid exact-category articulation inventory')
+        self.candidates, self.start, self.end = candidates, start, end
+        self.states = {n: CausalArticulation() for n in candidates}
+        self.initial_fraction = {}; self.moved = set()
+
+    def observe(self, step, before, after):
+        if set(before) != set(self.candidates) or set(after) != set(self.candidates):
+            raise ValueError('Missing articulation competitor')
+        import math
+        achieved = []
+        inside = self.start <= step < self.end
+        for name, info in self.candidates.items():
+            first, second = before[name], after[name]
+            for value in (first, second):
+                if (value['target_name'] != name or value['entity'] != info['entity']
+                        or not math.isfinite(value['directed_open_fraction'])):
+                    raise ValueError('Changed articulation binding identity or measurement')
+            if inside:
+                initial = self.initial_fraction.setdefault(name, first['directed_open_fraction'])
+                if abs(second['directed_open_fraction'] - initial) >= .035: self.moved.add(name)
+            outcome = self.states[name].update(step, second['goal_predicate'] if inside else None)
+            if outcome == 'SUCCEEDED': achieved.append(name)
+        if achieved:
+            if len(achieved) != 1 or self.moved != set(achieved):
+                raise ValueError('Multiple moving/achieved reference articulation candidates')
+            return achieved[0]
+        return None
+
+
 def resolve_prefix_rows(rows, candidates, category, arm, start, end, expected_name, expected_arm):
     """Recheck ALL real competitor observations before normalizing a prefix."""
     from copy import deepcopy
