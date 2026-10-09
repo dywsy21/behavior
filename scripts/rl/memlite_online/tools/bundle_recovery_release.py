@@ -22,7 +22,8 @@ def main():
             path=local_file(a.verify,row['path'])
             if path.stat().st_size!=row['bytes'] or file_sha(path)!=row['sha256']:raise ValueError('Transferred bytes differ: '+row['path'])
         print(json.dumps(dict(status='all_transferred_files_verified',files=len(m['files']),
-            bytes=sum(x['bytes'] for x in m['files']),manifest_sha256=file_sha(a.verify/'transfer-manifest.json'))));return
+            bytes=sum(x['bytes'] for x in m['files']),admission_sha256=m['admission_sha256'],
+            manifest_sha256=file_sha(a.verify/'transfer-manifest.json'))));return
     if not all((a.evidence_root,a.corpus,a.admission,a.approvals,a.protected,a.output)):
         p.error('Provide all build paths or --verify')
     if a.output.exists():raise FileExistsError(a.output)

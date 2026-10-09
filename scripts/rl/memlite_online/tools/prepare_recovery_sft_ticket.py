@@ -14,6 +14,46 @@ from recovery_corpus import file_sha  # noqa: E402
 from recovery_sft_data import require_training_pool  # noqa: E402
 
 
+DATA_CHECKS={
+    'full_read':('offline_recovery_full_read_audit_v1','passed'),
+    'processor':('accepted_recovery_processor_audit_v1','passed'),
+    'features':('accepted_feature_reload_audit_v1','passed'),
+    'start_states':('recovery_start_acceptance_v1','passed'),
+    'transfer':(None,'all_transferred_files_verified'),
+}
+
+
+def validate_data_checks(path,admission_sha,admission,high_sha):
+    accepted=json.loads(path.read_text())
+    if (accepted['schema']!='recovery_accepted_data_preflight_v1'
+            or accepted['admission_sha256']!=admission_sha
+            or accepted['optimizer_steps']!=0 or accepted['formal_training_authorized']
+            or set(accepted['checks'])!=set(DATA_CHECKS)):
+        raise ValueError('Wrong or incomplete accepted data preflight')
+    checked={};values={}
+    for name,(schema,status) in DATA_CHECKS.items():
+        ref=accepted['checks'][name];evidence_path=Path(ref['path'])
+        if file_sha(evidence_path)!=ref['sha256']:raise ValueError('Changed data preflight evidence: '+name)
+        evidence=json.loads(evidence_path.read_text())
+        # Expected success status is code-defined, not chosen by a run ticket.
+        if evidence.get('status')!=status or (schema and evidence.get('schema')!=schema):
+            raise ValueError('Unpassed or wrong data gate: '+name)
+        if name in ('processor','features','start_states','transfer') and evidence.get('admission_sha256')!=admission_sha:
+            raise ValueError('Evidence from another admission: '+name)
+        if name in ('full_read','processor') and evidence.get('inventory_sha256')!=admission['inventory_sha256']:
+            raise ValueError('Evidence from another corpus: '+name)
+        checked[name]=dict(verified=True,path=str(evidence_path),sha256=ref['sha256']);values[name]=evidence
+    if (values['features']['high_sha256']!=high_sha or values['features']['optimizer_steps']!=0
+            or not values['features']['head_consumption_and_insulated_backward']):
+        raise ValueError('Wrong feature parent or gradient contract')
+    starts=values['start_states']
+    if (starts['formal_training'] or starts['actor_oracle_inputs'] or not starts['manual_review_complete']
+            or {row['split'] for row in starts['accepted']}!={'train','dev'}):
+        raise ValueError('Incomplete or privileged start-state acceptance')
+    checked['receipt_sha256']=file_sha(path)
+    return checked
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--recipe',type=Path,required=True)
@@ -58,20 +98,9 @@ def main():
             engineering[key]=dict(interface_verified=True,diagnostic_only=True,evidence=str(path),sha256=file_sha(path))
     data_checks={}
     if args.accepted_data_evidence:
-        accepted=json.loads(args.accepted_data_evidence.read_text())
-        if (accepted['schema']!='recovery_accepted_data_preflight_v1'
-                or accepted['admission_sha256']!=args.admission_sha256
-                or accepted['optimizer_steps']!=0 or accepted['formal_training_authorized']):
-            raise ValueError('Wrong accepted data preflight')
-        for name,ref in accepted['checks'].items():
-            path=Path(ref['path'])
-            if file_sha(path)!=ref['sha256']:raise ValueError('Changed data preflight evidence: '+name)
-            evidence=json.loads(path.read_text())
-            if evidence.get('status') not in ref['accepted_statuses']:raise ValueError('Unpassed data gate: '+name)
-            data_checks[name]=dict(verified=True,path=str(path),sha256=ref['sha256'])
-        if set(data_checks)!={'full_read','processor','features','start_states','transfer'}:
-            raise ValueError('Missing actual data/start/cache check')
-        data_checks['receipt_sha256']=file_sha(args.accepted_data_evidence)
+        admission=json.loads((args.admission/'admission.json').read_text())
+        data_checks=validate_data_checks(args.accepted_data_evidence,args.admission_sha256,
+                                         admission,recipe['parents']['high']['sha256'])
     remaining=[]
     if not all(v['data_ready'] for v in gates.values()):
         remaining.append('Accepted per-sample outcome/planner/action evidence; no whole-clip blanket approval')
@@ -81,6 +110,7 @@ def main():
         admission_sha256=args.admission_sha256,node=recipe['preferred_node'],parents=recipe['parents'],
         data_gates=gates,engineering=engineering,accepted_data_checks=data_checks,
         technical_preparation_complete=not remaining,execution_ready=False,optimizer_steps=0,
+        preparation_scope='Initial verified GRASP-recovery SFT pilot; not runtime calibration or all-skill RL readiness',
         formal_training_authorized=False,remaining_preparation=remaining,
         separate_launch_requirements=['Independent team code review before merge; not performed by this single-agent preparation',
                                      'Explicit formal training run ticket; preparation is not authorization'],
