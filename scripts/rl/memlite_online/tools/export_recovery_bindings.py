@@ -38,7 +38,7 @@ def main():
     run = json.loads(args.source_manifest.read_text())
     inventory = json.loads(args.inventory.read_text())
     contracts = {t["task"]: t for g in run["groups"] for t in g["tasks"]}
-    templates, episodes, evidence = {}, {}, {}
+    templates, episodes, evidence, rejected = {}, {}, {}, {}
     for item in inventory:
         ep = item["episode"]
         task = ep["task"]
@@ -60,11 +60,22 @@ def main():
             templates[task] = (path, mapping)
         path, mapping = templates[task]
         key = canonical([ep["run"], ep["episode_id"]])
-        if key in episodes:
+        if key in episodes or key in rejected:
             continue
         stem = path.name.split("_task_" + task + "_0_0")[0] + "_task_" + task
         instance = path.parent / (stem + "_instances") / (stem + f"_0_{ep['instance_id']}_template-tro_state.json")
-        state_keys = instance_scope(json.loads(instance.read_text()), mapping)
+        state = json.loads(instance.read_text())
+        try:
+            state_keys = instance_scope(state, mapping)
+        except ValueError as error:
+            # A real full/partial scene mismatch must NOT be repaired by
+            # trying another template, class aliases, or numeric suffixes.
+            rejected[key] = dict(task=task, instance_id=ep["instance_id"], reason=str(error),
+                template=str(path), template_sha256=file_sha(path),
+                instance_state=str(instance), instance_state_sha256=file_sha(instance),
+                unmapped_scope_keys=sorted(set(state) - {"robot_poses"} - set(mapping)),
+                all_training_pools_eligible=False)
+            continue
         episodes[key] = {name: entity for entity, name in mapping.items()}
         evidence[key] = dict(task=task, instance_id=ep["instance_id"],
                              template=str(path), template_sha256=file_sha(path),
@@ -72,11 +83,12 @@ def main():
                              physical_scope_keys=sorted(state_keys), actor_input_permitted=False)
     result = dict(schema="recovery_physical_bindings_v1", inventory_sha256=digest(inventory),
                   source_manifest_sha256=file_sha(args.source_manifest), episodes=episodes,
-                  evidence=evidence, actor_input_permitted=False)
+                  evidence=evidence, rejected_episodes=rejected, actor_input_permitted=False)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x") as stream:
         json.dump(result, stream, indent=2, allow_nan=False)
-    print(json.dumps(dict(episodes=len(episodes), tasks=len(templates), output=str(args.output), sha256=file_sha(args.output))))
+    print(json.dumps(dict(episodes=len(episodes), rejected_episodes=list(rejected.values()),
+                         tasks=len(templates), output=str(args.output), sha256=file_sha(args.output))))
 
 
 if __name__ == "__main__":
