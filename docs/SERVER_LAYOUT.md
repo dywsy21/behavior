@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 03:36 CST：新增高层恢复意图包（待迁A800）
+
+- RTX根仍`/run/ti/rl_memlite_stage1_20261006`，下述数据位于`runs/recovery100_collection_20261009`。`planner-expansion-review-v1`为根亲审48页/504原RGB；`planner-expansion-approvals-v1.json`签23实际RETRY，`outcome-expansion-approvals-v3.json`保留95结果。原96的v2包/审批保留历史，但搬箱136/IP36已撤回，勿作为新训练源。
+- `outcome-planner-expansion-unit-v1`把两种审批合在同一48 episode单元，全读1474观察、0新动作。`outcome-planner-expansion-unit-v1.tar.gz`79,242,493B，SHA`52858bd603f17720c9cc707ef437d706aecdff295cc6d9b233954953ae78baa6`；`verify-outcome-planner-v1.5A7T6R`为新独立解包、227依赖全hash通过的保留校验副本，不是活跃训练目录。
+- 签核冻源`code/planner-signed-semantic-v1`=a51cfcaa，封装/历史语义审计冻源`code/planner-semantic-package-v1`=fb49b32b；不热改旧源。`grasp-semantic-{original-outcomes,corrected}-audit-v1.json`、`grasp-semantic-original-pilot-audit-v2.json`为机器回执，本地同名artifacts保留；最初15源另有本地`grasp-semantic-original-local-pilot-audit-v1.json`。
+- A800预定`/data/workspace/wsy/behavior2026/datasets/recovery-outcome-planner-source-20261010-v1`**尚未创建/传输**。用`a800_reviewed_union_v7_outcomes_planner.json`接原v4，不同时加入旧v2单元造成重复episode；旧v6已superseded且新builder拒绝。VPN未获重登确认；lc1最后已确认状态仍高observer14epoch/308、低RL global7，最终运行状态须连通后实查。
+
 ## 2026-10-10 03:14 CST：新增结果数据待迁移
 
 - RTX同`runs/recovery100_collection_20261009`下：`outcome-expansion-review-v2`为24页/288原RGB亲审材料，`outcome-expansion-approvals-v2.json`签96 TRAIN结果（SHAe6b39d94…8004d），`outcome-expansion-unit-v2`为48ZIP/1474观察紧凑全读单元。数据源/签发冻源分别`code/outcome-more-review-v1`=d3e463e2、`code/outcome-more-signed-v1`=faa854e4；没有新sim或optimizer。

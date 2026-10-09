@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 03:36 CST / Codex RECOVERY-USABLE：** 新合并单元`outcome-planner-expansion-unit-v1`实际48ZIP/1474原观察全读通过，95outcome＋23真实RETRY、0动作；23纠正末端均≥128控同目标抓持，仍只GRASP、不冒称跨机制/完整SR。79,242,493B包SHA52858bd6…78baa6独立解包227文件/92,618,261B全部校验通过（admission0b091d00…bb1cc0）。旧已训GRASP164结果＋20plan回查无同类语义冲突，2终态再验真实双手六控失持；新旧192扩展结果仅1冲突已撤。fb49b32b双端161恢复测试过、签核3测试过；轻量完整回执`docs/infra/results/2026-10-10-reviewed-planner-expansion-v1.json`。A800 v7联合/特征/训练未做，目标待迁移路径不存在；1080/socket仍缺、RTX八卡空、未重登VPN，低RL/observer最终状态仍待连接核验。CPU可交接准备完成，goal仍未可用；须用户确认VPN重登后先核现有进程/权重再续，不能重复开训或用旧v6。
+
 - **2026-10-10 03:33 CST / Codex RECOVERY-USABLE：** `a51cfcaa`新签核语义门本地158恢复＋3签核测试通过并Git双端冻结；机器回查前后两批192结果仅发现搬箱136/IP36一处冲突，修订后95outcome＋23plan共118项语义通过并实际签发（83c7a460…525f44d、d2e18a2f…7e3c7e），0新BC。旧v6 spec已显式superseded且新builder拒绝，v7指向待构建的同一episode合并单元，不能把旧outcome包与新plan包重复并入。旧最初pilot媒体source记录为本地路径，首次跨机只读audit路径门拒绝（未改任何标签）；补queue＋manifest SHA定位方式后待重核，不绕过根路径。A800连接继续待用户确认、真实训练终态仍未知。
 
 - **2026-10-10 03:27 CST / Codex RECOVERY-USABLE：** 已亲审24来源48页/504原RGB、实际RETRY字段及其7时点物理记录，发现`moving_boxes_to_storage_136`右手已抓住而原意图arm=UNSPECIFIED，左手重抓的IN_PROGRESS36与RETRY32对整体意图有歧义；不签该plan，并撤回新96结果中的这一个IP（旧包未迁A800/未训练，原证据保留）。新增签核语义门与反例测试进行中，待回查旧已签来源与构建纠正联合单元；不事后将旧计划改成LEFT，不通过删右手物理证据掩盖矛盾。其余23plan待SHA/连续末端核验签发；A800仍未获重连确认，未新启optimizer。

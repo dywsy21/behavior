@@ -1,0 +1,80 @@
+{
+  "schema": "reviewed_recovery_expansion_handoff_v1",
+  "owner": "Codex main",
+  "date_timezone": "2026-10-10 Asia/Shanghai",
+  "status": "cpu_preparation_verified_awaiting_A800_connection",
+  "signing_source_commit": "a51cfcaa",
+  "packaging_source_commit": "fb49b32ba48523ac1e4452fc18b457f61ca4da0c",
+  "manual_review": {
+    "review_directory": "artifacts/recovery-heterogeneous-20261010/planner-expansion-review-v1",
+    "sources": 24,
+    "sheets_personally_inspected": 48,
+    "original_rgb_panels_personally_inspected": 504,
+    "actual_issued_retry_and_memory_checked": 24,
+    "new_planner_approvals": 23,
+    "actual_corrective_stable_tail_min_controls": 128,
+    "planner_servo_arms": {"left": 11, "right": 12},
+    "scope": "Only actual issued GRASP retry targets; not action-window approval or full-task success. Actual command arm remains unchanged."
+  },
+  "semantic_correction": {
+    "case": "moving_boxes_to_storage_136",
+    "branch": "open_gripper_joint_jitter",
+    "withdrawn_outcome": {"control_step": 36, "value": "IN_PROGRESS"},
+    "rejected_planner_step": 32,
+    "reason": "Other hand already holds target while actual GRASP arm is UNSPECIFIED. Do not substitute the collector's selected servo arm for actor-visible command semantics.",
+    "old_96_outcome_package_was_trained": false,
+    "old_evidence_preserved": true,
+    "historical_training_audit": {
+      "previous_grasp_outcomes": 164,
+      "previous_grasp_planner_targets": 20,
+      "same_semantic_conflicts_found": 0,
+      "terminal_observations_separately_validated": 2,
+      "new_and_prior_expansion_outcomes_checked": 192,
+      "expansion_conflicts_found": 1
+    }
+  },
+  "signed_rows": {
+    "outcome": 95,
+    "outcome_classes": {"FAILED": 24, "IN_PROGRESS": 23, "SUCCEEDED": 48},
+    "planner": 23,
+    "action": 0,
+    "split": "train",
+    "source_groups": 24,
+    "mechanism": "GRASP",
+    "independent_calibration_or_test_rows_read": 0,
+    "outcome_approvals_sha256": "83c7a46013f1ec29eb5732557b128c575ba9c6c952902b50075f69cbc525f44d",
+    "planner_approvals_sha256": "d2e18a2f79919bf4031d80792df71e4368817c0c0cfa926693f3e585c87e3c7e"
+  },
+  "compact_unit": {
+    "host": "ssh -p 10383 root@42.192.34.154",
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/outcome-planner-expansion-unit-v1",
+    "archives_fully_read": 48,
+    "original_observations_fully_read": 1474,
+    "admission_sha256": "0b091d002564b6f3386b8b2dc2f3dc5cec73565bd1167a9b58250cba17bb1cc0",
+    "standalone_three_pool_training_ready": false,
+    "why_not_standalone_ready": "No DEV or action rows; merge with existing reviewed release without duplicate episodes."
+  },
+  "transport": {
+    "archive": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/outcome-planner-expansion-unit-v1.tar.gz",
+    "archive_bytes": 79242493,
+    "archive_sha256": "52858bd603f17720c9cc707ef437d706aecdff295cc6d9b233954953ae78baa6",
+    "files": 227,
+    "decoded_bytes": 92618261,
+    "manifest_sha256": "f94b42d4c6db8a2489eb92d43d77cb3fbd29eab2ebf9fad3b3e759be4a9fd98f",
+    "independent_extract_and_all_file_verification": "passed",
+    "verification_directory": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/verify-outcome-planner-v1.5A7T6R",
+    "A800_destination_not_yet_created": "/data/workspace/wsy/behavior2026/datasets/recovery-outcome-planner-source-20261010-v1"
+  },
+  "tests": {"local_recovery": 161, "remote_recovery": 161, "local_exact_review_signing": 3},
+  "next_data_spec": "configs/recovery_sft/a800_reviewed_union_v7_outcomes_planner.json",
+  "superseded_spec_rejected_by_builder": "configs/recovery_sft/a800_reviewed_union_v6_more_outcomes.json",
+  "new_optimizer_steps_from_this_data": 0,
+  "goal_complete": false,
+  "remaining": [
+    "User confirmation before VPN re-login that may displace teammate; no self-authorized reconnection.",
+    "Verify existing A800 observer/RL final state and latest checkpoint before any restart.",
+    "Transfer and verify v7 data, original held-out protection, actual feature extraction/processor and real out-of-fold feedback.",
+    "Train and validate new heterogeneous H1 recovery intent; calibrate observer on appropriate independent data.",
+    "Resume short-skill shared RL only with valid state/policy identity; demonstrate reliable improvement before expansion."
+  ]
+}
