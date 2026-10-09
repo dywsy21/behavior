@@ -8,7 +8,7 @@ from recovery_corpus import canonical, digest
 def feature_requests(anchors, history, selections):
     """selections: (sample_id, current|predecision, member index) tuples.
 
-    Four real observations at least 128 controls apart, confined to the same
+    Four real observations at least 16 controls apart, confined to the same
     actually issued intent attempt. Missing history is masked, never repeated.
     H1's current image is combined ONLY with the pre-decision command memory.
     """
@@ -46,7 +46,10 @@ def feature_requests(anchors, history, selections):
         checks = [bound(row, context)]
         for earlier in reversed(episodes[canonical(row['source_episode'])]):
             t = earlier['control_step']
-            if t > checks[-1]['control_step']-128 or t < context['intent_started_control_step']: continue
+            # Low-level execution yields a fresh image every 16 controls.
+            # Waiting 128 (the old planner cadence) makes short recovery
+            # decisions have only one check, forcing feedback UNKNOWN forever.
+            if t > checks[-1]['control_step']-16 or t < context['intent_started_control_step']: continue
             previous = histories[earlier['sample_id']]['observable']
             if (previous['issued_skills_semantic_json'] != context['issued_skills_semantic_json']
                     or previous['parent_goal'] != context['parent_goal']

@@ -70,13 +70,19 @@ class PipelineTests(unittest.TestCase):
     def test_causal_feature_clocks_and_h1_self_target_exclusion(self):
         anchors,history=joined()
         req=feature_requests(anchors,history,[('256','predecision',0)])[0]
-        self.assertEqual([c['control_step'] for c in req['checks']],[0,128,256])
+        self.assertEqual([c['control_step'] for c in req['checks']],[208,224,240,256])
         self.assertEqual(req['checks'][-1]['memory'],history[8]['observable']['memory'])
         self.assertNotIn('label',canonical(req['checks']))
         with self.assertRaises(ValueError): feature_requests(anchors,history,[('0','predecision',0)])
         with self.assertRaises(ValueError): feature_requests(anchors,history,[('256','predecision',1)])
         bad=deepcopy(history);bad[16]['predecision']['served_controls']=12
         with self.assertRaises(ValueError): feature_requests(anchors,bad,[('256','predecision',0)])
+
+    def test_short_attempt_has_multiple_distinct_real_checks(self):
+        anchors,history=joined()
+        req=feature_requests(anchors,history,[('32','observable',0)])[0]
+        self.assertEqual([c['control_step'] for c in req['checks']],[0,16,32])
+        self.assertTrue(all(c['control_step']<=32 for c in req['checks']))
 
     def test_group_folds_and_calibration_group_leak_rejected(self):
         fold=group_folds([str(i) for i in range(7)])

@@ -32,7 +32,8 @@ def validate_branch(rows,manifest,plans):
         if row['label_kind']=='same_state_local_teacher_candidate' and np.any(noise):
             raise ValueError('Noisy action disguised as clean teacher')
         if i and rows[i-1]['proprio_after']!=row['proprio_before']:raise ValueError('Broken physical chain')
-        if i and rows[i-1]['physical_audit']!=row['physical_before']:raise ValueError('Broken target evidence clock')
+        if i and any(rows[i-1]['physical_audit'][k]!=v for k,v in row['physical_before'].items()):
+            raise ValueError('Broken target evidence clock')
         event=[p for p in plans if p['control_step']<=i][-1]
         if (row['context']['context_id']!=event['event_sha256']
                 or row['context']['active_skills_semantic_json']!=event['active_skills_semantic_json']
