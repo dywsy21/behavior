@@ -29,12 +29,13 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--sources',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     p.add_argument('--gpus',nargs='+',type=int,required=True)
-    p.add_argument('--previous-collection',type=Path)
+    p.add_argument('--previous-collection',type=Path,action='append',default=[])
     p.add_argument('--peer-collection',type=Path,action='append',default=[])
     p.add_argument('--skip-case',action='append',default=[])
     p.add_argument('--skip-reason')
     p.add_argument('--priority-task',nargs='*',default=[])
     p.add_argument('--diversify-fault-timing',action='store_true')
+    p.add_argument('--reference-category-binding',action='store_true')
     p.add_argument('--concurrent-loads',type=int,default=2)
     p.add_argument('--warm-groups',action='store_true');a=p.parse_args()
     if a.warm_groups:
@@ -77,7 +78,10 @@ def main():
     for case in sources:
         if case['directory'] in a.skip_case:
             rows.append(dict(case=case['directory'],status='explicitly_skipped',reason=a.skip_reason));continue
-        previous=a.previous_collection/case['directory'] if a.previous_collection else None
+        priors=[root/case['directory'] for root in a.previous_collection
+                if (root/case['directory']/'result.json').exists() or (root/case['directory']/'status.json').exists()]
+        if len(priors)>1:raise ValueError('Multiple original attempts; cannot silently select a lucky retry')
+        previous=priors[0] if priors else None
         prior_receipt=(previous/'result.json' if previous is not None and (previous/'result.json').exists()
                        else previous/'status.json' if previous is not None and (previous/'status.json').exists() else None)
         if prior_receipt is not None:
@@ -116,7 +120,9 @@ def main():
                 proposal=json.loads((a.sources/name/'manifest.json').read_text())
                 if proposal['schema']=='recovery_expert_skill_proposal_v1':
                     command[0]=str(REPO/'scripts/rl/memlite_online/tools/collect_local_articulation_recovery.py')
-                elif a.diversify_fault_timing:command.append('--diversify-fault-timing')
+                else:
+                    if a.diversify_fault_timing:command.append('--diversify-fault-timing')
+                    if a.reference_category_binding:command.append('--reference-category-binding')
                 proc=subprocess.Popen(['bash',str(REPO/'scripts/eval/memlite_sft100/launch_sim.sh'),*command],stdout=log,stderr=subprocess.STDOUT,
                     stdin=subprocess.DEVNULL,env=env,cwd=REPO)
                 while proc.poll() is None:

@@ -1,0 +1,40 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-09 18:05 CST; personally inspected all 117 original RGB panels of three clean branches and the six preceding physical controls at t=16 and t=40",
+  "scope": "Outcome-only matched-clock clean controls for the same three source groups as recovery100_owner_review_v1. Not three extra independent events, not recovery trajectories, not new action/planner approvals. Right-hand same-target local hold only, not transport or full-task completion. This reduces one clock-label confound; it does not prove absence of other shortcuts.",
+  "branches": [
+    {
+      "case": "picking_up_trash_177",
+      "branch": "clean",
+      "manifest_sha256": "2a622d5c9547d698c8afd78a8b6252a9f7d5ccfea874d4ffae7efda1226112f1",
+      "review_directory": "trash177-clean-review",
+      "outcomes": [{"control_step": 16, "value": "SUCCEEDED"}, {"control_step": 40, "value": "SUCCEEDED"}],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand maintains trash_can_116 / ashcan.n.01_1, with occluded wrist but consistent head-view contact and exact target physical grasp. No drop/recovery in this clean branch; no trash-collection or lift claim."
+    },
+    {
+      "case": "putting_away_Halloween_decorations_206",
+      "branch": "clean",
+      "manifest_sha256": "3eb0024342e48b0bfa761fa5e45294bf83e6fa84704d0cfa2aeee8b656877c0f",
+      "review_directory": "halloween206-clean-review",
+      "outcomes": [{"control_step": 16, "value": "SUCCEEDED"}, {"control_step": 40, "value": "SUCCEEDED"}],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "The supported cauldron_92 / caldron.n.01_1 stays at the right hand; no opening or corrective maneuver. Six consecutive exact same-hand grasp facts support only local grasp outcome despite partly occluded rim."
+    },
+    {
+      "case": "setting_mousetraps_191",
+      "branch": "clean",
+      "manifest_sha256": "f4a168353082287133392f228f4a68a2b999ff75b6242bac8562daa47bddaeac",
+      "review_directory": "mousetraps191-clean-review",
+      "outcomes": [{"control_step": 16, "value": "SUCCEEDED"}, {"control_step": 40, "value": "SUCCEEDED"}],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the same mousetrap_49 / mousetrap.n.01_2 in unchanged contact; other cabinet traps remain separate. Physical binding and six-control hold match both labels. This is not a set/activated-trap or full-task label."
+    }
+  ]
+}

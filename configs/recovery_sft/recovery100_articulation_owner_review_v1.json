@@ -1,0 +1,27 @@
+{
+  "schema": "owner_articulation_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-09 18:09 CST; personally inspected all 156 original RGB panels across 52 physical observation times, exact target, predecision clock and 12 preceding physical controls",
+  "scope": "Only local washer-door clearance restoration. Goal uses explicitly declared >=35% joint-travel clearance and <=10% loss hysteresis; not full opening, access/fit certification, washing the toys, or complete task success. These reviewed points still need the multi-skill corpus/admission adapter; no optimizer or model release is authorized.",
+  "branches": [
+    {
+      "case": "wash_dog_toys_169",
+      "branch": "reverse_reference_fault",
+      "manifest_sha256": "af12e2334de2fadf158da536f1585e4c5cdf7a28ef0feb53ab0d7b4a1624f8ec",
+      "review_directory": "wash169-articulation-review-v1",
+      "review_sha256": "504b55ac6fca89b6e74a53bf4fdbed447d91ce3614da1896f5de59e7b2b18681",
+      "outcomes": [
+        {"control_step": 16, "role": "observable", "value": "SUCCEEDED"},
+        {"control_step": 270, "role": "predecision", "value": "FAILED"},
+        {"control_step": 284, "role": "observable", "value": "IN_PROGRESS"},
+        {"control_step": 528, "role": "observable", "value": "SUCCEEDED"},
+        {"control_step": 584, "role": "observable", "value": "SUCCEEDED"}
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": true,
+      "physical_recovery_verified": true,
+      "training_approved": false,
+      "notes": "Exact washer_ynwamu_0 / washer.n.03_1 on the left of the appliance pair. The front door visibly moves toward closed (0.378 -> 0.085 directed travel), then reopens to 0.373 and remains stable. Twelve FALSE goal facts at controls 258..269 establish the FAILED observation at 270 only for the previous EXECUTE context. The new RETRY context at 270 is UNKNOWN, not FAILED. At 284 the same door is measurably reopening; at 528 and 584 the debounced clearance has returned. The fault is actual robot actuation, not a simulator teleport. No blanket action approval: the sampled review is not an exhaustive 32-control action-window review."
+    }
+  ]
+}

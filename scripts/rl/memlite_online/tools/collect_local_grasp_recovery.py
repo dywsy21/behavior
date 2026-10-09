@@ -27,6 +27,7 @@ from common import atomic_json,OFFICIAL,OFFICIAL_COMMIT,sha256
 from recovery_corpus import canonical,digest,group_key,split_group
 from recovery_local_teacher import LocalGraspTeacher,perturb,NonGraspingFixedPoint,fault_duration,validate_terminal_observation
 from recovery_recorder import proprio61
+from recovery_reference_binding import ReferenceGraspBinding,resolve_prefix_rows
 from behavior_branch_state import capture_branch_metadata,restore_branch_metadata
 
 
@@ -36,6 +37,7 @@ def main(argv=None, *, shared_session=None):
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--seed',type=int,default=20261009)
     p.add_argument('--diversify-fault-timing',action='store_true')
+    p.add_argument('--reference-category-binding',action='store_true')
     a=p.parse_args(argv)
     if a.output.exists():raise FileExistsError(a.output)
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
@@ -120,8 +122,24 @@ def main(argv=None, *, shared_session=None):
                 raise ValueError('Original initial joint configuration does not match reset instance')
             scope={k:getattr(v,'wrapped_obj',v) for k,v in inst.env_accessor.object_scope.items()}
             matches=[(k,o) for k,o in scope.items() if o is not None and getattr(o,'name',None)==target_name]
-            if len(matches)!=1:raise ValueError('No exact task-scope target; do not guess aliases')
-            entity,target=matches[0]
+            requested_name=target_name;requested_arm=skills[0].get('arm','UNSPECIFIED').upper()
+            if requested_arm not in ('LEFT','RIGHT','UNSPECIFIED'):raise ValueError('Unsupported original GRASP arm')
+            allowed_arms=[requested_arm.lower()] if requested_arm!='UNSPECIFIED' else list(robot.arm_names)
+            binder=None;candidate_objects={};candidate_inventory={};binding_receipt=None
+            atomic_json(a.output/'target-binding-audit.json',dict(requested=requested_name,
+                task_objects=[dict(entity=k,name=getattr(o,'name',None),category=getattr(o,'category',None))
+                              for k,o in scope.items() if o is not None],
+                proposal_sha256=status['proposal_sha256'],reference_binding_enabled=a.reference_category_binding,
+                guessed_alias_accepted=False,actor_input=False))
+            if len(matches)==1:
+                entity,target=matches[0]
+            elif not matches and a.reference_category_binding:
+                candidate_objects={o.name:(k,o) for k,o in scope.items() if o is not None
+                    and getattr(o,'category',None)==requested_name and hasattr(o,'links') and o is not robot}
+                candidate_inventory={n:dict(entity=k,category=o.category) for n,(k,o) in candidate_objects.items()}
+                binder=ReferenceGraspBinding(candidate_inventory,requested_name,requested_arm,selected['start'],selected['end'])
+                entity,target=None,None  # No guessed target before the real contact evidence.
+            else:raise ValueError('No exact task-scope target; do not guess aliases')
             def indices(v):return v.detach().cpu().numpy().astype(int)
             arm_action={arm:indices(robot.arm_action_idx[arm]) for arm in robot.arm_names}
             grip_action={arm:int(indices(robot.gripper_action_idx[arm])[0]) for arm in robot.arm_names}
@@ -136,13 +154,17 @@ def main(argv=None, *, shared_session=None):
                 value[[14,22]]=np.clip(value[[14,22]],-1,1)
                 return value
             def physics():
-                pos,quat=target.get_position_orientation()
-                return dict(target_name=target_name,entity=entity,position=pos.tolist(),orientation=quat.tolist(),
-                    grasp={arm:robot.is_grasping(arm=arm,candidate_obj=target).name for arm in robot.arm_names},
-                    gripper_aperture={arm:float(robot.get_joint_positions()[robot.gripper_control_idx[arm]].mean())
-                                      for arm in robot.arm_names},
-                    all_held={o.name:{arm:robot.is_grasping(arm=arm,candidate_obj=o).name for arm in robot.arm_names}
-                              for o in scope.values() if o is not None and hasattr(o,'links') and o is not robot})
+                held={o.name:{arm:robot.is_grasping(arm=arm,candidate_obj=o).name for arm in robot.arm_names}
+                      for o in scope.values() if o is not None and hasattr(o,'links') and o is not robot}
+                aperture={arm:float(robot.get_joint_positions()[robot.gripper_control_idx[arm]].mean())
+                          for arm in robot.arm_names}
+                def one(k,obj):
+                    pos,quat=obj.get_position_orientation()
+                    return dict(target_name=obj.name,entity=k,position=pos.tolist(),orientation=quat.tolist(),
+                                grasp=held[obj.name],gripper_aperture=aperture,all_held=held)
+                if target is None:
+                    return dict(binding_candidates={n:one(k,o) for n,(k,o) in candidate_objects.items()})
+                return one(entity,target)
             def step(command):
                 if shutil.disk_usage(a.output).free < 100*2**30:raise RuntimeError('Disk safety reserve reached')
                 command=np.asarray(command,dtype=np.float32)
@@ -154,21 +176,50 @@ def main(argv=None, *, shared_session=None):
             def video(path):
                 evaluator._set_video_writer(inst,create_video_writer(fpath=str(path),resolution=(448,672),rate=30))
             prefix=(a.output/'prefix.jsonl').open('x',buffering=1);video(a.output/'prefix.mp4')
-            held_count={arm:0 for arm in robot.arm_names};grasp_arm=None
+            held_count={arm:0 for arm in allowed_arms};grasp_arm=None
             for t,command in enumerate(actions):
                 before=proprio61(inst.obs);evaluator._write_video(inst);after=step(command)
                 prefix.write(json.dumps(dict(control_step=t,action_executed_raw23=command.tolist(),
                     proprio_before=before,proprio_after=proprio61(inst.obs),physical_audit=after,
                     source_label_kind='original_reference_replay_not_corrective_BC'))+'\n')
-                for arm in held_count:held_count[arm]=held_count[arm]+1 if after['grasp'][arm]=='TRUE' else 0
-                if (t+1>=selected['start'] and any(v>=6 for v in held_count.values())):
-                    grasp_arm=next(arm for arm,v in held_count.items() if v>=6);break
+                if binder is not None:
+                    bound=binder.observe(t,after['binding_candidates'])
+                    if bound is not None:
+                        target_name,grasp_arm=bound;entity,target=candidate_objects[target_name];break
+                else:
+                    inside=selected['start']<=t<selected['end']
+                    for arm in held_count:held_count[arm]=held_count[arm]+1 if inside and after['grasp'][arm]=='TRUE' else 0
+                    if any(v>=6 for v in held_count.values()):
+                        grasp_arm=next(arm for arm,v in held_count.items() if v>=6);break
                 if t%16==0:atomic_json(a.output/'status.json',dict(status,status='replaying_prefix',source_frame=t))
             prefix.close();evaluator._set_video_writer(inst,None)
             if grasp_arm is None:
                 atomic_json(a.output/'result.json',dict(status,status='reference_grasp_not_reproduced',
                     training_approved=False,reason='No target-identity stable grasp in original reference'))
                 atomic_json(a.output/'status.json',dict(status,status='reference_grasp_not_reproduced'));return
+            if binder is not None:
+                # Keep the complete original all-competitor evidence. The
+                # normalized prefix chooses an actually measured field; it
+                # does not fabricate observations, commands or a new rollout.
+                raw_prefix=a.output/'binding-reference.jsonl'
+                (a.output/'prefix.jsonl').rename(raw_prefix)
+                raw_rows=[json.loads(line) for line in raw_prefix.read_text().splitlines()]
+                resolved=resolve_prefix_rows(raw_rows,candidate_inventory,requested_name,requested_arm,
+                                             selected['start'],selected['end'],target_name,grasp_arm)
+                with (a.output/'prefix.jsonl').open('x') as stream:
+                    for row in resolved:stream.write(json.dumps(row,allow_nan=False)+'\n')
+                # The new independent branch receives the explicitly resolved
+                # intent. The original source annotation remains unchanged.
+                skills[0]['target']=target_name
+                binding_receipt=dict(schema='original_reference_grasp_binding_v1',requested_category=requested_name,
+                    requested_arm=requested_arm,candidates=candidate_inventory,selected_target=target_name,
+                    selected_entity=entity,selected_arm=grasp_arm,evidence_available_control_step=t+1,
+                    source_proposal_sha256=status['proposal_sha256'],raw_reference_sha256=sha256(raw_prefix),
+                    normalized_prefix_sha256=sha256(a.output/'prefix.jsonl'),resolved_skills=skills,
+                    method='exact category + previously false + unique same-target same-arm grasp for six actual controls inside original skill interval',
+                    actor_input_uses_physical_audit=False,training_approved=False)
+                atomic_json(a.output/'reference-binding.json',binding_receipt)
+                status['reference_binding_sha256']=sha256(a.output/'reference-binding.json')
             seed_frame=t+1;seed_q=native_q();seed_q[grip_action[grasp_arm]]=-1
             seed_physics=physics();seed_state=proprio61(inst.obs)
             snapshot=dict(world=deepcopy(og.sim.dump_state(serialized=False)),metadata=capture_branch_metadata(evaluator),

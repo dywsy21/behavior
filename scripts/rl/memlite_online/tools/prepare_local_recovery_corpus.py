@@ -14,6 +14,7 @@ import zipfile
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import canonical,digest,file_sha,group_key,split_group,anchor_candidate
 from recovery_teacher_corpus import validate_branch,branch_histories,physical_proposal,episode_identity
+from recovery_reference_binding import verify_saved_binding
 
 
 def write_json(path,value):path.write_text(json.dumps(value,indent=2,allow_nan=False)+'\n')
@@ -54,6 +55,7 @@ def main():
             raise ValueError('Changed complete state snapshot')
         seed=json.loads((directory/'seed.json').read_text())
         prefix=[json.loads(x) for x in (directory/'prefix.jsonl').read_text().splitlines()]
+        verified_binding=verify_saved_binding(directory,source,result,prefix)
         if (len(prefix)!=seed['source_frame'] or len(prefix)<6 or
                 not all(r['physical_audit']['grasp'][seed['arm']]=='TRUE' for r in prefix[-6:])):
             raise ValueError('Seed was not physically verified as same-target same-arm grasp')
@@ -61,6 +63,9 @@ def main():
             collection_result_sha256=file_sha(directory/'result.json'),source_commit=result['source_commit'],
             original_release_sha256=source['original_release_sha256'],source_group=source['source_group'],
             full_snapshot_sha256=result['full_snapshot_sha256'],prefix_sha256=file_sha(directory/'prefix.jsonl')))
+        if verified_binding:
+            source_rows[-1]['reference_binding_sha256']=file_sha(directory/'reference-binding.json')
+            source_rows[-1]['binding_reference_sha256']=file_sha(directory/'binding-reference.jsonl')
         for branch in result['branches']:
             branch_path=directory/branch['kind'];manifest=json.loads((branch_path/'manifest.json').read_text())
             if manifest!=branch:raise ValueError('Changed finalized branch')
@@ -68,6 +73,8 @@ def main():
                     or file_sha(branch_path/'plans.json')!=manifest['plans_sha256']):raise ValueError('Changed physical branch')
             rows=[json.loads(x) for x in (branch_path/'transitions.jsonl').read_text().splitlines()]
             plans=json.loads((branch_path/'plans.json').read_text())
+            if verified_binding and any(json.loads(plan['active_skills_semantic_json'])!=verified_binding['resolved_skills'] for plan in plans):
+                raise ValueError('Corrective branch intent does not match the actually bound reference target')
             if not rows:
                 excluded.append(dict(case=entry['directory'],branch=branch['kind'],reason=branch['failure']));continue
             validate_branch(rows,manifest,plans)
