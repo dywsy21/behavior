@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 00:47 CST：异质恢复拟合及固定技能比较
+
+- A800共享根`/data/workspace/wsy/behavior2026`，新联合数据`datasets/recovery-reviewed-union-20261010-v3-articulation`；run根`runs/recovery_heterogeneous_20261010`。`L0/checkpoints/step_00000200_save_0004.pt`为200更新的动作专家SFT全checkpoint（SHA20fd2301…8044），不是旧RL增量；源`src/heterogeneous-fit-3085d21b`，已结束。
+- 同根`H1-feature-cache-v3`为140请求的冻结高bee76338特征；`H0-heterogeneous-fit-v1`和`H0-absolute-proprio-v1`已完成，后者selected-observer.pt SHA94d8ac57…94d50。两头均未校准部署，不可拿训练准确率当验收。
+- `fixed-skill-service-v1`（源`src/heterogeneous-paired-590d5abc`）在lc1 GPU0提供父/新FM服务、专用loopback18972；RTX同名run根八个`fixed-{radio155,wash169,cap238,micro134}-{parent,candidate}-v1`均已结束，原RGB/MP4/物理ledger保留。请求服务安全退出并校验权重不变中，不影响VPN/队友。
+- RTX仍仅使用`root@42.192.34.154:10383`；代码`code/heterogeneous-paired-590d5abc`冻结。本地视频证据目录`artifacts/recovery-heterogeneous-20261010`，不入Git。短RL服务/客户端正在验收，不能把这八条无optimizer配对称RL。
+
 ## 2026-10-10 00:03 CST 恢复数据与起点新状态
 
 - RTX `runs/recovery100_collection_20261009/grasp-independent-dev-collection-v1`93首次全部结束；`closed-independent-dev-corpus-v1`80独立来源/240ZIP/15,444观察，尚未逐样本人工准入和校准，不可拿数量当ready。旧大GRASP全读两实现已完整同SHA，均已结束。

@@ -1,0 +1,32 @@
+{
+  "owner": "Codex main agent",
+  "review_time_cst": "2026-10-10 00:48",
+  "source_commit": "590d5abc0d8c0ff4c0025d54a3928120a415b464",
+  "case": "wash_a_baseball_cap_238",
+  "split": "low-layer held-out source, high-layer selection DEV; not blind test",
+  "seed": 17,
+  "policy_start_control": 265,
+  "reference_end_control": 618,
+  "parent": {
+    "model_sha256": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470",
+    "controls": 353,
+    "success": false,
+    "final_directed_open_fraction": 0.2840747353153943,
+    "result_sha256": "95c3289644a2c82430f555990af9e77494bb016432eceb2759fdc830946711ad",
+    "ledger_sha256": "f62b763374be37cc102f93e42d97989d294d4cd65f25342eb764fab1724555ca"
+  },
+  "candidate": {
+    "model_sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044",
+    "controls": 284,
+    "success": true,
+    "final_directed_open_fraction": 0.35751656171935414,
+    "last_six_actual_controls_satisfy_fixed_functional_open": true,
+    "result_sha256": "cfe7ed13b158c08deab6e4ba29ac6c47779effc89115a890c73d5f539e557e90",
+    "ledger_sha256": "327fa00916ed630302041e51d8bf3e678dac48a3e964d5fb934e100ff6ce6271"
+  },
+  "machine_qa": "Recomputed every one of 637 same-skill rewards and consecutive real23 ACKs; all original PNG SHA values match; paired service completed 115 requests and verified both complete model tensors unchanged.",
+  "manual_qa": "Main agent inspected 24 original RGB panels: parent265/377/505/617 and candidate265/361/457/537, each head/left/right. Same closed-gap start, real left-hand door motion and greater candidate opening agree with physical ledger; detailed 0.35 threshold itself is checked in physics, not guessed from images.",
+  "local_evidence": "artifacts/recovery-heterogeneous-20261010/cap238-review-v1",
+  "remote_evidence": "/run/ti/rl_memlite_stage1_20261006/runs/recovery_heterogeneous_20261010/fixed-cap238-{parent,candidate}-v1",
+  "limitation": "One seed and one local functional predicate, not independent SR or full wash-cap task success. Parent and candidate both still fail wash169 and micro134; radio155 both succeed. No RL optimizer ran in these probes."
+}

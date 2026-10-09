@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 00:48 CST / Codex RECOVERY-USABLE：** cap238配对637条真实raw23 ACK/技能奖励逐条重算、全部原PNG SHA校验通过，根人工查24面板（父/新各4时刻×3相机）；新末6均功能开门、最终开度0.35752，父0.28407。只确认局部单seed改善，不声称可靠泛化。115请求服务已核全tensor unchanged后退出，撤自有18972转发，保留八路证据。新短RL完整客户端/3机制TRAIN配方＋129回归通过，拟一闲置A800共享AE/critic＋3RTX，20更新学习曲线、每轮2seed固定诊断、KL≤.03回溯；不是全任务RL，也不是已发生新更新。高H0绝对proprio对照依旧未部署。
+
+- **2026-10-10 00:47 CST / Codex RECOVERY-USABLE：** 八路固定技能比较均完成：radio父/新均抓稳20/19控；cap238原低353控未开成、新L0284控达到稳定功能开门；wash169、micro134父/新仍未完成。cap是低层DEV来源/高层选择DEV，单seed局部改善不是独立全任务SR，正在原视频/逐ACK复审。绝对proprio H0对照实际295步/选195，同选择DEV事件加权83.33%（原80%）、平衡88.99%，成功召回64.29%仍不足部署，权重94d8ac57…94d50/W&B4dd3fadbc143。短RL新增真实sim冷载/逐控制ACK客户端草稿已编译，尚未实际PPO；当前dirty仅自有该新文件，已fetch、未强pull，main仍33677bd0。
+
 - **2026-10-10 00:34 CST / Codex RECOVERY-USABLE：** 590d5abc原/新低服务lc1 GPU0 PID1577424已ready，新增loopback18972双SSH转发（原VPN不动）；RTX八卡启动radio155/wash169/cap238/micro134×父/新同seed17，run`recovery_heterogeneous_20261010/fixed-*-v1`，当前loading不能当成功。H0误判9行已逐定位：radio270已抓持却高置信IP、cap238/micro134种子已功能开门却预测FAILED，故不部署。代码确认时序头只显式输入proprio差分（绝对状态只间接在VLM token），新增可选连续绝对proprio小对照/架构SHA绑定，保留旧头默认兼容与actor真值隔离；待回归/同固定开发集实际拟合，不将猜测当根因结论。新独立80组仍没看模型预测。
 
 - **2026-10-10 00:25 CST / Codex RECOVERY-USABLE：** 新L0完成200/200，末权重20fd2301…8044、冻结VLM/LoRA SHA前后相等；恢复9DEV FM0.0586524→0.0199397（-66.00%），原100留出0.1296469→0.1318330（+1.69%），W&B686313581618已API验到200更新。lc2 GPU1 H0四类也自然平台停止290步/选190，TRAIN100%、10组40选择DEV事件加权80%、平衡83.04%，FAILED/UNKNOWN召回100%，IN_PROGRESS75%、SUCCEEDED57.14%，明确未可部署/未独立校准。回执`infra/results/2026-10-10-recovery-heterogeneous-offline-v1.json`；准备原/新低四起点真FM比较，含2已留出开门来源，不冒充盲测/全任务SR。短RL客户端与新优化仍待。

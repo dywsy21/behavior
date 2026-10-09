@@ -196,9 +196,11 @@ async def main():
                                 update=rounds.phase=='train'
                                 if update:await asyncio.to_thread(shared_update)
                                 rounds.advance(optimizer_completed=update)
-                                if rounds.phase=='finished':finished.set()
                     else:raise ValueError('Unknown short-skill operation')
                     publish();await socket.send(packb(response))
+                    # The last simulator must receive its final real-control
+                    # ACK before the server closes the listening context.
+                    if rounds.phase=='finished':finished.set()
         except websockets.ConnectionClosed:
             if current_job is not None:fatal[0]='Worker disconnected mid-episode';finished.set()
         except BaseException as error:
