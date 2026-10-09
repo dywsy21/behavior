@@ -1,6 +1,7 @@
 """Fixed parent/candidate target-free generation; NEVER executes robot actions."""
 import argparse
 import gc
+import importlib
 import json
 import os
 from pathlib import Path
@@ -23,6 +24,8 @@ def main():
     ap.add_argument('--model', choices=('parent', 'candidate'), required=True)
     ap.add_argument('--output', type=Path, required=True)
     args = ap.parse_args()
+    # Fail on an incomplete code closure before reading large model files.
+    importlib.import_module('g05.utils.memlite_planner_format')
     cfg = json.loads(args.config.read_text()); root = Path(cfg['root'])
     if args.output.exists():
         raise FileExistsError(args.output)
