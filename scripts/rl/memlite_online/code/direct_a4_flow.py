@@ -80,6 +80,7 @@ class A4DirectPPO:
         max_clip_fraction: float = 0.25,
         update_epochs: int = 1,
         microbatch_size: int = 1,
+        reward_protocol: str | None = None,
     ) -> None:
         if not 0 < transition_std < 1:
             raise ValueError("transition_std must be in (0, 1)")
@@ -95,8 +96,8 @@ class A4DirectPPO:
         self.update_epochs = int(update_epochs)
         self.microbatch_size = int(microbatch_size)
         self.training_mode = False
-        self.reward_protocol = os.environ.get('RL_REWARD_PROTOCOL', 'legacy_two_task_v1')
-        if self.reward_protocol not in ('legacy_two_task_v1', 'shared_terminal_q_v1'):
+        self.reward_protocol = reward_protocol or os.environ.get('RL_REWARD_PROTOCOL', 'legacy_two_task_v1')
+        if self.reward_protocol not in ('legacy_two_task_v1', 'shared_terminal_q_v1', 'skill_aligned_v1'):
             raise ValueError('Unknown reward protocol')
         self.update_count = 0
         self.actor_update_count = 0
@@ -272,10 +273,12 @@ class A4DirectPPO:
         first_image = next(iter(state.pixel_values.values()))
         dummy = torch.zeros(
             batch_size, self.fm.horizon_steps, self.fm.action_dim,
-            device=first_image.device, dtype=first_image.dtype,
+            device=first_image.device, dtype=torch.float32,
         )
         embodiments = [sample.get("embodiment") for sample in branch_batch["samples"]]
-        initial = self.fm._sample_noise(dummy, first_image.dtype, embodiments)
+        # FP32 flow states AND time grid must match likelihood recomputation.
+        # Never let an image tensor's BF16 dtype choose the Euler time grid.
+        initial = self.fm._sample_noise(dummy, torch.float32, embodiments)
         initial[..., ~self.active_action_dims] = 0
         chain = sample_stochastic_flow(
             self._velocity_fn(state),
@@ -520,6 +523,16 @@ class A4DirectPPO:
             accepted_actor_lr = 0.0
             post_update_metrics = dict(ratio_mean=1.0, mean_approx_kl=0.0, clip_fraction=0.0)
         self.critic_optimizer.step()
+        critic_after=[]
+        if self.reward_protocol=='skill_aligned_v1':
+            with torch.no_grad():
+                for begin in range(0,len(records),self.microbatch_size):
+                    subset=records[begin:begin+self.microbatch_size]
+                    batch=inferencer.prepare_training_batch([r[1]['observation'] for r in subset],
+                                                             [r[1]['local_subgoal'] for r in subset])
+                    with inferencer._branch_context():
+                        _,features=self._prefix(batch)
+                    critic_after.extend(self.critic(features).float().cpu().tolist())
         actor_changed = any(not torch.equal(p, saved) for p, saved in zip(self.actor_parameters, actor_backup))
         del actor_backup
 
@@ -559,6 +572,11 @@ class A4DirectPPO:
             "cuda_allocated_bytes": torch.cuda.memory_allocated(),
             "cuda_peak_allocated_bytes": torch.cuda.max_memory_allocated(),
         }
+        if critic_after:
+            after_values=torch.tensor(critic_after,dtype=torch.float32)
+            report['value_loss_after']=float(.5*(after_values-return_tensor).square().mean())
+            report['explained_variance_after']=(1.-float((return_tensor-after_values).var(unbiased=False))/return_variance
+                                                if return_variance>1e-12 else None)
         # Persist the configured starting rate in recovery checkpoints. The
         # accepted_actor_lr above records the actual line-search step.
         for group in self.actor_optimizer.param_groups:
