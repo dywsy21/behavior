@@ -17,6 +17,38 @@ from g05.utils.memlite_skill_protocol import (canonical_json, parse_active_skill
 OUTCOMES = {"IN_PROGRESS", "SUCCEEDED", "FAILED", "UNKNOWN"}
 
 
+def single_frame_planner_prefix(builder, prepared, causal):
+    """Build a serving prefix without ever calling the teacher-forcing builder.
+
+    ``causal`` must already be the six-field deployment input projection.
+    Refuse extra fields rather than silently dropping a caller's answer/audit.
+    Images and normalized proprio are copied individually from the processor.
+    """
+    from g05.utils.memlite_skill_protocol import V6_PLANNER_INPUT_FIELDS
+    if set(causal) != set(V6_PLANNER_INPUT_FIELDS):
+        raise ValueError('Planner inference requires the exact causal input whitelist')
+    if (builder.num_input_images != 3 or tuple(builder._image_sizes) !=
+            ('head_rgb', 'left_wrist_rgb', 'right_wrist_rgb')
+            or prepared.get('_instructions') != causal['task_name']):
+        raise ValueError('Planner task/camera mismatch')
+    if causal['known_previous_outcome'] not in OUTCOMES:
+        raise ValueError('Invalid known previous outcome')
+    validate_b_memory_text(causal['memory'], task_name=causal['task_name'])
+    validate_semantic_parent_goal(causal['previous_parent_goal'], field='previous_parent_goal', allow_none=True)
+    if builder.template.count('<EOC>') != 1:
+        raise ValueError('Ambiguous planner prefix boundary')
+    result = dict(causal, template=builder.template.split('<EOC>', 1)[0] + '<EOC>',
+        command=causal['task_name'], known_previous_outcome='Known previous outcome: ' + causal['known_previous_outcome'],
+        planner_prompt='First report the previous outcome only when it is evidenced; then output '
+                       'the decision, complete active-skills JSON bundle, memory update, and task completion.',
+        schema_version=6, memlite_schema_version=6, memlite_branch='high', memlite_causal_prompt=True,
+        embodiment=builder.embodiment_type,
+        proprio=dict(value=prepared['proprio'], proprio_dim_is_pad=prepared['proprio_dim_is_pad']))
+    for index, camera in enumerate(builder._image_sizes):
+        result[f'image{index}'] = builder._image_sizes[camera]
+    return result
+
+
 def last_context_hidden(hidden, modality_mask):
     """Gather the last non-padding position, NOT the sum of modality IDs.
 

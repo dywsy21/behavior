@@ -1,0 +1,28 @@
+{
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "union": "datasets/recovery-reviewed-union-20261009-v1",
+  "admission_sha256": "e16459de84be5e3097b76f567508e636f64bd856b90724e6d33d7d0e72a66049",
+  "models": {
+    "parent": {
+      "path": "runs/memlite_stage1_high_100task_v1/checkpoints/step_00048045_save_0027.pt",
+      "sha256": "3683f719ebb033cacf77afdc0330b25f43a3c3e5b704b0bda9623608f092c3d1"
+    },
+    "candidate": {
+      "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+      "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316"
+    }
+  },
+  "inventory": {
+    "path": "datasets/recovery-reviewed-union-20261009-v1/audit/inventory.json",
+    "sha256": "3b000e5136d36b298068e7986b6257e3c32ab57eb618c45f8f2b1743f76f9bf4"
+  },
+  "history": {
+    "path": "datasets/recovery-reviewed-union-20261009-v1/history/contexts.jsonl",
+    "sha256": "22d9138f80d6c1a4c138471b85eb29112dbf3dc4038381a6f750cefe49db7251"
+  },
+  "feedback": {
+    "path": "runs/recovery_pilot_a800_20261009/train-v1/H0/postprocess-001/feedback.jsonl",
+    "sha256": "6bf2f1dc5d6a8bc1d49b7315ede3823edf14976daf3bc5c09d9faac03d3fc2f5"
+  }
+}

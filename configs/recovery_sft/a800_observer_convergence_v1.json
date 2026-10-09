@@ -1,0 +1,24 @@
+{
+  "schema": "recovery_observer_convergence_diagnostic_v1",
+  "user_goal_authorized": true,
+  "root": "/data/workspace/wsy/behavior2026",
+  "admission": "datasets/recovery-reviewed-union-20261009-v1/admission",
+  "admission_sha256": "e16459de84be5e3097b76f567508e636f64bd856b90724e6d33d7d0e72a66049",
+  "features": "runs/recovery_pilot_a800_20261009/preparation/feature-cache/features.pt",
+  "feature_receipt": "runs/recovery_pilot_a800_20261009/preparation/feature-cache/receipt.json",
+  "features_sha256": "7dc916fed96cccebecc35713806b06174cbf29110d41716ad364889f87cfacdc",
+  "high_sha256": "3683f719ebb033cacf77afdc0330b25f43a3c3e5b704b0bda9623608f092c3d1",
+  "seed": 17,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "maximum_updates": 500,
+  "minimum_updates": 100,
+  "patience_updates": 100,
+  "evaluate_every": 5,
+  "interpretation": "Full-batch event-balanced capacity diagnostic; DEV selects checkpoint, not independent test/calibration. Never deploy this receipt or reuse against H1-updated backbone.",
+  "wandb": {
+    "mode": "online", "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05", "group": "memlite-recovery-usable-20261009",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key"
+  }
+}

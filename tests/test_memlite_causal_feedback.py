@@ -7,7 +7,7 @@ import unittest
 
 import torch
 
-from g05.utils.memlite_causal_feedback import CausalFeedbackLedger, CausalFeatureWindow, FeedbackIdentity, single_frame_member_prefix, last_context_hidden
+from g05.utils.memlite_causal_feedback import CausalFeedbackLedger, CausalFeatureWindow, FeedbackIdentity, single_frame_member_prefix, last_context_hidden, single_frame_planner_prefix
 
 # Test the torch-only head without importing the full VLM/Hydra deployment.
 # A private package name avoids shadowing g05 in other tests in this process.
@@ -31,6 +31,23 @@ def bundle(target="cup", parallel=False):
 
 
 class FeedbackTests(unittest.TestCase):
+    def test_planner_prefix_requires_input_whitelist_and_has_no_answers(self):
+        from g05.utils.memlite_skill_protocol import planner_input_projection
+        builder=types.SimpleNamespace(num_input_images=3,_image_sizes={k:(256,256) for k in
+            ('head_rgb','left_wrist_rgb','right_wrist_rgb')},embodiment_type='galaxea_r1pro',
+            template='<memory_text_!><EOC><outcome_target_text>|<next_decision_text>')
+        memory=json.dumps(dict(task_name='t',issued_command_history=[],verified_world_facts=[]),sort_keys=True,separators=(',',':'))
+        fields=dict(task_name='t',memory=memory,previous_intent='None',previous_parent_goal='none',
+            known_previous_outcome='UNKNOWN',execution_feedback='none')
+        prepared=dict(_instructions='t',proprio=torch.ones(1,27),proprio_dim_is_pad=torch.zeros(27,dtype=torch.bool),
+            outcome_target='FAILED',physical_audit={'oracle':True})
+        causal=planner_input_projection(fields)
+        a=single_frame_planner_prefix(builder,prepared,causal)
+        self.assertNotIn('outcome_target',a); self.assertNotIn('physical_audit',a)
+        self.assertEqual(a['memlite_branch'],'high'); self.assertTrue(a['template'].endswith('<EOC>'))
+        with self.assertRaises(ValueError): single_frame_planner_prefix(builder,prepared,dict(causal,next_decision='RETRY'))
+        with self.assertRaises(ValueError): single_frame_planner_prefix(builder,prepared,dict(causal,task_name='other'))
+
     def test_last_context_uses_nonzero_positions_not_modality_sum(self):
         hidden=torch.arange(3*5*2).reshape(3,5,2).float()
         masks=torch.tensor([[1,2,4,4,0],[0,0,1,2,4],[1,0,4,0,0]])
