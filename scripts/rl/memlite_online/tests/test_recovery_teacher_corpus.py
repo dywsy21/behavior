@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest
-from recovery_teacher_corpus import validate_branch,physical_proposal
+from recovery_teacher_corpus import validate_branch,physical_proposal,episode_identity
 
 
 def fixture():
@@ -29,6 +29,16 @@ def fixture():
 
 
 class TeacherCorpusTests(unittest.TestCase):
+    def test_copied_evidence_keeps_identity_but_different_physical_attempt_does_not(self):
+        source=dict(task='task',instance_id=1,source_group='task:1',episode_index=12)
+        result=dict(source_commit='a'*40,proposal_sha256='b'*64,full_snapshot_sha256='c'*64)
+        manifest=dict(transitions_sha256='d'*64)
+        first=episode_identity(source,result,manifest,'open_gripper')
+        copied=dict(result,directory='/different/machine/local-copy')
+        self.assertEqual(first,episode_identity(source,copied,manifest,'open_gripper'))
+        self.assertNotEqual(first,episode_identity(source,result,dict(transitions_sha256='e'*64),'open_gripper'))
+        self.assertNotEqual(first,episode_identity(source,result,manifest,'open_gripper_joint_jitter'))
+
     def test_true_applied_noise_and_causal_chain(self):
         self.assertTrue(validate_branch(*fixture()))
         for field,value in [('simulator_apply_ack',False),('label_kind','same_state_local_teacher_candidate'),

@@ -10,6 +10,16 @@ import numpy as np
 from recovery_corpus import canonical,digest
 
 
+def episode_identity(source, result, manifest, branch_kind):
+    """Content identity survives copying evidence to another directory/server."""
+    return dict(run='offline_teacher_'+result['source_commit'][:12],
+        episode_id=digest([result['proposal_sha256'],result['full_snapshot_sha256'],
+                           branch_kind,manifest['transitions_sha256']])[:24],
+        task=source['task'],instance_id=source['instance_id'],split='train',
+        source_commit=result['source_commit'],teacher_kind='offline_local_measured_joint_servo_v1',
+        actor_model_used=False,original_source_group=source['source_group'],original_episode=source['episode_index'])
+
+
 def validate_branch(rows,manifest,plans):
     if not rows or len(rows)!=manifest['controls'] or digest(plans)==digest([]):
         raise ValueError('Missing physical branch / issued plan history')

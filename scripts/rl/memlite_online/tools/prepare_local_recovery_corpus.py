@@ -13,7 +13,7 @@ import zipfile
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import canonical,digest,file_sha,group_key,split_group,anchor_candidate
-from recovery_teacher_corpus import validate_branch,branch_histories,physical_proposal
+from recovery_teacher_corpus import validate_branch,branch_histories,physical_proposal,episode_identity
 
 
 def write_json(path,value):path.write_text(json.dumps(value,indent=2,allow_nan=False)+'\n')
@@ -71,10 +71,7 @@ def main():
             if not rows:
                 excluded.append(dict(case=entry['directory'],branch=branch['kind'],reason=branch['failure']));continue
             validate_branch(rows,manifest,plans)
-            episode=dict(run=str(directory.parent.name),episode_id=digest([entry['manifest_sha256'],result['source_commit'],
-                directory.parent.name,branch['kind']])[:24],task=source['task'],instance_id=source['instance_id'],split='train',
-                source_commit=result['source_commit'],teacher_kind='offline_local_measured_joint_servo_v1',
-                actor_model_used=False,original_source_group=source['source_group'],original_episode=source['episode_index'])
+            episode=episode_identity(source,result,manifest,branch['kind'])
             clip_id=digest(episode)[:24];relative=clip_id+'.zip'
             binding={seed['physics']['target_name']:seed['physics']['entity']}
             bindings[canonical([episode['run'],episode['episode_id']])]=binding

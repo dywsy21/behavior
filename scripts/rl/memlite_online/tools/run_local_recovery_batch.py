@@ -26,7 +26,11 @@ def main():
     p.add_argument('--sources',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     p.add_argument('--gpus',nargs='+',type=int,required=True)
     p.add_argument('--previous-collection',type=Path)
+    p.add_argument('--concurrent-loads',type=int,default=2)
     p.add_argument('--warm-groups',action='store_true');a=p.parse_args()
+    if a.warm_groups:
+        raise ValueError('Warm groups quarantined: non-TRO scene joints can survive instance load. Use independent cold instances.')
+    if not 1<=a.concurrent_loads<=len(a.gpus):raise ValueError('Invalid scene loading concurrency')
     if a.output.exists():raise FileExistsError(a.output)
     if len(set(a.gpus))!=len(a.gpus):raise ValueError('Duplicate GPU')
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():raise ValueError('Dirty source')
@@ -36,7 +40,7 @@ def main():
     sources=json.loads((a.sources/'manifest.json').read_text())['cases']
     for case in sources:
         if sha256(a.sources/case['directory']/'manifest.json')!=case['manifest_sha256']:raise ValueError('Changed inventory')
-    a.output.mkdir(parents=True);jobs=queue.Queue();lock=threading.Lock();loading=threading.Semaphore(2)
+    a.output.mkdir(parents=True);jobs=queue.Queue();lock=threading.Lock();loading=threading.Semaphore(a.concurrent_loads)
     rows=[];pending=[]
     for case in sources:
         previous=a.previous_collection/case['directory'] if a.previous_collection else None
