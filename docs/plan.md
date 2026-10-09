@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 01:59 CST / Codex RECOVERY-USABLE：** 在读取任何60源预测前，固定旧选择DEV balanced最高的H0-absolute-proprio-v1（94d8ac57…94d50、bee高层）作本次独立校准对象，不拿校准集比较新旧头。按物理标签/身份确定性匹配每源唯一观察、三已知类各20（全部60源不丢），配置`independent_calibration_anchor_selection_v1.json`；保留原20事件/类＋precision/Wilson/置信.85门，不用196相关帧冒充196独立事件，且仅能检验GRASP平衡阶段而非部署先验/其它机制。新增执行入口待回归/真运行；248,653,288B传输包SHA43799cc3…fc01仍在迁移。
+
+- **2026-10-10 01:56 CST / Codex RECOVERY-USABLE：** 8675269b已push/三端144回归通过；196校准outcome已全部机器按真实物理/原图SHA签发，紧凑单元112ZIP/5871观察全读、60来源，52FAILED/45IP/99SUCCEEDED，0TRAIN/0action/planner，独立三池门正确为false。`independent-calibration-unit-v1` admission e9387d77…da91，正在打包迁A800联合；20reserved test无行准入。RL第5更新critic首次真实触发回溯：3e-4会升到.00931被拒，1.5e-4得到.0039637→.0039268后接受；actor5e-7/KL.01075。非SR证据。
+
 - **2026-10-10 01:55 CST / Codex RECOVERY-USABLE：** 校准数据角色保护实现并144本地恢复回归过：approval绑定calibration＋cohort SHA、仅dev/outcome，联合/loader默认排除校准和test，20预留test不能混入读取；无原训练/选择DEV支持时不能借校准行凑准入。5份根审、RTX紧凑单元/A800 v5联合配置已准备，待独立新源机器签发/实际全读；不热改8481ff24在训源。新guard固定probe4/6，开门两UNKNOWN，未有可靠SR提升。
 
 - **2026-10-10 01:49 CST / Codex RECOVERY-USABLE：** 根已亲看全部60独立校准来源612原RGB面板，并以5份owner review逐点批准196结果（0动作/0plan）；8个无因果支持故障保留UNLABELLED，正常同时间对照保留。材料`independent-calibration-review-v2`、配置`independent_calibration_owner_review{,_part2..5}_v1.json`；这是原图语义审批，机器签发/全读迁移/隔离角色/实际校准尚待，没有新预测、20冻结test未触碰。短RL guard第4更新后radio/PLACE各2成功、wash首条仍UNKNOWN，重启基线本身有波动，不宣布方法改善。

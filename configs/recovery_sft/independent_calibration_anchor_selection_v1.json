@@ -1,0 +1,501 @@
+{
+  "schema": "independent_calibration_anchor_selection_v1",
+  "declared_before_model_predictions": true,
+  "selection_rule": "Deterministic source-to-phase matching, no logits/confidences; every one of the 60 fixed sources used once. Exactly 20 IP/20 SUCCEEDED/20 FAILED. Class-balanced phase diagnostic, not deployment-prior estimation.",
+  "owner": "Codex main",
+  "cohort_sha256": "6c887ff292f8da2d854083f7daa20343c35ea19bc5c28df1ad37d8e0c45a96a4",
+  "per_class": 20,
+  "seed": 17,
+  "expected_groups": [
+    "installing a fax machine:247",
+    "storing food:120",
+    "getting organized for work:132",
+    "vacuuming floors:241",
+    "cleaning up branches and twigs:283",
+    "dispose of batteries:198",
+    "hanging pictures:164",
+    "clean a trumpet:24",
+    "store produce:270",
+    "composting waste:59",
+    "clean your rusty garden tools:202",
+    "cook a brisket:292",
+    "installing smoke detectors:257",
+    "cook broccolini:239",
+    "packing meal for delivery:16",
+    "clean up your desk:63",
+    "clean a patio:174",
+    "carrying out garden furniture:129",
+    "spraying fruit trees:265",
+    "picking up trash:182",
+    "dispose of glass:273",
+    "put together a basic pruning kit:261",
+    "sorting bottles cans and paper:233",
+    "cook hot dogs:52",
+    "collecting childrens toys:200",
+    "freeze fruit:51",
+    "hiding easter eggs:108",
+    "putting dirty dishes in sink:195",
+    "picking up toys:245",
+    "chop an onion:214",
+    "scrubbing bathroom floor:101",
+    "setting mousetraps:78",
+    "tidying bedroom:38",
+    "sweeping garage:182",
+    "bringing in wood:23",
+    "outfit a basic toolbox:140",
+    "sorting vegetables:160",
+    "loading the car:4",
+    "chopping wood:230",
+    "cleaning up plates and food:171",
+    "re shelving library books:239",
+    "spraying for bugs:96",
+    "halve an egg:249",
+    "make cabinet doors:37",
+    "assembling gift baskets:94",
+    "clean up broken glass:69",
+    "setup a bar for a cocktail party:121",
+    "laying tile floors:227",
+    "clean a keyboard:268",
+    "collecting aluminum cans:12",
+    "rearranging kitchen furniture:53",
+    "canning food:248",
+    "bringing paper to recycling:50",
+    "make rose centerpieces:59",
+    "cook brussels sprouts:188",
+    "attach a camera to a tripod:76",
+    "can meat:283",
+    "clean boxing gloves:165",
+    "cook a frozen pie:131",
+    "tidying living room:6"
+  ],
+  "selected_anchors": [
+    {
+      "source_group": "assembling gift baskets:94",
+      "sample_id": "0b261d3537a7b61f855687bd83d270be5f96de40fc11d49305a8fb512366f76f",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "attach a camera to a tripod:76",
+      "sample_id": "8fb878b6ba628fdb6b24d5133524e21cceeb40df5d4dc47cc378bbde30f33f8e",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "bringing in wood:23",
+      "sample_id": "2145b282bd6f8357c5e3d87701618ba5e4a424e22d08406e3385023eb076d270",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "bringing paper to recycling:50",
+      "sample_id": "a01aec70065b8e20295f09f0b19a0b174dde85c7017f69253b39d0e0b08194ab",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "can meat:283",
+      "sample_id": "0f3b75e4116a5a2a1699342a582d77a1aef407ae44695c71b47a35763b96f0e4",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "canning food:248",
+      "sample_id": "66f66a0d19cb775a984580060ee7a7a35fda051f761c72b49c5fdad17d4dfab4",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "carrying out garden furniture:129",
+      "sample_id": "4a45cec0516a78f4ebe49d0de0477a312ba293a4ea4c6763694bf2e067f124dc",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "chop an onion:214",
+      "sample_id": "9f0d88740e4956e2f37c68b2b1d0c21d0edc6662102de2cfc065c5c33a18f4a5",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "chopping wood:230",
+      "sample_id": "be3b0f92364424ba5bfe038bc61e209f7cc076966f58327a1b81f6e20c0e37ed",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "clean a keyboard:268",
+      "sample_id": "b810032dcbe62d8e04fd0817da7f895cd5749506c2771122fe39af12d2877a70",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "clean a patio:174",
+      "sample_id": "fad698c8a768c05b5263f16103d58724315c9b950b50d52d51f5f181c5ebe8e1",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "clean a trumpet:24",
+      "sample_id": "d4f1872f5a2ae9f203d37cf27f3e22c850c6dfae8749842b931cf12938d64d5f",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "clean boxing gloves:165",
+      "sample_id": "e80583ff2566bbb85919f03d5f9baf9748cb6f51c9d4d568d867e3b45dc9215c",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "clean up broken glass:69",
+      "sample_id": "4aa69d2b5b39a615cfb00c5779351e5ad4225acaf37a31f25c8a62b2eccf2575",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "clean up your desk:63",
+      "sample_id": "e2556cd1a68c92c6c9bd29edd04edd2d26034f9ab0bbc2bced4e1c3a188ff15e",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "clean your rusty garden tools:202",
+      "sample_id": "2b471932f941cced9b865f581a65227b191410f74a1267bf8b0cf5c67803f57d",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "cleaning up branches and twigs:283",
+      "sample_id": "bdfea338c14864ae6728c053783008b808ecef6a937623b6fb015bfa960a898e",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "cleaning up plates and food:171",
+      "sample_id": "886143f947432ebfc7dd41f0e82c48c4360a00da358a9123e92aab0b0c218772",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "collecting aluminum cans:12",
+      "sample_id": "e70f0bef26a76be4d0775e1e1d808f9aef440ca98a7724c403cd635e5018f176",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "collecting childrens toys:200",
+      "sample_id": "1102f8273643859d3e253b49a97a3d0059aee4dd985e798863fc4628025434ff",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "composting waste:59",
+      "sample_id": "aff091819713bc802e67cfdfd5a5149ee5069d14b667148bfa63c0a232f39cc2",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "cook a brisket:292",
+      "sample_id": "2bb41aeaab4a8f0cd03a6b23ee9b21e1916f4437f0f3dfeaa8d03639808601bc",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "cook a frozen pie:131",
+      "sample_id": "af6de6685f2f6f6d0ae34a0739f360349775b604be04625045ee62f41805b025",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "cook broccolini:239",
+      "sample_id": "3315a14e9231658c1d6ec50acd6ba5bdf4fcc1fb1509b262b31d946dde52aa51",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "cook brussels sprouts:188",
+      "sample_id": "93e5cdbc206d78d3a2ce82febf527dc0bdf661188ecec49cd2680c7af7a45090",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "cook hot dogs:52",
+      "sample_id": "2e6ecc388904ffd99b5f0bcc2567f89397d1a7c65e9419b351e93cf43d7216f3",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "dispose of batteries:198",
+      "sample_id": "5c7e123f1dae6aa4b921eb07aa06204fe05d106cff63f0ee0ff2032a91ba7970",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "dispose of glass:273",
+      "sample_id": "692076727b354689109ea1f2e7824a6582e0fbf7fc104d0e2760a199534b0840",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "freeze fruit:51",
+      "sample_id": "656c0debba2104d2ff33b467df73dfe8aa52ab6c5b63acfa5de2fcb91af6e46d",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "getting organized for work:132",
+      "sample_id": "adb69f490054e012232bf118e99a46d772c91050398d8a79a4ebbccca329ad24",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "halve an egg:249",
+      "sample_id": "aa2b7b218d4492df6646375d185dede1989f37595ded64267ad201bb1c0e0b08",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "hanging pictures:164",
+      "sample_id": "bd01f6daac2dd976b4e92ad76cbc5cf477c74d521583f2b2c276df16987a7453",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "hiding easter eggs:108",
+      "sample_id": "8dee0680cdbebde33e72329cbe201cf92f83b342f94ee0dc043102fbd64ce678",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "installing a fax machine:247",
+      "sample_id": "a841ea7ebbd29d50b6e389aeb7523f0929f1e4b935becb5e3d3fc36e2ef0add7",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "installing smoke detectors:257",
+      "sample_id": "716f0e4cd42bcfb620459b1dc3de7aa47100ed1c707f1d444610208aebcbe374",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "laying tile floors:227",
+      "sample_id": "ae9cff4a7c6156d612b7c8eb44daa647c0ec31d56010d0960c244e2c51034d5f",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "loading the car:4",
+      "sample_id": "b244f099be0e80772060cc72e5f90e783ba293b66c9390522b988f3912eff16f",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "make cabinet doors:37",
+      "sample_id": "460b676e3fb58087a3c5366123a5de10ccdf817ef39f5839f9134e4e77ab7c55",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "make rose centerpieces:59",
+      "sample_id": "831876deb81178a3060e8007bb0344a5e4df001fc8c33ec95a2a0286933cb6f5",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "outfit a basic toolbox:140",
+      "sample_id": "46974c22b7b5e1fb453e77e67aca180d5c04cbe65db235b47030fd8c7dd8e079",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "packing meal for delivery:16",
+      "sample_id": "f21233241bdadb55face341b035259556afabffe2ad7aeb47310c26a66e07ca8",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "picking up toys:245",
+      "sample_id": "68c14e3654688b81c3d34d13676a42fd506287c1404cbe95c613c2565e737cd2",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "picking up trash:182",
+      "sample_id": "0351c95fcc770fcbb65691e3812aff15ff7ae48271ccefa817571c91a0c62567",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "put together a basic pruning kit:261",
+      "sample_id": "149c952a28af0c3ca056ab05b6bf1edb07c7771a01067b8c543975ba97e41edc",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "putting dirty dishes in sink:195",
+      "sample_id": "8205cceb8476ff25e1d1255f497b59755575b27ec75fc5a88b19464db684eab9",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "re shelving library books:239",
+      "sample_id": "6f7362e2a79aa068a9e688ce5ca090ac11843a4121f615b8419a62bc2aad181a",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "rearranging kitchen furniture:53",
+      "sample_id": "39dfe2591a7d9a55e472b158d6e008e8fe4b6230352230e8298aa94804f4d995",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "scrubbing bathroom floor:101",
+      "sample_id": "a8567416875892e9bcb82c5e743e6c983964afe76defaf2f0d625ef0eed60010",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "setting mousetraps:78",
+      "sample_id": "d0d61d71c8354984564b957c3dbe0fadf8495ee857946a0b8457d0e35b0f1bff",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "setup a bar for a cocktail party:121",
+      "sample_id": "f6ab500c0c954e5f9c0b45b04df4f07fb4ea5de63094a95533eab4755de9e29b",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "sorting bottles cans and paper:233",
+      "sample_id": "897dd60d7db6d3d9ae5a0b19c745bbc546e137528df3bc85731c737785354aea",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "sorting vegetables:160",
+      "sample_id": "c36bda5f638eba0b4246a0a5206679cd555ecbd1e9c928d83f92cff5ab143cc9",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "spraying for bugs:96",
+      "sample_id": "5da2fea3fe4adf2a8b665b0ff1c3f9bc17fc9b223674e965bb0b6c8dae1efdda",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "spraying fruit trees:265",
+      "sample_id": "c3b53676c72669e913047263030f4d99c173871d4d1010214248ae155b1bb36b",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "store produce:270",
+      "sample_id": "5e75922e116b67b21598783ffe99ee93edd8de86201e2f4bb365d1a7b5c69955",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "storing food:120",
+      "sample_id": "96369c1448ee84740719941e5d57a0bb15a2b06dbd571cc5267258132e3a79d1",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "sweeping garage:182",
+      "sample_id": "7e001b5e9f1aae9ff3c55e4744f2f94257e6e59d61406ac72f1873c50bfc99f4",
+      "value": "FAILED",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "tidying bedroom:38",
+      "sample_id": "b5bc436bf4cd369a54c825ec8378022ff751a669eb2cf9d530bee1337f3cc56d",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "tidying living room:6",
+      "sample_id": "3590b363b6eb10650b54e5e5990f371a58349c8d8f06bd39a3cc2db719a87cac",
+      "value": "IN_PROGRESS",
+      "member_index": 0,
+      "history_role": "observable"
+    },
+    {
+      "source_group": "vacuuming floors:241",
+      "sample_id": "9deababf826ee9bff63eb9c9e764ddd51b1c2e0fc080964428e52b8daccdc1d4",
+      "value": "SUCCEEDED",
+      "member_index": 0,
+      "history_role": "observable"
+    }
+  ],
+  "input_rows_sha256": "a693f980f317232f29fad88974d897a384afd510ae3a5cc2b38f13a699fe23dd",
+  "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+  "selected_observer_sha256": "94d8ac578850ab9c434a44113e6108bc40ae4089be4bb5c5b94d5f6489894d50",
+  "fit_result_sha256": "02b8a34dbf95e7e99edb9bd106324939f26ae699a6eea2576d7a16457a0e39f6",
+  "selection_reason": "Locked using old selection DEV only: best balanced accuracy 0.88988; newer outcome-expansion and mechanism-balanced heads did not improve class-balanced reliability. Do not compare/select heads on this calibration cohort.",
+  "mechanism": "GRASP",
+  "test_predictions_or_labels_used": false,
+  "optimizer_steps": 0
+}
