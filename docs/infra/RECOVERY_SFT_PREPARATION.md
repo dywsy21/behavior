@@ -1,12 +1,61 @@
 # 恢复数据 → A800 小规模 SFT：准备与验收
 
-负责人：Codex；分支 `feat/recovery-sft-prep-20261009`。此页是10月9日批准的准备工作，不是新训练启动或数据放行通知。真实进度看 [plan](../plan.md)；方法/预算看 [RL方法计划](../RL_METHOD_PLAN.md)。
+负责人：Codex；分支 `feat/recovery-sft-prep-20261009`。此页是10月9日批准的准备工作，不是新正式训练启动通知。真实进度看 [plan](../plan.md)；方法看 [RL方法计划](../RL_METHOD_PLAN.md)。
+
+## 16:31 CST验收：首批GRASP恢复SFT技术准备完成
+
+本节覆盖以下历史“等额度/无恢复数据/起点全未通过”状态。用户已取消准备工作的reset、控制步和时长额度，本轮以实际质量验收收尾。**完成的是第一轮局部恢复方法试验的技术准备，不是100任务全技能数据覆盖、已校准结果头或方法有效性证明。** 13:04/14:24原回执保留，最新机器可读证据为 [v3验收摘要](results/2026-10-09-recovery-sft-preparation-v3.json)。
+
+| 交付 | 实际验收结果 |
+| --- | --- |
+| 旧RL | 已安全停在共享update180；权重、Adam、8rank RNG与旧轨迹均保留，不重开公共评测 |
+| A800训练工程 | H1/L0各8卡真实2更新；step1保存→显式恢复step2、完整CPU重载和W&B读回通过。工程权重不替换正式SFT父权重 |
+| 新采集记账 | 4任务40来源，35完成分支、4参考抓取未复现、1停滞隔离；33,007实际控制。45恢复候选分支只来自26来源，不冒充45独立恢复或actor SR |
+| 完整候选实读 | 105ZIP、10,436分支控制、7,926RGB、2,642观察锚点全部解码/动作/因果校验；1,575干净32控制窗口、51真实RETRY。未审核部分仍不可训练 |
+| 冻结准入数据 | 15独立来源，9TRAIN/6dev，45结果标签（每来源失败/推进/成功各一）、15实际恢复意图、15个正确32控制动作窗；我亲审585原RGB面板并结合精确目标/同手物理记录，仅签具体窗口 |
+| 实际数据消费 | 所有准入H1/L0样本在lc1正式processor实读；60因果成员请求/105次高层prefill已缓存，16.97秒不含权重加载。重载/头前反向通过，梯度不回流骨干，0optimizer |
+| 课程起点 | 全15来源一次冷进程验收，13通过（7TRAIN/6dev），2拒绝。13例都重放纠正后连续同手同目标抓持128控制，起点39原RGB面板亲审 |
+| 最终回归 | 105项RL/数据测试＋8项因果反馈测试通过；准备票固定成功状态、父权重/数据SHA，错误或跨版本证据不能通过 |
+
+`preparation-ticket-v3.json`明确记录`technical_preparation_complete=true`、`remaining_preparation=[]`，同时`execution_ready=false / formal_training_authorized=false`：它是验收清单，不是自动启动训练的许可。独立团队review尚待，feature没有合main；本轮不启动新正式SFT/RL。
+
+### 现在用哪些文件
+
+以下相对共享根`/data/workspace/wsy/behavior2026`：
+
+| 用途 | 路径 |
+| --- | --- |
+| 已验训练数据，唯一当前准入 | `datasets/recovery-local-corrections-20261009-v1/local-admission-v2/` |
+| 对应实际图像/动作/上下文 | 同release根`local-corpus-v3/{raw,audit,history,proposed-plans}` |
+| 冻结高层特征 | `runs/recovery_sft_preparation_20261009/h0-accepted-feature-cache-v2/` |
+| 课程证据与原图 | `datasets/recovery-curriculum-starts-20261009-v1/` |
+| 最终准备票和各门证据 | `runs/recovery_sft_preparation_20261009/preparation-ticket-v3.json`、`accepted-preflight-v1/` |
+| 全批候选，非训练release | `datasets/recovery-extra-candidates-20261009-v1/local-corpus-final-candidates-v2/` |
+| 实际验收冻结源 | `src/recovery-prep-4424b35`，回归源`src/recovery-prep-841bae6`；工程训练源仍`8f47fd7` |
+
+准入SHA `08684fb665a3113617463138db100c09cd12674dbe137bae3e0d0d3327db54ed`；特征SHA `b82fb5e6864593bfc7933b01dbf969bbe56f77fdc928956ff0db81884fe06ffd`。旧`admission-v3`只有19个自然rollout成功结果标签，与新`local-admission-v2`不是同一版本线，不按名字末尾数字混用。原105候选与15来源签发池也不能混用。
+
+### 起点怎么用，哪些没有通过
+
+合格路线为：新冷模拟器→加载原来源的完整seed世界/控制器/任务与指标时钟/RNG→重放原32控制fault→验证同目标当前确实未被抓持且位置误差≤5mm→交给待测actor。每个分支独立memory，只包含之前真实发出的意图；oracle只留在诊断字段。
+
+`failure-start.pt`已检查同进程恢复，但**其直接跨冷进程加载没有另行认证**，不要跳过上述已验证路线。原seed与记录动作仍在10383 `runs/recovery_prepare_sim_20261009/local-coverage-v2`或`local-coverage-v4-cold`，具体来源/对象/branch SHA见13项清单。冷验只测试保存时的场景、官方post2和单env，不能当作任意场景/向量环境恢复保证。
+
+`make_pizza:179`和`preparing lunch box:95`冷重放漂移分别6.070/5.772mm，拒绝用于该课程，不调门、不挑幸运重试；原采集实际执行过的SFT动作标签仍是真实数据。暖场景复用曾继承非TRO柜门状态，整条暖采集路线已隔离，runner默认拒绝。coffee142的静止非抓持死循环也隔离；新检测器用实际日志在控制128识别，不依赖资源倒计时。
+
+### 后续训练依赖，不冒充已完成
+
+先H0冻结骨干训练结果头/时序适配器，再产出真实分组OOF反馈供H1；L0只训练动作专家、冻结原192个LoRA，保留100任务专家锚点。正式父权重仍高48045/低98414。样本/梯度/续训入口已验，但**没有训练好的新H0/H1/L0，也没有新增SR/Q结果**。
+
+这15来源只支持初始GRASP方法小试。当前6个dev来源不足每类别20独立事件/置信度门，因此即使H0拟合能跑也不能开runtime readiness，反馈仍UNKNOWN。完整通用RL还需其它技能的课程/奖励实测、更多独立校准事件、预测反馈服务接入和固定对照；不能靠重复窗口凑数量，也不能说三个训练池过门等于通用恢复已经解决。旧SFT见过这些原TRAIN实例，新dev仅对本轮恢复增量留出，不叫从未见过的泛化测试。
+
+以下为历史检查点与接口说明，状态以本节为准。
 
 12:50 CST检查点：八卡硬件通信、L0真实父权重/FM梯度（ff584c1）及H0成员prefix/observer梯度（c25d06c）均通过，A80070＋8测试通过，0optimizer，所有诊断GPU已释放。242ZIP数据转移完整hash通过；原100task/3200个不同来源实例专家锚点索引已生成。三种恢复训练池依旧未放行；[回执](results/2026-10-09-recovery-sft-preparation.json)明确列出尚未完成的训练整合/数据/校准门。
 
 13:04 CST补充：冻结874d39e八卡**微型合成网络**验证了通用运行时的非均匀尾批全局梯度、模型/Adam/RNG精确恢复与单rank错误共同拒绝更新；它不是实际G0.5八卡训练验收。独立[W&B工程探针](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/26d903a19327)已真实写入/读回并结束，仅`engineering/*`指标，无合成loss混入训练曲线。0新增G0.5更新，所有GPU已释放；完整derivative trainer接线、数据/校准门仍待。
 
-## 14:15 CST当前验收结论（覆盖上方历史检查点）
+## 历史：14:15 CST验收结论（已被16:31检查点覆盖）
 
 **训练工程链已验，恢复数据与仿真起点门未全过，因此没有启动正式恢复SFT/RL。** 全部自有GPU验收进程已结束，lc1八卡0MiB/volatile不可纠正ECC均0；10383旧RL已安全保存第180次共享更新后停止，未删除旧产物。[本轮补充回执](results/2026-10-09-recovery-sft-preparation-v2.json)记录真实证据，旧13:04回执保留作历史。
 
@@ -22,7 +71,7 @@
 
 86项A800 RL/数据/wire回归和8项因果反馈测试全部通过。后续新增H0显式事件预算负控已本地8项pipeline回归通过：OOF与final训练的**合计**事件曝光必须同时满足用户票和5遍总上限，不能用最大允许5遍覆盖一张更小预算的票。独立成员代码review仍待，不合main。
 
-本轮已获批8次reset按保守预留4/例用尽；追加“最多12个原TRAIN起点、48reset、6144控制、90分钟”已询问，**尚未收到批准，不运行下一轮仿真**。这不是新的正式训练申请。
+历史上曾等待追加reset额度；**用户14:44已明确取消本轮全部准备额度，此等待已作废**，后续实际采集/验收见本页顶部。不能据此继续要求重置次数批准。
 
 ## 现有事实
 
@@ -105,7 +154,7 @@ export PYTHONPATH="$PWD/src"
 # 包含实际验证过的NCCL P2P/IB关闭和bond0，以及torchcodec所需NPP/FFmpeg库路径。
 # 未source时即使torch可import，也可能在读专家RGB视频时失败。
 
-CUDA_VISIBLE_DEVICES=2 timeout --signal=TERM --kill-after=30s 900s \
+CUDA_VISIBLE_DEVICES=2 \
   python scripts/rl/memlite_online/tools/check_recovery_parent_graph.py \
   --recipe configs/recovery_sft/a800_p2_v1.json --component L0 \
   --output /data/workspace/wsy/behavior2026/runs/recovery_sft_preparation_20261009/NEW_l0_graph
@@ -114,7 +163,7 @@ CUDA_VISIBLE_DEVICES=2 timeout --signal=TERM --kill-after=30s 900s \
 
 以上读取两条已验原专家TRAIN样本，只做真实前反向，**无optimizer**。H0采用明确的合成图测试目标，不把数值当物理标签/loss效果。八卡硬件通信小验已通过，但单卡模型图通过也不等于新SFT八卡全链验收。
 
-`prepare_recovery_sft_ticket.py`只产CPU准备票并列出阻塞，不启动训练。当前剩余准备是补齐实际结果类别/恢复续段和固定短TRAIN-dev合法起点；H0拟合校准与H1/L0效果验证属于之后获批的数据小训，不要反过来以“还没有训练好的头”宣称trainer不可运行。不能以本页、代码存在或19条单类审批充作“所有准备完成”。
+`prepare_recovery_sft_ticket.py`只产CPU准备票，不启动训练。初始GRASP小试的实际类别/纠正续段及TRAIN-dev冷起点现已验收，见顶部；H0拟合校准与H1/L0效果验证属于之后的数据小训。既不能以“没有训练好的头”宣称trainer不可运行，也不能把本次技术准备完成推广到所有技能部署就绪。
 
 ## 留给下一冻结RL的修复
 
