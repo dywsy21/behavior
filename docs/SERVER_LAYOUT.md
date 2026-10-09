@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 01:14 CST：短技能共享RL与结果训练扩充
+
+- lc1根`/data/workspace/wsy/behavior2026`，`runs/recovery_heterogeneous_20261010/short-rl-v2`在GPU0运行，冻源`src/short-skill-v4`=213f25d7，W&B b926be825dda，专用loopback18973双SSH转发；v1因优化前critic数值门失败，0更新，原日志/轨迹保留。RTX同run根三个客户端radio155/wash169-v3及tripod129-v5，物理GPU0/1/2，tripod新源`code/short-client-aux-v5`=0d5b6a27，其余源不热改。没有全任务RL/SR。
+- 新结果数据`runs/recovery100_collection_20261009/outcome-expansion-unit-v1`位于RTX，48ZIP/1426原观察/96签名TRAIN结果；迁移包`outcome-expansion-release-v1.tar.gz`已到lc1异质run根，SHA3045af9c…62894，拟解到`datasets/recovery-outcome-expansion-source-20261010-v1`后构建新union。部分单元自身没有DEV/action/planner，不独立放行三池训练。
+- 本地`artifacts/recovery-heterogeneous-20261010/outcome-expansion-review-v1`保留24来源288原RGB审阅证据；人工96具体决定在Git `configs/recovery_sft/outcome_expansion_owner_review_v1.json`。不移动旧data/weights、lc2 GPU0队友不碰。
+
 ## 2026-10-10 00:47 CST：异质恢复拟合及固定技能比较
 
 - A800共享根`/data/workspace/wsy/behavior2026`，新联合数据`datasets/recovery-reviewed-union-20261010-v3-articulation`；run根`runs/recovery_heterogeneous_20261010`。`L0/checkpoints/step_00000200_save_0004.pt`为200更新的动作专家SFT全checkpoint（SHA20fd2301…8044），不是旧RL增量；源`src/heterogeneous-fit-3085d21b`，已结束。
