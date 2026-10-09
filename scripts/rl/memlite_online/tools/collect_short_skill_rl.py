@@ -22,6 +22,7 @@ from recovery_recorder import proprio61
 from behavior_branch_state import restore_branch_metadata
 from skill_aligned_reward import SkillIdentity,SkillReward,validate_placement_start
 from skill_sim_measurements import OmniSkillMeasurements,vector
+from recovery_gpu_ownership import owns_short_skill_auxiliary
 from wire import packb,unpackb
 
 
@@ -102,9 +103,27 @@ def main():
     # unsets CUDA_VISIBLE_DEVICES; masking CUDA can disagree with Vulkan's
     # renderer index. Match that existing tested launch contract exactly.
     env=__import__('os').environ;gpu=env.get('OMNIGIBSON_GPU_ID')
-    if ('CUDA_VISIBLE_DEVICES' in env or gpu not in tuple(map(str,range(8))) or subprocess.check_output(
-            ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip()):
+    if 'CUDA_VISIBLE_DEVICES' in env or gpu not in tuple(map(str,range(8))):
         raise ValueError('Select one idle owned simulator GPU without displacing other jobs')
+    processes=subprocess.check_output(['nvidia-smi','-i',gpu,'--query-compute-apps=pid,used_memory',
+                                      '--format=csv,noheader,nounits'],text=True)
+    for line in processes.splitlines():
+        pid_text,memory=line.split(',');pid=int(pid_text);proc=Path('/proc')/str(pid)
+        # Existing Isaac peers create tiny auxiliary contexts on every card.
+        # Exempt only this exact recipe/port and proved output/PID/other-GPU
+        # ownership; never ignore an unrelated process merely for being small.
+        allowed=False
+        try:
+            argv=[x.decode() for x in (proc/'cmdline').read_bytes().split(b'\0') if x]
+            peer_env=dict(x.decode().split('=',1) for x in (proc/'environ').read_bytes().split(b'\0') if b'=' in x)
+            if '--output' in argv:
+                peer=Path(argv[argv.index('--output')+1])
+                if peer.parent.resolve()==a.output.parent.resolve() and (peer/'status.json').is_file():
+                    status=json.loads((peer/'status.json').read_text())
+                    allowed=owns_short_skill_auxiliary(pid,float(memory),int(gpu),status,peer,argv,peer_env,
+                        config_sha256=sha256(a.config),cases=cfg['cases'],port=a.port)
+        except (OSError,ValueError,IndexError):allowed=False
+        if not allowed:raise ValueError('GPU has an unowned or primary compute process: '+str(pid))
     import omnigibson as og
     from omnigibson.eval.evaluator import BatchedEvaluator
     from omnigibson.eval.utils.eval_utils import seed_everything,DEFAULT_EVAL_SEED

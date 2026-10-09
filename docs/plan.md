@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 01:08 CST / Codex RECOVERY-USABLE：** 新96结果签发197a47b0…3e47，紧凑单元48ZIP/1426原观察已全读，独立单元因0DEV/0动作/0plan三池不ready，保留门待联合旧release。tripod v4被资源门误拒绝：现场GPU2只有另两自有sim各174MiB辅助上下文，并非主任务占卡；扩展既有辅助上下文证明逻辑，严格同recipe/port/case/PID/output且主GPU不同、≤512MiB才排除，未知或大进程仍拒绝。原两collector/共享actor继续原冻源；新GPU2客户端待131回归后启动，尚无优化。
+
 - **2026-10-10 01:06 CST / Codex RECOVERY-USABLE：** 根完成24新task/24原TRAIN来源全部288原RGB面板亲审、逐sheet SHA/72成功失败过去6控证据核验及24实际技能目标绑定；签具体96结果（含同t8正常对照），0动作/0planner，决策`outcome_expansion_owner_review_v1.json`，待机器签发/联合准入，80独立DEV仍未用于选择。213f25d7短RL v2已ready（lc1 PID1596261/W&Bb926be825dda），radio/wash重新基线；tripod首次在模型监听就绪前HTTP失败、0控制/无job，保留v3失败回执后仅空闲GPU2重启v4，不中断其它会话/不重复机器人失败直到成功。
 
 - **2026-10-10 01:00 CST / Codex RECOVERY-USABLE：** 0053d2a3全130本地回归过；混精度独立复现同状态值差0.00090436（远超1e-5），修后外层autocast与FP32值逐bit一致。旧RL服务final明确失败/actor0、冻结SHA前后相等且A800/三RTX已释放。额外核到官方sim退出会提前结束解释器，已将客户端终态回执前移至teardown前，避免日志失败而status仍executing；旧v2原状态不篡改，由服务final/日志解释。A800缺增量bundle先决commit仅是Git传输未部署，改完整所需祖先包；不修改活跃源码。
