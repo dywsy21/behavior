@@ -37,7 +37,7 @@ def main():
         for index in range(len(dataset)):
             sample=dataset[index];s=sample['samples']
             if (not s['low_action_supervision_mask'] or s['memlite_branch']!='low'
-                    or s['outcome_supervision_mask'] or sample['action_is_pad'].any()):
+                    or s.get('outcome_supervision_mask',False) or sample['action_is_pad'].any()):
                 raise ValueError('Low masks or branch mismatch')
             if not all(torch.isfinite(v).all() for v in sample['pixel_values'].values()):raise ValueError('Nonfinite RGB')
             checks.append(dict(component='L0',split=split,sample_id=dataset.rows[index]['candidate']['sample_id'],
