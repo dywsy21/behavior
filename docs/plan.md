@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 02:40 CST / Codex RECOVERY-USABLE：** 新observer实际零LoRA prefill已与原cache逐bit相同，但0optimizer工程反传失败：probe把GRU设eval，cuDNN不允许eval-mode反传（非数据/模型nan）。原af892292 run已退出/日志保留；修为probe明确head.train、提前模式门和失败终态回执，待新冻源再验。低RL第6真实更新27chunks通过：actor5e-7/KL.011617、critic半MSE.00135170→.00135049，权重221290c7…14f9421；固定probe在途，仍无SR改善声明。
+
+- **2026-10-10 02:39 CST / Codex RECOVERY-USABLE：** af892292已push/新冻源双端152恢复回归过，lc1闲GPU0已提交独立`H0-observer-adapter-v1`PID1651364（loading，0实测优化）；低RL GPU1原bff37072源不动，首个续接update0006文件已产出，待具体KL/critic/固定probe核验。单独读取旧wash曲线0→5更新末开度始终约.299–.315、当前冷基线.304/.309，未有可靠功能成功或连续进展增益，不拿可见开缝当RL有效。
+
 - **2026-10-10 02:36 CST / Codex RECOVERY-USABLE：** 新结果表征实验固定方案：独立bee高骨干＋命名`outcome_observer` LoRA rank8/alpha16（仅VLM192 adapter tensor）＋时序头；base/vision/proprio/高规划/低actor不更新，结果CE只能到新adapter和头，不把标签放prefix。176 TRAIN/40原选择DEV不变，batch8×micro1、adapter2e-5/head1e-4、20epoch学习曲线/5epoch平台规则，60校准/20test均不参与。新入口须先验零adapter与原cache逐bit相等、实际反传白名单、训练后冻结SHA相等。152恢复＋9反馈回归过，尚未实际模型验收/更新；低RL原源已读取BASELINE_ACCEPTED并进入首轮TRAIN。
 
 - **2026-10-10 02:35 CST / Codex RECOVERY-USABLE：** 冷基线6/6完成，逐842实际控制/奖励/identity已重算，根亲看6页90原起点/视频相机面板并核SHA；radio各19控、PLACE100/70控成功，wash各317控UNKNOWN（开度.3040/.3094<.35）。两radio恢复误差均.002480m、washer0、全部proprio0；准许原5更新权重继续，不降低5mm门。`short_skill_cold_baseline_acceptance_v1.json`绑定服务六episode SHA和原权重，已复制run门，待首个新优化回执。观察器新增隔离LoRA+head训练入口/梯度白名单草稿完成，152＋9单元通过，未实际前反向/开训，不热改RL源。

@@ -120,6 +120,11 @@ def main():
     reference=cache['features'][request_key(train[0])]['context']
     if not torch.equal(initial_feature['context'][0].float().cpu(),reference):
         raise ValueError('Zero observer adapter does not reproduce pinned frozen prefix')
+    atomic_json(a.output/'zero-adapter-audit.json',dict(context_bitwise_equal=True,optimizer_steps=0,
+        features_sha256=cfg['features_sha256'],request_id=request_key(train[0])))
+    # cuDNN must retain GRU training intermediates even in this no-update
+    # gradient probe; eval-mode RNN forward cannot subsequently backpropagate.
+    head.train()
     with torch.autocast('cuda',dtype=torch.bfloat16):
         probe=head(**feature(train[0]),allow_context_grad=True)
         F.cross_entropy(probe.float(),torch.tensor([OUTCOMES.index(train[0]['approval']['label']['value'])],device='cuda')).backward()
@@ -201,4 +206,15 @@ def main():
     atomic_json(a.output/'status.json',status);atomic_json(a.output/'result.json',status);reader.close();wb.finish()
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    try:
+        main()
+    except BaseException as exc:
+        if '--output' in sys.argv:
+            output=Path(sys.argv[sys.argv.index('--output')+1]);status_path=output/'status.json'
+            if status_path.is_file():
+                from g05.utils.training.stage1_runtime import atomic_json
+                failed=json.loads(status_path.read_text())
+                failed.update(status='failed_not_deployed',error=repr(exc),failed_unix=time.time())
+                atomic_json(status_path,failed);atomic_json(output/'result.json',failed)
+        raise

@@ -40,6 +40,10 @@ class ObserverAdapterTests(unittest.TestCase):
         head(x,p,steps,mask,allow_context_grad=True).square().mean().backward()
         self.assertIsNotNone(x.grad);self.assertGreater(float(x.grad.abs().sum()),0.)
         self.assertIsNone(p.grad)
+        head.eval()
+        with self.assertRaisesRegex(ValueError,'GRU training mode'):
+            head(x,p,steps,mask,allow_context_grad=True)
+        with torch.no_grad():self.assertEqual(head(x,p,steps,mask).shape,(2,4))
 
 
 if __name__=='__main__':unittest.main()

@@ -32,6 +32,8 @@ class TemporalOutcomeObserver(nn.Module):
     def forward(self, context, proprio, steps, valid, *, allow_context_grad=False):
         if type(allow_context_grad) is not bool:
             raise ValueError('Explicit context-gradient opt-in required')
+        if allow_context_grad and torch.is_grad_enabled() and not self.sequence.training:
+            raise ValueError('Observer adapter backward requires GRU training mode')
         if context.ndim != 3 or not 1 <= context.shape[1] <= 4:
             raise ValueError("Observer admits 1..4 past/current checkpoints")
         batch, length, _ = context.shape

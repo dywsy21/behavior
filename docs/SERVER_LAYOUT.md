@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 02:39 CST：独立结果观察器适配训练
+
+- lc1 `src/observer-adapter-v1`=af892292，run `runs/recovery_heterogeneous_20261010/H0-observer-adapter-v1`、同名`.log`，GPU0/PID1651364，当前loading。专属LoRA/时序头checkpoint不是原high planner完整权重，不能替换bee高模型或现役H0；实际零adapter/反传审计与曲线以run回执为准。
+- 低RL仍GPU1/bff37072 `short-rl-v4-cold`，BASELINE_ACCEPTED已放行；基线人工与机器证据在RTX同run根`short-rl-v4-cold-baseline-review-v1`、本地artifacts同名。6条842控制/90面板只批准冷启动工程，不是RL方法增益。
+
 ## 2026-10-10 02:21 CST：逐轨迹冷启动续接
 
 - lc1 `src/short-skill-cold-v1`=bff37072、run `runs/recovery_heterogeneous_20261010/short-rl-v4-cold`，GPU1/PID1640246，W&Bc8823fe92ecd、loopback18974。精确续global5，六基线人工门未放行，不称新增更新。
