@@ -12,6 +12,15 @@
 
 ## 实时进度（最新记录在前）
 
+### 2026-10-09 10:49 CST：用户要求核查RL半天无进展（Codex / DIAG-SHARED-RL-STAGNATION）
+
+- **11:04 CST诊断完成/未改训练：** 最新仍training，18.31h/162共享更新、1317906控制步/41task、66完成TRAIN/0成功/宏Q0.01909479；最近2h仅17更新/18.55控制步每秒（全机），不是18h反复练同一task，33完成task均只过一对实例。只读扫描约7GB奖励日志耗38.9s/0GPU，证据[learning-signal JSON](infra/results/2026-10-09-shared-rl-learning-signal.json)：82036chunk仅6个非零终局Q奖励、79.75%块奖励绝对值<1e-3；13episode曾Q升、3条已完episode随后全丢。66完成episode中23条始终同一skill bundle，最长连续不变intent占全程的中位数90.57%。planner_only执行链固定UNKNOWN/none且高层冻结；K=3 memory去重同一指令、不含持续时间/尝试次数/执行结果，不能把10292次UNKNOWN当模型主动错误判断。低层RL无法直接修这些高层切换问题。
+- **学习信号/指标限制：** 原PBRS数值定义未发现反号；但稠密提示来自最终BDDL literal而非当前intent，例如扫车库只奖励地面关系/距离，扫帚grasp虽记录却未成为此技能奖励。通常每env每批32chunk/512control（17.1s），GAE直接衰减1/e约311control/10.4s，更早终局信用依赖critic。最近40更新KL中位0.000507、161/161初始LR1e-7接受、max unchanged KL0；不是频繁回退/未更新，仍是小更新。`post_update/value_loss`在critic.step前采集，不能称优化后critic loss；shared报告缺EV/return-value分布。默认动态任务宏Q曲线不是固定前后评测，不能证明相对SFT提升。
+- **排除与人工核验：** 八rank最近完整参数/两Adam指纹在160一致，164注册ID全部唯一/empty memory/independent ledger通过（真实episode是82，不能混数）。原图新增3候选18面板全部亲审、ZIP SHA/原validator通过，目录`artifacts/shared-rl100-20261008/diagnosis-20261009`：捡垃圾120已有一罐inside、另一罐在左手并GRASP→PLACE_IN，但仍未整任务成功；擦鞋60 Q波动0.1667–0.5仍NAV brush/无物理grasp；收食物入冰箱62临近超时仍NAV fridge/Q0。候选仍bc_eligible=false。特别核实normalized_time=human_steps/actual_steps，约2/3恰对应官方1.5×时限，**不是少跑1/3预算**。
+- **建议而非新授权：** 不建议原配方自动续时。先保留共享ckpt/日志，补可部署的结果/停滞反馈与高层恢复学习；低层用通用skill条件奖励/有验证的近技能起点课程做小预算重复训练，先证明一个动作技能可学再扩大100task；可信反馈/奖励通过后才校准更积极步幅与样本复用。修正critic诊断口径，若获批再做少量固定TRAIN-dev前后对照，不擅自恢复公共全量评测。新增只读统计工具＋3测试、Ruff/compile/diff通过；源码/参数/作业预算未修改，截止仍16:43:31 CST，团队独立review/后续训练票待。
+- Git已fetch/ff-pull，origin/main仍33677bd；本轮只读核对现有作业、奖励/梯度/规划行为，不重启、不改参数、不恢复公共评测。10:48实查`shared_rl100_20261008_v2`/5e4e62c仍training，约18.1h、160次共享更新、1304192控制步、已见41task/82episode，完成33task/66episode，官方完整成功0、已完成task宏Q0.01909479，13条episode曾Q增长。该TRAIN动态任务集合不可与旧0.0129作配对改善结论。
+- 八rank全版160、无ABORT/STOP，新W&B镜像di624k4h与源实时一致（本地刷新约13s前），不是页面停更；原24h截止10/09 16:43:31 CST不延长。正在核奖励信号覆盖/时序、更新强度与高层阶段切换瓶颈，并保存只读证据；尚不把运行健康当方法有效。旧DART goal仍blocked，本轮不恢复。
+
 ### 2026-10-08 19:16 CST：用户要求Codex持续亲自监控，并改用本人W&B账号（Codex / RL-SHARED100-MONITOR）
 
 - **20:06 CST用户team的W&B镜像已真实接通：** PRIVATE项目`hanhanyy-fudan-university-school-of-management/behavior-memlite-rl`，run=`di624k4h`（[监控页](https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior-memlite-rl/runs/di624k4h)）；官方API读回running/203条history，包含15次真实共享更新、123913控制步/9task/2完整TRAIN episode/Q0/SR0。本地observer PID2388584（uv launcher2388568），冻结`4165c44`/`/home/wsy/behavior-worktrees/rl-observer-4165c44`，输出`artifacts/shared-rl100-20261008/owner-wandb-v3`，每60s只读SSH回填；8单测/Ruff/compile/diff通过。新账号写权限实证通过，不再阻塞；原服务器训练/旧W&B run保持原样，非新训练/非独立eval。本地输出逐文件秘密匹配0、.netrc mtime与启动前逐位一致；凭据仅在进程内存。Codex当前turn继续亲自监控；该镜像自身只是持久日志，不等于聊天外自动唤醒，且依赖本地机器在线。下一步持续看官方Q/真实完成episode及异常，不改预算/高层冻结。
