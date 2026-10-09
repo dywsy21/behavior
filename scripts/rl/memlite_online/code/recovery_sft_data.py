@@ -37,7 +37,19 @@ def require_training_pool(release, pool, expected_admission_sha256, *, purpose='
         if name not in receipt['files']:
             raise ValueError('Unbound evaluation partition')
         partition = json.loads(local_file(release, name).read_text())
-    return receipt, rows_for_purpose(rows, partition, purpose)
+    selected = rows_for_purpose(rows, partition, purpose)
+    if partition is not None and purpose == 'training':
+        # A held-out test cohort may not supply the minimum DEV count/classes
+        # needed to admit a training experiment.
+        for split, minimum in (('train', 8), ('dev', 4)):
+            local = [r for r in selected if r['candidate']['split'] == split]
+            if (len({r['approval']['event_id'] for r in local}) < minimum
+                    or len({r['candidate']['source_group'] for r in local}) < 2):
+                raise ValueError('Frozen-test rows cannot satisfy training/selection coverage')
+            if pool == 'outcome' and not {'IN_PROGRESS','SUCCEEDED','FAILED'} <= {
+                    r['approval']['label']['value'] for r in local}:
+                raise ValueError('Frozen-test rows cannot supply missing training/selection classes')
+    return receipt, selected
 
 
 class CandidateArchiveReader:

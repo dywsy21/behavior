@@ -52,6 +52,7 @@ def main():
     cache_receipt = json.loads((root / cfg['feature_receipt']).read_text())
     if (cache_receipt['admission_sha256'] != cfg['admission_sha256']
             or cache_receipt['features_sha256'] != file_sha(root / cfg['features'])
+            or cache_receipt['features_sha256'] != cfg['features_sha256']
             or cache_receipt['high_sha256'] != cfg['high_sha256']
             or cache_receipt['diagnostic_only']):
         raise ValueError('Feature provenance mismatch')

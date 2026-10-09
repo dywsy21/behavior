@@ -1,0 +1,17 @@
+{
+  "schema": "recovery_frozen_observer_evaluation_v1",
+  "root": "/data/workspace/wsy/behavior2026",
+  "fit_result": "runs/recovery_usable_20261009/H0-new-high-convergence-v1/result.json",
+  "fit_result_sha256": "0416b05412cb15ff260fe0dad79caa492b24ff47824618f1df34b4f8c148d83f",
+  "fit_config": "src/recovery-refit-45efee1f/configs/recovery_sft/a800_h1_observer_convergence_v1.json",
+  "selected_observer": "runs/recovery_usable_20261009/H0-new-high-convergence-v1/selected-observer.pt",
+  "selected_observer_sha256": "499c42cc1949d2543ee7b92b409461351d05e4f5540e0318fdc94771268e5a4a",
+  "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+  "admission": "datasets/recovery-reviewed-union-20261009-v2-newdev/admission",
+  "admission_sha256": "21e378178face3983f06360265f47bc1301396e2b80a985a1bb78de8fd777c27",
+  "features": "runs/recovery_usable_20261009/H1-newdev-feature-cache-v1/features.pt",
+  "features_sha256": "cad8369d816f1914dbcb4bcfb1420fabf19348a1e31fa30084a887d855f823ac",
+  "feature_receipt": "runs/recovery_usable_20261009/H1-newdev-feature-cache-v1/receipt.json",
+  "expected_groups": ["composting waste:183", "assembling gift baskets:192", "cook a brisket:114"],
+  "scope": "Once-off diagnostic, no optimizer or selection on these three additional groups. Not a calibrated deployment or full-task success test."
+}
