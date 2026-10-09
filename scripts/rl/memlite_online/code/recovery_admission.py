@@ -84,8 +84,17 @@ def verify_approval(approval, row, evidence_root):
         raise ValueError('Require visual AND physical/semantic review, not self-report')
     label = approval['label']
     if approval['pool'] == 'outcome':
-        if set(label) != {'value', 'member_index', 'available_control_step', 'evidence_end_control_step'}:
+        fields = {'value', 'member_index', 'available_control_step', 'evidence_end_control_step'}
+        if set(label) not in (fields, fields | {'history_role'}):
             raise ValueError('Unrecognized outcome target')
+        role = label.get('history_role','observable')
+        if role not in ('observable','predecision'):
+            raise ValueError('Unknown result attempt context')
+        if role == 'predecision':
+            prior = row['label_audit'].get('predecision_outcome')
+            if (not prior or prior['value'] != label['value'] or not prior['context_id']
+                    or prior['evidence_end_control_step'] != step):
+                raise ValueError('No bound old-attempt result at this decision observation')
         members = json.loads(row['actor_input']['issued_skills_semantic_json'])
         if (label['value'] not in KNOWN_RESULTS or type(label['member_index']) is not int
                 or not 0 <= label['member_index'] < len(members)

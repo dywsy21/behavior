@@ -36,7 +36,8 @@ def one_per_event(rows):
 
 
 def request_key(row):
-    return digest([row['candidate']['sample_id'],'observable',row['approval']['label']['member_index']])
+    label = row['approval']['label']
+    return digest([row['candidate']['sample_id'],label.get('history_role','observable'),label['member_index']])
 
 
 def evaluate_head(model,rows,features,device):

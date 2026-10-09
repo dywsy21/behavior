@@ -30,6 +30,9 @@ def feature_requests(anchors, history, selections):
         context = h[role]
         if context is None or context['history_is_partial']:
             raise ValueError('No complete pre-decision history; do not invent it')
+        if role == 'predecision' and 'predecision_outcome' in row.get('label_audit',{}):
+            if row['label_audit']['predecision_outcome']['context_id'] != context['context_id']:
+                raise ValueError('Old-attempt outcome is bound to another issued context')
         members = json.loads(context['issued_skills_semantic_json'])
         if type(member) is not int or not 0 <= member < len(members):
             raise ValueError('Wrong issued skill member')

@@ -16,6 +16,7 @@ from recovery_corpus import canonical,digest,file_sha,split_group,anchor_candida
 from recovery_teacher_corpus import validate_branch,branch_histories,physical_proposal,episode_identity,PhysicalProposalIndex
 from recovery_reference_binding import verify_saved_binding
 from recovery_terminal_corpus import load_terminal,normalized_terminal,terminal_anchor
+from recovery_articulation_corpus import verify_articulation_seed,validate_articulation_branch,CLEAN
 
 
 def write_json(path,value):path.write_text(json.dumps(value,indent=2,allow_nan=False)+'\n')
@@ -27,6 +28,7 @@ def main():
     p.add_argument('--collection',type=Path,required=True);p.add_argument('--sources',type=Path,required=True)
     p.add_argument('--protected',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     p.add_argument('--previous-collection',type=Path,action='append',default=[])
+    p.add_argument('--mechanism',choices=('grasp','articulation'),default='grasp')
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     protected=set(json.loads(a.protected.read_text())['groups']);source_rows=[]
@@ -61,10 +63,16 @@ def main():
             raise ValueError('Changed complete state snapshot')
         seed=json.loads((directory/'seed.json').read_text())
         prefix=[json.loads(x) for x in (directory/'prefix.jsonl').read_text().splitlines()]
-        verified_binding=verify_saved_binding(directory,source,result,prefix)
-        if (len(prefix)!=seed['source_frame'] or len(prefix)<6 or
-                not all(r['physical_audit']['grasp'][seed['arm']]=='TRUE' for r in prefix[-6:])):
-            raise ValueError('Seed was not physically verified as same-target same-arm grasp')
+        articulation=a.mechanism=='articulation'
+        if articulation:
+            verified_binding=verify_articulation_seed(directory,source,result,prefix,seed)
+            target_physics=seed['physical'];arm='not_applicable';clean_label=CLEAN
+        else:
+            verified_binding=verify_saved_binding(directory,source,result,prefix)
+            if (len(prefix)!=seed['source_frame'] or len(prefix)<6 or
+                    not all(r['physical_audit']['grasp'][seed['arm']]=='TRUE' for r in prefix[-6:])):
+                raise ValueError('Seed was not physically verified as same-target same-arm grasp')
+            target_physics=seed['physics'];arm=seed['arm'];clean_label='same_state_local_teacher_candidate'
         source_rows.append(dict(case=entry['directory'],source_manifest_sha256=entry['manifest_sha256'],
             collection_result_sha256=file_sha(directory/'result.json'),source_commit=result['source_commit'],
             original_release_sha256=source['original_release_sha256'],source_group=source['source_group'],
@@ -83,16 +91,22 @@ def main():
                 raise ValueError('Corrective branch intent does not match the actually bound reference target')
             if not rows:
                 excluded.append(dict(case=entry['directory'],branch=branch['kind'],reason=branch['failure']));continue
-            validate_branch(rows,manifest,plans)
-            terminal=load_terminal(branch_path,manifest,rows,plans)
+            if articulation:
+                outcome_proposals,predecision_proposals=validate_articulation_branch(rows,manifest,plans,seed)
+                terminal=None  # This immutable collector has no separate final RGB.
+            else:
+                validate_branch(rows,manifest,plans)
+                terminal=load_terminal(branch_path,manifest,rows,plans)
             episode=episode_identity(source,result,manifest,branch['kind'])
+            if articulation:episode['teacher_kind']='offline_local_measured_reference_path_servo_v1'
             clip_id=digest(episode)[:24];relative=clip_id+'.zip'
-            binding={seed['physics']['target_name']:seed['physics']['entity']}
+            binding={target_physics['target_name']:target_physics['entity']}
             bindings[canonical([episode['run'],episode['episode_id']])]=binding
             normalized=deepcopy(rows)
             for row in normalized:
                 audit=row['physical_audit'];audit['grasp_states']={audit['entity']:audit['grasp']}
                 audit['entity_bindings']=binding
+                if articulation:row['policy_update']=0
             raw=''.join(json.dumps(r,sort_keys=True,allow_nan=False)+'\n' for r in normalized).encode()
             header_anchors={k:v for k,v in manifest['anchors'].items() if int(k)<len(rows)}
             if terminal:
@@ -129,7 +143,8 @@ def main():
                 episode=episode,controls=len(rows),images=3*len(header_anchors),events=header['events'],
                 structural_validation='passed',split=split_group(source['task'],source['instance_id'],protected))
             inventory.append(item);mapping={r['control_step']:r for r in normalized};branch_anchors=[]
-            proposal_index=PhysicalProposalIndex(rows,seed['arm']);intent_starts=same_intent_starts(mapping)
+            proposal_index=None if articulation else PhysicalProposalIndex(rows,arm)
+            intent_starts=same_intent_starts(mapping)
             for t,anchor in sorted(header_anchors.items(),key=lambda x:int(x[0])):
                 t=int(t);image_ref=dict(archive=relative,sha256=anchor['sha256'],control_step=t)
                 if terminal and t==terminal['control_step']:
@@ -137,14 +152,17 @@ def main():
                     branch_anchors.append(row);anchors.append(row);continue
                 row=anchor_candidate(episode,mapping,t,image_ref,binding,item['split'],intent_starts=intent_starts)
                 latest=[p for p in plans if p['control_step']<=t][-1]
-                proposal_label=physical_proposal(rows,t,seed['arm'],attempt_start=latest['control_step'],index=proposal_index)
+                proposal_label=(outcome_proposals[t] if articulation else physical_proposal(
+                    rows,t,arm,attempt_start=latest['control_step'],index=proposal_index))
                 row['label_audit']['offline_teacher']=dict(kind=branch['kind'],action_label_kind=rows[t]['label_kind'],
                     physical_recovery_candidate=branch['physical_recovery_candidate'],not_on_policy=True,
-                    source_event_id=digest([source['source_group'],'first_demonstrated_grasp']),
+                    source_event_id=digest([source['source_group'],'first_demonstrated_'+a.mechanism]),
                     branch_failure=branch['failure'])
                 row['label_audit']['outcome'].update(value=proposal_label,reason='causal_offline_physical_proposal_pending_review',
                     evidence_end_control_step=t)
-                if any(r['label_kind']!='same_state_local_teacher_candidate' for r in rows[t:t+32]):
+                if articulation and t in predecision_proposals:
+                    row['label_audit']['predecision_outcome']=predecision_proposals[t]
+                if any(r['label_kind']!=clean_label for r in rows[t:t+32]):
                     row['label_audit']['full_executed_32_step_target_available']=False
                 branch_anchors.append(row);anchors.append(row)
             context=branch_histories(branch_anchors,plans);histories.extend(context)
@@ -156,7 +174,8 @@ def main():
                         decision=h['observable']['issued_decision'],memory_update=h['observable']['memory'])
                     write_json(a.output/'proposed-plans'/(row['sample_id']+'.json'),target)
             queue.append(dict(source_group=source['source_group'],split=item['split'],case=entry['directory'],branch=branch['kind'],
-                source_path=str(branch_path),archive=relative,arm=seed['arm'],physical_recovery_candidate=branch['physical_recovery_candidate'],
+                source_path=str(branch_path),archive=relative,arm=arm,mechanism=a.mechanism,
+                physical_recovery_candidate=branch['physical_recovery_candidate'],
                 proposed_outcomes={v:sum(r['label_audit']['outcome']['value']==v for r in branch_anchors)
                                    for v in ('SUCCEEDED','FAILED','IN_PROGRESS')},failure=branch['failure']))
     write_json(a.output/'audit/inventory.json',inventory);write_lines(a.output/'audit/anchors.jsonl',anchors)

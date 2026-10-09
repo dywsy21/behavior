@@ -66,5 +66,14 @@ class AdmissionTests(unittest.TestCase):
         rows=[dict(self.row,control_step=k,sample_id=str(k)) for k in (16,20,24,28,32,96)]
         self.assertEqual([s['anchors'] for s in independent_candidates(rows)],[5,1])
 
+    def test_predecision_result_requires_exact_old_attempt_evidence(self):
+        approval=deepcopy(self.approval);approval['label']['history_role']='predecision'
+        with self.assertRaises(ValueError):verify_approval(approval,self.row,self.root)
+        row=deepcopy(self.row)
+        row['label_audit']['predecision_outcome']=dict(value='SUCCEEDED',context_id='old',evidence_end_control_step=32)
+        verify_approval(approval,row,self.root)
+        approval['label']['value']='FAILED'
+        with self.assertRaises(ValueError):verify_approval(approval,row,self.root)
+
 
 if __name__ == '__main__':unittest.main()

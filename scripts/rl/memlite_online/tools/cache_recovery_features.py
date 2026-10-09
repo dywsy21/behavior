@@ -46,7 +46,8 @@ def main():
         # H0 can be prepared/trained before the planner pool is ready. Read
         # approved planner rows only if present; do not require its gate here.
         for row in outcomes:
-            selections.append((row['candidate']['sample_id'],'observable',row['approval']['label']['member_index']))
+            label=row['approval']['label']
+            selections.append((row['candidate']['sample_id'],label.get('history_role','observable'),label['member_index']))
         path=a.admission/'planner.jsonl'
         if path.exists():
             admitted=json.loads((a.admission/'admission.json').read_text())
