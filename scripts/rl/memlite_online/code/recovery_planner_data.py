@@ -51,7 +51,10 @@ def planner_projection(candidate,history,target,feedback,high_sha256):
     result=dict(schema_version=6,memlite_branch='high',task_name=task,parent_goal=target['parent_goal'],
         target_parent_goal=target['parent_goal'],previous_parent_goal=prior['parent_goal'],
         previous_intent=prior['previous_intent'],memory=prior['memory'],
-        known_previous_outcome=value['estimated_bundle_outcome'],execution_feedback=feedback['execution_feedback'],
+        # An observer's calibrated estimate is still not privileged known
+        # truth. Keep it in the explicitly estimated feedback channel. This
+        # also preserves the frozen high_planner_only UNKNOWN input contract.
+        known_previous_outcome='UNKNOWN',execution_feedback=feedback['execution_feedback'],
         active_skills_semantic_json=semantic,active_skills_text=semantic_active_skills_text(parse_active_skills_semantic_json(semantic)),
         next_decision=target['decision'],memory_update=target['memory_update'],task_complete=False,
         outcome_target='UNKNOWN',outcome_supervision_mask=False,parent_goal_supervision_mask=True,low_action_supervision_mask=False)

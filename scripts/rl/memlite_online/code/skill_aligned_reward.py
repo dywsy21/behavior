@@ -59,11 +59,12 @@ def skill_measurement(skill, evidence):
         return value
     if verb=='GRASP':
         arm=skill['arm']
-        if arm not in ('LEFT','RIGHT') or evidence['arm']!=arm:
+        if arm not in ('LEFT','RIGHT','UNSPECIFIED') or evidence['arm']!=arm:
             raise ValueError('GRASP requires the requested exact hand')
         held=boolean('target_held_by_requested_arm')
         distance=finite(evidence['requested_eef_target_distance_m'],'eef-target distance')
-        # Wrong hand or closed-empty fingers never satisfy held.
+        # Wrong hand for an explicit arm, or closed-empty fingers, never
+        # satisfy held. An UNSPECIFIED command permits either actual hand.
         return dict(potential=.25*math.exp(-distance/.10)+.75*held, achieved=held)
     if verb=='NAVIGATE':
         distance=finite(evidence['reachable_pose_distance_m'],'reachable-pose distance')

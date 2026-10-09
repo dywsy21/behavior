@@ -116,10 +116,14 @@ class PipelineTests(unittest.TestCase):
         result=calibrate(logits,labels,['a','b','c'])
         self.assertFalse(result['ready']);self.assertGreater(len(result['blockers']),0)
         many=labels.repeat(40);perfect=torch.full((120,4),-8.);perfect[range(120),many]=8
-        good=calibrate(perfect,many,['a','b']*60)
+        groups=[f'independent:{i}' for i in range(120)]
+        good=calibrate(perfect,many,groups)
         self.assertTrue(good['ready'])
-        wrong=calibrate(perfect.roll(1,1),many,['a','b']*60)
+        wrong=calibrate(perfect.roll(1,1),many,groups)
         self.assertFalse(wrong['ready'])
+        with self.assertRaisesRegex(ValueError,'independent source group'):
+            calibrate(perfect,many,['a','b']*60)
+        with self.assertRaises(ValueError):calibrate(logits,labels,['a','b'])
 
     def test_temporal_head_real_backward_and_incomplete_history_unknown(self):
         head=module.TemporalOutcomeObserver(16,width=8)
@@ -142,6 +146,12 @@ class PipelineTests(unittest.TestCase):
         projection=planner_projection(row,h,target,pred,'a'*64)
         self.assertEqual(projection['memory'],prior['memory']);self.assertFalse(projection['outcome_supervision_mask'])
         self.assertEqual(projection['outcome_target'],'UNKNOWN');self.assertFalse(projection['low_action_supervision_mask'])
+        calibrated=deepcopy(pred);calibrated['provenance']['calibrated']=True
+        calibrated['execution_feedback']=feedback_text(prior,[dict(member=0,estimated_outcome='FAILED',confidence=.97)])
+        projected=planner_projection(row,h,target,calibrated,'a'*64)
+        self.assertEqual(projected['known_previous_outcome'],'UNKNOWN')
+        self.assertEqual(json.loads(projected['execution_feedback'])['estimated_bundle_outcome'],'FAILED')
+        self.assertEqual(projected['outcome_target'],'UNKNOWN')
         bad=deepcopy(target);bad['decision']='RETRY'
         with self.assertRaises(ValueError): planner_projection(row,h,bad,pred,'a'*64)
         bad=deepcopy(pred);bad['provenance']['trained_groups'].append(row['source_group'])

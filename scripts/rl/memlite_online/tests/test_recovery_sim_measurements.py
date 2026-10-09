@@ -88,5 +88,14 @@ class SensorTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             OmniSkillMeasurements(self.accessor,replace(ident,member=1),sensor.skill)
 
+    def test_unspecified_hand_permits_either_hand_without_rewriting_intent(self):
+        skill=dict(verb='GRASP',target=self.obj.name,arm='UNSPECIFIED')
+        ident=SkillIdentity('session','task',1,'ep','ctx',digest([skill]),0)
+        sensor=OmniSkillMeasurements(self.accessor,ident,skill)
+        self.contact['right']='TRUE'
+        result,audit=sensor.read(ident)
+        self.assertTrue(result['achieved']);self.assertEqual(audit['arm'],'UNSPECIFIED')
+        self.assertEqual(audit['eligible_hand_contacts'],dict(left=False,right=True))
+
 
 if __name__=='__main__':unittest.main()

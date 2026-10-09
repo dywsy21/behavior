@@ -96,6 +96,11 @@ def calibrate(logits,labels,groups,*,minimum_confidence=.85):
     import torch
     import torch.nn.functional as F
     if logits.shape!=(len(labels),4) or not torch.isfinite(logits).all(): raise ValueError('Bad calibration logits')
+    if (len(groups)!=len(labels) or any(not isinstance(g,str) or not g for g in groups)
+            or len(set(groups))!=len(groups)):
+        raise ValueError('Calibration requires one preselected event per independent source group, never duplicated frames')
+    if labels.ndim!=1 or (len(labels) and (labels.min()<0 or labels.max()>3)):
+        raise ValueError('Invalid calibration result class')
     if len(labels):
         temperatures=torch.logspace(math.log10(.5),math.log10(5.),41)
         losses=torch.stack([F.cross_entropy(logits/t,labels) for t in temperatures])

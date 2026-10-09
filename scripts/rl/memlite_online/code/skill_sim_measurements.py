@@ -86,7 +86,8 @@ class OmniSkillMeasurements:
         self.destination, self.articulation = None, None
         verb = skill['verb']
         if verb == 'GRASP':
-            if skill.get('arm') not in ('LEFT', 'RIGHT') or skill['arm'].lower() not in self.robot.arm_names:
+            if (skill.get('arm') not in ('LEFT', 'RIGHT','UNSPECIFIED')
+                    or (skill['arm']!='UNSPECIFIED' and skill['arm'].lower() not in self.robot.arm_names)):
                 raise ValueError('Unknown requested GRASP arm')
         elif verb in ('PLACE_IN', 'PLACE_ON'):
             self.destination = self.resolve(skill.get('destination'))
@@ -117,9 +118,14 @@ class OmniSkillMeasurements:
                         target_native_name=self.target.name, actor_input=False)
         verb = self.skill['verb']
         if verb == 'GRASP':
-            arm = self.skill['arm'].lower()
-            evidence.update(arm=self.skill['arm'], target_held_by_requested_arm=grasped(self.robot,self.target,arm),
-                requested_eef_target_distance_m=distance_to_box(self.robot.get_eef_position(arm=arm),self.target))
+            arms = list(self.robot.arm_names) if self.skill['arm']=='UNSPECIFIED' else [self.skill['arm'].lower()]
+            if not arms:
+                raise ValueError('Robot has no eligible grasp arm')
+            contacts = {arm:grasped(self.robot,self.target,arm) for arm in arms}
+            evidence.update(arm=self.skill['arm'], eligible_hand_contacts=contacts,
+                target_held_by_requested_arm=any(contacts.values()),
+                requested_eef_target_distance_m=min(distance_to_box(self.robot.get_eef_position(arm=arm),self.target)
+                                                    for arm in arms))
         elif self.destination is not None:
             if self.resolve(self.skill['destination']) is not self.destination:
                 raise ValueError('Stale placement destination')
