@@ -20,8 +20,10 @@ def observation():return dict(images={k:np.zeros((3,16,16),np.uint8) for k in
 def session(end=30):return SkillTrainingSession(dict(task='t',instance_id=1,start_control=0,end_control=end,
     context_id='ctx',semantic_bundle=json.dumps([skill()])),session='run',episode='ep',policy_version=0,
     policy_sha256='a'*64,initial_evidence=evidence())
-def message(s,op,**extra):return dict(op=op,identity=asdict(s.identity),policy_version=0,policy_sha256='a'*64,
-    control_step=s.rollout.step,observation=observation(),**extra)
+def message(s,op,**extra):
+    if op=='ack':extra.setdefault('observation_control_step',extra['controls'][-1]['control_step'])
+    return dict(op=op,identity=asdict(s.identity),policy_version=0,policy_sha256='a'*64,
+        control_step=s.rollout.step,observation=observation(),**extra)
 def controls(n,held=False):return [dict(control_step=i+1,simulator_apply_ack=True,
     action_executed_raw23=[0.]*23,physical_evidence=evidence(held),official_terminal=False,official_truncated=False)
     for i in range(n)]
@@ -72,6 +74,15 @@ class TrainingProtocolTests(unittest.TestCase):
         s.emit(np.zeros((16,23),np.float32),experience_id=1,old_value=0.)
         with self.assertRaises(ValueError):s.action_input(message(s,'action'))
         with self.assertRaises(ValueError):s.emit(np.zeros((16,23),np.float32),experience_id=2,old_value=0.)
+
+    def test_next_action_and_bootstrap_use_actual_ack_frame(self):
+        s=session();s.emit(np.zeros((16,23),np.float32),experience_id=1,old_value=0.)
+        bad=message(s,'ack',controls=controls(16));bad['observation_control_step']=15
+        with self.assertRaises(ValueError):s.ack(bad)
+        s.ack(message(s,'ack',controls=controls(16)));s.finish_ack(.2)
+        s.action_input(message(s,'action'))
+        bad=message(s,'action');bad['observation']['images']['head_rgb'][0,0,0]=1
+        with self.assertRaises(ValueError):s.action_input(bad)
 
 
 if __name__=='__main__':unittest.main()

@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 00:22 CST / Codex RECOVERY-USABLE：** L0已183/200，150步恢复FM0.0215359、原0.1321624（相对原+1.94%），继续监控非SR。lc2改用前台SSH master成功、VPN未重登；空闲GPU1完成高H1 bee76338的140因果请求/281实际prefill，新feature SHA f7c3b00f…e772，0优化，GPU0队友不动。新增四类H0充分拟合票80TRAIN/40DEV，待重载反传审计后启动；独立80来源不用于选权重/训练。短RL服务已接共享round barrier、实际ACK奖励/GAE及原FM PPO，当前仅代码/123协议回归，尚无sim客户端验收/新RL优化，不能用服务存在声称学会。
+
+- **2026-10-10 00:17 CST / Codex RECOVERY-USABLE：** 新L0已真实89/200更新，50步检查点已保存；固定9恢复DEV FM 0.0586524→0.0244991（-58.23%），原100留出0.1296469→0.1337349（+3.15%），低于本轮监控10%回退线，继续且不称闭环有效。W&B online run `686313581618`，服务日志silent所以以前grep不到URL不是未接入，API验回待。lc2只读确认GPU0有其它作业、1–7空，不动其0卡；尝试追加高层冻结特征到闲置1卡时两次短SSH master未持久化，cache尚未启动，不重连VPN。
+
+- **2026-10-10 00:12 CST / Codex RECOVERY-USABLE：** lc1 `recovery_heterogeneous_20261010/processor.json`57真实样本检查通过，ticket f5a92184…0df1。八卡L0已启动，supervisor1567476/torchrun1567486、冻结3085d21b，加载中尚无首更新；planned200，8卡micro1/满batch8＋真实尾batch3，19事件20遍，W&B须实际初始化后核验。`L0.supervisor/ledger.json`与`attempt_001.log`为真实入口，不能把进程启动写成训练完成。后续本地短技能代码d40c9280不进入这个冻结SFT源。
+
 - **2026-10-10 00:10 CST / Codex RECOVERY-USABLE：** A800迁移包逐SHA一致；新联合`datasets/recovery-reviewed-union-20261010-v3-articulation`全部34ZIP/3,910原观察及已批动作读取通过，120结果（80TRAIN/40DEV）、29plan（19/10）、28action（19/9），三池门均过，admission SHA20a81bd0…ba792。3085d21b正在lc1真实processor逐条验收并生成L0票后串行启动新run`recovery_heterogeneous_20261010/L0`，未见真实更新前不称已训练。GitHub push已恢复。另短技能PPO消息/单帧adapter新增逐任务/episode/意图/权重版本/真实raw23 ACK硬核验，奖励由独立物理证据重算不进actor，122本地回归过；尚未接线上服务/optimizer，不冒称RL。
 
 - **2026-10-10 00:03 CST / Codex RECOVERY-USABLE：** 0773eec2机器签发69项通过（52结果/9plan/8action，批准SHA c1f63a37…ed378），但开合单元独立来源少，原三池门均如实未ready，不降低门；将与原已签GRASP合成新异质版本再整体验收。675MiB候选＋审核证据正数据迁移，tar SHA b84ee013…ef27，原数据不删。新增显式授权20事件遍/8卡小batch配方、逐50步固定留出检查和可选充分拟合采样器，117本地回归过；此轮从原98414重启对照，不继承GRASP-only L0。GitHub两次TLS失败已记录，源码临时仍通过Git bundle到独立冻源，不热改运行目录；待恢复push。尚无新optimizer。

@@ -5,6 +5,7 @@ by this ledger to recompute rewards, not copied into a policy batch. A complete
 same-version episode is the unit handed to the PPO update barrier.
 """
 from dataclasses import asdict
+import hashlib
 import json
 
 import numpy as np
@@ -22,6 +23,13 @@ def actor_observation(value):
     return dict(images={k:v.copy() for k,v in value['images'].items()}, proprio=value['proprio'].copy())
 
 
+def observation_hash(value):
+    h=hashlib.sha256()
+    for key,array in sorted({**value['images'],'proprio':value['proprio']}.items()):
+        h.update(key.encode());h.update(str(array.dtype).encode());h.update(str(array.shape).encode());h.update(array.tobytes())
+    return h.hexdigest()
+
+
 class SkillTrainingSession:
     def __init__(self, case, *, session, episode, policy_version, policy_sha256, initial_evidence):
         self.case=case; self.version=policy_version; self.sha=policy_sha256
@@ -35,7 +43,7 @@ class SkillTrainingSession:
         self.reward=SkillReward(self.identity,measurement,control_step=case['start_control'])
         self.rollout=SkillRollout(self.identity,policy_version=policy_version,
             policy_sha256=policy_sha256,control_step=case['start_control'])
-        self.emitted=None; self.last=None
+        self.emitted=None; self.last=None; self.post_observation_sha=None
 
     def check_request(self, request, operation):
         if (request.get('op')!=operation or request.get('identity')!=asdict(self.identity)
@@ -49,7 +57,10 @@ class SkillTrainingSession:
         self.check_request(request,'action')
         if self.emitted is not None or self.rollout.ended:
             raise ValueError('Must ACK a chunk before requesting another; no action after end')
-        return actor_observation(request['observation'])
+        obs=actor_observation(request['observation'])
+        if self.post_observation_sha is not None and observation_hash(obs)!=self.post_observation_sha:
+            raise ValueError('Next action must use the actual ACKed post-control observation')
+        return obs
 
     def emit(self, actions, *, experience_id, old_value):
         if (not isinstance(actions,np.ndarray) or actions.shape!=(16,23)
@@ -63,7 +74,8 @@ class SkillTrainingSession:
         self.emitted=actions.copy()
 
     def ack(self, request):
-        if set(request)!={'op','identity','policy_version','policy_sha256','control_step','controls','observation'}:
+        if set(request)!={'op','identity','policy_version','policy_sha256','control_step','controls','observation',
+                          'observation_control_step'}:
             raise ValueError('Malformed applied-control message')
         self.check_request(request,'ack')
         if self.emitted is None or not isinstance(request['controls'],list) or not request['controls']:
@@ -71,6 +83,9 @@ class SkillTrainingSession:
         observation=actor_observation(request['observation'])
         if len(request['controls'])>self.rollout.pending['max_controls']:
             raise ValueError('Extra controls past the emitted chunk or reference horizon')
+        if (type(request['observation_control_step']) is not int
+                or request['observation_control_step']!=request['controls'][-1]['control_step']):
+            raise ValueError('Bootstrap observation does not match actual final ACK clock')
         rewards=[]
         for index,row in enumerate(request['controls']):
             if (set(row)!={'control_step','simulator_apply_ack','action_executed_raw23','physical_evidence',
@@ -89,6 +104,7 @@ class SkillTrainingSession:
         if (not self.last['terminated'] and not self.last['truncated']
                 and len(request['controls'])!=self.rollout.pending['max_controls']):
             raise ValueError('Partial active chunk cannot drop unexecuted controls')
+        self.post_observation_sha=observation_hash(observation)
         return observation,rewards
 
     def finish_ack(self, next_value):
