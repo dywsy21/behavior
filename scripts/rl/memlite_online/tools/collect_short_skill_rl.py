@@ -98,9 +98,12 @@ def main():
     if (reference.ndim!=2 or reference.shape[1]!=23 or not np.isfinite(reference).all()
             or not 0<=begin<case['end_control']<=len(reference)):
         raise ValueError('Invalid original raw23 controls')
-    gpu=__import__('os').environ.get('CUDA_VISIBLE_DEVICES')
-    if gpu not in tuple(map(str,range(8))) or subprocess.check_output(
-            ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
+    # The pinned Isaac/Omni launcher selects a physical GPU and deliberately
+    # unsets CUDA_VISIBLE_DEVICES; masking CUDA can disagree with Vulkan's
+    # renderer index. Match that existing tested launch contract exactly.
+    env=__import__('os').environ;gpu=env.get('OMNIGIBSON_GPU_ID')
+    if ('CUDA_VISIBLE_DEVICES' in env or gpu not in tuple(map(str,range(8))) or subprocess.check_output(
+            ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip()):
         raise ValueError('Select one idle owned simulator GPU without displacing other jobs')
     import omnigibson as og
     from omnigibson.eval.evaluator import BatchedEvaluator
