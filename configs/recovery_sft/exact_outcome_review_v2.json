@@ -1,0 +1,32 @@
+{
+  "schema": "recovery_exact_grasp_review_v1",
+  "reviewer": "Codex-primary",
+  "reviewed_at": "2026-10-09T13:59:00+08:00",
+  "index_sha256": "078159289c92f8139e4645d2131fc3eba57e8ca421e60dd4865dc9915f87c7a2",
+  "scope": "Each selected middle observation was inspected with its three original cameras and available adjacent observations, and exact-target same-arm physics through t-1. Approvals apply ONLY to the issued GRASP member at that anchor. No whole-clip action, planner, recovery or task-success approval.",
+  "criterion": "Specified target physically grasped by the same compatible arm for all six preceding applied controls; closure, reward and future evidence are insufficient. GRASP success does not certify lifting, transport, retained contents or usefulness to the overall task.",
+  "recovery_events_approved": 0,
+  "action_samples_approved": [],
+  "planner_samples_approved": [],
+  "items": [
+    {"ordinal": 0, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "storage_box_49", "arm": "right", "notes": "Box face/edges visible at the right hand. Exact box binding and six causal grasp states agree; not approval of later drop or box task completion."},
+    {"ordinal": 1, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "pesticide_atomizer_172", "arm": "left", "notes": "Green/red-tipped atomizer visible at the left hand. Exact pesticide atomizer physics agrees; spraying effectiveness not evaluated."},
+    {"ordinal": 2, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "insectifuge_atomizer_174", "arm": "left", "notes": "Green atomizer at left hand in close view; six exact insectifuge-atomizer states agree. Not an insect-removal success label."},
+    {"ordinal": 3, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "tupperware_73", "arm": "left", "notes": "White container held near sink. Name resolved by instance binding, not visual class guessing; not blanket approval across a subsequent container-ID change."},
+    {"ordinal": 4, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "packing_box_210", "arm": "right", "notes": "White packing box at right gripper on counter. Physical grasp is established; these frames alone do not certify lift/transport."},
+    {"ordinal": 5, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "baking_sheet_79", "arm": "right", "notes": "Right hand at black baking-tray edge; exact cookie-sheet grasp agrees. No transport/balance or food-retention approval."},
+    {"ordinal": 6, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "wicker_basket_220", "arm": "right", "notes": "Loaded basket gripped right. Shared event ID with later spans of this episode; not five independent successes."},
+    {"ordinal": 7, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "wicker_basket_220", "arm": "right", "notes": "Basket held but tilted, contents displaced/spilling. Reject action/planner positive supervision; only exact GRASP member fulfilled."},
+    {"ordinal": 8, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "wicker_basket_220", "arm": "right", "notes": "Basket remains attached right while contents are unsafe. Repeated same event; no good-transport or recovery label."},
+    {"ordinal": 9, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "wicker_basket_220", "arm": "right", "notes": "Tilted basket still held, contents displaced. Outcome-only; not action BC or task success."},
+    {"ordinal": 10, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "wicker_basket_220", "arm": "right", "notes": "Same prolonged basket-holding event with unsafe manipulation. Do not count duration as repeated independent learning evidence."},
+    {"ordinal": 11, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "wicker_basket_220", "arm": "right", "notes": "Both hands near basket; exact right-arm grasp states disambiguate. Different source instance from spans 6-10, still not safe transport approval."},
+    {"ordinal": 12, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "vidalia_onion_216", "arm": "left", "notes": "Pink onion visible at left gripper, exact onion binding agrees. Separate object from basket within same grouped source instance."},
+    {"ordinal": 13, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "can_of_soda_113", "arm": "left", "notes": "Blue can at left hand while bin is held right. Only designated can member is labeled; do not transfer bin success to another target."},
+    {"ordinal": 14, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "trash_can_116", "arm": "right", "notes": "Trash bin held right. This issued GRASP is physically fulfilled but may be a poor plan for clearing soda cans; no planner quality approval."},
+    {"ordinal": 15, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "trash_can_116", "arm": "right", "notes": "Bin surface occludes right wrist; head/adjacent views and exact six causal ashcan grasp states agree. Not bin placement or garbage clearing success."},
+    {"ordinal": 16, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "paper_bag_81", "arm": "right", "notes": "Bag interaction at open car boot; right view substantially occluded. Instance binding plus exact same-arm grasp states establish this narrow label; sparse RGB alone would not. No action approval."},
+    {"ordinal": 17, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "paper_bag_81", "arm": "right", "notes": "Bag occludes hand while car is visible. Same episode/object event as 16 and 18; physics confirms continuing hold, not a new recovery."},
+    {"ordinal": 18, "decision": "approve_outcome_only", "label": "SUCCEEDED", "member_index": 0, "target": "paper_bag_81", "arm": "right", "notes": "At indoor doorway with bag still obscuring wrist. Exact grasp states support continued holding only; arrival/place/task goal not certified."}
+  ]
+}

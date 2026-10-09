@@ -79,6 +79,7 @@ def main():
     from omnigibson.macros import gm
     from omegaconf import OmegaConf
     from recovery_recorder import proprio61
+    from behavior_branch_state import capture_branch_metadata, restore_branch_metadata
     gm.HEADLESS = True; gm.RENDER_VIEWER_CAMERA = False
     seed_everything(DEFAULT_EVAL_SEED)
     arrays = np.load(a.proposal/'prefix.npz', allow_pickle=False)
@@ -158,10 +159,11 @@ def main():
         controllers = deepcopy(robot.dump_state(serialized=False)['controller_groups'])
         if set(controllers)!=set(robot.controllers): raise ValueError('Incomplete controller snapshot')
         world = deepcopy(og.sim.dump_state(serialized=False))
+        metadata = capture_branch_metadata(evaluator)
         rng = dict(python=random.getstate(), numpy=np.random.get_state(), torch=torch.get_rng_state(),
                    cuda=torch.cuda.get_rng_state_all() if torch.cuda.is_initialized() else None)
         at_snapshot = sample('snapshot', True)
-        torch.save(dict(world=world, controllers=controllers, rng=rng, observation=at_snapshot,
+        torch.save(dict(world=world, controllers=controllers, rng=rng, rollout_metadata=metadata, observation=at_snapshot,
                         source=manifest, source_commit=commit, official_commit=OFFICIAL_COMMIT),
                    a.output/'full_snapshot.pt')
         branches = []
@@ -170,6 +172,7 @@ def main():
         for branch in range(2):
             if branch:
                 og.sim.load_state(deepcopy(world), serialized=False)
+                restore_branch_metadata(evaluator, metadata)
                 # The world snapshot includes the robot's controller_groups;
                 # do not re-load the robot a second time and recreate grasps.
                 random.setstate(rng['python']); np.random.set_state(rng['numpy']); torch.set_rng_state(rng['torch'])
@@ -181,7 +184,10 @@ def main():
             start_state = sample(f'branch{branch}-start', True)
             sequence = []
             for offset in range(16): sequence.append(advance(actions[336+offset], f'branch{branch}-{offset}'))
-            branches.append(dict(start=start_state, states=sequence))
+            branch_metadata = capture_branch_metadata(evaluator)
+            branches.append(dict(start=start_state, states=sequence,
+                env_steps=branch_metadata['env']['_current_steps'].tolist(),
+                task_metric_steps=[m['fields']['timesteps'] for m in branch_metadata['metrics'] if m['kind']=='TaskMetric']))
         stream.flush(); os.fsync(stream.fileno()); stream.close()
         diffs = [float(np.max(np.abs(np.asarray(x['proprio'])-np.asarray(y['proprio']))))
                  for x,y in zip(branches[0]['states'], branches[1]['states'])]

@@ -2,6 +2,7 @@
 
 ## 2026-10-09：恢复数据与A800 SFT准备（非正式开训）
 
+- **13:58 CST最新位置与状态：** 原10383 `runs/shared_rl100_20261008_v2`已安全停止，最终180次共享权重/Adam/八rank RNG保存在原`policies/gpu_0/checkpoints/direct_latest.pt`（SHA fbb473cd…b4eb2），不重启、不删除。同机`runs/recovery_prepare_sim_20261009/{lunch241-v2,pizza179-v1}`保留视频、物理记录及pizza世界快照（含controller_groups/RNG，不含完整env/task时钟，非生产起点验收通过）。A800最新冻结`src/recovery-prep-8f47fd7`；准备run根下`l0-trainer-v1`两次工程更新完成，`h1-trainer-v1`接续同票小验，各同级`.supervisor`保存累计预算/日志。候选根新增`causal-history-v3`完整6194锚点上下文，非训练标签；本地`span-review-v1`保存19锚点原图/物理人工审阅证据。旧源/历史失败均保留，共享env未改，正式SFT未启。
 - **13:04 CST运行时补充：** 新独立`src/recovery-prep-874d39e`仅用于通用运行时与W&B工程验收，原父模型图源不变。`runs/recovery_sft_preparation_20261009/runtime-gpu-v1/{rank0..7.json,toy-checkpoints/}`均通过，tiny合成权重不是MEM-Lite模型；`wandb-engineering-v1/receipt.json`在线读回PASS/run `26d903a19327`已finish。只归档该非敏感回执，不复制W&B内部目录/凭据。GPU已空，正式SFT未开；本地同名artifacts保留小回执。
 - **12:50 CST最新覆盖：** `src/recovery-prep-c25d06c`已同步；`h0-parent-graph-v3`及`tests-c25d06c.log`/`tests-feedback-c25d06c.log`全部通过，诊断退出/八卡空闲。`data-transfer-v1.json`确认242ZIP/原index/候选SHA完整一致；`expert-anchor-index-v1.json`为100task/3200原TRAIN锚点（不含新恢复标签）。下方“同步中/H0失败”是保留的中途历史。准备票仍execution_ready=false，正式新SFT没有启动。
 - 共享根仍为`/data/workspace/wsy/behavior2026`；本轮lc1空闲，lc2 GPU0已有队友进程，不碰。lc-connect已按用户许可重连，仅本地SOCKS1080/HTTP1081，不改路由/共享env。SSH控制连接属于本地会话，不把密码写入仓库。
