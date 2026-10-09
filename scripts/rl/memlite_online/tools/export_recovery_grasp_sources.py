@@ -91,7 +91,8 @@ def main():
                            episode=r['episode_index'],controls=controls))
         (a.output/'export-status.json').write_text(json.dumps(dict(status='exporting',completed=len(result),total=len(selected)))+'\n')
         print(json.dumps(dict(exported=out.name,completed=len(result),total=len(selected))),flush=True)
-    (a.output/'manifest.json').write_text(json.dumps(dict(schema='recovery_grasp_source_index_v2',status='complete',cases=result),indent=2)+'\n')
+    index_schema='recovery_grasp_source_index_v2' if a.verb=='GRASP' else 'recovery_skill_source_index_v1'
+    (a.output/'manifest.json').write_text(json.dumps(dict(schema=index_schema,status='complete',cases=result),indent=2)+'\n')
     (a.output/'export-status.json').write_text(json.dumps(dict(status='complete',completed=len(result),total=len(selected)))+'\n')
 
 

@@ -8,7 +8,6 @@ candidate-only; physical evidence must be independently inspected for admission.
 """
 import argparse
 from copy import deepcopy
-from collections import deque
 import json
 import os
 from pathlib import Path
