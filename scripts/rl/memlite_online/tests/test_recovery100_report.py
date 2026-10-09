@@ -29,6 +29,17 @@ class ReportTests(unittest.TestCase):
             self.assertFalse(actual['ready_for_joint_head_training'])
             # Copies in two result roots must not masquerade as two events.
             with self.assertRaises(ValueError):report(catalog,[src],[root/'collection',root/'collection'],[])
+            (out/'fault').mkdir();(out/'fault/manifest.json').write_text('{}')
+            result=json.loads((out/'result.json').read_text());result['source_commit']='test-commit'
+            (out/'result.json').write_text(json.dumps(result))
+            rejection=dict(schema='recovery100_manual_quality_rejections_v1',decisions=[dict(source_group='task:1',
+                branch='fault',source_commit='test-commit',manifest_sha256=file_sha(out/'fault/manifest.json'),reason='not functional')])
+            actual=report(catalog,[src],[root/'collection'],[],[rejection])
+            self.assertEqual(actual['totals']['raw_physical_candidate_sources'],1)
+            self.assertEqual(actual['totals']['physical_candidate_sources'],0)
+            self.assertEqual(actual['totals']['attempt_finished_sources'],1)
+            rejection['decisions'][0]['manifest_sha256']='changed'
+            with self.assertRaises(ValueError):report(catalog,[src],[root/'collection'],[],[rejection])
 
 
 if __name__=='__main__':unittest.main()

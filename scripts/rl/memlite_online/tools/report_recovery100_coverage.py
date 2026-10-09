@@ -15,9 +15,16 @@ from recovery_corpus import file_sha,group_key,split_group
 from recovery_coverage import skill_family
 
 
-def report(catalog,sources,collections,reviews):
+def report(catalog,sources,collections,reviews,rejections=()):
     planned={};tasks={t['task']:dict(task=t['task'],task_index=t['task_index'],skills={}) for t in catalog['tasks']}
     signed={(r['case'],r['branch']):r for review in reviews for r in review['branches']}
+    rejected={}
+    for rejection in rejections:
+        if rejection['schema']!='recovery100_manual_quality_rejections_v1':raise ValueError('Unknown rejection schema')
+        for decision in rejection['decisions']:
+            key=(decision['source_group'],decision['branch'])
+            if key in rejected and rejected[key]!=decision:raise ValueError('Conflicting quality rejection')
+            rejected[key]=decision
     for root in sources:
         for entry in json.loads((root/'manifest.json').read_text())['cases']:
             path=root/entry['directory']/'manifest.json';sha=file_sha(path)
@@ -32,7 +39,8 @@ def report(catalog,sources,collections,reviews):
                 if planned[key]['proposal_sha256']!=sha:raise ValueError('Conflicting original source')
                 continue
             row=dict(task=task,verb=verb,source_group=group,split=source['recovery_split'],case=entry['directory'],
-                proposal_sha256=sha,started=False,closed=False,physical_candidate=False,human_approved=False,status='pending')
+                proposal_sha256=sha,started=False,closed=False,attempt_finished=False,raw_physical_candidate=False,
+                physical_candidate=False,human_approved=False,status='pending',quality_rejections=[])
             found=[]
             for collection in collections:
                 directory=collection if (collection/'source.json').exists() else collection/entry['directory']
@@ -47,8 +55,19 @@ def report(catalog,sources,collections,reviews):
                 path=directory/('result.json' if closed else 'status.json')
                 state=json.loads(path.read_text())
                 row.update(started=True,closed=closed,status=state['status'],receipt_path=str(path),
+                    attempt_finished=closed or state['status']=='failed',
                     actual_controls_last_receipt=state.get('actual_controls',0))
                 for branch in state.get('branches',[]):
+                    if branch['physical_recovery_candidate']:row['raw_physical_candidate']=True
+                    rejection=rejected.get((group,branch['kind']))
+                    if rejection:
+                        if (file_sha(directory/branch['kind']/'manifest.json')!=rejection['manifest_sha256']
+                                or state.get('source_commit')!=rejection['source_commit']):
+                            raise ValueError('Quality rejection points to another attempt')
+                        if (entry['directory'],branch['kind']) in signed:
+                            raise ValueError('Same rejected branch cannot be counted as approved')
+                        row['quality_rejections'].append(rejection['reason'])
+                        continue  # Raw predicate success is not a functional recovery candidate.
                     if branch['physical_recovery_candidate']:row['physical_candidate']=True
                     approval=signed.get((entry['directory'],branch['kind']))
                     if approval:
@@ -56,10 +75,10 @@ def report(catalog,sources,collections,reviews):
                             raise ValueError('Human review points to changed branch')
                         row['human_approved']=True
             planned[key]=row
-    rows=list(planned.values());fields=('started','closed','physical_candidate','human_approved')
+    rows=list(planned.values());fields=('started','closed','attempt_finished','raw_physical_candidate','physical_candidate','human_approved')
     for row in rows:
         stats=tasks[row['task']]['skills'].setdefault(row['verb'],dict(family=skill_family(row['verb']),
-            planned=0,started=0,closed=0,physical_candidate=0,human_approved=0,by_split=defaultdict(Counter)))
+            planned=0,**{f:0 for f in fields},by_split=defaultdict(Counter)))
         stats['planned']+=1;stats['by_split'][row['split']]['planned']+=1
         for field in fields:
             stats[field]+=int(row[field]);stats['by_split'][row['split']][field]+=int(row[field])
@@ -80,9 +99,11 @@ def main():
     p.add_argument('--catalog',type=Path,required=True);p.add_argument('--sources',type=Path,nargs='+',required=True)
     p.add_argument('--collections',type=Path,nargs='+',required=True)
     p.add_argument('--reviews',type=Path,nargs='*',default=[]);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--quality-rejections',type=Path,nargs='*',default=[])
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
-    result=report(json.loads(a.catalog.read_text()),a.sources,a.collections,[json.loads(p.read_text()) for p in a.reviews])
+    result=report(json.loads(a.catalog.read_text()),a.sources,a.collections,[json.loads(p.read_text()) for p in a.reviews],
+                  [json.loads(p.read_text()) for p in a.quality_rejections])
     a.output.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result['totals'],indent=2))
 
 
