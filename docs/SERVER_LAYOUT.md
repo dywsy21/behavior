@@ -4,7 +4,7 @@
 
 以下相对lc1共享根`/data/workspace/wsy/behavior2026`。代码`src/recovery-pilot-7fc978c`独立Git冻源；不热pull原collector/训练目录。联合已签数据`datasets/recovery-reviewed-union-20261009-v1`含25ZIP/947原观察、68outcome/20planner/20action，原审批证据保留各旧snapshot并以`source-provenance.json`追溯，admission SHAe16459de…6049。这不是全部新候选的放行。
 
-准备回执/冻结特征位于`runs/recovery_pilot_a800_20261009/preparation`；拟定训练链输出`runs/recovery_pilot_a800_20261009/train-v1/{H0,L0,H1}`及各自`.supervisor`，实际是否运行以plan/chain.json为准。本时点尚0更新。父高48045/低98414与共享env不变，W&B新group `memlite-recovery-pilot-20261009`。100任务RTX采集仍用其原独立目录继续；未启动新RL/公共评测。
+准备回执/冻结特征位于`runs/recovery_pilot_a800_20261009/preparation`；训练链输出`runs/recovery_pilot_a800_20261009/train-v1/{H0,L0,H1}`及各自`.supervisor`，总监管`train-v1/chain.json`/PID1434266，外部日志`train-v1-chain.log`。20:15 CST已验H0 18更新完成、L0 10/35运行、H1待L0完成。H0末ckpt`H0/checkpoints/step_00000018_save_0018.pt`/SHA1e4e4fdb…f8ac，小头需配原高48045，不是完整planner；H0实际OOF在`H0/postprocess-001`、校准false不部署。W&B H0 `cb991b24c297`，L0 `c29b6cd43a02`，用户team/project `hanhanyy-fudan-university-school-of-management/behavior2026-g05`、新group `memlite-recovery-pilot-20261009`。父高48045/低98414与共享env不变。100任务RTX采集仍用其原独立目录继续；未启动新RL/公共评测。
 
 ## 2026-10-09 17:34 CST：100任务恢复数据扩展（正在采集，结果头未训练）
 
