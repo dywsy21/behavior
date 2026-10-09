@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 02:26 CST / Codex RECOVERY-USABLE：** 因果后缀训练1282fc5f/双端150回归已实际完成315步/选215（176已审TRAIN→290加权视图，非新增事件），TRAIN100%、原DEV76.67%/balanced73.69%，未改善原DEV、不部署、不拿校准集挑该头；权重5a63fae4…0b60cf7、W&Bde809756d0c6。说明仅训练小头/删短历史仍不够，下一步应查表征与监督而非继续扫同头超参。冷RL基线radio/PLACE各两条实际成功，wash首条317控UNKNOWN；仍global5、等六条起点/ACK/媒体验完后放行，不作新RL提升结论。
+
 - **2026-10-10 02:23 CST / Codex RECOVERY-USABLE：** H0具体分布缺口已核：旧80TRAIN/40DEV中历史长度1的SUCCEEDED均0；独立校准有59条该类型（t8成功59中仅8判对，37判FAILED）。不是已证明唯一根因，但足以检验历史长度捷径。固定下一对照使用已签v4的176TRAIN/40原DEV，同架构/优化器，只把每条TRAIN构造所有真实因果后缀、每原行总权重不变且当前帧/时钟/标签不变；不回灌60校准/20test、不增加独立事件数，选择DEV保持原样。实现/回归中；高H1新机制反馈仍待，不直接部署头。
 
 - **2026-10-10 02:21 CST / Codex RECOVERY-USABLE：** bff37072三端149回归通过，lc1 GPU1新`short-rl-v4-cold`PID1640246/W&Bc8823fe92ecd已ready；真实重载global5时actor/critic逐tensor相等、Adam322/6步5，非从头训。RTX0/1/2冷worker2282428/29/30已启动，每轨迹新子进程；先六同seed基线，BASELINE_ACCEPTED SHA门仍false，0新增优化。18974沿用自有已核连接，不动VPN/共享env/队友。
