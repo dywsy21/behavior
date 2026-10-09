@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 01:25 CST / Codex RECOVERY-USABLE：** v4逐误判核到OPEN高置信假成功（cap238 FAILED→SUCCEEDED .999），禁止部署；实际TRAIN39GRASP/5OPEN，新增24GRASP使OPEN的事件CE权重25%→11.36%，稀释只是待验证假设。新增唯一加权对照`a800_h1_observer_mechanism_balance_v1.json`，真实因果prefix中的verb分组后各50%/组内事件等权，旧eval不变、原默认兼容、132回归待核；不以类名猜技能/不改标签或门。60cal/20test来源声明已固定、未看任何新预测，仍待人工签核。
+
+- **2026-10-10 01:22 CST / Codex RECOVERY-USABLE：** 新H0 295步平台停止/选195，TRAIN176全对；同40选择DEV事件准确率83.33%→86.67%、成功召回64.29%→78.57%，但balanced88.99%→81.73%（FAILED90%、UNKNOWN75%、IP83.33%），不能只报平均提高或上线。权重20ba9696…e7474/W&Bbcc56c99674e，待逐误判及新增GRASP稀释OPEN比例诊断。未看预测前固定80新DEV的60校准/20冻结test来源SHA排序到`independent_outcome_cohort_v1.json`，不进训练/选ckpt、原图标注未签/未测；GRASP校准不可外推OPEN。RL第2更新也通过KL0.00956/clip0.0909/回溯2.5e-7，正在第2配对，仍无RL增益声明。
+
+- **2026-10-10 01:21 CST / Codex RECOVERY-USABLE：** v4冻结高bee特征236请求/386真实prefill、SHA60f5476c…0a0d7完成；独立重载与真实反传隔离通过。lc1空闲GPU1已启动`H0-outcome-expansion-v1`（61fdc5d2独立源），同绝对proprio架构/LR1e-4/500检查窗＋100步平台停，只改变已审TRAIN20→44组，40旧选择DEV不变；启动不算训练结果。短RL v2一轮配对六条已闭合，抓取/放置仍完成、开门仍UNKNOWN；进入第2采样，无可靠增益，继续不扩覆盖。
+
 - **2026-10-10 01:17 CST / Codex RECOVERY-USABLE：** v4联合82ZIP/5336原观察全读过，216结果=176 TRAIN（44组36task）＋40旧选择DEV（10组7task），另29plan/28action不增；三池门过/admission9a780cfe…dec1c。lc1空闲GPU1匹配bee76338缓存首调用缺PYTHONPATH在模型加载前退出（0更新、原log保留），补明确冻结src导入后attempt002运行中；并非数据或模型错误。RL首轮probe目前抓取/放置仍成功、开门seed17仍未完，不称改善。
 
 - **2026-10-10 01:16 CST / Codex RECOVERY-USABLE：** 短RL v2首次真实共享更新已验：26 on-policy chunks、322 AE/6 critic/完整Adam重载finite，round-0001 SHA8d3fad73…13307。原LR1e-6后KL0.3023被拒，5e-7后0.0646仍拒，回溯2.5e-7获KL0.01479/clip0.1077后接受，未降低阈值；固定六probe进行中，尚无RL改善结论。新结果迁移134文件/75,814,599解压字节逐SHA全过；0539c064独立源码正在全读构建v4联合，不改运行RL源/共享env。

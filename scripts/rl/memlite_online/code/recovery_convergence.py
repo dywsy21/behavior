@@ -2,12 +2,25 @@
 from collections import Counter
 
 
-def event_weights(rows):
+def event_weights(rows, mechanisms=None):
     """One unit of CE mass per physical event, irrespective of review density."""
     if not rows:
         raise ValueError('Empty reviewed outcome pool')
     keys = [(r['candidate']['source_group'], r['approval']['event_id']) for r in rows]
     counts = Counter(keys)
+    if mechanisms is not None:
+        # Each mechanism and then each physical event gets equal CE mass.
+        # Adding GRASP sources must not dilute the few articulation events.
+        if len(mechanisms) != len(rows) or any(not isinstance(m, str) or not m for m in mechanisms):
+            raise ValueError('Every approved member needs its actual issued mechanism')
+        event_mechanisms = {}
+        for key, mechanism in zip(keys, mechanisms):
+            if key in event_mechanisms and event_mechanisms[key] != mechanism:
+                raise ValueError('One outcome event has conflicting mechanism bindings')
+            event_mechanisms[key] = mechanism
+        events_by_mechanism = Counter(event_mechanisms.values())
+        return [1. / (len(events_by_mechanism) * events_by_mechanism[mechanism] * counts[key])
+                for key, mechanism in zip(keys, mechanisms)]
     return [1. / (len(counts) * counts[key]) for key in keys]
 
 

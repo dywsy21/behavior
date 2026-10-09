@@ -1,0 +1,416 @@
+{
+  "schema": "recovery_independent_cohort_v1",
+  "declared_before_any_model_predictions": true,
+  "selection": "SHA256 independent-20261010-v1:source_group; first 60 calibration, final 20 untouched frozen test. No prediction or outcome-class filtering.",
+  "source_queue_sha256": "95c6deccf909a45d0cc6de4bcf6337c884abaa1905eac40811534771595f13d3",
+  "source_corpus": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/closed-independent-dev-corpus-v1",
+  "calibration_groups": [
+    {
+      "source_group": "installing a fax machine:247",
+      "case": "installing_a_fax_machine_247",
+      "arm": "right"
+    },
+    {
+      "source_group": "storing food:120",
+      "case": "storing_food_120",
+      "arm": "left"
+    },
+    {
+      "source_group": "getting organized for work:132",
+      "case": "getting_organized_for_work_132",
+      "arm": "right"
+    },
+    {
+      "source_group": "vacuuming floors:241",
+      "case": "vacuuming_floors_241",
+      "arm": "right"
+    },
+    {
+      "source_group": "cleaning up branches and twigs:283",
+      "case": "cleaning_up_branches_and_twigs_283",
+      "arm": "right"
+    },
+    {
+      "source_group": "dispose of batteries:198",
+      "case": "dispose_of_batteries_198",
+      "arm": "right"
+    },
+    {
+      "source_group": "hanging pictures:164",
+      "case": "hanging_pictures_164",
+      "arm": "right"
+    },
+    {
+      "source_group": "clean a trumpet:24",
+      "case": "clean_a_trumpet_24",
+      "arm": "left"
+    },
+    {
+      "source_group": "store produce:270",
+      "case": "store_produce_270",
+      "arm": "left"
+    },
+    {
+      "source_group": "composting waste:59",
+      "case": "composting_waste_59",
+      "arm": "right"
+    },
+    {
+      "source_group": "clean your rusty garden tools:202",
+      "case": "clean_your_rusty_garden_tools_202",
+      "arm": "right"
+    },
+    {
+      "source_group": "cook a brisket:292",
+      "case": "cook_a_brisket_292",
+      "arm": "left"
+    },
+    {
+      "source_group": "installing smoke detectors:257",
+      "case": "installing_smoke_detectors_257",
+      "arm": "right"
+    },
+    {
+      "source_group": "cook broccolini:239",
+      "case": "cook_broccolini_239",
+      "arm": "left"
+    },
+    {
+      "source_group": "packing meal for delivery:16",
+      "case": "packing_meal_for_delivery_16",
+      "arm": "left"
+    },
+    {
+      "source_group": "clean up your desk:63",
+      "case": "clean_up_your_desk_63",
+      "arm": "left"
+    },
+    {
+      "source_group": "clean a patio:174",
+      "case": "clean_a_patio_174",
+      "arm": "right"
+    },
+    {
+      "source_group": "carrying out garden furniture:129",
+      "case": "carrying_out_garden_furniture_129",
+      "arm": "left"
+    },
+    {
+      "source_group": "spraying fruit trees:265",
+      "case": "spraying_fruit_trees_265",
+      "arm": "left"
+    },
+    {
+      "source_group": "picking up trash:182",
+      "case": "picking_up_trash_182",
+      "arm": "right"
+    },
+    {
+      "source_group": "dispose of glass:273",
+      "case": "dispose_of_glass_273",
+      "arm": "left"
+    },
+    {
+      "source_group": "put together a basic pruning kit:261",
+      "case": "put_together_a_basic_pruning_kit_261",
+      "arm": "right"
+    },
+    {
+      "source_group": "sorting bottles cans and paper:233",
+      "case": "sorting_bottles_cans_and_paper_233",
+      "arm": "left"
+    },
+    {
+      "source_group": "cook hot dogs:52",
+      "case": "cook_hot_dogs_52",
+      "arm": "right"
+    },
+    {
+      "source_group": "collecting childrens toys:200",
+      "case": "collecting_childrens_toys_200",
+      "arm": "right"
+    },
+    {
+      "source_group": "freeze fruit:51",
+      "case": "freeze_fruit_51",
+      "arm": "right"
+    },
+    {
+      "source_group": "hiding easter eggs:108",
+      "case": "hiding_Easter_eggs_108",
+      "arm": "right"
+    },
+    {
+      "source_group": "putting dirty dishes in sink:195",
+      "case": "putting_dirty_dishes_in_sink_195",
+      "arm": "right"
+    },
+    {
+      "source_group": "picking up toys:245",
+      "case": "picking_up_toys_245",
+      "arm": "left"
+    },
+    {
+      "source_group": "chop an onion:214",
+      "case": "chop_an_onion_214",
+      "arm": "right"
+    },
+    {
+      "source_group": "scrubbing bathroom floor:101",
+      "case": "scrubbing_bathroom_floor_101",
+      "arm": "right"
+    },
+    {
+      "source_group": "setting mousetraps:78",
+      "case": "setting_mousetraps_78",
+      "arm": "right"
+    },
+    {
+      "source_group": "tidying bedroom:38",
+      "case": "tidying_bedroom_38",
+      "arm": "left"
+    },
+    {
+      "source_group": "sweeping garage:182",
+      "case": "sweeping_garage_182",
+      "arm": "right"
+    },
+    {
+      "source_group": "bringing in wood:23",
+      "case": "bringing_in_wood_23",
+      "arm": "left"
+    },
+    {
+      "source_group": "outfit a basic toolbox:140",
+      "case": "outfit_a_basic_toolbox_140",
+      "arm": "right"
+    },
+    {
+      "source_group": "sorting vegetables:160",
+      "case": "sorting_vegetables_160",
+      "arm": "right"
+    },
+    {
+      "source_group": "loading the car:4",
+      "case": "loading_the_car_4",
+      "arm": "left"
+    },
+    {
+      "source_group": "chopping wood:230",
+      "case": "chopping_wood_230",
+      "arm": "left"
+    },
+    {
+      "source_group": "cleaning up plates and food:171",
+      "case": "cleaning_up_plates_and_food_171",
+      "arm": "right"
+    },
+    {
+      "source_group": "re shelving library books:239",
+      "case": "re_shelving_library_books_239",
+      "arm": "right"
+    },
+    {
+      "source_group": "spraying for bugs:96",
+      "case": "spraying_for_bugs_96",
+      "arm": "left"
+    },
+    {
+      "source_group": "halve an egg:249",
+      "case": "halve_an_egg_249",
+      "arm": "right"
+    },
+    {
+      "source_group": "make cabinet doors:37",
+      "case": "make_cabinet_doors_37",
+      "arm": "left"
+    },
+    {
+      "source_group": "assembling gift baskets:94",
+      "case": "assembling_gift_baskets_94",
+      "arm": "right"
+    },
+    {
+      "source_group": "clean up broken glass:69",
+      "case": "clean_up_broken_glass_69",
+      "arm": "right"
+    },
+    {
+      "source_group": "setup a bar for a cocktail party:121",
+      "case": "setup_a_bar_for_a_cocktail_party_121",
+      "arm": "right"
+    },
+    {
+      "source_group": "laying tile floors:227",
+      "case": "laying_tile_floors_227",
+      "arm": "left"
+    },
+    {
+      "source_group": "clean a keyboard:268",
+      "case": "clean_a_keyboard_268",
+      "arm": "right"
+    },
+    {
+      "source_group": "collecting aluminum cans:12",
+      "case": "collecting_aluminum_cans_12",
+      "arm": "right"
+    },
+    {
+      "source_group": "rearranging kitchen furniture:53",
+      "case": "rearranging_kitchen_furniture_53",
+      "arm": "right"
+    },
+    {
+      "source_group": "canning food:248",
+      "case": "canning_food_248",
+      "arm": "right"
+    },
+    {
+      "source_group": "bringing paper to recycling:50",
+      "case": "bringing_paper_to_recycling_50",
+      "arm": "left"
+    },
+    {
+      "source_group": "make rose centerpieces:59",
+      "case": "make_rose_centerpieces_59",
+      "arm": "left"
+    },
+    {
+      "source_group": "cook brussels sprouts:188",
+      "case": "cook_brussels_sprouts_188",
+      "arm": "right"
+    },
+    {
+      "source_group": "attach a camera to a tripod:76",
+      "case": "attach_a_camera_to_a_tripod_76",
+      "arm": "left"
+    },
+    {
+      "source_group": "can meat:283",
+      "case": "can_meat_283",
+      "arm": "right"
+    },
+    {
+      "source_group": "clean boxing gloves:165",
+      "case": "clean_boxing_gloves_165",
+      "arm": "right"
+    },
+    {
+      "source_group": "cook a frozen pie:131",
+      "case": "cook_a_frozen_pie_131",
+      "arm": "right"
+    },
+    {
+      "source_group": "tidying living room:6",
+      "case": "tidying_living_room_6",
+      "arm": "right"
+    }
+  ],
+  "frozen_test_groups": [
+    {
+      "source_group": "putting up christmas decorations inside:250",
+      "case": "putting_up_Christmas_decorations_inside_250",
+      "arm": "right"
+    },
+    {
+      "source_group": "cook bacon:145",
+      "case": "cook_bacon_145",
+      "arm": "right"
+    },
+    {
+      "source_group": "installing a modem:230",
+      "case": "installing_a_modem_230",
+      "arm": "left"
+    },
+    {
+      "source_group": "wash a baseball cap:242",
+      "case": "wash_a_baseball_cap_242",
+      "arm": "left"
+    },
+    {
+      "source_group": "freeze pies:148",
+      "case": "freeze_pies_148",
+      "arm": "right"
+    },
+    {
+      "source_group": "make gift bags for baby showers:19",
+      "case": "make_gift_bags_for_baby_showers_19",
+      "arm": "right"
+    },
+    {
+      "source_group": "cook cabbage:32",
+      "case": "cook_cabbage_32",
+      "arm": "left"
+    },
+    {
+      "source_group": "putting dishes away after cleaning:283",
+      "case": "putting_dishes_away_after_cleaning_283",
+      "arm": "right"
+    },
+    {
+      "source_group": "setting the fire:11",
+      "case": "setting_the_fire_11",
+      "arm": "left"
+    },
+    {
+      "source_group": "moving boxes to storage:238",
+      "case": "moving_boxes_to_storage_238",
+      "arm": "left"
+    },
+    {
+      "source_group": "boxing books up for storage:196",
+      "case": "boxing_books_up_for_storage_196",
+      "arm": "right"
+    },
+    {
+      "source_group": "installing a scanner:40",
+      "case": "installing_a_scanner_40",
+      "arm": "left"
+    },
+    {
+      "source_group": "organizing school stuff:65",
+      "case": "organizing_school_stuff_65",
+      "arm": "left"
+    },
+    {
+      "source_group": "slicing vegetables:19",
+      "case": "slicing_vegetables_19",
+      "arm": "right"
+    },
+    {
+      "source_group": "clearing food from table into fridge:284",
+      "case": "clearing_food_from_table_into_fridge_284",
+      "arm": "right"
+    },
+    {
+      "source_group": "putting away halloween decorations:8",
+      "case": "putting_away_Halloween_decorations_8",
+      "arm": "right"
+    },
+    {
+      "source_group": "putting away toys:261",
+      "case": "putting_away_toys_261",
+      "arm": "left"
+    },
+    {
+      "source_group": "putting shoes on rack:24",
+      "case": "putting_shoes_on_rack_24",
+      "arm": "right"
+    },
+    {
+      "source_group": "stacking wood:94",
+      "case": "stacking_wood_94",
+      "arm": "right"
+    },
+    {
+      "source_group": "organizing art supplies:183",
+      "case": "organizing_art_supplies_183",
+      "arm": "right"
+    }
+  ],
+  "training_forbidden": true,
+  "model_selection_forbidden": true,
+  "calibration_must_not_use_frozen_test": true,
+  "mechanism": "GRASP only: no automatic OPEN/PLACE or full-task deployment claim",
+  "training_ready": false
+}

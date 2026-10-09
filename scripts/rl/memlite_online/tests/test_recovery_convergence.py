@@ -32,6 +32,18 @@ class ConvergenceTests(unittest.TestCase):
         self.assertAlmostEqual(sum(w[:100]),.5); self.assertEqual(w[-1],.5)
         self.assertAlmostEqual(sum(w),1.)
 
+    def test_mechanism_balance_preserves_independent_event_mass(self):
+        rows = [row('grasp-a','FAILED')]*12+[row('grasp-b','SUCCEEDED')]*3+[row('door','UNKNOWN')]*2
+        w = event_weights(rows, ['GRASP']*15+['OPEN_DOOR']*2)
+        self.assertAlmostEqual(sum(w[:12]), .25)
+        self.assertAlmostEqual(sum(w[12:15]), .25)
+        self.assertAlmostEqual(sum(w[15:]), .5)
+        self.assertAlmostEqual(sum(w), 1.)
+        with self.assertRaisesRegex(ValueError, 'conflicting mechanism'):
+            event_weights([row('same','FAILED'),row('same','SUCCEEDED')], ['GRASP','OPEN_DOOR'])
+        with self.assertRaises(ValueError):event_weights(rows, ['GRASP'])
+        with self.assertRaises(ValueError):event_weights(rows, ['']*len(rows))
+
     def test_split_and_real_class_checks(self):
         a=[row('a',label) for label in ('FAILED','SUCCEEDED','IN_PROGRESS')]
         b=[row('b',label,'dev') for label in ('FAILED','SUCCEEDED','IN_PROGRESS')]

@@ -66,7 +66,20 @@ def main():
     optimizer = torch.optim.AdamW(head.parameters(), lr=cfg['learning_rate'], weight_decay=cfg['weight_decay'])
     values = temporal_batch([features[request_key(r)] for r in train], device)
     y = torch.tensor([OUTCOMES.index(r['approval']['label']['value']) for r in train], device=device)
-    weights = torch.tensor(event_weights(train), device=device)
+    weighting = cfg.get('outcome_weighting', 'physical_event')
+    if weighting not in ('physical_event', 'mechanism_then_physical_event'):
+        raise ValueError('Unregistered outcome weighting')
+    mechanisms = None
+    if weighting == 'mechanism_then_physical_event':
+        requests_by_id = {r['request_id']:r for r in cache['requests']}
+        mechanisms = []
+        for row in train:
+            request = requests_by_id[request_key(row)]
+            # The prefix is bound to the actual old attempt for predecision
+            # rows. Never infer its mechanism from a later planner target.
+            bundle = json.loads(request['checks'][-1]['issued_bundle'])
+            mechanisms.append(bundle[request['member_index']]['verb'])
+    weights = torch.tensor(event_weights(train, mechanisms), device=device)
     if any(v.requires_grad for v in values.values()):
         raise ValueError('Frozen cache must not carry backbone gradients')
     args.output.mkdir(parents=True)
@@ -126,6 +139,7 @@ def main():
         high_sha256=cfg['high_sha256'],selected_observer_sha256=file_sha(args.output/'selected-observer.pt'),
         runtime_ready=False,dev_used_for_model_selection=True,requires_new_independent_calibration=True,
         observer_kwargs=observer_kwargs,
+        outcome_weighting=weighting,
         wandb_url=wb.url,source_commit=commit,config_sha256=file_sha(args.config)))
     wb.finish()
 
