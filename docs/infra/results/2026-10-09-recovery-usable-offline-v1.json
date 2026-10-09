@@ -1,6 +1,6 @@
 {
   "owner": "Codex",
-  "time_cst": "2026-10-09 21:41",
+  "time_cst": "2026-10-09 22:19",
   "status": "offline_progress_not_runtime_ready",
   "a800_root": "/data/workspace/wsy/behavior2026/runs/recovery_usable_20261009",
   "observer": {
@@ -31,9 +31,37 @@
     "physical_rollout_success_not_measured": true,
     "caution": "Same-skill RETRY examples are limited; no proof of broad replan, calibrated feedback, or closed-loop success. Format forces only masked UNKNOWN/false constants, not decisions/skills."
   },
+  "observer_matched_to_new_high": {
+    "run": "H0-new-high-convergence-v1", "source_commit": "45efee1fe93355149911a528aa9e078aadb31643",
+    "trained_updates": 200, "selected_update": 100,
+    "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "selected_observer_sha256": "499c42cc1949d2543ee7b92b409461351d05e4f5540e0318fdc94771268e5a4a",
+    "result_sha256": "0416b05412cb15ff260fe0dad79caa492b24ff47824618f1df34b4f8c148d83f",
+    "selection_dev": {"source_events": 6, "labels_correct": 18, "labels_total": 18, "ce": 0.0542290098965168},
+    "wandb_run": "5338615d3a45", "wandb_independently_verified_finished": true,
+    "runtime_ready": false
+  },
+  "frozen_new_task_diagnostic": {
+    "run": "H0-new-task-frozen-diagnostic-v1", "source_commit": "1393c389e142a477c02b5ca9a3d0e007178c2898",
+    "groups": ["assembling gift baskets:192", "composting waste:183", "cook a brisket:114"],
+    "labels_correct": 9, "labels_total": 9, "independent_source_events": 3,
+    "each_known_class_correct": 3, "ce": 0.23407316207885742,
+    "raw_probability_ge_0_85": 5, "probabilities_not_calibrated": true,
+    "test_groups_excluded_from_optimizer_and_model_selection": true,
+    "result_sha256": "734aa241c9be2fdba87b0174dc6dfd0c9c0f48590ad6806e134584363c8b8fb3",
+    "caution": "Only three new local GRASP sources, reviewed recovered branches. No UNKNOWN ground-truth examples or deployment calibration; not whole-task success."
+  },
+  "counterfactual_feedback_probe": {
+    "parent_run": "generation-parent-probe-v1", "candidate_run": "generation-candidate-probe-v1",
+    "normal_task_samples": 100, "false_retry": 0, "normal_metrics_unchanged": true,
+    "recovery_remove_feedback_parent_correct": 0, "recovery_remove_feedback_candidate_correct": 5,
+    "recovery_samples": 6, "synthetic_diagnostic_not_real_world_accuracy": true,
+    "parent_result_sha256": "8ef52d311fcde200f5ee17f5f9e567792dc803c7efdfc4042fb8fa6b2319ab7d",
+    "candidate_result_sha256": "0614b45c08ed49c2eff0c0f6e510cda5959089fc4af5faa46e840ba78c2ef769"
+  },
   "next_gates": [
     "Independent outcome data across source groups, perturbation timings and skills; normal matched-time controls and real correction failures",
-    "Recache/refit observer after selecting and freezing new high backbone; do not mix hashes",
+    "Keep the observer bound to the newly recached H1; further H1 changes require recaching/refitting again",
     "Explicit calibrated-feedback serving/training profile; legacy high_planner_only input permits UNKNOWN only",
     "Real simulator adapters and fixed-start paired evaluation for shared short-skill rewards; no new RL updates yet",
     "At least three heterogeneous skill mechanisms with real improvement before wider task/update expansion"

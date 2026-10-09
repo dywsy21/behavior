@@ -61,6 +61,39 @@ class CandidateArchiveReader:
         for item in inventory:
             self.by_episode[canonical([item['episode']['run'],item['episode']['episode_id']])].append(item)
         self.cache = OrderedDict()
+        self.archives = OrderedDict()
+
+    def archive(self, relative):
+        """Bounded read-only handles; do not parse a long ZIP per RGB frame.
+
+        Source SHA is checked at episode admission, individual RGB SHA on
+        every read. A changed file identity/stat invalidates a cached handle.
+        No decoded RGB cache: every requested image is still read and checked.
+        """
+        path = local_file(self.root, relative)
+        stat = path.stat()
+        identity = (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+        if relative in self.archives:
+            previous, handle = self.archives[relative]
+            if previous != identity:
+                raise ValueError('Immutable source archive changed while open')
+            self.archives.move_to_end(relative)
+            return handle
+        handle = zipfile.ZipFile(path)
+        self.archives[relative] = (identity, handle)
+        if len(self.archives) > 4:
+            self.archives.popitem(last=False)[1][1].close()
+        return handle
+
+    def close(self):
+        for _, handle in self.archives.values():
+            handle.close()
+        self.archives.clear()
+        self.cache.clear()
+
+    def __getstate__(self):
+        # DataLoader spawn must never transfer an open file position/handle.
+        return dict(self.__dict__, archives=OrderedDict(), cache=OrderedDict())
 
     def episode(self, identity):
         key = canonical(identity)
@@ -70,17 +103,17 @@ class CandidateArchiveReader:
                 path = local_file(self.root, item['path'])
                 if file_sha(path) != item['sha256']:
                     raise ValueError('Source archive changed after inventory')
-                with zipfile.ZipFile(path) as archive:
-                    header = json.loads(archive.read('manifest.json'))
-                    if [header['episode']['run'],header['episode']['episode_id']] != identity:
-                        raise ValueError('Cross-episode source archive')
-                    headers[item['path']] = header
-                    for line in archive.read('transitions.jsonl').splitlines():
-                        row = json.loads(line)
-                        step = row['control_step']
-                        if step in merged and canonical(merged[step]) != canonical(row):
-                            raise ValueError('Conflicting overlap')
-                        merged[step] = row
+                archive = self.archive(item['path'])
+                header = json.loads(archive.read('manifest.json'))
+                if [header['episode']['run'],header['episode']['episode_id']] != identity:
+                    raise ValueError('Cross-episode source archive')
+                headers[item['path']] = header
+                for line in archive.read('transitions.jsonl').splitlines():
+                    row = json.loads(line)
+                    step = row['control_step']
+                    if step in merged and canonical(merged[step]) != canonical(row):
+                        raise ValueError('Conflicting overlap')
+                    merged[step] = row
             if not merged:
                 raise ValueError('No archived evidence for source episode')
             self.cache[key] = (merged, headers)
@@ -115,16 +148,16 @@ class CandidateArchiveReader:
         if state.shape != (1,61) or not np.isfinite(state).all():
             raise ValueError('Malformed real robot proprio tensors')
         images = {}
-        with zipfile.ZipFile(local_file(self.root, reference['archive'])) as archive:
-            for camera in ('head_rgb','left_wrist_rgb','right_wrist_rgb'):
-                data = archive.read(f'rgb/{t:08d}/{camera}.jpg')
-                import hashlib
-                if hashlib.sha256(data).hexdigest() != reference['sha256'][camera]:
-                    raise ValueError('RGB content mismatch')
-                im = np.asarray(Image.open(io.BytesIO(data)).convert('RGB')).copy()
-                if im.shape != (224,224,3):
-                    raise ValueError('Unexpected original RGB dimensions')
-                images[camera] = im
+        archive = self.archive(reference['archive'])
+        for camera in ('head_rgb','left_wrist_rgb','right_wrist_rgb'):
+            data = archive.read(f'rgb/{t:08d}/{camera}.jpg')
+            import hashlib
+            if hashlib.sha256(data).hexdigest() != reference['sha256'][camera]:
+                raise ValueError('RGB content mismatch')
+            im = np.asarray(Image.open(io.BytesIO(data)).convert('RGB')).copy()
+            if im.shape != (224,224,3):
+                raise ValueError('Unexpected original RGB dimensions')
+            images[camera] = im
         return state, images
 
     def observation_and_actions(self, candidate):

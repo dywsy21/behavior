@@ -8,6 +8,7 @@ from collections import Counter
 import json
 from pathlib import Path
 import sys
+import time
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest,file_sha
@@ -21,6 +22,12 @@ def main():
     p.add_argument('--corpus',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
+    started=time.monotonic()
+    def progress(stage, counts):
+        path=a.output.with_suffix('.progress.json')
+        temporary=path.with_suffix('.tmp')
+        temporary.write_text(json.dumps(dict(stage=stage,counts=dict(counts),seconds=time.monotonic()-started))+'\n')
+        temporary.replace(path)
     inventory=json.loads((a.corpus/'audit/inventory.json').read_text())
     summary=json.loads((a.corpus/'audit/summary.json').read_text())
     anchors=[json.loads(x) for x in (a.corpus/'audit/anchors.jsonl').read_text().splitlines()]
@@ -31,10 +38,12 @@ def main():
             or receipt['anchors_sha256']!=file_sha(a.corpus/'audit/anchors.jsonl')):
         raise ValueError('Unbound corpus/context receipt')
     counts=Counter()
+    progress('archives',counts)
     for item in inventory:
         checked=validate_archive(a.corpus/'raw'/item['path'])
         if checked['sha256']!=item['sha256']:raise ValueError('Changed archive')
         counts.update(archives=1,applied_controls=checked['controls'],decoded_images=checked['images'])
+        if counts['archives']%25==0:progress('archives',counts)
     reader=CandidateArchiveReader(a.corpus/'raw',inventory)
     by_id={h['sample_id']:h for h in history};selections=[]
     if len(by_id)!=len(anchors):raise ValueError('Incomplete / duplicated history')
@@ -47,6 +56,9 @@ def main():
                 or h['control_step']!=row['control_step']):raise ValueError('Cross-instance / stale context')
         selections.append((row['sample_id'],'observable',0))
         if h['predecision'] is not None:selections.append((row['sample_id'],'predecision',0))
+        if counts['observations_read']%500==0:progress('observations_actions',counts)
+    reader.close()
+    progress('causal_requests',counts)
     requests=feature_requests(anchors,history,selections)
     planning=[r for r in requests if r['role']=='predecision']
     result=dict(schema='offline_recovery_full_read_audit_v1',status='passed',
@@ -56,6 +68,7 @@ def main():
         planning_check_lengths=dict(Counter(len(r['checks']) for r in planning)),
         optimizer_steps=0,semantic_approval=False)
     a.output.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
+    progress('completed',counts)
 
 
 if __name__=='__main__':main()

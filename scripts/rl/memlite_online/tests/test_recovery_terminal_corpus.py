@@ -2,6 +2,7 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import sys
+import pickle
 import tempfile
 import unittest
 import zipfile
@@ -61,11 +62,25 @@ class TerminalCorpusTests(unittest.TestCase):
                 for camera,ref in t['images'].items():z.write(root/ref['path'],f'rgb/00000006/{camera}.jpg')
             reader=CandidateArchiveReader(root,[dict(path='one.zip',episode=episode,sha256=file_sha(root/'one.zip'))])
             state,images=reader.observation(row)
+            original_handle = reader.archives['one.zip'][1]
+            again_state, again_images = reader.observation(row)
+            self.assertIs(reader.archives['one.zip'][1], original_handle)
+            self.assertEqual(state.tolist(), again_state.tolist())
+            for camera in CAMERAS:
+                self.assertEqual(images[camera].tobytes(), again_images[camera].tobytes())
+            transferred = pickle.loads(pickle.dumps(reader))
+            self.assertFalse(transferred.archives)
+            self.assertEqual(transferred.observation(row)[0].tolist(),state.tolist())
+            transferred.close()
             self.assertEqual(state.shape,(1,61));self.assertEqual(set(images),set(CAMERAS))
             self.assertEqual(set(reader.episode(['offline','one'])[0]),set(range(6)))
             with self.assertRaisesRegex(ValueError,'no next action'):reader.observation_and_actions(row)
             altered=deepcopy(row);altered['label_audit']['full_executed_32_step_target_available']=True
             with self.assertRaisesRegex(ValueError,'confused with an applied action'):reader.observation(altered)
+            with zipfile.ZipFile(root/'one.zip','a') as changed:
+                changed.writestr('changed.txt', 'immutable sources cannot change')
+            with self.assertRaisesRegex(ValueError,'changed while open'):reader.observation(row)
+            reader.close()
 
 
 if __name__=='__main__':unittest.main()
