@@ -62,6 +62,13 @@ def main():
         def reset(self):pass
     class Evaluator(BatchedEvaluator):
         def load_policy(self):return NoPolicy()
+        def __exit__(self,kind,error,traceback):
+            # Official teardown may terminate Python before an outer except
+            # runs. Persist the real failure before handing over to it.
+            if error is not None:
+                receipt.update(status='failed',error=repr(error),seconds=time.monotonic()-started)
+                atomic_json(a.output/'status.json',receipt)
+            return super().__exit__(kind,error,traceback)
     cfg=OmegaConf.create(json.loads((a.case_directory/'resolved_config.json').read_text()))
     try:
         with Evaluator(cfg) as evaluator:
@@ -85,6 +92,8 @@ def main():
                 return dict(position=pos.tolist(),grasp={arm:robot.is_grasping(arm=arm,candidate_obj=target).name for arm in robot.arm_names})
             restore(saved)
             initial_error=float(np.max(np.abs(np.array(proprio61(inst.obs))-saved['seed_proprio'])))
+            receipt.update(status='replaying_fault',initial_max_proprio_error=initial_error,initial_physical=physical())
+            atomic_json(a.output/'status.json',receipt)
             if initial_error>1e-3 or physical()['grasp'][m['arm']]!='TRUE':raise ValueError('Cold snapshot initial state mismatch')
             held=0;lost=0;stream=(a.output/'replay.jsonl').open('x',buffering=1)
             failure_snapshot=None
@@ -92,6 +101,9 @@ def main():
                 if t==32:
                     state=physical();expected=row['physical_before']
                     position_error=float(np.max(np.abs(np.array(state['position'])-expected['position'])))
+                    receipt.update(failed_target_position_error_m=position_error,consecutive_lost_controls=lost,
+                        replayed_failure_physical=state,recorded_failure_position=expected['position'])
+                    atomic_json(a.output/'status.json',receipt)
                     if lost<6 or position_error>.005:raise ValueError('Replayed fault is not the same verified failure neighborhood')
                     # Prior issued context, not RETRY target or oracle feedback.
                     context=dict(task_name=source['task'].replace('_',' '),parent_goal=plans[0]['parent_goal'],
