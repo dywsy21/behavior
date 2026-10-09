@@ -83,5 +83,17 @@ class UnionTests(unittest.TestCase):
         protected=self.unit(99)
         with self.assertRaisesRegex(ValueError,'held-out'):self.build([protected])
 
+    def test_partition_is_persisted_hashed_and_test_group_not_a_new_training_group(self):
+        units = [self.unit(1), self.unit(2, 'dev')]
+        spec = dict(evidence_root=str(self.root), protected_groups=str(self.protected), units=units,
+                    evaluation_partition=dict(no_added_training_rows_expected=True, new_independent_groups=['t:2']))
+        with patch.object(module, 'CandidateArchiveReader'):
+            module.build_union(spec, self.root/'union')
+        receipt = json.loads((self.root/'union/admission/admission.json').read_text())
+        name = receipt['evaluation_partition_file']
+        path = self.root/'union/admission'/name
+        self.assertEqual(file_sha(path), receipt['files'][name])
+        self.assertEqual(json.loads(path.read_text())['frozen_test_groups'], ['t:2'])
+
 
 if __name__=='__main__':unittest.main()

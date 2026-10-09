@@ -2,6 +2,7 @@
 
 ## 2026-10-09 21:05 CST：持续goal以可用性验收为终点
 
+- **22:09执行：** 新H1的结果头已重拟合并W&B验真，旧6选择dev全对但不可宣称独立校准；反事实probe正常100无误重试、恢复无feedback仍5/6。B继续新3来源冻结诊断，新增group角色必须入admission哈希且默认训练loader排除；不把新增DEV混入挑checkpoint。A/C闭环与真实奖励adapter仍待，采集六卡新DEV/两卡开合继续，独立review待。
 - **21:51执行：** 真生成100原样本新旧event完全一致（85全部精确/0假RETRY）；6恢复dev旧0/new6正确RETRY，但feedback=none vs JSON混杂正在A800专门probe，不宣布广泛恢复可用。新H1特征已重算，下一步只用原选择数据重训匹配结果头，3新DEV/9标签单独测试。C接口同技能reward纯逻辑8回归已过，真实sim adapter/至少三机制RL及配对改善尚未完成，禁止沿旧稀疏最终Q续RL。RTX新93dev六卡采集/两卡开合继续，候选v5完整实读待，独立成员review待。
 - **21:23执行：** 小结果头充分拟合后6来源开发集3类各6标签全对，但dev参与选择/固定扰动流程，不准宣称校准可用；独立新增来源与反捷径对照必做。自由生成工程验收暴露Git遗漏`memlite_planner_format`运行时依赖，先修源码闭包再评价高层。均非新RL/机器人部署。
 - Codex继续独立执行本feature，不派subagent；新goal明确允许按需补数据、继续SFT与少量异质短技能RL，旧5遍/35步为历史小试而非goal上限。所有运行冻结新源，不占队友资源、不热改collectors，独立成员review仍待。

@@ -42,7 +42,7 @@ def main():
                 if len(selections)==a.diagnostic_limit: break
     else:
         if not a.admission or not a.admission_sha256: raise ValueError('Signed admissions required')
-        _,outcomes=require_training_pool(a.admission,'outcome',a.admission_sha256)
+        _,outcomes=require_training_pool(a.admission,'outcome',a.admission_sha256,purpose='feature_extraction')
         # H0 can be prepared/trained before the planner pool is ready. Read
         # approved planner rows only if present; do not require its gate here.
         for row in outcomes:

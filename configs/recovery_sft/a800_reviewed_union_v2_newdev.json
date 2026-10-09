@@ -1,0 +1,22 @@
+{
+  "evidence_root": "/data/workspace/wsy/behavior2026",
+  "protected_groups": "/data/workspace/wsy/behavior2026/runs/recovery_sft_preparation_20261009/cpu-preflight-v1/protected-groups.json",
+  "units": [
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/datasets/recovery-reviewed-union-20261009-v1",
+      "evidence_root": "/data/workspace/wsy/behavior2026",
+      "approvals": ["/data/workspace/wsy/behavior2026/datasets/recovery-reviewed-union-20261009-v1/approvals.json"]
+    },
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-independent-review-snapshot-v1/closed-grasp-corpus-v5-linear",
+      "evidence_root": "/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-independent-review-snapshot-v1",
+      "approvals": ["/data/workspace/wsy/behavior2026/runs/recovery100_collection_20261009/rtx-independent-review-snapshot-v1/closed-grasp-independent-approvals-v1.json"]
+    }
+  ],
+  "evaluation_partition": {
+    "old_union_dev": "previously used for model selection, not blind",
+    "new_independent_groups": ["composting waste:183", "assembling gift baskets:192", "cook a brisket:114"],
+    "new_group_role": "once-off frozen-observer cross-task diagnostic; NEVER optimize or select checkpoints on these groups",
+    "no_added_training_rows_expected": true
+  }
+}

@@ -14,7 +14,7 @@ from recovery_admission import local_file
 from recovery_corpus import canonical, file_sha
 
 
-def require_training_pool(release, pool, expected_admission_sha256):
+def require_training_pool(release, pool, expected_admission_sha256, *, purpose='training'):
     release = Path(release)
     if file_sha(release / 'admission.json') != expected_admission_sha256:
         raise ValueError('Stale or unpinned training admission')
@@ -30,7 +30,14 @@ def require_training_pool(release, pool, expected_admission_sha256):
     rows = [json.loads(line) for line in (release / (pool + '.jsonl')).read_text().splitlines()]
     if not rows or any(r['approval']['pool'] != pool for r in rows):
         raise ValueError('Empty or wrong objective pool')
-    return receipt, rows
+    from recovery_evaluation_partition import rows_for_purpose
+    partition = None
+    name = receipt.get('evaluation_partition_file')
+    if name is not None:
+        if name not in receipt['files']:
+            raise ValueError('Unbound evaluation partition')
+        partition = json.loads(local_file(release, name).read_text())
+    return receipt, rows_for_purpose(rows, partition, purpose)
 
 
 class CandidateArchiveReader:

@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'code'))
 from recovery_admission import audit_admission, local_file
 from recovery_corpus import canonical, digest, file_sha
 from recovery_sft_data import CandidateArchiveReader
+from recovery_evaluation_partition import build_partition
 
 
 def relocate_reference(reference, old_root, shared_root):
@@ -31,7 +32,7 @@ def build_union(spec, output):
         raise FileExistsError('Use a new immutable union directory')
     inventories, anchors, histories, approvals, sources = [], [], [], [], []
     episode_owners, sample_ids, objective_ids = {}, set(), set()
-    copies = []
+    copies, approved_units = [], []
     for unit_index, unit in enumerate(spec['units']):
         corpus, evidence = Path(unit['corpus']), Path(unit['evidence_root'])
         audit = corpus / 'audit'
@@ -52,6 +53,7 @@ def build_union(spec, output):
                 admission_audit=receipt))
         if not unit_rows:
             raise ValueError('An empty unit is not a reviewed training source')
+        approved_units.append(unit_rows)
         selected_episodes = {canonical(row['candidate']['source_episode']) for row in unit_rows}
         for identity in selected_episodes:
             if identity in episode_owners:
@@ -95,6 +97,7 @@ def build_union(spec, output):
             if app['pool'] == 'planner':
                 app['label']['verified_plan_path'] = relocate_reference(app['label']['verified_plan_path'], evidence, root)
             approvals.append(app)
+    partition = build_partition(spec.get('evaluation_partition'), approved_units)
     output.mkdir(parents=True, exist_ok=False)
     for directory in ('raw', 'audit', 'history', 'admission'):
         (output / directory).mkdir()
@@ -128,6 +131,10 @@ def build_union(spec, output):
     files = {}
     for pool, rows in admitted.items():
         path = output / 'admission' / (pool + '.jsonl'); write_rows(path, rows); files[path.name] = file_sha(path)
+    if partition is not None:
+        path = output / 'admission/evaluation_partition.json'
+        write_json(path, partition)
+        files[path.name] = file_sha(path)
     # Read every original observation including unlabelled causal history;
     # separately read every positive action target, never terminal-only rows.
     reader = CandidateArchiveReader(output/'raw', inventories)
@@ -136,6 +143,8 @@ def build_union(spec, output):
     for item in admitted['action']:
         reader.observation_and_actions(item['candidate'])
     receipt.update(files=files, source_provenance_sha256=file_sha(output/'source-provenance.json'))
+    if partition is not None:
+        receipt['evaluation_partition_file'] = 'evaluation_partition.json'
     write_json(output / 'admission/admission.json', receipt)
     result = dict(schema='reviewed_recovery_union_receipt_v1', status='passed',
         admission_sha256=file_sha(output/'admission/admission.json'), copied_archives=len(copies),
