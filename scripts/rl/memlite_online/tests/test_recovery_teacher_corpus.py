@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest
-from recovery_teacher_corpus import validate_branch,physical_proposal,episode_identity
+from recovery_teacher_corpus import validate_branch,physical_proposal,episode_identity,PhysicalProposalIndex
 
 
 def fixture():
@@ -29,6 +29,24 @@ def fixture():
 
 
 class TeacherCorpusTests(unittest.TestCase):
+    def test_index_exactly_matches_causal_scan_including_future_changes(self):
+        import random
+        rng=random.Random(17)
+        for _ in range(12):
+            rows,_,_=fixture()
+            for row in rows:
+                row['physical_audit']['grasp']['left']=rng.choice(['TRUE','FALSE','FALSE'])
+                row['label_kind']=rng.choice(['same_state_local_teacher_candidate','injected_fault_not_BC'])
+            index=PhysicalProposalIndex(rows,'left')
+            for start in (0,4,16):
+                for t in range(start,40):
+                    self.assertEqual(physical_proposal(rows,t,'left',attempt_start=start),
+                        physical_proposal(rows,t,'left',attempt_start=start,index=index))
+            before=physical_proposal(rows,16,'left',attempt_start=0,index=index)
+            for row in rows[16:]:row['physical_audit']['grasp']['left']='TRUE'
+            self.assertEqual(before,physical_proposal(rows,16,'left',attempt_start=0,index=PhysicalProposalIndex(rows,'left')))
+            with self.assertRaises(ValueError):physical_proposal(deepcopy(rows),16,'left',attempt_start=0,index=index)
+
     def test_copied_evidence_keeps_identity_but_different_physical_attempt_does_not(self):
         source=dict(task='task',instance_id=1,source_group='task:1',episode_index=12)
         result=dict(source_commit='a'*40,proposal_sha256='b'*64,full_snapshot_sha256='c'*64)

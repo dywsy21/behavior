@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "code"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from export_recovery_bindings import instance_scope
 from recovery_corpus import (anchor_candidate, group_key, outcome_candidate, split_group,
-                             stable_arm, validate_source_episode)
+                             stable_arm, validate_source_episode, same_intent_starts)
 
 
 def rows(held=False):
@@ -20,6 +20,17 @@ def rows(held=False):
 
 
 class RecoveryCorpusTests(unittest.TestCase):
+    def test_causal_intent_index_matches_scan_across_gaps_switches_and_future(self):
+        episode=dict(run='r',episode_id='e',task='t',instance_id=3)
+        data=rows(True)
+        del data[13]
+        for t in range(20,30):data[t]['context']['parent_goal']='another goal'
+        data[50]['context']['active_skills_semantic_json']='[{"verb":"NAVIGATE","target":"object"}]'
+        starts=same_intent_starts(data)
+        for t in data:
+            self.assertEqual(anchor_candidate(episode,data,t,{}, {},'train'),
+                anchor_candidate(episode,data,t,{}, {},'train',intent_starts=starts))
+
     def test_official_reset_metadata_is_not_a_scene_entity(self):
         mapping = {"cup.n.01_1": "cup_12"}
         self.assertEqual(instance_scope({"cup.n.01_1": {}, "robot_poses": {"R1Pro": [{}]}}, mapping),

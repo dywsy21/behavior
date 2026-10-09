@@ -84,20 +84,43 @@ def branch_histories(anchors,plans):
     return result
 
 
-def physical_proposal(rows,t,arm,*,attempt_start):
+class PhysicalProposalIndex:
+    """Prefix counts preserve causal answers without O(anchors * controls).
+
+    Whole immutable logs may be indexed, but each query reads only counts
+    ending before the observation. Future successes cannot change a label.
+    """
+    def __init__(self,rows,arm):
+        self.rows=rows;self.arm=arm;self.held=[0];self.unclean=[0]
+        for row in rows:
+            self.held.append(self.held[-1]+int(row['physical_audit']['grasp'][arm]=='TRUE'))
+            self.unclean.append(self.unclean[-1]+int(row['label_kind']!='same_state_local_teacher_candidate'))
+
+    def held_between(self,start,end):
+        return self.held[end]>self.held[start]
+
+    def clean_between(self,start,end):
+        return self.unclean[end]==self.unclean[start]
+
+
+def physical_proposal(rows,t,arm,*,attempt_start,index=None):
     """Past/current evidence only. These are candidates pending human review."""
+    if index is not None and (index.rows is not rows or index.arm!=arm):
+        raise ValueError('Cross-branch physical prefix index')
     if t<1:return None
     prior=rows[max(0,t-6):t];current=rows[t]['physical_before']
     if len(prior)==6 and all(r['physical_audit']['grasp'][arm]=='TRUE' for r in prior):
         return 'SUCCEEDED'
     lost=len(prior)==6 and all(all(v=='FALSE' for v in r['physical_audit']['grasp'].values()) for r in prior)
-    was_held=(attempt_start==0 and rows[0]['physical_before']['grasp'][arm]=='TRUE') or any(
-        r['physical_audit']['grasp'][arm]=='TRUE' for r in rows[attempt_start:max(attempt_start,t-6)])
+    end=max(attempt_start,t-6)
+    was_held=(attempt_start==0 and rows[0]['physical_before']['grasp'][arm]=='TRUE') or (
+        index.held_between(attempt_start,end) if index is not None else any(
+            r['physical_audit']['grasp'][arm]=='TRUE' for r in rows[attempt_start:end]))
     if lost and was_held:return 'FAILED'
     # A genuinely executing new correction: clean actions already applied in
     # this attempt and the hand is moving/closing or contact lacks debounce.
-    if t>attempt_start and attempt_start>0 and all(r['label_kind']=='same_state_local_teacher_candidate'
-                                                 for r in rows[attempt_start:t]):
+    if t>attempt_start and attempt_start>0 and (index.clean_between(attempt_start,t) if index is not None else
+            all(r['label_kind']=='same_state_local_teacher_candidate' for r in rows[attempt_start:t])):
         old=rows[attempt_start]['physical_before']['gripper_aperture'][arm]
         if abs(current['gripper_aperture'][arm]-old)>.002 or current['grasp'][arm]=='TRUE':
             return 'IN_PROGRESS'

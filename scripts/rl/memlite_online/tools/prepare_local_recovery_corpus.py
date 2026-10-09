@@ -12,8 +12,8 @@ import sys
 import zipfile
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_corpus import canonical,digest,file_sha,group_key,split_group,anchor_candidate
-from recovery_teacher_corpus import validate_branch,branch_histories,physical_proposal,episode_identity
+from recovery_corpus import canonical,digest,file_sha,group_key,split_group,anchor_candidate,same_intent_starts
+from recovery_teacher_corpus import validate_branch,branch_histories,physical_proposal,episode_identity,PhysicalProposalIndex
 from recovery_reference_binding import verify_saved_binding
 from recovery_terminal_corpus import load_terminal,normalized_terminal,terminal_anchor
 
@@ -129,14 +129,15 @@ def main():
                 episode=episode,controls=len(rows),images=3*len(header_anchors),events=header['events'],
                 structural_validation='passed',split=split_group(source['task'],source['instance_id'],protected))
             inventory.append(item);mapping={r['control_step']:r for r in normalized};branch_anchors=[]
+            proposal_index=PhysicalProposalIndex(rows,seed['arm']);intent_starts=same_intent_starts(mapping)
             for t,anchor in sorted(header_anchors.items(),key=lambda x:int(x[0])):
                 t=int(t);image_ref=dict(archive=relative,sha256=anchor['sha256'],control_step=t)
                 if terminal and t==terminal['control_step']:
                     row=terminal_anchor(episode,terminal,image_ref,item['split'],branch)
                     branch_anchors.append(row);anchors.append(row);continue
-                row=anchor_candidate(episode,mapping,t,image_ref,binding,item['split'])
+                row=anchor_candidate(episode,mapping,t,image_ref,binding,item['split'],intent_starts=intent_starts)
                 latest=[p for p in plans if p['control_step']<=t][-1]
-                proposal_label=physical_proposal(rows,t,seed['arm'],attempt_start=latest['control_step'])
+                proposal_label=physical_proposal(rows,t,seed['arm'],attempt_start=latest['control_step'],index=proposal_index)
                 row['label_audit']['offline_teacher']=dict(kind=branch['kind'],action_label_kind=rows[t]['label_kind'],
                     physical_recovery_candidate=branch['physical_recovery_candidate'],not_on_policy=True,
                     source_event_id=digest([source['source_group'],'first_demonstrated_grasp']),

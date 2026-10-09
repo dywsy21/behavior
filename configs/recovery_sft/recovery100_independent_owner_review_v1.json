@@ -1,0 +1,37 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-09 21:38 CST; personally inspected all 132 original RGB panels, verified every review sheet SHA and six-control causal grasp evidence",
+  "scope": "Three new recovery-DEV task-instance groups, not used by the pilot or observer fit. Outcome-only once-off cross-task diagnostic; no new BC or planner approval, no whole-task success. Selected from outcome-blind hash-ordered sources, retaining reference/failed-branch exclusions in the original collection. Do not count nine frames as nine independent trials or use this selection as a deployment calibration certificate.",
+  "branches": [
+    {
+      "case": "composting_waste_183",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "41d422b66fdfb8caf00cd4845c110a0a1cbc86eef739eadeba817312ee457247",
+      "review_directory": "independent-review-v1-composting_waste_183",
+      "review_sha256": "a6a78de2b50e2f3b0279d5391251bfb1d9d430cb06ee994884809e9ab1d5d5ff",
+      "outcomes": [{"control_step": 12, "value": "FAILED"}, {"control_step": 20, "value": "IN_PROGRESS"}, {"control_step": 40, "value": "SUCCEEDED"}],
+      "action_steps": [], "planner_steps": [], "corrective_execution_visually_verified": false,
+      "notes": "42 panels. Exact trash_can_66 / ashcan.n.01_1, requested right hand; six prior controls verify loss at 12 and reacquisition at 40. Head view shows the same supported bin throughout; wrist views are heavily occluded, so physical grasp state plus proprio is important. RETRY16 resets the attempt; t16 is not labelled FAILED. This checks contact reacquisition only, not lifting or compost disposal. No action quality release."
+    },
+    {
+      "case": "assembling_gift_baskets_192",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "35fcc2590caa5ce86fa6ab2c6b41ef497c28a8a09d0e713c13d4c0cee8ea51e8",
+      "review_directory": "independent-review-v1-assembling_gift_baskets_192",
+      "review_sha256": "af7a0e772bc1a2e793fbdadaa8d315eb3a61dcbc1371a1c8d215558bb290974b",
+      "outcomes": [{"control_step": 20, "value": "FAILED"}, {"control_step": 28, "value": "IN_PROGRESS"}, {"control_step": 48, "value": "SUCCEEDED"}],
+      "action_steps": [], "planner_steps": [], "corrective_execution_visually_verified": false,
+      "notes": "45 panels. Exact wicker_basket_89 / wicker_basket.n.01_4 is uniquely held by the left hand among three basket competitors. Opening loss and reclosure visible in left wrist/head; source remains supported on floor. Actual RETRY24, six-control success debounced by48. No claim of basket lift, gift assembly, or future stability."
+    },
+    {
+      "case": "cook_a_brisket_114",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "79c6e50a6aaa6a75a9310b6b9c51ac18e1880550a96dc9cdcbf98ba1009e033e",
+      "review_directory": "independent-review-v1-cook_a_brisket_114",
+      "review_sha256": "6763699af076ea5b970131035ee2109ff7463da9f3106d45500e73f068f3ee36",
+      "outcomes": [{"control_step": 28, "value": "FAILED"}, {"control_step": 36, "value": "IN_PROGRESS"}, {"control_step": 52, "value": "SUCCEEDED"}],
+      "action_steps": [], "planner_steps": [], "corrective_execution_visually_verified": false,
+      "notes": "45 panels. Exact frying_pan_78 / frying_pan.n.01_1, requested right hand. Right wrist shows handle released and reclosed while the pan stays supported; actual RETRY32, six-control physical stability achieved by52. Timing differs from the prior two cases; gripper closure at36 alone is not labelled success. No cooking or pan-transport claim."
+    }
+  ]
+}

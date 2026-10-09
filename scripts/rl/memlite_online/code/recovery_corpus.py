@@ -116,7 +116,18 @@ def outcome_candidate(rows_by_step, anchor, skills, binding):
                 members=members, evidence_end_control_step=anchor)
 
 
-def anchor_candidate(episode, rows_by_step, anchor, image_ref, binding, split):
+def same_intent_starts(rows_by_step):
+    """Linear causal equivalent of backward scanning every visual anchor."""
+    starts={};previous_step=None;previous_key=None
+    for step,row in sorted(rows_by_step.items()):
+        key=(canonical(json.loads(row['context']['active_skills_semantic_json'])),row['context']['parent_goal'])
+        starts[step]=(starts[previous_step] if previous_step is not None and step==previous_step+1
+                      and key==previous_key else step)
+        previous_step,previous_key=step,key
+    return starts
+
+
+def anchor_candidate(episode, rows_by_step, anchor, image_ref, binding, split, *, intent_starts=None):
     row = rows_by_step[anchor]
     skills = json.loads(row["context"]["active_skills_semantic_json"])
     semantic = canonical(skills)
@@ -127,13 +138,19 @@ def anchor_candidate(episode, rows_by_step, anchor, image_ref, binding, split):
                                     for r in future)
     no_early_terminal = continuous and not any(r["terminated"] or r["truncated"] for r in future[:-1])
     valid_actions = bool(continuous and same_intent and no_early_terminal)
-    cursor = anchor - 1
-    while cursor in rows_by_step:
-        previous = rows_by_step[cursor]
-        if (canonical(json.loads(previous["context"]["active_skills_semantic_json"])) != semantic
-                or previous["context"]["parent_goal"] != row["context"]["parent_goal"]):
-            break
-        cursor -= 1
+    if intent_starts is None:
+        cursor = anchor - 1
+        while cursor in rows_by_step:
+            previous = rows_by_step[cursor]
+            if (canonical(json.loads(previous["context"]["active_skills_semantic_json"])) != semantic
+                    or previous["context"]["parent_goal"] != row["context"]["parent_goal"]):
+                break
+            cursor -= 1
+    else:
+        start=intent_starts[anchor]
+        if type(start) is not int or start>anchor or start not in rows_by_step:
+            raise ValueError('Invalid causal intent index')
+        cursor=start-1
     before = rows_by_step.get(anchor - 1)
     physically_held = {}
     if before is not None:
