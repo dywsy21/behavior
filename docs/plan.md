@@ -14,6 +14,7 @@
 
 ### 2026-10-09 21:05 CST：持续goal推进到可用，而非完成小试（Codex / RECOVERY-USABLE，进行中）
 
+- **23:06 CST / 原图和全量读取复核：** radio父/新各20/19逐控ACK、末6物理抓持、所有原RGB SHA过，根已亲审两路start/end头＋右腕8原图；仍不声称提升。旧慢全读自然结束，其回执与164.56s缓存版本逐字节同SHA37150a6e…a824（不是抽样一致），确认加速未跳过验真。新DEV66/93首次闭合继续。PLACE入口98e78801远端106回归，调度新增明确PLACE路线/严格aux归属，待wash两路完成后安排九原参考，不挤占运行卡、不更换旧服务源。
 - **23:03 CST / PLACE第三机制合法起点工具：** 新`collect_placement_curriculum.py`仅原TRAIN/精确target＋destination，沿原参考到真正持物且未完成的技能起点（过去6控抓持），记录完整world/controller/任务/灯光/RNG与原图；参考后续和独立冷载须分别验证关系＋放手＋稳定，时间到仅UNKNOWN，不构造反放置伪负例/不自动授BC。新增拒绝已完成/已放手/未知或不足连续证据单测，106恢复回归过；九原来源已备，尚待冻源现场验收，当前wash模型对照仍运行，未热改服务或collector。
 - **23:01 CST / 首组真实FM对照完成：** radio155相同冷seed/故障回放/同发技能和噪声seed17，原低98414在20控、新L0在19控均重新稳定抓到radio89右手，六连续物理完成，非夹爪布尔/教师替代；0optimizer/冻结高层。单个已见来源差1控不构成可靠提升，跨冷进程RGB有渲染差异，不能声称逐像素完全配对。首请求编译9.26s，其余FM请求0.465–0.481s（不含仿真/网络）；episode/context/模型SHA日志独立，无服务错误。已在释放的同两卡提交wash169原/新两冷起点比较；PLACE合法原参考采集入口初稿完成，待单测/live，不用稿件声称新训练。
 - **22:58 CST / 同起点FM对照运行中：** ffdab471已Git到lc1/10383新`fixed-skill-ffdab471`，105双端回归过；lc1 GPU2 PID1527044 `recovery_usable_20261009/fixed-skill-service-v1`正在核SHA/加载原低与新L0。原VPN不重连，新增专用loopback18971双SSH转发，未对外开模型口。10383 GPU1/7已提交`fixed-radio155-{parent,candidate}-v1`冷sim，loading/0真实推理，不以提交宣称效果；两卡仅自有新DEV辅助context。后续wash169同票对照待radio验收；仍0新RL优化，六卡DEV60/93首次已闭合继续。

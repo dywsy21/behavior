@@ -119,8 +119,14 @@ def main():
                      '--proposal',str(a.sources/name),'--output',str(out)])
                 proposal=json.loads((a.sources/name/'manifest.json').read_text())
                 if proposal['schema']=='recovery_expert_skill_proposal_v1':
-                    command[0]=str(REPO/'scripts/rl/memlite_online/tools/collect_local_articulation_recovery.py')
-                    if a.reference_category_binding:command.append('--reference-category-binding')
+                    if proposal['skill_verb'] in ('PLACE_IN','PLACE_ON'):
+                        command[0]=str(REPO/'scripts/rl/memlite_online/tools/collect_placement_curriculum.py')
+                        command.extend(['--manifest-sha256',case['manifest_sha256']])
+                        if a.reference_category_binding:
+                            raise ValueError('Placement requires exact original bindings; category inference not validated')
+                    else:
+                        command[0]=str(REPO/'scripts/rl/memlite_online/tools/collect_local_articulation_recovery.py')
+                        if a.reference_category_binding:command.append('--reference-category-binding')
                 else:
                     if a.diversify_fault_timing:command.append('--diversify-fault-timing')
                     if a.reference_category_binding:command.append('--reference-category-binding')

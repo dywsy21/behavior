@@ -10,4 +10,5 @@ def owns_auxiliary(pid,used_mib,gpu,receipt,case_directory,argv,environ):
     index=argv.index('--output')
     if index+1>=len(argv) or Path(argv[index+1]).resolve()!=Path(case_directory).resolve():return False
     names={Path(v).name for v in argv}
-    return bool(names & {'collect_local_grasp_recovery.py','collect_local_articulation_recovery.py'})
+    return bool(names & {'collect_local_grasp_recovery.py','collect_local_articulation_recovery.py',
+                         'collect_placement_curriculum.py'})
