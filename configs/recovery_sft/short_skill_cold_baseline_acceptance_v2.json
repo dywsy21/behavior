@@ -1,0 +1,13 @@
+{
+  "schema": "short_skill_cold_baseline_acceptance_v1",
+  "approved": true,
+  "config_sha256": "2484ff3a214371c2238a112e4d9c315d6f97a721d874c76488e80881466d07f5",
+  "policy_sha256": "9664547d55e931532ead5b6d405381eb771219e1222aa16b207b5df630354927",
+  "episodes_sha256": "7e494eb37b8c2fc51f4cb1f2f85a4074f185c523150edef2b38cd790529f33ce",
+  "reviewed_episodes": 6,
+  "machine_audit_sha256": "45a60b1fcdd7074e3a26752b952170b5e9a8d52dc6bc5893283494a7727f60d5",
+  "manual_reviewer": "Codex root, 2026-10-10 08:38 CST: personally inspected six original-start/rollout contact sheets, 90 camera panels; independently checked every sheet hash and matched all six service job identities, controls, outcomes and policy SHA.",
+  "notes": "Radio both seeds: right fingers visibly reclose around the exact red radio, stable measured requested-arm hold; 19/19 controls, not whole-task switching-on success. Tripod: right hand releases target tripod upright on floor, 98/74 controls, official OnTop, all-hand release and low speed. Washer: left hand moves the target white washer door partly open then retreats; 317/317 controls, final fractions .304792/.300601 below .35, so remain UNKNOWN timeouts, never labelled FAILED or SUCCEEDED by appearance alone. All proprio reset errors zero; radio target error .00248003m, washer zero, unchanged 5mm gate. Permit exact global7 continuation on fresh on-policy training seeds only. Baseline checks correct execution and identities, not an RL improvement or full-task SR claim.",
+  "rollout_controls_recomputed": 844,
+  "whole_task_sr": false
+}
