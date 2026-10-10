@@ -15,7 +15,7 @@ REPO=Path(__file__).resolve().parents[4]
 sys.path[:0]=[str(REPO/'scripts/eval/memlite_sft100'),str(Path(__file__).resolve().parents[1]/'code')]
 from common import atomic_json
 from recovery_corpus import file_sha
-from skill_cold_worker import next_worker_action
+from skill_cold_worker import next_worker_action,require_service_hello
 from skill_training_protocol import read_only_recipe
 
 
@@ -51,6 +51,25 @@ def main():
         OMP_NUM_THREADS='2',OPENBLAS_NUM_THREADS='1')
     env.pop('CUDA_VISIBLE_DEVICES',None)
     try:
+        # Read HELLO and close without sending any operation. A model load can
+        # be slower than scene load; retry ONLY this pre-simulator transport,
+        # never a job, physical restore or failed episode. Binding mismatch is
+        # fatal and cannot be disguised as a temporarily unavailable service.
+        from websockets.sync.client import connect
+        from websockets.exceptions import ConnectionClosed,InvalidMessage
+        from wire import unpackb
+        receipt.update(status='waiting_service_before_simulator',transport_waits=0)
+        while True:
+            atomic_json(a.output/'status.json',dict(receipt,updated_unix=time.time()))
+            try:
+                with connect('ws://127.0.0.1:'+str(a.port),max_size=32<<20,
+                             compression=None,ping_timeout=None,open_timeout=10) as socket:
+                    require_service_hello(unpackb(socket.recv(timeout=30)),receipt['config_sha256'])
+                receipt['service_hello_verified_before_first_simulator']=True
+                break
+            except (OSError,TimeoutError,ConnectionClosed,InvalidMessage):
+                receipt['transport_waits']+=1
+                time.sleep(2)
         while True:
             ordinal=receipt['completed_episodes']+1
             child=a.output.parent/(a.output.name+f'-episode-{ordinal:06d}')

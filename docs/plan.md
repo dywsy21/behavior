@@ -12,7 +12,9 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-10 16:23 CST / Codex RECOVERY-USABLE：** 新冻源ccb39299/配置cda3c313的三权重分相位FM只读诊断已在lc1空闲GPU1/tmux `recovery-action-phase-v1`提交，run `L0-later-action-phase-diagnostic-v1`，共享盘独立cache；241恢复回归通过，待真实前向结果。低candidate服务已ready/实跑首条，W&B7554d6906d88，RTX原GPU0–2三冷worker；v10同原规则333更新/epoch9，曲线波动，不提前选权重/宣称可用。三条链独立，不动lc2和队友。
+- **2026-10-10 16:26 CST / Codex RECOVERY-USABLE：** candidate tripod首worker因模型服务尚未listen，场景先加载完成后WebSocket HTTP握手EOF；真实receipt `actual_controls=0`、未领取job，服务四个tripod仍pending，旧v1失败/scene日志完整保留。已在新worker加入**加载模拟器前仅读HELLO、不发送任何job**的运输等待；协议/config不匹配直接拒绝，不自动重置/重跑任何失败轨迹。等待新源检查后只续四个未领取job，radio/wash现役不重启。该工程失败不能隐去，也不算模型物理失败/成功。阶段FM诊断仍载入，v10按原选择规则继续。
+
+- **2026-10-10 16:22 CST / Codex RECOVERY-USABLE：** 新冻源ccb39299/配置cda3c313的三权重分相位FM只读诊断已在lc1空闲GPU1/tmux `recovery-action-phase-v1`提交，run `L0-later-action-phase-diagnostic-v1`，共享盘独立cache；241恢复回归通过，待真实前向结果。低candidate服务已ready/实跑首条，W&B7554d6906d88，RTX原GPU0–2三冷worker；v10同原规则333更新/epoch9，曲线波动，不提前选权重/宣称可用。三条链独立，不动lc2和队友。
 
 - **2026-10-10 16:21 CST / Codex RECOVERY-USABLE：** 额外只读诊断已实现：`eval_recovery_action_phases.py`比较共同L0父/两200步终态在同39已批准动作窗（30TRAIN/9原DEV）、四固定噪声seed的FM；逐事件先平均窗口再平均事件，拆GRASP/OPEN与每窗，避免新11窗把同五事件抬权。无optimizer/CAL/test/中间checkpoint挑选，3聚合反例与编译通过，尚待GPU实际运行；这用于定位“动作没学到”还是“离线学到但闭环仍偏移”，不能当成功率。两路物理candidate与v10原训练继续，活跃源码不改。
 

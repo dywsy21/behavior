@@ -11,6 +11,16 @@ from skill_training_protocol import read_only_recipe
 
 
 class ShortSkillRecipeTests(unittest.TestCase):
+    def test_hello_readiness_requires_exact_protocol_and_binding(self):
+        from skill_cold_worker import require_service_hello
+        sha='a'*64
+        self.assertTrue(require_service_hello(dict(protocol='short_skill_rl_v1',config_sha256=sha),sha))
+        for value in (dict(protocol='other',config_sha256=sha),
+                      dict(protocol='short_skill_rl_v1',config_sha256='b'*64),
+                      dict(protocol='short_skill_rl_v1',config_sha256=sha,job='already-claimed'),
+                      {'status':'ready'},None):
+            with self.assertRaises(ValueError):require_service_hello(value,sha)
+
     def test_both_pinned_sft_probes_use_shared_readonly_mode_gate(self):
         for name in ('control','later_actions'):
             cfg=json.loads((REPO/f'configs/recovery_sft/a800_later_action_probes_{name}_v1.json').read_text())

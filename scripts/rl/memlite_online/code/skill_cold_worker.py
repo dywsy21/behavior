@@ -1,6 +1,13 @@
 """Fresh-process worker boundaries; a failed reset is NEVER a retry signal."""
 
 
+def require_service_hello(message, config_sha256):
+    """A transport preflight does not claim a job or acknowledge completion."""
+    if message != dict(protocol='short_skill_rl_v1', config_sha256=config_sha256):
+        raise ValueError('Service protocol/config differs; do not load a simulator or retry this binding')
+    return True
+
+
 def validate_baseline_acceptance(receipt, *, config_sha256, policy_sha256, episodes_sha256):
     expected = dict(schema='short_skill_cold_baseline_acceptance_v1', approved=True,
         config_sha256=config_sha256, policy_sha256=policy_sha256,
