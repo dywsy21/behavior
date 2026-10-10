@@ -1,0 +1,106 @@
+{
+  "schema": "observer_class_balanced_fit_independent_reload_summary_v1",
+  "owner": "Codex root RECOVERY-USABLE",
+  "verified_at": "2026-10-10T17:48:00+08:00",
+  "fit_result_sha256": "7cff7691913ab922a85e3b0f460293f2c1d84f93b1407c00cc7536cff21e6b56",
+  "reload_result_sha256": "8c49b3902232f5536d2bac3e36338e904c1b41c449e2a6774ef09a6bf228d4f0",
+  "source_commit": "2a147313524340fb785ab94e36dfd24ef78a2a70",
+  "config_sha256": "69912986ac2c2315df7500cb882cf255a6bbd588cefd389a1f43147027afd076",
+  "selected_checkpoint_sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+  "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1",
+  "checkpoint": "checkpoints/selected.pt",
+  "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/baae68b19da0",
+  "data": {
+    "train_rows": 294,
+    "train_groups": 68,
+    "train_tasks": 53,
+    "selection_dev_rows": 40,
+    "selection_dev_groups": 10,
+    "selection_dev_tasks": 7,
+    "admission_sha256": "89eda5e5c82e424920b24e9cb4d3ead0dd83760d119337ef319ff2a7c5dce12a"
+  },
+  "only_recipe_change": "Equal25% TRAIN CE mass for four actual outcome classes; then equal independent events per class and equal windows within event/class. Original cadence16 history, all labels, LR/batch/early-stop and event-weighted DEV selection unchanged.",
+  "optimizer_updates": 666,
+  "stop_reason": "selection_dev_plateau",
+  "completed_epoch": 18,
+  "selected_epoch": 13,
+  "selected_step": 481,
+  "metrics": {
+    "dev": {
+      "event_weighted_ce": 0.08186282217502594,
+      "event_weighted_accuracy": 0.98333340883255,
+      "balanced_accuracy": 0.9791666716337204,
+      "per_class": {
+        "IN_PROGRESS": {
+          "rows": 12,
+          "recall": 0.9166666865348816
+        },
+        "SUCCEEDED": {
+          "rows": 14,
+          "recall": 1
+        },
+        "FAILED": {
+          "rows": 10,
+          "recall": 1
+        },
+        "UNKNOWN": {
+          "rows": 4,
+          "recall": 1
+        }
+      },
+      "reviewed_rows": 40,
+      "source_groups": 10
+    },
+    "train": {
+      "event_weighted_ce": 0.019746674224734306,
+      "event_weighted_accuracy": 0.9901961088180542,
+      "balanced_accuracy": 0.9908715486526489,
+      "per_class": {
+        "IN_PROGRESS": {
+          "rows": 71,
+          "recall": 0.98591548204422
+        },
+        "SUCCEEDED": {
+          "rows": 126,
+          "recall": 0.9920634627342224
+        },
+        "FAILED": {
+          "rows": 69,
+          "recall": 0.9855072498321533
+        },
+        "UNKNOWN": {
+          "rows": 28,
+          "recall": 1
+        }
+      },
+      "reviewed_rows": 294,
+      "source_groups": 68
+    }
+  },
+  "raw_dev_correct": 39,
+  "raw_train_correct": 291,
+  "prior_v8_selected_dev_balanced_accuracy": 0.8958333283662796,
+  "trainable_scope": {
+    "observer_specific_lora_tensors": 192,
+    "temporal_result_head_tensors": 14,
+    "planner_and_low_frozen": true,
+    "zero_adapter_equivalence_and_gradient_whitelist_passed": true
+  },
+  "reload": {
+    "real_unique_prefills": 490,
+    "adam_states": 206,
+    "adam_steps": [
+      481
+    ],
+    "dev_metrics_reproduced": true,
+    "base_sha256": "3f57f559ec95b86e3941a61d318b6bf563953452c748f6cd562cb66243c9a038"
+  },
+  "calibration_and_test_not_read": true,
+  "runtime_ready": false,
+  "limitations": [
+    "Selection DEV is small and used for checkpoint selection; it is not an independent deployment certificate.",
+    "Previous v8 failed its GRASP safety calibration despite high dev accuracy; those90 predictions are excluded from new validation.",
+    "Fresh v11 calibration and actual joint high/low physical behavior remain separate pending checks.",
+    "Training data is an approved recovery subset, not a new complete100-task SFT or full-task SR result."
+  ]
+}

@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 17:49 CST / Codex RECOVERY-USABLE：** 新30源已完整迁RTX并逐480依赖/PNG解码/NPZ23维动作61维状态/47,383控核验；tar和inventory双端一致，未开仿真。新`code/observer-v11-calibration-v1`/73aceeb2仅待命。candidate radio/tripod各8条已闭，新CPU末ACK等待实际生效、没有为finish额外加载sim；wash4/8继续，未改任何真实control/seed或复跑失败。v11精确训练/重载摘要`docs/infra/results/2026-10-10-observer-v11-fit-reload.json`已记录，仍未上线。
+
+- **2026-10-10 17:47 CST / Codex RECOVERY-USABLE：** 新pool-v4代码73aceeb2/270恢复回归通过；A800新`src/observer-reserve-calibration-v4`以真实旧513审批/三份SHA重建先前pool-v3选择逐项一致，实际确认187旧来源＝23物理缺测＋4 fit隔离＋90全部已预测＋70真正未预测reserve，0新forward。v4配置9f66d287；未修改旧标签/模型/统计门。新30包31d1e58d已本地核，RTX运输及新源码部署中；候选复验仍同一配方，联合/新采集暂不挤占它。
+
 - **2026-10-10 17:44 CST / Codex RECOVERY-USABLE：** 新30源CPU已全导出/480依赖103,130,743B/47,383参考控并真实fit+原metadata匹配（inventory bf232130、audit ac9e3d16、tar31d1e58d），尚无新仿真/标签。新显式pool-v4来源链本地实现：保留旧187＋新30全217分母，将旧90预测身份单独隔离而非伪作训练暴露/物理失败，只复用70未预测reserve；原签名不改，30每类/统计门不降。新旧脚本共同选择/校准前重新核三份预测暴露SHA及三cohort，union单独保存移出的全部审批。回归在验，真实v4联合/校准待新30物理、人审、运输，不宣称就绪。
 
 - **2026-10-10 17:38 CST / Codex RECOVERY-USABLE：** 新020ee407源码`src/observer-v11-fresh30-v1`已Git部署A800，CPU tmux `observer-v11-fresh30-export-v1`开始按固定30名单导出→真实fit/原名单SHA校验→封装，输出`runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-sources-v1`、`grasp-v11-new30-source-audit-v1.json`及同名tar，log `grasp-v11-new30-export-v1.log`。这仅参考源准备，0新标签/0sim/0训练；RTX须等candidate和联合物理结束。candidate已ready/W&B3724b079f4cf/实跑，observer重载完成，旧未通过校准及旧20test不变。
