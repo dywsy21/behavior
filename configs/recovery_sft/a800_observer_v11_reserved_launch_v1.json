@@ -1,0 +1,48 @@
+{
+  "schema": "observer_reserved_calibration_launch_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "root": "/data/workspace/wsy/behavior2026",
+  "union_spec": {
+    "path": "configs/recovery_sft/a800_observer_calibration_union_v3_unseen_reserves.json",
+    "sha256": "2d06f4c970d1d8ff7ea71b4dc0b1020c2a4647e9a170bd9d454037f1210a8b6a"
+  },
+  "source_pool": {
+    "path": "configs/recovery_sft/observer_calibration_pool_v4_unseen_reserves.json",
+    "sha256": "9f66d28726ea45ac73dec5e0203bf0f632e4573fca02e87a8ba2f64a975d2b08"
+  },
+  "fit_result": {
+    "path": "runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/result.json",
+    "sha256": "7cff7691913ab922a85e3b0f460293f2c1d84f93b1407c00cc7536cff21e6b56"
+  },
+  "fit_config": {
+    "path": "src/observer-v11-outcome-balance-v1/configs/recovery_sft/a800_observer_v11_outcome_balance_v1.json",
+    "sha256": "69912986ac2c2315df7500cb882cf255a6bbd588cefd389a1f43147027afd076"
+  },
+  "selected_observer": {
+    "path": "runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/checkpoints/selected.pt",
+    "sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699"
+  },
+  "cohorts": [
+    {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/grasp-cohort-v2.json",
+      "sha256": "b1a9329f574062a73694bac0347dbb6c58f0020529340900443315a0e978b2ea"
+    },
+    {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-cohort-v1.json",
+      "sha256": "d66023744fe026a1d23fd084149d5cbe1981206a7131a09270cb22a18a48e8bd"
+    },
+    {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-cohort-v1.json",
+      "sha256": "628d23eb6cbf46138cee63c5fbaca0053fb4084e3f198f780d2e8ea71b7e0b32"
+    }
+  ],
+  "new_unit": {
+    "directory": "datasets/recovery-v11-new30-calibration-20261010-v1",
+    "manifest_sha256": "fe222f88abc4cde12bd4a93336349dbbb4b2f601f9d48f02dda11cc4f8063c04",
+    "admission": "datasets/recovery-v11-new30-calibration-20261010-v1/runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-reviewed-unit-v1/admission/admission.json",
+    "admission_sha256": "9f409965c7129f43f3668aaa48c712fe081e696bbeaf54dca68e7a61ec4ff71e"
+  },
+  "run_output": "runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1",
+  "corpus_output": "datasets/recovery-observer-calibration-union-20261010-v3-unseen-reserves",
+  "interpretation": "Preparation only, no GPU/model/optimizer or automatic feedback deployment. Verify all transported bytes, preserve original signed cohort/exposure roles, fully audit the new union and freeze90 distinct phase anchors before any prediction. No old20 test access, checkpoint reselection, gate reduction, overwriting or automatic retry. Run GPU calibration and real-stream shadow separately after idle-resource and VPN checks."
+}

@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 19:21 CST：A800固定v11校准准备入口（未在A800运行）
+
+- Git入口`scripts/rl/memlite_online/tools/prepare_reserved_observer_launch.py --declaration configs/recovery_sft/a800_observer_v11_reserved_launch_v1.json`；声明SHA cc96f095…1e675固定原b0f3d125权重/7cff7691 fit、三cohort及fe222f88新运输manifest。连接恢复后须从共享根`src/`下新的干净冻结源码执行，复用现有g05-py310-cu128环境，不改共享env/不碰lc2。
+- 前置运输落点`datasets/recovery-v11-new30-calibration-20261010-v1`全字节校验，cohort另放独立校准run根`grasp-v11-new30-cohort-v1.json`。入口新建`datasets/recovery-observer-calibration-union-20261010-v3-unseen-reserves`及`runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1`；两者当前均未创建/运行，任何既有partial均拒绝覆盖。
+- 成功时run含`preflight.json`、`preselection-config.json`、`anchor-selection.json`、`calibration-config.json`、`result.json`；失败保留`failure.json`/partial，不重试。仅返回固定`calibrate_recovery_observer_adapter.py`命令，实际GPU任务须另核空闲卡启动；时序shadow仍独立使用已审41边界包，不因离线门通过就自动接管。当前本地仅编排回归/真实运输字节检查，不是A800模型结果。
+
 ## 2026-10-10 19:08 CST：新30已签核运输包
 
 - RTX新冻源`code/observer-v11-new30-reviewed-v1`=0475fb45；tmux`observer-v11-new30-sign-v1`已自然完成，同独立校准run根`grasp-v11-new30-sign-bundle-v1.log`保留。`grasp-v11-new30-approvals-part{1,2}-v1.json`、`grasp-v11-new30-reviewed-unit-v1`及同名tar.gz完整，admission9f409965…f71e、tar d166f291…66a9e；49archive/1594观测全读，86 CAL/0TRAIN。
