@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 11:51 CST / Codex RECOVERY-USABLE：** 低v6已global18；17步完整probe为3/6（GRASP2、PLACE1、OPEN0），未升级默认权重。下一同三技能续段实验已预登记`short_skill_continuation_v7_plan.json`，明确**不可启动草案**：待20真实终态/准确SHA，TRAIN4×、固定验证1×、每4更新测、critic仍1 fit及actorLR1e-6均不增；40更新为观察窗口而非goal终点。原90/补97采集波次的GPU辅助归属可预绑定，但后续每PID/commit/主卡/内存仍验，不动旧运行。高联合在线反馈接线/新独立结果校准/低可靠改善仍为未完成项。
+
+- **2026-10-10 11:45 CST / Codex RECOVERY-USABLE：** 补97包已RTX整包SHA核对与解包全1552依赖/332884634B复验（manifest663af447、audit bc860bfc），尚未启动采集。一次scp未结束便尝试解包产生EOF，未入采集/训练；不完整目录已保留为`grasp-supplement-sources-v1-partial-transfer-20261010T1142`，等scp退出并验整包后在新标准路径重解/全验，旧90不受影响。补采独立RTX source`code/recovery-calibration-supplement-v1`=e5fb9a9a已Git部署，待原90关闭/资源空闲；多wave归属修复cac5b21a已push，但现役v6不热改。
+
 - **2026-10-10 11:40 CST / Codex RECOVERY-USABLE：** 补97 source已CPU导出＋1552依赖/332884634B全验、排除546旧组/原留出，manifest663af447、audit bc860bfc…db245、包a7decdd6…6b95f，本地同hash后传RTX中，未新增仿真/训练/标签。为防下一轮低RL被后续校准wave小renderer误挡，新增显式多wave path/commit登记（仍逐PID/子目录/其他主GPU/≤512MiB验真，绝不按“进程小”泛放行），196回归和入口编译通过，尚未部署。v6 global17后续TRAIN继续，首90已56关闭/48候选/8未复现；当前三个目标均未整体验收，不扩全100 RL。
 
 - **2026-10-10 11:35 CST / Codex RECOVERY-USABLE：** 补97来源已Git部署lc1`src/recovery-calibration-supplement-v1`=e5fb9a9a，CPU实际导出68/97，后接全依赖校验/打包，不用GPU/不训练。新增pool-v2抽样器仍要求30×3不同source，所有缺测须终态SHA、已审但未选来源明确reserved；测试覆盖不能漏分母/复用行/冒称测试/降至20，195恢复回归全过。v6已global17的固定probe中，新90已53关闭（46候选＋7未复现），均不声称模型可用。旧all90规则不改；新pool在任何新v8推理前固定。下条登记的实际提交时刻为11:31 CST（原11:33笔误）。

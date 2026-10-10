@@ -1,0 +1,44 @@
+{
+  "schema": "short_skill_experiment_plan_not_launchable_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "launch_ready": false,
+  "hypothesis": "Real same-intent continuation beyond the demonstration interval will expose consequences of premature release and reduce reliance on an unsupported tail value. This is a continuing-task partial-episode-bootstrap experiment, not timeout-as-failure supervision.",
+  "dependency": {
+    "completed_run": "runs/recovery_heterogeneous_20261010/short-rl-v6-critic-restart",
+    "expected_completed_update": 20,
+    "checkpoint_sha256": "MUST_READ_ACTUAL_COMPLETED_CHECKPOINT_BEFORE_CREATING_LAUNCH_RECIPE",
+    "require_closed_final_paired_probes": true,
+    "require_frozen_parent_fingerprint_unchanged": true
+  },
+  "training_rollout_multiplier": 4,
+  "evaluation_rollout_multiplier": 1,
+  "evaluation_interval_updates": 4,
+  "learning_rounds_in_next_measurement_window": 40,
+  "training_seed_round_offset": 21,
+  "same_three_cases": ["turning_on_radio_155", "wash_dog_toys_169", "attach_a_camera_to_a_tripod_129"],
+  "fixed_evaluation_seeds": [17, 29],
+  "unchanged": {
+    "actor_lr": 0.000001,
+    "critic_lr": 0.0003,
+    "critic_fit_steps": 1,
+    "transition_std": 0.03,
+    "target_kl": 0.03,
+    "max_clip_fraction": 0.25,
+    "update_epochs": 1,
+    "reward": "skill_aligned_v1; gamma .999 per actual control, potential .2, six physically achieved controls for success",
+    "timeout": "UNKNOWN with bootstrap; never a FAILED label",
+    "actor_input": "Only actual RGB/proprio and fixed task/skill conditions; no simulator truth, time budget or privileged feedback",
+    "gradient_boundary": "322 native FM action-expert tensors and separate detached-feature critic only; planner/vision/VLM frozen",
+    "optimizer_resume": "Exact saved actor/critic/Adam and counters; explicit changed rollout metadata",
+    "case_reference_intervals": "Keep original manifests/proofs/source intervals unchanged; extension applies only to actual TRAIN execution"
+  },
+  "entry_gate": "Old window must close cleanly. A new clean Git worktree, exact final20 SHA and six freshly restored baseline episodes require physical/media review and explicit baseline acceptance before update21.",
+  "measurements": [
+    "At update0, every4 new updates and final update, evaluate all six original fixed-horizon probes; no evaluation data reaches the optimizer.",
+    "Report all three skill counts, including retention regressions. No checkpoint promotion based on a chosen successful video or training loss.",
+    "Compare reward/GAE/critic-tail decomposition on actual completed TRAIN episodes and original-time-prefix controls, with unmodified physical success thresholds.",
+    "Record original and extended policy deadlines, control ACKs, every native RGB/proprio boundary, model/version identity and all first failures."
+  ],
+  "interpretation": "Forty updates define a learning-curve observation window, not a reset quota, goal endpoint or permission to auto-expand to100 tasks. A repeated six-probe improvement is only a development signal. Any usability claim additionally requires fresh predeclared seeds and legal held-out starts, and preservation of the other skills.",
+  "stopping": "Stop on real control/identity/reward mismatch, changed cold starts, nonfinite/unsafe KL updates, a foreign primary GPU or insufficient disk. If the method does not improve, preserve the negative result and investigate targets/exploration rather than automatically increasing actor LR or lowering success criteria."
+}
