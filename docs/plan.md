@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 13:12 CST / Codex RECOVERY-USABLE：** v7已真实global21/91chunks，actor LR1e-6、KL.01336、clip.09341，critic半MSE .017582→.005259，版本fd6ae4e6…dc28b；没有加大学习率。首TRAIN三条：GRASP19控成功、PLACE136控成功、OPEN1268控仍UNKNOWN（最大开度.278877<.35）。闭合账本独立重算OPEN实得折扣奖励−.005554、尾项+.201131、平均adv−.183524，80块仅1正，原来短续段的正信用问题有所缓解但**尾项仍占绝对量97.3%，且尚无可靠技能改善**，不能宣称尾估计正确/目标完成。证据A800`short-rl-v7-first-round-diagnostic-v1/returns.json`；旧固定EVAL门不变，下一固定probe在global24。补97已有24终态、完整采集与待审材料链仍在跑，未做新预测/校准，lc2不动。
+
 - **2026-10-10 12:59 CST / Codex RECOVERY-USABLE：** v7六baseline全部闭合，根亲审6页90原RGB面板，机器重算922真实控制/reward/ACK和66无损观察边界；审计353e1e82…394fc。GRASP19/19控成、PLACE106/144控成，OPEN两317控未达功能阈值（末.299088/.295272），仍UNKNOWN，起点误差门全过；此为完整负结果基线，不是新增提升。绑定config f3b0ed3e、policy92fad0b1、episodes eed9ef57的人工许可已放A800`short-rl-v7-real-continuation/BASELINE_ACCEPTED.json`，才放行global21。补97采集继续；58ca88d9新原图审核材料链`observer-supplement-review-v1`已等待97完整终态，绝不自动签核/校准。
 
 - **2026-10-10 12:52 CST / Codex RECOVERY-USABLE：** 首90包已A800独立解包/386文件313,202,689B逐SHA通过，`datasets/recovery-fresh90-calibration-20261010-v1`，admission仍dd3a0f10…6be470且training_ready=false。补齐前瞻两wave CAL链：v3 partition逐group保留原cohort签名、187全尝试缺测/预选90/其余reserve分开记账，纯CAL零TRAIN只读入口，固定v8/b598＋bee原RGB真实重载forward与原统计门，不读取reserve/test图像、不更新参数；新工具`prepare_observer_calibration_pool.py`和`eval/calibrate_recovery_observer_adapter.py`205回归/编译通过，实际GPU校准须等97全闭＋根审签、尚未运行。低v7六baseline已有2done/2active/2pending、仍0新优化；补97已有6候选，真实进度不等于任何部署通过。
