@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 20:42 CST / Codex RECOVERY-USABLE：** 新高层正式小试已实启lc1八卡、tmux/run `H1-postfit-feedback-fit-v1`，源bb9389b5，票50827481…b7761，supervisor2258127/torchrun2258141；36TRAIN事件×20遍=360更新、global8（6正常+2恢复）、LR1e-6、仅326高层参数，结果头/低层/视觉骨干不更新。当前DDP/父权重加载，尚无首更新或效果结论；W&B配置online待实际URL。实际78样本processor与700正常时钟/24图复验完成后启动，不读旧test、不动lc2/队友；下一首步梯度/全卡/W&B验收，然后目标无泄漏生成、物理闭环与低RL可靠改善仍需做。
+
 - **2026-10-10 20:40 CST / Codex RECOVERY-USABLE：** lc1新冻bb9389b5的78真实高层processor及原示范700时钟/24processor全部通过，原23→27 padding/高层CE mask无误，真实固定反馈逐原logits/时钟重算相同。原示范24原图页逐字节与既有根人审一致；700行仅补`repeat_stride_controls=16`及来源描述改名，其余输入/target/时钟全同，根据此续签而非声称新看图（audit3138e57b…5423/rows38233cb1…1101，signoff新Git结果文件）。另核smoke_detectors92的64步双手确实未持目标，预测SUCCEEDED/.9056是保留的误报；不能以.85门当真值。下一Git同步独立人审回执、制作bb9389b5训练票并实启lc1高层360更新；低层/结果头冻结，W&B online，GPU尚空，独立成员review待。
 
 - **2026-10-10 20:37 CST / Codex RECOVERY-USABLE：** 固定v11在新78真实来源237次prefill/check完成（193.39s/0更新、run receipt5a79bd21…4c6b4）；TRAIN18 FAILED/17 UNKNOWN/1 SUCCEEDED，DEV20 FAILED/22 UNKNOWN。那1条成功估计不能当物理真值，保留与原RETRY监督共存，不按预测筛数据。实际源16b50c10不变，GPU0退出全空。新增训练准入从原raw/history重建所有window并重放固定logits/校准/freshness，强绑定observer与planner两权重、全source排除及实际processor，7新测试＋旧suite304（含5重复夹具）过；下一新冻结源真实78高层processor＋原示范复验后再训360updates（36事件×20遍、6normal/2recovery、仅高层、W&B），不是结果头/低层新训练或部署。

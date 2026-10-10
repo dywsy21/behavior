@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 20:42 CST：高层fixed-feedback训练启动
+
+- 活跃源`src/postfit-planner-fit-v1`=bb9389b5，lc1八卡tmux `H1-postfit-feedback-fit-v1`；run `runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v1`与同名`.log`/`.supervisor/attempt_001.log`/ledger及独立cache。票`H1-postfit-fit-preflight-v1/ticket.json` SHA50827481…b7761，前置同目录processor/expert审计。当前模型加载，未称训练完成。
+- 人工复验记录通过Git a83cd991单文件archive展开到`incoming/postfit-review-signoff-v1/docs/infra/results/2026-10-10-postfit-expert-feedback-review.json`，未修改活跃bb源。冻结头预测源16b已结束，run `H1-postfit-feedback-v1` receipt5a79bd21…4c6b4、237检查/0更新，完整本地artifact已SHA核对，含smoke92一次false-S保留。
+
 ## 2026-10-10 20:33 CST：A800无泄漏高层反馈实跑
 
 - `src/postfit-planner-feedback-v1`=33eb4b1b完成运输全验及`datasets/recovery-postfit-planner-union-20261010-v1`联合（admission404fcc0a…3463f、78/3516全读）。完整运输目录`datasets/recovery-postfit-planner-transport-20261010-v1`与全部原证据保留。
