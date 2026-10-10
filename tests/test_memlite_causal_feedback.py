@@ -120,6 +120,23 @@ class FeedbackTests(unittest.TestCase):
         with self.assertRaises(ValueError):cache.tensors(identity(episode='other'),5)
         with self.assertRaises(ValueError):cache.tensors(i,4)
 
+    def test_unready_confidence_contract_is_explicit_and_not_a_new_outcome(self):
+        for protocol,expected in [('raw_observer_confidence_v1',.99),('unready_zero_confidence_v1',0.)]:
+            i=identity();ledger=CausalFeedbackLedger(i,uncertainty_protocol=protocol)
+            ledger.issued(i,0,bundle(),'g')
+            for step in (0,128):
+                ledger.observe_clock(i,step)
+                ledger.estimated(i,step,[dict(outcome='SUCCEEDED',confidence=.99)],calibrated=False)
+            result=json.loads(ledger.projection(i,128))
+            self.assertEqual(result['estimated_member_outcomes'],[dict(member=0,estimated_outcome='UNKNOWN',confidence=expected)])
+            self.assertEqual(result['estimated_bundle_outcome'],'UNKNOWN')
+            for step in (256,384):
+                ledger.observe_clock(i,step)
+                ledger.estimated(i,step,[dict(outcome='FAILED',confidence=.96)],calibrated=True)
+            result=json.loads(ledger.projection(i,384))
+            self.assertEqual(result['estimated_member_outcomes'],[dict(member=0,estimated_outcome='FAILED',confidence=.96)])
+        with self.assertRaises(ValueError):CausalFeedbackLedger(identity(),uncertainty_protocol='oracle')
+
     def test_h0_gradients_stop_before_frozen_vlm(self):
         torch.manual_seed(17)
         observer=TemporalOutcomeObserver(16,width=8)

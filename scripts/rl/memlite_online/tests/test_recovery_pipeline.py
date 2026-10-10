@@ -79,6 +79,35 @@ class PipelineTests(unittest.TestCase):
         for counts,passes in [({'event-a':5},3),({'event-a':6},5),({},5)]:
             with self.assertRaises(ValueError):validate_h0_event_budget(counts,dict(event_passes=passes))
 
+    def test_causal_expert_feedback_cannot_bypass_actual_or_human_audit(self):
+        from recovery_corpus import file_sha
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);recipe=root/'recipe.json';path=root/'ticket.json'
+            recipe.write_text(json.dumps(dict(maximum_updates_per_line=1000,maximum_event_passes=5,
+                maximum_wall_seconds_per_line=14400,H1=dict(pool='planner',original_feedback='causal_expert_unknown_v1'))))
+            value=dict(schema='recovery_sft_launch_v1',component='H1',formal_training_authorized=True,
+                source_commit='source',maximum_updates=1,event_passes=1,wall_seconds=1800,world_size=8,micro_batch=1,
+                admission='unused',files=dict(recipe=dict(path=str(recipe),sha256=file_sha(recipe))))
+            path.write_text(json.dumps(value))
+            with self.assertRaisesRegex(ValueError,'actual processor'):validate_launch(path,'H1')
+            audit=root/'audit.json';review=root/'review.json'
+            data=dict(schema='expert_causal_feedback_audit_v1',status='AUTOMATED_PASSED',source_commit='source',
+                recipe_sha256=file_sha(recipe),normal_noninitial_control_tasks=100,processed_raw_samples=24,
+                clocks_match_runtime=True,targets_unchanged=True,physical_outcomes_added=0,rows_sha256='rows')
+            audit.write_text(json.dumps(data))
+            signed=dict(schema='expert_causal_feedback_human_review_v1',decision='APPROVED',audit_sha256=file_sha(audit),
+                rows_sha256='rows',sheets=[dict(sha256=str(i),note='reviewed visible image and binding',decision='APPROVED') for i in range(24)])
+            review.write_text(json.dumps(signed))
+            value['files'].update({k:dict(path=str(p),sha256=file_sha(p)) for k,p in
+                [('expert_feedback_audit',audit),('expert_feedback_human_review',review),('history',recipe),
+                 ('feedback',recipe),('feedback_receipt',recipe),('admission',recipe)]})
+            path.write_text(json.dumps(value))
+            with patch('recovery_train_contract.require_training_pool'):validate_launch(path,'H1')
+            signed['sheets'][0]['decision']='REJECTED';review.write_text(json.dumps(signed))
+            value['files']['expert_feedback_human_review']['sha256']=file_sha(review);path.write_text(json.dumps(value))
+            with self.assertRaisesRegex(ValueError,'Human feedback/image review'):validate_launch(path,'H1')
+
     def test_causal_feature_clocks_and_h1_self_target_exclusion(self):
         anchors,history=joined()
         req=feature_requests(anchors,history,[('256','predecision',0)])[0]
@@ -200,12 +229,21 @@ class PipelineTests(unittest.TestCase):
         projection=planner_projection(row,h,target,pred,'a'*64)
         self.assertEqual(projection['memory'],prior['memory']);self.assertFalse(projection['outcome_supervision_mask'])
         self.assertEqual(projection['outcome_target'],'UNKNOWN');self.assertFalse(projection['low_action_supervision_mask'])
+        raw_unknown=deepcopy(pred)
+        raw_unknown['execution_feedback']=feedback_text(prior,[dict(member=0,estimated_outcome='UNKNOWN',confidence=.53)])
+        legacy=planner_projection(row,h,target,raw_unknown,'a'*64)
+        gated=planner_projection(row,h,target,raw_unknown,'a'*64,uncertainty_protocol='unready_zero_confidence_v1')
+        self.assertEqual(json.loads(legacy['execution_feedback'])['estimated_member_outcomes'][0]['confidence'],.53)
+        self.assertEqual(gated,projection)
+        self.assertEqual(json.loads(raw_unknown['execution_feedback'])['estimated_member_outcomes'][0]['confidence'],.53)
         calibrated=deepcopy(pred);calibrated['provenance']['calibrated']=True
         calibrated['execution_feedback']=feedback_text(prior,[dict(member=0,estimated_outcome='FAILED',confidence=.97)])
         projected=planner_projection(row,h,target,calibrated,'a'*64)
         self.assertEqual(projected['known_previous_outcome'],'UNKNOWN')
         self.assertEqual(json.loads(projected['execution_feedback'])['estimated_bundle_outcome'],'FAILED')
         self.assertEqual(projected['outcome_target'],'UNKNOWN')
+        self.assertEqual(planner_projection(row,h,target,calibrated,'a'*64,
+            uncertainty_protocol='unready_zero_confidence_v1'),projected)
         bad=deepcopy(target);bad['decision']='RETRY'
         with self.assertRaises(ValueError): planner_projection(row,h,bad,pred,'a'*64)
         bad=deepcopy(pred);bad['provenance']['trained_groups'].append(row['source_group'])

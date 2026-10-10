@@ -121,12 +121,16 @@ class FeedbackIdentity:
 
 
 class CausalFeedbackLedger:
-    def __init__(self, identity: FeedbackIdentity, *, minimum_confidence=.85, confirmations=2):
+    def __init__(self, identity: FeedbackIdentity, *, minimum_confidence=.85, confirmations=2,
+                 uncertainty_protocol='raw_observer_confidence_v1'):
         if not isinstance(identity, FeedbackIdentity) or not 0 < minimum_confidence <= 1:
             raise ValueError("Invalid feedback contract")
         if type(confirmations) is not int or not 2 <= confirmations <= 8:
             raise ValueError("Require two to eight distinct observer checks")
+        if uncertainty_protocol not in ('raw_observer_confidence_v1', 'unready_zero_confidence_v1'):
+            raise ValueError('Unknown observer uncertainty input contract')
         self.identity = identity
+        self.uncertainty_protocol = uncertainty_protocol
         self.minimum_confidence, self.confirmations = minimum_confidence, confirmations
         self.control_step = 0
         self.bundle = self.parent = None
@@ -190,8 +194,10 @@ class CausalFeedbackLedger:
             confidence = row["confidence"]
             if isinstance(confidence, bool) or not isinstance(confidence, (float, int)) or not math.isfinite(confidence) or not 0 <= confidence <= 1:
                 raise ValueError("Invalid observer confidence")
+            usable_confidence = (0. if not calibrated and self.uncertainty_protocol == 'unready_zero_confidence_v1'
+                                 else float(confidence))
             safe.append(dict(outcome=row["outcome"] if calibrated and confidence >= self.minimum_confidence else "UNKNOWN",
-                             confidence=float(confidence), calibrated=bool(calibrated)))
+                             confidence=usable_confidence, calibrated=bool(calibrated)))
         self._proposals.append((control_step, safe))
 
     def projection(self, identity, control_step):

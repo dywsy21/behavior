@@ -61,14 +61,22 @@ def main():
     model, restore = restore_model(config, 'high', state=saved['model_state_dict'])
     del saved; gc.collect()
     model.requires_grad_(False).eval().cuda(); processor = make_processor(config, False)
-    expert = Stage1Dataset(release, config, 'high', 'eval')
+    expert_class=Stage1Dataset
+    original_feedback=cfg.get('original_feedback','none_v1')
+    if original_feedback not in ('none_v1','causal_expert_unknown_v1'):
+        raise ValueError('Unknown normal-state feedback protocol')
+    if original_feedback=='causal_expert_unknown_v1':
+        from recovery_expert_feedback import with_expert_feedback
+        expert_class=with_expert_feedback(Stage1Dataset)
+    expert = expert_class(release, config, 'high', 'eval')
     union = root / cfg['union']
     recovery = VerifiedRecoveryPlannerDataset(union/'admission', union/'raw',
         json.loads((root/cfg['inventory']['path']).read_text()), config, split='dev',
         admission_sha256=cfg['admission_sha256'],
         history=[json.loads(x) for x in (root/cfg['history']['path']).read_text().splitlines()],
         feedback=[json.loads(x) for x in (root/cfg['feedback']['path']).read_text().splitlines()],
-        evidence_root=root, high_sha256=cfg['models']['parent']['sha256'])
+        evidence_root=root, high_sha256=cfg['models']['parent']['sha256'],
+        uncertainty_protocol=cfg.get('uncertainty_protocol','raw_observer_confidence_v1'))
     original_schedule=cfg.get('original_schedule','first_fixed_one_per_task_v1')
     fixed=select_original_indices(np.load(release/'fixed_eval_indices.npy').reshape(100,32).tolist(),
         lambda i:expert.locate(i)[3],lambda i:int(expert.task_ids[i]),original_schedule)
@@ -79,6 +87,7 @@ def main():
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'], cwd=REPO, text=True).strip(),
         restoration=restore, schedule_sha256=digest(schedule), target_free=True,
         original_schedule=original_schedule,original_with_previous_intent=original_with_previous,
+        original_feedback=original_feedback,uncertainty_protocol=cfg.get('uncertainty_protocol','raw_observer_confidence_v1'),
         probe_unknown_confidence=cfg.get('probe_unknown_confidence',0.) if args.feedback_probe else None,
         recovery_dev_unseen_by_increment_only=True, no_physical_success_measurement=True,
         counterfactual_feedback_probe=args.feedback_probe,

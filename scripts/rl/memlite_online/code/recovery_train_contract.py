@@ -17,6 +17,24 @@ def validate_launch(ticket_path,component,*,engineering=False):
     for key,entry in ticket['files'].items():
         if file_sha(entry['path'])!=entry['sha256']: raise ValueError('Changed pinned launch input: '+key)
     recipe=json.loads(Path(ticket['files']['recipe']['path']).read_text())
+    if component=='H1' and recipe.get('H1',{}).get('original_feedback')=='causal_expert_unknown_v1':
+        if not {'expert_feedback_audit','expert_feedback_human_review'}<=ticket['files'].keys():
+            raise ValueError('New expert feedback needs actual processor and human visual acceptance')
+        audit=json.loads(Path(ticket['files']['expert_feedback_audit']['path']).read_text())
+        review=json.loads(Path(ticket['files']['expert_feedback_human_review']['path']).read_text())
+        if (audit.get('schema')!='expert_causal_feedback_audit_v1' or audit.get('status')!='AUTOMATED_PASSED'
+                or audit.get('source_commit')!=ticket['source_commit']
+                or audit.get('recipe_sha256')!=ticket['files']['recipe']['sha256']
+                or audit.get('normal_noninitial_control_tasks')!=100 or audit.get('processed_raw_samples')!=24
+                or audit.get('clocks_match_runtime') is not True or audit.get('targets_unchanged') is not True
+                or audit.get('physical_outcomes_added')!=0):
+            raise ValueError('Invalid new feedback audit')
+        if (review.get('schema')!='expert_causal_feedback_human_review_v1' or review.get('decision')!='APPROVED'
+                or review.get('audit_sha256')!=ticket['files']['expert_feedback_audit']['sha256']
+                or review.get('rows_sha256')!=audit['rows_sha256'] or len(review.get('sheets',[]))!=24
+                or len({r.get('sha256') for r in review['sheets']})!=24
+                or any(not r.get('note') or r.get('decision')!='APPROVED' for r in review['sheets'])):
+            raise ValueError('Human feedback/image review is missing or not bound to this audit')
     if ticket['event_passes'] > 5 and (recipe.get('extended_event_fit') is not True
             or recipe.get('training_authorized_by_this_file') is not True or not recipe.get('authorization')):
         raise ValueError('Extended event fitting requires a separately pinned authorized recipe')

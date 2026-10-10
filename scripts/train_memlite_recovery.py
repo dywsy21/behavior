@@ -76,8 +76,16 @@ def main():
     if (accepted['status']!='ACCEPTED' or not all(accepted['gates'].values())
             or file_sha(release/'manifest.json')!=accepted['manifest_sha256']
             or expert_index['manifest_sha256']!=accepted['manifest_sha256']): raise ValueError('Unaccepted original rehearsal source')
-    experts=Stage1Dataset(release,config,branch,'train')
+    expert_class=Stage1Dataset
+    original_feedback=recipe.get('H1',{}).get('original_feedback','none_v1')
+    if original_feedback not in ('none_v1','causal_expert_unknown_v1'):
+        raise ValueError('Unknown original-expert feedback protocol')
+    if branch=='high' and original_feedback=='causal_expert_unknown_v1':
+        from recovery_expert_feedback import with_expert_feedback
+        expert_class=with_expert_feedback(Stage1Dataset)
+    experts=expert_class(release,config,branch,'train')
     original_eval=Stage1Dataset(release,config,branch,'eval')
+    feedback_eval=expert_class(release,config,branch,'eval')
     by_task={k:[r['candidate'] for r in v] for k,v in expert_index['rows'].items()}
     if a.engineering:
         flat=[by_task[k][0] for k in sorted(by_task,key=int)[:32]]
@@ -101,7 +109,8 @@ def main():
             if (feedback_receipt['feedback_sha256']!=ticket['files']['feedback']['sha256']
                     or feedback_receipt['high_sha256']!=parent['sha256'] or feedback_receipt['diagnostic_only']):
                 raise ValueError('Invalid OOF feedback release')
-            kwargs.update(history=histories,feedback=feedback,evidence_root=ticket['evidence_root'],high_sha256=parent['sha256'])
+            kwargs.update(history=histories,feedback=feedback,evidence_root=ticket['evidence_root'],high_sha256=parent['sha256'],
+                uncertainty_protocol=recipe['H1'].get('uncertainty_protocol','raw_observer_confidence_v1'))
             new=VerifiedRecoveryPlannerDataset(**kwargs,split='train');dev=VerifiedRecoveryPlannerDataset(**kwargs,split='dev')
             # Recovery-only RETRY targets would teach a degenerate planner.
             # Rehearse normal original plans as well, exactly as L0 retains
@@ -184,7 +193,15 @@ def main():
             if dev is not None:
                 for i,item in enumerate(dev.rows):
                     dev_indices.setdefault((item['candidate']['source_group'],item['approval']['event_id']),i)
-            for scope,ds,indices in [('original_heldout',original_eval,fixed_eval)]+(
+            original_scopes=[('original_heldout',original_eval,fixed_eval)]
+            if branch=='high' and original_feedback=='causal_expert_unknown_v1':
+                from recovery_generation_metrics import select_original_indices
+                noninitial=select_original_indices(np.load(release/'fixed_eval_indices.npy').reshape(100,32).tolist(),
+                    lambda i:original_eval.locate(i)[3],lambda i:int(original_eval.task_ids[i]),
+                    'noninitial_fixed_one_per_task_v1')
+                original_scopes.extend([('original_noninitial',original_eval,noninitial),
+                    ('original_noninitial_causal_feedback',feedback_eval,noninitial)])
+            for scope,ds,indices in original_scopes+(
                     [('verified_dev',dev,list(dev_indices.values()))] if dev is not None else []):
                 stats=torch.zeros(2,dtype=torch.float64,device=device);error=None
                 torch.manual_seed(9183+rank)

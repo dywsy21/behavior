@@ -7,7 +7,7 @@ from recovery_features import validate_prediction_provenance
 from recovery_sft_data import CandidateArchiveReader, raw_observation, require_training_pool
 
 
-def planner_projection(candidate,history,target,feedback,high_sha256):
+def planner_projection(candidate,history,target,feedback,high_sha256,*,uncertainty_protocol='raw_observer_confidence_v1'):
     from g05.utils.memlite_skill_protocol import (semantic_active_skills_text,parse_active_skills_semantic_json,
         append_b_memory_idempotent,V6_MODEL_PROJECTION_FIELDS)
     sid=candidate['sample_id'];prior=history['predecision'];current=history['observable']
@@ -44,6 +44,14 @@ def planner_projection(candidate,history,target,feedback,high_sha256):
             raise ValueError('Uncalibrated/oracle member feedback')
     from recovery_observer_training import feedback_text
     if json.loads(feedback_text(prior,predictions))!=value: raise ValueError('Inconsistent aggregate feedback')
+    if uncertainty_protocol not in ('raw_observer_confidence_v1','unready_zero_confidence_v1'):
+        raise ValueError('Unknown planner uncertainty input contract')
+    execution_feedback=feedback['execution_feedback']
+    if uncertainty_protocol=='unready_zero_confidence_v1' and not feedback['provenance']['calibrated']:
+        # Preserve the real OOF provenance and UNKNOWN outcomes. An unready
+        # head supplies no usable confidence, just as no observer on original
+        # demonstrations supplies none. This is not an oracle replacement.
+        execution_feedback=feedback_text(prior,[dict(r,confidence=0.) for r in predictions])
     task=candidate['task'].replace('_',' ')
     if target['memory_update']!=append_b_memory_idempotent(prior['memory'],prior['previous_intent'],task_name=task):
         raise ValueError('Target memory uses unobserved future command')
@@ -54,7 +62,7 @@ def planner_projection(candidate,history,target,feedback,high_sha256):
         # An observer's calibrated estimate is still not privileged known
         # truth. Keep it in the explicitly estimated feedback channel. This
         # also preserves the frozen high_planner_only UNKNOWN input contract.
-        known_previous_outcome='UNKNOWN',execution_feedback=feedback['execution_feedback'],
+        known_previous_outcome='UNKNOWN',execution_feedback=execution_feedback,
         active_skills_semantic_json=semantic,active_skills_text=semantic_active_skills_text(parse_active_skills_semantic_json(semantic)),
         next_decision=target['decision'],memory_update=target['memory_update'],task_complete=False,
         outcome_target='UNKNOWN',outcome_supervision_mask=False,parent_goal_supervision_mask=True,low_action_supervision_mask=False)
@@ -63,7 +71,8 @@ def planner_projection(candidate,history,target,feedback,high_sha256):
 
 
 class VerifiedRecoveryPlannerDataset:
-    def __init__(self,release,raw_root,inventory,config,*,split,admission_sha256,history,feedback,evidence_root,high_sha256):
+    def __init__(self,release,raw_root,inventory,config,*,split,admission_sha256,history,feedback,evidence_root,high_sha256,
+                 uncertainty_protocol='raw_observer_confidence_v1'):
         self.receipt,rows=require_training_pool(release,'planner',admission_sha256)
         if digest(inventory)!=self.receipt['inventory_sha256']: raise ValueError('Wrong corpus')
         self.rows=[r for r in rows if r['candidate']['split']==split]
@@ -76,7 +85,8 @@ class VerifiedRecoveryPlannerDataset:
             label=item['approval']['label'];path=local_file(evidence_root,label['verified_plan_path'])
             if file_sha(path)!=label['verified_plan_sha256']: raise ValueError('Modified verified target')
             row=item['candidate'];sid=row['sample_id']
-            self.projections.append(planner_projection(row,self.history[sid],json.loads(path.read_text()),self.feedback[sid],high_sha256))
+            self.projections.append(planner_projection(row,self.history[sid],json.loads(path.read_text()),self.feedback[sid],high_sha256,
+                uncertainty_protocol=uncertainty_protocol))
 
     def __len__(self): return len(self.rows)
 

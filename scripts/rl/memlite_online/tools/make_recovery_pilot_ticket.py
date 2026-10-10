@@ -16,6 +16,8 @@ def main():
     p.add_argument('--component',choices=('H0','H1','L0'),required=True)
     p.add_argument('--feature-cache',type=Path);p.add_argument('--feature-audit',type=Path)
     p.add_argument('--feedback-directory',type=Path)
+    p.add_argument('--expert-feedback-audit',type=Path)
+    p.add_argument('--expert-feedback-human-review',type=Path)
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     recipe=json.loads(a.recipe.read_text());root=Path(recipe['root'])
@@ -42,6 +44,11 @@ def main():
         if (receipt['diagnostic_only'] or receipt['status']!='trained_calibration_and_oof_completed'
                 or receipt['high_sha256']!=recipe['parents']['high']['sha256']):raise ValueError('Invalid observer feedback')
         files.update(feedback=a.feedback_directory/'feedback.jsonl',feedback_receipt=a.feedback_directory/'feedback_receipt.json')
+        if recipe['H1'].get('original_feedback')=='causal_expert_unknown_v1':
+            if a.expert_feedback_audit is None or a.expert_feedback_human_review is None:
+                raise ValueError('New original feedback requires processor audit and human review')
+            files.update(expert_feedback_audit=a.expert_feedback_audit,
+                         expert_feedback_human_review=a.expert_feedback_human_review)
     small=a.component=='H0';pilot=recipe['pilot']
     ticket=dict(schema='recovery_sft_launch_v1',component=a.component,
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),

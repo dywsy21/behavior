@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 09:25 CST / Codex RECOVERY-USABLE：** 新正常示范feedback wrapper与部署ledger逐控制时钟一致，171恢复＋10因果feedback回归通过；增加显式`unready_zero_confidence_v1`，默认旧协议不变，恢复真实OOF provenance仍逐条验。实际processor/24三相机原样本审核脚本及新H1同父/同数据/同超参配方已补，启动硬门要求真实审核＋人工签核，不将单测当完成。旧H1 final420权重86334ead…c2795已落盘；准备独立无答案生成复验，不上线。低global10已实际更新，结果头v8 epoch4仍UNKNOWN0/4，未达goal。
+
+- **2026-10-10 09:17 CST / Codex RECOVERY-USABLE：** H1-v7-fit-v2已真实420/420完成，原首段留出CE.00844784→.00774531、恢复10DEV→5.70e-6；冻结参数SHA前后同0f7aede8…a966，W&B6cb6c8311ce9，不部署。真正非首段四路对照均确认100个控制都有前意图；截至候选probe37条，9条误RETRY＋1条JSON无效，原/新无feedback各前35条全正确，父probe也受影响。这证明旧“0假重试”初始样本指标漏掉重要风险，完整对照仍在跑。新本地因果expert wrapper将正常示范的已发生stride16命令历史转成与部署同格式的UNKNOWN计数，恢复侧未校准置信归零（真实OOF出处仍核验），目标不变/不造物理标签；默认保持旧实验兼容，待单测及实际processor验收后另冻源重训。新结果v8已37真实更新，非完成/非改善结论。
+
 - **2026-10-10 09:10 CST / Codex RECOVERY-USABLE：** v8真实冻结cache377请求/570prefill完成57.2s，SHAc9a72562…857db，0优化；新增23 UNKNOWN的原图、过去6控、实际RETRY事件与零新动作全部签核，未新增来源/BC。下一结果LoRA采用同初始化/超参/结构的纯数据对照294TRAIN（UNKNOWN28）＋原40DEV，配方`a800_observer_adapter_v8_retry_unknown_v1.json`，待独立冻源启动。四个非首段高层诊断（父/step50×观察/UNKNOWN反事实）以32d80c44新源提交，不替代正式H1在训源；其100任务控制必须全部确有前意图，不能再以初始样本冒称反馈注入测试。完整goal仍缺可部署结果反馈与可靠低层收益。
 
 - **2026-10-10 09:09 CST / Codex RECOVERY-USABLE（重要评测口径更正）：** step50旧反事实结果“正常0假RETRY”**不能证明抗格式捷径**：实查100/100正常样本全为`initial_no_previous_command_unmodified`，0条实际注入反馈；10恢复去掉反馈后decision全部EXECUTE（0/10正确RETRY）。原100 exact84/85仍是真实首段生成指标，不代表有历史的正常执行。修`select_original_indices`按已冻结每task32候选的真实metadata选首个非initial，缺任何task硬拒绝；正常probe置信固定.5（实OOF范围.307–.651），明确synthetic非标签/非训练；168回归通过，待父/step50非首段观察与反事实配对。v8未知类包274文件96,301,730字节全SHA、130ZIP/6810原观察全读过，admission89eda5e5…ce12a，结果294TRAIN/40DEV（UNKNOWN28/4）、意图/动作不增；lc1 GPU2新cache进行中。旧observer-v7独立467prefill重载、192adapter＋14头＋206 Adam精确，原DEV逐值复现但未部署。
