@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_convergence import event_weights, check_splits, selection_key, causal_suffix_training_items
-from recovery_generation_metrics import score_event, summarize, feedback_probe
+from recovery_generation_metrics import score_event, summarize, feedback_probe, select_original_indices
 
 
 def row(group, label, split='train'):
@@ -11,6 +11,16 @@ def row(group, label, split='train'):
 
 
 class ConvergenceTests(unittest.TestCase):
+    def test_noninitial_generation_schedule_cannot_silently_test_only_first_frames(self):
+        fixed=[[0,1,2],[3,4,5]]
+        previous=lambda i:'None' if i in (0,3,4) else 'a real previous command'
+        task=lambda i:i//3
+        self.assertEqual(select_original_indices(fixed,previous,task,'first_fixed_one_per_task_v1'),[0,3])
+        self.assertEqual(select_original_indices(fixed,previous,task,'noninitial_fixed_one_per_task_v1'),[1,5])
+        with self.assertRaisesRegex(ValueError,'No noninitial'):
+            select_original_indices(fixed,lambda i:'None',task,'noninitial_fixed_one_per_task_v1')
+        with self.assertRaisesRegex(ValueError,'task binding'):
+            select_original_indices([[0,3],[4,5]],previous,task,'noninitial_fixed_one_per_task_v1')
     def test_suffixes_keep_current_truth_clock_and_event_mass(self):
         import torch
         items=[dict(context=torch.arange(12).reshape(3,4),proprio=torch.arange(81).reshape(3,27),
@@ -39,6 +49,9 @@ class ConvergenceTests(unittest.TestCase):
         self.assertEqual(j['estimated_bundle_outcome'],'UNKNOWN')
         self.assertEqual(len(j['estimated_member_outcomes']),1)
         self.assertEqual(original['execution_feedback'],'none')
+        matched,_=feedback_probe(original,'original_heldout',unknown_confidence=.5)
+        self.assertEqual(json.loads(matched['execution_feedback'])['estimated_member_outcomes'][0]['confidence'],.5)
+        with self.assertRaises(ValueError):feedback_probe(original,'original_heldout',unknown_confidence=float('nan'))
         stripped,kind=feedback_probe(changed,'recovery_dev')
         self.assertEqual(stripped,original)
         with self.assertRaises(ValueError):feedback_probe(dict(original,known_previous_outcome='FAILED'),'recovery_dev')

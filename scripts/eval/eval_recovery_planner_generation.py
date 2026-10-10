@@ -1,5 +1,6 @@
 """Fixed parent/candidate target-free generation; NEVER executes robot actions."""
 import argparse
+from collections import Counter
 import gc
 import importlib
 import json
@@ -15,7 +16,7 @@ sys.path.insert(0, str(REPO / 'scripts/eval/memlite_sft100'))
 from recovery_corpus import file_sha, digest
 from recovery_planner_data import VerifiedRecoveryPlannerDataset
 from recovery_sft_data import raw_observation
-from recovery_generation_metrics import score_event, summarize, feedback_probe
+from recovery_generation_metrics import score_event, summarize, feedback_probe, select_original_indices
 
 
 def main():
@@ -68,12 +69,17 @@ def main():
         history=[json.loads(x) for x in (root/cfg['history']['path']).read_text().splitlines()],
         feedback=[json.loads(x) for x in (root/cfg['feedback']['path']).read_text().splitlines()],
         evidence_root=root, high_sha256=cfg['models']['parent']['sha256'])
-    fixed = np.load(release/'fixed_eval_indices.npy').reshape(100,32)[:,0].tolist()
+    original_schedule=cfg.get('original_schedule','first_fixed_one_per_task_v1')
+    fixed=select_original_indices(np.load(release/'fixed_eval_indices.npy').reshape(100,32).tolist(),
+        lambda i:expert.locate(i)[3],lambda i:int(expert.task_ids[i]),original_schedule)
+    original_with_previous=sum(expert.locate(i)[3]!='None' for i in fixed)
     schedule = [('original_heldout', int(i)) for i in fixed] + [('recovery_dev', i) for i in range(len(recovery))]
     args.output.mkdir(parents=True)
     receipt = dict(config_sha256=file_sha(args.config), checkpoint_sha256=cfg['models'][args.model]['sha256'],
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'], cwd=REPO, text=True).strip(),
         restoration=restore, schedule_sha256=digest(schedule), target_free=True,
+        original_schedule=original_schedule,original_with_previous_intent=original_with_previous,
+        probe_unknown_confidence=cfg.get('probe_unknown_confidence',0.) if args.feedback_probe else None,
         recovery_dev_unseen_by_increment_only=True, no_physical_success_measurement=True,
         counterfactual_feedback_probe=args.feedback_probe,
         synthetic_probe_metrics_are_not_real_world_accuracy=bool(args.feedback_probe))
@@ -92,7 +98,8 @@ def main():
         # receives only a whitelist prefix and the three processed images.
         prepared = processor._process_tensors(raw)
         causal=planner_input_projection(target);probe_kind='observed'
-        if args.feedback_probe:causal,probe_kind=feedback_probe(causal,split)
+        if args.feedback_probe:
+            causal,probe_kind=feedback_probe(causal,split,unknown_confidence=cfg.get('probe_unknown_confidence',0.))
         prefix = single_frame_planner_prefix(processor.samples_builder, prepared, causal)
         pixels = {k: v.unsqueeze(0).cuda() for k,v in prepared['pixel_values'].items()}
         event = None; error = None; text = None; tick = time.monotonic()
@@ -113,7 +120,13 @@ def main():
             stream.write(json.dumps(row, sort_keys=True)+'\n')
         (args.output/'progress.json').write_text(json.dumps(dict(completed=len(rows), total=len(schedule), summary=summarize(rows)))+'\n')
         print(json.dumps(dict(completed=len(rows), split=split, score=row['score'])), flush=True)
+    coverage=dict(Counter(r['probe_kind'] for r in rows))
+    if (args.feedback_probe and original_schedule=='noninitial_fixed_one_per_task_v1'
+            and coverage.get('synthetic_unknown_feedback_on_normal_state')!=100):
+        raise ValueError('Requested noninitial feedback control was not actually exercised')
     (args.output/'result.json').write_text(json.dumps(dict(receipt, status='completed', seconds=time.monotonic()-started,
+        probe_kind_counts=coverage,normal_feedback_probe_actually_exercised=bool(
+            args.feedback_probe and coverage.get('synthetic_unknown_feedback_on_normal_state',0)),
         summary=summarize(rows)), indent=2)+'\n')
 
 

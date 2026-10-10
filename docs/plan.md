@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 09:09 CST / Codex RECOVERY-USABLE（重要评测口径更正）：** step50旧反事实结果“正常0假RETRY”**不能证明抗格式捷径**：实查100/100正常样本全为`initial_no_previous_command_unmodified`，0条实际注入反馈；10恢复去掉反馈后decision全部EXECUTE（0/10正确RETRY）。原100 exact84/85仍是真实首段生成指标，不代表有历史的正常执行。修`select_original_indices`按已冻结每task32候选的真实metadata选首个非initial，缺任何task硬拒绝；正常probe置信固定.5（实OOF范围.307–.651），明确synthetic非标签/非训练；168回归通过，待父/step50非首段观察与反事实配对。v8未知类包274文件96,301,730字节全SHA、130ZIP/6810原观察全读过，admission89eda5e5…ce12a，结果294TRAIN/40DEV（UNKNOWN28/4）、意图/动作不增；lc1 GPU2新cache进行中。旧observer-v7独立467prefill重载、192adapter＋14头＋206 Adam精确，原DEV逐值复现但未部署。
+
 - **2026-10-10 09:02 CST / Codex RECOVERY-USABLE：** 专属observer-v7实际544更新/16epoch平台结束，选epoch11（4e78966d…192bd），DEV事件92.5%、balanced79.17%、IP11/12、成功14/14、失败10/10、UNKNOWN1/4；冻结骨干SHA前后完全相等3f57f559，不能将末epoch85.83%当所选结果。lc1 GPU2已提交独立重载/原RGB重算验收。根亲审23新重试零控制来源的23页138原RGB并核全部sheet SHA，新增精确UNKNOWN人工决定`retry_unknown_owner_review_v1.json`（不复用旧FAILED、不增BC/plan），待df5b5781机器签发与新unit联合，旧数据/训练不热改。首bundle因RTX缺前置f8提交而拒绝，改用已存在935基点成功Git部署，无覆盖活跃源码。
 
 - **2026-10-10 08:58 CST / Codex RECOVERY-USABLE：** H1固定step50真正无答案生成完成：10恢复DEV exact/valid/decision均10/10（父7/10且1条JSON无效），原100 exact84/100（父85）、falseRETRY0、memory100；不是盲测/不是机器人SR。同step50的反事实反馈probe已提交lc1 GPU5，检查见JSON就重试的捷径。正式H1已200步，原CE.00775033（低于原.00844784）。结果头仍UNKNOWN弱，新增**可选独立标注合同**：只在真实已发RETRY的零新控制时刻、旧失败因果可证且当前无持物时标UNKNOWN；不修改历史物理提议、不把旧FAILED继承到新attempt。10专项回归过、待23已审TRAIN来源原图重新审核与独立数据版本，尚未新增训练标签/启动下一轮。
