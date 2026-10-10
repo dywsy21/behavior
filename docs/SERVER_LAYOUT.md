@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 17:58 CST：新30 RTX材料准备队列
+
+- 新`code/observer-v11-calibration-v1`=73aceeb2，source tar31d1e58d已全部480依赖/原图/NPZ双端校验；未开始物理采集。
+- tmux `observer-v11-new30-postprocess-v1`仅等待独立校准run根`grasp-v11-new30-collection-v1/result.json`的全部30完整终态，之后自动生成`grasp-v11-new30-corpus-v1`、`grasp-v11-new30-cohort-v1.json`、`grasp-v11-new30-review-v1`与同名tar；日志`grasp-v11-new30-postprocess-v1.log`。没有任何自动签核/模型预测/训练。
+
 ## 2026-10-10 17:44 CST：固定v11新30校准参考源
 
 - lc1源`src/observer-v11-fresh30-v1`/020ee407；新`runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-sources-v1`已30完整，inventory bf232130…5eb34、480依赖/47,383参考控。同根`grasp-v11-new30-source-audit-v1.json` ac9e3d16…938d7、tar31d1e58d…7f6a1，导出log `grasp-v11-new30-export-v1.log`。全源仅CAL候选，不给训练许可；RTX运输/物理仍待。

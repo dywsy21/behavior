@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 17:58 CST / Codex RECOVERY-USABLE：** RTX新30的CPU后处理队列`observer-v11-new30-postprocess-v1`已登记，源73aceeb2；仅等全部30首尝试的`grasp-v11-new30-collection-v1/result.json`完整终态后生成corpus→独立cohort→原图review及tar，不按早期成败挑子集、绝不自动审批/训练。当前采集尚未开始，联合仍待candidate余2 OPEN闭合。输出和等待log均在独立校准run根，队友4–6不动。
+
 - **2026-10-10 17:52 CST / Codex RECOVERY-USABLE：** 新源预选校验进一步逐group比较参考控长度，加入“总控量相同但两来源长度互换”反例；四定向回归通过，A800实际30个长度逐项与原metadata完全一致。只加安全验收，不改已导出的原数据/collector/活跃推理；旧ac9e3d16审计保留而不覆盖，后续版本可用加强验证入口。
 
 - **2026-10-10 17:50 CST / Codex RECOVERY-USABLE：** RTX4–6新增队友GPU进程2956826/2956882/2956986（各约9.3GiB）已只读核资源，不停止/抢占；新30采集必须在联合闭环结束后按当时空闲卡选用，拟0–3/7而非旧3–7安排，实际仍再preflight。candidate第5 OPEN正常冷载（前四完），radio/tripod已8并CPU等全局finish；没有新物理失败重试或扩大RL。共享盘RTX4.7TiB余量，无清理动作。
