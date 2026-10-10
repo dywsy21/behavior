@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 22:45 CST / Codex RECOVERY-USABLE：** native候选200/200完整终态，真实12次learner消费、仅322动作专家/冻结eb4b不变；final34d994c9…de0797/result507f35fd…66c245，W&Bf15a6e5d6506。正常FM .138663与control .138697基本同（−.0245%），原9恢复DEV .018478比control .018126差1.95%；没有离线改善证据，继续已预登记物理检验而非挑中间权重。校准联合暂3条闭合（两抓19控成功、开seed101原317控UNKNOWN），仍等第4与全日志/原图审核；已见32检查均UNKNOWN，仍未证明有效反馈改善。候选训练轻量产物已迁本地，不搬大权重。
+
 - **2026-10-10 22:41 CST / Codex RECOVERY-USABLE：** 在native候选终态/新物理预测前登记三臂（原低0c52、同额外200 control9ac、候选仅final200）低层固定技能复验：原三TRAIN起点/原门/原时限，八新seed433/467/503/541/587/631/673/719，每臂24；无需高层/observer、不按中途结果选权重/种子。配置`native_learner_probe_preregistration_v1.json`，等当前校准四条worker全部退出及候选完成后才启动，完整分母和错误保留。这只检验同来源局部训练收益，非独立实例或全任务SR。
 
 - **2026-10-10 22:38 CST / Codex RECOVERY-USABLE：** lc1三冻结模型服务已GPU ready/0job/0更新，真实全部权重与v11 adapter加载门通过；RTX10383实核0/1空闲，提交同a2fd41ec源`causal-calibrated-{radio155,wash169}-probes-v1`两冷worker/18978，先config-bound HELLO再scene。尚无新物理结论；lc3 native候选已有92/200真实更新、50步原FM .13589/恢复DEV .01692，仍不挑中间权重，等final200与对照。

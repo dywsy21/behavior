@@ -82,6 +82,22 @@ class NativeLearnerActionTests(unittest.TestCase):
 
 
 class SameEventSupplementTests(unittest.TestCase):
+    def test_preregistered_physical_triple_changes_only_model_and_arm(self):
+        import json
+        from recovery_corpus import file_sha
+        repo=Path(__file__).resolve().parents[4]
+        path=repo/'configs/recovery_sft/native_learner_probe_preregistration_v1.json'
+        prereg=json.loads(path.read_text());arms=[]
+        for arm in ('parent','control','candidate'):
+            cfg=json.loads((repo/f'configs/recovery_sft/a800_native_learner_{arm}_probes_v1.json').read_text())
+            self.assertEqual(cfg['preregistration']['sha256'],file_sha(path))
+            self.assertEqual(cfg['evaluation_seeds'],prereg['evaluation_seeds'])
+            self.assertEqual(sorted(cfg['cases']),sorted(prereg['cases']))
+            self.assertEqual(cfg['learning_rounds'],0);self.assertNotIn('causal_planner',cfg)
+            self.assertEqual(cfg.pop('comparison_arm'),arm)
+            cfg.pop('model');arms.append(cfg)
+        self.assertEqual(arms[0],arms[1]);self.assertEqual(arms[0],arms[2])
+
     def fixture(self):
         rows=[dict(candidate=dict(sample_id=f'base{i}',task=f'task_{i}',source_group=f'task {i}:1',
             split='train',actor_input=dict(parent_goal='same parent',issued_skills_semantic_json='[{"verb":"OPEN_DOOR","target":"washer"}]')),
