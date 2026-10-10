@@ -4,6 +4,7 @@ These are annotation-derived command traces, NOT physical outcome labels or
 on-policy trajectories. Raw images remain audit artifacts outside Git.
 """
 import argparse
+from copy import deepcopy
 from collections import Counter
 import json
 from pathlib import Path
@@ -72,10 +73,12 @@ def main():
             original=Stage1Dataset.raw(ds,index,images=False)[0]['model_projection']
             if {k:v for k,v in projection.items() if k!='execution_feedback'}!={k:v for k,v in original.items() if k!='execution_feedback'}:
                 raise ValueError('Feedback wrapper changed an expert target')
-            sample=processor.preprocess(raw)
+            # Both processor entry points mutate their input dictionaries.
+            # Give them independent copies and preserve native audit pixels.
+            sample=processor.preprocess(deepcopy(raw))
             if sample['action'].shape!=(32,27) or tuple(torch.nonzero(sample['action_dim_is_pad']).flatten().tolist())!=(7,8,17,18):
                 raise ValueError('Processor changed robot action mapping')
-            prefix=single_frame_planner_prefix(processor.samples_builder,processor._process_tensors(raw),planner_input_projection(projection))
+            prefix=single_frame_planner_prefix(processor.samples_builder,processor._process_tensors(deepcopy(raw)),planner_input_projection(projection))
             # Only whitelist planner inputs, not current target plan/decision.
             if not prefix:raise ValueError('Empty real model prefix')
             row.update(processor_passed=True,source_identity=binding,images={})
