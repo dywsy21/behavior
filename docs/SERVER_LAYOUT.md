@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 16:49 CST：结果头v11与低层新噪声复验
+
+- lc1 GPU0 `runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1`、同名`.log`/`.runtime-cache`，tmux `observer-v11-outcome-balance-v1`；源码`src/observer-v11-outcome-balance-v1`=2a147313，配置69912986。四类等权候选，仅同294TRAIN/40选择DEV，尚待真实梯度/更新，不读CAL/test。
+- lc1 GPU2 `runs/recovery_heterogeneous_20261010/later-action-control-replication-v1`、同名tmux/log/cache、18976；源码`src/later-action-replication-v1`=6c7a0dfc。RTX同commit `code/later-action-replication-v1`，异质run根三`later-action-control-{radio155,wash169,tripod129}-replication-v1`、GPU0/1/2先HELLO后新sim；相邻`-episode-NNNNNN`保留真实媒体/控制。control/candidate配置SHA e02171c7/fb8a5060；第二臂尚未提交。旧18976隧道复用，lc2/RTX4–7队友不动。
+
 ## 2026-10-10 16:45 CST：只读物理配对与v10已收尾
 
 - A800异质run根`runs/recovery_heterogeneous_20261010`下`later-action-{control,candidate}-probes-v1`均completed、0更新、actor/frozen指纹不变。RTX三candidate worker均退出，其中tripod成功版本为`later-action-candidate-tripod129-probes-v2`（源`code/skill-readiness-v1`/76dc4b54）；旧v1零控制运输失败保留，不覆盖。全部审阅证据RTX/本地`later-action-{control,candidate}-review-v1`；本地`later-action-physical-pair-v1.json` SHA78c29f72。

@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 16:49 CST / Codex RECOVERY-USABLE：** 246恢复回归/源码干净门后，6c7a0dfc已Git部署两端新`later-action-replication-v1`；lc1 GPU2 `later-action-control-replication-v1`/18976加载，RTX0–2三`later-action-control-{radio155,wash169,tripod129}-replication-v1`先等config-bound HELLO，不抢跑scene。control配置e02171c7/candidate fb8a5060，两臂仅权重/arm不同；candidate尚未提交。全部既有作业已先核退出/RTX4–7四队友不动；v11 GPU0继续载入，仍待真实更新。这是固定权重只读复验，不是新的RL训练或已获可靠提升。
+
 - **2026-10-10 16:48 CST / Codex RECOVERY-USABLE：** v11类均衡观察器已在lc1实查空闲GPU0提交，冻结`src/observer-v11-outcome-balance-v1`/2a147313，配置69912986，run `H0-observer-v11-outcome-balance-v1`/同名log/cache/tmux；当前载入，尚未宣称optimizer更新。与此同时预登记只读低层复验：同两200步终态、原三TRAIN起点/原时限/门，八个新FM seed101/137/173/211/257/307/359/419、每臂24，不依据中间结果选种子/权重；旧四seed不混入本块主要结论，仍非独立实例泛化。两个`a800_later_action_replication_*_v1.json`与不变性测试已准备，待新冻源部署；计划lc1 GPU2+RTX0–2，旧RL/lc2/RTX队友4–7不动。
 
 - **2026-10-10 16:45 CST / Codex RECOVERY-USABLE：** 两臂24轨全部闭合/根亲审360原RGB/逐控审计通过，candidate1478控110无损边界、0更新/指纹不变/全部finish ACK；同四seed抓4→4、放4→4、开0→3（216/317UNKNOWN/233/287控），原.35×6门与317时限不变。摘要`docs/infra/results/2026-10-10-later-action-physical-pair.json`绑定pair78c29f72/candidate audit0b190a5b/service80181b9b。这是同TRAIN起点的小样本局部收益，不是独立实例/全任务SR，下一先固定两终态新噪声复验，不追加训练追分。v10独立重载已620真实prefill复现selected222/balanced83.63%（result6f266316），不部署。v11仅TRAIN四类等权、类内等event已实现/245恢复回归过，原294/40与v8历史/LR/选择规则不变；新A800拟GPU0，同20epoch/min5/patience5，未启动，不读已见90CAL/旧20。续接fetch/upstream相同、main无新增，自有dirty改动故未pull；lc1实查全空、RTX仅队友4–7，不触碰。
