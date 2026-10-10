@@ -12,7 +12,9 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-10 13:30 CST / Codex RECOVERY-USABLE：** 新增真实GPU跨任务交错验收工具/配方`audit_recovery_causal_runtime.py`/`causal_planner_shadow_runtime_qa_v1.json`，固定H1/a74、低L0/20fd、观察器bee+b598与原stats。只用三条已闭合TRAIN的真实起始RGB/61维本体；grouped/interleaved各两次规划、0执行控制，不伪造“新高层动作后的图像”或成功率，也不读取CAL/test。导出/入口编译通过，待Git冻源后运行；现役v7已global22、补97已30终态仍采集，不重复启动、学习率/门不变。
+- **2026-10-10 13:29 CST / Codex RECOVERY-USABLE：** 新源b22f7356已Git bundle部署两端独立`causal-runtime-gpu-qa-v1`；初次push TLS失败后重试成功。三个TRAIN真实初始观察无损导出、两端包SHA9d12a1f1…742e3/manifest9a1c2442…eaf4d通过，lc1空闲GPU0新同名tmux已启动12次生成工程验收；源/日志在异质run根，0optimizer/0物理控制，尚无终态。当前低v7 global22、原GPU1不变；补97已36终态（33候选/3参考未复现），仍在采集、尚未做新CAL预测。
+
+- **2026-10-10 13:27 CST / Codex RECOVERY-USABLE：** 新增真实GPU跨任务交错验收工具/配方`audit_recovery_causal_runtime.py`/`causal_planner_shadow_runtime_qa_v1.json`，固定H1/a74、低L0/20fd、观察器bee+b598与原stats。只用三条已闭合TRAIN的真实起始RGB/61维本体；grouped/interleaved各两次规划、0执行控制，不伪造“新高层动作后的图像”或成功率，也不读取CAL/test。导出/入口编译通过，待Git冻源后运行；现役v7已global22、补97已30终态仍采集，不重复启动、学习率/门不变。
 
 - **2026-10-10 13:20 CST / Codex RECOVERY-USABLE：** 补完新高层的独立事务session与target-free推理接线（`memlite_causal_session.py`、`recovery_causal_inference.py`），不热改任何现役服务：五类模型/统计SHA＋slot/task/instance/episode隔离、实际控制时钟、K3历史只记已发命令、丢弃/异常不提交、RETRY清独立member缓存。观察器严格使用原bee骨干，不能借新H1/a74特征；当前只shadow预测，给高层UNKNOWN/0＋真实计数，离线CAL不能自动授权在线结果切换。8 session＋4推理接线＋11原反馈＋205原恢复测试通过；第一次宽glob误扫两个旧环境依赖模块（缺pytest/scripts.data）失败，改为准确目标后全过。真实GPU/联合物理接线尚待，不能冒称已部署。另OPEN首长续段机器全验1268控/81无损边界、根亲看15面板，t428最大.278877后t446松手至末始终.268182；提前松手附近adv已负，详证`wash169-v7-train21-diagnostic-v2`，v1是传错父目录的空partial保留。
 

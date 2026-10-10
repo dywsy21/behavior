@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 13:29 CST：新高层独立会话真实GPU工程验收
+
+- A800 `src/causal-runtime-gpu-qa-v1`、RTX `code/causal-runtime-gpu-qa-v1`均b22f73565ee1b35aad0d0594549952b6d9bb2bb4；没有热改现役短技能或collector源。
+- 两端异质run根`causal-runtime-inputs-v1`是3个第一TRAIN真实起始观察、0训练/0CAL许可，包9d12a1f1…742e3、manifest9a1c2442…eaf4d。A800 GPU0 tmux/run`causal-runtime-gpu-qa-v1`、同名`.log`与`.runtime-cache`在做12次规划交错验收，0机器人控制，结果待；GPU1原v7不动。
+
 ## 2026-10-10 12:59 CST：v7基线获准、补97材料链等待
 
 - RTX异质run根`short-rl-v7-baseline-review-v1/audit.json` SHA353e1e82…394fc，已复制本地同名artifacts并根亲审6页。lc1 v7 run内`BASELINE_ACCEPTED.json`绑定本轮六episode SHAeed9ef57…4f9773，放行从global20续训；原未批准状态记录保留历史。
