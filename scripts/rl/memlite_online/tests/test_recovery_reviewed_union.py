@@ -102,5 +102,19 @@ class UnionTests(unittest.TestCase):
         self.assertEqual(file_sha(path), receipt['files'][name])
         self.assertEqual(json.loads(path.read_text())['frozen_test_groups'], ['t:2'])
 
+    def test_prediction_quarantine_cannot_remove_training_or_unspecified_roles(self):
+        unit=self.unit(1)
+        spec=dict(evidence_root=str(self.root),protected_groups=str(self.protected),units=[unit],
+            prediction_exposure_quarantine={'synthetic':'not_a_real_proof'},
+            evaluation_partition=dict(base_unit_count=0))
+        with patch('recovery_reserved_calibration.load_prediction_exposure',return_value=({'t:1'},{})):
+            with self.assertRaisesRegex(ValueError,'Prediction quarantine cannot remove'):
+                module.build_union(spec,self.root/'no-output')
+        self.assertFalse((self.root/'no-output').exists())
+        spec['evaluation_partition']['base_unit_count']=1
+        with patch('recovery_reserved_calibration.load_prediction_exposure',return_value=({'t:1'},{})):
+            with self.assertRaisesRegex(ValueError,'calibration-only transport'):
+                module.build_union(spec,self.root/'no-output')
+
 
 if __name__=='__main__':unittest.main()

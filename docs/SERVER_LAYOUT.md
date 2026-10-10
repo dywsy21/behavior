@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 17:44 CST：固定v11新30校准参考源
+
+- lc1源`src/observer-v11-fresh30-v1`/020ee407；新`runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-sources-v1`已30完整，inventory bf232130…5eb34、480依赖/47,383参考控。同根`grasp-v11-new30-source-audit-v1.json` ac9e3d16…938d7、tar31d1e58d…7f6a1，导出log `grasp-v11-new30-export-v1.log`。全源仅CAL候选，不给训练许可；RTX运输/物理仍待。
+- v11独立重载终态result 8c49b390…28d4f0已本地artifact，0梯度/490prefill/原DEV复现；v11仍未通过新CAL，不部署。
+
 ## 2026-10-10 17:32 CST：第二臂复验与免sim结束ACK
 
 - lc1 GPU2/18976/tmux/run `later-action-candidate-replication-v1`仍`src/later-action-replication-v1`/6c7a0dfc；RTX新`code/probe-finish-cpu-v1`/50bfcb36，GPU0/1/2三`later-action-candidate-{radio155,wash169,tripod129}-replication-v1`。只换结束ACK wrapper，全部真实collector/physics路径与旧源Git一致，0新训练。

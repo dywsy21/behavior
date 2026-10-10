@@ -19,7 +19,7 @@ sys.path[:0]=[str(REPO/'src'),str(REPO/'scripts'),str(REPO/'scripts/rl/memlite_o
 from recovery_corpus import digest,file_sha
 from recovery_features import feature_requests,HISTORY_PROTOCOLS
 from recovery_sft_data import require_training_pool,CandidateArchiveReader,raw_observation
-from recovery_prospective_adapter import require_prospective_selection,pool_sources
+from recovery_prospective_adapter import require_prospective_selection,pool_sources,pool_config_keys
 from recovery_observer_training import OUTCOMES,request_key,calibrate
 
 
@@ -49,18 +49,24 @@ def main():
     receipt,rows=require_training_pool(root/cfg['admission'],'outcome',cfg['admission_sha256'],purpose='calibration')
     partition=json.loads((root/cfg['admission']/receipt['evaluation_partition_file']).read_text())
     cohorts=[]
-    if len(cfg['cohorts'])!=2:raise ValueError('Two predeclared collection waves required')
-    for item,key in zip(cfg['cohorts'],('first_cohort_config','supplement_config')):
+    keys=pool_config_keys(pool)
+    if len(cfg['cohorts'])!=len(keys):raise ValueError('All predeclared collection waves required')
+    for item,key in zip(cfg['cohorts'],keys):
         cohorts.append((read_bound(item['path'],item['sha256']),item['sha256'],file_sha(REPO/pool[key])))
     if (pool.get('fit_admission_sha256') is not None
             and pool['fit_admission_sha256']!=fit_cfg['admission_sha256']):
         raise ValueError('Exposure manifest differs from the actual preselected fit')
-    provenance=pool_sources(pool,cohorts,exposed_groups={r['candidate']['source_group'] for r in old})
+    exposed={r['candidate']['source_group'] for r in old}
+    if pool['schema']=='prospective_calibration_source_pool_v4':
+        from recovery_reserved_calibration import load_reserved_pool
+        provenance=load_reserved_pool(root,REPO,pool,cohorts,exposed)
+    else:provenance=pool_sources(pool,cohorts,exposed_groups=exposed)
     if (partition['source_cohort_by_group']!=provenance['source_cohort_by_group']
             or selection['declared_groups']!=provenance['declared_groups']
             or sorted(selection['unavailable_sources'],key=lambda x:x['source_group'])!=sorted(
                 provenance['unavailable_sources'],key=lambda x:x['source_group'])
             or selection.get('ineligible_sources')!=provenance.get('ineligible_sources')
+            or selection.get('previously_predicted_sources')!=provenance.get('previously_predicted_sources')
             or selection['admission_sha256']!=cfg['admission_sha256']):
         raise ValueError('Changed original attempts, signed roles or selected release')
     chosen=require_prospective_selection(cfg,pool,selection,partition,rows,
@@ -123,6 +129,7 @@ def main():
         declared_source_count=selection['declared_source_count'],
         unavailable_source_count=selection['unavailable_source_count'],
         ineligible_source_count=selection.get('ineligible_source_count',0),
+        previously_predicted_source_count=selection.get('previously_predicted_source_count',0),
         previously_exposed_declared_groups=provenance.get('previously_exposed_declared_groups',[]),
         reviewed_source_count=selection['reviewed_source_count'],
         reserved_groups_not_predicted=selection['reserved_groups'],frozen_test_not_read=True,

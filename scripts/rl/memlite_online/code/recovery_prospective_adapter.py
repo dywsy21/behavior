@@ -2,6 +2,18 @@
 from recovery_calibration_selection import preselect_pool_anchors, selected_rows
 
 
+def pool_config_keys(pool):
+    keys=['first_cohort_config','supplement_config']
+    if pool['schema']=='prospective_calibration_source_pool_v4':keys.append('fresh_cohort_config')
+    return keys
+
+
+def selection_schema(pool):
+    return {'prospective_calibration_source_pool_v2':'independent_calibration_pool_selection_v2',
+        'prospective_calibration_source_pool_v3':'independent_calibration_pool_selection_v3',
+        'prospective_calibration_source_pool_v4':'independent_calibration_pool_selection_v4'}[pool['schema']]
+
+
 def pool_sources(pool, cohorts, *, exposed_groups=None):
     """Account for every first attempt before looking at a model prediction.
 
@@ -77,9 +89,9 @@ def make_pool_selection(pool, provenance, rows, *, pool_sha256, fit_result_sha25
         if a.get('cohort_sha256') != provenance['source_cohort_by_group'].get(c['source_group']):
             raise ValueError('Original signed cohort identity lost in union')
     result=preselect_pool_anchors(rows,provenance['declared_groups'],provenance['unavailable_sources'],
-        per_class=pool['per_class'],seed=pool['seed'],ineligible_sources=provenance.get('ineligible_sources'))
-    return dict(result,schema=('independent_calibration_pool_selection_v3'
-        if pool['schema'].endswith('_v3') else 'independent_calibration_pool_selection_v2'),
+        per_class=pool['per_class'],seed=pool['seed'],ineligible_sources=provenance.get('ineligible_sources'),
+        previously_predicted_sources=provenance.get('previously_predicted_sources'))
+    return dict(result,schema=selection_schema(pool),
         declared_before_model_predictions=True,per_class=pool['per_class'],seed=pool['seed'],
         cohort_sha256=pool_sha256,source_pool_sha256=pool_sha256,
         selected_observer_sha256=pool['selected_observer_sha256'],high_sha256=pool['high_sha256'],
@@ -90,8 +102,7 @@ def make_pool_selection(pool, provenance, rows, *, pool_sha256, fit_result_sha25
 
 def require_prospective_selection(cfg, pool, selection, partition, rows, exposed):
     if (cfg.get('schema') != 'prospective_observer_adapter_calibration_v1'
-            or selection.get('schema') != ('independent_calibration_pool_selection_v3'
-                if pool['schema'].endswith('_v3') else 'independent_calibration_pool_selection_v2')
+            or selection.get('schema') != selection_schema(pool)
             or partition.get('schema') != 'recovery_evaluation_partition_v3'
             or selection.get('mechanism') != 'GRASP'
             or selection['per_class'] != pool['per_class'] or selection['seed'] != pool['seed']

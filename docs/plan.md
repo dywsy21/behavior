@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 17:44 CST / Codex RECOVERY-USABLE：** 新30源CPU已全导出/480依赖103,130,743B/47,383参考控并真实fit+原metadata匹配（inventory bf232130、audit ac9e3d16、tar31d1e58d），尚无新仿真/标签。新显式pool-v4来源链本地实现：保留旧187＋新30全217分母，将旧90预测身份单独隔离而非伪作训练暴露/物理失败，只复用70未预测reserve；原签名不改，30每类/统计门不降。新旧脚本共同选择/校准前重新核三份预测暴露SHA及三cohort，union单独保存移出的全部审批。回归在验，真实v4联合/校准待新30物理、人审、运输，不宣称就绪。
+
+- **2026-10-10 17:38 CST / Codex RECOVERY-USABLE：** 新020ee407源码`src/observer-v11-fresh30-v1`已Git部署A800，CPU tmux `observer-v11-fresh30-export-v1`开始按固定30名单导出→真实fit/原名单SHA校验→封装，输出`runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-sources-v1`、`grasp-v11-new30-source-audit-v1.json`及同名tar，log `grasp-v11-new30-export-v1.log`。这仅参考源准备，0新标签/0sim/0训练；RTX须等candidate和联合物理结束。candidate已ready/W&B3724b079f4cf/实跑，observer重载完成，旧未通过校准及旧20test不变。
+
 - **2026-10-10 17:36 CST / Codex RECOVERY-USABLE：** v11独立重载result `8c49b390…28d4f0`已取本地，selected DEV CE.08186282/balanced.97916667精确复现，291/294 TRAIN及39/40 DEV，仍非盲测/部署。模型与fit结果先冻结b0f3d125/7cff7691；新30校准采集配置`observer_v11_fresh30_calibration_collection_v1.json`（24a46e0c）绑定此前纯元数据名单/原30每类门/全部652排除。源校验新增真实fit＋导出coverage＋预选名单逐身份/控制量/旧inventory SHA复核，263恢复回归通过；未采新物理/未读新模型预测，旧90已见源不能回用，原70reserve须新显式来源协议才准入。
 
 - **2026-10-10 17:33 CST / Codex RECOVERY-USABLE：** control新seed24条独立重算3650实控/264无损观察，全24sheet/360原相机面板已根亲看且SHA匹配（audit f1de14d5）。抓8/8、放4/8、开1/8；放seed419确有释放后倾倒/末速度不稳，137/173/257迟不松，开只有307在219控达原.35×6门，其余UNKNOWN保留。人审摘要`2026-10-10-later-action-replication-control-review.json`；候选臂正在载入/冷起点，不以旧四seed4/4放置外推稳定性，不混旧块统计/不更改门。v11独立重载已490真实prefill完全复现selected13/481，206 Adam状态齐全、0梯度/冻结不变、未读CAL/test；联合待当前闭环退出。

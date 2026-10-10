@@ -58,12 +58,14 @@ def preselect_anchors(rows, expected_groups, *, per_class=20, seed=17):
 
 
 def selected_rows(rows, manifest):
-    if manifest.get('schema') in ('independent_calibration_pool_selection_v2','independent_calibration_pool_selection_v3'):
+    if manifest.get('schema') in ('independent_calibration_pool_selection_v2','independent_calibration_pool_selection_v3',
+                                  'independent_calibration_pool_selection_v4'):
         if manifest.get('declared_before_model_predictions') is not True:
             raise ValueError('Pool selection must precede model predictions')
         expected = preselect_pool_anchors(rows, manifest['declared_groups'],
             manifest['unavailable_sources'], per_class=manifest['per_class'], seed=manifest['seed'],
-            ineligible_sources=(manifest['ineligible_sources'] if manifest['schema'].endswith('_v3') else None))
+            ineligible_sources=(manifest['ineligible_sources'] if not manifest['schema'].endswith('_v2') else None),
+            previously_predicted_sources=manifest.get('previously_predicted_sources'))
         if any(manifest.get(k) != v for k, v in expected.items()):
             raise ValueError('Pool denominator, availability, reserved groups or anchors changed')
         anchors = manifest['selected_anchors']
@@ -84,7 +86,7 @@ def selected_rows(rows, manifest):
 
 
 def preselect_pool_anchors(rows, declared_groups, unavailable_sources, *, per_class=30, seed=17,
-                          ineligible_sources=None):
+                          ineligible_sources=None, previously_predicted_sources=None):
     """Outcome-blind sampling from a fully accounted larger prospective pool.
 
     This is NOT v1's all-source certificate. Physical-data availability and
@@ -116,17 +118,28 @@ def preselect_pool_anchors(rows, declared_groups, unavailable_sources, *, per_cl
                 or any(c not in '0123456789abcdef' for c in item['exposure_admission_sha256'])):
             raise ValueError('Previously exposed sources need distinct pinned exposure, not physical failure labels')
         ineligible[item['source_group']]=dict(item)
+    predicted={}
+    for item in previously_predicted_sources or []:
+        if (set(item)!={'source_group','reason','selection_sha256','predictions_sha256'}
+                or item['source_group'] not in declared_groups
+                or item['source_group'] in unavailable or item['source_group'] in ineligible
+                or item['source_group'] in predicted or item['reason']!='previous_model_calibration_prediction'
+                or any(not isinstance(item[k],str) or len(item[k])!=64
+                       or any(c not in '0123456789abcdef' for c in item[k])
+                       for k in ('selection_sha256','predictions_sha256'))):
+            raise ValueError('Previously predicted sources need a distinct immutable exposure ledger')
+        predicted[item['source_group']]=dict(item)
     by_group={};identities=set()
     for row in rows:
         c,a=row['candidate'],row['approval'];group=c['source_group'];label=a['label']['value']
         if (c['split']!='dev' or a.get('usage_role')!='calibration' or a['pool']!='outcome'
-                or group not in declared_groups or group in unavailable or group in ineligible
+                or group not in declared_groups or group in unavailable or group in ineligible or group in predicted
                 or label not in (*CLASSES,'UNKNOWN')):
             raise ValueError('Undeclared, unavailable or non-calibration source in reviewed pool')
         key=(c['sample_id'],a['label']['member_index'],a['label'].get('history_role','observable'))
         if key in identities:raise ValueError('Duplicate approved phase observation')
         identities.add(key);by_group.setdefault(group,{}).setdefault(label,[]).append(row)
-    if set(by_group)|set(unavailable)|set(ineligible)!=set(declared_groups):
+    if set(by_group)|set(unavailable)|set(ineligible)|set(predicted)!=set(declared_groups):
         raise ValueError('Unreviewed/missing source must not vanish from the declared pool')
     candidates={label:sorted((g for g,v in by_group.items() if label in v),
         key=lambda g:digest(['calibration-phase',seed,label,g])) for label in CLASSES}
@@ -160,4 +173,8 @@ def preselect_pool_anchors(rows, declared_groups, unavailable_sources, *, per_cl
     if ineligible_sources is not None:
         result.update(ineligible_sources=[ineligible[g] for g in sorted(ineligible)],
             ineligible_source_count=len(ineligible),physically_reviewed_source_count=len(by_group)+len(ineligible))
+    if previously_predicted_sources is not None:
+        result.update(previously_predicted_sources=[predicted[g] for g in sorted(predicted)],
+            previously_predicted_source_count=len(predicted),
+            physically_reviewed_source_count=len(by_group)+len(ineligible)+len(predicted))
     return result

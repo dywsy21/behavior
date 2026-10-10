@@ -35,6 +35,12 @@ def build_union(spec, output):
     inventories, anchors, histories, approvals, sources = [], [], [], [], []
     quarantine=spec.get('exposure_quarantine')
     exposed=set();removed=[];declared_exclusions=set()
+    prediction_quarantine=spec.get('prediction_exposure_quarantine');predicted=set();prediction_removed=[]
+    if prediction_quarantine is not None:
+        from recovery_reserved_calibration import load_prediction_exposure
+        predicted,_=load_prediction_exposure(root,prediction_quarantine)
+        if spec.get('evaluation_partition',{}).get('base_unit_count')!=0:
+            raise ValueError('Prediction quarantine only permits calibration-only transport, not training')
     if quarantine is not None:
         if (set(quarantine)!={'fit_admission','fit_admission_sha256','groups','reason'}
                 or quarantine['reason']!='previous_training_or_model_selection_source'):
@@ -76,6 +82,15 @@ def build_union(spec, output):
                         sample_id=row['candidate']['sample_id'],approval=row['approval']))
             unit_rows=[r for r in unit_rows if r['candidate']['source_group'] not in exposed]
             if not unit_rows:raise ValueError('No eligible independent observations in source unit')
+        if prediction_quarantine is not None:
+            for row in unit_rows:
+                if row['candidate']['source_group'] in predicted:
+                    if row['approval'].get('usage_role')!='calibration' or row['approval']['pool']!='outcome':
+                        raise ValueError('Prediction quarantine cannot remove TRAIN, action or planner rows')
+                    prediction_removed.append(dict(source_group=row['candidate']['source_group'],
+                        sample_id=row['candidate']['sample_id'],approval=row['approval']))
+            unit_rows=[r for r in unit_rows if r['candidate']['source_group'] not in predicted]
+            if not unit_rows:raise ValueError('No unpredicted independent observations in source unit')
         approved_units.append(unit_rows)
         selected_episodes = {canonical(row['candidate']['source_episode']) for row in unit_rows}
         for identity in selected_episodes:
@@ -122,6 +137,8 @@ def build_union(spec, output):
             approvals.append(app)
     if quarantine is not None and {r['source_group'] for r in removed}!=declared_exclusions:
         raise ValueError('Exposure quarantine differs from actual approved source intersection')
+    if prediction_quarantine is not None and {r['source_group'] for r in prediction_removed}!=predicted:
+        raise ValueError('Must exclude ALL previously predicted groups, not only mistaken predictions')
     partition = build_partition(spec.get('evaluation_partition'), approved_units)
     output.mkdir(parents=True, exist_ok=False)
     for directory in ('raw', 'audit', 'history', 'admission'):
@@ -140,6 +157,10 @@ def build_union(spec, output):
     if quarantine is not None:
         write_json(output/'exposure-quarantine.json',dict(quarantine,removed_approvals=removed,
             original_approvals_unchanged=True,quarantined_source_count=len(declared_exclusions)))
+    if prediction_quarantine is not None:
+        write_json(output/'prediction-exposure-quarantine.json',dict(bindings=prediction_quarantine,
+            removed_approvals=prediction_removed,original_approvals_unchanged=True,
+            excluded_predicted_groups=sorted(predicted),reason='previous_model_calibration_prediction'))
     write_json(output / 'audit/inventory.json', inventories)
     write_rows(output / 'audit/anchors.jsonl', anchors)
     write_rows(output / 'history/contexts.jsonl', histories)
