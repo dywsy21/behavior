@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 22:32 CST / Codex RECOVERY-USABLE：** 低control200/200完整结束/322动作专家、冻结eb4b5d45不变；final9ac23c41…a362e，正常100FM .13465→.13870（+3.0%）、原9恢复DEV .01745→.01813（+3.9%），额外SFT未见离线提升。完整终态/八卡空闲核过后lc3提交同14e0源candidate/原8a6票，仍待实际首步。a2fd41ec两端新校准pilot源全部权重/fit/生成/cal/history实际CPU核过，lc1 GPU1/18978实提交三模型只读服务`causal-calibrated-grasp-probes-v1`；RTX worker尚未启动，等ready。两种新实验独立，不自动恢复PPO/扩100RL。
+
 - **2026-10-10 22:28 CST / Codex RECOVERY-USABLE：** 校准高低联合pilot已本地接好并337恢复回归通过：固定89907高＋0c52低＋独立bee/b0观察器，核新90校准与完成训练/两生成回执，GRASP-only估计、.85两fresh门，其他技能UNKNOWN0。真实每次ACK后按16控维护episode独立窗口，高层仍128控，不伪造接管前特征；新增原logits/clock/token独立日志复算、交错会话和坏值/错源反例。固定同radio155/wash169、101/137、原物理门/时限作四条只读工程pilot，未运行/不视为方法隔离对照或SR提升。lc3低control已147/200，原100正常FM第100约+1.19%，无异常；候选仍待完整control终态。
 
 - **2026-10-10 22:19 CST / Codex RECOVERY-USABLE：** 14e0ffde冻源A800真实TRAIN五窗全部通过，原30→35锚而独立event仍19；200更新的专家/事件/卡位完全同（00796c5d…cc95d），按预定seed实际12次learner抽样/4唯一窗，未为了覆盖第5窗调整seed或加权。新准入81917802…23e56d/control票12fc8744…32986/candidate8a6a5be7…8beb6。lc3实空后提交八卡`L0-native-learner-control-v1`/同名log，尚在加载，候选未启动；同父对照结束后核完整终态再开候选。现役源与lc2不动，独立review待。

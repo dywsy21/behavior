@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 22:33 CST：低层同事件对照与校准联合pilot
+
+- 新低源`src/native-learner-training-v1`=14e0ffde；`runs/recovery_heterogeneous_20261010/native-learner-preflight-v1/`保存control/candidate票及native TRAIN真实处理81917802…23e56d（200更新/19event/12次learner）。`L0-native-learner-control-v1`已200完成，final`step_00000200_save_0004.pt` SHA9ac23c41…a362e/W&B36ea7e717865；`L0-native-learner-candidate-v1`已提交lc3八卡，分别同名log/supervisor/launcher-cache；不能pull活跃源。
+- 校准联合两端新源`src/calibrated-causal-pilot-v1`（A800）/`code/calibrated-causal-pilot-v1`（RTX10383）=a2fd41ec。lc1 GPU1/tmux/run`causal-calibrated-grasp-probes-v1`、18978、同名log/runtime；当前加载、0物理，后续两RTX冷worker待ready。本地lc1 d控制socket18978正向与tmux`recovery-rtx-forward-18978-v1`反向到RTX loopback；未重新登录VPN。
+- 固定校准小回执已复制本地`artifacts/recovery-heterogeneous-20261010/calibrated-causal-pilot-v1/calibration.json`及RTX异质根`calibrated-causal-pilot-v1-calibration.json`，供独立CPU日志审核，不包含凭据、不授权新校准/训练。
+
 ## 2026-10-10 22:13 CST：生成终态与原生learner数据
 
 - A800异质run根下`H1-postfit-final-{initial,noninitial}-v2`均142条完成，lc3 GPU已释放。原v1缺库失败仍保留；v2使用同a260cc75源、显式既有激活脚本/run-owned TMPDIR，不改共享env。全部result/rows已在本地同名artifact，模型不迁本地。
