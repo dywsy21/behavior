@@ -1,5 +1,14 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 08:45 CST：A800连接恢复与在训位置（覆盖下方历史状态）
+
+- 用户已允许重连，当前lc1/lc3实通。A800共享根`/data/workspace/wsy/behavior2026`；新包实际落地`datasets/recovery-outcome-planner-source-20261010-v1`，227文件全SHA通过。联合`datasets/recovery-reviewed-union-20261010-v7-outcomes-planner`（admission `d57ae342d44165118b65803727fd62227f44a41e3c5d207df079aa9aea2a014f`）已130ZIP/6810观察全读，271/40结果、42/10意图、19/9动作TRAIN/选择DEV。
+- 下列run均相对`runs/recovery_heterogeneous_20261010`。`H1-feature-cache-v7`/`processor-audit-v7.json`/`feature-audit-v7.json`已验，`H0-v7-oof/postprocess-001`是实际78更新后的52行反馈，全UNKNOWN兜底，不是可部署头。
+- lc3八卡`H1-v7-fit-v2`（W&B`6cb6c8311ce9`），冻源`src/recovery-cache-isolation-v1`=`dca222b7`。`checkpoints/step_00000050_save_0001.pt`是首个50步完整高planner checkpoint；后续状态看supervisor和updates。旧`H1-v7-fit`在0更新因系统盘满退出，保留；v2编译/temp缓存全部在`H1-v7-fit-v2.supervisor/runtime-cache`，不清理/home、不改共享env。
+- lc1 GPU2 `H0-observer-adapter-v7-data-v1`（W&B`41df97c97dfe`），冻源`src/recovery-v7-training-v1`=`ed67b84f`；训练的是专属结果LoRA＋时序头，须配bee高骨干，不能直接当完整planner。旧`H0-observer-adapter-v2/checkpoints/selected.pt`在`...-reload-v1`独立重载通过，`...-prior-cohort-v1`为已看过60组的冻结诊断，均未部署。
+- lc1 GPU1 `short-rl-v5-cold-resume`（W&B`9e80c643bd3f`），源`src/short-skill-cold-resume-v2`=`935dac32`；真实global7精确续接，六冷baseline844控制/90原面板签核文件为run内`BASELINE_ACCEPTED.json`，专用loopback18975。RTX根`/run/ti/rl_memlite_stage1_20261006`，对应`code/short-skill-cold-resume-v2`同commit；相对异质run根`short-rl-{radio155,wash169,tripod129}-cold-resume-v2`监管和相邻递增episode，RTX0/1/2仅仿真。
+- 本地持久tmux：`recovery-lc-connect-20261010`、`recovery-lc1-control-20261010`、`recovery-lc3-control-20261010`、`recovery-rtx-forward-20261010`。SSH sockets是`/home/wsy/.ssh/lc{1,3}-recovery-20261010a.sock`，loopback1080/1081是本线程VPN代理。不要读取/复制VPN原始输出（含认证会话材料），不要动lc2队友；任何续接先核这些真实进程，不凭旧PID重开。
+
 ## 2026-10-10 03:36 CST：新增高层恢复意图包（待迁A800）
 
 - RTX根仍`/run/ti/rl_memlite_stage1_20261006`，下述数据位于`runs/recovery100_collection_20261009`。`planner-expansion-review-v1`为根亲审48页/504原RGB；`planner-expansion-approvals-v1.json`签23实际RETRY，`outcome-expansion-approvals-v3.json`保留95结果。原96的v2包/审批保留历史，但搬箱136/IP36已撤回，勿作为新训练源。

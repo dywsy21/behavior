@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 08:46 CST / Codex RECOVERY-USABLE：** 续接属实际进展而非重复等状态：Git已fetch/pull且干净，lc1/lc3真实PID在；父高无答案生成110条已完成（原100 exact85%、恢复10 exact70%/valid90%，3失败为两EXECUTE误判＋一不平衡JSON）。H1第50步原留出CE.00844784→.00780018、恢复DEV.00879186→.000059621，权重a04f351c…5459e1已原子保存，固定step50生成检查准备，不以CE替代行为。低global8 probe radio2/2、PLACE1/2（seed29 UNKNOWN165控，原2/2），等OPEN并审查失败与优势分配，不隐瞒退步/不调大LR。SERVER_LAYOUT补实际迁移/在训路径，旧3am待迁移是历史。
+
 - **2026-10-10 08:43 CST / Codex RECOVERY-USABLE：** 三路均已有真实优化而非只启动：H1-v7-fit-v2 **49/420**、专用observer-v7 **193**，低v5已global**8**（33真实chunks、actor回溯5e-7/KL.007019/clip.10909，critic回溯1.875e-5、半MSE.00214908→.00214315，ckpt c3094427…f01bd）。当前正在第8次更新后的固定技能probe，尚无新的成功率结论；高新结果需完成原DEV/生成/冻结检查，三路均未部署、完整goal未达到。持久VPN/forward正常，独立运行源码不热改，lc2不动。
 
 - **2026-10-10 08:42 CST / Codex RECOVERY-USABLE：** H1-v7-fit-v2缓存修复后已**真实20/420更新**，lc3八卡/全局8、6原2恢复，W&B6cb6c8311ce9；0步原留出CE.00844784、恢复DEV.00879186，尚无新选择/生成提升结论。lc1新observer已完成epoch4/136步评估（事件78.33%、UNKNOWN0/4，学习中）；旧专用LoRA60组原诊断82.5%与2个高置信假成功如实保留，不放行。低baseline人工门已读true，首TRAIN3机制真执行完，wash317控/开度.32356为旧global7带噪轨迹，不称新RL增益；等第8更新/固定probe。父高生成82/110在途。完整回执`docs/infra/results/2026-10-10-a800-recovery-resume-v1.json`；下一步续查三路真实结果、生成/原任务回退、冻结SHA与同seed技能，不能启动即完成goal，也不扩100任务RL。
