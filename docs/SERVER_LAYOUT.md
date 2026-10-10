@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 18:31 CST：VPN账号切换尚未连通
+
+- 按用户新指令停止本线程`recovery-lc-connect-20261010b`，改用账号2交互认证；网关密码校验成功但返回`pwpErrorCode=16`/个人信息页跳转，未建立SOCKS。旧lc1/lc3的b控制连接已退出；不得继续把这些socket视为可用，也不擅自恢复旧账号。密码/完整会话XML不入仓库，待用户处理网页登录提示。
+- RTX新30采集及CPU后处理不依赖VPN，仍运行；A800既有训练已结束，当前只阻塞新校准/时序GPU验收提交，不影响RTX首尝试。
+
 ## 2026-10-10 18:17 CST：新30独立校准物理采集
 
 - RTX `code/observer-v11-calibration-v1`/73aceeb2，GPU0/1/2/3/7，tmux `observer-v11-new30-collection-v1`；输出独立校准run根`grasp-v11-new30-collection-v1`及同名`.log`。双冷加载限流、所有首尝试保留，既有postprocess队列仅整理不审批。队友GPU5/6不动。

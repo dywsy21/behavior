@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 18:31 CST / Codex RECOVERY-USABLE：** 按用户新指令停止本线程旧VPN并交互改账号2，两次返回`password auth success`但`Result=0/pwpErrorCode=16`及个人信息页跳转，隧道未建立，密码不是写错的现有证据；未改密码/绕过网关/切回旧账号，已异步请用户网页登录处理提示。凭据未落Git/配置/日志，旧lc1/lc3控制连接已退，A800新任务暂无法提交。RTX新30仍自主采集（最新7候选/1参考未复现、其余在途），CPU准备继续。独立observer时序shadow模块及八回归通过、恢复共277通过；新全四真实边界导出/回放入口待真实GPU，不称已运行。
+
+- **2026-10-10 18:27 CST / Codex RECOVERY-USABLE：** 联合与固定低同seed首RGB并不逐像素相同，首raw23最大差约0.00029–0.00082；高生成parent/bundle均与固定输入相同且FM按job/seed/chunk独立fork RNG，故一条开门差异不能直接归咎高层或称确定性对照。下一在新独立源码补“原bee＋v11 observer的只读时序shadow推理”及失败事务/跨episode/重复帧回归：原16控/最多4真实历史，任何预测仍不进入planner，不把离线校准当在线授权。新30继续，原活跃源不改。
+
 - **2026-10-10 18:22 CST / Codex RECOVERY-USABLE：** 联合全四条独立逐561实控、当前RGB/本体SHA、offered raw23/独立ACK、七模型/统计身份及每episode memory/128控时钟回放通过（causal f68e8498、physical e930135b）；四sheet/60原面板根亲审。抓2/2均真实RETRY19控，开1/2为206成功/317 UNKNOWN，七次新规划均正确目标、30次复用，0observer/0优化、三类参数指纹不变。仅联合接线和局部行为通过，不称完整反馈可用；对照同seed固定低开2/2，当前联合1/2也不能声称更好。证据`docs/infra/results/2026-10-10-causal-joint-shadow-probes.json`。新30采集首源已正常完成，仍全闭后人审；下一结果头固定v11校准/只读时序验证。
 
 - **2026-10-10 18:17 CST / Codex RECOVERY-USABLE：** 高低联合两worker各2条/0物理重试/CPU末ACK完整关闭，A800服务收尾指纹仍待，独立四条逐控原图review已提交。RTX再核0/1/2/3/7全空、仅队友5/6主卡：新30 collector `observer-v11-new30-collection-v1`实启，源73aceeb2、5卡/同时冷载2、原参考scene库存和分散故障时刻；全部30首尝试保留，0标签自动批准/0模型预测。既有CPU postprocess只在全闭后准备人审材料；不触碰队友、旧CAL/test/阈值不变。
