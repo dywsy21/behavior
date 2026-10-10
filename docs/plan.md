@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 17:52 CST / Codex RECOVERY-USABLE：** 新源预选校验进一步逐group比较参考控长度，加入“总控量相同但两来源长度互换”反例；四定向回归通过，A800实际30个长度逐项与原metadata完全一致。只加安全验收，不改已导出的原数据/collector/活跃推理；旧ac9e3d16审计保留而不覆盖，后续版本可用加强验证入口。
+
+- **2026-10-10 17:50 CST / Codex RECOVERY-USABLE：** RTX4–6新增队友GPU进程2956826/2956882/2956986（各约9.3GiB）已只读核资源，不停止/抢占；新30采集必须在联合闭环结束后按当时空闲卡选用，拟0–3/7而非旧3–7安排，实际仍再preflight。candidate第5 OPEN正常冷载（前四完），radio/tripod已8并CPU等全局finish；没有新物理失败重试或扩大RL。共享盘RTX4.7TiB余量，无清理动作。
+
 - **2026-10-10 17:49 CST / Codex RECOVERY-USABLE：** 新30源已完整迁RTX并逐480依赖/PNG解码/NPZ23维动作61维状态/47,383控核验；tar和inventory双端一致，未开仿真。新`code/observer-v11-calibration-v1`/73aceeb2仅待命。candidate radio/tripod各8条已闭，新CPU末ACK等待实际生效、没有为finish额外加载sim；wash4/8继续，未改任何真实control/seed或复跑失败。v11精确训练/重载摘要`docs/infra/results/2026-10-10-observer-v11-fit-reload.json`已记录，仍未上线。
 
 - **2026-10-10 17:47 CST / Codex RECOVERY-USABLE：** 新pool-v4代码73aceeb2/270恢复回归通过；A800新`src/observer-reserve-calibration-v4`以真实旧513审批/三份SHA重建先前pool-v3选择逐项一致，实际确认187旧来源＝23物理缺测＋4 fit隔离＋90全部已预测＋70真正未预测reserve，0新forward。v4配置9f66d287；未修改旧标签/模型/统计门。新30包31d1e58d已本地核，RTX运输及新源码部署中；候选复验仍同一配方，联合/新采集暂不挤占它。

@@ -12,7 +12,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import file_sha,group_key,split_group
 
 
-def require_metadata_preview(preview, *, groups, controls, exclusions, fit, protected_sha256):
+def require_metadata_preview(preview, *, groups, controls, exclusions, fit, protected_sha256, source_controls):
     """Compare identities selected before labels/predictions, not favorable outcomes."""
     rows=preview.get('rows',[])
     if (preview.get('status')!='metadata_only_prospective30_no_export_no_labels_no_predictions'
@@ -22,6 +22,7 @@ def require_metadata_preview(preview, *, groups, controls, exclusions, fit, prot
             or set(groups)!={r['source_group'] for r in rows}
             or controls!=preview.get('expected_reference_controls')
             or controls!=sum(r['controls'] for r in rows)
+            or source_controls!={r['source_group']:r['controls'] for r in rows}
             or preview.get('fit_config_sha256')!=fit['config_sha256']
             or preview.get('fit_admission_sha256')!=fit['admission_sha256']
             or preview.get('protected_sha256')!=protected_sha256
@@ -76,7 +77,7 @@ def main():
     if inventory['status']!='complete':raise ValueError('Incomplete source export')
     import numpy as np
     from PIL import Image
-    groups=set();tasks=set();bindings=[];files=0;size=0;controls=0;release=None
+    groups=set();tasks=set();bindings=[];files=0;size=0;controls=0;release=None;source_controls={}
     for entry in inventory['cases']:
         directory=source/entry['directory'];manifest=directory/'manifest.json'
         if directory.parent!=source or file_sha(manifest)!=entry['manifest_sha256']:
@@ -103,7 +104,7 @@ def main():
                     or arrays['state'].shape!=(row['controls']+1,61)
                     or any(not np.isfinite(arrays[k]).all() for k in arrays.files)):
                 raise ValueError('Corrupt raw23/action and raw61/state source')
-        groups.add(group);tasks.add(row['task']);controls+=row['controls']
+        groups.add(group);tasks.add(row['task']);controls+=row['controls'];source_controls[group]=row['controls']
         bindings.append(dict(case=entry['directory'],source_group=group,
             manifest_sha256=entry['manifest_sha256'],original_split='train',usage_role='prospective_calibration_only'))
     if len(groups)!=cfg['selection']['metadata_fresh_sources'] or len(tasks)!=cfg['selection']['metadata_tasks']:
@@ -114,7 +115,7 @@ def main():
         preview_sha=file_sha(path)
         if preview_sha!=bound['sha256']:raise ValueError('Prediction-blind metadata preview changed')
         require_metadata_preview(json.loads(path.read_text()),groups=groups,controls=controls,
-            exclusions=excluded,fit=fit_binding,protected_sha256=file_sha(protected_path))
+            exclusions=excluded,fit=fit_binding,protected_sha256=file_sha(protected_path),source_controls=source_controls)
         coverage=json.loads((source/'coverage.json').read_text())['excluded_observer_fit']
         if any(coverage[k]!=fit_binding[k] for k in ('config_sha256','admission_sha256','source_groups')):
             raise ValueError('Exporter omitted actual observer-fit source exclusions')

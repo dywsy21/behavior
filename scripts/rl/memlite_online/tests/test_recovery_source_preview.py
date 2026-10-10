@@ -15,6 +15,7 @@ class SourcePreviewTests(unittest.TestCase):
             expected_reference_controls=465,fit_config_sha256='a'*64,fit_admission_sha256='b'*64,
             protected_sha256='c'*64,exclusions=[dict(path='prior',manifest_sha256='d'*64)])
         self.args=dict(groups={r['source_group'] for r in self.rows},controls=465,
+            source_controls={r['source_group']:r['controls'] for r in self.rows},
             fit=dict(config_sha256='a'*64,admission_sha256='b'*64),protected_sha256='c'*64,
             exclusions=[dict(path='prior',sha256='d'*64)])
 
@@ -31,6 +32,8 @@ class SourcePreviewTests(unittest.TestCase):
         for key,value in [('controls',464),('fit',dict(config_sha256='f'*64,admission_sha256='b'*64)),
                           ('protected_sha256','e'*64),('exclusions',[])]:
             with self.assertRaises(ValueError):module.require_metadata_preview(self.preview,**dict(self.args,**{key:value}))
+        changed=dict(self.args['source_controls']);changed['task:0']+=1;changed['task:1']-=1
+        with self.assertRaises(ValueError):module.require_metadata_preview(self.preview,**dict(self.args,source_controls=changed))
 
     def test_prediction_dependent_or_physical_preview_rejected(self):
         for key,value in [('model_not_selected_by_this_preview',False),('optimizer_updates',1),('physical_controls',1)]:

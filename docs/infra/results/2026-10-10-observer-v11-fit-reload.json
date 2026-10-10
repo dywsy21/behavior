@@ -79,7 +79,7 @@
   },
   "raw_dev_correct": 39,
   "raw_train_correct": 291,
-  "prior_v8_selected_dev_balanced_accuracy": 0.8958333283662796,
+  "prior_v8_selected_dev_balanced_accuracy": 0.8958333,
   "trainable_scope": {
     "observer_specific_lora_tensors": 192,
     "temporal_result_head_tensors": 14,
