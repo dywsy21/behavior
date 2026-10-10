@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest,file_sha
 from recovery_admission import local_file
-from recovery_teacher_corpus import physical_proposal,validate_branch,validate_grasp_review_semantics
+from recovery_teacher_corpus import physical_proposal,validate_branch,validate_grasp_review_semantics,new_grasp_attempt_unknown
 from recovery_terminal_corpus import load_terminal
 from recovery_articulation_corpus import CLEAN,validate_articulation_branch
 
@@ -95,6 +95,8 @@ def main():
                         or not indexed[t]['actor_input'].get('observation_only')):
                     raise ValueError('Missing actual final-observation review/corpus evidence')
                 measured=terminal['outcome_candidate']
+            elif outcome['value']=='UNKNOWN':
+                measured=new_grasp_attempt_unknown(rows,t,manifest['arm'],plans)
             else:measured=physical_proposal(rows,t,manifest['arm'],attempt_start=latest['control_step'])
             if measured!=outcome['value']:raise ValueError('Owner outcome contradicts causal physical evidence')
             if not articulation and (terminal is None or t != terminal['control_step']):

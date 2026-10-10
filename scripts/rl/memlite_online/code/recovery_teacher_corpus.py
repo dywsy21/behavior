@@ -127,6 +127,40 @@ def physical_proposal(rows,t,arm,*,attempt_start,index=None):
     return None
 
 
+def new_grasp_attempt_unknown(rows, t, arm, plans):
+    """An actually issued RETRY with zero applied controls has no new result.
+
+    This is a separate, opt-in annotation contract, not a change to historical
+    physical proposals. Prove the OLD attempt failed using only its past;
+    bind the new observed context to a real command; never use future recovery
+    success to assign UNKNOWN or propagate the old failure across the reset.
+    The caller must still validate the branch and obtain exact-image review.
+    """
+    if type(t) is not int or not 6 <= t < len(rows):
+        raise ValueError('New-attempt label requires a recorded decision observation')
+    prior = [p for p in plans if p['control_step'] < t]
+    current = [p for p in plans if p['control_step'] == t]
+    if len(current) != 1 or not prior or current[0]['decision'] != 'RETRY':
+        raise ValueError('UNKNOWN requires the exact actually issued RETRY, not a later frame')
+    event = current[0]
+    if (event['event_sha256'] != digest({k:v for k,v in event.items() if k != 'event_sha256'})
+            or rows[t]['context']['context_id'] != event['event_sha256']
+            or rows[t]['context']['active_skills_semantic_json'] != event['active_skills_semantic_json']
+            or prior[-1]['active_skills_semantic_json'] != event['active_skills_semantic_json']):
+        raise ValueError('New-attempt UNKNOWN must belong to this same-skill command context')
+    validate_grasp_review_semantics(rows, t, arm, event, planner_retry=True)
+    skill = json.loads(event['active_skills_semantic_json'])[0]
+    if skill.get('arm', 'UNSPECIFIED') not in ('LEFT', 'RIGHT', 'UNSPECIFIED'):
+        raise ValueError('Unverified multi-hand retry semantics')
+    if rows[t]['physical_before']['grasp'][arm] != 'FALSE':
+        raise ValueError('New-attempt UNKNOWN cannot override a current hold or missing measurement')
+    if physical_proposal(rows, t, arm, attempt_start=prior[-1]['control_step']) != 'FAILED':
+        raise ValueError('Old-attempt failure must be causally measured, not assumed from RETRY')
+    # Do not inspect rows[t].physical_audit, action, or any later row: these
+    # describe controls after the observation to which the label is attached.
+    return 'UNKNOWN'
+
+
 def validate_grasp_review_semantics(rows, t, arm, plan, *, outcome=None, planner_retry=False):
     """Reject arm-local labels that contradict the command the model sees.
 

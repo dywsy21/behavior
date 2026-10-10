@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest
-from recovery_teacher_corpus import validate_branch,physical_proposal,episode_identity,PhysicalProposalIndex,validate_grasp_review_semantics
+from recovery_teacher_corpus import validate_branch,physical_proposal,episode_identity,PhysicalProposalIndex,validate_grasp_review_semantics,new_grasp_attempt_unknown
 
 
 def fixture():
@@ -29,6 +29,40 @@ def fixture():
 
 
 class TeacherCorpusTests(unittest.TestCase):
+    def retry_fixture(self):
+        rows, manifest, plans = fixture()
+        event = dict(plans[0], control_step=16, decision='RETRY')
+        event['event_sha256'] = digest({k:v for k,v in event.items() if k!='event_sha256'})
+        plans.append(event)
+        for r in rows[16:]:
+            r['context']['context_id'] = event['event_sha256']
+        return rows, manifest, plans
+
+    def test_zero_control_retry_unknown_is_not_old_failure(self):
+        rows, _, plans = self.retry_fixture()
+        self.assertEqual(physical_proposal(rows,16,'left',attempt_start=0),'FAILED')
+        self.assertIsNone(physical_proposal(rows,16,'left',attempt_start=16))
+        self.assertEqual(new_grasp_attempt_unknown(rows,16,'left',plans),'UNKNOWN')
+        # Even a totally different future cannot change the decision label.
+        for row in rows[16:]:
+            row['physical_audit']['grasp']['left']='TRUE'
+        self.assertEqual(new_grasp_attempt_unknown(rows,16,'left',plans),'UNKNOWN')
+
+    def test_retry_unknown_rejects_wrong_clock_context_and_existing_hold(self):
+        for change in ('late','not_retry','context','other_hand','current_hold','no_old_hold'):
+            rows, _, plans = self.retry_fixture();t=16
+            if change=='late':t=17
+            if change=='not_retry':plans[1]['decision']='EXECUTE'
+            if change=='context':rows[16]['context']['context_id']='wrong'
+            if change=='other_hand':rows[16]['physical_before']['grasp']['right']='TRUE'
+            if change=='current_hold':rows[16]['physical_before']['grasp']['left']='TRUE'
+            if change=='no_old_hold':
+                for row in rows[:16]:
+                    row['physical_before']['grasp']['left']='FALSE'
+                    row['physical_audit']['grasp']['left']='FALSE'
+            with self.subTest(change=change),self.assertRaises(ValueError):
+                new_grasp_attempt_unknown(rows,t,'left',plans)
+
     def test_unspecified_arm_cannot_ignore_existing_other_hand_hold(self):
         rows,_,plans=fixture();plan=plans[0]
         for row in rows:

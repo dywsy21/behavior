@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 08:58 CST / Codex RECOVERY-USABLE：** H1固定step50真正无答案生成完成：10恢复DEV exact/valid/decision均10/10（父7/10且1条JSON无效），原100 exact84/100（父85）、falseRETRY0、memory100；不是盲测/不是机器人SR。同step50的反事实反馈probe已提交lc1 GPU5，检查见JSON就重试的捷径。正式H1已200步，原CE.00775033（低于原.00844784）。结果头仍UNKNOWN弱，新增**可选独立标注合同**：只在真实已发RETRY的零新控制时刻、旧失败因果可证且当前无持物时标UNKNOWN；不修改历史物理提议、不把旧FAILED继承到新attempt。10专项回归过、待23已审TRAIN来源原图重新审核与独立数据版本，尚未新增训练标签/启动下一轮。
+
+- **2026-10-10 08:54 CST / Codex RECOVERY-USABLE：** 低global8六固定probe已齐：GRASP2/2、PLACE1/2、OPEN0/2，未可靠改善、不增LR/任务。逐原reward-ledger重建33训练chunk的ACK/边界/GAE全部逐值一致：PLACE11chunk均值adv−.06564（失败/截断）、GRASP2chunk+.12236、OPEN20chunk+.02859；没有跨任务串链，也没有均值中心化制造正adv。PLACE seed29 baseline与失败的restore诊断除RGB SHA外完全一致；根看11时点33相机面板确认长期握住、末尾才松开，末165控速度.579m/s尚未稳定，保持UNKNOWN，不改成成功。视频/ledger在本地`artifacts/recovery-heterogeneous-20261010/short-rl-tripod129-v8-seed29-failure`，尚不能区分权重更新与冷渲染扰动的各自贡献。H1到150步原CE.00771749、恢复.00001438；step50真生成72/110仍在途，新observer408步仍UNKNOWN弱，均未部署。
+
 - **2026-10-10 08:46 CST / Codex RECOVERY-USABLE：** 续接属实际进展而非重复等状态：Git已fetch/pull且干净，lc1/lc3真实PID在；父高无答案生成110条已完成（原100 exact85%、恢复10 exact70%/valid90%，3失败为两EXECUTE误判＋一不平衡JSON）。H1第50步原留出CE.00844784→.00780018、恢复DEV.00879186→.000059621，权重a04f351c…5459e1已原子保存，固定step50生成检查准备，不以CE替代行为。低global8 probe radio2/2、PLACE1/2（seed29 UNKNOWN165控，原2/2），等OPEN并审查失败与优势分配，不隐瞒退步/不调大LR。SERVER_LAYOUT补实际迁移/在训路径，旧3am待迁移是历史。
 
 - **2026-10-10 08:43 CST / Codex RECOVERY-USABLE：** 三路均已有真实优化而非只启动：H1-v7-fit-v2 **49/420**、专用observer-v7 **193**，低v5已global**8**（33真实chunks、actor回溯5e-7/KL.007019/clip.10909，critic回溯1.875e-5、半MSE.00214908→.00214315，ckpt c3094427…f01bd）。当前正在第8次更新后的固定技能probe，尚无新的成功率结论；高新结果需完成原DEV/生成/冻结检查，三路均未部署、完整goal未达到。持久VPN/forward正常，独立运行源码不热改，lc2不动。
