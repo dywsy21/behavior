@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 18:42 CST / Codex RECOVERY-USABLE：** 全四联合轨迹的observable-only时序输入已在RTX从冻结18f2a6c8导出，41原生观测边界/561实际ACK控/4闭合episode，manifest `0c97937d…6ac38`、47MiB tar `c2d56386…4a4af`已复制本地并逐包SHA一致；不含结果标签/奖励/特权actor输入，不产生新控制。新增加载后adapter逐值一致与头有限性检查，shadow九定向回归通过（第一次误用不存在的tests/rl发现路径未执行测试，纠正后实过）；此前恢复278与causal 8+11通过。待A800真GPU回放，未称部署或准确率。新30当前20候选/1参考未复现、其余在途，仍等全闭根审；账号2网关阻塞未变。开始时已fetch，origin/main无新提交，保留本线程两检查未提交故未pull；后续安全提交/push。
+
 - **2026-10-10 18:31 CST / Codex RECOVERY-USABLE：** 按用户新指令停止本线程旧VPN并交互改账号2，两次返回`password auth success`但`Result=0/pwpErrorCode=16`及个人信息页跳转，隧道未建立，密码不是写错的现有证据；未改密码/绕过网关/切回旧账号，已异步请用户网页登录处理提示。凭据未落Git/配置/日志，旧lc1/lc3控制连接已退，A800新任务暂无法提交。RTX新30仍自主采集（最新7候选/1参考未复现、其余在途），CPU准备继续。独立observer时序shadow模块及八回归通过、恢复共277通过；新全四真实边界导出/回放入口待真实GPU，不称已运行。
 
 - **2026-10-10 18:27 CST / Codex RECOVERY-USABLE：** 联合与固定低同seed首RGB并不逐像素相同，首raw23最大差约0.00029–0.00082；高生成parent/bundle均与固定输入相同且FM按job/seed/chunk独立fork RNG，故一条开门差异不能直接归咎高层或称确定性对照。下一在新独立源码补“原bee＋v11 observer的只读时序shadow推理”及失败事务/跨episode/重复帧回归：原16控/最多4真实历史，任何预测仍不进入planner，不把离线校准当在线授权。新30继续，原活跃源不改。

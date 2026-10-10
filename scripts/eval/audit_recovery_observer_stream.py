@@ -83,12 +83,14 @@ def main():
         for name,tensor in saved['adapter_state'].items():
             if params[name].shape!=tensor.shape or not torch.isfinite(tensor).all():raise ValueError('Bad saved tensor')
             params[name].copy_(tensor)
+            if not torch.equal(params[name].detach().cpu(),tensor):raise ValueError('Observer adapter reload differs')
     if parameter_digest(policy,frozen=True)!=fit['frozen_before_sha256']:raise ValueError('Wrong frozen observer base')
     policy.requires_grad_(False).eval()
     before=parameter_digest(policy,frozen=True)
     head=TemporalOutcomeObserver(saved['observer_state']['context_projection.0.weight'].numel(),
         include_absolute_proprio=True,include_served_controls=cfg.get('include_served_controls',False)).cuda()
     head.load_state_dict(saved['observer_state'],strict=True);head.requires_grad_(False).eval()
+    if any(not torch.isfinite(t).all() for t in head.state_dict().values()):raise ValueError('Nonfinite observer head')
     processor=make_processor(config,False);results=[];started=time.monotonic()
     for row in fixture['rows']:
         old=CausalModelIdentity(**row['events'][0]['receipt']['destination_identity']['models'])

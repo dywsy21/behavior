@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 18:42 CST：真实时序shadow输入已导出
+
+- RTX冻结源码`/run/ti/rl_memlite_stage1_20261006/code/observer-shadow-stream-v1`=18f2a6c8；异质run根`observer-stream-all-four-inputs-v1`及同名tar.gz，manifest SHA0c97937d…6ac38、tar c2d56386…4a4af。全四闭合TRAIN诊断轨迹/41无损边界/561实际ACK，0新物理/0标签/0预测，不授予SFT/CAL许可。本地`artifacts/recovery-heterogeneous-20261010/`已取包和manifest验SHA。
+- 新GPU入口`audit_recovery_observer_stream.py`尚未运行，必须等A800账号2连接恢复并用独立冻结源码、原bee骨干＋v11 observer；不能把CPU导出/九回归当GPU验收。活跃RTX新30采集仍73aceeb2源，不热改。
+
 ## 2026-10-10 18:31 CST：VPN账号切换尚未连通
 
 - 按用户新指令停止本线程`recovery-lc-connect-20261010b`，改用账号2交互认证；网关密码校验成功但返回`pwpErrorCode=16`/个人信息页跳转，未建立SOCKS。旧lc1/lc3的b控制连接已退出；不得继续把这些socket视为可用，也不擅自恢复旧账号。密码/完整会话XML不入仓库，待用户处理网页登录提示。
