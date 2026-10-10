@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 09:54 CST / Codex RECOVERY-USABLE：** v8结果头实际740/20epoch完成，按预定balanced/CE规则选epoch15/step555，SHA b598b950…47041；选择DEV事件95%、balanced89.58%、IP10/12、S14/14、F10/10、UNKNOWN3/4，**不是末epoch指标、不是独立校准通过**（v7所选为92.5%/79.17%/UNKNOWN1/4）。新age数值输入对照已在lc1 GPU6冻结1b4bb664启动，仍同数据同父，不能用此代替v8实际改善证据。准备v8独立RGB重算/原60组已见校准队列诊断，20reserved test继续不碰。更正新高step50前20那条invalid：task4/instance284漏一项K=3命令历史，JSON语法正常，之前“JSON无效”表述不准。低旧v5已自有STOP退出、3 RTX worker均退；新v6独立e4baf78b在加载，179恢复回归过，尚未新优化。
+
 - **2026-10-10 09:50 CST / Codex RECOVERY-USABLE：** 低层旧v5第11/12两次critic均七次减半仍升误差、实际跳过；根验证已存global12/round0005权重SHA6b308939…9854c，与actor/critic/Adam一起保留。在最后检查active_sessions=0时发送自己的STOP（v5按owner_stop退出，不是算法完成），第6轮两条已完成但未优化轨迹只留证据、不回灌跨版本PPO。下一独立v3配方从12精确续、跳过不完整seed(offset13)，actor LR/噪声/KL/3起点均不变，只加critic动量重启严格下降门与无损边界观察/critic重放档案，再验6基线。原20更新测量窗口余8次，不是goal停止额度。当前仅停止请求/新配方，待旧进程实际退出、冻结源码再启动。
 
 - **2026-10-10 09:46 CST / Codex RECOVERY-USABLE：** 旧H1 final420真正非首段合成UNKNOWN probe误RETRY27/100（step50为20），继续训练未解决捷径；新同格式step50真实因果计数生成前20条0误RETRY、1JSON无效，完整110仍在途，不能提前算通过。结果v8到16epoch仍UNKNOWN1/4；核实这四例不是全0控，而是单check/真实已执行1、1、1、13控。发现结果GRU仅有帧间dt（单帧均0），命令已执行时长只藏在VLM文本；补可选数值served_controls输入及严格同attempt时钟校验，178恢复＋11因果回归通过。下一同v8数据/初始化/超参单变量结构对照配方已写，尚待冻结新源启动，不改标签/阈值、不把计数当物理成功失败。
