@@ -1,0 +1,150 @@
+{
+  "schema": "short_skill_training_window_closure_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "recorded_at": "2026-10-10T12:58:00+08:00",
+  "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/short-rl-v6-critic-restart",
+  "source_commit": "e4baf78b6f394c95183e88206c5ab78147b813d3",
+  "config_sha256": "a08f521f11e068512733271cb5f66c739e140fc65401e0072446b8d32a8581f4",
+  "result_sha256": "a927ff3e6b89a45946992f65509e7e096ab74062ccd89025623f14116c2e4675",
+  "episodes_sha256": "b88eed2cc21474e2f692f378be90043b0376e030a9ce4684abaf1ab739515b94",
+  "status": "completed_training_window_not_promoted",
+  "final_update": 20,
+  "actor_updates": 20,
+  "final_checkpoint": "checkpoints/round-0008.pt",
+  "final_checkpoint_sha256": "92fad0b13c459464038b7a112eb6ff0006106d7632e7843ad878dc1d89bfd7cb",
+  "frozen_before_sha256": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+  "frozen_after_sha256": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+  "fixed_development_probes": {
+    "12": {
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 2,
+        "trials": 2
+      },
+      "turning_on_radio_155": {
+        "success": 2,
+        "trials": 2
+      },
+      "wash_dog_toys_169": {
+        "success": 0,
+        "trials": 2
+      }
+    },
+    "13": {
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 2,
+        "trials": 2
+      },
+      "turning_on_radio_155": {
+        "success": 2,
+        "trials": 2
+      },
+      "wash_dog_toys_169": {
+        "success": 0,
+        "trials": 2
+      }
+    },
+    "14": {
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 1,
+        "trials": 2
+      },
+      "turning_on_radio_155": {
+        "success": 2,
+        "trials": 2
+      },
+      "wash_dog_toys_169": {
+        "success": 0,
+        "trials": 2
+      }
+    },
+    "15": {
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 2,
+        "trials": 2
+      },
+      "turning_on_radio_155": {
+        "success": 2,
+        "trials": 2
+      },
+      "wash_dog_toys_169": {
+        "success": 0,
+        "trials": 2
+      }
+    },
+    "16": {
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 2,
+        "trials": 2
+      },
+      "turning_on_radio_155": {
+        "success": 2,
+        "trials": 2
+      },
+      "wash_dog_toys_169": {
+        "success": 0,
+        "trials": 2
+      }
+    },
+    "17": {
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 1,
+        "trials": 2
+      },
+      "turning_on_radio_155": {
+        "success": 2,
+        "trials": 2
+      },
+      "wash_dog_toys_169": {
+        "success": 0,
+        "trials": 2
+      }
+    },
+    "18": {
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 2,
+        "trials": 2
+      },
+      "turning_on_radio_155": {
+        "success": 2,
+        "trials": 2
+      },
+      "wash_dog_toys_169": {
+        "success": 0,
+        "trials": 2
+      }
+    },
+    "19": {
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 2,
+        "trials": 2
+      },
+      "turning_on_radio_155": {
+        "success": 2,
+        "trials": 2
+      },
+      "wash_dog_toys_169": {
+        "success": 0,
+        "trials": 2
+      }
+    },
+    "20": {
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 2,
+        "trials": 2
+      },
+      "turning_on_radio_155": {
+        "success": 2,
+        "trials": 2
+      },
+      "wash_dog_toys_169": {
+        "success": 0,
+        "trials": 2
+      }
+    }
+  },
+  "whole_task_sr": false,
+  "reliable_improvement_demonstrated": false,
+  "promoted": false,
+  "closure_note": "All final6 actual probes closed before VPN loss. Wash worker failed while requesting finished notification, not during scored controls. The exact existing finished protocol was acknowledged with zero new rollouts/controls/updates. Original failed worker and partial transport attempt retained.",
+  "next": "Separate exact-global20 run with TRAIN-only real continuation4x and unchanged original-horizon EVAL; require fresh six-baseline review before update21."
+}

@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 12:59 CST：v7基线获准、补97材料链等待
+
+- RTX异质run根`short-rl-v7-baseline-review-v1/audit.json` SHA353e1e82…394fc，已复制本地同名artifacts并根亲审6页。lc1 v7 run内`BASELINE_ACCEPTED.json`绑定本轮六episode SHAeed9ef57…4f9773，放行从global20续训；原未批准状态记录保留历史。
+- RTX`code/prospective-calibration-review-v1`及A800`src/prospective-adapter-calibration-v1`=58ca88d9。RTX tmux`observer-supplement-review-v1`等待97collector最终receipt，后生成`grasp-supplement-corpus-v1`、`grasp-supplement-cohort-v1.json`、`grasp-supplement-review-v1`；日志`supplement-review-prepare-v1.log`。只有材料生成，不自动审批或预测。
+- A800已解包校准专用`datasets/recovery-fresh90-calibration-20261010-v1`，全386文件校验通过，transfer manifest ec21c009…593d3；保留0TRAIN和旧20测试不可读约束。
+
 ## 2026-10-10 12:47 CST：同技能真实续段v7已加载
 
 - 新源A800`src/short-skill-continuation-v7`与RTX`code/short-skill-continuation-v7`均cfef448eb38489b8195755f563d72a57e464a48b，不热改。lc1 GPU1 `runs/recovery_heterogeneous_20261010/short-rl-v7-real-continuation`，tmux`short-skill-rl-v7`、18975、W&B37e86f521dea；加载global20、等待新六baseline人审。
