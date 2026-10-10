@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 12:43 CST：v6完整结束、新校准补采与签发
+
+- lc1 `short-rl-v6-critic-restart/result.json`已完整终态，round-0008 SHA92fad0b13c459464038b7a112eb6ff0006106d7632e7843ad878dc1d89bfd7cb；旧server退出。VPN重连后的lc1 control socket为`/home/wsy/.ssh/lc1-recovery-20261010b.sock`，专用18975；旧a.sock失效，lc3尚未恢复，不碰队友会话。
+- RTX旧`observer-supplement97-v2`仅等待shell已停；新tmux`observer-supplement97-v3`、`supplement-collection-v3.log`按原ea3c54db开始GPU3–7首97采集，输出`grasp-supplement-collection-v1`，不得重复启动。wash旧worker网络失败回执保留，不伪改为finished。
+- RTX `code/fresh90-reviewed-sign-v1`=ab41ded6；tmux`fresh90-sign-bundle-v1`顺序生成首90的6份`grasp-approvals-partN-v1.json`、`grasp-reviewed-unit-v1`与同名tar.gz，日志`fresh90-sign-bundle-v1.log`。这是78人工可用源校准单元，不给训练许可；12不可用源与2拒签标签仍在原记录中。
+
 ## 2026-10-10 12:18 CST：radio客户端与校准审核链续接
 
 - RTX `code/short-skill-gpu-recheck-v1`=1210113e037313dd243eb669c0c21769d38aab5f；异质run根`short-rl-radio155-resume3-peer-v2`为新GPU0客户端，旧v1失败保留，A800仍原v6/global19，不重启服务。

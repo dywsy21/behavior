@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 12:43 CST / Codex RECOVERY-USABLE：** v6已正常关窗/进程退出：global20、6final全闭、冻结指纹前后eb4b5d45…c1572一致，最终round-0008实读7,622,837,181B/SHA92fad0b1…bfd7cb；19与20均GRASP2/2、PLACE2/2、OPEN0/2，仍无可靠改善。wash网络失败只在最后结束通知，保留失败回执，transport-only ACK完成而没有新控制/更新。补97原等待shell因wash失败将永远不满足，已在GPU全空/输出不存在时仅停止等待shell，按原ea3c54db源启动`observer-supplement97-v3`（RTX3–7）；首90六份人工决策在ab41ded6独立源机器签发/校准专用封装中，非训练许可。新v7实际配方已按20步真实SHA写入`a800_short_skill_rl_continuation_v7.json`，TRAIN4倍续段、EVAL原时限、每4更新固定probe、40新更新观察窗，须新6baseline人审才更新21；尚未启动新优化器。
+
 - **2026-10-10 12:35 CST / Codex RECOVERY-USABLE：** 首90全78原图/780面板根审完，六份owner review共246结果＝66F/56IP/124S，另外两错误IP拒签、12不可用源不移出90分母；没有新模型预测/训练。12:31本地VPN掉线导致wash仅“领取finished通知”的最后冷进程handshake失败，真正六final probe在断线前全部done。按已有用户授权重新登录VPN（仅loopback/eth2）并恢复lc1 control socket`20261010b`；服务20/active0/6done仍活，仅缺wash结束确认，正在补原protocol的transport-only finished ACK（0新轨迹/控制/更新），保留旧网络失败日志。补97须确认三RTX进程已退出、A800最终冻结SHA不变后开始，不重跑六条成功/失败。
 
 - **2026-10-10 12:29 CST / Codex RECOVERY-USABLE：** 首90原图审核发现两条真实语义冲突：dispose_glass106/t36、store_produce183/t20的候选IP忽略另一手已稳定抓住，实际指令arm=UNSPECIFIED；尚未签入任何数据/模型。全来源扫描定位仅这两处，撤候选、不改历史指令、不补造成功。已有最终签发语义门继续生效，并将同门前置到未来审核材料生成、保留拒绝原因；199恢复回归通过。根目前已亲审64可用来源645原面板，前五份签205结果（拒1；第2冲突待其原图审核），余14来源尚未签。低global20最后OPEN29 probe运行，原服务/当前采集代码不热改。
