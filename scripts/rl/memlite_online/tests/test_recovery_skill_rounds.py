@@ -3,7 +3,7 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from skill_rounds import SkillRounds
+from skill_rounds import SkillRounds,SkillEvaluationRounds
 
 
 class RoundTests(unittest.TestCase):
@@ -20,6 +20,24 @@ class RoundTests(unittest.TestCase):
         r=self.make();r.take('open')
         with self.assertRaises(ValueError):r.advance()
         self.assertFalse(r.ready)
+
+    def test_readonly_probe_set_never_installs_training(self):
+        r=SkillEvaluationRounds(['grasp','open','place'],[17,29],run='readonly')
+        self.assertEqual(len(r.jobs),6)
+        self.assertEqual({j['phase'] for j in r.jobs},{'evaluation'})
+        self.complete(r)
+        with self.assertRaises(ValueError):r.advance(optimizer_completed=True)
+        r.advance()
+        self.assertEqual((r.phase,r.round,r.targets),('finished',0,[]))
+        self.assertTrue(all(r.take(case) is None for case in r.cases))
+        with self.assertRaises(ValueError):r.advance()
+
+    def test_readonly_requires_actual_complete_episodes(self):
+        r=SkillEvaluationRounds(['grasp','open','place'],[17,29],run='readonly')
+        job=r.take('open')
+        with self.assertRaises(ValueError):r.advance()
+        with self.assertRaises(ValueError):r.complete(job['id'],[{'experience_id':1}])
+        self.assertEqual(r.phase,'evaluation')
 
     def test_paired_probes_never_enter_training_and_versions_are_barriered(self):
         r=self.make();self.assertEqual(len(r.jobs),6);self.complete(r);r.advance()

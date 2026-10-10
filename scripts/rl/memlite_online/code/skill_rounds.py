@@ -66,3 +66,17 @@ class SkillRounds:
             if self.round==self.limit:self.phase='finished';return
             self.round+=1;self.phase='train'
         self.install()
+
+
+class SkillEvaluationRounds(SkillRounds):
+    """One immutable-checkpoint probe set; there is no route to TRAIN."""
+    def __init__(self, cases, eval_seeds, *, run):
+        super().__init__(cases, eval_seeds, rounds=1, run=run)
+        self.limit = 0
+
+    def advance(self, *, optimizer_completed=False):
+        if not self.ready or self.phase != 'evaluation' or optimizer_completed:
+            raise ValueError('Read-only probes require complete episodes and zero optimizer updates')
+        if self.targets:
+            raise ValueError('Read-only probes may not collect optimizer targets')
+        self.phase = 'finished'

@@ -22,7 +22,7 @@ from common import atomic_json
 from recovery_corpus import digest,file_sha
 from skill_training_protocol import SkillTrainingSession,rollout_end_control
 from skill_policy_adapter import SingleFrameSkillAdapter
-from skill_rounds import SkillRounds
+from skill_rounds import SkillRounds,SkillEvaluationRounds
 from skill_cold_worker import validate_baseline_acceptance,finished_workers
 from recovery_gpu_ownership import declared_collection_peers
 from wire import packb,unpackb
@@ -33,8 +33,14 @@ async def main():
     ap.add_argument('--config',type=Path,required=True);ap.add_argument('--output',type=Path,required=True)
     ap.add_argument('--port',type=int,required=True);a=ap.parse_args()
     cfg=json.loads(a.config.read_text());root=Path(cfg['root'])
-    if cfg.get('schema')!='short_skill_rl_a800_v1' or cfg.get('user_goal_authorized') is not True:
+    evaluation_only=cfg.get('schema')=='short_skill_sft_evaluation_a800_v1'
+    if (cfg.get('schema') not in ('short_skill_rl_a800_v1','short_skill_sft_evaluation_a800_v1')
+            or cfg.get('user_goal_authorized') is not True):
         raise ValueError('Explicit short-skill goal recipe required')
+    if evaluation_only and (type(cfg.get('learning_rounds')) is not int or cfg['learning_rounds']!=0
+            or cfg.get('resume') is not None or cfg.get('require_baseline_acceptance',False)
+            or cfg.get('training_rollout_multiplier',1)!=1):
+        raise ValueError('SFT comparison must be read-only, original-horizon and without PPO resume')
     if a.output.exists() or subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
         raise ValueError('Use a new run and clean frozen source')
     gpu=os.environ.get('CUDA_VISIBLE_DEVICES')
@@ -92,9 +98,12 @@ async def main():
     spec=spec_from_file_location('_short_skill_digests',REPO/'scripts/train_memlite_recovery.py')
     mod=module_from_spec(spec);spec.loader.exec_module(mod)
     frozen_before=mod.parameter_digest(policy,frozen=True)
-    rounds=SkillRounds(cases,cfg['evaluation_seeds'],rounds=cfg['learning_rounds'],run=str(a.output),
+    actor_before=mod.parameter_digest(policy,frozen=False) if evaluation_only else None
+    rounds=(SkillEvaluationRounds(cases,cfg['evaluation_seeds'],run=str(a.output)) if evaluation_only else
+        SkillRounds(cases,cfg['evaluation_seeds'],rounds=cfg['learning_rounds'],run=str(a.output),
         seed_round_offset=cfg.get('training_seed_round_offset',0),
-        evaluation_interval_updates=cfg.get('evaluation_interval_updates',1))
+        evaluation_interval_updates=cfg.get('evaluation_interval_updates',1)))
+    receipt['evaluation_only']=evaluation_only
     receipt['training_seed_round_offset']=rounds.seed_round_offset
     receipt['evaluation_interval_updates']=rounds.evaluation_interval_updates
     receipt['training_rollout_multiplier']=training_multiplier
@@ -123,6 +132,7 @@ async def main():
     @torch.no_grad()
     def act(session,job,observation):
         nonlocal next_eval_id
+        if evaluation_only and job['phase']!='evaluation':raise ValueError('Read-only actor cannot sample TRAIN')
         target=goal(session.case);prepared,anchor=adapter.prepare(observation,target);batch=adapter.collate([prepared])
         chunk=(session.rollout.step-session.case['start_control'])//16
         with torch.random.fork_rng(devices=[0]):
@@ -157,6 +167,7 @@ async def main():
 
     def shared_update():
         nonlocal version,policy_sha
+        if evaluation_only:raise ValueError('Read-only SFT probes cannot update parameters')
         if sessions or not rounds.ready or rounds.phase!='train' or not disk_has_reserve(root):
             raise ValueError('Incomplete update barrier or insufficient shared disk reserve')
         targets=rounds.targets
@@ -262,7 +273,15 @@ async def main():
         publish();watch=asyncio.create_task(stop_watch());await finished.wait();watch.cancel()
     frozen_after=mod.parameter_digest(policy,frozen=True)
     if frozen_after!=frozen_before:fatal[0]='Frozen VLM/LoRA changed during short-skill PPO'
-    receipt.update(status='failed' if fatal[0] else 'completed_training_window_not_promoted',error=fatal[0],
+    if evaluation_only:
+        actor_after=mod.parameter_digest(policy,frozen=False)
+        if (actor_after!=actor_before or trainer.update_count or trainer.actor_update_count
+                or trainer.actor_optimizer.state or trainer.critic_optimizer is not None
+                or trainer.experiences or any(p.grad is not None for p in policy.parameters())):
+            fatal[0]='Read-only comparison changed actor or created training state'
+        receipt.update(actor_before_sha256=actor_before,actor_after_sha256=actor_after)
+    receipt.update(status='failed' if fatal[0] else ('completed_read_only_skill_probes' if evaluation_only
+        else 'completed_training_window_not_promoted'),error=fatal[0],
         frozen_before_sha256=frozen_before,frozen_after_sha256=frozen_after,
         optimizer_updates=trainer.update_count,actor_updates=trainer.actor_update_count)
     atomic_json(a.output/'result.json',receipt);atomic_json(a.output/'status.json',receipt);wb.finish()

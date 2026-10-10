@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 15:06 CST / Codex RECOVERY-USABLE：** 新增两wave CAL-only联合配方，164可用来源逐group保留原cohort签名，187全分母/23不可用不删；补97整包本地SHA db734aef…37edc0通过、传A800中，尚未模型预测。另只读短技能服务新增显式`short_skill_sft_evaluation_a800_v1`，固定探针后直接结束，禁止TRAIN/PPO恢复/更新，验actor及冻结层指纹、优化器state空；10调度回归通过，尚未物理运行。低原v7/global29继续，lc3晚段candidate100/200。两类RTX仿真配方的辅助GPU上下文不能在旧白名单下互认，后续须在原RL安全检查点串行切换，不热改绕过所有权门。
+
+- **2026-10-10 15:02 CST / Codex RECOVERY-USABLE：** 补97机器签核/全量封装完成，281 CAL结果、0 TRAIN/动作/意图；admission41a14554…da89da0，420文件686,953,522B、包db734aef…37edc0/554,816,201B，开始运输到A800，未读新预测。lc3旧首窗对照已正常完成200更新、冻结指纹eb4b5d45…c1572前后相同；原100留出FM .131833→.134588（+2.09%）、恢复9DEV .019940→.017400（−12.74%），不是技能成功率。相同L0父的晚段candidate已自动开始、首评完全相同，无重复启动；待最终权重及物理配对比较。
+
 - **2026-10-10 14:54 CST / Codex RECOVERY-USABLE：** 补97全部86页/888原RGB根亲审完成，六份`supplement97_calibration_owner_review_part{1..6}_v1.json`批准281结果＝71F/65IP/145S，0action/plan/TRAIN；review-index654e41a2…7297c1、cohort d6602374…8e8bd。搬椅50四个IP候选因另一手已满足UNSPECIFIED抓取而保持拒签，所有UNLABELLED及11失败/未复现源保留；未增加标签凑数。机器签发、两wave预选90独立组与固定v8实际校准仍待，旧20 test不读。lc3control已150/200、第100原FM+0.88%/恢复FM下降，尚未物理比较，原低RL不扩覆盖。
 
 - **2026-10-10 14:52 CST / Codex RECOVERY-USABLE：** lc3八卡control已100/200，W&B9ad353da42fa；第50原100留出FM .131833→.132727（+0.68%），恢复9DEV .019940→.018665，暂无物理收益结论。原低v7/global28六固定probe全闭：抓2/2、放2/2（104/138控）、开0/2（317/317 UNKNOWN），合4/6仍同baseline、不扩任务/不promote。补97原图SHA全验，216 F/S各六控支持独立重算过；前64页651RGB已写四份owner review共205 CAL结果，其余未签，0新CAL预测。喷壶颜色变化逐对象entity/六控核实、木头28瞬时grasp真但仅3控故仍IP；不把视觉颜色/瞬时接触当成功。
