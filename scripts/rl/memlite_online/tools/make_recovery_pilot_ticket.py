@@ -41,9 +41,16 @@ def main():
     if a.component=='H1':
         if a.feedback_directory is None:raise ValueError('Need actual completed observer OOF artifacts')
         receipt=json.loads((a.feedback_directory/'feedback_receipt.json').read_text())
-        if (receipt['diagnostic_only'] or receipt['status']!='trained_calibration_and_oof_completed'
+        fixed=recipe['H1'].get('feedback')=='frozen_source_disjoint_observer_v1'
+        expected=('frozen_source_disjoint_feedback_completed' if fixed else 'trained_calibration_and_oof_completed')
+        if (receipt['diagnostic_only'] or receipt['status']!=expected
                 or receipt['high_sha256']!=recipe['parents']['high']['sha256']):raise ValueError('Invalid observer feedback')
         files.update(feedback=a.feedback_directory/'feedback.jsonl',feedback_receipt=a.feedback_directory/'feedback_receipt.json')
+        if fixed:
+            from recovery_calibration_launch import bound
+            files.update(observer_exposure=bound(root,recipe['H1']['exposure']),
+                observer_calibration=bound(root,recipe['H1']['calibration']),
+                observer_prediction_trace=a.feedback_directory/'prediction-trace.json')
         if recipe['H1'].get('original_feedback')=='causal_expert_unknown_v1':
             if a.expert_feedback_audit is None or a.expert_feedback_human_review is None:
                 raise ValueError('New original feedback requires processor audit and human review')

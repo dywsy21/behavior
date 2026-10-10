@@ -1,0 +1,104 @@
+{
+  "schema": "memlite_recovery_preparation_recipe_v1",
+  "owner": "Codex",
+  "root": "/data/workspace/wsy/behavior2026",
+  "preferred_node": "10.19.7.1",
+  "training_authorized_by_this_file": true,
+  "authorization": "User's active RECOVERY-USABLE goal permits further reviewed-data SFT and heterogeneous short-skill RL until verified usable; this is one measured SFT stage, not the goal endpoint.",
+  "hypothesis": "Frozen source-disjoint calibrated observer feedback vs the existing UNKNOWN/counter-only a74 planner. Train only high on 36 reviewed first-attempt GRASP recovery sources (35 tasks), evaluate all42 original DEV sources; observer never trained/selected/calibrated on these78. Keep 6 normal/2 recovery mixture, LR1e-6,20 event passes=360 updates, original feedback counters and all100task rehearsal. Separate model generation, observer estimates and physical local skill/task success; normal initial/noninitial target-free controls and paired heldout recovery diagnostics required before deployment.",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "parents": {
+    "high": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-causal-feedback-fit-v1/checkpoints/step_00000420_save_0009.pt",
+      "sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2",
+      "step": 420
+    },
+    "low": {
+      "path": "runs/memlite_stage1_low_100task_v1/checkpoints/step_00098414_save_0021.pt",
+      "sha256": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470",
+      "step": 98414
+    }
+  },
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "seed": 17,
+  "maximum_updates_per_line": 2000,
+  "maximum_event_passes": 20,
+  "extended_event_fit": true,
+  "maximum_wall_seconds_per_line": 86400,
+  "stop_on_first_limit": true,
+  "evaluation_every_updates": 50,
+  "stopping_criteria": "20 passes of36 actual recovery TRAIN events with6 normal/2 recovery gives360updates;save/evaluate50 andend. Nonfinite, identity, resource, data or gradient errors stop. No automatic repeat; compare original heldout and42recoveryDEV generation plus real physical probes before any deployment claim.",
+  "nccl_env": {
+    "NCCL_P2P_DISABLE": "1",
+    "NCCL_IB_DISABLE": "1",
+    "NCCL_SOCKET_IFNAME": "bond0"
+  },
+  "H0": {
+    "pool": "outcome",
+    "trainable": "temporal_adapter_and_result_head_only",
+    "learning_rate": 0.0001,
+    "weight_decay": 0.01,
+    "max_causal_checks": 4,
+    "calibration_required_before_runtime": true
+  },
+  "H1": {
+    "pool": "planner",
+    "trainable": "high_planner_only",
+    "learning_rate": 0.000001,
+    "weight_decay": 0.01,
+    "feedback": "frozen_source_disjoint_observer_v1",
+    "rehearsal": "original_100task_plans",
+    "new_high_hash_invalidates_old_calibration": false,
+    "original_feedback": "causal_expert_unknown_v1",
+    "uncertainty_protocol": "unready_zero_confidence_v1",
+    "observer_backbone_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "exposure": {
+      "path": "runs/recovery_heterogeneous_20261010/v11-postfit-exposure-v1.json",
+      "sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8"
+    },
+    "calibration": {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1/calibration/calibration.json",
+      "sha256": "32ed1e9effc57a8716af659ab850de1d112b6ba0b5a1c83f078f3b16a0fd42b1"
+    },
+    "separate_observer_note": "Fixed bee backbone + b0 observer only; never substitute newly trained planner features. Its independent calibration remains conditional GRASP-only, not a guarantee under future rollout distribution shift."
+  },
+  "L0": {
+    "pool": "action",
+    "trainable": "low_action_expert_only",
+    "learning_rate": 0.00001,
+    "weight_decay": 0.03,
+    "rehearsal": "original_100task_actions",
+    "padding_dimensions": [
+      7,
+      8,
+      17,
+      18
+    ],
+    "predicted_actions": 32,
+    "executed_actions": 16,
+    "action_start": 0,
+    "fm_noise_samples": 4
+  },
+  "pilot": {
+    "H0_global_batch": 4,
+    "H1_L0_global_batch": 8,
+    "H1_L0_micro_batch": 1,
+    "H1_L0_world_size": 8,
+    "checkpoint_every_updates": 50,
+    "event_passes": 20,
+    "normal_to_recovery_full_batch": [
+      6,
+      2
+    ],
+    "note": "H1-only source-disjoint fit on idle lc1 eight GPUs. Frozen observer is not re-fit. Keep original first-attempt partial-step UNKNOWN and all actual model mistakes; never turn known_previous_outcome into predicted truth."
+  },
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-recovery-h1-postfit-feedback-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key",
+    "new_run_required": true
+  }
+}

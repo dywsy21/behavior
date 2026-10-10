@@ -2,10 +2,13 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path[:0]=[str(Path(__file__).resolve().parents[1]/'code'),str(Path(__file__).resolve().parents[4]/'src')]
-from recovery_postfit_feedback import clock_requests,predicted_execution_feedback,make_provenance,validate_provenance
+from recovery_postfit_feedback import clock_requests,predicted_execution_feedback,make_provenance,validate_provenance,validate_training_release,STATUS
+from recovery_corpus import digest,file_sha
 from test_recovery_postfit import PostfitTests
 
 
@@ -81,6 +84,48 @@ class PostfitFeedbackTests(unittest.TestCase):
         for g in e['excluded_groups']:
             bad=deepcopy(p);bad['target_groups'].append(g)
             with self.assertRaises(ValueError):validate_provenance(bad,group='new:1',high_sha256='c'*64)
+
+    def test_training_recomputes_actual_logits_and_exact_windows(self):
+        a,h,s,e,trace=self.trace(64);cal=PostfitTests().calibration()
+        with tempfile.TemporaryDirectory() as td:
+            p=Path(td);(p/'audit').mkdir();(p/'history').mkdir();(p/'admission').mkdir()
+            def write(name,obj,lines=False):
+                path=p/name;path.write_text((''.join(json.dumps(x)+'\n' for x in obj)) if lines else json.dumps(obj));return path
+            paths={}
+            paths['admission']=write('admission/admission.json',{})
+            paths['inventory']=write('audit/inventory.json',[])
+            anchors=write('audit/anchors.jsonl',a,True);paths['history']=write('history/contexts.jsonl',h,True)
+            write('history/receipt.json',dict(inventory_sha256=digest([]),anchors_sha256=file_sha(anchors),contexts_sha256=file_sha(paths['history'])))
+            paths['observer_calibration']=write('calibration.json',cal)
+            e['bindings']={'calibration':dict(sha256=file_sha(paths['observer_calibration']))}
+            paths['observer_exposure']=write('exposure.json',e)
+            paths['observer_prediction_trace']=write('trace.json',trace)
+            provenance=make_provenance(e,high_sha256='c'*64,exposure_sha256=file_sha(paths['observer_exposure']),
+                calibration_sha256=file_sha(paths['observer_calibration']),trace_sha256=file_sha(paths['observer_prediction_trace']),
+                target_groups=[s[0]['source_group']])
+            feedback=[dict(sample_id=s[0]['sample_id'],source_group=s[0]['source_group'],control_step=64,provenance=provenance,
+                execution_feedback=predicted_execution_feedback(s[0],h[-1],trace,cal))]
+            paths['feedback']=write('feedback.jsonl',feedback,True)
+            result=dict(status=STATUS,diagnostic_only=False,optimizer_updates=0,calibration_refit=False,observer_weights_updated=False,
+                all_admitted_rows_retained=True,frozen_before_sha256='1'*64,frozen_after_sha256='1'*64,
+                high_sha256='c'*64,planner_high_sha256='c'*64,admission_sha256=file_sha(paths['admission']),
+                feedback_sha256=file_sha(paths['feedback']),exposure_sha256=file_sha(paths['observer_exposure']),
+                calibration_sha256=file_sha(paths['observer_calibration']),prediction_trace_sha256=file_sha(paths['observer_prediction_trace']),
+                requests_sha256=digest([{k:v for k,v in r.items() if k!='logits'} for r in trace]),rows=1)
+            paths['feedback_receipt']=write('feedback_receipt.json',result)
+            ticket=dict(admission=str(p/'admission'),files={k:dict(path=str(v),sha256=file_sha(v)) for k,v in paths.items()})
+            recipe=dict(parents=dict(high=dict(sha256='c'*64)),H1=dict(feedback='frozen_source_disjoint_observer_v1',
+                observer_backbone_sha256='a'*64,observer_sha256='b'*64,exposure=dict(sha256=file_sha(paths['observer_exposure'])),
+                calibration=dict(sha256=file_sha(paths['observer_calibration']))))
+            with patch('recovery_sft_data.require_training_pool',return_value=({},[dict(candidate=s[0])])):
+                self.assertEqual(validate_training_release(ticket,recipe)['real_checks'],5)
+                # Even if an attacker rehashes the receipt and feedback, logits
+                # must actually imply that text under the serving contract.
+                feedback[0]['execution_feedback']=feedback[0]['execution_feedback'].replace('FAILED','SUCCEEDED')
+                write('feedback.jsonl',feedback,True);result['feedback_sha256']=file_sha(paths['feedback'])
+                write('feedback_receipt.json',result)
+                for k in ('feedback','feedback_receipt'):ticket['files'][k]['sha256']=file_sha(paths[k])
+                with self.assertRaisesRegex(ValueError,'actual fixed logits'):validate_training_release(ticket,recipe)
 
 
 if __name__=='__main__':unittest.main()

@@ -110,7 +110,7 @@ def main():
             feedback_receipt=json.loads(Path(ticket['files']['feedback_receipt']['path']).read_text())
             if (feedback_receipt['feedback_sha256']!=ticket['files']['feedback']['sha256']
                     or feedback_receipt['high_sha256']!=parent['sha256'] or feedback_receipt['diagnostic_only']):
-                raise ValueError('Invalid OOF feedback release')
+                raise ValueError('Invalid observer feedback release')
             kwargs.update(history=histories,feedback=feedback,evidence_root=ticket['evidence_root'],high_sha256=parent['sha256'],
                 uncertainty_protocol=recipe['H1'].get('uncertainty_protocol','raw_observer_confidence_v1'))
             new=VerifiedRecoveryPlannerDataset(**kwargs,split='train');dev=VerifiedRecoveryPlannerDataset(**kwargs,split='dev')

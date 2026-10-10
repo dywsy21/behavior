@@ -6,6 +6,7 @@ being trained are separate immutable models. Only observable history is used.
 from collections import defaultdict
 import json
 import math
+from pathlib import Path
 
 from recovery_corpus import canonical, digest, file_sha
 from recovery_postfit import calibration_gate
@@ -146,3 +147,68 @@ def validate_provenance(row, *, group, high_sha256):
             or not set(row['calibration_groups']) <= set(row['reserved_groups'])):
         raise ValueError('Observer fit, selection, calibration or reserved leakage')
     return True
+
+
+def validate_training_release(ticket, recipe):
+    """Recompute every feedback input from pinned logits before admitting H1.
+
+    This does not fabricate a legacy OOF-completed receipt. An independently
+    frozen observer retains its own backbone as the planner starts from a74.
+    """
+    from recovery_sft_data import require_training_pool
+    files=ticket['files']; high=recipe['parents']['high']['sha256']; h1=recipe['H1']
+    required={'feedback','feedback_receipt','observer_exposure','observer_calibration',
+              'observer_prediction_trace','history','inventory','admission'}
+    if not required<=files.keys() or h1.get('feedback')!='frozen_source_disjoint_observer_v1':
+        raise ValueError('Require an explicit pinned fixed-observer training contract')
+    for key in required:
+        if file_sha(files[key]['path'])!=files[key]['sha256']:raise ValueError('Changed feedback input: '+key)
+    def read_key(k):return json.loads(Path(files[k]['path']).read_text())
+    receipt=read_key('feedback_receipt');exposure=read_key('observer_exposure');cal=read_key('observer_calibration')
+    calibration_gate(cal);validate_exposure(exposure)
+    if (receipt.get('status')!=STATUS or receipt.get('diagnostic_only') is not False
+            or receipt.get('optimizer_updates')!=0 or receipt.get('calibration_refit') is not False
+            or receipt.get('observer_weights_updated') is not False or receipt.get('all_admitted_rows_retained') is not True
+            or receipt.get('frozen_before_sha256')!=receipt.get('frozen_after_sha256')
+            or receipt.get('high_sha256')!=high or receipt.get('planner_high_sha256')!=high
+            or receipt.get('admission_sha256')!=files['admission']['sha256']
+            or receipt.get('feedback_sha256')!=files['feedback']['sha256']
+            or receipt.get('exposure_sha256')!=files['observer_exposure']['sha256']
+            or receipt.get('calibration_sha256')!=files['observer_calibration']['sha256']
+            or receipt.get('prediction_trace_sha256')!=files['observer_prediction_trace']['sha256']
+            or exposure['high_sha256']!=h1['observer_backbone_sha256']
+            or exposure['observer_sha256']!=h1['observer_sha256']
+            or exposure['bindings']['calibration']['sha256']!=files['observer_calibration']['sha256']
+            or cal['high_sha256']!=exposure['high_sha256'] or cal['observer_sha256']!=exposure['observer_sha256']
+            or sorted(cal['source_groups'])!=sorted(exposure['calibration_groups'])):
+        raise ValueError('Frozen observer/planner/calibration/data receipt mismatch')
+    for key,name in [('observer_exposure','exposure'),('observer_calibration','calibration')]:
+        if files[key]['sha256']!=h1[name]['sha256']:
+            raise ValueError('Recipe does not pin this exact feedback observer')
+    _,rows=require_training_pool(ticket['admission'],'planner',files['admission']['sha256'])
+    corpus=Path(ticket['admission']).parent
+    hr=json.loads((corpus/'history/receipt.json').read_text())
+    if (hr['contexts_sha256']!=files['history']['sha256']
+            or hr['anchors_sha256']!=file_sha(corpus/'audit/anchors.jsonl')
+            or hr['inventory_sha256']!=digest(read_key('inventory'))):
+        raise ValueError('Changed actual prediction-clock evidence')
+    anchors=[json.loads(x) for x in (corpus/'audit/anchors.jsonl').read_text().splitlines()]
+    histories=[json.loads(x) for x in Path(files['history']['path']).read_text().splitlines()]
+    selected=[r['candidate'] for r in rows];requests=clock_requests(anchors,histories,selected,exposure)
+    trace=read_key('observer_prediction_trace')
+    if ([{k:v for k,v in r.items() if k!='logits'} for r in trace]!=requests
+            or receipt.get('requests_sha256')!=digest(requests)):
+        raise ValueError('Incomplete or altered real prediction request windows')
+    feedback=[json.loads(x) for x in Path(files['feedback']['path']).read_text().splitlines()]
+    expected=make_provenance(exposure,high_sha256=high,exposure_sha256=files['observer_exposure']['sha256'],
+        calibration_sha256=files['observer_calibration']['sha256'],trace_sha256=files['observer_prediction_trace']['sha256'],
+        target_groups=[r['source_group'] for r in selected])
+    if len(feedback)!=len(selected) or receipt.get('rows')!=len(selected):raise ValueError('Prediction selection/filtering')
+    by_id={r['sample_id']:r for r in histories}
+    for f,r in zip(feedback,selected):
+        validate_provenance(f['provenance'],group=r['source_group'],high_sha256=high)
+        if (f['provenance']!=expected or f['sample_id']!=r['sample_id'] or f['source_group']!=r['source_group']
+                or f['control_step']!=r['control_step'] or f['execution_feedback']!=
+                    predicted_execution_feedback(r,by_id[r['sample_id']],trace,cal)):
+            raise ValueError('Feedback differs from the actual fixed logits and serving freshness contract')
+    return dict(status='verified_frozen_source_disjoint_feedback',rows=len(feedback),real_checks=len(trace))

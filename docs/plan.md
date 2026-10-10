@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 20:37 CST / Codex RECOVERY-USABLE：** 固定v11在新78真实来源237次prefill/check完成（193.39s/0更新、run receipt5a79bd21…4c6b4）；TRAIN18 FAILED/17 UNKNOWN/1 SUCCEEDED，DEV20 FAILED/22 UNKNOWN。那1条成功估计不能当物理真值，保留与原RETRY监督共存，不按预测筛数据。实际源16b50c10不变，GPU0退出全空。新增训练准入从原raw/history重建所有window并重放固定logits/校准/freshness，强绑定observer与planner两权重、全source排除及实际processor，7新测试＋旧suite304（含5重复夹具）过；下一新冻结源真实78高层processor＋原示范复验后再训360updates（36事件×20遍、6normal/2recovery、仅高层、W&B），不是结果头/低层新训练或部署。
+
+- **2026-10-10 20:33 CST / Codex RECOVERY-USABLE：** lc1新冻结`src/postfit-planner-feedback-launch-v1`=16b50c10，GPU0/tmux `postfit-planner-feedback-v1`实启固定头预测，输出异质run根`H1-postfit-feedback-v1`及同名log/cache；当前模型加载中，非训练/部署通过。补训练入口独立fixed-observer协议：与旧OOF状态分开，准备从原raw/history重建每次check并逐行重算反馈，校验planner/observer两套SHA、全部拟合/选择/CAL/test排除，不将新的高层权重冒充observer骨干。此接口本地修改未推送/未进入活跃16b源，定向回归待。
+
 - **2026-10-10 20:31 CST / Codex RECOVERY-USABLE：** lc1冻结33eb4b1b已对完整tar远端再核eab93c64…a8908，412文件/211,780,945B全部字节通过；新A800联合78 archive/3,516观测再读通过，admission404fcc0a…3463f、原36TRAIN42DEV无漂移。新固定GPU生成配置绑定a74 planner／bee+b0 observer／原.85校准，仅这78来源、不拟合/部署；准备独立冻结launch源后提交GPU0。原时钟/隔离303回归通过；旧未完成前缀隔离，不进入任何准入。
 
 - **2026-10-10 20:29 CST / Codex RECOVERY-USABLE：** RTX新源86ea797c签发/联合全部78实际通过，78 archive/3,516观测全读、planner36TRAIN42DEV（35/42任务），0outcome/action；admission418e073e…b8dda、运输412文件/211,780,945B、tar eab93c64…a8908。本地完整下载已SHA一致；一次提前上传读到未下载完的62MiB前缀，已在lc1明确隔离为`.partial-incomplete-upload.tar.gz`，未解包/准入，完整已验包现已传完待远端全验。新增冻结source-disjoint反馈实现与6时钟/隔离测试（当前恢复suite303含5重复夹具测试）通过，独立bee observer与a74 planner显式绑定，24步陈旧回退UNKNOWN、48/64分别完整四帧，不伪装OOF或热改原时序。A800联合/GPU仍待；0新训练/物理/部署。

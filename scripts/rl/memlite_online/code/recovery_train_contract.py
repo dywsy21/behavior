@@ -17,6 +17,17 @@ def validate_launch(ticket_path,component,*,engineering=False):
     for key,entry in ticket['files'].items():
         if file_sha(entry['path'])!=entry['sha256']: raise ValueError('Changed pinned launch input: '+key)
     recipe=json.loads(Path(ticket['files']['recipe']['path']).read_text())
+    if component=='H1' and recipe.get('H1',{}).get('feedback')=='frozen_source_disjoint_observer_v1':
+        from recovery_postfit_feedback import validate_training_release
+        validate_training_release(ticket,recipe)
+        processor=json.loads(Path(ticket['files']['processor_audit']['path']).read_text())
+        if (processor.get('schema')!='accepted_recovery_processor_audit_v1' or processor.get('status')!='passed'
+                or processor.get('source_commit')!=ticket['source_commit']
+                or processor.get('recipe_sha256')!=ticket['files']['recipe']['sha256']
+                or processor.get('feedback_sha256')!=ticket['files']['feedback']['sha256']
+                or processor.get('admission_sha256')!=ticket['files']['admission']['sha256']
+                or processor.get('optimizer_steps')!=0 or processor.get('oracle_inputs') is not False):
+            raise ValueError('Fixed feedback requires actual all-row processor acceptance')
     if component=='H1' and recipe.get('H1',{}).get('original_feedback')=='causal_expert_unknown_v1':
         if not {'expert_feedback_audit','expert_feedback_human_review'}<=ticket['files'].keys():
             raise ValueError('New expert feedback needs actual processor and human visual acceptance')

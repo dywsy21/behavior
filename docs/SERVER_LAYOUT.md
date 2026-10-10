@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 20:33 CST：A800无泄漏高层反馈实跑
+
+- `src/postfit-planner-feedback-v1`=33eb4b1b完成运输全验及`datasets/recovery-postfit-planner-union-20261010-v1`联合（admission404fcc0a…3463f、78/3516全读）。完整运输目录`datasets/recovery-postfit-planner-transport-20261010-v1`与全部原证据保留。
+- 实际GPU源另冻`src/postfit-planner-feedback-launch-v1`=16b50c10；lc1 GPU0/tmux `postfit-planner-feedback-v1`，run `runs/recovery_heterogeneous_20261010/H1-postfit-feedback-v1`、同名log/runtime-cache。只读固定v11/旧bee骨干，预测待，不是高层训练或运行部署；其他节点/共享env未动。
+
 ## 2026-10-10 20:29 CST：新增高层planner-only签核包
 
 - RTX `code/postfit-planner-approved-v1`=86ea797c；`runs/recovery100_collection_20261009/postfit-planner-approvals-{part1..part8,semantic_resolution}-v1.json`、`postfit-planner-reviewed-unit-v1`及同名tar完成。全78仅planner准入，admission418e073e…b8dda、tar eab93c64…a8908；CPU签发tmux自然退出。原始223组/669分支与3暗图hold保留。
