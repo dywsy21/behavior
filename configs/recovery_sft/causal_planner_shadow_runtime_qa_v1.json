@@ -20,7 +20,12 @@
     "path": "runs/recovery_heterogeneous_20261010/H0-observer-adapter-v8-retry-unknown-v1/checkpoints/selected.pt",
     "sha256": "b598b950f54fc3515fd213f13d77e7e4b869de07462b728471b5954a6ea47041"
   },
-  "normalization_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "normalization_sha256": {
+    "planner": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "observer_normalization_path": "models/memlite-b-final-20260910/B-dataset-stats.json",
   "input_role": "three closed first-TRAIN initial RGB/proprio observations from short-rl-v7",
   "observer_runtime_mode": "shadow_unknown_v1",
   "resource": "One actually idle lc1 GPU, no optimizer, no simulator reset/control, no shared env or lc2 changes",

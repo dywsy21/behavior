@@ -10,7 +10,7 @@ from g05.utils.memlite_skill_protocol import append_b_memory_idempotent, canonic
 
 def identity(task='task', episode='episode', session='slot0'):
     return CausalSessionIdentity(session, task, 3, episode,
-        CausalModelIdentity('a'*64, 'b'*64, 'c'*64, 'd'*64, 'e'*64))
+        CausalModelIdentity('a'*64, 'b'*64, 'c'*64, 'd'*64, 'e'*64, 'f'*64, 'e'*64))
 
 
 def bundle(parallel=False, target='cup'):
@@ -66,8 +66,9 @@ class SessionTests(unittest.TestCase):
     def test_slot_task_episode_and_every_model_identity_are_isolated(self):
         i=identity();s=CausalPlannerSession(i);issue(s)
         alternatives=[identity(task='other'),identity(episode='new'),identity(session='slot1'),replace(i,instance=4)]
-        alternatives += [replace(i,models=replace(i.models,**{name:'f'*64})) for name in
-            ('planner','low','observer_backbone','observer_adapter','normalization')]
+        alternatives += [replace(i,models=replace(i.models,**{name:'0'*64})) for name in
+            ('planner','low','observer_backbone','observer_adapter','planner_normalization',
+             'low_normalization','observer_normalization')]
         for bad in alternatives:
             with self.assertRaises(ValueError):s.begin_planning(bad,0)
             with self.assertRaises(ValueError):s.observe(bad,16)

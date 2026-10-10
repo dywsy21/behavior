@@ -6,9 +6,15 @@ actual ACKed observation to its own CausalPlannerSession. No optimizer is
 created here; learned outcome predictions remain shadow-only in that session.
 """
 from contextlib import nullcontext
+import hashlib
+from pathlib import Path
 
 from skill_training_protocol import actor_observation
 from g05.utils.memlite_causal_feedback import single_frame_planner_prefix, single_frame_member_prefix
+
+
+def configuration_stats_sha256(config):
+    return hashlib.sha256(Path(config['stats_path']).read_bytes()).hexdigest()
 
 
 def observable_raw(observation, task_name, config):
@@ -33,7 +39,8 @@ class CausalPlannerInference:
     def __init__(self,policy,processor,config,*,models,loaded_planner_sha256,
                  cache_context=nullcontext,device='cuda'):
         if (loaded_planner_sha256!=models.planner or not policy.planner_only
-                or policy.training or any(p.requires_grad for p in policy.parameters())):
+                or policy.training or any(p.requires_grad for p in policy.parameters())
+                or configuration_stats_sha256(config)!=models.planner_normalization):
             raise ValueError('Require the separately SHA-checked frozen planner-only model')
         self.policy,self.processor,self.config=policy,processor,config
         self.models,self.cache_context,self.device=models,cache_context,device
@@ -72,7 +79,8 @@ class CausalPlannerInference:
 
 def observer_prefix(processor,config,session,identity,member,observation,*,loaded_backbone_sha256):
     """The observer may not consume new-planner features of the same shape."""
-    if loaded_backbone_sha256!=identity.models.observer_backbone:
+    if (loaded_backbone_sha256!=identity.models.observer_backbone
+            or configuration_stats_sha256(config)!=identity.models.observer_normalization):
         raise ValueError('Result adapter requires its original trained backbone, not the new planner')
     token,check=session.observer_request(identity,member)
     prepared=processor._process_tensors(observable_raw(observation,identity.task,config))

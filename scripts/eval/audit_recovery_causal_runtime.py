@@ -54,10 +54,18 @@ def main():
     torch.set_num_threads(2);torch.manual_seed(17);vision._flash_attn_varlen=None;vision._flash_attn_backend=None
     names=json.loads((root/cfg['expert_release']/'manifest.json').read_text())['task_names']
     high_config=configuration(root,'high',names);low_config=configuration(root,'low',names)
-    if any(file_sha(c['stats_path'])!=cfg['normalization_sha256'] for c in (high_config,low_config)):
-        raise ValueError('High/low normalization drift')
+    normalization=cfg['normalization_sha256']
+    if (set(normalization)!={'planner','low','observer'}
+            or file_sha(high_config['stats_path'])!=normalization['planner']
+            or file_sha(low_config['stats_path'])!=normalization['low']):
+        raise ValueError('Separately pinned high/low normalization drift')
+    # This QA does not load the observer, but its identity still pins the
+    # original observer statistics independently from the new serving high.
+    if file_sha(root/cfg['observer_normalization_path'])!=normalization['observer']:
+        raise ValueError('Original observer normalization drift')
     model_ids=CausalModelIdentity(**{k:cfg[k]['sha256'] for k in
-        ('planner','low','observer_backbone','observer_adapter')},normalization=cfg['normalization_sha256'])
+        ('planner','low','observer_backbone','observer_adapter')},
+        **{k+'_normalization':v for k,v in normalization.items()})
     a.output.mkdir(parents=True)
     status=dict(status='loading',pid=os.getpid(),source_commit=subprocess.check_output(
         ['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),config_sha256=file_sha(a.config),

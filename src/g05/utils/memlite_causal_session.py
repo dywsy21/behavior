@@ -35,7 +35,9 @@ class CausalModelIdentity:
     low: str
     observer_backbone: str
     observer_adapter: str
-    normalization: str
+    planner_normalization: str
+    low_normalization: str
+    observer_normalization: str
 
     def __post_init__(self):
         for value in asdict(self).values():

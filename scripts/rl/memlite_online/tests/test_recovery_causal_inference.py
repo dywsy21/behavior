@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 import types
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 import torch
@@ -40,10 +41,12 @@ class Policy:
 
 class Tests(unittest.TestCase):
     def setUp(self):
-        self.models=CausalModelIdentity('a'*64,'b'*64,'c'*64,'d'*64,'e'*64)
+        self.models=CausalModelIdentity('a'*64,'b'*64,'c'*64,'d'*64,'e'*64,'f'*64,'e'*64)
         self.i=CausalSessionIdentity('slot','task',3,'episode',self.models)
         self.session=CausalPlannerSession(self.i);self.policy=Policy();self.processor=Processor()
         self.config=dict(raw_shape=dict(state=[dict(key='left_arm',start_index=0,raw_shape=7)]))
+        stats=patch('recovery_causal_inference.configuration_stats_sha256',return_value='e'*64)
+        self.addCleanup(stats.stop);self.stats=stats.start()
         self.adapter=CausalPlannerInference(self.policy,self.processor,self.config,models=self.models,
             loaded_planner_sha256='a'*64,device='cpu')
         self.observation=dict(images={k:np.zeros((3,32,32),dtype=np.uint8) for k in
@@ -91,6 +94,16 @@ class Tests(unittest.TestCase):
         self.assertEqual(json.loads(second.memory)['issued_command_history'],[])
         self.assertEqual(len(json.loads(self.session.memory)['issued_command_history']),1)
         self.assertEqual(second.feedback.control_step,0)
+
+    def test_planner_and_observer_each_reject_wrong_normalizer_even_with_right_weights(self):
+        self.stats.return_value='f'*64
+        with self.assertRaises(ValueError):CausalPlannerInference(self.policy,self.processor,self.config,
+            models=self.models,loaded_planner_sha256='a'*64,device='cpu')
+        self.stats.return_value='e'*64
+        self.adapter.plan(self.session,self.i,self.observation,validate_low_goal=lambda x:None)
+        self.stats.return_value='f'*64
+        with self.assertRaises(ValueError):observer_prefix(self.processor,self.config,self.session,self.i,0,
+            self.observation,loaded_backbone_sha256='c'*64)
 
 
 if __name__=='__main__':unittest.main()

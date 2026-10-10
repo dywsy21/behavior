@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 13:33 CST / Codex RECOVERY-USABLE：** 实际GPU QA在模型载入/0生成前被归一化门拦下：新QA误要求高低统计同SHA。只读查实高B原stats=846bcbea…40b19、低action-bounds=10dc04dc…bd929，训练原来就分别使用它们，**不是现役训练统计漂移**。新会话身份改为三套明确normalization SHA（planner/low/observer），QA分别验，保留旧b22源/失败log，准备新冻源v2；此前“完整GPU接线通过”从未声称，0训练/物理影响。
+
 - **2026-10-10 13:29 CST / Codex RECOVERY-USABLE：** 新源b22f7356已Git bundle部署两端独立`causal-runtime-gpu-qa-v1`；初次push TLS失败后重试成功。三个TRAIN真实初始观察无损导出、两端包SHA9d12a1f1…742e3/manifest9a1c2442…eaf4d通过，lc1空闲GPU0新同名tmux已启动12次生成工程验收；源/日志在异质run根，0optimizer/0物理控制，尚无终态。当前低v7 global22、原GPU1不变；补97已36终态（33候选/3参考未复现），仍在采集、尚未做新CAL预测。
 
 - **2026-10-10 13:27 CST / Codex RECOVERY-USABLE：** 新增真实GPU跨任务交错验收工具/配方`audit_recovery_causal_runtime.py`/`causal_planner_shadow_runtime_qa_v1.json`，固定H1/a74、低L0/20fd、观察器bee+b598与原stats。只用三条已闭合TRAIN的真实起始RGB/61维本体；grouped/interleaved各两次规划、0执行控制，不伪造“新高层动作后的图像”或成功率，也不读取CAL/test。导出/入口编译通过，待Git冻源后运行；现役v7已global22、补97已30终态仍采集，不重复启动、学习率/门不变。
