@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 22:41 CST / Codex RECOVERY-USABLE：** 在native候选终态/新物理预测前登记三臂（原低0c52、同额外200 control9ac、候选仅final200）低层固定技能复验：原三TRAIN起点/原门/原时限，八新seed433/467/503/541/587/631/673/719，每臂24；无需高层/observer、不按中途结果选权重/种子。配置`native_learner_probe_preregistration_v1.json`，等当前校准四条worker全部退出及候选完成后才启动，完整分母和错误保留。这只检验同来源局部训练收益，非独立实例或全任务SR。
+
+- **2026-10-10 22:38 CST / Codex RECOVERY-USABLE：** lc1三冻结模型服务已GPU ready/0job/0更新，真实全部权重与v11 adapter加载门通过；RTX10383实核0/1空闲，提交同a2fd41ec源`causal-calibrated-{radio155,wash169}-probes-v1`两冷worker/18978，先config-bound HELLO再scene。尚无新物理结论；lc3 native候选已有92/200真实更新、50步原FM .13589/恢复DEV .01692，仍不挑中间权重，等final200与对照。
+
 - **2026-10-10 22:32 CST / Codex RECOVERY-USABLE：** 低control200/200完整结束/322动作专家、冻结eb4b5d45不变；final9ac23c41…a362e，正常100FM .13465→.13870（+3.0%）、原9恢复DEV .01745→.01813（+3.9%），额外SFT未见离线提升。完整终态/八卡空闲核过后lc3提交同14e0源candidate/原8a6票，仍待实际首步。a2fd41ec两端新校准pilot源全部权重/fit/生成/cal/history实际CPU核过，lc1 GPU1/18978实提交三模型只读服务`causal-calibrated-grasp-probes-v1`；RTX worker尚未启动，等ready。两种新实验独立，不自动恢复PPO/扩100RL。
 
 - **2026-10-10 22:28 CST / Codex RECOVERY-USABLE：** 校准高低联合pilot已本地接好并337恢复回归通过：固定89907高＋0c52低＋独立bee/b0观察器，核新90校准与完成训练/两生成回执，GRASP-only估计、.85两fresh门，其他技能UNKNOWN0。真实每次ACK后按16控维护episode独立窗口，高层仍128控，不伪造接管前特征；新增原logits/clock/token独立日志复算、交错会话和坏值/错源反例。固定同radio155/wash169、101/137、原物理门/时限作四条只读工程pilot，未运行/不视为方法隔离对照或SR提升。lc3低control已147/200，原100正常FM第100约+1.19%，无异常；候选仍待完整control终态。

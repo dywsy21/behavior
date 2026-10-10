@@ -1,0 +1,17 @@
+{
+  "schema": "native_learner_physical_probe_preregistration_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "registered_at": "2026-10-10T22:41:00+08:00",
+  "hypothesis": "Reviewed on-policy learner correction windows improve the same low parent's short-skill execution, beyond additional matched expert-only SFT, without damaging heterogeneous GRASP or PLACE.",
+  "arms_in_order": ["parent", "matched_control", "native_candidate"],
+  "parent_sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5",
+  "matched_control_sha256": "9ac23c414a4d814bd22c8ec4c2e386cf4168e3d644d9859641615542937a362e",
+  "candidate_selection": "Only completed final200 of L0-native-learner-candidate-v1; no intermediate checkpoint selection. Require original14e0ffde source, original8a6a5be7 launch ticket, same parent0c52 and frozen parameters unchanged.",
+  "evaluation_seeds": [433, 467, 503, 541, 587, 631, 673, 719],
+  "cases": ["turning_on_radio_155", "wash_dog_toys_169", "attach_a_camera_to_a_tripod_129"],
+  "case_contract_source": "configs/recovery_sft/a800_later_action_replication_later_actions_v1.json",
+  "case_contract_rule": "Exact existing TRAIN starts, original physical horizons, semantic skill/parent, FM solver and fixed reward gates. No high-planner or observer-generated intent is used in this low-only comparison.",
+  "primary_metrics": ["Exact paired per-seed physical skill success", "Per-mechanism success counts with failures retained", "Parent-versus-candidate and matched-control-versus-candidate wins and losses"],
+  "run_rule": "Run each declared arm's complete seed set in order, using actual idle lc1 GPU2 and RTX0-2 only after incompatible calibrated-pilot workers exit. Stop safely on engineering or ownership failure, retain partials, do not silently retry failures. No optimizer, no CAL/test, no global100 RL.",
+  "limitations": "Three repeatedly diagnosed TRAIN starts, not independent instances or whole-task SR. Corrective learner data adds only one source event. New FM seeds reduce reuse of the prior development seed block, not source leakage. A scientific comparison schedule is not a cap on the user's continuing recovery-data preparation goal."
+}
