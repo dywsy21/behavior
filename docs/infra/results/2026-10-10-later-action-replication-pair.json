@@ -1,0 +1,62 @@
+{
+  "status": "all_48_sheets_owner_reviewed_and_paired_physical_audit_passed",
+  "owner": "Codex root RECOVERY-USABLE",
+  "date": "2026-10-10 Asia/Shanghai",
+  "comparison_path": "artifacts/recovery-heterogeneous-20261010/later-action-replication-physical-pair-v1.json",
+  "comparison_sha256": "a8e17d18309cdb143542448bc973e4857601add95c5515ebd1f551560786869e",
+  "control_review": "docs/infra/results/2026-10-10-later-action-replication-control-review.json",
+  "candidate_audit_sha256": "b416bfa5d9a74a22efe702469d6b21ebe28f1f7f3eeb55ace0d43c5c82e805a4",
+  "candidate_sheets_personally_viewed": 24,
+  "candidate_original_camera_panels": 360,
+  "candidate_sheet_hashes_all_match": true,
+  "candidate_actual_controls_recomputed": 3437,
+  "candidate_lossless_boundaries_checked": 252,
+  "paired_controls_recomputed": 7087,
+  "seeds": [101, 137, 173, 211, 257, 307, 359, 419],
+  "policies": {
+    "control_sha256": "51e2c772ba321f1dd0b5faad1e31264e2acceca56013baf4c97f5fa94fee302c",
+    "candidate_sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5"
+  },
+  "sources": {
+    "both_services_and_control_worker": "6c7a0dfc48d921ac9f1258fe17a91c9b57a27dfb",
+    "candidate_worker": "50bfcb36a6913b46f5e9ed8652558d14d76272da",
+    "worker_difference": "Only terminal finish ACK uses CPU without another empty simulator. Actual collector, reward, archive, protocol and simulator launch files are unchanged. No physical retries."
+  },
+  "by_case": {
+    "turning_on_radio_155": {
+      "control_successes": 8,
+      "candidate_successes": 8,
+      "attempts_per_arm": 8,
+      "candidate_controls": [19, 19, 19, 19, 19, 19, 19, 19],
+      "visual_review": "All eight candidate sheets show the correct red radio and right gripper closing around it, consistent with independently checked holding persistence. GRASP only."
+    },
+    "wash_dog_toys_169": {
+      "control_successes": 1,
+      "candidate_successes": 4,
+      "attempts_per_arm": 8,
+      "candidate_success_seeds": [101, 137, 173, 307],
+      "gained_seeds": [101, 137, 173],
+      "lost_seeds": [],
+      "candidate_controls": [219, 211, 251, 317, 317, 213, 317, 317],
+      "visual_review": "All eight open the intended white washer. Four preserve contact/pull through the original 0.35 x six-control gate. Other four remain UNKNOWN:211 finishes near but below the threshold;257/359/419 release and withdraw after partial opening. No gate change or relabeling of binary Open as successful completion."
+    },
+    "attach_a_camera_to_a_tripod_129": {
+      "control_successes": 4,
+      "candidate_successes": 4,
+      "attempts_per_arm": 8,
+      "candidate_success_seeds": [101, 211, 307, 359],
+      "gained_seeds": [],
+      "lost_seeds": [],
+      "candidate_controls": [121, 165, 165, 62, 165, 140, 140, 165],
+      "visual_review": "Correct tripod/floor in all eight. Successful four show release and stable upright placement.137 releases late but does not satisfy the original persistence gate within the horizon;173/257 remain gripping;419 releases and tips/falls visibly. Final instantaneous relation or low speed does not overwrite UNKNOWN. Seed307 succeeds later than control, so no blanket speedup claim."
+    }
+  },
+  "optimizer_updates_in_probes": 0,
+  "actor_and_frozen_fingerprints_unchanged_both_arms": true,
+  "all_finish_acks_received": true,
+  "same_original_physical_gates_and_horizons": true,
+  "whole_task_sr": false,
+  "independent_instance_generalization": false,
+  "prior_four_seed_development_block_pooled": false,
+  "interpretation": "Directional OPEN improvement replicates in a prospectively fixed new-noise block at the same three TRAIN starts. Only three discordant gains; not strong population-level evidence and no cross-instance demonstration. GRASP/PLACE counts unchanged, and PLACE robustness remains limited. Continue separate high-low joint and observer validation, not automatic 100-task RL expansion."
+}

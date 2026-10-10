@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 18:06 CST：高低联合物理开始
+
+- RTX原candidate三个worker已各8完成且`finish_ack_without_new_simulator=true`，三结束通知不再新增scene。新GPU0/1 tmux/run `causal-joint-{radio155,wash169}-probes-v1`使用`code/probe-finish-cpu-v1`/50bfcb36；连接既有lc1 GPU1 `causal-joint-shadow-probes-v1`/a49b3fcd、18977。完整action journal与逐episode无损观察均留存，尚待真实结果/独立审计。
+- candidate全24审核材料`later-action-candidate-replication-review-v1`已CPU生成，正在复制本地根审；不代表模型已自动晋级。RTX队友当前GPU5/6不动，新30采集尚未启动。
+
 ## 2026-10-10 17:58 CST：新30 RTX材料准备队列
 
 - 新`code/observer-v11-calibration-v1`=73aceeb2，source tar31d1e58d已全部480依赖/原图/NPZ双端校验；未开始物理采集。

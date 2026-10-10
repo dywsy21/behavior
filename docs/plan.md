@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 18:11 CST / Codex RECOVERY-USABLE：** 新noise两臂各24全部完成，candidate 24sheet/360原面板SHA核对并根亲审，独立3437实控/252边界、配对总7087控；新块开1/8→4/8（新增101/137/173，无丢失）、抓8→8、放4→4。放137晚松未满原持续门、419明显倾倒，开211近门未达，所有UNKNOWN保留；不混旧四seed、不称新实例/整任务SR或普遍提速。证据`docs/infra/results/2026-10-10-later-action-replication-pair.json`，配对a8e17d18；两actor/frozen不变、0更新/全finish。联合四条继续，结果头新30仍待它退出后采集；独立成员审查/联合可用性未完成，不恢复全任务RL。
+
+- **2026-10-10 18:06 CST / Codex RECOVERY-USABLE：** candidate24全闭、三finish ACK无额外sim已实际通过，0更新、actor a7b61413及冻结eb4b5d45指纹前后完全一致；CPU逐控review已生成/取本地中，待根逐原图及配对，不提前称提升。RTX实查原worker全退、仅队友5/6主卡；新0/1 `causal-joint-{radio155,wash169}-probes-v1`已提交，两seed101/137，worker50bfcb36、既有A800 GPU1 a49b3fcd/18977服务不重启。仅真实历史高低联合只读，observer仍不加载、无新RL；新30采集继续等联合结束。
+
+- **2026-10-10 18:01 CST / Codex RECOVERY-USABLE：** candidate新seed23/24、最后OPEN冷起正常；预先提交CPU `later-action-candidate-replication-review-v1`等待三个worker各8条及finish ACK全闭后，才按固定全部24路径独立逐控/原图审计，不能审早期有利子集。仍50bfcb36源，不触碰正在运行的第8条；根待完整材料逐图签核和两臂配对。
+
 - **2026-10-10 17:58 CST / Codex RECOVERY-USABLE：** RTX新30的CPU后处理队列`observer-v11-new30-postprocess-v1`已登记，源73aceeb2；仅等全部30首尝试的`grasp-v11-new30-collection-v1/result.json`完整终态后生成corpus→独立cohort→原图review及tar，不按早期成败挑子集、绝不自动审批/训练。当前采集尚未开始，联合仍待candidate余2 OPEN闭合。输出和等待log均在独立校准run根，队友4–6不动。
 
 - **2026-10-10 17:52 CST / Codex RECOVERY-USABLE：** 新源预选校验进一步逐group比较参考控长度，加入“总控量相同但两来源长度互换”反例；四定向回归通过，A800实际30个长度逐项与原metadata完全一致。只加安全验收，不改已导出的原数据/collector/活跃推理；旧ac9e3d16审计保留而不覆盖，后续版本可用加强验证入口。
