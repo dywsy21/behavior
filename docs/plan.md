@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 10:17 CST / Codex RECOVERY-USABLE：** H1新因果反馈420实训完整完成/退出0，final SHA a74c5cc1…d5bf2；高326 tensors更新、低/vision冻结SHA前后同0f7aede8。原initialCE .0084325→.00771749、非首段无反馈.0007601→.00028570、因果反馈.00574998→.000284389、恢复10DEV .00865773→.000024113，均不等于SR。已写final16/128控双生成配方待冻结运行。另预登记固定v8/b598结果头的新校准采集：从全部旧8类inventory456来源之外，原TRAIN且恢复DEV metadata选90来源/84task、107004参考controls；未物理采集/未看模型预测。旧60只诊断、旧20test不碰，新90不训练不选模型，仍原precision/Wilson门，缺类/失败不删分母。拟CPU导出→空闲RTX3–7冷采→根逐图审核→固定头校准，不扩低RL任务。
+
+- **2026-10-10 10:11 CST / Codex RECOVERY-USABLE：** 六新冷baseline在87942854独立审核源重做全过：848实际控制/奖励/ACK、62原RGB＋状态无损边界；根亲审6页90面板、六SHA全符，GRASP19/19和PLACE103/73控成功、OPEN317/317仍UNKNOWN(.300635/.292725<.35)。新人工许可绑定6b308939权重/当前config/完整六episode SHA98834ddb，准备放行global13；这不是RL提升证据。v8同旧60预定anchor再算温度诊断仍有1/40高置信假成功，support16/15/19<20，未通过原门；该队列已看过且最初绑定旧头，不冒称新独立部署校准。需要另备不重叠校准来源，reserved20保持未读。高H1真实420更新已结束，待最终回执/生成验收。
+
 - **2026-10-10 10:09 CST / Codex RECOVERY-USABLE：** v8独立结果重载完成699真实prefill、192adapter/14头/206 Adam精确，DEV95%逐值复现；原60来源196行事件93.06%/balanced93.19%，非新盲测、未校准、20reserved test未读。高H1已400/420，128控规划频率诊断两路运行。低v6六基线全部实际采完，但新无损审核脚本第二条因`expected`集合被首条RGB数组覆盖而失败；只修审核变量名，保留partial，重做六条/人工图审之前不放optimizer。运行源/权重未热改。
 
 - **2026-10-10 10:00 CST / Codex RECOVERY-USABLE：** 新H1 step50完整真实计数生成：正常100 falseRETRY0/exact97/valid99，恢复10 exact10/10；同输入父falseRETRY21/exact76、旧final420 falseRETRY23/exact74。仍有一条K3记忆漏项，不部署。另定位未验收风险：正常训练annotation每16控刷新，实际`batch_core.py`每8chunk＝128控规划，模型可能学刷新计数比例捷径。已补只稀疏化重复同意图call的128控诊断（保留全部技能切换、已执行时长、图像/动作/目标），待独立生成检验，不提前当已适配。低v6已精确加载global12（322actor/6critic Adam全部步12，WB bfe04ed1a395），三RTX worker自有0/1/2真跑新6基线，5已完成/最后OPEN29待；无损原观察和每次实际ACK边界均保存，尚未授权继续优化。v8结果头独立重载＋原60组诊断在GPU2进行中，age对照GPU6正常优化。

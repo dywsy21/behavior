@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 10:11 CST：结果重载与低层精确续接（覆盖下方状态）
+
+- A800根不变，run均相对`runs/recovery_heterogeneous_20261010`。lc3 `H1-causal-feedback-fit-v1`已420实际更新，待supervisor终态；lc1 GPU5/7 `H1-cadence128-{parent,step50}-v1`在做部署频率诊断，源`src/recovery-cadence-archive-v1`/1b3538bc。
+- v8结果`H0-observer-adapter-v8-retry-unknown-v1`已740更新、selected epoch15/555，SHA b598b950…47041；`H0-observer-v8-acceptance-v1`独立原RGB重算/权重验收已完成，不等于部署可用。lc1 GPU6 `H0-observer-v8-command-age-v1`（1b4bb664、W&B51841d7580d1）为同数据数值命令年龄单变量实验，在训。
+- lc1 GPU1 `short-rl-v6-critic-restart`（e4baf78b、W&Bbfe04ed1a395），从旧v5 `checkpoints/round-0005.pt`/6b308939…9854c精确global12续接；新六baseline核验后才准第13更新。旧v5以owner STOP结束，部分第6轮只留证据不回灌。共享端口仍18975。
+- RTX10383同根`runs/recovery_heterogeneous_20261010/short-rl-{radio155,wash169,tripod129}-resume3-v1`是三冷worker，独立sim每条相邻episode目录，GPU0/1/2；所有chunk边界原观察在每条`observations/`。机器审核源`code/recovery-baseline-review-v2`/87942854，审阅`short-rl-v6-baseline-review-v2`；旧v1是变量覆盖失败partial，保留。根人工许可本地`artifacts/recovery-heterogeneous-20261010/short_skill_cold_baseline_acceptance_v3.json`，复制到A800 run内`BASELINE_ACCEPTED.json`后才生效。所有shared env/lc2不动。
+
 ## 2026-10-10 09:30 CST：反馈格式修正对照（当前）
 
 A800共用根仍`/data/workspace/wsy/behavior2026`、run根`runs/recovery_heterogeneous_20261010`。lc2队友、共享env均不动。
