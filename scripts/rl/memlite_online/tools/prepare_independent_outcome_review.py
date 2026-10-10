@@ -10,8 +10,8 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import file_sha
-from recovery_independent_cohort import cohort_sources, proposed_phase_points
-from recovery_teacher_corpus import validate_branch, physical_proposal, PhysicalProposalIndex
+from recovery_independent_cohort import cohort_sources, proposed_phase_points, semantic_phase_candidates
+from recovery_teacher_corpus import validate_branch
 
 
 def load_branch(source, root):
@@ -23,12 +23,9 @@ def load_branch(source, root):
     rows = [json.loads(s) for s in (branch/'transitions.jsonl').read_text().splitlines()]
     plans = json.loads((branch/'plans.json').read_text())
     validate_branch(rows, manifest, plans)
-    index = PhysicalProposalIndex(rows, manifest['arm'])
-    labels = {}
-    for t in sorted(int(k) for k in manifest['anchors'] if int(k) < len(rows)):
-        attempt = max(p['control_step'] for p in plans if p['control_step'] <= t)
-        labels[t] = physical_proposal(rows, t, manifest['arm'], attempt_start=attempt, index=index)
-    return branch, manifest, rows, plans, labels
+    labels, rejected = semantic_phase_candidates(rows, manifest['arm'], plans,
+        [int(k) for k in manifest['anchors'] if int(k) < len(rows)])
+    return branch, manifest, rows, plans, labels, rejected
 
 
 def main():
@@ -62,6 +59,7 @@ def main():
         raise FileExistsError(a.output)
     from PIL import Image, ImageDraw
     a.output.mkdir(parents=True); proposals = []; sheets = []; unavailable = []; unavailable_sources=[]
+    semantic_rejections = []
     for ordinal, (entry, branches) in enumerate(selected):
         if entry.get('unavailable_collection') is not None:
             missing=entry['unavailable_collection'];path=a.root/missing['receipt']
@@ -82,13 +80,17 @@ def main():
         # successful-attempt filter. Failed corrective traces remain eligible.
         source = max(candidates, key=lambda q:sum(q['proposed_outcomes'].get(k,0)>0
                      for k in ('FAILED','IN_PROGRESS','SUCCEEDED')))
-        branch, manifest, rows, plans, labels = load_branch(source, a.root)
+        branch, manifest, rows, plans, labels, rejected = load_branch(source, a.root)
+        semantic_rejections.extend(dict(source_group=entry['source_group'],case=entry['case'],
+            branch=source['branch'],manifest_sha256=file_sha(branch/'manifest.json'),**item) for item in rejected)
         retry = plans[1]['control_step'] if len(plans)>1 else len(rows)
         chosen, absent = proposed_phase_points(labels, retry)
         for label in absent:
             unavailable.append(dict(source_group=entry['source_group'],label=label,
                                     reason='No physically supported anchor in this causal phase; not invented'))
-        clean, cm, cr, cp, cl = load_branch(branches['clean'], a.root)
+        clean, cm, cr, cp, cl, rejected = load_branch(branches['clean'], a.root)
+        semantic_rejections.extend(dict(source_group=entry['source_group'],case=entry['case'],
+            branch='clean',manifest_sha256=file_sha(clean/'manifest.json'),**item) for item in rejected)
         clean_times = [t for t,v in cl.items() if v=='SUCCEEDED']
         if not clean_times:
             raise ValueError('Independent clean source needs manual investigation; do not silently drop it')
@@ -135,7 +137,8 @@ def main():
         outcomes=sum(len(p['outcomes']) for p in proposals),unavailable_classes=unavailable,
         available_review_sources=len(sheets),unavailable_sources=unavailable_sources,
         all_declared_sources_reviewable=not unavailable_sources,
-        role=a.role,cohort_sha256=file_sha(a.cohort),training_ready=False,model_predictions_read=False)
+        role=a.role,cohort_sha256=file_sha(a.cohort),training_ready=False,model_predictions_read=False,
+        semantic_rejections=semantic_rejections)
     (a.output/'review-index.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k not in ('sheets','unavailable_classes')}))
 

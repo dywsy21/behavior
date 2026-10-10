@@ -1,6 +1,31 @@
 """Fixed source-group roles, declared without reading model predictions."""
 
 
+def semantic_phase_candidates(rows, arm, plans, times):
+    """Keep rejected arm-local proposals visible, without inventing a new label.
+
+    The final signer already enforces this contract. Applying it when preparing
+    human review avoids presenting an UNSPECIFIED-arm command as still ongoing
+    after the other hand has already achieved a stable grasp.
+    """
+    from recovery_teacher_corpus import (
+        PhysicalProposalIndex, physical_proposal, validate_grasp_review_semantics,
+    )
+    index = PhysicalProposalIndex(rows, arm)
+    labels, rejected = {}, []
+    for t in sorted(times):
+        plan = max((p for p in plans if p['control_step'] <= t), key=lambda p: p['control_step'])
+        value = physical_proposal(rows, t, arm, attempt_start=plan['control_step'], index=index)
+        if value is not None:
+            try:
+                validate_grasp_review_semantics(rows, t, arm, plan, outcome=value)
+            except ValueError as exc:
+                rejected.append(dict(control_step=t, proposed_outcome=value, reason=str(exc)))
+                value = None  # Not UNKNOWN, FAILED or a fabricated corrected success.
+        labels[t] = value
+    return labels, rejected
+
+
 def proposed_phase_points(labels, retry):
     points, absent = [], []
     for label in ('FAILED', 'IN_PROGRESS', 'SUCCEEDED'):

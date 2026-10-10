@@ -1,0 +1,433 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main at 2026-10-10 04:25:46 UTC; personally inspected source47-53 and55-59 (12 sheets/111 original RGB panels) and matched exact physical target/arm records. No predictions consulted.",
+  "cohort_sha256": "b1a9329f574062a73694bac0347dbb6c58f0020529340900443315a0e978b2ea",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "bd8e8cc77d642ff838c477b0ba8f4442860c697c67da332e02e547c8a19e31b3",
+  "reviewed_sheet_count": 12,
+  "total_sheet_count": 78,
+  "declared_source_count": 90,
+  "branches": [
+    {
+      "case": "stacking_wood_91",
+      "branch": "open_gripper",
+      "manifest_sha256": "21124efd95e5fd79f7f4d6eb43339e1849cb2bb4a2d2a429b9f7d3063b1f543a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/stacking_wood_91--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 76,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 80,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Bark-covered log337 fills the left-wrist view and appears as the same long log in the head image. Hold76 is newly TRUE but not yet stable for six controls, so it remains IN_PROGRESS;80 and clean8 qualify. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "stacking_wood_91",
+      "branch": "clean",
+      "manifest_sha256": "64a24162e8dbeffc295768830a3a98875701f7534830b53ed1e1e9da18c1cc1a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/stacking_wood_91--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Bark-covered log337 fills the left-wrist view and appears as the same long log in the head image. Hold76 is newly TRUE but not yet stable for six controls, so it remains IN_PROGRESS;80 and clean8 qualify. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "organizing_art_supplies_199",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "4de407849308af638e9094194dafc807e6e11a5fd1bad2d47bb982a33bce9241",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/organizing_art_supplies_199--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the small green/yellow glue stick on the dresser. Fingers approach the same glue_stick92, but corrective52 has no physical grasp and no success is added; clean8 is positive. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "organizing_art_supplies_199",
+      "branch": "clean",
+      "manifest_sha256": "d23ba366ee6482f39851651819cd19bb8a9d721fe0fca58c92819c4f2f6c9890",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/organizing_art_supplies_199--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the small green/yellow glue stick on the dresser. Fingers approach the same glue_stick92, but corrective52 has no physical grasp and no success is added; clean8 is positive. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_238",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "847e3739ba933978e90a20b6069725ac76da610108b622891cbe2e334b8bbabe",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/scrubbing_bathroom_floor_238--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Red scrub-brush bristles are visible at the right wrist over the pale bathroom floor. Same brush222/arm and finger closure agree; labels concern grasp, not floor cleanliness. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_238",
+      "branch": "clean",
+      "manifest_sha256": "eba9ef0caef7b8bfe0648e3fdec3855806f7baa81058c3b8b7189865564337bf",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/scrubbing_bathroom_floor_238--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Red scrub-brush bristles are visible at the right wrist over the pale bathroom floor. Same brush222/arm and finger closure agree; labels concern grasp, not floor cleanliness. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "bringing_paper_to_recycling_33",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "9aec7b944506b72cf256c9db080f5e3d3ff602edbd419dd8e94bd46a0c41db13",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/bringing_paper_to_recycling_33--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the newspaper already between fingers at fault0, so no failed-grasp label is approved. Only clean8 newspaper197 sustained hold is signed. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "bringing_paper_to_recycling_33",
+      "branch": "clean",
+      "manifest_sha256": "5a05a00d5f45134ab8247e8e17a105d93770f53592c4b495a0dae6819d90b0c8",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/bringing_paper_to_recycling_33--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the newspaper already between fingers at fault0, so no failed-grasp label is approved. Only clean8 newspaper197 sustained hold is signed. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "halve_an_egg_126",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "e8042680a0933c86de03a2ca739d57c3a9cf56b5974082c38239e6f47fa0b161",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/halve_an_egg_126--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the white egg by the refrigerator shelf. Fault0 is already physically held and remains UNLABELLED. Only clean8 hard_boiled_egg231 grasp is signed, not cutting success. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "halve_an_egg_126",
+      "branch": "clean",
+      "manifest_sha256": "0b40ec81c1368cf4422bc990138bd0af594c31e2693a6815cb8ee7c05ecd8bc4",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/halve_an_egg_126--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the white egg by the refrigerator shelf. Fault0 is already physically held and remains UNLABELLED. Only clean8 hard_boiled_egg231 grasp is signed, not cutting success. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "installing_smoke_detectors_211",
+      "branch": "open_gripper",
+      "manifest_sha256": "c0c6f0694e3d9721c9e305783784b89f524fd06517839ecf471ee43027ef346f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/installing_smoke_detectors_211--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White circular detector with red button fills the right wrist. Finger displacement is subtle; exact fire_alarm102 binding supports grasp.36 has only newly TRUE hold, while40 meets six-control stability. No installation claim. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "installing_smoke_detectors_211",
+      "branch": "clean",
+      "manifest_sha256": "78a7c7adaad21d6610e6c129501103a0b5851b26f46edf5555ab96264d494d18",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/installing_smoke_detectors_211--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White circular detector with red button fills the right wrist. Finger displacement is subtle; exact fire_alarm102 binding supports grasp.36 has only newly TRUE hold, while40 meets six-control stability. No installation claim. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "setting_the_table_39",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "4801434b3250e1dbf50899b083a5b137fffe56be0489818990666d46724c99f2",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/setting_the_table_39--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand already holds the white plate at the high cabinet in fault0. Keep the fault unlabelled and approve only clean8 plate244 physical hold, not table-setting completion. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "setting_the_table_39",
+      "branch": "clean",
+      "manifest_sha256": "26b6e3926eb3d7a33ce9e5abfc0bb01c46500db66dec6a074af722492aa28149",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/setting_the_table_39--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand already holds the white plate at the high cabinet in fault0. Keep the fault unlabelled and approve only clean8 plate244 physical hold, not table-setting completion. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "boxing_food_after_dinner_110",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "5771f8c9c69b678278f2c3d85fe4a7d9dda0b93254b7ad440f7601efd2f84817",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/boxing_food_after_dinner_110--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand reaches the white food container in the open lower cupboard. Wrist view is heavily occluded by its rim/cabinet; exact tupperware231 and six-control physical states support fault8 versus clean8. No corrective recovery is invented. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "boxing_food_after_dinner_110",
+      "branch": "clean",
+      "manifest_sha256": "a3323c5d63618b4e8bbd258d2f5a05281dc76e203b8ca3b89b7322b2a35dffdd",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/boxing_food_after_dinner_110--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand reaches the white food container in the open lower cupboard. Wrist view is heavily occluded by its rim/cabinet; exact tupperware231 and six-control physical states support fault8 versus clean8. No corrective recovery is invented. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "cleaning_up_branches_and_twigs_264",
+      "branch": "open_gripper",
+      "manifest_sha256": "4fbe08cdc843bb253cdec5eaec992f5f6857863bb3b10500c6b6559f76077186",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/cleaning_up_branches_and_twigs_264--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand targets the forked branch on outdoor pavers; twig geometry is clear in the wrist view. Same branch178 and right fingers agree through opening, closing and sustained grasp52. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "cleaning_up_branches_and_twigs_264",
+      "branch": "clean",
+      "manifest_sha256": "bcf87e62bc25a2fc115c46a2d17bd9a032f92adeabe259569e55d57fcb40ce11",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/cleaning_up_branches_and_twigs_264--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand targets the forked branch on outdoor pavers; twig geometry is clear in the wrist view. Same branch178 and right fingers agree through opening, closing and sustained grasp52. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "vacuuming_floors_204",
+      "branch": "open_gripper",
+      "manifest_sha256": "cf54e5a33053afb9d52dc6bf535c99290404f8d37f4383fe376116e4538fb637",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/vacuuming_floors_204--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 32,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the black vacuum handle/body; head view includes its tube.28 is a newly TRUE but not yet six-control-stable hold,32 and clean8 are stable. This is not vacuuming success. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "vacuuming_floors_204",
+      "branch": "clean",
+      "manifest_sha256": "c02fec897bbfcaf2329764f054c3b87af3ada46f7708053e994e64602fe04afd",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/vacuuming_floors_204--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the black vacuum handle/body; head view includes its tube.28 is a newly TRUE but not yet six-control-stable hold,32 and clean8 are stable. This is not vacuuming success. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "clean_your_rusty_garden_tools_184",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "98d82b348f189f0d1449a6ff60635207eaa4fda96aa8451392d6f02e18981921",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/clean_your_rusty_garden_tools_184--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand is beside the red toolbox; the small steel-wool target is heavily occluded by fingers/box, so RGB alone cannot establish its grasp. Exact steel_wool333 reference binding and six-control physical record support these outcomes. Do not relabel the toolbox as target or claim rust removal. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "clean_your_rusty_garden_tools_184",
+      "branch": "clean",
+      "manifest_sha256": "80ff5cddfd914162caffec0f58a7350d2431538060ee2ea96acbe3730c611ef5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/clean_your_rusty_garden_tools_184--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand is beside the red toolbox; the small steel-wool target is heavily occluded by fingers/box, so RGB alone cannot establish its grasp. Exact steel_wool333 reference binding and six-control physical record support these outcomes. Do not relabel the toolbox as target or claim rust removal. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "cook_a_frozen_pie_282",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "d0570400ed00bfbe83d8196dd68f001c402f59018ecf4a5be5512677676183ba",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/cook_a_frozen_pie_282--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the pie edge at the refrigerator rack. Fault8 has open fingers and clean8 a distinct held orientation; exact apple_pie75 matches. No recovery/progress point is supported, and none is added. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    },
+    {
+      "case": "cook_a_frozen_pie_282",
+      "branch": "clean",
+      "manifest_sha256": "c965bd09d0ac02a1abf32073c66c0476a24670a4754272c13797cfd65c3a642b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/cook_a_frozen_pie_282--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the pie edge at the refrigerator rack. Fault8 has open fingers and clean8 a distinct held orientation; exact apple_pie75 matches. No recovery/progress point is supported, and none is added. Calibration outcomes only; never TRAIN/model selection/action/planner approval. Occluded imagery is not excluded to make accuracy easier."
+    }
+  ]
+}

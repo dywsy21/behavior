@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 12:35 CST / Codex RECOVERY-USABLE：** 首90全78原图/780面板根审完，六份owner review共246结果＝66F/56IP/124S，另外两错误IP拒签、12不可用源不移出90分母；没有新模型预测/训练。12:31本地VPN掉线导致wash仅“领取finished通知”的最后冷进程handshake失败，真正六final probe在断线前全部done。按已有用户授权重新登录VPN（仅loopback/eth2）并恢复lc1 control socket`20261010b`；服务20/active0/6done仍活，仅缺wash结束确认，正在补原protocol的transport-only finished ACK（0新轨迹/控制/更新），保留旧网络失败日志。补97须确认三RTX进程已退出、A800最终冻结SHA不变后开始，不重跑六条成功/失败。
+
+- **2026-10-10 12:29 CST / Codex RECOVERY-USABLE：** 首90原图审核发现两条真实语义冲突：dispose_glass106/t36、store_produce183/t20的候选IP忽略另一手已稳定抓住，实际指令arm=UNSPECIFIED；尚未签入任何数据/模型。全来源扫描定位仅这两处，撤候选、不改历史指令、不补造成功。已有最终签发语义门继续生效，并将同门前置到未来审核材料生成、保留拒绝原因；199恢复回归通过。根目前已亲审64可用来源645原面板，前五份签205结果（拒1；第2冲突待其原图审核），余14来源尚未签。低global20最后OPEN29 probe运行，原服务/当前采集代码不热改。
+
+- **2026-10-10 12:24 CST / Codex RECOVERY-USABLE：** 原90新v2审核材料完整生成/迁本地：90分母、78可审来源、780原RGB面板/248候选结果，12不可用均有绑定回执；全78拼图SHA和190条F/S六控物理支持机器核过。根已亲审前28可用来源294面板，按具体case/arm/target/帧签97结果（`fresh90_calibration_owner_review_part{1,2}_v1.json`），其余50来源未人工批准，不训练/不读新预测。低v6已真实global20保存，最终六probe仍运行；未提前视为整个窗口关闭/未启动v7。
+
 - **2026-10-10 12:18 CST / Codex RECOVERY-USABLE：** RTX新radio `short-rl-radio155-resume3-peer-v2`/1210113e已真实启动、GPU preflight过并加载scene，接原A800 global19未领job（不重复已完成任务/不改配方）。首90全部终态为78候选/9参考未复现/3工程失败；原审核链因未显式PYTHONPATH误导入旧g05而失败，partial不动，同6395冻结源显式`PYTHONPATH=src`重新生成`grasp-corpus-v2`→`grasp-cohort-v2.json`→`grasp-review-v2`，仍未签标签/校准。补97待机已改`observer-supplement97-v2`，绑定新radio v2、旧wash/tripod v1和新review-v2全90材料；未开始采集。高联合部署、低可靠提升、新头校准仍未完成。
 
 - **2026-10-10 12:07 CST / Codex RECOVERY-USABLE：** 上一goal回合属实质进展（续段实现、97源全验迁移、原图流水线和scene库存修复）；本回合Git pull/fetch已同步。新实查发现radio旧worker已12:01退出，child16在GPU preflight挡PID2603769，未建episode目录/未领取job/0控制；该PID为同一自有校准sorting-books240，12:01:23完成、26秒sim shutdown、28秒preflight失败，退出竞态高度吻合但旧日志未记录确切/proc errno。A800 PID1890914仍live/global19，其余两worker继续。新增完整GPU inventory重查（不忽略missing PID、不豁免新到的foreign/主GPU、记录每次快照），198回归/编译过；准备仅新radio客户端续剩余pending任务，原server/已完成轨迹/配方不动。补97待机需改绑定到新radio终态，旧失败日志/目录全部保留。

@@ -2,12 +2,32 @@ from copy import deepcopy
 from pathlib import Path
 import sys
 import unittest
+import json
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_independent_cohort import cohort_sources, proposed_phase_points
+from recovery_independent_cohort import cohort_sources, proposed_phase_points, semantic_phase_candidates
 
 
 class CohortTests(unittest.TestCase):
+    def test_review_proposals_preserve_but_reject_other_hand_semantic_contradiction(self):
+        rows=[]
+        for t in range(12):
+            state=dict(target_name='basket',grasp=dict(left='FALSE',right='TRUE'),
+                gripper_aperture=dict(left=.05 if t<8 else .01,right=.01))
+            rows.append(dict(physical_before=deepcopy(state),physical_audit=deepcopy(state),
+                label_kind='same_state_local_teacher_candidate'))
+        plan=dict(control_step=4,active_skills_semantic_json=json.dumps([
+            dict(verb='GRASP',target='basket',arm='UNSPECIFIED')]))
+        labels,rejected=semantic_phase_candidates(rows,'left',[plan],[8])
+        self.assertEqual(labels,{8:None})
+        self.assertEqual(rejected[0]['proposed_outcome'],'IN_PROGRESS')
+        self.assertIn('already satisfied',rejected[0]['reason'])
+        self.assertEqual(proposed_phase_points(labels,4)[0],[(8,'UNLABELLED')])
+        # Explicit LEFT is a different real command; do not silently rewrite it.
+        plan['active_skills_semantic_json']=json.dumps([dict(verb='GRASP',target='basket',arm='LEFT')])
+        self.assertEqual(semantic_phase_candidates(rows,'left',[plan],[8]),({8:'IN_PROGRESS'},[]))
+        self.assertEqual(rows[8]['physical_before']['grasp']['right'],'TRUE')
+
     def setUp(self):
         self.spec=dict(schema='recovery_independent_cohort_v1',declared_before_any_model_predictions=True,
             training_forbidden=True,model_selection_forbidden=True,calibration_must_not_use_frozen_test=True,

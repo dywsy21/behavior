@@ -1,0 +1,468 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main at 2026-10-10 04:29:12 UTC; personally inspected source60-67,71,73-75, 12 sheets/126 original RGB panels. Exact target/arm/stability matched; dispose_of_glass106 IP36 rejected after reading actual issued UNSPECIFIED-arm plans. No predictions consulted.",
+  "cohort_sha256": "b1a9329f574062a73694bac0347dbb6c58f0020529340900443315a0e978b2ea",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "bd8e8cc77d642ff838c477b0ba8f4442860c697c67da332e02e547c8a19e31b3",
+  "reviewed_sheet_count": 12,
+  "total_sheet_count": 78,
+  "declared_source_count": 90,
+  "rejected_candidates": [
+    {
+      "case": "dispose_of_glass_106",
+      "branch": "open_gripper_joint_jitter",
+      "control_step": 36,
+      "proposed_outcome": "IN_PROGRESS",
+      "reason": "UNSPECIFIED-arm GRASP already stably satisfied by right hand; not an incomplete left-hand command. No replacement label invented."
+    }
+  ],
+  "branches": [
+    {
+      "case": "organizing_school_stuff_220",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "68658218f56b6ab9442bec4a674c09198262f4be5c2d0a03f5489c3d59de15ce",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/organizing_school_stuff_220--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the orange-edged tote/bag by the cabinet. Exact tote208/right identity matches the open/closing finger sequence and sustained72/clean8 hold. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "organizing_school_stuff_220",
+      "branch": "clean",
+      "manifest_sha256": "7463fc2f8366dcef6aa5558641d3d718342953b67eca537c8e67ae35212585eb",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/organizing_school_stuff_220--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the orange-edged tote/bag by the cabinet. Exact tote208/right identity matches the open/closing finger sequence and sustained72/clean8 hold. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "put_together_a_basic_pruning_kit_264",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "a9f75277e5f73fa5b8f3ebe05088afbe52d553800103b773a5bebca29b75e0df",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/put_together_a_basic_pruning_kit_264--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Black-handled shears are visible in the right wrist over the garage floor. Same shears60 target is maintained; labels do not imply that the pruning kit is assembled. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "put_together_a_basic_pruning_kit_264",
+      "branch": "clean",
+      "manifest_sha256": "ca75ff1c244e60e69a7eef6a22edad7a93e64c6664f60d44bec52a18fc5db31d",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/put_together_a_basic_pruning_kit_264--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Black-handled shears are visible in the right wrist over the garage floor. Same shears60 target is maintained; labels do not imply that the pruning kit is assembled. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "dispose_of_glass_106",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b9de88a94ecfc4356ea4b11e221a9d10dbd7d8b3c8d6b9fc06f24ab50ad17b9e",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/dispose_of_glass_106--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Both wrists frame the black trash container. REJECT corrective36 IN_PROGRESS: the actual UNSPECIFIED-arm command is already satisfied by six preceding right-hand holds, although selected left hand is still empty. Keep supported FAILED8, both-hand held SUCCEEDED52 and clean8. No planner/action target is approved. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "dispose_of_glass_106",
+      "branch": "clean",
+      "manifest_sha256": "a93fcf17859f058597d19ce9e8c06d073923423166a7bbaf2ae44a8eefbd7278",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/dispose_of_glass_106--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Both wrists frame the black trash container. REJECT corrective36 IN_PROGRESS: the actual UNSPECIFIED-arm command is already satisfied by six preceding right-hand holds, although selected left hand is still empty. Keep supported FAILED8, both-hand held SUCCEEDED52 and clean8. No planner/action target is approved. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "installing_a_modem_132",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "75de60ba7c9bce0516deb7e3547d8e7e74a37c66acade7fcd1f0258dbdb0aee6",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/installing_a_modem_132--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White modem by the wooden table is already in the left hand at fault0; leave the fault UNLABELLED. Clean8 modem72 sustained grasp alone is positive, not installation success. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "installing_a_modem_132",
+      "branch": "clean",
+      "manifest_sha256": "66a41f38b8b1fec7a680f7cc20ba1181d34314d1941aaeb288652e1f34d9990b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/installing_a_modem_132--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White modem by the wooden table is already in the left hand at fault0; leave the fault UNLABELLED. Clean8 modem72 sustained grasp alone is positive, not installation success. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "make_cabinet_doors_269",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "84ae9e6462ba793f392cf8f400acf53bdd9549f66962cc80fd424353d024e90b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/make_cabinet_doors_269--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist targets the wooden cabinet-door panel, with right hand separate. Same cabinet_door73 matches failed8 and held clean8; no corrected grasp was supported or invented. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "make_cabinet_doors_269",
+      "branch": "clean",
+      "manifest_sha256": "5adbd9f22ce40a4f16ea5f0dc639d29cddc93aa7f72b58fa45e24d6fa2351e92",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/make_cabinet_doors_269--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist targets the wooden cabinet-door panel, with right hand separate. Same cabinet_door73 matches failed8 and held clean8; no corrected grasp was supported or invented. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "polishing_shoes_279",
+      "branch": "open_gripper",
+      "manifest_sha256": "34d3d235d32c1d0be31229321ad97a178b9a28d3df6e29209df26976b7715e53",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/polishing_shoes_279--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Red brush is visible at the left wrist beside the bed lamp. Brush42/left closure28 remains in progress, not success; clean8 is independently held. No polishing outcome. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "polishing_shoes_279",
+      "branch": "clean",
+      "manifest_sha256": "20fc161e3653429f36b669d9fd27d5e6869a9102a9c47d0a0d994742558f5f7b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/polishing_shoes_279--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Red brush is visible at the left wrist beside the bed lamp. Brush42/left closure28 remains in progress, not success; clean8 is independently held. No polishing outcome. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "clean_up_broken_glass_264",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "e4bbb084ac902ab0a719f9f040deb185c69229a00bb29a05b962ab8197a19c81",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/clean_up_broken_glass_264--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the jagged transparent broken-glass object over a black/white tiled floor. Same broken_glass97 binding and sustained hold agree across the views; no cleanup completion is inferred. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "clean_up_broken_glass_264",
+      "branch": "clean",
+      "manifest_sha256": "20dc3b5078d75a22deaef708eafa1ee7a76329f222f9fb7e218c01cd590116b2",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/clean_up_broken_glass_264--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the jagged transparent broken-glass object over a black/white tiled floor. Same broken_glass97 binding and sustained hold agree across the views; no cleanup completion is inferred. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "packing_meal_for_delivery_35",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "010f18fc9d0ae4fc8a273d74bd5287726cac08c8259b45c19f29e7e2b3da032c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/packing_meal_for_delivery_35--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand targets the tall brown paper bag on the commercial-kitchen counter. Bag75 and left fingers match fault/progress; no supported corrective success exists, and only clean8 is positive. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "packing_meal_for_delivery_35",
+      "branch": "clean",
+      "manifest_sha256": "af7f587f1492c253858b654df0f0c119e00a7f3407aabcbbbd3a65ba0693be23",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/packing_meal_for_delivery_35--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand targets the tall brown paper bag on the commercial-kitchen counter. Bag75 and left fingers match fault/progress; no supported corrective success exists, and only clean8 is positive. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "putting_dirty_dishes_in_sink_272",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c08e2a172f979dcd638185527b0651a9f2f5c71d23279dae49c871bff7ce5104",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/putting_dirty_dishes_in_sink_272--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Purple stained bowl is under the right wrist on a white table next to red chairs. Same bowl135 finger closure/hold is supported; stains do not change the GRASP label or imply washing success. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "putting_dirty_dishes_in_sink_272",
+      "branch": "clean",
+      "manifest_sha256": "fe91a60422f147d634efcdf23cf9713ee52e585478e1a1c63b8b34336f19f923",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/putting_dirty_dishes_in_sink_272--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Purple stained bowl is under the right wrist on a white table next to red chairs. Same bowl135 finger closure/hold is supported; stains do not change the GRASP label or imply washing success. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "collecting_aluminum_cans_280",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "0c616a686b4e1300e8f857da81d786d0f512c2d9cf1e07e2f62354bff16545df",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/collecting_aluminum_cans_280--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the nearer dark-topped blue can, distinct from the tan can in the left view. Exact can44 and right-arm hold evidence agree at44/clean8. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "collecting_aluminum_cans_280",
+      "branch": "clean",
+      "manifest_sha256": "12daacd616bf8a38d4dac0b6f81160042492e29ca461a30188ec7b89b142138a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/collecting_aluminum_cans_280--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the nearer dark-topped blue can, distinct from the tan can in the left view. Exact can44 and right-arm hold evidence agree at44/clean8. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "rearrange_your_room_194",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "127adaebd08964dd8167696c2dab7877c78131f89ba9a7ab718199c4b7daeb14",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/rearrange_your_room_194--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Blue-patterned pillow66 lies between the wrists; physical evidence identifies only left stable grasp at44 and clean8. Right visual proximity is not treated as a second hold or task completion. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "rearrange_your_room_194",
+      "branch": "clean",
+      "manifest_sha256": "49756db11362eeecdd86ba54bacb8cb34d33bbfc64dbb8f82d652c66a7c43381",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/rearrange_your_room_194--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Blue-patterned pillow66 lies between the wrists; physical evidence identifies only left stable grasp at44 and clean8. Right visual proximity is not treated as a second hold or task completion. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "installing_a_fax_machine_116",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "02d302547020d29a58f51c4ae6f3ab12f3444bf34a5fb425c7677e77cd631831",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/installing_a_fax_machine_116--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 40,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Grey fax keypad and body are visible in the right wrist. Facsimile180 is newly held at40 but not yet six-control stable, so40 remains progress and44/clean8 success. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    },
+    {
+      "case": "installing_a_fax_machine_116",
+      "branch": "clean",
+      "manifest_sha256": "f2abbd74bf9a650d61d90845d6e11326ff65ad57e009a83ebf5a3b998153c26f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/installing_a_fax_machine_116--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Grey fax keypad and body are visible in the right wrist. Facsimile180 is newly held at40 but not yet six-control stable, so40 remains progress and44/clean8 success. Calibration outcomes only; no TRAIN/checkpoint selection/action/planner approval."
+    }
+  ]
+}

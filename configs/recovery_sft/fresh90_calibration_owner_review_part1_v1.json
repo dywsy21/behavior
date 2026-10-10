@@ -1,0 +1,611 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 12:22 CST; personally inspected sources00-09 and12-17 (16 sheets /165 original RGB panels). All78 sheet SHA and190 six-control F/S evidence sequences checked; remaining62 sheets NOT yet manually approved.",
+  "cohort_sha256": "b1a9329f574062a73694bac0347dbb6c58f0020529340900443315a0e978b2ea",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "bd8e8cc77d642ff838c477b0ba8f4442860c697c67da332e02e547c8a19e31b3",
+  "reviewed_sheet_count": 16,
+  "total_sheet_count": 78,
+  "declared_source_count": 90,
+  "branches": [
+    {
+      "case": "turning_on_radio_270",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1cfc049dc741327f83b2b8554cd81fad38714d72ec4e001da00616cb9622d5b9",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/turning_on_radio_270--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "The red radio and right finger geometry agree across all three views. Open fingers at8, corrective closure at36, and sustained same-target right hold at52 match the recorded phase sequence. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "turning_on_radio_270",
+      "branch": "clean",
+      "manifest_sha256": "83d5d68b8da4e65aca228bc87832c037991a974e3a879f5b096f1bdbcfde3fb5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/turning_on_radio_270--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "The red radio and right finger geometry agree across all three views. Open fingers at8, corrective closure at36, and sustained same-target right hold at52 match the recorded phase sequence. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "picking_up_trash_181",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ce04706c63923fe524d1edda09680be0eb02671ff20d95dba32ef331087e3b2a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/picking_up_trash_181--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "The brown trash container is in the right-hand view. Fault anchor0 is explicitly UNLABELLED (already held); approve no fault/recovery result. Only the separately supported clean8 hold is signed. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "picking_up_trash_181",
+      "branch": "clean",
+      "manifest_sha256": "0198beed7199bdf1548f53997f768e84452976d69284eab683edbdbbc7f2302c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/picking_up_trash_181--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "The brown trash container is in the right-hand view. Fault anchor0 is explicitly UNLABELLED (already held); approve no fault/recovery result. Only the separately supported clean8 hold is signed. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "putting_away_Halloween_decorations_2",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "60d7f41bbb4c51fa34d82801783b23c3a61311f28ab03b49d5c2f23b28365ef7",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/putting_away_Halloween_decorations_2--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Black cauldron fills the right-wrist view; fingers separate then approach the rim. The same cauldron and right arm remain bound. Six-control physical hold supports52 and clean8, not whole-task completion. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "putting_away_Halloween_decorations_2",
+      "branch": "clean",
+      "manifest_sha256": "54b3557f06093e32138db575b673b78f883a6caaaa81eb3de49bc316d436e192",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/putting_away_Halloween_decorations_2--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Black cauldron fills the right-wrist view; fingers separate then approach the rim. The same cauldron and right arm remain bound. Six-control physical hold supports52 and clean8, not whole-task completion. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "can_meat_210",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ee4494dccb07fad6aaa18344f25fdfa94d33179b7650d9a3c2455c517c28b70c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/can_meat_210--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the orange curved sausage on the wooden counter; right wrist shows a separate pot and is not the supervised arm. Left closure/progress and subsequent same-sausage hold align with the recorded states. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "can_meat_210",
+      "branch": "clean",
+      "manifest_sha256": "01126ec656e4302f166afc5f17637152ac26e08c0670da793f6d26d768cf5763",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/can_meat_210--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the orange curved sausage on the wooden counter; right wrist shows a separate pot and is not the supervised arm. Left closure/progress and subsequent same-sausage hold align with the recorded states. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "setting_mousetraps_92",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "0e7f6fda4048395b40b7254545aca0bd89ae637e301c32726b09861132fb439a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/setting_mousetraps_92--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "The small trap is visible on the orange dresser under the right hand. Right fingers open, close around the same trap, then satisfy the sustained physical hold; the nearby second object/left arm is not confused with the target. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "setting_mousetraps_92",
+      "branch": "clean",
+      "manifest_sha256": "e35a67a7cda75aa14ca928a3cecba216e5457f27416757f776250a5bd90c42e4",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/setting_mousetraps_92--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "The small trap is visible on the orange dresser under the right hand. Right fingers open, close around the same trap, then satisfy the sustained physical hold; the nearby second object/left arm is not confused with the target. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "hiding_Easter_eggs_224",
+      "branch": "open_gripper",
+      "manifest_sha256": "dec922bb0bbe71e1070d19b1b06a04f6e999e7d8e2579012ee7480618b63178b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/hiding_Easter_eggs_224--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the wicker basket handle and patterned eggs. The supervised object is the basket, not one of the eggs. Left finger/handle motion agrees with the bound basket hold and clean control. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "hiding_Easter_eggs_224",
+      "branch": "clean",
+      "manifest_sha256": "9712304254a4ff10633a47dfc8c3812688ba290c5168a9538955fc878070ddc9",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/hiding_Easter_eggs_224--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the wicker basket handle and patterned eggs. The supervised object is the basket, not one of the eggs. Left finger/handle motion agrees with the bound basket hold and clean control. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "picking_up_toys_19",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "345bd76ef029c0c8ad1c44a145acaf63995418605e8e29e939ceee85d9ff6c75",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/picking_up_toys_19--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand surrounds the blue/green board-game box on the bed. The box identity and arm remain consistent through open fingers, approach68 and stable hold88; second distant box is not substituted. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "picking_up_toys_19",
+      "branch": "clean",
+      "manifest_sha256": "c463f074c29abb0dd9dd38b1112a661a102cfd13d78cb900b5e81da37d1eec14",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/picking_up_toys_19--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand surrounds the blue/green board-game box on the bed. The box identity and arm remain consistent through open fingers, approach68 and stable hold88; second distant box is not substituted. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "rearranging_kitchen_furniture_208",
+      "branch": "open_gripper",
+      "manifest_sha256": "b719f1a3fa36300da02fbb6c69e13169c12f89284f0c6e0c90a8c9ab454e18f8",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/rearranging_kitchen_furniture_208--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 80,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist is close to the black toaster slots, with much of the grasp occluded. Head view and exact toaster91 binding agree; do not infer success visually alone, use the audited sustained same-target physical hold at80/clean8. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "rearranging_kitchen_furniture_208",
+      "branch": "clean",
+      "manifest_sha256": "833ed8783c787d1eb949a37a972a0412438bf2bf238f8c014e26e3c494d1ec10",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/rearranging_kitchen_furniture_208--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist is close to the black toaster slots, with much of the grasp occluded. Head view and exact toaster91 binding agree; do not infer success visually alone, use the audited sustained same-target physical hold at80/clean8. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_111",
+      "branch": "open_gripper",
+      "manifest_sha256": "0eb0a528a3376729e181efa6a739757259eff59f2f83801e3c5d3a6cdf38b4d0",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/putting_up_Christmas_decorations_inside_111--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the wicker basket handle by the Christmas tree. Right fingers/handle alignment follows the reported retry sequence; the ornaments inside are not treated as the grasp target. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_111",
+      "branch": "clean",
+      "manifest_sha256": "5b8fe7b87881e0e36fec44493f043c18acdbf013bbfd8c8ff70671908da6a90a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/putting_up_Christmas_decorations_inside_111--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the wicker basket handle by the Christmas tree. Right fingers/handle alignment follows the reported retry sequence; the ornaments inside are not treated as the grasp target. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "set_up_a_coffee_station_in_your_kitchen_1",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "2d2b8edbbd9cad5e69101b95417c4e43dc39f81746b30b910fb91cb48d6c06ba",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/set_up_a_coffee_station_in_your_kitchen_1--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White coffee cup is under the right wrist. Fault8 shows the open hand while clean8 shows the held cup in a different orientation. No recovery/progress/success point exists on the corrective branch, and none is added. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "set_up_a_coffee_station_in_your_kitchen_1",
+      "branch": "clean",
+      "manifest_sha256": "467d717261597e85b9c0518120accb2efd849ae3a92d90e1e7b5a99cc4aba96a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/set_up_a_coffee_station_in_your_kitchen_1--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White coffee cup is under the right wrist. Fault8 shows the open hand while clean8 shows the held cup in a different orientation. No recovery/progress/success point exists on the corrective branch, and none is added. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "bringing_in_wood_298",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "db3d2e6ee350087c1680ae43fef520967af0b192a5780b5b01c684d8a1470d95",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/bringing_in_wood_298--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand targets the orange plywood plank over the outdoor pavers. Fault and clean8 are distinct physical holds; no corrective recovery is present in this material, so only FAILED8 and clean SUCCEEDED8 are signed. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "bringing_in_wood_298",
+      "branch": "clean",
+      "manifest_sha256": "c31e2ba2940f3a3e51db09484dd05de48047c3431296047a0f89c734bbb77d5d",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/bringing_in_wood_298--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand targets the orange plywood plank over the outdoor pavers. Fault and clean8 are distinct physical holds; no corrective recovery is present in this material, so only FAILED8 and clean SUCCEEDED8 are signed. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "tidying_bedroom_245",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "73d944e8ab0dac44adf158a2575ac210fa572fc2945d2fd52d3e791bc489926d",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/tidying_bedroom_245--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the nearer blue sandal, not the second sandal ahead. Right fingers open then close around this sandal; sustained grasp52 and clean8 agree with the exact object binding. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "tidying_bedroom_245",
+      "branch": "clean",
+      "manifest_sha256": "66ed2139656fb5ea5f7705bd3fa075b2a0536a2b024d29bb6216f1a3a6541bea",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/tidying_bedroom_245--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the nearer blue sandal, not the second sandal ahead. Right fingers open then close around this sandal; sustained grasp52 and clean8 agree with the exact object binding. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "outfit_a_basic_toolbox_5",
+      "branch": "open_gripper",
+      "manifest_sha256": "dffe0f71481519a722947586fb07fc64d6549bb4f9b350db06e5de48176fb9d5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/outfit_a_basic_toolbox_5--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the dark/blue screwdriver handle above the washer. Corrective36 is only ongoing closure and no supported success is present. Clean8 has the separately sustained left grasp. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "outfit_a_basic_toolbox_5",
+      "branch": "clean",
+      "manifest_sha256": "7f69bcb5cedb24ce7c7d85910c5f1f6193bbabb47da2b03915f4e6d2cc490377",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/outfit_a_basic_toolbox_5--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the dark/blue screwdriver handle above the washer. Corrective36 is only ongoing closure and no supported success is present. Clean8 has the separately sustained left grasp. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "sorting_vegetables_197",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "edc54dc423613ac7f82185cf29830f4bd5ffcde37b625d2def6abe34cb6dc698",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/sorting_vegetables_197--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "The right hand targets the basket handle, not the vegetables inside. Fault8 and clean8 differ in the right fingers/handle geometry and physical grasp; no unsupported corrective completion is approved. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "sorting_vegetables_197",
+      "branch": "clean",
+      "manifest_sha256": "4af9c9feb3978f83e789b6573d361e6e55fb12b50e611a53b0470cbbc2583af2",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/sorting_vegetables_197--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "The right hand targets the basket handle, not the vegetables inside. Fault8 and clean8 differ in the right fingers/handle geometry and physical grasp; no unsupported corrective completion is approved. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "collecting_childrens_toys_133",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "69af24614d9b0d4545d1d5db4f9ea4346beeb7481b964d716e805074950c2ae1",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/collecting_childrens_toys_133--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the nearer pink teddy bear; the second toy by the far wall stays separate. Right finger closure and the same teddy267 physical binding support the progression and clean control. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "collecting_childrens_toys_133",
+      "branch": "clean",
+      "manifest_sha256": "5f7f1c8edead18238f8b8653c28250ccd149bed8d8b97a624027ce7d2cd8680e",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/collecting_childrens_toys_133--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the nearer pink teddy bear; the second toy by the far wall stays separate. Right finger closure and the same teddy267 physical binding support the progression and clean control. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "putting_shoes_on_rack_10",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ac8f381a258692074d8c65ce9a4dd790e869a10e9b30107f8b7ee75ea7eeccbd",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/putting_shoes_on_rack_10--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist frames the nearer white/green gym shoe. The other shoe remains farther away; exact shoe78 and right-arm identity agree, with open/closing/sustained hold phases and independent clean8. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    },
+    {
+      "case": "putting_shoes_on_rack_10",
+      "branch": "clean",
+      "manifest_sha256": "57e639dd17a7f505b8af8990a0936a521ac80d500d30e6565e72b13120738062",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-review-v2/putting_shoes_on_rack_10--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist frames the nearer white/green gym shoe. The other shoe remains farther away; exact shoe78 and right-arm identity agree, with open/closing/sustained hold phases and independent clean8. Only GRASP outcome calibration is approved; never TRAIN/model selection/action/planner supervision. No full-task success claim."
+    }
+  ]
+}

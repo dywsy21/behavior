@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-10 12:35 CST / Codex：** B完成首90中的78可用源全部780原图亲审，签246结果、两条UNSPECIFIED双手冲突IP拒签，12不可用保留；199回归过，尚未新预测/校准。C global20与6final物理probe全部已完成，VPN中断仅影响wash最终结束通知；已按授权恢复lc1，补0控制transport ACK后核最终权重/冻结指纹。下一续段和补97仍独立冻结源码，不合main、不派subagent/lc2不动。
+
 **2026-10-10 12:18 CST / Codex：** B首90全闭78候选/12不可用仍计分母；审核链修源码PYTHONPATH在新v2目录重做，不自动签核。C新radio客户端1210113e已过preflight，续原服务19待领任务，其余worker/配方不变；补97依赖队列对应更新。高新权重尚未联合在线部署/低尚无可靠提升，仍根执行、不派subagent、不动lc2。
 
 **2026-10-10 12:07 CST / Codex：** C确认旧radio worker preflight在自有collector退出期间失败，未执行/领取该条任务，server19仍存活；完整GPU快照复查198测试过，拟只续radio剩余任务，不重训/不把缺任务计失败。B补97队列须换为新radio完成依赖，原90和待审材料链继续；所有新标签/校准/部署仍待真实核验，不派subagent、不动lc2。
