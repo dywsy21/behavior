@@ -1,0 +1,14 @@
+{
+  "evidence_root": "/data/workspace/wsy/behavior2026",
+  "protected_groups": "/data/workspace/wsy/behavior2026/runs/recovery_sft_preparation_20261009/cpu-preflight-v1/protected-groups.json",
+  "units": [
+    {
+      "corpus": "/data/workspace/wsy/behavior2026/datasets/recovery-postfit-planner-transport-20261010-v1/runs/recovery100_collection_20261009/postfit-planner-reviewed-unit-v1",
+      "evidence_root": "/data/workspace/wsy/behavior2026/datasets/recovery-postfit-planner-transport-20261010-v1",
+      "approvals": [
+        "/data/workspace/wsy/behavior2026/datasets/recovery-postfit-planner-transport-20261010-v1/runs/recovery100_collection_20261009/postfit-planner-reviewed-unit-v1/approvals.json"
+      ]
+    }
+  ],
+  "notes": "Exact transport relocation only; original 36 TRAIN/42 DEV, no CAL/test or new semantic approval."
+}

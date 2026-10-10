@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 20:29 CST：新增高层planner-only签核包
+
+- RTX `code/postfit-planner-approved-v1`=86ea797c；`runs/recovery100_collection_20261009/postfit-planner-approvals-{part1..part8,semantic_resolution}-v1.json`、`postfit-planner-reviewed-unit-v1`及同名tar完成。全78仅planner准入，admission418e073e…b8dda、tar eab93c64…a8908；CPU签发tmux自然退出。原始223组/669分支与3暗图hold保留。
+- 本地`artifacts/recovery-heterogeneous-20261010/postfit-planner-reviewed-unit-v1.tar.gz`完整验SHA，lc1同名incoming完整传完待全验。此前不完整前缀明确隔离`incoming/postfit-planner-reviewed-unit-v1.partial-incomplete-upload.tar.gz`，禁止消费；未覆盖任何活跃/原始数据。新A800目标`datasets/recovery-postfit-planner-transport-20261010-v1`与`datasets/recovery-postfit-planner-union-20261010-v1`尚未构建。
+
 ## 2026-10-10 20:03 CST：新高层无泄漏审核材料
 
 - lc1 `src/postfit-planner-review-v1`、RTX `code/postfit-planner-review-v1`均98ce86da；只CPU导出/审核材料生成，两作业已完成，未动原权重/共享env/队友。A800异质run根`v11-postfit-exposure-v1.json` SHA8842a093…90ef8，已复制RTX及本地同名artifact并核SHA。

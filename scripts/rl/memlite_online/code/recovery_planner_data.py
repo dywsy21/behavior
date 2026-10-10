@@ -24,7 +24,11 @@ def planner_projection(candidate,history,target,feedback,high_sha256,*,uncertain
         raise ValueError('Planner target is not the actually verified issued command')
     if (feedback['sample_id']!=sid or feedback['source_group']!=candidate['source_group']
             or feedback['control_step']!=candidate['control_step']): raise ValueError('Shifted predicted feedback')
-    validate_prediction_provenance(feedback['provenance'],group=candidate['source_group'],high_sha256=high_sha256)
+    if feedback['provenance'].get('schema') == 'frozen_source_disjoint_observer_feedback_v1':
+        from recovery_postfit_feedback import validate_provenance
+        validate_provenance(feedback['provenance'],group=candidate['source_group'],high_sha256=high_sha256)
+    else:
+        validate_prediction_provenance(feedback['provenance'],group=candidate['source_group'],high_sha256=high_sha256)
     value=json.loads(feedback['execution_feedback'])
     fields={'schema','same_intent_controls','same_intent_planner_refreshes','attempt_index','estimated_member_outcomes',
             'attempt_count_scope','estimated_bundle_outcome','source','stalled_is_not_failed'}
