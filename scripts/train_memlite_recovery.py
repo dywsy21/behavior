@@ -102,7 +102,8 @@ def main():
             new=VerifiedRecoveryActionDataset(**kwargs,split='train');dev=VerifiedRecoveryActionDataset(**kwargs,split='dev')
             schedule=list(finite_mixture_schedule(new.rows,by_task,batch_size=ticket['global_batch'],
                 maximum_event_passes=ticket['event_passes'],seed=recipe['seed'],
-                allow_extended_event_fit=recipe.get('extended_event_fit',False)))
+                allow_extended_event_fit=recipe.get('extended_event_fit',False),
+                anchor_selection_protocol=recipe['L0'].get('anchor_selection_protocol','legacy_shared_rng_v1')))
         else:
             histories=[json.loads(x) for x in Path(ticket['files']['history']['path']).read_text().splitlines()]
             feedback=[json.loads(x) for x in Path(ticket['files']['feedback']['path']).read_text().splitlines()]

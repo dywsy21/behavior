@@ -62,5 +62,27 @@ class DataTests(unittest.TestCase):
         self.assertEqual([b['new_count'] for b in batches],[2,1])
         self.assertTrue(all(b['expert_count']>b['new_count'] for b in batches))
 
+    def test_more_anchors_do_not_change_common_event_expert_or_rank_schedule(self):
+        original=[dict(candidate=dict(split='train',source_group=f't:{i}'),
+                       approval=dict(pool='action',event_id=str(i))) for i in range(19)]
+        expanded=deepcopy(original)+[deepcopy(original[i]) for i in range(5) for _ in range(3)]
+        kwargs=dict(expert_by_task={str(i):list(range(i*10,i*10+10)) for i in range(100)},
+                    batch_size=8,maximum_event_passes=20,allow_extended_event_fit=True,seed=17,
+                    anchor_selection_protocol='independent_anchor_rng_v1')
+        a=list(finite_mixture_schedule(original,**kwargs))
+        b=list(finite_mixture_schedule(expanded,**kwargs))
+        self.assertEqual(len(a),200)
+        def project(schedule,rows):
+            return [(batch['event_pass'],batch['new_events'],
+                [(kind,(rows[idx]['candidate']['source_group'],rows[idx]['approval']['event_id'])
+                         if kind=='new' else idx) for kind,idx in batch['rows']]) for batch in schedule]
+        self.assertEqual(project(a,original),project(b,expanded))
+        self.assertTrue(any(idx>=19 for batch in b for kind,idx in batch['rows'] if kind=='new'))
+        self.assertEqual(b,list(finite_mixture_schedule(expanded,**kwargs)))
+
+    def test_unknown_anchor_protocol_rejected(self):
+        with self.assertRaises(ValueError):
+            list(finite_mixture_schedule([],{},anchor_selection_protocol='unregistered'))
+
 
 if __name__=='__main__':unittest.main()

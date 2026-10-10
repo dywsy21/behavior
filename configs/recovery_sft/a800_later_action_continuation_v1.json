@@ -1,0 +1,100 @@
+{
+  "schema": "memlite_recovery_preparation_recipe_v1",
+  "owner": "Codex",
+  "root": "/data/workspace/wsy/behavior2026",
+  "preferred_node": "10.19.7.3",
+  "training_authorized_by_this_file": true,
+  "authorization": "User's active RECOVERY-USABLE goal permits further reviewed-data SFT and heterogeneous short-skill RL until verified usable; this is one measured SFT stage, not the goal endpoint.",
+  "hypothesis": "Adding individually reviewed middle/late OPEN_DOOR action windows, at unchanged independent-event weight, improves execution beyond matched continued SFT on start-only windows. Both arms start from the exact same L0/200 weight, use identical expert samples/event/rank order and optimizer settings, and require paired real skill execution before promotion.",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "parents": {
+    "high": {
+      "path": "runs/memlite_stage1_high_100task_v1/checkpoints/step_00048045_save_0027.pt",
+      "sha256": "3683f719ebb033cacf77afdc0330b25f43a3c3e5b704b0bda9623608f092c3d1",
+      "step": 48045
+    },
+    "low": {
+      "path": "runs/recovery_heterogeneous_20261010/L0/checkpoints/step_00000200_save_0004.pt",
+      "sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044",
+      "step": 200
+    }
+  },
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "seed": 17,
+  "maximum_updates_per_line": 2000,
+  "maximum_event_passes": 20,
+  "extended_event_fit": true,
+  "maximum_wall_seconds_per_line": 86400,
+  "stop_on_first_limit": true,
+  "evaluation_every_updates": 50,
+  "stopping_criteria": "One fixed 20-event-pass comparison window, expected 200 updates per arm; no automatic restart. Halt for nonfinite/identity/gradient/resource failures. Owner monitors original heldout regression >10% and physical paired evidence. This observation window is not the user's goal endpoint or a data collection quota.",
+  "nccl_env": {
+    "NCCL_P2P_DISABLE": "1",
+    "NCCL_IB_DISABLE": "1",
+    "NCCL_SOCKET_IFNAME": "bond0"
+  },
+  "H0": {
+    "pool": "outcome",
+    "trainable": "temporal_adapter_and_result_head_only",
+    "learning_rate": 0.0001,
+    "weight_decay": 0.01,
+    "max_causal_checks": 4,
+    "calibration_required_before_runtime": true
+  },
+  "H1": {
+    "pool": "planner",
+    "trainable": "high_planner_only",
+    "learning_rate": 0.000001,
+    "weight_decay": 0.01,
+    "feedback": "real_group_OOF_predictions_UNKNOWN_if_uncalibrated",
+    "rehearsal": "original_100task_plans",
+    "new_high_hash_invalidates_old_calibration": true
+  },
+  "L0": {
+    "pool": "action",
+    "trainable": "low_action_expert_only",
+    "learning_rate": 0.00001,
+    "weight_decay": 0.03,
+    "rehearsal": "original_100task_actions",
+    "padding_dimensions": [
+      7,
+      8,
+      17,
+      18
+    ],
+    "predicted_actions": 32,
+    "executed_actions": 16,
+    "action_start": 0,
+    "fm_noise_samples": 4,
+    "anchor_selection_protocol": "independent_anchor_rng_v1"
+  },
+  "pilot": {
+    "H0_global_batch": 4,
+    "H1_L0_global_batch": 8,
+    "H1_L0_micro_batch": 1,
+    "H1_L0_world_size": 8,
+    "checkpoint_every_updates": 50,
+    "event_passes": 20,
+    "normal_to_recovery_full_batch": [
+      6,
+      2
+    ],
+    "note": "One anchor per independent reviewed event per pass, mixed tasks, no repeated tail padding. Eight-rank DDP; no 100-task sparse-reward RL. H0/H1 require their separate acceptance tickets and cannot be inferred from this L0 launch."
+  },
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-recovery-later-action-pair-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key",
+    "new_run_required": true
+  },
+  "comparison": {
+    "component": "L0",
+    "control_corpus": "datasets/recovery-reviewed-union-20261010-v3-articulation",
+    "control_admission_sha256": "20a81bd07982d34cbdb822e7c1f34957440515bd75ed4691d3da47284f2ba792",
+    "candidate_corpus": "datasets/recovery-reviewed-union-20261010-v9-later-actions",
+    "changed_factor": "Which approved same-event action window is sampled; no extra event weight, new tasks, optimizer increase, head training or CAL/test use.",
+    "execution": "Sequentially on lc3 all eight A800, original-data control then expanded-window candidate. Do not disturb lc1 short RL or lc2."
+  }
+}

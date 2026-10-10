@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 14:40 CST / Codex RECOVERY-USABLE：** 11晚段动作机器签发c025c8d0…db1e0fe及原ART合并全读9ZIP/2963观察通过；新单元action16TRAIN/3DEV、仍5TRAIN事件，admission cf57a47a…7e13b27，包3636438b…12cc0ad/136.5MB已本地SHA核验，迁A800中。lc3新持久SSH已恢复、8GPU实查全空，根盘满故沿run共享盘cache，不改env/队友。准备同L0/200父的两路200更新对照：旧首窗 vs 新晚段、事件权重/专家样本/顺序/卡位完全相同；新增独立anchor RNG可选协议/7定向回归过，旧默认不变。训练尚未启动；低原v7 global27继续，补97待最终receipt/根签。
+
 - **2026-10-10 14:27 CST / Codex RECOVERY-USABLE：** 新中后段材料`later-action-review-v1`（c9680d0d，index9f9b2589…8d6e1f）五TRAIN/15候选窗已完整迁本地、40sheet/5review逐SHA过，根逐图亲审459原RGB面板。只人工批准11窗，明确拒clean_boxing_gloves196的1176/1460与280的1228/1524：完整窗口开度分别静止在.27715/.28062且臂撤离/换位，不因整条最终成功当正确BC；不造FAILED。新许可记录`recovery_later_action_owner_review_v1.json`，机器签发/合并/全读待，尚未训练。补97已83终态＝72候选/8未复现/3工程fail，后3全为exact-category库存缺失/0snapshot restore，保留全分母、不猜别名/不自动重试；原采集/后处理链继续。低global26仍原窗口，暂无可靠RL增益。
 
 - **2026-10-10 14:20 CST / Codex RECOVERY-USABLE：** 真实历史接管GPU QA结束：4真实生成＋4同帧复用，grouped/interleaved完全相同、950张量恢复/全参数指纹不变；radio32选RETRY/GRASP，wash270保持OPEN（旧空历史fixture为NAVIGATE）。只证明工程接管/两TRAIN例诊断，0物理，非SR/结果头部署；结果bf74f492…b80e78，摘要`docs/infra/results/2026-10-10-causal-handover-gpu-qa-v1.json`。另实读L0原20a81bd0准入：19TRAIN动作＝14GRASP＋5OPEN，5OPEN各仅恢复起点32控；原100task专家仍混训，不能说完全无开门监督。已实现按原五TRAIN事件抽中/后/完成附近窗口供**新**人工审核（4回归过），补长过程覆盖而非增加独立事件数；尚未新签/新SFT，不动原9DEV、CAL/test或现役v7。

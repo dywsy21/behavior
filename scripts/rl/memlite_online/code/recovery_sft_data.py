@@ -4,6 +4,7 @@ Archives remain immutable. Only an externally pinned, ready ACTION pool may
 instantiate the training dataset. Labels/audits/physics never enter samples.
 """
 from collections import defaultdict, OrderedDict
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -272,7 +273,7 @@ class VerifiedRecoveryActionDataset:
 
 
 def finite_mixture_schedule(new_rows, expert_by_task, *, batch_size=64, maximum_event_passes=5, seed=17, pool='action',
-                            allow_extended_event_fit=False):
+                            allow_extended_event_fit=False, anchor_selection_protocol='legacy_shared_rng_v1'):
     """At most ONE anchor/event/pass, ~70/30 expert/new, no repeat-filled tail.
 
     The schedule is global and committed before DDP splits it. Reuse is counted
@@ -281,7 +282,8 @@ def finite_mixture_schedule(new_rows, expert_by_task, *, batch_size=64, maximum_
     """
     if (batch_size < 8 or type(maximum_event_passes) is not int or maximum_event_passes < 1
             or (maximum_event_passes > 5 and allow_extended_event_fit is not True)
-            or pool not in ('action','planner')):
+            or pool not in ('action','planner')
+            or anchor_selection_protocol not in ('legacy_shared_rng_v1','independent_anchor_rng_v1')):
         raise ValueError('Invalid finite pilot budget')
     new_by_event = defaultdict(list)
     for index,item in enumerate(new_rows):
@@ -298,7 +300,17 @@ def finite_mixture_schedule(new_rows, expert_by_task, *, batch_size=64, maximum_
         rng.shuffle(events)
         for start in range(0,len(events),new_per_batch):
             selected = events[start:start+new_per_batch]
-            new = [('new',rng.choice(new_by_event[e])) for e in selected]
+            # A data-coverage comparison must not change expert examples,
+            # event order or rank positions merely because one event has more
+            # approved anchors. Keep the original protocol as the default for
+            # exact reproducibility of earlier schedules/checkpoints.
+            def choose_anchor(event):
+                if anchor_selection_protocol == 'legacy_shared_rng_v1':
+                    return rng.choice(new_by_event[event])
+                key=canonical([seed,epoch,list(event)]).encode()
+                independent=random.Random(int.from_bytes(hashlib.sha256(key).digest(),'big'))
+                return independent.choice(new_by_event[event])
+            new = [('new',choose_anchor(e)) for e in selected]
             expert_count = batch_size-len(new) if len(new) == new_per_batch else round(len(new)*7/3)
             rng.shuffle(tasks)
             experts = [('expert',rng.choice(expert_by_task[tasks[i%len(tasks)]])) for i in range(expert_count)]
