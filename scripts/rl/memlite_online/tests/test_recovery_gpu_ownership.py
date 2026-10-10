@@ -2,10 +2,27 @@ import sys
 from pathlib import Path
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_gpu_ownership import owns_auxiliary,owns_short_skill_auxiliary,owns_collection_auxiliary
+from recovery_gpu_ownership import owns_auxiliary,owns_short_skill_auxiliary,owns_collection_auxiliary,declared_collection_peers
 
 
 class OwnershipTests(unittest.TestCase):
+    def test_multiple_predeclared_waves_are_not_blanket_process_permissions(self):
+        peers=[dict(collection='/tmp/owned/cal90',source_commit='a'*40),
+               dict(collection='/tmp/owned/cal97',source_commit='b'*40)]
+        self.assertEqual(declared_collection_peers(peers),peers)
+        receipt=dict(schema='local_recovery_collection_status_v1',pid=123,source_commit='b'*40)
+        args=[123,174,0,receipt,'/tmp/owned/cal97/case',
+            ['python','collect_local_grasp_recovery.py','--output','/tmp/owned/cal97/case'],dict(EVAL_GPU='4')]
+        self.assertFalse(owns_collection_auxiliary(*args,**peers[0]))
+        self.assertTrue(owns_collection_auxiliary(*args,**peers[1]))
+        args[1]=513
+        self.assertFalse(any(owns_collection_auxiliary(*args,**p) for p in peers))
+        for name in ('/','/tmp','relative/name','/tmp/owned/*','/tmp/owned/../other'):
+            with self.assertRaises(ValueError):declared_collection_peers([dict(collection=name,source_commit='a'*40)])
+        with self.assertRaises(ValueError):declared_collection_peers(peers+peers[:1])
+        with self.assertRaises(ValueError):declared_collection_peers([],legacy_path='/tmp/owned/cal90')
+        self.assertEqual(declared_collection_peers([],legacy_path='/tmp/owned/cal90',legacy_commit='a'*40),peers[:1])
+
     def test_collection_peer_requires_exact_frozen_source_parent_and_pid(self):
         receipt=dict(schema='local_recovery_collection_status_v1',pid=123,source_commit='a'*40)
         args=[123,174,0,receipt,'/tmp/owned/calibration/case',

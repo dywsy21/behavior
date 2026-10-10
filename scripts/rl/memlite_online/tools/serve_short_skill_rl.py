@@ -24,6 +24,7 @@ from skill_training_protocol import SkillTrainingSession,rollout_end_control
 from skill_policy_adapter import SingleFrameSkillAdapter
 from skill_rounds import SkillRounds
 from skill_cold_worker import validate_baseline_acceptance,finished_workers
+from recovery_gpu_ownership import declared_collection_peers
 from wire import packb,unpackb
 
 
@@ -41,6 +42,7 @@ async def main():
             ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
         raise ValueError('Select one actually idle A800, do not displace another process')
     cases=cfg['cases']
+    declared_collection_peers(cfg.get('collection_peers',[]))
     training_multiplier=cfg.get('training_rollout_multiplier',1)
     for case in cases.values():rollout_end_control(case,'train',training_multiplier)
     if (len({json.loads(v['semantic_bundle'])[0]['verb'] for v in cases.values()})<3
