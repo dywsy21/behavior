@@ -22,6 +22,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('config','service-result','journal','histories','physical-audit','output'):
         p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--calibration',type=Path)
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     cfg=json.loads(a.config.read_text());service=json.loads(a.service_result.read_text())
@@ -35,6 +36,17 @@ def main():
     models=CausalModelIdentity(**{k:model_cfg[k]['sha256'] for k in
         ('planner','low','observer_backbone','observer_adapter')},
         **{k+'_normalization':v for k,v in model_cfg['normalization_sha256'].items()})
+    calibration=None;mode='shadow_unknown_v1'
+    if spec['protocol']=='recorded_handover_calibrated_grasp_v1':
+        from recovery_calibrated_observer import load_grasp_calibration
+        if a.calibration is None:raise ValueError('Explicit immutable calibration for calibrated journal audit')
+        calibration=load_grasp_calibration(a.calibration,model_cfg['pilot_receipts']['calibration']['sha256'],models)
+        mode='calibrated_grasp_estimate_pilot_v1'
+        if (service.get('calibration_sha256')!=calibration.calibration_sha256
+                or service.get('observer_before_sha256')!=service.get('observer_after_sha256')
+                or service.get('observer_head_unchanged') is not True):
+            raise ValueError('Calibrated observer parameters or receipt changed')
+    elif a.calibration is not None:raise ValueError('Shadow audit cannot enable calibrated predictions')
     expected={(key,seed) for key in cfg['cases'] for seed in cfg['evaluation_seeds']}
     jobs=service['jobs'];by_id={j['id']:j for j in jobs}
     if (service['status']!='completed_read_only_skill_probes' or service['error'] is not None
@@ -46,7 +58,8 @@ def main():
             or service['high_before_sha256']!=service['high_after_sha256']
             or service['actor_before_sha256']!=service['actor_after_sha256']
             or service['frozen_before_sha256']!=service['frozen_after_sha256']
-            or service['observer_predictions']!=0 or service['observer_feedback_mode']!='shadow_unknown_v1'
+            or calibration is None and service['observer_predictions']!=0
+            or service['observer_feedback_mode']!=mode
             or service['scoring']!='original_restored_skill_endpoint_not_RL_reward'
             or set(service['finish_acknowledged'])!=set(cfg['cases'])
             or len(jobs)!=len(expected) or len(by_id)!=len(expected)
@@ -74,20 +87,22 @@ def main():
         entries=[e for e in journal if e['job']['id']==job_id]
         job=dict(by_id[job_id],status='active')
         result=audit_joint_episode(entries,models=models,history_row=histories[row['case']],
-            case=cfg['cases'][row['case']],job=job,controls=controls,observation_hashes=observed)
+            case=cfg['cases'][row['case']],job=job,controls=controls,observation_hashes=observed,calibration=calibration)
         if result['applied_controls']!=row['actual_controls']:
             raise ValueError('Journal and physical audit disagree on actual controls')
         results.append(result)
     actual=service['causal_planner_audit']
-    for key in ('generations','reuses','applied_controls'):
+    for key in ('generations','reuses','applied_controls','observer_predictions'):
         if actual[key]!=sum(r[key] for r in results):raise ValueError('Wrong aggregate causal '+key)
-    if actual['active_episodes'] or actual['completed_episodes']!=len(expected) or actual['observer_predictions']:
+    if (actual['active_episodes'] or actual['completed_episodes']!=len(expected)
+            or service['observer_predictions']!=actual['observer_predictions']):
         raise ValueError('Unclosed episode or invented observer result')
     result=dict(status='all_joint_observations_intents_actual_actions_and_clocks_replayed',episodes=results,
         config_sha256=file_sha(a.config),service_result_sha256=file_sha(a.service_result),
         journal_sha256=file_sha(a.journal),histories_sha256=file_sha(a.histories),
         physical_audit_sha256=file_sha(a.physical_audit),whole_task_sr=False,
-        optimizer_updates=0,observer_predictions=0,policy_promotion_authorized=False,
+        optimizer_updates=0,observer_predictions=actual['observer_predictions'],observer_feedback_mode=mode,
+        raw_observer_logits_independently_recomputed=False,policy_promotion_authorized=False,
         original_media_owner_review_still_required=True)
     a.output.write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result))

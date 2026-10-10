@@ -1,0 +1,100 @@
+{
+  "schema": "short_skill_sft_evaluation_a800_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "user_goal_authorized": true,
+  "hypothesis": "Read-only calibrated feedback wiring and physical local probe: same two predeclared TRAIN starts/noise101/137/original horizons as the previous joint shadow run; replace a74 with fixed final360 H1 and allow separately calibrated v11 GRASP estimates. No change to low0c52, FM solver, resets or success gates. This is combined-system engineering, not an isolated causal attribution or independent success-rate claim. Actual handover has no fabricated past observer features; short successful GRASPs may finish before confirmed feedback.",
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "model": {
+    "path": "runs/recovery_heterogeneous_20261010/L0-later-actions-v1/checkpoints/step_00000200_save_0004.pt",
+    "sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5"
+  },
+  "seed": 271828,
+  "evaluation_seeds": [
+    101,
+    137
+  ],
+  "learning_rounds": 0,
+  "ppo": {
+    "transition_std": 0.03,
+    "actor_lr": 0.000001,
+    "critic_lr": 0.0003,
+    "clip_ratio": 0.2,
+    "target_kl": 0.03,
+    "max_clip_fraction": 0.25,
+    "update_epochs": 1,
+    "microbatch_size": 1,
+    "critic_descent_guard": true,
+    "critic_restart_stale_momentum": true,
+    "critic_update_audit": true,
+    "critic_fit_steps": 1
+  },
+  "sim_protected_groups": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/protected-groups.json",
+  "cases": {
+    "turning_on_radio_155": {
+      "task": "turning_on_radio",
+      "instance_id": 155,
+      "original_split": "train",
+      "recovery_split": "train",
+      "manifest_sha256": "68ea43144c953625d48ef3bae08ef7d660ece0200945d4908ef80e7aa28dec0b",
+      "context_id": "0bfefd434402c47842fd6b1743c8ec5de1f4785821578a99cd2ffc6410aa9ad2",
+      "start_control": 32,
+      "end_control": 173,
+      "parent_goal": "Parent command: description=\"pick up from\"; targets=[\"radio_89\"]; sources=[\"coffee_table_koagbh_0\"]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"coffee_table_koagbh_0\",\"target\":\"radio_89\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]",
+      "sim": {
+        "kind": "recovery",
+        "directory": "/run/ti/rl_memlite_stage1_20261006/runs/recovery_prepare_sim_20261009/local-coverage-v2/turning_on_radio_155",
+        "branch": "open_gripper_joint_jitter",
+        "proof": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/reward-radio155-v1/result.json",
+        "proof_sha256": "506354c55671fa8bc91366befa2364448f4a4816dc81e197e369c154ab3347f6"
+      }
+    },
+    "wash_dog_toys_169": {
+      "task": "wash_dog_toys",
+      "instance_id": 169,
+      "original_split": "train",
+      "recovery_split": "train",
+      "manifest_sha256": "af12e2334de2fadf158da536f1585e4c5cdf7a28ef0feb53ab0d7b4a1624f8ec",
+      "context_id": "7dae79b0776c4337741660b7a58ea4df4cbcb3472859a889bd2970227866e717",
+      "start_control": 270,
+      "end_control": 587,
+      "parent_goal": "Parent command: description=\"open door\"; targets=[\"washer_ynwamu_0\"]; sources=[]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"washer_ynwamu_0\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"OPEN_DOOR\"}]",
+      "sim": {
+        "kind": "recovery",
+        "directory": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/articulation-collection-v4/wash_dog_toys_169",
+        "branch": "reverse_reference_fault",
+        "proof": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/reward-wash169-v1/result.json",
+        "proof_sha256": "8104f35c904ad79b802cc2f416a71e9f06fa4e837509bacf691b484c807cd5fb"
+      }
+    }
+  },
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-causal-calibrated-grasp-pilot-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key",
+    "new_run_required": true
+  },
+  "resource": "One actually idle lc1 A800 for separately loaded frozen high and low; RTX10383 GPUs0/1 for two cold workers only after existing replication workers have exited. Teammates4-7/lc2 untouched; no overlap of incompatible simulator ownership recipes.",
+  "stopping": "Complete all four predeclared short episodes and finish ACKs irrespective of intermediate outcomes. Fail closed on hash/history/session/actual-action/clock/grammar faults, preserve physical and engineering failures, no silent retries. No optimizer or expanded RL.",
+  "gradient_contract": "All three models/observer head frozen; no optimizer updates or gradients. Only calibrated GRASP estimates may enter planner feedback, never known_previous_outcome, world facts, rewards or terminal labels. Other verbs remain UNKNOWN/0.",
+  "interpretation": "Local closed-loop feedback/identity acceptance only; previous benchmarks remain unchanged. Passing four short trajectories does not certify reliable recovery/generalization or complete-task SR.",
+  "simulator_reset_protocol": "fresh_process_each_episode_v1",
+  "require_baseline_acceptance": false,
+  "observation_archive": "lossless_chunk_boundaries_v1",
+  "training_rollout_multiplier": 1,
+  "causal_planner": {
+    "protocol": "recorded_handover_calibrated_grasp_v1",
+    "models_config": "configs/recovery_sft/causal_planner_calibrated_pilot_models_v1.json",
+    "models_config_sha256": "806fa9c8ff3fe6664cc15acadc35dbc66e3b48caa1f78c27b5e1a4b302c668fb",
+    "inputs_manifest": "runs/recovery_heterogeneous_20261010/causal-handover-inputs-v1/manifest.json",
+    "inputs_manifest_sha256": "00ff361f2fe9b7ad763f96d20e712998ac754e2d58c26086ee028a2005868603",
+    "planning_interval_controls": 128,
+    "observer_predictions_enabled": true,
+    "scoring": "original_restored_skill_endpoint_not_RL_reward"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "causal_planner_calibrated_grasp_pilot_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "hypothesis": "Read-only real-physics pilot of fixed final360 H1 with its separately trained observer backbone+adapter, original GRASP-only calibration and frozen low0c52. No oracle inputs, transplanted features, default promotion or optimization.",
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "planner": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2/checkpoints/step_00000360_save_0008.pt",
+    "sha256": "89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7"
+  },
+  "low": {
+    "path": "runs/recovery_heterogeneous_20261010/L0-later-actions-v1/checkpoints/step_00000200_save_0004.pt",
+    "sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5"
+  },
+  "observer_backbone": {
+    "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+    "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316"
+  },
+  "observer_adapter": {
+    "path": "runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/checkpoints/selected.pt",
+    "sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699"
+  },
+  "normalization_sha256": {
+    "planner": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "observer_normalization_path": "models/memlite-b-final-20260910/B-dataset-stats.json",
+  "input_role": "Only two exactly bound consumed local-teacher prefixes; deployment observation comes from a freshly restored simulator, never the old engineering RGB.",
+  "observer_runtime_mode": "calibrated_grasp_estimate_pilot_v1",
+  "resource": "One verified idle lc1 A800, no optimizer; independent source, no shared environment modification.",
+  "stop": "Finish fixed short-skill probes, record every generated/consumed command and parameter fingerprints; not full-task deployment or RECOVERY-USABLE completion.",
+  "pilot_receipts": {
+    "calibration": {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1/calibration/calibration.json",
+      "sha256": "32ed1e9effc57a8716af659ab850de1d112b6ba0b5a1c83f078f3b16a0fd42b1"
+    },
+    "observer_fit_config": {
+      "path": "configs/recovery_sft/a800_observer_v11_outcome_balance_v1.json",
+      "sha256": "69912986ac2c2315df7500cb882cf255a6bbd588cefd389a1f43147027afd076"
+    },
+    "observer_fit_result": {
+      "path": "runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/result.json",
+      "sha256": "7cff7691913ab922a85e3b0f460293f2c1d84f93b1407c00cc7536cff21e6b56"
+    },
+    "planner_training_result": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2/result.json",
+      "sha256": "bc5c9d40bc218e8acae7f946f67e66d563410ce676d43a45916bb3e94896153f"
+    },
+    "planner_initial_generation": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-postfit-final-initial-v2/result.json",
+      "sha256": "161ec3b5f4f087b16aec998eb6c5a6d7fa731ce9f1e3c73f90d379f2ca4590e8"
+    },
+    "planner_noninitial_generation": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-postfit-final-noninitial-v2/result.json",
+      "sha256": "e5a015a90e2d6f10801f47bd5e5431e2c26ed0edc908b0612d5c3ac8782367ea"
+    },
+    "scope": "read_only_pilot_not_default_promotion"
+  }
+}

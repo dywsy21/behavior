@@ -12,7 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-10 22:19 CST / Codex RECOVERY-USABLE：** 已补native TRAIN专用wrapper/显式票与真实处理准入；要求同source/task/parent/semantic只匹配一个既有event，禁止DEV/重复ID/新事件膨胀，原专家/事件/卡位采样逐项不变。332恢复单测/编译/diff过（修复一旧H1 mock返回约定，不改其训练逻辑）。预登记两臂各20事件遍/预期200更新，同低0c52父、LR1e-5、八卡、6正常+2恢复混合；只候选增加五已审learner相位，W&B单列其真实抽样数。新冻结源CPU验收/训练仍待，不把旧5窗eval processor通过代替新TRAIN接线通过；独立review待。
+- **2026-10-10 22:28 CST / Codex RECOVERY-USABLE：** 校准高低联合pilot已本地接好并337恢复回归通过：固定89907高＋0c52低＋独立bee/b0观察器，核新90校准与完成训练/两生成回执，GRASP-only估计、.85两fresh门，其他技能UNKNOWN0。真实每次ACK后按16控维护episode独立窗口，高层仍128控，不伪造接管前特征；新增原logits/clock/token独立日志复算、交错会话和坏值/错源反例。固定同radio155/wash169、101/137、原物理门/时限作四条只读工程pilot，未运行/不视为方法隔离对照或SR提升。lc3低control已147/200，原100正常FM第100约+1.19%，无异常；候选仍待完整control终态。
+
+- **2026-10-10 22:19 CST / Codex RECOVERY-USABLE：** 14e0ffde冻源A800真实TRAIN五窗全部通过，原30→35锚而独立event仍19；200更新的专家/事件/卡位完全同（00796c5d…cc95d），按预定seed实际12次learner抽样/4唯一窗，未为了覆盖第5窗调整seed或加权。新准入81917802…23e56d/control票12fc8744…32986/candidate8a6a5be7…8beb6。lc3实空后提交八卡`L0-native-learner-control-v1`/同名log，尚在加载，候选未启动；同父对照结束后核完整终态再开候选。现役源与lc2不动，独立review待。
+
+- **2026-10-10 22:17 CST / Codex RECOVERY-USABLE：** 已补native TRAIN专用wrapper/显式票与真实处理准入；要求同source/task/parent/semantic只匹配一个既有event，禁止DEV/重复ID/新事件膨胀，原专家/事件/卡位采样逐项不变。332恢复单测/编译/diff过（修复一旧H1 mock返回约定，不改其训练逻辑）。预登记两臂各20事件遍/预期200更新，同低0c52父、LR1e-5、八卡、6正常+2恢复混合；只候选增加五已审learner相位，W&B单列其真实抽样数。新冻结源CPU验收/训练仍待，不把旧5窗eval processor通过代替新TRAIN接线通过；独立review待。
 
 - **2026-10-10 22:13 CST / Codex RECOVERY-USABLE：** 两路final目标无泄漏生成均142/142终态/释放lc3卡：新42恢复40→42exact、正常非初始99→99/100；初态85→82/100的三处顺序/目标差异保持原严格评分，非新物理失败结论。结果initial161ec3b5…4590e8/noninitiale5a015a9…2367ea已取本地全行核SHA。native五窗A800真实CPU processor5/5通过（57bbbc1b…9370f，ebbae1a5；32×27/四补齐位/全真实未来动作），下一同事件低层对照：候选只增加已审learner相位，不加事件权重，DEV/正常回放不变；接线仍在测试，未开新SFT。Git fetch完成、HEAD/upstream一致/main无新增；自有未提交补丁故未pull，独立成员review仍待。
 
