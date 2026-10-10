@@ -12,7 +12,7 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-10 13:55 CST / Codex RECOVERY-USABLE：** global24六固定probe全闭：GRASP2/2（19/19控）、PLACE1/2（99控成、165控UNKNOWN）、OPEN0/2（两317控UNKNOWN），合3/6，未超过v7原4/6；小样本不声称统计退步，但**仍无可靠RL改善**，不promote/不扩任务/不加actorLR。原窗口进入第5 TRAIN轮。22闭合episode独立reward/return重算通过，四长OPEN的尾折扣值.2011→.1482→.1050→.0851、平均adv−.1835→−.1353→−.1193→−.0502；critic信用随真实后果下降并不等于动作学会，保留`short-rl-v7-update24-returns-v1`完整证据。补97已55闭（50候选/5未复现），0新签核/预测/校准，后处理等待tmux仍live；继续全闭后的根原图审签和固定v8校准，旧20不读。下一联合高层物理验收须先完成实际已发指令trace恢复/规划时钟接线，当前仅独立工程QA通过，不绕过该缺口。
+- **2026-10-10 13:55 CST / Codex RECOVERY-USABLE：** global24六固定probe全闭：GRASP2/2（19/19控）、PLACE1/2（99控成、165控UNKNOWN）、OPEN0/2（两317控UNKNOWN），合3/6，未超过v7原4/6；小样本不声称统计退步，但**仍无可靠RL改善**，不promote/不扩任务/不加actorLR。原窗口进入第5 TRAIN轮；随后独立实读7.6GB的round-0004确认文件SHA也为63250e28…80740c，轻量摘要`docs/infra/results/2026-10-10-short-skill-v7-update24.json`。22闭合episode独立reward/return重算通过，四长OPEN的尾折扣值.2011→.1482→.1050→.0851、平均adv−.1835→−.1353→−.1193→−.0502；critic信用随真实后果下降并不等于动作学会，保留`short-rl-v7-update24-returns-v1`完整证据。补97已55闭（50候选/5未复现），0新签核/预测/校准，后处理等待tmux仍live；继续全闭后的根原图审签和固定v8校准，旧20不读。下一联合高层物理验收须先完成实际已发指令trace恢复/规划时钟接线，当前仅独立工程QA通过，不绕过该缺口。
 
 - **2026-10-10 13:45 CST / Codex RECOVERY-USABLE：** v7已global24/四轮真实续段训练闭合，actor LR仍1e-6、93chunks、KL.010452/clip.098925，critic半MSE .014986→.013922；保存`checkpoints/round-0004.pt`（7,622,837,693B；policy身份63250e28…80740c，不冒称这是文件SHA）。进入第一组固定六probe、尚未全闭，不能提前报新成功率。四条OPEN TRAIN均1268控制未达原功能门，仍没有可靠提升；三技能不扩任务，原权重/更新幅度未升级默认。补97已43终态（40可审候选/3参考未复现），签核/90-anchor选择/新GPU校准仍未发生；待其全闭后继续原图逐源审核。GPU QA已完整结束，原GPU0空出，现役RL/collector/后处理等待链不重启。
 

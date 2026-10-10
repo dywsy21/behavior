@@ -1,0 +1,29 @@
+{
+  "schema": "short_skill_continuation_probe_summary_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/short-rl-v7-real-continuation",
+  "source_commit": "cfef448eb38489b8195755f563d72a57e464a48b",
+  "config_sha256": "f3b0ed3e9491615682d789257521dad26030da9d8ccec4194e21e9228954f130",
+  "global_update": 24,
+  "new_updates_since_resume": 4,
+  "checkpoint": "checkpoints/round-0004.pt",
+  "checkpoint_bytes": 7622837693,
+  "checkpoint_sha256_independently_read": "63250e283919d40da0b4dd244224152be65e6e70ce2901c1a32acc7bfc80740c",
+  "actor_learning_rate": 0.000001,
+  "post_update_approximate_kl": 0.010452344213732548,
+  "clip_fraction": 0.09892473305745791,
+  "fixed_probes": [
+    {"case": "turning_on_radio_155", "seed": 17, "controls": 19, "success": true},
+    {"case": "turning_on_radio_155", "seed": 29, "controls": 19, "success": true},
+    {"case": "attach_a_camera_to_a_tripod_129", "seed": 17, "controls": 99, "success": true},
+    {"case": "attach_a_camera_to_a_tripod_129", "seed": 29, "controls": 165, "success": false, "outcome": "UNKNOWN"},
+    {"case": "wash_dog_toys_169", "seed": 17, "controls": 317, "success": false, "outcome": "UNKNOWN"},
+    {"case": "wash_dog_toys_169", "seed": 29, "controls": 317, "success": false, "outcome": "UNKNOWN"}
+  ],
+  "six_probe_successes": 3,
+  "same_window_initial_probe_successes": 4,
+  "complete_task_sr_measured": false,
+  "reliable_improvement_established": false,
+  "promoted_as_default": false,
+  "notes": "All six fixed local-skill checks are complete. This small diagnostic does not establish statistical regression or generalization. OPEN uses the unchanged explicit local functional-clearance proxy, not merely the official barely-open predicate. No timeout was converted into FAILED. The existing three-skill training window continues; neither task coverage nor actor learning rate increased."
+}
