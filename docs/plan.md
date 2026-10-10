@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 11:07 CST / Codex RECOVERY-USABLE：** 上一goal回合为实质进展（修复worker并完成高初始回归）；本回合Git已pull/fetch，真实lc1 PID1890914/RTX worker存活，低已global15（28 chunks，KL.00850、critic半MSE.001573→.001222）。新增CPU闭合32真实episode reward/GAE尾项分解：OPEN三条TRAIN中最终bootstrap占折扣回报绝对量84–89%；policy14的实得.05845、尾估计.49128，平均adv+.01635，而尾值贡献+.43828。**这不是bootstrap必错证明，更不是把UNKNOWN改FAILED的许可**；现役明确是continuing-task目标，尚未改奖励/截断/actor。该条物理开度先升约.294又回.257并停滞，已取原controls/result，下一步原视频核查是否失去接触；190回归过。证据`artifacts/recovery-heterogeneous-20261010/short-rl-v6-returns-v1`和`wash169-train14-diagnostic`，当前不单靠更低critic loss宣称低层学会。
+
 - **2026-10-10 10:58 CST / Codex RECOVERY-USABLE：** 低v6/global14完整六probe为GRASP2/2、PLACE1/2、OPEN0/2（原baseline4/6，现3/6）；未完成均UNKNOWN，不伪标FAILED，继续当前三机制窗口、不扩任务或调大actor。三客户端已正常接续TRAIN round3，A800一个真实active episode；故原GPU检查故障已恢复，不是服务仍死等。新90校准21已关闭/19候选/2 reference未复现。187回归通过，6395f74a审核工具已Git部署RTX`code/recovery-fresh-cohort-review-v1`，源closure audit SHA fbbc507f…e0c75已迁；待全部90关闭后构corpus→cohort→原图审核，缺来源/标签仍不校准放行。默认网络Git push已成功，直连Git超时未覆盖任何文件；最新代码/计划已推feature分支，独立成员review仍未合main，goal未完成。
 
 - **2026-10-10 10:54 CST / Codex RECOVERY-USABLE：** H1 final420初始回归110条完成；正常100 exact85/valid100/误RETRY0、恢复10全对。与原bee父逐样本身份/target全部一致，85旧对仍对、15旧错仍错，无初始遗忘；结合非首段两控频率99/100只证明离线生成改善，不是SR。原始result/rows已取本地`artifacts/recovery-heterogeneous-20261010/H1-causal-final420-initial-v1`。低global14续probe中PLACE29截断UNKNOWN，仍无可靠收益。新校准19/90已关闭含2 reference未复现；补“全来源关闭后”审核装配器，失败以原终态SHA保留在90分母、0伪标签/0训练准入，旧严格校准门不放宽，待采集全闭及根逐图审核。

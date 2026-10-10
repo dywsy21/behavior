@@ -17,6 +17,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config',type=Path,required=True);p.add_argument('--runs',type=Path,nargs='+',required=True)
     p.add_argument('--policy-sha256',required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--diagnostic',action='store_true',
+        help='Audit a closed train/eval trajectory, explicitly NOT a six-start baseline authorization')
     a=p.parse_args();cfg=json.loads(a.config.read_text())
     if a.output.exists():raise FileExistsError(a.output)
     import numpy as np
@@ -29,7 +31,8 @@ def main():
         reset=json.loads((directory/'restore-diagnostics.json').read_text())
         process=json.loads((directory.parent/'result.json').read_text());job=result['job']
         key=(job['case'],job['seed']);case=cfg['cases'][job['case']]
-        if (key not in expected or key in seen or job['phase']!='evaluation' or job['round']!=0
+        if ((not a.diagnostic and (key not in expected or job['phase']!='evaluation' or job['round']!=0))
+                or key in seen or job['phase'] not in ('evaluation','train')
                 or process['status']!='completed_single_episode' or process['completed_episodes']!=1
                 or process['fresh_process_per_episode'] is not True or process['config_sha256']!=file_sha(a.config)
                 or any(x['policy_sha256']!=a.policy_sha256 for x in (result,start))
@@ -51,7 +54,7 @@ def main():
         for i,row in enumerate(controls):
             t=case['start_control']+i+1;command=np.asarray(row['action_executed_raw23'])
             if (row['control_step']!=t or row['simulator_apply_ack'] is not True or command.shape!=(23,)
-                    or not np.isfinite(command).all() or row['action_source']!='evaluation'
+                    or not np.isfinite(command).all() or row['action_source']!=job['phase']
                     or row['policy_version']!=result['policy_version']):raise ValueError('Actual action/ACK/clock differs')
             measured=skill_measurement(skill,row['physical_evidence'])
             value=reward.advance(identity,t,measured,protected_values={},official_terminal=row['official_terminal'],
@@ -81,7 +84,7 @@ def main():
         if not frames:raise ValueError('No actual policy video')
         indices=sorted({0,len(frames)//3,2*len(frames)//3,len(frames)-1})
         canvas=Image.new('RGB',(672,250*(len(indices)+1)),'white');draw=ImageDraw.Draw(canvas)
-        draw.text((4,4),job['case']+f" seed={job['seed']} original start",fill='black')
+        draw.text((4,4),job['case']+f" {job['phase']} v{result['policy_version']} seed={job['seed']}",fill='black')
         for col,camera in enumerate(('head','left_wrist','right_wrist')):
             with Image.open(directory/(camera+'_rgb.png')) as im:canvas.paste(im.convert('RGB'),(col*224,23))
         for row,index in enumerate(indices,1):
@@ -95,8 +98,9 @@ def main():
             reset_proprio_error=reset['proprio_error'],reset_target_error=reset.get('target_position_max_error'),
             final_physical=controls[-1]['physical_evidence'],sheet_sha256=file_sha(sheet),sheet=sheet.name))
         if archive_audit is not None:audits[-1]['observation_archive']=archive_audit
-    if seen!=expected:raise ValueError('Incomplete fixed-seed baseline, preserve partial audit')
-    result=dict(status='machine_control_reward_reset_audit_passed',episodes=audits,
+    if not a.diagnostic and seen!=expected:raise ValueError('Incomplete fixed-seed baseline, preserve partial audit')
+    result=dict(status=('diagnostic_closed_trajectory_audit_not_baseline' if a.diagnostic else 'machine_control_reward_reset_audit_passed'),episodes=audits,
+        baseline_protocol_checked=not a.diagnostic,
         policy_sha256=a.policy_sha256,config_sha256=file_sha(a.config),reviewed_by_human=False,
         optimizer_authorized=False,whole_task_sr=False)
     (a.output/'audit.json').write_text(json.dumps(result,indent=2)+'\n')
