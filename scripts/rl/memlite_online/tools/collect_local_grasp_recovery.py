@@ -28,7 +28,7 @@ from recovery_corpus import canonical,digest,group_key,split_group
 from recovery_local_teacher import LocalGraspTeacher,perturb,NonGraspingFixedPoint,fault_duration,validate_terminal_observation
 from recovery_control_clock import persist_applied_control,require_nonterminal
 from recovery_recorder import proprio61
-from recovery_reference_binding import ReferenceGraspBinding,resolve_prefix_rows
+from recovery_reference_binding import ReferenceGraspBinding,resolve_prefix_rows,include_native_scene_objects
 from behavior_branch_state import capture_branch_metadata,restore_branch_metadata
 
 
@@ -39,7 +39,11 @@ def main(argv=None, *, shared_session=None):
     p.add_argument('--seed',type=int,default=20261009)
     p.add_argument('--diversify-fault-timing',action='store_true')
     p.add_argument('--reference-category-binding',action='store_true')
+    p.add_argument('--reference-scene-inventory',action='store_true',
+        help='Also inspect exact native intermediate scene objects; never guess semantic aliases')
     a=p.parse_args(argv)
+    if a.reference_scene_inventory and not a.reference_category_binding:
+        raise ValueError('Scene inventory still requires explicit measured-reference category binding')
     if a.output.exists():raise FileExistsError(a.output)
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
         raise ValueError('Clean frozen source required')
@@ -122,6 +126,8 @@ def main(argv=None, *, shared_session=None):
             if float(initial_error[positions].max())>.05:
                 raise ValueError('Original initial joint configuration does not match reset instance')
             scope={k:getattr(v,'wrapped_obj',v) for k,v in inst.env_accessor.object_scope.items()}
+            task_scope=dict(scope)
+            if a.reference_scene_inventory:scope=include_native_scene_objects(scope,robot.scene.objects,robot)
             matches=[(k,o) for k,o in scope.items() if o is not None and getattr(o,'name',None)==target_name]
             requested_name=target_name;requested_arm=skills[0].get('arm','UNSPECIFIED').upper()
             if requested_arm not in ('LEFT','RIGHT','UNSPECIFIED'):raise ValueError('Unsupported original GRASP arm')
@@ -129,7 +135,10 @@ def main(argv=None, *, shared_session=None):
             binder=None;candidate_objects={};candidate_inventory={};binding_receipt=None
             atomic_json(a.output/'target-binding-audit.json',dict(requested=requested_name,
                 task_objects=[dict(entity=k,name=getattr(o,'name',None),category=getattr(o,'category',None))
-                              for k,o in scope.items() if o is not None],
+                              for k,o in task_scope.items() if o is not None],
+                additional_native_scene_objects=[dict(entity=k,name=o.name,category=getattr(o,'category',None))
+                    for k,o in scope.items() if k not in task_scope],
+                reference_scene_inventory_enabled=a.reference_scene_inventory,
                 proposal_sha256=status['proposal_sha256'],reference_binding_enabled=a.reference_category_binding,
                 guessed_alias_accepted=False,actor_input=False))
             if len(matches)==1:

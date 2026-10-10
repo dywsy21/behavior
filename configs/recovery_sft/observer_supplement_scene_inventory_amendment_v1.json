@@ -1,0 +1,18 @@
+{
+  "schema": "prospective_collection_engineering_amendment_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "declared_at": "2026-10-10T11:57:09+08:00",
+  "supplement_config": "configs/recovery_sft/observer_fresh_calibration_supplement_v1.json",
+  "supplement_config_sha256": "c00712285acc961515ee74cedea8ff4b4cb65c46b6bf9adaa0e11a983f546fdb",
+  "source_inventory_sha256": "663af44787a062876bae4e165bed648a4ad66a087eed8f9b7dee63daf5fdd5e3",
+  "source_audit_sha256": "bc860bfc1db9db120b48b5fd8f9b37fc3c7dbb7802e3588a0d18b75e414db245",
+  "before_supplement_physics": true,
+  "before_any_new_observer_predictions": true,
+  "reason": "Initial90 contains zero-control failures store_batteries_103 and store_honey_34: requested GRASP chair, but the collector looked only in the BDDL task-object scope, which contains no chair. Demonstrations can act on intermediate native scene objects. Actual presence and reference grasp of a scene chair are still unverified and must be measured, not assumed.",
+  "change": "On ALL fixed97 supplement sources enable explicit --reference-scene-inventory along with --reference-category-binding. Add real robot.scene.objects to reference-only inventory using exact native names/categories; non-task objects use scene_object:<native-name> audit IDs. Reject collisions and do not guess aliases, suffixes or nearest objects.",
+  "unchanged_binding_gate": "Exact category competitors, consecutive original controls, observed prior false grasp, unique same-target/same-arm contact held for six real controls inside the annotated skill interval. All competitors remain logged. Actor observations receive no simulator target-selection oracle.",
+  "unchanged_sampling_and_model": "Same97 first-attempt source identities, frozen v8, calibration source roles and statistical gates. Keep all original90 attempts and their failures unchanged. Do not re-run failed original90 for a luckier calibration sample.",
+  "unsupported_alias": "tidying_bathroom_203 requests toilet_tissue while native category is toilet_paper. This amendment does not invent that alias; it remains unsupported pending separate authoritative mapping and validation.",
+  "validation": "197 recovery tests plus collector and batch-entry compilation passed. Real scene binding on this new option is still pending first-attempt physical execution and original-media review; not a collection success or label approval.",
+  "deployment": "New clean frozen source only, after initial90 and old short-RL window finish. No hot changes to either active process or shared environment. Record new collector source commit in every actual receipt."
+}

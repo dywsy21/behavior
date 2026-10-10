@@ -7,6 +7,34 @@ must be recorded. Ambiguity is a hard rejection.
 """
 
 
+def include_native_scene_objects(scope, scene_objects, robot):
+    """Include real intermediate objects without category/name alias guesses.
+
+    A demonstration may move a chair although that chair is not a BDDL goal.
+    This expands the reference-only inventory, NOT the actor observation or
+    target-selection rule. All exact-category competitors still need actual
+    reference contact and the existing six-control uniqueness check.
+    """
+    expanded=dict(scope);named={}
+    for entity,obj in scope.items():
+        if obj is None:continue
+        name=getattr(obj,'name',None)
+        if not isinstance(name,str) or not name:raise ValueError('Unnamed task object')
+        if name in named and named[name] is not obj:raise ValueError('Conflicting native task object name')
+        named[name]=obj
+    for obj in scene_objects:
+        if obj is robot or not hasattr(obj,'links'):continue
+        name=getattr(obj,'name',None)
+        if not isinstance(name,str) or not name:raise ValueError('Unnamed native scene object')
+        if name in named:
+            if named[name] is not obj:raise ValueError('Native scene/task identity collision')
+            continue
+        entity='scene_object:'+name
+        if entity in expanded:raise ValueError('Synthetic reference key collides with real task entity')
+        expanded[entity]=obj;named[name]=obj
+    return expanded
+
+
 class ReferenceGraspBinding:
     def __init__(self, candidates, requested_category, requested_arm, start, end):
         if (not candidates or len(set(candidates)) != len(candidates)

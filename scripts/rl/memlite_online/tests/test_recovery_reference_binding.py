@@ -1,12 +1,13 @@
 from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
 import sys
 import unittest
 import json
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'code'))
-from recovery_reference_binding import ReferenceGraspBinding, ReferenceArticulationBinding, resolve_prefix_rows, verify_saved_binding
+from recovery_reference_binding import ReferenceGraspBinding, ReferenceArticulationBinding, resolve_prefix_rows, verify_saved_binding,include_native_scene_objects
 from recovery_corpus import file_sha
 
 
@@ -22,6 +23,28 @@ def physical(held=None):
 
 
 class BindingTests(unittest.TestCase):
+    def test_reference_inventory_includes_exact_intermediate_objects_without_aliases(self):
+        robot=SimpleNamespace(name='robot',category='agent',links={})
+        honey=SimpleNamespace(name='jar_of_honey_72',category='jar_of_honey',links={})
+        chair=SimpleNamespace(name='chair_native_5',category='chair',links={})
+        another=SimpleNamespace(name='chair_native_6',category='chair',links={})
+        scope={'agent.n.01_1':robot,'jar__of__honey.n.01_1':honey}
+        expanded=include_native_scene_objects(scope,[robot,honey,chair,another],robot)
+        self.assertEqual(len(scope),2)
+        self.assertIs(expanded['scene_object:chair_native_5'],chair)
+        candidates={o.name:dict(entity=k,category=o.category) for k,o in expanded.items() if o.category=='chair'}
+        binder=ReferenceGraspBinding(candidates,'chair','RIGHT',0,20)
+        def physical(held=()):return {n:dict(target_name=n,entity=v['entity'],
+            grasp=dict(left='FALSE',right='TRUE' if n in held else 'FALSE')) for n,v in candidates.items()}
+        binder.observe(0,physical())
+        for i in range(1,6):self.assertIsNone(binder.observe(i,physical(['chair_native_5'])))
+        self.assertEqual(binder.observe(6,physical(['chair_native_5'])),('chair_native_5','right'))
+        with self.assertRaises(ValueError):ReferenceGraspBinding(candidates,'toilet_tissue','RIGHT',0,20)
+        duplicate=SimpleNamespace(name='jar_of_honey_72',category='jar_of_honey',links={})
+        with self.assertRaises(ValueError):include_native_scene_objects(scope,[duplicate],robot)
+        ghost=SimpleNamespace(name='chair_native_7',category='chair')
+        self.assertEqual(include_native_scene_objects(scope,[ghost],robot),scope)
+
     def test_articulation_requires_unique_physical_transition_not_unique_category_name(self):
         candidates={n:dict(entity=n,category='door') for n in ('door_a','door_b')}
         def state(a,b):

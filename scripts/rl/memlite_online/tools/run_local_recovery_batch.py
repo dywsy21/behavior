@@ -40,10 +40,13 @@ def main():
     p.add_argument('--priority-task',nargs='*',default=[])
     p.add_argument('--diversify-fault-timing',action='store_true')
     p.add_argument('--reference-category-binding',action='store_true')
+    p.add_argument('--reference-scene-inventory',action='store_true')
     p.add_argument('--concurrent-loads',type=int,default=2)
     p.add_argument('--warm-groups',action='store_true');a=p.parse_args()
     if a.warm_groups:
         raise ValueError('Warm groups quarantined: non-TRO scene joints can survive instance load. Use independent cold instances.')
+    if a.reference_scene_inventory and not a.reference_category_binding:
+        raise ValueError('Scene inventory requires the original physical reference binding gate')
     if not 1<=a.concurrent_loads<=len(a.gpus):raise ValueError('Invalid scene loading concurrency')
     if a.output.exists():raise FileExistsError(a.output)
     if len(set(a.gpus))!=len(a.gpus):raise ValueError('Duplicate GPU')
@@ -146,6 +149,7 @@ def main():
                      '--proposal',str(a.sources/name),'--output',str(out)])
                 proposal=json.loads((a.sources/name/'manifest.json').read_text())
                 if proposal['schema']=='recovery_expert_skill_proposal_v1':
+                    if a.reference_scene_inventory:raise ValueError('New scene-inventory option is GRASP-only')
                     if proposal['skill_verb'] in ('PLACE_IN','PLACE_ON'):
                         command[0]=str(REPO/'scripts/rl/memlite_online/tools/collect_placement_curriculum.py')
                         command.extend(['--manifest-sha256',case['manifest_sha256']])
@@ -157,6 +161,7 @@ def main():
                 else:
                     if a.diversify_fault_timing:command.append('--diversify-fault-timing')
                     if a.reference_category_binding:command.append('--reference-category-binding')
+                    if a.reference_scene_inventory:command.append('--reference-scene-inventory')
                 proc=subprocess.Popen(['bash',str(REPO/'scripts/eval/memlite_sft100/launch_sim.sh'),*command],stdout=log,stderr=subprocess.STDOUT,
                     stdin=subprocess.DEVNULL,env=env,cwd=REPO)
                 while proc.poll() is None:
