@@ -22,7 +22,7 @@ REPO=Path(__file__).resolve().parents[4]
 sys.path.insert(0,str(REPO/'scripts/eval/memlite_sft100'))
 sys.path.insert(0,str(REPO/'scripts/rl/memlite_online/code'))
 from common import atomic_json,sha256
-from recovery_gpu_ownership import owns_auxiliary
+from recovery_gpu_ownership import owns_auxiliary,owns_short_skill_auxiliary
 
 
 def main():
@@ -31,6 +31,10 @@ def main():
     p.add_argument('--gpus',nargs='+',type=int,required=True)
     p.add_argument('--previous-collection',type=Path,action='append',default=[])
     p.add_argument('--peer-collection',type=Path,action='append',default=[])
+    p.add_argument('--short-skill-peer-prefix',type=Path,action='append',default=[],
+        help='Exact sibling episode-directory prefix for an owned running short-skill collector')
+    p.add_argument('--short-skill-peer-config',type=Path)
+    p.add_argument('--short-skill-peer-port',type=int)
     p.add_argument('--skip-case',action='append',default=[])
     p.add_argument('--skip-reason')
     p.add_argument('--priority-task',nargs='*',default=[])
@@ -45,6 +49,19 @@ def main():
     if len(set(a.gpus))!=len(a.gpus):raise ValueError('Duplicate GPU')
     if a.skip_case and not a.skip_reason:raise ValueError('Explicit skipped-source reason required')
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():raise ValueError('Dirty source')
+    short_peer_binding=None
+    if a.short_skill_peer_prefix:
+        if (a.short_skill_peer_config is None or a.short_skill_peer_port is None
+                or not 1<=a.short_skill_peer_port<=65535):
+            raise ValueError('Short-skill peers require their exact config and port')
+        peer_config=json.loads(a.short_skill_peer_config.read_text())
+        if peer_config.get('schema')!='short_skill_rl_a800_v1':raise ValueError('Unknown peer recipe')
+        short_peer_binding=dict(config_sha256=sha256(a.short_skill_peer_config),
+            cases=set(peer_config['cases']),port=a.short_skill_peer_port)
+        if any(not p.name.endswith('-episode') or any(c in p.name for c in '*?[]') for p in a.short_skill_peer_prefix):
+            raise ValueError('Use explicit episode prefix paths, never arbitrary globs')
+    elif a.short_skill_peer_config is not None or a.short_skill_peer_port is not None:
+        raise ValueError('Peer recipe/port must bind explicit episode prefixes')
     for gpu in a.gpus:
         running=subprocess.check_output(['nvidia-smi','-i',str(gpu),'--query-compute-apps=pid,used_gpu_memory',
             '--format=csv,noheader,nounits'],text=True).strip()
@@ -59,6 +76,16 @@ def main():
                         environ=dict(v.split('=',1) for v in Path(f'/proc/{pid}/environ').read_bytes().decode().split('\0') if '=' in v)
                     except FileNotFoundError:continue
                     allowed=allowed or owns_auxiliary(pid,memory,gpu,receipt,path.parent,argv,environ)
+            for prefix in a.short_skill_peer_prefix:
+                for path in prefix.parent.glob(prefix.name+'-*/status.json'):
+                    receipt=json.loads(path.read_text())
+                    if receipt.get('pid')!=pid:continue
+                    try:
+                        argv=Path(f'/proc/{pid}/cmdline').read_bytes().decode().split('\0')
+                        environ=dict(v.split('=',1) for v in Path(f'/proc/{pid}/environ').read_bytes().decode().split('\0') if '=' in v)
+                    except FileNotFoundError:continue
+                    allowed=allowed or owns_short_skill_auxiliary(pid,memory,gpu,receipt,path.parent,
+                        argv,environ,**short_peer_binding)
             if not allowed:raise RuntimeError(f'GPU {gpu} has unowned/non-auxiliary PID {pid}; do not stop it')
     inventory=json.loads((a.sources/'manifest.json').read_text())
     if inventory.get('status','complete')!='complete':raise ValueError('Source export is not complete')

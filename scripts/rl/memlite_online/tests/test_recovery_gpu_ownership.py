@@ -17,6 +17,18 @@ class OwnershipTests(unittest.TestCase):
         self.assertFalse(owns_short_skill_auxiliary(*changed,**kwargs))
         self.assertFalse(owns_auxiliary(*args))
 
+    def test_short_skill_peer_never_authorizes_active_primary_or_foreign_output(self):
+        args=[123,180,5,dict(pid=123,config_sha256='abc',case='radio'),
+              '/tmp/owned/radio-episode-000003',
+              ['python','collect_short_skill_rl.py','--output','/tmp/owned/radio-episode-000003','--port','18975'],
+              dict(EVAL_GPU='0')]
+        binding=dict(config_sha256='abc',cases={'radio'},port=18975)
+        self.assertTrue(owns_short_skill_auxiliary(*args,**binding))
+        for index,value in [(2,0),(1,12000),(4,'/tmp/teammate/run'),(6,dict(EVAL_GPU='5')),
+                            (3,dict(pid=124,config_sha256='abc',case='radio'))]:
+            changed=list(args);changed[index]=value
+            self.assertFalse(owns_short_skill_auxiliary(*changed,**binding))
+
     def test_only_same_registered_peer_small_aux_context_can_share(self):
         args=(123,188,7,dict(pid=123),'/tmp/owned/case',
               ['python','collect_local_grasp_recovery.py','--output','/tmp/owned/case'],dict(EVAL_GPU='2'))
