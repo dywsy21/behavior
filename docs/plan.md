@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 21:41 CST / Codex RECOVERY-USABLE：** H1 v2真实终态completed_finite_schedule/360更新完成，仅planner326参数；冻结前后均0f7aede8…a966。固定final360 checkpoint89907ea7…c83a7/result bc5c9d40…96153f，最终新DEV CE0.0000298773（−95.58%）、原初态0.00814818（+5.43%）、非初始0.000324787（+13.85%）/带反馈0.000347442（+22.31%）；必须实际生成核遗忘。lc3八卡已实空，预登记同100非初始＋42DEV与另100初态保留两路final生成，配置已固定真实完成权重，不选中间checkpoint；尚未提交。旧父142/142结果与本次训练轻量日志迁本地，不下载大权重。
+
 - **2026-10-10 21:39 CST / Codex RECOVERY-USABLE：** 高层已真实360/360有限更新，最终保存/收尾尚在途（latest仍350），不提前称训练终态。新增显式GRASP-only校准pilot会话与observer封装，固定原温度/.85/两fresh检查，其他技能UNKNOWN/0、known_previous_outcome始终UNKNOWN，估计不写世界事实/成功终止；7模型身份与每任务/attempt独立，旧shadow默认不变。8新增/24定向/320恢复回归（含旧5重复夹具）、py_compile与diff检查通过；只本地实现，未部署GPU/仿真，待最终权重生成验收和真实时序与闭环。新入口`recovery_calibrated_observer.py`，启动器仍不自动允许此模式。
 
 - **2026-10-10 21:37 CST / Codex RECOVERY-USABLE：** 根已亲审旧RL两成功轨迹全20页/113真实边界/339原相机面板（不是仅总览），只批5末段32控纠正窗：round6 s1102/1118/1134，round8 s1086/1102；原始动作SHA与物理增量逐项固定在`2026-10-10-rl-success-native-window-owner-review.json`。中间长停滞/释放回弹、短尾不批；两条仍只1原来源、不是两独立实例，明确learner非expert。现有格式缺逐控proprio，须新原生边界adapter/机器准入，尚0新SFT样本消费/优化/结果或高层标签许可。H1 v2继续315/360，父新DEV40/42的两错均EXECUTE代RETRY（baseball_cap102/scanner39），目标/记忆正确；最终候选生成待。

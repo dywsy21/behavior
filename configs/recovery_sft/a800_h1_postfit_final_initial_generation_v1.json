@@ -1,0 +1,42 @@
+{
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "union": "datasets/recovery-postfit-planner-union-20261010-v1",
+  "admission_sha256": "404fcc0a2e1d7f62466e08e6bfe994717905db6973cee84ee410ad0a32f3463f",
+  "models": {
+    "parent": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-causal-feedback-fit-v1/checkpoints/step_00000420_save_0009.pt",
+      "sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2"
+    },
+    "candidate": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2/checkpoints/step_00000360_save_0008.pt",
+      "sha256": "89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7"
+    }
+  },
+  "inventory": {
+    "path": "datasets/recovery-postfit-planner-union-20261010-v1/audit/inventory.json",
+    "sha256": "5869bd1eea8d0a5a5728eca3fc3145fbec94240bed7586de0a62dc5b1041e863"
+  },
+  "history": {
+    "path": "datasets/recovery-postfit-planner-union-20261010-v1/history/contexts.jsonl",
+    "sha256": "e9927128f8eeb4daa6e419b337a3f066e052aefd425cc1f9c4688c29493666f6"
+  },
+  "feedback": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-v1/feedback.jsonl",
+    "sha256": "586ef848c37ab26997c9b2da8105afaf57739ea68d0404ddac587e061cd20f80"
+  },
+  "original_schedule": "first_fixed_one_per_task_v1",
+  "original_feedback": "causal_expert_unknown_v1",
+  "original_feedback_repeat_stride": 16,
+  "uncertainty_protocol": "unready_zero_confidence_v1",
+  "scope": "Fixed final360 original100 first-state retention check plus the same42 recovery DEV. Original first-state parent85/100 result is a separate retained control, not the noninitial99/100. No checkpoint selection/weight updates/control actions/old test. All failures retained, target-free prefixes; idle lc3 GPU with separate source/cache. Stop on artifact mismatch/nonfinite/OOM. Generation/CE does not measure physical success.",
+  "validated_training_ticket": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-postfit-fit-preflight-v2/ticket.json",
+    "sha256": "a94a95f632c095200742d8bc2d342b63b00d68cad776cc50e94fc5d2f6a9a903"
+  },
+  "completed_training": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2/result.json",
+    "sha256": "bc5c9d40bc218e8acae7f946f67e66d563410ce676d43a45916bb3e94896153f",
+    "step": 360
+  }
+}
