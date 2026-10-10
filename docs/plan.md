@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 13:34 CST / Codex RECOVERY-USABLE：** 分支/统计身份修正733373fd已Git同步并在A800新源`src/causal-runtime-gpu-qa-v2`启动空闲GPU0同名run/tmux；8 session＋5适配回归通过，新增“权重正确但拿错normalizer也必须拒绝”。旧v1失败源/log不动，输入仍原9a1c2442/3TRAIN、0动作与optimizer。结果观察器原训练cfg也实读绑定846bcbea，未更换模型统计；新GPU终态待。低仍原v7，补97已40关闭，所有扩大覆盖/在线结果切换仍未获验收。
+
 - **2026-10-10 13:33 CST / Codex RECOVERY-USABLE：** 实际GPU QA在模型载入/0生成前被归一化门拦下：新QA误要求高低统计同SHA。只读查实高B原stats=846bcbea…40b19、低action-bounds=10dc04dc…bd929，训练原来就分别使用它们，**不是现役训练统计漂移**。新会话身份改为三套明确normalization SHA（planner/low/observer），QA分别验，保留旧b22源/失败log，准备新冻源v2；此前“完整GPU接线通过”从未声称，0训练/物理影响。
 
 - **2026-10-10 13:29 CST / Codex RECOVERY-USABLE：** 新源b22f7356已Git bundle部署两端独立`causal-runtime-gpu-qa-v1`；初次push TLS失败后重试成功。三个TRAIN真实初始观察无损导出、两端包SHA9d12a1f1…742e3/manifest9a1c2442…eaf4d通过，lc1空闲GPU0新同名tmux已启动12次生成工程验收；源/日志在异质run根，0optimizer/0物理控制，尚无终态。当前低v7 global22、原GPU1不变；补97已36终态（33候选/3参考未复现），仍在采集、尚未做新CAL预测。

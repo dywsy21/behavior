@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 13:34 CST：高低统计独立绑定后的GPU QA
+
+- A800新`src/causal-runtime-gpu-qa-v2`=733373fdd108fb765e30110f41d8b12c6260d08b，GPU0同名tmux/run/`.log`/`.runtime-cache`，仅工程生成；原v1在0生成前归一化门拒绝，保留失败log和源码，不覆盖。
+- 原始训练normalizer高/observer=`models/memlite-b-final-20260910/B-dataset-stats.json`/846bcbea…40b19；低=`manifests/memlite-stage1-v4-action-bounds/stats.json`/10dc04dc…bd929。v2会话分别绑定，禁止共用单一统计SHA推断兼容。
+
 ## 2026-10-10 13:29 CST：新高层独立会话真实GPU工程验收
 
 - A800 `src/causal-runtime-gpu-qa-v1`、RTX `code/causal-runtime-gpu-qa-v1`均b22f73565ee1b35aad0d0594549952b6d9bb2bb4；没有热改现役短技能或collector源。
