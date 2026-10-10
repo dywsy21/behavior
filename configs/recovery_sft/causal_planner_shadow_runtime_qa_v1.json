@@ -1,0 +1,28 @@
+{
+  "schema": "causal_planner_shadow_runtime_qa_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "hypothesis": "Actual GPU output for a session is invariant to interleaving with two other tasks. New H1 uses its own transactional causal ledger and unchanged native low condition builder; original observer backbone is separately pinned, not substituted into H1. This is zero-action engineering QA, not a rollout, checkpoint selection or outcome deployment.",
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "planner": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-causal-feedback-fit-v1/checkpoints/step_00000420_save_0009.pt",
+    "sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2"
+  },
+  "low": {
+    "path": "runs/recovery_heterogeneous_20261010/L0/checkpoints/step_00000200_save_0004.pt",
+    "sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044"
+  },
+  "observer_backbone": {
+    "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+    "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316"
+  },
+  "observer_adapter": {
+    "path": "runs/recovery_heterogeneous_20261010/H0-observer-adapter-v8-retry-unknown-v1/checkpoints/selected.pt",
+    "sha256": "b598b950f54fc3515fd213f13d77e7e4b869de07462b728471b5954a6ea47041"
+  },
+  "normalization_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "input_role": "three closed first-TRAIN initial RGB/proprio observations from short-rl-v7",
+  "observer_runtime_mode": "shadow_unknown_v1",
+  "resource": "One actually idle lc1 GPU, no optimizer, no simulator reset/control, no shared env or lc2 changes",
+  "stop": "Finish grouped/interleaved exact comparison; fail on any model/hash/input/grammar/conditioning/isolation mismatch. This is not RECOVERY-USABLE completion."
+}
