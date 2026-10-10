@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 13:20 CST / Codex RECOVERY-USABLE：** 补完新高层的独立事务session与target-free推理接线（`memlite_causal_session.py`、`recovery_causal_inference.py`），不热改任何现役服务：五类模型/统计SHA＋slot/task/instance/episode隔离、实际控制时钟、K3历史只记已发命令、丢弃/异常不提交、RETRY清独立member缓存。观察器严格使用原bee骨干，不能借新H1/a74特征；当前只shadow预测，给高层UNKNOWN/0＋真实计数，离线CAL不能自动授权在线结果切换。8 session＋4推理接线＋11原反馈＋205原恢复测试通过；第一次宽glob误扫两个旧环境依赖模块（缺pytest/scripts.data）失败，改为准确目标后全过。真实GPU/联合物理接线尚待，不能冒称已部署。另OPEN首长续段机器全验1268控/81无损边界、根亲看15面板，t428最大.278877后t446松手至末始终.268182；提前松手附近adv已负，详证`wash169-v7-train21-diagnostic-v2`，v1是传错父目录的空partial保留。
+
 - **2026-10-10 13:12 CST / Codex RECOVERY-USABLE：** v7已真实global21/91chunks，actor LR1e-6、KL.01336、clip.09341，critic半MSE .017582→.005259，版本fd6ae4e6…dc28b；没有加大学习率。首TRAIN三条：GRASP19控成功、PLACE136控成功、OPEN1268控仍UNKNOWN（最大开度.278877<.35）。闭合账本独立重算OPEN实得折扣奖励−.005554、尾项+.201131、平均adv−.183524，80块仅1正，原来短续段的正信用问题有所缓解但**尾项仍占绝对量97.3%，且尚无可靠技能改善**，不能宣称尾估计正确/目标完成。证据A800`short-rl-v7-first-round-diagnostic-v1/returns.json`；旧固定EVAL门不变，下一固定probe在global24。补97已有24终态、完整采集与待审材料链仍在跑，未做新预测/校准，lc2不动。
 
 - **2026-10-10 12:59 CST / Codex RECOVERY-USABLE：** v7六baseline全部闭合，根亲审6页90原RGB面板，机器重算922真实控制/reward/ACK和66无损观察边界；审计353e1e82…394fc。GRASP19/19控成、PLACE106/144控成，OPEN两317控未达功能阈值（末.299088/.295272），仍UNKNOWN，起点误差门全过；此为完整负结果基线，不是新增提升。绑定config f3b0ed3e、policy92fad0b1、episodes eed9ef57的人工许可已放A800`short-rl-v7-real-continuation/BASELINE_ACCEPTED.json`，才放行global21。补97采集继续；58ca88d9新原图审核材料链`observer-supplement-review-v1`已等待97完整终态，绝不自动签核/校准。
