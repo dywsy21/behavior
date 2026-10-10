@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 15:50 CST / Codex RECOVERY-USABLE：** 旧v7已按owner STOP完整退出，result明确Owner stop/32更新且冻结SHA前后eb4b…c1572不变；旧worker tmux全退，不改其失败格式/不称自然40轮完成。RTX4–7出现队友`openpi_benchmark/serve_policy.py`四进程，未触碰；改在实查空闲0–2启动control三个冷worker（CLI实记GPU、科学条件不变，配置resource旧3–5说明由本记录覆盖），新源501、端口18976、分别`later-action-control-{radio155,wash169,tripod129}-probes-v1`。这只是提交模拟器，尚未行为结果。A800新短起点cache已377请求/684prefill，SHA76284882…eb0d31a，下一独立与旧v8逐值比对才许v10优化；新核对工具及反例回归通过。
+
+- **2026-10-10 15:46 CST / Codex RECOVERY-USABLE：** v7/global32六固定probe全闭：抓19/19两成、放106成/165 UNKNOWN、开317/317 UNKNOWN，合3/6仍无可靠提升。实读round-0012 SHA8c30cb50…39bfe23与update0032发布一致，已在32/新第13轮未更新检查点发owner STOP，保留全部权重/Adam/RNG及可能新起的partial证据、不回灌；正在等服务/RTX子进程关闭，不能把STOP提交当已退出。lc1GPU2只读control服务ready/PID2083802、18976、0更新、12probe全部待；新的独立observer历史cache在GPU0准备，尚未训练v10。暂停是为串行配对物理检验，不是goal完成或实验额度耗尽。
+
 - **2026-10-10 15:42 CST / Codex RECOVERY-USABLE：** 固定v8新CAL实际完成97真实prefill/90独立组，84/90正确，但高置信误报成功2（木头205、咖啡滤纸142，均F8）；T1.7741、S precision25/27/.9259而Wilson下界.7663<.8，falseS上界.11364>.10，**仍不部署**。冻结SHA不变/0optimizer，完整轻量结果`docs/infra/results/2026-10-10-observer-pool-v3-calibration.json`；根重看两原sheet（物体近手/低对比遮挡），不改标签/门，旧60CAL/20test元数据与187无重叠。83/90仅单帧。原03:07只训头补起点已失败不重做；预登记新v10只改真实短起点历史且训练独立observer LoRA+头，同294/40与全部超参/标签，先cache一致性验证，不用这90条选新模型。lc1 GPU2旧首窗只读服务已提交18976待载入，RTX源501已冻/10调度回归过，仍未开始模拟器。
 
 - **2026-10-10 15:26 CST / Codex RECOVERY-USABLE：** 新独立CAL已实际在lc1 GPU0启动，源码50193209、tmux/run `observer-pool-calibration-v2`、PID2074663，config5b434290…1f2889；通过原fit78组隔离与90-anchor校验后载入，0optimizer/尚无结果。旧v1在0forward失败、日志保留；新模型预测只用90组，70reserve/旧20测试不forward。lc1 GPU1原v7已global31/第12轮，在原固定global32检查后拟安全暂停作业、保留完整权重及所有未完成轨迹，串行运行两份新SFT配对物理测试以避免旧辅助GPU白名单冲突；当前未停，也不把两长TRAIN成功当选模依据。
