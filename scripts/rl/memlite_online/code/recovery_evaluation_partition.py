@@ -12,16 +12,40 @@ def _groups(value):
     return set(value)
 
 
+INDEPENDENT_SCHEMAS = ('recovery_evaluation_partition_v2', 'recovery_evaluation_partition_v3')
+
+
+def _cohort_bindings(partition):
+    """A pool union retains each signed source cohort; never rewrites approval SHA."""
+    bindings = partition.get('source_cohort_by_group')
+    if partition.get('schema') != 'recovery_evaluation_partition_v3':
+        if bindings is not None:
+            raise ValueError('Multiple signed cohorts require explicit v3 provenance')
+        return None
+    expected = (set(partition['calibration_groups']) | set(partition['frozen_test_groups'])) - set(
+        partition.get('reserved_frozen_test_groups', []))
+    if (not isinstance(bindings, dict) or set(bindings) != expected
+            or any(not isinstance(s, str) or len(s) != 64 or any(c not in '0123456789abcdef' for c in s)
+                   for s in bindings.values())):
+        raise ValueError('Every admitted independent group needs its original signed cohort SHA')
+    return bindings
+
+
 def _guard_approval_roles(rows, partition):
+    bindings = _cohort_bindings(partition) if partition is not None else None
     for row in rows:
         approval = row.get('approval', {})
         role = approval.get('usage_role')
+        group = row['candidate']['source_group']
+        if bindings is not None and group in bindings and role is None:
+            raise ValueError('Pool union cannot erase a signed independent usage role')
         if role is None:
             continue
         if (role not in ('calibration', 'frozen_test') or partition is None
-                or partition.get('schema') != 'recovery_evaluation_partition_v2'
-                or row['candidate']['source_group'] not in partition[role+'_groups']
-                or approval.get('cohort_sha256') != partition.get('cohort_sha256')):
+                or partition.get('schema') not in INDEPENDENT_SCHEMAS
+                or group not in partition[role+'_groups']
+                or approval.get('cohort_sha256') != (bindings.get(group) if bindings is not None
+                                                     else partition.get('cohort_sha256'))):
             raise ValueError('Independent approval needs its exact non-training cohort role')
 
 
@@ -31,7 +55,7 @@ def build_partition(spec, unit_rows):
         return None
     if not unit_rows or not spec.get('no_added_training_rows_expected'):
         raise ValueError('This partition only permits a fixed training pool')
-    if spec.get('schema') == 'recovery_evaluation_partition_spec_v2':
+    if spec.get('schema') in ('recovery_evaluation_partition_spec_v2', 'recovery_evaluation_partition_spec_v3'):
         calibration = _groups(spec['calibration_groups'])
         frozen = _groups(spec['frozen_test_groups'])
         reserved = _groups(spec.get('reserved_frozen_test_groups', []))
@@ -51,13 +75,16 @@ def build_partition(spec, unit_rows):
         if (any(r['candidate']['split'] != 'dev' for r in new)
                 or {r['candidate']['source_group'] for r in new} != (calibration | frozen)-reserved):
             raise ValueError('New DEV must exactly match admitted independent roles')
-        partition = dict(schema='recovery_evaluation_partition_v2',
+        partition = dict(schema=('recovery_evaluation_partition_v3'
+            if spec['schema'].endswith('_v3') else 'recovery_evaluation_partition_v2'),
             training_groups=sorted({r['candidate']['source_group'] for r in base if r['candidate']['split']=='train'}),
             selection_dev_groups=sorted({r['candidate']['source_group'] for r in base if r['candidate']['split']=='dev'}),
             calibration_groups=sorted(calibration), frozen_test_groups=sorted(frozen),
             reserved_frozen_test_groups=sorted(reserved), cohort_sha256=sha,
             calibration_may_not_select_checkpoints=True,
             test_may_not_select_checkpoints_or_calibration=True)
+        if 'source_cohort_by_group' in spec:
+            partition['source_cohort_by_group'] = dict(spec['source_cohort_by_group'])
         validate_partition(partition, base+new)
         return partition
     if spec.get('schema') is not None or 'calibration_groups' in spec:
@@ -87,13 +114,13 @@ def build_partition(spec, unit_rows):
 
 
 def validate_partition(partition, rows):
-    if (partition.get('schema') not in ('recovery_evaluation_partition_v1', 'recovery_evaluation_partition_v2')
+    if (partition.get('schema') not in ('recovery_evaluation_partition_v1', *INDEPENDENT_SCHEMAS)
             or partition.get('test_may_not_select_checkpoints_or_calibration') is not True):
         raise ValueError('Invalid frozen-test role contract')
     groups = [_groups(partition[k]) for k in
               ('training_groups', 'selection_dev_groups', 'frozen_test_groups')]
     reserved = set()
-    if partition['schema'] == 'recovery_evaluation_partition_v2':
+    if partition['schema'] in INDEPENDENT_SCHEMAS:
         groups.append(_groups(partition['calibration_groups']))
         reserved = _groups(partition.get('reserved_frozen_test_groups', []))
         sha = partition.get('cohort_sha256', '')
@@ -130,7 +157,7 @@ def rows_for_purpose(rows, partition, purpose):
     if purpose == 'training':
         return [r for r in rows if r['candidate']['source_group'] not in frozen | calibration]
     if purpose == 'calibration':
-        if partition['schema'] != 'recovery_evaluation_partition_v2':
+        if partition['schema'] not in INDEPENDENT_SCHEMAS:
             raise ValueError('Independent calibration requires explicit calibration roles')
         return [r for r in rows if r['candidate']['source_group'] in calibration]
     if purpose == 'frozen_evaluation':

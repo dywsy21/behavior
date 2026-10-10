@@ -68,6 +68,45 @@ class PartitionTests(unittest.TestCase):
                        dict(calibration_groups=['c:3','c:3']),dict(training_groups=['a:1','c:3'])]:
             with self.assertRaises(ValueError):validate_partition(dict(partition,**change),self.old+cal+test)
 
+    def test_pool_union_preserves_two_original_signed_cohorts(self):
+        spec,cal,_=self.independent(reserve=True)
+        other=[dict(row('q:4','dev'),approval=dict(usage_role='calibration',cohort_sha256='b'*64))]
+        spec.update(schema='recovery_evaluation_partition_spec_v3',cohort_sha256='c'*64,
+            calibration_groups=['c:3','q:4'],source_cohort_by_group={'c:3':'a'*64,'q:4':'b'*64})
+        part=build_partition(spec,[self.old,cal,other])
+        self.assertEqual(part['cohort_sha256'],'c'*64)
+        self.assertEqual(rows_for_purpose(self.old+cal+other,part,'calibration'),cal+other)
+        self.assertEqual(rows_for_purpose(self.old+cal+other,part,'training'),self.old)
+        for changed in ({'c:3':'a'*64},{'c:3':'b'*64,'q:4':'a'*64},
+                        {'c:3':'a'*64,'q:4':'b'*64,'z:9':'d'*64}):
+            with self.assertRaises(ValueError):build_partition(dict(spec,source_cohort_by_group=changed),[self.old,cal,other])
+        with self.assertRaises(ValueError):build_partition(dict(spec,schema='recovery_evaluation_partition_spec_v2'),[self.old,cal,other])
+        erased=deepcopy(other);erased[0]['approval'].pop('usage_role')
+        with self.assertRaises(ValueError):build_partition(spec,[self.old,cal,erased])
+        rewritten=deepcopy(other);rewritten[0]['approval']['cohort_sha256']='c'*64
+        with self.assertRaises(ValueError):build_partition(spec,[self.old,cal,rewritten])
+
+    def test_zero_training_calibration_unit_only_allows_signed_read_only_access(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);spec,cal,_=self.independent(reserve=True)
+            for r in cal:r['approval'].update(pool='outcome',label=dict(value='FAILED'))
+            part=build_partition(dict(spec,base_unit_count=0),[cal])
+            (root/'evaluation_partition.json').write_text(json.dumps(part))
+            (root/'outcome.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in cal))
+            receipt=dict(schema='recovery_admission_v1',pools=dict(outcome=dict(
+                training_ready=False,blockers=['zero TRAIN rows intentionally'])),
+                files={n:file_sha(root/n) for n in ('evaluation_partition.json','outcome.jsonl')},
+                evaluation_partition_file='evaluation_partition.json')
+            (root/'admission.json').write_text(json.dumps(receipt));sha=file_sha(root/'admission.json')
+            self.assertEqual(require_training_pool(root,'outcome',sha,purpose='calibration')[1],cal)
+            for purpose in ('training','feature_extraction','frozen_evaluation'):
+                with self.assertRaises(ValueError):require_training_pool(root,'outcome',sha,purpose=purpose)
+            erased=deepcopy(cal);erased[0]['approval'].pop('usage_role')
+            (root/'outcome.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in erased))
+            receipt['files']['outcome.jsonl']=file_sha(root/'outcome.jsonl')
+            (root/'admission.json').write_text(json.dumps(receipt))
+            with self.assertRaises(ValueError):require_training_pool(root,'outcome',file_sha(root/'admission.json'),purpose='calibration')
+
     def test_no_overlap_added_train_or_unassigned_new_group(self):
         for rows in [[row('c:3', 'train')], [row('d:4', 'dev')], [row('b:2', 'dev')]]:
             with self.assertRaises(ValueError):
@@ -126,6 +165,7 @@ class PartitionTests(unittest.TestCase):
                 for i,item in enumerate(items):
                     item['approval']=dict(pool='outcome',event_id=item['candidate']['source_group'],
                         label=dict(value=('IN_PROGRESS','SUCCEEDED','FAILED')[i%3]))
+            for item in cal:item['approval'].update(usage_role='calibration',cohort_sha256='a'*64)
             spec=dict(schema='recovery_evaluation_partition_spec_v2',no_added_training_rows_expected=True,
                 calibration_groups=[r['candidate']['source_group'] for r in cal],
                 frozen_test_groups=['z:9'],reserved_frozen_test_groups=['z:9'],

@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 12:47 CST：同技能真实续段v7已加载
+
+- 新源A800`src/short-skill-continuation-v7`与RTX`code/short-skill-continuation-v7`均cfef448eb38489b8195755f563d72a57e464a48b，不热改。lc1 GPU1 `runs/recovery_heterogeneous_20261010/short-rl-v7-real-continuation`，tmux`short-skill-rl-v7`、18975、W&B37e86f521dea；加载global20、等待新六baseline人审。
+- RTX相同run根`short-rl-{radio155,wash169,tripod129}-continuation-v7`各GPU0/1/2，tmux`short-rl-{radio155,wash169,tripod129}-v7`；首次冷baseline已提交，RTX无optimizer。训练4×原参考时限、固定检查仍1×，每4新更新检查，不把训练窗口当goal完成。
+- 首90`grasp-reviewed-unit-v1.tar.gz`机器签核/全读完成，SHAc21772692e5e07bf86cdec3d1d98fc5b8965f537a8c026cfd6210b1fed9b0782，admission dd3a0f10…6be470；正在迁A800新数据目录，未做新校准预测/训练。
+
 ## 2026-10-10 12:43 CST：v6完整结束、新校准补采与签发
 
 - lc1 `short-rl-v6-critic-restart/result.json`已完整终态，round-0008 SHA92fad0b13c459464038b7a112eb6ff0006106d7632e7843ad878dc1d89bfd7cb；旧server退出。VPN重连后的lc1 control socket为`/home/wsy/.ssh/lc1-recovery-20261010b.sock`，专用18975；旧a.sock失效，lc3尚未恢复，不碰队友会话。

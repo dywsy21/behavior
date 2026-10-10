@@ -44,5 +44,24 @@ class ShortSkillRecipeTests(unittest.TestCase):
         self.assertTrue(after['ppo']['critic_restart_stale_momentum']);self.assertTrue(after['ppo']['critic_update_audit'])
         for key,value in before['ppo'].items():self.assertEqual(after['ppo'][key],value)
 
+    def test_continuation_only_changes_train_horizon_and_probe_cadence(self):
+        from recovery_gpu_ownership import declared_collection_peers
+        from skill_training_protocol import rollout_end_control
+        before=json.loads((REPO/'configs/recovery_sft/a800_short_skill_rl_cold_resume_v3.json').read_text())
+        after=json.loads((REPO/'configs/recovery_sft/a800_short_skill_rl_continuation_v7.json').read_text())
+        self.assertEqual(before['cases'],after['cases']);self.assertEqual(before['model'],after['model'])
+        self.assertEqual(after['resume']['updates'],20)
+        self.assertEqual(after['training_seed_round_offset'],21)
+        self.assertTrue(after['require_baseline_acceptance'])
+        self.assertEqual(after['evaluation_seeds'],before['evaluation_seeds'])
+        self.assertEqual(after['evaluation_interval_updates'],4)
+        self.assertEqual(len(declared_collection_peers(after['collection_peers'])),2)
+        self.assertEqual(after['ppo']['critic_fit_steps'],1)
+        for key,value in before['ppo'].items():self.assertEqual(after['ppo'][key],value)
+        for case in after['cases'].values():
+            self.assertEqual(rollout_end_control(case,'evaluation',4),case['end_control'])
+            self.assertEqual(rollout_end_control(case,'train',4)-case['start_control'],
+                4*(case['end_control']-case['start_control']))
+
 
 if __name__=='__main__':unittest.main()

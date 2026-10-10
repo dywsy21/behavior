@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 12:52 CST / Codex RECOVERY-USABLE：** 首90包已A800独立解包/386文件313,202,689B逐SHA通过，`datasets/recovery-fresh90-calibration-20261010-v1`，admission仍dd3a0f10…6be470且training_ready=false。补齐前瞻两wave CAL链：v3 partition逐group保留原cohort签名、187全尝试缺测/预选90/其余reserve分开记账，纯CAL零TRAIN只读入口，固定v8/b598＋bee原RGB真实重载forward与原统计门，不读取reserve/test图像、不更新参数；新工具`prepare_observer_calibration_pool.py`和`eval/calibrate_recovery_observer_adapter.py`205回归/编译通过，实际GPU校准须等97全闭＋根审签、尚未运行。低v7六baseline已有2done/2active/2pending、仍0新优化；补97已有6候选，真实进度不等于任何部署通过。
+
+- **2026-10-10 12:47 CST / Codex RECOVERY-USABLE：** v7新服务在lc1 GPU1真实ready/global20，cfef448e、config f3b0ed3e…954f130、W&B`37e86f521dea`；actor322/critic6 Adam完整、actor step20/critic step17与旧权重完全对应，TRAIN倍率1→4显式记录，baseline许可false。RTX0–2新`short-rl-{radio155,wash169,tripod129}-continuation-v7`已提交首六冷baseline，不重复旧probe/不自动准入。补97已真实采到3候选且继续，首90新单元144ZIP/6526观察/246结果机器全读通过，包c2177269…d9b0782本地完整SHA通过、迁A800中；其中0TRAIN、0新planner/action。新增多cohort审批原SHA保留与CAL-only只读入口，202回归过，尚未对新校准数据做任何模型预测。
+
 - **2026-10-10 12:43 CST / Codex RECOVERY-USABLE：** v6已正常关窗/进程退出：global20、6final全闭、冻结指纹前后eb4b5d45…c1572一致，最终round-0008实读7,622,837,181B/SHA92fad0b1…bfd7cb；19与20均GRASP2/2、PLACE2/2、OPEN0/2，仍无可靠改善。wash网络失败只在最后结束通知，保留失败回执，transport-only ACK完成而没有新控制/更新。补97原等待shell因wash失败将永远不满足，已在GPU全空/输出不存在时仅停止等待shell，按原ea3c54db源启动`observer-supplement97-v3`（RTX3–7）；首90六份人工决策在ab41ded6独立源机器签发/校准专用封装中，非训练许可。新v7实际配方已按20步真实SHA写入`a800_short_skill_rl_continuation_v7.json`，TRAIN4倍续段、EVAL原时限、每4更新固定probe、40新更新观察窗，须新6baseline人审才更新21；尚未启动新优化器。
 
 - **2026-10-10 12:35 CST / Codex RECOVERY-USABLE：** 首90全78原图/780面板根审完，六份owner review共246结果＝66F/56IP/124S，另外两错误IP拒签、12不可用源不移出90分母；没有新模型预测/训练。12:31本地VPN掉线导致wash仅“领取finished通知”的最后冷进程handshake失败，真正六final probe在断线前全部done。按已有用户授权重新登录VPN（仅loopback/eth2）并恢复lc1 control socket`20261010b`；服务20/active0/6done仍活，仅缺wash结束确认，正在补原protocol的transport-only finished ACK（0新轨迹/控制/更新），保留旧网络失败日志。补97须确认三RTX进程已退出、A800最终冻结SHA不变后开始，不重跑六条成功/失败。

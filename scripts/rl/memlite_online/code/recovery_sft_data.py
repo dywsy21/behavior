@@ -22,7 +22,11 @@ def require_training_pool(release, pool, expected_admission_sha256, *, purpose='
     if receipt.get('schema') != 'recovery_admission_v1' or pool not in receipt['pools']:
         raise ValueError('Unknown training pool')
     gate = receipt['pools'][pool]
-    if gate.get('training_ready') is not True or gate['blockers']:
+    # A standalone signed calibration unit deliberately has ZERO TRAIN rows.
+    # Its missing-training gate must stay false. Only explicit read-only
+    # calibration access can inspect it; never feature-extraction-as-training.
+    read_only_calibration = purpose == 'calibration' and pool == 'outcome'
+    if not read_only_calibration and (gate.get('training_ready') is not True or gate['blockers']):
         raise ValueError('Recovery training BLOCKED: ' + pool + ': ' + '; '.join(gate['blockers']))
     for name, sha in receipt['files'].items():
         if file_sha(local_file(release, name)) != sha:
@@ -38,6 +42,9 @@ def require_training_pool(release, pool, expected_admission_sha256, *, purpose='
             raise ValueError('Unbound evaluation partition')
         partition = json.loads(local_file(release, name).read_text())
     selected = rows_for_purpose(rows, partition, purpose)
+    if read_only_calibration and (not selected or any(
+            r['approval'].get('usage_role') != 'calibration' for r in selected)):
+        raise ValueError('Read-only calibration requires explicitly signed independent approvals')
     if partition is not None and purpose == 'training':
         # A held-out test cohort may not supply the minimum DEV count/classes
         # needed to admit a training experiment.
