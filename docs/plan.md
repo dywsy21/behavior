@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 09:10 CST / Codex RECOVERY-USABLE：** v8真实冻结cache377请求/570prefill完成57.2s，SHAc9a72562…857db，0优化；新增23 UNKNOWN的原图、过去6控、实际RETRY事件与零新动作全部签核，未新增来源/BC。下一结果LoRA采用同初始化/超参/结构的纯数据对照294TRAIN（UNKNOWN28）＋原40DEV，配方`a800_observer_adapter_v8_retry_unknown_v1.json`，待独立冻源启动。四个非首段高层诊断（父/step50×观察/UNKNOWN反事实）以32d80c44新源提交，不替代正式H1在训源；其100任务控制必须全部确有前意图，不能再以初始样本冒称反馈注入测试。完整goal仍缺可部署结果反馈与可靠低层收益。
+
 - **2026-10-10 09:09 CST / Codex RECOVERY-USABLE（重要评测口径更正）：** step50旧反事实结果“正常0假RETRY”**不能证明抗格式捷径**：实查100/100正常样本全为`initial_no_previous_command_unmodified`，0条实际注入反馈；10恢复去掉反馈后decision全部EXECUTE（0/10正确RETRY）。原100 exact84/85仍是真实首段生成指标，不代表有历史的正常执行。修`select_original_indices`按已冻结每task32候选的真实metadata选首个非initial，缺任何task硬拒绝；正常probe置信固定.5（实OOF范围.307–.651），明确synthetic非标签/非训练；168回归通过，待父/step50非首段观察与反事实配对。v8未知类包274文件96,301,730字节全SHA、130ZIP/6810原观察全读过，admission89eda5e5…ce12a，结果294TRAIN/40DEV（UNKNOWN28/4）、意图/动作不增；lc1 GPU2新cache进行中。旧observer-v7独立467prefill重载、192adapter＋14头＋206 Adam精确，原DEV逐值复现但未部署。
 
 - **2026-10-10 09:02 CST / Codex RECOVERY-USABLE：** 专属observer-v7实际544更新/16epoch平台结束，选epoch11（4e78966d…192bd），DEV事件92.5%、balanced79.17%、IP11/12、成功14/14、失败10/10、UNKNOWN1/4；冻结骨干SHA前后完全相等3f57f559，不能将末epoch85.83%当所选结果。lc1 GPU2已提交独立重载/原RGB重算验收。根亲审23新重试零控制来源的23页138原RGB并核全部sheet SHA，新增精确UNKNOWN人工决定`retry_unknown_owner_review_v1.json`（不复用旧FAILED、不增BC/plan），待df5b5781机器签发与新unit联合，旧数据/训练不热改。首bundle因RTX缺前置f8提交而拒绝，改用已存在935基点成功Git部署，无覆盖活跃源码。
