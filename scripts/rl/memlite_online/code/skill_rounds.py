@@ -3,16 +3,22 @@ from recovery_corpus import digest
 
 
 class SkillRounds:
-    def __init__(self, cases, eval_seeds, *, rounds, run):
+    def __init__(self, cases, eval_seeds, *, rounds, run, seed_round_offset=0):
         if len(cases)<3 or len(set(cases))!=len(cases) or type(rounds) is not int or rounds<1:
             raise ValueError('Need three distinct heterogeneous starts and a finite experiment window')
         if not eval_seeds or len(set(eval_seeds))!=len(eval_seeds) or any(type(x) is not int for x in eval_seeds):
             raise ValueError('Pin distinct paired evaluation seeds')
+        if type(seed_round_offset) is not int or seed_round_offset < 0:
+            raise ValueError('Training seed offset must be a nonnegative integer')
+        training_seeds={17000+1009*(seed_round_offset+i) for i in range(1,rounds+1)}
+        if training_seeds.intersection(eval_seeds):
+            raise ValueError('Training seeds must not overlap fixed evaluation seeds')
+        self.seed_round_offset=seed_round_offset
         self.cases=sorted(cases);self.eval_seeds=eval_seeds;self.limit=rounds;self.run=run
         self.phase='evaluation';self.round=0;self.jobs=[];self.targets=[];self.install()
 
     def install(self):
-        seeds=self.eval_seeds if self.phase=='evaluation' else [17000+1009*self.round]
+        seeds=self.eval_seeds if self.phase=='evaluation' else [17000+1009*(self.seed_round_offset+self.round)]
         self.jobs=[dict(id=digest([self.run,self.phase,self.round,case,seed]),case=case,seed=seed,
             phase=self.phase,round=self.round,status='pending') for case in self.cases for seed in seeds]
         self.targets=[]

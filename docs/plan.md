@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 08:26 CST / Codex RECOVERY-USABLE：** 精确选中权重为epoch15/330步（非末epoch20）：原DEV事件91.67%、四类平均81.55%、UNKNOWN2/4，SHA d5def649…a4c5；独立冻源d1fccad5已在lc1 GPU0启动原RGB重载前向（未算通过），0优化。新增断线续接v5配方从global7/9664547d再做13轮，保持技能/奖励/优化器，固定eval种子不变、TRAIN offset7避免新run重放旧种子；本地163恢复测试通过，实际服务尚未启动。已审核79MB包正在迁A800，不把传输/启动当验收或效果。RTX0–7实测空闲，lc2不动。
+
 - **2026-10-10 08:16 CST / Codex RECOVERY-USABLE（用户允许VPN重连，goal恢复）：** 按用户新增授权重连原lc-connect，仅eth2单进程/loopback1080、1081，不改路由/env；持久tmux `recovery-lc-connect-20261010`与lc1/lc3 SSH控制会话已实通，两个节点GPU全空，不碰lc2队友。核实H0-observer-v2实际20epoch/440更新结束、选epoch15，末DEV92.5%/balanced78.75%且UNKNOWN1/4，冻结SHA前后同，尚未独立重载/校准部署；低`short-rl-v4-cold`确认因Worker disconnected mid-episode终止global7、9664547d，非技能失败，父/冻结SHA不变。接下来先实际重载高观察器、迁移已审数据，同时按新独立run核验续接低层，不从头重复已完成训练。前条blocked为历史，完整目标恢复继续。
 
 - **2026-10-10 03:39 CST / Codex RECOVERY-USABLE（goal阻塞，非完成）：** 前一轮为实际进展（新数据纠错/签核/封装/校验），不是只等状态。本轮再次实测1080与lc1/lc2 socket缺失，现有lc1/lc3 SSH均exit255；RTX三个cold worker真实状态仍failed_no_retry、完成9/8/9条，GPU全空，A800后台终态不可观察。自03:07首次、03:18续接到本轮，同一VPN/待重登确认阻塞已连续≥3个goal回合；可独立完成的CPU数据准备已完成，剩余实际训练、特征、OOF和效果验证须连通A800。现将goal标记blocked，**不称已达到可用，不自行重登可能挤掉队友的VPN、不重复启动RL**。等待用户确认可以重连或外部恢复隧道；恢复后先核observer最终run/独立重载和低RL最新checkpoint，再迁v7/续训，完整三项目标不缩减。

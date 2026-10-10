@@ -87,7 +87,9 @@ async def main():
     spec=spec_from_file_location('_short_skill_digests',REPO/'scripts/train_memlite_recovery.py')
     mod=module_from_spec(spec);spec.loader.exec_module(mod)
     frozen_before=mod.parameter_digest(policy,frozen=True)
-    rounds=SkillRounds(cases,cfg['evaluation_seeds'],rounds=cfg['learning_rounds'],run=str(a.output))
+    rounds=SkillRounds(cases,cfg['evaluation_seeds'],rounds=cfg['learning_rounds'],run=str(a.output),
+        seed_round_offset=cfg.get('training_seed_round_offset',0))
+    receipt['training_seed_round_offset']=rounds.seed_round_offset
     version=trainer.update_count
     policy_sha=cfg['resume']['sha256'] if resumed else cfg['model']['sha256']
     sessions={};next_eval_id=10**9

@@ -43,5 +43,20 @@ class RoundTests(unittest.TestCase):
         r.complete(a['id'],[dict(experience_id=0)])
         with self.assertRaises(ValueError):r.complete(b['id'],[dict(experience_id=0)])
 
+    def test_resume_uses_fresh_training_seeds_and_unchanged_paired_probes(self):
+        r=SkillRounds(['grasp','open','place'],[17,29],rounds=13,run='new',seed_round_offset=7)
+        self.assertEqual({j['seed'] for j in r.jobs},{17,29})
+        self.complete(r);r.advance()
+        self.assertEqual({j['seed'] for j in r.jobs},{25072})
+        self.complete(r);r.advance(optimizer_completed=True)
+        self.assertEqual({j['seed'] for j in r.jobs},{17,29})
+
+    def test_invalid_or_overlapping_seed_offset_is_rejected(self):
+        for offset in (-1,True,0.5):
+            with self.assertRaises(ValueError):
+                SkillRounds(['grasp','open','place'],[17],rounds=1,run='r',seed_round_offset=offset)
+        with self.assertRaises(ValueError):
+            SkillRounds(['grasp','open','place'],[25072],rounds=1,run='r',seed_round_offset=7)
+
 
 if __name__=='__main__':unittest.main()
