@@ -51,6 +51,15 @@ def main():
     import torch
     import torch.distributed as dist
     from torch.nn.parallel import DistributedDataParallel as DDP
+    rank,world,local=(int(os.environ[k]) for k in ('RANK','WORLD_SIZE','LOCAL_RANK'))
+    if world!=ticket['world_size'] or rank!=local: raise ValueError('One registered node only')
+    from recovery_process_cache import isolated_rank_cache_env
+    from recovery_cuda_startup import initialize_cuda_backend
+    rank_cache=isolated_rank_cache_env(os.environ,local)
+    os.environ.update(rank_cache)
+    backend_receipt=initialize_cuda_backend(local)
+    print(json.dumps(dict(event='cuda_backend_ready',**backend_receipt,cache=rank_cache)),flush=True)
+    torch.set_num_threads(2);device=torch.device('cuda',local)
     from g05.data.memlite_stage1_dataset import Stage1Dataset,collate_stage1,to_device
     from g05.utils.training.stage1_model import configuration,restore_model
     from g05.utils.training.stage1_runtime import atomic_json,capture_rng,restore_rng,save_checkpoint,load_checkpoint,init_wandb
@@ -60,10 +69,7 @@ def main():
     from recovery_planner_data import VerifiedRecoveryPlannerDataset
     from recovery_features import balanced_event_schedule
     vision._flash_attn_varlen=None;vision._flash_attn_backend=None
-    rank,world,local=(int(os.environ[k]) for k in ('RANK','WORLD_SIZE','LOCAL_RANK'))
-    if world!=ticket['world_size'] or rank!=local: raise ValueError('One registered node only')
-    torch.set_num_threads(2);torch.cuda.set_device(local);device=torch.device('cuda',local)
-    dist.init_process_group('nccl',timeout=timedelta(seconds=900))
+    dist.init_process_group('nccl',timeout=timedelta(seconds=900),device_id=device)
     torch.manual_seed(recipe['seed']+rank);random.seed(recipe['seed']+rank);np.random.seed(recipe['seed']+rank)
     root=Path(recipe['root']);release=root/recipe['expert_release'];branch='high' if a.component=='H1' else 'low'
     manifest=json.loads((release/'manifest.json').read_text())

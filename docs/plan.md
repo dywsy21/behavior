@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 20:53 CST / Codex RECOVERY-USABLE：** 冷启动修复已本地实现：每rank独立六类run缓存、在任何模型导入前显式CUDA→Triton→FLA校验，保留原始driver异常并拒绝CPU误绑定，NCCL显式device_id。7定向（5新增）/309恢复回归及py_compile/diff-check过（含旧5重复夹具）；新增八rank纯kernel审计入口，下一新冻源对照共享/独立冷缓存的真实FLA前后向。GPU修复尚未实证，旧失败run/共享env不改；数据、parent、优化目标及360更新日程不变。
+
+- **2026-10-10 20:50 CST / Codex RECOVERY-USABLE：** H1-postfit-feedback-fit-v1于20:44首轮基线eval失败退出（supervisor returncode1/162.63s），0更新/0新checkpoint，八卡已释放；不能沿用20:42的“运行中”。rank0 FLA导入时吞掉Triton初始化异常并绑定`torch.cpu`，实际CUDA forward在`fla.utils.custom_device_ctx`报`torch.cpu.device`不存在；不是OOM。日志保留在原`.supervisor/attempt_001.log`，根正在查共享冷缓存/设备初始化次序，尚未证实底层异常成因；拟新冻源码先八rank真实kernel前后向再换新run，不改共享env/失败源、不读旧test。干净pull/fetch已同步，main无新增。另旧RL v7的36完成TRAIN/12更新只读重放1046 chunks，GAE均值与日志差<2e-7；平均每更新样本loss权重OPEN87.18%/PLACE10.49%/GRASP2.34%，这是样本权重不是梯度范数，说明不能把名义三技能均分当均衡优化；尚未改RL或作因果收益结论。
+
 - **2026-10-10 20:42 CST / Codex RECOVERY-USABLE：** 新高层正式小试已实启lc1八卡、tmux/run `H1-postfit-feedback-fit-v1`，源bb9389b5，票50827481…b7761，supervisor2258127/torchrun2258141；36TRAIN事件×20遍=360更新、global8（6正常+2恢复）、LR1e-6、仅326高层参数，结果头/低层/视觉骨干不更新。当前DDP/父权重加载，尚无首更新或效果结论；W&B配置online待实际URL。实际78样本processor与700正常时钟/24图复验完成后启动，不读旧test、不动lc2/队友；下一首步梯度/全卡/W&B验收，然后目标无泄漏生成、物理闭环与低RL可靠改善仍需做。
 
 - **2026-10-10 20:40 CST / Codex RECOVERY-USABLE：** lc1新冻bb9389b5的78真实高层processor及原示范700时钟/24processor全部通过，原23→27 padding/高层CE mask无误，真实固定反馈逐原logits/时钟重算相同。原示范24原图页逐字节与既有根人审一致；700行仅补`repeat_stride_controls=16`及来源描述改名，其余输入/target/时钟全同，根据此续签而非声称新看图（audit3138e57b…5423/rows38233cb1…1101，signoff新Git结果文件）。另核smoke_detectors92的64步双手确实未持目标，预测SUCCEEDED/.9056是保留的误报；不能以.85门当真值。下一Git同步独立人审回执、制作bb9389b5训练票并实启lc1高层360更新；低层/结果头冻结，W&B online，GPU尚空，独立成员review待。

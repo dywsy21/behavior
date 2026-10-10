@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 20:50 CST：H1首步前退出，失败现场保留
+
+- lc1 `H1-postfit-feedback-fit-v1` tmux已自然结束，`.supervisor/ledger.json`为EXITED/returncode1/162.63s；`attempt_001.log`保留rank0 FLA冷初始化回退CPU及后续`torch.cpu.device`异常。无updates/evaluations/checkpoint，原bb9389b5冻结源与父权重不动，不能从此run恢复不存在的训练进度。
+- 20:50八卡实查均0MiB/无计算任务；下一修复使用新冻结源、新验收和新run，不能修改共享g05-py310-cu128环境。当前VPN/SSH控制d健康，不重新登录。
+
 ## 2026-10-10 20:42 CST：高层fixed-feedback训练启动
 
 - 活跃源`src/postfit-planner-fit-v1`=bb9389b5，lc1八卡tmux `H1-postfit-feedback-fit-v1`；run `runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v1`与同名`.log`/`.supervisor/attempt_001.log`/ledger及独立cache。票`H1-postfit-fit-preflight-v1/ticket.json` SHA50827481…b7761，前置同目录processor/expert审计。当前模型加载，未称训练完成。
