@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 12:00 CST：固定补97已迁移，等待原作业关闭
+
+- RTX source`/run/ti/rl_memlite_stage1_20261006/code/recovery-calibration-scene-v1`=ea3c54db227680baf1e47ed56f1d04f1235c66f1，显式`--reference-scene-inventory`，只扩大参考侧exact native库存，不猜别名；旧`recovery-calibration-supplement-v1`=e5fb9a9a未用于物理采集，保留。
+- 同根`runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-sources-v1`已97来源/1552依赖双端复验；tar SHA a7decdd65402ac9a02533dc0da16714be8a7f28ec744cdc6caed56d88e46b95f、audit SHA bc860bfc1db9db120b48b5fd8f9b37fc3c7dbb7802e3588a0d18b75e414db245。先前提前解包的EOF副本已隔离为同级`grasp-supplement-sources-v1-partial-transfer-20261010T1142`，不参与任何作业，不删除。
+- tmux`observer-supplement97-v1`等待原90`result.json=inventory_attempts_finished`、`grasp-review-v1/review-index.json`全90及RTX三旧`short-rl-{radio155,wash169,tripod129}-resume3-peer-v1/result.json=finished_service_window`；满足才跑`grasp-supplement-collection-v1`/日志`supplement-collection-v1.log`，GPU3–7。新v7 RTX worker必须等此目录通过preflight创建，再用显式两个collection peer启动；此条不是补97已采集或新RL已开始。
+
 ## 2026-10-10 11:35 CST：独立校准补来源（未采集/未训练）
 
 - lc1共享根`/data/workspace/wsy/behavior2026/src/recovery-calibration-supplement-v1`=e5fb9a9a，tmux`recovery-calibration-supplement-v1`；`runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-sources-v1`CPU导出97新source，日志`supplement-export-v1.log`。完成后会生成`supplement-source-audit-v1.json`和同名tar.gz，须全SHA通过再迁RTX，不属于训练数据。

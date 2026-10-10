@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 12:00 CST / Codex RECOVERY-USABLE：** native scene可选修复ea3c54db已Git部署RTX`code/recovery-calibration-scene-v1`；tmux`observer-supplement97-v1`现**等待依赖、不是在采集**，须原90正常闭合＋90源review-index完整＋三个`resume3-peer-v1`低worker都finished_service_window，才以GPU3–7开始固定97首次采集。输出`grasp-supplement-collection-v1`，日志`supplement-collection-v1.log`；无短技能主卡占用/无新optimizer。下一v7应先等补97目录已创建且GPU preflight过，再起RTX0–2新worker，并在配置显式登记旧90abfc与补97ea3两个peer，避免启动顺序竞态。低目前18后第7 TRAIN，未提前绑定未来20权重。
+
 - **2026-10-10 11:57 CST / Codex RECOVERY-USABLE：** 首90已78闭合（66候选、9参考未复现、3工程失败）。3失败全0控制：两例请求chair但旧GRASP只查BDDL目标scope（无chair），另一例toilet_tissue/native toilet_paper仍不猜别名。补97首次运行前登记明确工程修订：可选完整native scene精确库存（复用开合侧做法），真实唯一同手抓取6控/所有竞争对象门不变；197回归/入口编译过，**实景仍待验证**。旧90不重试不覆盖，新97来源/model/校准门都不变；修订`observer_supplement_scene_inventory_amendment_v1.json`。低global18仍旧run，待20关闭后开续段，补采也不抢旧worker卡。
 
 - **2026-10-10 11:51 CST / Codex RECOVERY-USABLE：** 低v6已global18；17步完整probe为3/6（GRASP2、PLACE1、OPEN0），未升级默认权重。下一同三技能续段实验已预登记`short_skill_continuation_v7_plan.json`，明确**不可启动草案**：待20真实终态/准确SHA，TRAIN4×、固定验证1×、每4更新测、critic仍1 fit及actorLR1e-6均不增；40更新为观察窗口而非goal终点。原90/补97采集波次的GPU辅助归属可预绑定，但后续每PID/commit/主卡/内存仍验，不动旧运行。高联合在线反馈接线/新独立结果校准/低可靠改善仍为未完成项。
