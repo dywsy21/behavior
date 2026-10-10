@@ -1,0 +1,15 @@
+{
+  "evidence_root": "/run/ti/rl_memlite_stage1_20261006",
+  "protected_groups": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/protected-groups.json",
+  "units": [
+    {
+      "corpus": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/closed-grasp-corpus-v5-linear",
+      "evidence_root": "/run/ti/rl_memlite_stage1_20261006",
+      "approvals": [
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/outcome-expansion-approvals-v3.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/planner-expansion-approvals-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/retry-unknown-approvals-v1.json"
+      ]
+    }
+  ]
+}

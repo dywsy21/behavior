@@ -1,0 +1,397 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 09:02 CST; personally inspected all 23 two-timepoint sheets / 138 original RGB panels, verified every sheet SHA, and checked old-attempt failure/current RETRY0-control physical bindings. UNKNOWN only, no BC/plan promotion; unchanged TRAIN cohort.",
+  "branches": [
+    {
+      "case": "storing_food_249",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "505e7bd02959bcc4beb57c971b629a10b5bf863b634210b3b580d283417d012c",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/storing_food_249--open_gripper_joint_jitter",
+      "review_sha256": "fbccf8b827b1e5e76af70fd89d4313096bb9c310321a21d73a27472731444c12",
+      "outcomes": [
+        {
+          "control_step": 32,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Olive-oil bottle fills left wrist view; head shows open fingers at bottle. Occlusion does not establish a completed regrasp. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "getting_organized_for_work_166",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "adce102dd54cddfd2c367905ec153605fcce235bf5e55c87f524ed24c83d4ff1",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/getting_organized_for_work_166--open_gripper_joint_jitter",
+      "review_sha256": "c428dddd61b6072c699cf13bbc35a9200a0d16c5dbb67b1b5dd615f7db49fb9d",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Dark mouse on desk is visible from right wrist/head; new command has not executed, so low contrast is not a FAILED label. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "store_produce_8",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "063730cb1cdaa554dc585343ebd380f2fd6d32a1211faef5c7a78b85f81c86d7",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/store_produce_8--open_gripper_joint_jitter",
+      "review_sha256": "163a2d780e24f3d8a01d1f93b99602002cd4cebd66cf0d230ee56211030c90a5",
+      "outcomes": [
+        {
+          "control_step": 24,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Fruit-filled basket and both rim-adjacent hands visible; target is basket, not fruit. Contact appearance does not override both-hands-not-held evidence. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "clean_up_broken_glass_231",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ff4f6303720f31bf020660352f018314b18cb191aa6dad67642cf469595e7e33",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/clean_up_broken_glass_231--open_gripper_joint_jitter",
+      "review_sha256": "aacdba4bfbee1fda5414660202d9ef243361b49f303f30a239d5137f7a905e24",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Broken-glass ring at floor/right wrist matches bound target; no disposal or newly completed grasp is inferred. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "make_cabinet_doors_135",
+      "branch": "open_gripper",
+      "manifest_sha256": "55ec4d9c2ef5ff81b683fe742ac87e259bff326bfa7b4b2ac12242f54388f140",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/make_cabinet_doors_135--open_gripper",
+      "review_sha256": "f9ec1b849483ec7d6ab1dc0dc8fe663ab39f18bdd29238f8c1db98f27fb36934",
+      "outcomes": [
+        {
+          "control_step": 24,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Long wooden cabinet-door edge in left view; other wood in right hand is not this target. New target regrasp has not acted. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_233",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "8100be2dd03ac8c4c1e9e65647d9222bb6660eb4fb5dd4b8f74ef7961ee75820",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/attach_a_camera_to_a_tripod_233--open_gripper_joint_jitter",
+      "review_sha256": "98ae37caba766dc845fcb2854a7eaaa86463ad6c10a0dab2620aaa84be314c16",
+      "outcomes": [
+        {
+          "control_step": 48,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Tripod leg close to right wrist and whole tripod in head view; camera occlusion cannot prove a new successful grasp. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "clean_a_patio_127",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f4e4a901bf9bdd45a68b05e3b0611a39ff274640d505580640f8bde9369ce887",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/clean_a_patio_127--open_gripper_joint_jitter",
+      "review_sha256": "161b19543e40ffd53d112a96bcd23b49b003a98ce53c17276b3ebaf2977272cb",
+      "outcomes": [
+        {
+          "control_step": 32,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Broom shaft by left hand/ground visible across views; no sweeping or successful recovery target is assigned. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "sorting_vegetables_94",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b0cc6d8b56bf2c71035c2121a181bdd7087b76553054f8de48a76e3de0458b4f",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/sorting_vegetables_94--open_gripper_joint_jitter",
+      "review_sha256": "4e4c5dfcb4b937195c8aa867d13346abedbcc19cd19c6dfe51d38f8186f8af37",
+      "outcomes": [
+        {
+          "control_step": 32,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers beside vegetable-basket rim; targets are basket, not corn. No new control ACK after RETRY32. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "assembling_gift_baskets_54",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "bffaabc909306ef2b0ed364323bbcdfb9a704e44e00ef5afd6883ce5e79a8451",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/assembling_gift_baskets_54--open_gripper_joint_jitter",
+      "review_sha256": "9e0bc076aa61608502133207f9db514f7f00f1bbc3df54fb30668419bde3d4e1",
+      "outcomes": [
+        {
+          "control_step": 24,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Basket rim occludes left wrist near fireplace; head distinguishes nearby baskets. No new hold claim. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "sorting_books_on_shelf_220",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "91187191e581a1fa77ed0bbf6434a381b58edecc6a41b23c17d098f4365ab09d",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/sorting_books_on_shelf_220--open_gripper_joint_jitter",
+      "review_sha256": "0f9b604df006963228a129ba8f06ed671bb7c039c824a7711763c1bd35e3f64e",
+      "outcomes": [
+        {
+          "control_step": 24,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Blue hardback and right fingers at shelf are consistent across views; no book-placement or regrasp success claimed. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "setting_the_fire_280",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "769baf3cff19ff60f9cf45820c04e0ba5a0cb7f9771fe55157a233f2d4ac3b81",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/setting_the_fire_280--open_gripper_joint_jitter",
+      "review_sha256": "d5762fbd0976cbc8621451646ad44aa697952e3ec7e420bed148e65ee0d2e21e",
+      "outcomes": [
+        {
+          "control_step": 24,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Newspaper/left fingers near table edge; wrist occlusion leaves outcome uncertain, matching zero fresh controls. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_79",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "59ad96dd0a457345aaab52c34930349ca3e6b0a67036f37fc63f981a14d26482",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/scrubbing_bathroom_floor_79--open_gripper_joint_jitter",
+      "review_sha256": "dfab971c11c25906a7111b7584d66d5737ee03f07f4bf5044254c60546beb9c8",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Red scrub brush by right fingers visible in head/right wrist; not a floor-cleaning success label. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "dispose_of_glass_192",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1ee4cd534e4b5f8c8c3c68d4a3811345b27ca0a216a2ff5bb25c62245f2298a8",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/dispose_of_glass_192--open_gripper_joint_jitter",
+      "review_sha256": "8bb599cb43ff2ad624311b4495b8a3ad1d45ba3e088bbc38c29088e49ac6dee2",
+      "outcomes": [
+        {
+          "control_step": 16,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Trash can/liner fills left wrist; head shows both hands near rim. No claim that proximity equals holding. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "tidying_living_room_28",
+      "branch": "open_gripper",
+      "manifest_sha256": "79df1b3f2369c567688542cade66ff25b20626a95bddf1c730b353c09c0d4d46",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/tidying_living_room_28--open_gripper",
+      "review_sha256": "5414387b507d67ec5b823fa131b1ff0aa0947449c50cd9df13b9ddeea9ff239b",
+      "outcomes": [
+        {
+          "control_step": 64,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Newspaper visible between hands at floor; both recorded target holds false. New RETRY64 is not the preceding failure. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "spraying_fruit_trees_81",
+      "branch": "open_gripper",
+      "manifest_sha256": "d3740e40af1977980004d81dae783ebdc830207db4ab79a464a2a297e347bea1",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/spraying_fruit_trees_81--open_gripper",
+      "review_sha256": "0beab23cd7453bae561e9dfea76e0a40f079c9ad6554c6a3f793da35d9cea2eb",
+      "outcomes": [
+        {
+          "control_step": 32,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Red-topped pesticide sprayer near left fingers outdoors; no spraying completion or fresh grasp execution inferred. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "cook_bacon_25",
+      "branch": "open_gripper",
+      "manifest_sha256": "332a77650d6fbef2a076be165d7e15cdbf44878617807602ba51ab9600dbbd5e",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/cook_bacon_25--open_gripper",
+      "review_sha256": "7a07586260503e8e1fddfe10ab9ca9b6fb6eefb59b66cb1c3f10329974dc6648",
+      "outcomes": [
+        {
+          "control_step": 32,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Tray with bacon visible at right wrist/counter; target is tray, not food. No transport or grasp completion inferred. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "rearrange_your_room_65",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b47a647d6274f1f4b63e7da45ca0e66ce04b30dba31f8280382cd8307c67e62e",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/rearrange_your_room_65--open_gripper_joint_jitter",
+      "review_sha256": "985d023da8f8329834c32eef460754a393714a35768bedf328519f316b0feb73",
+      "outcomes": [
+        {
+          "control_step": 64,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Patterned pillow and open fingers visible; contact-like pose alone is not a newly executed grasp. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_139",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c1f7f8bd88690f345eab0d68617cce275db3d6dabba67ae5191585909d320f0a",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/putting_up_Christmas_decorations_inside_139--open_gripper_joint_jitter",
+      "review_sha256": "3791d227a7a848922421adf0589f7f51fb6d7e62eca5c0fc3db1bb3039f38400",
+      "outcomes": [
+        {
+          "control_step": 32,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Gift basket with ornaments at right fingers; target is basket, not decorations. New control count is zero. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "organizing_school_stuff_178",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f26420fd3345394829537cfca0db626f0a939d264ee48ad67f98cfb3e70f1587",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/organizing_school_stuff_178--open_gripper_joint_jitter",
+      "review_sha256": "51c346cc64fd6c5d54e380dc6f5736ae37898940ba7c0c8f06bad6a6f08620d6",
+      "outcomes": [
+        {
+          "control_step": 64,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Orange-handled tote is partly occluded at left wrist near desk; physical binding matches target and no fresh attempt outcome exists. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "make_gift_bags_for_baby_showers_13",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ae335fa7a7c17ffdadab2ec550eac22f6ecc80a39ffdd1261fc9cde4ef8dccd8",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/make_gift_bags_for_baby_showers_13--open_gripper_joint_jitter",
+      "review_sha256": "f24d6c35817fe9a444fc2d3d6dcd426aafcaf8fed20481eea6af6b4d33378afb",
+      "outcomes": [
+        {
+          "control_step": 24,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Wafer package visible along right wrist at counter; no new grasp or gift-bag completion inferred. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "clean_up_your_desk_259",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7f92bb113a39de883e823fb0a7b098e035517298b9dfb38be89d7f101084e992",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/clean_up_your_desk_259--open_gripper_joint_jitter",
+      "review_sha256": "4919c3ebddce958b7eedcf4705722965801f775fdf79e1b87dba77ed000e4f7f",
+      "outcomes": [
+        {
+          "control_step": 32,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Blue folder at left fingers near chair/cubby, not neighbouring books; no new successful grasp asserted. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "cook_hot_dogs_86",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "32456d0f731f3ffc743703d7ace185a932575752e7f54fd3f1a728f7ba36cc7f",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/cook_hot_dogs_86--open_gripper_joint_jitter",
+      "review_sha256": "8b2cca6bbd7c39d89e339e06c8b8347dc3a434998cd413de4a15b6f92d9747fa",
+      "outcomes": [
+        {
+          "control_step": 32,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Hot dog visible by right fingers at counter; target matches object, but new RETRY32 has applied no controls. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    },
+    {
+      "case": "composting_waste_274",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "a0b22a8476e0ceff2cfd77576a12c7b549f4495afca31931a45a524e2446cb87",
+      "review_directory": "runs/recovery100_collection_20261009/retry-unknown-review-v1/composting_waste_274--open_gripper_joint_jitter",
+      "review_sha256": "3ffdd37617126e14370fb080e40631a745a66215e7f7603e7755e0c190aa5d16",
+      "outcomes": [
+        {
+          "control_step": 48,
+          "value": "UNKNOWN"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Trash can side fills left view in kitchen; no food/compost completion claim, no current target hold in either hand. Approve only observable UNKNOWN at the exact real RETRY control; previous failure belongs to the old attempt. Later successful correction is not used as label evidence."
+    }
+  ]
+}

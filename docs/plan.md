@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 09:02 CST / Codex RECOVERY-USABLE：** 专属observer-v7实际544更新/16epoch平台结束，选epoch11（4e78966d…192bd），DEV事件92.5%、balanced79.17%、IP11/12、成功14/14、失败10/10、UNKNOWN1/4；冻结骨干SHA前后完全相等3f57f559，不能将末epoch85.83%当所选结果。lc1 GPU2已提交独立重载/原RGB重算验收。根亲审23新重试零控制来源的23页138原RGB并核全部sheet SHA，新增精确UNKNOWN人工决定`retry_unknown_owner_review_v1.json`（不复用旧FAILED、不增BC/plan），待df5b5781机器签发与新unit联合，旧数据/训练不热改。首bundle因RTX缺前置f8提交而拒绝，改用已存在935基点成功Git部署，无覆盖活跃源码。
+
 - **2026-10-10 08:58 CST / Codex RECOVERY-USABLE：** H1固定step50真正无答案生成完成：10恢复DEV exact/valid/decision均10/10（父7/10且1条JSON无效），原100 exact84/100（父85）、falseRETRY0、memory100；不是盲测/不是机器人SR。同step50的反事实反馈probe已提交lc1 GPU5，检查见JSON就重试的捷径。正式H1已200步，原CE.00775033（低于原.00844784）。结果头仍UNKNOWN弱，新增**可选独立标注合同**：只在真实已发RETRY的零新控制时刻、旧失败因果可证且当前无持物时标UNKNOWN；不修改历史物理提议、不把旧FAILED继承到新attempt。10专项回归过、待23已审TRAIN来源原图重新审核与独立数据版本，尚未新增训练标签/启动下一轮。
 
 - **2026-10-10 08:54 CST / Codex RECOVERY-USABLE：** 低global8六固定probe已齐：GRASP2/2、PLACE1/2、OPEN0/2，未可靠改善、不增LR/任务。逐原reward-ledger重建33训练chunk的ACK/边界/GAE全部逐值一致：PLACE11chunk均值adv−.06564（失败/截断）、GRASP2chunk+.12236、OPEN20chunk+.02859；没有跨任务串链，也没有均值中心化制造正adv。PLACE seed29 baseline与失败的restore诊断除RGB SHA外完全一致；根看11时点33相机面板确认长期握住、末尾才松开，末165控速度.579m/s尚未稳定，保持UNKNOWN，不改成成功。视频/ledger在本地`artifacts/recovery-heterogeneous-20261010/short-rl-tripod129-v8-seed29-failure`，尚不能区分权重更新与冷渲染扰动的各自贡献。H1到150步原CE.00771749、恢复.00001438；step50真生成72/110仍在途，新observer408步仍UNKNOWN弱，均未部署。
