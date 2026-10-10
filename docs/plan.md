@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 12:07 CST / Codex RECOVERY-USABLE：** 上一goal回合属实质进展（续段实现、97源全验迁移、原图流水线和scene库存修复）；本回合Git pull/fetch已同步。新实查发现radio旧worker已12:01退出，child16在GPU preflight挡PID2603769，未建episode目录/未领取job/0控制；该PID为同一自有校准sorting-books240，12:01:23完成、26秒sim shutdown、28秒preflight失败，退出竞态高度吻合但旧日志未记录确切/proc errno。A800 PID1890914仍live/global19，其余两worker继续。新增完整GPU inventory重查（不忽略missing PID、不豁免新到的foreign/主GPU、记录每次快照），198回归/编译过；准备仅新radio客户端续剩余pending任务，原server/已完成轨迹/配方不动。补97待机需改绑定到新radio终态，旧失败日志/目录全部保留。
+
 - **2026-10-10 12:03 CST / Codex RECOVERY-USABLE：** 当前安全检查点：低v6真实global19/固定probe中，18步完整结果仍GRASP2/PLACE2/OPEN0（4/6），17步3/6退步保留，**仍未证明低层可靠提升**。首90已85关闭（73候选/9未复现/3工程失败）；两个后处理/补97依赖tmux存活且仍等待，未重复启动。197恢复＋11因果反馈回归过；代码/配置/计划已feature提交，不合main。下一步按实际终态做：首90全闭→根逐原图审核；v6全20闭合→精确SHA与冻结指纹检查→按预登记新配置续段，先让补97 preflight启动再起新低worker。新观察器预测、校准、联合部署均尚未执行，goal继续，不拿代码通过或离线loss当完成。
 
 - **2026-10-10 12:00 CST / Codex RECOVERY-USABLE：** native scene可选修复ea3c54db已Git部署RTX`code/recovery-calibration-scene-v1`；tmux`observer-supplement97-v1`现**等待依赖、不是在采集**，须原90正常闭合＋90源review-index完整＋三个`resume3-peer-v1`低worker都finished_service_window，才以GPU3–7开始固定97首次采集。输出`grasp-supplement-collection-v1`，日志`supplement-collection-v1.log`；无短技能主卡占用/无新optimizer。下一v7应先等补97目录已创建且GPU preflight过，再起RTX0–2新worker，并在配置显式登记旧90abfc与补97ea3两个peer，避免启动顺序竞态。低目前18后第7 TRAIN，未提前绑定未来20权重。

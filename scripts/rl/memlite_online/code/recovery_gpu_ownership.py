@@ -1,6 +1,35 @@
 """Allow only proved auxiliary renderer contexts from this collection's peers."""
 import math
+import json
+import time
 from pathlib import Path
+
+
+def require_owned_gpu_inventory(snapshot, owned, *, checks=3, pause=time.sleep):
+    """Recheck a process-exit race without ever exempting unknown GPU users.
+
+    NVML's snapshot and /proc are not atomic. If a PID exits between them,
+    re-read the WHOLE GPU inventory, including any newly arrived processes.
+    A vanished PID is not a blanket permission; persistent unknown/primary
+    users fail closed. This retries only preflight, not a simulator episode.
+    """
+    if type(checks) is not int or not 1<=checks<=5:
+        raise ValueError('Bounded ownership re-observation required')
+    history=[]
+    for attempt in range(checks):
+        inventory={}
+        for pid,memory in snapshot():
+            if type(pid) is not int or pid<1 or not math.isfinite(memory) or memory<0:
+                raise ValueError('Invalid GPU process inventory')
+            inventory[pid]=max(memory,inventory.get(pid,0.))
+        inspected=[dict(pid=pid,used_mib=memory,owned=bool(owned(pid,memory)))
+                   for pid,memory in sorted(inventory.items())]
+        history.append(inspected)
+        if all(r['owned'] for r in inspected):
+            return dict(protocol='full_inventory_recheck_v1',snapshots=history,
+                missing_or_unknown_pids_ignored=False)
+        if attempt+1<checks:pause(.5)
+    raise ValueError('GPU ownership did not validate after full re-observation: '+json.dumps(history))
 
 
 def declared_collection_peers(configured, *, legacy_path=None, legacy_commit=None):

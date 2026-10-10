@@ -22,7 +22,7 @@ from recovery_recorder import proprio61
 from behavior_branch_state import restore_branch_metadata
 from skill_aligned_reward import SkillIdentity,SkillReward,validate_placement_start
 from skill_sim_measurements import OmniSkillMeasurements,vector
-from recovery_gpu_ownership import owns_short_skill_auxiliary,owns_collection_auxiliary,declared_collection_peers
+from recovery_gpu_ownership import owns_short_skill_auxiliary,owns_collection_auxiliary,declared_collection_peers,require_owned_gpu_inventory
 from skill_observation_archive import SkillObservationArchive
 from skill_training_protocol import rollout_end_control
 from wire import packb,unpackb
@@ -124,10 +124,12 @@ def main():
     env=__import__('os').environ;gpu=env.get('OMNIGIBSON_GPU_ID')
     if 'CUDA_VISIBLE_DEVICES' in env or gpu not in tuple(map(str,range(8))):
         raise ValueError('Select one idle owned simulator GPU without displacing other jobs')
-    processes=subprocess.check_output(['nvidia-smi','-i',gpu,'--query-compute-apps=pid,used_memory',
-                                      '--format=csv,noheader,nounits'],text=True)
-    for line in processes.splitlines():
-        pid_text,memory=line.split(',');pid=int(pid_text);proc=Path('/proc')/str(pid)
+    def snapshot_gpu():
+        processes=subprocess.check_output(['nvidia-smi','-i',gpu,'--query-compute-apps=pid,used_memory',
+                                          '--format=csv,noheader,nounits'],text=True)
+        return [(int(line.split(',')[0]),float(line.split(',')[1])) for line in processes.splitlines()]
+    def owned_gpu_process(pid,memory):
+        proc=Path('/proc')/str(pid)
         # Existing Isaac peers create tiny auxiliary contexts on every card.
         # Exempt only this exact recipe/port and proved output/PID/other-GPU
         # ownership; never ignore an unrelated process merely for being small.
@@ -147,7 +149,8 @@ def main():
                         allowed=allowed or owns_collection_auxiliary(pid,float(memory),int(gpu),status,peer,argv,peer_env,
                             **binding)
         except (OSError,ValueError,IndexError):allowed=False
-        if not allowed:raise ValueError('GPU has an unowned or primary compute process: '+str(pid))
+        return allowed
+    gpu_ownership_audit=require_owned_gpu_inventory(snapshot_gpu,owned_gpu_process)
     import omnigibson as og
     from omnigibson.eval.evaluator import BatchedEvaluator
     from omnigibson.eval.utils.eval_utils import seed_everything,DEFAULT_EVAL_SEED
@@ -159,6 +162,7 @@ def main():
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
         proof_sha256=source_spec['proof_sha256'],optimizer_on_this_host=False,actual_controls=0,
         collection_peers=collection_peers,
+        gpu_ownership_audit=gpu_ownership_audit,
         fresh_process_per_episode=a.single_episode,
         completed_episodes=0,protected_progress_contract_tested=False,whole_task_sr=False)
     atomic_json(a.output/'status.json',receipt)

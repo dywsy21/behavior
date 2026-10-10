@@ -2,10 +2,31 @@ import sys
 from pathlib import Path
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_gpu_ownership import owns_auxiliary,owns_short_skill_auxiliary,owns_collection_auxiliary,declared_collection_peers
+from recovery_gpu_ownership import owns_auxiliary,owns_short_skill_auxiliary,owns_collection_auxiliary,declared_collection_peers,require_owned_gpu_inventory
 
 
 class OwnershipTests(unittest.TestCase):
+    def test_exited_pid_requires_fresh_full_inventory_not_missing_proc_exemption(self):
+        data=iter([[(100,174.)],[(200,174.)]])
+        calls=[]
+        result=require_owned_gpu_inventory(lambda:next(data),lambda p,m:p==200,pause=calls.append)
+        self.assertEqual(len(result['snapshots']),2)
+        self.assertEqual(result['snapshots'][1],[dict(pid=200,used_mib=174.,owned=True)])
+        self.assertFalse(result['missing_or_unknown_pids_ignored'])
+        self.assertEqual(calls,[.5])
+        # An exited own process cannot hide a newly arrived foreign/primary PID.
+        data=iter([[(100,174.)],[(300,15000.)],[(300,15000.)]])
+        with self.assertRaisesRegex(ValueError,'300'):
+            require_owned_gpu_inventory(lambda:next(data),lambda p,m:False,pause=lambda _:None)
+        with self.assertRaises(ValueError):
+            require_owned_gpu_inventory(lambda:[(100,174.)],lambda p,m:False,pause=lambda _:None)
+        # Empty actual inventory is safe; duplicate rows use their MAX memory.
+        self.assertEqual(len(require_owned_gpu_inventory(lambda:[],lambda *_:False)['snapshots']),1)
+        with self.assertRaises(ValueError):
+            require_owned_gpu_inventory(lambda:[(100,174.),(100,15000.)],lambda p,m:m<=512,pause=lambda _:None)
+        with self.assertRaises(ValueError):
+            require_owned_gpu_inventory(lambda:[(100,float('nan'))],lambda *_:True)
+
     def test_multiple_predeclared_waves_are_not_blanket_process_permissions(self):
         peers=[dict(collection='/tmp/owned/cal90',source_commit='a'*40),
                dict(collection='/tmp/owned/cal97',source_commit='b'*40)]
