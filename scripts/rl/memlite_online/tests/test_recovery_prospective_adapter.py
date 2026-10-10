@@ -81,5 +81,37 @@ class ProspectiveAdapterTests(unittest.TestCase):
         with self.assertRaises(ValueError):make_pool_selection(pool,p,bad,pool_sha256='d'*64,fit_result_sha256='f'*64)
         with self.assertRaises(ValueError):make_pool_selection(pool,p,rows[3:],pool_sha256='d'*64,fit_result_sha256='f'*64)
 
+    def test_v3_quarantines_fit_exposure_without_calling_it_physics_failure(self):
+        pool,cohorts,rows,_,_,_,cfg=self.fixture()
+        exposed={'g:0','g:10','g:100'}
+        pool.update(schema='prospective_calibration_source_pool_v3',
+            previously_exposed_declared_groups=sorted(exposed),exposure_quarantined_before_any_prediction=True,
+            fit_admission_sha256='9'*64)
+        p=pool_sources(pool,cohorts,exposed_groups=exposed)
+        self.assertEqual(len(p['unavailable_sources']),6)
+        self.assertEqual({r['source_group'] for r in p['ineligible_sources']},{'g:10','g:100'})
+        eligible=[r for r in rows if r['candidate']['source_group'] not in exposed]
+        selection=make_pool_selection(pool,p,eligible,pool_sha256='d'*64,fit_result_sha256='f'*64)
+        self.assertEqual((selection['declared_source_count'],selection['reviewed_source_count'],
+            selection['unavailable_source_count'],selection['ineligible_source_count']),(187,179,6,2))
+        self.assertEqual(len(selection['reserved_groups']),89)
+        spec=dict(schema='recovery_evaluation_partition_spec_v3',base_unit_count=0,
+            no_added_training_rows_expected=True,calibration_may_not_select_checkpoints=True,
+            cohort_sha256='d'*64,calibration_groups=sorted(p['source_cohort_by_group']),
+            source_cohort_by_group=p['source_cohort_by_group'],
+            frozen_test_groups=p['reserved_frozen_test_groups'],reserved_frozen_test_groups=p['reserved_frozen_test_groups'])
+        partition=build_partition(spec,[eligible])
+        chosen=require_prospective_selection(cfg,pool,selection,partition,eligible,exposed)
+        self.assertEqual(len(chosen),90)
+        self.assertFalse({r['candidate']['source_group'] for r in chosen}&exposed)
+        with self.assertRaises(ValueError):pool_sources(pool,cohorts)
+        with self.assertRaises(ValueError):pool_sources(pool,cohorts,exposed_groups=exposed|{'g:11'})
+        with self.assertRaises(ValueError):make_pool_selection(pool,p,rows,pool_sha256='d'*64,fit_result_sha256='f'*64)
+        with self.assertRaises(ValueError):require_prospective_selection(cfg,pool,selection,partition,eligible,exposed|{'g:11'})
+
+    def test_v2_preselection_now_rejects_fit_overlap_before_any_gpu_call(self):
+        pool,cohorts,*_=self.fixture()
+        with self.assertRaises(ValueError):pool_sources(pool,cohorts,exposed_groups={'g:10'})
+
 
 if __name__=='__main__':unittest.main()

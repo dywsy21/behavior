@@ -15,7 +15,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'code'))
 from recovery_admission import audit_admission, local_file
 from recovery_corpus import canonical, digest, file_sha
-from recovery_sft_data import CandidateArchiveReader
+from recovery_sft_data import CandidateArchiveReader,require_training_pool
 from recovery_evaluation_partition import build_partition
 
 
@@ -33,6 +33,17 @@ def build_union(spec, output):
     if output.exists():
         raise FileExistsError('Use a new immutable union directory')
     inventories, anchors, histories, approvals, sources = [], [], [], [], []
+    quarantine=spec.get('exposure_quarantine')
+    exposed=set();removed=[];declared_exclusions=set()
+    if quarantine is not None:
+        if (set(quarantine)!={'fit_admission','fit_admission_sha256','groups','reason'}
+                or quarantine['reason']!='previous_training_or_model_selection_source'):
+            raise ValueError('Exposure quarantine requires immutable actual-fit admission')
+        _,fit_rows=require_training_pool(root/quarantine['fit_admission'],'outcome',quarantine['fit_admission_sha256'])
+        exposed={r['candidate']['source_group'] for r in fit_rows}
+        declared_exclusions=set(quarantine['groups'])
+        if len(declared_exclusions)!=len(quarantine['groups']) or not declared_exclusions<=exposed:
+            raise ValueError('Only actually exposed groups may be quarantined')
     episode_owners, sample_ids, objective_ids = {}, set(), set()
     copies, approved_units = [], []
     for unit_index, unit in enumerate(spec['units']):
@@ -55,6 +66,16 @@ def build_union(spec, output):
                 admission_audit=receipt))
         if not unit_rows:
             raise ValueError('An empty unit is not a reviewed training source')
+        if quarantine is not None:
+            for row in unit_rows:
+                if row['candidate']['source_group'] in exposed:
+                    if (row['approval'].get('usage_role')!='calibration' or row['approval']['pool']!='outcome'
+                            or row['candidate']['source_group'] not in declared_exclusions):
+                        raise ValueError('Cannot silently remove TRAIN, action, planner or undeclared exposure')
+                    removed.append(dict(source_group=row['candidate']['source_group'],
+                        sample_id=row['candidate']['sample_id'],approval=row['approval']))
+            unit_rows=[r for r in unit_rows if r['candidate']['source_group'] not in exposed]
+            if not unit_rows:raise ValueError('No eligible independent observations in source unit')
         approved_units.append(unit_rows)
         selected_episodes = {canonical(row['candidate']['source_episode']) for row in unit_rows}
         for identity in selected_episodes:
@@ -99,6 +120,8 @@ def build_union(spec, output):
             if app['pool'] == 'planner':
                 app['label']['verified_plan_path'] = relocate_reference(app['label']['verified_plan_path'], evidence, root)
             approvals.append(app)
+    if quarantine is not None and {r['source_group'] for r in removed}!=declared_exclusions:
+        raise ValueError('Exposure quarantine differs from actual approved source intersection')
     partition = build_partition(spec.get('evaluation_partition'), approved_units)
     output.mkdir(parents=True, exist_ok=False)
     for directory in ('raw', 'audit', 'history', 'admission'):
@@ -114,6 +137,9 @@ def build_union(spec, output):
     def write_rows(path, rows):
         path.write_text(''.join(canonical(row) + '\n' for row in rows))
     write_json(output / 'source-provenance.json', sources)
+    if quarantine is not None:
+        write_json(output/'exposure-quarantine.json',dict(quarantine,removed_approvals=removed,
+            original_approvals_unchanged=True,quarantined_source_count=len(declared_exclusions)))
     write_json(output / 'audit/inventory.json', inventories)
     write_rows(output / 'audit/anchors.jsonl', anchors)
     write_rows(output / 'history/contexts.jsonl', histories)

@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 15:18 CST / Codex RECOVERY-USABLE：** 实际fit暴露审计补齐：187中共5个既见DEV，4个有审图材料，另lunchbox106原本已列物理不可用。新pool-v3保留23物理缺测与4可用但暴露隔离，160合格组预选90/余70reserve；五个暴露身份全部公开留档。准入合并只允许隔离由原fit admission实际证实的CAL结果，原标签/审批不改、不得删TRAIN/动作/意图；预选与GPU两端均再次核实际fit。新DEV-only导出强制传原observer-fit config排除真实TRAIN/选择DEV，修复只看inventory的根因。230恢复回归过，未重跑采集/训练或读新预测，当前校准仍未通过。
+
+- **2026-10-10 15:14 CST / Codex RECOVERY-USABLE：** 固定v8实际CAL入口在0 forward前被独立性门正确拦截，发现四个新来源与原模型选择DEV重叠：preparing lunch box182/296、coffee station1、radio270。根因前瞻导出只排旧source inventory，未再对实际fit admission做集合差；原pool-v2不合格，旧记录“独立90”据此更正，不降低门/不冒充通过。正在新版本明确隔离四源、保留187分母及原签名，在任何新预测前重新冻结选择；旧失败日志/selection保留。另实读v7 global30文件SHA56a4fd2c…6bc9ba7与发布身份一致；十个长OPEN训练中第6/8条物理成功（896/869控），其余8 UNKNOWN，固定短probe仍0/2，不能称可靠提升，但更正“所有长OPEN都未成功”的过时判断。原RL未停止。
+
 - **2026-10-10 15:12 CST / Codex RECOVERY-USABLE：** 90独立CAL相位预选已在任何新预测前冻结：30IP/30S/30F，selection d13f25af…11af979；187来源中23不可用、74已审可用reserve不forward、旧20测试不读。真实校准新配方固定b598/bee与原fit/admission，准备GPU0只读运行。lc3晚段完整receipt已确认200/冻结指纹一致、W&B adff3780cd14，不只是文件存在。只读执行路径检查发现旧通用prefix会初始化未用critic并消耗首请求RNG，已增加显式跳过（仅新只读模式、旧训练默认不变）及RNG回归，防止首worker到达顺序破坏配对。
 
 - **2026-10-10 15:10 CST / Codex RECOVERY-USABLE：** 补97在A800420文件逐SHA全过；两wave联合全读301ZIP/17,652观察，527已签CAL结果＝137F/121IP/269S，164来源/92task、0 TRAIN/动作/意图，admission b15aeb84…291254d。预选配方单独保留空anchor SHA以阻止提前forward，下一固定90组后绑定新配方。lc3晚段200更新已到，最终FM原100=.134654、恢复9DEV=.017445，与旧首窗.134588/.017400相近、**无loss优势或物理改善结论**；最终receipt待。已预登记两权重同12probe（3技能×seed17/29/43/71），43/71为新增固定seed，仍TRAIN起点诊断不是泛化SR；需原RL安全切换后运行。

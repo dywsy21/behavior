@@ -24,10 +24,14 @@ def main():
     p.add_argument('--verb', default='GRASP', choices=['GRASP','OPEN_DOOR','CLOSE_DOOR','OPEN_DRAWER','CLOSE_DRAWER',
                                                      'OPEN_LID','CLOSE_LID','PLACE_IN','PLACE_ON'])
     p.add_argument('--existing-inventory', type=Path, action='append', default=[])
+    p.add_argument('--exclude-observer-fit-config',type=Path,
+        help='Mandatory for DEV-only prospective sources: exclude actual TRAIN and selection DEV, not only proposal inventories')
     p.add_argument('--train-groups-per-task', type=int, default=2)
     p.add_argument('--dev-groups-per-task', type=int, default=1)
     a = p.parse_args()
     if a.output.exists(): raise FileExistsError(a.output)
+    if a.train_groups_per_task==0 and a.exclude_observer_fit_config is None:
+        raise ValueError('DEV-only export must exclude the actual observer fit before source selection')
     import numpy as np
     from PIL import Image
     from g05.data.memlite_stage1_dataset import Stage1Dataset
@@ -46,6 +50,16 @@ def main():
     tasks=([t for _,t in sorted({(ep['row']['task_index'],ep['task_name']) for ep in episodes})]
            if a.all_tasks else a.tasks)
     existing=set()
+    excluded_fit=None
+    if a.exclude_observer_fit_config is not None:
+        from recovery_sft_data import require_training_pool
+        fit=json.loads(a.exclude_observer_fit_config.read_text())
+        if Path(fit['root']).resolve()!=root.resolve() or fit['expert_release']!=recipe['expert_release']:
+            raise ValueError('Observer fit and source export must bind the same original release')
+        _,rows=require_training_pool(root/fit['admission'],'outcome',fit['admission_sha256'])
+        existing.update(r['candidate']['source_group'] for r in rows)
+        excluded_fit=dict(config=str(a.exclude_observer_fit_config),config_sha256=file_sha(a.exclude_observer_fit_config),
+            admission_sha256=fit['admission_sha256'],source_groups=sorted(existing))
     for inventory in a.existing_inventory:
         for case in json.loads((inventory/'manifest.json').read_text())['cases']:
             path=inventory/case['directory']/'manifest.json'
@@ -60,7 +74,8 @@ def main():
     if not a.all_tasks and any(r['missing'] for r in coverage):raise ValueError('Insufficient original groups')
     a.output.mkdir(parents=True)
     (a.output/'coverage.json').write_text(json.dumps(dict(tasks=tasks,coverage=coverage,
-        retained_inventories=[str(x) for x in a.existing_inventory],training_approved=False),indent=2)+'\n')
+        retained_inventories=[str(x) for x in a.existing_inventory],excluded_observer_fit=excluded_fit,
+        training_approved=False),indent=2)+'\n')
     result = []
     for ep, segment, split in selected:
         r = ep['row']; task = ep['task_name']; controls = min(segment['end']+64, r['length']-1)

@@ -31,7 +31,14 @@ def main():
         if json.loads(source_cfg.read_text())['selected_observer']['fit_result_sha256']!=cfg['fit_result_sha256']:
             raise ValueError('Fit must have been fixed before source collection')
         cohorts.append((cohort,item['sha256'],source_sha))
-    provenance=pool_sources(pool,cohorts)
+    fit=read_bound(cfg['fit_result'],cfg['fit_result_sha256'])
+    fit_cfg=read_bound(cfg['fit_config'],fit['config_sha256'])
+    if (fit['selected_checkpoint_sha256']!=cfg['selected_observer_sha256']
+            or (pool.get('fit_admission_sha256') is not None
+                and pool['fit_admission_sha256']!=fit_cfg['admission_sha256'])):
+        raise ValueError('Exposure must come from the exact preselected model fit')
+    _,old=require_training_pool(root/fit_cfg['admission'],'outcome',fit_cfg['admission_sha256'])
+    provenance=pool_sources(pool,cohorts,exposed_groups={r['candidate']['source_group'] for r in old})
     receipt,rows=require_training_pool(root/cfg['admission'],'outcome',cfg['admission_sha256'],purpose='calibration')
     partition=json.loads((root/cfg['admission']/receipt['evaluation_partition_file']).read_text())
     if (partition.get('schema')!='recovery_evaluation_partition_v3'
@@ -47,6 +54,7 @@ def main():
     print(json.dumps(dict(status='anchors_frozen_before_predictions',sha256=file_sha(a.output),
         declared=selection['declared_source_count'],selected=selection['calibration_source_count'],
         unavailable=selection['unavailable_source_count'],reserved=len(selection['reserved_groups']),
+        ineligible_previously_exposed=selection.get('ineligible_source_count',0),
         optimizer_updates=0,calibration_fitted=False)))
 
 

@@ -52,11 +52,15 @@ def main():
     if len(cfg['cohorts'])!=2:raise ValueError('Two predeclared collection waves required')
     for item,key in zip(cfg['cohorts'],('first_cohort_config','supplement_config')):
         cohorts.append((read_bound(item['path'],item['sha256']),item['sha256'],file_sha(REPO/pool[key])))
-    provenance=pool_sources(pool,cohorts)
+    if (pool.get('fit_admission_sha256') is not None
+            and pool['fit_admission_sha256']!=fit_cfg['admission_sha256']):
+        raise ValueError('Exposure manifest differs from the actual preselected fit')
+    provenance=pool_sources(pool,cohorts,exposed_groups={r['candidate']['source_group'] for r in old})
     if (partition['source_cohort_by_group']!=provenance['source_cohort_by_group']
             or selection['declared_groups']!=provenance['declared_groups']
             or sorted(selection['unavailable_sources'],key=lambda x:x['source_group'])!=sorted(
                 provenance['unavailable_sources'],key=lambda x:x['source_group'])
+            or selection.get('ineligible_sources')!=provenance.get('ineligible_sources')
             or selection['admission_sha256']!=cfg['admission_sha256']):
         raise ValueError('Changed original attempts, signed roles or selected release')
     chosen=require_prospective_selection(cfg,pool,selection,partition,rows,
@@ -118,6 +122,8 @@ def main():
         admission_sha256=cfg['admission_sha256'],source_pool_sha256=cfg['source_pool_sha256'],
         declared_source_count=selection['declared_source_count'],
         unavailable_source_count=selection['unavailable_source_count'],
+        ineligible_source_count=selection.get('ineligible_source_count',0),
+        previously_exposed_declared_groups=provenance.get('previously_exposed_declared_groups',[]),
         reviewed_source_count=selection['reviewed_source_count'],
         reserved_groups_not_predicted=selection['reserved_groups'],frozen_test_not_read=True,
         selected_sources=90,history_protocol=protocol,requests_sha256=digest(requests))
