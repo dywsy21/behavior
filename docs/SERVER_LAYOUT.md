@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 19:37 CST：固定v11校准和时序GPU实启
+
+- A800冻结`src/observer-v11-reserved-calibration-v1`=689cda6f；新运输`datasets/recovery-v11-new30-calibration-20261010-v1`140文件全SHA验过。实际联合`datasets/recovery-observer-calibration-union-20261010-v3-unseen-reserves`，admission4a786aad…05515、168 archive/5306观测/286CAL/96组；`runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1`已含全准备结果，90锚9d90451d…60b0d、配置c2023234…91aa0。
+- lc1 GPU0 tmux `observer-v11-reserved-calibration-v1`，log/cache在独立校准run根同名`.log`/`.runtime-cache`，实际输出`v11-reserved-launch-v1/calibration`；GPU1 tmux `observer-v11-stream-shadow-v1`，异质run根`H0-observer-v11-stream-shadow-v1`与同名log/cache。两路在读原bee骨干/固定v11 b0结果权重，不训练/不部署。
+- 已迁异质run根`observer-stream-all-four-inputs-v1`，manifest0c97937d…6ac38。两路实际输出待，不能把运输、CPU完整准入或进程存在当GPU验收通过；lc2/共享env/旧原始资料均未动。
+
 ## 2026-10-10 19:34 CST：账号2连接已恢复
 
 - 本地持久VPN tmux `recovery-lc-connect-20261010c`，仅监听127.0.0.1:1080/1081；用户更新凭据交互输入，不写配置/Git/日志。lc1持久SSH tmux `recovery-lc1-control-20261010d`，socket `/home/wsy/.ssh/lc1-recovery-20261010d.sock`，显式ControlPersist=no；旧b/c socket不得当可用入口。19:33实查lc1八卡全空、共享盘1.7TiB余量，lc2未访问。

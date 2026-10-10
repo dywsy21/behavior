@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 19:37 CST / Codex RECOVERY-USABLE：** A800新冻结`src/observer-v11-reserved-calibration-v1`=689cda6f通过Git bundle同步（未改共享checkout工作区/活跃源）；新30运输140文件/114,748,003B全验、三原cohort SHA不变，v3未预测联合已实做168 archive/5,306观测全读，286 CAL-only/96组、0TRAIN/高层/动作，admission `4a786aad…05515`。真实90独立锚（每相位30）已在任何新预测前冻结`9d90451d…60b0d`，217总源/27缺测/4fit隔离/90旧预测隔离/6未选reserve完整保留；配置`c2023234…91aa0`。lc1 GPU0 `observer-v11-reserved-calibration-v1`已提交固定b0权重原门校准；GPU1 `observer-v11-stream-shadow-v1`已提交全四原轨迹/41真实边界只读GPU回放，均独立cache/log，模型加载/结果待。零新训练/零物理/零反馈部署，旧20test不读，goal未完成。
+
 - **2026-10-10 19:34 CST / Codex RECOVERY-USABLE：** 用户提供账号2更新凭据后，交互认证已通过且SOCKS1080/1081实启；lc1 SSH真实登录及只读资源检查通过，8×A800均0MiB/无计算进程、共享盘余1.7TiB，未登录lc2/修改共享env/触碰队友。旧个人信息网关阻塞解除，不再延用第三轮阻塞判断；凭据不入仓库/配置/日志。新持久VPN为`recovery-lc-connect-20261010c`，SSH为`recovery-lc1-control-20261010d`（显式ControlPersist=no，旧c临时master未存活，未误判可用）。本地干净pull/fetch已同步、main无新提交；下一新冻结Git源码→迁已签新30及41真实边界包→原门90锚校准/只读时序验证，尚未启动GPU或宣称反馈可用，goal尚未完成。
 
 - **2026-10-10 19:21 CST / Codex RECOVERY-USABLE：** 上一goal轮为实质进展（新30全部签核/运输完成），本轮干净pull/fetch已同步、main无新提交；账号2相同网关阻塞第2轮复核：1080/1081无监听、无VPN client会话；RTX三采集/整理/签发tmux已退出且终态文件分别complete/passed，不伪称仍有作业可等待。已补`prepare_reserved_observer_launch.py`＋`recovery_calibration_launch.py`及绑定声明`a800_observer_v11_reserved_launch_v1.json`（cc96f095…1e675）：只读核既选fit/权重/三cohort/新140文件→调用既有完整union审计→实际90独立相位预选→生成带SHA的GPU配置，不启动模型/改门/替换标签/覆盖旧partial。九定向回归（含真实114.7MB运输包）和全部287恢复回归通过；其余八项编排测试用合成元数据/假子进程，不冒称A800链实跑。新的实际union/校准/shadow仍必须等用户处理账号2网页登录；goal的高层有效反馈、跨来源可靠短技能/RL提升尚未证实，不完成或扩大范围。
