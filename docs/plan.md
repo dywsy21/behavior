@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 18:22 CST / Codex RECOVERY-USABLE：** 联合全四条独立逐561实控、当前RGB/本体SHA、offered raw23/独立ACK、七模型/统计身份及每episode memory/128控时钟回放通过（causal f68e8498、physical e930135b）；四sheet/60原面板根亲审。抓2/2均真实RETRY19控，开1/2为206成功/317 UNKNOWN，七次新规划均正确目标、30次复用，0observer/0优化、三类参数指纹不变。仅联合接线和局部行为通过，不称完整反馈可用；对照同seed固定低开2/2，当前联合1/2也不能声称更好。证据`docs/infra/results/2026-10-10-causal-joint-shadow-probes.json`。新30采集首源已正常完成，仍全闭后人审；下一结果头固定v11校准/只读时序验证。
+
+- **2026-10-10 18:17 CST / Codex RECOVERY-USABLE：** 高低联合两worker各2条/0物理重试/CPU末ACK完整关闭，A800服务收尾指纹仍待，独立四条逐控原图review已提交。RTX再核0/1/2/3/7全空、仅队友5/6主卡：新30 collector `observer-v11-new30-collection-v1`实启，源73aceeb2、5卡/同时冷载2、原参考scene库存和分散故障时刻；全部30首尝试保留，0标签自动批准/0模型预测。既有CPU postprocess只在全闭后准备人审材料；不触碰队友、旧CAL/test/阈值不变。
+
 - **2026-10-10 18:11 CST / Codex RECOVERY-USABLE：** 新noise两臂各24全部完成，candidate 24sheet/360原面板SHA核对并根亲审，独立3437实控/252边界、配对总7087控；新块开1/8→4/8（新增101/137/173，无丢失）、抓8→8、放4→4。放137晚松未满原持续门、419明显倾倒，开211近门未达，所有UNKNOWN保留；不混旧四seed、不称新实例/整任务SR或普遍提速。证据`docs/infra/results/2026-10-10-later-action-replication-pair.json`，配对a8e17d18；两actor/frozen不变、0更新/全finish。联合四条继续，结果头新30仍待它退出后采集；独立成员审查/联合可用性未完成，不恢复全任务RL。
 
 - **2026-10-10 18:06 CST / Codex RECOVERY-USABLE：** candidate24全闭、三finish ACK无额外sim已实际通过，0更新、actor a7b61413及冻结eb4b5d45指纹前后完全一致；CPU逐控review已生成/取本地中，待根逐原图及配对，不提前称提升。RTX实查原worker全退、仅队友5/6主卡；新0/1 `causal-joint-{radio155,wash169}-probes-v1`已提交，两seed101/137，worker50bfcb36、既有A800 GPU1 a49b3fcd/18977服务不重启。仅真实历史高低联合只读，observer仍不加载、无新RL；新30采集继续等联合结束。

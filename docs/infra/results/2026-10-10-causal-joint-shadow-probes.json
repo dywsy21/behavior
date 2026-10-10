@@ -1,0 +1,44 @@
+{
+  "status": "four_read_only_joint_probes_complete_independent_causal_and_physical_audits_passed",
+  "owner": "Codex root RECOVERY-USABLE",
+  "date": "2026-10-10 Asia/Shanghai",
+  "service_source": "a49b3fcd66e4d5790a46378ec7d33a5456225fff",
+  "worker_source": "50bfcb36a6913b46f5e9ed8652558d14d76272da",
+  "configuration": "configs/recovery_sft/a800_causal_joint_shadow_probes_v1.json",
+  "service_result_sha256": "c6375d492fc88b87a7d4b798dfa7ab351ac2bd39878baa209538a4ca63c49afc",
+  "journal_sha256": "f0f6a5dd5a241e19cd3bb4282f65305c89b919841c0f630ebf1cdf38ef19294a",
+  "causal_audit_sha256": "f68e8498a5e0f99c202a668400676942ece49c6fd2f9cb3d65ef81d48d814819",
+  "physical_audit_sha256": "e930135b24e08777fa847757607be16b47d677c37ee6a5c995cf4ecead98897a",
+  "local_evidence_directory": "artifacts/recovery-heterogeneous-20261010",
+  "sheets_personally_viewed": 4,
+  "original_camera_panels": 60,
+  "all_review_sheet_sha256_match": true,
+  "actual_controls": 561,
+  "actual_model_generations": 7,
+  "idempotent_reuses_not_generations": 30,
+  "cases": {
+    "turning_on_radio_155": {
+      "seeds": [101, 137],
+      "successes": 2,
+      "controls": [19, 19],
+      "plans": "Each restores one genuinely previously issued GRASP, then new high model independently emits RETRY for the same red radio. Both visually close the right gripper; independent physical holding gate passes."
+    },
+    "wash_dog_toys_169": {
+      "seeds": [101, 137],
+      "successes": 1,
+      "controls": [206, 317],
+      "plans": "High independently keeps correct washer OPEN_DOOR at actual controls270/398, additionally526 in137. Seed101 opens through the original gate;137 partially opens then withdraws and remains UNKNOWN."
+    }
+  },
+  "all_current_rgb_proprio_inputs_bound": true,
+  "all_actual_actions_bound_to_installed_intents": true,
+  "memory_clock_model_and_episode_isolation_independently_replayed": true,
+  "future_teacher_commands_restored": 0,
+  "optimizer_updates": 0,
+  "observer_predictions": 0,
+  "high_actor_and_frozen_fingerprints_unchanged": true,
+  "all_finish_acknowledgements_without_extra_simulator": true,
+  "whole_task_sr": false,
+  "deployment_authorized": false,
+  "limitations": "Two known TRAIN starts, two noise seeds each, actual past teacher command handover. Endpoint scoring refers to the original skill, not an RL reward after high changes intent. Observer remains UNKNOWN/0, so this is no test of learned completion/failure feedback. Compared subset of fixed-low candidate had2/2 OPEN; this joint block is1/2, not an improvement claim or proof of cause. No cross-instance generalization or 100-task RL expansion."
+}

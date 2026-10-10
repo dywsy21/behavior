@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 18:17 CST：新30独立校准物理采集
+
+- RTX `code/observer-v11-calibration-v1`/73aceeb2，GPU0/1/2/3/7，tmux `observer-v11-new30-collection-v1`；输出独立校准run根`grasp-v11-new30-collection-v1`及同名`.log`。双冷加载限流、所有首尝试保留，既有postprocess队列仅整理不审批。队友GPU5/6不动。
+- 高低联合两worker各2条已退出、无第3空sim；`causal-joint-shadow-review-v1` tmux正在独立CPU审四条控制/原图，A800最终指纹待收尾，未代表模型联合已通过。
+
 ## 2026-10-10 18:06 CST：高低联合物理开始
 
 - RTX原candidate三个worker已各8完成且`finish_ack_without_new_simulator=true`，三结束通知不再新增scene。新GPU0/1 tmux/run `causal-joint-{radio155,wash169}-probes-v1`使用`code/probe-finish-cpu-v1`/50bfcb36；连接既有lc1 GPU1 `causal-joint-shadow-probes-v1`/a49b3fcd、18977。完整action journal与逐episode无损观察均留存，尚待真实结果/独立审计。
