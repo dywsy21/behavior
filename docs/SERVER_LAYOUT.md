@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 19:03 CST：新30独立校准材料完整闭合
+
+- RTX独立校准run根`grasp-v11-new30-collection-v1`全30首尝试结束，ledger SHA473f0c67…7c0e、实际50,375控/30实例载入；26候选、1参考未复现、3工程失败。原活跃源73aceeb2未改，失败实例/日志不删除。
+- `grasp-v11-new30-corpus-v1`、`grasp-v11-new30-cohort-v1.json`（628d23eb…0b32）、`grasp-v11-new30-review-v1`（index1fe6ded0…78a1）与同名tar（0be79903…7e5）已完成。本地`artifacts/recovery-observer-fresh-calibration-20261010/`有cohort/完整review包及解包原图/总ledger；根26页/267面板已亲审，86 CAL-only结果待新冻源机器签发。A800新运输目录/union仅配置准备，未复制/构建或预测。
+
 ## 2026-10-10 18:42 CST：真实时序shadow输入已导出
 
 - RTX冻结源码`/run/ti/rl_memlite_stage1_20261006/code/observer-shadow-stream-v1`=18f2a6c8；异质run根`observer-stream-all-four-inputs-v1`及同名tar.gz，manifest SHA0c97937d…6ac38、tar c2d56386…4a4af。全四闭合TRAIN诊断轨迹/41无损边界/561实际ACK，0新物理/0标签/0预测，不授予SFT/CAL许可。本地`artifacts/recovery-heterogeneous-20261010/`已取包和manifest验SHA。

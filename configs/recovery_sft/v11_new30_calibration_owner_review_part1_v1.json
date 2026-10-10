@@ -1,0 +1,471 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex root, 2026-10-10 CST; personally viewed all12 listed full sheets/117 original RGB panels and exact target/arm/persistence records. Only explicit phase points approved.",
+  "cohort_sha256": "628d23eb6cbf46138cee63c5fbaca0053fb4084e3f198f780d2e8ea71b7e0b32",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "1fe6ded0a36f5c174222df4fd8befa9a052767d3f1428805f7161c86e7df78a1",
+  "reviewed_sheet_count": 12,
+  "reviewed_rgb_panels": 117,
+  "total_sheet_count": 26,
+  "declared_source_count": 30,
+  "branches": [
+    {
+      "case": "boxing_books_up_for_storage_247",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "806be5aed2196e03f808fdbd2442318a3258773a0e337e5096faa31231fd6b75",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/boxing_books_up_for_storage_247--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White storage-box rim at right hand: released/open at8, closing toward rim at28, clean8 clamps rim. No corrective SUCCEEDED anchor is approved. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "43e3f959d8aebb420ac65b044effe21f3bcb50334d77afb13e3b1a8fefab251c"
+    },
+    {
+      "case": "boxing_books_up_for_storage_247",
+      "branch": "clean",
+      "manifest_sha256": "e3ce57e0a9b0f282a76a661d5f527282db9482afd2577f4f7006f01fdd56ecc6",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/boxing_books_up_for_storage_247--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White storage-box rim at right hand: released/open at8, closing toward rim at28, clean8 clamps rim. No corrective SUCCEEDED anchor is approved. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "c9ab40c0d76f4984c621efef4a48c9016bff2fa7aba0478ac853290ae197459b"
+    },
+    {
+      "case": "can_meat_245",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "69bb7d6e4e84d127517a21e2aef91fd24fe9f59cffd945424628f64e4150b4b2",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/can_meat_245--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand targets the orange sausage on the board, not the pot in the other wrist. Open8, partial closure52, grasp72 and clean8 agree with six-control exact-target persistence. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "a262a45a8ee2c339bc15ab4d3cd886964eff3a25bb0bb71a3c9a8d107dbad61d"
+    },
+    {
+      "case": "can_meat_245",
+      "branch": "clean",
+      "manifest_sha256": "922562fadcbb1e6948b5c8b7414dcc4e2ae936b4ed1e0309baaeaa0e4a86054c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/can_meat_245--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand targets the orange sausage on the board, not the pot in the other wrist. Open8, partial closure52, grasp72 and clean8 agree with six-control exact-target persistence. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "6a099fc59e2ce0fa8a57999833e16f03ac06a443131247c744815a0148101302"
+    },
+    {
+      "case": "carrying_in_groceries_194",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b56c8783000d2f137986eac065293cf29f1e19b2b290317aefba374de48bb2ca",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/carrying_in_groceries_194--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Brown paper bag in the red car is the right-hand target; wrist view is partly occluded by bag contents. Clean8 exact bag/right-only persistence agrees with head view. Perturbed t0 is UNLABELLED, not a FAILED or recovery example. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "48ad34c0b45a606d24c5763f2b027fcb9c12df7641d0d986e129e648db8ab99e"
+    },
+    {
+      "case": "carrying_in_groceries_194",
+      "branch": "clean",
+      "manifest_sha256": "2e25454c6bee3cc1c39d3874ee7b2a93c5ed35a609d3e908b6e8f34135d3481b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/carrying_in_groceries_194--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Brown paper bag in the red car is the right-hand target; wrist view is partly occluded by bag contents. Clean8 exact bag/right-only persistence agrees with head view. Perturbed t0 is UNLABELLED, not a FAILED or recovery example. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "d2b2b2156f3681922be5c11b37a10de77c823723c863f9ade01b5f20fffd0502"
+    },
+    {
+      "case": "clean_a_keyboard_169",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "87a57a046ab58fc4e772afe1b7d329800dba64a15c296dba72bb2b1971c42bdb",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/clean_a_keyboard_169--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Blue pipe-cleaner handle near keyboard stays at right fingers. Open8, closing28, sustained same-object hold48 and clean8; left wrist is unrelated. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "3d29e1798ff5bbdd61d03dca244997f5db5ee72a4cd2e5307bbc341f5631d2b5"
+    },
+    {
+      "case": "clean_a_keyboard_169",
+      "branch": "clean",
+      "manifest_sha256": "e5878b29b1424d2b29f9ac130ad70e520ecdedd127c449c0cf289a34ecca5770",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/clean_a_keyboard_169--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Blue pipe-cleaner handle near keyboard stays at right fingers. Open8, closing28, sustained same-object hold48 and clean8; left wrist is unrelated. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "ecaecc8423d88b6617886b1045831db7bd4a50537b07423de522d444c92bd1c2"
+    },
+    {
+      "case": "cleaning_up_plates_and_food_147",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ff22ca884a90274379388852af2bbde05cb98d279364ba0c583586e1320d2add",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/cleaning_up_plates_and_food_147--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Target is white plate rim under the food, not the food itself. Right-open/released8 differs from clean clamped rim8. No missing corrective progress/success labels are invented. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "9c7e2927073d38ddc663043f7e7e74750c4785e1128789726bdcf6d97d0208fd"
+    },
+    {
+      "case": "cleaning_up_plates_and_food_147",
+      "branch": "clean",
+      "manifest_sha256": "83772bf737889753ad1d685f5b1b5514de2063bc799301917017bcecad52e8b0",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/cleaning_up_plates_and_food_147--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Target is white plate rim under the food, not the food itself. Right-open/released8 differs from clean clamped rim8. No missing corrective progress/success labels are invented. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "8b0907fffbc8aab7828d680089c8afdfc88e52672c789d14b113f89bbb4bf403"
+    },
+    {
+      "case": "collecting_childrens_toys_75",
+      "branch": "open_gripper",
+      "manifest_sha256": "99e8bc30e59410089645e4c217a01c6b002da6f956738345d5e3c43ba5bd2f33",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/collecting_childrens_toys_75--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Pink stuffed toy at left hand; same toy and arm in three views. At36 only two preceding controls are held so IN_PROGRESS is retained;40 and clean8 have all six held. Wide aperture on bulky toy is not used as failure evidence. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "37d348671c63a12992309ff0801ab779dd7516ff45a975e1863b5a9fb3b607c9"
+    },
+    {
+      "case": "collecting_childrens_toys_75",
+      "branch": "clean",
+      "manifest_sha256": "f3bd1d79cff93f4ff9107194d145b1879ee5b8835ec276847e0762df8031433e",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/collecting_childrens_toys_75--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Pink stuffed toy at left hand; same toy and arm in three views. At36 only two preceding controls are held so IN_PROGRESS is retained;40 and clean8 have all six held. Wide aperture on bulky toy is not used as failure evidence. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "fefbb04a7dff82705fad457a4265fe0ae84c2f39b5643a050daa0bae7a18e9f7"
+    },
+    {
+      "case": "cook_a_frozen_pie_184",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ab1370f7fc765db1c6ea08fd91ba0a382c503c348d74cc488384ec30c80dfaa6",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/cook_a_frozen_pie_184--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Pie on wire oven rack at the right hand: open fingers8 and clean8 edge grasp are visually consistent with exact apple-pie physics. No corrective success is inferred from unchanged pose. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "801d79e1539044539415b25c550e5d411e585edc3da310b20fc9dff873030d44"
+    },
+    {
+      "case": "cook_a_frozen_pie_184",
+      "branch": "clean",
+      "manifest_sha256": "fea32f7022961a5da9c76a070a5ec005b45b22ead07350a2c0d709569d79edfb",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/cook_a_frozen_pie_184--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Pie on wire oven rack at the right hand: open fingers8 and clean8 edge grasp are visually consistent with exact apple-pie physics. No corrective success is inferred from unchanged pose. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "18f3a3bac13f6e24d5dd6c37ed138192019943e787ab6ca9ec8b21359a42481c"
+    },
+    {
+      "case": "getting_organized_for_work_148",
+      "branch": "open_gripper",
+      "manifest_sha256": "836b3dbc08ddfccbcc5e464358e946abd2effd0ef1de36c1c15c0e0ecabfd0dc",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/getting_organized_for_work_148--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 32,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Black mouse behind display is visible but wrist lighting is dark and fingers partly occluded. The phase distinction is supported by the bound right-mouse release/closure and six-step hold records, not visual closure alone. No action/planner or full-task approval. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "f3eadbc10c334f1b6d438b677b41c08365c940d9deab0c64ddf33c69c001eda9"
+    },
+    {
+      "case": "getting_organized_for_work_148",
+      "branch": "clean",
+      "manifest_sha256": "0a8335fa7b603576e0a1fdc46d387c751c6315880677afb67f63e913c439f62c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/getting_organized_for_work_148--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Black mouse behind display is visible but wrist lighting is dark and fingers partly occluded. The phase distinction is supported by the bound right-mouse release/closure and six-step hold records, not visual closure alone. No action/planner or full-task approval. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "e141a10f4ffe86a5abcdfbe4c8252710e600aa4d5a01e38ca89fc131bc1b3eff"
+    },
+    {
+      "case": "halve_an_egg_95",
+      "branch": "open_gripper",
+      "manifest_sha256": "9464ea71d9eb2eca6c9fc6174d0680a3fc38b6437e85ed9ebc415e7faa65e24b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/halve_an_egg_95--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 84,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Yellow boiled egg on fridge rack: right fingers open8, surround it at68, and retain it84/clean8. Correct exact object and right arm; persistence rather than merely touching determines SUCCEEDED. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "e25f1d8422eb1700af60b227400c78f74027cdbf2313c94f67c54f2719f1258a"
+    },
+    {
+      "case": "halve_an_egg_95",
+      "branch": "clean",
+      "manifest_sha256": "16e847a6185502bac7a66e732c558f795dbd281c828fbbdad64c9f4fc4cb2552",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/halve_an_egg_95--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Yellow boiled egg on fridge rack: right fingers open8, surround it at68, and retain it84/clean8. Correct exact object and right arm; persistence rather than merely touching determines SUCCEEDED. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "5e964368b802e7ee22e0789e5c359673346ea3f8a285ded47683b98ccee77e32"
+    },
+    {
+      "case": "hanging_pictures_218",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "d7abd149aeef1423ebcf3af0f7bc78196c8efe6731e4b43c97a3c24436ab089f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/hanging_pictures_218--open_gripper_joint_jitter",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Poster/frame narrow edge is at left hand, visible in head and left wrist. Clean8 supports exact poster hold. Perturbed4 has only short unsupported history and remains UNLABELLED; no FAILED/IN_PROGRESS fabricated. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "784041a3ea86ed12ea84423af5631b7953ad42d391fd45c285821b61bc5d6659"
+    },
+    {
+      "case": "hanging_pictures_218",
+      "branch": "clean",
+      "manifest_sha256": "11a2f5de0f263662a73fd4b50226a8987f2d0d503c788a0c07dde91a1fbbf072",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/hanging_pictures_218--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Poster/frame narrow edge is at left hand, visible in head and left wrist. Clean8 supports exact poster hold. Perturbed4 has only short unsupported history and remains UNLABELLED; no FAILED/IN_PROGRESS fabricated. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "73a2848b3d9ba053ebaf63f3958735d27840eef66f882388f2a9e5b4353d3477"
+    },
+    {
+      "case": "hiding_Easter_eggs_199",
+      "branch": "open_gripper",
+      "manifest_sha256": "f899274b3d4c2d71e01477544d2d6c5bb5be8583fe45c9ee81d468ace28b2595",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/hiding_Easter_eggs_199--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand grips wicker basket rim containing colored eggs, not an egg. Open8, corrective closing52, settled basket grasp68 and clean8 are consistent across head/left wrist and physical identity. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "65cb47a383933f2884344873604cfb4ecb3ad9ad5a2f742e7aab43487a3e79e3"
+    },
+    {
+      "case": "hiding_Easter_eggs_199",
+      "branch": "clean",
+      "manifest_sha256": "40a858c8c74799acf8fdcfe9a344ea49b915ce44ba2af2d062942b9701eed476",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/hiding_Easter_eggs_199--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand grips wicker basket rim containing colored eggs, not an egg. Open8, corrective closing52, settled basket grasp68 and clean8 are consistent across head/left wrist and physical identity. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "b002ec8a40ae3ad0ebace8e3efbeaed84ca8a5a2a4d2b52de17cf270182fa9c4"
+    },
+    {
+      "case": "installing_a_modem_112",
+      "branch": "open_gripper",
+      "manifest_sha256": "c69c2a6579161275481cc4dade03bec99fe7eef4ee8c1c40a79e994454173b83",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/installing_a_modem_112--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 84,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White modem with dark vent/cable at left hand: visible opening8, closure68, settled left modem hold84/clean8. Right-wrist background is not a second target. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "7992fc76954cc7276b89c6bd0f2db9f314bceb3af537b546077189e54c053834"
+    },
+    {
+      "case": "installing_a_modem_112",
+      "branch": "clean",
+      "manifest_sha256": "a78f2abdfe8b0626f2b9c6a13e869f6dee62d15be728c72a41fa1b909cd9190c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-review-v1/installing_a_modem_112--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "White modem with dark vent/cable at left hand: visible opening8, closure68, settled left modem hold84/clean8. Right-wrist background is not a second target. Outcome CAL only; never TRAIN/model selection/action/planner/full-task success.",
+      "review_sha256": "63f91804b2f1554165e17faf2fe7ea879196657bc7226096f25ed54c1f5d79b2"
+    }
+  ]
+}

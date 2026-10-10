@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 19:03 CST / Codex RECOVERY-USABLE：** 新30材料全闭并双端SHA，cohort `628d23eb…0b32`、index `1fe6ded0…78a1`、review tar `0be79903…7e5`。根逐26页/267原RGB及对应目标/手臂/前六控物理记录亲审完成，显式批准86结果（F23/IP20/S43），3个UNLABELLED阶段保持不批、4不可用来源不替换；暗光/遮挡来源在逐例说明，不以夹爪闭合推成功。两份`v11_new30_calibration_owner_review_part{1,2}_v1.json`与RTX运输spec已准备，待冻结新源机器签发/全读/打包；0动作/高层标签/新训练许可。A800新联合spec `a800_observer_calibration_union_v3_unseen_reserves.json`仅待执行：217总源/27物理缺测/4fit暴露/90旧预测隔离/96未预测可用（70旧＋26新），原签名、30/class门与旧20test不变。VPN阻塞未变，未提交新A800任务。
+
+- **2026-10-10 18:57 CST / Codex RECOVERY-USABLE：** RTX新30首尝试全部闭合（ledger `473f0c67…7c0e`），26候选/1参考抓取未复现/3工程失败，实际50,375控、30次实例载入；最长slicing vegetables:193完整回放至原10,451控抓取前缀，未跳过/缩短。三工程失败分别初始关节偏差0.317>0.05（sorting bottles229）、exact-category场景库存缺失（store honey212/tidying bathroom175），0控失败不贴机器人FAILED。原CPU队列现准备全批corpus/cohort/原图，尚未人工批准/预测/校准。时序41文件已本地逐内容/形状验过，最新278回归通过；0729fdc8已push，TLS临时故障后协议兼容重试成功，未关闭证书验证。下一根全量审图，A800仍等账号2网关。
+
 - **2026-10-10 18:42 CST / Codex RECOVERY-USABLE：** 全四联合轨迹的observable-only时序输入已在RTX从冻结18f2a6c8导出，41原生观测边界/561实际ACK控/4闭合episode，manifest `0c97937d…6ac38`、47MiB tar `c2d56386…4a4af`已复制本地并逐包SHA一致；不含结果标签/奖励/特权actor输入，不产生新控制。新增加载后adapter逐值一致与头有限性检查，shadow九定向回归通过（第一次误用不存在的tests/rl发现路径未执行测试，纠正后实过）；此前恢复278与causal 8+11通过。待A800真GPU回放，未称部署或准确率。新30当前20候选/1参考未复现、其余在途，仍等全闭根审；账号2网关阻塞未变。开始时已fetch，origin/main无新提交，保留本线程两检查未提交故未pull；后续安全提交/push。
 
 - **2026-10-10 18:31 CST / Codex RECOVERY-USABLE：** 按用户新指令停止本线程旧VPN并交互改账号2，两次返回`password auth success`但`Result=0/pwpErrorCode=16`及个人信息页跳转，隧道未建立，密码不是写错的现有证据；未改密码/绕过网关/切回旧账号，已异步请用户网页登录处理提示。凭据未落Git/配置/日志，旧lc1/lc3控制连接已退，A800新任务暂无法提交。RTX新30仍自主采集（最新7候选/1参考未复现、其余在途），CPU准备继续。独立observer时序shadow模块及八回归通过、恢复共277通过；新全四真实边界导出/回放入口待真实GPU，不称已运行。
