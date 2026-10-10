@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 15:21 CST / Codex RECOVERY-USABLE：** 暴露隔离新联合v2实际全读293ZIP/17,449观察通过；仅移出由原fit证实的4组14条CAL审批，新513 CAL/160独立组、0TRAIN，admission d86e5b18…84d76d5，隔离原签名逐条留在`exposure-quarantine.json`，旧527单元不改。新pool-v3预选准备中、仍0模型预测。原v7两条长OPEN成功轨迹（第6/8训练轮）已提交独立逐控reward/ACK/起点/归档重算及原图sheet生成，尚待根亲看；这是审计真实信号不是更改成功门或给旧RL提前升格。
+
 - **2026-10-10 15:18 CST / Codex RECOVERY-USABLE：** 实际fit暴露审计补齐：187中共5个既见DEV，4个有审图材料，另lunchbox106原本已列物理不可用。新pool-v3保留23物理缺测与4可用但暴露隔离，160合格组预选90/余70reserve；五个暴露身份全部公开留档。准入合并只允许隔离由原fit admission实际证实的CAL结果，原标签/审批不改、不得删TRAIN/动作/意图；预选与GPU两端均再次核实际fit。新DEV-only导出强制传原observer-fit config排除真实TRAIN/选择DEV，修复只看inventory的根因。230恢复回归过，未重跑采集/训练或读新预测，当前校准仍未通过。
 
 - **2026-10-10 15:14 CST / Codex RECOVERY-USABLE：** 固定v8实际CAL入口在0 forward前被独立性门正确拦截，发现四个新来源与原模型选择DEV重叠：preparing lunch box182/296、coffee station1、radio270。根因前瞻导出只排旧source inventory，未再对实际fit admission做集合差；原pool-v2不合格，旧记录“独立90”据此更正，不降低门/不冒充通过。正在新版本明确隔离四源、保留187分母及原签名，在任何新预测前重新冻结选择；旧失败日志/selection保留。另实读v7 global30文件SHA56a4fd2c…6bc9ba7与发布身份一致；十个长OPEN训练中第6/8条物理成功（896/869控），其余8 UNKNOWN，固定短probe仍0/2，不能称可靠提升，但更正“所有长OPEN都未成功”的过时判断。原RL未停止。
