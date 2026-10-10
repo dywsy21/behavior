@@ -42,5 +42,21 @@ class CohortTests(unittest.TestCase):
             bad=deepcopy(self.spec);bad[field]=False
             with self.assertRaises(ValueError):cohort_sources(self.queue,bad,'calibration')
 
+    def test_new_calibration_keeps_old_reserved_test_external_and_unread(self):
+        spec=deepcopy(self.spec);spec['schema']='recovery_independent_calibration_only_cohort_v1'
+        spec.pop('frozen_test_groups')
+        spec.update(external_frozen_test_source_groups=['b:2'],external_frozen_test_cohort_sha256='a'*64,
+            prospective_config_sha256='b'*64,prospective_source_audit_sha256='c'*64,selected_observer_sha256='d'*64)
+        selected=cohort_sources(self.queue[:1],spec,'calibration')
+        self.assertEqual(selected[0][0]['source_group'],'a:1')
+        with self.assertRaises(ValueError):cohort_sources(self.queue[:1],spec,'frozen_test')
+        with self.assertRaises(ValueError):cohort_sources(self.queue,spec,'calibration')
+        for key,value in [('external_frozen_test_source_groups',['a:1']),
+                          ('external_frozen_test_source_groups',[]),('prospective_config_sha256','bad'),
+                          ('selected_observer_sha256',None)]:
+            bad=deepcopy(spec);bad[key]=value
+            with self.assertRaises(ValueError):cohort_sources(self.queue[:1],bad,'calibration')
+        with self.assertRaises(ValueError):cohort_sources([],spec,'calibration')
+
 
 if __name__=='__main__':unittest.main()

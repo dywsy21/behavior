@@ -38,6 +38,22 @@ def main():
     ap.add_argument('--role', choices=('calibration','frozen_test'), required=True)
     a = ap.parse_args()
     spec = json.loads(a.cohort.read_text()); corpus = Path(spec['source_corpus'])
+    if spec.get('schema')=='recovery_independent_calibration_only_cohort_v1':
+        external=a.root/spec['external_frozen_test_cohort']
+        prospective=a.root/spec['prospective_config']
+        audit_path=a.root/spec['prospective_source_audit']
+        for path,key in ((external,'external_frozen_test_cohort_sha256'),
+                         (prospective,'prospective_config_sha256'),(audit_path,'prospective_source_audit_sha256')):
+            if file_sha(path)!=spec[key]:raise ValueError('Changed predeclared external-test/model/source binding')
+        old=json.loads(external.read_text());audit=json.loads(audit_path.read_text())
+        config=json.loads(prospective.read_text())
+        if (sorted(spec['external_frozen_test_source_groups'])!=sorted(r['source_group'] for r in old['frozen_test_groups'])
+                or config['selected_observer']['sha256']!=spec['selected_observer_sha256']
+                or audit['selected_observer_sha256']!=spec['selected_observer_sha256']
+                or audit['config_sha256']!=spec['prospective_config_sha256']
+                or audit['status']!='source_closure_and_group_isolation_passed_not_labels'
+                or {r['source_group'] for r in audit['groups']}!={r['source_group'] for r in spec['calibration_groups']}):
+            raise ValueError('Calibrating a different model or silently selecting/dropping new source groups')
     queue_path = corpus/'review-queue.json'
     if file_sha(queue_path) != spec['source_queue_sha256']:
         raise ValueError('Independent cohort source queue changed')

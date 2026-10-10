@@ -19,20 +19,33 @@ def proposed_phase_points(labels, retry):
 
 
 def cohort_sources(queue, spec, role):
-    if (spec.get('schema') != 'recovery_independent_cohort_v1'
+    external_test=spec.get('schema')=='recovery_independent_calibration_only_cohort_v1'
+    if (spec.get('schema') not in ('recovery_independent_cohort_v1','recovery_independent_calibration_only_cohort_v1')
             or role not in ('calibration', 'frozen_test')
             or any(spec.get(k) is not True for k in (
                 'declared_before_any_model_predictions', 'training_forbidden',
                 'model_selection_forbidden', 'calibration_must_not_use_frozen_test'))):
         raise ValueError('Explicit independent, non-training cohort required')
+    if external_test:
+        if role!='calibration' or spec.get('frozen_test_groups'):
+            raise ValueError('External reserved test must never be materialized/read by this cohort')
+        for name in ('external_frozen_test_cohort_sha256','prospective_config_sha256',
+                     'prospective_source_audit_sha256','selected_observer_sha256'):
+            value=spec.get(name)
+            if not isinstance(value,str) or len(value)!=64 or any(c not in '0123456789abcdef' for c in value):
+                raise ValueError('External-test cohort requires immutable prospective/model bindings')
+        protected=spec.get('external_frozen_test_source_groups')
+        if (not isinstance(protected,list) or not protected or len(protected)!=len(set(protected))
+                or any(not isinstance(g,str) or not g for g in protected)):
+            raise ValueError('External reserved source-group identities required')
     declared = {}
-    for kind in ('calibration', 'frozen_test'):
+    for kind in (('calibration',) if external_test else ('calibration','frozen_test')):
         entries = spec[kind+'_groups']
         if not entries:
             raise ValueError('Both independent roles must be nonempty')
         for entry in entries:
             group = entry['source_group']
-            if group in declared:
+            if group in declared or (external_test and group in protected):
                 raise ValueError('Duplicate or overlapping independent group roles')
             declared[group] = (kind, entry)
     actual = {}
