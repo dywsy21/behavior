@@ -75,8 +75,8 @@ def main():
             obs=load_observation(directory/'observations',first)
             for camera,pixels in obs['images'].items():
                 with Image.open(directory/(camera+'.png')) as im:
-                    expected=np.asarray(Image.fromarray(pixels.transpose(1,2,0)).resize((224,224)))
-                    if not np.array_equal(expected,np.asarray(im)):raise ValueError('Native baseline image does not reproduce its original PNG')
+                    expected_pixels=np.asarray(Image.fromarray(pixels.transpose(1,2,0)).resize((224,224)))
+                    if not np.array_equal(expected_pixels,np.asarray(im)):raise ValueError('Native baseline image does not reproduce its original PNG')
         frames=iio.mimread(directory/'policy.mp4',memtest='1GB')
         if not frames:raise ValueError('No actual policy video')
         indices=sorted({0,len(frames)//3,2*len(frames)//3,len(frames)-1})
