@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 16:45 CST / Codex RECOVERY-USABLE：** 两臂24轨全部闭合/根亲审360原RGB/逐控审计通过，candidate1478控110无损边界、0更新/指纹不变/全部finish ACK；同四seed抓4→4、放4→4、开0→3（216/317UNKNOWN/233/287控），原.35×6门与317时限不变。摘要`docs/infra/results/2026-10-10-later-action-physical-pair.json`绑定pair78c29f72/candidate audit0b190a5b/service80181b9b。这是同TRAIN起点的小样本局部收益，不是独立实例/全任务SR，下一先固定两终态新噪声复验，不追加训练追分。v10独立重载已620真实prefill复现selected222/balanced83.63%（result6f266316），不部署。v11仅TRAIN四类等权、类内等event已实现/245恢复回归过，原294/40与v8历史/LR/选择规则不变；新A800拟GPU0，同20epoch/min5/patience5，未启动，不读已见90CAL/旧20。续接fetch/upstream相同、main无新增，自有dirty改动故未pull；lc1实查全空、RTX仅队友4–7，不触碰。
+
 - **2026-10-10 16:30 CST / Codex RECOVERY-USABLE：** 39窗×4noise×3模型共468真实FM前向完成/全部参数指纹不变（result28079f76）；新晚段OPEN TRAIN事件均值.023282→.013887（−40.4%），但原3 OPEN DEV .024998→.025818（+3.3%），抓取DEV两臂均约−28%，说明总FM隐藏机制差异，不能推SR。wash169起点candidate比control差(.01145/.00752)，晚508明显好(.01034/.02389)，未宣称这是闭环因果解释；摘要`docs/infra/results/2026-10-10-later-action-phase-loss.json`。v10已407步/11epoch原早停、selected6/222 SHA5a477efd，原DEV balanced83.63%未胜v8/89.58%，冻结SHA不变；在GPU3新独立重载复算，**不消耗新CAL/不部署**。新76dc4b54 tripod v2已HELLO过/实跑，先前0控握手失败仍留档；candidate前两OPEN一成一UNKNOWN，尚待全12与根审，不提前称可靠提升。
 
 - **2026-10-10 16:26 CST / Codex RECOVERY-USABLE：** candidate tripod首worker因模型服务尚未listen，场景先加载完成后WebSocket HTTP握手EOF；真实receipt `actual_controls=0`、未领取job，服务四个tripod仍pending，旧v1失败/scene日志完整保留。已在新worker加入**加载模拟器前仅读HELLO、不发送任何job**的运输等待；协议/config不匹配直接拒绝，不自动重置/重跑任何失败轨迹。等待新源检查后只续四个未领取job，radio/wash现役不重启。该工程失败不能隐去，也不算模型物理失败/成功。阶段FM诊断仍载入，v10按原选择规则继续。

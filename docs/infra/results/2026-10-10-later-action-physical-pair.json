@@ -1,0 +1,40 @@
+{
+  "owner": "Codex root",
+  "recorded_at": "2026-10-10T16:45:00+08:00",
+  "status": "paired12_per_arm_machine_and_root_media_review_complete_initial_local_gain",
+  "control_checkpoint_sha256": "51e2c772ba321f1dd0b5faad1e31264e2acceca56013baf4c97f5fa94fee302c",
+  "later_action_checkpoint_sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5",
+  "control_config_sha256": "4da5a6bc777b7a600e02f4ad5892e284fa6c5f398e73b8f2a4b7de4be7e208b5",
+  "later_action_config_sha256": "20288ffb47e175c502fb9c3cb4a1ef5415f648aa69f376d08756e76ff88d1824",
+  "paired_machine_summary_sha256": "78c29f7252ef798489763cf9750486a5b5c215edc55f623605748e613d30b729",
+  "control_audit_sha256": "7887aad0f7c372b89afb89a7b5ed8a40f10b60c9584af6d2f84318af9c223a9b",
+  "later_action_audit_sha256": "0b190a5b3c53e54ae46205c51c81b1c40114c4dd7e1305bf5cb9438dfb8e1988",
+  "control_service_result_sha256": "dbc0763a277c46b3994a9f737429f9ffc424cc21cc64727cb972589561f37353",
+  "later_action_service_result_sha256": "80181b9ba506f53f5ceb1c3a12b295c75f0006c8e0fcb20a3468f0b9ba38f2c8",
+  "seeds_in_order": [17, 29, 43, 71],
+  "cases": {
+    "turning_on_radio_155": {"skill": "GRASP", "control_successes": 4, "candidate_successes": 4,
+      "control_controls": [19, 19, 19, 19], "candidate_controls": [19, 19, 19, 19]},
+    "attach_a_camera_to_a_tripod_129": {"skill": "PLACE_ON", "control_successes": 4, "candidate_successes": 4,
+      "control_controls": [97, 65, 130, 39], "candidate_controls": [92, 72, 142, 43]},
+    "wash_dog_toys_169": {"skill": "OPEN_DOOR", "control_successes": 0, "candidate_successes": 3,
+      "control_controls": [317, 317, 317, 317], "candidate_controls": [216, 317, 233, 287],
+      "candidate_outcomes": ["SUCCEEDED", "UNKNOWN", "SUCCEEDED", "SUCCEEDED"],
+      "candidate_final_directed_open_fraction": [0.3551988416002357, 0.33175146195704464, 0.3507532805686517, 0.3533331314]}
+  },
+  "review": {
+    "root_viewed_all_sheets": 24, "original_camera_panels": 360,
+    "control_controls_recomputed": 1675, "candidate_controls_recomputed": 1478,
+    "control_lossless_boundary_observations": 124, "candidate_lossless_boundary_observations": 110,
+    "visual_findings": "Radio fingers close around the correct red target; tripod is released on the floor. The candidate's three successful OPEN probes maintain/pull the correct white washer door farther than the control, which releases and withdraws early. Candidate seed29 remains below the original .35 clearance gate and is UNKNOWN, not relabeled FAILED. Sampled images support, but do not replace, the exact six-control physical success audit."
+  },
+  "optimizer_updates_during_probes": 0,
+  "all_service_actor_and_frozen_fingerprints_unchanged": true,
+  "all_workers_finish_ack_and_exit_verified": true,
+  "startup_failure_preserved": "Candidate tripod v1 loaded its scene but failed transport before HELLO/job claim and with zero applied controls. V2 preflight waits for a config-bound HELLO before loading a fresh simulator; it only handled the four still-unclaimed jobs. No failed physical sample was retried or omitted.",
+  "local_evidence_root": "artifacts/recovery-heterogeneous-20261010",
+  "rtx_evidence_root": "/run/ti/rl_memlite_stage1_20261006/runs/recovery_heterogeneous_20261010",
+  "scope": "Same TRAIN source starts and paired FM noise seeds; identical original horizons and physical gates. Fixed issued skills, not a joint high-planner rollout. Initial small local evidence, not cross-instance generalization, statistical reliability, full-task success rate, or a new RL improvement.",
+  "new_training_data_or_policy_promotion_authorized_by_this_review": false,
+  "next": "Prospectively fixed fresh-noise replication of the same two final checkpoints before more RL, broader task coverage, or a reliability claim."
+}

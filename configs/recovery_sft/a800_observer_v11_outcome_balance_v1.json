@@ -1,0 +1,44 @@
+{
+  "schema": "recovery_observer_adapter_training_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "user_goal_authorized": true,
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "corpus": "datasets/recovery-reviewed-union-20261010-v8-retry-unknown",
+  "admission": "datasets/recovery-reviewed-union-20261010-v8-retry-unknown/admission",
+  "admission_sha256": "89eda5e5c82e424920b24e9cb4d3ead0dd83760d119337ef319ff2a7c5dce12a",
+  "features": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v8/features.pt",
+  "feature_receipt": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v8/receipt.json",
+  "features_sha256": "c9a72562e0e055a3ff0a33ce21263269676001575128d258c75b9e9d289857db",
+  "stats_sha256": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+  "high": {
+    "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+    "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316"
+  },
+  "adapter": {
+    "enabled": true,
+    "r": 8,
+    "alpha": 16,
+    "dropout": 0,
+    "adapter_name": "outcome_observer"
+  },
+  "adapter_learning_rate": 0.00002,
+  "head_learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "seed": 17,
+  "global_batch": 8,
+  "maximum_epochs": 20,
+  "minimum_epochs": 5,
+  "patience_epochs": 5,
+  "hypothesis": "One TRAIN-objective change vs completed original v8: equal mass per actual outcome class, then per physical event within that class. Original294TRAIN had event-weighted CE mass FAILED25.049%,IN_PROGRESS24.314%,SUCCEEDED42.647%,UNKNOWN7.990%; this candidate uses25% each without inventing/duplicating labels. Same original cadence16 cache/294TRAIN/40selectionDEV,beeparent,r8,seed17,LR2e-5/1e-4,batch8,20epoch/min5/patience5. No v10 short-history change, CAL/test fitting, confidence-gate adjustment or new runtime release. Default event_v1 remains byte-equivalent for old configs.",
+  "resource": "One verified idle lc1 A800 GPU0 after v10 fit has exited. Planner/low/vision/shared env/lc2 untouched.",
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-observer-outcome-balance-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key"
+  },
+  "outcome_weighting": "outcome_then_event_v1",
+  "interpretation": "Controlled optimization hypothesis, not a guaranteed calibration fix. Original event-weighted DEV metrics and balanced-accuracy checkpoint selection unchanged. Read-only independent reload required. Only if old selection DEV supports this candidate should a new prospectively fixed untouched calibration cohort be considered; no rescue with already inspected90CAL or reserved20test."
+}

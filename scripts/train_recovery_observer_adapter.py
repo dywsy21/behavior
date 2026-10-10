@@ -22,7 +22,7 @@ sys.path[:0]=[str(REPO/'src'),str(REPO/'scripts/rl/memlite_online/code')]
 from recovery_corpus import file_sha,digest
 from recovery_sft_data import require_training_pool,CandidateArchiveReader,raw_observation
 from recovery_observer_training import OUTCOMES,request_key
-from recovery_convergence import event_weights,check_splits,selection_key
+from recovery_convergence import event_weights,observer_training_weights,check_splits,selection_key
 from recovery_features import require_history_protocol
 
 
@@ -41,6 +41,8 @@ def main():
     receipt,rows=require_training_pool(root/cfg['admission'],'outcome',cfg['admission_sha256'])
     train=[r for r in rows if r['candidate']['split']=='train'];dev=[r for r in rows if r['candidate']['split']=='dev']
     check_splits(train,dev)
+    weighting_protocol=cfg.get('outcome_weighting','event_v1')
+    weights=observer_training_weights(train,weighting_protocol)
     cache_receipt=json.loads((root/cfg['feature_receipt']).read_text())
     if (file_sha(root/cfg['features'])!=cfg['features_sha256']
             or cache_receipt['features_sha256']!=cfg['features_sha256'] or cache_receipt['diagnostic_only']
@@ -146,7 +148,11 @@ def main():
     wb=init_wandb(dict(cfg['wandb'],name=a.output.name),a.output,run_id=uuid.uuid4().hex[:12],resume=False,
         metadata=dict(status,train_groups=sorted({r['candidate']['source_group'] for r in train}),
             selection_groups=sorted({r['candidate']['source_group'] for r in dev}),adapter_tensors=192))
-    weights=event_weights(train);step=0;started=time.monotonic();stopping=[False]
+    atomic_json(a.output/'weighting-audit.json',dict(protocol=weighting_protocol,train_rows=len(train),
+        weights_sha256=digest(weights),class_ce_mass={label:sum(w for r,w in zip(train,weights)
+            if r['approval']['label']['value']==label) for label in OUTCOMES},
+        evaluation_and_checkpoint_selection_unchanged=True,calibration_and_test_used=False))
+    step=0;started=time.monotonic();stopping=[False]
     for sig in (signal.SIGTERM,signal.SIGINT):signal.signal(sig,lambda *_:stopping.__setitem__(0,True))
     def evaluate(epoch):
         head.eval();logits=[]

@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 16:45 CST：只读物理配对与v10已收尾
+
+- A800异质run根`runs/recovery_heterogeneous_20261010`下`later-action-{control,candidate}-probes-v1`均completed、0更新、actor/frozen指纹不变。RTX三candidate worker均退出，其中tripod成功版本为`later-action-candidate-tripod129-probes-v2`（源`code/skill-readiness-v1`/76dc4b54）；旧v1零控制运输失败保留，不覆盖。全部审阅证据RTX/本地`later-action-{control,candidate}-review-v1`；本地`later-action-physical-pair-v1.json` SHA78c29f72。
+- `H0-observer-v10-short-context-v1`407更新后按原早停，`checkpoints/selected.pt` SHA5a477efd…5e87b3（epoch6/222）；`H0-observer-v10-short-context-reload-v1`已620真实prefill独立通过，result SHA6f266316…8665c4690f6d562cb8d。未胜v8，不部署。`L0-later-action-phase-diagnostic-v1`468只读前向已完成。lc1实查没有GPU任务，后续仍先实查再占用；RTX4–7为队友openpi服务，不动。
+
 ## 2026-10-10 16:22 CST：低层配对候选与相位诊断
 
 - A800根`/data/workspace/wsy/behavior2026`、异质run根`runs/recovery_heterogeneous_20261010`。只读control已完整关闭，根审材料RTX及本地`later-action-control-review-v1`；A800 GPU2当前`later-action-candidate-probes-v1`、源50193209、端口18976、W&B7554d6906d88。RTX源仍`code/later-action-physical-v2`/42728c3f，GPU0–2 `later-action-candidate-{radio155,wash169,tripod129}-probes-v1`，对照原12冷起点/seed，非新训练。

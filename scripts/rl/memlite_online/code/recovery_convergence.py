@@ -24,6 +24,26 @@ def event_weights(rows, mechanisms=None):
     return [1. / (len(counts) * counts[key]) for key in keys]
 
 
+def observer_training_weights(rows, protocol='event_v1'):
+    """Optional equal outcome, then equal physical-event mass within outcome.
+
+    Only the TRAIN objective changes. More reviewed frames of one class in
+    the same event do not buy more mass; no synthetic labels are introduced.
+    Evaluation/selection retain the existing event-weighted metrics.
+    """
+    if protocol == 'event_v1':
+        return event_weights(rows)
+    if protocol != 'outcome_then_event_v1' or not rows:
+        raise ValueError('Unknown observer objective weighting protocol')
+    labels=[r['approval']['label']['value'] for r in rows]
+    if set(labels) != {'IN_PROGRESS','SUCCEEDED','FAILED','UNKNOWN'}:
+        raise ValueError('Outcome balancing needs four actually reviewed TRAIN classes')
+    keys=[(label,r['candidate']['source_group'],r['approval']['event_id']) for label,r in zip(labels,rows)]
+    counts=Counter(keys)
+    events_per_label=Counter(k[0] for k in counts)
+    return [1./(len(events_per_label)*events_per_label[k[0]]*counts[k]) for k in keys]
+
+
 def check_splits(train, dev):
     a = {r['candidate']['source_group'] for r in train}
     b = {r['candidate']['source_group'] for r in dev}
