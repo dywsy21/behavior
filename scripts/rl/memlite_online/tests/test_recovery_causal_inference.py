@@ -105,5 +105,28 @@ class Tests(unittest.TestCase):
         with self.assertRaises(ValueError):observer_prefix(self.processor,self.config,self.session,self.i,0,
             self.observation,loaded_backbone_sha256='c'*64)
 
+    def test_serving_reuses_value_action_requests_and_waits_for_real_128_controls(self):
+        for step in (0,0,16,32,127):
+            self.session.observe(self.i,step)
+            self.adapter.ensure_context(self.session,self.i,self.observation,validate_low_goal=lambda x:None)
+        self.assertEqual(len(self.policy.inputs),1);self.assertEqual(self.session.revision,1)
+        self.assertEqual(self.session.feedback.refreshes,0)
+        self.session.observe(self.i,128)
+        result=self.adapter.ensure_context(self.session,self.i,self.observation,validate_low_goal=lambda x:None)
+        self.assertFalse(result['reused']);self.assertEqual(len(self.policy.inputs),2)
+        again=self.adapter.ensure_context(self.session,self.i,self.observation,validate_low_goal=lambda x:None)
+        self.assertTrue(again['reused']);self.assertIsNone(again['event'])
+        self.assertEqual(self.session.feedback.refreshes,1)
+
+    def test_takeover_is_one_immediate_call_not_permanent_cadence_bypass(self):
+        self.adapter.ensure_context(self.session,self.i,self.observation,validate_low_goal=lambda x:None)
+        self.session.observe(self.i,32);self.session.takeover_pending=True
+        self.adapter.ensure_context(self.session,self.i,self.observation,validate_low_goal=lambda x:None)
+        self.assertEqual(len(self.policy.inputs),2);self.assertFalse(self.session.takeover_pending)
+        self.session.observe(self.i,159)
+        self.assertTrue(self.adapter.ensure_context(self.session,self.i,self.observation,validate_low_goal=lambda x:None)['reused'])
+        self.session.observe(self.i,160)
+        self.assertFalse(self.adapter.ensure_context(self.session,self.i,self.observation,validate_low_goal=lambda x:None)['reused'])
+
 
 if __name__=='__main__':unittest.main()

@@ -93,6 +93,9 @@ class CausalPlannerSession:
         self.request = self.pending = self.installed = None
         self.windows = []
         self.closed = False
+        self.last_planned_control_step = None
+        self.takeover_pending = False
+        self.action_in_flight = None
 
     def _check(self, identity, control_step):
         if identity != self.identity or self.closed:
@@ -101,13 +104,13 @@ class CausalPlannerSession:
             raise ValueError("Request does not match the latest real control clock")
 
     def observe(self, identity, control_step):
-        if identity != self.identity or self.closed or self.request is not None:
+        if identity != self.identity or self.closed or self.request is not None or self.action_in_flight is not None:
             raise ValueError("Foreign/closed observation or unresolved planner transaction")
         self.feedback.observe_clock(identity.feedback_identity(), control_step)
 
     def begin_planning(self, identity, control_step):
         self._check(identity, control_step)
-        if self.request is not None:
+        if self.request is not None or self.action_in_flight is not None:
             raise ValueError("Commit or discard the pending planner request first")
         causal = dict(task_name=identity.task, memory=self.memory,
             previous_parent_goal=self.previous_parent_goal, previous_intent=self.previous_intent,
@@ -118,6 +121,22 @@ class CausalPlannerSession:
             request_generation=self.request_generation, control_step=control_step, causal=causal))
         self.request = dict(token=token, control_step=control_step, causal=causal)
         return token, deepcopy(causal)
+
+    def planning_due(self, identity, *, interval_controls=128):
+        """Serving cadence is measured in consumed controls, never RPC calls.
+
+        A verified prefix handover permits one immediate new-planner call.
+        Thereafter value/action requests at the same state reuse the command.
+        Raw ``begin_planning`` remains available for transactional replay/QA;
+        physical serving must use the cadence-aware inference entry point.
+        """
+        self._check(identity, self.feedback.control_step)
+        if type(interval_controls) is not int or interval_controls <= 0:
+            raise ValueError("Positive real-control planning interval required")
+        if self.request is not None or self.action_in_flight is not None:
+            raise ValueError("An unresolved proposal cannot be scheduled twice")
+        return (self.installed is None or self.takeover_pending
+            or self.feedback.control_step - self.last_planned_control_step >= interval_controls)
 
     def stage(self, identity, token, event):
         self._check(identity, self.feedback.control_step)
@@ -152,6 +171,8 @@ class CausalPlannerSession:
         self.memory = next_goal['memory']
         self.previous_intent, self.previous_parent_goal = next_goal['text'], next_goal['parent_goal']
         self.installed = next_goal
+        self.last_planned_control_step = self.feedback.control_step
+        self.takeover_pending = False
         self.revision += 1
         self.pending = self.request = None
         if changed:
@@ -207,7 +228,7 @@ class CausalPlannerSession:
 
     def close(self, identity, control_step):
         self._check(identity, control_step)
-        if self.request is not None:
+        if self.request is not None or self.action_in_flight is not None:
             raise ValueError("Close only after resolving the planner transaction")
         self.closed = True
         self.windows = []

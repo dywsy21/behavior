@@ -45,6 +45,24 @@ class CausalPlannerInference:
         self.policy,self.processor,self.config=policy,processor,config
         self.models,self.cache_context,self.device=models,cache_context,device
 
+    def ensure_context(self,session,identity,observation,*,validate_low_goal,interval_controls=128):
+        """Idempotent serving API for value + action at one observed state.
+
+        Reusing a command does not fabricate a generation, a memory update or
+        a planner refresh. Low conditioning is still checked for the current
+        observation. The transport owns the actual applied-action ACK clock.
+        """
+        if identity.models!=self.models or not callable(validate_low_goal):
+            raise ValueError('Session/model mismatch or missing low condition check')
+        actor_observation(observation)
+        if session.planning_due(identity,interval_controls=interval_controls):
+            return dict(self.plan(session,identity,observation,validate_low_goal=validate_low_goal),reused=False)
+        goal=session.low_goal(identity)
+        validate_low_goal(goal)
+        return dict(goal=goal,event=None,causal_input=None,reused=True,
+            control_step=session.feedback.control_step,revision=session.revision,
+            physical_success_asserted=False,observer_feedback_mode='shadow_unknown_v1')
+
     def plan(self,session,identity,observation,*,validate_low_goal):
         """Generate, validate downstream conditioning, then atomically issue.
 
