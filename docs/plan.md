@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 20:31 CST / Codex RECOVERY-USABLE：** lc1冻结33eb4b1b已对完整tar远端再核eab93c64…a8908，412文件/211,780,945B全部字节通过；新A800联合78 archive/3,516观测再读通过，admission404fcc0a…3463f、原36TRAIN42DEV无漂移。新固定GPU生成配置绑定a74 planner／bee+b0 observer／原.85校准，仅这78来源、不拟合/部署；准备独立冻结launch源后提交GPU0。原时钟/隔离303回归通过；旧未完成前缀隔离，不进入任何准入。
+
 - **2026-10-10 20:29 CST / Codex RECOVERY-USABLE：** RTX新源86ea797c签发/联合全部78实际通过，78 archive/3,516观测全读、planner36TRAIN42DEV（35/42任务），0outcome/action；admission418e073e…b8dda、运输412文件/211,780,945B、tar eab93c64…a8908。本地完整下载已SHA一致；一次提前上传读到未下载完的62MiB前缀，已在lc1明确隔离为`.partial-incomplete-upload.tar.gz`，未解包/准入，完整已验包现已传完待远端全验。新增冻结source-disjoint反馈实现与6时钟/隔离测试（当前恢复suite303含5重复夹具测试）通过，独立bee observer与a74 planner显式绑定，24步陈旧回退UNKNOWN、48/64分别完整四帧，不伪装OOF或热改原时序。A800联合/GPU仍待；0新训练/物理/部署。
 
 - **2026-10-10 20:23 CST / Codex RECOVERY-USABLE：** 根全部81来源/162页/1,923原RGB亲审闭合；78条实际RETRY通过（原36TRAIN42DEV、1,851面板），3条暗/遮挡隔离（battery13/64、unloading_car111），无新outcome/action许可、无CAL/test回流。part1–8＋独立steel-wool解封配置逐review SHA/命令时间/唯一性静态验过，原223组全账本保留。准备新RTX signed-unit spec及Git冻结后机器签核/搬运；当前仅owner审核，尚非训练完成或模型有效，独立成员review待。下一冻结v11按真实16控时钟生成无泄漏H1反馈；旧42组不可冒称OOF。

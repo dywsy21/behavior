@@ -1,0 +1,24 @@
+{
+  "schema": "postfit_planner_feedback_generation_v1",
+  "root": "/data/workspace/wsy/behavior2026",
+  "owner": "Codex RECOVERY-USABLE",
+  "exposure": {
+    "path": "runs/recovery_heterogeneous_20261010/v11-postfit-exposure-v1.json",
+    "sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8"
+  },
+  "planner_high": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-causal-feedback-fit-v1/checkpoints/step_00000420_save_0009.pt",
+    "sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2"
+  },
+  "corpus": "datasets/recovery-postfit-planner-union-20261010-v1",
+  "admission_sha256": "404fcc0a2e1d7f62466e08e6bfe994717905db6973cee84ee410ad0a32f3463f",
+  "hypothesis": "Frozen calibrated GRASP observer can supply genuine out-of-source feedback on actual check clocks; no selection or filtering based on predicted outcomes. This is a read-only input-generation step, not training or a success-rate evaluation.",
+  "resource": "One idle lc1 GPU0; stop on all reviewed decisions processed or any identity/causality/nonfinite error; no automatic retry, no fixed wall/reset allowance.",
+  "source_counts": {
+    "train": 36,
+    "dev": 42
+  },
+  "calibration_updates": 0,
+  "optimizer_updates": 0,
+  "physical_controls": 0
+}
