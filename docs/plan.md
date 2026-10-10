@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 14:20 CST / Codex RECOVERY-USABLE：** 真实历史接管GPU QA结束：4真实生成＋4同帧复用，grouped/interleaved完全相同、950张量恢复/全参数指纹不变；radio32选RETRY/GRASP，wash270保持OPEN（旧空历史fixture为NAVIGATE）。只证明工程接管/两TRAIN例诊断，0物理，非SR/结果头部署；结果bf74f492…b80e78，摘要`docs/infra/results/2026-10-10-causal-handover-gpu-qa-v1.json`。另实读L0原20a81bd0准入：19TRAIN动作＝14GRASP＋5OPEN，5OPEN各仅恢复起点32控；原100task专家仍混训，不能说完全无开门监督。已实现按原五TRAIN事件抽中/后/完成附近窗口供**新**人工审核（4回归过），补长过程覆盖而非增加独立事件数；尚未新签/新SFT，不动原9DEV、CAL/test或现役v7。
+
+- **2026-10-10 14:16 CST / Codex RECOVERY-USABLE：** 新代码edb74731已push并以Git bundle冻结到两端`causal-handover-gpu-qa-v1`；RTX首次bundle缺基提交被拒，改用已知共同祖先包后成功，没有prune/旧源改写。两真实TRAIN起点（radio32、wash270）已绑定真实已消费teacher历史/原cold replay proof导出，manifest00ff361f…868603、整包d55275af…61d8a核验；PLACEMENT无指令记录明确排除。lc1 GPU0/PID2035584实启新同名GPU QA（四次真实生成＋四次同状态复用，0物理/optimizer），尚未终态；本地218恢复＋8session＋11feedback以及A80013接线回归过。补97现67终态（60候选/7未复现）仍采集/未审签，低原v7继续，goal未完成。
+
 - **2026-10-10 14:09 CST / Codex RECOVERY-USABLE：** 补新联合接管接口`recovery_causal_handover.py`：仅重放真实teacher分支已发指令及已ACK控制，边界t及以后指令不入历史；任务/实例、context SHA、连续前缀与K3递推逐验，明确不是新H1生成的过去、不移植结果/特征。`ensure_context`按真实128控调度、同帧value/action复用，`AppliedActionClock`逐23维动作验ACK，部分3/16只推进3，未ACK时禁止规划/关会话；13新接线相关＋8 session回归通过。尚待真实前缀导出/GPU/物理联合验收，不覆盖旧0-control QA，不热改现役。低原v7实查PID正常/global25；补97仍采集，14:04为60闭（55候选/5未复现），还无新签核/预测，goal继续。
 
 - **2026-10-10 13:55 CST / Codex RECOVERY-USABLE：** global24六固定probe全闭：GRASP2/2（19/19控）、PLACE1/2（99控成、165控UNKNOWN）、OPEN0/2（两317控UNKNOWN），合3/6，未超过v7原4/6；小样本不声称统计退步，但**仍无可靠RL改善**，不promote/不扩任务/不加actorLR。原窗口进入第5 TRAIN轮；随后独立实读7.6GB的round-0004确认文件SHA也为63250e28…80740c，轻量摘要`docs/infra/results/2026-10-10-short-skill-v7-update24.json`。22闭合episode独立reward/return重算通过，四长OPEN的尾折扣值.2011→.1482→.1050→.0851、平均adv−.1835→−.1353→−.1193→−.0502；critic信用随真实后果下降并不等于动作学会，保留`short-rl-v7-update24-returns-v1`完整证据。补97已55闭（50候选/5未复现），0新签核/预测/校准，后处理等待tmux仍live；继续全闭后的根原图审签和固定v8校准，旧20不读。下一联合高层物理验收须先完成实际已发指令trace恢复/规划时钟接线，当前仅独立工程QA通过，不绕过该缺口。

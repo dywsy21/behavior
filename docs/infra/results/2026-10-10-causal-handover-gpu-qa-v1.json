@@ -1,0 +1,25 @@
+{
+  "owner": "Codex RECOVERY-USABLE",
+  "checked_at": "2026-10-10T14:20:00+08:00",
+  "source_commit": "edb74731ae507ebbcb517f91aab6df1d8b75bd69",
+  "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/causal-handover-gpu-qa-v1",
+  "status": "real_prefix_handover_engineering_passed_not_deployed",
+  "result_sha256": "bf74f4923fcbfe0f9f6f93bfa3194c84d0c8a8438270f02fcfface21acb80e78",
+  "events_sha256": "8b72ac40de015ce6f557a0c7d6fbf661f1c9045b58ca617992e27dd2a84fddcf",
+  "inputs_sha256": "00ff361f2fe9b7ad763f96d20e712998ac754e2d58c26086ee028a2005868603",
+  "planner_sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2",
+  "actual_gpu_generations": 4,
+  "same_state_idempotent_reuses": 4,
+  "grouped_interleaved_exactly_equal": true,
+  "exact_restored_tensors": 950,
+  "frozen_parameter_fingerprint_before_and_after": "e4a5f8a7c051a539fc3dba8fb1841ab09aa39c7241d65e7b468931de2090fe01",
+  "physical_controls": 0,
+  "optimizer_updates": 0,
+  "observer_predictions": 0,
+  "cases": [
+    {"case":"turning_on_radio_155","consumed_prefix_controls":32,"decision":"RETRY","verb":"GRASP","target":"radio_89"},
+    {"case":"wash_dog_toys_169","consumed_prefix_controls":270,"decision":"EXECUTE","verb":"OPEN_DOOR","target":"washer_ynwamu_0"}
+  ],
+  "placement_exclusion": "Its demonstration action prefix has no actually issued command history. Do not fabricate planner memory from segment annotations.",
+  "interpretation": "Past teacher-issued command trace is explicitly restored before a new planner takeover; the command at the current boundary and future commands are excluded. Wash retains the OPEN goal instead of the empty-history fixture's NAVIGATE. This is a two-case TRAIN engineering diagnostic, not semantic accuracy, physical recovery, runtime observer acceptance or whole-task SR."
+}
