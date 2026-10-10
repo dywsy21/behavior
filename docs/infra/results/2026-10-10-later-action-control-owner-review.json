@@ -1,0 +1,30 @@
+{
+  "owner": "Codex root",
+  "reviewed_at": "2026-10-10T16:17:00+08:00",
+  "status": "all12_control_probes_machine_and_original_media_reviewed",
+  "policy_sha256": "51e2c772ba321f1dd0b5faad1e31264e2acceca56013baf4c97f5fa94fee302c",
+  "config_sha256": "4da5a6bc777b7a600e02f4ad5892e284fa6c5f398e73b8f2a4b7de4be7e208b5",
+  "machine_audit_sha256": "7887aad0f7c372b89afb89a7b5ed8a40f10b60c9584af6d2f84318af9c223a9b",
+  "service_result_sha256": "dbc0763a277c46b3994a9f737429f9ffc424cc21cc64727cb972589561f37353",
+  "local_evidence": "artifacts/recovery-heterogeneous-20261010/later-action-control-review-v1",
+  "rtx_evidence": "/run/ti/rl_memlite_stage1_20261006/runs/recovery_heterogeneous_20261010/later-action-control-review-v1",
+  "seeds_in_order": [17, 29, 43, 71],
+  "reviewed_sheets": 12,
+  "original_camera_panels": 180,
+  "machine_recomputed_controls": 1675,
+  "lossless_chunk_boundary_observations": 124,
+  "outcomes": {
+    "GRASP": {"successes": 4, "attempts": 4, "controls": [19, 19, 19, 19]},
+    "PLACE_ON": {"successes": 4, "attempts": 4, "controls": [97, 65, 130, 39]},
+    "OPEN_DOOR": {"successes": 0, "attempts": 4, "controls": [317, 317, 317, 317],
+      "outcome": "UNKNOWN", "final_directed_open_fraction": [0.28088456270765255, 0.3050555561494849, 0.2901038901183226, 0.28533000495337063]}
+  },
+  "visual_review": "Root directly inspected all 12 SHA-verified sheets. Radio fingers close around the red target; tripod is released on the floor. Washer target is the correct white washer, not adjacent dryer: it opens partly then the hand disengages/withdraws. Official binary Open is true but the predeclared functional clearance .35 for six controls is not attained; do not change the threshold or relabel timeout as FAILED. Sheet samples support, but do not substitute for, the exact six-control physics recomputation.",
+  "optimizer_updates": 0,
+  "service_actor_and_frozen_fingerprints_unchanged": true,
+  "all_workers_finish_ack_and_exit_verified": true,
+  "whole_task_sr": false,
+  "sft_training_data_authorized": false,
+  "policy_promotion_authorized": false,
+  "remaining": "Run the already fixed later-actions arm, then independent per-control audit and original-media review before paired comparison. Same TRAIN source starts and FM noise seeds, not new independent task instances."
+}

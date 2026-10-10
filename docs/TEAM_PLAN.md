@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-10 16:17 CST / Codex：** A control12全闭/根审/逐控审计与零更新指纹全过，抓4放4开0，candidate按同条件串行载入，尚无配对提升；B v10短历史LoRA+头222更新、继续原选择DEV，不动已看CAL/旧test。C旧RL仍安全暂停，尚无可靠收益，不扩100task；RTX4–7队友不动。
+
 **2026-10-10 16:08 CST / Codex：** B v10专属observer LoRA+头已111真实更新、冻结层无梯度，效果未定；A control真实物理10/12已闭（抓4/放4成功、开2 UNKNOWN），仍待control全闭后同12条件candidate比较，不凭loss推广。C v7安全暂停/完整权重与partial保留。各路根独立执行，lc2及RTX4–7队友未触碰。
 
 **2026-10-10 15:55 CST / Codex：** B固定v8新独立CAL84/90但两高置信falseS，未通过安全门/未部署；v10是同294/40与超参的新真实短历史LoRA对照，特征377逐值验过、GPU0已提交。C旧v7/global32固定3/6、安全owner STOP退出/完整权重保留，不能冒称40轮完成；A低SFT两路200已完待物理比较。RTX4–7队友openpi不动，0–2新control首启因旧schema门在0物理前失败，正以共用模式门/新源码修复，A800只读服务不重启。旧CAL不回灌/不选新模型，根独立继续。

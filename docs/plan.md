@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 16:17 CST / Codex RECOVERY-USABLE：** control全部12与三个finish ACK/worker退出已核：0optimizer/actor指纹9d99ed30、冻结eb4b5d45前后不变；独立重算1675控制/124无损边界，根看12页180原相机面板（audit7887aad0、service dbc0763a），抓4/4、放4/4、开0/4。开门是正确白washer部分打开后松手撤离，末开度.281/.305/.290/.285；官方二值Open=true但未达预先固定功能门.35，不降低门/不把UNKNOWN写FAILED。人审摘要`docs/infra/results/2026-10-10-later-action-control-owner-review.json`。下一同501服务/427客户端、GPU2 A800+RTX0–2的candidate已提交载入，未称新物理结果；v10已222更新继续。
+
 - **2026-10-10 16:12 CST / Codex RECOVERY-USABLE：** 新增`recovery_probe_pair.py`及`compare_later_action_probes.py`，严格要求两只读臂全部固定case/seed、原时限/科学配方相同、零更新/指纹不变/finish ACK齐全、逐控独立审计通过，才汇总逐seed得失；成功步数仅对两边均成功者条件比较，不冒充整体速度/独立任务SR。5反例/配对回归及全238恢复测试通过，尚未用于未闭合的control结果。活跃两端源未改，当前control11/12，candidate未启动。
 
 - **2026-10-10 16:08 CST / Codex RECOVERY-USABLE：** v10已有真实111更新/epoch3，zero-adapter等价与192专属LoRA梯度门通过、其余policy无梯度；早期选择DEV尚未稳定，不宣称提升/不读CAL。42728c3f新RTX v2 worker已真实执行control前10/12：GRASP4/4、PLACE4/4、OPEN前2 UNKNOWN，仍等剩2及finish ACK/冻结指纹，未启动candidate；各原时限不变。15:59目录表与v7/global32安全暂停摘要已补齐。续接fetch完成，HEAD/upstream一致、main无新增未合入；本地自身未提交文档故未pull，不热改活跃源/lc2/队友GPU4–7。
