@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 20:03 CST：新高层无泄漏审核材料
+
+- lc1 `src/postfit-planner-review-v1`、RTX `code/postfit-planner-review-v1`均98ce86da；只CPU导出/审核材料生成，两作业已完成，未动原权重/共享env/队友。A800异质run根`v11-postfit-exposure-v1.json` SHA8842a093…90ef8，已复制RTX及本地同名artifact并核SHA。
+- RTX `runs/recovery100_collection_20261009/postfit-planner-review-v1`与同名tar.gz/log保留；index ff9979c7…b8355c、tar d281e69f…3266b。本地`artifacts/recovery-heterogeneous-20261010/postfit-planner-review-v1/`全162原图页已验SHA，仍为候选材料，不因文件存在就授予训练许可；原始全部223组及排除/失败账本保留。
+- 当前账号2 lc1控制d实通、八卡空闲（20:02快照），GPU新工作前重查。首6人审批准在Git配置`postfit_planner_owner_review_part1_v1.json`，不是已机器签核的运输数据单元；余75继续根审。
+
 ## 2026-10-10 19:41 CST：两项固定v11 GPU验证已结束
 
 - 上述源689cda6f的校准/时序两tmux均自然退出，lc1无GPU计算任务。`runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1/calibration/result.json` SHA1945e96f…0c558，原GRASP门通过；`calibration.json` SHA32ed1e9e…d42b1、`predictions.json` SHAd570302f…6259d。不是部署许可，全部失败与未知预测保留。

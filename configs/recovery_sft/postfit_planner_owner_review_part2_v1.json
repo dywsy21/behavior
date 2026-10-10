@@ -1,0 +1,124 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex root, personally inspected original RGB and exact-target physical/issued-command evidence",
+  "exposure_sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8",
+  "branches": [
+    {
+      "case": "composting_waste_183",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "41d422b66fdfb8caf00cd4845c110a0a1cbc86eef739eadeba817312ee457247",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/composting_waste_183--open_gripper_joint_jitter",
+      "review_sha256": "beba2378876c51be245ff9d4e2c2d32aef9531cdbe42240a6205634a53475ce8",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 original panels. trash_can_66 remains beside the right gripper; pre-retry jaw opening is visible in head/adjacent close view, right wrist itself is very dark. Exact-target hold records change right TRUE at0 to both FALSE12/16 and right stable40-156, corroborating actual GRASP RETRY16. Do not infer success from the occluded wrist. Planner-only approval."
+    },
+    {
+      "case": "clean_a_patio_22",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7a80b41997b5718bde230ba9f9a88b1bb07b6051ab246ae6d2779805059ab3cf",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/clean_a_patio_22--open_gripper_joint_jitter",
+      "review_sha256": "0b71992558ff39f75e11b5b109ee6a9fe78257e75678346ae5772940af90342c",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. broom_172 shaft lies between the opened left fingers at12/16; fingers close around the same shaft after RETRY16 through156, right view stays unengaged. Exact-object record loses left hold before retry and regains it36+. Only actual corrective GRASP intent approved."
+    },
+    {
+      "case": "store_produce_231",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "38435ae4f592b5ce6872e1e2e656514646d87a15b5e544b4d95cf81c4a583b0c",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/store_produce_231--open_gripper_joint_jitter",
+      "review_sha256": "498f97a888b2906ccaca73ae3fdbfb446b2c5eccae4b0d4c9f3a7a4c5f0e7fe6",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. Produce-filled wicker_basket_74 is clearly identified, left fingers open beside rim at12/16 then reclose after RETRY16; right-side view does not imply a second grasp. Exact left hold resumes40-156, right FALSE. Approve actual intent only, no carrying/stability or task-success supervision."
+    },
+    {
+      "case": "vacuuming_floors_134",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "dcaf7c0da3b5931ef72b672cee139a0f5a15dd12050e052b4b6786e217232b1d",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/vacuuming_floors_134--open_gripper_joint_jitter",
+      "review_sha256": "274073800d1c29723bfa44fa549513eb9d7ba70fb2acb5261a300cbc3767e2a5",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. vacuum_89 body/handle remains at left gripper; its bulky dark body obscures part of contact, so six-control exact-target records rather than silhouette alone establish loss48-64 and regained left hold84-200. Actual RETRY64 is consistent with these observations; right hand remains empty. Planner-only."
+    },
+    {
+      "case": "cook_a_brisket_114",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "79c6e50a6aaa6a75a9310b6b9c51ac18e1880550a96dc9cdcbf98ba1009e033e",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/cook_a_brisket_114--open_gripper_joint_jitter",
+      "review_sha256": "f3d6d1c3a5032d6d4cd91777888b465bd8094443a8c3dc24744dc2a3f5898279",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. frying_pan_78 is visible on counter with reddish handle between open right fingers at28/32, then jaw narrows around it after RETRY32 and stays through172. Exact right hold52+ agrees, left FALSE. Approve only actual GRASP retry, not cookware transport."
+    },
+    {
+      "case": "sorting_vegetables_17",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "32695ff838f43fafd3ebe30c2607f05f5816986e5189f1935230fe55cd86586a",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/sorting_vegetables_17--open_gripper_joint_jitter",
+      "review_sha256": "2594ee331c6b87764ca20d3add1f6539ade1397679c49dbce1b12530cb23af64",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. wicker_basket_221 is a produce basket with corn/greens; right fingers open beside rim16-32 then close after actual RETRY32 through172; left is unengaged. Exact basket rather than visible contents is the target and right hold52+ agrees. Planner-only GRASP approval, no object-content success."
+    },
+    {
+      "case": "setting_mousetraps_290",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7c44141ae009a186a9072a4aa89354dd4c0f7565dfb5e9f1ba3da773cdd97c17",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/setting_mousetraps_290--open_gripper_joint_jitter",
+      "review_sha256": "5775a23306cadb375654af4dbfa00838dd61e2c1083577704b12efd29e379ceb",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. mousetrap_48 under the right gripper is distinct from another trap visible left; right jaws open20/24 then close around that trap40+, with exact right hold stable44-164. Actual RETRY24 matches target and direction; no approval for the other trap or whole task."
+    },
+    {
+      "case": "installing_smoke_detectors_92",
+      "branch": "open_gripper",
+      "manifest_sha256": "4889434eaf5ae9431ba644da4cd7976dbfe2c09430c88a48f678bcd81ca580c7",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/installing_smoke_detectors_92--open_gripper",
+      "review_sha256": "8ad1b71ee2188375c7693532c5e7311a6b6a396b2df3172c42c83529f8716237",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/21 panels. White circular fire_alarm_102 and its red button remain at the right gripper; jaws partly hidden behind housing, no conflicting object/motion is visible. Exact target is unheld48-68 then held80-200 after actual RETRY64. Approve only this grasp intent; not installation/button execution."
+    }
+  ],
+  "review_index_sha256": "ff9979c7bcb36ad4c8bca3c3e06204f3ea910e9717e800a6b46579e110b8355c",
+  "reviewed_sources": 8,
+  "reviewed_sheets": 16,
+  "original_rgb_panels": 189,
+  "review_scope": "Only these eight actually issued planner targets. Case clean_your_rusty_garden_tools_143 held separately for semantic inspection, not approved. Original train/dev retained; no outcome or action approval."
+}

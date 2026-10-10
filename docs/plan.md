@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 20:23 CST / Codex RECOVERY-USABLE：** 根全部81来源/162页/1,923原RGB亲审闭合；78条实际RETRY通过（原36TRAIN42DEV、1,851面板），3条暗/遮挡隔离（battery13/64、unloading_car111），无新outcome/action许可、无CAL/test回流。part1–8＋独立steel-wool解封配置逐review SHA/命令时间/唯一性静态验过，原223组全账本保留。准备新RTX signed-unit spec及Git冻结后机器签核/搬运；当前仅owner审核，尚非训练完成或模型有效，独立成员review待。下一冻结v11按真实16控时钟生成无泄漏H1反馈；旧42组不可冒称OOF。
+
+- **2026-10-10 20:14 CST / Codex RECOVERY-USABLE：** 根审核至第62来源，60条planner-only批准已写part1–6及独立semantic-resolution；两个dispose_of_batteries实例13/64因原图近全黑/接触不可辨继续隔离。钢丝球疑点已实核原场景template e685394f…b6606准确绑定333→steel_wool/egeolq，并亲看原asset红/灰纹理bd59b0f1…dbace及31.1cm长形bbox：这是带柄资产、非对象错配，原hold历史保留且单独解封。全部实际RETRY/原split不变，无动作/结果新许可；剩余19来源继续根审后统一准入/运输，未启动新训练/读旧test。SFTP单文件副本未开始传输，已仅停止本线程该scp并以legacy scp成功取原asset图片；未修改服务器文件。
+
+- **2026-10-10 20:09 CST / Codex RECOVERY-USABLE：** 根已继续亲审至第26来源/52页/615原RGB面板；24条真实RETRY准入意图监督（part1–3配置、567面板），`clean_your_rusty_garden_tools_143`因钢丝球外观疑点、`dispose_of_batteries_64`因暗/遮挡暂缓，holds文件无planner/action/outcome许可。两条未删，正在只读查第一条原scene类别/绑定与asset纹理；此核查不接触模型预测或修改原标签。尚55候选未审；实际37/44原split及370组暴露排除不变，0新训练/部署。part2草稿schema继承错误已在签发前改正为owner review，尚无机器签发/运输，需统一静态回归后Git同步。
+
+- **2026-10-10 20:03 CST / Codex RECOVERY-USABLE：** 新98ce86da源已在lc1/RTX冻结实跑：v11真实排除manifest `8842a093…90ef8`绑定68拟合TRAIN/10选择DEV及全部历史/新CAL/test，共370组；原223组/669分支保留全账本，83未见正恢复候选中2条因另一手已持目标且命令未指定手臂拒绝，最终81待审（37TRAIN44DEV）。RTX `postfit-planner-review-v1`全162页/1,923原RGB已闭合、打包并本地全SHA复验（index `ff9979c7…b8355c`）。根已亲审首6来源/12页/144面板并写独立planner-only批准文件，余75尚未批准；上一图像输出截断的3来源不计已看。当前dirty仅本线程批准文件，因此只fetch不强pull；上游本分支一致、main无新提交。lc1八卡实空、无本线程GPU任务，下一继续原图审核与严格因果时钟的冻结预测反馈；0新训练/部署/物理控制，goal仍未完成。
+
 - **2026-10-10 19:54 CST / Codex RECOVERY-USABLE：** 上轮实质进展为账号2恢复＋v11原门CAL/真实时序通过；本轮干净pull/fetch、main无新进度，lc1控制d实通/八卡空闲。检查H1数据链发现旧42恢复TRAIN与v11拟合来源重合，不能直接用最终头做“无泄漏反馈”；保留旧OOF/UNKNOWN证据，不伪装成已校准输入。已核实际v8 outcome334行/78组、所有历史及新CAL/test排除，共370来源；RTX原`closed-grasp-corpus-v5-linear`669分支/223组中，166组未见，83结构性正恢复候选（38TRAIN45DEV），原始失败/分母不删。新增`recovery_postfit.py`、metadata排除导出与全候选原图审核入口，严格保留原split/固定v11身份与原校准门，5定向回归通过；即将新冻源在A800导出真绑定→RTX逐命令/物理语义核验和原图材料，不自动审批/训练。下一根审真实图像后再生成冻结头的source-disjoint反馈；高层消费、有效联合恢复及低RL可靠提升仍未完成。
 
 - **2026-10-10 19:41 CST / Codex RECOVERY-USABLE：** lc1两路固定v11实跑均正常终态并退出。新90独立GRASP相位校准原门**通过**（result `1945e96f…0c558`）：原始82/90；温度1.774/.85门下已知结果79/81正确、9 UNKNOWN/弃权；IP25/25、S28/29、F26/27，仍1高置信falseS/60非成功，Wilson上界8.86%<原10%，不称零误报。92真实prefill/0权重更新，旧20test/6reserve未读；温度拟合使用本CAL，非另一次盲测，也非OPEN/PLACE/完整SR许可。全四历史shadow 561实际ACK/41边界→39真实检查、35重复不算新证据、4短段依原16控规则跳过，记忆最多4帧、所有原planner输入仍UNKNOWN/0逐值复现、0串episode token/0新控制/0预测进planner（result `ea60a8dc…827b`）。两端SHA、90来源/类别、选择性统计/Wilson和时序已根复算；证据`docs/infra/results/2026-10-10-observer-v11-calibration-shadow.json`。两GPU已空，VPN保持；下一仅合法TRAIN的校准GRASP反馈生成/高层消费验收，不自动部署或扩RL。高低层可靠恢复/跨来源增益仍未证实，独立成员review待、goal不完成。

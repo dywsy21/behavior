@@ -1,0 +1,180 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex root, personally inspected original RGB and exact-target physical/issued-command evidence",
+  "exposure_sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8",
+  "branches": [
+    {
+      "case": "cook_brussels_sprouts_220",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "45cf56cd23b0b6b60bbee9e4ac3333e46628ccabf4ca14c5933e602342304ac5",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/cook_brussels_sprouts_220--open_gripper_joint_jitter",
+      "review_sha256": "89ea20c12a8e0541964de96bb537524b9b6df704ee905c5b62b55a0bdf69bef1",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. White tupperware91 at open refrigerator shelf, right fingers close on rim after actual RETRY64 at80-88; close view is dim but rim/jaw contrast and head target identity visible. Exact right hold88-204, left empty. Intent-only, not food cooking/removal success."
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_221",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "93a830c9bb1d1fa8241afd317ee34acf221a51f14e702a743865d39974fb2b4d",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/putting_up_Christmas_decorations_inside_221--open_gripper_joint_jitter",
+      "review_sha256": "97ca839bd5350fc77897bf6372ff73e2bcb7bb8c8e0bff47d9b4925ea37823f0",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. wicker_basket218 with decorations seen in head view; handle partly occludes right wrist but fingers visibly open32 then close36-52 around rim. Exact right hold52-172 confirms same basket. Actual RETRY32 only, no decorating success."
+    },
+    {
+      "case": "installing_a_fax_machine_20",
+      "branch": "open_gripper",
+      "manifest_sha256": "3ac6eb4449745ea813b145770065ae5472f0c4f22e349baf2e429df232ab7d79",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/installing_a_fax_machine_20--open_gripper",
+      "review_sha256": "0f4b5edf4f515e08211cdaec30ce980449240ac93bf3af102aace685e8547d68",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/21 panels. facsimile180 control panel visible in both wrists, target-right is actually unheld32-52 then held64-184 while left stays FALSE. Body obscures fine right contact but wrist edge/jaw motion and head are consistent with actual RETRY48; proximity/closed left fingers not treated as hold. Planner-only."
+    },
+    {
+      "case": "assembling_gift_baskets_192",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "35fcc2590caa5ce86fa6ab2c6b41ef497c28a8a09d0e713c13d4c0cee8ea51e8",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/assembling_gift_baskets_192--open_gripper_joint_jitter",
+      "review_sha256": "e273c09dd348d8086229fab24a93119151c8b332b3db76357b0d78aa73bc5b77",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Left wicker_basket89 distinct from adjacent second basket, left jaw opens20/24 then closes28-48 on rim and exact hold stable164. Right empty. Only actual GRASP RETRY24, not basket assembly."
+    },
+    {
+      "case": "can_meat_275",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "be73b6782f407803236819c4d588f129cc8d294dda96a03eea052d9e30e3cfad",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/can_meat_275--open_gripper_joint_jitter",
+      "review_sha256": "c9ce11f99131801fa067cb4a0316d622e7c0216381a17d41059503546e2cb8eb",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Orange bratwurst232 lies on cutting board under right hand, other sausages separate; right fingers close after RETRY32 by48-56 and exact same target held172. Left camera faces a container, not selected sausage. Intent-only."
+    },
+    {
+      "case": "can_meat_181",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "73a38b7d2f70963d229868cf4a17632d33f64a09d7562776ded8c83f3d51fcb4",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/can_meat_181--open_gripper_joint_jitter",
+      "review_sha256": "90e2764f10db0746770da39e292916b2bc1a036b5b4ab601fb3ac42c3eb49c58",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Curved bratwurst230 at left fingertips, other sausages visible farther on board; after RETRY48 jaw recloses64-72 and exact left hold188. Right hand at container not target. Only actual corrective GRASP, not meat canning."
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_153",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "28666af8fe9ba2253879b49dd3c2ef9ad38bd43746322761b9da650bec69370b",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/attach_a_camera_to_a_tripod_153--open_gripper_joint_jitter",
+      "review_sha256": "e9e3ef6232014a25a07fa74a6b85621ba5e26044482d52c0516c02d48c48cc3b",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. camera_tripod86 shaft and legs at right hand; right jaw visible opening28/32 and re-closing36-52, though joint housing partly occludes contact. Exact right hold52-172 agrees, left target-unheld. Actual RETRY32 only, not camera attachment."
+    },
+    {
+      "case": "installing_a_scanner_39",
+      "branch": "open_gripper",
+      "manifest_sha256": "b03d29cb8c59946d4274e00dc45bd80cb3b80572b664ae7ea7f012778e2ffeb6",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/installing_a_scanner_39--open_gripper",
+      "review_sha256": "e027b3118ea82acb5c5a6607dbcd7f95c97827c36cbbb92ac606370c988b68b5",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. scanner121 upright black/white housing at left hand, head confirms desk/scanner and left-jaw edge shifts after RETRY64; close views are partly housing-occluded, physical exact target left hold84-200 supports, right FALSE. Only corrective GRASP target, not scanner installation."
+    },
+    {
+      "case": "sorting_books_on_shelf_282",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1c36756b0b343213565fa30837111d57dcf04e724c875fb8d91fd81b1b8e8508",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/sorting_books_on_shelf_282--open_gripper_joint_jitter",
+      "review_sha256": "3354d59807b5620b107b96110451236e5a0a72a47fd5efa6320c903e33591536",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Pale-blue hardback56 at right hand on shelf, covers shift when jaw opens12/16 and reclose20-36; other books remain distinct. Exact right hold36-156 agrees, no shelf sorting success. Approve actual RETRY16 only."
+    },
+    {
+      "case": "cook_brussels_sprouts_177",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "fae2f9a7cd7b243b4426ba89a020b6a49f360312cca27c8ad5c74a98969eed20",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/cook_brussels_sprouts_177--open_gripper_joint_jitter",
+      "review_sha256": "1f51e522149f0f796503f2054b6f5571a2a8b371d7f04effbd48e3393a62bea4",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. tupperware91 containing sprouts at fridge shelf, right fingers open12/16 then narrow20-40 on rim; contents themselves are not targeted. Exact right hold40-156 agrees with visible same container, left camera self-arm. Actual GRASP RETRY16 only."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_146",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "d15eee03c0baa8b6419ebb8dc81dcb9dcaa055470494d162e557529cddf93cd2",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/scrubbing_bathroom_floor_146--open_gripper_joint_jitter",
+      "review_sha256": "5750e3f56990741e9d6ef5d274559593758049d8ad465e42d2b204fd004914ff",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Red scrub_brush222 bristles and right jaw clearly visible; initial contact0 is lost12/16, jaw closes20-36 and exact right hold36-156 remains. Left unengaged. Actual RETRY16 only, not floor cleaning success."
+    },
+    {
+      "case": "rearranging_kitchen_furniture_13",
+      "branch": "open_gripper",
+      "manifest_sha256": "3b5eaa262371b7eadad4f0e2217afe6f5a4eb024649429fb69140b8f46263910",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/rearranging_kitchen_furniture_13--open_gripper",
+      "review_sha256": "6583dd5e7686218f595fbf2f7e5ec4c7c2f02ec817185ab1532298fa078ab4c5",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Toaster91 slots visible at left wrist above stove; housing occludes fine contact but left jaw edge separates60/64 and closes68-84, consistent with exact left hold84-200, right target FALSE. Actual RETRY64 only, not furniture rearrangement success."
+    }
+  ],
+  "review_index_sha256": "ff9979c7bcb36ad4c8bca3c3e06204f3ea910e9717e800a6b46579e110b8355c",
+  "reviewed_sources": 12,
+  "reviewed_sheets": 24,
+  "original_rgb_panels": 285,
+  "review_scope": "Only actual issued RETRY planner targets, original split preserved; no outcome or action labels admitted."
+}

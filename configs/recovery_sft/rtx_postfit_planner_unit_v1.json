@@ -1,0 +1,22 @@
+{
+  "evidence_root": "/run/ti/rl_memlite_stage1_20261006",
+  "protected_groups": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/protected-groups.json",
+  "units": [
+    {
+      "corpus": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/closed-grasp-corpus-v5-linear",
+      "evidence_root": "/run/ti/rl_memlite_stage1_20261006",
+      "approvals": [
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/postfit-planner-approvals-part1-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/postfit-planner-approvals-part2-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/postfit-planner-approvals-part3-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/postfit-planner-approvals-part4-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/postfit-planner-approvals-part5-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/postfit-planner-approvals-part6-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/postfit-planner-approvals-part7-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/postfit-planner-approvals-part8-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/postfit-planner-approvals-semantic_resolution-v1.json"
+      ]
+    }
+  ],
+  "notes": "78 owner-reviewed actual RETRY targets, original 36 TRAIN/42 DEV; observer fit/selection and all CAL/test excluded. Planner-only; 3 dark/occluded holds and full failed-source ledger retained."
+}

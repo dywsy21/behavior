@@ -1,0 +1,180 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex root, personally inspected original RGB and exact-target physical/issued-command evidence",
+  "exposure_sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8",
+  "branches": [
+    {
+      "case": "collecting_childrens_toys_243",
+      "branch": "open_gripper",
+      "manifest_sha256": "79067af251cdb80cad3b495a03100d9e957e6c92b0a02ebb6afc37ac3cf298ca",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/collecting_childrens_toys_243--open_gripper",
+      "review_sha256": "22a3772e073b407448ebc8dc8411f8d5bce49fac86fef0a5a2230b9af80d6252",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. Pink teddy_bear_266 is at right fingertips and distinct from second pink toy on floor; visible right aperture narrows after actual RETRY32, same target held52-172. Left is empty for this target. Approve only retry of the bound bear."
+    },
+    {
+      "case": "clean_boxing_gloves_279",
+      "branch": "open_gripper",
+      "manifest_sha256": "3b02da77a202fecaee2f3e91209089a953a1092aabeda9202a29a9b86f0335b4",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/clean_boxing_gloves_279--open_gripper",
+      "review_sha256": "1cbc31326341fafb37cbe3f3119f917844b522cfa3a34ae0723ec4a0a9210b44",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/21 panels. Red dirty boxing_gloves_189 at left hand, paired glove rests on counter; left fingers open12/16 and reclose on cuff20-32, holding through152. Exact object checks agree. Approve actual RETRY16, not glove-cleaning or dirt-removal labels."
+    },
+    {
+      "case": "cook_cabbage_166",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "de947674d9e3ee554831b979df3cf859321e6aedaf85159626187180625da0eb",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/cook_cabbage_166--open_gripper_joint_jitter",
+      "review_sha256": "bb310a0602882123f986ae9528aeea19da7e3a8d6f599482d85677cd061cff01",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. frying_pan_208 has silver/gray handle centered in open right jaw before48; fingers reclose52-68 while pan stays on worktop. Exact right hold68-188 confirms actual GRASP retry, not cooking. Left unengaged."
+    },
+    {
+      "case": "polishing_shoes_25",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b53c3baa9b2e89c4f6844b2d281f5bc1185bfd9b81be710c921b78b8ece173cc",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/polishing_shoes_25--open_gripper_joint_jitter",
+      "review_sha256": "d78866a49906665fb8113c0582fd12c74e50457eac84a17544d479760fdfa7e3",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Red-bristled scrub_brush_42 beside left jaw near nightstand; opened fingers8-24 reclose28-44 and remain matched to164. Exact left hold corroborates, right empty. Only actual RETRY24, not shoe-polishing success."
+    },
+    {
+      "case": "slicing_vegetables_70",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "aa0b162cb4ed6420293b2827fd70dc622332ab0055c923a793fd50a4bd93e836",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/slicing_vegetables_70--open_gripper_joint_jitter",
+      "review_sha256": "54daa363c49c667fd74fdb384f3afee41936b313df38459809b30ffd83b7ac31",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. parer_207 red handle and three dark rivets are visible inside right jaw48-64, fingers close after actual RETRY64 by84 and stay through204. Exact target right hold agrees, left inactive. Grasp intent only, no slicing success."
+    },
+    {
+      "case": "chop_an_onion_70",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "500f8cf3b940db2b67aed96852e3bcfef6c7d2b58110e1e127a4f3757c4e0a65",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/chop_an_onion_70--open_gripper_joint_jitter",
+      "review_sha256": "ef3774b7e0983a10fdd8ec4943b4b34f321580bc42ec4bcaaa90fd00f6f240d1",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. White bowl_73 sits at left hand with rim/body partly occluding wrist; left fingers close onto edge after RETRY64, same bowl held88-204. Right hand faces cutting board but never holds this target. Approve only actual grasp retry, not onion/chopping actions."
+    },
+    {
+      "case": "composting_waste_120",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "927d19a3a8322392d4a13998d444c079f4c0c4492f4b05f17e01969535519373",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/composting_waste_120--open_gripper_joint_jitter",
+      "review_sha256": "6042df946128400ca8a02146507e6ef9def720c5f9f9b6423127172a7dde2ca3",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. trash_can_66 upright beside right hand, body dark but right jaw against pale floor clearly separates at20/24 then recloses at40/48. Left camera sees own arm, not another grasp. Exact target is held48-164 after RETRY24. Approve intent only, unlike the separately held near-black case64."
+    },
+    {
+      "case": "clean_up_your_desk_105",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "5df3d4f8a19f297e8127646d46e30033d2f40c9195109688f591003c3ecdac14",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/clean_up_your_desk_105--open_gripper_joint_jitter",
+      "review_sha256": "29b92dd2ea5f6d4993cdf37bd68472703cfa4d783a7103138e63415f8f644911",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Blue ring folder_231 on white chair is visible between left fingers; after RETRY32 jaws close on its spine at48-52 and stay matched through168. Exact left hold agrees and right view empty. Actual GRASP intent only, no desk tidying completion."
+    },
+    {
+      "case": "clean_a_keyboard_167",
+      "branch": "open_gripper",
+      "manifest_sha256": "bd4c143498e43e960e35d1e42d18f85d7128a4cc98489f5cf9054097bdae8b89",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/clean_a_keyboard_167--open_gripper",
+      "review_sha256": "b5198b6f8c273b22927d1a9e87c06f009e157b6487cfcbdf102d20580d8b90bb",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Blue-handled pipe_cleaner_120 with gray brush is visible beside keyboard in head view, right camera shows handle and ridged neck. Right jaw closes after RETRY24 by44; exact right hold44-164 matches. No keyboard-cleaning or action supervision granted."
+    },
+    {
+      "case": "clearing_food_from_table_into_fridge_21",
+      "branch": "open_gripper",
+      "manifest_sha256": "4f411f2723bfc9f645b4385be9a609273b86867e3c3f8cc295b5a157961fc99a",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/clearing_food_from_table_into_fridge_21--open_gripper",
+      "review_sha256": "f057c55ac429d5579bccce8c2ec9c84fcf7ceb78e23fd4cce56a11da995a5e5d",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. tupperware_73 white container at left gripper, distinct from second container on counter; left fingers visibly open64 and close80-84 on its edge, exact left hold84-204. Right hand over sink does not hold this target. Only actual RETRY64, not fridge placement."
+    },
+    {
+      "case": "outfit_a_basic_toolbox_51",
+      "branch": "open_gripper",
+      "manifest_sha256": "041619e4557c4bdd4bcd87b08170dfab3bce4ed7f809fb0952948427ffd4b2bf",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/outfit_a_basic_toolbox_51--open_gripper",
+      "review_sha256": "786f2ef6ad1c6dd75597be442f22a0b2d1e96e69501f78db1b22a30946a4d63a",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Orange drill_193 at left gripper beside red toolbox; wrist contact partially occluded by bulky drill but jaw closes after RETRY24 at40/44, head confirms same tool. Exact left hold44-164 supports recovery; right FALSE. Planner-only, not whole toolbox packing."
+    },
+    {
+      "case": "spraying_for_bugs_270",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "40d3f295976c06e4ba39a0f34bc4d032a05383084d66d8e5b2b9fc35b49c22b2",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/spraying_for_bugs_270--open_gripper_joint_jitter",
+      "review_sha256": "cb15e9b231e11bbc9c548c30820b77d79eb72590268c6b3334bf6e9994f65843",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Green-topped insectifuge_atomizer_174 clearly between left fingers, released12/16 then reclosed20-36, stable through156. Right hand empty. Actual GRASP RETRY16 agrees with physical records; no spraying execution/success label."
+    }
+  ],
+  "review_index_sha256": "ff9979c7bcb36ad4c8bca3c3e06204f3ea910e9717e800a6b46579e110b8355c",
+  "reviewed_sources": 12,
+  "reviewed_sheets": 24,
+  "original_rgb_panels": 285,
+  "review_scope": "These twelve actual corrective planner targets only. Original train/dev retained; no outcome or action approval."
+}

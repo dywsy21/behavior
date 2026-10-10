@@ -1,0 +1,96 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex root, personally inspected original RGB and exact-target physical/issued-command evidence",
+  "exposure_sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8",
+  "branches": [
+    {
+      "case": "tidying_bedroom_40",
+      "branch": "open_gripper",
+      "manifest_sha256": "94260d7a3cf87e4f640849322f0af71c64928228590b59a1904dd23c367af914",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/tidying_bedroom_40--open_gripper",
+      "review_sha256": "4d498b6cbfbf397171746f583bd4034e476817813136f3191ff3a93acc93979f",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Blue sandal189 sole/strap visible at right wrist, jaw open44/48 then closes52-68 around same sandal, exact right hold68-184 with left empty. Approve actual RETRY48 only, not bedroom completion."
+    },
+    {
+      "case": "chopping_wood_233",
+      "branch": "open_gripper",
+      "manifest_sha256": "098f42dcf208b8c4142b8fab2c99b21352b04f18b008cdc056450e9f693de04b",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/chopping_wood_233--open_gripper",
+      "review_sha256": "91a252b90e455bf5ca4552e33081c8e706dee2139b10cd1b6ae5d27608ca172f",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/21 panels. log174 bark and left jaw edge identifiable, opens20/24 then closes28-40; fine contact partly occluded by thick log but exact left hold40-160 matches visible same log, right empty. Actual RETRY24 only, not chopping success."
+    },
+    {
+      "case": "installing_a_modem_273",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "be62989fb437bc44e74c9804d1e434ff94fdfbc3f159f51f7976d9feb95ae19b",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/installing_a_modem_273--open_gripper_joint_jitter",
+      "review_sha256": "f87c4e00a22b5edee28d717b6e5b0e268371b007ec0c163cb18a9a0473ae2193",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. White modem72 moves between left fingers as jaw opens12/16 then closes20-36; final same modem stable in grasp156, right wrist faces separate black object not target. Actual RETRY16 only, no installation success."
+    },
+    {
+      "case": "clean_a_patio_234",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "e9070314558d9576da8ae2d47651181247e286a57c657f9d18ceb87d2255beb6",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/clean_a_patio_234--open_gripper_joint_jitter",
+      "review_sha256": "b273e82cdbac33795769c282eb8843709153d61f1b7083ebf4f350ba15383981",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. broom172 handle visibly within left jaw, wider20/24 then closes28-48 and stable164, right wrist shows handle from other angle but exact right target remains unheld. Approve actual RETRY24 only, not patio cleaning."
+    },
+    {
+      "case": "setting_the_fire_160",
+      "branch": "open_gripper",
+      "manifest_sha256": "70fdced1e7712966d53e6ded6d69036175524f5a7ccd27d540996806b638506b",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/setting_the_fire_160--open_gripper",
+      "review_sha256": "028b593a7fb22bdaf2135e2e80a8b90d17e84b8a318e181c5fb4558ecd5ae151",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Folded newspaper74 edge next to left jaw, open12/16 and reclose20-36 clearly visible despite sheet occlusion; exact left hold36-152 agrees, right unengaged. Actual RETRY16 only, not fire/task completion."
+    },
+    {
+      "case": "make_rose_centerpieces_45",
+      "branch": "open_gripper",
+      "manifest_sha256": "a8e1c5a20aee3a8d485f6b906093273ff90e9415b2645d8b7560abcf409f1f50",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/make_rose_centerpieces_45--open_gripper",
+      "review_sha256": "efb40afc796ef2b16c9ee5b6103ebbbdb2af74e602c22ed0be51829593755e2d",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. rose79 stem at left fingertips distinct from other roses on cabinet; opens12/16 and closes20-36 on stem, exact left hold36-156 stable. Actual RETRY16 only, not centerpiece completion."
+    }
+  ],
+  "review_index_sha256": "ff9979c7bcb36ad4c8bca3c3e06204f3ea910e9717e800a6b46579e110b8355c",
+  "reviewed_sources": 6,
+  "reviewed_sheets": 12,
+  "original_rgb_panels": 141,
+  "review_scope": "Only actual issued RETRY planner targets; original split; no outcomes/actions. Source74 held for darkness/contact occlusion, not admitted."
+}

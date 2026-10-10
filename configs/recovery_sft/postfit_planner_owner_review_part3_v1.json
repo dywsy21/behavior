@@ -1,0 +1,152 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex root, personally inspected original RGB and exact-target physical/issued-command evidence",
+  "exposure_sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8",
+  "branches": [
+    {
+      "case": "assembling_gift_baskets_160",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "657b780fd7568af71e8dc9ac15e8d375d00230495f890b1675abd02ee6953898",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/assembling_gift_baskets_160--open_gripper_joint_jitter",
+      "review_sha256": "47378bdb8d984ffffd4cdf4111eb54ccbd07fed7f3e1f2774d7789be29efb325",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Empty wicker_basket_92 is directly at the right jaw, distinct from the other basket on floor; open fingers before32 reclose on its rim after actual RETRY32. Exact target right hold52-172 corroborates, left FALSE. Planner-only target, not task completion."
+    },
+    {
+      "case": "storing_food_153",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "605e66a2fd4c667a1fd5b7def77f1d0ae7c712c3bcdcb4c1fd0cbbbf251ddbef",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/storing_food_153--open_gripper_joint_jitter",
+      "review_sha256": "cd2185dae0c1b69f690588427f48080e6093e8dd8d8a5269438f54ff43132e21",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Green olive-oil bottle_209 dominates left wrist and is visible at left hand in head view. Brief tilt near RETRY32 settles afterward; housing partly masks jaw contact, so exact six-control hold records52-168 corroborate grasp rather than inferring from image steadiness. Right hand unengaged; actual GRASP intent only."
+    },
+    {
+      "case": "stacking_wood_50",
+      "branch": "open_gripper",
+      "manifest_sha256": "5e5a7138ebca723293750e1074d4aeda46d987965207f41c8237731861a13d86",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/stacking_wood_50--open_gripper",
+      "review_sha256": "20a904bccd10de830bdfc550e54c6744070cce482922ffa4d0491fb2e6b38d18",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/21 panels. Bark-covered log_333 lies by right hand, another log is distant; right jaw opens before64 and re-closes with subtle visible aperture change after RETRY64. Same target has right hold80-200, left FALSE. Approve this intent only, not wood stacking."
+    },
+    {
+      "case": "organizing_school_stuff_11",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "faf7697a5b257bc2002e39e8133ca464104ba550149b9fa6ef218bf10494bb2a",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/organizing_school_stuff_11--open_gripper_joint_jitter",
+      "review_sha256": "96331767f0008cfc507248b281d975961d21fed0a7a9590c759927279abcae6a",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. Brown tote_208 rim/strap is beside right hand, opens12-16 then recloses20-40 and remains matched through156; left fingers remain empty. Right exact hold0 then lost12/16 and restored40+, consistent with actual RETRY16. Planner-only."
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_129",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "fee5dd5c2ee61209b70d913bab3fd6b4e0c955e3c3d48aa65efbe230e31088e1",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/attach_a_camera_to_a_tripod_129--open_gripper_joint_jitter",
+      "review_sha256": "44e6841194427b8753496d4178ab6240d93c26998c2d9c09db41c9caadbad1fc",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. Gray/silver camera_tripod_86 shaft is clearly between opened right fingers before32 and closed fingers after36-52; all legs remain visible, no different target acquired. Exact right hold52-172 agrees. Approve actual RETRY32 only, not camera mounting."
+    },
+    {
+      "case": "cleaning_up_branches_and_twigs_256",
+      "branch": "open_gripper",
+      "manifest_sha256": "8fc9791d2f484d174a0141792caefbf80b2e8f812e7688b3507e372b427de2da",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/cleaning_up_branches_and_twigs_256--open_gripper",
+      "review_sha256": "cd7bf61387097b13ce5ab71f58d7f67da9c84939be26f1871f2c128f24f3fdad",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. Thin forked branch_175 visibly at left jaw, fingers separate12/16 and reclose around main shaft20-36; a second branch lies in right background, not selected. Exact left hold returns36-156 after actual RETRY16. Approve intent only."
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_30",
+      "branch": "open_gripper",
+      "manifest_sha256": "d705c466adad7d06e6324a98ed99269de8063dce5aac9e4b2b0c7a39f4f9afab",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/putting_up_Christmas_decorations_inside_30--open_gripper",
+      "review_sha256": "af5c751d9e0bfda81e507d2c0ba02f5a0f8db3ef75dfcc76a7be98e461375932",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. wicker_basket_218 is visible in front with decorations inside; right wrist shows rim between fingers widening44/48 then narrowing52-68. Target is basket rather than contents; exact right hold68-184 agrees. Actual GRASP RETRY48 only."
+    },
+    {
+      "case": "collecting_aluminum_cans_205",
+      "branch": "open_gripper",
+      "manifest_sha256": "1793d6f6a6d05732f29b9e34d6a8ae30eb5042cebbe4b8291f2a010f085d687c",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/collecting_aluminum_cans_205--open_gripper",
+      "review_sha256": "e5755e67b61c2c5a98545a6477c6b070ece7db6f4175478e53f04234de53ae0d",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. Yellow can_of_soda_45 at right hand, silver pull-tab top in wrist; left-side can is a different visible object. Right fingers narrow after actual RETRY32, exact45 goes unheld16-36 to right held52-168. Approve only this target's retry, no all-can/task success."
+    },
+    {
+      "case": "chopping_wood_234",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "5deb0b31588a949276e4fa2e24fd1479c88a6156542fe91ef956c454ab079baf",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/chopping_wood_234--open_gripper_joint_jitter",
+      "review_sha256": "7a00a0b4703202b6f76252b57f2beafc54b2eb525ecd39aaa3151af11992148e",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/21 panels. log_177 with cut face is at left hand, larger piece/axe are background; left fingers reclose after actual RETRY32, exact hold becomes stable48-168 and right remains empty. Only GRASP recovery intent, not chopping."
+    },
+    {
+      "case": "boxing_books_up_for_storage_245",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "e35179366dfc00de927f45dd64b3e22f35c67f9bc77ed5f919b06554d732e0dd",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/boxing_books_up_for_storage_245--open_gripper_joint_jitter",
+      "review_sha256": "60643989d0b930a5cccbe5b5b01361692dbbc4b6f92d8f8f3b8b88e1d728f261",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root viewed both sheets/24 panels. White storage_box_49 at right hand is unheld at48; after actual RETRY48 fingers visibly close onto its thin wall by64-72, with right hold72-188 and left FALSE. Box identity verified from head and both sides of rim. Planner-only; no books/packing success."
+    }
+  ],
+  "review_index_sha256": "ff9979c7bcb36ad4c8bca3c3e06204f3ea910e9717e800a6b46579e110b8355c",
+  "reviewed_sources": 10,
+  "reviewed_sheets": 20,
+  "original_rgb_panels": 234,
+  "review_scope": "Ten actual corrective planner targets only. Original splits retained, no outcome/action approval. Dark dispose_of_batteries_64 held separately, not approved."
+}

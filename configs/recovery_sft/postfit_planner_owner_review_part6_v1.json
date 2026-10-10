@@ -1,0 +1,166 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex root, personally inspected original RGB and exact-target physical/issued-command evidence",
+  "exposure_sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8",
+  "branches": [
+    {
+      "case": "spraying_for_bugs_233",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "36ba4396cfb01d552c0e128d1f7b37345a1a9ac5ac1c574da0653d0315caf691",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/spraying_for_bugs_233--open_gripper_joint_jitter",
+      "review_sha256": "c62b2ce9cdd18d317465eb3033114e009c867022230d9238e5c1ea0abf625e91",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Red-topped insectifuge_atomizer_174 between left fingers, open16-32 then close36-52 and persist172, no target in right hand. Exact hold same arm/target agrees. Actual RETRY32 only, not spraying success."
+    },
+    {
+      "case": "sweeping_garage_112",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1b40c853b7d288671aa0b2bf752793077c756ad8d91224008382ec22ee48c4c8",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/sweeping_garage_112--open_gripper_joint_jitter",
+      "review_sha256": "d910cc7dfec872055b84d32ab8b7afbfd082e2a72cdfbc9da6895096ef587130",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. broom_60 handle at right gripper, broom head visible on floor; room dark but right finger boundaries and aperture clearly discernible, widening28/32 then closing36-52 through168. Exact right hold supports actual RETRY32; left empty."
+    },
+    {
+      "case": "cook_broccolini_158",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "6fca1a91a97104567c0bf53c37977e5ef80d31dd48522ef42f225b5540a50b87",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/cook_broccolini_158--open_gripper_joint_jitter",
+      "review_sha256": "db0a83dc2e1438fa0418154dacf10da88aecb672fccee9aa4a766b4cb86be843",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. White plate_74 with broccoli is left-hand target; after RETRY64, left fingers narrow onto thin rim80-88, right camera unengaged. Exact plate hold88-204 corroborates; vegetable appearance is not task-success evidence. Actual grasp intent only."
+    },
+    {
+      "case": "laying_tile_floors_54",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "39321f8369fc168b03e11b7215bbfe4a98c0b2f40cdcf1dc8ccd70a424e76151",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/laying_tile_floors_54--open_gripper_joint_jitter",
+      "review_sha256": "cf8c44609d4a7f9711d7a38a7c00569a240aa2a47de76ab96bdddb51e2866e1a",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Near white ceramic_tile_188 distinct from farther tile; left jaw open20/24 then narrows28-44, partly occluded by slab but boundary motion clear. Exact left hold44-164, target right FALSE. Approve actual RETRY24 only, not tile installation."
+    },
+    {
+      "case": "rearranging_kitchen_furniture_190",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "0e49e3e8db1717c6f6c85286dc4f4a0e58d1946858d51e5f007dafbc7955125b",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/rearranging_kitchen_furniture_190--open_gripper_joint_jitter",
+      "review_sha256": "2f6686d98c47b8f73f7914f0b918ef47bbbf04fcbfbd37e4ac3e0c45d73f75cb",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. toaster91 slot/body close-up partly masks left jaw, but head confirms same appliance beside stove and visible jaw/housing shifts with actual RETRY32. Exact target is not held16-36, stable left52-168; right is empty. Intent-only, not relocation success."
+    },
+    {
+      "case": "cleaning_up_branches_and_twigs_112",
+      "branch": "open_gripper",
+      "manifest_sha256": "58b34a3015b18d88a421464a12133614db1dde8a91b8eb6d37097cb2471d201a",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/cleaning_up_branches_and_twigs_112--open_gripper",
+      "review_sha256": "f55cc2c1f78052cfeb0f21435d87aa473ae4a35ba8b6eac89a9a0ea13d989551",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Thin branch178 is clearly flanked by right fingers32-48, which reclose52-68 on same shaft; left camera sees own arm/body not a second grasp. Stable exact right hold68-188 confirms actual RETRY48. No branch collection/task success label."
+    },
+    {
+      "case": "make_cabinet_doors_186",
+      "branch": "open_gripper",
+      "manifest_sha256": "5b8777427e755d5fd542385894d980768aca24c31a7cf07506229554c9f55f3a",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/make_cabinet_doors_186--open_gripper",
+      "review_sha256": "102fe99dd9030c95b629497476bf5545ab31b3a95c839d16579fed7aa3248984",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Thin wooden cabinet_door73 edge at left hand is visible when fingers close68-88; after64 motion rotates panel slightly but same edge retained204. Exact left hold88+ and empty right match. Only actual GRASP RETRY64, not fabrication/installation."
+    },
+    {
+      "case": "slicing_vegetables_55",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "3e18846cd1a7598f49cd3aba884fe2eacd0ea08a6c734f2381e4e658391df5b3",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/slicing_vegetables_55--open_gripper_joint_jitter",
+      "review_sha256": "2f779dd2cd3e2930f29b82fae4e123bcc17cababa83b9383386d32d8e9043151",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. parer207 wooden red handle with rivets between open right fingers48-64; fingers close68-84 and retain handle204. Target knife distinct from food/board behind. Exact right hold agrees. Actual RETRY64 only."
+    },
+    {
+      "case": "collecting_childrens_toys_184",
+      "branch": "open_gripper",
+      "manifest_sha256": "1197c5eec335276752cb102d5395dd8c3965fa3087ee45738ede7fc54323a287",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/collecting_childrens_toys_184--open_gripper",
+      "review_sha256": "79f0ff41c4ececd07cd7859567a06c93fa6903b54c83eb4dc8e6a8c4bf869651",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Pink teddy_bear266 at right hand distinct from other toy; fingers open16-32 then close36-52 at its body/limb, stable168. Physical exact-target right hold confirms actual RETRY32. Intent-only."
+    },
+    {
+      "case": "cook_hot_dogs_1",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "76342f17d16df385e8b706449a87caa0aebd1ef760a8ced11634e646b32daecc",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/cook_hot_dogs_1--open_gripper_joint_jitter",
+      "review_sha256": "e774f9327f5cd581d676b901b6c1d1da793db66bca3d829430013b84c0031f68",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. hotdog207 with bun/mustard is between right jaws0, released12/16 and reclamped20-36, same target held152. Left camera mostly self-arm; physical exact right hold confirms same sandwich. Only actual GRASP RETRY16, not cooking."
+    },
+    {
+      "case": "loading_the_car_2",
+      "branch": "open_gripper",
+      "manifest_sha256": "ee88ae525f3d6189d9b8c04a3f2fba61707fef466f5ee128916a0f53e6dfae2f",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/loading_the_car_2--open_gripper",
+      "review_sha256": "8c0aa99e472b0df61f4ea86833710850bb74cece5f2838d1625ede5c83972b67",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets/24 panels. Blue open toy_box81 at both hands, right fingers visibly separate12/16 then close32-40 on its wall. Left physically does not hold the target despite proximity. Same exact right hold40-156 agrees. Actual RETRY16 only, not car loading."
+    }
+  ],
+  "review_index_sha256": "ff9979c7bcb36ad4c8bca3c3e06204f3ea910e9717e800a6b46579e110b8355c",
+  "reviewed_sources": 11,
+  "reviewed_sheets": 22,
+  "original_rgb_panels": 264,
+  "review_scope": "Eleven actual corrective planner targets only. Original splits retained; no outcome/action approval. Dark dispose_of_batteries13 remains held."
+}

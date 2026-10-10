@@ -1,0 +1,96 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex root, personally inspected original RGB and exact-target physical/issued-command evidence",
+  "exposure_sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8",
+  "review_index_sha256": "ff9979c7bcb36ad4c8bca3c3e06204f3ea910e9717e800a6b46579e110b8355c",
+  "reviewed_sources": 6,
+  "reviewed_sheets": 12,
+  "original_rgb_panels": 144,
+  "review_scope": "Only these six actually issued corrective planner targets. Original train/dev retained; no outcome or action approval; no observer fit/calibration/test reuse.",
+  "branches": [
+    {
+      "case": "sweeping_garage_181",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f61fb28f3cbb8f6fdfee58c8405c872e8d822dadea17a7a404c4c2c541337c06",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/sweeping_garage_181--open_gripper_joint_jitter",
+      "review_sha256": "2dc0917fd7c03f46e28f06deb50d1d0109b0c2c4a5058f9be43a74fb087e9d29",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root personally inspected both sheets (8 observations/24 RGB panels): left gripper is open alongside broom_60 before actual RETRY64, then closes on the same shaft; right hand stays empty. Prior six-control records are FALSE/FALSE and later left hold is stable through204. Dark/close wrist view corroborated by head and exact-object physics. Approve only issued GRASP RETRY64, no outcome/action labels."
+    },
+    {
+      "case": "laying_tile_floors_215",
+      "branch": "open_gripper",
+      "manifest_sha256": "1829d0d2bbe6a40a67c4ac478a0d4cedb8122367f96b80f6a196d2fe65900e89",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/laying_tile_floors_215--open_gripper",
+      "review_sha256": "b6b56e7535fde7e34acd67c0f91d88ff8f3b25c6ffabfc9a0b801a9504651fb3",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        48
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets (8 observations/24 panels): white tile stays identifiable between the hands, left aperture changes after RETRY48 and remains closed through184; right hand does not acquire target. Prior and post-command six-control physical checks agree. Texture-filled wrist view alone is not a success proof. Approve only actual GRASP RETRY48."
+    },
+    {
+      "case": "freeze_pies_230",
+      "branch": "open_gripper",
+      "manifest_sha256": "bc687beaee71572d29d639f9d50a9dc9260bd8da2c052d7c751cf50625ac06aa",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/freeze_pies_230--open_gripper",
+      "review_sha256": "801b5e8657fdaebda5e6491cd7f9288853f8e6b535251ad63143d89133864b84",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        16
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets (8 observations/24 panels): right hand opens beside apple_pie_235/plate, target is unheld at RETRY16 and right grip closes again by36, maintained to156. Left camera partially occluded/overbright, but head/right views and exact-target hold records agree. This is pie-grasp recovery, not stable tray carrying or a complete task; approve only actual RETRY16."
+    },
+    {
+      "case": "chop_an_onion_111",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "031f3d013743f0fe26a36d34c136527c4776001a0f1d5539f2a2697ebb2066be",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/chop_an_onion_111--open_gripper_joint_jitter",
+      "review_sha256": "fa7d64f257eb5cbbb9b5fd2ceb4774ba04511aa93fa2753c17851a75966810ae",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets (8 observations/24 panels): the red-handled parer_74 is visible in the open right fingers at16/28/32, closes between them after actual RETRY32 and stays held to172. Left wrist points at sink and does not hold the target; six-control history matches. Approve only actual GRASP RETRY32, not cutting actions."
+    },
+    {
+      "case": "canning_food_261",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "d62b9cc851dd4ad8c9abade3525bec62f0018f55811916765a1842ffac18410f",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/canning_food_261--open_gripper_joint_jitter",
+      "review_sha256": "153dd040c6c8c2b8aae3ca66f18fc194022f1d5b0de36cabe3e61a878e8bcf01",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        64
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets (8 observations/24 panels): right gripper is open around carving_knife_207 at48/60/64, closes after actual RETRY64 and holds the same handle through204; left hand remains unengaged. Exact-target prior/post hold records support the pictured recovery. Approve only actual GRASP RETRY64."
+    },
+    {
+      "case": "setting_mousetraps_264",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "3521d4c72def146ee83ce357313a6f6ed14f300c9d668bb5e71bd2c24368dc45",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/setting_mousetraps_264--open_gripper_joint_jitter",
+      "review_sha256": "f9bb8c1ef047476a689e3eefbaa53e4de96a420b38f6ae9f65e86f8ef342834e",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        24
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root inspected both sheets (8 observations/24 panels): left fingers are open beside mousetrap_48 at8/20/24 and close after RETRY24, with sustained left hold from44 to164. Another trap is visible in right view, so exact target48 binding and right-FALSE records were checked. Approve only actual GRASP RETRY24; no placement/success/action supervision."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex root, personally inspected original RGB plus exact source scene and asset identity",
+  "exposure_sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8",
+  "branches": [
+    {
+      "case": "clean_your_rusty_garden_tools_143",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b68b05ed466d3a54c788ebc947643b3df12379a8ad588621c7b970f64cc65127",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/clean_your_rusty_garden_tools_143--open_gripper_joint_jitter",
+      "review_sha256": "a6675e52fea61fff09c193e8bae544ddb33dfb867cdfb2b741586a55811732d4",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [
+        32
+      ],
+      "corrective_execution_visually_verified": true,
+      "notes": "Root already personally viewed both sheets/24 original panels: right fingers are open16-32 around red ribbed-handled object in toolbox, close36-52 and remain through172; left stays empty, actual RETRY32 and exact-target hold agree. Initial semantic HOLD resolved by original scene template e685394f8a62c17f24425aa9c27a0675a5487aa6440428400dfac531f3db6606 explicitly mapping steel_wool_333/category steel_wool/model egeolq. Its inspected asset diffuse bd59b0f1f9e1c2ec024c65213b7cd6b2c9d33898f8a2696abfab2e13c69dbace is red/gray, and bbox0.311x0.087x0.020m confirms a long handled cleaning tool, not a spherical pad. No alias replacement or data relabeling; actual GRASP intent only."
+    }
+  ],
+  "review_index_sha256": "ff9979c7bcb36ad4c8bca3c3e06204f3ea910e9717e800a6b46579e110b8355c",
+  "reviewed_sources": 1,
+  "reviewed_sheets": 2,
+  "original_rgb_panels": 24,
+  "review_scope": "Resolves previously held semantic ambiguity for this source only; original DEV retained; no outcome/action permission."
+}

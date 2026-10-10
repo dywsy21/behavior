@@ -1,0 +1,57 @@
+{
+  "schema": "owner_local_recovery_review_holds_v1",
+  "resolutions": {
+    "clean_your_rusty_garden_tools_143": "Original hold preserved below as history; resolved by exact scene/asset investigation and separately signed postfit_planner_owner_review_semantic_resolution_v1.json. dispose_of_batteries_64 remains held."
+  },
+  "review_index_sha256": "ff9979c7bcb36ad4c8bca3c3e06204f3ea910e9717e800a6b46579e110b8355c",
+  "branches": [
+    {
+      "case": "unloading_the_car_111",
+      "branch": "open_gripper",
+      "manifest_sha256": "cc43098aa7bd12b65d577005c8fff01d88cf5cc26c05f26ad32960ee2a926bd6",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/unloading_the_car_111--open_gripper",
+      "review_sha256": "80439bcf6feac1cdcd568334ba30d6a54af02a15f76772b3a4ebb1996e6418b3",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "HOLD: Root inspected both sheets/24 original panels. Dark car trunk, left wrist camera mostly occluded; head locates briefcase84 but corrective contact cannot be confidently observed. Telemetry left-hold alone is insufficient. No planner/outcome/action permission; keep original DEV and failure ledger."
+    },
+    {
+      "case": "clean_your_rusty_garden_tools_143",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b68b05ed466d3a54c788ebc947643b3df12379a8ad588621c7b970f64cc65127",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/clean_your_rusty_garden_tools_143--open_gripper_joint_jitter",
+      "review_sha256": "a6675e52fea61fff09c193e8bae544ddb33dfb867cdfb2b741586a55811732d4",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "HOLD: Root viewed both sheets/24 panels. Target is named steel_wool_333 in semantic and physical records, yet wrist view shows a red ribbed tool in a red toolbox. Do not approve before original scene asset/annotation and higher-resolution imagery resolve object identity. Actual right-grasp telemetry alone does not settle this semantic mismatch."
+    },
+    {
+      "case": "dispose_of_batteries_64",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "d902c017e4548d22ed0c7690206569dd870f832f0aae0d71349668e12cc4ea6f",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/dispose_of_batteries_64--open_gripper_joint_jitter",
+      "review_sha256": "b7704714ffc3a4a2318f3a170a34148df2656dde5ca8c1f59bc710e6640e9bdc",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "HOLD: Root viewed both sheets/24 panels. trash_can_159 and right-hand contact are very dark/occluded throughout; telemetry is plausible but corrective execution cannot be confidently verified from these originals. Do not grant training approval solely from the physical success flag."
+    },
+    {
+      "case": "dispose_of_batteries_13",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "9975e9de90c380b724488bdf2c485cb49f80e005d278cb899daac7200c07c714",
+      "review_directory": "runs/recovery100_collection_20261009/postfit-planner-review-v1/dispose_of_batteries_13--open_gripper_joint_jitter",
+      "review_sha256": "aafcacb17b2c3cc6158757cfef3401bc91e37fefc1ff2d1a2d88485ed52442f9",
+      "outcomes": [],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "HOLD: Root inspected both sheets/24 panels. dispose_of_batteries13 has near-black trash_can159 and right contact region; head silhouette identifies can but fine finger/object interaction cannot be confidently verified. Same visibility concern as instance64, so no planner/outcome/action approval solely from telemetry."
+    }
+  ]
+}
