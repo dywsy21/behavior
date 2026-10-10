@@ -1,0 +1,53 @@
+{
+  "owner": "Codex root",
+  "recorded_at": "2026-10-10T23:02:00+08:00",
+  "status": "four_physical_episodes_machine_audited_and_root_media_reviewed_no_feedback_benefit_demonstrated",
+  "source_commit": "a2fd41ecacf42263b997b9842b1e9114ffaa309b",
+  "config_sha256": "ce0954ad77d90d6d5589e463170829bac81ca6431a9a107b33bfdbb986e74421",
+  "planner_sha256": "89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7",
+  "low_sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5",
+  "observer_adapter_sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+  "calibration_sha256": "32ed1e9effc57a8716af659ab850de1d112b6ba0b5a1c83f078f3b16a0fd42b1",
+  "service_result_sha256": "1db8171240e8e7e27983dece3566381ec21109bbb529cbce9db056b945a7940a",
+  "physical_audit_sha256": "f443e204b566f0baa96858564584a782acd1f3a136d6ca690a13138dc90038a2",
+  "causal_audit_sha256": "16a37ba1f68aded6d41cd6138b11df507dcdbcca7bb4e9f8de4f87fb58f90d8d",
+  "journal_sha256": "98954fd592ca58dcf8a61b21cb7a3e403315175305e23e169a2b6e65feeeea93",
+  "actual_controls": 622,
+  "lossless_boundary_observations": 45,
+  "observer_member_predictions": 45,
+  "observer_journal_checks_including_skips": 53,
+  "observer_feedback_estimated_bundle_outcomes": {"UNKNOWN": 53},
+  "actual_high_generations": 8,
+  "high_reuses": 33,
+  "optimizer_updates": 0,
+  "all_model_fingerprints_unchanged": true,
+  "all_four_episodes_closed_and_worker_finish_ACKs_verified": true,
+  "root_media_review": {
+    "sheets_viewed": 4,
+    "camera_panels": 60,
+    "notes": "Both GRASP probes close the correct right gripper around the red radio. Both OPEN probes operate the white washer, not the adjacent dark machine. Seed101 partially opens then lets go/withdraws and remains below the unchanged .35 clearance gate; seed137 reaches .3551276. Sampled original views corroborate identity and motion, not a substitute for every-control physical recomputation."
+  },
+  "seeds": [101, 137],
+  "cases": {
+    "turning_on_radio_155": {
+      "successes": 2, "controls": [19,19],
+      "old_shadow_successes": 2, "old_shadow_controls": [19,19]
+    },
+    "wash_dog_toys_169": {
+      "successes": 1, "controls": [317,267], "outcomes": ["UNKNOWN","SUCCEEDED"],
+      "final_open_fraction": [0.3286632670151844,0.3551276294736242],
+      "old_shadow_successes": 1, "old_shadow_controls": [206,317],
+      "old_shadow_outcomes": ["SUCCEEDED","UNKNOWN"]
+    }
+  },
+  "correction": "An earlier progress note attributed the old 206-control success to seed137. The bound old physical/causal audits show it was seed101; seed137 used317 and remainedUNKNOWN. There is one paired loss and one paired gain, not a matched successful episode becoming61 controls slower. Prior raw evidence is retained.",
+  "feedback_diagnosis": "For GRASP, control32 first predictsFAILED once; actual RETRY creates a new attempt and its control32 prediction isUNKNOWN. Control48 predictsIN_PROGRESS with calibrated confidence .81997, below the original .85 gate; final control51 is skipped under the original cadence16. No persistent result reaches the next high replan. Non-GRASP estimates are intentionallyUNKNOWN0 because calibration is GRASP-only. This pilot does not test an effective learned-feedback decision.",
+  "comparison_limitations": "The high checkpoint also changed, so this is not an observer-only causal ablation. Low input skill/parent stays identical, but independently cold-restored initial RGB differs; same FM seed does not promise bitwise replay. First16 raw-action maximum differences versus shadow are .0012123 for101 and .0024802 for137. Do not attribute gains/losses to calibration or infer full-task SR.",
+  "raw_logits_independently_recomputed_on_GPU": false,
+  "logged_logits_temperature_confidence_tokens_clocks_independently_replayed": true,
+  "whole_task_sr": false,
+  "deployment_or_new_training_label_permission": false,
+  "local_evidence": "artifacts/recovery-heterogeneous-20261010/calibrated-causal-pilot-v1 and causal-calibrated-grasp-review-v1",
+  "remote_evidence": "/run/ti/rl_memlite_stage1_20261006/runs/recovery_heterogeneous_20261010",
+  "next": "Finish predeclared low three-arm comparison. Separately require actual continuous issued-intent/observation history and enough real failed/successful execution to exercise calibrated feedback. Never invent past features or relax the .85/two-fresh gate to make this short pilot pass."
+}

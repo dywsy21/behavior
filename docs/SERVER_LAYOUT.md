@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 22:58 CST：校准联合已闭与native三臂物理验证
+
+- A800 `src/native-learner-physical-v1`和RTX10383 `code/native-learner-physical-v1`均646d5332；lc1 GPU2/tmux/run `native-learner-parent-probes-v1`、18979已ready，RTX0/1/2对应`native-learner-parent-{radio155,wash169,tripod129}-probes-v1`冷worker已提交。控制/候选两臂尚未开始，不能热改源码；本地d控制socket正向及tmux`recovery-rtx-forward-18979-v1`反向维持连接。
+- `L0-native-learner-candidate-v1`已200完成、final SHA34d994c9…de0797/W&Bf15a6e5d6506；lc3卡释放，权重仍共享盘。calibrated四轨/服务已闭合，完整本地轻量回执在`artifacts/recovery-heterogeneous-20261010/calibrated-causal-pilot-v1/`；RTX异质根同前缀service-result/causal-events/calibration三文件及原两worker/四episode保留。新CPU审核输出`causal-calibrated-grasp-review-v1`进行中，不是已人工验收。
+
 ## 2026-10-10 22:33 CST：低层同事件对照与校准联合pilot
 
 - 新低源`src/native-learner-training-v1`=14e0ffde；`runs/recovery_heterogeneous_20261010/native-learner-preflight-v1/`保存control/candidate票及native TRAIN真实处理81917802…23e56d（200更新/19event/12次learner）。`L0-native-learner-control-v1`已200完成，final`step_00000200_save_0004.pt` SHA9ac23c41…a362e/W&B36ea7e717865；`L0-native-learner-candidate-v1`已提交lc3八卡，分别同名log/supervisor/launcher-cache；不能pull活跃源。

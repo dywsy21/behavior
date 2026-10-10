@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 23:02 CST / Codex RECOVERY-USABLE：** 校准四轨622控/45无损边界全部重算、因果日志16a37ba1审计通过，根亲看四页60原RGB；53次观察器检查（45实际member预测，含跳过）最终全UNKNOWN，抓19控早于第二确认/下一高规划、非GRASP不在校准覆盖，故仍未实证反馈价值。**更正22:58及此前口述：旧开门206控成功是seed101，不是137；新101失败/137成功，净0而非同seed成功变慢。** 两轮初始RGB也非bitwise同，不能把物理差异归因观察器；摘要`2026-10-10-calibrated-joint-physical-pilot.json`保留全部来源及更正。原低parent24正在RTX0–2运行，control/candidate未启；目标仍未完成。
+
+- **2026-10-10 22:58 CST / Codex RECOVERY-USABLE：** 校准高低联合四条完整闭合/0更新/45观察器member预测/622实际控，两抓19控成功、开seed101原317控UNKNOWN、seed137于267控成功；与旧同种子成功数相同且后一条比旧206控慢，不称改善。开始独立逐控/时钟/原图审核。旧worker与全部RTX GPU上下文已退出；646d5332两端冻源、lc1 GPU2/18979 parent服务ready且0job，提交RTX0–2三冷worker按原预登记24条继续三臂比较。candidate34d和control9ac已完成200更新，不再挑中间权重；本地干净pull/fetch成功，独立成员review仍待。
+
 - **2026-10-10 22:45 CST / Codex RECOVERY-USABLE：** native候选200/200完整终态，真实12次learner消费、仅322动作专家/冻结eb4b不变；final34d994c9…de0797/result507f35fd…66c245，W&Bf15a6e5d6506。正常FM .138663与control .138697基本同（−.0245%），原9恢复DEV .018478比control .018126差1.95%；没有离线改善证据，继续已预登记物理检验而非挑中间权重。校准联合暂3条闭合（两抓19控成功、开seed101原317控UNKNOWN），仍等第4与全日志/原图审核；已见32检查均UNKNOWN，仍未证明有效反馈改善。候选训练轻量产物已迁本地，不搬大权重。
 
 - **2026-10-10 22:41 CST / Codex RECOVERY-USABLE：** 在native候选终态/新物理预测前登记三臂（原低0c52、同额外200 control9ac、候选仅final200）低层固定技能复验：原三TRAIN起点/原门/原时限，八新seed433/467/503/541/587/631/673/719，每臂24；无需高层/observer、不按中途结果选权重/种子。配置`native_learner_probe_preregistration_v1.json`，等当前校准四条worker全部退出及候选完成后才启动，完整分母和错误保留。这只检验同来源局部训练收益，非独立实例或全任务SR。
