@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 11:35 CST：独立校准补来源（未采集/未训练）
+
+- lc1共享根`/data/workspace/wsy/behavior2026/src/recovery-calibration-supplement-v1`=e5fb9a9a，tmux`recovery-calibration-supplement-v1`；`runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-sources-v1`CPU导出97新source，日志`supplement-export-v1.log`。完成后会生成`supplement-source-audit-v1.json`和同名tar.gz，须全SHA通过再迁RTX，不属于训练数据。
+- RTX原90仍在`grasp-collection-v1`；独立tmux`observer-fresh-review-v1`等其`result.json`闭合，再在6395f74a源生成`grasp-corpus-v1`、`grasp-cohort-v1.json`、`grasp-review-v1`。日志`grasp-review-prepare-v1.log`；全部只是候选和原图审核材料，不会自动签核、调参、读新v8预测或动旧20test。
+
 ## 2026-10-10 10:58 CST：前瞻校准审核工具已准备
 
 - RTX `code/recovery-fresh-cohort-review-v1`=6395f74a，`runs/recovery_observer_fresh_calibration_20261010/source-audit-v1.json` SHA fbbc507f52a7f66a678285b9d856a0fabc9b62223a2c23bf6a37ea05e19e0c75。采集仍abfc83dc不热改；待其全部90实际关闭，使用`prepare_local_recovery_corpus.py`→`prepare_prospective_calibration_cohort.py`→`prepare_independent_outcome_review.py`，必须保留未复现来源的原receipt/分母，不产生人工批准或训练许可。旧20test仅引用`configs/recovery_sft/independent_outcome_cohort_v1.json`元数据，不读取图像/预测。
