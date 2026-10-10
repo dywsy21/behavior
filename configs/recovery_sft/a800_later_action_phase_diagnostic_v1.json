@@ -1,0 +1,18 @@
+{
+  "schema": "recovery_matched_action_phase_diagnostic_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "corpus": "datasets/recovery-reviewed-union-20261010-v9-later-actions",
+  "admission_sha256": "e63085fe046fb4ec59fc43fa358b025edbb121efb07c1731e5f6a252471c942f",
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "noise_seeds": [9183, 19183, 29183, 39183],
+  "expected_rows": {"train": 30, "dev": 9},
+  "models": [
+    {"name": "parent", "path": "runs/recovery_heterogeneous_20261010/L0/checkpoints/step_00000200_save_0004.pt", "sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044"},
+    {"name": "control", "path": "runs/recovery_heterogeneous_20261010/L0-startonly-continuation-v1/checkpoints/step_00000200_save_0004.pt", "sha256": "51e2c772ba321f1dd0b5faad1e31264e2acceca56013baf4c97f5fa94fee302c"},
+    {"name": "later-actions", "path": "runs/recovery_heterogeneous_20261010/L0-later-actions-v1/checkpoints/step_00000200_save_0004.pt", "sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5"}
+  ],
+  "hypothesis": "Locate whether the same terminal SFT arms learned the reviewed opening phases at all, rather than infer their effect from aggregate GRASP/OPEN loss. All39 already approved anchors, matched four independent noise seeds per row and identical deterministic eval preprocessing; average windows within event before averaging events. No new TRAIN permission, CAL, reserved test, optimizer, intermediate checkpoint selection or SR claim. Run read-only on an idle lc1 GPU1, without interrupting observer0 or paired physical inference2.",
+  "interpretation": "Post-training diagnostic on known TRAIN and original selection DEV, not a new independent generalization test. Physical matched probes remain the behavioral comparison. Event-balanced FM summaries cannot certify successful execution."
+}
