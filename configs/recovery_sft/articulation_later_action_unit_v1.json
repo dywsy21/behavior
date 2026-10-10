@@ -1,0 +1,15 @@
+{
+  "evidence_root": "/run/ti/rl_memlite_stage1_20261006",
+  "protected_groups": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/protected-groups.json",
+  "units": [
+    {
+      "corpus": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/closed-articulation-corpus-v3",
+      "evidence_root": "/run/ti/rl_memlite_stage1_20261006",
+      "approvals": [
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/articulation-approvals-v1.json",
+        "/run/ti/rl_memlite_stage1_20261006/runs/recovery_heterogeneous_20261010/later-action-approvals-v1.json"
+      ]
+    }
+  ],
+  "interpretation": "One exact source version per episode, combining the original permissions and eleven newly owner-reviewed TRAIN action windows. No duplicate episodes, extra DEV action, CAL, new outcome/planner permissions or independent source groups."
+}

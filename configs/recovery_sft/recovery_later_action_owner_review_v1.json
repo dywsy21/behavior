@@ -1,0 +1,57 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 CST; personally viewed all 40 sheets / 459 original camera panels, checked exact sheet/review hashes and physical progression",
+  "scope": "Only eleven explicitly listed middle/late 32-control ACTION windows of five already used TRAIN corrections. Four other candidate windows are rejected. No new source groups, no extra outcome/planner approval, no full-task success. Existing event identity and DEV split must remain unchanged.",
+  "branches": [
+    {
+      "case": "clean_boxing_gloves_196", "branch": "reverse_reference_fault",
+      "manifest_sha256": "b80c4586dd6b1966fd9cc51790be14ad6959d98f73ffcadc1bdf4e3041af5ed1",
+      "review_directory": "runs/recovery_heterogeneous_20261010/later-action-review-v1/clean_boxing_gloves_196",
+      "review_sha256": "77c5021c2bd19215f1c82aff4f7ffcf1e0415beaf265851eccdd0284094bd3b9",
+      "outcomes": [], "action_steps": [1728], "planner_steps": [],
+      "rejected_action_steps": [1176,1460],
+      "corrective_execution_visually_verified": true,
+      "notes": "Personally viewed all eight sheets / 93 panels. REJECT1176 and1460: door fraction remains exactly .2771507369 across each full window while arms withdraw/reposition; their useful contribution to the OPEN correction is not established by these windows. Do not approve them just because the later whole branch succeeds. APPROVE only1728..1759 plus1760 endpoint: right hand at the white washer door pulls it from .3407 to .3957, crossing physical clearance1735 and confirmed hold1746, with continued contact and final1808 .4065. This does not assert that every release/regrasp is wrong; these two windows remain unapproved, without invented FAILED labels."
+    },
+    {
+      "case": "clean_boxing_gloves_280", "branch": "reverse_reference_fault",
+      "manifest_sha256": "ca24fb64fc33d4c3a473673449876ba5e6e11ed15eb80a36b221e1a7c6cb39f9",
+      "review_directory": "runs/recovery_heterogeneous_20261010/later-action-review-v1/clean_boxing_gloves_280",
+      "review_sha256": "c7aa23314d38972ab808c1674d7c6d1c238920e073d1638523144cf1403a3374",
+      "outcomes": [], "action_steps": [1804], "planner_steps": [],
+      "rejected_action_steps": [1228,1524],
+      "corrective_execution_visually_verified": true,
+      "notes": "Personally viewed all eight sheets / 93 panels. REJECT1228 and1524: opening stays exactly .2806241247 while left arm leaves/right arm changes position near the adjacent appliance; correct local OPEN contribution is unproven. APPROVE1804..1835 with1836 bracketing frame: right hand correctly contacts the white washer door and continues .3430→.3931, first physical clearance1811, confirmed hold1822 and final1884 .4038. Same original semantic target/command, no new event, no additional outcome/planner labels and no whole washing success."
+    },
+    {
+      "case": "sorting_household_items_84", "branch": "reverse_reference_fault",
+      "manifest_sha256": "e5a86e3c7f6f8f2e2037c1585bf256389e1fda30f36480c73a5d76fe3ecc7478",
+      "review_directory": "runs/recovery_heterogeneous_20261010/later-action-review-v1/sorting_household_items_84",
+      "review_sha256": "b98abc577fcde2f4b0b317ac70c425b4d6630518d04c532c279ec22ed5d2b129",
+      "outcomes": [], "action_steps": [388,480,556], "planner_steps": [],
+      "corrective_execution_visually_verified": true,
+      "notes": "Personally viewed all eight sheets / 93 panels. Right hand remains on the exact sliding door handle; the visible gap grows, including when the wrist camera is partly occluded by the door. Three complete windows show fractions .1736→.2085 (388..420), .2671→.2999 (480..512), .3424→.3716 (556..588), with stable hold574 and later636 .3783. No hand release or wrong target. Only these clean action windows, same original event; no new success label or whole-task claim."
+    },
+    {
+      "case": "sorting_household_items_29", "branch": "reverse_reference_fault",
+      "manifest_sha256": "fc5d7b1019a47cc3173dd3a93239cb8748f0b9ca8d7c2347b2cc80349c690cfa",
+      "review_directory": "runs/recovery_heterogeneous_20261010/later-action-review-v1/sorting_household_items_29",
+      "review_sha256": "b7df315e3750b7845448e7dcc9efb0f44aa0e6d8b789259252455774ff7a9907",
+      "outcomes": [], "action_steps": [404,496,572], "planner_steps": [],
+      "corrective_execution_visually_verified": true,
+      "notes": "Personally viewed all eight sheets / 90 panels. Exact sliding door, right wrist encloses the metal handle and head shows continued opening. Three full32 windows plus bracketing frames: .1602→.1959 (404..436), .2612→.2962 (496..528), .3448→.3780 (572..604); confirmed hold588 and final648 .3877 retain the opening. No switched command or release. Approval is only same-event corrective actions, not another independent recovery and not full sorting success."
+    },
+    {
+      "case": "wash_dog_toys_169",
+      "branch": "reverse_reference_fault",
+      "manifest_sha256": "af12e2334de2fadf158da536f1585e4c5cdf7a28ef0feb53ab0d7b4a1624f8ec",
+      "review_directory": "runs/recovery_heterogeneous_20261010/later-action-review-v1/wash_dog_toys_169",
+      "review_sha256": "311b4b5ff44c32f1a66f563acac2f58d0d654ce0d8f05f3253a86232172a83f2",
+      "outcomes": [],
+      "action_steps": [356, 440, 508],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": true,
+      "notes": "Personally viewed all eight sheets / 90 original camera panels. The left hand stays at the exact white washer handle while the door progresses outward: .1681→.2044 over356..388, .2595→.3018 over440..472, .3432→.3684 over508..540. The final window crosses into confirmed hold524 without releasing/backing away;584 remains .3731. The adjacent dark appliance is not the target. Approve only these three clean same-issued OPEN windows, not the whole clip, not new independent events and not an optimality claim. No late images or physics enter the earlier actor input."
+    }
+  ]
+}
