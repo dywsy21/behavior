@@ -32,5 +32,17 @@ class ShortSkillRecipeTests(unittest.TestCase):
         self.assertTrue(all(j['phase']=='evaluation' for j in rounds.jobs))
         self.assertLessEqual(recipe['ppo']['target_kl'],.05)
 
+    def test_critic_fix_does_not_expand_actor_step_or_reuse_incomplete_seed(self):
+        before=json.loads((REPO/'configs/recovery_sft/a800_short_skill_rl_cold_resume_v2.json').read_text())
+        after=json.loads((REPO/'configs/recovery_sft/a800_short_skill_rl_cold_resume_v3.json').read_text())
+        self.assertEqual(before['cases'],after['cases']);self.assertEqual(before['model'],after['model'])
+        self.assertTrue(after['require_baseline_acceptance'])
+        self.assertEqual(after['resume']['updates'],12)
+        self.assertEqual(after['training_seed_round_offset'],13)
+        self.assertEqual(after['learning_rounds']+after['resume']['updates'],20)
+        self.assertEqual(after['observation_archive'],'lossless_chunk_boundaries_v1')
+        self.assertTrue(after['ppo']['critic_restart_stale_momentum']);self.assertTrue(after['ppo']['critic_update_audit'])
+        for key,value in before['ppo'].items():self.assertEqual(after['ppo'][key],value)
+
 
 if __name__=='__main__':unittest.main()
