@@ -19,12 +19,15 @@ class Planner:
     def ensure_context(self,session,identity,observation,*,validate_low_goal,interval_controls):
         if not session.planning_due(identity,interval_controls=interval_controls):
             goal=session.low_goal(identity);validate_low_goal(goal)
-            return dict(goal=goal,reused=True)
+            return dict(goal=goal,reused=True,event=None,causal_input=None,control_step=session.feedback.control_step,
+                revision=session.revision,physical_success_asserted=False,observer_feedback_mode='shadow_unknown_v1')
         token,causal=session.begin_planning(identity,session.feedback.control_step)
         event=deepcopy(self.event)
         event['memory_update']=append_b_memory_idempotent(session.memory,session.previous_intent,task_name=identity.task)
         validate_low_goal(session.stage(identity,token,event))
-        return dict(goal=session.commit(identity,token),reused=False,causal_input=causal)
+        return dict(goal=session.commit(identity,token),reused=False,causal_input=causal,event=event,
+            control_step=session.feedback.control_step,revision=session.revision,
+            physical_success_asserted=False,observer_feedback_mode='shadow_unknown_v1')
 
 
 class ProbeTests(unittest.TestCase):
@@ -87,7 +90,7 @@ class ProbeTests(unittest.TestCase):
             rows.append(dict(case=case_key,task='some task',instance=instance,record=dict(control_step=32),
                 issued_prefix=deepcopy(projection),issued_prefix_sha256=digest(projection),
                 source_branch_manifest_sha256='e'*64,source_replay_proof_sha256='f'*64))
-            job=dict(case=case_key,phase='evaluation',round=0,id='job-'+str(instance))
+            job=dict(case=case_key,phase='evaluation',round=0,id='job-'+str(instance),seed=17+instance)
             physical=SimpleNamespace(case=case,identity=SimpleNamespace(session='sharedservice',episode=job['id']),
                 version=0,sha=self.models.low,rollout=SimpleNamespace(step=32,ended=False))
             self.jobs.append(job);self.physical.append(physical)

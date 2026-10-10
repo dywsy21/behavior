@@ -124,7 +124,8 @@ class CausalSkillProbe:
             raise ValueError('Exact emitted physical prefix length required')
         token=clock.offer(session.identity,raw_actions[:max_controls])
         self.log_event('action',dict(job=job,token=token,control_step=session.feedback.control_step,
-            revision=session.revision,goal=session.low_goal(session.identity),max_controls=max_controls))
+            revision=session.revision,goal=session.low_goal(session.identity),max_controls=max_controls,
+            offered_actions_raw23=deepcopy(clock.pending['actions'])))
 
     def acknowledge(self, physical, job, controls):
         key=self._job(physical,job);session,clock=self.active[key]

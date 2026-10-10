@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 17:10 CST：联合接管待运行源码
+
+- 新A800 `src/causal-joint-shadow-v1`、RTX `code/causal-joint-shadow-v1`同87ca5e3b，仅CPU真文件/历史验收，尚未GPU或物理运行；后续新增完整action journal/独立audit还需新冻源，勿将该目录当现役联合服务。模型配置d1c8deb5，joint probe0f82ba84；已有真实过去命令manifest为异质run根`causal-handover-inputs-v1/manifest.json`，SHA00ff361f…5868603，radio32/wash270各1历史命令，placement无记录不补造。
+- v11 W&B `baae68b19da0`继续原选择规则；低层control八新种子复验20/24，仍6c7a0dfc源，candidate尚未启。两活跃源不热改，lc2/RTX队友4–7不动。
+
 ## 2026-10-10 16:49 CST：结果头v11与低层新噪声复验
 
 - lc1 GPU0 `runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1`、同名`.log`/`.runtime-cache`，tmux `observer-v11-outcome-balance-v1`；源码`src/observer-v11-outcome-balance-v1`=2a147313，配置69912986。四类等权候选，仅同294TRAIN/40选择DEV，尚待真实梯度/更新，不读CAL/test。

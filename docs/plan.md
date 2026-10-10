@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 17:10 CST / Codex RECOVERY-USABLE：** 新独立`audit_causal_skill_probe.py`逐日志重建实际已发memory→128控规划→完整offered raw23→模拟器独立ACK，逐当前RGB/本体SHA绑定，补错误图像/历史/意图/动作/clock/跨job反例；全258恢复＋精确8session/11feedback通过（非全仓）。87ca5e3b源在A800 CPU实核四权重/高低统计/两真实历史均通过，radio32/wash270各只恢复此前1条命令、0未来命令、0物理；新增审计log尚待下一冻源，不热改。v11第8原DEV balanced91.67%/event95.83%初优v8但后续波动，仍原早停规则；control复验20/24、剩余OPEN继续。联合GPU/物理及结果头独立重载/新校准仍未通过。
+
 - **2026-10-10 17:02 CST / Codex RECOVERY-USABLE：** 联合bridge八新回归/全254恢复测试通过；额外宽glob误扫旧`test_memlite_causal_data/runtime`因本地缺scripts.data/pytest失败，精确session/feedback入口复核，不能称全仓通过。新joint配置0f82ba84/模型绑定d1c8deb5，所有计划/动作/ACK日志关联真实观察SHA、独立episode和原高低权重；模型/历史CPU真文件验收及GPU物理仍待。control复验继续、v11原规则继续，无新增CAL读/新RL更新/队友资源变动。
 
 - **2026-10-10 16:59 CST / Codex RECOVERY-USABLE：** 高低联合只读接线已本地实现：`causal_skill_probe.py`绑定真实历史/两个recovery起点，原高低normalizer/7 SHA分开；既有service显式opt-in、新source才加载冻结H1/a74和低0c52。每job独立memory/128实际ACK控重规划，raw23逐条对应、post-state t+1→action t显式投影；物理真值/未来教师/observer预测不入actor，原技能只评测终点、绝不用于新意图的RL。两case例外只在只读调度，不放宽RL三机制门；首253恢复检查在验，尚未真实GPU/联合仿真。预登记101/137两已有复验subset、radio/wash四条，placement无已发历史故排除；待当前两臂复验退出再运行，不热改现役。v11原规则训练继续，不以早期曲线选模型。
