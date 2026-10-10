@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 14:44 CST：低层后段动作对照与新校准材料
+
+- A800新源`/data/workspace/wsy/behavior2026/src/later-action-pair-v1`=7806657412bf0e917ab0c22c900560fe59c589de。lc3控制socket本地`/home/wsy/.ssh/lc3-recovery-20261010b.sock`、持久tmux`recovery-lc3-control-20261010b`；远端tmux`later-action-pair-v1`先跑异质run根`L0-startonly-continuation-v1`，完成后同父另跑`L0-later-actions-v1`。各`.supervisor`存ledger/log/cache，不能热改源码；总链log`later-action-pair-v1.log`。
+- 新数据`datasets/recovery-articulation-later-actions-20261010-v1`为132文件运输单位；`datasets/recovery-reviewed-union-20261010-v9-later-actions`为与原四GRASP单元的新联合，admission e63085fe…1c942f。验收与票在异质run根`later-action-pair-v1-{audit,processor}.json`、`later-action-{control,candidate}-v1-ticket.json`；旧v3不动。
+- RTX新97采集自然结束86候选/8未复现/3工程失败，`runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1`是86来源/888原RGB/281候选的未签材料；同名tar SHA9e0510eb…87582d，本地artifact保留。新cohort d6602374…8e8bd，0TRAIN许可、0新模型预测，待根原图审核。
+
 ## 2026-10-10 13:34 CST：高低统计独立绑定后的GPU QA
 
 - A800新`src/causal-runtime-gpu-qa-v2`=733373fdd108fb765e30110f41d8b12c6260d08b，GPU0同名tmux/run/`.log`/`.runtime-cache`，仅工程生成；原v1在0生成前归一化门拒绝，保留失败log和源码，不覆盖。

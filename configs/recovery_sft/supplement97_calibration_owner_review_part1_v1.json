@@ -1,0 +1,581 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 CST; personally viewed these 16 complete sheets and each camera panel. This is human approval only for explicitly listed supported outcomes, not unreviewed sources.",
+  "cohort_sha256": "d66023744fe026a1d23fd084149d5cbe1981206a7131a09270cb22a18a48e8bd",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "654e41a21734dbc1703efcd156906d7419486333996e536ec11206523d7297c1",
+  "reviewed_sheet_count": 16,
+  "reviewed_rgb_panels": 165,
+  "total_sheet_count": 86,
+  "declared_source_count": 97,
+  "branches": [
+    {
+      "case": "turning_on_radio_254",
+      "branch": "clean",
+      "manifest_sha256": "fb6b9840b2ca816c2b07d1308483ef329ce6b41a53c56acbe4cb7fde5a8ea0bf",
+      "review_sha256": "8096c434020dd4957833c0a00ed3c186159af51413a3959717c4f8c69a89c399",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/turning_on_radio_254--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Red radio stays at the right fingers; open gap at8, corrective closure20, stable right hold36 and clean8. Target/arm agree across head and wrist views. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "turning_on_radio_254",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "53c1413e6903841e0864b83e61295fd0a90cb102fc88f5f7f96d190caaa82140",
+      "review_sha256": "079df6c8d62522f6636a3378198a5ac1046ad1291ceac945900dc0e2fc75f2e7",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/turning_on_radio_254--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Red radio stays at the right fingers; open gap at8, corrective closure20, stable right hold36 and clean8. Target/arm agree across head and wrist views. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "picking_up_trash_36",
+      "branch": "clean",
+      "manifest_sha256": "6902ef8b11258ec73e5e3bb39479cc584fc3c34f81c8c2e5b3aa7c60a13e8cff",
+      "review_sha256": "5b66c35b9875f82e2fd04631e35891b6561a47ba61d3ea76ecc6d111bb312955",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/picking_up_trash_36--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Brown cylindrical bin rim is at the right hand; open8, closure20, right contact/hold40 and clean8 match the same object. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "picking_up_trash_36",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1d1733370eca5e4dd2ccebcd4105d4c6559f68fa9409c547af81b706e4ad4ecd",
+      "review_sha256": "2e23723d544ed6b91423acb46b6f03ffbfa967e00b464490763cab314552782b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/picking_up_trash_36--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Brown cylindrical bin rim is at the right hand; open8, closure20, right contact/hold40 and clean8 match the same object. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "putting_away_Halloween_decorations_40",
+      "branch": "clean",
+      "manifest_sha256": "b3f8ccd276705a4bc5415f576052cd2bd8a9ac1d461fac8a80b68a5c0cfab2f8",
+      "review_sha256": "a053e99c1131f2807f31cadb03f96cd83d6f532cec55b94e36211d8e1fdee270",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/putting_away_Halloween_decorations_40--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers enclose the black cauldron rim by48 after open8/closure28; clean8 agrees. Left wrist points at floor. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "putting_away_Halloween_decorations_40",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "f8ae4bbcfb2122f342986d6aa025fc9c230b80631d8850add84a3085e97f76e4",
+      "review_sha256": "90aa7a8b5e6074a7a06cb375ed13a08cae860d349593132c4f727d9ad5e688f4",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/putting_away_Halloween_decorations_40--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers enclose the black cauldron rim by48 after open8/closure28; clean8 agrees. Left wrist points at floor. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "cleaning_up_plates_and_food_29",
+      "branch": "clean",
+      "manifest_sha256": "11f522f20b1dceb30bc35299c8fce312d144030e4710eacfdf6542bb2bc93c36",
+      "review_sha256": "b11a2c65d421550241c4579b3ad32093f18ab237f73a6ad50754efc518ac4d16",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cleaning_up_plates_and_food_29--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at white food plate rim, open8 and advancing closure28; clean8 has supported hold. No recovered success anchor exists, so none signed. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "cleaning_up_plates_and_food_29",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "64b528cdd253a32af018120e27fec89c7e6307d2cd3aa9c1b8a8c02396bb326f",
+      "review_sha256": "36ac8321a7edccbf1114641a9276c26d5e06af7ca01ae6c50a7148445517f0de",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cleaning_up_plates_and_food_29--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at white food plate rim, open8 and advancing closure28; clean8 has supported hold. No recovered success anchor exists, so none signed. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "setting_mousetraps_71",
+      "branch": "clean",
+      "manifest_sha256": "d024ce0e0a1ddbc165f15e2f4ddab6b06f23b7403f8061a1a57df30e648747a2",
+      "review_sha256": "a806c928366731d317c43c7639c040d9064e9a4ef9277d092b10c375a58d005e",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/setting_mousetraps_71--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the same wire trap/block: open8, closer fingers20, supported grip36 and clean8. Does not assert the trap is set. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "setting_mousetraps_71",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "cb52fe2a8f5253dfa4019f78775ba33a5f1a8fc185695a94001dbfc4df3be2b4",
+      "review_sha256": "83f9d10b1015c9195ad2bfd80f047349d6727b94309e0589fde7651fcd13dd01",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/setting_mousetraps_71--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows the same wire trap/block: open8, closer fingers20, supported grip36 and clean8. Does not assert the trap is set. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "hiding_Easter_eggs_135",
+      "branch": "clean",
+      "manifest_sha256": "66e51adb7bce404028f14dc43eca3d29be2dfc75489fae251239a6f10cbe1f18",
+      "review_sha256": "00622319c267e74d74c1c22b01148eac6debc47bd48ff248f91aaa369da73a18",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/hiding_Easter_eggs_135--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist views wicker basket edge/eggs. Only clean8 has supported left hold; disturbed4 stays UNLABELLED, with no invented phase labels. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "picking_up_toys_11",
+      "branch": "clean",
+      "manifest_sha256": "17bf4fddd5aab40896e39a29b3bd6c0ec8ec12b0b04e41e3e03caf0caf530ba6",
+      "review_sha256": "89255063788a43c7e75f8cf9060d5f93aeaf28f2e093aeb21e5d3b9aff2fec25",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/picking_up_toys_11--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at exact green board-game box, closure52 then hold68; clean8 agrees. Other small box on table is not target. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "picking_up_toys_11",
+      "branch": "open_gripper",
+      "manifest_sha256": "706d396fe95ebef2bc0d92496547256838c594263acc8ac25d109be8d2150bf8",
+      "review_sha256": "3d473f9bb20e0f9dea45f8e3f88d4dcb539a099bcde30367402c5e86304fa1d5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/picking_up_toys_11--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at exact green board-game box, closure52 then hold68; clean8 agrees. Other small box on table is not target. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "rearranging_kitchen_furniture_215",
+      "branch": "clean",
+      "manifest_sha256": "4e09332ea2473f0b7ca7688c4a1636f1b70f34a1f9b79f799acfc7317e626005",
+      "review_sha256": "fc558688bc60b98576f7b62861cb65c1cb385908a015aad60e84e6f8c077b35e",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/rearranging_kitchen_furniture_215--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Toaster beside stove is left-hand target; head and partly occluded wrist agree with open8, closure28, hold40, clean8. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "rearranging_kitchen_furniture_215",
+      "branch": "open_gripper",
+      "manifest_sha256": "6cf076274effcd2713f3220cacbd6c5888fca7d98da42d1747b20433c3958c3b",
+      "review_sha256": "4a3a8673e5297bbf78fb4fdca5f0a24f5b78d5f1fe8b9fc2f0f237131e63e9b8",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/rearranging_kitchen_furniture_215--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Toaster beside stove is left-hand target; head and partly occluded wrist agree with open8, closure28, hold40, clean8. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_108",
+      "branch": "clean",
+      "manifest_sha256": "d8e347c164fec1493a8385e8a70c8d5fbca0fbe6fa0b4d87fac8ea0cc54afffb",
+      "review_sha256": "50e6505878318d4e744de3de6b2fcf1a3d1c08f698746e207a737770fd1ed589",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/putting_up_Christmas_decorations_inside_108--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Same ornament-filled wicker basket at the right hand: open8, approaching closure36, supported grip52 and clean8. Wrist sees basket weave, not a substituted ornament. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "putting_up_Christmas_decorations_inside_108",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c167d0e6c59b092d142e2cd7952ff79a6d99f02dea25bbc724140e57801f5673",
+      "review_sha256": "cdac2f3109f8ad9e690eb913db00fff18f47a2712b725df1fd044abc57e6187f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/putting_up_Christmas_decorations_inside_108--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Same ornament-filled wicker basket at the right hand: open8, approaching closure36, supported grip52 and clean8. Wrist sees basket weave, not a substituted ornament. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "set_up_a_coffee_station_in_your_kitchen_272",
+      "branch": "clean",
+      "manifest_sha256": "394a8404c96a8bafe3f42d5f1f63e2809af4053aef02e5f969d1ebbad6edcbc4",
+      "review_sha256": "b5b4bea54dd4a844faa35a3d7c91b377a4d2f4c27efe97b972512af2bae361e5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/set_up_a_coffee_station_in_your_kitchen_272--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers hold the white paper filter at the counter; only clean8 is signed. Disturbed0 is an initial held observation, not a failure/recovery label. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "putting_dishes_away_after_cleaning_248",
+      "branch": "clean",
+      "manifest_sha256": "8e39b2813c1f34ec26fa73eee91b02fbaf16f5b03d96c58569d54c98f799ae36",
+      "review_sha256": "90cc2c37fc12b5144137dc7f5f0d37f3320714acd86180cf6c9c936bf9090a16",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/putting_dishes_away_after_cleaning_248--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Blue-pattern plate is the right-hand target, distinct from the plain plate on counter. Only clean8 supported grasp; disturbed0 stays unlabelled. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "preparing_lunch_box_182",
+      "branch": "clean",
+      "manifest_sha256": "e5b446b02084021eb42338c85738d3a18fbf75fa9af36a12856b09b62fe8012e",
+      "review_sha256": "24ae9e8ced2fea20d7346003eb06cd75c28737e61aba59573570d93fc110142b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/preparing_lunch_box_182--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand closes at the white packing-box wall/rim: open8, closing20, grasp40 and clean8 agree between head and wrist. Not the adjacent sink. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "preparing_lunch_box_182",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c5727be2aead28ca8fb0640b74f35b8bc026e67b0f4d7992530fb396505db81c",
+      "review_sha256": "50de0fa6cd71315bec2af67b3fe31146b474d48fc03cabfce0b741927c7e51d2",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/preparing_lunch_box_182--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand closes at the white packing-box wall/rim: open8, closing20, grasp40 and clean8 agree between head and wrist. Not the adjacent sink. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "loading_the_car_20",
+      "branch": "clean",
+      "manifest_sha256": "c717df57cd624f8bd501089d34ff43388bb1c9dec2d458a64577bc48e6c251f5",
+      "review_sha256": "cbfa6de0d9f473e75f8d741ba685a29be4dfd686008da1ea842b6d002ac21a8f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/loading_the_car_20--clean",
+      "outcomes": [
+        {
+          "control_step": 28,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Blue toy box is held at both sides in clean28; right-hand positive is supported. Disturbed28 still has left hold and is correctly left UNLABELLED, not false FAILED. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "carrying_in_groceries_112",
+      "branch": "clean",
+      "manifest_sha256": "82c8ee25dda57e9d6e462dbfcfc6a29c34cf03eb0cefa200186ff95ef84933ae",
+      "review_sha256": "aeeee8535f44426288da673c0df4897168f30fda48a7783c4418af80dc82f99b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/carrying_in_groceries_112--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Brown paper bag is at right fingers inside the red-car trunk. Despite shadow, wrist/head object and finger changes agree: open8, closure20, hold52, clean8. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "carrying_in_groceries_112",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "0f5555723b9fb626e4bb514c612d5b2cac365fd457d06c89bed8c864e82fd3c9",
+      "review_sha256": "e64ef84ce5b5d8794b6baf1aee429b18f693d9cd3b014625132e3807c189abac",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/carrying_in_groceries_112--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Brown paper bag is at right fingers inside the red-car trunk. Despite shadow, wrist/head object and finger changes agree: open8, closure20, hold52, clean8. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "bringing_in_wood_105",
+      "branch": "clean",
+      "manifest_sha256": "72a9605eed88f6dfb5a9dc60cbb25d786f646d6fa611cec8f930ed8a9c263eba",
+      "review_sha256": "e9f675786b03ef0cb378023a62c0d618da4fa400d483a5ab2bd2ad9b1f761e70",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/bringing_in_wood_105--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand at the orange plywood edge on pavement; second board is distinct. Open8, approaching fingers68, grip84/clean8 agree with same target. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "bringing_in_wood_105",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7d641a7eec0fc12f13269d278c0b25f6f86a6833b4ac8dbf2a686954d0c8fb27",
+      "review_sha256": "5dbf7187ef0d49f1e398a9cdcfe8efe837f2f70b4751457cc855fe70fe9a95f8",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/bringing_in_wood_105--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 84,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand at the orange plywood edge on pavement; second board is distinct. Open8, approaching fingers68, grip84/clean8 agree with same target. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "moving_boxes_to_storage_144",
+      "branch": "clean",
+      "manifest_sha256": "65c8cf7f8d98a6bc43cf17fda8bab65886145ae486037824b2f3c465a8e2f4ba",
+      "review_sha256": "c2f720397710e93f85d1a99d62e3f07d9f1ce3f11c54ba2cab79ca1888e6dfd5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/moving_boxes_to_storage_144--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at red storage-box inner rim: opening8, closing68, hold88 and clean8. Right arm near other rim does not change left-hand label. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    },
+    {
+      "case": "moving_boxes_to_storage_144",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c1f722a041fc2e50aed9e697a9ae4a60bdcbf0f1aa40bc2e3410959501cb84c9",
+      "review_sha256": "07b997f1fdc1e7237d647b3a4f6d13a589632a59e21661a09c666044b68d7edf",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/moving_boxes_to_storage_144--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at red storage-box inner rim: opening8, closing68, hold88 and clean8. Right arm near other rim does not change left-hand label. Only outcome CAL; no TRAIN, action/planner, model selection or full-task success."
+    }
+  ]
+}

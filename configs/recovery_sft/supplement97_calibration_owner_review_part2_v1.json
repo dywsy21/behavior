@@ -1,0 +1,606 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 CST; personally viewed these 16 full original RGB sheets, metadata and supported phase evidence. Unlabelled phases not approved.",
+  "cohort_sha256": "d66023744fe026a1d23fd084149d5cbe1981206a7131a09270cb22a18a48e8bd",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "654e41a21734dbc1703efcd156906d7419486333996e536ec11206523d7297c1",
+  "reviewed_sheet_count": 16,
+  "reviewed_rgb_panels": 171,
+  "total_sheet_count": 86,
+  "declared_source_count": 97,
+  "branches": [
+    {
+      "case": "tidying_bedroom_29",
+      "branch": "clean",
+      "manifest_sha256": "da434c8ac5dad4f30a371af63fc011a5e0e21c7ba6f5e46b1fc0b709fc914962",
+      "review_sha256": "88e88f1962cf6fe62c7bdebe062e9256440c71ba062e618844bf2a630ab892e6",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/tidying_bedroom_29--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at the blue sandal, distinct from the other shoe; gap8, closing52, grip68 and clean8 agree across all views. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "tidying_bedroom_29",
+      "branch": "open_gripper",
+      "manifest_sha256": "f471783ddfdd759ae9c4a045c74c4e6275d101e3def872185c13f948b47bd31f",
+      "review_sha256": "1a6e890867d8b0dcd8ae59f6d421eb84bed35883266a0550a5ee0d32aa9cbf47",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/tidying_bedroom_29--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at the blue sandal, distinct from the other shoe; gap8, closing52, grip68 and clean8 agree across all views. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "sorting_vegetables_191",
+      "branch": "clean",
+      "manifest_sha256": "1371a9329c051d3a69c9687df61ff1fa0c9d034c256aa891c061c3270174bf04",
+      "review_sha256": "d738dc8d8f100915f95c6794dfc3240a680038c1c86797785d7a5691cf298da3",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/sorting_vegetables_191--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand grasps the wicker basket rim, not its vegetables. Open8, closure36, stable hold52 and clean8 remain same basket. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "sorting_vegetables_191",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b6f946d4edf7e67dd1a08d6c094bf3c230b4e9df46249f040c45f0198f436754",
+      "review_sha256": "d8946e31480eebd7f1b756366654e332a83951adf9d8eb68994dba13f9c5fa3e",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/sorting_vegetables_191--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand grasps the wicker basket rim, not its vegetables. Open8, closure36, stable hold52 and clean8 remain same basket. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "collecting_childrens_toys_174",
+      "branch": "clean",
+      "manifest_sha256": "5ded137c1edb706691b67ffad1dee1ce79194af4a9c657183e22f049e741cab2",
+      "review_sha256": "32ed3cb531214230ede54309c7893c17b490a60119e5bac38ca2c8333e010a50",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/collecting_childrens_toys_174--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Pink teddy bear near robot is the right target, not toy farther away. Open8, closing28, grip44 and clean8 show correct torso/arm contact. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "collecting_childrens_toys_174",
+      "branch": "open_gripper",
+      "manifest_sha256": "1a34ca51e96467660992edcb33cd408b6ca535b2b9328e3d4853e8b37cf8c43a",
+      "review_sha256": "559f5de1a111145dfc42f55bf0c883b12ba57fcc11803ed4c1a90a5083041fcc",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/collecting_childrens_toys_174--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Pink teddy bear near robot is the right target, not toy farther away. Open8, closing28, grip44 and clean8 show correct torso/arm contact. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "putting_shoes_on_rack_226",
+      "branch": "clean",
+      "manifest_sha256": "06f84b2abc863fe1ef4c4d0968d97f7b6ef2b8bae3de66334446aa2acdf39119",
+      "review_sha256": "9a5f45b26f84ed816a75c153b717d0089d7e9e61759617cb2a2417469005ee9f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/putting_shoes_on_rack_226--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist at brown sandal sole; fingers open8 then close36 and hold52. Clean8 matches; shelf placement is not claimed. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "putting_shoes_on_rack_226",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "3c589a2dedbcf23a70fbab2e9d6070b09ea5ccbb477eed352074ec202ab1cfa5",
+      "review_sha256": "78f1918c5c0aa018c1727846167f50cf69efe1df92f06e19f2bd6c40d21b46b1",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/putting_shoes_on_rack_226--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist at brown sandal sole; fingers open8 then close36 and hold52. Clean8 matches; shelf placement is not claimed. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "boxing_books_up_for_storage_211",
+      "branch": "clean",
+      "manifest_sha256": "90b9a9eb6ad0b850dabf28aa199cec0b104d03722c63e7211c3c0fa3caab26cd",
+      "review_sha256": "d5c015c38b045d164f046f5e6513f227e81b70bacecdc7d7f501fa7f657ec4f6",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/boxing_books_up_for_storage_211--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at white storage-box wall/rim; open8 and closure28 consistent, clean8 supported. Recovered SUCCEEDED unavailable, not added. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "boxing_books_up_for_storage_211",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "d531e484e265f06649059a96d02b1e70da3ae459eac67b074ebb501eb83ef11d",
+      "review_sha256": "49a495be2f159ab5f48aabdffa0d0e6f26764392270339b422d4fefa11f31692",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/boxing_books_up_for_storage_211--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at white storage-box wall/rim; open8 and closure28 consistent, clean8 supported. Recovered SUCCEEDED unavailable, not added. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "storing_food_21",
+      "branch": "clean",
+      "manifest_sha256": "2e4a79e85781a6ca40af18ce0b2d255624b63656d1f32df2364a9f7449cf6370",
+      "review_sha256": "7d3eb38086f13506c69abe868e26c149f4ad548b0435c99762f1287ee6a213b5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/storing_food_21--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand around green olive-oil bottle, not neighboring food boxes; gap8, closure20, grip36/clean8. Wrist occlusion by bottle is consistent. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "storing_food_21",
+      "branch": "open_gripper",
+      "manifest_sha256": "d23df9d7c20c6be3312bd43ecfa94c1507c7be935395d9faf14d816da34bfd07",
+      "review_sha256": "be83cfa2bc00d2030d6663dd8280884b18bef8bc3698da73c499c2a9a73beddd",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/storing_food_21--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand around green olive-oil bottle, not neighboring food boxes; gap8, closure20, grip36/clean8. Wrist occlusion by bottle is consistent. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "clearing_food_from_table_into_fridge_2",
+      "branch": "clean",
+      "manifest_sha256": "d1fb0f2c675ba698228ae840ab8d44aba807a52bd595b4b13a35db4db03a5f6d",
+      "review_sha256": "33fdea9e733aa5229f351342aa54ee41d38b614061d906f26ce2a1f6ca5e23f6",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clearing_food_from_table_into_fridge_2--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at white tupperware wall on counter; open8, closing68, grasp88 and clean8. The other container is not selected. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "clearing_food_from_table_into_fridge_2",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7cd102372e9f312028f50024c7b2ed82d838c1338f448ee4be4f7c8c6881af55",
+      "review_sha256": "5edd31ba1f08a9859ee4f2e17ffbe4b173f6051d697bcd50d9c9bc3556412850",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clearing_food_from_table_into_fridge_2--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at white tupperware wall on counter; open8, closing68, grasp88 and clean8. The other container is not selected. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "assembling_gift_baskets_48",
+      "branch": "clean",
+      "manifest_sha256": "2627a4d983aa1b5abdb7d0b8ebfe7c3d2144030c07a6739502d0e263ce4860f1",
+      "review_sha256": "680fa0f7cfe888a76a099137091dde26852b70367bd80438772750dbdb79b3ab",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/assembling_gift_baskets_48--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand encloses near wicker basket rim; other basket is separate. Opening8, approaching68, grip88/clean8 agree, without asserting finished basket assembly. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "assembling_gift_baskets_48",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "d9255f445201922c80fb60a6e181a26937313e48299bf7ef99ebac4968f3ac62",
+      "review_sha256": "c94add9a1e45207cc51858acee10270940af98a4ca1f7aed390b0a5019a17dc5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/assembling_gift_baskets_48--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand encloses near wicker basket rim; other basket is separate. Opening8, approaching68, grip88/clean8 agree, without asserting finished basket assembly. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "sorting_household_items_68",
+      "branch": "clean",
+      "manifest_sha256": "c82f5ca25fb95904afa12351f9b1e47eb2ea9da6c53384d61091b6b38306d00e",
+      "review_sha256": "29a48ca41ffed101eacc3cef210eb7aaecb9dc0433441feebdbb7e5c2b11559a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/sorting_household_items_68--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand holds white detergent bottle in basket at clean8. Disturbed0 is already held and remains UNLABELLED, no invented failed attempt. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "clean_up_your_desk_253",
+      "branch": "clean",
+      "manifest_sha256": "105790f126bfd0c47c0c6003404b1f24cf879f60eba232c0ec12f1cc337c8414",
+      "review_sha256": "b2d992f35284263bd9e93f5ee4a462807bc861b0343781b7d4571a803a36895a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_up_your_desk_253--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at blue folder/book-stack edge on chair; open8, closing68, grip84 and clean8. Right wrist sees floor/chair and does not imply another target. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "clean_up_your_desk_253",
+      "branch": "open_gripper",
+      "manifest_sha256": "aa1277361b6de2b69973fb4151b326b8fb1519cb7a82937285bc18cae5980ff3",
+      "review_sha256": "fc4aa66ea7c21ae2abb9e809e8c44827b5c434cf1a360e6aeabf2d81051dc21c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_up_your_desk_253--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 84,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at blue folder/book-stack edge on chair; open8, closing68, grip84 and clean8. Right wrist sees floor/chair and does not imply another target. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "setting_the_fire_267",
+      "branch": "clean",
+      "manifest_sha256": "8874a8bf9568c02826d585acdcb81daea730b68c5b0a44d889090bccf9a40a56",
+      "review_sha256": "2de283001154e32f53e69e57691b57d1d20a6904cc3559b604c2b7b0185a6a3a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/setting_the_fire_267--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand grips folded newspaper edge near table at clean8. Disturbed0 has no supported failure/progress event, so only clean success is approved. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "clean_boxing_gloves_167",
+      "branch": "clean",
+      "manifest_sha256": "d7e7aa40927db1930d48d1a8cbbdf527438c85f01799b292ee81056e410d6f7b",
+      "review_sha256": "5ddb7ed72ae92c761ec06b5a8712083c65b2ebe7e2b2cdb82dc27ca756d6d61f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_boxing_gloves_167--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers close on the nearer red dirty glove, not second glove: open8, approaching68, grip80/clean8. Dirt is still present; no cleaning success claimed. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "clean_boxing_gloves_167",
+      "branch": "open_gripper",
+      "manifest_sha256": "82249a888c8b0d33175c32f7ff98e6c1cff63b24143848d0dadbc4c3aafe4c21",
+      "review_sha256": "b1d11335ac77c60f22a58740f1e307b2dd68b7a2ad380d6fc4133cbf135108ad",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_boxing_gloves_167--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 80,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers close on the nearer red dirty glove, not second glove: open8, approaching68, grip80/clean8. Dirt is still present; no cleaning success claimed. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "wash_a_baseball_cap_175",
+      "branch": "clean",
+      "manifest_sha256": "1ad36b703d8be65a80263c9b7a30ab48e0589d0f951683ee6e8f2a91d1501cf5",
+      "review_sha256": "4fb44a937e424d88860e37053db3fd3a8f2cc9cb5caa7b8ac8fe55548b3225a2",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/wash_a_baseball_cap_175--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand targets nearer blue cap at rim, distinct from second cap; open8, closure52, hold72/clean8. Dirt remains and washing is not asserted. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "wash_a_baseball_cap_175",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "5b15f166f91f03d6ca8dea686544a9fe636f165cfb614c267d288dd1c42bb1ae",
+      "review_sha256": "cce6fe73c13d4d1bad269724ff250c56428d0159e6a4cf9013b34a006a834427",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/wash_a_baseball_cap_175--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand targets nearer blue cap at rim, distinct from second cap; open8, closure52, hold72/clean8. Dirt remains and washing is not asserted. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "hanging_pictures_216",
+      "branch": "clean",
+      "manifest_sha256": "8a97464f3ece92a85bdecffd44b428940be66ac011176e5f10b9309ec5c44654",
+      "review_sha256": "d76dd238af38755aa9739124cd70f4bfc7e29e8aa1fdbe4fae5556da46cf67c8",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/hanging_pictures_216--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers enclose thin poster edge seen side-on at clean8. Disturbed4 lacks full physical support and stays unlabelled; not a hanging-success label. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_242",
+      "branch": "clean",
+      "manifest_sha256": "924d9d33311f6018430c32269f0351dc286644e5840950c3e6efc0e5eb937e5c",
+      "review_sha256": "d5800277aa0cb94917ce0bd83a07ae080927dfca12b86f1d1f284a4b37424601",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/attach_a_camera_to_a_tripod_242--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at the tripod leg/frame, not camera on top. Open8, closing28, hold48/clean8 agree across head and wrist; no attachment success. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "attach_a_camera_to_a_tripod_242",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "629f3858cf0dd623834582b9b1d030892d628bd700e4cc87e8b04aea60cfe35f",
+      "review_sha256": "c8c38e3ee15984f0ef420ee0b6c6f04e4ca91fc89b782c01fe1eb21b92700ac2",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/attach_a_camera_to_a_tripod_242--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at the tripod leg/frame, not camera on top. Open8, closing28, hold48/clean8 agree across head and wrist; no attachment success. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "clean_a_patio_80",
+      "branch": "clean",
+      "manifest_sha256": "358d00d9d8b858388a3bd1d1d8136ee4b3f0c035307627bf14af1391c654596e",
+      "review_sha256": "70390cc69e1a5d5cba2ca60e2f1cb001402ddcb69f0ae42981a0ca0b2f4f69a3",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_a_patio_80--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers enclose brown broom handle after open8/closure52 at68; clean8 agrees. Grey patio background and other hand remain consistent. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    },
+    {
+      "case": "clean_a_patio_80",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "028b6f22a311c5ffb99e8a3889ce6246fb25b952ecbdd0d9f4dcda6b224cc52a",
+      "review_sha256": "ee9ab555f72222b4296af1e128da82637b9757cbea97cc57386c53d1605394f5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_a_patio_80--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers enclose brown broom handle after open8/closure52 at68; clean8 agrees. Grey patio background and other hand remain consistent. Only outcome calibration, not TRAIN/action/planner/selection or full-task success."
+    }
+  ]
+}

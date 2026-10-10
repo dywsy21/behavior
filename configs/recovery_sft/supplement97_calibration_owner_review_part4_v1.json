@@ -1,0 +1,607 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 CST; personally viewed these 16 sheets/all camera panels with exact-target, hand and physical hold evidence. Missing correction phases remain absent.",
+  "cohort_sha256": "d66023744fe026a1d23fd084149d5cbe1981206a7131a09270cb22a18a48e8bd",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "654e41a21734dbc1703efcd156906d7419486333996e536ec11206523d7297c1",
+  "reviewed_sheet_count": 16,
+  "reviewed_rgb_panels": 159,
+  "total_sheet_count": 86,
+  "declared_source_count": 97,
+  "branches": [
+    {
+      "case": "re_shelving_library_books_86",
+      "branch": "clean",
+      "manifest_sha256": "5b2bc6fb4608079f0e190b03409fdad642c5131aaaac5e28339f41aae84ae056",
+      "review_sha256": "cf371bbc4cd5499017ee64f3b33ae4d5451542440dcb9923cb1b0c8d3cac7554",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/re_shelving_library_books_86--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers on light-green hardback at desk edge, not blue book. Open8, closure28, sustained44/clean8; no shelving completion. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "re_shelving_library_books_86",
+      "branch": "open_gripper",
+      "manifest_sha256": "e27a0a8b0ce081ff0a8da413f325391b58548b2bdbb2f4727662eb6e173169a3",
+      "review_sha256": "c68d8f5e5ac015236c49a1722606dc6fdec7c91cf3114415703cb79561e83dd3",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/re_shelving_library_books_86--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers on light-green hardback at desk edge, not blue book. Open8, closure28, sustained44/clean8; no shelving completion. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "make_rose_centerpieces_169",
+      "branch": "clean",
+      "manifest_sha256": "6cddacdd191e7c453a649c745a1d87edcfad612583366182be4ade2d60c84edd",
+      "review_sha256": "6cc69a2e114f669efa0869159c421ea49adb2fe7b749d698b74c81a93c33f5a3",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/make_rose_centerpieces_169--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand encloses the near rose stems/leaves, other roses stay on table. Only clean8 supported grasp; disturbed0 unlabelled. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "sweeping_garage_97",
+      "branch": "clean",
+      "manifest_sha256": "0ac44a99719321eaf86ea3027c869a441c5b2bb5b2ebdfca369139d2b4804c15",
+      "review_sha256": "6a11c958bc5295d94d36bde3240f7156fb77109ee36356e4180faea68e49fe45",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/sweeping_garage_97--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at broom handle on garage floor; gap8, closure28, grip44/clean8. Brush head remains same, no sweeping success. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "sweeping_garage_97",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "9c03b81e259dca99aad55f475caac7e0d659ae37ea43246124d228c446ff35d7",
+      "review_sha256": "62e9810d32c67c8703e50dac1b8030d9ad5fe2baefeb59014c7a94d9fd0f4e69",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/sweeping_garage_97--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at broom handle on garage floor; gap8, closure28, grip44/clean8. Brush head remains same, no sweeping success. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "stacking_wood_85",
+      "branch": "clean",
+      "manifest_sha256": "601d9a4d4471e355c93861e3b47a531bc3f2fa4cc6366c321f5cccae363dab66",
+      "review_sha256": "f0ddaca07e438a6e189ba6f761414ff9a7be0941a6fd80d7a1a8423c31a2eafe",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/stacking_wood_85--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the same bark log lengthwise by wall. Open8, closure68, hold84/clean8; not stacked-wood completion. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "stacking_wood_85",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1f11b930ec014ffe0216fe11a8f3534176f403b4cbe03a37cf3fc9725fc5d5f0",
+      "review_sha256": "2ae15959e4c876a2f238e70c8b4321049361f991c49f386726b8ddf05ac14af1",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/stacking_wood_85--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 84,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist shows the same bark log lengthwise by wall. Open8, closure68, hold84/clean8; not stacked-wood completion. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "organizing_art_supplies_67",
+      "branch": "clean",
+      "manifest_sha256": "fe2e97cbc7890d9c34101c2cbc960fd1c675caf5bdb154f99cd3554902be5c6b",
+      "review_sha256": "a6751593197b521ef187586e600acfe24959a6865ddb1cbff36646bbaa9a09ff",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/organizing_art_supplies_67--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers approach green-sleeved white eraser, open8 then closer28. Clean8 supported; no recovered success anchor supplied. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "organizing_art_supplies_67",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "d0322805db1833f635d2c09ff2234ae57afdc736588732a7ea89552152e485e2",
+      "review_sha256": "d6fbfd03ccdee3bfe71472537a4d7abf96f975af3bcf8c72af048f55bea72419",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/organizing_art_supplies_67--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers approach green-sleeved white eraser, open8 then closer28. Clean8 supported; no recovered success anchor supplied. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_232",
+      "branch": "clean",
+      "manifest_sha256": "638513c38a9de156921da9bdf20cbb8030f8835ca2109bfa9a394b35316e4878",
+      "review_sha256": "adcd96047205d5d8310d8c5b85ad77308435f600844086b7df6f6d4c34e2f096",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/scrubbing_bathroom_floor_232--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand on red scrub brush near wall/floor; open8, closing20, hold36/clean8. The brush bristles are not another object. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "scrubbing_bathroom_floor_232",
+      "branch": "open_gripper",
+      "manifest_sha256": "31148d7bf3c996bde3008ff44de3b399585bf43517f130b9e230899492f66346",
+      "review_sha256": "4cca9ba118834c96649664e0767dd473db572b9c2044263d5d85f2a821739638",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/scrubbing_bathroom_floor_232--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand on red scrub brush near wall/floor; open8, closing20, hold36/clean8. The brush bristles are not another object. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "bringing_paper_to_recycling_233",
+      "branch": "clean",
+      "manifest_sha256": "7d5609c9a20c2450d1ea074c47e0bdcb4e6aa876a145daf00308fc4414388094",
+      "review_sha256": "32dc823ec21f8ea9b73e1e89234d8fa281f71cb2526c2200099faf96a0563911",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/bringing_paper_to_recycling_233--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand at newspaper edge on counter: open disturbed8 versus closed clean8. No supported corrected IP/S, retained missing. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "bringing_paper_to_recycling_233",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "4153492b161715cd8e1f83384acb22dde82b506a3c6a66fe8b0a49c84cfb58be",
+      "review_sha256": "99883c24a74cd3f0704f220fd25982c4349021548027689f7ee52fb6e3d49a20",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/bringing_paper_to_recycling_233--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand at newspaper edge on counter: open disturbed8 versus closed clean8. No supported corrected IP/S, retained missing. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "halve_an_egg_93",
+      "branch": "clean",
+      "manifest_sha256": "3b818f59be20a98d1917e2202156f1c70f0422538ccfc4592b2cd5a5bdd3ae7c",
+      "review_sha256": "33a31c00e20b761b73438ac004df7306410ba5a0196975c7dcb9c319f9e232e4",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/halve_an_egg_93--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers enclose the same yellow egg on fridge shelf, open8, closure52, grip68/clean8. No egg-cutting success inferred. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "halve_an_egg_93",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c2670946a5f81b141360ca3106f3728b814c398a05d0617d2e6f7453f0d709c6",
+      "review_sha256": "16b03582eb6844b4d4929f7d7a4f5351a7c656e3106216c19a1172d2fc778cc8",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/halve_an_egg_93--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers enclose the same yellow egg on fridge shelf, open8, closure52, grip68/clean8. No egg-cutting success inferred. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "installing_smoke_detectors_161",
+      "branch": "clean",
+      "manifest_sha256": "a19d6bb04659f304848b36c968714fad143cba10d0b99ea40195e39a6eb5efa2",
+      "review_sha256": "d9a80cca1a24dc855167dd9b18c5557ac085d9c83190ed0a2775dfd2462ef1c4",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/installing_smoke_detectors_161--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers approach the white circular alarm on table, open8 and closing20; clean8 hold supported. Recovered success is absent, no installation claim. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "installing_smoke_detectors_161",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7744d5468e448e11d4ac07a21aaad7767363e8a6c66721a23aef958421085dbc",
+      "review_sha256": "7da7a6349e75b2e4cbe239dd73036439580da7d872b1d3c8fd9c1de28981c2f8",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/installing_smoke_detectors_161--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers approach the white circular alarm on table, open8 and closing20; clean8 hold supported. Recovered success is absent, no installation claim. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "boxing_food_after_dinner_242",
+      "branch": "clean",
+      "manifest_sha256": "dc56ef1ed9153380dfa76c250c0181069f117449829343927c5b150fa29ecc24",
+      "review_sha256": "f03f91cd0dd3596c438498697c0f9d8d9feda5aa3fb831d3ae09f857a7dca62c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/boxing_food_after_dinner_242--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at white tupperware in open cabinet, not plated food above. Only clean8 is labelled; initial disturbed0 remains unlabelled. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "cleaning_up_branches_and_twigs_19",
+      "branch": "clean",
+      "manifest_sha256": "92cfbbcbe90ecde0a3a6a2c22daa4fb1497467f4383633998a1dc209cf8df49b",
+      "review_sha256": "f16498d946e491942f5e58281dc4faa79ff9aa29538928a3e94ae6a477de8f50",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cleaning_up_branches_and_twigs_19--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand at forked brown twig on pavement: open8, closing52, grasp68/clean8. Right wrist sees pavement/robot, not another held branch. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "cleaning_up_branches_and_twigs_19",
+      "branch": "open_gripper",
+      "manifest_sha256": "08bdca1d39734429520671c7c0f63a5ef1309ca8c182af548f87d603d0202c22",
+      "review_sha256": "cda0992ab7c0b0a98c9d9ea46f7b64f81c17915d2bca5490f77358438db50df4",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cleaning_up_branches_and_twigs_19--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand at forked brown twig on pavement: open8, closing52, grasp68/clean8. Right wrist sees pavement/robot, not another held branch. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "vacuuming_floors_58",
+      "branch": "clean",
+      "manifest_sha256": "732663488bebf8f4e8096d83e19a4726e22eac2a6194499776e9dcf371eda6f0",
+      "review_sha256": "97fa029c0869d438c2a95d278d314cdbd199b6b378361ab3c567d0e7c998b076",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/vacuuming_floors_58--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers approach vacuum handle housing, open8 then closing36, hold52/clean8. Actual whole-vacuum identity matches the head view, not floor nozzle. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "vacuuming_floors_58",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "096705afc91f6b67f99d626e9d4e85cd384ce5ea116a9a130df4d7c8b85552ea",
+      "review_sha256": "304d82afe21a364ebcd3d068b03065c4e39883b84906af58e7da99f5dd9641e6",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/vacuuming_floors_58--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers approach vacuum handle housing, open8 then closing36, hold52/clean8. Actual whole-vacuum identity matches the head view, not floor nozzle. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "thawing_frozen_food_54",
+      "branch": "clean",
+      "manifest_sha256": "07d1878bcc6e15ea13f7697c1d971f5a14d4824e28226b6f3ed870fce074e8f7",
+      "review_sha256": "3452df4968426e709d9fff9be698efa306e8337f988004aba960c7a6a7abb190",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/thawing_frozen_food_54--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand targets dark plate under bread in fridge: open8, closure52 and clean8 hold. No corrected success provided and no thawing label. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "thawing_frozen_food_54",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7696e5fe4bb97a9875d5ca74c99bc1ce6db4e3702997a212bbf076d21a6659e7",
+      "review_sha256": "e7b2138e8a6fef7196911bb72bbd73bfaf52d629f5598c10ed63c88faf9bdca3",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/thawing_frozen_food_54--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand targets dark plate under bread in fridge: open8, closure52 and clean8 hold. No corrected success provided and no thawing label. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "clean_your_rusty_garden_tools_239",
+      "branch": "clean",
+      "manifest_sha256": "f00c290e027f44641b6c5be86a835b241d29c52967ba9366f71bcef2452adcd3",
+      "review_sha256": "869b4974ed743c9bb51d21abe4df313ae9392f5648e72fe900c18caf9862df0a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_your_rusty_garden_tools_239--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at the red-handled scrubbing pad inside the red toolbox, exact steel_wool333 physics binding. Open8, closure52, hold72/clean8; the enclosing toolbox is not signed as target. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "clean_your_rusty_garden_tools_239",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "7cd33cd451bf5bb6899257e0e516f14b39481d28e3005f9fde407a4e64449a68",
+      "review_sha256": "93ec07170b0ec2eed7dc122ae2c7b50feed0c6043711f47623e21ea030bba613",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_your_rusty_garden_tools_239--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at the red-handled scrubbing pad inside the red toolbox, exact steel_wool333 physics binding. Open8, closure52, hold72/clean8; the enclosing toolbox is not signed as target. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "cook_a_frozen_pie_287",
+      "branch": "clean",
+      "manifest_sha256": "fc865a36d35a0c0a8fd9ea65225c95d8578f6500e3b28d7ff8dd71b93c5c9de4",
+      "review_sha256": "7d8c0d44dd72a016104d3680c2699ae2d67ef2c0f2111256f56382c22e98f45e",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_a_frozen_pie_287--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand reaches pale pie in dark freezer; open disturbed8 versus supported clean8. No recovery progress/success fabricated and no cooking claim. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "cook_a_frozen_pie_287",
+      "branch": "open_gripper",
+      "manifest_sha256": "ed9193e4ae5c524896548eac5a64cafac023026d2b2f7a877c3a4ad369f313d7",
+      "review_sha256": "939697a78b869c3bdd5437794d769f28ca21a4a6fea4f3b63580c66507204766",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_a_frozen_pie_287--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand reaches pale pie in dark freezer; open disturbed8 versus supported clean8. No recovery progress/success fabricated and no cooking claim. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "organizing_school_stuff_121",
+      "branch": "clean",
+      "manifest_sha256": "10edaeb2b78f0551ecf8ff0c3d8c056df73b9ddb2c20fb043f8d497e3ef4582a",
+      "review_sha256": "15da3c24815432d70665320bd1e2e53f4980faeeb45c8ad397ebad9e498a9ad2",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/organizing_school_stuff_121--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at orange tote edge/handle, with books inside. Gap8, closing68, supported88/clean8, not a separate book grasp. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    },
+    {
+      "case": "organizing_school_stuff_121",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c64488664f7f10abe078b80cd4e860a625520613bc885e76f47dbd6d6158a92a",
+      "review_sha256": "6b1aad4dfc0a46c27f8e29556c9d8dbc46efe7b22744e81c47783377e51fe9a5",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/organizing_school_stuff_121--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 68,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 88,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at orange tote edge/handle, with books inside. Gap8, closing68, supported88/clean8, not a separate book grasp. Only outcome CAL; no TRAIN/action/planner/selection/full-task success."
+    }
+  ]
+}

@@ -1,0 +1,586 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 CST; personally inspected these 16 complete sheets. Rechecked all216 FAILED/SUCCEEDED six-control supports; retained incomplete-hold IP and missing phases without fabrication.",
+  "cohort_sha256": "d66023744fe026a1d23fd084149d5cbe1981206a7131a09270cb22a18a48e8bd",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "654e41a21734dbc1703efcd156906d7419486333996e536ec11206523d7297c1",
+  "reviewed_sheet_count": 16,
+  "reviewed_rgb_panels": 156,
+  "total_sheet_count": 86,
+  "declared_source_count": 97,
+  "branches": [
+    {
+      "case": "clean_a_trumpet_103",
+      "branch": "clean",
+      "manifest_sha256": "3a0f1a6b36da74629ba9eaf7a7b8c4d819aa99a205371b6e8ec51d1ab0d5acb7",
+      "review_sha256": "27ebe890aa72c68428786e41758784fdf907365f92d53cdcb10387aad22030b1",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_a_trumpet_103--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers on red scrub brush, with trumpet separately on table. Only clean8 grasp signed; initial0 unlabelled, no cleaning/trumpet success. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "spraying_for_bugs_110",
+      "branch": "clean",
+      "manifest_sha256": "f570d50f1fdfd406dae72c96b7a3a2371138f8c721dcab705d1e8be551c2afe2",
+      "review_sha256": "c9c5b66da38b4ae836fd08240e71391166836e22c33f6f431be0df02f9354d25",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/spraying_for_bugs_110--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Black atomizer at left wrist; disturbed8 fingers open versus closed clean8. Cap is green in disturbed and red in clean, so color is not used as grasp evidence; labels require exact object identity and six-control physical hold/non-hold. No recovered IP/S invented. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "spraying_for_bugs_110",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "ce26486814306fd279e09b9f060158f6c90fae0dd42062bc8ed7f5dab02c39cb",
+      "review_sha256": "5cd00464c67c534cae348448eb4309b805a346c88f5ce4784e9b5dc2e287353f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/spraying_for_bugs_110--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Black atomizer at left wrist; disturbed8 fingers open versus closed clean8. Cap is green in disturbed and red in clean, so color is not used as grasp evidence; labels require exact object identity and six-control physical hold/non-hold. No recovered IP/S invented. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "spraying_fruit_trees_231",
+      "branch": "clean",
+      "manifest_sha256": "672b28be796dc7d7e71b0c091e9f3aa2775c777f68866d28b7fb58e38bab2cb6",
+      "review_sha256": "219ccc2b67aad3e6c1348e5ea7b560cfc86e96383597191f6f601cbc944710fa",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/spraying_fruit_trees_231--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand encloses black red-top sprayer after open8/closure36 at52; clean8 agrees. No inference that spraying has occurred. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "spraying_fruit_trees_231",
+      "branch": "open_gripper",
+      "manifest_sha256": "f8d601590ceacd5dd27d5f84b1cae4a5587f07cc1f636e08801314fda650eaf3",
+      "review_sha256": "13203887319b443f8b4fc37ef09b1c4417c5ecbf556d6b86d531eb27c3ae09fb",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/spraying_fruit_trees_231--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand encloses black red-top sprayer after open8/closure36 at52; clean8 agrees. No inference that spraying has occurred. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "make_microwave_popcorn_27",
+      "branch": "clean",
+      "manifest_sha256": "244a2821cceacc84038790a09aa0941c7106f975895139762cd62b62c4017049",
+      "review_sha256": "519c368d8929e5e29d01a7e41b8e7bc12d018a3f478f6a2511b57150415f419f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/make_microwave_popcorn_27--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at tan popcorn bag rim near stove; open8, closure36, supported grip52/clean8. Contents visible but cooking completion not inferred. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "make_microwave_popcorn_27",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1d330c195a6100dd2f82bb4bdd0c44fca387bed478ee8a6db3cabc1bfc8492a2",
+      "review_sha256": "03544a208ab6fdf8d4e1403ea8e19ffbd5f0341e796ab204090936e2cb974399",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/make_microwave_popcorn_27--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at tan popcorn bag rim near stove; open8, closure36, supported grip52/clean8. Contents visible but cooking completion not inferred. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_cabbage_87",
+      "branch": "clean",
+      "manifest_sha256": "ffa9827c5c3d074a1e84c229696edf76c2460c815972cec5427435b183b53861",
+      "review_sha256": "eccd3ba8e2ef5bc0ffff6a107e6ac00eabb0461112ba0247ab1a4def7b0862ba",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_cabbage_87--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers grasp metal frying-pan handle, not food/plate. Open8, closure20, hold36/clean8; handle partly occluded by wrist chassis but head matches. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_cabbage_87",
+      "branch": "open_gripper",
+      "manifest_sha256": "23b8607f453698a3210be02175aa542d24996e5233be2a6e423572f9a9c6aa05",
+      "review_sha256": "f6ec0a6393448744ffbeb76bcc4b9531026292dfde27481f4ab655374f49186f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_cabbage_87--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers grasp metal frying-pan handle, not food/plate. Open8, closure20, hold36/clean8; handle partly occluded by wrist chassis but head matches. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "chop_an_onion_281",
+      "branch": "clean",
+      "manifest_sha256": "627462a672e4311de7007a5b1d81fe0b6e15eea7eaa86379d4c86fa5e7bb25c2",
+      "review_sha256": "3f9cae191fd6a328b6b5533aab3e34c04f9e6063430aa83a2dad4f8c3c0ffabc",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/chop_an_onion_281--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand closes around wooden cutting-board handle opening: open8, closure52, hold68/clean8. It is not a knife or chopping completion. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "chop_an_onion_281",
+      "branch": "open_gripper",
+      "manifest_sha256": "81ea1b63f966df20e6e0b178ea7d3b1b0568774c209613c4832f4d18e0c86c42",
+      "review_sha256": "3c4ff2cb504dfe36c1d5b6ea589d134bb55a92df5001656a237920808a56061d",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/chop_an_onion_281--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand closes around wooden cutting-board handle opening: open8, closure52, hold68/clean8. It is not a knife or chopping completion. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "slicing_vegetables_96",
+      "branch": "clean",
+      "manifest_sha256": "9b46c3d75e9f7319e780d043ca16a977fd6e68fb71d4bb9666b405d808a43bac",
+      "review_sha256": "bda15fe1a8bf1d7bc06060ee51cb52abe352b0d63063afc0b8230dbf44ce31d9",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/slicing_vegetables_96--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at paring-knife wooden handle. Open8 and closing36 match; only clean8 success exists. Recovered success not fabricated. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "slicing_vegetables_96",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "428d1a62de3a0e12191790f81e418f87dc2b66025b6667f2c13cd3bd6cbdf23a",
+      "review_sha256": "ec206b28476efbf28980c1bd364fb5f174ed37fecc79d09461930259e75f689f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/slicing_vegetables_96--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at paring-knife wooden handle. Open8 and closing36 match; only clean8 success exists. Recovered success not fabricated. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "chopping_wood_31",
+      "branch": "clean",
+      "manifest_sha256": "851053a2ae6c0a3732424adf5f54c22fb9027d95cf5bc53b09f87d99659d4afa",
+      "review_sha256": "eafe9308c84056e3253f69790834bbce9e17343ac2409b82ed6c67c49c843f44",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/chopping_wood_31--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand on bark log, same target throughout. Open8 then contact28; IN_PROGRESS28 is allowed during the incomplete six-control hold, not contradicted by instantaneous grasp TRUE. Sustained32/clean8 are success, not chopped wood. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "chopping_wood_31",
+      "branch": "open_gripper",
+      "manifest_sha256": "1f683211639128db332ba04c23feb6216d201709f2e9d35e3a4b7383f75f9a95",
+      "review_sha256": "587ab8f88378740424d469063d2fa36e7e70364c22ab8789a1905f507888131e",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/chopping_wood_31--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 32,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand on bark log, same target throughout. Open8 then contact28; IN_PROGRESS28 is allowed during the incomplete six-control hold, not contradicted by instantaneous grasp TRUE. Sustained32/clean8 are success, not chopped wood. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_hot_dogs_65",
+      "branch": "clean",
+      "manifest_sha256": "e38f7f551eb4dd2ab122cf812bd52c12f3d18fff2b6c2a35b1b95dde5533d14a",
+      "review_sha256": "607f0b861d3e051a0455d6276a9d5e3bf028e1466f9aaeb3aa65718a0bd13270",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_hot_dogs_65--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at the same hotdog/bun on counter; open8, closure28, grip44 and clean8 agree. Cooking is not evaluated. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_hot_dogs_65",
+      "branch": "open_gripper",
+      "manifest_sha256": "eed363a86bc54cda56febc9f3604ca40ba7d4b3f8cb6f52fac080a623b194926",
+      "review_sha256": "aa6ba26edac019e8809e8ae03679b897b975729cc3738dc06bdf0226f77fb4f4",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_hot_dogs_65--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at the same hotdog/bun on counter; open8, closure28, grip44 and clean8 agree. Cooking is not evaluated. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "freeze_pies_242",
+      "branch": "clean",
+      "manifest_sha256": "2dbb968e2bec4399e83239cc47c86ba81462e2ea315a11ee6a3af0f6eda2edf6",
+      "review_sha256": "e2e1dbf74c09159908a800a126f029c7797734fdf86819cdafe3af39f2c843fa",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/freeze_pies_242--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand targets pale pie surface/edge, with left fingers visible but not recorded holding; disturbed8 non-hold and clean8 right hold align. No recovered IP or S exists. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "freeze_pies_242",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "dac4f18db77b00403dbb177326c732b1c21baf0c0a5778f5aecb1fc5f71b7e15",
+      "review_sha256": "5f04c6aa31136124930b0cb77e81b8e65ffcfa4f160e53cc5a4277736a4e15bd",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/freeze_pies_242--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand targets pale pie surface/edge, with left fingers visible but not recorded holding; disturbed8 non-hold and clean8 right hold align. No recovered IP or S exists. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "canning_food_135",
+      "branch": "clean",
+      "manifest_sha256": "c59be48359d094b448e751ac6a8f139bfeaa70fbf618ba730c0dcebfcfb606d1",
+      "review_sha256": "8153de2a37f7f5c5fc4e51b2945b23d38eff4693617d1a8dc9ade217cda297e8",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/canning_food_135--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at black carving-knife handle near board/fridge. Open8 and closing28, clean8 grip; recovered success absent and not filled. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "canning_food_135",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "2aac5513288ee3c04bc21344b5facc5bf870ec4d2d706664d1b421dddd62384d",
+      "review_sha256": "ea97bec00703d9c5422d94b49765828a2b8e20543480059cde2a2cfb3d9c2e4b",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/canning_food_135--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at black carving-knife handle near board/fridge. Open8 and closing28, clean8 grip; recovered success absent and not filled. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "make_pizza_173",
+      "branch": "clean",
+      "manifest_sha256": "d364d725ba06eb4b371a2e21f159c9164d4cb3b7a466ec5c29feb4b7c857b22d",
+      "review_sha256": "4c4c3a9928a478510f75f56551b9ba85dd6f26c06bf2349c320e4ecaa033398e",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/make_pizza_173--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand at white bowl rim, right arm near other kitchen objects. Only clean8 supported grasp; initial disturbed0 unlabelled, no pizza completion. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_a_brisket_8",
+      "branch": "clean",
+      "manifest_sha256": "d931ed7320ba8c849e35ce849a55bda496e7df8c5b5cb8718d45960428616050",
+      "review_sha256": "9b5ea5d50f1b67b4122b0df3beb36e11a9dee35e5bd3724f65cf0b634831e8f8",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_a_brisket_8--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers grasp wooden pan handle over sink/counter: opening8, closing52, held72 and clean8. Not adjacent cutting board. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_a_brisket_8",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "fa35c4b901fe19bbe8b134b3f56f1ffabed825c4c6ea2597e651f79bab030f99",
+      "review_sha256": "40cfd77b0f982d72da06be87caf29af893aa8eca7660420db4f7bbb7971c90e6",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_a_brisket_8--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers grasp wooden pan handle over sink/counter: opening8, closing52, held72 and clean8. Not adjacent cutting board. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "sorting_bottles_cans_and_paper_6",
+      "branch": "clean",
+      "manifest_sha256": "549d1d26ba0ac4e834cfbe7b25e361245cb102dfdf3a2b7ecc3088d859c85ff9",
+      "review_sha256": "a7045ad8c25065cf20dfe02f912d527edd9c9a1beeb87cc435e2fc0b46405803",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/sorting_bottles_cans_and_paper_6--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers surround dark wine bottle below red neck: gap8, closing20, grip36/clean8; newspapers remain background. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "sorting_bottles_cans_and_paper_6",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "4d44a3d0f8eb808ec0a06873d3fabeddbb05b19a2b64314ea0b0473546c021a4",
+      "review_sha256": "64afbeaa84aed709955b53c85f18c85adc2b10806a4daaf5d61421851691ab43",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/sorting_bottles_cans_and_paper_6--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers surround dark wine bottle below red neck: gap8, closing20, grip36/clean8; newspapers remain background. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "tidying_living_room_245",
+      "branch": "clean",
+      "manifest_sha256": "bd5bd0c69f46ddc0727663a263bd681fdd82ed20e3cbcdb546034dcb915fbc0f",
+      "review_sha256": "474506aa0db69b76f30e0912469dfca31d5856461b356514ee45794b3c912649",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/tidying_living_room_245--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers close on newspaper edge between hands: open8, closing36, grip52/clean8. Left hand's nearby image is not automatically treated as held. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "tidying_living_room_245",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "1f8b204d4b07239536cdc7e1edd5ce2c9555a948f3902e2202d067d29f36f24f",
+      "review_sha256": "417f69e707b31f5d217a4464174a3903596410a947aff3aa789ee5415ee23308",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/tidying_living_room_245--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers close on newspaper edge between hands: open8, closing36, grip52/clean8. Left hand's nearby image is not automatically treated as held. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "putting_away_toys_201",
+      "branch": "clean",
+      "manifest_sha256": "65cf5cd5c7f0ef9f6bcf7717133ae77a203daf0d84d141637e6f401e75bacb44",
+      "review_sha256": "3c37755a6baf4560484c4fa9f12a6082101099b82c71bb27e9d6d8bdc385d9b4",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/putting_away_toys_201--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist shows small white animal toy and head agrees. Only clean8 sustained grasp; disturbed0 stays unlabelled, not invented recovery. Outcome CAL only; no TRAIN/action/planner/model selection/full-task success."
+    }
+  ]
+}

@@ -1,0 +1,631 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 CST; personally viewed all16 complete sheets. Garden-chair intermediate labels rejected by exact issued-arm semantics remain excluded.",
+  "cohort_sha256": "d66023744fe026a1d23fd084149d5cbe1981206a7131a09270cb22a18a48e8bd",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "654e41a21734dbc1703efcd156906d7419486333996e536ec11206523d7297c1",
+  "reviewed_sheet_count": 16,
+  "reviewed_rgb_panels": 177,
+  "total_sheet_count": 86,
+  "declared_source_count": 97,
+  "branches": [
+    {
+      "case": "carrying_out_garden_furniture_50",
+      "branch": "clean",
+      "manifest_sha256": "c8045ba386a7949e0ac14664eb90145ba1afdb149956ef9cf2a5f53d833bede4",
+      "review_sha256": "bcd32afb9e7ff62f4dad5a6ee2ae5bbc58f59c7be654506281f3d9e2522d4194",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/carrying_out_garden_furniture_50--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Both views show the same wicker garden chair, released8 and held72/clean8. Proposed IP52/56/60/64 was correctly removed because the other hand already satisfied the unspecified-arm GRASP; do not re-add it. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "carrying_out_garden_furniture_50",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "6957b0acc3e31a5f8e601a5cafb28c713362d879d4f241b0cbdcf879bcba32b4",
+      "review_sha256": "f79f34e434b55a0d1c85e325508a753d118903b7fa82384959612aa3c51171a3",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/carrying_out_garden_furniture_50--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Both views show the same wicker garden chair, released8 and held72/clean8. Proposed IP52/56/60/64 was correctly removed because the other hand already satisfied the unspecified-arm GRASP; do not re-add it. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "put_together_a_basic_pruning_kit_70",
+      "branch": "clean",
+      "manifest_sha256": "6d4657bbc18b9e3c3c6c14d07f1d8869584c07996f3b4676333b2c706ae6c4ff",
+      "review_sha256": "86012e416b3fc90a77832860651d74a3276110bd002374897d7069e2dceebd6f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/put_together_a_basic_pruning_kit_70--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers on metal shears in dark garage, supported clean8 only. Disturbed0 already held and remains unlabelled; no kit completion. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "dispose_of_glass_196",
+      "branch": "clean",
+      "manifest_sha256": "dee8482b04219de90de9194a276503da4e3a3822f547ae9179a739454c84f647",
+      "review_sha256": "eff249eee942376848e93f559f71f27820151d7b767106cd308de681aaa9a425",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/dispose_of_glass_196--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist sees black bin liner/rim, head shows same bin between arms. Gap8, closure36, sustained52/clean8 are left grasp labels, not disposed glass. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "dispose_of_glass_196",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "0d61aec8b195a85a89e3d7afdb6c3fba8cdf570bd59ea48739a18f6e4c6e36ce",
+      "review_sha256": "f1b243302bca4f1762d0a10d60702b4df010d9361cb4adc06466d559e35b71c1",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/dispose_of_glass_196--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left wrist sees black bin liner/rim, head shows same bin between arms. Gap8, closure36, sustained52/clean8 are left grasp labels, not disposed glass. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "installing_a_modem_205",
+      "branch": "clean",
+      "manifest_sha256": "74069e07bd8dc0e20736a2d59afbc56fc7e5d2948dbd2ac6dd7bf47f40747096",
+      "review_sha256": "43b8f8476fafd5173ab57013cefc2079b4140e7847ebd4f53743c74509504661",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/installing_a_modem_205--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at white modem chassis beside antenna on table; open8, closing20, grip36/clean8, not antenna-only or installed-modem success. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "installing_a_modem_205",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b79dc60770ee274f5ad2ac8fd9e4b3a31443ee5c227782d41564d042d8e7d507",
+      "review_sha256": "6d0d30bfc235b0e372ae8176930f7ded95e02df0ca4a054a592b430c8904fb8c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/installing_a_modem_205--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at white modem chassis beside antenna on table; open8, closing20, grip36/clean8, not antenna-only or installed-modem success. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "make_cabinet_doors_260",
+      "branch": "clean",
+      "manifest_sha256": "9c17b73446a62ee40e5f9e3d88b4a362e40af3f07667089e52a95d067b4cdb56",
+      "review_sha256": "b6c1b0c28ad6c7ade8ec88519b54509fabbc0b60c546716376c7447b5f86ceb9",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/make_cabinet_doors_260--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand at narrow wooden cabinet-door edge; open8, closing20, grip40/clean8. Large wooden shelving is background, not target. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "make_cabinet_doors_260",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "c31d302c9ae9f7d436532e14bd391aaba3fd96dfd7d2bb1439927d013345b4aa",
+      "review_sha256": "a35b5bc0ad868bee2518797f65ca3a9f1eda487a30879065f25357c08aaffe20",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/make_cabinet_doors_260--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand at narrow wooden cabinet-door edge; open8, closing20, grip40/clean8. Large wooden shelving is background, not target. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "polishing_shoes_54",
+      "branch": "clean",
+      "manifest_sha256": "d8bc86cc8cded1c2dc1162cb535bdd1edf45d371851529126a617669dc01aa04",
+      "review_sha256": "63942651fb84f5efe9c75acc233becca5dade0b1f78e2926ea35167876af21f4",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/polishing_shoes_54--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand on red scrub brush beside lamp; open8, closure20, grip36/clean8. Right view sees arm/brush across scene, not shoe polishing success. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "polishing_shoes_54",
+      "branch": "open_gripper",
+      "manifest_sha256": "2ad1187601b8b4a0530271a188579fe4858796b26c3d296f3ed5d4b6aeed444e",
+      "review_sha256": "22c25029688caeed78320c6a03e5433740f3efe4440dd81fe9caa6aeb3d74f9a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/polishing_shoes_54--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand on red scrub brush beside lamp; open8, closure20, grip36/clean8. Right view sees arm/brush across scene, not shoe polishing success. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "clean_up_broken_glass_177",
+      "branch": "clean",
+      "manifest_sha256": "1b60ee0ec5ccc32111b9864194a22bfdbcce177fd45d2b9955dda47cc206cd6b",
+      "review_sha256": "24c9bcecd962bdc844bfa8b71916850a947717a6bccab7fc815d9d9d78c2f89a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_up_broken_glass_177--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers approach broken goblet stem/body on tiled floor: open8, closing52, hold68/clean8; shards/rim shape retained, no glass cleanup completion. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "clean_up_broken_glass_177",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b228b2fb73aa62886033b4239437e7b2055cbcce2a0151251822e2952879d79c",
+      "review_sha256": "00d987cdef2136e33541f6b0052903a378de2957db744532d763af746a4321e0",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_up_broken_glass_177--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 68,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers approach broken goblet stem/body on tiled floor: open8, closing52, hold68/clean8; shards/rim shape retained, no glass cleanup completion. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "putting_dirty_dishes_in_sink_294",
+      "branch": "clean",
+      "manifest_sha256": "17f0d716d902057884120271ad0c5aaf6abd38e36376af647baeddd5faa327ab",
+      "review_sha256": "7f2bc89e3d029fb095635de4817a8f3463441f428abbe15976547eb801ce7f4d",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/putting_dirty_dishes_in_sink_294--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist on purple bowl at striped chairs, distinct from other bowls. Only clean8 hold approved; disturbed0 lacks recovery evidence. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "make_gift_bags_for_baby_showers_130",
+      "branch": "clean",
+      "manifest_sha256": "0b8e6c35e6dfb5d55dd13e310d272fd37928ff9179374484d1f96c4cd22af20a",
+      "review_sha256": "a8880359e6c7c6f02ce459ae40e7a6ebc8a1d8add39e70aed52d82829ec3a967",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/make_gift_bags_for_baby_showers_130--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at wrapped wafer in open drawer; package print, drawer and head agree. Gap8, closure20, grip36/clean8; not gift-bag completion. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "make_gift_bags_for_baby_showers_130",
+      "branch": "open_gripper",
+      "manifest_sha256": "d2ce16405d8487bad7306c4ea27977b43dfb756773d03e7efc2654e9dda697b2",
+      "review_sha256": "c169901c97ff6540c2e6399ff349695954a1f0d0ae513cb652aaf7f507c5f997",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/make_gift_bags_for_baby_showers_130--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at wrapped wafer in open drawer; package print, drawer and head agree. Gap8, closure20, grip36/clean8; not gift-bag completion. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "collecting_aluminum_cans_2",
+      "branch": "clean",
+      "manifest_sha256": "bce408334ecea5c5f1d9e34baec8fda6a06234e36bdadda40cdfbec5df3f16f0",
+      "review_sha256": "43238873985e7f9a2afc5adc9c05441c34c4a5e412230156543ce64d03df5a9a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/collecting_aluminum_cans_2--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at blue soda can on carpet, seen top-down in wrist; open8, closer36, held52/clean8, not nearby bucket. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "collecting_aluminum_cans_2",
+      "branch": "open_gripper",
+      "manifest_sha256": "b9400b140e5abcb72751ca78e4a7e2e1201907ca3d49b360dc1720ffd7fb731e",
+      "review_sha256": "404db69cf96a07bb050dc12cc1b12cb05cdc68fcc2007a55f81135027b31d024",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/collecting_aluminum_cans_2--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 52,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at blue soda can on carpet, seen top-down in wrist; open8, closer36, held52/clean8, not nearby bucket. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "rearrange_your_room_30",
+      "branch": "clean",
+      "manifest_sha256": "3df44ae15ff20b5ba752bdbb9a89a3ef901eeea851ac52ef494e76e83784d1d1",
+      "review_sha256": "66d87a6ffd239d7b443372f98ddae517ce752bdd1af2556310cb79e8ed605095",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/rearrange_your_room_30--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers on pale blue patterned pillow edge, right arm nearby but not held in physical trace. Open8, closing28, grip44/clean8. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "rearrange_your_room_30",
+      "branch": "open_gripper",
+      "manifest_sha256": "66b8440a2135f2e5d43e71b337c45ef16949d5a1d90a0286e46a5861de0ff6e2",
+      "review_sha256": "59c5da286f05b35a83c2e4299353f312c93fd301dfe57f3e092ba4331e1b5415",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/rearrange_your_room_30--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers on pale blue patterned pillow edge, right arm nearby but not held in physical trace. Open8, closing28, grip44/clean8. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "installing_a_fax_machine_43",
+      "branch": "clean",
+      "manifest_sha256": "d2c297034821f6923d6923547da8b6ed78b7b1757bc4e473d8710759ec92d1fe",
+      "review_sha256": "03e98a12a86d34aeecc7953e4314dd237149a357a5119dd411f66c3fb74d6b16",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/installing_a_fax_machine_43--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at black fax housing/side on dark table; open8, approaching36, hold48/clean8. Phone handset belongs to same machine, not installation completion. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "installing_a_fax_machine_43",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "746a10daa17fef650ca4fa55e9856ad00c615ce39c433e0047bf48e44b8b5209",
+      "review_sha256": "208cc10e60b99f6057db1f9ab46e49a0cb0dd82dd340061dfe72ee1981c0a562",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/installing_a_fax_machine_43--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at black fax housing/side on dark table; open8, approaching36, hold48/clean8. Phone handset belongs to same machine, not installation completion. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "composting_waste_118",
+      "branch": "clean",
+      "manifest_sha256": "6ce8234ec9582980c30f85632cbcdf60c918834dd3a29e739fbf82cc8f03c267",
+      "review_sha256": "e7748e204215a68182a4756f8d2cc286b18d3f5509e6e07c97d3575cbab4e775",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/composting_waste_118--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at dark bin rim/body beneath kitchen counter; gap8, closure28, hold48/clean8 agree with head placement and wrist. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "composting_waste_118",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "5db4b1316c77bbd897ba788bca203345a33ff6e6742f98fc5e9e5ac32e0444b3",
+      "review_sha256": "37af39f2ea05fa88150ade850a86ca0b2a70f8de8572166fd6dfe6066681ffaf",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/composting_waste_118--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 48,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right hand at dark bin rim/body beneath kitchen counter; gap8, closure28, hold48/clean8 agree with head placement and wrist. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "store_produce_70",
+      "branch": "clean",
+      "manifest_sha256": "8cd85fee499c1e73171a94cf4348fb68c08ec731c859845ed578eef2c5b7b791",
+      "review_sha256": "b66c98a72ed3a337902d1534a6e4ca8cc0cad9082d7c02c39caebe42f6a57032",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/store_produce_70--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers close on fruit-filled wicker basket rim: open8, closing20, held36/clean8; right wrist sees floor and left-hand label remains exact. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "store_produce_70",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "66f3652f930422883399ba67217795a4ce9d9f784da7cd4feb634dc5d945e687",
+      "review_sha256": "fc39fff1f6e85254b4d0f0cc39c208250f9fc38a7be52931d8acd81cd262c5a0",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/store_produce_70--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers close on fruit-filled wicker basket rim: open8, closing20, held36/clean8; right wrist sees floor and left-hand label remains exact. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "installing_a_scanner_124",
+      "branch": "clean",
+      "manifest_sha256": "c76ce3e77ba5717c0e0744f9185615d8c2cc3cce8d000b2cb8d67ece0d21ee21",
+      "review_sha256": "2ff599617def1f00d896a3751ebc57a678e8355ada816931fee1cf87cc0e6a04",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/installing_a_scanner_124--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand encloses scanner side edge at desk, not nearby red-topped tool. Open8, closure20, grip36/clean8; not scanner installation success. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "installing_a_scanner_124",
+      "branch": "open_gripper",
+      "manifest_sha256": "36c012a737859c3895215ca492ecfa131f9f96be76b44a00ae1e5c15fe5509e2",
+      "review_sha256": "10409977b425b44ada7159535b26fd8b1109c383634e0aed753ff470de07c336",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/installing_a_scanner_124--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left hand encloses scanner side edge at desk, not nearby red-topped tool. Open8, closure20, grip36/clean8; not scanner installation success. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "clean_a_keyboard_278",
+      "branch": "clean",
+      "manifest_sha256": "8e7bcd53bce1d1ec05809c5a786d021dad110ebd1d9e4c76f8c6f49351760960",
+      "review_sha256": "3516e5138df37cf6c1d3a5c382f8f805b8268170ca9fc3658b42567f7e470780",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_a_keyboard_278--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at blue-handled pipe-cleaning brush on desk; open8, closure20, hold36/clean8. Keyboard itself is a separate object. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "clean_a_keyboard_278",
+      "branch": "open_gripper",
+      "manifest_sha256": "acb096f65a476e34820ac69d9d9d76a1a97216c9f9f68ca353d703d3a0a0b5b6",
+      "review_sha256": "b41296d301c984d980ba83caed0d1d10980fd9df7433bbc185477f923ae5fbdf",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/clean_a_keyboard_278--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 36,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at blue-handled pipe-cleaning brush on desk; open8, closure20, hold36/clean8. Keyboard itself is a separate object. Outcome CAL only, never TRAIN/action/planner/model selection/full-task success."
+    }
+  ]
+}

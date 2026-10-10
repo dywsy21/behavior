@@ -1,0 +1,232 @@
+{
+  "schema": "owner_local_recovery_review_v1",
+  "reviewer": "Codex main, 2026-10-10 CST; personally inspected final6 complete sheets/all60 panels. Together six owner records cover all86 sheets/888 original RGB panels; all216 terminal-class six-control supports independently checked.",
+  "cohort_sha256": "d66023744fe026a1d23fd084149d5cbe1981206a7131a09270cb22a18a48e8bd",
+  "role": "calibration_only_never_training_or_selection",
+  "review_index_sha256": "654e41a21734dbc1703efcd156906d7419486333996e536ec11206523d7297c1",
+  "reviewed_sheet_count": 6,
+  "reviewed_rgb_panels": 60,
+  "total_sheet_count": 86,
+  "declared_source_count": 97,
+  "branches": [
+    {
+      "case": "dispose_of_batteries_121",
+      "branch": "clean",
+      "manifest_sha256": "8682a6120e3bf4ebda5eb6256617eaac7fe15a2b3e3175ef437d96a4df1425e3",
+      "review_sha256": "48830aecd887f57b2ca5cd2cb8bdd1c9d4fde81aeace463cab17c2061f20bb77",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/dispose_of_batteries_121--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Dark bin beside white cabinet is the right-hand target; head shows same rim/body and wrist edge/fingers agree with open8, closure52, hold72/clean8. Low light is noted; six-control physics, not brightness, establishes result. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "dispose_of_batteries_121",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "a4e39b65f64bc51e062f14ee7d395fa1f7bb0fc44b41d042a6c0e5f0a999f4a0",
+      "review_sha256": "6b18c3e5ea3891594d6b5a15362281de19dc4e3616e354916d54487aee22bb4c",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/dispose_of_batteries_121--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 52,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 72,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Dark bin beside white cabinet is the right-hand target; head shows same rim/body and wrist edge/fingers agree with open8, closure52, hold72/clean8. Low light is noted; six-control physics, not brightness, establishes result. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_brussels_sprouts_22",
+      "branch": "clean",
+      "manifest_sha256": "882268fe52b02f3a06509a0d0590b07954fefdf416dc5d554a430eec0f0db874",
+      "review_sha256": "c23511317a008adb45a354d6e354af28594c41cc97b0f6a8fb2d768e67860415",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_brussels_sprouts_22--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist at white food-container wall in freezer, sprouts inside. Disturbed8 non-hold and clean8 grip only; no corrected phases or cooking label. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_brussels_sprouts_22",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "8e801960e9d0d4a5ec46d0dcfcbb473b99a479000351ded2e3217883617141ae",
+      "review_sha256": "7acb38071cb56166a2ba287a436af599933f253288a7229b9f2c286dfe34e341",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_brussels_sprouts_22--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist at white food-container wall in freezer, sprouts inside. Disturbed8 non-hold and clean8 grip only; no corrected phases or cooking label. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_broccolini_297",
+      "branch": "clean",
+      "manifest_sha256": "8502f63437be83c6fbf47bd5c225190fb7c6d5c88a9395e6e0a2a1c0fedf5bd5",
+      "review_sha256": "87a9aecc29a7761f75ee2a3f12876b385d8406dd1608fb05c3f8181161fde1a6",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_broccolini_297--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at white plate edge with broccoli, right fingers adjacent but not held. Open8, closure20, hold40/clean8 agree; no cooking success. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "cook_broccolini_297",
+      "branch": "open_gripper",
+      "manifest_sha256": "520e20331c5aceca04909d8e92a9336b430d3a91e32383dc7bd83cab562e06ea",
+      "review_sha256": "3eb059896276fd55912eef423f24be0ea605eebe51a8d8dd867f41d8a77af91a",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/cook_broccolini_297--open_gripper",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 20,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 40,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers at white plate edge with broccoli, right fingers adjacent but not held. Open8, closure20, hold40/clean8 agree; no cooking success. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "setup_a_bar_for_a_cocktail_party_166",
+      "branch": "clean",
+      "manifest_sha256": "8b2437ebb9dd81d2750ab0c4e44dfce65a370e75628234666c2b14886b22cc28",
+      "review_sha256": "945f8248e1c8652fb13a300dccafde90bad12f98ce5932c1937a44472098140f",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/setup_a_bar_for_a_cocktail_party_166--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist sees dark transparent stemmed wineglass on wood counter. Open8, closer36, grip56/clean8 share exact bowl/stem silhouette; no bar setup completion. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "setup_a_bar_for_a_cocktail_party_166",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "01b18fcb9e0712900902bbc9faf621cb1194e706d41ae6cfb20ddc61be4df64d",
+      "review_sha256": "29ef7ae336f755c027907d6db09352a926f5fc30a4af9fe4d5cd2eb9aefeb65d",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/setup_a_bar_for_a_cocktail_party_166--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 36,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 56,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right wrist sees dark transparent stemmed wineglass on wood counter. Open8, closer36, grip56/clean8 share exact bowl/stem silhouette; no bar setup completion. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "laying_tile_floors_214",
+      "branch": "clean",
+      "manifest_sha256": "03f1fff5ee3b205a39da26611480de309331da7b93f3f420d6157853d7eece0c",
+      "review_sha256": "95751b05d8e98fdcea5ae18b0e1b71745c3afa68b7fbd855d8d11d25201ba796",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/laying_tile_floors_214--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers on grey ceramic-tile edge, not wall/floor. Gap8, closure28, grip44/clean8 supported; no installed-tile success. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "laying_tile_floors_214",
+      "branch": "open_gripper_joint_jitter",
+      "manifest_sha256": "b89ea5879c044fc5b4726fdd6e0fdb7030dda0a9610bb3a95c4b24c4a6cbe0ff",
+      "review_sha256": "0795fc51144e3f593d5f25a5454c34e47f427db163271ecb4ff8dad332186298",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/laying_tile_floors_214--open_gripper_joint_jitter",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "FAILED"
+        },
+        {
+          "control_step": 28,
+          "value": "IN_PROGRESS"
+        },
+        {
+          "control_step": 44,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Left fingers on grey ceramic-tile edge, not wall/floor. Gap8, closure28, grip44/clean8 supported; no installed-tile success. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    },
+    {
+      "case": "sorting_books_on_shelf_47",
+      "branch": "clean",
+      "manifest_sha256": "7c56530ad99aca30a3e43ba0ef005e88d9789796fc82a1ce98082c4dfb02e591",
+      "review_sha256": "ad24fb780db084464d4131cc3c9eeb2898eb4bd548d9167efa80d50af0a6d174",
+      "review_directory": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-review-v1/sorting_books_on_shelf_47--clean",
+      "outcomes": [
+        {
+          "control_step": 8,
+          "value": "SUCCEEDED"
+        }
+      ],
+      "action_steps": [],
+      "planner_steps": [],
+      "corrective_execution_visually_verified": false,
+      "notes": "Right fingers at thin comic-book spine in shelf. Only clean8 sustained grasp; disturbed0 already held remains unlabelled, no recovery/sorting claim. Only result calibration; no TRAIN/action/planner/model selection/full-task success."
+    }
+  ]
+}

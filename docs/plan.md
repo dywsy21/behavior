@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 14:54 CST / Codex RECOVERY-USABLE：** 补97全部86页/888原RGB根亲审完成，六份`supplement97_calibration_owner_review_part{1..6}_v1.json`批准281结果＝71F/65IP/145S，0action/plan/TRAIN；review-index654e41a2…7297c1、cohort d6602374…8e8bd。搬椅50四个IP候选因另一手已满足UNSPECIFIED抓取而保持拒签，所有UNLABELLED及11失败/未复现源保留；未增加标签凑数。机器签发、两wave预选90独立组与固定v8实际校准仍待，旧20 test不读。lc3control已150/200、第100原FM+0.88%/恢复FM下降，尚未物理比较，原低RL不扩覆盖。
+
+- **2026-10-10 14:52 CST / Codex RECOVERY-USABLE：** lc3八卡control已100/200，W&B9ad353da42fa；第50原100留出FM .131833→.132727（+0.68%），恢复9DEV .019940→.018665，暂无物理收益结论。原低v7/global28六固定probe全闭：抓2/2、放2/2（104/138控）、开0/2（317/317 UNKNOWN），合4/6仍同baseline、不扩任务/不promote。补97原图SHA全验，216 F/S各六控支持独立重算过；前64页651RGB已写四份owner review共205 CAL结果，其余未签，0新CAL预测。喷壶颜色变化逐对象entity/六控核实、木头28瞬时grasp真但仅3控故仍IP；不把视觉颜色/瞬时接触当成功。
+
+- **2026-10-10 14:44 CST / Codex RECOVERY-USABLE：** 新联合v9已A800全读34ZIP/3910观察，admission e63085fe…1c942f：action30TRAIN/9DEV＝原19＋新11，所有原outcome/planner/DEV逐字段仅运输路径差异；200×2批次专家/事件/卡位投影SHA73201d73…dc1515完全同，11窗实际各抽2–10次。68条真实processor通过、224回归过。78066574新冻源`src/later-action-pair-v1`在lc3八卡tmux同名实启旧首窗control，PID4060587/torchrun4060597，ticket1807975f；candidate票41735438等待control完整结束再启动，尚未首更新。原v7已global28/fixed probe在途。补97全闭86候选/8未复现/3失败；86来源888原RGB/281候选结果已整理，尚未根审签/新CAL预测。
+
 - **2026-10-10 14:40 CST / Codex RECOVERY-USABLE：** 11晚段动作机器签发c025c8d0…db1e0fe及原ART合并全读9ZIP/2963观察通过；新单元action16TRAIN/3DEV、仍5TRAIN事件，admission cf57a47a…7e13b27，包3636438b…12cc0ad/136.5MB已本地SHA核验，迁A800中。lc3新持久SSH已恢复、8GPU实查全空，根盘满故沿run共享盘cache，不改env/队友。准备同L0/200父的两路200更新对照：旧首窗 vs 新晚段、事件权重/专家样本/顺序/卡位完全相同；新增独立anchor RNG可选协议/7定向回归过，旧默认不变。训练尚未启动；低原v7 global27继续，补97待最终receipt/根签。
 
 - **2026-10-10 14:27 CST / Codex RECOVERY-USABLE：** 新中后段材料`later-action-review-v1`（c9680d0d，index9f9b2589…8d6e1f）五TRAIN/15候选窗已完整迁本地、40sheet/5review逐SHA过，根逐图亲审459原RGB面板。只人工批准11窗，明确拒clean_boxing_gloves196的1176/1460与280的1228/1524：完整窗口开度分别静止在.27715/.28062且臂撤离/换位，不因整条最终成功当正确BC；不造FAILED。新许可记录`recovery_later_action_owner_review_v1.json`，机器签发/合并/全读待，尚未训练。补97已83终态＝72候选/8未复现/3工程fail，后3全为exact-category库存缺失/0snapshot restore，保留全分母、不猜别名/不自动重试；原采集/后处理链继续。低global26仍原窗口，暂无可靠RL增益。
