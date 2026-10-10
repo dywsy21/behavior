@@ -1,0 +1,29 @@
+{
+  "schema": "prospective_observer_adapter_calibration_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "root": "/data/workspace/wsy/behavior2026",
+  "source_pool": "src/observer-exposure-quarantine-v1/configs/recovery_sft/observer_calibration_pool_v3.json",
+  "source_pool_sha256": "8da1661b2fa91534803d59bdf29f068413988ecf5533b177e624a4fdd6dbc933",
+  "cohorts": [
+    {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/grasp-cohort-v2.json",
+      "sha256": "b1a9329f574062a73694bac0347dbb6c58f0020529340900443315a0e978b2ea"
+    },
+    {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-cohort-v1.json",
+      "sha256": "d66023744fe026a1d23fd084149d5cbe1981206a7131a09270cb22a18a48e8bd"
+    }
+  ],
+  "fit_result": "runs/recovery_heterogeneous_20261010/H0-observer-adapter-v8-retry-unknown-v1/result.json",
+  "fit_result_sha256": "14abb9e0e8fd7f84fa9330bcadca65c00826ffb80862b798e32f17fc4b8c7e94",
+  "fit_config": "src/observer-v8-retry-unknown-v1/configs/recovery_sft/a800_observer_adapter_v8_retry_unknown_v1.json",
+  "selected_observer": "runs/recovery_heterogeneous_20261010/H0-observer-adapter-v8-retry-unknown-v1/checkpoints/selected.pt",
+  "selected_observer_sha256": "b598b950f54fc3515fd213f13d77e7e4b869de07462b728471b5954a6ea47041",
+  "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+  "corpus": "datasets/recovery-observer-calibration-union-20261010-v2",
+  "admission": "datasets/recovery-observer-calibration-union-20261010-v2/admission",
+  "admission_sha256": "d86e5b1851d978fc8df2caf2cd6d426e1b371ad98dd6f6ea6e548dcd684d76d5",
+  "anchor_selection": "runs/recovery_observer_fresh_calibration_20261010/pool-v3-anchor-selection-v1.json",
+  "anchor_selection_sha256": "f1c0a7fc7aa98a13f5ff55826c67cb8c0266943be283bd4b6da4a1f8ef0efbf8",
+  "interpretation": "Model-prediction-blind pool-v3 after explicit actual-fit exposure quarantine. All187 attempts retained:23 physical/reference unavailable,4 available-but-previously-exposed,160 independently eligible. Deterministic90 unique phase anchors(30each),70 eligible reserves not forwarded; old20test unread. Exact b598/bee/fit unchanged. Fit temperature only at unchanged confidence/statistical gates; no checkpoint reselection or automatic deployment."
+}

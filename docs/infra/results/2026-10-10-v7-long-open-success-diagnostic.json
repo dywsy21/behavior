@@ -1,0 +1,76 @@
+{
+  "schema": "short_skill_long_train_success_diagnostic_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "reviewed_at": "2026-10-10T15:24:00+08:00",
+  "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/short-rl-v7-real-continuation",
+  "config_sha256": "f3b0ed3e9491615682d789257521dad26030da9d8ccec4194e21e9228954f130",
+  "denominator": {
+    "first_completed_open_train_episodes": 10,
+    "physical_successes": 2,
+    "unknown_timeouts": 8,
+    "fixed_original_horizon_eval_at_update28": {
+      "successes": 0,
+      "episodes": 2
+    }
+  },
+  "root_review": {
+    "sheets": 2,
+    "camera_panels": 30,
+    "notes": "Both sheets show the registered washer door, release/reposition phases and later renewed door interaction; final physical criterion is verified against washer_ynwamu_0, not the adjacent dryer or a closed gripper. Root inspected all sampled video/original-start panels. Full actual controls, exact semantic target, restore error and lossless boundary archives independently recomputed. No assertion that each intermediate action is a correct BC target."
+  },
+  "episodes": [
+    {
+      "training_round": 6,
+      "policy_version": 25,
+      "seed": 44243,
+      "run": "/run/ti/rl_memlite_stage1_20261006/runs/recovery_heterogeneous_20261010/short-rl-wash169-continuation-v7-episode-000010/train-0006-44243",
+      "actual_controls": 896,
+      "success": true,
+      "outcome": "SUCCEEDED",
+      "final_physical": {
+        "semantic_skill_sha256": "63369bc1d6a37e0cabd50ac14d87196b44dabddfc5571a068b73c2ca346466d1",
+        "exact_binding_verified": true,
+        "target_native_name": "washer_ynwamu_0",
+        "actor_input": false,
+        "official_open": true,
+        "directed_open_fraction": 0.36949338422119826
+      },
+      "audit_sha256": "0b001e694c4ff3673c08baf8dacc1419a0ae72df1c9c9db5dd8766ddbc2ffc2f",
+      "sheet_sha256": "72f46b85da38cd8503193207da9adab2f5676eda132d9b216271872313b1d2e2",
+      "controls_sha256": "ab35206865cb7a9437c3e4945e07fee218e9014f83f29e73cef2967efff18ca3",
+      "policy_video_sha256": "b8ac69fd225d08f3283fd49232c9069f229ff3a236d9e60c23de3957514de359",
+      "reset_proprio_error": 0,
+      "reset_target_error": 0
+    },
+    {
+      "training_round": 8,
+      "policy_version": 27,
+      "seed": 46261,
+      "run": "/run/ti/rl_memlite_stage1_20261006/runs/recovery_heterogeneous_20261010/short-rl-wash169-continuation-v7-episode-000012/train-0008-46261",
+      "actual_controls": 869,
+      "success": true,
+      "outcome": "SUCCEEDED",
+      "final_physical": {
+        "semantic_skill_sha256": "63369bc1d6a37e0cabd50ac14d87196b44dabddfc5571a068b73c2ca346466d1",
+        "exact_binding_verified": true,
+        "target_native_name": "washer_ynwamu_0",
+        "actor_input": false,
+        "official_open": true,
+        "directed_open_fraction": 0.3935095105903539
+      },
+      "audit_sha256": "4bd97ba54471f6100b4c93acf6ecd94d7f0f286cdd11e9d0b5aee21dba44c718",
+      "sheet_sha256": "b03d94fb93aec7c291bfbfac0b5e708f0b3c2e00fc264af1d56d415896aed029",
+      "controls_sha256": "8475d25dadd79b815082e0104e205635a5099f5e32753b3dadb1b876464b6f6a",
+      "policy_video_sha256": "dd84e1184a51a46253377a6191346bf32350da587d7fb9b05ea025df8e874648",
+      "reset_proprio_error": 0,
+      "reset_target_error": 0
+    }
+  ],
+  "conclusions": {
+    "true_local_physical_success_evidence": true,
+    "causal_rl_improvement_demonstrated": false,
+    "whole_task_sr": false,
+    "training_approval": false,
+    "limitation": "Stochastic TRAIN rollouts use up to1268controls, whereas fixed probes allow317. No identical long-horizon pre-RL baseline exists yet; two TRAIN successes alone neither prove improvement nor justify lowering the original probe criterion. Keep all failed/UNKNOWN attempts."
+  }
+}

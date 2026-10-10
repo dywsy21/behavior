@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 15:24 CST / Codex RECOVERY-USABLE：** 新pool-v3已在0预测下冻结90组/30各相位，selection f1c0a7fc…f0efbf8，187全分母/23物理不可用/4暴露隔离/70合格reserve；原fit的78组在两端明确排除，新校准绑定配方完成，尚待实际GPU结果。低长OPEN两成功已独立重算1765真实控及全部无损边界，根看2sheet/30相机面板，精确washer_ynwamu_0末开度.369493/.393510、original success门不变；中段松手/后段再接触仍不顺滑，不给整段BC许可。诊断摘要`docs/infra/results/2026-10-10-v7-long-open-success-diagnostic.json`，2/10随机TRAIN不冒充同预算前后对照/完整SR；原v7继续。
+
 - **2026-10-10 15:21 CST / Codex RECOVERY-USABLE：** 暴露隔离新联合v2实际全读293ZIP/17,449观察通过；仅移出由原fit证实的4组14条CAL审批，新513 CAL/160独立组、0TRAIN，admission d86e5b18…84d76d5，隔离原签名逐条留在`exposure-quarantine.json`，旧527单元不改。新pool-v3预选准备中、仍0模型预测。原v7两条长OPEN成功轨迹（第6/8训练轮）已提交独立逐控reward/ACK/起点/归档重算及原图sheet生成，尚待根亲看；这是审计真实信号不是更改成功门或给旧RL提前升格。
 
 - **2026-10-10 15:18 CST / Codex RECOVERY-USABLE：** 实际fit暴露审计补齐：187中共5个既见DEV，4个有审图材料，另lunchbox106原本已列物理不可用。新pool-v3保留23物理缺测与4可用但暴露隔离，160合格组预选90/余70reserve；五个暴露身份全部公开留档。准入合并只允许隔离由原fit admission实际证实的CAL结果，原标签/审批不改、不得删TRAIN/动作/意图；预选与GPU两端均再次核实际fit。新DEV-only导出强制传原observer-fit config排除真实TRAIN/选择DEV，修复只看inventory的根因。230恢复回归过，未重跑采集/训练或读新预测，当前校准仍未通过。
