@@ -87,6 +87,8 @@ class A4DirectPPO:
         microbatch_size: int = 1,
         reward_protocol: str | None = None,
         critic_descent_guard: bool = False,
+        critic_restart_stale_momentum: bool = False,
+        critic_update_audit: bool = False,
     ) -> None:
         if not 0 < transition_std < 1:
             raise ValueError("transition_std must be in (0, 1)")
@@ -108,6 +110,12 @@ class A4DirectPPO:
         if type(critic_descent_guard) is not bool or (critic_descent_guard and self.reward_protocol!='skill_aligned_v1'):
             raise ValueError('Critic descent guard is an explicit short-skill protocol choice')
         self.critic_descent_guard = critic_descent_guard
+        if type(critic_restart_stale_momentum) is not bool or (critic_restart_stale_momentum and not critic_descent_guard):
+            raise ValueError('Explicit critic restart requires the same-batch descent guard')
+        self.critic_restart_stale_momentum = critic_restart_stale_momentum
+        if type(critic_update_audit) is not bool or (critic_update_audit and not critic_descent_guard):
+            raise ValueError('Exact critic replay audit needs the detached-feature descent guard')
+        self.critic_update_audit=critic_update_audit
         self.update_count = 0
         self.actor_update_count = 0
         self.next_experience_id = 0
@@ -368,6 +376,8 @@ class A4DirectPPO:
                                 "target_kl": self.target_kl,
                                 "max_clip_fraction": self.max_clip_fraction,
                                 "critic_descent_guard": self.critic_descent_guard,
+                                "critic_restart_stale_momentum": self.critic_restart_stale_momentum,
+                                "critic_update_audit": self.critic_update_audit,
                                 "nominal_critic_lr": self.critic_lr},
             "action_expert": self.policy.model.action_expert.state_dict(),
             "critic": self.critic.state_dict(),
@@ -546,8 +556,14 @@ class A4DirectPPO:
                 cached_values = self.critic(cached_critic_features).float().cpu()
             if not torch.allclose(cached_values,old_values,atol=1e-5,rtol=1e-5):
                 raise RuntimeError('Cached critic observations no longer reproduce on-policy values')
+            if self.critic_update_audit:
+                from critic_descent import save_critic_update_audit
+                save_critic_update_audit(self.output_dir/f'critic-update-{self.update_count+1:06d}.pt',
+                    self.critic,self.critic_optimizer,cached_critic_features,return_tensor.cuda(),
+                    [dict(experience_id=r[0],local_subgoal=r[1]['local_subgoal'],old_value=r[1]['old_value']) for r in records])
             critic_guard_metrics = guarded_critic_step(self.critic,self.critic_optimizer,cached_critic_features,
-                                                       return_tensor.cuda(),learning_rate=self.critic_lr)
+                return_tensor.cuda(),learning_rate=self.critic_lr,
+                restart_stale_momentum=self.critic_restart_stale_momentum)
         else:
             self.critic_optimizer.step()
         critic_after=[]

@@ -23,6 +23,7 @@ from behavior_branch_state import restore_branch_metadata
 from skill_aligned_reward import SkillIdentity,SkillReward,validate_placement_start
 from skill_sim_measurements import OmniSkillMeasurements,vector
 from recovery_gpu_ownership import owns_short_skill_auxiliary
+from skill_observation_archive import SkillObservationArchive
 from wire import packb,unpackb
 
 
@@ -35,6 +36,9 @@ def main():
     a=ap.parse_args();cfg=json.loads(a.config.read_text());case=cfg['cases'][a.case];source_spec=case['sim']
     if cfg.get('schema')!='short_skill_rl_a800_v1' or cfg.get('user_goal_authorized') is not True:
         raise ValueError('Explicit short-skill goal recipe required')
+    archive_protocol=cfg.get('observation_archive','disabled')
+    if archive_protocol not in ('disabled','lossless_chunk_boundaries_v1'):
+        raise ValueError('Unknown exact-observation archival contract')
     if a.output.exists() or subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
         raise ValueError('New output and clean frozen source required')
     official=json.loads((REPO/'scripts/eval/memlite_sft100/official_manifest.json').read_text())
@@ -231,6 +235,11 @@ def main():
                     socket.send(packb(dict(op='begin',job_id=job['id'],initial_evidence=physical)))
                     ack=unpackb(socket.recv(timeout=1800))
                     if ack.get('status')!='begun' or ack['identity']!=asdict(identity):raise ValueError('Begin identity mismatch')
+                    archive=None
+                    if archive_protocol=='lossless_chunk_boundaries_v1':
+                        archive=SkillObservationArchive(episode/'observations',identity,
+                            policy_version=assignment['policy_version'],policy_sha256=assignment['policy_sha256'],start_control=begin)
+                        archive.append(identity,t,current)
                     receipt.update(status='executing',job=job,completed_episodes=completed);atomic_json(a.output/'status.json',receipt)
                     video=iio.get_writer(str(episode/'policy.mp4'),fps=15,codec='libx264',macro_block_size=None)
                     try:
@@ -263,6 +272,7 @@ def main():
                                         or response['identity']!=asdict(identity) or response['final_reward']!=dict(last,identity=asdict(identity))
                                         or response['ended']!=(last['terminated'] or last['truncated'])):
                                     raise ValueError('A800 reward/GAE ACK differs from actual simulator measurements')
+                                if archive is not None:archive.append(identity,t,current)
                                 if response['ended']:break
                     finally:
                         if video is not None:video.close()
@@ -271,6 +281,10 @@ def main():
                         policy_sha256=assignment['policy_sha256'],skill_success=last['skill_success'],outcome=last['outcome'],
                         scored_controls=t-begin,restore_controls=len(reset_indices),seconds=time.monotonic()-episode_start,
                         controls_sha256=sha256(episode/'controls.jsonl'),optimizer_on_this_host=False,whole_task_sr=False)
+                    if archive is not None:
+                        final['observation_archive']=dict(protocol=archive_protocol,
+                            manifest_sha256=sha256(archive.root/'manifest.json'),
+                            observations_sha256=sha256(archive.root/'observations.jsonl'))
                     atomic_json(episode/'result.json',final);receipt.update(status='between_episodes',completed_episodes=completed)
                     atomic_json(a.output/'status.json',receipt)
                     if a.single_episode:
