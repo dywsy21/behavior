@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 21:53 CST / Codex RECOVERY-USABLE：** 固定v11新校准时序GPU回放已全4闭合/39检查/561原ACK，69.28s；实际模型前后指纹4425283d…3b48相同，旧命令/非反馈高层输入/计数逐项保持，0新生成/控制/优化。结果`H0-observer-v11-calibrated-stream-v1/result.json`与checks9168119e…7b773，具体预测分布正复核；这是校准接线工程证据，不是新高层闭环/独立准确率。新增通用native learner数据出口与读取器仅准备真实s[t]＋ACK t+1…t+32，旧已签5窗、单源事件权重不变，4时钟/跨源/policy/尾部/23维精度测试过；尚未真实导出/processor/新训练。
+
+- **2026-10-10 21:49 CST / Codex RECOVERY-USABLE：** lc3两路v2的CPU真实VideoDecoder导入已过、tmux存活/模型加载中，尚无生成行；启动库路径错误已越过。lc1 GPU0新`observer-v11-calibrated-stream-v1`/16d2ab90实启原四episode/41观测/561ACK只读GPU回放，原bee+b0模型/.85温度门、GRASP-only预测，旧高命令固定不再生成、0新控制/优化；run `H0-observer-v11-calibrated-stream-v1`，尚待终态。原低wash169事件确有4已批专家窗，因此新的5 learner窗将只补同一原来源事件的候选相位，不能将窗口数当5新事件加权。
+
 - **2026-10-10 21:47 CST / Codex RECOVERY-USABLE：** final两路改独立v2输出/tmux，同a260源/89907权重、原v1错误manifest/log保留；wrapper显式source既有激活脚本，先分配共享盘run-owned TMPDIR/cache，再CPU导入VideoDecoder成功门后才载模型。单独CPU尝试亦遇lc3系统/tmp与home已满，故不能省掉既有run缓存步骤；未删除队友文件/改共享env。新运行待progress确认。四旧闭环calibrated replay入口已321回归/编译过，明确重放旧命令、不重新高生成/物理或称校准泛化成功，下一独立GPU。
 
 - **2026-10-10 21:46 CST / Codex RECOVERY-USABLE：** 两路final生成v1均在首原视频读取前退出，0生成；启动wrapper漏source既有`activate_a800_training.sh`，torchcodec加载报缺libnppicc.so.12，不是权重或数据错误。GPU0/1已空，原run manifest/log/cache保留；拟同a260源/同权重数据独立v2输出仅补已有库路径，先CPU导入decoder再重启。不改共享env/原失败源，也不以无progress称仍在加载。校准replay入口与新鲜session factory仅本地实现、321回归通过，GPU验收待。

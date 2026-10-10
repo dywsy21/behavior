@@ -15,6 +15,7 @@
   "trajectory_reviews": [
     {
       "round": 6,
+      "index_relative_path": "rl-success-wash169-round6-action-review-v1/index.json",
       "seed": 44243,
       "job_id": "d36b9c1a35e31f994a0741a0d969acead66311b25634af3032b283408b2e4020",
       "index_sha256": "f11393c8be2606c3ff8e8344a6c969c739f7ec63e76893f0852805324505496a",
@@ -34,6 +35,7 @@
     },
     {
       "round": 8,
+      "index_relative_path": "rl-success-wash169-round8-action-review-v1/index.json",
       "seed": 46261,
       "job_id": "4d29f53a80048fcc6f37faccbe3a1a163979afb6b00177fa80b1aefe1b5f73b2",
       "index_sha256": "80e477f534d51e12cd55c0177720ed07fca9bf8bd6376f8b4221a80d908aaadd",
