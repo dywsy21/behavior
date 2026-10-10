@@ -20,7 +20,7 @@ REPO=Path(__file__).resolve().parents[4]
 sys.path[:0]=[str(REPO/'src'),str(REPO/'scripts/eval/memlite_sft100'),str(Path(__file__).resolve().parents[1]/'code')]
 from common import atomic_json
 from recovery_corpus import digest,file_sha
-from skill_training_protocol import SkillTrainingSession
+from skill_training_protocol import SkillTrainingSession,rollout_end_control
 from skill_policy_adapter import SingleFrameSkillAdapter
 from skill_rounds import SkillRounds
 from skill_cold_worker import validate_baseline_acceptance,finished_workers
@@ -41,6 +41,8 @@ async def main():
             ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
         raise ValueError('Select one actually idle A800, do not displace another process')
     cases=cfg['cases']
+    training_multiplier=cfg.get('training_rollout_multiplier',1)
+    for case in cases.values():rollout_end_control(case,'train',training_multiplier)
     if (len({json.loads(v['semantic_bundle'])[0]['verb'] for v in cases.values()})<3
             or any(v['original_split']!='train' or v['recovery_split']!='train' for v in cases.values())):
         raise ValueError('Need three admitted TRAIN skill mechanisms, never DEV/public test')
@@ -82,14 +84,20 @@ async def main():
             parent_sha256=cfg['model']['sha256'],stats_sha256=cfg['stats_sha256'],
             case_contracts_sha256=digest(cases),high_layer_fixed=True,updates=resume['updates']))
         receipt['resume'] = resumed
+        receipt['resume']['new_training_rollout_multiplier']=training_multiplier
         trainer.checkpoint_extra['resumed_from_sha256'] = resume['sha256']
     from importlib.util import spec_from_file_location,module_from_spec
     spec=spec_from_file_location('_short_skill_digests',REPO/'scripts/train_memlite_recovery.py')
     mod=module_from_spec(spec);spec.loader.exec_module(mod)
     frozen_before=mod.parameter_digest(policy,frozen=True)
     rounds=SkillRounds(cases,cfg['evaluation_seeds'],rounds=cfg['learning_rounds'],run=str(a.output),
-        seed_round_offset=cfg.get('training_seed_round_offset',0))
+        seed_round_offset=cfg.get('training_seed_round_offset',0),
+        evaluation_interval_updates=cfg.get('evaluation_interval_updates',1))
     receipt['training_seed_round_offset']=rounds.seed_round_offset
+    receipt['evaluation_interval_updates']=rounds.evaluation_interval_updates
+    receipt['training_rollout_multiplier']=training_multiplier
+    trainer.checkpoint_extra.update(training_rollout_multiplier=training_multiplier,
+        fixed_evaluation_horizon='original_reference_interval_unchanged')
     version=trainer.update_count
     policy_sha=cfg['resume']['sha256'] if resumed else cfg['model']['sha256']
     sessions={};next_eval_id=10**9
@@ -199,7 +207,8 @@ async def main():
                                 or request['job_id']!=current_job['id'] or request['job_id'] in sessions):
                             raise ValueError('Unbound/duplicate real reset')
                         session=SkillTrainingSession(cases[current_job['case']],session=str(a.output),episode=current_job['id'],
-                            policy_version=version,policy_sha256=policy_sha,initial_evidence=request['initial_evidence'])
+                            policy_version=version,policy_sha256=policy_sha,initial_evidence=request['initial_evidence'],
+                            phase=current_job['phase'],training_rollout_multiplier=training_multiplier)
                         sessions[current_job['id']]=session
                         response=dict(status='begun',identity=asdict(session.identity),policy_version=version,policy_sha256=policy_sha)
                     elif op=='action':
@@ -219,6 +228,7 @@ async def main():
                             targets=session.training_targets() if current_job['phase']=='train' else []
                             result=dict(job=current_job,success=session.last['skill_success'],outcome=session.last['outcome'],
                                 actual_controls=session.rollout.step-session.case['start_control'],
+                                reference_end_control=session.case['end_control'],policy_end_control=session.policy_end_control,
                                 policy_version=version,policy_sha256=policy_sha,whole_task_sr=False)
                             with (a.output/'episodes.jsonl').open('a') as stream:stream.write(json.dumps(result)+'\n')
                             wb.log({'train/update':version,f"{current_job['phase']}/{current_job['case']}/success":int(result['success']),

@@ -24,6 +24,7 @@ from skill_aligned_reward import SkillIdentity,SkillReward,validate_placement_st
 from skill_sim_measurements import OmniSkillMeasurements,vector
 from recovery_gpu_ownership import owns_short_skill_auxiliary,owns_collection_auxiliary
 from skill_observation_archive import SkillObservationArchive
+from skill_training_protocol import rollout_end_control
 from wire import packb,unpackb
 
 
@@ -36,6 +37,8 @@ def main():
     ap.add_argument('--peer-collection',type=Path)
     ap.add_argument('--peer-collection-commit')
     a=ap.parse_args();cfg=json.loads(a.config.read_text());case=cfg['cases'][a.case];source_spec=case['sim']
+    training_multiplier=cfg.get('training_rollout_multiplier',1)
+    rollout_end_control(case,'train',training_multiplier)
     if bool(a.peer_collection)!=bool(a.peer_collection_commit):
         raise ValueError('An explicit collection directory and its frozen commit must be supplied together')
     if a.peer_collection and (not (a.peer_collection/'status.json').is_file()
@@ -197,6 +200,7 @@ def main():
                     if assignment.get('status')=='wait':time.sleep(1);continue
                     if assignment.get('status')!='job' or assignment['case']!=case:raise ValueError('Unbound job assignment')
                     job=assignment['job'];episode=a.output/(job['phase']+'-'+str(job['round']).zfill(4)+'-'+str(job['seed']))
+                    policy_end=rollout_end_control(case,job['phase'],training_multiplier)
                     episode.mkdir(exist_ok=False);episode_start=time.monotonic()
                     receipt.update(status='restoring',job=job,completed_episodes=completed)
                     atomic_json(a.output/'status.json',receipt)
@@ -256,7 +260,7 @@ def main():
                     video=iio.get_writer(str(episode/'policy.mp4'),fps=15,codec='libx264',macro_block_size=None)
                     try:
                         with (episode/'controls.jsonl').open('x',buffering=1) as log:
-                            while t<case['end_control']:
+                            while t<policy_end:
                                 common=dict(identity=asdict(identity),policy_version=assignment['policy_version'],policy_sha256=assignment['policy_sha256'],control_step=t)
                                 socket.send(packb(dict(op='action',observation=current,**common)))
                                 result=unpackb(socket.recv(timeout=1800))
@@ -267,7 +271,7 @@ def main():
                                     term,trunc,_=evaluator._apply_actions(torch.as_tensor(command.copy())[None],[0]);t+=1;receipt['actual_controls']+=1
                                     measurement,physical=sensor.read(identity)
                                     last=reward.advance(identity,t,measurement,protected_values={},official_terminal=bool(term[0]),
-                                                        time_limit=bool(trunc[0]) or t==case['end_control'])
+                                                        time_limit=bool(trunc[0]) or t==policy_end)
                                     control=dict(control_step=t,simulator_apply_ack=True,action_executed_raw23=command.tolist(),
                                         physical_evidence=physical,official_terminal=bool(term[0]),official_truncated=bool(trunc[0]))
                                     controls.append(control);current=observable()
@@ -292,6 +296,7 @@ def main():
                     final=dict(job=job,identity=asdict(identity),policy_version=assignment['policy_version'],
                         policy_sha256=assignment['policy_sha256'],skill_success=last['skill_success'],outcome=last['outcome'],
                         scored_controls=t-begin,restore_controls=len(reset_indices),seconds=time.monotonic()-episode_start,
+                        reference_end_control=case['end_control'],policy_end_control=policy_end,
                         controls_sha256=sha256(episode/'controls.jsonl'),optimizer_on_this_host=False,whole_task_sr=False)
                     if archive is not None:
                         final['observation_archive']=dict(protocol=archive_protocol,

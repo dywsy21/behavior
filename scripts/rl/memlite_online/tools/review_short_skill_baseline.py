@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import file_sha,digest
 from skill_aligned_reward import SkillIdentity,SkillReward,skill_measurement
+from skill_training_protocol import rollout_end_control
 
 
 def main():
@@ -31,6 +32,10 @@ def main():
         reset=json.loads((directory/'restore-diagnostics.json').read_text())
         process=json.loads((directory.parent/'result.json').read_text());job=result['job']
         key=(job['case'],job['seed']);case=cfg['cases'][job['case']]
+        policy_end=rollout_end_control(case,job['phase'],cfg.get('training_rollout_multiplier',1))
+        if (result.get('reference_end_control',case['end_control'])!=case['end_control']
+                or result.get('policy_end_control',case['end_control'])!=policy_end):
+            raise ValueError('Training/probe horizon contract changed')
         if ((not a.diagnostic and (key not in expected or job['phase']!='evaluation' or job['round']!=0))
                 or key in seen or job['phase'] not in ('evaluation','train')
                 or process['status']!='completed_single_episode' or process['completed_episodes']!=1
@@ -58,7 +63,7 @@ def main():
                     or row['policy_version']!=result['policy_version']):raise ValueError('Actual action/ACK/clock differs')
             measured=skill_measurement(skill,row['physical_evidence'])
             value=reward.advance(identity,t,measured,protected_values={},official_terminal=row['official_terminal'],
-                time_limit=row['official_truncated'] or t==case['end_control'])
+                time_limit=row['official_truncated'] or t==policy_end)
             if dict(value,identity=asdict(identity))!=row['skill_reward']:raise ValueError('Skill reward does not recompute')
         if (value['skill_success']!=result['skill_success'] or value['outcome']!=result['outcome']
                 or not (value['terminated'] or value['truncated'])):raise ValueError('False episode completion')

@@ -58,5 +58,34 @@ class RoundTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             SkillRounds(['grasp','open','place'],[25072],rounds=1,run='r',seed_round_offset=7)
 
+    def test_sparse_probes_preserve_all_train_seeds_and_force_final_probe(self):
+        def sequence(interval):
+            r=SkillRounds(['grasp','open','place'],[17,29],rounds=5,run='r',
+                seed_round_offset=13,evaluation_interval_updates=interval)
+            training=[];evaluations=[]
+            while r.phase!='finished':
+                train=r.phase=='train'
+                if train:training.append((r.round,[(j['case'],j['seed'],j['id']) for j in r.jobs]))
+                else:evaluations.append(r.round)
+                self.complete(r)
+                if train:self.assertEqual(len(r.targets),3)
+                else:self.assertEqual(r.targets,[])
+                r.advance(optimizer_completed=train)
+            return training,evaluations
+        reference,full=sequence(1)
+        self.assertEqual(full,[0,1,2,3,4,5])
+        for interval,expected in [(2,[0,2,4,5]),(4,[0,4,5]),(10,[0,5])]:
+            training,evaluations=sequence(interval)
+            self.assertEqual(training,reference)
+            self.assertEqual(evaluations,expected)
+
+    def test_sparse_probes_cannot_bypass_active_episode_or_optimizer_barrier(self):
+        r=SkillRounds(['grasp','open','place'],[17,29],rounds=5,run='r',evaluation_interval_updates=4)
+        self.complete(r);r.advance();r.take('open')
+        with self.assertRaises(ValueError):r.advance(optimizer_completed=True)
+        for interval in (0,-1,True,1.5):
+            with self.assertRaises(ValueError):
+                SkillRounds(['grasp','open','place'],[17,29],rounds=5,run='r',evaluation_interval_updates=interval)
+
 
 if __name__=='__main__':unittest.main()

@@ -9,7 +9,7 @@ import numpy as np
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_corpus import digest
-from skill_training_protocol import SkillTrainingSession,actor_observation
+from skill_training_protocol import SkillTrainingSession,actor_observation,rollout_end_control
 
 
 def skill():return dict(verb='GRASP',arm='RIGHT')
@@ -17,9 +17,9 @@ def evidence(held=False):return dict(semantic_skill_sha256=digest(skill()),exact
     arm='RIGHT',target_held_by_requested_arm=held,requested_eef_target_distance_m=.05)
 def observation():return dict(images={k:np.zeros((3,16,16),np.uint8) for k in
     ('head_rgb','left_wrist_rgb','right_wrist_rgb')},proprio=np.zeros(61,np.float32))
-def session(end=30):return SkillTrainingSession(dict(task='t',instance_id=1,start_control=0,end_control=end,
+def session(end=30,**kwargs):return SkillTrainingSession(dict(task='t',instance_id=1,start_control=0,end_control=end,
     context_id='ctx',semantic_bundle=json.dumps([skill()])),session='run',episode='ep',policy_version=0,
-    policy_sha256='a'*64,initial_evidence=evidence())
+    policy_sha256='a'*64,initial_evidence=evidence(),**kwargs)
 def message(s,op,**extra):
     if op=='ack':extra.setdefault('observation_control_step',extra['controls'][-1]['control_step'])
     return dict(op=op,identity=asdict(s.identity),policy_version=0,policy_sha256='a'*64,
@@ -30,6 +30,39 @@ def controls(n,held=False):return [dict(control_step=i+1,simulator_apply_ack=Tru
 
 
 class TrainingProtocolTests(unittest.TestCase):
+    def test_extended_training_observes_past_reference_without_relaxing_probe(self):
+        case=dict(start_control=270,end_control=587)
+        self.assertEqual(rollout_end_control(case,'train',4),1538)
+        self.assertEqual(rollout_end_control(case,'evaluation',4),587)
+        for phase in ('train','evaluation'):
+            for factor in (0,-1,True,1.5):
+                with self.assertRaises(ValueError):rollout_end_control(case,phase,factor)
+        s=session(8,training_rollout_multiplier=4)
+        s.emit(np.zeros((16,23),np.float32),experience_id=1,old_value=.5)
+        _,reward=s.ack(message(s,'ack',controls=controls(16)))
+        self.assertFalse(reward[7]['truncated']);self.assertFalse(reward[-1]['truncated'])
+        s.finish_ack(.4)
+        self.assertFalse(s.rollout.ended)
+        s.emit(np.zeros((16,23),np.float32),experience_id=2,old_value=.4)
+        rows=controls(16)
+        for row in rows:row['control_step']+=16
+        _,reward=s.ack(message(s,'ack',controls=rows))
+        self.assertTrue(reward[-1]['truncated']);self.assertEqual(reward[-1]['outcome'],'UNKNOWN')
+        s.finish_ack(.3)
+        self.assertEqual(sum(t['actual_controls'] for t in s.training_targets()),32)
+        probe=session(8,phase='evaluation',training_rollout_multiplier=4)
+        probe.emit(np.zeros((16,23),np.float32),experience_id=1,old_value=0.)
+        _,reward=probe.ack(message(probe,'ack',controls=controls(8)))
+        self.assertTrue(reward[-1]['truncated']);self.assertEqual(reward[-1]['outcome'],'UNKNOWN')
+        probe.finish_ack(0.)
+        self.assertEqual(probe.rollout.step,8)
+        solved=session(8,training_rollout_multiplier=4)
+        solved.emit(np.zeros((16,23),np.float32),experience_id=1,old_value=0.)
+        _,reward=solved.ack(message(solved,'ack',controls=controls(6,True)))
+        self.assertTrue(reward[-1]['skill_success']);self.assertTrue(reward[-1]['terminated'])
+        solved.finish_ack(0.)
+        self.assertEqual(solved.rollout.step,6)
+
     def test_actor_whitelist_and_task_isolation(self):
         s=session();s.action_input(message(s,'action'))
         bad=observation();bad['reward']=1.

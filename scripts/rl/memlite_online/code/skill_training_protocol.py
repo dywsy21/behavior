@@ -16,6 +16,20 @@ from skill_aligned_reward import SkillIdentity, SkillReward, skill_measurement
 from skill_rollout import SkillRollout
 
 
+def rollout_end_control(case,phase,training_multiplier=1):
+    """Extend only TRAIN observation windows, never the fixed probe deadline.
+
+    The reference interval still identifies the legal source/intent. Once
+    learned actions start, an annotation endpoint is not a physical failure
+    or a mandatory reset. All extra controls need normal physical ACKs.
+    """
+    begin,end=case['start_control'],case['end_control']
+    if (phase not in ('train','evaluation') or type(training_multiplier) is not int or training_multiplier<1
+            or type(begin) is not int or type(end) is not int or begin<0 or end<=begin):
+        raise ValueError('Explicit phase, valid reference interval and positive integer training multiplier required')
+    return begin+(end-begin)*(training_multiplier if phase=='train' else 1)
+
+
 def actor_observation(value):
     if set(value) != {'images', 'proprio'}:
         raise ValueError('Actor observations may not include reward, labels, clocks or physics')
@@ -31,8 +45,10 @@ def observation_hash(value):
 
 
 class SkillTrainingSession:
-    def __init__(self, case, *, session, episode, policy_version, policy_sha256, initial_evidence):
+    def __init__(self, case, *, session, episode, policy_version, policy_sha256, initial_evidence,
+                 phase='train',training_rollout_multiplier=1):
         self.case=case; self.version=policy_version; self.sha=policy_sha256
+        self.policy_end_control=rollout_end_control(case,phase,training_rollout_multiplier)
         bundle=json.loads(case['semantic_bundle'])
         if len(bundle)!=1 or case['end_control']<=case['start_control']:
             raise ValueError('Need one issued skill and its finite reference interval')
@@ -66,8 +82,8 @@ class SkillTrainingSession:
         if (not isinstance(actions,np.ndarray) or actions.shape!=(16,23)
                 or actions.dtype!=np.float32 or not np.isfinite(actions).all() or self.emitted is not None):
             raise ValueError('Expected one finite native raw23 action chunk')
-        remaining=self.case['end_control']-self.rollout.step
-        if remaining<=0:raise ValueError('Completed reference interval')
+        remaining=self.policy_end_control-self.rollout.step
+        if remaining<=0:raise ValueError('Completed declared policy rollout window')
         self.rollout.begin_chunk(experience_id=experience_id,old_value=old_value,
             policy_version=self.version,policy_sha256=self.sha,control_step=self.rollout.step,
             max_controls=min(16,remaining))
@@ -98,7 +114,7 @@ class SkillTrainingSession:
             measured=skill_measurement(self.skill,row['physical_evidence'])
             last=self.reward.advance(self.identity,row['control_step'],measured,protected_values={},
                 official_terminal=row['official_terminal'],
-                time_limit=row['official_truncated'] or row['control_step']==self.case['end_control'])
+                time_limit=row['official_truncated'] or row['control_step']==self.policy_end_control)
             self.rollout.acknowledge(last);rewards.append(dict(last,identity=asdict(self.identity)))
             self.last=last
         if (not self.last['terminated'] and not self.last['truncated']

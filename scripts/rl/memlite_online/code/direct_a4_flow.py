@@ -214,6 +214,7 @@ class A4DirectPPO:
             "actor_lr": self.actor_optimizer.param_groups[0]["lr"],
             "new_nominal_actor_lr": self.nominal_actor_lr,
             "actor_updates": self.actor_update_count,
+            "previous_training_rollout_multiplier": payload.get('training_rollout_multiplier',1),
         }
 
     @property
