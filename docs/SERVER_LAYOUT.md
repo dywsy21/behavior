@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 10:47 CST：短RL客户端工程续接
+
+- A800 `short-rl-v6-critic-restart`仍原服务e4baf78b、global14，未重启/未改训练配方。RTX `code/short-skill-collection-peer-v1`=366dde9b，三个新`runs/recovery_heterogeneous_20261010/short-rl-{radio155,wash169,tripod129}-resume3-peer-v1`及相邻episode为当前worker，GPU0/1/2；旧`resume3-v1`因ownership preflight退出，保留全部成功和失败日志。新CLI显式绑定校准采集目录/abfc83dc/PID/其他主GPU且≤512MiB辅助上下文，不允许其他任务主卡。
+- lc1 GPU4 `H1-causal-final420-initial-v1`初始100＋恢复10生成检查，源`src/recovery-initial-check-v1`=7c54c6be；高420训练已结束，非再次训练。
+
 ## 2026-10-10 10:32 CST：前瞻校准新90来源和最终高层生成
 
 - A800根下`runs/recovery_observer_fresh_calibration_20261010/grasp-sources-v1`：90原TRAIN/恢复DEV新来源，排除全部旧456group；`source-audit-v1.json`全1440依赖验收，manifest71fd766b，包`grasp-sources-v1.tar.gz`/7d78093f…d42e。源导出1531f0ae、closure审核`src/recovery-freshcal-closure-v1`/5cfbcf4c。固定观察器仍b598/bee，旧20test不动，不准这些数据参与训练/选权重。
