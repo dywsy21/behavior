@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 12:18 CST：radio客户端与校准审核链续接
+
+- RTX `code/short-skill-gpu-recheck-v1`=1210113e037313dd243eb669c0c21769d38aab5f；异质run根`short-rl-radio155-resume3-peer-v2`为新GPU0客户端，旧v1失败保留，A800仍原v6/global19，不重启服务。
+- 校准首90终态78候选/9参考未复现/3工程失败。`grasp-corpus-v1`为PYTHONPATH导入失败partial保留；同6395源以`PYTHONPATH=src`新`grasp-corpus-v2`、`grasp-cohort-v2.json`、`grasp-review-v2`，tmux`observer-fresh-review-v2`/日志`grasp-review-prepare-v2.log`。
+- 原补97等待tmux v1已停止（尚未采集）；新`observer-supplement97-v2`/`supplement-collection-v2.log`等待新review-v2全90材料及radio v2/wash v1/tripod v1全部`finished_service_window`，再开始原定`grasp-supplement-collection-v1`。禁止按旧v1 radio失败路径无限等待，亦不得重复启动已存在输出。
+
 ## 2026-10-10 12:00 CST：固定补97已迁移，等待原作业关闭
 
 - RTX source`/run/ti/rl_memlite_stage1_20261006/code/recovery-calibration-scene-v1`=ea3c54db227680baf1e47ed56f1d04f1235c66f1，显式`--reference-scene-inventory`，只扩大参考侧exact native库存，不猜别名；旧`recovery-calibration-supplement-v1`=e5fb9a9a未用于物理采集，保留。

@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 12:18 CST / Codex RECOVERY-USABLE：** RTX新radio `short-rl-radio155-resume3-peer-v2`/1210113e已真实启动、GPU preflight过并加载scene，接原A800 global19未领job（不重复已完成任务/不改配方）。首90全部终态为78候选/9参考未复现/3工程失败；原审核链因未显式PYTHONPATH误导入旧g05而失败，partial不动，同6395冻结源显式`PYTHONPATH=src`重新生成`grasp-corpus-v2`→`grasp-cohort-v2.json`→`grasp-review-v2`，仍未签标签/校准。补97待机已改`observer-supplement97-v2`，绑定新radio v2、旧wash/tripod v1和新review-v2全90材料；未开始采集。高联合部署、低可靠提升、新头校准仍未完成。
+
 - **2026-10-10 12:07 CST / Codex RECOVERY-USABLE：** 上一goal回合属实质进展（续段实现、97源全验迁移、原图流水线和scene库存修复）；本回合Git pull/fetch已同步。新实查发现radio旧worker已12:01退出，child16在GPU preflight挡PID2603769，未建episode目录/未领取job/0控制；该PID为同一自有校准sorting-books240，12:01:23完成、26秒sim shutdown、28秒preflight失败，退出竞态高度吻合但旧日志未记录确切/proc errno。A800 PID1890914仍live/global19，其余两worker继续。新增完整GPU inventory重查（不忽略missing PID、不豁免新到的foreign/主GPU、记录每次快照），198回归/编译过；准备仅新radio客户端续剩余pending任务，原server/已完成轨迹/配方不动。补97待机需改绑定到新radio终态，旧失败日志/目录全部保留。
 
 - **2026-10-10 12:03 CST / Codex RECOVERY-USABLE：** 当前安全检查点：低v6真实global19/固定probe中，18步完整结果仍GRASP2/PLACE2/OPEN0（4/6），17步3/6退步保留，**仍未证明低层可靠提升**。首90已85关闭（73候选/9未复现/3工程失败）；两个后处理/补97依赖tmux存活且仍等待，未重复启动。197恢复＋11因果反馈回归过；代码/配置/计划已feature提交，不合main。下一步按实际终态做：首90全闭→根逐原图审核；v6全20闭合→精确SHA与冻结指纹检查→按预登记新配置续段，先让补97 preflight启动再起新低worker。新观察器预测、校准、联合部署均尚未执行，goal继续，不拿代码通过或离线loss当完成。
