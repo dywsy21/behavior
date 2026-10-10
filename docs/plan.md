@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 16:23 CST / Codex RECOVERY-USABLE：** 新冻源ccb39299/配置cda3c313的三权重分相位FM只读诊断已在lc1空闲GPU1/tmux `recovery-action-phase-v1`提交，run `L0-later-action-phase-diagnostic-v1`，共享盘独立cache；241恢复回归通过，待真实前向结果。低candidate服务已ready/实跑首条，W&B7554d6906d88，RTX原GPU0–2三冷worker；v10同原规则333更新/epoch9，曲线波动，不提前选权重/宣称可用。三条链独立，不动lc2和队友。
+
 - **2026-10-10 16:21 CST / Codex RECOVERY-USABLE：** 额外只读诊断已实现：`eval_recovery_action_phases.py`比较共同L0父/两200步终态在同39已批准动作窗（30TRAIN/9原DEV）、四固定噪声seed的FM；逐事件先平均窗口再平均事件，拆GRASP/OPEN与每窗，避免新11窗把同五事件抬权。无optimizer/CAL/test/中间checkpoint挑选，3聚合反例与编译通过，尚待GPU实际运行；这用于定位“动作没学到”还是“离线学到但闭环仍偏移”，不能当成功率。两路物理candidate与v10原训练继续，活跃源码不改。
 
 - **2026-10-10 16:17 CST / Codex RECOVERY-USABLE：** control全部12与三个finish ACK/worker退出已核：0optimizer/actor指纹9d99ed30、冻结eb4b5d45前后不变；独立重算1675控制/124无损边界，根看12页180原相机面板（audit7887aad0、service dbc0763a），抓4/4、放4/4、开0/4。开门是正确白washer部分打开后松手撤离，末开度.281/.305/.290/.285；官方二值Open=true但未达预先固定功能门.35，不降低门/不把UNKNOWN写FAILED。人审摘要`docs/infra/results/2026-10-10-later-action-control-owner-review.json`。下一同501服务/427客户端、GPU2 A800+RTX0–2的candidate已提交载入，未称新物理结果；v10已222更新继续。

@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 16:23 CST：低层配对候选与相位诊断
+
+- A800根`/data/workspace/wsy/behavior2026`、异质run根`runs/recovery_heterogeneous_20261010`。只读control已完整关闭，根审材料RTX及本地`later-action-control-review-v1`；A800 GPU2当前`later-action-candidate-probes-v1`、源50193209、端口18976、W&B7554d6906d88。RTX源仍`code/later-action-physical-v2`/42728c3f，GPU0–2 `later-action-candidate-{radio155,wash169,tripod129}-probes-v1`，对照原12冷起点/seed，非新训练。
+- A800 GPU1 `L0-later-action-phase-diagnostic-v1`、tmux `recovery-action-phase-v1`、新源`src/recovery-action-phase-v1`/ccb39299；三固定权重×39已批准窗×4noise seed，只读FM诊断，独立`.runtime-cache`，无新SFT/CAL/成功率授权。GPU0 observer v10继续，W&B903aca8affe0。
+
 ## 2026-10-10 15:59 CST：A800新SFT、结果头与只读物理对照
 
 - A800根仍`/data/workspace/wsy/behavior2026`，以下训练/策略run相对`runs/recovery_heterogeneous_20261010`。lc3两路`L0-startonly-continuation-v1`、`L0-later-actions-v1`均完成200步，最终`checkpoints/step_00000200_save_0004.pt`分别51e2c772…fee302c、0c523beb…13400ca5；不得覆盖为默认模型。完整轻量对照见`docs/infra/results/2026-10-10-later-action-sft-pair.json`。
