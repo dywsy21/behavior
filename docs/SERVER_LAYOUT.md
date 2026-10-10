@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 10:58 CST：前瞻校准审核工具已准备
+
+- RTX `code/recovery-fresh-cohort-review-v1`=6395f74a，`runs/recovery_observer_fresh_calibration_20261010/source-audit-v1.json` SHA fbbc507f52a7f66a678285b9d856a0fabc9b62223a2c23bf6a37ea05e19e0c75。采集仍abfc83dc不热改；待其全部90实际关闭，使用`prepare_local_recovery_corpus.py`→`prepare_prospective_calibration_cohort.py`→`prepare_independent_outcome_review.py`，必须保留未复现来源的原receipt/分母，不产生人工批准或训练许可。旧20test仅引用`configs/recovery_sft/independent_outcome_cohort_v1.json`元数据，不读取图像/预测。
+- lc1 `H1-causal-final420-initial-v1`已110生成完；result/rows本地同名`artifacts/recovery-heterogeneous-20261010`已保存。初始100与bee父身份/target全相同、85对15错全部保持；final高权重仍`H1-causal-feedback-fit-v1/checkpoints/step_00000420_save_0009.pt`，不是新的checkpoint。
+
 ## 2026-10-10 10:47 CST：短RL客户端工程续接
 
 - A800 `short-rl-v6-critic-restart`仍原服务e4baf78b、global14，未重启/未改训练配方。RTX `code/short-skill-collection-peer-v1`=366dde9b，三个新`runs/recovery_heterogeneous_20261010/short-rl-{radio155,wash169,tripod129}-resume3-peer-v1`及相邻episode为当前worker，GPU0/1/2；旧`resume3-v1`因ownership preflight退出，保留全部成功和失败日志。新CLI显式绑定校准采集目录/abfc83dc/PID/其他主GPU且≤512MiB辅助上下文，不允许其他任务主卡。
