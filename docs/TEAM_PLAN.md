@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-10 08:38 CST / Codex：** B v7新联合311结果/52意图/28动作全读、processor通过；独立observer重载通过但未部署。计划lc3真实OOF→42恢复事件的H1训练（6原/2新、20遍），不使用oracle失败标签。C lc1 GPU1已global7精确重载，RTX0–2六baseline在采，W&B9e80c643bd3f；A保持原L0参考不重复。仍须真实效果/校准和H1生成验收，尚不扩任务。
+
 **2026-10-10 08:26 CST / Codex：** B选中observer真实epoch15/330（DEV91.67%/balanced81.55%、UNKNOWN2/4），lc1 GPU0独立重载在途，新数据迁移；C拟global7精确续接并补TRAIN种子offset回归，待六冷起点重新验收，不复用旧baseline许可。A不重复L0；H1实际OOF/意图实训与可靠技能增益仍待，不合main。
 
 **2026-10-10 08:16 CST / Codex：** 用户已明确允许VPN重连；lc1/lc3实通且GPU空闲，goal恢复。B结果观察器实际440更新完成/selected15、UNKNOWN仍弱，先独立权重重载与新数据；C原RL真实global7断线终止、checkpoint保留，准备新run精确续接。A原L0不重复，lc2队友不动；暂不扩100task或宣称可靠SR提升。

@@ -1,0 +1,91 @@
+{
+  "schema": "memlite_recovery_preparation_recipe_v1",
+  "owner": "Codex",
+  "root": "/data/workspace/wsy/behavior2026",
+  "preferred_node": "10.19.7.3",
+  "training_authorized_by_this_file": true,
+  "authorization": "User's active RECOVERY-USABLE goal permits further reviewed-data SFT and heterogeneous short-skill RL until verified usable; this is one measured SFT stage, not the goal endpoint.",
+  "hypothesis": "On the newly signed v7 corpus (42 TRAIN and 10 selection DEV recovery intentions), an H1 planner can learn actual RETRY commands from current RGB, predecision memory and honest out-of-fold feedback, rehearsing six original-task plans per two recovery rows. Fit the small real OOF heads first; any unvalidated prediction remains UNKNOWN, not a privileged FAILED label. This tests recovery intent supervision and observable elapsed/attempt counters, not a newly calibrated outcome observer, full-task success, or broad RL.",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "parents": {
+    "high": {
+      "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+      "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+      "step": 35
+    },
+    "low": {
+      "path": "runs/memlite_stage1_low_100task_v1/checkpoints/step_00098414_save_0021.pt",
+      "sha256": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470",
+      "step": 98414
+    }
+  },
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "seed": 17,
+  "maximum_updates_per_line": 2000,
+  "maximum_event_passes": 20,
+  "extended_event_fit": true,
+  "maximum_wall_seconds_per_line": 86400,
+  "stop_on_first_limit": true,
+  "evaluation_every_updates": 50,
+  "stopping_criteria": "Finite 20 event passes, saving at 50 updates and end; no automatic restart. Pause for nonfinite loss, invalid identity/gradient boundaries, resource conflict, or >10% original heldout loss regression at monitored checks. Completion is not deployment approval.",
+  "nccl_env": {
+    "NCCL_P2P_DISABLE": "1",
+    "NCCL_IB_DISABLE": "1",
+    "NCCL_SOCKET_IFNAME": "bond0"
+  },
+  "H0": {
+    "pool": "outcome",
+    "trainable": "temporal_adapter_and_result_head_only",
+    "learning_rate": 0.0001,
+    "weight_decay": 0.01,
+    "max_causal_checks": 4,
+    "calibration_required_before_runtime": true
+  },
+  "H1": {
+    "pool": "planner",
+    "trainable": "high_planner_only",
+    "learning_rate": 0.000001,
+    "weight_decay": 0.01,
+    "feedback": "real_group_OOF_predictions_UNKNOWN_if_uncalibrated",
+    "rehearsal": "original_100task_plans",
+    "new_high_hash_invalidates_old_calibration": true
+  },
+  "L0": {
+    "pool": "action",
+    "trainable": "low_action_expert_only",
+    "learning_rate": 0.00001,
+    "weight_decay": 0.03,
+    "rehearsal": "original_100task_actions",
+    "padding_dimensions": [
+      7,
+      8,
+      17,
+      18
+    ],
+    "predicted_actions": 32,
+    "executed_actions": 16,
+    "action_start": 0,
+    "fm_noise_samples": 4
+  },
+  "pilot": {
+    "H0_global_batch": 4,
+    "H1_L0_global_batch": 8,
+    "H1_L0_micro_batch": 1,
+    "H1_L0_world_size": 8,
+    "checkpoint_every_updates": 50,
+    "event_passes": 20,
+    "normal_to_recovery_full_batch": [
+      6,
+      2
+    ],
+    "note": "H0 three real OOF fold fits plus final small head use the pre-existing at-most-five aggregate event exposure protocol, solely for safe input provenance; insufficient confidence must stay UNKNOWN. H1 uses 20 reviewed event passes (42 events -> 420 updates), global8 on idle lc3 eight GPUs. Dedicated observer LoRA is fitted separately and is NOT substituted into OOF."
+  },
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-recovery-h1-v7-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key",
+    "new_run_required": true
+  }
+}
