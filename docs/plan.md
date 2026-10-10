@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 17:36 CST / Codex RECOVERY-USABLE：** v11独立重载result `8c49b390…28d4f0`已取本地，selected DEV CE.08186282/balanced.97916667精确复现，291/294 TRAIN及39/40 DEV，仍非盲测/部署。模型与fit结果先冻结b0f3d125/7cff7691；新30校准采集配置`observer_v11_fresh30_calibration_collection_v1.json`（24a46e0c）绑定此前纯元数据名单/原30每类门/全部652排除。源校验新增真实fit＋导出coverage＋预选名单逐身份/控制量/旧inventory SHA复核，263恢复回归通过；未采新物理/未读新模型预测，旧90已见源不能回用，原70reserve须新显式来源协议才准入。
+
+- **2026-10-10 17:33 CST / Codex RECOVERY-USABLE：** control新seed24条独立重算3650实控/264无损观察，全24sheet/360原相机面板已根亲看且SHA匹配（audit f1de14d5）。抓8/8、放4/8、开1/8；放seed419确有释放后倾倒/末速度不稳，137/173/257迟不松，开只有307在219控达原.35×6门，其余UNKNOWN保留。人审摘要`2026-10-10-later-action-replication-control-review.json`；候选臂正在载入/冷起点，不以旧四seed4/4放置外推稳定性，不混旧块统计/不更改门。v11独立重载已490真实prefill完全复现selected13/481，206 Adam状态齐全、0梯度/冻结不变、未读CAL/test；联合待当前闭环退出。
+
+- **2026-10-10 17:32 CST / Codex RECOVERY-USABLE：** candidate新种子24只读复验已提交：A800同6c7a0dfc源/lc1 GPU2/18976，`later-action-candidate-replication-v1`；RTX0–2三`later-action-candidate-{radio155,wash169,tripod129}-replication-v1`使用新50bfcb36 `code/probe-finish-cpu-v1`。与control的collector/launch/reward/protocol/archive源码逐文件Git比较完全相同，仅wrapper在全部8条闭合后CPU结束ACK、不再造第9空sim；两端实际版本分别留档。control24独立逐控和审图材料`later-action-control-replication-review-v1`正在CPU生成，尚未根审，不提前写新seed成功率；v11独立重载继续。所有原作业先核退出，未热改联合待命服务/队友。
+
 - **2026-10-10 17:29 CST / Codex RECOVERY-USABLE：** v11按原patience5在18轮/666更新完成，selected13/481 SHA `b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699`，选择DEV39/40、balanced97.92%/event98.33%；高低冻结指纹不变、CAL/test未读，尚未部署。lc1实查空闲GPU3用原2a147313源启动`H0-observer-v11-outcome-balance-reload-v1`，独立原RGB复算待。control新seed24/24及三finish ACK/RTX退出已核，0更新/指纹不变，待逐控审计根审；candidate尚未启动。新冷worker仅在全部固定seed关闭后用CPU取最终ACK，避免为结束通知多加载一次sim；259恢复回归通过，尚未部署、原control源码不动。续接fetch HEAD/upstream相同、main无新增，自有dirty补丁故未pull。
 
 - **2026-10-10 17:18 CST / Codex RECOVERY-USABLE：** A800 CPU按实际v11 fit＋全部十旧inventory排除652来源，原selector coverage5有96个“一task一全新DEV源”可选，预测前固定hash(seed17)挑30task/30来源/47,383参考控。仅元数据预览`docs/infra/results/2026-10-10-next-observer-calibration-source-preview.json`，0新RGB导出/物理/标签/预测，不是新校准已就绪或v11最终模型已选；意图是在模型选择结束后补真正新来源，保留旧90已见、70未预测reserve、旧20test全部角色，不缩30/class或统计门。联合服务a49b3fcd已GPU ready、0job待命；旧低control22/24继续。另先前seed17两开门MP4已取本地各review目录`open-seed17.mp4`，SHA与审计551e69fe/9e16a21c一致，未入Git。

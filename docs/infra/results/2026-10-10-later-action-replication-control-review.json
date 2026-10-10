@@ -1,0 +1,42 @@
+{
+  "status": "all_24_fixed_probe_sheets_owner_reviewed_after_independent_physical_audit",
+  "owner": "Codex root RECOVERY-USABLE",
+  "review_date": "2026-10-10 Asia/Shanghai",
+  "audit_sha256": "f1de14d580aca759b962264078970818cc9a272ec8488e400b8f06ae4cbd9a82",
+  "audit_path_local": "artifacts/recovery-heterogeneous-20261010/later-action-control-replication-review-v1/audit.json",
+  "policy_sha256": "51e2c772ba321f1dd0b5faad1e31264e2acceca56013baf4c97f5fa94fee302c",
+  "config_sha256": "e02171c7e6f1dbf57cc89caa7e6ef61e058b9429c5eae9b31cb875a3b41d44bb",
+  "all_media_sheet_hashes_checked": true,
+  "sheets_personally_viewed": 24,
+  "original_camera_panels": 360,
+  "actual_controls_independently_recomputed": 3650,
+  "lossless_observation_boundaries_audited": 264,
+  "seeds_for_each_case": [101, 137, 173, 211, 257, 307, 359, 419],
+  "cases": {
+    "turning_on_radio_155": {
+      "success": 8,
+      "total": 8,
+      "controls": [19, 19, 19, 19, 19, 19, 19, 19],
+      "visual_notes": "All eight sheets show the same red radio and right gripper closing around it. Independent requested-hand holding/contact persistence is satisfied. Short GRASP only, not whole radio task."
+    },
+    "wash_dog_toys_169": {
+      "success": 1,
+      "total": 8,
+      "success_seeds": [307],
+      "controls": [317, 317, 317, 317, 317, 219, 317, 317],
+      "visual_notes": "All eight target the correct white washer. Seed307 keeps contact/pulling through the functional opening gate. Other seven partially open and often withdraw/release; the fixed 0.35 opening/persistence gate is not met within the original horizon. UNKNOWN remains UNKNOWN, despite binary Open sometimes being true."
+    },
+    "attach_a_camera_to_a_tripod_129": {
+      "success": 4,
+      "total": 8,
+      "success_seeds": [101, 211, 307, 359],
+      "controls": [123, 165, 165, 61, 165, 79, 137, 165],
+      "visual_notes": "All eight show the intended tripod and floor. Four finish a stable release;137/173/257 are mostly still gripping within horizon,419 releases but tips/falls and has excessive final speed. Stable physical relation/release/speed/persistence is taken from independently recomputed controls, not inferred solely from sparse frames."
+    }
+  },
+  "new_training_or_optimizer_authorized_by_this_review": false,
+  "whole_task_sr": false,
+  "independent_instance_generalization": false,
+  "candidate_comparison_complete": false,
+  "interpretation": "Prospectively fixed new-noise block at three known TRAIN physical starts. No pooling with prior four-seed development block. Candidate arm and joint high/low behavior remain pending."
+}

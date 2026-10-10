@@ -1,0 +1,99 @@
+{
+  "schema": "prospective_observer_calibration_collection_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "declared_before_physical_collection_and_model_predictions": true,
+  "root": "/data/workspace/wsy/behavior2026",
+  "hypothesis": "Fixed completed v11 selected by the original TRAIN/selection DEV only. Metadata-blind 30 new sources supplement only the70 previously unpredicted reserves from old pool-v3; the90 already predicted old sources remain excluded, all old187 attempts/failed model receipts remain preserved, old20test untouched. This config authorizes exactly the predeclared30 first attempts, not model-dependent replacement or a changed acceptance gate. No new optimizer/model selection.",
+  "selected_observer": {
+    "path": "runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/checkpoints/selected.pt",
+    "sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "selected_step": 481,
+    "fit_result_sha256": "7cff7691913ab922a85e3b0f460293f2c1d84f93b1407c00cc7536cff21e6b56"
+  },
+  "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+  "history_protocol": "cadence16_v1",
+  "source_recipe": "configs/recovery_sft/a800_h1_causal_feedback_fit_v1.json",
+  "protected": "runs/recovery_sft_preparation_20261009/cpu-preflight-v1/protected-groups.json",
+  "source_output": "runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-sources-v1",
+  "require_actual_fit_exclusion": true,
+  "observer_fit_config": {
+    "path": "src/observer-v11-outcome-balance-v1/configs/recovery_sft/a800_observer_v11_outcome_balance_v1.json",
+    "sha256": "69912986ac2c2315df7500cb882cf255a6bbd588cefd389a1f43147027afd076"
+  },
+  "metadata_preview": {
+    "path": "docs/infra/results/2026-10-10-next-observer-calibration-source-preview.json",
+    "sha256": "7adf6ba2d7a75af43eb8e98290018761c3d3c159427da1d2a9b24197a37fe6ac"
+  },
+  "excluded_inventories": [
+    "runs/recovery100_collection_20261009/grasp-sources-v1",
+    "runs/recovery100_collection_20261009/grasp-independent-dev-sources-v1",
+    "runs/recovery100_collection_20261009/articulation-sources-v1",
+    "runs/recovery100_collection_20261009/articulation-sources-v2",
+    "runs/recovery100_collection_20261009/articulation-gap-sources-v1",
+    "runs/recovery100_collection_20261009/articulation-light-sources-v1",
+    "runs/recovery100_collection_20261009/place-in-short-sources-v1",
+    "runs/recovery100_collection_20261009/place-on-short-sources-v1",
+    "runs/recovery_observer_fresh_calibration_20261010/grasp-sources-v1",
+    "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-sources-v1"
+  ],
+  "selection": {
+    "verb": "GRASP",
+    "all_tasks": false,
+    "tasks": [
+      "boxing books up for storage",
+      "boxing food after dinner",
+      "can meat",
+      "carrying in groceries",
+      "clean a keyboard",
+      "cleaning up plates and food",
+      "collecting childrens toys",
+      "cook a frozen pie",
+      "getting organized for work",
+      "halve an egg",
+      "hanging pictures",
+      "hiding Easter eggs",
+      "installing a modem",
+      "installing a scanner",
+      "laying tile floors",
+      "make microwave popcorn",
+      "make rose centerpieces",
+      "organizing school stuff",
+      "outfit a basic toolbox",
+      "picking up trash",
+      "putting away toys",
+      "putting up Christmas decorations inside",
+      "re shelving library books",
+      "slicing vegetables",
+      "sorting bottles cans and paper",
+      "spraying fruit trees",
+      "store honey",
+      "store produce",
+      "tidying bathroom",
+      "vacuuming floors"
+    ],
+    "train_coverage": 0,
+    "dev_coverage": 5,
+    "metadata_fresh_sources": 30,
+    "metadata_tasks": 30,
+    "excluded_unique_groups": 652,
+    "expected_reference_controls": 47383,
+    "rule": "Exactly the30 metadata-only preview identities, no outcome/prediction-based substitution. Original TRAIN release, immutable recoveryDEV, all ten historical source inventories and actual78 observer fit groups excluded. Every failed attempt stays in the denominator."
+  },
+  "calibration": {
+    "per_class_target": 30,
+    "confidence": 0.85,
+    "temperature_range": [
+      0.5,
+      5
+    ],
+    "minimum_independent_actual_events": 20,
+    "minimum_independent_confident_predictions": 20,
+    "minimum_selective_precision": 0.9,
+    "minimum_precision_wilson95_lower": 0.8,
+    "maximum_false_success_wilson95_upper": 0.1,
+    "anchor_rule": "Separate pending v4 provenance must bind original70 unpredicted reserve signatures plus all30 new first attempts; exclude all90 previously predicted groups. Deterministic exactly30 independent groups per IP/S/F phase before any v11 prediction. No lower quota/threshold or new checkpoint selection.",
+    "scope": "GRASP class-balanced phase calibration only; OPEN/PLACE/general deployment not certified."
+  },
+  "resource": "CPU export/checks on lc1 shared disk; fresh frozen source only. Physical collection must wait for both fixed low arms and joint probe workers to finish; verified idle RTX resources only. No lc2/shared environment changes.",
+  "reserved_test_20_untouched": true
+}

@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-10 17:36 CST / Codex：** B v11独立加载490原图prefill实过（8c49b390），下一固定最终b0f3d125在真正未预测来源做原门校准；新30元数据配置冻结，物理待RTX两低臂及联合退出。A control新24根全部审完：抓8/放4/开1；candidate新24运行中，不混旧块。新免sim末ACK是工程优化、不变配方；C旧RL不恢复。所有来源/分母/失败留档，独立成员review仍待。
+
 **2026-10-10 17:29 CST / Codex：** B v11完成666、原DEV选第13轮/481（balanced97.92%），GPU3独立重载在途，仍需真正新CAL安全门、不部署。A control新seed24全闭、0更新，下一candidate同条件对照并逐控/根审。只读worker新增结束ACK免sim优化259回归过，不改变任一真实物理episode；独立成员review仍待，不合main。C旧RL继续保留暂停、不扩100task。
 
 **2026-10-10 17:18 CST / Codex：** B v11训练中，原选择DEV曾到97.92%balanced，不提前部署/选中间权重；CPU预测前另选30全新DEV来源、排除652既有/fit来源，尚未采集/标注，后续独立校准门保持。A低control新seed22/24继续、candidate未启；联合高低服务仅GPU预载ready/0job，物理待两臂退出。C旧RL不动，不以离线准确率扩100任务。

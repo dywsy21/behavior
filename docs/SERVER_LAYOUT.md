@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 17:32 CST：第二臂复验与免sim结束ACK
+
+- lc1 GPU2/18976/tmux/run `later-action-candidate-replication-v1`仍`src/later-action-replication-v1`/6c7a0dfc；RTX新`code/probe-finish-cpu-v1`/50bfcb36，GPU0/1/2三`later-action-candidate-{radio155,wash169,tripod129}-replication-v1`。只换结束ACK wrapper，全部真实collector/physics路径与旧源Git一致，0新训练。
+- RTX `later-action-control-replication-review-v1`为全24旧臂独立逐控/原媒体审图材料，新同名tmux/log，待完成及根人工审核；不是自动批准。
+
 ## 2026-10-10 17:29 CST：v11终态与独立加载
 
 - lc1 `H0-observer-v11-outcome-balance-v1`已666/18轮早停，`checkpoints/selected.pt` SHA b0f3d125…ad699（第13轮/481）。新GPU3/tmux/run `H0-observer-v11-outcome-balance-reload-v1`、独立同名log/cache，仍原2a147313源码；真实原图复算待，不是部署许可。
