@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 10:32 CST：前瞻校准新90来源和最终高层生成
+
+- A800根下`runs/recovery_observer_fresh_calibration_20261010/grasp-sources-v1`：90原TRAIN/恢复DEV新来源，排除全部旧456group；`source-audit-v1.json`全1440依赖验收，manifest71fd766b，包`grasp-sources-v1.tar.gz`/7d78093f…d42e。源导出1531f0ae、closure审核`src/recovery-freshcal-closure-v1`/5cfbcf4c。固定观察器仍b598/bee，旧20test不动，不准这些数据参与训练/选权重。
+- RTX根下同名run目录已同包/全SHA复验；`grasp-collection-v1`、同名`.log`，tmux`observer-fresh-cal90-v1`，源码`code/recovery-fresh-calibration-v1`/abfc83dc。使用GPU3–7，严格验证现役short-RL的其他卡小renderer辅助上下文，不动其主卡或任何队友；初始加载并发2。采集候选不等于人工签核/校准通过。
+- lc1 GPU0/2 `runs/recovery_heterogeneous_20261010/H1-causal-final420-cadence{16,128}-v1`，源`src/recovery-final-freshcal-v1`/1531f0ae；高final420 a74c5cc1…d5bf2。原step50/父128生成已结束。GPU6 observer-age已740完成，selected18/666/76c25ea6，不优于旧v8，未上线。
+
 ## 2026-10-10 10:11 CST：结果重载与低层精确续接（覆盖下方状态）
 
 - A800根不变，run均相对`runs/recovery_heterogeneous_20261010`。lc3 `H1-causal-feedback-fit-v1`已420实际更新，待supervisor终态；lc1 GPU5/7 `H1-cadence128-{parent,step50}-v1`在做部署频率诊断，源`src/recovery-cadence-archive-v1`/1b3538bc。

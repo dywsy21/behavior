@@ -95,3 +95,36 @@ def guarded_critic_step(critic, optimizer, features, returns, *, learning_rate, 
     if restart_stale_momentum:
         result['critic_first_moment_restarted']=bool(accepted and trials[-1]['first_moment_restarted'])
     return result
+
+
+def fit_cached_critic(critic, optimizer, features, returns, *, learning_rate, steps=1,
+                     restart_stale_momentum=False):
+    """Fit detached on-policy targets after ONE actor update; default unchanged.
+
+    First step uses the actual previously accumulated/clipped gradient. Extra
+    critic steps recompute only .5 * half-MSE, exactly the existing value-loss
+    coefficient. They cannot re-run the actor, change GAE targets, or attach a
+    gradient to cached observations. A failed descent search ends this fit.
+    """
+    if type(steps) is not int or steps<1:raise ValueError('Positive explicit critic fit length required')
+    curve=[]
+    for index in range(steps):
+        if index:
+            optimizer.zero_grad(set_to_none=True)
+            (.25*(critic(features)-returns).square().mean()).backward()
+            norm=torch.nn.utils.clip_grad_norm_(critic.parameters(),1.)
+            if not torch.isfinite(norm):raise ValueError('Nonfinite cached critic gradient')
+        trial=guarded_critic_step(critic,optimizer,features,returns,learning_rate=learning_rate,
+            restart_stale_momentum=restart_stale_momentum)
+        curve.append(trial)
+        if not trial['critic_updated']:break
+    # Preserve the entire old result/schema for default one-step recipes.
+    if steps==1:return curve[0]
+    accepted=[r for r in curve if r['critic_updated']]
+    return dict(critic_updated=bool(accepted),critic_half_mse_before=curve[0]['critic_half_mse_before'],
+        critic_half_mse_after=curve[-1]['critic_half_mse_after'],
+        accepted_critic_lr=accepted[-1]['accepted_critic_lr'] if accepted else 0.,
+        critic_backtracking=curve[0]['critic_backtracking'],
+        critic_first_moment_restarted=any(r.get('critic_first_moment_restarted',False) for r in curve),
+        critic_fit_requested_steps=steps,critic_fit_optimizer_steps=len(accepted),critic_fit_curve=curve,
+        actor_steps_during_cached_fit=0,targets_recomputed_during_cached_fit=False)

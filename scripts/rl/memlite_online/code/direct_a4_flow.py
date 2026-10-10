@@ -89,6 +89,7 @@ class A4DirectPPO:
         critic_descent_guard: bool = False,
         critic_restart_stale_momentum: bool = False,
         critic_update_audit: bool = False,
+        critic_fit_steps: int = 1,
     ) -> None:
         if not 0 < transition_std < 1:
             raise ValueError("transition_std must be in (0, 1)")
@@ -116,6 +117,9 @@ class A4DirectPPO:
         if type(critic_update_audit) is not bool or (critic_update_audit and not critic_descent_guard):
             raise ValueError('Exact critic replay audit needs the detached-feature descent guard')
         self.critic_update_audit=critic_update_audit
+        if type(critic_fit_steps) is not int or critic_fit_steps<1 or (critic_fit_steps>1 and not critic_descent_guard):
+            raise ValueError('Multiple detached critic fits require the explicit short-skill descent guard')
+        self.critic_fit_steps=critic_fit_steps
         self.update_count = 0
         self.actor_update_count = 0
         self.next_experience_id = 0
@@ -201,6 +205,10 @@ class A4DirectPPO:
             "critic_matches_checkpoint": critic_equal,
             "actor_optimizer_states": len(self.actor_optimizer.state),
             "critic_optimizer_states": len(self.critic_optimizer.state),
+            "critic_adam_step_min": min((float(v['step']) for v in self.critic_optimizer.state.values()),default=None),
+            "critic_adam_step_max": max((float(v['step']) for v in self.critic_optimizer.state.values()),default=None),
+            "old_critic_fit_steps": payload.get('training_config',{}).get('critic_fit_steps',1),
+            "new_critic_fit_steps": self.critic_fit_steps,
             "actor_adam_step_min": min((float(v['step']) for v in self.actor_optimizer.state.values()),default=None),
             "actor_adam_step_max": max((float(v['step']) for v in self.actor_optimizer.state.values()),default=None),
             "actor_lr": self.actor_optimizer.param_groups[0]["lr"],
@@ -378,6 +386,7 @@ class A4DirectPPO:
                                 "critic_descent_guard": self.critic_descent_guard,
                                 "critic_restart_stale_momentum": self.critic_restart_stale_momentum,
                                 "critic_update_audit": self.critic_update_audit,
+                                "critic_fit_steps": self.critic_fit_steps,
                                 "nominal_critic_lr": self.critic_lr},
             "action_expert": self.policy.model.action_expert.state_dict(),
             "critic": self.critic.state_dict(),
@@ -550,7 +559,7 @@ class A4DirectPPO:
         critic_guard_metrics = {}
         cached_critic_features = None
         if self.critic_descent_guard:
-            from critic_descent import guarded_critic_step
+            from critic_descent import fit_cached_critic
             cached_critic_features = torch.stack([r[1]['critic_features'] for r in records]).cuda()
             with torch.no_grad():
                 cached_values = self.critic(cached_critic_features).float().cpu()
@@ -561,8 +570,9 @@ class A4DirectPPO:
                 save_critic_update_audit(self.output_dir/f'critic-update-{self.update_count+1:06d}.pt',
                     self.critic,self.critic_optimizer,cached_critic_features,return_tensor.cuda(),
                     [dict(experience_id=r[0],local_subgoal=r[1]['local_subgoal'],old_value=r[1]['old_value']) for r in records])
-            critic_guard_metrics = guarded_critic_step(self.critic,self.critic_optimizer,cached_critic_features,
+            critic_guard_metrics = fit_cached_critic(self.critic,self.critic_optimizer,cached_critic_features,
                 return_tensor.cuda(),learning_rate=self.critic_lr,
+                steps=self.critic_fit_steps,
                 restart_stale_momentum=self.critic_restart_stale_momentum)
         else:
             self.critic_optimizer.step()

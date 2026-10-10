@@ -7,7 +7,7 @@ import unittest
 import torch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from critic_descent import guarded_critic_step,save_critic_update_audit
+from critic_descent import guarded_critic_step,save_critic_update_audit,fit_cached_critic
 
 
 class FlatCritic(torch.nn.Module):
@@ -89,6 +89,42 @@ class CriticDescentTests(unittest.TestCase):
             torch.testing.assert_close(saved['gradients']['weight'],self.head.weight.grad)
             torch.testing.assert_close(saved['features'],self.x)
             with self.assertRaises(FileExistsError):save_critic_update_audit(path,self.head,opt,self.x,self.y,ids)
+
+    def test_default_cached_fit_is_exact_old_step(self):
+        first=deepcopy(self.head);second=deepcopy(self.head)
+        a=torch.optim.AdamW(first.parameters(),lr=.01,weight_decay=0.)
+        b=torch.optim.AdamW(second.parameters(),lr=.01,weight_decay=0.)
+        for head in (first,second):(.25*(head(self.x)-self.y).square().mean()).backward()
+        old=guarded_critic_step(first,a,self.x,self.y,learning_rate=.01)
+        new=fit_cached_critic(second,b,self.x,self.y,learning_rate=.01)
+        self.assertEqual(old,new);self.assertTrue(torch.equal(first.weight,second.weight))
+        for key,value in a.state_dict()['state'][0].items():
+            self.assertTrue(torch.equal(value,b.state_dict()['state'][0][key]))
+
+    def test_multiple_critic_steps_keep_features_and_targets_detached_unchanged(self):
+        opt=torch.optim.AdamW(self.head.parameters(),lr=.01,weight_decay=0.)
+        (.25*(self.head(self.x)-self.y).square().mean()).backward()
+        before_x=self.x.clone();before_y=self.y.clone()
+        result=fit_cached_critic(self.head,opt,self.x,self.y,learning_rate=.01,steps=5,
+            restart_stale_momentum=True)
+        self.assertEqual(result['critic_fit_optimizer_steps'],5)
+        self.assertEqual(float(opt.state[self.head.weight]['step']),5.)
+        self.assertEqual(result['actor_steps_during_cached_fit'],0)
+        self.assertFalse(result['targets_recomputed_during_cached_fit'])
+        self.assertTrue(torch.equal(self.x,before_x));self.assertTrue(torch.equal(self.y,before_y))
+        self.assertTrue(all(r['critic_half_mse_after']<r['critic_half_mse_before'] for r in result['critic_fit_curve']))
+        for value in (0,True,1.5):
+            with self.assertRaises(ValueError):fit_cached_critic(self.head,opt,self.x,self.y,learning_rate=.01,steps=value)
+
+    def test_cached_fit_stops_after_a_skipped_search(self):
+        opt=torch.optim.AdamW(self.head.parameters(),lr=.01,weight_decay=0.)
+        self.head.weight.grad=-torch.ones_like(self.head.weight)
+        before=deepcopy(opt.state_dict());weight=self.head.weight.detach().clone()
+        result=fit_cached_critic(self.head,opt,self.x,self.y,learning_rate=.01,steps=5)
+        self.assertEqual(result['critic_fit_optimizer_steps'],0)
+        self.assertEqual(len(result['critic_fit_curve']),1)
+        self.assertTrue(torch.equal(self.head.weight,weight))
+        self.assertEqual(before,opt.state_dict())
 
 
 if __name__=='__main__':unittest.main()
