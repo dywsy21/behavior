@@ -142,7 +142,7 @@ async def main():
                     result=trainer.sample_branch(batch,[observation],[target])
                     actions=result['action'];eid=result['experience_ids'][0];value=float(result['old_value'][0])
                 else:
-                    state,_=trainer._prefix(batch);fm=trainer.fm
+                    state,_=trainer._prefix(batch,initialize_critic=not evaluation_only);fm=trainer.fm
                     dummy=torch.zeros(1,fm.horizon_steps,fm.action_dim,device='cuda',dtype=torch.float32)
                     actions=fm._sample_noise(dummy,torch.float32,[batch['samples'][0].get('embodiment')])
                     actions[...,pad.cuda()]=0;velocity=trainer._velocity_fn(state)

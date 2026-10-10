@@ -230,7 +230,7 @@ class A4DirectPPO:
         elif self.critic.network[0].in_features != features.shape[-1]:
             raise RuntimeError("A4 prefix feature dimension changed")
 
-    def _prefix(self, branch_batch: dict[str, Any]):
+    def _prefix(self, branch_batch: dict[str, Any], *, initialize_critic: bool = True):
         # The Stage1 serving builder already validates the target-free low prefix.
         # Never call the legacy six-frame policy validator on this new model.
         for sample in branch_batch["samples"]:
@@ -247,7 +247,10 @@ class A4DirectPPO:
                     or not ((remaining >= 0) & (remaining <= 1)).all()):
                 raise ValueError('Invalid critic-only remaining time')
             features = torch.cat((features, remaining.to(features.device)), dim=-1)
-        self._ensure_critic(features)
+        # Read-only SFT comparisons must not consume action RNG to initialize
+        # an unused critic on whichever worker happens to make the first call.
+        if initialize_critic:
+            self._ensure_critic(features)
         return state, features
 
     def _velocity_fn(self, state):

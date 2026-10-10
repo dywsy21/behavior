@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 15:12 CST / Codex RECOVERY-USABLE：** 90独立CAL相位预选已在任何新预测前冻结：30IP/30S/30F，selection d13f25af…11af979；187来源中23不可用、74已审可用reserve不forward、旧20测试不读。真实校准新配方固定b598/bee与原fit/admission，准备GPU0只读运行。lc3晚段完整receipt已确认200/冻结指纹一致、W&B adff3780cd14，不只是文件存在。只读执行路径检查发现旧通用prefix会初始化未用critic并消耗首请求RNG，已增加显式跳过（仅新只读模式、旧训练默认不变）及RNG回归，防止首worker到达顺序破坏配对。
+
 - **2026-10-10 15:10 CST / Codex RECOVERY-USABLE：** 补97在A800420文件逐SHA全过；两wave联合全读301ZIP/17,652观察，527已签CAL结果＝137F/121IP/269S，164来源/92task、0 TRAIN/动作/意图，admission b15aeb84…291254d。预选配方单独保留空anchor SHA以阻止提前forward，下一固定90组后绑定新配方。lc3晚段200更新已到，最终FM原100=.134654、恢复9DEV=.017445，与旧首窗.134588/.017400相近、**无loss优势或物理改善结论**；最终receipt待。已预登记两权重同12probe（3技能×seed17/29/43/71），43/71为新增固定seed，仍TRAIN起点诊断不是泛化SR；需原RL安全切换后运行。
 
 - **2026-10-10 15:06 CST / Codex RECOVERY-USABLE：** 新增两wave CAL-only联合配方，164可用来源逐group保留原cohort签名，187全分母/23不可用不删；补97整包本地SHA db734aef…37edc0通过、传A800中，尚未模型预测。另只读短技能服务新增显式`short_skill_sft_evaluation_a800_v1`，固定探针后直接结束，禁止TRAIN/PPO恢复/更新，验actor及冻结层指纹、优化器state空；10调度回归通过，尚未物理运行。低原v7/global29继续，lc3晚段candidate100/200。两类RTX仿真配方的辅助GPU上下文不能在旧白名单下互认，后续须在原RL安全检查点串行切换，不热改绕过所有权门。
