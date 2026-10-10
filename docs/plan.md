@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 16:12 CST / Codex RECOVERY-USABLE：** 新增`recovery_probe_pair.py`及`compare_later_action_probes.py`，严格要求两只读臂全部固定case/seed、原时限/科学配方相同、零更新/指纹不变/finish ACK齐全、逐控独立审计通过，才汇总逐seed得失；成功步数仅对两边均成功者条件比较，不冒充整体速度/独立任务SR。5反例/配对回归及全238恢复测试通过，尚未用于未闭合的control结果。活跃两端源未改，当前control11/12，candidate未启动。
+
 - **2026-10-10 16:08 CST / Codex RECOVERY-USABLE：** v10已有真实111更新/epoch3，zero-adapter等价与192专属LoRA梯度门通过、其余policy无梯度；早期选择DEV尚未稳定，不宣称提升/不读CAL。42728c3f新RTX v2 worker已真实执行control前10/12：GRASP4/4、PLACE4/4、OPEN前2 UNKNOWN，仍等剩2及finish ACK/冻结指纹，未启动candidate；各原时限不变。15:59目录表与v7/global32安全暂停摘要已补齐。续接fetch完成，HEAD/upstream一致、main无新增未合入；本地自身未提交文档故未pull，不热改活跃源/lc2/队友GPU4–7。
 
 - **2026-10-10 15:55 CST / Codex RECOVERY-USABLE：** v10新特征独立比对全过：377请求中198不变、179仅补真实同attempt起点，旧current/长历史及初始头全bit一致；`observer-v10-short-context-feature-pair-v1.json`绑定76284882新cache。新冻源2d95190a于lc1 GPU0/tmux `observer-v10-short-context-v1`提交同294/40的LoRA+头训练，尚待首实际更新/梯度门，不读CAL。低control三worker首启在collector旧schema门失败，发生于import/scene/reset前、0物理，旧失败run保留；A800服务仍原501/ready/0updates，不重启。将模式校验提取为service/worker/collector共用函数，只读collector禁止执行TRAIN job，233回归通过，准备新RTX源/v2 worker接入同一等待中的12个job，未掩盖物理失败。
