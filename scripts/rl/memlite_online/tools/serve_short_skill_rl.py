@@ -20,7 +20,7 @@ REPO=Path(__file__).resolve().parents[4]
 sys.path[:0]=[str(REPO/'src'),str(REPO/'scripts/eval/memlite_sft100'),str(Path(__file__).resolve().parents[1]/'code')]
 from common import atomic_json
 from recovery_corpus import digest,file_sha
-from skill_training_protocol import SkillTrainingSession,rollout_end_control
+from skill_training_protocol import SkillTrainingSession,rollout_end_control,read_only_recipe
 from skill_policy_adapter import SingleFrameSkillAdapter
 from skill_rounds import SkillRounds,SkillEvaluationRounds
 from skill_cold_worker import validate_baseline_acceptance,finished_workers
@@ -33,14 +33,7 @@ async def main():
     ap.add_argument('--config',type=Path,required=True);ap.add_argument('--output',type=Path,required=True)
     ap.add_argument('--port',type=int,required=True);a=ap.parse_args()
     cfg=json.loads(a.config.read_text());root=Path(cfg['root'])
-    evaluation_only=cfg.get('schema')=='short_skill_sft_evaluation_a800_v1'
-    if (cfg.get('schema') not in ('short_skill_rl_a800_v1','short_skill_sft_evaluation_a800_v1')
-            or cfg.get('user_goal_authorized') is not True):
-        raise ValueError('Explicit short-skill goal recipe required')
-    if evaluation_only and (type(cfg.get('learning_rounds')) is not int or cfg['learning_rounds']!=0
-            or cfg.get('resume') is not None or cfg.get('require_baseline_acceptance',False)
-            or cfg.get('training_rollout_multiplier',1)!=1):
-        raise ValueError('SFT comparison must be read-only, original-horizon and without PPO resume')
+    evaluation_only=read_only_recipe(cfg)
     if a.output.exists() or subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
         raise ValueError('Use a new run and clean frozen source')
     gpu=os.environ.get('CUDA_VISIBLE_DEVICES')

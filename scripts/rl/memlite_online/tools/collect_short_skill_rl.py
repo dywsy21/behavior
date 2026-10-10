@@ -24,7 +24,7 @@ from skill_aligned_reward import SkillIdentity,SkillReward,validate_placement_st
 from skill_sim_measurements import OmniSkillMeasurements,vector
 from recovery_gpu_ownership import owns_short_skill_auxiliary,owns_collection_auxiliary,declared_collection_peers,require_owned_gpu_inventory
 from skill_observation_archive import SkillObservationArchive
-from skill_training_protocol import rollout_end_control
+from skill_training_protocol import rollout_end_control,read_only_recipe
 from wire import packb,unpackb
 
 
@@ -47,8 +47,7 @@ def main():
         raise ValueError('Invalid frozen collection peer')
     collection_peers=declared_collection_peers(cfg.get('collection_peers',[]),
         legacy_path=a.peer_collection,legacy_commit=a.peer_collection_commit)
-    if cfg.get('schema')!='short_skill_rl_a800_v1' or cfg.get('user_goal_authorized') is not True:
-        raise ValueError('Explicit short-skill goal recipe required')
+    evaluation_only=read_only_recipe(cfg)
     archive_protocol=cfg.get('observation_archive','disabled')
     if archive_protocol not in ('disabled','lossless_chunk_boundaries_v1'):
         raise ValueError('Unknown exact-observation archival contract')
@@ -208,6 +207,8 @@ def main():
                     if assignment.get('status')=='wait':time.sleep(1);continue
                     if assignment.get('status')!='job' or assignment['case']!=case:raise ValueError('Unbound job assignment')
                     job=assignment['job'];episode=a.output/(job['phase']+'-'+str(job['round']).zfill(4)+'-'+str(job['seed']))
+                    if evaluation_only and job['phase']!='evaluation':
+                        raise ValueError('Read-only collector cannot execute a training job')
                     policy_end=rollout_end_control(case,job['phase'],training_multiplier)
                     episode.mkdir(exist_ok=False);episode_start=time.monotonic()
                     receipt.update(status='restoring',job=job,completed_episodes=completed)

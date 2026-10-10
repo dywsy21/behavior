@@ -16,6 +16,7 @@ sys.path[:0]=[str(REPO/'scripts/eval/memlite_sft100'),str(Path(__file__).resolve
 from common import atomic_json
 from recovery_corpus import file_sha
 from skill_cold_worker import next_worker_action
+from skill_training_protocol import read_only_recipe
 
 
 def main():
@@ -26,6 +27,7 @@ def main():
     p.add_argument('--peer-collection',type=Path)
     p.add_argument('--peer-collection-commit')
     a=p.parse_args();cfg=json.loads(a.config.read_text())
+    read_only_recipe(cfg)
     if bool(a.peer_collection)!=bool(a.peer_collection_commit):
         raise ValueError('Peer collection and frozen source commit must be bound together')
     peer_args=[]

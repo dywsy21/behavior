@@ -7,9 +7,21 @@ REPO=Path(__file__).resolve().parents[4]
 sys.path.insert(0,str(REPO/'scripts/rl/memlite_online/code'))
 from recovery_corpus import digest,group_key,split_group
 from skill_rounds import SkillRounds
+from skill_training_protocol import read_only_recipe
 
 
 class ShortSkillRecipeTests(unittest.TestCase):
+    def test_both_pinned_sft_probes_use_shared_readonly_mode_gate(self):
+        for name in ('control','later_actions'):
+            cfg=json.loads((REPO/f'configs/recovery_sft/a800_later_action_probes_{name}_v1.json').read_text())
+            self.assertTrue(read_only_recipe(cfg))
+            for change in (dict(schema='unregistered'),dict(learning_rounds=1),dict(learning_rounds=False),
+                    dict(resume={'path':'old-ppo'}),dict(training_rollout_multiplier=4),
+                    dict(simulator_reset_protocol='warm'),dict(user_goal_authorized=False)):
+                with self.assertRaises(ValueError):read_only_recipe(dict(cfg,**change))
+        cfg=json.loads((REPO/'configs/recovery_sft/a800_short_skill_rl_continuation_v7.json').read_text())
+        self.assertFalse(read_only_recipe(cfg))
+
     def test_three_train_mechanisms_with_bound_proofs(self):
         recipe=json.loads((REPO/'configs/recovery_sft/a800_short_skill_rl_v1.json').read_text())
         self.assertTrue(recipe['user_goal_authorized'])

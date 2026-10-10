@@ -16,6 +16,21 @@ from skill_aligned_reward import SkillIdentity, SkillReward, skill_measurement
 from skill_rollout import SkillRollout
 
 
+def read_only_recipe(cfg):
+    """Shared service/worker/simulator mode gate; a probe cannot become TRAIN."""
+    schema=cfg.get('schema')
+    if (schema not in ('short_skill_rl_a800_v1','short_skill_sft_evaluation_a800_v1')
+            or cfg.get('user_goal_authorized') is not True):
+        raise ValueError('Explicit short-skill goal recipe required')
+    readonly=schema=='short_skill_sft_evaluation_a800_v1'
+    if readonly and (type(cfg.get('learning_rounds')) is not int or cfg['learning_rounds']!=0
+            or cfg.get('resume') is not None or cfg.get('require_baseline_acceptance',False)
+            or cfg.get('training_rollout_multiplier',1)!=1
+            or cfg.get('simulator_reset_protocol')!='fresh_process_each_episode_v1'):
+        raise ValueError('SFT probes must be read-only, cold, original-horizon and without PPO resume')
+    return readonly
+
+
 def rollout_end_control(case,phase,training_multiplier=1):
     """Extend only TRAIN observation windows, never the fixed probe deadline.
 
