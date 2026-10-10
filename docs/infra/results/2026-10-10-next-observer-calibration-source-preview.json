@@ -1,0 +1,298 @@
+{
+  "status": "metadata_only_prospective30_no_export_no_labels_no_predictions",
+  "fit_config_sha256": "69912986ac2c2315df7500cb882cf255a6bbd588cefd389a1f43147027afd076",
+  "fit_admission_sha256": "89eda5e5c82e424920b24e9cb4d3ead0dd83760d119337ef319ff2a7c5dce12a",
+  "excluded_unique_groups": 652,
+  "exclusions": [
+    {
+      "path": "runs/recovery100_collection_20261009/grasp-sources-v1",
+      "manifest_sha256": "5a568344f862a137a3f0b60fda143d0600d589f1e13f02606e20acaf29c0feaa"
+    },
+    {
+      "path": "runs/recovery100_collection_20261009/grasp-independent-dev-sources-v1",
+      "manifest_sha256": "ce654520381cd9ae6bce37d113170a7f00ab0dbd31773f8221ebb85b9282a142"
+    },
+    {
+      "path": "runs/recovery100_collection_20261009/articulation-sources-v1",
+      "manifest_sha256": "132331d8b9b0129dce89e99a380496576b11adf737bdf7dcb682abfbe1c89cca"
+    },
+    {
+      "path": "runs/recovery100_collection_20261009/articulation-sources-v2",
+      "manifest_sha256": "fbc668b292c8cf718d1c224e8e1afce7fdd87e7419a7c724dca6c54f5f9defa2"
+    },
+    {
+      "path": "runs/recovery100_collection_20261009/articulation-gap-sources-v1",
+      "manifest_sha256": "e710307d16bbc71eecd3524826eff99c85ca9bf01553ab547884d057810418a2"
+    },
+    {
+      "path": "runs/recovery100_collection_20261009/articulation-light-sources-v1",
+      "manifest_sha256": "9379f49a3d63d4ec48cdf780690c7e6122f662355e92fb603a0745bd36f0b05a"
+    },
+    {
+      "path": "runs/recovery100_collection_20261009/place-in-short-sources-v1",
+      "manifest_sha256": "bc38376caeab30a2a1a3d2a2ad48e339d538a2243dd7893f17a9bafe3fb996d4"
+    },
+    {
+      "path": "runs/recovery100_collection_20261009/place-on-short-sources-v1",
+      "manifest_sha256": "770235286434e52248d790464fb36fd58d844cfd66f49b2310a2799cbf8f3ced"
+    },
+    {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/grasp-sources-v1",
+      "manifest_sha256": "71fd766bdd39b4c48e3303c124cd258e6581860ba8420ce66c27ea271b6a2076"
+    },
+    {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-sources-v1",
+      "manifest_sha256": "663af44787a062876bae4e165bed648a4ad66a087eed8f9b7dee63daf5fdd5e3"
+    }
+  ],
+  "protected_sha256": "8bc57e50305d7fa79cc63022a7b78a161671db9681d222f334d200fb964f43d1",
+  "qualified_fresh_tasks": 96,
+  "selection_seed": 17,
+  "dev_coverage": 5,
+  "rows": [
+    {
+      "task": "boxing books up for storage",
+      "task_index": 23,
+      "instance": 247,
+      "source_group": "boxing books up for storage:247",
+      "controls": 1289,
+      "split": "dev"
+    },
+    {
+      "task": "boxing food after dinner",
+      "task_index": 67,
+      "instance": 163,
+      "source_group": "boxing food after dinner:163",
+      "controls": 1544,
+      "split": "dev"
+    },
+    {
+      "task": "can meat",
+      "task_index": 4,
+      "instance": 245,
+      "source_group": "can meat:245",
+      "controls": 4118,
+      "split": "dev"
+    },
+    {
+      "task": "carrying in groceries",
+      "task_index": 14,
+      "instance": 194,
+      "source_group": "carrying in groceries:194",
+      "controls": 946,
+      "split": "dev"
+    },
+    {
+      "task": "clean a keyboard",
+      "task_index": 93,
+      "instance": 169,
+      "source_group": "clean a keyboard:169",
+      "controls": 1504,
+      "split": "dev"
+    },
+    {
+      "task": "cleaning up plates and food",
+      "task_index": 3,
+      "instance": 147,
+      "source_group": "cleaning up plates and food:147",
+      "controls": 2208,
+      "split": "dev"
+    },
+    {
+      "task": "collecting childrens toys",
+      "task_index": 21,
+      "instance": 75,
+      "source_group": "collecting childrens toys:75",
+      "controls": 862,
+      "split": "dev"
+    },
+    {
+      "task": "cook a frozen pie",
+      "task_index": 72,
+      "instance": 184,
+      "source_group": "cook a frozen pie:184",
+      "controls": 2074,
+      "split": "dev"
+    },
+    {
+      "task": "getting organized for work",
+      "task_index": 28,
+      "instance": 148,
+      "source_group": "getting organized for work:148",
+      "controls": 1924,
+      "split": "dev"
+    },
+    {
+      "task": "halve an egg",
+      "task_index": 62,
+      "instance": 95,
+      "source_group": "halve an egg:95",
+      "controls": 1744,
+      "split": "dev"
+    },
+    {
+      "task": "hanging pictures",
+      "task_index": 34,
+      "instance": 218,
+      "source_group": "hanging pictures:218",
+      "controls": 739,
+      "split": "dev"
+    },
+    {
+      "task": "hiding Easter eggs",
+      "task_index": 6,
+      "instance": 199,
+      "source_group": "hiding easter eggs:199",
+      "controls": 1403,
+      "split": "dev"
+    },
+    {
+      "task": "installing a modem",
+      "task_index": 77,
+      "instance": 112,
+      "source_group": "installing a modem:112",
+      "controls": 664,
+      "split": "dev"
+    },
+    {
+      "task": "installing a scanner",
+      "task_index": 92,
+      "instance": 217,
+      "source_group": "installing a scanner:217",
+      "controls": 1834,
+      "split": "dev"
+    },
+    {
+      "task": "laying tile floors",
+      "task_index": 98,
+      "instance": 110,
+      "source_group": "laying tile floors:110",
+      "controls": 964,
+      "split": "dev"
+    },
+    {
+      "task": "make microwave popcorn",
+      "task_index": 40,
+      "instance": 43,
+      "source_group": "make microwave popcorn:43",
+      "controls": 1434,
+      "split": "dev"
+    },
+    {
+      "task": "make rose centerpieces",
+      "task_index": 56,
+      "instance": 170,
+      "source_group": "make rose centerpieces:170",
+      "controls": 694,
+      "split": "dev"
+    },
+    {
+      "task": "organizing school stuff",
+      "task_index": 73,
+      "instance": 44,
+      "source_group": "organizing school stuff:44",
+      "controls": 754,
+      "split": "dev"
+    },
+    {
+      "task": "outfit a basic toolbox",
+      "task_index": 19,
+      "instance": 157,
+      "source_group": "outfit a basic toolbox:157",
+      "controls": 1995,
+      "split": "dev"
+    },
+    {
+      "task": "picking up trash",
+      "task_index": 1,
+      "instance": 23,
+      "source_group": "picking up trash:23",
+      "controls": 784,
+      "split": "dev"
+    },
+    {
+      "task": "putting away toys",
+      "task_index": 54,
+      "instance": 198,
+      "source_group": "putting away toys:198",
+      "controls": 664,
+      "split": "dev"
+    },
+    {
+      "task": "putting up Christmas decorations inside",
+      "task_index": 9,
+      "instance": 109,
+      "source_group": "putting up christmas decorations inside:109",
+      "controls": 861,
+      "split": "dev"
+    },
+    {
+      "task": "re shelving library books",
+      "task_index": 55,
+      "instance": 156,
+      "source_group": "re shelving library books:156",
+      "controls": 1294,
+      "split": "dev"
+    },
+    {
+      "task": "slicing vegetables",
+      "task_index": 43,
+      "instance": 193,
+      "source_group": "slicing vegetables:193",
+      "controls": 10759,
+      "split": "dev"
+    },
+    {
+      "task": "sorting bottles cans and paper",
+      "task_index": 52,
+      "instance": 229,
+      "source_group": "sorting bottles cans and paper:229",
+      "controls": 634,
+      "split": "dev"
+    },
+    {
+      "task": "spraying fruit trees",
+      "task_index": 39,
+      "instance": 19,
+      "source_group": "spraying fruit trees:19",
+      "controls": 880,
+      "split": "dev"
+    },
+    {
+      "task": "store honey",
+      "task_index": 83,
+      "instance": 212,
+      "source_group": "store honey:212",
+      "controls": 489,
+      "split": "dev"
+    },
+    {
+      "task": "store produce",
+      "task_index": 91,
+      "instance": 163,
+      "source_group": "store produce:163",
+      "controls": 874,
+      "split": "dev"
+    },
+    {
+      "task": "tidying bathroom",
+      "task_index": 84,
+      "instance": 175,
+      "source_group": "tidying bathroom:175",
+      "controls": 874,
+      "split": "dev"
+    },
+    {
+      "task": "vacuuming floors",
+      "task_index": 69,
+      "instance": 14,
+      "source_group": "vacuuming floors:14",
+      "controls": 576,
+      "split": "dev"
+    }
+  ],
+  "expected_reference_controls": 47383,
+  "model_not_selected_by_this_preview": true,
+  "physical_controls": 0,
+  "optimizer_updates": 0
+}

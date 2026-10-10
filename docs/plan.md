@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 17:18 CST / Codex RECOVERY-USABLE：** A800 CPU按实际v11 fit＋全部十旧inventory排除652来源，原selector coverage5有96个“一task一全新DEV源”可选，预测前固定hash(seed17)挑30task/30来源/47,383参考控。仅元数据预览`docs/infra/results/2026-10-10-next-observer-calibration-source-preview.json`，0新RGB导出/物理/标签/预测，不是新校准已就绪或v11最终模型已选；意图是在模型选择结束后补真正新来源，保留旧90已见、70未预测reserve、旧20test全部角色，不缩30/class或统计门。联合服务a49b3fcd已GPU ready、0job待命；旧低control22/24继续。另先前seed17两开门MP4已取本地各review目录`open-seed17.mp4`，SHA与审计551e69fe/9e16a21c一致，未入Git。
+
 - **2026-10-10 17:13 CST / Codex RECOVERY-USABLE：** 完整action journal＋独立回放审计已冻结a49b3fcd，部署新`causal-joint-shadow-v2`（两端）；lc1实查空闲GPU1预加载`causal-joint-shadow-probes-v1`/18977，仅模型待命、0job/0新物理。RTX联合worker仍等两臂新噪声复验完全关闭，未混不同ownership配方/未热改当前6c7源。v11原早停继续，低control剩余OPEN冷加载正常；RTX原队友4–7进程当前已自然不在GPU清单，但不据此抢占或改变既有复验资源。
 
 - **2026-10-10 17:10 CST / Codex RECOVERY-USABLE：** 新独立`audit_causal_skill_probe.py`逐日志重建实际已发memory→128控规划→完整offered raw23→模拟器独立ACK，逐当前RGB/本体SHA绑定，补错误图像/历史/意图/动作/clock/跨job反例；全258恢复＋精确8session/11feedback通过（非全仓）。87ca5e3b源在A800 CPU实核四权重/高低统计/两真实历史均通过，radio32/wash270各只恢复此前1条命令、0未来命令、0物理；新增审计log尚待下一冻源，不热改。v11第8原DEV balanced91.67%/event95.83%初优v8但后续波动，仍原早停规则；control复验20/24、剩余OPEN继续。联合GPU/物理及结果头独立重载/新校准仍未通过。
