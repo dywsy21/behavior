@@ -8,6 +8,22 @@ def require_service_hello(message, config_sha256):
     return True
 
 
+def probe_finish_without_simulator(completed, seeds):
+    """Only after every fixed read-only seed has a closed simulator receipt."""
+    if (type(completed) is not int or completed<0 or not seeds
+            or any(type(seed) is not int for seed in seeds) or len(set(seeds))!=len(seeds)
+            or completed>len(seeds)):
+        raise ValueError('Exact nonduplicate read-only episode accounting required')
+    return completed==len(seeds)
+
+
+def require_probe_finish_response(response):
+    """A finished probe case may wait for peers, but must never take a new job."""
+    if response=={'status':'finished'}:return True
+    if response=={'status':'wait'}:return False
+    raise ValueError('Unexpected job/error after all fixed probe episodes; do not run/retry it')
+
+
 def validate_baseline_acceptance(receipt, *, config_sha256, policy_sha256, episodes_sha256):
     expected = dict(schema='short_skill_cold_baseline_acceptance_v1', approved=True,
         config_sha256=config_sha256, policy_sha256=policy_sha256,

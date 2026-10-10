@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 17:29 CST / Codex RECOVERY-USABLE：** v11按原patience5在18轮/666更新完成，selected13/481 SHA `b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699`，选择DEV39/40、balanced97.92%/event98.33%；高低冻结指纹不变、CAL/test未读，尚未部署。lc1实查空闲GPU3用原2a147313源启动`H0-observer-v11-outcome-balance-reload-v1`，独立原RGB复算待。control新seed24/24及三finish ACK/RTX退出已核，0更新/指纹不变，待逐控审计根审；candidate尚未启动。新冷worker仅在全部固定seed关闭后用CPU取最终ACK，避免为结束通知多加载一次sim；259恢复回归通过，尚未部署、原control源码不动。续接fetch HEAD/upstream相同、main无新增，自有dirty补丁故未pull。
+
 - **2026-10-10 17:18 CST / Codex RECOVERY-USABLE：** A800 CPU按实际v11 fit＋全部十旧inventory排除652来源，原selector coverage5有96个“一task一全新DEV源”可选，预测前固定hash(seed17)挑30task/30来源/47,383参考控。仅元数据预览`docs/infra/results/2026-10-10-next-observer-calibration-source-preview.json`，0新RGB导出/物理/标签/预测，不是新校准已就绪或v11最终模型已选；意图是在模型选择结束后补真正新来源，保留旧90已见、70未预测reserve、旧20test全部角色，不缩30/class或统计门。联合服务a49b3fcd已GPU ready、0job待命；旧低control22/24继续。另先前seed17两开门MP4已取本地各review目录`open-seed17.mp4`，SHA与审计551e69fe/9e16a21c一致，未入Git。
 
 - **2026-10-10 17:13 CST / Codex RECOVERY-USABLE：** 完整action journal＋独立回放审计已冻结a49b3fcd，部署新`causal-joint-shadow-v2`（两端）；lc1实查空闲GPU1预加载`causal-joint-shadow-probes-v1`/18977，仅模型待命、0job/0新物理。RTX联合worker仍等两臂新噪声复验完全关闭，未混不同ownership配方/未热改当前6c7源。v11原早停继续，低control剩余OPEN冷加载正常；RTX原队友4–7进程当前已自然不在GPU清单，但不据此抢占或改变既有复验资源。

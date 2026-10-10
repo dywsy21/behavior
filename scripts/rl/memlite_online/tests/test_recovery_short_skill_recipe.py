@@ -11,6 +11,17 @@ from skill_training_protocol import read_only_recipe
 
 
 class ShortSkillRecipeTests(unittest.TestCase):
+    def test_final_transport_ack_does_not_need_an_extra_physical_reset(self):
+        from skill_cold_worker import probe_finish_without_simulator,require_probe_finish_response
+        for completed in range(8):self.assertFalse(probe_finish_without_simulator(completed,list(range(8))))
+        self.assertTrue(probe_finish_without_simulator(8,list(range(8))))
+        for completed,seeds in [(9,list(range(8))),(-1,[17]),(True,[17]),(1,[]),(2,[17,17])]:
+            with self.assertRaises(ValueError):probe_finish_without_simulator(completed,seeds)
+        self.assertFalse(require_probe_finish_response({'status':'wait'}))
+        self.assertTrue(require_probe_finish_response({'status':'finished'}))
+        for response in ({'status':'job'},{'status':'finished','job':{}},{'error':'failed'},None):
+            with self.assertRaises(ValueError):require_probe_finish_response(response)
+
     def test_fresh_noise_replication_freezes_both_final_policies_and_conditions(self):
         from copy import deepcopy
         replicas=[]

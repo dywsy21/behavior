@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 17:29 CST：v11终态与独立加载
+
+- lc1 `H0-observer-v11-outcome-balance-v1`已666/18轮早停，`checkpoints/selected.pt` SHA b0f3d125…ad699（第13轮/481）。新GPU3/tmux/run `H0-observer-v11-outcome-balance-reload-v1`、独立同名log/cache，仍原2a147313源码；真实原图复算待，不是部署许可。
+- `later-action-control-replication-v1`完成24/24、三finish ACK、0更新，RTX三原worker均退出，0–2无活跃sim；完整失败/终态和额外结束通知scene仍保留。新数据candidate尚未启动。
+
 ## 2026-10-10 17:13 CST：联合服务预加载，尚无机器人执行
 
 - lc1新`src/causal-joint-shadow-v2`/a49b3fcd，GPU1/tmux `causal-joint-shadow-probes-v1`，异质run同名目录/log/cache，端口18977预加载冻结H1/a74与低0c52；没有客户端/job/物理，observer权重只hash、不加载/预测。RTX `code/causal-joint-shadow-v2`同commit，worker尚未启动，必须等当前两臂复验完全退出，不混ownership。旧v1源码/CPU验收保留。

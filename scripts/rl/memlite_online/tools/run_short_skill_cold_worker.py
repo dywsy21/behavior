@@ -15,7 +15,8 @@ REPO=Path(__file__).resolve().parents[4]
 sys.path[:0]=[str(REPO/'scripts/eval/memlite_sft100'),str(Path(__file__).resolve().parents[1]/'code')]
 from common import atomic_json
 from recovery_corpus import file_sha
-from skill_cold_worker import next_worker_action,require_service_hello
+from skill_cold_worker import (next_worker_action,require_service_hello,
+    probe_finish_without_simulator,require_probe_finish_response)
 from skill_training_protocol import read_only_recipe
 
 
@@ -27,7 +28,7 @@ def main():
     p.add_argument('--peer-collection',type=Path)
     p.add_argument('--peer-collection-commit')
     a=p.parse_args();cfg=json.loads(a.config.read_text())
-    read_only_recipe(cfg)
+    evaluation_only=read_only_recipe(cfg)
     if bool(a.peer_collection)!=bool(a.peer_collection_commit):
         raise ValueError('Peer collection and frozen source commit must be bound together')
     peer_args=[]
@@ -57,7 +58,7 @@ def main():
         # fatal and cannot be disguised as a temporarily unavailable service.
         from websockets.sync.client import connect
         from websockets.exceptions import ConnectionClosed,InvalidMessage
-        from wire import unpackb
+        from wire import packb,unpackb
         receipt.update(status='waiting_service_before_simulator',transport_waits=0)
         while True:
             atomic_json(a.output/'status.json',dict(receipt,updated_unix=time.time()))
@@ -71,6 +72,24 @@ def main():
                 receipt['transport_waits']+=1
                 time.sleep(2)
         while True:
+            if evaluation_only and probe_finish_without_simulator(receipt['completed_episodes'],cfg['evaluation_seeds']):
+                # An extra simulator used to be loaded solely to receive the
+                # final transport ACK. All real physical episodes are already
+                # closed here: poll the existing protocol on CPU instead.
+                receipt.update(status='waiting_peer_finish_without_simulator',finish_waits=0)
+                atomic_json(a.output/'status.json',dict(receipt,updated_unix=time.time()))
+                with connect('ws://127.0.0.1:'+str(a.port),max_size=32<<20,
+                             compression=None,ping_timeout=None,open_timeout=10) as socket:
+                    require_service_hello(unpackb(socket.recv(timeout=30)),receipt['config_sha256'])
+                    while True:
+                        socket.send(packb(dict(op='job',case=a.case)))
+                        if require_probe_finish_response(unpackb(socket.recv(timeout=30))):break
+                        receipt['finish_waits']+=1
+                        atomic_json(a.output/'status.json',dict(receipt,updated_unix=time.time()))
+                        time.sleep(2)
+                receipt.update(status='finished_service_window',updated_unix=time.time(),
+                    finish_ack_without_new_simulator=True)
+                break
             ordinal=receipt['completed_episodes']+1
             child=a.output.parent/(a.output.name+f'-episode-{ordinal:06d}')
             receipt.update(status='running_episode',child_output=str(child),updated_unix=time.time())
@@ -90,6 +109,8 @@ def main():
                 stream.write(json.dumps(dict(child=str(child),result_sha256=file_sha(result_path),
                     returncode=code,next_action=action))+'\n')
             if action=='finished':
+                if evaluation_only and receipt['completed_episodes']!=len(cfg['evaluation_seeds']):
+                    raise ValueError('Read-only service finished before this worker completed its exact seed set')
                 receipt.update(status='finished_service_window',updated_unix=time.time());break
             receipt['completed_episodes']+=1
     except BaseException as exc:
