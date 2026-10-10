@@ -1,0 +1,109 @@
+{
+  "schema": "prospective_observer_calibration_summary_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "verified_at": "2026-10-10T15:42:00+08:00",
+  "run": "/data/workspace/wsy/behavior2026/runs/recovery_observer_fresh_calibration_20261010/observer-pool-calibration-v2",
+  "source_commit": "501932090b7e4aea6ed53a2974af20aabe9b922c",
+  "config_sha256": "5b43429075d89750c4b99cad8b73a8d4c5a614b45cd49343aa53b582cd1f2889",
+  "observer_sha256": "b598b950f54fc3515fd213f13d77e7e4b869de07462b728471b5954a6ea47041",
+  "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+  "anchor_selection_sha256": "f1c0a7fc7aa98a13f5ff55826c67cb8c0266943be283bd4b6da4a1f8ef0efbf8",
+  "admission_sha256": "d86e5b1851d978fc8df2caf2cd6d426e1b371ad98dd6f6ea6e548dcd684d76d5",
+  "source_pool_sha256": "8da1661b2fa91534803d59bdf29f068413988ecf5533b177e624a4fdd6dbc933",
+  "availability": {
+    "declared": 187,
+    "physical_or_reference_unavailable": 23,
+    "previously_exposed_available_quarantined": 4,
+    "eligible": 160,
+    "selected": 90,
+    "reserved_not_forwarded": 70,
+    "old_test20_not_read": true
+  },
+  "optimizer_updates": 0,
+  "uncalibrated_accuracy": 0.9333333373069763,
+  "real_unique_prefills": 97,
+  "history_lengths": {
+    "1": 83,
+    "2": 7
+  },
+  "calibration": {
+    "schema": "recovery_observer_calibration_v1",
+    "temperature": 1.7740670442581177,
+    "minimum_confidence": 0.85,
+    "ready": false,
+    "blockers": [
+      "SUCCEEDED: insufficient independent support or selective precision",
+      "false_success_rate_upper95_exceeds_0.10"
+    ],
+    "events": 90,
+    "classes": {
+      "IN_PROGRESS": {
+        "actual_events": 30,
+        "confident_predictions": 25,
+        "correct": 25,
+        "precision": 1,
+        "precision_wilson95": [
+          0.8668035060468213,
+          1
+        ]
+      },
+      "SUCCEEDED": {
+        "actual_events": 30,
+        "confident_predictions": 27,
+        "correct": 25,
+        "precision": 0.9259259259259259,
+        "precision_wilson95": [
+          0.7663002270926937,
+          0.9794457783026165
+        ]
+      },
+      "FAILED": {
+        "actual_events": 30,
+        "confident_predictions": 28,
+        "correct": 28,
+        "precision": 1,
+        "precision_wilson95": [
+          0.8793527963418923,
+          1
+        ]
+      }
+    },
+    "false_success_count": 2,
+    "false_success_upper95": 0.11363987528925378,
+    "status": "fit_only_not_runtime_ready",
+    "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_sha256": "b598b950f54fc3515fd213f13d77e7e4b869de07462b728471b5954a6ea47041",
+    "anchor_selection_sha256": "f1c0a7fc7aa98a13f5ff55826c67cb8c0266943be283bd4b6da4a1f8ef0efbf8",
+    "cohort_sha256": "8da1661b2fa91534803d59bdf29f068413988ecf5533b177e624a4fdd6dbc933",
+    "mechanism": "GRASP",
+    "only_class_balanced_phase_support": true,
+    "certifies_other_mechanisms": false,
+    "accuracy_conditioned_on_manually_supported_sources": true,
+    "certifies_all_declared_sources": false
+  },
+  "calibration_sha256": "4b6cd77f3cb9585a520a21e0a6df2268badc91f69caf1378519c65abca707324",
+  "predictions_sha256": "cc0b2cf68f6714d8ce08e27afbd7da0b29f3e0ecace6c6a7030283788cf553c8",
+  "frozen_before_sha256": "3f57f559ec95b86e3941a61d318b6bf563953452c748f6cd562cb66243c9a038",
+  "frozen_after_sha256": "3f57f559ec95b86e3941a61d318b6bf563953452c748f6cd562cb66243c9a038",
+  "high_confidence_false_successes": [
+    {
+      "source_group": "chopping wood:205",
+      "label": "FAILED",
+      "predicted": "SUCCEEDED",
+      "confidence": 0.9744621409939511,
+      "control_step": 8,
+      "history_length": 1,
+      "root_media_rechecked": true
+    },
+    {
+      "source_group": "set up a coffee station in your kitchen:142",
+      "label": "FAILED",
+      "predicted": "SUCCEEDED",
+      "confidence": 0.9538414931552793,
+      "control_step": 8,
+      "history_length": 1,
+      "root_media_rechecked": true
+    }
+  ],
+  "interpretation": "Fixed v8 is NOT deployment-ready: two high-confidence false successes, success precision Wilson lower .7663<.8 and false-success upper .11364>.10. 84/90 correct is not task SR. No weight, threshold or label was changed using these outputs. Existing 03:07 frozen-head short-start experiment did not improve selection DEV; future observer-adapter/history training is a separate method candidate and must use only original TRAIN/selection DEV, then new untouched prospective evidence. Do not reuse these90 to select/present a new model as independently validated."
+}

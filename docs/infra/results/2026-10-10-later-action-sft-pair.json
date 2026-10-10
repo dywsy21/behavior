@@ -1,0 +1,215 @@
+{
+  "schema": "matched_later_action_sft_comparison_v1",
+  "verified_at": "2026-10-10T15:30:00+08:00",
+  "owner": "Codex RECOVERY-USABLE",
+  "training_node": "lc3 8xA800",
+  "comparison": "Same L0/200 parent, optimizer/schedule/200 steps, original expert samples, independently weighted events and rank allocation. Candidate adds11 reviewed later OPEN windows within the same5 events; no new event or DEV/CAL/test changes.",
+  "common_batch_projection_sha256": "73201d73bd30bd328e214f12bfc437a431b330beeab7323a667ed76ddddc1515",
+  "results": [
+    {
+      "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/L0-startonly-continuation-v1",
+      "status": "completed_finite_schedule",
+      "steps": 200,
+      "source_commit": "7806657412bf0e917ab0c22c900560fe59c589de",
+      "parent_sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044",
+      "frozen_before_sha256": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+      "frozen_after_sha256": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+      "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/9ad353da42fa",
+      "checkpoint": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/L0-startonly-continuation-v1/checkpoints/step_00000200_save_0004.pt",
+      "checkpoint_receipt": {
+        "path": "step_00000200_save_0004.pt",
+        "sha256": "51e2c772ba321f1dd0b5faad1e31264e2acceca56013baf4c97f5fa94fee302c",
+        "state": {
+          "step": 200,
+          "save_sequence": 4,
+          "fingerprint": "b78f7a8b8d1a71ad1814321e4e3db47159d870c9a06d53c55b2b1dbd45cdaf2b",
+          "consumed_seconds": 655.808563714847,
+          "run_id": "9ad353da42fa"
+        },
+        "consumed_seconds": 692.9307432025671
+      },
+      "evaluations": [
+        {
+          "step": 0,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.13183296894951185,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.019939695219486808,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        },
+        {
+          "step": 50,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.13272746935084698,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.01866537238952618,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        },
+        {
+          "step": 100,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.13299893871159046,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.018182608168482203,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        },
+        {
+          "step": 150,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.13384386982723379,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.017616659258874717,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        },
+        {
+          "step": 200,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.13458805053772815,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.01739996470115035,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        }
+      ],
+      "result_sha256": "1940123aa5c81aa240b4f4a380c950b8544a278ab09e0eb613e9b29d38829209",
+      "evaluations_sha256": "b8b5f7e69cfd9adddf083e17df40819a3ca12d2268404900f0a462c2edd13c7f"
+    },
+    {
+      "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/L0-later-actions-v1",
+      "status": "completed_finite_schedule",
+      "steps": 200,
+      "source_commit": "7806657412bf0e917ab0c22c900560fe59c589de",
+      "parent_sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044",
+      "frozen_before_sha256": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+      "frozen_after_sha256": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+      "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/adff3780cd14",
+      "checkpoint": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/L0-later-actions-v1/checkpoints/step_00000200_save_0004.pt",
+      "checkpoint_receipt": {
+        "path": "step_00000200_save_0004.pt",
+        "sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5",
+        "state": {
+          "step": 200,
+          "save_sequence": 4,
+          "fingerprint": "012139692b0f29b04e78a7831b78c8fcec06725f7f6afef96cd00966bc991d66",
+          "consumed_seconds": 641.3824579427019,
+          "run_id": "adff3780cd14"
+        },
+        "consumed_seconds": 679.6426364677027
+      },
+      "evaluations": [
+        {
+          "step": 0,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.13183296894951185,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.019939695219486808,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        },
+        {
+          "step": 50,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.13271539896722126,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.018758421718786306,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        },
+        {
+          "step": 100,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.1330333302614717,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.018529953660020505,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        },
+        {
+          "step": 150,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.13394414042791314,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.01771041606935326,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        },
+        {
+          "step": 200,
+          "evaluation": {
+            "original_heldout": {
+              "loss": 0.13465355222477607,
+              "denominator": 292468,
+              "rows": 100
+            },
+            "verified_dev": {
+              "loss": 0.017445090312312766,
+              "denominator": 26496,
+              "rows": 9
+            }
+          }
+        }
+      ],
+      "result_sha256": "88fa548a75304c548cba7c9519f78d36b3fe8e77848438aec9b39428b3d0b813",
+      "evaluations_sha256": "3efa57baee40eca4c0b2ced01123d26a5831dc66ac1bf2a771a767a25b29bd15"
+    }
+  ],
+  "interpretation": "Both fits complete with identical frozen VLM/LoRA fingerprints. Candidate final recovery FM .017445 vs control .017400 and original100 FM .134654 vs .134588: no meaningful loss advantage. Original100 reference is a fixed monitor, not an independent aggregate100-task SR. Paired original-horizon physical probes(3starts x4FM-noise seeds/arm) preregistered but not yet executed. No model promotion."
+}

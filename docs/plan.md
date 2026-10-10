@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 15:42 CST / Codex RECOVERY-USABLE：** 固定v8新CAL实际完成97真实prefill/90独立组，84/90正确，但高置信误报成功2（木头205、咖啡滤纸142，均F8）；T1.7741、S precision25/27/.9259而Wilson下界.7663<.8，falseS上界.11364>.10，**仍不部署**。冻结SHA不变/0optimizer，完整轻量结果`docs/infra/results/2026-10-10-observer-pool-v3-calibration.json`；根重看两原sheet（物体近手/低对比遮挡），不改标签/门，旧60CAL/20test元数据与187无重叠。83/90仅单帧。原03:07只训头补起点已失败不重做；预登记新v10只改真实短起点历史且训练独立observer LoRA+头，同294/40与全部超参/标签，先cache一致性验证，不用这90条选新模型。lc1 GPU2旧首窗只读服务已提交18976待载入，RTX源501已冻/10调度回归过，仍未开始模拟器。
+
+- **2026-10-10 15:26 CST / Codex RECOVERY-USABLE：** 新独立CAL已实际在lc1 GPU0启动，源码50193209、tmux/run `observer-pool-calibration-v2`、PID2074663，config5b434290…1f2889；通过原fit78组隔离与90-anchor校验后载入，0optimizer/尚无结果。旧v1在0forward失败、日志保留；新模型预测只用90组，70reserve/旧20测试不forward。lc1 GPU1原v7已global31/第12轮，在原固定global32检查后拟安全暂停作业、保留完整权重及所有未完成轨迹，串行运行两份新SFT配对物理测试以避免旧辅助GPU白名单冲突；当前未停，也不把两长TRAIN成功当选模依据。
+
 - **2026-10-10 15:24 CST / Codex RECOVERY-USABLE：** 新pool-v3已在0预测下冻结90组/30各相位，selection f1c0a7fc…f0efbf8，187全分母/23物理不可用/4暴露隔离/70合格reserve；原fit的78组在两端明确排除，新校准绑定配方完成，尚待实际GPU结果。低长OPEN两成功已独立重算1765真实控及全部无损边界，根看2sheet/30相机面板，精确washer_ynwamu_0末开度.369493/.393510、original success门不变；中段松手/后段再接触仍不顺滑，不给整段BC许可。诊断摘要`docs/infra/results/2026-10-10-v7-long-open-success-diagnostic.json`，2/10随机TRAIN不冒充同预算前后对照/完整SR；原v7继续。
 
 - **2026-10-10 15:21 CST / Codex RECOVERY-USABLE：** 暴露隔离新联合v2实际全读293ZIP/17,449观察通过；仅移出由原fit证实的4组14条CAL审批，新513 CAL/160独立组、0TRAIN，admission d86e5b18…84d76d5，隔离原签名逐条留在`exposure-quarantine.json`，旧527单元不改。新pool-v3预选准备中、仍0模型预测。原v7两条长OPEN成功轨迹（第6/8训练轮）已提交独立逐控reward/ACK/起点/归档重算及原图sheet生成，尚待根亲看；这是审计真实信号不是更改成功门或给旧RL提前升格。

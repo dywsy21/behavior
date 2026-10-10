@@ -1,0 +1,23 @@
+{
+  "schema": "observer_short_context_adapter_plan_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "hypothesis": "The current learned observer-LoRA may benefit from being trained together with its temporal head on the real issuance frame plus current frame during1..15-control attempts. This differs from the completed unsuccessful frozen-VLM/head-only short-start experiment. It is an observability hypothesis, not a guaranteed cure for grasp-vs-near-object ambiguity.",
+  "control_config": "configs/recovery_sft/a800_observer_adapter_v8_retry_unknown_v1.json",
+  "single_change": "history_protocol=attempt_start_short_v1 in both the SHA-bound feature cache and real RGB adapter-training forward. Same294TRAIN/68groups,40selectionDEV/10groups, same bee parent, initial head, r8, AdamW, LR2e-5/1e-4, batch8,seed17,20epoch/5epoch plateau.",
+  "admission_sha256": "89eda5e5c82e424920b24e9cb4d3ead0dd83760d119337ef319ff2a7c5dce12a",
+  "history_protocol": "attempt_start_short_v1",
+  "feature_output": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v8-short-start-v2",
+  "training_output": "runs/recovery_heterogeneous_20261010/H0-observer-v10-short-context-v1",
+  "resource": "One verified idle lc1 A800 GPU0; no lc2/shared-env/low-RL mutation. Cache then independently audit current features/added true-start frames against old v8 cache before optimizer.",
+  "selection": "Unchanged original selection-DEV selection_key only. No CAL rows in optimizer, feature cache, or checkpoint selection. New candidate must be independently reloaded and evaluated on new unexposed evidence if justified; old90 CAL predictions cannot certify or select it.",
+  "stopping": "Exact freeze/gradient/source gates; finite20epochs/min5/patience5 selects candidate, not goal completion. Stop and inspect invalid history/nonfinite/out-of-scope data rather than requeueing blindly.",
+  "not_changed": [
+    "planner weights",
+    "low actor",
+    "labels",
+    "source splits",
+    "normalization",
+    "result confidence or physical success thresholds"
+  ],
+  "known_limitations": "83/90 prior CAL inputs had only one real check; however two false positives are visually ambiguous unheld objects and may require different supervision/active confirmation beyond temporal context. Do not infer success from CE or solve gates by recollecting until passing."
+}
