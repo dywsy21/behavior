@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 19:08 CST：新30已签核运输包
+
+- RTX新冻源`code/observer-v11-new30-reviewed-v1`=0475fb45；tmux`observer-v11-new30-sign-v1`已自然完成，同独立校准run根`grasp-v11-new30-sign-bundle-v1.log`保留。`grasp-v11-new30-approvals-part{1,2}-v1.json`、`grasp-v11-new30-reviewed-unit-v1`及同名tar.gz完整，admission9f409965…f71e、tar d166f291…66a9e；49archive/1594观测全读，86 CAL/0TRAIN。
+- 本地`artifacts/recovery-observer-fresh-calibration-20261010/grasp-v11-new30-transport-v1`为已全140文件SHA验过解包，同级tar保留。计划A800新落点`datasets/recovery-v11-new30-calibration-20261010-v1`尚未创建/传输，新联合spec已Git；原A800数据/环境/权重没有改动，须等账号2网关恢复。scope/签核/运输证据见`docs/infra/results/2026-10-10-v11-new30-calibration-review.json`。
+
 ## 2026-10-10 19:03 CST：新30独立校准材料完整闭合
 
 - RTX独立校准run根`grasp-v11-new30-collection-v1`全30首尝试结束，ledger SHA473f0c67…7c0e、实际50,375控/30实例载入；26候选、1参考未复现、3工程失败。原活跃源73aceeb2未改，失败实例/日志不删除。

@@ -1,0 +1,122 @@
+{
+  "schema": "v11_new30_calibration_original_media_review_and_transport_v1",
+  "owner": "Codex root RECOVERY-USABLE",
+  "verified_at": "2026-10-10T19:07:36+08:00",
+  "collection": {
+    "source_commit": "73aceeb20ab6d6a26ae43adedf168ae8b6240470",
+    "config": "configs/recovery_sft/observer_v11_fresh30_calibration_collection_v1.json",
+    "config_sha256": "24a46e0c6b7364990286a87943c3694a523eef69d5c5f578f889bb62a63ea99a",
+    "ledger_sha256": "473f0c67c398ce009bd6c5bdd4a11456cc5e5c156eccbbe6120a38cf54187c0e",
+    "declared_sources": 30,
+    "completed_candidate_sources": 26,
+    "reference_grasp_not_reproduced": 1,
+    "engineering_failures": 3,
+    "actual_controls": 50375,
+    "instance_loads": 30,
+    "all_first_attempts_preserved": true,
+    "unavailable": [
+      {
+        "group": "boxing food after dinner:163",
+        "reason": "reference_grasp_not_reproduced"
+      },
+      {
+        "group": "sorting bottles cans and paper:229",
+        "reason": "reset_original_joint_alignment_mismatch",
+        "largest_checked_error": 0.31708458613593393,
+        "original_tolerance": 0.05,
+        "actual_controls": 0
+      },
+      {
+        "group": "store honey:212",
+        "reason": "missing_exact_category_candidate_inventory",
+        "actual_controls": 0
+      },
+      {
+        "group": "tidying bathroom:175",
+        "reason": "missing_exact_category_candidate_inventory",
+        "actual_controls": 0
+      }
+    ]
+  },
+  "review": {
+    "cohort_sha256": "628d23eb6cbf46138cee63c5fbaca0053fb4084e3f198f780d2e8ea71b7e0b32",
+    "index_sha256": "1fe6ded0a36f5c174222df4fd8befa9a052767d3f1428805f7161c86e7df78a1",
+    "media_archive_sha256": "0be799039d3e43ef5369be2a810cd079f39ba380fbcb42cb65f736bffc5e57e5",
+    "full_sheets_personally_viewed": 26,
+    "original_rgb_panels_personally_viewed": 267,
+    "unlabelled_phase_views_retained": 3,
+    "known_phase_rejections_after_visual_review": 0,
+    "outcomes": {
+      "FAILED": 23,
+      "IN_PROGRESS": 20,
+      "SUCCEEDED": 43
+    },
+    "usage_role": "calibration_only_never_training_or_selection",
+    "action_approvals": 0,
+    "planner_approvals": 0,
+    "decisions": [
+      {
+        "path": "configs/recovery_sft/v11_new30_calibration_owner_review_part1_v1.json",
+        "sha256": "77c485a2caab4feaf01c6d6bace85d9eb6bfc694d0d04157b1bab95b2dd06856"
+      },
+      {
+        "path": "configs/recovery_sft/v11_new30_calibration_owner_review_part2_v1.json",
+        "sha256": "a95278c743e51ec6c06fb83601febc6d3516463ec538e0b55b043c1788f73da0"
+      }
+    ],
+    "method": "Personally compare all registered phase/clean original three-camera panels with exact intended target, actual left/right identity and preceding-six-control physical evidence; do not infer hold from aperture alone. Dark/occluded cases explicitly noted. No model predictions used to approve or discard sources."
+  },
+  "signed_unit": {
+    "source_commit": "0475fb451d077456d270133045eb50be31a5201b",
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/recovery_observer_fresh_calibration_20261010/grasp-v11-new30-reviewed-unit-v1",
+    "admission_sha256": "9f409965c7129f43f3668aaa48c712fe081e696bbeaf54dca68e7a61ec4ff71e",
+    "approvals_sha256": "d47b452db99e7eb28d979b8de139b2baf81c3751028b571116833265f366bb71",
+    "receipt_sha256": "78f9729bd44c931e22e0dae9ff6696633e3657451fea9d6af14a4c5cdf7b388f",
+    "partition_sha256": "7eab5821af97e922e560782b20eff05adc394841e6de64d7abeae225b990ccef",
+    "copied_archives": 49,
+    "observations_machine_read": 1594,
+    "approved_outcome_rows": 86,
+    "training_groups": 0,
+    "selection_dev_groups": 0,
+    "calibration_groups": 26,
+    "frozen_test_reserved_unread": 20
+  },
+  "transport": {
+    "archive_name": "grasp-v11-new30-reviewed-unit-v1.tar.gz",
+    "archive_sha256": "d166f2919eeeb5bfd7edc5fcfb0c8f093694f93dcd0dbe0bc52dfbe972866a9e",
+    "archive_bytes": 85415543,
+    "files": 140,
+    "unpacked_bytes": 114748003,
+    "manifest_sha256": "fe222f88abc4cde12bd4a93336349dbbb4b2f601f9d48f02dda11cc4f8063c04",
+    "local_copy": "/home/wsy/behavior/artifacts/recovery-observer-fresh-calibration-20261010/grasp-v11-new30-transport-v1",
+    "all_local_transferred_files_verified": true,
+    "transferred_to_a800": false
+  },
+  "next_union": {
+    "spec": "configs/recovery_sft/a800_observer_calibration_union_v3_unseen_reserves.json",
+    "status": "specification_prepared_not_built_or_calibrated",
+    "declared_sources": 217,
+    "unavailable_collection_sources": 27,
+    "available_actual_fit_exposed_quarantined": 4,
+    "prior_predicted_sources_excluded": 90,
+    "old_never_predicted_reserves": 70,
+    "new_available_sources": 26,
+    "unpredicted_reviewed_sources": 96,
+    "label_graph_support": {
+      "IN_PROGRESS": 62,
+      "FAILED": 72,
+      "SUCCEEDED": 96
+    },
+    "ninety_distinct_groups_thirty_per_class_feasible": true,
+    "actual_immutable_anchor_selection_performed": false,
+    "original_safety_gates_unchanged": true,
+    "original_per_source_cohort_signatures_preserved": true,
+    "old20_frozen_test_untouched": true
+  },
+  "limits": [
+    "These are independent GRASP calibration labels, not new TRAIN rows, a complete100-task recovery dataset, model accuracy or whole-task success.",
+    "Passing source/signature/media checks is not observer calibration or learned-feedback deployment; A800 calibration and streaming shadow remain unrun.",
+    "Account2 authentication passed password check but gateway pwpErrorCode16 requested a personal-information-page action. No tunnel; await user resolution, no old-account fallback or repeat authentication without new information.",
+    "No failed sources or previous failed calibration receipts were deleted; no physics retry selected for favorable outcomes."
+  ]
+}

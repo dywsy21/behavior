@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 19:08 CST / Codex RECOVERY-USABLE：** RTX新冻结`code/observer-v11-new30-reviewed-v1`=0475fb45完成两份机器签发/运输unit全读，86 CAL-only/26组、49原archive/1,594观测，admission `9f409965…f71e`；tar `d166f291…66a9e`（85,415,543B）已迁本地，140文件/114,748,003B逐SHA通过（manifest fe222f88…3c04）。实际TRAIN/选择DEV/动作/高层池均0、旧20test未读；独立成员review仍待。标签图静态检查96未预测组支持IP62/F72/S96，可满足三类各30不同来源，但真实A800 admission/anchor预选/模型校准尚未执行。证据`docs/infra/results/2026-10-10-v11-new30-calibration-review.json`。账号2网关待用户网页登录处理；无SOCKS1080，未切旧账号/改密码/反复重登。下一仅连接恢复后Git新冻结源→迁包全验→构建v3新联合/冻结90锚→固定v11校准及41真实边界shadow，原门不降、未通过不部署、不扩全任务RL；goal未完成。
+
 - **2026-10-10 19:03 CST / Codex RECOVERY-USABLE：** 新30材料全闭并双端SHA，cohort `628d23eb…0b32`、index `1fe6ded0…78a1`、review tar `0be79903…7e5`。根逐26页/267原RGB及对应目标/手臂/前六控物理记录亲审完成，显式批准86结果（F23/IP20/S43），3个UNLABELLED阶段保持不批、4不可用来源不替换；暗光/遮挡来源在逐例说明，不以夹爪闭合推成功。两份`v11_new30_calibration_owner_review_part{1,2}_v1.json`与RTX运输spec已准备，待冻结新源机器签发/全读/打包；0动作/高层标签/新训练许可。A800新联合spec `a800_observer_calibration_union_v3_unseen_reserves.json`仅待执行：217总源/27物理缺测/4fit暴露/90旧预测隔离/96未预测可用（70旧＋26新），原签名、30/class门与旧20test不变。VPN阻塞未变，未提交新A800任务。
 
 - **2026-10-10 18:57 CST / Codex RECOVERY-USABLE：** RTX新30首尝试全部闭合（ledger `473f0c67…7c0e`），26候选/1参考抓取未复现/3工程失败，实际50,375控、30次实例载入；最长slicing vegetables:193完整回放至原10,451控抓取前缀，未跳过/缩短。三工程失败分别初始关节偏差0.317>0.05（sorting bottles229）、exact-category场景库存缺失（store honey212/tidying bathroom175），0控失败不贴机器人FAILED。原CPU队列现准备全批corpus/cohort/原图，尚未人工批准/预测/校准。时序41文件已本地逐内容/形状验过，最新278回归通过；0729fdc8已push，TLS临时故障后协议兼容重试成功，未关闭证书验证。下一根全量审图，A800仍等账号2网关。
