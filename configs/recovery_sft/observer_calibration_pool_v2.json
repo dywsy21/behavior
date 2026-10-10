@@ -1,0 +1,36 @@
+{
+  "schema": "prospective_calibration_source_pool_v2",
+  "owner": "Codex RECOVERY-USABLE",
+  "declared_before_any_model_predictions": true,
+  "selected_observer_sha256": "b598b950f54fc3515fd213f13d77e7e4b869de07462b728471b5954a6ea47041",
+  "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+  "first_cohort_config": "configs/recovery_sft/observer_fresh_calibration_collection_v1.json",
+  "supplement_config": "configs/recovery_sft/observer_fresh_calibration_supplement_v1.json",
+  "declared_sources": 187,
+  "expected_first_sources": 90,
+  "expected_supplement_sources": 97,
+  "per_class": 30,
+  "seed": 17,
+  "model_selection_forbidden": true,
+  "training_forbidden": true,
+  "reserved_test_20_untouched": true,
+  "collection_attempts": "Exactly one predeclared attempt per source. All187 original identities and terminal receipts are retained, including physics/reference failures. Model predictions must not be read before source availability, manual labels and deterministic anchors are frozen.",
+  "unavailable_policy": "Only explicit closed collection failures or separately documented original-media semantic rejection can make a source unavailable. Do not replace or conceal these sources; do not fabricate labels. Report collection/reference availability separately from outcome accuracy, which is conditional on signed observable sources.",
+  "selection_rule": "Separate pool-v2 protocol: merge all90+97 predeclared first-attempt identities; preserve explicit unavailable/semantic-unapproved sources in collection denominator. Deterministic bipartite matching selects exactly30 IN_PROGRESS,30 SUCCEEDED,30 FAILED independent source groups from actually signed outcome support, BEFORE ANY model prediction. Unselected eligible sources are reserved, not treated as passed. If90 unique supported anchors cannot be matched, calibration remains blocked. Report calibration as conditional on verified observable GRASP sources and separately report collection availability; no all187/full100-task deployment claim.",
+  "unchanged_gates": {
+    "per_class_target": 30,
+    "confidence": 0.85,
+    "temperature_range": [
+      0.5,
+      5
+    ],
+    "minimum_independent_actual_events": 20,
+    "minimum_independent_confident_predictions": 20,
+    "minimum_selective_precision": 0.9,
+    "minimum_precision_wilson95_lower": 0.8,
+    "maximum_false_success_wilson95_upper": 0.1,
+    "anchor_rule": "Separate pool-v2 protocol: merge all90+97 predeclared first-attempt identities; preserve explicit unavailable/semantic-unapproved sources in collection denominator. Deterministic bipartite matching selects exactly30 IN_PROGRESS,30 SUCCEEDED,30 FAILED independent source groups from actually signed outcome support, BEFORE ANY model prediction. Unselected eligible sources are reserved, not treated as passed. If90 unique supported anchors cannot be matched, calibration remains blocked. Report calibration as conditional on verified observable GRASP sources and separately report collection availability; no all187/full100-task deployment claim.",
+    "scope": "GRASP phase-balanced only; cannot certify OPEN/PLACE or deployment-prior accuracy."
+  },
+  "interpretation": "A new outcome-blind sampling protocol, NOT a passing result under the original all90-source protocol. That protocol remains not-ready when its physical-source requirement fails. Pool v2 changes missing-data handling and source count only, never statistical safety gates or the tested checkpoint. No predictions on old20 frozen test, and no claim of OPEN/PLACE or full-task SR."
+}

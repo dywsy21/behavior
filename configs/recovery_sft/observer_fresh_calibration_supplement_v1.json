@@ -1,0 +1,57 @@
+{
+  "schema": "prospective_observer_calibration_collection_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "declared_before_physical_collection_and_model_predictions": true,
+  "root": "/data/workspace/wsy/behavior2026",
+  "hypothesis": "Prospective supplement for physically unavailable sources, NOT repeated model-dependent data collection. The first fixed90 cohort already contains reference-restoration failures before any v8 predictions. Preserve that cohort and every original failed receipt. Fix one additional metadata-balanced wave now: exclude all546 previous groups, add97 fresh groups from97 tasks, attempt each exactly once. Build a separately declared 187-source pool with explicit collection availability; physically and manually supported source groups may enter fixed deterministic90-anchor phase-balanced calibration before predictions. The first90 all-source protocol remains not-ready if any source is unavailable; it is not silently amended. Do not change the frozen v8 checkpoint, confidence, class-support, precision, Wilson or false-success gates; old20 test remains untouched.",
+  "selected_observer": {
+    "path": "runs/recovery_heterogeneous_20261010/H0-observer-adapter-v8-retry-unknown-v1/checkpoints/selected.pt",
+    "sha256": "b598b950f54fc3515fd213f13d77e7e4b869de07462b728471b5954a6ea47041",
+    "selected_step": 555,
+    "fit_result_sha256": "14abb9e0e8fd7f84fa9330bcadca65c00826ffb80862b798e32f17fc4b8c7e94"
+  },
+  "high_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+  "history_protocol": "cadence16_v1",
+  "source_recipe": "configs/recovery_sft/a800_h1_causal_feedback_fit_v1.json",
+  "protected": "runs/recovery_sft_preparation_20261009/cpu-preflight-v1/protected-groups.json",
+  "source_output": "runs/recovery_observer_fresh_calibration_20261010/grasp-supplement-sources-v1",
+  "excluded_inventories": [
+    "runs/recovery100_collection_20261009/grasp-sources-v1",
+    "runs/recovery100_collection_20261009/grasp-independent-dev-sources-v1",
+    "runs/recovery100_collection_20261009/articulation-sources-v1",
+    "runs/recovery100_collection_20261009/articulation-sources-v2",
+    "runs/recovery100_collection_20261009/articulation-gap-sources-v1",
+    "runs/recovery100_collection_20261009/articulation-light-sources-v1",
+    "runs/recovery100_collection_20261009/place-in-short-sources-v1",
+    "runs/recovery100_collection_20261009/place-on-short-sources-v1",
+    "runs/recovery_observer_fresh_calibration_20261010/grasp-sources-v1"
+  ],
+  "selection": {
+    "verb": "GRASP",
+    "all_tasks": true,
+    "train_coverage": 0,
+    "dev_coverage": 4,
+    "metadata_fresh_sources": 97,
+    "metadata_tasks": 97,
+    "excluded_unique_groups": 546,
+    "expected_reference_controls": 150483,
+    "rule": "Existing deterministic exporter with all prior inventories including the full initial90. Original TRAIN release and immutable recovery-DEV groups only; raise metadata coverage from3 to4, one new group per eligible task. All97 first attempts are retained irrespective of physical outcome. No lucky retries or model predictions enter selection."
+  },
+  "calibration": {
+    "per_class_target": 30,
+    "confidence": 0.85,
+    "temperature_range": [
+      0.5,
+      5
+    ],
+    "minimum_independent_actual_events": 20,
+    "minimum_independent_confident_predictions": 20,
+    "minimum_selective_precision": 0.9,
+    "minimum_precision_wilson95_lower": 0.8,
+    "maximum_false_success_wilson95_upper": 0.1,
+    "anchor_rule": "Separate pool-v2 protocol: merge all90+97 predeclared first-attempt identities; preserve explicit unavailable/semantic-unapproved sources in collection denominator. Deterministic bipartite matching selects exactly30 IN_PROGRESS,30 SUCCEEDED,30 FAILED independent source groups from actually signed outcome support, BEFORE ANY model prediction. Unselected eligible sources are reserved, not treated as passed. If90 unique supported anchors cannot be matched, calibration remains blocked. Report calibration as conditional on verified observable GRASP sources and separately report collection availability; no all187/full100-task deployment claim.",
+    "scope": "GRASP phase-balanced only; cannot certify OPEN/PLACE or deployment-prior accuracy."
+  },
+  "resource": "CPU export and full source-closure checks on lc1 shared disk while existing jobs run. Physical collection ONLY after the first90 collector and original-media preparation finish, on verified idle RTX10383 GPUs3-7. Existing low RL on RTX0-2 and lc1GPU1, teammate lc2 and shared environments remain untouched. No optimizer or training on any calibration source.",
+  "reserved_test_20_untouched": true
+}

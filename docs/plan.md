@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 11:33 CST / Codex RECOVERY-USABLE：** TRAIN续段/稀疏probe修复093dfe88已193回归、commit/push，现役v6仍原e4/global16不热改。新90的原`all90`条件因7个参考抓取未复现已不能满足，明确保留NOT-READY，不能悄悄删源算通过。未读任何新v8预测前，CPU元数据核定额外97新DEV来源/97task、排除全546旧group；另登记pool-v2（90+97全尝试分母、人工可观测支持中确定性选30×3独立anchor、其余保留），**只改缺测/采样方案，不改权重/置信度/精度/Wilson/误报门**。补充配置已落地、未采集；首90结束后自动corpus→cohort→原图待审链已启动，仅制备材料、不签核不推理。旧20测试/队友/lc2不动。
+
 - **2026-10-10 11:21 CST / Codex RECOVERY-USABLE：** OPEN policy14原317 controls/21无损边界全复核，根亲看15原视频面板；真实t429最大开度.295897、t434左夹爪由闭切开，后109控固定.257366；提前释放chunk76仍adv+.03532，后块+.04057，暂只诊断一条TRAIN，不能造接触失败真值。签核证据`docs/infra/results/2026-10-10-wash169-train14-owner-review.json`。据此**调整下一实验优先级**：先同3机制TRAIN延长同意图真实观察窗口（拟4×、真成功仍立即结束），固定EVAL原时限/奖励/actorLR不变；先核正负信用是否随真实后果改善，cached20 critic拟合后置，不只更用力拟合未经验证尾目标。已实现可选TRAIN窗口＋默认1的定期probe（拟每4更新，首/末必测），193回归过，全部未热改/未启用；现役v6已global16，15步完整probe仍4/6，无OPEN提升。新90数据38已闭/33候选/5未复现，原校准门/测试隔离不放宽。
 
 - **2026-10-10 11:07 CST / Codex RECOVERY-USABLE：** 上一goal回合为实质进展（修复worker并完成高初始回归）；本回合Git已pull/fetch，真实lc1 PID1890914/RTX worker存活，低已global15（28 chunks，KL.00850、critic半MSE.001573→.001222）。新增CPU闭合32真实episode reward/GAE尾项分解：OPEN三条TRAIN中最终bootstrap占折扣回报绝对量84–89%；policy14的实得.05845、尾估计.49128，平均adv+.01635，而尾值贡献+.43828。**这不是bootstrap必错证明，更不是把UNKNOWN改FAILED的许可**；现役明确是continuing-task目标，尚未改奖励/截断/actor。该条物理开度先升约.294又回.257并停滞，已取原controls/result，下一步原视频核查是否失去接触；190回归过。证据`artifacts/recovery-heterogeneous-20261010/short-rl-v6-returns-v1`和`wash169-train14-diagnostic`，当前不单靠更低critic loss宣称低层学会。
