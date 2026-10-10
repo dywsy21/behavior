@@ -61,7 +61,7 @@ class CausalPlannerInference:
         validate_low_goal(goal)
         return dict(goal=goal,event=None,causal_input=None,reused=True,
             control_step=session.feedback.control_step,revision=session.revision,
-            physical_success_asserted=False,observer_feedback_mode='shadow_unknown_v1')
+            physical_success_asserted=False,observer_feedback_mode=session.observer_feedback_mode)
 
     def plan(self,session,identity,observation,*,validate_low_goal):
         """Generate, validate downstream conditioning, then atomically issue.
@@ -88,7 +88,7 @@ class CausalPlannerInference:
             installed=session.commit(identity,token)
             return dict(goal=installed,event=events[0],causal_input=causal,
                 control_step=session.feedback.control_step,revision=session.revision,
-                physical_success_asserted=False,observer_feedback_mode='shadow_unknown_v1')
+                physical_success_asserted=False,observer_feedback_mode=session.observer_feedback_mode)
         except BaseException:
             if session.request is not None and session.request['token']==token:
                 session.discard(identity,token)

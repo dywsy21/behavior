@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 21:39 CST / Codex RECOVERY-USABLE：** 高层已真实360/360有限更新，最终保存/收尾尚在途（latest仍350），不提前称训练终态。新增显式GRASP-only校准pilot会话与observer封装，固定原温度/.85/两fresh检查，其他技能UNKNOWN/0、known_previous_outcome始终UNKNOWN，估计不写世界事实/成功终止；7模型身份与每任务/attempt独立，旧shadow默认不变。8新增/24定向/320恢复回归（含旧5重复夹具）、py_compile与diff检查通过；只本地实现，未部署GPU/仿真，待最终权重生成验收和真实时序与闭环。新入口`recovery_calibrated_observer.py`，启动器仍不自动允许此模式。
+
+- **2026-10-10 21:37 CST / Codex RECOVERY-USABLE：** 根已亲审旧RL两成功轨迹全20页/113真实边界/339原相机面板（不是仅总览），只批5末段32控纠正窗：round6 s1102/1118/1134，round8 s1086/1102；原始动作SHA与物理增量逐项固定在`2026-10-10-rl-success-native-window-owner-review.json`。中间长停滞/释放回弹、短尾不批；两条仍只1原来源、不是两独立实例，明确learner非expert。现有格式缺逐控proprio，须新原生边界adapter/机器准入，尚0新SFT样本消费/优化/结果或高层标签许可。H1 v2继续315/360，父新DEV40/42的两错均EXECUTE代RETRY（baseball_cap102/scanner39），目标/记忆正确；最终候选生成待。
+
+- **2026-10-10 21:33 CST / Codex RECOVERY-USABLE：** lc3父a74自由生成142/142真实完成（1030.21s、schedule dd121f3e…e1c0）：100正常非初始exact99/100（1 bundle错），新42恢复exact40/42（2 decision错），不是物理SR。H1 v2实际300/360、step250恢复DEV CE2.0502e-5，原初态0.00810054/带反馈非初始0.00031708，仍按预定final360验而不挑中间权重。旧RL成功两条全边界CPU审核完成，本地/RTX全20页逐SHA一致（index f11393c8…5496a /80e477f5…aaadd）；root继续亲看原图，尚未批准动作训练样本或启动新低层训练。两run/失败分母完整保留，lc2/共享env不动。
+
+- **2026-10-10 21:24 CST / Codex RECOVERY-USABLE：** 新5e43877d经Git bundle在RTX冻结`code/rl-success-action-review-v1`，CPU tmux同名实启两个已验成功轨迹全原生边界/32动作审核材料（`rl-success-wash169-round{6,8}-action-review-v1`及logs），尚待root逐页验收。Git对象缓存既有gc.log报告松散对象多，未做prune/删除/整理活跃仓；fetch/worktree成功，不影响任务。lc1 H1 v2实际203/360，step200恢复DEV CE2.9417e-5、原初态0.00808549（比基线+4.62%），旧非初始+5.38%/带反馈+11.88%；绝对量仍小但需最终生成确认遗忘，未挑checkpoint或宣称改善。lc3父63/142正常前段exact，后段恢复尚待。
+
 - **2026-10-10 21:23 CST / Codex RECOVERY-USABLE：** 补原生RL边界审核工具`review_short_skill_action_windows.py`：只核真实s[t]与ACK t+1…t+32，保留短尾/停滞元数据、不造dense proprio、不自动准入；逐原无损边界三视角全量渲染、重新核每控reward并固定start/controls/result SHA。三新时钟/缺口/终止/串policy回归及312恢复suite（含旧重复夹具）、py_compile通过；尚未在RTX运行新全图材料。H1 v2到200/360（保存/eval在途），父生成55/142正常前段全exact；仍不把部分生成与CE当物理成功率。
 
 - **2026-10-10 21:21 CST / Codex RECOVERY-USABLE：** 两旧OPEN训练成功轨迹1765实控/113无损边界逐ACK、奖惩、冷起点和观测SHA全复验通过，root已亲看两总览/30相机面板；白色目标洗衣机门末段进一步打开，最终directed_fraction .36949/.39351、原连续6控门通过。此前存在数百控几乎不变的平台（.24162/.29672），且869/896控远大于原317控EVAL窗，因此不是可靠短窗RL收益或整段优质BC。原记录缺逐控proprio、仅16控边界有真实RGB/proprio；不得补造dense状态来套旧archive schema。下一只在真实边界＋连续实际32动作上准备候选及全原图复核，再决定是否训练。证据RTX异质根`rl-success-wash169-round{6,8}-audit-v1`，audit SHA0b001e69…ffc2f/4bd97ba5…4c718，本地同名artifact；0新标签/优化。H1 v2实际189/360、父生成43/142前段正常均exact，不代表恢复42或完整SR。

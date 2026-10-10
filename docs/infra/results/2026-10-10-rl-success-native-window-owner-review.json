@@ -1,0 +1,62 @@
+{
+  "schema": "native_rl_action_window_owner_review_v1",
+  "reviewer": "Codex-root",
+  "reviewed_at": "2026-10-10T21:37:00+08:00",
+  "scope": "Owner personally inspected all 20 pages: 113 native boundary observations, 339 camera panels, plus both earlier trajectory overviews. This is selective learner self-imitation evidence, not expert quality, independent starts, full-task SR or machine training admission.",
+  "review_source_commit": "5e43877dc28a6fc7599c5d2a0c931dc545b39f68",
+  "source_config_sha256": "f3b0ed3e9491615682d789257521dad26030da9d8ccec4194e21e9228954f130",
+  "source_original_split": "train",
+  "source_recovery_split": "train",
+  "original_source_groups": ["wash dog toys:169"],
+  "independent_source_groups": 1,
+  "observations": "Both episodes open the same white washer partially, then spend hundreds of controls with no additional opening and substantial hand/base repositioning. The final recontact and pull genuinely further opens the intended door. Camera order is head/left-wrist/right-wrist; the right-wrist images show the close-up contact. No new arm-specific instruction is inferred. Middle plateaus, early grip-release/recoil and incomplete terminal tails are not approved as positive action examples.",
+  "approved_action_type": "observed_learner_late_corrective_progress_not_expert",
+  "clock_contract": "Only real native RGB/proprio s[t] and independently ACKed raw23 actions t+1 through t+32; no fabricated dense proprio, no future observations as actor inputs, no terminal padding, no cross-policy/intent window.",
+  "trajectory_reviews": [
+    {
+      "round": 6,
+      "seed": 44243,
+      "job_id": "d36b9c1a35e31f994a0741a0d969acead66311b25634af3032b283408b2e4020",
+      "index_sha256": "f11393c8be2606c3ff8e8344a6c969c739f7ec63e76893f0852805324505496a",
+      "physical_audit_sha256": "0b001e694c4ff3673c08baf8dacc1419a0ae72df1c9c9db5dd8766ddbc2ffc2f",
+      "source_policy_sha256": "b36d487e594c66fbef2342876865a91a01d18e0418682012bf9dcf29362f0d31",
+      "observations_reviewed": 57,
+      "pages_reviewed": 10,
+      "controls": 896,
+      "final_directed_open_fraction": 0.36949338422119826,
+      "approved_observation_control_steps": [1102, 1118, 1134],
+      "approved_action_sha256": [
+        "18ba4d3af8e519c889027273ab9e5db20df2a7276689a1a6da73cc51c6a51840",
+        "c0415eaff536f3fba86226865a0b0408e3269518083af911ded64a6018b661e7",
+        "9b9ff2cff8a35d361cb37d072a21548cf20f60d3f8332bf437abf17016d0b73e"
+      ],
+      "reason": "All three full windows cover visible final recontact/pull, with independently measured normalized opening progress +0.07670/+0.18816/+0.23294. Terminal ACK is allowed only as the final target action. Earlier 832-control approach/stall is not made positive by eventual success."
+    },
+    {
+      "round": 8,
+      "seed": 46261,
+      "job_id": "4d29f53a80048fcc6f37faccbe3a1a163979afb6b00177fa80b1aefe1b5f73b2",
+      "index_sha256": "80e477f534d51e12cd55c0177720ed07fca9bf8bd6376f8b4221a80d908aaadd",
+      "physical_audit_sha256": "4bd97ba54471f6100b4c93acf6ecd94d7f0f286cdd11e9d0b5aee21dba44c718",
+      "source_policy_sha256": "f48364705aeeaf8da073f294b95fbf4461ebfe3ee7998834f1f9cb1c28fb587f",
+      "observations_reviewed": 56,
+      "pages_reviewed": 10,
+      "controls": 869,
+      "final_directed_open_fraction": 0.3935095105903539,
+      "approved_observation_control_steps": [1086, 1102],
+      "approved_action_sha256": [
+        "712aa00c912e823dbd4fffbb58a1c94622a16f11db33522125a9286671bc5836",
+        "6f2c053fe83c1bfc8de0da0c57cdd2cc8169969461049ffd49171098e26f3bc6"
+      ],
+      "reason": "Two complete windows have visible final pull and measured normalized progress +0.10220/+0.15224. s[1118] has only 21 remaining actions and is explicitly excluded. Long middle no-progress segment is excluded."
+    }
+  ],
+  "other_windows": "All windows not listed remain unapproved, including early useful but redundant actions; no negative/failure label is invented for them.",
+  "actor_input_privileged_state_allowed": false,
+  "outcome_or_planner_label_permission": false,
+  "training_dataset_materialized": false,
+  "machine_training_admission": false,
+  "required_next": "Implement and verify a native-boundary-only adapter and transport with exact input/action hashes. Keep these highly correlated windows at one source/event weight, mix with existing heterogeneous reviewed actions and original 100-task rehearsal, then matched-checkpoint physical comparison before promotion. No whole-trajectory BC or automatic PPO restart.",
+  "all_original_failed_and_partial_episodes_retained": true,
+  "independent_member_review": "pending"
+}

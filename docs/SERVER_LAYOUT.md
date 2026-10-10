@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 21:24 CST：RTX旧RL成功片段的CPU证据复核
+
+- 原v7两个OPEN TRAIN：异质run根`short-rl-wash169-continuation-v7-episode-000010/train-0006-44243`（v25/896控）及`…episode-000012/train-0008-46261`（v27/869控）；0新仿真/优化。旧86ea源码生成`rl-success-wash169-round{6,8}-audit-v1`，1765逐控reward/ACK及113无损观测通过，两总览/audit已取本地同名artifact并root亲审。
+- 新冻结`code/rl-success-action-review-v1`=5e43877d，tmux `rl-success-action-review-v1`只CPU构造全原生边界review；输出同异质根`rl-success-wash169-round{6,8}-action-review-v1`/logs。仍为未准入候选；没有补造逐控proprio或复活旧RL。对象cache原gc警告不作删除处理。
+
 ## 2026-10-10 21:11 CST：H1首权重已落盘，lc3并行父模型生成
 
 - lc1 `H1-postfit-feedback-fit-v2`实际81/360；首checkpoint `step_00000050_save_0001.pt` SHA4b5a7429…56988/同名JSON/latest.json，原始updates/evaluations分别保留。W&B run af2c77329e7b已远端API核running/准确源码与326高层参数。

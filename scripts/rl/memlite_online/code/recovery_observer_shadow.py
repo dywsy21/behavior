@@ -16,6 +16,8 @@ OUTCOMES = ('IN_PROGRESS', 'SUCCEEDED', 'FAILED', 'UNKNOWN')
 
 
 class BoundObserverShadowInference:
+    feedback_mode = 'shadow_unknown_v1'
+
     def __init__(self, policy, processor, config, head, session, *,
                  loaded_backbone_sha256, loaded_adapter_sha256,
                  history_protocol='cadence16_v1', device='cuda'):
@@ -33,6 +35,17 @@ class BoundObserverShadowInference:
         self.policy, self.processor, self.config, self.head = policy, processor, config, head
         self.device = device
         self.last = None
+
+    def prediction(self, logits, member):
+        confidence, predicted = logits.softmax(-1).max(-1)
+        return dict(outcome=OUTCOMES[int(predicted)], confidence=float(confidence))
+
+    def commit_predictions(self, identity, step, predictions):
+        self.session.shadow_outcomes(identity, step, predictions)
+
+    def feedback_metadata(self):
+        return dict(observer_feedback_mode=self.feedback_mode, entered_planner=False,
+                    calibration_applied=False, status='shadow_only_observer_check')
 
     def check(self, identity, observation):
         """All members commit together; failed prefill/head leaves no history.
@@ -54,13 +67,13 @@ class BoundObserverShadowInference:
             if self.last['observation_sha256'] != digest:
                 raise ValueError('Different RGB/proprio at the same actual observation clock')
             return dict(status='duplicate_check_not_recomputed', control_step=step,
-                observer_feedback_mode='shadow_unknown_v1', entered_planner=False)
+                observer_feedback_mode=self.feedback_mode, entered_planner=False)
         endings = [w.rows[-1][0] if w.rows else None for w in session.windows]
         if not endings or len(set(endings)) != 1:
             raise ValueError('All members require aligned, separately conditioned feature windows')
         if endings[0] is not None and step - endings[0] < 16:
             return dict(status='partial_chunk_skipped_by_original_cadence', control_step=step,
-                observer_feedback_mode='shadow_unknown_v1', entered_planner=False)
+                observer_feedback_mode=self.feedback_mode, entered_planner=False)
         tokens, proposed, predictions, evidence = [], deepcopy(session.windows), [], []
         amp = torch.autocast('cuda', dtype=torch.bfloat16) if self.device == 'cuda' else nullcontext()
         with torch.inference_mode(), amp:
@@ -78,9 +91,10 @@ class BoundObserverShadowInference:
                 if logits.shape != (1, 4) or not torch.isfinite(logits).all():
                     raise ValueError('Finite four-class shadow logits required')
                 confidence, predicted = logits[0].softmax(-1).max(-1)
-                predictions.append(dict(outcome=OUTCOMES[int(predicted)], confidence=float(confidence)))
+                uncalibrated = dict(outcome=OUTCOMES[int(predicted)], confidence=float(confidence))
+                predictions.append(self.prediction(logits[0], member))
                 evidence.append(dict(member=member, raw_logits=logits[0].cpu().tolist(),
-                    uncalibrated_prediction=predictions[-1], context_steps=values['steps'][0].cpu().tolist(),
+                    uncalibrated_prediction=uncalibrated, context_steps=values['steps'][0].cpu().tolist(),
                     request_token=token))
                 tokens.append(token)
         # Revalidate after every expensive call, before either history or
@@ -91,10 +105,9 @@ class BoundObserverShadowInference:
         for member, token in enumerate(tokens):
             if session.observer_request(identity, member)[0] != token:
                 raise ValueError('Issued attempt changed while observer was running')
-        session.shadow_outcomes(identity, step, predictions)
+        self.commit_predictions(identity, step, predictions)
         session.windows = proposed
         self.last = dict(generation=generation, control_step=step, observation_sha256=digest)
-        return dict(status='shadow_only_observer_check', control_step=step,
+        return dict(control_step=step,
             attempt_generation=generation, observation_sha256=digest, members=evidence,
-            observer_feedback_mode='shadow_unknown_v1', entered_planner=False,
-            calibration_applied=False, optimizer_updates=0)
+            optimizer_updates=0, **self.feedback_metadata())

@@ -76,6 +76,8 @@ class CausalPlannerSession:
     clock. A discarded or rejected proposal cannot change memory or feedback.
     The transport must verify actual action ACKs before advancing this clock.
     """
+    observer_feedback_mode = 'shadow_unknown_v1'
+
     def __init__(self, identity, *, initial_control_step=0):
         if not isinstance(identity, CausalSessionIdentity):
             raise ValueError("Explicit session identity required")
