@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 19:34 CST：账号2连接已恢复
+
+- 本地持久VPN tmux `recovery-lc-connect-20261010c`，仅监听127.0.0.1:1080/1081；用户更新凭据交互输入，不写配置/Git/日志。lc1持久SSH tmux `recovery-lc1-control-20261010d`，socket `/home/wsy/.ssh/lc1-recovery-20261010d.sock`，显式ControlPersist=no；旧b/c socket不得当可用入口。19:33实查lc1八卡全空、共享盘1.7TiB余量，lc2未访问。
+- 尚未提交新GPU任务；下方19:21的冻结校准准备入口和新数据迁移接着执行，不将连接恢复等同于校准通过。现有RTX原始资料/权重/失败记录全部保留。
+
 ## 2026-10-10 19:21 CST：A800固定v11校准准备入口（未在A800运行）
 
 - Git入口`scripts/rl/memlite_online/tools/prepare_reserved_observer_launch.py --declaration configs/recovery_sft/a800_observer_v11_reserved_launch_v1.json`；声明SHA cc96f095…1e675固定原b0f3d125权重/7cff7691 fit、三cohort及fe222f88新运输manifest。连接恢复后须从共享根`src/`下新的干净冻结源码执行，复用现有g05-py310-cu128环境，不改共享env/不碰lc2。
