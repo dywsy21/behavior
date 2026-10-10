@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 20:56 CST / Codex RECOVERY-USABLE：** 2695dc33共享冷缓存实测终态7/8真实FLA前后向通过，rank7在driver加载报NFS stale handle（0.335s），其余95.3–95.5s，原异常已明确留档。八卡释放后另启动`cuda-cold-rank-probe-v1`独立rank缓存冷测，待结果。新源78 processor/700时钟/24实际processor全部通过；700行及24原图页与旧已亲审版本逐字节相同，根明确续签`2026-10-10-postfit-expert-feedback-cuda-retry-review.json`（audit a3349756…ab503、processor11ccf58b…33c52），不是新语义审批。下一固定同源新票并在八卡真实kernel过后重开H1；0新权重/未称效果。
+
+- **2026-10-10 20:55 CST / Codex RECOVERY-USABLE：** 新冻2695dc33在lc1八rank共享冷缓存纯kernel测试已捕获原始driver异常：rank7 `cuda_utils.so: cannot stat shared object: Stale file handle`，与NFS并发替换一致，FLA此前吞异常转CPU的链条得到实际复现；其余rank kernel仍在完成，尚不称独立缓存修复通过。新源CPU全78复验第一次仅写结果时因缺父目录退出（0输出准入），现创建明确新目录后以独立attempt2日志重跑，旧错误log保留。无新模型更新，shared env/旧run不动，后续独立rank冷测及同源新票。
+
 - **2026-10-10 20:53 CST / Codex RECOVERY-USABLE：** 冷启动修复已本地实现：每rank独立六类run缓存、在任何模型导入前显式CUDA→Triton→FLA校验，保留原始driver异常并拒绝CPU误绑定，NCCL显式device_id。7定向（5新增）/309恢复回归及py_compile/diff-check过（含旧5重复夹具）；新增八rank纯kernel审计入口，下一新冻源对照共享/独立冷缓存的真实FLA前后向。GPU修复尚未实证，旧失败run/共享env不改；数据、parent、优化目标及360更新日程不变。
 
 - **2026-10-10 20:50 CST / Codex RECOVERY-USABLE：** H1-postfit-feedback-fit-v1于20:44首轮基线eval失败退出（supervisor returncode1/162.63s），0更新/0新checkpoint，八卡已释放；不能沿用20:42的“运行中”。rank0 FLA导入时吞掉Triton初始化异常并绑定`torch.cpu`，实际CUDA forward在`fla.utils.custom_device_ctx`报`torch.cpu.device`不存在；不是OOM。日志保留在原`.supervisor/attempt_001.log`，根正在查共享冷缓存/设备初始化次序，尚未证实底层异常成因；拟新冻源码先八rank真实kernel前后向再换新run，不改共享env/失败源、不读旧test。干净pull/fetch已同步，main无新增。另旧RL v7的36完成TRAIN/12更新只读重放1046 chunks，GAE均值与日志差<2e-7；平均每更新样本loss权重OPEN87.18%/PLACE10.49%/GRASP2.34%，这是样本权重不是梯度范数，说明不能把名义三技能均分当均衡优化；尚未改RL或作因果收益结论。
