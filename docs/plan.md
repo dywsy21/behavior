@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 09:46 CST / Codex RECOVERY-USABLE：** 旧H1 final420真正非首段合成UNKNOWN probe误RETRY27/100（step50为20），继续训练未解决捷径；新同格式step50真实因果计数生成前20条0误RETRY、1JSON无效，完整110仍在途，不能提前算通过。结果v8到16epoch仍UNKNOWN1/4；核实这四例不是全0控，而是单check/真实已执行1、1、1、13控。发现结果GRU仅有帧间dt（单帧均0），命令已执行时长只藏在VLM文本；补可选数值served_controls输入及严格同attempt时钟校验，178恢复＋11因果回归通过。下一同v8数据/初始化/超参单变量结构对照配方已写，尚待冻结新源启动，不改标签/阈值、不把计数当物理成功失败。
+
 - **2026-10-10 09:40 CST / Codex RECOVERY-USABLE：** 新H1真实50updates，W&B271c5d91e8c4，权重9da12771…6c7d7。正常非首段＋真实因果UNKNOWN计数CE .00574998→.000447287，原非首段无反馈.000760109→.000305419，恢复10DEV .00865773→.000164313；仍需真生成，不以loss降幅称改善已验收。低global11的critic七次减半均增同批half-MSE，实际跳过更新；本地补可选Adam一阶动量重启回退（严格下降才接受，二阶/步数保留，不改变actor LR/KL），及精确chunk边界原RGB＋61D状态无损档案、critic更新重放证据，177回归过，**尚未改变在跑RL**，待窗口检查后独立配方/源码再使用。结果v8未知OPEN泛化仍弱，不部署。
 
 - **2026-10-10 09:30 CST / Codex RECOVERY-USABLE：** 正常示范新feedback实际验收700 anchors/100非首段任务，全部与runtime ledger相同；24真实processor保持原target/23→27映射不变，根亲看24页72原RGB并逐SHA签核（审核5daddae5、rows c74749e0，人工回执见`docs/infra/results/2026-10-10-expert-feedback-human-review-v1.json`）。这是原标注衍生时钟，不是新物理标签/on-policy轨迹。新H1同bee父/42TRAIN＋10DEV/6原2新/1e-6/20遍420updates，独立源41be48ba、ticket f2f637c6，lc3八卡`H1-causal-feedback-fit-v1`已提交启动/尚待首更新，cache全部run隔离，lc2不动。旧父/step50完整非首段对照均98/100 exact；UNKNOWN.5合成probe误RETRY22/20条，去feedback恢复分别5/10与0/10，不能上线。旧final420追加两路lc1 GPU5/7生成在跑；首次tmux环境未激活退出、v2显式env成功，保留失败日志。audit首次因重复调用会原地变更的processor退出，修独立raw拷贝后v2全通过，未热改旧源码。

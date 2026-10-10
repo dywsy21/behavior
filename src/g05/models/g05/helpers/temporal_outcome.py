@@ -17,19 +17,22 @@ class TemporalOutcomeObserver(nn.Module):
     shared full-bundle vector cannot produce identifiable per-member labels.
     The feature-extraction caller must preserve that binding and its SHA.
     """
-    def __init__(self, hidden_size, width=128, *, include_absolute_proprio=False):
+    def __init__(self, hidden_size, width=128, *, include_absolute_proprio=False,include_served_controls=False):
         super().__init__()
         if type(include_absolute_proprio) is not bool:
             raise ValueError('Explicit observer proprio architecture flag required')
         self.include_absolute_proprio=include_absolute_proprio
+        if type(include_served_controls) is not bool:
+            raise ValueError('Explicit observable command-age architecture flag required')
+        self.include_served_controls=include_served_controls
         self.context_projection = nn.Sequential(nn.LayerNorm(hidden_size), nn.Linear(hidden_size, width), nn.SiLU())
-        self.sequence = nn.GRU(width+28+(27 if include_absolute_proprio else 0), width, batch_first=True)
+        self.sequence = nn.GRU(width+28+(27 if include_absolute_proprio else 0)+int(include_served_controls), width, batch_first=True)
         self.residual = nn.Linear(width, hidden_size)
         nn.init.zeros_(self.residual.weight)
         nn.init.zeros_(self.residual.bias)
         self.head = PlannerOutcomeHead(hidden_size)
 
-    def forward(self, context, proprio, steps, valid, *, allow_context_grad=False):
+    def forward(self, context, proprio, steps, valid, *, allow_context_grad=False,served_controls=None):
         if type(allow_context_grad) is not bool:
             raise ValueError('Explicit context-gradient opt-in required')
         if allow_context_grad and torch.is_grad_enabled() and not self.sequence.training:
@@ -48,6 +51,16 @@ class TemporalOutcomeObserver(nn.Module):
                 or (steps[valid] < 0).any()
                 or ((steps[:, 1:] <= steps[:, :-1]) & valid[:, 1:]).any()):
             raise ValueError("Temporal observations must be finite, right-padded, and strictly causal")
+        if self.include_served_controls:
+            if (served_controls is None or served_controls.shape!=steps.shape
+                    or served_controls.dtype not in (torch.int32,torch.int64)
+                    or (served_controls[valid]<0).any() or (served_controls[valid]>steps[valid]).any()):
+                raise ValueError('Need the actual nonnegative served-control count at each causal check')
+            starts=steps-served_controls
+            if ((starts!=starts[:,:1])&valid).any():
+                raise ValueError('Observer sequence crosses an issued intent attempt')
+        elif served_controls is not None:
+            raise ValueError('Served-control input requires its matching observer architecture')
         # Cached H0 remains insulated by default. A separate observer-only
         # adapter experiment can opt in; that caller must freeze the planner,
         # visual backbone and actor and verify its dedicated LoRA boundary.
@@ -63,6 +76,11 @@ class TemporalOutcomeObserver(nn.Module):
             # object/contact truth. In particular absolute gripper aperture
             # must not exist only as rounded tokens inside a frozen VLM.
             pieces.append(state.tanh())
+        if self.include_served_controls:
+            # Unlike inter-frame dt, age distinguishes an unexecuted new
+            # intent (0) from a short attempt with one available observation.
+            # This is an observed command counter, never a physical label.
+            pieces.append((served_controls.detach().float()/30.).log1p()[...,None])
         inputs = torch.cat(pieces, dim=-1)
         packed = pack_padded_sequence(inputs, sizes.cpu(), batch_first=True, enforce_sorted=False)
         _, last = self.sequence(packed)

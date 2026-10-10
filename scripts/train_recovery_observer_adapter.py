@@ -93,7 +93,8 @@ def main():
     # Match the frozen-head experiment's RNG independently of zero-LoRA init.
     torch.manual_seed(cfg['seed'])
     hidden=next(iter(cache['features'].values()))['context'].shape[-1]
-    head=TemporalOutcomeObserver(hidden,include_absolute_proprio=True).cuda()
+    head=TemporalOutcomeObserver(hidden,include_absolute_proprio=True,
+        include_served_controls=cfg.get('include_served_controls',False)).cuda()
     head.head.load_state_dict(cache['initial_head'],strict=True)
     adapter_parameters=[p for p in policy.parameters() if p.requires_grad]
     optimizer=torch.optim.AdamW([dict(params=adapter_parameters,lr=cfg['adapter_learning_rate']),
@@ -113,8 +114,11 @@ def main():
             pixels={k:v.unsqueeze(0).cuda() for k,v in prepared['pixel_values'].items()}
             context=policy.outcome_context_for_observer_adapter_training([prefix],pixels)[0]
             contexts.append(context);proprio.append(prefix['proprio']['value'].reshape(27).cuda());steps.append(check['control_step'])
-        return dict(context=torch.stack(contexts)[None],proprio=torch.stack(proprio)[None],
+        result=dict(context=torch.stack(contexts)[None],proprio=torch.stack(proprio)[None],
             steps=torch.tensor(steps,device='cuda')[None],valid=torch.ones(1,len(steps),dtype=torch.bool,device='cuda'))
+        if head.include_served_controls:
+            result['served_controls']=torch.tensor([c['served_controls'] for c in request['checks']],device='cuda')[None]
+        return result
     # Prove zero-adapter equivalence against an already SHA-bound real prefill,
     # then prove real gradients reach only this adapter and the separate head.
     head.eval()

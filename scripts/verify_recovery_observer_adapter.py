@@ -150,7 +150,7 @@ def main():
     if frozen_before != fit['frozen_before_sha256']:
         raise ValueError('Reloaded frozen parent does not match training')
     head = TemporalOutcomeObserver(next(iter(cache['features'].values()))['context'].shape[-1],
-        include_absolute_proprio=True).cuda()
+        include_absolute_proprio=True,include_served_controls=cfg.get('include_served_controls',False)).cuda()
     head.load_state_dict(checkpoint['observer_state'],strict=True);head.eval()
     if any(not torch.isfinite(t).all() for t in head.state_dict().values()):
         raise ValueError('Nonfinite reloaded observer')
@@ -185,6 +185,8 @@ def main():
                     context,state=memo[key];contexts.append(context);states.append(state);steps.append(check['control_step'])
                 values=dict(context=torch.stack(contexts)[None],proprio=torch.stack(states)[None],
                     steps=torch.tensor(steps,device='cuda')[None],valid=torch.ones(1,len(steps),dtype=torch.bool,device='cuda'))
+                if head.include_served_controls:
+                    values['served_controls']=torch.tensor([c['served_controls'] for c in request['checks']],device='cuda')[None]
                 logits.append(head(**values).float().cpu()[0])
             logits=torch.stack(logits);y=torch.tensor([OUTCOMES.index(r['approval']['label']['value']) for r in items])
             pred=logits.argmax(-1);w=torch.tensor(event_weights(items));ce=F.cross_entropy(logits,y,reduction='none')

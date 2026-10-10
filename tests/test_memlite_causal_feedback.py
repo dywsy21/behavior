@@ -137,6 +137,14 @@ class FeedbackTests(unittest.TestCase):
             self.assertEqual(result['estimated_member_outcomes'],[dict(member=0,estimated_outcome='FAILED',confidence=.96)])
         with self.assertRaises(ValueError):CausalFeedbackLedger(identity(),uncertainty_protocol='oracle')
 
+    def test_optional_control_age_requires_actual_same_attempt_on_every_append(self):
+        i=identity();cache=CausalFeatureWindow(i,intent_started_control_step=32)
+        for step in (32,48):
+            cache.append(i,step,torch.ones(8),torch.ones(27),intent_started_control_step=32)
+        self.assertEqual(cache.tensors(i,48)['served_controls'].tolist(),[[0,16]])
+        with self.assertRaises(ValueError):cache.append(i,64,torch.ones(8),torch.ones(27))
+        with self.assertRaises(ValueError):cache.append(i,64,torch.ones(8),torch.ones(27),intent_started_control_step=64)
+
     def test_h0_gradients_stop_before_frozen_vlm(self):
         torch.manual_seed(17)
         observer=TemporalOutcomeObserver(16,width=8)

@@ -227,15 +227,21 @@ class CausalFeedbackLedger:
 
 class CausalFeatureWindow:
     """Bounded detached context cache. Identity never becomes an actor feature."""
-    def __init__(self, identity, maximum=4):
+    def __init__(self, identity, maximum=4,*,intent_started_control_step=None):
         if not isinstance(identity, FeedbackIdentity) or type(maximum) is not int or not 1 <= maximum <= 4:
             raise ValueError("Invalid bounded feature window")
         self.identity, self.rows = identity, deque(maxlen=maximum)
+        if intent_started_control_step is not None and (type(intent_started_control_step) is not int or intent_started_control_step<0):
+            raise ValueError('Actual intent issuance clock required')
+        self.intent_started_control_step=intent_started_control_step
 
-    def append(self, identity, control_step, context_hidden, normalized_proprio):
+    def append(self, identity, control_step, context_hidden, normalized_proprio,*,intent_started_control_step=None):
         import torch
         if identity != self.identity or type(control_step) is not int or control_step < 0:
             raise ValueError("Wrong feature-cache identity/clock")
+        if (intent_started_control_step!=self.intent_started_control_step
+                or (self.intent_started_control_step is not None and control_step<self.intent_started_control_step)):
+            raise ValueError('New/retried intent must have a fresh causal feature window')
         if self.rows and control_step <= self.rows[-1][0]:
             raise ValueError("Duplicate/backward feature observation")
         if (context_hidden.ndim != 1 or normalized_proprio.shape != (27,)
@@ -247,7 +253,10 @@ class CausalFeatureWindow:
         import torch
         if identity != self.identity or not self.rows or at_control_step != self.rows[-1][0]:
             raise ValueError("Cannot retrieve another episode's or future context window")
-        return dict(context=torch.stack([r[1] for r in self.rows])[None],
+        result=dict(context=torch.stack([r[1] for r in self.rows])[None],
                     proprio=torch.stack([r[2] for r in self.rows])[None],
                     steps=torch.tensor([[r[0] for r in self.rows]], device=self.rows[-1][1].device),
                     valid=torch.ones((1, len(self.rows)), dtype=torch.bool, device=self.rows[-1][1].device))
+        if self.intent_started_control_step is not None:
+            result['served_controls']=result['steps']-self.intent_started_control_step
+        return result

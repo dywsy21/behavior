@@ -25,6 +25,14 @@ def temporal_batch(items, device):
             raise ValueError('Malformed member feature sequence')
         for key in ('context','proprio','steps'): result[key][i,:n]=row[key].to(device)
         result['valid'][i,:n]=True
+    ages=['served_controls' in row for row in items]
+    if any(ages):
+        if not all(ages):raise ValueError('Mixed observer command-age feature protocols')
+        result['served_controls']=torch.zeros_like(result['steps'])
+        for i,(row,n) in enumerate(zip(items,lengths)):
+            if row['served_controls'].shape!=(n,) or row['served_controls'].dtype not in (torch.int32,torch.int64):
+                raise ValueError('Actual integer command ages must align with the checked frames')
+            result['served_controls'][i,:n]=row['served_controls'].to(device)
     return result
 
 

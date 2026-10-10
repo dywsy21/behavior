@@ -45,5 +45,28 @@ class ObserverAdapterTests(unittest.TestCase):
             head(x,p,steps,mask,allow_context_grad=True)
         with torch.no_grad():self.assertEqual(head(x,p,steps,mask).shape,(2,4))
 
+    def test_explicit_command_age_is_observable_and_cannot_cross_attempts(self):
+        import torch
+        sys.path.insert(0,str(Path(__file__).parent))
+        from test_recovery_pipeline import module
+        from recovery_observer_training import temporal_batch
+        head=module.TemporalOutcomeObserver(16,width=8,include_served_controls=True)
+        torch.nn.init.normal_(head.residual.weight,std=.2)
+        # Same visible context, proprio and one-frame inter-check dt=0;
+        # only an already observed command age differs.
+        row=dict(context=torch.ones(1,16),proprio=torch.zeros(1,27),steps=torch.tensor([160]),served_controls=torch.tensor([0]))
+        old=dict(row,served_controls=torch.tensor([160]))
+        values=temporal_batch([row,old],'cpu');out=head(**values)
+        self.assertFalse(torch.allclose(out[0],out[1]))
+        out.square().mean().backward();self.assertIsNotNone(head.sequence.weight_ih_l0.grad)
+        with self.assertRaises(ValueError):head(**{k:v for k,v in values.items() if k!='served_controls'})
+        bad=dict(values,served_controls=torch.tensor([[0],[161]]))
+        with self.assertRaises(ValueError):head(**bad)
+        two=dict(context=torch.ones(2,16),proprio=torch.zeros(2,27),steps=torch.tensor([32,48]),served_controls=torch.tensor([0,8]))
+        with self.assertRaisesRegex(ValueError,'crosses an issued intent'):head(**temporal_batch([two],'cpu'))
+        with self.assertRaises(ValueError):temporal_batch([row,{k:v for k,v in old.items() if k!='served_controls'}],'cpu')
+        legacy=module.TemporalOutcomeObserver(16,width=8)
+        with self.assertRaises(ValueError):legacy(**values)
+
 
 if __name__=='__main__':unittest.main()
