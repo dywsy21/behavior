@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 17:13 CST：联合服务预加载，尚无机器人执行
+
+- lc1新`src/causal-joint-shadow-v2`/a49b3fcd，GPU1/tmux `causal-joint-shadow-probes-v1`，异质run同名目录/log/cache，端口18977预加载冻结H1/a74与低0c52；没有客户端/job/物理，observer权重只hash、不加载/预测。RTX `code/causal-joint-shadow-v2`同commit，worker尚未启动，必须等当前两臂复验完全退出，不混ownership。旧v1源码/CPU验收保留。
+
 ## 2026-10-10 17:10 CST：联合接管待运行源码
 
 - 新A800 `src/causal-joint-shadow-v1`、RTX `code/causal-joint-shadow-v1`同87ca5e3b，仅CPU真文件/历史验收，尚未GPU或物理运行；后续新增完整action journal/独立audit还需新冻源，勿将该目录当现役联合服务。模型配置d1c8deb5，joint probe0f82ba84；已有真实过去命令manifest为异质run根`causal-handover-inputs-v1/manifest.json`，SHA00ff361f…5868603，radio32/wash270各1历史命令，placement无记录不补造。
