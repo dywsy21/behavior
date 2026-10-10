@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 19:41 CST：两项固定v11 GPU验证已结束
+
+- 上述源689cda6f的校准/时序两tmux均自然退出，lc1无GPU计算任务。`runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1/calibration/result.json` SHA1945e96f…0c558，原GRASP门通过；`calibration.json` SHA32ed1e9e…d42b1、`predictions.json` SHAd570302f…6259d。不是部署许可，全部失败与未知预测保留。
+- `runs/recovery_heterogeneous_20261010/H0-observer-v11-stream-shadow-v1/result.json` SHAea60a8dc…827b、`checks.jsonl` SHAdc56c815…09d01，四episode/39实际检查/0权重更新/0机器人控制。两路轻量结果与全部预测/检查已取本地对应`artifacts/recovery-observer-fresh-calibration-20261010/v11-reserved-launch-v1/calibration/`和`artifacts/recovery-heterogeneous-20261010/H0-observer-v11-stream-shadow-v1/`，两端SHA及统计已核。
+- VPN账号2仍本地tmux `recovery-lc-connect-20261010c`，lc1控制socket仍d；密码不落文件。既有训练、旧测试、共享env、lc2与队友未动；后续新GPU任务再次核资源，不沿用本条空闲快照。
+
 ## 2026-10-10 19:37 CST：固定v11校准和时序GPU实启
 
 - A800冻结`src/observer-v11-reserved-calibration-v1`=689cda6f；新运输`datasets/recovery-v11-new30-calibration-20261010-v1`140文件全SHA验过。实际联合`datasets/recovery-observer-calibration-union-20261010-v3-unseen-reserves`，admission4a786aad…05515、168 archive/5306观测/286CAL/96组；`runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1`已含全准备结果，90锚9d90451d…60b0d、配置c2023234…91aa0。
