@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 19:54 CST / Codex RECOVERY-USABLE：** 上轮实质进展为账号2恢复＋v11原门CAL/真实时序通过；本轮干净pull/fetch、main无新进度，lc1控制d实通/八卡空闲。检查H1数据链发现旧42恢复TRAIN与v11拟合来源重合，不能直接用最终头做“无泄漏反馈”；保留旧OOF/UNKNOWN证据，不伪装成已校准输入。已核实际v8 outcome334行/78组、所有历史及新CAL/test排除，共370来源；RTX原`closed-grasp-corpus-v5-linear`669分支/223组中，166组未见，83结构性正恢复候选（38TRAIN45DEV），原始失败/分母不删。新增`recovery_postfit.py`、metadata排除导出与全候选原图审核入口，严格保留原split/固定v11身份与原校准门，5定向回归通过；即将新冻源在A800导出真绑定→RTX逐命令/物理语义核验和原图材料，不自动审批/训练。下一根审真实图像后再生成冻结头的source-disjoint反馈；高层消费、有效联合恢复及低RL可靠提升仍未完成。
+
 - **2026-10-10 19:41 CST / Codex RECOVERY-USABLE：** lc1两路固定v11实跑均正常终态并退出。新90独立GRASP相位校准原门**通过**（result `1945e96f…0c558`）：原始82/90；温度1.774/.85门下已知结果79/81正确、9 UNKNOWN/弃权；IP25/25、S28/29、F26/27，仍1高置信falseS/60非成功，Wilson上界8.86%<原10%，不称零误报。92真实prefill/0权重更新，旧20test/6reserve未读；温度拟合使用本CAL，非另一次盲测，也非OPEN/PLACE/完整SR许可。全四历史shadow 561实际ACK/41边界→39真实检查、35重复不算新证据、4短段依原16控规则跳过，记忆最多4帧、所有原planner输入仍UNKNOWN/0逐值复现、0串episode token/0新控制/0预测进planner（result `ea60a8dc…827b`）。两端SHA、90来源/类别、选择性统计/Wilson和时序已根复算；证据`docs/infra/results/2026-10-10-observer-v11-calibration-shadow.json`。两GPU已空，VPN保持；下一仅合法TRAIN的校准GRASP反馈生成/高层消费验收，不自动部署或扩RL。高低层可靠恢复/跨来源增益仍未证实，独立成员review待、goal不完成。
 
 - **2026-10-10 19:37 CST / Codex RECOVERY-USABLE：** A800新冻结`src/observer-v11-reserved-calibration-v1`=689cda6f通过Git bundle同步（未改共享checkout工作区/活跃源）；新30运输140文件/114,748,003B全验、三原cohort SHA不变，v3未预测联合已实做168 archive/5,306观测全读，286 CAL-only/96组、0TRAIN/高层/动作，admission `4a786aad…05515`。真实90独立锚（每相位30）已在任何新预测前冻结`9d90451d…60b0d`，217总源/27缺测/4fit隔离/90旧预测隔离/6未选reserve完整保留；配置`c2023234…91aa0`。lc1 GPU0 `observer-v11-reserved-calibration-v1`已提交固定b0权重原门校准；GPU1 `observer-v11-stream-shadow-v1`已提交全四原轨迹/41真实边界只读GPU回放，均独立cache/log，模型加载/结果待。零新训练/零物理/零反馈部署，旧20test不读，goal未完成。
