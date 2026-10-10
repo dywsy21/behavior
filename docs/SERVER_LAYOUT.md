@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 22:13 CST：生成终态与原生learner数据
+
+- A800异质run根下`H1-postfit-final-{initial,noninitial}-v2`均142条完成，lc3 GPU已释放。原v1缺库失败仍保留；v2使用同a260cc75源、显式既有激活脚本/run-owned TMPDIR，不改共享env。全部result/rows已在本地同名artifact，模型不迁本地。
+- `datasets/rl-reviewed-native-late-windows-v1`是21依赖文件/五原生32控纠正窗（manifest2eda69a9…8bfef；仅wash169单源事件）；不是五新事件/专家或新高层标签。完整tar在`incoming/rl-reviewed-native-late-windows-v1.tar.gz`及本地同名artifact，SHA5f35672b…8833。
+- `src/native-learner-processor-v1`=ebbae1a5；CPU真实处理审计`runs/recovery_heterogeneous_20261010/native-learner-processor-v1/result.json` SHA57bbbc1b…9370f，五窗通过/0更新，低SFT接线待。校准历史回放源`src/observer-calibrated-stream-v1`=16d2ab90，run`H0-observer-v11-calibrated-stream-v1`已完成39检查/561历史ACK，无新物理，result f6f65d10…04013；lc1 GPU0已释放。
+
 ## 2026-10-10 21:43 CST：H1新反馈终态与固定生成验收
 
 - A800共享根`/data/workspace/wsy/behavior2026`，`runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2`已完成360/360；final为`checkpoints/step_00000360_save_0008.pt`（SHA89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7）、result SHA bc5c9d40bc218e8acae7f946f67e66d563410ce676d43a45916bb3e94896153f。训练GPU已释放，原失败v1仍保留。

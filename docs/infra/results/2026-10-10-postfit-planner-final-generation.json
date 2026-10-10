@@ -1,0 +1,41 @@
+{
+  "owner": "Codex main",
+  "time": "2026-10-10T22:13:00+08:00",
+  "checkpoint_sha256": "89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7",
+  "selection": "Predeclared final 360, no intermediate checkpoint selection",
+  "source_commit": "a260cc7558ed2abfa472051946518b8260d1401d",
+  "parent_checkpoint_sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2",
+  "target_free": true,
+  "physical_success_measurement": false,
+  "runs": {
+    "initial": {
+      "directory": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/H1-postfit-final-initial-v2",
+      "result_sha256": "161ec3b5f4f087b16aec998eb6c5a6d7fa731ce9f1e3c73f90d379f2ca4590e8",
+      "rows_sha256": "9cb78fc4623a7de5a2d0a2ef068ff60826d68449faa3abe7c9b4b3fdd2836a5a",
+      "normal_rows": 100,
+      "parent_exact": 85,
+      "candidate_exact": 82,
+      "new_normal_mismatches": ["task2 instance258 frame3: left vs right drawer in parent; same current navigation", "task22 instance55 frame59: sandal75 vs gym_shoe77", "task59 instance1 frame0: marker vs paintbrush"],
+      "interpretation": "Strict demonstration agreement decreased; these differences may be alternative legal ordering, not proven extra physical failures. Score unchanged.",
+      "candidate_false_retry": 0
+    },
+    "noninitial": {
+      "directory": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/H1-postfit-final-noninitial-v2",
+      "result_sha256": "e5a015a90e2d6f10801f47bd5e5431e2c26ed0edc908b0612d5c3ac8782367ea",
+      "rows_sha256": "b23ad1c567b70ab45782eefb62bb4711ed8385372d43f7324d56444812438a31",
+      "schedule_sha256": "dd121f3e510daa84bdfa0b06433fad8499a264752ae97900e025097623d0e1c0",
+      "normal_rows": 100,
+      "parent_exact": 99,
+      "candidate_exact": 99,
+      "candidate_false_retry": 0
+    }
+  },
+  "recovery_dev": {
+    "rows": 42,
+    "parent_exact": 40,
+    "candidate_exact": 42,
+    "scope": "Same 42 recovery DEV in both runs, not 84 independent examples; all require RETRY. Unseen by this incremental fit, not a blind whole-task evaluation.",
+    "corrected": ["wash a baseball cap:102", "installing a scanner:39"]
+  },
+  "promotion": "Not promoted; calibrated-feedback physical execution and independent member review remain."
+}

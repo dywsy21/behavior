@@ -62,7 +62,10 @@ def validate_launch(ticket_path,component,*,engineering=False):
             raise ValueError('Engineering is two original-expert updates at most, not recovery SFT')
     else:
         pool=recipe[component]['pool']
-        require_training_pool(ticket['admission'],pool,ticket['files']['admission']['sha256'])
+        approved=require_training_pool(ticket['admission'],pool,ticket['files']['admission']['sha256'])
+        if component=='L0':
+            from recovery_native_actions import validate_native_training_supplement
+            validate_native_training_supplement(ticket,recipe,[r for r in approved[1] if r['candidate']['split']=='train'])
         if component=='H0' and ticket['world_size']!=1: raise ValueError('Tiny cached observer uses one worker')
         if component=='H1' and not {'history','feedback','feedback_receipt'}<=ticket['files'].keys():
             raise ValueError('H1 needs real causal history and OOF prediction artifacts')

@@ -12,7 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-10 22:00 CST / Codex RECOVERY-USABLE：** native5末段窗已RTX全1765控再算奖惩/同技能/ACK、导出并本地5/5原生回读（真实head720×720、wrist480×480、state61、未来32×23，不是把审核缩略图当训练输入）；27文件约9.27MB，manifest2eda69a9…8bfef，tar5f35672b…8833已A800字节核对，尚待其CPU真实processor。原低wash169四专家窗与新learner五窗只同1来源事件，未开新SFT。初态3新增严格不匹配已逐identity/target与父核同：抽屉left→right、sandal75→gym_shoe77、marker→paintbrush；这些不等于已证物理失败或灾难遗忘，不改原评分，也不据此升级默认。高新42恢复/非初始生成仍在途。
+- **2026-10-10 22:19 CST / Codex RECOVERY-USABLE：** 已补native TRAIN专用wrapper/显式票与真实处理准入；要求同source/task/parent/semantic只匹配一个既有event，禁止DEV/重复ID/新事件膨胀，原专家/事件/卡位采样逐项不变。332恢复单测/编译/diff过（修复一旧H1 mock返回约定，不改其训练逻辑）。预登记两臂各20事件遍/预期200更新，同低0c52父、LR1e-5、八卡、6正常+2恢复混合；只候选增加五已审learner相位，W&B单列其真实抽样数。新冻结源CPU验收/训练仍待，不把旧5窗eval processor通过代替新TRAIN接线通过；独立review待。
+
+- **2026-10-10 22:13 CST / Codex RECOVERY-USABLE：** 两路final目标无泄漏生成均142/142终态/释放lc3卡：新42恢复40→42exact、正常非初始99→99/100；初态85→82/100的三处顺序/目标差异保持原严格评分，非新物理失败结论。结果initial161ec3b5…4590e8/noninitiale5a015a9…2367ea已取本地全行核SHA。native五窗A800真实CPU processor5/5通过（57bbbc1b…9370f，ebbae1a5；32×27/四补齐位/全真实未来动作），下一同事件低层对照：候选只增加已审learner相位，不加事件权重，DEV/正常回放不变；接线仍在测试，未开新SFT。Git fetch完成、HEAD/upstream一致/main无新增；自有未提交补丁故未pull，独立成员review仍待。
+
+- **2026-10-10 22:00 CST / Codex RECOVERY-USABLE：** native5末段窗已RTX全1765控再算奖惩/同技能/ACK、导出并本地5/5原生回读（真实head720×720、wrist480×480、state61、未来32×23，不是把审核缩略图当训练输入）；21个依赖文件约9.27MB，manifest2eda69a9…8bfef，tar5f35672b…8833已A800字节核对，尚待其CPU真实processor。原低wash169四专家窗与新learner五窗只同1来源事件，未开新SFT。初态3新增严格不匹配已逐identity/target与父核同：抽屉left→right、sandal75→gym_shoe77、marker→paintbrush；这些不等于已证物理失败或灾难遗忘，不改原评分，也不据此升级默认。高新42恢复/非初始生成仍在途。
 
 - **2026-10-10 21:55 CST / Codex RECOVERY-USABLE：** final初态100全出，exact82/100（父a74旧同scope85/100），decision100/100/0误RETRY，bundle86/parent93；恢复42仍在后段、非初始42/100在途。不能把恢复CE−95.6%当总体提升，先逐父候选原行查新增遗忘，不升级默认。校准replay完整复核result f6f65d10…04013/checks9168119e…7b773：39最终反馈全UNKNOWN，33开门依法未校准；6抓取检查因中途接管短历史/重试后只有0、16控而不足可靠两次确认，并非已验证反馈带来恢复收益。独立重载原logits39对max差0.15625（BF16数值非逐位同），冻结指纹一致；下一需实际连续历史/较长失败恢复，而不降低确认门。原native5窗CPU真实导出已提交RTX新5bbc源，待结果。
 

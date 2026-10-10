@@ -7,6 +7,7 @@ ticket and cannot add outcome/planner labels or independent source events.
 from dataclasses import asdict
 import json
 from pathlib import Path
+import random
 import shutil
 
 import numpy as np
@@ -185,3 +186,104 @@ def native_low_raw(reader,index,config):
     raw['action']={m['key']:torch.from_numpy(action[:,m['start_index']:m['start_index']+m['raw_shape']].copy())
         for m in config['raw_shape']['action']}
     return raw
+
+
+def same_event_supplement_rows(base_rows,native_rows):
+    """No new event weight: each learner anchor must match one existing event.
+
+    TRAIN source, actual issued semantic skill and parent are all required.
+    Several windows or stochastic policies never become independent events.
+    """
+    if not native_rows:raise ValueError('An explicit supplement cannot be empty')
+    output=[]
+    for native in native_rows:
+        if (native['original_split']!='train' or native['recovery_split']!='train'
+                or native.get('action_source')!='reviewed_learner_late_correction_not_expert'):
+            raise ValueError('Only original TRAIN learner samples may supplement TRAIN')
+        matches=[]
+        for item in base_rows:
+            row=item['candidate'];actor=row['actor_input']
+            if (row['source_group']==native['source_group'] and row['task']==native['task']
+                    and row['split']=='train' and item['approval']['pool']=='action'
+                    and actor['parent_goal']==native['parent_goal']
+                    and json.loads(actor['issued_skills_semantic_json'])==json.loads(native['semantic_bundle'])):
+                matches.append(item['approval']['event_id'])
+        if len(set(matches))!=1:
+            raise ValueError('Require one already approved same-source/skill/parent event; no new event weight')
+        output.append(dict(candidate=dict(sample_id=native['sample_id'],source_group=native['source_group'],
+            task=native['task'],split='train',native_learner=True),
+            approval=dict(pool='action',event_id=matches[0],label=dict(quality='reviewed_learner_late_correction_not_expert'))))
+    if len({r['candidate']['sample_id'] for r in base_rows+output})!=len(base_rows)+len(output):
+        raise ValueError('Duplicate supplement/base sample identity')
+    return output
+
+
+def validate_native_training_supplement(ticket,recipe,base_rows):
+    """Explicit same-source extension; old admission and processor gates stay."""
+    spec=recipe.get('L0',{}).get('native_learner_supplement')
+    if spec is None:
+        if any(k.startswith('native_') for k in ticket['files']):raise ValueError('Undeclared learner supplement')
+        return None
+    if (ticket['component']!='L0' or set(spec)!={'protocol','manifest','owner_review'}
+            or spec['protocol']!='same_existing_source_event_v1'):
+        raise ValueError('Explicit action-only same-event supplement required')
+    files=ticket['files'];root=Path(recipe['root'])
+    for name,key in [('manifest','native_manifest'),('owner_review','native_owner_review')]:
+        path=bound(root,spec[name])
+        if files.get(key)!=dict(path=str(path),sha256=spec[name]['sha256']):
+            raise ValueError('Ticket does not bind the exact learner supplement')
+    audit_ref=files.get('native_processor_audit')
+    if audit_ref is None or file_sha(audit_ref['path'])!=audit_ref['sha256']:
+        raise ValueError('Actual native input/action processor validation required')
+    reader=NativeLearnerActionReader(Path(files['native_manifest']['path']).parent,
+        files['native_manifest']['sha256'],files['native_owner_review']['sha256'])
+    same_event_supplement_rows(base_rows,reader.rows)
+    audit=read(audit_ref['path'])
+    if (audit.get('schema')!='native_learner_processor_audit_v1' or audit.get('status')!='passed'
+            or audit.get('source_commit')!=ticket['source_commit'] or audit.get('optimizer_steps')!=0
+            or audit.get('oracle_inputs') is not False or audit.get('stats_sha256')!=recipe['stats_sha256']
+            or audit.get('training_processor_checked') is not True
+            or audit.get('recipe_sha256')!=ticket['files']['recipe']['sha256']
+            or audit.get('admission_sha256')!=ticket['files']['admission']['sha256']
+            or audit.get('same_event_schedule_check',{}).get('unchanged_expert_event_rank_order') is not True
+            or audit.get('manifest_sha256')!=files['native_manifest']['sha256']
+            or audit.get('owner_review_sha256')!=files['native_owner_review']['sha256']
+            or [(s['sample_id'],s['actions_sha256']) for s in audit['samples']]!=[
+                (s['sample_id'],s['actions_sha256']) for s in reader.rows]
+            or any(s['shape']!=[32,27] or s['padding_indices']!=[7,8,17,18]
+                   or s.get('train_masks_verified') is not True for s in audit['samples'])):
+        raise ValueError('Native processor receipt/model/source/clock drift')
+    return reader
+
+
+class SameEventLearnerSupplement:
+    """TRAIN only; DEV stays the untouched original recovery/normal examples."""
+    def __init__(self,base,reader):
+        if base.split!='train':raise ValueError('Learner actions never enter the fixed DEV set')
+        self.base,self.reader,self.config=base,reader,base.config
+        self.rows=base.rows+same_event_supplement_rows(base.rows,reader.rows)
+        self.processor=None
+
+    def __len__(self):return len(self.rows)
+
+    def __getitem__(self,index):
+        if index<len(self.base):return self.base[index]
+        import torch
+        from g05.utils.training.stage1_model import make_processor
+        if self.processor is None:self.processor=make_processor(self.config,True)
+        local=index-len(self.base);row=self.rows[index]
+        old_random,old_np=random.getstate(),np.random.get_state()
+        try:
+            with torch.random.fork_rng(devices=[]):
+                seed=int(row['candidate']['sample_id'][:8],16)
+                torch.manual_seed(seed);random.seed(seed);np.random.seed(seed)
+                sample=self.processor.preprocess(native_low_raw(self.reader,local,self.config))
+        finally:
+            random.setstate(old_random);np.random.set_state(old_np)
+        if (sample['action'].shape!=(32,27) or not torch.isfinite(sample['action']).all()
+                or tuple(torch.nonzero(sample['action_dim_is_pad']).flatten().tolist())!=(7,8,17,18)
+                or sample['action_is_pad'].any()):
+            raise ValueError('Invalid exact native action sample')
+        sample['source_identity']=dict(pool='reviewed_learner_action',sample=row['candidate']['sample_id'],
+            event=row['approval']['event_id'],task=row['candidate']['task'],source_group=row['candidate']['source_group'])
+        return sample

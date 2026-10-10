@@ -106,6 +106,10 @@ def main():
                     admission_sha256=ticket['files']['admission']['sha256'])
         if a.component=='L0':
             new=VerifiedRecoveryActionDataset(**kwargs,split='train');dev=VerifiedRecoveryActionDataset(**kwargs,split='dev')
+            if recipe['L0'].get('native_learner_supplement') is not None:
+                from recovery_native_actions import validate_native_training_supplement,SameEventLearnerSupplement
+                native=validate_native_training_supplement(ticket,recipe,new.rows)
+                new=SameEventLearnerSupplement(new,native)
             schedule=list(finite_mixture_schedule(new.rows,by_task,batch_size=ticket['global_batch'],
                 maximum_event_passes=ticket['event_passes'],seed=recipe['seed'],
                 allow_extended_event_fit=recipe.get('extended_event_fit',False),
@@ -130,6 +134,8 @@ def main():
     schedule=schedule[:ticket['maximum_updates']]
     binding=dict(component=a.component,source_commit=commit,parent_sha256=parent['sha256'],admission_sha256=data_sha,
         recipe_sha256=file_sha(a.ticket),world_size=world,micro_batch=ticket['micro_batch'])
+    if 'native_manifest' in ticket['files']:
+        binding['native_learner_manifest_sha256']=ticket['files']['native_manifest']['sha256']
     fingerprint=schedule_fingerprint(schedule,binding=binding)
     if rank==0:
         if not a.resume: a.output.mkdir(parents=True,exist_ok=False)
@@ -168,7 +174,8 @@ def main():
             cfg=dict(recipe['wandb'],name=a.output.name,group=recipe['wandb']['group']+('-engineering' if a.engineering else ''))
             wb=init_wandb(cfg,a.output,run_id=state['run_id'],resume=a.resume,
                 metadata=dict(component=a.component,engineering_only=a.engineering,parent_sha256=parent['sha256'],
-                    data_sha256=data_sha,source_commit=commit,schedule_fingerprint=fingerprint,trainable_groups=groups))
+                    data_sha256=data_sha,source_commit=commit,schedule_fingerprint=fingerprint,trainable_groups=groups,
+                    native_learner_manifest_sha256=binding.get('native_learner_manifest_sha256')))
         except Exception as exc: error=exc
     collective_error(error,device=device,phase='W&B online initialization')
     stopping=[False]
@@ -253,6 +260,10 @@ def main():
         state['step']+=1
         model.model.ar_helper._last_ce_cache=None
         metrics.update(update=state['step'],seconds=time.monotonic()-before,event_pass=batch['event_pass'])
+        metrics.update(expert_examples=sum(kind=='expert' for kind,_ in batch['rows']),
+            recovery_examples=sum(kind=='new' for kind,_ in batch['rows']),
+            native_learner_examples=sum(kind=='new' and new.rows[i]['candidate'].get('native_learner',False)
+                for kind,i in batch['rows']) if new is not None else 0)
         if rank==0:
             with (a.output/'updates.jsonl').open('a') as f: f.write(json.dumps(metrics)+'\n')
             wb.log({'train/update':state['step'],**{'train/'+k:v for k,v in metrics.items()},'scope/engineering_only':int(a.engineering)})

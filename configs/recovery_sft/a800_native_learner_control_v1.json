@@ -1,0 +1,100 @@
+{
+  "schema": "memlite_recovery_preparation_recipe_v1",
+  "owner": "Codex",
+  "root": "/data/workspace/wsy/behavior2026",
+  "preferred_node": "10.19.7.3",
+  "training_authorized_by_this_file": true,
+  "authorization": "User's active RECOVERY-USABLE goal permits further reviewed-data SFT and heterogeneous short-skill RL until verified usable; this is one measured SFT stage, not the goal endpoint.",
+  "hypothesis": "Five individually reviewed late corrective learner windows from two old same-skill RL rollouts can improve recovery beyond matched extra SFT using existing approved expert windows. Both arms start from low0c52, keep the same source-event weight, original expert identities, event order, DDP ranks, loss, optimizer and unchanged DEV. The five correlated windows are only one existing TRAIN source event and are not called expert trajectories. Real paired skill execution, not FM loss alone, decides usefulness.",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "parents": {
+    "high": {
+      "path": "runs/memlite_stage1_high_100task_v1/checkpoints/step_00048045_save_0027.pt",
+      "sha256": "3683f719ebb033cacf77afdc0330b25f43a3c3e5b704b0bda9623608f092c3d1",
+      "step": 48045
+    },
+    "low": {
+      "path": "runs/recovery_heterogeneous_20261010/L0-later-actions-v1/checkpoints/step_00000200_save_0004.pt",
+      "sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5",
+      "step": 200
+    }
+  },
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "seed": 17,
+  "maximum_updates_per_line": 2000,
+  "maximum_event_passes": 20,
+  "extended_event_fit": true,
+  "maximum_wall_seconds_per_line": 86400,
+  "stop_on_first_limit": true,
+  "evaluation_every_updates": 50,
+  "stopping_criteria": "One predeclared 20-event-pass matched comparison, expected 200 updates per arm; final200 only, no intermediate selection or auto-restart. Stop for nonfinite, identity, gradient, resource or input-contract failures. Monitor original heldout regression >10%; no claim of efficacy without real paired skill execution. This scientific comparison is not a collection/reset quota or goal endpoint.",
+  "nccl_env": {
+    "NCCL_P2P_DISABLE": "1",
+    "NCCL_IB_DISABLE": "1",
+    "NCCL_SOCKET_IFNAME": "bond0"
+  },
+  "H0": {
+    "pool": "outcome",
+    "trainable": "temporal_adapter_and_result_head_only",
+    "learning_rate": 0.0001,
+    "weight_decay": 0.01,
+    "max_causal_checks": 4,
+    "calibration_required_before_runtime": true
+  },
+  "H1": {
+    "pool": "planner",
+    "trainable": "high_planner_only",
+    "learning_rate": 0.000001,
+    "weight_decay": 0.01,
+    "feedback": "real_group_OOF_predictions_UNKNOWN_if_uncalibrated",
+    "rehearsal": "original_100task_plans",
+    "new_high_hash_invalidates_old_calibration": true
+  },
+  "L0": {
+    "pool": "action",
+    "trainable": "low_action_expert_only",
+    "learning_rate": 0.00001,
+    "weight_decay": 0.03,
+    "rehearsal": "original_100task_actions",
+    "padding_dimensions": [
+      7,
+      8,
+      17,
+      18
+    ],
+    "predicted_actions": 32,
+    "executed_actions": 16,
+    "action_start": 0,
+    "fm_noise_samples": 4,
+    "anchor_selection_protocol": "independent_anchor_rng_v1"
+  },
+  "pilot": {
+    "H0_global_batch": 4,
+    "H1_L0_global_batch": 8,
+    "H1_L0_micro_batch": 1,
+    "H1_L0_world_size": 8,
+    "checkpoint_every_updates": 50,
+    "event_passes": 20,
+    "normal_to_recovery_full_batch": [
+      6,
+      2
+    ],
+    "note": "One anchor per independent reviewed event per pass, mixed tasks, no repeated tail padding. Eight-rank DDP; no 100-task sparse-reward RL. H0/H1 require their separate acceptance tickets and cannot be inferred from this L0 launch."
+  },
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-recovery-native-learner-pair-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key",
+    "new_run_required": true
+  },
+  "comparison": {
+    "component": "L0",
+    "control_corpus": "datasets/recovery-reviewed-union-20261010-v9-later-actions",
+    "candidate_corpus": "datasets/recovery-reviewed-union-20261010-v9-later-actions",
+    "changed_factor": "Candidate adds five owner-approved native learner32 windows inside one already approved event; no new event mass, synthetic expert state, outcome/planner labels, DEV changes or optimizer increase.",
+    "execution": "Sequential lc3 eight A800, existing-window control followed by native-supplement candidate. Do not use lc2 or displace another GPU job.",
+    "arm": "control"
+  }
+}

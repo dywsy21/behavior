@@ -18,6 +18,7 @@ def main():
     p.add_argument('--feedback-directory',type=Path)
     p.add_argument('--expert-feedback-audit',type=Path)
     p.add_argument('--expert-feedback-human-review',type=Path)
+    p.add_argument('--native-processor-audit',type=Path)
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     recipe=json.loads(a.recipe.read_text());root=Path(recipe['root'])
@@ -38,6 +39,12 @@ def main():
         check=json.loads(a.feature_audit.read_text())
         if check['status']!='passed' or check['admission_sha256']!=sha or check['optimizer_steps']!=0:raise ValueError('Unverified actual features')
         files.update(features=a.feature_cache/'features.pt',feature_receipt=a.feature_cache/'receipt.json',feature_audit=a.feature_audit)
+    if a.component=='L0' and recipe['L0'].get('native_learner_supplement') is not None:
+        from recovery_calibration_launch import bound
+        spec=recipe['L0']['native_learner_supplement']
+        if a.native_processor_audit is None:raise ValueError('Explicit real native processor audit required')
+        files.update(native_manifest=bound(root,spec['manifest']),native_owner_review=bound(root,spec['owner_review']),
+            native_processor_audit=a.native_processor_audit.resolve())
     if a.component=='H1':
         if a.feedback_directory is None:raise ValueError('Need actual completed observer OOF artifacts')
         receipt=json.loads((a.feedback_directory/'feedback_receipt.json').read_text())
