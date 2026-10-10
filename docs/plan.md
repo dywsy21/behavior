@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 08:16 CST / Codex RECOVERY-USABLE（用户允许VPN重连，goal恢复）：** 按用户新增授权重连原lc-connect，仅eth2单进程/loopback1080、1081，不改路由/env；持久tmux `recovery-lc-connect-20261010`与lc1/lc3 SSH控制会话已实通，两个节点GPU全空，不碰lc2队友。核实H0-observer-v2实际20epoch/440更新结束、选epoch15，末DEV92.5%/balanced78.75%且UNKNOWN1/4，冻结SHA前后同，尚未独立重载/校准部署；低`short-rl-v4-cold`确认因Worker disconnected mid-episode终止global7、9664547d，非技能失败，父/冻结SHA不变。接下来先实际重载高观察器、迁移已审数据，同时按新独立run核验续接低层，不从头重复已完成训练。前条blocked为历史，完整目标恢复继续。
+
 - **2026-10-10 03:39 CST / Codex RECOVERY-USABLE（goal阻塞，非完成）：** 前一轮为实际进展（新数据纠错/签核/封装/校验），不是只等状态。本轮再次实测1080与lc1/lc2 socket缺失，现有lc1/lc3 SSH均exit255；RTX三个cold worker真实状态仍failed_no_retry、完成9/8/9条，GPU全空，A800后台终态不可观察。自03:07首次、03:18续接到本轮，同一VPN/待重登确认阻塞已连续≥3个goal回合；可独立完成的CPU数据准备已完成，剩余实际训练、特征、OOF和效果验证须连通A800。现将goal标记blocked，**不称已达到可用，不自行重登可能挤掉队友的VPN、不重复启动RL**。等待用户确认可以重连或外部恢复隧道；恢复后先核observer最终run/独立重载和低RL最新checkpoint，再迁v7/续训，完整三项目标不缩减。
 
 - **2026-10-10 03:36 CST / Codex RECOVERY-USABLE：** 新合并单元`outcome-planner-expansion-unit-v1`实际48ZIP/1474原观察全读通过，95outcome＋23真实RETRY、0动作；23纠正末端均≥128控同目标抓持，仍只GRASP、不冒称跨机制/完整SR。79,242,493B包SHA52858bd6…78baa6独立解包227文件/92,618,261B全部校验通过（admission0b091d00…bb1cc0）。旧已训GRASP164结果＋20plan回查无同类语义冲突，2终态再验真实双手六控失持；新旧192扩展结果仅1冲突已撤。fb49b32b双端161恢复测试过、签核3测试过；轻量完整回执`docs/infra/results/2026-10-10-reviewed-planner-expansion-v1.json`。A800 v7联合/特征/训练未做，目标待迁移路径不存在；1080/socket仍缺、RTX八卡空、未重登VPN，低RL/observer最终状态仍待连接核验。CPU可交接准备完成，goal仍未可用；须用户确认VPN重登后先核现有进程/权重再续，不能重复开训或用旧v6。

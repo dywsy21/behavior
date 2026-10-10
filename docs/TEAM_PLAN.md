@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-10 08:16 CST / Codex：** 用户已明确允许VPN重连；lc1/lc3实通且GPU空闲，goal恢复。B结果观察器实际440更新完成/selected15、UNKNOWN仍弱，先独立权重重载与新数据；C原RL真实global7断线终止、checkpoint保留，准备新run精确续接。A原L0不重复，lc2队友不动；暂不扩100task或宣称可靠SR提升。
+
 **2026-10-10 03:39 CST / Codex：** 持续goal现blocked而非完成：同一A800 VPN缺失/重登待确认已连续三个goal回合，CPU补充数据已全部交接准备，剩余B训练/OOF/校准及C短RL学习验证均依赖A800。本轮真实lc1/lc3 SSH失败，RTX三worker终态9/8/9且八卡空；不将A800不可观察说成已退出。等待用户允许重登或连接恢复后先核旧作业再继续，不新开替代RTX训练，不缩减可用性目标。
 
 **2026-10-10 03:36 CST / Codex：** B新95结果＋23意图已签/全读/独立解包校验，原164 GRASP结果＋20plan的同类arm语义回查通过；修订v7待A800迁移，0新optimizer。A不因新意图数据重复低层BC；C仍网络阻塞、八RTX已空，最后真实global7不等于可靠增益。当前等待用户协调VPN，之后先核observer终态/独立重载，再处理真实OOF/H1与短技能RL；不启动全100RL、不部署未校准头、不合main。
