@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-10 16:30 CST / Codex：** B v10已按原早停407更新，selected6 balanced83.63%未胜v8，GPU3独立重载中，不用新CAL补救/不部署。A分相位FM468前向实过，新增晚段改善OPEN TRAIN约40%但OPEN DEV约恶化3%，待真实配对；candidate OPEN目前1成1UNKNOWN不提前升级。tripod首场景0控/未领job握手竞态保留，新76dc4b54只读HELLO门验证后续未领取任务。C旧RL保持暂停，不扩100task/不动队友。
+
 **2026-10-10 16:17 CST / Codex：** A control12全闭/根审/逐控审计与零更新指纹全过，抓4放4开0，candidate按同条件串行载入，尚无配对提升；B v10短历史LoRA+头222更新、继续原选择DEV，不动已看CAL/旧test。C旧RL仍安全暂停，尚无可靠收益，不扩100task；RTX4–7队友不动。
 
 **2026-10-10 16:08 CST / Codex：** B v10专属observer LoRA+头已111真实更新、冻结层无梯度，效果未定；A control真实物理10/12已闭（抓4/放4成功、开2 UNKNOWN），仍待control全闭后同12条件candidate比较，不凭loss推广。C v7安全暂停/完整权重与partial保留。各路根独立执行，lc2及RTX4–7队友未触碰。

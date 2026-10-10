@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 16:30 CST / Codex RECOVERY-USABLE：** 39窗×4noise×3模型共468真实FM前向完成/全部参数指纹不变（result28079f76）；新晚段OPEN TRAIN事件均值.023282→.013887（−40.4%），但原3 OPEN DEV .024998→.025818（+3.3%），抓取DEV两臂均约−28%，说明总FM隐藏机制差异，不能推SR。wash169起点candidate比control差(.01145/.00752)，晚508明显好(.01034/.02389)，未宣称这是闭环因果解释；摘要`docs/infra/results/2026-10-10-later-action-phase-loss.json`。v10已407步/11epoch原早停、selected6/222 SHA5a477efd，原DEV balanced83.63%未胜v8/89.58%，冻结SHA不变；在GPU3新独立重载复算，**不消耗新CAL/不部署**。新76dc4b54 tripod v2已HELLO过/实跑，先前0控握手失败仍留档；candidate前两OPEN一成一UNKNOWN，尚待全12与根审，不提前称可靠提升。
+
 - **2026-10-10 16:26 CST / Codex RECOVERY-USABLE：** candidate tripod首worker因模型服务尚未listen，场景先加载完成后WebSocket HTTP握手EOF；真实receipt `actual_controls=0`、未领取job，服务四个tripod仍pending，旧v1失败/scene日志完整保留。已在新worker加入**加载模拟器前仅读HELLO、不发送任何job**的运输等待；协议/config不匹配直接拒绝，不自动重置/重跑任何失败轨迹。等待新源检查后只续四个未领取job，radio/wash现役不重启。该工程失败不能隐去，也不算模型物理失败/成功。阶段FM诊断仍载入，v10按原选择规则继续。
 
 - **2026-10-10 16:22 CST / Codex RECOVERY-USABLE：** 新冻源ccb39299/配置cda3c313的三权重分相位FM只读诊断已在lc1空闲GPU1/tmux `recovery-action-phase-v1`提交，run `L0-later-action-phase-diagnostic-v1`，共享盘独立cache；241恢复回归通过，待真实前向结果。低candidate服务已ready/实跑首条，W&B7554d6906d88，RTX原GPU0–2三冷worker；v10同原规则333更新/epoch9，曲线波动，不提前选权重/宣称可用。三条链独立，不动lc2和队友。

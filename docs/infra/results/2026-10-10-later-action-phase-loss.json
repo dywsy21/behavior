@@ -1,0 +1,146 @@
+{
+  "status": "matched_action_phase_loss_diagnostic_completed",
+  "config_sha256": "cda3c3136183945a06487a38a8aaf8ecfd19faf3dee143b6766436afba8410a2",
+  "source_commit": "ccb39299b19516298c642b14138d2fb1990d7506",
+  "admission_sha256": "e63085fe046fb4ec59fc43fa358b025edbb121efb07c1731e5f6a252471c942f",
+  "rows_sha256": "e82c1602a7e9e45c2d5059eba3019f1b9337245e49e02ba07fd7e2e5ed6db3d1",
+  "optimizer_updates": 0,
+  "whole_task_sr": false,
+  "models": [
+    {
+      "model": {
+        "name": "parent",
+        "path": "runs/recovery_heterogeneous_20261010/L0/checkpoints/step_00000200_save_0004.pt",
+        "sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044"
+      },
+      "summary": [
+        {
+          "split": "dev",
+          "mechanism": "GRASP",
+          "events": 6,
+          "anchors": 6,
+          "event_balanced_loss": 0.016981411428339237,
+          "anchor_mean_loss": 0.016981411428339237
+        },
+        {
+          "split": "dev",
+          "mechanism": "OPEN_DOOR",
+          "events": 3,
+          "anchors": 3,
+          "event_balanced_loss": 0.024998398362726406,
+          "anchor_mean_loss": 0.024998398362726406
+        },
+        {
+          "split": "train",
+          "mechanism": "GRASP",
+          "events": 14,
+          "anchors": 14,
+          "event_balanced_loss": 0.012348027327184721,
+          "anchor_mean_loss": 0.012348027327184721
+        },
+        {
+          "split": "train",
+          "mechanism": "OPEN_DOOR",
+          "events": 5,
+          "anchors": 16,
+          "event_balanced_loss": 0.023282045296028904,
+          "anchor_mean_loss": 0.023323617227699447
+        }
+      ],
+      "actual_forwards": 156,
+      "rows_sha256": "5a3006062fbfb0ff0c50210c7846477af6362d41224ea024e5ade829bc595c46",
+      "parameters_unchanged": true
+    },
+    {
+      "model": {
+        "name": "control",
+        "path": "runs/recovery_heterogeneous_20261010/L0-startonly-continuation-v1/checkpoints/step_00000200_save_0004.pt",
+        "sha256": "51e2c772ba321f1dd0b5faad1e31264e2acceca56013baf4c97f5fa94fee302c"
+      },
+      "summary": [
+        {
+          "split": "dev",
+          "mechanism": "GRASP",
+          "events": 6,
+          "anchors": 6,
+          "event_balanced_loss": 0.012143100274429804,
+          "anchor_mean_loss": 0.012143100274429804
+        },
+        {
+          "split": "dev",
+          "mechanism": "OPEN_DOOR",
+          "events": 3,
+          "anchors": 3,
+          "event_balanced_loss": 0.02534007556412531,
+          "anchor_mean_loss": 0.02534007556412531
+        },
+        {
+          "split": "train",
+          "mechanism": "GRASP",
+          "events": 14,
+          "anchors": 14,
+          "event_balanced_loss": 0.006555389170390292,
+          "anchor_mean_loss": 0.006555389170390292
+        },
+        {
+          "split": "train",
+          "mechanism": "OPEN_DOOR",
+          "events": 5,
+          "anchors": 16,
+          "event_balanced_loss": 0.024658793696890703,
+          "anchor_mean_loss": 0.025026908215216317
+        }
+      ],
+      "actual_forwards": 156,
+      "rows_sha256": "f7dc11c6fb258a9aa041a7df2d222a2236e9999b04d1d539b1da557b560dce21",
+      "parameters_unchanged": true
+    },
+    {
+      "model": {
+        "name": "later-actions",
+        "path": "runs/recovery_heterogeneous_20261010/L0-later-actions-v1/checkpoints/step_00000200_save_0004.pt",
+        "sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5"
+      },
+      "summary": [
+        {
+          "split": "dev",
+          "mechanism": "GRASP",
+          "events": 6,
+          "anchors": 6,
+          "event_balanced_loss": 0.01220466554218876,
+          "anchor_mean_loss": 0.01220466554218876
+        },
+        {
+          "split": "dev",
+          "mechanism": "OPEN_DOOR",
+          "events": 3,
+          "anchors": 3,
+          "event_balanced_loss": 0.02581759887760964,
+          "anchor_mean_loss": 0.02581759887760964
+        },
+        {
+          "split": "train",
+          "mechanism": "GRASP",
+          "events": 14,
+          "anchors": 14,
+          "event_balanced_loss": 0.006695146728827624,
+          "anchor_mean_loss": 0.006695146728827624
+        },
+        {
+          "split": "train",
+          "mechanism": "OPEN_DOOR",
+          "events": 5,
+          "anchors": 16,
+          "event_balanced_loss": 0.013886725404502257,
+          "anchor_mean_loss": 0.013625089894048871
+        }
+      ],
+      "actual_forwards": 156,
+      "rows_sha256": "fb619ccd1a81ec71daf0c5a92de07388082f56e0b2e862f5b1c66d16e82f4a93",
+      "parameters_unchanged": true
+    }
+  ],
+  "result_sha256": "28079f76002dff1a584eb8ed8dfb9f42d419b5a3709903630d364cd164b2a8d4",
+  "evidence": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/L0-later-action-phase-diagnostic-v1",
+  "interpretation": "Known TRAIN / original selection DEV, no calibration/test or optimizer. New later windows reduce TRAIN OPEN event-balanced FM by about40.4% vs common parent, while OPEN DEV is about3.3% worse. Control improvement primarily GRASP; its OPEN TRAIN worsens. Wash169 start270 is .00752control vs .01145candidate but late508 improves .02389 to .01034; do not mistake average loss for closed-loop success or assume start/late tradeoff is causal failure explanation."
+}
