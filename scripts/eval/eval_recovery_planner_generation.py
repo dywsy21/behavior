@@ -67,7 +67,7 @@ def main():
         raise ValueError('Unknown normal-state feedback protocol')
     if original_feedback=='causal_expert_unknown_v1':
         from recovery_expert_feedback import with_expert_feedback
-        expert_class=with_expert_feedback(Stage1Dataset)
+        expert_class=with_expert_feedback(Stage1Dataset,repeat_stride_controls=cfg.get('original_feedback_repeat_stride',16))
     expert = expert_class(release, config, 'high', 'eval')
     union = root / cfg['union']
     recovery = VerifiedRecoveryPlannerDataset(union/'admission', union/'raw',
@@ -88,6 +88,7 @@ def main():
         restoration=restore, schedule_sha256=digest(schedule), target_free=True,
         original_schedule=original_schedule,original_with_previous_intent=original_with_previous,
         original_feedback=original_feedback,uncertainty_protocol=cfg.get('uncertainty_protocol','raw_observer_confidence_v1'),
+        original_feedback_repeat_stride=cfg.get('original_feedback_repeat_stride',16),
         probe_unknown_confidence=cfg.get('probe_unknown_confidence',0.) if args.feedback_probe else None,
         recovery_dev_unseen_by_increment_only=True, no_physical_success_measurement=True,
         counterfactual_feedback_probe=args.feedback_probe,

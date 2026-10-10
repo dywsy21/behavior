@@ -53,5 +53,19 @@ class ExpertFeedbackTests(unittest.TestCase):
             if key=='clock':anchors[1]=(3,0,anchors[1][2],'p',[])
             with self.subTest(key=key),self.assertRaises(ValueError):expert_unknown_feedback(ep,5)
 
+    def test_slower_refresh_only_thins_redundant_calls_not_commands_or_elapsed_age(self):
+        ep=episode()
+        before=json.loads(expert_unknown_feedback(ep,2));after=json.loads(expert_unknown_feedback(ep,2,repeat_stride_controls=128))
+        self.assertEqual(before['same_intent_planner_refreshes'],1)
+        self.assertEqual(after['same_intent_planner_refreshes'],0)
+        self.assertEqual(dict(before,same_intent_planner_refreshes=0),after)
+        self.assertEqual(json.loads(expert_unknown_feedback(ep,5,repeat_stride_controls=128))['attempt_index'],2)
+        one=ep['segments'][0]
+        ep['anchors']=[(3,0,'None','None',[])]+[(3+16*i,0,one['text'],one['parent'],[]) for i in range(1,13)]
+        out=json.loads(expert_unknown_feedback(ep,11,repeat_stride_controls=128))
+        self.assertEqual(out['same_intent_controls'],176);self.assertEqual(out['same_intent_planner_refreshes'],1)
+        for cadence in (8,True,0):
+            with self.assertRaises(ValueError):expert_unknown_feedback(ep,11,repeat_stride_controls=cadence)
+
 
 if __name__=='__main__':unittest.main()

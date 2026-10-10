@@ -61,6 +61,22 @@ def main():
                 or not (value['terminated'] or value['truncated'])):raise ValueError('False episode completion')
         for filename,sha in start['original_rgb'].items():
             if file_sha(directory/filename)!=sha:raise ValueError('Original start image changed')
+        archive_audit=None
+        if cfg.get('observation_archive')=='lossless_chunk_boundaries_v1':
+            from skill_observation_archive import audit_archive,load_observation
+            boundaries=[case['start_control']]+[r['control_step'] for i,r in enumerate(controls)
+                if i==len(controls)-1 or r['experience_id']!=controls[i+1]['experience_id']]
+            archive_audit=audit_archive(directory/'observations',identity,policy_version=result['policy_version'],
+                policy_sha256=a.policy_sha256,expected_steps=boundaries)
+            if (result['observation_archive']['manifest_sha256']!=archive_audit['manifest_sha256']
+                    or result['observation_archive']['observations_sha256']!=archive_audit['observations_sha256']):
+                raise ValueError('Final receipt is not bound to the complete observation archive')
+            first=json.loads((directory/'observations/observations.jsonl').read_text().splitlines()[0])
+            obs=load_observation(directory/'observations',first)
+            for camera,pixels in obs['images'].items():
+                with Image.open(directory/(camera+'.png')) as im:
+                    expected=np.asarray(Image.fromarray(pixels.transpose(1,2,0)).resize((224,224)))
+                    if not np.array_equal(expected,np.asarray(im)):raise ValueError('Native baseline image does not reproduce its original PNG')
         frames=iio.mimread(directory/'policy.mp4',memtest='1GB')
         if not frames:raise ValueError('No actual policy video')
         indices=sorted({0,len(frames)//3,2*len(frames)//3,len(frames)-1})
@@ -78,6 +94,7 @@ def main():
             actual_controls=len(controls),outcome=result['outcome'],success=result['skill_success'],
             reset_proprio_error=reset['proprio_error'],reset_target_error=reset.get('target_position_max_error'),
             final_physical=controls[-1]['physical_evidence'],sheet_sha256=file_sha(sheet),sheet=sheet.name))
+        if archive_audit is not None:audits[-1]['observation_archive']=archive_audit
     if seen!=expected:raise ValueError('Incomplete fixed-seed baseline, preserve partial audit')
     result=dict(status='machine_control_reward_reset_audit_passed',episodes=audits,
         policy_sha256=a.policy_sha256,config_sha256=file_sha(a.config),reviewed_by_human=False,

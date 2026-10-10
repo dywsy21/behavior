@@ -82,7 +82,8 @@ def main():
         raise ValueError('Unknown original-expert feedback protocol')
     if branch=='high' and original_feedback=='causal_expert_unknown_v1':
         from recovery_expert_feedback import with_expert_feedback
-        expert_class=with_expert_feedback(Stage1Dataset)
+        expert_class=with_expert_feedback(Stage1Dataset,
+            repeat_stride_controls=recipe['H1'].get('original_feedback_repeat_stride',16))
     experts=expert_class(release,config,branch,'train')
     original_eval=Stage1Dataset(release,config,branch,'eval')
     feedback_eval=expert_class(release,config,branch,'eval')

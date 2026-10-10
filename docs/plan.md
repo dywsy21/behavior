@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 10:00 CST / Codex RECOVERY-USABLE：** 新H1 step50完整真实计数生成：正常100 falseRETRY0/exact97/valid99，恢复10 exact10/10；同输入父falseRETRY21/exact76、旧final420 falseRETRY23/exact74。仍有一条K3记忆漏项，不部署。另定位未验收风险：正常训练annotation每16控刷新，实际`batch_core.py`每8chunk＝128控规划，模型可能学刷新计数比例捷径。已补只稀疏化重复同意图call的128控诊断（保留全部技能切换、已执行时长、图像/动作/目标），待独立生成检验，不提前当已适配。低v6已精确加载global12（322actor/6critic Adam全部步12，WB bfe04ed1a395），三RTX worker自有0/1/2真跑新6基线，5已完成/最后OPEN29待；无损原观察和每次实际ACK边界均保存，尚未授权继续优化。v8结果头独立重载＋原60组诊断在GPU2进行中，age对照GPU6正常优化。
+
 - **2026-10-10 09:54 CST / Codex RECOVERY-USABLE：** v8结果头实际740/20epoch完成，按预定balanced/CE规则选epoch15/step555，SHA b598b950…47041；选择DEV事件95%、balanced89.58%、IP10/12、S14/14、F10/10、UNKNOWN3/4，**不是末epoch指标、不是独立校准通过**（v7所选为92.5%/79.17%/UNKNOWN1/4）。新age数值输入对照已在lc1 GPU6冻结1b4bb664启动，仍同数据同父，不能用此代替v8实际改善证据。准备v8独立RGB重算/原60组已见校准队列诊断，20reserved test继续不碰。更正新高step50前20那条invalid：task4/instance284漏一项K=3命令历史，JSON语法正常，之前“JSON无效”表述不准。低旧v5已自有STOP退出、3 RTX worker均退；新v6独立e4baf78b在加载，179恢复回归过，尚未新优化。
 
 - **2026-10-10 09:50 CST / Codex RECOVERY-USABLE：** 低层旧v5第11/12两次critic均七次减半仍升误差、实际跳过；根验证已存global12/round0005权重SHA6b308939…9854c，与actor/critic/Adam一起保留。在最后检查active_sessions=0时发送自己的STOP（v5按owner_stop退出，不是算法完成），第6轮两条已完成但未优化轨迹只留证据、不回灌跨版本PPO。下一独立v3配方从12精确续、跳过不完整seed(offset13)，actor LR/噪声/KL/3起点均不变，只加critic动量重启严格下降门与无损边界观察/critic重放档案，再验6基线。原20更新测量窗口余8次，不是goal停止额度。当前仅停止请求/新配方，待旧进程实际退出、冻结源码再启动。

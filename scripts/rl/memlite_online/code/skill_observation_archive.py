@@ -65,3 +65,20 @@ def load_observation(root,record):
     if observation_hash(observation)!=record['observation_sha256']:
         raise ValueError('Native observation changed across archive roundtrip')
     return observation
+
+
+def audit_archive(root,identity,*,policy_version,policy_sha256,expected_steps):
+    root=Path(root);header=json.loads((root/'manifest.json').read_text())
+    if (not expected_steps or header.get('schema')!='skill_observation_archive_v1'
+            or header.get('identity')!=asdict(identity) or header.get('policy_version')!=policy_version
+            or header.get('policy_sha256')!=policy_sha256 or header.get('start_control')!=expected_steps[0]
+            or header.get('admission_for_training') is not False or header.get('physical_truth_in_policy_input') is not False):
+        raise ValueError('Observation archive belongs to a different policy/episode or label protocol')
+    records=[json.loads(x) for x in (root/'observations.jsonl').read_text().splitlines()]
+    if [r['control_step'] for r in records]!=expected_steps:
+        raise ValueError('Native observations must cover every actual ACKed chunk boundary exactly once')
+    if len({r['file'] for r in records})!=len(records):raise ValueError('Reused observation file')
+    for record in records:load_observation(root,record)
+    return dict(status='exact_boundaries_and_lossless_roundtrip_passed',observations=len(records),
+        manifest_sha256=file_sha(root/'manifest.json'),observations_sha256=file_sha(root/'observations.jsonl'),
+        total_bytes=sum(r['bytes'] for r in records))

@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from skill_observation_archive import SkillObservationArchive,load_observation
+from skill_observation_archive import SkillObservationArchive,load_observation,audit_archive
 from skill_aligned_reward import SkillIdentity
 from test_recovery_skill_training_protocol import observation
 
@@ -29,6 +29,10 @@ class ObservationArchiveTests(unittest.TestCase):
             np.testing.assert_array_equal(b['proprio'],obs['proprio'])
             header=json.loads((root/'manifest.json').read_text())
             self.assertEqual(header['policy_version'],7);self.assertFalse(header['admission_for_training'])
+            accepted=audit_archive(root,identity,policy_version=7,policy_sha256='b'*64,expected_steps=[32,48])
+            self.assertEqual(accepted['observations'],2)
+            with self.assertRaises(ValueError):audit_archive(root,identity,policy_version=7,policy_sha256='b'*64,expected_steps=[32,40,48])
+            with self.assertRaises(ValueError):audit_archive(root,identity,policy_version=8,policy_sha256='b'*64,expected_steps=[32,48])
             for ident,step in [(identity,48),(identity,16),(replace(identity,task='other'),64)]:
                 with self.assertRaises(ValueError):archive.append(ident,step,obs)
             with self.assertRaises(FileExistsError):SkillObservationArchive(root,identity,policy_version=8,policy_sha256='c'*64,start_control=0)

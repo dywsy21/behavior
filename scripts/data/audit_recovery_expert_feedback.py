@@ -37,7 +37,8 @@ def main():
     for line in (release/'episodes.jsonl').read_text().splitlines():
         ep=json.loads(line);names[ep['row']['task_index']]=ep['task_name']
     config=configuration(root,'high',names);processor=make_processor(config,False)
-    wrapper=with_expert_feedback(Stage1Dataset)
+    repeat_stride=recipe['H1'].get('original_feedback_repeat_stride',16)
+    wrapper=with_expert_feedback(Stage1Dataset,repeat_stride_controls=repeat_stride)
     datasets={s:wrapper(release,config,'high',s) for s in ('train','eval')}
     fixed=np.load(release/'fixed_eval_indices.npy').reshape(100,32).tolist()
     ev=datasets['eval']
@@ -55,16 +56,20 @@ def main():
     visual_tasks={0,3,17,40,60,99}
     for split,index in selected:
         ds=datasets[split];ep,frame,_,previous,parent,_=ds.locate(index)
-        serial,anchor=(int(x) for x in ds.candidates[index]);value=expert_unknown_feedback(ep,anchor)
+        serial,anchor=(int(x) for x in ds.candidates[index]);value=expert_unknown_feedback(ep,anchor,repeat_stride_controls=repeat_stride)
         ledger=CausalFeedbackLedger(identity,uncertainty_protocol='unready_zero_confidence_v1')
+        last_key=None;last_issued=-1
         for step,seg,*_ in ep['anchors'][:anchor]:
-            segment=ep['segments'][seg];ledger.issued(identity,step,segment['semantic'],segment['parent'])
+            segment=ep['segments'][seg];key=(segment['semantic'],segment['parent'])
+            if key!=last_key or step-last_issued>=repeat_stride:
+                ledger.issued(identity,step,segment['semantic'],segment['parent']);last_issued=step
+            last_key=key
         if value!=ledger.projection(identity,frame):raise ValueError('Offline/runtime clock mismatch')
         feedback=None if value=='none' else json.loads(value)
         counts[(split,'initial' if feedback is None else 'noninitial')]+=1
         row=dict(split=split,candidate=index,task=int(ds.task_ids[index]),episode=int(ep['row']['episode_index']),
             frame=frame,anchor=anchor,previous_intent=previous,previous_parent_goal=parent,feedback=feedback,
-            source_trace='annotation_derived_stride16_not_on_policy')
+            source_trace='annotation_derived_not_on_policy',repeat_stride_controls=repeat_stride)
         # Decode/process two temporally diverse real samples per selected task
         # and split (24 samples / 72 original RGB), without creating new labels.
         key=(split,row['task'],'visual')
@@ -101,7 +106,8 @@ def main():
         recipe_sha256=file_sha(a.recipe),release_manifest_sha256=file_sha(release/'manifest.json'),
         rows=len(rows),normal_noninitial_control_tasks=100,processed_raw_samples=picture,
         clocks_match_runtime=True,targets_unchanged=True,physical_outcomes_added=0,
-        source_trace='annotation_derived_stride16_not_on_policy',rows_sha256=file_sha(a.output/'rows.jsonl'),
+        source_trace='annotation_derived_not_on_policy',original_feedback_repeat_stride=repeat_stride,
+        rows_sha256=file_sha(a.output/'rows.jsonl'),
         noninitial_schedule_sha256=digest(noninitial),human_visual_review_required=True)
     (a.output/'result.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt),flush=True)
 

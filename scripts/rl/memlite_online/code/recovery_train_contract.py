@@ -25,6 +25,7 @@ def validate_launch(ticket_path,component,*,engineering=False):
         if (audit.get('schema')!='expert_causal_feedback_audit_v1' or audit.get('status')!='AUTOMATED_PASSED'
                 or audit.get('source_commit')!=ticket['source_commit']
                 or audit.get('recipe_sha256')!=ticket['files']['recipe']['sha256']
+                or audit.get('original_feedback_repeat_stride',16)!=recipe['H1'].get('original_feedback_repeat_stride',16)
                 or audit.get('normal_noninitial_control_tasks')!=100 or audit.get('processed_raw_samples')!=24
                 or audit.get('clocks_match_runtime') is not True or audit.get('targets_unchanged') is not True
                 or audit.get('physical_outcomes_added')!=0):
