@@ -61,8 +61,20 @@ def main():
     if a.output.exists():
         raise FileExistsError(a.output)
     from PIL import Image, ImageDraw
-    a.output.mkdir(parents=True); proposals = []; sheets = []; unavailable = []
+    a.output.mkdir(parents=True); proposals = []; sheets = []; unavailable = []; unavailable_sources=[]
     for ordinal, (entry, branches) in enumerate(selected):
+        if entry.get('unavailable_collection') is not None:
+            missing=entry['unavailable_collection'];path=a.root/missing['receipt']
+            if file_sha(path)!=missing['receipt_sha256']:raise ValueError('Changed unavailable collection receipt')
+            state=json.loads(path.read_text())
+            if (state.get('source_group')!=entry['source_group'] or state.get('status')!=missing['reason']
+                    or state.get('status') in ('loading','collecting','replaying_prefix','completed_candidates_only')):
+                raise ValueError('Unavailable source is active, another group, or has completed candidates')
+            unavailable_sources.append(dict(source_group=entry['source_group'],case=entry['case'],**missing))
+            for label in ('FAILED','IN_PROGRESS','SUCCEEDED'):
+                unavailable.append(dict(source_group=entry['source_group'],label=label,
+                    reason='No verified corrective trajectory; collection failure is not an outcome label'))
+            continue
         candidates = [branches[name] for name in ('open_gripper_joint_jitter','open_gripper') if name in branches]
         if not candidates or 'clean' not in branches:
             raise ValueError('Missing registered corrective or clean branch')
@@ -121,6 +133,8 @@ def main():
         reviewer='',branches=proposals,role=a.role,cohort_sha256=file_sha(a.cohort)),indent=2)+'\n')
     result=dict(sheets=sheets,sources=len(selected),original_rgb_panels=sum(s['panels'] for s in sheets),
         outcomes=sum(len(p['outcomes']) for p in proposals),unavailable_classes=unavailable,
+        available_review_sources=len(sheets),unavailable_sources=unavailable_sources,
+        all_declared_sources_reviewable=not unavailable_sources,
         role=a.role,cohort_sha256=file_sha(a.cohort),training_ready=False,model_predictions_read=False)
     (a.output/'review-index.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k not in ('sheets','unavailable_classes')}))

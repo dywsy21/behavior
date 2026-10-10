@@ -57,6 +57,15 @@ class CohortTests(unittest.TestCase):
             bad=deepcopy(spec);bad[key]=value
             with self.assertRaises(ValueError):cohort_sources(self.queue[:1],bad,'calibration')
         with self.assertRaises(ValueError):cohort_sources([],spec,'calibration')
+        missing=deepcopy(spec)
+        missing['calibration_groups'][0]['unavailable_collection']=dict(
+            receipt='case/result.json',receipt_sha256='e'*64,reason='reference_grasp_not_reproduced')
+        # Retain the declared group with no labels; never turn it into FAILED.
+        self.assertEqual(cohort_sources([],missing,'calibration')[0][1],{})
+        self.assertEqual(cohort_sources([],missing,'calibration')[0][0]['source_group'],'a:1')
+        with self.assertRaises(ValueError):cohort_sources(self.queue[:1],missing,'calibration')
+        missing['calibration_groups'][0]['unavailable_collection']['receipt_sha256']='bad'
+        with self.assertRaises(ValueError):cohort_sources([],missing,'calibration')
 
 
 if __name__=='__main__':unittest.main()

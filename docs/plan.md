@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 10:54 CST / Codex RECOVERY-USABLE：** H1 final420初始回归110条完成；正常100 exact85/valid100/误RETRY0、恢复10全对。与原bee父逐样本身份/target全部一致，85旧对仍对、15旧错仍错，无初始遗忘；结合非首段两控频率99/100只证明离线生成改善，不是SR。原始result/rows已取本地`artifacts/recovery-heterogeneous-20261010/H1-causal-final420-initial-v1`。低global14续probe中PLACE29截断UNKNOWN，仍无可靠收益。新校准19/90已关闭含2 reference未复现；补“全来源关闭后”审核装配器，失败以原终态SHA保留在90分母、0伪标签/0训练准入，旧严格校准门不放宽，待采集全闭及根逐图审核。
+
 - **2026-10-10 10:47 CST / Codex RECOVERY-USABLE：** GPU辅助归属修复186恢复回归＋两个入口编译通过（首测漏PYTHONPATH仅导入错误，补src后全过），独立366dde9b已部署RTX三`short-rl-*-resume3-peer-v1`，preflight通过并进入冷模拟器加载；同一A800 v6/global14未重启，不改actor或critic配方。新90校准审核增加独立calibration-only合同9297f0f6，严格绑定已冻结v8/原20test元数据/90源closure且拒绝漏来源，暂未签新标签。高初始回归真实生成中，不能提前宣称无退步。
 
 - **2026-10-10 10:44 CST / Codex RECOVERY-USABLE：** 查实低v6三冷worker在10:29–30的下一次启动preflight拒绝新采集器PID2429377（其他卡174MiB辅助renderer），并非物理失败；失败子目录不存在、尚未连接领取job，A800服务仍global14/active0/2个probe done与4 pending，所有权重和轨迹保留。准备新冻源补双向严格peer目录/PID/commit/主卡隔离，续未领取任务，不热改server/奖励/学习率、不重做done probe。新90采集11已关闭含1 reference未复现，保留失败分母。另lc1 GPU4初始无历史100回归已提交7c54c6be独立源，尚待生成结果。

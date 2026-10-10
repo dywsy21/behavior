@@ -47,6 +47,13 @@ def cohort_sources(queue, spec, role):
             group = entry['source_group']
             if group in declared or (external_test and group in protected):
                 raise ValueError('Duplicate or overlapping independent group roles')
+            missing=entry.get('unavailable_collection')
+            if missing is not None:
+                if (not external_test or not isinstance(missing,dict) or not missing.get('reason')
+                        or not missing.get('receipt') or not isinstance(missing.get('receipt_sha256'),str)
+                        or len(missing['receipt_sha256'])!=64
+                        or any(c not in '0123456789abcdef' for c in missing['receipt_sha256'])):
+                    raise ValueError('Missing observations require an explicit bound collection failure, not a result label')
             declared[group] = (kind, entry)
     actual = {}
     for row in queue:
@@ -54,12 +61,15 @@ def cohort_sources(queue, spec, role):
         if row['split'] != 'dev' or group not in declared:
             raise ValueError('Unassigned or TRAIN source in independent cohort')
         expected = declared[group][1]
+        if expected.get('unavailable_collection') is not None:
+            raise ValueError('An available candidate cannot be silently marked unavailable')
         if any(row[key] != expected[key] for key in ('case', 'arm')):
             raise ValueError('Independent source identity changed')
         branches = actual.setdefault(group, {})
         if row['branch'] in branches:
             raise ValueError('Duplicated closed branch')
         branches[row['branch']] = row
-    if set(actual) != set(declared):
+    unavailable={g for g,(_,entry) in declared.items() if entry.get('unavailable_collection') is not None}
+    if set(actual)|unavailable != set(declared):
         raise ValueError('Missing independent source; preserve the declared denominator')
-    return [(entry, actual[entry['source_group']]) for entry in spec[role+'_groups']]
+    return [(entry, actual.get(entry['source_group'],{})) for entry in spec[role+'_groups']]
