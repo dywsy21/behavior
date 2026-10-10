@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 10:36 CST / Codex RECOVERY-USABLE：** 高final420在16与部署128两路各110真生成完整通过运行：两路正常100 exact99、结构/记忆100%、误RETRY0，恢复10全对；唯一差错均task82/store batteries实例25提前由GRASP切NAVIGATE(bottom_cabinet)，不是JSON/历史错误。仍需初始无历史100回归（旧父85/100）与物理闭环，配方已补未冒称SR。低global14首次真实证明原Adam动量上坡：方向内积+.0017826、7次原提议均升MSE；一阶动量回退后−.0023210，同批半MSE .00273596→.00123862（降54.7%），CPU原权重/梯度/Adam独立重放一致。仍待该更新后技能probe，不以critic loss当任务提升。
+
 - **2026-10-10 10:32 CST / Codex RECOVERY-USABLE：** 新90校准包RTX目的端1440文件/296485606B全SHA一致，独立abfc83dc采集器已在自有RTX3–7实际运行，首2来源完成候选(591/1157 controls)、另2加载；不是90审核完成/不进训练。A800低v6已global14，第13固定probe仍GRASP2/2、PLACE2/2、OPEN0/2，无可靠新增收益；final H1两频率真生成接近完成。根据确切critic重放新增**默认仍1**的可选cached20 critic拟合，只用已detach同批目标、不重跑actor/不改GAE/奖励/actor LR，每步仍需实际下降；184恢复回归过，现役v6没有热改或启用，下一窗口须先看其完整曲线。
 
 - **2026-10-10 10:28 CST / Codex RECOVERY-USABLE：** 新90校准源已A800全1440依赖296485606B哈希＋PNG解码＋原23动作/61状态形状有限值检查，排除全部旧456group，config71109fb6/manifest71fd766b；数据包7d78093f…d42e已经本地校验迁RTX，待目的端全读/采集。数值命令年龄对照完成740步，按选择DEV选epoch18/666，95%但balanced85.42%、UNKNOWN2/4，低于原v8的89.58%/3/4，故不替换已固定校准头（未拿cal挑它）。低critic原13步权重/Adam/梯度CPU独立复算一致；同28冻结样本上仅critic追加20拟合可把半MSE.004318→.000395（约90.85%降），证明有同批拟合空间，非独立泛化/RL收益，现役RL未改/没有新actor更新许可来自此诊断。
