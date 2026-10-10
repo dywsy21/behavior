@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 13:45 CST / Codex RECOVERY-USABLE：** v7已global24/四轮真实续段训练闭合，actor LR仍1e-6、93chunks、KL.010452/clip.098925，critic半MSE .014986→.013922；保存`checkpoints/round-0004.pt`（7,622,837,693B；policy身份63250e28…80740c，不冒称这是文件SHA）。进入第一组固定六probe、尚未全闭，不能提前报新成功率。四条OPEN TRAIN均1268控制未达原功能门，仍没有可靠提升；三技能不扩任务，原权重/更新幅度未升级默认。补97已43终态（40可审候选/3参考未复现），签核/90-anchor选择/新GPU校准仍未发生；待其全闭后继续原图逐源审核。GPU QA已完整结束，原GPU0空出，现役RL/collector/后处理等待链不重启。
+
 - **2026-10-10 13:41 CST / Codex RECOVERY-USABLE：** `causal-runtime-gpu-qa-v2`真实完成12次H1生成/12次原生低条件，三任务grouped与interleaved事件/输入/条件逐值一致，950张量精确恢复且全参数指纹e4a5f8a7…0fe01前后不变；result89a41492…0393d、eventsbd0ed6a1…a3f07已取本地。**只通过工程隔离，不是意图正确率/闭环验收**：此fixture是中途真实图配空历史、0执行的工程输入，出现wash选NAVIGATE、tripod选digital_camera而非所持tripod、radio零控第二次RETRY；不能拿这些当新策略的实际行为/物理失败标签。正式partial-start验收必须恢复实际已发指令trace和正确规划时钟，不能重复空memory中途开局。另实读v8结果头TRAIN294＝GRASP264/63组＋OPEN30/5组，PLACE仍0监督；新90/97校准只能覆盖预登记GRASP相位，不能称通用全技能已齐。补97现42闭（39候选/3未复现），低原v7继续、未宣称可靠提升。
 
 - **2026-10-10 13:34 CST / Codex RECOVERY-USABLE：** 分支/统计身份修正733373fd已Git同步并在A800新源`src/causal-runtime-gpu-qa-v2`启动空闲GPU0同名run/tmux；8 session＋5适配回归通过，新增“权重正确但拿错normalizer也必须拒绝”。旧v1失败源/log不动，输入仍原9a1c2442/3TRAIN、0动作与optimizer。结果观察器原训练cfg也实读绑定846bcbea，未更换模型统计；新GPU终态待。低仍原v7，补97已40关闭，所有扩大覆盖/在线结果切换仍未获验收。
