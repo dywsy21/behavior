@@ -22,10 +22,18 @@ from recovery_observer_training import OUTCOMES, request_key
 from recovery_convergence import event_weights, check_splits
 
 
+def require_diagnostic_groups(items, exposed, expected):
+    groups={r['candidate']['source_group'] for r in items}
+    if not groups or groups & exposed or groups != set(expected) or len(expected) != len(set(expected)):
+        raise ValueError('Diagnostic groups must exactly match a predeclared disjoint cohort')
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('config', 'fit', 'output'):
         p.add_argument('--'+name, type=Path, required=True)
+    p.add_argument('--additional-diagnostic',type=Path,
+        help='Previously inspected calibration cohort: frozen diagnostic only, no new calibration or model selection')
     a = p.parse_args(); cfg = json.loads(a.config.read_text()); root = Path(cfg['root'])
     fit = json.loads((a.fit/'result.json').read_text())
     if (cfg.get('schema') != 'recovery_observer_adapter_training_v1'
@@ -75,6 +83,35 @@ def main():
     protocol = require_history_protocol(cfg,feature_receipt,cache)
     if digest(cache['requests']) != feature_receipt['requests_sha256']:
         raise ValueError('Changed causal requests')
+    diagnostic=None
+    if a.additional_diagnostic:
+        dc=json.loads(a.additional_diagnostic.read_text())
+        if (dc.get('schema')!='observer_adapter_prior_cohort_diagnostic_v1'
+                or dc['selected_checkpoint_sha256']!=expected
+                or dc['fit_result_sha256']!=file_sha(a.fit/'result.json')
+                or dc['high_sha256']!=cfg['high']['sha256']
+                or dc.get('previously_inspected_not_blind') is not True):
+            raise ValueError('Diagnostic must pin this completed selected fit; never select on predictions')
+        dr,drows=require_training_pool(root/dc['admission'],'outcome',dc['admission_sha256'],purpose='calibration')
+        require_diagnostic_groups(drows,{r['candidate']['source_group'] for r in train+dev},dc['expected_groups'])
+        dfr=json.loads((root/dc['feature_receipt']).read_text())
+        dcache=torch.load(root/dc['features'],map_location='cpu',weights_only=False)
+        if (file_sha(root/dc['features'])!=dc['features_sha256']
+                or dfr['features_sha256']!=dc['features_sha256'] or dfr['diagnostic_only']
+                or dfr['admission_sha256']!=dc['admission_sha256']
+                or dfr['high_sha256']!=cfg['high']['sha256']
+                or require_history_protocol(cfg,dfr,dcache)!=protocol
+                or digest(dcache['requests'])!=dfr['requests_sha256']):
+            raise ValueError('Unbound diagnostic RGB request cache')
+        dcorpus=root/dc['corpus'];dinv=json.loads((dcorpus/'audit/inventory.json').read_text())
+        dh=json.loads((dcorpus/'history/receipt.json').read_text())
+        if (digest(dinv)!=dr['inventory_sha256'] or digest(dinv)!=dfr['inventory_sha256']
+                or file_sha(dcorpus/'history/contexts.jsonl')!=dfr['history_sha256']
+                or file_sha(dcorpus/'audit/anchors.jsonl')!=dh['anchors_sha256']):
+            raise ValueError('Diagnostic observations/history changed')
+        diagnostic=dict(rows=drows,requests={r['request_id']:r for r in dcache['requests']},
+            anchors={r['sample_id']:r for r in map(json.loads,(dcorpus/'audit/anchors.jsonl').read_text().splitlines())},
+            inventory=dinv,corpus=dcorpus)
     checkpoint = torch.load(path,map_location='cpu',weights_only=False)
     if (checkpoint['schema'] != 'recovery_observer_adapter_checkpoint_v1'
             or checkpoint['high_sha256'] != cfg['high']['sha256']
@@ -125,7 +162,12 @@ def main():
     processor=make_processor(config,False);reader=CandidateArchiveReader(corpus/'raw',inventory)
     memo={};metrics={};started=time.monotonic()
     with torch.no_grad(),torch.autocast('cuda',dtype=torch.bfloat16):
-        for split,items in (('dev',dev),('train',train)):
+        splits=[('dev',dev),('train',train)]+([('prior_cohort_diagnostic',diagnostic['rows'])] if diagnostic else [])
+        for split,items in splits:
+            if split=='prior_cohort_diagnostic':
+                reader.close()
+                reader=CandidateArchiveReader(diagnostic['corpus']/'raw',diagnostic['inventory'])
+                anchors=diagnostic['anchors'];requests=diagnostic['requests']
             logits=[]
             for row in items:
                 request=requests[request_key(row)];contexts=[];states=[];steps=[]
@@ -167,8 +209,12 @@ def main():
     status.update(status='independent_reload_and_forward_passed_not_deployed',selected_epoch=checkpoint['epoch'],
         selected_step=checkpoint['step'],adapter_tensors=len(adapter_names),head_tensors=len(head.state_dict()),
         adam_states=206,adam_steps=adam_steps,real_unique_prefills=len(memo),metrics=metrics,
-        dev_metrics_reproduced=True,calibration_and_test_not_read=True,base_sha256=frozen_before,
+        dev_metrics_reproduced=True,calibration_and_test_not_read=diagnostic is None,
+        frozen_test_not_read=True,calibration_fitted=False,base_sha256=frozen_before,
         seconds=time.monotonic()-started)
+    if diagnostic:
+        status.update(prior_cohort_diagnostic_config_sha256=file_sha(a.additional_diagnostic),
+            previously_inspected_not_blind=True,diagnostic_not_used_for_checkpoint_selection=True)
     atomic_json(a.output/'result.json',status);atomic_json(a.output/'status.json',status);reader.close()
 
 

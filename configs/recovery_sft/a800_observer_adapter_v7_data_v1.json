@@ -1,0 +1,42 @@
+{
+  "schema": "recovery_observer_adapter_training_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "user_goal_authorized": true,
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "corpus": "datasets/recovery-reviewed-union-20261010-v7-outcomes-planner",
+  "admission": "datasets/recovery-reviewed-union-20261010-v7-outcomes-planner/admission",
+  "admission_sha256": "d57ae342d44165118b65803727fd62227f44a41e3c5d207df079aa9aea2a014f",
+  "features": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v7/features.pt",
+  "feature_receipt": "runs/recovery_heterogeneous_20261010/H1-feature-cache-v7/receipt.json",
+  "features_sha256": "b909a8a3b1490bd63b85ed3e02ca0bee2d5cc192fb8ae0fcf5581cad08d7c558",
+  "stats_sha256": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+  "high": {
+    "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+    "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316"
+  },
+  "adapter": {
+    "enabled": true,
+    "r": 8,
+    "alpha": 16,
+    "dropout": 0,
+    "adapter_name": "outcome_observer"
+  },
+  "adapter_learning_rate": 0.00002,
+  "head_learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "seed": 17,
+  "global_batch": 8,
+  "maximum_epochs": 20,
+  "minimum_epochs": 5,
+  "patience_epochs": 5,
+  "hypothesis": "Same separate result-only LoRA/head recipe as completed observer-v2, adding the newly physically and visually signed 95 TRAIN outcomes across 24 source groups. Fit 271 TRAIN/68 groups, same40 selection DEV/10 groups; no calibration/test in updates or selection. Keep original initialization/architecture/LR/objective to measure the data change. UNKNOWN remains only five TRAIN rows and is a reported coverage limitation, not a license to synthesize successful/failed labels. Parent planner and low controller stay frozen; H1 OOF is an independent pipeline.",
+  "resource": "One actually idle lc1 GPU2, independent clean frozen source. Low RL uses GPU1; extra old-cohort forward diagnosis uses GPU3. Twenty-epoch learning curve plus five-epoch plateau rule, not goal completion. No shared environment changes.",
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-recovery-observer-adapter-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key"
+  }
+}
