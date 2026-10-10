@@ -13,6 +13,7 @@ REPO=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(REPO/'scripts/rl/memlite_online/code'))
 from recovery_train_contract import validate_launch
 from recovery_corpus import file_sha
+from recovery_process_cache import isolated_cache_env
 from g05.utils.training.stage1_runtime import atomic_json,disk_has_reserve
 
 
@@ -45,6 +46,10 @@ def main():
     env=dict(os.environ,PYTHONPATH=str(REPO/'src'),OMP_NUM_THREADS='2',TOKENIZERS_PARALLELISM='false',
         HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',RECOVERY_DEADLINE=str(deadline),RECOVERY_STOP_FILE=str(stop),
         RECOVERY_PREVIOUS_SECONDS=str(previous),RECOVERY_STARTED=str(started),RECOVERY_ATTEMPT=f'{attempt:03d}',**recipe['nccl_env'])
+    # Shared /home on the cluster can be full even while the approved data
+    # volume has ample reserve. Keep all child compiler/temp files per run.
+    cache_env=isolated_cache_env(control)
+    env.update(cache_env)
     if a.component=='H0':
         env['CUDA_VISIBLE_DEVICES']='0'
         command=[sys.executable,'scripts/train_memlite_recovery_h0.py','--ticket',str(a.ticket),'--output',str(a.output)]
@@ -58,7 +63,8 @@ def main():
     stopping=[False]
     for sig in (signal.SIGTERM,signal.SIGINT): signal.signal(sig,lambda *_:stopping.__setitem__(0,True))
     ledger=dict(ticket_sha256=identity,attempt=attempt,limit_seconds=limit,source_commit=commit,
-                component=a.component,engineering_only=a.engineering,supervisor_pid=os.getpid())
+                component=a.component,engineering_only=a.engineering,supervisor_pid=os.getpid(),
+                runtime_cache_env=cache_env)
     with (control/f'attempt_{attempt:03d}.log').open('x') as log:
         child=subprocess.Popen(command,env=env,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
         ledger['child_pid']=child.pid;term_at=None

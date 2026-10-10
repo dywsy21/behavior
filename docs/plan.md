@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 08:35 CST / Codex RECOVERY-USABLE：** 旧observer-v2在已诊断60来源/196结果的真实新LoRA前向完成：事件82.5%、三类平均89.26%、成功75/99、失败49/52、进展44/45（旧小头47.08%事件），0优化/未温度拟合/非新盲测/仍不部署。新observer-v7已55优化/epoch2，W&B41df97c97dfe。lc3 H1首run在0步原留出检查失败：八rank统一Triton默认/home缓存ENOSPC，非模型或标签nan，0权重更新、日志保留；修独立supervisor下编译/temp缓存，不删系统盘或改共享env，待新冻源新run。低冷baseline仍等wash第二条，不提前放行；父高生成对照已提交GPU4。
+
 - **2026-10-10 08:33 CST / Codex RECOVERY-USABLE：** ed67b84f冻源正式提交：lc1 GPU2结果LoRA新271 TRAIN（原40 DEV不动），GPU3旧epoch15在已看过60组上的额外冻结诊断（非新盲测/不拟合温度）；lc3先真实OOF完成78更新/W&Bd84e7bc56a93，52预测均因校准不足保持UNKNOWN、非可用结果头。其真实feedback SHA45f8e8b4…59472已绑定H1票，lc3八卡H1监督训练supervisor3840564/child3840574运行加载，拟420更新/W&B待。不将UNKNOWN兜底称为可靠结果闭环。低v5冷baseline radio两条19控成功、PLACE98/74控成功，wash首条317控UNKNOWN，最后一条待；原奖励/权重未改、0新RL更新。
 
 - **2026-10-10 08:30 CST / Codex RECOVERY-USABLE（记录时刻更正，原08:38误记）：** 低v5实际重载global7：322actor/6critic Adam与权重逐tensor相等、Adam步均7、W&B9e80c643bd3f；18975双向端口实通，RTX0/1/2新冷worker PID2325500/03/06启动，等六baseline审核，尚无新优化。v7全部80条H1/L0真实processor通过且0优化/无真值输入；高层方案固定为bee父模型、42个TRAIN恢复意图×20事件遍（420更新）、每batch6原任务＋2恢复，lc3八卡；先真实分组OOF，不可靠结果一律UNKNOWN，绝不把物理标签塞进高层。结果观察器新数据拟合单独进行，不能冒用其训练内预测当OOF。
