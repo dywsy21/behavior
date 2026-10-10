@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 15:59 CST：A800新SFT、结果头与只读物理对照
+
+- A800根仍`/data/workspace/wsy/behavior2026`，以下训练/策略run相对`runs/recovery_heterogeneous_20261010`。lc3两路`L0-startonly-continuation-v1`、`L0-later-actions-v1`均完成200步，最终`checkpoints/step_00000200_save_0004.pt`分别51e2c772…fee302c、0c523beb…13400ca5；不得覆盖为默认模型。完整轻量对照见`docs/infra/results/2026-10-10-later-action-sft-pair.json`。
+- lc1 GPU2 `later-action-control-probes-v1`是只读固定技能服务，端口18976、源`src/observer-pool-calibration-v2`/50193209、W&B40ea0c4fa942。本地lc1 control新增18976正向，RTX反向tmux`recovery-rtx-forward-18976-v1`；旧18975仍保留但原RL不运行。RTX新源`code/later-action-physical-v2`/42728c3f，GPU0–2 `later-action-control-{radio155,wash169,tripod129}-probes-v2`；v1在旧schema门0物理失败，保留日志。RTX4–7于15:49实见队友openpi服务，不动，后续使用前必须重新核资源。
+- 原`short-rl-v7-real-continuation`已owner STOP/32更新关闭，`checkpoints/round-0012.pt`实读SHA8c30cb50…39bfe23，所有Adam/RNG、完整及partial轨迹保留；result中的Owner stop不是自然完成40新更新。六固定probe3/6无可靠收益。两条长TRAIN开门成功独立审计在RTX及本地`v7-open-success-round{6,8}-v1`，不能当整段BC许可。
+- lc1 GPU0新`H0-observer-v10-short-context-v1`（source `src/observer-v10-short-context-v1`/2d95190a）是独立observer LoRA+头的短历史候选，不改高planner/低actor。cache `H1-feature-cache-v8-short-start-v2` SHA76284882…eb0d31a；377请求/179真实起点补帧，`observer-v10-short-context-feature-pair-v1.json`全旧特征bit一致，原294TRAIN/40选择DEV，不含CAL。
+- 新校准运输单位`datasets/recovery-supplement97-calibration-20261010-v1`；原联合`recovery-observer-calibration-union-20261010-v1`因4可用组与既见DEV重叠不用于预测。纠正联合`...-v2`（admission d86e5b18…84d76d5）保留`exposure-quarantine.json`，513 CAL/160独立组、0TRAIN。`runs/recovery_observer_fresh_calibration_20261010/observer-pool-calibration-v2`为最终固定v8校准结果：84/90但两高置信falseS，ready=false，不部署；旧v1失败log/旧selection保留。新selection f1c0a7fc…f0efbf8；187分母、23物理缺测、4暴露隔离、70合格reserve未forward、旧20测试不读。
+
 ## 2026-10-10 14:44 CST：低层后段动作对照与新校准材料
 
 - A800新源`/data/workspace/wsy/behavior2026/src/later-action-pair-v1`=7806657412bf0e917ab0c22c900560fe59c589de。lc3控制socket本地`/home/wsy/.ssh/lc3-recovery-20261010b.sock`、持久tmux`recovery-lc3-control-20261010b`；远端tmux`later-action-pair-v1`先跑异质run根`L0-startonly-continuation-v1`，完成后同父另跑`L0-later-actions-v1`。各`.supervisor`存ledger/log/cache，不能热改源码；总链log`later-action-pair-v1.log`。

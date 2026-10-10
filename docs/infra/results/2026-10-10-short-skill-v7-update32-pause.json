@@ -1,0 +1,32 @@
+{
+  "schema": "short_skill_owner_pause_receipt_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "verified_at": "2026-10-10T15:59:00+08:00",
+  "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/short-rl-v7-real-continuation",
+  "source_commit": "cfef448eb38489b8195755f563d72a57e464a48b",
+  "global_update": 32,
+  "new_updates_in_this_window": 12,
+  "original_planned_new_updates": 40,
+  "status": "intentionally_paused_after_fixed_probe_not_window_complete",
+  "checkpoint": "checkpoints/round-0012.pt",
+  "verified_file_sha256": "8c30cb50fb0b530032a3273ff8aaa0da2885eaba525d1405ffbc104c039bfe23",
+  "file_sha_matches_published_policy_identity": true,
+  "frozen_before_sha256": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+  "frozen_after_sha256": "eb4b5d45e188af609fb4fbdfc3c87741ab14ed17a1981adeb9d9e0cb4c3c1572",
+  "fixed_probes": [
+    {"skill": "GRASP", "seed": 17, "controls": 19, "success": true},
+    {"skill": "GRASP", "seed": 29, "controls": 19, "success": true},
+    {"skill": "PLACE_ON", "seed": 17, "controls": 106, "success": true},
+    {"skill": "PLACE_ON", "seed": 29, "controls": 165, "success": false, "outcome": "UNKNOWN"},
+    {"skill": "OPEN_DOOR", "seed": 17, "controls": 317, "success": false, "outcome": "UNKNOWN"},
+    {"skill": "OPEN_DOOR", "seed": 29, "controls": 317, "success": false, "outcome": "UNKNOWN"}
+  ],
+  "fixed_successes": 3,
+  "fixed_total": 6,
+  "baseline_successes": 4,
+  "reliable_improvement": false,
+  "whole_task_sr": false,
+  "checkpoint_and_partial_evidence_retained": true,
+  "partial_next_round_may_not_resume_as_on_policy": true,
+  "reason": "Serialize owned RTX simulation to evaluate two matched SFT continuations, without hot-editing renderer peer ownership or teammate work. This is not a reset quota, task completion, checkpoint deletion or proof that RL cannot learn. Long stochastic TRAIN successes remain separate audited evidence."
+}

@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 16:08 CST / Codex RECOVERY-USABLE：** v10已有真实111更新/epoch3，zero-adapter等价与192专属LoRA梯度门通过、其余policy无梯度；早期选择DEV尚未稳定，不宣称提升/不读CAL。42728c3f新RTX v2 worker已真实执行control前10/12：GRASP4/4、PLACE4/4、OPEN前2 UNKNOWN，仍等剩2及finish ACK/冻结指纹，未启动candidate；各原时限不变。15:59目录表与v7/global32安全暂停摘要已补齐。续接fetch完成，HEAD/upstream一致、main无新增未合入；本地自身未提交文档故未pull，不热改活跃源/lc2/队友GPU4–7。
+
 - **2026-10-10 15:55 CST / Codex RECOVERY-USABLE：** v10新特征独立比对全过：377请求中198不变、179仅补真实同attempt起点，旧current/长历史及初始头全bit一致；`observer-v10-short-context-feature-pair-v1.json`绑定76284882新cache。新冻源2d95190a于lc1 GPU0/tmux `observer-v10-short-context-v1`提交同294/40的LoRA+头训练，尚待首实际更新/梯度门，不读CAL。低control三worker首启在collector旧schema门失败，发生于import/scene/reset前、0物理，旧失败run保留；A800服务仍原501/ready/0updates，不重启。将模式校验提取为service/worker/collector共用函数，只读collector禁止执行TRAIN job，233回归通过，准备新RTX源/v2 worker接入同一等待中的12个job，未掩盖物理失败。
 
 - **2026-10-10 15:50 CST / Codex RECOVERY-USABLE：** 旧v7已按owner STOP完整退出，result明确Owner stop/32更新且冻结SHA前后eb4b…c1572不变；旧worker tmux全退，不改其失败格式/不称自然40轮完成。RTX4–7出现队友`openpi_benchmark/serve_policy.py`四进程，未触碰；改在实查空闲0–2启动control三个冷worker（CLI实记GPU、科学条件不变，配置resource旧3–5说明由本记录覆盖），新源501、端口18976、分别`later-action-control-{radio155,wash169,tripod129}-probes-v1`。这只是提交模拟器，尚未行为结果。A800新短起点cache已377请求/684prefill，SHA76284882…eb0d31a，下一独立与旧v8逐值比对才许v10优化；新核对工具及反例回归通过。
