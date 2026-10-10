@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 09:30 CST / Codex RECOVERY-USABLE：** 正常示范新feedback实际验收700 anchors/100非首段任务，全部与runtime ledger相同；24真实processor保持原target/23→27映射不变，根亲看24页72原RGB并逐SHA签核（审核5daddae5、rows c74749e0，人工回执见`docs/infra/results/2026-10-10-expert-feedback-human-review-v1.json`）。这是原标注衍生时钟，不是新物理标签/on-policy轨迹。新H1同bee父/42TRAIN＋10DEV/6原2新/1e-6/20遍420updates，独立源41be48ba、ticket f2f637c6，lc3八卡`H1-causal-feedback-fit-v1`已提交启动/尚待首更新，cache全部run隔离，lc2不动。旧父/step50完整非首段对照均98/100 exact；UNKNOWN.5合成probe误RETRY22/20条，去feedback恢复分别5/10与0/10，不能上线。旧final420追加两路lc1 GPU5/7生成在跑；首次tmux环境未激活退出、v2显式env成功，保留失败日志。audit首次因重复调用会原地变更的processor退出，修独立raw拷贝后v2全通过，未热改旧源码。
+
 - **2026-10-10 09:25 CST / Codex RECOVERY-USABLE：** 新正常示范feedback wrapper与部署ledger逐控制时钟一致，171恢复＋10因果feedback回归通过；增加显式`unready_zero_confidence_v1`，默认旧协议不变，恢复真实OOF provenance仍逐条验。实际processor/24三相机原样本审核脚本及新H1同父/同数据/同超参配方已补，启动硬门要求真实审核＋人工签核，不将单测当完成。旧H1 final420权重86334ead…c2795已落盘；准备独立无答案生成复验，不上线。低global10已实际更新，结果头v8 epoch4仍UNKNOWN0/4，未达goal。
 
 - **2026-10-10 09:17 CST / Codex RECOVERY-USABLE：** H1-v7-fit-v2已真实420/420完成，原首段留出CE.00844784→.00774531、恢复10DEV→5.70e-6；冻结参数SHA前后同0f7aede8…a966，W&B6cb6c8311ce9，不部署。真正非首段四路对照均确认100个控制都有前意图；截至候选probe37条，9条误RETRY＋1条JSON无效，原/新无feedback各前35条全正确，父probe也受影响。这证明旧“0假重试”初始样本指标漏掉重要风险，完整对照仍在跑。新本地因果expert wrapper将正常示范的已发生stride16命令历史转成与部署同格式的UNKNOWN计数，恢复侧未校准置信归零（真实OOF出处仍核验），目标不变/不造物理标签；默认保持旧实验兼容，待单测及实际processor验收后另冻源重训。新结果v8已37真实更新，非完成/非改善结论。

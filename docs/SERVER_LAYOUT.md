@@ -1,5 +1,15 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 09:30 CST：反馈格式修正对照（当前）
+
+A800共用根仍`/data/workspace/wsy/behavior2026`、run根`runs/recovery_heterogeneous_20261010`。lc2队友、共享env均不动。
+
+- lc3八卡新H1：`H1-causal-feedback-fit-v1`，ticket `H1-causal-feedback-ticket-v1.json`（f2f637c6），独立源码`src/h1-causal-feedback-v2`（41be48ba）；正常示范输入加入因果UNKNOWN计数，新配方不改原target，实际更新状态见plan。编译/temp缓存全部在`.supervisor/runtime-cache`。
+- 新输入实际验收`H1-expert-feedback-audit-v2`（700 metadata、24 processor/72RGB），人审`H1-expert-feedback-human-review-v1.json`；首v1失败保留，不是通过版本。
+- 旧H1-v7-fit-v2已完成420，final `checkpoints/step_00000420_save_0009.pt` SHA86334ead…c2795；无部署验收。lc1 GPU5/7在跑`H1-final420-noninitial-{observed,probe}-v2`，源`src/h1-causal-feedback-v1`（8a6ddeb8）。原/step50四路`H1-noninitial-*-v1`已完成，是真非首段控制，区别于旧初始100误标反馈probe。
+- lc1 GPU2 `H0-observer-adapter-v8-retry-unknown-v1`，源`src/observer-v8-retry-unknown-v1`（5e2e1893），数据`datasets/recovery-reviewed-union-20261010-v8-retry-unknown`：294TRAIN40DEV，未部署。
+- lc1 GPU1与RTX10383 GPU0/1/2仍`short-rl-v5-cold-resume`共享短技能RL，源935dac32；当前没有可靠收益，不改为全任务RL。
+
 ## 2026-10-10 08:45 CST：A800连接恢复与在训位置（覆盖下方历史状态）
 
 - 用户已允许重连，当前lc1/lc3实通。A800共享根`/data/workspace/wsy/behavior2026`；新包实际落地`datasets/recovery-outcome-planner-source-20261010-v1`，227文件全SHA通过。联合`datasets/recovery-reviewed-union-20261010-v7-outcomes-planner`（admission `d57ae342d44165118b65803727fd62227f44a41e3c5d207df079aa9aea2a014f`）已130ZIP/6810观察全读，271/40结果、42/10意图、19/9动作TRAIN/选择DEV。
