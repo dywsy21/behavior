@@ -1,0 +1,145 @@
+{
+  "schema": "short_skill_sft_evaluation_a800_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "user_goal_authorized": true,
+  "hypothesis": "Prospectively fixed eight-new-noise-seed replication of the already completed matched200-update final checkpoints. No retraining/checkpoint selection; same three TRAIN starts, raw23 controls, original horizons/physics gates and frozen FM inference. First four-seed result is development evidence (OPEN0/4 vs3/4), not pooled confirmatory evidence. This new block tests repeatability across action noise at the same physical source starts, not independent instances or full-task SR.",
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "model": {
+    "path": "runs/recovery_heterogeneous_20261010/L0-startonly-continuation-v1/checkpoints/step_00000200_save_0004.pt",
+    "sha256": "51e2c772ba321f1dd0b5faad1e31264e2acceca56013baf4c97f5fa94fee302c"
+  },
+  "seed": 271828,
+  "evaluation_seeds": [
+    101,
+    137,
+    173,
+    211,
+    257,
+    307,
+    359,
+    419
+  ],
+  "learning_rounds": 0,
+  "ppo": {
+    "transition_std": 0.03,
+    "actor_lr": 0.000001,
+    "critic_lr": 0.0003,
+    "clip_ratio": 0.2,
+    "target_kl": 0.03,
+    "max_clip_fraction": 0.25,
+    "update_epochs": 1,
+    "microbatch_size": 1,
+    "critic_descent_guard": true,
+    "critic_restart_stale_momentum": true,
+    "critic_update_audit": true,
+    "critic_fit_steps": 1
+  },
+  "sim_protected_groups": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/protected-groups.json",
+  "cases": {
+    "turning_on_radio_155": {
+      "task": "turning_on_radio",
+      "instance_id": 155,
+      "original_split": "train",
+      "recovery_split": "train",
+      "manifest_sha256": "68ea43144c953625d48ef3bae08ef7d660ece0200945d4908ef80e7aa28dec0b",
+      "context_id": "0bfefd434402c47842fd6b1743c8ec5de1f4785821578a99cd2ffc6410aa9ad2",
+      "start_control": 32,
+      "end_control": 173,
+      "parent_goal": "Parent command: description=\"pick up from\"; targets=[\"radio_89\"]; sources=[\"coffee_table_koagbh_0\"]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"coffee_table_koagbh_0\",\"target\":\"radio_89\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"GRASP\"}]",
+      "sim": {
+        "kind": "recovery",
+        "directory": "/run/ti/rl_memlite_stage1_20261006/runs/recovery_prepare_sim_20261009/local-coverage-v2/turning_on_radio_155",
+        "branch": "open_gripper_joint_jitter",
+        "proof": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/reward-radio155-v1/result.json",
+        "proof_sha256": "506354c55671fa8bc91366befa2364448f4a4816dc81e197e369c154ab3347f6"
+      }
+    },
+    "wash_dog_toys_169": {
+      "task": "wash_dog_toys",
+      "instance_id": 169,
+      "original_split": "train",
+      "recovery_split": "train",
+      "manifest_sha256": "af12e2334de2fadf158da536f1585e4c5cdf7a28ef0feb53ab0d7b4a1624f8ec",
+      "context_id": "7dae79b0776c4337741660b7a58ea4df4cbcb3472859a889bd2970227866e717",
+      "start_control": 270,
+      "end_control": 587,
+      "parent_goal": "Parent command: description=\"open door\"; targets=[\"washer_ynwamu_0\"]; sources=[]; destinations=[]; target_parts=[]; arms=[]",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"\",\"source\":\"\",\"target\":\"washer_ynwamu_0\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"OPEN_DOOR\"}]",
+      "sim": {
+        "kind": "recovery",
+        "directory": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/articulation-collection-v4/wash_dog_toys_169",
+        "branch": "reverse_reference_fault",
+        "proof": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/reward-wash169-v1/result.json",
+        "proof_sha256": "8104f35c904ad79b802cc2f416a71e9f06fa4e837509bacf691b484c807cd5fb"
+      }
+    },
+    "attach_a_camera_to_a_tripod_129": {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 129,
+      "original_split": "train",
+      "recovery_split": "train",
+      "manifest_sha256": "b28631ad9e1eb50b3aa1280e076a170b0efadb6c26b4db131454da8dee03430f",
+      "context_id": "9cee5f431357f671fa53acfaf7fe796bb6324670d363074241d62d7d2b7d43e0",
+      "start_control": 471,
+      "end_control": 636,
+      "parent_goal": "Task goal: attach a camera to a tripod",
+      "semantic_bundle": "[{\"arm\":\"UNSPECIFIED\",\"destination\":\"floors_nlswvt_0\",\"source\":\"\",\"target\":\"camera_tripod_86\",\"target_part\":\"\",\"unbound_relation\":\"\",\"verb\":\"PLACE_ON\"}]",
+      "sim": {
+        "kind": "placement",
+        "directory": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/place-on-curriculum-v1/attach_a_camera_to_a_tripod_129",
+        "proposal": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/place-on-short-sources-v1/attach_a_camera_to_a_tripod_129",
+        "proof": "/run/ti/rl_memlite_stage1_20261006/runs/recovery100_collection_20261009/place-cold-tripod129-v2/result.json",
+        "proof_sha256": "3dce42674e217e18d247dddf04a64e3ef52aea2d1e9026d6a237a88be219b1fd"
+      }
+    }
+  },
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-later-action-noise-replication-20261010",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key",
+    "new_run_required": true
+  },
+  "resource": "One verified idle lc1 A800 GPU2 for frozen inference; RTX10383 verified idle GPUs0-2 for three cold workers. All previous physical probes have finished. RTX4-7 teammate services/lc2 untouched. Both arms sequential, independent fresh immutable source/run directories.",
+  "stopping": "No parameter updates. End after all24 original-horizon probes and three finish ACKs per arm, regardless of interim outcomes. Eight seeds are a predeclared measurement block, not an overall goal quota. Preserve engineering failures/partial episodes without silent retries or relaxed success gates; independently audit all controls and root-review original media.",
+  "gradient_contract": "Frozen RGB/language prefix and high planner. PPO acts only on 322 native action-expert tensors; critic learns from detached observable prefix features. Privileged physics only recomputes reward. Actual 23 controls retained; padding only model27 indices7,8,17,18.",
+  "interpretation": "Paired short-skill development comparison on TRAIN source instances, not independent task generalization or whole-task success. Action noise generation/FP32 Euler and control clock exactly reuse the existing proven collector/service path.",
+  "simulator_reset_protocol": "fresh_process_each_episode_v1",
+  "require_baseline_acceptance": false,
+  "observation_archive": "lossless_chunk_boundaries_v1",
+  "training_rollout_multiplier": 1,
+  "pair": {
+    "protocol": "matched_later_action_sft_v1",
+    "arm": "control",
+    "common_parent_sha256": "20fd230170e1921243be495c0f1a3a0dc46076d44722fefe310b24184d248044",
+    "training_source_commit": "7806657412bf0e917ab0c22c900560fe59c589de",
+    "updates": 200,
+    "seed_roles": {
+      "101": "prospectively fixed fresh FM-noise seed; same source world state",
+      "137": "prospectively fixed fresh FM-noise seed; same source world state",
+      "173": "prospectively fixed fresh FM-noise seed; same source world state",
+      "211": "prospectively fixed fresh FM-noise seed; same source world state",
+      "257": "prospectively fixed fresh FM-noise seed; same source world state",
+      "307": "prospectively fixed fresh FM-noise seed; same source world state",
+      "359": "prospectively fixed fresh FM-noise seed; same source world state",
+      "419": "prospectively fixed fresh FM-noise seed; same source world state"
+    }
+  },
+  "replication": {
+    "protocol": "fixed_checkpoint_fresh_noise_block_v1",
+    "prior_pair_summary_sha256": "78c29f7252ef798489763cf9750486a5b5c215edc55f623605748e613d30b729",
+    "prior_seeds": [
+      17,
+      29,
+      43,
+      71
+    ],
+    "combine_with_prior_for_primary_claim": false,
+    "task_generalization": false,
+    "checkpoint_selected_before_new_outcomes": true
+  }
+}

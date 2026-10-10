@@ -11,6 +11,25 @@ from skill_training_protocol import read_only_recipe
 
 
 class ShortSkillRecipeTests(unittest.TestCase):
+    def test_fresh_noise_replication_freezes_both_final_policies_and_conditions(self):
+        from copy import deepcopy
+        replicas=[]
+        for arm in ('control','later_actions'):
+            old=json.loads((REPO/f'configs/recovery_sft/a800_later_action_probes_{arm}_v1.json').read_text())
+            new=json.loads((REPO/f'configs/recovery_sft/a800_later_action_replication_{arm}_v1.json').read_text())
+            self.assertTrue(read_only_recipe(new))
+            for key in ('cases','model','stats_sha256','ppo','seed','observation_archive'):
+                self.assertEqual(old[key],new[key])
+            self.assertEqual(len(new['evaluation_seeds']),8)
+            self.assertEqual(len(set(new['evaluation_seeds'])),8)
+            self.assertFalse(set(new['evaluation_seeds']) & set(old['evaluation_seeds']))
+            self.assertFalse(new['replication']['combine_with_prior_for_primary_claim'])
+            self.assertFalse(new['replication']['task_generalization'])
+            self.assertEqual(new['pair']['seed_roles'].keys(),set(map(str,new['evaluation_seeds'])))
+            normalized=deepcopy(new);del normalized['model'];del normalized['pair']['arm']
+            replicas.append(normalized)
+        self.assertEqual(*replicas)
+
     def test_hello_readiness_requires_exact_protocol_and_binding(self):
         from skill_cold_worker import require_service_hello
         sha='a'*64
