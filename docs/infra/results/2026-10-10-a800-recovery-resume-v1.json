@@ -1,0 +1,142 @@
+{
+  "schema": "recovery_a800_goal_resume_evidence_v1",
+  "recorded_cst": "2026-10-10 08:42 CST",
+  "owner": "Codex RECOVERY-USABLE",
+  "status": "training_in_progress_goal_not_achieved",
+  "new_admitted_union": {
+    "path": "/data/workspace/wsy/behavior2026/datasets/recovery-reviewed-union-20261010-v7-outcomes-planner",
+    "admission_sha256": "d57ae342d44165118b65803727fd62227f44a41e3c5d207df079aa9aea2a014f",
+    "archives": 130,
+    "original_observations_decoded": 6810,
+    "outcome_train": 271,
+    "outcome_selection_dev": 40,
+    "planner_train": 42,
+    "planner_selection_dev": 10,
+    "action_train": 19,
+    "action_selection_dev": 9,
+    "independent_calibration_test_not_training": true
+  },
+  "observer_old_selected": {
+    "checkpoint_sha256": "d5def6499c2ce5b354446c52385fc468887a47fac771517db82f056229b6a4c5",
+    "epoch": 15,
+    "step": 330,
+    "independent_reload_real_prefills": 364,
+    "selected_dev": {
+      "event_weighted_ce": 0.27965158224105835,
+      "event_weighted_accuracy": 0.9166667461395264,
+      "balanced_accuracy": 0.8154761791229248,
+      "per_class": {
+        "IN_PROGRESS": {
+          "rows": 12,
+          "recall": 0.8333333134651184
+        },
+        "SUCCEEDED": {
+          "rows": 14,
+          "recall": 0.9285714030265808
+        },
+        "FAILED": {
+          "rows": 10,
+          "recall": 1
+        },
+        "UNKNOWN": {
+          "rows": 4,
+          "recall": 0.5
+        }
+      },
+      "reviewed_rows": 40,
+      "source_groups": 10
+    },
+    "prior_cohort_diagnostic": {
+      "event_weighted_ce": 0.8010279536247253,
+      "event_weighted_accuracy": 0.8250000476837158,
+      "balanced_accuracy": 0.8925537467002869,
+      "per_class": {
+        "IN_PROGRESS": {
+          "rows": 45,
+          "recall": 0.9777777791023254
+        },
+        "SUCCEEDED": {
+          "rows": 99,
+          "recall": 0.7575757503509521
+        },
+        "FAILED": {
+          "rows": 52,
+          "recall": 0.942307710647583
+        }
+      },
+      "reviewed_rows": 196,
+      "source_groups": 60
+    },
+    "prior_cohort_previously_inspected_not_blind": true,
+    "optimizer_updates_during_diagnostic": 0,
+    "calibration_fitted": false,
+    "runtime_ready": false
+  },
+  "observer_new": {
+    "source_commit": "ed67b84f5ebf687e82485a04b57bdc34abd492cb",
+    "config": "configs/recovery_sft/a800_observer_adapter_v7_data_v1.json",
+    "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/H0-observer-adapter-v7-data-v1",
+    "node": "lc1",
+    "gpu": 2,
+    "wandb": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/41df97c97dfe",
+    "last_completed_eval_step": 136,
+    "real_optimizer_updates": true,
+    "base_planner_low_frozen": true,
+    "not_deployed": true
+  },
+  "planner": {
+    "source_commit": "dca222b72be9a7353f30ce4c7dd837c5036a04e8",
+    "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/H1-v7-fit-v2",
+    "node": "lc3",
+    "gpus": 8,
+    "last_verified_optimizer_step": 20,
+    "planned_updates": 420,
+    "learning_rate": 0.000001,
+    "global_batch": 8,
+    "original_rehearsal_per_batch": 6,
+    "recovery_per_batch": 2,
+    "wandb": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/6cb6c8311ce9",
+    "previous_failed_run": "H1-v7-fit (zero optimizer updates; system disk full at default Triton cache)",
+    "repair": "Per-run compiler/temp caches on shared data volume, no deletions or shared environment edits",
+    "oof": {
+      "real_optimizer_updates": 78,
+      "feedback_sha256": "45f8e8b402875c7c96f36feae9376f846d5fe8416dbefc39433376983de59472",
+      "rows": 52,
+      "all_predictions_unknown_fallback": true,
+      "calibrated": false
+    }
+  },
+  "short_rl": {
+    "node": "lc1",
+    "gpu": 1,
+    "run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/short-rl-v5-cold-resume",
+    "wandb": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/9e80c643bd3f",
+    "resume_step": 7,
+    "resume_sha256": "9664547d55e931532ead5b6d405381eb771219e1222aa16b207b5df630354927",
+    "actor_adam_tensors": 322,
+    "critic_adam_tensors": 6,
+    "resume_tensor_equal": true,
+    "training_seed_round_offset": 7,
+    "simulator_reset": "fresh OS process for each episode",
+    "baseline": {
+      "controls_recomputed": 844,
+      "reviewed_sheets": 6,
+      "reviewed_camera_panels": 90,
+      "acceptance": "configs/recovery_sft/short_skill_cold_baseline_acceptance_v2.json",
+      "grasp_success": 2,
+      "place_success": 2,
+      "open_success": 0,
+      "open_timeouts_unknown": 2
+    },
+    "baseline_gate_open": true,
+    "reliable_rl_improvement": false
+  },
+  "remaining": [
+    "Complete current observer/H1 fits; audit selected/last checkpoint and frozen parameter identities",
+    "Compare pinned target-free parent/candidate planner generation including false RETRY and memory correctness",
+    "Assess outcome classes and fresh calibration; UNKNOWN support remains sparse, no deployment gate bypass",
+    "Continue shared short-skill learning; compare fixed probes, do not count already solved GRASP/PLACE baselines as RL gains",
+    "Integrate reliable learned result/stagnation/recovery feedback and demonstrate heterogeneous closed-loop improvements before coverage/update expansion"
+  ],
+  "complete": false
+}

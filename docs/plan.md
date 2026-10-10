@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 08:42 CST / Codex RECOVERY-USABLE：** H1-v7-fit-v2缓存修复后已**真实20/420更新**，lc3八卡/全局8、6原2恢复，W&B6cb6c8311ce9；0步原留出CE.00844784、恢复DEV.00879186，尚无新选择/生成提升结论。lc1新observer已完成epoch4/136步评估（事件78.33%、UNKNOWN0/4，学习中）；旧专用LoRA60组原诊断82.5%与2个高置信假成功如实保留，不放行。低baseline人工门已读true，首TRAIN3机制真执行完，wash317控/开度.32356为旧global7带噪轨迹，不称新RL增益；等第8更新/固定probe。父高生成82/110在途。完整回执`docs/infra/results/2026-10-10-a800-recovery-resume-v1.json`；下一步续查三路真实结果、生成/原任务回退、冻结SHA与同seed技能，不能启动即完成goal，也不扩100任务RL。
+
 - **2026-10-10 08:38 CST / Codex RECOVERY-USABLE：** v5六冷baseline全部机器逐844控制/奖励/ACK/identity复算通过，根亲看6页90原相机面板并核SHA；radio19/19成功、PLACE98/74成功、wash317/317仍UNKNOWN（开度.304792/.300601<.35），proprio全0/radio位差2.48mm，无门限下调。批准文件`short_skill_cold_baseline_acceptance_v2.json`绑定当前9664547d权重/6episode SHA7e494eb3，准备放行第8次更新（还未更新）。lc3实际系统盘100%/inode非满已证，独立cache修复dca222b7/165测试，新H1-v7-fit-v2监督PID3844247、child3844257加载；不删任何文件、不动lc2。observer旧LoRA60组与新训练/父生成继续独立源。
 
 - **2026-10-10 08:35 CST / Codex RECOVERY-USABLE：** 旧observer-v2在已诊断60来源/196结果的真实新LoRA前向完成：事件82.5%、三类平均89.26%、成功75/99、失败49/52、进展44/45（旧小头47.08%事件），0优化/未温度拟合/非新盲测/仍不部署。新observer-v7已55优化/epoch2，W&B41df97c97dfe。lc3 H1首run在0步原留出检查失败：八rank统一Triton默认/home缓存ENOSPC，非模型或标签nan，0权重更新、日志保留；修独立supervisor下编译/temp缓存，不删系统盘或改共享env，待新冻源新run。低冷baseline仍等wash第二条，不提前放行；父高生成对照已提交GPU4。

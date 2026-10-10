@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-10 08:42 CST / Codex：** B H1已修复并实际20/420更新（lc3八卡，6cb6c8311ce9），新结果LoRA已136+步（lc1 GPU2，41df97c97dfe），旧LoRA60组离线提升非部署。C六baseline已根审核放行，第8共享更新待，不能将首带噪轨迹当学习后效果。三路安全冻结源/独立run继续；待完整学习曲线、生成与真正异质闭环收益，不合main、不改lc2、goal未完成。
+
 **2026-10-10 08:35 CST / Codex：** B H1在第0步遇lc3/home空间不足（Tritoncache），原run失败保留，修每run共享盘缓存后重开；未改任何队友文件/共享env。独立observer新v7已55步，旧LoRA60来源离线事件82.5%（非盲测/非SR/未部署）是实测新进展；C待完整六冷baseline人工复验。A不动。
 
 **2026-10-10 08:33 CST / Codex：** B真实OOF78步完成但未可靠，52行全部UNKNOWN兜底；lc3八卡新H1意图SFT加载，lc1 GPU2专用结果LoRA新数据训练、GPU3旧头冻结诊断，三路源ed67b84f。另固定100原任务＋10恢复DEV做高层无答案生成对照。C六冷baseline还差wash第二条，未放optimizer；A不重训。完整闭环与可靠收益仍待。
