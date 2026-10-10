@@ -12,9 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-10 08:38 CST / Codex RECOVERY-USABLE：** 低v5实际重载global7：322actor/6critic Adam与权重逐tensor相等、Adam步均7、W&B9e80c643bd3f；18975双向端口实通，RTX0/1/2新冷worker PID2325500/03/06启动，等六baseline审核，尚无新优化。v7全部80条H1/L0真实processor通过且0优化/无真值输入；高层方案固定为bee父模型、42个TRAIN恢复意图×20事件遍（420更新）、每batch6原任务＋2恢复，lc3八卡；先真实分组OOF，不可靠结果一律UNKNOWN，绝不把物理标签塞进高层。结果观察器新数据拟合单独进行，不能冒用其训练内预测当OOF。
+- **2026-10-10 08:33 CST / Codex RECOVERY-USABLE：** ed67b84f冻源正式提交：lc1 GPU2结果LoRA新271 TRAIN（原40 DEV不动），GPU3旧epoch15在已看过60组上的额外冻结诊断（非新盲测/不拟合温度）；lc3先真实OOF完成78更新/W&Bd84e7bc56a93，52预测均因校准不足保持UNKNOWN、非可用结果头。其真实feedback SHA45f8e8b4…59472已绑定H1票，lc3八卡H1监督训练supervisor3840564/child3840574运行加载，拟420更新/W&B待。不将UNKNOWN兜底称为可靠结果闭环。低v5冷baseline radio两条19控成功、PLACE98/74控成功，wash首条317控UNKNOWN，最后一条待；原奖励/权重未改、0新RL更新。
 
-- **2026-10-10 08:34 CST / Codex RECOVERY-USABLE：** observer-v2独立GPU重载通过：192adapter/14头/206 Adam均精确、step330，364真实prefill重放原DEV三项指标逐值相同、frozen SHA3f57f559不变，仍未校准部署。v7联合实际130 ZIP/6810原观察全读通过，admission d57ae342…2a014f：结果271TRAIN/40DEV（68/10组），意图42TRAIN/10DEV，动作仍19/9，不作新增动作授权。新cache与80条processor检查已提交，结果待。低v5三端163回归过、A800 PID1840100加载中，尚未optimizer更新；新持久18975隧道只占本线程端口。
+- **2026-10-10 08:30 CST / Codex RECOVERY-USABLE（记录时刻更正，原08:38误记）：** 低v5实际重载global7：322actor/6critic Adam与权重逐tensor相等、Adam步均7、W&B9e80c643bd3f；18975双向端口实通，RTX0/1/2新冷worker PID2325500/03/06启动，等六baseline审核，尚无新优化。v7全部80条H1/L0真实processor通过且0优化/无真值输入；高层方案固定为bee父模型、42个TRAIN恢复意图×20事件遍（420更新）、每batch6原任务＋2恢复，lc3八卡；先真实分组OOF，不可靠结果一律UNKNOWN，绝不把物理标签塞进高层。结果观察器新数据拟合单独进行，不能冒用其训练内预测当OOF。
+
+- **2026-10-10 08:29 CST / Codex RECOVERY-USABLE（记录时刻更正，原08:34误记）：** observer-v2独立GPU重载通过：192adapter/14头/206 Adam均精确、step330，364真实prefill重放原DEV三项指标逐值相同、frozen SHA3f57f559不变，仍未校准部署。v7联合实际130 ZIP/6810原观察全读通过，admission d57ae342…2a014f：结果271TRAIN/40DEV（68/10组），意图42TRAIN/10DEV，动作仍19/9，不作新增动作授权。新cache与80条processor检查已提交，结果待。低v5三端163回归过、A800 PID1840100加载中，尚未optimizer更新；新持久18975隧道只占本线程端口。
 
 - **2026-10-10 08:26 CST / Codex RECOVERY-USABLE：** 精确选中权重为epoch15/330步（非末epoch20）：原DEV事件91.67%、四类平均81.55%、UNKNOWN2/4，SHA d5def649…a4c5；独立冻源d1fccad5已在lc1 GPU0启动原RGB重载前向（未算通过），0优化。新增断线续接v5配方从global7/9664547d再做13轮，保持技能/奖励/优化器，固定eval种子不变、TRAIN offset7避免新run重放旧种子；本地163恢复测试通过，实际服务尚未启动。已审核79MB包正在迁A800，不把传输/启动当验收或效果。RTX0–7实测空闲，lc2不动。
 

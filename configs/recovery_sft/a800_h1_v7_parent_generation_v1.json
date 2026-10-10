@@ -1,0 +1,25 @@
+{
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "union": "datasets/recovery-reviewed-union-20261010-v7-outcomes-planner",
+  "admission_sha256": "d57ae342d44165118b65803727fd62227f44a41e3c5d207df079aa9aea2a014f",
+  "models": {
+    "parent": {
+      "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+      "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316"
+    }
+  },
+  "inventory": {
+    "path": "datasets/recovery-reviewed-union-20261010-v7-outcomes-planner/audit/inventory.json",
+    "sha256": "8a18bca59fa6a3ad734d8035b0f88e032fc7b9b80ffbbd253e382f0e8bf615ad"
+  },
+  "history": {
+    "path": "datasets/recovery-reviewed-union-20261010-v7-outcomes-planner/history/contexts.jsonl",
+    "sha256": "741f48839a7337321ac16955c6111ea9f460ad8e89a3c747591cd54422fe945e"
+  },
+  "feedback": {
+    "path": "runs/recovery_heterogeneous_20261010/H0-v7-oof/postprocess-001/feedback.jsonl",
+    "sha256": "45f8e8b402875c7c96f36feae9376f846d5fe8416dbefc39433376983de59472"
+  },
+  "scope": "Predeclared target-free greedy generation on100 original heldout anchors plus10 reviewed recovery DEV states, with real out-of-fold feedback and exact predecision memory. Parent baseline only; candidate remains unpinned until the separately running H1 fit completes. No optimizer, simulator or full-task success claim. These recovery DEV groups are reused development diagnostics, not an independent blind test."
+}

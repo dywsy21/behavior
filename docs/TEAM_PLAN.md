@@ -1,6 +1,8 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
-**2026-10-10 08:38 CST / Codex：** B v7新联合311结果/52意图/28动作全读、processor通过；独立observer重载通过但未部署。计划lc3真实OOF→42恢复事件的H1训练（6原/2新、20遍），不使用oracle失败标签。C lc1 GPU1已global7精确重载，RTX0–2六baseline在采，W&B9e80c643bd3f；A保持原L0参考不重复。仍须真实效果/校准和H1生成验收，尚不扩任务。
+**2026-10-10 08:33 CST / Codex：** B真实OOF78步完成但未可靠，52行全部UNKNOWN兜底；lc3八卡新H1意图SFT加载，lc1 GPU2专用结果LoRA新数据训练、GPU3旧头冻结诊断，三路源ed67b84f。另固定100原任务＋10恢复DEV做高层无答案生成对照。C六冷baseline还差wash第二条，未放optimizer；A不重训。完整闭环与可靠收益仍待。
+
+**2026-10-10 08:30 CST / Codex（记录时刻更正，原08:38误记）：** B v7新联合311结果/52意图/28动作全读、processor通过；独立observer重载通过但未部署。计划lc3真实OOF→42恢复事件的H1训练（6原/2新、20遍），不使用oracle失败标签。C lc1 GPU1已global7精确重载，RTX0–2六baseline在采，W&B9e80c643bd3f；A保持原L0参考不重复。仍须真实效果/校准和H1生成验收，尚不扩任务。
 
 **2026-10-10 08:26 CST / Codex：** B选中observer真实epoch15/330（DEV91.67%/balanced81.55%、UNKNOWN2/4），lc1 GPU0独立重载在途，新数据迁移；C拟global7精确续接并补TRAIN种子offset回归，待六冷起点重新验收，不复用旧baseline许可。A不重复L0；H1实际OOF/意图实训与可靠技能增益仍待，不合main。
 
