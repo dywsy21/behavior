@@ -1,0 +1,236 @@
+{
+  "schema": "expert_causal_feedback_human_review_v1",
+  "owner": "Codex/root",
+  "decision": "APPROVED",
+  "review_method": "Root renewed the existing personal visual approval only after all 24 original image sheets matched prior personally reviewed bytes, and all 700 rows matched after exactly two metadata-only changes: source_trace annotation_derived_stride16_not_on_policy -> annotation_derived_not_on_policy; explicit repeat_stride_controls=16 added. No input/target/image/counter values changed. This is evidence-preserving revalidation, not a new claim of visual inspection or automatic semantic approval.",
+  "audit_sha256": "3138e57bdbef7f8dc2d7df4d3dccd0dc7adb39b8c313eef9d9f7aab1b00d5423",
+  "rows_sha256": "38233cb1ce82e85035ea039ac3a6f5d06e0c154cff8e9d30f36ef1ba62891101",
+  "sheets": [
+    {
+      "path": "sheet-000.png",
+      "sha256": "648a6bcf9175fc2907972bb81c4d1daea280e4d37a2533ad9d9779c23901bcfa",
+      "task": 0,
+      "split": "eval",
+      "frame": 1287,
+      "decision": "APPROVED",
+      "note": "收音机已在桌面、双腕无遮挡异常；272控只表历史长度，保持UNKNOWN，不推断放置成功。"
+    },
+    {
+      "path": "sheet-001.png",
+      "sha256": "17eeccedc3d8f6992a4ac60bd7eff6db656a286cced670dcd1c86cb734c376bb",
+      "task": 0,
+      "split": "eval",
+      "frame": 2247,
+      "decision": "APPROVED",
+      "note": "另一留出实例收音机在桌面、双手旁；368控正常动作历史，未改成失败标签。"
+    },
+    {
+      "path": "sheet-002.png",
+      "sha256": "7f7e1c54efad574db84fd255037dae846867731f37c358a1bc605d0a344407e6",
+      "task": 3,
+      "split": "eval",
+      "frame": 3069,
+      "decision": "APPROVED",
+      "note": "端食物盘向厨房/冰箱方向，右腕见盘边；240控与NAVIGATE历史对齐，不推断停滞。"
+    },
+    {
+      "path": "sheet-003.png",
+      "sha256": "4c16dbdc9babc67812ce4339a42458330e9af7ecbffa76799350fefb43c7657a",
+      "task": 3,
+      "split": "eval",
+      "frame": 16189,
+      "decision": "APPROVED",
+      "note": "碗在水槽区域，双手回收；512控PLACE_IN上下文保持UNKNOWN，无伪物理完成。"
+    },
+    {
+      "path": "sheet-004.png",
+      "sha256": "8d1b1546cb726065f8c73b88979b8fa03899b8a2b89334f98698f8958316ceb5",
+      "task": 17,
+      "split": "eval",
+      "frame": 7708,
+      "decision": "APPROVED",
+      "note": "冰箱开合区域与右手可见；272控CLOSE_DOOR计数，不以静态一帧宣告完成。"
+    },
+    {
+      "path": "sheet-005.png",
+      "sha256": "200a27943904a1beba23bde4f215c07061e6d5208237b1528cae408942ba6980",
+      "task": 17,
+      "split": "eval",
+      "frame": 9137,
+      "decision": "APPROVED",
+      "note": "冰箱旁靠近墙面，腕视场主要墙面；576控不作为失败真值，保留原有部分可见性。"
+    },
+    {
+      "path": "sheet-006.png",
+      "sha256": "dc7e89af1a027da444b9e5c771ad4393ae469638ff258fdd2031a1e57a204bb0",
+      "task": 40,
+      "split": "eval",
+      "frame": 651,
+      "decision": "APPROVED",
+      "note": "厨房微波炉在前，双腕机器人自身可见；640控NAVIGATE历史与场景相符。"
+    },
+    {
+      "path": "sheet-007.png",
+      "sha256": "76cb66c7add5b905eb7334756d8a5ffe01b9baeb48b465c6dea459c9fbe45143",
+      "task": 40,
+      "split": "eval",
+      "frame": 3172,
+      "decision": "APPROVED",
+      "note": "微波炉面板灯可见、手臂下降；224控TURN_ON_SWITCH历史，不把亮灯变为新增监督。"
+    },
+    {
+      "path": "sheet-008.png",
+      "sha256": "67fcaff47b68cc2c7afb9fb13137d2b841e9b37e2e178d5967b1996b6e958a28",
+      "task": 60,
+      "split": "eval",
+      "frame": 904,
+      "decision": "APPROVED",
+      "note": "洗刷地面场景、红色刷具近腕；208控正常WIPE历史，UNKNOWN不猜标签。"
+    },
+    {
+      "path": "sheet-009.png",
+      "sha256": "43253b15db9242ea7fe06e4770965467c5efd34a9d7055a7cc753d92d82a062f",
+      "task": 60,
+      "split": "eval",
+      "frame": 4238,
+      "decision": "APPROVED",
+      "note": "近墙刷洗、工具和双手可见；attempt5是重复命令计数，不解释为五次物理失败。"
+    },
+    {
+      "path": "sheet-010.png",
+      "sha256": "8e3409914f2fe2c904b74bf4c1db31011f6d086eb25836acdbbe6b38a65a5d51",
+      "task": 99,
+      "split": "eval",
+      "frame": 4740,
+      "decision": "APPROVED",
+      "note": "书架和手持书可见；144控放书上下文。原类名comic_book重复未重标，不声称精确实例完成。"
+    },
+    {
+      "path": "sheet-011.png",
+      "sha256": "710264b752e7b1638520dc1eeca65136dbdffa7ee22e783614a15daa93c1ac41",
+      "task": 99,
+      "split": "eval",
+      "frame": 6615,
+      "decision": "APPROVED",
+      "note": "书本贴近书格、手仍在；704控/attempt2仅标命令历史，未捏造放置成败。"
+    },
+    {
+      "path": "sheet-012.png",
+      "sha256": "133f04d547922f954bfde57f158c6d7528a2faa768defff539b032906e01bc34",
+      "task": 0,
+      "split": "train",
+      "frame": 20,
+      "decision": "APPROVED",
+      "note": "训练初始客厅方向、双腕俯视机器人；16控/0刷新表首次导航之后，不是初始none。"
+    },
+    {
+      "path": "sheet-013.png",
+      "sha256": "d585c1fbf9a536ee098678c2e8ea516a9aaa637d600d0c88961964f4a9050916",
+      "task": 0,
+      "split": "train",
+      "frame": 1602,
+      "decision": "APPROVED",
+      "note": "左手靠收音机控制钮、右手在侧，近腕清楚；272控PRESS历史，未新增开关结果。"
+    },
+    {
+      "path": "sheet-014.png",
+      "sha256": "13460819fe4a96b8a0ee758d6cb00ac098e7521791a65ca4b37455368a9c8c9d",
+      "task": 3,
+      "split": "train",
+      "frame": 16017,
+      "decision": "APPROVED",
+      "note": "端碗向水槽方向、两个腕图见碗；624控导航有效格式，不视为超时失败。"
+    },
+    {
+      "path": "sheet-015.png",
+      "sha256": "1190c363515aaa67b9e257f1307df6b573d602bd8f940807ad50a7976c1d5e2f",
+      "task": 3,
+      "split": "train",
+      "frame": 3957,
+      "decision": "APPROVED",
+      "note": "端食物盘向冰箱厨房移动，右腕贴盘；496控导航，未添加掉落标签。"
+    },
+    {
+      "path": "sheet-016.png",
+      "sha256": "92ff77d05070d276575a6b4f05e36829b91103535c9a7470fac86942cb871184",
+      "task": 17,
+      "split": "train",
+      "frame": 11512,
+      "decision": "APPROVED",
+      "note": "冰箱旁手臂前伸，腕图视场有限；880控关门历史仍UNKNOWN，不把长时间等同失败。"
+    },
+    {
+      "path": "sheet-017.png",
+      "sha256": "54b8f8fd2cfc25c935c6542769af4426a25e623313c92763539e01eba3237d88",
+      "task": 17,
+      "split": "train",
+      "frame": 9702,
+      "decision": "APPROVED",
+      "note": "瓶在手/桌面附近，右腕近瓶盖；448控放置历史，未知接触稳定性故不推成功。"
+    },
+    {
+      "path": "sheet-018.png",
+      "sha256": "5504c6cb8af91e72265aebf9aab09afa10d5a4011e82eee43f92239fb203ea79",
+      "task": 40,
+      "split": "train",
+      "frame": 472,
+      "decision": "APPROVED",
+      "note": "近微波炉、双腕朝下；464控导航历史，格式与恢复样本一致。"
+    },
+    {
+      "path": "sheet-019.png",
+      "sha256": "37d3397c30fecaffb79a1d0f7026756a4860eaa6e1379365cb64c3caf598deb5",
+      "task": 40,
+      "split": "train",
+      "frame": 65,
+      "decision": "APPROVED",
+      "note": "较早厨房导航，微波炉在画面右前；64控3刷新由过去anchors核对。"
+    },
+    {
+      "path": "sheet-020.png",
+      "sha256": "1180cea3a7551e852eb1f08705d9ce0e668e09f94646c41936d1720fd9112a64",
+      "task": 60,
+      "split": "train",
+      "frame": 2811,
+      "decision": "APPROVED",
+      "note": "刷具在右侧、地板可见；16控attempt4来自换回旧命令，不构造第四次失败。"
+    },
+    {
+      "path": "sheet-021.png",
+      "sha256": "a5845c3524adfa0ebff81c5b7ca7b590981f6574883e20b6acc533bc91168f8a",
+      "task": 60,
+      "split": "train",
+      "frame": 1963,
+      "decision": "APPROVED",
+      "note": "厕所地面/刷具可见；160控attempt3只表命令再出现，与未知结果分开。"
+    },
+    {
+      "path": "sheet-022.png",
+      "sha256": "e7953f83c5afd1383349eafb5e54ef93386b3ca4f594f7d238357acb82066b80",
+      "task": 99,
+      "split": "train",
+      "frame": 1393,
+      "decision": "APPROVED",
+      "note": "右手伸入书格抓书，近腕见书脊；48控GRASP上下文，没有把闭爪当成功。"
+    },
+    {
+      "path": "sheet-023.png",
+      "sha256": "1880c87b0ff5dcf0f231fad343f3bd427fd3c205169736f6534bb0ed7a70213f",
+      "task": 99,
+      "split": "train",
+      "frame": 4294,
+      "decision": "APPROVED",
+      "note": "双书及书格近手可见；320控PLACE_ON历史，原类级名称保留，UNKNOWN不冒称物理真值。"
+    }
+  ],
+  "previous_audit_sha256": "5daddae5c573a40f2e6e9f98d3ccf325b31204ec3952a5ef0bbc734224206725",
+  "previous_rows_sha256": "c74749e07553218b2a4ad3d8117dc426f0dbc534c47699e998530c99f4e971ba",
+  "unchanged_original_sheets": 24,
+  "unchanged_observable_and_target_rows": 700,
+  "metadata_only_differences": [
+    "source_trace descriptive string",
+    "explicit repeat_stride_controls=16"
+  ],
+  "validated_source_commit": "bb9389b5f49145d429f114fee1ceadf27411e235",
+  "recipe_sha256": "cdb4a46c27f560726c326f39bf7409731849b71ad1d97aa6d2227d3d9f9d9657"
+}

@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 20:40 CST / Codex RECOVERY-USABLE：** lc1新冻bb9389b5的78真实高层processor及原示范700时钟/24processor全部通过，原23→27 padding/高层CE mask无误，真实固定反馈逐原logits/时钟重算相同。原示范24原图页逐字节与既有根人审一致；700行仅补`repeat_stride_controls=16`及来源描述改名，其余输入/target/时钟全同，根据此续签而非声称新看图（audit3138e57b…5423/rows38233cb1…1101，signoff新Git结果文件）。另核smoke_detectors92的64步双手确实未持目标，预测SUCCEEDED/.9056是保留的误报；不能以.85门当真值。下一Git同步独立人审回执、制作bb9389b5训练票并实启lc1高层360更新；低层/结果头冻结，W&B online，GPU尚空，独立成员review待。
+
 - **2026-10-10 20:37 CST / Codex RECOVERY-USABLE：** 固定v11在新78真实来源237次prefill/check完成（193.39s/0更新、run receipt5a79bd21…4c6b4）；TRAIN18 FAILED/17 UNKNOWN/1 SUCCEEDED，DEV20 FAILED/22 UNKNOWN。那1条成功估计不能当物理真值，保留与原RETRY监督共存，不按预测筛数据。实际源16b50c10不变，GPU0退出全空。新增训练准入从原raw/history重建所有window并重放固定logits/校准/freshness，强绑定observer与planner两权重、全source排除及实际processor，7新测试＋旧suite304（含5重复夹具）过；下一新冻结源真实78高层processor＋原示范复验后再训360updates（36事件×20遍、6normal/2recovery、仅高层、W&B），不是结果头/低层新训练或部署。
 
 - **2026-10-10 20:33 CST / Codex RECOVERY-USABLE：** lc1新冻结`src/postfit-planner-feedback-launch-v1`=16b50c10，GPU0/tmux `postfit-planner-feedback-v1`实启固定头预测，输出异质run根`H1-postfit-feedback-v1`及同名log/cache；当前模型加载中，非训练/部署通过。补训练入口独立fixed-observer协议：与旧OOF状态分开，准备从原raw/history重建每次check并逐行重算反馈，校验planner/observer两套SHA、全部拟合/选择/CAL/test排除，不将新的高层权重冒充observer骨干。此接口本地修改未推送/未进入活跃16b源，定向回归待。
