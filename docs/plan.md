@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 21:47 CST / Codex RECOVERY-USABLE：** final两路改独立v2输出/tmux，同a260源/89907权重、原v1错误manifest/log保留；wrapper显式source既有激活脚本，先分配共享盘run-owned TMPDIR/cache，再CPU导入VideoDecoder成功门后才载模型。单独CPU尝试亦遇lc3系统/tmp与home已满，故不能省掉既有run缓存步骤；未删除队友文件/改共享env。新运行待progress确认。四旧闭环calibrated replay入口已321回归/编译过，明确重放旧命令、不重新高生成/物理或称校准泛化成功，下一独立GPU。
+
+- **2026-10-10 21:46 CST / Codex RECOVERY-USABLE：** 两路final生成v1均在首原视频读取前退出，0生成；启动wrapper漏source既有`activate_a800_training.sh`，torchcodec加载报缺libnppicc.so.12，不是权重或数据错误。GPU0/1已空，原run manifest/log/cache保留；拟同a260源/同权重数据独立v2输出仅补已有库路径，先CPU导入decoder再重启。不改共享env/原失败源，也不以无progress称仍在加载。校准replay入口与新鲜session factory仅本地实现、321回归通过，GPU验收待。
+
+- **2026-10-10 21:43 CST / Codex RECOVERY-USABLE：** final360大权重已在A800重新逐字节SHA核对89907ea7…c83a7，训练八卡全部释放。新Git冻源`src/postfit-final-generation-v1`=a260cc75；lc3 GPU0/1分别实启`postfit-final-noninitial-v1`与`postfit-final-initial-v1`，各固定100正常＋42恢复，验证已完成360结果与原训练票后加载。模型/数据只读、独立六类cache、无checkpoint挑选/新优化/物理控制；待实际生成结果。校准会话320本地测试过，不等于GPU/闭环部署通过；后续实测时序接线仍待。
+
 - **2026-10-10 21:41 CST / Codex RECOVERY-USABLE：** H1 v2真实终态completed_finite_schedule/360更新完成，仅planner326参数；冻结前后均0f7aede8…a966。固定final360 checkpoint89907ea7…c83a7/result bc5c9d40…96153f，最终新DEV CE0.0000298773（−95.58%）、原初态0.00814818（+5.43%）、非初始0.000324787（+13.85%）/带反馈0.000347442（+22.31%）；必须实际生成核遗忘。lc3八卡已实空，预登记同100非初始＋42DEV与另100初态保留两路final生成，配置已固定真实完成权重，不选中间checkpoint；尚未提交。旧父142/142结果与本次训练轻量日志迁本地，不下载大权重。
 
 - **2026-10-10 21:39 CST / Codex RECOVERY-USABLE：** 高层已真实360/360有限更新，最终保存/收尾尚在途（latest仍350），不提前称训练终态。新增显式GRASP-only校准pilot会话与observer封装，固定原温度/.85/两fresh检查，其他技能UNKNOWN/0、known_previous_outcome始终UNKNOWN，估计不写世界事实/成功终止；7模型身份与每任务/attempt独立，旧shadow默认不变。8新增/24定向/320恢复回归（含旧5重复夹具）、py_compile与diff检查通过；只本地实现，未部署GPU/仿真，待最终权重生成验收和真实时序与闭环。新入口`recovery_calibrated_observer.py`，启动器仍不自动允许此模式。

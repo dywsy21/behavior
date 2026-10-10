@@ -45,6 +45,21 @@ def restore(identity,plans,rows,tick):
 
 
 class HandoverTests(unittest.TestCase):
+    def test_explicit_calibrated_factory_is_fresh_and_bound(self):
+        from g05.utils.memlite_causal_session import CausalPlannerSession
+        from recovery_calibrated_observer import GraspCalibrationBinding,CalibratedGraspPilotSession
+        i,plans,rows=fixture();projection=teacher_prefix_projection(plans,rows,at_control_step=32)
+        binding=GraspCalibrationBinding(i.models,'0'*64,1.77)
+        session,_=restore_teacher_prefix(i,projection,source_task='some_task',source_instance=3,
+            session_factory=lambda identity:CalibratedGraspPilotSession(identity,calibration=binding))
+        self.assertEqual(session.observer_feedback_mode,'calibrated_grasp_estimate_pilot_v1')
+        self.assertEqual(session.feedback.control_step,32)
+        self.assertEqual(len(session.feedback._proposals),0)
+        for factory in (lambda _:session,lambda _:CausalPlannerSession(replace(i,episode='foreign')),
+                        lambda _:object()):
+            with self.assertRaises(ValueError):restore_teacher_prefix(i,projection,
+                source_task='some_task',source_instance=3,session_factory=factory)
+
     def test_predecision_never_restores_current_target_or_future_memory(self):
         i,plans,rows=fixture();s,receipt,projection=restore(i,plans,rows,32)
         self.assertEqual(s.feedback.attempt,1);self.assertEqual(s.feedback.started,0)

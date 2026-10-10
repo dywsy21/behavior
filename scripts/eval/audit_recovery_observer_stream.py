@@ -1,7 +1,9 @@
-"""Fixed observer on real historical observations; predictions remain shadow.
+"""Fixed observer on real historical observations; no new actor/control calls.
 
 The high commands and actual ACKs are replayed, NOT regenerated or rewritten.
 This is TRAIN engineering diagnostics, never calibration or a new rollout.
+Default feedback remains shadow. Explicit pinned calibration enables only a
+GRASP estimate replay; historical commands/ACKs and known outcomes stay fixed.
 """
 import argparse
 from dataclasses import replace
@@ -26,7 +28,15 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('fit-config','fit','inputs','output'):p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--inputs-sha256',required=True)
+    p.add_argument('--calibration',type=Path)
+    p.add_argument('--calibration-sha256')
     a=p.parse_args();cfg=json.loads(a.fit_config.read_text());root=Path(cfg['root'])
+    if bool(a.calibration)!=bool(a.calibration_sha256):
+        raise ValueError('Both the immutable calibration receipt and its SHA are required')
+    if a.calibration is not None:
+        from recovery_postfit import calibration_gate
+        if file_sha(a.calibration)!=a.calibration_sha256:raise ValueError('Calibration receipt changed')
+        calibration_gate(json.loads(a.calibration.read_text()))
     fit=json.loads((a.fit/'result.json').read_text());fixture=json.loads((a.inputs/'manifest.json').read_text())
     if (a.output.exists() or subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip()
             or fit['status']!='observer_adapter_fit_complete_not_deployed' or fit['config_sha256']!=file_sha(a.fit_config)
@@ -69,6 +79,7 @@ def main():
     if file_sha(config['stats_path'])!=cfg['stats_sha256']:raise ValueError('Observer normalization drift')
     a.output.mkdir(parents=True)
     status=dict(status='loading',pid=os.getpid(),optimizer_updates=0,new_physical_controls=0,runtime_deployed=False,
+        calibration_sha256=a.calibration_sha256,commands_regenerated=0,
         selected_observer_sha256=fit['selected_checkpoint_sha256'],inputs_sha256=a.inputs_sha256,
         fit_result_sha256=file_sha(a.fit/'result.json'),fit_config_sha256=file_sha(a.fit_config),
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip())
@@ -98,14 +109,35 @@ def main():
             raise ValueError('Fixture has another observer backbone or normalization')
         models=replace(old,observer_adapter=fit['selected_checkpoint_sha256'])
         identity=CausalSessionIdentity('observer-stream-shadow',row['task'],row['instance'],row['job_id'],models)
-        session,_=restore_teacher_prefix(identity,row['issued_prefix'],source_task=row['task'],source_instance=row['instance'])
+        options={};observer_class=BoundObserverShadowInference
+        if a.calibration is not None:
+            from recovery_calibrated_observer import (load_grasp_calibration,
+                CalibratedGraspPilotSession,BoundCalibratedGraspInference)
+            calibration=load_grasp_calibration(a.calibration,a.calibration_sha256,models)
+            options['session_factory']=lambda i:CalibratedGraspPilotSession(i,calibration=calibration)
+            observer_class=BoundCalibratedGraspInference
+        session,_=restore_teacher_prefix(identity,row['issued_prefix'],source_task=row['task'],source_instance=row['instance'],**options)
         clock=AppliedActionClock(session)
-        observer=BoundObserverShadowInference(policy,processor,config,head,session,
+        observer=observer_class(policy,processor,config,head,session,
             loaded_backbone_sha256=models.observer_backbone,loaded_adapter_sha256=models.observer_adapter)
         records={r['control_step']:r for r in row['records']};consumed=0;checks=[]
         def check(phase):
             step=session.feedback.control_step
             result=observer.check(identity,load_observation(a.inputs/row['directory'],records[step]))
+            # Do not generate a new command or alter the recorded actions in
+            # this diagnostic. Also check the calibrated numerical path from
+            # independently logged raw logits, including unsupported members.
+            if a.calibration is not None and 'members' in result:
+                from recovery_calibrated_observer import calibrated_prediction
+                members=json.loads(session.installed['semantic_bundle'])
+                expected=[calibrated_prediction(v['raw_logits'],temperature=calibration.temperature,
+                    verb=members[v['member']]['verb']) for v in result['members']]
+                actual=session.feedback._proposals[-1][1]
+                for prediction,value in zip(expected,actual):
+                    outcome=prediction['outcome'] if prediction['confidence']>=.85 else 'UNKNOWN'
+                    if value!=dict(outcome=outcome,confidence=prediction['confidence'],calibrated=True):
+                        raise ValueError('Calibrated stream differs from raw-logit projection')
+                result['estimated_feedback']=session.feedback.projection(identity.feedback_identity(),step)
             record=dict(case=row['case'],seed=row['seed'],phase=phase,issued_goal=session.low_goal(identity),**result)
             checks.append(record)
             with (a.output/'checks.jsonl').open('a') as stream:stream.write(json.dumps(record)+'\n')
@@ -116,7 +148,19 @@ def main():
                 result=entry['result']
                 if not result['reused']:
                     token,causal=session.begin_planning(identity,step)
-                    if causal!=result['causal_input']:raise ValueError('Shadow result changed original planner input')
+                    original=result['causal_input']
+                    if a.calibration is None:
+                        if causal!=original:raise ValueError('Shadow result changed original planner input')
+                    else:
+                        if {k:v for k,v in causal.items() if k!='execution_feedback'}!={
+                                k:v for k,v in original.items() if k!='execution_feedback'}:
+                            raise ValueError('Calibration changed memory, task, known outcome or issued intent')
+                        # Counters/attempt identity must remain identical;
+                        # only estimated outcomes and their confidences differ.
+                        estimated=json.loads(causal['execution_feedback']);old_feedback=json.loads(original['execution_feedback'])
+                        for key in ('estimated_member_outcomes','estimated_bundle_outcome'):
+                            estimated.pop(key);old_feedback.pop(key)
+                        if estimated!=old_feedback:raise ValueError('Calibration changed actual execution counters')
                     session.stage(identity,token,result['event']);session.commit(identity,token)
                 if session.low_goal(identity)!=result['goal']:raise ValueError('Recorded command mismatch')
                 check('after_recorded_plan')
@@ -130,15 +174,18 @@ def main():
             else:raise ValueError('Unknown historical event')
         if not session.closed or consumed!=len(row['actual_acks']):raise ValueError('Unclosed or omitted actual controls')
         results.append(dict(case=row['case'],seed=row['seed'],actual_source_controls=consumed,
-            real_checks=sum(r['status']=='shadow_only_observer_check' for r in checks),
+            real_checks=sum(r['status'] in ('shadow_only_observer_check','calibrated_grasp_pilot_observer_check') for r in checks),
             max_history=max((len(m['context_steps']) for r in checks for m in r.get('members',[])),default=0),
-            planner_inputs_exactly_reproduced_with_unknown_zero=True))
-        atomic_json(a.output/'status.json',dict(status,status='streaming_shadow',completed=len(results)))
+            planner_inputs_exactly_reproduced_with_unknown_zero=a.calibration is None,
+            recorded_commands_unchanged=True,non_feedback_causal_inputs_unchanged=True))
+        atomic_json(a.output/'status.json',dict(status,status=(
+            'streaming_shadow' if a.calibration is None else 'streaming_calibrated_grasp_replay'),completed=len(results)))
     if (parameter_digest(policy,frozen=True)!=before
             or any(not torch.equal(head.state_dict()[n].detach().cpu(),v) for n,v in saved['observer_state'].items())
             or any(p.grad is not None or p.requires_grad for m in (policy,head) for p in m.parameters())):
         raise ValueError('Read-only observer mutated parameters or gradients')
-    atomic_json(a.output/'result.json',dict(status,status='completed_fixed_observer_stream_shadow_not_deployed',
+    terminal='completed_fixed_observer_stream_shadow_not_deployed' if a.calibration is None else 'completed_calibrated_grasp_stream_replay_not_deployed'
+    atomic_json(a.output/'result.json',dict(status,status=terminal,
         episodes=results,checks_sha256=file_sha(a.output/'checks.jsonl'),seconds=time.monotonic()-started,
         frozen_before_sha256=before,frozen_after_sha256=before,planner_predictions_entered=0,
         independent_accuracy_not_measured=True,calibration_not_performed=True,whole_task_sr=False))

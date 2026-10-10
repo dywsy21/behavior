@@ -61,7 +61,8 @@ def teacher_prefix_projection(plans, rows, *, at_control_step):
         physical_outcome_input=False)
 
 
-def restore_teacher_prefix(identity, projection, *, source_task, source_instance):
+def restore_teacher_prefix(identity, projection, *, source_task, source_instance,
+                           session_factory=CausalPlannerSession):
     """Create a NEW episode-local session; never mutate an existing session.
 
     Model identity names the new serving models. Provenance explicitly says
@@ -91,7 +92,11 @@ def restore_teacher_prefix(identity, projection, *, source_task, source_instance
         if (not isinstance(row['action_sha256'],str) or len(row['action_sha256'])!=64
                 or any(c not in '0123456789abcdef' for c in row['action_sha256'])):
             raise ValueError('Missing applied-action identity')
-    session=CausalPlannerSession(identity)
+    session=session_factory(identity)
+    if (not isinstance(session,CausalPlannerSession) or session.identity!=identity
+            or session.revision!=0 or session.installed is not None or session.closed
+            or session.feedback.control_step!=0 or session.request is not None):
+        raise ValueError('A fresh matching causal session is required for handover')
     for row in events:
         if (set(row)!={'control_step','context_id','issued_by','memory_before','previous_intent','event'}
                 or row['memory_before']!=session.memory or row['previous_intent']!=session.previous_intent):

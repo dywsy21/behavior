@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 21:43 CST：H1新反馈终态与固定生成验收
+
+- A800共享根`/data/workspace/wsy/behavior2026`，`runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2`已完成360/360；final为`checkpoints/step_00000360_save_0008.pt`（SHA89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7）、result SHA bc5c9d40bc218e8acae7f946f67e66d563410ce676d43a45916bb3e94896153f。训练GPU已释放，原失败v1仍保留。
+- 生成冻结源`src/postfit-final-generation-v1`（a260cc75）；lc3 GPU0/1 tmux `postfit-final-noninitial-v1` / `postfit-final-initial-v1`，输出同run根`H1-postfit-final-noninitial-v1` / `H1-postfit-final-initial-v1`，独立同名`.runtime`缓存与无H1前缀tmux名`.log`。两路刚提交、不是已通过。
+- 父对照`H1-postfit-parent-noninitial-v1`已完成142条（99/100正常、40/42恢复exact），没有物理控制；轻量文件与本次训练日志已取本地对应`artifacts/recovery-heterogeneous-20261010/`，大权重留服务器。两条旧RL原生边界全20页同artifact根，5末段窗仅owner审核、尚未机器准入训练。
+
 ## 2026-10-10 21:24 CST：RTX旧RL成功片段的CPU证据复核
 
 - 原v7两个OPEN TRAIN：异质run根`short-rl-wash169-continuation-v7-episode-000010/train-0006-44243`（v25/896控）及`…episode-000012/train-0008-46261`（v27/869控）；0新仿真/优化。旧86ea源码生成`rl-success-wash169-round{6,8}-audit-v1`，1765逐控reward/ACK及113无损观测通过，两总览/audit已取本地同名artifact并root亲审。
