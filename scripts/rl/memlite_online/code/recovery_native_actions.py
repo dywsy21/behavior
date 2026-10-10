@@ -166,3 +166,22 @@ class NativeLearnerActionReader:
         if sha!=row['actions_sha256']:raise ValueError('Native target bytes changed')
         observation=load_observation(directory/'observations',row['observation'])
         return observation,action,dict(task=row['task'].replace('_',' '),parent_goal=row['parent_goal'],semantic_bundle=row['semantic_bundle'])
+
+
+def native_low_raw(reader,index,config):
+    """Use the inherited low processor; only current state/goal and raw23."""
+    import torch
+    from recovery_causal_inference import observable_raw
+    from g05.data.memlite_stage1_labels import projection
+    from g05.utils.memlite_skill_protocol import parse_active_skills_semantic_json,semantic_active_skills_text
+    observation,action,goal=reader.read(index)
+    raw=observable_raw(observation,goal['task'],config)
+    semantic=goal['semantic_bundle']
+    segment=dict(parent=goal['parent_goal'],semantic=semantic,parent_supervised=False,
+        text=semantic_active_skills_text(parse_active_skills_semantic_json(semantic)))
+    raw.update(idx=index,action_is_pad=torch.zeros(32,dtype=torch.bool),
+        model_projection=projection(segment,branch='low',task_name=goal['task'],
+            previous_intent='None',previous_parent='none',history=[]))
+    raw['action']={m['key']:torch.from_numpy(action[:,m['start_index']:m['start_index']+m['raw_shape']].copy())
+        for m in config['raw_shape']['action']}
+    return raw

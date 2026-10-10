@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_native_actions import checked_action_window
+from recovery_native_actions import checked_action_window,native_low_raw
 from recovery_corpus import digest
 
 
@@ -48,6 +48,27 @@ class NativeLearnerActionTests(unittest.TestCase):
         with self.assertRaises(ValueError):self.read(rows+[deepcopy(rows[-1])])
         rows[0]['control_step']=101.
         with self.assertRaises(ValueError):self.read(rows)
+
+    def test_raw_low_projection_only_current_observation_and_same_skill(self):
+        import types
+        import torch
+        from recovery_corpus import canonical
+        observation=dict(proprio=np.zeros(61,dtype=np.float32),images={k:np.zeros((3,32,32),dtype=np.uint8)
+            for k in ('head_rgb','left_wrist_rgb','right_wrist_rgb')})
+        goal=dict(task='some task',parent_goal='Task goal: some task',semantic_bundle=canonical([
+            dict(verb='GRASP',target='cup',source='',destination='',target_part='',arm='LEFT',unbound_relation='')]))
+        action=np.arange(32*23,dtype=np.float32).reshape(32,23)
+        reader=types.SimpleNamespace(read=lambda _: (observation,action,goal))
+        config=dict(raw_shape=dict(state=[dict(key='actual_state',start_index=0,raw_shape=61)],
+            action=[dict(key='actual_controls',start_index=0,raw_shape=23)]))
+        raw=native_low_raw(reader,0,config)
+        self.assertEqual(raw['model_projection']['memlite_branch'],'low')
+        self.assertTrue(torch.equal(raw['action']['actual_controls'],torch.from_numpy(action)))
+        self.assertFalse(raw['action_is_pad'].any())
+        for forbidden in ('reward','physical_evidence','source_policy_sha256','source_group','outcome_target'):
+            self.assertNotIn(forbidden,raw)
+        reader.read=lambda _: (dict(observation,reward=1),action,goal)
+        with self.assertRaises(ValueError):native_low_raw(reader,0,config)
 
 
 if __name__=='__main__':unittest.main()
