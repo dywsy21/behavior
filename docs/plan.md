@@ -12,6 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 21:23 CST / Codex RECOVERY-USABLE：** 补原生RL边界审核工具`review_short_skill_action_windows.py`：只核真实s[t]与ACK t+1…t+32，保留短尾/停滞元数据、不造dense proprio、不自动准入；逐原无损边界三视角全量渲染、重新核每控reward并固定start/controls/result SHA。三新时钟/缺口/终止/串policy回归及312恢复suite（含旧重复夹具）、py_compile通过；尚未在RTX运行新全图材料。H1 v2到200/360（保存/eval在途），父生成55/142正常前段全exact；仍不把部分生成与CE当物理成功率。
+
+- **2026-10-10 21:21 CST / Codex RECOVERY-USABLE：** 两旧OPEN训练成功轨迹1765实控/113无损边界逐ACK、奖惩、冷起点和观测SHA全复验通过，root已亲看两总览/30相机面板；白色目标洗衣机门末段进一步打开，最终directed_fraction .36949/.39351、原连续6控门通过。此前存在数百控几乎不变的平台（.24162/.29672），且869/896控远大于原317控EVAL窗，因此不是可靠短窗RL收益或整段优质BC。原记录缺逐控proprio、仅16控边界有真实RGB/proprio；不得补造dense状态来套旧archive schema。下一只在真实边界＋连续实际32动作上准备候选及全原图复核，再决定是否训练。证据RTX异质根`rl-success-wash169-round{6,8}-audit-v1`，audit SHA0b001e69…ffc2f/4bd97ba5…4c718，本地同名artifact；0新标签/优化。H1 v2实际189/360、父生成43/142前段正常均exact，不代表恢复42或完整SR。
+
+- **2026-10-10 21:17 CST / Codex RECOVERY-USABLE：** H1 v2实际147/360、step100 DEV CE0.0000320549/原初态0.00788019，未见非有限/后端错；lc3父自由生成13/142已真实产出、均为前段正常样本，不能推后续42恢复准确率。A/C按“RL轨迹洗数据”既有授权先只读核旧v7两个真实成功OPEN TRAIN（round6/seed44243/policy25和round8/46261/policy27，实际896+869控）；在原RTX冻结86ea源以现成`--diagnostic`入口CPU实启逐控ACK/物理reward/真实历史/原图审核，tmux `rl-success-two-open-audit-v1`，无新增仿真/优化。所有其余失败及36完成TRAIN分母保留，样本尚未人工批准/构造低层SFT，不能把晚成功之前全部停滞动作自动当优质专家。
+
+- **2026-10-10 21:12 CST / Codex RECOVERY-USABLE：** 父生成首launcher在GPU/模型加载前因校验进程未设置PYTHONPATH而误找到旧g05安装、缺`memlite_causal_feedback`退出，原`.log`保留且0生成。已只修启动环境为db1f071a/src，再同名tmux提交、独立`.attempt2.log`（无覆盖既有run数据），没有改共享env/源码/训练。lc1 H1 v2未受影响；父生成仍待真实行输出，不沿用“模型已加载”误判。
+
+- **2026-10-10 21:11 CST / Codex RECOVERY-USABLE：** H1 v2到81/360，首step50权重`step_00000050_save_0001.pt` SHA4b5a7429…56988已原子发布；同42DEV CE从0.000676273到0.0000337088（约−95.02%），100原始初态0.00772860→0.00776179（+0.43%），两100非初始scope近持平，不把teacher-forcing CE当生成或物理改善。lc3 GPU0已实启父模型142条自由生成，冻结源`src/postfit-generation-parent-v1`=db1f071a，tmux `postfit-parent-noninitial-v1`，run异质根`H1-postfit-parent-noninitial-v1`；已复核a94票与模型/数据SHA，独立六类runtime-cache，模型加载中。只父模型、无候选SHA伪造/中间选择；原lc1训练/共享env/队友不动。
+
 - **2026-10-10 21:10 CST / Codex RECOVERY-USABLE：** lc1 H1 v2继续，lc3以同一已连VPN新建SSH控制d并只读确认八卡全空；没有重登VPN/改密码/触碰lc2。准备单卡父a74的新42恢复DEV＋原100非初始状态target-free生成（新Git配置，候选权重尚不存在，不填假SHA/不做中间ckpt选择）；与H1八卡训练分节点并行，只有冻结权重/输入/独立cache，尚未提交GPU。旧RL机制报告记录样本权重而非梯度；下一先高层生成验收和实闭环，再有证据地改低RL。
 
 - **2026-10-10 21:07 CST / Codex RECOVERY-USABLE：** H1 v2实际50/360更新（首反向冷编译102.97s，随后约3–4s/步），8卡/real_samples8/累计1微批、有限梯度，已越过原崩溃点；更新前342 heldout正常完成，当前首50步保存/对照eval在途，不以训练loss下降称策略提升。W&B远端API确认run `af2c77329e7b` running、准确2695源/仅326planner参数、已收到train/update25；链接`https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/af2c77329e7b`。旧v7样本质量审计已固化`docs/infra/results/2026-10-10-short-rl-v7-loss-balance.json`，62全部episode保留、只36已消费TRAIN/1046chunks计入，12轮GAE复算全符；均分episode仍会不同chunk占比，但改成等episode平均是改变目标而非已证错误修复，尚不据此改RL/承诺收益。

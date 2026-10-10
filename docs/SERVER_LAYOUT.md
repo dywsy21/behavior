@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 21:11 CST：H1首权重已落盘，lc3并行父模型生成
+
+- lc1 `H1-postfit-feedback-fit-v2`实际81/360；首checkpoint `step_00000050_save_0001.pt` SHA4b5a7429…56988/同名JSON/latest.json，原始updates/evaluations分别保留。W&B run af2c77329e7b已远端API核running/准确源码与326高层参数。
+- lc3新只读资源检查全空后GPU0启动tmux `postfit-parent-noninitial-v1`，冻结共享源`src/postfit-generation-parent-v1`=db1f071a；run `runs/recovery_heterogeneous_20261010/H1-postfit-parent-noninitial-v1`与同名`.log`/`.runtime/runtime-cache`。父a74/真实42DEV与原100非初始状态，0训练/0物理、结果待。本地lc3控制socket `/home/wsy/.ssh/lc3-recovery-20261010d.sock`，持久SSH exec session51297；沿用当前VPN、未重新登录VPN或写入凭据。
+
 ## 2026-10-10 20:59 CST：rank缓存修复实测通过，H1 v2启动
 
 - 新冻结源码`/data/workspace/wsy/behavior2026/src/recovery-cuda-startup-v1`=2695dc33；两纯kernel run `runs/recovery_heterogeneous_20261010/cuda-cold-{shared,rank}-probe-v1`原始每rank JSON/result/log/cache保留，shared7/8失败、rank8/8通过，0训练。实际torch2.7.1+cu128/triton3.3.1，未改shared env。
