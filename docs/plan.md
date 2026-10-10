@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 17:02 CST / Codex RECOVERY-USABLE：** 联合bridge八新回归/全254恢复测试通过；额外宽glob误扫旧`test_memlite_causal_data/runtime`因本地缺scripts.data/pytest失败，精确session/feedback入口复核，不能称全仓通过。新joint配置0f82ba84/模型绑定d1c8deb5，所有计划/动作/ACK日志关联真实观察SHA、独立episode和原高低权重；模型/历史CPU真文件验收及GPU物理仍待。control复验继续、v11原规则继续，无新增CAL读/新RL更新/队友资源变动。
+
+- **2026-10-10 16:59 CST / Codex RECOVERY-USABLE：** 高低联合只读接线已本地实现：`causal_skill_probe.py`绑定真实历史/两个recovery起点，原高低normalizer/7 SHA分开；既有service显式opt-in、新source才加载冻结H1/a74和低0c52。每job独立memory/128实际ACK控重规划，raw23逐条对应、post-state t+1→action t显式投影；物理真值/未来教师/observer预测不入actor，原技能只评测终点、绝不用于新意图的RL。两case例外只在只读调度，不放宽RL三机制门；首253恢复检查在验，尚未真实GPU/联合仿真。预登记101/137两已有复验subset、radio/wash四条，placement无已发历史故排除；待当前两臂复验退出再运行，不热改现役。v11原规则训练继续，不以早期曲线选模型。
+
+- **2026-10-10 16:52 CST / Codex RECOVERY-USABLE：** v11已24真实更新/W&B `baae68b19da0`，zero-adapter/192专属LoRA梯度门通过，四类实际CE质量各.25（weights f1df02eb），非高planner或低actor训练；首DEV曲线待。低control复验服务ready、三worker config-bound HELLO全部通过后才加载scene，未隐去46次仅网络等待、未重跑物理样本。并行准备高＋低只读联合接管：仅有真实已发历史的radio/wash，原奖励只作固定目标评分、决不把改变意图后的评分拿去RL；按128实际ACK控重规划，observer未ready保持UNKNOWN/0。不改现役任何源，联合尚未实现/运行。
+
 - **2026-10-10 16:49 CST / Codex RECOVERY-USABLE：** 246恢复回归/源码干净门后，6c7a0dfc已Git部署两端新`later-action-replication-v1`；lc1 GPU2 `later-action-control-replication-v1`/18976加载，RTX0–2三`later-action-control-{radio155,wash169,tripod129}-replication-v1`先等config-bound HELLO，不抢跑scene。control配置e02171c7/candidate fb8a5060，两臂仅权重/arm不同；candidate尚未提交。全部既有作业已先核退出/RTX4–7四队友不动；v11 GPU0继续载入，仍待真实更新。这是固定权重只读复验，不是新的RL训练或已获可靠提升。
 
 - **2026-10-10 16:48 CST / Codex RECOVERY-USABLE：** v11类均衡观察器已在lc1实查空闲GPU0提交，冻结`src/observer-v11-outcome-balance-v1`/2a147313，配置69912986，run `H0-observer-v11-outcome-balance-v1`/同名log/cache/tmux；当前载入，尚未宣称optimizer更新。与此同时预登记只读低层复验：同两200步终态、原三TRAIN起点/原时限/门，八个新FM seed101/137/173/211/257/307/359/419、每臂24，不依据中间结果选种子/权重；旧四seed不混入本块主要结论，仍非独立实例泛化。两个`a800_later_action_replication_*_v1.json`与不变性测试已准备，待新冻源部署；计划lc1 GPU2+RTX0–2，旧RL/lc2/RTX队友4–7不动。

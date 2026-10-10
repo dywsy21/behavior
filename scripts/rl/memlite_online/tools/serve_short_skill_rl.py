@@ -26,6 +26,7 @@ from skill_rounds import SkillRounds,SkillEvaluationRounds
 from skill_cold_worker import validate_baseline_acceptance,finished_workers
 from recovery_gpu_ownership import declared_collection_peers
 from wire import packb,unpackb
+from causal_skill_probe import load_causal_probe_metadata,CausalSkillProbe
 
 
 async def main():
@@ -34,6 +35,7 @@ async def main():
     ap.add_argument('--port',type=int,required=True);a=ap.parse_args()
     cfg=json.loads(a.config.read_text());root=Path(cfg['root'])
     evaluation_only=read_only_recipe(cfg)
+    causal_metadata=load_causal_probe_metadata(cfg,REPO)
     if a.output.exists() or subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
         raise ValueError('Use a new run and clean frozen source')
     gpu=os.environ.get('CUDA_VISIBLE_DEVICES')
@@ -44,7 +46,7 @@ async def main():
     declared_collection_peers(cfg.get('collection_peers',[]))
     training_multiplier=cfg.get('training_rollout_multiplier',1)
     for case in cases.values():rollout_end_control(case,'train',training_multiplier)
-    if (len({json.loads(v['semantic_bundle'])[0]['verb'] for v in cases.values()})<3
+    if (len({json.loads(v['semantic_bundle'])[0]['verb'] for v in cases.values()})<(2 if causal_metadata else 3)
             or any(v['original_split']!='train' or v['recovery_split']!='train' for v in cases.values())):
         raise ValueError('Need three admitted TRAIN skill mechanisms, never DEV/public test')
     if file_sha(root/cfg['model']['path'])!=cfg['model']['sha256']:raise ValueError('Changed SFT parent')
@@ -63,6 +65,10 @@ async def main():
         parent_sha256=cfg['model']['sha256'],reward_protocol='skill_aligned_v1',optimizer_updates=0,
         action_format='native_real23_model27_pad_7_8_17_18',high_layer_fixed=True,
         protected_progress_contract_tested=False,whole_task_sr_evaluated=False)
+    if causal_metadata:
+        receipt.update(high_layer_fixed=False,high_weights_frozen=True,observer_predictions=0,
+            observer_feedback_mode='shadow_unknown_v1',scoring='original_restored_skill_endpoint_not_RL_reward',
+            joint_model_identity=asdict(causal_metadata['identities']))
     atomic_json(a.output/'status.json',receipt)
     names=json.loads((root/cfg['expert_release']/'manifest.json').read_text())['task_names']
     config=configuration(root,'low',names)
@@ -92,7 +98,30 @@ async def main():
     mod=module_from_spec(spec);spec.loader.exec_module(mod)
     frozen_before=mod.parameter_digest(policy,frozen=True)
     actor_before=mod.parameter_digest(policy,frozen=False) if evaluation_only else None
-    rounds=(SkillEvaluationRounds(cases,cfg['evaluation_seeds'],run=str(a.output)) if evaluation_only else
+    causal=None;high_policy=None
+    if causal_metadata:
+        from recovery_causal_inference import CausalPlannerInference
+        from g05.models.kv_cache import SparseKVCache
+        from sparse_cache import indexed_cache_freeze
+        high_config=configuration(root,'high',names)
+        pinned=causal_metadata['models'];identities=causal_metadata['identities']
+        if file_sha(high_config['stats_path'])!=identities.planner_normalization:
+            raise ValueError('Joint planner normalization differs from training')
+        saved=torch.load(root/pinned['planner']['path'],map_location='cpu',mmap=True,weights_only=False)
+        high_policy,high_restoration=restore_model(high_config,'high',state=saved['model_state_dict'])
+        del saved;gc.collect();high_policy.requires_grad_(False).eval().cuda()
+        high_before=mod.parameter_digest(high_policy,frozen=True)
+        planner=CausalPlannerInference(high_policy,make_processor(high_config,False),high_config,
+            models=identities,loaded_planner_sha256=pinned['planner']['sha256'],
+            cache_context=lambda:indexed_cache_freeze(high_policy.model.ar_helper,SparseKVCache))
+        def log_causal(kind,value):
+            with (a.output/'causal-events.jsonl').open('a') as stream:
+                stream.write(json.dumps(dict(kind=kind,**value))+'\n')
+        causal=CausalSkillProbe(cases,causal_metadata['fixture'],identities,planner,adapter,log_event=log_causal)
+        receipt.update(high_restoration=high_restoration,high_before_sha256=high_before,
+            observer_weights_hashed_but_not_loaded_or_inferred=True)
+    rounds=(SkillEvaluationRounds(cases,cfg['evaluation_seeds'],run=str(a.output),
+        allow_two_logged_cases=causal is not None) if evaluation_only else
         SkillRounds(cases,cfg['evaluation_seeds'],rounds=cfg['learning_rounds'],run=str(a.output),
         seed_round_offset=cfg.get('training_seed_round_offset',0),
         evaluation_interval_updates=cfg.get('evaluation_interval_updates',1)))
@@ -119,6 +148,7 @@ async def main():
             optimizer_updates=trainer.update_count,active_episodes=len(sessions),
             baseline_approved=baseline_approved,finish_acknowledged=sorted(finish_acknowledged),
             jobs=rounds.jobs,wandb_url=wb.url,updated_unix=time.time())
+        if causal is not None:receipt['causal_planner_audit']=causal.audit()
         atomic_json(a.output/'status.json',receipt)
     def goal(case):return {k:case[k] for k in ('task','parent_goal','semantic_bundle')}
 
@@ -126,7 +156,8 @@ async def main():
     def act(session,job,observation):
         nonlocal next_eval_id
         if evaluation_only and job['phase']!='evaluation':raise ValueError('Read-only actor cannot sample TRAIN')
-        target=goal(session.case);prepared,anchor=adapter.prepare(observation,target);batch=adapter.collate([prepared])
+        target=causal.goal(session,job,observation) if causal is not None else goal(session.case)
+        prepared,anchor=adapter.prepare(observation,target);batch=adapter.collate([prepared])
         chunk=(session.rollout.step-session.case['start_control'])//16
         with torch.random.fork_rng(devices=[0]):
             torch.manual_seed(job['seed']+1000003*chunk)
@@ -147,6 +178,7 @@ async def main():
                     eid=next_eval_id;next_eval_id+=1;value=0.
         raw=adapter.postprocess(actions,batch,anchor)
         session.emit(raw,experience_id=eid,old_value=value)
+        if causal is not None:causal.offer(session,job,raw,session.rollout.pending['max_controls'])
         return dict(action_chunk=raw,experience_id=eid,old_value=value,
             max_controls=session.rollout.pending['max_controls'],identity=asdict(session.identity),
             control_step=session.rollout.step,policy_version=version,policy_sha256=policy_sha)
@@ -216,6 +248,7 @@ async def main():
                             policy_version=version,policy_sha256=policy_sha,initial_evidence=request['initial_evidence'],
                             phase=current_job['phase'],training_rollout_multiplier=training_multiplier)
                         sessions[current_job['id']]=session
+                        if causal is not None:causal.begin(session,current_job)
                         response=dict(status='begun',identity=asdict(session.identity),policy_version=version,policy_sha256=policy_sha)
                     elif op=='action':
                         if current_job is None:raise ValueError('No active job')
@@ -224,6 +257,7 @@ async def main():
                     elif op=='ack':
                         if current_job is None:raise ValueError('No active job')
                         session=sessions[current_job['id']];observation,rewards=session.ack(request)
+                        if causal is not None:causal.acknowledge(session,current_job,request['controls'])
                         value=await asyncio.to_thread(next_value,session,current_job,observation)
                         transition=session.finish_ack(value)
                         with (a.output/'reward-ledger.jsonl').open('a') as stream:
@@ -231,6 +265,7 @@ async def main():
                         response=dict(status='acknowledged',ended=session.rollout.ended,control_step=session.rollout.step,
                             final_reward=rewards[-1],identity=asdict(session.identity),policy_version=version,policy_sha256=policy_sha)
                         if session.rollout.ended:
+                            if causal is not None:causal.close(session,current_job)
                             targets=session.training_targets() if current_job['phase']=='train' else []
                             result=dict(job=current_job,success=session.last['skill_success'],outcome=session.last['outcome'],
                                 actual_controls=session.rollout.step-session.case['start_control'],
@@ -273,6 +308,12 @@ async def main():
                 or trainer.experiences or any(p.grad is not None for p in policy.parameters())):
             fatal[0]='Read-only comparison changed actor or created training state'
         receipt.update(actor_before_sha256=actor_before,actor_after_sha256=actor_after)
+    if causal is not None:
+        high_after=mod.parameter_digest(high_policy,frozen=True)
+        receipt.update(high_after_sha256=high_after,causal_planner_audit=causal.audit())
+        if (high_after!=high_before or any(p.grad is not None for p in high_policy.parameters())
+                or causal.active or len(causal.completed)!=len(cases)*len(cfg['evaluation_seeds'])):
+            fatal[0]=fatal[0] or 'Joint planner changed, accumulated gradients or left incomplete episodes'
     receipt.update(status='failed' if fatal[0] else ('completed_read_only_skill_probes' if evaluation_only
         else 'completed_training_window_not_promoted'),error=fatal[0],
         frozen_before_sha256=frozen_before,frozen_after_sha256=frozen_after,

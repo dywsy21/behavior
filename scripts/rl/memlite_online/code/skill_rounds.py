@@ -70,9 +70,22 @@ class SkillRounds:
 
 class SkillEvaluationRounds(SkillRounds):
     """One immutable-checkpoint probe set; there is no route to TRAIN."""
-    def __init__(self, cases, eval_seeds, *, run):
-        super().__init__(cases, eval_seeds, rounds=1, run=run)
-        self.limit = 0
+    def __init__(self, cases, eval_seeds, *, run, allow_two_logged_cases=False):
+        # Joint high/low handover excludes placement, whose source lacks an
+        # actually issued command trace. This opt-in never applies to PPO.
+        if type(allow_two_logged_cases) is not bool:
+            raise ValueError('Explicit read-only logged-handover opt-in required')
+        if not allow_two_logged_cases:
+            super().__init__(cases, eval_seeds, rounds=1, run=run)
+            self.limit=0
+            return
+        if len(cases)<2 or len(set(cases))!=len(cases):
+            raise ValueError('At least two distinct logged read-only handovers required')
+        if not eval_seeds or len(set(eval_seeds))!=len(eval_seeds) or any(type(s) is not int for s in eval_seeds):
+            raise ValueError('Pin distinct read-only probe seeds')
+        self.seed_round_offset=0;self.evaluation_interval_updates=1
+        self.cases=sorted(cases);self.eval_seeds=eval_seeds;self.limit=0;self.run=run
+        self.phase='evaluation';self.round=0;self.jobs=[];self.targets=[];self.install()
 
     def advance(self, *, optimizer_completed=False):
         if not self.ready or self.phase != 'evaluation' or optimizer_completed:
