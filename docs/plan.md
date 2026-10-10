@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 10:44 CST / Codex RECOVERY-USABLE：** 查实低v6三冷worker在10:29–30的下一次启动preflight拒绝新采集器PID2429377（其他卡174MiB辅助renderer），并非物理失败；失败子目录不存在、尚未连接领取job，A800服务仍global14/active0/2个probe done与4 pending，所有权重和轨迹保留。准备新冻源补双向严格peer目录/PID/commit/主卡隔离，续未领取任务，不热改server/奖励/学习率、不重做done probe。新90采集11已关闭含1 reference未复现，保留失败分母。另lc1 GPU4初始无历史100回归已提交7c54c6be独立源，尚待生成结果。
+
 - **2026-10-10 10:36 CST / Codex RECOVERY-USABLE：** 高final420在16与部署128两路各110真生成完整通过运行：两路正常100 exact99、结构/记忆100%、误RETRY0，恢复10全对；唯一差错均task82/store batteries实例25提前由GRASP切NAVIGATE(bottom_cabinet)，不是JSON/历史错误。仍需初始无历史100回归（旧父85/100）与物理闭环，配方已补未冒称SR。低global14首次真实证明原Adam动量上坡：方向内积+.0017826、7次原提议均升MSE；一阶动量回退后−.0023210，同批半MSE .00273596→.00123862（降54.7%），CPU原权重/梯度/Adam独立重放一致。仍待该更新后技能probe，不以critic loss当任务提升。
 
 - **2026-10-10 10:32 CST / Codex RECOVERY-USABLE：** 新90校准包RTX目的端1440文件/296485606B全SHA一致，独立abfc83dc采集器已在自有RTX3–7实际运行，首2来源完成候选(591/1157 controls)、另2加载；不是90审核完成/不进训练。A800低v6已global14，第13固定probe仍GRASP2/2、PLACE2/2、OPEN0/2，无可靠新增收益；final H1两频率真生成接近完成。根据确切critic重放新增**默认仍1**的可选cached20 critic拟合，只用已detach同批目标、不重跑actor/不改GAE/奖励/actor LR，每步仍需实际下降；184恢复回归过，现役v6没有热改或启用，下一窗口须先看其完整曲线。

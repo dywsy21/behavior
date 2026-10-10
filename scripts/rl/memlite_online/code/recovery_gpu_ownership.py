@@ -22,3 +22,13 @@ def owns_short_skill_auxiliary(pid,used_mib,gpu,receipt,case_directory,argv,envi
         return False
     return owns_auxiliary(pid,used_mib,gpu,receipt,case_directory,argv,environ,
                           collectors={'collect_short_skill_rl.py'})
+
+
+def owns_collection_auxiliary(pid,used_mib,gpu,receipt,case_directory,argv,environ,*,collection,source_commit):
+    """An explicit frozen collection, not any small process, may be a peer."""
+    if (receipt.get('schema')!='local_recovery_collection_status_v1'
+            or receipt.get('source_commit')!=source_commit
+            or len(source_commit)!=40 or any(c not in '0123456789abcdef' for c in source_commit)
+            or Path(case_directory).resolve().parent!=Path(collection).resolve()):
+        return False
+    return owns_auxiliary(pid,used_mib,gpu,receipt,case_directory,argv,environ)

@@ -22,7 +22,7 @@ from recovery_recorder import proprio61
 from behavior_branch_state import restore_branch_metadata
 from skill_aligned_reward import SkillIdentity,SkillReward,validate_placement_start
 from skill_sim_measurements import OmniSkillMeasurements,vector
-from recovery_gpu_ownership import owns_short_skill_auxiliary
+from recovery_gpu_ownership import owns_short_skill_auxiliary,owns_collection_auxiliary
 from skill_observation_archive import SkillObservationArchive
 from wire import packb,unpackb
 
@@ -33,7 +33,15 @@ def main():
     ap.add_argument('--output',type=Path,required=True);ap.add_argument('--port',type=int,required=True)
     ap.add_argument('--single-episode',action='store_true',
         help='Exit after one ACKed episode; an external worker starts a fresh simulator, never retries a failed start')
+    ap.add_argument('--peer-collection',type=Path)
+    ap.add_argument('--peer-collection-commit')
     a=ap.parse_args();cfg=json.loads(a.config.read_text());case=cfg['cases'][a.case];source_spec=case['sim']
+    if bool(a.peer_collection)!=bool(a.peer_collection_commit):
+        raise ValueError('An explicit collection directory and its frozen commit must be supplied together')
+    if a.peer_collection and (not (a.peer_collection/'status.json').is_file()
+            or len(a.peer_collection_commit)!=40
+            or any(c not in '0123456789abcdef' for c in a.peer_collection_commit)):
+        raise ValueError('Invalid frozen collection peer')
     if cfg.get('schema')!='short_skill_rl_a800_v1' or cfg.get('user_goal_authorized') is not True:
         raise ValueError('Explicit short-skill goal recipe required')
     archive_protocol=cfg.get('observation_archive','disabled')
@@ -128,6 +136,10 @@ def main():
                     status=json.loads((peer/'status.json').read_text())
                     allowed=owns_short_skill_auxiliary(pid,float(memory),int(gpu),status,peer,argv,peer_env,
                         config_sha256=sha256(a.config),cases=cfg['cases'],port=a.port)
+                if a.peer_collection and peer.parent.resolve()==a.peer_collection.resolve() and (peer/'status.json').is_file():
+                    status=json.loads((peer/'status.json').read_text())
+                    allowed=allowed or owns_collection_auxiliary(pid,float(memory),int(gpu),status,peer,argv,peer_env,
+                        collection=a.peer_collection,source_commit=a.peer_collection_commit)
         except (OSError,ValueError,IndexError):allowed=False
         if not allowed:raise ValueError('GPU has an unowned or primary compute process: '+str(pid))
     import omnigibson as og

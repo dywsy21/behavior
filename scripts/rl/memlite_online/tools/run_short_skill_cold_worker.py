@@ -23,7 +23,17 @@ def main():
     p.add_argument('--config',type=Path,required=True);p.add_argument('--case',required=True)
     p.add_argument('--port',type=int,required=True);p.add_argument('--gpu',type=int,choices=range(8),required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--peer-collection',type=Path)
+    p.add_argument('--peer-collection-commit')
     a=p.parse_args();cfg=json.loads(a.config.read_text())
+    if bool(a.peer_collection)!=bool(a.peer_collection_commit):
+        raise ValueError('Peer collection and frozen source commit must be bound together')
+    peer_args=[]
+    if a.peer_collection:
+        if (not (a.peer_collection/'status.json').is_file() or len(a.peer_collection_commit)!=40
+                or any(c not in '0123456789abcdef' for c in a.peer_collection_commit)):
+            raise ValueError('Invalid owned collection peer')
+        peer_args=['--peer-collection',str(a.peer_collection.resolve()),'--peer-collection-commit',a.peer_collection_commit]
     if (a.case not in cfg['cases'] or cfg.get('user_goal_authorized') is not True
             or cfg.get('simulator_reset_protocol') != 'fresh_process_each_episode_v1'):
         raise ValueError('Explicit case and fresh-reset recipe required')
@@ -33,6 +43,8 @@ def main():
     receipt=dict(status='starting',pid=os.getpid(),gpu=a.gpu,case=a.case,config_sha256=file_sha(a.config),
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
         completed_episodes=0,failed_attempts_retried=0,optimizer_on_this_host=False,started_unix=time.time())
+    if a.peer_collection:
+        receipt.update(peer_collection=str(a.peer_collection.resolve()),peer_collection_commit=a.peer_collection_commit)
     env=dict(os.environ,EVAL_GPU=str(a.gpu),EVAL_SOURCE=str(REPO/'scripts/eval/memlite_sft100'),
         OMP_NUM_THREADS='2',OPENBLAS_NUM_THREADS='1')
     env.pop('CUDA_VISIBLE_DEVICES',None)
@@ -46,7 +58,7 @@ def main():
                 process=subprocess.Popen(['bash','scripts/eval/memlite_sft100/launch_sim.sh',
                     'scripts/rl/memlite_online/tools/collect_short_skill_rl.py',
                     '--config',str(a.config.resolve()),'--case',a.case,'--port',str(a.port),
-                    '--output',str(child.resolve()),'--single-episode'],cwd=REPO,env=env,
+                    '--output',str(child.resolve()),'--single-episode',*peer_args],cwd=REPO,env=env,
                     stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
                 receipt['child_pid']=process.pid;atomic_json(a.output/'status.json',receipt)
                 code=process.wait()

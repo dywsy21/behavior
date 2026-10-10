@@ -2,10 +2,23 @@ import sys
 from pathlib import Path
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
-from recovery_gpu_ownership import owns_auxiliary,owns_short_skill_auxiliary
+from recovery_gpu_ownership import owns_auxiliary,owns_short_skill_auxiliary,owns_collection_auxiliary
 
 
 class OwnershipTests(unittest.TestCase):
+    def test_collection_peer_requires_exact_frozen_source_parent_and_pid(self):
+        receipt=dict(schema='local_recovery_collection_status_v1',pid=123,source_commit='a'*40)
+        args=[123,174,0,receipt,'/tmp/owned/calibration/case',
+              ['python','collect_local_grasp_recovery.py','--output','/tmp/owned/calibration/case'],dict(EVAL_GPU='4')]
+        binding=dict(collection='/tmp/owned/calibration',source_commit='a'*40)
+        self.assertTrue(owns_collection_auxiliary(*args,**binding))
+        for key,value in [('collection','/tmp/owned'),('source_commit','b'*40),('source_commit','bad')]:
+            self.assertFalse(owns_collection_auxiliary(*args,**(binding|{key:value})))
+        for index,value in [(1,12000),(2,4),(4,'/tmp/owned/calibration/sibling'),
+                            (3,dict(receipt,pid=124)),(3,dict(receipt,schema='unowned'))]:
+            changed=list(args);changed[index]=value
+            self.assertFalse(owns_collection_auxiliary(*changed,**binding))
+
     def test_short_skill_aux_requires_exact_recipe_port_case_and_other_gpu(self):
         args=(123,174,2,dict(pid=123,config_sha256='abc',case='radio'),'/tmp/run/radio',
               ['python','collect_short_skill_rl.py','--output','/tmp/run/radio','--port','18973'],dict(EVAL_GPU='0'))
