@@ -1,0 +1,33 @@
+{
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "union": "datasets/recovery-postfit-planner-union-20261010-v1",
+  "admission_sha256": "404fcc0a2e1d7f62466e08e6bfe994717905db6973cee84ee410ad0a32f3463f",
+  "models": {
+    "parent": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-causal-feedback-fit-v1/checkpoints/step_00000420_save_0009.pt",
+      "sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2"
+    }
+  },
+  "inventory": {
+    "path": "datasets/recovery-postfit-planner-union-20261010-v1/audit/inventory.json",
+    "sha256": "5869bd1eea8d0a5a5728eca3fc3145fbec94240bed7586de0a62dc5b1041e863"
+  },
+  "history": {
+    "path": "datasets/recovery-postfit-planner-union-20261010-v1/history/contexts.jsonl",
+    "sha256": "e9927128f8eeb4daa6e419b337a3f066e052aefd425cc1f9c4688c29493666f6"
+  },
+  "feedback": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-v1/feedback.jsonl",
+    "sha256": "586ef848c37ab26997c9b2da8105afaf57739ea68d0404ddac587e061cd20f80"
+  },
+  "original_schedule": "noninitial_fixed_one_per_task_v1",
+  "original_feedback": "causal_expert_unknown_v1",
+  "original_feedback_repeat_stride": 16,
+  "uncertainty_protocol": "unready_zero_confidence_v1",
+  "scope": "Read-only exact a74 parent baseline: fixed 100 normal noninitial heldout examples plus all 42 new recovery DEV decisions, actual source-disjoint frozen-observer feedback. Actor prefixes exclude target plan/decision/memory update. This is target-free generation, not physical recovery or whole-task success. Candidate intentionally absent until its finite 360-update run completes and final checkpoint is SHA-verified; no intermediate-checkpoint selection. One otherwise idle lc3 GPU, separate immutable source and run cache; no training, shared-env changes, lc2 or teammate interference. Stop on nonfinite/OOM/identity mismatch and retain all generated failures. Existing initial-state 85/100 retention evidence remains a separate scope requiring candidate verification. Actual resource use is recorded; no artificial collection quota.",
+  "validated_training_ticket": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-postfit-fit-preflight-v2/ticket.json",
+    "sha256": "a94a95f632c095200742d8bc2d342b63b00d68cad776cc50e94fc5d2f6a9a903"
+  }
+}

@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-10 21:10 CST / Codex RECOVERY-USABLE：** lc1 H1 v2继续，lc3以同一已连VPN新建SSH控制d并只读确认八卡全空；没有重登VPN/改密码/触碰lc2。准备单卡父a74的新42恢复DEV＋原100非初始状态target-free生成（新Git配置，候选权重尚不存在，不填假SHA/不做中间ckpt选择）；与H1八卡训练分节点并行，只有冻结权重/输入/独立cache，尚未提交GPU。旧RL机制报告记录样本权重而非梯度；下一先高层生成验收和实闭环，再有证据地改低RL。
+
+- **2026-10-10 21:07 CST / Codex RECOVERY-USABLE：** H1 v2实际50/360更新（首反向冷编译102.97s，随后约3–4s/步），8卡/real_samples8/累计1微批、有限梯度，已越过原崩溃点；更新前342 heldout正常完成，当前首50步保存/对照eval在途，不以训练loss下降称策略提升。W&B远端API确认run `af2c77329e7b` running、准确2695源/仅326planner参数、已收到train/update25；链接`https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/af2c77329e7b`。旧v7样本质量审计已固化`docs/infra/results/2026-10-10-short-rl-v7-loss-balance.json`，62全部episode保留、只36已消费TRAIN/1046chunks计入，12轮GAE复算全符；均分episode仍会不同chunk占比，但改成等episode平均是改变目标而非已证错误修复，尚不据此改RL/承诺收益。
+
+- **2026-10-10 20:59 CST / Codex RECOVERY-USABLE：** 独立rank冷缓存8/8真实FLA前后向通过（98.88–105.70s，全部CUDA/SM80/有限非零梯度，result0e41eb2c…20330），共享对照7/8/NFS stale失败result74264b17…b3888；源码2695dc33/原共享env未变。lc1八卡空闲复核后实启tmux/run `H1-postfit-feedback-fit-v2`，新票a94a95f6…9a903；同父a74/同36TRAIN×20遍360更新/同原准入/6正常2恢复，W&B online，尚待首真实更新。两冷测原结果已复制本地`artifacts/recovery-heterogeneous-20261010/cuda-startup-audit-v1`；原失败v1不覆盖、不作resume，既有CAL/test/低层/结果头不更新。
+
 - **2026-10-10 20:56 CST / Codex RECOVERY-USABLE：** 2695dc33共享冷缓存实测终态7/8真实FLA前后向通过，rank7在driver加载报NFS stale handle（0.335s），其余95.3–95.5s，原异常已明确留档。八卡释放后另启动`cuda-cold-rank-probe-v1`独立rank缓存冷测，待结果。新源78 processor/700时钟/24实际processor全部通过；700行及24原图页与旧已亲审版本逐字节相同，根明确续签`2026-10-10-postfit-expert-feedback-cuda-retry-review.json`（audit a3349756…ab503、processor11ccf58b…33c52），不是新语义审批。下一固定同源新票并在八卡真实kernel过后重开H1；0新权重/未称效果。
 
 - **2026-10-10 20:55 CST / Codex RECOVERY-USABLE：** 新冻2695dc33在lc1八rank共享冷缓存纯kernel测试已捕获原始driver异常：rank7 `cuda_utils.so: cannot stat shared object: Stale file handle`，与NFS并发替换一致，FLA此前吞异常转CPU的链条得到实际复现；其余rank kernel仍在完成，尚不称独立缓存修复通过。新源CPU全78复验第一次仅写结果时因缺父目录退出（0输出准入），现创建明确新目录后以独立attempt2日志重跑，旧错误log保留。无新模型更新，shared env/旧run不动，后续独立rank冷测及同源新票。

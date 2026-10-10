@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-10 20:59 CST：rank缓存修复实测通过，H1 v2启动
+
+- 新冻结源码`/data/workspace/wsy/behavior2026/src/recovery-cuda-startup-v1`=2695dc33；两纯kernel run `runs/recovery_heterogeneous_20261010/cuda-cold-{shared,rank}-probe-v1`原始每rank JSON/result/log/cache保留，shared7/8失败、rank8/8通过，0训练。实际torch2.7.1+cu128/triton3.3.1，未改shared env。
+- lc1八卡新tmux/run `H1-postfit-feedback-fit-v2`/同名`.log`/`.supervisor`；票`H1-postfit-fit-preflight-v2/ticket.json` SHAa94a95f6…9a903，实际processor与expert审计同目录。签核通过Git49abc781单文件archive展开到`incoming/postfit-cuda-review-signoff-v1/docs/infra/results/2026-10-10-postfit-expert-feedback-cuda-retry-review.json`，未热改2695源。首更新/效果待，v1失败现场仍全保留。
+
 ## 2026-10-10 20:50 CST：H1首步前退出，失败现场保留
 
 - lc1 `H1-postfit-feedback-fit-v1` tmux已自然结束，`.supervisor/ledger.json`为EXITED/returncode1/162.63s；`attempt_001.log`保留rank0 FLA冷初始化回退CPU及后续`torch.cpu.device`异常。无updates/evaluations/checkpoint，原bb9389b5冻结源与父权重不动，不能从此run恢复不存在的训练进度。

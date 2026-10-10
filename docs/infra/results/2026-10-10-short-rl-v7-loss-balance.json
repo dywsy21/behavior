@@ -1,0 +1,225 @@
+{
+  "schema": "short_skill_sample_mass_audit_v1",
+  "owner": "Codex/root",
+  "source_run": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/short-rl-v7-real-continuation",
+  "source_commit": "cfef448eb38489b8195755f563d72a57e464a48b",
+  "source_config_sha256": "f3b0ed3e9491615682d789257521dad26030da9d8ccec4194e21e9228954f130",
+  "optimizer_updates": [
+    21,
+    32
+  ],
+  "completed_train_episodes": 36,
+  "excluded_partial_round": 13,
+  "original_episode_count": 62,
+  "total_chunks": 1046,
+  "formula": "A_i = reward_i + discount_i * next_value_i - old_value_i + trace_discount_i * A_next; every microbatch contributes len(subset)/len(all_chunks)",
+  "files": {
+    "episodes.jsonl": {
+      "sha256": "db950e08d8247d4884f2834fe8acc9859776e376549bbf802536f7508412d0f7",
+      "bytes": 27134
+    },
+    "result.json": {
+      "sha256": "bdc929743cb4c75d31e32b7a4488cc4971be47de6cc35ae929325f2a37e6f1a0",
+      "bytes": 2763
+    },
+    "reward-ledger.jsonl": {
+      "sha256": "8f3a5f70c3f20474715581159f4beb44bb604b56f24dc3a7a5ccd22b273627a5",
+      "bytes": 15454501
+    },
+    "update-0021.json": {
+      "sha256": "bc2cae9f19026a4babd33b7e4a476dd81d86136618433c57067b65d022e6867a",
+      "bytes": 2487
+    },
+    "update-0022.json": {
+      "sha256": "bdb35a199b4c815a15773ecdf979beb28c26873698cfe1f9fdab7779f016da5a",
+      "bytes": 2741
+    },
+    "update-0023.json": {
+      "sha256": "55e08e9847783d79f5a6cfb156dd3fcd35a9ae84df571d339cf401ae5cff8462",
+      "bytes": 2740
+    },
+    "update-0024.json": {
+      "sha256": "bb75be0188682dce2cfe98bc7b12630098e2db5cd85b86bc141cf6c90708784c",
+      "bytes": 4248
+    },
+    "update-0025.json": {
+      "sha256": "2851fd8af4d33c63dc6061791beac22ea0270542c220525fcd5037392ab888eb",
+      "bytes": 2494
+    },
+    "update-0026.json": {
+      "sha256": "80e5abcbfaa02d80db9e43749acd7577028d49185bd2f61c1d0b8e2960619ff6",
+      "bytes": 2487
+    },
+    "update-0027.json": {
+      "sha256": "1c8b59024aeb7fbefad638c2819a550676566fc6bd6919cf13ab3a2c23c35aa0",
+      "bytes": 4250
+    },
+    "update-0028.json": {
+      "sha256": "925257ae8e5691da76f9d7fc02eb0a0a9bed88eb92d6da249e721dd777b8c900",
+      "bytes": 2482
+    },
+    "update-0029.json": {
+      "sha256": "54c00d7e4503a113ac97354d12aaadaefc86f30aa0b2ecfc12f3cbe2e06edbfa",
+      "bytes": 4246
+    },
+    "update-0030.json": {
+      "sha256": "cfd24040e337239c9d04bc0f42d1effa427ecc849e1c5abbabc24d2010b265eb",
+      "bytes": 2497
+    },
+    "update-0031.json": {
+      "sha256": "c37860fcd7678c742e4900b646e44f10184a36a0a6928da3e91778c9248264cf",
+      "bytes": 2753
+    },
+    "update-0032.json": {
+      "sha256": "da7216a6b27c9907ed98f13fd7bcd77c727f2a0826d5b12e189dedac34be06a4",
+      "bytes": 2747
+    }
+  },
+  "cases": {
+    "attach_a_camera_to_a_tripod_129": {
+      "episodes": 12,
+      "successful_episodes": 12,
+      "controls": 1700,
+      "chunks": 111,
+      "mean_sample_loss_mass_per_update": 0.1048824326865747,
+      "raw_advantage_mean": 0.23553451230814107,
+      "positive_advantage_fraction": 0.954954954954955
+    },
+    "turning_on_radio_155": {
+      "episodes": 12,
+      "successful_episodes": 12,
+      "controls": 239,
+      "chunks": 24,
+      "mean_sample_loss_mass_per_update": 0.023366167969061345,
+      "raw_advantage_mean": 0.3270937358696591,
+      "positive_advantage_fraction": 0.9583333333333334
+    },
+    "wash_dog_toys_169": {
+      "episodes": 12,
+      "successful_episodes": 2,
+      "controls": 14445,
+      "chunks": 911,
+      "mean_sample_loss_mass_per_update": 0.871751399344364,
+      "raw_advantage_mean": -0.07097637427589852,
+      "positive_advantage_fraction": 0.17672886937431395
+    }
+  },
+  "updates": [
+    {
+      "update": 21,
+      "chunks": 91,
+      "mean_advantage_replay_error": 7.276170554959549e-09,
+      "actor_lr": 1e-06,
+      "post_kl": 0.013359798992866302,
+      "critic_half_mse_before": 0.017582349479198456,
+      "critic_half_mse_after": 0.005259036552160978
+    },
+    {
+      "update": 22,
+      "chunks": 88,
+      "mean_advantage_replay_error": 3.0243754722825145e-10,
+      "actor_lr": 1e-06,
+      "post_kl": 0.011855896245502994,
+      "critic_half_mse_before": 0.011754423379898071,
+      "critic_half_mse_after": 0.005948233418166637
+    },
+    {
+      "update": 23,
+      "chunks": 85,
+      "mean_advantage_replay_error": 4.986718676880386e-10,
+      "actor_lr": 1e-06,
+      "post_kl": 0.009278949721534873,
+      "critic_half_mse_before": 0.01075940765440464,
+      "critic_half_mse_after": 0.007477761246263981
+    },
+    {
+      "update": 24,
+      "chunks": 93,
+      "mean_advantage_replay_error": 3.0027757710882064e-10,
+      "actor_lr": 1e-06,
+      "post_kl": 0.010452344213732548,
+      "critic_half_mse_before": 0.014985762536525726,
+      "critic_half_mse_after": 0.013921622186899185
+    },
+    {
+      "update": 25,
+      "chunks": 91,
+      "mean_advantage_replay_error": 2.7457715545686767e-09,
+      "actor_lr": 1e-06,
+      "post_kl": 0.02010724713813493,
+      "critic_half_mse_before": 0.016738876700401306,
+      "critic_half_mse_after": 0.014046872034668922
+    },
+    {
+      "update": 26,
+      "chunks": 62,
+      "mean_advantage_replay_error": 4.3247696535075875e-09,
+      "actor_lr": 1e-06,
+      "post_kl": 0.005890080920277884,
+      "critic_half_mse_before": 0.036585867404937744,
+      "critic_half_mse_after": 0.017919298261404037
+    },
+    {
+      "update": 27,
+      "chunks": 94,
+      "mean_advantage_replay_error": 2.105158179721567e-09,
+      "actor_lr": 1e-06,
+      "post_kl": 0.0037783945316481006,
+      "critic_half_mse_before": 0.01144834328442812,
+      "critic_half_mse_after": 0.01005448680371046
+    },
+    {
+      "update": 28,
+      "chunks": 68,
+      "mean_advantage_replay_error": 2.3330786746988963e-09,
+      "actor_lr": 1e-06,
+      "post_kl": 0.005725261016991948,
+      "critic_half_mse_before": 0.02414829097688198,
+      "critic_half_mse_after": 0.01264165248721838
+    },
+    {
+      "update": 29,
+      "chunks": 96,
+      "mean_advantage_replay_error": 4.339568850098008e-09,
+      "actor_lr": 1e-06,
+      "post_kl": 0.00485824357247111,
+      "critic_half_mse_before": 0.006830562837421894,
+      "critic_half_mse_after": 0.004984451923519373
+    },
+    {
+      "update": 30,
+      "chunks": 99,
+      "mean_advantage_replay_error": 3.30022342093228e-09,
+      "actor_lr": 1e-06,
+      "post_kl": 0.0041246669375187145,
+      "critic_half_mse_before": 0.008530710823833942,
+      "critic_half_mse_after": 0.007103640586137772
+    },
+    {
+      "update": 31,
+      "chunks": 90,
+      "mean_advantage_replay_error": 2.092690465360647e-09,
+      "actor_lr": 1e-06,
+      "post_kl": 0.0023066308654961175,
+      "critic_half_mse_before": 0.007668251637369394,
+      "critic_half_mse_after": 0.006567945703864098
+    },
+    {
+      "update": 32,
+      "chunks": 89,
+      "mean_advantage_replay_error": 1.3553699031165767e-09,
+      "actor_lr": 1e-06,
+      "post_kl": 0.0019721882722734244,
+      "critic_half_mse_before": 0.00922433566302061,
+      "critic_half_mse_after": 0.008511072024703026
+    }
+  ],
+  "interpretation": [
+    "This is sample-loss weighting, not measured gradient attribution or evidence that balancing will improve learning.",
+    "Uniform rollout counts do not imply uniform chunk counts; episode-length-normalized loss would be a changed objective, not a correctness fix.",
+    "OPEN has sparse TRAIN successes and mostly negative advantages; mean-centering must not manufacture positive supervision. Timeout remains UNKNOWN.",
+    "Do not resume the stopped degraded actor or expand tasks based on these counts. A separately controlled fit/credit-assignment test is required."
+  ],
+  "new_training_started": false,
+  "whole_task_sr": false
+}
