@@ -26,12 +26,15 @@ def main():
     ap.add_argument('--release', type=Path, help='Optional actual V3 stream; otherwise cached compute only')
     ap.add_argument('--workers', type=int, choices=(8,16,32), default=32)
     ap.add_argument('--input-only', action='store_true', help='Profile the same real input path without loading/updating the model')
+    ap.add_argument('--compact-rgb', action='store_true', help='Keep native uint8 through checked placement; resize/normalize on each assigned GPU')
     ap.add_argument('--freeze-vision', action='store_true')
     ap.add_argument('--warmup', type=int, default=2)
     ap.add_argument('--measure', type=int, default=5)
     args = ap.parse_args()
     if args.input_only and args.release is None:
         raise ValueError('Input-only profiling requires the actual protected V3 release')
+    if args.compact_rgb and args.release is None:
+        raise ValueError('Compact RGB is a real-stream transport mode')
     if args.output.exists() or args.warmup < 1 or not 1 <= args.measure <= 20:
         raise ValueError('Fresh output and an explicitly short timing window required')
     if os.environ.get('CUDA_VISIBLE_DEVICES') != '0,1,2,3,4,5,6,7':
@@ -125,6 +128,8 @@ def main():
             row['tokenized_prompt_mask'] = np.ones(2,dtype=bool)
             examples.append(row)
         batch = jax.tree.map(lambda *xs: np.stack(xs), *examples)
+        if args.compact_rgb:
+            return batch
         return Observation.from_dict({k:v for k,v in batch.items() if k!='actions'}), batch['actions']
 
     data_iterator = None
@@ -141,6 +146,7 @@ def main():
                             multiprocessing_context='spawn',prefetch_factor=1)
         data_iterator = iter(loader)
         stream_receipt = dict(release=str(args.release),workers=args.workers,
+                              compact_rgb=args.compact_rgb,
                               train_episodes=len(stream_dataset.episodes),stride16_train_samples=len(stream_dataset),
                               sampled_indices_sha256=hashlib.sha256(selection.tobytes()).hexdigest(),
                               real_samples=sample_count,repeat_cached_batch=False,identities=[])
@@ -148,6 +154,17 @@ def main():
     else:
         batch = prepare_batch(native,[i%100 for i in range(args.batch_size)],resize_cached=True)
     data_sharding = jax.sharding.NamedSharding(mesh,jax.sharding.PartitionSpec(sharding.DATA_AXIS))
+    if args.compact_rgb:
+        from behavior_champion.frontend import resize_uint8_rgb, resize_normalized_rgb
+        rng = np.random.default_rng(17)
+        for height,width in ((720,720),(480,480),(480,640)):
+            pixels = rng.integers(0,256,(8,height,width,3),dtype=np.uint8)
+            compact = jax.jit(resize_uint8_rgb,in_shardings=data_sharding,out_shardings=data_sharding)(
+                place_from_host(pixels,data_sharding))
+            previous = jax.jit(resize_normalized_rgb,in_shardings=data_sharding,out_shardings=data_sharding)(
+                place_from_host(pixels.astype(np.float32)/255.*2.-1.,data_sharding))
+            np.testing.assert_array_equal(np.asarray(compact),np.asarray(previous))
+        print(json.dumps(dict(compact_frontend_exact_all8=True,image_shapes=3)),flush=True)
 
     def next_stream_batch():
         started = time.monotonic()
@@ -201,6 +218,7 @@ def main():
         result = dict(status='input_only_profile_completed',rows=rows,optimizer_updates=0,
                       trained_checkpoint_saved=False,source_commit=source_commit,
                       integration_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+                      compact_frontend_exact_all8=args.compact_rgb,
                       transport_validation=transport_receipt,real_stream={k:v for k,v in stream_receipt.items() if k!='identities'})
         (args.output/'result.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps(result),flush=True)
@@ -266,7 +284,12 @@ def main():
         loader_receipt['initialized_parameter_roundtrip_hashes_passed'] = len(expected_parameter_hashes)
         print(json.dumps(dict(initialized_parameter_roundtrip_hashes_passed=len(expected_parameter_hashes))),flush=True)
         def core_step(key,state,batch):
-            if args.release is not None:
+            if args.compact_rgb:
+                from behavior_champion.frontend import resize_uint8_rgb
+                fields = {k:v for k,v in batch.items() if k!='actions'}
+                fields['image'] = {k:resize_uint8_rgb(v) for k,v in fields['image'].items()}
+                batch = Observation.from_dict(fields), batch['actions']
+            elif args.release is not None:
                 from behavior_champion.frontend import resize_normalized_rgb
                 observation,actions = batch
                 observation = observation.replace(images={k:resize_normalized_rgb(v) for k,v in observation.images.items()})
@@ -313,6 +336,7 @@ def main():
                 trained_checkpoint_saved=False,source_commit=source_commit,patch_sha256=hashlib.sha256(delta).hexdigest(),
                 openpi_source_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
                 communication_environment=communication,
+                compact_frontend_exact_all8=args.compact_rgb,
                 transport_validation=transport_receipt,
                 parent_revision=verified['revision'],probe_sha256=h.hexdigest(),checkpoint_migration=loader_receipt,
                 real_stream=None if stream_receipt is None else {k:v for k,v in stream_receipt.items() if k!='identities'},

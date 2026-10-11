@@ -27,6 +27,29 @@ class TransportTests(unittest.TestCase):
         x = self.jax.device_put(np.arange(16,dtype=np.float32))
         with self.assertRaises(TypeError): place_from_host(x,self.sharding)
 
+    def test_nonfinite_input_does_not_bypass_exact_check(self):
+        from behavior_champion.jax_transport import place_from_host
+        x = np.arange(16,dtype=np.float32)
+        x[7] = np.nan
+        with self.assertRaises(ValueError): place_from_host(x,self.sharding)
+
+    def test_uint8_all_values_roundtrip(self):
+        from behavior_champion.jax_transport import place_from_host
+        x = np.tile(np.arange(256,dtype=np.uint8),(8,1))
+        np.testing.assert_array_equal(np.asarray(place_from_host(x,self.sharding)),x)
+
+    def test_single_corrupted_value_is_rejected(self):
+        from unittest.mock import patch
+        from behavior_champion.jax_transport import place_from_host
+        original_put = self.jax.device_put
+        def corrupt(value, sharding):
+            value = value.copy()
+            value[-1] += 1
+            return original_put(value, sharding)
+        with patch.object(self.jax, 'device_put', side_effect=corrupt):
+            with self.assertRaises(ValueError):
+                place_from_host(np.arange(16,dtype=np.float32),self.sharding)
+
     def test_fsdp_loss_gradient_and_update_against_numpy(self):
         from behavior_champion.jax_transport import check_collective_and_gradient
         receipt = check_collective_and_gradient(self.mesh)

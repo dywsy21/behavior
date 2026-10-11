@@ -22,7 +22,13 @@ def place_from_host(tree, sharding):
     for before, after in zip(leaves, jax.tree.leaves(placed), strict=True):
         before = np.asarray(before)
         for shard in after.addressable_shards:
-            np.testing.assert_array_equal(np.asarray(shard.data), before[shard.index])
+            actual = np.asarray(shard.data)
+            expected = before[shard.index]
+            # Check EVERY value on EVERY shard, but avoid np.testing's repeated
+            # NaN/Inf masks and diagnostics allocations on gigabytes of pixels.
+            # NaNs are not legitimate training inputs and fail closed here.
+            if actual.dtype != expected.dtype or not np.array_equal(actual, expected):
+                raise ValueError('Exact host-to-shard roundtrip failed')
     return placed
 
 

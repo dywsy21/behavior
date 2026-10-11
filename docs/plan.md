@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 23:43 CST / Codex CHAMPION-2026：** 输入-only 1536锚全终态，cProfile确认主瓶颈是3.010GB归一化图片的`np.testing`反复NaN/Inf掩码/诊断开销：6批累计37.23s，仅常规from_dict再8.53s；四timed严格分发7.55–7.60s/批。新本地改uint8原像素下发后GPU同原resize/round/LUT归一化（传输约缩4倍），逐值核验改为每卡完整`np.array_equal`，不抽样、不移除验证；单值损坏/NaN反例和前端逐位一致测试新增，下一冻结源真实八卡前端一致门＋7步全链。原有权重/数据/损失/队友env不动，无正式训练。
+
+- **2026-10-11 23:41 CST / Codex CHAMPION-2026：** a3410a7d已push并Git冻`src/champion-input-profile-20261011-v1`，14定向测试/语法/diff全过。lc1八卡再次空闲后实启tmux`champion-input-profile-v1`/run`runs/champion_assets_20261011/input-profile-bs256-v1`，同256/32worker/seed17/1536不同TRAIN锚，2warm4timed，仅实际输入与严格host分发，不载模型/0优化。阶段timing与cProfile待；原stream末尾失败已保留和修复，不涂改旧结果。下一据profile修瓶颈并重新整链7步，不自动正式训练。
+
 - **2026-10-11 23:37 CST / Codex CHAMPION-2026：** 真实流v1完成7有限更新后，末尾结果序列化因`source`局部变量遮蔽退出；不是已通过终态回执，`steps.jsonl/stream.json`原件保留且已取本地，无保存权重/八卡已释放。五timed实际约25.30s/256，GPU7.54–7.58s，host11.80–21.49s，不能沿用缓存7.63s推正式ETA。下一修收尾变量并用同流输入-only拆读/拼接/transform/严格分发耗时，不加载模型/不优化；32原读单测快不代表整链快。本轮fetch完成main仍33677bd0，保留上轮自有四文档dirty故未pull，不覆盖队友。冠军优先/MEM专项维持，无新正式训练。
 
 - **2026-10-11 23:16 CST / Codex CHAMPION-2026：** 16d0926f已Git冻结`src/champion-stream-20261011-v1`，八卡实空后启动tmux`champion-stream-bs256-v1`、run`runs/champion_assets_20261011/stream-bs256-w32-v1`：原父/bs256/flow4、32CPUworker、原TRAIN全局shuffle1792不同锚、2warm＋5timed；数据/归一化/FAST/显式分发/原JAX核串联，0保存ckpt/非正式训练。原三尺寸含非方图像前端字节一致回归过、全14冠军定向测试过，尚待真实流优化步/吞吐。MEM仅保留固定边界诊断结论，下一按切换监督与128实际控时钟检查，不重复旧99%延续验收。
