@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 01:35 CST / Codex CHAMPION-2026：** W&B c683实测在线建立/结束/同run重开/远端终态summary全通过，team既有`behavior2026-g05`/run`bkdsnrhx`，0优化/0媒体，回执SHA6eff6287…6973已本地复制。工程GPU前两步有限、保存全状态仍进行；CPU复查发现c22恢复metadata含tuple而JSON为list会误拒绝（最初小树测试未覆盖），本地补规范化和真实stage-table反例，不热改原run。新增新进程只恢复第2步并重演第3步入口，保留原未中断参考/生产与消费commit/全叶字节门，待原作业终态后再启动，不能预先称续训通过。
+
 - **2026-10-12 01:27 CST / Codex CHAMPION-2026：** c22实际CPU穷尽8000批通过（5.24s），每批全100task/44×2+56×3，2048000全唯一、各task20480、旧/新50各1024000，九断点重建一致，保留105TRAIN/6eval隔离；plan SHA fa1dda37…ab0e。真实八卡工程probe已过host通信/梯度及三种图像尺寸前端全卡逐位一致，模型初始化进行中。另新增online-only W&B生命周期与同run恢复验收入口（不把优化步当云端append索引，避免恢复时丢日志）；CPU测试/实际云验收待，不写凭据、不换账号、不热改GPU源。
 
 - **2026-10-12 01:24 CST / Codex CHAMPION-2026：** c22d1b72已push并Git冻结lc1`src/champion-resume-probe-20261012-v1`，八卡实空后tmux`champion-resume-bs256-v1`启动`runs/champion_assets_20261011/resume-bs256-v1{,.log}`，原shared50全部文件重hash后才初始化，3更新+第3步重演/30min工程窗口、只工程checkpoint。另CPU tmux`champion-balanced-sampling-v1`穷尽8000批抽样，输出`sampling-balanced-v1.{json,log}`；都运行中、无结果不称验收。初Git bundle基于远端缺失8e3祖先而拒绝，改24544cc已知祖先完整bundle后成功，未覆盖源码。下两条初记时间依据本地估计偏快，现按工具UTC校正为01:22/01:18；无重跑旧测试。

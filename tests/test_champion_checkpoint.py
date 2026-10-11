@@ -54,9 +54,10 @@ class CheckpointTests(unittest.TestCase):
         shardings = jax.tree.map(lambda _: replicate, payload)
         template = jax.tree.map(lambda x: jax.ShapeDtypeStruct(x.shape, x.dtype), payload)
         with tempfile.TemporaryDirectory() as root:
-            receipt = save_full(root, payload, completed=2, contract={'source': 'abc'},
+            contract = {'source': 'abc', 'stage_counts': (5, 6, 7)}
+            receipt = save_full(root, payload, completed=2, contract=contract,
                                 cursor=self.plan.cursor(2), reserve_bytes=0)
-            restored = restore_full(receipt['path'], template, shardings, contract={'source': 'abc'},
+            restored = restore_full(receipt['path'], template, shardings, contract=contract,
                                     plan=self.plan, manifest_sha256=receipt['manifest_sha256'])
             self.assertEqual(tree_fingerprints(payload), tree_fingerprints(restored))
             self.assertEqual(tree_fingerprints(want), tree_fingerprints(self.step(restored)))

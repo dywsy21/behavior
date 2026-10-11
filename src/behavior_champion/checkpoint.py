@@ -74,6 +74,10 @@ def save_full(directory, tree, *, completed, contract, cursor, reserve_bytes=256
 def restore_full(directory, template, shardings, *, contract, plan, manifest_sha256):
     import jax
     from .jax_transport import place_from_host
+    # Dataclass configs contain tuples (e.g. task-stage tables), while JSON
+    # faithfully stores the same sequence as a list. Canonicalize metadata;
+    # this does not relax any array, source identity or cursor comparison.
+    contract = json.loads(json.dumps(contract))
     root = Path(directory).resolve()
     if sha256(root / 'manifest.json') != manifest_sha256:
         raise ValueError('Checkpoint manifest digest differs from receipt')

@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 01:35 CST：冠军W&B在线恢复验收完成
+
+- lc1 `src/champion-online-preflight-20261012-v1`=c683c1ce，CPU tmux`champion-wandb-online-v1`已终态；`runs/champion_assets_20261011/wandb-online-v1{,.log}`保留，result SHA6eff6287…6973、本地`artifacts/champion-episode-20261012/wandb-online-v1-result.json`同SHA。既有team/project`hanhanyy-fudan-university-school-of-management/behavior2026-g05`、run`bkdsnrhx`已远端核同run恢复终态；0优化，不能误作正式模型进度。
+- 原`resume-bs256-v1`仍保存全状态中，c22活跃源码不改；后续恢复metadata tuple/list修复只进新冻结源。CPU采样完整回执`sampling-balanced-v1.json` SHAa7fca44a…bb13已本地同名复制。
+
 ## 2026-10-12 01:24 CST：冠军正式链工程恢复验收
 
 - lc1共享根`/data/workspace/wsy/behavior2026`，冻结`src/champion-resume-probe-20261012-v1`=c22d1b72，八卡tmux`champion-resume-bs256-v1`，run`runs/champion_assets_20261011/resume-bs256-v1`及同名`.log`。仅3更新＋第3步恢复重演、30min工程验收；工程checkpoint不作正式训练/部署权重，参数/优化器/EMA/相关噪声/随机键全叶保存，失败目录保留、不自动清理。

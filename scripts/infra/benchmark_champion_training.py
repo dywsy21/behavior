@@ -29,10 +29,15 @@ def main():
     ap.add_argument('--input-only', action='store_true', help='Profile the same real input path without loading/updating the model')
     ap.add_argument('--compact-rgb', action='store_true', help='Keep native uint8 through checked placement; resize/normalize on each assigned GPU')
     ap.add_argument('--resume-probe', action='store_true', help='Three-update balanced/row-Adam full-state save/restore correctness probe; not formal training')
+    ap.add_argument('--resume-probe-from', type=Path, help='Cold process: restore the passed engineering checkpoint and replay ONLY update3')
+    ap.add_argument('--resume-reference-sha256', help='SHA256 of the original uninterrupted-third-update.json')
     ap.add_argument('--freeze-vision', action='store_true')
     ap.add_argument('--warmup', type=int, default=2)
     ap.add_argument('--measure', type=int, default=5)
     args = ap.parse_args()
+    cold_resume = args.resume_probe_from is not None
+    if cold_resume and (not args.resume_probe or not args.resume_reference_sha256):
+        raise ValueError('Cold replay requires the explicit resume probe and bound original reference')
     if args.resume_probe and (args.release is None or not args.compact_rgb or args.input_only or
                              args.freeze_vision or args.batch_size != 256 or args.flow_samples != 4 or
                              args.warmup != 2 or args.measure != 1):
@@ -151,11 +156,11 @@ def main():
         from torch.utils.data import DataLoader, Subset
         from behavior_champion.dataset import NativeV3Dataset, collate_native, worker_init
         stream_dataset = NativeV3Dataset(args.release,'train')
-        sample_count = (args.warmup+args.measure)*args.batch_size
+        sample_count = (1 if cold_resume else args.warmup+args.measure)*args.batch_size
         if args.resume_probe:
             from behavior_champion.sampling import BalancedPlan
             balanced_plan = BalancedPlan(stream_dataset, updates=8000, batch_size=256, seed=17)
-            selection = np.concatenate([balanced_plan.batch(i) for i in range(3)])
+            selection = np.concatenate([balanced_plan.batch(i) for i in ([2] if cold_resume else range(3))])
             (args.output/'sampling-plan.json').write_text(json.dumps(balanced_plan.contract,indent=2)+'\n')
         else:
             selection = np.random.default_rng(17).permutation(len(stream_dataset))[:sample_count]
@@ -293,8 +298,60 @@ def main():
     # GPU0->peer copies of jax.random.key(...). Every replica is read back.
     init_key = place_from_host(np.array([0,17],dtype=np.uint32),replicated)
     train_key = place_from_host(np.array([0,19],dtype=np.uint32),replicated)
+    if args.resume_probe:
+        from behavior_champion.release import RELEASE_SHA256
+        from behavior_champion.sampling import digest_json
+        resume_contract = dict(purpose='ENGINEERING_ONLY_NOT_FOR_DEPLOYMENT',
+            integration_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+            parent_revision=verified['revision'],parent_receipt_sha256=hashlib.sha256(args.verified.read_bytes()).hexdigest(),
+            reference_commit=source_commit,reference_patch_sha256=hashlib.sha256(delta).hexdigest(),
+            openpi_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
+            release_sha256=RELEASE_SHA256,layout_sha256=digest_json(layout),
+            model=dataclasses.asdict(config.model),optimizer=dataclasses.asdict(config.optimizer),
+            lr=dataclasses.asdict(config.lr_schedule),ema_decay=config.ema_decay,flow_samples=4,
+            sampler_plan_sha256=balanced_plan.fingerprint,
+            environment={key:os.environ.get(key) for key in ('XLA_FLAGS','NCCL_P2P_DISABLE','NCCL_IB_DISABLE',
+                'NCCL_SOCKET_IFNAME','OPENBLAS_NUM_THREADS','OMP_NUM_THREADS')},
+            jax_version=jax.__version__,numpy_version=np.__version__)
+        # Normalize tuple/list representation before comparison with JSON.
+        resume_contract = json.loads(json.dumps(resume_contract))
+    if cold_resume:
+        from behavior_champion.release import sha256
+        reference_run = args.resume_probe_from
+        reference_file = reference_run/'uninterrupted-third-update.json'
+        if sha256(reference_file) != args.resume_reference_sha256:
+            raise ValueError('Cold replay reference digest mismatch')
+        # The uninterrupted branch is an independent reference even when the
+        # producer's later restore fails. In particular, c22d1b72's tuple/list
+        # metadata comparison was too strict before any restore. Do not relabel
+        # that failure as a passed same-process test or regenerate its weights.
+        reference_result = (json.loads((reference_run/'resume-result.json').read_text())
+                            if (reference_run/'resume-result.json').exists() else None)
+        if reference_result is not None and reference_result.get('cross_process_restore_tested'):
+            raise ValueError('Use the original uninterrupted producer, not another replay')
+        saved = json.loads((reference_run/'checkpoint-receipt.json').read_text())
+        original_manifest = json.loads((Path(saved['path'])/'manifest.json').read_text())
+        original_contract = original_manifest['contract']
+        producing_commit = original_contract['integration_commit']
+        # This new consumer may add diagnostic code, but cannot silently change
+        # any computation/data/optimizer/restore dependency of the producer.
+        subprocess.run(['git','diff','--exit-code',producing_commit,'HEAD','--',
+            *[f'src/behavior_champion/{name}.py' for name in
+              ('contracts','dataset','frontend','jax_transport','optimizer','release','sampling')]],
+            stdout=subprocess.DEVNULL,check=True)
+        comparable = dict(resume_contract,integration_commit=producing_commit)
+        if comparable != original_contract:
+            raise ValueError('Cold resume graph/config/data/numeric environment differs from producer')
+        resume_contract = original_contract
     with sharding.set_mesh(mesh):
-        state, state_sharding = core.init_train_state(config,init_key,mesh,resume=False,norm_stats=stats)
+        state, state_sharding = core.init_train_state(config,init_key,mesh,resume=cold_resume,norm_stats=stats)
+        if cold_resume:
+            from behavior_champion.checkpoint import restore_full
+            restored = restore_full(saved['path'],dict(state=state,train_rng=jax.ShapeDtypeStruct((2,),jnp.uint32)),
+                dict(state=state_sharding,train_rng=replicated),contract=resume_contract,
+                plan=balanced_plan,manifest_sha256=saved['manifest_sha256'])
+            state,train_key = restored['state'],restored['train_rng']
+            print(json.dumps(dict(cold_checkpoint_restored=True,completed_updates=int(state.step))),flush=True)
         jax.block_until_ready(state)
         # Init may reshard large tensors. Round-trip all loaded parameter bytes
         # before allowing a single update; synthetic collectives alone are insufficient.
@@ -325,7 +382,7 @@ def main():
                        out_shardings=(state_sharding,replicated),donate_argnums=(1,))
         times = []
         resume_receipt = None
-        for index in range(args.warmup+args.measure):
+        for index in ([2] if cold_resume else range(args.warmup+args.measure)):
             started=time.monotonic()
             data_seconds = 0.
             batch_tasks = None
@@ -353,25 +410,11 @@ def main():
             if index>=args.warmup:times.append(seconds)
             if args.resume_probe and index == 1:
                 from behavior_champion.checkpoint import save_full
-                from behavior_champion.release import RELEASE_SHA256
-                from behavior_champion.sampling import digest_json
-                resume_contract = dict(purpose='ENGINEERING_ONLY_NOT_FOR_DEPLOYMENT',
-                    integration_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
-                    parent_revision=verified['revision'],parent_receipt_sha256=hashlib.sha256(args.verified.read_bytes()).hexdigest(),
-                    reference_commit=source_commit,reference_patch_sha256=hashlib.sha256(delta).hexdigest(),
-                    openpi_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
-                    release_sha256=RELEASE_SHA256,layout_sha256=digest_json(layout),
-                    model=dataclasses.asdict(config.model),optimizer=dataclasses.asdict(config.optimizer),
-                    lr=dataclasses.asdict(config.lr_schedule),ema_decay=config.ema_decay,flow_samples=4,
-                    sampler_plan_sha256=balanced_plan.fingerprint,
-                    environment={key:os.environ.get(key) for key in ('XLA_FLAGS','NCCL_P2P_DISABLE','NCCL_IB_DISABLE',
-                        'NCCL_SOCKET_IFNAME','OPENBLAS_NUM_THREADS','OMP_NUM_THREADS')},
-                    jax_version=jax.__version__,numpy_version=np.__version__)
                 saved = save_full(args.output/'engineering-checkpoints',dict(state=state,train_rng=train_key),
                     completed=2,contract=resume_contract,cursor=balanced_plan.cursor(2))
                 (args.output/'checkpoint-receipt.json').write_text(json.dumps(saved,indent=2)+'\n')
                 print(json.dumps(dict(full_state_saved=saved)),flush=True)
-        if args.resume_probe:
+        if args.resume_probe and not cold_resume:
             import gc
             from behavior_champion.checkpoint import restore_full, tree_fingerprints
             baseline_metrics = jax.tree.map(np.asarray,metrics)
@@ -398,6 +441,28 @@ def main():
             print(json.dumps(resume_receipt),flush=True)
             if not exact or not metric_exact:
                 raise ValueError('Full-state restored third update differs; preserve both fingerprints and do not deploy')
+        elif cold_resume:
+            from behavior_champion.checkpoint import tree_fingerprints
+            baseline = json.loads(reference_file.read_text())
+            after = tree_fingerprints(dict(state=state,train_rng=train_key))
+            (args.output/'cold-restored-third-update.json').write_text(json.dumps(after,indent=2)+'\n')
+            original_steps = [json.loads(line) for line in (reference_run/'steps.jsonl').read_text().splitlines()]
+            last = original_steps[-1]
+            metric_exact = last['step'] == 3 and all(float(metrics[k]) == last[k] for k in ('loss','grad_norm'))
+            exact = baseline == after
+            resume_receipt = dict(status='passed' if exact and metric_exact else 'failed_no_retry',
+                cross_process_restore_tested=True,all_dynamic_leaves_exact=exact,
+                loss_and_grad_norm_exact=metric_exact,reference_sha256=args.resume_reference_sha256,
+                checkpoint=saved,optimizer_updates_this_process=1,physical_controls=0,
+                full_state_leaves=len(after['leaves']),producing_commit=producing_commit,
+                consuming_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+                producer_same_process_restore_status=None if reference_result is None else reference_result['status'],
+                checkpoint_reader_sha256=hashlib.sha256((Path(__file__).resolve().parents[2]/'src/behavior_champion/checkpoint.py').read_bytes()).hexdigest(),
+                new_checkpoint_saved=False)
+            (args.output/'resume-result.json').write_text(json.dumps(resume_receipt,indent=2)+'\n')
+            print(json.dumps(resume_receipt),flush=True)
+            if not exact or not metric_exact:
+                raise ValueError('Cold-process continuation differs; preserve evidence and investigate')
     if data_iterator is not None:
         finish_stream()
     result=dict(status='engineering_resume_probe_completed' if args.resume_probe else
@@ -407,7 +472,7 @@ def main():
                 warmup_steps=args.warmup,timed_steps=args.measure,optimizer_updates=int(state.step),
                 seconds_per_step_aggregate=sum(times)/len(times),
                 examples_per_second_aggregate=args.batch_size*len(times)/sum(times),
-                trained_checkpoint_saved=False,engineering_full_state_checkpoint_saved=args.resume_probe,
+                trained_checkpoint_saved=False,engineering_full_state_checkpoint_saved=args.resume_probe and not cold_resume,
                 resume_validation=resume_receipt,source_commit=source_commit,patch_sha256=hashlib.sha256(delta).hexdigest(),
                 openpi_source_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
                 communication_environment=communication,
