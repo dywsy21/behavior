@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 00:55 CST / Codex CHAMPION-2026：** ea68290a已push/Git冻`src/champion-golden-replay-20261012-v1`，lc1 GPU0作者原wrapper只读回放`runs/champion_episode_20261012/radio-author-replay-v1`已第1生成动作SHA不符而failed_no_retry；阶段一致、权重初始SHA相同，0物理/0更新，原log/check保留。尚不能判是移植逻辑还是跨进程数值/非参数噪声状态差异，下一同进程相同输入/种子直接比两实现，并核相关噪声重建；不松阈值假称通过，不自动重跑官方回合。正式24h/8000步方案已异步再次请用户确认，尚无答复。
+
 - **2026-10-12 00:50 CST / Codex CHAMPION-2026：** 修后冠军reader真实全源审计18895TRAIN/12,443,010原生锚（旧50=6,997,602、新50=5,445,408）；task0=25710、task26=304699，105TRAIN整源不回灌。task-layout-admitted-v2 SHA d2257aec…2041仍1087stage，完整layout/offset与旧v1逐项一致，参数行布局不需重建。旧官方684a8305`generate_robot_config`与2026配置皆assisted，夹爪stats实际q01=-1/q99=1，没有证据是模式或归一化塌缩。新增只读作者原wrapper AST＋原PiBehaviorPolicy.infer回放入口，计划同162原观测/seed17比对动作SHA和stage票；0新物理/0更新，实际GPU核验待，不先声称移植一致或把失败全归因模型。
 
 - **2026-10-12 00:44 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** 0baf9113已push/Git冻lc1`src/champion-quarantine-audit-20261012-v1`，原audit-v3终态12.26s、逐12,299,471候选/任务完全一致：18895eligible TRAIN，356784真bundle切换(2.9008%)、11923792同技能延续；周期128计1545714调用中302801(19.5897%)前意图不同于原stride16历史。保留原105TRAIN/6eval隔离与1000eval不入训练；这是命令重采样诊断、非真实actor history/物理标签。冠军原片107.533s/3226帧SHA223abe5d…43f1、全部3225动作ACK/162观测hash/两端身份/未变权重均已本地脚本复核；根亲看0/640/1200/1800/2400/3225关键帧，未看到完成。另原动作两gripper全程0.993…1.004、原proprio双手全开，正在核原2025/2026控制约定，不先归因或重训。正式新配方仍待确认。

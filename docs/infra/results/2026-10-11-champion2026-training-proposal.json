@@ -28,14 +28,17 @@
     "global_batch": 256,
     "stride": 16,
     "phase": "preserve original fixed per-video 0..15 phase",
-    "train_episodes": 19000,
+    "train_episodes": 18895,
+    "preserved_whole_source_train_quarantines": 105,
+    "quarantine_fix_source_commit": "0baf911376101e704b42f2ee78dcb2330e07056d",
+    "eligible_native_stride16_anchors": 12443010,
     "excluded_eval_episodes": 1000,
     "distribution": "each batch includes all100 tasks, 2 or3 distinct anchors/task; rotate extra56 slots fairly; shuffle within task without replacement, reshuffle only after exhaustion",
-    "reason": "Official tasks are equally important; global-frame-uniform pool gives task26 309735 anchors vs task0 25832, a 12x imbalance",
+    "reason": "Official tasks are equally important; admitted global-frame-uniform pool gives task26 304699 anchors vs task0 25710, an11.85x imbalance",
     "old_new_task_ratio": "50:50 over fair scheduling cycle",
-    "task_pool_extremes": {"task0":25832,"task26":309735},
-    "episodes_per_task": 190,
-    "benchmark_sampling_difference": "Measured throughput used global-frame shuffle with84-91 tasks/batch, not this proposed balanced sampler; validate it before launch"
+    "task_pool_examples": {"task0":25710,"task26":304699},
+    "episodes_per_task": "Original190 TRAIN identities minus task-specific preserved quarantines",
+    "benchmark_sampling_difference": "Measured throughput used global-frame shuffle with84-91 tasks/batch. Its1792 rows included8 now-correctly-quarantined rows; all7 updates were discarded with no checkpoint. Keep historical timing evidence, but never reuse that sample stream for formal fitting; validate corrected admission and balanced sampling before launch."
   },
   "optimizer_proposal_not_yet_implemented_or_benchmarked": {
     "type": "AdamW",
@@ -54,7 +57,7 @@
     "target_updates": 8000,
     "wall_clock_hours_max": 24,
     "target_observations": 2048000,
-    "fraction_of_12524274_anchors_by_count": 0.163522,
+    "fraction_of_12443010_admitted_anchors_by_count": 0.1646,
     "short_benchmark_seconds_per_update": 9.414200565963984,
     "compute_plus_input_hours_at_short_rate": 20.92044570214219,
     "meaning": "Leave roughly3h for startup/checkpoint/eval; not a guarantee and not a complete data pass; stop safely at24h rather than automatically extend",
@@ -69,6 +72,16 @@
     "2026 inference adapter action-clock, stage-vote/inpainting session isolation, and short physical smoke",
     "Independent review before merge to main; feature remains isolated"
   ],
+  "readonly_cp2_development_probe": {
+    "date": "2026-10-12",
+    "model": "Final2025 cp2 specialist, not this proposal's shared50 intermediate parent",
+    "task_instance_policy_seed": "turning_on_radio / DEV301 /17",
+    "official_controls": 3225,
+    "official_success": false,
+    "official_q_score": 0.0,
+    "observation": "Reached the radio table, stayed at predicted stage2 after control1420; both offered gripper channels stayed near+1. Full original MP4 and action/observation journals retained.",
+    "meaning": "2026 transport ran end-to-end; not proof of policy effectiveness, migration completeness, or general SR. Exact author-wrapper replay is pending."
+  },
   "monitoring": {
     "fixed_eval": "Protected heldout, fixed sample/noise selection, separately report old50/new50 FM/FAST/stage metrics",
     "save": "Target every1000 updates plus final; exact retention/space checked before launch, no deletion of pre-existing checkpoints",
