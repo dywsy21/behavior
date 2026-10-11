@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 09:36 CST / Codex FULL-EPISODE-VIDEO：** radio/food两个`-v3`模型已ready且0更新，RTX GPU0/1分别提交修正66c24客户端新`radio-v2`/`food-v2`完整回合，原0控失败v1保留。tripod原回合已672实际控继续，无重置/中途接管；三任务状态/记忆/模型均独立，代码同步仅Git冻源。
+
+- **2026-10-11 09:35 CST / Codex FULL-EPISODE-VIDEO：** tripod已读到480条真实逐控ACK/30个16控chunk，头/意图原始日志齐，当前NAVIGATE到digital_camera_87，未结束/未声称成功；非GRASP结果头高置信只作字幕原始预测、仍不校准输入为已知真值。radio/food新服务继续同权重加载。此次首实际控制确认更正此前仅running/首推理在途的口径。
+
+- **2026-10-11 09:33 CST / Codex FULL-EPISODE-VIDEO：** tripod首完整回合已跨过官方初态加载与元数据记录、status=running，原超时5867/仿真seed0、public301；首当前RGB正在真实高层/结果头/FM闭环，连续录制全控。radio/food同权重新服务仍加载，未重新提交sim。旧三片精简CPU与11单测再次通过；尚无完整任务结果。
+
+- **2026-10-11 09:31 CST / Codex FULL-EPISODE-VIDEO：** 两失败首run已证A800 journal都仅BEGIN、无plan/action/ACK，RTX无controls；GPU0/1自然释放，不隐去失败记录。修正客户端66c24d9e冻为RTX`full-episode-videos-20261011-client-v4`；tripod使用尚未连接的原ready服务，GPU2实启首场景；radio/food同a394模型源新`-v3`服务在lc1GPU0/1重新加载。未改权重/随机seed/任何任务条件，没有重跑执行后的失败或挑最好样本。
+
 - **2026-10-11 09:29 CST / Codex FULL-EPISODE-VIDEO：** food/radio首客户端在官方load_batch末记录时误读不存在的`BehaviorTask._max_steps`，均在首次policy inference/真实控制之前退出；原初态单帧/日志/BEGIN会话保留，0执行视频、不是模型失败或成功。已定位纯元数据记录错误，改从官方原`human_stats.length×EVAL_TIMEOUT_MULTIPLIER`记录同一时限，不改终止条件/物理；需要新客户端冻源和已断开的两模型新run，tripod未连接服务不重载。完整回合尚未产出，不将该失败隐作有效分母。
 
 - **2026-10-11 09:26 CST / Codex FULL-EPISODE-VIDEO：** lc1三独立模型ready、每卡33.3GiB、全部权重/配套回执通过，0更新。RTX新7394客户端在GPU1/0分别实提交food/radio完整官方回合（tmux`full-video-{food,radio}-v1`，run根`runs/full_episode_videos_20261011/{case}-v1`），持有既有GPU锁；目前场景加载、尚无动作成功证据。tripod模型就绪但sim等首轮场景加载结束后启动，避免同时载三场景；所有任务按原官方成功/超时结束，不预设短窗。

@@ -1,5 +1,15 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 09:36 CST：三条完整回合当前配对
+
+- RTX`runs/full_episode_videos_20261011/tripod-v1` ↔ A800同根`tripod-v2`；RTX`radio-v2`/`food-v2` ↔ A800`radio-v3`/`food-v3`。三client都66c24d9e、三model都a3949d76；case、config、源身份及实际动作字节在两端日志交叉绑定。
+- 前两任务RTX`-v1`＋A800`-v2`是初态0控工程失败，不能并入新实际执行片；旧A800三`-v1`是更早0客户端owner停止。视频导出必须只取上行当前配对的已完成终态，不按目录后缀误配。
+
+## 2026-10-11 09:31 CST：启动记录错误修复
+
+- RTX food/radio`-v1`在0真实控制时因读取错误超时属性退出，A800相应`-v2`已failed_no_retry/仅BEGIN，原视频只有初态，禁止称全程。新客户端`code/full-episode-videos-20261011-client-v4`=66c24d9e修元数据记录；tripod`-v1`已启动其首场景。
+- A800原a394模型源不变，radio/food改新run与log`runs/full_episode_videos_20261011/{radio,food}-v3`，同GPU0/1/原端口加载；tripod仍`-v2`/GPU2/19702。旧目录不覆盖、无新权重训练。
+
 ## 2026-10-11 09:26 CST：完整回合开始
 
 - A800模型冻结`src/full-episode-videos-20261011-v2`=a3949d76，三个run `runs/full_episode_videos_20261011/{radio,food,tripod}-v2`及同名.log，lc1 GPU0/1/2、19700/19701/19702，全部ready。只读高89907/低0c52/观察器bee+b0，旧v1停于0客户端。
