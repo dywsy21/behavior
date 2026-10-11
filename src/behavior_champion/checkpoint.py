@@ -10,11 +10,41 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
+import time
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 
 from .release import sha256
 from .sampling import digest_json
+
+
+def materialize_host(value):
+    """Assemble disjoint physical shards on CPU, without a GPU all-gather.
+
+    JAX's default global NumPy conversion assembles large interleaved shards
+    serially. Parallel copies use the same exact indices and bytes; no casting
+    or lossy compression is introduced. Replicated slices are copied once.
+    """
+    import jax
+    if not isinstance(value, jax.Array):
+        return np.asarray(value)
+    if not value.is_fully_addressable:
+        raise ValueError('Checkpoint writer requires the whole single-node mesh')
+    value.block_until_ready()
+    unique = {}
+    for shard in value.addressable_shards:
+        unique.setdefault(repr(shard.index), shard)
+    if sum(shard.data.size for shard in unique.values()) != value.size:
+        raise ValueError('Physical shard indices do not cover a single full array')
+    if len(unique) == 1:
+        return np.asarray(next(iter(unique.values())).data).reshape(value.shape)
+    host = np.empty(value.shape, dtype=np.dtype(value.dtype))
+    def copy(shard):
+        np.copyto(host[shard.index], np.asarray(shard.data), casting='no')
+    with ThreadPoolExecutor(max_workers=min(8, len(unique))) as pool:
+        list(pool.map(copy, unique.values()))
+    return host
 
 
 def _description(path, value):
@@ -26,16 +56,21 @@ def _description(path, value):
                 bytes=int(np.prod(shape, dtype=np.int64)) * dtype.itemsize)
 
 
-def tree_fingerprints(tree):
+def tree_fingerprints(tree, *, progress=None):
     import jax
     rows = []
     for path, leaf in jax.tree_util.tree_flatten_with_path(tree)[0]:
-        host = np.ascontiguousarray(np.asarray(jax.device_get(leaf))).reshape(-1).view(np.uint8)
+        started = time.monotonic()
+        host = np.ascontiguousarray(materialize_host(leaf)).reshape(-1).view(np.uint8)
+        assembled = time.monotonic()
         rows.append(dict(**_description(path, leaf), sha256=hashlib.sha256(memoryview(host)).hexdigest()))
+        if progress:
+            progress(dict(operation='fingerprint', leaf=len(rows)-1, path=rows[-1]['path'], bytes=host.nbytes,
+                          host_assembly_seconds=assembled-started, hash_seconds=time.monotonic()-assembled))
     return dict(sha256=digest_json(rows), leaves=rows)
 
 
-def save_full(directory, tree, *, completed, contract, cursor, reserve_bytes=256 << 30):
+def save_full(directory, tree, *, completed, contract, cursor, reserve_bytes=256 << 30, progress=None):
     """Commit a new immutable directory only after all full-state files are durable."""
     import jax
     root = Path(directory).resolve()
@@ -50,12 +85,19 @@ def save_full(directory, tree, *, completed, contract, cursor, reserve_bytes=256
     temporary = Path(tempfile.mkdtemp(prefix=f'.incomplete-{completed:08d}-', dir=root))
     rows = []
     for index, (path, leaf) in enumerate(items):
-        host = np.ascontiguousarray(np.asarray(jax.device_get(leaf))).reshape(-1).view(np.uint8)
+        started = time.monotonic()
+        host = np.ascontiguousarray(materialize_host(leaf)).reshape(-1).view(np.uint8)
+        assembled = time.monotonic()
         row = dict(**_description(path, leaf), file=f'{index:05d}.bin',
                    sha256=hashlib.sha256(memoryview(host)).hexdigest())
+        hashed = time.monotonic()
         with (temporary / row['file']).open('xb') as stream:
             host.tofile(stream); stream.flush(); os.fsync(stream.fileno())
         rows.append(row)
+        if progress:
+            progress(dict(operation='save', leaf=index, path=row['path'], bytes=host.nbytes,
+                          host_assembly_seconds=assembled-started, hash_seconds=hashed-assembled,
+                          write_fsync_seconds=time.monotonic()-hashed))
     manifest = dict(schema='champion-full-state-v1', completed_updates=completed,
                     contract=contract, contract_sha256=digest_json(contract), sampler_cursor=cursor,
                     leaves=rows, dynamic_bytes=needed,

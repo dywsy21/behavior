@@ -10,7 +10,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from behavior_champion.checkpoint import save_full, restore_full, tree_fingerprints
+from behavior_champion.checkpoint import save_full, restore_full, tree_fingerprints, materialize_host
 from behavior_champion.optimizer import RowScaledAdamW
 from behavior_champion.release import sha256
 from behavior_champion.sampling import BalancedPlan
@@ -27,6 +27,18 @@ class ToyState:
 
 
 class CheckpointTests(unittest.TestCase):
+    def test_disjoint_shards_all_axes_and_replicas_match_original_numpy(self):
+        from jax.sharding import Mesh, NamedSharding, PartitionSpec as P
+        devices = jax.devices()
+        mesh = Mesh(np.asarray(devices), ('d',))
+        values = np.arange(len(devices) * 96, dtype=np.float32).reshape(len(devices), 8, 12)
+        for partition in (P('d', None, None), P(None, 'd', None), P()):
+            if partition == P(None, 'd', None) and 8 % len(devices):
+                continue
+            placed = jax.device_put(values, NamedSharding(mesh, partition))
+            np.testing.assert_array_equal(materialize_host(placed), np.asarray(jax.device_get(placed)))
+            np.testing.assert_array_equal(materialize_host(placed), values)
+
     def setup_state(self):
         params = nnx.State({name: {'embedding': nnx.VariableState(nnx.Param, jnp.ones((5, 3)))}
                             for name in ('task_embeddings', 'task_stage_embeddings')})

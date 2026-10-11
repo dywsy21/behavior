@@ -19,6 +19,9 @@ import time
 
 
 def main():
+    def checkpoint_progress(row):
+        if row['bytes'] >= 64 << 20:
+            print(json.dumps(dict(checkpoint_progress=row)),flush=True)
     ap = argparse.ArgumentParser(description=__doc__)
     for key in ('reference','layout','patch','openpi-reference','openpi-patch','checkpoint','verified','probe','output'):
         ap.add_argument('--'+key, type=Path, required=True)
@@ -411,14 +414,14 @@ def main():
             if args.resume_probe and index == 1:
                 from behavior_champion.checkpoint import save_full
                 saved = save_full(args.output/'engineering-checkpoints',dict(state=state,train_rng=train_key),
-                    completed=2,contract=resume_contract,cursor=balanced_plan.cursor(2))
+                    completed=2,contract=resume_contract,cursor=balanced_plan.cursor(2),progress=checkpoint_progress)
                 (args.output/'checkpoint-receipt.json').write_text(json.dumps(saved,indent=2)+'\n')
                 print(json.dumps(dict(full_state_saved=saved)),flush=True)
         if args.resume_probe and not cold_resume:
             import gc
             from behavior_champion.checkpoint import restore_full, tree_fingerprints
             baseline_metrics = jax.tree.map(np.asarray,metrics)
-            baseline = tree_fingerprints(dict(state=state,train_rng=train_key))
+            baseline = tree_fingerprints(dict(state=state,train_rng=train_key),progress=checkpoint_progress)
             (args.output/'uninterrupted-third-update.json').write_text(json.dumps(baseline,indent=2)+'\n')
             template = jax.tree.map(lambda x:jax.ShapeDtypeStruct(x.shape,x.dtype),dict(state=state,train_rng=train_key))
             del state; gc.collect()
@@ -426,7 +429,7 @@ def main():
                 contract=resume_contract,plan=balanced_plan,manifest_sha256=saved['manifest_sha256'])
             state,metrics = step(restored['train_rng'],restored['state'],batch)
             jax.block_until_ready((state,metrics))
-            after = tree_fingerprints(dict(state=state,train_rng=restored['train_rng']))
+            after = tree_fingerprints(dict(state=state,train_rng=restored['train_rng']),progress=checkpoint_progress)
             (args.output/'restored-third-update.json').write_text(json.dumps(after,indent=2)+'\n')
             exact = baseline == after
             metric_exact = all(np.array_equal(a,np.asarray(b)) for a,b in
@@ -444,7 +447,7 @@ def main():
         elif cold_resume:
             from behavior_champion.checkpoint import tree_fingerprints
             baseline = json.loads(reference_file.read_text())
-            after = tree_fingerprints(dict(state=state,train_rng=train_key))
+            after = tree_fingerprints(dict(state=state,train_rng=train_key),progress=checkpoint_progress)
             (args.output/'cold-restored-third-update.json').write_text(json.dumps(after,indent=2)+'\n')
             original_steps = [json.loads(line) for line in (reference_run/'steps.jsonl').read_text().splitlines()]
             last = original_steps[-1]

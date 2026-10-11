@@ -24,7 +24,11 @@
     "gradient_freezing": "none; do not confuse author's freeze_vision_backbone flag with a parameter-gradient freeze",
     "pretrained_norm_fast_and_noise_correlation": "unchanged"
   },
-  "sampling_proposal_not_yet_implemented": {
+  "sampling": {
+    "implementation_status": "IMPLEMENTED_AND_ALL_8000_BATCHES_CPU_VERIFIED_2026_10_12_NOT_A_TRAINING_LAUNCH",
+    "implementation_commit": "c22d1b72",
+    "plan_sha256": "fa1dda371465225506eb662282cad7204c72a8ae4504d973dde86995d654ab0e",
+    "audit_sha256": "a7fca44afe804592575ed87a5f5cfe06c5e5f7de677e22915873a094d8a0bb13",
     "global_batch": 256,
     "stride": 16,
     "phase": "preserve original fixed per-video 0..15 phase",
@@ -33,14 +37,15 @@
     "quarantine_fix_source_commit": "0baf911376101e704b42f2ee78dcb2330e07056d",
     "eligible_native_stride16_anchors": 12443010,
     "excluded_eval_episodes": 1000,
-    "distribution": "each batch includes all100 tasks, 2 or3 distinct anchors/task; rotate extra56 slots fairly; shuffle within task without replacement, reshuffle only after exhaustion",
+    "distribution": "each batch includes all100 tasks, 2 or3 distinct anchors/task; rotate extra56 slots fairly; shuffle within task without replacement. Registered8000-update plan never exhausts any task; fail rather than silently repeat or extend the budget",
     "reason": "Official tasks are equally important; admitted global-frame-uniform pool gives task26 304699 anchors vs task0 25710, an11.85x imbalance",
     "old_new_task_ratio": "50:50 over fair scheduling cycle",
     "task_pool_examples": {"task0":25710,"task26":304699},
     "episodes_per_task": "Original190 TRAIN identities minus task-specific preserved quarantines",
     "benchmark_sampling_difference": "Measured throughput used global-frame shuffle with84-91 tasks/batch. Its1792 rows included8 now-correctly-quarantined rows; all7 updates were discarded with no checkpoint. Keep historical timing evidence, but never reuse that sample stream for formal fitting; validate corrected admission and balanced sampling before launch."
   },
-  "optimizer_proposal_not_yet_implemented_or_benchmarked": {
+  "optimizer": {
+    "implementation_status": "IMPLEMENTED_CPU_ROW_AND_MOMENT_EQUALITY_TESTED; ACTUAL8_A800_FINITE_ENGINEERING_UPDATES; FULL_RESTORE_VALIDATION_PENDING",
     "type": "AdamW",
     "pretrained_peak_lr": 0.000025,
     "new_task_stage_rows_peak_lr": 0.0001,
