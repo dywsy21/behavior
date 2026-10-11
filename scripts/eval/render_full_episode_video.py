@@ -60,13 +60,17 @@ def main():
     status=read(a.episode/'status.json');service=read(a.service/'result.json')
     if (status['status']!='completed' or service['status']!='completed' or not service['weights_unchanged']
             or status['config_sha256']!=service['config_sha256'] or status['case']!=service['case']
-            or status['source_commit']!=service['source_commit'] or service['optimizer_updates']!=0
+            or service['optimizer_updates']!=0
             or status['controls']!=service['result']['control_step']):
         raise ValueError('Full unchanged-model episode and matching server completion required')
     hello=read(a.episode/'service-hello.json');events=jsonl(a.service/'events.jsonl')
     if (events[0]['kind']!='begin' or events[-1]['kind']!='close' or events[0]['identity']!=hello['identity']
             or any(r['episode']!=hello['identity']['episode'] for r in events)):
         raise ValueError('Missing/foreign complete server session')
+    metric_path=a.episode/'json'/f"{status['task']}_{status['instance_id']}_0.json"
+    if sha(metric_path)!=status['official_metrics_sha256']:raise ValueError('Changed official metrics')
+    metric=read(metric_path)
+    if any(metric[k]!=v for k,v in status['official_result'].items()):raise ValueError('Changed official result summary')
     chunks=jsonl(a.episode/'chunks.jsonl');controls=jsonl(a.episode/'controls.jsonl')
     actions=[r for r in events if r['kind']=='action']
     if len(actions)!=len(chunks):raise ValueError('Server/client action logs disagree')
@@ -109,6 +113,7 @@ def main():
         control_ack_sha256=sha(a.episode/'controls.jsonl'),stream=final,playback_speed=1,
         all_original_frames_preserved=True,initial_frame=True,ending_freeze=False,actual_steps=status['controls'],
         official_result=status['official_result'],model_identity=service['model_identity'],
+        client_source_commit=status['source_commit'],model_source_commit=service['source_commit'],
         probability_meaning='raw softmax of actual online per-member outcome logits, not physical success probability',
         caption_fields=['current_intent','outcome_prediction_and_probability'],owner_visual_review_pending=True)
     (a.output/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')

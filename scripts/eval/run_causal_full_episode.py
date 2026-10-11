@@ -72,7 +72,13 @@ def main():
             receipt=evaluator.policy.finish(evaluator._batch_obs())
             record=results[301]
             if receipt['control_step']!=record['steps']:raise ValueError('Official/ACK step mismatch')
-            status.update(status='completed',finished=time.time(),controls=record['steps'],official_result=record,
+            # Official normalized-distance diagnostics may be +inf when a
+            # body part never moves. Preserve the original metric file, but
+            # do not put nonfinite ancillary values into the strict receipt.
+            summary={k:record[k] for k in ('task','instance_id','rollout_id','steps','success','q_score')}
+            metric_path=a.output/'json'/f"{case['task']}_301_0.json"
+            status.update(status='completed',finished=time.time(),controls=record['steps'],official_result=summary,
+                official_metrics_sha256=hashlib.sha256(metric_path.read_bytes()).hexdigest(),
                 service_finish=receipt,video_frames_expected=record['steps']+1,optimizer_updates=0)
             atomic_json(a.output/'status.json',status)
     except BaseException as e:

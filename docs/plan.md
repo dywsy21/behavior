@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 09:20 CST / Codex FULL-EPISODE-VIDEO：** 新a3949d76 Git冻源两端`full-episode-videos-20261011-v2`，lc1 GPU0–2三服务`{radio,food,tripod}-v2`已提交新加载；旧v1无任何action/events、不复用。RTX实空/4.7TiB余量，三仿真尚未开始，等各模型ready再接入。旧三片精简MP4完整解码通过（1344×558，仅两字段，旧版保留），根已看radio新成片关键帧；全程渲染器原速/无末帧定格/无丢帧，新旧8字幕单测过，完整回合视频仍待。
+
 - **2026-10-11 09:21 CST / Codex FULL-EPISODE-VIDEO：** 全程入口静态复核发现终态日志`episode`重复关键字会导致close异常，已本地修复并补官方正常SystemExit处理；三v1服务仍未接客户端/0仿真，逐PID/argv核归属后SIGTERM停加载，原目录/log保留，改新v2冻源再启动而非热改。全程字幕渲染器按原始初态＋每控制帧、实际action/ACK/头输出逐项交叉核验；3时钟/终止/错头反例＋5minimal字幕测试过。只显示当前意图及逐成员原始头预测概率，所有技术说明放manifest/聊天，不进画面。
 
 - **2026-10-11 09:17 CST / Codex FULL-EPISODE-VIDEO：** a590c23f已commit/push且Git bundle在A800与RTX各建不可变`full-episode-videos-20261011-v1`；首增量缺远端54d父对象被Git拒绝，改从两端已有646d构造完整增量，未覆盖源/清理对象。lc1 GPU0/1/2分别提交radio/food/tripod三独立模型服务，run `runs/full_episode_videos_20261011/{case}-v1`/logs，仍加载/未新控制。旧短片minimal字幕CPU重编码开始，旧原片不覆盖。根额外13校准回归＋5字幕回归过；本地miniconda路径随后外部变为不可见，未安装/修改环境，媒体工具改用现有`/usr/bin/python`。
