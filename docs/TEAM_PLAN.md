@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-11 09:08 CST / Codex：** FULL-EPISODE-VIDEO由根独立处理：精简字幕至意图/结果头预测概率，另跑三个从初态到官方终止的完整回合，保留全部成功/失败/超时。旧goal暂停及原未完成对照/消融不恢复；本次不训练、不据少量视频宣称SR改善。
+
 **2026-10-11 08:53 CST / Codex：** VIDEO-INTENT-OUTCOME已交付准备完成：两任务三段实际MP4＋47.2s合集，真实高层/结果头实时字幕、原始与校准后及物理真值分开，CPU验证/人工关键帧检查通过。没有重启未完低层对照或上轮消融；原RECOVERY-USABLE及独立review仍待，不把视频成片当效果提升。
 
 **2026-10-11 08:44 CST / Codex：** 先响应用户VIDEO-INTENT-OUTCOME，CPU生成真实MP4同步原高层/结果头字幕，不跑新训练或美化UNKNOWN。原native-parent三worker4/2/4后failed_no_retry，保留完整失败/未完成分母，尚不可比较三臂；上轮消融仅本地补丁/测试、没有实际GPU运行。其他目标与成员review仍待。

@@ -1,0 +1,20 @@
+{
+  "schema": "fresh_full_episode_readonly_v1",
+  "owner": "Codex FULL-EPISODE-VIDEO",
+  "hypothesis": "Inspect complete autonomous behavior and synchronized real intent/outcome predictions from fresh official starts; this is not a success-selected montage or a method comparison.",
+  "models_config": "configs/recovery_sft/causal_planner_calibrated_pilot_models_v1.json",
+  "mode": "public_test",
+  "instance_id": 301,
+  "policy_seed": 17,
+  "planning_interval_controls": 128,
+  "action_chunk_size": 16,
+  "cases": {
+    "radio": {"task": "turning_on_radio", "task_id": 0, "sim_gpu": 0, "model_gpu": 0, "port": 19700},
+    "food": {"task": "cleaning_up_plates_and_food", "task_id": 3, "sim_gpu": 1, "model_gpu": 1, "port": 19701},
+    "tripod": {"task": "attach_a_camera_to_a_tripod", "task_id": 35, "sim_gpu": 2, "model_gpu": 2, "port": 19702}
+  },
+  "termination": "Original official success or official task-specific timeout only; infrastructure errors preserved, never silently restarted.",
+  "data_role": "Previously diagnosed public_test301 development demonstration, never training or independent SR evidence.",
+  "resource": "Three verified-idle lc1 GPUs for independent frozen models, RTX10383 GPUs0-2 for official simulation. No optimizer, no changed shared environment.",
+  "overlay": "Only current intent and per-member raw outcome-head outputs/probabilities below footage; no counters, model hashes, physical truth or invented CoT."
+}

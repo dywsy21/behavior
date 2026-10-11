@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 09:13 CST / Codex FULL-EPISODE-VIDEO：** lc1账号2代理与持久SSH shell已恢复，八A800实空。新增独立全程service/session/client/evaluator（不改官方源码/现役入口），从空记忆、0教师动作开始；真实23维逐控ACK推进128控高层与16控观察器，末不足16控照实闭合，记录初态＋每个真实控制帧。3新反例/时钟/跨task隔离测试过、编译/diff过。固定public_test301开发实例、seed17的radio/task0、food/task3、tripod/task35各一回合，官方1.5×人类平均时限原样（约3224/20544/5867控），不选结果/不裁断任务；源码准备冻结、尚未提交GPU/仿真。
+
+- **2026-10-11 09:08 CST / Codex FULL-EPISODE-VIDEO：** 用户明确要求精简为底部当前意图＋结果头输出/概率，并新增几个从官方初始状态至成功/超时的完整回合；上一批两task三段仅中途接管局部片段，不再用其代替全程。RTX10383八卡实查空闲；原本地VPN/SSH会话已退出，沿用户此前许可仅重连账号2，代理恢复、lc1 SSH认证在途，不动lc2/robo/队友。准备独立全程只读入口，真实ACK时钟/每episode隔离/最新89907高＋0c52低＋bee/b0观察器，禁止教师前缀、物理真值进actor和结果筛选；尚未新仿真。旧RECOVERY-USABLE goal仍paused、三处未提交消融保留；fetch后HEAD/upstream54d5da87/main无新变化，dirty故未pull。
+
 - **2026-10-11 08:53 CST / Codex VIDEO-INTENT-OUTCOME：** 已完成两任务三段真实在线录像＋47.2s合集，均H264/15fps/1344×960/faststart，全708输出帧完整解码；本地`artifacts/recovery-execution-videos-20261011/00-overview.mp4`，三段4.4/19.73/23.07s（明确0.25x/0.5x慢放与片尾2s定格）。新CPU工具`render_causal_execution_video.py`按发出当前动作的真实plan/observer顺序烧录，防止chunk末帧提前显示下一意图；四反例测试过，全部300原始帧SHA绑定/618慢放执行帧ROI数值对齐检查过，根看七个成片关键帧确认切换、中文、无遮挡。原始概率/过滤后反馈/高层已消费结果/物理诊断分开，OPEN未校准与全UNKNOWN如实显示；无新推理/仿真/训练。轻量验收`2026-10-11-execution-videos-with-online-feedback.json`含全SHA/ckpt路径；仍非完整任务SR或goal完成。
 
 - **2026-10-11 08:44 CST / Codex VIDEO-INTENT-OUTCOME：** 用户要求可播放执行视频及同步意图/结果头输出，优先制作已完整审核的校准联合录像：radio155/101、wash169/137成功与wash169/101未完成，来自两任务局部技能，非完整任务SR。只取实际MP4及同episode日志，不将原图拼成图流、不生成伪CoT或把物理真值冒充模型预测；未知/GRASP-only范围明确显示。源码自有三处未提交的只读消融补丁保留、fetch无新upstream故未pull/未启动消融。核RTX三个native-parent冷worker均failed_no_retry（已完成4/2/4），不重试/不隐去partial；该24条对照尚不完整，控制/候选未启动。本轮先交付视频、不为此重启训练/评测。
