@@ -1,5 +1,9 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 21:50 CST：冠军依赖隔离
+
+- `src/champion-prep-20261011-v1`=4ee223d8运行只建依赖的入口；新上游`src/champion2025-ca556f74-v1`精确ca556f74/openpi01177e0，不运行上游sudo setup脚本、不安装旧模拟器。tmux `champion-env-bootstrap-v1`、`runs/champion_assets_20261011/env-bootstrap-v1.log`，目标env `envs/champion-openpi-py311-v1`、独立`tools/champion-{python,uv-cache}-v1`。当前只在下载/构建，不称环境通过，更不称训练开始。
+
 ## 2026-10-11 21:33 CST：边界专项评测与冠军权重准备
 
 - lc1新Git冻结`/data/workspace/wsy/behavior2026/src/planner-transition-audit-20261011-v1`=cf91918a，原源码不热改；GPU0/1 `planner-transition-parent-v1`/`planner-transition-candidate-v1`为242条只读高层生成，分别`runs/planner_transition_audit_20261011/{parent,candidate}-v1`、同名`.log`及`.runtime/runtime-cache`。模型a74/89907不训练，所有原CAL/test不新读，新增100条来自原normal heldout真实技能边界。
