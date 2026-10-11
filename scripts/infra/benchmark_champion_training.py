@@ -1,8 +1,9 @@
 """Short, disposable 8-A800 full-gradient timing from verified champion weights.
 
 Uses the pinned author's actual init_train_state/train_step, FM+FAST+stage
-losses and AdamW/EMA. NO trained checkpoint is saved. A cached real mixed-task
-batch is a compute measurement, not full-loader throughput or learning evidence.
+losses and AdamW/EMA. Default timings save no checkpoint. The explicitly
+selected resume probe saves a NOT-FOR-DEPLOYMENT engineering full-state
+checkpoint after two updates and checks the third update after restoration.
 """
 import argparse
 import dataclasses
@@ -27,10 +28,15 @@ def main():
     ap.add_argument('--workers', type=int, choices=(8,16,32), default=32)
     ap.add_argument('--input-only', action='store_true', help='Profile the same real input path without loading/updating the model')
     ap.add_argument('--compact-rgb', action='store_true', help='Keep native uint8 through checked placement; resize/normalize on each assigned GPU')
+    ap.add_argument('--resume-probe', action='store_true', help='Three-update balanced/row-Adam full-state save/restore correctness probe; not formal training')
     ap.add_argument('--freeze-vision', action='store_true')
     ap.add_argument('--warmup', type=int, default=2)
     ap.add_argument('--measure', type=int, default=5)
     args = ap.parse_args()
+    if args.resume_probe and (args.release is None or not args.compact_rgb or args.input_only or
+                             args.freeze_vision or args.batch_size != 256 or args.flow_samples != 4 or
+                             args.warmup != 2 or args.measure != 1):
+        raise ValueError('Resume probe is exactly three full-gradient bs256/flow4 native balanced updates')
     if args.input_only and args.release is None:
         raise ValueError('Input-only profiling requires the actual protected V3 release')
     if args.compact_rgb and args.release is None:
@@ -66,12 +72,18 @@ def main():
     verified = json.loads(args.verified.read_text())
     if verified['status'] != 'all_selected_assets_verified' or verified['revision'] != '114902410a6439ad1a0b58a112b84159d3ab3f65':
         raise ValueError('Use the verified shared50 parent, not a final specialist silently')
+    if args.resume_probe and hashlib.sha256(args.verified.read_bytes()).hexdigest() != 'd0ca3f072c11967f3581827151c7242f53e53897650a80f2263f0803fd5b1e8a':
+        raise ValueError('Use the registered original shared50 verification receipt')
     # Each immutable verified file must still have the same size. The separate
     # verifier hashes ALL files on this explicit root immediately before use.
     for row in verified['files']:
         path = args.checkpoint/row['path']
         if not path.is_file() or path.stat().st_size != row['size']:
             raise ValueError('Changed verified asset: '+str(path))
+        if args.resume_probe:
+            from behavior_champion.release import sha256
+            if sha256(path) != row['sha256']:
+                raise ValueError('Changed shared50 asset bytes: '+str(path))
     sys.path.insert(0, str(args.openpi_reference/'src'))
     sys.path.insert(0, str(args.reference/'src'))
     import numpy as np
@@ -134,12 +146,19 @@ def main():
 
     data_iterator = None
     stream_receipt = None
+    balanced_plan = None
     if args.release is not None:
         from torch.utils.data import DataLoader, Subset
         from behavior_champion.dataset import NativeV3Dataset, collate_native, worker_init
         stream_dataset = NativeV3Dataset(args.release,'train')
         sample_count = (args.warmup+args.measure)*args.batch_size
-        selection = np.random.default_rng(17).permutation(len(stream_dataset))[:sample_count]
+        if args.resume_probe:
+            from behavior_champion.sampling import BalancedPlan
+            balanced_plan = BalancedPlan(stream_dataset, updates=8000, batch_size=256, seed=17)
+            selection = np.concatenate([balanced_plan.batch(i) for i in range(3)])
+            (args.output/'sampling-plan.json').write_text(json.dumps(balanced_plan.contract,indent=2)+'\n')
+        else:
+            selection = np.random.default_rng(17).permutation(len(stream_dataset))[:sample_count]
         if len(selection) != sample_count: raise ValueError('Insufficient real stream samples')
         loader = DataLoader(Subset(stream_dataset,selection),batch_size=32,num_workers=args.workers,
                             shuffle=False,collate_fn=collate_native,worker_init_fn=worker_init,
@@ -262,6 +281,12 @@ def main():
         weight_loader=ExpandedLoader(),batch_size=args.batch_size,num_flow_samples=args.flow_samples,
         fsdp_devices=8,wandb_enabled=False,
         freeze_filter=nnx_utils.PathRegex('PaliGemma/img/.*') if args.freeze_vision else nnx.Nothing)
+    if args.resume_probe:
+        from openpi.training.optimizer import CosineDecaySchedule
+        from behavior_champion.optimizer import RowScaledAdamW
+        config = dataclasses.replace(config,optimizer=RowScaledAdamW(),
+            lr_schedule=CosineDecaySchedule(warmup_steps=300,peak_lr=2.5e-5,decay_steps=8000,decay_lr=2.5e-6),
+            ema_decay=.99)
     replicated = jax.sharding.NamedSharding(mesh,jax.sharding.PartitionSpec())
     if batch is not None: batch = place_from_host(batch,data_sharding)
     # Legacy uint32 PRNG keys preserve the same seed while avoiding implicit
@@ -299,6 +324,7 @@ def main():
                        in_shardings=(replicated,state_sharding,data_sharding),
                        out_shardings=(state_sharding,replicated),donate_argnums=(1,))
         times = []
+        resume_receipt = None
         for index in range(args.warmup+args.measure):
             started=time.monotonic()
             data_seconds = 0.
@@ -325,15 +351,64 @@ def main():
             with (args.output/'steps.jsonl').open('a') as stream: stream.write(json.dumps(row)+'\n')
             print(json.dumps(row),flush=True)
             if index>=args.warmup:times.append(seconds)
+            if args.resume_probe and index == 1:
+                from behavior_champion.checkpoint import save_full
+                from behavior_champion.release import RELEASE_SHA256
+                from behavior_champion.sampling import digest_json
+                resume_contract = dict(purpose='ENGINEERING_ONLY_NOT_FOR_DEPLOYMENT',
+                    integration_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+                    parent_revision=verified['revision'],parent_receipt_sha256=hashlib.sha256(args.verified.read_bytes()).hexdigest(),
+                    reference_commit=source_commit,reference_patch_sha256=hashlib.sha256(delta).hexdigest(),
+                    openpi_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
+                    release_sha256=RELEASE_SHA256,layout_sha256=digest_json(layout),
+                    model=dataclasses.asdict(config.model),optimizer=dataclasses.asdict(config.optimizer),
+                    lr=dataclasses.asdict(config.lr_schedule),ema_decay=config.ema_decay,flow_samples=4,
+                    sampler_plan_sha256=balanced_plan.fingerprint,
+                    environment={key:os.environ.get(key) for key in ('XLA_FLAGS','NCCL_P2P_DISABLE','NCCL_IB_DISABLE',
+                        'NCCL_SOCKET_IFNAME','OPENBLAS_NUM_THREADS','OMP_NUM_THREADS')},
+                    jax_version=jax.__version__,numpy_version=np.__version__)
+                saved = save_full(args.output/'engineering-checkpoints',dict(state=state,train_rng=train_key),
+                    completed=2,contract=resume_contract,cursor=balanced_plan.cursor(2))
+                (args.output/'checkpoint-receipt.json').write_text(json.dumps(saved,indent=2)+'\n')
+                print(json.dumps(dict(full_state_saved=saved)),flush=True)
+        if args.resume_probe:
+            import gc
+            from behavior_champion.checkpoint import restore_full, tree_fingerprints
+            baseline_metrics = jax.tree.map(np.asarray,metrics)
+            baseline = tree_fingerprints(dict(state=state,train_rng=train_key))
+            (args.output/'uninterrupted-third-update.json').write_text(json.dumps(baseline,indent=2)+'\n')
+            template = jax.tree.map(lambda x:jax.ShapeDtypeStruct(x.shape,x.dtype),dict(state=state,train_rng=train_key))
+            del state; gc.collect()
+            restored = restore_full(saved['path'],template,dict(state=state_sharding,train_rng=replicated),
+                contract=resume_contract,plan=balanced_plan,manifest_sha256=saved['manifest_sha256'])
+            state,metrics = step(restored['train_rng'],restored['state'],batch)
+            jax.block_until_ready((state,metrics))
+            after = tree_fingerprints(dict(state=state,train_rng=restored['train_rng']))
+            (args.output/'restored-third-update.json').write_text(json.dumps(after,indent=2)+'\n')
+            exact = baseline == after
+            metric_exact = all(np.array_equal(a,np.asarray(b)) for a,b in
+                zip(jax.tree.leaves(baseline_metrics),jax.tree.leaves(metrics),strict=True))
+            resume_receipt = dict(status='passed' if exact and metric_exact else 'failed_no_retry',
+                uninterrupted_vs_restored_all_dynamic_leaves_exact=exact,metrics_exact=metric_exact,
+                checkpoint=saved,optimizer_updates_from_parent=3,extra_replay_updates=1,
+                checkpoint_role='engineering_validation_only_not_a_formal_or_deployable_model',
+                cross_process_restore_tested=False,full_state_leaves=len(after['leaves']),
+                sampler_plan_sha256=balanced_plan.fingerprint)
+            (args.output/'resume-result.json').write_text(json.dumps(resume_receipt,indent=2)+'\n')
+            print(json.dumps(resume_receipt),flush=True)
+            if not exact or not metric_exact:
+                raise ValueError('Full-state restored third update differs; preserve both fingerprints and do not deploy')
     if data_iterator is not None:
         finish_stream()
-    result=dict(status='short_disposable_stream_timing_completed' if args.release else 'short_disposable_compute_timing_completed',batch_size=args.batch_size,
+    result=dict(status='engineering_resume_probe_completed' if args.resume_probe else
+                ('short_disposable_stream_timing_completed' if args.release else 'short_disposable_compute_timing_completed'),batch_size=args.batch_size,
                 flow_samples=args.flow_samples,true_vision_freeze=args.freeze_vision,
                 seconds_per_step_median=float(np.median(times)),examples_per_second=args.batch_size/float(np.median(times)),
                 warmup_steps=args.warmup,timed_steps=args.measure,optimizer_updates=int(state.step),
                 seconds_per_step_aggregate=sum(times)/len(times),
                 examples_per_second_aggregate=args.batch_size*len(times)/sum(times),
-                trained_checkpoint_saved=False,source_commit=source_commit,patch_sha256=hashlib.sha256(delta).hexdigest(),
+                trained_checkpoint_saved=False,engineering_full_state_checkpoint_saved=args.resume_probe,
+                resume_validation=resume_receipt,source_commit=source_commit,patch_sha256=hashlib.sha256(delta).hexdigest(),
                 openpi_source_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
                 communication_environment=communication,
                 compact_frontend_exact_all8=args.compact_rgb,
