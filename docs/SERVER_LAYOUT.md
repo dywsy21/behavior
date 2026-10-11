@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 21:33 CST：边界专项评测与冠军权重准备
+
+- lc1新Git冻结`/data/workspace/wsy/behavior2026/src/planner-transition-audit-20261011-v1`=cf91918a，原源码不热改；GPU0/1 `planner-transition-parent-v1`/`planner-transition-candidate-v1`为242条只读高层生成，分别`runs/planner_transition_audit_20261011/{parent,candidate}-v1`、同名`.log`及`.runtime/runtime-cache`。模型a74/89907不训练，所有原CAL/test不新读，新增100条来自原normal heldout真实技能边界。
+- 冠军公开资产下载：共享`models/champion2025/shared50-11490241`与`models/champion2025/final-cp2-89545bc1`，固定HF revision见目录短SHA；tmux`champion-shared50-download-v1`/`champion-cp2-download-v1`，日志`runs/champion_assets_20261011/{shared50-v1,final-cp2-v1}.log`，镜像alpha直连/无令牌，只用既有`envs/download`。这不是训练/已验收权重；下载返回后还须逐文件对照官方hash检查，尚无新冠军训练环境。
+- 本地food全片`artifacts/full-episode-videos-20261011/food/execution.mp4`已684.867s完整结束/Q0、SHA1fb55f67…60374，根已看0/300/684s，三视频两端进程均结束、原GPU已释放；上一10:12“food进行中”是历史检查点，不再是现状。旧goal恢复/扩展按当前plan，不再paused。
+
 ## 2026-10-11 10:07 CST：完整任务成片与收片器恢复
 
 - 本地`artifacts/full-episode-videos-20261011/{radio,tripod}/execution.mp4`已完成，分别107.533/195.633秒；同目录有字幕/timeline/全量机器核验manifest和根人工`owner-review.json`。全原片/两端控制与模型日志在`source/{case}/{episode,service}`，不入Git、不删除服务器原件。
