@@ -48,6 +48,7 @@ def main():
     runtime=args.output.with_name(args.output.name+'.runtime')
     if runtime.exists():
         raise FileExistsError('Use a fresh isolated runtime cache: '+str(runtime))
+    runtime.mkdir(parents=True,exist_ok=False)
     os.environ.update(isolated_cache_env(runtime))
     import numpy as np
     import torch
