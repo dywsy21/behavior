@@ -1,18 +1,17 @@
 """Native LeRobot V3 RGB reader, independent of the MEM-Lite skill targets.
 
-The release supplies only the protected split, episode identity and fixed
-stride phase. Every eligible frame is indexed; no skill-boundary truncation.
+The release supplies the protected split, whole-source quarantines, episode
+identity and fixed stride phase. Every frame of an admitted episode is indexed;
+there is no skill-boundary truncation or automatic quarantine readmission.
 Pixels stay native uint8. The champion's own transforms run downstream.
 """
 from collections import OrderedDict
-import hashlib
-import json
 from pathlib import Path
 
 import numpy as np
 
 
-RELEASE_SHA256 = '90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23'
+from .release import AcceptedRelease, RELEASE_SHA256
 CAMERAS = {
     'base_0_rgb': 'zed_link_camera_0',
     'left_wrist_0_rgb': 'left_realsense_link_camera_0',
@@ -31,30 +30,19 @@ def action_indices(frame, length, horizon=30):
 class NativeV3Dataset:
     def __init__(self, release, split='train', *, manifest_sha256=RELEASE_SHA256):
         self.release = Path(release)
-        payload = (self.release / 'manifest.json').read_bytes()
-        if hashlib.sha256(payload).hexdigest() != manifest_sha256:
-            raise ValueError('Unregistered source release')
         if split not in ('train', 'eval'):
             raise ValueError('Explicit original train/eval split required')
-        manifest = json.loads(payload)
-        self.root = Path(manifest['raw_root'])
+        accepted = AcceptedRelease(release, manifest_sha256=manifest_sha256)
+        self.root = Path(accepted.manifest['raw_root'])
         self.split = split
         self.episodes = []
-        seen = set()
-        with (self.release / 'episodes.jsonl').open() as stream:
-            for line in stream:
-                ep = json.loads(line)
-                row = ep['row']
-                eid = int(row['episode_index'])
-                if eid in seen:
-                    raise ValueError('Duplicate episode identity across release splits')
-                seen.add(eid)
-                if ep['split'] != split:
-                    continue
-                length, phase = int(row['length']), int(ep['phase'])
-                if not 0 <= phase < 16 or length <= phase:
-                    raise ValueError('Invalid original fixed stride phase')
-                self.episodes.append(dict(row=row, phase=phase, split=ep['split']))
+        self.excluded_episode_counts = dict(accepted.excluded_splits)
+        for _, ep in accepted.episodes(split):
+            row = ep['row']
+            length, phase = int(row['length']), int(ep['phase'])
+            if not 0 <= phase < 16 or length <= phase:
+                raise ValueError('Invalid original fixed stride phase')
+            self.episodes.append(dict(row=row, phase=phase, split=ep['split']))
         counts = [(e['row']['length'] - 1 - e['phase']) // 16 + 1 for e in self.episodes]
         if not counts:
             raise ValueError('Empty selected split')

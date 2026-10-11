@@ -11,6 +11,8 @@ import os
 from pathlib import Path
 import time
 
+from behavior_champion.release import AcceptedRelease
+
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
@@ -27,11 +29,11 @@ def main():
     import torch
     from g05.data.lerobot.datasets.video_utils import decode_video_frames_torchcodec
     torch.set_num_threads(1)
-    manifest = json.loads((args.release/'manifest.json').read_text())
+    accepted = AcceptedRelease(args.release)
+    manifest = accepted.manifest
     root = Path(manifest['raw_root'])
     selected = {}
-    for line in (args.release/'episodes.jsonl').open():
-        episode = json.loads(line)
+    for _, episode in accepted.episodes('train'):
         task = int(episode['row']['task_index'])
         if episode['split'] == 'train' and task < args.task_count and task not in selected:
             selected[task] = episode
@@ -87,7 +89,8 @@ def main():
         while block := stream.read(8*1024*1024):
             digest.update(block)
     result = dict(status='real_train_probe_prepared_not_training_or_effect_evaluation',
-                  selection='first TRAIN episode per task, one-third episode frame on original stride phase',
+                  selection='first admitted TRAIN episode per task, one-third episode frame on original stride phase',
+                  preserved_source_quarantines=dict(accepted.excluded_splits),
                   identities=identities, seconds=time.monotonic()-started, native_npz_sha256=digest.hexdigest(),
                   source_manifest_sha256=hashlib.sha256((args.release/'manifest.json').read_bytes()).hexdigest(),
                   image_shapes={k:list(v[0].shape) for k,v in images.items()}, action_horizon=30,

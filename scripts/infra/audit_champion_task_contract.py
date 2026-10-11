@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from behavior_champion.contracts import make_task_layout
+from behavior_champion.release import AcceptedRelease
 
 
 def sha(path):
@@ -26,12 +27,12 @@ def main():
     if args.output.exists():
         raise FileExistsError(args.output)
     old = [r['id'] for r in json.loads(args.legacy_task_data.read_text())['tasks']]
-    manifest = json.loads((args.release/'manifest.json').read_text())
+    accepted = AcceptedRelease(args.release)
+    manifest = accepted.manifest
     names = {int(k): v for k, v in manifest['task_names'].items()}
     durations = defaultdict(list)
     splits = defaultdict(int)
-    for line in (args.release/'episodes.jsonl').open():
-        episode = json.loads(line)
+    for _, episode in accepted.episodes():
         splits[episode['split']] += 1
         if episode['split'] == 'train':
             durations[episode['row']['task_index']].append(episode['row']['length'])
@@ -44,6 +45,7 @@ def main():
                   legacy_stage_rows_preserved=596,
                   old_official_ids_unchanged=all(layout.dataset_to_model[i] == i for i in range(50)),
                   train_mean_frames=means, source_episode_splits=dict(splits),
+                  preserved_source_quarantines=dict(accepted.excluded_splits),
                   source_hashes={str(p): sha(p) for p in
                       (args.legacy_task_data, args.release/'manifest.json', args.release/'episodes.jsonl')},
                   warnings=['New stage counts are an initial TRAIN-duration-bin recipe, not physical outcomes.',

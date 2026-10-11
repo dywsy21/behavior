@@ -1,5 +1,16 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 00:35 CST：冠军原回合完成，审计失败现场保留
+
+- 两端`champion-radio-cp2-v1`已终态3225控/162推理/Q0、0优化，lc1与RTX GPU0释放；本地完整原件在`artifacts/champion-episode-20261012/radio-cp2-v1/{episode,service}`，含原107.533s/3226帧MP4、逐控/模型事件、全162 NPZ。模型参数前后SHA一致；视频不含伪造MEM-Lite intent/outcome。
+- CPU`memlite-train-cadence-v1`因启动漏PYTHONPATH、`-v2`因原105TRAIN整源隔离导致空锚拒绝，均已结束。相应`train-cadence-audit-v{1,2}.log`保留，无虚填result；新修正源/输出将另建，旧release不更改。
+
+## 2026-10-12 00:26 CST：冠军首次完整回合与MEM历史元数据审计
+
+- A800共享根`/data/workspace/wsy/behavior2026`及RTX根`/run/ti/rl_memlite_stage1_20261006`分别冻结`src/champion-inference-20261012-v1`、`code/champion-inference-20261012-v1`=d9371871，两端同tmux`champion-radio-cp2-v1`、同相对run`runs/champion_episode_20261012/radio-cp2-v1{,.log}`。A800模型GPU0/loopback19720；RTX仿真GPU0持既有锁。原官方radio301/seed0/模型17，无前缀或timeout覆盖；当前未终态。A800保留原观测NPZ/事件/指纹，RTX保留逐控ACK/动作块/官方视频与指标。
+- lc1另冻`src/memlite-cadence-audit-20261012-v1`=bdce5866，CPU tmux`memlite-train-cadence-v1`，结果/日志`runs/planner_transition_audit_20261011/train-cadence-audit-v1.{json,log}`；不读RGB/权重，不造标签/不训练。
+- 本地`artifacts/champion-episode-20261012/radio-live/000001.{npz,png}`与`000033.{npz,png}`为control0/640真实观测及无改动RGB解码，仅人工诊断，不是新训练样本。隧道复用既有lc1控制socket和`champion-rtx-forward-19720`，未重登VPN。
+
 ## 2026-10-11 23:54 CST：冠军真实流测速完成、无正式训练
 
 - A800共享根`/data/workspace/wsy/behavior2026`：`src/champion-compact-stream-20261011-v1`=b99310d1；`runs/champion_assets_20261011/stream-bs256-w32-v2{,.log}`完整7步短测终态、0checkpoint，lc1八卡已释放。均值9.4142s/256，不能当物理Q/SR。

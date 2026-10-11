@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 00:35 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** 核原ACCEPTED release确认111整源隔离=105TRAIN/6eval，真实eligible18895/994、MEM锚12,299,471。此前冠军原生reader/新task时长统计仅保留split而未继承整源隔离，是正式训练前发现的数据准入缺口；旧测速7步权重全丢弃，无正式模型。新增`behavior_champion.release.AcceptedRelease`逐metadata SHA/原acceptance/隔离identity/跨split instance检查，所有冠军reader、probe选源、task统计继承；不改已准入episode内跨技能动作。MEM审计改严格逐行对照原候选/任务数组并单列隔离，不复活排除源。7读取器+2节奏测试过，真实全源统计待；新源将另冻，不改旧回合/测速源。旧19k/12,524,274预算口径须由新准入统计更正，保留旧测量证据。
+
+- **2026-10-12 00:28 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** 冠军cp2首radio301/seed17原完整回合终态齐：3225真实控、162推理、尾15未执行，官方success=false/Q=0，原指标SHAb6583cf7…3677；两端ACK一致，参数前后b1ebe3fc…102fc相同、0优化、两GPU已释放。不能把阶段推进当任务成功，更不能据单DEV判一般SR；全原视频/逐控/原观测正取本地进一步核因。MEM audit-v2在原episodes含无eligible anchor时拒绝退出（无result），原现场保留；下一先核原manifest/排除规则，再显式计无可用样本记录，不能放宽样本覆盖一致门掩盖缺口。
+
+- **2026-10-12 00:27 CST / Codex RECOVERY-USABLE：** 元数据audit-v1启动命令漏PYTHONPATH、读数据前`ModuleNotFoundError:g05`退出，原log保留、无result；非数据/模型故障。相同bdce5866冻源另起tmux`memlite-train-cadence-v2`，显式源码PYTHONPATH，输出改`train-cadence-audit-v2.{json,log}`不覆盖原失败；结果待。冠军radio服务已ACK3225控，正在终态指纹/官方结果收尾，尚未把回执齐全前称完成。
+
+- **2026-10-12 00:26 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** 本地干净pull/fetch仍bdce5866、origin/main33677bd0；lc1/RTX原d9371871冠军radio回合已2700控、stage0→2、未终态。根亲看control0/640未改head RGB，640已到收音机桌前，尚不据此报抓取/成功。bdce5866另冻`src/memlite-cadence-audit-20261012-v1`，CPU tmux`memlite-train-cadence-v1`实启，输出`runs/planner_transition_audit_20261011/train-cadence-audit-v1.{json,log}`，精确19000TRAIN/排1000eval的切换及128控前命令审计待；0新标签/训练/物理。正式冠军8000步/24h配方仍待确认，无新大训。
+
 - **2026-10-12 00:21 CST / Codex RECOVERY-USABLE：** 冠军物理回合真实已过640控仍进行、无终态。利用等待检查MEM历史：`recovery_expert_feedback.py`的128选项只省略同意图重复刷新，仍保留每个标注切换，不能称真正周期128控actor历史。新增TRAIN-only元数据审计（不读RGB/权重、不改样本/标签）：计原anchor切换比例，比较相同帧16步oracle前命令与周期128前命令；2反例通过。初CPU测试因g05.data包初始化引入非必要OmegaConf失败，改为加载同一Git元数据模块而非安装依赖；下一冻源审全19000TRAIN，保留1000eval排除，不将重采样历史冒充实际执行/物理成功。
 
 - **2026-10-12 00:17 CST / Codex CHAMPION-2026：** lc1 cp2服务ready，26公开资产全重hash；真实TRAIN task0/1各单独与交错3次（共12生成）的动作、stage/history/token逐项完全相同，`preflight.json`明确0物理控/0优化，只工程时钟回放。单GPU当前约8.49GiB显存，不能当24GiB容器完整部署峰值验收。RTX GPU0再次空闲并持既有gpu_0.lock后实启tmux`champion-radio-cp2-v1`、run同`runs/champion_episode_20261012/radio-cp2-v1`，原official radio301/seed0/原timeout/无演示前缀，模型seed17；当前场景加载中、未报Q/SR。loopback19720经既有lc1控制连接及单独本地reverse SSH转发，不重登VPN/不开放公网端口。正式大训仍等待用户确认。

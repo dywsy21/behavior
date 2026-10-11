@@ -1,11 +1,12 @@
 """TRAIN-only metadata audit; creates no labels, samples or model updates."""
 import argparse
 from collections import Counter,defaultdict
-import hashlib
 import importlib.util
 import json
 from pathlib import Path
 import time
+
+from behavior_champion.release import AcceptedRelease, sha256
 
 # Load the exact checked-in metadata module without executing g05.data's
 # package initializer (which unnecessarily imports model/decoder dependencies).
@@ -48,23 +49,29 @@ def main():
     p.add_argument('--release',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     a=p.parse_args()
     if a.output.exists():raise ValueError('Fresh audit result required')
-    payload=(a.release/'manifest.json').read_bytes()
-    if hashlib.sha256(payload).hexdigest()!='90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23':
-        raise ValueError('Unregistered original split/release')
-    started=time.monotonic();counts=Counter();tasks=defaultdict(Counter);excluded=0;seen=set()
-    with (a.release/'episodes.jsonl').open() as stream:
-        for line in stream:
-            ep=json.loads(line);eid=int(ep['row']['episode_index'])
-            if eid in seen:raise ValueError('Duplicate cross-split episode')
-            seen.add(eid)
-            if ep['split']!='train':excluded+=1;continue
-            row=analyze_episode(ep);counts.update(row);tasks[int(ep['row']['task_index'])].update(row)
     import numpy as np
-    shape=np.load(a.release/'train_candidates.npy',mmap_mode='r').shape
-    if shape[0]!=counts['anchors'] or counts['episodes']!=19000 or excluded!=1000 or set(tasks)!=set(range(100)):
+    started=time.monotonic();accepted=AcceptedRelease(a.release)
+    for name in ('train_candidates.npy','train_tasks.npy'):accepted.verify_file(name)
+    candidates=np.load(a.release/'train_candidates.npy',mmap_mode='r')
+    task_ids=np.load(a.release/'train_tasks.npy',mmap_mode='r')
+    counts=Counter();tasks=defaultdict(Counter);cursor=0
+    for serial,ep in accepted.episodes('train'):
+        row=analyze_episode(ep);task=int(ep['row']['task_index']);n=row['anchors']
+        observed=candidates[cursor:cursor+n]
+        if (observed.shape!=(n,2) or not np.all(observed[:,0]==serial) or
+                not np.array_equal(observed[:,1],np.arange(n)) or
+                not np.all(task_ids[cursor:cursor+n]==task)):
+            raise ValueError('Audit source/anchor/task differs from original training sampler')
+        counts.update(row);tasks[task].update(row);cursor+=n
+    eligible=accepted.acceptance['eligible_episodes'];quarantined=accepted.excluded_splits
+    if (candidates.shape[0]!=counts['anchors'] or task_ids.shape!=(cursor,) or
+            counts['episodes']!=eligible['train'] or counts['episodes']+quarantined['train']!=19000 or
+            eligible['eval']+quarantined['eval']!=1000 or set(tasks)!=set(range(100))):
         raise ValueError('Audit does not exactly cover original protected TRAIN candidate universe')
     result=dict(status='train_metadata_transition_and_cadence_audit_completed',counts=dict(counts),
-        tasks={str(k):dict(v) for k,v in sorted(tasks.items())},excluded_original_eval_episodes=excluded,
+        tasks={str(k):dict(v) for k,v in sorted(tasks.items())},excluded_original_eval_episodes=1000,
+        preserved_source_quarantines=dict(quarantined),original_candidates_all_rows_exact=True,
+        source_manifest_sha256=sha256(a.release/'manifest.json'),
         bundle_transition_fraction=counts['bundle_transition']/counts['anchors'],
         periodic128_previous_mismatch_fraction=counts['periodic128_prior_differs_from_stride16']/counts['periodic128_eligible_calls'],
         seconds=time.monotonic()-started,optimizer_updates=0,new_training_samples=0,physical_controls=0,
