@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 23:16 CST：冠军真实V3流串联短验收
+
+- lc1 `src/champion-stream-20261011-v1`=16d0926f，tmux`champion-stream-bs256-v1`；共享run根`runs/champion_assets_20261011/stream-bs256-w32-v1{,.log}`。只有1792真实TRAIN样本/7丢弃更新，无新模型保存。原缓存bs256-v4已7步完成，原始读取w8/w16/w32均完成，GPU此前已释放；原三失败探针保留，不删除。
+- 本地总回执`docs/infra/results/2026-10-11-champion2026-readiness.json`、完整短结果`artifacts/champion-reference-20261011/{compute-bs256-v4-result,io-w8-v1,io-w16-v1,io-w32-v1}.json`。不把原始读取时偶发预取命中0.3秒当吞吐，须看总timed样本/总秒。
+
 ## 2026-10-11 22:46 CST：冠军八卡计算与新版读取短探针
 
 - lc1共享根同下：`src/champion-compute-20261011-v2`=bac49468，tmux`champion-compute-bs256-v2`；`runs/champion_assets_20261011/compute-bs256-v2{,.log}`保存7个丢弃更新的测速证据，不生成模型。旧`compute-bs256-v1`首步通信挂起后owner TERM，仅原现场保留。

@@ -25,10 +25,13 @@ def main():
     ap.add_argument('--flow-samples', type=int, choices=(1, 4, 15), default=4)
     ap.add_argument('--release', type=Path, help='Optional actual V3 stream; otherwise cached compute only')
     ap.add_argument('--workers', type=int, choices=(8,16,32), default=32)
+    ap.add_argument('--input-only', action='store_true', help='Profile the same real input path without loading/updating the model')
     ap.add_argument('--freeze-vision', action='store_true')
     ap.add_argument('--warmup', type=int, default=2)
     ap.add_argument('--measure', type=int, default=5)
     args = ap.parse_args()
+    if args.input_only and args.release is None:
+        raise ValueError('Input-only profiling requires the actual protected V3 release')
     if args.output.exists() or args.warmup < 1 or not 1 <= args.measure <= 20:
         raise ValueError('Fresh output and an explicitly short timing window required')
     if os.environ.get('CUDA_VISIBLE_DEVICES') != '0,1,2,3,4,5,6,7':
@@ -49,9 +52,9 @@ def main():
     os.environ['XLA_PYTHON_CLIENT_ALLOCATOR'] = 'default'
     os.environ['OPENBLAS_NUM_THREADS'] = '4'
     os.environ['OMP_NUM_THREADS'] = '4'
-    source = subprocess.check_output(['git','rev-parse','HEAD'], cwd=args.reference, text=True).strip()
+    source_commit = subprocess.check_output(['git','rev-parse','HEAD'], cwd=args.reference, text=True).strip()
     delta = subprocess.check_output(['git','diff'], cwd=args.reference)
-    if source != 'ca556f74a455cef7987a2be4537b5ac85cc56dd7' or delta != args.patch.read_bytes():
+    if source_commit != 'ca556f74a455cef7987a2be4537b5ac85cc56dd7' or delta != args.patch.read_bytes():
         raise ValueError('Unregistered champion source/patch')
     openpi_source = subprocess.check_output(['git','rev-parse','HEAD'], cwd=args.openpi_reference, text=True).strip()
     openpi_delta = subprocess.check_output(['git','diff'], cwd=args.openpi_reference)
@@ -144,6 +147,64 @@ def main():
         batch = None
     else:
         batch = prepare_batch(native,[i%100 for i in range(args.batch_size)],resize_cached=True)
+    data_sharding = jax.sharding.NamedSharding(mesh,jax.sharding.PartitionSpec(sharding.DATA_AXIS))
+
+    def next_stream_batch():
+        started = time.monotonic()
+        chunks = [next(data_iterator) for _ in range(args.batch_size//32)]
+        read_end = time.monotonic()
+        native_source = {key:np.concatenate([chunk[key] for chunk in chunks])
+                         for key in chunks[0] if key!='identity'}
+        identities = [item for chunk in chunks for item in chunk['identity']]
+        batch_tasks = len({item['task'] for item in identities})
+        if batch_tasks<2 or any(item['split']!='train' or item['frame']%16!=item['phase'] for item in identities):
+            raise ValueError('Mixed-task/stride/protected split contract failed')
+        stream_receipt['identities'].extend(identities)
+        native_source.update({key:np.array([item[field] for item in identities],dtype=np.int32)
+                              for key,field in (('task_id','task'),('frame','frame'),('length','length'))})
+        concatenate_end = time.monotonic()
+        prepared = prepare_batch(native_source,range(args.batch_size),resize_cached=False)
+        prepare_end = time.monotonic()
+        placed = place_from_host(prepared,data_sharding)
+        place_end = time.monotonic()
+        return placed,batch_tasks,dict(read_wait=read_end-started,
+            concatenate=concatenate_end-read_end,transforms=prepare_end-concatenate_end,
+            placement_and_exact_roundtrip=place_end-prepare_end,
+            host_prepared_bytes=sum(np.asarray(x).nbytes for x in jax.tree.leaves(prepared)))
+
+    def finish_stream():
+        try: next(data_iterator)
+        except StopIteration: pass
+        else: raise ValueError('Unexpected extra stream data')
+        if len({item['index'] for item in stream_receipt['identities']})!=stream_receipt['real_samples']:
+            raise ValueError('Duplicate real training observations')
+        (args.output/'stream.json').write_text(json.dumps(stream_receipt,indent=2)+'\n')
+
+    if args.input_only:
+        import cProfile
+        profiler = cProfile.Profile()
+        rows = []
+        profiler.enable()
+        for index in range(args.warmup+args.measure):
+            started = time.monotonic()
+            placed,tasks,phases = next_stream_batch()
+            jax.block_until_ready(placed)
+            row = dict(step=index+1,warmup=index<args.warmup,seconds=time.monotonic()-started,
+                       distinct_tasks=tasks,phases=phases)
+            rows.append(row)
+            with (args.output/'steps.jsonl').open('a') as stream: stream.write(json.dumps(row)+'\n')
+            print(json.dumps(row),flush=True)
+            del placed
+        profiler.disable()
+        profiler.dump_stats(str(args.output/'input-profile.pstats'))
+        finish_stream()
+        result = dict(status='input_only_profile_completed',rows=rows,optimizer_updates=0,
+                      trained_checkpoint_saved=False,source_commit=source_commit,
+                      integration_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+                      transport_validation=transport_receipt,real_stream={k:v for k,v in stream_receipt.items() if k!='identities'})
+        (args.output/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+        print(json.dumps(result),flush=True)
+        return
     import_spec = importlib.util.spec_from_file_location('champion_train_core',args.reference/'scripts/train.py')
     core = importlib.util.module_from_spec(import_spec); import_spec.loader.exec_module(core)
     loader_receipt = {}
@@ -183,7 +244,6 @@ def main():
         weight_loader=ExpandedLoader(),batch_size=args.batch_size,num_flow_samples=args.flow_samples,
         fsdp_devices=8,wandb_enabled=False,
         freeze_filter=nnx_utils.PathRegex('PaliGemma/img/.*') if args.freeze_vision else nnx.Nothing)
-    data_sharding = jax.sharding.NamedSharding(mesh,jax.sharding.PartitionSpec(sharding.DATA_AXIS))
     replicated = jax.sharding.NamedSharding(mesh,jax.sharding.PartitionSpec())
     if batch is not None: batch = place_from_host(batch,data_sharding)
     # Legacy uint32 PRNG keys preserve the same seed while avoiding implicit
@@ -220,22 +280,12 @@ def main():
             started=time.monotonic()
             data_seconds = 0.
             batch_tasks = None
+            phases = None
             if data_iterator is not None:
-                chunks = [next(data_iterator) for _ in range(args.batch_size//32)]
-                source = {key:np.concatenate([chunk[key] for chunk in chunks])
-                          for key in chunks[0] if key!='identity'}
-                identities = [item for chunk in chunks for item in chunk['identity']]
-                batch_tasks = len({item['task'] for item in identities})
-                if batch_tasks<2 or any(item['split']!='train' or item['frame']%16!=item['phase'] for item in identities):
-                    raise ValueError('Mixed-task/stride/protected split contract failed')
-                stream_receipt['identities'].extend(identities)
-                source.update({key:np.array([item[field] for item in identities],dtype=np.int32)
-                               for key,field in (('task_id','task'),('frame','frame'),('length','length'))})
                 # Preserve raw RGB through host placement. The author's existing
                 # preprocess_observation resizes on EACH assigned GPU, inside
                 # jit, so no unsafe GPU0->peer image copies are introduced.
-                batch = place_from_host(prepare_batch(source,range(args.batch_size),resize_cached=False),data_sharding)
-                del chunks, source
+                batch,batch_tasks,phases = next_stream_batch()
                 data_seconds=time.monotonic()-started
             compute_started=time.monotonic()
             state, metrics=step(train_key,state,batch)
@@ -245,6 +295,7 @@ def main():
                 raise ValueError('Nonfinite training metrics')
             row=dict(step=index+1,seconds=seconds,warmup=index<args.warmup,
                      host_data_prepare_and_placement_seconds=data_seconds,
+                     input_phases=phases,
                      accelerator_step_seconds=time.monotonic()-compute_started,
                      distinct_tasks=batch_tasks,
                      loss=float(metrics['loss']),grad_norm=float(metrics['grad_norm']))
@@ -252,19 +303,14 @@ def main():
             print(json.dumps(row),flush=True)
             if index>=args.warmup:times.append(seconds)
     if data_iterator is not None:
-        try: next(data_iterator)
-        except StopIteration: pass
-        else: raise ValueError('Unexpected extra stream data')
-        if len({item['index'] for item in stream_receipt['identities']})!=stream_receipt['real_samples']:
-            raise ValueError('Duplicate real training observations')
-        (args.output/'stream.json').write_text(json.dumps(stream_receipt,indent=2)+'\n')
+        finish_stream()
     result=dict(status='short_disposable_stream_timing_completed' if args.release else 'short_disposable_compute_timing_completed',batch_size=args.batch_size,
                 flow_samples=args.flow_samples,true_vision_freeze=args.freeze_vision,
                 seconds_per_step_median=float(np.median(times)),examples_per_second=args.batch_size/float(np.median(times)),
                 warmup_steps=args.warmup,timed_steps=args.measure,optimizer_updates=int(state.step),
                 seconds_per_step_aggregate=sum(times)/len(times),
                 examples_per_second_aggregate=args.batch_size*len(times)/sum(times),
-                trained_checkpoint_saved=False,source_commit=source,patch_sha256=hashlib.sha256(delta).hexdigest(),
+                trained_checkpoint_saved=False,source_commit=source_commit,patch_sha256=hashlib.sha256(delta).hexdigest(),
                 openpi_source_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
                 communication_environment=communication,
                 transport_validation=transport_receipt,

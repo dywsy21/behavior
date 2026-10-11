@@ -83,15 +83,41 @@
     "v1": "missing existing NCCL P2P workaround; first step hung; owner-stopped, no completed update or model saved",
     "v2": "failed closed before weights: GPU0-origin arange psum returned22, expected28; NumPy-host-origin returned28",
     "v3": "host-origin eight-A800 FSDP loss/gradient/update passed, max gradient error1.8917489796876907e-10; input exact-check stopped before weights on implicit float64-to-float32 canonicalization",
-    "v4": "host dtype canonicalization explicitly performed before exact shard checks; running, no throughput result yet",
+    "v4": "completed: 74 actual parameter tensor roundtrip hashes passed; seven finite-gradient disposable updates; steady cached batch256/flow4 median7.629081179853529sec, 33.555810190620484obs/sec; no model saved",
     "scope": "New champion JAX environment only; not evidence that prior Torch MEM-Lite training was corrupted",
     "remaining_restriction": "Generic direct GPU-to-GPU copies are unsafe; explicit host-origin placement and checked NCCL path only. No driver/system-level repair claimed."
   },
   "not_done": [
-    "actual full-model short timing completion and finite gradients",
     "complete optimized shuffled-loader plus training/checkpoint throughput",
     "2026 websocket runtime, per-session stage/vote/inpainting isolation and physical rollout verification",
     "independent member code review and final recipe discussion",
     "formal new training, official Q/SR or submission artifact completion"
-  ]
+  ],
+  "real_stream_v1": {
+    "integration_commit": "16d0926f",
+    "status": "seven_finite_updates_then_terminal_report_UnboundLocalError_source_shadowing",
+    "run": "/data/workspace/wsy/behavior2026/runs/champion_assets_20261011/stream-bs256-w32-v1",
+    "trained_checkpoint_saved": false,
+    "timed_step_seconds": [29.058530495967716,27.288695031311363,22.81313570588827,19.334393498953432,28.009581749793142],
+    "host_prepare_seconds": [21.49491211818531,19.746954465284944,15.262059096246958,11.801186890807003,20.43416253477335],
+    "interpretation": "Actual input pipeline is the bottleneck; cache-only compute speed cannot be used as end-to-end ETA. Preserve failed terminal report and profile before new run."
+  },
+  "completed_cached_compute": {
+    "result_sha256": "6d19f6d3d6bec1c38ca9e15448f7c3f10fcdd38c1fdd143a2b5d8144885456db",
+    "run": "/data/workspace/wsy/behavior2026/runs/champion_assets_20261011/compute-bs256-v4",
+    "seconds_per_step_median": 7.629081179853529,
+    "batch_size": 256,
+    "flow_samples": 4,
+    "formal_trained_checkpoint_saved": false,
+    "warning": "Timing only; repeated cached observations, stochastic noise/augmentations; falling loss is not a validation/effect claim"
+  },
+  "completed_io32": {
+    "result_sha256": "41a098f7d6d6351302ddfa1d39b4b3d36d00415fca3a1d305b6b8f56adc97467",
+    "real_samples": 2560,
+    "timed_seconds": 41.85359900677577,
+    "seconds_per_batch_aggregate": 5.231699875846971,
+    "examples_per_second_aggregate": 48.93247053063334,
+    "workers": 32,
+    "caveat": "Not end-to-end training; raw input pipeline only, cache state not controlled"
+  }
 }

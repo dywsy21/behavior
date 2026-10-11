@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 23:37 CST / Codex CHAMPION-2026：** 真实流v1完成7有限更新后，末尾结果序列化因`source`局部变量遮蔽退出；不是已通过终态回执，`steps.jsonl/stream.json`原件保留且已取本地，无保存权重/八卡已释放。五timed实际约25.30s/256，GPU7.54–7.58s，host11.80–21.49s，不能沿用缓存7.63s推正式ETA。下一修收尾变量并用同流输入-only拆读/拼接/transform/严格分发耗时，不加载模型/不优化；32原读单测快不代表整链快。本轮fetch完成main仍33677bd0，保留上轮自有四文档dirty故未pull，不覆盖队友。冠军优先/MEM专项维持，无新正式训练。
+
+- **2026-10-11 23:16 CST / Codex CHAMPION-2026：** 16d0926f已Git冻结`src/champion-stream-20261011-v1`，八卡实空后启动tmux`champion-stream-bs256-v1`、run`runs/champion_assets_20261011/stream-bs256-w32-v1`：原父/bs256/flow4、32CPUworker、原TRAIN全局shuffle1792不同锚、2warm＋5timed；数据/归一化/FAST/显式分发/原JAX核串联，0保存ckpt/非正式训练。原三尺寸含非方图像前端字节一致回归过、全14冠军定向测试过，尚待真实流优化步/吞吐。MEM仅保留固定边界诊断结论，下一按切换监督与128实际控时钟检查，不重复旧99%延续验收。
+
 - **2026-10-11 23:14 CST / Codex CHAMPION-2026：** 真实流前端进一步固定为“原uint8 resize/round再归一化”的原缓存语义；单纯挪入JIT会有float32 FMA约5.96e-8差，现用常量归一化LUT避免，不能借换预处理制造benchmark差异。拟测源在aeff3be9上追加此前端，尚未启实流；GPU已释放、无正式更新。缓存算速回执SHA6d19f6d3…5456db，32worker原读回执41a098f7…97467已本地核对，下一整链7步验收后给预算方案。
 
 - **2026-10-11 23:07 CST / Codex CHAMPION-2026：** v4全7丢弃更新完成，无保存ckpt：bs256/flow4稳态7.629s/步、33.56观察/s，74真实参数张量初始化哈希全过（75叶中一项非参数中间量不作旧权重哈希），原50task/596stage旧行字节保持；loss/grad有限，仅同缓存batch算速、不是泛化收益。32worker原始读取10batch也全闭：8timed共41.854s/2048=48.93观察/s，5.232s/批；中位0.833s受预取偏差不能用。下一新增同模型真实shuffle流短串联，把原RGB先按host契约分到各GPU再用原preprocess内部resize，避免GPU0图像直拷；仍7丢弃更新，不启动正式训练。
