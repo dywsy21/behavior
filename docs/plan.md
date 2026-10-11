@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 10:07 CST / Codex FULL-EPISODE-VIDEO：** tripod全5868控＋初态=5869帧、195.633s完整原速片已本地全解码/动作ACK对齐，SHA2b930905…de2e1ef；根亲看0/90/195s确认两字段/无遮挡并交付可播放MP4，官方success=false/Q=0不美化。collector在两片完成后因一次RTX SSH255退出；新只读核food仍running/6176控，实际仿真/模型未断，准备仅恢复收片、不重试episode。补失败收片显式resume和传输重读，保留旧状态/原成片，拒绝覆盖partial；单测待，三处旧消融仍不动。
+
+- **2026-10-11 09:56 CST / Codex FULL-EPISODE-VIDEO：** radio两端完整终态/0更新/三模型前后SHA相同，全3225实际控＋初态=3226帧、107.533s原速H264已下载并烧录，仅两字段；输出`artifacts/full-episode-videos-20261011/radio/execution.mp4` SHA641c6f21…67712。严格两端action/ACK/头日志逐项对齐及全视频解码通过，根亲看0/40/107s成片，中文无遮挡/无额外面板，人审sidecar同目录。官方success=false/Q=0如实保留，已先给用户可播放全片；tripod/food继续、不重跑选成功。
+
+- **2026-10-11 09:54 CST / Codex FULL-EPISODE-VIDEO：** radio/301官方run已返回3225控、success=false/Q=0（sim log00:17:08），原MP4正常关闭；仍等service最后真实ACK/冻结参数hash回执以及本地字幕导出，不提前称视频验收完成。完整失败过程不裁剪/不重试挑成功；tripod/food原回合继续。collector只读运行源不热改。
+
+- **2026-10-11 09:46 CST / Codex FULL-EPISODE-VIDEO：** 新898d39c1本地收片器启动（tmux`full-video-collector-20261011`），只轮询上述固定三对run、在sim与model双completed后复制MP4/原日志并做逐控字幕导出，不重连VPN、不发任何模拟器控制、不重试episode/改权重；本地`artifacts/full-episode-videos-20261011/collector-status.json`实时记录，成片仍需根亲审。三条现役实验不动，媒体脚本在收片器退出前不热改；源码/plan已push。
+
 - **2026-10-11 09:42 CST / Codex FULL-EPISODE-VIDEO：** 三任务均已真实控制，在线抽核radio5/food5/tripod18次真实高层生成：独立session/episode/task一致，所有memory_before/memory_update与实际任务绑定、known_previous_outcome仍UNKNOWN，无跨task记忆。只读审计不改运行源/权重；仍等各回合官方终态和完整MP4，不把当前高置信头输出当成功。
 
 - **2026-10-11 09:36 CST / Codex FULL-EPISODE-VIDEO：** radio/food两个`-v3`模型已ready且0更新，RTX GPU0/1分别提交修正66c24客户端新`radio-v2`/`food-v2`完整回合，原0控失败v1保留。tripod原回合已672实际控继续，无重置/中途接管；三任务状态/记忆/模型均独立，代码同步仅Git冻源。

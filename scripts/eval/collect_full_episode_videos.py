@@ -4,6 +4,7 @@ Read-only SSH/SCP of completed evidence; never logs in to VPN, launches a
 simulator, retries an episode, changes weights, or touches active source.
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -19,14 +20,53 @@ SSH_A800=['ssh','-F','/home/wsy/.ssh/lc-a800.conf','-S','/home/wsy/.ssh/lc1-full
 
 
 def run(argv):
-    return subprocess.check_output(argv,text=True,timeout=60)
+    # Only re-read status after a transport failure. Never re-run an episode,
+    # copy into a partial destination, reconnect VPN, or retry a renderer error.
+    for attempt in range(3):
+        try:
+            return subprocess.check_output(argv,text=True,timeout=60)
+        except (subprocess.TimeoutExpired,subprocess.CalledProcessError) as error:
+            if (isinstance(error,subprocess.CalledProcessError) and error.returncode!=255) or attempt==2:
+                raise
+            time.sleep(5)
+
+
+def prepare_output(output,resume):
+    if not resume:
+        output.mkdir(parents=True,exist_ok=False)
+        return dict(status='waiting_for_original_runs',started=time.time(),completed={},cases={})
+    previous=output/'collector-status.json'
+    original=previous.read_text()
+    state=json.loads(original)
+    if state['status']!='collector_failed_original_runs_untouched':
+        raise ValueError('Resume is only allowed after the original collector has failed')
+    if set(state['completed'])-set(PAIRS) or set(state['cases'])-set(PAIRS):
+        raise ValueError('Unexpected episode in saved collector state')
+    for case,receipt in state['completed'].items():
+        video=(output/case/'execution.mp4').resolve()
+        manifest=json.loads((output/case/'manifest.json').read_text())
+        if (Path(receipt['video']).resolve()!=video
+                or manifest['status']!='full_episode_encoded_and_decoded'
+                or hashlib.sha256(video.read_bytes()).hexdigest()!=receipt['sha256']
+                or manifest['output_sha256']!=receipt['sha256']
+                or manifest['official_result']!=receipt['official_result']):
+            raise ValueError('Completed video differs from its original receipt')
+    # Partial copy/render destinations need explicit inspection, never overwrite.
+    for case in set(PAIRS)-set(state['completed']):
+        if any(p.exists() for p in (output/case,output/'source'/case,output/(case+'-render.log'))):
+            raise ValueError('Partial collection exists; preserve it for owner inspection')
+    with (output/f'collector-status.before-resume-{time.time_ns()}.json').open('x') as archive:
+        archive.write(original)
+    state.pop('error',None)
+    state.update(status='waiting_for_original_runs',resumed=time.time())
+    return state
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--resume',action='store_true',help='Resume failed read-only collection; never retry simulations')
     a=p.parse_args()
-    a.output.mkdir(parents=True,exist_ok=False)
-    state=dict(status='waiting_for_original_runs',started=time.time(),completed={},cases={})
+    state=prepare_output(a.output,a.resume)
     def publish():
         state['updated']=time.time()
         tmp=a.output/'collector-status.tmp'
