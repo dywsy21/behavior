@@ -64,7 +64,7 @@ class CheckpointTests(unittest.TestCase):
         want = self.step(payload)
         replicate = jax.sharding.SingleDeviceSharding(jax.devices()[0])
         shardings = jax.tree.map(lambda _: replicate, payload)
-        template = jax.tree.map(lambda x: jax.ShapeDtypeStruct(x.shape, x.dtype), payload)
+        template = jax.tree.map(lambda x: jax.ShapeDtypeStruct(x.shape, x.dtype, weak_type=x.weak_type), payload)
         with tempfile.TemporaryDirectory() as root:
             contract = {'source': 'abc', 'stage_counts': (5, 6, 7)}
             receipt = save_full(root, payload, completed=2, contract=contract,
@@ -72,12 +72,18 @@ class CheckpointTests(unittest.TestCase):
             restored = restore_full(receipt['path'], template, shardings, contract=contract,
                                     plan=self.plan, manifest_sha256=receipt['manifest_sha256'])
             self.assertEqual(tree_fingerprints(payload), tree_fingerprints(restored))
+            self.assertEqual([x.weak_type for x in jax.tree.leaves(payload)],
+                             [x.weak_type for x in jax.tree.leaves(restored)])
             self.assertEqual(tree_fingerprints(want), tree_fingerprints(self.step(restored)))
             with self.assertRaises(ValueError):
                 save_full(root, payload, completed=2, contract={'source': 'abc'},
                           cursor=self.plan.cursor(2), reserve_bytes=0)
             with self.assertRaises(ValueError):
                 restore_full(receipt['path'], template, shardings, contract={'source': 'changed'},
+                             plan=self.plan, manifest_sha256=receipt['manifest_sha256'])
+            wrong_template = jax.tree.map(lambda x: jax.ShapeDtypeStruct(x.shape, x.dtype), payload)
+            with self.assertRaises(ValueError):
+                restore_full(receipt['path'], wrong_template, shardings, contract=contract,
                              plan=self.plan, manifest_sha256=receipt['manifest_sha256'])
 
     def test_corrupt_file_and_cursor_rejected(self):

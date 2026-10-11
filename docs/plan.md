@@ -12,7 +12,11 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-12 01:56 CST / Codex CHAMPION-2026：** 新`behavior_champion/evaluation.py`与CPU选择入口固定原eval各task16样本（1600、旧/新50各800、各25×32batch），不把训练样本混入验证、不解封6个eval隔离；保留全部原1000留出身份边界。两单测通过，真实994eligible源选择审计待；只是身份/固定噪声协议，0模型forward/无eval loss，不冒称已评估。v2工程恢复仍活跃进行，正常源码/parent/共享env不改，正式训练仍未批准。
+- **2026-10-12 02:16 CST / Codex CHAMPION-2026：** 428 v2已完整保存54,489,569,924B/302叶，第2步manifest365b25e5…b3bba；恢复后所有loss指标逐位同，但第3步9/302叶SHA不同（1个输入embedding参数+4个embedding的8个Adam矩），其余参数/EMA/随机键同，严格后续更新门failed_no_retry、进程/GPU已退出；完整两份指纹保留，不能称全部续训门PASS。CPU另确证step weak_type True→False并触发额外JIT，本地已补元数据及反例；它是否解释9叶差异尚未证，嵌入scatter浮点累加非确定性需单独测。下一八卡微核重复32次、普通/排除非确定算子各一（≤5min、0策略更新），不先改正式运行flags；依据OpenXLA官方determinism说明，不能把普通浮点累加差异直接等同checkpoint损坏。无正式训练。
+
+- **2026-10-12 02:01 CST / Codex CHAMPION-2026：** 3c1dac40 CPU真实原eval994源选择完成：100task各16/共1600、旧/新各800，plan3a10106e…665d7、完整回执SHA885340e4…a7b8a已本地；0forward、不是eval成绩。源审查另发现作者`compute_detailed_loss(train=False)`不返回stage CE，新增独立无augmentation stage评估入口（保持base-task因果attention、不切train=True），防漏报为0；数学单测过，真实模型整条eval待。v2真实4.83GB叶HOST组装0.77–0.96s、hash3.8–5.0s、fsync约10s，较原慢组装已有工程改善证据，但完整保存/恢复门仍未终态，不称通过或模型有效。
+
+- **2026-10-12 01:54 CST / Codex CHAMPION-2026：** 新`behavior_champion/evaluation.py`与CPU选择入口固定原eval各task16样本（1600、旧/新50各800、各25×32batch），不把训练样本混入验证、不解封6个eval隔离；保留全部原1000留出身份边界。两单测通过，真实994eligible源选择审计待；只是身份/固定噪声协议，0模型forward/无eval loss，不冒称已评估。v2工程恢复仍活跃进行，正常源码/parent/共享env不改，正式训练仍未批准。
 
 - **2026-10-12 01:51 CST / Codex CHAMPION-2026：** 原pid/tmux已消失、nvidia计算列表空，c22仅43GiB未提交快照且没有完整manifest/第3步参考；不称可恢复。428180a0冻结源已在八卡重新启动tmux`champion-resume-bs256-v2`、run`runs/champion_assets_20261011/resume-bs256-v2{,.log}`，同3步/30min工程验收；新HOST组装速度与完整保存/恢复逐叶门待实际结果。`src/champion-cold-resume-20261012-v1`=7bedfcff仅准备未运行，不能把文件夹存在当冷恢复实测。无正式训练/新SR。
 

@@ -352,7 +352,7 @@ def main():
             from behavior_champion.checkpoint import restore_full
             restored = restore_full(saved['path'],dict(state=state,train_rng=jax.ShapeDtypeStruct((2,),jnp.uint32)),
                 dict(state=state_sharding,train_rng=replicated),contract=resume_contract,
-                plan=balanced_plan,manifest_sha256=saved['manifest_sha256'])
+                plan=balanced_plan,manifest_sha256=saved['manifest_sha256'],allow_legacy_engineering_weak_types=True)
             state,train_key = restored['state'],restored['train_rng']
             print(json.dumps(dict(cold_checkpoint_restored=True,completed_updates=int(state.step))),flush=True)
         jax.block_until_ready(state)
@@ -423,7 +423,8 @@ def main():
             baseline_metrics = jax.tree.map(np.asarray,metrics)
             baseline = tree_fingerprints(dict(state=state,train_rng=train_key),progress=checkpoint_progress)
             (args.output/'uninterrupted-third-update.json').write_text(json.dumps(baseline,indent=2)+'\n')
-            template = jax.tree.map(lambda x:jax.ShapeDtypeStruct(x.shape,x.dtype),dict(state=state,train_rng=train_key))
+            template = jax.tree.map(lambda x:jax.ShapeDtypeStruct(x.shape,x.dtype,weak_type=x.weak_type),
+                                    dict(state=state,train_rng=train_key))
             del state; gc.collect()
             restored = restore_full(saved['path'],template,dict(state=state_sharding,train_rng=replicated),
                 contract=resume_contract,plan=balanced_plan,manifest_sha256=saved['manifest_sha256'])

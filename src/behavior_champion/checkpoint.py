@@ -100,6 +100,7 @@ def save_full(directory, tree, *, completed, contract, cursor, reserve_bytes=256
                           write_fsync_seconds=time.monotonic()-hashed))
     manifest = dict(schema='champion-full-state-v1', completed_updates=completed,
                     contract=contract, contract_sha256=digest_json(contract), sampler_cursor=cursor,
+                    weak_types=[bool(getattr(leaf, 'weak_type', False)) for _, leaf in items],
                     leaves=rows, dynamic_bytes=needed,
                     tree_sha256=digest_json([{k: v for k, v in row.items() if k != 'file'} for row in rows]))
     with (temporary / 'manifest.json').open('x') as stream:
@@ -113,7 +114,8 @@ def save_full(directory, tree, *, completed, contract, cursor, reserve_bytes=256
                 completed_updates=completed, tree_sha256=manifest['tree_sha256'], bytes=needed)
 
 
-def restore_full(directory, template, shardings, *, contract, plan, manifest_sha256):
+def restore_full(directory, template, shardings, *, contract, plan, manifest_sha256,
+                 allow_legacy_engineering_weak_types=False):
     import jax
     from .jax_transport import place_from_host
     # Dataclass configs contain tuples (e.g. task-stage tables), while JSON
@@ -133,6 +135,16 @@ def restore_full(directory, template, shardings, *, contract, plan, manifest_sha
     if treedef != placement_def or len(items) != len(manifest['leaves']):
         raise ValueError('Checkpoint template/sharding tree changed')
     rows = manifest['leaves']
+    weak_types = manifest.get('weak_types')
+    template_weak = [bool(getattr(leaf, 'weak_type', False)) for _, leaf in items]
+    if weak_types is None:
+        if not allow_legacy_engineering_weak_types or contract.get('purpose') != 'ENGINEERING_ONLY_NOT_FOR_DEPLOYMENT':
+            raise ValueError('Checkpoint lacks JAX weak-type metadata; no implicit formal compatibility')
+        # Explicit compatibility ONLY for the original engineering snapshots.
+        # Their frozen graph supplies the original abstract scalar types.
+        weak_types = template_weak
+    if weak_types != template_weak:
+        raise ValueError('JAX weak-type metadata differs from the frozen restore template')
     expected_tree_sha = digest_json([{k: v for k, v in row.items() if k != 'file'} for row in rows])
     if expected_tree_sha != manifest['tree_sha256']:
         raise ValueError('Checkpoint leaf ledger changed')
@@ -145,13 +157,26 @@ def restore_full(directory, template, shardings, *, contract, plan, manifest_sha
         if source.is_symlink() or source.stat().st_size != row['bytes'] or sha256(source) != row['sha256']:
             raise ValueError('Corrupted checkpoint array: ' + row['path'])
     restored = []
-    for (_, leaf), row, placement in zip(items, rows, placements, strict=True):
+    for (_, leaf), row, placement, weak in zip(items, rows, placements, weak_types, strict=True):
         dtype = np.dtype(leaf.dtype) if hasattr(leaf, 'dtype') else np.asarray(leaf).dtype
         host = np.fromfile(root / row['file'], dtype=dtype).reshape(row['shape'])
         # Fail closed on any mutation between the validation and consumption.
         if hashlib.sha256(memoryview(host.reshape(-1).view(np.uint8))).hexdigest() != row['sha256']:
             raise ValueError('Checkpoint changed while restoring')
-        restored.append(place_from_host(host, placement))
+        if weak:
+            if host.shape != ():
+                raise ValueError('Unsupported weak array; do not silently change its JAX abstract type')
+            value = jax.device_put(host.item(), placement)
+            if value.dtype != host.dtype or not value.weak_type:
+                raise ValueError('Weak scalar dtype/type was not preserved')
+            for shard in value.addressable_shards:
+                if not np.array_equal(np.asarray(shard.data), host):
+                    raise ValueError('Weak scalar host-origin replica mismatch')
+        else:
+            value = place_from_host(host, placement)
+        if bool(value.weak_type) != weak:
+            raise ValueError('Restored JAX abstract type differs')
+        restored.append(value)
     result = jax.tree_util.tree_unflatten(treedef, restored)
     actual_step = int(np.asarray(result['state'].step)) if 'state' in result else manifest['completed_updates']
     if actual_step != manifest['completed_updates']:
