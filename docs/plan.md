@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 23:54 CST / Codex CHAMPION-2026：** b99310d1真实流v2全7有限更新/终态回执完成，0保存ckpt/八卡释放。原v1/v2全部1792来源身份逐项相同，五timed平均25.3009→9.4142s/256（2.6875×）、host17.7479→1.8610s；三尺寸八卡前端逐位通过、74真实参数初始化hash通过。loss配对最大相对差0.08497%，不声称完整训练轨迹逐位相同或有效提升。v2 result ab791149…805c/steps02bb5945…5338/streamab807d62…5cc3已本地原SHA核对；profile回执b20a81ff…2f9d。当前12,524,274个TRAIN锚按短测纯外推约127.94h/遍，未含保存/评测、非长期保证；24h不能冒称全量一遍。下一先讨论新正式配方（lc1八卡、100任务平衡混批256/stride16、目标8000步且24h上限、保留原FM+.05FAST+.1stage、4噪声、旧参数2.5e-5/新task-stage行1e-4），此配方与采样/分组LR尚未实现或批准开训；正式保存恢复/W&B/2026推理闭环仍需验收。MEM只续真切换与128控历史专项，不启动新大训抢主线。
+
+- **2026-10-11 23:46 CST / Codex CHAMPION-2026：** b99310d1已Git冻结`src/champion-compact-stream-20261011-v1`，18定向测试全过（含单值损坏/NaN必拒绝）。lc1空卡后实启tmux`champion-stream-bs256-v2`/run`runs/champion_assets_20261011/stream-bs256-w32-v2`，与原v1相同1792真实shuffle锚、父权重/bs256/flow4/7丢弃更新；唯一工程改变是紧凑RGB与完整等值检查实现，先额外验三尺寸全部八卡前端逐位相同。尚待原始实测，不报推测提速，0保存ckpt/未正式训练。
+
 - **2026-10-11 23:43 CST / Codex CHAMPION-2026：** 输入-only 1536锚全终态，cProfile确认主瓶颈是3.010GB归一化图片的`np.testing`反复NaN/Inf掩码/诊断开销：6批累计37.23s，仅常规from_dict再8.53s；四timed严格分发7.55–7.60s/批。新本地改uint8原像素下发后GPU同原resize/round/LUT归一化（传输约缩4倍），逐值核验改为每卡完整`np.array_equal`，不抽样、不移除验证；单值损坏/NaN反例和前端逐位一致测试新增，下一冻结源真实八卡前端一致门＋7步全链。原有权重/数据/损失/队友env不动，无正式训练。
 
 - **2026-10-11 23:41 CST / Codex CHAMPION-2026：** a3410a7d已push并Git冻`src/champion-input-profile-20261011-v1`，14定向测试/语法/diff全过。lc1八卡再次空闲后实启tmux`champion-input-profile-v1`/run`runs/champion_assets_20261011/input-profile-bs256-v1`，同256/32worker/seed17/1536不同TRAIN锚，2warm4timed，仅实际输入与严格host分发，不载模型/0优化。阶段timing与cProfile待；原stream末尾失败已保留和修复，不涂改旧结果。下一据profile修瓶颈并重新整链7步，不自动正式训练。

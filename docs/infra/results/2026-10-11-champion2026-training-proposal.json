@@ -1,0 +1,79 @@
+{
+  "status": "PROPOSAL_ONLY_NOT_A_LAUNCH_CONFIG_OR_TRAINING_AUTHORIZATION",
+  "owner": "Codex root",
+  "user_priority": "champion_primary_memlite_targeted_validation_secondary",
+  "approval_needed": "Discuss and confirm new formal training recipe before launch",
+  "resource": "lc1 single node, 8 A800; do not assume lc2/teammate resources",
+  "parent": {
+    "repo": "IliaLarchenko/behavior_50t_checkpoint",
+    "revision": "114902410a6439ad1a0b58a112b84159d3ab3f65",
+    "role": "shared50 intermediate, NOT the final four-specialist champion submission",
+    "initialization": "retain 50 task rows and 596 stage rows, append 50 task/491 stage rows, preserve other pretrained arrays",
+    "optimizer": "fresh fine-tuning optimizer; public parent has no resumable optimizer"
+  },
+  "hypothesis": "A proven champion controller can adapt to all 100 tasks using protected RGB/native actions and balanced limited-budget fine-tuning, without coupling to unvalidated MEM-Lite planning",
+  "model": {
+    "tasks": 100,
+    "action_horizon": 30,
+    "native_action_dim": 23,
+    "model_action_dim": 32,
+    "loss": "FM + 0.05 * FAST_CE + 0.1 * stage_CE",
+    "flow_draws_per_observation": 4,
+    "flow_draws_note": "Author default was15; four preserves expected objective but changes gradient variance and is chosen here for observed budget tradeoff",
+    "knowledge_insulation": false,
+    "gradient_freezing": "none; do not confuse author's freeze_vision_backbone flag with a parameter-gradient freeze",
+    "pretrained_norm_fast_and_noise_correlation": "unchanged"
+  },
+  "sampling_proposal_not_yet_implemented": {
+    "global_batch": 256,
+    "stride": 16,
+    "phase": "preserve original fixed per-video 0..15 phase",
+    "train_episodes": 19000,
+    "excluded_eval_episodes": 1000,
+    "distribution": "each batch includes all100 tasks, 2 or3 distinct anchors/task; rotate extra56 slots fairly; shuffle within task without replacement, reshuffle only after exhaustion",
+    "reason": "Official tasks are equally important; global-frame-uniform pool gives task26 309735 anchors vs task0 25832, a 12x imbalance",
+    "old_new_task_ratio": "50:50 over fair scheduling cycle",
+    "task_pool_extremes": {"task0":25832,"task26":309735},
+    "episodes_per_task": 190,
+    "benchmark_sampling_difference": "Measured throughput used global-frame shuffle with84-91 tasks/batch, not this proposed balanced sampler; validate it before launch"
+  },
+  "optimizer_proposal_not_yet_implemented_or_benchmarked": {
+    "type": "AdamW",
+    "pretrained_peak_lr": 0.000025,
+    "new_task_stage_rows_peak_lr": 0.0001,
+    "row_scaling": "Apply4x to Adam updates on appended rows only, NOT gradient multiplication before Adam; test old-row invariance and restore identity",
+    "warmup_updates": 300,
+    "schedule": "cosine decay to10% of peaks at update8000",
+    "betas": [0.9,0.95],
+    "epsilon": 1e-8,
+    "weight_decay": 1e-10,
+    "global_grad_clip": 1.0,
+    "ema_decay": 0.99
+  },
+  "budget_proposal": {
+    "target_updates": 8000,
+    "wall_clock_hours_max": 24,
+    "target_observations": 2048000,
+    "fraction_of_12524274_anchors_by_count": 0.163522,
+    "short_benchmark_seconds_per_update": 9.414200565963984,
+    "compute_plus_input_hours_at_short_rate": 20.92044570214219,
+    "meaning": "Leave roughly3h for startup/checkpoint/eval; not a guarantee and not a complete data pass; stop safely at24h rather than automatically extend",
+    "reserve_after_training": "At least48h, preferably60h for physical evaluation/submission; official Oct16 hour/timezone not confirmed"
+  },
+  "required_before_formal_launch": [
+    "User confirms recipe and budget",
+    "Balanced sampler unique/protected split and deterministic resume checks",
+    "Row-specific optimizer step and optimizer/EMA/RNG/sampler restore tests",
+    "W&B online handshake under authorized team without exposing credentials",
+    "Actual full model checkpoint write/reload and source/asset fingerprints",
+    "2026 inference adapter action-clock, stage-vote/inpainting session isolation, and short physical smoke",
+    "Independent review before merge to main; feature remains isolated"
+  ],
+  "monitoring": {
+    "fixed_eval": "Protected heldout, fixed sample/noise selection, separately report old50/new50 FM/FAST/stage metrics",
+    "save": "Target every1000 updates plus final; exact retention/space checked before launch, no deletion of pre-existing checkpoints",
+    "stop": "Nonfinite loss/gradient, identity or split breach, communication/restore failure, physical interface failure; wall limit safely saves and exits",
+    "effect_evidence": "Only matched physical rollouts establish Q/SR gains; lower SFT loss alone does not"
+  },
+  "memlite_parallel_scope": "Target actual skill-transition supervision and deployed128-control history cadence; preserve continuation/recovery controls. No new large MEM training or simplistic fusion into champion mainline."
+}

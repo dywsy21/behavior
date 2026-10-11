@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 23:54 CST：冠军真实流测速完成、无正式训练
+
+- A800共享根`/data/workspace/wsy/behavior2026`：`src/champion-compact-stream-20261011-v1`=b99310d1；`runs/champion_assets_20261011/stream-bs256-w32-v2{,.log}`完整7步短测终态、0checkpoint，lc1八卡已释放。均值9.4142s/256，不能当物理Q/SR。
+- `src/champion-input-profile-20261011-v1`=a3410a7d及`runs/champion_assets_20261011/input-profile-bs256-v1{,.log}`完成1536真实来源输入剖析，`input-profile.pstats`保留；v1原stream的收尾变量错误现场仍在，没有覆盖或假填result。
+- 本地`artifacts/champion-reference-20261011/stream-bs256-w32-v{1,2}-{steps.jsonl,stream.json}`及v2`-result.json`、`input-profile-bs256-v1-{result.json}`/`.pstats`是小型证据副本。公开父权重/原数据/共享env未改；Git摘要`docs/infra/results/2026-10-11-champion2026-readiness.json`、待讨论配方`docs/infra/results/2026-10-11-champion2026-training-proposal.json`。
+
 ## 2026-10-11 23:16 CST：冠军真实V3流串联短验收
 
 - lc1 `src/champion-stream-20261011-v1`=16d0926f，tmux`champion-stream-bs256-v1`；共享run根`runs/champion_assets_20261011/stream-bs256-w32-v1{,.log}`。只有1792真实TRAIN样本/7丢弃更新，无新模型保存。原缓存bs256-v4已7步完成，原始读取w8/w16/w32均完成，GPU此前已释放；原三失败探针保留，不删除。
