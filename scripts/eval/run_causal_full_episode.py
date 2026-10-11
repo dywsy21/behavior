@@ -18,8 +18,22 @@ def main():
     p.add_argument('--config',type=Path,required=True)
     p.add_argument('--case',required=True)
     p.add_argument('--output',type=Path,required=True)
-    a=p.parse_args();cfg=json.loads(a.config.read_text());case=cfg['cases'][a.case]
-    if a.output.exists() or cfg['schema']!='fresh_full_episode_readonly_v1':raise ValueError('Fresh output required')
+    a=p.parse_args();cfg=json.loads(a.config.read_text())
+    champion=cfg['schema']=='champion2026_readonly_full_episode_v1'
+    if champion:
+        if a.case!=cfg['case']:raise ValueError('Wrong registered champion case')
+        case=cfg
+    else:case=cfg['cases'][a.case]
+    if a.output.exists() or cfg['schema'] not in ('fresh_full_episode_readonly_v1','champion2026_readonly_full_episode_v1'):
+        raise ValueError('Fresh registered output required')
+    gpu=str(case['sim_gpu'])
+    # Isaac/Vulkan uses the original device numbering. The existing simulator
+    # launcher intentionally leaves CUDA_VISIBLE_DEVICES unset and selects via
+    # OMNIGIBSON_GPU_ID; a CUDA-only mask does not select the renderer reliably.
+    if (os.environ.get('OMNIGIBSON_GPU_ID')!=gpu or os.environ.get('CUDA_VISIBLE_DEVICES') not in (None,'')
+            or subprocess.check_output(
+        ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip()):
+        raise ValueError('Registered simulator GPU must be idle')
     if subprocess.check_output(['git','status','--porcelain'],cwd=HERE,text=True).strip():raise ValueError('Dirty source')
     if cfg['mode']!='public_test' or cfg['instance_id']!=301:raise ValueError('Use preregistered development instance')
     pinned=json.loads((HERE/'memlite_sft100/official_manifest.json').read_text())
@@ -60,7 +74,8 @@ def main():
                 atomic_json(a.output/'status.json',status)
             return term,trunc
     resolved=OmegaConf.create(dict(env_wrapper=dict(_target_='rgb_wrapper.RGBOnlyFullResWrapper'),
-        policy_name='causal_full_episode',model=dict(_target_='full_episode_client.FullEpisodePolicy',
+        policy_name='champion_full_episode' if champion else 'causal_full_episode',model=dict(
+            _target_='champion_episode_client.ChampionEpisodePolicy' if champion else 'full_episode_client.FullEpisodePolicy',
             port=case['port'],task_id=case['task_id'],case=a.case,config_sha256=status['config_sha256'],output=str(a.output)),
         headless=True,partial_scene_load=True,max_steps=None,write_video=True,mode='public_test',
         seed=DEFAULT_EVAL_SEED,num_envs=1,task=dict(name=case['task']),robot=OmegaConf.load(OFFICIAL/'omnigibson/eval/r1pro.yaml')))

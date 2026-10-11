@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 00:14 CST / Codex CHAMPION-2026：** 冠军独立运行时/WS服务/20控客户端与原官方完整回合runner接线已本地实现；启动先重新逐文件hash公开cp2、源patch核对、真实TRAIN两task单独/交错12次生成一致门，然后才ready。原MEM16控入口保留；新增controller测试覆盖跨任务stage/RNG/inpainting、错误ACK/尾段终止、压缩两分支、非法stage/特权字段，另直接比对固定上游投票方法。Isaac选卡按既有`OMNIGIBSON_GPU_ID`而非CUDA隐藏，避免混用模型与渲染设备编号。尚未GPU部署/物理/Q；下一定向验收后冻源单卡服务，再原radio301完整回合，不启动新训练。
+
+- **2026-10-12 00:07 CST / Codex CHAMPION-2026：** 上轮分类为progress（真实整链2.69×提速/回执/代码已push），本轮干净pull/fetch已同步，正式8000步/24h未获新确认、不能因goal自动开训。继续独立冠军推理准备：新增纯episode会话（原3票/2晋级、20实际控、26→20压缩或20直出、4步续接、独立PRNG/ACK/终态），stateless model入口和预登记cp2 radio301/seed17只读完整回合配置；尚未GPU/物理运行，单测待。lc1/RTX10383八卡只读实核空闲，robo/lc2/队友不动；共享盘仅1.2TiB空闲，后续checkpoint保存必须空间门，不自行清理。
+
 - **2026-10-11 23:54 CST / Codex CHAMPION-2026：** b99310d1真实流v2全7有限更新/终态回执完成，0保存ckpt/八卡释放。原v1/v2全部1792来源身份逐项相同，五timed平均25.3009→9.4142s/256（2.6875×）、host17.7479→1.8610s；三尺寸八卡前端逐位通过、74真实参数初始化hash通过。loss配对最大相对差0.08497%，不声称完整训练轨迹逐位相同或有效提升。v2 result ab791149…805c/steps02bb5945…5338/streamab807d62…5cc3已本地原SHA核对；profile回执b20a81ff…2f9d。当前12,524,274个TRAIN锚按短测纯外推约127.94h/遍，未含保存/评测、非长期保证；24h不能冒称全量一遍。下一先讨论新正式配方（lc1八卡、100任务平衡混批256/stride16、目标8000步且24h上限、保留原FM+.05FAST+.1stage、4噪声、旧参数2.5e-5/新task-stage行1e-4），此配方与采样/分组LR尚未实现或批准开训；正式保存恢复/W&B/2026推理闭环仍需验收。MEM只续真切换与128控历史专项，不启动新大训抢主线。
 
 - **2026-10-11 23:46 CST / Codex CHAMPION-2026：** b99310d1已Git冻结`src/champion-compact-stream-20261011-v1`，18定向测试全过（含单值损坏/NaN必拒绝）。lc1空卡后实启tmux`champion-stream-bs256-v2`/run`runs/champion_assets_20261011/stream-bs256-w32-v2`，与原v1相同1792真实shuffle锚、父权重/bs256/flow4/7丢弃更新；唯一工程改变是紧凑RGB与完整等值检查实现，先额外验三尺寸全部八卡前端逐位相同。尚待原始实测，不报推测提速，0保存ckpt/未正式训练。
