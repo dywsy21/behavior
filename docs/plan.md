@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 09:26 CST / Codex FULL-EPISODE-VIDEO：** lc1三独立模型ready、每卡33.3GiB、全部权重/配套回执通过，0更新。RTX新7394客户端在GPU1/0分别实提交food/radio完整官方回合（tmux`full-video-{food,radio}-v1`，run根`runs/full_episode_videos_20261011/{case}-v1`），持有既有GPU锁；目前场景加载、尚无动作成功证据。tripod模型就绪但sim等首轮场景加载结束后启动，避免同时载三场景；所有任务按原官方成功/超时结束，不预设短窗。
+
+- **2026-10-11 09:24 CST / Codex FULL-EPISODE-VIDEO：** 三服务已真实占GPU约25–33GiB/卡继续加载（a3949d76，0客户端）。模拟器完成回执另补官方normalized-distance可能为Inf的兼容：原官方metrics不改，只摘有限Q/SR/steps及原文件SHA，客户端新7394fd6c冻源`full-episode-videos-20261011-client-v3`，模型源保持不动，两端commit分开记录；这不改动作/物理/时限。实际sim Python已导入新client/编译通过，RTX707GiB可用。根亲看三旧minimal成片关键帧，中文无遮挡且只有两字段，非完整回合性质不变。
+
 - **2026-10-11 09:20 CST / Codex FULL-EPISODE-VIDEO：** 新a3949d76 Git冻源两端`full-episode-videos-20261011-v2`，lc1 GPU0–2三服务`{radio,food,tripod}-v2`已提交新加载；旧v1无任何action/events、不复用。RTX实空/4.7TiB余量，三仿真尚未开始，等各模型ready再接入。旧三片精简MP4完整解码通过（1344×558，仅两字段，旧版保留），根已看radio新成片关键帧；全程渲染器原速/无末帧定格/无丢帧，新旧8字幕单测过，完整回合视频仍待。
 
 - **2026-10-11 09:21 CST / Codex FULL-EPISODE-VIDEO：** 全程入口静态复核发现终态日志`episode`重复关键字会导致close异常，已本地修复并补官方正常SystemExit处理；三v1服务仍未接客户端/0仿真，逐PID/argv核归属后SIGTERM停加载，原目录/log保留，改新v2冻源再启动而非热改。全程字幕渲染器按原始初态＋每控制帧、实际action/ACK/头输出逐项交叉核验；3时钟/终止/错头反例＋5minimal字幕测试过。只显示当前意图及逐成员原始头预测概率，所有技术说明放manifest/聊天，不进画面。

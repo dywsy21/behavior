@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 09:26 CST：完整回合开始
+
+- A800模型冻结`src/full-episode-videos-20261011-v2`=a3949d76，三个run `runs/full_episode_videos_20261011/{radio,food,tripod}-v2`及同名.log，lc1 GPU0/1/2、19700/19701/19702，全部ready。只读高89907/低0c52/观察器bee+b0，旧v1停于0客户端。
+- RTX客户端冻结`code/full-episode-videos-20261011-client-v3`=7394fd6c，run同根`runs/full_episode_videos_20261011/{case}-v1`及同名.log；food/radio已GPU1/0提交，tripod待首批场景载完后GPU2。每run保存官方完整`videos/*.mp4`/`json/*.json`、逐控`controls.jsonl`、真实在线字幕源`chunks.jsonl`和终态status；不会覆盖旧短片/训练。
+
 ## 2026-10-11 09:21 CST：完整回合录像准备
 
 - A800`/data/workspace/wsy/behavior2026/src/full-episode-videos-20261011-v1`与RTX根`code/full-episode-videos-20261011-v1`均a590c23f；三个lc1模型`runs/full_episode_videos_20261011/{radio,food,tripod}-v1`在0客户端/0控制时owner停加载，避免已发现终态日志异常，原日志保留，新v2源待。RTX根为`/run/ti/rl_memlite_stage1_20261006`。
