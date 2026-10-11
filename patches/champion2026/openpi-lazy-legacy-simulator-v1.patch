@@ -1,0 +1,22 @@
+diff --git a/src/openpi/policies/b1k_policy.py b/src/openpi/policies/b1k_policy.py
+index 73c97c8..f4decb1 100644
+--- a/src/openpi/policies/b1k_policy.py
++++ b/src/openpi/policies/b1k_policy.py
+@@ -5,7 +5,6 @@ import numpy as np
+ 
+ from openpi import transforms
+ from openpi.models import model as _model
+-from omnigibson.learning.utils.eval_utils import PROPRIOCEPTION_INDICES
+ 
+ 
+ def make_b1k_example() -> dict:
+@@ -23,6 +22,9 @@ def extract_state_from_proprio(proprio_data):
+     """
+     We assume perfect correlation for the two gripper fingers.
+     """
++    # Legacy 256-D adapter only. The 2026 champion uses its separate native61
++    # adapter; importing training configs must not initialize a simulator.
++    from omnigibson.learning.utils.eval_utils import PROPRIOCEPTION_INDICES
+     # extract joint position
+     base_qvel = proprio_data[..., PROPRIOCEPTION_INDICES["R1Pro"]["base_qvel"]]  # 3
+     trunk_qpos = proprio_data[..., PROPRIOCEPTION_INDICES["R1Pro"]["trunk_qpos"]]  # 4

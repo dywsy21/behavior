@@ -19,7 +19,7 @@ import time
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    for key in ('reference','layout','patch','checkpoint','verified','probe','output'):
+    for key in ('reference','layout','patch','openpi-reference','openpi-patch','checkpoint','verified','probe','output'):
         ap.add_argument('--'+key, type=Path, required=True)
     ap.add_argument('--batch-size', type=int, choices=(32, 64, 128, 256), required=True)
     ap.add_argument('--flow-samples', type=int, choices=(1, 4, 15), default=4)
@@ -45,6 +45,10 @@ def main():
     delta = subprocess.check_output(['git','diff'], cwd=args.reference)
     if source != 'ca556f74a455cef7987a2be4537b5ac85cc56dd7' or delta != args.patch.read_bytes():
         raise ValueError('Unregistered champion source/patch')
+    openpi_source = subprocess.check_output(['git','rev-parse','HEAD'], cwd=args.openpi_reference, text=True).strip()
+    openpi_delta = subprocess.check_output(['git','diff'], cwd=args.openpi_reference)
+    if openpi_source != '01177e0242a1c7e8fad2547caa0e987def614cda' or openpi_delta != args.openpi_patch.read_bytes():
+        raise ValueError('Unregistered openpi source/patch')
     verified = json.loads(args.verified.read_text())
     if verified['status'] != 'all_selected_assets_verified' or verified['revision'] != '114902410a6439ad1a0b58a112b84159d3ab3f65':
         raise ValueError('Use the verified shared50 parent, not a final specialist silently')
@@ -54,6 +58,7 @@ def main():
         path = args.checkpoint/row['path']
         if not path.is_file() or path.stat().st_size != row['size']:
             raise ValueError('Changed verified asset: '+str(path))
+    sys.path.insert(0, str(args.openpi_reference/'src'))
     sys.path.insert(0, str(args.reference/'src'))
     import numpy as np
     import jax
@@ -165,6 +170,7 @@ def main():
                 seconds_per_step_median=float(np.median(times)),examples_per_second=args.batch_size/float(np.median(times)),
                 warmup_steps=args.warmup,timed_steps=args.measure,optimizer_updates=int(state.step),
                 trained_checkpoint_saved=False,source_commit=source,patch_sha256=hashlib.sha256(delta).hexdigest(),
+                openpi_source_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
                 parent_revision=verified['revision'],probe_sha256=h.hexdigest(),checkpoint_migration=loader_receipt,
                 warning='Cached real batch; no epoch ETA until shuffled full-loader/checkpoint/eval overhead is measured.')
     (args.output/'result.json').write_text(json.dumps(result,indent=2)+'\n')

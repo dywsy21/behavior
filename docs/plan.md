@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 22:28 CST / Codex CHAMPION-2026：** 两组资产下载后逐文件对官方HF固定revision blob/LFS hash检查已结束，`shared50-verified-v1.json`/`final-cp2-verified-v1.json`落盘，尚待加载模型而非“冠军效果通过”。100真实TRAIN输入49.22s完成（fe19d18c…14e0ad），只作计算/接口探针，不称全局shuffle吞吐。完整缓存和pytest补充包中转两端SHA均一致，正独立解包；发现uv缓存绝对链接，新增仅允许两指定副本的机械重定位，不碰g05/旧cache。CPU实际上游train_step已可导入：openpi另一处旧OmniGibson引用改成函数内lazy import（独立补丁），旧公式不改；下一远端离线安装、8卡短测速与完整数据加载耗时，不启动正式训练。
+
 - **2026-10-11 22:22 CST / Codex CHAMPION-2026：** 新兼容补丁CPU实际JAX0.5.3/NNX建图通过：75叶同名同dtype，只task[50,2048]→[100,2048]、stage[596,1024]→[1087,1024]两表变形（patch df9236b2…71df1，`model-shapes-v1.json`，不是已加载大权重）。e21208cd冻源在lc1完成真实TRAIN-only 50task native probe（24.57s，2aa6c1f6…357c6），100task输入也完成待轻量回执；不裁技能边界、不resize原RGB。远端依赖v4因GitHub TLS拉LeRobot失败，改本地同uv0.9.16/上游lock完整177包缓存中转（归档25a637e3…f532d），额外生产import所需pytest3包也按原lock固定；尚待远端离线安装/GPU验收，原失败日志全留。短benchmark脚本只计划少量丢弃优化更新、不保存ckpt，不是正式大训。
 
 - **2026-10-11 22:02 CST / Codex RECOVERY-USABLE：** 两cf919边界专项完整242/242且两端result SHA实核一致、GPU全释放：parent/candidate真边界27/25，延续控制99/99，恢复DEV40/42（各分母100/100/42）。真边界有72/74条照抄上一意图，各1条其他技能错误；所有配对输入/任务完全相同、target未进入prefix、0更新/0仿真。完整轻量`docs/infra/results/2026-10-11-planner-transition-audit.json`，原行在本地/A800同名artifact。结论是旧验收偏重延续、切换明显不足，**不是单帧边界分数等于完整SR或唯一故障原因**；需后续切换/自由历史验证，不再叠易样本追99%。冠军两权重下载及独立环境准备继续，不据优先级选择自动开大训。
