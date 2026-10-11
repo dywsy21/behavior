@@ -12,7 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-12 00:14 CST / Codex CHAMPION-2026：** 冠军独立运行时/WS服务/20控客户端与原官方完整回合runner接线已本地实现；启动先重新逐文件hash公开cp2、源patch核对、真实TRAIN两task单独/交错12次生成一致门，然后才ready。原MEM16控入口保留；新增controller测试覆盖跨任务stage/RNG/inpainting、错误ACK/尾段终止、压缩两分支、非法stage/特权字段，另直接比对固定上游投票方法。Isaac选卡按既有`OMNIGIBSON_GPU_ID`而非CUDA隐藏，避免混用模型与渲染设备编号。尚未GPU部署/物理/Q；下一定向验收后冻源单卡服务，再原radio301完整回合，不启动新训练。
+- **2026-10-12 00:21 CST / Codex RECOVERY-USABLE：** 冠军物理回合真实已过640控仍进行、无终态。利用等待检查MEM历史：`recovery_expert_feedback.py`的128选项只省略同意图重复刷新，仍保留每个标注切换，不能称真正周期128控actor历史。新增TRAIN-only元数据审计（不读RGB/权重、不改样本/标签）：计原anchor切换比例，比较相同帧16步oracle前命令与周期128前命令；2反例通过。初CPU测试因g05.data包初始化引入非必要OmegaConf失败，改为加载同一Git元数据模块而非安装依赖；下一冻源审全19000TRAIN，保留1000eval排除，不将重采样历史冒充实际执行/物理成功。
+
+- **2026-10-12 00:17 CST / Codex CHAMPION-2026：** lc1 cp2服务ready，26公开资产全重hash；真实TRAIN task0/1各单独与交错3次（共12生成）的动作、stage/history/token逐项完全相同，`preflight.json`明确0物理控/0优化，只工程时钟回放。单GPU当前约8.49GiB显存，不能当24GiB容器完整部署峰值验收。RTX GPU0再次空闲并持既有gpu_0.lock后实启tmux`champion-radio-cp2-v1`、run同`runs/champion_episode_20261012/radio-cp2-v1`，原official radio301/seed0/原timeout/无演示前缀，模型seed17；当前场景加载中、未报Q/SR。loopback19720经既有lc1控制连接及单独本地reverse SSH转发，不重登VPN/不开放公网端口。正式大训仍等待用户确认。
+
+- **2026-10-12 00:14 CST / Codex CHAMPION-2026：** d9371871通过24定向测试/语法检查并push，A800/RTX均Git冻结`champion-inference-20261012-v1`；RTX最初向旧`code/behavior`fetch因缺66c祖先被拒，随后解析既有client worktree真实common gitdir(`behavior_sft_submission_20261008/.git`)再成功，不改旧源/不reset。lc1 GPU0已实启tmux`champion-radio-cp2-v1`、`runs/champion_episode_20261012/radio-cp2-v1`，仅资产重hash/只读加载与两任务真实模型隔离preflight；模拟器未启动、0控制/0更新。下一ready后RTX GPU0单条原官方radio301完整任务，保留全部失败，不触发正式训练。
+
+- **2026-10-12 00:12 CST / Codex CHAMPION-2026：** 冠军独立运行时/WS服务/20控客户端与原官方完整回合runner接线已本地实现；启动先重新逐文件hash公开cp2、源patch核对、真实TRAIN两task单独/交错12次生成一致门，然后才ready。原MEM16控入口保留；新增controller测试覆盖跨任务stage/RNG/inpainting、错误ACK/尾段终止、压缩两分支、非法stage/特权字段，另直接比对固定上游投票方法。Isaac选卡按既有`OMNIGIBSON_GPU_ID`而非CUDA隐藏，避免混用模型与渲染设备编号。尚未GPU部署/物理/Q；下一定向验收后冻源单卡服务，再原radio301完整回合，不启动新训练。
 
 - **2026-10-12 00:07 CST / Codex CHAMPION-2026：** 上轮分类为progress（真实整链2.69×提速/回执/代码已push），本轮干净pull/fetch已同步，正式8000步/24h未获新确认、不能因goal自动开训。继续独立冠军推理准备：新增纯episode会话（原3票/2晋级、20实际控、26→20压缩或20直出、4步续接、独立PRNG/ACK/终态），stateless model入口和预登记cp2 radio301/seed17只读完整回合配置；尚未GPU/物理运行，单测待。lc1/RTX10383八卡只读实核空闲，robo/lc2/队友不动；共享盘仅1.2TiB空闲，后续checkpoint保存必须空间门，不自行清理。
 
