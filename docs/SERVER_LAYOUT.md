@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 09:21 CST：完整回合录像准备
+
+- A800`/data/workspace/wsy/behavior2026/src/full-episode-videos-20261011-v1`与RTX根`code/full-episode-videos-20261011-v1`均a590c23f；三个lc1模型`runs/full_episode_videos_20261011/{radio,food,tripod}-v1`在0客户端/0控制时owner停加载，避免已发现终态日志异常，原日志保留，新v2源待。RTX根为`/run/ti/rl_memlite_stage1_20261006`。
+- 本地VPN tmux`full-video-vpn-20261011`；lc1持久shell tmux`full-video-lc1-shell-20261011`/socket`/home/wsy/.ssh/lc1-full-video-20261011.sock`。模型端口19700–19702经该SSH本地转发和`full-video-rtx-tunnels-20261011`反向到RTX同端口，全部只监听loopback，无凭据入Git。
+- 原短片精简版另放本地`artifacts/recovery-execution-videos-20261011/minimal/`，不覆盖08:53诊断字幕版；新的全程原片/成片将分别在RTX/A800`runs/full_episode_videos_20261011`和本地`artifacts/full-episode-videos-20261011`，未完成前不称已交付。
+
 ## 2026-10-11 08:53 CST：在线意图/结果头执行视频（本地）
 
 - 本地`/home/wsy/behavior/artifacts/recovery-execution-videos-20261011/00-overview.mp4`为47.2秒合集；`01-radio-grasp/`、`02-washer-open-success/`、`03-washer-open-incomplete/`各有`execution.mp4`、原时钟`overlay.ass`、`timeline.json`与编码manifest，`source/`保留来自RTX10383的真实原MP4/控制日志，`review/`为本人成片抽帧核验。媒体不入Git、不移走服务器原件。

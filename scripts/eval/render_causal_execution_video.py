@@ -112,6 +112,32 @@ def line(y, text, *, size=23, color='E8E8E8', x=28):
     return r'{\an7\pos(' + f'{x},{y}' + r')\fs' + str(size) + r'\c&H' + color + '&}' + clean(text)
 
 
+def minimal_texts(goal, members, decision='EXECUTE'):
+    """Only the two requested fields; probabilities are raw model outputs."""
+    skills=json.loads(goal['semantic_bundle'])
+    if len(skills)!=len(members) or [m['member'] for m in members]!=list(range(len(skills))):
+        raise ValueError('Intent and per-member head outputs must be aligned')
+    verbs={'GRASP':'抓取','OPEN_DOOR':'打开','PLACE':'放置','RELEASE':'松开',
+        'TOGGLE_ON':'开启','TOGGLE_OFF':'关闭','NAVIGATE':'移动','REACH':'伸手靠近'}
+    arms={'LEFT':'左手','RIGHT':'右手','BOTH':'双手','UNSPECIFIED':''}
+    intents=[];outcomes=[]
+    for skill,member in zip(skills,members):
+        arm=arms.get(skill['arm'],skill['arm'])
+        target=skill['target']
+        intention=f"{arm}{verbs.get(skill['verb'],skill['verb'])} {target}"
+        if skill.get('destination'):intention+=' → '+skill['destination']
+        intents.append(intention)
+        p=probabilities(member['raw_logits']);i=max(range(4),key=p.__getitem__)
+        outcomes.append(f"{arm or target}：{ZH[OUTCOMES[i]]} {p[i]*100:.1f}%")
+    prefix='重试 · ' if decision=='RETRY' else ''
+    return ['当前意图：'+prefix+'； '.join(intents),'结果头预测：'+'； '.join(outcomes)]
+
+
+def minimal_caption(state, **unused):
+    texts=minimal_texts(state['plan']['goal'],state['observer']['result']['members'],state['plan']['event']['decision'])
+    return [line(462,texts[0],size=25,color='FFFF8A'),line(507,texts[1],size=25)]
+
+
 def caption(state, *, title, job, speed, temperature, models, terminal=None):
     skill = state['skill']; plan = state['plan']; event = plan['event']
     raw = state['observer']; member = raw['result']['members'][0]
@@ -157,6 +183,7 @@ def main():
         parser.add_argument('--'+name, type=Path, required=True)
     parser.add_argument('--title', required=True)
     parser.add_argument('--speed', type=float, choices=(1., .5, .25), default=1.)
+    parser.add_argument('--layout', choices=('minimal','diagnostic'), default='minimal')
     a = parser.parse_args()
     if a.output.exists(): raise FileExistsError(a.output)
     result, start, audit, causal, service, config = map(read,
@@ -187,7 +214,9 @@ def main():
         controls=controls, nframes=int(info['nb_read_frames']))
     a.output.mkdir(parents=True)
     repeats = round(1/a.speed); body_frames = len(states)*repeats; tail_frames = 30
-    ass = ['[Script Info]', 'ScriptType: v4.00+', 'PlayResX: 1344', 'PlayResY: 960', 'WrapStyle: 2',
+    height=558 if a.layout=='minimal' else 960
+    render_caption=minimal_caption if a.layout=='minimal' else caption
+    ass = ['[Script Info]', 'ScriptType: v4.00+', 'PlayResX: 1344', f'PlayResY: {height}', 'WrapStyle: 2',
         '[V4+ Styles]', 'Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding',
         'Style: Default,Noto Serif CJK SC,23,&H00EEEEEE,&H00EEEEEE,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1',
         '[Events]', 'Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text']
@@ -195,8 +224,8 @@ def main():
         for text in texts: ass.append(f'Dialogue: 0,{stamp(first)},{stamp(last)},Default,,0,0,0,,{text}')
     temperature = read(a.calibration)['temperature']; models = service['joint_model_identity']
     for i,state in enumerate(states):
-        emit(i*repeats,(i+1)*repeats,caption(state,title=a.title,job=job,speed=a.speed,temperature=temperature,models=models))
-    emit(body_frames,body_frames+tail_frames,caption(states[-1],title=a.title,job=job,
+        emit(i*repeats,(i+1)*repeats,render_caption(state,title=a.title,job=job,speed=a.speed,temperature=temperature,models=models))
+    emit(body_frames,body_frames+tail_frames,render_caption(states[-1],title=a.title,job=job,
         speed=a.speed,temperature=temperature,models=models,terminal=result))
     subtitle = a.output/'overlay.ass'; subtitle.write_text('\n'.join(ass)+'\n')
     # A real decoded video is the sole visual input. Slow playback duplicates
@@ -204,7 +233,8 @@ def main():
     path = str(subtitle.resolve())
     if any(c in path for c in "':,[]\\"): raise ValueError('Unsupported filter-path character')
     video = a.output/'execution.mp4'
-    filters = f'scale=1344:448:flags=lanczos,pad=1344:960:0:132:color=0x101722,setpts=PTS/{a.speed},tpad=stop_mode=clone:stop_duration=3,fps=15,ass=filename={path}'
+    top=0 if a.layout=='minimal' else 132
+    filters = f'scale=1344:448:flags=lanczos,pad=1344:{height}:0:{top}:color=0x101722,setpts=PTS/{a.speed},tpad=stop_mode=clone:stop_duration=3,fps=15,ass=filename={path}'
     cmd = ['ffmpeg','-nostdin','-v','warning','-n','-i',str(a.episode/'policy.mp4'),'-an',
         '-vf',filters,'-frames:v',str(body_frames+tail_frames),'-c:v','libx264','-crf','18',
         '-preset','medium','-pix_fmt','yuv420p','-movflags','+faststart',str(video)]
@@ -223,7 +253,7 @@ def main():
         original_fps=15,raw_prediction_is_not_calibrated_physical_truth=True,
         all_captions_bound_to_actual_emitting_action=True,synthetic_robot_images=0,
         newly_run_model_inferences=0,new_physical_controls=0,whole_task_sr=False,
-        encoder_command=cmd,stream=final,owner_output_media_review_pending=True)
+        encoder_command=cmd,stream=final,layout=a.layout,owner_output_media_review_pending=True)
     (a.output/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
     timeline=[dict(source_frame=x['frame'],control_step=x['control_step'],action_step=x['action_step'],
         revision=x['revision'],observer_step=x['observer']['control_step'],

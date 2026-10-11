@@ -64,5 +64,17 @@ class CausalVideoTests(unittest.TestCase):
             self.assertGreater(when,(frame-1)/15)
         self.assertEqual(video.clean('{\\pos(1,1)}\nother'), '(/pos(1,1)) other')
 
+    def test_minimal_overlay_has_only_intent_and_raw_head_probability(self):
+        skill=dict(verb='GRASP',arm='RIGHT',target='radio',destination='')
+        texts=video.minimal_texts(dict(semantic_bundle=__import__('json').dumps([skill])),
+            [dict(member=0,raw_logits=[0.,10.,0.,0.])])
+        self.assertEqual(len(texts),2)
+        self.assertTrue(texts[0].startswith('当前意图：'))
+        self.assertIn('右手抓取 radio',texts[0])
+        self.assertEqual(texts[1],'结果头预测：右手：成功 100.0%')
+        for text in texts:
+            for clutter in ('控制步','ckpt','物理','校准','seed','实例','memory','CoT'):
+                self.assertNotIn(clutter,text)
+
 
 if __name__=='__main__':unittest.main()

@@ -117,7 +117,7 @@ async def main():
         f"{a.case}-{cfg['instance_id']}-seed{cfg['policy_seed']}",identities)
     def emit(kind, value):
         with (a.output/'events.jsonl').open('a') as f:
-            f.write(json.dumps(dict(kind=kind,episode=identity.episode,**value),allow_nan=False)+'\n')
+            f.write(json.dumps(dict(value,kind=kind,episode=identity.episode),allow_nan=False)+'\n')
     session = None; used = False; done = asyncio.Event(); gate = asyncio.Lock()
 
     async def handler(socket):

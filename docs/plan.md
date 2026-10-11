@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 09:21 CST / Codex FULL-EPISODE-VIDEO：** 全程入口静态复核发现终态日志`episode`重复关键字会导致close异常，已本地修复并补官方正常SystemExit处理；三v1服务仍未接客户端/0仿真，逐PID/argv核归属后SIGTERM停加载，原目录/log保留，改新v2冻源再启动而非热改。全程字幕渲染器按原始初态＋每控制帧、实际action/ACK/头输出逐项交叉核验；3时钟/终止/错头反例＋5minimal字幕测试过。只显示当前意图及逐成员原始头预测概率，所有技术说明放manifest/聊天，不进画面。
+
+- **2026-10-11 09:17 CST / Codex FULL-EPISODE-VIDEO：** a590c23f已commit/push且Git bundle在A800与RTX各建不可变`full-episode-videos-20261011-v1`；首增量缺远端54d父对象被Git拒绝，改从两端已有646d构造完整增量，未覆盖源/清理对象。lc1 GPU0/1/2分别提交radio/food/tripod三独立模型服务，run `runs/full_episode_videos_20261011/{case}-v1`/logs，仍加载/未新控制。旧短片minimal字幕CPU重编码开始，旧原片不覆盖。根额外13校准回归＋5字幕回归过；本地miniconda路径随后外部变为不可见，未安装/修改环境，媒体工具改用现有`/usr/bin/python`。
+
 - **2026-10-11 09:13 CST / Codex FULL-EPISODE-VIDEO：** lc1账号2代理与持久SSH shell已恢复，八A800实空。新增独立全程service/session/client/evaluator（不改官方源码/现役入口），从空记忆、0教师动作开始；真实23维逐控ACK推进128控高层与16控观察器，末不足16控照实闭合，记录初态＋每个真实控制帧。3新反例/时钟/跨task隔离测试过、编译/diff过。固定public_test301开发实例、seed17的radio/task0、food/task3、tripod/task35各一回合，官方1.5×人类平均时限原样（约3224/20544/5867控），不选结果/不裁断任务；源码准备冻结、尚未提交GPU/仿真。
 
 - **2026-10-11 09:08 CST / Codex FULL-EPISODE-VIDEO：** 用户明确要求精简为底部当前意图＋结果头输出/概率，并新增几个从官方初始状态至成功/超时的完整回合；上一批两task三段仅中途接管局部片段，不再用其代替全程。RTX10383八卡实查空闲；原本地VPN/SSH会话已退出，沿用户此前许可仅重连账号2，代理恢复、lc1 SSH认证在途，不动lc2/robo/队友。准备独立全程只读入口，真实ACK时钟/每episode隔离/最新89907高＋0c52低＋bee/b0观察器，禁止教师前缀、物理真值进actor和结果筛选；尚未新仿真。旧RECOVERY-USABLE goal仍paused、三处未提交消融保留；fetch后HEAD/upstream54d5da87/main无新变化，dirty故未pull。

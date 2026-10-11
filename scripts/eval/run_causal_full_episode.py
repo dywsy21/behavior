@@ -76,6 +76,8 @@ def main():
                 service_finish=receipt,video_frames_expected=record['steps']+1,optimizer_updates=0)
             atomic_json(a.output/'status.json',status)
     except BaseException as e:
+        if isinstance(e,SystemExit) and e.code in (None,0) and status.get('status')=='completed':
+            return
         status.update(status='failed_no_retry',error=repr(e),finished=time.time())
         atomic_json(a.output/'status.json',status);raise
 
