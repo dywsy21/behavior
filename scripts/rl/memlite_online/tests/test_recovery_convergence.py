@@ -3,7 +3,8 @@ from pathlib import Path
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'code'))
 from recovery_convergence import event_weights, check_splits, selection_key, causal_suffix_training_items
-from recovery_generation_metrics import score_event, summarize, feedback_probe, select_original_indices
+from recovery_generation_metrics import (score_event, summarize, feedback_probe, select_original_indices,
+                                        mask_observer_estimates)
 
 
 def row(group, label, split='train'):
@@ -11,6 +12,47 @@ def row(group, label, split='train'):
 
 
 class ConvergenceTests(unittest.TestCase):
+    def _feedback_causal(self):
+        from g05.utils.memlite_skill_protocol import semantic_active_skills_text
+        from recovery_observer_training import feedback_text
+        skill=dict(verb='GRASP',target='cup',arm='LEFT',source='',destination='',target_part='',unbound_relation='')
+        return dict(previous_intent=semantic_active_skills_text([skill, dict(skill,target='other',arm='RIGHT')]),
+            known_previous_outcome='UNKNOWN', memory='unchanged original memory',
+            execution_feedback=feedback_text(dict(served_controls=237,repeated_planning_count=4,attempt_number=2),
+                [dict(member=0,estimated_outcome='FAILED',confidence=.92),
+                 dict(member=1,estimated_outcome='IN_PROGRESS',confidence=.91)]))
+
+    def test_mask_keeps_real_clock_parallel_members_and_original_immutable(self):
+        import json
+        from copy import deepcopy
+        original=self._feedback_causal();before=deepcopy(original)
+        masked,kind=mask_observer_estimates(original)
+        self.assertEqual(original,before)
+        self.assertEqual(kind,'masked_observer_estimates_actual_counters_preserved')
+        for key in original:
+            if key!='execution_feedback':self.assertEqual(masked[key],original[key])
+        old=json.loads(original['execution_feedback']);new=json.loads(masked['execution_feedback'])
+        for key in old:
+            if key not in ('estimated_member_outcomes','estimated_bundle_outcome'):self.assertEqual(new[key],old[key])
+        self.assertEqual(new['estimated_bundle_outcome'],'UNKNOWN')
+        self.assertEqual(new['estimated_member_outcomes'],
+            [dict(member=i,estimated_outcome='UNKNOWN',confidence=0.) for i in range(2)])
+        self.assertEqual(mask_observer_estimates(masked)[0],masked)
+        self.assertEqual(mask_observer_estimates(dict(original,execution_feedback='none')),
+            (dict(original,execution_feedback='none'),'no_feedback_to_mask'))
+
+    def test_mask_rejects_corrupted_counters_members_and_hidden_fields(self):
+        import json
+        original=self._feedback_causal()
+        for key,value in [('same_intent_controls',-1),('same_intent_planner_refreshes',True),
+                ('attempt_index',0),('estimated_bundle_outcome','SUCCEEDED'),('privileged_success',True)]:
+            obj=json.loads(original['execution_feedback']);obj[key]=value
+            with self.assertRaises(ValueError):mask_observer_estimates(dict(original,execution_feedback=json.dumps(obj)))
+        for field,value in [('member',1),('member',False),('confidence',float('nan')),('confidence',True)]:
+            obj=json.loads(original['execution_feedback']);obj['estimated_member_outcomes'][0][field]=value
+            with self.assertRaises(ValueError):mask_observer_estimates(dict(original,execution_feedback=json.dumps(obj)))
+        with self.assertRaises(ValueError):mask_observer_estimates(dict(original,known_previous_outcome='SUCCEEDED'))
+
     def test_noninitial_generation_schedule_cannot_silently_test_only_first_frames(self):
         fixed=[[0,1,2],[3,4,5]]
         previous=lambda i:'None' if i in (0,3,4) else 'a real previous command'

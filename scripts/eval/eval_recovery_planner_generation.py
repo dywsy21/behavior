@@ -16,7 +16,8 @@ sys.path.insert(0, str(REPO / 'scripts/eval/memlite_sft100'))
 from recovery_corpus import file_sha, digest
 from recovery_planner_data import VerifiedRecoveryPlannerDataset
 from recovery_sft_data import raw_observation
-from recovery_generation_metrics import score_event, summarize, feedback_probe, select_original_indices
+from recovery_generation_metrics import (score_event, summarize, feedback_probe, select_original_indices,
+                                        mask_observer_estimates, select_transition_indices)
 
 
 def main():
@@ -24,7 +25,10 @@ def main():
     ap.add_argument('--config', type=Path, required=True)
     ap.add_argument('--model', choices=('parent', 'candidate'), required=True)
     ap.add_argument('--output', type=Path, required=True)
-    ap.add_argument('--feedback-probe', action='store_true', help='Counterfactual shortcut diagnostic, not heldout accuracy')
+    diagnostic = ap.add_mutually_exclusive_group()
+    diagnostic.add_argument('--feedback-probe', action='store_true', help='Counterfactual shortcut diagnostic, not heldout accuracy')
+    diagnostic.add_argument('--mask-observer-estimates', action='store_true',
+        help='Counterfactual ablation of estimates only; genuine counters/history unchanged, no training or actions')
     args = ap.parse_args()
     # Fail on an incomplete code closure before reading large model files.
     importlib.import_module('g05.utils.memlite_planner_format')
@@ -40,8 +44,15 @@ def main():
     if gpu not in tuple(map(str, range(8))) or subprocess.check_output(
             ['nvidia-smi', '-i', gpu, '--query-compute-apps=pid', '--format=csv,noheader'], text=True).strip():
         raise RuntimeError('Select one verified idle GPU')
+    from recovery_process_cache import isolated_cache_env
+    runtime=args.output.with_name(args.output.name+'.runtime')
+    if runtime.exists():
+        raise FileExistsError('Use a fresh isolated runtime cache: '+str(runtime))
+    os.environ.update(isolated_cache_env(runtime))
     import numpy as np
     import torch
+    from recovery_cuda_startup import initialize_cuda_backend
+    print(json.dumps(dict(event='cuda_backend_ready', **initialize_cuda_backend(0))), flush=True)
     from g05.models.g05.qwen35 import vision
     from g05.utils.training.stage1_model import configuration, restore_model, make_processor
     from g05.data.memlite_stage1_dataset import Stage1Dataset
@@ -82,21 +93,36 @@ def main():
         lambda i:expert.locate(i)[3],lambda i:int(expert.task_ids[i]),original_schedule)
     original_with_previous=sum(expert.locate(i)[3]!='None' for i in fixed)
     schedule = [('original_heldout', int(i)) for i in fixed] + [('recovery_dev', i) for i in range(len(recovery))]
+    transitions=[]
+    if cfg.get('include_transition_probes',False):
+        if args.feedback_probe or args.mask_observer_estimates:
+            raise ValueError('First transition audit must retain actual input fields')
+        def target_intent(index):
+            episode,_,segment,_,_,_=expert.locate(index)
+            return episode['segments'][segment]['text']
+        transitions=select_transition_indices(
+            [np.flatnonzero(expert.task_ids==task).tolist() for task in range(100)],
+            lambda i:expert.locate(i)[3],target_intent,lambda i:int(expert.task_ids[i]))
+        schedule=[('original_transition',int(i)) for i in transitions]+schedule
     args.output.mkdir(parents=True)
     receipt = dict(config_sha256=file_sha(args.config), checkpoint_sha256=cfg['models'][args.model]['sha256'],
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'], cwd=REPO, text=True).strip(),
         restoration=restore, schedule_sha256=digest(schedule), target_free=True,
         original_schedule=original_schedule,original_with_previous_intent=original_with_previous,
+        transition_probe_count=len(transitions),
+        transition_selection='first_actual_bundle_change_in_original_heldout_task_order' if transitions else None,
         original_feedback=original_feedback,uncertainty_protocol=cfg.get('uncertainty_protocol','raw_observer_confidence_v1'),
         original_feedback_repeat_stride=cfg.get('original_feedback_repeat_stride',16),
         probe_unknown_confidence=cfg.get('probe_unknown_confidence',0.) if args.feedback_probe else None,
         recovery_dev_unseen_by_increment_only=True, no_physical_success_measurement=True,
         counterfactual_feedback_probe=args.feedback_probe,
-        synthetic_probe_metrics_are_not_real_world_accuracy=bool(args.feedback_probe))
+        observer_estimates_masked=args.mask_observer_estimates,
+        actual_counters_preserved_by_estimate_mask=args.mask_observer_estimates,
+        synthetic_probe_metrics_are_not_real_world_accuracy=bool(args.feedback_probe or args.mask_observer_estimates))
     (args.output/'manifest.json').write_text(json.dumps(receipt, indent=2)+'\n')
     started = time.monotonic(); rows = []
     for split, index in schedule:
-        if split == 'original_heldout':
+        if split.startswith('original_'):
             raw, identity = expert.raw(index)
             target = raw.pop('model_projection')
         else:
@@ -108,8 +134,11 @@ def main():
         # receives only a whitelist prefix and the three processed images.
         prepared = processor._process_tensors(raw)
         causal=planner_input_projection(target);probe_kind='observed'
+        original_causal_sha256=digest(causal)
         if args.feedback_probe:
             causal,probe_kind=feedback_probe(causal,split,unknown_confidence=cfg.get('probe_unknown_confidence',0.))
+        elif args.mask_observer_estimates:
+            causal,probe_kind=mask_observer_estimates(causal)
         prefix = single_frame_planner_prefix(processor.samples_builder, prepared, causal)
         pixels = {k: v.unsqueeze(0).cuda() for k,v in prepared['pixel_values'].items()}
         event = None; error = None; text = None; tick = time.monotonic()
@@ -122,7 +151,13 @@ def main():
             if isinstance(exc, torch.cuda.OutOfMemoryError):
                 raise
             error = str(exc); text = getattr(exc, 'planner_texts', None)
-        row = dict(split=split, identity=identity, probe_kind=probe_kind, score=score_event(event,target), event=event, error=error,
+        row = dict(split=split, identity=identity, probe_kind=probe_kind,
+            previous_intent=causal['previous_intent'],
+            target_changes_previous_intent=(causal['previous_intent']!='None'
+                and causal['previous_intent']!=target['active_skills_text']),
+            original_causal_input_sha256=original_causal_sha256, actual_causal_input_sha256=digest(causal),
+            causal_input_changed=digest(causal)!=original_causal_sha256,
+            score=score_event(event,target), event=event, error=error,
             text=text, seconds=time.monotonic()-tick,
             expected={k:target[k] for k in ('next_decision','target_parent_goal','active_skills_semantic_json','memory_update')})
         rows.append(row)
@@ -137,6 +172,7 @@ def main():
     (args.output/'result.json').write_text(json.dumps(dict(receipt, status='completed', seconds=time.monotonic()-started,
         probe_kind_counts=coverage,normal_feedback_probe_actually_exercised=bool(
             args.feedback_probe and coverage.get('synthetic_unknown_feedback_on_normal_state',0)),
+        causal_input_changed_counts=dict(Counter(r['split'] for r in rows if r['causal_input_changed'])),
         summary=summarize(rows)), indent=2)+'\n')
 
 

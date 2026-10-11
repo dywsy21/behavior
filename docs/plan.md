@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 21:23 CST / Codex RECOVERY-USABLE＋CHAMPION-2026：** 用户已恢复并扩展active goal为两线：继续高层结果/停滞/恢复监督与通用短技能RL达可用；同时准备去年冠军权重适配今年100任务，**新一轮大规模训练须先与用户讨论**。上一实质轮归类progress（完整失败轨迹揭示固定NAV，不是verified wait）；本轮fetch后本分支/main无新增，三处自有未提交诊断补丁保留，dirty不pull。实核lc1/RTX10383全部GPU空闲、三个video run双completed，food20545控/Q0全片已本地且根亲看0/300/684s；不是仍运行。官方主页当前截止**2026-10-16**（未列具体时区/小时），按约五天倒排，不按完整七天启动120h训练。
+
+- **2026-10-11 21:23 CST / Codex RECOVERY-USABLE：** 三全程分别26/46/161次真实高规划全部EXECUTE/NAV；末真实停滞计数3200/5760/20480控、24/44/159次refresh均传入高层，非计数丢失。NAV不在已校准GRASP覆盖，实际反馈全UNKNOWN；不能把视频上原始高置信预测改当真值。更重要：复算原99/100非初始生成评测，**99样本的目标技能与已给的上一技能相同，仅1条真实切换**；旧“99%正常”不证明能切阶段。正在补100task真实边界独立指标及原100控制/42恢复DEV的同权重自由生成，不改标签/回灌public301/先开大训。
+
+- **2026-10-11 21:23 CST / Codex CHAMPION-2026：** 作者公开权重实查无门控：`IliaLarchenko/behavior_submission`固定89545bc1（四最终模型各12.646GB），`behavior_50t_checkpoint`固定11490241（12.646GB共同50task中间权重，作者未完整评测，不能赋予最终冠军成绩）。源码只读clone于`artifacts/champion-reference-20261011`，ca556f74；旧openpi01177e0/BEHAVIOR684a830版本钉住。已发现50任务/596阶段常量及strict shape loader，不能只改num_tasks=100；需要按任务名映射扩表、保留旧阶段/归一化/动作delta和V3数据/2026 websocket适配。尚未下载大权重/创建新环境/训练；下一完成形状/数据兼容清单与实际测速后讨论大训取舍。
+
 - **2026-10-11 10:12 CST / Codex FULL-EPISODE-VIDEO：** 两完整成片逐条26＋46次真实高规划的task/memory绑定及128控时钟再次全过，202/367字幕区间无缺口，187/206不同头字幕，模型前后权重全同/0更新。轻量完整审计`docs/infra/results/2026-10-11-full-episode-videos.json`保存视频SHA、任务、两端源码/ckpt和根抽帧记录；两成片可先交付，food仍原回合8064/20544控（非完整结果），收片器waiting且已就绪自动下载/导出，最终仍待亲审。不称三片全部完成、不恢复暂停goal，旧三处消融补丁保留。
 
 - **2026-10-11 10:07 CST / Codex FULL-EPISODE-VIDEO：** 5108f705已push，4新收片恢复反例＋8字幕回归＋3全程session回归全部通过（15项）；原collector已退出后，核两成片SHA并以`full-video-collector-20261011-resume`恢复同三对run收片，原失败状态另外归档，food原回合继续6656控，无新仿真/重置/训练。radio/tripod真实26/46次高层规划均持续NAVIGATE原各自目标，故字幕意图不变是真实模型输出，并非卡字幕；头概率仍随实际在线预测更新。第三片待终态与本人检查，旧goal保持paused。

@@ -1,0 +1,36 @@
+{
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "union": "datasets/recovery-postfit-planner-union-20261010-v1",
+  "admission_sha256": "404fcc0a2e1d7f62466e08e6bfe994717905db6973cee84ee410ad0a32f3463f",
+  "models": {
+    "parent": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-causal-feedback-fit-v1/checkpoints/step_00000420_save_0009.pt",
+      "sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2"
+    },
+    "candidate": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2/checkpoints/step_00000360_save_0008.pt",
+      "sha256": "89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7"
+    }
+  },
+  "inventory": {
+    "path": "datasets/recovery-postfit-planner-union-20261010-v1/audit/inventory.json",
+    "sha256": "5869bd1eea8d0a5a5728eca3fc3145fbec94240bed7586de0a62dc5b1041e863"
+  },
+  "history": {
+    "path": "datasets/recovery-postfit-planner-union-20261010-v1/history/contexts.jsonl",
+    "sha256": "e9927128f8eeb4daa6e419b337a3f066e052aefd425cc1f9c4688c29493666f6"
+  },
+  "feedback": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-v1/feedback.jsonl",
+    "sha256": "586ef848c37ab26997c9b2da8105afaf57739ea68d0404ddac587e061cd20f80"
+  },
+  "original_schedule": "noninitial_fixed_one_per_task_v1",
+  "include_transition_probes": true,
+  "original_feedback": "causal_expert_unknown_v1",
+  "original_feedback_repeat_stride": 16,
+  "uncertainty_protocol": "unready_zero_confidence_v1",
+  "owner": "Codex root",
+  "hypothesis": "Prior 99/100 normal generation is a continuation-dominated metric: 99 targets repeat the supplied previous skill. A separate real-boundary score may expose a stage-transition failure concealed by the aggregate. This is a diagnostic, not a causal proof about full rollouts.",
+  "scope": "One frozen parent/candidate pair, first actual skill-bundle change per task selected from original heldout metadata BEFORE any predictions, plus unchanged 100 previous controls and all42 recovery DEV. 242 generations/model, two idle lc1 GPUs, no model updates or simulator actions. Source/hash, nonfinite, OOM, or missing boundary stops the run; no silent replacement with an easy continuation. No new large-scale training is authorized by this config."
+}

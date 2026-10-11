@@ -26,6 +26,31 @@ def select_original_indices(fixed_by_task, previous_intent, task_index, mode):
     return result
 
 
+def select_transition_indices(candidates_by_task, previous_intent, target_intent, task_index):
+    """First genuine skill-boundary anchor per task, selected before prediction.
+
+    A repeated command is not a transition test, even at a late video frame.
+    Inputs come from the original heldout teacher trace, not future outcomes.
+    This diagnoses annotation-stage selection, not physical task success.
+    """
+    result=[]
+    for task,indices in enumerate(candidates_by_task):
+        selected=None
+        for index in indices:
+            if type(index) is not int or task_index(index)!=task:
+                raise ValueError('Transition schedule lost heldout task binding')
+            previous=previous_intent(index)
+            if previous!='None' and previous!=target_intent(index):
+                selected=index
+                break
+        if selected is None:
+            raise ValueError('No actual heldout skill transition for task '+str(task))
+        result.append(selected)
+    if not result or len(set(result))!=len(result):
+        raise ValueError('Empty or duplicated transition schedule')
+    return result
+
+
 def feedback_probe(causal, split, *, unknown_confidence=0.):
     """Counterfactual diagnostic, never real labels, training or runtime input.
 
@@ -65,6 +90,56 @@ def score_event(event, target):
         false_retry=target['next_decision'] != 'RETRY' and event['decision'] == 'RETRY')
     result['exact'] = all(result[k] for k in ('decision', 'bundle', 'parent', 'memory'))
     return result
+
+
+def mask_observer_estimates(causal):
+    """Read-only ablation: remove estimates, retaining genuine command clocks.
+
+    Unlike the legacy presence/absence shortcut probe, this keeps the field,
+    all actual counters, member ordering, previous command and memory. It is
+    not a new label, a deployment setting or permission to alter SFT data.
+    """
+    from g05.utils.memlite_skill_protocol import canonical_json, parse_active_skills_text
+    if causal['known_previous_outcome'] != 'UNKNOWN':
+        raise ValueError('Ablation cannot edit known outcome truth')
+    result = dict(causal)
+    if causal['execution_feedback'] == 'none':
+        return result, 'no_feedback_to_mask'
+    feedback = json.loads(causal['execution_feedback'])
+    fields = {'schema', 'same_intent_controls', 'same_intent_planner_refreshes',
+              'attempt_index', 'estimated_member_outcomes', 'attempt_count_scope',
+              'estimated_bundle_outcome', 'source', 'stalled_is_not_failed'}
+    if (not isinstance(feedback, dict) or set(feedback) != fields
+            or feedback['schema'] != 'causal_execution_feedback_v1'
+            or feedback['attempt_count_scope'] != 'last_64_distinct_intents_this_episode'
+            or feedback['source'] != 'observable_counter_and_learned_observer'
+            or feedback['stalled_is_not_failed'] is not True
+            or any(type(feedback[k]) is not int or feedback[k] < 0 for k in
+                   ('same_intent_controls', 'same_intent_planner_refreshes', 'attempt_index'))
+            or feedback['attempt_index'] < 1):
+        raise ValueError('Require the unchanged causal feedback schema and real counters')
+    members = parse_active_skills_text(causal['previous_intent'], allow_empty=False)
+    estimates = feedback['estimated_member_outcomes']
+    outcomes = {'IN_PROGRESS', 'SUCCEEDED', 'FAILED', 'UNKNOWN'}
+    if not isinstance(estimates, list) or len(estimates) != len(members):
+        raise ValueError('Observer member count differs from the actual previous intent')
+    for i, row in enumerate(estimates):
+        if (not isinstance(row, dict) or set(row) != {'member', 'estimated_outcome', 'confidence'}
+                or type(row['member']) is not int or row['member'] != i
+                or row['estimated_outcome'] not in outcomes
+                or isinstance(row['confidence'], bool) or not isinstance(row['confidence'], (int, float))
+                or not math.isfinite(row['confidence']) or not 0 <= row['confidence'] <= 1):
+            raise ValueError('Unordered or invalid member estimate')
+    values = [r['estimated_outcome'] for r in estimates]
+    aggregate = ('SUCCEEDED' if all(v == 'SUCCEEDED' for v in values) else
+                 'FAILED' if 'FAILED' in values else 'UNKNOWN' if 'UNKNOWN' in values else 'IN_PROGRESS')
+    if feedback['estimated_bundle_outcome'] != aggregate:
+        raise ValueError('Inconsistent estimated bundle outcome')
+    feedback['estimated_member_outcomes'] = [dict(member=i, estimated_outcome='UNKNOWN', confidence=0.)
+                                             for i in range(len(members))]
+    feedback['estimated_bundle_outcome'] = 'UNKNOWN'
+    result['execution_feedback'] = canonical_json(feedback)
+    return result, 'masked_observer_estimates_actual_counters_preserved'
 
 
 def summarize(rows):
