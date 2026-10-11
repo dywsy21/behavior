@@ -23,6 +23,8 @@ def main():
         ap.add_argument('--'+key, type=Path, required=True)
     ap.add_argument('--batch-size', type=int, choices=(32, 64, 128, 256), required=True)
     ap.add_argument('--flow-samples', type=int, choices=(1, 4, 15), default=4)
+    ap.add_argument('--release', type=Path, help='Optional actual V3 stream; otherwise cached compute only')
+    ap.add_argument('--workers', type=int, choices=(8,16,32), default=32)
     ap.add_argument('--freeze-vision', action='store_true')
     ap.add_argument('--warmup', type=int, default=2)
     ap.add_argument('--measure', type=int, default=5)
@@ -105,21 +107,43 @@ def main():
         while block := stream.read(8*1024*1024): h.update(block)
     if h.hexdigest() != probe_receipt['native_npz_sha256'] or len(native['task_id']) != 100:
         raise ValueError('Use the exact real 100-TRAIN-task probe')
-    examples = []
-    for i, official_task in enumerate(native['task_id']):
-        task = layout['dataset_to_model'][str(int(official_task))]
-        state = state23_from_proprio61(native['state61'][i])
-        row = normalizer(dict(state=state, actions=delta_actions(native['actions23'][i],state)))
-        row = tokenizer(row)
-        row['state'], row['actions'] = pad32(row['state']), pad32(row['actions'])
-        row['image'] = {key: np.asarray(image_tools.resize_with_pad(native[key][i],224,224))
-                        for key in ('base_0_rgb','left_wrist_0_rgb','right_wrist_0_rgb')}
-        row['image_mask'] = {key: np.bool_(True) for key in row['image']}
-        row['tokenized_prompt'] = np.array([task, training_stage(int(native['frame'][i]),int(native['length'][i]),layout['num_stages'][task])],dtype=np.int32)
-        row['tokenized_prompt_mask'] = np.ones(2,dtype=bool)
-        examples.append(row)
-    batch = jax.tree.map(lambda *xs: np.stack(xs), *[examples[i%100] for i in range(args.batch_size)])
-    observation = Observation.from_dict({k:v for k,v in batch.items() if k!='actions'})
+    def prepare_batch(source, indices, *, resize_cached):
+        examples = []
+        for i in indices:
+            task = layout['dataset_to_model'][str(int(source['task_id'][i]))]
+            state = state23_from_proprio61(source['state61'][i])
+            row = normalizer(dict(state=state, actions=delta_actions(source['actions23'][i],state)))
+            row = tokenizer(row)
+            row['state'], row['actions'] = pad32(row['state']), pad32(row['actions'])
+            row['image'] = {key: np.asarray(image_tools.resize_with_pad(source[key][i],224,224)) if resize_cached else source[key][i]
+                            for key in ('base_0_rgb','left_wrist_0_rgb','right_wrist_0_rgb')}
+            row['image_mask'] = {key: np.bool_(True) for key in row['image']}
+            row['tokenized_prompt'] = np.array([task, training_stage(int(source['frame'][i]),int(source['length'][i]),layout['num_stages'][task])],dtype=np.int32)
+            row['tokenized_prompt_mask'] = np.ones(2,dtype=bool)
+            examples.append(row)
+        batch = jax.tree.map(lambda *xs: np.stack(xs), *examples)
+        return Observation.from_dict({k:v for k,v in batch.items() if k!='actions'}), batch['actions']
+
+    data_iterator = None
+    stream_receipt = None
+    if args.release is not None:
+        from torch.utils.data import DataLoader, Subset
+        from behavior_champion.dataset import NativeV3Dataset, collate_native, worker_init
+        stream_dataset = NativeV3Dataset(args.release,'train')
+        sample_count = (args.warmup+args.measure)*args.batch_size
+        selection = np.random.default_rng(17).permutation(len(stream_dataset))[:sample_count]
+        if len(selection) != sample_count: raise ValueError('Insufficient real stream samples')
+        loader = DataLoader(Subset(stream_dataset,selection),batch_size=32,num_workers=args.workers,
+                            shuffle=False,collate_fn=collate_native,worker_init_fn=worker_init,
+                            multiprocessing_context='spawn',prefetch_factor=1)
+        data_iterator = iter(loader)
+        stream_receipt = dict(release=str(args.release),workers=args.workers,
+                              train_episodes=len(stream_dataset.episodes),stride16_train_samples=len(stream_dataset),
+                              sampled_indices_sha256=hashlib.sha256(selection.tobytes()).hexdigest(),
+                              real_samples=sample_count,repeat_cached_batch=False,identities=[])
+        batch = None
+    else:
+        batch = prepare_batch(native,[i%100 for i in range(args.batch_size)],resize_cached=True)
     import_spec = importlib.util.spec_from_file_location('champion_train_core',args.reference/'scripts/train.py')
     core = importlib.util.module_from_spec(import_spec); import_spec.loader.exec_module(core)
     loader_receipt = {}
@@ -161,7 +185,7 @@ def main():
         freeze_filter=nnx_utils.PathRegex('PaliGemma/img/.*') if args.freeze_vision else nnx.Nothing)
     data_sharding = jax.sharding.NamedSharding(mesh,jax.sharding.PartitionSpec(sharding.DATA_AXIS))
     replicated = jax.sharding.NamedSharding(mesh,jax.sharding.PartitionSpec())
-    batch = place_from_host((observation,batch['actions']),data_sharding)
+    if batch is not None: batch = place_from_host(batch,data_sharding)
     # Legacy uint32 PRNG keys preserve the same seed while avoiding implicit
     # GPU0->peer copies of jax.random.key(...). Every replica is read back.
     init_key = place_from_host(np.array([0,17],dtype=np.uint32),replicated)
@@ -187,26 +211,60 @@ def main():
         times = []
         for index in range(args.warmup+args.measure):
             started=time.monotonic()
+            data_seconds = 0.
+            batch_tasks = None
+            if data_iterator is not None:
+                chunks = [next(data_iterator) for _ in range(args.batch_size//32)]
+                source = {key:np.concatenate([chunk[key] for chunk in chunks])
+                          for key in chunks[0] if key!='identity'}
+                identities = [item for chunk in chunks for item in chunk['identity']]
+                batch_tasks = len({item['task'] for item in identities})
+                if batch_tasks<2 or any(item['split']!='train' or item['frame']%16!=item['phase'] for item in identities):
+                    raise ValueError('Mixed-task/stride/protected split contract failed')
+                stream_receipt['identities'].extend(identities)
+                source.update({key:np.array([item[field] for item in identities],dtype=np.int32)
+                               for key,field in (('task_id','task'),('frame','frame'),('length','length'))})
+                # Preserve raw RGB through host placement. The author's existing
+                # preprocess_observation resizes on EACH assigned GPU, inside
+                # jit, so no unsafe GPU0->peer image copies are introduced.
+                batch = place_from_host(prepare_batch(source,range(args.batch_size),resize_cached=False),data_sharding)
+                del chunks, source
+                data_seconds=time.monotonic()-started
+            compute_started=time.monotonic()
             state, metrics=step(train_key,state,batch)
             jax.block_until_ready((state,metrics))
             seconds=time.monotonic()-started
             if not all(np.isfinite(np.asarray(x)).all() for x in jax.tree.leaves(metrics)):
                 raise ValueError('Nonfinite training metrics')
             row=dict(step=index+1,seconds=seconds,warmup=index<args.warmup,
+                     host_data_prepare_and_placement_seconds=data_seconds,
+                     accelerator_step_seconds=time.monotonic()-compute_started,
+                     distinct_tasks=batch_tasks,
                      loss=float(metrics['loss']),grad_norm=float(metrics['grad_norm']))
             with (args.output/'steps.jsonl').open('a') as stream: stream.write(json.dumps(row)+'\n')
             print(json.dumps(row),flush=True)
             if index>=args.warmup:times.append(seconds)
-    result=dict(status='short_disposable_compute_timing_completed',batch_size=args.batch_size,
+    if data_iterator is not None:
+        try: next(data_iterator)
+        except StopIteration: pass
+        else: raise ValueError('Unexpected extra stream data')
+        if len({item['index'] for item in stream_receipt['identities']})!=stream_receipt['real_samples']:
+            raise ValueError('Duplicate real training observations')
+        (args.output/'stream.json').write_text(json.dumps(stream_receipt,indent=2)+'\n')
+    result=dict(status='short_disposable_stream_timing_completed' if args.release else 'short_disposable_compute_timing_completed',batch_size=args.batch_size,
                 flow_samples=args.flow_samples,true_vision_freeze=args.freeze_vision,
                 seconds_per_step_median=float(np.median(times)),examples_per_second=args.batch_size/float(np.median(times)),
                 warmup_steps=args.warmup,timed_steps=args.measure,optimizer_updates=int(state.step),
+                seconds_per_step_aggregate=sum(times)/len(times),
+                examples_per_second_aggregate=args.batch_size*len(times)/sum(times),
                 trained_checkpoint_saved=False,source_commit=source,patch_sha256=hashlib.sha256(delta).hexdigest(),
                 openpi_source_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
                 communication_environment=communication,
                 transport_validation=transport_receipt,
                 parent_revision=verified['revision'],probe_sha256=h.hexdigest(),checkpoint_migration=loader_receipt,
-                warning='Cached real batch; no epoch ETA until shuffled full-loader/checkpoint/eval overhead is measured.')
+                real_stream=None if stream_receipt is None else {k:v for k,v in stream_receipt.items() if k!='identities'},
+                warning='Real short stream includes loader, transforms, checked placement and compute but excludes checkpoint/eval and long-run variance.' if args.release else
+                        'Cached real batch; no epoch ETA until shuffled full-loader/checkpoint/eval overhead is measured.')
     (args.output/'result.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result),flush=True)
 

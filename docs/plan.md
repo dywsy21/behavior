@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 23:07 CST / Codex CHAMPION-2026：** v4全7丢弃更新完成，无保存ckpt：bs256/flow4稳态7.629s/步、33.56观察/s，74真实参数张量初始化哈希全过（75叶中一项非参数中间量不作旧权重哈希），原50task/596stage旧行字节保持；loss/grad有限，仅同缓存batch算速、不是泛化收益。32worker原始读取10batch也全闭：8timed共41.854s/2048=48.93观察/s，5.232s/批；中位0.833s受预取偏差不能用。下一新增同模型真实shuffle流短串联，把原RGB先按host契约分到各GPU再用原preprocess内部resize，避免GPU0图像直拷；仍7丢弃更新，不启动正式训练。
+
 - **2026-10-11 23:02 CST / Codex CHAMPION-2026：** v4已再次通过真实8A800数值门并进入大模型初始化（还未出全参数hash/优化步）。I/O确认本节点有96逻辑CPU、8→16worker读取吞吐仍上升，准备32worker短复验10×256（2warm＋8timed覆盖两轮预取周期），新增聚合吞吐字段，拒绝以单个预取快batch/中位数推ETA；这是读取工程测试，不是新大训/数据重建。冠军推理协议/正式loader整合和成员review仍待，真实Q/SR未产生。
 
 - **2026-10-11 22:59 CST / Codex CHAMPION-2026：** 91bcd0ac已Git冻结`src/champion-compute-20261011-v4`，同bs256/flow4/7丢弃更新新v4实启；原v3停止于输入dtype门、没有载大模型。3新增传输CPU反例过（拒绝device-origin、显式dtype后精确回读、独立梯度/更新），两CPU I/O结果已原SHA复制本地。轻量总回执`docs/infra/results/2026-10-11-champion2026-readiness.json`集中保存权重/环境/接口/失败/读取实测及尚未完成事项；不把环境/单测可用称正式模型或提交包完成。

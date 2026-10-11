@@ -154,5 +154,8 @@ def collate_native(rows):
 
 
 def worker_init(_):
+    import os
+    os.environ['CUDA_VISIBLE_DEVICES'] = ''
+    os.environ['JAX_PLATFORMS'] = 'cpu'
     import torch
     torch.set_num_threads(1)
