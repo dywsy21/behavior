@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 08:53 CST：在线意图/结果头执行视频（本地）
+
+- 本地`/home/wsy/behavior/artifacts/recovery-execution-videos-20261011/00-overview.mp4`为47.2秒合集；`01-radio-grasp/`、`02-washer-open-success/`、`03-washer-open-incomplete/`各有`execution.mp4`、原时钟`overlay.ass`、`timeline.json`与编码manifest，`source/`保留来自RTX10383的真实原MP4/控制日志，`review/`为本人成片抽帧核验。媒体不入Git、不移走服务器原件。
+- Git轻量完整验收在`docs/infra/results/2026-10-11-execution-videos-with-online-feedback.json`，CPU复现入口`scripts/eval/render_causal_execution_video.py`；读取已验证的校准联合四轨physical/causal/service/journal/calibration文件，不调用模型、不操作GPU、不修改共享env。原始单片manifest的owner pending字段是编码时状态，后续owner签核以此Git验收为准。
+- 08:43核RTX原native-parent三冷worker分别完成4/2/4后failed_no_retry，全部部分与失败原件保留；尚无完整24条回执或control/candidate物理，不能把这三个失败worker当作对照完成。
+
 ## 2026-10-10 22:58 CST：校准联合已闭与native三臂物理验证
 
 - A800 `src/native-learner-physical-v1`和RTX10383 `code/native-learner-physical-v1`均646d5332；lc1 GPU2/tmux/run `native-learner-parent-probes-v1`、18979已ready，RTX0/1/2对应`native-learner-parent-{radio155,wash169,tripod129}-probes-v1`冷worker已提交。控制/候选两臂尚未开始，不能热改源码；本地d控制socket正向及tmux`recovery-rtx-forward-18979-v1`反向维持连接。

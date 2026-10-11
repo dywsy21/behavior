@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 08:53 CST / Codex VIDEO-INTENT-OUTCOME：** 已完成两任务三段真实在线录像＋47.2s合集，均H264/15fps/1344×960/faststart，全708输出帧完整解码；本地`artifacts/recovery-execution-videos-20261011/00-overview.mp4`，三段4.4/19.73/23.07s（明确0.25x/0.5x慢放与片尾2s定格）。新CPU工具`render_causal_execution_video.py`按发出当前动作的真实plan/observer顺序烧录，防止chunk末帧提前显示下一意图；四反例测试过，全部300原始帧SHA绑定/618慢放执行帧ROI数值对齐检查过，根看七个成片关键帧确认切换、中文、无遮挡。原始概率/过滤后反馈/高层已消费结果/物理诊断分开，OPEN未校准与全UNKNOWN如实显示；无新推理/仿真/训练。轻量验收`2026-10-11-execution-videos-with-online-feedback.json`含全SHA/ckpt路径；仍非完整任务SR或goal完成。
+
+- **2026-10-11 08:44 CST / Codex VIDEO-INTENT-OUTCOME：** 用户要求可播放执行视频及同步意图/结果头输出，优先制作已完整审核的校准联合录像：radio155/101、wash169/137成功与wash169/101未完成，来自两任务局部技能，非完整任务SR。只取实际MP4及同episode日志，不将原图拼成图流、不生成伪CoT或把物理真值冒充模型预测；未知/GRASP-only范围明确显示。源码自有三处未提交的只读消融补丁保留、fetch无新upstream故未pull/未启动消融。核RTX三个native-parent冷worker均failed_no_retry（已完成4/2/4），不重试/不隐去partial；该24条对照尚不完整，控制/候选未启动。本轮先交付视频、不为此重启训练/评测。
+
 - **2026-10-10 23:02 CST / Codex RECOVERY-USABLE：** 校准四轨622控/45无损边界全部重算、因果日志16a37ba1审计通过，根亲看四页60原RGB；53次观察器检查（45实际member预测，含跳过）最终全UNKNOWN，抓19控早于第二确认/下一高规划、非GRASP不在校准覆盖，故仍未实证反馈价值。**更正22:58及此前口述：旧开门206控成功是seed101，不是137；新101失败/137成功，净0而非同seed成功变慢。** 两轮初始RGB也非bitwise同，不能把物理差异归因观察器；摘要`2026-10-10-calibrated-joint-physical-pilot.json`保留全部来源及更正。原低parent24正在RTX0–2运行，control/candidate未启；目标仍未完成。
 
 - **2026-10-10 22:58 CST / Codex RECOVERY-USABLE：** 校准高低联合四条完整闭合/0更新/45观察器member预测/622实际控，两抓19控成功、开seed101原317控UNKNOWN、seed137于267控成功；与旧同种子成功数相同且后一条比旧206控慢，不称改善。开始独立逐控/时钟/原图审核。旧worker与全部RTX GPU上下文已退出；646d5332两端冻源、lc1 GPU2/18979 parent服务ready且0job，提交RTX0–2三冷worker按原预登记24条继续三臂比较。candidate34d和control9ac已完成200更新，不再挑中间权重；本地干净pull/fetch成功，独立成员review仍待。

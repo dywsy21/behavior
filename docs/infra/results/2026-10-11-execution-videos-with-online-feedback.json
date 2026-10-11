@@ -1,0 +1,71 @@
+{
+  "owner": "Codex root",
+  "recorded_at": "2026-10-11T08:53:00+08:00",
+  "status": "three_actual_online_rollout_mp4s_captioned_decoded_and_owner_spot_checked",
+  "local_root": "/home/wsy/behavior/artifacts/recovery-execution-videos-20261011",
+  "overview": {
+    "path": "00-overview.mp4", "duration_seconds": 47.2, "frames": 708, "bytes": 5203874,
+    "sha256": "4778f2d76202cda6e9bf42a8308907c64d30cc9978db5bf70c4c90b0ca4c360d"
+  },
+  "videos": [
+    {
+      "path": "01-radio-grasp/execution.mp4", "task": "turning_on_radio", "instance": 155, "seed": 101,
+      "outcome": "SUCCEEDED", "controls": 19, "original_frames": 9, "playback_speed": 0.25,
+      "duration_seconds": 4.4, "frames": 66,
+      "sha256": "702c95395ab11a718a7b9c0d0c030d3ce002ce9791dc11612c9f718706f09874",
+      "source_sha256": "276a8c3405e787bec1102710ed9d630114f11b47726005bc998a8aecc050ba34",
+      "source_frame_roi_check_max_gray_mae": 0.29496173469387754
+    },
+    {
+      "path": "02-washer-open-success/execution.mp4", "task": "wash_dog_toys", "instance": 169, "seed": 137,
+      "outcome": "SUCCEEDED", "controls": 267, "original_frames": 133, "playback_speed": 0.5,
+      "duration_seconds": 19.733333, "frames": 296,
+      "sha256": "c549b331ff400d60433609ea77b73acb8127c4c7056aec8ba22d130d71b7dc12",
+      "source_sha256": "638d1d5419ad7454f52adc52d81edbe55b2e5584b8f24348a3f10caef952cd6c",
+      "source_frame_roi_check_max_gray_mae": 0.4845875850340136
+    },
+    {
+      "path": "03-washer-open-incomplete/execution.mp4", "task": "wash_dog_toys", "instance": 169, "seed": 101,
+      "outcome": "UNKNOWN", "controls": 317, "original_frames": 158, "playback_speed": 0.5,
+      "duration_seconds": 23.066667, "frames": 346,
+      "sha256": "70a77211d80ac98d2694ef7aac97270a87d00a83fd43aa4fcf96ece3c3ed2213",
+      "source_sha256": "576b2a52bf5a567f285c0a718f92cefba1a425d05b7df3d225aa01918dc68570",
+      "source_frame_roi_check_max_gray_mae": 0.5106823979591837
+    }
+  ],
+  "codec": "H264 yuv420p 1344x960 15fps faststart",
+  "source_recording": "Continuous original policy.mp4 captured every2 applied controls at15fps, not assembled sparse observation images. Slow playback repeats existing frames; no interpolation or synthetic robot frames. Each clip ends with an explicitly labeled2-second last-frame freeze and terminal log receipt; the odd final control has no source-video frame.",
+  "caption_contract": "Each decoded frame is bound to the actual ACTION that emitted its control. The post-ACK planner/head update at a chunk-ending image is not displayed early. All shown predictions are original online logits; no model rerun or posthoc predictions. Original head probabilities, calibrated/gated estimates, last input actually consumed by the high planner, and privileged physical diagnostics are separate.",
+  "observer_limitations": "Original GRASP-only calibration is unchanged. OPEN raw logits are diagnostic, never declared calibrated or delivered as known truth. All filtered bundle estimates in these recordings wereUNKNOWN. Unknown is not replaced by the physical success label. These videos do not demonstrate useful calibrated feedback or complete-task SR.",
+  "models": {
+    "planner": {
+      "path": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2/checkpoints/step_00000360_save_0008.pt",
+      "sha256": "89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7"
+    },
+    "low": {
+      "path": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/L0-later-actions-v1/checkpoints/step_00000200_save_0004.pt",
+      "sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5"
+    },
+    "observer_adapter": {
+      "path": "/data/workspace/wsy/behavior2026/runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/checkpoints/selected.pt",
+      "sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699"
+    }
+  },
+  "verification": {
+    "complete_decode_all_four_mp4s": true,
+    "causal_overlay_unit_tests": 4,
+    "all300_original_frames_source_sha_bound": true,
+    "618_slowed_body_frames_numeric_source_roi_sanity_check": true,
+    "owner_viewed_encoded_frames": ["radio12", "radio31", "radio32", "success127", "success128", "success294", "incomplete344"],
+    "owner_notes": "Chinese glyphs readable, no overlay over camera footage, no visible clipping. Radio31/32 changesUNKNOWN toIN_PROGRESS only after the actual observation/action boundary; washer127/128 changesRETRY toEXECUTE at the correct next chunk. Terminal freeze distinguishes scored truth from raw head andUNKNOWN feedback. Not a claim of manual viewing every frame."
+  },
+  "audits": {
+    "physical_sha256": "f443e204b566f0baa96858564584a782acd1f3a136d6ca690a13138dc90038a2",
+    "causal_sha256": "16a37ba1f68aded6d41cd6138b11df507dcdbcca7bb4e9f8de4f87fb58f90d8d",
+    "online_journal_sha256": "98954fd592ca58dcf8a61b21cb7a3e403315175305e23e169a2b6e65feeeea93"
+  },
+  "new_model_inferences": 0,
+  "new_simulator_controls": 0,
+  "training_or_policy_promotion": false,
+  "source_remote_root": "root@42.192.34.154:10383 /run/ti/rl_memlite_stage1_20261006/runs/recovery_heterogeneous_20261010/causal-calibrated-*-probes-v1-episode-*"
+}
