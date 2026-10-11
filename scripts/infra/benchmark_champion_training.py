@@ -171,7 +171,10 @@ def main():
         jax.block_until_ready(state)
         # Init may reshard large tensors. Round-trip all loaded parameter bytes
         # before allowing a single update; synthetic collectives alone are insufficient.
-        for key,value in flatten_dict(state.params.to_pure_dict()).items():
+        initialized = flatten_dict(state.params.to_pure_dict())
+        if not expected_parameter_hashes.keys() <= initialized.keys():
+            raise ValueError('Initialized graph lost expected parameter keys')
+        for key,value in initialized.items():
             if key not in expected_parameter_hashes: continue
             actual = np.asarray(jax.device_get(value))
             if hashlib.sha256(actual.tobytes()).hexdigest() != expected_parameter_hashes[key]:

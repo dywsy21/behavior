@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 22:57 CST / Codex CHAMPION-2026：** v3在真实8A800已过host分发、NCCL求和和FSDP梯度/更新独立门（最大梯度差1.89e-10），随后严格输入回读因原norm_stats产float64、JAX默认float32转换被拦，非22错误重现、仍0载模型/0更新。修为HOST显式按JAX dtype规范转型，再保持逐元素严格相等，不放宽容差；CPU8设备已验证。16worker真实I/O也完成，四timed总34.877s/1024=29.36样本/s（8.72s/256聚合，不能拿0.28s预取命中当真实吞吐），同预选索引/热缓存；全部1536身份/原split通过，正式端到端算速尚待。
+
+- **2026-10-11 22:55 CST / Codex CHAMPION-2026：** afc898b4已push并Git冻结`src/champion-compute-20261011-v3`，lc1八卡空闲后新v3短计算探针提交，host-origin/独立梯度/真权重hash门尚待远端结果；同实现本地8个CPU设备数值回归通过（梯度最大差1.16e-10）＋原10合同测试过。另CPU16worker同一1536预选索引复测`io-w16-v1`，OS/NFS已预热须显式注明，不能把全部加速归因worker数。原v1/v2失败不覆盖；模型、公开权重、环境均未改写，仍未正式大训。
+
 - **2026-10-11 22:51 CST / Codex CHAMPION-2026：** v2前置psum拒绝、0载权重/0更新。独立最小复现实测GPU0-origin arange八卡求和22/22，CPU-origin同输入28正确；NCCL禁P2P不能覆盖PJRT自身搬运，绝不放宽错误结果。新修限定所有训练输入/PRNG从host直接按目标sharding下发并逐物理shard回读、关闭XLA本地memcpy collective，新增有独立NumPy真值的FSDP梯度/更新门与真实全参数初始化hash回读；原生GPU直拷仍标不安全，不宣称驱动已修。此为新冠军JAX栈，不是旧Torch MEM训练损坏证据。CPU I/O已1536真实样本全过：12,524,274个stride16 TRAIN锚/19000演示，8worker稳态15.528s/256、各batch84–87任务，只是原RGB读取/传输、不含transform/训练；下一新冻源实际验门/测速。
 
 - **2026-10-11 22:46 CST / Codex CHAMPION-2026：** v1自有进程退出、八卡显存清空后，Git冻结bac49468于`src/champion-compute-20261011-v2`；同父/bs256/flow4/2warm+5timed新`compute-bs256-v2`实启，唯一修复是补上既有NCCL通信配置和前置psum门，原v1日志不覆盖。另a85daad6冻源`src/champion-io-20261011-v1`启动8CPU worker全局shuffle1536真实TRAIN帧解码/传输（`io-w8-v1{.log,.json}`），不占训练GPU、不改数据。两者可能有CPU/I/O资源竞争，算速仅这次机器负载条件，不做理想峰值宣传；尚待完成/回执。

@@ -12,6 +12,11 @@ def place_from_host(tree, sharding):
     leaves = jax.tree.leaves(tree)
     if any(isinstance(x, jax.Array) for x in leaves):
         raise TypeError('Implicit GPU-to-GPU placement is forbidden on this cluster')
+    # JAX with x64 disabled canonically converts NumPy float64/int64. Perform
+    # that same cast explicitly on HOST first, then demand exact shard values;
+    # never weaken equality to a tolerance to hide transport corruption.
+    tree = jax.tree.map(lambda x: np.asarray(x,dtype=jax.dtypes.canonicalize_dtype(np.asarray(x).dtype)),tree)
+    leaves = jax.tree.leaves(tree)
     placed = jax.device_put(tree, sharding)
     # Verify actual physical shards rather than one convenient replica only.
     for before, after in zip(leaves, jax.tree.leaves(placed), strict=True):
