@@ -1,0 +1,66 @@
+{
+  "recorded_at": "2026-10-11T22:02:00+08:00",
+  "owner": "Codex root",
+  "status": "completed_offline_diagnostic_not_closed_loop_success",
+  "source_commit": "cf91918abbc0dbb190588fc9d2dab219597f10a2",
+  "gpu_optimizer_updates": 0,
+  "cases": {
+    "parent": {
+      "checkpoint_sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2",
+      "result_sha256": "bb39b13d8958d2eae953f4e6467f0bad2a0693ce83c2a92ac4aed4f01e58e3a4",
+      "rows_sha256": "9e44074169b95510b3770583cef2c68609226772a27e840a429f9a16f5c33ce8",
+      "counts": {
+        "original_transition": {
+          "total": 100,
+          "exact": 27
+        },
+        "original_heldout": {
+          "total": 100,
+          "exact": 99
+        },
+        "recovery_dev": {
+          "total": 42,
+          "exact": 40
+        }
+      },
+      "boundary_repeat_previous": 72,
+      "seconds_excluding_model_load": 1569.158251460176
+    },
+    "candidate": {
+      "checkpoint_sha256": "89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7",
+      "result_sha256": "fba3e1be6eb9cc115e29f00400f3938868ff407f5ba041ba6ae32298900aa288",
+      "rows_sha256": "825c12dbabb61ecc83e9871f3921c18c15c600028e56265f7d8b5661dd182de8",
+      "counts": {
+        "original_transition": {
+          "total": 100,
+          "exact": 25
+        },
+        "original_heldout": {
+          "total": 100,
+          "exact": 99
+        },
+        "recovery_dev": {
+          "total": 42,
+          "exact": 42
+        }
+      },
+      "boundary_repeat_previous": 74,
+      "seconds_excluding_model_load": 1592.6552998111583
+    }
+  },
+  "paired_inputs_identical": true,
+  "limitations": [
+    "One preselected first true transition per task, not all transitions or whole-episode accuracy.",
+    "First-boundary scoring is sensitive to annotation timing; persistent closed-loop NAV has separate video evidence.",
+    "This diagnoses a continuation shortcut; does not prove it is the only cause or that low-level actions work.",
+    "42 recovery DEV samples are development evidence, not a blind success-rate estimate."
+  ],
+  "artifacts": {
+    "local": "/home/wsy/behavior/artifacts/planner-transition-audit-20261011",
+    "A800": "/data/workspace/wsy/behavior2026/runs/planner_transition_audit_20261011"
+  },
+  "next": [
+    "Mainline: champion compatibility and throughput before discussing new large training.",
+    "MEM-Lite: measure/train phase transitions and genuine outcome-supported progress; retain continuation controls; do not feed raw uncalibrated outcome-head probabilities as verified facts."
+  ]
+}
