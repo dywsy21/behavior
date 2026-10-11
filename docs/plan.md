@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 10:12 CST / Codex FULL-EPISODE-VIDEO：** 两完整成片逐条26＋46次真实高规划的task/memory绑定及128控时钟再次全过，202/367字幕区间无缺口，187/206不同头字幕，模型前后权重全同/0更新。轻量完整审计`docs/infra/results/2026-10-11-full-episode-videos.json`保存视频SHA、任务、两端源码/ckpt和根抽帧记录；两成片可先交付，food仍原回合8064/20544控（非完整结果），收片器waiting且已就绪自动下载/导出，最终仍待亲审。不称三片全部完成、不恢复暂停goal，旧三处消融补丁保留。
+
 - **2026-10-11 10:07 CST / Codex FULL-EPISODE-VIDEO：** 5108f705已push，4新收片恢复反例＋8字幕回归＋3全程session回归全部通过（15项）；原collector已退出后，核两成片SHA并以`full-video-collector-20261011-resume`恢复同三对run收片，原失败状态另外归档，food原回合继续6656控，无新仿真/重置/训练。radio/tripod真实26/46次高层规划均持续NAVIGATE原各自目标，故字幕意图不变是真实模型输出，并非卡字幕；头概率仍随实际在线预测更新。第三片待终态与本人检查，旧goal保持paused。
 
 - **2026-10-11 10:06 CST / Codex FULL-EPISODE-VIDEO：** tripod全5868控＋初态=5869帧、195.633s完整原速片已本地全解码/动作ACK对齐，SHA2b930905…de2e1ef；根亲看0/90/195s确认两字段/无遮挡并交付可播放MP4，官方success=false/Q=0不美化。collector在两片完成后因一次RTX SSH255退出；新只读核food仍running/6176控，实际仿真/模型未断，准备仅恢复收片、不重试episode。补失败收片显式resume和传输重读，保留旧状态/原成片，拒绝覆盖partial；单测待，三处旧消融仍不动。
