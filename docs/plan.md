@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 01:56 CST / Codex CHAMPION-2026：** 新`behavior_champion/evaluation.py`与CPU选择入口固定原eval各task16样本（1600、旧/新50各800、各25×32batch），不把训练样本混入验证、不解封6个eval隔离；保留全部原1000留出身份边界。两单测通过，真实994eligible源选择审计待；只是身份/固定噪声协议，0模型forward/无eval loss，不冒称已评估。v2工程恢复仍活跃进行，正常源码/parent/共享env不改，正式训练仍未批准。
+
+- **2026-10-12 01:51 CST / Codex CHAMPION-2026：** 原pid/tmux已消失、nvidia计算列表空，c22仅43GiB未提交快照且没有完整manifest/第3步参考；不称可恢复。428180a0冻结源已在八卡重新启动tmux`champion-resume-bs256-v2`、run`runs/champion_assets_20261011/resume-bs256-v2{,.log}`，同3步/30min工程验收；新HOST组装速度与完整保存/恢复逐叶门待实际结果。`src/champion-cold-resume-20261012-v1`=7bedfcff仅准备未运行，不能把文件夹存在当冷恢复实测。无正式训练/新SR。
+
+- **2026-10-12 01:50 CST / Codex CHAMPION-2026：** 原c22探针2步后全状态保存已近20min且CPU大张量组装缓慢，旧恢复metadata误拒绝也已静态定位；根核精确pid3327524/原命令后发TERM，等待进程/GPU终态确认，不将部分checkpoint称可恢复/有效模型。原`resume-bs256-v1`日志和`.incomplete-*`保留，不删原parent/任何旧权重。下一同父/同种子/同3步仅替换HOST分片组装+metadata修复，428180a0新独立源`src/champion-resume-shards-20261012-v2`、独立run`resume-bs256-v2`；仍30min工程门/非正式训练，不放宽逐叶和指标精确恢复门。
+
 - **2026-10-12 01:44 CST / Codex CHAMPION-2026：** 原c22工程作业仍活跃保存（pid3327524，已21min）；慢段没有checkpoint文件fd打开/GPU空闲，不能全归因NFS，整机可用821GiB/仅33MiB swap，不是已证OOM。新本地checkpoint改按实际addressable shard在HOST并行组装C顺序（不GPU all-gather、不降dtype），八CPU设备的两分片轴/replica逐值反例通过，累计37测试；加入逐叶host组装/hash/write阶段计时，真实GPU速度与续训仍待，不热改旧源。若原30min工程窗口无法全闭，保留原完整/部分文件，在新冻结源检验此针对性修复，不给原失败补PASS。正式采样proposal已反映实际全8000批验收；大训授权仍待。
 
 - **2026-10-12 01:35 CST / Codex CHAMPION-2026：** W&B c683实测在线建立/结束/同run重开/远端终态summary全通过，team既有`behavior2026-g05`/run`bkdsnrhx`，0优化/0媒体，回执SHA6eff6287…6973已本地复制。工程GPU前两步有限、保存全状态仍进行；CPU复查发现c22恢复metadata含tuple而JSON为list会误拒绝（最初小树测试未覆盖），本地补规范化和真实stage-table反例，不热改原run。新增新进程只恢复第2步并重演第3步入口，保留原未中断参考/生产与消费commit/全叶字节门，待原作业终态后再启动，不能预先称续训通过。

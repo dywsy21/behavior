@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 01:51 CST：冠军续训工程v2启动
+
+- 原`src/champion-resume-probe-20261012-v1`=c22d1b72 / `runs/champion_assets_20261011/resume-bs256-v1{,.log}`已owner TERM后确认pid3327524/GPU/tmux均退出；2步后保存组装耗时过大，43GiB `.incomplete-*`全保留、无完整manifest、不准resume。没有删旧权重/原文件。
+- 新`src/champion-resume-shards-20261012-v2`=428180a0 / tmux`champion-resume-bs256-v2`，run`runs/champion_assets_20261011/resume-bs256-v2{,.log}`正在3步工程验收；改HOST并行组装/tuple规范化，其余数据、种子、父权重和损失不变。八卡此时归该probe，非正式大训。
+- `src/champion-cold-resume-20261012-v1`=7bedfcff是未启动的准备源；没有“已通过”的冷恢复结果。
+
 ## 2026-10-12 01:35 CST：冠军W&B在线恢复验收完成
 
 - lc1 `src/champion-online-preflight-20261012-v1`=c683c1ce，CPU tmux`champion-wandb-online-v1`已终态；`runs/champion_assets_20261011/wandb-online-v1{,.log}`保留，result SHA6eff6287…6973、本地`artifacts/champion-episode-20261012/wandb-online-v1-result.json`同SHA。既有team/project`hanhanyy-fudan-university-school-of-management/behavior2026-g05`、run`bkdsnrhx`已远端核同run恢复终态；0优化，不能误作正式模型进度。
