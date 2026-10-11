@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 22:22 CST / Codex CHAMPION-2026：** 新兼容补丁CPU实际JAX0.5.3/NNX建图通过：75叶同名同dtype，只task[50,2048]→[100,2048]、stage[596,1024]→[1087,1024]两表变形（patch df9236b2…71df1，`model-shapes-v1.json`，不是已加载大权重）。e21208cd冻源在lc1完成真实TRAIN-only 50task native probe（24.57s，2aa6c1f6…357c6），100task输入也完成待轻量回执；不裁技能边界、不resize原RGB。远端依赖v4因GitHub TLS拉LeRobot失败，改本地同uv0.9.16/上游lock完整177包缓存中转（归档25a637e3…f532d），额外生产import所需pytest3包也按原lock固定；尚待远端离线安装/GPU验收，原失败日志全留。短benchmark脚本只计划少量丢弃优化更新、不保存ckpt，不是正式大训。
+
 - **2026-10-11 22:02 CST / Codex RECOVERY-USABLE：** 两cf919边界专项完整242/242且两端result SHA实核一致、GPU全释放：parent/candidate真边界27/25，延续控制99/99，恢复DEV40/42（各分母100/100/42）。真边界有72/74条照抄上一意图，各1条其他技能错误；所有配对输入/任务完全相同、target未进入prefix、0更新/0仿真。完整轻量`docs/infra/results/2026-10-11-planner-transition-audit.json`，原行在本地/A800同名artifact。结论是旧验收偏重延续、切换明显不足，**不是单帧边界分数等于完整SR或唯一故障原因**；需后续切换/自由历史验证，不再叠易样本追99%。冠军两权重下载及独立环境准备继续，不据优先级选择自动开大训。
 
 - **2026-10-11 21:57 CST / Codex CHAMPION-2026：** lc1真实TRAIN-only任务布局审计e307925b…5122通过：19,000训练/1,000原留出，旧50/596行不变，新50按训练均长初定491阶段，共1087；仅CPU合同，不是已迁完模型。上游环境Git/Python下载问题用本地官方Python3.11.14中转，两端tar SHA8bd3a4f2…8450通过；v2因PyPI30s网络超时退出，v3限并发/300s继续但带宽仍低，准备改用**原lock版本＋wheel hash**的PyPI镜像安装（不改权重/依赖配方/现有g05环境）。额外源审发现上游`freeze_vision_backbone`只切train=False，真正冻结仍需optimizer filter；新训练配方不能把该开关误报为梯度冻结。food第三全片完整验收已补入轻量视频JSON，原失败/Q0不变。

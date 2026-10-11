@@ -1,0 +1,5 @@
+# Pinned openpi 01177e0 imports pytest unconditionally from gemma_pytorch.py
+# even in JAX model imports. These versions come from that same uv.lock.
+pytest==8.3.5
+iniconfig==2.1.0
+pluggy==1.6.0

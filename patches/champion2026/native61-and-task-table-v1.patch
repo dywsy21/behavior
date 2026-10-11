@@ -1,0 +1,194 @@
+diff --git a/src/b1k/models/pi_behavior.py b/src/b1k/models/pi_behavior.py
+index dc2f85d..34c9f9c 100644
+--- a/src/b1k/models/pi_behavior.py
++++ b/src/b1k/models/pi_behavior.py
+@@ -96,6 +96,8 @@ class PiBehavior(_model.BaseModel):
+         
+         # Store config for later use
+         self.config = config
++        self.task_num_stages = tuple(config.task_num_stages)
++        self.task_stage_offsets = tuple(sum(self.task_num_stages[:i]) for i in range(config.num_tasks))
+         
+         paligemma_config = _gemma.get_config(config.paligemma_variant)
+         action_expert_config = _gemma.get_config(config.action_expert_variant)
+@@ -154,7 +156,7 @@ class PiBehavior(_model.BaseModel):
+         # Task-specific stage embeddings (one per stage per task)
+         # Total embeddings = sum of stages across all tasks (596 for 5-15 stages per task)
+         self.task_stage_embeddings = nnx.Embed(
+-            num_embeddings=TOTAL_TASK_STAGE_EMBEDDINGS,
++            num_embeddings=sum(self.task_num_stages),
+             features=self.subtask_encoding_dim,
+             rngs=rngs,
+         )
+@@ -235,7 +237,7 @@ class PiBehavior(_model.BaseModel):
+         """
+         # Get number of stages for each task in batch using JAX array indexing
+         # Convert tuple to JAX array inside function to avoid import-time device allocation
+-        task_num_stages_array = jnp.array(TASK_NUM_STAGES, dtype=jnp.int32)
++        task_num_stages_array = jnp.array(self.task_num_stages, dtype=jnp.int32)
+         task_num_stages = task_num_stages_array[task_ids]  # [B] - JAX array indexing
+         
+         # Normalize: stage 0 → 0.0, last stage → 1.0 (per-task scaling)
+@@ -476,7 +478,7 @@ class PiBehavior(_model.BaseModel):
+         # Task-specific stage embedding with corrected indexing
+         # Use vectorized lookup: offset + stage for each task
+         # Convert tuple to JAX array inside function to avoid import-time device allocation
+-        task_stage_offsets_array = jnp.array(TASK_STAGE_OFFSETS, dtype=jnp.int32)
++        task_stage_offsets_array = jnp.array(self.task_stage_offsets, dtype=jnp.int32)
+         task_stage_offsets = task_stage_offsets_array[task_ids]  # [b] - JAX array indexing
+         task_stage_idx = task_stage_offsets + subtask_state  # [b]
+         task_stage_embedding = self.task_stage_embeddings(task_stage_idx)  # [b, 1024]
+@@ -724,7 +726,7 @@ class PiBehavior(_model.BaseModel):
+         
+         # Mask out invalid stages for each task (vectorized JAX operations)
+         task_ids = observation.tokenized_prompt[:, 0]  # [B]
+-        task_num_stages_array = jnp.array(TASK_NUM_STAGES, dtype=jnp.int32)
++        task_num_stages_array = jnp.array(self.task_num_stages, dtype=jnp.int32)
+         task_num_stages = task_num_stages_array[task_ids]  # [B] - JAX array indexing
+         stage_range = jnp.arange(MAX_NUM_STAGES)  # [15]
+         valid_mask = stage_range[None, :] < task_num_stages[:, None]  # [B, 15]
+@@ -1015,7 +1017,7 @@ class PiBehavior(_model.BaseModel):
+         
+         # Mask out invalid stages for each task (vectorized JAX operations)
+         task_ids = observation.tokenized_prompt[:, 0]  # [B]
+-        task_num_stages_array = jnp.array(TASK_NUM_STAGES, dtype=jnp.int32)
++        task_num_stages_array = jnp.array(self.task_num_stages, dtype=jnp.int32)
+         task_num_stages = task_num_stages_array[task_ids]  # [B] - JAX array indexing
+         stage_range = jnp.arange(MAX_NUM_STAGES)  # [15]
+         valid_mask = stage_range[None, :] < task_num_stages[:, None]  # [B, 15]
+diff --git a/src/b1k/models/pi_behavior_config.py b/src/b1k/models/pi_behavior_config.py
+index d38897f..85c09c7 100644
+--- a/src/b1k/models/pi_behavior_config.py
++++ b/src/b1k/models/pi_behavior_config.py
+@@ -54,6 +54,8 @@ class PiBehaviorConfig(_model.BaseModelConfig):
+     
+     # Number of tasks in the behavior dataset
+     num_tasks: int = 50
++    # Keep the legacy rows exactly; append new 2026 task bins explicitly.
++    task_num_stages: tuple[int, ...] = TASK_NUM_STAGES
+     # Task embedding dimension - will match the paligemma width
+     task_embedding_dim: int = None  # type: ignore
+     # Maximum number of subtask states across all tasks
+@@ -111,6 +113,12 @@ class PiBehaviorConfig(_model.BaseModelConfig):
+     freeze_vision_backbone: bool = True
+ 
+     def __post_init__(self):
++        if len(self.task_num_stages) != self.num_tasks or any(
++            type(n) is not int or not 5 <= n <= MAX_NUM_STAGES for n in self.task_num_stages
++        ):
++            raise ValueError("Explicit per-task stage table must match num_tasks and the 15-way head")
++        if self.num_tasks < 50 or self.task_num_stages[:50] != TASK_NUM_STAGES:
++            raise ValueError("The pretrained first 50 task/stage rows must retain their original meaning")
+         if self.task_embedding_dim is None:
+             paligemma_config = _gemma.get_config(self.paligemma_variant)
+             object.__setattr__(self, "task_embedding_dim", paligemma_config.width)
+@@ -169,4 +177,4 @@ class PiBehaviorConfig(_model.BaseModelConfig):
+             observation_spec = Observation(**obs_kwargs)
+         
+         action_spec = jax.ShapeDtypeStruct([batch_size, self.action_horizon, self.action_dim], jnp.float32)
+-        return observation_spec, action_spec
+\ No newline at end of file
++        return observation_spec, action_spec
+diff --git a/src/b1k/policies/b1k_policy.py b/src/b1k/policies/b1k_policy.py
+index 140a5a2..a3bff22 100644
+--- a/src/b1k/policies/b1k_policy.py
++++ b/src/b1k/policies/b1k_policy.py
+@@ -12,7 +12,7 @@ import numpy as np
+ 
+ from openpi import transforms
+ from openpi.models import model as _model
+-from omnigibson.learning.utils.eval_utils import PROPRIOCEPTION_INDICES
++from behavior_champion.contracts import state23_from_proprio61
+ 
+ 
+ def make_b1k_example() -> dict:
+@@ -26,35 +26,8 @@ def make_b1k_example() -> dict:
+     }
+ 
+ def extract_state_from_proprio(proprio_data):
+-    """
+-    We assume perfect correlation for the two gripper fingers.
+-    """
+-    # extract joint position
+-    base_qvel = proprio_data[..., PROPRIOCEPTION_INDICES["R1Pro"]["base_qvel"]]  # 3
+-    trunk_qpos = proprio_data[..., PROPRIOCEPTION_INDICES["R1Pro"]["trunk_qpos"]]  # 4
+-    arm_left_qpos = proprio_data[..., PROPRIOCEPTION_INDICES["R1Pro"]["arm_left_qpos"]]  #  7
+-    arm_right_qpos = proprio_data[..., PROPRIOCEPTION_INDICES["R1Pro"]["arm_right_qpos"]]  #  7
+-    
+-    # Extract raw gripper widths and normalize to [-1, 1] to match action space
+-    left_gripper_raw = proprio_data[..., PROPRIOCEPTION_INDICES["R1Pro"]["gripper_left_qpos"]].sum(axis=-1, keepdims=True)
+-    right_gripper_raw = proprio_data[..., PROPRIOCEPTION_INDICES["R1Pro"]["gripper_right_qpos"]].sum(axis=-1, keepdims=True)
+-    
+-    # Normalize gripper widths from [0, 0.1] to [-1, 1] 
+-    # Based on statistics: physical range is [0, 0.1], action range is [-1, 1]
+-    # Formula: normalized = 2 * (raw / max_width) - 1
+-    MAX_GRIPPER_WIDTH = 0.1  # From statistics q99 values
+-    left_gripper_width = 2.0 * (left_gripper_raw / MAX_GRIPPER_WIDTH) - 1.0
+-    right_gripper_width = 2.0 * (right_gripper_raw / MAX_GRIPPER_WIDTH) - 1.0
+-
+-    # Original baseline uses incorrect order for the state
+-    return np.concatenate([
+-        base_qvel,
+-        trunk_qpos,
+-        arm_left_qpos,
+-        left_gripper_width,    # Now normalized [-1, 1]
+-        arm_right_qpos,
+-        right_gripper_width,   # Now normalized [-1, 1]
+-    ], axis=-1)
++    """2026 allowed 61-D proprio -> pretrained native23 state, no simulator import."""
++    return state23_from_proprio61(proprio_data)
+ 
+ 
+ def _parse_image(image) -> np.ndarray:
+diff --git a/src/b1k/training/config.py b/src/b1k/training/config.py
+index 52dfb7d..0f03eac 100644
+--- a/src/b1k/training/config.py
++++ b/src/b1k/training/config.py
+@@ -108,7 +108,7 @@ class ModelTransformFactory(GroupFactory):
+         return _transforms.Group(
+             inputs=[
+                 _transforms.ResizeImages(224, 224),
+-                b1k_transforms.ComputeSubtaskStateFromMeta(dataset=None),
++                b1k_transforms.ComputeSubtaskStateFromMeta(dataset=None, task_num_stages=model_config.task_num_stages),
+                 b1k_transforms.TaskIndexToTaskId(),
+                 _transforms.PadStatesAndActions(model_config.action_dim),
+             ],
+@@ -395,4 +395,3 @@ def get_config(config_name: str) -> TrainConfig:
+         raise ValueError(f"Config '{config_name}' not found.{closest_str}")
+ 
+     return _CONFIGS_DICT[config_name]
+-
+diff --git a/src/b1k/transforms.py b/src/b1k/transforms.py
+index b785716..93587dc 100644
+--- a/src/b1k/transforms.py
++++ b/src/b1k/transforms.py
+@@ -119,6 +119,7 @@ class ComputeSubtaskStateFromMeta(DataTransformFn):
+     """
+     
+     dataset: object | None = None  # Will be set by data loader
++    task_num_stages: tuple[int, ...] = TASK_NUM_STAGES
+     
+     def __call__(self, data: DataDict) -> DataDict:
+         if self.dataset is None:
+@@ -136,13 +137,11 @@ class ComputeSubtaskStateFromMeta(DataTransformFn):
+         task_index = int(data["task_index"])
+         
+         # Validate task_index
+-        if not (0 <= task_index < 50):
+-            logging.warning(f"Invalid task_index {task_index}, using stage 0")
+-            data["subtask_state"] = np.array(0, dtype=np.int32)
+-            return data
++        if not (0 <= task_index < len(self.task_num_stages)):
++            raise ValueError(f"Invalid task_index {task_index}; refusing silent stage-0 fallback")
+         
+         # Get number of stages for this task
+-        num_stages = TASK_NUM_STAGES[task_index]
++        num_stages = self.task_num_stages[task_index]
+         
+         # Get episode length from dataset metadata
+         if not hasattr(self.dataset, 'meta') or not hasattr(self.dataset.meta, 'episodes'):
+@@ -318,4 +317,3 @@ class TokenizeFASTActions(DataTransformFn):
+         data["fast_token_mask"] = mask
+         
+         return data
+-
