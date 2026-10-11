@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 22:45 CST / Codex CHAMPION-2026：** 更正22:40“首次编译”后续状态：bs256-v1完成权重/扩表与编译后首步不返回，8GPU100%但仅72–82W/显存利用0，符合集群既有默认PCIe P2P挂起记录；新冠军启动漏继承原NCCL workaround。仅核身份后TERM自有PID3189336，0已完成更新/0ckpt，原log保留，不能报任何训练吞吐。新增显式`NCCL_P2P_DISABLE=1/IB_DISABLE=1/SOCKET_IFNAME=bond0`门与八卡psum实际验收，再新v2重测；不称ACS/驱动根因已证明。独立CPU TorchCodec初导缺FFmpeg，引用既有只读tools/ffmpeg后导入通过；新增独立activation，不安装/热改共享env。
+
 - **2026-10-11 22:40 CST / Codex CHAMPION-2026：** 新独立`behavior_champion/dataset.py`只复用已验收v4的split/原视频phase/元数据，重新直接索引全部phase+16帧；真实30动作跨技能区间，仅episode末尾重复最后动作，61/23与原RGB不预改。4数据边界/不串留出/重复episode拒绝测试＋6本体/任务合同全过；尚待远端实际V3解码和进程传输。`benchmark_champion_io.py`计划CPU8worker、全局shuffle6×256（2warm＋4timed），不读新的test、不更新模型；8卡计算探针已过模型载入/扩表，当前首次XLA编译，不把启动当算速通过。
 
 - **2026-10-11 22:38 CST / Codex CHAMPION-2026：** 八张A800真实JAX CUDA矩阵kernel全通过，180包freeze SHA c518d442…af30fa3。lc1八卡原实空后提交`champion-compute-bs256-v1`，输出`runs/champion_assets_20261011/compute-bs256-v1{,.log}`；冻源2e4150a6、shared50父11490241、100task真实TRAIN缓存、seed17/19、bs256/4个FM噪声、2warm＋5timed优化更新、不保存模型。主假设是原冠军全梯度计算图可在8×80GB执行且算速可测；0部署/非正式大训，失败即保留诊断、不自动开展长训。纯计算吞吐仍须叠加真实V3读取/存档/评测开销才能给正式ETA。

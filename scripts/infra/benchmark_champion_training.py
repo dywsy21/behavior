@@ -31,6 +31,10 @@ def main():
         raise ValueError('Fresh output and an explicitly short timing window required')
     if os.environ.get('CUDA_VISIBLE_DEVICES') != '0,1,2,3,4,5,6,7':
         raise ValueError('This timing is explicitly single-node eight-GPU')
+    communication = {key: os.environ.get(key) for key in
+                     ('NCCL_P2P_DISABLE', 'NCCL_IB_DISABLE', 'NCCL_SOCKET_IFNAME')}
+    if communication != dict(NCCL_P2P_DISABLE='1', NCCL_IB_DISABLE='1', NCCL_SOCKET_IFNAME='bond0'):
+        raise ValueError('Use the measured lc1 PCIe communication workaround from A800_CLUSTER.md')
     if subprocess.check_output(['nvidia-smi','--query-compute-apps=pid','--format=csv,noheader'], text=True).strip():
         raise RuntimeError('All eight GPUs must be verified idle; never interrupt a teammate')
     args.output.mkdir(parents=True)
@@ -77,6 +81,11 @@ def main():
     from behavior_champion.contracts import state23_from_proprio61, delta_actions, pad32, training_stage, append_embeddings
     if len(jax.devices()) != 8 or any(device.platform != 'gpu' for device in jax.devices()):
         raise ValueError('Expected eight actual CUDA devices')
+    collective = jax.pmap(lambda x: jax.lax.psum(x, 'device'), axis_name='device')(jnp.arange(8, dtype=jnp.float32))
+    jax.block_until_ready(collective)
+    if not np.array_equal(np.asarray(collective), np.full(8,28,dtype=np.float32)):
+        raise ValueError('Eight-device collective result mismatch')
+    print('EIGHT_GPU_COLLECTIVE_PASSED',flush=True)
     jax.config.update('jax_compilation_cache_dir', str(args.output/'jax-cache'))
     layout = json.loads(args.layout.read_text())['layout']
     assets = args.checkpoint/'assets/IliaLarchenko/behavior_224_rgb'
@@ -171,6 +180,7 @@ def main():
                 warmup_steps=args.warmup,timed_steps=args.measure,optimizer_updates=int(state.step),
                 trained_checkpoint_saved=False,source_commit=source,patch_sha256=hashlib.sha256(delta).hexdigest(),
                 openpi_source_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
+                communication_environment=communication,
                 parent_revision=verified['revision'],probe_sha256=h.hexdigest(),checkpoint_migration=loader_receipt,
                 warning='Cached real batch; no epoch ETA until shuffled full-loader/checkpoint/eval overhead is measured.')
     (args.output/'result.json').write_text(json.dumps(result,indent=2)+'\n')
