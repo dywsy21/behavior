@@ -205,7 +205,14 @@ def main():
                 raise ValueError('Initialized parameter bytes changed in transport: '+str(key))
         loader_receipt['initialized_parameter_roundtrip_hashes_passed'] = len(expected_parameter_hashes)
         print(json.dumps(dict(initialized_parameter_roundtrip_hashes_passed=len(expected_parameter_hashes))),flush=True)
-        step = jax.jit(functools.partial(core.train_step,config),
+        def core_step(key,state,batch):
+            if args.release is not None:
+                from behavior_champion.frontend import resize_normalized_rgb
+                observation,actions = batch
+                observation = observation.replace(images={k:resize_normalized_rgb(v) for k,v in observation.images.items()})
+                batch = observation,actions
+            return core.train_step(config,key,state,batch)
+        step = jax.jit(core_step,
                        in_shardings=(replicated,state_sharding,data_sharding),
                        out_shardings=(state_sharding,replicated),donate_argnums=(1,))
         times = []
