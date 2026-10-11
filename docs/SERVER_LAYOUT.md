@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 22:46 CST：冠军八卡计算与新版读取短探针
+
+- lc1共享根同下：`src/champion-compute-20261011-v2`=bac49468，tmux`champion-compute-bs256-v2`；`runs/champion_assets_20261011/compute-bs256-v2{,.log}`保存7个丢弃更新的测速证据，不生成模型。旧`compute-bs256-v1`首步通信挂起后owner TERM，仅原现场保留。
+- `src/champion-io-20261011-v1`=a85daad6，tmux`champion-io-w8-v1`；同run根`io-w8-v1{.log,.json}`是CPU8worker实际RGB/V3解码的1536样本测速，不是新的训练数据。数据仍原`datasets/memlite-stage1-20260930-v4`的train/split/phase，新的冠军reader不读取MEM技能标签。
+- 启动需source新独立`activate_champion_a800.sh`，复用只读`tools/ffmpeg`库及本集群已验收NCCL禁P2P配置，不能直接裸启动推断8卡collective可用；不改g05环境/全局启动文件。
+
 ## 2026-10-11 22:33 CST：冠军资产与环境验收完成，模型测速待
 
 - 共享根`/data/workspace/wsy/behavior2026`，`envs/champion-openpi-py311-v1`独立180包，`runs/champion_assets_20261011/env-offline-v1.log`/`env-v1/pip-freeze.txt`验收；不复用或修改g05 env。Python在`tools/champion-python-transfer-v1/cpython-3.11.14-linux-x86_64-gnu`。原bootstrap v1–v4失败/owner停止日志和原缓存保留，当前离线任务已完成。

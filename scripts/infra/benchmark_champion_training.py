@@ -35,6 +35,8 @@ def main():
                      ('NCCL_P2P_DISABLE', 'NCCL_IB_DISABLE', 'NCCL_SOCKET_IFNAME')}
     if communication != dict(NCCL_P2P_DISABLE='1', NCCL_IB_DISABLE='1', NCCL_SOCKET_IFNAME='bond0'):
         raise ValueError('Use the measured lc1 PCIe communication workaround from A800_CLUSTER.md')
+    if '--xla_gpu_use_memcpy_local_p2p=false' not in os.environ.get('XLA_FLAGS','').split():
+        raise ValueError('Explicitly disable XLA local memcpy collectives on this cluster')
     if subprocess.check_output(['nvidia-smi','--query-compute-apps=pid','--format=csv,noheader'], text=True).strip():
         raise RuntimeError('All eight GPUs must be verified idle; never interrupt a teammate')
     args.output.mkdir(parents=True)
@@ -79,13 +81,13 @@ def main():
     from b1k.transforms import TokenizeFASTActions
     from b1k.models.observation import Observation
     from behavior_champion.contracts import state23_from_proprio61, delta_actions, pad32, training_stage, append_embeddings
+    from behavior_champion.jax_transport import place_from_host, check_collective_and_gradient
     if len(jax.devices()) != 8 or any(device.platform != 'gpu' for device in jax.devices()):
         raise ValueError('Expected eight actual CUDA devices')
-    collective = jax.pmap(lambda x: jax.lax.psum(x, 'device'), axis_name='device')(jnp.arange(8, dtype=jnp.float32))
-    jax.block_until_ready(collective)
-    if not np.array_equal(np.asarray(collective), np.full(8,28,dtype=np.float32)):
-        raise ValueError('Eight-device collective result mismatch')
-    print('EIGHT_GPU_COLLECTIVE_PASSED',flush=True)
+    mesh = sharding.make_mesh(8)
+    transport_receipt = check_collective_and_gradient(mesh)
+    (args.output/'transport.json').write_text(json.dumps(transport_receipt,indent=2)+'\n')
+    print(json.dumps(transport_receipt),flush=True)
     jax.config.update('jax_compilation_cache_dir', str(args.output/'jax-cache'))
     layout = json.loads(args.layout.read_text())['layout']
     assets = args.checkpoint/'assets/IliaLarchenko/behavior_224_rgb'
@@ -121,6 +123,7 @@ def main():
     import_spec = importlib.util.spec_from_file_location('champion_train_core',args.reference/'scripts/train.py')
     core = importlib.util.module_from_spec(import_spec); import_spec.loader.exec_module(core)
     loader_receipt = {}
+    expected_parameter_hashes = {}
 
     class ExpandedLoader:
         def load(self, expected):
@@ -142,6 +145,11 @@ def main():
             for key, value in loaded.items():
                 if value.shape != shapes[key].shape:
                     raise ValueError('Non-embedding shape mismatch: '+str(key))
+                if not any(name in key for name in ('action_correlation_cholesky','L_spatial','L_temporal',
+                           'cached_num_inpaint_actions','cached_input_action_dim','cached_Sigma_uo_Sigma_oo_inv',
+                           'cached_L_cond_free','cached_Sigma_ou_Sigma_uu_inv','cached_L_cond_inp')):
+                    expected_value = value.astype(jnp.bfloat16) if args.freeze_vision and key[:2]==('PaliGemma','img') else value
+                    expected_parameter_hashes[key] = hashlib.sha256(expected_value.tobytes()).hexdigest()
             loader_receipt.update(dict(keys=len(loaded),expanded=grown,other_arrays_unchanged=True))
             return unflatten_dict(loaded)
 
@@ -151,20 +159,32 @@ def main():
         weight_loader=ExpandedLoader(),batch_size=args.batch_size,num_flow_samples=args.flow_samples,
         fsdp_devices=8,wandb_enabled=False,
         freeze_filter=nnx_utils.PathRegex('PaliGemma/img/.*') if args.freeze_vision else nnx.Nothing)
-    mesh = sharding.make_mesh(8)
     data_sharding = jax.sharding.NamedSharding(mesh,jax.sharding.PartitionSpec(sharding.DATA_AXIS))
     replicated = jax.sharding.NamedSharding(mesh,jax.sharding.PartitionSpec())
-    batch = jax.device_put((observation,batch['actions']),data_sharding)
+    batch = place_from_host((observation,batch['actions']),data_sharding)
+    # Legacy uint32 PRNG keys preserve the same seed while avoiding implicit
+    # GPU0->peer copies of jax.random.key(...). Every replica is read back.
+    init_key = place_from_host(np.array([0,17],dtype=np.uint32),replicated)
+    train_key = place_from_host(np.array([0,19],dtype=np.uint32),replicated)
     with sharding.set_mesh(mesh):
-        state, state_sharding = core.init_train_state(config,jax.random.key(17),mesh,resume=False,norm_stats=stats)
+        state, state_sharding = core.init_train_state(config,init_key,mesh,resume=False,norm_stats=stats)
         jax.block_until_ready(state)
+        # Init may reshard large tensors. Round-trip all loaded parameter bytes
+        # before allowing a single update; synthetic collectives alone are insufficient.
+        for key,value in flatten_dict(state.params.to_pure_dict()).items():
+            if key not in expected_parameter_hashes: continue
+            actual = np.asarray(jax.device_get(value))
+            if hashlib.sha256(actual.tobytes()).hexdigest() != expected_parameter_hashes[key]:
+                raise ValueError('Initialized parameter bytes changed in transport: '+str(key))
+        loader_receipt['initialized_parameter_roundtrip_hashes_passed'] = len(expected_parameter_hashes)
+        print(json.dumps(dict(initialized_parameter_roundtrip_hashes_passed=len(expected_parameter_hashes))),flush=True)
         step = jax.jit(functools.partial(core.train_step,config),
                        in_shardings=(replicated,state_sharding,data_sharding),
                        out_shardings=(state_sharding,replicated),donate_argnums=(1,))
         times = []
         for index in range(args.warmup+args.measure):
             started=time.monotonic()
-            state, metrics=step(jax.random.key(19),state,batch)
+            state, metrics=step(train_key,state,batch)
             jax.block_until_ready((state,metrics))
             seconds=time.monotonic()-started
             if not all(np.isfinite(np.asarray(x)).all() for x in jax.tree.leaves(metrics)):
@@ -181,6 +201,7 @@ def main():
                 trained_checkpoint_saved=False,source_commit=source,patch_sha256=hashlib.sha256(delta).hexdigest(),
                 openpi_source_commit=openpi_source,openpi_patch_sha256=hashlib.sha256(openpi_delta).hexdigest(),
                 communication_environment=communication,
+                transport_validation=transport_receipt,
                 parent_revision=verified['revision'],probe_sha256=h.hexdigest(),checkpoint_migration=loader_receipt,
                 warning='Cached real batch; no epoch ETA until shuffled full-loader/checkpoint/eval overhead is measured.')
     (args.output/'result.json').write_text(json.dumps(result,indent=2)+'\n')

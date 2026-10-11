@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 22:51 CST / Codex CHAMPION-2026：** v2前置psum拒绝、0载权重/0更新。独立最小复现实测GPU0-origin arange八卡求和22/22，CPU-origin同输入28正确；NCCL禁P2P不能覆盖PJRT自身搬运，绝不放宽错误结果。新修限定所有训练输入/PRNG从host直接按目标sharding下发并逐物理shard回读、关闭XLA本地memcpy collective，新增有独立NumPy真值的FSDP梯度/更新门与真实全参数初始化hash回读；原生GPU直拷仍标不安全，不宣称驱动已修。此为新冠军JAX栈，不是旧Torch MEM训练损坏证据。CPU I/O已1536真实样本全过：12,524,274个stride16 TRAIN锚/19000演示，8worker稳态15.528s/256、各batch84–87任务，只是原RGB读取/传输、不含transform/训练；下一新冻源实际验门/测速。
+
+- **2026-10-11 22:46 CST / Codex CHAMPION-2026：** v1自有进程退出、八卡显存清空后，Git冻结bac49468于`src/champion-compute-20261011-v2`；同父/bs256/flow4/2warm+5timed新`compute-bs256-v2`实启，唯一修复是补上既有NCCL通信配置和前置psum门，原v1日志不覆盖。另a85daad6冻源`src/champion-io-20261011-v1`启动8CPU worker全局shuffle1536真实TRAIN帧解码/传输（`io-w8-v1{.log,.json}`），不占训练GPU、不改数据。两者可能有CPU/I/O资源竞争，算速仅这次机器负载条件，不做理想峰值宣传；尚待完成/回执。
+
 - **2026-10-11 22:45 CST / Codex CHAMPION-2026：** 更正22:40“首次编译”后续状态：bs256-v1完成权重/扩表与编译后首步不返回，8GPU100%但仅72–82W/显存利用0，符合集群既有默认PCIe P2P挂起记录；新冠军启动漏继承原NCCL workaround。仅核身份后TERM自有PID3189336，0已完成更新/0ckpt，原log保留，不能报任何训练吞吐。新增显式`NCCL_P2P_DISABLE=1/IB_DISABLE=1/SOCKET_IFNAME=bond0`门与八卡psum实际验收，再新v2重测；不称ACS/驱动根因已证明。独立CPU TorchCodec初导缺FFmpeg，引用既有只读tools/ffmpeg后导入通过；新增独立activation，不安装/热改共享env。
 
 - **2026-10-11 22:40 CST / Codex CHAMPION-2026：** 新独立`behavior_champion/dataset.py`只复用已验收v4的split/原视频phase/元数据，重新直接索引全部phase+16帧；真实30动作跨技能区间，仅episode末尾重复最后动作，61/23与原RGB不预改。4数据边界/不串留出/重复episode拒绝测试＋6本体/任务合同全过；尚待远端实际V3解码和进程传输。`benchmark_champion_io.py`计划CPU8worker、全局shuffle6×256（2warm＋4timed），不读新的test、不更新模型；8卡计算探针已过模型载入/扩表，当前首次XLA编译，不把启动当算速通过。

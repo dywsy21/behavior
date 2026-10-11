@@ -6,6 +6,7 @@ export LD_LIBRARY_PATH="$BHV_CHAMPION_ROOT/tools/ffmpeg/usr/lib/x86_64-linux-gnu
 export NCCL_SOCKET_IFNAME=bond0
 export NCCL_IB_DISABLE=1
 export NCCL_P2P_DISABLE=1
+export XLA_FLAGS="${XLA_FLAGS:+$XLA_FLAGS }--xla_gpu_use_memcpy_local_p2p=false"
 export HF_HUB_DISABLE_IMPLICIT_TOKEN=1
 export TOKENIZERS_PARALLELISM=false
 # Caller must select GPU(s), frozen source, run path and authorized experiment.
