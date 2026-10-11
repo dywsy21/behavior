@@ -1,7 +1,9 @@
 {
   "recorded_at": "2026-10-11T10:12:05+08:00",
   "owner": "Codex root",
-  "status": "two_full_videos_reviewed_food_original_episode_still_running",
+  "updated_at": "2026-10-11T21:51:00+08:00",
+  "status": "all_three_full_videos_machine_verified_and_owner_sample_reviewed",
+  "earlier_snapshot": "At 10:12 only radio/tripod were complete; food had 8064 controls. Original episode subsequently completed without restarting or truncation.",
   "purpose": "Complete task execution videos with only current intent and online outcome-head prediction/probability in the footer.",
   "local_root": "/home/wsy/behavior/artifacts/full-episode-videos-20261011",
   "source_roots": {
@@ -24,7 +26,7 @@
     "caption_clock": "Actual issuing intent and same-episode/member raw outcome logits, never later predictions",
     "probability_meaning": "Raw four-way outcome-head softmax, not whole-task success probability or physical truth",
     "optimizer_updates": 0,
-    "other_training_goal": "paused; not resumed by this video request"
+    "other_training_goal": "Was paused during video collection; resumed separately by user at 21:23, not by the video request"
   },
   "models": {
     "A800_root": "/data/workspace/wsy/behavior2026",
@@ -81,30 +83,36 @@
       "caption_chunks": 367,
       "distinct_caption_pairs": 206,
       "reviewed_seconds": [0, 90, 195]
+    },
+    {
+      "case": "food",
+      "task_id": 3,
+      "task": "cleaning_up_plates_and_food",
+      "sim_run": "food-v2",
+      "model_run": "food-v3",
+      "video": "food/execution.mp4",
+      "sha256": "1fb55f67af86bfe067916998d7cec7fdf0384459259a33165cda9843cee60374",
+      "seconds": 684.866667,
+      "actual_controls": 20545,
+      "frames": 20546,
+      "official_success": false,
+      "official_q_score_final": 0.0,
+      "real_high_generations": 161,
+      "reviewed_seconds": [0, 300, 684],
+      "machine_receipt": "food/manifest.json",
+      "owner_review": "food/owner-review.json"
     }
   ],
   "verification": {
-    "full_decode_and_frame_counts": "passed for both completed videos",
-    "every_client_action_and_ack_matches_server": "passed for both completed videos",
-    "every_real_high_call_task_memory_and_128_control_clock": "passed: 26 radio + 46 tripod",
-    "all_model_parameters_before_after": "unchanged for both completed episodes",
+    "full_decode_and_frame_counts": "passed for all three completed videos",
+    "every_client_action_and_ack_matches_server": "passed for all three completed videos",
+    "every_real_high_call_task_memory_and_128_control_clock": "passed: 26 radio + 46 tripod + 161 food",
+    "all_model_parameters_before_after": "unchanged for all three completed episodes",
     "root_visual_review": "Sampled encoded start/middle/end timestamps listed per video, readable two-field footer, no camera occlusion; not manual inspection of every frame",
-    "constant_intent": "Both planners actually kept generating NAVIGATE to their own target; not a frozen subtitle",
+    "constant_intent": "All three independent sessions kept generating NAVIGATE to their own target; not a frozen subtitle",
     "unit_tests": "15 targeted tests passed: 4 collector recovery, 8 caption/encoding timeline, 3 full-episode session"
   },
-  "pending": {
-    "case": "food",
-    "task_id": 3,
-    "task": "cleaning_up_plates_and_food",
-    "sim_run": "food-v2",
-    "model_run": "food-v3",
-    "observed_controls": 8064,
-    "official_max_steps": 20544,
-    "status": "running; not yet a complete video or outcome",
-    "collector_tmux": "full-video-collector-20261011-resume",
-    "collector_commit": "5108f705",
-    "next": "Await both original terminal receipts, automatically copy/render, then owner review; do not replay or truncate the episode"
-  },
+  "pending": null,
   "preserved_failures": [
     "Initial model-v1 services stopped by owner before any client/actions to fix close-journal bug.",
     "Initial radio/food simulator-v1 failed at metadata-only max-step lookup before any real control; logs/initial frames preserved. Current runs use the same weights, seed and instance.",

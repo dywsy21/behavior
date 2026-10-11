@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 21:57 CST / Codex CHAMPION-2026：** lc1真实TRAIN-only任务布局审计e307925b…5122通过：19,000训练/1,000原留出，旧50/596行不变，新50按训练均长初定491阶段，共1087；仅CPU合同，不是已迁完模型。上游环境Git/Python下载问题用本地官方Python3.11.14中转，两端tar SHA8bd3a4f2…8450通过；v2因PyPI30s网络超时退出，v3限并发/300s继续但带宽仍低，准备改用**原lock版本＋wheel hash**的PyPI镜像安装（不改权重/依赖配方/现有g05环境）。额外源审发现上游`freeze_vision_backbone`只切train=False，真正冻结仍需optimizer filter；新训练配方不能把该开关误报为梯度冻结。food第三全片完整验收已补入轻量视频JSON，原失败/Q0不变。
+
 - **2026-10-11 21:50 CST / Codex CHAMPION-2026＋RECOVERY-USABLE：** 4ee223d8已push/Git冻源，lc1`champion-env-bootstrap-v1`在全新env目标构建Python3.11＋锁定openpi依赖，未安装/更改g05 env、未启动训练；Python下载慢，开始本地官方分发的独立中转准备。旧50官方任务名与当前100manifest一一对照**50全保留且ID不变**。新`behavior_champion/contracts.py`完成61→23本体/23→32尾补零/17相对关节与绝对底盘躯干末维夹爪往返/旧596阶段行保留，6CPU反例通过，尚非GPU/完整模型扩表。边界100中parent72/current74条直接重复上一意图，各仅1条错为其他技能，足以定位“难切换”而非仅JSON格式问题；正常/恢复余项仍运行。
 
 - **2026-10-11 21:43 CST / Codex CHAMPION-2026＋RECOVERY-USABLE：** 用户已明确选定**冠军路线优先、MEM-Lite继续验证**；不是授权立即启动新大训。冠军适配/实测和可提交包为主线，MEM只补关键诊断，不抢正式训练窗口；先实测再讨论24–36h配方并保留至少两天评测。固定cf919两路边界专项已各完成100真实技能切换：parent27/100、current25/100 exact（其余正常100＋恢复42还在跑），显著低于旧易延续样本99%，不能把旧准确率当阶段推进可用。两冠军下载仍进行；原环境不动，准备独立Python3.11/JAX0.5.3环境及任务/动作兼容检查。
