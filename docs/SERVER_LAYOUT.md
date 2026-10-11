@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 22:33 CST：冠军资产与环境验收完成，模型测速待
+
+- 共享根`/data/workspace/wsy/behavior2026`，`envs/champion-openpi-py311-v1`独立180包，`runs/champion_assets_20261011/env-offline-v1.log`/`env-v1/pip-freeze.txt`验收；不复用或修改g05 env。Python在`tools/champion-python-transfer-v1/cpython-3.11.14-linux-x86_64-gnu`。原bootstrap v1–v4失败/owner停止日志和原缓存保留，当前离线任务已完成。
+- `tools/champion-uv-transferred-cache-v1`/`champion-extra-transferred-cache-v1`为校验归档的新副本，内绝对cache链接机械迁到新根；源归档`incoming/champion-{wheelcache,extra-cache}-v1-transfer.tar.gz`可恢复。它们不是运行权重，不能因“cache”名字就现在删除；环境构建依赖的共享源仍保留。
+- 新integration冻源`src/champion-offline-ready-20261011-v1`=2e4150a6；模型独立`src/champion2026-native-v1`是ca556f74＋Git跟踪的df9236b2补丁，openpi独立`src/openpi2026-native-v1`是01177e0＋e6bf4b81补丁。补丁工作树仅允许逐字节匹配登记patch，不能被训练中热改。原`champion2025-ca556f74-v1`及其openpi未改。
+- 权重验收`runs/champion_assets_20261011/shared50-verified-v1.json`(d0ca3f07…b1e8a)/`final-cp2-verified-v1.json`(a6246d70…e5b12)；对应模型根仍`models/champion2025/shared50-11490241`和`final-cp2-89545bc1/checkpoint_2`。`native-probe100-v1/{native.npz,result.json}`是100任务TRAIN真实单帧/30动作缓存(fe19d18c…14e0ad)，用于接口与算速，不能称完整训练数据加载吞吐。
+
 ## 2026-10-11 21:50 CST：冠军依赖隔离
 
 - `src/champion-prep-20261011-v1`=4ee223d8运行只建依赖的入口；新上游`src/champion2025-ca556f74-v1`精确ca556f74/openpi01177e0，不运行上游sudo setup脚本、不安装旧模拟器。tmux `champion-env-bootstrap-v1`、`runs/champion_assets_20261011/env-bootstrap-v1.log`，目标env `envs/champion-openpi-py311-v1`、独立`tools/champion-{python,uv-cache}-v1`。当前只在下载/构建，不称环境通过，更不称训练开始。

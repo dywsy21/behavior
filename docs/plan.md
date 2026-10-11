@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 22:40 CST / Codex CHAMPION-2026：** 新独立`behavior_champion/dataset.py`只复用已验收v4的split/原视频phase/元数据，重新直接索引全部phase+16帧；真实30动作跨技能区间，仅episode末尾重复最后动作，61/23与原RGB不预改。4数据边界/不串留出/重复episode拒绝测试＋6本体/任务合同全过；尚待远端实际V3解码和进程传输。`benchmark_champion_io.py`计划CPU8worker、全局shuffle6×256（2warm＋4timed），不读新的test、不更新模型；8卡计算探针已过模型载入/扩表，当前首次XLA编译，不把启动当算速通过。
+
+- **2026-10-11 22:38 CST / Codex CHAMPION-2026：** 八张A800真实JAX CUDA矩阵kernel全通过，180包freeze SHA c518d442…af30fa3。lc1八卡原实空后提交`champion-compute-bs256-v1`，输出`runs/champion_assets_20261011/compute-bs256-v1{,.log}`；冻源2e4150a6、shared50父11490241、100task真实TRAIN缓存、seed17/19、bs256/4个FM噪声、2warm＋5timed优化更新、不保存模型。主假设是原冠军全梯度计算图可在8×80GB执行且算速可测；0部署/非正式大训，失败即保留诊断、不自动开展长训。纯计算吞吐仍须叠加真实V3读取/存档/评测开销才能给正式ETA。
+
+- **2026-10-11 22:33 CST / Codex CHAMPION-2026：** 2e4150a6 Git冻源完成远端离线安装：180包pip check全过、实际JAX0.5.3/flax0.10.2/orbax0.11.13，`env-offline-v1.log`明确READY，g05环境未改。shared50全24文件12,645,700,537B验收d0ca3f07…b1e8a，cp2全26文件12,645,718,417B验收a6246d70…e5b12，均本地/共享盘已取回执；不是性能/Q验收。两独立上游worktree为`src/champion2026-native-v1`(ca556＋df9236补丁)、`src/openpi2026-native-v1`(01177＋e6bf4b补丁)，不热改原env安装源；8卡均实空，开始纯CUDA kernel验收，之后预定bs256/4噪声/2warm＋5timed短计算探针，保留原FAST/.05/阶段.1/AdamW+EMA，0部署、0正式训练ckpt。
+
 - **2026-10-11 22:28 CST / Codex CHAMPION-2026：** 两组资产下载后逐文件对官方HF固定revision blob/LFS hash检查已结束，`shared50-verified-v1.json`/`final-cp2-verified-v1.json`落盘，尚待加载模型而非“冠军效果通过”。100真实TRAIN输入49.22s完成（fe19d18c…14e0ad），只作计算/接口探针，不称全局shuffle吞吐。完整缓存和pytest补充包中转两端SHA均一致，正独立解包；发现uv缓存绝对链接，新增仅允许两指定副本的机械重定位，不碰g05/旧cache。CPU实际上游train_step已可导入：openpi另一处旧OmniGibson引用改成函数内lazy import（独立补丁），旧公式不改；下一远端离线安装、8卡短测速与完整数据加载耗时，不启动正式训练。
 
 - **2026-10-11 22:22 CST / Codex CHAMPION-2026：** 新兼容补丁CPU实际JAX0.5.3/NNX建图通过：75叶同名同dtype，只task[50,2048]→[100,2048]、stage[596,1024]→[1087,1024]两表变形（patch df9236b2…71df1，`model-shapes-v1.json`，不是已加载大权重）。e21208cd冻源在lc1完成真实TRAIN-only 50task native probe（24.57s，2aa6c1f6…357c6），100task输入也完成待轻量回执；不裁技能边界、不resize原RGB。远端依赖v4因GitHub TLS拉LeRobot失败，改本地同uv0.9.16/上游lock完整177包缓存中转（归档25a637e3…f532d），额外生产import所需pytest3包也按原lock固定；尚待远端离线安装/GPU验收，原失败日志全留。短benchmark脚本只计划少量丢弃优化更新、不保存ckpt，不是正式大训。
