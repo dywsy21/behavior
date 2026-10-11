@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 01:24 CST：冠军正式链工程恢复验收
+
+- lc1共享根`/data/workspace/wsy/behavior2026`，冻结`src/champion-resume-probe-20261012-v1`=c22d1b72，八卡tmux`champion-resume-bs256-v1`，run`runs/champion_assets_20261011/resume-bs256-v1`及同名`.log`。仅3更新＋第3步恢复重演、30min工程验收；工程checkpoint不作正式训练/部署权重，参数/优化器/EMA/相关噪声/随机键全叶保存，失败目录保留、不自动清理。
+- 同源CPU tmux`champion-balanced-sampling-v1`，输出`runs/champion_assets_20261011/sampling-balanced-v1.{json,log}`，核原准入18895TRAIN/100task/8000批，不读RGB/不改原release。新大训仍未批准，两作业尚未终态。
+
 ## 2026-10-12 01:05 CST：作者wrapper对照与修后全源统计
 
 - lc1 `src/champion-golden-replay-20261012-v{1,2}`分别ea68290a/24544cc9，`runs/champion_episode_20261012/radio-author-replay-v{1,2}{,.log}`全保留；v1原历史严格门首块拒绝，v2同进程原/新162次动作及阶段全同，跨进程历史不精确仍明确false。两次均0新物理/0优化、GPU已释放。本地v2轻量副本`artifacts/champion-episode-20261012/radio-author-replay-v2`；原episode全部媒体/动作/观测仍在两端原目录。

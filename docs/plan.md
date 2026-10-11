@@ -12,9 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-12 01:33 CST / Codex CHAMPION-2026：** 新采样/后Adam新行×4及全动态状态保存恢复共7新增CPU测试全过，含实际NNX状态旧行/动量保持、bf16/EMA/RNG、损坏/错cursor拒绝；冠军累计34测试全过。新增逐叶安全checkpoint（原子目录、字节SHA、显式HOST回卡、保留失败目录、不自动删旧档）并接原计算入口的3步工程续训探针，尚未真实GPU验收。下一预登记lc1八卡/原shared50/seed17及19/准入TRAIN/3更新+第3步恢复重演、最长30min，验第2步全状态保存后第3步与未中断逐叶一致；只工程checkpoint不可部署，0正式训练。并CPU穷尽核8000批/204.8万抽样/原隔离与相位；用户新大训配方仍待答、W&B正式链与跨进程推理数值问题仍待。
+- **2026-10-12 01:27 CST / Codex CHAMPION-2026：** c22实际CPU穷尽8000批通过（5.24s），每批全100task/44×2+56×3，2048000全唯一、各task20480、旧/新50各1024000，九断点重建一致，保留105TRAIN/6eval隔离；plan SHA fa1dda37…ab0e。真实八卡工程probe已过host通信/梯度及三种图像尺寸前端全卡逐位一致，模型初始化进行中。另新增online-only W&B生命周期与同run恢复验收入口（不把优化步当云端append索引，避免恢复时丢日志）；CPU测试/实际云验收待，不写凭据、不换账号、不热改GPU源。
 
-- **2026-10-12 01:22 CST / Codex CHAMPION-2026：** 上轮为progress（原完整失败回合/同进程对照、准入修复与MEM全源诊断已落Git）；本轮干净pull/fetch仍8e3a4a47、main33677bd0，lc1八卡实空/共享盘1.2TiB。正式训练准备新增`behavior_champion/sampling.py`按每批100task各2–3锚、额外56轮转、按task无放回并有界拒绝耗尽；cursor只取完成更新数、不随prefetch前移。新增`optimizer.py`只在AdamW更新后对新task/stage行×4，旧行/矩估计不乘梯度；本地代码与反例测试已写、运行待。新8000步/max24h仍未获授权，没有新GPU/正式训练；下一保存/恢复含全部非参数状态与随机键，不能用模型文件存在代替续训验收。
+- **2026-10-12 01:24 CST / Codex CHAMPION-2026：** c22d1b72已push并Git冻结lc1`src/champion-resume-probe-20261012-v1`，八卡实空后tmux`champion-resume-bs256-v1`启动`runs/champion_assets_20261011/resume-bs256-v1{,.log}`，原shared50全部文件重hash后才初始化，3更新+第3步重演/30min工程窗口、只工程checkpoint。另CPU tmux`champion-balanced-sampling-v1`穷尽8000批抽样，输出`sampling-balanced-v1.{json,log}`；都运行中、无结果不称验收。初Git bundle基于远端缺失8e3祖先而拒绝，改24544cc已知祖先完整bundle后成功，未覆盖源码。下两条初记时间依据本地估计偏快，现按工具UTC校正为01:22/01:18；无重跑旧测试。
+
+- **2026-10-12 01:22 CST / Codex CHAMPION-2026：** 新采样/后Adam新行×4及全动态状态保存恢复共7新增CPU测试全过，含实际NNX状态旧行/动量保持、bf16/EMA/RNG、损坏/错cursor拒绝；冠军累计34测试全过。新增逐叶安全checkpoint（原子目录、字节SHA、显式HOST回卡、保留失败目录、不自动删旧档）并接原计算入口的3步工程续训探针，尚未真实GPU验收。下一预登记lc1八卡/原shared50/seed17及19/准入TRAIN/3更新+第3步恢复重演、最长30min，验第2步全状态保存后第3步与未中断逐叶一致；只工程checkpoint不可部署，0正式训练。并CPU穷尽核8000批/204.8万抽样/原隔离与相位；用户新大训配方仍待答、W&B正式链与跨进程推理数值问题仍待。
+
+- **2026-10-12 01:18 CST / Codex CHAMPION-2026：** 上轮为progress（原完整失败回合/同进程对照、准入修复与MEM全源诊断已落Git）；本轮干净pull/fetch仍8e3a4a47、main33677bd0，lc1八卡实空/共享盘1.2TiB。正式训练准备新增`behavior_champion/sampling.py`按每批100task各2–3锚、额外56轮转、按task无放回并有界拒绝耗尽；cursor只取完成更新数、不随prefetch前移。新增`optimizer.py`只在AdamW更新后对新task/stage行×4，旧行/矩估计不乘梯度；本地代码与反例测试已写、运行待。新8000步/max24h仍未获授权，没有新GPU/正式训练；下一保存/恢复含全部非参数状态与随机键，不能用模型文件存在代替续训验收。
 
 - **2026-10-12 01:08 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** 本轮实证集中到`docs/infra/results/2026-10-12-champion-radio-and-memlite-cadence.json`：原失败全片、逐控/原观测核验、162同进程原实现对照、跨进程未过门、全源隔离修复和MEM切换/128历史统计全部分开。原/新媒体与失败现场保留；只修准入、加审计，没有新训练/选最好case。27冠军+2MEM定向测试再次全过、3轻量JSON解析/diff检查过，下一安全commit/push；用户新8000步/max24h授权未答，正式采样/恢复/W&B和跨进程数值定位仍待，goal不标完成。
 
