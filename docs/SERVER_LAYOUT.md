@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-11 10:07 CST：完整任务成片与收片器恢复
+
+- 本地`artifacts/full-episode-videos-20261011/{radio,tripod}/execution.mp4`已完成，分别107.533/195.633秒；同目录有字幕/timeline/全量机器核验manifest和根人工`owner-review.json`。全原片/两端控制与模型日志在`source/{case}/{episode,service}`，不入Git、不删除服务器原件。
+- food仍沿09:36原配对运行，尚无完整成片。原`collector-status.json`在只读SSH255后失败，失败原文保存在`collector-status.before-resume-*.json`；新本地tmux`full-video-collector-20261011-resume`沿5108f705只恢复收片，日志为`artifacts/full-episode-videos-20261011-collector-resume.log`，未重新启动模拟器或模型。它不覆盖partial、不重置episode/连接VPN，待food完成后核验和导出。
+
 ## 2026-10-11 09:36 CST：三条完整回合当前配对
 
 - RTX`runs/full_episode_videos_20261011/tripod-v1` ↔ A800同根`tripod-v2`；RTX`radio-v2`/`food-v2` ↔ A800`radio-v3`/`food-v3`。三client都66c24d9e、三model都a3949d76；case、config、源身份及实际动作字节在两端日志交叉绑定。
