@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 09:42 CST / Codex FULL-EPISODE-VIDEO：** 三任务均已真实控制，在线抽核radio5/food5/tripod18次真实高层生成：独立session/episode/task一致，所有memory_before/memory_update与实际任务绑定、known_previous_outcome仍UNKNOWN，无跨task记忆。只读审计不改运行源/权重；仍等各回合官方终态和完整MP4，不把当前高置信头输出当成功。
+
 - **2026-10-11 09:36 CST / Codex FULL-EPISODE-VIDEO：** radio/food两个`-v3`模型已ready且0更新，RTX GPU0/1分别提交修正66c24客户端新`radio-v2`/`food-v2`完整回合，原0控失败v1保留。tripod原回合已672实际控继续，无重置/中途接管；三任务状态/记忆/模型均独立，代码同步仅Git冻源。
 
 - **2026-10-11 09:35 CST / Codex FULL-EPISODE-VIDEO：** tripod已读到480条真实逐控ACK/30个16控chunk，头/意图原始日志齐，当前NAVIGATE到digital_camera_87，未结束/未声称成功；非GRASP结果头高置信只作字幕原始预测、仍不校准输入为已知真值。radio/food新服务继续同权重加载。此次首实际控制确认更正此前仅running/首推理在途的口径。
