@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 01:08 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** 本轮实证集中到`docs/infra/results/2026-10-12-champion-radio-and-memlite-cadence.json`：原失败全片、逐控/原观测核验、162同进程原实现对照、跨进程未过门、全源隔离修复和MEM切换/128历史统计全部分开。原/新媒体与失败现场保留；只修准入、加审计，没有新训练/选最好case。27冠军+2MEM定向测试再次全过、3轻量JSON解析/diff检查过，下一安全commit/push；用户新8000步/max24h授权未答，正式采样/恢复/W&B和跨进程数值定位仍待，goal不标完成。
+
+- **2026-10-12 01:05 CST / Codex CHAMPION-2026：** 原wrapper同进程v2完整162生成完成，动作FP32/阶段及票历史逐项完全一致、模型参数前后b1ebe3fc…102fc不变，0新物理/0优化，GPU释放。与原实际回合历史逐位一致仍0/162；首块差约1e-3量级，后续含滚动续接的差异累积，不能不测就归为无害精度误差，更不能把该门写PASS。已分开记录作者适配一致性与跨进程可复现性，下一需固定/记录全运行数值与非参数状态并定位；当前不再反复试301挑成功。冠军与MEM轻量证据将合入摘要，正式24h配方仍等用户确认；保存/恢复、任务均衡采样、分组更新、W&B正式链仍未完成，不冒称ready。
+
+- **2026-10-12 01:00 CST / Codex CHAMPION-2026：** 新24544cc9已push/Git冻`src/champion-golden-replay-20261012-v2`，GPU0 tmux`champion-golden-radio-v2`/run`radio-author-replay-v2`实启加载：同一model/seed下同时跑原wrapper与新session；独立记录同进程动作/阶段精确门、跨进程历史差异，不把历史不符改称通过。原v1失败不覆盖，0新仿真/优化。原1792测速流逐identity核有8个隔离源样本（2719/3930/3962/5811/9605/9689/9783/9817），原7更新全丢弃；100任务native静态probe未含隔离源。准入修复和12,443,010新样本数已同步readiness/proposal，24h/8000步授权仍待。
+
 - **2026-10-12 00:55 CST / Codex CHAMPION-2026：** ea68290a已push/Git冻`src/champion-golden-replay-20261012-v1`，lc1 GPU0作者原wrapper只读回放`runs/champion_episode_20261012/radio-author-replay-v1`已第1生成动作SHA不符而failed_no_retry；阶段一致、权重初始SHA相同，0物理/0更新，原log/check保留。尚不能判是移植逻辑还是跨进程数值/非参数噪声状态差异，下一同进程相同输入/种子直接比两实现，并核相关噪声重建；不松阈值假称通过，不自动重跑官方回合。正式24h/8000步方案已异步再次请用户确认，尚无答复。
 
 - **2026-10-12 00:50 CST / Codex CHAMPION-2026：** 修后冠军reader真实全源审计18895TRAIN/12,443,010原生锚（旧50=6,997,602、新50=5,445,408）；task0=25710、task26=304699，105TRAIN整源不回灌。task-layout-admitted-v2 SHA d2257aec…2041仍1087stage，完整layout/offset与旧v1逐项一致，参数行布局不需重建。旧官方684a8305`generate_robot_config`与2026配置皆assisted，夹爪stats实际q01=-1/q99=1，没有证据是模式或归一化塌缩。新增只读作者原wrapper AST＋原PiBehaviorPolicy.infer回放入口，计划同162原观测/seed17比对动作SHA和stage票；0新物理/0更新，实际GPU核验待，不先声称移植一致或把失败全归因模型。

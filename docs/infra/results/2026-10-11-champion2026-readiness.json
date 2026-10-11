@@ -65,9 +65,17 @@
   "data_io": {
     "release": "/data/workspace/wsy/behavior2026/datasets/memlite-stage1-20260930-v4",
     "manifest_sha256": "90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23",
-    "train_episodes": 19000,
+    "train_episodes": 18895,
+    "source_quarantines_preserved": {"train":105,"eval":6},
+    "admission_fix_commit": "0baf911376101e704b42f2ee78dcb2330e07056d",
     "original_heldout_episodes_excluded": 1000,
-    "train_stride16_samples": 12524274,
+    "train_stride16_samples": 12443010,
+    "historical_unfiltered_benchmark_pool": {"train_episodes":19000,"stride16_samples":12524274},
+    "corrected_task_layout_audit": {
+      "sha256":"d2257aec60b4653808c7b214b33795408c39b69f7515b064ed6314154ae72041",
+      "path":"/data/workspace/wsy/behavior2026/runs/champion_assets_20261011/task-layout-admitted-v2.json",
+      "layout_and_all_stage_offsets_exactly_unchanged":true
+    },
     "stride_phase": "reuse each original episode's fixed phase in 0..15",
     "probe_samples_per_run": 1536,
     "sampled_indices_sha256": "f7facaabd8f1f5a5cdc7d7a66def5029d8a1b0da6d2a0b8d3a042a15058adff8",
@@ -89,7 +97,7 @@
   },
   "not_done": [
     "formal sampler/grouped-optimizer recipe approval, full checkpoint/resume and W&B lifecycle validation; short optimized real-stream timing is completed",
-    "2026 websocket runtime, per-session stage/vote/inpainting isolation and physical rollout verification",
+    "Cross-process historical action reproducibility:162 same-process author/adapter calls passed action and stage exactness, but historical replay was not exact; source of cross-process numerical difference unresolved",
     "independent member code review and final recipe discussion",
     "formal new training, official Q/SR or submission artifact completion"
   ],
@@ -105,6 +113,7 @@
     "timed_steps": 5,
     "optimizer_updates_discarded": 7,
     "trained_checkpoint_saved": false,
+    "admission_audit_correction": "Historical1792-sample stream contained8 subsequently correctly quarantined source rows (episodes2719,3930,3962,5811,9605,9689,9783,9817). All7 probe updates discarded. This stream is not approved for any formal fit; corrected source universe is recorded in data_io.",
     "batch_size": 256,
     "flow_samples": 4,
     "workers": 32,

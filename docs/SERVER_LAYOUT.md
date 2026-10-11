@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 01:05 CST：作者wrapper对照与修后全源统计
+
+- lc1 `src/champion-golden-replay-20261012-v{1,2}`分别ea68290a/24544cc9，`runs/champion_episode_20261012/radio-author-replay-v{1,2}{,.log}`全保留；v1原历史严格门首块拒绝，v2同进程原/新162次动作及阶段全同，跨进程历史不精确仍明确false。两次均0新物理/0优化、GPU已释放。本地v2轻量副本`artifacts/champion-episode-20261012/radio-author-replay-v2`；原episode全部媒体/动作/观测仍在两端原目录。
+- lc1 `src/champion-quarantine-audit-20261012-v1`=0baf9113；`runs/planner_transition_audit_20261011/train-cadence-audit-v3.json` SHA1dbd6367…a4ec、`runs/champion_assets_20261011/task-layout-admitted-v2.json` SHAd2257aec…2041已完整终态并本地同SHA副本。原MEM1230万候选逐行全同，冠军准入后1244万原生锚，所有105TRAIN/6eval整源隔离保留；旧release与冻结source均未改。
+
 ## 2026-10-12 00:35 CST：冠军原回合完成，审计失败现场保留
 
 - 两端`champion-radio-cp2-v1`已终态3225控/162推理/Q0、0优化，lc1与RTX GPU0释放；本地完整原件在`artifacts/champion-episode-20261012/radio-cp2-v1/{episode,service}`，含原107.533s/3226帧MP4、逐控/模型事件、全162 NPZ。模型参数前后SHA一致；视频不含伪造MEM-Lite intent/outcome。

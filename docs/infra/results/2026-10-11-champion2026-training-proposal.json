@@ -80,7 +80,7 @@
     "official_success": false,
     "official_q_score": 0.0,
     "observation": "Reached the radio table, stayed at predicted stage2 after control1420; both offered gripper channels stayed near+1. Full original MP4 and action/observation journals retained.",
-    "meaning": "2026 transport ran end-to-end; not proof of policy effectiveness, migration completeness, or general SR. Exact author-wrapper replay is pending."
+    "meaning": "2026 transport ran end-to-end, and162 same-process author-wrapper versus adapter calls were action/stage bitwise-identical. Cross-process replay of the historical action stream was NOT exact; numeric/runtime cause remains unresolved. Neither test proves policy effectiveness or general SR."
   },
   "monitoring": {
     "fixed_eval": "Protected heldout, fixed sample/noise selection, separately report old50/new50 FM/FAST/stage metrics",
