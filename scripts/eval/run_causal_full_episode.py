@@ -34,7 +34,7 @@ def main():
     import omnigibson as og
     if Path(og.__file__).resolve()!=OFFICIAL/'omnigibson/__init__.py':raise ValueError('Wrong simulator source')
     from omnigibson.eval.evaluator import BatchedEvaluator
-    from omnigibson.eval.utils.eval_utils import seed_everything,DEFAULT_EVAL_SEED
+    from omnigibson.eval.utils.eval_utils import seed_everything,DEFAULT_EVAL_SEED,EVAL_TIMEOUT_MULTIPLIER
     from omnigibson.macros import gm
     from omegaconf import OmegaConf
     gm.HEADLESS=True;gm.RENDER_VIEWER_CAMERA=False
@@ -46,7 +46,7 @@ def main():
             # One true initial-state frame, then one official post-action frame
             # for EVERY control including the last partial chunk's final action.
             self._write_video(self.instance_eval_states[0])
-            status.update(status='running',official_max_steps=self.env.task._max_steps,
+            status.update(status='running',official_max_steps=int(self.human_stats['length']*EVAL_TIMEOUT_MULTIPLIER),
                 simulator_seed=DEFAULT_EVAL_SEED,first_state_recorded=True)
             atomic_json(a.output/'status.json',status)
         def _step_fn(self,indices):

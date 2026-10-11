@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 09:29 CST / Codex FULL-EPISODE-VIDEO：** food/radio首客户端在官方load_batch末记录时误读不存在的`BehaviorTask._max_steps`，均在首次policy inference/真实控制之前退出；原初态单帧/日志/BEGIN会话保留，0执行视频、不是模型失败或成功。已定位纯元数据记录错误，改从官方原`human_stats.length×EVAL_TIMEOUT_MULTIPLIER`记录同一时限，不改终止条件/物理；需要新客户端冻源和已断开的两模型新run，tripod未连接服务不重载。完整回合尚未产出，不将该失败隐作有效分母。
+
 - **2026-10-11 09:26 CST / Codex FULL-EPISODE-VIDEO：** lc1三独立模型ready、每卡33.3GiB、全部权重/配套回执通过，0更新。RTX新7394客户端在GPU1/0分别实提交food/radio完整官方回合（tmux`full-video-{food,radio}-v1`，run根`runs/full_episode_videos_20261011/{case}-v1`），持有既有GPU锁；目前场景加载、尚无动作成功证据。tripod模型就绪但sim等首轮场景加载结束后启动，避免同时载三场景；所有任务按原官方成功/超时结束，不预设短窗。
 
 - **2026-10-11 09:24 CST / Codex FULL-EPISODE-VIDEO：** 三服务已真实占GPU约25–33GiB/卡继续加载（a3949d76，0客户端）。模拟器完成回执另补官方normalized-distance可能为Inf的兼容：原官方metrics不改，只摘有限Q/SR/steps及原文件SHA，客户端新7394fd6c冻源`full-episode-videos-20261011-client-v3`，模型源保持不动，两端commit分开记录；这不改动作/物理/时限。实际sim Python已导入新client/编译通过，RTX707GiB可用。根亲看三旧minimal成片关键帧，中文无遮挡且只有两字段，非完整回合性质不变。

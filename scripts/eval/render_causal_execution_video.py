@@ -125,10 +125,12 @@ def minimal_texts(goal, members, decision='EXECUTE'):
         arm=arms.get(skill['arm'],skill['arm'])
         target=skill['target']
         intention=f"{arm}{verbs.get(skill['verb'],skill['verb'])} {target}"
+        if skill.get('target_part'):intention+=' / '+skill['target_part']
         if skill.get('destination'):intention+=' → '+skill['destination']
         intents.append(intention)
         p=probabilities(member['raw_logits']);i=max(range(4),key=p.__getitem__)
-        outcomes.append(f"{arm or target}：{ZH[OUTCOMES[i]]} {p[i]*100:.1f}%")
+        label=(arm+' '+target).strip() if len(skills)>1 else (arm or target)
+        outcomes.append(f"{label}：{ZH[OUTCOMES[i]]} {p[i]*100:.1f}%")
     prefix='重试 · ' if decision=='RETRY' else ''
     return ['当前意图：'+prefix+'； '.join(intents),'结果头预测：'+'； '.join(outcomes)]
 
