@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-11 23:02 CST / Codex CHAMPION-2026：** v4已再次通过真实8A800数值门并进入大模型初始化（还未出全参数hash/优化步）。I/O确认本节点有96逻辑CPU、8→16worker读取吞吐仍上升，准备32worker短复验10×256（2warm＋8timed覆盖两轮预取周期），新增聚合吞吐字段，拒绝以单个预取快batch/中位数推ETA；这是读取工程测试，不是新大训/数据重建。冠军推理协议/正式loader整合和成员review仍待，真实Q/SR未产生。
+
+- **2026-10-11 22:59 CST / Codex CHAMPION-2026：** 91bcd0ac已Git冻结`src/champion-compute-20261011-v4`，同bs256/flow4/7丢弃更新新v4实启；原v3停止于输入dtype门、没有载大模型。3新增传输CPU反例过（拒绝device-origin、显式dtype后精确回读、独立梯度/更新），两CPU I/O结果已原SHA复制本地。轻量总回执`docs/infra/results/2026-10-11-champion2026-readiness.json`集中保存权重/环境/接口/失败/读取实测及尚未完成事项；不把环境/单测可用称正式模型或提交包完成。
+
 - **2026-10-11 22:57 CST / Codex CHAMPION-2026：** v3在真实8A800已过host分发、NCCL求和和FSDP梯度/更新独立门（最大梯度差1.89e-10），随后严格输入回读因原norm_stats产float64、JAX默认float32转换被拦，非22错误重现、仍0载模型/0更新。修为HOST显式按JAX dtype规范转型，再保持逐元素严格相等，不放宽容差；CPU8设备已验证。16worker真实I/O也完成，四timed总34.877s/1024=29.36样本/s（8.72s/256聚合，不能拿0.28s预取命中当真实吞吐），同预选索引/热缓存；全部1536身份/原split通过，正式端到端算速尚待。
 
 - **2026-10-11 22:55 CST / Codex CHAMPION-2026：** afc898b4已push并Git冻结`src/champion-compute-20261011-v3`，lc1八卡空闲后新v3短计算探针提交，host-origin/独立梯度/真权重hash门尚待远端结果；同实现本地8个CPU设备数值回归通过（梯度最大差1.16e-10）＋原10合同测试过。另CPU16worker同一1536预选索引复测`io-w16-v1`，OS/NFS已预热须显式注明，不能把全部加速归因worker数。原v1/v2失败不覆盖；模型、公开权重、环境均未改写，仍未正式大训。

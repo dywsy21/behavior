@@ -16,7 +16,7 @@ def main():
     args = ap.parse_args()
     if os.environ.get('CUDA_VISIBLE_DEVICES') != '' or args.output.exists():
         raise ValueError('Explicit CPU-only environment and fresh result required')
-    if not 1 <= args.workers <= 16 or not 4 <= args.batches <= 10:
+    if not 1 <= args.workers <= 32 or not 4 <= args.batches <= 10:
         raise ValueError('Short bounded I/O diagnostic required')
     import numpy as np
     import torch
@@ -52,9 +52,12 @@ def main():
     try: next(iterator)
     except StopIteration: pass
     else: raise ValueError('Unexpected extra data')
+    timed_seconds = sum(r['seconds'] for r in rows[2:])
     result = dict(status='cpu_native_decode_and_transport_completed', workers=args.workers,
                   real_samples=len(identities), total_train_stride16_samples=len(data),
                   episodes=len(data.episodes), seconds_per_batch_median=float(np.median([r['seconds'] for r in rows[2:]])),
+                  timed_seconds=timed_seconds, seconds_per_batch_aggregate=timed_seconds/(len(rows)-2),
+                  examples_per_second_aggregate=(len(rows)-2)*256/timed_seconds,
                   rows=rows, sampled_indices_sha256=hashlib.sha256(indices.tobytes()).hexdigest(),
                   identities=identities, no_normalization_resize_tokenization=True,
                   caveat='Raw I/O only. Includes CPU decode and process transport; excludes champion transforms, accelerator compute, checkpoints and eval. Not an end-to-end ETA.')

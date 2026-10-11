@@ -1,0 +1,97 @@
+{
+  "status": "preparation_in_progress_not_formal_training_authorization",
+  "owner": "Codex root",
+  "priority": "champion_to_2026_primary_memlite_targeted_validation_secondary",
+  "deadline": {
+    "official_date": "2026-10-16",
+    "exact_hour_timezone": "not_published_on_inspected_challenge_page",
+    "url": "https://behavior.stanford.edu/challenge/index.html",
+    "proposal_only": "24-36h initial training window, reserve >=48h evaluation/package; discuss before launch"
+  },
+  "source": {
+    "champion": "ca556f74a455cef7987a2be4537b5ac85cc56dd7",
+    "openpi": "01177e0242a1c7e8fad2547caa0e987def614cda",
+    "native61_task_expansion_patch": "df9236b26fa3a9789d9423bc3c1705044620740f20045356deaf182ea5371df1",
+    "lazy_legacy_simulator_import_patch": "e6bf4b81a1983f68f05c2b1eb3890689fd8c422e6b8f654b2c86f1bcdac6efe7",
+    "compute_v4_integration_commit": "91bcd0ac",
+    "public_repository": "https://github.com/IliaLarchenko/behavior-1k-solution"
+  },
+  "verified_weights": [
+    {
+      "role": "shared_50_task_intermediate_not_final_champion_score",
+      "repo": "IliaLarchenko/behavior_50t_checkpoint",
+      "revision": "114902410a6439ad1a0b58a112b84159d3ab3f65",
+      "path": "/data/workspace/wsy/behavior2026/models/champion2025/shared50-11490241",
+      "files": 24,
+      "bytes": 12645700537,
+      "verification_receipt_sha256": "d0ca3f072c11967f3581827151c7242f53e53897650a80f2263f0803fd5b1e8a"
+    },
+    {
+      "role": "final_cp2_16_legacy_task_specialist",
+      "repo": "IliaLarchenko/behavior_submission",
+      "revision": "89545bc1b7aa7f2e687bc0032d091f132d715d4e",
+      "path": "/data/workspace/wsy/behavior2026/models/champion2025/final-cp2-89545bc1/checkpoint_2",
+      "files": 26,
+      "bytes": 12645718417,
+      "verification_receipt_sha256": "a6246d7013fdb0a908820ef2a4e58aa23f56317d868c212f9320daed04fe5b12"
+    }
+  ],
+  "environment": {
+    "path": "/data/workspace/wsy/behavior2026/envs/champion-openpi-py311-v1",
+    "python": "3.11.14",
+    "jax": "0.5.3",
+    "flax": "0.10.2",
+    "orbax": "0.11.13",
+    "pip_check": "all_180_packages_compatible",
+    "freeze_sha256": "c518d44241953b35518a397f0d8cc3ae016794c5807818aac29c11292af30fa3",
+    "g05_shared_environment_changed": false
+  },
+  "contracts": {
+    "old_task_ids_unchanged": 50,
+    "num_tasks": 100,
+    "old_stage_rows_preserved": 596,
+    "expanded_stage_rows": 1087,
+    "stage_meanings": "TRAIN-duration bins, NOT physical outcome labels",
+    "abstract_model_leaves": 75,
+    "only_two_shape_changes": [[50, 2048, 100, 2048], [596, 1024, 1087, 1024]],
+    "observation_proprio": 61,
+    "native_control": 23,
+    "model_control": "23 real dimensions followed by nine zeros, NOT G05 interleaved27",
+    "horizon": 30,
+    "skill_boundary_clipping": false,
+    "episode_end_padding": "repeat final real action, never cross episode",
+    "normalizer_fast_and_correlation": "preserved pretrained assets"
+  },
+  "data_io": {
+    "release": "/data/workspace/wsy/behavior2026/datasets/memlite-stage1-20260930-v4",
+    "manifest_sha256": "90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23",
+    "train_episodes": 19000,
+    "original_heldout_episodes_excluded": 1000,
+    "train_stride16_samples": 12524274,
+    "stride_phase": "reuse each original episode's fixed phase in 0..15",
+    "probe_samples_per_run": 1536,
+    "sampled_indices_sha256": "f7facaabd8f1f5a5cdc7d7a66def5029d8a1b0da6d2a0b8d3a042a15058adff8",
+    "distinct_tasks_each_batch": [86, 86, 84, 86, 87, 87],
+    "workers8_timed_batch_seconds": [16.869333741720766, 15.158693399745971, 15.279200313147157, 15.777529046870768],
+    "workers16_timed_batch_seconds": [16.39887763792649, 0.28431032272055745, 17.623659669421613, 0.5705159585922956],
+    "workers8_result_sha256": "d94246c5e7460436f1b4b31f92c0abb35c633e01b5bde3be02f56a42395862aa",
+    "workers16_result_sha256": "4ec11e429f1c34c3bb64e1ed7416b8d29958a5e70b896d9f39d00df4836b92fd",
+    "interpretation": "Raw native RGB decode plus worker transport/collation only. Use aggregate elapsed time, not isolated prefetched fast batch. Second run reuses same indices with warmed OS/NFS cache. Excludes resize/tokenize/model/checkpoint/eval; not full-training ETA."
+  },
+  "transport": {
+    "single_gpu_kernels_all8": "passed",
+    "v1": "missing existing NCCL P2P workaround; first step hung; owner-stopped, no completed update or model saved",
+    "v2": "failed closed before weights: GPU0-origin arange psum returned22, expected28; NumPy-host-origin returned28",
+    "v3": "host-origin eight-A800 FSDP loss/gradient/update passed, max gradient error1.8917489796876907e-10; input exact-check stopped before weights on implicit float64-to-float32 canonicalization",
+    "v4": "host dtype canonicalization explicitly performed before exact shard checks; running, no throughput result yet",
+    "scope": "New champion JAX environment only; not evidence that prior Torch MEM-Lite training was corrupted",
+    "remaining_restriction": "Generic direct GPU-to-GPU copies are unsafe; explicit host-origin placement and checked NCCL path only. No driver/system-level repair claimed."
+  },
+  "not_done": [
+    "actual full-model short timing completion and finite gradients",
+    "complete optimized shuffled-loader plus training/checkpoint throughput",
+    "2026 websocket runtime, per-session stage/vote/inpainting isolation and physical rollout verification",
+    "independent member code review and final recipe discussion",
+    "formal new training, official Q/SR or submission artifact completion"
+  ]
+}
