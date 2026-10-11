@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 00:50 CST / Codex CHAMPION-2026：** 修后冠军reader真实全源审计18895TRAIN/12,443,010原生锚（旧50=6,997,602、新50=5,445,408）；task0=25710、task26=304699，105TRAIN整源不回灌。task-layout-admitted-v2 SHA d2257aec…2041仍1087stage，完整layout/offset与旧v1逐项一致，参数行布局不需重建。旧官方684a8305`generate_robot_config`与2026配置皆assisted，夹爪stats实际q01=-1/q99=1，没有证据是模式或归一化塌缩。新增只读作者原wrapper AST＋原PiBehaviorPolicy.infer回放入口，计划同162原观测/seed17比对动作SHA和stage票；0新物理/0更新，实际GPU核验待，不先声称移植一致或把失败全归因模型。
+
+- **2026-10-12 00:44 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** 0baf9113已push/Git冻lc1`src/champion-quarantine-audit-20261012-v1`，原audit-v3终态12.26s、逐12,299,471候选/任务完全一致：18895eligible TRAIN，356784真bundle切换(2.9008%)、11923792同技能延续；周期128计1545714调用中302801(19.5897%)前意图不同于原stride16历史。保留原105TRAIN/6eval隔离与1000eval不入训练；这是命令重采样诊断、非真实actor history/物理标签。冠军原片107.533s/3226帧SHA223abe5d…43f1、全部3225动作ACK/162观测hash/两端身份/未变权重均已本地脚本复核；根亲看0/640/1200/1800/2400/3225关键帧，未看到完成。另原动作两gripper全程0.993…1.004、原proprio双手全开，正在核原2025/2026控制约定，不先归因或重训。正式新配方仍待确认。
+
 - **2026-10-12 00:35 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** 核原ACCEPTED release确认111整源隔离=105TRAIN/6eval，真实eligible18895/994、MEM锚12,299,471。此前冠军原生reader/新task时长统计仅保留split而未继承整源隔离，是正式训练前发现的数据准入缺口；旧测速7步权重全丢弃，无正式模型。新增`behavior_champion.release.AcceptedRelease`逐metadata SHA/原acceptance/隔离identity/跨split instance检查，所有冠军reader、probe选源、task统计继承；不改已准入episode内跨技能动作。MEM审计改严格逐行对照原候选/任务数组并单列隔离，不复活排除源。7读取器+2节奏测试过，真实全源统计待；新源将另冻，不改旧回合/测速源。旧19k/12,524,274预算口径须由新准入统计更正，保留旧测量证据。
 
 - **2026-10-12 00:28 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** 冠军cp2首radio301/seed17原完整回合终态齐：3225真实控、162推理、尾15未执行，官方success=false/Q=0，原指标SHAb6583cf7…3677；两端ACK一致，参数前后b1ebe3fc…102fc相同、0优化、两GPU已释放。不能把阶段推进当任务成功，更不能据单DEV判一般SR；全原视频/逐控/原观测正取本地进一步核因。MEM audit-v2在原episodes含无eligible anchor时拒绝退出（无result），原现场保留；下一先核原manifest/排除规则，再显式计无可用样本记录，不能放宽样本覆盖一致门掩盖缺口。
