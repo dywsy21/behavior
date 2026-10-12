@@ -49,6 +49,17 @@ SIGINT/SIGTERM 只请求停止，当前更新结束后完整保存；不要第�
 - 固定原 eval：100 task 各16、共1600，旧/新50各800。每1000步、初始和末尾做 EMA forward，时间/停止条件不足时不伪造结果。无 augmentation，独立固定噪声；stage CE 单独计算，因为作者 `train=False` 原接口漏返回该项。逐任务与两组 FM/FAST/stage/总损失分开报告；不把它当作 Q/SR。
 - `exports/ema_XXXXXXXX`：作者 Orbax `params/` + `assets/`，附 task-layout 与 manifest；每个 EMA 数组匹配其完整 checkpoint，导出后用作者 `restore_params` 逐字节回读。推理仍会按作者路径转换 BF16，此格式验收不等于物理控制成功。
 
+### 不打断训练的已保存 EMA 导出
+
+`scripts/infra/export_champion_saved_ema.py` 在新冻结源码/独立输出目录执行，设置
+`JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES=''`，不恢复优化器、不读取活跃模型、不占GPU。
+参数为 `--root`、完整 `--checkpoint`、已验签 `--manifest-sha256`、新的 `--output`；
+默认保留775GiB，不能抢占其他正在保存作业的预留。只允许正式、已原子发布的checkpoint，
+校验step/全叶账本/原100任务映射、全部EMA字节和对应模型shape/dtype，原资产严格验签。
+复用原作者加载回读的 `export_ema`，不另造权重格式；NNX容器仅用于导出纯参数字典，
+包括correlation等Intermediate值，不可用作训练恢复。该入口不修改原run/源码/checkpoint，
+导出完成也不代表官方协议、24GB显卡、容器或物理成功率已通过。
+
 ## 尚未通过就不能写成“已就绪”
 
 2026-10-12 已证：全部8000批CPU采样、W&B同run在线恢复、八卡默认scatter

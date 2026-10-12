@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 20:10 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 根补独立CPU已保存EMA导出入口`export_champion_saved_ema.py`/`checkpoint_export.py`，只验签读取完整checkpoint的75 EMA叶、不恢复Adam/占GPU/更改原run；映射、资产、step、字节、BF16/Intermediate及作者回读9项新旧测试过。尚未在目标环境/真实13.62GB EMA运行，待MEM最终保存后才实导出以保护空间。lc3 H1已有282/360、240完整保存，冠军原1071继续；GitHub重试fetch及6ad32ed7 push成功，未拉取或热改任何活跃源。
+
 - **2026-10-12 20:04 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** lc3原H1已210/360真实更新、首120完整26,593,048,600B checkpoint已保存，8样本/6专家2恢复与有限梯度不变；W&B API实读`5efbea52cbc1`有48/90/105真实历史，非仅本地online。只用固定final360作后续396真实反馈留出及旧域回归，不挑中间权重。低层18页根亲审回执cdc402cd…f399已补入三臂Git摘要，72全控机审与原门计数保持，不推广。冠军原PID继续，1000回执已验、后续源码/共享环境未改；本次fetch遭GitHub TLS中断且自有文档未提交，未强pull，下一重试安全同步。
 
 - **2026-10-12 19:55 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军首1000全checkpoint已atomic发布（54,489,569,924B/manifest cfbdb6f4…0df6/tree65c3f459…af45），同1600原留出EMA完整有限：FM0.520977→0.210484（−59.60%，100task均降），旧50/新50分别−52.34%/−62.67%，阶段acc55.31→78.50%（旧92.5→96.125%、新18.125→60.875%）。原eval e53e45fd…1fd8/manifest/latest三回执双端一致落本地step1000-v1，详见`2026-10-12-champion-step1000.json`；原训练继续、尚非新权重物理Q/SR或提交通过。MEM低层根完成18页抽帧（全部差异seed和8条未成功都覆盖），发现washer24条末态official_open均true、局部0.35开度门导致5/7/7；tripod差异是释放后稳定性，不是装相机整任务。原门与计数不改，不以净+1推广，owner物理签核已本地。
