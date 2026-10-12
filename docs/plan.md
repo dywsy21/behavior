@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 20:44 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 新880ea444官方EMA协议源已独立冻结lc3（包881d49eb…bed5），全29导出文件/100映射/75参数CPU验签通过；目标champion env16过2因本地参考路径缺失跳过，另G05 CPU指定原官方network a9cc50bd后6客户端测试全过，未改环境。GPU实际协议仍等control-s0退出/空闲，不抢卡。MEM固定六分片已各100–104/132，现3条无效输出定位为task45历史OPEN_DOOR漏写两个空source/destination字段，原严格K3字串守门拒绝，**本轮原样计失败**，不热修/重试或按部分分数宣称改善；原242已有141条。
+
 - **2026-10-12 20:34 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 正式1000 EMA CPU导出v2完整通过（128.59s/0GPU/0优化），75数组全部匹配原完整checkpoint＋作者回读，7签名资产与100任务映射齐；export ae3b0a79…75e9c/result7be832e0…df61三轻量回执双端一致落本地`ema1000-v2`，摘要`2026-10-12-champion-ema1000-export.json`。登记新权重原官方10项协议验证，仅待MEM control-s0完成释放lc3 GPU1后独立运行，不能把导出叫新Q/SR/24GB/容器验收。MEM六分片实有各22–23条、原242回归50条，全部未终态，不挑部分指标；冠军训练原源不动。
 
 - **2026-10-12 20:31 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军导出修复c14a9513本地及目标env15回归通过、Git包d027fefb…29d3两端同SHA，新CPU源/run-v2已启动（tmux `champion-saved-ema1000-v2`），不更改原缓存/训练/失败v1，实际全模型回读待。高层补训正式摘要已落`2026-10-12-memlite-handoff-fit.json`；b976留出六分片CPU前门/模型加载中、GPU7原242已有16条真实生成，尚未完整评分，不把个别正确输出当改善。

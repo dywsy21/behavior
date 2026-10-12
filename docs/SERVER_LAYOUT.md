@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 20:44 CST：冠军正式EMA协议源待GPU
+
+- `src/champion-ema1000-protocol-20261012-v1`=880ea444d963f1d1c4e18caa8958fdfbda5c41fd，Git包881d49ebafaa44ea861b18abba5225ce70dfed7334070764bb9957352f71bed5。仅CPU配置/资产/原客户端验收完成，实际server/probe未起；既定lc3 GPU1必须先等MEM control-s0终态退出，不占GPU0。
+- 实际EMA `runs/champion_saved_exports_20261012/step1000-v2/ema_00001000`（12,649,166,246B/29文件/75数组/7资产），export ae3b0a79…75e9c、result7be832e0…df61、task-layout3dbedc05…0b57；本地`artifacts/champion-formal-20261012/ema1000-v2`三回执同SHA。不要把旧v1失败log删除或称新物理验收。
+
 ## 2026-10-12 20:31 CST：MEM固定生成与冠军CPU导出v2
 
 - MEM独立源`src/memlite-handoff-planner-eval-20261012-v1`=b9763def4794b2dd49b32454acde768be0629bfa，包181cd4f4…31aa/36目标env回归。run根`runs/recovery_handoff_20261012/planner-eval-v1`，`control-s0/1/2`在lc3 GPU1/2/3、`candidate-s0/1/2`在4/5/6，`retention-transition`在7；相应同名log、tmux `handoff-eval-{control,candidate}-sN-v1` 与 `handoff-retention-transition-v1`。不占GPU0，不把CPU加载中视为评分已出。
