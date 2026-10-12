@@ -68,9 +68,9 @@ async def main():
         if owner is not None:
             await socket.close(code=1013,reason='One official batched evaluator per port');return
         owner=socket
-        await socket.send(packb(dict(kind='memlite_final_ack_batch_v1',config_sha256=state['config_sha256'],
-            action_dim=23,chunk_size=16,optimizer_updates=0)))
         try:
+            await socket.send(packb(dict(kind='memlite_final_ack_batch_v1',config_sha256=state['config_sha256'],
+                action_dim=23,chunk_size=16,optimizer_updates=0)))
             async for payload in socket:
                 async with gate:
                     result=await asyncio.to_thread(dispatch,unpackb(payload))
@@ -88,7 +88,14 @@ async def main():
             try:await socket.send(packb(dict(ok=False,error=repr(e))))
             except websockets.ConnectionClosed:pass
             stopped.set()
-        finally:owner=None
+        finally:
+            # A normal websocket close also ends async iteration without a
+            # ConnectionClosed exception. It must not abandon live memory and
+            # silently admit a replacement evaluator or reroll.
+            if state.get('status')!='failed' and any(not w.session.closed for w in runtime.sessions.values()):
+                state.update(status='failed',error='Client closed with unacknowledged or unfinished episodes')
+                atomic_json(a.run/'status.json',state);stopped.set()
+            owner=None
     async def watch():
         while not stopped.is_set():
             if (a.run/'STOP').exists():stopped.set();return

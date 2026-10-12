@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 00:08 CST / Codex SUBMISSION-FULL-EVAL：** 高047真实GPU工程终态：原4 TRAIN前缀、8次生成/160.25s，batch2/4、重排4和缩小1的11个输出均与各自serial事件完全相同；参数前后c93db878…20f1不变，torch单高层峰11.84GiB，GPU进程已退出释放。result c02cab9e…6c9f两端相同，摘要`2026-10-13-memlite-final-high-batch.json`；batch4为6.87s但首serial含冷编译，不虚报端到端倍率/24GB资格。两高层传输均完成、控制d2cb6529…20b4c核同，原4接收PID已退。另仅本地补正常WebSocket关闭也拒弃活跃session的失败保护、原54项再次过；不热改eeda运行源。**最新低34d/bee+b0迁移和完整官方预验收仍待A800 VPN权限恢复，1000公共实例0/1000，尚无新Q/SR。** 已发非阻塞确认，未擅自重登挤队友；冠军最后实读仍22:44/2060，不能将断线推断为已停或已完。下一获准重连后先核原训练/资源，再CPU导出、迁移、同源全链预验收并启动全量，goal未完成。
+
+- **2026-10-13 00:01 CST / Codex SUBMISSION-FULL-EVAL：** eeda6c31已push并经Git包6470f185…f264双端验签到RTX独立`code/memlite-final-eval-20261012-v1`，实际模型env54测试过（7.03s）。GPU0核空后提交`runs/memlite_final_preparation_20261013/high-batch-v1`/同名log、tmux`memlite-final-high-batch-v1`，仅新047四TRAIN前缀8次真实生成工程比较，终态待；不读取公共数据、不调用低层/observer、不改env或权重。高新权重已传完/验SHA，另一旧高对照仍自然续传。A800 VPN确认未回，完整新模型迁移/模拟预验收/1000评测仍未启动，原冠军不改；源代码完整交付资格及独立审查待。
+
 - **2026-10-12 23:59 CST / Codex SUBMISSION-FULL-EVAL：** 新/旧因果反馈、会话、批处理、执行回执、包约束与原提交回归共54项通过（此前一次测试命令漏`tests/`子目录、0项执行，纠正后以上54项真实通过），源码编译/差异检查过。高047 model-only文件现已原子传完且目的SHA949c7067…ff0d与源一致，manifest e9af…f876同；对照f79仍续传、不重启。登记四条原已验TRAIN前缀的高层真实serial/batch/重排GPU工程检验，8模型调用/0优化/0模拟步，只验证正式评测所需批处理，不能替代完整高低层/observer官方预验收。新低34d/bee+b0仍未迁，VPN确认待；冠军原训练不操作，全量公共实例仍0。
 
 - **2026-10-12 23:50 CST / Codex SUBMISSION-FULL-EVAL：** 新独立`memlite_final`入口已实现：生产高低层批处理、独立校准observer/逐环境session、官方原`_step_fn`返回后才确认动作、终态不足16步精确回执、结束slot不重编号/不复活、全1000注册及不可改原JSON/MP4归档。新迁移器只导出低层/observer模型张量并保留原SHA，复用正在传的高047，保护冠军所有剩余完整保存预留；不复制optimizer或任何秘密。18项新/原causal测试已过，真实新链GPU/模拟器尚未验收，不称已开评。新增8worker启动器严格等待同源TRAIN工程门，未实际运行；网络仍缺1080/待用户确认重连，源/环境未热改、冠军不动。

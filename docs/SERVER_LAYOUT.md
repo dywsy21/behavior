@@ -1,5 +1,18 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 00:08 CST：高层批处理工程终态与完整高层迁移
+
+- RTX `runs/memlite_final_preparation_20261013/high-batch-v1/result.json` 与本地`artifacts/final-eval-20261012/high-batch-v1/result.json`均c02cab9e519bfc21f22709b081758a090fbb38f08966bb2f9992d3e5a83e6c9f，8次模型调用/0模拟步/0优化，所有批处理/重排输出与serial相同、参数前后c93db878…20f1；原tmux/进程自然结束，GPU0释放。只验单高层，不是全链或提交资格。
+- 原`handoff_portable_20261012/pack-v1/control-model.pt`也已完整11,440,576,055B，d2cb6529d02ba8c3af2f6069b9c07a37f262e72c2755fbf979f5a3c52cc20b4c；原3405222/3405233/3405288/3405290均退出。新候选949和旧对照d2均保留，不再有在用的权重传输，不删除输入/旧证据。
+- A800原本地master和1080不在线；未重登VPN、未改变冠军作业，当前不能报告实时A800训练步数。最新低34d/独立bee+b0未迁入RTX，完整全量run尚未创建。
+
+## 2026-10-13 00:01 CST：最新版全量评测独立入口（尚未开公共测试）
+
+- RTX `code/memlite-final-eval-20261012-v1` = eeda6c316039fd5a8be0d9c0291ee86d7f7061ea，Git包6470f18549684fc8dc2b3d6ac9910c47c26fe1c40cccc390d2bc64c49f6ff264；目标原模型env54回归通过，没有环境安装或旧代码覆盖。
+- `runs/memlite_final_preparation_20261013/high-batch-v1`、同名`.log`、tmux`memlite-final-high-batch-v1`：GPU0四个已验TRAIN前缀，8次高层生成/0优化/0模拟步，只做serial/batch/顺序工程验证，未终态。不是1000回合评测。
+- 原`handoff_portable_20261012/pack-v1/candidate-model.pt`已完整11,440,577,965B、949c7067…ff0d；manifest e9af…f876相同。旧对照`.control-model.pt.*`仍是续传中间产物，不移动/删除或拿来评测。
+- 最新低34d和独立bee+b0仍在A800原目录，未误报RTX已齐。CPU精确导出入口`export_memlite_final_assets.py`已Git冻结，待VPN恢复后运行；全量1000run尚未创建。
+
 ## 2026-10-12 22:38 CST：冠军2000保存与RTX诊断新冻结源
 
 - lc1原正式run的`checkpoints/step_00002000`已发布：manifest bc750dd5d1053dc7dce4468ef82f0220418e6613c64294ffdca15d39af11fb66、tree dc80b9c1576cd394e40d3ed930e83c9662b26c323de15710aec7d67a75dbcd62，54,489,569,924B；`eval-00002000-1791815708396710714.json` 569b421cbd3957c8e6dec3c0c486c5c344e465ea3d9c999561556c4b76dd1481。最新checkpoint回执2fd6f356…0ddf，以上三文件本地`artifacts/champion-formal-20261012/shared100-v1/step2000-v1`同SHA。原PID3895302继续，未导出2000 EMA/启动它的物理评估。
