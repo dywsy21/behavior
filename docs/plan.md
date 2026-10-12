@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 15:07 CST / Codex RECOVERY-USABLE：** 第三模拟器资源门已修为显式`--peer-sim-status`：逐PID核同配置SHA、case/instance/output、活跃状态、进程真实命令/主卡环境及冻结commit；仅允许本轮其他主卡的每PID≤512MiB辅助上下文，拒绝陌生/重载进程并保留≥24GiB余量。CPU两项正反例通过；原radio/food源码与执行不动。下一把该独立修复提交/冻结后仅启动尚未开始的tripod，不能将此前被拒绝启动算物理失败或默默复跑。
+
+- **2026-10-12 15:03 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** radio/food已14:56实际启动RTX0/1，15:02模型回执分别112/80控，原官方超时3224/20544未改。tripod启动前被空卡检查拒绝（未创建run/0控）：已查GPU2仅两个本轮Isaac进程各174MiB初始化上下文，非队友训练；不杀进程、不绕过原门，下一在新冻源加入严格同run/异主卡/小上下文凭据检查后再开GPU2。冠军标准协议适配在本地实现中，物理ACK与delivery时钟分离，不热改已跑源、不称已验收。
+
+- **2026-10-12 14:56 CST / Codex RECOVERY-USABLE：** 旧899两片242已终态/严格合并，result SHA18d4f237…e506；与原串行逐条身份、实际输入SHA、目标、生成文本、事件及全部score零差异，关闭真实分片parity门。79f87027双端冻结源/包SHA4fd60d81…a3a1已核；lc1三模型14:49提交、14:55全部ready，各独立GPU0/1/2约33.3GiB，0优化/尚0物理。专用19810–19812双段loopback转发已存活，RTX八卡实空；下一按登记先radio/food、加载结束再tripod，不覆盖旧片、不静默重试。冠军正式配方仍待，不使用lc3队友卡/不重登VPN。
+
 - **2026-10-12 14:46 CST / Codex RECOVERY-USABLE：** 新f79四片242＋初态两片142全部终态/严格合并通过，结果b79c6244…b2d7/82f1f404…d7d5。与旧串行899全部242身份、实际输入SHA、目标逐条全同：边界25→63（+38/0退），延续99→97（0新增/2退，task17与80分别在原段结束前62/11帧提前换技能，不能凭接近边界豁免错误），恢复42→42；初态strict82→83。旧899新分片仍进行，不先称完整parity通过。登记同旧radio/food/tripod、301、sim0/policy17的三条完整物理对照：只高层换f79，low0c52/独立bee+b0 observer不变；新configs已绑定真实训练/合并回执，模型/sim尚未启动。须先CPU回执门/空卡/新冻源/专用19810–19812转发；不改原片、不选成功、不重跑失败。
 
 - **2026-10-12 14:40 CST / Codex RECOVERY-USABLE / 阶段性离线改善：** 新f79的固定100真边界已全部生成，与旧899原串行100条逐task身份/actual causal input SHA/目标完全一致：exact/bundle25→63，38新增正确/0丢失，valid全100；照搬previous仍35条（旧74）。这是完整边界子集而非全626终态，普通延续/初态/恢复及旧控制新分片对旧串行的一致性仍待，0物理Q/SR；不能因此默认部署或标goal完成。证据在generation-final-v1/candidate-0..3/rows.jsonl与原planner_transition_audit_20261011/candidate-v1/rows.jsonl，原完整run不覆盖。

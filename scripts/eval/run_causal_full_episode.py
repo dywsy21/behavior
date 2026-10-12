@@ -11,6 +11,7 @@ import time
 HERE=Path(__file__).resolve().parent
 sys.path[:0]=[str(HERE),str(HERE/'memlite_sft100')]
 from common import OFFICIAL,atomic_json
+from gpu_start_guard import check_simulator_gpu
 
 
 def main():
@@ -18,6 +19,7 @@ def main():
     p.add_argument('--config',type=Path,required=True)
     p.add_argument('--case',required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--peer-sim-status',type=Path,action='append',default=[])
     a=p.parse_args();cfg=json.loads(a.config.read_text())
     champion=cfg['schema']=='champion2026_readonly_full_episode_v1'
     if champion:
@@ -30,10 +32,9 @@ def main():
     # Isaac/Vulkan uses the original device numbering. The existing simulator
     # launcher intentionally leaves CUDA_VISIBLE_DEVICES unset and selects via
     # OMNIGIBSON_GPU_ID; a CUDA-only mask does not select the renderer reliably.
-    if (os.environ.get('OMNIGIBSON_GPU_ID')!=gpu or os.environ.get('CUDA_VISIBLE_DEVICES') not in (None,'')
-            or subprocess.check_output(
-        ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip()):
-        raise ValueError('Registered simulator GPU must be idle')
+    if os.environ.get('OMNIGIBSON_GPU_ID')!=gpu or os.environ.get('CUDA_VISIBLE_DEVICES') not in (None,''):
+        raise ValueError('Registered simulator GPU selection is required')
+    gpu_receipt=check_simulator_gpu(gpu,peer_statuses=a.peer_sim_status,config_path=a.config)
     if subprocess.check_output(['git','status','--porcelain'],cwd=HERE,text=True).strip():raise ValueError('Dirty source')
     if cfg['mode']!='public_test' or cfg['instance_id']!=301:raise ValueError('Use preregistered development instance')
     pinned=json.loads((HERE/'memlite_sft100/official_manifest.json').read_text())
@@ -43,7 +44,8 @@ def main():
     for name in ('videos','json'):(a.output/name).mkdir()
     status=dict(status='loading',case=a.case,task=case['task'],instance_id=301,pid=os.getpid(),started=time.time(),
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=HERE,text=True).strip(),
-        config_sha256=hashlib.sha256(a.config.read_bytes()).hexdigest(),official_commit=pinned['commit'])
+        config_sha256=hashlib.sha256(a.config.read_bytes()).hexdigest(),official_commit=pinned['commit'],
+        gpu_start_guard=gpu_receipt)
     atomic_json(a.output/'status.json',status)
     import omnigibson as og
     if Path(og.__file__).resolve()!=OFFICIAL/'omnigibson/__init__.py':raise ValueError('Wrong simulator source')

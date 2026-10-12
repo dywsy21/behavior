@@ -1,7 +1,7 @@
 {
-  "status": "training_completed_fixed_final_generation_pending",
+  "status": "training_and_fixed_final_generation_completed_physical_pending",
   "owner": "Codex root",
-  "time_cst": "2026-10-12 14:32",
+  "time_cst": "2026-10-12 14:56",
   "source_commit": "6ab70cea73ffb62c26f700b4913f72d27d9d74b2",
   "run": "/data/workspace/wsy/behavior2026/runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1",
   "recipe": "configs/recovery_sft/a800_h1_periodic_teacher_fit_lc1_v1.json",
@@ -69,8 +69,27 @@
     }
   },
   "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/458bf4b6f147",
+  "fixed_generation": {
+    "source_commit": "b7a9953f4d5c2f9aa72ac6e20232d8791125ccf1",
+    "root": "runs/recovery_periodic_20261012/generation-final-v1",
+    "candidate_result_sha256": "b79c6244426dc2a990ad39e17658ebd49f2d0c2f16a7750519dac36cf3d1b2d7",
+    "initial_result_sha256": "82f1f404e8f5655f13a37959bdc4e9144e27eb03e15b0d0b68d0cc61c89dd7d5",
+    "control_result_sha256": "18d4f2375c5728d4909126202c08358d7b145af06d52c669d7dc45e5af03e506",
+    "old_serial_vs_sharded_rows": 242,
+    "old_serial_vs_sharded_input_target_text_event_score_differences": 0,
+    "old_vs_new_matched_identity_actual_input_target_rows": 242,
+    "exact_counts_old899_newf79": {
+      "true_transition": {"total": 100, "old": 25, "new": 63, "gained": 38, "lost": 0},
+      "noninitial_continuation": {"total": 100, "old": 99, "new": 97, "gained": 0, "lost": 2},
+      "recovery_dev": {"total": 42, "old": 42, "new": 42},
+      "initial": {"total": 100, "old": 82, "new": 83}
+    },
+    "noninitial_regression_tasks": [17, 80],
+    "regressions_not_exempted_or_relabelled": true,
+    "physical_success_inference_permitted": false
+  },
   "physical_controls": 0,
   "method_usable_established": false,
   "formal_champion_training_started": false,
-  "next": "Fixed final generation (242 transition/continuation/recovery +142 initial/recovery), paired control899 same-code sharded replay and old serial equality; then matched physical probes if warranted. No automatic additional fit."
+  "next": "Three preregistered full original-timeout DEV episodes (radio, food, tripod; instance301 sim0 policy17), only planner899->f79. Low and separately calibrated observer remain fixed; all outcomes retained. Model services ready, physics not yet started at this receipt. No automatic additional fit."
 }

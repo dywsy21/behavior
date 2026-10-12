@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 14:56 CST：周期高层完整物理对照准备就绪
+
+- 双端新冻结79f87027：lc1 `src/memlite-periodic-physical-20261012-v1`，RTX10383 `/run/ti/rl_memlite_stage1_20261006/code/memlite-periodic-physical-20261012-v1`；Git对象包SHA4fd60d812290d2dacac952e81e78bdc9a3b81959c91810f2969124b866c903a1，两端核验，不覆盖原源。
+- 两端各自run根 `runs/periodic_full_20261012`：lc1 `{radio,food,tripod}-model-v1`/同名.log，tmux `periodic-phys-{case}-model-v1`，GPU0/1/2已ready；RTX计划 `{case}-sim-v1` 尚未启动。模型f79/low0c52/独立observer bee+b0各自隔离。端口19810–19812仅loopback，经原lc1 master正向及本地pid3660465独立SSH反向到RTX；未重登VPN，旧19700–19702转发不改。
+- 固定生成全部结束/卡3–7已释放；`runs/recovery_periodic_20261012/generation-final-v1/{candidate,initial,control}-merged`分别b79c6244…b2d7、82f1f404…d7d5、18d4f237…e506。旧控制242对原串行逐条全同，不能把八个进程的片内均值代替这些严格合并结果。
+
 ## 2026-10-12 14:34 CST：固定终点自由生成已提交
 
 - lc1冻结`/data/workspace/wsy/behavior2026/src/memlite-periodic-generation-20261012-v1`=b7a9953f。共享run根`runs/recovery_periodic_20261012/generation-final-v1`：`candidate-0..3`为新f79边界/延续/恢复242条四分片，`initial-0..1`为新f79初态/恢复142条两分片，`control-0..1`为旧899相同242条两分片；对应GPU0–3/4–5/6–7，tmux前缀`periodic-final-`，日志为各目录同名`.log`。
