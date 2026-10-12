@@ -1,0 +1,53 @@
+{
+  "recorded_at": "2026-10-12T19:18:00+08:00",
+  "owner": "Codex RECOVERY-USABLE",
+  "status": "CPU_AUDIT_COMPLETE_FROZEN_PREDICTION_STARTING_NOT_PLANNER_SCORED",
+  "purpose": "heldout_eval_only",
+  "training_admission_forbidden": true,
+  "registration": "configs/recovery_sft/handoff_heldout_registration_v1.json",
+  "registration_sha256": "f8b37278255a04dc0db03e80f0b0cb770b04b231b648d720b996bf30af299b6f",
+  "preparation_commit": "57f274c74c5ae8018ad06452fb7ed14a062823e6",
+  "preparation_result_sha256": "a5d1af622a9d51023d7c63f71147b01ff8ed4a2f1496a41111b97163a9035430",
+  "candidates_sha256": "44357412459f4d45fd9cfaf0a3681b2960033fb285124f90f655aaffc4d2103f",
+  "requests_sha256": "3276ce5c862f5a352f067eff8a13a95dcae3e98ec60eb579b0bf82eab857ecf7",
+  "original_eligible_eval_episodes": 994,
+  "original_eval_anchors": 645793,
+  "original_train_source_groups_excluded": 18895,
+  "observer_fit_selection_cal_test_and_recovery_dev_groups_excluded": true,
+  "selected_rows": 396,
+  "selected_tasks": 99,
+  "selected_source_groups": 350,
+  "missing_task": 66,
+  "missing_reason": "No applicable previous-GRASP heldout candidate under the fixed calibration scope; no substitute or fabricated case.",
+  "selection": {
+    "continuation": 198,
+    "handoff": 198,
+    "explicit_verb_or_bundle_change": 185,
+    "explicit_bound_object_or_goal_change": 13,
+    "deterministic_two_per_task_bucket_distinct_sources": true,
+    "model_predictions_used_in_selection": false
+  },
+  "audit": {
+    "source_commit": "5e6e2192cecc9cae7c8e85dd1b69537bea6bc257",
+    "config_sha256": "317c48b491869aa57d929178de3daafaeadc7827f91515da7351f0ba1ea15bfb",
+    "result_sha256": "2b8a7303cf4f64b55113fb3c96296d801f0ada9476d9edf0c9f4ab5a12b4b4b6",
+    "checks_sha256": "c98bc03e953d618c4ac72ea80722b16ea33ed08f47c51e6967cb63ce64aca576",
+    "rows": 396,
+    "actual_observations": 1980,
+    "seconds": 329.2840251792222,
+    "optimizer_updates": 0,
+    "model_calls": 0,
+    "actual_source_rgb_proprio_serving_prefix_and_tokens_checked": true,
+    "physical_outcome_asserted": false,
+    "local_receipts": "artifacts/recovery-handoff-20261012/heldout-audit-v1"
+  },
+  "prediction": {
+    "node": "lc3",
+    "gpu": 1,
+    "remote_run": "/data/workspace/wsy/behavior2026/runs/recovery_handoff_20261012/heldout-predict-v1",
+    "tmux": "memlite-handoff-heldout-predict-v1",
+    "head_checks_planned": 792,
+    "completed": false
+  },
+  "limits": "Original heldout used by earlier teacher-forcing evaluation; not independent blind test or whole-task success. Annotation-command histories are not executed actor trajectories. Feedback estimates never replace physical outcome truth. Personal review and actual paired final360 generation remain pending."
+}

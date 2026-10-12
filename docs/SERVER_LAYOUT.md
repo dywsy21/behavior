@@ -1,5 +1,15 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 19:18 CST：原EVAL CPU门全过，冻结头预测启动
+
+- `runs/recovery_handoff_20261012/heldout-audit-v1/result.json` SHA2b8a7303cf4f64b55113fb3c96296d801f0ada9476d9edf0c9f4ab5a12b4b4b6/checks c98bc03e…a576已本地同SHA归档；396/1980实际观察全过、0模型/0优化。
+- 同5e6e源新`runs/recovery_handoff_20261012/heldout-predict-v1`及`.log`、tmux`memlite-handoff-heldout-predict-v1`/GPU1；原bee+b0校准，仅792真实检查、未终态，不回灌SFT。低层候选仍GPU2/19820，H1训练旧661票不变，冠军lc1不动。
+
+## 2026-10-12 19:11 CST：原EVAL实际prefix CPU审计运行中
+
+- lc3`src/memlite-handoff-heldout-inference-20261012-v1`=5e6e2192cecc9cae7c8e85dd1b69537bea6bc257；增量Git包4c721418…4ad1已双端验签，43测试通过。`runs/recovery_handoff_20261012/heldout-audit-v1`及`.log`，tmux`memlite-handoff-heldout-audit-v1`/PID2831610，config317c48b4…5bfb，396EVAL/1980观察CPU验收中，尚未GPU预测；TRAIN新拟合仍留原661票。
+- RTX第三`candidate-tripod129-v2`也已提交，同原d257冻源/19820，三worker运行；不改未知small GPU进程白名单或共享env。
+
 ## 2026-10-12 19:08 CST：第三低层候选运行；原EVAL反馈CPU选择完成
 
 - lc3低层候选仍原d257源，`runs/native_learner_heartbeat_20261012/candidate-model-v2`、PID2827976、tmux`memlite-native-candidate-model-v2`/GPU2/19820/W&B3a8b626e1e83；已ready，两RTX `candidate-radio155-v2`/`candidate-wash169-v2`冷worker已提交、third tripod待错峰，同名tmux前缀`memlite-native-`。对照原result48377d52…3212/episode f53c7a23…13a3已同SHA本地`artifacts/native-learner-heartbeat-20261012/control`，原三worker均退出，数据不删。

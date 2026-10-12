@@ -1,5 +1,6 @@
 """Deterministic, source-disjoint EVAL selection before any model predictions."""
 from collections import Counter, defaultdict
+import copy
 
 from recovery_corpus import digest
 from recovery_handoff_feedback import EVAL_SCHEMA
@@ -63,3 +64,38 @@ def select_heldout_requests(pairs, *, excluded_groups):
     for key in sorted(strata):
         result.extend((original, request) for _, original, request in sorted(strata[key], key=lambda x:x[0])[:2])
     return result, dict(counts)
+
+
+def replay_heldout_projection(request, prediction, episode, trace, calibration):
+    """Recompute real estimates from the saved logits, never promote to truth."""
+    from recovery_handoff_inference import feedback_from_trace
+    target = request['original_projection']; identity = request['original_identity']
+    if (request['schema'] != EVAL_SCHEMA or identity['split'] != 'eval' or episode['split'] != 'eval'
+            or prediction['sample_id'] != request['sample_id']
+            or prediction['source_group'] != request['source_group']
+            or prediction['original_identity'] != identity
+            or prediction['target_projection_sha256'] != digest(target)
+            or prediction['original_execution_feedback'] != target['execution_feedback']
+            or prediction['known_previous_outcome'] != 'UNKNOWN'
+            or prediction['physical_outcome_asserted'] is not False
+            or prediction['new_human_admission'] is not False
+            or target['known_previous_outcome'] != 'UNKNOWN' or target['outcome_target'] != 'UNKNOWN'
+            or target['outcome_supervision_mask'] or target['low_action_supervision_mask']):
+        raise ValueError('Mismatched heldout estimate/target or invented outcome supervision')
+    feedback = feedback_from_trace(request, episode, trace, calibration)
+    if feedback != prediction['execution_feedback']:
+        raise ValueError('Estimate differs from actual frozen observer logits/production ledger')
+    projection = copy.deepcopy(target); projection['execution_feedback'] = feedback
+    return projection
+
+
+def validate_fixed_fit(result, latest, model):
+    """Only the predeclared final360, not a partial/best intermediate model."""
+    from pathlib import PurePosixPath
+    if (result['status'] != 'completed_finite_schedule' or result['engineering_only'] is not False
+            or result['step'] != 360 or result['planned_updates'] != 360
+            or result['frozen_before_sha256'] != result['frozen_after_sha256']
+            or result['parent_sha256'] != 'a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2'
+            or latest['state']['step'] != 360 or latest['sha256'] != model['sha256']
+            or latest['path'] != PurePosixPath(model['path']).name):
+        raise ValueError('Require same-parent fully completed fixed final360 and original save receipt')

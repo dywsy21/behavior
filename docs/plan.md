@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 19:18 CST / Codex RECOVERY-USABLE：** 396原留出/1980实际观察全量CPU RGB/proprio/部署prefix/token门已终态通过（329.28s），原result2b8a7303…b4b6/checks c98bc03e…a576两端同SHA收本地；lc3 GPU1实空后同5e6e冻源启动`heldout-predict-v1`，仅原bee+b0/32ed校准的792检查、0优化，尚未终态或亲审。另独立高层留出生成入口`eval_memlite_handoff_heldout.py`在本地完成：回放原logits、同帧RGB、目标毒化反例、实际token核对、仅同a74父固定final360、权重前后hash、独立分片严格合并；51相关测试全过，**尚未实际模型评分/新效果**。原661 H1票仍待低层第三臂和GPU1作业结束后整节点空，不改正在训练的冠军或共享env。
+
+- **2026-10-12 19:11 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 396留出全量RGB/prefix CPU验收在lc3新5e6e2192冻源已运行（PID2831610、`heldout-audit-v1`，源包4c721418…4ad1/43目标env测试过）；独立eval schema/真实eval reader/禁止回灌，不热改原661或d257。GPU冻结反馈待CPU门，task66缺适用GRASP样本明确不补。第三低层三冷worker均已提交，radio首条已物理结束/washer恢复中，未知最终比较。冠军原run782/8000、近20步9.186s、100task且数值有限；首1000完整保存/留出效果仍待。Git一次TLS失败后重推5e6e成功。
+
 - **2026-10-12 19:08 CST / Codex RECOVERY-USABLE：** 低层extra200对照9ac终态24/24、radio8/8＋washer7/8＋tripod7/8，两组权重前后相同/0更新/3方ACK/原worker与卡全部退出；原result48377d52…3212、episodes f53c7a23…13a3双端一致收本地。随后同d257源lc3 GPU2新候选34d已ready（PID2827976/W&B3a8b626e1e83），RTX0/1两冷worker已提交、第三错峰待；尚0候选结果，不称恢复数据有效。另57f274c7新CPU源实核全部994原eval/645793锚，从中预测前固定396条/99task/350源（198继续、198明确交接），26目标env测试过，25.74s/0GPU；三原回执SHA两端一致，预备result a5d1af62…5430。TRAIN和observer保护源均排除，缺少GRASP适用task不补伪例，真实RGB/prefix/预测与亲审未完、绝不回灌SFT；新的eval推理路由43本地回归过，旧训练源不改。
 
 - **2026-10-12 19:03 CST / Codex RECOVERY-USABLE：** 新增原EVAL真实反馈留出预登记与CPU选择器（`handoff_heldout_registration_v1.json`/`prepare_memlite_handoff_heldout.py`）：先排除全部原TRAIN、observer fit/selection/CAL/test及恢复DEV整源，预测前按identity SHA每task取2个继续/2个明确交接、各桶异源；保留真实eval索引/独立schema，不伪装TRAIN，不按头输出挑样本。新split/来源/顺序反例与历史回归42项全过；尚未在原数据生成候选/预测/打分，无新模型效果。旧661 H1启动票与d257三臂源码不动；低层对照23/24（radio8/8、tripod7/8、washer6/7）、候选待，冠军675步正常/首1000保存待。下一新CPU冻源准备并核范围，原三臂完成后启既定高层短拟合，不能将留出转训练。
