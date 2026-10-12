@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 13:52 CST / Codex RECOVERY-USABLE / 资源变化与启动更正：** lc3最后查询已出现8个队友VLLM EngineCore（每卡约65GiB/93–97%），启动器保护正确在模型/optimizer之前拒绝，原tmux退出、0训练步/无ckpt；保留`H1-periodic-fit-v1.log`，不停止队友。13:51实核lc1八卡0MiB/无计算进程，改临时用lc1做同一短对照，独立`a800_h1_periodic_teacher_fit_lc1_v1.json`仅节点/优先让位规则变更；冠军配方一旦获批，先让MEM安全保存退出，不抢其正式窗口。新冻结源/票和CPU复验待，不能把13:50提交写成成功运行；原lc3配方/79f源/CPU通过证据保留。
+
+- **2026-10-12 13:50 CST / Codex RECOVERY-USABLE：** 79f冻结源真实preflight全部结束：调度881bb5e6…67410、78反馈processor a6f844b5…e338b、120周期actual adapter/token 3f3c1f0c…28498；新票d0f1ec9b…cbd11全部源/父/准入/预测反馈校验通过。lc3八卡再次实空后tmux`memlite-periodic-fit-v1`实际提交，输出`runs/recovery_periodic_20261012/H1-periodic-fit-v1{,.log,.supervisor}`；同a74父、global8、6周期示范/2固定恢复、LR1e-6/360更新/保存120步、至多4h安全窗口，只326高层参数，原模型/低层/独立observer不更新。当前等待真实首更新/W&B，不把tmux提交当训练或效果成功；lc1未启动冠军大训/仍等配方确认。原CPU失败及全部检查点不删。
+
+- **2026-10-12 13:49 CST / Codex RECOVERY-USABLE：** 79f19d42已push/Git对象包两端SHA88cbd8b1…65673导入并冻结lc3`src/memlite-periodic-fit-20261012-v1`，原队友tmux不动。CPU`runs/recovery_periodic_20261012/preflight-v1`真实360批通过：2160普通示范/1736唯一样本（952文本切换、246初态、962延续），每批6不同任务、全部100task；720恢复的事件、step与rank槽与旧控制逐个完全一致，各36事件20遍。空间需要949159327444B，当前1104964730880B通过。78原fixed-observer反馈processor也终态，120周期实际adapter/token仍进行，GPU未启动。累计14新周期/14原pipeline/5相机计数测试通过；不把这些说成模型效果。
+
 - **2026-10-12 13:47 CST / Codex RECOVERY-USABLE：** 周期数据route及启动门已实现、14周期reader/来源/时钟反例＋14原恢复pipeline回归通过；新源保留原source/task/同帧RGB和重建history，未知source/留出/结果或低层mask打开即拒绝。恢复schedule不是重新随机采：从旧360控制SHA b0e3b4ac…ce0c2逐slot映射普通样本、每task独立shuffle/cycle，恢复event及8rank位置不变；新增真实360批CPU审计入口。磁盘初检需冠军775GiB＋最多4份1.1×26.59GB，运行中提前留足最后保存，不删除权重；真实源adapter/78feedback/调度审计待，未开GPU训练。下一同冻源在lc3验收后启动，成员独立review仍未完成/不合main。
 
 - **2026-10-12 13:42 CST / Codex RECOVERY-USABLE：** 上轮为progress（新增真实数据准入/13反例/相机与token验收），不是效果完成。本轮干净fetch/pull最新5aa、main仍33677。lc3原password SSH已重新认证并保持控制socket（复用现有VPN、不重登），实际8卡空、共享余约1.1TiB；只读保留队友`calvin`tmux。实现周期数据验签reader/实际adapter审计门及与旧360控制的schedule逐slot重映射：36恢复源20遍/720条恢复的顺序与rank位置完全保留，仅6普通示范/批换成已审128历史候选；同a74父、LR1e-6、360更新，低层/observer不动。计划lc3八卡、checkpoint120步（原每份26.59GB，保留冠军775GiB外加本run最多4份），新配方`a800_h1_periodic_teacher_fit_v1.json`；尚未实际训练，反例/真实78反馈与120新adapter门待。冠军8k/24h仍等配方确认、不占lc1。

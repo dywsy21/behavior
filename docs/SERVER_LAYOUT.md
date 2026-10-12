@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 13:50 CST：lc3周期历史高层配对训练
+
+- 共享冻结源`/data/workspace/wsy/behavior2026/src/memlite-periodic-fit-20261012-v1`=79f19d42；node lc3（10.19.7.3）八卡，tmux`memlite-periodic-fit-v1`、run根`runs/recovery_periodic_20261012/H1-periodic-fit-v1`及`.log/.supervisor`。只高层360更新（global8/LR1e-6/同a74父），安全保存每120步；结果头与低层不训、不自动部署。启动刚提交/首更新待。
+- 同run根`preflight-v1`保存360批schedule881bb5e6…67410、原78反馈processor a6f844b5…e338b、新1800源/120实际periodic adapter+token结果3f3c1f0c…28498、训练票d0f1ec9b…cbd11。原数据不重写；完整旧360控制schedule/89907最终权重在`runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2`，本次恢复slot完全沿用，不覆盖旧run。
+- 本地lc3控制socket`/home/wsy/.ssh/lc3-recovery-20261012.sock`由前台SSH exec session53195保持；认证后复用现有VPN、未重登ec/lc-connect或保存密码。队友`calvin`tmux不动，lc1冠军窗口仍空/未正式开训。
+
 ## 2026-10-12 13:30 CST：MEM-Lite周期历史数据侧验收终态
 
 - lc1共享根`/data/workspace/wsy/behavior2026`：`src/memlite-periodic-processor-20261012-v2`=4c637d63、`src/memlite-periodic-tokens-20261012-v2`=996b6d9e，均冻结且CPU作业已终态。`runs/planner_transition_audit_20261011/periodic-processor-v3/result.json` SHA b56f6180…226b1、`periodic-tokens-v2/result.json` SHA b02edc98…493c1；1800源重建与120已审实际processor/token/mask通过，0模型forward/训练，八卡未占用。

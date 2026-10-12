@@ -1,0 +1,120 @@
+{
+  "schema": "memlite_recovery_preparation_recipe_v1",
+  "owner": "Codex",
+  "root": "/data/workspace/wsy/behavior2026",
+  "preferred_node": "10.19.7.1",
+  "training_authorized_by_this_file": true,
+  "authorization": "User's active RECOVERY-USABLE goal permits further reviewed-data SFT and heterogeneous short-skill RL until verified usable; this is one measured SFT stage, not the goal endpoint.",
+  "hypothesis": "Paired against the completed H1-postfit-feedback-fit-v2 final360 (89907ea7): same a74 parent, LR1e-6,360 updates, exact same36 recovery TRAIN sources,6 expert/2 recovery slots, recovery event order/rank positions and20 event passes. Replace only expert anchors with reviewed period128 current-image intent histories (1800 candidates,2 initial/8 text-change/8 continuation per task). This jointly tests cadence-correct history plus changed-command enrichment, not either component alone. Fixed existing100 true-boundary/100 continuation/42 recoveryDEV generation and original initial controls remain required; teacher-forcing loss alone is not improvement.",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "parents": {
+    "high": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-causal-feedback-fit-v1/checkpoints/step_00000420_save_0009.pt",
+      "sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2",
+      "step": 420
+    },
+    "low": {
+      "path": "runs/memlite_stage1_low_100task_v1/checkpoints/step_00098414_save_0021.pt",
+      "sha256": "d4d76099780281fb21ece6ab2dd6cd4deb643a9169c6c4fb2c130e1cce4cb470",
+      "step": 98414
+    }
+  },
+  "stats_sha256": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+  "seed": 17,
+  "maximum_updates_per_line": 360,
+  "maximum_event_passes": 20,
+  "extended_event_fit": true,
+  "maximum_wall_seconds_per_line": 14400,
+  "stop_on_first_limit": true,
+  "evaluation_every_updates": 50,
+  "stopping_criteria": "One predeclared360-update paired comparison, no intermediate checkpoint cherry-picking. Stop on nonfinite/identity/resource/gradient errors; reserve4h wall for orderly save. Do not auto-repeat or deploy. Champion formal training remains separately unapproved; lc1 remains free. Explicit priority: safely stop and save for an approved champion formal launch; resume only the same pinned ticket after lc1 is available.",
+  "nccl_env": {
+    "NCCL_P2P_DISABLE": "1",
+    "NCCL_IB_DISABLE": "1",
+    "NCCL_SOCKET_IFNAME": "bond0"
+  },
+  "H0": {
+    "pool": "outcome",
+    "trainable": "temporal_adapter_and_result_head_only",
+    "learning_rate": 0.0001,
+    "weight_decay": 0.01,
+    "max_causal_checks": 4,
+    "calibration_required_before_runtime": true
+  },
+  "H1": {
+    "pool": "planner",
+    "trainable": "high_planner_only",
+    "learning_rate": 0.000001,
+    "weight_decay": 0.01,
+    "feedback": "frozen_source_disjoint_observer_v1",
+    "rehearsal": "original_100task_plans",
+    "new_high_hash_invalidates_old_calibration": false,
+    "original_feedback": "causal_expert_unknown_v1",
+    "uncertainty_protocol": "unready_zero_confidence_v1",
+    "observer_backbone_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "exposure": {
+      "path": "runs/recovery_heterogeneous_20261010/v11-postfit-exposure-v1.json",
+      "sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8"
+    },
+    "calibration": {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1/calibration/calibration.json",
+      "sha256": "32ed1e9effc57a8716af659ab850de1d112b6ba0b5a1c83f078f3b16a0fd42b1"
+    },
+    "separate_observer_note": "Fixed bee backbone + b0 observer only; never substitute newly trained planner features. Its independent calibration remains conditional GRASP-only, not a guarantee under future rollout distribution shift.",
+    "periodic_teacher": {
+      "protocol": "reviewed_annotation_period128_v1",
+      "admission": "docs/infra/results/2026-10-12-memlite-periodic-teacher-review.json",
+      "admission_sha256": "05ff448a1faae4a8c6b1ae84de0ab33481853e73f31565c96547bd23b562b31b",
+      "candidates": "runs/planner_transition_audit_20261011/periodic-teacher-v1/candidates.jsonl",
+      "candidate_sha256": "ab066a7481c3af930ab63ee976765a73fddb2edd8cac1de5560df87b40cc1802",
+      "control_schedule": {
+        "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2/schedule.json",
+        "sha256": "b0e3b4acad39b7cafba99429d970bba4ce2a72d292f9a8cdfaf842fc008ce0c2"
+      },
+      "control_final": {
+        "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-fit-v2/checkpoints/step_00000360_save_0008.pt",
+        "sha256": "89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7"
+      },
+      "reserve_for_champion_bytes": 832149913600
+    }
+  },
+  "L0": {
+    "pool": "action",
+    "trainable": "low_action_expert_only",
+    "learning_rate": 0.00001,
+    "weight_decay": 0.03,
+    "rehearsal": "original_100task_actions",
+    "padding_dimensions": [
+      7,
+      8,
+      17,
+      18
+    ],
+    "predicted_actions": 32,
+    "executed_actions": 16,
+    "action_start": 0,
+    "fm_noise_samples": 4
+  },
+  "pilot": {
+    "H0_global_batch": 4,
+    "H1_L0_global_batch": 8,
+    "H1_L0_micro_batch": 1,
+    "H1_L0_world_size": 8,
+    "checkpoint_every_updates": 120,
+    "event_passes": 20,
+    "normal_to_recovery_full_batch": [
+      6,
+      2
+    ],
+    "note": "lc3 became occupied by teammate vLLM immediately before launch and our no-compete guard rejected before model loading. Use idle lc1 temporarily for this360-update paired small SFT; if champion's separate formal recipe is approved, safely checkpoint/stop this job first. No teammate jobs/env changed. Four checkpoint slots and champion775GiB disk reservation retained."
+  },
+  "wandb": {
+    "mode": "online",
+    "entity": "hanhanyy-fudan-university-school-of-management",
+    "project": "behavior2026-g05",
+    "group": "memlite-periodic-planner-20261012",
+    "credential_file": "/data/workspace/wsy/behavior2026/secrets/stage1-wandb.key",
+    "new_run_required": true
+  }
+}
