@@ -18,6 +18,7 @@ from recovery_planner_data import VerifiedRecoveryPlannerDataset
 from recovery_sft_data import raw_observation
 from recovery_generation_metrics import (score_event, summarize, feedback_probe, select_original_indices,
                                         mask_observer_estimates, select_transition_indices)
+from recovery_generation_shards import generation_shard
 
 
 def main():
@@ -25,11 +26,17 @@ def main():
     ap.add_argument('--config', type=Path, required=True)
     ap.add_argument('--model', choices=('parent', 'candidate'), required=True)
     ap.add_argument('--output', type=Path, required=True)
+    ap.add_argument('--num-shards', type=int, default=1)
+    ap.add_argument('--shard-index', type=int, default=0)
     diagnostic = ap.add_mutually_exclusive_group()
     diagnostic.add_argument('--feedback-probe', action='store_true', help='Counterfactual shortcut diagnostic, not heldout accuracy')
     diagnostic.add_argument('--mask-observer-estimates', action='store_true',
         help='Counterfactual ablation of estimates only; genuine counters/history unchanged, no training or actions')
     args = ap.parse_args()
+    if args.num_shards < 1 or not 0 <= args.shard_index < args.num_shards:
+        raise ValueError('Invalid generation shard arguments')
+    if args.num_shards != 1 and (args.feedback_probe or args.mask_observer_estimates):
+        raise ValueError('Counterfactual diagnostics retain their original serial coverage checks')
     # Fail on an incomplete code closure before reading large model files.
     importlib.import_module('g05.utils.memlite_planner_format')
     cfg = json.loads(args.config.read_text()); root = Path(cfg['root'])
@@ -105,6 +112,7 @@ def main():
             [np.flatnonzero(expert.task_ids==task).tolist() for task in range(100)],
             lambda i:expert.locate(i)[3],target_intent,lambda i:int(expert.task_ids[i]))
         schedule=[('original_transition',int(i)) for i in transitions]+schedule
+    local_schedule, sharding = generation_shard(schedule, args.shard_index, args.num_shards)
     args.output.mkdir(parents=True)
     receipt = dict(config_sha256=file_sha(args.config), checkpoint_sha256=cfg['models'][args.model]['sha256'],
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'], cwd=REPO, text=True).strip(),
@@ -120,9 +128,10 @@ def main():
         observer_estimates_masked=args.mask_observer_estimates,
         actual_counters_preserved_by_estimate_mask=args.mask_observer_estimates,
         synthetic_probe_metrics_are_not_real_world_accuracy=bool(args.feedback_probe or args.mask_observer_estimates))
+    receipt['sharding'] = sharding
     (args.output/'manifest.json').write_text(json.dumps(receipt, indent=2)+'\n')
     started = time.monotonic(); rows = []
-    for split, index in schedule:
+    for global_index, split, index in local_schedule:
         if split.startswith('original_'):
             raw, identity = expert.raw(index)
             target = raw.pop('model_projection')
@@ -153,6 +162,7 @@ def main():
                 raise
             error = str(exc); text = getattr(exc, 'planner_texts', None)
         row = dict(split=split, identity=identity, probe_kind=probe_kind,
+            global_schedule_index=global_index, scheduled_sample_index=index,
             previous_intent=causal['previous_intent'],
             target_changes_previous_intent=(causal['previous_intent']!='None'
                 and causal['previous_intent']!=target['active_skills_text']),
@@ -164,7 +174,7 @@ def main():
         rows.append(row)
         with (args.output/'rows.jsonl').open('a') as stream:
             stream.write(json.dumps(row, sort_keys=True)+'\n')
-        (args.output/'progress.json').write_text(json.dumps(dict(completed=len(rows), total=len(schedule), summary=summarize(rows)))+'\n')
+        (args.output/'progress.json').write_text(json.dumps(dict(completed=len(rows), total=len(local_schedule), summary=summarize(rows)))+'\n')
         print(json.dumps(dict(completed=len(rows), split=split, score=row['score'])), flush=True)
     coverage=dict(Counter(r['probe_kind'] for r in rows))
     if (args.feedback_probe and original_schedule=='noninitial_fixed_one_per_task_v1'

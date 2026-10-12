@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 14:08 CST / Codex RECOVERY-USABLE：** W&B只读API实核run458bf4b6f147为running且服务端已收56步loss/梯度，GPU系统monitor警告不等于指标离线；训练本地已100/360，第50步边界CE0.0242207→0.0201432、非初始CE略升，尚无自由生成效果。为同固定终点评估增加独立调用分片/完整合并：不改模型、prefix、greedy或样本，只按全局索引分到独立进程；拒缺/重/错源/错权重/半成品，8个分片与边界回归通过。预定新终点242条（100边界/100延续/42恢复）4片、原初态142条2片、旧899控制242条2片，训练完整退出后才用8个空闲GPU；逐样本对齐和旧串行控制一致性必查，不报告片内平均或物理SR。尚未启动生成，不热改6ab训练源；冠军具体配方仍待。
+
+- **2026-10-12 14:04 CST / Codex RECOVERY-USABLE：** lc1真实首更新已过，当前35/360（首步100.47s含冷编译，后续约4–5s/步），loss/grad有限；八rank确为本run且约50GiB/100% GPU，未动lc3队友。初始442条分域teacher-forcing已全出，其中真边界CE0.0242207、普通非初始0.0002862，不能混称高层可用。在线W&B run id `458bf4b6f147`已建流；其GPU系统监控子进程启动超时，训练指标是否服务端收到另核，不因此热改/重启训练。CPU四份回执已取本地`artifacts/recovery-periodic-20261012/preflight-lc1-v1/`且SHA全相同。下一固定360终点、冻结参数校验、同100真边界/100延续/42恢复自由生成及初态保持；冠军正式配方仍未批准、不启动。
+
+- **2026-10-12 13:55 CST / Codex RECOVERY-USABLE：** 6ab70cea已push并Git冻`src/memlite-periodic-fit-20261012-lc1-v1`；仅换节点后重跑新source/recipe绑定的全部CPU门：schedule6318df46…6be2f、78反馈22e4f908…3ffaf、120新reader+token d403e76d…cc9c4，通过票3e75973a…f065a2。再次读lc1计算进程确为空后才提交tmux`memlite-periodic-fit-lc1-v1`，run`runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1{,.log,.supervisor}`；同360配对/不热改原79f源/共享env，首更新和W&B仍待实际核对。lc3队友作业全保留，正式冠军未启动；若配方获准则先安全保存让位。
+
 - **2026-10-12 13:52 CST / Codex RECOVERY-USABLE / 资源变化与启动更正：** lc3最后查询已出现8个队友VLLM EngineCore（每卡约65GiB/93–97%），启动器保护正确在模型/optimizer之前拒绝，原tmux退出、0训练步/无ckpt；保留`H1-periodic-fit-v1.log`，不停止队友。13:51实核lc1八卡0MiB/无计算进程，改临时用lc1做同一短对照，独立`a800_h1_periodic_teacher_fit_lc1_v1.json`仅节点/优先让位规则变更；冠军配方一旦获批，先让MEM安全保存退出，不抢其正式窗口。新冻结源/票和CPU复验待，不能把13:50提交写成成功运行；原lc3配方/79f源/CPU通过证据保留。
 
 - **2026-10-12 13:50 CST / Codex RECOVERY-USABLE：** 79f冻结源真实preflight全部结束：调度881bb5e6…67410、78反馈processor a6f844b5…e338b、120周期actual adapter/token 3f3c1f0c…28498；新票d0f1ec9b…cbd11全部源/父/准入/预测反馈校验通过。lc3八卡再次实空后tmux`memlite-periodic-fit-v1`实际提交，输出`runs/recovery_periodic_20261012/H1-periodic-fit-v1{,.log,.supervisor}`；同a74父、global8、6周期示范/2固定恢复、LR1e-6/360更新/保存120步、至多4h安全窗口，只326高层参数，原模型/低层/独立observer不更新。当前等待真实首更新/W&B，不把tmux提交当训练或效果成功；lc1未启动冠军大训/仍等配方确认。原CPU失败及全部检查点不删。

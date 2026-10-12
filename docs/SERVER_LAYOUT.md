@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 14:04 CST：lc1周期高层真实训练，lc3未训练
+
+- 实际运行节点lc1，共享根`/data/workspace/wsy/behavior2026`，冻结源`src/memlite-periodic-fit-20261012-lc1-v1`=6ab70cea、配方`configs/recovery_sft/a800_h1_periodic_teacher_fit_lc1_v1.json`；tmux`memlite-periodic-fit-lc1-v1`，run`runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1{,.log,.supervisor}`。已35/360真实更新，不是仅提交进程；首更新/全部初始442条分域eval已写JSONL，W&B run id458bf4b6f147。低层/独立observer不训、终态参数hash待。
+- 同根`preflight-lc1-v1/{schedule,processor,ticket}.json`和`periodic-processor/result.json`都真实PASS；本地`artifacts/recovery-periodic-20261012/preflight-lc1-v1/`四文件同SHA。每120步保存，末步360；保留冠军775GiB之外四份安全checkpoint空间，不删除任何旧权重。
+- **更正下条13:50状态：lc3启动器在模型加载前检测队友8卡VLLM而拒绝，0更新/无ckpt。** 原源79f、日志和CPU通过票保留，`memlite-periodic-fit-v1`已退出；队友calvin/VLLM不动。lc1临时小训遇冠军具体配方批准则先安全保存让位，冠军尚未正式启动。
+
 ## 2026-10-12 13:50 CST：lc3周期历史高层配对训练
 
 - 共享冻结源`/data/workspace/wsy/behavior2026/src/memlite-periodic-fit-20261012-v1`=79f19d42；node lc3（10.19.7.3）八卡，tmux`memlite-periodic-fit-v1`、run根`runs/recovery_periodic_20261012/H1-periodic-fit-v1`及`.log/.supervisor`。只高层360更新（global8/LR1e-6/同a74父），安全保存每120步；结果头与低层不训、不自动部署。启动刚提交/首更新待。
