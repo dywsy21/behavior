@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 20:51 CST：MEM396配对收齐、EMA1000实际接口运行
+
+- MEM六分片原目录全部保留；远端`planner-eval-v1/{control,candidate}-merged`和本地`artifacts/recovery-handoff-20261012/planner-eval-v1/`同名目录，control result3a285dbe…b48f/rows893bd136…079c，candidate resultc0393c78…789a/rows1ef512c3…7e01，396×2全齐。旧域`retention-transition`继续GPU7；`retention-initial-s0/1/2`新GPU4/5/6，原b976源/142固定不变。
+- 冠军 `runs/champion_official_protocol_20261012/ema1000-server-v1` / `ema1000-probe-v1`及对应log/tmux，原880源，server PID2967984/GPU1/loopback19830已ready，原客户端用G05 env/0GPU，实际10检查进行中。源权重digest959acb2d…bfa4，结束还需前后核；GPU0新未知PID2967222保留，原lc1训练不受更改。
+
 ## 2026-10-12 20:44 CST：冠军正式EMA协议源待GPU
 
 - `src/champion-ema1000-protocol-20261012-v1`=880ea444d963f1d1c4e18caa8958fdfbda5c41fd，Git包881d49ebafaa44ea861b18abba5225ce70dfed7334070764bb9957352f71bed5。仅CPU配置/资产/原客户端验收完成，实际server/probe未起；既定lc3 GPU1必须先等MEM control-s0终态退出，不占GPU0。

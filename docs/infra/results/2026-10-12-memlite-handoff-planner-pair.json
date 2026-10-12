@@ -1,0 +1,78 @@
+{
+  "schema": "memlite_real_feedback_heldout_pair_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "source_commit": "b9763def4794b2dd49b32454acde768be0629bfa",
+  "config_sha256": "3a1cd2a2e06c4cce609b6d814a954eb2d54866fc4ea30e477394a0a7ba933c29",
+  "rows_per_model": 396,
+  "original_eval_tasks": 99,
+  "all396_identity_input_audit_expected_target_matched": true,
+  "training_admission_forbidden": true,
+  "optimizer_updates": 0,
+  "physical_controls": 0,
+  "models": {
+    "control": {
+      "checkpoint_sha256": "f79cd96c13099cfb6df856dbcab83c670eb042ad512cfe3972af5ac3049f66a0",
+      "parameters_before": "f9ea33313f5c90b3d810998fa04922e5f2d63d7923f7dbf9451dd82207df66d1",
+      "parameters_after": "f9ea33313f5c90b3d810998fa04922e5f2d63d7923f7dbf9451dd82207df66d1",
+      "receipts": {
+        "rows.jsonl": "893bd1364991c3d567d8e2483628c083aa30a61f2324c89aa29e7c313604079c",
+        "result.json": "3a285dbeefab9466ef59992900ad24cf67ae7286e7fdb4d12cfa24657101b48f",
+        "manifest.json": "121439cc10c459d80cc04790d9163488aee65eff9a977062f79921a49f8222bc"
+      }
+    },
+    "candidate": {
+      "checkpoint_sha256": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+      "parameters_before": "c93db878558b13709df58cd65e942c495284e6cac4437b187ec93bdd4fbb20f1",
+      "parameters_after": "c93db878558b13709df58cd65e942c495284e6cac4437b187ec93bdd4fbb20f1",
+      "receipts": {
+        "rows.jsonl": "1ef512c3faed4af37320df2e65516b649a0f5ad3148da96c213f184a757b7e01",
+        "result.json": "c0393c78b0bc41287455df17c3cf6469173bbc015ffa6b66c864c561c82d789a",
+        "manifest.json": "fa7bce16c1a6925cef516b0daf6553dd511db9fdba6ceb586886dd47edab275d"
+      }
+    }
+  },
+  "metrics": {
+    "heldout_continuation": {
+      "rows": 198,
+      "control_exact": 192,
+      "candidate_exact": 192,
+      "gained_task_ids": [],
+      "lost_task_ids": [],
+      "control_errors": {
+        "different_but_wrong_bundle_or_parent": 6
+      },
+      "candidate_errors": {
+        "different_but_wrong_bundle_or_parent": 6
+      }
+    },
+    "heldout_handoff": {
+      "rows": 198,
+      "control_exact": 126,
+      "candidate_exact": 127,
+      "gained_task_ids": [
+        32,
+        51,
+        97
+      ],
+      "lost_task_ids": [
+        45,
+        70
+      ],
+      "control_errors": {
+        "retained_previous_bundle": 58,
+        "different_but_wrong_bundle_or_parent": 12,
+        "planner generation violates causal K=3 memory recurrence": 1,
+        "planner generation active bundle is not JSON": 1
+      },
+      "candidate_errors": {
+        "retained_previous_bundle": 56,
+        "different_but_wrong_bundle_or_parent": 12,
+        "planner generation violates causal K=3 memory recurrence": 2,
+        "planner generation active bundle is not JSON": 1
+      }
+    }
+  },
+  "local_evidence": "artifacts/recovery-handoff-20261012/planner-eval-v1",
+  "policy_promoted": false,
+  "interpretation": "Net one extra correct handoff, unchanged continuation; no reliable practical gain established.56/71 candidate handoff errors retain the previous bundle.Three candidate invalid generations are retained, including two omitted empty fields in memory strings and one non-JSON active bundle. No current decoder relaxation, retry or sample filtering. Original242 and initial142 retention still running; no new physical improvement claim."
+}
