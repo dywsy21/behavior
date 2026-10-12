@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 00:11 CST / Codex SUBMISSION-FULL-EVAL：** 最后静态复核将预验收batch2/batch4统一为每task同一TRAIN实例1–4，仅分组不同，避免不同工作量造成假提速；公开切分仍恰好0–9、不重复/不漏尾批。新增回归后本地55项过（1.62s），RTX旧eeda54项及单高层实测证据保留，不将新增代码说成已在模拟器通过。最新源待获得A800连接后统一新冻结部署，完整公共评测仍0/1000、权重迁移/全链GPU门/最终24GB或50端口交付待；当前安全检查点提交，VPN重连确认仍为外部依赖。
+
 - **2026-10-13 00:08 CST / Codex SUBMISSION-FULL-EVAL：** 高047真实GPU工程终态：原4 TRAIN前缀、8次生成/160.25s，batch2/4、重排4和缩小1的11个输出均与各自serial事件完全相同；参数前后c93db878…20f1不变，torch单高层峰11.84GiB，GPU进程已退出释放。result c02cab9e…6c9f两端相同，摘要`2026-10-13-memlite-final-high-batch.json`；batch4为6.87s但首serial含冷编译，不虚报端到端倍率/24GB资格。两高层传输均完成、控制d2cb6529…20b4c核同，原4接收PID已退。另仅本地补正常WebSocket关闭也拒弃活跃session的失败保护、原54项再次过；不热改eeda运行源。**最新低34d/bee+b0迁移和完整官方预验收仍待A800 VPN权限恢复，1000公共实例0/1000，尚无新Q/SR。** 已发非阻塞确认，未擅自重登挤队友；冠军最后实读仍22:44/2060，不能将断线推断为已停或已完。下一获准重连后先核原训练/资源，再CPU导出、迁移、同源全链预验收并启动全量，goal未完成。
 
 - **2026-10-13 00:01 CST / Codex SUBMISSION-FULL-EVAL：** eeda6c31已push并经Git包6470f185…f264双端验签到RTX独立`code/memlite-final-eval-20261012-v1`，实际模型env54测试过（7.03s）。GPU0核空后提交`runs/memlite_final_preparation_20261013/high-batch-v1`/同名log、tmux`memlite-final-high-batch-v1`，仅新047四TRAIN前缀8次真实生成工程比较，终态待；不读取公共数据、不调用低层/observer、不改env或权重。高新权重已传完/验SHA，另一旧高对照仍自然续传。A800 VPN确认未回，完整新模型迁移/模拟预验收/1000评测仍未启动，原冠军不改；源代码完整交付资格及独立审查待。

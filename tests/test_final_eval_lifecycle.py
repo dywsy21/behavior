@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts/eval/memlite_final'))
-from lifecycle import AppliedBatchClock, validate_episode_metadata
+from lifecycle import AppliedBatchClock, validate_episode_metadata, episode_portions
 
 
 def test_ack_real_partial_and_survivor_stays_in_slot():
@@ -55,3 +55,11 @@ def test_fresh_batch_is_independent():
     a, b = AppliedBatchClock(2), AppliedBatchClock(2)
     a.offer({0:'a',1:'b'}); a.before_step([0,1]); a.applied([0,1])
     assert b.steps == [0,0] and b.pending == {}
+
+
+def test_same_train_workload_and_exact_public_coverage_for_both_batch_sizes():
+    for size in (2,4):
+        assert episode_portions(size,preflight=True)==[(size,[1,2,3,4])]
+        parts=episode_portions(size)
+        assert [i for count,indices in parts for i in indices]==list(range(10))
+        assert all(len(indices)%count==0 for count,indices in parts)

@@ -7,6 +7,15 @@ Finished rows retain their original slot; they can never be renumbered/revived.
 from copy import deepcopy
 
 
+def episode_portions(num_envs, *, preflight=False):
+    if type(num_envs) is not int or num_envs not in (2,4):
+        raise ValueError('Use the predeclared two/four-environment comparison')
+    # Both engineering configurations consume the SAME four TRAIN instances.
+    # Only grouping changes; no workload difference masquerades as speedup.
+    if preflight:return [(num_envs,[1,2,3,4])]
+    return [(2,list(range(10)))] if num_envs==2 else [(4,list(range(8))),(2,[8,9])]
+
+
 class AppliedBatchClock:
     def __init__(self, count, chunk_size=16):
         if type(count) is not int or not 1 <= count <= 4 or chunk_size != 16:

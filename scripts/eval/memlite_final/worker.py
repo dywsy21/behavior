@@ -13,6 +13,7 @@ import time
 HERE=Path(__file__).resolve().parent;REPO=HERE.parents[2]
 sys.path[:0]=[str(HERE.parent/'memlite_sft100'),str(HERE)]
 from common import ROOT,SIM_ROOT,MODEL_PYTHON,atomic_json,sha256
+from lifecycle import episode_portions
 
 
 def stop_child(child):
@@ -82,8 +83,7 @@ def main():
             time.sleep(3)
         loader.close();loader=None
         for task in tasks:
-            portions=[(a.num_envs,list(range(1,a.num_envs+1)))] if a.preflight else (
-                [(4,list(range(8))),(2,[8,9])] if a.num_envs==4 else [(2,list(range(10)))])
+            portions=episode_portions(a.num_envs,preflight=a.preflight)
             for count,indices in portions:
                 if (job/'STOP').exists():raise InterruptedError('Requested administrative stop')
                 if shutil.disk_usage(job).free<150<<30:raise RuntimeError('Preserve disk safety reserve')
