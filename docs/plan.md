@@ -12,6 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 12:49 CST / Codex CHAMPION-2026：** 冠军工程全证据已本地收齐，`docs/infra/results/2026-10-12-champion-training-chain.json`登记全302叶同进程/冷恢复、原eval1600及工程EMA-v1回读的真实SHA，非正式效果。新增`policy_assets.py`校验正式EMA-v2全文件账本/模型映射、拒绝工程权重和漏登记参数，保留公开父权重兼容；新增`storage.py`加载模型前预检整个保留计划（新run775GiB，8定期+1紧急+EMA+256GiB余量），不删任何旧文件。共60CPU测试通过，手册/团队/目录已同步真实终态。v2全模型与物理/容器、独立review仍未验；新大训尚未批准、未启动。上一图审记录时间12:45应为12:42，分类问题/原task74视觉疑点仍待处理。
+
+- **2026-10-12 12:45 CST / Codex RECOVERY-USABLE + CHAMPION-2026：** 根已亲看剩余12–29页，完成100task分层120case/30页原RGB抽查，**有问题、不准入训练**：task69同GRASP vacuum仅source字段变化被v1计为transition，需分开真正动作/实体变化与描述变化；task74 ep14836/frame11150的wheelbarrow视觉身份不确定，须回原视频/标注定位或隔离，不能猜改标签。完整个人审查记录本地`artifacts/memlite-periodic-teacher-20261012/owner-review.json`，不声称1800条全人工验过。lc1已只读确认八卡0MiB/无计算进程/无tmux，工程冷验收已结束，盘余1.1TiB；Git fetch最新、分支与upstream一致，因本轮未提交修改不pull覆盖。下一完成上述数据门与冠军导出入口测试/交接，未开新大训。
+
+- **2026-10-12 12:35 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** a5e `engine-cold-v1`14min内全终态通过：新进程第3步302叶全同、原eval100task各16全1600有限、工程EMA作者loader逐数组回读；无正式更新/物理，不据初始loss称有效。八卡待最终空闲复核，成果小文件正在收本地。新推理资产v2路径本地已补正式EMA manifest/全文件SHA/模型表一致性检查，显式拒绝工程导出；54CPU测试通过，完整真实物理/提交容器仍待。MEM审图v2已120case/30页全导出、本地review SHA d4fef27d…f8dc；根亲审00–11页/48case，未见新增跨episode/时钟错配，保留原unbound关系和像素遮挡限制，不猜实体ID/结果；owner-review.json记录仍IN_PROGRESS、未准入训练。下一补完剩余页与processor接口，不能把候选数当新可用数据数。
+
+- **2026-10-12 12:29 CST / Codex RECOVERY-USABLE：** CPU审图v1在任何RGB读取前被环境门拒绝：已有tmux server保留冠军作业的CUDA可见变量，外层shell的空CUDA未传入新pane；没有初始化GPU/创建审图输出。下一同831源用pane命令内显式`env CUDA_VISIBLE_DEVICES= JAX_PLATFORMS=cpu PYTHONPATH=<冻结源>/src`，日志另存v2，原失败log保留；不重启/改动冠军作业。此处更正上条“CPU导出已提交”为实际尚未读图，不报人审完成。
+
+- **2026-10-12 12:28 CST / Codex CHAMPION-2026：** a5e新进程/新正式engine冷重演已真实PASS：原269第2步恢复后第3步全302叶SHA同、loss/grad_norm同，工程EMA已回读通过；`engine-cold-v1/cold-replay.json`与原reference绑定，不是仅同进程测试。八卡继续同run的原eval1600 EMA前向，未终态不报loss结果；0正式更新/1工程重演。83132c31另冻CPU`src/memlite-periodic-review-20261012-v1`/tmux`memlite-periodic-review-v1`，导出原100task各1真切换+10初态/10延续共120候选的前/当前三相机审查图（原RGB不改、标签不准入、0GPU），run`runs/planner_transition_audit_20261011/periodic-review-v1`，人审仍待。
+
 - **2026-10-12 12:24 CST / Codex CHAMPION-2026 + RECOVERY-USABLE：** a5e新进程已精确恢复工程第2步，全模型EMA作者格式写出+作者loader逐数组回读及原快照绑定通过（export manifest89bf0f74…55a8，约12GiB、不可部署）；下一步冷重演在首次编译中，1600 eval仍待。e91 CPU全18895源周期128候选已完成34.85s：保留1468388调用，其中325040真切换；1982源遇标注缺口截断，未猜补后77326已知调用。选1800/100task（每task2初态+8切换+8延续），与全部原12299471索引绑定；JSONL ab066a74…1802、result65963bf1…ea61已本地同SHA。0RGB/0训练/0新结果与低层监督，尚待人审，不准入训练；原数据不改。新训练链手册记录默认拒绝、恢复/停止/EMA/W&B实际语义，成员review与新大训授权仍待。
 
 - **2026-10-12 12:20 CST / Codex RECOVERY-USABLE：** 根补`recovery_periodic_teacher.py`与CPU候选选择入口，真正按128控重算previous intent/parent/3事件memory，而非只稀疏refresh计数；首个未标注的计划调用即截断可用前缀，不猜缺口命令。每task挑2初态/8真切换/8延续（不足如实缺），全部只原TRAIN/105隔离保留，与原candidate索引逐行核绑定；结果头/低层监督mask均false、候选human_admission=false。三反例测试通过，真实全源候选构建/图审待，尚不训练或声称改善。冠军a5e冷恢复原进程仍活跃，未占额外GPU/不改lc2。

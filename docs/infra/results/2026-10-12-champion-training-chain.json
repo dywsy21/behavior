@@ -1,0 +1,62 @@
+{
+  "status": "ENGINEERING_CHAIN_VERIFIED_FORMAL_LAUNCH_NOT_APPROVED",
+  "owner": "Codex CHAMPION-2026",
+  "date_timezone": "2026-10-12 Asia/Shanghai",
+  "formal_optimizer_updates": 0,
+  "physical_controls_this_validation": 0,
+  "embedding_gradient_repeat": {
+    "calls_per_condition": 32,
+    "default_distinct_hashes": 32,
+    "default_max_repeat_difference": 0.000003814697265625,
+    "deterministic_distinct_hashes": 1,
+    "deterministic_max_repeat_difference": 0,
+    "required_flag": "--xla_gpu_exclude_nondeterministic_ops=true"
+  },
+  "same_process_resume": {
+    "run": "/data/workspace/wsy/behavior2026/runs/champion_assets_20261011/resume-bs256-deterministic-v3",
+    "source_commit": "269b5a81",
+    "checkpoint_completed_updates": 2,
+    "checkpoint_bytes": 54489569924,
+    "checkpoint_manifest_sha256": "86b8258e72698d0f8267c0ac232cf33e177bc221a78e959f60520bcd2f4faa9f",
+    "next_update_dynamic_leaves_exact": 302,
+    "all_metrics_exact": true,
+    "uninterrupted_next_state_sha256": "f34e189e01be16631123c871204e9ef118bd97d8c4284b76e518185e14b1febd",
+    "result_sha256": "844c0764eec4bb1c66e713a8cfb874bdf966478852155200d9f8e3dc40ac3fea"
+  },
+  "cold_new_engine": {
+    "run": "/data/workspace/wsy/behavior2026/runs/champion_assets_20261011/engine-cold-v1",
+    "source_commit": "a5e3f0ce1cb15661e753dacbee5fc8706aa825e8",
+    "seconds": 833.453061924316,
+    "engineering_replay_updates": 1,
+    "next_update_dynamic_leaves_exact": 302,
+    "loss_and_grad_norm_exact": true,
+    "cold_state_sha256": "f34e189e01be16631123c871204e9ef118bd97d8c4284b76e518185e14b1febd",
+    "result_sha256": "75e59e4f6a11a7a4fea2c716e6fecc9a829171dbf87e0e1eba53c13fcda8b5df",
+    "eval_rows_sha256": "fc7f7afefebb7981e809322a0ea4a729dfb334f534e27a5b2ebc1c76ffe09fc2",
+    "ema_v1_author_loader_roundtrip_exact": true,
+    "ema_v1_manifest_sha256": "89bf0f745226c93ec4c088808612358ba45a64a7cf2466711458d23b153555a8",
+    "ema_usable_for_deployment": false
+  },
+  "engineering_ema_step3_original_heldout": {
+    "scope": "Three engineering updates; NOT a trained effect result, independent Q/SR, or exact unmodified parent baseline",
+    "tasks": 100,
+    "observations_per_task": 16,
+    "all": {"observations":1600,"fm":0.5211661188930157,"fast_ce":0.8170174008933827,"stage_ce":3.1353976333769173,"stage_accuracy":0.55375,"total":0.8755567559204064},
+    "old50": {"observations":800,"fm":0.3103498623159248,"fast_ce":0.857943291515112,"stage_ce":0.32933310368136154,"stage_accuracy":0.92625,"total":0.3861803372181021},
+    "new50": {"observations":800,"fm":0.7319823754701065,"fast_ce":0.7760915102716536,"stage_ce":5.941462163072473,"stage_accuracy":0.18125,"total":1.3649331746227107}
+  },
+  "local_evidence_directory": "artifacts/champion-episode-20261012/engine-cold-v1",
+  "later_cpu_validation": {
+    "tests_passed": 60,
+    "covers": ["formal EMA v2 file ledger, public-parent compatibility and rejection of engineering exports", "full planned snapshot storage reservation without deletion"],
+    "full_v2_model_export_not_yet_run": true,
+    "new_formal_run_required_free_disk_gib": 775
+  },
+  "still_required": [
+    "User confirmation of new formal training recipe (priority already confirmed, recipe still pending)",
+    "Independent member review before main integration",
+    "Actual trained EMA through 2026 physical inference and submission container",
+    "Integrated long-running CLI and online W&B after approved launch; separate W&B same-run resume and real engine were tested, not a long run"
+  ],
+  "effect_claim": "None. Historical public cp2 radio development episode remains Q0."
+}

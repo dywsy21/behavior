@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 12:49 CST：冠军冷验收终态与MEM图审
+
+- lc1`runs/champion_assets_20261011/engine-cold-v1`已833.45秒全终态，八卡0MiB/无计算进程/无tmux；0正式更新、1工程重演、1600原eval。真实EMA-v1仍工程不可部署，不是正式模型。小证据全拷本地`artifacts/champion-episode-20261012/engine-cold-v1`，result SHA75e59e4f…8b5df、eval逐样本fc7f7afe…09fc2；原数据/权重/失败现场未删除，盘余1.1TiB。
+- CPU审图`runs/planner_transition_audit_20261011/periodic-review-v2`的120case/30页/690原RGB已本地`artifacts/memlite-periodic-teacher-20261012/review/`；根个人审查记录在同父目录`owner-review.json`。图审已完成但有待解决问题，不是训练准入。v1原失败日志保留；没有新MEM训练。
+
 ## 2026-10-12 12:24 CST：正式链EMA与MEM周期候选
 
 - lc1`runs/champion_assets_20261011/engine-cold-v1/exports/ema_00000002`为a5e只读工程导出，manifest89bf0f74…55a8，作者loader逐值全同、`usable_for_deployment=false`。原54.49GB checkpoint仍在269 v3目录；八卡原`champion-engine-cold-v1`尚进行新入口冷重演，不是长训练。

@@ -34,23 +34,15 @@ async def main():
         raise ValueError('Registered model GPU must be idle')
     root=Path(cfg['a800_root']);reference=root/cfg['reference'];openpi=root/cfg['openpi_reference']
     checked_sources(reference,openpi,REPO)
-    verified=root/cfg['verified']
-    if file_sha(verified)!=cfg['verified_sha256']:
-        raise ValueError('Changed public-asset verification receipt')
-    receipt=json.loads(verified.read_text())
-    if receipt['revision']!=cfg['revision'] or receipt['status']!='all_selected_assets_verified':
-        raise ValueError('Wrong public parent')
+    from behavior_champion.policy_assets import verify_policy_assets
+    checked=verify_policy_assets(root,REPO,cfg)
+    receipt=checked['receipt']
     a.output.mkdir(parents=True)
     STATUS_PATH=a.output/'status.json'
     status=dict(status='validating_assets',pid=os.getpid(),started=time.time(),optimizer_updates=0,
         config_sha256=file_sha(a.config),asset_receipt_sha256=cfg['verified_sha256'],
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip())
     atomic_json(a.output/'status.json',status)
-    asset_root=(root/cfg['asset_root']).resolve()
-    for row in receipt['files']:
-        path=(asset_root/row['path']).resolve()
-        if not path.is_relative_to(asset_root) or path.stat().st_size!=row['size'] or file_sha(path)!=row['sha256']:
-            raise ValueError('Changed public checkpoint asset '+row['path'])
     os.environ.update(WANDB_MODE='disabled',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',
         XLA_PYTHON_CLIENT_PREALLOCATE='false',JAX_COMPILATION_CACHE_DIR=str(a.output/'jax-cache'))
     sys.path[:0]=[str(reference/'src'),str(openpi/'src')]
@@ -62,14 +54,14 @@ async def main():
     from behavior_champion.session import ChampionSession
     from b1k.shared.correction_rules import apply_correction_rules, check_gripper_variation
     from wire import packb,unpackb
-    layout=json.loads((REPO/cfg['layout']).read_text())['layout']
+    layout=checked['layout']
     model_task=layout['dataset_to_model'][str(cfg['task_id'])]
     if model_task not in cfg['trained_model_tasks']:
         raise ValueError('This specialist was not trained for the requested task')
     stages=layout['num_stages'][:cfg['model_task_count']]
     status.update(status='loading_model',assets_rehashed=len(receipt['files']))
     atomic_json(a.output/'status.json',status)
-    runtime=ChampionRuntime(root/cfg['checkpoint'],stages)
+    runtime=ChampionRuntime(root/cfg['checkpoint'],stages,expected_model=checked['expected_model'])
     def parameter_digest():
         digest=hashlib.sha256()
         for path,value in nnx.state(runtime.policy._model,nnx.Param).flat_state().items():

@@ -24,7 +24,7 @@ def checked_sources(reference,openpi_reference,repo):
 
 
 class ChampionRuntime:
-    def __init__(self,checkpoint,num_stages):
+    def __init__(self,checkpoint,num_stages,*,expected_model=None):
         import jax
         from b1k.training import config
         from b1k.policies.policy_config import create_trained_policy
@@ -33,6 +33,10 @@ class ChampionRuntime:
         base=config.get_config('pi_behavior_b1k_fast')
         cfg=dataclasses.replace(base,model=dataclasses.replace(base.model,
             num_tasks=len(num_stages),task_num_stages=tuple(num_stages)))
+        if expected_model is not None:
+            import json
+            if json.loads(json.dumps(dataclasses.asdict(cfg.model))) != expected_model:
+                raise ValueError('Deployment graph differs from exported training model')
         self.policy=create_trained_policy(cfg,checkpoint,sample_kwargs={'num_steps':20})
         self.num_stages=tuple(num_stages)
 

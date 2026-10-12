@@ -73,7 +73,7 @@ def main():
         seconds=time.monotonic()-started, eval_observations=1600, metrics=heldout, export=exported,
         effect_claim='None: three engineering updates and supervised loss are not Q/SR evidence')
     write_json(args.output / 'result.json', result)
-    print(json.dumps(result), flush=True)
+    print(json.dumps({key: value for key, value in result.items() if key != 'metrics'}), flush=True)
 
 
 if __name__ == '__main__': main()

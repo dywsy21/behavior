@@ -72,11 +72,13 @@ def export_ema(directory, state, *, receipt, assets, layout, contract, reserve_b
     # The inference adapter must use this model-task mapping, not dataset IDs as
     # embedding IDs, nor the old hard-coded 50-task table.
     (temporary / 'task-layout.json').write_text(json.dumps(layout, indent=2) + '\n')
-    manifest = dict(schema='champion-ema-export-v1', weights='EMA', completed_updates=int(state.step),
+    files = [dict(path=str(path.relative_to(temporary)), size=path.stat().st_size, sha256=sha256(path))
+             for path in sorted(temporary.rglob('*')) if path.is_file()]
+    manifest = dict(schema='champion-ema-export-v2', weights='EMA', completed_updates=int(state.step),
         source_checkpoint=receipt, training_contract_sha256=digest_json(contract),
         purpose=contract['purpose'], usable_for_deployment=contract['purpose'] == 'CHAMPION100_FORMAL_SFT',
         model=contract['model'], task_layout_sha256=digest_json(layout),
-        restored_by_author_loader_exact=True,
+        restored_by_author_loader_exact=True, files=files,
         parameters=[dict(path='/'.join(key), **value) for key, value in expected.items()])
     # Commit only after both the loadable parameters and copied assets are on
     # durable storage. A failed/incomplete directory remains visibly incomplete.

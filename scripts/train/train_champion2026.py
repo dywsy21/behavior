@@ -86,6 +86,11 @@ def main():
                 shutil.copy2(args.output / 'result.json', history / f'result-{time.time_ns()}.json')
         else:
             write_json(args.output / 'timing.json', dict(started_unix=time.time(), downtime_counts=True))
+        from behavior_champion.storage import check_storage
+        disk = check_storage(args.output, completed=0 if receipt is None else receipt['completed_updates'],
+                             updates=3 if args.engineering else recipe['updates'],
+                             checkpoint_every=2 if args.engineering else recipe['checkpoint_every'])
+        write_json(args.output / f'storage-preflight-{time.time_ns()}.json', disk)
         engine = TrainingEngine(args.root, repo, args.output,
                                 recipe, engineering=args.engineering)
         if receipt is not None and engine.contract != prior_contract:
