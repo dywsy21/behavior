@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 12:00 CST：冠军数值确定性验收
+
+- lc1`runs/champion_assets_20261011/resume-bs256-v2`已终态：54,489,569,924B完整第2步快照保留，恢复即时全部数组回读通过；后续第3步9/302数组不一致，严格门failed_no_retry，非可部署模型。原v1的43GiB不完整快照也保留。12:00八卡空，共享盘余1.1TiB；无旧tmux活跃。
+- `src/champion-numeric-audit-20261012-v1`=269b5a81；`embedding-repeat-{default,deterministic}-v1.{json,log}`两CPU/HOST绑定八卡微核终态，默认32次不同/确定性32次全同，本地小回执在`artifacts/champion-episode-20261012/`。下一同源新run`resume-bs256-deterministic-v3`只作3步恢复工程验证，不热改原env/数据/权重。
+
 ## 2026-10-12 01:51 CST：冠军续训工程v2启动
 
 - 原`src/champion-resume-probe-20261012-v1`=c22d1b72 / `runs/champion_assets_20261011/resume-bs256-v1{,.log}`已owner TERM后确认pid3327524/GPU/tmux均退出；2步后保存组装耗时过大，43GiB `.incomplete-*`全保留、无完整manifest、不准resume。没有删旧权重/原文件。

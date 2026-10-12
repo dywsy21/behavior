@@ -1,0 +1,15 @@
+{
+  "schema": "champion100-training-v1",
+  "formal_launch_approved": false,
+  "approval_note": "PENDING: priority confirmed, new 8000-update/24h large-training recipe not yet approved",
+  "updates": 8000,
+  "batch_size": 256,
+  "max_hours": 24,
+  "checkpoint_every": 1000,
+  "eval_every": 1000,
+  "eval_per_task": 16,
+  "wandb_entity": "hanhanyy-fudan-university-school-of-management",
+  "wandb_project": "behavior2026-g05",
+  "parent": "shared50-11490241",
+  "recipe_details": "docs/infra/results/2026-10-11-champion2026-training-proposal.json"
+}

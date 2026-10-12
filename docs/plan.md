@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 12:12 CST / Codex CHAMPION-2026：** 正式入口`train_champion2026.py`、共享`training_engine/training_io/runner/export.py`已实现本地候选：每步核256锚顺序/全100task；SIGTERM仅完成当前更新后保存；24h从原启动时计含重启间隔，不重置预算；固定原eval1600/EMA/逐task旧新50与漏样本拒绝；EMA导出用作者Orbax格式逐字节回读并绑定完整checkpoint。默认Git recipe`formal_launch_approved=false`在任何GPU/W&B动作前拒绝正式启动。累计50项CPU测试过，真实新入口冷恢复/1600前向/大EMA导出待；v3原3步确定性probe正在恢复验收。下一`validate_champion_training_engine.py`只消费v3通过的第2步，导出工程EMA、重演第3步比全302叶、完整1600留出（1重演/0正式更新/≤30min、八卡，保持工程不可部署标记）；不把工程loss当Q/SR或正式大训准备全部通过。
+
+- **2026-10-12 12:00 CST / Codex CHAMPION-2026：** 续接核Git已同步、lc1原v2进程/tmux均不存在、八卡空、共享盘余1.1TiB。269b5a81八卡embedding微核实际32次默认32种SHA/最大差3.8147e-6，设置`--xla_gpu_exclude_nondeterministic_ops=true`后32次全同/差0，证明该栈存在可消除的scatter非确定性，但不单凭微核断定整模型9叶全因此。两回执已本地`artifacts/champion-episode-20261012/embedding-repeat-*-v1.json`，0策略更新。下一同269源、新run`resume-bs256-deterministic-v3`，只新增确定性flag及已记录weak_type修复，重做原3更新+恢复重演/30min工程门；正式大训仍未授权，不修改活跃源/env，不删除旧54.49GB完整或43GiB未完成快照。
+
 - **2026-10-12 02:16 CST / Codex CHAMPION-2026：** 428 v2已完整保存54,489,569,924B/302叶，第2步manifest365b25e5…b3bba；恢复后所有loss指标逐位同，但第3步9/302叶SHA不同（1个输入embedding参数+4个embedding的8个Adam矩），其余参数/EMA/随机键同，严格后续更新门failed_no_retry、进程/GPU已退出；完整两份指纹保留，不能称全部续训门PASS。CPU另确证step weak_type True→False并触发额外JIT，本地已补元数据及反例；它是否解释9叶差异尚未证，嵌入scatter浮点累加非确定性需单独测。下一八卡微核重复32次、普通/排除非确定算子各一（≤5min、0策略更新），不先改正式运行flags；依据OpenXLA官方determinism说明，不能把普通浮点累加差异直接等同checkpoint损坏。无正式训练。
 
 - **2026-10-12 02:01 CST / Codex CHAMPION-2026：** 3c1dac40 CPU真实原eval994源选择完成：100task各16/共1600、旧/新各800，plan3a10106e…665d7、完整回执SHA885340e4…a7b8a已本地；0forward、不是eval成绩。源审查另发现作者`compute_detailed_loss(train=False)`不返回stage CE，新增独立无augmentation stage评估入口（保持base-task因果attention、不切train=True），防漏报为0；数学单测过，真实模型整条eval待。v2真实4.83GB叶HOST组装0.77–0.96s、hash3.8–5.0s、fsync约10s，较原慢组装已有工程改善证据，但完整保存/恢复门仍未终态，不称通过或模型有效。
