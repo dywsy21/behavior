@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 20:31 CST：MEM固定生成与冠军CPU导出v2
+
+- MEM独立源`src/memlite-handoff-planner-eval-20261012-v1`=b9763def4794b2dd49b32454acde768be0629bfa，包181cd4f4…31aa/36目标env回归。run根`runs/recovery_handoff_20261012/planner-eval-v1`，`control-s0/1/2`在lc3 GPU1/2/3、`candidate-s0/1/2`在4/5/6，`retention-transition`在7；相应同名log、tmux `handoff-eval-{control,candidate}-sN-v1` 与 `handoff-retention-transition-v1`。不占GPU0，不把CPU加载中视为评分已出。
+- 冠军v1资产缓存校验失败log保留；新`src/champion-saved-export-20261012-v2`=c14a9513b4fe442f01c90e1dc571a24334f65abd，经包d027fefb…29d3和15目标env回归，run `runs/champion_saved_exports_20261012/step1000-v2`及log/tmux `champion-saved-ema1000-v2`。只复制7个原签名资产，不删/拷贝运行时pyc，0GPU/0优化；仍待导出终态。
+
 ## 2026-10-12 20:26 CST：MEM最终360与冠军独立CPU导出
 
 - lc3 H1最终`runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/checkpoints/step_00000360_save_0003.pt` SHA047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d；result5d91ca197c36f9d20b06c37e2ea868c245345f4a43fe90093f3f51e7ef95c269/latest18ca6236deb26ac8125ec615052c6e72aa43c446fff03572eae0d2a3f2586124，监督器exit0/2067.15s。轻量回执本地`artifacts/recovery-handoff-20261012/H1-fit-lc3-v1`，没复制26GB权重。

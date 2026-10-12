@@ -1,0 +1,50 @@
+{
+  "schema": "memlite_handoff_fit_result_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "source_commit": "661c00a9299e7752265f5f85b44980d2fc9d183c",
+  "checkpoint": {
+    "path": "/data/workspace/wsy/behavior2026/runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/checkpoints/step_00000360_save_0003.pt",
+    "sha256": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d"
+  },
+  "parent_sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2",
+  "status": "completed_finite_schedule",
+  "optimizer_updates": 360,
+  "planned_updates": 360,
+  "engineering_only": false,
+  "frozen_before_sha256": "0f7aede8a6421ac7be425ecffe384d465079cd67829162acea2e08963a8ca966",
+  "frozen_after_sha256": "0f7aede8a6421ac7be425ecffe384d465079cd67829162acea2e08963a8ca966",
+  "supervisor_returncode": 0,
+  "seconds": 2067.1510721482337,
+  "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/5efbea52cbc1",
+  "ce_initial_final": {
+    "original_heldout": [
+      0.007724483548838136,
+      0.007886203844253894
+    ],
+    "original_noninitial": [
+      0.00028560760770896605,
+      0.0006137253747261446
+    ],
+    "original_noninitial_causal_feedback": [
+      0.0002843859776363453,
+      0.0007299768476309059
+    ],
+    "original_transition_causal_feedback": [
+      0.024177167355428835,
+      0.011642364902547254
+    ],
+    "verified_dev": [
+      0.0006780705720331003,
+      0.00031986846192099734
+    ]
+  },
+  "receipts": {
+    "ledger.json": "0f4af62e0c5bd58f8eff3815a4ffe5f25537f44e97166856c43b3d75db708aeb",
+    "updates.jsonl": "eb4770f825ed3e452f3f27b3a59af91ae400b4bb0f69e79ed54a7e704308a87c",
+    "result.json": "5d91ca197c36f9d20b06c37e2ea868c245345f4a43fe90093f3f51e7ef95c269",
+    "latest.json": "18ca6236deb26ac8125ec615052c6e72aa43c446fff03572eae0d2a3f2586124",
+    "evaluations.jsonl": "c2967df2f22a00cf85549071691cac03c34a8d50b7613567adb6b952d51dcf18"
+  },
+  "local_evidence": "artifacts/recovery-handoff-20261012/H1-fit-lc3-v1",
+  "interpretation": "Completed fixed360 same-a74-parent fit, only383 feedback inputs changed, low/observer frozen. Transition/recovery CE decreased but continuation CE increased. Fixed free-generation pair and original-domain retention are running; no physical improvement, promotion or usable-model claim."
+}
