@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 12:17 CST：确定性全状态通过，新正式入口冷验收
+
+- lc1`runs/champion_assets_20261011/resume-bs256-deterministic-v3`=269源已完成：302叶恢复后下一步全同，manifest86b8258e…faa9f、reference f34e189e…1febd，仍工程不可部署。54.49GB第2步完整快照保留，原v1/v2未删；八卡已释放。
+- 新冻结`src/champion-formal-chain-20261012-v1`=a5e3f0ce，下一tmux`champion-engine-cold-v1`/run`runs/champion_assets_20261011/engine-cold-v1{,.log}`，只验证一个冷重演、原eval1600和EMA工程导出；不是正式训练/实际Q。Git recipe仍批准false，CLI拒绝门已实测无GPU/输出副作用。
+
 ## 2026-10-12 12:00 CST：冠军数值确定性验收
 
 - lc1`runs/champion_assets_20261011/resume-bs256-v2`已终态：54,489,569,924B完整第2步快照保留，恢复即时全部数组回读通过；后续第3步9/302数组不一致，严格门failed_no_retry，非可部署模型。原v1的43GiB不完整快照也保留。12:00八卡空，共享盘余1.1TiB；无旧tmux活跃。
