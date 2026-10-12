@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 16:48 CST / Codex RECOVERY-USABLE：** 独立CPU冻源00569709已在lc1完成候选源重建（9.25s/0GPU/0模型）：原1800全部核回同帧TRAIN，仅准备用于真实observer的383条/97task/379源，193继续、178动词变化、7明确对象/目标变化、5未绑定关系变化；34保护源样本与2缺原注释观测窗口已排除，另非GRASP/无前意图不适用。候选766次头检查尚未执行/0新标签/0新训、不能称已收齐恢复数据。原结果SHA016837d6…438b已两端一致落本地，详情`2026-10-12-memlite-handoff-preparation.json`；15相关CPU单测通过。下一RGB/proprio与真实prefix核验、冻结observer预测及亲审，不把未知/误报改成成功。冠军仍是独立30b05548等待原food完整回合，不挤占其八卡或共享env。
+
 - **2026-10-12 16:46 CST / Codex RECOVERY-USABLE：** 已实现CPU候选预备器`prepare_memlite_handoff_feedback.py`及纯函数`recovery_handoff_feedback.py`：重建原1800已审周期TRAIN目标，不改旧标签；排除observer fit/selection/CAL/test及原恢复DEV整源，只对上一条GRASP命令构造T−64…T五个真实原锚、两次四帧结果头请求，严格输入上一条意图/parent/因果memory，下一技能只留目标侧。仅metadata候选/尚未运行真实反馈或新拟合，随后冻结到独立CPU源验原数据；不得把文字变化或专家段结束当物理成功。短技能心跳三回归已过并提交502f35ad，Git首次TLS失败、重试push已成功；冠军冻结30b05548不受后来MEM更改影响，原food继续、最后16:40为16000控。
 
 - **2026-10-12 16:37 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军正式源30b055485b2720c8dc3391a27cea052cab9e4fc7已push，经双端SHA72f8e9a2…86836的Git包在lc1新`src/champion-formal-20261012-v1`冻结，原checkout不动；目标环境20项入口/保存/优化器等小测试全过20.11s（包含JAX微型计算，不是正式更新）。仅food原回合占卡、16:34已14608控，继续等终态。MEM已逐条78真实反馈→已审目标验SHA/时钟：TRAIN36全RETRY，其中estimated FAILED18/UNKNOWN17/SUCCEEDED1，DEV42也全同技能RETRY；普通1800专家增强反馈全UNKNOWN，证实缺“学习结果头报成功后的正向换技能”监督，不代表唯一根因或物理成功。详见`2026-10-12-memlite-feedback-coverage.json`。本地同时将已证的禁周期ping修复扩至短技能5入口/6连接，不热改任何运行源；原10/10短试中断的首次断线原因未取栈，不能据此倒推其根因，新的物理对照仍待。

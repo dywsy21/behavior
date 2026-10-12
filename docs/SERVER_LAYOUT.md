@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 16:48 CST：正式冠军源已冻结；MEM新反馈候选CPU准备完成
+
+- 冠军待启动冻结源`/data/workspace/wsy/behavior2026/src/champion-formal-20261012-v1`=30b055485b2720c8dc3391a27cea052cab9e4fc7，Git包SHA72f8e9a2f31b80e229c920b71f30ec54ff3c42ab452bb0d07fc13512e4386836。配方文件SHA361b872414bfb44ed0dd5ea8d640bd23e1dcc81a717a707970db520e7b02bdb2；不是后来MEM提交的热更新。
+- MEM独立源`src/memlite-handoff-requests-20261012-v1`=00569709c1a677b485c04b1fdd573a9729e87946；CPU run `runs/recovery_handoff_20261012/prepare-v1`和同名`.log`已完成。`requests.jsonl` SHAed615dad…dcd9e约4.57MB，仅766次未执行observer请求/383原TRAIN目标候选；`result.json` SHA016837d6…438b。没有权重更新、没有新训练准入。
+- 本地轻量原回执`artifacts/recovery-handoff-20261012/prepare-v1/result.json`两端同SHA；Git摘要`docs/infra/results/2026-10-12-memlite-handoff-preparation.json`。
+
 ## 2026-10-12 16:30 CST：冠军获准正式训练，等待MEM原餐盘终态
 
 - lc1 `memory-server-v1`/`memory-probe-v1`均已完整结束，PID3865558正常停止、GPU3释放；下方16:08“运行中”为历史状态。显存最终回执见`docs/infra/results/2026-10-12-champion-serving-memory.json`。

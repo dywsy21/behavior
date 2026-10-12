@@ -1,0 +1,37 @@
+{
+  "status": "CPU_REQUESTS_ONLY_NOT_GENERATED_OR_TRAINING_ADMITTED",
+  "owner": "Codex root",
+  "time_cst": "2026-10-12 16:48",
+  "source_commit": "00569709c1a677b485c04b1fdd573a9729e87946",
+  "frozen_source": "/data/workspace/wsy/behavior2026/src/memlite-handoff-requests-20261012-v1",
+  "run": "/data/workspace/wsy/behavior2026/runs/recovery_handoff_20261012/prepare-v1",
+  "result_sha256": "016837d6e05af03c00f39a46c01c2add3aeee9b53908326ad05b9a4c872a438b",
+  "requests_sha256": "ed615dad12ef6efbee9979d1d8ab02a72d75e56edcd7999a18d5911dc5adcd9e",
+  "local_result": "artifacts/recovery-handoff-20261012/prepare-v1/result.json",
+  "original_rows_reconstructed": 1800,
+  "selected": 383,
+  "tasks": 97,
+  "source_groups": 379,
+  "change_classes": {
+    "identical_command": 193,
+    "explicit_verb_or_bundle_change": 178,
+    "explicit_bound_object_or_goal_change": 7,
+    "unbound_relation_change_not_verified_roles": 5
+  },
+  "rejected": {
+    "outside_grasp_calibration": 1185,
+    "initial_no_previous_intent": 196,
+    "protected_source": 34,
+    "missing_original_annotated_observation": 2
+  },
+  "protected_groups": 412,
+  "protected_recovery_dev_groups": 42,
+  "prospective_observer_checks": 766,
+  "actual_model_calls": 0,
+  "images_decoded": 0,
+  "optimizer_updates": 0,
+  "human_admitted": false,
+  "tests": "15 local CPU tests passed, including causal windows, source/split rejection, previous-intent rather than target conditioning, full-ledger versus last-two-fresh-check equivalence and original heartbeat regression.",
+  "next": "Decode and verify actual RGB/proprio, validate production observer prefixes, generate immutable predictions with the same frozen GRASP-only observer/calibration, and personally review paired observations and next-command labels before any fit. Preserve wrong/unknown estimates; never generate success labels from expert boundaries.",
+  "limits": "Only GRASP completion estimates are calibrated. These are annotated expert command histories, not on-policy recovery rollouts or verified physical successes. The5 unbound-relation changes are not claimed as explicit role/skill handoffs. No broader 100-skill result coverage is asserted."
+}
