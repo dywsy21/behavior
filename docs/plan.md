@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 13:30 CST / Codex RECOVERY-USABLE：** 996b新CPU`periodic-tokens-v2`完整63.63s PASS（全1800源重建＋120原RGB/真实token/mask复验），result b02edc98…493c1两端SHA相同。正确有效token数394–998、prefix309–677、监督76–314；v1错误的attention分类值求和指标不沿用，其他原通过门保持。新轻量`docs/infra/results/2026-10-12-memlite-periodic-teacher-review.json`绑定全部证据，根仅准入**原TRAIN高层意图增强**；结果/terminal真值和低层BC均不准入，不改1800候选原件，不把120分层人审写成1800全审。5相机/计数＋8来源时钟反例通过，0新模型训练/0物理效果；下一需显式验签数据adapter和独立冻结专项训练/配对评估。冠军工程链已完成，8k/24h大训配方仍待用户确认，未擅自启训。
+
 - **2026-10-12 13:28 CST / Codex RECOVERY-USABLE：** bb39 CPU`periodic-tokens-v1`实际完整120/100task，生产prefix/field span/结果及terminal -100/意图权重1/memory0.25全过，result9668aa73…9be3c两端一致、0模型forward/优化/八卡空。末端报告发现本脚本把G05分类attention ID求和当token数（不是模型mask错误），这两个长度指标不可用；已改数非0位置并补非二值反例，拟新v2重跑CPU留准确长度，原v1结果不涂改。数据有意义的原图/来源/mask门已过，训练入口/配对效果仍待。
 
 - **2026-10-12 13:24 CST / Codex RECOVERY-USABLE：** 原v3输入通过后补实际token级验收选项：用原InputPreprocessor（不造VLM）将120亲审样本8条混batch，经生产`_context_positions`/字段span/mask/CE权重函数检查；应拒绝前缀CE、无证据结果/terminal CE、memory非0.25、意图被截断或错位。相机4反例回归通过，真实Qwen tokenizer执行待；仍0模型forward/0GPU/0优化，不提前签完整训练准入。源、run另冻/另名，v3原通过回执不更改。

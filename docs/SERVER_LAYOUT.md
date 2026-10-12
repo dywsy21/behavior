@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 13:30 CST：MEM-Lite周期历史数据侧验收终态
+
+- lc1共享根`/data/workspace/wsy/behavior2026`：`src/memlite-periodic-processor-20261012-v2`=4c637d63、`src/memlite-periodic-tokens-20261012-v2`=996b6d9e，均冻结且CPU作业已终态。`runs/planner_transition_audit_20261011/periodic-processor-v3/result.json` SHA b56f6180…226b1、`periodic-tokens-v2/result.json` SHA b02edc98…493c1；1800源重建与120已审实际processor/token/mask通过，0模型forward/训练，八卡未占用。
+- 本地对应`artifacts/memlite-periodic-teacher-20261012/{processor-v3,tokens-v2}/result.json`均两端SHA相同；原30页/120case人审和task74更早原图5页保留，task69误判已更正。Git小型准入/限制记录`docs/infra/results/2026-10-12-memlite-periodic-teacher-review.json`仅供高层意图增强，不是新模型/结果头/低层BC准入或训练启动票。
+- 原processor v1工作目录失败、v2验收脚本误认相机名失败全部保留；token v1的mask通过但两长度指标错误，原回执保留、v2另文件纠正。无删除/改标签/覆盖旧run。lc1直连GitHub两次失败后用已push提交的增量Git对象包经现有SSH导入（`incoming/codex-git-bundles/source-{1641b782,4c637d63,bb39eb9e,996b6d9e}.bundle`），均两端SHA＋Git依赖核验，不是覆盖活跃源码；VPN未重登，共享env未改。
+
 ## 2026-10-12 12:49 CST：冠军冷验收终态与MEM图审
 
 - lc1`runs/champion_assets_20261011/engine-cold-v1`已833.45秒全终态，八卡0MiB/无计算进程/无tmux；0正式更新、1工程重演、1600原eval。真实EMA-v1仍工程不可部署，不是正式模型。小证据全拷本地`artifacts/champion-episode-20261012/engine-cold-v1`，result SHA75e59e4f…8b5df、eval逐样本fc7f7afe…09fc2；原数据/权重/失败现场未删除，盘余1.1TiB。

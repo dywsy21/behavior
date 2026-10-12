@@ -1,0 +1,107 @@
+{
+  "status": "ACCEPTED_RESTRICTED_HIGH_INTENT_AUGMENTATION_NOT_A_TRAINING_LAUNCH",
+  "owner": "Codex root",
+  "date_timezone": "2026-10-12 Asia/Shanghai",
+  "hypothesis": "Training at the deployed128-control command-history clock with explicit changed-command examples can reduce copying the previous intent; no model-effect claim yet",
+  "candidate": {
+    "source_release": "datasets/memlite-stage1-20260930-v4",
+    "source_manifest_sha256": "90ff0fa9334959dae5ff4368913add6c8a3858e9c124ca7b6c0b05abe85d6f23",
+    "remote": "/data/workspace/wsy/behavior2026/runs/planner_transition_audit_20261011/periodic-teacher-v1/candidates.jsonl",
+    "sha256": "ab066a7481c3af930ab63ee976765a73fddb2edd8cac1de5560df87b40cc1802",
+    "rows": 1800,
+    "tasks": 100,
+    "split": "original TRAIN only; existing105 whole-source TRAIN quarantines retained",
+    "per_task": {"initial":2,"text_change":8,"identical_command":8},
+    "annotation_clock_controls": 128,
+    "history": "Recomputed previous command, previous parent and causal3-command memory, not merely thinned refresh counters. Stop at the first missing scheduled annotation; no guessed gap command.",
+    "current_target": "Unchanged original expert annotation from the actual same source frame"
+  },
+  "all1800_machine_label_audit": {
+    "sha256": "aeb3eaa75b9316c5a082bd8c1e53d72aae75bbf9d7d0d737f4e26869d7c39557",
+    "initial": 200,
+    "identical_command": 800,
+    "explicit_verb_or_bundle_change": 757,
+    "explicit_bound_object_or_goal_change": 30,
+    "unbound_relation_change_not_verified_roles": 13,
+    "source_or_binding_description_change": 0,
+    "meaning": "Text/semantic command categories, never evidence of physical progress or success"
+  },
+  "human_review": {
+    "review_index_sha256": "d4fef27dbbdabbd81a82f58d2fbfcbfa0b2135ac22dac27b869bae20fea8f8dc",
+    "owner_record_sha256": "09e9866e2a09bef4748ae668409638abf78d21bbc1aed9e0b67102a46ef6bc59",
+    "local_record": "artifacts/memlite-periodic-teacher-20261012/owner-review.json",
+    "personally_reviewed_cases": 120,
+    "tasks": 100,
+    "sample_design": "One changed-command case per task, plus10 initial and10 continuing cases",
+    "sheets": 30,
+    "original_rgb_panels": 690,
+    "additional_task74_original_context_sheets": 5,
+    "new_cross_episode_or_clock_mismatch_observed": false,
+    "not_all1800_manually_reviewed": true,
+    "corrections": [
+      "Task69 source-only claim was the reviewer's thumbnail-text misreading. Source JSON is GRASP vacuum -> TURN_ON_SWITCH vacuum; claim retracted, no data rejection or relabeling.",
+      "Task74 wheelbarrow uncertainty resolved using earlier original side-view frames5632/5888/6144 and reorientation/grasp/carry frames6272-7168. Original wheelbarrow label retained; no invented physical outcome."
+    ],
+    "task74_context_sha256": [
+      "d8632db3e115c49d418b85bff52b68394757f11b194b68ea838d35f9c98cd704",
+      "b77c500bdfc62b09c814dea19f4b3816421ef1a2351debd4072d16b50ce0ba03"
+    ]
+  },
+  "real_cpu_processor": {
+    "source_commit": "4c637d63c8ea7490fcd9a03d21d4b26f16ae1562",
+    "run": "/data/workspace/wsy/behavior2026/runs/planner_transition_audit_20261011/periodic-processor-v3",
+    "result_sha256": "b56f61808939b0b94b5cd96e50d19a3416a83181c829c0c969ba6861359226b1",
+    "seconds": 62.794237992260605,
+    "original_projection_reconstruction": "1800/1800 exact",
+    "reviewed_samples_processed": 120,
+    "current_original_rgb_hashes_exact": 360,
+    "camera_mapping": {"head_rgb":"exterior","left_wrist_rgb":"wrist_left","right_wrist_rgb":"wrist_right"},
+    "processed_rgb_matches_own_camera_transforms_exact": true,
+    "low_action_and_outcome_masks": false,
+    "old_failures_retained": "v1 bad working directory; v2 audit script incorrectly expected raw camera names after legitimate camera_type renaming. Neither is evidence of a policy-camera bug."
+  },
+  "real_cpu_token_and_loss_mask": {
+    "source_commit": "996b6d9e5d8f456c6fe960518cf3370111b5b2a0",
+    "run": "/data/workspace/wsy/behavior2026/runs/planner_transition_audit_20261011/periodic-tokens-v2",
+    "result_sha256": "b02edc98d42064572b5a9bcaa898ecced5b23be0b0d0f5f8117b165a959493c1",
+    "seconds": 63.63413430424407,
+    "tasks": 100,
+    "reviewed_samples": 120,
+    "mixed_batch_size": 8,
+    "input_token_range": [394,998],
+    "context_token_range": [309,677],
+    "supervised_token_range": [76,314],
+    "length_metric": "Count non-padding positions; G05 attention values are modality IDs, not a binary mask",
+    "training_prefix_equals_deployment_context": true,
+    "prefix_labels_all_ignored": true,
+    "outcome_and_terminal_labels_all_ignored": true,
+    "decision_and_complete_skill_bundle_ce_weight": 1.0,
+    "memory_update_ce_weight": 0.25,
+    "tested_real_production_functions": ["InputPreprocessor.encode_train/encode_inference", "_context_positions", "_mask_unsupervised_ar_fields", "_planner_only_loss_token_weights"],
+    "model_forwards": 0,
+    "optimizer_updates": 0,
+    "earlier_token_v1": "All field/mask checks passed. Its input_tokens/context_tokens wrongly summed modality IDs; discard those two length metrics, retain immutable original receipt9668aa73...9be3c. v2 corrects the reporting function and rechecks all120 cases."
+  },
+  "scope_limits": [
+    "Annotation-resampled history is not an executed actor trace; dense expert actions between calls may contain other skills.",
+    "No outcome/terminal truth, fixed-skill action BC or DART-expert supervision is admitted.",
+    "Unbound relation roles and visually indistinguishable instance IDs are not guessed; original metadata identity is retained.",
+    "The13 unbound-relation changes are not reported as verified bound-object changes.",
+    "This augmentation does not supply the missing physical recovery feedback for non-GRASP skills."
+  ],
+  "training_admitted": true,
+  "admission_scope": {
+    "allowed_component": "high_planner_only original-TRAIN intent augmentation",
+    "authorizer": "Codex root after the recorded stratified personal review and real CPU contracts",
+    "candidate_rows_remain_immutable": true,
+    "receipt_overrides_only_candidate_provisional_human_admission": "This SHA-bound scope-specific receipt, not editing the1800 provisional rows; a future training adapter must explicitly verify it",
+    "required_outcome_supervision_mask": false,
+    "required_low_action_supervision_mask": false,
+    "all1800_manually_reviewed": false,
+    "new_training_launch_approved_by_this_receipt": false,
+    "remaining_before_fitting": "Wire a fail-closed adapter and pin separate parent, recipe, source and paired fixed evaluation; this receipt alone is not a run ticket."
+  },
+  "new_optimizer_updates": 0,
+  "physical_controls": 0,
+  "effect_claim": "None; no new model trained. Separate fitting and fixed transition/continuation/recovery evaluation, then matched physical rollouts, remain required."
+}
