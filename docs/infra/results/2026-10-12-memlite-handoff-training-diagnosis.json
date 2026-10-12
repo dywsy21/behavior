@@ -1,0 +1,55 @@
+{
+  "owner": "Codex RECOVERY-USABLE",
+  "recorded_at": "2026-10-12T21:28:00+08:00",
+  "status": "CPU_EXPOSURE_COMPLETE_MODEL_DIAGNOSIS_PENDING",
+  "source_commit": "4747c18f",
+  "evidence": "artifacts/recovery-handoff-20261012/train-exposure-audit-v1/result.json",
+  "evidence_sha256": "f70a9441baf39fd48f9fd01d661f5ccf3c19bfbfb8d79bbdda5f66d2359e22ec",
+  "config": "configs/recovery_sft/a800_handoff_train_diagnostic_v1.json",
+  "config_sha256": "8126baa3ee2f7a4bdb409a65006da4d01e8eaf2a54e10c80eaa427486d113885",
+  "actual_training": {
+    "completed_updates": 360,
+    "same_schedule_as_control": true,
+    "distinct_expert_tasks_every_batch": 6,
+    "expert_exposures": 2160,
+    "unique_expert_anchors": 1736,
+    "expert_pool_size": 1800,
+    "recovery_exposures": 720,
+    "distinct_recovery_rows": 36,
+    "learned_feedback_pool_size": 383,
+    "learned_feedback_unique_seen": 373,
+    "learned_feedback_exposures": 469,
+    "learned_handoff_pool_size": 190,
+    "learned_handoff_unique_seen": 184,
+    "learned_handoff_exposures": 238,
+    "tasks_with_learned_handoff_exposure": 81,
+    "each_seen_expert_anchor_exposures": [1, 2]
+  },
+  "loss_accounting": {
+    "existing_memory_ce_weight": 0.25,
+    "learned_handoff_weighted_denominator_mass": 23843.5,
+    "bundle_weighted_tokens": 9287.0,
+    "memory_weighted_tokens": 9142.5,
+    "token_mass_is_gradient_fraction": false,
+    "field_CE_saved_by_completed_fit": false,
+    "model_already_computes_field_CE": true,
+    "feedback_reaches_actual_model_prefix": true
+  },
+  "interpretation": [
+    "The completed short comparison scarcely repeats individual feedback-conditioned handoffs. This is a coverage/exposure limitation, not proof that more steps will help.",
+    "The existing memory weight is already0.25. Do not propose changing1.0 to0.25 as an untried fix.",
+    "Total teacher-forced CE cannot identify whether the first discriminative intent token is learned. New diagnosis records actual field CE, first target-versus-repeat token logits, and unchanged strict free generation on the TRAIN pool.",
+    "First-choice probabilities condition on correct preceding fields and are not free-decoding probabilities. No model diagnostic results exist yet."
+  ],
+  "safety": {
+    "new_optimizer_updates": 0,
+    "new_labels": 0,
+    "eval_rows_used_for_training": 0,
+    "physical_success_claim": false,
+    "model_promotion": false,
+    "automatic_extra_fit": false,
+    "lc3_other_jobs_preserved": true,
+    "lc1_champion_source_unchanged": true,
+    "independent_member_review": "pending"
+  }
+}

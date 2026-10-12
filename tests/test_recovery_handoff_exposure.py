@@ -5,7 +5,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts/rl/memlite_online/code'))
-from recovery_handoff_exposure import training_exposure, first_difference
+from recovery_handoff_exposure import training_exposure, first_difference, choice_cache_index
 
 
 def example():
@@ -78,6 +78,15 @@ class ExposureTests(unittest.TestCase):
         self.assertEqual(first_difference([1,2,3,4],[1,2,9,4]),(2,3,9))
         self.assertIsNone(first_difference([1,2],[1,2]))
         self.assertIsNone(first_difference([1,2],[1,2,3]))
+
+    def test_first_choice_uses_shifted_mask_not_raw_field_offset(self):
+        labels=[-100,-100,7,8,-100,2,3,4]
+        mask=[v!=-100 for v in labels[1:]]
+        actual=choice_cache_index([2,3,4],[2,9,4],5,labels,mask)
+        self.assertEqual(actual,dict(field_token_offset=1,full_token_position=6,
+                                    ce_cache_index=3,target_token=3,repeated_token=9))
+        with self.assertRaises(ValueError):choice_cache_index([2,3,4],[2,9,4],4,labels,mask)
+        with self.assertRaises(ValueError):choice_cache_index([2,3,4],[2,9,4],5,labels,[True]*7)
 
 
 if __name__=='__main__':unittest.main()

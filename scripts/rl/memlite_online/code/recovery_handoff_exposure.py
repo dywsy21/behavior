@@ -124,3 +124,21 @@ def first_difference(target, repeated):
         if wanted != old:
             return index, wanted, old
     return None
+
+
+def choice_cache_index(target, repeated, span_start, full_labels, shifted_mask):
+    """Map a field's first choice into the exact CE shift/mask gather."""
+    if len(shifted_mask) != len(full_labels)-1:
+        raise ValueError('CE mask lost its next-token shift')
+    if shifted_mask != [label != -100 for label in full_labels[1:]]:
+        raise ValueError('Different teacher-forced evidence mask')
+    difference = first_difference(target, repeated)
+    if difference is None:
+        return None
+    offset, wanted, old = difference
+    position = span_start + offset
+    if (not 0 < position < len(full_labels) or full_labels[position] != wanted
+            or not shifted_mask[position-1]):
+        raise ValueError('First choice is masked or assigned to another field')
+    return dict(field_token_offset=offset, full_token_position=position,
+                ce_cache_index=sum(shifted_mask[:position-1]), target_token=wanted, repeated_token=old)
