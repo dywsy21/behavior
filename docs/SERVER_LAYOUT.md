@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 12:24 CST：正式链EMA与MEM周期候选
+
+- lc1`runs/champion_assets_20261011/engine-cold-v1/exports/ema_00000002`为a5e只读工程导出，manifest89bf0f74…55a8，作者loader逐值全同、`usable_for_deployment=false`。原54.49GB checkpoint仍在269 v3目录；八卡原`champion-engine-cold-v1`尚进行新入口冷重演，不是长训练。
+- `src/memlite-periodic-teacher-20261012-v1`=e91c8108，CPU tmux`memlite-periodic-teacher-v1`已完成；`runs/planner_transition_audit_20261011/periodic-teacher-v1/{candidates.jsonl,result.json}`分别ab066a74…1802/65963bf1…ea61，本地`artifacts/memlite-periodic-teacher-20261012/`同SHA。1800元数据候选未审、不训练，原数据/照片/权重没移动。
+
 ## 2026-10-12 12:17 CST：确定性全状态通过，新正式入口冷验收
 
 - lc1`runs/champion_assets_20261011/resume-bs256-deterministic-v3`=269源已完成：302叶恢复后下一步全同，manifest86b8258e…faa9f、reference f34e189e…1febd，仍工程不可部署。54.49GB第2步完整快照保留，原v1/v2未删；八卡已释放。
