@@ -5,6 +5,24 @@ import json
 import math
 
 
+def diagnostic_model_identity(model, parameter_digest):
+    """Retain the CE forward's required profile without enabling optimization.
+
+    inference_mode prevents autograd; removing requires_grad flags would break
+    the policy's original stage gate. Hash both groups, not only frozen tensors.
+    """
+    from recovery_corpus import digest
+    groups = {key:len(values) for key,values in model.coordination_trainable_parameter_groups().items()}
+    if model.training or groups != {'planner_vlm':326}:
+        raise ValueError('Read-only CE diagnosis must retain the original high planner profile in eval mode')
+    if any(parameter.grad is not None for parameter in model.parameters()):
+        raise ValueError('Unexpected gradient in read-only diagnosis')
+    hashes = {name:parameter_digest(model,frozen=value) for name,value in
+              (('profile_enabled',False),('profile_frozen',True))}
+    return dict(sha256=digest(hashes),scope='both_original_parameter_groups_v1',groups=groups,
+                no_parameter_gradients=True)
+
+
 def preprocess_planner_example(processor, raw, identity):
     """Stage1 preprocessing consumes raw metadata in place; retain truth first."""
     target = copy.deepcopy(raw['model_projection'])

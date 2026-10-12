@@ -6,7 +6,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts/rl/memlite_online/code'))
 from recovery_handoff_exposure import (training_exposure, first_difference, choice_cache_index,
-                                      preprocess_planner_example)
+                                      preprocess_planner_example, diagnostic_model_identity)
 
 
 def example():
@@ -34,6 +34,27 @@ def example():
 
 
 class ExposureTests(unittest.TestCase):
+    def test_readonly_ce_keeps_profile_but_hashes_both_groups(self):
+        from types import SimpleNamespace
+        model=SimpleNamespace(training=False,coordination_trainable_parameter_groups=lambda:{'planner_vlm':[0]*326},
+                              parameters=lambda:[SimpleNamespace(grad=None)])
+        calls=[]
+        def hashes(actual,*,frozen):
+            self.assertIs(actual,model);calls.append(frozen);return str(frozen)
+        before=diagnostic_model_identity(model,hashes)
+        self.assertEqual(calls,[False,True]);self.assertEqual(before['groups'],{'planner_vlm':326})
+        self.assertEqual(before,diagnostic_model_identity(model,hashes))
+        changed=diagnostic_model_identity(model,lambda _,frozen:'different' if frozen else str(frozen))
+        self.assertNotEqual(before['sha256'],changed['sha256'])
+
+    def test_disabled_profile_training_mode_or_gradient_refused(self):
+        from types import SimpleNamespace
+        for groups,training,grad in (({},False,None),({'planner_vlm':[0]*326},True,None),
+                                     ({'planner_vlm':[0]*326},False,1)):
+            model=SimpleNamespace(training=training,coordination_trainable_parameter_groups=lambda:groups,
+                                  parameters=lambda:[SimpleNamespace(grad=grad)])
+            with self.assertRaises(ValueError):diagnostic_model_identity(model,lambda _,frozen:'hash')
+
     def test_target_survives_processor_consuming_and_mutating_raw_metadata(self):
         class Processor:
             def preprocess(self,raw):

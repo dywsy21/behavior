@@ -1,7 +1,7 @@
 {
   "owner": "Codex RECOVERY-USABLE",
-  "recorded_at": "2026-10-12T21:40:00+08:00",
-  "status": "CPU_EXPOSURE_AND_ALL383_REAL_PREFIXES_COMPLETE_MODEL_DIAGNOSIS_PENDING",
+  "recorded_at": "2026-10-12T22:16:00+08:00",
+  "status": "CPU_EXPORT_COMPLETE_RTX_TRANSPORT_IN_PROGRESS_MODEL_DIAGNOSIS_PENDING",
   "source_commit": "4747c18f",
   "evidence": "artifacts/recovery-handoff-20261012/train-exposure-audit-v1/result.json",
   "evidence_sha256": "f70a9441baf39fd48f9fd01d661f5ccf3c19bfbfb8d79bbdda5f66d2359e22ec",

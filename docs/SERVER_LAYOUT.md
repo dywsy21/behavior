@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 22:16 CST：MEM模型只读跨机诊断传输
+
+- lc3 `src/memlite-handoff-portable-20261012-v1`和RTX10383 `code/memlite-handoff-portable-20261012-v1`均64ee34320e30ddc95cb2c8bf7338c890543d41a9；Git包e3d3a0edc5b8e568c9429ed197b092d3978dbc268cdc27413ba83106e213f289，不覆盖活跃代码。
+- lc3 `runs/recovery_handoff_20261012/portable-export-v1`已完成383输入和两精确model-only导出，result c9d228e1f6a64625b55cce069907142172e6159626e3ffadff4562545907d347，`portable/manifest.json` e9af5f5b21c3858c9a4a3cf42c9b8723ccee23d8688f23947c4b4a89d4dcf876。实际约22.65GiB，原19GiB是低估，不删原checkpoint/optimizer；当时共享盘仍790GiB可用。RTX目标`/run/ti/rl_memlite_stage1_20261006/runs/handoff_portable_20261012/pack-v1`流式传输中，未最终验签。
+- RTX模型解释器是既存`/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python`，torch2.7.1+cu128/transformers4.57.1/triton3.3.1，仅只读复用。此前检查的sim环境缺依赖不代表没有模型环境；两个env均未修改。GPU0小内核QA结果位于同run根`gpu-qa-v1/result.json`（01477db6e6c2dbefdd165e698596b59ea2373b638f457c7d2f507b8ae1d3091f），进程结束；不是完整模型/物理验收。
+- 本地仅小回执`artifacts/recovery-handoff-20261012/{portable-export-v1,rtx-gpu-qa-v1}`，没有把24GB模型暂存本地；原大权重与原输入均保留。
+
 ## 2026-10-12 21:40 CST：TRAIN CPU前门终态；RTX资源只读核查
 
 - lc3原24faf41b `train-diagnostic-cpu-v3`完整383/207.07s/0模型0更新结束，tmux自然退出；result8939c282cc17280b3d200e8f7cacb3c657e1e9486896aeb1019f37cbec3acffb、cpu-prefix-audit ab24503dfeb8a8cb1673d812e11b462c56a4ea5b1c32d8f83eab046e416b39ed均本地`artifacts/recovery-handoff-20261012/train-diagnostic-cpu-v3`同SHA。没有GPU模型诊断终态。

@@ -23,7 +23,7 @@ from recovery_calibration_launch import bound, read, write_new
 from recovery_corpus import digest, file_sha
 from recovery_generation_metrics import score_event, summarize
 from recovery_generation_shards import generation_shard
-from recovery_handoff_exposure import choice_cache_index, preprocess_planner_example
+from recovery_handoff_exposure import choice_cache_index, preprocess_planner_example, diagnostic_model_identity
 from recovery_handoff_inference import tree_sha
 from recovery_process_cache import isolated_cache_env
 
@@ -221,10 +221,12 @@ def run_diagnostic(args,checkpoint,model_config,prepared_rows,common,started):
     saved = torch.load(checkpoint,map_location='cpu',mmap=True,weights_only=False)
     if saved['state']['step'] != 360: raise ValueError('Not the fixed final360 checkpoint')
     model, restoration = restore_model(model_config,'high',state=saved['model_state_dict'])
-    del saved; gc.collect(); model.requires_grad_(False).eval().cuda()
-    before = parameter_digest(model,frozen=True)
+    del saved; gc.collect(); model.eval().cuda()
+    identity_before = diagnostic_model_identity(model,parameter_digest)
+    before = identity_before['sha256']
     model.model.ar_helper._need_full_logits = True
-    common.update(restoration=restoration,model_before_sha256=before)
+    common.update(restoration=restoration,model_before_sha256=before,
+                  diagnostic_parameter_profile=identity_before)
     write_new(args.output/'manifest.json',common); rows = []
     for position,split,index,request,target,prefix,prepared,record in prepared_rows:
         tick = time.monotonic()
@@ -256,8 +258,9 @@ def run_diagnostic(args,checkpoint,model_config,prepared_rows,common,started):
         rows.append(row)
         with (args.output/'rows.jsonl').open('a') as stream: stream.write(json.dumps(row,sort_keys=True,allow_nan=False)+'\n')
         print(json.dumps(dict(completed=len(rows),total=len(prepared_rows),score=row['score'])),flush=True)
-    after = parameter_digest(model,frozen=True)
-    if after != before: raise ValueError('Diagnostic mutated model weights')
+    identity_after = diagnostic_model_identity(model,parameter_digest)
+    after = identity_after['sha256']
+    if identity_after != identity_before: raise ValueError('Diagnostic mutated model weights or parameter profile')
     write_new(args.output/'result.json',dict(common,status='completed',rows=len(rows),
         model_after_sha256=after,summary=summarize(rows),seconds=time.monotonic()-started,
         cpu_prefix_audit_sha256=file_sha(args.output/'cpu-prefix-audit.json')))

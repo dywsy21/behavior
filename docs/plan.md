@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 22:33 CST / Codex RECOVERY-USABLE：** 全模型前向前的源码检查发现新诊断入口`requires_grad_(False)`会使原CE stage gate丢失`planner_vlm`组；已仅修新诊断为保留原326张量profile＋`inference_mode`＋禁optimizer，并分别hash原启用/冻结两组，结束拒绝任何梯度/权重/profile改变。不是已完成训练bug，不热改64ee导出源或冠军。另补全383、同输入/同模型来源的诊断专用合并与分字段CE/首分歧概率统计，避免通用merger要求不存在的`probe_kind`；24定向回归过，真实GPU仍待。直传改为三个互不重叠文件流，旧本机中转及串行rsync已核停止，partial保留/续传，不复制私钥、不重登VPN、不改env；未将未验签包当可用。
+
+- **2026-10-12 22:16 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军原PID3895302实1906/8000、9.16s/更新、每batch100task且有限，继续原八卡与W&B，2000保存尚待。MEM `portable-export-v1`已383完整终态/371.94s/0模型0更新，result c9d228e1…d347、manifest e9af5f5b…f876；两950-tensor模型逐字节相同，RTX GPU0小FLA内核有限/55.02s（result01477db6…091f，不是全模型验收），进程已退出。**更正资源估算：实际导出约22.65GiB而非登记估计19GiB，原775GiB共享预留仍保留；不补造达标记录、不删原件。** 已开始向RTX新`handoff_portable_20261012/pack-v1`流式传输，完整目的端验签/383 CPU前门/GPU诊断仍待。Git首次fetch遇TLS失败后重试成功，HEAD64ee与upstream一致；保留续接两文档未提交记录，未强pull脏树/热改源。
+
+- **2026-10-12 22:02 CST / Codex RECOVERY-USABLE：** portable源64ee3432经Git包e3d3a0ed…f289分别验签到lc3独立src和RTX独立code，A80025/RTX19定向测试过（RTX只读原model venv，未安装/改env）。lc3 CPU-only `portable-export-v1`/同名log、tmux`handoff-portable-export-v1`已启动：重新生成供传输的实际张量并逐条比原383验收，再导出两model-only权重，尚未终态/未迁数据。两端action codec SHA同5088f64a…dace；RTXtorch2.7.1cu128/transformers4.57.1/triton3.3.1已实读，下一独占空闲GPU0做小内核QA，然后验签传输/CPU跨机前门。
+
 - **2026-10-12 21:59 CST / Codex RECOVERY-USABLE：** 增加`recovery_handoff_portable.py`与RTX只读入口/独立transport登记：CPU全383必须与原ab245前缀逐条相同，原f79/047两完整权重导出950 tensor逐字节复核，仅删除导出物中的optimizer（不动原件）；两asset路径白名单迁移，保留775GiB共享盘预留。RTX既有模型env两关键库同版，只读复用，不改sim/env。自由生成排在本样本teacher-forcing前，原严格parser不放宽；19本地反例通过，真实导出/迁移/GPU尚待，未有新效果。
 
 - **2026-10-12 21:50 CST / Codex RECOVERY-USABLE：** control三片在最初GPU检查即拒绝，未创建输出/加载模型/产生CUDA计算；真实核到0–3新3039811/3040116–18作业，4–7原302xxxx继续。不是模型失败或观察超时，不重新争抢/停止外部进程，保留三log。RTX备选已有`/home/tione/notebook/baselines/GalaxeaVLA/.venv`模型环境，torch2.7.1+cu128/transformers4.57.1与A800完全同版（不等同全部依赖已验）；可只读复用而无需改sim env。下一CPU导出原两权重的无优化器精确tensor副本和383已验输入，验签迁RTX后诊断，原权重/标签不变。冠军1729/8000继续。
