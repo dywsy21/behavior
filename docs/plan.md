@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 17:39 CST / Codex RECOVERY-USABLE：** 增加`render_memlite_handoff_review.py`及确定性选择回归（通过）：待真实预测终态后，至少160条、覆盖全部97个有候选的task、所有稀有对象/关系变化并分层检查继续/切换×真实预测结果。每张图将T−64/T三相机与真实推理观察SHA核对，不修改原图或训练标签；抽样用于质量审查而非盲测指标。当前CPU审计已250条/1250观察无异常，预测和人工签核仍待，不提前准入。
+
 - **2026-10-12 17:35 CST / Codex RECOVERY-USABLE：** 新入口0322685f已push/Git包e2613ca7…d456双端验签，lc3独立源`src/memlite-handoff-inference-20261012-v1`冻结；24相关本地单测及目标G05 env新增9测试全过。CPU全量真实RGB/prefix审计已启动`runs/recovery_handoff_20261012/audit-v1`，tmux`memlite-handoff-audit-v1`/PID2777588，0GPU/0优化，尚校验输入；原始data/observer曝光/383请求不变。GPU预测严格要求同source/配方完整CPU回执与逐观测token/像素hash一致才进入；尚未预测或训练准入。冠军17:33已156真实步，原run不改。
 
 - **2026-10-12 17:32 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 根续接Git fetch/pull已完成/干净，冠军原PID3895302仍真实推进（17:24为96步/约9.3s、未改源码）。新增383候选冻结observer入口与CPU前置验收：逐5帧RGB/61D状态走真实serving归一化，比较三相机/前意图prefix/生产token，毒化未来标签与动作作反例；原128控命令全历史回放后仅最后两新鲜预测入反馈，目标/UNKNOWN真值保持。代码`generate_memlite_handoff_feedback.py`及`recovery_handoff_inference.py`正在本地检查，尚未部署或模型调用/新准入。lc3 17:25已八卡空，仍仅登记GPU1、不抢lc1冠军；下一冻结CPU审计再真实预测及亲审。
