@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 14:34 CST：固定终点自由生成已提交
+
+- lc1冻结`/data/workspace/wsy/behavior2026/src/memlite-periodic-generation-20261012-v1`=b7a9953f。共享run根`runs/recovery_periodic_20261012/generation-final-v1`：`candidate-0..3`为新f79边界/延续/恢复242条四分片，`initial-0..1`为新f79初态/恢复142条两分片，`control-0..1`为旧899相同242条两分片；对应GPU0–3/4–5/6–7，tmux前缀`periodic-final-`，日志为各目录同名`.log`。
+- 每进程独立`.runtime`编译/cache及模型prefill，进程内不共享不同任务的MEM状态；只读生成/无机器人控制。完整分数必须等所有分片`result.json`后经`merge_recovery_planner_generation.py`复核，片内均值不可冒充全量。正式训练源6ab与全部120/240/360保存保持不变。
+
 ## 2026-10-12 14:32 CST：lc1周期高层训练完整结束
 
 - 同run`runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1`完整360/360、supervisor EXITED/0、34.4min；八卡已释放。最终`checkpoints/step_00000360_save_0003.pt` SHA f79cd96c13099cfb6df856dbcab83c670eb042ad512cfe3972af5ac3049f66a0，另120/240保存全保留、不部署。
