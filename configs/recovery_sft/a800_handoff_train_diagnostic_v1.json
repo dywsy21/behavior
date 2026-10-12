@@ -1,0 +1,25 @@
+{
+  "schema": "handoff_train_diagnostic_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "root": "/data/workspace/wsy/behavior2026",
+  "node": "10.19.7.3",
+  "hypothesis": "Separate insufficient exposure, teacher-forced easy-token dilution and free-decoding failures on the ORIGINAL TRAIN pool. No heldout row, new target, optimizer step, retry, checkpoint search or physical-success claim.",
+  "optimizer_updates": 0,
+  "data_split": "train",
+  "rows": 383,
+  "seed": 17,
+  "recipe": {"path": "configs/recovery_sft/a800_h1_periodic_handoff_fit_lc3_v1.json", "sha256": "bbc3837fc34e919be2629ca7a2b0453eb9face526d3dbb18fc088892a80fce51"},
+  "observer_generation": {"path": "configs/recovery_sft/a800_handoff_observer_v1.json", "sha256": "5b1b6ee950d59e0c48de05fe462ea3adb77fa25977653b33c63eeac100fd9050"},
+  "model_specs_only": {"path": "configs/recovery_sft/a800_handoff_heldout_planner_pair_v1.json", "sha256": "3a1cd2a2e06c4cce609b6d814a954eb2d54866fc4ea30e477394a0a7ba933c29"},
+  "inputs": {
+    "schedule": {"path": "runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/schedule.json", "sha256": "4933d6f855fef3226e6171722602777c2b6134e3c045ba61b3cc3d0b23ea4b72"},
+    "control": {"path": "runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1/schedule.json", "sha256": "47f3bffdb71399551d77e656995025a242023a4d262ebfbd1b1555824075b89e"},
+    "candidates": {"path": "runs/planner_transition_audit_20261011/periodic-teacher-v1/candidates.jsonl", "sha256": "ab066a7481c3af930ab63ee976765a73fddb2edd8cac1de5560df87b40cc1802"},
+    "requests": {"path": "runs/recovery_handoff_20261012/prepare-v1/requests.jsonl", "sha256": "ed615dad12ef6efbee9979d1d8ab02a72d75e56edcd7999a18d5911dc5adcd9e"},
+    "predictions": {"path": "runs/recovery_handoff_20261012/predict-v1/feedback.jsonl", "sha256": "a3e16ea8c8445e9a1ec726b6caea366afa8b0fb0c5e4dfc63375dffd87de5aec"},
+    "processor_audit": {"path": "runs/recovery_handoff_20261012/processor-v2/result.json", "sha256": "709e71744fe0bf51adf6a998c1c54be45dccb3951b964f7f08c574c71d2e755b"},
+    "updates": {"path": "runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/updates.jsonl", "sha256": "eb4770f825ed3e452f3f27b3a59af91ae400b4bb0f69e79ed54a7e704308a87c"},
+    "fit": {"path": "runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/result.json", "sha256": "5d91ca197c36f9d20b06c37e2ea868c245345f4a43fe90093f3f51e7ef95c269"}
+  },
+  "stopping": "CPU audit needs no GPU. Model phase only on one actually idle lc3 GPU, rechecked after CPU validation, one pass per fixed final checkpoint over all383 original TRAIN rows. Preserve lc1 champion, every teammate job, raw strict-parse failures and before/after model digests. No automatic further fit."
+}
