@@ -14,13 +14,18 @@ from .contracts import state23_from_proprio61
 
 class ChampionSession:
     def __init__(self, *, episode, task, model_task, num_stages, seed, predictor,
-                 correct_actions, gripper_variation, apply_legacy_rules=True):
+                 correct_actions, gripper_variation, apply_legacy_rules=True,
+                 clock_kind='physical_ack'):
         if not episode or not 0 <= task < 100 or not 0 <= model_task < 100 or not 5 <= num_stages <= 15:
             raise ValueError('Explicit episode/task/stage contract required')
         if not 0 <= seed < 2**32:
             raise ValueError('Explicit uint32 policy seed required')
         if apply_legacy_rules and model_task >= 50:
             raise ValueError('Never apply old-task correction tables to new tasks')
+        if clock_kind not in ('physical_ack', 'policy_delivery'):
+            raise ValueError('An explicit physical or delivery clock is required')
+        self.clock_kind = clock_kind
+        self.delivered_controls = 0
         self.episode, self.task, self.model_task = episode, task, model_task
         self.num_stages, self.seed = num_stages, seed
         self.predictor, self.correct_actions = predictor, correct_actions
@@ -38,7 +43,15 @@ class ChampionSession:
         if self.used or self.closed:
             raise ValueError('A session cannot reset/reuse another episode')
         self.used = True
-        return dict(episode=self.episode,task=self.task,control_step=0)
+        return dict(episode=self.episode,task=self.task,**self.clock())
+
+    def clock(self):
+        if self.clock_kind == 'physical_ack':
+            return dict(control_step=self.control_step)
+        # The standard official websocket has no execution acknowledgement.
+        # A sent chunk may be only partly executed when the episode terminates.
+        return dict(clock_kind='policy_delivery',delivered_controls=self.delivered_controls,
+                    physically_confirmed_controls=None)
 
     def _vote(self, predicted):
         self.history.append(predicted)
@@ -113,11 +126,14 @@ class ChampionSession:
         self.rng = new_rng.copy()
         self.predictions += 1
         identity = dict(episode=self.episode,task=self.task,prediction=self.predictions,
-                        start=self.control_step,actions_sha256=hashlib.sha256(chunk.tobytes()).hexdigest())
+                        start=self.control_step if self.clock_kind=='physical_ack' else self.delivered_controls,
+                        actions_sha256=hashlib.sha256(chunk.tobytes()).hexdigest())
+        if self.clock_kind != 'physical_ack':
+            identity['clock_kind'] = self.clock_kind
         self.token = hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()
         self.pending = chunk.copy()
         return dict(token=self.token,action_chunk=chunk,display=dict(
-            episode=self.episode,task=self.task,control_step=self.control_step,
+            episode=self.episode,task=self.task,**self.clock(),
             input_stage=input_stage,corrected_stage=int(corrected_stage),next_stage=self.stage,
             predicted_stage=predicted,stage_probability=float(prob[predicted]),
             stage_probabilities=prob.tolist(),stage_votes=list(self.history),compressed=compress,
@@ -126,6 +142,8 @@ class ChampionSession:
             meaning='duration-stage prediction, NOT MEM-Lite intent or physical outcome'))
 
     def ack(self, *, token, controls):
+        if self.clock_kind != 'physical_ack':
+            raise ValueError('A delivery-only session cannot accept fabricated physical ACKs')
         if self.closed or self.pending is None or token!=self.token or not controls:
             raise ValueError('Stale, foreign or empty control ACK')
         if len(controls)>len(self.pending):
@@ -144,6 +162,23 @@ class ChampionSession:
             self.token = None
         return dict(control_step=self.control_step)
 
+    def record_delivery(self, *, token, actions):
+        """Called only after transport send; deliberately NOT a physical ACK."""
+        if self.clock_kind != 'policy_delivery':
+            raise ValueError('Physical sessions require real simulator ACKs')
+        sent = np.asarray(actions)
+        if (self.closed or self.pending is None or token != self.token
+                or sent.dtype != np.float32 or sent.ndim != 2 or sent.shape[1] != 23
+                or not 0 < len(sent) <= len(self.pending)
+                or not np.array_equal(sent,self.pending[:len(sent)])):
+            raise ValueError('Foreign, stale or changed policy delivery')
+        self.delivered_controls += len(sent)
+        self.pending = self.pending[len(sent):].copy()
+        if not len(self.pending):
+            self.pending = None
+            self.token = None
+        return self.clock()
+
     def finish(self):
         if not self.used or self.closed:
             raise ValueError('Cannot finish an unused/closed episode')
@@ -153,5 +188,5 @@ class ChampionSession:
         self.pending=None
         self.initial_actions=None
         self.history.clear()
-        return dict(episode=self.episode,task=self.task,control_step=self.control_step,
+        return dict(episode=self.episode,task=self.task,**self.clock(),
                     predictions=self.predictions,unused_offered_controls=unused,optimizer_updates=0)

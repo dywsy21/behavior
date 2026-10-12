@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 15:09 CST：三完整物理均在运行
+
+- RTX radio/food继续原79f87027；第三客户端新`code/memlite-periodic-physical-20261012-client-v2`=964be90c，仅额外同run小GPU上下文验签，两已运行源不改。包`incoming/codex-periodic-20261012/physical-guard-964be90c.bundle` SHA009bcd78…d559；GPU2验明原两sim PID3263806/3263822各174MiB、free72464MiB，原启动拒绝不产生新回合。
+- RTX tmux `periodic-phys-{radio,food,tripod}-sim-v1`、run同根`{case}-sim-v1`；原GPU0/1/2锁全程持有。15:08 radio304/food272真实控、tripod状态running。三个lc1模型仍79f/GPU0–2、独立loopback19810–19812，未热更新或追加训练。
+
 ## 2026-10-12 14:56 CST：周期高层完整物理对照准备就绪
 
 - 双端新冻结79f87027：lc1 `src/memlite-periodic-physical-20261012-v1`，RTX10383 `/run/ti/rl_memlite_stage1_20261006/code/memlite-periodic-physical-20261012-v1`；Git对象包SHA4fd60d812290d2dacac952e81e78bdc9a3b81959c91810f2969124b866c903a1，两端核验，不覆盖原源。

@@ -82,3 +82,21 @@ IP方案须至少50端口。现有`package_submission.py`是旧MEM全1000条专�
 部署适配时每连接/每reset独立stage、RNG、inpainting；标准协议没有物理ACK，
 不能捏造`simulator_apply_ack=True`，须显式区分已发送控制与已物理确认控制。
 仍需完整协议实连、跨任务交错/重置、24GB和真实新EMA物理验收；当前无提交授权、未上传模型或视频。
+
+## 2026-10-12 15:09 CST：标准协议桥实现（真实模型验收待）
+
+`scripts/eval/serve_champion_official.py`是新的独立loopback工程入口，读取同一已验签父权重/EMA，
+不替换已有诊断服务。`behavior_champion/official.py`消费官方msgpack，`reset`不回包；支持
+逐控请求或固定20步chunk，其第0动作完全相同。每连接仅1环境：标准观测没有稳定环境ID，
+故拒绝可能缩批/换槽的向量batch，不猜测哪个slot属于上一回合。task变化必须先reset；
+每次reset重新创建stage投票、RNG、inpainting与动作队列，不让任务/连接共享记忆。
+
+`ChampionSession`默认仍为真实`physical_ack`时钟；新官方模式显式`policy_delivery`，
+仅在socket发送完成后计数，`physically_confirmed_controls=null`，绝不凭网络发送造物理ACK。
+最后一块可能只执行一部分，reset时丢弃未用队列但不把发出20步冒称实际执行20步。
+
+预登记`official_cp2_protocol_v1.json`只用空闲lc1 GPU3、公开cp2、两个原TRAIN观测，
+`probe_champion_official.py`通过SHA锁定的原官方client代码实连，比较各任务独立与交错、
+逐控与chunk20、半块reset/换任务。0优化/0仿真，全部断言通过后才记协议PASS。
+本地新五项、原实控六项、资产六项通过；websockets10本机跳过原sync客户端，下一既有16环境验证。
+服务还没有24GB实体GPU/容器验收，也没有新正式EMA的物理成绩；不称可提交、不开外网端口。

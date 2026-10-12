@@ -1,0 +1,108 @@
+"""Verified champion policy through the unmodified official websocket protocol.
+
+One environment per connection; reset has no reply; no physical ACK is invented.
+The registered loopback protocol probe is not a submission or formal training.
+"""
+import argparse
+import asyncio
+import hashlib
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import time
+
+REPO=Path(__file__).resolve().parents[2]
+sys.path[:0]=[str(REPO/'src'),str(REPO/'scripts/eval/memlite_sft100')]
+from common import atomic_json
+from behavior_champion.inference import file_sha,checked_sources
+
+
+async def run(args):
+    cfg=json.loads(args.config.read_text())
+    if cfg['schema']!='champion2026_official_websocket_v1' or args.output.exists():
+        raise ValueError('Registered official-protocol config and fresh run required')
+    if cfg['host']!='127.0.0.1':
+        raise ValueError('This engineering entry is loopback-only, not public submission hosting')
+    if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
+        raise ValueError('Clean frozen source required')
+    gpu=str(cfg['model_gpu'])
+    if (os.environ.get('CUDA_VISIBLE_DEVICES')!=gpu or subprocess.check_output(
+            ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip()):
+        raise ValueError('Registered model GPU must be idle')
+    root=Path(cfg['a800_root']);reference=root/cfg['reference'];openpi=root/cfg['openpi_reference']
+    checked_sources(reference,openpi,REPO)
+    from behavior_champion.policy_assets import verify_policy_assets
+    checked=verify_policy_assets(root,REPO,cfg)
+    stages=checked['layout']['num_stages'][:cfg['model_task_count']]
+    mapping=checked['layout']['dataset_to_model']
+    allowed=cfg['allowed_task_ids']
+    if (not allowed or len(set(allowed))!=len(allowed) or any(type(t) is not int or str(t) not in mapping
+            or mapping[str(t)] not in cfg['trained_model_tasks'] for t in allowed)):
+        raise ValueError('Task scope must be covered by the verified model')
+    if cfg['num_inference_steps']!=20:
+        raise ValueError('Only the verified20-step champion runtime is supported')
+    args.output.mkdir(parents=True)
+    status=dict(status='loading',pid=os.getpid(),started=time.time(),optimizer_updates=0,
+        source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
+        config_sha256=file_sha(args.config),asset_receipt_sha256=cfg['verified_sha256'],
+        physical_execution_evidence=False,allowed_task_ids=allowed)
+    atomic_json(args.output/'status.json',status)
+    os.environ.update(WANDB_MODE='disabled',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',
+        XLA_PYTHON_CLIENT_PREALLOCATE='false',JAX_COMPILATION_CACHE_DIR=str(args.output/'jax-cache'))
+    sys.path[:0]=[str(reference/'src'),str(openpi/'src')]
+    import numpy as np
+    import flax.nnx as nnx
+    from b1k.shared.correction_rules import apply_correction_rules,check_gripper_variation
+    from behavior_champion.inference import ChampionRuntime
+    from behavior_champion.session import ChampionSession
+    from behavior_champion.official import OfficialPolicyServer
+    from wire import packb,unpackb
+    runtime=ChampionRuntime(root/cfg['checkpoint'],stages,expected_model=checked['expected_model'])
+    def digest():
+        sha=hashlib.sha256()
+        for path,value in nnx.state(runtime.policy._model,nnx.Param).flat_state().items():
+            array=np.asarray(value.value);sha.update(repr((path,array.shape,str(array.dtype))).encode())
+            sha.update(array.tobytes())
+        return sha.hexdigest()
+    before=digest()
+    def factory(episode,task):
+        if task not in allowed:raise ValueError('Task outside registered model scope')
+        model_task=mapping[str(task)]
+        return ChampionSession(episode=episode,task=task,model_task=model_task,num_stages=stages[model_task],
+            seed=cfg['policy_seed'],predictor=runtime.infer,correct_actions=apply_correction_rules,
+            gripper_variation=check_gripper_variation,
+            apply_legacy_rules=cfg['apply_legacy_rules'] and model_task<50,clock_kind='policy_delivery')
+    def journal(row):
+        with (args.output/'events.jsonl').open('a') as stream:
+            stream.write(json.dumps(dict(time=time.time(),**row),allow_nan=False)+'\n')
+    server=OfficialPolicyServer(factory,metadata=dict(policy='champion2026',action_chunk_size=20,
+        action_dimension=23,environment_batch_size=1,allowed_task_ids=allowed,
+        source_commit=status['source_commit'],config_sha256=status['config_sha256'],
+        clock_kind='policy_delivery',physical_execution_evidence=False),
+        packb=packb,unpackb=unpackb,journal=journal,max_connections=cfg['max_connections'])
+    stop=asyncio.Event()
+    for sig in (signal.SIGTERM,signal.SIGINT):
+        asyncio.get_running_loop().add_signal_handler(sig,stop.set)
+    def ready(_):
+        status.update(status='ready',parameters_before=before,loaded=time.time())
+        atomic_json(args.output/'status.json',status)
+    try:
+        await server.run(host=cfg['host'],port=cfg['port'],stop=stop,ready=ready)
+        after=digest()
+        if after!=before:raise ValueError('Read-only policy parameters changed')
+        status.update(status='closed',finished=time.time(),parameters_after=after,weights_unchanged=True)
+        atomic_json(args.output/'result.json',status)
+    except BaseException as error:
+        status.update(status='failed_no_retry',error=repr(error),finished=time.time())
+        raise
+    finally:atomic_json(args.output/'status.json',status)
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--config',type=Path,required=True)
+    parser.add_argument('--output',type=Path,required=True)
+    asyncio.run(run(parser.parse_args()))

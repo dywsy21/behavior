@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 15:09 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 新标准协议实现`behavior_champion/official.py`＋独立server/probe：单连接单环境，reset无回包、chunk20/逐控序列一致，逐连接/逐reset隔离stage/RNG/inpainting；新增delivery-only时钟拒伪造物理ACK，原实控接口六测试保持通过。CPU新五项/资产六项通过，本机websockets10缺官方sync客户端一项明确跳过；初次health测试被本机HTTP代理拦截502，测试作用域绕过loopback代理后通过，非服务端故障。下一冻源在既有16环境跑原官方客户端/公开cp2真实TRAIN17次以上模型调用，不训练、不称24GB/物理/提交通过。MEM三场景已全部running，radio304/food272真实控，tripod刚加载完；后者新客户端964be90c仅资源门变更，原两端模型79f不动。
+
 - **2026-10-12 15:07 CST / Codex RECOVERY-USABLE：** 第三模拟器资源门已修为显式`--peer-sim-status`：逐PID核同配置SHA、case/instance/output、活跃状态、进程真实命令/主卡环境及冻结commit；仅允许本轮其他主卡的每PID≤512MiB辅助上下文，拒绝陌生/重载进程并保留≥24GiB余量。CPU两项正反例通过；原radio/food源码与执行不动。下一把该独立修复提交/冻结后仅启动尚未开始的tripod，不能将此前被拒绝启动算物理失败或默默复跑。
 
 - **2026-10-12 15:03 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** radio/food已14:56实际启动RTX0/1，15:02模型回执分别112/80控，原官方超时3224/20544未改。tripod启动前被空卡检查拒绝（未创建run/0控）：已查GPU2仅两个本轮Isaac进程各174MiB初始化上下文，非队友训练；不杀进程、不绕过原门，下一在新冻源加入严格同run/异主卡/小上下文凭据检查后再开GPU2。冠军标准协议适配在本地实现中，物理ACK与delivery时钟分离，不热改已跑源、不称已验收。
