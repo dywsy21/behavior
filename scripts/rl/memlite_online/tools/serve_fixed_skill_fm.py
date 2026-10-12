@@ -145,7 +145,7 @@ async def main():
             except Exception as error:receipt.update(status='failed',error=repr(error))
             finally:
                 atomic_json(a.output/'status.json',receipt);stopped.set()
-    async with websockets.serve(handler,'127.0.0.1',a.port,compression=None,max_size=16<<20,ping_timeout=None):
+    async with websockets.serve(handler,'127.0.0.1',a.port,compression=None,max_size=16<<20,ping_interval=None,ping_timeout=None):
         receipt.update(status='ready');atomic_json(a.output/'status.json',receipt)
         watcher_task=asyncio.create_task(watcher());await stopped.wait();watcher_task.cancel()
 

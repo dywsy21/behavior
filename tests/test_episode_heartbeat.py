@@ -36,5 +36,21 @@ class HeartbeatTests(unittest.TestCase):
         Connection.start_keepalive(fake)
         self.assertFalse(hasattr(fake,'keepalive_thread'))
 
+    def test_short_skill_control_and_episode_connections_disable_pings(self):
+        files = {'run_short_skill_cold_worker.py': 2, 'serve_fixed_skill_fm.py': 1,
+                 'serve_short_skill_rl.py': 1, 'collect_short_skill_rl.py': 1,
+                 'check_skill_reward_replay.py': 1}
+        for file, count in files.items():
+            tree = ast.parse((REPO/'scripts/rl/memlite_online/tools'/file).read_text())
+            calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call)
+                     and (isinstance(node.func, ast.Name) and node.func.id == 'connect' or
+                          isinstance(node.func, ast.Attribute) and node.func.attr == 'serve')]
+            self.assertEqual(len(calls), count, file)
+            for call in calls:
+                options = {kw.arg: kw.value for kw in call.keywords}
+                self.assertIn('ping_interval', options, file)
+                self.assertIsNone(ast.literal_eval(options['ping_interval']), file)
+                self.assertIsNone(ast.literal_eval(options['ping_timeout']), file)
+
 
 if __name__=='__main__':unittest.main()

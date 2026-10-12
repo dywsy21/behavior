@@ -310,7 +310,7 @@ async def main():
         while not (a.output/'STOP').exists():await asyncio.sleep(2)
         fatal[0]='Owner stop requested; retain completed checkpoint and partial evidence';finished.set()
 
-    async with websockets.serve(handler,'127.0.0.1',a.port,compression=None,max_size=32<<20,ping_timeout=None):
+    async with websockets.serve(handler,'127.0.0.1',a.port,compression=None,max_size=32<<20,ping_interval=None,ping_timeout=None):
         publish();watch=asyncio.create_task(stop_watch());await finished.wait();watch.cancel()
     frozen_after=mod.parameter_digest(policy,frozen=True)
     if frozen_after!=frozen_before:fatal[0]='Frozen VLM/LoRA changed during short-skill PPO'

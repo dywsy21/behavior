@@ -1,0 +1,48 @@
+{
+  "schema": "memlite_feedback_coverage_diagnosis_v1",
+  "owner": "Codex root",
+  "checked_at": "2026-10-12T16:33:00+08:00",
+  "status": "MISSING_POSITIVE_LEARNED_SUCCESS_HANDOFF_SUPERVISION_NOT_A_NEW_TRAINING_ADMISSION",
+  "root": "/data/workspace/wsy/behavior2026",
+  "admission": "datasets/recovery-postfit-planner-union-20261010-v1/admission/admission.json",
+  "admission_sha256": "404fcc0a2e1d7f62466e08e6bfe994717905db6973cee84ee410ad0a32f3463f",
+  "feedback": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-v1/feedback.jsonl",
+  "feedback_sha256": "586ef848c37ab26997c9b2da8105afaf57739ea68d0404ddac587e061cd20f80",
+  "history": "datasets/recovery-postfit-planner-union-20261010-v1/history/contexts.jsonl",
+  "history_sha256": "e9927128f8eeb4daa6e419b337a3f066e052aefd425cc1f9c4688c29493666f6",
+  "audit": "Joined all78 feedback rows to admitted planner targets and causal predecision history by sample_id; verified each referenced target SHA and source control step. All78 target decisions are RETRY with an unchanged semantic skill bundle.",
+  "counts": [
+    {"split":"train", "estimated_outcome":"FAILED", "target_decision":"RETRY", "same_skill":true, "rows":18},
+    {"split":"train", "estimated_outcome":"UNKNOWN", "target_decision":"RETRY", "same_skill":true, "rows":17},
+    {"split":"train", "estimated_outcome":"SUCCEEDED", "target_decision":"RETRY", "same_skill":true, "rows":1},
+    {"split":"dev", "estimated_outcome":"FAILED", "target_decision":"RETRY", "same_skill":true, "rows":20},
+    {"split":"dev", "estimated_outcome":"UNKNOWN", "target_decision":"RETRY", "same_skill":true, "rows":22}
+  ],
+  "sole_training_success_estimate": {
+    "sample_id":"a7f0e61b7e9345e74c75607185a4c280bd7de942e7eb6d25bcb182a4ea10acc9",
+    "source_group":"installing smoke detectors:92",
+    "control_step":64,
+    "prior_and_target":"GRASP fire_alarm_102 from coffee_table",
+    "interpretation":"An estimated success is not physical truth; do not relabel the verified RETRY to manufacture a positive handoff."
+  },
+  "periodic_expert_augmentation": {
+    "path":"runs/planner_transition_audit_20261011/periodic-teacher-v1/candidates.jsonl",
+    "sha256":"ab066a7481c3af930ab63ee976765a73fddb2edd8cac1de5560df87b40cc1802",
+    "rows":1800,
+    "scope":"Reviewed original TRAIN intent augmentation only; code fixes original execution feedback to UNKNOWN, no outcome or action supervision. It teaches command transitions but not response to a learned SUCCEEDED signal."
+  },
+  "physical_evidence": {
+    "run":"runs/periodic_full_20261012/radio-model-v2",
+    "actual_success_estimate_in_planner_input_at_controls":[1536,3200],
+    "response":"Continued GRASP; official full-episode Q0, no confirmed stable physical grasp/lift/switch.",
+    "causal_limit":"Coverage gap is established, but not proven the sole cause: low policy and observer distribution shift remain possible."
+  },
+  "next": [
+    "Prepare source-disjoint original-TRAIN handoff and continuation candidates with real cadence16 observer windows and period128 planner history.",
+    "Generate actual frozen/calibrated observer predictions; never synthesize success from annotation boundaries or expose physical labels to actor.",
+    "Retain false-success/retry and ambiguous/continuation counterexamples; no deterministic success-to-next-skill shortcut.",
+    "Human-review new input/target pairs and enforce source splits before any additional fit; use fixed boundary, continuation and recovery controls."
+  ],
+  "new_training_updates": 0,
+  "new_deployment_or_success_claim": false
+}

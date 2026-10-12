@@ -64,7 +64,7 @@ def main():
             atomic_json(a.output/'status.json',dict(receipt,updated_unix=time.time()))
             try:
                 with connect('ws://127.0.0.1:'+str(a.port),max_size=32<<20,
-                             compression=None,ping_timeout=None,open_timeout=10) as socket:
+                             compression=None,ping_interval=None,ping_timeout=None,open_timeout=10) as socket:
                     require_service_hello(unpackb(socket.recv(timeout=30)),receipt['config_sha256'])
                 receipt['service_hello_verified_before_first_simulator']=True
                 break
@@ -79,7 +79,7 @@ def main():
                 receipt.update(status='waiting_peer_finish_without_simulator',finish_waits=0)
                 atomic_json(a.output/'status.json',dict(receipt,updated_unix=time.time()))
                 with connect('ws://127.0.0.1:'+str(a.port),max_size=32<<20,
-                             compression=None,ping_timeout=None,open_timeout=10) as socket:
+                             compression=None,ping_interval=None,ping_timeout=None,open_timeout=10) as socket:
                     require_service_hello(unpackb(socket.recv(timeout=30)),receipt['config_sha256'])
                     while True:
                         socket.send(packb(dict(op='job',case=a.case)))

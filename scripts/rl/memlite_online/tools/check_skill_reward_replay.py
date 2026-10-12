@@ -129,7 +129,7 @@ def main():
                 from websockets.sync.client import connect
                 from wire import packb,unpackb
                 import imageio.v2 as iio
-                socket=connect('ws://127.0.0.1:'+str(a.policy_port),max_size=16<<20,compression=None,ping_timeout=None)
+                socket=connect('ws://127.0.0.1:'+str(a.policy_port),max_size=16<<20,compression=None,ping_interval=None,ping_timeout=None)
                 hello=unpackb(socket.recv(timeout=60))
                 if hello.get('protocol')!='fixed_skill_fm_v1' or hello['models']!=policy_cfg['models']:
                     raise ValueError('Wrong inference server/model identities')

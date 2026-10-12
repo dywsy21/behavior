@@ -193,7 +193,7 @@ def main():
                 for camera,image in obs['images'].items():
                     p=path/(camera+'.png');Image.fromarray(image.transpose(1,2,0)).resize((224,224)).save(p);refs[p.name]=sha256(p)
                 return refs
-            with connect('ws://127.0.0.1:'+str(a.port),max_size=32<<20,compression=None,ping_timeout=None) as socket:
+            with connect('ws://127.0.0.1:'+str(a.port),max_size=32<<20,compression=None,ping_interval=None,ping_timeout=None) as socket:
                 hello=unpackb(socket.recv(timeout=120))
                 if hello!=dict(protocol='short_skill_rl_v1',config_sha256=sha256(a.config)):
                     raise ValueError('Different training service/config')
