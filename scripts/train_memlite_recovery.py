@@ -90,7 +90,16 @@ def main():
         from recovery_expert_feedback import with_expert_feedback
         expert_class=with_expert_feedback(Stage1Dataset,
             repeat_stride_controls=recipe['H1'].get('original_feedback_repeat_stride',16))
-    experts=expert_class(release,config,branch,'train')
+    periodic_pool=None
+    train_expert_class=expert_class
+    if recipe.get('H1',{}).get('periodic_teacher') is not None:
+        if branch!='high' or a.engineering: raise ValueError('Periodic data is an explicit high-only fitting route')
+        from recovery_periodic_data import PeriodicTeacherPool,with_periodic_teacher
+        periodic_pool=PeriodicTeacherPool(root,recipe['H1']['periodic_teacher'],repo=REPO)
+        # Start from original source raw(), not the old dense-feedback wrapper:
+        # its previous command/counters are intentionally replaced as a unit.
+        train_expert_class=with_periodic_teacher(Stage1Dataset,periodic_pool)
+    experts=train_expert_class(release,config,branch,'train')
     original_eval=Stage1Dataset(release,config,branch,'eval')
     feedback_eval=expert_class(release,config,branch,'eval')
     by_task={k:[r['candidate'] for r in v] for k,v in expert_index['rows'].items()}
@@ -127,15 +136,29 @@ def main():
             # Recovery-only RETRY targets would teach a degenerate planner.
             # Rehearse normal original plans as well, exactly as L0 retains
             # original actions; never mislabel these as new recovery events.
-            schedule=list(finite_mixture_schedule(new.rows,by_task,batch_size=ticket['global_batch'],
-                maximum_event_passes=ticket['event_passes'],seed=recipe['seed'],pool='planner',
-                allow_extended_event_fit=recipe.get('extended_event_fit',False)))
+            if periodic_pool is None:
+                schedule=list(finite_mixture_schedule(new.rows,by_task,batch_size=ticket['global_batch'],
+                    maximum_event_passes=ticket['event_passes'],seed=recipe['seed'],pool='planner',
+                    allow_extended_event_fit=recipe.get('extended_event_fit',False)))
+            else:
+                from recovery_periodic_data import remap_control_schedule
+                schedule=remap_control_schedule(json.loads(periodic_pool.control_path.read_text()),
+                    experts.periodic_by_task,lambda i:int(experts.task_ids[i]),seed=recipe['seed'],
+                    recovery_rows=new.rows,binding=dict(component='H1',parent_sha256=parent['sha256'],
+                        admission_sha256=ticket['files']['admission']['sha256'],world_size=world,
+                        micro_batch=ticket['micro_batch']))
+                if len(schedule)!=ticket['maximum_updates'] or max(r['event_pass'] for r in schedule)+1!=ticket['event_passes']:
+                    raise ValueError('Periodic comparison changed the original fixed training exposure')
         data_sha=ticket['files']['admission']['sha256']
     schedule=schedule[:ticket['maximum_updates']]
     binding=dict(component=a.component,source_commit=commit,parent_sha256=parent['sha256'],admission_sha256=data_sha,
         recipe_sha256=file_sha(a.ticket),world_size=world,micro_batch=ticket['micro_batch'])
     if 'native_manifest' in ticket['files']:
         binding['native_learner_manifest_sha256']=ticket['files']['native_manifest']['sha256']
+    if periodic_pool is not None:
+        binding.update(periodic_candidate_sha256=ticket['files']['periodic_candidates']['sha256'],
+            periodic_admission_sha256=ticket['files']['periodic_admission']['sha256'],
+            paired_control_schedule_sha256=ticket['files']['periodic_control_schedule']['sha256'])
     fingerprint=schedule_fingerprint(schedule,binding=binding)
     if rank==0:
         if not a.resume: a.output.mkdir(parents=True,exist_ok=False)
@@ -216,6 +239,15 @@ def main():
                     'noninitial_fixed_one_per_task_v1')
                 original_scopes.extend([('original_noninitial',original_eval,noninitial),
                     ('original_noninitial_causal_feedback',feedback_eval,noninitial)])
+                if periodic_pool is not None:
+                    from recovery_generation_metrics import select_transition_indices
+                    def target_intent(i):
+                        ep,_,segment,_,_,_=feedback_eval.locate(i)
+                        return ep['segments'][segment]['text']
+                    transitions=select_transition_indices(
+                        [np.flatnonzero(feedback_eval.task_ids==task).tolist() for task in range(100)],
+                        lambda i:feedback_eval.locate(i)[3],target_intent,lambda i:int(feedback_eval.task_ids[i]))
+                    original_scopes.append(('original_transition_causal_feedback',feedback_eval,transitions))
             for scope,ds,indices in original_scopes+(
                     [('verified_dev',dev,list(dev_indices.values()))] if dev is not None else []):
                 stats=torch.zeros(2,dtype=torch.float64,device=device);error=None

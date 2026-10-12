@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 13:47 CST / Codex RECOVERY-USABLE：** 周期数据route及启动门已实现、14周期reader/来源/时钟反例＋14原恢复pipeline回归通过；新源保留原source/task/同帧RGB和重建history，未知source/留出/结果或低层mask打开即拒绝。恢复schedule不是重新随机采：从旧360控制SHA b0e3b4ac…ce0c2逐slot映射普通样本、每task独立shuffle/cycle，恢复event及8rank位置不变；新增真实360批CPU审计入口。磁盘初检需冠军775GiB＋最多4份1.1×26.59GB，运行中提前留足最后保存，不删除权重；真实源adapter/78feedback/调度审计待，未开GPU训练。下一同冻源在lc3验收后启动，成员独立review仍未完成/不合main。
+
+- **2026-10-12 13:42 CST / Codex RECOVERY-USABLE：** 上轮为progress（新增真实数据准入/13反例/相机与token验收），不是效果完成。本轮干净fetch/pull最新5aa、main仍33677。lc3原password SSH已重新认证并保持控制socket（复用现有VPN、不重登），实际8卡空、共享余约1.1TiB；只读保留队友`calvin`tmux。实现周期数据验签reader/实际adapter审计门及与旧360控制的schedule逐slot重映射：36恢复源20遍/720条恢复的顺序与rank位置完全保留，仅6普通示范/批换成已审128历史候选；同a74父、LR1e-6、360更新，低层/observer不动。计划lc3八卡、checkpoint120步（原每份26.59GB，保留冠军775GiB外加本run最多4份），新配方`a800_h1_periodic_teacher_fit_v1.json`；尚未实际训练，反例/真实78反馈与120新adapter门待。冠军8k/24h仍等配方确认、不占lc1。
+
 - **2026-10-12 13:30 CST / Codex RECOVERY-USABLE：** 996b新CPU`periodic-tokens-v2`完整63.63s PASS（全1800源重建＋120原RGB/真实token/mask复验），result b02edc98…493c1两端SHA相同。正确有效token数394–998、prefix309–677、监督76–314；v1错误的attention分类值求和指标不沿用，其他原通过门保持。新轻量`docs/infra/results/2026-10-12-memlite-periodic-teacher-review.json`绑定全部证据，根仅准入**原TRAIN高层意图增强**；结果/terminal真值和低层BC均不准入，不改1800候选原件，不把120分层人审写成1800全审。5相机/计数＋8来源时钟反例通过，0新模型训练/0物理效果；下一需显式验签数据adapter和独立冻结专项训练/配对评估。冠军工程链已完成，8k/24h大训配方仍待用户确认，未擅自启训。
 
 - **2026-10-12 13:28 CST / Codex RECOVERY-USABLE：** bb39 CPU`periodic-tokens-v1`实际完整120/100task，生产prefix/field span/结果及terminal -100/意图权重1/memory0.25全过，result9668aa73…9be3c两端一致、0模型forward/优化/八卡空。末端报告发现本脚本把G05分类attention ID求和当token数（不是模型mask错误），这两个长度指标不可用；已改数非0位置并补非二值反例，拟新v2重跑CPU留准确长度，原v1结果不涂改。数据有意义的原图/来源/mask门已过，训练入口/配对效果仍待。

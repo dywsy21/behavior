@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import sys
 import time
+import subprocess
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / 'scripts/rl/memlite_online/code'))
@@ -121,6 +122,7 @@ def main():
     parser.add_argument('--candidate-sha256', required=True)
     parser.add_argument('--review-sha256', required=True)
     parser.add_argument('--check-tokens', action='store_true', help='Also run actual mixed-task token/CE-mask stack on CPU')
+    parser.add_argument('--recipe', type=Path, help='Use the actual reviewed training adapter; binds audit to recipe and source')
     args = parser.parse_args()
     if os.environ.get('CUDA_VISIBLE_DEVICES') != '' or args.output.exists():
         raise ValueError('CPU-only and fresh output required')
@@ -133,7 +135,17 @@ def main():
     accepted = AcceptedRelease(release)
     for name in ('train_candidates.npy', 'train_tasks.npy', 'episode_offsets.npy'): accepted.verify_file(name)
     config = configuration(args.root, 'high', accepted.manifest['task_names'])
-    data = Stage1Dataset(release, config, 'high', 'train')
+    data_class=Stage1Dataset; periodic_admission_sha=None
+    if args.recipe is not None:
+        if not args.check_tokens: raise ValueError('Actual adapter admission requires token audit as well')
+        from recovery_periodic_data import PeriodicTeacherPool,with_periodic_teacher
+        recipe=json.loads(args.recipe.read_text())
+        if Path(recipe['root']).resolve()!=args.root.resolve(): raise ValueError('Foreign adapter recipe root')
+        pool=PeriodicTeacherPool(args.root,recipe['H1']['periodic_teacher'],repo=REPO)
+        if pool.candidate_path.resolve()!=args.candidates.resolve(): raise ValueError('Different actual adapter candidates')
+        periodic_admission_sha=recipe['H1']['periodic_teacher']['admission_sha256']
+        data_class=with_periodic_teacher(Stage1Dataset,pool)
+    data = data_class(release, config, 'high', 'train')
     rows = [json.loads(line) for line in args.candidates.read_text().splitlines()]
     review = json.loads(args.review.read_text())
     if review['candidate_sha256'] != args.candidate_sha256: raise ValueError('Foreign review')
@@ -156,6 +168,8 @@ def main():
         if reviewed[index]['identity'] != row['identity'] or reviewed[index]['projection'] != projection:
             raise ValueError('Reviewed image/target identity differs')
         raw, identity = data.raw(index)
+        if args.recipe is not None and raw['model_projection'] != projection:
+            raise ValueError('Actual training adapter did not reconstruct the reviewed periodic history')
         if identity['frame'] != row['identity']['frame'] or identity['episode'] != row['identity']['episode']:
             raise ValueError('Processor decoded a different source observation')
         camera_names = {'head_rgb':'base_0_rgb', 'left_wrist_rgb':'left_wrist_0_rgb', 'right_wrist_rgb':'right_wrist_0_rgb'}
@@ -203,6 +217,10 @@ def main():
         optimizer_updates=0, decoded_current_rgb_images=len(processed)*3,
         token_checks=token_checks, tokenized_review_cases=len(token_checks), model_forwards=0,
         training_admitted=False, limit='Engineering contract only; no physical outcome/action truth or model effect')
+    if args.recipe is not None:
+        result.update(schema='periodic_planner_processor_audit_v1', real_adapter_used=True,
+            source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
+            recipe_sha256=sha256(args.recipe),periodic_admission_sha256=periodic_admission_sha)
     (args.output / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps({key:value for key,value in result.items() if key not in ('candidates', 'processed', 'token_checks')}), flush=True)
 

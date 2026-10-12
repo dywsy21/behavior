@@ -28,7 +28,11 @@ def validate_launch(ticket_path,component,*,engineering=False):
                 or processor.get('admission_sha256')!=ticket['files']['admission']['sha256']
                 or processor.get('optimizer_steps')!=0 or processor.get('oracle_inputs') is not False):
             raise ValueError('Fixed feedback requires actual all-row processor acceptance')
-    if component=='H1' and recipe.get('H1',{}).get('original_feedback')=='causal_expert_unknown_v1':
+    periodic=recipe.get('H1',{}).get('periodic_teacher') is not None
+    if periodic:
+        from recovery_periodic_data import validate_periodic_launch
+        validate_periodic_launch(ticket,recipe)
+    if component=='H1' and recipe.get('H1',{}).get('original_feedback')=='causal_expert_unknown_v1' and not periodic:
         if not {'expert_feedback_audit','expert_feedback_human_review'}<=ticket['files'].keys():
             raise ValueError('New expert feedback needs actual processor and human visual acceptance')
         audit=json.loads(Path(ticket['files']['expert_feedback_audit']['path']).read_text())

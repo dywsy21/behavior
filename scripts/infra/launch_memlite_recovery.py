@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import shutil
 import subprocess
 import sys
 import time
@@ -29,6 +30,15 @@ def main():
     if ticket['source_commit']!=commit: raise ValueError('Source does not match approved ticket')
     if recipe['preferred_node'] not in subprocess.check_output(['hostname','-I'],text=True).split(): raise ValueError('Wrong node')
     if not disk_has_reserve(recipe['root']): raise RuntimeError('Keep 256GiB shared disk reserve')
+    runtime_reserve_gib=256.
+    if recipe.get('H1',{}).get('periodic_teacher') is not None:
+        from recovery_periodic_data import checkpoint_reservation
+        spec=recipe['H1']['periodic_teacher']
+        reservation=checkpoint_reservation((Path(recipe['root'])/recipe['parents']['high']['path']).stat().st_size,
+            ticket['maximum_updates'],ticket['checkpoint_every_updates'],spec['reserve_for_champion_bytes'])
+        if shutil.disk_usage(recipe['root']).free < reservation['required_free_bytes']:
+            raise RuntimeError('Periodic run would consume the reserved champion training capacity')
+        runtime_reserve_gib=reservation['runtime_stop_free_bytes']/1024**3
     # No interference, even when another job uses only one device of this node.
     if subprocess.check_output(['nvidia-smi','--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
         raise RuntimeError('Node has another GPU job; do not displace/compete')
@@ -72,7 +82,7 @@ def main():
             while child.poll() is None:
                 now=time.monotonic();ledger.update(status='RUNNING',consumed_seconds=previous+now-started,updated=time.time())
                 atomic_json(ledger_path,ledger)
-                if stopping[0] or now+180>=deadline or not disk_has_reserve(recipe['root']):
+                if stopping[0] or now+180>=deadline or not disk_has_reserve(recipe['root'],runtime_reserve_gib):
                     if not stop.exists(): atomic_json(stop,dict(reason='signal_time_or_disk_reserve'))
                 if now>=deadline:
                     if term_at is None: os.killpg(child.pid,signal.SIGTERM);term_at=now
