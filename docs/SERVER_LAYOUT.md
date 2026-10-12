@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 15:58 CST：radio-v2完整本地视频已核验
+
+- 本地`artifacts/periodic-full-videos-20261012-v2/radio/execution.mp4`为完整107.533s/3226帧、原速、底部仅意图/结果头概率，SHA91b0a7b57780dba0586eaee1bafc0725f6839fc04c2712c47065724fe51238b0；原件两端日志在`source/radio/{episode,service}`，未覆盖原20261011或中断v1。
+- `radio/owner-review.json`记录根12抽帧和终态原分辨率检查，官方3225步failure/Q0；机器collector的owner-pending是生成时快照，人工签核以此独立记录为准，不热改冻结收片器。food/tripod继续既有d793 v2，尚未全程成片。
+
 ## 2026-10-12 15:43 CST：本地新轮收片器正在等待终态
 
 - 本地冻结`/home/wsy/behavior/artifacts/frozen-source/periodic-video-collector-20261012-v2`=68531356，tmux`periodic-video-collector-20261012-v2`，log`artifacts/periodic-full-videos-20261012-v2.log`，state同名目录内`collector-status.json`。只读SSH/SCP、完整一致性与字幕渲染，不启动/重试模拟器或重登VPN；当前0成片/全部运行。

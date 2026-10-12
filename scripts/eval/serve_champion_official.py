@@ -48,8 +48,13 @@ async def run(args):
     status=dict(status='loading',pid=os.getpid(),started=time.time(),optimizer_updates=0,
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
         config_sha256=file_sha(args.config),asset_receipt_sha256=cfg['verified_sha256'],
-        physical_execution_evidence=False,allowed_task_ids=allowed)
+        physical_execution_evidence=False,allowed_task_ids=allowed,memory_profiling=args.profile_memory)
     atomic_json(args.output/'status.json',status)
+    memory_profile = None
+    if args.profile_memory:
+        from behavior_champion.memory_profile import ProcessMemoryProfile
+        memory_profile = ProcessMemoryProfile(args.output,gpu)
+        memory_profile.start()
     os.environ.update(WANDB_MODE='disabled',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',
         XLA_PYTHON_CLIENT_PREALLOCATE='false',JAX_COMPILATION_CACHE_DIR=str(args.output/'jax-cache'))
     sys.path[:0]=[str(reference/'src'),str(openpi/'src')]
@@ -61,6 +66,11 @@ async def run(args):
     from behavior_champion.official import OfficialPolicyServer
     from wire import packb,unpackb
     runtime=ChampionRuntime(root/cfg['checkpoint'],stages,expected_model=checked['expected_model'])
+    def memory_snapshot(label):
+        if memory_profile is not None:
+            import jax
+            memory_profile.record_jax(label,jax.devices()[0].memory_stats())
+    memory_snapshot('model_loaded')
     def digest():
         sha=hashlib.sha256()
         for path,value in nnx.state(runtime.policy._model,nnx.Param).flat_state().items():
@@ -78,6 +88,8 @@ async def run(args):
     def journal(row):
         with (args.output/'events.jsonl').open('a') as stream:
             stream.write(json.dumps(dict(time=time.time(),**row),allow_nan=False)+'\n')
+        if row['kind']=='delivered' and row.get('generated_display') is not None:
+            memory_snapshot('prediction_delivered')
     server=OfficialPolicyServer(factory,metadata=dict(policy='champion2026',action_chunk_size=20,
         action_dimension=23,environment_batch_size=1,allowed_task_ids=allowed,
         source_commit=status['source_commit'],config_sha256=status['config_sha256'],
@@ -87,12 +99,17 @@ async def run(args):
     for sig in (signal.SIGTERM,signal.SIGINT):
         asyncio.get_running_loop().add_signal_handler(sig,stop.set)
     def ready(_):
+        if memory_profile is not None:memory_profile.phase='serving'
         status.update(status='ready',parameters_before=before,loaded=time.time())
         atomic_json(args.output/'status.json',status)
     try:
         await server.run(host=cfg['host'],port=cfg['port'],stop=stop,ready=ready)
         after=digest()
         if after!=before:raise ValueError('Read-only policy parameters changed')
+        if memory_profile is not None:
+            memory_snapshot('server_closed')
+            status['memory_profile']=memory_profile.finish()
+            atomic_json(args.output/'memory-profile.json',status['memory_profile'])
         status.update(status='closed',finished=time.time(),parameters_after=after,weights_unchanged=True)
         atomic_json(args.output/'result.json',status)
     except BaseException as error:
@@ -105,4 +122,5 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--profile-memory',action='store_true',help='Read-only per-PID NVML sampling plus JAX allocator statistics; not a hardware-limit test')
     asyncio.run(run(parser.parse_args()))

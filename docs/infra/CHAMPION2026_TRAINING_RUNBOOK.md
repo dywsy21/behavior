@@ -108,3 +108,16 @@ IP方案须至少50端口。现有`package_submission.py`是旧MEM全1000条专�
 d793eb87只关闭自有服务/内部client的周期心跳，以避开同步库`ping_timeout=None`＋高延迟
 触发的ping循环（安装原库的CPU反例已在两服务器复现）。官方client保持原60s/300s参数未改。
 24GB、容器、正式新EMA及物理效果依然未验收；不能由这些协议检查推出成功率提升。
+
+## 2026-10-12 16:04 CST：提交显存准备，非实体24GB验收
+
+`serve_champion_official.py --profile-memory`只增加本进程GPU内存遥测：0.5秒采样NVML逐PID占用，
+并在模型加载/同步推理完成后读取JAX allocator统计。日志独立`gpu-memory-samples.jsonl`，
+成功关闭后`memory-profile.json`；采样错误单列，不假填零，不把其他进程占用算给模型。
+采样最大值是下界，不能据A800测得低于24GiB就宣称3090/A5000/TitanRTX或Docker已通过。
+
+本次根负责有限只读probe：沿原配置`official_cp2_protocol_v1.json`、lc1实空GPU3、原cp2和
+两个TRAIN输入，复用18次真实模型调用/10项序列检查，在新冻源与新
+`runs/champion_official_protocol_20261012/memory-{server,probe}-v1`目录运行；只为量实际峰值，
+不是新增效果实验或正式训练。18调用完成后正常关闭绑定服务、复核权重摘要；模型/协议失败
+则保留现场并停止，不扩为物理回合、不占队友GPU、不热改环境。实际结果尚待。

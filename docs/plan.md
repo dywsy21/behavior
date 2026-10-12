@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 16:04 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军新增可选只读逐PID显存采样（0.5s NVML＋同步模型调用后JAX分配器峰值），19项采样/原协议/会话CPU测试通过；本机系统Python缺pytest、隔离env缺G05的OmegaConf，改用原champion env `--noconftest`执行不依赖G05 fixture的这些测试，无安装/改环境。已核lc1 GPU3实空，下一冻结新源、原cp2/两个TRAIN/18次模型调用有限probe，仅量加载＋推理显存，不冒充实体24GB/Docker或新EMA。此时tripod-v2也已5868控原官方failure/Q0、195.633s/5869帧全片落地（a3b043ac…d86f）；根12分布帧复核仍绕房间导航、全367块仅NAVIGATE，未见抓取/装配，记录媒体验收不等策略有效。food原回合继续，正式冠军配方仍未获准。
+
+- **2026-10-12 15:58 CST / Codex RECOVERY-USABLE：** radio-v2已原官方3225控终态failure/Q0，不再是工程中断；完整107.533s/3226帧30fps字幕MP4已本地`artifacts/periodic-full-videos-20261012-v2/radio/execution.mp4`（91b0a7b5…38b0），全解码/原帧保留通过。根亲看12分布帧及终态原分辨率：机器人到桌前并伸手，不能确认稳定抓起/开机；896控从NAVIGATE切GRASP后仍2329控未推进。原日志26次真规划中1536/3200已收到独立observer的estimated SUCCEEDED仍重复GRASP，故不能误归因于反馈完全未输入；known UNKNOWN是无物理真值的原合同，不是丢反馈。人工记录同目录`owner-review.json`，这是展示媒体审查通过而非策略可用。food/tripod仍原v2运行，不改权重/配置/重置，不追加训练；冠军正式配方仍待确认。
+
 - **2026-10-12 15:43 CST / Codex RECOVERY-USABLE：** 本地只读收片器已15:39在独立冻结68531356 `artifacts/frozen-source/periodic-video-collector-20261012-v2`启动，tmux同末目录名；输出`artifacts/periodic-full-videos-20261012-v2`，registration SHA07f5acd6…b6ce已绑定，三case均running/尚0成片。15:43采样radio1920、food1920、tripod1280（按128控状态发布），全部继续。同原10/11完整日志对照，旧radio202块一直NAVIGATE；新radio第896控已NAVIGATE→GRASP，food/tripod此前仍NAVIGATE。此为高层实际命令变化，不代表物理抓住或Q/SR提升；等原官方终态、完整视频与根人工核验再结论。冠军正式8k/24h仍待用户确认，不能把优先级答复当配方授权。
 
 - **2026-10-12 15:38 CST / Codex RECOVERY-USABLE：** d793双端三v2已全部真实执行：15:37 ACK radio768/food747/tripod96，日志0–5s更新，均无错误；越过原心跳中断控制点是工程恢复，不是任务成功。新增只读collector registration锁定三case的v2目录/双端commit/config SHA，拒错配、路径注入、挑选任务与恢复时换配置；保留旧20261011默认和原失败片。7收片＋3视频时钟测试通过，下一独立本地冻源收齐三完整原片并渲染仅意图/结果头字幕，再根人工抽帧；尚无新完整Q/SR/成片。
