@@ -1,0 +1,38 @@
+{
+  "schema": "memlite_final_public100_v1",
+  "owner": "Codex SUBMISSION-FULL-EVAL",
+  "authorization": "User requested latest MEM-Lite full official RTX evaluation before the champion final-model evaluation. No public-test selection, retraining, external upload or official submission.",
+  "source_root": "/data/workspace/wsy/behavior2026",
+  "target_root": "/run/ti/rl_memlite_stage1_20261006",
+  "models": {
+    "planner": {"path": "runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/checkpoints/step_00000360_save_0003.pt", "sha256": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d", "step": 360, "tensors": 950},
+    "low": {"path": "runs/recovery_heterogeneous_20261010/L0-native-learner-candidate-v1/checkpoints/step_00000200_save_0004.pt", "sha256": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797", "step": 200, "tensors": 1138},
+    "observer_backbone": {"path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt", "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316", "step": 35, "tensors": 950},
+    "observer_adapter": {"path": "runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/checkpoints/selected.pt", "sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699"}
+  },
+  "existing_planner_export": {
+    "source_path": "runs/recovery_handoff_20261012/portable-export-v1/portable/candidate-model.pt",
+    "target_path": "runs/handoff_portable_20261012/pack-v1/candidate-model.pt",
+    "sha256": "949c70676c58ec9a2a1ee35195467964d1f8c254b95def7ed5744e705b17ff0d"
+  },
+  "normalization_sha256": {
+    "planner": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "calibration": {"path": "runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1/calibration/calibration.json", "sha256": "32ed1e9effc57a8716af659ab850de1d112b6ba0b5a1c83f078f3b16a0fd42b1"},
+  "observer_fit_config": {"path": "configs/recovery_sft/a800_observer_v11_outcome_balance_v1.json", "sha256": "69912986ac2c2315df7500cb882cf255a6bbd588cefd389a1f43147027afd076"},
+  "observer_fit_result": {"path": "runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/result.json", "sha256": "7cff7691913ab922a85e3b0f460293f2c1d84f93b1407c00cc7536cff21e6b56"},
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "policy_seed": 17,
+  "planner_interval_controls": 128,
+  "chunk_size": 16,
+  "fm_steps": 10,
+  "indices": [0,1,2,3,4,5,6,7,8,9],
+  "rollouts": 1,
+  "mode": "public_test",
+  "official_commit": "a8247a8cc1633fe1ca0cc66aa07243d46c64f155",
+  "model_python": "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+  "sim_python": "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+  "notes": "Original weights retained; exact model-only transport is not a new trained model. GRASP calibration only, no privileged actor input. Publish all raw official metrics/videos. Batch size selected by TRAIN engineering preflight before public cases."
+}

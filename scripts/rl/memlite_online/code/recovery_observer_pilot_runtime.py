@@ -48,7 +48,7 @@ def validate_pilot_receipts(models,identities,repo):
 
 
 class LoadedPilotObserver:
-    def __init__(self,metadata,models,names,*,parameter_digest):
+    def __init__(self,metadata,models,names,*,parameter_digest,configuration_override=None):
         import torch
         from g05.utils.training.stage1_model import configuration,restore_model,make_processor
         from g05.models.g05.helpers.temporal_outcome import TemporalOutcomeObserver
@@ -56,7 +56,12 @@ class LoadedPilotObserver:
         from g05.models.g05.helpers.observer_adapter import require_observer_adapter_only
         self.digest=parameter_digest;self.models=models
         spec=metadata['models'];accepted=metadata['calibrated'];cfg=accepted['fit_config'];fit=accepted['fit']
-        root=Path(spec['root']);self.config=configuration(root,'high',names)
+        root=Path(spec['root'])
+        # Portable inference supplies the exact signed production config with
+        # only asset paths relocated. The caller verifies the pack manifest;
+        # the original normalizer, tensor lineage and frozen digest gates below
+        # still apply. Historical callers retain the original construction.
+        self.config=configuration(root,'high',names) if configuration_override is None else configuration_override
         if file_sha(self.config['stats_path'])!=models.observer_normalization:raise ValueError('Observer stats drift')
         saved=torch.load(root/spec['observer_adapter']['path'],map_location='cpu',weights_only=False)
         if (saved['schema']!='recovery_observer_adapter_checkpoint_v1'
