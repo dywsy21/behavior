@@ -36,11 +36,16 @@ class RunnerTests(unittest.TestCase):
                            checkpoint_every=2, eval_every=2, stop=stop, prior_seconds=prior,
                            started=0, clock=lambda: engine.clock[0])
 
-    def test_registered_pending_recipe_refuses_formal_before_execution(self):
+    def test_registered_approved_recipe_and_unapproved_copy_gate(self):
         root = Path(__file__).resolve().parents[1]
         recipe = json.loads((root / 'configs/champion2026/shared100_v1.json').read_text())
-        self.assertFalse(recipe['formal_launch_approved'])
-        with self.assertRaises(PermissionError): validate_launch(recipe, engineering=False)
+        self.assertTrue(recipe['formal_launch_approved'])
+        self.assertIn('2026-10-12 user:', recipe['approval_note'])
+        validate_launch(recipe, engineering=False)
+        with self.assertRaises(PermissionError):
+            validate_launch(dict(recipe, formal_launch_approved=False), engineering=False)
+        with self.assertRaises(PermissionError):
+            validate_launch(dict(recipe, formal_launch_approved='true'), engineering=False)
         validate_launch(recipe, engineering=True)
         with self.assertRaises(ValueError): validate_launch(dict(recipe, updates=8001), engineering=True)
 

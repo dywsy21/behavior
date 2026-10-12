@@ -1,4 +1,4 @@
-"""Guarded champion100 training entry; default Git recipe is NOT approved.
+"""Guarded champion100 training entry; requires recorded approval in Git.
 
 Formal execution requires the user-confirmed recipe to be recorded in Git.
 --engineering runs only three updates and labels all outputs non-deployable.
@@ -48,7 +48,7 @@ def main():
         raise ValueError('Use the registered Git recipe, not an untracked external approval toggle')
     recipe = json.loads(args.recipe.read_text())
     # This check is intentionally BEFORE GPU discovery, W&B, output mutation,
-    # source imports, or parent loading. Default invocation cannot start a job.
+    # source imports, or parent loading. An unapproved recipe cannot start a job.
     validate_launch(recipe, engineering=args.engineering)
     check_environment()
     if args.resume_latest:

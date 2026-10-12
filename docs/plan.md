@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 16:30 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 用户已明确批准冠军正式大训并继续MEM，覆盖此前“待批准”。已在Git配方/AGENTS/手册记录：lc1八A800、shared50→100task、global256/stride16、8000更新或首次启动起24h、W&B online，沿原固定留出与完整保存。仅授权状态/对应防误启动测试更新，数学/采样不变；20项入口/空间/采样/优化器/完整保存/导出/W&B CPU回归全过（10.59s），尚未启动，先提交冻结。16:27真实仅food模型3840850占GPU1，已12960/20545控，正常等完整终态后释放八卡，不打断旧片；磁盘空1,022,891,130,880B，大于775GiB。MEM继续CPU核真实成功反馈→技能切换的数据覆盖，并保留两完整Q0，不挤占冠军资源；下一源码冻结及实际开训首更新验收。
+
 - **2026-10-12 16:11 CST / Codex CHAMPION-2026：** A800实际显存probe已终态：原cp2两TRAIN/18模型调用、47.46s，10项协议检查全过且动作SHA与原3b对照十项全同；253次0.5s逐PID采样0错误，加载峰8664MiB、全程峰8718MiB≈8.51GiB，JAX live峰7,231,032,064B。仅A800采样下界，不等3090/A5000/TitanRTX、容器或新100task EMA验收。13新/原client CPU在精确官方引用下全过；模型before/after同b1ebe3fc，已SIGTERM正常关停并核GPU3释放。四轻量原回执已两端SHA核验至`artifacts/champion-official-protocol-20261012/memory-v1`，Git摘要`2026-10-12-champion-serving-memory.json`。MEM两完整Q0/亲审及food仍进行中的事实另登记`2026-10-12-memlite-periodic-full-progress.json`，不伪填第三结果；正式冠军大训仍未启动。
 
 - **2026-10-12 16:08 CST / Codex CHAMPION-2026：** 冻源322d8177已由已push Git包7aff6764…1e869双端验签导入lc1独立`src/champion-memory-profile-20261012-v1`；GPU3只读`memory-server-v1` PID3865558已ready、初始参数摘要同前b1ebe3fc…102fc，`memory-probe-v1`已提交原两TRAIN/18调用有限显存测试。仅开启遥测，未改actor/seed/步数/连接隔离；正式训练未开始。MEM radio/tripod终态与全片均保留、food原v2已7936控继续；不把新源覆盖任何活跃源。

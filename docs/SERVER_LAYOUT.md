@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 16:30 CST：冠军获准正式训练，等待MEM原餐盘终态
+
+- lc1 `memory-server-v1`/`memory-probe-v1`均已完整结束，PID3865558正常停止、GPU3释放；下方16:08“运行中”为历史状态。显存最终回执见`docs/infra/results/2026-10-12-champion-serving-memory.json`。
+- 当前lc1仅`runs/periodic_full_20261012/food-model-v2` GPU1/PID3840850活跃；RTX配对`food-sim-v2`继续原完整回合，本地collector继续等第三全片。冠军正式源/run将在新独立路径建立，未热改任何旧源或共享env、未重登VPN。
+
 ## 2026-10-12 16:08 CST：冠军只读显存探针运行，MEM已两成片
 
 - lc1新`src/champion-memory-profile-20261012-v1`=322d81777777fb166f6100fe6514f245537afbe3；Git对象包`incoming/codex-git-bundles/memory-source-322d8177.bundle` SHA7aff67644ed90bae298e813d6ae767280670eb48193c9ac277f184c202a1e869。原Git checkout与其他冻结源不改。

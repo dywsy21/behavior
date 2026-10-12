@@ -1,7 +1,7 @@
 {
   "schema": "champion100-training-v1",
-  "formal_launch_approved": false,
-  "approval_note": "PENDING: priority confirmed, new 8000-update/24h large-training recipe not yet approved",
+  "formal_launch_approved": true,
+  "approval_note": "2026-10-12 user: 启动冠军方案大训练吧，memlite方案也继续推进. Approved previously discussed lc1 8xA800, BS256, stride16, shared100, 8000 updates or 24h; MEM-Lite must not displace this run.",
   "updates": 8000,
   "batch_size": 256,
   "max_hours": 24,
