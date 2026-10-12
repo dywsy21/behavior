@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 16:56 CST / Codex CHAMPION-2026：** 正式启动器已在lc1 tmux`champion-shared100-formal-v1`提交，冻结30b05548、run预定`runs/champion_formal_20261012/shared100-v1`、同名`.log`；当前依赖等待，**尚0正式更新/W&B未产生**。启动shell只等原food PID3840850自然退出，验completed/权重未变/原source与config后exec正式入口（无engineering/resume），入口再核八卡空闲/全保存空间；等待不计24h、不抢卡/不杀进程。具体票`2026-10-12-champion-formal-launch.json`。MEM00569709已另冻至RTX、原websockets16三回归通过（sim env无pytest，使用原unittest入口，无安装）；383候选仍仅CPU请求，真实预测/人审/新训练待。
+
 - **2026-10-12 16:48 CST / Codex RECOVERY-USABLE：** 独立CPU冻源00569709已在lc1完成候选源重建（9.25s/0GPU/0模型）：原1800全部核回同帧TRAIN，仅准备用于真实observer的383条/97task/379源，193继续、178动词变化、7明确对象/目标变化、5未绑定关系变化；34保护源样本与2缺原注释观测窗口已排除，另非GRASP/无前意图不适用。候选766次头检查尚未执行/0新标签/0新训、不能称已收齐恢复数据。原结果SHA016837d6…438b已两端一致落本地，详情`2026-10-12-memlite-handoff-preparation.json`；15相关CPU单测通过。下一RGB/proprio与真实prefix核验、冻结observer预测及亲审，不把未知/误报改成成功。冠军仍是独立30b05548等待原food完整回合，不挤占其八卡或共享env。
 
 - **2026-10-12 16:46 CST / Codex RECOVERY-USABLE：** 已实现CPU候选预备器`prepare_memlite_handoff_feedback.py`及纯函数`recovery_handoff_feedback.py`：重建原1800已审周期TRAIN目标，不改旧标签；排除observer fit/selection/CAL/test及原恢复DEV整源，只对上一条GRASP命令构造T−64…T五个真实原锚、两次四帧结果头请求，严格输入上一条意图/parent/因果memory，下一技能只留目标侧。仅metadata候选/尚未运行真实反馈或新拟合，随后冻结到独立CPU源验原数据；不得把文字变化或专家段结束当物理成功。短技能心跳三回归已过并提交502f35ad，Git首次TLS失败、重试push已成功；冠军冻结30b05548不受后来MEM更改影响，原food继续、最后16:40为16000控。

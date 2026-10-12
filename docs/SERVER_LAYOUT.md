@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 16:56 CST：正式冠军启动器已提交，依赖等待
+
+- lc1 tmux `champion-shared100-formal-v1`，log `/data/workspace/wsy/behavior2026/runs/champion_formal_20261012/shared100-v1.log`；正式run同目录去`.log`，只有依赖完成后才创建/起24h时钟。源30b05548不变，明确非engineering、非resume；等原food模型正常退出与终态验签后才进八卡/空间检查。
+- RTX新准备源 `/run/ti/rl_memlite_stage1_20261006/code/memlite-handoff-requests-20261012-v1`=00569709，与lc1 CPU源同commit；Git bundle30e2f46c…e5acd两端核验。原sim env的3项心跳unittest已通过，未装pytest/改env/启动额外模拟器；旧food d793源码不动。
+
 ## 2026-10-12 16:48 CST：正式冠军源已冻结；MEM新反馈候选CPU准备完成
 
 - 冠军待启动冻结源`/data/workspace/wsy/behavior2026/src/champion-formal-20261012-v1`=30b055485b2720c8dc3391a27cea052cab9e4fc7，Git包SHA72f8e9a2f31b80e229c920b71f30ec54ff3c42ab452bb0d07fc13512e4386836。配方文件SHA361b872414bfb44ed0dd5ea8d640bd23e1dcc81a717a707970db520e7b02bdb2；不是后来MEM提交的热更新。
