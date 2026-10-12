@@ -23,7 +23,8 @@ from recovery_calibration_launch import bound, read, write_new
 from recovery_corpus import digest, file_sha
 from recovery_generation_metrics import score_event, summarize
 from recovery_generation_shards import generation_shard
-from recovery_handoff_exposure import choice_cache_index, preprocess_planner_example, diagnostic_model_identity
+from recovery_handoff_exposure import (choice_cache_index, preprocess_planner_example,
+                                      diagnostic_model_identity, validate_diagnostic_checkpoint_step)
 from recovery_handoff_inference import tree_sha
 from recovery_process_cache import isolated_cache_env
 
@@ -205,7 +206,7 @@ def main():
     run_diagnostic(args,checkpoint,data.config,prepared_rows,common,started)
 
 
-def run_diagnostic(args,checkpoint,model_config,prepared_rows,common,started):
+def run_diagnostic(args,checkpoint,model_config,prepared_rows,common,started,*,expected_checkpoint_step=360):
     """Identical model calls for native and SHA-verified portable inputs."""
     import torch
     from g05.data.memlite_stage1_dataset import collate_stage1, to_device
@@ -219,7 +220,7 @@ def run_diagnostic(args,checkpoint,model_config,prepared_rows,common,started):
     def forbidden(*args,**kwargs): raise RuntimeError('Optimizer forbidden in TRAIN diagnosis')
     torch.optim.Adam.step = torch.optim.AdamW.step = forbidden
     saved = torch.load(checkpoint,map_location='cpu',mmap=True,weights_only=False)
-    if saved['state']['step'] != 360: raise ValueError('Not the fixed final360 checkpoint')
+    validate_diagnostic_checkpoint_step(saved['state']['step'],expected_checkpoint_step,common)
     model, restoration = restore_model(model_config,'high',state=saved['model_state_dict'])
     del saved; gc.collect(); model.eval().cuda()
     identity_before = diagnostic_model_identity(model,parameter_digest)

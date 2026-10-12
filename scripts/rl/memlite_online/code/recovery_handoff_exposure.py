@@ -4,6 +4,19 @@ import copy
 import json
 import math
 
+ENGINEERING_PARENT_SHA = '3683f719ebb033cacf77afdc0330b25f43a3c3e5b704b0bda9623608f092c3d1'
+
+
+def validate_diagnostic_checkpoint_step(actual, expected, common):
+    if actual != expected:
+        raise ValueError('Wrong registered checkpoint step')
+    if expected == 360:
+        return
+    if (expected != 48045 or common.get('purpose') != 'ENGINEERING_PARENT_ONLY_NOT_FINAL360_COMPARISON'
+            or common.get('checkpoint_sha256') != ENGINEERING_PARENT_SHA
+            or common.get('optimizer_updates') != 0):
+        raise ValueError('Only the exact old parent is permitted for engineering, never substitute in model comparison')
+
 
 def diagnostic_model_identity(model, parameter_digest):
     """Retain the CE forward's required profile without enabling optimization.

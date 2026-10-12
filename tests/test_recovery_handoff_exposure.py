@@ -6,7 +6,8 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts/rl/memlite_online/code'))
 from recovery_handoff_exposure import (training_exposure, first_difference, choice_cache_index,
-                                      preprocess_planner_example, diagnostic_model_identity)
+                                      preprocess_planner_example, diagnostic_model_identity,
+                                      validate_diagnostic_checkpoint_step, ENGINEERING_PARENT_SHA)
 
 
 def example():
@@ -34,6 +35,17 @@ def example():
 
 
 class ExposureTests(unittest.TestCase):
+    def test_engineering_parent_cannot_be_substituted_for_fixed_model_pair(self):
+        common=dict(purpose='ENGINEERING_PARENT_ONLY_NOT_FINAL360_COMPARISON',
+                    checkpoint_sha256=ENGINEERING_PARENT_SHA,optimizer_updates=0)
+        validate_diagnostic_checkpoint_step(360,360,{})
+        validate_diagnostic_checkpoint_step(48045,48045,common)
+        for actual,expected in ((48045,360),(360,48045),(1,1)):
+            with self.assertRaises(ValueError):validate_diagnostic_checkpoint_step(actual,expected,common)
+        for key,value in (('purpose','comparison'),('checkpoint_sha256','different'),('optimizer_updates',1)):
+            wrong=dict(common);wrong[key]=value
+            with self.assertRaises(ValueError):validate_diagnostic_checkpoint_step(48045,48045,wrong)
+
     def test_readonly_ce_keeps_profile_but_hashes_both_groups(self):
         from types import SimpleNamespace
         model=SimpleNamespace(training=False,coordination_trainable_parameter_groups=lambda:{'planner_vlm':[0]*326},
