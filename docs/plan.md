@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 15:38 CST / Codex RECOVERY-USABLE：** d793双端三v2已全部真实执行：15:37 ACK radio768/food747/tripod96，日志0–5s更新，均无错误；越过原心跳中断控制点是工程恢复，不是任务成功。新增只读collector registration锁定三case的v2目录/双端commit/config SHA，拒错配、路径注入、挑选任务与恢复时换配置；保留旧20261011默认和原失败片。7收片＋3视频时钟测试通过，下一独立本地冻源收齐三完整原片并渲染仅意图/结果头字幕，再根人工抽帧；尚无新完整Q/SR/成片。
+
+- **2026-10-12 15:31 CST / Codex RECOVERY-USABLE：** 心跳修复d793eb87双端三模型已全部ready，同f79/0c52/bee+b0、同配置SHA8aa6ff52…c54；RTX空卡/旧锁释放复核后，实际提交`radio-sim-v2`和`food-sim-v2`，原任务/301/sim0/policy17/官方超时不变，无动作数限额或教师前缀。tripod待首批加载完后只启动一次，新旧目录全分开；这是公开记录的基础设施复验，不从失败片挑结果、不抹旧中断。模拟完整Q/视频尚待，冠军正式配方仍待批准。
+
 - **2026-10-12 15:30 CST / Codex CHAMPION-2026：** 标准协议真实cp2已全通过：18次模型调用/10逐值检查、46.91s、两原TRAIN状态，任务交错、60逐控vs3×20块、半块reset/换task全部动作完全一致；旧工程服务已按登记停止并完成before/after参数hash b1ebe3fc…102fc一致、0优化/0物理。小回执已收本地两端同SHA（probe eb406de9…947b、server eccee115…a776），Git总结`2026-10-12-champion-official-protocol.json`；不称24GB/容器/新EMA或Q通过。MEM心跳原库反例在lc1/RTX各2测试全过，双端d793eb87新冻源已建，三个`model-v2`启动加载、新sim尚未启；旧中断全部保留。冠军正式配方未获批，不自动开训。
 
 - **2026-10-12 15:26 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军3bdf24f7在lc1既有16环境原官方客户端实连六测试全过/无skip；新独立`server-v2` GPU3已ready（旧v1 tmux参数引用错误导致0进程/0日志/0模型，未假称ready），只读cp2摘要b1ebe3fc…102fc。有限`actual-probe-v1`刚提交，等18次真实模型/逐控chunk一致性，不称效果。三MEM旧sim已SIGINT退出、RTX八卡空，服务全部明确failed_no_retry/ACK368、336、64；sim原status仍running是Isaac信号退出前未刷终态，另administrative-stop是权威中断证据，不覆盖原JSON。不重登VPN/不动权重。下一新冻结源关闭内部心跳，先原库反例再同三case新目录完整复验。

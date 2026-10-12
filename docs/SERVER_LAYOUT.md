@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 15:38 CST：心跳修复后当前有效完整回合配对
+
+- lc1 `src/memlite-periodic-heartbeat-20261012-v2` 与RTX `code/memlite-periodic-heartbeat-20261012-v2`均d793eb87，各自 `runs/periodic_full_20261012/{case}-model-v2` / `{case}-sim-v2`，对应tmux `periodic-phys-{case}-{model,sim}-v2`，case仍radio/food/tripod、GPU0/1/2、端口19810–19812。原v1是明确工程中断，不是当前活跃版本。
+- 各端 `heartbeat-tests-{lc1,rtx}-v2.log`记录安装原同步库负等待/紧发100ping复现及禁心跳不建线程，两项全过；不修改已安装库。15:37三case控制768/747/96仍在推进，未完成前禁止收成完整评测。
+- 本地预定 `artifacts/periodic-full-videos-20261012-v2/`，精确登记`configs/recovery_sft/periodic_full_video_collection_v2.json`，原片/服务日志在`source/{case}`、字幕MP4在`{case}/execution.mp4`；collector尚待独立本地冻结源启动，不覆盖10/11全片或当前v1中断片。
+
 ## 2026-10-12 15:26 CST：旧三MEM工程中断，冠军标准协议只读验证
 
 - RTX `runs/periodic_full_20261012/{case}-sim-v1`均已人为SIGINT终止心跳风暴；每目录保留`infrastructure-ping-storm-stack.txt`、`administrative-stop.json`与原片/日志，368/336/64实际控制。Isaac信号处理使原status停在running，但已核进程全部消失/卡空，不能按原状态当活跃或伪造完整指标。

@@ -12,6 +12,37 @@ import collect_full_episode_videos as collector
 
 
 class CollectorTests(unittest.TestCase):
+    def test_registration_is_explicit_all_cases_and_binds_runtime_sources(self):
+        source=Path(__file__).resolve().parents[1]/'configs/recovery_sft/periodic_full_video_collection_v2.json'
+        spec=collector.registration(source)
+        self.assertEqual(spec['pairs']['radio'],('radio-sim-v2','radio-model-v2'))
+        status=dict(case='radio',config_sha256=spec['config_sha256'],source_commit=spec['sim_source_commit'])
+        collector.validate_registered_status(spec,'radio',status,status)
+        for field,value in [('case','food'),('config_sha256','f'*64),('source_commit','a'*40)]:
+            bad=dict(status,**{field:value})
+            with self.assertRaises(ValueError):collector.validate_registered_status(spec,'radio',bad,status)
+
+    def test_registration_rejects_path_traversal_injection_duplicates_and_selection(self):
+        source=Path(__file__).resolve().parents[1]/'configs/recovery_sft/periodic_full_video_collection_v2.json'
+        original=json.loads(source.read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'registration.json'
+            for edit in [lambda x:x['pairs'].pop('food'),
+                         lambda x:x['pairs']['radio'].__setitem__(0,'../../foreign'),
+                         lambda x:x.__setitem__('rtx_root',x['rtx_root']+'; bad'),
+                         lambda x:x['pairs']['food'].__setitem__(0,x['pairs']['radio'][0])]:
+                value=json.loads(json.dumps(original));edit(value);path.write_text(json.dumps(value))
+                with self.assertRaises(ValueError):collector.registration(path)
+
+    def test_resume_refuses_to_change_registration_even_before_copy(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)/'new';state=collector.prepare_output(root,False,registration_sha256='a'*64)
+            state['status']='collector_failed_original_runs_untouched'
+            (root/'collector-status.json').write_text(json.dumps(state))
+            with self.assertRaisesRegex(ValueError,'Registration'):
+                collector.prepare_output(root,True,registration_sha256='b'*64)
+            self.assertFalse(list(root.glob('collector-status.before-resume-*')))
+
     def fixture(self,root):
         (root/'radio').mkdir()
         video=root/'radio/execution.mp4'

@@ -1,0 +1,17 @@
+{
+  "schema": "registered_full_episode_collection_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "purpose": "Collect all three named full episodes after the documented v1 infrastructure abort; never select successful videos or overwrite incomplete originals.",
+  "rtx_root": "/run/ti/rl_memlite_stage1_20261006/runs/periodic_full_20261012",
+  "a800_root": "/data/workspace/wsy/behavior2026/runs/periodic_full_20261012",
+  "pairs": {
+    "radio": ["radio-sim-v2", "radio-model-v2"],
+    "tripod": ["tripod-sim-v2", "tripod-model-v2"],
+    "food": ["food-sim-v2", "food-model-v2"]
+  },
+  "sim_source_commit": "d793eb87d19d8325aba70f611f75d3f94c66b2ea",
+  "model_source_commit": "d793eb87d19d8325aba70f611f75d3f94c66b2ea",
+  "config_sha256": "8aa6ff52546bdf534ed42f06460696b026017a31c025ab49451950308e6eac54",
+  "data_role": "Previously diagnosed public_test301 DEV episodes; neither training nor independent SR evidence",
+  "caption": "Only current intent and raw outcome-head output with probabilities below footage; separate original/source and subtitled MP4, require owner frame review."
+}
