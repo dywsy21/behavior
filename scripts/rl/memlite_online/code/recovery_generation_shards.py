@@ -53,6 +53,9 @@ def merge_generation_shards(parts):
         if (result.get('status') != 'completed'
                 or any(result.get(k) != v for k, v in manifest.items())):
             raise ValueError('Incomplete or mismatched terminal receipt')
+        if ('model_before_sha256' in manifest
+                and result.get('model_after_sha256') != manifest['model_before_sha256']):
+            raise ValueError('Read-only generation model changed or final digest is missing')
         if len(actual) != len(selected):
             raise ValueError('Missing or extra generated rows')
         for row, (position, split, sample_index) in zip(actual, selected):
@@ -66,4 +69,6 @@ def merge_generation_shards(parts):
         raise ValueError('Incomplete global generation coverage')
     first['sharding'] = dict(protocol=binding['protocol'], num_shards=count,
                              merged=True, global_schedule=schedule)
+    if 'model_before_sha256' in first:
+        first['model_after_sha256'] = first['model_before_sha256']
     return first, [rows[i] for i in range(len(schedule))], seconds

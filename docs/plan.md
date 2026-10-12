@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 20:14 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 新5f305420独立源经Git包8307792a…f276双端验签落lc3，冠军CPU导出9项目标env回归通过；MEM留出/分片/反馈35项目标env回归也过（最初命令误写不存在的metrics测试，未运行，随后用实际文件重验）。H1原348/360、240已保存，最终保存后再启实际CPU导出/高层生成，不争用活跃GPU或磁盘预留。另给严格分片合并补每份只读模型前后digest检查/合并保留与缺失、变更反例，尚未启动留出模型生成。
+
 - **2026-10-12 20:10 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 根补独立CPU已保存EMA导出入口`export_champion_saved_ema.py`/`checkpoint_export.py`，只验签读取完整checkpoint的75 EMA叶、不恢复Adam/占GPU/更改原run；映射、资产、step、字节、BF16/Intermediate及作者回读9项新旧测试过。尚未在目标环境/真实13.62GB EMA运行，待MEM最终保存后才实导出以保护空间。lc3 H1已有282/360、240完整保存，冠军原1071继续；GitHub重试fetch及6ad32ed7 push成功，未拉取或热改任何活跃源。
 
 - **2026-10-12 20:04 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** lc3原H1已210/360真实更新、首120完整26,593,048,600B checkpoint已保存，8样本/6专家2恢复与有限梯度不变；W&B API实读`5efbea52cbc1`有48/90/105真实历史，非仅本地online。只用固定final360作后续396真实反馈留出及旧域回归，不挑中间权重。低层18页根亲审回执cdc402cd…f399已补入三臂Git摘要，72全控机审与原门计数保持，不推广。冠军原PID继续，1000回执已验、后续源码/共享环境未改；本次fetch遭GitHub TLS中断且自有文档未提交，未强pull，下一重试安全同步。

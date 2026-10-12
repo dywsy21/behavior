@@ -61,6 +61,18 @@ class GenerationShardTests(unittest.TestCase):
             parts = self.fixture(); change(parts)
             with self.assertRaises(ValueError): merge_generation_shards(parts)
 
+    def test_frozen_model_digest_checked_for_every_shard_and_retained(self):
+        parts = self.fixture()
+        for manifest, result, _ in parts:
+            manifest['model_before_sha256'] = 'before'
+            result.update(model_before_sha256='before', model_after_sha256='before')
+        receipt, _, _ = merge_generation_shards(parts)
+        self.assertEqual(receipt['model_before_sha256'], receipt['model_after_sha256'])
+        bad = copy.deepcopy(parts); bad[1][1].pop('model_after_sha256')
+        with self.assertRaises(ValueError): merge_generation_shards(bad)
+        bad = copy.deepcopy(parts); bad[2][1]['model_after_sha256'] = 'changed'
+        with self.assertRaises(ValueError): merge_generation_shards(bad)
+
 
 if __name__ == '__main__':
     unittest.main()
