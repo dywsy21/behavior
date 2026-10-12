@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 15:43 CST：本地新轮收片器正在等待终态
+
+- 本地冻结`/home/wsy/behavior/artifacts/frozen-source/periodic-video-collector-20261012-v2`=68531356，tmux`periodic-video-collector-20261012-v2`，log`artifacts/periodic-full-videos-20261012-v2.log`，state同名目录内`collector-status.json`。只读SSH/SCP、完整一致性与字幕渲染，不启动/重试模拟器或重登VPN；当前0成片/全部运行。
+- 精确登记SHA07f5acd691897bc5178516638a46f6ad215f2497d4bda8b2452aa5d19ef7b6ce绑定三个d793 v2配对；任何片失败会保留原证据并停收，需owner检查后才恢复，不静默跳过。成片仍须根亲审，不能按collector进程退出称效果通过。
+
 ## 2026-10-12 15:38 CST：心跳修复后当前有效完整回合配对
 
 - lc1 `src/memlite-periodic-heartbeat-20261012-v2` 与RTX `code/memlite-periodic-heartbeat-20261012-v2`均d793eb87，各自 `runs/periodic_full_20261012/{case}-model-v2` / `{case}-sim-v2`，对应tmux `periodic-phys-{case}-{model,sim}-v2`，case仍radio/food/tripod、GPU0/1/2、端口19810–19812。原v1是明确工程中断，不是当前活跃版本。

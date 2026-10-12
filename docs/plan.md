@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 15:43 CST / Codex RECOVERY-USABLE：** 本地只读收片器已15:39在独立冻结68531356 `artifacts/frozen-source/periodic-video-collector-20261012-v2`启动，tmux同末目录名；输出`artifacts/periodic-full-videos-20261012-v2`，registration SHA07f5acd6…b6ce已绑定，三case均running/尚0成片。15:43采样radio1920、food1920、tripod1280（按128控状态发布），全部继续。同原10/11完整日志对照，旧radio202块一直NAVIGATE；新radio第896控已NAVIGATE→GRASP，food/tripod此前仍NAVIGATE。此为高层实际命令变化，不代表物理抓住或Q/SR提升；等原官方终态、完整视频与根人工核验再结论。冠军正式8k/24h仍待用户确认，不能把优先级答复当配方授权。
+
 - **2026-10-12 15:38 CST / Codex RECOVERY-USABLE：** d793双端三v2已全部真实执行：15:37 ACK radio768/food747/tripod96，日志0–5s更新，均无错误；越过原心跳中断控制点是工程恢复，不是任务成功。新增只读collector registration锁定三case的v2目录/双端commit/config SHA，拒错配、路径注入、挑选任务与恢复时换配置；保留旧20261011默认和原失败片。7收片＋3视频时钟测试通过，下一独立本地冻源收齐三完整原片并渲染仅意图/结果头字幕，再根人工抽帧；尚无新完整Q/SR/成片。
 
 - **2026-10-12 15:31 CST / Codex RECOVERY-USABLE：** 心跳修复d793eb87双端三模型已全部ready，同f79/0c52/bee+b0、同配置SHA8aa6ff52…c54；RTX空卡/旧锁释放复核后，实际提交`radio-sim-v2`和`food-sim-v2`，原任务/301/sim0/policy17/官方超时不变，无动作数限额或教师前缀。tripod待首批加载完后只启动一次，新旧目录全分开；这是公开记录的基础设施复验，不从失败片挑结果、不抹旧中断。模拟完整Q/视频尚待，冠军正式配方仍待批准。
