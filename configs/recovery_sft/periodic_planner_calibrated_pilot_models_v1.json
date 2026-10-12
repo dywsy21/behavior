@@ -1,0 +1,60 @@
+{
+  "schema": "causal_planner_calibrated_grasp_pilot_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "hypothesis": "Matched fresh DEV physical diagnostic: replace only the old899 planner with final360 periodic-history f79. Low0c52 and separate bee+b0 GRASP-only observer/calibration remain unchanged. Offline boundary63/100 vs25, continuation97/100 vs99, recovery42/42 and initial83/100 vs82 justify checking execution, not declaring general usability.",
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "planner": {
+    "path": "runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1/checkpoints/step_00000360_save_0003.pt",
+    "sha256": "f79cd96c13099cfb6df856dbcab83c670eb042ad512cfe3972af5ac3049f66a0"
+  },
+  "low": {
+    "path": "runs/recovery_heterogeneous_20261010/L0-later-actions-v1/checkpoints/step_00000200_save_0004.pt",
+    "sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5"
+  },
+  "observer_backbone": {
+    "path": "runs/recovery_pilot_a800_20261009/train-v1/H1/checkpoints/step_00000035_save_0007.pt",
+    "sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316"
+  },
+  "observer_adapter": {
+    "path": "runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/checkpoints/selected.pt",
+    "sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699"
+  },
+  "normalization_sha256": {
+    "planner": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "observer_normalization_path": "models/memlite-b-final-20260910/B-dataset-stats.json",
+  "input_role": "Only fresh official RGB/proprio and causally issued per-episode command history; no teacher prefix, model-input privileged state or test-to-train admission.",
+  "observer_runtime_mode": "calibrated_grasp_estimate_pilot_v1",
+  "resource": "Three separately verified idle lc1 GPUs for one model session each. No optimizer or shared environment changes.",
+  "stop": "One full fresh official episode per registered radio/food/tripod case. Official success/timeout only; preserve errors, never automatically reroll. Diagnostic only, not deployment or RECOVERY-USABLE completion.",
+  "pilot_receipts": {
+    "calibration": {
+      "path": "runs/recovery_observer_fresh_calibration_20261010/v11-reserved-launch-v1/calibration/calibration.json",
+      "sha256": "32ed1e9effc57a8716af659ab850de1d112b6ba0b5a1c83f078f3b16a0fd42b1"
+    },
+    "observer_fit_config": {
+      "path": "configs/recovery_sft/a800_observer_v11_outcome_balance_v1.json",
+      "sha256": "69912986ac2c2315df7500cb882cf255a6bbd588cefd389a1f43147027afd076"
+    },
+    "observer_fit_result": {
+      "path": "runs/recovery_heterogeneous_20261010/H0-observer-v11-outcome-balance-v1/result.json",
+      "sha256": "7cff7691913ab922a85e3b0f460293f2c1d84f93b1407c00cc7536cff21e6b56"
+    },
+    "planner_training_result": {
+      "path": "runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1/result.json",
+      "sha256": "2dce2bdc5bc55e062ff1285f09d15910e468895fd62a930fc7824b4ec5c1b1ff"
+    },
+    "planner_initial_generation": {
+      "path": "runs/recovery_periodic_20261012/generation-final-v1/initial-merged/result.json",
+      "sha256": "82f1f404e8f5655f13a37959bdc4e9144e27eb03e15b0d0b68d0cc61c89dd7d5"
+    },
+    "planner_noninitial_generation": {
+      "path": "runs/recovery_periodic_20261012/generation-final-v1/candidate-merged/result.json",
+      "sha256": "b79c6244426dc2a990ad39e17658ebd49f2d0c2f16a7750519dac36cf3d1b2d7"
+    },
+    "scope": "read_only_pilot_not_default_promotion"
+  }
+}

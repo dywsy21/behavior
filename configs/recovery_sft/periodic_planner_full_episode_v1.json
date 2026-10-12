@@ -1,0 +1,38 @@
+{
+  "schema": "fresh_full_episode_readonly_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "hypothesis": "Same three previously filmed DEV cases, fresh official starts, simulator seed0/policy seed17 and full original timeouts; change ONLY planner899->f79 while retaining low0c52 and the same separate observer. Record all three, not success-selected videos. Simulation nondeterminism prevents claiming paired physical states are bitwise identical.",
+  "models_config": "configs/recovery_sft/periodic_planner_calibrated_pilot_models_v1.json",
+  "mode": "public_test",
+  "instance_id": 301,
+  "policy_seed": 17,
+  "planning_interval_controls": 128,
+  "action_chunk_size": 16,
+  "cases": {
+    "radio": {
+      "task": "turning_on_radio",
+      "task_id": 0,
+      "sim_gpu": 0,
+      "model_gpu": 0,
+      "port": 19810
+    },
+    "food": {
+      "task": "cleaning_up_plates_and_food",
+      "task_id": 3,
+      "sim_gpu": 1,
+      "model_gpu": 1,
+      "port": 19811
+    },
+    "tripod": {
+      "task": "attach_a_camera_to_a_tripod",
+      "task_id": 35,
+      "sim_gpu": 2,
+      "model_gpu": 2,
+      "port": 19812
+    }
+  },
+  "termination": "Original official success or official task-specific timeout only; infrastructure errors preserved, never silently restarted.",
+  "data_role": "Previously diagnosed public_test301 development demonstration, never training or independent SR evidence.",
+  "resource": "Use idle lc1 GPUs0-2 after completed generation; RTX10383 GPUs0-2 verified idle again at launch. Independent episodes and ports19810-19812, stagger scene loading. No training, scene interventions or shared environment edits. Approved champion formal work retains priority; any administrative interruption is recorded, not silently rerolled.",
+  "overlay": "Only current intent and per-member raw outcome-head outputs/probabilities below footage; no counters, model hashes, physical truth or invented CoT."
+}

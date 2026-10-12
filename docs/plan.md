@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 14:46 CST / Codex RECOVERY-USABLE：** 新f79四片242＋初态两片142全部终态/严格合并通过，结果b79c6244…b2d7/82f1f404…d7d5。与旧串行899全部242身份、实际输入SHA、目标逐条全同：边界25→63（+38/0退），延续99→97（0新增/2退，task17与80分别在原段结束前62/11帧提前换技能，不能凭接近边界豁免错误），恢复42→42；初态strict82→83。旧899新分片仍进行，不先称完整parity通过。登记同旧radio/food/tripod、301、sim0/policy17的三条完整物理对照：只高层换f79，low0c52/独立bee+b0 observer不变；新configs已绑定真实训练/合并回执，模型/sim尚未启动。须先CPU回执门/空卡/新冻源/专用19810–19812转发；不改原片、不选成功、不重跑失败。
+
+- **2026-10-12 14:40 CST / Codex RECOVERY-USABLE / 阶段性离线改善：** 新f79的固定100真边界已全部生成，与旧899原串行100条逐task身份/actual causal input SHA/目标完全一致：exact/bundle25→63，38新增正确/0丢失，valid全100；照搬previous仍35条（旧74）。这是完整边界子集而非全626终态，普通延续/初态/恢复及旧控制新分片对旧串行的一致性仍待，0物理Q/SR；不能因此默认部署或标goal完成。证据在generation-final-v1/candidate-0..3/rows.jsonl与原planner_transition_audit_20261011/candidate-v1/rows.jsonl，原完整run不覆盖。
+
 - **2026-10-12 14:34 CST / Codex RECOVERY-USABLE：** b7a9953f已push，增量Git包SHA1e0c1e3d…00e7c两端校验/导入后冻结`src/memlite-periodic-generation-20261012-v1`；新源8个CPU分片/边界回归通过、再次实核八卡空，14:33:53实际提交8独立tmux`periodic-final-{candidate-0..3,initial-0..1,control-0..1}`。run根`runs/recovery_periodic_20261012/generation-final-v1`，4片final242＋2片初态142＋2片旧899的242，保持原a74反馈来源/未知置信口径/greedy，0优化/0物理；正在冷加载，不把提交当完整分数。后续须完整合并、逐样本输入与旧串行输出复核；新大训未启。
 
 - **2026-10-12 14:32 CST / Codex RECOVERY-USABLE：** 360步完整终态PASS（非engineering），全326高层参数可训、冻结hash前后0f7aede8…a966相同；supervisor EXITED/0、2064.12s，实核八卡空/tmux已无。final`step_00000360_save_0003.pt` SHA f79cd96c…f66a0，result2dce2bdc…b1ff已两端一致并收本地。固定边界CE0.0242207→0.0116518（-51.89%），普通非初始0.0002862→0.0006157（上升）、初态0.007717→0.007861；不能称可用/物理成功。新两份final生成配置绑定实际权重/训练票与完整result；下一冻结新评测源8个独立进程跑预定三组626条，尚未启动；不动6ab训练快照或旧899/a74。
