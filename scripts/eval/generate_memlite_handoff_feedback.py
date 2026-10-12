@@ -14,10 +14,11 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO/'src'), str(REPO/'scripts'), str(REPO/'scripts/infra'),
                str(REPO/'scripts/rl/memlite_online/code')]
 from recovery_calibration_launch import bound, read, write_new
-from recovery_corpus import file_sha, digest
+from recovery_corpus import file_sha, digest, group_key
 from recovery_handoff_inference import (reconstruct_request, unique_checks, observation_and_prefix,
                                        feedback_from_trace)
 from recovery_process_cache import isolated_cache_env
+from recovery_handoff_heldout import generation_split, SELECTION
 
 
 def source_inputs(cfg):
@@ -28,6 +29,7 @@ def source_inputs(cfg):
     from recovery_postfit import calibration_gate
     from g05.utils.training.stage1_model import configuration, make_processor
     from g05.data.memlite_stage1_dataset import Stage1Dataset
+    split = generation_split(cfg)
     root = Path(cfg['root']); request_path = bound(root, cfg['requests'])
     prep = read(bound(root, cfg['preparation'])); recipe = read(REPO/cfg['original_recipe'])
     h1 = recipe['H1']; periodic = h1['periodic_teacher']
@@ -36,7 +38,17 @@ def source_inputs(cfg):
             or prep['optimizer_updates'] != 0 or prep['human_admitted'] is not False
             or file_sha(REPO/cfg['original_recipe']) != prep['recipe_sha256']):
         raise ValueError('Wrong CPU request lineage')
-    candidates = bound(root, dict(path=periodic['candidates'], sha256=periodic['candidate_sha256']))
+    if split == 'train':
+        candidates = bound(root, dict(path=periodic['candidates'], sha256=periodic['candidate_sha256']))
+    else:
+        candidates = bound(root, cfg['candidates'])
+        registration = bound(REPO, cfg['registration'])
+        if (prep['status'] != 'CPU_HELDOUT_EVAL_REQUESTS_ONLY_TRAINING_FORBIDDEN'
+                or prep['purpose'] != 'heldout_eval_only' or prep['training_admission_forbidden'] is not True
+                or prep['predictions_used_in_selection'] is not False or prep['selection'] != SELECTION
+                or prep['registration_sha256'] != file_sha(registration)
+                or prep['candidates_sha256'] != cfg['candidates']['sha256']):
+            raise ValueError('Unregistered, mixed-split or model-selected heldout candidates')
     exposure = read(bound(root, h1['exposure'])); excluded = validate_exposure(exposure)
     paths = {}
     for key, binding in exposure['bindings'].items():
@@ -65,18 +77,28 @@ def source_inputs(cfg):
     _, recovery = require_training_pool(root/eval_cfg['union']/'admission','planner',eval_cfg['admission_sha256'])
     excluded |= {r['candidate']['source_group'] for r in recovery if r['candidate']['split'] == 'dev'}
     release = AcceptedRelease(root/recipe['expert_release'])
-    for name in ('train_candidates.npy','train_tasks.npy','episode_offsets.npy'):
+    for name in (split+'_candidates.npy',split+'_tasks.npy','episode_offsets.npy'):
         release.verify_file(name)
+    if split == 'eval':
+        train_groups = {group_key(ep['task_name'],int(ep['row']['task_instance_id']))
+                        for _,ep in release.episodes('train')}
+        if len(train_groups) != prep['train_groups_excluded']:
+            raise ValueError('Original source exclusions changed')
+        excluded |= train_groups
     config = configuration(root,'high',release.manifest['task_names'])
     if file_sha(config['stats_path']) != fit_cfg['stats_sha256']: raise ValueError('Changed normalization')
-    data = Stage1Dataset(release.root,config,'high','train')
+    data = Stage1Dataset(release.root,config,'high',split)
     rows = [json.loads(x) for x in request_path.read_text().splitlines()]
     originals = {r['identity']['original_candidate_index']:r
         for r in (json.loads(x) for x in candidates.read_text().splitlines())}
     if len(rows) != cfg['rows'] or len({r['sample_id'] for r in rows}) != len(rows):
         raise ValueError('Missing or duplicated decision samples')
     for row in rows:
-        reconstruct_request(row, originals[row['original_identity']['original_candidate_index']], data, excluded)
+        reconstruct_request(row, originals[row['original_identity']['original_candidate_index']], data, excluded,
+                            expected_split=split)
+    if split == 'eval' and (len(originals) != len(rows) or
+            set(originals) != {r['original_identity']['original_candidate_index'] for r in rows}):
+        raise ValueError('Missing or filtered heldout targets')
     models = dict(root=str(root), observer_backbone=fit_cfg['high'],
         observer_adapter=dict(path=str(paths['selected_observer'].relative_to(root)),sha256=h1['observer_sha256']))
     accepted = dict(fit_config=fit_cfg,fit=fit,paths={'observer_fit_config':paths['fit_config']})
@@ -94,9 +116,8 @@ def main():
     ap.add_argument('--mode',choices=['audit','predict'],required=True)
     ap.add_argument('--audit',type=Path)
     ap.add_argument('--audit-sha256')
-    a = ap.parse_args(); cfg = read(a.config)
-    if (cfg['schema'] != 'periodic_handoff_observer_generation_v1' or cfg['optimizer_updates'] != 0
-            or not cfg['human_review_required_before_fit'] or a.output.exists()
+    a = ap.parse_args(); cfg = read(a.config); split = generation_split(cfg)
+    if (cfg['optimizer_updates'] != 0 or a.output.exists()
             or subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip()):
         raise ValueError('Explicit read-only recipe, clean frozen source and fresh output required')
     gpu = os.environ.get('CUDA_VISIBLE_DEVICES')
@@ -112,7 +133,9 @@ def main():
     status = dict(status='validating',mode=a.mode,source_commit=subprocess.check_output(
         ['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),config_sha256=file_sha(a.config),
         pid=os.getpid(),hostname=socket.gethostname(),optimizer_updates=0,started=time.time(),
-        requests_sha256=cfg['requests']['sha256'],human_admitted=False,physical_outcome_asserted=False)
+        requests_sha256=cfg['requests']['sha256'],human_admitted=False,physical_outcome_asserted=False,
+        data_split=split,purpose='heldout_eval_only' if split=='eval' else 'train_input_generation',
+        training_admission_forbidden=split=='eval')
     write_new(a.output/'status.json',status)
     import torch
     torch.set_num_threads(2); torch.manual_seed(cfg['seed'])
@@ -196,7 +219,8 @@ def main():
         observer_adapter_sha256=data.identities.observer_adapter,observer_normalization_sha256=data.identities.observer_normalization,
         calibration_sha256=data.exposure['bindings']['calibration']['sha256'],calibration_refit=False,
         all_rows_retained=True,known_truth_not_added=True,
-        limitation='Annotation-command history over original TRAIN, not an executed actor rollout; source exclusions apply to observer adapter fit/selection/CAL/test and recovery DEV, not the pretrained backbone original TRAIN. Human review required before any SFT.')
+        limitation=('Original heldout annotation-command histories, not executed actor rollouts or physical outcome truth. All original TRAIN and observer adapter exposure sources excluded; never eligible for SFT.' if split=='eval' else
+        'Annotation-command history over original TRAIN, not an executed actor rollout; source exclusions apply to observer adapter fit/selection/CAL/test and recovery DEV, not the pretrained backbone original TRAIN. Human review required before any SFT.'))
     if observer is not None:
         if audited or predictions != cfg['head_checks']: raise ValueError('Incomplete actual generation')
         final.update(observer.finish(),cpu_audit_sha256=a.audit_sha256)

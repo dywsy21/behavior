@@ -1,6 +1,6 @@
 {
   "schema": "native_learner_three_arm_progress_v2",
-  "recorded_at": "2026-10-12T18:32:00+08:00",
+  "recorded_at": "2026-10-12T19:08:00+08:00",
   "owner": "Codex RECOVERY-USABLE",
   "source_commit": "d257fbd0be943356af2fa6beadebea3ca326aa4a",
   "registration": "configs/recovery_sft/native_learner_probe_heartbeat_restart_v2.json",
@@ -43,14 +43,30 @@
     }
   },
   "control": {
-    "status": "loading",
+    "status": "completed_read_only_skill_probes",
     "pid": 2807433,
     "checkpoint_sha256": "9ac23c414a4d814bd22c8ec4c2e386cf4168e3d644d9859641615542937a362e",
     "remote": "/data/workspace/wsy/behavior2026/runs/native_learner_heartbeat_20261012/control-model-v2",
-    "completed": 0
+    "result_sha256": "48377d52ee52ada7ee996f448d9d7feee06452c2a92a0e4da84f5beee2a93212",
+    "episodes_sha256": "f53c7a2393b95bda434463fd6c4e58f7bf1134fedefd7f082213ed01613c13a3",
+    "local_receipts": "artifacts/native-learner-heartbeat-20261012/control",
+    "completed": 24,
+    "optimizer_updates": 0,
+    "actor_updates": 0,
+    "actor_and_frozen_unchanged": true,
+    "all_three_final_ack": true,
+    "skills": {
+      "turning_on_radio_155": {"success": 8, "total": 8},
+      "wash_dog_toys_169": {"success": 7, "total": 8},
+      "attach_a_camera_to_a_tripod_129": {"success": 7, "total": 8}
+    }
   },
   "candidate": {
-    "status": "not_started",
+    "status": "ready_worker_launch_submitted",
+    "pid": 2827976,
+    "remote": "/data/workspace/wsy/behavior2026/runs/native_learner_heartbeat_20261012/candidate-model-v2",
+    "checkpoint_sha256": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/3a8b626e1e83",
     "completed": 0
   },
   "interpretation": "Same three original TRAIN skill starts, not complete tasks or unseen-source success. All three arms must finish before comparing. No old partial trials merged, no failure replay/best-seed selection, no new optimization."

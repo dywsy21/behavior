@@ -1,0 +1,34 @@
+{
+  "schema": "periodic_handoff_observer_eval_generation_v1",
+  "purpose": "heldout_eval_only",
+  "owner": "Codex RECOVERY-USABLE",
+  "hypothesis": "Measure later high-planner handoff and continuation on source-disjoint heldout observations with actual fixed-observer estimates, not only UNKNOWN inputs.",
+  "root": "/data/workspace/wsy/behavior2026",
+  "node": "lc3",
+  "gpu": 1,
+  "requests": {
+    "path": "runs/recovery_handoff_20261012/heldout-prepare-v1/requests.jsonl",
+    "sha256": "3276ce5c862f5a352f067eff8a13a95dcae3e98ec60eb579b0bf82eab857ecf7"
+  },
+  "candidates": {
+    "path": "runs/recovery_handoff_20261012/heldout-prepare-v1/candidates.jsonl",
+    "sha256": "44357412459f4d45fd9cfaf0a3681b2960033fb285124f90f655aaffc4d2103f"
+  },
+  "preparation": {
+    "path": "runs/recovery_handoff_20261012/heldout-prepare-v1/result.json",
+    "sha256": "a5d1af622a9d51023d7c63f71147b01ff8ed4a2f1496a41111b97163a9035430"
+  },
+  "registration": {
+    "path": "configs/recovery_sft/handoff_heldout_registration_v1.json",
+    "sha256": "f8b37278255a04dc0db03e80f0b0cb770b04b231b648d720b996bf30af299b6f"
+  },
+  "original_recipe": "configs/recovery_sft/a800_h1_periodic_teacher_fit_lc1_v1.json",
+  "rows": 396,
+  "head_checks": 792,
+  "optimizer_updates": 0,
+  "seed": 17,
+  "training_admission_forbidden": true,
+  "human_review_required_before_evaluation": true,
+  "stop": "One complete fixed heldout universe; abort on identity, prefix, model mutation, resource or numeric error. No label changes, filtering, calibration fitting or retries.",
+  "control": "Keep original UNKNOWN feedback and unchanged targets; use identical generated input estimates for f79 and new fixed final360 comparison."
+}

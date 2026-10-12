@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 19:08 CST：第三低层候选运行；原EVAL反馈CPU选择完成
+
+- lc3低层候选仍原d257源，`runs/native_learner_heartbeat_20261012/candidate-model-v2`、PID2827976、tmux`memlite-native-candidate-model-v2`/GPU2/19820/W&B3a8b626e1e83；已ready，两RTX `candidate-radio155-v2`/`candidate-wash169-v2`冷worker已提交、third tripod待错峰，同名tmux前缀`memlite-native-`。对照原result48377d52…3212/episode f53c7a23…13a3已同SHA本地`artifacts/native-learner-heartbeat-20261012/control`，原三worker均退出，数据不删。
+- 新CPU源`src/memlite-handoff-heldout-prep-20261012-v1`=57f274c74c5ae8018ad06452fb7ed14a062823e6，Git包3ae43ba2…a8fe；`runs/recovery_handoff_20261012/heldout-prepare-v1`396条99task原EVAL选择完，result a5d1af62…5430/candidates44357412…103f/requests3276ce5c…ecf7；本地artifact同目录原文件同SHA。未生成反馈/图审/训练准入；661 H1票和原383 TRAIN证据不更改。
+
 ## 2026-10-12 18:44 CST：新高层CPU前门全部通过，启动票已备但未开训
 
 - lc3新源`src/memlite-handoff-fit-20261012-v2`=661c00a9299e7752265f5f85b44980d2fc9d183c，Git包e281b61b…1545；旧846源/v1失败log保留。`runs/recovery_handoff_20261012/processor-v2/result.json` SHA709e7174…755b（383全验/0GPU/0更新）；`preflight-v2/recovery-processor.json` SHA681cfc27…322c，`schedule-audit.json` SHA97821a14…39b6，`ticket.json` SHA0f69b176b5ecf686994bf612cc6234db534c1354a39bf33b83cb4be559afff0c；本地同后缀artifact目录均验一致。原owner-review已复制到远端review-v2、仍c057e7d9…1a0b。

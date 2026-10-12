@@ -18,6 +18,7 @@ sys.path[:0]=[str(REPO/'src'),str(REPO/'scripts/rl/memlite_online/code')]
 from recovery_calibration_launch import bound,read,write_new
 from recovery_corpus import file_sha,digest
 from recovery_handoff_inference import tree_sha,unique_checks
+from recovery_handoff_heldout import generation_split
 
 
 def validate_generation_receipt(result,cfg,config_sha256):
@@ -83,7 +84,9 @@ def main():
     torch.set_num_threads(2)
     accepted=AcceptedRelease(root/recipe['expert_release'])
     model_config=configuration(root,'high',accepted.manifest['task_names'])
-    data=Stage1Dataset(accepted.root,model_config,'high','train')
+    split=generation_split(cfg)
+    if result.get('data_split', 'train')!=split: raise ValueError('Wrong review split')
+    data=Stage1Dataset(accepted.root,model_config,'high',split)
     calibration=read(bound(root,recipe['H1']['calibration']))
     if file_sha(bound(root,recipe['H1']['calibration']))!=result['calibration_sha256']: raise ValueError('Changed fixed calibration')
     font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',14)
@@ -130,7 +133,8 @@ def main():
         cases=len(evidence),tasks=len({r['identity']['task'] for r in evidence}),pages=pages,rows=evidence,
         by_outcome=dict(Counter(json.loads(r['feedback']['execution_feedback'])['estimated_bundle_outcome'] for r in evidence)),
         by_change=dict(Counter(r['target_change_class'] for r in evidence)),human_review_complete=False,
-        training_admitted=False,optimizer_updates=0,seconds=time.monotonic()-started,
+        training_admitted=False,data_split=split,training_admission_forbidden=split=='eval',
+        optimizer_updates=0,seconds=time.monotonic()-started,
         scope='All covered tasks, all rare role changes, >=8 per available estimate/change stratum, deterministic fill to160. Review selection, not independent test metrics.'))
 
 

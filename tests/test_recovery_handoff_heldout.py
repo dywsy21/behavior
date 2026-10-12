@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts/rl/memlite_online/code'))
 from recovery_handoff_feedback import requests_for_candidate, requests_for_eval_candidate, EVAL_SCHEMA
-from recovery_handoff_heldout import select_heldout_requests, selection_bucket
+from recovery_handoff_heldout import select_heldout_requests, selection_bucket, generation_split
 from recovery_periodic_teacher import validate_candidate_projection
 import test_recovery_handoff_feedback as fixture
 import test_recovery_periodic_teacher as original_fixture
@@ -67,6 +67,17 @@ class HeldoutTests(unittest.TestCase):
         self.assertEqual(selection_bucket('explicit_bound_object_or_goal_change'), 'handoff')
         self.assertIsNone(selection_bucket('source_or_binding_description_change'))
         self.assertIsNone(selection_bucket('unbound_relation_change_not_verified_roles'))
+
+    def test_generation_has_no_implicit_or_relabelled_split(self):
+        train=dict(schema='periodic_handoff_observer_generation_v1',human_review_required_before_fit=True)
+        heldout=dict(schema='periodic_handoff_observer_eval_generation_v1',purpose='heldout_eval_only',
+            training_admission_forbidden=True,human_review_required_before_evaluation=True)
+        self.assertEqual(generation_split(train),'train')
+        self.assertEqual(generation_split(heldout),'eval')
+        for key in ('purpose','training_admission_forbidden','human_review_required_before_evaluation'):
+            bad=copy.deepcopy(heldout); bad.pop(key)
+            with self.assertRaises(ValueError): generation_split(bad)
+        with self.assertRaises(ValueError): generation_split(dict(train,purpose='heldout_eval_only'))
 
 
 if __name__ == '__main__': unittest.main()

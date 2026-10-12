@@ -7,6 +7,21 @@ from recovery_handoff_feedback import EVAL_SCHEMA
 SELECTION = 'heldout-periodic128-grasp-2-per-task-bucket-v1'
 
 
+def generation_split(config):
+    if config.get('schema') == 'periodic_handoff_observer_generation_v1':
+        if config.get('purpose') not in (None, 'train_input_generation'):
+            raise ValueError('TRAIN generation cannot change its declared purpose')
+        if config.get('human_review_required_before_fit') is not True:
+            raise ValueError('TRAIN input generation requires personal admission')
+        return 'train'
+    if (config.get('schema') == 'periodic_handoff_observer_eval_generation_v1'
+            and config.get('purpose') == 'heldout_eval_only'
+            and config.get('training_admission_forbidden') is True
+            and config.get('human_review_required_before_evaluation') is True):
+        return 'eval'
+    raise ValueError('Explicit separate TRAIN or heldout-only generation contract required')
+
+
 def selection_bucket(change_class):
     if change_class == 'identical_command':
         return 'continuation'
