@@ -1,12 +1,33 @@
 {
   "owner": "Codex RECOVERY-USABLE",
-  "recorded_at": "2026-10-12T22:16:00+08:00",
+  "recorded_at": "2026-10-12T22:38:00+08:00",
   "status": "CPU_EXPORT_COMPLETE_RTX_TRANSPORT_IN_PROGRESS_MODEL_DIAGNOSIS_PENDING",
   "source_commit": "4747c18f",
   "evidence": "artifacts/recovery-handoff-20261012/train-exposure-audit-v1/result.json",
   "evidence_sha256": "f70a9441baf39fd48f9fd01d661f5ccf3c19bfbfb8d79bbdda5f66d2359e22ec",
   "config": "configs/recovery_sft/a800_handoff_train_diagnostic_v1.json",
   "config_sha256": "8126baa3ee2f7a4bdb409a65006da4d01e8eaf2a54e10c80eaa427486d113885",
+  "portable_transport": {
+    "export_source_commit": "64ee34320e30ddc95cb2c8bf7338c890543d41a9",
+    "export_result_sha256": "c9d228e1f6a64625b55cce069907142172e6159626e3ffadff4562545907d347",
+    "pack_manifest_sha256": "e9af5f5b21c3858c9a4a3cf42c9b8723ccee23d8688f23947c4b4a89d4dcf876",
+    "exported_bytes": 24325415566,
+    "original_19GiB_estimate_exceeded": true,
+    "775GiB_shared_reserve_preserved_at_export": true,
+    "exact_model_tensors_per_model": 950,
+    "optimizer_exported": false,
+    "target": "/run/ti/rl_memlite_stage1_20261006/runs/handoff_portable_20261012/pack-v1",
+    "target_transfer_complete": false,
+    "target_full_verification_complete": false,
+    "target_model_python": "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+    "environment_mutated": false,
+    "synthetic_fla_qa_sha256": "01477db6e6c2dbefdd165e698596b59ea2373b638f457c7d2f507b8ae1d3091f",
+    "qa_is_whole_model_acceptance": false,
+    "gpu_diagnostic_source_commit": "aa6ede7a0ea4f563feb409adf5c31e55710cd8cd",
+    "gpu_diagnostic_source": "/run/ti/rl_memlite_stage1_20261006/code/memlite-handoff-portable-20261012-v2",
+    "target_environment_unit_tests_passed": 24,
+    "diagnostic_profile_fix": "Preserve original326-tensor planner profile required by CE stage gate. inference_mode, forbidden optimizer calls, no-gradient checks and before/after hashes over both parameter groups prevent updates. No completed-training or policy behavior changed."
+  },
   "cpu_prefix_acceptance": {
     "source_commit": "24faf41b80cb0cdac0a8050156282702cc78a89b",
     "run": "/data/workspace/wsy/behavior2026/runs/recovery_handoff_20261012/train-diagnostic-cpu-v3",
@@ -60,7 +81,7 @@
     "The existing memory weight is already0.25. Do not propose changing1.0 to0.25 as an untried fix.",
     "Total teacher-forced CE cannot identify whether the first discriminative intent token is learned. New diagnosis records actual field CE, first target-versus-repeat token logits, and unchanged strict free generation on the TRAIN pool.",
     "First-choice probabilities condition on correct preceding fields and are not free-decoding probabilities. No model diagnostic results exist yet.",
-    "At21:39 lc3's eight GPUs remain in unrelated jobs; do not preempt. RTX10383 is idle with4.7T available, but its existing sim environment lacks transformers/JAX. Evaluate an isolated portable model environment and SHA-bound input transport as an alternative; no existing environment mutation or new GPU run has occurred."
+    "RTX10383 has a separate pre-existing model venv with the same torch2.7.1+cu128 and transformers4.57.1; lack of dependencies in its sim env was not evidence that a new model env was required. Reuse the model env read-only. At22:38 transfer remains incomplete; only a synthetic FLA kernel QA, not complete model diagnostics, has run. lc3 unrelated GPU jobs and lc1 champion training are untouched."
   ],
   "safety": {
     "new_optimizer_updates": 0,

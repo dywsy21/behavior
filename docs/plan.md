@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 22:38 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军原2000完整checkpoint已atomic发布/54,489,569,924B，manifest bc750dd5…fb66、tree dc80b9c1…cd62；同1600原留出/顺序/RNG计划的EMA评估终态569b421c…1481，三轻量回执本地`step2000-v1`均同SHA。FM1000→2000为0.210484→0.201354（−4.34%），阶段准确78.5→80.75%；new50 FM−7.29%，old50反升1.11%，64/100较1000改善、100/100仍低于初始。仅离线，未称新SR/2000导出/提交通过；主训练继续原预算。MEM新aa6ede7a经Git包c1537e58…5304验签到RTX独立`memlite-handoff-portable-20261012-v2`，实际env24回归过；383配对GPU尚待完整包传输/验签，原代码与env不热改，不推广模型。
+
 - **2026-10-12 22:33 CST / Codex RECOVERY-USABLE：** 全模型前向前的源码检查发现新诊断入口`requires_grad_(False)`会使原CE stage gate丢失`planner_vlm`组；已仅修新诊断为保留原326张量profile＋`inference_mode`＋禁optimizer，并分别hash原启用/冻结两组，结束拒绝任何梯度/权重/profile改变。不是已完成训练bug，不热改64ee导出源或冠军。另补全383、同输入/同模型来源的诊断专用合并与分字段CE/首分歧概率统计，避免通用merger要求不存在的`probe_kind`；24定向回归过，真实GPU仍待。直传改为三个互不重叠文件流，旧本机中转及串行rsync已核停止，partial保留/续传，不复制私钥、不重登VPN、不改env；未将未验签包当可用。
 
 - **2026-10-12 22:16 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军原PID3895302实1906/8000、9.16s/更新、每batch100task且有限，继续原八卡与W&B，2000保存尚待。MEM `portable-export-v1`已383完整终态/371.94s/0模型0更新，result c9d228e1…d347、manifest e9af5f5b…f876；两950-tensor模型逐字节相同，RTX GPU0小FLA内核有限/55.02s（result01477db6…091f，不是全模型验收），进程已退出。**更正资源估算：实际导出约22.65GiB而非登记估计19GiB，原775GiB共享预留仍保留；不补造达标记录、不删原件。** 已开始向RTX新`handoff_portable_20261012/pack-v1`流式传输，完整目的端验签/383 CPU前门/GPU诊断仍待。Git首次fetch遇TLS失败后重试成功，HEAD64ee与upstream一致；保留续接两文档未提交记录，未强pull脏树/热改源。

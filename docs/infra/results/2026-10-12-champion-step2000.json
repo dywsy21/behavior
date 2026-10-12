@@ -1,0 +1,62 @@
+{
+  "schema": "champion_formal_fixed_eval_progress_v1",
+  "recorded_at": "2026-10-12T22:38:00+08:00",
+  "owner": "Codex CHAMPION-2026",
+  "status": "second_full_checkpoint_and_fixed_eval_complete_training_continues",
+  "source_commit": "30b055485b2720c8dc3391a27cea052cab9e4fc7",
+  "run": "/data/workspace/wsy/behavior2026/runs/champion_formal_20261012/shared100-v1",
+  "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/6wx5m0i7",
+  "completed_updates": 2000,
+  "target_updates": 8000,
+  "cumulative_wall_limit_hours": 24,
+  "checkpoint": {
+    "relative_path": "checkpoints/step_00002000",
+    "manifest_sha256": "bc750dd5d1053dc7dce4468ef82f0220418e6613c64294ffdca15d39af11fb66",
+    "tree_sha256": "dc80b9c1576cd394e40d3ed930e83c9662b26c323de15710aec7d67a75dbcd62",
+    "full_leaf_bytes": 54489569924,
+    "latest_receipt_sha256": "2fd6f356980c342fc061fc37ef85e922121837c6cd3e16c9e622933ce3370ddf",
+    "deployment_ema_export_done": false
+  },
+  "evaluation": {
+    "relative_path": "eval-00002000-1791815708396710714.json",
+    "sha256": "569b421cbd3957c8e6dec3c0c486c5c344e465ea3d9c999561556c4b76dd1481",
+    "weights": "EMA",
+    "same_1600_ordered_source_rows_as_initial_and_step1000": true,
+    "eval_plan_sha256": "3a10106e2869897be9914ece6d0b9ed7244b61b439292c9859d54752cc2665d7",
+    "all_row_metrics_finite": true,
+    "tasks_with_lower_FM_loss_than_step1000": 64,
+    "tasks_with_lower_FM_loss_than_initial": 100,
+    "all": {
+      "rows": 1600,
+      "FM_initial": 0.5209773843493894,
+      "FM_step1000": 0.21048440823717102,
+      "FM_step2000": 0.20135356707305618,
+      "FM_reduction_vs1000_percent": 4.338013081627559,
+      "FM_reduction_vs_initial_percent": 61.350804637227796,
+      "FAST_CE_step2000": 0.6211664346244652,
+      "stage_CE_step2000": 0.5247938817723745,
+      "stage_accuracy_step1000": 0.785,
+      "stage_accuracy_step2000": 0.8075,
+      "total_step2000": 0.284891277787101
+    },
+    "old50": {
+      "rows": 800,
+      "FM_step1000": 0.14776655738285627,
+      "FM_step2000": 0.1494139359519613,
+      "FM_increase_vs1000_percent": 1.1148521006933692,
+      "stage_accuracy_step1000": 0.96125,
+      "stage_accuracy_step2000": 0.96125
+    },
+    "new50": {
+      "rows": 800,
+      "FM_step1000": 0.27320225909148577,
+      "FM_step2000": 0.253293198194151,
+      "FM_reduction_vs1000_percent": 7.287297317211386,
+      "stage_accuracy_step1000": 0.60875,
+      "stage_accuracy_step2000": 0.65375
+    }
+  },
+  "local_receipts": "artifacts/champion-formal-20261012/shared100-v1/step2000-v1",
+  "all_three_local_receipts_match_remote_sha256": true,
+  "limits": "Original fixed-RNG heldout objectives and teacher-forced stage accuracy only. Improvement is not uniform across tasks: old50 FM slightly regresses versus1000. No simulator Q/SR, exported2000 EMA, or submission-container/24GB qualification is claimed. Live training source/environment unchanged."
+}

@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 22:38 CST：冠军2000保存与RTX诊断新冻结源
+
+- lc1原正式run的`checkpoints/step_00002000`已发布：manifest bc750dd5d1053dc7dce4468ef82f0220418e6613c64294ffdca15d39af11fb66、tree dc80b9c1576cd394e40d3ed930e83c9662b26c323de15710aec7d67a75dbcd62，54,489,569,924B；`eval-00002000-1791815708396710714.json` 569b421cbd3957c8e6dec3c0c486c5c344e465ea3d9c999561556c4b76dd1481。最新checkpoint回执2fd6f356…0ddf，以上三文件本地`artifacts/champion-formal-20261012/shared100-v1/step2000-v1`同SHA。原PID3895302继续，未导出2000 EMA/启动它的物理评估。
+- RTX新`code/memlite-handoff-portable-20261012-v2`=aa6ede7a0ea4f563feb409adf5c31e55710cd8cd，Git包c1537e58cbf20a860a2fa55663080692605d9775e690c7fbcc373419a6ed5304；实际模型env24测试过。v1源/CPU导出包不变，v2只修诊断profile保留和统计，不热改旧目录。
+- 原本机tar中转和串行rsync均已核停止；三个互不重叠的候选/对照/输入传输流续传至同`pack-v1`，partial文件不是已验收数据。仅短时agent签名转发，未把私钥复制到服务器、未改authorized_keys/共享env、未重登VPN；完整SHA和CPU前门通过前不启动模型。
+
 ## 2026-10-12 22:16 CST：MEM模型只读跨机诊断传输
 
 - lc3 `src/memlite-handoff-portable-20261012-v1`和RTX10383 `code/memlite-handoff-portable-20261012-v1`均64ee34320e30ddc95cb2c8bf7338c890543d41a9；Git包e3d3a0edc5b8e568c9429ed197b092d3978dbc268cdc27413ba83106e213f289，不覆盖活跃代码。
