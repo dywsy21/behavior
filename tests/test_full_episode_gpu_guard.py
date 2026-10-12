@@ -41,6 +41,11 @@ class GuardTests(unittest.TestCase):
             (proc/'environ').write_bytes(b'OMNIGIBSON_GPU_ID=0\0')
             with patch.object(guard.subprocess,'check_output',return_value='a'*40+'\n'):
                 self.assertEqual(guard.peer_identity(status,config_path=config,gpu=2,proc_root=root/'proc'),123)
+                (proc/'cmdline').write_bytes(b'\0'.join(x.encode() for x in args+['--peer-sim-status','/other/status.json'])+b'\0')
+                self.assertEqual(guard.peer_identity(status,config_path=config,gpu=2,proc_root=root/'proc'),123)
+                (proc/'cmdline').write_bytes(b'\0'.join(x.encode() for x in args+['--config',str(config)])+b'\0')
+                with self.assertRaises(ValueError):guard.peer_identity(status,config_path=config,gpu=2,proc_root=root/'proc')
+                (proc/'cmdline').write_bytes(b'\0'.join(x.encode() for x in args)+b'\0')
                 with self.assertRaises(ValueError):guard.peer_identity(status,config_path=config,gpu=0,proc_root=root/'proc')
                 (proc/'environ').write_bytes(b'OMNIGIBSON_GPU_ID=2\0')
                 with self.assertRaises(ValueError):guard.peer_identity(status,config_path=config,gpu=2,proc_root=root/'proc')

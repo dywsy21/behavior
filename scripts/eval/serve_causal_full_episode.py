@@ -164,7 +164,8 @@ async def main():
             except Exception:pass
             done.set()
 
-    async with websockets.serve(handler,'127.0.0.1',case['port'],compression=None,max_size=64<<20,ping_timeout=None):
+    async with websockets.serve(handler,'127.0.0.1',case['port'],compression=None,max_size=64<<20,
+                                ping_interval=None,ping_timeout=None):
         status.update(status='ready',model_identity=asdict(identities),restoration=restores,loaded=time.time())
         atomic_json(a.output/'status.json',status)
         await done.wait()

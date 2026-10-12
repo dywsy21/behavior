@@ -13,7 +13,8 @@ from wire import unpackb
 class ChampionEpisodePolicy(FullEpisodePolicy):
     def __init__(self, *, port, task_id, case, config_sha256, output):
         self.output=Path(output);self.task_id=task_id;self.used=False;self.elapsed=0
-        self.socket=connect(f'ws://127.0.0.1:{port}',max_size=64<<20,ping_timeout=None,open_timeout=30)
+        self.socket=connect(f'ws://127.0.0.1:{port}',max_size=64<<20,
+                            ping_interval=None,ping_timeout=None,open_timeout=30)
         hello=unpackb(self.socket.recv(timeout=900))
         if (hello['kind']!='champion2026_episode_v1' or hello['case']!=case or
                 hello['config_sha256']!=config_sha256 or hello['chunk_size']!=20):

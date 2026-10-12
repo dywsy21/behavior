@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 15:26 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军3bdf24f7在lc1既有16环境原官方客户端实连六测试全过/无skip；新独立`server-v2` GPU3已ready（旧v1 tmux参数引用错误导致0进程/0日志/0模型，未假称ready），只读cp2摘要b1ebe3fc…102fc。有限`actual-probe-v1`刚提交，等18次真实模型/逐控chunk一致性，不称效果。三MEM旧sim已SIGINT退出、RTX八卡空，服务全部明确failed_no_retry/ACK368、336、64；sim原status仍running是Isaac信号退出前未刷终态，另administrative-stop是权威中断证据，不覆盖原JSON。不重登VPN/不动权重。下一新冻结源关闭内部心跳，先原库反例再同三case新目录完整复验。
+
+- **2026-10-12 15:24 CST / Codex RECOVERY-USABLE / 工程中断：** 三物理分别停在368/336/64已确认控后长时间不推进；根只读py-spy三进程＋socket队列定位客户端recv线程处理大量pong、主线程等RPC。已读安装websockets16同步keepalive：`ping_timeout=None`且实际latency>默认20s时`join(interval-latency)`为负、不等pong就再发，符合心跳风暴，不能误报GPU或策略失败。已对绑定case/output/pid的三个sim发SIGINT保留`infrastructure-ping-storm-stack.txt`/`administrative-stop.json`/所有原片日志；退出与GPU释放待。新源只在内部client/server显式关闭ping_interval，保留RPC1800s/SSH存活检查，不热改库/旧进程。后续CPU原实现反例及同权重/seed三个新目录工程复验，不把旧未完成片计成完整Q/SR。现有VPN可用、未重登。
+
 - **2026-10-12 15:09 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 新标准协议实现`behavior_champion/official.py`＋独立server/probe：单连接单环境，reset无回包、chunk20/逐控序列一致，逐连接/逐reset隔离stage/RNG/inpainting；新增delivery-only时钟拒伪造物理ACK，原实控接口六测试保持通过。CPU新五项/资产六项通过，本机websockets10缺官方sync客户端一项明确跳过；初次health测试被本机HTTP代理拦截502，测试作用域绕过loopback代理后通过，非服务端故障。下一冻源在既有16环境跑原官方客户端/公开cp2真实TRAIN17次以上模型调用，不训练、不称24GB/物理/提交通过。MEM三场景已全部running，radio304/food272真实控，tripod刚加载完；后者新客户端964be90c仅资源门变更，原两端模型79f不动。
 
 - **2026-10-12 15:07 CST / Codex RECOVERY-USABLE：** 第三模拟器资源门已修为显式`--peer-sim-status`：逐PID核同配置SHA、case/instance/output、活跃状态、进程真实命令/主卡环境及冻结commit；仅允许本轮其他主卡的每PID≤512MiB辅助上下文，拒绝陌生/重载进程并保留≥24GiB余量。CPU两项正反例通过；原radio/food源码与执行不动。下一把该独立修复提交/冻结后仅启动尚未开始的tripod，不能将此前被拒绝启动算物理失败或默默复跑。

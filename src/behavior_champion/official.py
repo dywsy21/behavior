@@ -162,7 +162,7 @@ class OfficialPolicyServer:
     async def run(self, *, host, port, stop=None, ready=None):
         import websockets
         async with websockets.serve(self.handler,host,port,compression=None,max_size=64<<20,
-                                    ping_timeout=None,process_request=self.health) as server:
+                                    ping_interval=None,ping_timeout=None,process_request=self.health) as server:
             if ready is not None:
                 ready(server)
             if stop is None:

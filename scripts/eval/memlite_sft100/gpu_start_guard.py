@@ -26,9 +26,13 @@ def peer_identity(status_path, *, config_path, gpu, proc_root=Path('/proc')):
         raise ValueError('Invalid peer PID')
     process = proc_root/str(pid)
     args = [x.decode() for x in (process/'cmdline').read_bytes().split(b'\0') if x]
-    if len(args) != 8 or Path(args[1]).name != 'run_causal_full_episode.py':
+    if len(args) < 8 or len(args)%2 or Path(args[1]).name != 'run_causal_full_episode.py':
         raise ValueError('Peer PID is not the exact registered simulator command')
-    options = dict(zip(args[2::2],args[3::2]))
+    pairs = list(zip(args[2::2],args[3::2]))
+    core = [(key,value) for key,value in pairs if key != '--peer-sim-status']
+    if len(core) != 3:
+        raise ValueError('Repeated or extra peer simulator options')
+    options = dict(core)
     if (set(options) != {'--config','--case','--output'} or options['--case'] != state['case']
             or Path(options['--output']).resolve() != path.parent
             or hashlib.sha256(Path(options['--config']).read_bytes()).hexdigest() != config_sha):

@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 15:26 CST：旧三MEM工程中断，冠军标准协议只读验证
+
+- RTX `runs/periodic_full_20261012/{case}-sim-v1`均已人为SIGINT终止心跳风暴；每目录保留`infrastructure-ping-storm-stack.txt`、`administrative-stop.json`与原片/日志，368/336/64实际控制。Isaac信号处理使原status停在running，但已核进程全部消失/卡空，不能按原状态当活跃或伪造完整指标。
+- lc1对应 `{case}-model-v1`都failed_no_retry/ConnectionClosedError，旧模型/source/日志保留，未做参数更新；19810–19812原转发不换VPN。新复验尚未启动。
+- lc1 `src/champion-official-protocol-20261012-v1`=3bdf24f7，Git包711db1da…b2d78；SHA锁定外部原网络参考`incoming/official-network-a9cc50bd.py`仅CPU引用、不覆盖官方源。run `runs/champion_official_protocol_20261012/cpu-tests-v1.log`原客户端六项全过；`server-v2`/同名.log、tmux`champion-official-protocol-server-v2` GPU3/loopback19820已ready，`actual-probe-v1`/log与tmux`champion-official-actual-probe-v1`有限真实TRAIN请求进行中。v1 shell引用启动失败/0模型，未复用目录冒称成功。
+
 ## 2026-10-12 15:09 CST：三完整物理均在运行
 
 - RTX radio/food继续原79f87027；第三客户端新`code/memlite-periodic-physical-20261012-client-v2`=964be90c，仅额外同run小GPU上下文验签，两已运行源不改。包`incoming/codex-periodic-20261012/physical-guard-964be90c.bundle` SHA009bcd78…d559；GPU2验明原两sim PID3263806/3263822各174MiB、free72464MiB，原启动拒绝不产生新回合。
