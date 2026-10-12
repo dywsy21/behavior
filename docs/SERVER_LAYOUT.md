@@ -1,5 +1,16 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 21:40 CST：TRAIN CPU前门终态；RTX资源只读核查
+
+- lc3原24faf41b `train-diagnostic-cpu-v3`完整383/207.07s/0模型0更新结束，tmux自然退出；result8939c282cc17280b3d200e8f7cacb3c657e1e9486896aeb1019f37cbec3acffb、cpu-prefix-audit ab24503dfeb8a8cb1673d812e11b462c56a4ea5b1c32d8f83eab046e416b39ed均本地`artifacts/recovery-handoff-20261012/train-diagnostic-cpu-v3`同SHA。没有GPU模型诊断终态。
+- 10383的八卡当时无compute、每卡73415MiB，`/run/ti`4.7T余量，仅只读检查，不构成未来预约。`/run/ti/rl_memlite_stage1_20261006/env/sim`软链至`/run/ti/behavior_stage3_20260930/envs/sim`，torch2.7.0+cu128，存在hydra/omegaconf/torchcodec但无transformers/JAX；若迁模型必须独立env与验签输入，不能pip修改原sim env。lc3其他GPU作业不动。
+
+## 2026-10-12 21:35 CST：TRAIN诊断独立源码与原失败保留
+
+- lc3新源`src/memlite-handoff-train-diagnostic-20261012-v3`=24faf41b80cb0cdac0a8050156282702cc78a89b，Git包ad6fb089edbbae482654b6ad568a651402d5b38afa4f01172ef65addc54097a2。`runs/recovery_handoff_20261012/train-diagnostic-cpu-v3`及同名log/tmux`memlite-handoff-train-cpu-v3`，仅CPU前门；不称模型实测已完成，不抢lc3外部八卡。
+- 原v1=1e1db152和v2=edf6c6b7只读失败现场/日志保留，分别为新诊断入口raw标签读取顺序、误用teacher处理后结构做serving前缀；无GPU/优化/对原训练热改。局部修复已在v3，不覆盖旧源。
+- 本地`artifacts/recovery-handoff-20261012/train-exposure-v1`为原SHA验签的轻量输入副本；`train-exposure-audit-v1/result.json` f70a9441…22ec是原4747干净源曝光审计。不是新数据准入或效果报告。
+
 ## 2026-10-12 21:02 CST：新EMA协议与MEM回归终态；lc3外部作业占卡
 
 - lc3 `ema1000-server-v1/result.json` c8c3b34368f2d203b9680b19336cb9144ab886f0fd7f79d70d50c246d84b3f89、`ema1000-probe-v1/result.json` 0b8166dae8ee51372bd61758c9a14fcffeb166afa54b7729181c6c1170b1202f、`memory-profile.json`5ee6542b83ebe14692ce27df7191494c55238c3071835ad4dfee2346d7917d3b；均在本地`artifacts/champion-formal-20261012/protocol1000-v1/{server,probe}`，10检查/权重未变、原PID2967984关闭、19830释放。

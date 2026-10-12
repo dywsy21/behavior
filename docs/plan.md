@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 21:40 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 24faf41b/v3真实383原TRAIN CPU前门完整通过/207.07s/0模型0优化，result8939c282…cffb/prefix-ab24503d…39ed双端SHA齐，落本地`train-diagnostic-cpu-v3`；字段首分歧位置与实际CE mask、原观察及serving归一化/前缀均验，不称已取得logits/自由生成结果。相关本地44测试过，源目标env16过，原失败v1/v2保留。lc3八卡仍299xxxx非本轮作业；只读另查RTX10383八卡空/4.7T余量，但sim env缺transformers/JAX，下一可评估独立模型env＋已验输入迁移，不能热改sim环境或直接假定可跑。冠军原PID3895302实1685/8000、9.37s、100task有限/W&B原run继续，2000常规保存与新物理仍待；本轮未推广MEM或扩RL，goal未完成。
+
+- **2026-10-12 21:35 CST / Codex RECOVERY-USABLE：** 新24faf41b/v3独立源经Git包ad6fb089…97a2双端验签、目标env16测试，CPU-only `train-diagnostic-cpu-v3`已起（tmux`memlite-handoff-train-cpu-v3`、同名log），实际383前缀/字段mask验收中，无GPU/优化。另按原requests＋实际schedule统计238交接曝光中156为NAVIGATE、PRESS3、POUR1，完整14类计数加入诊断摘要；这是监督分布缺口，不直接证明加训有效，也不回灌留出。
+
 - **2026-10-12 21:33 CST / Codex RECOVERY-USABLE：** edf6c6b7/v2目标env16测试过，但真实CPU继续拒绝`Planner task/camera mismatch`：完整teacher processor输出已清理`_instructions`，不能直接冒充serving中间张量。新增诊断入口改复用现有`observable_raw→_process_tensors→single_frame_planner_prefix`，并逐张量比teacher/serving归一化；保护原守门不放宽。v2日志保留/0模型/0更新，新v3再跑全383前门，非既有训练或推理回归。
 
 - **2026-10-12 21:30 CST / Codex RECOVERY-USABLE：** 新1e1db152诊断源经Git包720d6a79…d534双端验签、目标env15回归过，lc3独立`train-diagnostic-cpu-v1`真实CPU验收遇`KeyError:model_projection`并已退出/0模型/0优化：新增入口在会就地消费raw的processor之后读target。修为预处理前深拷贝目标与identity，加入pop/嵌套变更反例；**不是既有训练路径错误**，不热改原v1/日志/任何训练源，下一新冻结v2重验。lc3非本轮作业保持。

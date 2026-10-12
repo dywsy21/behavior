@@ -1,12 +1,26 @@
 {
   "owner": "Codex RECOVERY-USABLE",
-  "recorded_at": "2026-10-12T21:28:00+08:00",
-  "status": "CPU_EXPOSURE_COMPLETE_MODEL_DIAGNOSIS_PENDING",
+  "recorded_at": "2026-10-12T21:40:00+08:00",
+  "status": "CPU_EXPOSURE_AND_ALL383_REAL_PREFIXES_COMPLETE_MODEL_DIAGNOSIS_PENDING",
   "source_commit": "4747c18f",
   "evidence": "artifacts/recovery-handoff-20261012/train-exposure-audit-v1/result.json",
   "evidence_sha256": "f70a9441baf39fd48f9fd01d661f5ccf3c19bfbfb8d79bbdda5f66d2359e22ec",
   "config": "configs/recovery_sft/a800_handoff_train_diagnostic_v1.json",
   "config_sha256": "8126baa3ee2f7a4bdb409a65006da4d01e8eaf2a54e10c80eaa427486d113885",
+  "cpu_prefix_acceptance": {
+    "source_commit": "24faf41b80cb0cdac0a8050156282702cc78a89b",
+    "run": "/data/workspace/wsy/behavior2026/runs/recovery_handoff_20261012/train-diagnostic-cpu-v3",
+    "local": "artifacts/recovery-handoff-20261012/train-diagnostic-cpu-v3",
+    "result_sha256": "8939c282cc17280b3d200e8f7cacb3c657e1e9486896aeb1019f37cbec3acffb",
+    "prefix_audit_sha256": "ab24503dfeb8a8cb1673d812e11b462c56a4ea5b1c32d8f83eab046e416b39ed",
+    "rows": 383,
+    "seconds": 207.07181058079004,
+    "actual_observation_training_serving_prefix_and_choice_mask_checked": true,
+    "model_forwards": 0,
+    "optimizer_updates": 0,
+    "both_receipts_remote_local_sha_equal": true,
+    "v1_v2_failed_diagnostic_logs_preserved": true
+  },
   "actual_training": {
     "completed_updates": 360,
     "same_schedule_as_control": true,
@@ -23,7 +37,13 @@
     "learned_handoff_unique_seen": 184,
     "learned_handoff_exposures": 238,
     "tasks_with_learned_handoff_exposure": 81,
-    "each_seen_expert_anchor_exposures": [1, 2]
+    "each_seen_expert_anchor_exposures": [1, 2],
+    "learned_handoff_target_verb_exposures": {
+      "NAVIGATE": 156, "PLACE_IN": 18, "GRASP": 14, "PLACE_ON": 11,
+      "CLOSE_DOOR": 8, "HANDOVER": 6, "WIPE_HARD": 6, "PLACE_NEXT_TO": 4,
+      "TURN_ON_SWITCH": 4, "CHOP": 3, "PRESS": 3, "INSERT": 2, "PUSH": 2, "POUR": 1
+    },
+    "target_verb_counts_source": "Same SHA-pinned original TRAIN requests.jsonl joined to actual schedule.json; no extra sampling or labels."
   },
   "loss_accounting": {
     "existing_memory_ce_weight": 0.25,
@@ -39,7 +59,8 @@
     "The completed short comparison scarcely repeats individual feedback-conditioned handoffs. This is a coverage/exposure limitation, not proof that more steps will help.",
     "The existing memory weight is already0.25. Do not propose changing1.0 to0.25 as an untried fix.",
     "Total teacher-forced CE cannot identify whether the first discriminative intent token is learned. New diagnosis records actual field CE, first target-versus-repeat token logits, and unchanged strict free generation on the TRAIN pool.",
-    "First-choice probabilities condition on correct preceding fields and are not free-decoding probabilities. No model diagnostic results exist yet."
+    "First-choice probabilities condition on correct preceding fields and are not free-decoding probabilities. No model diagnostic results exist yet.",
+    "At21:39 lc3's eight GPUs remain in unrelated jobs; do not preempt. RTX10383 is idle with4.7T available, but its existing sim environment lacks transformers/JAX. Evaluate an isolated portable model environment and SHA-bound input transport as an alternative; no existing environment mutation or new GPU run has occurred."
   ],
   "safety": {
     "new_optimizer_updates": 0,
