@@ -12,7 +12,13 @@
 
 ## 实时进度（最新记录在前）
 
-- **2026-10-12 13:18 CST / Codex RECOVERY-USABLE：** CPU v2已终态失败、0训练/八卡仍空；根定位是新增检查脚本误将处理后相机名当原始RGB key。实际`BaseProcessor.process_images`按原配置映射为`exterior/wrist_left/wrist_right`，不是已证串图。补检查脚本按固定R1Pro映射核原图/模板/输出顺序，并独立执行每相机val transform逐像素比对，左右腕同尺寸互换/单像素损坏也拒绝；不改原模型/processor/数据。新4反例及新冻结CPU复验待，旧v1/v2失败log保留。fetch无新团队提交，保留本轮plan dirty未pull。
+- **2026-10-12 13:24 CST / Codex RECOVERY-USABLE：** 原v3输入通过后补实际token级验收选项：用原InputPreprocessor（不造VLM）将120亲审样本8条混batch，经生产`_context_positions`/字段span/mask/CE权重函数检查；应拒绝前缀CE、无证据结果/terminal CE、memory非0.25、意图被截断或错位。相机4反例回归通过，真实Qwen tokenizer执行待；仍0模型forward/0GPU/0优化，不提前签完整训练准入。源、run另冻/另名，v3原通过回执不更改。
+
+- **2026-10-12 13:21 CST / Codex RECOVERY-USABLE：** 4c637 CPU v3真实62.79s完整终态PASS：1800同帧来源/128控previous与memory/目标逐条重建，120亲审case共360当前原RGB与人审hash一致，再经真实processor逐相机像素/模板顺序/低层与结果mask/EOC目标边界全过。result SHA b56f6180…226b1已两端同SHA，原v1/v2失败不覆盖。只有CPU输入验收、0训练/0新Q/SR，原120图审不是1800全人工审；原关系未绑定和annotation-history非actor-history限制继续保留。下一记录受限高层意图数据准入/实际token与损失门，再决定专项拟合；冠军大训配方仍待用户确认。
+
+- **2026-10-12 13:20 CST / Codex RECOVERY-USABLE：** 4c637d63已push，4相机反例＋8时钟/标签测试全过。经已push Git增量包SHA0059b249…922de两端核验、bundle verify/fetch，新冻lc1`src/memlite-periodic-processor-20261012-v2`，CPU`periodic-processor-v3{,.log}`真实已处理20个人审case且相机原图/输出逐像素一致门未再报错，完整1800/120终态仍待。启动前壳层无`python`已改用系统python3验包，未改env；v1/v2失败原样保留。前两条操作时刻校正为实际13:16/13:17 CST，不改证据结论；无新GPU/训练。
+
+- **2026-10-12 13:16 CST / Codex RECOVERY-USABLE：** CPU v2已终态失败、0训练/八卡仍空；根定位是新增检查脚本误将处理后相机名当原始RGB key。实际`BaseProcessor.process_images`按原配置映射为`exterior/wrist_left/wrist_right`，不是已证串图。补检查脚本按固定R1Pro映射核原图/模板/输出顺序，并独立执行每相机val transform逐像素比对，左右腕同尺寸互换/单像素损坏也拒绝；不改原模型/processor/数据。新4反例及新冻结CPU复验待，旧v1/v2失败log保留。fetch无新团队提交，保留本轮plan dirty未pull。
 
 - **2026-10-12 13:11 CST / Codex RECOVERY-USABLE + CHAMPION-2026：** 1641已成功Git导入；CPU v1在配置解析前段因工作目录是`/home/user`而找不到相对`configs/data/_transforms.yaml`退出，未处理图片/无准入。同一冻结源显式`cd`后另启`periodic-processor-v2{,.log}`，v1失败log保留，不热改源/环境。冠军整轮磁盘预检已在lc1实通过：需832149913600B（775GiB，含256GiB保留），实空1105090052096B；0删除/0优化。现source/停止边界均清晰，待v2实际终态。
 

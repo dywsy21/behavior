@@ -44,12 +44,77 @@ def validate_processed_cameras(processor, original_images, sample):
     return dict(mapping)
 
 
+def make_token_processor(config):
+    """Build the real token stack without constructing a VLM or using CUDA."""
+    from omegaconf import OmegaConf
+    from g05.models.g05.io.input_preprocessor import InputPreprocessor
+    from g05.models.g05.g05_policy_qwen35 import G05PolicyQwen35
+    cfg = OmegaConf.create(config['arch'])
+    pp = cfg.input_preprocessor
+    return InputPreprocessor(
+        hf_processor_path=cfg.hf_processor_path,
+        hf_processor_class=cfg.get('hf_processor_class', G05PolicyQwen35.default_hf_processor_class),
+        action_tokenizer_class=cfg.action_tokenizer, at_config=cfg.AT_CONFIG, model=None,
+        base_vocab_size=cfg.get('base_vocab_size', G05PolicyQwen35.default_base_vocab_size),
+        padded_vocab_size=cfg.get('padded_vocab_size', G05PolicyQwen35.default_padded_vocab_size),
+        pad_token_id=cfg.pad_token_id, image_token_index=cfg.image_token_index,
+        num_image_tokens=cfg.vision.num_image_tokens, input_action_corruption=pp.input_action_corruption,
+        pred_eov=pp.pred_eov, batchify_action=pp.batchify_action, pi05_ft_mode=pp.pi05_ft_mode,
+        proprio_encoder=cfg.proprio_encoder, model_type=G05PolicyQwen35.default_model_type,
+        model_cfg=cfg, add_loc_tokens=bool(cfg.get('add_loc_tokens', False)))
+
+
+def validate_token_batch(token_processor, config, samples):
+    """Exercise production token boundaries and CE weights; no model forward."""
+    from types import SimpleNamespace
+    import torch
+    from g05.models.g05.g05_policy_memlite_planner_outcome import G05PolicyMEMLitePlannerOutcome as Policy
+    if not samples or len(samples) > 8:
+        raise ValueError('Expected 1..8 aligned CPU token samples')
+    cfg = config['arch']; head = cfg['planner_outcome']
+    shell = SimpleNamespace(processor=token_processor, training=True, planner_only=True,
+        supervise_task_parent_format=head.get('supervise_task_parent_format', False),
+        task_parent_formats=head.get('task_parent_format_by_task', {}),
+        memory_update_ce_weight=head['memory_update_ce_weight'])
+    ids, labels, attention, _ = token_processor.encode_train(samples, device=torch.device('cpu'),
+        training=True, max_chunk_token_length=cfg['max_chunk_token_length'],
+        max_pad_token_length=cfg.get('max_pad_token_length'))
+    context, context_attention = token_processor.encode_inference(samples, device=torch.device('cpu'),
+        mode='ar', training=True)
+    Policy._assert_tokenized_prefix_contract(shell, context, context_attention, samples)
+    positions = Policy._context_positions(ids, attention, context, context_attention)
+    spans = Policy._mask_unsupervised_ar_fields(shell, ids, labels, positions, samples)
+    weights, codes = Policy._planner_only_loss_token_weights(shell, labels, spans, samples=samples)
+    checks = []
+    for number, (sample, fields, position) in enumerate(zip(samples, spans, positions)):
+        Policy._validate_planner_only_outcome_contract(sample, index=number)
+        if weights is None or not torch.all(labels[number, :position + 1] == -100):
+            raise ValueError('Planner context received supervision or memory weighting disappeared')
+        for field in ('outcome_target', 'task_complete'):
+            if (not torch.all(labels[number, fields[field]] == -100)
+                    or not torch.all(weights[number, fields[field]] == 0)):
+                raise ValueError('Unevidenced outcome/terminal tokens received CE: ' + field)
+        for field, wanted_weight in (('next_decision', 1.), ('active_skills_semantic_json', 1.),
+                                     ('memory_update', .25)):
+            valid = labels[number, fields[field]] != -100
+            if not valid.all() or not valid.numel() or not torch.all(weights[number, fields[field]] == wanted_weight):
+                raise ValueError('Lost or incorrectly weighted planner supervision: ' + field)
+        checks.append(dict(task_name=sample['task_name'],
+            input_tokens=int(attention[number].sum()), context_tokens=int(context_attention[number].sum()),
+            supervised_tokens=int((labels[number] != -100).sum()),
+            supervised_field_tokens={field:int((labels[number, span] != -100).sum()) for field,span in fields.items()},
+            field_codes=sorted(set(codes[number][labels[number] != -100].tolist())),
+            memory_weight=.25, outcome_tokens=0, terminal_tokens=0))
+    return checks
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('root', 'candidates', 'review', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--candidate-sha256', required=True)
     parser.add_argument('--review-sha256', required=True)
+    parser.add_argument('--check-tokens', action='store_true', help='Also run actual mixed-task token/CE-mask stack on CPU')
     args = parser.parse_args()
     if os.environ.get('CUDA_VISIBLE_DEVICES') != '' or args.output.exists():
         raise ValueError('CPU-only and fresh output required')
@@ -68,8 +133,9 @@ def main():
     if review['candidate_sha256'] != args.candidate_sha256: raise ValueError('Foreign review')
     reviewed = {row['identity']['original_candidate_index']: row for row in review['rows']}
     processor = make_processor(config, False)
+    token_processor = make_token_processor(config) if args.check_tokens else None
     args.output.mkdir(parents=True)
-    verified, processed, seen = [], [], set()
+    verified, processed, seen, token_batch, token_checks = [], [], set(), [], []
     started = time.monotonic()
     for row in rows:
         index = row['identity']['original_candidate_index']
@@ -114,16 +180,25 @@ def main():
                               camera_mapping=camera_mapping, processed_rgb_exact_per_camera=True,
                               pixel_shapes={key:list(value.shape) for key,value in sample['pixel_values'].items()},
                               outcome_supervision=False, low_supervision=False))
+        if token_processor is not None:
+            token_batch.append(content)
+            if len(token_batch) == 8:
+                token_checks.extend(validate_token_batch(token_processor, config, token_batch))
+                token_batch.clear()
         if len(processed) % 20 == 0: print(json.dumps(dict(processed_review_cases=len(processed))), flush=True)
     if len(verified) != 1800 or len(processed) != len(reviewed) or len(reviewed) != 120:
         raise ValueError('Incomplete fixed candidate/review coverage')
+    if token_batch: token_checks.extend(validate_token_batch(token_processor, config, token_batch))
+    if args.check_tokens and len(token_checks) != len(reviewed):
+        raise ValueError('Incomplete token/CE-mask coverage')
     result = dict(status='passed_cpu_causal_source_and_processor_contract', candidate_sha256=args.candidate_sha256,
         review_sha256=args.review_sha256, reconstructed_candidates=len(verified), processed_review_cases=len(processed),
         candidates=verified, processed=processed, seconds=time.monotonic()-started,
         optimizer_updates=0, decoded_current_rgb_images=len(processed)*3,
+        token_checks=token_checks, tokenized_review_cases=len(token_checks), model_forwards=0,
         training_admitted=False, limit='Engineering contract only; no physical outcome/action truth or model effect')
     (args.output / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
-    print(json.dumps({key:value for key,value in result.items() if key not in ('candidates', 'processed')}), flush=True)
+    print(json.dumps({key:value for key,value in result.items() if key not in ('candidates', 'processed', 'token_checks')}), flush=True)
 
 
 if __name__ == '__main__': main()

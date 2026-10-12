@@ -45,7 +45,8 @@
     "benchmark_sampling_difference": "Measured throughput used global-frame shuffle with84-91 tasks/batch. Its1792 rows included8 now-correctly-quarantined rows; all7 updates were discarded with no checkpoint. Keep historical timing evidence, but never reuse that sample stream for formal fitting; validate corrected admission and balanced sampling before launch."
   },
   "optimizer": {
-    "implementation_status": "IMPLEMENTED_CPU_ROW_AND_MOMENT_EQUALITY_TESTED; ACTUAL8_A800_FINITE_ENGINEERING_UPDATES; FULL_RESTORE_VALIDATION_PENDING",
+    "implementation_status": "PASSED_CPU_ROW_AND_MOMENT_EQUALITY; ACTUAL8_A800_FINITE_ENGINEERING_UPDATES; ALL302_STATE_LEAVES_EXACT_NEXT_UPDATE_AFTER_SAME_AND_NEW_PROCESS_RESTORE_2026_10_12",
+    "engineering_evidence": "docs/infra/results/2026-10-12-champion-training-chain.json; not a formal fitted checkpoint or Q/SR result",
     "type": "AdamW",
     "pretrained_peak_lr": 0.000025,
     "new_task_stage_rows_peak_lr": 0.0001,
