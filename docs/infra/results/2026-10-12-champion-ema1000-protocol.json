@@ -1,0 +1,47 @@
+{
+  "status": "formal_ema1000_actual_official_protocol_passed_not_physical_success",
+  "owner": "Codex CHAMPION-2026",
+  "source_commit": "880ea444d963f1d1c4e18caa8958fdfbda5c41fd",
+  "config": "configs/champion2026/official_ema1000_protocol_v1.json",
+  "config_sha256": "29db0c69635cb8c53e2d9fd17828d3940e9e6ef8f4757f08f4748f54b11afe33",
+  "export_manifest_sha256": "ae3b0a79f9e8371dadcc40d5820be6b46d9bd7a97fc026aa67ad82379bc75e9c",
+  "server_run": "/data/workspace/wsy/behavior2026/runs/champion_official_protocol_20261012/ema1000-server-v1",
+  "probe_run": "/data/workspace/wsy/behavior2026/runs/champion_official_protocol_20261012/ema1000-probe-v1",
+  "actual_checks_passed": 10,
+  "checks": [
+    "interleaved-task1-chunk0",
+    "interleaved-task0-chunk0",
+    "interleaved-task1-chunk1",
+    "interleaved-task0-chunk1",
+    "interleaved-task1-chunk2",
+    "interleaved-task0-chunk2",
+    "single-control-vs-chunk20-task0",
+    "partial-chunk-first-control",
+    "reset-drops-nineteen-cached-controls-and-all-history",
+    "reset-may-change-task-with-no-state-leak"
+  ],
+  "parameters_before": "959acb2d09aff33e4adb6d0507ae36c1458987779b087d3da7aa196f0ddbbfa4",
+  "parameters_after": "959acb2d09aff33e4adb6d0507ae36c1458987779b087d3da7aa196f0ddbbfa4",
+  "server_closed": true,
+  "optimizer_updates": 0,
+  "physical_controls": 0,
+  "probe_seconds": 42.21575999259949,
+  "memory_device": {
+    "uuid": "GPU-395f20e3-883f-dec8-efc2-2c7fe46cd22c",
+    "name": "NVIDIA A800 80GB PCIe",
+    "total_mib": 81920
+  },
+  "sampled_process_peak_mib": 8716,
+  "sampled_peak_is_lower_bound": true,
+  "jax_live_peak_bytes": 7251457024,
+  "is_24gb_hardware_acceptance": false,
+  "is_container_acceptance": false,
+  "q_or_sr_measured": false,
+  "local_receipts": "artifacts/champion-formal-20261012/protocol1000-v1",
+  "sha256": {
+    "probe/result.json": "0b8166dae8ee51372bd61758c9a14fcffeb166afa54b7729181c6c1170b1202f",
+    "server/result.json": "c8c3b34368f2d203b9680b19336cb9144ab886f0fd7f79d70d50c246d84b3f89",
+    "server/memory-profile.json": "5ee6542b83ebe14692ce27df7191494c55238c3071835ad4dfee2346d7917d3b"
+  },
+  "note": "Original unmodified official client on two fixed TRAIN observations,18 actual model calls. Memory-profile embedded conservative not_formal_ema_acceptance field describes that measurement alone; this protocol receipt separately binds the real formal1000 export. Not full100-task physical or submission acceptance."
+}

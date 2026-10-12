@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 21:02 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军新正式1000 EMA实际原客户端10/10全过（42.22s），包括跨task交替、重置丢缓存及单动作/20块逐字节相同；服务经原PID/cwd/回执核验后正常SIGTERM关闭，参数959acb2d…bfa4前后相同，GPU采样峰8716MiB（A800，不是实体24GB/容器/物理SR）。原server c8c3b343…3f89/probe0b8166da…202f/profile5ee6542b…7d3b双端收齐，见`2026-10-12-champion-ema1000-protocol.json`。MEM旧域242与初始142完整收齐/原输入逐条同f79：边界63→63/100、继续97→97/100、恢复42→42/42，初始83→85/100；两域重复的42不合并成84独立样本，详`2026-10-12-memlite-handoff-retention.json`。本轮MEM/协议测试进程均已退出；lc3现出现外部8卡作业29850xx，各约36GiB，**不停止/不抢卡**。lc1冠军1440/8000正常、最近20步9.35s/100task/有限数值。下一：冠军继续常规2000保存/固定eval与空闲资源上的新权重物理；MEM先在独立TRAIN侧审计难交接覆盖及字段学习，不回灌本次EVAL，不自动再续360或扩大RL，goal仍未完成。
+
 - **2026-10-12 20:51 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 原396真实反馈两模型全部终态，权重前后各自一致；六分片严格合并、396逐身份/像素token输入/目标相同、6原回执SHA双端一致。handoff f79 126/198→047 127/198（新胜task32/51/97，丢45/70），continuation均192/198且无交换；候选56条仍保留旧bundle、12条选错另bundle/parent、3条语法拒绝。**无可靠实用提升、不推广/自动加训**，不是物理SR；详`2026-10-12-memlite-handoff-planner-pair.json`。原242继续GPU7，初始142已在新释放GPU4–6三分片起；GPU0未知作业2967222不动。冠军新EMA server2967984/lc3 GPU1已ready，官方原客户端`ema1000-probe-v1`实际请求已起；lc1正式训练1345步/9.32s/100task有限继续。
 
 - **2026-10-12 20:44 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 新880ea444官方EMA协议源已独立冻结lc3（包881d49eb…bed5），全29导出文件/100映射/75参数CPU验签通过；目标champion env16过2因本地参考路径缺失跳过，另G05 CPU指定原官方network a9cc50bd后6客户端测试全过，未改环境。GPU实际协议仍等control-s0退出/空闲，不抢卡。MEM固定六分片已各100–104/132，现3条无效输出定位为task45历史OPEN_DOOR漏写两个空source/destination字段，原严格K3字串守门拒绝，**本轮原样计失败**，不热修/重试或按部分分数宣称改善；原242已有141条。

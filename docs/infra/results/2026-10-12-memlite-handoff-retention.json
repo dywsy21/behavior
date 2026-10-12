@@ -1,0 +1,71 @@
+{
+  "schema": "memlite_handoff_retention_result_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "candidate_sha256": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+  "control_sha256": "f79cd96c13099cfb6df856dbcab83c670eb042ad512cfe3972af5ac3049f66a0",
+  "source_commit": "b9763def4794b2dd49b32454acde768be0629bfa",
+  "optimizer_updates": 0,
+  "physical_controls": 0,
+  "schedules": {
+    "retention-transition": {
+      "rows": 242,
+      "identity_target_input_pairs_verified": true,
+      "metrics": {
+        "original_heldout": {
+          "rows": 100,
+          "control_exact": 97,
+          "candidate_exact": 97,
+          "gains": 0,
+          "losses": 0
+        },
+        "original_transition": {
+          "rows": 100,
+          "control_exact": 63,
+          "candidate_exact": 63,
+          "gains": 0,
+          "losses": 0
+        },
+        "recovery_dev": {
+          "rows": 42,
+          "control_exact": 42,
+          "candidate_exact": 42,
+          "gains": 0,
+          "losses": 0
+        }
+      },
+      "local": "artifacts/recovery-handoff-20261012/planner-eval-v1/retention-transition",
+      "sha256": {
+        "rows.jsonl": "b4c758532e9313607332b8167dabafc25214cecbe177e37ba79a6e0a7fad57d4",
+        "result.json": "6a21a4aeabd58fa3ef24d8c69400a8da10857ad252be1a07c1baa41e058f50fb",
+        "manifest.json": "b0203c7c2d65ccf5cef524918d02e0a46c8535e8753859eff0b0f9733b4cfcfb"
+      }
+    },
+    "retention-initial-merged": {
+      "rows": 142,
+      "identity_target_input_pairs_verified": true,
+      "metrics": {
+        "original_heldout": {
+          "rows": 100,
+          "control_exact": 83,
+          "candidate_exact": 85,
+          "gains": 2,
+          "losses": 0
+        },
+        "recovery_dev": {
+          "rows": 42,
+          "control_exact": 42,
+          "candidate_exact": 42,
+          "gains": 0,
+          "losses": 0
+        }
+      },
+      "local": "artifacts/recovery-handoff-20261012/planner-eval-v1/retention-initial-merged",
+      "sha256": {
+        "rows.jsonl": "8032e098db796608cca82f4a4a0bf91c423937591231d964932324a1f330eb29",
+        "result.json": "f2f6b91abb00b18f1c6330a90dd58ac631f9a009d8bf13cf9bbd9a700d0f48fd",
+        "manifest.json": "039f4b657f024365b8b11551db54f4f157958a197becbd93f6dac2c6e1a50dd6"
+      }
+    }
+  },
+  "interpretation": "The same42 recovery DEV examples repeat in both schedules, not84 independent cases. Initial gains2/100; original boundary63/100, continuation97/100 and recovery42/42 unchanged. Combined with real-feedback handoff126->127/198, no reliable practical gain or policy promotion. No evaluation data admitted to training."
+}

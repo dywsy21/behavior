@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 21:02 CST：新EMA协议与MEM回归终态；lc3外部作业占卡
+
+- lc3 `ema1000-server-v1/result.json` c8c3b34368f2d203b9680b19336cb9144ab886f0fd7f79d70d50c246d84b3f89、`ema1000-probe-v1/result.json` 0b8166dae8ee51372bd61758c9a14fcffeb166afa54b7729181c6c1170b1202f、`memory-profile.json`5ee6542b83ebe14692ce27df7191494c55238c3071835ad4dfee2346d7917d3b；均在本地`artifacts/champion-formal-20261012/protocol1000-v1/{server,probe}`，10检查/权重未变、原PID2967984关闭、19830释放。
+- `planner-eval-v1/retention-transition`原242终态result6a21a4ae…50fb/rowsb4c75853…57d4；`retention-initial-merged`原142终态resultf2f6b91a…48fd/rows8032e098…eb29；本地`artifacts/recovery-handoff-20261012/planner-eval-v1/`同名目录均验SHA，不删原3分片/旧控制回执。全部本轮MEM进程结束。
+- 20:59后lc3八卡出现2985039/2985038/2985030/2985035/2985004/2985054/2985042/2985007等**非本轮进程**，不干预，不把这些GPU占用报成本轮继续训练；lc1冠军原PID/run仍正常。
+
 ## 2026-10-12 20:51 CST：MEM396配对收齐、EMA1000实际接口运行
 
 - MEM六分片原目录全部保留；远端`planner-eval-v1/{control,candidate}-merged`和本地`artifacts/recovery-handoff-20261012/planner-eval-v1/`同名目录，control result3a285dbe…b48f/rows893bd136…079c，candidate resultc0393c78…789a/rows1ef512c3…7e01，396×2全齐。旧域`retention-transition`继续GPU7；`retention-initial-s0/1/2`新GPU4/5/6，原b976源/142固定不变。
