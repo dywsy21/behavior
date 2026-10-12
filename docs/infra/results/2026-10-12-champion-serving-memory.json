@@ -1,0 +1,51 @@
+{
+  "status": "a800_memory_profile_complete_not_target_hardware_acceptance",
+  "owner": "Codex CHAMPION-2026",
+  "time_cst": "2026-10-12 16:11",
+  "source_commit": "322d81777777fb166f6100fe6514f245537afbe3",
+  "run_root": "/data/workspace/wsy/behavior2026/runs/champion_official_protocol_20261012",
+  "server": "memory-server-v1",
+  "probe": "memory-probe-v1",
+  "config_sha256": "40b66ab6ec5b8dfb6be5e87c95c36c0883a76212199a700b6cea3d7b78454e8f",
+  "public_checkpoint": "models/champion2025/final-cp2-89545bc1/checkpoint_2",
+  "device": "NVIDIA A800 80GB PCIe, lc1 GPU3",
+  "preallocate": false,
+  "sampling_interval_seconds": 0.5,
+  "samples": 253,
+  "sampling_errors": 0,
+  "sampled_process_peak_mib": 8718,
+  "loading_peak_mib": 8664,
+  "serving_peak_mib": 8718,
+  "jax_peak_bytes_in_use": 7231032064,
+  "jax_peak_pool_bytes": 8592031744,
+  "jax_snapshots": 20,
+  "actual_model_calls": 18,
+  "probe_seconds": 47.45543384552002,
+  "protocol_checks_exact": 10,
+  "all_ten_action_digests_equal_previous_frozen_3b_probe": true,
+  "model_parameters_before_and_after": "b1ebe3fc4d3ef0ecd169a9d09ad315e9d9638eee1e3c2eb569fa6c60c27102fc",
+  "optimizer_updates": 0,
+  "physical_controls": 0,
+  "server_closed_and_gpu_released": true,
+  "receipts": {
+    "local_root": "artifacts/champion-official-protocol-20261012/memory-v1",
+    "server-result.json": "dcc78ec17310bb5dc703db63b54d7c24428280f22ab9b58c8ca9a73d8771ffb3",
+    "probe-result.json": "2911818c17261f6555686b15813d7b7a57940e58fef3c3b4ff42b7c15c5883de",
+    "memory-profile.json": "4c66e2a78955777b78f66dabc294837565ea599c78ea8b7581ca9f15c2ddc0fd",
+    "gpu-memory-samples.jsonl": "b6583854ac29bf4ee42649f18cb94cf377a73b03c908e041a5e20974818eaa89",
+    "all_remote_and_local_hashes_match": true
+  },
+  "validation": {
+    "local_cpu_tests": "19 passed with existing isolated champion environment and --noconftest",
+    "server_memory_and_original_client_tests": "13 passed after setting the exact pinned official network reference; no skips",
+    "champion_env_initial_test_skips": "17 passed/2 skipped: external original-reference availability; preserved, not reported as full acceptance"
+  },
+  "limitations": [
+    "The sampled process peak is a lower bound; shorter NVML peaks may be missed.",
+    "A800 arithmetic/compiler behavior is not an acceptance test on RTX3090, A5000 or TitanRTX.",
+    "Only two real TRAIN observations and the public 50-task cp2 were exercised; no formal 100-task EMA exists yet.",
+    "No container, public server, upload or competition submission was made.",
+    "This does not resolve the previously recorded cross-process radio historical-replay discrepancy for other inputs.",
+    "Formal champion training remains unapproved and was not launched."
+  ]
+}

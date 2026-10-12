@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 16:08 CST：冠军只读显存探针运行，MEM已两成片
+
+- lc1新`src/champion-memory-profile-20261012-v1`=322d81777777fb166f6100fe6514f245537afbe3；Git对象包`incoming/codex-git-bundles/memory-source-322d8177.bundle` SHA7aff67644ed90bae298e813d6ae767280670eb48193c9ac277f184c202a1e869。原Git checkout与其他冻结源不改。
+- run根`runs/champion_official_protocol_20261012/memory-{server,probe}-v1`，对应同名`.log`和tmux`champion-memory-{server,probe}-v1`；server GPU3/PID3865558，probe只CPU客户端。server内逐PID `gpu-memory-samples.jsonl`和终态`memory-profile.json`；这是A800测峰值、非实体24GB/Docker验收，原公开cp2不更新。
+- 本地tripod完整`artifacts/periodic-full-videos-20261012-v2/tripod/execution.mp4` SHAa3b043acc823c18c01a2d2d1b6d0d671c36bafef98087aae33a656b81891d86f，195.633s/5869帧/官方failure Q0；根12抽帧及全367块意图审查在`owner-review.json`。radio与tripod均完成，food继续原v2。
+
 ## 2026-10-12 15:58 CST：radio-v2完整本地视频已核验
 
 - 本地`artifacts/periodic-full-videos-20261012-v2/radio/execution.mp4`为完整107.533s/3226帧、原速、底部仅意图/结果头概率，SHA91b0a7b57780dba0586eaee1bafc0725f6839fc04c2712c47065724fe51238b0；原件两端日志在`source/radio/{episode,service}`，未覆盖原20261011或中断v1。

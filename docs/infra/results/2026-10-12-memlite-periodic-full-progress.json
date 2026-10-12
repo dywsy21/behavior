@@ -1,0 +1,61 @@
+{
+  "status": "two_complete_development_episodes_one_still_running",
+  "time_cst": "2026-10-12 16:11",
+  "owner": "Codex RECOVERY-USABLE",
+  "registration": "configs/recovery_sft/periodic_full_video_collection_v2.json",
+  "source_commit_both_ends": "d793eb87d19d8325aba70f611f75d3f94c66b2ea",
+  "planner_sha256": "f79cd96c13099cfb6df856dbcab83c670eb042ad512cfe3972af5ac3049f66a0",
+  "low_sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5",
+  "instance_id": 301,
+  "simulator_seed": 0,
+  "policy_seed": 17,
+  "teacher_prefix_controls": 0,
+  "optimizer_updates": 0,
+  "original_official_timeout_unchanged": true,
+  "completed": {
+    "radio": {
+      "steps": 3225,
+      "success": false,
+      "q_score": 0.0,
+      "intent_change": {"control": 896, "from": "NAVIGATE", "to": "GRASP"},
+      "subsequent_intent_changes": 0,
+      "estimated_success_in_actual_planner_input_at": [1536, 3200],
+      "physical_grasp_success_verified": false,
+      "video": "artifacts/periodic-full-videos-20261012-v2/radio/execution.mp4",
+      "video_sha256": "91b0a7b57780dba0586eaee1bafc0725f6839fc04c2712c47065724fe51238b0",
+      "frames": 3226,
+      "duration_seconds": 107.533333,
+      "owner_review": "12 spread frames and a full-resolution terminal frame; arm reaches radio, stable grasp and switch operation unverified"
+    },
+    "tripod": {
+      "steps": 5868,
+      "success": false,
+      "q_score": 0.0,
+      "all_367_chunks_intent": "NAVIGATE digital_camera_87",
+      "video": "artifacts/periodic-full-videos-20261012-v2/tripod/execution.mp4",
+      "video_sha256": "a3b043acc823c18c01a2d2d1b6d0d671c36bafef98087aae33a656b81891d86f",
+      "frames": 5869,
+      "duration_seconds": 195.633333,
+      "owner_review": "12 spread frames; repeated room navigation, no grasp/assembly visible in inspected frames"
+    }
+  },
+  "still_running": {"food": {"last_reported_controls": 8832, "official_max_steps": 20544}},
+  "media": {
+    "full_machine_decode_complete_for_both_finished_videos": true,
+    "all_original_frames_retained": true,
+    "playback_speed": 1,
+    "bottom_only_intent_and_raw_result_head_probability": true,
+    "owner_review_records": "Per-case owner-review.json in ignored local artifacts",
+    "original_videos_and_metrics_unchanged": true
+  },
+  "interpretation": "Radio changes intent and reaches, but no observed full-task gain; tripod remains stuck in navigation. Offline boundary accuracy improvement does not establish policy usability.",
+  "is_independent_sr_estimate": false,
+  "is_three_episode_final_aggregate": false,
+  "limits": [
+    "These are previously diagnosed development instances, not independent blind tests.",
+    "Full-episode logging lacks per-step physical grasp predicates, so raw head success cannot establish a stable grasp.",
+    "NAVIGATE predictions are outside the GRASP-only calibration scope.",
+    "Earlier v1 heartbeat-interrupted attempts are preserved as infrastructure aborts, not added to policy failure counts.",
+    "No threshold or weights were changed to make these development videos succeed."
+  ]
+}

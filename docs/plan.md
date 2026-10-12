@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 16:11 CST / Codex CHAMPION-2026：** A800实际显存probe已终态：原cp2两TRAIN/18模型调用、47.46s，10项协议检查全过且动作SHA与原3b对照十项全同；253次0.5s逐PID采样0错误，加载峰8664MiB、全程峰8718MiB≈8.51GiB，JAX live峰7,231,032,064B。仅A800采样下界，不等3090/A5000/TitanRTX、容器或新100task EMA验收。13新/原client CPU在精确官方引用下全过；模型before/after同b1ebe3fc，已SIGTERM正常关停并核GPU3释放。四轻量原回执已两端SHA核验至`artifacts/champion-official-protocol-20261012/memory-v1`，Git摘要`2026-10-12-champion-serving-memory.json`。MEM两完整Q0/亲审及food仍进行中的事实另登记`2026-10-12-memlite-periodic-full-progress.json`，不伪填第三结果；正式冠军大训仍未启动。
+
+- **2026-10-12 16:08 CST / Codex CHAMPION-2026：** 冻源322d8177已由已push Git包7aff6764…1e869双端验签导入lc1独立`src/champion-memory-profile-20261012-v1`；GPU3只读`memory-server-v1` PID3865558已ready、初始参数摘要同前b1ebe3fc…102fc，`memory-probe-v1`已提交原两TRAIN/18调用有限显存测试。仅开启遥测，未改actor/seed/步数/连接隔离；正式训练未开始。MEM radio/tripod终态与全片均保留、food原v2已7936控继续；不把新源覆盖任何活跃源。
+
 - **2026-10-12 16:04 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军新增可选只读逐PID显存采样（0.5s NVML＋同步模型调用后JAX分配器峰值），19项采样/原协议/会话CPU测试通过；本机系统Python缺pytest、隔离env缺G05的OmegaConf，改用原champion env `--noconftest`执行不依赖G05 fixture的这些测试，无安装/改环境。已核lc1 GPU3实空，下一冻结新源、原cp2/两个TRAIN/18次模型调用有限probe，仅量加载＋推理显存，不冒充实体24GB/Docker或新EMA。此时tripod-v2也已5868控原官方failure/Q0、195.633s/5869帧全片落地（a3b043ac…d86f）；根12分布帧复核仍绕房间导航、全367块仅NAVIGATE，未见抓取/装配，记录媒体验收不等策略有效。food原回合继续，正式冠军配方仍未获准。
 
 - **2026-10-12 15:58 CST / Codex RECOVERY-USABLE：** radio-v2已原官方3225控终态failure/Q0，不再是工程中断；完整107.533s/3226帧30fps字幕MP4已本地`artifacts/periodic-full-videos-20261012-v2/radio/execution.mp4`（91b0a7b5…38b0），全解码/原帧保留通过。根亲看12分布帧及终态原分辨率：机器人到桌前并伸手，不能确认稳定抓起/开机；896控从NAVIGATE切GRASP后仍2329控未推进。原日志26次真规划中1536/3200已收到独立observer的estimated SUCCEEDED仍重复GRASP，故不能误归因于反馈完全未输入；known UNKNOWN是无物理真值的原合同，不是丢反馈。人工记录同目录`owner-review.json`，这是展示媒体审查通过而非策略可用。food/tripod仍原v2运行，不改权重/配置/重置，不追加训练；冠军正式配方仍待确认。
