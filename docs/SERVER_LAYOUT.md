@@ -1,5 +1,15 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 19:42 CST：三低层臂结束，lc3高层补训提交
+
+- 候选`runs/native_learner_heartbeat_20261012/candidate-model-v2/result.json` SHA1b6cf0ec97e22d4cc8e1187281c47c8b445d23988112327a54b00453ee326afb，episodes e9b0bc6a9a1040b75cc11762596934b7ed0deb2448473cd7787cee58631c1aee；本地`artifacts/native-learner-heartbeat-20261012/candidate`同SHA。全部3worker/服务与生成2834958均退出，相关GPU实空；原证据/19820隧道保留。
+- lc3新run`runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1`及`.log`/`.supervisor`，tmux`memlite-handoff-fit-lc3-v1`。只用已冻结661源和`preflight-v2/ticket.json`原0f69票，19:42:16提交、初始化待；不动共享env/lc1冠军，360步或4h先到即停。
+
+## 2026-10-12 19:32 CST：留出冻结反馈收齐，前两低层臂全控审计通过
+
+- lc3`heldout-predict-v1/result.json` SHAe0d2646626963b9ffdbdaf813f28e6ff0b6a4087457deea54131f17c1e58ea72，checks仍c98bc03e…a576/trace1a38b428…d576/feedback d80ca2cc…6ee8；`heldout-review-v1/review.json` SHA002df25d9f90f0aceb4607aa1c8ace404b81bdff428332c74c5c3ad56ee00d2c，40页160条/全部本地同SHA，亲审未完成。GPU1生成已终态/释放待真实nvidia核；不改原预测。
+- RTX `runs/native_learner_heartbeat_20261012/{parent,control}-audit-v2/audit.json`分别2d1b300b…1358/62dbd4fa…87eb，原d257 `review_short_skill_baseline.py`完整24各臂重算通过、0新仿真；相应24页每臂与JSON已复制到本地`artifacts/native-learner-heartbeat-20261012/`同名目录并验签。候选原run未结束，不启动H1或停止其worker。
+
 ## 2026-10-12 19:18 CST：原EVAL CPU门全过，冻结头预测启动
 
 - `runs/recovery_handoff_20261012/heldout-audit-v1/result.json` SHA2b8a7303cf4f64b55113fb3c96296d801f0ada9476d9edf0c9f4ab5a12b4b4b6/checks c98bc03e…a576已本地同SHA归档；396/1980实际观察全过、0模型/0优化。

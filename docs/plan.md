@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 19:42 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 第三低层34d完整24/24、三方ACK/0优化/actor与冻结模块前后SHA相同，lc3与RTX原进程及GPU均实空；result1b6cf0ec…6afb、episodes e9b0bc6a…1aee双端同SHA已收本地，原d257全控物理复核下一进行，不先推广。整节点空与1,022,495,985,664B实空门核后，19:42:16在lc3提交既定661源/0f69启动票的`H1-handoff-fit-lc3-v1`（tmux同名前加memlite、360步/4h、8卡），当前启动验票/首优化与W&B待；只改383反馈输入、原目标/同f79序列不变，不等EVAL亲审才能训TRAIN，396留出永久不训练。冠军原run980/8000、100task/有限梯度、1000保存待。续接fetch成功，因自有待提交改动未pull，不覆盖团队修改。
+
+- **2026-10-12 19:32 CST / Codex RECOVERY-USABLE：** 原留出396/792冻结反馈完整终态（609.44s/0优化），CPU与模型1980观察回执SHA c98bc03e…a576全同，observer前后4425283d…3b48/头均不变；result e0d26466…ea72、trace1a38b428…d576/feedback d80ca2cc…6ee8已两端同SHA。估计297成功/7失败/92未知；198真命令交接有197成功估计，但198继续中也有100成功，不能用估计硬切换或称物理准确。`heldout-review-v1`40页160条99task已渲染/收本地并验页SHA待根亲审，review002df25d…00d2c，永久不训练。另原d257 CPU入口对低层父/对照各24条全控ACK/奖励/恢复/无损观察/视频重算均通过（audit2d1b300b…1358/62dbd4fa…87eb，本地同SHA），不是模型自报；第三尚21/24。新增三臂逐job/seed原物理对照分析及13相关反例过，未得候选终态、不推广策略。冠军仍原PID活跃，未改源码/环境。
+
 - **2026-10-12 19:18 CST / Codex RECOVERY-USABLE：** 396原留出/1980实际观察全量CPU RGB/proprio/部署prefix/token门已终态通过（329.28s），原result2b8a7303…b4b6/checks c98bc03e…a576两端同SHA收本地；lc3 GPU1实空后同5e6e冻源启动`heldout-predict-v1`，仅原bee+b0/32ed校准的792检查、0优化，尚未终态或亲审。另独立高层留出生成入口`eval_memlite_handoff_heldout.py`在本地完成：回放原logits、同帧RGB、目标毒化反例、实际token核对、仅同a74父固定final360、权重前后hash、独立分片严格合并；51相关测试全过，**尚未实际模型评分/新效果**。原661 H1票仍待低层第三臂和GPU1作业结束后整节点空，不改正在训练的冠军或共享env。
 
 - **2026-10-12 19:11 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 396留出全量RGB/prefix CPU验收在lc3新5e6e2192冻源已运行（PID2831610、`heldout-audit-v1`，源包4c721418…4ad1/43目标env测试过）；独立eval schema/真实eval reader/禁止回灌，不热改原661或d257。GPU冻结反馈待CPU门，task66缺适用GRASP样本明确不补。第三低层三冷worker均已提交，radio首条已物理结束/washer恢复中，未知最终比较。冠军原run782/8000、近20步9.186s、100task且数值有限；首1000完整保存/留出效果仍待。Git一次TLS失败后重推5e6e成功。
