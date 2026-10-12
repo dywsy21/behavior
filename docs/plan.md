@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 17:35 CST / Codex RECOVERY-USABLE：** 新入口0322685f已push/Git包e2613ca7…d456双端验签，lc3独立源`src/memlite-handoff-inference-20261012-v1`冻结；24相关本地单测及目标G05 env新增9测试全过。CPU全量真实RGB/prefix审计已启动`runs/recovery_handoff_20261012/audit-v1`，tmux`memlite-handoff-audit-v1`/PID2777588，0GPU/0优化，尚校验输入；原始data/observer曝光/383请求不变。GPU预测严格要求同source/配方完整CPU回执与逐观测token/像素hash一致才进入；尚未预测或训练准入。冠军17:33已156真实步，原run不改。
+
 - **2026-10-12 17:32 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 根续接Git fetch/pull已完成/干净，冠军原PID3895302仍真实推进（17:24为96步/约9.3s、未改源码）。新增383候选冻结observer入口与CPU前置验收：逐5帧RGB/61D状态走真实serving归一化，比较三相机/前意图prefix/生产token，毒化未来标签与动作作反例；原128控命令全历史回放后仅最后两新鲜预测入反馈，目标/UNKNOWN真值保持。代码`generate_memlite_handoff_feedback.py`及`recovery_handoff_inference.py`正在本地检查，尚未部署或模型调用/新准入。lc3 17:25已八卡空，仍仅登记GPU1、不抢lc1冠军；下一冻结CPU审计再真实预测及亲审。
 
 - **2026-10-12 17:16 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 正式冠军已验到**41/8000真实优化步**，全部已完成batch逐条核100task各2/3样本、global256、TRAIN，所有loss/grad有限、无failure；第2–41步均值9.398s，八卡各约60.2GiB/实测瞬时100%。初始1600原留出EMA已完整：FM0.520977/FAST0.817195/stageCE3.133253，总0.875162；旧50FM0.310015、新50FM0.731940。此为0更新baseline，训练末41步loss0.542693并非同样本eval改善。W&B API实读running且云端已有至17步历史（读取时刻），不是仅建立run；常规1000ckpt尚未到、不可报已保存。五不可变原回执已两端SHA一致落`artifacts/champion-formal-20261012/shared100-v1`，详情`2026-10-12-champion-formal-launch.json`。三MEM完整收片后仅撤本轮19810–19812反向/正向转发，原master/VPN与197xx不动、无文件删除。17:14只读核lc3 GPU1–7已空、GPU0队友PID2701764占约5.7GiB；下一MEM可用空闲单GPU1做383候选真实冻结observer预测，先RGB/prefix校验和新冻结入口，**尚未启动/不改其env或GPU0，不占lc1冠军资源**。goal仍未完成。

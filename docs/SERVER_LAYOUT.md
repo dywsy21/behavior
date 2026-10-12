@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 17:35 CST：MEM真实输入CPU审计在lc3运行
+
+- lc3冻结源`/data/workspace/wsy/behavior2026/src/memlite-handoff-inference-20261012-v1`=0322685fe4397395900bb2016ac82b00f7a0323d；Git包`incoming/codex-git-bundles/handoff-inference-0322685f.bundle` SHAe2613ca76075697b800a26f9c3605ee9ae84a0d59be76df0d6b77b7d3524d456，两端一致。
+- CPU run `runs/recovery_handoff_20261012/audit-v1`及同名`.log`，tmux`memlite-handoff-audit-v1`、PID2777588；383候选/逐5真实观察，实际图片/token前门待完成，0GPU/0优化。配方`configs/recovery_sft/a800_handoff_observer_v1.json` SHA5b1b6ee950d59e0c48de05fe462ea3adb77fa25977653b33c63eeac100fd9050；后续仅原bee+b0冻结observer、GPU1，不占lc1冠军。
+
 ## 2026-10-12 17:16 CST：冠军41真实步；MEM可用lc3空闲单卡，尚未启动
 
 - 原lc1正式run/源30b/PID3895302不变；17:15:53已41优化，journal与逐批sampler均100任务/256样本；原1600初始eval `eval-00000000-1791795930370745341.json` SHAc560c58d…04cf，合同SHA5de115d3…3e82。五不可变回执两端一致落本地`artifacts/champion-formal-20261012/shared100-v1`；W&B6wx5m0i7 online且API读到running/真实loss。1000步常规checkpoint仍待。
