@@ -1,0 +1,22 @@
+{
+  "schema": "native_learner_physical_probe_restart_v2",
+  "owner": "Codex RECOVERY-USABLE",
+  "registered_at": "2026-10-12T17:44:00+08:00",
+  "original_preregistration": {
+    "path": "configs/recovery_sft/native_learner_probe_preregistration_v1.json",
+    "sha256": "33179f588276eb030054fd5382b9936f0bf5c688f74e0f3f422a2da2c5fcd3a3"
+  },
+  "reason": "The prior parent-only comparison stopped after a transport/worker engineering error; all partial records remain. The initial disconnect has no stack and is not retroactively attributed to the separately reproduced WebSocket busy ping loop. New version disables periodic pings, as already regression-tested.",
+  "hypothesis": "Unchanged: compare final200 reviewed native learner correction against the same parent's final200 expert-only control and the unmodified parent.",
+  "scientific_changes": [],
+  "arms_in_order": ["parent", "matched_control", "native_candidate"],
+  "model_node": "lc3",
+  "model_gpu": 2,
+  "loopback_port": 19820,
+  "simulator_host": "RTX10383",
+  "simulator_gpus": [0, 1, 2],
+  "physical_protocol": "Repeat the complete originally declared 24-case arm for each checkpoint in this explicitly versioned restart. Do not mix old partials with new results, pick best retries, change seeds or retry failed episodes silently. Abort on engineering/ownership error. All actual outcomes, including failure, retained.",
+  "case_and_seed_contract": "Identical original three TRAIN starts, eight seeds433/467/503/541/587/631/673/719, original horizons, same physical gates and deterministic FP32 Euler FM. Zero optimizer updates, no high planner, no calibrated observer or heldout data.",
+  "resource_policy": "Use actually idle lc3 GPU2 and RTX0-2 only; champion remains alone on lc1, handoff observer uses lc3 GPU1. No shared environment changes or teammate eviction.",
+  "metrics": "Paired same-start local skill success and all wins/losses; not independent instances or whole-task SR. Root reviews the final paired evidence, not intermediate best seeds."
+}

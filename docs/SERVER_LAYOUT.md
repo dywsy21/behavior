@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 17:42 CST：383/1915 CPU门通过，冻结observer单卡启动
+
+- `runs/recovery_handoff_20261012/audit-v1/result.json` SHA782d5036bdec5a2d6806295f1626b9f94c3f301f63be0848361c608a37d6e084（383条/1915观察/352.81s），原本地`artifacts/recovery-handoff-20261012/audit-v1/result.json`同SHA。
+- lc3 GPU1/tmux`memlite-handoff-predict-v1`/PID2781295，`runs/recovery_handoff_20261012/predict-v1`及同名`.log`；仍用0322685f源、5b1b6ee9配置，仅原冻结bee+b0结果头766次检查/0优化/未准入，首预测与终态待。冠军lc1原作业不变；RTX10383八卡当时全无compute进程，未启新模拟。
+
 ## 2026-10-12 17:35 CST：MEM真实输入CPU审计在lc3运行
 
 - lc3冻结源`/data/workspace/wsy/behavior2026/src/memlite-handoff-inference-20261012-v1`=0322685fe4397395900bb2016ac82b00f7a0323d；Git包`incoming/codex-git-bundles/handoff-inference-0322685f.bundle` SHAe2613ca76075697b800a26f9c3605ee9ae84a0d59be76df0d6b77b7d3524d456，两端一致。

@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 17:45 CST / Codex RECOVERY-USABLE：** 原383候选的真实冻结推理已执行首20头检查（10条：estimated成功8/失败1/未知1），CPU/加载模型token逐项相同；仅分布示例，非准确率/物理成功。根登记低层三臂heartbeat-v2工程复验：父0c52/extra200对照9ac/extra200恢复候选34d，原三TRAIN起点×8seed/原期限/FP32 FM不变，每臂24条完整新版，不拼旧半途数据或挑重试最佳；仅迁lc3 GPU2＋RTX0–2并禁周期ping，原首次断线无栈不倒推原因。新配置/科学同一性守门和测试在本地，尚未启动该模拟对照、不新增训练；冠军独占lc1不动。
+
+- **2026-10-12 17:42 CST / Codex RECOVERY-USABLE：** 383/1915真实观察的全量CPU审计终态通过（352.81s），原结果SHA782d5036…e084已双端核落`artifacts/recovery-handoff-20261012/audit-v1`，逐观察SHA4d3e74b3…02cc；不是metadata-only或人工准入。lc3 GPU1确认空后启动同032源`runs/recovery_handoff_20261012/predict-v1`，tmux`memlite-handoff-predict-v1`/PID2781295，正在原bee+b0/32ed校准加载，计划仅766头检查、0优化/不重拟校准。真实预测终态、至少160分层图审与后续配对SFT均待；RTX八卡只读核空但未启动新模拟器。
+
 - **2026-10-12 17:39 CST / Codex RECOVERY-USABLE：** 增加`render_memlite_handoff_review.py`及确定性选择回归（通过）：待真实预测终态后，至少160条、覆盖全部97个有候选的task、所有稀有对象/关系变化并分层检查继续/切换×真实预测结果。每张图将T−64/T三相机与真实推理观察SHA核对，不修改原图或训练标签；抽样用于质量审查而非盲测指标。当前CPU审计已250条/1250观察无异常，预测和人工签核仍待，不提前准入。
 
 - **2026-10-12 17:35 CST / Codex RECOVERY-USABLE：** 新入口0322685f已push/Git包e2613ca7…d456双端验签，lc3独立源`src/memlite-handoff-inference-20261012-v1`冻结；24相关本地单测及目标G05 env新增9测试全过。CPU全量真实RGB/prefix审计已启动`runs/recovery_handoff_20261012/audit-v1`，tmux`memlite-handoff-audit-v1`/PID2777588，0GPU/0优化，尚校验输入；原始data/observer曝光/383请求不变。GPU预测严格要求同source/配方完整CPU回执与逐观测token/像素hash一致才进入；尚未预测或训练准入。冠军17:33已156真实步，原run不改。

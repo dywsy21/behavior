@@ -35,6 +35,13 @@ async def main():
     ap.add_argument('--port',type=int,required=True);a=ap.parse_args()
     cfg=json.loads(a.config.read_text());root=Path(cfg['root'])
     evaluation_only=read_only_recipe(cfg)
+    from recovery_probe_restart import validate_probe_restart
+    restart=validate_probe_restart(cfg,REPO)
+    if restart:
+        import socket
+        if (not evaluation_only or os.environ.get('CUDA_VISIBLE_DEVICES')!=str(restart['model_gpu'])
+                or a.port!=restart['loopback_port'] or socket.gethostname()!='a800-3'):
+            raise ValueError('Engineering restart belongs only to lc3 GPU2 loopback19820, read-only')
     causal_metadata=load_causal_probe_metadata(cfg,REPO)
     if a.output.exists() or subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
         raise ValueError('Use a new run and clean frozen source')

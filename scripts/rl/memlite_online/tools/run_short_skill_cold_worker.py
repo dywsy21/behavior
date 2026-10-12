@@ -29,6 +29,13 @@ def main():
     p.add_argument('--peer-collection-commit')
     a=p.parse_args();cfg=json.loads(a.config.read_text())
     evaluation_only=read_only_recipe(cfg)
+    from recovery_probe_restart import validate_probe_restart
+    restart=validate_probe_restart(cfg,REPO)
+    if restart:
+        case_order=list(cfg['cases'])
+        if (not evaluation_only or a.case not in case_order or a.port!=restart['loopback_port']
+                or a.gpu!=restart['simulator_gpus'][case_order.index(a.case)]):
+            raise ValueError('Restart worker must retain registered case/GPU and read-only transport')
     if bool(a.peer_collection)!=bool(a.peer_collection_commit):
         raise ValueError('Peer collection and frozen source commit must be bound together')
     peer_args=[]
