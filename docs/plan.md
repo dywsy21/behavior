@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 18:35 CST / Codex RECOVERY-USABLE：** 8466943b新冻源经Git包f863fe4f…32a7双端验签、目标env36测试过；全383CPU门发现**新验证器错误假定UNKNOWN置信度必为0**，实际生产ledger在两次门后UNKNOWN一致时保留raw置信度（383中78条），原预测/数据不改。本地已按真实ledger修验收并加精确反例，下一新冻源v2全验；另一78恢复审计缺输出父目录、无回执，旧log保留并明确重验，不冒充已通过。对照三冷worker已启动/原d257不变，冠军原run继续，尚0新H1更新。
+
 - **2026-10-12 18:32 CST / Codex RECOVERY-USABLE：** 新383反馈的限制adapter、actual training/serving prefix＋CE门与单独lc3同a74/360配方已实现（`recovery_handoff_data.py`/`check_memlite_handoff_processor.py`）；原1800目标/原f79批次顺序保持，只覆盖383的输入估计，指纹绑定feedback SHA。34数据/历史回归＋6渲染/物理工程回归通过；一条额外测试命令文件名写错未执行，已改用实际路径验证。下一Git冻结后目标环境全383CPU实测与原78恢复processor验收，尚无新H1训练或效果结论。低层父24回执两端同SHA落本地，三臂摘要`2026-10-12-memlite-native-three-arm-progress.json`；对照服务PID2807433加载中/worker待ready。
 
 - **2026-10-12 18:28 CST / Codex RECOVERY-USABLE：** 低层父0c52已完整24/24：radio GRASP8/8、washer OPEN5/8、tripod PLACE6/8，原3TRAIN起点/8seed/0更新，冻结与actor前后SHA相同、三方final ACK齐、模型和RTX0–2均已退出释放；原result SHA6e9847e4…7487/episode SHA20d4e741…fca4。这不是新模型改善或完整SR。随即在同d257冻源/lc3 GPU2/19820新`control-model-v2`启动extra200对照9ac加载，待ready才起相同三worker，候选仍未启。另383反馈adapter已本地实现/29相关回归过，原意图与计数不可更改，实际prefix/CE全量CPU门仍待，不启动新SFT。

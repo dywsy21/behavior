@@ -61,10 +61,28 @@ class HandoffDataTests(unittest.TestCase):
             with self.assertRaises(ValueError): feedback_overlay(row, request, predicted)
 
     def test_invalid_unready_confidence_and_unreviewed_classes_refused(self):
-        for outcome, confidence in (('UNKNOWN', .9), ('SUCCEEDED', .84), ('FAILED', float('nan')),
+        for outcome, confidence in (('UNKNOWN', -1.), ('SUCCEEDED', .84), ('FAILED', float('nan')),
                                     ('SUCCEEDED', 1.2), ('IN_PROGRESS', .98)):
             row, request, predicted = self.example(outcome, confidence)
             with self.assertRaises(ValueError): feedback_overlay(row, request, predicted)
+
+    def test_production_agreed_gated_unknown_retains_nonzero_raw_confidence(self):
+        from g05.utils.memlite_causal_feedback import CausalFeedbackLedger, FeedbackIdentity
+        from g05.utils.memlite_skill_protocol import canonical_json, parse_active_skills_text
+        row, request, predicted = self.example()
+        p = row['projection']; identity = FeedbackIdentity('test',p['task_name'],1,'ep','a'*64,'b'*64)
+        ledger = CausalFeedbackLedger(identity,uncertainty_protocol='unready_zero_confidence_v1')
+        ledger.issued(identity,128,canonical_json(parse_active_skills_text(p['previous_intent'])),p['previous_parent_goal'])
+        for at, conf in ((240,.61),(256,.72)):
+            ledger.observe_clock(identity,at)
+            ledger.estimated(identity,at,[dict(outcome='FAILED',confidence=conf)],calibrated=True)
+        actual = json.loads(ledger.projection(identity,256))
+        feedback = json.loads(predicted['execution_feedback'])
+        for key in ('estimated_bundle_outcome','estimated_member_outcomes'): feedback[key]=actual[key]
+        predicted['execution_feedback']=json.dumps(feedback)
+        _, overlaid = feedback_overlay(row,request,predicted)
+        member=json.loads(overlaid['execution_feedback'])['estimated_member_outcomes'][0]
+        self.assertEqual(member['estimated_outcome'],'UNKNOWN'); self.assertEqual(member['confidence'],.61)
 
     def test_overlay_copy_no_cross_sample_memory_and_unselected_unchanged(self):
         row, request, predicted = self.example(); index, projection = feedback_overlay(row, request, predicted)

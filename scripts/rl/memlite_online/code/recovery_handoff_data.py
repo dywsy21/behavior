@@ -49,9 +49,12 @@ def feedback_overlay(original, request, predicted):
             or outcome not in ('SUCCEEDED', 'FAILED', 'UNKNOWN')
             or type(confidence) not in (int, float) or not math.isfinite(confidence)
             or not 0 <= confidence <= 1 or after['estimated_bundle_outcome'] != outcome
-            or (outcome == 'UNKNOWN' and confidence != 0)
             or (outcome != 'UNKNOWN' and confidence < .85)):
         raise ValueError('Invalid calibrated estimate or unready confidence')
+    # Production retains min(raw confidences) when two threshold-gated UNKNOWN
+    # values agree. UNKNOWN therefore need not have confidence0, and this field
+    # is not generally P(UNKNOWN). Preserve the serving semantics; the CPU gate
+    # separately replays the two actual logits through that same ledger.
     from g05.utils.memlite_skill_protocol import parse_active_skills_text
     previous = parse_active_skills_text(projection['previous_intent'])
     if len(previous) != 1 or previous[0]['verb'] != 'GRASP':
