@@ -1,0 +1,24 @@
+{
+  "schema": "periodic_handoff_observer_generation_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "hypothesis": "Real fixed-observer inputs at original TRAIN handoffs can supply missing feedback-conditioned planning supervision; no new physical outcome truth is asserted.",
+  "root": "/data/workspace/wsy/behavior2026",
+  "node": "lc3",
+  "gpu": 1,
+  "requests": {
+    "path": "runs/recovery_handoff_20261012/prepare-v1/requests.jsonl",
+    "sha256": "ed615dad12ef6efbee9979d1d8ab02a72d75e56edcd7999a18d5911dc5adcd9e"
+  },
+  "preparation": {
+    "path": "runs/recovery_handoff_20261012/prepare-v1/result.json",
+    "sha256": "016837d6e05af03c00f39a46c01c2add3aeee9b53908326ad05b9a4c872a438b"
+  },
+  "original_recipe": "configs/recovery_sft/a800_h1_periodic_teacher_fit_lc1_v1.json",
+  "rows": 383,
+  "head_checks": 766,
+  "optimizer_updates": 0,
+  "seed": 17,
+  "stop": "One complete fixed candidate universe; abort on any identity, input, model mutation, resource or numeric error. No automatic retries, filtering or training admission.",
+  "control": "Original UNKNOWN feedback and original teacher targets retained for subsequent paired evaluation; physical success is not measured here.",
+  "human_review_required_before_fit": true
+}
