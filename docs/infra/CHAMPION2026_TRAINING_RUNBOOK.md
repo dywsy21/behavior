@@ -61,3 +61,24 @@ SIGINT/SIGTERM 只请求停止，当前更新结束后完整保存；不要第�
 还需：新正式权重的2026物理/提交容器验收、成员独立审查、用户批准新大训。
 长时间CLI＋在线W&B尚未整体运行；数学/保存/恢复/评估engine和W&B生命周期是分别实测的。
 公开 cp2 的首个完整 DEV radio 回合仍是 Q0；不以工程通过掩盖这个效果问题。
+
+## 2026-10-12 14:15 CST：提交接口复核（尚未实现/验收部署）
+
+[当前官方提交说明](https://behavior.stanford.edu/challenge/submission.html)允许不足1000条的
+部分提交，但缺项计零；禁止挑最好rollout。原JSON/MP4不能修改，字幕片只能是另外的
+展示副本。须附wrapper、实际robot config、完整运行说明，Docker方案须实证单24GB GPU；
+IP方案须至少50端口。现有`package_submission.py`是旧MEM全1000条专用草案器，不能冒充
+冠军封包或自动放宽成成功筛选器；截止前部分提交须另登记覆盖范围与零分分母。
+
+官网写v3.9.3；公开Git当前没有无后缀同名tag，实际最新公开
+[v3.9.3-post2](https://github.com/StanfordVL/BEHAVIOR-1K/releases/tag/v3.9.3-post2)
+指向a8247a8，与当前封存sim代码一致。不能凭旧tag名称改动活跃模拟器；最终提交写完整commit。
+10383只读检查八卡空闲、Docker server24.0.9可访问，**未创建容器/未改环境/未启动模拟器**。
+
+当前`serve_champion_episode.py`与`champion_episode_client.py`是有identity/token/真实执行ACK
+的内部诊断协议，不是官方直接可连的服务。已读封存官方`network_utils.py`：标准客户端
+先GET `/healthz`，连接后收metadata；`reset`只发送、不读取ACK；观测请求期待`action`，
+可协商`__action_chunk_size__=20`并要求`action_chunk[...,0,:]`与`action`完全一致。
+部署适配时每连接/每reset独立stage、RNG、inpainting；标准协议没有物理ACK，
+不能捏造`simulator_apply_ack=True`，须显式区分已发送控制与已物理确认控制。
+仍需完整协议实连、跨任务交错/重置、24GB和真实新EMA物理验收；当前无提交授权、未上传模型或视频。
