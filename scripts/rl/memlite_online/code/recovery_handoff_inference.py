@@ -7,7 +7,7 @@ import hashlib
 import json
 
 from recovery_corpus import digest
-from recovery_handoff_feedback import requests_for_candidate
+from recovery_handoff_feedback import requests_for_candidate, requests_for_eval_candidate
 from recovery_periodic_teacher import original_label_module, periodic_annotation_trace
 
 PREFIX_FIELDS = ('task_name', 'parent_goal', 'issued_bundle', 'member_index', 'memory', 'served_controls')
@@ -48,11 +48,14 @@ def unique_checks(row):
     return list(found.values())
 
 
-def reconstruct_request(row, original, data, excluded):
+def reconstruct_request(row, original, data, excluded, *, expected_split='train'):
     from recovery_periodic_teacher import validate_candidate_projection
     i = row['original_identity']; index = i['original_candidate_index']
     episode, frame, *_ = data.locate(index)
-    validate_candidate_projection(original, episode, original_index=index, original_pair=data.candidates[index])
+    if expected_split not in ('train', 'eval') or data.split != expected_split:
+        raise ValueError('Wrong explicit original observer dataset split')
+    validate_candidate_projection(original, episode, original_index=index,
+                                  original_pair=data.candidates[index], expected_split=expected_split)
     if original['identity'] != i: raise ValueError('Changed original target identity')
     frame_map = {}
     for check in unique_checks(row):
@@ -62,7 +65,8 @@ def reconstruct_request(row, original, data, excluded):
             raise ValueError('Cross-task/episode/frame original observation')
         if at in frame_map and frame_map[at] != number: raise ValueError('Duplicate original frame')
         frame_map[at] = number
-    rebuilt, reason = requests_for_candidate(original, frame_map, excluded_groups=excluded)
+    make_request = requests_for_candidate if expected_split == 'train' else requests_for_eval_candidate
+    rebuilt, reason = make_request(original, frame_map, excluded_groups=excluded)
     if reason is not None or rebuilt != row: raise ValueError('Altered or protected periodic request')
     return episode
 

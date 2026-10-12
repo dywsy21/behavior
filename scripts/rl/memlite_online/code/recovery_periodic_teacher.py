@@ -92,11 +92,12 @@ def unknown_feedback(record_index, records, segments):
                                    repeat_stride_controls=128)
 
 
-def validate_candidate_projection(row, episode, *, original_index, original_pair):
-    """Recompute every candidate field from immutable same-frame TRAIN source."""
+def validate_candidate_projection(row, episode, *, original_index, original_pair, expected_split='train'):
+    """Recompute original labels; TRAIN remains the fail-closed default."""
     labels = original_label_module()
     source = episode['row']
-    if episode['split'] != 'train': raise ValueError('Periodic training candidate crossed original heldout')
+    if expected_split not in ('train', 'eval') or episode['split'] != expected_split:
+        raise ValueError('Periodic candidate crossed its explicit original split')
     serial, anchor_number = map(int, original_pair)
     anchors = labels.anchor_records(episode['segments'], episode['phase'])
     records, audit = periodic_annotation_trace(anchors, episode['segments'])
@@ -106,7 +107,7 @@ def validate_candidate_projection(row, episode, *, original_index, original_pair
     identity = dict(episode_serial=serial, original_candidate_index=int(original_index),
         episode=int(source['episode_index']), task=int(source['task_index']),
         instance=int(source['task_instance_id']), raw_episode=int(source['raw_episode_id']),
-        frame=record['frame'], phase=int(episode['phase']), split='train', kind=command_kind(record, segment))
+        frame=record['frame'], phase=int(episode['phase']), split=expected_split, kind=command_kind(record, segment))
     target = labels.projection(segment, branch='high', task_name=episode['task_name'],
         previous_intent=record['previous_intent'], previous_parent=record['previous_parent'], history=record['history'])
     target['execution_feedback'] = unknown_feedback(number, records, episode['segments'])

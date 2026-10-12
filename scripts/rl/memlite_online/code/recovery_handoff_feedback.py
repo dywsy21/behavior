@@ -11,18 +11,30 @@ from recovery_corpus import digest, group_key
 from recovery_periodic_teacher import command_change_class
 
 SCHEMA = 'periodic_teacher_frozen_observer_requests_v1'
+EVAL_SCHEMA = 'periodic_heldout_frozen_observer_requests_v1'
 
 
 def requests_for_candidate(row, frame_indices, *, excluded_groups):
+    return _requests(row, frame_indices, excluded_groups=excluded_groups,
+                     expected_split='train', schema=SCHEMA)
+
+
+def requests_for_eval_candidate(row, frame_indices, *, excluded_groups):
+    """Explicit heldout namespace; never relabel EVAL observations as TRAIN."""
+    return _requests(row, frame_indices, excluded_groups=excluded_groups,
+                     expected_split='eval', schema=EVAL_SCHEMA)
+
+
+def _requests(row, frame_indices, *, excluded_groups, expected_split, schema):
     from g05.utils.memlite_skill_protocol import canonical_json, parse_active_skills_text
     identity, p = row['identity'], row['projection']
-    if (identity['split'] != 'train' or identity['instance'] >= 301
+    if (identity['split'] != expected_split or not 0 <= identity['instance'] < 301
             or row['teacher_kind'] != 'annotation_periodic_command_trace_not_actor_rollout'
             or row['annotation_trace']['period'] != 128
             or p['known_previous_outcome'] != 'UNKNOWN' or p['outcome_target'] != 'UNKNOWN'
             or p['outcome_supervision_mask'] or p['low_action_supervision_mask']
             or p['next_decision'] != 'EXECUTE'):
-        raise ValueError('Only accepted TRAIN high-intent candidates, never outcome/BC labels')
+        raise ValueError('Require explicit original split and high-intent-only labels')
     group = group_key(p['task_name'], identity['instance'])
     if group in excluded_groups:
         return None, 'protected_source'
@@ -46,7 +58,7 @@ def requests_for_candidate(row, frame_indices, *, excluded_groups):
         return None, 'missing_original_annotated_observation'
     if frame_indices[frame] != identity['original_candidate_index']:
         raise ValueError('Decision observation changed identity')
-    sid = digest([SCHEMA, identity])
+    sid = digest([schema, identity])
     checks = []
     for member in range(len(members)):
         five = [dict(original_candidate_index=frame_indices[t], frame=t,
@@ -59,7 +71,7 @@ def requests_for_candidate(row, frame_indices, *, excluded_groups):
             checks.append(dict(request_id=digest([sid, member, window[-1]['frame']]),
                                member_index=member, control_step=window[-1]['control_step'],
                                checks=window))
-    return dict(schema=SCHEMA, sample_id=sid, source_group=group,
+    return dict(schema=schema, sample_id=sid, source_group=group,
                 original_identity=identity, annotation_trace=row['annotation_trace'],
                 target_change_class=command_change_class(p['previous_intent'], p['active_skills_text']),
                 original_projection=p, requests=checks,
