@@ -5,6 +5,19 @@ and the command-memory ledger at the same 128-control clock. Missing annotated
 calls end a usable prefix: never invent a command across an unlabeled gap.
 The returned targets cannot create result-head or low-action supervision.
 """
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def original_label_module():
+    # This source is deliberately dependency-light. Import by pinned repo file
+    # to avoid g05.data.__init__ eagerly importing unrelated training stacks.
+    import importlib.util
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[4] / 'src/g05/data/memlite_stage1_labels.py'
+    spec = importlib.util.spec_from_file_location('periodic_original_label_contract', path)
+    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+    return module
 
 
 def periodic_annotation_trace(anchors, segments, *, period=128):
@@ -77,3 +90,30 @@ def unknown_feedback(record_index, records, segments):
                 row['previous_parent'], row['history']) for row in records]
     return expert_unknown_feedback(dict(anchors=anchors, segments=segments), record_index,
                                    repeat_stride_controls=128)
+
+
+def validate_candidate_projection(row, episode, *, original_index, original_pair):
+    """Recompute every candidate field from immutable same-frame TRAIN source."""
+    labels = original_label_module()
+    source = episode['row']
+    if episode['split'] != 'train': raise ValueError('Periodic training candidate crossed original heldout')
+    serial, anchor_number = map(int, original_pair)
+    anchors = labels.anchor_records(episode['segments'], episode['phase'])
+    records, audit = periodic_annotation_trace(anchors, episode['segments'])
+    found = [(number, record) for number, record in enumerate(records) if record['original_anchor'] == anchor_number]
+    if len(found) != 1: raise ValueError('Candidate not on the known periodic command prefix')
+    number, record = found[0]; segment = episode['segments'][record['segment']]
+    identity = dict(episode_serial=serial, original_candidate_index=int(original_index),
+        episode=int(source['episode_index']), task=int(source['task_index']),
+        instance=int(source['task_instance_id']), raw_episode=int(source['raw_episode_id']),
+        frame=record['frame'], phase=int(episode['phase']), split='train', kind=command_kind(record, segment))
+    target = labels.projection(segment, branch='high', task_name=episode['task_name'],
+        previous_intent=record['previous_intent'], previous_parent=record['previous_parent'], history=record['history'])
+    target['execution_feedback'] = unknown_feedback(number, records, episode['segments'])
+    target['low_action_supervision_mask'] = False
+    if (row['identity'] != identity or row['annotation_trace'] != audit or row['projection'] != target
+            or row['original_stride16_previous_intent'] != anchors[anchor_number][2]
+            or row['human_admission'] is not False
+            or row['teacher_kind'] != 'annotation_periodic_command_trace_not_actor_rollout'):
+        raise ValueError('Candidate identity, causal history, target or supervision differs from original source')
+    return target

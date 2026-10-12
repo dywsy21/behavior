@@ -1,13 +1,60 @@
 import importlib.util
+import copy
 from pathlib import Path
+import sys
 import unittest
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts/rl/memlite_online/code'))
 spec = importlib.util.spec_from_file_location('periodic_teacher',
     Path(__file__).resolve().parents[1] / 'scripts/rl/memlite_online/code/recovery_periodic_teacher.py')
 module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
 
 
 class PeriodicTeacherTests(unittest.TestCase):
+    def candidate(self):
+        from g05.utils.memlite_skill_protocol import parse_active_skills_text, canonical_json
+        labels = module.original_label_module()
+        anchor_records, projection = labels.anchor_records, labels.projection
+        segments = []
+        for start, end, verb in ((0,64,'NAVIGATE'),(64,192,'GRASP'),(192,512,'PLACE_ON')):
+            text = self.command(verb=verb)
+            segments.append(dict(start=start,end=end,text=text,semantic=canonical_json(parse_active_skills_text(text)),
+                                 parent='Task goal: vacuuming floors',parent_supervised=False))
+        episode = dict(row=dict(episode_index=7,task_index=0,task_instance_id=1,raw_episode_id=10),
+                       segments=segments,phase=0,split='train',task_name='vacuuming floors')
+        anchors=anchor_records(segments,0); records,audit=module.periodic_annotation_trace(anchors,segments)
+        record=records[1]; segment=segments[record['segment']]
+        target=projection(segment,branch='high',task_name=episode['task_name'],previous_intent=record['previous_intent'],
+                          previous_parent=record['previous_parent'],history=record['history'])
+        target.update(execution_feedback=module.unknown_feedback(1,records,segments),low_action_supervision_mask=False)
+        identity=dict(episode_serial=7,original_candidate_index=100,episode=7,task=0,instance=1,raw_episode=10,
+                      frame=128,phase=0,split='train',kind='transition')
+        row=dict(identity=identity,projection=target,annotation_trace=audit,
+                 original_stride16_previous_intent=anchors[8][2],human_admission=False,
+                 teacher_kind='annotation_periodic_command_trace_not_actor_rollout')
+        return row,episode
+
+    def test_candidate_rebuilt_from_same_frame_not_dense_previous(self):
+        row,episode=self.candidate()
+        result=module.validate_candidate_projection(row,episode,original_index=100,original_pair=(7,8))
+        self.assertEqual(result,row['projection'])
+        self.assertNotEqual(result['previous_intent'],row['original_stride16_previous_intent'])
+        self.assertFalse(result['outcome_supervision_mask'])
+        self.assertFalse(result['low_action_supervision_mask'])
+
+    def test_tampered_history_mask_identity_or_target_rejected(self):
+        row,episode=self.candidate()
+        for field,value in (('memory','future target'),('low_action_supervision_mask',True),
+                            ('outcome_supervision_mask',True),('active_skills_text',self.command(target='other'))):
+            changed=copy.deepcopy(row);changed['projection'][field]=value
+            with self.assertRaises(ValueError):
+                module.validate_candidate_projection(changed,episode,original_index=100,original_pair=(7,8))
+        changed=copy.deepcopy(row);changed['identity']['frame']+=16
+        with self.assertRaises(ValueError):
+            module.validate_candidate_projection(changed,episode,original_index=100,original_pair=(7,8))
+        with self.assertRaises(ValueError):
+            module.validate_candidate_projection(row,dict(episode,split='eval'),original_index=100,original_pair=(7,8))
+
     def command(self, verb='GRASP', target='vacuum', source='', destination='', arm='UNSPECIFIED'):
         from g05.utils.memlite_skill_protocol import semantic_active_skills_text
         return semantic_active_skills_text([dict(verb=verb, target=target, source=source,

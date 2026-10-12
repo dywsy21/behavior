@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 13:03 CST / Codex RECOVERY-USABLE：** task74 ep14836视觉疑点已回原源解决：5632/5888/6144可见红色手推车斗/轮支架/长把手，6272–6656转正并双手抓把，6912/7168与后续草地搬运物体一致；原wheelbarrow标注保留，不是已证错标。ffdf冻结CPU两个context run均完成、本地5页亲审，SHA d8632db3…d704/b77c500b…ba03。120case/100task图审完成，未改原图/原标签；13未绑定关系变化单列而不猜角色，task69误判已撤回。补全源同帧projection重建及真实processor检查入口，只CPU/0优化；8反例测试待末次执行，1800元数据＋120已审RGB实际接口验收待。仍非训练准入。
+
 - **2026-10-12 12:52 CST / Codex RECOVERY-USABLE / 明确更正：** 上条task69“同GRASP仅source变化”是根误读缩略图文字，不是数据缺陷；原review JSON明确GRASP→TURN_ON_SWITCH，撤回此判断，不改/拒该条标签。新增逐条机器审计全部1800目标text/semantic同一、mask/split/唯一索引通过：800文本切换中757动词/并行bundle变化、30明确绑定目标/目的/部位变化、13未绑定关系变化，另800延续/200初始，**本候选集0条source-only变化**。新增分类回归保留用于防未来误计，不称物理推进；原全源325040仍仅文本变化计数。task74视觉疑点待原上下文核实，owner-review已记录更正；6单测中未绑定fixture先因非canonical JSON失败，修fixture重跑后才报通过。冠军700ee469已推送；不启动大训。
 
 - **2026-10-12 12:49 CST / Codex CHAMPION-2026：** 冠军工程全证据已本地收齐，`docs/infra/results/2026-10-12-champion-training-chain.json`登记全302叶同进程/冷恢复、原eval1600及工程EMA-v1回读的真实SHA，非正式效果。新增`policy_assets.py`校验正式EMA-v2全文件账本/模型映射、拒绝工程权重和漏登记参数，保留公开父权重兼容；新增`storage.py`加载模型前预检整个保留计划（新run775GiB，8定期+1紧急+EMA+256GiB余量），不删任何旧文件。共60CPU测试通过，手册/团队/目录已同步真实终态。v2全模型与物理/容器、独立review仍未验；新大训尚未批准、未启动。上一图审记录时间12:45应为12:42，分类问题/原task74视觉疑点仍待处理。
