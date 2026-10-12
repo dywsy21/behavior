@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 16:46 CST / Codex RECOVERY-USABLE：** 已实现CPU候选预备器`prepare_memlite_handoff_feedback.py`及纯函数`recovery_handoff_feedback.py`：重建原1800已审周期TRAIN目标，不改旧标签；排除observer fit/selection/CAL/test及原恢复DEV整源，只对上一条GRASP命令构造T−64…T五个真实原锚、两次四帧结果头请求，严格输入上一条意图/parent/因果memory，下一技能只留目标侧。仅metadata候选/尚未运行真实反馈或新拟合，随后冻结到独立CPU源验原数据；不得把文字变化或专家段结束当物理成功。短技能心跳三回归已过并提交502f35ad，Git首次TLS失败、重试push已成功；冠军冻结30b05548不受后来MEM更改影响，原food继续、最后16:40为16000控。
+
 - **2026-10-12 16:37 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军正式源30b055485b2720c8dc3391a27cea052cab9e4fc7已push，经双端SHA72f8e9a2…86836的Git包在lc1新`src/champion-formal-20261012-v1`冻结，原checkout不动；目标环境20项入口/保存/优化器等小测试全过20.11s（包含JAX微型计算，不是正式更新）。仅food原回合占卡、16:34已14608控，继续等终态。MEM已逐条78真实反馈→已审目标验SHA/时钟：TRAIN36全RETRY，其中estimated FAILED18/UNKNOWN17/SUCCEEDED1，DEV42也全同技能RETRY；普通1800专家增强反馈全UNKNOWN，证实缺“学习结果头报成功后的正向换技能”监督，不代表唯一根因或物理成功。详见`2026-10-12-memlite-feedback-coverage.json`。本地同时将已证的禁周期ping修复扩至短技能5入口/6连接，不热改任何运行源；原10/10短试中断的首次断线原因未取栈，不能据此倒推其根因，新的物理对照仍待。
 
 - **2026-10-12 16:30 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 用户已明确批准冠军正式大训并继续MEM，覆盖此前“待批准”。已在Git配方/AGENTS/手册记录：lc1八A800、shared50→100task、global256/stride16、8000更新或首次启动起24h、W&B online，沿原固定留出与完整保存。仅授权状态/对应防误启动测试更新，数学/采样不变；20项入口/空间/采样/优化器/完整保存/导出/W&B CPU回归全过（10.59s），尚未启动，先提交冻结。16:27真实仅food模型3840850占GPU1，已12960/20545控，正常等完整终态后释放八卡，不打断旧片；磁盘空1,022,891,130,880B，大于775GiB。MEM继续CPU核真实成功反馈→技能切换的数据覆盖，并保留两完整Q0，不挤占冠军资源；下一源码冻结及实际开训首更新验收。
