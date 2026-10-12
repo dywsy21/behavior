@@ -1,0 +1,45 @@
+{
+  "root": "/data/workspace/wsy/behavior2026",
+  "expert_release": "datasets/memlite-stage1-20260930-v4",
+  "union": "datasets/recovery-postfit-planner-union-20261010-v1",
+  "admission_sha256": "404fcc0a2e1d7f62466e08e6bfe994717905db6973cee84ee410ad0a32f3463f",
+  "models": {
+    "parent": {
+      "path": "runs/recovery_heterogeneous_20261010/H1-causal-feedback-fit-v1/checkpoints/step_00000420_save_0009.pt",
+      "sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2"
+    },
+    "candidate": {
+      "path": "runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1/checkpoints/step_00000360_save_0003.pt",
+      "sha256": "f79cd96c13099cfb6df856dbcab83c670eb042ad512cfe3972af5ac3049f66a0"
+    }
+  },
+  "inventory": {
+    "path": "datasets/recovery-postfit-planner-union-20261010-v1/audit/inventory.json",
+    "sha256": "5869bd1eea8d0a5a5728eca3fc3145fbec94240bed7586de0a62dc5b1041e863"
+  },
+  "history": {
+    "path": "datasets/recovery-postfit-planner-union-20261010-v1/history/contexts.jsonl",
+    "sha256": "e9927128f8eeb4daa6e419b337a3f066e052aefd425cc1f9c4688c29493666f6"
+  },
+  "feedback": {
+    "path": "runs/recovery_heterogeneous_20261010/H1-postfit-feedback-v1/feedback.jsonl",
+    "sha256": "586ef848c37ab26997c9b2da8105afaf57739ea68d0404ddac587e061cd20f80"
+  },
+  "original_schedule": "noninitial_fixed_one_per_task_v1",
+  "include_transition_probes": true,
+  "original_feedback": "causal_expert_unknown_v1",
+  "original_feedback_repeat_stride": 16,
+  "uncertainty_protocol": "unready_zero_confidence_v1",
+  "owner": "Codex root",
+  "hypothesis": "The fixed final360 periodic-history/changed-command augmentation improves true-boundary generation over the matched old899 control without destroying continuation, initial-plan or recovery retention. Same a74 parent and720 recovery rank slots; no intermediate checkpoint selection.",
+  "scope": "Unchanged first100 real heldout boundaries +100 fixed noninitial controls +42 recovery DEV. Four independent shards for this final checkpoint; simultaneously rerun old899 control using its unchanged config in two shards and compare all242 original causal inputs/identities and old serial output parity. No training, physical controls, new labels, blind-SR claim or automatic deployment.",
+  "validated_training_ticket": {
+    "path": "runs/recovery_periodic_20261012/preflight-lc1-v1/ticket.json",
+    "sha256": "3e75973acc6d054bd5ff3275eec2c1017780c21dd765ced7413a2c95c1f065a2"
+  },
+  "completed_training": {
+    "path": "runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1/result.json",
+    "sha256": "2dce2bdc5bc55e062ff1285f09d15910e468895fd62a930fc7824b4ec5c1b1ff",
+    "step": 360
+  }
+}

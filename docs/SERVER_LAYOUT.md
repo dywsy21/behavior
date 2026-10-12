@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 14:32 CST：lc1周期高层训练完整结束
+
+- 同run`runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1`完整360/360、supervisor EXITED/0、34.4min；八卡已释放。最终`checkpoints/step_00000360_save_0003.pt` SHA f79cd96c13099cfb6df856dbcab83c670eb042ad512cfe3972af5ac3049f66a0，另120/240保存全保留、不部署。
+- `result.json` SHA2dce2bdc…b1ff、最终checkpoint回执7c558795…0b75两端同；本地`artifacts/recovery-periodic-20261012/H1-fit-lc1-v1/`保存result/updates/evaluations/latest/ledger。Git轻量总结`docs/infra/results/2026-10-12-memlite-periodic-fit.json`，对应固定生成配置`a800_h1_periodic_final_{transition,initial}_v1.json`已绑定实际final，生成尚未启动。不能把teacher-forcing下降当技能推进或Q/SR。
+
 ## 2026-10-12 14:04 CST：lc1周期高层真实训练，lc3未训练
 
 - 实际运行节点lc1，共享根`/data/workspace/wsy/behavior2026`，冻结源`src/memlite-periodic-fit-20261012-lc1-v1`=6ab70cea、配方`configs/recovery_sft/a800_h1_periodic_teacher_fit_lc1_v1.json`；tmux`memlite-periodic-fit-lc1-v1`，run`runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1{,.log,.supervisor}`。已35/360真实更新，不是仅提交进程；首更新/全部初始442条分域eval已写JSONL，W&B run id458bf4b6f147。低层/独立observer不训、终态参数hash待。

@@ -1,0 +1,76 @@
+{
+  "status": "training_completed_fixed_final_generation_pending",
+  "owner": "Codex root",
+  "time_cst": "2026-10-12 14:32",
+  "source_commit": "6ab70cea73ffb62c26f700b4913f72d27d9d74b2",
+  "run": "/data/workspace/wsy/behavior2026/runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1",
+  "recipe": "configs/recovery_sft/a800_h1_periodic_teacher_fit_lc1_v1.json",
+  "node": "lc1",
+  "world_size": 8,
+  "updates": 360,
+  "global_batch": 8,
+  "learning_rate": 0.000001,
+  "elapsed_seconds": 2064.119624475017,
+  "parent_sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2",
+  "final_checkpoint": {
+    "path": "runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1/checkpoints/step_00000360_save_0003.pt",
+    "sha256": "f79cd96c13099cfb6df856dbcab83c670eb042ad512cfe3972af5ac3049f66a0",
+    "step": 360,
+    "save_sequence": 3
+  },
+  "matched_control": {
+    "sha256": "89907ea757643d4d74e520e89617aea6bea9e925830b05966cce8c6da0cc83a7",
+    "same_parent": true,
+    "same_720_recovery_step_rank_slots": true
+  },
+  "training_change": "Reviewed period128 teacher-command histories and transition-enriched normal expert anchors jointly; not either change isolated, not actor-rollout history.",
+  "exposures": {
+    "expert": 2160,
+    "unique_expert": 1736,
+    "candidate_pool": 1800,
+    "expert_tasks": 100,
+    "recovery": 720,
+    "recovery_source_events": 36,
+    "recovery_event_passes": 20
+  },
+  "trainable_groups": {
+    "planner_vlm": 326
+  },
+  "frozen_before_sha256": "0f7aede8a6421ac7be425ecffe384d465079cd67829162acea2e08963a8ca966",
+  "frozen_after_sha256": "0f7aede8a6421ac7be425ecffe384d465079cd67829162acea2e08963a8ca966",
+  "result_sha256": "2dce2bdc5bc55e062ff1285f09d15910e468895fd62a930fc7824b4ec5c1b1ff",
+  "evaluations_sha256": "11b8bfc27191f87b4607aff15a666a64698c48f5fb80e6cea2336e03160b32f5",
+  "updates_sha256": "c7840154cbc1b0de7075e047dac2528a3236364ad6994d8854f832bb2d7658e1",
+  "final_teacher_forcing": {
+    "original_heldout": {
+      "loss": 0.007860728181212305,
+      "denominator": 7121.75,
+      "rows": 100
+    },
+    "original_noninitial": {
+      "loss": 0.0006156569941385422,
+      "denominator": 10643.25,
+      "rows": 100
+    },
+    "original_noninitial_causal_feedback": {
+      "loss": 0.0007319601205784071,
+      "denominator": 10643.25,
+      "rows": 100
+    },
+    "original_transition_causal_feedback": {
+      "loss": 0.011651767598733273,
+      "denominator": 8565.25,
+      "rows": 100
+    },
+    "verified_dev": {
+      "loss": 0.00031273005630178734,
+      "denominator": 3464.25,
+      "rows": 42
+    }
+  },
+  "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/458bf4b6f147",
+  "physical_controls": 0,
+  "method_usable_established": false,
+  "formal_champion_training_started": false,
+  "next": "Fixed final generation (242 transition/continuation/recovery +142 initial/recovery), paired control899 same-code sharded replay and old serial equality; then matched physical probes if warranted. No automatic additional fit."
+}
