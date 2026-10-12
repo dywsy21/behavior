@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 18:32 CST / Codex RECOVERY-USABLE：** 新383反馈的限制adapter、actual training/serving prefix＋CE门与单独lc3同a74/360配方已实现（`recovery_handoff_data.py`/`check_memlite_handoff_processor.py`）；原1800目标/原f79批次顺序保持，只覆盖383的输入估计，指纹绑定feedback SHA。34数据/历史回归＋6渲染/物理工程回归通过；一条额外测试命令文件名写错未执行，已改用实际路径验证。下一Git冻结后目标环境全383CPU实测与原78恢复processor验收，尚无新H1训练或效果结论。低层父24回执两端同SHA落本地，三臂摘要`2026-10-12-memlite-native-three-arm-progress.json`；对照服务PID2807433加载中/worker待ready。
+
+- **2026-10-12 18:28 CST / Codex RECOVERY-USABLE：** 低层父0c52已完整24/24：radio GRASP8/8、washer OPEN5/8、tripod PLACE6/8，原3TRAIN起点/8seed/0更新，冻结与actor前后SHA相同、三方final ACK齐、模型和RTX0–2均已退出释放；原result SHA6e9847e4…7487/episode SHA20d4e741…fca4。这不是新模型改善或完整SR。随即在同d257冻源/lc3 GPU2/19820新`control-model-v2`启动extra200对照9ac加载，待ready才起相同三worker，候选仍未启。另383反馈adapter已本地实现/29相关回归过，原意图与计数不可更改，实际prefix/CE全量CPU门仍待，不启动新SFT。
+
+- **2026-10-12 18:14 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 根已亲看40页/160条/97task/960原图panel，包含全部8 FAILED/所有稀有角色变化，未见新跨源/相机/时钟错接；原同类物体ID、遮挡接触与未绑定角色仍明确不可目测认证。准入仅383条**真实冻结头估计作为高层输入**配原TRAIN意图，不新增物理结果/低层BC标签、不改原目标；签核`2026-10-12-memlite-handoff-review.json`，本地owner SHA c057e7d9…1a0b。下一验签adapter及实际prefix/CE mask门、另登记配对SFT，尚0新训。低层父臂20/24物理完成、后两臂未启；冠军18:10只读已394/8000、9.37s/步/100task/有限梯度，无重启或源码变更。续接fetch已完，因自有文档修改未pull、不覆盖团队进展。
+
+- **2026-10-12 17:58 CST / Codex RECOVERY-USABLE：** 9232584f新冻结渲染源经Git包091a1f04…0226双端验签，`review-v2`完整产出40页/160条/97task/960原图panel，均与实际预测观察SHA相同；含全部8 FAILED、117 SUCCEEDED、35 UNKNOWN及全部7绑定角色变化/5未绑定关系变化。旧渲染字段错误仅修消费方，原766预测与权重不重跑。当前收片准备根逐页亲审，**尚无人审准入或新训练**。低层d257父臂三冷worker全部运行（RTX0/1/2），已有真实物理终态/0优化，整套24尚未齐，后两臂待；W&B`ccd0e5e0e8ed`，不以首个收音机成功当改善。
+
 - **2026-10-12 17:55 CST / Codex RECOVERY-USABLE：** 383条/1915观察/766真实头检查完整结束（615.98s），CPU与实际模型逐观测token/像素回执同SHA4d3e74b3…02cc；observer前后4425283d…3b48/头权重均相同、0优化。最终estimated成功276/失败8/未知99/IN_PROGRESS0，177/178动词变化为成功估计，但89个同命令目标也报成功，不能据此造物理真值或无条件切换。原结果SHA807311f4…6256已双端一致；新Git摘要`2026-10-12-memlite-handoff-feedback.json`。审图首入口误读observer回执为frozen字段，CPU渲染在改图/标签前拒绝；保留旧log，新字段回归2项过、下一新源新目录，不重推理/不回灌。低层父臂两worker已握手并装载场景，三脚架待错峰，最终物理比较尚未产生。
 
 - **2026-10-12 17:48 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 低层新版d257fbd0已push并在lc3/RTX各新冻源，Git包5875c966…829a三端一致；两目标环境科学配置同一性＋心跳4项均过，额外14本地回归通过。父臂模型现lc3 GPU2/PID2785278、`runs/native_learner_heartbeat_20261012/parent-model-v2`加载中，19820专用双段loopback已建，不碰VPN/master/旧转发，尚0物理probe/0优化；worker等真实ready再启。原手交接observer仍lc3 GPU1独立预测，数据未准入。冠军只读已246更新，最近20步9.45s，全部100task/有限梯度、无failure；不把变batch训练loss当eval提升，1000保存/评估仍待。

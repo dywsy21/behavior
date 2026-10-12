@@ -149,6 +149,10 @@ def main():
                         micro_batch=ticket['micro_batch']))
                 if len(schedule)!=ticket['maximum_updates'] or max(r['event_pass'] for r in schedule)+1!=ticket['event_passes']:
                     raise ValueError('Periodic comparison changed the original fixed training exposure')
+                if periodic_pool.handoff is not None:
+                    control=json.loads(periodic_pool.handoff.files['handoff_control_schedule'].read_text())
+                    if schedule!=control['schedule']:
+                        raise ValueError('Handoff fitting changed its exact same-parent periodic control schedule')
         data_sha=ticket['files']['admission']['sha256']
     schedule=schedule[:ticket['maximum_updates']]
     binding=dict(component=a.component,source_commit=commit,parent_sha256=parent['sha256'],admission_sha256=data_sha,
@@ -159,6 +163,9 @@ def main():
         binding.update(periodic_candidate_sha256=ticket['files']['periodic_candidates']['sha256'],
             periodic_admission_sha256=ticket['files']['periodic_admission']['sha256'],
             paired_control_schedule_sha256=ticket['files']['periodic_control_schedule']['sha256'])
+        if periodic_pool.handoff is not None:
+            binding.update(handoff_admission_sha256=ticket['files']['handoff_admission']['sha256'],
+                handoff_feedback_sha256=ticket['files']['handoff_feedback']['sha256'])
     fingerprint=schedule_fingerprint(schedule,binding=binding)
     if rank==0:
         if not a.resume: a.output.mkdir(parents=True,exist_ok=False)

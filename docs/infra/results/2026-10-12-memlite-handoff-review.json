@@ -1,0 +1,64 @@
+{
+  "status": "ACCEPTED_RESTRICTED_HIGH_FEEDBACK_INPUT_NOT_A_TRAINING_LAUNCH",
+  "owner": "Codex root",
+  "recorded_at": "2026-10-12T18:14:00+08:00",
+  "hypothesis": "Use actual frozen observer estimates in the existing periodic expert input so the planner learns both continuation and skill handoff, without fabricating outcome truth or changing expert targets.",
+  "source": {
+    "candidate_sha256": "ab066a7481c3af930ab63ee976765a73fddb2edd8cac1de5560df87b40cc1802",
+    "requests": "runs/recovery_handoff_20261012/prepare-v1/requests.jsonl",
+    "requests_sha256": "ed615dad12ef6efbee9979d1d8ab02a72d75e56edcd7999a18d5911dc5adcd9e",
+    "feedback": "runs/recovery_handoff_20261012/predict-v1/feedback.jsonl",
+    "feedback_sha256": "a3e16ea8c8445e9a1ec726b6caea366afa8b0fb0c5e4dfc63375dffd87de5aec",
+    "prediction_result": "runs/recovery_handoff_20261012/predict-v1/result.json",
+    "prediction_result_sha256": "807311f4757184ac466123565ea45a959424f9cf91e339954f7e697ae81e6256",
+    "cpu_audit_sha256": "782d5036bdec5a2d6806295f1626b9f94c3f301f63be0848361c608a37d6e084",
+    "exposure_sha256": "8842a0938c6c10274584145e41c2078d1a08856a172c352d286262b8d4900ef8",
+    "rows": 383,
+    "tasks": 97,
+    "source_groups": 379,
+    "split": "original TRAIN; observer adapter fit/selection/CAL/test and recovery DEV groups excluded"
+  },
+  "human_review": {
+    "local_record": "artifacts/recovery-handoff-20261012/review-v2/owner-review.json",
+    "owner_record_sha256": "c057e7d90ed98776b4dbd4d98cefbac24c26d8f5d557d5af5a80f6cacebc1a0b",
+    "review_manifest": "runs/recovery_handoff_20261012/review-v2/review.json",
+    "review_manifest_sha256": "017dd78147b473e23a5fdf6e029653ecfd697a4e9de06b60cc35da7def3d44b9",
+    "personally_reviewed_cases": 160,
+    "tasks": 97,
+    "pages": 40,
+    "rgb_panels": 960,
+    "sample_design": "All97 represented tasks, all8 FAILED, all7 explicit bound-object changes/all5 unbound-relation changes, stratified outcomes and deterministic fill.117 SUCCEEDED/35 UNKNOWN.",
+    "page_sha256_verified": true,
+    "all383_personally_reviewed": false,
+    "new_observed_source_camera_or_time_mismatches": 0,
+    "caveats": [
+      "Two instants cannot certify stable physical grasp/contact or exact IDs of identical objects.",
+      "Naturally occluded/reflective wrist panels are not evidence of broken camera preprocessing.",
+      "Annotation-resampled commands are not actor rollout history; pretrained backbone can have seen original TRAIN.",
+      "Original unresolved roles and category aliases remain unresolved. Case159 same hardback category for target/destination is not a verified self-placement identity.",
+      "An estimate may disagree with a later visual state; preserve it as learned input, never convert to physical truth."
+    ]
+  },
+  "training_admitted": true,
+  "admission_scope": {
+    "allowed_component": "high_planner_only estimated execution_feedback input",
+    "allowed_target_change": false,
+    "required_known_previous_outcome": "UNKNOWN",
+    "required_outcome_supervision_mask": false,
+    "required_low_action_supervision_mask": false,
+    "required_task_complete": false,
+    "preserve_all383_estimates_including_unknown_and_failures": true,
+    "all_other_periodic_candidates_keep_original_feedback": true,
+    "physical_outcome_asserted": false,
+    "observer_refit_allowed": false,
+    "low_bc_allowed": false,
+    "new_training_launch_approved_by_this_receipt": false
+  },
+  "remaining_before_fitting": [
+    "Fail-closed adapter bound to these SHA receipts and original same-frame projection.",
+    "Actual high training/serving prefix and CE mask audit; no next target leakage.",
+    "Separate fixed-parent paired SFT recipe and same heldout transition/continuation/recovery controls; no new deployment implied."
+  ],
+  "new_optimizer_updates": 0,
+  "effect_claim": "None. Input-quality admission is not head accuracy, planner effectiveness or task success."
+}

@@ -20,6 +20,7 @@ def main():
     p.add_argument('--expert-feedback-human-review',type=Path)
     p.add_argument('--native-processor-audit',type=Path)
     p.add_argument('--periodic-processor-audit',type=Path)
+    p.add_argument('--handoff-processor-audit',type=Path)
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     recipe=json.loads(a.recipe.read_text());root=Path(recipe['root'])
@@ -61,11 +62,17 @@ def main():
                 observer_prediction_trace=a.feedback_directory/'prediction-trace.json')
         periodic=recipe['H1'].get('periodic_teacher')
         if periodic is not None:
-            if a.periodic_processor_audit is None: raise ValueError('Need actual periodic adapter/token audit')
             from recovery_periodic_data import PeriodicTeacherPool
             pool=PeriodicTeacherPool(root,periodic)
             files.update(periodic_admission=pool.admission_path,periodic_candidates=pool.candidate_path,
-                periodic_control_schedule=pool.control_path,periodic_processor_audit=a.periodic_processor_audit)
+                periodic_control_schedule=pool.control_path)
+            if pool.handoff is None:
+                if a.periodic_processor_audit is None: raise ValueError('Need actual periodic adapter/token audit')
+                files['periodic_processor_audit']=a.periodic_processor_audit
+            else:
+                if a.handoff_processor_audit is None: raise ValueError('Need actual handoff adapter/token audit')
+                files.update(pool.handoff.files)
+                files['handoff_processor_audit']=a.handoff_processor_audit.resolve()
         if recipe['H1'].get('original_feedback')=='causal_expert_unknown_v1' and periodic is None:
             if a.expert_feedback_audit is None or a.expert_feedback_human_review is None:
                 raise ValueError('New original feedback requires processor audit and human review')

@@ -1,5 +1,21 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 18:28 CST：低层父臂完整结束，对照臂开始加载
+
+- 原`parent-model-v2/result.json` SHA6e9847e4c0ce405c15bb4ee71a505be5345b7493e1c01c42fb3c5a36f5257487；`episodes.jsonl` SHA20d4e7414842594c42c885cc2ae1eceaf92a51bc34b6767458fb2d808b67fca4，24条原seed齐且两组权重SHA未变。RTX三`parent-*-v2/result.json`均finished_service_window，卡空/无旧活跃worker，原片不删。
+- 同d257源码新lc3 GPU2/tmux`memlite-native-control-model-v2`，run`runs/native_learner_heartbeat_20261012/control-model-v2`/同名.log，仅加载对照9ac，19820原专用隧道复用；worker待ready后开新`control-{radio155,wash169,tripod129}-v2`，不复用父目录。
+
+## 2026-10-12 18:14 CST：160分层审图完成，限制准入原反馈
+
+- 本地`artifacts/recovery-handoff-20261012/review-v2`40页29MB均核SHA、根160条全亲审，`owner-review.json` SHA c057e7d90ed98776b4dbd4d98cefbac24c26d8f5d557d5af5a80f6cacebc1a0b；准入范围与图像局限见Git `docs/infra/results/2026-10-12-memlite-handoff-review.json`。原383预测/原图/标签不改，尚未新拟合。
+- 原低层父模型GPU2/RTX0–2目录不变，已20/24；冠军原lc1已394更新，1000常规保存未到。生成GPU1已自然释放，无新共享环境更改。
+
+## 2026-10-12 17:58 CST：真实预测完成、160审查图已渲染，父臂三worker在跑
+
+- 原`predict-v1/result.json` SHA807311f4757184ac466123565ea45a959424f9cf91e339954f7e697ae81e6256，383/1915/766/0优化，observer前后4425283d…3b48、GPU1自然释放；本地同名原回执已核SHA。全预测8FAILED/276SUCCEEDED/99UNKNOWN，仅估计。
+- lc3新CPU渲染源`src/memlite-handoff-review-20261012-v2`=9232584fcbb456ee8ab4418f3673d9dfa0947b33，Git包091a1f04…0226；`runs/recovery_handoff_20261012/review-v2`40页/160/97task已完，85.90s，下一收至本地`artifacts/recovery-handoff-20261012/review-v2`亲审。旧`review-v1.log`KeyError保留，原预测不改。
+- RTX冷worker root `runs/native_learner_heartbeat_20261012`：`parent-radio155-v2` PID3289792/GPU0、`parent-wash169-v2` PID3289897/GPU1、`parent-tripod129-v2` PID3296724/GPU2，tmux同名前加`memlite-native-`（radio/wash/tripod名），各episode子目录完整保留；lc3父服务2785278/W&B ccd0e5e0e8ed正常。首若干物理已结束，整24与后两模型仍待，不删旧partial。
+
 ## 2026-10-12 17:48 CST：低层三臂heartbeat-v2源与父模型加载
 
 - lc3 `/data/workspace/wsy/behavior2026/src/memlite-native-learner-heartbeat-20261012-v2` 与RTX `/run/ti/rl_memlite_stage1_20261006/code/memlite-native-learner-heartbeat-20261012-v2`均d257fbd0be943356af2fa6beadebea3ca326aa4a；包SHA5875c9667954c16d5b24781a4a04c19c3238e60cf20238454569f79d8a7d829a。旧源/GC警告不清理不覆盖。

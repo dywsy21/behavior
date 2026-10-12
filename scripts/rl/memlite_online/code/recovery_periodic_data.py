@@ -89,6 +89,10 @@ class PeriodicTeacherPool:
                             for k,n in (('initial',2),('transition',8),('continuation',8))})
         if len(self.rows) != 1800 or kinds != expected:
             raise ValueError('Periodic selection missing tasks, strata or source anchors')
+        self.handoff = None
+        if spec.get('learned_handoff') is not None:
+            from recovery_handoff_data import HandoffFeedbackPool
+            self.handoff = HandoffFeedbackPool(root, spec['learned_handoff'], self, repo=repo)
 
 
 def with_periodic_teacher(dataset_class, pool):
@@ -111,6 +115,8 @@ def with_periodic_teacher(dataset_class, pool):
                     original_index=index, original_pair=pair)
                 if int(self.task_ids[index]) != row['identity']['task']:
                     raise ValueError('Periodic source task differs from original index')
+                if getattr(pool, 'handoff', None) is not None:
+                    value = pool.handoff.projection(index, value)
                 self._periodic_projection_cache[index] = value
             raw, identity = super().raw(index, images=images)
             if any(identity[key] != row['identity'][key] for key in ('episode','task','frame','raw_episode','instance')):
@@ -167,11 +173,19 @@ def validate_periodic_launch(ticket, recipe):
     spec = recipe['H1']['periodic_teacher']; files = ticket['files']
     expected = {'periodic_admission':spec['admission_sha256'], 'periodic_candidates':spec['candidate_sha256'],
                 'periodic_control_schedule':spec['control_schedule']['sha256']}
-    if not (set(expected) | {'periodic_processor_audit'}) <= files.keys():
+    learned = spec.get('learned_handoff') is not None
+    audit_key = 'handoff_processor_audit' if learned else 'periodic_processor_audit'
+    if not (set(expected) | {audit_key}) <= files.keys():
         raise ValueError('Missing periodic real-adapter audit or source binding')
     for key, digest in expected.items():
         if files[key]['sha256'] != digest or file_sha(files[key]['path']) != digest:
             raise ValueError('Different periodic pinned input: ' + key)
+    if recipe['H1'].get('original_feedback') != 'causal_expert_unknown_v1':
+        raise ValueError('Keep the unchanged original causal-feedback evaluation control')
+    if learned:
+        from recovery_handoff_data import validate_handoff_launch
+        validate_handoff_launch(ticket, recipe)
+        return
     audit = json.loads(Path(files['periodic_processor_audit']['path']).read_text())
     if (audit.get('schema') != 'periodic_planner_processor_audit_v1' or audit.get('real_adapter_used') is not True
             or audit.get('source_commit') != ticket['source_commit']

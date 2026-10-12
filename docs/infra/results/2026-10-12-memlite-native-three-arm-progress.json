@@ -1,0 +1,57 @@
+{
+  "schema": "native_learner_three_arm_progress_v2",
+  "recorded_at": "2026-10-12T18:32:00+08:00",
+  "owner": "Codex RECOVERY-USABLE",
+  "source_commit": "d257fbd0be943356af2fa6beadebea3ca326aa4a",
+  "registration": "configs/recovery_sft/native_learner_probe_heartbeat_restart_v2.json",
+  "registration_sha256": "4b2799a517bae5b24aab849eccbb8c43b6425f6471f569ed7a2d18efeb34c472",
+  "seeds": [
+    433,
+    467,
+    503,
+    541,
+    587,
+    631,
+    673,
+    719
+  ],
+  "parent": {
+    "status": "completed_read_only_skill_probes",
+    "checkpoint_sha256": "0c523bebb867a37e0fd03067bdd202ff1e3c637d98e050de71a747cf13400ca5",
+    "remote": "/data/workspace/wsy/behavior2026/runs/native_learner_heartbeat_20261012/parent-model-v2",
+    "result_sha256": "6e9847e4c0ce405c15bb4ee71a505be5345b7493e1c01c42fb3c5a36f5257487",
+    "episodes_sha256": "20d4e7414842594c42c885cc2ae1eceaf92a51bc34b6767458fb2d808b67fca4",
+    "local_receipts": "artifacts/native-learner-heartbeat-20261012/parent",
+    "completed": 24,
+    "optimizer_updates": 0,
+    "actor_updates": 0,
+    "actor_and_frozen_unchanged": true,
+    "all_three_final_ack": true,
+    "skills": {
+      "turning_on_radio_155": {
+        "success": 8,
+        "total": 8
+      },
+      "wash_dog_toys_169": {
+        "success": 5,
+        "total": 8
+      },
+      "attach_a_camera_to_a_tripod_129": {
+        "success": 6,
+        "total": 8
+      }
+    }
+  },
+  "control": {
+    "status": "loading",
+    "pid": 2807433,
+    "checkpoint_sha256": "9ac23c414a4d814bd22c8ec4c2e386cf4168e3d644d9859641615542937a362e",
+    "remote": "/data/workspace/wsy/behavior2026/runs/native_learner_heartbeat_20261012/control-model-v2",
+    "completed": 0
+  },
+  "candidate": {
+    "status": "not_started",
+    "completed": 0
+  },
+  "interpretation": "Same three original TRAIN skill starts, not complete tasks or unseen-source success. All three arms must finish before comparing. No old partial trials merged, no failure replay/best-seed selection, no new optimization."
+}
