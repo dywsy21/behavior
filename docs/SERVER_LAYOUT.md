@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 17:48 CST：低层三臂heartbeat-v2源与父模型加载
+
+- lc3 `/data/workspace/wsy/behavior2026/src/memlite-native-learner-heartbeat-20261012-v2` 与RTX `/run/ti/rl_memlite_stage1_20261006/code/memlite-native-learner-heartbeat-20261012-v2`均d257fbd0be943356af2fa6beadebea3ca326aa4a；包SHA5875c9667954c16d5b24781a4a04c19c3238e60cf20238454569f79d8a7d829a。旧源/GC警告不清理不覆盖。
+- lc3 GPU2/PID2785278/tmux`memlite-native-parent-model-v2`，run`runs/native_learner_heartbeat_20261012/parent-model-v2`及同名`.log`，配方SHA5a8a14103cee2f4256e2234f13f94c3952ec1008b6789b4147aeaf950c488db3；加载中/0物理/0优化。
+- 本地lc3原master仅新增L19820，本地tmux`memlite-rtx-native-forward-v2`保活SSH反向R19820至RTX loopback；未重登VPN，不改旧端口。仅服务ready后开RTX0–2原三冷worker，尚未启动；MEM observer仍GPU1原032源，冠军lc1原30b源不变。
+
 ## 2026-10-12 17:42 CST：383/1915 CPU门通过，冻结observer单卡启动
 
 - `runs/recovery_handoff_20261012/audit-v1/result.json` SHA782d5036bdec5a2d6806295f1626b9f94c3f301f63be0848361c608a37d6e084（383条/1915观察/352.81s），原本地`artifacts/recovery-handoff-20261012/audit-v1/result.json`同SHA。

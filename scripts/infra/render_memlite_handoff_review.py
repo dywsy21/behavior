@@ -20,6 +20,15 @@ from recovery_corpus import file_sha,digest
 from recovery_handoff_inference import tree_sha,unique_checks
 
 
+def validate_generation_receipt(result,cfg,config_sha256):
+    if (result.get('status')!='frozen_handoff_predictions_completed_not_admitted' or result['optimizer_updates']!=0
+            or result['requests_sha256']!=cfg['requests']['sha256'] or result['config_sha256']!=config_sha256
+            or result['observer_before_sha256']!=result['observer_after_sha256']
+            or not result['observer_head_unchanged'] or not result['all_rows_retained']
+            or result['rows']!=cfg['rows'] or result['head_checks']!=cfg['head_checks']):
+        raise ValueError('Complete unchanged actual observer predictions required')
+
+
 def select_review_rows(rows, feedback, *, minimum=160):
     """Every covered task + every rare role-change + actual-estimate strata."""
     if len({r['sample_id'] for r in rows})!=len(rows) or set(feedback)!={r['sample_id'] for r in rows}:
@@ -52,10 +61,7 @@ def main():
     if os.environ.get('CUDA_VISIBLE_DEVICES')!='' or a.output.exists(): raise ValueError('CPU-only fresh render')
     if file_sha(a.generation)!=a.generation_sha256: raise ValueError('Changed generation receipt')
     result=read(a.generation);run=a.generation.parent
-    if (result['status']!='frozen_handoff_predictions_completed_not_admitted' or result['optimizer_updates']!=0
-            or result['requests_sha256']!=cfg['requests']['sha256'] or result['config_sha256']!=file_sha(a.config)
-            or result['frozen_before_sha256']!=result['frozen_after_sha256'] or not result['observer_head_unchanged']):
-        raise ValueError('Complete frozen actual predictions required')
+    validate_generation_receipt(result,cfg,file_sha(a.config))
     for name,key in [('feedback.jsonl','feedback_sha256'),('checks.jsonl','checks_sha256'),('trace.jsonl','trace_sha256')]:
         if file_sha(run/name)!=result[key]: raise ValueError('Changed prediction evidence')
     rows=[json.loads(x) for x in bound(root,cfg['requests']).read_text().splitlines()]

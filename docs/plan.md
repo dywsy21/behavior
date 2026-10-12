@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 17:55 CST / Codex RECOVERY-USABLE：** 383条/1915观察/766真实头检查完整结束（615.98s），CPU与实际模型逐观测token/像素回执同SHA4d3e74b3…02cc；observer前后4425283d…3b48/头权重均相同、0优化。最终estimated成功276/失败8/未知99/IN_PROGRESS0，177/178动词变化为成功估计，但89个同命令目标也报成功，不能据此造物理真值或无条件切换。原结果SHA807311f4…6256已双端一致；新Git摘要`2026-10-12-memlite-handoff-feedback.json`。审图首入口误读observer回执为frozen字段，CPU渲染在改图/标签前拒绝；保留旧log，新字段回归2项过、下一新源新目录，不重推理/不回灌。低层父臂两worker已握手并装载场景，三脚架待错峰，最终物理比较尚未产生。
+
+- **2026-10-12 17:48 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 低层新版d257fbd0已push并在lc3/RTX各新冻源，Git包5875c966…829a三端一致；两目标环境科学配置同一性＋心跳4项均过，额外14本地回归通过。父臂模型现lc3 GPU2/PID2785278、`runs/native_learner_heartbeat_20261012/parent-model-v2`加载中，19820专用双段loopback已建，不碰VPN/master/旧转发，尚0物理probe/0优化；worker等真实ready再启。原手交接observer仍lc3 GPU1独立预测，数据未准入。冠军只读已246更新，最近20步9.45s，全部100task/有限梯度、无failure；不把变batch训练loss当eval提升，1000保存/评估仍待。
+
 - **2026-10-12 17:45 CST / Codex RECOVERY-USABLE：** 原383候选的真实冻结推理已执行首20头检查（10条：estimated成功8/失败1/未知1），CPU/加载模型token逐项相同；仅分布示例，非准确率/物理成功。根登记低层三臂heartbeat-v2工程复验：父0c52/extra200对照9ac/extra200恢复候选34d，原三TRAIN起点×8seed/原期限/FP32 FM不变，每臂24条完整新版，不拼旧半途数据或挑重试最佳；仅迁lc3 GPU2＋RTX0–2并禁周期ping，原首次断线无栈不倒推原因。新配置/科学同一性守门和测试在本地，尚未启动该模拟对照、不新增训练；冠军独占lc1不动。
 
 - **2026-10-12 17:42 CST / Codex RECOVERY-USABLE：** 383/1915真实观察的全量CPU审计终态通过（352.81s），原结果SHA782d5036…e084已双端核落`artifacts/recovery-handoff-20261012/audit-v1`，逐观察SHA4d3e74b3…02cc；不是metadata-only或人工准入。lc3 GPU1确认空后启动同032源`runs/recovery_handoff_20261012/predict-v1`，tmux`memlite-handoff-predict-v1`/PID2781295，正在原bee+b0/32ed校准加载，计划仅766头检查、0优化/不重拟校准。真实预测终态、至少160分层图审与后续配对SFT均待；RTX八卡只读核空但未启动新模拟器。

@@ -1,0 +1,71 @@
+{
+  "status": "GENERATION_COMPLETE_HUMAN_REVIEW_PENDING",
+  "recorded_at": "2026-10-12T17:55:00+08:00",
+  "owner": "Codex RECOVERY-USABLE",
+  "recipe": "configs/recovery_sft/a800_handoff_observer_v1.json",
+  "source_commit": "0322685fe4397395900bb2016ac82b00f7a0323d",
+  "remote_root": "/data/workspace/wsy/behavior2026/runs/recovery_handoff_20261012",
+  "cpu_audit": {
+    "path": "audit-v1/result.json",
+    "sha256": "782d5036bdec5a2d6806295f1626b9f94c3f301f63be0848361c608a37d6e084",
+    "observations": 1915,
+    "rows": 383
+  },
+  "prediction": {
+    "path": "predict-v1/result.json",
+    "sha256": "807311f4757184ac466123565ea45a959424f9cf91e339954f7e697ae81e6256",
+    "status": "frozen_handoff_predictions_completed_not_admitted",
+    "mode": "predict",
+    "source_commit": "0322685fe4397395900bb2016ac82b00f7a0323d",
+    "config_sha256": "5b1b6ee950d59e0c48de05fe462ea3adb77fa25977653b33c63eeac100fd9050",
+    "pid": 2781295,
+    "hostname": "a800-3",
+    "optimizer_updates": 0,
+    "started": 1791798073.9960139,
+    "requests_sha256": "ed615dad12ef6efbee9979d1d8ab02a72d75e56edcd7999a18d5911dc5adcd9e",
+    "human_admitted": false,
+    "physical_outcome_asserted": false,
+    "rows": 383,
+    "observations": 1915,
+    "head_checks": 766,
+    "seconds": 615.9825272075832,
+    "checks_sha256": "4d3e74b380b90b0ff93e78ef36df8c9cf43421a74f651d26aa1081d6d5cd02cc",
+    "trace_sha256": "765f587c6a006c00057d48250d91cc1b4cdd2c0511ec32f674acaf16674ed7db",
+    "feedback_sha256": "a3e16ea8c8445e9a1ec726b6caea366afa8b0fb0c5e4dfc63375dffd87de5aec",
+    "feedback_counts": {
+      "FAILED": 8,
+      "SUCCEEDED": 276,
+      "UNKNOWN": 99
+    },
+    "by_target_change": {
+      "identical_command / FAILED": 8,
+      "identical_command / SUCCEEDED": 89,
+      "explicit_verb_or_bundle_change / SUCCEEDED": 177,
+      "identical_command / UNKNOWN": 96,
+      "explicit_bound_object_or_goal_change / UNKNOWN": 1,
+      "explicit_bound_object_or_goal_change / SUCCEEDED": 6,
+      "unbound_relation_change_not_verified_roles / SUCCEEDED": 4,
+      "explicit_verb_or_bundle_change / UNKNOWN": 1,
+      "unbound_relation_change_not_verified_roles / UNKNOWN": 1
+    },
+    "observer_backbone_sha256": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter_sha256": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "observer_normalization_sha256": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "calibration_sha256": "32ed1e9effc57a8716af659ab850de1d112b6ba0b5a1c83f078f3b16a0fd42b1",
+    "calibration_refit": false,
+    "all_rows_retained": true,
+    "known_truth_not_added": true,
+    "limitation": "Annotation-command history over original TRAIN, not an executed actor rollout; source exclusions apply to observer adapter fit/selection/CAL/test and recovery DEV, not the pretrained backbone original TRAIN. Human review required before any SFT.",
+    "observer_before_sha256": "4425283d4cabf796c62c2ba9c6ae42807c09ce6e967ee402e0163c71116e3b48",
+    "observer_after_sha256": "4425283d4cabf796c62c2ba9c6ae42807c09ce6e967ee402e0163c71116e3b48",
+    "observer_head_unchanged": true,
+    "cpu_audit_sha256": "782d5036bdec5a2d6806295f1626b9f94c3f301f63be0848361c608a37d6e084"
+  },
+  "human_review": {
+    "status": "PENDING",
+    "first_render_attempt": "review-v1.log: field-name mismatch, no modified source data/weights; fixed new renderer source required",
+    "desired_rows_at_least": 160,
+    "desired_task_coverage": 97
+  },
+  "interpretation": "Estimated outcomes, not annotated physical truth. 89 successful estimates still have the same teacher command; never enforce unconditional success-to-switch. All 383 kept, including failures/UNKNOWN; missing IN_PROGRESS reported honestly. No new optimizer updates, data admission or SR evidence."
+}

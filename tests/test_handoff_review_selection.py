@@ -5,10 +5,20 @@ import unittest
 
 sys.path[:0]=[str(Path(__file__).resolve().parents[1]/'scripts/infra'),
              str(Path(__file__).resolve().parents[1]/'scripts/rl/memlite_online/code')]
-from render_memlite_handoff_review import select_review_rows
+from render_memlite_handoff_review import select_review_rows,validate_generation_receipt
 
 
 class SelectionTests(unittest.TestCase):
+    def test_actual_observer_receipt_field_names_and_mutation_rejection(self):
+        cfg=dict(requests={'sha256':'a'*64},rows=383,head_checks=766)
+        result=dict(status='frozen_handoff_predictions_completed_not_admitted',optimizer_updates=0,
+            requests_sha256='a'*64,config_sha256='b'*64,observer_before_sha256='c'*64,
+            observer_after_sha256='c'*64,observer_head_unchanged=True,all_rows_retained=True,rows=383,head_checks=766)
+        validate_generation_receipt(result,cfg,'b'*64)
+        for key,value in [('observer_after_sha256','d'*64),('observer_head_unchanged',False),
+                          ('head_checks',765),('all_rows_retained',False),('optimizer_updates',1)]:
+            with self.assertRaises(ValueError): validate_generation_receipt(dict(result,**{key:value}),cfg,'b'*64)
+
     def test_all_tasks_rare_changes_and_available_outcome_strata(self):
         rows=[];feedback={}
         for i in range(240):
