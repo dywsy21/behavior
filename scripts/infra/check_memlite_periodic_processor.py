@@ -64,6 +64,12 @@ def make_token_processor(config):
         model_cfg=cfg, add_loc_tokens=bool(cfg.get('add_loc_tokens', False)))
 
 
+def valid_token_count(attention):
+    # G05 attention uses categorical modality IDs, NOT a binary mask. Summing
+    # its integer values overcounts tokens; only non-padding positions count.
+    return int((attention != 0).sum())
+
+
 def validate_token_batch(token_processor, config, samples):
     """Exercise production token boundaries and CE weights; no model forward."""
     from types import SimpleNamespace
@@ -100,7 +106,7 @@ def validate_token_batch(token_processor, config, samples):
             if not valid.all() or not valid.numel() or not torch.all(weights[number, fields[field]] == wanted_weight):
                 raise ValueError('Lost or incorrectly weighted planner supervision: ' + field)
         checks.append(dict(task_name=sample['task_name'],
-            input_tokens=int(attention[number].sum()), context_tokens=int(context_attention[number].sum()),
+            input_tokens=valid_token_count(attention[number]), context_tokens=valid_token_count(context_attention[number]),
             supervised_tokens=int((labels[number] != -100).sum()),
             supervised_field_tokens={field:int((labels[number, span] != -100).sum()) for field,span in fields.items()},
             field_codes=sorted(set(codes[number][labels[number] != -100].tolist())),

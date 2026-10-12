@@ -13,6 +13,10 @@ spec.loader.exec_module(module)
 
 
 class CameraIdentityTests(unittest.TestCase):
+    def test_categorical_attention_counts_positions_not_modality_values(self):
+        self.assertEqual(module.valid_token_count(torch.tensor([0, 1, 2, 3, 0, 4])), 4)
+        self.assertEqual(module.valid_token_count(torch.tensor([0, 0])), 0)
+
     def fixture(self):
         pairs = (('head_rgb', 'exterior'), ('left_wrist_rgb', 'wrist_left'),
                  ('right_wrist_rgb', 'wrist_right'))

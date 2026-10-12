@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 13:28 CST / Codex RECOVERY-USABLE：** bb39 CPU`periodic-tokens-v1`实际完整120/100task，生产prefix/field span/结果及terminal -100/意图权重1/memory0.25全过，result9668aa73…9be3c两端一致、0模型forward/优化/八卡空。末端报告发现本脚本把G05分类attention ID求和当token数（不是模型mask错误），这两个长度指标不可用；已改数非0位置并补非二值反例，拟新v2重跑CPU留准确长度，原v1结果不涂改。数据有意义的原图/来源/mask门已过，训练入口/配对效果仍待。
+
 - **2026-10-12 13:24 CST / Codex RECOVERY-USABLE：** 原v3输入通过后补实际token级验收选项：用原InputPreprocessor（不造VLM）将120亲审样本8条混batch，经生产`_context_positions`/字段span/mask/CE权重函数检查；应拒绝前缀CE、无证据结果/terminal CE、memory非0.25、意图被截断或错位。相机4反例回归通过，真实Qwen tokenizer执行待；仍0模型forward/0GPU/0优化，不提前签完整训练准入。源、run另冻/另名，v3原通过回执不更改。
 
 - **2026-10-12 13:21 CST / Codex RECOVERY-USABLE：** 4c637 CPU v3真实62.79s完整终态PASS：1800同帧来源/128控previous与memory/目标逐条重建，120亲审case共360当前原RGB与人审hash一致，再经真实processor逐相机像素/模板顺序/低层与结果mask/EOC目标边界全过。result SHA b56f6180…226b1已两端同SHA，原v1/v2失败不覆盖。只有CPU输入验收、0训练/0新Q/SR，原120图审不是1800全人工审；原关系未绑定和annotation-history非actor-history限制继续保留。下一记录受限高层意图数据准入/实际token与损失门，再决定专项拟合；冠军大训配方仍待用户确认。
