@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 17:06 CST：冠军正式加载与初始评估；三MEM完整片已齐
+
+- lc1正式run `/data/workspace/wsy/behavior2026/runs/champion_formal_20261012/shared100-v1`，PID3895302、实际开始16:59:54 CST；`timing.json`/`contract.json`/`transport.json`/全保存`storage-preflight-*.json`已落地，W&B `behavior2026-g05/6wx5m0i7`为online。17:04八卡约32.8GiB/100%，初始1600留出评估进行、首优化待，不把该阶段当已训完。
+- 原MEM food模型与RTX sim均正常终态/退出、20545控/Q0；本地第三完整 `artifacts/periodic-full-videos-20261012-v2/food/execution.mp4` SHAbe20816b8d47922215cc1123590d3cdec20c53280aad6ff0b69ca36f7b7efeec，684.867s/20546帧，`owner-review.json`为根12帧＋501.33s细看。三原片/服务事件/逐控ACK及字幕均保留，collector已收齐且不再运行；原GC警告未做清理或删除。
+
 ## 2026-10-12 16:56 CST：正式冠军启动器已提交，依赖等待
 
 - lc1 tmux `champion-shared100-formal-v1`，log `/data/workspace/wsy/behavior2026/runs/champion_formal_20261012/shared100-v1.log`；正式run同目录去`.log`，只有依赖完成后才创建/起24h时钟。源30b05548不变，明确非engineering、非resume；等原food模型正常退出与终态验签后才进八卡/空间检查。

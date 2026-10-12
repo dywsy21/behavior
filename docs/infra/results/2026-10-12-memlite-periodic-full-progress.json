@@ -1,6 +1,6 @@
 {
-  "status": "two_complete_development_episodes_one_still_running",
-  "time_cst": "2026-10-12 16:11",
+  "status": "all_three_development_episodes_complete_media_reviewed_policy_not_accepted",
+  "time_cst": "2026-10-12 17:06",
   "owner": "Codex RECOVERY-USABLE",
   "registration": "configs/recovery_sft/periodic_full_video_collection_v2.json",
   "source_commit_both_ends": "d793eb87d19d8325aba70f611f75d3f94c66b2ea",
@@ -27,6 +27,23 @@
       "duration_seconds": 107.533333,
       "owner_review": "12 spread frames and a full-resolution terminal frame; arm reaches radio, stable grasp and switch operation unverified"
     },
+    "food": {
+      "steps": 20545,
+      "success": false,
+      "q_score": 0.0,
+      "intent_transitions": [
+        {"control":0,"intent":"NAVIGATE fridge_petcxr_0","chunks":176},
+        {"control":2816,"intent":"OPEN_DOOR fridge_petcxr_0 right_door","chunks":760},
+        {"control":14976,"intent":"NAVIGATE bowl_92","chunks":349}
+      ],
+      "planner_calls": 161,
+      "input_feedback_counts": {"none":1,"UNKNOWN":160},
+      "video": "artifacts/periodic-full-videos-20261012-v2/food/execution.mp4",
+      "video_sha256": "be20816b8d47922215cc1123590d3cdec20c53280aad6ff0b69ca36f7b7efeec",
+      "frames": 20546,
+      "duration_seconds": 684.866667,
+      "owner_review": "12 spread frames plus501.333s full-resolution subtitle check. Long door-handle manipulation and late upward/rotated view; precise physical fall/door-success mechanism not established. Raw NAVIGATE success99.6% is outside GRASP calibration and was not passed as success to high."
+    },
     "tripod": {
       "steps": 5868,
       "success": false,
@@ -39,18 +56,19 @@
       "owner_review": "12 spread frames; repeated room navigation, no grasp/assembly visible in inspected frames"
     }
   },
-  "still_running": {"food": {"last_reported_controls": 8832, "official_max_steps": 20544}},
+  "still_running": {},
+  "aggregate": {"completed":3,"successes":0,"success_rate":0.0,"mean_final_q_score":0.0,"scope":"Only these3 registered diagnosed development cases; not the100-task SR"},
   "media": {
-    "full_machine_decode_complete_for_both_finished_videos": true,
+    "full_machine_decode_complete_for_all_three_videos": true,
     "all_original_frames_retained": true,
     "playback_speed": 1,
     "bottom_only_intent_and_raw_result_head_probability": true,
     "owner_review_records": "Per-case owner-review.json in ignored local artifacts",
     "original_videos_and_metrics_unchanged": true
   },
-  "interpretation": "Radio changes intent and reaches, but no observed full-task gain; tripod remains stuck in navigation. Offline boundary accuracy improvement does not establish policy usability.",
+  "interpretation": "Radio reaches and food switches from fridge navigation to door opening then bowl navigation, but all3 complete development episodes remain Q0/failure. Tripod remains in navigation. Offline boundary accuracy or command switching does not establish successful skills or policy usability.",
   "is_independent_sr_estimate": false,
-  "is_three_episode_final_aggregate": false,
+  "is_three_episode_final_aggregate": true,
   "limits": [
     "These are previously diagnosed development instances, not independent blind tests.",
     "Full-episode logging lacks per-step physical grasp predicates, so raw head success cannot establish a stable grasp.",
