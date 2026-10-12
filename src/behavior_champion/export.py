@@ -13,7 +13,8 @@ from .release import sha256
 from .sampling import digest_json
 
 
-def export_ema(directory, state, *, receipt, assets, layout, contract, reserve_bytes=256 << 30):
+def export_ema(directory, state, *, receipt, assets, layout, contract, reserve_bytes=256 << 30,
+               asset_files=None):
     import jax
     import orbax.checkpoint as ocp
     from flax.traverse_util import flatten_dict
@@ -65,10 +66,27 @@ def export_ema(directory, state, *, receipt, assets, layout, contract, reserve_b
             raise ValueError('Exported EMA bytes differ: ' + str(key))
     del actual, restored
     asset_target = temporary / 'assets/IliaLarchenko/behavior_224_rgb'
-    shutil.copytree(assets, asset_target, symlinks=False)
-    for original in Path(assets).rglob('*'):
-        if original.is_file() and sha256(original) != sha256(asset_target / original.relative_to(assets)):
-            raise ValueError('Exported normalization/tokenizer assets changed')
+    if asset_files is None:
+        shutil.copytree(assets, asset_target, symlinks=False)
+        for original in Path(assets).rglob('*'):
+            if original.is_file() and sha256(original) != sha256(asset_target / original.relative_to(assets)):
+                raise ValueError('Exported normalization/tokenizer assets changed')
+    else:
+        # A CPU export from a live shared installation must not copy transient
+        # tokenizer bytecode caches produced after the verified asset receipt.
+        # Keep them in place; copy ONLY the original pinned asset file ledger.
+        if not asset_files or 'norm_stats.json' not in asset_files:
+            raise ValueError('Incomplete explicitly pinned export asset ledger')
+        for name, expected_sha in asset_files.items():
+            relative = Path(name); original = Path(assets) / relative
+            if (relative.is_absolute() or '..' in relative.parts or original.is_symlink()
+                    or not original.resolve().is_relative_to(Path(assets).resolve())
+                    or sha256(original) != expected_sha):
+                raise ValueError('Unsafe or changed pinned export asset')
+            copied = asset_target / relative; copied.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(original, copied)
+            if sha256(copied) != expected_sha:
+                raise ValueError('Pinned export asset changed during copying')
     # The inference adapter must use this model-task mapping, not dataset IDs as
     # embedding IDs, nor the old hard-coded 50-task table.
     (temporary / 'task-layout.json').write_text(json.dumps(layout, indent=2) + '\n')

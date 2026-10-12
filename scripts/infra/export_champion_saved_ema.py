@@ -36,10 +36,11 @@ def main():
     layout = json.loads((receipts / 'task-layout-admitted-v2.json').read_text())['layout']
     state, receipt, contract = read_checkpoint_ema(args.checkpoint,
         manifest_sha256=args.manifest_sha256, layout=layout)
-    assets = verify_parent_assets(root / 'models/champion2025/shared50-11490241',
-        receipts / 'shared50-verified-v1.json', expected_sha256=contract['parent_receipt_sha256'])
+    assets, asset_files = verify_parent_assets(root / 'models/champion2025/shared50-11490241',
+        receipts / 'shared50-verified-v1.json', expected_sha256=contract['parent_receipt_sha256'],
+        with_ledger=True)
     exported = export_ema(args.output, state, receipt=receipt, assets=assets,
-        layout=layout, contract=contract, reserve_bytes=args.reserve_gib << 30)
+        layout=layout, contract=contract, reserve_bytes=args.reserve_gib << 30, asset_files=asset_files)
     result = dict(status='durable_ema_exported_and_author_roundtrip_verified', export=exported,
         source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip(),
         seconds=time.monotonic()-started, optimizer_updates=0, gpu_devices=0,
