@@ -12,6 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 13:18 CST / Codex RECOVERY-USABLE：** CPU v2已终态失败、0训练/八卡仍空；根定位是新增检查脚本误将处理后相机名当原始RGB key。实际`BaseProcessor.process_images`按原配置映射为`exterior/wrist_left/wrist_right`，不是已证串图。补检查脚本按固定R1Pro映射核原图/模板/输出顺序，并独立执行每相机val transform逐像素比对，左右腕同尺寸互换/单像素损坏也拒绝；不改原模型/processor/数据。新4反例及新冻结CPU复验待，旧v1/v2失败log保留。fetch无新团队提交，保留本轮plan dirty未pull。
+
+- **2026-10-12 13:11 CST / Codex RECOVERY-USABLE + CHAMPION-2026：** 1641已成功Git导入；CPU v1在配置解析前段因工作目录是`/home/user`而找不到相对`configs/data/_transforms.yaml`退出，未处理图片/无准入。同一冻结源显式`cd`后另启`periodic-processor-v2{,.log}`，v1失败log保留，不热改源/环境。冠军整轮磁盘预检已在lc1实通过：需832149913600B（775GiB，含256GiB保留），实空1105090052096B；0删除/0优化。现source/停止边界均清晰，待v2实际终态。
+
+- **2026-10-12 13:10 CST / Codex RECOVERY-USABLE：** lc1第二次GitHub fetch于130s连接超时，仍未启动检查；未重连VPN/不改队友会话。改将**已push的同一1641b782 Git对象包**（增量基ffdf、SHA96f34e9d…48c7f）经现有SSH传`incoming/codex-git-bundles/source-1641b782.bundle`，两端SHA一致，`git bundle verify/fetch`后只创建新的detached worktree，不复制/覆盖活跃源码、不改远端主分支。CPU processor链随此提交，真实开始/终态仍以run log核对；原1800候选、120审图和权重完全未改。
+
+- **2026-10-12 13:06 CST / Codex RECOVERY-USABLE / 启动状态更正：** 上条1641 CPU链尚未实际开始：lc1 Git fetch先因GitHub TLS(-110)失败，新worktree和processor log都未创建，0图片/0处理/0GPU。仅重试Git网络读取后再启动，不把SSH提交当作已运行，不重连VPN或修改共享环境。13:06额外disk预检因新源尚不存在未执行；已有60单测与约1.1TiB df不受影响。
+
+- **2026-10-12 13:04 CST / Codex RECOVERY-USABLE：** 1641b782已推送/冻lc1`src/memlite-periodic-processor-20261012-v1`，CPU原g05环境实提交`runs/planner_transition_audit_20261011/periodic-processor-v1{,.log}`：全1800同帧源重建、120亲审样本共360 RGB逐字节比原图hash，再过真实processor核memory/previous/目标/EOC边界及全低层/结果mask。8反例单测已通过（纯标签模块改直接从冻结文件导入，未向冠军env加g05依赖）；本run0GPU/0模型/0优化，不改共享env，待实际终态后再准入。
+
 - **2026-10-12 13:03 CST / Codex RECOVERY-USABLE：** task74 ep14836视觉疑点已回原源解决：5632/5888/6144可见红色手推车斗/轮支架/长把手，6272–6656转正并双手抓把，6912/7168与后续草地搬运物体一致；原wheelbarrow标注保留，不是已证错标。ffdf冻结CPU两个context run均完成、本地5页亲审，SHA d8632db3…d704/b77c500b…ba03。120case/100task图审完成，未改原图/原标签；13未绑定关系变化单列而不猜角色，task69误判已撤回。补全源同帧projection重建及真实processor检查入口，只CPU/0优化；8反例测试待末次执行，1800元数据＋120已审RGB实际接口验收待。仍非训练准入。
 
 - **2026-10-12 12:52 CST / Codex RECOVERY-USABLE / 明确更正：** 上条task69“同GRASP仅source变化”是根误读缩略图文字，不是数据缺陷；原review JSON明确GRASP→TURN_ON_SWITCH，撤回此判断，不改/拒该条标签。新增逐条机器审计全部1800目标text/semantic同一、mask/split/唯一索引通过：800文本切换中757动词/并行bundle变化、30明确绑定目标/目的/部位变化、13未绑定关系变化，另800延续/200初始，**本候选集0条source-only变化**。新增分类回归保留用于防未来误计，不称物理推进；原全源325040仍仅文本变化计数。task74视觉疑点待原上下文核实，owner-review已记录更正；6单测中未绑定fixture先因非canonical JSON失败，修fixture重跑后才报通过。冠军700ee469已推送；不启动大训。

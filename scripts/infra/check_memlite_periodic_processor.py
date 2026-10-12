@@ -17,6 +17,33 @@ from recovery_periodic_teacher import validate_candidate_projection
 from behavior_champion.release import AcceptedRelease, sha256
 
 
+def validate_processed_cameras(processor, original_images, sample):
+    """Verify raw-key -> configured camera-type renaming AND actual pixels.
+
+    BaseProcessor.process_images keys tensors by camera_type, not raw RGB key.
+    Test independent per-camera transforms so two equal-size wrist tensors
+    cannot be silently exchanged while preserving keys/shapes.
+    """
+    import torch
+    expected_mapping = (('head_rgb', 'exterior'), ('left_wrist_rgb', 'wrist_left'),
+                        ('right_wrist_rgb', 'wrist_right'))
+    mapping = tuple((meta['key'], meta['camera_type']) for meta in processor.shape_meta['images'])
+    raw_keys, output_keys = zip(*expected_mapping)
+    if (mapping != expected_mapping or tuple(original_images) != raw_keys
+            or tuple(processor.samples_builder._image_keys) != raw_keys
+            or tuple(sample['pixel_values']) != output_keys):
+        raise ValueError('Raw/template/processed camera mapping or order changed')
+    for raw_key, camera_type in mapping:
+        expected = original_images[raw_key].clone()
+        for transform in processor.val_transforms[raw_key]:
+            expected = transform(expected)
+        actual = sample['pixel_values'][camera_type]
+        if (actual.dtype != expected.dtype or actual.shape != expected.shape
+                or not torch.isfinite(actual).all() or not torch.equal(actual, expected)):
+            raise ValueError('Processed RGB differs from its own source camera: ' + raw_key)
+    return dict(mapping)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('root', 'candidates', 'review', 'output'):
@@ -66,6 +93,7 @@ def main():
             digest = hashlib.sha256(pixels[0].permute(1,2,0).contiguous().numpy().tobytes()).hexdigest()
             if digest != reviewed[index]['original_rgb_sha256'][str(identity['frame']) + ':' + camera_names[name]]:
                 raise ValueError('Training reader RGB differs from the personally reviewed original frame')
+        original_images = {name: pixels.clone() for name, pixels in raw['images'].items()}
         raw.update(model_projection=projection, action_is_pad=torch.ones(32, dtype=torch.bool),
             action={meta['key']: torch.zeros(32, meta['raw_shape']) for meta in config['raw_shape']['action']})
         sample = processor.preprocess(raw); content = sample['samples']
@@ -76,16 +104,14 @@ def main():
             raise ValueError('Unexpected outcome or low-action supervision')
         if tuple(torch.nonzero(sample['action_dim_is_pad']).flatten().tolist()) != (7, 8, 17, 18):
             raise ValueError('R1Pro padding mapping changed')
-        if tuple(sample['pixel_values']) != ('head_rgb', 'left_wrist_rgb', 'right_wrist_rgb'):
-            raise ValueError('Camera identity/order changed')
-        if not all(torch.isfinite(value).all() for value in sample['pixel_values'].values()):
-            raise ValueError('Invalid processed RGB')
+        camera_mapping = validate_processed_cameras(processor, original_images, sample)
         template = content['template'] if 'template' in content else processor.samples_builder.template
         prefix, separator, suffix = template.partition('<EOC>')
         if (not separator or any(token in prefix for token in ('active_skills_semantic_json',
                  'current_parent_goal', 'memory_update', 'outcome_target'))):
             raise ValueError('Current target leaked into autoregressive prefix')
         processed.append(dict(identity=identity, original_reviewed_rgb_exact=True,
+                              camera_mapping=camera_mapping, processed_rgb_exact_per_camera=True,
                               pixel_shapes={key:list(value.shape) for key,value in sample['pixel_values'].items()},
                               outcome_supervision=False, low_supervision=False))
         if len(processed) % 20 == 0: print(json.dumps(dict(processed_review_cases=len(processed))), flush=True)
