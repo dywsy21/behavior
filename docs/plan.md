@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 15:30 CST / Codex CHAMPION-2026：** 标准协议真实cp2已全通过：18次模型调用/10逐值检查、46.91s、两原TRAIN状态，任务交错、60逐控vs3×20块、半块reset/换task全部动作完全一致；旧工程服务已按登记停止并完成before/after参数hash b1ebe3fc…102fc一致、0优化/0物理。小回执已收本地两端同SHA（probe eb406de9…947b、server eccee115…a776），Git总结`2026-10-12-champion-official-protocol.json`；不称24GB/容器/新EMA或Q通过。MEM心跳原库反例在lc1/RTX各2测试全过，双端d793eb87新冻源已建，三个`model-v2`启动加载、新sim尚未启；旧中断全部保留。冠军正式配方未获批，不自动开训。
+
 - **2026-10-12 15:26 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军3bdf24f7在lc1既有16环境原官方客户端实连六测试全过/无skip；新独立`server-v2` GPU3已ready（旧v1 tmux参数引用错误导致0进程/0日志/0模型，未假称ready），只读cp2摘要b1ebe3fc…102fc。有限`actual-probe-v1`刚提交，等18次真实模型/逐控chunk一致性，不称效果。三MEM旧sim已SIGINT退出、RTX八卡空，服务全部明确failed_no_retry/ACK368、336、64；sim原status仍running是Isaac信号退出前未刷终态，另administrative-stop是权威中断证据，不覆盖原JSON。不重登VPN/不动权重。下一新冻结源关闭内部心跳，先原库反例再同三case新目录完整复验。
 
 - **2026-10-12 15:24 CST / Codex RECOVERY-USABLE / 工程中断：** 三物理分别停在368/336/64已确认控后长时间不推进；根只读py-spy三进程＋socket队列定位客户端recv线程处理大量pong、主线程等RPC。已读安装websockets16同步keepalive：`ping_timeout=None`且实际latency>默认20s时`join(interval-latency)`为负、不等pong就再发，符合心跳风暴，不能误报GPU或策略失败。已对绑定case/output/pid的三个sim发SIGINT保留`infrastructure-ping-storm-stack.txt`/`administrative-stop.json`/所有原片日志；退出与GPU释放待。新源只在内部client/server显式关闭ping_interval，保留RPC1800s/SSH存活检查，不热改库/旧进程。后续CPU原实现反例及同权重/seed三个新目录工程复验，不把旧未完成片计成完整Q/SR。现有VPN可用、未重登。

@@ -100,3 +100,11 @@ IP方案须至少50端口。现有`package_submission.py`是旧MEM全1000条专�
 逐控与chunk20、半块reset/换任务。0优化/0仿真，全部断言通过后才记协议PASS。
 本地新五项、原实控六项、资产六项通过；websockets10本机跳过原sync客户端，下一既有16环境验证。
 服务还没有24GB实体GPU/容器验收，也没有新正式EMA的物理成绩；不称可提交、不开外网端口。
+
+**15:30更新：** 原官方client在lc1通过全部6项CPU/真实socket测试；公开cp2的18次真实模型调用
+完成10项逐值一致性检查（含60逐控vs3×20块、交错任务、半块reset与换task），46.91秒。
+停止服务后参数before/after b1ebe3fc…102fc完全一致，0优化/0物理；小证据见
+[协议验收回执](results/2026-10-12-champion-official-protocol.json)。此实测冻结3bdf24f7；后续
+d793eb87只关闭自有服务/内部client的周期心跳，以避开同步库`ping_timeout=None`＋高延迟
+触发的ping循环（安装原库的CPU反例已在两服务器复现）。官方client保持原60s/300s参数未改。
+24GB、容器、正式新EMA及物理效果依然未验收；不能由这些协议检查推出成功率提升。
