@@ -1,0 +1,39 @@
+{
+  "status": "durable_ema_exported_and_author_roundtrip_verified",
+  "source_commit": "c14a9513b4fe442f01c90e1dc571a24334f65abd",
+  "source_checkpoint": {
+    "path": "/data/workspace/wsy/behavior2026/runs/champion_formal_20261012/shared100-v1/checkpoints/step_00001000",
+    "manifest_sha256": "cfbdb6f4ed13903c277564dd57b557894734262434fd84b82a1816781c6d0df6",
+    "completed_updates": 1000,
+    "tree_sha256": "65c3f459084d73a8e7c7a1493be08733c1abc1cd7caa85c87926b02e8778af45",
+    "bytes": 54489569924
+  },
+  "export_path": "/data/workspace/wsy/behavior2026/runs/champion_saved_exports_20261012/step1000-v2/ema_00001000",
+  "export_manifest_sha256": "ae3b0a79f9e8371dadcc40d5820be6b46d9bd7a97fc026aa67ad82379bc75e9c",
+  "result_sha256": "7be832e0187e9492946f6002e6486860bd1babad8811f3edb5f4097e433cdf61",
+  "seconds": 128.59230778645724,
+  "optimizer_updates": 0,
+  "gpu_devices": 0,
+  "weights": "EMA",
+  "parameter_arrays": 75,
+  "export_files": 29,
+  "export_file_bytes": 12649166246,
+  "asset_files": [
+    "assets/IliaLarchenko/behavior_224_rgb/fast_tokenizer/metadata.json",
+    "assets/IliaLarchenko/behavior_224_rgb/fast_tokenizer/processing_action_tokenizer.py",
+    "assets/IliaLarchenko/behavior_224_rgb/fast_tokenizer/processor_config.json",
+    "assets/IliaLarchenko/behavior_224_rgb/fast_tokenizer/special_tokens_map.json",
+    "assets/IliaLarchenko/behavior_224_rgb/fast_tokenizer/tokenizer.json",
+    "assets/IliaLarchenko/behavior_224_rgb/fast_tokenizer/tokenizer_config.json",
+    "assets/IliaLarchenko/behavior_224_rgb/norm_stats.json"
+  ],
+  "task_layout_sha256": "9bacf96256b6a6159df37dde30ff629cee07218e36d6b10028a02c1093f3b472",
+  "model_tasks": 100,
+  "author_loader_exact": true,
+  "local_receipts": "artifacts/champion-formal-20261012/ema1000-v2",
+  "limits": [
+    "Formal saved1000 EMA export, not training completion.",
+    "Official protocol for this EMA, physical Q/SR,24GB hardware and container acceptance remain pending.",
+    "Old failedv1 log and live bytecode cache retained;v2 copied only the original signed seven assets."
+  ]
+}

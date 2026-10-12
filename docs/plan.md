@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 20:34 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 正式1000 EMA CPU导出v2完整通过（128.59s/0GPU/0优化），75数组全部匹配原完整checkpoint＋作者回读，7签名资产与100任务映射齐；export ae3b0a79…75e9c/result7be832e0…df61三轻量回执双端一致落本地`ema1000-v2`，摘要`2026-10-12-champion-ema1000-export.json`。登记新权重原官方10项协议验证，仅待MEM control-s0完成释放lc3 GPU1后独立运行，不能把导出叫新Q/SR/24GB/容器验收。MEM六分片实有各22–23条、原242回归50条，全部未终态，不挑部分指标；冠军训练原源不动。
+
 - **2026-10-12 20:31 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军导出修复c14a9513本地及目标env15回归通过、Git包d027fefb…29d3两端同SHA，新CPU源/run-v2已启动（tmux `champion-saved-ema1000-v2`），不更改原缓存/训练/失败v1，实际全模型回读待。高层补训正式摘要已落`2026-10-12-memlite-handoff-fit.json`；b976留出六分片CPU前门/模型加载中、GPU7原242已有16条真实生成，尚未完整评分，不把个别正确输出当改善。
 
 - **2026-10-12 20:27 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** b9763def新MEM冻源经Git包181cd4f4…31aa双端验签/36目标env回归，lc3 GPU1–3 control f79、4–6 candidate047各3分片，加GPU7原242留出已提交，真实预测未出，GPU0不动。冠军CPU导出v1在原资产校验处拒绝：只多出作者tokenizer运行生成的一个`__pycache__/…cpython-311.pyc`，7个原资产齐/哈希正常；非权重损坏，无导出成功。根修为保留缓存原位、只复制验签7文件白名单，新增缓存不拷贝反例；下一新冻结v2，不改原训练/共享环境/旧失败log。
