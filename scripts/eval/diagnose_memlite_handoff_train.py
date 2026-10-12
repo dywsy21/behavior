@@ -132,6 +132,7 @@ def main():
     from g05.utils.memlite_causal_feedback import single_frame_planner_prefix
     from g05.utils.memlite_skill_protocol import planner_input_projection
     from recovery_periodic_data import PeriodicTeacherPool, with_periodic_teacher
+    from recovery_causal_inference import observable_raw
     from check_memlite_periodic_processor import make_token_processor
     context = source_inputs(generation)
     pool = PeriodicTeacherPool(root,recipe['H1']['periodic_teacher'],repo=REPO)
@@ -163,7 +164,11 @@ def main():
             raise ValueError('Current training observation differs from the accepted original')
         target, prepared = preprocess_planner_example(context.processor,raw,identity)
         causal = planner_input_projection(target)
-        prefix = single_frame_planner_prefix(context.processor.samples_builder,prepared,causal)
+        serving_prepared = context.processor._process_tensors(observable_raw(observed,target['task_name'],data.config))
+        normalized = ('pixel_values','proprio','proprio_dim_is_pad')
+        if tree_sha({k:prepared[k] for k in normalized}) != tree_sha({k:serving_prepared[k] for k in normalized}):
+            raise ValueError('Serving and teacher-forced normalization differ')
+        prefix = single_frame_planner_prefix(context.processor.samples_builder,serving_prepared,causal)
         encoded = tokenizer.encode_inference([prefix],device=torch.device('cpu'),mode='ar',training=False)
         training_prefix = tokenizer.encode_inference([prepared['samples']],device=torch.device('cpu'),mode='ar',training=False)
         if tree_sha(encoded) != tree_sha(training_prefix) or tree_sha(encoded) != accepted[sid]['prefix_sha256']:
