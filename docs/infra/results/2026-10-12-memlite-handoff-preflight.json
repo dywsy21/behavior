@@ -1,0 +1,71 @@
+{
+  "status": "READY_FOR_REGISTERED_H1_FIT_NOT_STARTED",
+  "recorded_at": "2026-10-12T18:44:00+08:00",
+  "owner": "Codex RECOVERY-USABLE",
+  "source_commit": "661c00a9299e7752265f5f85b44980d2fc9d183c",
+  "frozen_source": "/data/workspace/wsy/behavior2026/src/memlite-handoff-fit-20261012-v2",
+  "source_bundle_sha256": "e281b61bb9abea9de501b23496725eef0a7c5ca5f31eeae662ae417012891545",
+  "recipe": "configs/recovery_sft/a800_h1_periodic_handoff_fit_lc3_v1.json",
+  "recipe_sha256": "bbc3837fc34e919be2629ca7a2b0453eb9face526d3dbb18fc088892a80fce51",
+  "actual_cpu_audit": {
+    "path": "runs/recovery_handoff_20261012/processor-v2/result.json",
+    "sha256": "709e71744fe0bf51adf6a998c1c54be45dccb3951b964f7f08c574c71d2e755b",
+    "seconds": 175.98104710970074,
+    "original_targets": 1800,
+    "learned_feedback_rows": 383,
+    "tokenized_rows": 383,
+    "personally_reviewed_current_rgb_matches": 480,
+    "real_logits_recomputed": true,
+    "training_serving_prefix_equal": true,
+    "same_periodic_control_schedule": true,
+    "outcome_tokens_supervised": 0,
+    "low_action_supervision": false,
+    "physical_truth_added": 0,
+    "model_forwards": 0,
+    "optimizer_updates": 0
+  },
+  "recovery_processor": {
+    "path": "runs/recovery_handoff_20261012/preflight-v2/recovery-processor.json",
+    "sha256": "681cfc27ba400f969db768498e126cb7f94b8cda9bd97af9c49664c5a63f322c",
+    "train": 36,
+    "dev": 42,
+    "oracle_inputs": false
+  },
+  "schedule": {
+    "path": "runs/recovery_handoff_20261012/preflight-v2/schedule-audit.json",
+    "sha256": "97821a1416bc81ba946a61b58f68564b71013445fdc289c0c32ee26d415f39b6",
+    "sequence_sha256": "d2e27d71b680551dca71fca1bba9d05847cdeec9b67a19b1b35069ae57583fe9",
+    "updates": 360,
+    "expert_exposures": 2160,
+    "expert_unique": 1736,
+    "recovery_exposures": 720,
+    "six_distinct_expert_tasks_per_batch": true,
+    "unchanged_recovery_rank_slots": true
+  },
+  "launch_ticket": {
+    "path": "runs/recovery_handoff_20261012/preflight-v2/ticket.json",
+    "sha256": "0f69b176b5ecf686994bf612cc6234db534c1354a39bf33b83cb4be559afff0c",
+    "component": "H1",
+    "parent_sha256": "a74c5cc147dcd632dfddcef780f2268845b13c9c4169f61d2aa7f90a875d5bf2",
+    "world_size": 8,
+    "global_batch": 8,
+    "learning_rate": 0.000001,
+    "maximum_updates": 360,
+    "maximum_wall_seconds": 14400,
+    "observer_and_low_unchanged": true,
+    "wandb_group": "memlite-periodic-handoff-20261012"
+  },
+  "local_receipts": "artifacts/recovery-handoff-20261012/{processor-v2,preflight-v2}",
+  "target_environment_tests_passed": 37,
+  "earlier_attempts_preserved": [
+    "processor-v1.log: validator incorrectly required every UNKNOWN confidence to be0; production keeps min raw confidence when two gated UNKNOWN values agree. Fixed validator and exact regression, not raw data or serving semantics.",
+    "recovery-processor-v1.log: output parent directory absent; no receipt issued. Rechecked all78 in v2 after creating only the specific output directory.",
+    "Schedule CLI initially lacked src:scripts in PYTHONPATH; explicit frozen-source import path fixed invocation without shared-environment changes."
+  ],
+  "remaining": [
+    "Finish control and candidate low-policy24-probe arms; leave their d257 live source untouched.",
+    "Recheck all8 lc3 GPUs idle and current shared storage including ongoing champion checkpoints before launching; no queue has yet started H1.",
+    "Keep fixed final360 selection and existing heldout boundary/continuation/recovery/initial generation controls. Register an additional source-disjoint real-feedback heldout comparison before interpreting handoff gains; current383 are TRAIN, not evaluation.",
+    "Require matched physical rollouts before any effectiveness/deployment claim; existing three complete MEM DEV episodes remain0/3."
+  ]
+}

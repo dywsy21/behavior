@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 18:44 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 新661c00a9冻源（包e281b61b…1545）目标env37回归与**完整真实CPU门通过**：1800原目标、383实际反馈/logits/token、480已亲审当前RGB逐值匹配，训练/部署prefix相同且无结果/低层监督，175.98s。原78恢复processor也全过（36TRAIN42DEV），同f79批次序列SHA d2e27d71…3fe9/720恢复槽不变；完整回执均收本地同SHA，详见`2026-10-12-memlite-handoff-preflight.json`。正式H1启动票0f69b176…fff0c已生成/验证，**尚未启动**：待当前低层后两臂跑完并核lc3八卡和动态磁盘空闲，再同a74/360单改反馈输入拟合，仍须额外真实反馈留出与原固定生成/物理效果验收。对照9ac截至18:42为10/24、无error/0优化，第三candidate未启。冠军18:43已603/8000，近20步9.277s、100task/有限梯度，原run/代码/W&B不变，首1000保存仍待。
+
 - **2026-10-12 18:35 CST / Codex RECOVERY-USABLE：** 8466943b新冻源经Git包f863fe4f…32a7双端验签、目标env36测试过；全383CPU门发现**新验证器错误假定UNKNOWN置信度必为0**，实际生产ledger在两次门后UNKNOWN一致时保留raw置信度（383中78条），原预测/数据不改。本地已按真实ledger修验收并加精确反例，下一新冻源v2全验；另一78恢复审计缺输出父目录、无回执，旧log保留并明确重验，不冒充已通过。对照三冷worker已启动/原d257不变，冠军原run继续，尚0新H1更新。
 
 - **2026-10-12 18:32 CST / Codex RECOVERY-USABLE：** 新383反馈的限制adapter、actual training/serving prefix＋CE门与单独lc3同a74/360配方已实现（`recovery_handoff_data.py`/`check_memlite_handoff_processor.py`）；原1800目标/原f79批次顺序保持，只覆盖383的输入估计，指纹绑定feedback SHA。34数据/历史回归＋6渲染/物理工程回归通过；一条额外测试命令文件名写错未执行，已改用实际路径验证。下一Git冻结后目标环境全383CPU实测与原78恢复processor验收，尚无新H1训练或效果结论。低层父24回执两端同SHA落本地，三臂摘要`2026-10-12-memlite-native-three-arm-progress.json`；对照服务PID2807433加载中/worker待ready。

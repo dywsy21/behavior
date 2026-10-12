@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 18:44 CST：新高层CPU前门全部通过，启动票已备但未开训
+
+- lc3新源`src/memlite-handoff-fit-20261012-v2`=661c00a9299e7752265f5f85b44980d2fc9d183c，Git包e281b61b…1545；旧846源/v1失败log保留。`runs/recovery_handoff_20261012/processor-v2/result.json` SHA709e7174…755b（383全验/0GPU/0更新）；`preflight-v2/recovery-processor.json` SHA681cfc27…322c，`schedule-audit.json` SHA97821a14…39b6，`ticket.json` SHA0f69b176b5ecf686994bf612cc6234db534c1354a39bf33b83cb4be559afff0c；本地同后缀artifact目录均验一致。原owner-review已复制到远端review-v2、仍c057e7d9…1a0b。
+- H1拟合尚未启动、不要重复投票或热改661源；后续仅用该ticket经`launch_memlite_recovery.py`，显式冻结源码`PYTHONPATH=src:scripts`，先等lc3当前GPU2低层三臂结束和八卡空闲/保存空间足够。
+- 对照服务PID2807433/tmux`memlite-native-control-model-v2`、W&B`behavior2026-g05/83588d52b60f`，RTX三`control-{radio155,wash169,tripod129}-v2`原d257冷worker在运行，18:42为10/24；19820双段转发保持，第三模型未加载。冠军独占lc1原run，18:43为603/8000。
+
 ## 2026-10-12 18:28 CST：低层父臂完整结束，对照臂开始加载
 
 - 原`parent-model-v2/result.json` SHA6e9847e4c0ce405c15bb4ee71a505be5345b7493e1c01c42fb3c5a36f5257487；`episodes.jsonl` SHA20d4e7414842594c42c885cc2ae1eceaf92a51bc34b6767458fb2d808b67fca4，24条原seed齐且两组权重SHA未变。RTX三`parent-*-v2/result.json`均finished_service_window，卡空/无旧活跃worker，原片不删。
