@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 12:52 CST / Codex RECOVERY-USABLE / 明确更正：** 上条task69“同GRASP仅source变化”是根误读缩略图文字，不是数据缺陷；原review JSON明确GRASP→TURN_ON_SWITCH，撤回此判断，不改/拒该条标签。新增逐条机器审计全部1800目标text/semantic同一、mask/split/唯一索引通过：800文本切换中757动词/并行bundle变化、30明确绑定目标/目的/部位变化、13未绑定关系变化，另800延续/200初始，**本候选集0条source-only变化**。新增分类回归保留用于防未来误计，不称物理推进；原全源325040仍仅文本变化计数。task74视觉疑点待原上下文核实，owner-review已记录更正；6单测中未绑定fixture先因非canonical JSON失败，修fixture重跑后才报通过。冠军700ee469已推送；不启动大训。
+
 - **2026-10-12 12:49 CST / Codex CHAMPION-2026：** 冠军工程全证据已本地收齐，`docs/infra/results/2026-10-12-champion-training-chain.json`登记全302叶同进程/冷恢复、原eval1600及工程EMA-v1回读的真实SHA，非正式效果。新增`policy_assets.py`校验正式EMA-v2全文件账本/模型映射、拒绝工程权重和漏登记参数，保留公开父权重兼容；新增`storage.py`加载模型前预检整个保留计划（新run775GiB，8定期+1紧急+EMA+256GiB余量），不删任何旧文件。共60CPU测试通过，手册/团队/目录已同步真实终态。v2全模型与物理/容器、独立review仍未验；新大训尚未批准、未启动。上一图审记录时间12:45应为12:42，分类问题/原task74视觉疑点仍待处理。
 
 - **2026-10-12 12:45 CST / Codex RECOVERY-USABLE + CHAMPION-2026：** 根已亲看剩余12–29页，完成100task分层120case/30页原RGB抽查，**有问题、不准入训练**：task69同GRASP vacuum仅source字段变化被v1计为transition，需分开真正动作/实体变化与描述变化；task74 ep14836/frame11150的wheelbarrow视觉身份不确定，须回原视频/标注定位或隔离，不能猜改标签。完整个人审查记录本地`artifacts/memlite-periodic-teacher-20261012/owner-review.json`，不声称1800条全人工验过。lc1已只读确认八卡0MiB/无计算进程/无tmux，工程冷验收已结束，盘余1.1TiB；Git fetch最新、分支与upstream一致，因本轮未提交修改不pull覆盖。下一完成上述数据门与冠军导出入口测试/交接，未开新大训。

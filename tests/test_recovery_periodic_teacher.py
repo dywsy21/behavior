@@ -8,6 +8,36 @@ module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
 
 
 class PeriodicTeacherTests(unittest.TestCase):
+    def command(self, verb='GRASP', target='vacuum', source='', destination='', arm='UNSPECIFIED'):
+        from g05.utils.memlite_skill_protocol import semantic_active_skills_text
+        return semantic_active_skills_text([dict(verb=verb, target=target, source=source,
+            destination=destination, target_part='', arm=arm, unbound_relation='')])
+
+    def test_source_only_change_is_not_counted_as_skill_progress(self):
+        self.assertEqual(module.command_change_class(self.command(source='floors'), self.command()),
+                         'source_or_binding_description_change')
+        self.assertEqual(module.command_change_class(self.command(target=''), self.command()),
+                         'source_or_binding_description_change')
+
+    def test_real_verb_target_or_destination_changes_remain_distinct(self):
+        self.assertEqual(module.command_change_class(self.command(verb='NAVIGATE'), self.command()),
+                         'explicit_verb_or_bundle_change')
+        self.assertEqual(module.command_change_class(self.command(), self.command(target='broom')),
+                         'explicit_bound_object_or_goal_change')
+        self.assertEqual(module.command_change_class(self.command(verb='PLACE_ON', destination='table'),
+                                                    self.command(verb='PLACE_ON', destination='shelf')),
+                         'explicit_bound_object_or_goal_change')
+        self.assertEqual(module.command_change_class('None', self.command()), 'initial')
+        self.assertEqual(module.command_change_class(self.command(), self.command()), 'identical_command')
+
+    def test_changed_unbound_entities_never_guess_target_roles(self):
+        from g05.utils.memlite_skill_protocol import semantic_active_skills_text, canonical_json
+        def text(entity):
+            return semantic_active_skills_text([dict(verb='GRASP', target='', source='', destination='',
+                target_part='', arm='UNSPECIFIED', unbound_relation=canonical_json(dict(entities=[entity, 'fridge'], spatial_relations=['layer4'])))])
+        self.assertEqual(module.command_change_class(text('tupperware74'), text('tupperware75')),
+                         'unbound_relation_change_not_verified_roles')
+
     def trace(self):
         segments = [dict(start=0, end=64, text='NAVIGATE', parent='P0'),
                     dict(start=64, end=192, text='GRASP', parent='P1'),
