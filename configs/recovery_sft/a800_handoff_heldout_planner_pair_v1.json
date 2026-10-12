@@ -1,0 +1,52 @@
+{
+  "schema": "real_handoff_heldout_planner_generation_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "root": "/data/workspace/wsy/behavior2026",
+  "optimizer_updates": 0,
+  "training_admission_forbidden": true,
+  "hypothesis": "Only the383 actual frozen-feedback input replacements differ between the same-a74-parent fixed final360 fits. Compare all396 preselected EVAL rows with identical actual feedback, images, prefix, greedy generation; measure both valid handoff and continuation, not physical success. No checkpoint selection or evaluation-driven target filtering.",
+  "generation_config": {
+    "path": "configs/recovery_sft/a800_handoff_heldout_observer_v1.json",
+    "sha256": "317c48b491869aa57d929178de3daafaeadc7827f91515da7351f0ba1ea15bfb"
+  },
+  "prediction": {
+    "path": "runs/recovery_handoff_20261012/heldout-predict-v1/result.json",
+    "sha256": "e0d2646626963b9ffdbdaf813f28e6ff0b6a4087457deea54131f17c1e58ea72"
+  },
+  "owner_review": {
+    "path": "runs/recovery_handoff_20261012/heldout-review-v1/owner-review.json",
+    "sha256": "d070f0ca8581d9e1e60d259d76eafeaf3787b635e9126bff46a585cf2f2e63de"
+  },
+  "models": {
+    "control": {
+      "checkpoint": {
+        "path": "runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1/checkpoints/step_00000360_save_0003.pt",
+        "sha256": "f79cd96c13099cfb6df856dbcab83c670eb042ad512cfe3972af5ac3049f66a0"
+      },
+      "fit_result": {
+        "path": "runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1/result.json",
+        "sha256": "2dce2bdc5bc55e062ff1285f09d15910e468895fd62a930fc7824b4ec5c1b1ff"
+      },
+      "latest": {
+        "path": "runs/recovery_periodic_20261012/H1-periodic-fit-lc1-v1/checkpoints/latest.json",
+        "sha256": "7c558795df98d29f83f7a8f04756bff105c162a65fd48b84fa82bb808fea0b75"
+      }
+    },
+    "candidate": {
+      "checkpoint": {
+        "path": "runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/checkpoints/step_00000360_save_0003.pt",
+        "sha256": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d"
+      },
+      "fit_result": {
+        "path": "runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/result.json",
+        "sha256": "5d91ca197c36f9d20b06c37e2ea868c245345f4a43fe90093f3f51e7ef95c269"
+      },
+      "latest": {
+        "path": "runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/checkpoints/latest.json",
+        "sha256": "18ca6236deb26ac8125ec615052c6e72aa43c446fff03572eae0d2a3f2586124"
+      }
+    }
+  },
+  "resource": "lc3 only after H1 completed/exited. Control GPUs1-3,candidate4-6,three independent shards each;GPU7 for original-domain retention. Preserve GPU0/recent unrelated jobs and lc1 champion. CPU hash/prefix validation first; recheck each assigned GPU is idle before loading. No shared environment changes.",
+  "stopping": "Exactly the fixed396 rows per model; no optimizer/physical control/automatic retry. Abort on identity, prefix, model mutation or numeric/resource failure; keep incomplete evidence. No automatic deployment."
+}

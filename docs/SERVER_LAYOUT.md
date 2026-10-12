@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 20:26 CST：MEM最终360与冠军独立CPU导出
+
+- lc3 H1最终`runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/checkpoints/step_00000360_save_0003.pt` SHA047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d；result5d91ca197c36f9d20b06c37e2ea868c245345f4a43fe90093f3f51e7ef95c269/latest18ca6236deb26ac8125ec615052c6e72aa43c446fff03572eae0d2a3f2586124，监督器exit0/2067.15s。轻量回执本地`artifacts/recovery-handoff-20261012/H1-fit-lc3-v1`，没复制26GB权重。
+- 新CPU源`src/champion-saved-export-20261012-v1`=5f3054209bff9fa330cc5a424e40bf3594abac5e；Git包8307792a…f276、目标env9回归通过。独立run`runs/champion_saved_exports_20261012/step1000-v1`和同名log，tmux`champion-saved-ema1000-v1`，只CPU/预留775GiB/目标原1000完整EMA；正在执行，不热改原30b训练源，不占队友GPU。
+
 ## 2026-10-12 20:04 CST：MEM补训首120保存与W&B云端确认
 
 - 原lc3 `runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/checkpoints/step_00000120_save_0001.pt`为26,593,048,600B完整保存，有同名json和latest.json；不是已选效果最优的部署权重，固定用最终360验证。

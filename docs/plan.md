@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 20:26 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** lc3 H1原661源完整360/360结束、supervisor exit0/2067.15s、冻结参数前后0f7aede8…a966一致；所有360批均8样本/6专家2恢复/有限梯度。固定final权重047152f1…38d（第三完整保存），result5d91ca19…c269/latest18ca6236…6124等回执已双端收齐，留出transition CE0.02418→0.01164但continuation CE反而上升，不能只报正向一侧。登记396真实反馈control f79/candidate047固定比较与原242/初始142回归，尚未生成；保留GPU0短暂出现的新未知作业不动，拟用lc3 GPU1–7。冠军1144步正常/约9.31s，独立5f源CPU首1000 EMA导出已提交`champion-saved-ema1000-v1`，只读完整checkpoint、不占GPU/不改训练源，实际导出/作者回读仍待。
+
 - **2026-10-12 20:14 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 新5f305420独立源经Git包8307792a…f276双端验签落lc3，冠军CPU导出9项目标env回归通过；MEM留出/分片/反馈35项目标env回归也过（最初命令误写不存在的metrics测试，未运行，随后用实际文件重验）。H1原348/360、240已保存，最终保存后再启实际CPU导出/高层生成，不争用活跃GPU或磁盘预留。另给严格分片合并补每份只读模型前后digest检查/合并保留与缺失、变更反例，尚未启动留出模型生成。
 
 - **2026-10-12 20:10 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 根补独立CPU已保存EMA导出入口`export_champion_saved_ema.py`/`checkpoint_export.py`，只验签读取完整checkpoint的75 EMA叶、不恢复Adam/占GPU/更改原run；映射、资产、step、字节、BF16/Intermediate及作者回读9项新旧测试过。尚未在目标环境/真实13.62GB EMA运行，待MEM最终保存后才实导出以保护空间。lc3 H1已有282/360、240完整保存，冠军原1071继续；GitHub重试fetch及6ad32ed7 push成功，未拉取或热改任何活跃源。
