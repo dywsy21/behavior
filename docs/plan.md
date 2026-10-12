@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 17:16 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 正式冠军已验到**41/8000真实优化步**，全部已完成batch逐条核100task各2/3样本、global256、TRAIN，所有loss/grad有限、无failure；第2–41步均值9.398s，八卡各约60.2GiB/实测瞬时100%。初始1600原留出EMA已完整：FM0.520977/FAST0.817195/stageCE3.133253，总0.875162；旧50FM0.310015、新50FM0.731940。此为0更新baseline，训练末41步loss0.542693并非同样本eval改善。W&B API实读running且云端已有至17步历史（读取时刻），不是仅建立run；常规1000ckpt尚未到、不可报已保存。五不可变原回执已两端SHA一致落`artifacts/champion-formal-20261012/shared100-v1`，详情`2026-10-12-champion-formal-launch.json`。三MEM完整收片后仅撤本轮19810–19812反向/正向转发，原master/VPN与197xx不动、无文件删除。17:14只读核lc3 GPU1–7已空、GPU0队友PID2701764占约5.7GiB；下一MEM可用空闲单GPU1做383候选真实冻结observer预测，先RGB/prefix校验和新冻结入口，**尚未启动/不改其env或GPU0，不占lc1冠军资源**。goal仍未完成。
+
 - **2026-10-12 17:06 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军W&B online已真实建立`behavior2026-g05/6wx5m0i7`，目的CHAMPION100_FORMAL_SFT/源30b绑定；17:04八卡各约32.8GiB/100%正在初始EMA评估，常量折叠编译提示非终态错误，首优化仍待。MEM第三food完整原片/字幕片已全解码验签/亲看12分布帧＋501.33s原分辨率，684.867s/20546帧、SHAbe20816b…feec；20545控仍官方Q0，2816控转OPEN_DOOR、14976转NAVIGATE bowl，后段视角明显朝上/倾斜但缺base/contact记录不能武断判定具体摔倒机制。至此原登记三DEV完整0/3、Q均0，不是100task独立SR。全片路径与严格限制已更新`2026-10-12-memlite-periodic-full-progress.json`及artifacts各owner-review；raw NAV成功99.6%未校准，实际160次反馈全UNKNOWN，不能拿字幕概率当成功。下一先验冠军初始eval与优化步；MEM补真实交接反馈与后续身体状态诊断，不改阈值凑成功。
 
 - **2026-10-12 17:00 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 原food服务已完整20545控/161规划、weights_unchanged=true/0优化并自然退出；正式冠军依赖门通过，**16:59:54 CST实际进入正式训练入口**，PID3895302已持八卡context、原775GiB全保存门通过（实空1,023,370,330,112B）。新run `champion_formal_20261012/shared100-v1`已写timing/storage，仍初始化/尚0优化，W&B与初始1600留出/首更新待，不以进程存在报通过。24h截止从上述实际启动起算，等待阶段不算。原food全片由已运行collector继续收取/待亲审；MEM383数据仍仅候选，冠军源30b不动。

@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 17:16 CST：冠军41真实步；MEM可用lc3空闲单卡，尚未启动
+
+- 原lc1正式run/源30b/PID3895302不变；17:15:53已41优化，journal与逐批sampler均100任务/256样本；原1600初始eval `eval-00000000-1791795930370745341.json` SHAc560c58d…04cf，合同SHA5de115d3…3e82。五不可变回执两端一致落本地`artifacts/champion-formal-20261012/shared100-v1`；W&B6wx5m0i7 online且API读到running/真实loss。1000步常规checkpoint仍待。
+- 三MEM full-v2均已完整退出/收片/亲审；本轮专用反向SSH PID3660465已正常终止，lc1 master的19810/19811/19812三正向也仅逐条取消；master、VPN及旧197xx转发保持，不影响冠军训练/收状态，未删文件。
+- 17:14 lc3只读核GPU1–7实空，GPU0 PID2701764约5854MiB为队友作业，不动；共享00569709 CPU源/383请求已存在，下一单GPU1原冻结observer预测需先实现并验证实际RGB/prefix入口，目前未启动该模型或训练。
+
 ## 2026-10-12 17:06 CST：冠军正式加载与初始评估；三MEM完整片已齐
 
 - lc1正式run `/data/workspace/wsy/behavior2026/runs/champion_formal_20261012/shared100-v1`，PID3895302、实际开始16:59:54 CST；`timing.json`/`contract.json`/`transport.json`/全保存`storage-preflight-*.json`已落地，W&B `behavior2026-g05/6wx5m0i7`为online。17:04八卡约32.8GiB/100%，初始1600留出评估进行、首优化待，不把该阶段当已训完。
