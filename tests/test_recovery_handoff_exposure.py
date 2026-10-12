@@ -5,7 +5,8 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts/rl/memlite_online/code'))
-from recovery_handoff_exposure import training_exposure, first_difference, choice_cache_index
+from recovery_handoff_exposure import (training_exposure, first_difference, choice_cache_index,
+                                      preprocess_planner_example)
 
 
 def example():
@@ -33,6 +34,18 @@ def example():
 
 
 class ExposureTests(unittest.TestCase):
+    def test_target_survives_processor_consuming_and_mutating_raw_metadata(self):
+        class Processor:
+            def preprocess(self,raw):
+                projection=raw.pop('model_projection'); projection['memory']['value']='changed'
+                return {'samples':projection}
+        raw={'model_projection':{'memory':{'value':'original'}}}; identity={'frame':128}
+        target, prepared=preprocess_planner_example(Processor(),raw,identity)
+        self.assertEqual(target,{'memory':{'value':'original'}})
+        self.assertEqual(prepared['samples']['memory']['value'],'changed')
+        prepared['source_identity']['frame']=0
+        self.assertEqual(identity,{'frame':128})
+
     def test_complete_actual_exposure_and_weighted_token_mass(self):
         args=example(); before=copy.deepcopy(args)
         summary,rows=training_exposure(*args)

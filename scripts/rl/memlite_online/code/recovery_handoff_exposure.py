@@ -1,7 +1,16 @@
 """Audit executed TRAIN exposure, not heldout quality or physical success."""
 from collections import Counter, defaultdict
+import copy
 import json
 import math
+
+
+def preprocess_planner_example(processor, raw, identity):
+    """Stage1 preprocessing consumes raw metadata in place; retain truth first."""
+    target = copy.deepcopy(raw['model_projection'])
+    prepared = processor.preprocess(raw)
+    prepared['source_identity'] = copy.deepcopy(identity)
+    return target, prepared
 
 
 def _unique(rows, key):

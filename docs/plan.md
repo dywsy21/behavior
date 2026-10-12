@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 21:30 CST / Codex RECOVERY-USABLE：** 新1e1db152诊断源经Git包720d6a79…d534双端验签、目标env15回归过，lc3独立`train-diagnostic-cpu-v1`真实CPU验收遇`KeyError:model_projection`并已退出/0模型/0优化：新增入口在会就地消费raw的processor之后读target。修为预处理前深拷贝目标与identity，加入pop/嵌套变更反例；**不是既有训练路径错误**，不热改原v1/日志/任何训练源，下一新冻结v2重验。lc3非本轮作业保持。
+
 - **2026-10-12 21:28 CST / Codex RECOVERY-USABLE：** 4747c18f干净源下完整CPU曝光审计终态，result f70a9441…22ec/config8126baa3…3885，摘要`2026-10-12-memlite-handoff-training-diagnosis.json`。新增同固定f79/047、383原TRAIN的只读字段CE＋首分歧token＋严格自由生成入口；首分歧按真实next-token shift/CE mask定位，概率明确以正确前文为条件，不冒充free-decoding概率。15个本地反例/回归通过，CPU真实383前门与GPU实测尚待；下一新冻源上CPU执行，lc3有队友作业不启动GPU。冠军21:24实际1563/8000、9.25s/步、100task有限继续，未更改原训练。
 
 - **2026-10-12 21:19 CST / Codex RECOVERY-USABLE：** 从原完整360优化记录而非候选池计数审计TRAIN：两臂实际schedule逐批相同；1800专家锚点中1736被用、2160次，383真实反馈中373被用/469次，其中190交接候选184被用/238次、覆盖81task。原383实际token审计显示交接样本加权分母约38.95%为bundle、38.34%为memory（已有0.25权重，**不等于梯度占比**）；原trainer仅保存总CE，未保存已计算的字段CE。新增只读曝光审计/反例测试14过，原4文件SHA双端一致落`artifacts/recovery-handoff-20261012/train-exposure-v1`；完整可重放回执和TRAIN字段/自由生成诊断正在补，不回灌EVAL、不自动再续训。lc3八卡现仍非本轮299xxxx作业，不干预；lc1冠军继续原源。

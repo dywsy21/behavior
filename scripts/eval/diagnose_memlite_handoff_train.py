@@ -23,7 +23,7 @@ from recovery_calibration_launch import bound, read, write_new
 from recovery_corpus import digest, file_sha
 from recovery_generation_metrics import score_event, summarize
 from recovery_generation_shards import generation_shard
-from recovery_handoff_exposure import choice_cache_index
+from recovery_handoff_exposure import choice_cache_index, preprocess_planner_example
 from recovery_handoff_inference import tree_sha
 from recovery_process_cache import isolated_cache_env
 
@@ -161,8 +161,8 @@ def main():
                         proprio=data._raw_arrays(ep['row'])['observation.state'][frame].copy())
         if identity != accepted[sid]['identity'] or tree_sha(observed) != accepted[sid]['observation_sha256']:
             raise ValueError('Current training observation differs from the accepted original')
-        prepared = context.processor.preprocess(raw); prepared['source_identity'] = identity
-        target = raw['model_projection']; causal = planner_input_projection(target)
+        target, prepared = preprocess_planner_example(context.processor,raw,identity)
+        causal = planner_input_projection(target)
         prefix = single_frame_planner_prefix(context.processor.samples_builder,prepared,causal)
         encoded = tokenizer.encode_inference([prefix],device=torch.device('cpu'),mode='ar',training=False)
         training_prefix = tokenizer.encode_inference([prepared['samples']],device=torch.device('cpu'),mode='ar',training=False)
