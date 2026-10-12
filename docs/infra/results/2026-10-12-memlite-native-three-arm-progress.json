@@ -1,6 +1,6 @@
 {
   "schema": "native_learner_three_arm_progress_v2",
-  "recorded_at": "2026-10-12T19:08:00+08:00",
+  "recorded_at": "2026-10-12T20:04:00+08:00",
   "owner": "Codex RECOVERY-USABLE",
   "source_commit": "d257fbd0be943356af2fa6beadebea3ca326aa4a",
   "registration": "configs/recovery_sft/native_learner_probe_heartbeat_restart_v2.json",
@@ -62,12 +62,52 @@
     }
   },
   "candidate": {
-    "status": "ready_worker_launch_submitted",
+    "status": "completed_read_only_skill_probes",
     "pid": 2827976,
     "remote": "/data/workspace/wsy/behavior2026/runs/native_learner_heartbeat_20261012/candidate-model-v2",
     "checkpoint_sha256": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
     "wandb_url": "https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/3a8b626e1e83",
-    "completed": 0
+    "result_sha256": "1b6cf0ec97e22d4cc8e1187281c47c8b445d23988112327a54b00453ee326afb",
+    "episodes_sha256": "e9b0bc6a9a1040b75cc11762596934b7ed0deb2448473cd7787cee58631c1aee",
+    "local_receipts": "artifacts/native-learner-heartbeat-20261012/candidate",
+    "completed": 24,
+    "optimizer_updates": 0,
+    "actor_updates": 0,
+    "actor_and_frozen_unchanged": true,
+    "all_three_final_ack": true,
+    "skills": {
+      "turning_on_radio_155": {"success": 8, "total": 8},
+      "wash_dog_toys_169": {"success": 7, "total": 8},
+      "attach_a_camera_to_a_tripod_129": {"success": 8, "total": 8}
+    }
   },
-  "interpretation": "Same three original TRAIN skill starts, not complete tasks or unseen-source success. All three arms must finish before comparing. No old partial trials merged, no failure replay/best-seed selection, no new optimization."
+  "independent_full_physical_audits": {
+    "remote_root": "/run/ti/rl_memlite_stage1_20261006/runs/native_learner_heartbeat_20261012",
+    "local_root": "artifacts/native-learner-heartbeat-20261012",
+    "parent-audit-v2/audit.json": "2d1b300b91f9595a319cab003917301e1c9e6104137b0dbd1f2808b67b951358",
+    "control-audit-v2/audit.json": "62dbd4fa3eda1641df96bff4ee3809d48c93145986d848fc72e946c3c6b787eb",
+    "candidate-audit-v2/audit.json": "b090d24108322c8e791b19b2bfc7b8990cff82d9c9e274bcc58cd9e45af1017c",
+    "actual_controls_recomputed": 8437,
+    "status": "all_72_cold_restores_actions_ack_rewards_archives_machine_passed",
+    "human_physical_review": "root_personally_reviewed_18_contact_sheets_covering_all_pair_discordances_and_all_8_unsuccessful_rows",
+    "owner_review_path": "artifacts/native-learner-heartbeat-20261012/owner-physical-review-v1.json",
+    "owner_review_sha256": "cdc402cdb65c8b21962c222a6a44bc1016e7b09be0f0f5d8d012485814c4f399",
+    "review_limit": "Distributed actual-video frames, not every frame of all 72 episodes. All 24 washer endings are official_open=true; the preregistered directed-opening threshold 0.35 accounts for the 5/7/7 local scores. Tripod discordance concerns post-release stability, not full camera attachment. No threshold changed after observing outcomes."
+  },
+  "paired_comparison": {
+    "source_commit": "5b6d75434cbfe1e8f496bf1a8bd4c9601f09e388",
+    "path": "artifacts/native-learner-heartbeat-20261012/paired-comparison-v1.json",
+    "sha256": "0c278baf4f1bc76adbd4db61c752114af770b152bb3f81be3bba0bf14fd82d7c",
+    "parent_success": 19,
+    "control_success": 22,
+    "candidate_success": 23,
+    "total_per_arm": 24,
+    "candidate_vs_control": {
+      "radio": {"gained": [], "lost": []},
+      "washer": {"gained": [433], "lost": [587]},
+      "tripod": {"gained": [631], "lost": []}
+    },
+    "policy_promotion_authorized": false
+  },
+  "interpretation": "Complete same three original TRAIN starts, not full tasks or unseen-source success. Candidate gains one tripod seed over equal-extra-update control, but washer has one exchanged win/loss. No established general recovery gain or automatic promotion. All 72 retained; no old partial trials merged, failure replay/best-seed selection, or new optimization."
 }

@@ -1,5 +1,22 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-12 20:04 CST：MEM补训首120保存与W&B云端确认
+
+- 原lc3 `runs/recovery_handoff_20261012/H1-handoff-fit-lc3-v1/checkpoints/step_00000120_save_0001.pt`为26,593,048,600B完整保存，有同名json和latest.json；不是已选效果最优的部署权重，固定用最终360验证。
+- 在线run `https://wandb.ai/hanhanyy-fudan-university-school-of-management/behavior2026-g05/runs/5efbea52cbc1` 已经API核到真实训练历史；当前210/360、原661冻源不改。
+- 本地 `artifacts/native-learner-heartbeat-20261012/owner-physical-review-v1.json` SHA cdc402cdb65c8b21962c222a6a44bc1016e7b09be0f0f5d8d012485814c4f399，18页覆盖全部三臂差异与未成功，视频与旧回执保留。
+
+## 2026-10-12 19:55 CST：冠军首1000完整保存与评估
+
+- lc1正式run下`checkpoints/step_00001000`已发布，manifest cfbdb6f4ed13903c277564dd57b557894734262434fd84b82a1816781c6d0df6、tree65c3f459084d73a8e7c7a1493be08733c1abc1cd7caa85c87926b02e8778af45、54,489,569,924B。`latest-checkpoint.json`22bf4453…ef80b；`eval-00001000-1791805978138868888.json`e53e45fd…1fd8，同1600原留出EMA完成。
+- 上述三个轻量回执已收本地`artifacts/champion-formal-20261012/shared100-v1/step1000-v1`并逐SHA相同；没有复制55GB权重或启动新仿真，EMA部署导出尚待，训练原源/进程不动。
+- lc3留出人审签核`heldout-review-v1/owner-review.json`d070f0ca…63de双端相同；本地低层三臂`owner-physical-review-v1.json`为18页抽帧签核，不把72条全部录像逐帧人看写成已完成。
+
+## 2026-10-12 19:48 CST：高层首更新已验
+
+- lc3`H1-handoff-fit-lc3-v1.supervisor/ledger.json`supervisor2849383/child2849396，8rank2849401–2849408；`updates.jsonl`真实到13步、`evaluations.jsonl`step0完整。W&B目录`run-20261012_114347-5efbea52cbc1`，原661源/0f69票未变；首120保存待，不能称高层训练已完成。
+- lc1冠军原1000步进入全保存，`checkpoints/.incomplete-00001000-yv04o1lx`仍中间产物，禁止拿它推理/恢复或收为最终权重；等atomic manifest/latest发布。
+
 ## 2026-10-12 19:42 CST：三低层臂结束，lc3高层补训提交
 
 - 候选`runs/native_learner_heartbeat_20261012/candidate-model-v2/result.json` SHA1b6cf0ec97e22d4cc8e1187281c47c8b445d23988112327a54b00453ee326afb，episodes e9b0bc6a9a1040b75cc11762596934b7ed0deb2448473cd7787cee58631c1aee；本地`artifacts/native-learner-heartbeat-20261012/candidate`同SHA。全部3worker/服务与生成2834958均退出，相关GPU实空；原证据/19820隧道保留。

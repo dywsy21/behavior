@@ -12,6 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 20:04 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** lc3原H1已210/360真实更新、首120完整26,593,048,600B checkpoint已保存，8样本/6专家2恢复与有限梯度不变；W&B API实读`5efbea52cbc1`有48/90/105真实历史，非仅本地online。只用固定final360作后续396真实反馈留出及旧域回归，不挑中间权重。低层18页根亲审回执cdc402cd…f399已补入三臂Git摘要，72全控机审与原门计数保持，不推广。冠军原PID继续，1000回执已验、后续源码/共享环境未改；本次fetch遭GitHub TLS中断且自有文档未提交，未强pull，下一重试安全同步。
+
+- **2026-10-12 19:55 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 冠军首1000全checkpoint已atomic发布（54,489,569,924B/manifest cfbdb6f4…0df6/tree65c3f459…af45），同1600原留出EMA完整有限：FM0.520977→0.210484（−59.60%，100task均降），旧50/新50分别−52.34%/−62.67%，阶段acc55.31→78.50%（旧92.5→96.125%、新18.125→60.875%）。原eval e53e45fd…1fd8/manifest/latest三回执双端一致落本地step1000-v1，详见`2026-10-12-champion-step1000.json`；原训练继续、尚非新权重物理Q/SR或提交通过。MEM低层根完成18页抽帧（全部差异seed和8条未成功都覆盖），发现washer24条末态official_open均true、局部0.35开度门导致5/7/7；tripod差异是释放后稳定性，不是装相机整任务。原门与计数不改，不以净+1推广，owner物理签核已本地。
+
+- **2026-10-12 19:49 CST / Codex RECOVERY-USABLE：** 根已亲看留出page00–39全部40页/160条/99task/960 RGB panel，含全部7 estimated FAILED与13对象变化，未见新跨源/相机/时钟错接；遮挡、同类ID、接触真值及关系未绑定仍不可目测认证，保留原标签/全部不确定预测，不把100继续中的成功估计判成100物理假阳性。签核仅用于396留出命令生成比较、**永不训练**；owner d070f0ca…63de已双端同SHA，摘要`2026-10-12-memlite-handoff-heldout-review.json`。下一固定f79/新final360原396＋原242生成、随后物理验证；TRAIN补训独立继续。
+
+- **2026-10-12 19:48 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** lc3高层已过初始化并实有13/360更新，8rank每batch6专家+2恢复、CE/梯度有限、约3.3–3.5s/步；原step0五域留出已完整，W&B online本地run`5efbea52cbc1`（云端历史实读待），首120保存未到。冠军原run已1000更新，19:48仍原PID正常写`.incomplete-00001000-yv04o1lx`，不能将中间目录称完整checkpoint，保存/固定1600评估终态待；无重启/热改。
+
+- **2026-10-12 19:45 CST / Codex RECOVERY-USABLE：** 三臂72条全量8,437控制/真实23维动作ACK/冷恢复/奖励/无损观察与视频审计及逐job配对通过；原父19/24、等步普通续训22/24、恢复候选23/24。对照→候选：radio无差，washer433新增成功但587丢失，tripod631新增成功；不得把合计+1称稳定通用提升/完整SR。新5b6d7543分析、13回归与Git push完成，配对SHA0c278baf…2d7c/原72回执保留，候选audit b090d241…017c同SHA已收本地，根物理抽帧待。lc3高层supervisor2849383/8子进程启动中、尚无首更新，留出亲审已至page17（72/160），不能提前签核。
+
 - **2026-10-12 19:42 CST / Codex RECOVERY-USABLE / CHAMPION-2026：** 第三低层34d完整24/24、三方ACK/0优化/actor与冻结模块前后SHA相同，lc3与RTX原进程及GPU均实空；result1b6cf0ec…6afb、episodes e9b0bc6a…1aee双端同SHA已收本地，原d257全控物理复核下一进行，不先推广。整节点空与1,022,495,985,664B实空门核后，19:42:16在lc3提交既定661源/0f69启动票的`H1-handoff-fit-lc3-v1`（tmux同名前加memlite、360步/4h、8卡），当前启动验票/首优化与W&B待；只改383反馈输入、原目标/同f79序列不变，不等EVAL亲审才能训TRAIN，396留出永久不训练。冠军原run980/8000、100task/有限梯度、1000保存待。续接fetch成功，因自有待提交改动未pull，不覆盖团队修改。
 
 - **2026-10-12 19:32 CST / Codex RECOVERY-USABLE：** 原留出396/792冻结反馈完整终态（609.44s/0优化），CPU与模型1980观察回执SHA c98bc03e…a576全同，observer前后4425283d…3b48/头均不变；result e0d26466…ea72、trace1a38b428…d576/feedback d80ca2cc…6ee8已两端同SHA。估计297成功/7失败/92未知；198真命令交接有197成功估计，但198继续中也有100成功，不能用估计硬切换或称物理准确。`heldout-review-v1`40页160条99task已渲染/收本地并验页SHA待根亲审，review002df25d…00d2c，永久不训练。另原d257 CPU入口对低层父/对照各24条全控ACK/奖励/恢复/无损观察/视频重算均通过（audit2d1b300b…1358/62dbd4fa…87eb，本地同SHA），不是模型自报；第三尚21/24。新增三臂逐job/seed原物理对照分析及13相关反例过，未得候选终态、不推广策略。冠军仍原PID活跃，未改源码/环境。
