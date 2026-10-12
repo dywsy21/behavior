@@ -101,11 +101,15 @@ def main():
     ap.add_argument('--output', type=Path, required=True)
     ap.add_argument('--num-shards', type=int, default=1)
     ap.add_argument('--shard-index', type=int, default=0)
+    ap.add_argument('--export-registration', type=Path,
+                    help='CPU-only, exact-byte portable diagnostic bundle; no new training data')
     args = ap.parse_args(); cfg = read(args.config); root = Path(cfg['root'])
     if (args.output.exists() or subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip()
             or cfg['node'] not in subprocess.check_output(['hostname','-I'],text=True).split()):
         raise ValueError('Require fresh output, clean frozen source and the registered node')
     gpu = os.environ.get('CUDA_VISIBLE_DEVICES')
+    if args.export_registration and (args.mode != 'cpu' or args.num_shards != 1 or args.shard_index != 0):
+        raise ValueError('Portable export requires the entire CPU-only TRAIN universe')
     def idle():
         if gpu not in tuple(map(str,range(1,8))) or subprocess.check_output(
                 ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
@@ -187,10 +191,24 @@ def main():
     write_new(args.output/'cpu-prefix-audit.json',dict(common,status='passed',rows=cpu_rows))
     del tokenizer; gc.collect()
     if args.mode == 'cpu':
+        portable = None
+        if args.export_registration:
+            from recovery_handoff_portable import export_pack
+            portable = export_pack(args.output/'portable', registration=read(args.export_registration),
+                registration_sha256=file_sha(args.export_registration), diagnostic=cfg,
+                diagnostic_sha256=file_sha(args.config), model_config=data.config,
+                prepared_rows=prepared_rows,cpu_rows=cpu_rows,common=common,repo=REPO)
         write_new(args.output/'result.json',dict(common,status='completed_cpu_only',rows=len(cpu_rows),
-                  model_forwards=0,seconds=time.monotonic()-started,exposure=exposure))
+                  model_forwards=0,seconds=time.monotonic()-started,exposure=exposure,portable=portable))
         return
     checkpoint = bound(root,spec['checkpoint']); idle()
+    run_diagnostic(args,checkpoint,data.config,prepared_rows,common,started)
+
+
+def run_diagnostic(args,checkpoint,model_config,prepared_rows,common,started):
+    """Identical model calls for native and SHA-verified portable inputs."""
+    import torch
+    from g05.data.memlite_stage1_dataset import collate_stage1, to_device
     from recovery_cuda_startup import initialize_cuda_backend
     from g05.models.g05.qwen35 import vision
     from g05.utils.training.stage1_model import restore_model
@@ -202,7 +220,7 @@ def main():
     torch.optim.Adam.step = torch.optim.AdamW.step = forbidden
     saved = torch.load(checkpoint,map_location='cpu',mmap=True,weights_only=False)
     if saved['state']['step'] != 360: raise ValueError('Not the fixed final360 checkpoint')
-    model, restoration = restore_model(data.config,'high',state=saved['model_state_dict'])
+    model, restoration = restore_model(model_config,'high',state=saved['model_state_dict'])
     del saved; gc.collect(); model.requires_grad_(False).eval().cuda()
     before = parameter_digest(model,frozen=True)
     model.model.ar_helper._need_full_logits = True
@@ -212,14 +230,6 @@ def main():
         tick = time.monotonic()
         actual = model.processor.encode_inference([prefix],device=torch.device('cpu'),mode='ar',training=False)
         if tree_sha(actual) != record['encoded_sha256']: raise ValueError('Loaded model tokenizer differs')
-        with torch.inference_mode(),torch.autocast('cuda',dtype=torch.bfloat16):
-            loss, metrics = model(to_device(collate_stage1([prepared]),torch.device('cuda')))
-            choices = choice_statistics(model,prepared,record['choice_layout_sha256'])
-        scalars = {key:float(value) for key,value in metrics.items()
-                   if key.startswith('ce_field_') or key in ('raw_unweighted_ce','weighted_training_ce','memory_update_ce_weight')}
-        if not torch.isfinite(loss) or not all(math.isfinite(v) for v in scalars.values()):
-            raise ValueError('Nonfinite teacher-forced diagnostic')
-        model.model.ar_helper._last_ce_cache = None
         event = error = text = None
         try:
             with torch.inference_mode(),torch.autocast('cuda',dtype=torch.bfloat16),indexed_cache_freeze(model.model.ar_helper,SparseKVCache):
@@ -228,6 +238,16 @@ def main():
         except (ValueError,RuntimeError) as exc:
             if isinstance(exc,torch.cuda.OutOfMemoryError) or not hasattr(exc,'planner_texts'): raise
             error = str(exc); text = exc.planner_texts
+        # Obtain the target-free result before presenting this row's targets
+        # to the separate teacher-forced diagnostic forward.
+        with torch.inference_mode(),torch.autocast('cuda',dtype=torch.bfloat16):
+            loss, metrics = model(to_device(collate_stage1([prepared]),torch.device('cuda')))
+            choices = choice_statistics(model,prepared,record['choice_layout_sha256'])
+        scalars = {key:float(value) for key,value in metrics.items()
+                   if key.startswith('ce_field_') or key in ('raw_unweighted_ce','weighted_training_ce','memory_update_ce_weight')}
+        if not torch.isfinite(loss) or not all(math.isfinite(v) for v in scalars.values()):
+            raise ValueError('Nonfinite teacher-forced diagnostic')
+        model.model.ar_helper._last_ce_cache = None
         row = dict(global_schedule_index=position,scheduled_sample_index=index,split=split,
             sample_id=request['sample_id'],identity=request['original_identity'],input_audit=record,
             teacher_forced_fields=scalars,first_choice=choices,score=score_event(event,target),
@@ -235,7 +255,7 @@ def main():
             expected={k:target[k] for k in ('next_decision','target_parent_goal','active_skills_semantic_json','memory_update')})
         rows.append(row)
         with (args.output/'rows.jsonl').open('a') as stream: stream.write(json.dumps(row,sort_keys=True,allow_nan=False)+'\n')
-        print(json.dumps(dict(completed=len(rows),total=len(local),score=row['score'])),flush=True)
+        print(json.dumps(dict(completed=len(rows),total=len(prepared_rows),score=row['score'])),flush=True)
     after = parameter_digest(model,frozen=True)
     if after != before: raise ValueError('Diagnostic mutated model weights')
     write_new(args.output/'result.json',dict(common,status='completed',rows=len(rows),

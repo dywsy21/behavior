@@ -1,0 +1,17 @@
+{
+  "schema": "handoff_train_portable_registration_v1",
+  "owner": "Codex RECOVERY-USABLE",
+  "purpose": "Read-only TRAIN fit diagnosis on free RTX10383 while lc3 is occupied; not SFT/RL, new labels, outcome calibration or physical success.",
+  "diagnostic_config": {"path": "configs/recovery_sft/a800_handoff_train_diagnostic_v1.json", "sha256": "8126baa3ee2f7a4bdb409a65006da4d01e8eaf2a54e10c80eaa427486d113885"},
+  "accepted_prefix_audit": {"path": "runs/recovery_handoff_20261012/train-diagnostic-cpu-v3/cpu-prefix-audit.json", "sha256": "ab24503dfeb8a8cb1673d812e11b462c56a4ea5b1c32d8f83eab046e416b39ed"},
+  "target_root": "/run/ti/rl_memlite_stage1_20261006",
+  "target_python": "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+  "target_node": "RTX10383",
+  "rows": 383,
+  "optimizer_updates": 0,
+  "data_split": "train",
+  "reserve_shared_bytes": 832149913600,
+  "models": ["control", "candidate"],
+  "resources": "Export CPU-only on lc3; at most19GiB additional artifacts with775GiB shared-disk reserve. Transfer into a fresh RTX directory; original code, checkpoints, inputs and environments remain unchanged. Recheck GPU ownership at launch; existing RTX model environment is read-only, GPU0 is initially reserved for environment QA, model runs use actually idle1..7.",
+  "stopping": "All383 already accepted inputs and both exact final360 model states, never partial model/row selection. Abort on any SHA, target, tensor-byte, device, prefix, numeric or resource mismatch. No optimizer or automatic further fitting."
+}

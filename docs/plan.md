@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-12 21:59 CST / Codex RECOVERY-USABLE：** 增加`recovery_handoff_portable.py`与RTX只读入口/独立transport登记：CPU全383必须与原ab245前缀逐条相同，原f79/047两完整权重导出950 tensor逐字节复核，仅删除导出物中的optimizer（不动原件）；两asset路径白名单迁移，保留775GiB共享盘预留。RTX既有模型env两关键库同版，只读复用，不改sim/env。自由生成排在本样本teacher-forcing前，原严格parser不放宽；19本地反例通过，真实导出/迁移/GPU尚待，未有新效果。
+
+- **2026-10-12 21:50 CST / Codex RECOVERY-USABLE：** control三片在最初GPU检查即拒绝，未创建输出/加载模型/产生CUDA计算；真实核到0–3新3039811/3040116–18作业，4–7原302xxxx继续。不是模型失败或观察超时，不重新争抢/停止外部进程，保留三log。RTX备选已有`/home/tione/notebook/baselines/GalaxeaVLA/.venv`模型环境，torch2.7.1+cu128/transformers4.57.1与A800完全同版（不等同全部依赖已验）；可只读复用而无需改sim env。下一CPU导出原两权重的无优化器精确tensor副本和383已验输入，验签迁RTX后诊断，原权重/标签不变。冠军1729/8000继续。
+
+- **2026-10-12 21:45 CST / Codex RECOVERY-USABLE：** 本轮资源重新核到lc3仅GPU4–7外部302xxxx作业、GPU1–3实际无compute；改用原已验24faf41b源/8126配置直接诊断，无需先迁移环境。登记`runs/recovery_handoff_20261012/train-diagnostic-v1/{control,candidate}-s0/1/2`：先control f79三独立shard在1/2/3，再待退出后candidate047同三片；每模型全383既定TRAIN、相同输入/seed17/严格解析，0优化不选checkpoint；GPU入口CPU核完再检查空卡，有竞用则拒绝，不碰GPU0/4–7或lc1。GPU结果尚未出，不把前一CPU验收当模型效果。
+
 - **2026-10-12 21:40 CST / Codex CHAMPION-2026 / RECOVERY-USABLE：** 24faf41b/v3真实383原TRAIN CPU前门完整通过/207.07s/0模型0优化，result8939c282…cffb/prefix-ab24503d…39ed双端SHA齐，落本地`train-diagnostic-cpu-v3`；字段首分歧位置与实际CE mask、原观察及serving归一化/前缀均验，不称已取得logits/自由生成结果。相关本地44测试过，源目标env16过，原失败v1/v2保留。lc3八卡仍299xxxx非本轮作业；只读另查RTX10383八卡空/4.7T余量，但sim env缺transformers/JAX，下一可评估独立模型env＋已验输入迁移，不能热改sim环境或直接假定可跑。冠军原PID3895302实1685/8000、9.37s、100task有限/W&B原run继续，2000常规保存与新物理仍待；本轮未推广MEM或扩RL，goal未完成。
 
 - **2026-10-12 21:35 CST / Codex RECOVERY-USABLE：** 新24faf41b/v3独立源经Git包ad6fb089…97a2双端验签、目标env16测试，CPU-only `train-diagnostic-cpu-v3`已起（tmux`memlite-handoff-train-cpu-v3`、同名log），实际383前缀/字段mask验收中，无GPU/优化。另按原requests＋实际schedule统计238交接曝光中156为NAVIGATE、PRESS3、POUR1，完整14类计数加入诊断摘要；这是监督分布缺口，不直接证明加训有效，也不回灌留出。
