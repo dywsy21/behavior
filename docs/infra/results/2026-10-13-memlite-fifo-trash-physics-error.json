@@ -1,0 +1,143 @@
+{
+  "schema": "memlite_fifo_diagnosed_physics_batch_v1",
+  "observed_at": "2026-10-13T13:35:29.252306+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/manifest.json",
+    "sha256": "ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5"
+  },
+  "diagnosis": {
+    "kind": "simulator_nonfinite_robot_pose",
+    "scene_slot": 0,
+    "robot_link": "left_gripper_finger_link1",
+    "exception": "AssertionError: /World/scene_0/controllable__r1pro__robot_r1/left_gripper_finger_link1 orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.",
+    "traceback_copies": 3,
+    "official_score_available": false,
+    "cause": "Undetermined: finite model actions do not prove stable physics or correct action semantics"
+  },
+  "affected_instances": [
+    301,
+    302,
+    303,
+    304
+  ],
+  "directly_reported_bad_instance": 301,
+  "official_metrics_available": false,
+  "original_error_ledger": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/picking_up_trash-n4-i0-execution-errors.json",
+    "sha256": "96025a2abe32cd85188d1af9d903f9171ec5a32699a2dca369fbbfec52e9d597"
+  },
+  "original_log": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/picking_up_trash-n4-i0.log",
+    "sha256": "b533fb6a4c9bf74baad9af460409c5cd44646aa8d3e085439d442cf1201aa7cf"
+  },
+  "original_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0/attempts/00.json",
+    "sha256": "eaadf04a579520b716e2d856b197833fe44fabcef906529a748a66ed1f9eec22"
+  },
+  "trace": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/model-000/events.jsonl",
+    "sha256": "de2be795e955e09428b9312b0cf7ed1ca1d9868129929b029c71ccd5787c0c29"
+  },
+  "final_weight_receipt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/model-000/weights-final.json",
+    "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271"
+  },
+  "weights_unchanged": true,
+  "observer_unchanged": true,
+  "optimizer_updates": 0,
+  "old_model_pid": 3600434,
+  "old_model_alive": false,
+  "retained_unstarted_tail": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/picking_up_trash-n4-i0-unstarted-tail.json",
+    "sha256": "9622f4678cb407ce2f4d138657a149476546bc49d938d5c780d0a881d68efc31"
+  },
+  "next_indices": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "next_instance_ids": [
+    305,
+    306,
+    307,
+    308
+  ],
+  "tail_id": "picking_up_trash-n4-i0-unstarted-i4",
+  "replacement_model": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/model-001",
+    "pid": 3626270,
+    "status": "ready",
+    "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+  },
+  "partial_action_receipts": {
+    "301": {
+      "actions": 91,
+      "max_raw23_abs": 39.251914978027344,
+      "last_ack": 1440,
+      "last_offer_step": 1440,
+      "all_actions_finite": true
+    },
+    "302": {
+      "actions": 91,
+      "max_raw23_abs": 1.536820888519287,
+      "last_ack": 1440,
+      "last_offer_step": 1440,
+      "all_actions_finite": true
+    },
+    "303": {
+      "actions": 91,
+      "max_raw23_abs": 1.5416536331176758,
+      "last_ack": 1440,
+      "last_offer_step": 1440,
+      "all_actions_finite": true
+    },
+    "304": {
+      "actions": 91,
+      "max_raw23_abs": 1.5399670600891113,
+      "last_ack": 1440,
+      "last_offer_step": 1440,
+      "all_actions_finite": true
+    }
+  },
+  "global_stop_exists": false,
+  "score_fabricated": false,
+  "failed_instances_rerun": false,
+  "cause_not_proven": "Finite outputs and a late39.25-magnitude command do not determine whether physics or policy/anchoring became unstable first; no policy/physics modification or public reroll.",
+  "continuation_process_check": {
+    "observed_at": "2026-10-13T13:40:18.557715+00:00",
+    "worker_pid": 3599525,
+    "worker_status": "evaluating",
+    "replacement_model_pid": 3626270,
+    "replacement_model_status": "ready",
+    "new_simulator_pid": 3626634,
+    "new_part": "picking_up_trash-n4-i0-unstarted-i4",
+    "new_command_indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "new_instance_ids": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "actor_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+    "policy_unchanged": true,
+    "physical_steps_not_yet_verified_by_this_check": true,
+    "supervisor_pid": 3599503,
+    "supervisor_alive": true,
+    "champion_queue_pid": 3603438,
+    "champion_queue_alive": true,
+    "summary": {
+      "completed": 176,
+      "execution_errors": 16,
+      "unaccounted": 808,
+      "completed_only_q": 0,
+      "completed_only_sr": 0
+    }
+  }
+}

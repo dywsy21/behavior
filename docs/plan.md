@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 21:40 CST / Codex SUBMISSION-FULL-EVAL（新物理异常已隔离）：** 原MEM累计176完整/16执行异常/808未覆盖，completed-only Q0/SR0；21:30:50捡垃圾301–304同批中301左夹爪finger link姿态NaN，三份重复栈是同一异常、不是四个独立物理失败。原4例均最后ACK1440、无官方JSON，不造分数/不重跑；old model000与sim已退，final权重/observer不变、0更新，原trace/log/attempt/partial视频保留。既有691隔离器未触发全局STOP：新同51c model001 PID3626270 ready，sim3626634实际命令只含未尝试indices4–7（305–308），非重跑301–304；此时未核新物理步数，不以ready代替闭环通过。原supervisor3599503/worker/冠军后继3603438实活，后继仍等待。原有限动作中301末段幅值39.25不证明首因，未改actor/physics/超时。证据`docs/infra/results/2026-10-13-memlite-fifo-trash-physics-error.json`；下一核新批实际控制并继续全量，交付仍暂缓。干净本地fetch/pull已同步，无运行源变更。
+
 - **2026-10-13 21:30 CST / Codex SUBMISSION-FULL-EVAL（166完整）：** 原supervisor3599503/八worker和冠军后继3603438实活，新美术用品305–308及喇叭305–308各4完成，累计166完整/12旧异常/822未覆盖，Q0/SR0未变；新part自动沿原schedule推进，没有重启/新训练。根只读核FIFO轮前14完整（含此前6）：4原trace从byte0连续至该完整批最后close，不过滤交织事件；104,278实际控制/6,524 ACK、空初始memory、完整模型/任务/slot身份、高低层当前意图、observer时钟及14原JSON/视频帧数/SHA均过，二次读取同prefix字节一致。摘要`docs/infra/results/2026-10-13-memlite-fifo-first14-prefix-audit.json`；活跃尾部及最终权重封存尚未核，不能称整run封存或策略有效。当前继续原全量/后继，模型交付仍暂停；等待本身不是阻塞，不新增机械重试。
 
 - **2026-10-13 21:24 CST / Codex SUBMISSION-FULL-EVAL（新增6完整＋时间风险）：** FIFO轮首6完整已实读：扫描仪305–308各6388步、爆米花309/310各4857步，6原JSON/MP4 SHA及30fps/672×448帧数均核相同，全部Q0/SR0；累计158完整/12既有异常/830未覆盖，原3599503及后继3603438实活，已切后续新part，没有重跑旧完整结果。原manifest名义6387/4856与实际各多1步是原官方终止循环口径，当前max_steps=None交原evaluator；不是把normalized_time≈2/3当成提前截断，也未改超时。只读剩余工作量筛查`docs/infra/results/2026-10-13-memlite-running-workload-screen.json`：约14,728,140剩余控制预算；八卡21:11:23–21:15:58固定热态窗口32256控/275s≈117.29控/s，直接相除34.88h**仅为忽略加载/重置/尾部批次/任务差异的恒速参照，非ETA或严格下界**。冠军仍0公共、自身全量吞吐未测，不用MEM速度编造合并完成时间；本轮官方主页复核仍列10/16，未重新确认旧文档AoE时区。继续原先MEM→冠军顺序、交付暂缓，不靠缩短回合赶时间。
