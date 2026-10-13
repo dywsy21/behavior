@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 22:05 CST / Codex SUBMISSION-FULL-EVAL：** 首个非零Q批次四原JSON/MP4/attempt均实核、完整保留，37600实际控制与service ACK/视频帧数一致，只有咖啡台305为Q1/6，其余三例Q0，四例均未成功。摘要`docs/infra/results/2026-10-13-memlite-first-nonzero-final-q.json`，不推断相对起始改善或训练收益，不回灌公共数据。GPU0新model3633586现ready但尚无新sim子进程（worker旧sim字段是已退出3600705），正等后续场景准入；不能据旧字段称重跑/实际恢复，下一核真实309/310命令与控制。188完整/20异常，原全量与后继继续。
+
+- **2026-10-13 22:03 CST / Codex SUBMISSION-FULL-EVAL（第二批隔离＋首个非零Q）：** 原run现188完整/20执行异常/792未覆盖；21:58:34牛胸305–308中305左夹爪finger link NaN（同栈重复4次），最后各6112 ACK，无这4例官方JSON，301–304原完整JSON/视频/attempt保留。旧GPU0模型与sim已退，final高低层/observer不变、0更新，691隔离器没有全局STOP；new model001 PID3633586仍加载，下一实际sim范围待核，不能称已闭环恢复。此模型原301–304连续闭合trace 36,218,153B/44012控制/2752 ACK也独立审过；异常尾动作均有限但305最大110.77，不能据此断定首因。证据`docs/infra/results/2026-10-13-memlite-fifo-brisket-physics-error.json`。新增咖啡台305–308已正式终态；305原官方final Q=1/6、success=false、9400步，原视频9400帧/30fps/672×448，JSON SHA678756ca…79fbe、MP4 SHA4e914e4d…17e23；当前completed-only Q0.0008865248、SR0，非全1000成绩/训练改善证明，不把非零终局值自动当相对起始进步。原全量与冠军等待继续，不变更模型/物理/超时或重跑失败例，下一核GPU0未尝试尾批及留存原件。
+
 - **2026-10-13 21:58 CST / Codex SUBMISSION-FULL-EVAL（184完整，继续原作业）：** 只读核原supervisor3599503/八worker与后继3603438实活；当前184完整/16既有异常/800未覆盖，completed-only Q0/SR0，未新增异常或重启。新增18原件（牛胸301–304、培根301–304、蜂蜜301–304、喇叭/美术用品/扫描仪各309/310）共177,978控制；六原committed attempt的物理计数与service ACK、18官方JSON步数、18原MP4的帧数/672×448/30fps全部相同，原件SHA已记录。摘要`docs/infra/results/2026-10-13-memlite-fifo-next18-output-audit.json`；不是这18条的完整因果trace审计/最终权重封存，也不是1000全量结果。上轮为隔离后真实控制验证，本轮为已核live作业的等待＋新原件校核；既定MEM→冠军不变、不新训练/交付，下一等待原回合及错误门，不将持续运行误判阻塞。首临时SSH检查引用转义错误在扫数据前退出，安全重跑只读检查通过，运行源和原件未动。
 
 - **2026-10-13 21:45 CST / Codex SUBMISSION-FULL-EVAL（隔离后真实控制核验）：** 同原job的GPU7新model001/捡垃圾305–308各784实际控制、合计3136控制/196 ACK已逐条核验；连续原trace 2,671,109B/SHA734b2d25…82f4b二读一致，四个begin均零步/空memory，任务/实例/slot/模型绑定、当前高层意图→低层、observer代次/时钟与raw23执行digest均过。当前仍活跃、有待ACK块，不能称完整回合/最终权重封存；没有301–304重试，也没有全局重启。证据补入同`2026-10-13-memlite-fifo-trash-physics-error.json`。首次临时只读检查误用metadata字段/下划线任务名而拒绝，按原runtime的`instance`及空格任务名纠正后通过，运行源未改。原全量与冠军后继继续，下一等待原终态，不新增诊断回合。

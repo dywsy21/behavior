@@ -1,0 +1,158 @@
+{
+  "schema": "memlite_fifo_brisket_physics_error_v1",
+  "observed_at": "2026-10-13T14:02:36.434009+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/manifest.json",
+    "sha256": "ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5"
+  },
+  "diagnosis": {
+    "kind": "simulator_nonfinite_robot_pose",
+    "scene_slot": 0,
+    "robot_link": "left_gripper_finger_link1",
+    "exception": "AssertionError: /World/scene_0/controllable__r1pro__robot_r1/left_gripper_finger_link1 orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.",
+    "traceback_copies": 4,
+    "official_score_available": false,
+    "cause": "Undetermined: finite model actions do not prove stable physics or correct action semantics"
+  },
+  "direct_bad_instance": 305,
+  "batch_error_instances": [
+    305,
+    306,
+    307,
+    308
+  ],
+  "execution_error_ledger": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/cook_a_brisket-n4-i0-execution-errors.json",
+    "sha256": "457a2a152e1ce2d27286021bf368f2ad81b395650a218caf69e3f5ab94d638f9"
+  },
+  "log": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/cook_a_brisket-n4-i0.log",
+    "sha256": "18d94d1e9293733c1ba1ac248cff0bd6ee8bdcaac062c058c9125c0b1d7112b2"
+  },
+  "aborted_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/attempts/04.json",
+    "sha256": "3519aaea523b1f237948b3e8ef5247e89d7f03634df0dbb526b29bec80e25646"
+  },
+  "preserved_completed_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/attempts/00.json",
+    "sha256": "0359b3a03d450331d10b96848ee2113f20388e652901964b0972254785886ed2"
+  },
+  "original_completed_metric_instances": [
+    301,
+    302,
+    303,
+    304
+  ],
+  "no_metrics_for_error_cases": true,
+  "trace": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/model-000/events.jsonl",
+    "sha256": "b5695c3425850117e3ef3f45ee1de930169be9d82c287509bc5ce31308115e83"
+  },
+  "last_physical_ack_and_actions": {
+    "305": {
+      "actions": 383,
+      "last_ack": 6112,
+      "max_raw23_abs": 110.76803588867188,
+      "all_actions_finite": true,
+      "last_offer_step": 6112
+    },
+    "306": {
+      "actions": 383,
+      "last_ack": 6112,
+      "max_raw23_abs": 1.4483962059020996,
+      "all_actions_finite": true,
+      "last_offer_step": 6112
+    },
+    "307": {
+      "actions": 383,
+      "last_ack": 6112,
+      "max_raw23_abs": 1.8389968872070312,
+      "all_actions_finite": true,
+      "last_offer_step": 6112
+    },
+    "308": {
+      "actions": 383,
+      "last_ack": 6112,
+      "max_raw23_abs": 8.526870727539062,
+      "all_actions_finite": true,
+      "last_offer_step": 6112
+    }
+  },
+  "completed_prefix_audit": {
+    "bytes": 36218153,
+    "sha256": "cd4d18c0f0072060897977f35a3e91adb50763592d95f73588499500790209a3",
+    "status": "complete_causal_trace_audit",
+    "episodes": 4,
+    "events": {
+      "begin": 4,
+      "plan": 344,
+      "observer": 3096,
+      "action": 2752,
+      "ack": 2752,
+      "close": 4
+    },
+    "applied_controls": 44012,
+    "models": {
+      "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+      "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+      "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+      "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+      "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+      "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+      "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+    },
+    "tasks": [
+      "cook a brisket"
+    ],
+    "checks": [
+      "fresh empty per-episode memory",
+      "full identity and fixed slot on every event",
+      "high-to-low exact current intent",
+      "observer attempt and applied clock",
+      "unique tokens and exact raw23 physical ACK digest",
+      "final partial chunk acknowledged"
+    ],
+    "proves_full_task_success": false
+  },
+  "final_weights": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/model-000/weights-final.json",
+    "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271"
+  },
+  "weights_unchanged": true,
+  "observer_unchanged": true,
+  "optimizer_updates": 0,
+  "old_model_pid": 3599579,
+  "old_model_alive": false,
+  "old_sim_pid": 3600705,
+  "old_sim_alive": false,
+  "replacement_model": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/model-001",
+    "pid": 3633586,
+    "status": "loading",
+    "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+  },
+  "global_stop": false,
+  "summary": {
+    "status": "running",
+    "completed": 188,
+    "execution_errors": 20,
+    "unaccounted": 792,
+    "completed_only_q": 0.0008865248226950354,
+    "completed_only_sr": 0
+  },
+  "later_model_ready_check": {
+    "observed_at": "2026-10-13T14:05:04.968951+00:00",
+    "model_status": "ready",
+    "model_pid": 3633586,
+    "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+    "worker_part_field": "cook_a_brisket-n4-i0",
+    "worker_sim_field": 3600705,
+    "child_commands": "3633586 /home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python /run/ti/rl_memlite_stage1_20261006/code/memlite-final-eval-20261013-v4/scripts/eval/memlite_final/serve.py --config /run/ti/rl_memlite_stage1_20261006/code/memlite-final-eval-20261013-v4/configs/recovery_sft/memlite_final_full_eval_v1.json --pack /run/ti/rl_memlite_stage1_20261006/runs/memlite_final_preparation_20261013/assets-v1 --manifest-sha256 07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0 --run /run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/model-001 --port 19900\n",
+    "next_simulator_not_yet_started_at_observation": true,
+    "stale_old_sim_field_not_a_live_process": true
+  },
+  "next_simulator_not_yet_verified": true,
+  "failed_instances_rerun": false,
+  "cause_not_proven": true
+}

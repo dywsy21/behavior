@@ -1,0 +1,223 @@
+{
+  "schema": "memlite_first_nonzero_final_q_v1",
+  "observed_at": "2026-10-13T14:05:04.968951+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/manifest.json",
+    "sha256": "ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5"
+  },
+  "task": "set_up_a_coffee_station_in_your_kitchen",
+  "cases": [
+    {
+      "task": "set_up_a_coffee_station_in_your_kitchen",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 9400,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/json/set_up_a_coffee_station_in_your_kitchen_305_0.json",
+        "sha256": "678756ca6334819e94f99879b8fafc7fb6055d6f93a72af17950101fc7779fbe"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/videos/set_up_a_coffee_station_in_your_kitchen_305_0.mp4",
+        "sha256": "4e914e4d11ec28895531c98de1dab3bbc017117338f887b596235a3f1bb17e23"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9400"
+      },
+      "official_metrics": {
+        "task": "set_up_a_coffee_station_in_your_kitchen",
+        "instance_id": 305,
+        "rollout_id": 0,
+        "steps": 9400,
+        "success": false,
+        "agent_distance": {
+          "base": 8.03382561710228,
+          "left": 21.72538130179828,
+          "right": 15.014976742964109
+        },
+        "normalized_agent_distance": {
+          "base": 2.1608136431347424,
+          "left": 0.44032368717082887,
+          "right": 0.7137673393348404
+        },
+        "q_score": {
+          "final": 0.16666666666666666
+        },
+        "time": {
+          "simulator_steps": 9400,
+          "simulator_time": 313.3333333333333,
+          "normalized_time": 0.6666186170212766
+        }
+      }
+    },
+    {
+      "task": "set_up_a_coffee_station_in_your_kitchen",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 9400,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/json/set_up_a_coffee_station_in_your_kitchen_306_0.json",
+        "sha256": "1b77bcff4616f8c405bb5413022348806418454ea3740e09b38b6f15f111eb62"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/videos/set_up_a_coffee_station_in_your_kitchen_306_0.mp4",
+        "sha256": "ad7dd12eb1e1cf3beb1b136f1e5c4edc3849d1e9c5764a5d899a8194be77fa56"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9400"
+      },
+      "official_metrics": {
+        "task": "set_up_a_coffee_station_in_your_kitchen",
+        "instance_id": 306,
+        "rollout_id": 0,
+        "steps": 9400,
+        "success": false,
+        "agent_distance": {
+          "base": 7.581653187566381,
+          "left": 11.59311446119142,
+          "right": 16.39817891491066
+        },
+        "normalized_agent_distance": {
+          "base": 2.289685319353446,
+          "left": 0.8251622143491617,
+          "right": 0.6535603773815997
+        },
+        "q_score": {
+          "final": 0
+        },
+        "time": {
+          "simulator_steps": 9400,
+          "simulator_time": 313.3333333333333,
+          "normalized_time": 0.6666186170212766
+        }
+      }
+    },
+    {
+      "task": "set_up_a_coffee_station_in_your_kitchen",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 9400,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/json/set_up_a_coffee_station_in_your_kitchen_307_0.json",
+        "sha256": "c0acee141e3ef09c7be386403319bce33cf83724354ec24af56f05c8e259f14a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/videos/set_up_a_coffee_station_in_your_kitchen_307_0.mp4",
+        "sha256": "8c27abf58603179cd55222c4eacf516f4b1612133adb055610f688495a58306f"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9400"
+      },
+      "official_metrics": {
+        "task": "set_up_a_coffee_station_in_your_kitchen",
+        "instance_id": 307,
+        "rollout_id": 0,
+        "steps": 9400,
+        "success": false,
+        "agent_distance": {
+          "base": 15.702179947958967,
+          "left": 23.535703657152794,
+          "right": 27.1754593613
+        },
+        "normalized_agent_distance": {
+          "base": 1.105553500057581,
+          "left": 0.4064548117766903,
+          "right": 0.3943705185444681
+        },
+        "q_score": {
+          "final": 0
+        },
+        "time": {
+          "simulator_steps": 9400,
+          "simulator_time": 313.3333333333333,
+          "normalized_time": 0.6666186170212766
+        }
+      }
+    },
+    {
+      "task": "set_up_a_coffee_station_in_your_kitchen",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 9400,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/json/set_up_a_coffee_station_in_your_kitchen_308_0.json",
+        "sha256": "845647f4fd8357c5e6738a40f15c95bb75a7354f8ebbec2de7de3d7114b3abe6"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/videos/set_up_a_coffee_station_in_your_kitchen_308_0.mp4",
+        "sha256": "82c1c21d246e2854d43e6e9f5fb4053a10aca34ac2e011e3c27c5dbe70d4e3aa"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9400"
+      },
+      "official_metrics": {
+        "task": "set_up_a_coffee_station_in_your_kitchen",
+        "instance_id": 308,
+        "rollout_id": 0,
+        "steps": 9400,
+        "success": false,
+        "agent_distance": {
+          "base": 14.640336607507678,
+          "left": 24.242844638851693,
+          "right": 24.04939248376877
+        },
+        "normalized_agent_distance": {
+          "base": 1.1857377644649143,
+          "left": 0.39459890712120327,
+          "right": 0.4456328785533011
+        },
+        "q_score": {
+          "final": 0
+        },
+        "time": {
+          "simulator_steps": 9400,
+          "simulator_time": 313.3333333333333,
+          "normalized_time": 0.6666186170212766
+        }
+      }
+    }
+  ],
+  "attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/attempts/04.json",
+    "sha256": "582532176f10990cc73e4a69078bba786e42871c94ab4f9d144d52cd2e60f0ae"
+  },
+  "actual_controls": [
+    9400,
+    9400,
+    9400,
+    9400
+  ],
+  "service_ack_steps": [
+    9400,
+    9400,
+    9400,
+    9400
+  ],
+  "summary": {
+    "status": "running",
+    "completed": 188,
+    "execution_errors": 20,
+    "unaccounted": 792,
+    "completed_only_q": 0.0008865248226950354,
+    "completed_only_sr": 0
+  },
+  "q_sum": 0.16666666666666666,
+  "successes": 0,
+  "inference_limitations": [
+    "Nonzero final Q is not full-task success",
+    "No matched comparator or initial-state Q comparison; not evidence of training improvement",
+    "This batch is public development evaluation, not reusable training data"
+  ]
+}
