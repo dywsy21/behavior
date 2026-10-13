@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 18:44 CST / Codex SUBMISSION-FULL-EVAL（反馈口径澄清）：** 根人工核两原MP4的18个抽帧，原视频SHA均与14条审计相同；堆肥301房内移动、抽帧未证到达垃圾桶；刷地309在1791等帧刷子明显位于右夹爪旁/离地，说明有局部操控迹象，非官方抓持/整任务成功认证。进一步核实际`causal_input.execution_feedback`：刷地309在1792–3712连续16次给高层SUCCEEDED估计（置信约0.93–0.99）仍输出GRASP，3840第17次才转HANDOVER；不是结果头完全没接入。前条所列`previous_outcome=UNKNOWN`是固定非物理真值合同，不可误读为没有预测反馈，原18:35事实保留并明确更正解释。NAVIGATE没有已校准结果反馈是当前GRASP-only范围限制；导航没到位与高层忽视结果仍须区别，不由这些公开帧训练/改本轮模型。摘要追加实际反馈和人工定位；原两完整视频/派生图在忽略目录`continuation-v1/intent-inspection.yCSMuZ`。18:44实际监控126完整＋4原异常/870待覆盖、Q0/SR0，原supervisor3540742与后继3540913均实活、8worker无新错误；保持同run与自动后继。
+
+- **2026-10-13 18:35 CST / Codex SUBMISSION-FULL-EVAL：** 在既有14完整续评回合上只读整理意图轨迹（无新rollout/训练）：13/14全程同一NAVIGATE目标，所有高层调用`reused=false`，不是缓存未刷新；仅刷地309从NAVIGATE→GRASP→HANDOVER→NAVIGATE发生转移，14条所有planner previous_outcome仍UNKNOWN。原JSON底盘累计位移4.89–17.42m表明实际有运动，但不证明导航到位；高层不切换与低层没到目标的因果尚需视频，不把重复意图直接当模型故障首因。绑定原trace前缀/指标SHA的摘要`docs/infra/results/2026-10-13-memlite-first14-intent-persistence.json`；只是公开开发诊断，不回灌训练/不改本轮actor。原8卡评测及冠军队列继续，下一只读人工核原视频，不追加测试回合。
+
 - **2026-10-13 18:22 CST / Codex SUBMISSION-FULL-EVAL：** 原run已跨过100完整回合，现104/1000＋4已披露物理异常、892待覆盖，completed-only Q0/SR0；8worker无新诊断错误，原supervisor3540742与后继3540913实查S态活跃。原51c推理、9f冠军、374续评、f99队列四源码均HEAD不变且Git干净，未改规则/重跑挑优。18:04实测速率/剩余量及19分钟加载自然完成证据已随da6a8424推送；继续同评测与自动后继，不复做已完成审计/新训练，模型交付仍暂停。
 
 - **2026-10-13 18:20 CST / Codex SUBMISSION-FULL-EVAL：** 累计98完整＋4原执行异常/898待覆盖、Q0/SR0，原续评与冠军等待队列不变。GPU7爆米花加载自然完成：原part start1791885026.372→首attempt1791886180.790，19.24分钟；当前同3557372已四实例各2048实际控制、模型357次请求/最新时间实增。只读`py-spy dump --nonblocking`栈显示官方物理`step`，未暂停/重启进程、未改watchdog/超时，原30分钟门未触发；采样原文在忽略目录`artifacts/final-eval-20261012/continuation-v1/popcorn-loading-nonblocking-stack.txt`。此前12分钟无请求是加载延迟，不是已证实卡死；运行态继续，不据已完成快任务给承诺ETA或改模型。

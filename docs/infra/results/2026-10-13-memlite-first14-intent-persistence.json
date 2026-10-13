@@ -1,0 +1,1567 @@
+{
+  "schema": "memlite_continuation_first14_intent_persistence_v1",
+  "observed_at": "2026-10-13T10:35:11.230933+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2",
+  "selection": "Same first14 completed episodes as prior causal audit; no new rollout, no Q/success selection",
+  "diagnostic_only": true,
+  "training_authorized_by_this_report": false,
+  "proves_navigation_success": false,
+  "trace_prefixes": [
+    {
+      "gpu": 1,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_1/model-000/events.jsonl",
+      "prefix_bytes": 45373743,
+      "prefix_sha256": "213b4aa91092dcfbb2fd127045b11c9c20045356d799d4377a06124a83438151"
+    },
+    {
+      "gpu": 2,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_2/model-000/events.jsonl",
+      "prefix_bytes": 36104990,
+      "prefix_sha256": "192d1cb1a95dad91440ffecebc948f4d36091748a645fa4a1800af5585290b44"
+    },
+    {
+      "gpu": 3,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_3/model-000/events.jsonl",
+      "prefix_bytes": 47613689,
+      "prefix_sha256": "aa4522c5077b3d9787952a46855eba0aba264c9fb01a61f0d26c0f26dad8ada5"
+    },
+    {
+      "gpu": 6,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_6/model-000/events.jsonl",
+      "prefix_bytes": 45896992,
+      "prefix_sha256": "0a6697769a196df08c9f0daba9318d615423654acd760799fe2c6564fd380540"
+    },
+    {
+      "gpu": 7,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_7/model-000/events.jsonl",
+      "prefix_bytes": 22239045,
+      "prefix_sha256": "87b1ff1a95f6352e63b0058116417cf690b7e0d5497c5c028c209037ca16f7fe"
+    }
+  ],
+  "episodes": [
+    {
+      "task": "composting_waste",
+      "instance": 301,
+      "steps": 5458,
+      "q": 0,
+      "success": false,
+      "plans": 43,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 5458,
+          "plans": 43,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "trash_can",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 5458
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 43
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 342,
+        "MISSING": 43
+      },
+      "decision_counts": {
+        "EXECUTE": 43
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 17.41600056304908,
+        "left": 22.03111345587604,
+        "right": 22.71988296051677
+      },
+      "metric_sha256": "e2184cdc6ca38fa5582ec99aa3f4a0fc87674b155f55cd197cf27485760a8b46"
+    },
+    {
+      "task": "composting_waste",
+      "instance": 302,
+      "steps": 5458,
+      "q": 0,
+      "success": false,
+      "plans": 43,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 5458,
+          "plans": 43,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "trash_can",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 5458
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 43
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 342,
+        "MISSING": 43
+      },
+      "decision_counts": {
+        "EXECUTE": 43
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 13.750918701560424,
+        "left": 19.391947900123796,
+        "right": 19.969893944470186
+      },
+      "metric_sha256": "5316f2a336a73b319757543affcd822f33e077a46668b8cd735b71b85136b1c6"
+    },
+    {
+      "task": "composting_waste",
+      "instance": 303,
+      "steps": 5458,
+      "q": 0,
+      "success": false,
+      "plans": 43,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 5458,
+          "plans": 43,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "trash_can",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 5458
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 43
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 342,
+        "MISSING": 43
+      },
+      "decision_counts": {
+        "EXECUTE": 43
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 4.885298363171991,
+        "left": 8.137458593962037,
+        "right": 7.679423290138857
+      },
+      "metric_sha256": "3dafa421be874d96df27bc027722f7c657ededfdb1e9a98e6c53272c157c22e2"
+    },
+    {
+      "task": "composting_waste",
+      "instance": 304,
+      "steps": 5458,
+      "q": 0,
+      "success": false,
+      "plans": 43,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 5458,
+          "plans": 43,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "trash_can",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 5458
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 43
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 342,
+        "MISSING": 43
+      },
+      "decision_counts": {
+        "EXECUTE": 43
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 9.465919241091857,
+        "left": 17.005369540892843,
+        "right": 18.728900353863537
+      },
+      "metric_sha256": "74dd1dea5576e45cbf8b3a4fa1476b1993016fa30d8dba78128031e6141a4e9d"
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance": 309,
+      "steps": 4731,
+      "q": 0,
+      "success": false,
+      "plans": 37,
+      "unique_bundles": 4,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 1280,
+          "plans": 10,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        },
+        {
+          "start_control": 1280,
+          "end_control_exclusive": 3840,
+          "plans": 20,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "start_control": 3840,
+          "end_control_exclusive": 4224,
+          "plans": 3,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "",
+              "target_part": "",
+              "unbound_relation": "{\"entities\":[\"scrub_brush\"],\"spatial_relations\":[]}",
+              "verb": "HANDOVER"
+            }
+          ]
+        },
+        {
+          "start_control": 4224,
+          "end_control_exclusive": 4731,
+          "plans": 4,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "floors",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 1787,
+        "GRASP": 2560,
+        "HANDOVER": 384
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 37
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 299,
+        "MISSING": 34
+      },
+      "decision_counts": {
+        "EXECUTE": 37
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 5.1846201421840306,
+        "left": 13.536176078920107,
+        "right": 11.803717527204753
+      },
+      "metric_sha256": "32bda89a361f9ebf04ab49d9355636abd9efbde9fd89912d3776811eb526d346"
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance": 310,
+      "steps": 4731,
+      "q": 0,
+      "success": false,
+      "plans": 37,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 4731,
+          "plans": 37,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 4731
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 37
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 296,
+        "MISSING": 37
+      },
+      "decision_counts": {
+        "EXECUTE": 37
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 5.098199817409977,
+        "left": 8.962344170797337,
+        "right": 8.502918539948723
+      },
+      "metric_sha256": "c991af8b6eba5cf8cb6f67c0496b2122067af1c0fa49e5ee4f0ffe424b78291f"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance": 301,
+      "steps": 5164,
+      "q": 0,
+      "success": false,
+      "plans": 41,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 5164,
+          "plans": 41,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "cabinet_door",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 5164
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 41
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 323,
+        "MISSING": 41
+      },
+      "decision_counts": {
+        "EXECUTE": 41
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 15.505096987931676,
+        "left": 19.179449826955988,
+        "right": 18.960752168960425
+      },
+      "metric_sha256": "457f4b9bae7655affee48137b2da73f55f99e8e54fe6e70a6a49a64290f737e4"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance": 302,
+      "steps": 5164,
+      "q": 0,
+      "success": false,
+      "plans": 41,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 5164,
+          "plans": 41,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "cabinet_door",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 5164
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 41
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 323,
+        "MISSING": 41
+      },
+      "decision_counts": {
+        "EXECUTE": 41
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 5.985783717746642,
+        "left": 12.039494126377122,
+        "right": 10.65955163565377
+      },
+      "metric_sha256": "f7fe188d9ae87b69ab78f0305ff6f5512c28f5b0adc19e4fbec6fed816559fa1"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance": 303,
+      "steps": 5164,
+      "q": 0,
+      "success": false,
+      "plans": 41,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 5164,
+          "plans": 41,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "cabinet_door",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 5164
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 41
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 323,
+        "MISSING": 41
+      },
+      "decision_counts": {
+        "EXECUTE": 41
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 10.439526787075087,
+        "left": 13.744392702921232,
+        "right": 15.046846555464981
+      },
+      "metric_sha256": "3cf49dddb3b1f4a95c4f3ca4677814b1c7ec3c81de8f26a638d6881a20a5ee51"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance": 304,
+      "steps": 5164,
+      "q": 0,
+      "success": false,
+      "plans": 41,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 5164,
+          "plans": 41,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "cabinet_door",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 5164
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 41
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 323,
+        "MISSING": 41
+      },
+      "decision_counts": {
+        "EXECUTE": 41
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 13.975094296444318,
+        "left": 23.03985617285116,
+        "right": 26.446415281173586
+      },
+      "metric_sha256": "b0a7a5493fda17e6cef5b15abb8bfd60b730c728f50e18d06e83cfed0e01f69a"
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance": 309,
+      "steps": 6116,
+      "q": 0,
+      "success": false,
+      "plans": 48,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 6116,
+          "plans": 48,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "facsimile",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 6116
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 48
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 383,
+        "MISSING": 48
+      },
+      "decision_counts": {
+        "EXECUTE": 48
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 6.464874929245013,
+        "left": 8.891270278861384,
+        "right": 9.509193782363582
+      },
+      "metric_sha256": "d9133ea6922693a1a2de2671540ebdf2aa16063e0c2b24acce8ad969341f07ea"
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance": 310,
+      "steps": 6116,
+      "q": 0,
+      "success": false,
+      "plans": 48,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 6116,
+          "plans": 48,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "facsimile",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 6116
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 48
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 383,
+        "MISSING": 48
+      },
+      "decision_counts": {
+        "EXECUTE": 48
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 6.939544337242523,
+        "left": 13.759491181388967,
+        "right": 13.36590706128095
+      },
+      "metric_sha256": "39d9c5288979c6a7d8a583c2da2f7aa42e85c8a5bd441b0eea6682b67f8830c1"
+    },
+    {
+      "task": "installing_a_modem",
+      "instance": 309,
+      "steps": 3620,
+      "q": 0,
+      "success": false,
+      "plans": 29,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 3620,
+          "plans": 29,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "modem",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 3620
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 29
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 227,
+        "MISSING": 29
+      },
+      "decision_counts": {
+        "EXECUTE": 29
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 7.886765669639923,
+        "left": 12.67913262642196,
+        "right": 10.910644498129841
+      },
+      "metric_sha256": "11c1101b095fa258b268a8a6efe5e326e4c9056e9a0ec38b158157414f626b0d"
+    },
+    {
+      "task": "installing_a_modem",
+      "instance": 310,
+      "steps": 3620,
+      "q": 0,
+      "success": false,
+      "plans": 29,
+      "unique_bundles": 1,
+      "segments": [
+        {
+          "start_control": 0,
+          "end_control_exclusive": 3620,
+          "plans": 29,
+          "bundle": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "modem",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "NAVIGATE"
+            }
+          ]
+        }
+      ],
+      "verb_applied_controls": {
+        "NAVIGATE": 3620
+      },
+      "planner_previous_outcome_counts": {
+        "UNKNOWN": 29
+      },
+      "observer_known_previous_outcome_counts": {
+        "UNKNOWN": 227,
+        "MISSING": 29
+      },
+      "decision_counts": {
+        "EXECUTE": 29
+      },
+      "reused_plans": 0,
+      "agent_distance": {
+        "base": 5.732237180503205,
+        "left": 10.310718423374738,
+        "right": 10.885263392923662
+      },
+      "metric_sha256": "80034919e6fc41722d84c7c67c63a64bea24a7effff7737bc37ee6beb0a7125c"
+    }
+  ],
+  "summary": {
+    "episodes": 14,
+    "single_unchanged_navigation_episodes": 13,
+    "planner_calls": 564,
+    "reused_plans": 0,
+    "applied_controls": 71422,
+    "navigation_controls": 68478,
+    "all_planner_previous_outcomes_unknown": true
+  },
+  "actual_feedback": [
+    {
+      "task": "composting_waste",
+      "instance": 301,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 42
+      },
+      "max_same_intent_controls": 5376,
+      "max_same_intent_refreshes": 41,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "composting_waste",
+      "instance": 302,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 42
+      },
+      "max_same_intent_controls": 5376,
+      "max_same_intent_refreshes": 41,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "composting_waste",
+      "instance": 303,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 42
+      },
+      "max_same_intent_controls": 5376,
+      "max_same_intent_refreshes": 41,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "composting_waste",
+      "instance": 304,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 42
+      },
+      "max_same_intent_controls": 5376,
+      "max_same_intent_refreshes": 41,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance": 309,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 18,
+        "FAILED": 1,
+        "SUCCEEDED": 17
+      },
+      "max_same_intent_controls": 2560,
+      "max_same_intent_refreshes": 19,
+      "non_unknown_feedback_rows": [
+        {
+          "step": 1408,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "FAILED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9173508158913221,
+                "estimated_outcome": "FAILED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 128,
+            "same_intent_planner_refreshes": 0,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 1792,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9802404151225852,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 512,
+            "same_intent_planner_refreshes": 3,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 1920,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9763261387965105,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 640,
+            "same_intent_planner_refreshes": 4,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 2048,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9836662450755311,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 768,
+            "same_intent_planner_refreshes": 5,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 2176,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9808150059655929,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 896,
+            "same_intent_planner_refreshes": 6,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 2304,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9737354487576788,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 1024,
+            "same_intent_planner_refreshes": 7,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 2432,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9321013146521335,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 1152,
+            "same_intent_planner_refreshes": 8,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 2560,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.971176107776383,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 1280,
+            "same_intent_planner_refreshes": 9,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 2688,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9742206723786647,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 1408,
+            "same_intent_planner_refreshes": 10,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 2816,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9747769387870514,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 1536,
+            "same_intent_planner_refreshes": 11,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 2944,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9685163508611766,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 1664,
+            "same_intent_planner_refreshes": 12,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 3072,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9305286205251053,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 1792,
+            "same_intent_planner_refreshes": 13,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 3200,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9733456839682457,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 1920,
+            "same_intent_planner_refreshes": 14,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 3328,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9378879790927843,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 2048,
+            "same_intent_planner_refreshes": 15,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 3456,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9848254387391058,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 2176,
+            "same_intent_planner_refreshes": 16,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 3584,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9852526002186198,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 2304,
+            "same_intent_planner_refreshes": 17,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 3712,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9788549216688022,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 2432,
+            "same_intent_planner_refreshes": 18,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "floors",
+              "target": "scrub_brush",
+              "target_part": "",
+              "unbound_relation": "",
+              "verb": "GRASP"
+            }
+          ]
+        },
+        {
+          "step": 3840,
+          "previous_known": "UNKNOWN",
+          "feedback": {
+            "attempt_count_scope": "last_64_distinct_intents_this_episode",
+            "attempt_index": 1,
+            "estimated_bundle_outcome": "SUCCEEDED",
+            "estimated_member_outcomes": [
+              {
+                "confidence": 0.9686207178393653,
+                "estimated_outcome": "SUCCEEDED",
+                "member": 0
+              }
+            ],
+            "same_intent_controls": 2560,
+            "same_intent_planner_refreshes": 19,
+            "schema": "causal_execution_feedback_v1",
+            "source": "observable_counter_and_learned_observer",
+            "stalled_is_not_failed": true
+          },
+          "next_goal": [
+            {
+              "arm": "UNSPECIFIED",
+              "destination": "",
+              "source": "",
+              "target": "",
+              "target_part": "",
+              "unbound_relation": "{\"entities\":[\"scrub_brush\"],\"spatial_relations\":[]}",
+              "verb": "HANDOVER"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance": 310,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 36
+      },
+      "max_same_intent_controls": 4608,
+      "max_same_intent_refreshes": 35,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance": 301,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 40
+      },
+      "max_same_intent_controls": 5120,
+      "max_same_intent_refreshes": 39,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance": 302,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 40
+      },
+      "max_same_intent_controls": 5120,
+      "max_same_intent_refreshes": 39,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance": 303,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 40
+      },
+      "max_same_intent_controls": 5120,
+      "max_same_intent_refreshes": 39,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance": 304,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 40
+      },
+      "max_same_intent_controls": 5120,
+      "max_same_intent_refreshes": 39,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance": 309,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 47
+      },
+      "max_same_intent_controls": 6016,
+      "max_same_intent_refreshes": 46,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance": 310,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 47
+      },
+      "max_same_intent_controls": 6016,
+      "max_same_intent_refreshes": 46,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "installing_a_modem",
+      "instance": 309,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 28
+      },
+      "max_same_intent_controls": 3584,
+      "max_same_intent_refreshes": 27,
+      "non_unknown_feedback_rows": []
+    },
+    {
+      "task": "installing_a_modem",
+      "instance": 310,
+      "actual_estimated_feedback_counts": {
+        "NONE_INITIAL": 1,
+        "UNKNOWN": 28
+      },
+      "max_same_intent_controls": 3584,
+      "max_same_intent_refreshes": 27,
+      "non_unknown_feedback_rows": []
+    }
+  ],
+  "interpretation_notes": [
+    "planner event previous_outcome and causal known_previous_outcome remain UNKNOWN by the planner-only nonphysical contract. These are NOT the feedback availability measure.",
+    "Actual learned estimates enter the separate causal_input.execution_feedback estimated_bundle_outcome. For scrub309 these include one FAILED and 17 SUCCEEDED planner calls.",
+    "At controls1792..3712 the 16 successive high planner calls contain estimated SUCCEEDED yet still issue GRASP; at3840 the next SUCCEEDED input accompanies HANDOVER. This is observed association, not a causal feedback ablation or physical grasp proof.",
+    "Current calibrated observer scope is GRASP only. Other verbs are intentionally UNKNOWN rather than claimed calibrated failures/successes.",
+    "Repeated intent is not itself proof the high-level decision is wrong: low navigation may not have reached the target. In the sampled compost301 frames no target arrival was visually established.",
+    "These publicly evaluated trajectories remain development diagnostics, never training admission. No model/threshold/action/physics/timeout change or new rollout was performed."
+  ],
+  "manual_visual_review": {
+    "reviewer": "Codex root",
+    "review_mode": "Manual inspection of decoded original video contact sheets, not automated labels and not full-video physical adjudication",
+    "reviewed_at_cst": "2026-10-13 18:42",
+    "local_dir": "/home/wsy/behavior/artifacts/final-eval-20261012/continuation-v1/intent-inspection.yCSMuZ",
+    "frames_zero_based": [
+      {
+        "task": "composting_waste",
+        "instance": 301,
+        "video_sha256": "790868dba9575998615f17aa33100ff4b694671aef14d2c6eace37dc398c2039",
+        "frames": [
+          0,
+          1024,
+          2048,
+          3072,
+          4096,
+          5400
+        ],
+        "contact_sheet": "composting_waste_301_0-contact.png",
+        "contact_sheet_sha256": "13e0f78c2c4b54416a2739c375e855c1a47755023788786f45b34dd0b09e6769",
+        "observation": "Room-facing camera orientation/position changes substantially; wrists remain predominantly occluded by robot body; arrival/contact with the trash can is not visible in these samples. Repeated NAVIGATE alone cannot identify high-vs-low fault."
+      },
+      {
+        "task": "scrubbing_bathroom_floor",
+        "instance": 309,
+        "video_sha256": "5fdbb8be55fb5210151c5599c2ccdc67444fbed7a8f55658b32e3ce043549066",
+        "frames": [
+          0,
+          1200,
+          1408,
+          3008,
+          3904,
+          4608
+        ],
+        "contact_sheet": "scrubbing_bathroom_floor_309_0-contact.png",
+        "contact_sheet_sha256": "9053615dfde9375774511d35bbcdc1327cf25eb0d9d5fd3bd3b8d5f8f02ed72a",
+        "observation": "Robot approaches red scrub brush; later samples show brush beside right gripper and off the floor, then handover-positioned hands. Neither sustained physical grasp nor successful handover/cleaning is certified by this contact sheet."
+      },
+      {
+        "task": "scrubbing_bathroom_floor",
+        "instance": 309,
+        "frames": [
+          1407,
+          1791,
+          2303,
+          2815,
+          3327,
+          3711
+        ],
+        "corresponding_preplan_control_steps": [
+          1408,
+          1792,
+          2304,
+          2816,
+          3328,
+          3712
+        ],
+        "contact_sheet": "scrubbing309-preplan-grasp-contact.png",
+        "contact_sheet_sha256": "aed99853200d26aafb5dae61b8c6e60cb4db6f9444df33b1a2d49622df2fbafb",
+        "observation": "At1407 brush remains near floor; at1791 and subsequent sampled frames brush is visibly beside the right gripper and appears raised. This supports local manipulation but is not privileged held-object ground truth. Frames are k-1 because the official video is written after each physical step."
+      }
+    ],
+    "all_task_successes": false
+  }
+}
