@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 20:46 CST / Codex SUBMISSION-FULL-EVAL：** 新resume_v4 GPU0已出现真实推理trace，场景票8释放/10准入，MEM与冠军后继原PID实活；152完整/12旧异常未变。等待期间只读补核上一轮新增玫瑰309/310的整份11.27MB原trace（SHA042c77ec…73b2），两回合13,598实际控制/850 ACK、108计划、原JSON/MP4哈希与6,799帧各自一致，记忆/slot/高低层意图/observer时钟均通过。至此既有152完整累计796,630控制/49,856 ACK逐事件核过，不推断任务成功或高层语义正确；摘要`docs/infra/results/2026-10-13-memlite-stopped-continuation-new2-audit.json`。首次诊断脚本错读不存在的identity.rollout已报错退出，按原完整episode ID核对后通过，无原件修改/新回合。
+
 - **2026-10-13 20:41 CST / Codex SUBMISSION-FULL-EVAL（冠军后继已登记）：** 858885e0经Git包`eaaf48a8…fc4e7`部署独立RTX `code/champion-fifo-eval-20261013-v1`，目标69回归通过，`inspect`实读原9f source/HERE/REPO、manifest19b056a7、原dispatcher SHA74f3a33d…46bf均正确，0新GPU/0回合/无actor或物理变化。新tmux`champion-final100-after-resume-v4`、PID3603438真实waiting，队列`champion_final100_20261013_v2/queue-resume-v4`绑定MEM ec02111c及旧队列终态SHAadc0dfbc…b30a，启用FIFO、复用已完成2/4门，phases仍空/冠军公共0。MEM3599503继续，全部八模型ready、初始票0–7已释放，首两场景8/9准入、余6公平等候；当前152完整/12旧异常，未称全量完成。下一持续只读监控首实际控制及异常，交付暂缓、不新训练。
 
 - **2026-10-13 20:40 CST / Codex SUBMISSION-FULL-EVAL：** 根补冠军独立FIFO入口`champion_fifo_eval.py`与后继队列显式`--fifo-champion`，仅替换原9f调度器的准入依赖和worker派发入口；原HERE/REPO、worker函数、模型/模拟器命令和2/4预检不改。69本地回归通过（含真实六进程两槽测试及错误actor路径拒绝）；目标冻结部署/实际只读绑定检查和新队列启动仍待，不能称冠军已排上。MEM原3599503及八worker实活，GPU6已按票2完成加载，初始票0–5已释放、6/7准入，后来的场景票8起等待，152完整/12旧异常无新完整。fetch确认远端同691/origin-main33677，当前是自己未提交的续接修改，未在dirty工作树pull；旧现场和交付暂停不变。

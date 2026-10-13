@@ -1,0 +1,73 @@
+{
+  "schema": "memlite_stopped_continuation_new2_causal_audit_v1",
+  "status": "complete_causal_trace_audit",
+  "observed_at": "2026-10-13T12:45:47.053738+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v3",
+  "seal": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v3-diagnosed-stop-v1.json",
+    "sha256": "98278cca0abef0df4ec9620a97973d3b1e5211dd373c5c0c94d38db6698979bc"
+  },
+  "auditor_source_commit": "691d2e43abcc42538a0ddf83d2f208da55b59dcb",
+  "auditor_file_sha256": "bfefcf1adb071a61556280fbcc4554370e431fc1606251b07e87b262c7672eb8",
+  "trace": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v3/workers/gpu_1/model-000/events.jsonl",
+    "sha256": "042c77ec5d28e48d9f62ec2253135a48f7b468be03bb6a7a4c4d1a2b13ac73b2",
+    "bytes": 11271829
+  },
+  "filtering": "entire original sealed trace; no event/episode filtering",
+  "episodes": 2,
+  "applied_controls": 13598,
+  "events": {
+    "begin": 2,
+    "plan": 108,
+    "observer": 958,
+    "action": 850,
+    "ack": 850,
+    "close": 2
+  },
+  "models": {
+    "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+    "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "cases": [
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v3-make_rose_centerpieces-309-r0",
+      "controls": 6799,
+      "metrics_sha256": "867db0f9c3d271a1890b317f2105b23947ac621f928dfd2f6df8c9be22ef69ab",
+      "video_sha256": "d7a0111783a945b494bcf5ac4caa426b2c1c324f2e8bedcd0683a458daf1ca4f",
+      "video_probe": {"width": 672, "height": 448, "r_frame_rate": "30/1", "nb_frames": "6799"}
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v3-make_rose_centerpieces-310-r0",
+      "controls": 6799,
+      "metrics_sha256": "a3f4f67901a2a13c8f6aad0ef8f1210d9046e9b9b2797991b1148f457ffd9754",
+      "video_sha256": "29634cf301bba11abc6733bdb361ad92c577d2ab1669d1d51ed15337dc064b2e",
+      "video_probe": {"width": 672, "height": 448, "r_frame_rate": "30/1", "nb_frames": "6799"}
+    }
+  ],
+  "case_paths": "Original metrics/video paths are individually recorded in the SHA-bound seal; neither file was modified.",
+  "checks": [
+    "fresh empty per-episode memory",
+    "full identity and fixed slot on every event",
+    "high-to-low exact current intent",
+    "observer attempt and applied clock",
+    "unique tokens and exact raw23 physical ACK digest",
+    "final partial chunk acknowledged",
+    "closed episode IDs and exact control totals agree with both original metrics and original video frame counts",
+    "original full trace, metric and video SHA256 agree with stopped-run seal"
+  ],
+  "original_outputs_unmodified": true,
+  "optimizer_updates": 0,
+  "proves_full_task_success": false
+}
