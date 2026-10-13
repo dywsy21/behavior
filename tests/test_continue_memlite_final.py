@@ -296,3 +296,13 @@ def test_never_admitted_exception_requires_no_model_no_attempt_and_exact_gate(tm
     else:row['model_path']='/maybe-loaded'
     path.write_text(json.dumps(row))
     with pytest.raises(ValueError):m.freeze_continuation(prior,seal)
+
+
+def test_ready_unused_model_may_have_no_lazy_trace_but_started_one_may_not(tmp_path,monkeypatch):
+    prior,seal=stopped_continuation(tmp_path,monkeypatch,never_loaded=True)
+    (prior/'workers/gpu_0/model-000/events.jsonl').unlink()
+    result=m.freeze_continuation(prior,seal)
+    assert result['models_without_inference_events'][0]['gpu']==0
+    assert result['models_without_inference_events'][0]['trace_created'] is False
+    path=prior/'workers/gpu_0/model-000/status.json';row=m.read(path);row['requests']=1;path.write_text(json.dumps(row))
+    with pytest.raises(ValueError):m.freeze_continuation(prior,tmp_path/'rejected-seal.json')

@@ -294,7 +294,7 @@ def freeze_continuation(prior, output):
     records, errors = list(sealed['records']), list(sealed['execution_errors'])
     for row in records:
         check_binding(row['metrics']); check_binding(row['video'])
-    workers, parts, never_loaded = {}, {}, []
+    workers, parts, never_loaded, unused_models = {}, {}, [], []
     for group in m['groups']:
         gpu = group['gpu']; path = prior / 'workers' / f'gpu_{gpu}'
         worker = read(path / 'status.json'); workers[gpu] = worker
@@ -333,7 +333,18 @@ def freeze_continuation(prior, output):
                     or model_state.get('manifest_sha256') != m['pack_manifest_sha256']
                     or model_state.get('source_commit') != m['runtime_commit']):
                 raise ValueError('Actual model generation differs from the frozen registration')
-            evidence.extend(binding(model_path / name) for name in ('weights-final.json', 'status.json', 'events.jsonl'))
+            evidence.extend(binding(model_path / name) for name in ('weights-final.json', 'status.json'))
+            events = model_path / 'events.jsonl'
+            if events.exists():
+                evidence.append(binding(events))
+            elif (model_state.get('requests') in (None, 0)
+                    and not any(list((prior / 'parts' / p['id'] / 'attempts').glob('*.json')) for p in group['parts'])):
+                # Ready model, but its scene never reached the first attempt;
+                # the event writer is lazy. Do not create an artificial trace.
+                unused_models.append(dict(gpu=gpu, model=str(model_path), status=binding(model_path / 'status.json'),
+                    requests=0, public_attempts_started=0, trace_created=False))
+            else:
+                raise ValueError('Model with possible inference is missing its original trace')
         evidence.append(binding(path / 'status.json'))
         for part in group['parts']:
             if part['id'] in parts:
@@ -418,6 +429,7 @@ def freeze_continuation(prior, output):
         administrative_interruptions=interrupted, unstarted=len(expected) - len(known), evidence=evidence,
         original_outputs_unmodified=True, all_eight_models_unchanged=not never_loaded,
         all_loaded_models_unchanged=True, model_workers_started=8-len(never_loaded), never_admitted_workers=never_loaded,
+        models_without_inference_events=unused_models,
         policy=sealed['policy'])
     remaining_parts(original, result)  # also refuses to silently regroup partial physical batches
     atomic_json(output, result)
