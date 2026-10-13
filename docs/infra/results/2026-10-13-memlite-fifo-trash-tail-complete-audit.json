@@ -1,0 +1,151 @@
+{
+  "schema": "memlite_isolated_worker_full_tail_audit_v1",
+  "observed_at": "2026-10-13T14:19:34.202277+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/manifest.json",
+    "sha256": "ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5"
+  },
+  "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/model-001/events.jsonl",
+  "audited_prefix_bytes": 26114776,
+  "audited_prefix_sha256": "5ced6d60293b77bda07a11f6b2f3bad9cffb161baace6403494e699759ef476e",
+  "captured_file_bytes": 26114776,
+  "continuous_prefix_no_event_filter": true,
+  "prefix_identical_on_second_read": true,
+  "result": {
+    "status": "complete_causal_trace_audit",
+    "episodes": 4,
+    "events": {
+      "begin": 4,
+      "plan": 248,
+      "observer": 2224,
+      "action": 1976,
+      "ack": 1976,
+      "close": 4
+    },
+    "applied_controls": 31608,
+    "models": {
+      "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+      "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+      "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+      "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+      "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+      "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+      "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+    },
+    "tasks": [
+      "picking up trash"
+    ],
+    "checks": [
+      "fresh empty per-episode memory",
+      "full identity and fixed slot on every event",
+      "high-to-low exact current intent",
+      "observer attempt and applied clock",
+      "unique tokens and exact raw23 physical ACK digest",
+      "final partial chunk acknowledged"
+    ],
+    "proves_full_task_success": false
+  },
+  "cases": [
+    {
+      "task": "picking_up_trash",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 7902,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0-unstarted-i4/json/picking_up_trash_305_0.json",
+        "sha256": "a8a5041123d7fdb01deabb02d5ea7b037c99fea44bb457c62fe735cf0912c532"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0-unstarted-i4/videos/picking_up_trash_305_0.mp4",
+        "sha256": "0444105835072a1bd9c1e9e6d4b78d02f108b85b14d1cbc4a5c99b9bcbfa3302"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7902"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "picking_up_trash",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 7902,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0-unstarted-i4/json/picking_up_trash_306_0.json",
+        "sha256": "9661533930dcf4c51fff92e001e74d912a18d660241fc28ecf7c31bcbe058ae7"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0-unstarted-i4/videos/picking_up_trash_306_0.mp4",
+        "sha256": "01e6472f164d499d824667219bda0f99939922c8a29f0bf80883202d7e5e2103"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7902"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "picking_up_trash",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 7902,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0-unstarted-i4/json/picking_up_trash_307_0.json",
+        "sha256": "1ab6e313d324a1dedbfa351708cb350121e59633cc912291297d6523692d42a9"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0-unstarted-i4/videos/picking_up_trash_307_0.mp4",
+        "sha256": "5f8c139f14b90d37c0e44ef196ee82009af1e265166f8ed6bc7ed9fe21b9e4c7"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7902"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "picking_up_trash",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 7902,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0-unstarted-i4/json/picking_up_trash_308_0.json",
+        "sha256": "614c32c0416dbb9aafd4d3a3c29ace03d17d1a907afb39b2f81b72eaf112ccf9"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0-unstarted-i4/videos/picking_up_trash_308_0.mp4",
+        "sha256": "5700518c7666f03417d0dae7ac0ce3b9e8076c0d04c61bfae6430e82a87b8f6a"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7902"
+      },
+      "q_score": 0,
+      "success": false
+    }
+  ],
+  "next_worker_part": "picking_up_trash-n2-i8",
+  "next_sim_pid": 3638992,
+  "failed301_304_absent": true,
+  "complete_current_model_seal": false,
+  "active_suffix_not_in_scope": true,
+  "summary": {
+    "completed": 196,
+    "execution_errors": 20,
+    "unaccounted": 784,
+    "completed_only_q": 0.0008503401360544217,
+    "completed_only_sr": 0
+  }
+}
