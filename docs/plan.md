@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 15:24 CST / Codex SUBMISSION-FULL-EVAL：** MEM八worker原run运行/无失败，加载并发按原2限制，不热改；冠军约11GB/12.65GB收片继续。新增明确依赖队列`queue_champion_after_memlite.py`：只在同注册MEM1000完整完成＋GPU实空后，依次执行原冠军final的TRAIN2、TRAIN4、公共1000；失败即停留证，不重试、不抢卡、不选择公共成绩。队列/trace/冠军前门17回归过，尚未部署/排队（待完整EMA资产注册），不将计划等同已开始冠军评测。
+
 - **2026-10-13 15:17 CST / Codex SUBMISSION-FULL-EVAL：** 新51c11d32源2/4完整实际TRAIN验收均过：各8回合/2056原物理ACK，所有高低层/observer/head前后不变；batch2 215.386s/9.5456控制/s，batch4 167.846s/12.2493控制/s（吞吐+28.3%，不含场景加载）。两份完整trace根独立重算均通过，model-only pack不变，GPU全部已释放、磁盘4.7T可用。按既定速度门选择每卡4环境；15:17提交8卡正式1000公共评测tmux `memlite-final100-v2`、run `runs/memlite_final100_20261013_v2`，当前开始加载/未有公共完成数，不提前报Q/SR。冠军final46段仍传输，后续独立全量不混入本run。
 
 - **2026-10-13 15:13 CST / Codex SUBMISSION-FULL-EVAL：** 根对原v1实测8回合完整事件追加独立只读审计：每次空记忆、固定slot/任务/实例/权重身份，24高层规划与136低层块的意图/observer代次、136 ACK逐条重算原raw23 digest、2056实际步及末块1步全部一致，无所查跨episode/任务串线；trace0e11c8f4…e462d，本地`preflight-batch2-v1/trace-audit.json`，非成功率证据。新v2 radio同1028控制，batch4 101.71s、batch2 129.95s（此组约1.278倍）；keyboard仍在跑，最终批量未选。冠军46段约4.8GB已收、未全齐；目标原官方network显式指定后6协议测试全过，补齐先前缺路径跳过项。
