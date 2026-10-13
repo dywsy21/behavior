@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 16:08 CST / Codex SUBMISSION-FULL-EVAL：** portal-only打包器f0181558已push，经Git包c44618c3…91b6f67验签独立部署RTX `code/final-portal-20261013-v1`；本地41回归/目标41回归均过，真实进行中的MEM run也按预期拒绝打包且0产物创建，不称已收齐1000。原MEM/冠军/依赖队列三冻源Git仍干净且commit不变，原PID均在；最新34/1000、completed-only Q0/SR0（非全量成绩），8worker无错误。接下来保持当前评测/后继队列，终态用独立工具收portal草稿；单24GB/50端口模型交付、外部视频链接与团队声明仍待，未对外上传。
+
 - **2026-10-13 16:05 CST / Codex SUBMISSION-FULL-EVAL：** 首16公开回合追加闭合episode逐事件审计：63,388实际控制/3,968 ACK逐条重算，高低层当前意图、空初始memory、固定身份与observer代次一致；原轨迹前缀SHA/长度及边界写入`2026-10-13-memlite-first16-public-audit.json`，不覆盖活跃回合/不称策略有效。新增独立`package_final_public_eval.py`和12项反例/双模型合成打包测试，与trace/冠军回归共25项真过；前两次未配置本地测试导入而0项执行，随后显式纯CPU测试入口已修正。真实1000打包仍待评测完成，原两冻结运行源未动；下一冻结部署独立打包器，继续监控，不上传或改原件。
 
 - **2026-10-13 15:55 CST / Codex SUBMISSION-FULL-EVAL：** 原MEM正式run已真实完成16/1000（radio8、keyboard4、hanging_pictures4），16原官方JSON与已提交attempt的实际步数逐条相等，16原MP4均672×448/30fps且帧数等于实际控制；此批Q均0、SR0/16，不推广为1000全量结论、不换权重或重跑挑优。8worker均正常评估，supervisor3488161与冠军等待队列3495978实活，未重启。官网提交/公告10月13日复核：仍需原件、24GB Docker或50端口模型交付；现内部复现ZIP含元数据JSON，下一补独立portal-only打包器（不热改活跃源/不对外提交）。本轮初次pull TLS失败保留记录，随后HTTP/1.1 pull成功Already up to date。

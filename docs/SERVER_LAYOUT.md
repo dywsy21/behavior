@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 16:08 CST：独立portal草稿工具，不修改评测现场
+
+- RTX `/run/ti/rl_memlite_stage1_20261006/code/final-portal-20261013-v1` 固定f0181558163abf4f6a2abeda9768777939b783d0；入口`scripts/eval/package_final_public_eval.py`。Git包在`runs/final_portal_preparation_20261013/source.bundle`，SHA c44618c32f2f6d04f536550a9b270e2cbd705da6a01f7e3b9ee24cad691b6f67，本地副本`artifacts/final-eval-20261012/portal-tool-v1/source.bundle`。
+- 只在原run完整1000且封存包/物理回执/全部原件SHA一致后生成新的portal目录；现无真实portal ZIP，未完run拒绝测试未创建`memlite-draft-not-created`。不能把合成1000测试目录当官方结果。
+- 原MEM `memlite_final100_20261013_v2` 现34/1000进行中，原冠军等待队列实活；两评测源51c11d32/852361a8及队列fe2432cd均未改动。
+
 ## 2026-10-13 15:31 CST：冠军模型已齐与真实后续队列
 
 - RTX最终完整EMA：`/run/ti/rl_memlite_stage1_20261006/runs/champion_final_preparation_20261013/ema8000-v1`，原export9608b3ef…744cd；26文件＋manifest均完整SHA通过，`assembly-v1.json`为原重组回执，不再是仅manifest占位。
