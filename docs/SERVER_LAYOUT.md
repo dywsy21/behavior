@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 19:38 CST：第二次封存后的实际续评
+
+- RTX根仍`/run/ti/rl_memlite_stage1_20261006`。**当前MEM** `runs/memlite_final100_20261013_resume_v3`，manifest `e2152ded02b0844caf57bdafa13fa73b9c9295c7c3d5b9e6f349faef9f29ac10`；实际actor仍原51c `code/memlite-final-eval-20261013-v4`，新编排为不同目录 `code/final-eval-continuation-20261013-v4` = `6125b615ab39ac2b616c97ca13e8b6cfd00d8c9e`。不要混淆两个v4目录。
+- tmux `memlite-final100-resume-v3` / supervisor3582917 / 八worker3582932–39；总log `supervisor.log`，`status.json`/`summary.json`与每卡`workers/gpu_i/model-NNN/events.jsonl`。登记838剩余，150完整与12异常不重跑，18行政中断明确续跑。
+- 新父seal `runs/memlite_final100_20261013_resume_v2-diagnosed-stop-v1.json` SHA `a5ae63459cd62ac659e49f48675eb99908eca4dde3872768cae708604d5588a4`；150原JSON/MP4依旧指向最初run及resume_v2，旧run/status/STOP保留不动。封存/新manifest本地副本`artifacts/final-eval-20261012/continuation-v3`同SHA。
+- 冠军仍`runs/champion_final100_20261013_v2` + 原9f runtime/已验2/4预检，不新注册模型；新等待目录`queue-resume-v3`，外层log `queue-resume-v3.log`，tmux `champion-final100-after-resume-v3` / PID3583122，队列源码同612。旧`queue`为已停证据，不覆盖/删除；新队列绑定它的status SHA `b1c102fcdf2c4a4f13f42c83adaeab4def6c3fbe80ef0bc68e187bf5068003c1`。
+- 原resume_v2及17:22后继已于19:10退出；代码`final-eval-continuation-20261013-v3`=eb5仅用于一次被安全门拒绝的CPU封存，没启动新的公共回合。准确原因/分类见`docs/infra/FINAL_EVAL_CONTINUATION.md`，不能将旧summary的running当成在运行。
+
 ## 2026-10-13 17:22 CST：实际运行的MEM续评与冠军后继
 
 - **当前MEM**：RTX `runs/memlite_final100_20261013_resume_v2`，manifest82bc1ee3d2cc704f00ae6d2a153a12ad9ca4c08609d2f5b0ec818a5b687cf79f；编排`code/final-eval-continuation-20261013-v2`=374cfa8f3189b9e646d9692028af5854fa1b4712，实际actor/物理仍`code/memlite-final-eval-20261013-v4`=51c11d32。tmux`memlite-final100-resume-v2`、supervisor3540742、日志`supervisor.log`、`status.json`/`summary.json`。每卡`workers/gpu_i/model-NNN`独立模型代次，实际动作trace在该目录`events.jsonl`，诊断异常`*-execution-errors.json`不冒充官方JSON。
