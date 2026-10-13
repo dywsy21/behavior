@@ -157,7 +157,192 @@
     "completed_only_q": 0.0008503401360544217,
     "completed_only_sr": 0
   },
-  "next_simulator_not_yet_verified": true,
+  "next_simulator_not_yet_verified_at_initial_diagnosis": true,
+  "later_continuation_and_error_group_check": {
+    "observed_at": "2026-10-13T14:35:25.857293+00:00",
+    "error_cases": 22,
+    "physical_error_batches": 6,
+    "error_groups": [
+      {
+        "task": "installing_a_fax_machine",
+        "instances": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "diagnosis": {
+          "kind": "simulator_nonfinite_robot_pose",
+          "scene_slot": 3,
+          "exception": "AssertionError: /World/scene_3/controllable__r1pro__robot_r1/base_link orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.",
+          "official_score_available": false,
+          "cause": "Undetermined: finite model actions do not prove stable physics or correct action semantics"
+        },
+        "attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/parts/installing_a_fax_machine-n4-i0/attempts/04.json",
+          "sha256": "b7af28a4061ec1975d56ec6b4dc93772626b0d7990bf0be7f779b29e602dea09"
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/workers/gpu_6/installing_a_fax_machine-n4-i0.log",
+          "sha256": "4dee66f32c7404d96c02baa50228295f385fd4a74224243c23717e1b1408b698"
+        }
+      },
+      {
+        "task": "make_rose_centerpieces",
+        "instances": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "diagnosis": {
+          "kind": "simulator_nonfinite_robot_pose",
+          "scene_slot": 3,
+          "robot_link": "base_link",
+          "exception": "AssertionError: /World/scene_3/controllable__r1pro__robot_r1/base_link orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.",
+          "traceback_copies": 1,
+          "official_score_available": false,
+          "cause": "Undetermined: finite model actions do not prove stable physics or correct action semantics"
+        },
+        "attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/make_rose_centerpieces-n4-i0/attempts/04.json",
+          "sha256": "82923b2cf27b6e599bc42f8fab143f452a3a61b5903b94ddedb13fe341e0cac7"
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_1/make_rose_centerpieces-n4-i0.log",
+          "sha256": "fd1961c00de01e5c1374692ad0cc373c2f8a3e34f08ac522ee1ea8109fd5a427"
+        }
+      },
+      {
+        "task": "set_up_a_coffee_station_in_your_kitchen",
+        "instances": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "diagnosis": {
+          "kind": "simulator_nonfinite_robot_pose",
+          "scene_slot": 1,
+          "robot_link": "left_gripper_finger_link1",
+          "exception": "AssertionError: /World/scene_1/controllable__r1pro__robot_r1/left_gripper_finger_link1 orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.",
+          "traceback_copies": 3,
+          "official_score_available": false,
+          "cause": "Undetermined: finite model actions do not prove stable physics or correct action semantics"
+        },
+        "attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/set_up_a_coffee_station_in_your_kitchen-n4-i0/attempts/00.json",
+          "sha256": "b5743fc989b5af1b2cdb6bb3631aa76392b77a89c48440007cf8a9f2fc6c7419"
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_5/set_up_a_coffee_station_in_your_kitchen-n4-i0.log",
+          "sha256": "fc07390db5f1db1dd2dd81aa70dabbc32d4b0aa2fcdfe38f4039be06e00afad5"
+        }
+      },
+      {
+        "task": "cook_a_brisket",
+        "instances": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "diagnosis": {
+          "kind": "simulator_nonfinite_robot_pose",
+          "scene_slot": 0,
+          "robot_link": "left_gripper_finger_link1",
+          "exception": "AssertionError: /World/scene_0/controllable__r1pro__robot_r1/left_gripper_finger_link1 orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.",
+          "traceback_copies": 4,
+          "official_score_available": false,
+          "cause": "Undetermined: finite model actions do not prove stable physics or correct action semantics"
+        },
+        "attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/attempts/04.json",
+          "sha256": "3519aaea523b1f237948b3e8ef5247e89d7f03634df0dbb526b29bec80e25646"
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/cook_a_brisket-n4-i0.log",
+          "sha256": "18d94d1e9293733c1ba1ac248cff0bd6ee8bdcaac062c058c9125c0b1d7112b2"
+        }
+      },
+      {
+        "task": "set_up_a_coffee_station_in_your_kitchen",
+        "instances": [
+          309,
+          310
+        ],
+        "diagnosis": {
+          "kind": "simulator_nonfinite_robot_pose",
+          "scene_slot": 0,
+          "robot_link": "right_gripper_finger_link1",
+          "exception": "AssertionError: /World/scene_0/controllable__r1pro__robot_r1/right_gripper_finger_link1 orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.",
+          "traceback_copies": 3,
+          "official_score_available": false,
+          "cause": "Undetermined: finite model actions do not prove stable physics or correct action semantics"
+        },
+        "attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n2-i8/attempts/08.json",
+          "sha256": "688c8be195d7f1e3c7d5feb889ff29fedf8ad2e0c5a542a17d0fcaefb2fd8620"
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_5/set_up_a_coffee_station_in_your_kitchen-n2-i8.log",
+          "sha256": "dc953ebd9b5f6679876cd282b493613a5b9088d202ef66cdce15761843d22382"
+        }
+      },
+      {
+        "task": "picking_up_trash",
+        "instances": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "diagnosis": {
+          "kind": "simulator_nonfinite_robot_pose",
+          "scene_slot": 0,
+          "robot_link": "left_gripper_finger_link1",
+          "exception": "AssertionError: /World/scene_0/controllable__r1pro__robot_r1/left_gripper_finger_link1 orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.",
+          "traceback_copies": 3,
+          "official_score_available": false,
+          "cause": "Undetermined: finite model actions do not prove stable physics or correct action semantics"
+        },
+        "attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/picking_up_trash-n4-i0/attempts/00.json",
+          "sha256": "eaadf04a579520b716e2d856b197833fe44fabcef906529a748a66ed1f9eec22"
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/picking_up_trash-n4-i0.log",
+          "sha256": "b533fb6a4c9bf74baad9af460409c5cd44646aa8d3e085439d442cf1201aa7cf"
+        }
+      }
+    ],
+    "next_worker_gpu": 5,
+    "next_registered_part": {
+      "task": "chop_an_onion",
+      "task_id": 42,
+      "num_envs": 4,
+      "indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "id": "chop_an_onion-n4-i0"
+    },
+    "next_sim_pid": 3643370,
+    "next_sim_command": "/run/ti/behavior_stage3_20260930/envs/sim/bin/python /run/ti/rl_memlite_stage1_20261006/code/memlite-final-eval-20261013-v4/scripts/eval/memlite_final/run_task.py --task chop_an_onion --task-id 42 --output /run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/chop_an_onion-n4-i0 --port 19905 --config-sha256 98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc --run-id memlite_final100_20261013_resume_v4 --num-envs 4 --indices 0 1 2 3 4 5 6 7 ",
+    "next_part_status": "loading",
+    "next_part_control_steps": null,
+    "next_attempts": [],
+    "next_model_pid": 3640605,
+    "next_model_status": "ready",
+    "new_task_absent_from_inherited_records_and_errors": true,
+    "global_stop": false
+  },
   "failed_instances_rerun": false,
   "cause_not_proven": true
 }
