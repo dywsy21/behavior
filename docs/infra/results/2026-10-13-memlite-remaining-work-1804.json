@@ -1,0 +1,372 @@
+{
+  "observed_epoch": 1791885842.4655943,
+  "snapshot_completed": 78,
+  "snapshot_errors": 4,
+  "official_total_caps": 15819280,
+  "remaining_caps": 15446250,
+  "rates_by_batch": {
+    "2": {
+      "n": 7,
+      "minimum": 10.030155946678143,
+      "median": 12.444228357734355,
+      "maximum": 12.911129909008327
+    },
+    "4": {
+      "n": 16,
+      "minimum": 12.561752955024447,
+      "median": 16.297766751586586,
+      "maximum": 17.925090154342815
+    }
+  },
+  "initial_scene_load_seconds": {
+    "n": 25,
+    "median": 212.84342074394226,
+    "maximum": 467.1200044155121
+  },
+  "gpus": [
+    {
+      "gpu": 0,
+      "remaining_caps_by_batch": {
+        "2": 380792,
+        "4": 1523168
+      },
+      "remaining_part_count": 22,
+      "active_applied_steps_not_subtracted": 14336,
+      "execution_hours_if_future_matches_stratified_sample": {
+        "fast_sample": 32.90182278254462,
+        "median_sample": 34.46071742925683,
+        "slow_sample": 36.95297975590348
+      }
+    },
+    {
+      "gpu": 1,
+      "remaining_caps_by_batch": {
+        "2": 391842,
+        "4": 1545536
+      },
+      "remaining_part_count": 24,
+      "active_applied_steps_not_subtracted": 14848,
+      "execution_hours_if_future_matches_stratified_sample": {
+        "fast_sample": 33.5063124781614,
+        "median_sample": 35.08861182512596,
+        "slow_sample": 37.63438319600932
+      }
+    },
+    {
+      "gpu": 2,
+      "remaining_caps_by_batch": {
+        "2": 383640,
+        "4": 1534560
+      },
+      "remaining_part_count": 22,
+      "active_applied_steps_not_subtracted": 4096,
+      "execution_hours_if_future_matches_stratified_sample": {
+        "fast_sample": 33.14790040834739,
+        "median_sample": 34.718454259963686,
+        "slow_sample": 37.229356587204585
+      }
+    },
+    {
+      "gpu": 3,
+      "remaining_caps_by_batch": {
+        "2": 391438,
+        "4": 1545096
+      },
+      "remaining_part_count": 24,
+      "active_applied_steps_not_subtracted": 15872,
+      "execution_hours_if_future_matches_stratified_sample": {
+        "fast_sample": 33.49027304344016,
+        "median_sample": 35.072094488075884,
+        "slow_sample": 37.61623505823355
+      }
+    },
+    {
+      "gpu": 4,
+      "remaining_caps_by_batch": {
+        "2": 392112,
+        "4": 1544976
+      },
+      "remaining_part_count": 24,
+      "active_applied_steps_not_subtracted": 22016,
+      "execution_hours_if_future_matches_stratified_sample": {
+        "fast_sample": 33.5033294457118,
+        "median_sample": 35.085094122178745,
+        "slow_sample": 37.631219443489336
+      }
+    },
+    {
+      "gpu": 5,
+      "remaining_caps_by_batch": {
+        "2": 391470,
+        "4": 1565880
+      },
+      "remaining_part_count": 24,
+      "active_applied_steps_not_subtracted": 12800,
+      "execution_hours_if_future_matches_stratified_sample": {
+        "fast_sample": 33.82444107198351,
+        "median_sample": 35.427049549442145,
+        "slow_sample": 37.989198788429206
+      }
+    },
+    {
+      "gpu": 6,
+      "remaining_caps_by_batch": {
+        "2": 379796,
+        "4": 1519184
+      },
+      "remaining_part_count": 22,
+      "active_applied_steps_not_subtracted": 9216,
+      "execution_hours_if_future_matches_stratified_sample": {
+        "fast_sample": 32.81576473644225,
+        "median_sample": 34.37058193649559,
+        "slow_sample": 36.85632549888946
+      }
+    },
+    {
+      "gpu": 7,
+      "remaining_caps_by_batch": {
+        "2": 391352,
+        "4": 1565408
+      },
+      "remaining_part_count": 24,
+      "active_applied_steps_not_subtracted": 0,
+      "execution_hours_if_future_matches_stratified_sample": {
+        "fast_sample": 33.814245440015554,
+        "median_sample": 35.41637084648448,
+        "slow_sample": 37.977747782076136
+      }
+    }
+  ],
+  "samples": [
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "attach_a_camera_to_a_tripod-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 23472,
+      "seconds": 1385.7000123951584,
+      "controls_per_second": 16.938731175609256
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "clean_a_keyboard-n2-i8",
+      "attempt": "08.json",
+      "batch": 2,
+      "controls": 11630,
+      "seconds": 900.7732151998207,
+      "controls_per_second": 12.911129909008327
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "clean_a_keyboard-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 23260,
+      "seconds": 1351.9346093805507,
+      "controls_per_second": 17.204974144908984
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "clean_a_keyboard-n4-i0",
+      "attempt": "04.json",
+      "batch": 4,
+      "controls": 23260,
+      "seconds": 1331.2554650846869,
+      "controls_per_second": 17.47222874200207
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "hanging_pictures-n2-i8",
+      "attempt": "08.json",
+      "batch": 2,
+      "controls": 7164,
+      "seconds": 657.1918617254123,
+      "controls_per_second": 10.900926224483985
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "hanging_pictures-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 14328,
+      "seconds": 921.047153769061,
+      "controls_per_second": 15.556206803710003
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "hanging_pictures-n4-i0",
+      "attempt": "04.json",
+      "batch": 4,
+      "controls": 14328,
+      "seconds": 955.0976581173018,
+      "controls_per_second": 15.001607299763984
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "installing_a_fax_machine-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 24464,
+      "seconds": 1488.1072287959978,
+      "controls_per_second": 16.439675533189504
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "installing_a_modem-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 14480,
+      "seconds": 855.8113318011165,
+      "controls_per_second": 16.919617048685016
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "installing_a_modem-n4-i0",
+      "attempt": "04.json",
+      "batch": 4,
+      "controls": 14480,
+      "seconds": 836.3372090933844,
+      "controls_per_second": 17.313590550032767
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "scrubbing_bathroom_floor-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 18924,
+      "seconds": 1451.4922643583268,
+      "controls_per_second": 13.037616847628113
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "scrubbing_bathroom_floor-n4-i0",
+      "attempt": "04.json",
+      "batch": 4,
+      "controls": 18924,
+      "seconds": 1506.4776443028823,
+      "controls_per_second": 12.561752955024447
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "turning_on_radio-n2-i8",
+      "attempt": "08.json",
+      "batch": 2,
+      "controls": 6450,
+      "seconds": 584.5565464338288,
+      "controls_per_second": 11.034005246112034
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "turning_on_radio-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 12900,
+      "seconds": 822.3070285879076,
+      "controls_per_second": 15.687571127967008
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "turning_on_radio-n4-i0",
+      "attempt": "04.json",
+      "batch": 4,
+      "controls": 12900,
+      "seconds": 831.5367360953242,
+      "controls_per_second": 15.51344569642825
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "vacuuming_floors-n2-i8",
+      "attempt": "08.json",
+      "batch": 2,
+      "controls": 7236,
+      "seconds": 578.7016388243064,
+      "controls_per_second": 12.503852615141541
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "vacuuming_floors-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 14472,
+      "seconds": 895.7741536777467,
+      "controls_per_second": 16.15585796998367
+    },
+    {
+      "job": "memlite_final100_20261013_v2",
+      "part": "vacuuming_floors-n4-i0",
+      "attempt": "04.json",
+      "batch": 4,
+      "controls": 14472,
+      "seconds": 906.1103346161544,
+      "controls_per_second": 15.971564882471641
+    },
+    {
+      "job": "memlite_final100_20261013_resume_v2",
+      "part": "composting_waste-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 21832,
+      "seconds": 1233.1308275666088,
+      "controls_per_second": 17.704528596598337
+    },
+    {
+      "job": "memlite_final100_20261013_resume_v2",
+      "part": "installing_a_fax_machine-n2-i8",
+      "attempt": "08.json",
+      "batch": 2,
+      "controls": 12232,
+      "seconds": 982.9456394053996,
+      "controls_per_second": 12.444228357734355
+    },
+    {
+      "job": "memlite_final100_20261013_resume_v2",
+      "part": "installing_a_modem-n2-i8",
+      "attempt": "08.json",
+      "batch": 2,
+      "controls": 7240,
+      "seconds": 580.6705650221556,
+      "controls_per_second": 12.468343387999624
+    },
+    {
+      "job": "memlite_final100_20261013_resume_v2",
+      "part": "make_cabinet_doors-n4-i0",
+      "attempt": "00.json",
+      "batch": 4,
+      "controls": 20656,
+      "seconds": 1152.3512474494055,
+      "controls_per_second": 17.925090154342815
+    },
+    {
+      "job": "memlite_final100_20261013_resume_v2",
+      "part": "scrubbing_bathroom_floor-n2-i8",
+      "attempt": "08.json",
+      "batch": 2,
+      "controls": 9462,
+      "seconds": 943.3552230196074,
+      "controls_per_second": 10.030155946678143
+    }
+  ],
+  "assumptions": [
+    "Running partial steps not subtracted; completed official receipts only",
+    "Rates include inference, physics, rendering, transport and recording inside each evaluator.run, exclude initial scene load",
+    "Future tasks/scenes may be materially slower or faster; this is scenario arithmetic, not measured whole-run ETA",
+    "Known four prior errors remain disclosed; future errors not predicted",
+    "No changes to running jobs"
+  ],
+  "bindings": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/assets_readiness/sim_data/2026-challenge-task-instances/metadata/task.jsonl",
+      "sha256": "7dbb5f7f00a2e06c693dfbb3045e5c28e627b6179e775f1ad93ca4b61f08e6dc"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/manifest.json",
+      "sha256": "82bc1ee3d2cc704f00ae6d2a153a12ad9ca4c08609d2f5b0ec818a5b687cf79f"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/manifest.json",
+      "sha256": "3dd8862c9c0eed786929bb064e3b4e4b5513ad36a1391ffd96bf92bccc719be4"
+    }
+  ],
+  "schema": "memlite_live_remaining_work_scenarios_v1",
+  "scene_load_warning": "Only started/completed scene loads enter observed load distribution; a currently live popcorn load is longer than this distribution. Scheduler lock wait is not included."
+}
