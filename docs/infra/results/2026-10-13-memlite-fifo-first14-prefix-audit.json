@@ -1,0 +1,448 @@
+{
+  "schema": "memlite_fifo_first14_closed_prefix_audit_v1",
+  "observed_at": "2026-10-13T13:29:23.809148+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "manifest_sha256": "ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5",
+  "auditor_source_commit": "691d2e43abcc42538a0ddf83d2f208da55b59dcb",
+  "auditor_sha256": "bfefcf1adb071a61556280fbcc4554370e431fc1606251b07e87b262c7672eb8",
+  "episodes": 14,
+  "applied_controls": 104278,
+  "physical_ack_count": 6524,
+  "models": {
+    "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+    "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "traces": [
+    {
+      "gpu": 2,
+      "part": "organizing_art_supplies-n4-i4",
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_2/model-000/events.jsonl",
+      "audited_prefix_bytes": 30950556,
+      "audited_prefix_sha256": "97e89598c42f41f3e55cd06ae0eaffb4827cb44c6b4affe0e79f1ece36d1cd5d",
+      "captured_file_bytes": 30952550,
+      "prefix_stability_second_read": true,
+      "episodes": 4,
+      "applied_controls": 37168,
+      "events": {
+        "begin": 4,
+        "plan": 292,
+        "observer": 2616,
+        "action": 2324,
+        "ack": 2324,
+        "close": 4
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 3,
+      "part": "clean_a_trumpet-n4-i4",
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_3/model-000/events.jsonl",
+      "audited_prefix_bytes": 26033620,
+      "audited_prefix_sha256": "3036c0f4042e889ec0daf2f7a6da51cff3976c2df96be363a9eaf1dbd7dfe85b",
+      "captured_file_bytes": 26247081,
+      "prefix_stability_second_read": true,
+      "episodes": 4,
+      "applied_controls": 31844,
+      "events": {
+        "begin": 4,
+        "plan": 252,
+        "observer": 2244,
+        "action": 1992,
+        "ack": 1992,
+        "close": 4
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 4,
+      "part": "installing_a_scanner-n4-i4",
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_4/model-000/events.jsonl",
+      "audited_prefix_bytes": 21242945,
+      "audited_prefix_sha256": "f89bf1721d22dcd2823edb50b68c9e526113b60701996ad17c77c572543dc4a8",
+      "captured_file_bytes": 26440287,
+      "prefix_stability_second_read": true,
+      "episodes": 4,
+      "applied_controls": 25552,
+      "events": {
+        "begin": 4,
+        "plan": 200,
+        "observer": 1800,
+        "action": 1600,
+        "ack": 1600,
+        "close": 4
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 7,
+      "part": "make_microwave_popcorn-n2-i8",
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/model-000/events.jsonl",
+      "audited_prefix_bytes": 8087104,
+      "audited_prefix_sha256": "93245f223e2b9a8fd46882a23b2e3380e9372b7222c4c630ca501a4f82bb7ba6",
+      "captured_file_bytes": 11800971,
+      "prefix_stability_second_read": true,
+      "episodes": 2,
+      "applied_controls": 9714,
+      "events": {
+        "begin": 2,
+        "plan": 76,
+        "observer": 684,
+        "action": 608,
+        "ack": 608,
+        "close": 2
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 9292,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n4-i4/json/organizing_art_supplies_305_0.json",
+        "sha256": "020e87a4af2826607e9a813445d03230d62cfce85ee11ef5cf84689667d28a28"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n4-i4/videos/organizing_art_supplies_305_0.mp4",
+        "sha256": "11b8b1d5308be675da458d6a5af8f57c1527c15d71282e1edb66d65be3f7a1bd"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9292"
+      }
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 9292,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n4-i4/json/organizing_art_supplies_306_0.json",
+        "sha256": "3bb1ff1c2d48474bd3c4faf76353697256934d5d09131b75d381da3ff3980234"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n4-i4/videos/organizing_art_supplies_306_0.mp4",
+        "sha256": "a5ddbed2546403e59902b9bba702d8288f2f2939305ffc3db602cf4a01c36689"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9292"
+      }
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 9292,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n4-i4/json/organizing_art_supplies_307_0.json",
+        "sha256": "cfc0619e4ea406e17aee335d93708d2e17f31ca82423d77269e4aa23b62407e2"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n4-i4/videos/organizing_art_supplies_307_0.mp4",
+        "sha256": "e7041578b40e007cfe802fdb215917f32d66be4d01615f2405a6a22ec931e23d"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9292"
+      }
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 9292,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n4-i4/json/organizing_art_supplies_308_0.json",
+        "sha256": "69db7a46a7b5ff4343f326d09ee0147275e5b713d4787171b3f91cf4cd093ba1"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n4-i4/videos/organizing_art_supplies_308_0.mp4",
+        "sha256": "ebbac95d9a1309b650823950925b3b2950fadf0f6edd9d3d9ed9c63e6abae8fc"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9292"
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 7961,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n4-i4/json/clean_a_trumpet_305_0.json",
+        "sha256": "987cd1c8985e2830eb8b0709a36e2f1e00ceccff8c895e30bf49478b089e5641"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n4-i4/videos/clean_a_trumpet_305_0.mp4",
+        "sha256": "003c276dc4d940de4a4985902e626de73e463b59ccee6da977896bff64b2e028"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7961"
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 7961,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n4-i4/json/clean_a_trumpet_306_0.json",
+        "sha256": "9b823135f03454da7e92bde41aaef1eaac80b84ff5bdd4630d793a42e0ca037c"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n4-i4/videos/clean_a_trumpet_306_0.mp4",
+        "sha256": "c522992d234d2adb573f1e49d7240f7bc32139ff245ecc86243da820b29ad813"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7961"
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 7961,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n4-i4/json/clean_a_trumpet_307_0.json",
+        "sha256": "a37e945bd50935eccaaedac64b93c0aadd4e6a91095ee653b44144147991bfac"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n4-i4/videos/clean_a_trumpet_307_0.mp4",
+        "sha256": "a50a8fc0ef33ee7d61e9a64576592bb5634184e15cc2c2521244892a745d5277"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7961"
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 7961,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n4-i4/json/clean_a_trumpet_308_0.json",
+        "sha256": "a49027cab499515539b4e02fb28aed1a18f801e0555d1d351ac8c7b53dc72e80"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n4-i4/videos/clean_a_trumpet_308_0.mp4",
+        "sha256": "5ad3a080882a807efdf4db37f8a2b8676cf52bfe44b0204984dff6124e84bf05"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7961"
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/json/installing_a_scanner_305_0.json",
+        "sha256": "05aabb6ed589f46e08574560fe84e766da5df4874c0e3af1fca94631169f671d"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/videos/installing_a_scanner_305_0.mp4",
+        "sha256": "801b68e7c45e29fb1a353c11bb12bc9ab120e38654e64de750aa914fabd93246"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/json/installing_a_scanner_306_0.json",
+        "sha256": "bbf263818ff1ca9213ac71115e5d660d97e1f5a719b7cece3d0c636fed9b46d8"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/videos/installing_a_scanner_306_0.mp4",
+        "sha256": "47c10d5df51f11fa7e06e0fdb8eb3fc3ac2714547a69ca74a41fc13c3695ed71"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/json/installing_a_scanner_307_0.json",
+        "sha256": "43dce307a537b9ed216775900a788990f25c45895d06055d199e1bd3248fc4e8"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/videos/installing_a_scanner_307_0.mp4",
+        "sha256": "bbf134230cc63b712ad53715b1a46cc2c04c13ae7646b1b446ff217136d5ec75"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/json/installing_a_scanner_308_0.json",
+        "sha256": "428b453652b19b5dd6c38aa040544cd0c645fe9b056f80d5095b4a3f8277220f"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/videos/installing_a_scanner_308_0.mp4",
+        "sha256": "b870a10e5d65eee40bd03ad7c0e91d974d76248bc9e83aba349f5ce064f23cee"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      }
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 4857,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/make_microwave_popcorn-n2-i8/json/make_microwave_popcorn_309_0.json",
+        "sha256": "99194815ec8e4ad6c165a240252692bab38a9beb344eda9032c03f961972c7ba"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/make_microwave_popcorn-n2-i8/videos/make_microwave_popcorn_309_0.mp4",
+        "sha256": "23b1ce73a33fa208948af1e3cfe6f209b12ae173b0d1762b23db029f90010e6a"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "4857"
+      }
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 4857,
+      "success": false,
+      "q_score": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/make_microwave_popcorn-n2-i8/json/make_microwave_popcorn_310_0.json",
+        "sha256": "a2ca86da193ea6015e87500af635b622c6470551f1e1b61d1f302d721a95ec05"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/make_microwave_popcorn-n2-i8/videos/make_microwave_popcorn_310_0.mp4",
+        "sha256": "ed7c43d7966fc6fde5b51cfdaffcaa56f47e3b6cddc7fbe7c81bb50deb44d4b5"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "4857"
+      }
+    }
+  ],
+  "scope": "First14 actually completed continuation episodes, selected before audit from completed receipts, not by Q/SR; every event from byte0 through the last close of the completed batch is retained.",
+  "limitations": [
+    "Active log tails and final weight seal are not yet audited",
+    "This is an intermediate evidence receipt, not a completed1000 evaluation",
+    "Does not prove physical outcome estimates or high-level intent semantics are correct"
+  ],
+  "original_outputs_unmodified": true,
+  "optimizer_updates": 0
+}
