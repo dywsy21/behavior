@@ -1,0 +1,343 @@
+{
+  "schema": "memlite_cross_task_first_eggs_partial_q_audit_v1",
+  "observed_at": "2026-10-13T14:46:08.964155+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/manifest.json",
+    "sha256": "ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5"
+  },
+  "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_4/model-000/events.jsonl",
+  "audited_prefix_bytes": 69232537,
+  "audited_prefix_sha256": "b775903fe88073d3331ccb6508f3a6de22a1f25b43021ae5e9f7ef1937338ddf",
+  "captured_file_bytes": 73187239,
+  "continuous_prefix_no_event_filter": true,
+  "prefix_unchanged_on_second_read": true,
+  "result": {
+    "status": "complete_causal_trace_audit",
+    "episodes": 10,
+    "events": {
+      "begin": 10,
+      "plan": 660,
+      "observer": 5920,
+      "action": 5260,
+      "ack": 5260,
+      "close": 10
+    },
+    "applied_controls": 84048,
+    "models": {
+      "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+      "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+      "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+      "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+      "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+      "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+      "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+    },
+    "tasks": [
+      "hiding Easter eggs",
+      "installing a scanner"
+    ],
+    "checks": [
+      "fresh empty per-episode memory",
+      "full identity and fixed slot on every event",
+      "high-to-low exact current intent",
+      "observer attempt and applied clock",
+      "unique tokens and exact raw23 physical ACK digest",
+      "final partial chunk acknowledged"
+    ],
+    "proves_full_task_success": false
+  },
+  "cases": [
+    {
+      "task": "hiding_Easter_eggs",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 11430,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/json/hiding_Easter_eggs_301_0.json",
+        "sha256": "d0347ce52d805d0821218b5dc01515c9cb7b34413e67c559617d8b881aa53a67"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/videos/hiding_Easter_eggs_301_0.mp4",
+        "sha256": "00bd8fef2e6fcc61139381d35eeaf2137f1fc4290ab7e0c064b7dd2cfe8c1380"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11430"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "hiding_Easter_eggs",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 11430,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/json/hiding_Easter_eggs_302_0.json",
+        "sha256": "fac649bdca4403489d54c57b6af29c2055d03dd8ebbbc6b59d3e2bc7a730458f"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/videos/hiding_Easter_eggs_302_0.mp4",
+        "sha256": "0aad5a6c47d687bebce0ba9d6da5f41ba0b51dde034993e1bacb6edbaf8e8bd0"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11430"
+      },
+      "q_score": 0.2222222222222222,
+      "success": false
+    },
+    {
+      "task": "hiding_Easter_eggs",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 11430,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/json/hiding_Easter_eggs_303_0.json",
+        "sha256": "7a01fc0668c8e2267ff7755ab2343748c2d5bf46fe11caca0816ff71312675d1"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/videos/hiding_Easter_eggs_303_0.mp4",
+        "sha256": "85bf2f921163b368bf10bd86b976fd82466a2f81b6345297569e85f94cddfc55"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11430"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "hiding_Easter_eggs",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 11430,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/json/hiding_Easter_eggs_304_0.json",
+        "sha256": "eba70bae86e9bf7ea6c3f56add4174c0d9af869c4524439a29c5608608ccce9b"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/videos/hiding_Easter_eggs_304_0.mp4",
+        "sha256": "f01f5a524306684a722e14d327d97cf166820e07ce0848a344089e2cd2194f61"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11430"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/json/installing_a_scanner_305_0.json",
+        "sha256": "05aabb6ed589f46e08574560fe84e766da5df4874c0e3af1fca94631169f671d"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/videos/installing_a_scanner_305_0.mp4",
+        "sha256": "801b68e7c45e29fb1a353c11bb12bc9ab120e38654e64de750aa914fabd93246"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/json/installing_a_scanner_306_0.json",
+        "sha256": "bbf263818ff1ca9213ac71115e5d660d97e1f5a719b7cece3d0c636fed9b46d8"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/videos/installing_a_scanner_306_0.mp4",
+        "sha256": "47c10d5df51f11fa7e06e0fdb8eb3fc3ac2714547a69ca74a41fc13c3695ed71"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/json/installing_a_scanner_307_0.json",
+        "sha256": "43dce307a537b9ed216775900a788990f25c45895d06055d199e1bd3248fc4e8"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/videos/installing_a_scanner_307_0.mp4",
+        "sha256": "bbf134230cc63b712ad53715b1a46cc2c04c13ae7646b1b446ff217136d5ec75"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/json/installing_a_scanner_308_0.json",
+        "sha256": "428b453652b19b5dd6c38aa040544cd0c645fe9b056f80d5095b4a3f8277220f"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n4-i4/videos/installing_a_scanner_308_0.mp4",
+        "sha256": "b870a10e5d65eee40bd03ad7c0e91d974d76248bc9e83aba349f5ce064f23cee"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n2-i8/json/installing_a_scanner_309_0.json",
+        "sha256": "304972f1692b74547c757ae1ddc03de303e62f7c31e5a98c27a146819129daf3"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n2-i8/videos/installing_a_scanner_309_0.mp4",
+        "sha256": "af861dda95302dfbf2b650fb92ef06ec7b5f697e70af7c17b26ce264770d486b"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      },
+      "q_score": 0,
+      "success": false
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n2-i8/json/installing_a_scanner_310_0.json",
+        "sha256": "cc22371517674f58f1cca80750dcf88bfb84e763b30853f5d57d4b55958ba83e"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n2-i8/videos/installing_a_scanner_310_0.mp4",
+        "sha256": "441d29ec531a78873834f2cd9246136b41ab3b882b5f5c4e9a4f93da7ed461b5"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      },
+      "q_score": 0,
+      "success": false
+    }
+  ],
+  "positive_cases": [
+    {
+      "task": "hiding_Easter_eggs",
+      "instance_id": 302,
+      "q_score": 0.2222222222222222,
+      "success": false
+    }
+  ],
+  "cross_task_transition": "installing a scanner -> hiding Easter eggs",
+  "same_model_process": true,
+  "model_final_seal": false,
+  "ongoing_suffix_not_in_scope": true,
+  "not_evidence_of_training_improvement": true,
+  "summary": {
+    "completed": 210,
+    "execution_errors": 22,
+    "unaccounted": 768,
+    "completed_only_q": 0.0018518518518518517,
+    "completed_only_sr": 0
+  },
+  "original_positive_detail": [
+    {
+      "task": "hiding_Easter_eggs",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 11430,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/json/hiding_Easter_eggs_302_0.json",
+        "sha256": "fac649bdca4403489d54c57b6af29c2055d03dd8ebbbc6b59d3e2bc7a730458f"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/videos/hiding_Easter_eggs_302_0.mp4",
+        "sha256": "0aad5a6c47d687bebce0ba9d6da5f41ba0b51dde034993e1bacb6edbaf8e8bd0"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11430"
+      },
+      "official_metrics": {
+        "task": "hiding_Easter_eggs",
+        "instance_id": 302,
+        "rollout_id": 0,
+        "steps": 11430,
+        "success": false,
+        "agent_distance": {
+          "base": 37.298739000274715,
+          "left": 46.13116508831354,
+          "right": 51.22269353555657
+        },
+        "normalized_agent_distance": {
+          "base": 0.5870278885256345,
+          "left": 0.23243072182272487,
+          "right": 0.23875159925962916
+        },
+        "q_score": {
+          "final": 0.2222222222222222
+        },
+        "time": {
+          "simulator_steps": 11430,
+          "simulator_time": 381,
+          "normalized_time": 0.6666426071741033
+        }
+      },
+      "attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/hiding_Easter_eggs-n4-i0/attempts/00.json",
+        "sha256": "38f72aede49d336159fe42872fe80f9dc246786b1cffc452e242aefca4ba086a"
+      }
+    }
+  ]
+}

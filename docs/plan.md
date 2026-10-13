@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 22:46 CST / Codex SUBMISSION-FULL-EVAL（210完整，第二条非零Q）：** 原run210完整/22执行异常/768未覆盖，completed-only Q0.00185185、SR0；新增彩蛋302原终局Q2/9、success=false、11430步，原JSON/video/committed attempt步数与帧数核同，不能把随任务组成变化的均值上升称训练收益。根对GPU4同一model000进程“扫描仪6例→彩蛋4例”连续69,232,537B前缀实审：10条/84,048控制/5260 ACK，跨task空memory、完整身份/slot、当前高低层意图、observer时钟及raw23 ACK digest均过，10原JSON/MP4 SHA与帧数一致；只覆盖这个已闭合前缀，不冒称活跃尾部或整模型权重已封存。证据`docs/infra/results/2026-10-13-memlite-eggs-cross-task-causal-audit.json`；仅两条非零Q（咖啡305/彩蛋302），暂无完整成功。22:41 GPU5新洋葱301–304各384真实控制，原监督/后继直接实活；其他卡已按原排程转新任务，无异常重跑/全局重启，继续MEM→冠军，交付仍暂缓。
+
 - **2026-10-13 22:35 CST / Codex SUBMISSION-FULL-EVAL（只续未试任务）：** GPU5新同权重model3640605 ready，sim3643370已实际加载原manifest登记的`chop_an_onion-n4-i0 --indices 0 1 2 3 4 5 6 7`（task42，两批各4），此任务不在父seal已完/异常集合中；不是重跑咖啡309/310，尚无新attempt/实际控制不提前称通过。原父封存＋本轮error ledger按original attempt去重，现22受影响实例来自6次物理batch异常，不能说成22个独立机器人失稳。完整逐批task/实例/原log和attempt SHA、下一实际命令补入咖啡尾批摘要。其他7卡及冠军等待保持原作业，无新模型/物理修改或全局重启；下一继续看正式回合终态。
 
 - **2026-10-13 22:32 CST / Codex SUBMISSION-FULL-EVAL（咖啡尾批隔离）：** 原run196完整/22执行异常/782未覆盖，completed-only Q0.00085034/SR0。GPU5咖啡台309右夹爪finger link NaN，同批309/310各最后5904 ACK后中断（同一栈3次，不是两独立物理失败），无这两例官方JSON/不重跑；305–308原完整结果与305的Q1/6保留、SHA不变。旧model3600433与sim3633807已退，高低层/observer最终权重不变/0更新；new同51c model3640605加载中，原supervisor与其他worker/冠军队列未被全局停止，下一实际task范围待核。原model000前四例的连续31,320,804B trace进一步全审通过：37600控制/2352 ACK、独立空memory/身份/意图/observer/原raw23回执均一致；异常尾309最大454.28且有限，仍不确定策略或物理失稳的先后因果。证据`docs/infra/results/2026-10-13-memlite-fifo-coffee-tail-physics-error.json`；只读诊断，没有修改actor/官方物理/超时，继续既定全量与后继，不把长时间等待记为阻塞。22:24实查磁盘仍4.6TiB可用。
