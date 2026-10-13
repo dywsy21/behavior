@@ -23,7 +23,8 @@ REPO = HERE.parents[1]
 sys.path[:0] = [str(HERE / 'memlite_sft100'), str(HERE / 'memlite_final'), str(HERE)]
 from common import ROOT, SIM_ROOT, MODEL_PYTHON, aggregate, atomic_json, sha256
 from completed_metrics import completed_metrics
-from memlite_final.worker import loader_lock, stop_child
+from memlite_final.worker import stop_child
+from loader_admission import loader_lock
 
 
 def read(path):
@@ -293,7 +294,7 @@ def freeze_continuation(prior, output):
     records, errors = list(sealed['records']), list(sealed['execution_errors'])
     for row in records:
         check_binding(row['metrics']); check_binding(row['video'])
-    workers, parts = {}, {}
+    workers, parts, never_loaded = {}, {}, []
     for group in m['groups']:
         gpu = group['gpu']; path = prior / 'workers' / f'gpu_{gpu}'
         worker = read(path / 'status.json'); workers[gpu] = worker
@@ -303,8 +304,26 @@ def freeze_continuation(prior, output):
             raise ValueError('Worker lacks a verified post-stop terminal state')
         model_dirs = sorted(p for p in path.glob('model-*') if p.is_dir())
         finals = [binding(p / 'weights-final.json') for p in model_dirs]
-        if not model_dirs or finals != worker['model_generations']:
+        if finals != worker['model_generations']:
             raise ValueError('Incomplete model-generation verification')
+        if not model_dirs:
+            # The historical non-FIFO gate could timeout a worker that never
+            # launched ANY model or simulator. This is not a failed episode.
+            log = prior / f'gpu_{gpu}.log'
+            expected_error = "TimeoutError('Scene/model loading admission timed out or stopped')"
+            text = log.read_text()
+            if (str(gpu) not in state['failed_gpus'] or worker.get('error') != expected_error
+                    or worker.get('model_pid') or worker.get('model_path') or worker.get('sim_pid')
+                    or worker.get('part') or worker['completed_parts'] or worker['diagnosed_failed_parts']
+                    or worker['finished'] - worker['started'] < 1800
+                    or 'loader = loader_lock(job)' not in text or 'in loader_lock' not in text
+                    or not text.rstrip().endswith('TimeoutError: Scene/model loading admission timed out or stopped')
+                    or any((prior / 'parts' / p['id']).exists() for p in group['parts'])):
+                raise ValueError('Missing model receipt is not a proven never-admitted worker')
+            never_loaded.append(dict(gpu=gpu, worker=binding(path / 'status.json'), log=binding(log),
+                diagnosis='nonfair_loader_admission_timeout_before_any_model_or_episode',
+                model_started=False, public_attempts_started=0, score_available=False))
+            evidence.append(binding(log))
         for model_path in model_dirs:
             if not exact_frozen_weights(read(model_path / 'weights-final.json')):
                 raise ValueError('Model/observer parameters changed')
@@ -332,7 +351,7 @@ def freeze_continuation(prior, output):
             parts[tail['id']] = (gpu, tail); evidence.append(binding(tail_path))
     if set(workers) != set(range(8)) or not set(map(int, state['failed_gpus'])) <= set(workers):
         raise ValueError('Incomplete eight-worker stop')
-    interrupted, newly_diagnosed = [], set()
+    interrupted, newly_diagnosed = [], {str(r['gpu']) for r in never_loaded}
     for part_path in sorted((prior / 'parts').iterdir()):
         if part_path.name not in parts:
             raise ValueError('Unregistered physical output')
@@ -397,7 +416,8 @@ def freeze_continuation(prior, output):
         manifest=binding(prior / 'manifest.json'), root_manifest=root_pin, previous_stop_seal=m['seal'],
         source_commit=original['source_commit'], records=records, completed=len(records), execution_errors=errors,
         administrative_interruptions=interrupted, unstarted=len(expected) - len(known), evidence=evidence,
-        original_outputs_unmodified=True, all_eight_models_unchanged=True,
+        original_outputs_unmodified=True, all_eight_models_unchanged=not never_loaded,
+        all_loaded_models_unchanged=True, model_workers_started=8-len(never_loaded), never_admitted_workers=never_loaded,
         policy=sealed['policy'])
     remaining_parts(original, result)  # also refuses to silently regroup partial physical batches
     atomic_json(output, result)
@@ -439,6 +459,7 @@ def prepare(prior, seal, runtime_source, job):
                     tasks=m['tasks'], cases=m['cases'], groups=groups,
                     inherited_completed=receipt['completed'], initial_execution_errors=len(receipt['execution_errors']),
                     administrative_restarts=len(receipt['administrative_interruptions']),
+                    loader_admission='fifo_two_slots_queue_wait_is_not_execution_timeout_v1',
                     expected=1000, automatic_retries=False, policy_changed=False, optimizer_updates=0,
                     error_policy='Record diagnosed nonfinite-pose batches as missing official scores; '
                                  'restart model only for different unattempted cases; no score fabrication',
@@ -535,7 +556,7 @@ def worker(job, gpu):
             if shutil.disk_usage(job).free < 150 << 30:
                 raise RuntimeError('Disk safety reserve')
             if model is None:
-                loader = loader_lock(job)
+                loader = loader_lock(job, purpose=f'gpu{gpu}:model-{len(state["model_generations"]):03d}')
                 model_path = path / f'model-{len(state["model_generations"]):03d}'
                 with (path / (model_path.name + '.log')).open('x') as log:
                     model = subprocess.Popen([str(MODEL_PYTHON), str(runtime / 'serve.py'),
@@ -549,7 +570,7 @@ def worker(job, gpu):
                         raise RuntimeError('Original frozen model loading failed/timed out/stopped')
                     time.sleep(3)
                 loader.close(); loader = None
-            output = job / 'parts' / part['id']; loader = loader_lock(job)
+            output = job / 'parts' / part['id']; loader = loader_lock(job, purpose=f'gpu{gpu}:scene:{part["id"]}')
             command = ['bash', str(scripts / 'memlite_sft100/launch_sim.sh'), str(runtime / 'run_task.py'),
                 '--task', part['task'], '--task-id', str(part['task_id']), '--output', str(output),
                 '--port', str(19900 + gpu), '--config-sha256', m['config_sha256'], '--run-id', job.name,

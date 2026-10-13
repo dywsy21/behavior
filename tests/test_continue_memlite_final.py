@@ -133,7 +133,7 @@ def test_sibling_physics_failure_cannot_silently_discard_early_finished_case(tmp
     with pytest.raises(ValueError):m.require_no_uncommitted_metrics(tmp_path)
 
 
-def stopped_continuation(tmp_path, monkeypatch):
+def stopped_continuation(tmp_path, monkeypatch, never_loaded=False):
     """Synthetic metadata only; real ffprobe/hash audit runs on the target."""
     def write(p, v):
         p.parent.mkdir(parents=True, exist_ok=True); p.write_text(json.dumps(v)); return p
@@ -165,6 +165,14 @@ def stopped_continuation(tmp_path, monkeypatch):
     (prior/'STOP').touch()
     for group in manifest['groups']:
         gpu=group['gpu'];w=prior/'workers'/f'gpu_{gpu}';md=w/'model-000'
+        if never_loaded and gpu==6:
+            write(w/'status.json',dict(status='needs_diagnosis',pid=98765007,started=0,finished=1801,
+                model_generations=[],completed_parts=[],diagnosed_failed_parts=[],
+                error="TimeoutError('Scene/model loading admission timed out or stopped')"))
+            (prior/'gpu_6.log').write_text('Traceback (most recent call last):\nloader = loader_lock(job)\n'
+                'File "worker.py", line 35, in loader_lock\nTimeoutError: Scene/model loading admission timed out or stopped\n')
+            state=m.read(prior/'status.json');state['failed_gpus']['6']={};write(prior/'status.json',state)
+            continue
         weights=dict(weights_unchanged=True,observer_head_unchanged=True,optimizer_updates=0,
                      observer_before_sha256='digest',observer_after_sha256='digest')
         write(md/'weights-final.json',weights)
@@ -266,3 +274,25 @@ def test_property_ui_requires_exact_nonphysics_stack_and_later_applied_steps():
             (text+'\nRuntimeError: unknown',state),(text.replace('scroll_y_max','robot_state'),state),
             (text.replace('2026-10-13T11:01:59Z','no_time'),state)):
         assert m.nonfatal_property_ui(bad_text,bad_state,attempt) is None
+
+
+def test_seal_never_admitted_worker_does_not_fabricate_model_or_episode_failure(tmp_path,monkeypatch):
+    prior,seal=stopped_continuation(tmp_path,monkeypatch,never_loaded=True)
+    result=m.freeze_continuation(prior,seal)
+    assert result['completed']==8 and len(result['execution_errors'])==8
+    assert result['model_workers_started']==7 and result['all_loaded_models_unchanged']
+    assert result['all_eight_models_unchanged'] is False
+    assert result['never_admitted_workers'][0]['gpu']==6
+    assert result['never_admitted_workers'][0]['public_attempts_started']==0
+
+
+@pytest.mark.parametrize('bad',['started_part','wrong_error','short_wait','model_path'])
+def test_never_admitted_exception_requires_no_model_no_attempt_and_exact_gate(tmp_path,monkeypatch,bad):
+    prior,seal=stopped_continuation(tmp_path,monkeypatch,never_loaded=True)
+    path=prior/'workers/gpu_6/status.json';row=m.read(path)
+    if bad=='started_part':(prior/'parts/task6-n4-i0').mkdir()
+    elif bad=='wrong_error':row['error']='Out of memory'
+    elif bad=='short_wait':row['finished']=100
+    else:row['model_path']='/maybe-loaded'
+    path.write_text(json.dumps(row))
+    with pytest.raises(ValueError):m.freeze_continuation(prior,seal)
