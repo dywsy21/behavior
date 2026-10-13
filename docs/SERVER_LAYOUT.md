@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 14:16 CST：RTX评测依赖与传输检查点
+
+- MEM最终评测源码`code/memlite-final-eval-20261013-v3`=bb728ba5386b6135a6a4523e460801036d55fc95，Git包1c03f6a2f7b6c472022eab111067616070a7de2f628940c886646333efb88b45，目标env64测试通过。完整最新权重未齐，公共run尚未注册/启动。
+- 传输源A800 `src/memlite-final-transport-20261013-v1`及RTX `code/memlite-final-transport-20261013-v1`=add6bc9f；22段清单`runs/memlite_final_assets_20261013_v1-chunks.json` / RTX `runs/memlite_final_preparation_20261013/chunks-v1.json` SHA d1c17971…cb7b。接收`chunks-v1`目录，原约2.74GB rsync部分文件保留于同根`rsync-partials-preserved-v1`，未删除。
+- RTX冠军作者依赖：`code/champion-reference-20261013-v1`=ca556f74+原native61 patch，`code/openpi-reference-20261013-v1`=01177e02+原lazy-simulator patch；Git包cf07323f…0540 / 7af08889…c20c。原作者source身份检查通过。
+- RTX冠军解释器只读复用`/home/tione/notebook/baselines/StarVLA/.venv/bin/python`；**必须显式前置**`runs/champion_final_preparation_20261013/deps-v1`和上述两作者源码、`openpi/packages/openpi-client/src`及本项目`src`，不能使用StarVLA原LeRobot0.1.0代替。独立deps为LeRobot Git577cd109/0.3.4、PyAV14.4、datasets3.6、transformers4.53.2、tokenizers0.21.1、HFhub0.34.4；复制部分502文件树SHA ac7fe7d9…9abc3双端同。
+- 小JAX SM120内核、CPU模型导入通过，不是完整冠军GPU/容器资格。原StarVLA/G05/sim env均未修改；PyPI/Git/PyAV首次依赖失败已记录，没有对系统安装FFmpeg或CUDA。
+
 ## 2026-10-13 13:36 CST：VPN恢复与最新MEM完整推理包
 
 - 用户本人ec账号重连已授权/实际恢复，仅loopback1080/1081。本地持久会话`full-eval-vpn-20261013`、lc1/lc3独立SSH master；不记录凭据，不修改全局路由。lc1冠军3895302约7547步继续、已7000完整保存；lc3八卡外部作业未触碰。

@@ -1,0 +1,26 @@
+{
+  "scope": "fixed_original_heldout_loss_not_physical_Q_or_SR",
+  "source_commit": "30b055485b2720c8dc3391a27cea052cab9e4fc7",
+  "run": "/data/workspace/wsy/behavior2026/runs/champion_formal_20261012/shared100-v1",
+  "checkpoint_step": 7000,
+  "checkpoint_bytes": 54489569924,
+  "checkpoint_manifest_sha256": "bb867d69de36079771d3c8afa8f54f9bd710fd7c1b198c2e5dd17cb8fe41a44b",
+  "checkpoint_tree_sha256": "fafd884cebabaddd04b4c35a96951008be60e11fe9a7d99817335c5e0abdf7db",
+  "evaluation_sha256": "23f4d52d07d2848a8b13e6466e04e7aa4f5dbc0dbeb946b3c73655f3cf49ac20",
+  "eval_plan_sha256": "3a10106e2869897be9914ece6d0b9ed7244b61b439292c9859d54752cc2665d7",
+  "weights": "EMA",
+  "observations": 1600,
+  "same_eval_plan_and_order_as_step2000": true,
+  "metrics": {
+    "all": {"action_loss": 0.18126352185870928, "subtask_accuracy": 0.808125},
+    "old50": {"action_loss": 0.13966273469035514, "subtask_accuracy": 0.9575},
+    "new50": {"action_loss": 0.22286430902706342, "subtask_accuracy": 0.65875}
+  },
+  "fm_change_percent_vs_step2000": -9.977496553144116,
+  "tasks_with_lower_fm_than_step2000": 81,
+  "physical_q_score": null,
+  "physical_success_rate": null,
+  "promoted_by_public_test": false,
+  "local_original_receipts": "artifacts/champion-formal-20261012/shared100-v1/step7000-v1",
+  "note": "Original full training remains in progress. Evaluate its terminal EMA, not a checkpoint selected from public performance."
+}

@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 14:16 CST / Codex CHAMPION-2026：** RTX独立依赖覆盖后的原作者模型CPU导入已通过/40.04s；LeRobot/PyAV复制共502文件/96,431,391B，源/目的树SHA ac7fe7d9…9abc3完全一致，四个公开包亦按原版本安装；完整权重GPU仍未测、24GB仍待。只读核原正式训练源码确认其终态会自行导出author-roundtrip验证的EMA v2，优先接收这一原自动产物，**不重复另外导出12GB**；若自然导出失败，才依据完整终态checkpoint显式恢复导出、不重训。当前7826更新继续、训练源30b未动。MEM约16.2GB分块在传，0公开实例。
+
+- **2026-10-13 14:12 CST / Codex CHAMPION-2026：** 等MEM权重分块期间补冠军固定槽位批量客户端`champion_batched_client.py`：每slot一条原官方协议连接、独立chunk20缓存，结束slot不重编号/不复活，不把服务端delivery计数伪装成物理ACK；实际步数只由模拟器成功step后的回调累计，reset清空各slot。9项新/原协议测试通过，尚未GPU/模拟器，不宣称冠军全量已就绪。独立deps已为原LeRobot577cd109/0.3.4、datasets3.6、transformers4.53.2/tokenizers0.21.1、PyAV14.4；完整CPU导入进行中，原环境均不变。MEM分块已约13.69GB且首low尾段验SHA发布，整包/全链门仍待。
+
+- **2026-10-13 14:04 CST / Codex SUBMISSION-FULL-EVAL / CHAMPION-2026：** 最新bb728ba5经Git包1c03f6a2…8b45部署RTX独立`code/memlite-final-eval-20261013-v3`，目标env64测试过/6.05s；未改运行中的传输源或旧env。分块约8.8GB已接收、整包终态待；冠军7745步/约9.28s，原预算继续。7000与2000的eval plan、1600条顺序/任务和EMA身份实比全同，FM−9.98%、81/100 task改善，摘要`2026-10-13-champion-step7000.json`，仍非Q/SR。PyAV14.4源码编译缺ffmpeg7自然失败、旧env未变，改只读复用A800原二进制至独立deps，完整冠军CPU/GPU模型验收仍待。
+
 - **2026-10-13 13:56 CST / Codex SUBMISSION-FULL-EVAL：** 原正确的task内2/4分批保持；补回执task集合/重复拒绝、提交README及原配置/验收/视频hash清单归档，不编辑官方metrics或MP4。全部64本地回归真实通过；完整模型/模拟器仍未跑，GPU门待权重分块齐全，不能把64测试称物理通过。冠军RTX独立依赖从原锁577cd109的A800已安装LeRobot只读复制（GitHub直取TLS失败现场保留），其余五包按A800原版本装新deps目录，不升级StarVLA/G05/sim原env。
 
 - **2026-10-13 13:53 CST / Codex SUBMISSION-FULL-EVAL（判断更正）：** 静态复核曾误以为batch2应有4条part回执；新测试实际揭示`episode_portions`一次交4实例、`run_task`在同一task内部按2/4分批，故两种配置都应2个task part，原len=2没有错误。已当面更正，不改变原正确分批行为；只新增回执任务/批量/实例入口集合一致性与重复拒绝保护。首次新测试2失败/61过系测试假设错误，修正后待重跑，不说全通过。冠军依赖lerobot0.3.4来自原锁定Git577cd109而非PyPI，独立安装首尝试解析失败且未更改旧env；下一按原Git SHA准备。
