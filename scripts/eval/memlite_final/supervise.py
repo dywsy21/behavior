@@ -11,6 +11,7 @@ HERE=Path(__file__).resolve().parent;REPO=HERE.parents[2]
 sys.path[:0]=[str(HERE.parent/'memlite_sft100'),str(HERE)]
 from common import ROOT,atomic_json,sha256
 from report import report
+from lifecycle import episode_portions
 
 
 def select_preflight(job, manifest):
@@ -20,12 +21,18 @@ def select_preflight(job, manifest):
         if not path.is_file():continue
         value=json.loads(path.read_text())
         if value['status']!='completed':continue
+        expected_parts={f'{task}-n{count}-i{indices[0]}'
+            for task in ('turning_on_radio','clean_a_keyboard')
+            for count,indices in episode_portions(size,preflight=True)}
+        completed_parts=value['completed_parts']
         if (value['source_commit']!=manifest['source_commit'] or value['num_envs']!=size
                 or value['config_sha256']!=manifest['config_sha256']
                 or value['pack_manifest_sha256']!=manifest['pack_manifest_sha256']
                 or value['verification']['config_sha256']!=manifest['config_sha256']
                 or value['preflight'] is not True or not value['verification']['weights_unchanged']
-                or value['verification']['optimizer_updates']!=0 or len(value['completed_parts'])!=2
+                or value['verification']['optimizer_updates']!=0
+                or len(completed_parts)!=len(expected_parts)
+                or {Path(p).name for p in completed_parts}!=expected_parts
                 or not value['control_steps_per_second']>0):
             raise ValueError('Mismatched actual latest-model engineering receipt')
         candidates[size]=(value,dict(path=str(path),sha256=sha256(path)))

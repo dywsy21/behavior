@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 13:56 CST / Codex SUBMISSION-FULL-EVAL：** 原正确的task内2/4分批保持；补回执task集合/重复拒绝、提交README及原配置/验收/视频hash清单归档，不编辑官方metrics或MP4。全部64本地回归真实通过；完整模型/模拟器仍未跑，GPU门待权重分块齐全，不能把64测试称物理通过。冠军RTX独立依赖从原锁577cd109的A800已安装LeRobot只读复制（GitHub直取TLS失败现场保留），其余五包按A800原版本装新deps目录，不升级StarVLA/G05/sim原env。
+
+- **2026-10-13 13:53 CST / Codex SUBMISSION-FULL-EVAL（判断更正）：** 静态复核曾误以为batch2应有4条part回执；新测试实际揭示`episode_portions`一次交4实例、`run_task`在同一task内部按2/4分批，故两种配置都应2个task part，原len=2没有错误。已当面更正，不改变原正确分批行为；只新增回执任务/批量/实例入口集合一致性与重复拒绝保护。首次新测试2失败/61过系测试假设错误，修正后待重跑，不说全通过。冠军依赖lerobot0.3.4来自原锁定Git577cd109而非PyPI，独立安装首尝试解析失败且未更改旧env；下一按原Git SHA准备。
+
+- **2026-10-13 13:49 CST / Codex SUBMISSION-FULL-EVAL：** add6bc9f传输工具经Git包15859f11…efb2双端独立部署，22段/1GiB清单d1c17971…cb7b两端同。已明确停止本轮源rsync388345/388354（code20为人工停传），约2.74GB partial完整移至RTX `rsync-partials-preserved-v1`可恢复，604MB小资产流正常完成；16并发新分块传输已实际开始，目标`chunks-v1`，不触及评测/训练/共享env。冠军作者Git+原patch已在RTX核同；现有JAX小核通过，但完整CPU导入缺`lerobot.datasets`（旧StarVLA依赖不一致），不称完整模型可用，下一仅独立依赖覆盖/验收。冠军原训练7639步继续，最终EMA及正式物理评测仍待。
+
 - **2026-10-13 13:46 CST / Codex SUBMISSION-FULL-EVAL：** 原两大文件单连接约1–2MB/s，增加CPU无损分块SSH工具`transfer_frozen_eval_assets.py`，原冻结包不重导出：预先核整文件与每1GiB分块SHA，最多16连接传独立part，逐块＋最终整文件再次核验后独占发布；原部分传输保留、不覆写已验文件、不带私钥/优化器。5项本地测试过（字节全同、截断/多余/错误hash拒绝、路径/重叠/重复发布保护），部署和实际加速尚待，不提前报提速。另RTX原StarVLA环境JAX0.5.3已完成SM120小内核/35.62s，旧ptxas回退驱动编译但结果有限；仅内核兼容，不是冠军完整模型或24GB资格。
 
 - **2026-10-13 13:39 CST / Codex CHAMPION-2026：** 7000原始评估/manifest/latest三件已本地同SHA（eval23f4d52d…ac20、manifest bb867d69…a44b、latest58be3dd6…4c6），固定1600 all FM0.1812635、old50 0.1396627、new50 0.2228643，阶段准确80.8125%；同源/同eval plan的逐项比较尚待摘要，不宣称物理Q/SR。MEM两大文件正在直传且有字节增长。为等传输期间准备冠军终态RTX评测，只读同步原作者两个Git bundle（cf07323f…0540 / 7af08889…c20c），保持原commit和登记patch；拟在空闲RTX GPU0做现有JAX环境小内核兼容检查，零模型/优化/模拟步、不修改env，若失败保留现场并换独立env，不占A800任何GPU。
