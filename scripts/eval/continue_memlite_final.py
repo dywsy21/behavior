@@ -247,6 +247,19 @@ def unstarted_tail(part, attempts):
                        predecessor=part['id'])
 
 
+def require_no_uncommitted_metrics(output):
+    """Do not classify an early-finished sibling as an execution error.
+
+    The official evaluator can publish one completed case before the whole
+    physical batch finishes. Such a record needs a separate per-case trace/ACK
+    audit; this conservative continuation must stop instead of discarding it
+    or silently downgrading a real success when another slot later crashes.
+    """
+    known = {p for p, _ in completed_metrics(output)}
+    if set((Path(output) / 'json').glob('*.json')) != known:
+        raise ValueError('Uncommitted official case records require independent physical audit; do not label them errors')
+
+
 def worker(job, gpu):
     job, m = registration(job)
     if not 0 <= gpu < 8:
@@ -345,6 +358,7 @@ def worker(job, gpu):
             diagnosis = physics_error(logpath.read_text())
             if diagnosis is None:
                 raise RuntimeError('Unclassified failure; preserve evidence for diagnosis: ' + part['id'])
+            require_no_uncommitted_metrics(output)
             attempts = [(p, read(p)) for p in sorted((output / 'attempts').glob('*.json'))]
             unfinished = [(p, r) for p, r in attempts if r['status'] != 'completed']
             if len(unfinished) != 1 or unfinished[0][1]['status'] != 'running':

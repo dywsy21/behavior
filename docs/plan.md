@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 17:18 CST / Codex SUBMISSION-FULL-EVAL：** 启动前自审补续评计分保护：同批次有单个实例先写官方JSON、另slot随后物理崩溃时，未完成整批ACK不代表可把已有结果丢掉/降为失败；新`require_no_uncommitted_metrics`发现此情形停下独立逐例物理审计，保留已写/半写原件。新及关联20回归过，无公共重跑或policy变化。9f源正供冠军TRAIN，不热改；将冻结新续评编排源、以相同cb40封存重新登记v2（v1仅准备未启动），冠军runtime继续9f，batch4 radio1028已完/keyboard加载。
+
+- **2026-10-13 17:14 CST / Codex SUBMISSION-FULL-EVAL：** 根亲审传真机308原部分MP4（5306帧，SHA5e8cf99a…0e715）的5100/5150/5170/5180/5190/5300及5180–5185：5181已明显场景外/部件异常，早于5184处395量级指令；原5168块最大1.9687167（有限但不等于安全/关节范围合格）。官方成功step后逐帧写入的代码顺序已核，不能将395认作首次物理失稳原因；更早碰撞/状态首因仍未由现有记录确证，不改actor/物理/clip。派生图在本地`continuation-v1/fax308-*.png`与新run `diagnostics/`，原件未变，设计文档补因果边界。另冠军batch2八原视频帧数各257与实际ACK均同；batch4正在原TRAIN推进、无公共。
+
+- **2026-10-13 17:06 CST / Codex SUBMISSION-FULL-EVAL：** 冠军修复源9f6e75bd的batch2真实8TRAIN/2056控制完整终态通过，权重前后2a5ce80b…3975相同/0更新，执行161.3598s、12.7417控制/s（不含场景加载），0公共。原worker/模型退出且GPU实空后启动同8TRAIN batch4 tmux`champion-final8000-preflight-b4-v2`，结果待；未借旧失败轮替代新验收。独立队列f99affa4已Git包f6043096…cda84部署`code/final-eval-queue-20261013-v2`，目标30测试通过；新队列未启动，等batch4结束再起MEM932和显式后继冠军公共轮。
+
 - **2026-10-13 17:02 CST / Codex SUBMISSION-FULL-EVAL：** 原已完成64回合追加全部逐事件根审计：277,144控制/17,354 ACK精确重算，八卡固定slot、空初始memory、高低层意图及observer代次均同，官方步数逐条一致；证据`docs/infra/results/2026-10-13-memlite-stopped64-audit.json`，不涵盖未完回合/不称策略有效。封存cb40fb20…2e9fa与新续评manifest882e00b2…3cadb已收本地同SHA。目标显式官方network路径补跑6/6通过（补齐上一轮skip）；冠军v2真实radio TRAIN4/1028控制已完，keyboard在加载，完整工程门待。新后继队列仅显式`--mem-continuation`才接受1000覆盖＋已披露异常，并须`--completed-preflight`验签2/4已完门后才能复用；30队列/续评/trace回归过，未部署/排新队列，不会静默把4异常当1000有效官方结果。
 
 - **2026-10-13 16:56 CST / Codex SUBMISSION-FULL-EVAL（计数更正＋真实部署）：** 9f6e75bd已push，Git包16c4452d…b79f双端SHA同，独立RTX `code/final-eval-continuation-20261013-v1`部署；目标54回归过/1官方源码路径未设跳过（待显式补跑）。实际封存原64视频/指标SHA与八模型不变回执；行政中断实为**14**而非前述18，原未完共18=4物理异常＋14行政中断，未开始918；先前口算错误已向用户更正。新MEM `runs/memlite_final100_20261013_resume_v1`注册932剩余，不重跑64/4，尚未起8卡；原freeze回执`runs/memlite_final100_20261013_v2-diagnosed-stop-v1.json`。冠军新v2注册19b056a7…21297，同final EMA9608、0公共；GPU核空后已实际重提batch2 TRAIN tmux `champion-final8000-preflight-b2-v2`，完整结果待，旧v1保留。

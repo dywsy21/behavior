@@ -101,3 +101,15 @@ def test_evidence_mutation_rejected(tmp_path):
     pinned=m.binding(p);m.check_binding(pinned)
     p.write_text('{"changed":true}')
     with pytest.raises(ValueError):m.check_binding(pinned)
+
+
+def test_sibling_physics_failure_cannot_silently_discard_early_finished_case(tmp_path):
+    (tmp_path/'json').mkdir();(tmp_path/'attempts').mkdir()
+    (tmp_path/'status.json').write_text(json.dumps(dict(status='running',task='radio')))
+    (tmp_path/'attempts/00.json').write_text(json.dumps(dict(status='running',instance_ids=[301,302])))
+    m.require_no_uncommitted_metrics(tmp_path)
+    # Even an unfinished write is kept for diagnosis, not classified away.
+    record=tmp_path/'json/radio_301_0.json';record.write_text('{')
+    with pytest.raises(ValueError):m.require_no_uncommitted_metrics(tmp_path)
+    record.write_text(json.dumps(dict(task='radio',instance_id=301,rollout_id=0,steps=17,success=True)))
+    with pytest.raises(ValueError):m.require_no_uncommitted_metrics(tmp_path)
