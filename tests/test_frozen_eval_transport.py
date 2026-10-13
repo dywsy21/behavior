@@ -62,3 +62,12 @@ def test_overlap_changed_source_and_wrong_pack_rejected(tmp_path):
         t.prepare(source, t.digest(source / 'manifest.json'), tmp_path / 'bad.json')
     with pytest.raises(ValueError):
         t.receive(tmp_path, '../escape', 6, '0' * 64, io.BytesIO(b'abcdef'))
+
+
+def test_explicit_repair_still_uses_complete_signed_plan(tmp_path):
+    _,plan=fixture(tmp_path)
+    rows=t.selected_parts(plan,['observer_backbone-001.part'])
+    assert len(rows)==1 and rows[0][1]['offset']==137
+    assert len(t.selected_parts(plan))>1
+    for bad in ([],['not-registered.part'],['low-000.part','low-000.part']):
+        with pytest.raises(ValueError):t.selected_parts(plan,bad)

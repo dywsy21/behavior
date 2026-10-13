@@ -129,7 +129,18 @@ def receive(directory, name, length, sha, stream):
     return dict(part=name, bytes=length, sha256=sha)
 
 
-def push(plan, *, host, port, remote_script, remote_parts, workers):
+def selected_parts(plan, only_parts=None):
+    check_plan(plan)
+    parts=[(row,chunk) for row in plan['files'] for chunk in row['chunks']]
+    if only_parts is not None:
+        if (not only_parts or len(set(only_parts))!=len(only_parts)
+                or not set(only_parts)<={chunk['name'] for _,chunk in parts}):
+            raise ValueError('Explicit repair names must be unique members of the original signed plan')
+        parts=[(row,chunk) for row,chunk in parts if chunk['name'] in only_parts]
+    return parts
+
+
+def push(plan, *, host, port, remote_script, remote_parts, workers, only_parts=None):
     if not 1 <= workers <= 16:
         raise ValueError('Explicit bounded transport concurrency required')
     def one(row, chunk):
@@ -169,10 +180,11 @@ def push(plan, *, host, port, remote_script, remote_parts, workers):
                     process.kill()
                     process.wait()
             raise
-    check_plan(plan)
+    parts=selected_parts(plan,only_parts)
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
-        futures = [executor.submit(one, row, chunk) for row in plan['files'] for chunk in row['chunks']]
-        return dict(status='all_parts_transferred', parts=[f.result() for f in futures])
+        futures = [executor.submit(one,row,chunk) for row,chunk in parts]
+        return dict(status='all_parts_transferred' if only_parts is None else 'explicit_selected_parts_transferred',
+            parts=[f.result() for f in futures])
 
 
 def assemble(plan, directory, pack):
@@ -226,6 +238,7 @@ def main():
             a.add_argument('--host', required=True); a.add_argument('--port', type=int, required=True)
             a.add_argument('--remote-script', required=True); a.add_argument('--remote-parts', required=True)
             a.add_argument('--workers', type=int, default=16)
+            a.add_argument('--only-part',action='append',help='Explicit repair of diagnosed missing parts; no automatic retry')
         else:
             a.add_argument('--directory', required=True); a.add_argument('--pack', required=True)
     a = p.parse_args()
@@ -239,7 +252,7 @@ def main():
         plan = json.loads(Path(a.plan).read_text())
         if a.mode == 'push':
             result = push(plan, host=a.host, port=a.port, remote_script=a.remote_script,
-                remote_parts=a.remote_parts, workers=a.workers)
+                remote_parts=a.remote_parts, workers=a.workers,only_parts=a.only_part)
         else:
             result = assemble(plan, a.directory, a.pack)
     print(json.dumps(result), flush=True)
