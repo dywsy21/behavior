@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 21:45 CST / Codex SUBMISSION-FULL-EVAL（隔离后真实控制核验）：** 同原job的GPU7新model001/捡垃圾305–308各784实际控制、合计3136控制/196 ACK已逐条核验；连续原trace 2,671,109B/SHA734b2d25…82f4b二读一致，四个begin均零步/空memory，任务/实例/slot/模型绑定、当前高层意图→低层、observer代次/时钟与raw23执行digest均过。当前仍活跃、有待ACK块，不能称完整回合/最终权重封存；没有301–304重试，也没有全局重启。证据补入同`2026-10-13-memlite-fifo-trash-physics-error.json`。首次临时只读检查误用metadata字段/下划线任务名而拒绝，按原runtime的`instance`及空格任务名纠正后通过，运行源未改。原全量与冠军后继继续，下一等待原终态，不新增诊断回合。
+
 - **2026-10-13 21:40 CST / Codex SUBMISSION-FULL-EVAL（新物理异常已隔离）：** 原MEM累计176完整/16执行异常/808未覆盖，completed-only Q0/SR0；21:30:50捡垃圾301–304同批中301左夹爪finger link姿态NaN，三份重复栈是同一异常、不是四个独立物理失败。原4例均最后ACK1440、无官方JSON，不造分数/不重跑；old model000与sim已退，final权重/observer不变、0更新，原trace/log/attempt/partial视频保留。既有691隔离器未触发全局STOP：新同51c model001 PID3626270 ready，sim3626634实际命令只含未尝试indices4–7（305–308），非重跑301–304；此时未核新物理步数，不以ready代替闭环通过。原supervisor3599503/worker/冠军后继3603438实活，后继仍等待。原有限动作中301末段幅值39.25不证明首因，未改actor/physics/超时。证据`docs/infra/results/2026-10-13-memlite-fifo-trash-physics-error.json`；下一核新批实际控制并继续全量，交付仍暂缓。干净本地fetch/pull已同步，无运行源变更。
 
 - **2026-10-13 21:30 CST / Codex SUBMISSION-FULL-EVAL（166完整）：** 原supervisor3599503/八worker和冠军后继3603438实活，新美术用品305–308及喇叭305–308各4完成，累计166完整/12旧异常/822未覆盖，Q0/SR0未变；新part自动沿原schedule推进，没有重启/新训练。根只读核FIFO轮前14完整（含此前6）：4原trace从byte0连续至该完整批最后close，不过滤交织事件；104,278实际控制/6,524 ACK、空初始memory、完整模型/任务/slot身份、高低层当前意图、observer时钟及14原JSON/视频帧数/SHA均过，二次读取同prefix字节一致。摘要`docs/infra/results/2026-10-13-memlite-fifo-first14-prefix-audit.json`；活跃尾部及最终权重封存尚未核，不能称整run封存或策略有效。当前继续原全量/后继，模型交付仍暂停；等待本身不是阻塞，不新增机械重试。

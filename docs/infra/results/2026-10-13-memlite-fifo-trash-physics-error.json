@@ -105,6 +105,63 @@
   "score_fabricated": false,
   "failed_instances_rerun": false,
   "cause_not_proven": "Finite outputs and a late39.25-magnitude command do not determine whether physics or policy/anchoring became unstable first; no policy/physics modification or public reroll.",
+  "continuation_causal_prefix_check": {
+    "schema": "live_unstarted_tail_causal_prefix_check_v1",
+    "observed_at": "2026-10-13T13:45:30.129878+00:00",
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/model-001/events.jsonl",
+    "prefix_bytes": 2671109,
+    "prefix_sha256": "734b2d25f10a85cd463a4a891a16bc57feede4f984370cf2d7256f1064182f4b",
+    "prefix_unchanged_on_second_read": true,
+    "events": 652,
+    "episodes": [
+      {
+        "episode": "memlite_final100_20261013_resume_v4-picking_up_trash-305-r0",
+        "instance_id": 305,
+        "slot": 0,
+        "control_steps": 784,
+        "pending_unacked_chunk": true
+      },
+      {
+        "episode": "memlite_final100_20261013_resume_v4-picking_up_trash-306-r0",
+        "instance_id": 306,
+        "slot": 1,
+        "control_steps": 784,
+        "pending_unacked_chunk": true
+      },
+      {
+        "episode": "memlite_final100_20261013_resume_v4-picking_up_trash-307-r0",
+        "instance_id": 307,
+        "slot": 2,
+        "control_steps": 784,
+        "pending_unacked_chunk": true
+      },
+      {
+        "episode": "memlite_final100_20261013_resume_v4-picking_up_trash-308-r0",
+        "instance_id": 308,
+        "slot": 3,
+        "control_steps": 784,
+        "pending_unacked_chunk": true
+      }
+    ],
+    "physical_acks": 196,
+    "applied_controls": 3136,
+    "initial_memory_empty": true,
+    "high_low_observer_identity_and_clock_passed": true,
+    "raw23_ack_digest_passed": true,
+    "closed_episodes": 0,
+    "complete_episode_audit": false,
+    "final_model_weight_seal": false,
+    "models": {
+      "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+      "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+      "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+      "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+      "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+      "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+      "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+    },
+    "diagnostic_correction": "Initial read-only checker used metadata-style task/instance_id against the runtime normalized task/instance schema and failed before auditing; corrected using actual frozen batch_runtime contract. No runtime/data modifications."
+  },
   "continuation_process_check": {
     "observed_at": "2026-10-13T13:40:18.557715+00:00",
     "worker_pid": 3599525,
