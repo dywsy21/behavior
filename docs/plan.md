@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 15:07 CST / Codex CHAMPION-2026：** final8000原固定1600 EMA留出全量回执3c18f517…b3cf已收：FM all0.181779/old50 0.139709/new50 0.223849，stage80.375%/95.5%/65.25%；比7000 FM略回升，仍按事先约定final，不按留出/公共挑ckpt，不称Q/SR。摘要`2026-10-13-champion-final8000.json`。852361a8基础设施源经Git包8d6d38aa…543a双端冻结，目标env32测试过1缺本地主源路径跳过、完整GPU仍待；原EMA46段/512MiB签名计划653ccdd3…86aa已8并行传RTX（session35810，源`ema8000-transfer-v1.log`），不传优化器或改原模型。
+
 - **2026-10-13 15:03 CST / Codex SUBMISSION-FULL-EVAL：** 原MEM v1 batch2已完整终态：高c93/低15d/observer442和head前后不变、0更新、2056 ACK一致、9.1268控制/s，原进程/GPU0已退出；新51c11d32源/v2 manifest3dd8862c…19be4在GPU1 batch4、随后GPU0 batch2实际加载中，旧结果不拷贝冒充新回执。冠军final8000三回执源/本地SHA相同、3895302自然退出；迁移只传12.65GB EMA、不传54GB优化器。冠军全量八worker/原视频打包草稿与范围传输扩展已写；首组合测试发现错误导入旧SFT worker（无GPU运行），已改显式`memlite_final.worker`，重验中，不热改任何在用源。
 
 - **2026-10-13 14:59 CST / Codex CHAMPION-2026 / SUBMISSION-FULL-EVAL：** 冠军原run终态`completed_target_updates`/8000/78,987.66s（21.94h），完整checkpoint bfe75b12…a463/tree ed5ec6b6…4fe6，原自动EMA9608b3ef…744cd（26文件/12,649,068,999B/75参数/作者回读通过），终态ecc49345…4c833与latest5684afbd…30a13a已收本地`artifacts/champion-formal-20261012/shared100-v1/final8000-v1`并实核checkpoint/EMA逐身份绑定；下一迁移此final，不选7000或追加训练。MEM旧源TRAIN8条/2056实际控制/225.27s全完，最终权重校验中。新防竞争源51c11d32/v4已Git部署、目标env67回归通过，准备新v2注册重验2/4，不借旧源回执冒充新源通过，公共仍0。

@@ -1,0 +1,43 @@
+{
+  "owner": "Codex CHAMPION-2026",
+  "observed_at": "2026-10-13T15:07:00+08:00",
+  "run": "lc1:/data/workspace/wsy/behavior2026/runs/champion_formal_20261012/shared100-v1",
+  "source_commit": "30b055485b2720c8dc3391a27cea052cab9e4fc7",
+  "status": "completed_target_updates",
+  "completed_updates": 8000,
+  "elapsed_seconds": 78987.66172881285,
+  "terminal_sha256": "ecc49345ae306b65cf0df9cc04cccdd69a800a0cd9be79ab5e1db1adfa24c833",
+  "checkpoint": {
+    "path": "checkpoints/step_00008000",
+    "bytes": 54489569924,
+    "manifest_sha256": "bfe75b12ff30a318fa3c1c30470aa9a90a96ec50611aa8026540bd8036d6a463",
+    "tree_sha256": "ed5ec6b604cf27976cdf070a195a4e9e75d2e66c8cea6513aea3c837d5544fe6"
+  },
+  "ema": {
+    "path": "exports/ema_00008000",
+    "export_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+    "bytes_excluding_manifest": 12649068999,
+    "files_excluding_manifest": 26,
+    "parameters": 75,
+    "author_loader_exact_roundtrip": true,
+    "terminal_checkpoint_binding_verified": true
+  },
+  "fixed_heldout": {
+    "scope": "offline_loss_not_physical_success",
+    "weights": "EMA",
+    "file": "eval-00008000-1791874234181441106.json",
+    "sha256": "3c18f51766178cc58e6ce91a3131bc7fdf0ce10ef150caff1b8d2342674cb3cf",
+    "plan_sha256": "3a10106e2869897be9914ece6d0b9ed7244b61b439292c9859d54752cc2665d7",
+    "observations": 1600,
+    "all": {"fm_loss": 0.18177896578799846, "stage_accuracy": 0.80375},
+    "old50": {"fm_loss": 0.13970872762743966, "stage_accuracy": 0.955},
+    "new50": {"fm_loss": 0.22384920394855726, "stage_accuracy": 0.6525}
+  },
+  "selection": "Pre-agreed terminal8000, not best heldout/public checkpoint; step7000 FM was slightly lower",
+  "public_evaluation_completed": 0,
+  "new_final_model_qscore": null,
+  "new_final_model_success_rate": null,
+  "submission_ready": false,
+  "remaining": ["Exact EMA transfer to RTX", "Actual full-model RTX TRAIN preflight", "All1000 original public evaluation cases", "Submission output validation and model delivery acceptance"],
+  "local_original_receipts": "artifacts/champion-formal-20261012/shared100-v1/final8000-v1"
+}
