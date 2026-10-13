@@ -1,0 +1,5715 @@
+{
+  "schema": "memlite_first150_observational_planner_summary_v1",
+  "observed_at": "2026-10-13T11:59:07.259131+00:00",
+  "seal": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2-diagnosed-stop-v1.json",
+    "sha256": "a5ae63459cd62ac659e49f48675eb99908eca4dde3872768cae708604d5588a4"
+  },
+  "trace_bindings": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_0/model-000/events.jsonl",
+      "sha256": "08cbea4d6bd31dcba2e08e03395311c8a1083901f3cbde5b4a60a8fd3a739816"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_1/model-000/events.jsonl",
+      "sha256": "bf415a3a2326424213db02f2fdf74611b2b503a4a6e1651742657957f7827a07"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_2/model-000/events.jsonl",
+      "sha256": "665d982a7ce5151cd4b173c631627c420f890f9fa926b5e490a5f2d4781563f5"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_3/model-000/events.jsonl",
+      "sha256": "24b80042465d72c60348050aa8e10a6c4d90c41453cab7c2aef35cd2cd0e9f1f"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_4/model-000/events.jsonl",
+      "sha256": "dfab95e8633173b192a817a506f11fda545a3abb8b07d8900197aeb5645faf5a"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_5/model-000/events.jsonl",
+      "sha256": "e3e9d7b6a3eb0f27bcc28905485e0bc04c98b5c94c4ae72568d45d1b1e0ccb31"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_6/model-000/events.jsonl",
+      "sha256": "090d823c75f223f1159cf3a2808f006d2faebad2dc55e042f00b50fe2221656d"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_7/model-000/events.jsonl",
+      "sha256": "6d2eb323d4c8cf51ba0b72b772ffc684c6be97a333c0201a90cb5b36f360e34d"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/workers/gpu_0/model/events.jsonl",
+      "sha256": "a46066c253111067278d92b87a04d35e2911d228352e378add3fc125a06f5eaf"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/workers/gpu_1/model/events.jsonl",
+      "sha256": "7a62258e8d621229ed0479145521613e38cc6466190420d1acbc1efd97b30183"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/workers/gpu_2/model/events.jsonl",
+      "sha256": "a79ca31510e82fce137c226cd5b8878b9ae7631597223876cc988e3169f033bf"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/workers/gpu_3/model/events.jsonl",
+      "sha256": "978ec91f8be69745734a52d1b50550d544b590783f4deb95b9aeb378042d2573"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/workers/gpu_4/model/events.jsonl",
+      "sha256": "9764b65532be73208178a2d3be01b8a8c4ea05e46bf535663a8c5cf93da26a85"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/workers/gpu_5/model/events.jsonl",
+      "sha256": "b0023e84f2e5755071f4b3154a7b257c7ba185efb7d9b12651bb9efcf91a814c"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/workers/gpu_6/model/events.jsonl",
+      "sha256": "60255a50eff70ed4b697468ca05456cb17966d25cb6cd9729be679b748f60c20"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/workers/gpu_7/model/events.jsonl",
+      "sha256": "8cced8f7f9d40b2312451dc7cfe376ebd2c45f2762349ac7ef792c39f64d2989"
+    }
+  ],
+  "models": {
+    "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+    "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "summary": {
+    "episodes": 150,
+    "tasks": 18,
+    "applied_controls": 783032,
+    "planner_calls": 6192,
+    "cached_planner_calls": 0,
+    "navigation_only_episodes": 78,
+    "one_semantic_intent_episodes": 78,
+    "single_navigation_intent_episodes": 78,
+    "controls_by_verb_set": {
+      "NAVIGATE": 593518,
+      "GRASP": 148602,
+      "HANDOVER": 5369,
+      "OPEN_DOOR": 26959,
+      "WIPE_HARD": 4628,
+      "PUSH": 3956
+    },
+    "input_feedback_counts": {
+      "NO_FEEDBACK": 150,
+      "UNKNOWN": 5705,
+      "FAILED": 41,
+      "SUCCEEDED": 296
+    },
+    "predicted_success_same_intent": 275,
+    "predicted_success_changed_intent": 21,
+    "episodes_with_predicted_success": 39,
+    "episodes_with_same_intent_after_predicted_success": 38,
+    "official_successes": 0,
+    "q_final_sum": 0,
+    "navigation_control_fraction": 0.757974131325412,
+    "same_intent_given_predicted_success_fraction": 0.9290540540540541
+  },
+  "tasks": [
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "episodes": 10,
+      "navigation_only": 6,
+      "one_semantic_intent": 6,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 17,
+      "predicted_success_same_intent": 16
+    },
+    {
+      "task": "clean_a_keyboard",
+      "episodes": 10,
+      "navigation_only": 9,
+      "one_semantic_intent": 9,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 0,
+      "predicted_success_same_intent": 0
+    },
+    {
+      "task": "clean_a_trumpet",
+      "episodes": 4,
+      "navigation_only": 0,
+      "one_semantic_intent": 0,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 11,
+      "predicted_success_same_intent": 8
+    },
+    {
+      "task": "composting_waste",
+      "episodes": 10,
+      "navigation_only": 9,
+      "one_semantic_intent": 9,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 0,
+      "predicted_success_same_intent": 0
+    },
+    {
+      "task": "cook_broccolini",
+      "episodes": 10,
+      "navigation_only": 8,
+      "one_semantic_intent": 8,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 4,
+      "predicted_success_same_intent": 3
+    },
+    {
+      "task": "hanging_pictures",
+      "episodes": 10,
+      "navigation_only": 2,
+      "one_semantic_intent": 2,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 36,
+      "predicted_success_same_intent": 30
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "episodes": 6,
+      "navigation_only": 6,
+      "one_semantic_intent": 6,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 0,
+      "predicted_success_same_intent": 0
+    },
+    {
+      "task": "installing_a_modem",
+      "episodes": 10,
+      "navigation_only": 9,
+      "one_semantic_intent": 9,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 0,
+      "predicted_success_same_intent": 0
+    },
+    {
+      "task": "installing_a_scanner",
+      "episodes": 4,
+      "navigation_only": 3,
+      "one_semantic_intent": 3,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 0,
+      "predicted_success_same_intent": 0
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "episodes": 10,
+      "navigation_only": 7,
+      "one_semantic_intent": 7,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 5,
+      "predicted_success_same_intent": 4
+    },
+    {
+      "task": "make_cabinet_doors",
+      "episodes": 10,
+      "navigation_only": 7,
+      "one_semantic_intent": 7,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 0,
+      "predicted_success_same_intent": 0
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "episodes": 8,
+      "navigation_only": 1,
+      "one_semantic_intent": 1,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 0,
+      "predicted_success_same_intent": 0
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "episodes": 4,
+      "navigation_only": 1,
+      "one_semantic_intent": 1,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 28,
+      "predicted_success_same_intent": 26
+    },
+    {
+      "task": "organizing_art_supplies",
+      "episodes": 4,
+      "navigation_only": 1,
+      "one_semantic_intent": 1,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 67,
+      "predicted_success_same_intent": 67
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "episodes": 10,
+      "navigation_only": 1,
+      "one_semantic_intent": 1,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 25,
+      "predicted_success_same_intent": 22
+    },
+    {
+      "task": "sweeping_garage",
+      "episodes": 10,
+      "navigation_only": 2,
+      "one_semantic_intent": 2,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 70,
+      "predicted_success_same_intent": 66
+    },
+    {
+      "task": "turning_on_radio",
+      "episodes": 10,
+      "navigation_only": 1,
+      "one_semantic_intent": 1,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 20,
+      "predicted_success_same_intent": 20
+    },
+    {
+      "task": "vacuuming_floors",
+      "episodes": 10,
+      "navigation_only": 5,
+      "one_semantic_intent": 5,
+      "success_count": 0,
+      "q_final_sum": 0,
+      "predicted_success_inputs": 13,
+      "predicted_success_same_intent": 13
+    }
+  ],
+  "cases": [
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-attach_a_camera_to_a_tripod-301-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 2432,
+        "GRASP": 3436
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37,
+        "FAILED": 1,
+        "SUCCEEDED": 7
+      },
+      "predicted_success_same_intent": 7,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 6,
+      "max_reported_same_intent_controls": 3328,
+      "success_confidence_range": [
+        0.8580026303832307,
+        0.9751395454127167
+      ],
+      "first_positive_feedback": {
+        "control_step": 2688,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9107450336759193
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors_nlswvt_0",
+            "target": "digital_camera_87",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors_nlswvt_0",
+            "target": "digital_camera_87",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-attach_a_camera_to_a_tripod-302-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 2412,
+        "GRASP": 3456
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 38,
+        "FAILED": 1,
+        "SUCCEEDED": 6
+      },
+      "predicted_success_same_intent": 5,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 2,
+      "max_reported_same_intent_controls": 3456,
+      "success_confidence_range": [
+        0.8797293285240685,
+        0.9769090059953063
+      ],
+      "first_positive_feedback": {
+        "control_step": 2304,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.912166298425394
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors_nlswvt_0",
+            "target": "digital_camera_87",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors_nlswvt_0",
+            "target": "digital_camera_87",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-attach_a_camera_to_a_tripod-303-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5868
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-attach_a_camera_to_a_tripod-304-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5868
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-attach_a_camera_to_a_tripod-305-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5868
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-attach_a_camera_to_a_tripod-306-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5868
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-attach_a_camera_to_a_tripod-307-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5868
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-attach_a_camera_to_a_tripod-308-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3456,
+        "GRASP": 2412
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 44,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3456,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-attach_a_camera_to_a_tripod-309-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3072,
+        "GRASP": 2796
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 41,
+        "SUCCEEDED": 4
+      },
+      "predicted_success_same_intent": 4,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 2,
+      "max_reported_same_intent_controls": 3072,
+      "success_confidence_range": [
+        0.8545190670497264,
+        0.9275058920040734
+      ],
+      "first_positive_feedback": {
+        "control_step": 3840,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8738857336047884
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors_nlswvt_0",
+            "target": "digital_camera_87",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors_nlswvt_0",
+            "target": "digital_camera_87",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-attach_a_camera_to_a_tripod-310-r0",
+      "steps": 5868,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5868
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-301-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5815
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-302-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5815
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-303-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5815
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-304-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 4279,
+        "PUSH": 1536
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 2176,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-305-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5815
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-306-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5815
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-307-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5815
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-308-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5815
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-309-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5815
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_keyboard",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-clean_a_keyboard-310-r0",
+      "steps": 5815,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 46,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5815
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-clean_a_trumpet-301-r0",
+      "steps": 7961,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 63,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 4761,
+        "GRASP": 3200
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 59,
+        "SUCCEEDED": 3
+      },
+      "predicted_success_same_intent": 2,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 2,
+      "max_reported_same_intent_controls": 3200,
+      "success_confidence_range": [
+        0.9547906717629565,
+        0.9774012761692494
+      ],
+      "first_positive_feedback": {
+        "control_step": 5760,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9743197922183902
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk_aduafr_0",
+            "target": "scrub_brush_86",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk_aduafr_0",
+            "target": "scrub_brush_86",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-clean_a_trumpet-302-r0",
+      "steps": 7961,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 63,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 2048,
+        "GRASP": 5913
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 58,
+        "FAILED": 1,
+        "SUCCEEDED": 3
+      },
+      "predicted_success_same_intent": 3,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 1,
+      "max_reported_same_intent_controls": 5888,
+      "success_confidence_range": [
+        0.8565470445264742,
+        0.893544374409527
+      ],
+      "first_positive_feedback": {
+        "control_step": 4480,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8581569101749738
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk_aduafr_0",
+            "target": "scrub_brush_86",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk_aduafr_0",
+            "target": "scrub_brush_86",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-clean_a_trumpet-303-r0",
+      "steps": 7961,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 63,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5657,
+        "GRASP": 2304
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 58,
+        "SUCCEEDED": 4
+      },
+      "predicted_success_same_intent": 3,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 3,
+      "max_reported_same_intent_controls": 4736,
+      "success_confidence_range": [
+        0.9585774412676967,
+        0.9839953056966255
+      ],
+      "first_positive_feedback": {
+        "control_step": 2816,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9804939783070289
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk_aduafr_0",
+            "target": "scrub_brush_86",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk_aduafr_0",
+            "target": "scrub_brush_86",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-clean_a_trumpet-304-r0",
+      "steps": 7961,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 63,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 4,
+      "semantic_switches": 3,
+      "controls_by_verb_set": {
+        "NAVIGATE": 4480,
+        "GRASP": 896,
+        "WIPE_HARD": 2585
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 59,
+        "FAILED": 2,
+        "SUCCEEDED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 2,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 2816,
+      "success_confidence_range": [
+        0.9822272264374259,
+        0.9822272264374259
+      ],
+      "first_positive_feedback": {
+        "control_step": 3712,
+        "same_semantic_intent": false,
+        "confidence": [
+          0.9822272264374259
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk_aduafr_0",
+            "target": "scrub_brush_86",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "",
+            "target": "trumpet_87",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "NAVIGATE"
+          }
+        ]
+      }
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-301-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5458
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-302-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5458
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-303-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5458
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-304-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5458
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-305-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5458
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-306-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5458
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-307-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5458
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-308-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5458
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-309-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5458
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-composting_waste-310-r0",
+      "steps": 5458,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 43,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5376,
+        "GRASP": 82
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 42
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5376,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-301-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6927
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 54
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6912,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-302-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6927
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 54
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6912,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-303-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6927
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 54
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6912,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-304-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6927
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 54
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6912,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-305-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5903,
+        "GRASP": 1024
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 49,
+        "FAILED": 1,
+        "SUCCEEDED": 4
+      },
+      "predicted_success_same_intent": 3,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 3,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": [
+        0.9690345366080707,
+        0.9850407907132175
+      ],
+      "first_positive_feedback": {
+        "control_step": 4480,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9690345366080707
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "commercial_kitchen_table",
+            "target": "plate",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "commercial_kitchen_table",
+            "target": "plate",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-306-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6927
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 54
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6912,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-307-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6927
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 54
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6912,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-308-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6272,
+        "GRASP": 655
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 54
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6272,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-309-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6927
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 54
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6912,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-cook_broccolini-310-r0",
+      "steps": 6927,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 55,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6927
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 54
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6912,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-301-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3198,
+        "GRASP": 384
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 24,
+        "FAILED": 1,
+        "SUCCEEDED": 2
+      },
+      "predicted_success_same_intent": 1,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 1,
+      "max_reported_same_intent_controls": 1792,
+      "success_confidence_range": [
+        0.9375290603801097,
+        0.9774864662034329
+      ],
+      "first_positive_feedback": {
+        "control_step": 1536,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9375290603801097
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-302-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1918,
+        "GRASP": 1664
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 19,
+        "FAILED": 1,
+        "SUCCEEDED": 7
+      },
+      "predicted_success_same_intent": 6,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 6,
+      "max_reported_same_intent_controls": 1664,
+      "success_confidence_range": [
+        0.9589535987317638,
+        0.9844886776298093
+      ],
+      "first_positive_feedback": {
+        "control_step": 1408,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9844886776298093
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-303-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 768,
+        "GRASP": 2814
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 27
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 2688,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-304-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 3,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1790,
+        "GRASP": 768,
+        "HANDOVER": 1024
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 24,
+        "SUCCEEDED": 3
+      },
+      "predicted_success_same_intent": 2,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 2,
+      "max_reported_same_intent_controls": 1152,
+      "success_confidence_range": [
+        0.9589475488501655,
+        0.9684587901116226
+      ],
+      "first_positive_feedback": {
+        "control_step": 1664,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9628626423628995
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-305-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3582
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 27
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3456,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-306-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1024,
+        "GRASP": 2558
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 27
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 2432,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-307-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1918,
+        "GRASP": 1664
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 16,
+        "FAILED": 1,
+        "SUCCEEDED": 10
+      },
+      "predicted_success_same_intent": 9,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 9,
+      "max_reported_same_intent_controls": 1664,
+      "success_confidence_range": [
+        0.9709089628073729,
+        0.9809162810868144
+      ],
+      "first_positive_feedback": {
+        "control_step": 1408,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.972635108741636
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-308-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 766,
+        "GRASP": 2816
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 15,
+        "SUCCEEDED": 12
+      },
+      "predicted_success_same_intent": 11,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 9,
+      "max_reported_same_intent_controls": 2816,
+      "success_confidence_range": [
+        0.8643348268213584,
+        0.9824416715851401
+      ],
+      "first_positive_feedback": {
+        "control_step": 896,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8643348268213584
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-309-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3582
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 27
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3456,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-hanging_pictures-310-r0",
+      "steps": 3582,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 28,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 768,
+        "GRASP": 384,
+        "HANDOVER": 2430
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 24,
+        "FAILED": 1,
+        "SUCCEEDED": 2
+      },
+      "predicted_success_same_intent": 1,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 1,
+      "max_reported_same_intent_controls": 2304,
+      "success_confidence_range": [
+        0.9744886714640609,
+        0.9804759683343678
+      ],
+      "first_positive_feedback": {
+        "control_step": 1024,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9804759683343678
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bar_egwapq_0",
+            "target": "poster_73",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_fax_machine-301-r0",
+      "steps": 6116,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 48,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6116
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 47
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6016,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_fax_machine-302-r0",
+      "steps": 6116,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 48,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6116
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 47
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6016,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_fax_machine-303-r0",
+      "steps": 6116,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 48,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6116
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 47
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6016,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_fax_machine-304-r0",
+      "steps": 6116,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 48,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6116
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 47
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6016,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_a_fax_machine-309-r0",
+      "steps": 6116,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 48,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6116
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 47
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6016,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_a_fax_machine-310-r0",
+      "steps": 6116,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 48,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6116
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 47
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6016,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_modem-301-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3620
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_modem-302-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3620
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_modem-303-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3620
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_modem-304-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3620
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_modem-305-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3620
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_modem-306-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3620
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_modem-307-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3584,
+        "GRASP": 36
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-installing_a_modem-308-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3620
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_a_modem-309-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3620
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_a_modem-310-r0",
+      "steps": 3620,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3620
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_a_scanner-301-r0",
+      "steps": 6388,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 50,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6388
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 49
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6272,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_a_scanner-302-r0",
+      "steps": 6388,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 50,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3968,
+        "PUSH": 2420
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 49
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3968,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_a_scanner-303-r0",
+      "steps": 6388,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 50,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6388
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 49
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6272,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_a_scanner-304-r0",
+      "steps": 6388,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 50,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6388
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 49
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6272,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-301-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3854
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-302-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3072,
+        "GRASP": 782
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3072,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-303-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1664,
+        "GRASP": 2190
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 2176,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-304-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3854
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-305-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1934,
+        "GRASP": 1920
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 24,
+        "FAILED": 1,
+        "SUCCEEDED": 5
+      },
+      "predicted_success_same_intent": 4,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 4,
+      "max_reported_same_intent_controls": 1920,
+      "success_confidence_range": [
+        0.982684192048271,
+        0.9890980992663585
+      ],
+      "first_positive_feedback": {
+        "control_step": 2048,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9890980992663585
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table",
+            "target": "fire_alarm",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table",
+            "target": "fire_alarm",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-306-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3854
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-307-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3854
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-308-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3854
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-309-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3854
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-installing_smoke_detectors-310-r0",
+      "steps": 3854,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 31,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3854
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-301-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5164
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 40
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5120,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-302-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5164
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 40
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5120,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-303-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5164
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 40
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5120,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-304-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5164
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 40
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5120,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-305-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5164
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 40
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5120,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-306-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5164
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 40
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5120,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-307-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 896,
+        "GRASP": 4268
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 39,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 4224,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-308-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5036,
+        "OPEN_DOOR": 128
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 40
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-309-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5036,
+        "GRASP": 128
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 40
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3968,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_cabinet_doors-310-r0",
+      "steps": 5164,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 41,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5164
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 40
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 5120,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_microwave_popcorn-301-r0",
+      "steps": 4857,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 38,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 512,
+        "OPEN_DOOR": 4345
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 4224,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_microwave_popcorn-302-r0",
+      "steps": 4857,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 38,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1664,
+        "OPEN_DOOR": 3193
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3072,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_microwave_popcorn-303-r0",
+      "steps": 4857,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 38,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1408,
+        "OPEN_DOOR": 3449
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3328,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_microwave_popcorn-304-r0",
+      "steps": 4857,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 38,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1024,
+        "OPEN_DOOR": 3833
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3712,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_microwave_popcorn-305-r0",
+      "steps": 4857,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 38,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1408,
+        "OPEN_DOOR": 3449
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3328,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_microwave_popcorn-306-r0",
+      "steps": 4857,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 38,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 768,
+        "OPEN_DOOR": 4089
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3968,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_microwave_popcorn-307-r0",
+      "steps": 4857,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 38,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 4857
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 4736,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_microwave_popcorn-308-r0",
+      "steps": 4857,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 38,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 384,
+        "OPEN_DOOR": 4473
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 4352,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_rose_centerpieces-301-r0",
+      "steps": 6799,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 54,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 3,
+      "controls_by_verb_set": {
+        "NAVIGATE": 2304,
+        "GRASP": 4495
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 30,
+        "SUCCEEDED": 23
+      },
+      "predicted_success_same_intent": 22,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 21,
+      "max_reported_same_intent_controls": 2688,
+      "success_confidence_range": [
+        0.9352641981092229,
+        0.9778913454863447
+      ],
+      "first_positive_feedback": {
+        "control_step": 2816,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9767282189223927
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bottom_cabinet",
+            "target": "rose",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bottom_cabinet",
+            "target": "rose",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_rose_centerpieces-302-r0",
+      "steps": 6799,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 54,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5120,
+        "GRASP": 1679
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 52,
+        "SUCCEEDED": 1
+      },
+      "predicted_success_same_intent": 1,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 1,
+      "max_reported_same_intent_controls": 5120,
+      "success_confidence_range": [
+        0.9592160312644864,
+        0.9592160312644864
+      ],
+      "first_positive_feedback": {
+        "control_step": 5888,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9592160312644864
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bottom_cabinet",
+            "target": "rose",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bottom_cabinet",
+            "target": "rose",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_rose_centerpieces-303-r0",
+      "steps": 6799,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 54,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 3,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5760,
+        "GRASP": 1039
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 49,
+        "SUCCEEDED": 4
+      },
+      "predicted_success_same_intent": 3,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 2,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": [
+        0.9229522363375028,
+        0.977650959921197
+      ],
+      "first_positive_feedback": {
+        "control_step": 2560,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9732782173101128
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bottom_cabinet",
+            "target": "rose",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "bottom_cabinet",
+            "target": "rose",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-make_rose_centerpieces-304-r0",
+      "steps": 6799,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 54,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6799
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 53
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6784,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-organizing_art_supplies-301-r0",
+      "steps": 9292,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 73,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1920,
+        "GRASP": 7372
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 35,
+        "FAILED": 1,
+        "SUCCEEDED": 36
+      },
+      "predicted_success_same_intent": 36,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 27,
+      "max_reported_same_intent_controls": 7296,
+      "success_confidence_range": [
+        0.8511398468377402,
+        0.9695508317522826
+      ],
+      "first_positive_feedback": {
+        "control_step": 3712,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8755947028912325
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk",
+            "target": "glue_stick",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk",
+            "target": "glue_stick",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-organizing_art_supplies-302-r0",
+      "steps": 9292,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 73,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 9292
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 72
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 9216,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-organizing_art_supplies-303-r0",
+      "steps": 9292,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 73,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1792,
+        "GRASP": 7500
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 61,
+        "SUCCEEDED": 11
+      },
+      "predicted_success_same_intent": 11,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 6,
+      "max_reported_same_intent_controls": 7424,
+      "success_confidence_range": [
+        0.85689546326062,
+        0.920538396772146
+      ],
+      "first_positive_feedback": {
+        "control_step": 2176,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.85689546326062
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk",
+            "target": "glue_stick",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk",
+            "target": "glue_stick",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-organizing_art_supplies-304-r0",
+      "steps": 9292,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 73,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3660,
+        "GRASP": 5632
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 52,
+        "SUCCEEDED": 20
+      },
+      "predicted_success_same_intent": 20,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 6,
+      "max_reported_same_intent_controls": 5632,
+      "success_confidence_range": [
+        0.8746568779158003,
+        0.9804307924930097
+      ],
+      "first_positive_feedback": {
+        "control_step": 3968,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9804307924930097
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk",
+            "target": "glue_stick",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "desk",
+            "target": "glue_stick",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-scrubbing_bathroom_floor-301-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1920,
+        "GRASP": 2811
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 35,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 2688,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-scrubbing_bathroom_floor-302-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3200,
+        "GRASP": 1024,
+        "HANDOVER": 507
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 29,
+        "FAILED": 1,
+        "SUCCEEDED": 6
+      },
+      "predicted_success_same_intent": 5,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 5,
+      "max_reported_same_intent_controls": 3200,
+      "success_confidence_range": [
+        0.9672440780214775,
+        0.986707019823032
+      ],
+      "first_positive_feedback": {
+        "control_step": 3584,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9859848423411901
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "scrub_brush",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "scrub_brush",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-scrubbing_bathroom_floor-303-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 640,
+        "GRASP": 4091
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 35,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3968,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-scrubbing_bathroom_floor-304-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3840,
+        "GRASP": 891
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 34,
+        "FAILED": 2
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 2,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3840,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-scrubbing_bathroom_floor-305-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 896,
+        "GRASP": 3835
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 35,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3712,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-scrubbing_bathroom_floor-306-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1664,
+        "GRASP": 3067
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 35,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 2944,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-scrubbing_bathroom_floor-307-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 4,
+      "semantic_switches": 3,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1024,
+        "GRASP": 640,
+        "HANDOVER": 1024,
+        "WIPE_HARD": 2043
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 33,
+        "FAILED": 1,
+        "SUCCEEDED": 2
+      },
+      "predicted_success_same_intent": 1,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 1,
+      "max_reported_same_intent_controls": 1920,
+      "success_confidence_range": [
+        0.9226391994214516,
+        0.9831229543199361
+      ],
+      "first_positive_feedback": {
+        "control_step": 1536,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9831229543199361
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "scrub_brush",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "scrub_brush",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-scrubbing_bathroom_floor-308-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 384,
+        "GRASP": 4347
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 35,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 4224,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-scrubbing_bathroom_floor-309-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 4,
+      "semantic_switches": 3,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1787,
+        "GRASP": 2560,
+        "HANDOVER": 384
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 18,
+        "FAILED": 1,
+        "SUCCEEDED": 17
+      },
+      "predicted_success_same_intent": 16,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 16,
+      "max_reported_same_intent_controls": 2560,
+      "success_confidence_range": [
+        0.9305286205251053,
+        0.9852526002186198
+      ],
+      "first_positive_feedback": {
+        "control_step": 1792,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9802404151225852
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "scrub_brush",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "scrub_brush",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-scrubbing_bathroom_floor-310-r0",
+      "steps": 4731,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 37,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 4731
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 36
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 4608,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-301-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5430,
+        "GRASP": 1280
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 44,
+        "FAILED": 1,
+        "SUCCEEDED": 7
+      },
+      "predicted_success_same_intent": 7,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 7,
+      "max_reported_same_intent_controls": 2944,
+      "success_confidence_range": [
+        0.9369280676524032,
+        0.9786938120823153
+      ],
+      "first_positive_feedback": {
+        "control_step": 3328,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9369280676524032
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-302-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3968,
+        "GRASP": 2742
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 43,
+        "FAILED": 4,
+        "SUCCEEDED": 5
+      },
+      "predicted_success_same_intent": 5,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 4,
+      "longest_consecutive_predicted_success_same_intent": 5,
+      "max_reported_same_intent_controls": 3968,
+      "success_confidence_range": [
+        0.8514212694890569,
+        0.979359345197577
+      ],
+      "first_positive_feedback": {
+        "control_step": 6144,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8931455838570878
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-303-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3382,
+        "GRASP": 3328
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 37,
+        "FAILED": 1,
+        "SUCCEEDED": 14
+      },
+      "predicted_success_same_intent": 13,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 6,
+      "max_reported_same_intent_controls": 3328,
+      "success_confidence_range": [
+        0.8541645293550494,
+        0.9690986768648641
+      ],
+      "first_positive_feedback": {
+        "control_step": 2688,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9655978937562609
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-304-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 896,
+        "GRASP": 5814
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 49,
+        "FAILED": 1,
+        "SUCCEEDED": 2
+      },
+      "predicted_success_same_intent": 2,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 1,
+      "max_reported_same_intent_controls": 5760,
+      "success_confidence_range": [
+        0.8605219627908781,
+        0.962536367514357
+      ],
+      "first_positive_feedback": {
+        "control_step": 2048,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.962536367514357
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-305-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 4022,
+        "GRASP": 2688
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 33,
+        "FAILED": 1,
+        "SUCCEEDED": 18
+      },
+      "predicted_success_same_intent": 17,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 17,
+      "max_reported_same_intent_controls": 2688,
+      "success_confidence_range": [
+        0.956973516014035,
+        0.9861902979563609
+      ],
+      "first_positive_feedback": {
+        "control_step": 2048,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9730548732779067
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-306-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1664,
+        "GRASP": 5046
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 41,
+        "FAILED": 1,
+        "SUCCEEDED": 10
+      },
+      "predicted_success_same_intent": 10,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 5,
+      "max_reported_same_intent_controls": 4992,
+      "success_confidence_range": [
+        0.8727484792495709,
+        0.9682717683526778
+      ],
+      "first_positive_feedback": {
+        "control_step": 2304,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9280431011361386
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-307-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6710
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 52
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6656,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-308-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 5558,
+        "GRASP": 1152
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 44,
+        "FAILED": 1,
+        "SUCCEEDED": 7
+      },
+      "predicted_success_same_intent": 6,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 6,
+      "max_reported_same_intent_controls": 3712,
+      "success_confidence_range": [
+        0.9515448420581756,
+        0.9862325874808958
+      ],
+      "first_positive_feedback": {
+        "control_step": 2176,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9515448420581756
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-309-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 3,
+      "semantic_switches": 2,
+      "controls_by_verb_set": {
+        "NAVIGATE": 4662,
+        "GRASP": 2048
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 45,
+        "SUCCEEDED": 7
+      },
+      "predicted_success_same_intent": 6,
+      "predicted_success_changed_intent": 1,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 3,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": [
+        0.8957749531248902,
+        0.985163392678813
+      ],
+      "first_positive_feedback": {
+        "control_step": 1408,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.9596844463284913
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "broom",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_resume_v2-sweeping_garage-310-r0",
+      "steps": 6710,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 53,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 6710
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 52
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 6656,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-301-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1664,
+        "GRASP": 1561
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 24,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 1664,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-302-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1664,
+        "GRASP": 1561
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 25
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 1664,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-303-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3225
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 25
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3200,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-304-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1024,
+        "GRASP": 2201
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 24,
+        "SUCCEEDED": 1
+      },
+      "predicted_success_same_intent": 1,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 1,
+      "max_reported_same_intent_controls": 2176,
+      "success_confidence_range": [
+        0.8746901556444939,
+        0.8746901556444939
+      ],
+      "first_positive_feedback": {
+        "control_step": 1536,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8746901556444939
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table_koagbh_0",
+            "target": "radio_89",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table_koagbh_0",
+            "target": "radio_89",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-305-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1024,
+        "GRASP": 2201
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 25
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 2176,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-306-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1664,
+        "GRASP": 1561
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 21,
+        "FAILED": 1,
+        "SUCCEEDED": 3
+      },
+      "predicted_success_same_intent": 3,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 2,
+      "max_reported_same_intent_controls": 1664,
+      "success_confidence_range": [
+        0.8597013781835552,
+        0.8886819158496594
+      ],
+      "first_positive_feedback": {
+        "control_step": 2688,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8886819158496594
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table_koagbh_0",
+            "target": "radio_89",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table_koagbh_0",
+            "target": "radio_89",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-307-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 2688,
+        "GRASP": 537
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 24,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 2688,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-308-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1280,
+        "GRASP": 1945
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 24,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 1920,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-309-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 768,
+        "GRASP": 2457
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 16,
+        "SUCCEEDED": 9
+      },
+      "predicted_success_same_intent": 9,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 6,
+      "max_reported_same_intent_controls": 2432,
+      "success_confidence_range": [
+        0.8552849391930376,
+        0.9775166630541754
+      ],
+      "first_positive_feedback": {
+        "control_step": 1792,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8671911944954993
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table_koagbh_0",
+            "target": "radio_89",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table_koagbh_0",
+            "target": "radio_89",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-turning_on_radio-310-r0",
+      "steps": 3225,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 26,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1280,
+        "GRASP": 1945
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 18,
+        "SUCCEEDED": 7
+      },
+      "predicted_success_same_intent": 7,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 6,
+      "max_reported_same_intent_controls": 1920,
+      "success_confidence_range": [
+        0.8782628460621192,
+        0.9384642345713011
+      ],
+      "first_positive_feedback": {
+        "control_step": 2304,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8782628460621192
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table_koagbh_0",
+            "target": "radio_89",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "coffee_table_koagbh_0",
+            "target": "radio_89",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-301-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3618
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-302-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 896,
+        "GRASP": 2722
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 21,
+        "SUCCEEDED": 7
+      },
+      "predicted_success_same_intent": 7,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 5,
+      "max_reported_same_intent_controls": 2688,
+      "success_confidence_range": [
+        0.8517791893655864,
+        0.92091637217256
+      ],
+      "first_positive_feedback": {
+        "control_step": 2432,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8517791893655864
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "vacuum",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "vacuum",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-303-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3618
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-304-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 2304,
+        "GRASP": 1314
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 24,
+        "FAILED": 1,
+        "SUCCEEDED": 3
+      },
+      "predicted_success_same_intent": 3,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 2,
+      "max_reported_same_intent_controls": 2304,
+      "success_confidence_range": [
+        0.8563264357120213,
+        0.9335584900004921
+      ],
+      "first_positive_feedback": {
+        "control_step": 3200,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8563264357120213
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "vacuum",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "vacuum",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-305-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3618
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-306-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3618
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-307-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 896,
+        "GRASP": 2722
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 25,
+        "SUCCEEDED": 3
+      },
+      "predicted_success_same_intent": 3,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 3,
+      "max_reported_same_intent_controls": 2688,
+      "success_confidence_range": [
+        0.8628051110041708,
+        0.9135395820529747
+      ],
+      "first_positive_feedback": {
+        "control_step": 3328,
+        "same_semantic_intent": true,
+        "confidence": [
+          0.8691205857035461
+        ],
+        "previous_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "vacuum",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ],
+        "next_bundle": [
+          {
+            "arm": "UNSPECIFIED",
+            "destination": "",
+            "source": "floors",
+            "target": "vacuum",
+            "target_part": "",
+            "unbound_relation": "",
+            "verb": "GRASP"
+          }
+        ]
+      }
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-308-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3200,
+        "GRASP": 418
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 27,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3200,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-309-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 2,
+      "semantic_switches": 1,
+      "controls_by_verb_set": {
+        "NAVIGATE": 1792,
+        "GRASP": 1826
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 27,
+        "FAILED": 1
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 1,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 1792,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    },
+    {
+      "task": "vacuuming_floors",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "episode": "memlite_final100_20261013_v2-vacuuming_floors-310-r0",
+      "steps": 3618,
+      "official_success": false,
+      "official_q_final": 0,
+      "planner_calls": 29,
+      "cached_planner_calls": 0,
+      "distinct_semantic_intents": 1,
+      "semantic_switches": 0,
+      "controls_by_verb_set": {
+        "NAVIGATE": 3618
+      },
+      "input_feedback_counts": {
+        "NO_FEEDBACK": 1,
+        "UNKNOWN": 28
+      },
+      "predicted_success_same_intent": 0,
+      "predicted_success_changed_intent": 0,
+      "predicted_failure_same_intent": 0,
+      "longest_consecutive_predicted_success_same_intent": 0,
+      "max_reported_same_intent_controls": 3584,
+      "success_confidence_range": null,
+      "first_positive_feedback": null
+    }
+  ],
+  "scope": "Exactly150 previously sealed and causally audited complete episodes; no incomplete or retried-error cases; no new rollout, training or parameter change.",
+  "notice": "Planner repetition is an observed failure pattern, not proof of which layer caused it. Calibrated GRASP outcome estimates are not privileged physical truth; unchanged intent after estimated success does not itself prove an ignored correct signal. NO_FEEDBACK is the initial none sentinel, not UNKNOWN.",
+  "sampling_limitation": "Completed cases so far cover18 tasks, not a random or complete sample of100; do not generalize these proportions to the whole benchmark."
+}
