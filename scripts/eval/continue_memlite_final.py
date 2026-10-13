@@ -53,12 +53,24 @@ def physics_error(text):
     """Narrow diagnosis; OOM, timeouts and malformed model output are NOT this."""
     text = re.sub(r'\x1b\[[0-9;]*m', '', text)
     pattern = (r'AssertionError: /World/scene_(\d+)/controllable__r1pro__robot_r1/'
-               r'base_link orientation tensor\(\[nan, nan, nan, nan\]\) is not a unit quaternion\.')
+               r'([A-Za-z][A-Za-z0-9_]*link[0-9]*) orientation '
+               r'tensor\(\[nan, nan, nan, nan\]\) is not a unit quaternion\.')
     matches = list(re.finditer(pattern, text))
-    if len(matches) != 1 or 'rigid_dynamic_prim.py' not in text or 'Traceback (most recent call last)' not in text:
+    if (not matches or len({m[0] for m in matches}) != 1
+            or 'rigid_dynamic_prim.py' not in text or 'Traceback (most recent call last)' not in text):
+        return None
+    # OmniGibson reports the callback exception again when raising its wrapper.
+    # Accept duplicate copies of ONE exact link/slot failure, not other errors.
+    exceptions = list(re.finditer(r'\b[A-Za-z_][\w.]*(?:Error|Exception): [^\r\n]+', text))
+    allowed = {matches[0][0], 'AssertionError: read_from_physx must be called during a physics step',
+               'RuntimeError: Exception occurred during pre-physics step'}
+    if (not exceptions or exceptions[0].start() != matches[0].start()
+            or any(e[0].strip() not in allowed for e in exceptions)
+            or re.search(r'CUDA out of memory|CUDA error:|device-side assert', text, re.I)):
         return None
     return dict(kind='simulator_nonfinite_robot_pose', scene_slot=int(matches[0][1]),
-                exception=matches[0][0], official_score_available=False,
+                robot_link=matches[0][2], exception=matches[0][0], traceback_copies=len(matches),
+                official_score_available=False,
                 cause='Undetermined: finite model actions do not prove stable physics or correct action semantics')
 
 
@@ -181,12 +193,185 @@ def remaining_parts(m, sealed):
     return groups
 
 
+def root_registration(prior, seen=None):
+    """Bind every continuation to the same original policy and case schedule."""
+    prior = Path(prior).resolve(); seen = set() if seen is None else seen
+    if prior in seen:
+        raise ValueError('Cyclic continuation lineage')
+    seen.add(prior)
+    m = read(prior / 'manifest.json')
+    if m['schema'] == 'memlite_final_public100_run_v1':
+        return prior, m, binding(prior / 'manifest.json')
+    if m['schema'] != 'memlite_final_explicit_continuation_v1':
+        raise ValueError('Unknown original evaluation schema')
+    if m['prior_manifest']['path'] != str(Path(m['prior']) / 'manifest.json'):
+        raise ValueError('Continuation parent path changed')
+    check_binding(m['prior_manifest']); check_binding(m['seal'])
+    root, original, pin = root_registration(m['prior'], seen)
+    if (m.get('root_manifest', pin) != pin or m['runtime_commit'] != original['source_commit']
+            or m['policy_changed'] is not False or m['optimizer_updates'] != 0
+            or any(m[k] != original[k] for k in ('tasks', 'cases', 'config_path', 'config_sha256',
+                                                 'pack', 'pack_manifest_sha256'))):
+        raise ValueError('Policy, data, or task identities changed across continuations')
+    return root, original, pin
+
+
+def require_exited(pids):
+    if any(pid is not None and Path(f'/proc/{pid}').exists() for pid in pids):
+        raise ValueError('Original process still exists; do not seal live output')
+
+
+def freeze_continuation(prior, output):
+    """Seal an explicitly diagnosed stopped continuation, without rerolling it.
+
+    Previous completed originals/errors remain immutable references. A global
+    STOP interruption is restartable only when no independent error or already
+    published uncommitted official result is present. Never infer a zero score.
+    """
+    prior, output = Path(prior).resolve(), Path(output).resolve()
+    if output.exists() or not output.parent.is_dir():
+        raise ValueError('New receipt in an existing evidence directory required')
+    m, state = read(prior / 'manifest.json'), read(prior / 'status.json')
+    if (m['schema'] != 'memlite_final_explicit_continuation_v1' or state['status'] != 'needs_diagnosis'
+            or not state.get('finished') or not (prior / 'STOP').exists() or not state['failed_gpus']):
+        raise ValueError('Explicitly stopped continuation with a diagnosed failure required')
+    require_exited([state['pid'], *state['worker_pids'].values()])
+    root, original, root_pin = root_registration(prior)
+    frozen_source(m['runtime_source'], original['source_commit'])
+    sealed = read(m['seal']['path'])
+    if (sealed['prior'] != m['prior'] or sealed['manifest'] != m['prior_manifest']
+            or sealed['completed'] != m['inherited_completed']
+            or len(sealed['execution_errors']) != m['initial_execution_errors']):
+        raise ValueError('Inherited seal identity/counts changed')
+    evidence = list(sealed['evidence']) + [m['seal'], root_pin, binding(root / 'accepted-preflight.json'),
+        binding(prior / 'manifest.json'), binding(prior / 'status.json'), binding(prior / 'STOP')]
+    for entry in evidence:
+        check_binding(entry)
+    records, errors = list(sealed['records']), list(sealed['execution_errors'])
+    for row in records:
+        check_binding(row['metrics']); check_binding(row['video'])
+    workers, parts = {}, {}
+    for group in m['groups']:
+        gpu = group['gpu']; path = prior / 'workers' / f'gpu_{gpu}'
+        worker = read(path / 'status.json'); workers[gpu] = worker
+        require_exited([worker['pid'], worker.get('model_pid'), worker.get('sim_pid')])
+        if (worker['status'] not in ('needs_diagnosis', 'completed', 'completed_with_execution_errors')
+                or not worker.get('finished') or worker.get('final_verification_error')):
+            raise ValueError('Worker lacks a verified post-stop terminal state')
+        model_dirs = sorted(p for p in path.glob('model-*') if p.is_dir())
+        finals = [binding(p / 'weights-final.json') for p in model_dirs]
+        if not model_dirs or finals != worker['model_generations']:
+            raise ValueError('Incomplete model-generation verification')
+        for model_path in model_dirs:
+            if not exact_frozen_weights(read(model_path / 'weights-final.json')):
+                raise ValueError('Model/observer parameters changed')
+            model_state = read(model_path / 'status.json')
+            require_exited([model_state.get('pid')])
+            if (model_state.get('config_sha256') != m['config_sha256']
+                    or model_state.get('manifest_sha256') != m['pack_manifest_sha256']
+                    or model_state.get('source_commit') != m['runtime_commit']):
+                raise ValueError('Actual model generation differs from the frozen registration')
+            evidence.extend(binding(model_path / name) for name in ('weights-final.json', 'status.json', 'events.jsonl'))
+        evidence.append(binding(path / 'status.json'))
+        for part in group['parts']:
+            if part['id'] in parts:
+                raise ValueError('Duplicate registered part')
+            parts[part['id']] = (gpu, part)
+        # These tails are registered only after a diagnosed failure, and are
+        # checked against the predecessor's actually issued original prefix.
+        for tail_path in sorted(path.glob('*-unstarted-tail.json')):
+            tail = read(tail_path); predecessor = tail['predecessor']
+            if predecessor not in parts or parts[predecessor][0] != gpu or tail['id'] in parts:
+                raise ValueError('Unknown or duplicate unstarted tail')
+            issued = [(p, read(p)) for p in sorted((prior / 'parts' / predecessor / 'attempts').glob('*.json'))]
+            if tail != unstarted_tail(parts[predecessor][1], issued):
+                raise ValueError('Unstarted tail differs from actual original attempts')
+            parts[tail['id']] = (gpu, tail); evidence.append(binding(tail_path))
+    if set(workers) != set(range(8)) or not set(map(int, state['failed_gpus'])) <= set(workers):
+        raise ValueError('Incomplete eight-worker stop')
+    interrupted, newly_diagnosed = [], set()
+    for part_path in sorted((prior / 'parts').iterdir()):
+        if part_path.name not in parts:
+            raise ValueError('Unregistered physical output')
+        gpu, part = parts[part_path.name]; worker = workers[gpu]
+        ps = read(part_path / 'status.json')
+        if (any(ps.get(k) != part[k] for k in ('task', 'task_id', 'indices', 'num_envs'))
+                or ps.get('config_sha256') != m['config_sha256']
+                or ps.get('source_commit') != m['runtime_commit']
+                or ps.get('official_commit') != original['official_commit'] or ps.get('optimizer_updates') != 0):
+            raise ValueError('Part task/runtime identity changed')
+        require_no_uncommitted_metrics(part_path)
+        records.extend(original_record(metric, row) for metric, row in completed_metrics(part_path))
+        attempts = [(p, read(p)) for p in sorted((part_path / 'attempts').glob('*.json'))]
+        unstarted_tail(part, attempts)
+        if any(a.get('simulator_seed') != 0 or a.get('policy_seed') != 17 for _, a in attempts):
+            raise ValueError('Original physical/policy seeds changed')
+        evidence.extend([binding(part_path / 'status.json'), *[binding(p) for p, _ in attempts]])
+        unfinished = [(p, r) for p, r in attempts if r['status'] != 'completed']
+        log = prior / 'workers' / f'gpu_{gpu}' / (part['id'] + '.log')
+        evidence.append(binding(log)); text = log.read_text()
+        if not unfinished:
+            if ps['status'] != 'completed' and attempts:
+                raise ValueError('Uncommitted part needs independent audit')
+            if not attempts and 'Traceback (most recent call last)' in text:
+                raise ValueError('Unknown pre-attempt failure needs independent diagnosis')
+            continue
+        if len(unfinished) != 1 or unfinished[-1] != attempts[-1] or unfinished[0][1]['status'] != 'running':
+            raise ValueError('Unclassified partial physical attempt')
+        attempt, row = unfinished[0]
+        if len(row['instance_ids']) != part['num_envs']:
+            raise ValueError('Partial physical batch identity')
+        diagnosis = physics_error(text)
+        pending_rows = [dict(task=part['task'], instance_id=i, rollout_id=row['rollout'],
+                            original_attempt=binding(attempt)) for i in row['instance_ids']]
+        if diagnosis:
+            if not 0 <= diagnosis['scene_slot'] < part['num_envs']:
+                raise ValueError('Exception slot is outside the physical batch')
+            errors.extend(r | dict(diagnosis=diagnosis, log=binding(log), rerun_allowed=False) for r in pending_rows)
+            if worker.get('part') == part['id']:
+                newly_diagnosed.add(str(gpu))
+            elif part['id'] not in worker['diagnosed_failed_parts']:
+                raise ValueError('Historical physics error not in the worker ledger')
+        else:
+            if (worker.get('part') != part['id'] or worker.get('error') != "InterruptedError('Administrative stop')"
+                    or 'Traceback (most recent call last)' in text):
+                raise ValueError('Independent unknown failure cannot be an administrative reroll')
+            interrupted.extend(r | dict(reason='Other worker triggered global administrative STOP',
+                rerun_allowed=True, best_of_n=False, log=binding(log)) for r in pending_rows)
+    if not set(state['failed_gpus']) <= newly_diagnosed:
+        raise ValueError('Supervisor failure remains undiagnosed')
+    for gpu, worker in workers.items():
+        if (worker['status'] == 'needs_diagnosis' and str(gpu) not in newly_diagnosed
+                and worker.get('error') != "InterruptedError('Administrative stop')"):
+            raise ValueError('Additional worker failure is not a verified administrative interruption')
+    known = [key(r) for r in records + errors + interrupted]
+    expected = {key(r) for r in original['cases']}
+    if len(known) != len(set(known)) or not set(known) <= expected:
+        raise ValueError('Duplicate/foreign completed, error or interrupted case')
+    result = dict(schema='memlite_final_diagnosed_stop_v2', created=time.time(), prior=str(prior),
+        manifest=binding(prior / 'manifest.json'), root_manifest=root_pin, previous_stop_seal=m['seal'],
+        source_commit=original['source_commit'], records=records, completed=len(records), execution_errors=errors,
+        administrative_interruptions=interrupted, unstarted=len(expected) - len(known), evidence=evidence,
+        original_outputs_unmodified=True, all_eight_models_unchanged=True,
+        policy=sealed['policy'])
+    remaining_parts(original, result)  # also refuses to silently regroup partial physical batches
+    atomic_json(output, result)
+    return result
+
+
 def prepare(prior, seal, runtime_source, job):
     prior, seal, runtime_source, job = map(lambda p: Path(p).resolve(), (prior, seal, runtime_source, job))
-    m, receipt = read(prior / 'manifest.json'), read(seal)
+    parent, receipt = read(prior / 'manifest.json'), read(seal)
+    root, m, root_pin = root_registration(prior)
     if (job.parent != ROOT / 'runs' or job.exists() or receipt['prior'] != str(prior)
             or receipt['manifest'] != binding(prior / 'manifest.json')
-            or read(prior / 'accepted-preflight.json')['num_envs'] != 4):
+            or receipt['schema'] not in ('memlite_final_diagnosed_stop_v1', 'memlite_final_diagnosed_stop_v2')
+            or receipt['completed'] != len(receipt['records'])
+            or receipt['source_commit'] != m['source_commit']
+            or receipt.get('root_manifest', root_pin) != root_pin
+            or read(root / 'accepted-preflight.json')['num_envs'] != 4
+            or (parent['schema'] == 'memlite_final_explicit_continuation_v1'
+                and str(runtime_source) != parent['runtime_source'])):
         raise ValueError('New continuation of this exact diagnosed batch4 run required')
     frozen_source(runtime_source, m['source_commit'])
     if subprocess.check_output(['git', 'status', '--porcelain'], cwd=REPO, text=True).strip():
@@ -203,6 +388,7 @@ def prepare(prior, seal, runtime_source, job):
                     source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip(),
                     runtime_source=str(runtime_source), runtime_commit=m['source_commit'],
                     prior=str(prior), prior_manifest=binding(prior / 'manifest.json'), seal=binding(seal),
+                    root_manifest=root_pin,
                     config_path=m['config_path'], config_sha256=m['config_sha256'],
                     pack=m['pack'], pack_manifest_sha256=m['pack_manifest_sha256'],
                     tasks=m['tasks'], cases=m['cases'], groups=groups,
@@ -225,6 +411,8 @@ def registration(job):
     frozen_source(m['runtime_source'], m['runtime_commit'])
     for name in ('prior_manifest', 'seal'):
         check_binding(m[name])
+    if 'root_manifest' in m:
+        check_binding(m['root_manifest'])
     if sha256(m['config_path']) != m['config_sha256']:
         raise ValueError('Policy config changed')
     return job, m
@@ -358,6 +546,8 @@ def worker(job, gpu):
             diagnosis = physics_error(logpath.read_text())
             if diagnosis is None:
                 raise RuntimeError('Unclassified failure; preserve evidence for diagnosis: ' + part['id'])
+            if not 0 <= diagnosis['scene_slot'] < part['num_envs']:
+                raise ValueError('Exception slot is outside the physical batch')
             require_no_uncommitted_metrics(output)
             attempts = [(p, read(p)) for p in sorted((output / 'attempts').glob('*.json'))]
             unfinished = [(p, r) for p, r in attempts if r['status'] != 'completed']
@@ -478,13 +668,13 @@ def supervise(job):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=('freeze', 'prepare', 'worker', 'supervise', 'report'))
+    parser.add_argument('command', choices=('freeze', 'freeze-continuation', 'prepare', 'worker', 'supervise', 'report'))
     for name in ('prior', 'seal', 'runtime-source', 'job', 'output'):
         parser.add_argument('--' + name, type=Path)
     parser.add_argument('--gpu', type=int); parser.add_argument('--final', action='store_true')
     args = parser.parse_args()
-    if args.command == 'freeze':
-        result = freeze(args.prior, args.output)
+    if args.command in ('freeze', 'freeze-continuation'):
+        result = (freeze if args.command == 'freeze' else freeze_continuation)(args.prior, args.output)
         print(json.dumps(dict(completed=result['completed'], execution_errors=len(result['execution_errors']),
                               administrative_interruptions=len(result['administrative_interruptions']))))
     elif args.command == 'prepare':

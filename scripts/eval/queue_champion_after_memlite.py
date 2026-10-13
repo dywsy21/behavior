@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -54,11 +55,39 @@ def existing_preflight(job,source):
     return result
 
 
+def queue_location(job,mem,name,previous,*,completed_preflight=False,continuation=False):
+    """A new dependency queue may replace only a dead, never-launched queue."""
+    if not re.fullmatch(r'queue(?:-[A-Za-z0-9_-]+)?',name):
+        raise ValueError('A queue basename inside the champion job is required')
+    queue=job/name
+    if queue.exists():raise ValueError('Keep the original queue evidence; use a new queue directory')
+    if previous is None:
+        if name!='queue':raise ValueError('Replacement queue requires explicit predecessor')
+        return queue,None
+    previous=Path(previous).resolve()
+    if (previous.parent!=job or previous==queue or not completed_preflight or not continuation):
+        raise ValueError('Replacement must preserve the same champion run and completed preflights')
+    status=previous/'status.json';old=json.loads(status.read_text())
+    if (old.get('status')!='needs_diagnosis' or not old.get('finished') or old.get('phases')!=[]
+            or old.get('error')!="RuntimeError('MEM evaluation needs diagnosis; no automatic reroll or GPU takeover')"
+            or Path(f'/proc/{old["pid"]}').exists() or old.get('champion_job')!=str(job)):
+        raise ValueError('Previous queue is live, unclassified, or has already launched champion work')
+    m=json.loads((mem/'manifest.json').read_text());prior=Path(old['mem_job'])
+    if (m.get('prior')!=str(prior) or m.get('prior_manifest')!=dict(path=str(prior/'manifest.json'),sha256=sha(prior/'manifest.json'))
+            or json.loads((prior/'status.json').read_text()).get('status')!='needs_diagnosis'
+            or old['bindings'].get(str(prior/'manifest.json'))!=sha(prior/'manifest.json')
+            or old['bindings'].get(str(job/'manifest.json'))!=sha(job/'manifest.json')):
+        raise ValueError('Replacement dependency is not the explicit continuation of the stopped run')
+    return queue,dict(path=str(status),sha256=sha(status))
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('mem-job','champion-job','champion-source'):p.add_argument('--'+k,type=Path,required=True)
     p.add_argument('--mem-continuation',action='store_true',help='Account for diagnosed execution errors explicitly, not as official scores')
     p.add_argument('--completed-preflight',action='store_true',help='Verify and reuse both already-completed same-source TRAIN gates; do not rerun them')
+    p.add_argument('--queue-name',default='queue',help='New evidence directory inside the champion job')
+    p.add_argument('--previous-queue',type=Path,help='Explicit dead, never-launched predecessor; never overwrite it')
     a=p.parse_args();mem=a.mem_job.resolve();job=a.champion_job.resolve();source=a.champion_source.resolve()
     mm=json.loads((mem/'manifest.json').read_text());cm=json.loads((job/'manifest.json').read_text())
     mem_schema='memlite_final_explicit_continuation_v1' if a.mem_continuation else 'memlite_final_public100_run_v1'
@@ -71,14 +100,19 @@ def main():
     if preflight is None:
         for n in (2,4):
             if (job/'preflight'/f'batch{n}').exists():raise ValueError('Never silently reuse or reroll prior queue attempts')
-    queue=job/'queue';queue.mkdir(exist_ok=False)
+    queue,previous=queue_location(job,mem,a.queue_name,a.previous_queue,
+        completed_preflight=a.completed_preflight,continuation=a.mem_continuation)
+    owner_lock=(job/'queue-owner.lock').open('a');fcntl.flock(owner_lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    queue.mkdir(exist_ok=False)
     lock=(queue/'lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     bindings={str(x/'manifest.json'):sha(x/'manifest.json') for x in (mem,job)}
     if preflight:
         bindings.update({r['path']:r['sha256'] for r in preflight['evidence'].values()})
+    if previous:bindings[previous['path']]=previous['sha256']
     state=dict(status='waiting_for_memlite',pid=os.getpid(),started=time.time(),bindings=bindings,
         mem_job=str(mem),champion_job=str(job),champion_source=str(source),phases=[],automatic_retries=False,
         mem_continuation=a.mem_continuation,existing_preflight=preflight,
+        previous_queue=previous,
         queue_source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=Path(__file__).resolve().parents[2],text=True).strip())
     def publish():
         state['updated']=time.time();tmp=queue/'status.json.tmp'
@@ -120,7 +154,7 @@ def main():
     except BaseException as error:
         state.update(status='needs_diagnosis',error=repr(error));raise
     finally:
-        state['finished']=time.time();publish();lock.close()
+        state['finished']=time.time();publish();lock.close();owner_lock.close()
 
 
 if __name__=='__main__':main()
