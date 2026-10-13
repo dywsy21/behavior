@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 19:07 CST / Codex SUBMISSION-FULL-EVAL：** 原MEM续评累计150完整/1000＋4原物理异常、846待覆盖，completed-only Q0/SR0，尚非全量成绩。持续只读监控原supervisor3540742、八worker及冠军后继3540913，均实活、无新增错误；咖啡台长加载已自然进入控制，无重启/改超时。本轮是已核实等待，同run继续，不重复既有审计或加入新训练/推理改动。只读观察会话30575每20s核进程、里程碑/5分钟输出，不负责启停；真正执行仍由原374编排/f99队列管理。下一继续正式评测与终态收集，模型交付仍暂停。
+
 - **2026-10-13 18:44 CST / Codex SUBMISSION-FULL-EVAL（反馈口径澄清）：** 根人工核两原MP4的18个抽帧，原视频SHA均与14条审计相同；堆肥301房内移动、抽帧未证到达垃圾桶；刷地309在1791等帧刷子明显位于右夹爪旁/离地，说明有局部操控迹象，非官方抓持/整任务成功认证。进一步核实际`causal_input.execution_feedback`：刷地309在1792–3712连续16次给高层SUCCEEDED估计（置信约0.93–0.99）仍输出GRASP，3840第17次才转HANDOVER；不是结果头完全没接入。前条所列`previous_outcome=UNKNOWN`是固定非物理真值合同，不可误读为没有预测反馈，原18:35事实保留并明确更正解释。NAVIGATE没有已校准结果反馈是当前GRASP-only范围限制；导航没到位与高层忽视结果仍须区别，不由这些公开帧训练/改本轮模型。摘要追加实际反馈和人工定位；原两完整视频/派生图在忽略目录`continuation-v1/intent-inspection.yCSMuZ`。18:44实际监控126完整＋4原异常/870待覆盖、Q0/SR0，原supervisor3540742与后继3540913均实活、8worker无新错误；保持同run与自动后继。
 
 - **2026-10-13 18:35 CST / Codex SUBMISSION-FULL-EVAL：** 在既有14完整续评回合上只读整理意图轨迹（无新rollout/训练）：13/14全程同一NAVIGATE目标，所有高层调用`reused=false`，不是缓存未刷新；仅刷地309从NAVIGATE→GRASP→HANDOVER→NAVIGATE发生转移，14条所有planner previous_outcome仍UNKNOWN。原JSON底盘累计位移4.89–17.42m表明实际有运动，但不证明导航到位；高层不切换与低层没到目标的因果尚需视频，不把重复意图直接当模型故障首因。绑定原trace前缀/指标SHA的摘要`docs/infra/results/2026-10-13-memlite-first14-intent-persistence.json`；只是公开开发诊断，不回灌训练/不改本轮actor。原8卡评测及冠军队列继续，下一只读人工核原视频，不追加测试回合。
