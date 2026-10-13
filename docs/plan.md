@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 20:40 CST / Codex SUBMISSION-FULL-EVAL：** 根补冠军独立FIFO入口`champion_fifo_eval.py`与后继队列显式`--fifo-champion`，仅替换原9f调度器的准入依赖和worker派发入口；原HERE/REPO、worker函数、模型/模拟器命令和2/4预检不改。69本地回归通过（含真实六进程两槽测试及错误actor路径拒绝）；目标冻结部署/实际只读绑定检查和新队列启动仍待，不能称冠军已排上。MEM原3599503及八worker实活，GPU6已按票2完成加载，初始票0–5已释放、6/7准入，后来的场景票8起等待，152完整/12旧异常无新完整。fetch确认远端同691/origin-main33677，当前是自己未提交的续接修改，未在dirty工作树pull；旧现场和交付暂停不变。
+
+- **2026-10-13 20:26 CST / Codex SUBMISSION-FULL-EVAL（实际恢复FIFO轮）：** 691d2e43经Git包b930e2f2…020da部署独立RTX `code/final-eval-continuation-20261013-v6-standalone`，目标65回归通过；普通shared clone v6因多层alternates超过Git深度限制失败，未启动、现场保留，改为no-hardlinks＋dissociate独立对象库，旧源码不动。真实seal `98278cca…979bc`核152完整/12旧异常/18行政/818未启、7已加载模型不变＋GPU6未加载＋GPU5零请求无trace（不造文件）。新resume_v4 manifest `ec02111c…a8ba5`登记836剩余，原51c actor；八卡核空后tmux`memlite-final100-resume-v4` supervisor3599503/worker3599518–25已实活，FIFO票据0/1准入、GPU6票2等候，无新完整回合。冠军旧队列已停，下一补其独立公平编排并重登记后继，不冒称冠军已排上/开公共；交付仍暂停。
+
 - **2026-10-13 20:22 CST / Codex SUBMISSION-FULL-EVAL：** 1a812d60通过Git包54be285c…bbad5独立部署RTX v5、目标64测试过；封存发现GPU5模型虽已ready但场景未进入首attempt、请求0，原事件文件按需创建所以并不存在，严格SHA读取拦住且未写seal/未恢复。补仅“0请求＋该卡全部0attempt”的缺trace分类，仍核真实权重终态且不造空trace；有任何请求/尝试而缺trace仍拒绝，新65回归过。下一冻结小修再封存恢复，不改活跃推理或原日志；当前仍停机现场，冠军后继待独立公平准入集成。
 
 - **2026-10-13 20:20 CST / Codex SUBMISSION-FULL-EVAL：** 根完成独立FIFO两槽准入：后续任务不得插队，等槽不算模型执行超时，已准入后的原30分钟进展门/官方步数不变；票据保留、PID复用/死亡/STOP有显式状态。64本地回归通过，含真实六子进程竞争、3800s虚拟等待与明确“未加载worker不造权重回执/失败回合”。远端已核七个真实模型权重/observer未变、GPU6确无模型/回合，当前八卡全空；152完整、18实际行政中断，最终完整封存待。新编排将冻结部署恢复MEM；冠军9f也有旧准入，待在独立编排层补齐后再登记其后继，原预检/actor不覆盖，不新增训练或交付。

@@ -88,6 +88,7 @@ def main():
     p.add_argument('--completed-preflight',action='store_true',help='Verify and reuse both already-completed same-source TRAIN gates; do not rerun them')
     p.add_argument('--queue-name',default='queue',help='New evidence directory inside the champion job')
     p.add_argument('--previous-queue',type=Path,help='Explicit dead, never-launched predecessor; never overwrite it')
+    p.add_argument('--fifo-champion',action='store_true',help='Use an independently frozen FIFO coordinator with the original champion actor/preflights')
     a=p.parse_args();mem=a.mem_job.resolve();job=a.champion_job.resolve();source=a.champion_source.resolve()
     mm=json.loads((mem/'manifest.json').read_text());cm=json.loads((job/'manifest.json').read_text())
     mem_schema='memlite_final_explicit_continuation_v1' if a.mem_continuation else 'memlite_final_public100_run_v1'
@@ -97,6 +98,8 @@ def main():
             or subprocess.check_output(['git','status','--porcelain'],cwd=source,text=True).strip()):
         raise ValueError('Two original registered runs and exact clean champion source required')
     preflight=existing_preflight(job,source) if a.completed_preflight else None
+    if a.fifo_champion and preflight is None:
+        raise ValueError('FIFO composition requires both original completed preflights')
     if preflight is None:
         for n in (2,4):
             if (job/'preflight'/f'batch{n}').exists():raise ValueError('Never silently reuse or reroll prior queue attempts')
@@ -109,10 +112,15 @@ def main():
     if preflight:
         bindings.update({r['path']:r['sha256'] for r in preflight['evidence'].values()})
     if previous:bindings[previous['path']]=previous['sha256']
+    coordinator=Path(__file__).resolve().parents[2]
+    if a.fifo_champion:
+        for name in ('champion_fifo_eval.py','loader_admission.py'):
+            file=coordinator/'scripts/eval'/name;bindings[str(file)]=sha(file)
     state=dict(status='waiting_for_memlite',pid=os.getpid(),started=time.time(),bindings=bindings,
         mem_job=str(mem),champion_job=str(job),champion_source=str(source),phases=[],automatic_retries=False,
         mem_continuation=a.mem_continuation,existing_preflight=preflight,
         previous_queue=previous,
+        fifo_champion=a.fifo_champion,
         queue_source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=Path(__file__).resolve().parents[2],text=True).strip())
     def publish():
         state['updated']=time.time();tmp=queue/'status.json.tmp'
@@ -133,11 +141,15 @@ def main():
         if subprocess.check_output(['nvidia-smi','--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
             raise RuntimeError('GPU owner changed after MEM; no displacement')
         script=source/'scripts/eval/champion_full_eval.py'
+        if a.fifo_champion:script=coordinator/'scripts/eval/champion_fifo_eval.py'
         phases=[('preflight_batch2',['worker','--gpu','0','--num-envs','2','--preflight']),
                 ('preflight_batch4',['worker','--gpu','0','--num-envs','4','--preflight']),
                 ('public1000',['supervise'])]
         if preflight:phases=phases[-1:]
         env=os.environ.copy();env['PYTHONDONTWRITEBYTECODE']='1'
+        if a.fifo_champion:
+            env['BEHAVIOR_CHAMPION_FIFO_RUNTIME']=str(source)
+            env['BEHAVIOR_CHAMPION_FIFO_COMMIT']=state['queue_source_commit']
         for name,extra in phases:
             unchanged();argv=[sys.executable,str(script),*extra,'--job',str(job)]
             phase=dict(name=name,started=time.time(),argv=argv,status='running')

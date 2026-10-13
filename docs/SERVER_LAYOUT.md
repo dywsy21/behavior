@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 20:26 CST：公平加载准入轮（当前）
+
+- 当前RTX MEM `runs/memlite_final100_20261013_resume_v4`，manifest `ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5`；编排 `code/final-eval-continuation-20261013-v6-standalone` = `691d2e43abcc42538a0ddf83d2f208da55b59dcb`，为独立Git对象库。原actor仍 `code/memlite-final-eval-20261013-v4`=51c，不能混淆。tmux `memlite-final100-resume-v4` / supervisor3599503 / 八worker3599518–25；FIFO记录 `loader-admission/request-*.json` 保留生命周期和owner身份。
+- 父seal `runs/memlite_final100_20261013_resume_v3-diagnosed-stop-v1.json` SHA `98278cca0abef0df4ec9620a97973d3b1e5211dd373c5c0c94d38db6698979bc`：152原完整、12旧物理异常、18行政、818未启。只有7个模型实际加载，GPU6未获准入，GPU5已ready但0请求所以原本无events.jsonl；不要补造这些不存在的回执/trace。
+- 旧resume_v3于20:08等槽超时后停机，旧冠军 `queue-resume-v3` 已停；新冠军后继待公平编排接入，不沿用旧“队列仍实活”的记录。`code/final-eval-continuation-20261013-v6` 是alternates过深的失败克隆、未运行；v5仅CPU封存被缺lazy trace门拦住；均保留不覆盖。
+
 ## 2026-10-13 19:38 CST：第二次封存后的实际续评
 
 - RTX根仍`/run/ti/rl_memlite_stage1_20261006`。**当前MEM** `runs/memlite_final100_20261013_resume_v3`，manifest `e2152ded02b0844caf57bdafa13fa73b9c9295c7c3d5b9e6f349faef9f29ac10`；实际actor仍原51c `code/memlite-final-eval-20261013-v4`，新编排为不同目录 `code/final-eval-continuation-20261013-v4` = `6125b615ab39ac2b616c97ca13e8b6cfd00d8c9e`。不要混淆两个v4目录。

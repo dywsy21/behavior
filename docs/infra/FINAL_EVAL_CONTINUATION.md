@@ -48,8 +48,6 @@ RTX `runs/memlite_final100_20261013_v2`，推理/物理入口固定`51c11d32a5d2
 
 19:38真实封存/部署完成：6125b615目标53项回归通过，seal `a5ae63459cd62ac659e49f48675eb99908eca4dde3872768cae708604d5588a4`，150完整＋12异常＋18行政＋820未启。新resume_v3 manifest `e2152ded02b0844caf57bdafa13fa73b9c9295c7c3d5b9e6f349faef9f29ac10`实际开始838剩余，actor不变；新冠军`queue-resume-v3`只替换已停依赖编排，不替换模型/公共run/原预检。旧原件、行政partial、两次错误和全部源码版本保留。
 
-## 冠军TRAIN接口修复
-
 ### 20:10新增：加载准入饥饿不是模型超时
 
 resume_v3的GPU6始终在第一处`loader_lock(job)`等待，1800s后旧门抛TimeoutError，全局停止。该worker没有启动模型或模拟器，也没有公共attempt；不能伪造第八份权重回执或给未试实例记物理失败。实际已启动七模型的终态均未变；新增两条玫瑰309/310已完成，保留至152条。
@@ -57,5 +55,13 @@ resume_v3的GPU6始终在第一处`loader_lock(job)`等待，1800s后旧门抛Ti
 独立`loader_admission.py`保留两个原flock槽，但以受锁保护的顺序票据FIFO准入：后续任务不能越过未启动worker。只取消**排队等槽**的1800s截止，拿到槽后的模型ready/模拟无请求30分钟安全门和官方控制步时限不变。票据记录owner PID＋进程启动ticks，死亡/复用PID票据标记abandoned，STOP标记cancelled，释放记released；不删除票据证据。
 
 封存器仅对原日志明确证明“等槽超时、0模型、0模拟器、0任务输出”的worker允许缺模型回执，单列`never_admitted_workers`，其余真正模型仍必须逐份参数不变；不会把未启动算物理失败。新增实际六子进程FIFO/两槽并发测试、跨3800s队列等待、STOP及过期PID等，合计64本地回归通过，真实目标封存待。冠军旧9f编排也采用旧准入函数，下一在独立编排层补同类修复，不能热改其actor源或伪造新预检。
+
+### 冠军同类准入的独立修复
+
+`champion_fifo_eval.py`在新的冻结checkout加载原9f `champion_full_eval.py`，先验原manifest、配置、源commit与终态回执。仅重绑定`loader_lock`及原supervisor用来启动子worker的`__file__`；原模块已计算的HERE/REPO、worker函数、模型服务和模拟器入口完全保持9f。新wrapper和FIFO文件SHA由后继队列绑定，父/子编排另写只增不覆的provenance回执；原模型/预检身份不改写成新commit。`inspect`只读验证绑定，不启动GPU或创建回合。
+
+只准搭配已完成的原2/4 TRAIN门，禁止wrapper隐式重做preflight。后继显式`--fifo-champion --completed-preflight`，等待MEM1000已说明覆盖并核GPU空闲；未知失败仍停，不加入自动公共重试。2026-10-13 20:40本地69项通过；实际部署/原源绑定检查待。此为根自审与回归，不冒称已有另一成员独立审查。
+
+## 冠军TRAIN接口修复
 
 原final8000权重成功GPU加载，首TRAIN在0控制步被客户端字段检查拦截。官方`evaluator.py::_preprocess_obs`额外加入`robot_r1::cam_rel_poses`。修复只在客户端明确丢弃此键，不读取其值、不发给模型；RGB/61D本体/任务编号的原协议不变，其他未知字段继续拒绝。纯CPU回归覆盖不读取该字段、未知/特权键拒绝、固定slot缩小/重置/实际ACK。必须在新冻结源做真实TRAIN复验后，才准冠军公共轮；旧失败目录保留。
