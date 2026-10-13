@@ -34,23 +34,29 @@ def save_new(path, value):
 
 
 def check_plan(plan):
-    if plan['schema'] != 'frozen_eval_range_transport_v1':
+    champion=plan['schema']=='frozen_champion_export_transport_v1'
+    if plan['schema'] != 'frozen_eval_range_transport_v1' and not champion:
         raise ValueError('Unknown transfer plan')
     names = set()
-    for row in plan['files']:
-        if row['name'] not in ('low.pt', 'observer_backbone.pt') or row['name'] in names:
+    if not plan['files']:raise ValueError('Empty transport')
+    for number,row in enumerate(plan['files']):
+        name=Path(row['name'])
+        if (row['name'] in names or name.is_absolute() or '..' in name.parts
+                or (not champion and row['name'] not in ('low.pt','observer_backbone.pt'))
+                or (champion and (row['name']=='export.json' or not re.fullmatch(r'[A-Za-z0-9_./-]+',row['name'])))):
             raise ValueError('Unexpected or duplicate model')
         names.add(row['name'])
+        stem=f'f{number:03d}' if champion else name.stem
         offset = 0
         for i, chunk in enumerate(row['chunks']):
             if (chunk['offset'] != offset or chunk['bytes'] <= 0
-                    or chunk['name'] != f"{Path(row['name']).stem}-{i:03d}.part"
+                    or chunk['bytes']>2<<30 or chunk['name'] != f'{stem}-{i:03d}.part'
                     or re.fullmatch('[0-9a-f]{64}', chunk['sha256']) is None):
                 raise ValueError('Invalid, overlapping or gapped range')
             offset += chunk['bytes']
         if offset != row['bytes'] or not offset:
             raise ValueError('Incomplete file coverage')
-    if names != {'low.pt', 'observer_backbone.pt'}:
+    if not champion and names != {'low.pt', 'observer_backbone.pt'}:
         raise ValueError('Both fixed model files required')
     return plan
 
@@ -99,9 +105,39 @@ def prepare(pack, manifest_sha, output, chunk_bytes=1 << 30):
     return dict(plan_sha256=digest(output), parts=sum(len(r['chunks']) for r in rows))
 
 
+def prepare_champion(pack, manifest_sha, output, chunk_bytes=512<<20):
+    pack=Path(pack).resolve()
+    if digest(pack/'export.json')!=manifest_sha or not 1<=chunk_bytes<=2<<30:raise ValueError('Unbound export')
+    manifest=json.loads((pack/'export.json').read_text())
+    if (manifest['schema']!='champion-ema-export-v2' or manifest['weights']!='EMA'
+            or manifest['purpose']!='CHAMPION100_FORMAL_SFT' or manifest['usable_for_deployment'] is not True
+            or manifest['restored_by_author_loader_exact'] is not True):raise ValueError('Unverified formal EMA')
+    rows=[]
+    for number,signed in enumerate(manifest['files']):
+        relative=Path(signed['path']);path=pack/relative
+        if (relative.is_absolute() or '..' in relative.parts or path.is_symlink()
+                or not path.resolve().is_relative_to(pack) or path.stat().st_size!=signed['size']):
+            raise ValueError('Unsafe or changed export source')
+        chunks=[];full=hashlib.sha256();offset=0
+        with path.open('rb') as f:
+            while offset<signed['size']:
+                length=min(chunk_bytes,signed['size']-offset);h=hashlib.sha256();left=length
+                while left:
+                    block=f.read(min(BUFFER,left))
+                    if not block:raise ValueError('Truncated source')
+                    full.update(block);h.update(block);left-=len(block)
+                chunks.append(dict(name=f'f{number:03d}-{len(chunks):03d}.part',offset=offset,
+                    bytes=length,sha256=h.hexdigest()));offset+=length
+            if f.read(1) or full.hexdigest()!=signed['sha256']:raise ValueError('Export SHA changed')
+        rows.append(dict(name=signed['path'],source=str(path),bytes=offset,sha256=full.hexdigest(),chunks=chunks))
+    plan=check_plan(dict(schema='frozen_champion_export_transport_v1',source_manifest_sha256=manifest_sha,files=rows))
+    save_new(output,plan)
+    return dict(plan_sha256=digest(output),parts=sum(len(r['chunks']) for r in rows))
+
+
 def receive(directory, name, length, sha, stream):
     directory = Path(directory).resolve()
-    if (re.fullmatch(r'(low|observer_backbone)-\d{3}\.part', name) is None
+    if (re.fullmatch(r'(low|observer_backbone|f\d{3})-\d{3}\.part', name) is None
             or not 0 < length <= 2 << 30 or re.fullmatch('[0-9a-f]{64}', sha) is None):
         raise ValueError('Invalid explicit part')
     directory.mkdir(parents=True, exist_ok=True)
@@ -190,14 +226,23 @@ def push(plan, *, host, port, remote_script, remote_parts, workers, only_parts=N
 def assemble(plan, directory, pack):
     check_plan(plan)
     directory, pack = Path(directory), Path(pack)
-    if digest(pack / 'manifest.json') != plan['source_manifest_sha256']:
+    champion=plan['schema']=='frozen_champion_export_transport_v1'
+    manifest_path=pack/('export.json' if champion else 'manifest.json')
+    if digest(manifest_path) != plan['source_manifest_sha256']:
         raise ValueError('Destination pack identity differs')
+    if champion:
+        signed=json.loads(manifest_path.read_text())['files']
+        expected={(r['path'],r['size'],r['sha256']) for r in signed}
+        if len(expected)!=len(signed) or {(r['name'],r['bytes'],r['sha256']) for r in plan['files']}!=expected:
+            raise ValueError('Plan omits/changes signed export files')
     receipts = []
     for row in plan['files']:
         target = pack / row['name']
+        if not target.resolve().is_relative_to(pack.resolve()):raise ValueError('Escaped destination')
+        target.parent.mkdir(parents=True,exist_ok=True)
         if target.exists():
             raise FileExistsError('Never overwrite a prior final file')
-        temp = directory / (row['name'] + '.assembling-' + uuid.uuid4().hex)
+        temp = directory / (Path(row['name']).name + '.assembling-' + uuid.uuid4().hex)
         full = hashlib.sha256()
         with temp.open('xb') as out:
             for chunk in row['chunks']:
@@ -228,6 +273,9 @@ def main():
     a = sub.add_parser('prepare')
     a.add_argument('--pack', required=True); a.add_argument('--manifest-sha256', required=True)
     a.add_argument('--output', required=True)
+    a=sub.add_parser('prepare-champion')
+    a.add_argument('--pack',required=True);a.add_argument('--manifest-sha256',required=True)
+    a.add_argument('--output',required=True)
     a = sub.add_parser('receive')
     a.add_argument('--directory', required=True); a.add_argument('--name', required=True)
     a.add_argument('--length', type=int, required=True); a.add_argument('--sha256', required=True)
@@ -242,7 +290,9 @@ def main():
         else:
             a.add_argument('--directory', required=True); a.add_argument('--pack', required=True)
     a = p.parse_args()
-    if a.mode == 'prepare':
+    if a.mode == 'prepare-champion':
+        result=prepare_champion(a.pack,a.manifest_sha256,a.output)
+    elif a.mode == 'prepare':
         result = prepare(a.pack, a.manifest_sha256, a.output)
     elif a.mode == 'receive':
         result = receive(a.directory, a.name, a.length, a.sha256, sys.stdin.buffer)

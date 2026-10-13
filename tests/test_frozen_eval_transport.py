@@ -71,3 +71,24 @@ def test_explicit_repair_still_uses_complete_signed_plan(tmp_path):
     assert len(t.selected_parts(plan))>1
     for bad in ([],['not-registered.part'],['low-000.part','low-000.part']):
         with pytest.raises(ValueError):t.selected_parts(plan,bad)
+
+
+def test_original_champion_multifile_export_transport(tmp_path):
+    source=tmp_path/'source';source.mkdir();(source/'params').mkdir()
+    files=[]
+    for name in ('params/one','params/two','task-layout.json'):
+        data=(name.encode()*41);path=source/name;path.write_bytes(data)
+        files.append(dict(path=name,size=len(data),sha256=t.digest(path)))
+    manifest=dict(schema='champion-ema-export-v2',weights='EMA',purpose='CHAMPION100_FORMAL_SFT',
+        usable_for_deployment=True,restored_by_author_loader_exact=True,files=files)
+    (source/'export.json').write_text(json.dumps(manifest))
+    output=tmp_path/'plan.json';t.prepare_champion(source,t.digest(source/'export.json'),output,chunk_bytes=73)
+    plan=json.loads(output.read_text());parts=tmp_path/'parts';target=tmp_path/'target';target.mkdir()
+    (target/'export.json').write_bytes((source/'export.json').read_bytes())
+    for row,chunk in t.selected_parts(plan):
+        data=(source/row['name']).read_bytes()[chunk['offset']:chunk['offset']+chunk['bytes']]
+        t.receive(parts,chunk['name'],len(data),chunk['sha256'],io.BytesIO(data))
+    incomplete=json.loads(output.read_text());incomplete['files'].pop()
+    with pytest.raises(ValueError):t.assemble(incomplete,parts,target)
+    assert t.assemble(plan,parts,target)['status']=='exact_original_files_published'
+    for row in files:assert t.digest(target/row['path'])==row['sha256']

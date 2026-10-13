@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 15:03 CST / Codex SUBMISSION-FULL-EVAL：** 原MEM v1 batch2已完整终态：高c93/低15d/observer442和head前后不变、0更新、2056 ACK一致、9.1268控制/s，原进程/GPU0已退出；新51c11d32源/v2 manifest3dd8862c…19be4在GPU1 batch4、随后GPU0 batch2实际加载中，旧结果不拷贝冒充新回执。冠军final8000三回执源/本地SHA相同、3895302自然退出；迁移只传12.65GB EMA、不传54GB优化器。冠军全量八worker/原视频打包草稿与范围传输扩展已写；首组合测试发现错误导入旧SFT worker（无GPU运行），已改显式`memlite_final.worker`，重验中，不热改任何在用源。
+
+- **2026-10-13 14:59 CST / Codex CHAMPION-2026 / SUBMISSION-FULL-EVAL：** 冠军原run终态`completed_target_updates`/8000/78,987.66s（21.94h），完整checkpoint bfe75b12…a463/tree ed5ec6b6…4fe6，原自动EMA9608b3ef…744cd（26文件/12,649,068,999B/75参数/作者回读通过），终态ecc49345…4c833与latest5684afbd…30a13a已收本地`artifacts/champion-formal-20261012/shared100-v1/final8000-v1`并实核checkpoint/EMA逐身份绑定；下一迁移此final，不选7000或追加训练。MEM旧源TRAIN8条/2056实际控制/225.27s全完，最终权重校验中。新防竞争源51c11d32/v4已Git部署、目标env67回归通过，准备新v2注册重验2/4，不借旧源回执冒充新源通过，公共仍0。
+
 - **2026-10-13 14:56 CST / Codex SUBMISSION-FULL-EVAL：** MEM三模型实际GPU已加载（峰33.06GiB分配），原TRAIN radio4实例已完，1028实际控制/136.31s，post-step ACK和原指标步数一致，keyboard继续，尚未完整验收或公共结果。审到官方JSON用非原子写且随后关闭MP4，新增按原完整attempt回执读结果的防竞争接口（2反例通过，未掩盖已提交的坏记录），接入新的MEM/冠军汇总；不热改bb728运行源，新公共源将重新冻结/验收，原v1证据保留。冠军8000完整保存/固定eval已推进，原自动EMA终态仍待。
 
 - **2026-10-13 14:44 CST / Codex SUBMISSION-FULL-EVAL：** RTX完整low11,462,481,970B/0b4f2d88…71dca及observer11,440,579,875B/3eefa5b5…d0c9f已按原分块＋整文件SHA通过、模型包依赖全验。bb728冻结源正式注册`runs/memlite_final100_20261013_v1`/manifest f2cb3b24…5607b，1000实例/原官方源码身份齐，**公共仍0/1000**；GPU0实空后提交同原两TRAIN任务batch2全链验收（tmux `memlite-final-preflight-b2-v1`，256控制/8实例），实际加载与闭环待，不把启动当通过。冠军原8000更新已达到、完整终态保存/留出/EMA仍在等待；d8c4677d已push，未热改MEM运行源。
