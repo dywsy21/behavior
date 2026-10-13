@@ -1,0 +1,147 @@
+{
+  "schema": "memlite_running_workload_screening_v1",
+  "observed_at": "2026-10-13T13:23:57.196436+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "manifest_sha256": "ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5",
+  "original_nominal_horizon_sum": 1581828,
+  "groups": [
+    {
+      "gpu": 0,
+      "planned_cases": 100,
+      "completed_since_resume": 0,
+      "active_cases": 4,
+      "nominal_total_controls": 1836860,
+      "completed_nominal_budget": 0,
+      "active_applied_controls": 36864,
+      "remaining_timeout_budget_controls": 1799996
+    },
+    {
+      "gpu": 1,
+      "planned_cases": 100,
+      "completed_since_resume": 0,
+      "active_cases": 4,
+      "nominal_total_controls": 1836640,
+      "completed_nominal_budget": 0,
+      "active_applied_controls": 24576,
+      "remaining_timeout_budget_controls": 1812064
+    },
+    {
+      "gpu": 2,
+      "planned_cases": 106,
+      "completed_since_resume": 0,
+      "active_cases": 4,
+      "nominal_total_controls": 1881032,
+      "completed_nominal_budget": 0,
+      "active_applied_controls": 34304,
+      "remaining_timeout_budget_controls": 1846728
+    },
+    {
+      "gpu": 3,
+      "planned_cases": 106,
+      "completed_since_resume": 0,
+      "active_cases": 4,
+      "nominal_total_controls": 1873706,
+      "completed_nominal_budget": 0,
+      "active_applied_controls": 28672,
+      "remaining_timeout_budget_controls": 1845034
+    },
+    {
+      "gpu": 4,
+      "planned_cases": 106,
+      "completed_since_resume": 4,
+      "active_cases": 2,
+      "nominal_total_controls": 1876328,
+      "completed_nominal_budget": 25552,
+      "active_applied_controls": 1536,
+      "remaining_timeout_budget_controls": 1849240
+    },
+    {
+      "gpu": 5,
+      "planned_cases": 106,
+      "completed_since_resume": 0,
+      "active_cases": 4,
+      "nominal_total_controls": 1881210,
+      "completed_nominal_budget": 0,
+      "active_applied_controls": 12288,
+      "remaining_timeout_budget_controls": 1868922
+    },
+    {
+      "gpu": 6,
+      "planned_cases": 100,
+      "completed_since_resume": 0,
+      "active_cases": 4,
+      "nominal_total_controls": 1829710,
+      "completed_nominal_budget": 0,
+      "active_applied_controls": 31744,
+      "remaining_timeout_budget_controls": 1797966
+    },
+    {
+      "gpu": 7,
+      "planned_cases": 112,
+      "completed_since_resume": 2,
+      "active_cases": 0,
+      "nominal_total_controls": 1917904,
+      "completed_nominal_budget": 9714,
+      "active_applied_controls": 0,
+      "remaining_timeout_budget_controls": 1908190
+    }
+  ],
+  "remaining_timeout_budget_controls": 14728140,
+  "window": {
+    "start_utc": "2026-10-13T13:11:23+00:00",
+    "end_utc": "2026-10-13T13:15:58+00:00",
+    "elapsed_seconds": 275,
+    "num_envs": [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      2
+    ],
+    "start_steps_per_slot": [
+      6272,
+      3840,
+      5632,
+      3968,
+      4480,
+      768,
+      4864,
+      2816
+    ],
+    "end_steps_per_slot": [
+      7424,
+      4736,
+      6784,
+      5120,
+      5632,
+      1664,
+      5888,
+      4096
+    ],
+    "delta_controls": 32256,
+    "controls_per_second": 117.29454545454546,
+    "per_gpu_controls_per_second": [
+      16.756363636363638,
+      13.032727272727273,
+      16.756363636363638,
+      16.756363636363638,
+      16.756363636363638,
+      13.032727272727273,
+      14.894545454545455,
+      9.309090909090909
+    ],
+    "source": "Two read-only snapshots of original simulator post-success-step status; updated each 128 controls, so the rate is approximate"
+  },
+  "optimistic_constant_throughput_hours": 34.87928602430556,
+  "champion_nominal_full_timeout_controls": 15819280,
+  "limitations": [
+    "Not a wall-clock ETA",
+    "Ignores future scene loads, resets, teardown and queue contention",
+    "Ignores 2/4 batch mix and task-dependent speed",
+    "Early success may shorten work; new failures may extend it",
+    "Does not change frozen scheduling, actor, simulator or official timeouts"
+  ]
+}
