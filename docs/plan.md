@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 17:22 CST / Codex SUBMISSION-FULL-EVAL（已恢复运行）：** 冠军原final8000修复源9f的2/4完整TRAIN门均通过，各8回合/2056实际控制且原JSON/MP4帧数全部相同、0更新/参数前后2a5ce80b…3975；2档161.3598s/12.7417控制/s，4档139.7436s/14.7127控制/s（+15.47%，不含加载），按预注册门选4，摘要`2026-10-13-champion-final-rtx-preflight.json`。新MEM编排374cfa8f经Git包bf31660d…efe46部署，目标20回归过；一次push TLS失败后HTTP/1.1重推成功。新manifest82bc1ee3…cf79f `runs/memlite_final100_20261013_resume_v2`实际起tmux`memlite-final100-resume-v2`/supervisor3540742、八worker3540758/59/61/62/63/65/67/68，当前分批加载，64旧完整＋4异常原样继承、932剩余，未冒称新回合已完成。f99队列`champion-final100-after-resume-v2` PID3540913实活等待，显式验证已完2/4，不重跑TRAIN；待MEM1000覆盖并GPU释放后执行原champion_v2公共1000。未知故障仍停，不吞异常/不对外提交/不恢复交付工作；原所有失败与未启动v1现场保留。
+
 - **2026-10-13 17:18 CST / Codex SUBMISSION-FULL-EVAL：** 启动前自审补续评计分保护：同批次有单个实例先写官方JSON、另slot随后物理崩溃时，未完成整批ACK不代表可把已有结果丢掉/降为失败；新`require_no_uncommitted_metrics`发现此情形停下独立逐例物理审计，保留已写/半写原件。新及关联20回归过，无公共重跑或policy变化。9f源正供冠军TRAIN，不热改；将冻结新续评编排源、以相同cb40封存重新登记v2（v1仅准备未启动），冠军runtime继续9f，batch4 radio1028已完/keyboard加载。
 
 - **2026-10-13 17:14 CST / Codex SUBMISSION-FULL-EVAL：** 根亲审传真机308原部分MP4（5306帧，SHA5e8cf99a…0e715）的5100/5150/5170/5180/5190/5300及5180–5185：5181已明显场景外/部件异常，早于5184处395量级指令；原5168块最大1.9687167（有限但不等于安全/关节范围合格）。官方成功step后逐帧写入的代码顺序已核，不能将395认作首次物理失稳原因；更早碰撞/状态首因仍未由现有记录确证，不改actor/物理/clip。派生图在本地`continuation-v1/fax308-*.png`与新run `diagnostics/`，原件未变，设计文档补因果边界。另冠军batch2八原视频帧数各257与实际ACK均同；batch4正在原TRAIN推进、无公共。

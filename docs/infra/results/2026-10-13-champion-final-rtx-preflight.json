@@ -1,0 +1,188 @@
+{
+  "schema": "champion_final8000_rtx_train_preflight_v2",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+  "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+  "results": [
+    {
+      "num_envs": 2,
+      "status": "completed_train_engineering_not_public",
+      "status_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/preflight/batch2/status.json",
+      "status_sha256": "ab7094195cfcbbe95f025a7771767bc8915fdcb79d78c6d245ec008010d36ac5",
+      "result_sha256": "4cf052886b36ad6985d7e747c165b49e82763f00869940aec7fb691bef12fee5",
+      "events_sha256": "e229d99249854a9d3c1477c8470fa8d746882a0ed402c873c2bf065bfc0c417f",
+      "events": {
+        "connected": 4,
+        "reset": 8,
+        "delivered": 104,
+        "closed": 4
+      },
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "export_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "controls": 2056,
+      "execution_seconds": 161.35980605799705,
+      "controls_per_second": 12.741710902038506,
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "cases": [
+        {
+          "task": "clean_a_keyboard",
+          "instance": 1,
+          "steps": 257,
+          "metric_sha256": "4b2ad8f6e620300155adb2bc798d2035a38d55a11e039dd07cd14ace26ceea35",
+          "video_sha256": "50a31668302789340f4c73cc267fad7424365025e2d26392ad6fd3ce05dab3b1",
+          "video_frames": 257
+        },
+        {
+          "task": "clean_a_keyboard",
+          "instance": 2,
+          "steps": 257,
+          "metric_sha256": "7215b5d363b3ee93a3d821be503770c1c1dc13ad7f34408bee66dad47364d238",
+          "video_sha256": "62e4f553381e7f413b46b914c4babac72ad05a18d28e7445d7a38d4057d9adfb",
+          "video_frames": 257
+        },
+        {
+          "task": "clean_a_keyboard",
+          "instance": 3,
+          "steps": 257,
+          "metric_sha256": "6f510e2b092cb80bfc345a1854fbde2ab677a17eb9b8d5d42992c329fb45acd2",
+          "video_sha256": "54933f31e3a71432e0f250ead552c121fa1d550bb0fe4a2d212b79413dcff9e3",
+          "video_frames": 257
+        },
+        {
+          "task": "clean_a_keyboard",
+          "instance": 4,
+          "steps": 257,
+          "metric_sha256": "3ecc1a964e20e1b512926ea3d917932760247745c90bd45728d109900b874858",
+          "video_sha256": "3f9ba57ad4852d827bcea6781a37c8dda82dfe9b6b5638d3da946bc498a01174",
+          "video_frames": 257
+        },
+        {
+          "task": "turning_on_radio",
+          "instance": 1,
+          "steps": 257,
+          "metric_sha256": "28a2dca3f8aafbb7728b7b65e3eb20e4ac47a5bf706c6aaac4e430fec864a493",
+          "video_sha256": "ec01b59423ec083b44857b82e5ae508adf66254d8f12da498808878e4a85e068",
+          "video_frames": 257
+        },
+        {
+          "task": "turning_on_radio",
+          "instance": 2,
+          "steps": 257,
+          "metric_sha256": "62179d1dc3888f50e1c5cf4e78ddc4e8ecdee108c99e101610bfeb87e64207ee",
+          "video_sha256": "fa7cf52bdc2eb5b9d297f88479d527ded49c60f64b403a44a14340183b724e54",
+          "video_frames": 257
+        },
+        {
+          "task": "turning_on_radio",
+          "instance": 3,
+          "steps": 257,
+          "metric_sha256": "a2938775e4408d97292680a8fc99255e3deb2eaf6faf6d9f9f1907c790873a0e",
+          "video_sha256": "1adcc3d26f1526d90ad5a910071633b5f169a9dd08d4e03e7b750d4de91c63ed",
+          "video_frames": 257
+        },
+        {
+          "task": "turning_on_radio",
+          "instance": 4,
+          "steps": 257,
+          "metric_sha256": "6119ef9b2003836853440131a31ec9f7d4541d1ffbc0792a2da9167710ff14a1",
+          "video_sha256": "abc5a18b43f3846ac02a44164690ce6bb479a4e4f198bea1b5a9937e448c6b46",
+          "video_frames": 257
+        }
+      ]
+    },
+    {
+      "num_envs": 4,
+      "status": "completed_train_engineering_not_public",
+      "status_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/preflight/batch4/status.json",
+      "status_sha256": "5d2cc18ecba9d943508656bff2998373c885aa101e97813c6f57e4f1307cbee3",
+      "result_sha256": "019bfd6e58bc67b7282b89961499f1f53725e9040067ed4cf6fdef1f96bb834c",
+      "events_sha256": "7e2df50661102a73794284bd4712d3a609981192419f9e304a1c37713308ff84",
+      "events": {
+        "connected": 8,
+        "reset": 8,
+        "delivered": 104,
+        "closed": 8
+      },
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "export_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "controls": 2056,
+      "execution_seconds": 139.7435524398461,
+      "controls_per_second": 14.712664477919468,
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "cases": [
+        {
+          "task": "clean_a_keyboard",
+          "instance": 1,
+          "steps": 257,
+          "metric_sha256": "808664f578501db991ac95aff2116fce0ec45429fa7b267eababf9c7e006f55a",
+          "video_sha256": "9a4ae29b961fec4de0f771951dc44b8fba73be0a44f092a9b1525a0a2fac22de",
+          "video_frames": 257
+        },
+        {
+          "task": "clean_a_keyboard",
+          "instance": 2,
+          "steps": 257,
+          "metric_sha256": "e310c322a2c17529fd3581dedcfec9b0ae167ffc596f6ccb3f5fc3e92ca84620",
+          "video_sha256": "f003d5579a078e615116cb7cf59f187fdb0ceaa72feac5f06d3efdb8482951fb",
+          "video_frames": 257
+        },
+        {
+          "task": "clean_a_keyboard",
+          "instance": 3,
+          "steps": 257,
+          "metric_sha256": "f00a0995d8069095098dc21e7e4069b3d7eb95388ff7fcf82e92d1a9ff777c44",
+          "video_sha256": "07b67f3ffaea0f4b432c0777bc8b911f82a43409d901e39210169cbca1e935ad",
+          "video_frames": 257
+        },
+        {
+          "task": "clean_a_keyboard",
+          "instance": 4,
+          "steps": 257,
+          "metric_sha256": "b7f14780d3a086c3136a69079794fdc8a99c117baec31e72a2c330a720bab988",
+          "video_sha256": "47b782b21ff6a3e1d7deac93a5473e9c8257ff35f2cca63d62347b5e700951eb",
+          "video_frames": 257
+        },
+        {
+          "task": "turning_on_radio",
+          "instance": 1,
+          "steps": 257,
+          "metric_sha256": "601a8e0c44f5a80bcefcc1d65026f1ddefb4bb73ac2dd214e121bbcd0338946f",
+          "video_sha256": "80438d1941a191828875ddef3e5188b9a13cc0227e24ac48e4503820e424c373",
+          "video_frames": 257
+        },
+        {
+          "task": "turning_on_radio",
+          "instance": 2,
+          "steps": 257,
+          "metric_sha256": "4d6dae72bd204b18f586b36961ebc97cb0b15729d6bfe6d9130659709712b9dd",
+          "video_sha256": "13477e7e01759eff6d241cb6412fcb8de1150147f1635971c2f5f6aaf5450335",
+          "video_frames": 257
+        },
+        {
+          "task": "turning_on_radio",
+          "instance": 3,
+          "steps": 257,
+          "metric_sha256": "5e771307fd288f23b4882768771ddcd0af1555980dded7e165887b2f3527003a",
+          "video_sha256": "7bc3e14ccfe3f9909e45f9b0d83e95816a710b9557ed38d6899531b5b1cb2eaf",
+          "video_frames": 257
+        },
+        {
+          "task": "turning_on_radio",
+          "instance": 4,
+          "steps": 257,
+          "metric_sha256": "8d3f49250b37a5aa7c8af282e5402e48dce6edf735120dac48c2b7f08f9a5227",
+          "video_sha256": "dc6682e4dfbe8db46c780c566736c1d04459f728664eba243d882138dd5711a4",
+          "video_frames": 257
+        }
+      ]
+    }
+  ],
+  "selected_num_envs": 4,
+  "throughput_gain_fraction": 0.15468515892678392,
+  "includes_scene_loading": false,
+  "optimizer_updates": 0,
+  "public_cases": 0,
+  "proves_full_task_success": false
+}

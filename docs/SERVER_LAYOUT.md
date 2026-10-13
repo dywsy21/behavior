@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 17:22 CST：实际运行的MEM续评与冠军后继
+
+- **当前MEM**：RTX `runs/memlite_final100_20261013_resume_v2`，manifest82bc1ee3d2cc704f00ae6d2a153a12ad9ca4c08609d2f5b0ec818a5b687cf79f；编排`code/final-eval-continuation-20261013-v2`=374cfa8f3189b9e646d9692028af5854fa1b4712，实际actor/物理仍`code/memlite-final-eval-20261013-v4`=51c11d32。tmux`memlite-final100-resume-v2`、supervisor3540742、日志`supervisor.log`、`status.json`/`summary.json`。每卡`workers/gpu_i/model-NNN`独立模型代次，实际动作trace在该目录`events.jsonl`，诊断异常`*-execution-errors.json`不冒充官方JSON。
+- 原64完整视频和JSON仍引用旧`memlite_final100_20261013_v2`的原路径＋封存SHA，不删除/覆盖；新结果在续评`parts/`。4初始物理异常和14行政中断见封存cb40fb20…2e9fa。此前`resume_v1`只有未启动注册及派生诊断图，**没有运行过新的公共回合**，不要误认成在用run。
+- **冠军**：`runs/champion_final100_20261013_v2`、9f6e75bd冻结运行源不变；其batch2/4真实TRAIN均通过，速度12.7417/14.7127控制/s、选4。真实回执本地`artifacts/champion-formal-20261012/rtx-preflight-v2`，Git摘要`docs/infra/results/2026-10-13-champion-final-rtx-preflight.json`。公共仍0，等待MEM资源。
+- **后继队列**：`code/final-eval-queue-20261013-v2`=f99affa4，tmux`champion-final100-after-resume-v2`、PID3540913；日志冠军run `queue.log`、状态`queue/status.json`。显式`--mem-continuation --completed-preflight`：等待1000覆盖（错误单列）＋GPU实空，再仅执行冠军公共1000；不重跑已完成TRAIN，不将MEM缺4官方分数称全有效。模型交付继续暂缓。
+- Git包`runs/final_portal_preparation_20261013/eval-continuation-v2.bundle` SHA bf31660d2e770923c84818f9208edd22324c73a221259d9cb2e0fc623b4efe46；队列包`eval-continuation-queue-v2.bundle` SHA f6043096de9121a97b6366b49ce26a80ab6862debae53f3ce2529b3d50acda84。部署均新checkout，无热改原51c/9f运行源。
+
 ## 2026-10-13 16:56 CST：原评测故障现场与独立续评
 
 - 原MEM `runs/memlite_final100_20261013_v2`保留STOP/全部原件，16:30传真机308非有限姿态触发停止；64完整、4同批次物理异常、14行政中断。封存`runs/memlite_final100_20261013_v2-diagnosed-stop-v1.json`，逐视频SHA/帧数及八权重回执验证，不覆盖原件。
