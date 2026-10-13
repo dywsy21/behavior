@@ -42,6 +42,10 @@ RTX `runs/memlite_final100_20261013_v2`，推理/物理入口固定`51c11d32a5d2
 
 本地51项定向回归通过，服务器真实数据封存和恢复待；根自审不冒称另一成员已独立review。
 
+**服务器封存拒绝后的更正：** 八worker状态并不足以判定行政中断。原玫瑰插花305–308在19:09:36另有scene3/base_link NaN，早于该worker19:09:47读取STOP；虽然状态写Administrative stop，四条必须列入执行异常，不能续跑。故第二次停止新增物理异常实际8条（咖啡4＋玫瑰4），行政中断18条；累计150完整＋12异常，待续838。原eb5封存器正确拦住喇叭日志的独立traceback，未产生seal/未启动新回合。
+
+喇叭traceback为19:01:59仅`omni.kit.property.usd/widgets.py`→`omni.kit.window.property/window.py`的空`scroll_y_max`界面回调；19:09:28原成功物理step后的状态仍为4实例各1920实际控制，模型trace各实例还确认至2032。加入仅此已查明UI栈＋更晚成功物理时刻＋正控制计数的封存诊断，其他异常仍拒绝；不改官方UI/物理/actor。新增回归明确验证“worker叫行政停止、原日志实际NaN”不能被重跑，以及没有后续物理证据不得豁免UI异常；合计53通过。
+
 ## 冠军TRAIN接口修复
 
 原final8000权重成功GPU加载，首TRAIN在0控制步被客户端字段检查拦截。官方`evaluator.py::_preprocess_obs`额外加入`robot_r1::cam_rel_poses`。修复只在客户端明确丢弃此键，不读取其值、不发给模型；RGB/61D本体/任务编号的原协议不变，其他未知字段继续拒绝。纯CPU回归覆盖不读取该字段、未知/特权键拒绝、固定slot缩小/重置/实际ACK。必须在新冻结源做真实TRAIN复验后，才准冠军公共轮；旧失败目录保留。

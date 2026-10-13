@@ -7,6 +7,7 @@ interruptions may restart. New physics failures are isolated to their batch.
 All inference and physics still run from the original frozen source checkout.
 """
 import argparse
+from datetime import datetime
 import fcntl
 import json
 import os
@@ -221,6 +222,48 @@ def require_exited(pids):
         raise ValueError('Original process still exists; do not seal live output')
 
 
+def nonfatal_property_ui(text, part_state, attempt):
+    """Accept only the observed property-window callback, with later physics.
+
+    This is not a blanket 'ignore traceback' switch. The frozen simulator writes
+    control_steps/updated only AFTER a successful physical step and applied ACK.
+    Its timestamp must postdate every exact UI exception and this actual batch.
+    """
+    exception = "AttributeError: 'NoneType' object has no attribute 'scroll_y_max'"
+    allowed_files = ('/omni/kit/property/usd/widgets.py', '/omni/kit/window/property/window.py')
+    blocks, current, started = [], None, None
+    for line in text.splitlines():
+        if 'Traceback (most recent call last)' in line:
+            if current is not None:
+                return None
+            try:
+                started = datetime.fromisoformat(line.split()[0].replace('Z', '+00:00')).timestamp()
+            except (ValueError, IndexError):
+                return None
+            current = []
+        elif current is not None:
+            current.append(line)
+            error = re.search(r'\b[A-Za-z_][\w.]*(?:Error|Exception): [^\r\n]+', line)
+            if error:
+                files = re.findall(r'File "([^"]+)"', '\n'.join(current))
+                if (error[0].strip() != exception or not files
+                        or any(not p.endswith(allowed_files) for p in files)
+                        or not all(any(p.endswith(suffix) for p in files) for suffix in allowed_files)):
+                    return None
+                blocks.append(started); current = None
+        elif re.search(r'\b[A-Za-z_][\w.]*(?:Error|Exception):', line):
+            return None
+    steps = part_state.get('control_steps', [])
+    if (current is not None or not blocks or part_state.get('status') != 'running'
+            or len(steps) != len(attempt['instance_ids']) or not all(type(n) is int and n > 0 for n in steps)
+            or part_state.get('updated', 0) <= max(*blocks, attempt['started'])
+            or re.search(r'CUDA out of memory|CUDA error:|device-side assert', text, re.I)):
+        return None
+    return dict(kind='nonfatal_property_window_callback', exception=exception, occurrences=len(blocks),
+                last_exception_time=max(blocks), later_successful_physics_time=part_state['updated'],
+                later_applied_controls=steps, no_actor_or_physics_traceback=True)
+
+
 def freeze_continuation(prior, output):
     """Seal an explicitly diagnosed stopped continuation, without rerolling it.
 
@@ -333,11 +376,13 @@ def freeze_continuation(prior, output):
             elif part['id'] not in worker['diagnosed_failed_parts']:
                 raise ValueError('Historical physics error not in the worker ledger')
         else:
+            ui = nonfatal_property_ui(text, ps, row) if 'Traceback (most recent call last)' in text else None
             if (worker.get('part') != part['id'] or worker.get('error') != "InterruptedError('Administrative stop')"
-                    or 'Traceback (most recent call last)' in text):
-                raise ValueError('Independent unknown failure cannot be an administrative reroll')
+                    or ('Traceback (most recent call last)' in text and ui is None)):
+                raise ValueError('Independent unknown failure cannot be an administrative reroll: ' + part['id'])
             interrupted.extend(r | dict(reason='Other worker triggered global administrative STOP',
-                rerun_allowed=True, best_of_n=False, log=binding(log)) for r in pending_rows)
+                rerun_allowed=True, best_of_n=False, log=binding(log),
+                reviewed_nonfatal_diagnostic=ui, last_physical_status=binding(part_path / 'status.json')) for r in pending_rows)
     if not set(state['failed_gpus']) <= newly_diagnosed:
         raise ValueError('Supervisor failure remains undiagnosed')
     for gpu, worker in workers.items():

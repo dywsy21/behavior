@@ -240,3 +240,29 @@ def test_second_prepare_uses_root_schedule_not_continuation_coordinator(tmp_path
     assert manifest['administrative_restarts']==4
     assert sum(len(p['indices']) for g in manifest['groups'] for p in g['parts'])==984
     assert manifest['prior']==str(prior) and manifest['root_manifest']['path']==str(tmp_path/'original/manifest.json')
+
+
+def test_independent_nan_during_global_stop_is_not_administratively_rerun(tmp_path,monkeypatch):
+    prior,seal=stopped_continuation(tmp_path,monkeypatch)
+    log=(prior/'workers/gpu_5/task5-n4-i0.log').read_text()
+    (prior/'workers/gpu_1/task1-n4-i0.log').write_text(log)
+    result=m.freeze_continuation(prior,seal)
+    assert result['completed']==8 and len(result['execution_errors'])==12
+    assert result['administrative_interruptions']==[]
+
+
+def test_property_ui_requires_exact_nonphysics_stack_and_later_applied_steps():
+    text=('2026-10-13T11:01:59Z [py stderr]: Traceback (most recent call last):\n'
+          'File "/env/omni/kit/property/usd/widgets.py", line 210\n'
+          'File "/env/omni/kit/window/property/window.py", line 404\n'
+          "AttributeError: 'NoneType' object has no attribute 'scroll_y_max'")
+    state=dict(status='running',updated=1791889768,control_steps=[1920]*4)
+    attempt=dict(instance_ids=[305,306,307,308],started=1791889301)
+    result=m.nonfatal_property_ui(text,state,attempt)
+    assert result['last_exception_time']==1791889319
+    assert result['later_applied_controls']==[1920]*4
+    for bad_text,bad_state in ((text,state|dict(updated=1791889318)),(text,state|dict(control_steps=[])),
+            (text,state|dict(status='failed')),(text.replace('widgets.py','physics.py'),state),
+            (text+'\nRuntimeError: unknown',state),(text.replace('scroll_y_max','robot_state'),state),
+            (text.replace('2026-10-13T11:01:59Z','no_time'),state)):
+        assert m.nonfatal_property_ui(bad_text,bad_state,attempt) is None
