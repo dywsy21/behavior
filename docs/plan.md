@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 17:38 CST / Codex SUBMISSION-FULL-EVAL：** 原续评supervisor3540742/8worker与后继3540913均实活；GPU1/2/3/6已实际公开模型请求152/31/155/69，其他4卡按原2并发加载限流加载/等待，暂无新错误、不重启。新完整回合尚0，汇总仍64原完整Q0/SR0＋4已披露异常，932待覆盖；不是最终成绩。原51c actor、9f冠军、374续评编排与f99队列四checkout均实查Git干净/HEAD不变。继续现run与后继队列，模型交付维持暂停。
+
 - **2026-10-13 17:22 CST / Codex SUBMISSION-FULL-EVAL（已恢复运行）：** 冠军原final8000修复源9f的2/4完整TRAIN门均通过，各8回合/2056实际控制且原JSON/MP4帧数全部相同、0更新/参数前后2a5ce80b…3975；2档161.3598s/12.7417控制/s，4档139.7436s/14.7127控制/s（+15.47%，不含加载），按预注册门选4，摘要`2026-10-13-champion-final-rtx-preflight.json`。新MEM编排374cfa8f经Git包bf31660d…efe46部署，目标20回归过；一次push TLS失败后HTTP/1.1重推成功。新manifest82bc1ee3…cf79f `runs/memlite_final100_20261013_resume_v2`实际起tmux`memlite-final100-resume-v2`/supervisor3540742、八worker3540758/59/61/62/63/65/67/68，当前分批加载，64旧完整＋4异常原样继承、932剩余，未冒称新回合已完成。f99队列`champion-final100-after-resume-v2` PID3540913实活等待，显式验证已完2/4，不重跑TRAIN；待MEM1000覆盖并GPU释放后执行原champion_v2公共1000。未知故障仍停，不吞异常/不对外提交/不恢复交付工作；原所有失败与未启动v1现场保留。
 
 - **2026-10-13 17:18 CST / Codex SUBMISSION-FULL-EVAL：** 启动前自审补续评计分保护：同批次有单个实例先写官方JSON、另slot随后物理崩溃时，未完成整批ACK不代表可把已有结果丢掉/降为失败；新`require_no_uncommitted_metrics`发现此情形停下独立逐例物理审计，保留已写/半写原件。新及关联20回归过，无公共重跑或policy变化。9f源正供冠军TRAIN，不热改；将冻结新续评编排源、以相同cb40封存重新登记v2（v1仅准备未启动），冠军runtime继续9f，batch4 radio1028已完/keyboard加载。
