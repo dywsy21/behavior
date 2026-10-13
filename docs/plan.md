@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 13:46 CST / Codex SUBMISSION-FULL-EVAL：** 原两大文件单连接约1–2MB/s，增加CPU无损分块SSH工具`transfer_frozen_eval_assets.py`，原冻结包不重导出：预先核整文件与每1GiB分块SHA，最多16连接传独立part，逐块＋最终整文件再次核验后独占发布；原部分传输保留、不覆写已验文件、不带私钥/优化器。5项本地测试过（字节全同、截断/多余/错误hash拒绝、路径/重叠/重复发布保护），部署和实际加速尚待，不提前报提速。另RTX原StarVLA环境JAX0.5.3已完成SM120小内核/35.62s，旧ptxas回退驱动编译但结果有限；仅内核兼容，不是冠军完整模型或24GB资格。
+
+- **2026-10-13 13:39 CST / Codex CHAMPION-2026：** 7000原始评估/manifest/latest三件已本地同SHA（eval23f4d52d…ac20、manifest bb867d69…a44b、latest58be3dd6…4c6），固定1600 all FM0.1812635、old50 0.1396627、new50 0.2228643，阶段准确80.8125%；同源/同eval plan的逐项比较尚待摘要，不宣称物理Q/SR。MEM两大文件正在直传且有字节增长。为等传输期间准备冠军终态RTX评测，只读同步原作者两个Git bundle（cf07323f…0540 / 7af08889…c20c），保持原commit和登记patch；拟在空闲RTX GPU0做现有JAX环境小内核兼容检查，零模型/优化/模拟步、不修改env，若失败保留现场并换独立env，不占A800任何GPU。
+
+- **2026-10-13 13:36 CST / Codex SUBMISSION-FULL-EVAL：** CPU精确导出终态通过：低34d→model-only 0b4f2d88…1dca/1138 tensors、observer bee→3eefa5b5…0c9f/950 tensors逐张量字节全同；b0原adapter不变、高047复用原949导出。新包23,507,320,520B，manifest 07d2308c…40c0已本地验同，冠军剩余保存/安全预留285,019,917,312B。三条互斥文件传输已由lc3直传RTX `runs/memlite_final_preparation_20261013/assets-v1`，没有复制私钥、删除原权重或更改优化器；目的完整验签/全链TRAIN预验收待，不能把已导出称已开公共评测。
+
+- **2026-10-13 13:34 CST / Codex SUBMISSION-FULL-EVAL：** 本人账号VPN已真实恢复，loopback1080及lc1/lc3 SSH可用。冠军原3895302已7547/8000、最近9.54s/更新，7000完整保存54,489,569,924B、manifest bb867d69…a44b；未重启/热改，下一等待原终态。lc3八卡为外部作业，RTX八卡核空、4.7T余量；新1adc479e经Git包f9a6ea29…e8f2双端验签部署独立A800 `src/memlite-final-export-20261013-v1` / RTX `code/memlite-final-eval-20261013-v2`，RTX55回归过/6.71s。仅CPU精确导出已在lc3 tmux`memlite-final-export-20261013-v1`启动，输出`runs/memlite_final_assets_20261013_v1`/同名log，预留冠军余下保存与安全空间；共享盘约485GiB，未删除任何文件。完整模型包/物理预验收尚待，全量公共实例仍0/1000。
+
 - **2026-10-13 13:30 CST / Codex SUBMISSION-FULL-EVAL：** 用户已明确后续ec账号为本人所有、允许重连，覆盖前轮等待权限的阻塞。当前分支干净fetch/pull完成，无新远端变更；先恢复既有loopback VPN，再只读核lc1原冠军训练及lc3资源，继续最新MEM低34d/独立bee+b0精确导出迁移和官方全链预验收。尚未宣称VPN已通、冠军训练已完成或1000评测已启动；不重复旧高层传输，不改共享env/活跃源码，不启动新训练。
 
 - **2026-10-13 00:11 CST / Codex SUBMISSION-FULL-EVAL：** 最后静态复核将预验收batch2/batch4统一为每task同一TRAIN实例1–4，仅分组不同，避免不同工作量造成假提速；公开切分仍恰好0–9、不重复/不漏尾批。新增回归后本地55项过（1.62s），RTX旧eeda54项及单高层实测证据保留，不将新增代码说成已在模拟器通过。最新源待获得A800连接后统一新冻结部署，完整公共评测仍0/1000、权重迁移/全链GPU门/最终24GB或50端口交付待；当前安全检查点提交，VPN重连确认仍为外部依赖。

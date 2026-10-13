@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 13:36 CST：VPN恢复与最新MEM完整推理包
+
+- 用户本人ec账号重连已授权/实际恢复，仅loopback1080/1081。本地持久会话`full-eval-vpn-20261013`、lc1/lc3独立SSH master；不记录凭据，不修改全局路由。lc1冠军3895302约7547步继续、已7000完整保存；lc3八卡外部作业未触碰。
+- 新冻结源A800 `src/memlite-final-export-20261013-v1` / RTX `code/memlite-final-eval-20261013-v2` = 1adc479e81c67446519769496cf825d1a87eaf8c，Git包f9a6ea29fef00343164aad253dc95f41910249a1f8ae86589c43d2614229e8f2。RTX55定向回归通过，未改原环境。
+- A800 `runs/memlite_final_assets_20261013_v1`及同名log：CPU导出完成，23,507,320,520B，manifest 07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0；低0b4f2d88…1dca、observer3eefa5b5…0c9f、原b0头。只去除optimizer，原模型张量精确验收，原checkpoint保留。
+- RTX目标`runs/memlite_final_preparation_20261013/assets-v1`三流传输中，不是已验收模型；高047继续用原`runs/handoff_portable_20261012/pack-v1/candidate-model.pt`，不重复传。小manifest本地`artifacts/final-eval-20261012/assets-v1`；完整物理验收和公共1000 run未启动。
+
 ## 2026-10-13 00:08 CST：高层批处理工程终态与完整高层迁移
 
 - RTX `runs/memlite_final_preparation_20261013/high-batch-v1/result.json` 与本地`artifacts/final-eval-20261012/high-batch-v1/result.json`均c02cab9e519bfc21f22709b081758a090fbb38f08966bb2f9992d3e5a83e6c9f，8次模型调用/0模拟步/0优化，所有批处理/重排输出与serial相同、参数前后c93db878…20f1；原tmux/进程自然结束，GPU0释放。只验单高层，不是全链或提交资格。
