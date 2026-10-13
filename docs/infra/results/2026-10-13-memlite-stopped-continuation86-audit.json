@@ -1,0 +1,930 @@
+{
+  "schema": "memlite_stopped_continuation_complete86_causal_audit_v1",
+  "observed_at": "2026-10-13T11:46:11.263630+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2",
+  "seal": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2-diagnosed-stop-v1.json",
+    "sha256": "a5ae63459cd62ac659e49f48675eb99908eca4dde3872768cae708604d5588a4"
+  },
+  "auditor_source_commit": "6125b615ab39ac2b616c97ca13e8b6cfd00d8c9e",
+  "auditor_file_sha256": "bfefcf1adb071a61556280fbcc4554370e431fc1606251b07e87b262c7672eb8",
+  "episodes": 86,
+  "applied_controls": 505888,
+  "physical_ack_count": 31652,
+  "models": {
+    "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+    "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "gpus": [
+    {
+      "gpu": 0,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_0/model-000/events.jsonl",
+      "full_trace_sha256": "08cbea4d6bd31dcba2e08e03395311c8a1083901f3cbde5b4a60a8fd3a739816",
+      "full_trace_bytes": 55643563,
+      "audited_prefix_bytes": 55480130,
+      "audited_prefix_sha256": "a5766aaf7108de11b6e3df520b81a2ff5b75d17068e9dfa5b6b9f5d19bea2d23",
+      "episodes": 10,
+      "applied_controls": 67100,
+      "events": {
+        "begin": 10,
+        "plan": 530,
+        "observer": 4730,
+        "action": 4200,
+        "ack": 4200,
+        "close": 10
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 1,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_1/model-000/events.jsonl",
+      "full_trace_sha256": "bf415a3a2326424213db02f2fdf74611b2b503a4a6e1651742657957f7827a07",
+      "full_trace_bytes": 70624489,
+      "audited_prefix_bytes": 67949613,
+      "audited_prefix_sha256": "bca42e69d0083665ab4d00fdd929edf7652b89ce3a0522231a7524149bfdf317",
+      "episodes": 14,
+      "applied_controls": 81776,
+      "events": {
+        "begin": 14,
+        "plan": 646,
+        "observer": 5766,
+        "action": 5120,
+        "ack": 5120,
+        "close": 14
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 2,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_2/model-000/events.jsonl",
+      "full_trace_sha256": "665d982a7ce5151cd4b173c631627c420f890f9fa926b5e490a5f2d4781563f5",
+      "full_trace_bytes": 63729159,
+      "audited_prefix_bytes": 38762916,
+      "audited_prefix_sha256": "7a429ddf8770731fd9e7fdaf33ad88475abc7e718b050a4206008ebacf6be568",
+      "episodes": 6,
+      "applied_controls": 46630,
+      "events": {
+        "begin": 6,
+        "plan": 366,
+        "observer": 3282,
+        "action": 2916,
+        "ack": 2916,
+        "close": 6
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 3,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_3/model-000/events.jsonl",
+      "full_trace_sha256": "24b80042465d72c60348050aa8e10a6c4d90c41453cab7c2aef35cd2cd0e9f1f",
+      "full_trace_bytes": 75877757,
+      "audited_prefix_bytes": 69153291,
+      "audited_prefix_sha256": "cf86a8162cd3e67303b3faa731ea4e2ff15bd62fbee17cb5b4e785f037729a97",
+      "episodes": 14,
+      "applied_controls": 83484,
+      "events": {
+        "begin": 14,
+        "plan": 662,
+        "observer": 5884,
+        "action": 5222,
+        "ack": 5222,
+        "close": 14
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 4,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_4/model-000/events.jsonl",
+      "full_trace_sha256": "dfab95e8633173b192a817a506f11fda545a3abb8b07d8900197aeb5645faf5a",
+      "full_trace_bytes": 66115928,
+      "audited_prefix_bytes": 50559446,
+      "audited_prefix_sha256": "7d4d12daf1a275e601402bc7a7cb7bd05832b2cd40cf0c38b3b0e7ce8ef06a47",
+      "episodes": 10,
+      "applied_controls": 60760,
+      "events": {
+        "begin": 10,
+        "plan": 476,
+        "observer": 4278,
+        "action": 3802,
+        "ack": 3802,
+        "close": 10
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 5,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_5/model-000/events.jsonl",
+      "full_trace_sha256": "e3e9d7b6a3eb0f27bcc28905485e0bc04c98b5c94c4ae72568d45d1b1e0ccb31",
+      "full_trace_bytes": 44425635,
+      "audited_prefix_bytes": 32265579,
+      "audited_prefix_sha256": "148906e2be90e6fe112adffb8be0a56da91043a26b6396013491b54ec4ef648b",
+      "episodes": 10,
+      "applied_controls": 38540,
+      "events": {
+        "begin": 10,
+        "plan": 310,
+        "observer": 2720,
+        "action": 2410,
+        "ack": 2410,
+        "close": 10
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 6,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_6/model-000/events.jsonl",
+      "full_trace_sha256": "090d823c75f223f1159cf3a2808f006d2faebad2dc55e042f00b50fe2221656d",
+      "full_trace_bytes": 67583290,
+      "audited_prefix_bytes": 67583290,
+      "audited_prefix_sha256": "090d823c75f223f1159cf3a2808f006d2faebad2dc55e042f00b50fe2221656d",
+      "episodes": 12,
+      "applied_controls": 81502,
+      "events": {
+        "begin": 12,
+        "plan": 646,
+        "observer": 5742,
+        "action": 5096,
+        "ack": 5096,
+        "close": 12
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 7,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_7/model-000/events.jsonl",
+      "full_trace_sha256": "6d2eb323d4c8cf51ba0b72b772ffc684c6be97a333c0201a90cb5b36f360e34d",
+      "full_trace_bytes": 39583050,
+      "audited_prefix_bytes": 38404917,
+      "audited_prefix_sha256": "442816c6039b5b66c6837b15555901d7b65eacb4ac81460a732b3908b71737f1",
+      "episodes": 10,
+      "applied_controls": 46096,
+      "events": {
+        "begin": 10,
+        "plan": 362,
+        "observer": 3248,
+        "action": 2886,
+        "ack": 2886,
+        "close": 10
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    }
+  ],
+  "projection": "Every original event through the last completed close on each GPU, without filtering interleaved events; all close identities exactly equal the 86 sealed committed episodes.",
+  "all_official_steps_match": true,
+  "all_video_frames_match": true,
+  "all_eight_model_final_weights_verified_by_seal": true,
+  "proves_full_task_success": false,
+  "notice": "Original64 audited separately; these86 include previously audited14. This extends evidence, not another rollout or independent efficacy test.",
+  "cases": [
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 5868,
+      "metrics_sha256": "436fca8b26f4f4f9a060e4ab128b7a6fb9c1616038a091d063f41683d72c8a8b",
+      "video_sha256": "2f15ccd9128781fdb3c8847447c60542eae8c9f856555fe2fbeca5b78532247f"
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 5868,
+      "metrics_sha256": "661bfe725e23c0371c6316685f30a106fb51662ecb8e08b80b9d5ed25f232f77",
+      "video_sha256": "19da80ec6ab72f20ca29d2584f4640f63a470f8a38874e3a8058d81451c4bc6f"
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 5868,
+      "metrics_sha256": "41a347f41f0db027a675d4055d406e24da99e9442dc3289740016b9429db05df",
+      "video_sha256": "138fd428d7fe2daa916a091e972c8a997324eddcea15017d495ecfef62599c41"
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 5868,
+      "metrics_sha256": "da3aa266477727a36710de0361fb77b72103d4a8c5bf4c9c0b204fc545c52562",
+      "video_sha256": "516247c8f1a77fcf6d662f7fc34020c2209f1a00eef7c7fe2837b0a3dd655b91"
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 5868,
+      "metrics_sha256": "1e6ac2f52a37f155a80a01040b1c064d746d8fa783b8b3da1caca68375d16ea3",
+      "video_sha256": "1887e9f2e9032cd2c25cef640b6d48c85de09272762d501712e6c99f98b1f734"
+    },
+    {
+      "task": "attach_a_camera_to_a_tripod",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 5868,
+      "metrics_sha256": "bb12aa3aa4b06ff9cccda11f636f1ee2a4489512843bf7d74468ca42b9035a16",
+      "video_sha256": "6334883b661f8a2e33fe46f2187c5103f226c7d9060cd73ec2a26a6cd1bbb1e6"
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 7961,
+      "metrics_sha256": "4e877c4496eaa24f6015a090993bff2ae67d1faaa89cf3e26ff839463dba2759",
+      "video_sha256": "206c97f1199750c9a50c714a893005a513d3893422e266e142fe6272f3acf8fe"
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 7961,
+      "metrics_sha256": "6fc5eee26a041307c868913f3b656e80097224ff0ea61715cc1299b5ed808b39",
+      "video_sha256": "37b81c666886e114e06acf95219feba7aa0be0ef115f62db2e8eb351ecccdc11"
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 7961,
+      "metrics_sha256": "01eb0236f86d36609335af827d16130e4c06c59ff9a25511830e4707f3fd0e0e",
+      "video_sha256": "03735ae229b7a7c25e4529e2662d5edbb54544d04bff1f8d047ef9b9c40e8dac"
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 7961,
+      "metrics_sha256": "b68b768bb0dea79f0bad7dc862508fd6e6b7b22b58308bdcc07c24eaf0e07cc0",
+      "video_sha256": "113862e1fe7626628b07daaa69ae13d01c07ce7f3609fa78b49c43f6b6387b7a"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "8288ef1786382de3c738dad9614c9a88be82454e2795cbef2f945d3f5b262d85",
+      "video_sha256": "50a9de4992600c1b794817997c26340db5770b94f62758404f7519d16e9c1a76"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "894a85e499cdf02909c8d09dfc38fb8cdeaf4975562684659b57e3c1e75c0360",
+      "video_sha256": "fe3b8ab44d44d205f47d1f0dbbc127c28d86cb0f9ab15a55b0c58c5e32f62c1e"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "e2184cdc6ca38fa5582ec99aa3f4a0fc87674b155f55cd197cf27485760a8b46",
+      "video_sha256": "790868dba9575998615f17aa33100ff4b694671aef14d2c6eace37dc398c2039"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "5316f2a336a73b319757543affcd822f33e077a46668b8cd735b71b85136b1c6",
+      "video_sha256": "aea6b37b6a7c1da86648dcfaef90f7843facc5868380c81186c45f7143e7e684"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "3dafa421be874d96df27bc027722f7c657ededfdb1e9a98e6c53272c157c22e2",
+      "video_sha256": "d8a6f05820de80c1a2ec2f709ec29d26f4edfc5630381f883e6aa9395d213d2d"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "74dd1dea5576e45cbf8b3a4fa1476b1993016fa30d8dba78128031e6141a4e9d",
+      "video_sha256": "a4b633d4baf19fb4dee45bb923ec694c6bf88fb6de54b974ff3bb8fc4886e5a6"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "25ae028445e02847518a572631c3cb5dabaf4cc80c96235b388d59166e30017b",
+      "video_sha256": "4068255aa79ca39dd1819594f7ded0bc56ccc34b43fccfa928d85eeed26e0459"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "4fdb96c1148a3374a0b3118b688d9889df06c0a4a91969df7941899f39eab473",
+      "video_sha256": "3174431140f9f11df075673012dbe6d486173373fea75f112615f46f987a41ed"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "957ca91935e85c4e095e122fcb8524c5364d2982214a0c5c550f2e3a11363d16",
+      "video_sha256": "07681c160167b722a4223b2128e3b7022a6aec966cf35d15d6da452da0e8fa22"
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 5458,
+      "metrics_sha256": "2859f194badf0532f3cc758d5a30444cd77779445a117d78ef9cd08cbe57343d",
+      "video_sha256": "bffedf03c84275a28d067eb339c08ec8ad9401cbe9f5512edd64e9fdb6c64b26"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "3ab24496a1ebec6141657b4d963540b7dbf7038c680626377a5b4803804b3257",
+      "video_sha256": "b4f170ecf49d6c250f706fe6b853e13032a98ce0a4bf551ccec5267dd93d5057"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "282c5f1d8e0dda2a6c5c80c66b072fea0522d2edeb5a0059b997e08e1e3adfa9",
+      "video_sha256": "969dd6171174331056cef19ec9c34be63dca3bd77cd64bda6029bd54c58efe68"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "2161e1156e5117010df2d970f5d303ac073719db9dba77d074f32a9fcba0383a",
+      "video_sha256": "1ae59f01bc6fd556aa84b51c5d830680796b30922a55ef5d444db273da9f5def"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "3e3a3e0ae6bbecfd3033cdb750f0c76e2937f96afa1f3689f5568bffac2b7a36",
+      "video_sha256": "649f63f0aec051c1df9557bc5662e8a1145fc98a695f6d7390fc9139139940ad"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "e5497325d71df40c622ac6d9335828f486bb31f103af42f8ad7508b727521652",
+      "video_sha256": "efb95711b10a19a3f8d0ecd622e7e95f19ea5bfc7223121583d3a72139c10033"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "146aac84eb3d28f268a0c8810867c7048ab5285e754aa1e0923447bde687b061",
+      "video_sha256": "4d0e06a1784d838dd4260ca801171872e3ef57a1e236d283a533f821600c10e2"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "6880554459dd30f383804a87bdf814111880a8c7592ce219689979cdda6a2ffa",
+      "video_sha256": "d4d5d97adfd9c042a8a677a6fe97f39d279ff9c634c0466d4efb31c3fc3a76e3"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "e75f907e82579006b8270ca6b3cb166c87e5d44772eaa7554627934e61ce058d",
+      "video_sha256": "4b4686b670d830a03612443a2d5270f97edcb4cf4aa32be0f9421f7f35db1939"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "78b977db71a906df5e585a3b3719b5212395c7511d96c445bf327ab82344c27c",
+      "video_sha256": "c5b53d5a83b7972e63aa6983771f4d62191bc1c80c64ba7dedc9bb8d2156266c"
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 6927,
+      "metrics_sha256": "6b1e992cd7a5aa80a51c5c823b29682f772462966a4f4fb334a9666dc653d75a",
+      "video_sha256": "71952979395556f0be7ef9b2a3fb1924217581363b8fac530e11e9c01c397366"
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 6116,
+      "metrics_sha256": "d9133ea6922693a1a2de2671540ebdf2aa16063e0c2b24acce8ad969341f07ea",
+      "video_sha256": "82fb0395d589144f27f510a44135c58dc43d2bddf21d057d9556d4572e17ba4c"
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 6116,
+      "metrics_sha256": "39d9c5288979c6a7d8a583c2da2f7aa42e85c8a5bd441b0eea6682b67f8830c1",
+      "video_sha256": "45da7672a8532cb6f3148df1ce4c42ea6a79785dc1e7e4c039d89b111c1674fd"
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 3620,
+      "metrics_sha256": "11c1101b095fa258b268a8a6efe5e326e4c9056e9a0ec38b158157414f626b0d",
+      "video_sha256": "ab4d4d6737edf23375bf975aa7361bd5a115ebea7d59ac82715cfb470ba4f059"
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 3620,
+      "metrics_sha256": "80034919e6fc41722d84c7c67c63a64bea24a7effff7737bc37ee6beb0a7125c",
+      "video_sha256": "e9b0537095272a195135b5bdc6f308ecb78197d3972017152f1266f24f445a63"
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics_sha256": "741bd8ef1edc292ede75fff81ab81914d024786427cbbb4e0329c2e75aa0dd36",
+      "video_sha256": "5c2917219c71b1884ef61ad410933920a3a636f032323912fb1210371099df5f"
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics_sha256": "9777fdb6b495c9e17d55386bc25f8560c47caf460f4ff03d3cd7470f7f2afb50",
+      "video_sha256": "406167cb3e4a9ca007b6a57b5650391d5092d63f2035429d2b51c1434520f2b8"
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics_sha256": "e8292d7fc615069723236d120a85f71376e61f0a7b3f9b9cc88d75b8b07d6eba",
+      "video_sha256": "dc0b3911df323555b71cbfc730222302ba6eadeac4d91a4b0346d8627557cd8d"
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics_sha256": "c2565d78092a0794f89843d3eb4a8bf83ff6b32e8c283dbca8221dbce3a559c9",
+      "video_sha256": "93e3e2c90732e8779e69546ea635014ba7533d19479d5004f03aab34cb7f93b5"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "2f03bcb2ad8cf9587f5313cbad81add84b6be59e9266a0df94c43a9c54c31c1f",
+      "video_sha256": "a04d36189b7a01cb68b759eee476d56cb1120db4c61ced66e1a584ffaff4c535"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "d93497510308d4209bbc778d4d5f5d9dc24d0593a1c4023675b84f50cc93fb18",
+      "video_sha256": "639892b86cf74c5d12707aa769689563e4e991fe2480094bb2e5952c6578a787"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "760fdaec22445da89957f3a24cafd345655f31ebe46eb9a6fa287cff1cd18d71",
+      "video_sha256": "38577a3e2f08d4e4a9fe638e3340a9ff95bca5088ff4868338838001e0844543"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "d1a6417c7368e37552e4dde8ab68266451889bc983d113ecc896fc06f0d4eebd",
+      "video_sha256": "d0594ad0c97170ef86c8881fe9303293f8ed343ab1eb1ff1d54c090150dafc85"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "53616850a434f9b41414bde14f91955bac015de193f9e1fb2ad6d771834f3dd6",
+      "video_sha256": "26b15a1c5f541e0f952445a70cb4f44eb107a0b8012afb109178ae6c7649edf5"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "0f156ab4cca80187c8cc07a1acce88de8cfe8b83d6547f5906c4ebe9862d9e0d",
+      "video_sha256": "eeae9a53becc7b0b7074a7eb4b615da785cc10ae8ba55d2bb0b00f6c1ddf2c41"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "2077ee1b78cce306100c3c3083a375e2f8b4fc142c547da1fbb6d238bc7c0247",
+      "video_sha256": "dd650fcd5901d588ea770bbb866959cfcfc67e64a48d9767901d488b973f42f9"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "f73b595399a41638510167d01fb5bc864eda9f5b084da3e784443c18efab7cc2",
+      "video_sha256": "1a60424fbf75e7bf320b1f17d93c65528dc6731ff43ad158e8a954f9384c384f"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "0c9fb0f1ad01234477b20083800937e5e9498f84455d28101fbbaed6dd3ef8f5",
+      "video_sha256": "0d8114d1c510766a32e9fbcd8fa9bbc9becc7c06a4c085cd5b7184cc162ef58b"
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 3854,
+      "metrics_sha256": "afaf3bbee9a89288edc0c70c44b632d3930cec9dcf021eef397fbeab23c805cd",
+      "video_sha256": "ac3c64cada144f6c1cc6ef9a1f315ed09a2156be868d8341f93c561a4be7c5c9"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "a8020d58c089029f3b62eb44b14db74ac9c2750d1578637e4d299675764e4968",
+      "video_sha256": "fd862e760b17012a9ea603dca48bc24c8fc93666466e76f1e545299da9ecde22"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "d873252840feddb04f1f719eb106db45fa5dbc92b9e7dd7bf6ce098364a55ccd",
+      "video_sha256": "4aeb5caddb2d51f1e55a52d0514945a7a4fc68f0d9ff6ffd0a9c0f8fac18e4c7"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "457f4b9bae7655affee48137b2da73f55f99e8e54fe6e70a6a49a64290f737e4",
+      "video_sha256": "7df448c8e499456b0178d44ec9bb7660cdfe323b672b41aa8d593a59170ecd8d"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "f7fe188d9ae87b69ab78f0305ff6f5512c28f5b0adc19e4fbec6fed816559fa1",
+      "video_sha256": "d1ddfd9f9bb4f5d023d6fbeac8bbe485d23c82b9260b9fe0aac44c79f72de084"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "3cf49dddb3b1f4a95c4f3ca4677814b1c7ec3c81de8f26a638d6881a20a5ee51",
+      "video_sha256": "3cb65a6947e292e3c3907172388e85850e1106d33b5f7006e1eddfba5200112d"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "b0a7a5493fda17e6cef5b15abb8bfd60b730c728f50e18d06e83cfed0e01f69a",
+      "video_sha256": "ddb20fc3563c9862be966a3b61472588ac24f0c6a86516b2744c87ac3c6cd9ff"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "315ab6e4ee25f0a684768173757e8917252bc9ff3d3768a096bf04533cdc0912",
+      "video_sha256": "b623b8ab896aba7f47e4ac3ad8c05c1d832eb3d62f09e198778c632b4bdde026"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "79c99df9759038325c9ef0595abaa25db9e3fc5c0f27af29fe303657189d7c06",
+      "video_sha256": "68edc52791f8ec1227f580c6c87f63683245fe89f2a9e4098761b0f2b10ec304"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "ef5ef9af268d26c2b427b7a418408bbd88a16585dd6614b188f1cdaa2e8ea7da",
+      "video_sha256": "4e4c493f1f53480ae6415d7e0cc2295e52107d3445ecd0db99704d6b41085cae"
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 5164,
+      "metrics_sha256": "4ad71f86e4cddb03103d2c5a70f6331b317efce7ded449600be0d55d5c9bf615",
+      "video_sha256": "8ff83cb944fcb71888e3a6ad11ed688c542eb3822409f1fbd9bb5cae19226a45"
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 4857,
+      "metrics_sha256": "aefdb71313eab9dd4cf3bb18e3b98b6bd00796ee72c0a40cda0b6a88107d1b48",
+      "video_sha256": "cd110238fc05ef2eb73d2156af44ccb0f163f86263e08d5a694d5efb84dcc99b"
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 4857,
+      "metrics_sha256": "513c7f72a1e28de76935977cc84a482b5ff4d987154915205fb13a205035309a",
+      "video_sha256": "2fb38bb89d7d0a6244dba7195e962d0c11a43bae1b1675eeae7225300004379c"
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 4857,
+      "metrics_sha256": "f6efce11a36946a1c96dfe6cf0c20e885d67543b306e9fdcb1392cde18303f4c",
+      "video_sha256": "bf34d68ea6185387032d7424657ee3aa7e79fe40246af47da95dfdbb23bfeb47"
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 4857,
+      "metrics_sha256": "23a6874f7c535459864a19efff22fe33b5f7c5147d7cb289c035f426f8731af8",
+      "video_sha256": "7eb04fbe86c076368bdcc796c8bca801d4278fdfbde6f6f9ecbaaafed6c2f6ad"
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 4857,
+      "metrics_sha256": "830d33cb1befebb652e9c5a13ca3bbf8517288a5aae29cc7175496cc9503f54e",
+      "video_sha256": "13f6d65b07a21ce25b2c8b644d251701e3f51b2e33db6ce4a1bdc01b0c417d17"
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 4857,
+      "metrics_sha256": "fcbcfbad32296e1938b4ba61f7ad6d4541d539631998b2bab53b0ddfb4bd0f48",
+      "video_sha256": "769c9bb628db479343ef27492d318e323b2708817848f83230c00505d431cfc0"
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 4857,
+      "metrics_sha256": "c1e4c5efe0e6a8687616c420938fb6619cf6b91cc568cf876a740e4d9f70bd08",
+      "video_sha256": "fd70c05a0a481bad7f0ef08972e49a4c048c1677fbf20f9b006451f7a256dcbb"
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 4857,
+      "metrics_sha256": "fd23966a2352d7b40e137335c4c7384c7d9f2d5d8c8690ccde7ce4593d166296",
+      "video_sha256": "aaee3ff95ce0a14a4dabe0028f9c57719b2bf4d42eb5c4ea5995140eed414f95"
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 6799,
+      "metrics_sha256": "d71834f0541f38658282528a37c5f91029cc27edf0f244b139dcd0ececca0469",
+      "video_sha256": "877d9c1da09d00be31fe35c5860d7b95c0e1a4cd8bfc7c8c4e7de96424f02e25"
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 6799,
+      "metrics_sha256": "2a29a679c9ce2662bc6efce83adfa2a4435e21a88846faa1590291d8e786381a",
+      "video_sha256": "4d6f94a9372febbcad338fa86021d3cd2d76d66f1d9a2f9c9255cf72bf77c8b4"
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 6799,
+      "metrics_sha256": "ce9bae80f7b79557c3f607fa7153bc8bebab3d157473392c403709f15caf79b8",
+      "video_sha256": "320ec525e55efae3ac0e9cb01682baa2bb7102f07d5636097e76b5cb3b70e845"
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 6799,
+      "metrics_sha256": "9fed7c7a78230f2baf3437e50ad5170135c88b44a61c1760631e3a261623b861",
+      "video_sha256": "5773d2ee8b2d542893a8148f8b2084a61b6aea485057edf9f55bdc4006667fe6"
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 9292,
+      "metrics_sha256": "83ef66203e2f115a2d07fcb0645e006bd75de3742fb3a94e8ef7797162afe331",
+      "video_sha256": "f2106c191b04c1e59d6c0b2eaa935bb71541d34d34330bd79ff22e8018ca7cb1"
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 9292,
+      "metrics_sha256": "2640a942c01b3c3835d48e55dbace7b106e511a927986f82e15317f2089cba20",
+      "video_sha256": "2b3eb861edad66200cd214998fd0df2638505d3342c6e69742ae1bb671e0f6f9"
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 9292,
+      "metrics_sha256": "8f9982971ccbccd249a8253752b759704f5743e5f8d510d39868379b981f666b",
+      "video_sha256": "5af2d88a38560b0d897793e4a2d5a6e070f342fe30ddca1a26f994095cd91ad3"
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 9292,
+      "metrics_sha256": "975c8dcafcf2ad3c8576b2562b0fc902517cd3a864bbdbf4ada6b2ff08b1c355",
+      "video_sha256": "3cdca064704315a15820b81400e8874d04ce70948fdd25a8504a466a78c1a61d"
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 4731,
+      "metrics_sha256": "32bda89a361f9ebf04ab49d9355636abd9efbde9fd89912d3776811eb526d346",
+      "video_sha256": "5fdbb8be55fb5210151c5599c2ccdc67444fbed7a8f55658b32e3ce043549066"
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 4731,
+      "metrics_sha256": "c991af8b6eba5cf8cb6f67c0496b2122067af1c0fa49e5ee4f0ffe424b78291f",
+      "video_sha256": "d12a3033aff682c47f0da86ab1923475e2f20c0b333a6b48d01a33fff085e03b"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "8ce268fd8727e8756d6203b4bb8e72eb6df9f1a50267855cb1d2dfe944f2fe96",
+      "video_sha256": "d51355b1688af8f3ada61995956826bc0f0bd98403d0d89c5b9ad912c55e7e45"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "6b7d9cc60a88e366e030b767999fb9ab6f031e5f25fdcfa1ac80ebcd74c87bbb",
+      "video_sha256": "335db945a66a6c6ee0e32e9a1c7c1fcfd325245335bd92ef2d2f7d729e08787c"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "670b6f5827faaade0f68410595215a195ced87a28e29d4da00044f1e80d720b7",
+      "video_sha256": "f8d576a4ad9487271946371d3b3dbec0f78376ea8e0f128bfccaf6c738aa9179"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "d429ca94fa84449d20ced6da8d39351e1e9bcdf197e0c1182f338232acfdc83f",
+      "video_sha256": "dc86f85d232105c6dba6699f2e014821ee70deb2816b462e59a239a989c828b3"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "f81aee9f423c202d4be8fdbb1fd8e934327daf3e8490fb5d743bcf951a497b94",
+      "video_sha256": "17467e24a0d466fcde38e5ae7be783f513c7297d42d730d73afb21d943fbf2f2"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "5b89bf1e7f19381b1e31f13f1d9c36e1d82924fc494a96bff34b21da27dbee55",
+      "video_sha256": "eb6c7729bfa1aaa585bbb5fe7256294e159349708249eebc4267f4164861fed7"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "0cd50cabb54a8cdc9bdd8892bd23a27cdcc8499d64dcab58790b588b9f5b911e",
+      "video_sha256": "ec1cb7e16d794e190985a228eaf848a36fb944d2ffcb276b27a866d607629e09"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "be1cc46a6c07b84725461a059703321fe0e3f10af7127e4a04841baafbc4150d",
+      "video_sha256": "5fd1c4d00a92a284d254d1c640f5282aeef3d5a4fbd3edae406c66e3475d5f7a"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "d619be04c47e222f42626e815efb555ff88b3527fd0d0cc65b36410b9bd398aa",
+      "video_sha256": "04f281357a8d6fe68e3b380f23a6cdcf2500a5c89aae7f962cf5d9197880fa54"
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 6710,
+      "metrics_sha256": "b2a2b4538997f5f7244f01396bc1f20a29c1203d55c836524d0d1a1e0644b3f3",
+      "video_sha256": "d130c626cffe4a0bb4748e5123665aeb522522d98ae0362531173e1d848525e3"
+    }
+  ],
+  "case_count": 86
+}

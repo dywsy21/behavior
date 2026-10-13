@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 19:46 CST / Codex SUBMISSION-FULL-EVAL：** 新resume_v3原supervisor3582917/后继3583122和八worker实活，GPU1已开始真实请求7次，其他卡分批加载/等待，无新异常；当前仍150完整＋12旧异常，不冒称新回合完成。根利用等待完成旧resume_v2全部86完整回合的只读逐事件审计（含此前14，不是再做86次rollout）：505,888控制/31,652 ACK全部重算，八trace原SHA与a5ae封存相同，从文件头到最后闭合episode逐事件审查、未过滤中间事件，逐例步数与官方JSON/视频相同，空初始memory/固定模型任务slot/高低层当前意图/observer代次通过。证据`docs/infra/results/2026-10-13-memlite-stopped-continuation86-audit.json`，与原64审计合计覆盖150完整回合；不覆盖异常/行政partial、不证明策略有效。原评测继续，不改actor/物理/超时、不恢复交付。
+
 - **2026-10-13 19:38 CST / Codex SUBMISSION-FULL-EVAL（实际恢复）：** 新6125b615通过Git包c6caf55c…5dca1独立部署RTX `code/final-eval-continuation-20261013-v4`，目标53回归通过；真实CPU封存已核150原JSON/视频、八模型终态/身份/seed，seal a5ae6345…88a4：150完整＋12异常＋18行政＋820未启。新`runs/memlite_final100_20261013_resume_v3` manifest e2152ded…ac10注册838剩余，原actor51c/规则不变；GPU核空后tmux`memlite-final100-resume-v3` supervisor3582917、八worker3582932–39实活，当前加载，尚无新完整回合。冠军同19b原run/9f runtime经已完2/4验签后新`queue-resume-v3`/tmux`champion-final100-after-resume-v3` PID3583122实活等待，旧队列b1c102fc…003c1保留且绑定，不重跑预检。seal/manifest本地`artifacts/final-eval-20261012/continuation-v3`双端SHA相同，当前150完整Q0/SR0、非全量成绩，4.6TiB余量；根继续看实际推进，交付仍暂缓。
 
 - **2026-10-13 19:37 CST / Codex SUBMISSION-FULL-EVAL（实封存拒绝与分类更正）：** eb5e5290经Git包a3b408d8…76c18在RTX独立v3部署、目标51测试过；CPU封存因喇叭日志含traceback正确拒绝，未写seal/未开新回合。逐日志发现玫瑰305–308在19:09:36也有独立base_link NaN，原worker误仅记STOP；必须额外保留为4异常，故此前22行政实为18行政＋4玫瑰异常，累计150完整/12异常，待838。喇叭则仅属性窗scroll_y_max空引用，19:09:28仍有各1920成功物理回执、trace到2032；新封存只允许这一精确UI栈且有更晚物理进展，其余trace仍拒绝。新增根回归后53过；下一新冻源/真实封存验签再恢复，同actor/规则不变，旧v3失败现场保留。
