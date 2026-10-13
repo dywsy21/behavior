@@ -1,0 +1,57 @@
+{
+  "owner": "Codex SUBMISSION-FULL-EVAL",
+  "observed_at": "2026-10-13T16:03:00+08:00",
+  "run": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2",
+  "evaluation_source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "audit_source_commit": "fe2432cd5dc434bc1193f14707a2d581a65682fa",
+  "scope": "First 16 committed public episodes; not full-model Q/SR and not all active episodes",
+  "original_json_physical_ack_and_30fps_video_frame_counts_match": true,
+  "video_resolution": [672, 448],
+  "original_videos_modified": false,
+  "completed_only_q": 0.0,
+  "completed_successes": 0,
+  "episodes_audited": 16,
+  "applied_controls_audited": 63388,
+  "trace_audit": "Every complete line for a closed episode was selected from the recorded file prefix; still-active episodes excluded. Snapshot bytes include any incomplete final line, which is not parsed.",
+  "trace_file_relative_pattern": "workers/gpu_{gpu}/model/events.jsonl",
+  "checks": [
+    "Fresh per-episode memory with empty issued-command history and verified-world facts",
+    "Fixed task, instance, episode, model and slot identity on every event",
+    "High-level current goal equals low-level conditioning goal",
+    "Observer attempt generation and applied-action clock alignment",
+    "Unique action token and independently recomputed raw23 physical ACK digest",
+    "Final partial action chunk acknowledged exactly"
+  ],
+  "audited_groups": [
+    {
+      "gpu": 0,
+      "task": "clean_a_keyboard",
+      "instances": [301, 302, 303, 304],
+      "steps_each": 5815,
+      "trace_prefix_bytes": 31268657,
+      "trace_prefix_sha256": "e0dc5e33d518bf9c0c5865a6766ba234c54f1f912d54932cae297134e563faec",
+      "events": {"begin": 4, "plan": 184, "observer": 1640, "action": 1456, "ack": 1456, "close": 4}
+    },
+    {
+      "gpu": 1,
+      "task": "turning_on_radio",
+      "instances": [301, 302, 303, 304, 305, 306, 307, 308],
+      "steps_each": 3225,
+      "trace_prefix_bytes": 24386566,
+      "trace_prefix_sha256": "cf4c9659f15147a81919442de3ff85bcc879ddd6e60444c58124919f5896d317",
+      "events": {"begin": 8, "plan": 208, "observer": 1824, "action": 1616, "ack": 1616, "close": 8}
+    },
+    {
+      "gpu": 5,
+      "task": "hanging_pictures",
+      "instances": [301, 302, 303, 304],
+      "steps_each": 3582,
+      "trace_prefix_bytes": 20714732,
+      "trace_prefix_sha256": "5aa36774e18df80ccd09b85c84bd66de02e59f774f0c39f284b4c8385d3b72b3",
+      "events": {"begin": 4, "plan": 112, "observer": 1008, "action": 896, "ack": 896, "close": 4}
+    }
+  ],
+  "all1000_completed": false,
+  "proves_policy_effectiveness": false,
+  "public_retries_or_checkpoint_selection": false
+}

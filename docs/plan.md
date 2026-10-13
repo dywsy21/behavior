@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 16:05 CST / Codex SUBMISSION-FULL-EVAL：** 首16公开回合追加闭合episode逐事件审计：63,388实际控制/3,968 ACK逐条重算，高低层当前意图、空初始memory、固定身份与observer代次一致；原轨迹前缀SHA/长度及边界写入`2026-10-13-memlite-first16-public-audit.json`，不覆盖活跃回合/不称策略有效。新增独立`package_final_public_eval.py`和12项反例/双模型合成打包测试，与trace/冠军回归共25项真过；前两次未配置本地测试导入而0项执行，随后显式纯CPU测试入口已修正。真实1000打包仍待评测完成，原两冻结运行源未动；下一冻结部署独立打包器，继续监控，不上传或改原件。
+
+- **2026-10-13 15:55 CST / Codex SUBMISSION-FULL-EVAL：** 原MEM正式run已真实完成16/1000（radio8、keyboard4、hanging_pictures4），16原官方JSON与已提交attempt的实际步数逐条相等，16原MP4均672×448/30fps且帧数等于实际控制；此批Q均0、SR0/16，不推广为1000全量结论、不换权重或重跑挑优。8worker均正常评估，supervisor3488161与冠军等待队列3495978实活，未重启。官网提交/公告10月13日复核：仍需原件、24GB Docker或50端口模型交付；现内部复现ZIP含元数据JSON，下一补独立portal-only打包器（不热改活跃源/不对外提交）。本轮初次pull TLS失败保留记录，随后HTTP/1.1 pull成功Already up to date。
+
 - **2026-10-13 15:31 CST / Codex SUBMISSION-FULL-EVAL：** 冠军26原文件/12.65GB完整重组＋逐文件SHA＋terminal/checkpoint/EMA/100映射/官方1000实例注册门全部通过；RTX `runs/champion_final100_20261013_v1` manifest73e11312…b2c86，frozen852361a8，尚0冠军GPU/公共回合。fe2432cd队列实际启动tmux `champion-final100-after-mem-v1`，等待MEM1000完整后GPU实空→TRAIN2→TRAIN4→公共1000，失败停止诊断，无重试/抢卡/新训练。回执本地`artifacts/champion-formal-20261012/rtx-final8000-v1`；临时转发SSH master/独立agent已关闭并清除其身份，未复制私钥、不关闭用户VPN或原lc1/lc3普通连接。MEM前两卡实际公开动作、后续worker按原加载限流启动，无错误且尚0完整回合，不报最终Q/SR。
 
 - **2026-10-13 15:28 CST / Codex SUBMISSION-FULL-EVAL：** 冠军原final EMA46/46分块传输exit0，12,649,068,999B全部抵RTX，852源按原export逐文件整SHA重组运行中；未全文件重验前不注册/推理。队列fe2432cd经包48b60a60…c1364冻结RTX `code/full-eval-queue-20261013-v1`，目标17回归通过；一次GitHub TLS失败已显式重推成功，未替代Git同步或改活跃源。MEM首批公开场景实际模型请求已出，8worker原run无错误/0完整回合，加载中其余GPU不拿去做冠军预验收。
