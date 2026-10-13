@@ -13,7 +13,7 @@ import torch
 
 HERE=Path(__file__).resolve().parent
 sys.path[:0]=[str(HERE.parents[1]/'src'),str(HERE/'memlite_sft100')]
-from behavior_champion.official import parse_observation, CHUNK_KEY
+from behavior_champion.official import parse_observation, CHUNK_KEY, CAMERAS, PROPRIO
 from wire import packb, unpackb
 
 
@@ -68,16 +68,25 @@ class ChampionBatchedPolicy:
             raise ValueError('Ready episode and actual prior step required')
         if self.deadline is None:self.deadline=time.monotonic()+self.limit
         if time.monotonic()>=self.deadline:raise TimeoutError('Official episode wall timeout')
-        arrays={k:(v.detach().cpu().numpy() if isinstance(v,torch.Tensor) else np.asarray(v)) for k,v in obs.items()}
-        if any(v.ndim<1 or v.shape[0]!=self.count for v in arrays.values()):
+        if set(obs)!={'task_id',PROPRIO,*CAMERAS.values()}:
+            raise ValueError('Only original RGB/proprio/task fields are allowed')
+        if any(v.ndim<1 or v.shape[0]!=self.count for v in obs.values()):
             raise ValueError('Observation batch lost original slot dimensions')
+        task_ids=obs['task_id']
+        task_ids=task_ids.detach().cpu().numpy() if isinstance(task_ids,torch.Tensor) else np.asarray(task_ids)
+        if (task_ids.shape not in ((self.count,),(self.count,1)) or task_ids.dtype.kind not in 'iu'
+                or not np.all(task_ids==self.task_id)):
+            raise ValueError('Task changed without a fresh policy session')
         actions=np.zeros((self.count,23),dtype=np.float32)
         for slot in sorted(self.active):
-            request={k:v[slot:slot+1] for k,v in arrays.items()}
-            request[CHUNK_KEY]=20
-            task,_,_=parse_observation(request)
-            if task!=self.task_id:raise ValueError('Task changed without a fresh policy session')
             if slot not in self.chunks or self.positions[slot]==20:
+                # Do not copy full-resolution GPU RGB to CPU during the 19
+                # open-loop replay steps: no model consumes those frames.
+                request={k:(v[slot:slot+1].detach().cpu().numpy() if isinstance(v,torch.Tensor)
+                    else np.asarray(v[slot:slot+1])) for k,v in obs.items()}
+                request[CHUNK_KEY]=20
+                task,_,_=parse_observation(request)
+                if task!=self.task_id:raise ValueError('Foreign actor observation')
                 remaining=min(600,self.deadline-time.monotonic())
                 if remaining<=0:raise TimeoutError('Official query exceeds remaining wall budget')
                 self.sockets[slot].send(packb(request))

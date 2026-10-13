@@ -74,3 +74,16 @@ def test_foreign_task_privilege_and_model_identity_rejected():
     with pytest.raises(ValueError):
         ChampionBatchedPolicy(port=1,num_envs=1,task_id=0,config_sha256='wrong',source_commit='commit',socket_factory=lambda:socket)
     assert socket.closed
+
+
+def test_no_rgb_cpu_copy_during_open_loop_chunk_replay(monkeypatch):
+    p,_,obs=setup_policy();calls=[];original=torch.Tensor.cpu
+    def counted(t,*a,**kw):
+        if t.ndim==4:calls.append(tuple(t.shape))
+        return original(t,*a,**kw)
+    monkeypatch.setattr(torch.Tensor,'cpu',counted)
+    for _ in range(20):p.forward(obs);p.applied([0,1,2,3])
+    assert len(calls)==12
+    p.forward(obs);p.applied([0,1,2,3])
+    assert len(calls)==24
+    p.finish()
