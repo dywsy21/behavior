@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 16:56 CST：原评测故障现场与独立续评
+
+- 原MEM `runs/memlite_final100_20261013_v2`保留STOP/全部原件，16:30传真机308非有限姿态触发停止；64完整、4同批次物理异常、14行政中断。封存`runs/memlite_final100_20261013_v2-diagnosed-stop-v1.json`，逐视频SHA/帧数及八权重回执验证，不覆盖原件。
+- 新编排源RTX `code/final-eval-continuation-20261013-v1`=9f6e75bd7e5efe4ef487c9e7219fcc361e68088b；Git包`runs/final_portal_preparation_20261013/eval-continuation-v1.bundle` SHA16c4452d78e856b618e6a0819ad9b57acc4f9f9991b9122fad362eeb7f93b79f。MEM实际模型/物理仍调用原51c11d32 `code/memlite-final-eval-20261013-v4`，未热改。
+- 新MEM `runs/memlite_final100_20261013_resume_v1`只注册932剩余（尚未启动）；summary将区分官方已完成与执行异常，不能把1000覆盖伪称1000官方JSON。
+- 冠军原v1首TRAIN0步被相机位姿附加字段拦截，失败现场保留；修复客户端后的新注册`runs/champion_final100_20261013_v2` manifest19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297，同原final8000 EMA。batch2 TRAIN tmux`champion-final8000-preflight-b2-v2`，日志`preflight-batch2-engineering.log`，正在验收、0公共。原等待队列已停，不应当成仍运行。
+- CPU运行时/300图一致性证据：本地`artifacts/final-eval-20261012/runtime-inventory-v1`，RTX `runs/final_portal_preparation_20261013/runtime-inventory-v1`；原TRAIN100 native SHAfe19d18c…14e0ad，三端同。用户已明确暂缓模型交付。
+
 ## 2026-10-13 16:08 CST：独立portal草稿工具，不修改评测现场
 
 - RTX `/run/ti/rl_memlite_stage1_20261006/code/final-portal-20261013-v1` 固定f0181558163abf4f6a2abeda9768777939b783d0；入口`scripts/eval/package_final_public_eval.py`。Git包在`runs/final_portal_preparation_20261013/source.bundle`，SHA c44618c32f2f6d04f536550a9b270e2cbd705da6a01f7e3b9ee24cad691b6f67，本地副本`artifacts/final-eval-20261012/portal-tool-v1/source.bundle`。

@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 17:02 CST / Codex SUBMISSION-FULL-EVAL：** 原已完成64回合追加全部逐事件根审计：277,144控制/17,354 ACK精确重算，八卡固定slot、空初始memory、高低层意图及observer代次均同，官方步数逐条一致；证据`docs/infra/results/2026-10-13-memlite-stopped64-audit.json`，不涵盖未完回合/不称策略有效。封存cb40fb20…2e9fa与新续评manifest882e00b2…3cadb已收本地同SHA。目标显式官方network路径补跑6/6通过（补齐上一轮skip）；冠军v2真实radio TRAIN4/1028控制已完，keyboard在加载，完整工程门待。新后继队列仅显式`--mem-continuation`才接受1000覆盖＋已披露异常，并须`--completed-preflight`验签2/4已完门后才能复用；30队列/续评/trace回归过，未部署/排新队列，不会静默把4异常当1000有效官方结果。
+
+- **2026-10-13 16:56 CST / Codex SUBMISSION-FULL-EVAL（计数更正＋真实部署）：** 9f6e75bd已push，Git包16c4452d…b79f双端SHA同，独立RTX `code/final-eval-continuation-20261013-v1`部署；目标54回归过/1官方源码路径未设跳过（待显式补跑）。实际封存原64视频/指标SHA与八模型不变回执；行政中断实为**14**而非前述18，原未完共18=4物理异常＋14行政中断，未开始918；先前口算错误已向用户更正。新MEM `runs/memlite_final100_20261013_resume_v1`注册932剩余，不重跑64/4，尚未起8卡；原freeze回执`runs/memlite_final100_20261013_v2-diagnosed-stop-v1.json`。冠军新v2注册19b056a7…21297，同final EMA9608、0公共；GPU核空后已实际重提batch2 TRAIN tmux `champion-final8000-preflight-b2-v2`，完整结果待，旧v1保留。
+
 - **2026-10-13 16:53 CST / Codex SUBMISSION-FULL-EVAL：** 新独立续评编排`continue_memlite_final.py`完成：原64回合引用原JSON/MP4 SHA、4物理异常不重跑/不造官方分数、18行政中断显式登记、其余未启动逐案覆盖；动作/模型/官方物理仍调用原51c11d32冻源，不热改。已诊断NaN仅隔离该物理batch，新模型进程仅服务不同未试实例；未知错误仍停诊断。冠军TRAIN首试0物理步因官方`robot_r1::cam_rel_poses`额外字段被过严客户端拒绝，权重前后2a5ce80b…3975相同；已补仅丢弃这一不入actor字段、其他未知/特权字段仍拒绝的最小修复。新增/关联55回归全过；尚未部署续评或声称冠军全链通过，新冻结源/新TRAIN复验待，旧失败现场保留。
 
 - **2026-10-13 16:40 CST / Codex SUBMISSION-FULL-EVAL / CHAMPION-2026：** 原MEM及旧后继队列已退出、八GPU实空/4.6T可用、冠军冻结852源Git干净与preflight目录空复核后，提交原final8000的既定TRAIN batch2工程门（8实例/256控制、不含公共），tmux `champion-final8000-preflight-b2-v1`、原注册run `champion_final100_20261013_v1/preflight/batch2`，总log `preflight-batch2-engineering.log`。仅调整资源等待顺序，不选择新权重/改模型或抢队友；MEM停机现场继续CPU诊断，冠军完整模型GPU/仿真通过仍待。
