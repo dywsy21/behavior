@@ -7,8 +7,9 @@ import sys
 import zipfile
 
 HERE=Path(__file__).resolve().parent
-sys.path.insert(0,str(HERE.parent/'memlite_sft100'))
+sys.path[:0]=[str(HERE.parent/'memlite_sft100'),str(HERE.parent)]
 from common import aggregate,atomic_json,sha256
+from completed_metrics import completed_metrics
 
 
 def reproduction_readme(manifest):
@@ -72,8 +73,8 @@ def report(job, *, final=False):
     job=Path(job);manifest=json.loads((job/'manifest.json').read_text())
     records=[];inventory=[]
     for part in sorted((job/'parts').glob('*')):
-        for metric in sorted((part/'json').glob('*.json')):
-            row=json.loads(metric.read_text());records.append(row)
+        for metric,row in completed_metrics(part,final=final):
+            records.append(row)
             video=part/'videos'/(metric.stem+'.mp4')
             item=dict(task=row['task'],instance_id=row['instance_id'],rollout_id=row['rollout_id'],
                 metrics=str(metric),video=str(video),video_exists=video.is_file())

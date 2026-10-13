@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 14:44 CST：RTX最新版MEM全链工程验收启动
+
+- 完整包`/run/ti/rl_memlite_stage1_20261006/runs/memlite_final_preparation_20261013/assets-v1`已验原manifest07d2308c…040c0和所有文件；low0b4f2d88…71dca、独立observer3eefa5b5…d0c9f完整发布，22原分块与旧rsync部分文件保留，不删唯一证据。
+- 正式注册（尚未公共执行）`runs/memlite_final100_20261013_v1`，manifest f2cb3b24e990aa1e332a4bec79e5971337060cef5df18f733df24b1b2905607b，固定源码`code/memlite-final-eval-20261013-v3`=bb728ba5。
+- TRAIN GPU0 batch2验收：tmux `memlite-final-preflight-b2-v1`，总log `preflight-batch2.log`，状态/模型/任务log在`preflight/batch2/`。仅通过后比较batch4，再开8卡1000公共实例；当前无公共评测成绩。
+
 ## 2026-10-13 14:16 CST：RTX评测依赖与传输检查点
 
 - MEM最终评测源码`code/memlite-final-eval-20261013-v3`=bb728ba5386b6135a6a4523e460801036d55fc95，Git包1c03f6a2f7b6c472022eab111067616070a7de2f628940c886646333efb88b45，目标env64测试通过。完整最新权重未齐，公共run尚未注册/启动。
