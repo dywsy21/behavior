@@ -1,0 +1,463 @@
+{
+  "schema": "memlite_continuation_first14_causal_trace_audit_v1",
+  "observed_at": "2026-10-13T09:59:37.070078+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2",
+  "manifest_sha256": "82bc1ee3d2cc704f00ae6d2a153a12ad9ca4c08609d2f5b0ec818a5b687cf79f",
+  "auditor_source_commit": "374cfa8f3189b9e646d9692028af5854fa1b4712",
+  "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "episodes": 14,
+  "applied_controls": 71422,
+  "all_official_steps_match": true,
+  "all_video_frames_match": true,
+  "models": {
+    "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+    "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "gpus": [
+    {
+      "gpu": 1,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_1/model-000/events.jsonl",
+      "prefix_bytes": 26882163,
+      "prefix_sha256": "2dab0f74b34da03f4fb1665f8ef73f4c20023e577f5aff0b7045039c1902b182",
+      "projection_sha256": "8e57c456f3989f5aebc08ffd99d0cd316bea9901a0906b382734696d66b900b6",
+      "episodes": 4,
+      "applied_controls": 21832,
+      "events": {
+        "begin": 4,
+        "plan": 172,
+        "observer": 1540,
+        "action": 1368,
+        "ack": 1368,
+        "close": 4
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 2,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_2/model-000/events.jsonl",
+      "prefix_bytes": 7806526,
+      "prefix_sha256": "7606cfeeee3bfde9ee28604e7e896edadca9e53b8bf222bf27a4c0891ae83e5a",
+      "projection_sha256": "7606cfeeee3bfde9ee28604e7e896edadca9e53b8bf222bf27a4c0891ae83e5a",
+      "episodes": 2,
+      "applied_controls": 9462,
+      "events": {
+        "begin": 2,
+        "plan": 74,
+        "observer": 666,
+        "action": 592,
+        "ack": 592,
+        "close": 2
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 3,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_3/model-000/events.jsonl",
+      "prefix_bytes": 26863356,
+      "prefix_sha256": "b4f539fff2ba39814abf23aa73ea97f9c3162bdb50f16c6101535ead15863414",
+      "projection_sha256": "69b03bb14d12262f1083c668c39d298d86f1b7401995b2a30251c10fc8f996d3",
+      "episodes": 4,
+      "applied_controls": 20656,
+      "events": {
+        "begin": 4,
+        "plan": 164,
+        "observer": 1456,
+        "action": 1292,
+        "ack": 1292,
+        "close": 4
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 6,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_6/model-000/events.jsonl",
+      "prefix_bytes": 14061378,
+      "prefix_sha256": "385c9baa3ee7b1c2cd898313a94f385186221b50d3cae6476d6359fd4cd33b02",
+      "projection_sha256": "637d9da47c765f73f8037706ceb2b4fd02d1c3f0719d70b1f1079552e40cb96c",
+      "episodes": 2,
+      "applied_controls": 12232,
+      "events": {
+        "begin": 2,
+        "plan": 96,
+        "observer": 862,
+        "action": 766,
+        "ack": 766,
+        "close": 2
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 7,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/workers/gpu_7/model-000/events.jsonl",
+      "prefix_bytes": 6051447,
+      "prefix_sha256": "7a60a01375c1b03d3894d7258892575cf24acc5b8d31dfd8752f8d416ef85f5b",
+      "projection_sha256": "7a60a01375c1b03d3894d7258892575cf24acc5b8d31dfd8752f8d416ef85f5b",
+      "episodes": 2,
+      "applied_controls": 7240,
+      "events": {
+        "begin": 2,
+        "plan": 58,
+        "observer": 512,
+        "action": 454,
+        "ack": 454,
+        "close": 2
+      },
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "task": "composting_waste",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 5458,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/composting_waste-n4-i0/json/composting_waste_301_0.json",
+        "sha256": "e2184cdc6ca38fa5582ec99aa3f4a0fc87674b155f55cd197cf27485760a8b46"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/composting_waste-n4-i0/videos/composting_waste_301_0.mp4",
+        "sha256": "790868dba9575998615f17aa33100ff4b694671aef14d2c6eace37dc398c2039",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "5458"
+        }
+      }
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 5458,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/composting_waste-n4-i0/json/composting_waste_302_0.json",
+        "sha256": "5316f2a336a73b319757543affcd822f33e077a46668b8cd735b71b85136b1c6"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/composting_waste-n4-i0/videos/composting_waste_302_0.mp4",
+        "sha256": "aea6b37b6a7c1da86648dcfaef90f7843facc5868380c81186c45f7143e7e684",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "5458"
+        }
+      }
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 5458,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/composting_waste-n4-i0/json/composting_waste_303_0.json",
+        "sha256": "3dafa421be874d96df27bc027722f7c657ededfdb1e9a98e6c53272c157c22e2"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/composting_waste-n4-i0/videos/composting_waste_303_0.mp4",
+        "sha256": "d8a6f05820de80c1a2ec2f709ec29d26f4edfc5630381f883e6aa9395d213d2d",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "5458"
+        }
+      }
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 5458,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/composting_waste-n4-i0/json/composting_waste_304_0.json",
+        "sha256": "74dd1dea5576e45cbf8b3a4fa1476b1993016fa30d8dba78128031e6141a4e9d"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/composting_waste-n4-i0/videos/composting_waste_304_0.mp4",
+        "sha256": "a4b633d4baf19fb4dee45bb923ec694c6bf88fb6de54b974ff3bb8fc4886e5a6",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "5458"
+        }
+      }
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 5164,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/make_cabinet_doors-n4-i0/json/make_cabinet_doors_301_0.json",
+        "sha256": "457f4b9bae7655affee48137b2da73f55f99e8e54fe6e70a6a49a64290f737e4"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/make_cabinet_doors-n4-i0/videos/make_cabinet_doors_301_0.mp4",
+        "sha256": "7df448c8e499456b0178d44ec9bb7660cdfe323b672b41aa8d593a59170ecd8d",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "5164"
+        }
+      }
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 5164,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/make_cabinet_doors-n4-i0/json/make_cabinet_doors_302_0.json",
+        "sha256": "f7fe188d9ae87b69ab78f0305ff6f5512c28f5b0adc19e4fbec6fed816559fa1"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/make_cabinet_doors-n4-i0/videos/make_cabinet_doors_302_0.mp4",
+        "sha256": "d1ddfd9f9bb4f5d023d6fbeac8bbe485d23c82b9260b9fe0aac44c79f72de084",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "5164"
+        }
+      }
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 5164,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/make_cabinet_doors-n4-i0/json/make_cabinet_doors_303_0.json",
+        "sha256": "3cf49dddb3b1f4a95c4f3ca4677814b1c7ec3c81de8f26a638d6881a20a5ee51"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/make_cabinet_doors-n4-i0/videos/make_cabinet_doors_303_0.mp4",
+        "sha256": "3cb65a6947e292e3c3907172388e85850e1106d33b5f7006e1eddfba5200112d",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "5164"
+        }
+      }
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 5164,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/make_cabinet_doors-n4-i0/json/make_cabinet_doors_304_0.json",
+        "sha256": "b0a7a5493fda17e6cef5b15abb8bfd60b730c728f50e18d06e83cfed0e01f69a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/make_cabinet_doors-n4-i0/videos/make_cabinet_doors_304_0.mp4",
+        "sha256": "ddb20fc3563c9862be966a3b61472588ac24f0c6a86516b2744c87ac3c6cd9ff",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "5164"
+        }
+      }
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 4731,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/scrubbing_bathroom_floor-n2-i8/json/scrubbing_bathroom_floor_309_0.json",
+        "sha256": "32bda89a361f9ebf04ab49d9355636abd9efbde9fd89912d3776811eb526d346"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/scrubbing_bathroom_floor-n2-i8/videos/scrubbing_bathroom_floor_309_0.mp4",
+        "sha256": "5fdbb8be55fb5210151c5599c2ccdc67444fbed7a8f55658b32e3ce043549066",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "4731"
+        }
+      }
+    },
+    {
+      "task": "scrubbing_bathroom_floor",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 4731,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/scrubbing_bathroom_floor-n2-i8/json/scrubbing_bathroom_floor_310_0.json",
+        "sha256": "c991af8b6eba5cf8cb6f67c0496b2122067af1c0fa49e5ee4f0ffe424b78291f"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/scrubbing_bathroom_floor-n2-i8/videos/scrubbing_bathroom_floor_310_0.mp4",
+        "sha256": "d12a3033aff682c47f0da86ab1923475e2f20c0b333a6b48d01a33fff085e03b",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "4731"
+        }
+      }
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 6116,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/installing_a_fax_machine-n2-i8/json/installing_a_fax_machine_309_0.json",
+        "sha256": "d9133ea6922693a1a2de2671540ebdf2aa16063e0c2b24acce8ad969341f07ea"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/installing_a_fax_machine-n2-i8/videos/installing_a_fax_machine_309_0.mp4",
+        "sha256": "82fb0395d589144f27f510a44135c58dc43d2bddf21d057d9556d4572e17ba4c",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "6116"
+        }
+      }
+    },
+    {
+      "task": "installing_a_fax_machine",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 6116,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/installing_a_fax_machine-n2-i8/json/installing_a_fax_machine_310_0.json",
+        "sha256": "39d9c5288979c6a7d8a583c2da2f7aa42e85c8a5bd441b0eea6682b67f8830c1"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/installing_a_fax_machine-n2-i8/videos/installing_a_fax_machine_310_0.mp4",
+        "sha256": "45da7672a8532cb6f3148df1ce4c42ea6a79785dc1e7e4c039d89b111c1674fd",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "6116"
+        }
+      }
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 3620,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/installing_a_modem-n2-i8/json/installing_a_modem_309_0.json",
+        "sha256": "11c1101b095fa258b268a8a6efe5e326e4c9056e9a0ec38b158157414f626b0d"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/installing_a_modem-n2-i8/videos/installing_a_modem_309_0.mp4",
+        "sha256": "ab4d4d6737edf23375bf975aa7361bd5a115ebea7d59ac82715cfb470ba4f059",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "3620"
+        }
+      }
+    },
+    {
+      "task": "installing_a_modem",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 3620,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/installing_a_modem-n2-i8/json/installing_a_modem_310_0.json",
+        "sha256": "80034919e6fc41722d84c7c67c63a64bea24a7effff7737bc37ee6beb0a7125c"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v2/parts/installing_a_modem-n2-i8/videos/installing_a_modem_310_0.mp4",
+        "sha256": "e9b0537095272a195135b5bdc6f308ecb78197d3972017152f1266f24f445a63",
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "nb_frames": "3620"
+        }
+      }
+    }
+  ],
+  "selection": "First five completed physical batches in the continuation; no selection by success or Q; original64 audit separate",
+  "projection": "Original event order for exactly these closed episode IDs; immutable byte-length/SHA of the live trace prefix recorded; no unfinished episode included",
+  "proves_full_task_success": false,
+  "optimizer_updates": 0,
+  "weights_final_verification_pending": true
+}

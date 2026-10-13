@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 17:59 CST / Codex SUBMISSION-FULL-EVAL：** 新续评首5个完整batch/14回合已追加根只读审计：71,422真实控制、4,472动作ACK逐一重算，所有回合空初始memory、固定任务/实例/slot/模型身份、高低层当前意图/observer代次一致；14官方步数与原MP4帧数全部相同（672×448/30fps）。证据`docs/infra/results/2026-10-13-memlite-continuation-first14-audit.json`固定原trace前缀字节数/SHA、原JSON/视频SHA；只选已闭合回合，不读半写文件/修改原件，不覆盖旧64审计。当前仍0成功，隔离与回执一致性不等于策略有效；活跃模型终态权重核验仍待，评测与冠军后继继续。
+
+- **2026-10-13 17:57 CST / Codex SUBMISSION-FULL-EVAL：** 原resume_v2续评新增14条真实完整结果，累计78/1000、另4原物理异常、918待覆盖，completed-only Q0/SR0，不称全量成绩。八worker均已进入仿真，GPU2/6/7正常结束原剩余part并切换下一任务；supervisor及冠军后继仍为原进程，无新增错误、未重启/换权重。证据为续评`summary.json`及新5份完整attempt（堆肥4、柜门4、刷地2、传真机2、调制解调器2）；下一核新完成回合的逐例trace/官方记录/原视频一致性，保持当前评测与后继队列。模型交付继续暂缓。
+
 - **2026-10-13 17:38 CST / Codex SUBMISSION-FULL-EVAL：** 原续评supervisor3540742/8worker与后继3540913均实活；GPU1/2/3/6已实际公开模型请求152/31/155/69，其他4卡按原2并发加载限流加载/等待，暂无新错误、不重启。新完整回合尚0，汇总仍64原完整Q0/SR0＋4已披露异常，932待覆盖；不是最终成绩。原51c actor、9f冠军、374续评编排与f99队列四checkout均实查Git干净/HEAD不变。继续现run与后继队列，模型交付维持暂停。
 
 - **2026-10-13 17:22 CST / Codex SUBMISSION-FULL-EVAL（已恢复运行）：** 冠军原final8000修复源9f的2/4完整TRAIN门均通过，各8回合/2056实际控制且原JSON/MP4帧数全部相同、0更新/参数前后2a5ce80b…3975；2档161.3598s/12.7417控制/s，4档139.7436s/14.7127控制/s（+15.47%，不含加载），按预注册门选4，摘要`2026-10-13-champion-final-rtx-preflight.json`。新MEM编排374cfa8f经Git包bf31660d…efe46部署，目标20回归过；一次push TLS失败后HTTP/1.1重推成功。新manifest82bc1ee3…cf79f `runs/memlite_final100_20261013_resume_v2`实际起tmux`memlite-final100-resume-v2`/supervisor3540742、八worker3540758/59/61/62/63/65/67/68，当前分批加载，64旧完整＋4异常原样继承、932剩余，未冒称新回合已完成。f99队列`champion-final100-after-resume-v2` PID3540913实活等待，显式验证已完2/4，不重跑TRAIN；待MEM1000覆盖并GPU释放后执行原champion_v2公共1000。未知故障仍停，不吞异常/不对外提交/不恢复交付工作；原所有失败与未启动v1现场保留。
