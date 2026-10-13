@@ -1,0 +1,163 @@
+{
+  "schema": "memlite_fifo_coffee_tail_physics_error_v1",
+  "observed_at": "2026-10-13T14:32:15.465643+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/manifest.json",
+    "sha256": "ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5"
+  },
+  "diagnosis": {
+    "kind": "simulator_nonfinite_robot_pose",
+    "scene_slot": 0,
+    "robot_link": "right_gripper_finger_link1",
+    "exception": "AssertionError: /World/scene_0/controllable__r1pro__robot_r1/right_gripper_finger_link1 orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.",
+    "traceback_copies": 3,
+    "official_score_available": false,
+    "cause": "Undetermined: finite model actions do not prove stable physics or correct action semantics"
+  },
+  "direct_bad_instance": 309,
+  "batch_error_instances": [
+    309,
+    310
+  ],
+  "execution_error_ledger": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_5/set_up_a_coffee_station_in_your_kitchen-n2-i8-execution-errors.json",
+    "sha256": "a7e3bfe281cb81ddee0c38530ac9e4497d8def73ac9a5e010971cfd255f01ed7"
+  },
+  "log": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_5/set_up_a_coffee_station_in_your_kitchen-n2-i8.log",
+    "sha256": "dc953ebd9b5f6679876cd282b493613a5b9088d202ef66cdce15761843d22382"
+  },
+  "aborted_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n2-i8/attempts/08.json",
+    "sha256": "688c8be195d7f1e3c7d5feb889ff29fedf8ad2e0c5a542a17d0fcaefb2fd8620"
+  },
+  "preserved_completed_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/attempts/04.json",
+    "sha256": "582532176f10990cc73e4a69078bba786e42871c94ab4f9d144d52cd2e60f0ae"
+  },
+  "preserved_completed_metrics": [
+    {
+      "instance_id": 305,
+      "q_score": 0.16666666666666666,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/json/set_up_a_coffee_station_in_your_kitchen_305_0.json",
+        "sha256": "678756ca6334819e94f99879b8fafc7fb6055d6f93a72af17950101fc7779fbe"
+      }
+    },
+    {
+      "instance_id": 306,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/json/set_up_a_coffee_station_in_your_kitchen_306_0.json",
+        "sha256": "1b77bcff4616f8c405bb5413022348806418454ea3740e09b38b6f15f111eb62"
+      }
+    },
+    {
+      "instance_id": 307,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/json/set_up_a_coffee_station_in_your_kitchen_307_0.json",
+        "sha256": "c0acee141e3ef09c7be386403319bce33cf83724354ec24af56f05c8e259f14a"
+      }
+    },
+    {
+      "instance_id": 308,
+      "q_score": 0,
+      "success": false,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/set_up_a_coffee_station_in_your_kitchen-n4-i4/json/set_up_a_coffee_station_in_your_kitchen_308_0.json",
+        "sha256": "845647f4fd8357c5e6738a40f15c95bb75a7354f8ebbec2de7de3d7114b3abe6"
+      }
+    }
+  ],
+  "no_metrics_for_error_cases": true,
+  "trace": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_5/model-000/events.jsonl",
+    "sha256": "63e71c5f28ea7468b3916378d9a0c3df09749922b826b64f34ba5f33b87468b7"
+  },
+  "last_physical_ack_and_actions": {
+    "309": {
+      "actions": 370,
+      "last_ack": 5904,
+      "max_raw23_abs": 454.2818908691406,
+      "all_actions_finite": true,
+      "last_offer_step": 5904
+    },
+    "310": {
+      "actions": 370,
+      "last_ack": 5904,
+      "max_raw23_abs": 2.244692802429199,
+      "all_actions_finite": true,
+      "last_offer_step": 5904
+    }
+  },
+  "completed_prefix_audit": {
+    "bytes": 31320804,
+    "sha256": "59e4bc0c96968bc18b65c0d447078c9562e8fcc376fc45987247b8df157769f2",
+    "status": "complete_causal_trace_audit",
+    "episodes": 4,
+    "events": {
+      "begin": 4,
+      "plan": 296,
+      "observer": 2648,
+      "action": 2352,
+      "ack": 2352,
+      "close": 4
+    },
+    "applied_controls": 37600,
+    "models": {
+      "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+      "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+      "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+      "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+      "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+      "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+      "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+    },
+    "tasks": [
+      "set up a coffee station in your kitchen"
+    ],
+    "checks": [
+      "fresh empty per-episode memory",
+      "full identity and fixed slot on every event",
+      "high-to-low exact current intent",
+      "observer attempt and applied clock",
+      "unique tokens and exact raw23 physical ACK digest",
+      "final partial chunk acknowledged"
+    ],
+    "proves_full_task_success": false
+  },
+  "final_weights": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_5/model-000/weights-final.json",
+    "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271"
+  },
+  "weights_unchanged": true,
+  "observer_unchanged": true,
+  "optimizer_updates": 0,
+  "old_model_pid": 3600433,
+  "old_model_alive": false,
+  "old_sim_pid": 3633807,
+  "old_sim_alive": false,
+  "replacement_model": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_5/model-001",
+    "pid": 3640605,
+    "status": "loading",
+    "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+  },
+  "global_stop": false,
+  "summary": {
+    "status": "running",
+    "completed": 196,
+    "execution_errors": 22,
+    "unaccounted": 782,
+    "completed_only_q": 0.0008503401360544217,
+    "completed_only_sr": 0
+  },
+  "next_simulator_not_yet_verified": true,
+  "failed_instances_rerun": false,
+  "cause_not_proven": true
+}

@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 22:32 CST / Codex SUBMISSION-FULL-EVAL（咖啡尾批隔离）：** 原run196完整/22执行异常/782未覆盖，completed-only Q0.00085034/SR0。GPU5咖啡台309右夹爪finger link NaN，同批309/310各最后5904 ACK后中断（同一栈3次，不是两独立物理失败），无这两例官方JSON/不重跑；305–308原完整结果与305的Q1/6保留、SHA不变。旧model3600433与sim3633807已退，高低层/observer最终权重不变/0更新；new同51c model3640605加载中，原supervisor与其他worker/冠军队列未被全局停止，下一实际task范围待核。原model000前四例的连续31,320,804B trace进一步全审通过：37600控制/2352 ACK、独立空memory/身份/意图/observer/原raw23回执均一致；异常尾309最大454.28且有限，仍不确定策略或物理失稳的先后因果。证据`docs/infra/results/2026-10-13-memlite-fifo-coffee-tail-physics-error.json`；只读诊断，没有修改actor/官方物理/超时，继续既定全量与后继，不把长时间等待记为阻塞。22:24实查磁盘仍4.6TiB可用。
+
 - **2026-10-13 22:20 CST / Codex SUBMISSION-FULL-EVAL（隔离后的完整批次验收）：** 捡垃圾305–308四条完整终态，各7902实际控制，累计196完整/20旧异常/784未覆盖，completed-only Q0.00085034/SR0；四条新终态自身Q0/SR0。根对model001从byte0至四例全部close的26,114,776B原连续trace审计：31,608控制/1976 ACK，空初始memory、完整任务/实例/slot/模型身份、当前意图→动作、observer时钟及每次raw23执行digest均过；二次读取同prefix一致，原4视频/JSON SHA、帧数和控制一致。没有301–304重试；下一309/310已用sim3638992进入后续part，仍不称整模型最终权重封存/后续尾部已审。证据`docs/infra/results/2026-10-13-memlite-fifo-trash-tail-complete-audit.json`。原MEM/八worker及冠军后继继续实活，未新增异常或改动模型；完整1000及冠军公共仍待，保持原顺序。
 
 - **2026-10-13 22:14 CST / Codex SUBMISSION-FULL-EVAL（Q解释核实）：** 原任务评分/behavior task/evaluator三文件SHA均与冻结官方a824清单相同；只抽出纯`compute_q_score`跑4个无仿真边界例，确认非成功时只计“初始false且终局true”的条件，初始已真不白给分。因此更正22:03/22:05的保守解释：咖啡台305的Q1/6确是相对本实例起始状态**新满足目标条件**，仍不证明整任务成功、具体哪个技能有效或训练优于对照。官方`normalized_time`实际为human_steps/actual_steps，约2/3与1.5倍示范长度超时一致，不是只跑2/3预算。完整公式、原SHA与4例输出已补入首非零Q摘要；源码是冻结归档而非Git checkout，未假称git HEAD检查通过。22:11原live监控192完整/20既有异常/788未覆盖，Q均值0.0008681/SR0，22:14 GPU0新309/310现各1536实际控制、102模型请求，原supervisor/新模型/新sim与冠军后继直接ps实活；原作业/冠军队列不改，无新仿真或训练。
