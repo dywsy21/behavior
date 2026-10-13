@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 15:31 CST / Codex SUBMISSION-FULL-EVAL：** 冠军26原文件/12.65GB完整重组＋逐文件SHA＋terminal/checkpoint/EMA/100映射/官方1000实例注册门全部通过；RTX `runs/champion_final100_20261013_v1` manifest73e11312…b2c86，frozen852361a8，尚0冠军GPU/公共回合。fe2432cd队列实际启动tmux `champion-final100-after-mem-v1`，等待MEM1000完整后GPU实空→TRAIN2→TRAIN4→公共1000，失败停止诊断，无重试/抢卡/新训练。回执本地`artifacts/champion-formal-20261012/rtx-final8000-v1`；临时转发SSH master/独立agent已关闭并清除其身份，未复制私钥、不关闭用户VPN或原lc1/lc3普通连接。MEM前两卡实际公开动作、后续worker按原加载限流启动，无错误且尚0完整回合，不报最终Q/SR。
+
+- **2026-10-13 15:28 CST / Codex SUBMISSION-FULL-EVAL：** 冠军原final EMA46/46分块传输exit0，12,649,068,999B全部抵RTX，852源按原export逐文件整SHA重组运行中；未全文件重验前不注册/推理。队列fe2432cd经包48b60a60…c1364冻结RTX `code/full-eval-queue-20261013-v1`，目标17回归通过；一次GitHub TLS失败已显式重推成功，未替代Git同步或改活跃源。MEM首批公开场景实际模型请求已出，8worker原run无错误/0完整回合，加载中其余GPU不拿去做冠军预验收。
+
 - **2026-10-13 15:24 CST / Codex SUBMISSION-FULL-EVAL：** MEM八worker原run运行/无失败，加载并发按原2限制，不热改；冠军约11GB/12.65GB收片继续。新增明确依赖队列`queue_champion_after_memlite.py`：只在同注册MEM1000完整完成＋GPU实空后，依次执行原冠军final的TRAIN2、TRAIN4、公共1000；失败即停留证，不重试、不抢卡、不选择公共成绩。队列/trace/冠军前门17回归过，尚未部署/排队（待完整EMA资产注册），不将计划等同已开始冠军评测。
 
 - **2026-10-13 15:17 CST / Codex SUBMISSION-FULL-EVAL：** 新51c11d32源2/4完整实际TRAIN验收均过：各8回合/2056原物理ACK，所有高低层/observer/head前后不变；batch2 215.386s/9.5456控制/s，batch4 167.846s/12.2493控制/s（吞吐+28.3%，不含场景加载）。两份完整trace根独立重算均通过，model-only pack不变，GPU全部已释放、磁盘4.7T可用。按既定速度门选择每卡4环境；15:17提交8卡正式1000公共评测tmux `memlite-final100-v2`、run `runs/memlite_final100_20261013_v2`，当前开始加载/未有公共完成数，不提前报Q/SR。冠军final46段仍传输，后续独立全量不混入本run。

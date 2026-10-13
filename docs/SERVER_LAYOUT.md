@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 15:31 CST：冠军模型已齐与真实后续队列
+
+- RTX最终完整EMA：`/run/ti/rl_memlite_stage1_20261006/runs/champion_final_preparation_20261013/ema8000-v1`，原export9608b3ef…744cd；26文件＋manifest均完整SHA通过，`assembly-v1.json`为原重组回执，不再是仅manifest占位。
+- 冠军独立注册run `runs/champion_final100_20261013_v1`，manifest73e11312cfd4b9ba691d77e081b174c2f1f8440479082522aa6b5888153b2c86，模型/模拟器源码`code/champion-final-eval-20261013-v1`=852361a8，8配置端口20000–20007，不与MEM19900–19907混用。
+- 后续队列源码`code/full-eval-queue-20261013-v1`=fe2432cd、Git包48b60a60…c1364；tmux `champion-final100-after-mem-v1`，状态`runs/champion_final100_20261013_v1/queue/status.json`、总log `queue.log`。等待MEM run v2完整1000并释放GPU，再依次原final模型TRAIN2/4和1000公共；不是冠军已经在评。
+- 本地`artifacts/champion-formal-20261012/rtx-final8000-v1`保存轻量manifest/assembly，原46分块留服务器未删。临时转发master与独立ssh-agent已关、身份清除；用户VPN和普通lc1/lc3 master保留，不留服务器私钥。
+
 ## 2026-10-13 15:17 CST：MEM正式公共轮启动、冠军终态迁移
 
 - **当前MEM公共轮**：RTX根`/run/ti/rl_memlite_stage1_20261006`；`runs/memlite_final100_20261013_v2`，源码`code/memlite-final-eval-20261013-v4`=51c11d32，tmux`memlite-final100-v2`，supervisor3488161/8workers3488172–3488179，每卡4环境。`status.json`是实时运行态、`summary.json`是完整attempt口径的进度，`parts/*/json`和`videos`为原件，未满1000不叫全量成绩。当前加载中。
