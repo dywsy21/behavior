@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 15:17 CST / Codex SUBMISSION-FULL-EVAL：** 新51c11d32源2/4完整实际TRAIN验收均过：各8回合/2056原物理ACK，所有高低层/observer/head前后不变；batch2 215.386s/9.5456控制/s，batch4 167.846s/12.2493控制/s（吞吐+28.3%，不含场景加载）。两份完整trace根独立重算均通过，model-only pack不变，GPU全部已释放、磁盘4.7T可用。按既定速度门选择每卡4环境；15:17提交8卡正式1000公共评测tmux `memlite-final100-v2`、run `runs/memlite_final100_20261013_v2`，当前开始加载/未有公共完成数，不提前报Q/SR。冠军final46段仍传输，后续独立全量不混入本run。
+
+- **2026-10-13 15:13 CST / Codex SUBMISSION-FULL-EVAL：** 根对原v1实测8回合完整事件追加独立只读审计：每次空记忆、固定slot/任务/实例/权重身份，24高层规划与136低层块的意图/observer代次、136 ACK逐条重算原raw23 digest、2056实际步及末块1步全部一致，无所查跨episode/任务串线；trace0e11c8f4…e462d，本地`preflight-batch2-v1/trace-audit.json`，非成功率证据。新v2 radio同1028控制，batch4 101.71s、batch2 129.95s（此组约1.278倍）；keyboard仍在跑，最终批量未选。冠军46段约4.8GB已收、未全齐；目标原官方network显式指定后6协议测试全过，补齐先前缺路径跳过项。
+
 - **2026-10-13 15:07 CST / Codex CHAMPION-2026：** final8000原固定1600 EMA留出全量回执3c18f517…b3cf已收：FM all0.181779/old50 0.139709/new50 0.223849，stage80.375%/95.5%/65.25%；比7000 FM略回升，仍按事先约定final，不按留出/公共挑ckpt，不称Q/SR。摘要`2026-10-13-champion-final8000.json`。852361a8基础设施源经Git包8d6d38aa…543a双端冻结，目标env32测试过1缺本地主源路径跳过、完整GPU仍待；原EMA46段/512MiB签名计划653ccdd3…86aa已8并行传RTX（session35810，源`ema8000-transfer-v1.log`），不传优化器或改原模型。
 
 - **2026-10-13 15:03 CST / Codex SUBMISSION-FULL-EVAL：** 原MEM v1 batch2已完整终态：高c93/低15d/observer442和head前后不变、0更新、2056 ACK一致、9.1268控制/s，原进程/GPU0已退出；新51c11d32源/v2 manifest3dd8862c…19be4在GPU1 batch4、随后GPU0 batch2实际加载中，旧结果不拷贝冒充新回执。冠军final8000三回执源/本地SHA相同、3895302自然退出；迁移只传12.65GB EMA、不传54GB优化器。冠军全量八worker/原视频打包草稿与范围传输扩展已写；首组合测试发现错误导入旧SFT worker（无GPU运行），已改显式`memlite_final.worker`，重验中，不热改任何在用源。

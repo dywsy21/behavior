@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 15:17 CST：MEM正式公共轮启动、冠军终态迁移
+
+- **当前MEM公共轮**：RTX根`/run/ti/rl_memlite_stage1_20261006`；`runs/memlite_final100_20261013_v2`，源码`code/memlite-final-eval-20261013-v4`=51c11d32，tmux`memlite-final100-v2`，supervisor3488161/8workers3488172–3488179，每卡4环境。`status.json`是实时运行态、`summary.json`是完整attempt口径的进度，`parts/*/json`和`videos`为原件，未满1000不叫全量成绩。当前加载中。
+- 新v2 `preflight/batch2`、`preflight/batch4`均完整8TRAIN/2056实际控制＋权重不变；本地`artifacts/final-eval-20261012/preflight-batch{2,4}-v2`保留原事件/回执/根独立trace审计，摘要`docs/infra/results/2026-10-13-memlite-final-preflight.json`。旧v1工程run保留，绝不并入公共分母。
+- **冠军终态** A800 `runs/champion_formal_20261012/shared100-v1/checkpoints/step_00008000`完整54,489,569,924B；`exports/ema_00008000`原作者可加载EMA12,649,068,999B/26文件（不含manifest），export9608b3ef…744cd、终态ecc49345…4c833，原训练自然退出。只迁EMA。
+- 冠军转移：A800 `src/champion-final-transport-20261013-v1`及RTX `code/champion-final-eval-20261013-v1`=852361a8，包8d6d38aa…543a；原计划`runs/champion_formal_20261012/ema8000-transfer-v1.json` SHA653ccdd3…86aa，8连接/46段；日志同名前缀`.log`。RTX `runs/champion_final_preparation_20261013/ema8000-chunks-v1`收片，最终目标`ema8000-v1`（目前只有原manifest，不是完整权重）。不得提前当可用checkpoint。
+
 ## 2026-10-13 14:44 CST：RTX最新版MEM全链工程验收启动
 
 - 完整包`/run/ti/rl_memlite_stage1_20261006/runs/memlite_final_preparation_20261013/assets-v1`已验原manifest07d2308c…040c0和所有文件；low0b4f2d88…71dca、独立observer3eefa5b5…d0c9f完整发布，22原分块与旧rsync部分文件保留，不删唯一证据。

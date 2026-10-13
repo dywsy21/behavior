@@ -1,0 +1,43 @@
+{
+  "owner": "Codex SUBMISSION-FULL-EVAL",
+  "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "rtx_run": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2",
+  "manifest_sha256": "3dd8862c9c0eed786929bb064e3b4e4b5513ad36a1391ffd96bf92bccc719be4",
+  "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+  "pack_manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+  "tasks": ["turning_on_radio", "clean_a_keyboard"],
+  "split": "TRAIN",
+  "instance_indices_per_task": [1, 2, 3, 4],
+  "max_steps_parameter": 256,
+  "actual_applied_controls_per_episode": 257,
+  "note": "Original official evaluator indexing retained; actual metric and ACK both257, no timeout or video writer edit",
+  "batch2": {
+    "gpu": 0,
+    "episodes": 8,
+    "controls": 2056,
+    "run_seconds_excluding_scene_load": 215.38646324444562,
+    "controls_per_second": 9.545632390400561,
+    "status_sha256": "39e1588f689a95ea1cc75e6b8edab48b7e8fc8ed7c8ebd4f9d14b6dbf21a29a4",
+    "trace_sha256": "69a26c0fbd69df00e07f073b2abae00110389091cd9b43dc08ee896e594bdb7e",
+    "trace_audit_sha256": "6c1795d91679537ca248fe2cccb9c690ff22d9654fbc6b7dffbdc421467f108a"
+  },
+  "batch4": {
+    "gpu": 1,
+    "episodes": 8,
+    "controls": 2056,
+    "run_seconds_excluding_scene_load": 167.84598826989532,
+    "controls_per_second": 12.24932464095576,
+    "status_sha256": "726ade08e69bb621f7efca0f5dd30f457909fa0defefeabe4d95ccc0aeccebb5",
+    "trace_sha256": "ff4da4175866e840000a9ecd91521ba728e2288b86f85c71114f478395e26ba0",
+    "trace_audit_sha256": "cfa1eaa894830868bb85d3464ec721e8679cd0a7a51528bc860c63efd1b60836"
+  },
+  "selected_public_num_envs": 4,
+  "all_model_weights_unchanged": true,
+  "optimizer_updates": 0,
+  "physical_trace_checks": ["empty memory for every episode", "fixed episode/task/slot/model identity", "current high-to-low intent equality", "observer generation and causal clock", "unique tokens", "all actual raw23 ACK digests", "partial final chunk and closure"],
+  "public_run_started_at": "2026-10-13T15:17:13+08:00",
+  "public_supervisor_pid": 3488161,
+  "public_completed_at_start": 0,
+  "full_qscore_or_sr_proven": false,
+  "submission_ready": false
+}
