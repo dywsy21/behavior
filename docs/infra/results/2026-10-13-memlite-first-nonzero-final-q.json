@@ -215,9 +215,49 @@
   },
   "q_sum": 0.16666666666666666,
   "successes": 0,
+  "score_semantics_verified_later": {
+    "observed_at": "2026-10-13T14:13:55.256225+00:00",
+    "official_commit": "a8247a8cc1633fe1ca0cc66aa07243d46c64f155",
+    "official_tag": "v3.9.3-post2",
+    "source_kind": "frozen source archive without Git metadata; checked against registered original file hashes",
+    "manifest": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/code/memlite-final-eval-20261013-v4/scripts/eval/memlite_sft100/official_manifest.json",
+      "sha256": "b7c8c27784a9dd097a90007d592c50732c4cdf3ec55d14939ce5ac8eeaa1effd"
+    },
+    "files": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/metrics/task_metric.py",
+        "sha256": "9f9c20fa5c3b8e57c46d81e04e71eb2b63c007809a43631a6b4fe3c791ceef8e",
+        "pinned_sha256": "9f9c20fa5c3b8e57c46d81e04e71eb2b63c007809a43631a6b4fe3c791ceef8e",
+        "matches_pinned": true
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/tasks/behavior_task.py",
+        "sha256": "44db7998933da4111292a1ce343b11126ea024b2492482b13156058accf29f6d",
+        "pinned_sha256": "44db7998933da4111292a1ce343b11126ea024b2492482b13156058accf29f6d",
+        "matches_pinned": true
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+        "sha256": "5885dceea636ce206accbb26d153b90c3004e3d5e959eced27529487c18ae870",
+        "pinned_sha256": "5885dceea636ce206accbb26d153b90c3004e3d5e959eced27529487c18ae870",
+        "matches_pinned": true
+      }
+    ],
+    "pure_function_cases": {
+      "already_true_no_new_progress": 0,
+      "one_new_predicate": 0.16666666666666666,
+      "success_shortcut": 1,
+      "no_goal_options": 0
+    },
+    "formula": "If not full success: max over goal options of count(initial_false AND final_true) divided by number of predicates in that option.",
+    "normalised_time_formula": "human_demonstration_steps / actual_simulator_steps; about2/3 at a1.5x demonstration-length timeout is expected.",
+    "interpretation": "Coffee305 final1/6 records at least one newly satisfied predicate relative to its own starting state, not free credit from initially true predicates. Exact predicate and causal skill efficacy are not identified by the scalar score.",
+    "simulation_or_training_started": false
+  },
   "inference_limitations": [
     "Nonzero final Q is not full-task success",
-    "No matched comparator or initial-state Q comparison; not evidence of training improvement",
+    "Official Q excludes credit for initially true predicates; no matched model comparator or predicate-level trajectory diagnosis, so not evidence of training improvement",
     "This batch is public development evaluation, not reusable training data"
   ]
 }

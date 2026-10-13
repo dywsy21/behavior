@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 22:14 CST / Codex SUBMISSION-FULL-EVAL（Q解释核实）：** 原任务评分/behavior task/evaluator三文件SHA均与冻结官方a824清单相同；只抽出纯`compute_q_score`跑4个无仿真边界例，确认非成功时只计“初始false且终局true”的条件，初始已真不白给分。因此更正22:03/22:05的保守解释：咖啡台305的Q1/6确是相对本实例起始状态**新满足目标条件**，仍不证明整任务成功、具体哪个技能有效或训练优于对照。官方`normalized_time`实际为human_steps/actual_steps，约2/3与1.5倍示范长度超时一致，不是只跑2/3预算。完整公式、原SHA与4例输出已补入首非零Q摘要；源码是冻结归档而非Git checkout，未假称git HEAD检查通过。22:11原live监控192完整/20既有异常/788未覆盖，Q均值0.0008681/SR0，22:14 GPU0新309/310现各1536实际控制、102模型请求，原supervisor/新模型/新sim与冠军后继直接ps实活；原作业/冠军队列不改，无新仿真或训练。
+
 - **2026-10-13 22:08 CST / Codex SUBMISSION-FULL-EVAL：** 原GPU0 worker3599518现已实际派发sim3635232，`cook_a_brisket-n2-i8 --indices 8 9`（仅未试309/310），原51c source；新sim处于loading/尚无控制计数，非重跑异常305–308或已完301–304。原supervisor3599503/new model3633586/冠军后继3603438直接ps实活，无全局STOP；具体命令和进程证据已补入牛胸异常摘要。188完整/20异常、Q均值0.0008865/SR0仍属部分结果；继续同作业等待，完整全量与冠军公共轮均未完成，goal保持active。
 
 - **2026-10-13 22:05 CST / Codex SUBMISSION-FULL-EVAL：** 首个非零Q批次四原JSON/MP4/attempt均实核、完整保留，37600实际控制与service ACK/视频帧数一致，只有咖啡台305为Q1/6，其余三例Q0，四例均未成功。摘要`docs/infra/results/2026-10-13-memlite-first-nonzero-final-q.json`，不推断相对起始改善或训练收益，不回灌公共数据。GPU0新model3633586现ready但尚无新sim子进程（worker旧sim字段是已退出3600705），正等后续场景准入；不能据旧字段称重跑/实际恢复，下一核真实309/310命令与控制。188完整/20异常，原全量与后继继续。
