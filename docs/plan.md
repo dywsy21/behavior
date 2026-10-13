@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 20:54 CST / Codex SUBMISSION-FULL-EVAL（实测公平准入）：** 本轮为已核实live进程的等待＋运行证据确认，非重启：原MEM3599503、GPU6 worker3599524和冠军后继3603438直接ps实活。前14个实际admitted_at排序严格为票0–13；上一轮未启动的GPU6本轮蜂蜜301–304各有512实际控制ACK，GPU0牛胸各2368、GPU1培根各784、GPU2美术用品各1424。当前四卡实际控制、其余分批加载，152完整/12旧异常尚无新终态；不把正在执行计入完整分母。干净工作分支fetch/pull确认已同步，未改冻结源码/模型/物理，无需启动额外诊断回合；下一继续等待原全量作业及后继，不恢复交付。
+
 - **2026-10-13 20:46 CST / Codex SUBMISSION-FULL-EVAL：** 新resume_v4 GPU0已出现真实推理trace，场景票8释放/10准入，MEM与冠军后继原PID实活；152完整/12旧异常未变。等待期间只读补核上一轮新增玫瑰309/310的整份11.27MB原trace（SHA042c77ec…73b2），两回合13,598实际控制/850 ACK、108计划、原JSON/MP4哈希与6,799帧各自一致，记忆/slot/高低层意图/observer时钟均通过。至此既有152完整累计796,630控制/49,856 ACK逐事件核过，不推断任务成功或高层语义正确；摘要`docs/infra/results/2026-10-13-memlite-stopped-continuation-new2-audit.json`。首次诊断脚本错读不存在的identity.rollout已报错退出，按原完整episode ID核对后通过，无原件修改/新回合。
 
 - **2026-10-13 20:41 CST / Codex SUBMISSION-FULL-EVAL（冠军后继已登记）：** 858885e0经Git包`eaaf48a8…fc4e7`部署独立RTX `code/champion-fifo-eval-20261013-v1`，目标69回归通过，`inspect`实读原9f source/HERE/REPO、manifest19b056a7、原dispatcher SHA74f3a33d…46bf均正确，0新GPU/0回合/无actor或物理变化。新tmux`champion-final100-after-resume-v4`、PID3603438真实waiting，队列`champion_final100_20261013_v2/queue-resume-v4`绑定MEM ec02111c及旧队列终态SHAadc0dfbc…b30a，启用FIFO、复用已完成2/4门，phases仍空/冠军公共0。MEM3599503继续，全部八模型ready、初始票0–7已释放，首两场景8/9准入、余6公平等候；当前152完整/12旧异常，未称全量完成。下一持续只读监控首实际控制及异常，交付暂缓、不新训练。
