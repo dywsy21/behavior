@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 22:08 CST / Codex SUBMISSION-FULL-EVAL：** 原GPU0 worker3599518现已实际派发sim3635232，`cook_a_brisket-n2-i8 --indices 8 9`（仅未试309/310），原51c source；新sim处于loading/尚无控制计数，非重跑异常305–308或已完301–304。原supervisor3599503/new model3633586/冠军后继3603438直接ps实活，无全局STOP；具体命令和进程证据已补入牛胸异常摘要。188完整/20异常、Q均值0.0008865/SR0仍属部分结果；继续同作业等待，完整全量与冠军公共轮均未完成，goal保持active。
+
 - **2026-10-13 22:05 CST / Codex SUBMISSION-FULL-EVAL：** 首个非零Q批次四原JSON/MP4/attempt均实核、完整保留，37600实际控制与service ACK/视频帧数一致，只有咖啡台305为Q1/6，其余三例Q0，四例均未成功。摘要`docs/infra/results/2026-10-13-memlite-first-nonzero-final-q.json`，不推断相对起始改善或训练收益，不回灌公共数据。GPU0新model3633586现ready但尚无新sim子进程（worker旧sim字段是已退出3600705），正等后续场景准入；不能据旧字段称重跑/实际恢复，下一核真实309/310命令与控制。188完整/20异常，原全量与后继继续。
 
 - **2026-10-13 22:03 CST / Codex SUBMISSION-FULL-EVAL（第二批隔离＋首个非零Q）：** 原run现188完整/20执行异常/792未覆盖；21:58:34牛胸305–308中305左夹爪finger link NaN（同栈重复4次），最后各6112 ACK，无这4例官方JSON，301–304原完整JSON/视频/attempt保留。旧GPU0模型与sim已退，final高低层/observer不变、0更新，691隔离器没有全局STOP；new model001 PID3633586仍加载，下一实际sim范围待核，不能称已闭环恢复。此模型原301–304连续闭合trace 36,218,153B/44012控制/2752 ACK也独立审过；异常尾动作均有限但305最大110.77，不能据此断定首因。证据`docs/infra/results/2026-10-13-memlite-fifo-brisket-physics-error.json`。新增咖啡台305–308已正式终态；305原官方final Q=1/6、success=false、9400步，原视频9400帧/30fps/672×448，JSON SHA678756ca…79fbe、MP4 SHA4e914e4d…17e23；当前completed-only Q0.0008865248、SR0，非全1000成绩/训练改善证明，不把非零终局值自动当相对起始进步。原全量与冠军等待继续，不变更模型/物理/超时或重跑失败例，下一核GPU0未尝试尾批及留存原件。

@@ -152,7 +152,31 @@
     "next_simulator_not_yet_started_at_observation": true,
     "stale_old_sim_field_not_a_live_process": true
   },
-  "next_simulator_not_yet_verified": true,
+  "next_simulator_not_yet_verified_at_initial_diagnosis": true,
+  "next_simulator_command_check": {
+    "observed_at": "2026-10-13T14:08:06.395935+00:00",
+    "worker_pid": 3599518,
+    "new_model_pid": 3633586,
+    "new_sim_pid": 3635232,
+    "new_sim_command": "/run/ti/behavior_stage3_20260930/envs/sim/bin/python /run/ti/rl_memlite_stage1_20261006/code/memlite-final-eval-20261013-v4/scripts/eval/memlite_final/run_task.py --task cook_a_brisket --task-id 51 --output /run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n2-i8 --port 19900 --config-sha256 98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc --run-id memlite_final100_20261013_resume_v4 --num-envs 2 --indices 8 9 ",
+    "part": "cook_a_brisket-n2-i8",
+    "indices": [
+      8,
+      9
+    ],
+    "instance_ids": [
+      309,
+      310
+    ],
+    "part_status": "loading",
+    "applied_controls": null,
+    "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+    "physical_execution_confirmed": false,
+    "global_stop": false,
+    "queue_pid": 3603438,
+    "queue_status": "waiting_for_memlite",
+    "process_liveness": "    PID STAT     ELAPSED\n3599503 S+      01:42:11\n3599518 Ss      01:42:11\n3603438 Ss+     01:27:22\n3633586 Ssl        08:47\n3635232 Rsl        01:33\n"
+  },
   "failed_instances_rerun": false,
   "cause_not_proven": true
 }
