@@ -87,3 +87,24 @@ def test_no_rgb_cpu_copy_during_open_loop_chunk_replay(monkeypatch):
     p.forward(obs);p.applied([0,1,2,3])
     assert len(calls)==24
     p.finish()
+
+
+def test_official_camera_extrinsics_are_not_actor_input_or_even_read():
+    p,sockets,obs=setup_policy()
+    # An object without tensor operations proves the excluded value is never
+    # touched, validated as an actor input, copied to CPU or put on the wire.
+    obs['robot_r1::cam_rel_poses']=object()
+    actions=p.forward(obs);p.applied([0,1,2,3])
+    assert actions[:,0].tolist()==[100,101,102,103]
+    for s in sockets:
+        assert set(s.requests[-1])=={'task_id',PROPRIO,*CAMERAS.values(),'__action_chunk_size__'}
+    p.finish()
+
+
+@pytest.mark.parametrize('mutation',['missing_camera','other_robot_extrinsics','privileged'])
+def test_known_ignored_field_does_not_weaken_other_observation_checks(mutation):
+    p,_,obs=setup_policy();obs['robot_r1::cam_rel_poses']=object()
+    if mutation=='missing_camera':del obs[next(iter(CAMERAS.values()))]
+    elif mutation=='other_robot_extrinsics':obs['robot_r2::cam_rel_poses']=object()
+    else:obs['success']=object()
+    with pytest.raises(ValueError):p.forward(obs)

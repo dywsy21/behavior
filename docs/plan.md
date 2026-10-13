@@ -12,6 +12,16 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 16:53 CST / Codex SUBMISSION-FULL-EVAL：** 新独立续评编排`continue_memlite_final.py`完成：原64回合引用原JSON/MP4 SHA、4物理异常不重跑/不造官方分数、18行政中断显式登记、其余未启动逐案覆盖；动作/模型/官方物理仍调用原51c11d32冻源，不热改。已诊断NaN仅隔离该物理batch，新模型进程仅服务不同未试实例；未知错误仍停诊断。冠军TRAIN首试0物理步因官方`robot_r1::cam_rel_poses`额外字段被过严客户端拒绝，权重前后2a5ce80b…3975相同；已补仅丢弃这一不入actor字段、其他未知/特权字段仍拒绝的最小修复。新增/关联55回归全过；尚未部署续评或声称冠军全链通过，新冻结源/新TRAIN复验待，旧失败现场保留。
+
+- **2026-10-13 16:40 CST / Codex SUBMISSION-FULL-EVAL / CHAMPION-2026：** 原MEM及旧后继队列已退出、八GPU实空/4.6T可用、冠军冻结852源Git干净与preflight目录空复核后，提交原final8000的既定TRAIN batch2工程门（8实例/256控制、不含公共），tmux `champion-final8000-preflight-b2-v1`、原注册run `champion_final100_20261013_v1/preflight/batch2`，总log `preflight-batch2-engineering.log`。仅调整资源等待顺序，不选择新权重/改模型或抢队友；MEM停机现场继续CPU诊断，冠军完整模型GPU/仿真通过仍待。
+
+- **2026-10-13 16:38 CST / Codex SUBMISSION-FULL-EVAL：** 用户明确暂缓模型交付，只优先我们自己的评测；停止扩展Docker/50端口交付。原MEM v2于16:30传真机308的scene3机器人四元数NaN断言，gpu6失败触发全局STOP，其余七worker和冠军后继队列均已自然/保护退出，当前并非仍在跑。已提交64原回合Q0/SR0，另22回合启动未完（传真机4＋其他行政中断18），原JSON/MP4/trace不改不删、不把缺失当完整官方成绩。传真机308在5184控制处raw23绝对值突增至395，其他7实例最大<1.84；当前仅能确认异常动作/状态链，尚不能断言首因。下一只读核物理异常与中断清单，设计保留已完成且不挑优的续评及失败隔离；不热改模型、不隐式重跑、冠军未开公共。
+
+- **2026-10-13 16:30 CST / Codex SUBMISSION-FULL-EVAL：** 原TRAIN100三相机300原图CPU预处理跨环境逐张输入/输出SHA全同，A800 Pillow11.2.1与RTX12.2.0的共同输出a8baba3e…8eb3、原image_tools d48b4bd7…977；完整native fe19d18c…14e0ad源/本地/RTX三端同。两回执在`artifacts/final-eval-20261012/runtime-inventory-v1/{a800,rtx}-preprocess300.json`，RTX同名路径位于`runs/final_portal_preparation_20261013/runtime-inventory-v1`；0模型/0GPU/0公共样本，不等于完整模型迁移验收。独立CPU核验脚本`scripts/infra/probe_champion_preprocessing.py`待同诊断证据提交；所有共享env保持不变。
+
+- **2026-10-13 16:22 CST / Codex SUBMISSION-FULL-EVAL：** 实收RTX三环境依赖/入口文件哈希清单`artifacts/final-eval-20261012/runtime-inventory-v1/rtx-runtime.json` SHA29ecebe5…2714fe，纯metadata/0GPU且排除环境秘密和direct_url。确认冠军A800原Pillow11.2.1、RTX准备环境12.2.0（JAX/Flax/Orbax/NumPy一致）；不热改env，下一用原已登记TRAIN100原分辨率300图（native fe19d18c…14e0ad）做CPU逐像素预处理一致性检查，不运行公共/模型/新训练。RTX Docker24.0.9仅runc且system df被API拒绝、lc1无Docker；只报告能力缺口，不擅自装runtime/改daemon，已异步询问最终24GB环境或50端口交付选择，现评测继续。
+
 - **2026-10-13 16:08 CST / Codex SUBMISSION-FULL-EVAL：** portal-only打包器f0181558已push，经Git包c44618c3…91b6f67验签独立部署RTX `code/final-portal-20261013-v1`；本地41回归/目标41回归均过，真实进行中的MEM run也按预期拒绝打包且0产物创建，不称已收齐1000。原MEM/冠军/依赖队列三冻源Git仍干净且commit不变，原PID均在；最新34/1000、completed-only Q0/SR0（非全量成绩），8worker无错误。接下来保持当前评测/后继队列，终态用独立工具收portal草稿；单24GB/50端口模型交付、外部视频链接与团队声明仍待，未对外上传。
 
 - **2026-10-13 16:05 CST / Codex SUBMISSION-FULL-EVAL：** 首16公开回合追加闭合episode逐事件审计：63,388实际控制/3,968 ACK逐条重算，高低层当前意图、空初始memory、固定身份与observer代次一致；原轨迹前缀SHA/长度及边界写入`2026-10-13-memlite-first16-public-audit.json`，不覆盖活跃回合/不称策略有效。新增独立`package_final_public_eval.py`和12项反例/双模型合成打包测试，与trace/冠军回归共25项真过；前两次未配置本地测试导入而0项执行，随后显式纯CPU测试入口已修正。真实1000打包仍待评测完成，原两冻结运行源未动；下一冻结部署独立打包器，继续监控，不上传或改原件。

@@ -68,8 +68,15 @@ class ChampionBatchedPolicy:
             raise ValueError('Ready episode and actual prior step required')
         if self.deadline is None:self.deadline=time.monotonic()+self.limit
         if time.monotonic()>=self.deadline:raise TimeoutError('Official episode wall timeout')
-        if set(obs)!={'task_id',PROPRIO,*CAMERAS.values()}:
-            raise ValueError('Only original RGB/proprio/task fields are allowed')
+        required={'task_id',PROPRIO,*CAMERAS.values()}
+        # The pinned evaluator adds camera extrinsics in _preprocess_obs.
+        # They are not an actor input: discard this exact known transport
+        # field before touching values, slicing rows or sending a request.
+        # Continue rejecting every other unknown/privileged field.
+        if not required<=set(obs) or set(obs)-required-{'robot_r1::cam_rel_poses'}:
+            raise ValueError('Only original RGB/proprio/task fields are allowed; '
+                f'missing={sorted(required-set(obs))}, extra={sorted(set(obs)-required)}')
+        obs={k:obs[k] for k in required}
         if any(v.ndim<1 or v.shape[0]!=self.count for v in obs.values()):
             raise ValueError('Observation batch lost original slot dimensions')
         task_ids=obs['task_id']
