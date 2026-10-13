@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-13 18:22 CST / Codex SUBMISSION-FULL-EVAL：** 原run已跨过100完整回合，现104/1000＋4已披露物理异常、892待覆盖，completed-only Q0/SR0；8worker无新诊断错误，原supervisor3540742与后继3540913实查S态活跃。原51c推理、9f冠军、374续评、f99队列四源码均HEAD不变且Git干净，未改规则/重跑挑优。18:04实测速率/剩余量及19分钟加载自然完成证据已随da6a8424推送；继续同评测与自动后继，不复做已完成审计/新训练，模型交付仍暂停。
+
 - **2026-10-13 18:20 CST / Codex SUBMISSION-FULL-EVAL：** 累计98完整＋4原执行异常/898待覆盖、Q0/SR0，原续评与冠军等待队列不变。GPU7爆米花加载自然完成：原part start1791885026.372→首attempt1791886180.790，19.24分钟；当前同3557372已四实例各2048实际控制、模型357次请求/最新时间实增。只读`py-spy dump --nonblocking`栈显示官方物理`step`，未暂停/重启进程、未改watchdog/超时，原30分钟门未触发；采样原文在忽略目录`artifacts/final-eval-20261012/continuation-v1/popcorn-loading-nonblocking-stack.txt`。此前12分钟无请求是加载延迟，不是已证实卡死；运行态继续，不据已完成快任务给承诺ETA或改模型。
 
 - **2026-10-13 18:04 CST / Codex SUBMISSION-FULL-EVAL：** 只读核原官方`task.jsonl`的100个1.5×human时限与注册horizon逐项相同；78已完/4异常后尚15,446,250控制步预算（未扣正在跑的部分）。23个已完物理batch中4环境16组吞吐中位16.30控制/s、2环境7组12.44；分卡/分batch外推剩余纯执行临界约35.4h中位场景、38.0h较慢样本场景，另需加载/排队/异常处理，不是可靠全任务ETA或SR证据。摘要`docs/infra/results/2026-10-13-memlite-remaining-work-1804.json`绑定原meta与manifest。GPU7爆米花part当前加载约12分钟、模型尚无新请求，但仿真3557372实活Rsl/CPU忙，不按日志暂静判死或重启；其余worker与后继原进程继续，保留原30分钟进展门。下一盯该加载及新完整结果，不改模型/物理/超时、交付暂缓。
