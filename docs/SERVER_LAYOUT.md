@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-13 20:41 CST：冠军公平后继（当前等待）
+
+- 新独立编排RTX `code/champion-fifo-eval-20261013-v1` = `858885e04d6e9702778001f90657795469980300`，Git包 `runs/champion_final_preparation_20261013/champion-fifo-v1.bundle` SHA `eaaf48a87d976949ade1825b13c74f0ffab9dbd720e20da9d287d43903cfc4e7`。目标69回归及只读原9f绑定检查通过；不是替换冠军模型源。
+- 冠军仍 `runs/champion_final100_20261013_v2` / manifest19b056a7 / 原`code/final-eval-continuation-20261013-v1`=9f。新队列 `queue-resume-v4/status.json`，log `queue-resume-v4.log`，tmux `champion-final100-after-resume-v4` / PID3603438已waiting；前队列`queue-resume-v3`终态SHA `adc0dfbcce1cd19e039d759a2a4075be52cc33dbf4c50098de573f5efaadb30a`保留。
+- 新队列绑定下方MEM resume_v4/ec02111c，待规定1000覆盖（12既有异常明确缺官方成绩）和GPU实空后只跑冠军公共阶段。实际开始时另写`coordinator-receipts/`和`loader-admission/`；目前phases空，不声称冠军已开始公共推理。
+
 ## 2026-10-13 20:26 CST：公平加载准入轮（当前）
 
 - 当前RTX MEM `runs/memlite_final100_20261013_resume_v4`，manifest `ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5`；编排 `code/final-eval-continuation-20261013-v6-standalone` = `691d2e43abcc42538a0ddf83d2f208da55b59dcb`，为独立Git对象库。原actor仍 `code/memlite-final-eval-20261013-v4`=51c，不能混淆。tmux `memlite-final100-resume-v4` / supervisor3599503 / 八worker3599518–25；FIFO记录 `loader-admission/request-*.json` 保留生命周期和owner身份。

@@ -62,6 +62,8 @@ resume_v3的GPU6始终在第一处`loader_lock(job)`等待，1800s后旧门抛Ti
 
 只准搭配已完成的原2/4 TRAIN门，禁止wrapper隐式重做preflight。后继显式`--fifo-champion --completed-preflight`，等待MEM1000已说明覆盖并核GPU空闲；未知失败仍停，不加入自动公共重试。2026-10-13 20:40本地69项通过；实际部署/原源绑定检查待。此为根自审与回归，不冒称已有另一成员独立审查。
 
+20:41真实验收补充：858885e0独立RTX源目标69项通过，`inspect`验证原9f路径、19b056a7 manifest与原dispatcher SHA74f3a33d…46bf；新`queue-resume-v4`/PID3603438等待MEM resume_v4。原已完成TRAIN只验签，0新增rollout，actor/物理未改；完整公共评测仍待。
+
 ## 冠军TRAIN接口修复
 
 原final8000权重成功GPU加载，首TRAIN在0控制步被客户端字段检查拦截。官方`evaluator.py::_preprocess_obs`额外加入`robot_r1::cam_rel_poses`。修复只在客户端明确丢弃此键，不读取其值、不发给模型；RGB/61D本体/任务编号的原协议不变，其他未知字段继续拒绝。纯CPU回归覆盖不读取该字段、未知/特权键拒绝、固定slot缩小/重置/实际ACK。必须在新冻结源做真实TRAIN复验后，才准冠军公共轮；旧失败目录保留。
